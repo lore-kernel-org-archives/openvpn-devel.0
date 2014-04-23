@@ -1,10 +1,13 @@
-From: Steffan Karger <steffan@...1856...>
-Date: Thu, 24 Apr 2014 00:43:37 +0200
-Message-Id: <1398293018-8581-2-git-send-email-steffan@...1856...>
-In-Reply-To: <1398293018-8581-1-git-send-email-steffan@...1856...>
-References: <1398293018-8581-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH 1/2] Add support for elliptic curve
-	diffie-hellmann key exchange (ECDH)
+Message-ID: <53584B0C.8020209@...1901...>
+Date: Wed, 23 Apr 2014 19:21:48 -0400
+From: Timothe Litt <litt@...1901...>
+MIME-Version: 1.0
+References: <53572C4E.7010701@...1901...>	<20140423081058.GJ16637@...1296...>	<53579C5D.5000902@...1435...>	<5357DDFC.2010401@...1901...>
+	<53581D43.6060501@...1856...>
+In-Reply-To: <53581D43.6060501@...1856...>
+Content-Type: multipart/signed; protocol="application/pkcs7-signature";
+	micalg=sha1; boundary="------------ms060507070401020501070804"
+Subject: Re: [Openvpn-devel] Progress on Version negotiation
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,418 +16,152 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
 
-This patch is based on Jan Just Keijser's patch from Feb 7, 2012.
+This is a cryptographically signed message in MIME format.
 
-When OpenSSL 1.0.2+ or PolarSSL is used, lets the crypto library do the
-heavy lifting. For OpenSSL builds, if a user specifies a curve using
---ecdh-curve, it first tries to override automatic selection using that
-curve.
+--------------ms060507070401020501070804
+Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+Content-Transfer-Encoding: quoted-printable
 
-For older OpenSSL, tries the following things (in order of preference):
- * When supplied, use the ecdh curve specified by the user.
- * Try to extract the curve from the private key, use the same curve.
- * Fall back on secp384r1 curve.
+On 23-Apr-14 16:06, Steffan Karger wrote:
+> I generated a matching pair of traces of the failure (client and server)
+> & posted a summary.
+>
+> Let me know if you would like the full traces.
+Sent off-list.
+>
+> I've been trying to reproduce the error. I grabbed my spare pi from the
+> desk drawer and built 2.3.3 from sources like you describe in #385. I
+> fired up a Windows 8.1 VM, and installed OpenVPN 2.3.3-I002 (x64). This
+> setup however happily connects with TLSv1.2. It's hard to get a hold on
+> this one...
+My windows client is XP, 32-bit.  It's a physical machine (old notebook).
 
-Note that although a curve lookup might succeed, OpenSSL 1.0.0 and older do
-*not* support TLSv1.1 or TLSv1.2, which means no that no EC-crypto can be
-used.
+Although the problem first surfaced on 2.3.3, I'm now running off=20
+git-master (of a few days back).  How I did that is in #385 too.
 
-Signed-off-by: Steffan Karger <steffan@...1856...>
----
- README.ec                  |  35 ++++++++++++++
- doc/openvpn.8              |  14 ++++++
- src/openvpn/init.c         |   4 +-
- src/openvpn/options.c      |  11 +++++
- src/openvpn/options.h      |   2 +
- src/openvpn/ssl.c          |   4 ++
- src/openvpn/ssl_backend.h  |  15 ++++++
- src/openvpn/ssl_openssl.c  | 116 +++++++++++++++++++++++++++++++++++++++++++++
- src/openvpn/ssl_polarssl.c |  26 ++++++++++
- 9 files changed, 226 insertions(+), 1 deletion(-)
- create mode 100644 README.ec
+For those on the list:
 
-diff --git a/README.ec b/README.ec
-new file mode 100644
-index 0000000..3293801
---- /dev/null
-+++ b/README.ec
-@@ -0,0 +1,35 @@
-+Since 2.4.0, OpenVPN has official support for elliptic curve crypto. Elliptic
-+curves are an alternative to RSA for asymmetric encryption.
-+
-+Elliptic curve crypto ('ECC') can be used for the ('TLS') control channel only
-+in OpenVPN; the data channel (encrypting the actual network traffic) uses
-+symmetric encryption. ECC can be used in TLS for authentication (ECDSA) and key
-+exchange (ECDH).
-+
-+Key exchange (ECDH)
-+-------------------
-+OpenVPN 2.4.0 and newer automatically initialize ECDH parameters. When ECDSA is
-+used for authentication, the curve used for the server certificate will be used
-+for ECDH too. When autodetection fails (e.g. when using RSA certificates)
-+OpenVPN lets the crypto library decide if possible, or falls back to the
-+secp384r1 curve.
-+
-+An administrator can force an OpenVPN/OpenSSL server to use a specific curve
-+using the --ecdh-curve <curvename> option with one of the curves listed as
-+available by the --show-curves option. Clients will use the same curve as
-+selected by the server.
-+
-+Note that not all curves listed by --show-curves are available for use with TLS;
-+in that case connecting will fail with a 'no shared cipher' TLS error.
-+
-+Authentication (ECDSA)
-+----------------------
-+Since OpenVPN 2.4.0, using ECDSA certificates works 'out of the box'. Which
-+specific curves and cipher suites are available depends on your version and
-+configuration of the crypto library. The crypto library will automatically
-+select a cipher suite for the TLS control channel.
-+
-+Support for generating an ECDSA certificate chain is available in EasyRSA (in
-+spite of it's name) since EasyRSA 3.0. The parameters you're looking for are
-+'--use-algo=ec' and '--curve=<curve_name>'. See the EasyRSA documentation for
-+more details on generating ECDSA certificates.
-diff --git a/doc/openvpn.8 b/doc/openvpn.8
-index 3a58317..b7d6a3d 100644
---- a/doc/openvpn.8
-+++ b/doc/openvpn.8
-@@ -4246,6 +4246,13 @@ included with the OpenVPN distribution.  Diffie Hellman parameters
- may be considered public.
- .\"*********************************************************
- .TP
-+.B \-\-ecdh-curve name
-+Specify the curve to use for elliptic curve Diffie Hellman. Available
-+curves can be listed with
-+.B \-\-show-curves
-+. The specified curve will only be used for ECDH TLS-ciphers.
-+.\"*********************************************************
-+.TP
- .B \-\-cert file
- Local peer's signed certificate in .pem format \-\- must be signed
- by a certificate authority whose certificate is in
-@@ -5027,6 +5034,13 @@ lowest.
- Show currently available hardware-based crypto acceleration
- engines supported by the OpenSSL library.
- .\"*********************************************************
-+.TP
-+.B \-\-show-curves
-+(Standalone)
-+Show all available elliptic curves to use with the
-+.B \-\-ecdh-curve
-+option.
-+.\"*********************************************************
- .SS Generate a random key:
- Used only for non-TLS static key encryption mode.
- .\"*********************************************************
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index c2907cd..467b98a 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -871,7 +871,7 @@ print_openssl_info (const struct options *options)
- #ifdef ENABLE_CRYPTO
-   if (options->show_ciphers || options->show_digests || options->show_engines
- #ifdef ENABLE_SSL
--      || options->show_tls_ciphers
-+      || options->show_tls_ciphers || options->show_curves
- #endif
-     )
-     {
-@@ -884,6 +884,8 @@ print_openssl_info (const struct options *options)
- #ifdef ENABLE_SSL
-       if (options->show_tls_ciphers)
- 	show_available_tls_ciphers (options->cipher_list);
-+      if (options->show_curves)
-+	show_available_curves();
- #endif
-       return true;
-     }
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 4af2974..40210e6 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -854,6 +854,7 @@ init_options (struct options *o, const bool init_gc)
-   o->renegotiate_seconds = 3600;
-   o->handshake_window = 60;
-   o->transition_window = 3600;
-+  o->ecdh_curve = NULL;
- #ifdef ENABLE_X509ALTUSERNAME
-   o->x509_username_field = X509_USERNAME_FIELD_DEFAULT;
- #endif
-@@ -6516,6 +6517,16 @@ add_option (struct options *options,
-       VERIFY_PERMISSION (OPT_P_GENERAL);
-       options->show_tls_ciphers = true;
-     }
-+  else if (streq (p[0], "show-curves"))
-+    {
-+      VERIFY_PERMISSION (OPT_P_GENERAL);
-+      options->show_curves = true;
-+    }
-+  else if (streq (p[0], "ecdh-curve") && p[1])
-+    {
-+      VERIFY_PERMISSION (OPT_P_CRYPTO);
-+      options->ecdh_curve= p[1];
-+    }
-   else if (streq (p[0], "tls-server"))
-     {
-       VERIFY_PERMISSION (OPT_P_GENERAL);
-diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-index ec1d091..092eac4 100644
---- a/src/openvpn/options.h
-+++ b/src/openvpn/options.h
-@@ -201,6 +201,7 @@ struct options
-   bool show_engines;
- #ifdef ENABLE_SSL
-   bool show_tls_ciphers;
-+  bool show_curves;
- #endif
-   bool genkey;
- #endif
-@@ -515,6 +516,7 @@ struct options
-   const char *priv_key_file;
-   const char *pkcs12_file;
-   const char *cipher_list;
-+  const char *ecdh_curve;
-   const char *tls_verify;
-   int verify_x509_type;
-   const char *verify_x509_name;
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index b09e52b..9bcb2ac 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -555,6 +555,10 @@ init_ssl (const struct options *options, struct tls_root_ctx *new_ctx)
-       tls_ctx_load_extra_certs(new_ctx, options->extra_certs_file, options->extra_certs_file_inline);
-     }
- 
-+  /* Once keys and cert are loaded, load ECDH parameters */
-+  if (options->tls_server)
-+    tls_ctx_load_ecdh_params(new_ctx, options->ecdh_curve);
-+
-   /* Allowable ciphers */
-   tls_ctx_restrict_ciphers(new_ctx, options->cipher_list);
- 
-diff --git a/src/openvpn/ssl_backend.h b/src/openvpn/ssl_backend.h
-index 57b03df..37a458c 100644
---- a/src/openvpn/ssl_backend.h
-+++ b/src/openvpn/ssl_backend.h
-@@ -186,6 +186,16 @@ void tls_ctx_load_dh_params(struct tls_root_ctx *ctx, const char *dh_file,
-     const char *dh_file_inline);
- 
- /**
-+ * Load Elliptic Curve Parameters, and load them into the library-specific
-+ * TLS context.
-+ *
-+ * @param ctx          TLS context to use
-+ * @param curve_name   The name of the elliptic curve to load.
-+ */
-+void tls_ctx_load_ecdh_params(struct tls_root_ctx *ctx, const char *curve_name
-+    );
-+
-+/**
-  * Load PKCS #12 file for key, cert and (optionally) CA certs, and add to
-  * library-specific TLS context.
-  *
-@@ -461,6 +471,11 @@ void print_details (struct key_state_ssl * ks_ssl, const char *prefix);
- void show_available_tls_ciphers (const char *tls_ciphers);
- 
- /*
-+ * Show the available elliptic curves in the crypto library
-+ */
-+void show_available_curves (void);
-+
-+/*
-  * The OpenSSL library has a notion of preference in TLS ciphers.  Higher
-  * preference == more secure. Return the highest preference cipher.
-  */
-diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-index 1923230..63b566e 100644
---- a/src/openvpn/ssl_openssl.c
-+++ b/src/openvpn/ssl_openssl.c
-@@ -56,6 +56,9 @@
- #include <openssl/pkcs12.h>
- #include <openssl/x509.h>
- #include <openssl/crypto.h>
-+#ifndef OPENSSL_NO_EC
-+#include <openssl/ec.h>
-+#endif
- 
- /*
-  * Allocate space in SSL objects in which to store a struct tls_session
-@@ -329,6 +332,75 @@ tls_ctx_load_dh_params (struct tls_root_ctx *ctx, const char *dh_file,
-   DH_free (dh);
- }
- 
-+void
-+tls_ctx_load_ecdh_params (struct tls_root_ctx *ctx, const char *curve_name
-+    )
-+{
-+#ifndef OPENSSL_NO_EC
-+  int nid = NID_undef;
-+  EC_KEY *ecdh = NULL;
-+  const char *sname = NULL;
-+
-+  /* Generate a new ECDH key for each SSL session (for non-ephemeral ECDH) */
-+  SSL_CTX_set_options(ctx->ctx, SSL_OP_SINGLE_ECDH_USE);
-+#if OPENSSL_VERSION_NUMBER >= 0x10002000L
-+  /* OpenSSL 1.0.2 and newer can automatically handle ECDH parameter loading */
-+  if (NULL == curve_name) {
-+    SSL_CTX_set_ecdh_auto(ctx->ctx, 1);
-+    return;
-+  }
-+#endif
-+  /* For older OpenSSL, we'll have to do the parameter loading on our own */
-+  if (curve_name != NULL)
-+    {
-+      /* Use user supplied curve if given */
-+      msg (D_TLS_DEBUG, "Using user specified ECDH curve (%s)", curve_name);
-+      nid = OBJ_sn2nid(curve_name);
-+    }
-+  else
-+    {
-+      /* Extract curve from key */
-+      EC_KEY *eckey = NULL;
-+      const EC_GROUP *ecgrp = NULL;
-+      EVP_PKEY *pkey = NULL;
-+
-+      /* Little hack to get private key ref from SSL_CTX, yay OpenSSL... */
-+      SSL ssl;
-+      ssl.cert = ctx->ctx->cert;
-+      pkey = SSL_get_privatekey(&ssl);
-+
-+      msg (D_TLS_DEBUG, "Extracting ECDH curve from private key");
-+
-+      if (pkey != NULL && (eckey = EVP_PKEY_get1_EC_KEY(pkey)) != NULL &&
-+          (ecgrp = EC_KEY_get0_group(eckey)) != NULL)
-+        nid = EC_GROUP_get_curve_name(ecgrp);
-+    }
-+
-+  /* Translate NID back to name , just for kicks */
-+  sname = OBJ_nid2sn(nid);
-+  if (sname == NULL) sname = "(Unknown)";
-+
-+  /* Create new EC key and set as ECDH key */
-+  if (NID_undef == nid || NULL == (ecdh = EC_KEY_new_by_curve_name(nid)))
-+    {
-+      /* Creating key failed, fall back on sane default */
-+      ecdh = EC_KEY_new_by_curve_name(NID_secp384r1);
-+      const char *source = (NULL == curve_name) ?
-+          "extract curve from certificate" : "use supplied curve";
-+      msg (D_TLS_DEBUG_LOW,
-+          "Failed to %s (%s), using secp384r1 instead.", source, sname);
-+      sname = OBJ_nid2sn(NID_secp384r1);
-+    }
-+
-+  if (!SSL_CTX_set_tmp_ecdh(ctx->ctx, ecdh))
-+    msg (M_SSLERR, "SSL_CTX_set_tmp_ecdh: cannot add curve");
-+
-+  msg (D_TLS_DEBUG_LOW, "ECDH curve %s added", sname);
-+
-+  EC_KEY_free(ecdh);
-+#endif /* OPENSSL_NO_EC */
-+}
-+
- int
- tls_ctx_load_pkcs12(struct tls_root_ctx *ctx, const char *pkcs12_file,
-     const char *pkcs12_file_inline,
-@@ -1299,6 +1371,50 @@ show_available_tls_ciphers (const char *cipher_list)
-   SSL_CTX_free (tls_ctx.ctx);
- }
- 
-+/*
-+ * Show the Elliptic curves that are available for us to use
-+ * in the OpenSSL library.
-+ */
-+void
-+show_available_curves()
-+{
-+#ifndef OPENSSL_NO_EC
-+  EC_builtin_curve *curves = NULL;
-+  size_t crv_len = 0;
-+  size_t n = 0;
-+
-+  crv_len = EC_get_builtin_curves(NULL, 0);
-+
-+  curves = OPENSSL_malloc((int)(sizeof(EC_builtin_curve) * crv_len));
-+
-+  if (curves == NULL)
-+    msg (M_SSLERR, "Cannot create EC_builtin_curve object");
-+  else
-+  {
-+    if (EC_get_builtin_curves(curves, crv_len))
-+    {
-+      printf ("Available Elliptic curves:\n");
-+      for (n = 0; n < crv_len; n++)
-+      {
-+        const char *sname;
-+        sname   = OBJ_nid2sn(curves[n].nid);
-+        if (sname == NULL) sname = "";
-+
-+        printf("%s\n", sname);
-+      }
-+    }
-+    else
-+    {
-+      msg (M_SSLERR, "Cannot get list of builtin curves");
-+    }
-+    OPENSSL_free(curves);
-+  }
-+#else
-+  msg (M_DEBUG, "Your OpenSSL library was built without elliptic curve support."
-+		" Skipping ECDH parameter loading.");
-+#endif
-+}
-+
- void
- get_highest_preference_tls_cipher (char *buf, int size)
- {
-diff --git a/src/openvpn/ssl_polarssl.c b/src/openvpn/ssl_polarssl.c
-index 8371893..5bd6d7d 100644
---- a/src/openvpn/ssl_polarssl.c
-+++ b/src/openvpn/ssl_polarssl.c
-@@ -228,6 +228,15 @@ else
-       (counter_type) 8 * mpi_size(&ctx->dhm_ctx->P));
- }
- 
-+void
-+tls_ctx_load_ecdh_params (struct tls_root_ctx *ctx, const char *curve_name
-+    )
-+{
-+    if (NULL != curve_name)
-+      msg(M_WARN, "WARNING: PolarSSL builds do not support specifying an ECDH "
-+                  "curve, using default curves.");
-+}
-+
- int
- tls_ctx_load_pkcs12(struct tls_root_ctx *ctx, const char *pkcs12_file,
-     const char *pkcs12_file_inline,
-@@ -1084,6 +1093,23 @@ show_available_tls_ciphers (const char *cipher_list)
- }
- 
- void
-+show_available_curves (void)
-+{
-+  const ecp_curve_info *pcurve = ecp_curve_list();
-+
-+  if (NULL == pcurve)
-+    msg (M_FATAL, "Cannot retrieve curve list from PolarSSL");
-+
-+  /* Print curve list */
-+  printf ("Available Elliptic curves, listed in order of preference:\n\n");
-+  while (POLARSSL_ECP_DP_NONE != pcurve->grp_id)
-+    {
-+      printf("%s\n", pcurve->name);
-+      pcurve++;
-+    }
-+}
-+
-+void
- get_highest_preference_tls_cipher (char *buf, int size)
- {
-   const char *cipher_name;
--- 
-1.8.3.2
+With a hint from Steffan,
 
+I have established that the client certificate is not being sent.  I=20
+believe this is a client issue.
+
+It appears that including the cert/key in the conf file, rather than=20
+from the crypto API makes 1.2 work.
+
+We suspect there's some issue due to 1.2's larger hashes/message size.=20=20
+Not clear whether the cryptoapi interface is the cause or a victim.
+
+As I can't build the windows client (it's really annoying that it=20
+requires commercial tools), further debug will need help from folks who can.
+
+As always, let me know if I can do anything more to help.
+
+
+
+--------------ms060507070401020501070804
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
+
+MIAGCSqGSIb3DQEHAqCAMIACAQExCzAJBgUrDgMCGgUAMIAGCSqGSIb3DQEHAQAAoIIPDzCC
+BjQwggQcoAMCAQICASAwDQYJKoZIhvcNAQEFBQAwfTELMAkGA1UEBhMCSUwxFjAUBgNVBAoT
+DVN0YXJ0Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNp
+Z25pbmcxKTAnBgNVBAMTIFN0YXJ0Q29tIENlcnRpZmljYXRpb24gQXV0aG9yaXR5MB4XDTA3
+MTAyNDIxMDI1NVoXDTE3MTAyNDIxMDI1NVowgYwxCzAJBgNVBAYTAklMMRYwFAYDVQQKEw1T
+dGFydENvbSBMdGQuMSswKQYDVQQLEyJTZWN1cmUgRGlnaXRhbCBDZXJ0aWZpY2F0ZSBTaWdu
+aW5nMTgwNgYDVQQDEy9TdGFydENvbSBDbGFzcyAyIFByaW1hcnkgSW50ZXJtZWRpYXRlIENs
+aWVudCBDQTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAMsohUWcASz7GfKrpTOM
+KqANy9BV7V0igWdGxA8IU77L3aTxErQ+fcxtDYZ36Z6GH0YFn7fq5RADteP0AYzrCA+EQTfi
+8q1+kA3m0nwtwXG94M5sIqsvs7lRP1aycBke/s5g9hJHryZ2acScnzczjBCAo7X1v5G3yw8M
+DP2m2RCye0KfgZ4nODerZJVzhAlOD9YejvAXZqHksw56HzElVIoYSZ3q4+RJuPXXfIoyby+Y
+2m1E+YzX5iCZXBx05gk6MKAW1vaw4/v2OOLy6FZH3XHHtOkzUreG//CsFnB9+uaYSlR65cdG
+zTsmoIK8WH1ygoXhRBm98SD7Hf/r3FELNvUCAwEAAaOCAa0wggGpMA8GA1UdEwEB/wQFMAMB
+Af8wDgYDVR0PAQH/BAQDAgEGMB0GA1UdDgQWBBSuVYNv7DHKufcd+q9rMfPIHeOsuzAfBgNV
+HSMEGDAWgBROC+8apEBbpRdphzDKNGhD0EGu8jBmBggrBgEFBQcBAQRaMFgwJwYIKwYBBQUH
+MAGGG2h0dHA6Ly9vY3NwLnN0YXJ0c3NsLmNvbS9jYTAtBggrBgEFBQcwAoYhaHR0cDovL3d3
+dy5zdGFydHNzbC5jb20vc2ZzY2EuY3J0MFsGA1UdHwRUMFIwJ6AloCOGIWh0dHA6Ly93d3cu
+c3RhcnRzc2wuY29tL3Nmc2NhLmNybDAnoCWgI4YhaHR0cDovL2NybC5zdGFydHNzbC5jb20v
+c2ZzY2EuY3JsMIGABgNVHSAEeTB3MHUGCysGAQQBgbU3AQIBMGYwLgYIKwYBBQUHAgEWImh0
+dHA6Ly93d3cuc3RhcnRzc2wuY29tL3BvbGljeS5wZGYwNAYIKwYBBQUHAgEWKGh0dHA6Ly93
+d3cuc3RhcnRzc2wuY29tL2ludGVybWVkaWF0ZS5wZGYwDQYJKoZIhvcNAQEFBQADggIBADqp
+Jw3I07QWke9plNBpxUxcffc7nUrIQpJHDci91DFG7fVhHRkMZ1J+BKg5UNUxIFJ2Z9B90Mic
+c/NXcs7kPBRdn6XGO/vPc87Y6R+cWS9Nc9+fp3Enmsm94OxOwI9wn8qnr/6o3mD4noP9Jphw
+UPTXwHovjavRnhUQHLfo/i2NG0XXgTHXS2Xm0kVUozXqpYpAdumMiB/vezj1QHQJDmUdPYMc
+p+reg9901zkyT3fDW/ivJVv6pWtkh6Pw2ytZT7mvg7YhX3V50Nv860cV11mocUVcqBLv0gcT
++HBDYtbuvexNftwNQKD5193A7zN4vG7CTYkXxytSjKuXrpEatEiFPxWgb84nVj25SU5q/r1X
+hwby6mLhkbaXslkVtwEWT3Van49rKjlK4XrUKYYWtnfzq6aSak5u0Vpxd1rY79tWhD3EdCvO
+hNz/QplNa+VkIsrcp7+8ZhP1l1b2U6MaxIVteuVMD3X0vziIwr7jxYae9FZjbxlpUemqXjcC
+0QaFfN7qI0JsQMALL7iGRBg7K0CoOBzECdD3fuZil5kU/LP9cr1BK31U0Uy651bFnAMMMkqh
+AChIbn0ei72VnbpSsrrSdF0BAGYQ8vyHae5aCg+H75dVCV33K6FuxZrf09yTz+Vx/PkdRUYk
+XmZz/OTfyJXsUOUXrym6KvI2rYpccSk5MIII0zCCB7ugAwIBAgICJtUwDQYJKoZIhvcNAQEF
+BQAwgYwxCzAJBgNVBAYTAklMMRYwFAYDVQQKEw1TdGFydENvbSBMdGQuMSswKQYDVQQLEyJT
+ZWN1cmUgRGlnaXRhbCBDZXJ0aWZpY2F0ZSBTaWduaW5nMTgwNgYDVQQDEy9TdGFydENvbSBD
+bGFzcyAyIFByaW1hcnkgSW50ZXJtZWRpYXRlIENsaWVudCBDQTAeFw0xMjA5MjUxODQyMTha
+Fw0xNDA5MjcxOTIyNDJaMIGQMRkwFwYDVQQNExBPZ3RBNVhZZXZheGFkbGtKMQswCQYDVQQG
+EwJVUzEWMBQGA1UECBMNTWFzc2FjaHVzZXR0czEVMBMGA1UEBxMMU291dGhib3JvdWdoMRUw
+EwYDVQQDEwxUaW1vdGhlIExpdHQxIDAeBgkqhkiG9w0BCQEWEXRpbW90aGVAbGl0dHMubmV0
+MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEA38JrSHJ7GVdQiTppuafIBrhphuLL
+HAmpeAFNvUBuUUh4X8Nx4Ag03hrC/B7OWYpUJI1HgWCK/eMtKEWF7UMwFhkMeqWSdrZyb4uk
+EqTf46SyyAghF6BGuuVTiptED63FwzQY2PTXCmAJviuRXoJMzlhAwzUFpsWTFhswigFLrMCn
+kJ9nndqnxQmMFpD7pjJ6kFkxKz/5k1CEzAfSerWHkIOBuXFyYpDDgDFXN1+qF25HsVVw+4xT
+1/tNvCEVQ9WAleUznLvWgT5sV8tTewsUiYOgSqyoHiuJCOc9YJF2pUHGZVV+WzS8YIb95ax5
+5yoS+C3D3FFzl6CbcI3nc6csqkP4bNBqm96Z/WdfTV4ouoycI4N9AJ86l6/Ygjz3/juFI9ni
+as8nE051hksnyCon87fyP3/NezZ9NcUYVUnki1cVhfh2cN+s79fGWbUJePjT0fmso0FVcSRp
+ddLyeZladbifFG+TiQO9BFt97e16OwyFpXRIzZWnfEiG2ss51Vpv9au8RrLgBD07aKE3mzZp
+xZzoZ8c/jgb1YcUyAyaVmdOk4A3eGe7c8Loa+eYIRwkbjoE6H/PKcoRNIqnYQ44zvOOONRDI
+S3vBpzofVK5Ndx0NVDIvsbWEPb9ntR32taUUZ334SPN447UO3sjvItFg1oOuC1i6kL6l1vRM
+GNouPvECAwEAAaOCBDcwggQzMAkGA1UdEwQCMAAwCwYDVR0PBAQDAgSwMB0GA1UdJQQWMBQG
+CCsGAQUFBwMCBggrBgEFBQcDBDAdBgNVHQ4EFgQUJZNwH8x9MtxbZmI9AK6Jj+IELcowHwYD
+VR0jBBgwFoAUrlWDb+wxyrn3HfqvazHzyB3jrLswgaYGA1UdEQSBnjCBm4ERdGltb3RoZUBs
+aXR0cy5uZXSBEXRpbW90aGVAbGl0dHMubmV0gQxsaXR0QGFjbS5vcmeBDWxpdHRAaWVlZS5v
+cmeBFGhvc3RtYXN0ZXJAbGl0dHMubmV0gRdsaXR0c25ldGFkbWluQGxpdHRzLm5ldIETd2lr
+aWFkbWluQGxpdHRzLm5ldIESc2VjdXJpdHlAbGl0dHMubmV0MIICIQYDVR0gBIICGDCCAhQw
+ggIQBgsrBgEEAYG1NwECAjCCAf8wLgYIKwYBBQUHAgEWImh0dHA6Ly93d3cuc3RhcnRzc2wu
+Y29tL3BvbGljeS5wZGYwNAYIKwYBBQUHAgEWKGh0dHA6Ly93d3cuc3RhcnRzc2wuY29tL2lu
+dGVybWVkaWF0ZS5wZGYwgfcGCCsGAQUFBwICMIHqMCcWIFN0YXJ0Q29tIENlcnRpZmljYXRp
+b24gQXV0aG9yaXR5MAMCAQEagb5UaGlzIGNlcnRpZmljYXRlIHdhcyBpc3N1ZWQgYWNjb3Jk
+aW5nIHRvIHRoZSBDbGFzcyAyIFZhbGlkYXRpb24gcmVxdWlyZW1lbnRzIG9mIHRoZSBTdGFy
+dENvbSBDQSBwb2xpY3ksIHJlbGlhbmNlIG9ubHkgZm9yIHRoZSBpbnRlbmRlZCBwdXJwb3Nl
+IGluIGNvbXBsaWFuY2Ugb2YgdGhlIHJlbHlpbmcgcGFydHkgb2JsaWdhdGlvbnMuMIGcBggr
+BgEFBQcCAjCBjzAnFiBTdGFydENvbSBDZXJ0aWZpY2F0aW9uIEF1dGhvcml0eTADAgECGmRM
+aWFiaWxpdHkgYW5kIHdhcnJhbnRpZXMgYXJlIGxpbWl0ZWQhIFNlZSBzZWN0aW9uICJMZWdh
+bCBhbmQgTGltaXRhdGlvbnMiIG9mIHRoZSBTdGFydENvbSBDQSBwb2xpY3kuMDYGA1UdHwQv
+MC0wK6ApoCeGJWh0dHA6Ly9jcmwuc3RhcnRzc2wuY29tL2NydHUyLWNybC5jcmwwgY4GCCsG
+AQUFBwEBBIGBMH8wOQYIKwYBBQUHMAGGLWh0dHA6Ly9vY3NwLnN0YXJ0c3NsLmNvbS9zdWIv
+Y2xhc3MyL2NsaWVudC9jYTBCBggrBgEFBQcwAoY2aHR0cDovL2FpYS5zdGFydHNzbC5jb20v
+Y2VydHMvc3ViLmNsYXNzMi5jbGllbnQuY2EuY3J0MCMGA1UdEgQcMBqGGGh0dHA6Ly93d3cu
+c3RhcnRzc2wuY29tLzANBgkqhkiG9w0BAQUFAAOCAQEAXJ5dj2hKDwAh3aPsYWSJdC6PE7O2
+u4pZz4H1mucRf3ZLoLjrAMhtINAqrWkvfiOTWQruNpQAXL+Gb6pk5sDoSXwISbPraVMb4uCS
+g++F/XTCvqfsCitXd6Jhl5dyV0pi2MwmHyrBsjsER1EwA+39av+cfoL0gKuJy5y92wRt0It8
+Eu77N5HaMlDlxEXXTQWP5Q2g7IZy+/ZeeG8FjrUM/bmwyvdb3mBreKgL2mZHnG+mf09IDACG
+9ogoV2xJNQ0lRHxH5NJ/XGSztQACboxl3wK/t86Vhh6i1JeaLMcJ5oaemxdATK0NZVk/hIK0
+hXGzTMVw1xoP/9LSYyoRD6yypzGCBNowggTWAgEBMIGTMIGMMQswCQYDVQQGEwJJTDEWMBQG
+A1UEChMNU3RhcnRDb20gTHRkLjErMCkGA1UECxMiU2VjdXJlIERpZ2l0YWwgQ2VydGlmaWNh
+dGUgU2lnbmluZzE4MDYGA1UEAxMvU3RhcnRDb20gQ2xhc3MgMiBQcmltYXJ5IEludGVybWVk
+aWF0ZSBDbGllbnQgQ0ECAibVMAkGBSsOAwIaBQCgggIbMBgGCSqGSIb3DQEJAzELBgkqhkiG
+9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE0MDQyMzIzMjE0OFowIwYJKoZIhvcNAQkEMRYEFB9k
+yZiVWUZLHJ5iH6gOb0B3S1sgMGwGCSqGSIb3DQEJDzFfMF0wCwYJYIZIAWUDBAEqMAsGCWCG
+SAFlAwQBAjAKBggqhkiG9w0DBzAOBggqhkiG9w0DAgICAIAwDQYIKoZIhvcNAwICAUAwBwYF
+Kw4DAgcwDQYIKoZIhvcNAwICASgwgaQGCSsGAQQBgjcQBDGBljCBkzCBjDELMAkGA1UEBhMC
+SUwxFjAUBgNVBAoTDVN0YXJ0Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENl
+cnRpZmljYXRlIFNpZ25pbmcxODA2BgNVBAMTL1N0YXJ0Q29tIENsYXNzIDIgUHJpbWFyeSBJ
+bnRlcm1lZGlhdGUgQ2xpZW50IENBAgIm1TCBpgYLKoZIhvcNAQkQAgsxgZaggZMwgYwxCzAJ
+BgNVBAYTAklMMRYwFAYDVQQKEw1TdGFydENvbSBMdGQuMSswKQYDVQQLEyJTZWN1cmUgRGln
+aXRhbCBDZXJ0aWZpY2F0ZSBTaWduaW5nMTgwNgYDVQQDEy9TdGFydENvbSBDbGFzcyAyIFBy
+aW1hcnkgSW50ZXJtZWRpYXRlIENsaWVudCBDQQICJtUwDQYJKoZIhvcNAQEBBQAEggIAHodG
+F5561BMI8bWbUvA8Zw7Nm/odEvdq/WLT73ystS8V+hZhnJdQf0N2k10KFFgCLy0v/ij/iIPh
+iyX984ohTYeXEe4Ws7/g8uMsLp8rW/4sW2j+T6HMk6rGpTDBxfQ4XjCVQDrWov3FCqu83/6V
+0b5RVpo8IyigjC8wPFXVTzo1W9P3P7nsdCIQosD8VdsYOzshRWkUOQqd0CjOPdOyJE2EtjGk
+psxuvX5oRHkVvP+Pmti8N9n9fRGTAFgyoCAnRaGJ5ZrfSOUVw0YBUUJKprTQn3iPBtAbD8rd
+CKRo5oJDIrv3YM4pvgPyKF+q5Tj3xB5/TKEMeGDerQLV3iC01ueiCQMYPKIa1XibFN+y6xMH
+sF0NUQQYbHv06QClD7tq4UPm3eP8jSMQWGpkBaAehh6VcYnZTIIc42qRuBaYVDs+iWEDw6F5
+q7x89Zq7gD7tT0L7MlQ7XvlLdi5+eDnJV95ov1mrOYktqjlwZiKRQUAHKReo7sD/74yGkSKP
+s0Zt3O8nKe19mPlA/q5OwWBCPJp1k9kjyrq87o2lrPnWYr5BmX5V1+X/5m/xDoG7c5tLDAVa
+PSfo6UI1vQMNoVwL9CB1ycJKHtXC/+xoyb6XzOhr5tRdMiOYeaIKqZXX0OR2i0+jMQUQUPhy
+e0zwTxp5f/T2J/9lU7kiuXZNo2X2jE8AAAAAAAA=
+--------------ms060507070401020501070804--
 
