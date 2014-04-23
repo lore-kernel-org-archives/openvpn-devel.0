@@ -1,13 +1,15 @@
-Date: Wed, 23 Apr 2014 10:10:59 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20140423081058.GJ16637@...1296...>
-References: <53572C4E.7010701@...1901...>
-Mime-Version: 1.0
+Message-ID: <535790BE.40407@...1227...>
+Date: Wed, 23 Apr 2014 12:06:54 +0200
+From: Arne Schwabe <arne@...1227...>
+MIME-Version: 1.0
+References: <1393370880-28553-1-git-send-email-steffan@...1856...>
+	<1393370880-28553-2-git-send-email-steffan@...1856...>
+In-Reply-To: <1393370880-28553-2-git-send-email-steffan@...1856...>
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="RQUomjmsF1ZEk74p"
-Content-Disposition: inline
-In-Reply-To: <53572C4E.7010701@...1901...>
-Subject: Re: [Openvpn-devel] Progress on Version negotiation
+	protocol="application/pgp-signature";
+	boundary="Me84OF0bj2f5n0x3FRI1tLlSHkkqMWPjk"
+Subject: Re: [Openvpn-devel] [PATCH 1/2] Add support for elliptic curve
+ diffie-hellmann key exchange (ECDH)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,47 +18,49 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Timothe Litt <litt@...1901...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
 
---RQUomjmsF1ZEk74p
-Content-Type: text/plain; charset="us-ascii"
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--Me84OF0bj2f5n0x3FRI1tLlSHkkqMWPjk
+Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
+Am 26.02.14 00:27, schrieb Steffan Karger:
+> This patch is based on Jan Just Keijser's patch from Feb 7, 2012.
+>
+> When OpenSSL 1.0.2 or newer is used, lets OpenSSL do the heavy lifting.
+>
+> Otherwise, tries the following things (in order of preference):
+>  * When supplied, use the ecdh curve specified by the user.
+>  * Try to extract the curve from the private key, use the same curve.
+>  * Fall back on secp384r1 curve.
+>
+> Note that although the curve lookup succeeds, OpenSSL 1.0.0 and older do
+> *not* support TLSv1.1 or TLSv1.2, which means no that no EC-crypto can be
+> used.
+>
+> This patch also bumps the minimum required OpenSSL version to 0.9.8,
+> because older version do not have all the functions used and would require
+> adding (more) #ifdefs.
+>
+ACK.
 
-On Tue, Apr 22, 2014 at 10:58:22PM -0400, Timothe Litt wrote:
-> It does not appear to be the negotiation, rather it's TLS1.2.
+Arne
 
-This is quite cool, thank you.  (I'm not enough of a crypto geek to
-make real sense out of it, but it's quite useful to understand where
-it is failing, and I appreciate that you took the time to dig into it)
 
-Steffan, Arne, any ideas?
-
-gert
-
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---RQUomjmsF1ZEk74p
-Content-Type: application/pgp-signature
-Content-Disposition: inline
+--Me84OF0bj2f5n0x3FRI1tLlSHkkqMWPjk
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.13 (NetBSD)
+Version: GnuPG v1
+Comment: Using GnuPG with Thunderbird - http://www.enigmail.net/
 
-iQCVAwUBU1d1kqkuBuNlUUl1AQJ3HwP/RclBZjDJYI1KL65tCYLs9ZYK01khziHg
-One+kkMpPbmLtf3d42zf0gkxN113v/U2jmqo372amHodiM9on2U+cFTwyfoVWrCI
-igI0jqV+tzi5uEO0vDCCj2KgVhA8riSqKc+uVcMzxIETxOk8f6V+adaFk8jUXk+N
-Y48KYfEJ7TA=
-=T7SP
+iEYEARECAAYFAlNXkL4ACgkQe8+cMNS4zRem+QCfVsMHh+G+9KWCMroGHnarDd6+
+bjMAoMBqy9oH0ejOMEpBNsmRpkV36fSY
+=MAja
 -----END PGP SIGNATURE-----
 
---RQUomjmsF1ZEk74p--
+--Me84OF0bj2f5n0x3FRI1tLlSHkkqMWPjk--
 
