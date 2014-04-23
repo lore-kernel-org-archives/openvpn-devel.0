@@ -1,13 +1,14 @@
-Message-ID: <5357F7F7.4090401@...1901...>
-Date: Wed, 23 Apr 2014 13:27:19 -0400
-From: Timothe Litt <litt@...1901...>
-MIME-Version: 1.0
+Date: Wed, 23 Apr 2014 19:49:10 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20140423174910.GM16637@...1296...>
 References: <53572C4E.7010701@...1901...> <20140423081058.GJ16637@...1296...>
 	<53579C5D.5000902@...1435...> <5357DDFC.2010401@...1901...>
-	<20140423163811.GK16637@...1296...>
-In-Reply-To: <20140423163811.GK16637@...1296...>
-Content-Type: multipart/signed; protocol="application/pkcs7-signature";
-	micalg=sha1; boundary="------------ms020908060101070109070903"
+	<20140423163811.GK16637@...1296...> <5357F7F7.4090401@...1901...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="aD3VbYq6HWsw/f7D"
+Content-Disposition: inline
+In-Reply-To: <5357F7F7.4090401@...1901...>
 Subject: Re: [Openvpn-devel] Progress on Version negotiation
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -17,399 +18,51 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
+To: Timothe Litt <litt@...1901...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-This is a cryptographically signed message in MIME format.
-
---------------ms020908060101070109070903
-Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+--aD3VbYq6HWsw/f7D
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Gert,
+Hi,
 
-> while cycling home from $paidwork
-Cycling while thinking about TLS might be as bad as texting while driving...
+On Wed, Apr 23, 2014 at 01:27:19PM -0400, Timothe Litt wrote:
+> >now - does that sound like it could be the problem?  The initial handsha=
+ke
+> >packet "under some conditions" (like: the local OpenSSL build having
+> >more available ciphers, depending on how it was built) being too big,
+> >causing "surprises"?
+> As I have noted, we're well past the client hello, so:
+>    You are right that the number of ciphers does effect the hello size.
+>    But if that was involved here, we should fail much sooner.
 
-> now - does that sound like it could be the problem?  The initial handshake
-> packet "under some conditions" (like: the local OpenSSL build having
-> more available ciphers, depending on how it was built) being too big,
-> causing "surprises"?
-As I have noted, we're well past the client hello, so:
-    You are right that the number of ciphers does effect the hello size.
-    But if that was involved here, we should fail much sooner.
+OK, right.  Sorry for wasting time here.  I said I'm not the crypto
+expert...  just something I've come across before.
 
-We're past the hellos, have done the certificate send from the server,=20
-the key exchange & the client cert request - which is where the client=20
-seems to be failing.  Perhaps the trace that I sent will tell someone=20
-what is being sent.
+gert
 
-I have only one server set up.
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-I did previously try different ciphers -- no change.
+--aD3VbYq6HWsw/f7D
+Content-Type: application/pgp-signature
+Content-Disposition: inline
 
-But, I tested exactly as you requested (on the server only):
---tls-cipher AES128-SHA fails
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.13 (NetBSD)
 
---tls-cipher DHE-RSA-AES256-SHA
+iQCVAwUBU1f9FqkuBuNlUUl1AQIW+gQAvfmfjP3OWkigjWVY47HSC6DDouOV86gX
+ibnRDrSpIx/zmyOdBOoLGtZ4ykIH2bTYieCmm9MGouZXj0+TTbJtHLNeNO2kujPe
+QDJVkyHy6KZVfKsQujI7RraVYwpSSPy7+oqz3o2ZP35iEYJtAsBjoTaW5Ux4UKNY
+DvTy/4eyIN0=
+=mQNZ
+-----END PGP SIGNATURE-----
 
-No cipher match
-
-Set on both ends:
---tls-cipher AES128-SHA fails
-
-Cipher list (Er, the "Deprecated DEFAULT, please use DEFAULT" should be=20
-fixed!)
-
-Server
-  openvpn --tls-cipher DEFAULT --show-tls
-Wed Apr 23 12:53:49 2014 Deprecated TLS cipher name 'DEFAULT', please=20
-use IANA name 'DEFAULT'
-Available TLS Ciphers,
-listed in order of preference:
-
-TLS-ECDHE-RSA-WITH-AES-256-GCM-SHA384
-TLS-ECDHE-ECDSA-WITH-AES-256-GCM-SHA384
-TLS-ECDHE-RSA-WITH-AES-256-CBC-SHA384
-TLS-ECDHE-ECDSA-WITH-AES-256-CBC-SHA384
-TLS-ECDHE-RSA-WITH-AES-256-CBC-SHA
-TLS-ECDHE-ECDSA-WITH-AES-256-CBC-SHA
-TLS-SRP-SHA-DSS-WITH-AES-256-CBC-SHA
-TLS-SRP-SHA-RSA-WITH-AES-256-CBC-SHA
-TLS-DHE-DSS-WITH-AES-256-GCM-SHA384
-TLS-DHE-RSA-WITH-AES-256-GCM-SHA384
-TLS-DHE-RSA-WITH-AES-256-CBC-SHA256
-TLS-DHE-DSS-WITH-AES-256-CBC-SHA256
-TLS-DHE-RSA-WITH-AES-256-CBC-SHA
-TLS-DHE-DSS-WITH-AES-256-CBC-SHA
-TLS-DHE-RSA-WITH-CAMELLIA-256-CBC-SHA
-TLS-DHE-DSS-WITH-CAMELLIA-256-CBC-SHA
-TLS-ECDH-RSA-WITH-AES-256-GCM-SHA384
-TLS-ECDH-ECDSA-WITH-AES-256-GCM-SHA384
-TLS-ECDH-RSA-WITH-AES-256-CBC-SHA384
-TLS-ECDH-ECDSA-WITH-AES-256-CBC-SHA384
-TLS-ECDH-RSA-WITH-AES-256-CBC-SHA
-TLS-ECDH-ECDSA-WITH-AES-256-CBC-SHA
-TLS-RSA-WITH-AES-256-GCM-SHA384
-TLS-RSA-WITH-AES-256-CBC-SHA256
-TLS-RSA-WITH-AES-256-CBC-SHA
-TLS-RSA-WITH-CAMELLIA-256-CBC-SHA
-TLS-PSK-WITH-AES-256-CBC-SHA
-TLS-ECDHE-RSA-WITH-3DES-EDE-CBC-SHA
-TLS-ECDHE-ECDSA-WITH-3DES-EDE-CBC-SHA
-TLS-SRP-SHA-DSS-WITH-3DES-EDE-CBC-SHA
-TLS-SRP-SHA-RSA-WITH-3DES-EDE-CBC-SHA
-TLS-DHE-RSA-WITH-3DES-EDE-CBC-SHA
-TLS-DHE-DSS-WITH-3DES-EDE-CBC-SHA
-TLS-ECDH-RSA-WITH-3DES-EDE-CBC-SHA
-TLS-ECDH-ECDSA-WITH-3DES-EDE-CBC-SHA
-TLS-RSA-WITH-3DES-EDE-CBC-SHA
-TLS-PSK-WITH-3DES-EDE-CBC-SHA
-TLS-ECDHE-RSA-WITH-AES-128-GCM-SHA256
-TLS-ECDHE-ECDSA-WITH-AES-128-GCM-SHA256
-TLS-ECDHE-RSA-WITH-AES-128-CBC-SHA256
-TLS-ECDHE-ECDSA-WITH-AES-128-CBC-SHA256
-TLS-ECDHE-RSA-WITH-AES-128-CBC-SHA
-TLS-ECDHE-ECDSA-WITH-AES-128-CBC-SHA
-TLS-SRP-SHA-DSS-WITH-AES-128-CBC-SHA
-TLS-SRP-SHA-RSA-WITH-AES-128-CBC-SHA
-TLS-DHE-DSS-WITH-AES-128-GCM-SHA256
-TLS-DHE-RSA-WITH-AES-128-GCM-SHA256
-TLS-DHE-RSA-WITH-AES-128-CBC-SHA256
-TLS-DHE-DSS-WITH-AES-128-CBC-SHA256
-TLS-DHE-RSA-WITH-AES-128-CBC-SHA
-TLS-DHE-DSS-WITH-AES-128-CBC-SHA
-TLS-DHE-RSA-WITH-SEED-CBC-SHA
-TLS-DHE-DSS-WITH-SEED-CBC-SHA
-TLS-DHE-RSA-WITH-CAMELLIA-128-CBC-SHA
-TLS-DHE-DSS-WITH-CAMELLIA-128-CBC-SHA
-TLS-ECDH-RSA-WITH-AES-128-GCM-SHA256
-TLS-ECDH-ECDSA-WITH-AES-128-GCM-SHA256
-TLS-ECDH-RSA-WITH-AES-128-CBC-SHA256
-TLS-ECDH-ECDSA-WITH-AES-128-CBC-SHA256
-TLS-ECDH-RSA-WITH-AES-128-CBC-SHA
-TLS-ECDH-ECDSA-WITH-AES-128-CBC-SHA
-TLS-RSA-WITH-AES-128-GCM-SHA256
-TLS-RSA-WITH-AES-128-CBC-SHA256
-TLS-RSA-WITH-AES-128-CBC-SHA
-TLS-RSA-WITH-SEED-CBC-SHA
-TLS-RSA-WITH-CAMELLIA-128-CBC-SHA
-TLS-PSK-WITH-AES-128-CBC-SHA
-TLS-ECDHE-RSA-WITH-RC4-128-SHA
-TLS-ECDHE-ECDSA-WITH-RC4-128-SHA
-TLS-ECDH-RSA-WITH-RC4-128-SHA
-TLS-ECDH-ECDSA-WITH-RC4-128-SHA
-TLS-RSA-WITH-RC4-128-SHA
-TLS-RSA-WITH-RC4-128-MD5
-TLS-PSK-WITH-RC4-128-SHA
-TLS-DHE-RSA-WITH-DES-CBC-SHA
-TLS-DHE-DSS-WITH-DES-CBC-SHA
-TLS-RSA-WITH-DES-CBC-SHA
-TLS-DH-RSA-EXPORT-WITH-DES40-CBC-SHA
-TLS-DH-DSS-EXPORT-WITH-DES40-CBC-SHA
-TLS-RSA-EXPORT-WITH-DES40-CBC-SHA
-TLS-RSA-EXPORT-WITH-RC2-CBC-40-MD5
-TLS-RSA-EXPORT-WITH-RC4-40-MD5
-
-Client (windows) that fails:
-  openvpn --tls-cipher DEFAULT --show-tls
-Wed Apr 23 12:53:49 2014 Deprecated TLS cipher name 'DEFAULT', please=20
-use IANA name 'DEFAULT'
-Available TLS Ciphers,
-listed in order of preference:
-
-TLS-ECDHE-RSA-WITH-AES-256-GCM-SHA384
-TLS-ECDHE-ECDSA-WITH-AES-256-GCM-SHA384
-TLS-ECDHE-RSA-WITH-AES-256-CBC-SHA384
-TLS-ECDHE-ECDSA-WITH-AES-256-CBC-SHA384
-TLS-ECDHE-RSA-WITH-AES-256-CBC-SHA
-TLS-ECDHE-ECDSA-WITH-AES-256-CBC-SHA
-TLS-SRP-SHA-DSS-WITH-AES-256-CBC-SHA
-TLS-SRP-SHA-RSA-WITH-AES-256-CBC-SHA
-TLS-DHE-DSS-WITH-AES-256-GCM-SHA384
-TLS-DHE-RSA-WITH-AES-256-GCM-SHA384
-TLS-DHE-RSA-WITH-AES-256-CBC-SHA256
-TLS-DHE-DSS-WITH-AES-256-CBC-SHA256
-TLS-DHE-RSA-WITH-AES-256-CBC-SHA
-TLS-DHE-DSS-WITH-AES-256-CBC-SHA
-TLS-DHE-RSA-WITH-CAMELLIA-256-CBC-SHA
-TLS-DHE-DSS-WITH-CAMELLIA-256-CBC-SHA
-TLS-ECDH-RSA-WITH-AES-256-GCM-SHA384
-TLS-ECDH-ECDSA-WITH-AES-256-GCM-SHA384
-TLS-ECDH-RSA-WITH-AES-256-CBC-SHA384
-TLS-ECDH-ECDSA-WITH-AES-256-CBC-SHA384
-TLS-ECDH-RSA-WITH-AES-256-CBC-SHA
-TLS-ECDH-ECDSA-WITH-AES-256-CBC-SHA
-TLS-RSA-WITH-AES-256-GCM-SHA384
-TLS-RSA-WITH-AES-256-CBC-SHA256
-TLS-RSA-WITH-AES-256-CBC-SHA
-TLS-RSA-WITH-CAMELLIA-256-CBC-SHA
-TLS-PSK-WITH-AES-256-CBC-SHA
-TLS-ECDHE-RSA-WITH-3DES-EDE-CBC-SHA
-TLS-ECDHE-ECDSA-WITH-3DES-EDE-CBC-SHA
-TLS-SRP-SHA-DSS-WITH-3DES-EDE-CBC-SHA
-TLS-SRP-SHA-RSA-WITH-3DES-EDE-CBC-SHA
-TLS-DHE-RSA-WITH-3DES-EDE-CBC-SHA
-TLS-DHE-DSS-WITH-3DES-EDE-CBC-SHA
-TLS-ECDH-RSA-WITH-3DES-EDE-CBC-SHA
-TLS-ECDH-ECDSA-WITH-3DES-EDE-CBC-SHA
-TLS-RSA-WITH-3DES-EDE-CBC-SHA
-TLS-PSK-WITH-3DES-EDE-CBC-SHA
-TLS-ECDHE-RSA-WITH-AES-128-GCM-SHA256
-TLS-ECDHE-ECDSA-WITH-AES-128-GCM-SHA256
-TLS-ECDHE-RSA-WITH-AES-128-CBC-SHA256
-TLS-ECDHE-ECDSA-WITH-AES-128-CBC-SHA256
-TLS-ECDHE-RSA-WITH-AES-128-CBC-SHA
-TLS-ECDHE-ECDSA-WITH-AES-128-CBC-SHA
-TLS-SRP-SHA-DSS-WITH-AES-128-CBC-SHA
-TLS-SRP-SHA-RSA-WITH-AES-128-CBC-SHA
-TLS-DHE-DSS-WITH-AES-128-GCM-SHA256
-TLS-DHE-RSA-WITH-AES-128-GCM-SHA256
-TLS-DHE-RSA-WITH-AES-128-CBC-SHA256
-TLS-DHE-DSS-WITH-AES-128-CBC-SHA256
-TLS-DHE-RSA-WITH-AES-128-CBC-SHA
-TLS-DHE-DSS-WITH-AES-128-CBC-SHA
-TLS-DHE-RSA-WITH-SEED-CBC-SHA
-TLS-DHE-DSS-WITH-SEED-CBC-SHA
-TLS-DHE-RSA-WITH-CAMELLIA-128-CBC-SHA
-TLS-DHE-DSS-WITH-CAMELLIA-128-CBC-SHA
-TLS-ECDH-RSA-WITH-AES-128-GCM-SHA256
-TLS-ECDH-ECDSA-WITH-AES-128-GCM-SHA256
-TLS-ECDH-RSA-WITH-AES-128-CBC-SHA256
-TLS-ECDH-ECDSA-WITH-AES-128-CBC-SHA256
-TLS-ECDH-RSA-WITH-AES-128-CBC-SHA
-TLS-ECDH-ECDSA-WITH-AES-128-CBC-SHA
-TLS-RSA-WITH-AES-128-GCM-SHA256
-TLS-RSA-WITH-AES-128-CBC-SHA256
-TLS-RSA-WITH-AES-128-CBC-SHA
-TLS-RSA-WITH-SEED-CBC-SHA
-TLS-RSA-WITH-CAMELLIA-128-CBC-SHA
-TLS-PSK-WITH-AES-128-CBC-SHA
-TLS-ECDHE-RSA-WITH-RC4-128-SHA
-TLS-ECDHE-ECDSA-WITH-RC4-128-SHA
-TLS-ECDH-RSA-WITH-RC4-128-SHA
-TLS-ECDH-ECDSA-WITH-RC4-128-SHA
-TLS-RSA-WITH-RC4-128-SHA
-TLS-RSA-WITH-RC4-128-MD5
-TLS-PSK-WITH-RC4-128-SHA
-TLS-DHE-RSA-WITH-DES-CBC-SHA
-TLS-DHE-DSS-WITH-DES-CBC-SHA
-TLS-RSA-WITH-DES-CBC-SHA
-TLS-DH-RSA-EXPORT-WITH-DES40-CBC-SHA
-TLS-DH-DSS-EXPORT-WITH-DES40-CBC-SHA
-TLS-RSA-EXPORT-WITH-DES40-CBC-SHA
-TLS-RSA-EXPORT-WITH-RC2-CBC-40-MD5
-TLS-RSA-EXPORT-WITH-RC4-40-MD5
-
-
-
-
-Timothe Litt
-ACM Distinguished Engineer
---------------------------
-This communication may not represent the ACM or my employer's views,
-if any, on the matters discussed.
-
-On 23-Apr-14 12:38, Gert Doering wrote:
-> Hi,
->
-> On Wed, Apr 23, 2014 at 11:36:28AM -0400, Timothe Litt wrote:
->> Just to confirm that the issue is 1.2, not the negotiation:
->>
->> I added an unconditional
->>        sslopt |=3D SSL_OP_NO_TLSv1_2;
->>   in tls_ctx_set_options.
->>
->> With this (and the context initialized to SSL_v23_*_method, so we
->> negotiate), the tunnel comes up.
->> Without it, the tunnel does not come up.
->>
->> So it is the use of 1.2 that is the issue, not how it is selected.
-> Thinking through this, while cycling home from $paidwork, I remembered
-> something I saw when debugging something similar ("if I enable TLS1.2,
-> things explode") last time.
->
->  From Perl's IO::Socket::SSL:
->
->      # older versions of F5 BIG-IP hang when getting SSL client hello >25=
-5 bytes
->      # http://support.f5.com/kb/en-us/solutions/public/13000/000/sol13037=
-.html
->      # http://guest:guest@...1902.../Ticket/Display.html?id=3D2771
->      # Debian works around this by disabling TLSv12 on the client side
->      # Chrome and IE11 use TLSv12 but use only a few ciphers, so that pac=
-ket
->      # stays small enough
->      # The following list is taken from IE11, except that we don't do RC4=
--MD5,
->      # RC4-SHA is already bad enough. Also, we have a different sort order
->      # compared to IE11, because we put ciphers supporting forward secrec=
-y on top
->
-> now - does that sound like it could be the problem?  The initial handshake
-> packet "under some conditions" (like: the local OpenSSL build having
-> more available ciphers, depending on how it was built) being too big,
-> causing "surprises"?
->
-> (This question is more geared towards James, Arne and Steffan :-) )
->
-> Timothe, on your failing setup, could you try putting some variations of
-> "--tls-cipher" in your openvpn.conf?  I'm not really sure I understand
-> the variants, but "openvpn --show-tls" suggests that some of these might
-> work
->
->    tls-cipher AES128-SHA
->    tls-cipher DHE-RSA-AES256-SHA
->
-> what does "openvpn --tls-cipher DEFAULT --show-tls" list on your systems
-> (or, phrased differently, if you have a system that does *not* fail on
-> TLS 1.2, does it show a shorter list)?
->
-> gert
-
-
-
---------------ms020908060101070109070903
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
-
-MIAGCSqGSIb3DQEHAqCAMIACAQExCzAJBgUrDgMCGgUAMIAGCSqGSIb3DQEHAQAAoIIPDzCC
-BjQwggQcoAMCAQICASAwDQYJKoZIhvcNAQEFBQAwfTELMAkGA1UEBhMCSUwxFjAUBgNVBAoT
-DVN0YXJ0Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNp
-Z25pbmcxKTAnBgNVBAMTIFN0YXJ0Q29tIENlcnRpZmljYXRpb24gQXV0aG9yaXR5MB4XDTA3
-MTAyNDIxMDI1NVoXDTE3MTAyNDIxMDI1NVowgYwxCzAJBgNVBAYTAklMMRYwFAYDVQQKEw1T
-dGFydENvbSBMdGQuMSswKQYDVQQLEyJTZWN1cmUgRGlnaXRhbCBDZXJ0aWZpY2F0ZSBTaWdu
-aW5nMTgwNgYDVQQDEy9TdGFydENvbSBDbGFzcyAyIFByaW1hcnkgSW50ZXJtZWRpYXRlIENs
-aWVudCBDQTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAMsohUWcASz7GfKrpTOM
-KqANy9BV7V0igWdGxA8IU77L3aTxErQ+fcxtDYZ36Z6GH0YFn7fq5RADteP0AYzrCA+EQTfi
-8q1+kA3m0nwtwXG94M5sIqsvs7lRP1aycBke/s5g9hJHryZ2acScnzczjBCAo7X1v5G3yw8M
-DP2m2RCye0KfgZ4nODerZJVzhAlOD9YejvAXZqHksw56HzElVIoYSZ3q4+RJuPXXfIoyby+Y
-2m1E+YzX5iCZXBx05gk6MKAW1vaw4/v2OOLy6FZH3XHHtOkzUreG//CsFnB9+uaYSlR65cdG
-zTsmoIK8WH1ygoXhRBm98SD7Hf/r3FELNvUCAwEAAaOCAa0wggGpMA8GA1UdEwEB/wQFMAMB
-Af8wDgYDVR0PAQH/BAQDAgEGMB0GA1UdDgQWBBSuVYNv7DHKufcd+q9rMfPIHeOsuzAfBgNV
-HSMEGDAWgBROC+8apEBbpRdphzDKNGhD0EGu8jBmBggrBgEFBQcBAQRaMFgwJwYIKwYBBQUH
-MAGGG2h0dHA6Ly9vY3NwLnN0YXJ0c3NsLmNvbS9jYTAtBggrBgEFBQcwAoYhaHR0cDovL3d3
-dy5zdGFydHNzbC5jb20vc2ZzY2EuY3J0MFsGA1UdHwRUMFIwJ6AloCOGIWh0dHA6Ly93d3cu
-c3RhcnRzc2wuY29tL3Nmc2NhLmNybDAnoCWgI4YhaHR0cDovL2NybC5zdGFydHNzbC5jb20v
-c2ZzY2EuY3JsMIGABgNVHSAEeTB3MHUGCysGAQQBgbU3AQIBMGYwLgYIKwYBBQUHAgEWImh0
-dHA6Ly93d3cuc3RhcnRzc2wuY29tL3BvbGljeS5wZGYwNAYIKwYBBQUHAgEWKGh0dHA6Ly93
-d3cuc3RhcnRzc2wuY29tL2ludGVybWVkaWF0ZS5wZGYwDQYJKoZIhvcNAQEFBQADggIBADqp
-Jw3I07QWke9plNBpxUxcffc7nUrIQpJHDci91DFG7fVhHRkMZ1J+BKg5UNUxIFJ2Z9B90Mic
-c/NXcs7kPBRdn6XGO/vPc87Y6R+cWS9Nc9+fp3Enmsm94OxOwI9wn8qnr/6o3mD4noP9Jphw
-UPTXwHovjavRnhUQHLfo/i2NG0XXgTHXS2Xm0kVUozXqpYpAdumMiB/vezj1QHQJDmUdPYMc
-p+reg9901zkyT3fDW/ivJVv6pWtkh6Pw2ytZT7mvg7YhX3V50Nv860cV11mocUVcqBLv0gcT
-+HBDYtbuvexNftwNQKD5193A7zN4vG7CTYkXxytSjKuXrpEatEiFPxWgb84nVj25SU5q/r1X
-hwby6mLhkbaXslkVtwEWT3Van49rKjlK4XrUKYYWtnfzq6aSak5u0Vpxd1rY79tWhD3EdCvO
-hNz/QplNa+VkIsrcp7+8ZhP1l1b2U6MaxIVteuVMD3X0vziIwr7jxYae9FZjbxlpUemqXjcC
-0QaFfN7qI0JsQMALL7iGRBg7K0CoOBzECdD3fuZil5kU/LP9cr1BK31U0Uy651bFnAMMMkqh
-AChIbn0ei72VnbpSsrrSdF0BAGYQ8vyHae5aCg+H75dVCV33K6FuxZrf09yTz+Vx/PkdRUYk
-XmZz/OTfyJXsUOUXrym6KvI2rYpccSk5MIII0zCCB7ugAwIBAgICJtUwDQYJKoZIhvcNAQEF
-BQAwgYwxCzAJBgNVBAYTAklMMRYwFAYDVQQKEw1TdGFydENvbSBMdGQuMSswKQYDVQQLEyJT
-ZWN1cmUgRGlnaXRhbCBDZXJ0aWZpY2F0ZSBTaWduaW5nMTgwNgYDVQQDEy9TdGFydENvbSBD
-bGFzcyAyIFByaW1hcnkgSW50ZXJtZWRpYXRlIENsaWVudCBDQTAeFw0xMjA5MjUxODQyMTha
-Fw0xNDA5MjcxOTIyNDJaMIGQMRkwFwYDVQQNExBPZ3RBNVhZZXZheGFkbGtKMQswCQYDVQQG
-EwJVUzEWMBQGA1UECBMNTWFzc2FjaHVzZXR0czEVMBMGA1UEBxMMU291dGhib3JvdWdoMRUw
-EwYDVQQDEwxUaW1vdGhlIExpdHQxIDAeBgkqhkiG9w0BCQEWEXRpbW90aGVAbGl0dHMubmV0
-MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEA38JrSHJ7GVdQiTppuafIBrhphuLL
-HAmpeAFNvUBuUUh4X8Nx4Ag03hrC/B7OWYpUJI1HgWCK/eMtKEWF7UMwFhkMeqWSdrZyb4uk
-EqTf46SyyAghF6BGuuVTiptED63FwzQY2PTXCmAJviuRXoJMzlhAwzUFpsWTFhswigFLrMCn
-kJ9nndqnxQmMFpD7pjJ6kFkxKz/5k1CEzAfSerWHkIOBuXFyYpDDgDFXN1+qF25HsVVw+4xT
-1/tNvCEVQ9WAleUznLvWgT5sV8tTewsUiYOgSqyoHiuJCOc9YJF2pUHGZVV+WzS8YIb95ax5
-5yoS+C3D3FFzl6CbcI3nc6csqkP4bNBqm96Z/WdfTV4ouoycI4N9AJ86l6/Ygjz3/juFI9ni
-as8nE051hksnyCon87fyP3/NezZ9NcUYVUnki1cVhfh2cN+s79fGWbUJePjT0fmso0FVcSRp
-ddLyeZladbifFG+TiQO9BFt97e16OwyFpXRIzZWnfEiG2ss51Vpv9au8RrLgBD07aKE3mzZp
-xZzoZ8c/jgb1YcUyAyaVmdOk4A3eGe7c8Loa+eYIRwkbjoE6H/PKcoRNIqnYQ44zvOOONRDI
-S3vBpzofVK5Ndx0NVDIvsbWEPb9ntR32taUUZ334SPN447UO3sjvItFg1oOuC1i6kL6l1vRM
-GNouPvECAwEAAaOCBDcwggQzMAkGA1UdEwQCMAAwCwYDVR0PBAQDAgSwMB0GA1UdJQQWMBQG
-CCsGAQUFBwMCBggrBgEFBQcDBDAdBgNVHQ4EFgQUJZNwH8x9MtxbZmI9AK6Jj+IELcowHwYD
-VR0jBBgwFoAUrlWDb+wxyrn3HfqvazHzyB3jrLswgaYGA1UdEQSBnjCBm4ERdGltb3RoZUBs
-aXR0cy5uZXSBEXRpbW90aGVAbGl0dHMubmV0gQxsaXR0QGFjbS5vcmeBDWxpdHRAaWVlZS5v
-cmeBFGhvc3RtYXN0ZXJAbGl0dHMubmV0gRdsaXR0c25ldGFkbWluQGxpdHRzLm5ldIETd2lr
-aWFkbWluQGxpdHRzLm5ldIESc2VjdXJpdHlAbGl0dHMubmV0MIICIQYDVR0gBIICGDCCAhQw
-ggIQBgsrBgEEAYG1NwECAjCCAf8wLgYIKwYBBQUHAgEWImh0dHA6Ly93d3cuc3RhcnRzc2wu
-Y29tL3BvbGljeS5wZGYwNAYIKwYBBQUHAgEWKGh0dHA6Ly93d3cuc3RhcnRzc2wuY29tL2lu
-dGVybWVkaWF0ZS5wZGYwgfcGCCsGAQUFBwICMIHqMCcWIFN0YXJ0Q29tIENlcnRpZmljYXRp
-b24gQXV0aG9yaXR5MAMCAQEagb5UaGlzIGNlcnRpZmljYXRlIHdhcyBpc3N1ZWQgYWNjb3Jk
-aW5nIHRvIHRoZSBDbGFzcyAyIFZhbGlkYXRpb24gcmVxdWlyZW1lbnRzIG9mIHRoZSBTdGFy
-dENvbSBDQSBwb2xpY3ksIHJlbGlhbmNlIG9ubHkgZm9yIHRoZSBpbnRlbmRlZCBwdXJwb3Nl
-IGluIGNvbXBsaWFuY2Ugb2YgdGhlIHJlbHlpbmcgcGFydHkgb2JsaWdhdGlvbnMuMIGcBggr
-BgEFBQcCAjCBjzAnFiBTdGFydENvbSBDZXJ0aWZpY2F0aW9uIEF1dGhvcml0eTADAgECGmRM
-aWFiaWxpdHkgYW5kIHdhcnJhbnRpZXMgYXJlIGxpbWl0ZWQhIFNlZSBzZWN0aW9uICJMZWdh
-bCBhbmQgTGltaXRhdGlvbnMiIG9mIHRoZSBTdGFydENvbSBDQSBwb2xpY3kuMDYGA1UdHwQv
-MC0wK6ApoCeGJWh0dHA6Ly9jcmwuc3RhcnRzc2wuY29tL2NydHUyLWNybC5jcmwwgY4GCCsG
-AQUFBwEBBIGBMH8wOQYIKwYBBQUHMAGGLWh0dHA6Ly9vY3NwLnN0YXJ0c3NsLmNvbS9zdWIv
-Y2xhc3MyL2NsaWVudC9jYTBCBggrBgEFBQcwAoY2aHR0cDovL2FpYS5zdGFydHNzbC5jb20v
-Y2VydHMvc3ViLmNsYXNzMi5jbGllbnQuY2EuY3J0MCMGA1UdEgQcMBqGGGh0dHA6Ly93d3cu
-c3RhcnRzc2wuY29tLzANBgkqhkiG9w0BAQUFAAOCAQEAXJ5dj2hKDwAh3aPsYWSJdC6PE7O2
-u4pZz4H1mucRf3ZLoLjrAMhtINAqrWkvfiOTWQruNpQAXL+Gb6pk5sDoSXwISbPraVMb4uCS
-g++F/XTCvqfsCitXd6Jhl5dyV0pi2MwmHyrBsjsER1EwA+39av+cfoL0gKuJy5y92wRt0It8
-Eu77N5HaMlDlxEXXTQWP5Q2g7IZy+/ZeeG8FjrUM/bmwyvdb3mBreKgL2mZHnG+mf09IDACG
-9ogoV2xJNQ0lRHxH5NJ/XGSztQACboxl3wK/t86Vhh6i1JeaLMcJ5oaemxdATK0NZVk/hIK0
-hXGzTMVw1xoP/9LSYyoRD6yypzGCBNowggTWAgEBMIGTMIGMMQswCQYDVQQGEwJJTDEWMBQG
-A1UEChMNU3RhcnRDb20gTHRkLjErMCkGA1UECxMiU2VjdXJlIERpZ2l0YWwgQ2VydGlmaWNh
-dGUgU2lnbmluZzE4MDYGA1UEAxMvU3RhcnRDb20gQ2xhc3MgMiBQcmltYXJ5IEludGVybWVk
-aWF0ZSBDbGllbnQgQ0ECAibVMAkGBSsOAwIaBQCgggIbMBgGCSqGSIb3DQEJAzELBgkqhkiG
-9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE0MDQyMzE3MjcxOVowIwYJKoZIhvcNAQkEMRYEFNiJ
-BZ5b6Audt9WMBQHqGcOZh5kQMGwGCSqGSIb3DQEJDzFfMF0wCwYJYIZIAWUDBAEqMAsGCWCG
-SAFlAwQBAjAKBggqhkiG9w0DBzAOBggqhkiG9w0DAgICAIAwDQYIKoZIhvcNAwICAUAwBwYF
-Kw4DAgcwDQYIKoZIhvcNAwICASgwgaQGCSsGAQQBgjcQBDGBljCBkzCBjDELMAkGA1UEBhMC
-SUwxFjAUBgNVBAoTDVN0YXJ0Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENl
-cnRpZmljYXRlIFNpZ25pbmcxODA2BgNVBAMTL1N0YXJ0Q29tIENsYXNzIDIgUHJpbWFyeSBJ
-bnRlcm1lZGlhdGUgQ2xpZW50IENBAgIm1TCBpgYLKoZIhvcNAQkQAgsxgZaggZMwgYwxCzAJ
-BgNVBAYTAklMMRYwFAYDVQQKEw1TdGFydENvbSBMdGQuMSswKQYDVQQLEyJTZWN1cmUgRGln
-aXRhbCBDZXJ0aWZpY2F0ZSBTaWduaW5nMTgwNgYDVQQDEy9TdGFydENvbSBDbGFzcyAyIFBy
-aW1hcnkgSW50ZXJtZWRpYXRlIENsaWVudCBDQQICJtUwDQYJKoZIhvcNAQEBBQAEggIAs+uo
-1SchETg+L/sLhsbuQKzRECIqnVoaZ9PTVUsm53yYJOZdcoHKJYMyXkZ0ZNawXxIghx/RMryR
-SzW8sePNBBogO9qJMb248Cjbo1dqwUx3FAvF/iHszilYN4/dBwFxn+ksswEpltwGCuB663FP
-i/O2qEw1dGHlda1qbTDKSbi2Zun2aSZJRWUa1SMhS2ENmOzgPDimxpkb7WmrPj8kq5qw0/jr
-vBKTuL/mWpFuOLh0Q74WMLXoLXrgOXjhcVpZ2XBcu3BhzV2GeR2PMXMwMro2C69WhfbaOcyB
-AjnSI6wDOWvS8NjwzWW4mRuXfsZwY2KQtDezh3ub5LKtgoUa7FQmcbU5SMogGtAWNdn1rWk4
-HOpqm+SkvWDG7CCtbdfprd/DrbFULEy1935yRTWm18ZNCoFRp/71zKJdMo/5df7jxKbY23ll
-oO7CNW31oCFxbsnvIzXAPKhUBJu8SMkrT//NGzuDuWzJZgnEWuRySckfTpOFcALkwwbyqSZ2
-wP62Reirdsmg1P+mm91NO2fzLzd8EqPTzY8WNIKzvlLqKpie1Iw15jgGZNQwwBZiCn1hed1x
-LjcLILoHh4S4WGO+f7V+uZpEgkrArDqPfMEBIL2/+pE2EmyzN3fDVzZhyI3pw3l60NnXLsGL
-m9GLsZKRGpoU2AOKp2Z935MG92sKd9MAAAAAAAA=
---------------ms020908060101070109070903--
+--aD3VbYq6HWsw/f7D--
 
