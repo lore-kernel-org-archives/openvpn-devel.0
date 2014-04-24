@@ -1,19 +1,14 @@
-Message-ID: <1398346077.723.139.camel@...1904...>
+Message-ID: <1398345955.723.137.camel@...1904...>
 From: David Woodhouse <dwmw2@...1866...>
-Date: Thu, 24 Apr 2014 14:27:57 +0100
-In-Reply-To: <534B8BF9.2060405@...1147...>
-References: <1397366216-657-1-git-send-email-cernekee@...277...>
-	<20140413104705.GL16637@...1296...>
-	<CAJiQ=7DYg6PnTJ0piiUDKaT5wefVBxvPH3ZPHANQxOgWeDHjPg@...278...>
-	<534AAAEC.7050105@...1227...>
-	<CAJiQ=7COCWVzV1pq+ek8zimj65CdB0UM8S+1om1k8p_75yDjRA@...278...>
-	<534B8BF9.2060405@...1147...>
+Date: Thu, 24 Apr 2014 14:25:55 +0100
+In-Reply-To: <CABBOjC+m6LTk+TYtCXswYH017GAh7CFe8tSqOOr-idR+q_dTfg@...278...>
+References: <CABBOjCJuPbKa-ocaqVQDtFT3PreE=GrZPm0Dv_12o1A14ZNkBA@...278...>
+	<CABBOjC+m6LTk+TYtCXswYH017GAh7CFe8tSqOOr-idR+q_dTfg@...278...>
 Content-Type: multipart/signed; micalg="sha-1";
 	protocol="application/x-pkcs7-signature"; 
-	boundary="=-Un/j66gTf8Nh0V60U44i"
+	boundary="=-7icDpNhj6hyWIzu+fc6u"
 Mime-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH 0/3] Support non-root operation using
- ocproxy
+Subject: Re: [Openvpn-devel] TAP adapter detection
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,58 +17,41 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Jan Just Keijser <janjust@...1147...>
-Cc: Kevin Cernekee <cernekee@...277...>, openvpn-devel@lists.sourceforge.net
+To: Greg Toombs <gtoombs@...1905...>
+Cc: openvpn-devel@lists.sourceforge.net, openconnect-devel@...1906...
 
---=-Un/j66gTf8Nh0V60U44i
+--=-7icDpNhj6hyWIzu+fc6u
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, 2014-04-14 at 09:19 +0200, Jan Just Keijser wrote:
-> I do like the idea of not needing root access to run openvpn - esp=20
-> windows users could benefit from this, as they're not always allowed to=20
-> install the tap-win adapter. Then again, it goes against the UNIX/Linux=20
-> philosophy that each tool (e.g. openvpn) should do one thing and it=20
-> should do it well. By adding patches like this left and right we're=20
-> steering away from that philosophy.
+On Thu, 2014-04-17 at 17:01 -0400, Greg Toombs wrote:
+> Found the problem. tun-win32.c:45 -
+> #define TAP_COMPONENT_ID "tap0901"
+>=20
+> This is only valid for the most recent version of the TAP adapter. For
+> other versions, this should actually be "tapoas". So openconnect
+> saying that there are no TAP adapters is incorrect. Instead, it should
+> check all known component IDs, and then check for the version, so that
+> instead of reporting no TAP adapters, it detects the following:
+>=20
+> Error: TAP-Windows driver v9.9 or greater is required (found 9.7)
+> Set up tun device failed
 
-I'm inclined to agree about the philosophy, but I think it's a design
-decision made long ago in OpenVPN, and I wouldn't necessarily advocate
-changing it.
+Hm, really "tapoas"? Where did that driver come from?
 
-One way of applying the UNIX philosophy in this context is to suggest
-that the "one thing" that a VPN tool should do well is the transfer of
-packets between an encrypted network link and a local one.
+As far as I can tell from the OpenVPN revision history, they've used
+'tap0901' since February 2007=C2=B9 and it was 'tap0801' before that.
 
-If you take a look at vpnc and openconnect, you'll see that the nasty
-details of how you *configure* a network connection for every platform
-under the sun was considered to be outside the scope. It was farmed out
-to a separate tool, vpnc-script. Which allows us to *share* that
-vpnc-script between the two clients rather than reproducing the effort.
-
-If you look at the situation from that point of view, then yes =E2=80=94 ad=
-ding
-"patches like this left and right" is definitely steering away from the
-UNIX philosophy. But the "patches like this" could be seen to include
-all the existing support for configuring specific platforms such as
-Linux, *BSD, Solaris, Windows, OSX, Android, etc. :)
-
-But there are good reasons why openvpn does this stuff for itself, and I
-don't think it's very practical to change it. Kevin's patches are in
-line with the existing design.
-
-We have a lot of configuration cruft in openvpn, and fundamentally what
-it does is give the core code a file descriptor that it can shove
-packets in and out of. If Kevin offers a relatively clean way for that
-file descriptor to be a UNIX dgram socket which we handed to a spawned
-child process, instead of a handle to the kernel's /dev/net/tun device,
-I don't see why we'd consider that a violation of the philosophy.
+Adding the openvon-devel list to Cc since the clue we seek is probably
+there...
 
 --=20
-David Woodhouse                            Open Source Technology Centre
-David.Woodhouse@...753...                              Intel Corporation
+dwmw2
 
---=-Un/j66gTf8Nh0V60U44i
+=C2=B9 https://github.com/OpenVPN/tap-windows/commit/ee313a978f7aa9
+
+
+--=-7icDpNhj6hyWIzu+fc6u
 Content-Type: application/x-pkcs7-signature; name="smime.p7s"
 Content-Disposition: attachment; filename="smime.p7s"
 Content-Transfer-Encoding: base64
@@ -167,20 +145,20 @@ bhXkgdT2t1V1bNAxggNvMIIDawIBATCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0
 Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcxODA2
 BgNVBAMTL1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENBAgMG
 hc4wCQYFKw4DAhoFAKCCAa8wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUx
-DxcNMTQwNDI0MTMyNzU3WjAjBgkqhkiG9w0BCQQxFgQU0S3Ga5T6F5vf9ip2KWSsxGO3lkswgaUG
+DxcNMTQwNDI0MTMyNTU1WjAjBgkqhkiG9w0BCQQxFgQUam0QH5aRPkWoW9A1ppvKUZtfRF8wgaUG
 CSsGAQQBgjcQBDGBlzCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0Q29tIEx0ZC4x
 KzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcxODA2BgNVBAMTL1N0
 YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENBAgMGhc4wgacGCyqG
 SIb3DQEJEAILMYGXoIGUMIGMMQswCQYDVQQGEwJJTDEWMBQGA1UEChMNU3RhcnRDb20gTHRkLjEr
 MCkGA1UECxMiU2VjdXJlIERpZ2l0YWwgQ2VydGlmaWNhdGUgU2lnbmluZzE4MDYGA1UEAxMvU3Rh
 cnRDb20gQ2xhc3MgMSBQcmltYXJ5IEludGVybWVkaWF0ZSBDbGllbnQgQ0ECAwaFzjANBgkqhkiG
-9w0BAQEFAASCAQBoZBswMJ2mdM9ov99MDJpVkuli/JFYca9mDek5KFS6GKiRacuumSqHyL6Xloqp
-b9dREOFLMiAESSBwilIb3spcyB44v5DsRQlkcl2DGFfNnx7i1TrYhTBqTR21Rb0ph3mD/my2qbfL
-4pmKEQm7rseUvcohd6Hf4BjWf4Ido0Mw99wIeZhb1hV34aY2ag+BZmoXZY2ktj2QdDd7lm3Glpyk
-GP3rpCoUnjnmalzAEbesd/n8L5P9ESOJ7JL4Ni/QNbqz2pw268gaH/RsjaQEs4u4RytHOVaVLvAP
-QuMRCK/eXAWDtj/a4ug4VGb+jsbxe4MVGYib4wnqUFYoe9Q7MKYgAAAAAAAA
+9w0BAQEFAASCAQBhdhd9Tc7tmk+I53oN7t+w9hp5TxHDqbQBLQvbQ1tPnHJ1wBJFP66vAoXHHaAS
+ujMsAD2/sNvHQYQeF11CfiXXG6+Fi91S0238CbuRBURyRGhU4XoihW+YUcLFpNZvKBF1Tt9kf3FS
+/T+N2h3KhW2DfQjqDiwuptUkCGsjj623acfUSc17oRPlH1JumhBeTVC3wNJgR8YaBeVFzL5oS9lc
+G3vv5z7whX31m50JYk064KrjHjjOjeWeV6mW2n3+ojtjkgInmOny/B8y/eZKOH7w2H2RAHPF1Gcg
+lP7ewrYo34zTioUi0X+vP/7sfzxYsQCsVYDxQL9wMHPvJllyzVWiAAAAAAAA
 
 
---=-Un/j66gTf8Nh0V60U44i--
+--=-7icDpNhj6hyWIzu+fc6u--
 
 
