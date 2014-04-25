@@ -1,15 +1,7 @@
-Date: Fri, 25 Apr 2014 20:47:45 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20140425184744.GB16637@...1296...>
-References: <1390164697-1590-1-git-send-email-gert@...1296...>
-	<201404251837.s3PIba2p027719@...1295...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="A2XMdEky08Aybe/a"
-Content-Disposition: inline
-In-Reply-To: <201404251837.s3PIba2p027719@...1295...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: Repair --multihome on
-	FreeBSD for IPv4 sockets.
+Date: Fri, 25 Apr 2014 21:09:03 +0200
+Message-Id: <1398452943-18426-1-git-send-email-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH] Rewrite manpage section about --multihome
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,45 +10,63 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---A2XMdEky08Aybe/a
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Part of the information was confusing, part was outdated, and part was
+just not making sense.
 
-Hi,
+Pointed out in trac#348.
 
-On Fri, Apr 25, 2014 at 08:37:37PM +0200, Gert Doering wrote:
-> Patch has been applied to the master and release/2.3 branches.
->=20
-> commit 661d914c8732a208580b1eab167255c85da162c9 (master)
-> commit fc759c2eb4fbf0792d0052966fcf36efebc5bf5d (master)
+Also add note about Linux IPv4-mapped issues as per trac#306.
 
-The second line is release/2.3, obviously.  Sorry.
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+ doc/openvpn.8 | 29 +++++++++++++++++------------
+ 1 file changed, 17 insertions(+), 12 deletions(-)
 
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+diff --git a/doc/openvpn.8 b/doc/openvpn.8
+index ae3a4e0..457957b 100644
+--- a/doc/openvpn.8
++++ b/doc/openvpn.8
+@@ -2343,18 +2343,23 @@ is NOT specified.
+ .\"*********************************************************
+ .TP
+ .B \-\-multihome
+-Configure a multi-homed UDP server.  This option can be used when
+-OpenVPN has been configured to listen on all interfaces, and will
+-attempt to bind client sessions to the interface on which packets
+-are being received, so that outgoing packets will be sent out
+-of the same interface.  Note that this option is only relevant for
+-UDP servers and currently is only implemented on Linux.
+-
+-Note: clients connecting to a
+-.B \-\-multihome
+-server should always use the
+-.B \-\-nobind
+-option.
++Configure a multi-homed UDP server.  This option needs to be used when
++a server has more than one IP address (e.g. multiple interfaces, or
++secondary IP addresses), and is not using
++.B \-\-local 
++to force binding to one specific address only.  This option will 
++add some extra lookups to the packet path to ensure that the UDP reply 
++packets are always sent from the source address that the client's packet 
++was sent to. This is not supported on all platforms, and it adds more
++processing, so it's not enabled by default.
++
++Note: this option is only relevant for UDP servers, for TCP this happens
++automatically.
++
++Note 2: if you do an IPv6+IPv4 dual-stack bind on a Linux machine with 
++multiple IPv4 address, connections to IPv4 addresses will not work 
++right on kernels before 3.14, due to missing kernel support for the 
++IPv4-mapped case.
+ .\"*********************************************************
+ .TP
+ .B \-\-echo [parms...]
+-- 
+1.8.3.2
 
---A2XMdEky08Aybe/a
-Content-Type: application/pgp-signature
-Content-Disposition: inline
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.13 (NetBSD)
-
-iQCVAwUBU1qt0KkuBuNlUUl1AQIPzQP/WiNUJQUcBjThD4i26lJtOJmhF7Tys9bG
-PGx1CQ2/DupkPrjywWQH9IH/mYo+XZ3rWoduJT343nJCS1GDzyEQzFmdM7nx7FuE
-Y7VmzrFvBAE62c+P9Kl1Kyohp+Q/Owu84xPxWdL05DjTLeDB3/8yqMwnglX8jGHd
-LaAveSCe0Xc=
-=1+9m
------END PGP SIGNATURE-----
-
---A2XMdEky08Aybe/a--
 
