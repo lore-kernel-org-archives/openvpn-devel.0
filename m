@@ -1,7 +1,9 @@
 From: Gert Doering <gert@...1296...>
-Date: Fri, 25 Apr 2014 21:09:03 +0200
-Message-Id: <1398452943-18426-1-git-send-email-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH] Rewrite manpage section about --multihome
+Date: Fri, 25 Apr 2014 21:19:15 +0200
+Message-Id: <1398453555-19706-1-git-send-email-gert@...1296...>
+In-Reply-To: <1398452943-18426-1-git-send-email-gert@...1296...>
+References: <1398452943-18426-1-git-send-email-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH v2] Rewrite manpage section about --multihome
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,22 +17,20 @@ Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
 Part of the information was confusing, part was outdated, and part was
-just not making sense.
-
-Pointed out in trac#348.
+just not making sense.  Pointed out in trac#348.
 
 Also add note about Linux IPv4-mapped issues as per trac#306.
 
 Signed-off-by: Gert Doering <gert@...1296...>
 ---
- doc/openvpn.8 | 29 +++++++++++++++++------------
- 1 file changed, 17 insertions(+), 12 deletions(-)
+ doc/openvpn.8 | 28 ++++++++++++++++------------
+ 1 file changed, 16 insertions(+), 12 deletions(-)
 
 diff --git a/doc/openvpn.8 b/doc/openvpn.8
-index ae3a4e0..457957b 100644
+index ae3a4e0..29bfda3 100644
 --- a/doc/openvpn.8
 +++ b/doc/openvpn.8
-@@ -2343,18 +2343,23 @@ is NOT specified.
+@@ -2343,18 +2343,22 @@ is NOT specified.
  .\"*********************************************************
  .TP
  .B \-\-multihome
@@ -52,12 +52,11 @@ index ae3a4e0..457957b 100644
 +.B \-\-local 
 +to force binding to one specific address only.  This option will 
 +add some extra lookups to the packet path to ensure that the UDP reply 
-+packets are always sent from the source address that the client's packet 
-+was sent to. This is not supported on all platforms, and it adds more
++packets are always sent from the address that the client is 
++talking to. This is not supported on all platforms, and it adds more
 +processing, so it's not enabled by default.
 +
-+Note: this option is only relevant for UDP servers, for TCP this happens
-+automatically.
++Note: this option is only relevant for UDP servers.
 +
 +Note 2: if you do an IPv6+IPv4 dual-stack bind on a Linux machine with 
 +multiple IPv4 address, connections to IPv4 addresses will not work 
