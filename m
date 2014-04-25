@@ -1,10 +1,10 @@
-Date: Fri, 25 Apr 2014 20:31:50 +0200 (CEST)
-Message-Id: <201404251831.s3PIVo55012567@...1295...>
+Date: Fri, 25 Apr 2014 20:37:37 +0200 (CEST)
+Message-Id: <201404251837.s3PIba2p027719@...1295...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1396001222-5033-1-git-send-email-arne@...1227...>
-References: <1396001222-5033-1-git-send-email-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix man page and OSCP script:
-	tls_serial_{n} is decimal
+In-Reply-To: <1390164697-1590-1-git-send-email-gert@...1296...>
+References: <1390164697-1590-1-git-send-email-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Repair --multihome on FreeBSD
+	for IPv4 sockets.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,28 +15,27 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
+To: Gert Doering <gert@...1296...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master and release/2.3 branches.
+As announced at the IRC meeting yesterday, I decided to apply lazy ACK 
+rules here.  The code is tested, fixes an actual bug, and nobody NAKed
+it for 4 months...
 
-I've counted the result from yesterday's IRC discussion plus the mail
-thread as "ACK from James and me", and Steffan agreed as well (canceling
-his initial NAK).
+Patch has been applied to the master and release/2.3 branches.
 
-commit 959d60789b6f0bd74296600f58f626cfa9738f78 (master)
-commit d160a62852408121ce8fc023a89f47c7920c16e8 (release/2.3)
+commit 661d914c8732a208580b1eab167255c85da162c9 (master)
+commit fc759c2eb4fbf0792d0052966fcf36efebc5bf5d (master)
 
-Author: Arne Schwabe
-Date:   Fri Mar 28 11:07:01 2014 +0100
+Author: Gert Doering
+Date:   Sun Jan 19 21:51:37 2014 +0100
 
-     Fix man page and OSCP script: tls_serial_{n} is decimal
+     Repair --multihome on FreeBSD for IPv4 sockets.
 
-     Acked-by: James Yonan <james@...515...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1396001222-5033-1-git-send-email-arne@...1227...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/8409
      Signed-off-by: Gert Doering <gert@...1296...>
+     Lazy-Ack-by: Gert Doering <gert@...1296...>
+     Message-Id: <1390164697-1590-1-git-send-email-gert@...1296...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/8250
 
 
 --
