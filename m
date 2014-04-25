@@ -1,10 +1,17 @@
-Date: Fri, 25 Apr 2014 20:05:49 +0200 (CEST)
-Message-Id: <201404251805.s3PI5nFk018801@...1295...>
+Date: Fri, 25 Apr 2014 20:28:04 +0200
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1398293018-8581-3-git-send-email-steffan@...1856...>
-References: <1398293018-8581-3-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Add an elliptic curve testing
-	cert chain to the sample keys
+Message-ID: <20140425182803.GA16637@...1296...>
+References: <1396001222-5033-1-git-send-email-arne@...1227...>
+	<CAA1AbxJCv9ff7XHv1GKtCPuB-Hc5Lv33ufPfqcTraNpFnJf7fw@...278...>
+	<20140330134619.GT16637@...1296...>
+	<534F898A.3060607@...515...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="3zaowp3fdBRYvZvo"
+Content-Disposition: inline
+In-Reply-To: <534F898A.3060607@...515...>
+Subject: Re: [Openvpn-devel] [PATCH] Fix man page and OSCP script:
+	tls_serial_{n} is decimal
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,29 +20,55 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Steffan Karger <steffan@...1856...>
+To: James Yonan <james@...515...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master branch.
+--3zaowp3fdBRYvZvo
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-commit cdbd56ceeae4ef6352e19814447d402d0b5468c0
-Author: Steffan Karger
-Date:   Thu Apr 24 00:43:38 2014 +0200
+Hi,
 
-     Add an elliptic curve testing cert chain to the sample keys
+On Thu, Apr 17, 2014 at 01:58:02AM -0600, James Yonan wrote:
+> If we keep the current behavior (PolarSSL serial numbers are hex while=20
+> OpenSSL are decimal) then we should at least mark the serial number when=
+=20
+> it's hex, so client software can distinguish it.
+>=20
+> This very simple patch does that.
 
-     Signed-off-by: Steffan Karger <steffan@...1856...>
-     Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <1398293018-8581-3-git-send-email-steffan@...1856...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/8601
-     Signed-off-by: Gert Doering <gert@...1296...>
+As discussed yesterday on the IRC meeting, NAK on this - Steffan promised
+to send a patch that will change PolarSSL to provide decimal serial
+numbers as well (*nudge*), so we're fully consistent.
 
+> RFC 5280, published in 2008, decrees that serial numbers can be
+> up to 20 bytes long, hence it is necessary to support SSL
+> libraries that return the serial number as a hex string.
 
---
-kind regards,
+Emphasizing this again, don't use "%d" on serials :-)
 
-Gert Doering
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
+--3zaowp3fdBRYvZvo
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.13 (NetBSD)
+
+iQCVAwUBU1qpM6kuBuNlUUl1AQJqTAP/RWzoxqyt6Aj08mH3bKLatqQ5tft0aBE8
+Mnb52eWhq6Pzylz1MAQxj4KYNLeAc4lbl6H/sNPC1rebBDuBtHuGyXSgIfF3IiYz
+tGbNEjffcJBGEWGvUsn94FMBab2mwknKPi4DU5HqYoUj1p941I/h6flXLIVMX1dn
+EcKsNDX3gkU=
+=4c7k
+-----END PGP SIGNATURE-----
+
+--3zaowp3fdBRYvZvo--
 
