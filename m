@@ -1,11 +1,9 @@
-Message-ID: <535AB879.1000807@...1227...>
-Date: Fri, 25 Apr 2014 21:33:13 +0200
-From: Arne Schwabe <arne@...1227...>
-MIME-Version: 1.0
-References: <1398452943-18426-1-git-send-email-gert@...1296...>
-	<1398453555-19706-1-git-send-email-gert@...1296...>
+Date: Fri, 25 Apr 2014 22:45:55 +0200 (CEST)
+Message-Id: <201404252045.s3PKjt1A020679@...1295...>
+From: Gert Doering <gert@...1296...>
 In-Reply-To: <1398453555-19706-1-git-send-email-gert@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH v2] Rewrite manpage section about
+References: <1398453555-19706-1-git-send-email-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Rewrite manpage section about
 	--multihome
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -15,18 +13,30 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-On 25.04.2014 21:19, Gert Doering wrote:
-> Part of the information was confusing, part was outdated, and part was
-> just not making sense.  Pointed out in trac#348.
->
-> Also add note about Linux IPv4-mapped issues as per trac#306.
->
->
-ACK as per discussion on #openvpn-devel.
+Your patch has been applied to the master and release/2.3 branch.
 
-Arne
+commit abe18c69a61b42e5ac68b77f66198fc15be99e31 (master)
+commit d40de75fea9c9fa17b68e13be67731b6ccec9fb5 (release/2.3)
+
+Author: Gert Doering
+Date:   Fri Apr 25 21:19:15 2014 +0200
+
+     Rewrite manpage section about --multihome
+
+     Signed-off-by: Gert Doering <gert@...1296...>
+     Acked-by: Arne Schwabe <arne@...1227...>
+     Message-Id: <1398453555-19706-1-git-send-email-gert@...1296...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/8635
+
+
+--
+kind regards,
+
+Gert Doering
+
 
