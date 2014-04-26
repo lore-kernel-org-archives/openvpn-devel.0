@@ -1,10 +1,13 @@
-Message-ID: <535B762A.8050200@...1790...>
-Date: Sat, 26 Apr 2014 11:02:34 +0200
-From: Tore Anderson <tore@...1790...>
-MIME-Version: 1.0
+Date: Sat, 26 Apr 2014 11:44:53 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20140426094453.GC16637@...1296...>
 References: <1398452943-18426-1-git-send-email-gert@...1296...>
-	<535B6F81.8030005@...1790...>
-In-Reply-To: <535B6F81.8030005@...1790...>
+	<535B6F81.8030005@...1790...> <535B762A.8050200@...1790...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="6eZmXbBP9Km6HxFR"
+Content-Disposition: inline
+In-Reply-To: <535B762A.8050200@...1790...>
 Subject: Re: [Openvpn-devel] [PATCH] Rewrite manpage section about
 	--multihome
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -15,36 +18,63 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: Tore Anderson <tore@...1790...>
+Cc: openvpn-devel@lists.sourceforge.net
+
+--6eZmXbBP9Km6HxFR
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
-To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+Content-Disposition: inline
 
-* Tore Anderson
-> The patches will eventually make it into the previous LTS release
-> 12.04 =ABPrecise=BB too, as part of the upcoming 12.04.5 point release
-> (expected in August).
+Hi,
 
-Just a little followup here to clarify in case you decide to add this
-info to the documentation. The 12.04.5 =ABPrecise=BB fixes will come about
-by importing a collection of packages from 14.04. They call this a
-Hardware Enablement Stack (the purpose is to bring support for modern
-hardware and its drivers to the older but still-supported releases):
+On Sat, Apr 26, 2014 at 11:02:34AM +0200, Tore Anderson wrote:
+> * Tore Anderson
+> > The patches will eventually make it into the previous LTS release
+> > 12.04 =ABPrecise=BB too, as part of the upcoming 12.04.5 point release
+> > (expected in August).
+>=20
+> Just a little followup here to clarify in case you decide to add this
+> info to the documentation.
 
-https://wiki.ubuntu.com/Kernel/LTSEnablementStack
+I'm not sure if I really want to go there.  It is a lot of details, for
+one specific Linux variant, while the manage is also read by people on
+other Linux variants, or even (gasp!) non-Linux users.
 
-Anyway, what I wanted to clarify is that if a user is installing 12.04.5
-from scratch, then it should default to using the kernel package from
-14.04, and the IPv6 multihoming fixes should be there out of the box.
-However if the user is on <=3D12.04.4, doing a distribution upgrade is not
-sufficient, he would also need to manually install the kernel from the
-14.04 Hardware Enablement Stack to get the required fixes. This is done
-by installing the package "linux-generic-lts-trusty".
+You're right, of course, about the 3.15 bit.  So maybe change this to:
 
-Here's some suggested text:
+-----------------------------------------------------------
+Note 2: if you do an IPv6+IPv4 dual-stack bind on a Linux machine with
+multiple IPv4 address, connections to IPv4 addresses will not work
+right on kernels before 3.15, due to missing kernel support for the
+IPv4-mapped case (some distributions have ported this to earlier kernel
+versions, though).
+-----------------------------------------------------------
 
-  The fixes are also present in Ubuntu 12.04.5 =ABPrecise=BB (kernel
-  package "linux-generic-lts-trusty" required) and in Ubuntu 14.04
-  =ABTrusty=BB.
+I'm happy to put your detailed text into the trac ticket, though, so=20
+someone finding "it does not work!" and looking into trac can find them.
 
-Tore
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--6eZmXbBP9Km6HxFR
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.13 (NetBSD)
+
+iQCVAwUBU1uAFakuBuNlUUl1AQKD9wP/Ub49CEm4KurNWA0duk1V3jriWQ52PYXW
+5lusnloH/qyxNzN5qM2jD8CoDTbkX7KnBDkMGL41CWCQ2+boolV3gqiYVxP/mTRP
+eyKy6xazyTn3/3xYaB01NxdDVUCWoEgV60M/Aa1R/wW7kJnRyB0P9jwnJvRdDGU7
+4uEeO4mD47M=
+=4ImA
+-----END PGP SIGNATURE-----
+
+--6eZmXbBP9Km6HxFR--
 
