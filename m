@@ -1,10 +1,16 @@
+Date: Sat, 26 Apr 2014 13:56:55 +0200
 From: Gert Doering <gert@...1296...>
-Date: Sat, 26 Apr 2014 13:30:54 +0200
-Message-Id: <1398511854-3609-1-git-send-email-gert@...1296...>
-In-Reply-To: <535B762A.8050200@...1790...>
-References: <535B762A.8050200@...1790...>
-Subject: [Openvpn-devel] [PATCH] More IPv6-related updates to the openvpn
-	man page.
+Message-ID: <20140426115654.GD16637@...1296...>
+References: <1398452943-18426-1-git-send-email-gert@...1296...>
+	<535B6F81.8030005@...1790...> <535B762A.8050200@...1790...>
+	<20140426094453.GC16637@...1296...> <535B869C.7000303@...1790...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="OQpvtaB1tgc6SPDf"
+Content-Disposition: inline
+In-Reply-To: <535B869C.7000303@...1790...>
+Subject: Re: [Openvpn-devel] [PATCH] Rewrite manpage section about
+	--multihome
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,64 +19,61 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Tore Anderson <tore@...1790...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Point to correct kernel version for --multihome and IPv4-mapped
-addresses (3.15, Tore Anderson).
+--OQpvtaB1tgc6SPDf
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Remove old reference to http://www.greenie.net/ from the IPv6 section,
-as the code and documentation in here is more current than on that site.
-Some more additions and clarifications.
+Hi,
 
-Signed-off-by: Gert Doering <gert@...1296...>
----
- doc/openvpn.8 | 16 ++++++++++------
- 1 file changed, 10 insertions(+), 6 deletions(-)
+On Sat, Apr 26, 2014 at 12:12:44PM +0200, Tore Anderson wrote:
+> > I'm not sure if I really want to go there.
+> Completely fine by me, just getting the information out there, so you
+> can decide what to do with it, :-)
 
-diff --git a/doc/openvpn.8 b/doc/openvpn.8
-index 29bfda3..8cddcec 100644
---- a/doc/openvpn.8
-+++ b/doc/openvpn.8
-@@ -2357,8 +2357,9 @@ Note: this option is only relevant for UDP servers.
- 
- Note 2: if you do an IPv6+IPv4 dual-stack bind on a Linux machine with 
- multiple IPv4 address, connections to IPv4 addresses will not work 
--right on kernels before 3.14, due to missing kernel support for the 
--IPv4-mapped case.
-+right on kernels before 3.15, due to missing kernel support for the
-+IPv4-mapped case (some distributions have ported this to earlier kernel
-+versions, though).
- .\"*********************************************************
- .TP
- .B \-\-echo [parms...]
-@@ -5471,9 +5472,11 @@ option can be used BEFORE this option to produce debugging information.
- .SS IPv6 Related Options
- .\"*********************************************************
- The following options exist to support IPv6 tunneling in peer-to-peer
--and client-server mode.  As of now, this is just very basic
--documentation of the IPv6-related options. More documentation can be
--found on http://www.greenie.net/ipv6/openvpn.html.
-+and client-server mode.  All options are modeled after their IPv4
-+counterparts, so more detailed explanations given there apply here
-+as well (except for
-+.B \-\-topology
-+, which has no effect on IPv6).
- .TP
- .B --ifconfig-ipv6 ipv6addr/bits ipv6remote
- configure IPv6 address
-@@ -5504,7 +5507,8 @@ pool starts at
- .B ipv6addr
- and increments by +1 for every new client (linear mode).  The
- .B /bits
--setting controls the size of the pool.
-+setting controls the size of the pool.  Due to implementation details,
-+the pool size must be between /64 and /112.
- .TP
- .B --ifconfig-ipv6-push ipv6addr/bits ipv6remote
- for ccd/ per-client static IPv6 interface configuration, see
--- 
-1.8.3.2
+Yeah, thanks for the details and the links.  It helps.
 
+> > I'm happy to put your detailed text into the trac ticket, though, so=20
+> > someone finding "it does not work!" and looking into trac can find them.
+>=20
+> Yeah, about that...I'm not sure your trac is completely healthy. Even
+> though I submitted issue #306, I get "Warning: No permissions to add a
+> comment." when trying to add info, there's no way I can close the ticket
+> (which I think it should be, as it's not an OpenVPN bug in the first
+> place), and I never got any e-mail notification about your comments on
+> that ticket either.
+
+Our trac doesn't like this ticket, I think - took me 4 attempts to actually
+get the comment in, but *closing* worked at the first go...
+
+(I think you can't close it, as that needs more permissions than "default",
+but the comment-no-permission thing is some sort of weird thing we need
+to look into, "we" being "Samuli and Eric", I think...)
+
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--OQpvtaB1tgc6SPDf
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.13 (NetBSD)
+
+iQCVAwUBU1ufBqkuBuNlUUl1AQJkFAP9E4W1uscTz1tWorXouO4w13gfWHlvRFd9
+1TAwQQ2vockXI7jPfL7+G93rwXVVp4K3N/TKqv7wYNPw8nCqdM1GlcUQ7a4IhsAe
+jGFrNOTP8JHP+rbwObhWn2zcX89qMeDiE6LsKwhTK2goofWURn/SyquT2GddsIdb
++NK+65/zsXM=
+=W27G
+-----END PGP SIGNATURE-----
+
+--OQpvtaB1tgc6SPDf--
 
