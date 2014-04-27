@@ -1,10 +1,11 @@
-From: Steffan Karger <steffan@...1856...>
-Date: Sun, 27 Apr 2014 10:49:21 +0200
-Message-Id: <1398588561-18964-2-git-send-email-steffan@...1856...>
-In-Reply-To: <1398588561-18964-1-git-send-email-steffan@...1856...>
-References: <1398588561-18964-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH 2/2] Fix OCSP_check.sh to also use decimal
-	for stdout verification.
+Message-ID: <535CD403.6040603@...1227...>
+Date: Sun, 27 Apr 2014 11:55:15 +0200
+From: Arne Schwabe <arne@...1227...>
+MIME-Version: 1.0
+References: <20140426210044.GF16637@...1296...>
+In-Reply-To: <20140426210044.GF16637@...1296...>
+Subject: Re: [Openvpn-devel] socket.c issues when building snapshots on
+	windows...
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,50 +14,46 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
 
-This is an extra fix needed on top of 959d607, which already changes the
-serial parameter to correctly use decimal representation.
+On 26.04.2014 23:00, Gert Doering wrote:
+> Hiya,
+>
+> with some arm-twisting, I managed to convince build-snapshot to actually
+> do that (it would prefer to do a git clone, autoconf, tarball, copy tarball,
+> ignore the tarball, fetch 2.3.3 source, extract 2.3.3 and build that, thus
+> never showing compilation errors...), and here we go...
+>
+> socket.c: In function 'socket_bind':
+> socket.c:1124:40: error: 'IPV6_V6ONLY' undeclared (first use in this function)
+> socket.c:1124:40: note: each undeclared identifier is reported only once for each function it appears in
+> socket.c:1124:7: warning: passing argument 4 of 'setsockopt' from incompatible pointer type [enabled by default]
+> /usr/lib/gcc/i686-w64-mingw32/4.6/../../../../i686-w64-mingw32/include/winsock2.h:1016:34: note: expected 'const char *' but argument is of type 'int *'
+> socket.c: In function 'openvpn_connect':
+> socket.c:1218:32: error: 'const struct sockaddr' has no member named 'addr'
+> socket.c:1218:62: error: 'const struct sockaddr' has no member named 'addr'
+> socket.c: In function 'socket_recv_queue':
+> socket.c:3135:45: error: 'struct link_socket_addr' has no member named 'local'
+>
+> ... I'm posting this here so whoever has time can take a stab at it
+> (I won't be able to work on this for the next couple of days, will focus
+> on 2.3.4 release items).
+>
+>
+The option seems to be supported since Windows Vista. I think we should 
+add something like this to the windows ifdefs (copied from 
+http://marc.info/?l=apr-dev&m=121392734329754&w=2):
 
-Signed-off-by: Steffan Karger <steffan@...1856...>
----
- contrib/OCSP_check/OCSP_check.sh | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/contrib/OCSP_check/OCSP_check.sh b/contrib/OCSP_check/OCSP_check.sh
-index 7e9e1e8..553c3dc 100644
---- a/contrib/OCSP_check/OCSP_check.sh
-+++ b/contrib/OCSP_check/OCSP_check.sh
-@@ -71,7 +71,7 @@ if [ $check_depth -eq -1 ] || [ $cur_depth -eq $check_depth ]; then
-   # - The serial number must not be empty
-   # - The exit status of "openssl ocsp" must be zero
-   # - The output of the above command must contain the line
--  #   "0x${serial}: good"
-+  #   "${serial}: good"
-   #
-   # Everything else fails with exit status 1.
- 
-@@ -83,7 +83,7 @@ if [ $check_depth -eq -1 ] || [ $cur_depth -eq $check_depth ]; then
-     # Sample output that is assumed here:
-     #
-     # Response verify OK
--    # 0x428740A5: good
-+    # 4287405: good
-     #      This Update: Apr 24 19:38:49 2010 GMT
-     #      Next Update: May  2 14:23:42 2010 GMT
-     #
-@@ -101,7 +101,7 @@ if [ $check_depth -eq -1 ] || [ $cur_depth -eq $check_depth ]; then
- 
-     if [ $? -eq 0 ]; then
-       # check that it's good
--      if echo "$status" | grep -Fq "0x${serial}: good"; then
-+      if echo "$status" | grep -Fq "^${serial}: good"; then
-         exit 0
-       fi
-     fi
--- 
-1.8.3.2
-
++/* Ugly solution - only the Windows 2008 SDK or later have this symbol 
+defined.
++ * The symbol doesn't guarantee that the socket option is supported on
++ * the runtime version of Windows, so we define it here (for build 
+systems)
++ * and always check at runtime if it is supported.
++ */
++#ifndef IPV6_V6ONLY
++#define IPV6_V6ONLY 27
++#endif
 
