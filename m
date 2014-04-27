@@ -1,11 +1,10 @@
-Message-ID: <535CD403.6040603@...1227...>
-Date: Sun, 27 Apr 2014 11:55:15 +0200
-From: Arne Schwabe <arne@...1227...>
-MIME-Version: 1.0
-References: <20140426210044.GF16637@...1296...>
-In-Reply-To: <20140426210044.GF16637@...1296...>
-Subject: Re: [Openvpn-devel] socket.c issues when building snapshots on
-	windows...
+Date: Sun, 27 Apr 2014 14:43:28 +0200 (CEST)
+Message-Id: <201404271243.s3RChS5m013961@...1295...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <1398585348-7969-1-git-send-email-steffan@...1856...>
+References: <1398585348-7969-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Change signedness of hash in
+	x509_get_sha1_hash(), fixes compiler warning.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,46 +13,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Steffan Karger <steffan@...1856...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-On 26.04.2014 23:00, Gert Doering wrote:
-> Hiya,
->
-> with some arm-twisting, I managed to convince build-snapshot to actually
-> do that (it would prefer to do a git clone, autoconf, tarball, copy tarball,
-> ignore the tarball, fetch 2.3.3 source, extract 2.3.3 and build that, thus
-> never showing compilation errors...), and here we go...
->
-> socket.c: In function 'socket_bind':
-> socket.c:1124:40: error: 'IPV6_V6ONLY' undeclared (first use in this function)
-> socket.c:1124:40: note: each undeclared identifier is reported only once for each function it appears in
-> socket.c:1124:7: warning: passing argument 4 of 'setsockopt' from incompatible pointer type [enabled by default]
-> /usr/lib/gcc/i686-w64-mingw32/4.6/../../../../i686-w64-mingw32/include/winsock2.h:1016:34: note: expected 'const char *' but argument is of type 'int *'
-> socket.c: In function 'openvpn_connect':
-> socket.c:1218:32: error: 'const struct sockaddr' has no member named 'addr'
-> socket.c:1218:62: error: 'const struct sockaddr' has no member named 'addr'
-> socket.c: In function 'socket_recv_queue':
-> socket.c:3135:45: error: 'struct link_socket_addr' has no member named 'local'
->
-> ... I'm posting this here so whoever has time can take a stab at it
-> (I won't be able to work on this for the next couple of days, will focus
-> on 2.3.4 release items).
->
->
-The option seems to be supported since Windows Vista. I think we should 
-add something like this to the windows ifdefs (copied from 
-http://marc.info/?l=apr-dev&m=121392734329754&w=2):
+ACK ("obviously correct")
 
-+/* Ugly solution - only the Windows 2008 SDK or later have this symbol 
-defined.
-+ * The symbol doesn't guarantee that the socket option is supported on
-+ * the runtime version of Windows, so we define it here (for build 
-systems)
-+ * and always check at runtime if it is supported.
-+ */
-+#ifndef IPV6_V6ONLY
-+#define IPV6_V6ONLY 27
-+#endif
+Your patch has been applied to the master and release/2.3 branches.
+
+commit d4309c21d9cde43c777985e373242afa78afefa1 (master)
+commit b36515a7115cec9a0f1c4240a83d4b5d184235f1 (release/2.3)
+
+Author: Steffan Karger
+Date:   Sun Apr 27 09:55:48 2014 +0200
+
+     Change signedness of hash in x509_get_sha1_hash(), fixes compiler warning.
+
+     Signed-off-by: Steffan Karger <steffan@...1856...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1398585348-7969-1-git-send-email-steffan@...1856...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/8647
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
+
 
