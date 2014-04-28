@@ -1,11 +1,11 @@
-Message-ID: <535ECBB0.2060709@...1901...>
-Date: Mon, 28 Apr 2014 17:44:16 -0400
+Message-ID: <535EE1D1.10308@...1901...>
+Date: Mon, 28 Apr 2014 19:18:41 -0400
 From: Timothe Litt <litt@...1901...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; protocol="application/pkcs7-signature";
-	micalg=sha1; boundary="------------ms010101010700010301050603"
-Subject: [Openvpn-devel] [PATCH] Add support for specifying the syslog
- facility, as requested  in trac #188.
+	micalg=sha1; boundary="------------ms040507030907040307090200"
+Subject: [Openvpn-devel] [PATCH] Remove validation hook in syslog facility
+	patch.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,305 +18,50 @@ To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
 This is a cryptographically signed message in MIME format.
 
---------------ms010101010700010301050603
+--------------ms040507030907040307090200
 Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
 Content-Transfer-Encoding: quoted-printable
 
-Users want this because it allows them to have syslog put all OpenVPN=20
-messages
-in specific file(s) by using syslog.conf.
+Cosmetic issue.
 
-Adds --syslog-facility name option, which must precede --daemon and=20
---syslog.
+Apply this after the full patch. (Or just delete the 5 characters from=20
+the full patch before applying.)
 
-Adds ability to specify facility as [name] in --daemon and --syslog's=20
-progname argument,
-which makes it possible to specify the syslog facility name without=20
-modifying certain
-system init scripts.  --syslog-facility takes precedence.
+Sorry about the noise.
 
-For example, Debian automatically generates a --daemon vpn-{configname}
-directive.  If you name the config foo[local1].conf, it's as though you=20
-were able to
-specify --syslog-facility local1 --daemon vpn-foo --config=20
-foo[local1].conf.  Absent
-this feature, This isn't possible without modifying the=20
-distribution-provided init script.
+ From 0ec2da0e86dd39a474705e099a1b4085b9602590 Mon Sep 17 00:00:00 2001
+From: Timothe Litt <litt@...1901...>
+Date: Mon, 28 Apr 2014 18:42:42 -0400
+Subject: [PATCH] Remove validation hook in syslog facility patch.
 
---syslog-facility list (or any other undefined name) will list the=20
-facilities that the
-platform supports.
+While validating, PACKAGE_NAME (mixed case) was used as a default logger=20
+program name to ensure coverate of a corner case.
 
-The old method of -DLOG_OPENVPN still provides the facility used by=20
-default.  Thus, the
-priority is:
-   --syslog-facility
-   --daemon [facility] or --syslog [facility]
-   -DLOG_OPENVPN
+This wasn't reverted prior to release of the patch.
 
-This is forward and backward compatible with existing scripts & initfiles.
+This switches to the intended PACKAGE (lower case) default.
+
+Released as a separate patch so as not to invalidate any review of the=20
+full patch.
 
 Signed-off-by: Timothe Litt <litt@...1901...>
 ---
-  doc/openvpn.8         |   15 ++++++
-  src/openvpn/error.c   |  129=20
-+++++++++++++++++++++++++++++++++++++++++++++++--
-  src/openvpn/error.h   |    1 +
-  src/openvpn/options.c |   19 ++++++++
-  4 files changed, 161 insertions(+), 3 deletions(-)
+  src/openvpn/error.c |    2 +-
+  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/doc/openvpn.8 b/doc/openvpn.8
-index 34894e5..2c63795 100644
---- a/doc/openvpn.8
-+++ b/doc/openvpn.8
-@@ -2169,6 +2169,12 @@ When unspecified,
-  .B progname
-  defaults to "openvpn".
-
-+If --syslog-facility has not been specified and the name
-+includes [facility], the specified syslog facility name will be used with
-+the system logger.  (This method of specifying the facility name may be
-+convenient when initialization scripts generate --daemon progname from
-+the config file name.  This avoids the need to edit the script.)
-+
-  When OpenVPN is run with the
-  .B \-\-daemon
-  option, it will try to delay daemonization until the majority of=20
-initialization
-@@ -2188,6 +2194,15 @@ directive above for description of
-  .B progname
-  parameter.
-  .TP
-+.B \-\-syslog-faciity name
-+When logging to syslog, use name (e.g. local1 or daemon) for the facility.
-+If name is absent or not supported, a platform-dependent list of valid
-+facility names is provided.
-+
-+Must be specified before --daemon and --syslog.
-+If this is not convenient, the facility name may be specified as [name] in
-+the name parameter of either directive.
-+.TP
-  .B \-\-errors-to-stderr
-  Output errors to stderr instead of stdout unless log output is=20
-redirected by one of the
-  .B \-\-log
 diff --git a/src/openvpn/error.c b/src/openvpn/error.c
-index fd9f19d..fb0abbd 100644
+index fb0abbd..af7d486 100644
 --- a/src/openvpn/error.c
 +++ b/src/openvpn/error.c
-@@ -89,9 +89,10 @@ static bool machine_readable_output;   /* GLOBAL */
-  /* Should timestamps be included on messages to stdout/stderr? */
-  static bool suppress_timestamps; /* GLOBAL */
+@@ -563,7 +563,7 @@ open_syslog (const char *pgmname, bool stdio_to_null)
+                   /* Default program name */
 
--/* The program name passed to syslog */
-+/* The program name and facility passed to syslog */
-  #if SYSLOG_CAPABILITY
-  static char *pgmname_syslog;  /* GLOBAL */
-+static int facility_syslog =3D -1; /* Unspec (RFC5424 - can not be=20
-negative) */
-  #endif
+                   if (!*pname)
+-                   pname =3D PACKAGE_NAME;
++                   pname =3D PACKAGE;
 
-  /* If non-null, messages should be written here (used for debugging=20
-only) */
-@@ -439,6 +440,93 @@ out_of_memory (void)
-    exit (1);
-  }
+                   /* Convert extracted facility name to code */
 
-+#if SYSLOG_CAPABILITY
-+static int syslog_fac_code (const char *name, int default_code)
-+{
-+  static struct {
-+    int code;
-+    const char *const name;
-+  } facnames[] =3D {
-+    { LOG_AUTH, "auth" },
-+#ifdef LOG_AUTHPRIV  /* Prefered (private), but non-POSIX */
-+    { LOG_AUTHPRIV, "authpriv" },
-+#else
-+    { LOG_AUTH, "authpriv" }, /* Map to non-secure code */
-+#endif
-+    { LOG_CRON, "cron" },
-+    { LOG_DAEMON, "daemon" },
-+#ifdef LOG_FTP
-+    { LOG_FTP, "ftp" },
-+#endif
-+    { LOG_LPR, "lpr" },
-+    { LOG_MAIL, "mail" },
-+    { LOG_NEWS, "news" },
-+#ifdef LOG_SYSLOG
-+    { LOG_SYSLOG, "syslog" },
-+#endif
-+    { LOG_USER, "user" },
-+#ifdef LOG_UUCP
-+    { LOG_UUCP, "uucp" },
-+#endif
-+    { LOG_LOCAL0, "local0" },
-+    { LOG_LOCAL1, "local1" },
-+    { LOG_LOCAL2, "local2" },
-+    { LOG_LOCAL3, "local3" },
-+    { LOG_LOCAL4, "local4" },
-+    { LOG_LOCAL5, "local5" },
-+    { LOG_LOCAL6, "local6" },
-+    { LOG_LOCAL7, "local7" },
-+
-+    { 0, NULL },
-+  }, *fac;
-+
-+   if (use_syslog)
-+    {
-+      msg (M_ERR, "syslog facility can not be changed after logging has=20
-started");
-+      return;
-+    }
-+
-+ /* Lookup facility code by name */
-+
-+  for (fac =3D facnames; fac->name; fac++)
-+    {
-+      if (!strcmp (fac->name, name))
-+       {
-+         return  fac->code;
-+       }
-+    }
-+
-+  /* Not found, look for name of facility that will be used */
-+
-+  if (default_code =3D=3D -1)
-+    default_code =3D LOG_OPENVPN;
-+
-+  for (fac =3D facnames; fac->name; fac++)
-+    {
-+      if (fac->code =3D=3D default_code)
-+       {
-+         break;
-+       }
-+    }
-+
-+  /* Warn, and list valid names (they are platform-dependent) */
-+
-+  msg (M_WARN, "syslog: %s is not a valid facility name, using %s", name,
-+       (fac->name? fac->name : "default"));
-+  for (fac =3D facnames; fac->name; fac++)
-+    {
-+      msg (M_INFO, "syslog: %s facility is valid on this platform",=20
-fac->name);
-+    }
-+  return default_code;
-+}
-+
-+void set_syslog_facility (const char *name)
-+{
-+  facility_syslog =3D syslog_fac_code (name, -1);
-+}
-+
-+#endif
-+
-  void
-  open_syslog (const char *pgmname, bool stdio_to_null)
-  {
-@@ -447,8 +535,43 @@ open_syslog (const char *pgmname, bool stdio_to_null)
-      {
-        if (!use_syslog)
-         {
--         pgmname_syslog =3D string_alloc (pgmname ? pgmname : PACKAGE, NUL=
-L);
--         openlog (pgmname_syslog, LOG_PID, LOG_OPENVPN);
-+         char *pname =3D pgmname_syslog =3D string_alloc (pgmname ?
-+                                                      pgmname :=20
-PACKAGE, NULL);
-+         int facility =3D facility_syslog;
-+         if (facility =3D=3D -1)
-+           {
-+             /* Unspecified, default */
-+
-+             facility =3D LOG_OPENVPN;
-+
-+             /* Attempt to extract from program name (simplifies init=20
-files) */
-+             char *facb, *face;
-+
-+             /* Decode optional [facilityname] prefix */
-+
-+             if ((facb =3D strchr (pgmname_syslog, '[')) !=3D NULL
-+                 && (face =3D strchr (facb+1, ']')) !=3D NULL)
-+               {
-+                 char *facname =3D malloc (face - facb); /* [name] =3D>=20
-name\0 */
-+
-+                 /* Extract facility name and remove from option string */
-+
-+                 *face++ =3D '\0';
-+                 strcpy (facname, facb+1);
-+                 memmove (facb, face, strlen(face)+1);
-+
-+                 /* Default program name */
-+
-+                 if (!*pname)
-+                   pname =3D PACKAGE_NAME;
-+
-+                 /* Convert extracted facility name to code */
-+
-+                 facility =3D syslog_fac_code (facname, facility);
-+                 free (facname);
-+               }
-+           }
-+         openlog (pname, LOG_PID, facility);
-           use_syslog =3D true;
-
-           /* Better idea: somehow pipe stdout/stderr output to msg() */
-diff --git a/src/openvpn/error.h b/src/openvpn/error.h
-index 1e1f2ac..cbd1980 100644
---- a/src/openvpn/error.h
-+++ b/src/openvpn/error.h
-@@ -234,6 +234,7 @@ void msg_forked (void);
-
-  /* syslog output */
-
-+void set_syslog_facility (const char *name);
-  void open_syslog (const char *pgmname, bool stdio_to_null);
-  void close_syslog ();
-
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 40210e6..e6cc1cc 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -333,9 +333,21 @@ static const char usage_message[] =3D
-    "--setcon context: Apply this SELinux context after initialization.\n"
-  #endif
-    "--cd dir        : Change to this directory before initialization.\n"
-+#if SYSLOG_CAPABILITY
-+  "--syslog-facility name : When logging to syslog, use name (e.g. \n"
-+  "                  local1) for the facility.  If name is absent or not\n"
-+  "                  supported, a platform-dependent list of valid\n"
-+  "                  facility names is provided.  Must be specified\n"
-+  "                  before --daemon and --syslog.\n"
-+#endif
-    "--daemon [name] : Become a daemon after initialization.\n"
-    "                  The optional 'name' parameter will be passed\n"
-    "                  as the program name to the system logger.\n"
-+#if SYSLOG_CAPABILITY
-+  "                  If --syslog-facility has not been specified and \n"
-+  "                  the name includes [facility], the specified\n"
-+  "                  syslog facility name will be used.\n"
-+#endif
-    "--syslog [name] : Output to syslog, but do not become a daemon.\n"
-    "                  See --daemon above for a description of the=20
-'name' parm.\n"
-    "--inetd [name] ['wait'|'nowait'] : Run as an inetd or xinetd server.\n"
-@@ -4661,6 +4673,13 @@ add_option (struct options *options,
-        VERIFY_PERMISSION (OPT_P_GENERAL);
-        options->up_restart =3D true;
-      }
-+#if SYSLOG_CAPABILITY
-+  else if (streq (p[0], "syslog-facility"))
-+    {
-+      VERIFY_PERMISSION (OPT_P_GENERAL);
-+      set_syslog_facility (p[1]);
-+    }
-+#endif
-    else if (streq (p[0], "syslog"))
-      {
-        VERIFY_PERMISSION (OPT_P_GENERAL);
 --
 1.7.10.4
 
@@ -329,7 +74,7 @@ if any, on the matters discussed.
 
 
 
---------------ms010101010700010301050603
+--------------ms040507030907040307090200
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -411,8 +156,8 @@ hXGzTMVw1xoP/9LSYyoRD6yypzGCBNowggTWAgEBMIGTMIGMMQswCQYDVQQGEwJJTDEWMBQG
 A1UEChMNU3RhcnRDb20gTHRkLjErMCkGA1UECxMiU2VjdXJlIERpZ2l0YWwgQ2VydGlmaWNh
 dGUgU2lnbmluZzE4MDYGA1UEAxMvU3RhcnRDb20gQ2xhc3MgMiBQcmltYXJ5IEludGVybWVk
 aWF0ZSBDbGllbnQgQ0ECAibVMAkGBSsOAwIaBQCgggIbMBgGCSqGSIb3DQEJAzELBgkqhkiG
-9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE0MDQyODIxNDQxNlowIwYJKoZIhvcNAQkEMRYEFNTL
-bYbI/jfbEviOnt/jHpSqVkwnMGwGCSqGSIb3DQEJDzFfMF0wCwYJYIZIAWUDBAEqMAsGCWCG
+9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE0MDQyODIzMTg0MVowIwYJKoZIhvcNAQkEMRYEFNwU
+jmEgXyewQGL+JsJ8WHx0Ch4yMGwGCSqGSIb3DQEJDzFfMF0wCwYJYIZIAWUDBAEqMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzAOBggqhkiG9w0DAgICAIAwDQYIKoZIhvcNAwICAUAwBwYF
 Kw4DAgcwDQYIKoZIhvcNAwICASgwgaQGCSsGAQQBgjcQBDGBljCBkzCBjDELMAkGA1UEBhMC
 SUwxFjAUBgNVBAoTDVN0YXJ0Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENl
@@ -420,16 +165,16 @@ cnRpZmljYXRlIFNpZ25pbmcxODA2BgNVBAMTL1N0YXJ0Q29tIENsYXNzIDIgUHJpbWFyeSBJ
 bnRlcm1lZGlhdGUgQ2xpZW50IENBAgIm1TCBpgYLKoZIhvcNAQkQAgsxgZaggZMwgYwxCzAJ
 BgNVBAYTAklMMRYwFAYDVQQKEw1TdGFydENvbSBMdGQuMSswKQYDVQQLEyJTZWN1cmUgRGln
 aXRhbCBDZXJ0aWZpY2F0ZSBTaWduaW5nMTgwNgYDVQQDEy9TdGFydENvbSBDbGFzcyAyIFBy
-aW1hcnkgSW50ZXJtZWRpYXRlIENsaWVudCBDQQICJtUwDQYJKoZIhvcNAQEBBQAEggIAgmeO
-8MBREWy0L9Wn7rNlBGJkK/qWcSsJX2z4Hbl0voltM3AsXxJE0y+XFsIMyiaxhcazK9zHc8Ib
-5gJ14gv2grp64aclIAYA1YGmbh8R1/ZptEczgKn9laaxBcXfPVxIa1kRkGvMPq+oOx6sbRUX
-f5g2aCCHeUYZDMkdir5jZpf6FVWZulAuJX5w4YNqbopMVKy2qZLxZ8djM9Dvh+BXbIRTgtge
-s7U8UruvJ5T8abGbn/3jsknJymnf+rq3cxUxdmvjJ4J0IrDJzmFMa3KIVTspJ1qGsmtWPok5
-1eoQMMFbDkWniOqlnBHmHV3rquBvrgtw+j8zOL6oTp5B1Bi6c5dtji3PDdXsHgTSdhacQd5O
-Mna4hDz7WB6ll/3F/yRK5qajkapGmSgY2vHC3djvF69kmRZ3N0W0joDS8HNvBbW1YgwDzGdF
-gZOjdTB/cOS6a/NyWp3vaWpUde5fxrh+GqcGP0YOQjAYlQdp9d+fx8zZhikcup+oLFBsbJ4K
-N7sCSFuWhJ+1g6MGL1XgOzQRoq31nmdFc765K0o0ZhgfMCZCYjow+nKDO0jFf/I6HaWTA+zn
-BDLC6epZFfPDYdeMoA0gKoZKZ0uYo4t7CtX17YIBpTKcGOno4Z5Rq+ET4yr8wbshFaXoWad0
-62YSfXwSJs02rawh0sE2D4Cdc4Z+AGwAAAAAAAA=
---------------ms010101010700010301050603--
+aW1hcnkgSW50ZXJtZWRpYXRlIENsaWVudCBDQQICJtUwDQYJKoZIhvcNAQEBBQAEggIAquMT
+MDgKcaiLHFel/7KWsuDjgz2x803TBjcxPc96ySVJcyABGMkzKGwyw0GfsryOBPoHOYub95P0
+Qa1W17W5zU90WbQoKOdOuQpUTVnAoOf/SfrdmZViq19WfOAdyHMKZXhaSCp5cpvIgEhTzeiZ
+lplxp+Af3+R8AoV/3UP9HmNk30g0fyD/YNqWlvopvoleXu6HyODl7O4SnV1asMzDDODkPIxx
+ReqbCwLHgMizj4/gHQQGASAP1/ug6jUSsU3dCOJ/ZqwYw6hAgPfLhRKc7VgUH4sX34K297GY
+2Sg4IJI1MqsExcfxAMLki9cPB0qJYkBGth8I4gW+kWP7wMZqM4RTYff3PfvSTPDGJaiDsj66
+MDql2Iss1F1g/GI5wxy3Xsl6LkC0jAP/Nox6lS0Ca5noK+wcHc1p/pZ5gvdI6M5KzHwTfyAW
+FA5cvXg/GeQlhE62cGfqktwmrXVycEU+FpGrzMTWHDgGoC7DVclUCeQ29vU2CgjuWjWwOuLk
+HZ27u48ZeV3WO2SSdW6MHLncB2fvBkz+TuAjn/8XFtGZtOOGCGwZ901v1P4FMC1Pt5/U9Qxj
+12dfkpXykCuXj7nOY2+3BLvzPA72M9GcTpJbDzxmovvwdeLrAsqj8EtoqS112qOeT9Yilne3
+FhlZrfANYA8i1d0c5vOkphONfelnWLkAAAAAAAA=
+--------------ms040507030907040307090200--
 
