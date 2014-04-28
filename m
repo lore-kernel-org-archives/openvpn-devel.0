@@ -1,14 +1,13 @@
-Message-ID: <535E7A16.2060905@...1901...>
-Date: Mon, 28 Apr 2014 11:56:06 -0400
-From: Timothe Litt <litt@...1901...>
+Message-ID: <535EB49E.5090809@...1856...>
+Date: Mon, 28 Apr 2014 22:05:50 +0200
+From: Steffan Karger <steffan@...1856...>
 MIME-Version: 1.0
-References: <53593C96.1040404@...1901...>
-	<201404281504.s3SF4A96017619@...309...>
-	<20140428152231.GT16637@...1296...>
-In-Reply-To: <20140428152231.GT16637@...1296...>
-Content-Type: multipart/signed; protocol="application/pkcs7-signature";
-	micalg=sha1; boundary="------------ms080703070500090701080405"
-Subject: Re: [Openvpn-devel] Topics for today's community meeting
+References: <1398588561-18964-1-git-send-email-steffan@...1856...>
+	<201404271322.s3RDM5qu017603@...1295...>
+In-Reply-To: <201404271322.s3RDM5qu017603@...1295...>
+Content-Type: multipart/mixed; boundary="------------060107010707080904020008"
+Subject: Re: [Openvpn-devel] [PATCH applied] Re: Make serial env exporting
+ consistent amongst OpenSSL and PolarSSL builds.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,159 +16,236 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: George Ross <gdmr@...308...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
-This is a cryptographically signed message in MIME format.
+This is a multi-part message in MIME format.
+--------------060107010707080904020008
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 
---------------ms080703070500090701080405
-Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
-Content-Transfer-Encoding: quoted-printable
+Hi,
 
->   "why is it breaking for you
-> in particular, while it works for other Linux users just fine" (half
-> of my testbed is Linux...)
-Indeed, that is the interesting question.    This has to do with how the=20
-client certificate is signed by the client, which in TLS1.2 is=20
-negotiated between the client and server - and depends on the=20
-available/selected ciphers.
+On 27-04-14 15:22, Gert Doering wrote:
+> Your patch has been applied to the master branch ONLY, as it doesn't
+> work with PolarSSL 1.2 (no "x509_crt" type there) - so 2.3.x still has
+> inconsistency here.
 
-As I wrote here: http://sourceforge.net/p/openvpn/mailman/message/32265218/=
-, I believe I know where this is coming from, just not why.
-I'd like to set a breakpoint in the client and forward/back track to find o=
-ut.
+Right, different PolarSSL API. Attached a reworked patch for 2.3. Same
+functionality, slightly different API calls.
 
-George: One way to do that would be what I suggested here:  http://sourcefo=
-rge.net/p/openvpn/mailman/message/32264919/
+-Steffan
 
-Is this feasible?  At this point, I think it would be the most efficient wa=
-y to proceed.
+--------------060107010707080904020008
+Content-Type: text/x-patch;
+	name="0001-Make-serial-env-exporting-consistent-amongst-OpenSSL.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+	filename*0="0001-Make-serial-env-exporting-consistent-amongst-OpenSSL.pa";
+	filename*1="tch"
 
-I could give you instructions for creating a process dump - but a dump file=
- would have more secrets in it than what I suggested.
+From 52d5f5a76dc70e20da740acd347cbdaab40b60df Mon Sep 17 00:00:00 2001
+From: Steffan Karger <steffan@...1856...>
+Date: Mon, 28 Apr 2014 21:50:22 +0200
+Subject: [PATCH] Make serial env exporting consistent amongst OpenSSL and
+ PolarSSL builds.
 
-The two referenced mail messages are as far as I got by inspection.
+This changes the representation of the tls_serial_{n} environment variable
+from hex to decimal for PolarSSL builds, to match OpenSSL build behaviour.
+
+Because hex representation for serials makes sense too, and to ease
+transition for PolarSSL users, added tls_serial_hex_{n} that exports the
+serial in hex represenation for both crypto library backends.
+
+Signed-off-by: Steffan Karger <steffan@...1856...>
+---
+ doc/openvpn.8                     |  6 ++++++
+ src/openvpn/ssl_verify.c          |  9 +++++++--
+ src/openvpn/ssl_verify_backend.h  | 21 +++++++++++++++++---
+ src/openvpn/ssl_verify_openssl.c  | 10 +++++++++-
+ src/openvpn/ssl_verify_polarssl.c | 42 ++++++++++++++++++++++++++++++++++++++-
+ 5 files changed, 81 insertions(+), 7 deletions(-)
+
+diff --git a/doc/openvpn.8 b/doc/openvpn.8
+index 7a33f8a..585751b 100644
+--- a/doc/openvpn.8
++++ b/doc/openvpn.8
+@@ -6048,6 +6048,12 @@ code should check that.
+ See the contrib/OCSP_check/OCSP_check.sh script for an example.
+ .\"*********************************************************
+ .TP
++.B tls_serial_hex_{n}
++Like
++.B tls_serial_{n}\fR,
++but in hex form (e.g. "12:34:56:78:9A").
++.\"*********************************************************
++.TP
+ .B tun_mtu
+ The MTU of the TUN/TAP device.
+ Set prior to
+diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
+index 0670f2a..c90c2c3 100644
+--- a/src/openvpn/ssl_verify.c
++++ b/src/openvpn/ssl_verify.c
+@@ -435,10 +435,15 @@ verify_cert_set_env(struct env_set *es, openvpn_x509_cert_t *peer_cert, int cert
+   }
+ 
+   /* export serial number as environmental variable */
+-  serial = x509_get_serial(peer_cert, &gc);
++  serial = backend_x509_get_serial(peer_cert, &gc);
+   openvpn_snprintf (envname, sizeof(envname), "tls_serial_%d", cert_depth);
+   setenv_str (es, envname, serial);
+ 
++  /* export serial number in hex as environmental variable */
++  serial = backend_x509_get_serial_hex(peer_cert, &gc);
++  openvpn_snprintf (envname, sizeof(envname), "tls_serial_hex_%d", cert_depth);
++  setenv_str (es, envname, serial);
++
+   gc_free(&gc);
+ }
+ 
+@@ -562,7 +567,7 @@ verify_check_crl_dir(const char *crl_dir, openvpn_x509_cert_t *cert)
+   int fd = -1;
+   struct gc_arena gc = gc_new();
+ 
+-  char *serial = x509_get_serial(cert, &gc);
++  char *serial = backend_x509_get_serial(cert, &gc);
+ 
+   if (!openvpn_snprintf(fn, sizeof(fn), "%s%c%s", crl_dir, OS_SPECIFIC_DIRSEP, serial))
+     {
+diff --git a/src/openvpn/ssl_verify_backend.h b/src/openvpn/ssl_verify_backend.h
+index 1658cc0..6f118c9 100644
+--- a/src/openvpn/ssl_verify_backend.h
++++ b/src/openvpn/ssl_verify_backend.h
+@@ -113,16 +113,31 @@ result_t x509_get_username (char *common_name, int cn_len,
+     char * x509_username_field, openvpn_x509_cert_t *peer_cert);
+ 
+ /*
+- * Return the certificate's serial number.
++ * Return the certificate's serial number in decimal string representation.
+  *
+  * The serial number is returned as a string, since it might be a bignum.
+  *
+  * @param cert		Certificate to retrieve the serial number from.
+  * @param gc		Garbage collection arena to use when allocating string.
+  *
+- * @return 		The certificate's serial number.
++ * @return 		String representation of the certificate's serial number
++ * 			in decimal notation, or NULL on error.
+  */
+-char *x509_get_serial (openvpn_x509_cert_t *cert, struct gc_arena *gc);
++char *backend_x509_get_serial (openvpn_x509_cert_t *cert, struct gc_arena *gc);
++
++/*
++ * Return the certificate's serial number in hex string representation.
++ *
++ * The serial number is returned as a string, since it might be a bignum.
++ *
++ * @param cert		Certificate to retrieve the serial number from.
++ * @param gc		Garbage collection arena to use when allocating string.
++ *
++ * @return 		String representation of the certificate's serial number
++ * 			in hex notation, or NULL on error.
++ */
++char *backend_x509_get_serial_hex (openvpn_x509_cert_t *cert,
++    struct gc_arena *gc);
+ 
+ /*
+  * Save X509 fields to environment, using the naming convention:
+diff --git a/src/openvpn/ssl_verify_openssl.c b/src/openvpn/ssl_verify_openssl.c
+index 91a42b2..19982ae 100644
+--- a/src/openvpn/ssl_verify_openssl.c
++++ b/src/openvpn/ssl_verify_openssl.c
+@@ -220,7 +220,7 @@ x509_get_username (char *common_name, int cn_len,
+ }
+ 
+ char *
+-x509_get_serial (openvpn_x509_cert_t *cert, struct gc_arena *gc)
++backend_x509_get_serial (openvpn_x509_cert_t *cert, struct gc_arena *gc)
+ {
+   ASN1_INTEGER *asn1_i;
+   BIGNUM *bignum;
+@@ -238,6 +238,14 @@ x509_get_serial (openvpn_x509_cert_t *cert, struct gc_arena *gc)
+   return serial;
+ }
+ 
++char *
++backend_x509_get_serial_hex (openvpn_x509_cert_t *cert, struct gc_arena *gc)
++{
++  const ASN1_INTEGER *asn1_i = X509_get_serialNumber(cert);
++
++  return format_hex_ex(asn1_i->data, asn1_i->length, 0, 1, ":", gc);
++}
++
+ unsigned char *
+ x509_get_sha1_hash (X509 *cert, struct gc_arena *gc)
+ {
+diff --git a/src/openvpn/ssl_verify_polarssl.c b/src/openvpn/ssl_verify_polarssl.c
+index 5db4f02..3fd861c 100644
+--- a/src/openvpn/ssl_verify_polarssl.c
++++ b/src/openvpn/ssl_verify_polarssl.c
+@@ -38,6 +38,8 @@
+ #if defined(ENABLE_SSL) && defined(ENABLE_CRYPTO_POLARSSL)
+ 
+ #include "ssl_verify.h"
++#include <polarssl/error.h>
++#include <polarssl/bignum.h>
+ #include <polarssl/sha1.h>
+ 
+ #define MAX_SUBJECT_LENGTH 256
+@@ -123,11 +125,49 @@ x509_get_username (char *cn, int cn_len,
+ }
+ 
+ char *
+-x509_get_serial (x509_cert *cert, struct gc_arena *gc)
++backend_x509_get_serial (openvpn_x509_cert_t *cert, struct gc_arena *gc)
+ {
+   int ret = 0;
+   int i = 0;
+   char *buf = NULL;
++  size_t buflen = 0;
++  mpi serial_mpi = { 0 };
++  int retval = 0;
++
++  /* Transform asn1 integer serial into PolarSSL MPI */
++  mpi_init(&serial_mpi);
++  retval = mpi_read_binary(&serial_mpi, cert->serial.p, cert->serial.len);
++  if (retval < 0)
++    {
++      char errbuf[128];
++      error_strerror(retval, errbuf, sizeof(errbuf));
++
++      msg(M_WARN, "Failed to retrieve serial from certificate: %s.", errbuf);
++      return NULL;
++    }
++
++  /* Determine decimal representation length, allocate buffer */
++  mpi_write_string(&serial_mpi, 10, buf, &buflen);
++  buf = gc_malloc(buflen, true, gc);
++
++  /* Write MPI serial as decimal string into buffer */
++  retval = mpi_write_string(&serial_mpi, 10, buf, &buflen);
++  if (retval < 0)
++    {
++      char errbuf[128];
++      error_strerror(retval, errbuf, sizeof(errbuf));
++
++      msg(M_WARN, "Failed to write serial to string: %s.", errbuf);
++      return NULL;
++    }
++
++  return buf;
++}
++
++char *
++backend_x509_get_serial_hex (openvpn_x509_cert_t *cert, struct gc_arena *gc)
++{
++  char *buf = NULL;
+   size_t len = cert->serial.len * 3 + 1;
+ 
+   buf = gc_malloc(len, true, gc);
+-- 
+1.9.1
 
 
-On 28-Apr-14 11:22, Gert Doering wrote:
-> Hi,
->
-> On Mon, Apr 28, 2014 at 04:04:10PM +0100, George Ross wrote:
->> OK, with the attached patch it does appear to work for me.  I'll give it
->> some more exercise tomorrow morning, but in a quick test the tunnel does
->> now appear to come up properly.
-> Thanks.  That confirms the theory "it's the TLS negotiation patch", and
-> in particular "TLS 1.1 works, TLS 1.2 breaks".
->
-> Now the even more interesting question is "why is it breaking for you
-> in particular, while it works for other Linux users just fine" (half
-> of my testbed is Linux...)
->
-> gert
-
-
-
---------------ms080703070500090701080405
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
-
-MIAGCSqGSIb3DQEHAqCAMIACAQExCzAJBgUrDgMCGgUAMIAGCSqGSIb3DQEHAQAAoIIPDzCC
-BjQwggQcoAMCAQICASAwDQYJKoZIhvcNAQEFBQAwfTELMAkGA1UEBhMCSUwxFjAUBgNVBAoT
-DVN0YXJ0Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNp
-Z25pbmcxKTAnBgNVBAMTIFN0YXJ0Q29tIENlcnRpZmljYXRpb24gQXV0aG9yaXR5MB4XDTA3
-MTAyNDIxMDI1NVoXDTE3MTAyNDIxMDI1NVowgYwxCzAJBgNVBAYTAklMMRYwFAYDVQQKEw1T
-dGFydENvbSBMdGQuMSswKQYDVQQLEyJTZWN1cmUgRGlnaXRhbCBDZXJ0aWZpY2F0ZSBTaWdu
-aW5nMTgwNgYDVQQDEy9TdGFydENvbSBDbGFzcyAyIFByaW1hcnkgSW50ZXJtZWRpYXRlIENs
-aWVudCBDQTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAMsohUWcASz7GfKrpTOM
-KqANy9BV7V0igWdGxA8IU77L3aTxErQ+fcxtDYZ36Z6GH0YFn7fq5RADteP0AYzrCA+EQTfi
-8q1+kA3m0nwtwXG94M5sIqsvs7lRP1aycBke/s5g9hJHryZ2acScnzczjBCAo7X1v5G3yw8M
-DP2m2RCye0KfgZ4nODerZJVzhAlOD9YejvAXZqHksw56HzElVIoYSZ3q4+RJuPXXfIoyby+Y
-2m1E+YzX5iCZXBx05gk6MKAW1vaw4/v2OOLy6FZH3XHHtOkzUreG//CsFnB9+uaYSlR65cdG
-zTsmoIK8WH1ygoXhRBm98SD7Hf/r3FELNvUCAwEAAaOCAa0wggGpMA8GA1UdEwEB/wQFMAMB
-Af8wDgYDVR0PAQH/BAQDAgEGMB0GA1UdDgQWBBSuVYNv7DHKufcd+q9rMfPIHeOsuzAfBgNV
-HSMEGDAWgBROC+8apEBbpRdphzDKNGhD0EGu8jBmBggrBgEFBQcBAQRaMFgwJwYIKwYBBQUH
-MAGGG2h0dHA6Ly9vY3NwLnN0YXJ0c3NsLmNvbS9jYTAtBggrBgEFBQcwAoYhaHR0cDovL3d3
-dy5zdGFydHNzbC5jb20vc2ZzY2EuY3J0MFsGA1UdHwRUMFIwJ6AloCOGIWh0dHA6Ly93d3cu
-c3RhcnRzc2wuY29tL3Nmc2NhLmNybDAnoCWgI4YhaHR0cDovL2NybC5zdGFydHNzbC5jb20v
-c2ZzY2EuY3JsMIGABgNVHSAEeTB3MHUGCysGAQQBgbU3AQIBMGYwLgYIKwYBBQUHAgEWImh0
-dHA6Ly93d3cuc3RhcnRzc2wuY29tL3BvbGljeS5wZGYwNAYIKwYBBQUHAgEWKGh0dHA6Ly93
-d3cuc3RhcnRzc2wuY29tL2ludGVybWVkaWF0ZS5wZGYwDQYJKoZIhvcNAQEFBQADggIBADqp
-Jw3I07QWke9plNBpxUxcffc7nUrIQpJHDci91DFG7fVhHRkMZ1J+BKg5UNUxIFJ2Z9B90Mic
-c/NXcs7kPBRdn6XGO/vPc87Y6R+cWS9Nc9+fp3Enmsm94OxOwI9wn8qnr/6o3mD4noP9Jphw
-UPTXwHovjavRnhUQHLfo/i2NG0XXgTHXS2Xm0kVUozXqpYpAdumMiB/vezj1QHQJDmUdPYMc
-p+reg9901zkyT3fDW/ivJVv6pWtkh6Pw2ytZT7mvg7YhX3V50Nv860cV11mocUVcqBLv0gcT
-+HBDYtbuvexNftwNQKD5193A7zN4vG7CTYkXxytSjKuXrpEatEiFPxWgb84nVj25SU5q/r1X
-hwby6mLhkbaXslkVtwEWT3Van49rKjlK4XrUKYYWtnfzq6aSak5u0Vpxd1rY79tWhD3EdCvO
-hNz/QplNa+VkIsrcp7+8ZhP1l1b2U6MaxIVteuVMD3X0vziIwr7jxYae9FZjbxlpUemqXjcC
-0QaFfN7qI0JsQMALL7iGRBg7K0CoOBzECdD3fuZil5kU/LP9cr1BK31U0Uy651bFnAMMMkqh
-AChIbn0ei72VnbpSsrrSdF0BAGYQ8vyHae5aCg+H75dVCV33K6FuxZrf09yTz+Vx/PkdRUYk
-XmZz/OTfyJXsUOUXrym6KvI2rYpccSk5MIII0zCCB7ugAwIBAgICJtUwDQYJKoZIhvcNAQEF
-BQAwgYwxCzAJBgNVBAYTAklMMRYwFAYDVQQKEw1TdGFydENvbSBMdGQuMSswKQYDVQQLEyJT
-ZWN1cmUgRGlnaXRhbCBDZXJ0aWZpY2F0ZSBTaWduaW5nMTgwNgYDVQQDEy9TdGFydENvbSBD
-bGFzcyAyIFByaW1hcnkgSW50ZXJtZWRpYXRlIENsaWVudCBDQTAeFw0xMjA5MjUxODQyMTha
-Fw0xNDA5MjcxOTIyNDJaMIGQMRkwFwYDVQQNExBPZ3RBNVhZZXZheGFkbGtKMQswCQYDVQQG
-EwJVUzEWMBQGA1UECBMNTWFzc2FjaHVzZXR0czEVMBMGA1UEBxMMU291dGhib3JvdWdoMRUw
-EwYDVQQDEwxUaW1vdGhlIExpdHQxIDAeBgkqhkiG9w0BCQEWEXRpbW90aGVAbGl0dHMubmV0
-MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEA38JrSHJ7GVdQiTppuafIBrhphuLL
-HAmpeAFNvUBuUUh4X8Nx4Ag03hrC/B7OWYpUJI1HgWCK/eMtKEWF7UMwFhkMeqWSdrZyb4uk
-EqTf46SyyAghF6BGuuVTiptED63FwzQY2PTXCmAJviuRXoJMzlhAwzUFpsWTFhswigFLrMCn
-kJ9nndqnxQmMFpD7pjJ6kFkxKz/5k1CEzAfSerWHkIOBuXFyYpDDgDFXN1+qF25HsVVw+4xT
-1/tNvCEVQ9WAleUznLvWgT5sV8tTewsUiYOgSqyoHiuJCOc9YJF2pUHGZVV+WzS8YIb95ax5
-5yoS+C3D3FFzl6CbcI3nc6csqkP4bNBqm96Z/WdfTV4ouoycI4N9AJ86l6/Ygjz3/juFI9ni
-as8nE051hksnyCon87fyP3/NezZ9NcUYVUnki1cVhfh2cN+s79fGWbUJePjT0fmso0FVcSRp
-ddLyeZladbifFG+TiQO9BFt97e16OwyFpXRIzZWnfEiG2ss51Vpv9au8RrLgBD07aKE3mzZp
-xZzoZ8c/jgb1YcUyAyaVmdOk4A3eGe7c8Loa+eYIRwkbjoE6H/PKcoRNIqnYQ44zvOOONRDI
-S3vBpzofVK5Ndx0NVDIvsbWEPb9ntR32taUUZ334SPN447UO3sjvItFg1oOuC1i6kL6l1vRM
-GNouPvECAwEAAaOCBDcwggQzMAkGA1UdEwQCMAAwCwYDVR0PBAQDAgSwMB0GA1UdJQQWMBQG
-CCsGAQUFBwMCBggrBgEFBQcDBDAdBgNVHQ4EFgQUJZNwH8x9MtxbZmI9AK6Jj+IELcowHwYD
-VR0jBBgwFoAUrlWDb+wxyrn3HfqvazHzyB3jrLswgaYGA1UdEQSBnjCBm4ERdGltb3RoZUBs
-aXR0cy5uZXSBEXRpbW90aGVAbGl0dHMubmV0gQxsaXR0QGFjbS5vcmeBDWxpdHRAaWVlZS5v
-cmeBFGhvc3RtYXN0ZXJAbGl0dHMubmV0gRdsaXR0c25ldGFkbWluQGxpdHRzLm5ldIETd2lr
-aWFkbWluQGxpdHRzLm5ldIESc2VjdXJpdHlAbGl0dHMubmV0MIICIQYDVR0gBIICGDCCAhQw
-ggIQBgsrBgEEAYG1NwECAjCCAf8wLgYIKwYBBQUHAgEWImh0dHA6Ly93d3cuc3RhcnRzc2wu
-Y29tL3BvbGljeS5wZGYwNAYIKwYBBQUHAgEWKGh0dHA6Ly93d3cuc3RhcnRzc2wuY29tL2lu
-dGVybWVkaWF0ZS5wZGYwgfcGCCsGAQUFBwICMIHqMCcWIFN0YXJ0Q29tIENlcnRpZmljYXRp
-b24gQXV0aG9yaXR5MAMCAQEagb5UaGlzIGNlcnRpZmljYXRlIHdhcyBpc3N1ZWQgYWNjb3Jk
-aW5nIHRvIHRoZSBDbGFzcyAyIFZhbGlkYXRpb24gcmVxdWlyZW1lbnRzIG9mIHRoZSBTdGFy
-dENvbSBDQSBwb2xpY3ksIHJlbGlhbmNlIG9ubHkgZm9yIHRoZSBpbnRlbmRlZCBwdXJwb3Nl
-IGluIGNvbXBsaWFuY2Ugb2YgdGhlIHJlbHlpbmcgcGFydHkgb2JsaWdhdGlvbnMuMIGcBggr
-BgEFBQcCAjCBjzAnFiBTdGFydENvbSBDZXJ0aWZpY2F0aW9uIEF1dGhvcml0eTADAgECGmRM
-aWFiaWxpdHkgYW5kIHdhcnJhbnRpZXMgYXJlIGxpbWl0ZWQhIFNlZSBzZWN0aW9uICJMZWdh
-bCBhbmQgTGltaXRhdGlvbnMiIG9mIHRoZSBTdGFydENvbSBDQSBwb2xpY3kuMDYGA1UdHwQv
-MC0wK6ApoCeGJWh0dHA6Ly9jcmwuc3RhcnRzc2wuY29tL2NydHUyLWNybC5jcmwwgY4GCCsG
-AQUFBwEBBIGBMH8wOQYIKwYBBQUHMAGGLWh0dHA6Ly9vY3NwLnN0YXJ0c3NsLmNvbS9zdWIv
-Y2xhc3MyL2NsaWVudC9jYTBCBggrBgEFBQcwAoY2aHR0cDovL2FpYS5zdGFydHNzbC5jb20v
-Y2VydHMvc3ViLmNsYXNzMi5jbGllbnQuY2EuY3J0MCMGA1UdEgQcMBqGGGh0dHA6Ly93d3cu
-c3RhcnRzc2wuY29tLzANBgkqhkiG9w0BAQUFAAOCAQEAXJ5dj2hKDwAh3aPsYWSJdC6PE7O2
-u4pZz4H1mucRf3ZLoLjrAMhtINAqrWkvfiOTWQruNpQAXL+Gb6pk5sDoSXwISbPraVMb4uCS
-g++F/XTCvqfsCitXd6Jhl5dyV0pi2MwmHyrBsjsER1EwA+39av+cfoL0gKuJy5y92wRt0It8
-Eu77N5HaMlDlxEXXTQWP5Q2g7IZy+/ZeeG8FjrUM/bmwyvdb3mBreKgL2mZHnG+mf09IDACG
-9ogoV2xJNQ0lRHxH5NJ/XGSztQACboxl3wK/t86Vhh6i1JeaLMcJ5oaemxdATK0NZVk/hIK0
-hXGzTMVw1xoP/9LSYyoRD6yypzGCBNowggTWAgEBMIGTMIGMMQswCQYDVQQGEwJJTDEWMBQG
-A1UEChMNU3RhcnRDb20gTHRkLjErMCkGA1UECxMiU2VjdXJlIERpZ2l0YWwgQ2VydGlmaWNh
-dGUgU2lnbmluZzE4MDYGA1UEAxMvU3RhcnRDb20gQ2xhc3MgMiBQcmltYXJ5IEludGVybWVk
-aWF0ZSBDbGllbnQgQ0ECAibVMAkGBSsOAwIaBQCgggIbMBgGCSqGSIb3DQEJAzELBgkqhkiG
-9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE0MDQyODE1NTYwNlowIwYJKoZIhvcNAQkEMRYEFBwc
-jzz6dXLEWdCNKoALtQ+JmbI9MGwGCSqGSIb3DQEJDzFfMF0wCwYJYIZIAWUDBAEqMAsGCWCG
-SAFlAwQBAjAKBggqhkiG9w0DBzAOBggqhkiG9w0DAgICAIAwDQYIKoZIhvcNAwICAUAwBwYF
-Kw4DAgcwDQYIKoZIhvcNAwICASgwgaQGCSsGAQQBgjcQBDGBljCBkzCBjDELMAkGA1UEBhMC
-SUwxFjAUBgNVBAoTDVN0YXJ0Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENl
-cnRpZmljYXRlIFNpZ25pbmcxODA2BgNVBAMTL1N0YXJ0Q29tIENsYXNzIDIgUHJpbWFyeSBJ
-bnRlcm1lZGlhdGUgQ2xpZW50IENBAgIm1TCBpgYLKoZIhvcNAQkQAgsxgZaggZMwgYwxCzAJ
-BgNVBAYTAklMMRYwFAYDVQQKEw1TdGFydENvbSBMdGQuMSswKQYDVQQLEyJTZWN1cmUgRGln
-aXRhbCBDZXJ0aWZpY2F0ZSBTaWduaW5nMTgwNgYDVQQDEy9TdGFydENvbSBDbGFzcyAyIFBy
-aW1hcnkgSW50ZXJtZWRpYXRlIENsaWVudCBDQQICJtUwDQYJKoZIhvcNAQEBBQAEggIAVILr
-gFtCCUB/ulHuMoAxtZFJrwf+fQonLOJ03mPhzvcEg+/MB9V8bczTOrOutemzEXC50FfYRDFO
-jrJR1dt6w2QrZNp0GVrpecUuty/m64YEku1ugdc47s2Tjluy8t8P/UumCE+/vQKc74ashYCr
-A+lK806ZpROVKOZ8mgRKTer1PHe+IVYXGCEmekkDj2uonU6VmYK2WwIojdApKRoOiuU9xb/v
-Hq8K2vKN3OJyrD33NxKmHMjzhuarQ7YJ7DRDoXjioWtHkbA9GnC1e09eFZFNZKpMTjHXJFAV
-EvlIrNpnjwaJzZTg4uJ6I60lLto1qTU0iDGMU6joDoAxE+OogePaQB1VAl2PTZd3kXsBHhFb
-UKlc78Hey50KcnrukSL6tGs5HzhTAfKSbj2O2GqJQCF60rU87UZHBTUe+Pp+8ENIPZ5/YhcG
-gtT3WhCe6kFaxVDzhK0EmrfeP+2yu+yXnwqL42DraqZ3TPNfIKXEDEgQVJPB2ueYfnnsZ4rZ
-WfSS5lfRWt+/EwfBRZX4Scsjc3HYbhOtL8tyYnRFu0Hpvo9bVWTh+Y2WWb9UWcWnMKUP2PeD
-yJhLQ+4Yi0XgAx/TDJXMs4PPI30HWt5Zb7mitI3hvakS7Y23uIEqUpR6Vg1tA4baGnO/j8pP
-tx1zpy9gYUnFoy1ctyIW5sWd5fghUIsAAAAAAAA=
---------------ms080703070500090701080405--
+--------------060107010707080904020008--
 
