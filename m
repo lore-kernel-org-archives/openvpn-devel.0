@@ -1,11 +1,13 @@
-Message-Id: <201404281504.s3SF4A96017619@...309...>
-In-Reply-To: Your message of "Thu, 24 Apr 2014 12:32:22 EDT."
-	<53593C96.1040404@...1901...>
+Date: Mon, 28 Apr 2014 17:22:32 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20140428152231.GT16637@...1296...>
+References: <53593C96.1040404@...1901...>
+	<201404281504.s3SF4A96017619@...309...>
 Mime-Version: 1.0
-Content-Type: multipart/mixed; boundary="----------=_1398697450-26302-2"
-Content-Transfer-Encoding: binary
-Date: Mon, 28 Apr 2014 16:04:10 +0100
-From: George Ross <gdmr@...308...>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="bniG9LpkhGP4pQp3"
+Content-Disposition: inline
+In-Reply-To: <201404281504.s3SF4A96017619@...309...>
 Subject: Re: [Openvpn-devel] Topics for today's community meeting
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -15,115 +17,49 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Timothe Litt <litt@...1901...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: George Ross <gdmr@...308...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, Timothe Litt <litt@...1901...>
 
-This is a multi-part message in MIME format...
-
-------------=_1398697450-26302-2
-Received: from eden.inf.ed.ac.uk (eden.inf.ed.ac.uk [129.215.24.11])
-	by crunchie.inf.ed.ac.uk (8.14.4/8.14.4) with ESMTP id s3SF49GR021562; 
-	Mon, 28 Apr 2014 16:04:09 +0100
-Received: from eden.inf.ed.ac.uk (localhost [127.0.0.1])
-	by eden.inf.ed.ac.uk (8.14.4/8.14.4) with ESMTP id s3SF4A96017619;
-	Mon, 28 Apr 2014 16:04:10 +0100
-Message-Id: <201404281504.s3SF4A96017619@...309...>
-X-Mailer: exmh version CVS-20111221 with nmh-1.3
-X-Image-Url: http://homepages.inf.ed.ac.uk/gdmr/gdmr.tif
-X-Url: http://homepages.inf.ed.ac.uk/gdmr/
-X-Pgp-Keyid: AD758CC5
-X-Pgp-Fingerprint: B91E D430 1E0D 5883 EF6A  426C B676 5C2B AD75 8CC5
-X-Pgp-Url: http://homepages.inf.ed.ac.uk/gdmr/PGP-DSA-key.asc
-To: Timothe Litt <litt@...1901...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-Subject: Re: [Openvpn-devel] Topics for today's community meeting
-In-Reply-To: Your message of "Thu, 24 Apr 2014 12:32:22 EDT."
-	<53593C96.1040404@...1901...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; boundary="==_Exmh_1398697450_8243P";
-	micalg=pgp-sha1; protocol="application/pgp-signature"
-Content-Transfer-Encoding: 7bit
-Date: Mon, 28 Apr 2014 16:04:10 +0100
-From: George Ross <gdmr@...308...>
-
---==_Exmh_1398697450_8243P
-Content-Type: multipart/mixed ;
-	boundary="==_Exmh_1398697283_82430"
-
-This is a multipart MIME message.
-
---==_Exmh_1398697283_82430
-Content-Type: text/plain; charset=us-ascii
+--bniG9LpkhGP4pQp3
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
-> Any of the suggested patches should determine that.  The quickest and
-> simplest is in
->
-> src/openvpn/ssl_openssl.c
-> ...
+Hi,
 
-OK, with the attached patch it does appear to work for me.  I'll give it
-some more exercise tomorrow morning, but in a quick test the tunnel does
-now appear to come up properly.
+On Mon, Apr 28, 2014 at 04:04:10PM +0100, George Ross wrote:
+> OK, with the attached patch it does appear to work for me.  I'll give it
+> some more exercise tomorrow morning, but in a quick test the tunnel does
+> now appear to come up properly.
 
+Thanks.  That confirms the theory "it's the TLS negotiation patch", and
+in particular "TLS 1.1 works, TLS 1.2 breaks".
 
---==_Exmh_1398697283_82430
-Content-Type: text/plain ; name="openvpn-no-tls12-patch"; charset=us-ascii
-Content-Disposition: inline
-Content-Description: openvpn-no-tls12-patch
+Now the even more interesting question is "why is it breaking for you
+in particular, while it works for other Linux users just fine" (half
+of my testbed is Linux...)
 
---- openvpn-2.3.3/src/openvpn/ssl_openssl.c.dist	2014-04-28 15:40:11.000000000 +0100
-+++ openvpn-2.3.3/src/openvpn/ssl_openssl.c	2014-04-28 15:40:39.000000000 +0100
-@@ -208,6 +208,7 @@
-   /* process SSL options including minimum TLS version we will accept from peer */
-   {
-     long sslopt = SSL_OP_SINGLE_DH_USE | SSL_OP_NO_TICKET | SSL_OP_NO_SSLv2 | SSL_OP_NO_SSLv3;
-+    sslopt |= SSL_OP_NO_TLSv1_2;
-     const int tls_version_min = (ssl_flags >> SSLF_TLS_VERSION_SHIFT) & SSLF_TLS_VERSION_MASK;
-     if (tls_version_min > TLS_VER_1_0)
-       sslopt |= SSL_OP_NO_TLSv1;
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
---==_Exmh_1398697283_82430
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-
-George D M Ross MSc PhD CEng MBCS CITP, University of Edinburgh,
-School of Informatics, 10 Crichton Street, Edinburgh, Scotland, EH8 9AB
-Mail: gdmr@...308...   Voice: 0131 650 5147   Fax: 0131 650 6899
-PGP: 1024D/AD758CC5  B91E D430 1E0D 5883 EF6A  426C B676 5C2B AD75 8CC5
-
-The University of Edinburgh is a charitable body, registered in
-Scotland, with registration number SC005336.
-
---==_Exmh_1398697283_82430--
-
-
-
---==_Exmh_1398697450_8243P
+--bniG9LpkhGP4pQp3
 Content-Type: application/pgp-signature
 Content-Disposition: inline
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.14 (GNU/Linux)
-Comment: Exmh version 2.7.2 2005/01/04
+Version: GnuPG v1.4.13 (NetBSD)
 
-iEYEARECAAYFAlNebeoACgkQtnZcK611jMWclQCfSPHV5iNKUPGnOG/ZqMtL42iQ
-C/UAoIhwPvVJezdTZ7HkGUC4v6YX5BAn
-=OVLh
+iQCVAwUBU15yN6kuBuNlUUl1AQKczQP9FFihBIccsLq2yVqUUobnwkaT8725K5J+
+HlLp2gJxrfkenj4v/8OftBVcjso+yiWbQPfmpouhZp1MXk/daXs9zK3gpYHzZ7fp
+YhY/6yOPiws9hxxN7PjSv/XCVaIIX+3gqFl/jDpqRU0sa6uK6Z7IQnjFICj4pVIs
+hGGou/EfWfo=
+=9klu
 -----END PGP SIGNATURE-----
 
---==_Exmh_1398697450_8243P--
-
-------------=_1398697450-26302-2
-MIME-Version: 1.0
-X-Mailer: MIME-tools 5.420 (Entity 5.420)
-Content-Type: text/plain
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Content-Description: Edinburgh University charitable status
-
-The University of Edinburgh is a charitable body, registered in
-Scotland, with registration number SC005336.
-
-------------=_1398697450-26302-2--
+--bniG9LpkhGP4pQp3--
 
