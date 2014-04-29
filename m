@@ -1,9 +1,10 @@
-Message-ID: <53600550.1000905@...515...>
-Date: Tue, 29 Apr 2014 23:02:24 +0300
-From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] Help with testing OpenVPN 2.3.3 installers with
-	tap-windows6?
+Date: Tue, 29 Apr 2014 23:06:17 +0200 (CEST)
+Message-Id: <201404292106.s3TL6HHE020255@...1295...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <1391873629-14388-1-git-send-email-dt@...1411...>
+References: <1391873629-14388-1-git-send-email-dt@...1411...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix is_ipv6 in case of tap
+	interface.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,40 +13,36 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-15"
-Content-Transfer-Encoding: quoted-printable
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Dmitrij Tejblum <dt@...1411...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi all,
+ACK.  Sorry for the long delay.  
 
-I built OpenVPN 2.3.3 installers that contain tap-windows6 (NDIS 6) drivers:
+Tested against reference tap server with "--mssfix 1000", verified with 
+tcpdump without/with the patch and IPv4 and IPv6 TCP SYNs.
 
-<http://build.openvpn.net/downloads/temp/ndis6>
+Your patch has been applied to the master and release/2.3 branches.
 
-Note the build number, "605", where the first digit ("6") means "comes
-with an NDIS 6 driver".
+commit db037c20086587a609ef33127c15de080270f2cb (master)
+commit 7227af1131a5d7ae2ea4d8d1cd3cba3001440326 (release/2.3)
 
-I tested the 64-bit version on Win7 64-bit and it seemed to work ok, but
-my testing was anything but extensive.  So, if [some of] you happen to
-have a non-critical Windows box(es) lying around it'd be great if you
-could test whether the new driver works ok in your environment. I
-suggest removing any previous OpenVPN installations, installing the new
-package and then verifying the driver version using the Device Manager;
-the NDIS 5 driver version is 9.9.2, whereas this new driver is 9.21.0
+Author: Dmitrij Tejblum
+Date:   Sat Feb 8 19:33:49 2014 +0400
 
-Note that as tap-windows6 is still an unproven driver it can BSOD. We
-haven't experienced any problems with it, but it's best too keep that
-possibility in mind.
+     Fix is_ipv6 in case of tap interface.
 
-We will soon start offering the OpenVPN installer with NDIS 6-driver as
-an option and hopefully soon afterwards make them the default option for
-Windows Vista and above.
+     Signed-off-by: Dmitrij Tejblum <dt@...1411...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1391873629-14388-1-git-send-email-dt@...1411...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/8259
+     Signed-off-by: Gert Doering <gert@...1296...>
 
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
 
-irc freenode net: mattock
+--
+kind regards,
+
+Gert Doering
 
 
