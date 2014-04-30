@@ -1,11 +1,13 @@
-Message-ID: <5360E962.3010509@...515...>
-Date: Wed, 30 Apr 2014 15:15:30 +0300
-From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
+Message-ID: <5360E5F1.2010908@...1420...>
+Date: Wed, 30 Apr 2014 14:00:49 +0200
+From: Christian Rank <christian.rank@...1420...>
 MIME-Version: 1.0
 References: <mailman.136280.1398841893.2178.openvpn-devel@lists.sourceforge.net>
 	<mailman.136280.1398841893.2178.openvpn-devel.{0dae5f05-5c86-4434-9a1f-0755a01b1752}.0@lists.sourceforge.net>
-	<53600550.1000905@...515...> <5360E5F1.2010908@...1420...>
-In-Reply-To: <5360E5F1.2010908@...1420...>
+	<53600550.1000905@...515...>
+In-Reply-To: <53600550.1000905@...515...>
+Content-Type: multipart/signed; protocol="application/pkcs7-signature";
+	micalg=sha1; boundary="------------ms000505000509050106040608"
 Subject: Re: [Openvpn-devel] Help with testing OpenVPN 2.3.3 installers with
  tap-windows6? (Openvpn-devel Digest, Vol 95, Issue 44)
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -16,60 +18,161 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: samuli@...515...
+Cc: openvpn-devel@lists.sourceforge.net
+
+This is a cryptographically signed message in MIME format.
+
+--------------ms000505000509050106040608
 Content-Type: text/plain; charset="ISO-8859-15"
 Content-Transfer-Encoding: quoted-printable
-To: Christian Rank <christian.rank@...1420...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
+On 04/29/2014 10:02 PM, Samuli Sepp?nen wrote:
+> Hi all,
+>=20
+> I built OpenVPN 2.3.3 installers that contain tap-windows6 (NDIS 6) drive=
+rs:
+>=20
+> <http://build.openvpn.net/downloads/temp/ndis6>
+>=20
+> Note the build number, "605", where the first digit ("6") means "comes
+> with an NDIS 6 driver".
+>=20
+> I tested the 64-bit version on Win7 64-bit and it seemed to work ok, but
+> my testing was anything but extensive.  So, if [some of] you happen to
+> have a non-critical Windows box(es) lying around it'd be great if you
+> could test whether the new driver works ok in your environment. I
+> suggest removing any previous OpenVPN installations, installing the new
+> package and then verifying the driver version using the Device Manager;
+> the NDIS 5 driver version is 9.9.2, whereas this new driver is 9.21.0
+>=20
+> Note that as tap-windows6 is still an unproven driver it can BSOD. We
+> haven't experienced any problems with it, but it's best too keep that
+> possibility in mind.
+>=20
+> We will soon start offering the OpenVPN installer with NDIS 6-driver as
+> an option and hopefully soon afterwards make them the default option for
+> Windows Vista and above.
+>=20
 
-> On 04/29/2014 10:02 PM, Samuli Sepp?nen wrote:
->> Hi all,
->>
->> I built OpenVPN 2.3.3 installers that contain tap-windows6 (NDIS 6) driv=
-ers:
->>
->> <http://build.openvpn.net/downloads/temp/ndis6>
->>
->> Note the build number, "605", where the first digit ("6") means "comes
->> with an NDIS 6 driver".
->>
->> I tested the 64-bit version on Win7 64-bit and it seemed to work ok, but
->> my testing was anything but extensive.  So, if [some of] you happen to
->> have a non-critical Windows box(es) lying around it'd be great if you
->> could test whether the new driver works ok in your environment. I
->> suggest removing any previous OpenVPN installations, installing the new
->> package and then verifying the driver version using the Device Manager;
->> the NDIS 5 driver version is 9.9.2, whereas this new driver is 9.21.0
->>
->> Note that as tap-windows6 is still an unproven driver it can BSOD. We
->> haven't experienced any problems with it, but it's best too keep that
->> possibility in mind.
->>
->> We will soon start offering the OpenVPN installer with NDIS 6-driver as
->> an option and hopefully soon afterwards make them the default option for
->> Windows Vista and above.
->>
-> Hello,
->
-> I've just done some testing on Win7 64-bit (german localization) and
-> didn't notice any problems. However, driver assembly version is
-> indicated as "9.0.0.21", not "9.21.0". (?)
->
-> Regards,
-> 	Christian
->
-Thanks for testing, Christian!
+Hello,
 
-I believe that odd version number is to be expected, and really boils
-down to formatting differences. Similarly the old tap-windows (NDIS 5)
-driver will report 9.0.0.9 as it's version - in our parlance that
-translates to 9.9.x.
+I've just done some testing on Win7 64-bit (german localization) and
+didn't notice any problems. However, driver assembly version is
+indicated as "9.0.0.21", not "9.21.0". (?)
+
+Regards,
+	Christian
 
 --=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
+Dr. Christian Rank
+Rechenzentrum Universit=E4t Passau
+Bereich Netzwerk und Telekommunikation
+IT-Sicherheitsbeauftragter der Universit=E4t
+Innstr. 33
+D-94032 Passau
+GERMANY
+Tel.: 0851/509-1838
+Fax:  0851/509-1802
 
-irc freenode net: mattock
 
+--------------ms000505000509050106040608
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
+
+MIAGCSqGSIb3DQEHAqCAMIACAQExCzAJBgUrDgMCGgUAMIAGCSqGSIb3DQEHAQAAoIIO7TCC
+BCEwggMJoAMCAQICAgDHMA0GCSqGSIb3DQEBBQUAMHExCzAJBgNVBAYTAkRFMRwwGgYDVQQK
+ExNEZXV0c2NoZSBUZWxla29tIEFHMR8wHQYDVQQLExZULVRlbGVTZWMgVHJ1c3QgQ2VudGVy
+MSMwIQYDVQQDExpEZXV0c2NoZSBUZWxla29tIFJvb3QgQ0EgMjAeFw0wNjEyMTkxMDI5MDBa
+Fw0xOTA2MzAyMzU5MDBaMFoxCzAJBgNVBAYTAkRFMRMwEQYDVQQKEwpERk4tVmVyZWluMRAw
+DgYDVQQLEwdERk4tUEtJMSQwIgYDVQQDExtERk4tVmVyZWluIFBDQSBHbG9iYWwgLSBHMDEw
+ggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDpm8NnhfkNrvWNVMOWUDU9YuluTO2U
+1wBblSJ01CDrNI/W7MAxBAuZgeKmFNJSoCgjhIt0iQReW+DieMF4yxbLKDU5ey2QRdDtoAB6
+fL9KDhsAw4bpXCsxEXsM84IkQ4wcOItqaACa7txPeKvSxhObdq3u3ibo7wGvdA/BCaL2a869
+080UME/15eOkyGKbghoDJzANAmVgTe3RCSMqljVYJ9N2xnG2kB3E7f81hn1vM7PbD8URwoqD
+oZRdQWvY0hD1TP3KUazZve+Sg7va64sWVlZDz+HVEz2mHycwzUlU28kTNJpxdcVs6qcLmPkh
+nSevPqM5OUhqjK3JmfvDEvK9AgMBAAGjgdkwgdYwcAYDVR0fBGkwZzBloGOgYYZfaHR0cDov
+L3BraS50ZWxlc2VjLmRlL2NnaS1iaW4vc2VydmljZS9hZl9Eb3dubG9hZEFSTC5jcmw/LWNy
+bF9mb3JtYXQ9WF81MDkmLWlzc3Vlcj1EVF9ST09UX0NBXzIwHQYDVR0OBBYEFEm3xs/oPR9/
+6kR7Eyn38QpwPt5kMB8GA1UdIwQYMBaAFDHDeRu69VPXF+CJei0XbAqzK50zMA4GA1UdDwEB
+/wQEAwIBBjASBgNVHRMBAf8ECDAGAQH/AgECMA0GCSqGSIb3DQEBBQUAA4IBAQA74Vp3wEgX
+3KkY7IGvWonwvSiSpspZGBJw7Cjy565/lizn8l0ZMfYTK3S9vYCyufdnyTmieTvhERHua3iR
+M347XyYndVNljjNj7s9zw7CSI0khUHUjoR8Y4pSFPT8z6XcgjaK95qGFKUD2P3MyWA0Ja6ba
+hWzAP7uNZmRWJE6uDT8yNQFb6YyC2XJZT7GGhfF0hVblw/hc843uR7NTBXDn5U2KaYMo4RMJ
+hp5eyOpYHgwf+aTUWgRo/Sg+iwK2WLX2oSw3VwBnqyNojWOl75lrXP1LVvarQIc01BGSbOyH
+xQoLBzNytG8MHVQs2FHHzL8w00Ny8TK/jM5JY6gA9/IcMIIFLDCCBBSgAwIBAgIECfk9uzAN
+BgkqhkiG9w0BAQUFADBaMQswCQYDVQQGEwJERTETMBEGA1UEChMKREZOLVZlcmVpbjEQMA4G
+A1UECxMHREZOLVBLSTEkMCIGA1UEAxMbREZOLVZlcmVpbiBQQ0EgR2xvYmFsIC0gRzAxMB4X
+DTA3MDIxOTE1MjAxMloXDTE5MDIxODAwMDAwMFowgZ8xCzAJBgNVBAYTAkRFMQ8wDQYDVQQH
+EwZQYXNzYXUxHDAaBgNVBAoTE1VuaXZlcnNpdGFldCBQYXNzYXUxFjAUBgNVBAsTDVJlY2hl
+bnplbnRydW0xJTAjBgNVBAMTHFVuaXZlcnNpdGFldCBQYXNzYXUgQ0EgLSBHMDExIjAgBgkq
+hkiG9w0BCQEWE2NhQHJ6LnVuaS1wYXNzYXUuZGUwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAw
+ggEKAoIBAQCHgNE07AUUNYr1fFuo47bkmM/6R+SPTDHZxa9+glXCbOrBEqZwT/GumzG3Xr2I
+XimOX66uURF5JSZGIxi0B2QoE28g+mFSer03waQPBWshdB76F9FUTCgau/mVJ9DzFNk6x8h9
+goOchMdwbbA2uVPb/UTfnGfzE+qqI9hLDQS/1D750pXNJcu4CpM7ly8fYW0n8GAlq3RFNkL8
+ugPP9kvMxNhOzTVdOFsRhHR3Z+q5jh+zPB08SRmFOyJ4MMwR9wh4AqxwhoGNG5rmc6SqvNLk
+epgidtTfiMVjcC9dD7JniSe8BDVvX8cx3XsObhsJVnlbFnqlbSZbc9ylwyM1JOvPAgMBAAGj
+ggGyMIIBrjAPBgNVHRMBAf8EBTADAQH/MAsGA1UdDwQEAwIBBjAdBgNVHQ4EFgQUCbHfoehh
+XaHNxvSDeTosBgyM7AgwHwYDVR0jBBgwFoAUSbfGz+g9H3/qRHsTKffxCnA+3mQwHgYDVR0R
+BBcwFYETY2FAcnoudW5pLXBhc3NhdS5kZTCBiAYDVR0fBIGAMH4wPaA7oDmGN2h0dHA6Ly9j
+ZHAxLnBjYS5kZm4uZGUvZ2xvYmFsLXJvb3QtY2EvcHViL2NybC9jYWNybC5jcmwwPaA7oDmG
+N2h0dHA6Ly9jZHAyLnBjYS5kZm4uZGUvZ2xvYmFsLXJvb3QtY2EvcHViL2NybC9jYWNybC5j
+cmwwgaIGCCsGAQUFBwEBBIGVMIGSMEcGCCsGAQUFBzAChjtodHRwOi8vY2RwMS5wY2EuZGZu
+LmRlL2dsb2JhbC1yb290LWNhL3B1Yi9jYWNlcnQvY2FjZXJ0LmNydDBHBggrBgEFBQcwAoY7
+aHR0cDovL2NkcDIucGNhLmRmbi5kZS9nbG9iYWwtcm9vdC1jYS9wdWIvY2FjZXJ0L2NhY2Vy
+dC5jcnQwDQYJKoZIhvcNAQEFBQADggEBANhmIUVwpozSS3zYWc4IEtC5XNkraTGAWjORLd3i
+nLJ15ps9u0yypoAorDWMZN2VRdh5/YzVli2VWF9sEKQeyzJ70Ds9cVauFoVH94R7vYZvHR8k
+xytLa8DTSWDL8SgEoiI9C5BrA7ek1kFeH/nNVFFrkk+xC6amVgVQbWpyI4Z+5YH/Ku7oHtwb
+ujpa5tibheotJBuz6uSkM2cqEUHyD/s8IJOCnRq8MUBIcYTua2j1u6RYir9djaq4ykUBnH5I
+59Gout3bnhQn7sRZ0KQB/YsuYxQyTJbyPK0uiBQ6MWDwoRAUkwXR6/zduEOY+C6tOv6JgdDg
+R9GdkSpOV6f+CPEwggWUMIIEfKADAgECAgcVtXzOm9uDMA0GCSqGSIb3DQEBBQUAMIGfMQsw
+CQYDVQQGEwJERTEPMA0GA1UEBxMGUGFzc2F1MRwwGgYDVQQKExNVbml2ZXJzaXRhZXQgUGFz
+c2F1MRYwFAYDVQQLEw1SZWNoZW56ZW50cnVtMSUwIwYDVQQDExxVbml2ZXJzaXRhZXQgUGFz
+c2F1IENBIC0gRzAxMSIwIAYJKoZIhvcNAQkBFhNjYUByei51bmktcGFzc2F1LmRlMB4XDTEz
+MDUxNzA5NTgyMloXDTE0MDUxNzA5NTgyMlowcTELMAkGA1UEBhMCREUxDzANBgNVBAcTBlBh
+c3NhdTEcMBoGA1UEChMTVW5pdmVyc2l0YWV0IFBhc3NhdTEWMBQGA1UECxMNUmVjaGVuemVu
+dHJ1bTEbMBkGA1UEAxMSRHIuIENocmlzdGlhbiBSYW5rMIIBIjANBgkqhkiG9w0BAQEFAAOC
+AQ8AMIIBCgKCAQEA8vSpMfUHFtLfsLSIjBmuxt9ZrIsSweqwjDn/rJZGTRjXUf4JR8yQAAum
+SFnqATS2jb6aAwkUW5Db3dz4hYmrUauS6yViKhW6l2TM7lAlTjkUiLYJGAVjEDX5+izK7sDL
++qH4XTxZNzavi/uEUuxY6ovUu9oqyCk74b7Xw0f2IX2gnZ+AyTdb9BvaqMoTylRi3+WLrRDh
+eYC343KIzX5nJ6LNz+zt+8A5aad0NMTMXUBbthmGycMxegH+OHSvqaozDpow1HysXPMA657F
+11tixXArWVYW6CqyDOmJ40A+ot0efARf7w61W7U76uFMl7CfXjLZdGO+z4rNyydMWjpx+QID
+AQABo4ICADCCAfwwLwYDVR0gBCgwJjARBg8rBgEEAYGtIYIsAQEEAwAwEQYPKwYBBAGBrSGC
+LAIBBAMAMAkGA1UdEwQCMAAwCwYDVR0PBAQDAgXgMB0GA1UdJQQWMBQGCCsGAQUFBwMCBggr
+BgEFBQcDBDAdBgNVHQ4EFgQUUyjHXQcCpfyG2WROug3Bdenmhd0wHwYDVR0jBBgwFoAUCbHf
+oehhXaHNxvSDeTosBgyM7AgwJwYDVR0RBCAwHoEcY2hyaXN0aWFuLnJhbmtAdW5pLXBhc3Nh
+dS5kZTCBhQYDVR0fBH4wfDA8oDqgOIY2aHR0cDovL2NkcDEucGNhLmRmbi5kZS91bmktcGFz
+c2F1LWNhL3B1Yi9jcmwvY2FjcmwuY3JsMDygOqA4hjZodHRwOi8vY2RwMi5wY2EuZGZuLmRl
+L3VuaS1wYXNzYXUtY2EvcHViL2NybC9jYWNybC5jcmwwgaAGCCsGAQUFBwEBBIGTMIGQMEYG
+CCsGAQUFBzAChjpodHRwOi8vY2RwMS5wY2EuZGZuLmRlL3VuaS1wYXNzYXUtY2EvcHViL2Nh
+Y2VydC9jYWNlcnQuY3J0MEYGCCsGAQUFBzAChjpodHRwOi8vY2RwMi5wY2EuZGZuLmRlL3Vu
+aS1wYXNzYXUtY2EvcHViL2NhY2VydC9jYWNlcnQuY3J0MA0GCSqGSIb3DQEBBQUAA4IBAQAH
+aNsv/oaVwcWLlu5vU/YSxc64vOiH6s03I3qEIWCXL8O6JsJdhjKiWsUNrtbBkNK+IwMPs5rN
+U6jsS1FLO0xK866VBCgov9+3UN2bjWeWZmvAyMLPYu9dkk0ijRjgwOCmivpYwiyT15UZtRMN
+PQOdIEHkaU2A2RT01rUsdzReerVn0nGxGn9Og6EiJqENdkC77G2D5sdI8IaOzqaOLeG2uFab
+bpbp+HKkVGJtsgsexM79kzUSWS6MFgGRvyL2h7plU1AHJjmTbM39fKxXtwPznam1Y4RMspdr
+wwJT8Vvp+OXv80hSg08bPIB8i1ek1Vk82asQHrbka7GV/rvw+4bxMYIEIjCCBB4CAQEwgasw
+gZ8xCzAJBgNVBAYTAkRFMQ8wDQYDVQQHEwZQYXNzYXUxHDAaBgNVBAoTE1VuaXZlcnNpdGFl
+dCBQYXNzYXUxFjAUBgNVBAsTDVJlY2hlbnplbnRydW0xJTAjBgNVBAMTHFVuaXZlcnNpdGFl
+dCBQYXNzYXUgQ0EgLSBHMDExIjAgBgkqhkiG9w0BCQEWE2NhQHJ6LnVuaS1wYXNzYXUuZGUC
+BxW1fM6b24MwCQYFKw4DAhoFAKCCAkswGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkq
+hkiG9w0BCQUxDxcNMTQwNDMwMTIwMDQ5WjAjBgkqhkiG9w0BCQQxFgQUCFP0pQ7cm0mzL4aA
+YxXBmLyl9rwwbAYJKoZIhvcNAQkPMV8wXTALBglghkgBZQMEASowCwYJYIZIAWUDBAECMAoG
+CCqGSIb3DQMHMA4GCCqGSIb3DQMCAgIAgDANBggqhkiG9w0DAgIBQDAHBgUrDgMCBzANBggq
+hkiG9w0DAgIBKDCBvAYJKwYBBAGCNxAEMYGuMIGrMIGfMQswCQYDVQQGEwJERTEPMA0GA1UE
+BxMGUGFzc2F1MRwwGgYDVQQKExNVbml2ZXJzaXRhZXQgUGFzc2F1MRYwFAYDVQQLEw1SZWNo
+ZW56ZW50cnVtMSUwIwYDVQQDExxVbml2ZXJzaXRhZXQgUGFzc2F1IENBIC0gRzAxMSIwIAYJ
+KoZIhvcNAQkBFhNjYUByei51bmktcGFzc2F1LmRlAgcVtXzOm9uDMIG+BgsqhkiG9w0BCRAC
+CzGBrqCBqzCBnzELMAkGA1UEBhMCREUxDzANBgNVBAcTBlBhc3NhdTEcMBoGA1UEChMTVW5p
+dmVyc2l0YWV0IFBhc3NhdTEWMBQGA1UECxMNUmVjaGVuemVudHJ1bTElMCMGA1UEAxMcVW5p
+dmVyc2l0YWV0IFBhc3NhdSBDQSAtIEcwMTEiMCAGCSqGSIb3DQEJARYTY2FAcnoudW5pLXBh
+c3NhdS5kZQIHFbV8zpvbgzANBgkqhkiG9w0BAQEFAASCAQA9OpdJMV9hFbI4c9Oi9x6qLODI
++8QcSJEpe4jUKU39s6SEn54JpIVuclCMq5rGBs3KQXrVDiAD2W56AzyN9vBJLQJ4glouxB0b
+5MJsOEQdYTU5IQmz9msCXc6/sWybacVS4jNtS2n3K5QFuMg9DNHPWPPukCrS2q+csKbhWHED
+LTkVbSXrrWd4x8wmWS1fHITLKlk6tYR/sRURD97c0e+dxrOiG0pp0Jm5CCnBiPOcO+8z/sB8
+lo8SZf9E/CHKy+Afa2PJ7LBD3QX7FRIBe1SIA5j92UmSmxP41Z+Th9XslFWpllsD2iaxo0BI
+KPaEOxkLX6oAiFw47CZS6riVQTqRAAAAAAAA
+--------------ms000505000509050106040608--
 
