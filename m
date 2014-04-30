@@ -1,11 +1,10 @@
-Message-ID: <53601CAA.9090301@...1856...>
-Date: Tue, 29 Apr 2014 23:42:02 +0200
-From: Steffan Karger <steffan@...1856...>
-MIME-Version: 1.0
-References: <1398805779-29376-1-git-send-email-gert@...1296...>
+Date: Wed, 30 Apr 2014 09:10:55 +0200 (CEST)
+Message-Id: <201404300710.s3U7AtVM023109@...1295...>
+From: Gert Doering <gert@...1296...>
 In-Reply-To: <1398805779-29376-1-git-send-email-gert@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH] Conditionalize calls to
- print_default_gateway on !ENABLE_SMALL
+References: <1398805779-29376-1-git-send-email-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Conditionalize calls to
+	print_default_gateway on !ENABLE_SMALL
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,56 +13,30 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA256
+Patch has been applied to the master and release/2.3 branches.
 
-ACK.
+commit c29e08a2f33234fb705a8323c0d9e1e07b0773fd (master)
+commit d08a6a94e14a73b62603500b9a1a89cb9ec5cb2f (release/2.3)
 
-- -Steffan
+Author: Gert Doering
+Date:   Tue Apr 29 23:09:39 2014 +0200
 
-On 29-04-14 23:09, Gert Doering wrote:
-> Calls to print_default_gateway() depended on #ifdef ENABLE_DEBUG,
-> but the actual function wasn't compiled in #ifdef ENABLE_SMALL, so
-> the combination "configure --enable-small --enable-debug" didn't
-> work. Fix.
-> 
-> Fix trac #397
-> 
-> Signed-off-by: Gert Doering <gert@...1296...> --- 
-> src/openvpn/options.c | 2 +- src/openvpn/route.c   | 2 +- 2 files
-> changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/src/openvpn/options.c b/src/openvpn/options.c index
-> 40210e6..fe9b99d 100644 --- a/src/openvpn/options.c +++
-> b/src/openvpn/options.c @@ -4144,7 +4144,7 @@ add_option (struct
-> options *options,
-> 
-> read_config_file (options, p[1], level, file, line, msglevel,
-> permission_mask, option_types_found, es); } -#ifdef ENABLE_DEBUG 
-> +#if defined(ENABLE_DEBUG) && !defined(ENABLE_SMALL) else if (streq
-> (p[0], "show-gateway")) { struct route_gateway_info rgi; diff --git
-> a/src/openvpn/route.c b/src/openvpn/route.c index 1d9da42..12f5b62
-> 100644 --- a/src/openvpn/route.c +++ b/src/openvpn/route.c @@
-> -579,7 +579,7 @@ init_route_list (struct route_list *rl, if
-> (rl->rgi.flags & RGI_ADDR_DEFINED) { setenv_route_addr (es,
-> "net_gateway", rl->rgi.gateway.addr, -1); -#ifdef ENABLE_DEBUG +#if
-> defined(ENABLE_DEBUG) && !defined(ENABLE_SMALL) 
-> print_default_gateway (D_ROUTE, &rl->rgi); #endif }
-> 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-Comment: Using GnuPG with Thunderbird - http://www.enigmail.net/
+     Conditionalize calls to print_default_gateway on !ENABLE_SMALL
 
-iQEcBAEBCAAGBQJTYByqAAoJEJgCyj0AftKI5W4IAIuVh/DeCIgSJrpKOoRFGyFe
-lkNaZYQIsAo1v2MpCO4K66X4mMPOJPWyErvaSaSRNPxPugfkcNt/6EQsX4CV2R14
-TFwP0HzC2yqsp4FOFqfOsvWd7Zl0YQFSAOCj3gbNSzpiUtysX7oMNr+nX0alwIcu
-e23uSOwrN6CaL+6zO+eANTZnD8nNU3RwWCDUTS0ckD7Crys1F36qWuvkmxUC9tvB
-2jbBEWfbRTll/lq+kaVUrUCK5Kofr5Am6armr3Y4WieBVVAOxmz2gDGry5eOvrqa
-ym7acRj73FTej+iGS9l0cTBJKrkGdhgke0vGUNXFkAXHnsoL9hqnGVtxBCUvgVo=
-=iiDj
------END PGP SIGNATURE-----
+     Signed-off-by: Gert Doering <gert@...1296...>
+     Acked-by: Steffan Karger <steffan.karger@...1435...>
+     Message-Id: <1398805779-29376-1-git-send-email-gert@...1296...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/8670
+
+
+--
+kind regards,
+
+Gert Doering
+
 
