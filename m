@@ -1,10 +1,12 @@
-Date: Wed, 30 Apr 2014 09:10:55 +0200 (CEST)
-Message-Id: <201404300710.s3U7AtVM023109@...1295...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <1398805779-29376-1-git-send-email-gert@...1296...>
-References: <1398805779-29376-1-git-send-email-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Conditionalize calls to
-	print_default_gateway on !ENABLE_SMALL
+Message-ID: <5360AC4A.5080406@...515...>
+Date: Wed, 30 Apr 2014 01:54:50 -0600
+From: James Yonan <james@...515...>
+MIME-Version: 1.0
+References: <1398064204-26476-1-git-send-email-james@...515...>	<1398064204-26476-4-git-send-email-james@...515...>	<20140427175312.GJ16637@...1296...>	<535D6431.5000308@...1856...>
+	<535EC5FE.6060302@...1856...>
+In-Reply-To: <535EC5FE.6060302@...1856...>
+Subject: Re: [Openvpn-devel] [PATCH 4/4] When tls-version-min is unspecified,
+ revert to original versioning approach.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,30 +15,50 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
-Patch has been applied to the master and release/2.3 branches.
+On 28/04/2014 15:19, Steffan Karger wrote:
+> Hi,
+>
+> On 27-04-14 22:10, Steffan Karger wrote:
+>> On 27-04-14 19:53, Gert Doering wrote:
+>>> On Mon, Apr 21, 2014 at 01:10:04AM -0600, James Yonan wrote: The
+>>> attached patch is what I intend to commit to release/2.3 *only*,
+>>> not to master - as agreed at the IRC meeting.  "Please ACK" :-)
+>>
+>> Sorry, but NAK.
+>
+> On a more constructive note: attached a new proposal for this patch.
+>
+>> The OpenSSL bits look fine
+>
+> On a closer look, the wrapping "if (tls_version_min > TLS_VER_UNSPEC)"
+> in tls_ctx_set_options() seems redundant, because TLS_VER_UNSPEC <
+> TLS_VER_1_0 < TLS_VER_1_1 < TLS_VER_1_2 and the ifs are checking for
+> "tls_version_min > TLS_VER_1_x". I've removed these changes in the
+> attached patch proposal.
+>
+>> the PolarSSL bits
+>> would also allow for SSL_MINOR_VERSION_0, which is SSLv3 and thus a
+>> reduction in security (and actually increases the handshake complexity).
+>
+> To elaborate a bit: The naming is a bit confusing, but
+> SSL_MAJOR_VERSION_3 + SSL_MINOR_VERSION_O means SSLv3, ... +
+> SSL_MINOR_VERSION_1 means TLSv1.0, ... + SSL_MINOR_VERSION_2 means
+> TLSv1.1, etc. If none are given (what would happen in the previous
+> version of the patch), PolarSSL defaults the minimum version to SSLv3
+> and maximum to TLSv1.2. The attached patch thus removes the wrapping "if
+> (tls_version_min > TLS_VER_UNSPEC)" and sets the default to TLSv1.0 to
+> TLSv1.2 again. That is equal to the behaviour prior to the TLS
+> versioning patch.
+>
+> -Steffan
 
-commit c29e08a2f33234fb705a8323c0d9e1e07b0773fd (master)
-commit d08a6a94e14a73b62603500b9a1a89cb9ec5cb2f (release/2.3)
+This is fine.  I can ACK this.
 
-Author: Gert Doering
-Date:   Tue Apr 29 23:09:39 2014 +0200
-
-     Conditionalize calls to print_default_gateway on !ENABLE_SMALL
-
-     Signed-off-by: Gert Doering <gert@...1296...>
-     Acked-by: Steffan Karger <steffan.karger@...1435...>
-     Message-Id: <1398805779-29376-1-git-send-email-gert@...1296...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/8670
-
-
---
-kind regards,
-
-Gert Doering
+Thanks,
+James
 
 
