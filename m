@@ -1,13 +1,14 @@
-Message-ID: <5360E5F1.2010908@...1420...>
-Date: Wed, 30 Apr 2014 14:00:49 +0200
+Message-ID: <5360EB20.3060301@...1420...>
+Date: Wed, 30 Apr 2014 14:22:56 +0200
 From: Christian Rank <christian.rank@...1420...>
 MIME-Version: 1.0
 References: <mailman.136280.1398841893.2178.openvpn-devel@lists.sourceforge.net>
 	<mailman.136280.1398841893.2178.openvpn-devel.{0dae5f05-5c86-4434-9a1f-0755a01b1752}.0@lists.sourceforge.net>
-	<53600550.1000905@...515...>
-In-Reply-To: <53600550.1000905@...515...>
+	<53600550.1000905@...515...> <5360E5F1.2010908@...1420...>
+	<5360E962.3010509@...515...>
+In-Reply-To: <5360E962.3010509@...515...>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature";
-	micalg=sha1; boundary="------------ms000505000509050106040608"
+	micalg=sha1; boundary="------------ms090805080300010306060105"
 Subject: Re: [Openvpn-devel] Help with testing OpenVPN 2.3.3 installers with
  tap-windows6? (Openvpn-devel Digest, Vol 95, Issue 44)
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -18,48 +19,65 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: samuli@...515...
-Cc: openvpn-devel@lists.sourceforge.net
+To: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
 This is a cryptographically signed message in MIME format.
 
---------------ms000505000509050106040608
+--------------ms090805080300010306060105
 Content-Type: text/plain; charset="ISO-8859-15"
 Content-Transfer-Encoding: quoted-printable
 
-On 04/29/2014 10:02 PM, Samuli Sepp?nen wrote:
-> Hi all,
+On 04/30/2014 02:15 PM, Samuli Sepp=E4nen wrote:
 >=20
-> I built OpenVPN 2.3.3 installers that contain tap-windows6 (NDIS 6) drive=
-rs:
+>> On 04/29/2014 10:02 PM, Samuli Sepp?nen wrote:
+>>> Hi all,
+>>>
+>>> I built OpenVPN 2.3.3 installers that contain tap-windows6 (NDIS 6) dri=
+vers:
+>>>
+>>> <http://build.openvpn.net/downloads/temp/ndis6>
+>>>
+>>> Note the build number, "605", where the first digit ("6") means "comes
+>>> with an NDIS 6 driver".
+>>>
+>>> I tested the 64-bit version on Win7 64-bit and it seemed to work ok, but
+>>> my testing was anything but extensive.  So, if [some of] you happen to
+>>> have a non-critical Windows box(es) lying around it'd be great if you
+>>> could test whether the new driver works ok in your environment. I
+>>> suggest removing any previous OpenVPN installations, installing the new
+>>> package and then verifying the driver version using the Device Manager;
+>>> the NDIS 5 driver version is 9.9.2, whereas this new driver is 9.21.0
+>>>
+>>> Note that as tap-windows6 is still an unproven driver it can BSOD. We
+>>> haven't experienced any problems with it, but it's best too keep that
+>>> possibility in mind.
+>>>
+>>> We will soon start offering the OpenVPN installer with NDIS 6-driver as
+>>> an option and hopefully soon afterwards make them the default option for
+>>> Windows Vista and above.
+>>>
+>> Hello,
+>>
+>> I've just done some testing on Win7 64-bit (german localization) and
+>> didn't notice any problems. However, driver assembly version is
+>> indicated as "9.0.0.21", not "9.21.0". (?)
+>>
+>> Regards,
+>> 	Christian
+>>
+> Thanks for testing, Christian!
 >=20
-> <http://build.openvpn.net/downloads/temp/ndis6>
->=20
-> Note the build number, "605", where the first digit ("6") means "comes
-> with an NDIS 6 driver".
->=20
-> I tested the 64-bit version on Win7 64-bit and it seemed to work ok, but
-> my testing was anything but extensive.  So, if [some of] you happen to
-> have a non-critical Windows box(es) lying around it'd be great if you
-> could test whether the new driver works ok in your environment. I
-> suggest removing any previous OpenVPN installations, installing the new
-> package and then verifying the driver version using the Device Manager;
-> the NDIS 5 driver version is 9.9.2, whereas this new driver is 9.21.0
->=20
-> Note that as tap-windows6 is still an unproven driver it can BSOD. We
-> haven't experienced any problems with it, but it's best too keep that
-> possibility in mind.
->=20
-> We will soon start offering the OpenVPN installer with NDIS 6-driver as
-> an option and hopefully soon afterwards make them the default option for
-> Windows Vista and above.
+> I believe that odd version number is to be expected, and really boils
+> down to formatting differences. Similarly the old tap-windows (NDIS 5)
+> driver will report 9.0.0.9 as it's version - in our parlance that
+> translates to 9.9.x.
 >=20
 
-Hello,
+Hello Samuli,
 
-I've just done some testing on Win7 64-bit (german localization) and
-didn't notice any problems. However, driver assembly version is
-indicated as "9.0.0.21", not "9.21.0". (?)
+thanks for clarification. I've now tested successfully on Win 8.1 64-bit
+(german localization). Version numbers are the same as on Win 7.
 
 Regards,
 	Christian
@@ -76,7 +94,7 @@ Tel.: 0851/509-1838
 Fax:  0851/509-1802
 
 
---------------ms000505000509050106040608
+--------------ms090805080300010306060105
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -158,8 +176,8 @@ gZ8xCzAJBgNVBAYTAkRFMQ8wDQYDVQQHEwZQYXNzYXUxHDAaBgNVBAoTE1VuaXZlcnNpdGFl
 dCBQYXNzYXUxFjAUBgNVBAsTDVJlY2hlbnplbnRydW0xJTAjBgNVBAMTHFVuaXZlcnNpdGFl
 dCBQYXNzYXUgQ0EgLSBHMDExIjAgBgkqhkiG9w0BCQEWE2NhQHJ6LnVuaS1wYXNzYXUuZGUC
 BxW1fM6b24MwCQYFKw4DAhoFAKCCAkswGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkq
-hkiG9w0BCQUxDxcNMTQwNDMwMTIwMDQ5WjAjBgkqhkiG9w0BCQQxFgQUCFP0pQ7cm0mzL4aA
-YxXBmLyl9rwwbAYJKoZIhvcNAQkPMV8wXTALBglghkgBZQMEASowCwYJYIZIAWUDBAECMAoG
+hkiG9w0BCQUxDxcNMTQwNDMwMTIyMjU2WjAjBgkqhkiG9w0BCQQxFgQUJ/01rAD9XKVzduLb
+C9n2D9Ol77wwbAYJKoZIhvcNAQkPMV8wXTALBglghkgBZQMEASowCwYJYIZIAWUDBAECMAoG
 CCqGSIb3DQMHMA4GCCqGSIb3DQMCAgIAgDANBggqhkiG9w0DAgIBQDAHBgUrDgMCBzANBggq
 hkiG9w0DAgIBKDCBvAYJKwYBBAGCNxAEMYGuMIGrMIGfMQswCQYDVQQGEwJERTEPMA0GA1UE
 BxMGUGFzc2F1MRwwGgYDVQQKExNVbml2ZXJzaXRhZXQgUGFzc2F1MRYwFAYDVQQLEw1SZWNo
@@ -168,11 +186,11 @@ KoZIhvcNAQkBFhNjYUByei51bmktcGFzc2F1LmRlAgcVtXzOm9uDMIG+BgsqhkiG9w0BCRAC
 CzGBrqCBqzCBnzELMAkGA1UEBhMCREUxDzANBgNVBAcTBlBhc3NhdTEcMBoGA1UEChMTVW5p
 dmVyc2l0YWV0IFBhc3NhdTEWMBQGA1UECxMNUmVjaGVuemVudHJ1bTElMCMGA1UEAxMcVW5p
 dmVyc2l0YWV0IFBhc3NhdSBDQSAtIEcwMTEiMCAGCSqGSIb3DQEJARYTY2FAcnoudW5pLXBh
-c3NhdS5kZQIHFbV8zpvbgzANBgkqhkiG9w0BAQEFAASCAQA9OpdJMV9hFbI4c9Oi9x6qLODI
-+8QcSJEpe4jUKU39s6SEn54JpIVuclCMq5rGBs3KQXrVDiAD2W56AzyN9vBJLQJ4glouxB0b
-5MJsOEQdYTU5IQmz9msCXc6/sWybacVS4jNtS2n3K5QFuMg9DNHPWPPukCrS2q+csKbhWHED
-LTkVbSXrrWd4x8wmWS1fHITLKlk6tYR/sRURD97c0e+dxrOiG0pp0Jm5CCnBiPOcO+8z/sB8
-lo8SZf9E/CHKy+Afa2PJ7LBD3QX7FRIBe1SIA5j92UmSmxP41Z+Th9XslFWpllsD2iaxo0BI
-KPaEOxkLX6oAiFw47CZS6riVQTqRAAAAAAAA
---------------ms000505000509050106040608--
+c3NhdS5kZQIHFbV8zpvbgzANBgkqhkiG9w0BAQEFAASCAQARpqOObUkg642BWhatzYqv41ar
+L27Lv5pzXuIRRfpoulWH9KcQm7E/+ss6iCTDr3eE4f2GWupPD1TUdT3/FBB//Q1L/r3NwHis
+7wRiq1i/zDMgz2CJ8ixk5HvBrvQ6TpYdhQamOTX+kNiN+hIl+Aib4E7A38FCWM7wa060IajS
+BiyN/nEJtajmcYjJW9AEkbiOQBGfYOxSxoqm+4miAyXIsi1EMlgaLM1IXaQYnF7x9kBWINuF
+oe3Esz6lsR4r9I7q5ZOyILjSITKVaFQ787Yu1FxqiXNn+k2lW+rLgG6kE1IycvjfcQ7w0TmO
+TtkE1BsxNWXPYFaxdCNoyXgHlglWAAAAAAAA
+--------------ms090805080300010306060105--
 
