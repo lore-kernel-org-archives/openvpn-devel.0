@@ -1,12 +1,11 @@
-Message-ID: <5362DB19.3000800@...1114...>
-Date: Fri, 02 May 2014 01:39:05 +0200
-From: David Sommerseth <openvpn.list@...1114...>
-MIME-Version: 1.0
+Date: Fri, 2 May 2014 01:50:33 +0200
+From: Samuel Thibault <samuel.thibault@...1817...>
+Message-ID: <20140501235033.GW5592@...1818...>
 References: <CAGyAFMVOixa+Qiz_nRjhjgPdrMBvtiiuZ4DqCEUu75TC8u_ffQ@...278...>
-In-Reply-To: <CAGyAFMVOixa+Qiz_nRjhjgPdrMBvtiiuZ4DqCEUu75TC8u_ffQ@...278...>
+	<5362DB19.3000800@...1114...>
+MIME-Version: 1.0
+In-Reply-To: <5362DB19.3000800@...1114...>
 Subject: Re: [Openvpn-devel] ipv6 env vars to client scripts
-Reply-To: "openvpn-devel@lists.sourceforge.net"
-	<openvpn-devel@lists.sourceforge.net>
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,39 +14,31 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Lev Stipakov <lstipakov@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-[re-sending, with mailing list on Cc as well]
+David Sommerseth, le Fri 02 May 2014 01:39:05 +0200, a =E9crit :
+> On 17/04/14 14:07, Lev Stipakov wrote:
+> > Hello,
+> >
+> > Are there any plans to support ipv6 env vars in
+> > client-connect/disconnect scripts?
+> >
+> > There are at least 2 tickes on that feature:
+> >
+> > https://community.openvpn.net/openvpn/ticket/230
+> > https://community.openvpn.net/openvpn/ticket/369
+> >
+> > Is there anything that prevents merging any of suggested patches to
+> > the master branch?
+>=20
+> I don't think I've seen these patches on the mailing list (I'm going thro=
+ugh=20
+> the list now).
 
-On 17/04/14 14:07, Lev Stipakov wrote:
-> Hello,
->
-> Are there any plans to support ipv6 env vars in
-> client-connect/disconnect scripts?
->
-> There are at least 2 tickes on that feature:
->
-> https://community.openvpn.net/openvpn/ticket/230
-> https://community.openvpn.net/openvpn/ticket/369
->
-> Is there anything that prevents merging any of suggested patches to
-> the master branch?
+My patches were sent on 2013 May 24th on openvpn-devel.
 
-I don't think I've seen these patches on the mailing list (I'm going through 
-the list now).  All patches must go via the mailing list for 
-puopenvpn-users@...1908... ACK messages.  So it would be great 
-if you could get these patches on the list, using git send-email.  It helps 
-making the review process smoother.
-
-Maybe the patches in both these two tickets could be merged into a single 
-patch.  They look quite related.
-
-
--- 
-kind regards,
-
-David Sommerseth
+Samuel
 
