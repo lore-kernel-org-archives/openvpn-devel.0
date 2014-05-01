@@ -1,10 +1,14 @@
-Message-ID: <5362A729.3070102@...515...>
-Date: Thu, 01 May 2014 22:57:29 +0300
-From: =?ISO-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
-MIME-Version: 1.0
+Date: Thu, 1 May 2014 22:14:06 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20140501201406.GS16637@...1296...>
 References: <536262FD.1090105@...1901...> <53627F26.1060208@...515...>
 	<20140501191514.GQ16637@...1296...>
-In-Reply-To: <20140501191514.GQ16637@...1296...>
+	<5362A729.3070102@...515...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="k4AVHsodD5VyoCOZ"
+Content-Disposition: inline
+In-Reply-To: <5362A729.3070102@...515...>
 Subject: Re: [Openvpn-devel] IRC & Community...
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -14,73 +18,66 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: quoted-printable
-To: Gert Doering <gert@...1296...>
+To: Samuli =?iso-8859-1?Q?Sepp=E4nen?= <samuli@...515...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, Timothe Litt <litt@...1901...>
 
+--k4AVHsodD5VyoCOZ
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+Hi,
 
+On Thu, May 01, 2014 at 10:57:29PM +0300, Samuli Sepp=E4nen wrote:
+> I will have a look at the developer docs to ensure they accurately
+> reflects our current practices. I will also try to outline the various
+> ways people can use get their patches merged more easily with least
+> amount of frustration and delays.
 
-> Hi,
->
-> On Thu, May 01, 2014 at 08:06:46PM +0300, Samuli Sepp=E4nen wrote:
->> A few notes about where we get our patches from... in the documentation
->> we do say that "post the patch to openvpn-devel list". That was a
->> decision that was reached some years ago. However, we, in practice, do
->> accept patches from Trac, GitHub and IRC. We should probably change the
->> documentation to reflect this.
->
-> Actually, openvpn-devel *is* the way, with trac being second (due to
-> the way we reference every commit to a mail on openvpn-devel, trac
-> patches basically need someone re-sending them to the list).
->
-> Github and IRC are *not* a welcome input for patches, because it doesn't
-> match the agreed-upon workflow ("ack or nack on the list, reference that
-> message in the commit"), and doesn't have the benefit of trac to be
-> tied to a ticket that can be set to a given milestone, etc.
->
-> IRC is very welcome to bounce around ideas ("should we fix this?  if
-> yes, in which way?") but it needs to result in a patch being sent to
-> openvpn-devel.  Actually, this is often the reason why some patches get
-> ACKed much quicker than others - they have been discussed, the reason
-> for the change is well-understood, and for complicated stuff, the details
-> how to tackle it might have been agreed-upon beforehand.
->
-> gert
-Good corrections, I was not being concise enough. What I meant that we
-don't actively ignore patches to OpenVPN that come in via Trac, IRC or
-GitHub. That said we don't very actively monitor those venues, either.
-If there are good patches somewhere outside openvpn-devel mailing list,
-we simply ask the author to resend the patch to the mailing list.
+Thanks.
 
-It is also not entirely true that we only accept patches sent to
-openvpn-devel. Some time ago OpenVPN was split into several
-subprojects[*], most of which do accept GitHub pull requests, OpenVPN
-itself being an exception.
+It might be good to also point out our ACK regime ("it does not go in=20
+unless reviewed by someone who is trusted to understand the impact of=20
+the change"), and the reason why things sometimes just do not seem to=20
+be moving - "lack of development time".
 
-I will have a look at the developer docs to ensure they accurately
-reflects our current practices. I will also try to outline the various
-ways people can use get their patches merged more easily with least
-amount of frustration and delays.
+I do like Timeothe's enthusiasm, but things like "if nobody said something
+for 14 days, it goes *in*" is just not realistic with the amount of
+potential ACKers we have right now - and at some times, we all have very
+very busy phases, where we can barely follow the list, let alone give
+meaningful advice about patches.  This approach is also dangerous - our
+ACK policy is there to ensure that patches are reviewed for security
+critical side effects, and in doubt, well-tested.  So far, this succeeded=20
+quite well - even if it's a major pain at times, because it truly slows
+down everything...
 
-- --=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
+Also, someone would actually have to "put it in" in that case, and as
+the only one actively committing stuff right now is *me*, somethings=20
+things just don't happen.  Like, for the next few weeks, I will be busy
+with paid-for work that is not openvpn related, so I won't be very
+active unless some sort of emergency patch comes up.
 
-irc freenode net: mattock
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-[*] <https://github.com/OpenVPN>
+--k4AVHsodD5VyoCOZ
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-Comment: Using GnuPG with Thunderbird - http://www.enigmail.net/
+Version: GnuPG v1.4.13 (NetBSD)
 
-iEYEARECAAYFAlNipykACgkQwp2X7RmNIqMWEQCggk8Uwwd/Ygm0NcIpahp3lG8a
-t3gAoOOBHg2KPzdznjzbxqP+PoybaQek
-=3D5tF4
+iQCVAwUBU2KrDqkuBuNlUUl1AQLFlQQAuFTNH3tfDaVA/JEVgILnxZSddDGIxQiI
+Ddh13UEggH04fOhQZ7Q+NmtgE5DBLiaZdLPs1gw4WTM/i+gN0TylFP+fi09UvCiQ
+Dd3VjXpdGCBk1UkQ6j96JJ86Srqb663Ppy2JtKBlC59tnnN8oaeCQoHIoObH8JOn
+p9aseKP1Aic=
+=FbZt
 -----END PGP SIGNATURE-----
 
+--k4AVHsodD5VyoCOZ--
 
