@@ -1,11 +1,10 @@
-Date: Fri, 2 May 2014 01:50:33 +0200
-From: Samuel Thibault <samuel.thibault@...1817...>
-Message-ID: <20140501235033.GW5592@...1818...>
-References: <CAGyAFMVOixa+Qiz_nRjhjgPdrMBvtiiuZ4DqCEUu75TC8u_ffQ@...278...>
-	<5362DB19.3000800@...1114...>
-MIME-Version: 1.0
-In-Reply-To: <5362DB19.3000800@...1114...>
-Subject: Re: [Openvpn-devel] ipv6 env vars to client scripts
+From: David Sommerseth <dazo@...384...>
+Date: Fri,  2 May 2014 02:28:24 +0200
+Message-Id: <1398990504-4239-1-git-send-email-dazo@...384...>
+In-Reply-To: <1397663021-18815-1-git-send-email-davids@...1347...>
+References: <1397663021-18815-1-git-send-email-davids@...1347...>
+Subject: [Openvpn-devel] [PATCH v2] Improve error reporting on file access
+	to --client-config-dir and --ccd-exclusive
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,31 +13,68 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-David Sommerseth, le Fri 02 May 2014 01:39:05 +0200, a =E9crit :
-> On 17/04/14 14:07, Lev Stipakov wrote:
-> > Hello,
-> >
-> > Are there any plans to support ipv6 env vars in
-> > client-connect/disconnect scripts?
-> >
-> > There are at least 2 tickes on that feature:
-> >
-> > https://community.openvpn.net/openvpn/ticket/230
-> > https://community.openvpn.net/openvpn/ticket/369
-> >
-> > Is there anything that prevents merging any of suggested patches to
-> > the master branch?
->=20
-> I don't think I've seen these patches on the mailing list (I'm going thro=
-ugh=20
-> the list now).
+OpenVPN will do some simple sanity checking at startup to ensure the expected
+files and directories is in place.  However, with --client-config-dir and
+--ccd-exclusive, things are slightly different.  In both cases it is perfectly
+fine that files does not exists, and we cannot know any file names beforehand
+due to these filenames being based upon the certificate's CN field.
 
-My patches were sent on 2013 May 24th on openvpn-devel.
+The problem arises when OpenVPN cannot open files inside a directory because
+the directory permissions are too restrictive, have wrong ownership (triggered
+by the usage of --user/--group) or other security mechanisms the OS uses.
 
-Samuel
+When a client connects, the test_file() function is used to check if a client
+config file has been prepared.  And if not, it continues without trying to read
+it.  So, if the privileges of the running OpenVPN process is not allowed to
+open and read an existing file, OpenVPN will treat this as a non-existing file
+without saying anything.  This is clearly wrong.  So this patch adds an warning
+message in the OpenVPN log if it could not open the file due to lack of
+permissions.
+
+This will work fine on all *nix based OSes.  Windows however reports 'no such
+file or directory' (errno=2/-ENOENT) even on privilege access errors when the
+directory this file resides is too restrictive.  But there is no easy way to
+work around that.  However, I believe that the initial sanity checking at
+startup will catch that one, as it will check if the directories it needs
+exists.
+
+This patch has only gone through simple basic testing, with both too few
+privileges and with proper privileges to the CCD directory.  With wrong
+privileges, the following error can be found if CN=Test client
+
+  Fri May  2 00:00:10 2014 us=281993 127.0.0.1:41017 Could not access file '/etc/clients/Test client': Permission denied (errno=13)
+
+[v2 - use openvpn_errno() instead of errno, for better platform support]
+
+Trac: #277
+Trac-URL: https://community.openvpn.net/openvpn/ticket/277
+Signed-off-by: David Sommerseth <dazo@...384...>
+---
+ src/openvpn/misc.c |    6 ++++++
+ 1 files changed, 6 insertions(+), 0 deletions(-)
+
+diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
+index 7483184..63b4c1c 100644
+--- a/src/openvpn/misc.c
++++ b/src/openvpn/misc.c
+@@ -861,6 +861,12 @@ test_file (const char *filename)
+ 	  fclose (fp);
+ 	  ret = true;
+ 	}
++      else
++	{
++	  if( openvpn_errno () == EACCES ) {
++	    msg( M_WARN | M_ERRNO, "Could not access file '%s'", filename);
++	  }
++	}
+     }
+ 
+   dmsg (D_TEST_FILE, "TEST FILE '%s' [%d]",
+-- 
+1.7.1
+
 
