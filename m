@@ -1,10 +1,10 @@
-Message-ID: <53661960.9080704@...1856...>
-Date: Sun, 04 May 2014 12:41:36 +0200
-From: Steffan Karger <steffan@...1856...>
 MIME-Version: 1.0
-References: <20140424163216.GA4403@...1907...>
-In-Reply-To: <20140424163216.GA4403@...1907...>
-Subject: Re: [Openvpn-devel] [PATCH] Keying Material Exporters [RFC 5705]
+Date: Mon, 5 May 2014 08:02:38 +0200
+Message-ID: <CALufPjXL2hX-W25uBvGNk1M_TbbrkZcUMe-3dYwD2oa9f6DD2Q@...278...>
+From: Marine B <yunai39@...277...>
+Content-Type: multipart/alternative; boundary=089e013d1c46ebfe5a04f8a0e0d8
+Subject: [Openvpn-devel] [New Plugin] Diifferent subnet for different Group
+	of user
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,63 +13,62 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Hi Daniel,
+--089e013d1c46ebfe5a04f8a0e0d8
+Content-Type: text/plain; charset=UTF-8
 
-Sorry for the delay, I've finally found some spare time to dig a bit
-into your patch. I've not looked at the implementation details yet, just
-the big picture for now.
+Good Morning,
 
-First of all, I can see exported key material being useful. As a matter
-of fact, OpenVPN does something similar to derive its data channel keys.
+I have made an atempte at creating a new plugin for OpenVPN. My goal was to
+be able to give ip, comming from different subnet , to user from different
+group. Let me explain:
 
-On 24-04-14 18:32, Daniel Kubec wrote:
-> updated patch:
-> 
-> git format-patch -n HEAD^ --stdout > ./openvpn-channel-bindings.patch
+You have two group:
+Group A, where user common name follow the regex ^A* and those people need
+to have an ip in 10.0.0.0/24
+Group B, where user common name follow the regex ^B* and those people need
+to have an ip in 10.0.1.0/24
 
-It's probably easier if you create commits while doing work, and then
-use 'git format-patch origin/master' or 'git format-patch HEAD~n' (with
-n your number of commits). That generates patch files including your
-commit message, and are easy to apply using 'git am'.
+Usually, you would use client-config-dir, but for that you need to have
+every file ready before hand.
 
-Also, your patch does a number of things to achieve you goal; abstract
-some functions, add plugin calls, and do the actual export. Patches are
-more easily reviewed if those separate steps are separated into several
-commits (with each having a clear commit message describing the goal and
-the changes of the commit).
+I want my plugin to handle that kind of situtation.
 
-> vpn_binding_key: 
->   - keying material derived by openvpn's crypto later (ssl.c:tls1_*)
->   - life time across negotiations (works a bit like EKM)
-> 
-> tls_binding_key: Exported Keying Material [RFC 5705] 
->   - derived when crypto backend support ( currently openssl >= 1.0.2 )
+Tell me if you think it is a bad idea, good, my implementation suck ...
+well anything.
 
-I'm not sure we should do the vpn_binding_key part, because:
-1) I believe we should leave the crypto to the crypto libraries as much
-as possible. From this perspective I'd vote for just calling
-SSL_export_keying_material() if it's available (which according tot the
-OpenSSL ChangeLog / git tree is since 1.0.1, not 1.0.2). PolarSSL does
-not support EKM yet, so our PolarSSL builds just won't support it
-either. Just put that into the manpage, and we can add it when(/if)
-PolarSSL adds support too.
-2) I think the exported keying material should *not* survive
-negotiations; negotiations by design force the endpoints to authenticate
-again, which should also be the case when using EKM.
-3) As a positive side effect, the patch will add a lot less code to
-OpenVPN if vpn_binding_key is not added.
+The plugin is disponible here
+https://github.com/yunai39/OpenVPNSubNetworkPlugin/blob/master/src/simple.c
 
-The new code calls the OPENVPN_PLUGIN_TLS_FINAL plugin twice (also from
-key_method_2_write() now), why is that? And (partly as a question to our
-plugin meister David), will that not break stuff for current plugin
-interface consumers?
+I am far from being an expert in C, and I tried to figure out how OpenVPN
+plugin work by reading previous plugin code.
 
-Once the big picture is clear, I'll have to look more carefully at the
-implementation details.
+Thank you.
 
--Steffan
+--089e013d1c46ebfe5a04f8a0e0d8
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div><div><div><div><div><div><div><div><div>Good Morning,=
+<br><br></div>I have made an atempte at creating a new plugin for OpenVPN. =
+My goal was to be able to give ip, comming from different subnet , to user =
+from different group. Let me explain:<br>
+<br></div>You have two group:<br>Group A, where user common name follow the=
+ regex ^A* and those people need to have an ip in <a href=3D"http://10.0.0.=
+0/24">10.0.0.0/24</a></div>Group B, where user common name follow the regex=
+ ^B* and those people need to have an ip in <a href=3D"http://10.0.1.0/24">=
+10.0.1.0/24</a><br>
+<br></div>Usually, you would use client-config-dir, but for that you need t=
+o have every file ready before hand.<br><br></div>I want my plugin to handl=
+e that kind of situtation.<br><br></div>Tell me if you think it is a bad id=
+ea, good, my implementation suck ... well anything.<br>
+<br></div>The plugin is disponible here <a href=3D"https://github.com/yunai=
+39/OpenVPNSubNetworkPlugin/blob/master/src/simple.c">https://github.com/yun=
+ai39/OpenVPNSubNetworkPlugin/blob/master/src/simple.c</a><br><br></div>I am=
+ far from being an expert in C, and I tried to figure out how OpenVPN plugi=
+n work by reading previous plugin code.<br>
+<br></div>Thank you.<br></div>
+
+--089e013d1c46ebfe5a04f8a0e0d8--
 
