@@ -1,10 +1,10 @@
 From: James Yonan <james@...515...>
-Date: Thu,  8 May 2014 16:50:33 -0600
-Message-Id: <1399589436-8730-4-git-send-email-james@...515...>
+Date: Thu,  8 May 2014 16:50:34 -0600
+Message-Id: <1399589436-8730-5-git-send-email-james@...515...>
 In-Reply-To: <1399589436-8730-1-git-send-email-james@...515...>
 References: <1399589436-8730-1-git-send-email-james@...515...>
-Subject: [Openvpn-devel] [PATCH 3/6] Explicitly cast the third parameter of
-	setsockopt to const void * to avoid warning.
+Subject: [Openvpn-devel] [PATCH 4/6] MSVC 2008 doesn't support dimensioning
+	an array with a const var nor using %z as a printf format specifier.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,22 +20,34 @@ Cc: James Yonan <james@...515...>
 
 Signed-off-by: James Yonan <james@...515...>
 ---
- src/openvpn/socket.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ src/openvpn/ssl_openssl.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/src/openvpn/socket.h b/src/openvpn/socket.h
-index 4e7e7f8..793cd9f 100644
---- a/src/openvpn/socket.h
-+++ b/src/openvpn/socket.h
-@@ -1023,7 +1023,7 @@ static inline void
- link_socket_set_tos (struct link_socket *ls)
- {
-   if (ls && ls->ptos_defined)
--    setsockopt (ls->sd, IPPROTO_IP, IP_TOS, &ls->ptos, sizeof (ls->ptos));
-+    setsockopt (ls->sd, IPPROTO_IP, IP_TOS, (const void *)&ls->ptos, sizeof (ls->ptos));
- }
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index 481600a..d845fd7 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -261,8 +261,7 @@ tls_ctx_restrict_ciphers(struct tls_root_ctx *ctx, const char *ciphers)
  
- #endif
+   const tls_cipher_name_pair *cipher_pair;
+ 
+-  const size_t openssl_ciphers_size = 4096;
+-  char openssl_ciphers[openssl_ciphers_size];
++  char openssl_ciphers[4096];
+   size_t openssl_ciphers_len = 0;
+   openssl_ciphers[0] = '\0';
+ 
+@@ -301,8 +300,8 @@ tls_ctx_restrict_ciphers(struct tls_root_ctx *ctx, const char *ciphers)
+ 	}
+ 
+       // Make sure new cipher name fits in cipher string
+-      if (((openssl_ciphers_size-1) - openssl_ciphers_len) < current_cipher_len) {
+-	msg(M_SSLERR, "Failed to set restricted TLS cipher list, too long (>%zu).", openssl_ciphers_size-1);
++      if (((sizeof(openssl_ciphers)-1) - openssl_ciphers_len) < current_cipher_len) {
++	msg(M_SSLERR, "Failed to set restricted TLS cipher list, too long (>%d).", (int)sizeof(openssl_ciphers)-1);
+       }
+ 
+       // Concatenate cipher name to OpenSSL cipher string
 -- 
 1.8.5.5
 
