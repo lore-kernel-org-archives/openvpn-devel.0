@@ -1,11 +1,10 @@
-Date: Tue, 20 May 2014 11:02:39 +0200 (CEST)
-Message-Id: <201405200902.s4K92d8I007508@...1295...>
+Date: Tue, 20 May 2014 11:06:39 +0200 (CEST)
+Message-Id: <201405200906.s4K96d4I016230@...1295...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1399589436-8730-3-git-send-email-james@...515...>
-References: <1399589436-8730-3-git-send-email-james@...515...>
-Subject: [Openvpn-devel] [PATCH applied] Re: In socket.c,
-	fixed issue where uninitialized value (err) is being passed to to
-	gai_strerror.
+In-Reply-To: <1399589436-8730-4-git-send-email-james@...515...>
+References: <1399589436-8730-4-git-send-email-james@...515...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Explicitly cast the third
+	parameter of setsockopt to const void * to avoid warning.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -23,19 +22,18 @@ ACK.
 
 Your patch has been applied to the release/2.3 branch only.
 
-This code is not present in "master" (most likely due to the dual-stack 
-refactoring).
+"master" has this change as part of 46e02127 already.
 
-commit 302655c98503850765f860951a2b80280bc17385
+commit 36c216556a0de5250040d95ac8f7a8c18b8683b4
 Author: James Yonan
-Date:   Thu May 8 16:50:32 2014 -0600
+Date:   Thu May 8 16:50:33 2014 -0600
 
-     In socket.c, fixed issue where uninitialized value (err) is being passed to to gai_strerror.
+     Explicitly cast the third parameter of setsockopt to const void * to avoid warning.
 
      Signed-off-by: James Yonan <james@...515...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1399589436-8730-3-git-send-email-james@...515...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/8713
+     Message-Id: <1399589436-8730-4-git-send-email-james@...515...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/8708
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
