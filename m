@@ -1,10 +1,11 @@
-Date: Tue, 20 May 2014 11:06:39 +0200 (CEST)
-Message-Id: <201405200906.s4K96d4I016230@...1295...>
+Date: Tue, 20 May 2014 11:09:43 +0200 (CEST)
+Message-Id: <201405200909.s4K99hDE014606@...1295...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1399589436-8730-4-git-send-email-james@...515...>
-References: <1399589436-8730-4-git-send-email-james@...515...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Explicitly cast the third
-	parameter of setsockopt to const void * to avoid warning.
+In-Reply-To: <1399589436-8730-5-git-send-email-james@...515...>
+References: <1399589436-8730-5-git-send-email-james@...515...>
+Subject: [Openvpn-devel] [PATCH applied] Re: MSVC 2008 doesn't support
+	dimensioning an array with a const var nor using %z as a
+	printf format specifier.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,18 +23,18 @@ ACK.
 
 Your patch has been applied to the release/2.3 branch only.
 
-"master" has this change as part of 46e02127 already.
+"master" already has the change, as part of 46e02127
 
-commit 36c216556a0de5250040d95ac8f7a8c18b8683b4
+commit 11fbe93b08180acddc8ac301e6eff6553b9f78e1
 Author: James Yonan
-Date:   Thu May 8 16:50:33 2014 -0600
+Date:   Thu May 8 16:50:34 2014 -0600
 
-     Explicitly cast the third parameter of setsockopt to const void * to avoid warning.
+     MSVC 2008 doesn't support dimensioning an array with a const var nor using %z as a printf format specifier.
 
      Signed-off-by: James Yonan <james@...515...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1399589436-8730-4-git-send-email-james@...515...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/8708
+     Message-Id: <1399589436-8730-5-git-send-email-james@...515...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/8710
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
