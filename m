@@ -1,10 +1,11 @@
-Date: Tue, 20 May 2014 11:01:20 +0200 (CEST)
-Message-Id: <201405200901.s4K91K8g008766@...1295...>
+Date: Tue, 20 May 2014 11:02:39 +0200 (CEST)
+Message-Id: <201405200902.s4K92d8I007508@...1295...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1399589436-8730-2-git-send-email-james@...515...>
-References: <1399589436-8730-2-git-send-email-james@...515...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fixed several instances of
-	declarations after statements.
+In-Reply-To: <1399589436-8730-3-git-send-email-james@...515...>
+References: <1399589436-8730-3-git-send-email-james@...515...>
+Subject: [Openvpn-devel] [PATCH applied] Re: In socket.c,
+	fixed issue where uninitialized value (err) is being passed to to
+	gai_strerror.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,21 +21,21 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 ACK.
 
-Your patch has been applied to the release/2.3 branch.
+Your patch has been applied to the release/2.3 branch only.
 
-Two of the changes are in "master" already, and the socket.c one has been
-superseded by Arne's dual-stack code changes.
+This code is not present in "master" (most likely due to the dual-stack 
+refactoring).
 
-commit 8adb295ebaef0ddf10ce732df36fa6be2d939c0c
+commit 302655c98503850765f860951a2b80280bc17385
 Author: James Yonan
-Date:   Thu May 8 16:50:31 2014 -0600
+Date:   Thu May 8 16:50:32 2014 -0600
 
-     Fixed several instances of declarations after statements.
+     In socket.c, fixed issue where uninitialized value (err) is being passed to to gai_strerror.
 
      Signed-off-by: James Yonan <james@...515...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1399589436-8730-2-git-send-email-james@...515...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/8709
+     Message-Id: <1399589436-8730-3-git-send-email-james@...515...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/8713
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
