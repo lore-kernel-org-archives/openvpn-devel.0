@@ -1,10 +1,10 @@
-From: Steffan Karger <steffan@...1856...>
-Date: Sun, 25 May 2014 21:18:20 +0200
-Message-Id: <1401045501-12343-3-git-send-email-steffan@...1856...>
-In-Reply-To: <1401045501-12343-1-git-send-email-steffan@...1856...>
-References: <1401045501-12343-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH 2/3] Remove unneeded wrapper functions in
-	crypto_openssl.c
+Date: Sun, 25 May 2014 21:56:27 +0200 (CEST)
+Message-Id: <201405251956.s4PJuRUW018867@...1295...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <5381FEFF.1040609@...1856...>
+References: <5381FEFF.1040609@...1856...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Use SSL_MODE_RELEASE_BUFFERS if
+	available
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,73 +15,29 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Cristian Rodriguez <crrodriguez@...724...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Both EVPCipherInit_ov() and EVPCipherUpdate_ov() wrapped OpenSSL functions
-without any changes, so lets just use the functions directly.
+Hi,
 
-Signed-off-by: Steffan Karger <steffan@...1856...>
----
- src/openvpn/crypto_openssl.c | 20 ++++----------------
- 1 file changed, 4 insertions(+), 16 deletions(-)
+your patch has been applied to the OpenVPN master branch.  Sorry it took
+us so long...
 
-diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
-index f471eee..22bb7c9 100644
---- a/src/openvpn/crypto_openssl.c
-+++ b/src/openvpn/crypto_openssl.c
-@@ -57,18 +57,6 @@
- #warning Some OpenSSL HMAC message digests now support key lengths greater than MAX_HMAC_KEY_LENGTH -- consider increasing MAX_HMAC_KEY_LENGTH
- #endif
- 
--static inline int
--EVP_CipherInit_ov (EVP_CIPHER_CTX *ctx, const EVP_CIPHER *type, uint8_t *key, uint8_t *iv, int enc)
--{
--  return EVP_CipherInit (ctx, type, key, iv, enc);
--}
--
--static inline int
--EVP_CipherUpdate_ov (EVP_CIPHER_CTX *ctx, uint8_t *out, int *outl, uint8_t *in, int inl)
--{
--  return EVP_CipherUpdate (ctx, out, outl, in, inl);
--}
--
- #ifndef EVP_CIPHER_name
- #define EVP_CIPHER_name(e)		OBJ_nid2sn(EVP_CIPHER_nid(e))
- #endif
-@@ -519,13 +507,13 @@ cipher_ctx_init (EVP_CIPHER_CTX *ctx, uint8_t *key, int key_len,
-   CLEAR (*ctx);
- 
-   EVP_CIPHER_CTX_init (ctx);
--  if (!EVP_CipherInit_ov (ctx, kt, NULL, NULL, enc))
-+  if (!EVP_CipherInit (ctx, kt, NULL, NULL, enc))
-     msg (M_SSLERR, "EVP cipher init #1");
- #ifdef HAVE_EVP_CIPHER_CTX_SET_KEY_LENGTH
-   if (!EVP_CIPHER_CTX_set_key_length (ctx, key_len))
-     msg (M_SSLERR, "EVP set key size");
- #endif
--  if (!EVP_CipherInit_ov (ctx, NULL, key, NULL, enc))
-+  if (!EVP_CipherInit (ctx, NULL, key, NULL, enc))
-     msg (M_SSLERR, "EVP cipher init #2");
- 
-   /* make sure we used a big enough key */
-@@ -559,14 +547,14 @@ cipher_ctx_mode (const EVP_CIPHER_CTX *ctx)
- int
- cipher_ctx_reset (EVP_CIPHER_CTX *ctx, uint8_t *iv_buf)
- {
--  return EVP_CipherInit_ov (ctx, NULL, NULL, iv_buf, -1);
-+  return EVP_CipherInit (ctx, NULL, NULL, iv_buf, -1);
- }
- 
- int
- cipher_ctx_update (EVP_CIPHER_CTX *ctx, uint8_t *dst, int *dst_len,
-     uint8_t *src, int src_len)
- {
--  return EVP_CipherUpdate_ov (ctx, dst, dst_len, src, src_len);
-+  return EVP_CipherUpdate (ctx, dst, dst_len, src, src_len);
- }
- 
- int
--- 
-1.9.1
+commit a6c573d22566a1dfc44ab060687192a4debc2e03
+Author: Cristian Rodriguez
+Date:   Sun May 25 15:52:58 2014 +0200
+
+     Use SSL_MODE_RELEASE_BUFFERS if available
+
+     Signed-off-by: Cristian Rodriguez <crrodriguez@...724...>
+     Acked-by: Steffan Karger <steffan.karger@...1435...>
+     Message-Id: <5381FEFF.1040609@...1856...>
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
