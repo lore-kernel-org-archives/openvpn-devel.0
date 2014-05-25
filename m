@@ -1,10 +1,8 @@
-Date: Sun, 25 May 2014 21:56:27 +0200 (CEST)
-Message-Id: <201405251956.s4PJuRUW018867@...1295...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <5381FEFF.1040609@...1856...>
-References: <5381FEFF.1040609@...1856...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Use SSL_MODE_RELEASE_BUFFERS if
-	available
+From: Steffan Karger <steffan@...1856...>
+Date: Mon, 26 May 2014 00:08:31 +0200
+Message-Id: <1401055713-9891-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH] Some crypto_openssl.c cleanup for
+	release/2.3
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,29 +13,13 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Cristian Rodriguez <crrodriguez@...724...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-your patch has been applied to the OpenVPN master branch.  Sorry it took
-us so long...
+These are 1/3 and 2/3 of the crypto_openssl.c cleanup patches, but rebased and
+fixed for the release/2.3 branch.
 
-commit a6c573d22566a1dfc44ab060687192a4debc2e03
-Author: Cristian Rodriguez
-Date:   Sun May 25 15:52:58 2014 +0200
-
-     Use SSL_MODE_RELEASE_BUFFERS if available
-
-     Signed-off-by: Cristian Rodriguez <crrodriguez@...724...>
-     Acked-by: Steffan Karger <steffan.karger@...1435...>
-     Message-Id: <5381FEFF.1040609@...1856...>
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+-Steffan
 
 
