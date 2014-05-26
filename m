@@ -1,10 +1,10 @@
-Date: Mon, 26 May 2014 19:34:56 +0200 (CEST)
-Message-Id: <201405261734.s4QHYuad001133@...1295...>
+Date: Mon, 26 May 2014 19:56:00 +0200 (CEST)
+Message-Id: <201405261756.s4QHu03W013522@...1295...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1401045501-12343-3-git-send-email-steffan@...1856...>
-References: <1401045501-12343-3-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Remove unneeded wrapper
-	functions in crypto_openssl.c
+In-Reply-To: <1401055713-9891-2-git-send-email-steffan@...1856...>
+References: <1401055713-9891-2-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Remove function without effect
+	(cipher_ok() always returned true).
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,17 +18,17 @@ Content-Transfer-Encoding: 8bit
 To: Steffan Karger <steffan@...1856...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-ACK.  Patch has been applied to the master branch.
+Your patch has been applied to the release/2.3 branch.
 
-commit 9fbd056873616e9101f5007f92e98b53b245968e
+commit ad4da1ac27cf9308852cac4b3a591a40fa579bc3
 Author: Steffan Karger
-Date:   Sun May 25 21:18:20 2014 +0200
+Date:   Mon May 26 00:08:32 2014 +0200
 
-     Remove unneeded wrapper functions in crypto_openssl.c
+     Remove function without effect (cipher_ok() always returned true).
 
      Signed-off-by: Steffan Karger <steffan@...1856...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1401045501-12343-3-git-send-email-steffan@...1856...>
+     Message-Id: <1401055713-9891-2-git-send-email-steffan@...1856...>
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
