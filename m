@@ -1,10 +1,10 @@
-Date: Mon, 26 May 2014 19:55:54 +0200 (CEST)
-Message-Id: <201405261755.s4QHtsLr020090@...1295...>
+Date: Mon, 26 May 2014 19:56:03 +0200 (CEST)
+Message-Id: <201405261756.s4QHu3bn014973@...1295...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1389706398-26922-1-git-send-email-gert@...1296...>
-References: <1389706398-26922-1-git-send-email-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Merge get_default_gateway()
-	implementation for all 4+1 BSD variants.
+In-Reply-To: <1401055713-9891-3-git-send-email-steffan@...1856...>
+References: <1401055713-9891-3-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Remove unneeded wrapper
+	functions in crypto_openssl.c
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,21 +15,21 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
+To: Steffan Karger <steffan@...1856...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Lazy-ACK rules applied.  Patch has been applied to the master branch.
+Your patch has been applied to the release/2.3 branch.
 
-commit cab6305be749930eae9c4a1348fb90c4c515d8d7
-Author: Gert Doering
-Date:   Tue Jan 14 14:33:18 2014 +0100
+commit c570c1923c4b81871a115f0c07bb2aa04e85fd69
+Author: Steffan Karger
+Date:   Mon May 26 00:08:33 2014 +0200
 
-     Merge get_default_gateway() implementation for all 4+1 BSD variants.
+     Remove unneeded wrapper functions in crypto_openssl.c
 
+     Signed-off-by: Steffan Karger <steffan@...1856...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1401055713-9891-3-git-send-email-steffan@...1856...>
      Signed-off-by: Gert Doering <gert@...1296...>
-     Lazy-Ack-by: Gert Doering <gert@...1296...>
-     Message-Id: <1389706398-26922-1-git-send-email-gert@...1296...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/8233
 
 
 --
