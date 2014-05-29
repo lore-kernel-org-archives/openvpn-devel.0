@@ -1,10 +1,8 @@
-Date: Wed, 28 May 2014 22:39:12 +0200 (CEST)
-Message-Id: <201405282039.s4SKdCSr011968@...1295...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <53863C41.1020408@...1856...>
-References: <53863C41.1020408@...1856...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix merge error in a6c573d,
-	the ssl ctx is now abstracted.
+From: Steffan Karger <steffan@...1856...>
+Date: Thu, 29 May 2014 12:39:07 +0200
+Message-Id: <1401359947-31144-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH] Add (default disabled) --enable-werror
+	option to configure
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,33 +13,45 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Steffan Karger <steffan@...1856...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Argh...  so why didn't this blow up in my or buildbot's face?  I *did* 
-test this...
+Useful for example during development or automated builds, to make the
+build error out if new warnings are introduced.
 
-Anyway. ACK. Patch has been applied to the master branch.
+Signed-off-by: Steffan Karger <steffan@...1856...>
+---
+ configure.ac | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-Yes, de-warn patches welcome, though I dislike "just sprinkle casts around"
-patches :-)
-
-commit efb304cf4904cbf5d926ab7a6ecde101472fa023
-Author: Steffan Karger
-Date:   Wed May 28 21:40:34 2014 +0200
-
-     Fix merge error in a6c573d, the ssl ctx is now abstracted.
-
-     Signed-off-by: Steffan Karger <steffan@...1856...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <53863C41.1020408@...1856...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/8745
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/configure.ac b/configure.ac
+index ea35d73..1073312 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -244,6 +244,13 @@ AC_ARG_ENABLE(
+ )
+ 
+ AC_ARG_ENABLE(
++	[werror],
++	[AS_HELP_STRING([--enable-werror], [promote compiler warnings to errors, will cause builds to fail is the compiler issues warnings (debugging option) @<:@default=no@:>@])],
++	,
++	[enable_werror="no"]
++)
++
++AC_ARG_ENABLE(
+ 	[strict-options],
+ 	[AS_HELP_STRING([--enable-strict-options], [enable strict options check between peers (debugging option) @<:@default=no@:>@])],
+ 	,
+@@ -1137,6 +1144,9 @@ fi
+ if test "${enable_strict}" = "yes"; then
+ 	CFLAGS="${CFLAGS} -Wall -Wno-unused-parameter -Wno-unused-function"
+ fi
++if test "${enable_werror}" = "yes"; then
++	CFLAGS="${CFLAGS} -Werror"
++fi
+ 
+ if test "${WIN32}" = "yes"; then
+ 	test -z "${MAN2HTML}" && AC_MSG_ERROR([man2html is required for win32])
+-- 
+1.9.1
 
 
