@@ -1,10 +1,10 @@
-From: Steffan Karger <steffan@...1856...>
-Date: Sun,  1 Jun 2014 19:58:56 +0200
-Message-Id: <1401645536-27849-6-git-send-email-steffan@...1856...>
-In-Reply-To: <1401645536-27849-1-git-send-email-steffan@...1856...>
-References: <1401645536-27849-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH 5/5] Remove unused variable 'proxy' from
-	socket_restart_pause()
+Date: Sun, 1 Jun 2014 21:01:12 +0200 (CEST)
+Message-Id: <201406011901.s51J1Chq000347@...1295...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <1401645536-27849-2-git-send-email-steffan@...1856...>
+References: <1401645536-27849-2-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Use generic openvpn_x509_cert_t
+	in ssl_verify_polarssl.c
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,39 +15,27 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Steffan Karger <steffan@...1856...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Variable 'proxy' was set but never read, so remove it.
+ACK. Your patch has been applied to the master branch.
 
-Signed-off-by: Steffan Karger <steffan@...1856...>
----
- src/openvpn/init.c | 10 ----------
- 1 file changed, 10 deletions(-)
+commit a87c0a9624d5fb28930d9d137ba9dbd8a2515caf
+Author: Steffan Karger
+Date:   Sun Jun 1 19:58:52 2014 +0200
 
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 021b5ca..76b1bbe 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -1860,18 +1860,8 @@ do_hold (struct context *c)
- static void
- socket_restart_pause (struct context *c)
- {
--  bool proxy = false;
-   int sec = 2;
- 
--#ifdef ENABLE_HTTP_PROXY
--  if (c->options.ce.http_proxy_options)
--    proxy = true;
--#endif
--#ifdef ENABLE_SOCKS
--  if (c->options.ce.socks_proxy_server)
--    proxy = true;
--#endif
--
-   switch (c->options.ce.proto)
-     {
-     case PROTO_TCP_SERVER:
--- 
-1.9.1
+     Use generic openvpn_x509_cert_t in ssl_verify_polarssl.c
+
+     Signed-off-by: Steffan Karger <steffan@...1856...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1401645536-27849-2-git-send-email-steffan@...1856...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/8752
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
