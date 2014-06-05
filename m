@@ -1,14 +1,9 @@
-Message-ID: <53907F22.2060005@...1114...>
-Date: Thu, 05 Jun 2014 16:30:58 +0200
-From: David Sommerseth <openvpn.list@...1114...>
+Message-ID: <5390887A.4040001@...515...>
+Date: Thu, 05 Jun 2014 18:10:50 +0300
+From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-References: <53907082.70804@...1800...>
-In-Reply-To: <53907082.70804@...1800...>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="9q6huFSS7MfQIjx30kPugLtFrUd8DbpoA"
-Subject: Re: [Openvpn-devel] latest OpenSSL security advisories
-Reply-To: openvpn-devel@lists.sourceforge.net
+Subject: [Openvpn-devel] New OpenVPN Windows installers released to fix
+	OpenSSL security vulnerabilities
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,54 +12,47 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Mike Tancsa <mike@...1800...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---9q6huFSS7MfQIjx30kPugLtFrUd8DbpoA
-Content-Type: text/plain; charset="ISO-8859-1"
+Content-Type: text/plain; charset="ISO-8859-15"
 Content-Transfer-Encoding: quoted-printable
-
-On 05/06/14 15:28, Mike Tancsa wrote:
-> A few more vulnerabilities it would seem. Can anyone shed light on how=20
-> this impacts OpenVPN ?
->=20
-> http://www.openssl.org/news/secadv_20140605.txt
->=20
-> Does OpenVPN make use of DTLS ? or SSL_MODE_RELEASE_BUFFERS  ?
-
-I don't remember the details around SSL_MODE_RELEASE_BUFFERS.  As I
-understand, it needs to be explicitly enabled.  At a very quick glance
-(git grep), I don't see that being used at all.
-
-But OpenVPN does not make use of DTLS.  DTLS came 4-5 years (roughly)
-after the first OpenVPN release.  There are currently no immediate plans
-to move over to DTLS
-
-So, as most of these OpenSSL issues:  OpenVPN itself is secure, as long
-as OpenSSL is safe.  And in most cases, enabling --tls-auth is an
-additional security barrier which can often make attacks on OpenVPN
-tunnels more difficult.
+To: "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, "openvpn-announce@lists.sourceforge.net" <openvpn-announce@lists.sourceforge.net>
 
 
---=20
-kind regards,
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-David Sommerseth
+Hi all,
 
+The OpenSSL project released fixes to several security vulnerabilities
+today, one of which (the MITM vulnerability) affects OpenVPN:
 
---9q6huFSS7MfQIjx30kPugLtFrUd8DbpoA
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+<http://www.openssl.org/news/secadv_20140605.txt>
 
+OpenVPN 2.3.2 and 2.3.4 Windows installers that include a fixed version
+of OpenSSL have now been released:
+
+<http://openvpn.net/index.php/download/community-downloads.html>
+
+All Windows users of OpenVPN should upgrade their installations
+immediately to the latest 2.3.2 or 2.3.4 releases.
+
+Please note that OpenVPN 2.2.2 Windows installers, which were also
+vulnerable, have been removed from the main download pages. If you are
+unable to upgrade to a recent release you can still build 2.2.2
+yourself, linking it to a more recent OpenSSL version.
+
+- --=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1
 Comment: Using GnuPG with Thunderbird - http://www.enigmail.net/
 
-iEYEARECAAYFAlOQfyQACgkQDC186MBRfrrl7wCcC93rch7Shsq0BRBQgScNLUW1
-Mt0AoI1/0zRoymjstaZ1/kDKoGJii6aL
-=nY+k
+iEYEARECAAYFAlOQiHoACgkQwp2X7RmNIqPhUgCfdKXmmnZGz71w5wF4leaC6aJf
+kwYAoIDK8M3fNcIx3gAWepaL0Lt04cGe
+=3DXOGC
 -----END PGP SIGNATURE-----
 
---9q6huFSS7MfQIjx30kPugLtFrUd8DbpoA--
 
