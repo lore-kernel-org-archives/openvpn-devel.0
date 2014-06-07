@@ -1,11 +1,15 @@
-Message-ID: <539334C9.8080009@...1856...>
-Date: Sat, 07 Jun 2014 17:50:33 +0200
-From: Steffan Karger <steffan@...1856...>
-MIME-Version: 1.0
+Date: Sat, 7 Jun 2014 21:00:35 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20140607190035.GX1118@...1296...>
 References: <1402080235-24409-1-git-send-email-gert@...1296...>
-In-Reply-To: <1402080235-24409-1-git-send-email-gert@...1296...>
+	<539334C9.8080009@...1856...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="U7F658e60E1K4csu"
+Content-Disposition: inline
+In-Reply-To: <539334C9.8080009@...1856...>
 Subject: Re: [Openvpn-devel] [PATCH] Drop incoming fe80:: packets silently
- now.
+	now.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,65 +18,53 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+To: Steffan Karger <steffan@...1856...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-ACK
+--U7F658e60E1K4csu
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Getting rid of useless log messages makes the important ones stand out
-more, which is great.
+Hi,
 
-Maybe put the IPv6 link-local address comment on a single line?
+On Sat, Jun 07, 2014 at 05:50:33PM +0200, Steffan Karger wrote:
+> Maybe put the IPv6 link-local address comment on a single line?
 
--Steffan
+Yeah.  That one started as a multi-line comment :-) - I'll change it=20
+to
 
-On 06-06-14 20:43, Gert Doering wrote:
-> IPv6 has the concept of "link local" addresses, fe80::<host id>, which
-> normally are present on every link, and are used for stuff like DHCPv6,
-> neighbor discovery, etc.
-> 
-> OpenVPN point-to-multipoint mode currently does neither configure them on
-> tun interfaces, nor are they handled in a meaningful way if a client OS
-> always has them (like Windows or Solaris) - so the log fills with many
-> lines of "MULTI: bad source address from client [fe80::...]", serving
-> no useful purpose.
-> 
-> This patch just recognizes IPv6 LL packets and silently drops them.
-> 
-> Further patches can build on this and add full link-local support, which
-> would require address learning (as the addresse are based on host IDs, not
-> assigned by the server).
-> 
-> Signed-off-by: Gert Doering <gert@...1296...>
-> ---
->  src/openvpn/multi.c | 14 ++++++++++++--
->  1 file changed, 12 insertions(+), 2 deletions(-)
-> 
-> diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-> index e451924..f00a9cf 100644
-> --- a/src/openvpn/multi.c
-> +++ b/src/openvpn/multi.c
-> @@ -2161,8 +2161,18 @@ multi_process_incoming_link (struct multi_context *m, struct multi_instance *ins
->  	      /* make sure that source address is associated with this client */
->  	      else if (multi_get_instance_by_virtual_addr (m, &src, true) != m->pending)
->  		{
-> -		  msg (D_MULTI_DROPPED, "MULTI: bad source address from client [%s], packet dropped",
-> -		       mroute_addr_print (&src, &gc));
-> +		  /* IPv6 link-local address (fe80::xxx)?
-> +                   */
-> +		  if ( (src.type & MR_ADDR_MASK) == MR_ADDR_IPV6 &&
-> +		        src.addr[0] == 0xfe && src.addr[1] == 0x80 )
-> +		    {
-> +		      /* do nothing, for now.  TODO: add address learning */
-> +		    }
-> +		  else
-> +		    {
-> +		      msg (D_MULTI_DROPPED, "MULTI: bad source address from client [%s], packet dropped",
-> +		           mroute_addr_print (&src, &gc));
-> +		    }
->  		  c->c2.to_tun.len = 0;
->  		}
->  	      /* client-to-client communication enabled? */
-> 
+> > -		  msg (D_MULTI_DROPPED, "MULTI: bad source address from client [%s],=
+ packet dropped",
+> > -		       mroute_addr_print (&src, &gc));
+> > +		  /* IPv6 link-local address (fe80::xxx)? */
+> > +		  if ( (src.type & MR_ADDR_MASK) =3D=3D MR_ADDR_IPV6 &&
+> > +		        src.addr[0] =3D=3D 0xfe && src.addr[1] =3D=3D 0x80 )
+> > +		    {
+
+... as I go.
+
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--U7F658e60E1K4csu
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQCVAwUBU5NhUqkuBuNlUUl1AQL2pgQAmjc3NruI9tCeWxh8zZhRKTuoPF+YDBRd
+lWetBrPUo9Hjh27EFyvyDcO0tVjYI7PXdFYFYI7P4nIiJ75Cuq4Dxv7yR9a9wCqP
+c0gmNQi25Kyz+F+yVc3gFIiFjC7XxpMy3bYr9mJ3aaNeptg0WUgEhYaC4tvr3GxN
+6KGmVXL8vC4=
+=oud4
+-----END PGP SIGNATURE-----
+
+--U7F658e60E1K4csu--
 
