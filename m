@@ -1,10 +1,8 @@
-Date: Sun, 8 Jun 2014 12:58:36 +0200 (CEST)
-Message-Id: <201406081058.s58AwaDO018986@...1295...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <1402080235-24409-1-git-send-email-gert@...1296...>
-References: <1402080235-24409-1-git-send-email-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Drop incoming fe80:: packets
-	silently now.
+From: Steffan Karger <steffan@...1856...>
+Date: Sun,  8 Jun 2014 18:16:11 +0200
+Message-Id: <1402244175-31462-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH] Fix remaining issues with OFB/CFB cipher
+	modes
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,28 +13,19 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Patch has been applied to the master and release/2.3 branches.
+Hi,
 
-commit 70f1864188ad00451683cabf51e56b7730250c40 (master)
-commit 45f5a0a87870809ee453695ff0167b3754f0431e (release/2.3)
+OFB and CFB cipher modes have been broken for a long time, see trac ticket #89
+(https://community.openvpn.net/openvpn/ticket/89). Commit be46a2c enables
+support for OFB and CFB again, but leaves some minor problems around. The
+following patches resolve the remaining issues.
 
-Author: Gert Doering
-Date:   Fri Jun 6 20:43:55 2014 +0200
+Patches 1-3 fix some minor issues I encountered while testing OFB/CFB.
 
-     Drop incoming fe80:: packets silently now.
+Patch 4 extends the t_lpback tests to prevent further regression.
 
-     Signed-off-by: Gert Doering <gert@...1296...>
-     Acked-by: Steffan Karger <steffan.karger@...1435...>
-     Message-Id: <1402080235-24409-1-git-send-email-gert@...1296...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/8773
-
-
---
-kind regards,
-
-Gert Doering
+-Steffan
 
 
