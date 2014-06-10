@@ -1,13 +1,8 @@
-Date: Mon, 9 Jun 2014 17:26:12 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20140609152611.GZ1118@...1296...>
-References: <001301cf83e1$a04bdbc0$e0e39340$@bassi@...1916...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="tbn31orTZdSAVHoc"
-Content-Disposition: inline
-In-Reply-To: <001301cf83e1$a04bdbc0$e0e39340$@bassi@...1916...>
-Subject: Re: [Openvpn-devel] installation openvpn with pfsense
+MIME-Version: 1.0
+Date: Tue, 10 Jun 2014 13:35:25 +0000
+Message-ID: <CAGyAFMUQ+vF_oh4MYvs_C1Th=2KzoHoDi8Bcrv66X8jfiwARLw@...278...>
+From: Lev Stipakov <lstipakov@...277...>
+Subject: [Openvpn-devel] Rekey and Defer sample plugin
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,43 +11,71 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: luigi bassi <luigi.bassi@...1916...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---tbn31orTZdSAVHoc
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Hello,
 
-HI,
+I'm facing a problem with "defer" sample plugin and rekeying.
 
-On Mon, Jun 09, 2014 at 02:52:09PM +0200, luigi bassi wrote:
-> Please solve this problem is very urgent and important for me.=20
+I use plugin from
+https://github.com/OpenVPN/openvpn/tree/master/sample/sample-plugins/defer.
 
-I take this is an offer to pay for support?
+Relevant part of openvpn config:
 
-gert
+> auth-user-pass-optional
+> setenv test_deferred_auth 2
+> plugin /etc/openvpn/simple.so
+> reneg-sec 20
 
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+Everything works fine, plugin writes into auth control file in 2 secs
+and client got authenticated. When rekeying happends, plugin got
+called and writes again to auth control file, however after that
+connection breaks.
 
---tbn31orTZdSAVHoc
-Content-Type: application/pgp-signature
-Content-Disposition: inline
+Part of OpenVPN log:
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
+OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY
+DEFER u='' p='' acf='/tmp/openvpn_acf_8ec7b1fb155ede01c8bae22c6e4ad4ea.tmp'
+( sleep 2 ; echo AUTH
+/tmp/openvpn_acf_8ec7b1fb155ede01c8bae22c6e4ad4ea.tmp 2 ; echo 1
+>/tmp/openvpn_acf_8ec7b1fb155ede01c8bae22c6e4ad4ea.tmp ) &
+Tue Jun 10 13:25:50 2014 us=851659
+588b4d7d-f8ec-4397-8156-43ed232c2dd8/10.64.1.101:1194 PLUGIN_CALL:
+POST /etc/openvpn/simple.so/PLUGIN_AUTH_USER_PASS_VERIFY status=2
+Tue Jun 10 13:25:50 2014 us=851680
+588b4d7d-f8ec-4397-8156-43ed232c2dd8/10.64.1.101:1194 TLS:
+Username/Password authentication deferred for username ''
+OPENVPN_PLUGIN_TLS_FINAL
+Tue Jun 10 13:25:50 2014 us=851695
+588b4d7d-f8ec-4397-8156-43ed232c2dd8/10.64.1.101:1194 PLUGIN_CALL:
+POST /etc/openvpn/simple.so/PLUGIN_TLS_FINAL status=0
+Tue Jun 10 13:25:50 2014 us=851842
+588b4d7d-f8ec-4397-8156-43ed232c2dd8/10.64.1.101:1194 Data Channel
+Encrypt: Cipher 'BF-CBC' initialized with 128 bit key
+Tue Jun 10 13:25:50 2014 us=851850
+588b4d7d-f8ec-4397-8156-43ed232c2dd8/10.64.1.101:1194 Data Channel
+Encrypt: Using 160 bit message hash 'SHA1' for HMAC authentication
+Tue Jun 10 13:25:50 2014 us=851894
+588b4d7d-f8ec-4397-8156-43ed232c2dd8/10.64.1.101:1194 Data Channel
+Decrypt: Cipher 'BF-CBC' initialized with 128 bit key
+Tue Jun 10 13:25:50 2014 us=851902
+588b4d7d-f8ec-4397-8156-43ed232c2dd8/10.64.1.101:1194 Data Channel
+Decrypt: Using 160 bit message hash 'SHA1' for HMAC authentication
+Tue Jun 10 13:25:50 2014 us=853273
+588b4d7d-f8ec-4397-8156-43ed232c2dd8/10.64.1.101:1194 Control Channel:
+TLSv1, cipher TLSv1/SSLv3 DHE-RSA-AES256-SHA, 2048 bit RSA
+Tue Jun 10 13:25:51 2014 us=238477
+588b4d7d-f8ec-4397-8156-43ed232c2dd8/10.64.1.101:1194 TLS Error:
+local/remote TLS keys are out of sync: [AF_INET]10.64.1.101:1194 [1]
 
-iQCVAwUBU5XSE6kuBuNlUUl1AQJx3QP/WMEx6KJ9CO/i49LlLUgNXjARQZe2lhYv
-x3sS3MlStVqldf9qXvX+ik7zmvidRpGwJwOdiB4g7q9b6TauULvO41lGeBlfKuvn
-v8gnDfhI25y5xve43pKnj9Ry3mQtjqSzZ/ynkjCyMD4DGV3CxWABzY0Usmof5vpx
-nYWvfQxX0Tk=
-=gP9G
------END PGP SIGNATURE-----
+and after that lots of "TLS keys are out of sync".
 
---tbn31orTZdSAVHoc--
+Is it kind of a bug in OpenVPN/sample plugin or am I missing something
+in configuration? Anything can be done (maybe in OpenVPN code) to make
+it work?
+
+-- 
+-Lev
 
