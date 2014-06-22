@@ -1,12 +1,10 @@
-Message-ID: <53A6F59D.9040801@...1856...>
-Date: Sun, 22 Jun 2014 17:26:21 +0200
-From: Steffan Karger <steffan@...1856...>
-MIME-Version: 1.0
-References: <1397663021-18815-1-git-send-email-davids@...1347...>
-	<1398990504-4239-1-git-send-email-dazo@...384...>
+Date: Sun, 22 Jun 2014 19:31:19 +0200 (CEST)
+Message-Id: <201406221731.s5MHVIEL010514@...1295...>
+From: Gert Doering <gert@...1296...>
 In-Reply-To: <1398990504-4239-1-git-send-email-dazo@...384...>
-Subject: Re: [Openvpn-devel] [PATCH v2] Improve error reporting on file
- access to --client-config-dir and --ccd-exclusive
+References: <1398990504-4239-1-git-send-email-dazo@...384...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Improve error reporting on file
+	access to --client-config-dir and --ccd-exclusive
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,73 +13,32 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: David Sommerseth <dazo@...384...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-ACK
+Your patch has been applied to the master and release/2.3 branches.
 
-Sorry it took so long. Patch looks good, and works as expected for me.
+commit 4978dadaed4ecf1b9dd256f57c6a5c895691580b (master)
+commit 488994b3f65242ec31b015f53e21d935f75b8bee (release/2.3)
 
--Steffan
+Author: David Sommerseth
+Date:   Fri May 2 02:28:24 2014 +0200
 
-On 02-05-14 02:28, David Sommerseth wrote:
-> OpenVPN will do some simple sanity checking at startup to ensure the expected
-> files and directories is in place.  However, with --client-config-dir and
-> --ccd-exclusive, things are slightly different.  In both cases it is perfectly
-> fine that files does not exists, and we cannot know any file names beforehand
-> due to these filenames being based upon the certificate's CN field.
-> 
-> The problem arises when OpenVPN cannot open files inside a directory because
-> the directory permissions are too restrictive, have wrong ownership (triggered
-> by the usage of --user/--group) or other security mechanisms the OS uses.
-> 
-> When a client connects, the test_file() function is used to check if a client
-> config file has been prepared.  And if not, it continues without trying to read
-> it.  So, if the privileges of the running OpenVPN process is not allowed to
-> open and read an existing file, OpenVPN will treat this as a non-existing file
-> without saying anything.  This is clearly wrong.  So this patch adds an warning
-> message in the OpenVPN log if it could not open the file due to lack of
-> permissions.
-> 
-> This will work fine on all *nix based OSes.  Windows however reports 'no such
-> file or directory' (errno=2/-ENOENT) even on privilege access errors when the
-> directory this file resides is too restrictive.  But there is no easy way to
-> work around that.  However, I believe that the initial sanity checking at
-> startup will catch that one, as it will check if the directories it needs
-> exists.
-> 
-> This patch has only gone through simple basic testing, with both too few
-> privileges and with proper privileges to the CCD directory.  With wrong
-> privileges, the following error can be found if CN=Test client
-> 
->   Fri May  2 00:00:10 2014 us=281993 127.0.0.1:41017 Could not access file '/etc/clients/Test client': Permission denied (errno=13)
-> 
-> [v2 - use openvpn_errno() instead of errno, for better platform support]
-> 
-> Trac: #277
-> Trac-URL: https://community.openvpn.net/openvpn/ticket/277
-> Signed-off-by: David Sommerseth <dazo@...384...>
-> ---
->  src/openvpn/misc.c |    6 ++++++
->  1 files changed, 6 insertions(+), 0 deletions(-)
-> 
-> diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
-> index 7483184..63b4c1c 100644
-> --- a/src/openvpn/misc.c
-> +++ b/src/openvpn/misc.c
-> @@ -861,6 +861,12 @@ test_file (const char *filename)
->  	  fclose (fp);
->  	  ret = true;
->  	}
-> +      else
-> +	{
-> +	  if( openvpn_errno () == EACCES ) {
-> +	    msg( M_WARN | M_ERRNO, "Could not access file '%s'", filename);
-> +	  }
-> +	}
->      }
->  
->    dmsg (D_TEST_FILE, "TEST FILE '%s' [%d]",
-> 
+     Improve error reporting on file access to --client-config-dir and --ccd-exclusive
+
+     Trac-URL: https://community.openvpn.net/openvpn/ticket/277
+     Signed-off-by: David Sommerseth <dazo@...384...>
+     Acked-by: Steffan Karger <steffan.karger@...1435...>
+     Message-Id: <1398990504-4239-1-git-send-email-dazo@...384...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/8688
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
+
 
