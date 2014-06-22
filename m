@@ -1,8 +1,12 @@
-Message-ID: <53A3532E.7080203@...1147...>
-Date: Thu, 19 Jun 2014 23:16:30 +0200
-From: Jan Just Keijser <janjust@...1147...>
+Message-ID: <53A6F59D.9040801@...1856...>
+Date: Sun, 22 Jun 2014 17:26:21 +0200
+From: Steffan Karger <steffan@...1856...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] looking for a co-author for an OpenVPN book
+References: <1397663021-18815-1-git-send-email-davids@...1347...>
+	<1398990504-4239-1-git-send-email-dazo@...384...>
+In-Reply-To: <1398990504-4239-1-git-send-email-dazo@...384...>
+Subject: Re: [Openvpn-devel] [PATCH v2] Improve error reporting on file
+ access to --client-config-dir and --ccd-exclusive
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,23 +15,73 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
-Hi all,
+ACK
 
-I'm looking for a co-author for an OpenVPN book, called 'Mastering 
-OpenVPN' , from Packt Publishing. They also published my last book and 
-have now approached me for a new book. I don't want to be the sole 
-author this time, so I'm looking for another person (preferably one) to 
-help put this book together.
+Sorry it took so long. Patch looks good, and works as expected for me.
 
-Is anybody interested? Contact me for more details regarding payment, 
-how much time it would take etc.
+-Steffan
 
-Thx,
-
-JJK / Jan Just Keijser
-
+On 02-05-14 02:28, David Sommerseth wrote:
+> OpenVPN will do some simple sanity checking at startup to ensure the expected
+> files and directories is in place.  However, with --client-config-dir and
+> --ccd-exclusive, things are slightly different.  In both cases it is perfectly
+> fine that files does not exists, and we cannot know any file names beforehand
+> due to these filenames being based upon the certificate's CN field.
+> 
+> The problem arises when OpenVPN cannot open files inside a directory because
+> the directory permissions are too restrictive, have wrong ownership (triggered
+> by the usage of --user/--group) or other security mechanisms the OS uses.
+> 
+> When a client connects, the test_file() function is used to check if a client
+> config file has been prepared.  And if not, it continues without trying to read
+> it.  So, if the privileges of the running OpenVPN process is not allowed to
+> open and read an existing file, OpenVPN will treat this as a non-existing file
+> without saying anything.  This is clearly wrong.  So this patch adds an warning
+> message in the OpenVPN log if it could not open the file due to lack of
+> permissions.
+> 
+> This will work fine on all *nix based OSes.  Windows however reports 'no such
+> file or directory' (errno=2/-ENOENT) even on privilege access errors when the
+> directory this file resides is too restrictive.  But there is no easy way to
+> work around that.  However, I believe that the initial sanity checking at
+> startup will catch that one, as it will check if the directories it needs
+> exists.
+> 
+> This patch has only gone through simple basic testing, with both too few
+> privileges and with proper privileges to the CCD directory.  With wrong
+> privileges, the following error can be found if CN=Test client
+> 
+>   Fri May  2 00:00:10 2014 us=281993 127.0.0.1:41017 Could not access file '/etc/clients/Test client': Permission denied (errno=13)
+> 
+> [v2 - use openvpn_errno() instead of errno, for better platform support]
+> 
+> Trac: #277
+> Trac-URL: https://community.openvpn.net/openvpn/ticket/277
+> Signed-off-by: David Sommerseth <dazo@...384...>
+> ---
+>  src/openvpn/misc.c |    6 ++++++
+>  1 files changed, 6 insertions(+), 0 deletions(-)
+> 
+> diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
+> index 7483184..63b4c1c 100644
+> --- a/src/openvpn/misc.c
+> +++ b/src/openvpn/misc.c
+> @@ -861,6 +861,12 @@ test_file (const char *filename)
+>  	  fclose (fp);
+>  	  ret = true;
+>  	}
+> +      else
+> +	{
+> +	  if( openvpn_errno () == EACCES ) {
+> +	    msg( M_WARN | M_ERRNO, "Could not access file '%s'", filename);
+> +	  }
+> +	}
+>      }
+>  
+>    dmsg (D_TEST_FILE, "TEST FILE '%s' [%d]",
+> 
 
