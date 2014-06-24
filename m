@@ -1,9 +1,10 @@
-From: Steffan Karger <steffan@...1856...>
-Date: Tue, 24 Jun 2014 22:03:26 +0200
-Message-Id: <1403640206-7024-2-git-send-email-steffan@...1856...>
-In-Reply-To: <1403640206-7024-1-git-send-email-steffan@...1856...>
-References: <1403640206-7024-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH] Update README.polarssl
+Date: Tue, 24 Jun 2014 22:49:33 +0200 (CEST)
+Message-Id: <201406242049.s5OKnXko019464@...1295...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <1398415277-6880-1-git-send-email-steffan.karger@...1435...>
+References: <1398415277-6880-1-git-send-email-steffan.karger@...1435...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix bug that incorrectly
+	refuses oid representation eku's in polar builds
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,44 +15,29 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Steffan Karger <steffan.karger@...1435...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-PolarSSL support has been extended and adjusted, but README.polarssl was
-not accordingly adjusted. This updates README.polarssl to the current state
-of affairs for the master branch.
+Your patch has been applied to the master and release/2.3 branches.
 
-Signed-off-by: Steffan Karger <steffan@...1856...>
----
- README.polarssl | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+commit e238b806f5f3843b80d5b1b2b269679210faa7f6 (master)
+commit 991e3574dd9d11dac61b302377b29d24a46b89b1 (release/2.3)
 
-diff --git a/README.polarssl b/README.polarssl
-index ab7c2d7..6f1fa51 100644
---- a/README.polarssl
-+++ b/README.polarssl
-@@ -7,7 +7,7 @@ To Build and Install,
- 	make
- 	make install
- 
--This version depends on at least PolarSSL v1.1.
-+This version depends on PolarSSL 1.3 (and requires at least 1.3.3).
- 
- *************************************************************************
- 
-@@ -17,12 +17,10 @@ in the PolarSSL version of OpenVPN:
-  * PKCS#12 file support
-  * --capath support - Loading certificate authorities from a directory
-  * Windows CryptoAPI support
-- * Management external key support
-  * X.509 alternative username fields (must be "CN")
- 
- Plugin/Script features:
- 
-- * X.509 Serial number is in hex, not decimal as with OpenSSL
-  * X.509 subject line has a different format than the OpenSSL subject line
-  * X.509 certificate export does not work
-  * X.509 certificate tracking
--- 
-1.9.1
+Author: Steffan Karger
+Date:   Fri Apr 25 10:41:17 2014 +0200
+
+     Fix bug that incorrectly refuses oid representation eku's in polar builds
+
+     Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+     Acked-by: David Sommerseth <dazo@...384...>
+     Message-Id: <1398415277-6880-1-git-send-email-steffan.karger@...1435...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/8627
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
