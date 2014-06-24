@@ -1,8 +1,8 @@
-Date: Tue, 24 Jun 2014 22:53:27 +0200 (CEST)
-Message-Id: <201406242053.s5OKrRjC001427@...1295...>
+Date: Tue, 24 Jun 2014 22:53:31 +0200 (CEST)
+Message-Id: <201406242053.s5OKrVPi006313@...1295...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1403640206-7024-2-git-send-email-steffan@...1856...>
-References: <1403640206-7024-2-git-send-email-steffan@...1856...>
+In-Reply-To: <1403640206-7024-1-git-send-email-steffan@...1856...>
+References: <1403640206-7024-1-git-send-email-steffan@...1856...>
 Subject: [Openvpn-devel] [PATCH applied] Re: Update README.polarssl
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -17,18 +17,18 @@ Content-Transfer-Encoding: 8bit
 To: Steffan Karger <steffan@...1856...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-ACK. Patch has been applied to the master branch.
+ACK.  Patch has been applied to the release/2.3 branch.
 
-commit 96b9538711789355472607922ab1a0ac6d151367
+commit f7048855c0f4d1045181cfbc24381c786a9ace31
 Author: Steffan Karger
-Date:   Tue Jun 24 22:03:26 2014 +0200
+Date:   Tue Jun 24 22:03:25 2014 +0200
 
      Update README.polarssl
 
      Signed-off-by: Steffan Karger <steffan@...1856...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1403640206-7024-2-git-send-email-steffan@...1856...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/8803
+     Message-Id: <1403640206-7024-1-git-send-email-steffan@...1856...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/8804
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
