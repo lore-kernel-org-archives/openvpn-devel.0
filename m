@@ -1,10 +1,9 @@
-Date: Tue, 24 Jun 2014 22:49:33 +0200 (CEST)
-Message-Id: <201406242049.s5OKnXko019464@...1295...>
+Date: Tue, 24 Jun 2014 22:53:27 +0200 (CEST)
+Message-Id: <201406242053.s5OKrRjC001427@...1295...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1398415277-6880-1-git-send-email-steffan.karger@...1435...>
-References: <1398415277-6880-1-git-send-email-steffan.karger@...1435...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix bug that incorrectly
-	refuses oid representation eku's in polar builds
+In-Reply-To: <1403640206-7024-2-git-send-email-steffan@...1856...>
+References: <1403640206-7024-2-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Update README.polarssl
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,23 +14,21 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Steffan Karger <steffan.karger@...1435...>
+To: Steffan Karger <steffan@...1856...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master and release/2.3 branches.
+ACK. Patch has been applied to the master branch.
 
-commit e238b806f5f3843b80d5b1b2b269679210faa7f6 (master)
-commit 991e3574dd9d11dac61b302377b29d24a46b89b1 (release/2.3)
-
+commit 96b9538711789355472607922ab1a0ac6d151367
 Author: Steffan Karger
-Date:   Fri Apr 25 10:41:17 2014 +0200
+Date:   Tue Jun 24 22:03:26 2014 +0200
 
-     Fix bug that incorrectly refuses oid representation eku's in polar builds
+     Update README.polarssl
 
-     Signed-off-by: Steffan Karger <steffan.karger@...1435...>
-     Acked-by: David Sommerseth <dazo@...384...>
-     Message-Id: <1398415277-6880-1-git-send-email-steffan.karger@...1435...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/8627
+     Signed-off-by: Steffan Karger <steffan@...1856...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1403640206-7024-2-git-send-email-steffan@...1856...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/8803
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
