@@ -1,14 +1,14 @@
-Message-ID: <53B03B43.2040009@...1227...>
-Date: Sun, 29 Jun 2014 18:13:55 +0200
-From: Arne Schwabe <arne@...1227...>
-MIME-Version: 1.0
-References: <CAGyAFMXhPTamN5tZYr92=re8Bhxky=priWS8UhCU3E_p2D8-mQ@...278...>
-	<CAGyAFMV6kZzTFwdp21n8GTNa-fbPx_S-TpYjpiC+R862WoMhAA@...278...>
-In-Reply-To: <CAGyAFMV6kZzTFwdp21n8GTNa-fbPx_S-TpYjpiC+R862WoMhAA@...278...>
+Date: Sun, 29 Jun 2014 18:25:51 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20140629162551.GK1118@...1296...>
+References: <CAEsd45Q1Ow+pasP0FhtJEkV-WW-yFA4dfKzx6QEKgnJf+m5Dtg@...278...>
+Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="nCWojv8DLplM3cUxxO4RhtqlQGhwhrglu"
-Subject: Re: [Openvpn-devel] session-id implementation
+	protocol="application/pgp-signature"; boundary="qABWltju4eaUXBmg"
+Content-Disposition: inline
+In-Reply-To: <CAEsd45Q1Ow+pasP0FhtJEkV-WW-yFA4dfKzx6QEKgnJf+m5Dtg@...278...>
+Subject: Re: [Openvpn-devel] Recently-disclosed LZO vulnerability and
+	OpenVPN's use of LZO
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,49 +17,68 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Lev Stipakov <lstipakov@...277...>, openvpn-devel@lists.sourceforge.net
+To: "Jonathan K. Bullard" <jkbullard@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---nCWojv8DLplM3cUxxO4RhtqlQGhwhrglu
-Content-Type: text/plain; charset="ISO-8859-1"
+--qABWltju4eaUXBmg
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Am 27.03.14 09:57, schrieb Lev Stipakov:
-> Hi,
->
-> Same patch with added NULL check in push.c:308. Turns out that
-> peer_info might be NULL.
->
-I looked at the patched, a few minor nitpicks:
+Hi,
 
-- The test should be if the IV_PROTO is at least 2 and not if exactly 2
-- use_session_id should be bool instead of int
-- If I understand the code in ssl.c tls_pre_decrypt corrrectly the
+On Sun, Jun 29, 2014 at 12:09:01PM -0400, Jonathan K. Bullard wrote:
+> Am I correct to assume that OpenVPN's use of LZO is restricted to much
+> smaller block sizes? I assume the block sizes that OpenVPN uses LZO for a=
+re
+> limited to the maximum packet size, which would be on the order of 1500
+> bytes or so (because of MTU size limits).
 
-          ASSERT (buf_advance (buf, op =3D=3D P_DATA_V1 ? 1 : 4));
+OpenVPN does not use "cross block" decompression state, so yes, only
+a single packet at a time is decompressed.  For UDP, this is obviously
+below 64kbyte.  For TCP, the OpenVPN socket code imposes a maximum
+length which is based on MTU + overhead (if I understand the code=20
+right, it's a bit complicated) and if the TCP stream claims to contain
+an "OpenVPN packet" larger than that, the session is torn down.
 
-will give an asserton if the other side just send a packet with only
-P_DATA_V2 as op code and no opcode.
+> Or does OpenVPN ever use LZO on larger amounts of data? Is there any
+> possibility of OpenVPN using LZO on 8MB?
 
-I have not checked if the addition three bytes cause any mtu related
-issues. Other than then that the patch looks good.
+I do not see any such possibility.
 
-Arne
+> * Also see the discussion on the LZ4 discussion board
+> <https://code.google.com/p/lz4/issues/detail?id=3D52>; the vulnerability =
+was
+> actually discovered by Ludvig Strigeus
+> <https://en.wikipedia.org/wiki/Ludvig_Strigeus> eighteen months ago.
 
+"git master" contains a copy of lz4 in src/compat/, which I intend to
+update to their fixed-version - not because I think we're vulnerable,
+but because I want to avoid questions and user irritation ("they are still
+shipping the vulnerable version!!").  So it might be a good thing to=20
+release new bundles with lzo 2.07 anyway...
 
---nCWojv8DLplM3cUxxO4RhtqlQGhwhrglu
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--qABWltju4eaUXBmg
+Content-Type: application/pgp-signature
+Content-Disposition: inline
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1
-Comment: Using GnuPG with Thunderbird - http://www.enigmail.net/
 
-iEYEARECAAYFAlOwO0MACgkQe8+cMNS4zReOvgCg82JB4pB7GURPTG1z6L0ms+eu
-NSsAmwT9qq1E6IVnCQPAKE35aF7s98AO
-=kdzt
+iQCVAwUBU7A+DqkuBuNlUUl1AQKO0wP/Wm0S+Htd7oR2rnZNepKzkEBJlM2W1hME
+1azSlcRjqWqwpWjwiQc58dq6cM48BiziskadMyoWrfrUUG28rP51wydrmSCJVM4C
+AOqP4YAUHS9IDOokrjx9Vx+ow307ZbfUEiWwXOxjLHCzXV/+SI4TF8Co8fqCiMv3
+GF/YT9DLPWI=
+=vvjD
 -----END PGP SIGNATURE-----
 
---nCWojv8DLplM3cUxxO4RhtqlQGhwhrglu--
+--qABWltju4eaUXBmg--
 
