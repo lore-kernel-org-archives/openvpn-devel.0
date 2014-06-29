@@ -1,10 +1,14 @@
+Message-ID: <53B03B43.2040009@...1227...>
+Date: Sun, 29 Jun 2014 18:13:55 +0200
+From: Arne Schwabe <arne@...1227...>
 MIME-Version: 1.0
-From: "Jonathan K. Bullard" <jkbullard@...277...>
-Date: Sun, 29 Jun 2014 12:09:01 -0400
-Message-ID: <CAEsd45Q1Ow+pasP0FhtJEkV-WW-yFA4dfKzx6QEKgnJf+m5Dtg@...278...>
-Content-Type: multipart/alternative; boundary=047d7b342eac2f4e2f04fcfbc5f5
-Subject: [Openvpn-devel] Recently-disclosed LZO vulnerability and OpenVPN's
-	use of LZO
+References: <CAGyAFMXhPTamN5tZYr92=re8Bhxky=priWS8UhCU3E_p2D8-mQ@...278...>
+	<CAGyAFMV6kZzTFwdp21n8GTNa-fbPx_S-TpYjpiC+R862WoMhAA@...278...>
+In-Reply-To: <CAGyAFMV6kZzTFwdp21n8GTNa-fbPx_S-TpYjpiC+R862WoMhAA@...278...>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="nCWojv8DLplM3cUxxO4RhtqlQGhwhrglu"
+Subject: Re: [Openvpn-devel] session-id implementation
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,91 +17,49 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Lev Stipakov <lstipakov@...277...>, openvpn-devel@lists.sourceforge.net
 
---047d7b342eac2f4e2f04fcfbc5f5
-Content-Type: text/plain; charset=UTF-8
-
-A recent *"Lab Mouse Security research blog" entry*
-<http://blog.securitymouse.com/2014/06/raising-lazarus-20-year-old-bug-that.html>
-claimed
-that a bug exists in several implementations of the LZO algorithm commonly
-used by OpenVPN and that the bug causes a security vulnerability.
-
-A rebuttal on the "RealTime Data Compression" blog
-<http://fastcompression.blogspot.co.uk/2014/06/lets-move-on.html> points
-out that the circumstances required to exploit the vulnerability make
-exploitation unlikely. Among other requirements, the rebuttal says that a
-problem only happens with block sizes larger than 8MB.
-
-Am I correct to assume that OpenVPN's use of LZO is restricted to much
-smaller block sizes? I assume the block sizes that OpenVPN uses LZO for are
-limited to the maximum packet size, which would be on the order of 1500
-bytes or so (because of MTU size limits).
-
-Or does OpenVPN ever use LZO on larger amounts of data? Is there any
-possibility of OpenVPN using LZO on 8MB?
-
-* Also see the discussion on the LZ4 discussion board
-<https://code.google.com/p/lz4/issues/detail?id=52>; the vulnerability was
-actually discovered by Ludvig Strigeus
-<https://en.wikipedia.org/wiki/Ludvig_Strigeus> eighteen months ago.
-
---047d7b342eac2f4e2f04fcfbc5f5
-Content-Type: text/html; charset="UTF-8"
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--nCWojv8DLplM3cUxxO4RhtqlQGhwhrglu
+Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr"><span style=3D"font-family:Arial,Helvetica,sans-serif;font=
--size:13px">A recent=C2=A0</span><a href=3D"http://blog.securitymouse.com/2=
-014/06/raising-lazarus-20-year-old-bug-that.html" style=3D"margin:0px;paddi=
-ng:0px;border:0px;vertical-align:baseline;text-decoration:none;color:rgb(10=
-2,17,204);font-family:Arial,Helvetica,sans-serif;font-size:13px" target=3D"=
-_blank"><u>&quot;Lab Mouse Security research blog&quot; entry</u></a><font =
-face=3D"Arial, Helvetica, sans-serif">=C2=A0claimed that a bug exists in se=
-veral implementations of the LZO algorithm commonly used by OpenVPN and tha=
-t the bug causes a security vulnerability.</font><div>
+Am 27.03.14 09:57, schrieb Lev Stipakov:
+> Hi,
+>
+> Same patch with added NULL check in push.c:308. Turns out that
+> peer_info might be NULL.
+>
+I looked at the patched, a few minor nitpicks:
 
-<font face=3D"Arial, Helvetica, sans-serif"><br></font></div><div><font fac=
-e=3D"Arial, Helvetica, sans-serif">A=C2=A0<a href=3D"http://fastcompression=
-.blogspot.co.uk/2014/06/lets-move-on.html">rebuttal on the &quot;RealTime D=
-ata Compression&quot; blog</a>=C2=A0points out that the </font><font face=
-=3D"Arial, Helvetica, sans-serif">circumstances required to exploit the vul=
-nerability make exploitation unlikely. Among other requirements,=C2=A0</fon=
-t><span style=3D"font-size:13px;font-family:Arial,Helvetica,sans-serif">the=
- rebuttal says that a problem only happens with block sizes larger than 8MB=
-.</span></div>
+- The test should be if the IV_PROTO is at least 2 and not if exactly 2
+- use_session_id should be bool instead of int
+- If I understand the code in ssl.c tls_pre_decrypt corrrectly the
 
-<div><div style=3D"margin:0px;padding:0px;border:0px;vertical-align:baselin=
-e;font-family:Arial,Helvetica,sans-serif;font-size:13px">
-<br></div><div style=3D"margin:0px;padding:0px;border:0px;vertical-align:ba=
-seline;font-family:Arial,Helvetica,sans-serif;font-size:13px">Am I correct =
-to assume that OpenVPN&#39;s use of LZO is restricted to much smaller block=
- sizes? I assume the block sizes that OpenVPN uses LZO for are limited to t=
-he maximum packet size, which would be on the order of 1500 bytes or so (be=
-cause of MTU size limits).</div>
+          ASSERT (buf_advance (buf, op =3D=3D P_DATA_V1 ? 1 : 4));
 
-<div style=3D"margin:0px;padding:0px;border:0px;vertical-align:baseline;fon=
-t-family:Arial,Helvetica,sans-serif;font-size:13px"><br></div><div style=3D=
-"margin:0px;padding:0px;border:0px;vertical-align:baseline;font-family:Aria=
-l,Helvetica,sans-serif;font-size:13px">
+will give an asserton if the other side just send a packet with only
+P_DATA_V2 as op code and no opcode.
 
-Or does OpenVPN ever use LZO on larger amounts of data? Is there any possib=
-ility of OpenVPN using LZO on 8MB?</div><div style=3D"margin:0px;padding:0p=
-x;border:0px;vertical-align:baseline;font-family:Arial,Helvetica,sans-serif=
-;font-size:13px">
+I have not checked if the addition three bytes cause any mtu related
+issues. Other than then that the patch looks good.
 
-<br></div><div style=3D"margin:0px;padding:0px;border:0px;vertical-align:ba=
-seline;font-family:Arial,Helvetica,sans-serif;font-size:13px">* Also see th=
-e=C2=A0<a href=3D"https://code.google.com/p/lz4/issues/detail?id=3D52">disc=
-ussion on the LZ4 discussion board</a>; the=C2=A0<font face=3D"Arial, Helve=
-tica, sans-serif" style=3D"font-size:small">vulnerability was actually disc=
-overed by=C2=A0</font><font color=3D"#000000" style=3D"font-family:arial;fo=
-nt-size:small"><span style=3D"font-size:12px;white-space:pre-wrap"><a href=
-=3D"https://en.wikipedia.org/wiki/Ludvig_Strigeus">Ludvig Strigeus</a></spa=
-n></font><font face=3D"Arial, Helvetica, sans-serif" style=3D"font-size:sma=
-ll">=C2=A0eighteen months ago</font>.<br>
+Arne
 
-</div></div></div>
 
---047d7b342eac2f4e2f04fcfbc5f5--
+--nCWojv8DLplM3cUxxO4RhtqlQGhwhrglu
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+Comment: Using GnuPG with Thunderbird - http://www.enigmail.net/
+
+iEYEARECAAYFAlOwO0MACgkQe8+cMNS4zReOvgCg82JB4pB7GURPTG1z6L0ms+eu
+NSsAmwT9qq1E6IVnCQPAKE35aF7s98AO
+=kdzt
+-----END PGP SIGNATURE-----
+
+--nCWojv8DLplM3cUxxO4RhtqlQGhwhrglu--
 
