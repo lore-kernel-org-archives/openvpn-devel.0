@@ -1,13 +1,10 @@
-Message-ID: <53B033CC.3050107@...1227...>
-Date: Sun, 29 Jun 2014 17:42:04 +0200
-From: Arne Schwabe <arne@...1227...>
 MIME-Version: 1.0
-References: <A1005665-126D-45D5-A6F2-75ED0EAE30FE@...1918...>
-In-Reply-To: <A1005665-126D-45D5-A6F2-75ED0EAE30FE@...1918...>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="PkNPe1F9QhJHAn87sdN9J49Jvw7AgaWfa"
-Subject: Re: [Openvpn-devel] [PATCH] Fix socket-flag/TCP_NODELAY on Mac OS X
+From: "Jonathan K. Bullard" <jkbullard@...277...>
+Date: Sun, 29 Jun 2014 12:09:01 -0400
+Message-ID: <CAEsd45Q1Ow+pasP0FhtJEkV-WW-yFA4dfKzx6QEKgnJf+m5Dtg@...278...>
+Content-Type: multipart/alternative; boundary=047d7b342eac2f4e2f04fcfbc5f5
+Subject: [Openvpn-devel] Recently-disclosed LZO vulnerability and OpenVPN's
+	use of LZO
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,66 +13,91 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: James Bekkema <james@...1918...>, openvpn-devel@lists.sourceforge.net
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---PkNPe1F9QhJHAn87sdN9J49Jvw7AgaWfa
-Content-Type: text/plain; charset="windows-1252"
+--047d7b342eac2f4e2f04fcfbc5f5
+Content-Type: text/plain; charset=UTF-8
+
+A recent *"Lab Mouse Security research blog" entry*
+<http://blog.securitymouse.com/2014/06/raising-lazarus-20-year-old-bug-that.html>
+claimed
+that a bug exists in several implementations of the LZO algorithm commonly
+used by OpenVPN and that the bug causes a security vulnerability.
+
+A rebuttal on the "RealTime Data Compression" blog
+<http://fastcompression.blogspot.co.uk/2014/06/lets-move-on.html> points
+out that the circumstances required to exploit the vulnerability make
+exploitation unlikely. Among other requirements, the rebuttal says that a
+problem only happens with block sizes larger than 8MB.
+
+Am I correct to assume that OpenVPN's use of LZO is restricted to much
+smaller block sizes? I assume the block sizes that OpenVPN uses LZO for are
+limited to the maximum packet size, which would be on the order of 1500
+bytes or so (because of MTU size limits).
+
+Or does OpenVPN ever use LZO on larger amounts of data? Is there any
+possibility of OpenVPN using LZO on 8MB?
+
+* Also see the discussion on the LZ4 discussion board
+<https://code.google.com/p/lz4/issues/detail?id=52>; the vulnerability was
+actually discovered by Ludvig Strigeus
+<https://en.wikipedia.org/wiki/Ludvig_Strigeus> eighteen months ago.
+
+--047d7b342eac2f4e2f04fcfbc5f5
+Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Am 26.06.14 13:40, schrieb James Bekkema:
-> Hi All,
->
-> OpenVPN 2.3.4 will currently throw a warning of "NOTE: setsockopt TCP_NOD=
-ELAY=3D1 failed (No kernel support)=94 when attempting to use the TCP_NODEL=
-AY socket option on Mac OS X/Darwin. Kernel support is there, however the r=
-equired header file where TCP_NODELAY is defined is not being included. Thi=
-s patch simply alters syshead.h to include <netinet/tcp.h> on Darwin platfo=
-rms.
->
->
-> --- src/openvpn/syshead.h.orig	2014-05-01 21:12:22.000000000 +1000
-> +++ src/openvpn/syshead.h	2014-06-26 17:43:30.000000000 +1000
-> @@ -349,6 +349,14 @@
->=20=20
->  #endif /* TARGET_DRAGONFLY */
->=20=20
-> +#ifdef TARGET_DARWIN
-> +
-> +#ifdef HAVE_NETINET_TCP_H
-> +#include <netinet/tcp.h>
-> +#endif
-> +
-> +#endif /* TARGET_DARWIN */
-> +
->  #ifdef WIN32
->  #include <iphlpapi.h>
->  #include <ntddndis.h>
->
->
-> Tested under 10.7 to 10.10dp2. "Socket flags: TCP_NODELAY=3D1 succeeded=
-=94 when running with debug enabled. In addition the latest beta version of=
- Viscosity is using a copy of OpenVPN with this patch applied: no issues ha=
-ve been reported from testers thus far.
->
-Ack.
+<div dir=3D"ltr"><span style=3D"font-family:Arial,Helvetica,sans-serif;font=
+-size:13px">A recent=C2=A0</span><a href=3D"http://blog.securitymouse.com/2=
+014/06/raising-lazarus-20-year-old-bug-that.html" style=3D"margin:0px;paddi=
+ng:0px;border:0px;vertical-align:baseline;text-decoration:none;color:rgb(10=
+2,17,204);font-family:Arial,Helvetica,sans-serif;font-size:13px" target=3D"=
+_blank"><u>&quot;Lab Mouse Security research blog&quot; entry</u></a><font =
+face=3D"Arial, Helvetica, sans-serif">=C2=A0claimed that a bug exists in se=
+veral implementations of the LZO algorithm commonly used by OpenVPN and tha=
+t the bug causes a security vulnerability.</font><div>
 
-Arne
+<font face=3D"Arial, Helvetica, sans-serif"><br></font></div><div><font fac=
+e=3D"Arial, Helvetica, sans-serif">A=C2=A0<a href=3D"http://fastcompression=
+.blogspot.co.uk/2014/06/lets-move-on.html">rebuttal on the &quot;RealTime D=
+ata Compression&quot; blog</a>=C2=A0points out that the </font><font face=
+=3D"Arial, Helvetica, sans-serif">circumstances required to exploit the vul=
+nerability make exploitation unlikely. Among other requirements,=C2=A0</fon=
+t><span style=3D"font-size:13px;font-family:Arial,Helvetica,sans-serif">the=
+ rebuttal says that a problem only happens with block sizes larger than 8MB=
+.</span></div>
 
+<div><div style=3D"margin:0px;padding:0px;border:0px;vertical-align:baselin=
+e;font-family:Arial,Helvetica,sans-serif;font-size:13px">
+<br></div><div style=3D"margin:0px;padding:0px;border:0px;vertical-align:ba=
+seline;font-family:Arial,Helvetica,sans-serif;font-size:13px">Am I correct =
+to assume that OpenVPN&#39;s use of LZO is restricted to much smaller block=
+ sizes? I assume the block sizes that OpenVPN uses LZO for are limited to t=
+he maximum packet size, which would be on the order of 1500 bytes or so (be=
+cause of MTU size limits).</div>
 
---PkNPe1F9QhJHAn87sdN9J49Jvw7AgaWfa
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+<div style=3D"margin:0px;padding:0px;border:0px;vertical-align:baseline;fon=
+t-family:Arial,Helvetica,sans-serif;font-size:13px"><br></div><div style=3D=
+"margin:0px;padding:0px;border:0px;vertical-align:baseline;font-family:Aria=
+l,Helvetica,sans-serif;font-size:13px">
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-Comment: Using GnuPG with Thunderbird - http://www.enigmail.net/
+Or does OpenVPN ever use LZO on larger amounts of data? Is there any possib=
+ility of OpenVPN using LZO on 8MB?</div><div style=3D"margin:0px;padding:0p=
+x;border:0px;vertical-align:baseline;font-family:Arial,Helvetica,sans-serif=
+;font-size:13px">
 
-iEYEARECAAYFAlOwM9EACgkQe8+cMNS4zRewhACgwS86GkpbdGGRbmsHkjGBeGh+
-ArgAn2x7hcLCdtDYLVJuRaQ/ltYKCN5E
-=U///
------END PGP SIGNATURE-----
+<br></div><div style=3D"margin:0px;padding:0px;border:0px;vertical-align:ba=
+seline;font-family:Arial,Helvetica,sans-serif;font-size:13px">* Also see th=
+e=C2=A0<a href=3D"https://code.google.com/p/lz4/issues/detail?id=3D52">disc=
+ussion on the LZ4 discussion board</a>; the=C2=A0<font face=3D"Arial, Helve=
+tica, sans-serif" style=3D"font-size:small">vulnerability was actually disc=
+overed by=C2=A0</font><font color=3D"#000000" style=3D"font-family:arial;fo=
+nt-size:small"><span style=3D"font-size:12px;white-space:pre-wrap"><a href=
+=3D"https://en.wikipedia.org/wiki/Ludvig_Strigeus">Ludvig Strigeus</a></spa=
+n></font><font face=3D"Arial, Helvetica, sans-serif" style=3D"font-size:sma=
+ll">=C2=A0eighteen months ago</font>.<br>
 
---PkNPe1F9QhJHAn87sdN9J49Jvw7AgaWfa--
+</div></div></div>
+
+--047d7b342eac2f4e2f04fcfbc5f5--
 
