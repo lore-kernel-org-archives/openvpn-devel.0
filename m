@@ -1,11 +1,10 @@
-Message-ID: <53B074B7.5040300@...1856...>
-Date: Sun, 29 Jun 2014 22:19:03 +0200
-From: Steffan Karger <steffan@...1856...>
-MIME-Version: 1.0
-References: <CAEsd45Q1Ow+pasP0FhtJEkV-WW-yFA4dfKzx6QEKgnJf+m5Dtg@...278...>
-In-Reply-To: <CAEsd45Q1Ow+pasP0FhtJEkV-WW-yFA4dfKzx6QEKgnJf+m5Dtg@...278...>
-Subject: Re: [Openvpn-devel] Recently-disclosed LZO vulnerability and
- OpenVPN's use of LZO
+Date: Mon, 30 Jun 2014 16:51:04 +0200 (CEST)
+Message-Id: <201406301451.s5UEp3ja019618@...1295...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <A1005665-126D-45D5-A6F2-75ED0EAE30FE@...1918...>
+References: <A1005665-126D-45D5-A6F2-75ED0EAE30FE@...1918...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix socket-flag/TCP_NODELAY on
+	Mac OS X
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,37 +13,30 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: James Bekkema <james@...1918...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
+Thanks. Patch has been applied to the master and release/2.3 branches.
 
-On 29-06-14 18:09, Jonathan K. Bullard wrote:
-> A recent _"Lab Mouse Security research blog" entry_
-> <http://blog.securitymouse.com/2014/06/raising-lazarus-20-year-old-bug-that.html> claimed
-> that a bug exists in several implementations of the LZO algorithm
-> commonly used by OpenVPN and that the bug causes a security vulnerability.
-> 
-> A rebuttal on the "RealTime Data Compression" blog
-> <http://fastcompression.blogspot.co.uk/2014/06/lets-move-on.html> points
-> out that the circumstances required to exploit the vulnerability make
-> exploitation unlikely. Among other requirements, the rebuttal says that
-> a problem only happens with block sizes larger than 8MB.
-> 
-> Am I correct to assume that OpenVPN's use of LZO is restricted to much
-> smaller block sizes? I assume the block sizes that OpenVPN uses LZO for
-> are limited to the maximum packet size, which would be on the order of
-> 1500 bytes or so (because of MTU size limits).
-> 
-> Or does OpenVPN ever use LZO on larger amounts of data? Is there any
-> possibility of OpenVPN using LZO on 8MB?
+commit 37170767a221a4847416fc339083704ae1b4c001 (master)
+commit 066202de18a13d67664534d10698eda1fdeab381 (release/2.3)
 
-You are partly correct; OpenVPN parses UDP or TCP packets, which due to
-fragmentation can become as large as ~65KB. However, this is still
-within comfortable distance from the 'critical' 8MB boundary for LZ4,
-and 16MB for lzo. So OpenVPN is not vulnerable.
+Author: James Bekkema
+Date:   Thu Jun 26 21:40:39 2014 +1000
 
-Regards,
--Steffan
+     Fix socket-flag/TCP_NODELAY on Mac OS X
+
+     Acked-by: Arne Schwabe <arne@...1227...>
+     Message-Id: <A1005665-126D-45D5-A6F2-75ED0EAE30FE@...1918...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/8809
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
+
 
