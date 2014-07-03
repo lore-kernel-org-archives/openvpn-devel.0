@@ -1,10 +1,9 @@
-Date: Thu, 3 Jul 2014 09:51:07 +0200 (CEST)
-Message-Id: <201407030751.s637p7Fw025096@...1295...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <1404336688-15036-1-git-send-email-steffan@...1856...>
-References: <1404336688-15036-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH applied] Re: cleanup: remove #if 0'ed
-	function initiate_untrusted_session() from ssl.c.
+Date: Thu, 3 Jul 2014 11:38:20 +0300
+From: Pasi =?iso-8859-1?Q?K=E4rkk=E4inen?= <pasik@...124...>
+Message-ID: <20140703083820.GG18930@...1281...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] OpenVPN Windows client (GUI) config files under
+ user homedir/profile
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,28 +12,18 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 8bit
-To: Steffan Karger <steffan@...1856...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master branch.
+Hello,
 
-commit e6b5755c381923bb4d225bda1f1747415a29341d
-Author: Steffan Karger
-Date:   Wed Jul 2 23:31:28 2014 +0200
-
-     cleanup: remove #if 0'ed function initiate_untrusted_session() from ssl.c.
-
-     Signed-off-by: Steffan Karger <steffan@...1856...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1404336688-15036-1-git-send-email-steffan@...1856...>
-     Signed-off-by: Gert Doering <gert@...1296...>
+Are there plans to support having Windows OpenVPN client (GUI) configfiles under user's homedir/profile instead of system wide c:\program files\openvpn\config\ ? 
 
 
---
-kind regards,
+Thanks,
 
-Gert Doering
+-- Pasi
 
 
