@@ -1,8 +1,8 @@
-From: Mike Gilbert <floppym@...594...>
-Date: Thu,  3 Jul 2014 16:24:05 -0400
-Message-Id: <1404419045-14728-1-git-send-email-floppym@...594...>
-Subject: [Openvpn-devel] [PATCH] Add configure check for the path to
-	systemd-ask-password
+From: Steffan Karger <steffan@...1856...>
+Date: Thu,  3 Jul 2014 23:47:45 +0200
+Message-Id: <1404424065-24787-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH] Don't issue warning for 'translate to self'
+	tls-ciphers
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,50 +15,35 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Gentoo Linux installs this in /usr/bin by default. Also, the user may
-have installed it in /usr/local/bin if building from source.
----
- configure.ac          | 3 +++
- src/openvpn/console.c | 2 +-
- 2 files changed, 4 insertions(+), 1 deletion(-)
+All cipher suite names supplied through --tls-cipher are translated by
+OpenVPN to IANA names, to get OpenSSL and PolarSSL configuration files
+compatible. OpenSSL however supports cipher suite group names, like
+'DEFAULT', 'HIGH', or 'ECDH'. To make OpenVPN not complain about these,
+entries translating these to themselves were added to the translation
+table. However, to make OpenVPN not still complain, the deprecated-name
+check has to be reversed from 'if this is a deprecated name then complain'
+to 'if this is not a iana name, then complain'. Which this commit does.
 
-diff --git a/configure.ac b/configure.ac
-index 77e950d..faa2c4a 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -368,15 +368,18 @@ AC_ARG_VAR([IPROUTE], [full path to ip utility])
- AC_ARG_VAR([NETSTAT], [path to netstat utility]) # tests
- AC_ARG_VAR([MAN2HTML], [path to man2html utility])
- AC_ARG_VAR([GIT], [path to git utility])
-+AC_ARG_VAR([SYSTEMD_ASK_PASSWORD], [path to systemd-ask-password utility])
- AC_PATH_PROGS([IFCONFIG], [ifconfig],, [$PATH:/usr/local/sbin:/usr/sbin:/sbin])
- AC_PATH_PROGS([ROUTE], [route],, [$PATH:/usr/local/sbin:/usr/sbin:/sbin])
- AC_PATH_PROGS([IPROUTE], [ip],, [$PATH:/usr/local/sbin:/usr/sbin:/sbin])
-+AC_PATH_PROGS([SYSTEMD_ASK_PASSWORD], [systemd-ask-password],, [$PATH:/usr/local/bin:/usr/bin:/bin])
- AC_CHECK_PROGS([NETSTAT], [netstat], [netstat], [$PATH:/usr/local/sbin:/usr/sbin:/sbin:/etc]) # tests
- AC_CHECK_PROGS([MAN2HTML], [man2html])
- AC_CHECK_PROGS([GIT], [git]) # optional
- AC_DEFINE_UNQUOTED([IFCONFIG_PATH], ["$IFCONFIG"], [Path to ifconfig tool])
- AC_DEFINE_UNQUOTED([IPROUTE_PATH], ["$IPROUTE"], [Path to iproute tool])
- AC_DEFINE_UNQUOTED([ROUTE_PATH], ["$ROUTE"], [Path to route tool])
-+AC_DEFINE_UNQUOTED([SYSTEMD_ASK_PASSWORD_PATH], ["$SYSTEMD_ASK_PASSWORD"], [Path to systemd-ask-password tool])
+Signed-off-by: Steffan Karger <steffan@...1856...>
+---
+ src/openvpn/ssl_openssl.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index c9d2d26..adf3ae6 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -270,7 +270,8 @@ tls_ctx_restrict_ciphers(struct tls_root_ctx *ctx, const char *ciphers)
+           current_cipher_len = strlen(current_cipher);
  
- #
- # Libtool
-diff --git a/src/openvpn/console.c b/src/openvpn/console.c
-index afda8ca..059b6f0 100644
---- a/src/openvpn/console.c
-+++ b/src/openvpn/console.c
-@@ -162,7 +162,7 @@ get_console_input_systemd (const char *prompt, const bool echo, char *input, con
-   struct argv argv;
- 
-   argv_init (&argv);
--  argv_printf (&argv, "/bin/systemd-ask-password");
-+  argv_printf (&argv, SYSTEMD_ASK_PASSWORD_PATH);
-   argv_printf_cat (&argv, "%s", prompt);
- 
-   if ((std_out = openvpn_popen (&argv, NULL)) < 0) {
+ 	  if (end_of_cipher - begin_of_cipher == current_cipher_len &&
+-	      0 == memcmp (&ciphers[begin_of_cipher], cipher_pair->openssl_name, end_of_cipher - begin_of_cipher))
++	      0 != memcmp (&ciphers[begin_of_cipher], cipher_pair->iana_name,
++		  end_of_cipher - begin_of_cipher))
+ 	    {
+ 	      // Non-IANA name used, show warning
+ 	      msg (M_WARN, "Deprecated TLS cipher name '%s', please use IANA name '%s'", cipher_pair->openssl_name, cipher_pair->iana_name);
 -- 
-2.0.0
+1.9.1
 
 
