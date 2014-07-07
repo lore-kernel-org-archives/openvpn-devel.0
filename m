@@ -1,12 +1,12 @@
-Message-ID: <53BA6036.3030305@...1227...>
-Date: Mon, 07 Jul 2014 10:54:14 +0200
+Message-ID: <53BA60A0.7080607@...1227...>
+Date: Mon, 07 Jul 2014 10:56:00 +0200
 From: Arne Schwabe <arne@...1227...>
 MIME-Version: 1.0
 References: <1402244175-31462-1-git-send-email-steffan@...1856...>
-	<1402244175-31462-4-git-send-email-steffan@...1856...>
-In-Reply-To: <1402244175-31462-4-git-send-email-steffan@...1856...>
-Subject: Re: [Openvpn-devel] [PATCH 3/4] Improve --show-ciphers to show if a
- cipher can be used in static key mode
+	<1402244175-31462-5-git-send-email-steffan@...1856...>
+In-Reply-To: <1402244175-31462-5-git-send-email-steffan@...1856...>
+Subject: Re: [Openvpn-devel] [PATCH 4/4] Extend t_lpback tests to test all
+ ciphers reported by --show-ciphers
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,13 +20,10 @@ Content-Transfer-Encoding: 7bit
 To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
 
 Am 08.06.14 18:16, schrieb Steffan Karger:
-> Also remove the bulky warning from init_key_type() and add the information
-> to the --show-ciphers output.
+> ... instead of just BF-CBC. Should catch more mistakes.
 >
 >
-It does what it says but I think most users will be confused about what
-(SSL mode only) is about. Most people which are not familar with openvpn
-will not parse it as "non --static mode".
+ACK
 
 Arne
 
