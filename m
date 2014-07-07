@@ -1,14 +1,10 @@
-Message-ID: <53BAE57F.3030503@...1856...>
-Date: Mon, 07 Jul 2014 20:22:55 +0200
-From: Steffan Karger <steffan@...1856...>
-MIME-Version: 1.0
-References: <1402244175-31462-1-git-send-email-steffan@...1856...>
-	<1402244175-31462-4-git-send-email-steffan@...1856...>
-	<53BA6036.3030305@...1227...> <53BADAE4.5040903@...1856...>
-	<53BADE4A.4040609@...1227...>
-In-Reply-To: <53BADE4A.4040609@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH 3/4] Improve --show-ciphers to show if a
- cipher can be used in static key mode
+Date: Mon, 7 Jul 2014 20:30:23 +0200 (CEST)
+Message-Id: <201407071830.s67IUN3U022103@...1295...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <1402244175-31462-2-git-send-email-steffan@...1856...>
+References: <1402244175-31462-2-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Rename ALLOW_NON_CBC_CIPHERS to
+	ENABLE_OFB_CFB_MODE, and add to configure.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,32 +13,29 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Steffan Karger <steffan@...1856...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-On 07-07-14 19:52, Arne Schwabe wrote:
-> Am 07.07.14 19:37, schrieb Steffan Karger:
->> On 07-07-14 10:54, Arne Schwabe wrote:
->>> Am 08.06.14 18:16, schrieb Steffan Karger:
->>>> Also remove the bulky warning from init_key_type() and add the information
->>>> to the --show-ciphers output.
->>>>
->>> It does what it says but I think most users will be confused about what
->>> (SSL mode only) is about. Most people which are not familar with openvpn
->>> will not parse it as "non --static mode".
->> Hmm, you're right. I'm not very good at this sort of thing. What about
->> "(no static key mode)"? Any other suggestions?
->>
-> Maybe (tls-client/tls-server mode only) or (Not in --static mode)? That
-> way the users knows what option you are referring to?
+Your patch has been applied to the master branch.
 
-Well, users will probably use 'client' or 'server' in their configs,
-which expands to tls-client or tls-server. Also, --static is actually
-called --secret, which is not very descriptive either (otherwise that
-would be great). Gah.
+commit c353af2f474f79bfd7b2b67ecc02e91152500209
+Author: Steffan Karger
+Date:   Sun Jun 8 18:16:12 2014 +0200
 
-So, "(client/server mode only)"?
+     Rename ALLOW_NON_CBC_CIPHERS to ENABLE_OFB_CFB_MODE, and add to configure.
 
--Steffan
+     Signed-off-by: Steffan Karger <steffan@...1856...>
+     Acked-by: Arne Schwabe <arne@...1227...>
+     Message-Id: <1402244175-31462-2-git-send-email-steffan@...1856...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/8781
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
+
 
