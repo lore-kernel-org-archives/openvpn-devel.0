@@ -1,12 +1,12 @@
-Message-ID: <53BA771C.3070403@...1227...>
-Date: Mon, 07 Jul 2014 12:31:56 +0200
+Message-ID: <53BA772F.4080607@...1227...>
+Date: Mon, 07 Jul 2014 12:32:15 +0200
 From: Arne Schwabe <arne@...1227...>
 MIME-Version: 1.0
-References: <1402409073-54067216-1-git-send-email-gert@...1296...>	<1402409073-54067216-2-git-send-email-gert@...1296...>
-	<1402409073-54067216-3-git-send-email-gert@...1296...>
-In-Reply-To: <1402409073-54067216-3-git-send-email-gert@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH 2/4] Add tap driver initialization and
- ifconfig for AIX.
+References: <1402409073-54067216-1-git-send-email-gert@...1296...>	<1402409073-54067216-2-git-send-email-gert@...1296...>	<1402409073-54067216-3-git-send-email-gert@...1296...>
+	<1402409073-54067216-4-git-send-email-gert@...1296...>
+In-Reply-To: <1402409073-54067216-4-git-send-email-gert@...1296...>
+Subject: Re: [Openvpn-devel] [PATCH 3/4] implement adding/deleting routes on
+ AIX, for IPv4 and IPv6
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -23,13 +23,11 @@ Cc: Gert Doering <gd@...1505...>
 Am 10.06.14 16:04, schrieb Gert Doering:
 > From: Gert Doering <gd@...1505...>
 >
-> AIX is special... ifconfig only works if it can add the data to
-> the ODM right away, so setup a local enviromnment set that has
-> "ODMDIR=/etc/objrepos" in it (hard-coded, nobody changes that).
+> AIX only has TAP interfaces, so always use gateway address as next hop,
+> not interface name.
 >
-> Only --dev tap or --dev tapNN are supported right now.  AIX has no
-> tun driver (so tun mode would need to dynamically add/remove ethernet
-> headers to/from AIX).
+> AIX route works much more reliable if passed netbits than netmask - do so
+> (introducing a new helper function netmask_to_netbits2())
 >
 ACK on the basis of "cannot test, but looks sane and does not touch
 other platforms"
