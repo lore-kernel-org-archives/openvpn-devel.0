@@ -1,13 +1,13 @@
-Message-ID: <53BADA1D.1040605@...1856...>
-Date: Mon, 07 Jul 2014 19:34:21 +0200
+Message-ID: <53BADAE4.5040903@...1856...>
+Date: Mon, 07 Jul 2014 19:37:40 +0200
 From: Steffan Karger <steffan@...1856...>
 MIME-Version: 1.0
 References: <1402244175-31462-1-git-send-email-steffan@...1856...>
-	<1402244175-31462-2-git-send-email-steffan@...1856...>
-	<53BA5E08.7@...1227...>
-In-Reply-To: <53BA5E08.7@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH 1/4] Rename ALLOW_NON_CBC_CIPHERS to
- ENABLE_OFB_CFB_MODE, and add to configure.
+	<1402244175-31462-4-git-send-email-steffan@...1856...>
+	<53BA6036.3030305@...1227...>
+In-Reply-To: <53BA6036.3030305@...1227...>
+Subject: Re: [Openvpn-devel] [PATCH 3/4] Improve --show-ciphers to show if a
+ cipher can be used in static key mode
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,21 +20,17 @@ Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
-On 07-07-14 10:44, Arne Schwabe wrote:
+On 07-07-14 10:54, Arne Schwabe wrote:
 > Am 08.06.14 18:16, schrieb Steffan Karger:
->> Makes OFB/CFB compile time configurable, and fixes output of --show-ciphers
->> to also show OFB/CFB ciphers along the way (becasue crypto.h was not
->> included from crypto_openssl.c).
+>> Also remove the bulky warning from init_key_type() and add the information
+>> to the --show-ciphers output.
 >>
->>
-> ACK. But maybe we should just always enable this mode instead of having
-> another configure option.
+> It does what it says but I think most users will be confused about what
+> (SSL mode only) is about. Most people which are not familar with openvpn
+> will not parse it as "non --static mode".
 
-Thanks. Just to make this clear to others too: OFB/CFB was and after
-this still is enabled by default. Still, I'd prefer to have this option,
-because it makes my life easier for OpenVPN-NL, where everything not-CBC
-is disabled (and I'm the one maintaining this code, so in the end it is
-my problem anyway ;) ).
+Hmm, you're right. I'm not very good at this sort of thing. What about
+"(no static key mode)"? Any other suggestions?
 
 -Steffan
 
