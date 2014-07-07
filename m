@@ -1,12 +1,12 @@
-Message-ID: <53BA5F48.2080303@...1227...>
-Date: Mon, 07 Jul 2014 10:50:16 +0200
+Message-ID: <53BA6036.3030305@...1227...>
+Date: Mon, 07 Jul 2014 10:54:14 +0200
 From: Arne Schwabe <arne@...1227...>
 MIME-Version: 1.0
 References: <1402244175-31462-1-git-send-email-steffan@...1856...>
-	<1402244175-31462-3-git-send-email-steffan@...1856...>
-In-Reply-To: <1402244175-31462-3-git-send-email-steffan@...1856...>
-Subject: Re: [Openvpn-devel] [PATCH 2/4] Add proper check for crypto modes
- (CBC or OFB/CFB)
+	<1402244175-31462-4-git-send-email-steffan@...1856...>
+In-Reply-To: <1402244175-31462-4-git-send-email-steffan@...1856...>
+Subject: Re: [Openvpn-devel] [PATCH 3/4] Improve --show-ciphers to show if a
+ cipher can be used in static key mode
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,18 +20,13 @@ Content-Transfer-Encoding: 7bit
 To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
 
 Am 08.06.14 18:16, schrieb Steffan Karger:
-> OpenSSL has added AEAD-CBC mode ciphers like AES-128-CBC-HMAC-SHA1, which
-> have mode EVP_CIPH_CBC_MODE, but require a different API (the AEAD API).
-> So, add extra checks to filter out those AEAD-mode ciphers.
->
-> Adding these made the crypto library agnostic function cfb_ofb_mode()
-> superfuous, so removed that on the go.
->
-> Also update all cipher mode checks to use the new cipher_kt_mode_*()
-> functions for consistency.
+> Also remove the bulky warning from init_key_type() and add the information
+> to the --show-ciphers output.
 >
 >
-ACK. Apart from the AEAD changes is also only refactoring.
+It does what it says but I think most users will be confused about what
+(SSL mode only) is about. Most people which are not familar with openvpn
+will not parse it as "non --static mode".
 
 Arne
 
