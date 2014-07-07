@@ -1,12 +1,11 @@
-Message-ID: <53BA772F.4080607@...1227...>
-Date: Mon, 07 Jul 2014 12:32:15 +0200
+Message-ID: <53BA7759.9070502@...1227...>
+Date: Mon, 07 Jul 2014 12:32:57 +0200
 From: Arne Schwabe <arne@...1227...>
 MIME-Version: 1.0
-References: <1402409073-54067216-1-git-send-email-gert@...1296...>	<1402409073-54067216-2-git-send-email-gert@...1296...>	<1402409073-54067216-3-git-send-email-gert@...1296...>
-	<1402409073-54067216-4-git-send-email-gert@...1296...>
-In-Reply-To: <1402409073-54067216-4-git-send-email-gert@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH 3/4] implement adding/deleting routes on
- AIX, for IPv4 and IPv6
+References: <1402409073-54067216-1-git-send-email-gert@...1296...>	<1402409073-54067216-2-git-send-email-gert@...1296...>	<1402409073-54067216-3-git-send-email-gert@...1296...>	<1402409073-54067216-4-git-send-email-gert@...1296...>
+	<1402409073-54067216-5-git-send-email-gert@...1296...>
+In-Reply-To: <1402409073-54067216-5-git-send-email-gert@...1296...>
+Subject: Re: [Openvpn-devel] [PATCH 4/4] Make t_client.sh work on AIX.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -23,11 +22,7 @@ Cc: Gert Doering <gd@...1505...>
 Am 10.06.14 16:04, schrieb Gert Doering:
 > From: Gert Doering <gd@...1505...>
 >
-> AIX only has TAP interfaces, so always use gateway address as next hop,
-> not interface name.
->
-> AIX route works much more reliable if passed netbits than netmask - do so
-> (introducing a new helper function netmask_to_netbits2())
+> Teach it how to run ifconfig/route on AIX to have meaningful results.
 >
 ACK on the basis of "cannot test, but looks sane and does not touch
 other platforms"
