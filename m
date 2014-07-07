@@ -1,9 +1,9 @@
-Date: Mon, 7 Jul 2014 20:20:49 +0200 (CEST)
-Message-Id: <201407071820.s67IKnsu019242@...1295...>
+Date: Mon, 7 Jul 2014 20:21:00 +0200 (CEST)
+Message-Id: <201407071821.s67IL0qh003823@...1295...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1402409073-54067216-2-git-send-email-gert@...1296...>
-References: <1402409073-54067216-2-git-send-email-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Recognize AIX, define TARGET_AIX
+In-Reply-To: <1402409073-54067216-5-git-send-email-gert@...1296...>
+References: <1402409073-54067216-5-git-send-email-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Make t_client.sh work on AIX.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,16 +19,16 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Your patch has been applied to the master branch.
 
-commit 42f13dc03c12805b994ea67fe77c9cb9dd55c10d
+commit a637016ea3a6b49e3c792ca335f50eb32a182093
 Author: Gert Doering
-Date:   Tue Jun 10 16:04:30 2014 +0200
+Date:   Tue Jun 10 16:04:33 2014 +0200
 
-     Recognize AIX, define TARGET_AIX
+     Make t_client.sh work on AIX.
 
      Signed-off-by: Gert Doering <gd@...1505...>
      Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <1402409073-54067216-2-git-send-email-gert@...1296...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/8787
+     Message-Id: <1402409073-54067216-5-git-send-email-gert@...1296...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/8786
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
