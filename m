@@ -1,10 +1,12 @@
-Date: Mon, 7 Jul 2014 22:09:34 +0200 (CEST)
-Message-Id: <201407072009.s67K9YQ0010531@...1295...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <1402244175-31462-5-git-send-email-steffan@...1856...>
+Message-ID: <53BAFFD3.2070207@...1856...>
+Date: Mon, 07 Jul 2014 22:15:15 +0200
+From: Steffan Karger <steffan@...1856...>
+MIME-Version: 1.0
 References: <1402244175-31462-5-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Extend t_lpback tests to test
-	all ciphers reported by --show-ciphers
+	<201407072009.s67K9YQ0010531@...1295...>
+In-Reply-To: <201407072009.s67K9YQ0010531@...1295...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Re: Extend t_lpback tests to
+ test all ciphers reported by --show-ciphers
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,34 +15,20 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Steffan Karger <steffan@...1856...>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+To: Gert Doering <gert@...1296...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master branch.
+Hi,
 
-(It might break the script on some of the more obscure platforms that 
-haven't learned the new POSIXly "tail -n+7" yet.  But if so, buildbot 
-will tell us, and we can then still fix it, like by using "sed -e '1,6d'" 
-instead...)
+On 07-07-14 22:09, Gert Doering wrote:
+> Your patch has been applied to the master branch.
 
-commit b2bff9fa15695f2850999688b0ca6047016fd7f5
-Author: Steffan Karger
-Date:   Sun Jun 8 18:16:15 2014 +0200
+Thanks. These are actually bugfixes for stuff that should just work in
+2.3 too, so I suggest to apply these patches, including the preceding
+OFB/CFB fix by Heiko (be46a2c083a6bd77754bc1674249eab583d25dac) to the
+release/2.3 branch too. That will close trac ticket #89.
 
-     Extend t_lpback tests to test all ciphers reported by --show-ciphers
-
-     Signed-off-by: Steffan Karger <steffan@...1856...>
-     Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <1402244175-31462-5-git-send-email-steffan@...1856...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/8777
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
-
+-Steffan
 
