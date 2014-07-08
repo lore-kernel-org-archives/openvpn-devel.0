@@ -1,10 +1,8 @@
-Date: Mon, 7 Jul 2014 22:30:25 +0200 (CEST)
-Message-Id: <201407072030.s67KUP2F013129@...1295...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1404424065-24787-1-git-send-email-steffan@...1856...>
-References: <1404424065-24787-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Don't issue warning for
-	'translate to self' tls-ciphers
+Date: Tue,  8 Jul 2014 09:20:54 +0200
+Message-Id: <1404804054-32424-1-git-send-email-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH] Call init script helpers with explicit path
+	(./)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,27 +13,50 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Steffan Karger <steffan@...1856...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master branch.
+The provided OpenVPN init scripts scan /etc/openvpn for *.conf and run
+an OpenVPN process for each, and if a .sh script with the same base name
+exists, this is run before openvpn.  Change from running "$name.sh" to
+"./$name.sh" - depending on the shell used, the script won't be found
+otherwise, and ensuring that the script isn't searched in $PATH is the
+right thing anyway.
 
-commit 29ed605c2a91e85bc9905cf2968e900cb3969095
-Author: Steffan Karger
-Date:   Thu Jul 3 23:47:45 2014 +0200
+Reported in trac #423
 
-     Don't issue warning for 'translate to self' tls-ciphers
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+ distro/rpm/openvpn.init.d.rhel | 2 +-
+ distro/rpm/openvpn.init.d.suse | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-     Signed-off-by: Steffan Karger <steffan@...1856...>
-     Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <1404424065-24787-1-git-send-email-steffan@...1856...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/8824
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/distro/rpm/openvpn.init.d.rhel b/distro/rpm/openvpn.init.d.rhel
+index 821abd5..cdf3e9d 100755
+--- a/distro/rpm/openvpn.init.d.rhel
++++ b/distro/rpm/openvpn.init.d.rhel
+@@ -148,7 +148,7 @@ case "$1" in
+ 	for c in `/bin/ls *.conf 2>/dev/null`; do
+ 	    bn=${c%%.conf}
+ 	    if [ -f "$bn.sh" ]; then
+-		. $bn.sh
++		. ./$bn.sh
+ 	    fi
+ 	    rm -f $piddir/$bn.pid
+ 	    $openvpn --daemon --writepid $piddir/$bn.pid --config $c --cd $work
+diff --git a/distro/rpm/openvpn.init.d.suse b/distro/rpm/openvpn.init.d.suse
+index 2bac7f3..270024e 100644
+--- a/distro/rpm/openvpn.init.d.suse
++++ b/distro/rpm/openvpn.init.d.suse
+@@ -161,7 +161,7 @@ case "$1" in
+ 	for c in `/bin/ls *.conf 2>/dev/null`; do
+ 	    bn=${c%%.conf}
+ 	    if [ -f "$bn.sh" ]; then
+-		. $bn.sh
++		. ./$bn.sh
+ 	    fi
+ 	    rm -f $piddir/$bn.pid
+ 	    $openvpn --daemon --writepid $piddir/$bn.pid --config $c --cd $work
+-- 
+1.8.5.5
 
 
