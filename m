@@ -1,16 +1,11 @@
-Message-ID: <53BE842C.4020102@...1227...>
-Date: Thu, 10 Jul 2014 14:16:44 +0200
-From: Arne Schwabe <arne@...1227...>
+Message-ID: <53BEB037.5080301@...1516...>
+Date: Thu, 10 Jul 2014 17:24:39 +0200
+From: Holger Kummert <Holger.Kummert@...1516...>
 MIME-Version: 1.0
-References: <1404735142-31420-1-git-send-email-arne@...1227...>
-	<1404811301-12860-1-git-send-email-arne@...1227...>
-	<20140709203935.GZ1118@...1296...>
-In-Reply-To: <20140709203935.GZ1118@...1296...>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="dI5NAuMeJkVVguiBSJb1fTP6941FjMkfo"
-Subject: Re: [Openvpn-devel] [Patch v3] Remove #ifdefs for client nat
-	support.
+References: <1397645317-20116-1-git-send-email-Holger.Kummert@...1516...>	<1397645317-20116-2-git-send-email-Holger.Kummert@...1516...>	<20140602182009.GP1118@...1296...>
+	<538F27C6.2030203@...1516...>
+In-Reply-To: <538F27C6.2030203@...1516...>
+Subject: Re: [Openvpn-devel] [PATCH 1/2] Get NTLMv1 and NTLMv2 up and running
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,78 +14,37 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---dI5NAuMeJkVVguiBSJb1fTP6941FjMkfo
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: quoted-printable
 
-Am 09.07.14 22:39, schrieb Gert Doering:
-> Hi,
+Hello,
+
+Am 04.06.2014 16:05, schrieb Holger Kummert:
+>> Is this used - and thus tested - by you only, or is it used by UTM
+>> customers?  (This would give us confidence that it's tested by a larger
+>> user base, and those tend to uncover issues :-) ).
 >
-> On Tue, Jul 08, 2014 at 11:21:41AM +0200, Arne Schwabe wrote:
->> --- a/src/openvpn/forward.c
->> +++ b/src/openvpn/forward.c
->> @@ -1018,6 +1018,8 @@ process_ip_header (struct context *c, unsigned int=
- flags, struct buffer *buf)
->>    if (!c->options.passtos)
->>      flags &=3D ~PIPV4_PASSTOS;
->>  #endif
->> +  if (!c->options.client_nat)
->> +    flags &=3D ~PIPV4_CLIENT_NAT;
->>    if (!c->options.route_gateway_via_dhcp)
->>      flags &=3D ~PIPV4_EXTRACT_DHCP_ROUTER;
->>=20=20
-> This...
->
->> @@ -1046,14 +1050,12 @@ process_ip_header (struct context *c, unsigned i=
-nt flags, struct buffer *buf)
->>  	      if (flags & PIP_MSSFIX)
->>  		mss_fixup_ipv4 (&ipbuf, MTU_TO_MSS (TUN_MTU_SIZE_DYNAMIC (&c->c2.fram=
-e)));
->>=20=20
->> -#ifdef ENABLE_CLIENT_NAT
->>  	      /* possibly do NAT on packet */
->>  	      if ((flags & PIPV4_CLIENT_NAT) && c->options.client_nat)
-> ... sort of obsoletes this c->options.client_nat check, right?
->
-> (I'm not sure I understand why it was done the way it is, but if you
-> do the first change, maybe just get rid of the second bit of the=20
-> condition here...)
->
-> The rest is quite straightforward de-#ifdef-ing, which I like :)
->
-> gert
+> Well, I thought I let it pass through the review process of the group
+> first before pushing it to customers.
+> But if it would help the review we could do it the other way
+> round and give it to customers first.
+> No problem.
 
-That is actually a bugfix that "slipped" into the patch, but yes the
-second part is kind of duplicated.
+in the meantime I got feedback from a customer who successfully tested 
+both patches.
+His environment is Win7 on client side, and Win2012R2 on server side.
 
-See alos the discussion on
+I also tested the implementation against a Win2003R2 server successfully
+(this server used utf8-encoding and NTLMv2sec, too). The client was
+a Win7 Ultimate with SP1.
 
-Message-ID: <53584132.4030807@...515...>
-
-and the mail before that. We probablly really should commit a fix for this =
-stuff otherwise it pops up every 6 months or so.
-
-Arne
+So we know now that the NTLM-patches work against Win2003R2, Win2008R2,
+Win2012R2 and squid (the latter was reported by David Woodhouse).
 
 
 
---dI5NAuMeJkVVguiBSJb1fTP6941FjMkfo
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-Comment: Using GnuPG with Thunderbird - http://www.enigmail.net/
-
-iEYEARECAAYFAlO+hCwACgkQe8+cMNS4zReVQwCdEGIsvx4a0QUkBAUNerSQ/zRx
-/IYAnjSo6ghZAwgj2mOuPkMbZV4iuyX3
-=Im8h
------END PGP SIGNATURE-----
-
---dI5NAuMeJkVVguiBSJb1fTP6941FjMkfo--
+Regards,
+Holger
 
