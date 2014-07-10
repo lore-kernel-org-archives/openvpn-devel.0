@@ -1,5 +1,5 @@
-Date: Thu, 10 Jul 2014 21:27:55 +0200 (CEST)
-Message-Id: <201407101927.s6AJRtgK025664@...1295...>
+Date: Thu, 10 Jul 2014 21:27:59 +0200 (CEST)
+Message-Id: <201407101927.s6AJRxGU016740@...1295...>
 From: Gert Doering <gert@...1296...>
 In-Reply-To: <53BED57C.7070300@...1435...>
 References: <53BED57C.7070300@...1435...>
@@ -20,11 +20,11 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 ACK.
 
-Your patch has been applied to the master branch.
+Your patch has been applied to the release/2.3 branch.
 
-commit d860ee4a4c2cac03a872f07a9e629b56f3158b8b
+commit 132b67f7f75ecd9ae653b4d37db9c60579971875
 Author: Steffan Karger
-Date:   Sun Jul 6 11:27:21 2014 +0200
+Date:   Sun Jul 6 11:34:34 2014 +0200
 
      Don't exit daemon if opening or parsing the CRL fails.
 
