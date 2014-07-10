@@ -1,10 +1,10 @@
-Date: Thu, 10 Jul 2014 21:14:24 +0200 (CEST)
-Message-Id: <201407101914.s6AJEOxL001822@...1295...>
+Date: Thu, 10 Jul 2014 21:27:55 +0200 (CEST)
+Message-Id: <201407101927.s6AJRtgK025664@...1295...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <53B1BDD8.8020705@...1856...>
-References: <53B1BDD8.8020705@...1856...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Do not upcase
-	x509-username-field for mixed-case arguments.
+In-Reply-To: <53BED57C.7070300@...1435...>
+References: <53BED57C.7070300@...1435...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Don't exit daemon if opening or
+	parsing the CRL fails.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,23 +15,22 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Andris Kalnozols <andris@...1839...>
+To: Steffan Karger <steffan.karger@...1435...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master and release/2.3 branches.
+ACK.
 
-commit f4e0ad82b0eaccce965074c1ceec2b7e3853dc0d (master)
-commit a2da658ba6aa34043d87226c3f971474942e0bed (release/2.3)
+Your patch has been applied to the master branch.
 
-Author: Andris Kalnozols
-Date:   Sat Jun 28 19:41:02 2014 +0200
+commit d860ee4a4c2cac03a872f07a9e629b56f3158b8b
+Author: Steffan Karger
+Date:   Sun Jul 6 11:27:21 2014 +0200
 
-     Do not upcase x509-username-field for mixed-case arguments.
+     Don't exit daemon if opening or parsing the CRL fails.
 
-     Signed-off-by: Andris Kalnozols <andris@...1839...>
      Signed-off-by: Steffan Karger <steffan.karger@...1435...>
-     Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <53B1BDD8.8020705@...1856...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <53BED57C.7070300@...1435...>
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
