@@ -1,12 +1,17 @@
-Message-ID: <53BFFAC3.9060505@...1147...>
-Date: Fri, 11 Jul 2014 16:54:59 +0200
-From: Jan Just Keijser <janjust@...1147...>
-MIME-Version: 1.0
+Date: Fri, 11 Jul 2014 20:07:59 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20140711180758.GJ1118@...1296...>
 References: <53BF9998.5020906@...1921...> <53BFA5AA.4070305@...1147...>
-	<20140711123541.GG1118@...1296...>
-In-Reply-To: <20140711123541.GG1118@...1296...>
+	<53BFA759.7060307@...1227...> <53BFA9A0.3020605@...1147...>
+	<53BFACDE.9050609@...1227...> <53BFAF81.2080705@...1147...>
+	<53BFC22C.5010601@...1227...> <53BFF9BE.1090204@...1147...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="SXJj2kVWw/JBQDhF"
+Content-Disposition: inline
+In-Reply-To: <53BFF9BE.1090204@...1147...>
 Subject: Re: [Openvpn-devel] [PATCH] Add topology in sample server
- configuration file
+	configuration file
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,53 +20,44 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Gert Doering <gert@...1296...>
+To: Jan Just Keijser <janjust@...1147...>
 Cc: openvpn-devel@lists.sourceforge.net
+
+--SXJj2kVWw/JBQDhF
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
 Hi,
 
-Gert Doering wrote:
-> On Fri, Jul 11, 2014 at 10:51:54AM +0200, Jan Just Keijser wrote:
->   
->> On 11/07/14 10:00, Philipp Hagemeister wrote:
->>     
->>> On modern systems, topology subnet should always be set, but it's
->>> missing in the configuration file.
->>> Add it with a short explanation.
->>>       
->> NACK
->> There are a few annoying issues with
->>   topology subnet
->> esp when using server side things like
->>   route <remote subnet> <mask>
->>
->> that will *fail* with 'topology subnet' ; until this is fixed this 
->> should NOT be considered the default.
->>     
->
-> Well, it's on the roadmap, and Arne has already sent a patch.
->
-> So, what other issues exist?  This is the only one I'm aware of... 
-> (and the recent trac ticket about "topology subnet not working on
-> FreeBSD 10" turned out to be local confusion...)
->
->
->   
-hmm I thought I had a TRAC ticket on this but I cannot find it anymore...
-I recall some  minor annoyances all having to do with needing to 
-explictly add a gateway for the server-side routes. I'm 99.9% confident 
-that Arne's one-liner will have fixed them.
+On Fri, Jul 11, 2014 at 04:50:38PM +0200, Jan Just Keijser wrote:
+> the master branch (from openvpn-testing) currently does not build on=20
+> either CentOS 5 and 6.
 
-With those annoyances gone I'd even be in favor of making 'topology 
-subnet' the default for the 2.4 release :)
+Install snappy(-dev) or run configure with --disable-snappy :-) - besides=20
+that, it should build just fine.
 
-cheers,
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-JJK
+--SXJj2kVWw/JBQDhF
+Content-Type: application/pgp-signature
+Content-Disposition: inline
 
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
 
+iQCVAwUBU8An/qkuBuNlUUl1AQKf8gP+J6i8l6/i+cF6Yt/JcvqHZb4kmcl18mrJ
+9hDglebiUYkQm8z34f1Lc0vaZRCr6V03kRRHtaMe13X4+M9ctLLZKDnxeMH1AKNt
+NQU29UnCcgt0OmJYamgKQC3zVwYJKYDJcak4qCVIGRJEzFxbYweG63i0WcXeX5Az
+1HkTkf6QLJ0=
+=R10g
+-----END PGP SIGNATURE-----
 
-
+--SXJj2kVWw/JBQDhF--
 
