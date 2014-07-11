@@ -1,13 +1,8 @@
-Message-ID: <53BFAF81.2080705@...1147...>
-Date: Fri, 11 Jul 2014 11:33:53 +0200
-From: Jan Just Keijser <janjust@...1147...>
-MIME-Version: 1.0
-References: <53BF9998.5020906@...1921...> <53BFA5AA.4070305@...1147...>
-	<53BFA759.7060307@...1227...> <53BFA9A0.3020605@...1147...>
-	<53BFACDE.9050609@...1227...>
-In-Reply-To: <53BFACDE.9050609@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH] Add topology in sample server
- configuration file
+From: Arne Schwabe <arne@...1227...>
+Date: Fri, 11 Jul 2014 12:47:39 +0200
+Message-Id: <1405075659-7881-1-git-send-email-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH] Fix server routes not working in topology
+	subnet with --server
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,69 +11,63 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-Hi Arne,
+---
+ doc/openvpn.8        | 5 ++++-
+ src/openvpn/helper.c | 5 ++++-
+ 2 files changed, 8 insertions(+), 2 deletions(-)
 
-Arne Schwabe wrote:
->> This is really not *necessary*, but the way the code does tun & tap and
->> net30 & subnet, it gets confused about things.  Needs fixing, sorry for
->> that.
->>
->>
->>
->> so in some cases a server-side statement
->>  route 192.168.1.0 255.255.255.0
->> works fine with 'topology net30' but NOT with 'topology subnet'.
->>
->> This is a long standing bug that needs to be fixed before we can
->> forcefeed everybody 'topology subnet'.
->>     
->
-> Okay. I see where the confusion is coming from. if you have net30, the
-> second parameter for the ifconfig is always the gateway. In subnet you
-> explicity need to set the gateway by setting/pushing route-gateway.
->
-> In normal setups the --server macro automatically does that for you.
->   
-I wish this were true. Consider the following server config:
-
-proto udp
-port 1194
-dev tun
-server 192.168.200.0 255.255.255.0
-ca       /etc/openvpn/cookbook/ca.crt
-cert     /etc/openvpn/cookbook/server.crt
-key      /etc/openvpn/cookbook/server.key
-dh       /etc/openvpn/cookbook/dh1024.pem
-tls-auth /etc/openvpn/cookbook/ta.key 0
-persist-key
-persist-tun
-keepalive 10 60
-push "route 10.198.0.0 255.255.0.0"
-user  nobody
-group nobody
-client-config-dir /etc/openvpn/cookbook/clients
-route 192.168.4.0 255.255.255.0
-
-(example from my cookbook)
-this example works fine 'as is' but if you add
-  topology subnet
-you get
-
-Fri Jul 11 11:31:28 2014 OpenVPN ROUTE: OpenVPN needs a gateway 
-parameter for a --route option and no default was specified by either 
---route-gateway or --ifconfig options
-Fri Jul 11 11:31:28 2014 OpenVPN ROUTE: failed to parse/resolve route 
-for host/network: 192.168.4.0
-Fri Jul 11 11:31:28 2014 TUN/TAP device tun0 opened
-
-
-so the 'server' macro does not seem to properly publish this in all cases.
-
-JJK
+diff --git a/doc/openvpn.8 b/doc/openvpn.8
+index 6d4f3cf..d5eeed5 100644
+--- a/doc/openvpn.8
++++ b/doc/openvpn.8
+@@ -2704,7 +2704,7 @@ on sufficiently fast hardware.  SSL/TLS authentication must
+ be used in this mode.
+ .\"*********************************************************
+ .TP
+-.B \-\-server network netmask
++.B \-\-server network netmask ['nopool']
+ A helper directive designed to simplify the configuration
+ of OpenVPN's server mode.  This directive will set up an
+ OpenVPN server which will allocate addresses to clients
+@@ -2739,6 +2739,9 @@ expands as follows:
+    if !nopool:
+      ifconfig-pool 10.8.0.2 10.8.0.254 255.255.255.0
+    push "route-gateway 10.8.0.1"
++   if redirect-gateway unset:
++     redirect-gateway 10.8.0.1
++      
+ .in -4
+ .ft
+ .fi
+diff --git a/src/openvpn/helper.c b/src/openvpn/helper.c
+index d9eef03..fb22815 100644
+--- a/src/openvpn/helper.c
++++ b/src/openvpn/helper.c
+@@ -232,6 +232,7 @@ helper_client_server (struct options *o)
+    *   if !nopool: 
+    *     ifconfig-pool 10.8.0.2 10.8.0.254 255.255.255.0
+    *   push "route-gateway 10.8.0.1"
++   *   route-gateway 10.8.0.1
+    */
+ 
+   if (o->server_defined)
+@@ -311,8 +312,10 @@ helper_client_server (struct options *o)
+ 		  ifconfig_pool_verify_range (M_USAGE, o->ifconfig_pool_start, o->ifconfig_pool_end);
+ 		}
+ 	      o->ifconfig_pool_netmask = o->server_netmask;
+-		  
++
+ 	      push_option (o, print_opt_route_gateway (o->server_network + 1, &o->gc), M_USAGE);
++	      if (!o->route_default_gateway)
++		o->route_default_gateway = o->ifconfig_local;
+ 	    }
+ 	  else
+ 	    ASSERT (0);
+-- 
+1.8.5.2 (Apple Git-48)
 
 
