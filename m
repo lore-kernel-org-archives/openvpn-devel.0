@@ -1,17 +1,15 @@
-Date: Fri, 11 Jul 2014 20:07:59 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20140711180758.GJ1118@...1296...>
+Message-ID: <53C02A4E.6040103@...1147...>
+Date: Fri, 11 Jul 2014 20:17:50 +0200
+From: Jan Just Keijser <janjust@...1147...>
+MIME-Version: 1.0
 References: <53BF9998.5020906@...1921...> <53BFA5AA.4070305@...1147...>
 	<53BFA759.7060307@...1227...> <53BFA9A0.3020605@...1147...>
 	<53BFACDE.9050609@...1227...> <53BFAF81.2080705@...1147...>
 	<53BFC22C.5010601@...1227...> <53BFF9BE.1090204@...1147...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="SXJj2kVWw/JBQDhF"
-Content-Disposition: inline
-In-Reply-To: <53BFF9BE.1090204@...1147...>
+	<20140711180758.GJ1118@...1296...>
+In-Reply-To: <20140711180758.GJ1118@...1296...>
 Subject: Re: [Openvpn-devel] [PATCH] Add topology in sample server
-	configuration file
+ configuration file
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,44 +18,36 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Jan Just Keijser <janjust@...1147...>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Gert Doering <gert@...1296...>
 Cc: openvpn-devel@lists.sourceforge.net
-
---SXJj2kVWw/JBQDhF
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
 Hi,
 
-On Fri, Jul 11, 2014 at 04:50:38PM +0200, Jan Just Keijser wrote:
-> the master branch (from openvpn-testing) currently does not build on=20
-> either CentOS 5 and 6.
+On 11/07/14 20:07, Gert Doering wrote:
+> Hi,
+>
+> On Fri, Jul 11, 2014 at 04:50:38PM +0200, Jan Just Keijser wrote:
+>> the master branch (from openvpn-testing) currently does not build on
+>> either CentOS 5 and 6.
+> Install snappy(-dev) or run configure with --disable-snappy :-) - besides
+> that, it should build just fine.
+>
+>
+an
+   autoreconf -i
+did the trick on CentOS 6; on CentOS 5 I get
 
-Install snappy(-dev) or run configure with --disable-snappy :-) - besides=20
-that, it should build just fine.
+checking for SSL_OP_NO_TICKET flag in OpenSSL... no
+configure: error: OpenVPN 2.4+ requires SSL_OP_NO_TICKET in OpenSSL
 
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+which is logical as the "stock" openssl lib on CentOS 5 is openssl 0.9.8 
+; to me, this breaks CentOS 5 builds, as I have no option nor desire to 
+build & install openssl 1.0 on them.
 
---SXJj2kVWw/JBQDhF
-Content-Type: application/pgp-signature
-Content-Disposition: inline
+share and enjoy,
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
+JJK
 
-iQCVAwUBU8An/qkuBuNlUUl1AQKf8gP+J6i8l6/i+cF6Yt/JcvqHZb4kmcl18mrJ
-9hDglebiUYkQm8z34f1Lc0vaZRCr6V03kRRHtaMe13X4+M9ctLLZKDnxeMH1AKNt
-NQU29UnCcgt0OmJYamgKQC3zVwYJKYDJcak4qCVIGRJEzFxbYweG63i0WcXeX5Az
-1HkTkf6QLJ0=
-=R10g
------END PGP SIGNATURE-----
-
---SXJj2kVWw/JBQDhF--
 
