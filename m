@@ -1,15 +1,11 @@
-Date: Sun, 13 Jul 2014 21:08:02 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20140713190802.GZ1118@...1296...>
-References: <20140703083820.GG18930@...1281...>
-	<20140713183018.GN27631@...1281...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="uuwIKJs7er60DmzI"
-Content-Disposition: inline
-In-Reply-To: <20140713183018.GN27631@...1281...>
-Subject: Re: [Openvpn-devel] OpenVPN Windows client (GUI) config files under
-	user homedir/profile
+MIME-Version: 1.0
+In-Reply-To: <l8qvsn$jif$1@...1062...>
+References: <l8qvsn$jif$1@...1062...>
+From: "Jonathan K. Bullard" <jkbullard@...277...>
+Date: Mon, 14 Jul 2014 23:57:29 -0400
+Message-ID: <CAEsd45Sd4LEXZ3sjh_=7e66BpGn6nofUEA_LGPN858WKKfDw8A@...278...>
+Content-Type: multipart/alternative; boundary=047d7bdc17f674714504fe336a3e
+Subject: Re: [Openvpn-devel] Easy-RSA v3 release planning
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,55 +14,29 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Pasi =?iso-8859-1?Q?K=E4rkk=E4inen?= <pasik@...124...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Josh Cepek <josh.cepek@...1085...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---uuwIKJs7er60DmzI
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+--047d7bdc17f674714504fe336a3e
+Content-Type: text/plain; charset=UTF-8
 
-Hi,
+On Tue, Dec 17, 2013 at 9:05 PM, Josh Cepek <josh.cepek@...1085...> wrote:
 
-On Sun, Jul 13, 2014 at 09:30:18PM +0300, Pasi K=E4rkk=E4inen wrote:
-> On Thu, Jul 03, 2014 at 11:38:20AM +0300, Pasi K=E4rkk=E4inen wrote:
-> > Are there plans to support having Windows OpenVPN client (GUI) configfi=
-les under user's homedir/profile instead of system wide c:\program files\op=
-envpn\config\ ?=20
+> The notable fix since -rc1 has been support for OpenSSL-0.9.8 (commit
+> 8b1fe01.) While I hope this isn't a common need, the fix was simple
+> enough, and this is still a supported OpenSSL version.
+>
 
-Well, as far as I know, nothing is in the queue.
+Any update on the availability of an -rc2 with this fix?
 
-On the other hand, I know that Heiko is working on revamping the whole
-GUI with the interactive service model, which brings along some nice
-ideas about restricting configs to "what the admin provided" or "more
-open", if I understood him right.  The problem is, as always, available
-time, and he's been very busy in the past months...
+--047d7bdc17f674714504fe336a3e
+Content-Type: text/html; charset=UTF-8
 
-(So I'm not calling for patches now, as it might just conflict with
-already worked-on code - or not...)
+<div dir="ltr"><div>On Tue, Dec 17, 2013 at 9:05 PM, Josh Cepek <span dir="ltr">&lt;<a href="mailto:josh.cepek@...1085..." target="_blank">josh.cepek@...1085...</a>&gt;</span> wrote:<br></div><div class="gmail_extra"><div class="gmail_quote">
 
-gert
+<blockquote class="gmail_quote" style="margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">The notable fix since -rc1 has been support for OpenSSL-0.9.8 (commit<br>
+8b1fe01.) While I hope this isn&#39;t a common need, the fix was simple<br>
+enough, and this is still a supported OpenSSL version.<br></blockquote><div><br></div><div>Any update on the availability of an -rc2 with this fix?</div><div><br></div></div></div></div>
 
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---uuwIKJs7er60DmzI
-Content-Type: application/pgp-signature
-Content-Disposition: inline
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQCVAwUBU8LZEqkuBuNlUUl1AQI5MQQAsNhk4kRNEMVe5krjPQMXdl0Z1VQuSuDz
-5E/WIbR6PYctMdus1xoM7QDVN++p/CwUjJBjKcPZgKrG0tl8K7iFhHtvKpSG6HAO
-c9RNo/lR6J+SW83xT2tzsWH4rQQ0eTc9UKtldluiCuea54TzHlNGQ3AVRFbKCXvH
-g9Cqsz0eusI=
-=DmKk
------END PGP SIGNATURE-----
-
---uuwIKJs7er60DmzI--
+--047d7bdc17f674714504fe336a3e--
 
