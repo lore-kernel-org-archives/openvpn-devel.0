@@ -1,9 +1,13 @@
-MIME-Version: 1.0
-In-Reply-To: <11052645.930865.1405935348844.JavaMail.root@...1893...>
+Date: Mon, 21 Jul 2014 14:02:50 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20140721120250.GK1118@...1296...>
 References: <11052645.930865.1405935348844.JavaMail.root@...1893...>
-From: Steffan Karger <steffan@...1856...>
-Date: Mon, 21 Jul 2014 13:24:53 +0200
-Message-ID: <CAA1Abx+R_ARom8UBH2z-qRz0bqwq7==vT5KY93OWCgeQQc=ShA@...278...>
+	<CAA1Abx+R_ARom8UBH2z-qRz0bqwq7==vT5KY93OWCgeQQc=ShA@...278...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="f2unX6n4w7rMQ5H3"
+Content-Disposition: inline
+In-Reply-To: <CAA1Abx+R_ARom8UBH2z-qRz0bqwq7==vT5KY93OWCgeQQc=ShA@...278...>
 Subject: Re: [Openvpn-devel] OpenSSL in OpenVPN software to be replaced?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -13,25 +17,47 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-To: Lisa Minogue <lminogue@...1892...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Steffan Karger <steffan@...1856...>
+Cc: Lisa Minogue <lminogue@...1892...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Hi Lisa,
+--f2unX6n4w7rMQ5H3
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-On Mon, Jul 21, 2014 at 11:35 AM, Lisa Minogue <lminogue@...1892...> wrote:
-> do you have plans to replace OpenSSL with PolarSSL or LibreSSL? And how soon will new bundles of OpenVPN software be released that incorporate OpenSSL alternatives?
+Hi,
 
-OpenVPN is already capable of using PolarSSL instead of OpenSSL, see
-http://community.openvpn.net/openvpn/wiki/UsingPolarSSL. I don't know
-of any 'regular' OpenVPN software releases that use PolarSSL, but
-there is OpenVPN-NL (https://openvpn.fox-it.com) that uses PolarSSL.
+On Mon, Jul 21, 2014 at 01:24:53PM +0200, Steffan Karger wrote:
+> LibreSSL has just been ported to Linux.=20
 
-LibreSSL has just been ported to Linux. As soon as it becomes mature
-and readily available in distros, I think it would be nice to add it
-as an option for OpenVPN, but afaik there are currently no concrete
-plans to do so.
+I'd stay away from LibreSSL for a while.  "We do OpenBSD, and do not care
+for portability" seems to have side effects on things like "seeding RNG"
+that should be fully understood before using that.
 
--Steffan
+(Unfortunately I do not have the link that details this particular issue
+- came around it last week)
+
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--f2unX6n4w7rMQ5H3
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQCVAwUBU80BaqkuBuNlUUl1AQKPygP/TTUVcjOe1nfsG1Uoge2luTpOUSbmw0q6
+X3acBxob1f9n+SFAy912neuG/CR+aBuUfpO8BO+Z4GE1pVBnB5BCSvqqvenYYi2C
+ppE8SF2N333mb8FK3AfzQ7470An1tNFwJaZn/GaRUqQuA+Qgd+LQpmxyFrQt8kwU
+ZCZltK3eF1c=
+=/FAa
+-----END PGP SIGNATURE-----
+
+--f2unX6n4w7rMQ5H3--
 
