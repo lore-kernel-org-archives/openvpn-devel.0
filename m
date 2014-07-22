@@ -1,16 +1,13 @@
-Date: Mon, 21 Jul 2014 20:48:02 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20140721184801.GU1118@...1296...>
-References: <11052645.930865.1405935348844.JavaMail.root@...1893...>
-	<20140721120346.GL1118@...1296...>
-	<53CD0B1B.6000801@...515...>
-	<22905346.946911.1405963050383.JavaMail.root@...1893...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="2zmMdo9kaOZMikRi"
-Content-Disposition: inline
-In-Reply-To: <22905346.946911.1405963050383.JavaMail.root@...1893...>
-Subject: Re: [Openvpn-devel] OpenSSL in OpenVPN software to be replaced?
+In-Reply-To: <OF80C424FD.27405071-ONC1257C07.004692C7-C1257C07.004BC7CB@...1923...>
+References: <OF80C424FD.27405071-ONC1257C07.004692C7-C1257C07.004BC7CB@...1923...>
+MIME-Version: 1.0
+From: arno.odermatt@...1845...
+Message-ID: <OFF4D01B5D.C068F160-ONC1257D1D.0055C3F1-C1257D1D.005A2BE1@...1846...>
+Date: Tue, 22 Jul 2014 18:24:54 +0200
+Content-Type: multipart/alternative;
+	boundary="=_alternative 005A2BB1C1257D1D_="
+Subject: [Openvpn-devel] Openvpn 2.3.2: "Could not create temporary file"
+	....Too many open files
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,114 +16,118 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Lisa Minogue <lminogue@...1892...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
---2zmMdo9kaOZMikRi
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+This is a multipart message in MIME format.
+--=_alternative 005A2BB1C1257D1D_=
+Content-Type: text/plain; charset="US-ASCII"
 
-Hi,
+Dear all,
 
-On Mon, Jul 21, 2014 at 07:17:30PM +0200, Lisa Minogue wrote:
-> Hi Samuli and friends:
->=20
-> This is what I think.
+we are driving O-VPN 2.3.2 on Fedora20.
+Since we have quit many permanently connected O-VPN clients, we have 
+started three O-VPN processes, listening on three different ports and 
+setting up three different tap interfaces:
 
-Don't think so much, use google first :)
+Today, all three O-VPN processes crashed suddenly, whereas we found 
+following error:
 
-> Both of us don't know how long it will take for OpenSSL to fix the long l=
-ist of bugs -some of which are significant- that have accumulated over the =
-years. One year or two years?
->=20
-> OpenVPN is in the business of providing software that enables secure comm=
-unications. Can OpenVPN afford to wait one or two years for bugs to be fixe=
-d?=20
+ ip-172-16-128-101 openvpn[654]: <CN>/172.16.253.10:44214 Could not create 
+temporary file '/var/tmp/openvpn_cc_1bd37815cbacd70936015e40e25198aa.tmp': 
+Too many open files
 
-What makes you assume that any of these bugs are security relevant?=20=20
+We did not find any helpful information, neither in the the mail-archives, 
+nor in other forums/panels, beside something related to user/password 
+authentication (openvpn-auth-pam), which we are not using (using 
+TLS-server) and also lsof did not provide any helpful information to 
+correlate this error to a (file-) resource problem
 
-All software has bugs, and of the OpenSSL bugs so far, only two had=20
-really nasty effects on OpenVPN (heartbleed and the most recent weak
-crypto one) and heartbleed only affected users that were on 1.0.1, none=20
-that were on 0.9.8.  So while one might have opinions on OpenSSL code=20
-quality and maintainability, it's track record is fairly *good* for code=20
-that has been around for so long.
-
-But we don't have to "wait one or two years".  PolarSSL support is here
-*today* - you can build OpenVPN with PolarSSL just fine.  It's just that
-the binaries we provide for windows are currently built against OpenSSL,
-because nobody extended the windows build environment to build against
-PolarSSL.
-
-(If you feel we need windows binaries built with PolarSSL: patches for
-the build system are welcome.  We are always short on time, so contributions
-are welcome)
+https://forums.openvpn.net/topic13474.html 
+https://community.openvpn.net/openvpn/ticket/201 
 
 
-> How will OpenVPN address the concerns of its Access Server's customers? D=
-o Access Server software incorporate OpenSSL or PolarSSL?
+After this happened, we found:
 
-AS could be built with PolarSSL mostly fine (some functionality is missing
-in PolarSSL), and judging from the patches I've seen from James, he is=20
-working on it.  But for AS, ask your commercial channels, not this list.
+- in /tmp:      -rw-r--r--.  1 root    0 Jul 18 10:51 vpn3_sema_15198 
+#sema files laying around
 
-OpenVPN Connect on iOS uses PolarSSL already today.
-
-> Hackers and agencies sponsored by their respective governments
-> will have a field day disrupting secure communications enabled by
-> the use of defective VPN software. Economic espionage will wreak
-> havoc on the markets and create unfair competition for those
-> countries which are technically and scientifically superior. Human
-> rights abuses will be on the increase.
-
-You're welcome to funnel your excitement about the poor state of software
-into patches that contribute what you think is missing.  The rest of us
-is already busy doing so.
+- in /var/tmp   -rw-------.  1 root        0 Jul 18 10:51 
+openvpn_cc_0e211df697b9f5620da89bd05f44ef48.tmp
 
 
-> I accept that substantial portions of the current software code for=20
-> Windows will have to be rewritten.=20
+Deleting of the sema-files and restarting O-VPN brought back everything to 
+life.
 
-Nothing at all of the *code* needs to be rewritten.  OpenVPN with PolarSSL
-support is here today.
+Has anybody ever experienced something similar, can this be a bug and what 
+could be the corrective action to overcome, this to repeat again?
 
-What needs to be done is extend the build system to build windows binaries
-with PolarSSL - building so for Linux is very easy today, just call
+Thank you for any help in this
 
- ./configure --with-crypto-library=3Dpolarssl
- make
-
-and you get a polarssl-enabled OpenVPN binary.
+Ar
 
 
-> But aren't you also doing it for Access Server customers? Aren't they aff=
-ected by OpenSSL's bugs?
 
-This is not the AS support channel, so we can't answer questions about AS.
+******************************************************
+Notice: The information contained in this message is intended only for use of the individual(s) named above and may contain confidential, proprietary or legally privileged information. No confidentiality or privilege is waived or lost by any mistransmission. If you are not the intended recipient of this message you are hereby notified that you must not use, disseminate , copy it in any form or take any action in reliance of it. If you have received this message in error please delete it and any copies of it and notify the sender immediately.
+*******************************************************
+--=_alternative 005A2BB1C1257D1D_=
+Content-Type: text/html; charset="US-ASCII"
 
-gert
+<font size=2 face="sans-serif">Dear all,</font>
+<br>
+<br><font size=2 face="sans-serif">we are driving O-VPN 2.3.2 on Fedora20.</font>
+<br><font size=2 face="sans-serif">Since we have quit many permanently
+connected O-VPN clients, we have started three O-VPN processes, listening
+on three different ports and setting up three different tap interfaces:<br>
+<br>
+Today, all three O-VPN processes crashed suddenly, whereas we found following
+error:<br>
+<br>
+</font><font size=2 face="Calibri"> ip-172-16-128-101 openvpn[654]: &lt;CN&gt;/172.16.253.10:44214
+Could not create temporary file '/var/tmp/openvpn_cc_1bd37815cbacd70936015e40e25198aa.tmp':
+</font><font size=2 color=blue face="Calibri"><b>Too many open files</b></font><font size=2 face="sans-serif"><br>
+<br>
+We did not find any helpful information, neither in the the mail-archives,
+nor in other forums/panels, beside something related to user/password authentication
+(openvpn-auth-pam), which we are not using (using TLS-server) and also
+lsof did not provide any helpful information to correlate this error to
+a (file-) resource problem</font>
+<br>
+<table width=267 style="border-collapse:collapse;">
+<tr valign=top height=8>
+<td width=265 style="border-style:solid;border-color:#000000;border-width:0px 0px 0px 0px;padding:1px 1px;"><a href=https://forums.openvpn.net/topic13474.html><font size=1 color=blue><b><u>https://forums.openvpn.net/topic13474.html</u></b></font></a><font size=1>
+</font><font size=1 color=blue><b><u><br>
+</u></b></font><a href=https://community.openvpn.net/openvpn/ticket/201><font size=1 color=blue><b><u>https://community.openvpn.net/openvpn/ticket/201</u></b></font></a><font size=1>
+</font></table>
+<br>
+<br><font size=2 face="sans-serif"><br>
+After this happened, we found:</font>
+<br>
+<br><font size=2 face="sans-serif">- in /tmp: &nbsp; &nbsp; &nbsp; &nbsp;</font><font size=2 face="Calibri">-rw-r--r--.
+&nbsp;1 root &nbsp; &nbsp;0 Jul 18 10:51 vpn3_sema_15198</font><font size=2 face="sans-serif">
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;#sema
+files laying around</font>
+<br>
+<br><font size=2 face="sans-serif">- in /var/tmp &nbsp; &nbsp; &nbsp; &nbsp;-rw-------.
+&nbsp;1 root &nbsp; &nbsp; &nbsp; &nbsp;0 Jul 18 10:51 openvpn_cc_0e211df697b9f5620da89bd05f44ef48.tmp</font>
+<br>
+<br><font size=2 face="sans-serif"><br>
+Deleting of the sema-files and restarting O-VPN brought back everything
+to life.</font>
+<br>
+<br><font size=2 face="sans-serif">Has anybody ever experienced something
+similar, can this be a bug and what could be the corrective action to overcome,
+this to repeat again?</font>
+<br><font size=2 face="sans-serif"><br>
+Thank you for any help in this</font>
+<br>
+<br><font size=2 face="sans-serif">Ar<br>
+</font><font size=1 face="Arial"><br>
+</font>
+<br clear="both">
+******************************************************<BR>
+Notice: The information contained in this message is intended only for use of the individual(s) named above and may contain confidential, proprietary or legally privileged information. No confidentiality or privilege is waived or lost by any mistransmission. If you are not the intended recipient of this message you are hereby notified that you must not use, disseminate , copy it in any form or take any action in reliance of it. If you have received this message in error please delete it and any copies of it and notify the sender immediately.<BR>
+*******************************************************<BR>
 
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---2zmMdo9kaOZMikRi
-Content-Type: application/pgp-signature
-Content-Disposition: inline
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQCVAwUBU81gYakuBuNlUUl1AQK7bAQAwlR0jOB7zh3EJbn4iLEkvrG8056aHKH4
-lHvz6rb1ML5lZ2X6vdHiCgeJ6CYUmv/8moIh7S/5ixlLA4bm2dILiN/Wy+bNQqBi
-R6bdXrJK86ggjeuwKtn9KDVcd+lqQzBxuhOamDhENX/mXznn6jCWDzkHNJLt9tsY
-8jP0U+rq8gI=
-=iHTx
------END PGP SIGNATURE-----
-
---2zmMdo9kaOZMikRi--
+--=_alternative 005A2BB1C1257D1D_=--
 
