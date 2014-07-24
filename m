@@ -1,17 +1,18 @@
-Date: Thu, 24 Jul 2014 16:08:45 +0200
+Date: Thu, 24 Jul 2014 20:10:32 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20140724140845.GT1118@...1296...>
+Message-ID: <20140724181032.GX1118@...1296...>
 References: <OF80C424FD.27405071-ONC1257C07.004692C7-C1257C07.004BC7CB@...1923...>
 	<OFF4D01B5D.C068F160-ONC1257D1D.0055C3F1-C1257D1D.005A2BE1@...1846...>
 	<9998AE72-2992-4D02-8E27-BE9A55BDBDF6@...1286...>
 	<20140722193436.GI1118@...1296...>
 	<OF0A6F87B6.7643FAD4-ONC1257D1E.00208574-C1257D1E.0022B4AF@...1846...>
-	<53D02C7F.10900@...1147...>
+	<53D02C7F.10900@...1147...> <20140724140845.GT1118@...1296...>
+	<OF5C660519.1F3B315A-ONC1257D1F.004F8E28-C1257D1F.005477F1@...1846...>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="mhFEuq5UON706CVc"
+	protocol="application/pgp-signature"; boundary="eLlMuDqWz6GHXUjE"
 Content-Disposition: inline
-In-Reply-To: <53D02C7F.10900@...1147...>
+In-Reply-To: <OF5C660519.1F3B315A-ONC1257D1F.004F8E28-C1257D1F.005477F1@...1846...>
 Subject: Re: [Openvpn-devel] Openvpn 2.3.2: "Could not create temporary
 	file" ....Too many open files
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -22,49 +23,59 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Jan Just Keijser <janjust@...1147...>
+To: arno.odermatt@...1845...
 Cc: openvpn-devel@lists.sourceforge.net
 
---mhFEuq5UON706CVc
+--eLlMuDqWz6GHXUjE
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Wed, Jul 23, 2014 at 11:43:27PM +0200, Jan Just Keijser wrote:
-> >Gert, we are sure, there was not a problem with the resources (eg.:=20
-> >max open files, max filed descriptors, etc.) on the system.
-> >What else can I do about it?
-> >
-> try debugging this by adding some statements to the client-connect=20
-> script, e.g.
+On Thu, Jul 24, 2014 at 05:22:37PM +0200, arno.odermatt@...1845... wrote:
+> I did the first part:
 >=20
-> ls -l /proc/self/fd/* | wc -l >> /tmp/debug.log
-> sysctl fs.file-nr >> /tmp/debug.log
+> NO, we are not using any Plugins, only client -connects scripts
+
+Mmmh, ok.
+
+> lsof -n | wc -l           4405=20
+
+That doesn't tell much, except "the total number of open files in
+the system is 4405".
+
+> lsof -p 25211 > openvpn1.txt
+> lsof -p 25232 > openvpn2.txt
+> lsof -p 25252 > openvpn3.txt
 >=20
-> to find out if there really are no more filehandles available.
-> For each connection a new client-connect script is started, so I doubt=20
-> that any non-closed file handles will accumulate and cause this problem.
+> It looks like, we got much more then just some lines:
+>=20=20=20=20=20=20=20=20=20=20
+> openvpn3.txt    openvpn2.txt    openvpn1.txt
 
-The error message came from OpenVPN, so if there is a leak, it's in
-OpenVPN, not in the script.
+If you look at the files (in attachment), you'll see that the large bulk
+of it is "TCP" - so your openvpn processes are using up the amount of file
+descriptors the system is willing to give them for TCP connects, as every
+TCP client needs to have it's own socket.
 
-OTOH, we use openvpn (git master) with client-connect scripts and=20
-per-user generated configs on a moderately-loaded system, and have
-not run into fd exhaustion issues - and lsof doesn't print anything
-interesting either, so it must be something more interesting than
-a forgotten close() call...
+If you run "ulimit -a" from the same environment where you start the
+OpenVPN processes, you'll see a line that looks like this:
 
-Arno, are you using plugins?  (A plugin runs in the OpenVPN context,
-and if a plugin leaks FDs, it will affect OpenVPN as well)
+$ ulimit -a
+...
+nofile                         (-n)  1024
 
-How does a "lsof -p $processid" for the OpenVPN process look like after
-it has run for a few hours?  Mine shows about 20 lines, and most of them
-are shared libraries (/lib/...*.so.*) - if it is significantly more for
-you, there is the problem.
+that's the maximum number of file descriptors - subtract some 20-odd,
+and you have ~1000 left for about 1000 clients.
+
+$ ulimit -n 2000
+
+can usually be used to raise that limit to 2000 (if run as root, in the=20
+same shell that starts openvpn later)...  I'm not a Fedora expert, so=20
+maybe they have some other limitations, or ways to control the limits.
 
 gert
+
 
 --=20
 USENET is *not* the non-clickable part of WWW!
@@ -73,19 +84,19 @@ rt/
 Gert Doering - Munich, Germany                             gert@...1296...
 fax: +49-89-35655025                        gert@...1297...
 
---mhFEuq5UON706CVc
+--eLlMuDqWz6GHXUjE
 Content-Type: application/pgp-signature
 Content-Disposition: inline
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1
 
-iQCVAwUBU9ETbakuBuNlUUl1AQKVQwQAtbevathDr/mLtjDoj4+XkdnkaOLP79h9
-sIHK8ihv/EQnD3L37YARX4KnC2oo6N2opxaFwEW5C5gxF7namtpHwyLtJ5E/8VdY
-Z9jQypsGVB+Gfsf/ByCVFu0ervZ7diH3wOyCKao1kbMtzCPzWMYXzSHe7/siIDvy
-pj4n4pc22jQ=
-=SQgT
+iQCVAwUBU9FMGKkuBuNlUUl1AQL2rAP6A0fW32h96+Rsi0MpRRWzx4dBtHZs7ShU
+3lW8eJB7sYNuLgkevBZJpQXaNR0ysCKqjDlWmlU6g3D4PruFET/U5iqTHmKQauvS
++0ycKZKwZnV9mdQ7dQxquNnhHxUk6UItTLVcosr8WtVq3IWIS80RwUFzillMB/g2
+eknNSGs5fTI=
+=/ymu
 -----END PGP SIGNATURE-----
 
---mhFEuq5UON706CVc--
+--eLlMuDqWz6GHXUjE--
 
