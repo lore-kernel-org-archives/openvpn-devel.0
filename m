@@ -1,8 +1,8 @@
 From: Steffan Karger <steffan@...1856...>
-Date: Tue, 29 Jul 2014 22:52:24 +0200
-Message-Id: <1406667144-17674-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH] Fix frame size calculation for non-CBC
-	modes.
+Date: Tue, 29 Jul 2014 23:04:26 +0200
+Message-Id: <1406667866-14226-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH] Fix typo in cipher_kt_mode_{cbc,
+	ofb_cfb}() doxygen.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,55 +15,33 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-CBC mode is the only mode that OpenVPN supports that needs padding. So,
-only include the worst case padding size in the frame size calculation when
-using CBC mode.
-
-While doing so, rewrite crypto_adjust_frame_parameters() to be better
-readable, and provide debug output (for high debug levels).
-
 Signed-off-by: Steffan Karger <steffan@...1856...>
 ---
- src/openvpn/crypto.c | 26 +++++++++++++++++++++-----
- 1 file changed, 21 insertions(+), 5 deletions(-)
+ src/openvpn/crypto_backend.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
-index ef2bde1..2ba8487 100644
---- a/src/openvpn/crypto.c
-+++ b/src/openvpn/crypto.c
-@@ -403,11 +403,27 @@ crypto_adjust_frame_parameters(struct frame *frame,
- 			       bool packet_id,
- 			       bool packet_id_long_form)
- {
--  frame_add_to_extra_frame (frame,
--			    (packet_id ? packet_id_size (packet_id_long_form) : 0) +
--			    ((cipher_defined && use_iv) ? cipher_kt_iv_size (kt->cipher) : 0) +
--			    (cipher_defined ? cipher_kt_block_size (kt->cipher) : 0) + /* worst case padding expansion */
--			    kt->hmac_length);
-+  size_t crypto_overhead = 0;
-+
-+  if (packet_id)
-+    crypto_overhead += packet_id_size (packet_id_long_form);
-+
-+  if (cipher_defined)
-+    {
-+      if (use_iv)
-+	crypto_overhead += cipher_kt_iv_size (kt->cipher);
-+
-+      if (cipher_kt_mode_cbc (kt->cipher))
-+	/* worst case padding expansion */
-+	crypto_overhead += cipher_kt_block_size (kt->cipher);
-+    }
-+
-+  crypto_overhead += kt->hmac_length;
-+
-+  frame_add_to_extra_frame (frame, crypto_overhead);
-+
-+  msg(D_MTU_DEBUG, "%s: Adjusting frame parameters for crypto by %zu bytes",
-+      __func__, crypto_overhead);
- }
+diff --git a/src/openvpn/crypto_backend.h b/src/openvpn/crypto_backend.h
+index a48ad6c..bc067a7 100644
+--- a/src/openvpn/crypto_backend.h
++++ b/src/openvpn/crypto_backend.h
+@@ -231,7 +231,7 @@ int cipher_kt_block_size (const cipher_kt_t *cipher_kt);
+ int cipher_kt_mode (const cipher_kt_t *cipher_kt);
  
- /*
+ /**
+- * Check of the supplied cipher is a supported CBC mode cipher.
++ * Check if the supplied cipher is a supported CBC mode cipher.
+  *
+  * @param cipher	Static cipher parameters. May not be NULL.
+  *
+@@ -241,7 +241,7 @@ bool cipher_kt_mode_cbc(const cipher_kt_t *cipher)
+   __attribute__((nonnull));
+ 
+ /**
+- * Check of the supplied cipher is a supported OFB or CFB mode cipher.
++ * Check if the supplied cipher is a supported OFB or CFB mode cipher.
+  *
+  * @param cipher	Static cipher parameters. May not be NULL.
+  *
 -- 
 1.9.1
 
