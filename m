@@ -1,10 +1,14 @@
-Date: Tue, 29 Jul 2014 23:15:36 +0200 (CEST)
-Message-Id: <201407292115.s6TLFasc006181@...1295...>
+Date: Tue, 29 Jul 2014 23:20:54 +0200
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1406667866-14226-1-git-send-email-steffan@...1856...>
-References: <1406667866-14226-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix typo in cipher_kt_mode_{cbc,
-	ofb_cfb}() doxygen.
+Message-ID: <20140729212054.GB1118@...1296...>
+References: <1406667144-17674-1-git-send-email-steffan@...1856...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="Bi1c4c+m8JUixgIF"
+Content-Disposition: inline
+In-Reply-To: <1406667144-17674-1-git-send-email-steffan@...1856...>
+Subject: Re: [Openvpn-devel] [PATCH] Fix frame size calculation for non-CBC
+	modes.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,33 +17,49 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
 To: Steffan Karger <steffan@...1856...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-ACK.
+--Bi1c4c+m8JUixgIF
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Your patch has been applied to the master and release/2.3 branches.
+Hi,
 
-commit 38cd1ed5ee89218415c5edfc990cfd47fd879d55 (master)
-commit d6865ba92eaff015fa5c5707186f4a9d52a68e25 (release/2.3)
+On Tue, Jul 29, 2014 at 10:52:24PM +0200, Steffan Karger wrote:
+> CBC mode is the only mode that OpenVPN supports that needs padding. So,
+> only include the worst case padding size in the frame size calculation wh=
+en
+> using CBC mode.
+>=20
+> While doing so, rewrite crypto_adjust_frame_parameters() to be better
+> readable, and provide debug output (for high debug levels).
 
-Author: Steffan Karger
-Date:   Tue Jul 29 23:04:26 2014 +0200
+Is this a bugfix or performance/packet size optimization?  I assume=20
+"master only"?
 
-     Fix typo in cipher_kt_mode_{cbc, ofb_cfb}() doxygen.
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-     Signed-off-by: Steffan Karger <steffan@...1856...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1406667866-14226-1-git-send-email-steffan@...1856...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/8953
-     Signed-off-by: Gert Doering <gert@...1296...>
+--Bi1c4c+m8JUixgIF
+Content-Type: application/pgp-signature
+Content-Disposition: inline
 
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
 
---
-kind regards,
+iQCVAwUBU9gQNqkuBuNlUUl1AQIUQgP6AksCihdnAWzFJoNUKYm4bzRQog8vshWu
+HubAoC2WSI+apGEmcsky6++1xMZcPZqm5BZyoJ6UCQribbLZxpAAMMfFzVInUJJB
++YzK3HwydB4Zx4ICIgZhLdl7NBxsp/YDHuXFyqYAP9GbxwnbNxVrzQDq8fUxqHOZ
++KUt8eb1CyE=
+=lKuS
+-----END PGP SIGNATURE-----
 
-Gert Doering
-
+--Bi1c4c+m8JUixgIF--
 
