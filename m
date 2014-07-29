@@ -1,15 +1,8 @@
-Message-ID: <53D803BE.1040500@...1926...>
-Date: Tue, 29 Jul 2014 22:27:42 +0200
-From: Julien Muchembled <jm@...1926...>
-MIME-Version: 1.0
-References: <1406654929-6079-1-git-send-email-jm@...1926...>
-	<20140729185713.GX1118@...1296...>
-In-Reply-To: <20140729185713.GX1118@...1296...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature";
-	boundary="MPSOJxF1xDEu1hAKrx2vC5mjedhKN4h5b"
-Subject: Re: [Openvpn-devel] [PATCH] Fix --mtu-disc option with IPv6
-	transport
+From: Steffan Karger <steffan@...1856...>
+Date: Tue, 29 Jul 2014 22:52:24 +0200
+Message-Id: <1406667144-17674-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH] Fix frame size calculation for non-CBC
+	modes.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,69 +11,60 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---MPSOJxF1xDEu1hAKrx2vC5mjedhKN4h5b
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: quoted-printable
+CBC mode is the only mode that OpenVPN supports that needs padding. So,
+only include the worst case padding size in the frame size calculation when
+using CBC mode.
 
-Le 07/29/14 20:57, Gert Doering a =E9crit :
-> On Tue, Jul 29, 2014 at 07:28:49PM +0200, Julien Muchembled wrote:
->> Socket configuration of MTU discovery was done unconditionally at IP lev=
-el,
->> which has no effect for other protocols. This fixes the issue of OpenVPN
->> sending fragmented tcp6/udp6 packets even when 'mtu-disc yes' option is =
-passed.
->=20
-> Sounds good.  I'm not sure I understand what that socket option *does*,
-> though...  will it make the kernel report back any ICMP packet too big
-> messages received?  Or will it not honour those unless IPV6_MTU_DISCOVER
-> is set?
->=20
-> Is there documentation for that socket option somewhere?
+While doing so, rewrite crypto_adjust_frame_parameters() to be better
+readable, and provide debug output (for high debug levels).
 
-'man 7 ip' and 'man 7 ipv6'
+Signed-off-by: Steffan Karger <steffan@...1856...>
+---
+ src/openvpn/crypto.c | 26 +++++++++++++++++++++-----
+ 1 file changed, 21 insertions(+), 5 deletions(-)
 
-For example:
-  A --[mtu=3D1500]-- B --[mtu=3D1400]-- C
+diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
+index ef2bde1..2ba8487 100644
+--- a/src/openvpn/crypto.c
++++ b/src/openvpn/crypto.c
+@@ -403,11 +403,27 @@ crypto_adjust_frame_parameters(struct frame *frame,
+ 			       bool packet_id,
+ 			       bool packet_id_long_form)
+ {
+-  frame_add_to_extra_frame (frame,
+-			    (packet_id ? packet_id_size (packet_id_long_form) : 0) +
+-			    ((cipher_defined && use_iv) ? cipher_kt_iv_size (kt->cipher) : 0) +
+-			    (cipher_defined ? cipher_kt_block_size (kt->cipher) : 0) + /* worst case padding expansion */
+-			    kt->hmac_length);
++  size_t crypto_overhead = 0;
++
++  if (packet_id)
++    crypto_overhead += packet_id_size (packet_id_long_form);
++
++  if (cipher_defined)
++    {
++      if (use_iv)
++	crypto_overhead += cipher_kt_iv_size (kt->cipher);
++
++      if (cipher_kt_mode_cbc (kt->cipher))
++	/* worst case padding expansion */
++	crypto_overhead += cipher_kt_block_size (kt->cipher);
++    }
++
++  crypto_overhead += kt->hmac_length;
++
++  frame_add_to_extra_frame (frame, crypto_overhead);
++
++  msg(D_MTU_DEBUG, "%s: Adjusting frame parameters for crypto by %zu bytes",
++      __func__, crypto_overhead);
+ }
+ 
+ /*
+-- 
+1.9.1
 
-Given a UDP6 socket on A with IPV6_MTU_DISCOVER=3DIP_PMTUDISC_DO,
-    sendto(1452 bytes, B) will succeed
-but sendto(1452 bytes, C) will return EMSGSIZE (except for the first send t=
-o C)
-
-Yes, at some point, there are icmp packets.
-
-> (Last not least, because I'm too lazy to look: is that patch against
-> git master or against release/2.3?)
-
-master
-
-
---MPSOJxF1xDEu1hAKrx2vC5mjedhKN4h5b
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQIcBAEBCAAGBQJT2APDAAoJEEwjvlkacWMkwIIQAJl0xIFXPsSQLEyuhlv7LU4K
-EDyguHMbhq6FMgBlqU1hmGCpJ7cQM+HTYWaOI4/JBrwQtfBnJHIXwZMIwRg3d0A5
-YH/5pkxGsYfLcvxyeYDDdrlpLQBrVZeK33zLhsRpyzg6H9NmZ0GBuyI091cw82KG
-CRI8z1m1abpsAYRxu81RlyrVtRVGIB4EMEcWNkehPab2i6L12O26riRGNG724o3k
-A3KCqENXJrLdnqiQYHBzhwIKMzQuhWs85VhC/R2//F8HzPnoechcgAGsfw/kkziF
-SYz2INQW18a9GwK007jwq5e0BCEwE96r/AanKtPQj2Xzz1yU8iM39kWxZ6EzOHRn
-fjmAnkBpVpjXyr46JiaSvEYeXGIg0suKTwbjnY4SryJsTnCZ1pcPPiOLkVVWg0UU
-RKStrSkM4V/6cn+QmmrR+Wb1/HdbvHpKbqNK/Uig5fs2N/BEuQ5ooZtHm49nRWQF
-BZLCVWoNXtNW8fHd9fyelZEBf1Je4LZmHGc70hgHEF/FovIau9kMKn9KWXL52LUj
-uNJD62Nu870wHM88YMWRWu7ungWqQ9ny2nssBLIjmizyoUc+eU0BotKa5sz6kOzg
-/qDqNdeK8Lh9O2bxoglRjwwG9BiI0DJ70IO69jKWELmFNzkpNj+ereH40PLZVOBY
-zcUk8Xaho83+c0Stvbe5
-=shji
------END PGP SIGNATURE-----
-
---MPSOJxF1xDEu1hAKrx2vC5mjedhKN4h5b--
 
