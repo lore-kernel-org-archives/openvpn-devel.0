@@ -1,14 +1,18 @@
-Message-ID: <53D8BAEE.7030402@...1926...>
-Date: Wed, 30 Jul 2014 11:29:18 +0200
-From: Julien Muchembled <jm@...1926...>
-MIME-Version: 1.0
+Date: Wed, 30 Jul 2014 11:37:48 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20140730093748.GH1118@...1296...>
 References: <1406654929-6079-1-git-send-email-jm@...1926...>
 	<20140729185713.GX1118@...1296...>
 	<53D803BE.1040500@...1926...>
 	<20140729210527.GY1118@...1296...>
 	<53D84749.6060601@...1926...>
 	<20140730054253.GC1118@...1296...>
-In-Reply-To: <20140730054253.GC1118@...1296...>
+	<53D8BAEE.7030402@...1926...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="Ay5ZYbEuU6AKGwz0"
+Content-Disposition: inline
+In-Reply-To: <53D8BAEE.7030402@...1926...>
 Subject: Re: [Openvpn-devel] [PATCH] Fix --mtu-disc option with IPv6
 	transport
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,58 +23,67 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: quoted-printable
-To: Gert Doering <gert@...1296...>
+To: Julien Muchembled <jm@...1926...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Hello,
+--Ay5ZYbEuU6AKGwz0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Le 07/30/14 07:42, Gert Doering a =E9crit :
-> On Wed, Jul 30, 2014 at 03:15:53AM +0200, Julien Muchembled wrote:
->> Le 07/29/14 23:05, Gert Doering a =E9crit :
->>>> For example:
->>>>   A --[mtu=3D1500]-- B --[mtu=3D1400]-- C
->>>>
->>>> Given a UDP6 socket on A with IPV6_MTU_DISCOVER=3DIP_PMTUDISC_DO,
->>>>     sendto(1452 bytes, B) will succeed
->>>> but sendto(1452 bytes, C) will return EMSGSIZE (except for the first s=
-end to C)
->>>> Yes, at some point, there are icmp packets.
->>>
->>> So (being lazy again, sorry) how is the maximum message size communicat=
-ed
->>> back to OpenVPN?  Ancilliary data again?
->>
->> ICMP packets contains the size and ping/ping6 even reports it (this is r=
-eal example with mtu=3D1433 between B & C):
+Hi,
+
+On Wed, Jul 30, 2014 at 11:29:18AM +0200, Julien Muchembled wrote:
+> > I know that part, but the ICMP packets are seen by the kernel, not by
+> > OpenVPN.  So how does the information arrive in OpenVPN?  sendto() fail=
+s,
+> > but how does OpenVPN know which max message size will be acceptable?
 >=20
-> I know that part, but the ICMP packets are seen by the kernel, not by
-> OpenVPN.  So how does the information arrive in OpenVPN?  sendto() fails,
-> but how does OpenVPN know which max message size will be acceptable?
+> Although I didn't try all MTU-related options of OpenVPN, it seems to=20
+> ignore EMSGSIZE.=20
 
-Although I didn't try all MTU-related options of OpenVPN, it seems to ignor=
-e EMSGSIZE. It's not something I planned to study immediately and I don't k=
-now how to get the maximum message size programmatically (I could look at t=
-he code of ping).
+Well, handling that error will not lead anywhere, as it just tells us
+"the packet got lost, because it was too big".  More interesting is the
+information "so, how big is 'not too big'" and that won't be in the=20
+error code, but most likely in ancilliary socket data.
 
-What I can say is by only adding '--mtu-disc yes' option, the MTU of the tu=
-n/tap interface remains 1500 and does not change automatically to anything =
-else. If a packet is small enough for mtu=3D1500 but too big for the underl=
-ying network, then it's simply dropped.
+I'll go and find out...
 
-> [..]
->> What I've experienced is that fragmentation is bad for perf and that som=
-e routers on the internet don't route fragmented UDP packets properly, whic=
-h is why I've switched to TCP-only for the moment:
->>   http://git.erp5.org/gitweb/re6stnet.git/commit/cd653523a1474ff9f8956a3=
-31c42235454887f65
+> It's not something I planned to study immediately and I don't know how to=
+ get the maximum message size programmatically (I could look at the code of=
+ ping).
 >=20
-> Of course.  Having that functionality for IPv6 is a good thing.  I was
-> just trying to understand code that I've not yet had to look into :-)
+> What I can say is by only adding '--mtu-disc yes' option, the MTU of the =
+tun/tap interface remains 1500 and does not change automatically to anythin=
+g else. If a packet is small enough for mtu=3D1500 but too big for the unde=
+rlying network, then it's simply dropped.
 
-By the way, I forgot to mention that this patch could be a regression for p=
-latforms that define IP_MTU_DISCOVER but not IPV6_MTU_DISCOVER. I don't kno=
-w if such platform exist. Maybe the 'switch' clause added by the patch shou=
-ld be splitted.
+We won't change the interface MTU (because on half the platforms, we can't,
+or it won't have an effect), but OpenVPN is likely to fragment internally.=
+=20=20
+So "--mtu-disc yes" would need to go along with "--fragment".
+
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--Ay5ZYbEuU6AKGwz0
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQCVAwUBU9i87KkuBuNlUUl1AQKQAQP/UlCPwe0l4U5steuXvKsmXBoVirPGFCs6
+rU4tilzkdmiBHBvhfo1gDbHTGXV619vv3KqWRiUVMUx5iosQmD1zFJzXelTrAj71
+/TTSPWdgU9tj/CQ8aZd33z6CxDvY8RvIqQopYoJlkqg2adp9c43XLb6y47bnDmIg
+KEKKCxQYSKs=
+=cm+g
+-----END PGP SIGNATURE-----
+
+--Ay5ZYbEuU6AKGwz0--
 
