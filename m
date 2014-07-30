@@ -1,12 +1,17 @@
-Message-ID: <53D8246B.2060408@...1856...>
-Date: Wed, 30 Jul 2014 00:47:07 +0200
-From: Steffan Karger <steffan@...1856...>
+Message-ID: <53D84749.6060601@...1926...>
+Date: Wed, 30 Jul 2014 03:15:53 +0200
+From: Julien Muchembled <jm@...1926...>
 MIME-Version: 1.0
-References: <1406667144-17674-1-git-send-email-steffan@...1856...>
-	<20140729212054.GB1118@...1296...>
-In-Reply-To: <20140729212054.GB1118@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH] Fix frame size calculation for non-CBC
- modes.
+References: <1406654929-6079-1-git-send-email-jm@...1926...>
+	<20140729185713.GX1118@...1296...>
+	<53D803BE.1040500@...1926...>
+	<20140729210527.GY1118@...1296...>
+In-Reply-To: <20140729210527.GY1118@...1296...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature";
+	boundary="GM5gRS5NxsPM7dNFJFRWxm3rpbOnC5mV4"
+Subject: Re: [Openvpn-devel] [PATCH] Fix --mtu-disc option with IPv6
+	transport
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,39 +20,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 8bit
 To: Gert Doering <gert@...1296...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--GM5gRS5NxsPM7dNFJFRWxm3rpbOnC5mV4
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
 
-On 29-07-14 23:20, Gert Doering wrote:
-> On Tue, Jul 29, 2014 at 10:52:24PM +0200, Steffan Karger wrote:
->> CBC mode is the only mode that OpenVPN supports that needs padding. So,
->> only include the worst case padding size in the frame size calculation when
->> using CBC mode.
+Le 07/29/14 23:05, Gert Doering a =E9crit :
+>> For example:
+>>   A --[mtu=3D1500]-- B --[mtu=3D1400]-- C
 >>
->> While doing so, rewrite crypto_adjust_frame_parameters() to be better
->> readable, and provide debug output (for high debug levels).
-> 
-> Is this a bugfix or performance/packet size optimization?  I assume 
-> "master only"?
+>> Given a UDP6 socket on A with IPV6_MTU_DISCOVER=3DIP_PMTUDISC_DO,
+>>     sendto(1452 bytes, B) will succeed
+>> but sendto(1452 bytes, C) will return EMSGSIZE (except for the first sen=
+d to C)
+>> Yes, at some point, there are icmp packets.
+>=20
+> So (being lazy again, sorry) how is the maximum message size communicated
+> back to OpenVPN?  Ancilliary data again?
 
-More a bug than a packet size optimization, but neither really. It's
-just something that was not correct.
+ICMP packets contains the size and ping/ping6 even reports it (this is real=
+ example with mtu=3D1433 between B & C):
 
-Too-large frame parameters don't really seem to have an influence on the
-actual connection. At least, for as far as I grasp the networking
-code... (Please correct me if I'm wrong.) The calculated values are
-reported to the user and peer. By default the tun-mtu is set to 1500,
-and the link-mtu to 1500 + calculated overhead. If that calculated
-overhead is too large, too large buffers are allocated, but the packets
-actually sent are still limited by their real payload+overhead. If peers
-don't agree on their link-mtu's they will issue a warning, but - as long
-as the buffers are large enough - will still happily connect. Since
-OFB/CFB has been fixed (very recently) in both master and release/2.3,
-I'd say this fix should go into both.
-
--Steffan
-
+# ping6 -c 1 -M do -s 1452 B
+PING B (...) 1452 data bytes
+1460 bytes from B: icmp_seq=3D1 ttl=3D255 time=3D0.430 ms
+# ping6 -c 1 -M do -s 1454 B
+PING B(...) 1454 data bytes
+--GM5gRS5NxsPM7dNFJFRWxm3rpbOnC5mV4--
