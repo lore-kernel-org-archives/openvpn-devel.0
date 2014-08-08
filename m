@@ -1,11 +1,13 @@
-Message-ID: <53E4862B.1080709@...515...>
-Date: Fri, 08 Aug 2014 11:11:23 +0300
-From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
-MIME-Version: 1.0
-References: <53E477F2.8080003@...515...>
-In-Reply-To: <53E477F2.8080003@...515...>
-Subject: Re: [Openvpn-devel] Impact of latest OpenSSL vulnerabilities to
-	OpenVPN
+Date: Fri, 8 Aug 2014 11:56:17 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20140808095617.GY1118@...1296...>
+References: <1407453032-588-1-git-send-email-gavin.shrubbery@...277...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="ZLRdPLWYXRI0d11o"
+Content-Disposition: inline
+In-Reply-To: <1407453032-588-1-git-send-email-gavin.shrubbery@...277...>
+Subject: Re: [Openvpn-devel] [PATCH] Tease apart ipv6 and ipv4 ifconfig code.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,45 +16,45 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-15"
+To: Gavin Shrubbery <gavin.shrubbery@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
+
+--ZLRdPLWYXRI0d11o
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>, "openvpn-announce@lists.sourceforge.net" <openvpn-announce@lists.sourceforge.net>
+Content-Disposition: inline
 
+Hi,
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+On Fri, Aug 08, 2014 at 11:10:32AM +1200, Gavin Shrubbery wrote:
+> This change makes it possible to configure an IPv6 address on a
+> tunnel without also having an IPv4 address.
 
+Thanks.  Could you please rebase this on git master?  tun.c has changed a=20
+bit since 2.3, and your patch looks like it's based on 2.3 (the AIX bits
+are missing, which is a giveaway).
 
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-> Hi all,
->
-> Information on how the latest OpenSSL vulnerabilities affect OpenVPN is
-> available here:
->
->
-<https://community.openvpn.net/openvpn/wiki/VulnerabilitiesFixedInOpenSSL1.=
-0.1i>
->
-> Yesterday's Windows installer releases bundle OpenSSL 1.0.0i, which is
-> immune to the two issues which may[1] affect OpenVPN. Updated installers
-> are available here:
->
-Responding to myself before somebody else corrects me. The Windows
-installers bundle 1.0.1i (not 1.0.0i).
+--ZLRdPLWYXRI0d11o
+Content-Type: application/pgp-signature
+Content-Disposition: inline
 
-Sorry for the noise.
-- --=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1
 
-iEYEARECAAYFAlPkhisACgkQwp2X7RmNIqPKIgCeNsM6/3Z1Y9IDMMOYKQztHeWQ
-76cAn1t8clBRaBWhhEAY2pYI8LHbzjSC
-=3DXS4x
+iQCVAwUBU+SewakuBuNlUUl1AQJ7JAQAhkRzxfrf+RMjYpY7TfIRT8+sL4d65po7
+xuKUGvlXt6K8tvBhm0ggSANiuwpMcnRTED+McUoL8xA5QGFeR/R2xSQFOUUv+Ug+
+kZ89eRWMn5cK8dSj2WVbo27aDr85TCFP/W1EuZJIWQZjWo+RQv/47f3MSSR+aCdq
+DurwSsjvBUY=
+=cUs+
 -----END PGP SIGNATURE-----
 
+--ZLRdPLWYXRI0d11o--
 
