@@ -1,10 +1,12 @@
-MIME-Version: 1.0
-In-Reply-To: <CACKeg=tkLGZSE0c1kDyJ0A4fe1eD8nNFE2ZGrHCbN46EHeYHPw@...278...>
+Date: Fri, 15 Aug 2014 22:19:51 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20140815201951.GC1118@...1296...>
 References: <CACKeg=tkLGZSE0c1kDyJ0A4fe1eD8nNFE2ZGrHCbN46EHeYHPw@...278...>
-Date: Fri, 15 Aug 2014 15:15:46 -0500
-Message-ID: <CACKeg=te1Cj75qgWMEP0gJiQZXpntCGSudNZ2=y5ySt-d4DQmQ@...278...>
-From: Micah Robert <marobert87@...277...>
-Content-Type: multipart/alternative; boundary=001a11c30554bb1ea50500b0af8f
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="Sk7UC+SzUGg8pv7D"
+Content-Disposition: inline
+In-Reply-To: <CACKeg=tkLGZSE0c1kDyJ0A4fe1eD8nNFE2ZGrHCbN46EHeYHPw@...278...>
 Subject: Re: [Openvpn-devel] Bad signature
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -14,59 +16,44 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+To: Micah Robert <marobert87@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---001a11c30554bb1ea50500b0af8f
-Content-Type: text/plain; charset=UTF-8
+--Sk7UC+SzUGg8pv7D
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Sorry to have bothered all of you. The problem was in the GnuPG GUI. The
-signatures checks out fine using command prompt.
+Hi,
 
-
-
-On Fri, Aug 15, 2014 at 2:00 PM, Micah Robert <marobert87@...277...> wrote:
-
-> The GnuPG signatures for all 4 of the windows downloads from <
-> https://openvpn.net/index.php/open-source/downloads.html> show as bad
-> when verified against the signature downloads from <
-> https://openvpn.net/index.php/open-source/documentation/sig.html>.
->
+On Fri, Aug 15, 2014 at 02:00:38PM -0500, Micah Robert wrote:
 > Also, Norton shows 3 of the 4 files to be only 8 days old and 1 to be only
 > 7 days old.
->
-> Sincerely,
-> Micah Robert
->
 
---001a11c30554bb1ea50500b0af8f
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+That sounds plausible, as Samuli did a re-spin with a new openssl version
+some time last week...
 
-<div dir=3D"ltr">Sorry to have bothered all of you. The problem was in the =
-GnuPG GUI. The signatures checks out fine using command prompt.<div><br></d=
-iv></div><div class=3D"gmail_extra"><br><br><div class=3D"gmail_quote">On F=
-ri, Aug 15, 2014 at 2:00 PM, Micah Robert <span dir=3D"ltr">&lt;<a href=3D"=
-mailto:marobert87@...277..." target=3D"_blank">marobert87@...277...</a>&gt;=
-</span> wrote:<br>
-<blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1p=
-x #ccc solid;padding-left:1ex"><div dir=3D"ltr"><div style=3D"font-family:a=
-rial,sans-serif;font-size:13px">The GnuPG signatures for all 4 of the windo=
-ws downloads from &lt;<a href=3D"https://openvpn.net/index.php/open-source/=
-downloads.html" target=3D"_blank">https://openvpn.net/index.php/open-source=
-/downloads.html</a>&gt; show as bad when verified against the signature dow=
-nloads from &lt;<a href=3D"https://openvpn.net/index.php/open-source/docume=
-ntation/sig.html" target=3D"_blank">https://openvpn.net/index.php/open-sour=
-ce/documentation/sig.html</a>&gt;.</div>
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-<div style=3D"font-family:arial,sans-serif;font-size:13px"><br></div><div s=
-tyle=3D"font-family:arial,sans-serif;font-size:13px">Also, Norton shows 3 o=
-f the 4 files to be only 8 days old and 1 to be only 7 days old.</div><div =
-style=3D"font-family:arial,sans-serif;font-size:13px">
+--Sk7UC+SzUGg8pv7D
+Content-Type: application/pgp-signature
+Content-Disposition: inline
 
-<br></div><div style=3D"font-family:arial,sans-serif;font-size:13px">Sincer=
-ely,</div><div style=3D"font-family:arial,sans-serif;font-size:13px">Micah =
-Robert</div></div>
-</blockquote></div><br></div>
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
 
---001a11c30554bb1ea50500b0af8f--
+iQCVAwUBU+5rZ6kuBuNlUUl1AQIZEAP+M9tcj8cqg9X5ZCa9MfbRbsEXbvGEBihS
+dQ9ZA2PcMTP1wkYQPQ+smD9b8/QT7MpQmM62xyMgSHJK7rDaFwhibPOXrv+X8HkE
+UaduCEM42inp9sND9q5AFAuqN9gqBNPTlg+eQi4I8qL9HXkyr/3KS9zbgLEPprlp
+CBvdFYMKqFc=
+=U6lL
+-----END PGP SIGNATURE-----
+
+--Sk7UC+SzUGg8pv7D--
 
