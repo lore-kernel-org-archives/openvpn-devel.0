@@ -1,7 +1,9 @@
 From: Steffan Karger <steffan@...1856...>
-Date: Wed, 20 Aug 2014 23:00:25 +0200
-Message-Id: <1408568426-19601-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH 1/2] Fix some unintialized variable warnings
+Date: Wed, 20 Aug 2014 23:00:26 +0200
+Message-Id: <1408568426-19601-2-git-send-email-steffan@...1856...>
+In-Reply-To: <1408568426-19601-1-git-send-email-steffan@...1856...>
+References: <1408568426-19601-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH 2/2] Fix clang warning in options.c
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,61 +16,33 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Does not actually change behaviour, but fixes compiler warnings
-and properly initializing is good habit anyway.
+fixed warning: expression which evaluates to zero treated as a
+null pointer constant of type 'struct addrinfo *'
+
+Seems to be innocent, but clang is correct that this is strange.
+init_tun() expects two pointers, but options_string() tried to
+feed it two uint32_t values.
 
 Signed-off-by: Steffan Karger <steffan@...1856...>
 ---
- src/openvpn/plugin.c | 2 +-
- src/openvpn/sig.c    | 2 +-
- src/openvpn/socket.c | 4 ++--
- 3 files changed, 4 insertions(+), 4 deletions(-)
+ src/openvpn/options.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/src/openvpn/plugin.c b/src/openvpn/plugin.c
-index 0948f23..54c5b52 100644
---- a/src/openvpn/plugin.c
-+++ b/src/openvpn/plugin.c
-@@ -291,7 +291,7 @@ plugin_init_item (struct plugin *p, const struct plugin_option *o)
- static void
- plugin_vlog (openvpn_plugin_log_flags_t flags, const char *name, const char *format, va_list arglist)
- {
--  unsigned int msg_flags;
-+  unsigned int msg_flags = 0;
- 
-   if (!format)
-     return;
-diff --git a/src/openvpn/sig.c b/src/openvpn/sig.c
-index 90e39a4..a3d29de 100644
---- a/src/openvpn/sig.c
-+++ b/src/openvpn/sig.c
-@@ -126,7 +126,7 @@ print_signal (const struct signal_info *si, const char *title, int msglevel)
-     {
-       const char *type = (si->signal_text ? si->signal_text : "");
-       const char *t = (title ? title : "process");
--      const char *hs;
-+      const char *hs = NULL;
-       switch (si->source)
-         {
-         case SIG_SOURCE_SOFT:
-diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
-index 9e6bd10..c649d62 100644
---- a/src/openvpn/socket.c
-+++ b/src/openvpn/socket.c
-@@ -2354,12 +2354,12 @@ print_sockaddr_ex (const struct sockaddr *sa,
- 				   struct gc_arena *gc)
- {
-   struct buffer out = alloc_buf_gc (128, gc);
--  bool addr_is_defined;
-+  bool addr_is_defined = false;
-   char hostaddr[NI_MAXHOST] = "";
-   char servname[NI_MAXSERV] = "";
-   int status;
- 
--  socklen_t salen;
-+  socklen_t salen = 0;
-   switch(sa->sa_family)
-     {
-     case AF_INET:
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index f536daa..84eb6ed 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -2934,8 +2934,8 @@ options_string (const struct options *o,
+ 		     o->ifconfig_ipv6_local,
+ 		     o->ifconfig_ipv6_netbits,
+ 		     o->ifconfig_ipv6_remote,
+-		     (in_addr_t)0,
+-		     (in_addr_t)0,
++		     NULL,
++		     NULL,
+ 		     false,
+ 		     NULL);
+       if (tt)
 -- 
 1.9.1
 
