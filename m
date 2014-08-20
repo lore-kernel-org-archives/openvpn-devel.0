@@ -1,10 +1,7 @@
-MIME-Version: 1.0
-In-Reply-To: <CAFLxGvy77WaHhrsqSfm2Va4fbD_y5Ta5ykMsczCQ=-Z9AkNjnQ@...278...>
-References: <CAFLxGvy77WaHhrsqSfm2Va4fbD_y5Ta5ykMsczCQ=-Z9AkNjnQ@...278...>
-Date: Wed, 20 Aug 2014 18:42:11 +0600
-Message-ID: <CAFHpkQFLz5P2_F0U=ED7My5a0WfEc3T9GR_VrDxQ-XSZe1pCWA@...278...>
-From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Subject: Re: [Openvpn-devel] Ongoing Windoes 8 issues
+From: Steffan Karger <steffan@...1856...>
+Date: Wed, 20 Aug 2014 23:00:25 +0200
+Message-Id: <1408568426-19601-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH 1/2] Fix some unintialized variable warnings
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,34 +10,66 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Richard Weinberger <richard.weinberger@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
-when "some hacks work, some not" , it looks like assumtion that
-variables should be initialized with zero.
-have a look around, maybe youl'll find another uninitialized variable :-)
+Does not actually change behaviour, but fixes compiler warnings
+and properly initializing is good habit anyway.
 
-2014-08-20 13:32 GMT+06:00 Richard Weinberger <richard.weinberger@...277...>:
-> Hi!
->
-> This bug exists for almost 14 months (!!) without a solution.
-> Some hacks work some not.
-> https://community.openvpn.net/openvpn/ticket/316
->
-> I really wonder why this issue is ignored by the OpenVPN developers.
->
-> --
-> Thanks,
-> //richard
->
-> ------------------------------------------------------------------------------
-> Slashdot TV.
-> Video for Nerds.  Stuff that matters.
-> http://tv.slashdot.org/
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+Signed-off-by: Steffan Karger <steffan@...1856...>
+---
+ src/openvpn/plugin.c | 2 +-
+ src/openvpn/sig.c    | 2 +-
+ src/openvpn/socket.c | 4 ++--
+ 3 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/src/openvpn/plugin.c b/src/openvpn/plugin.c
+index 0948f23..54c5b52 100644
+--- a/src/openvpn/plugin.c
++++ b/src/openvpn/plugin.c
+@@ -291,7 +291,7 @@ plugin_init_item (struct plugin *p, const struct plugin_option *o)
+ static void
+ plugin_vlog (openvpn_plugin_log_flags_t flags, const char *name, const char *format, va_list arglist)
+ {
+-  unsigned int msg_flags;
++  unsigned int msg_flags = 0;
+ 
+   if (!format)
+     return;
+diff --git a/src/openvpn/sig.c b/src/openvpn/sig.c
+index 90e39a4..a3d29de 100644
+--- a/src/openvpn/sig.c
++++ b/src/openvpn/sig.c
+@@ -126,7 +126,7 @@ print_signal (const struct signal_info *si, const char *title, int msglevel)
+     {
+       const char *type = (si->signal_text ? si->signal_text : "");
+       const char *t = (title ? title : "process");
+-      const char *hs;
++      const char *hs = NULL;
+       switch (si->source)
+         {
+         case SIG_SOURCE_SOFT:
+diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
+index 9e6bd10..c649d62 100644
+--- a/src/openvpn/socket.c
++++ b/src/openvpn/socket.c
+@@ -2354,12 +2354,12 @@ print_sockaddr_ex (const struct sockaddr *sa,
+ 				   struct gc_arena *gc)
+ {
+   struct buffer out = alloc_buf_gc (128, gc);
+-  bool addr_is_defined;
++  bool addr_is_defined = false;
+   char hostaddr[NI_MAXHOST] = "";
+   char servname[NI_MAXSERV] = "";
+   int status;
+ 
+-  socklen_t salen;
++  socklen_t salen = 0;
+   switch(sa->sa_family)
+     {
+     case AF_INET:
+-- 
+1.9.1
+
 
