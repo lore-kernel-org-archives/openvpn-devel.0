@@ -1,15 +1,8 @@
-Message-ID: <53F70EE2.4010506@...1114...>
-Date: Fri, 22 Aug 2014 11:35:30 +0200
-From: David Sommerseth <openvpn.list@...1114...>
-MIME-Version: 1.0
-References: <1408568426-19601-1-git-send-email-steffan@...1856...>
-In-Reply-To: <1408568426-19601-1-git-send-email-steffan@...1856...>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="cTpl8xi477LDGij10N29p6KKRtVIWo99o"
-Subject: Re: [Openvpn-devel] [PATCH 1/2] Fix some unintialized variable
-	warnings
-Reply-To: openvpn-devel@lists.sourceforge.net
+From: Steffan Karger <steffan@...1856...>
+Date: Sat, 23 Aug 2014 18:21:41 +0200
+Message-Id: <1408810901-24715-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH] Add option to disable Diffie Hellman key
+	exchange by setting "--dh none"
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,94 +11,101 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---cTpl8xi477LDGij10N29p6KKRtVIWo99o
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: quoted-printable
+As requested on the mailing list and in trac ticket #410, add an option to
+disable 'traditional' Diffie Hellman key exchange. People want to be able
+to create ecdh-only configurations.
 
-On 20/08/14 23:00, Steffan Karger wrote:
-> Does not actually change behaviour, but fixes compiler warnings
-> and properly initializing is good habit anyway.
->=20
-> Signed-off-by: Steffan Karger <steffan@...1856...>
-> ---
->  src/openvpn/plugin.c | 2 +-
->  src/openvpn/sig.c    | 2 +-
->  src/openvpn/socket.c | 4 ++--
->  3 files changed, 4 insertions(+), 4 deletions(-)
->=20
-> diff --git a/src/openvpn/plugin.c b/src/openvpn/plugin.c
-> index 0948f23..54c5b52 100644
-> --- a/src/openvpn/plugin.c
-> +++ b/src/openvpn/plugin.c
-> @@ -291,7 +291,7 @@ plugin_init_item (struct plugin *p, const struct plug=
-in_option *o)
->  static void
->  plugin_vlog (openvpn_plugin_log_flags_t flags, const char *name, const c=
-har *format, va_list arglist)
->  {
-> -  unsigned int msg_flags;
-> +  unsigned int msg_flags =3D 0;
->=20=20
->    if (!format)
->      return;
-> diff --git a/src/openvpn/sig.c b/src/openvpn/sig.c
-> index 90e39a4..a3d29de 100644
-> --- a/src/openvpn/sig.c
-> +++ b/src/openvpn/sig.c
-> @@ -126,7 +126,7 @@ print_signal (const struct signal_info *si, const cha=
-r *title, int msglevel)
->      {
->        const char *type =3D (si->signal_text ? si->signal_text : "");
->        const char *t =3D (title ? title : "process");
-> -      const char *hs;
-> +      const char *hs =3D NULL;
->        switch (si->source)
->          {
->          case SIG_SOURCE_SOFT:
-> diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
-> index 9e6bd10..c649d62 100644
-> --- a/src/openvpn/socket.c
-> +++ b/src/openvpn/socket.c
-> @@ -2354,12 +2354,12 @@ print_sockaddr_ex (const struct sockaddr *sa,
->  				   struct gc_arena *gc)
->  {
->    struct buffer out =3D alloc_buf_gc (128, gc);
-> -  bool addr_is_defined;
-> +  bool addr_is_defined =3D false;
->    char hostaddr[NI_MAXHOST] =3D "";
->    char servname[NI_MAXSERV] =3D "";
->    int status;
->=20=20
-> -  socklen_t salen;
-> +  socklen_t salen =3D 0;
->    switch(sa->sa_family)
->      {
->      case AF_INET:
->=20
+Also update the manpage to reflect the new behaviour, and while touching it
+change the text to motivate users towards a more secure configuration.
 
-ACK.  Safe and sane changes.
+Signed-off-by: Steffan Karger <steffan@...1856...>
+---
+ doc/openvpn.8         | 15 ++++++++++-----
+ src/openvpn/options.c | 14 ++++++++++----
+ src/openvpn/ssl.c     |  5 ++++-
+ 3 files changed, 24 insertions(+), 10 deletions(-)
 
---=20
-kind regards,
+diff --git a/doc/openvpn.8 b/doc/openvpn.8
+index f2911c0..0448d29 100644
+--- a/doc/openvpn.8
++++ b/doc/openvpn.8
+@@ -4238,13 +4238,18 @@ Not available with PolarSSL.
+ File containing Diffie Hellman parameters
+ in .pem format (required for
+ .B \-\-tls-server
+-only). Use
++only).
+ 
+-.B openssl dhparam -out dh1024.pem 1024
++Set
++.B file=none
++to disable Diffie Hellman key exchange (and use ECDH only). Note that this
++requires peers to be using an SSL library that supports ECDH TLS cipher suites
++(e.g. OpenSSL 1.0.1+, or PolarSSL 1.3+).
+ 
+-to generate your own, or use the existing dh1024.pem file
+-included with the OpenVPN distribution.  Diffie Hellman parameters
+-may be considered public.
++Use
++.B openssl dhparam -out dh2048.pem 2048
++to generate 2048-bit DH parameters. Diffie Hellman parameters may be considered
++public.
+ .\"*********************************************************
+ .TP
+ .B \-\-ecdh-curve name
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 84eb6ed..92189a5 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -2149,10 +2149,6 @@ options_postprocess_verify_ce (const struct options *options, const struct conne
+       (options->shared_secret_file != NULL) > 1)
+     msg (M_USAGE, "specify only one of --tls-server, --tls-client, or --secret");
+ 
+-  if (options->tls_server)
+-    {
+-      notnull (options->dh_file, "DH file (--dh)");
+-    }
+   if (options->tls_server || options->tls_client)
+     {
+ #ifdef ENABLE_PKCS11
+@@ -2504,6 +2500,16 @@ options_postprocess_mutate (struct options *o)
+   for (i = 0; i < o->connection_list->len; ++i)
+ 	options_postprocess_mutate_ce (o, o->connection_list->array[i]);
+ 
++#ifdef ENABLE_SSL
++  if (o->tls_server)
++    {
++      /* Check that DH file is specified, or explicitly disabled */
++      notnull (o->dh_file, "DH file (--dh)");
++      if (streq (o->dh_file, "none"))
++	o->dh_file = NULL;
++    }
++#endif
++
+ #if ENABLE_MANAGEMENT
+   if (o->http_proxy_override)
+ 	options_postprocess_http_proxy_override(o);
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 3ce1f60..34f02a7 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -483,7 +483,10 @@ init_ssl (const struct options *options, struct tls_root_ctx *new_ctx)
+   if (options->tls_server)
+     {
+       tls_ctx_server_new(new_ctx);
+-      tls_ctx_load_dh_params(new_ctx, options->dh_file, options->dh_file_inline);
++
++      if (options->dh_file)
++	tls_ctx_load_dh_params(new_ctx, options->dh_file,
++			       options->dh_file_inline);
+     }
+   else				/* if client */
+     {
+-- 
+1.9.1
 
-David Sommerseth
-
-
---cTpl8xi477LDGij10N29p6KKRtVIWo99o
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iEYEARECAAYFAlP3DuIACgkQDC186MBRfrpeDACfQaxbBHi/JkV1JPENaY1ep2Mk
-mcQAoINfx6bRnDW8oQDV62MhnbIheWc/
-=kxpv
------END PGP SIGNATURE-----
-
---cTpl8xi477LDGij10N29p6KKRtVIWo99o--
 
