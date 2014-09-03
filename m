@@ -1,15 +1,11 @@
-Sender: daniel kubec <kubec.daniel@...277...>
-Date: Wed, 27 Aug 2014 11:34:11 +0200
-From: Daniel Kubec <niel@...1898...>
-Message-ID: <20140827093409.GA659@...1900...>
-References: <20140526132551.GA9011@...1915...>
-	<5390E0F0.5000808@...1114...>
+Message-ID: <SNT148-W76BE9A56DA884B570B3DCE99C40@...512...>
+Content-Type: multipart/mixed;
+	boundary="_ac7ca002-7f5f-49dd-878d-3da4ca979411_"
+From: =?big5?B?sWkgpUCqTg==?= <roy8119425@...160...>
+Date: Wed, 3 Sep 2014 19:18:56 +0800
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="YZ5djTAD1cGYuMQK"
-Content-Disposition: inline
-In-Reply-To: <5390E0F0.5000808@...1114...>
-Subject: Re: [Openvpn-devel] [PATCH] Add support for Keying Material
- Exporter [RFC 5705]
+Subject: [Openvpn-devel] [PATCH] kill command with IPv6 client address and
+ port
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,392 +14,153 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---YZ5djTAD1cGYuMQK
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+--_ac7ca002-7f5f-49dd-878d-3da4ca979411_
+Content-Type: multipart/alternative;
+	boundary="_d265b5c2-0f7a-4bb4-a9a0-4aeeb47a8b41_"
 
-Hi David,
+--_d265b5c2-0f7a-4bb4-a9a0-4aeeb47a8b41_
+Content-Type: text/plain; charset="big5"
+Content-Transfer-Encoding: base64
 
-I am sorry for the delay but I was very busy :( I hope that I resolved
-all issues.
+SGkNCkZvciB0aWNrZXQgIzI4MCwgdGhpcyBwYXRjaCBhbGxvd3Mgc2VydmVyIHRvIGtpbGwgY2xp
+ZW50IHdpdGggc3BlY2lmaWVkIElQdjYocG9ydClBbmQgc2hvdyBwb3J0IGluIHN0YXR1cyBjb21t
+YW5kDQpGb3IgZXhhbXBsZSwgd2hlbiBzZXJ2ZXIgc3RhcnRlZCB3aXRoIHByb3RvIHVkcDYsIHRo
+ZSByZXN1bHQgb2Ygc3RhdHVzIDIgY29tbWFuZCBzaG93cyBsaWtlOkNMSUVOVF9MSVNULGFkbWlu
+LDo6ZmZmZjoxOTIuMTY4LjI1LjE0NygxMTk0KSwxMC44LjAuNiw3ODQ5LCAuLi5DTElFTlRfTElT
+VCxhZG1pbixmZTgwOjoyMTE6MzJmZjpmZTE5OjY5OWIoMTE5NCksMTAuOC4wLjEwLDEzMDEwLCAu
+Li4NCkFuZCBjYW4ga2lsbCBjbGllbnQgd2l0aCBraWxsIGNvbW1hbmQ6a2lsbCA6OmZmZmY6MTky
+LjE2OC4yNS4xNDcoMTE5NClraWxsIGZlODA6OjIxMTozMmZmOmZlMTk6Njk5YigxMTk0KQ0KLS1S
+b3kgCQkgCSAgIAkJICA=
 
-I made several tests with my aaa plugin prototype based on following
-crypto backends: 
+--_d265b5c2-0f7a-4bb4-a9a0-4aeeb47a8b41_
+Content-Type: text/html; charset="big5"
+Content-Transfer-Encoding: base64
 
-        openssl-1.0.0m    (no EKM support)
-        openssl-1.0.1     (with EKM support)
-        openssl-1.1.0-dev (with EKM support)
-        PolarSSL 1.3.8    (no EKM support)
+PGh0bWw+DQo8aGVhZD4NCjxzdHlsZT48IS0tDQouaG1tZXNzYWdlIFANCnsNCm1hcmdpbjowcHg7
+DQpwYWRkaW5nOjBweA0KfQ0KYm9keS5obW1lc3NhZ2UNCnsNCmZvbnQtc2l6ZTogMTJwdDsNCmZv
+bnQtZmFtaWx5OrdzstOp+sXpDQp9DQotLT48L3N0eWxlPjwvaGVhZD4NCjxib2R5IGNsYXNzPSdo
+bW1lc3NhZ2UnPjxkaXYgZGlyPSdsdHInPkhpPGRpdj48YnI+PC9kaXY+PGRpdj5Gb3IgdGlja2V0
+ICMyODAsIHRoaXMgcGF0Y2ggYWxsb3dzIHNlcnZlciB0byBraWxsIGNsaWVudCB3aXRoIHNwZWNp
+ZmllZCBJUHY2KHBvcnQpPC9kaXY+PGRpdj5BbmQgc2hvdyBwb3J0IGluIHN0YXR1cyBjb21tYW5k
+PC9kaXY+PGRpdj48YnI+PC9kaXY+PGRpdj5Gb3IgZXhhbXBsZSwgd2hlbiBzZXJ2ZXIgc3RhcnRl
+ZCB3aXRoIHByb3RvIHVkcDYsIHRoZSByZXN1bHQgb2Ygc3RhdHVzIDIgY29tbWFuZCBzaG93cyBs
+aWtlOjwvZGl2PjxkaXY+Q0xJRU5UX0xJU1QsYWRtaW4sOjpmZmZmOjE5Mi4xNjguMjUuMTQ3PGI+
+KDExOTQpPC9iPiwxMC44LjAuNiw3ODQ5LCAuLi48L2Rpdj48ZGl2PkNMSUVOVF9MSVNULGFkbWlu
+LGZlODA6OjIxMTozMmZmOmZlMTk6Njk5YjxiPigxMTk0KTwvYj4sMTAuOC4wLjEwLDEzMDEwLCAu
+Li48L2Rpdj48ZGl2Pjxicj48L2Rpdj48ZGl2PkFuZCBjYW4ga2lsbCBjbGllbnQgd2l0aCBraWxs
+IGNvbW1hbmQ6PC9kaXY+PGRpdj5raWxsJm5ic3A7PHNwYW4gc3R5bGU9ImZvbnQtc2l6ZTogMTJw
+dDsiPjo6ZmZmZjoxOTIuMTY4LjI1LjE0Nzwvc3Bhbj48c3BhbiBzdHlsZT0iZm9udC1zaXplOiAx
+MnB0OyI+KDExOTQpPC9zcGFuPjwvZGl2PjxkaXY+PHNwYW4gc3R5bGU9ImZvbnQtc2l6ZTogMTJw
+dDsiPmtpbGwmbmJzcDs8L3NwYW4+PHNwYW4gc3R5bGU9ImZvbnQtc2l6ZTogMTJwdDsiPmZlODA6
+OjIxMTozMmZmOmZlMTk6Njk5Yjwvc3Bhbj48c3BhbiBzdHlsZT0iZm9udC1zaXplOiAxMnB0OyI+
+KDExOTQpPC9zcGFuPjwvZGl2PjxkaXY+PGJyPjxkaXY+LS08L2Rpdj48ZGl2PlJveTwvZGl2Pjwv
+ZGl2PiAJCSAJICAgCQkgIDwvZGl2PjwvYm9keT4NCjwvaHRtbD4=
 
-a) tls_binding_key is available in OPENVPN_PLUGIN_TLS_FINAL only.
-b) It depends (if someone request such feature I am open for extending)
-c) Hex format is without spaces
-d) It is working with PolarSSL
-f) Man pages were updated to:
+--_d265b5c2-0f7a-4bb4-a9a0-4aeeb47a8b41_--
 
-Save Exported Keying Material [RFC5705] of len bytes using label in
-environment (tls_binding_key) for use by plugins in OPENVPN_PLUGIN_TLS_FINAL
-callback.
-
-Note that exporter labels have the potential to collide with existing
-PRF labels. In order to prevent this, labels MUST begin with "EXPORTER".
-This option requires OpenSSL 1.0.1 or newer.
-
-
-Regards
-
-Daniel
-
-
-On Thu, Jun 05, 2014 at 11:28:16PM +0200, David Sommerseth wrote:
-> On 26/05/14 15:25, Daniel Kubec wrote:
-> > Add support for TLS Keying Material Exporters [RFC 5705].
-> >     
-> > Keying Material Exporter allow additional keying material to be derived from existing TLS channel. 
-> > This exported keying material can then be used for a variety of purposes.
-> > 
-> 
-> I've finally had some time to compile and test this patch, as well as
-> done code review of it.  First of all, this is a good piece of work!  So
-> I'm looking forward to see this arrive in OpenVPN.  It will surely help
-> develop more advanced authentication methods.
-> 
-> The patch does indeed work quite well.  It provides a tls_binding_key
-> environment variable to plugins which supports OPENVPN_PLUGIN_TLS_FINAL.
-> 
-> Here's my comments, thoughts and questions ...
-> 
-> a) Is the intention that this tls_binding_key variable should only be
->    available when the OPENVPN_PLUGIN_TLS_FINAL plugin call happens?
-> 
->    Currently tls_binding_key is available to all plugin *and* script
->    calls happening after OPENVPN_PLUGIN_TLS_FINAL has been called.  But
->    *only* after a plugin which supports this hook has run.  This smells
->    like a bug.
-> 
->    I think I would recommend this variable only to available for the
->    OPENVPN_PLUGIN_TLS_FINAL call.  Which means you would need to add a
->    setenv_del() in ssl.c:key_method_2_read() after plugin_call().
-> 
->    I spotted tls_binding_key in the following hooks (using a slightly
->    modified sample-plugin/log/log.c)
-> 
->    Client side: PLUGIN_IPCHANGE, PLUGIN_UP, PLUGIN_ROUTE_UP
->                 and PLUGIN_ROUTE_DOWN
-> 
->    Server side: PLUGIN_IPCHANGE, PLUGIN_CLIENT_CONNECT_V2*,
->                 PLUGIN_LEARN_ADDRESS and PLUGIN_CLIENT_DISCONNECT
-> 
->                 * Most likely PLUGIN_CLIENT_CONNECT too
-> 
->    I also tried to use a --client-connect script which dumps 'printenv'
->    to a file.  When this log.so plug-in was used, I saw tls_binding_key
->    in the printenv dump.  It was not present when log.so was not loaded.
-> 
-> 
-> b) Should there be a script-hook available for this as well?
-> 
->    This could make it possible to make authentication methods using
->    scripts as an addition to plug-ins written in C.  Just thinking
->    aloud, not saying it's a requirement.
-> 
-> 
-> c) The format is currently like this:
->              0f3d5a7a 8b78fe1a 8a7fce61 58b89142
->    Is this format the preferred formatting?
-> 
->    Other formats are available through format_hex_ex().  I would
->    probably recommend another separator than space, if a separator is
->    needed at all.
-> 
-> 
-> d) This patch breaks building with PolarSSL.
-> 
->    ssl.o: In function `key_method_2_read':
->    ~/openvpn.git/src/openvpn/ssl.c:2129: undefined reference to
->    `key_state_export_keying_material'
->    collect2: error: ld returned 1 exit status
-> 
->    I would recommend to add a kind of wrapper function in
->    ssl_polarssl.c which adds this function.  Not sure if it would
->    be appropriate to do an ASSERT(0) or do something else.  Maybe it
->    should not set anything, just return without adding the
->    tls_binding_key.  When plug-ins expecting to see this fails to find
->    this variable, it will the plug-in's responsibility to not explode.
-> 
-> 
-> e) Has this patch been tested with OpenSSL < 1.0.1?
-> 
->    Is it really needed with the #else ASSERT(0); ?
-> 
-> 
-> f) It should be stated better in the man page that this feature depends
->    on a plug-in supporting OPENVPN_PLUGIN_TLS_FINAL.
-> 
-> 
-> -- 
-> kind regards,
-> 
-> David Sommerseth
-> 
-
-
-
---YZ5djTAD1cGYuMQK
-Content-Type: text/plain; charset=us-ascii
+--_ac7ca002-7f5f-49dd-878d-3da4ca979411_
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: base64
 Content-Disposition: attachment;
-	filename="0001-Added-support-for-TLS-Keying-Material-Exporters-RFC-.patch"
+	filename="0001-VPN-Server-227-Support-kill-command-for-IPv6-client.patch"
 
-From 2c4d6aeb0aa24792afb7df45a64de8e04416b95e Mon Sep 17 00:00:00 2001
-From: Daniel Kubec <niel@...1898...>
-Date: Wed, 27 Aug 2014 11:02:37 +0200
-Subject: [PATCH] Added support for TLS Keying Material Exporters [RFC 5705].
+RnJvbSAyMWRiOWYwYzBkYzgwYzllNzFiODA2NTVhNzAzMTIzZjEyYjliNDZjIE1vbiBTZXAgMTcg
+MDA6MDA6MDAgMjAwMQpGcm9tOiByb3ljaGFuZyA8cm95Y2hhbmdAc3lub2xvZ3kuY29tPgpEYXRl
+OiBUdWUsIDIgU2VwIDIwMTQgMTk6MDM6MDEgKzA4MDAKU3ViamVjdDogPFZQTiBTZXJ2ZXI+ICMy
+MjcgLSBTdXBwb3J0IGtpbGwgY29tbWFuZCBmb3IgSVB2NiBjbGllbnQKCgktIEFkZCBwb3J0IGlu
+Zm8gb2YgSVB2NiBjbGllbnQgaW4gc3RhdHVzIGNvbW1hbmQKClJldmlld2VyOiBiZW5jaGFuZwot
+LS0KIHNyYy9vcGVudnBuL21hbmFnZS5jIHwgICA0MyArKysrKysrKysrKysrKysrKysrKysrKysr
+KysrKysrKysrKysrKysrKy0tCiBzcmMvb3BlbnZwbi9tYW5hZ2UuaCB8ICAgIDEgKwogc3JjL29w
+ZW52cG4vbXJvdXRlLmMgfCAgIDEwICsrKysrKysrKysKIHNyYy9vcGVudnBuL211bHRpLmMgIHwg
+ICAzMiArKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKwogNCBmaWxlcyBjaGFuZ2VkLCA4
+NCBpbnNlcnRpb25zKCspLCAyIGRlbGV0aW9ucygtKQoKZGlmZiAtLWdpdCBhL3NyYy9vcGVudnBu
+L21hbmFnZS5jIGIvc3JjL29wZW52cG4vbWFuYWdlLmMKaW5kZXggMGE0NTQyYS4uOTQxNmE4ZSAx
+MDA2NDQKLS0tIGEvc3JjL29wZW52cG4vbWFuYWdlLmMKKysrIGIvc3JjL29wZW52cG4vbWFuYWdl
+LmMKQEAgLTQ1NCwxOCArNDU0LDU3IEBAIG1hbl9raWxsIChzdHJ1Y3QgbWFuYWdlbWVudCAqbWFu
+LCBjb25zdCBjaGFyICp2aWN0aW0pCiB7CiAgIHN0cnVjdCBnY19hcmVuYSBnYyA9IGdjX25ldyAo
+KTsKIAotICBpZiAobWFuLT5wZXJzaXN0LmNhbGxiYWNrLmtpbGxfYnlfY24gJiYgbWFuLT5wZXJz
+aXN0LmNhbGxiYWNrLmtpbGxfYnlfYWRkcikKKyAgaWYgKG1hbi0+cGVyc2lzdC5jYWxsYmFjay5r
+aWxsX2J5X2NuICYmIG1hbi0+cGVyc2lzdC5jYWxsYmFjay5raWxsX2J5X2FkZHIgJiYgbWFuLT5w
+ZXJzaXN0LmNhbGxiYWNrLmtpbGxfYnlfYWRkcjYpCiAgICAgewogICAgICAgc3RydWN0IGJ1ZmZl
+ciBidWY7CiAgICAgICBjaGFyIHAxWzEyOF07CiAgICAgICBjaGFyIHAyWzEyOF07CisgICAgICBj
+aGFyIHAzWzEyOF07CisgICAgICBjaGFyIHA0WzEyOF07CiAgICAgICBpbnQgbl9raWxsZWQ7CiAK
+ICAgICAgIGJ1Zl9zZXRfcmVhZCAoJmJ1ZiwgKHVpbnQ4X3QqKSB2aWN0aW0sIHN0cmxlbiAodmlj
+dGltKSArIDEpOwogICAgICAgYnVmX3BhcnNlICgmYnVmLCAnOicsIHAxLCBzaXplb2YgKHAxKSk7
+CiAgICAgICBidWZfcGFyc2UgKCZidWYsICc6JywgcDIsIHNpemVvZiAocDIpKTsKIAotICAgICAg
+aWYgKHN0cmxlbiAocDEpICYmIHN0cmxlbiAocDIpKQorICAgICAgYnVmX3NldF9yZWFkICgmYnVm
+LCAodWludDhfdCopIHZpY3RpbSwgc3RybGVuICh2aWN0aW0pICsgMSk7CisgICAgICBidWZfcGFy
+c2UgKCZidWYsICcoJywgcDMsIHNpemVvZiAocDMpKTsKKyAgICAgIGJ1Zl9wYXJzZSAoJmJ1Ziwg
+JyknLCBwNCwgc2l6ZW9mIChwNCkpOworCisgICAgICBpZiAoc3RybGVuIChwMykgJiYgc3RybGVu
+IChwNCkpCisJeworCSAgLyogSVB2Nihwb3J0KSBzcGVjaWZpZWQgKi8KKwkgIGludCBzOworCSAg
+c3RydWN0IGluNl9hZGRyIGFkZHI7CisKKwkgIHMgPSBpbmV0X3B0b24oQUZfSU5FVDYsIHAzLCAm
+YWRkcik7CisJICBpZiAocyA+IDApCisJICAgIHsKKwkgICAgICBjb25zdCBpbnQgcG9ydCA9IGF0
+b2kgKHA0KTsKKwkgICAgICBpZiAocG9ydCA+IDAgJiYgcG9ydCA8IDY1NTM2KQorCQl7CisJCSAg
+bl9raWxsZWQgPSAoKm1hbi0+cGVyc2lzdC5jYWxsYmFjay5raWxsX2J5X2FkZHI2KSAobWFuLT5w
+ZXJzaXN0LmNhbGxiYWNrLmFyZywgYWRkciwgcG9ydCk7CisJCSAgaWYgKG5fa2lsbGVkID4gMCkK
+KwkJICAgIHsKKwkJICAgICAgbXNnIChNX0NMSUVOVCwgIlNVQ0NFU1M6ICVkIGNsaWVudChzKSBh
+dCBhZGRyZXNzICVzOiVkIGtpbGxlZCIsCisJCQkgICBuX2tpbGxlZCwKKwkJCSAgIHByaW50X2lu
+Nl9hZGRyIChhZGRyLCAwLCAmZ2MpLAorCQkJICAgcG9ydCk7CisJCSAgICB9CisJCSAgZWxzZQor
+CQkgICAgeworCQkgICAgICBtc2cgKE1fQ0xJRU5ULCAiRVJST1I6IGNsaWVudCBhdCBhZGRyZXNz
+ICVzOiVkIG5vdCBmb3VuZCIsCisJCQkgICBwcmludF9pbjZfYWRkciAoYWRkciwgMCwgJmdjKSwK
+KwkJCSAgIHBvcnQpOworCQkgICAgfQorCQl9CisJICAgIH0KKwkgIGVsc2UKKwkgICAgeworCSAg
+ICAgIG1zZyAoTV9DTElFTlQsICJFUlJPUjogZXJyb3IgcGFyc2luZyBJUHY2IGFkZHJlc3M6ICVz
+IiwgcDMpOworCSAgICB9CisJfQorICAgICAgZWxzZSBpZiAoc3RybGVuIChwMSkgJiYgc3RybGVu
+IChwMikpCiAJewogCSAgLyogSVA6cG9ydCBzcGVjaWZpZWQgKi8KIAkgIGJvb2wgc3RhdHVzOwpk
+aWZmIC0tZ2l0IGEvc3JjL29wZW52cG4vbWFuYWdlLmggYi9zcmMvb3BlbnZwbi9tYW5hZ2UuaApp
+bmRleCAyOGRhNjlmLi5mY2FlNTNiIDEwMDY0NAotLS0gYS9zcmMvb3BlbnZwbi9tYW5hZ2UuaAor
+KysgYi9zcmMvb3BlbnZwbi9tYW5hZ2UuaApAQCAtMTUzLDYgKzE1Myw3IEBAIHN0cnVjdCBtYW5h
+Z2VtZW50X2NhbGxiYWNrCiAgIHZvaWQgKCpzaG93X25ldCkgKHZvaWQgKmFyZywgY29uc3QgaW50
+IG1zZ2xldmVsKTsKICAgaW50ICgqa2lsbF9ieV9jbikgKHZvaWQgKmFyZywgY29uc3QgY2hhciAq
+Y29tbW9uX25hbWUpOwogICBpbnQgKCpraWxsX2J5X2FkZHIpICh2b2lkICphcmcsIGNvbnN0IGlu
+X2FkZHJfdCBhZGRyLCBjb25zdCBpbnQgcG9ydCk7CisgIGludCAoKmtpbGxfYnlfYWRkcjYpICh2
+b2lkICphcmcsIGNvbnN0IHN0cnVjdCBpbjZfYWRkciBhZGRyLCBjb25zdCBpbnQgcG9ydCk7CiAg
+IHZvaWQgKCpkZWxldGVfZXZlbnQpICh2b2lkICphcmcsIGV2ZW50X3QgZXZlbnQpOwogICBpbnQg
+KCpuX2NsaWVudHMpICh2b2lkICphcmcpOwogI2lmZGVmIE1BTkFHRU1FTlRfREVGX0FVVEgKZGlm
+ZiAtLWdpdCBhL3NyYy9vcGVudnBuL21yb3V0ZS5jIGIvc3JjL29wZW52cG4vbXJvdXRlLmMKaW5k
+ZXggODUwZTMzNi4uOGVlNTAzYiAxMDA2NDQKLS0tIGEvc3JjL29wZW52cG4vbXJvdXRlLmMKKysr
+IGIvc3JjL29wZW52cG4vbXJvdXRlLmMKQEAgLTQyNiwxMiArNDI2LDIyIEBAIG1yb3V0ZV9hZGRy
+X3ByaW50X2V4IChjb25zdCBzdHJ1Y3QgbXJvdXRlX2FkZHIgKm1hLAogCSAgYnJlYWs7CiAJY2Fz
+ZSBNUl9BRERSX0lQVjY6CiAJICB7CisJICAgIHN0cnVjdCBidWZmZXIgYnVmOworCSAgICBpbnQg
+cG9ydDsKKwkgICAgYnVmX3NldF9yZWFkICgmYnVmLCBtYWRkci5hZGRyLCBtYWRkci5sZW4pOwor
+CSAgICBidWZfcmVhZF9hbGxvYyAoJmJ1ZiwgMTYpOwogCSAgICBidWZfcHJpbnRmICgmb3V0LCAi
+JXMiLAogCQkgIHByaW50X2luNl9hZGRyKCAqKHN0cnVjdCBpbjZfYWRkciopJm1hZGRyLmFkZHIs
+IDAsIGdjKSk7IAogCSAgICBpZiAobWFkZHIudHlwZSAmIE1SX1dJVEhfTkVUQklUUykKIAkgICAg
+ICB7CiAJCWJ1Zl9wcmludGYgKCZvdXQsICIvJWQiLCBtYWRkci5uZXRiaXRzKTsKIAkgICAgICB9
+CisJICAgIGlmIChtYWRkci50eXBlICYgTVJfV0lUSF9QT1JUKQorCSAgICAgIHsKKwkJcG9ydCA9
+IGJ1Zl9yZWFkX3UxNiAoJmJ1Zik7CisJCWlmIChwb3J0ID49IDApCisJCSAgYnVmX3ByaW50ZiAo
+Jm91dCwgIiglZCkiLCBwb3J0KTsKKwkgICAgICB9CiAJICAgIH0KIAkgICAgYnJlYWs7CiAJICBk
+ZWZhdWx0OgpkaWZmIC0tZ2l0IGEvc3JjL29wZW52cG4vbXVsdGkuYyBiL3NyYy9vcGVudnBuL211
+bHRpLmMKaW5kZXggMWRiN2JlYS4uMmVmZDA0MCAxMDA2NDQKLS0tIGEvc3JjL29wZW52cG4vbXVs
+dGkuYworKysgYi9zcmMvb3BlbnZwbi9tdWx0aS5jCkBAIC0yNjk5LDYgKzI2OTksMzcgQEAgbWFu
+YWdlbWVudF9jYWxsYmFja19raWxsX2J5X2FkZHIgKHZvaWQgKmFyZywgY29uc3QgaW5fYWRkcl90
+IGFkZHIsIGNvbnN0IGludCBwb3IKICAgcmV0dXJuIGNvdW50OwogfQogCitzdGF0aWMgaW50Citt
+YW5hZ2VtZW50X2NhbGxiYWNrX2tpbGxfYnlfYWRkcjYgKHZvaWQgKmFyZywgY29uc3Qgc3RydWN0
+IGluNl9hZGRyIGFkZHIsIGNvbnN0IGludCBwb3J0KQoreworICBzdHJ1Y3QgbXVsdGlfY29udGV4
+dCAqbSA9IChzdHJ1Y3QgbXVsdGlfY29udGV4dCAqKSBhcmc7CisgIHN0cnVjdCBoYXNoX2l0ZXJh
+dG9yIGhpOworICBzdHJ1Y3QgaGFzaF9lbGVtZW50ICpoZTsKKyAgc3RydWN0IG9wZW52cG5fc29j
+a2FkZHIgc2FkZHI7CisgIHN0cnVjdCBtcm91dGVfYWRkciBtYWRkcjsKKyAgaW50IGNvdW50ID0g
+MDsKKworICBDTEVBUiAoc2FkZHIpOworICBzYWRkci5hZGRyLmluNi5zaW42X2ZhbWlseSA9IEFG
+X0lORVQ2OworICBzYWRkci5hZGRyLmluNi5zaW42X2FkZHIgPSBhZGRyOworICBzYWRkci5hZGRy
+LmluNi5zaW42X3BvcnQgPSBodG9ucyAocG9ydCk7CisgIGlmIChtcm91dGVfZXh0cmFjdF9vcGVu
+dnBuX3NvY2thZGRyICgmbWFkZHIsICZzYWRkciwgdHJ1ZSkpCisgICAgeworICAgICAgaGFzaF9p
+dGVyYXRvcl9pbml0IChtLT5pdGVyLCAmaGkpOworICAgICAgd2hpbGUgKChoZSA9IGhhc2hfaXRl
+cmF0b3JfbmV4dCAoJmhpKSkpCisJeworCSAgc3RydWN0IG11bHRpX2luc3RhbmNlICptaSA9IChz
+dHJ1Y3QgbXVsdGlfaW5zdGFuY2UgKikgaGUtPnZhbHVlOworCSAgaWYgKCFtaS0+aGFsdCAmJiBt
+cm91dGVfYWRkcl9lcXVhbCAoJm1hZGRyLCAmbWktPnJlYWwpKQorCSAgICB7CisJICAgICAgbXVs
+dGlfc2lnbmFsX2luc3RhbmNlIChtLCBtaSwgU0lHVEVSTSk7CisJICAgICAgKytjb3VudDsKKwkg
+ICAgfQorCX0KKyAgICAgIGhhc2hfaXRlcmF0b3JfZnJlZSAoJmhpKTsKKyAgICB9CisgIHJldHVy
+biBjb3VudDsKK30KKwogc3RhdGljIHZvaWQKIG1hbmFnZW1lbnRfZGVsZXRlX2V2ZW50ICh2b2lk
+ICphcmcsIGV2ZW50X3QgZXZlbnQpCiB7CkBAIC0yODMwLDYgKzI4NjEsNyBAQCBpbml0X21hbmFn
+ZW1lbnRfY2FsbGJhY2tfbXVsdGkgKHN0cnVjdCBtdWx0aV9jb250ZXh0ICptKQogICAgICAgY2Iu
+c2hvd19uZXQgPSBtYW5hZ2VtZW50X3Nob3dfbmV0X2NhbGxiYWNrOwogICAgICAgY2Iua2lsbF9i
+eV9jbiA9IG1hbmFnZW1lbnRfY2FsbGJhY2tfa2lsbF9ieV9jbjsKICAgICAgIGNiLmtpbGxfYnlf
+YWRkciA9IG1hbmFnZW1lbnRfY2FsbGJhY2tfa2lsbF9ieV9hZGRyOworICAgICAgY2Iua2lsbF9i
+eV9hZGRyNiA9IG1hbmFnZW1lbnRfY2FsbGJhY2tfa2lsbF9ieV9hZGRyNjsKICAgICAgIGNiLmRl
+bGV0ZV9ldmVudCA9IG1hbmFnZW1lbnRfZGVsZXRlX2V2ZW50OwogICAgICAgY2Iubl9jbGllbnRz
+ID0gbWFuYWdlbWVudF9jYWxsYmFja19uX2NsaWVudHM7CiAjaWZkZWYgTUFOQUdFTUVOVF9ERUZf
+QVVUSAotLSAKMS43LjkuNQoK
 
-Keying Material Exporter allow additional keying material to be derived from
-existing TLS channel. This exported keying material can then be used for a
-variety of purposes.
----
- doc/openvpn.8              |   10 ++++++++++
- src/openvpn/init.c         |   14 ++++++++++++++
- src/openvpn/options.c      |   27 +++++++++++++++++++++++++++
- src/openvpn/options.h      |    6 ++++++
- src/openvpn/ssl.c          |    4 ++++
- src/openvpn/ssl_backend.h  |   13 +++++++++++++
- src/openvpn/ssl_common.h   |    6 ++++++
- src/openvpn/ssl_openssl.c  |   31 +++++++++++++++++++++++++++++++
- src/openvpn/ssl_polarssl.c |    6 ++++++
- 9 files changed, 117 insertions(+), 0 deletions(-)
-
-diff --git a/doc/openvpn.8 b/doc/openvpn.8
-index f2911c0..433dd86 100644
---- a/doc/openvpn.8
-+++ b/doc/openvpn.8
-@@ -2684,6 +2684,16 @@ client-connect), then
- every module and script must return success (0) in order for
- the connection to be authenticated.
- .\"*********************************************************
-+.TP
-+.B \-\-keying-material-exporter [label] [len]
-+Save Exported Keying Material [RFC5705] of len bytes using label in environment
-+(tls_binding_key) for use by plugins in OPENVPN_PLUGIN_TLS_FINAL callback.
-+
-+Note that exporter labels have the potential to collide with existing PRF
-+labels. In order to prevent this, labels MUST begin with "EXPORTER".
-+
-+This option requires OpenSSL 1.0.1 or newer.
-+.\"*********************************************************
- .SS Server Mode
- Starting with OpenVPN 2.0, a multi-client TCP/UDP server mode
- is supported, and can be enabled with the
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index a673be5..a3c9606 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -2249,6 +2249,20 @@ do_init_crypto_tls (struct context *c, const unsigned int flags)
-   to.comp_options = options->comp;
- #endif
- 
-+#if defined(ENABLE_CRYPTO_OPENSSL) && OPENSSL_VERSION_NUMBER >= 0x10001000  
-+  if (options->keying_material_exporter_label)
-+    {
-+      to.ekm_used = true;
-+      to.ekm_size = options->keying_material_exporter_length;
-+      to.ekm_label = options->keying_material_exporter_label;
-+      to.ekm_label_size = strlen(to.ekm_label);
-+    }
-+  else
-+    {
-+      to.ekm_used = false;
-+    }
-+#endif  
-+
-   /* TLS handshake authentication (--tls-auth) */
-   if (options->tls_auth_file)
-     {
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index f536daa..e375235 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -623,6 +623,10 @@ static const char usage_message[] =
-   "--x509-track x  : Save peer X509 attribute x in environment for use by\n"
-   "                  plugins and management interface.\n"
- #endif
-+#if defined(ENABLE_CRYPTO_OPENSSL) && OPENSSL_VERSION_NUMBER >= 0x10001000
-+  "--keying-material-exporter label len : Save Exported Keying Material (RFC5705)\n"
-+  "                  of len bytes using label in environment for use by plugins.\n"
-+#endif
-   "--remote-cert-ku v ... : Require that the peer certificate was signed with\n"
-   "                  explicit key usage, you can specify more than one value.\n"
-   "                  value should be given in hex format.\n"
-@@ -6985,6 +6989,29 @@ add_option (struct options *options,
-       options->persist_mode = 1;
-     }
- #endif
-+#if defined(ENABLE_CRYPTO_OPENSSL) && OPENSSL_VERSION_NUMBER >= 0x10001000
-+  else if (streq (p[0], "keying-material-exporter") && p[1] && p[2])
-+    {
-+      int ekm_length = positive_atoi (p[2]);
-+
-+      VERIFY_PERMISSION (OPT_P_GENERAL);
-+
-+      if (strncmp(p[1], "EXPORTER", 8))
-+        {
-+          msg (msglevel, "Keying material exporter label must begin with "
-+                         "\"EXPORTER\"");
-+          goto err;
-+        }
-+      if (ekm_length < 1 || ekm_length >= (1 << 16))
-+        {
-+          msg (msglevel, "Invalid keying material exporter length");
-+          goto err;
-+        }
-+
-+      options->keying_material_exporter_label = p[1];
-+      options->keying_material_exporter_length = ekm_length;
-+    }
-+#endif
-   else
-     {
-       int i;
-diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-index 5ba4f2f..bf7eb65 100644
---- a/src/openvpn/options.h
-+++ b/src/openvpn/options.h
-@@ -598,6 +598,12 @@ struct options
-   bool show_net_up;
-   int route_method;
- #endif
-+
-+#if defined(ENABLE_CRYPTO_OPENSSL) && OPENSSL_VERSION_NUMBER >= 0x10001000
-+  /* Keying Material Exporters [RFC 5705] */
-+  const char *keying_material_exporter_label;
-+  int keying_material_exporter_length;
-+#endif
- };
- 
- #define streq(x, y) (!strcmp((x), (y)))
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 3ce1f60..0a486d2 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -2130,8 +2130,12 @@ key_method_2_read (struct buffer *buf, struct tls_multi *multi, struct tls_sessi
-    */
-   if (ks->authenticated && plugin_defined (session->opt->plugins, OPENVPN_PLUGIN_TLS_FINAL))
-     {
-+      key_state_export_keying_material(&ks->ks_ssl, session);
-+
-       if (plugin_call (session->opt->plugins, OPENVPN_PLUGIN_TLS_FINAL, NULL, NULL, session->opt->es) != OPENVPN_PLUGIN_FUNC_SUCCESS)
- 	ks->authenticated = false;
-+
-+      setenv_del (session->opt->es, "tls_binding_key");
-     }
- 
-   /*
-diff --git a/src/openvpn/ssl_backend.h b/src/openvpn/ssl_backend.h
-index bfd1549..db05e3b 100644
---- a/src/openvpn/ssl_backend.h
-+++ b/src/openvpn/ssl_backend.h
-@@ -333,6 +333,19 @@ void key_state_ssl_init(struct key_state_ssl *ks_ssl,
-  */
- void key_state_ssl_free(struct key_state_ssl *ks_ssl);
- 
-+/**
-+ * Keying Material Exporters [RFC 5705] allows additional keying material to be
-+ * derived from existing TLS channel. This exported keying material can then be
-+ * used for a variety of purposes.
-+ *
-+ * @param ks_ssl       The SSL channel's state info
-+ * @param session      The session associated with the given key_state
-+ */
-+
-+void
-+key_state_export_keying_material(struct key_state_ssl *ks_ssl,
-+    struct tls_session *session) __attribute__((nonnull));
-+
- /**************************************************************************/
- /** @addtogroup control_tls
-  *  @{ */
-diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
-index 04ba789..eefc3c5 100644
---- a/src/openvpn/ssl_common.h
-+++ b/src/openvpn/ssl_common.h
-@@ -314,6 +314,12 @@ struct tls_options
- 
-   /* --gremlin bits */
-   int gremlin;
-+
-+  /* Keying Material Exporter [RFC 5705] parameters */
-+  const char *ekm_label;
-+  size_t ekm_label_size;
-+  bool ekm_used; /* true when Keying Material should be exported */
-+  size_t ekm_size;
- };
- 
- /** @addtogroup control_processor
-diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-index adf3ae6..3c733ee 100644
---- a/src/openvpn/ssl_openssl.c
-+++ b/src/openvpn/ssl_openssl.c
-@@ -133,6 +133,37 @@ bool tls_ctx_initialised(struct tls_root_ctx *ctx)
-   return NULL != ctx->ctx;
- }
- 
-+void
-+key_state_export_keying_material(struct key_state_ssl *ssl,
-+                                 struct tls_session *session)
-+{
-+  if (session->opt->ekm_used)
-+    {
-+#if (OPENSSL_VERSION_NUMBER >= 0x10001000)
-+      unsigned char ekm[session->opt->ekm_size];
-+
-+      if (SSL_export_keying_material(ssl->ssl, ekm, sizeof(ekm),
-+          session->opt->ekm_label, session->opt->ekm_label_size, NULL, 0, 0))
-+       {
-+         const char *ekm_hex = NULL;
-+         struct gc_arena gc = gc_new();
-+
-+         ekm_hex = format_hex_ex (ekm, sizeof(ekm), 40, 0, NULL, &gc);
-+         setenv_str (session->opt->es, "tls_binding_key", ekm_hex);
-+         dmsg(M_DEBUG, "%s: exported keying material: %s", __func__,
-+             ekm_hex);
-+
-+         gc_free(&gc);
-+       }
-+      else
-+       {
-+         msg (M_WARN, "WARNING: Export keying material failed!");
-+         setenv_del (session->opt->es, "tls_binding_key");
-+       }
-+#endif
-+    }
-+}
-+
- /*
-  * Print debugging information on SSL/TLS session negotiation.
-  */
-diff --git a/src/openvpn/ssl_polarssl.c b/src/openvpn/ssl_polarssl.c
-index ddccf1d..f9072ef 100644
---- a/src/openvpn/ssl_polarssl.c
-+++ b/src/openvpn/ssl_polarssl.c
-@@ -146,6 +146,12 @@ tls_ctx_initialised(struct tls_root_ctx *ctx)
- }
- 
- void
-+key_state_export_keying_material(struct key_state_ssl *ssl,
-+                                 struct tls_session *session)
-+{
-+}
-+
-+void
- tls_ctx_set_options (struct tls_root_ctx *ctx, unsigned int ssl_flags)
- {
- }
--- 
-1.7.1
-
-
---YZ5djTAD1cGYuMQK--
+--_ac7ca002-7f5f-49dd-878d-3da4ca979411_--
 
