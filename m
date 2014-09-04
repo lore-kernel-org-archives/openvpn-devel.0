@@ -1,8 +1,12 @@
-From: davids@...1347...
-Date: Wed,  3 Sep 2014 18:23:37 +0200
-Message-Id: <1409761417-30948-1-git-send-email-davids@...1347...>
-Subject: [Openvpn-devel] [PATCH] Don't let openvpn_popen() keep zoombies
-	around
+Message-ID: <SNT148-W43036EEA91281A582656F199C50@...512...>
+From: =?big5?B?sWkgpUCqTg==?= <roy8119425@...160...>
+Date: Thu, 4 Sep 2014 10:36:24 +0800
+In-Reply-To: <20140903125713.GF1118@...1296...>
+References: <SNT148-W76BE9A56DA884B570B3DCE99C40@...512...>,
+	<20140903125713.GF1118@...1296...>
+MIME-Version: 1.0
+Subject: Re: [Openvpn-devel] [PATCH] kill command with IPv6 client address
+ and port
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,48 +15,16 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: fcrozat@...1519...
+Content-Type: text/plain; charset="big5"
+Content-Transfer-Encoding: base64
+To: Gert Doering <gert@...1296...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-From: David Sommerseth <davids@...1347...>
-
-Commit 9449e6a9eba30c9ed054f57d630a88c9f087080f introduced the
-openvpn_popen() function to support retrieving passwords via systemd.
-
-It was discovered that the child processes openvpn fork()ed would
-be lingering around until openvpn stopped.  This was due to the lack
-of a wait() call.
-
-This patch also cleans up a few minor white-space issues in the same
-code segment.
-
-Cc: Frederic Crozat <fcrozat@...1519...>
-Signed-off-by: David Sommerseth <davids@...1347...>
----
- src/openvpn/misc.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
-
-diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
-index 63b4c1c..16c8dcf 100644
---- a/src/openvpn/misc.c
-+++ b/src/openvpn/misc.c
-@@ -376,8 +376,11 @@ openvpn_popen (const struct argv *a,  const struct env_set *es)
- 			}
- 		      else /* parent side */
- 			{
--                            ret=pipe_stdout[0];
--			    close (pipe_stdout[1]);
-+                          int status;
-+
-+                          waitpid(pid, &status, 0);
-+                          ret = pipe_stdout[0];
-+                          close (pipe_stdout[1]);
- 			}
- 	      }
- 	      else {
--- 
-1.8.3.1
-
-
+SGkgR2VydCwKClRoYW5rcyBmb3IgeW91ciByZXBseSwgaXQncyBteSBtaXN0YWtlCk5vdyBteSBx
+dWVzdGlvbiBpcyBob3cgdG8gcmVjb3JkIHRoZSBjbGllbnQgaWQgZXZlcnkgdGltZSB3aGVuIGEg
+Y2xpZW50IGNvbm5lY3RlZApJcyB0aGVyZSBhIGhvb2sgaW4gc2VydmVyIHdoaWNoIHdpbGwgYmUg
+dHJpZ2dlcmVkIHdoZW4gYSBuZXcgY2xpZW50IGNvbm5lY3Q/CgpDdXJyZW50bHkgaW4gbXkgYXBw
+bGljYXRpb24sIEkgcGFyc2UgdGhlIHJlc3VsdCBvZiBzdGF0dXMgMiB0byBnZXQgdGhlIElQOnBv
+cnQgZm9yIGtpbGxpbmcKQnV0IHRoZSBjbGllbnQgaWQgaXMgbm90IGEgcGFydCBvZiBzdGF0dXMg
+MiByZXN1bHQKSXMgdGhlcmUgYSBiZXR0ZXIgd2F5IHRvIGRvIHRoaXM/CgpUaGFua3MgYWdhaW4h
+CgotLQpSb3kKIAkJIAkgICAJCSAg
