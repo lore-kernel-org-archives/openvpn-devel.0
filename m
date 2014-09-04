@@ -1,10 +1,16 @@
-Message-ID: <5408494D.7050407@...1435...>
-Date: Thu, 4 Sep 2014 13:13:17 +0200
-From: Steffan Karger <steffan.karger@...1435...>
-MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="------------000009000000080300040403"
-Subject: [Openvpn-devel] [PATCH] Remove quadratic complexity from
-	openvpn_base64_decode()
+Date: Thu, 4 Sep 2014 13:46:59 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20140904114659.GH1118@...1296...>
+References: <20140903125713.GF1118@...1296...>
+	<SNT148-W43036EEA91281A582656F199C50@...512...>
+	<5407D15E.8060300@...1227...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="DsdztYVzhbn+JGnu"
+Content-Disposition: inline
+In-Reply-To: <5407D15E.8060300@...1227...>
+Subject: Re: [Openvpn-devel] [PATCH] kill command with IPv6 client address
+	and port
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,78 +19,59 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Arne Schwabe <arne@...1227...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---------------000009000000080300040403
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+--DsdztYVzhbn+JGnu
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
 Hi,
 
-Attached a patch for a change suggested by Jann Horn, to remove the
-quadratic complexity from openvpn_base64_decode().
+On Wed, Sep 03, 2014 at 10:41:34PM -0400, Arne Schwabe wrote:
+> Newer OpenVPN versions (I don't recall if -master or 2.3.x) have this
+> information in the status report. For older version you have to record
+> the ID when a client is connected.
 
-The suggestion was originally sent to the security list, because
-quadratic complexity can potentially lead to a denial-of-service attack
-vector. In the current OpenVPN codebase, this is however *not* the case.
+In master:
 
-OpenVPN doesn't use it's base64 encoding a lot. The only place where a
-denial of service could be interesting is when the server uses a
-management interface, and an authenticated client sends a malicious
-challenge response to the server. Those responses are sent over the TLS
-channel, and openvpn limits those messages to 2048 bytes
-(TLS_CHANNEL_BUF_SIZE). The old base64 decode code has a complexity of
-(n/8)^2 (one strlen over on average half the string length per 4-byte
-base64 token), which results in 65536 byte comparisons per message.
-That's not enough to be practical for an attack.
+commit 662ce6acc065bddf6490b3494725b8b3987b7def
+Author: Arne Schwabe <arne@...1227...>
+Date:   Fri Aug 31 16:19:13 2012 +0200
 
-That said, I do like the suggestion to make the code constant time. I'd
-say it should be applied to both master and 2.3 branches as a bugfix.
-
--Steffan
-
---------------000009000000080300040403
-Content-Type: text/x-patch;
-	name="0001-Remove-quadratic-complexity-from-openvpn_base64_deco.patch"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment;
-	filename*0="0001-Remove-quadratic-complexity-from-openvpn_base64_deco.pa";
-	filename*1="tch"
-
-From 488390691137e9a8ea4c2c63db930e2396049934 Mon Sep 17 00:00:00 2001
-From: Jann Horn <jann@...1933...>
-Date: Wed, 16 Jul 2014 21:55:42 +0200
-Subject: [PATCH] Remove quadratic complexity from openvpn_base64_decode()
-
-Every four input characters, openvpn_base64_decode called token_decode,
-which in turn called strlen() on the remaining input. This means that
-base64 decoding in openvpn had quadratic complexity.
-
-All we really need to know is whether the token is complete, so replace
-the check to check just that, and make the complexity linear wrt the
-input length.
-
-Signed-off-by: Steffan Karger <steffan.karger@...1435...>
----
- src/openvpn/base64.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/src/openvpn/base64.c b/src/openvpn/base64.c
-index bb89aae..7dccec2 100644
---- a/src/openvpn/base64.c
-+++ b/src/openvpn/base64.c
-@@ -110,7 +110,7 @@ token_decode(const char *token)
-     int i;
-     unsigned int val = 0;
-     int marker = 0;
--    if (strlen(token) < 4)
-+    if (!token[0] || !token[1] || !token[2] || !token[3])
- 	return DECODE_ERROR;
-     for (i = 0; i < 4; i++) {
- 	val *= 64;
--- 
-1.9.1
+    Add the client id (CID) to the output of the status command
 
 
---------------000009000000080300040403--
+Wasn't backported to 2.3, due to "it's new functionality that might break
+existing usage".
+
+In the context of this mail thread, this is slightly moot, though, as
+the new "kill by ip+port" patch would not get applied to 2.3 anyway (same
+reason), so use master and enjoy :-)
+
+gert
+
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--DsdztYVzhbn+JGnu
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQCVAwUBVAhRM6kuBuNlUUl1AQK6gAP7B3S5IY0pJz7m2um+zoSdqQZZTKQhOOIQ
+KhukhXrPS6MNcUCZn39HKKR6rJ8Saz6dY+nun2vO7v9tYInTblS8ngGLnTb1v/Ro
+EX1/GtrzeWPLHeNgVyQDDcWAFpcecEfYAz4F6yCuWZNu6miR1uqhX6esQcmUhhOd
+kWWhTFRxxXU=
+=HPSf
+-----END PGP SIGNATURE-----
+
+--DsdztYVzhbn+JGnu--
 
