@@ -1,10 +1,11 @@
-Message-ID: <SNT148-W43036EEA91281A582656F199C50@...512...>
-From: =?big5?B?sWkgpUCqTg==?= <roy8119425@...160...>
-Date: Thu, 4 Sep 2014 10:36:24 +0800
-In-Reply-To: <20140903125713.GF1118@...1296...>
+Message-ID: <5407D15E.8060300@...1227...>
+Date: Wed, 03 Sep 2014 22:41:34 -0400
+From: Arne Schwabe <arne@...1227...>
+MIME-Version: 1.0
 References: <SNT148-W76BE9A56DA884B570B3DCE99C40@...512...>,
 	<20140903125713.GF1118@...1296...>
-MIME-Version: 1.0
+	<SNT148-W43036EEA91281A582656F199C50@...512...>
+In-Reply-To: <SNT148-W43036EEA91281A582656F199C50@...512...>
 Subject: Re: [Openvpn-devel] [PATCH] kill command with IPv6 client address
  and port
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -15,16 +16,25 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="big5"
-Content-Transfer-Encoding: base64
-To: Gert Doering <gert@...1296...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: =?UTF-8?B?5by1IOS4luadsA==?= <roy8119425@...160...>, Gert Doering <gert@...1296...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-SGkgR2VydCwKClRoYW5rcyBmb3IgeW91ciByZXBseSwgaXQncyBteSBtaXN0YWtlCk5vdyBteSBx
-dWVzdGlvbiBpcyBob3cgdG8gcmVjb3JkIHRoZSBjbGllbnQgaWQgZXZlcnkgdGltZSB3aGVuIGEg
-Y2xpZW50IGNvbm5lY3RlZApJcyB0aGVyZSBhIGhvb2sgaW4gc2VydmVyIHdoaWNoIHdpbGwgYmUg
-dHJpZ2dlcmVkIHdoZW4gYSBuZXcgY2xpZW50IGNvbm5lY3Q/CgpDdXJyZW50bHkgaW4gbXkgYXBw
-bGljYXRpb24sIEkgcGFyc2UgdGhlIHJlc3VsdCBvZiBzdGF0dXMgMiB0byBnZXQgdGhlIElQOnBv
-cnQgZm9yIGtpbGxpbmcKQnV0IHRoZSBjbGllbnQgaWQgaXMgbm90IGEgcGFydCBvZiBzdGF0dXMg
-MiByZXN1bHQKSXMgdGhlcmUgYSBiZXR0ZXIgd2F5IHRvIGRvIHRoaXM/CgpUaGFua3MgYWdhaW4h
-CgotLQpSb3kKIAkJIAkgICAJCSAg
+Am 03.09.14 22:36, schrieb 張 世杰:
+> Hi Gert,
+>
+> Thanks for your reply, it's my mistake
+> Now my question is how to record the client id every time when a client connected
+> Is there a hook in server which will be triggered when a new client connect?
+>
+> Currently in my application, I parse the result of status 2 to get the IP:port for killing
+> But the client id is not a part of status 2 result
+> Is there a better way to do this?
+>
+Newer OpenVPN versions (I don't recall if -master or 2.3.x) have this
+information in the status report. For older version you have to record
+the ID when a client is connected.
+
+Arne
+
