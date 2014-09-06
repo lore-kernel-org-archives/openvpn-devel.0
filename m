@@ -1,15 +1,14 @@
-Date: Sat, 6 Sep 2014 14:09:05 +0200
+Date: Sat, 6 Sep 2014 14:31:48 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20140906120905.GB1118@...1296...>
-References: <1409930731-15263-1-git-send-email-davids@...1347...>
-	<1409930731-15263-4-git-send-email-davids@...1347...>
+Message-ID: <20140906123148.GE1118@...1296...>
+References: <5408494D.7050407@...1435...>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="ucKxrLtqiGlSKUCp"
+	protocol="application/pgp-signature"; boundary="EiSSoD3jrYkcqL01"
 Content-Disposition: inline
-In-Reply-To: <1409930731-15263-4-git-send-email-davids@...1347...>
-Subject: Re: [Openvpn-devel] [PATCH 3/4] Clean up the pipe closing in
-	openvpn_popen()
+In-Reply-To: <5408494D.7050407@...1435...>
+Subject: Re: [Openvpn-devel] [PATCH] Remove quadratic complexity from
+	openvpn_base64_decode()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,34 +17,24 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: davids@...1347...
-Cc: openvpn-devel@lists.sourceforge.net, fcrozat@...1519...
+To: Steffan Karger <steffan.karger@...1435...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---ucKxrLtqiGlSKUCp
+--EiSSoD3jrYkcqL01
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Fri, Sep 05, 2014 at 05:25:30PM +0200, davids@...1347... wrote:
-> @@ -365,27 +365,30 @@ openvpn_popen (const struct argv *a,  const struct =
-env_set *es)
->  		      pid =3D fork ();
->  		      if (pid =3D=3D (pid_t)0) /* child side */
->  			{
-> -			  close (pipe_stdout[0]);
-> +			  close (pipe_stdout[0]);  /* Close read end */
->  			  dup2 (pipe_stdout[1],1);
->  			  execve (cmd, argv, envp);
-> +			  close (pipe_stdout[1]);
->  			  exit (127);
+On Thu, Sep 04, 2014 at 01:13:17PM +0200, Steffan Karger wrote:
+> Attached a patch for a change suggested by Jann Horn, to remove the
+> quadratic complexity from openvpn_base64_decode().
+[..]
+> That said, I do like the suggestion to make the code constant time. I'd
+> say it should be applied to both master and 2.3 branches as a bugfix.
 
-NAK, as that addition does not have any benefit.  Even if the execve()
-fails, the next thing is an exit(), which will close all file descriptors
-anyway.  It's just extra code that impairs reading.
-
-The rest of the change would get an feature- and code-ACK, though :)
+ACK.  Will merge to both branches ASAP.
 
 gert
 
@@ -56,19 +45,19 @@ rt/
 Gert Doering - Munich, Germany                             gert@...1296...
 fax: +49-89-35655025                        gert@...1297...
 
---ucKxrLtqiGlSKUCp
+--EiSSoD3jrYkcqL01
 Content-Type: application/pgp-signature
 Content-Disposition: inline
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1
 
-iQCVAwUBVAr5YakuBuNlUUl1AQJ2ngP/SVp0hpeS4fLf79Gym/QgOa1/tQQ7rsLq
-n37u/8B1+/DOD726NXEOsrUcF1FQG+XhiqvRps5yqkZJ+O4n2/KsFtlO5D8M/rmF
-5kTlwlTq79iZBdC9MjbJGkrJoWX6ek85x5ISyW8HodzVmVvY3gjkfOYJYDGFSwe4
-k5zcgRt+tw0=
-=DvCs
+iQCVAwUBVAr+tKkuBuNlUUl1AQIIkQP/fNNOJXCPRNkvyIFMq2XUprb5RIyx3FYF
+Rekl1XExtWK55ZuZurT1fH0b5u/ln+oAYNZzYx0Hn37gZ1XdUfdNdFWXt6iV4WUO
+Rkv5c0bjIDhn7NG7du9CS0LnO+8jzu8/VG/Wl1ckX+zM+4f8y3CFJXoM2qZJIEkt
+3hB8D2YW37U=
+=Oe4X
 -----END PGP SIGNATURE-----
 
---ucKxrLtqiGlSKUCp--
+--EiSSoD3jrYkcqL01--
 
