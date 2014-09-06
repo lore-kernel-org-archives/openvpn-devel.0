@@ -1,10 +1,15 @@
-From: davids@...1347...
-Date: Fri,  5 Sep 2014 17:25:29 +0200
-Message-Id: <1409930731-15263-3-git-send-email-davids@...1347...>
-In-Reply-To: <1409930731-15263-1-git-send-email-davids@...1347...>
-References: <1409930731-15263-1-git-send-email-davids@...1347...>
-Subject: [Openvpn-devel] [PATCH 2/4] Don't try to use systemd-ask-password
-	if it is not available
+Date: Sat, 6 Sep 2014 13:53:00 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20140906115300.GX1118@...1296...>
+References: <1404419045-14728-1-git-send-email-floppym@...594...>
+	<5409C39F.1050009@...1114...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="4RzVFyjIcZfAa5OY"
+Content-Disposition: inline
+In-Reply-To: <5409C39F.1050009@...1114...>
+Subject: Re: [Openvpn-devel] [PATCH] Add configure check for the path to
+	systemd-ask-password
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,50 +18,49 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: fcrozat@...1519...
+To: openvpn-users@lists.sourceforge.net
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: David Sommerseth <davids@...1347...>
+--4RzVFyjIcZfAa5OY
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-If the SYSTEMD_ASK_PASSWORD_PATH executable cannot be found, we
-don't consider systemd as running.
+Hi,
 
-Also cleaned up some white-space issues here while at it.
+On Fri, Sep 05, 2014 at 04:07:27PM +0200, David Sommerseth wrote:
+> On 03/07/14 22:24, Mike Gilbert wrote:
+> > Gentoo Linux installs this in /usr/bin by default. Also, the user
+> > may have installed it in /usr/local/bin if building from source.
+>=20
+> ACK.  Also considering that Fedora have moved /{bin,sbin} to
+> /usr/{bin,sbin}, this makes a lot of sense.  More Linux distros may be
+> on the same path as well.
 
-Signed-off-by: David Sommerseth <davids@...1347...>
----
- src/openvpn/console.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+Yeah, double-ACK.  Hardcoding program paths in the middle of C code is
+something we should have never merged in the first place :)
 
-diff --git a/src/openvpn/console.c b/src/openvpn/console.c
-index 059b6f0..e35b6bd 100644
---- a/src/openvpn/console.c
-+++ b/src/openvpn/console.c
-@@ -143,15 +143,16 @@ close_tty (FILE *fp)
- static bool
- check_systemd_running ()
- {
--  struct stat a, b;
-+  struct stat a, b, c;
- 
-   /* We simply test whether the systemd cgroup hierarchy is
--   * mounted */
-+   * mounted, as well as the systemd-ask-password executable
-+   * being available */
- 
-   return (lstat("/sys/fs/cgroup", &a) == 0)
--	  && (lstat("/sys/fs/cgroup/systemd", &b) == 0)
--	  && (a.st_dev != b.st_dev);
--
-+    && (lstat("/sys/fs/cgroup/systemd", &b) == 0)
-+    && (stat(SYSTEMD_ASK_PASSWORD_PATH, &c) == 0)
-+    && (a.st_dev != b.st_dev);
- }
- 
- static bool
--- 
-1.8.3.1
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
+--4RzVFyjIcZfAa5OY
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQCVAwUBVAr1nKkuBuNlUUl1AQLQBgQAqhZ696JyuzFa/QlCfxQRW6+w+uVZzB4y
+Foot7+Krs67/YX1vqTKpupf9DC4nlhuj+Xf39Uo+HWwrD7yAjQeGmqtfzUZi3dV6
++/7CUof5BSIe2tdIY2KxvHKQ1Z/YtErjXrjmnPhW59/l2KQUW6bqfS66JNmJtdZM
+/4GXazp0vv0=
+=iPIb
+-----END PGP SIGNATURE-----
+
+--4RzVFyjIcZfAa5OY--
 
