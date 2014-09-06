@@ -1,15 +1,15 @@
-Date: Sat, 6 Sep 2014 13:53:00 +0200
+Date: Sat, 6 Sep 2014 13:56:15 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20140906115300.GX1118@...1296...>
-References: <1404419045-14728-1-git-send-email-floppym@...594...>
-	<5409C39F.1050009@...1114...>
+Message-ID: <20140906115615.GY1118@...1296...>
+References: <1409930731-15263-1-git-send-email-davids@...1347...>
+	<1409930731-15263-5-git-send-email-davids@...1347...>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="4RzVFyjIcZfAa5OY"
+	protocol="application/pgp-signature"; boundary="nOzxAaGBfJwFK2kS"
 Content-Disposition: inline
-In-Reply-To: <5409C39F.1050009@...1114...>
-Subject: Re: [Openvpn-devel] [PATCH] Add configure check for the path to
-	systemd-ask-password
+In-Reply-To: <1409930731-15263-5-git-send-email-davids@...1347...>
+Subject: Re: [Openvpn-devel] [PATCH 4/4] White-space clean-up of
+	openvpn_popen()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,29 +18,28 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-users@lists.sourceforge.net
-Cc: openvpn-devel@lists.sourceforge.net
+To: davids@...1347...
+Cc: openvpn-devel@lists.sourceforge.net, fcrozat@...1519...
 
---4RzVFyjIcZfAa5OY
+--nOzxAaGBfJwFK2kS
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Fri, Sep 05, 2014 at 04:07:27PM +0200, David Sommerseth wrote:
-> On 03/07/14 22:24, Mike Gilbert wrote:
-> > Gentoo Linux installs this in /usr/bin by default. Also, the user
-> > may have installed it in /usr/local/bin if building from source.
->=20
-> ACK.  Also considering that Fedora have moved /{bin,sbin} to
-> /usr/{bin,sbin}, this makes a lot of sense.  More Linux distros may be
-> on the same path as well.
+On Fri, Sep 05, 2014 at 05:25:31PM +0200, davids@...1347... wrote:
+> Reformatted to 2 space indents (no tabs).
 
-Yeah, double-ACK.  Hardcoding program paths in the middle of C code is
-something we should have never merged in the first place :)
+NAK, as our current coding style is "2 space indents, tab=3D8" - even if
+not consistently used everywhere, *if* we do reformatting at this stage,
+do it towards the current style.
+
+(I agree that we might want to reformat prior to releasing 2.4, and
+should discuss this in Munich)
 
 gert
+
 --=20
 USENET is *not* the non-clickable part of WWW!
                                                            //www.muc.de/~ge=
@@ -48,19 +47,19 @@ rt/
 Gert Doering - Munich, Germany                             gert@...1296...
 fax: +49-89-35655025                        gert@...1297...
 
---4RzVFyjIcZfAa5OY
+--nOzxAaGBfJwFK2kS
 Content-Type: application/pgp-signature
 Content-Disposition: inline
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1
 
-iQCVAwUBVAr1nKkuBuNlUUl1AQLQBgQAqhZ696JyuzFa/QlCfxQRW6+w+uVZzB4y
-Foot7+Krs67/YX1vqTKpupf9DC4nlhuj+Xf39Uo+HWwrD7yAjQeGmqtfzUZi3dV6
-+/7CUof5BSIe2tdIY2KxvHKQ1Z/YtErjXrjmnPhW59/l2KQUW6bqfS66JNmJtdZM
-/4GXazp0vv0=
-=iPIb
+iQCVAwUBVAr2XqkuBuNlUUl1AQJvfAQAlv4VO/Ma8hMQvjKS0SlpBqrSUi3CSoiG
+hG9R9oYXOLFa7xwWffgx9kEnTXCQHCozs0UqFQNtC+WawyQpNessKG0Yeb7xUiFN
+MrEvgoTPA2wUjs5HISSpORQt5V/bYCNUMgf8slroPbnyPA93ttZaPeePk6eZTHzW
+VG/HEs8XXW4=
+=vXwt
 -----END PGP SIGNATURE-----
 
---4RzVFyjIcZfAa5OY--
+--nOzxAaGBfJwFK2kS--
 
