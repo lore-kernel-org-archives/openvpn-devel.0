@@ -1,7 +1,10 @@
 From: David Sommerseth <openvpn.list@...1114...>
-Date: Tue,  9 Sep 2014 19:26:11 +0200
-Message-Id: <1410283573-17933-1-git-send-email-openvpn.list@...1114...>
-Subject: [Openvpn-devel] [PATCH v2 0/2] Further systemd cleanups
+Date: Tue,  9 Sep 2014 19:26:13 +0200
+Message-Id: <1410283573-17933-3-git-send-email-openvpn.list@...1114...>
+In-Reply-To: <1410283573-17933-1-git-send-email-openvpn.list@...1114...>
+References: <1410283573-17933-1-git-send-email-openvpn.list@...1114...>
+Subject: [Openvpn-devel] [PATCH v2 2/2] Clean up the pipe closing in
+	openvpn_popen()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,25 +19,62 @@ To: openvpn-devel@lists.sourceforge.net
 
 From: David Sommerseth <davids@...1347...>
 
-This replaces patch 2/4 [1] and patch 3/4 [2] of the last round,
-just fixing up things from the review.
+Do the proper closing of the pipe ends which is not being used,
+also in error situations.  Moved the closing of the parent side
+before the waitpid(), to be consistent with the child side (as
+early as possible).
 
-Patch 1/4 [3] got an ACK and have been applied, while patch 4/4 [4]
-will be considered in a bigger scope.
+Also improved the error messages with more details.
 
-[1] <http://thread.gmane.org/gmane.network.openvpn.devel/9023/focus=9024>
-[2] <http://thread.gmane.org/gmane.network.openvpn.devel/9023/focus=9020>
-[3] <http://thread.gmane.org/gmane.network.openvpn.devel/9023/focus=9021>
-[4] <http://thread.gmane.org/gmane.network.openvpn.devel/9023/focus=9022>
+[v2 - Don't call close() if execve() fails]
 
-David Sommerseth (2):
-  Don't try to use systemd-ask-password if it is not available
-  Clean up the pipe closing in openvpn_popen()
+Signed-off-by: David Sommerseth <davids@...1347...>
+---
+ src/openvpn/misc.c | 18 ++++++++++--------
+ 1 file changed, 10 insertions(+), 8 deletions(-)
 
- src/openvpn/console.c |  8 +++++---
- src/openvpn/misc.c    | 18 ++++++++++--------
- 2 files changed, 15 insertions(+), 11 deletions(-)
-
+diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
+index 19bbef7..61bc523 100644
+--- a/src/openvpn/misc.c
++++ b/src/openvpn/misc.c
+@@ -365,27 +365,29 @@ openvpn_popen (const struct argv *a,  const struct env_set *es)
+ 		      pid = fork ();
+ 		      if (pid == (pid_t)0) /* child side */
+ 			{
+-			  close (pipe_stdout[0]);
++			  close (pipe_stdout[0]);  /* Close read end */
+ 			  dup2 (pipe_stdout[1],1);
+ 			  execve (cmd, argv, envp);
+ 			  exit (127);
+ 			}
+-		      else if (pid < (pid_t)0) /* fork failed */
+-			{
+-			  msg (M_ERR, "openvpn_popen: unable to fork");
+-			}
+-		      else /* parent side */
++		      else if (pid > (pid_t)0) /* parent side */
+ 			{
+                           int status = 0;
+ 
++                          close (pipe_stdout[1]); /* Close write end */
+                           waitpid(pid, &status, 0);
+                           ret = pipe_stdout[0];
++			}
++		      else /* fork failed */
++			{
++                          close (pipe_stdout[0]);
+                           close (pipe_stdout[1]);
++			  msg (M_ERR, "openvpn_popen: unable to fork %s", cmd);
+ 			}
+ 	      }
+ 	      else {
+-		      msg (M_WARN, "openvpn_popen: unable to create stdout pipe");
+-		      ret = -1;
++                msg (M_WARN, "openvpn_popen: unable to create stdout pipe for %s", cmd);
++                ret = -1;
+ 	      }
+ 	}
+       else if (!warn_shown && (script_security < SSEC_SCRIPTS))
 -- 
 1.8.3.1
 
