@@ -1,10 +1,10 @@
-From: David Sommerseth <openvpn.list@...1114...>
-Date: Wed, 10 Sep 2014 11:56:22 +0200
-Message-Id: <1410342982-16292-1-git-send-email-openvpn.list@...1114...>
-In-Reply-To: <20140909202408.GK1118@...1296...>
-References: <20140909202408.GK1118@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Clean up the pipe closing in
-	openvpn_popen()
+Date: Sun, 14 Sep 2014 21:00:22 +0200 (CEST)
+Message-Id: <201409141900.s8EJ0Ljv000985@...1295...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <5408494D.7050407@...1435...>
+References: <5408494D.7050407@...1435...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Remove quadratic complexity
+	from openvpn_base64_decode()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,38 +15,29 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net, David Sommerseth <davids@...1347...>
+To: Jann Horn <jann@...1933...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: David Sommerseth <davids@...1347...>
+Your patch has been applied to the master and release/2.3 branches.
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+commit 25e1ec71dd150e803c0a25308c193fea124c7b7a (master)
+commit 72cbc106d95fb18892c739f128d29d4f54179771 (release/2.3)
 
+Author: Jann Horn
+Date:   Wed Jul 16 21:55:42 2014 +0200
 
-Your patch has been applied to the master branch.
+     Remove quadratic complexity from openvpn_base64_decode()
 
-commit df8ebb21ad1957ec013ab832a0f6c18e9d6744f6
-Author: David Sommerseth
-Date:   Fri Sep 5 17:04:58 2014 +0200
-
-     Clean up the pipe closing in openvpn_popen()
-
-     Signed-off-by: David Sommerseth <davids@...1347...>
+     Signed-off-by: Steffan Karger <steffan.karger@...1435...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: 20140909202408.GK1118@...1296...
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/9036
+     Message-Id: <5408494D.7050407@...1435...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/9016
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
-- --
+--
 kind regards,
 
-David Sommerseth
+Gert Doering
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iEYEARECAAYFAlQQIEIACgkQDC186MBRfrr2kgCgn3G0L2jUoqysmn4WU46+5Qg9
-lNYAoIxNovrd6Ca4Oy962+ZqTNkbtDNF
-=mMdO
------END PGP SIGNATURE-----
 
