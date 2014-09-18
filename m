@@ -1,7 +1,13 @@
-From: David Sommerseth <openvpn.list@...1114...>
-Date: Thu, 18 Sep 2014 11:02:16 +0200
-Message-Id: <1411030936-16309-1-git-send-email-openvpn.list@...1114...>
-Subject: [Openvpn-devel] [PATCH] Add systemd unit file for OpenVPN
+Date: Thu, 18 Sep 2014 12:14:40 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20140918101439.GR1118@...1296...>
+References: <1411030936-16309-1-git-send-email-openvpn.list@...1114...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="vCxiLyp6hdm6asOm"
+Content-Disposition: inline
+In-Reply-To: <1411030936-16309-1-git-send-email-openvpn.list@...1114...>
+Subject: Re: [Openvpn-devel] [PATCH] Add systemd unit file for OpenVPN
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -10,50 +16,51 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: David Sommerseth <openvpn.list@...1114...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: David Sommerseth <davids@...1347...>
+--vCxiLyp6hdm6asOm
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-This is to encourage all Linux distributions to use a unified systemd
-unit file.
+Hi,
 
-This unit file also tries to reduce the capabilities of the running
-openvpn process.
+On Thu, Sep 18, 2014 at 11:02:16AM +0200, David Sommerseth wrote:
+> From: David Sommerseth <davids@...1347...>
+>=20
+> This is to encourage all Linux distributions to use a unified systemd
+> unit file.
 
-Signed-off-by: David Sommerseth <davids@...1347...>
----
- distro/systemd/openvpn@...1685... | 19 +++++++++++++++++++
- 1 file changed, 19 insertions(+)
- create mode 100644 distro/systemd/openvpn@...1685...
+ACK, with this small change:
 
-diff --git a/distro/systemd/openvpn@...1685... b/distro/systemd/openvpn@...1685...
-new file mode 100644
-index 0000000..e17a8a5
---- /dev/null
-+++ b/distro/systemd/openvpn@...1685...
-@@ -0,0 +1,19 @@
-+[Unit]
-+Description=OpenVPN tunnel for %I
-+After=syslog.target network.target
-+Documentation=man:openvpn(8)
-+Documentation=https://community.openvpn.net/openvpn/wiki/Openvpn23ManPage
-+Documentation=http://community.openvpn.net/openvpn/wiki/HOWTO
-+
-+[Service]
-+PrivateTmp=true
-+Type=forking
-+PIDFile=/var/run/openvpn/%i.pid
-+ExecStart=/usr/sbin/openvpn --daemon --writepid /var/run/openvpn/%i.pid --cd /etc/openvpn/ --config %i.conf
-+CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_CHROOT CAP_DAC_READ_SEARCH 
-+LimitNPROC=10
-+DeviceAllow=/dev/null rw
-+DeviceAllow=/dev/net/tun rw
-+
-+[Install]
-+WantedBy=multi-user.target
--- 
-1.8.3.1
+> +Documentation=3Dhttps://community.openvpn.net/openvpn/wiki/Openvpn23ManP=
+age
+> +Documentation=3Dhttp://community.openvpn.net/openvpn/wiki/HOWTO
 
+Agree with yourself whether http or https is the way forward :-)
+
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--vCxiLyp6hdm6asOm
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQCVAwUBVBqwj6kuBuNlUUl1AQJe0QP/er+xiXcEjKBWOyHbMLYoPlXdOPmLxjIv
+1BA9ES0uzNcJAsOvC7vTwUP0mK272bI+5IjO5cafNogGJTpr/aJBhYaFKYlGF06C
+Lz3M5WtzqGO9wBgvvo4HgKC9HoO5Me1J9P2CyEezXHOmsxKVHM57k+r+Y0zqUbud
+UBMyPnonL4g=
+=fNWB
+-----END PGP SIGNATURE-----
+
+--vCxiLyp6hdm6asOm--
 
