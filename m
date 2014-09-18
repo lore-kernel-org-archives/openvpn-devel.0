@@ -1,10 +1,7 @@
-Date: Mon, 15 Sep 2014 20:27:35 +0200 (CEST)
-Message-Id: <201409151827.s8FIRZ4u014292@...1295...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <1408396155-9017-1-git-send-email-steffan@...1856...>
-References: <1408396155-9017-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix compiler warnings in
-	ssl_polarssl.c.
+From: David Sommerseth <openvpn.list@...1114...>
+Date: Thu, 18 Sep 2014 11:02:16 +0200
+Message-Id: <1411030936-16309-1-git-send-email-openvpn.list@...1114...>
+Subject: [Openvpn-devel] [PATCH] Add systemd unit file for OpenVPN
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,28 +12,48 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Steffan Karger <steffan@...1856...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-ACK. Your patch has been applied to the master branch.
+From: David Sommerseth <davids@...1347...>
 
-commit 9048d50b0a27a724ad088dc4904eb4888b0bca87 (master)
+This is to encourage all Linux distributions to use a unified systemd
+unit file.
 
-Author: Steffan Karger
-Date:   Mon Aug 18 23:09:15 2014 +0200
+This unit file also tries to reduce the capabilities of the running
+openvpn process.
 
-     Fix compiler warnings in ssl_polarssl.c.
+Signed-off-by: David Sommerseth <davids@...1347...>
+---
+ distro/systemd/openvpn@...1685... | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
+ create mode 100644 distro/systemd/openvpn@...1685...
 
-     Signed-off-by: Steffan Karger <steffan@...1856...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1408396155-9017-1-git-send-email-steffan@...1856...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/8991
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/distro/systemd/openvpn@...1685... b/distro/systemd/openvpn@...1685...
+new file mode 100644
+index 0000000..e17a8a5
+--- /dev/null
++++ b/distro/systemd/openvpn@...1685...
+@@ -0,0 +1,19 @@
++[Unit]
++Description=OpenVPN tunnel for %I
++After=syslog.target network.target
++Documentation=man:openvpn(8)
++Documentation=https://community.openvpn.net/openvpn/wiki/Openvpn23ManPage
++Documentation=http://community.openvpn.net/openvpn/wiki/HOWTO
++
++[Service]
++PrivateTmp=true
++Type=forking
++PIDFile=/var/run/openvpn/%i.pid
++ExecStart=/usr/sbin/openvpn --daemon --writepid /var/run/openvpn/%i.pid --cd /etc/openvpn/ --config %i.conf
++CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_CHROOT CAP_DAC_READ_SEARCH 
++LimitNPROC=10
++DeviceAllow=/dev/null rw
++DeviceAllow=/dev/net/tun rw
++
++[Install]
++WantedBy=multi-user.target
+-- 
+1.8.3.1
 
 
