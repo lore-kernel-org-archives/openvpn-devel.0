@@ -1,9 +1,9 @@
+Date: Tue, 23 Sep 2014 08:45:45 -0400 (EDT)
+From: Hubert Kario <hkario@...1347...>
+Message-ID: <373411786.14344069.1411476345082.JavaMail.zimbra@...1347...>
+In-Reply-To: <1827991635.14343530.1411476262740.JavaMail.zimbra@...1347...>
 MIME-Version: 1.0
-Date: Sat, 20 Sep 2014 01:59:49 +0330
-Message-ID: <CAF+AVD1FuFgHnMBSUT7zuat=NA96wX5eFu8CYBYrPLZq5BA0Zw@...278...>
-From: si simsons <si3624s@...277...>
-Content-Type: multipart/alternative; boundary=047d7b15a275a19563050372a3e5
-Subject: [Openvpn-devel] (no subject)
+Subject: [Openvpn-devel] OCSP_check.sh fixup
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,17 +12,25 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 To: openvpn-devel@lists.sourceforge.net
 
---047d7b15a275a19563050372a3e5
-Content-Type: text/plain; charset=UTF-8
+There are few serious issues with the OCSP_check.sh script:
+ 1. It will accept OCSP responses with bad signatures
+ 2. It may accept OCSP old responses as currently valid
 
+detailed description on bug tracker:
+https://community.openvpn.net/openvpn/ticket/450#ticket
 
+Pull request with fixes:
+https://github.com/OpenVPN/openvpn/pull/17
 
---047d7b15a275a19563050372a3e5
-Content-Type: text/html; charset=UTF-8
-
-
-
---047d7b15a275a19563050372a3e5--
+--=20
+Regards,
+Hubert Kario
+Quality Engineer, QE BaseOS Security team
+Email: hkario@...1347...
+Web: www.cz.redhat.com
+Red Hat Czech s.r.o., Purky=C5=88ova 99/71, 612 45, Brno, Czech Republic
 
