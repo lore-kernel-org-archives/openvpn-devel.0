@@ -1,10 +1,10 @@
-Message-ID: <54239676.2060402@...1856...>
-Date: Thu, 25 Sep 2014 06:13:42 +0200
-From: Steffan Karger <steffan@...1856...>
 MIME-Version: 1.0
-References: <373411786.14344069.1411476345082.JavaMail.zimbra@...1347...>
-In-Reply-To: <373411786.14344069.1411476345082.JavaMail.zimbra@...1347...>
-Subject: Re: [Openvpn-devel] OCSP_check.sh fixup
+Date: Thu, 25 Sep 2014 03:04:02 -0300
+Message-ID: <CAHfqr-Zo32XxeXEepPoW7g6iK6KnZPjDpZCr0cYYMXEGJi4Ttw@...278...>
+From: Jorge Ramos <jframos@...1935...>
+Content-Type: multipart/alternative; boundary=047d7b34354c32d9260503dd91f6
+Subject: [Openvpn-devel] Problem with I603-64 under Vista 64 SP2
+Reply-To: jramos@...1936...
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,37 +13,89 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Hi Hubert,
+--047d7b34354c32d9260503dd91f6
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 23-09-14 14:45, Hubert Kario wrote:
-> There are few serious issues with the OCSP_check.sh script:
->  1. It will accept OCSP responses with bad signatures
->  2. It may accept OCSP old responses as currently valid
-> 
-> detailed description on bug tracker:
-> https://community.openvpn.net/openvpn/ticket/450#ticket
-> 
-> Pull request with fixes:
-> https://github.com/OpenVPN/openvpn/pull/17
+Hello,
 
-Thanks.
 
-OpenVPN uses a patch review mechanism that requires all patches to be
-sent to this mailinglist (see
-http://community.openvpn.net/openvpn/wiki/DeveloperDocumentation). Could
-you pleases send your suggested changes (as one or two patches) to this
-mailinglist? (git format-patch is your friend). Once the patches are on
-the mailinglist, we can do the final code review.
 
-Anticipating on the actual review, your suggested changes sound good to
-me. Normally we'd have to be careful not to break existing setups, but
-since this script has been broken for quite a while (and has only been
-fixed recently) it appears to be not used very often. So I think it is
-fine to change the behaviour like this.
+I installed openvpn-install-2.3.4-I603-x86_64.exe under Vista 64 SP2 and it
+didn=E2=80=99t work. VPN connects but don=E2=80=99t work and openvpn-gui ca=
+n=E2=80=99t stop openvpn
+process. I have tried manually signaling the event sent to openvpn via
+command line but it seems that openvpn wasn=E2=80=99t waiting on that. In t=
+his
+scenario a boot was impossible because openvpn didn=E2=80=99t die. I have to
+poweroff the computer each new try (annoying and dangerous) !
 
--Steffan
+
+
+I uninstall i603 and install openvpn-install-2.3.4-I003-x86_64.exe and
+everything works as expected including the manual signaling of event (I did
+it just to be sure, not a normal operation). The connection is usable, but
+slow. Probably a network related problem.
+
+
+
+I=E2=80=99m not sure if this is a bug or not.
+
+
+Regards
+
+Jorge Ramos
+
+--047d7b34354c32d9260503dd91f6
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><p class=3D"MsoNormal"><span lang=3D"EN-US" style=3D"backg=
+round-color:rgb(255,255,255)">Hello,</span></p>
+
+<p class=3D"MsoNormal"><span lang=3D"EN-US" style=3D"background-color:rgb(2=
+55,255,255)">=C2=A0</span></p>
+
+<p class=3D"MsoNormal"><span lang=3D"EN-US" style=3D"background-color:rgb(2=
+55,255,255)">I installed
+openvpn-install-2.3.4-I603-x86_64.exe under Vista 64 SP2 and it didn=E2=80=
+=99t work. VPN
+connects but don=E2=80=99t work and openvpn-gui can=E2=80=99t stop openvpn =
+process. I have
+tried manually signaling the event sent to openvpn via command line but it
+seems that openvpn wasn=E2=80=99t waiting on that. In this scenario a boot =
+was
+impossible because openvpn didn=E2=80=99t die. I have to poweroff the compu=
+ter each new
+try (annoying and dangerous) !</span></p>
+
+<p class=3D"MsoNormal"><span lang=3D"EN-US" style=3D"background-color:rgb(2=
+55,255,255)">=C2=A0</span></p>
+
+<p class=3D"MsoNormal"><span lang=3D"EN-US" style=3D"background-color:rgb(2=
+55,255,255)">I uninstall
+i603 and install openvpn-install-2.3.4-I003-x86_64.exe and everything works=
+ as
+expected including the manual signaling of event (I did it just to be sure,=
+ not
+a normal operation). The connection is usable, but slow. Probably a network
+related problem.</span></p>
+
+<p class=3D"MsoNormal"><span lang=3D"EN-US" style=3D"background-color:rgb(2=
+55,255,255)">=C2=A0</span></p>
+
+<p class=3D"MsoNormal"><span lang=3D"EN-US" style=3D"background-color:rgb(2=
+55,255,255)">I=E2=80=99m not
+sure if this is a bug or not.</span></p>
+
+<p class=3D"MsoNormal"><span lang=3D"EN-US" style=3D"background-color:rgb(2=
+55,255,255)"><br></span></p><p class=3D"MsoNormal"><span lang=3D"EN-US" sty=
+le=3D"background-color:rgb(255,255,255)">Regards=C2=A0</span></p>
+
+<p class=3D"MsoNormal">Jorge
+Ramos<br></p></div>
+
+--047d7b34354c32d9260503dd91f6--
 
