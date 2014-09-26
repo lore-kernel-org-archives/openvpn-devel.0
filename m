@@ -1,10 +1,11 @@
-From: Hubert Kario <hkario@...1347...>
-Date: Fri, 26 Sep 2014 12:24:01 +0200
-Message-Id: <1411727041-11884-2-git-send-email-hkario@...1347...>
-In-Reply-To: <1411727041-11884-1-git-send-email-hkario@...1347...>
-References: <1411727041-11884-1-git-send-email-hkario@...1347...>
-Subject: [Openvpn-devel] [PATCH 2/2] ocsp_check - double check if ocsp
-	didn't report any errors in execution
+Message-ID: <54259015.2030005@...1921...>
+Date: Fri, 26 Sep 2014 18:11:01 +0200
+From: Philipp Hagemeister <phihag@...1921...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature";
+	boundary="VwFdbpuh9sN9xIlK579ECHbb5qQGvRjQd"
+Subject: [Openvpn-devel] [PATCH] Implement on-link route adding for iproute2
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,41 +14,77 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-in case the reposnses are too old, ocsp tool can return text like this:
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--VwFdbpuh9sN9xIlK579ECHbb5qQGvRjQd
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 
-Response verify OK
-ca/cert.pem: WARNING: Status times invalid.
-139990703290240:error:2707307D:OCSP routines:OCSP_check_validity:status expired:ocsp_cl.c:358:
-good
-        This Update: Sep 21 12:12:48 2014 GMT
-        Next Update: Sep 22 12:12:48 2014 GMT
+Currently, when compiling with --enable-iproute2 , OpenVPN does not
+create a correct route when the user is connected to the Internet
+without a gateway (e.g. via ppp). This patch implements the
+corresponding FIXME.
 
-light change in buffering can cause "verify OK" and "ca/cert.pem: good"
-to be placed in a way that matching will be valid
+Signed-off-by: Philipp Hagemeister <phihag@...1921...>
 ---
- contrib/OCSP_check/OCSP_check.sh | 4 ++++
- 1 file changed, 4 insertions(+)
+ src/openvpn/route.c | 13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
 
-diff --git a/contrib/OCSP_check/OCSP_check.sh b/contrib/OCSP_check/OCSP_check.sh
-index ce7ec04..6876c6d 100644
---- a/contrib/OCSP_check/OCSP_check.sh
-+++ b/contrib/OCSP_check/OCSP_check.sh
-@@ -100,6 +100,10 @@ if [ $check_depth -eq -1 ] || [ $cur_depth -eq $check_depth ]; then
-                     -serial "${serial}" 2>&1)
- 
-     if [ $? -eq 0 ]; then
-+      # check if ocsp didn't report any errors
-+      if echo "$status" | grep -Eq "(error|fail)"; then
-+          exit 1
-+      fi
-       # check that the reported status of certificate is ok
-       if echo "$status" | grep -Fq "^${serial}: good"; then
-         # check if signature on the OCSP response verified correctly
--- 
-1.9.3
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index 5428e76..a06c841 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -1285,15 +1285,18 @@ add_route (struct route_ipv4 *r,
 
+ #if defined(TARGET_LINUX)
+ #ifdef ENABLE_IPROUTE
+-  /* FIXME -- add on-link support for ENABLE_IPROUTE */
+-  argv_printf (&argv, "%s route add %s/%d via %s",
+-             iproute_path,
++  argv_printf (&argv, "%s route add %s/%d",
++             iproute_path,
+              network,
+-             count_netmask_bits(netmask),
+-             gateway);
++             count_netmask_bits(netmask));
++
+   if (r->flags & RT_METRIC_DEFINED)
+     argv_printf_cat (&argv, "metric %d", r->metric);
+
++  if (is_on_link (is_local_route, flags, rgi))
++    argv_printf_cat (&argv, "dev %s", rgi->iface);
++  else
++    argv_printf_cat (&argv, "via %s", gateway);
+ #else
+   argv_printf (&argv, "%s add -net %s netmask %s",
+               ROUTE_PATH,
+--=20
+2.1.1
+
+
+--VwFdbpuh9sN9xIlK579ECHbb5qQGvRjQd
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQIcBAEBCgAGBQJUJZAVAAoJENtLVMukgmoYetkQAKUmxm8uWGZA93/OWUIsaKqy
+iFJEhud2gFoS17fIQiNtaa2nCpX1zT1l4Gnq/iNmf6N1jG3StgQvl4LKfHbuE7Km
+8Jds30DjWppzf1LZkL1EyQe6P5hplVzQDDze7xfdzq1NwRDhclyevKPiEBVISGx6
+OTcq+3Q1QUH+s4uZYF2US7kg8UTrroDZtd7g2Q4qcJUAqxbbRpggCXphezlfxvuH
+4A86NFVBjCsk5zLcQVQd1QlQmjGUAN1R46Af2/2Z5rAET38lMeG6i4dijP60NqIN
+DkDcrz3Rv1yKOY8zvGeFKDVz7yuVEr3o5ubrOaJX3pyeAamol7UzjCBBW3VjXbDa
+GmSCVNbgonNrTOZGMYuTw8Gb0AK7evJwyplwp12unxmUl8a0rcBEELcNaq2ROubk
+zwfdakoEQONWRX2ohIu7V3zHnw2Spe7nP5aIX9XRfxN7vSjvMZgq9eY+/2kft2y+
+AxU79+5a5L3XQ3DtiOkqe801vCVU53fBqTKPMyecxCEwzcypD6k2JOzvlhGD0nLV
+vjsLCO8qCAjrZ/55C9+YNN97kI5hQyCqWIFn1NWk3l1TGgYYEJfFmG4Lz2kMX/JZ
+/JsEtt7dyVN5B4fiO1QYfMXl9spJ/VKYdTajqL994qM9u63KSJcip47yYKnYKsG0
+G8gtn5dVW2qRCHYtwJ5C
+=ZjcH
+-----END PGP SIGNATURE-----
+
+--VwFdbpuh9sN9xIlK579ECHbb5qQGvRjQd--
 
