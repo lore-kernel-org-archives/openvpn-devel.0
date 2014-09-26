@@ -1,13 +1,8 @@
-Date: Thu, 25 Sep 2014 17:00:51 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20140925150051.GF396@...1296...>
-References: <CAHfqr-Zo32XxeXEepPoW7g6iK6KnZPjDpZCr0cYYMXEGJi4Ttw@...278...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="qcHopEYAB45HaUaB"
-Content-Disposition: inline
-In-Reply-To: <CAHfqr-Zo32XxeXEepPoW7g6iK6KnZPjDpZCr0cYYMXEGJi4Ttw@...278...>
-Subject: Re: [Openvpn-devel] Problem with I603-64 under Vista 64 SP2
+From: Hubert Kario <hkario@...1347...>
+Date: Fri, 26 Sep 2014 12:24:00 +0200
+Message-Id: <1411727041-11884-1-git-send-email-hkario@...1347...>
+Subject: [Openvpn-devel] [PATCH 1/2] ocsp_check - signature verification and
+	cert staus results are separate
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,45 +11,55 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: jramos@...1936...
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---qcHopEYAB45HaUaB
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+when openssl returns result of parsing and verification of the
+OCSP response, the signature verification is separate from the certificate
+status, as such it's necessary to check both of them.
 
-Hi,
+Otherwise results like:
 
-On Thu, Sep 25, 2014 at 03:04:02AM -0300, Jorge Ramos wrote:
-> I???m not sure if this is a bug or not.
+Response Verify Failure
+140170966779776:error:27069076:OCSP routines:OCSP_basic_verify:signer certificate not found:ocsp_vfy.c:85:
+ca/cert.pem: good
+        This Update: Sep 23 12:12:28 2014 GMT
 
-It is.  The new NDIS6 based tap driver seems to work for some, and hang
-for others (and this is what you've seen).
+will be accepted as being trustworthy.
 
-Samuli, have you had any word about this from the author?
+Note that "Response verify OK" is printed on stderr, so it can't
+be discarded.
 
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+Signed-off-by: Hubert Kario <hkario@...1347...>
+---
+ contrib/OCSP_check/OCSP_check.sh | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
---qcHopEYAB45HaUaB
-Content-Type: application/pgp-signature
-Content-Disposition: inline
+diff --git a/contrib/OCSP_check/OCSP_check.sh b/contrib/OCSP_check/OCSP_check.sh
+index 553c3dc..ce7ec04 100644
+--- a/contrib/OCSP_check/OCSP_check.sh
++++ b/contrib/OCSP_check/OCSP_check.sh
+@@ -97,12 +97,15 @@ if [ $check_depth -eq -1 ] || [ $cur_depth -eq $check_depth ]; then
+                     "$nonce" \
+                     -CAfile "$verify" \
+                     -url "$ocsp_url" \
+-                    -serial "${serial}" 2>/dev/null)
++                    -serial "${serial}" 2>&1)
+ 
+     if [ $? -eq 0 ]; then
+-      # check that it's good
++      # check that the reported status of certificate is ok
+       if echo "$status" | grep -Fq "^${serial}: good"; then
+-        exit 0
++        # check if signature on the OCSP response verified correctly
++        if echo "$status" | grep -Fq "^Response verify OK"; then
++            exit 0
++        fi
+       fi
+     fi
+   fi
+-- 
+1.9.3
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQCVAwUBVCQuI6kuBuNlUUl1AQJmeAP+IfmXcAXG4E86OgZNIwbJ5re+0Iv1FuEW
-m/ZRT7ahs1frZmVE7zaIFf4MSKRagUt4/P+JvPQwrj7vRgIa0LufJcAG4W1YAKLz
-Li3OVHdTFvQEy+4M8YZzrpbaNJ+F/7dQvVS7z0y/QwRJwDr3m9tkNBOa6Jt1DQva
-Ji77Meu+y4s=
-=8yPI
------END PGP SIGNATURE-----
-
---qcHopEYAB45HaUaB--
 
