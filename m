@@ -1,8 +1,9 @@
-Message-ID: <54291BE0.2080809@...515...>
-Date: Mon, 29 Sep 2014 11:44:16 +0300
+Message-ID: <54291DD9.6060802@...515...>
+Date: Mon, 29 Sep 2014 11:52:41 +0300
 From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] tap-windows6 bugfixes
+Subject: [Openvpn-devel] Any Windows-based OpenVPN servers available for
+	fixing bug #432?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,16 +20,14 @@ To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-Hi all,
+Hi,
 
-Just got back from my one-week vacation and learned that the author of
-tap-windows6 has started fixing the issues:
+Does someone have a spare (=3Dnon-production) Windows-based OpenVPN server
+(e.g. on EC2) which could be used to debug and fix #432?
 
-<https://github.com/TDivine/tap-windows6>
+<https://community.openvpn.net/openvpn/ticket/432>
 
-I'll build an updated tap-windows6 installer after a few more bugs have
-been squashed, then after some beta-testing rebuild the OpenVPN Windows
-installers.
+Best regards,
 
 - --=20
 Samuli Sepp=E4nen
@@ -39,9 +38,9 @@ irc freenode net: mattock
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1
 
-iEYEARECAAYFAlQpG+AACgkQwp2X7RmNIqMcDgCggeUdIFKphJKJc9ao+gLi/uxs
-tMoAniMhSm/wvGJrV8d28YcX7po1KHLN
-=3DvJf9
+iEYEARECAAYFAlQpHdkACgkQwp2X7RmNIqME2wCgkqEgRHvJh9yflN2sT3GYYhob
+ICMAoOG6X7E65wTsWz1lQxXxULjNbd/4
+=3DtMCF
 -----END PGP SIGNATURE-----
 
 
