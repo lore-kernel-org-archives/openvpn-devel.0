@@ -1,12 +1,8 @@
-Message-ID: <542E87BD.2090409@...515...>
-Date: Fri, 03 Oct 2014 14:25:49 +0300
-From: =?windows-1252?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
-MIME-Version: 1.0
-References: <20140426210044.GF16637@...1296...>
-	<535CD403.6040603@...1227...>
-In-Reply-To: <535CD403.6040603@...1227...>
-Subject: Re: [Openvpn-devel] socket.c issues when building snapshots on
-	windows...
+From: David Sommerseth <openvpn.list@...1114...>
+Date: Fri,  3 Oct 2014 15:57:41 +0200
+Message-Id: <1412344661-26600-1-git-send-email-openvpn.list@...1114...>
+Subject: [Openvpn-devel] [PATCH] systemd: Use systemd functions to consider
+	systemd availability
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,112 +11,134 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
-To: Arne Schwabe <arne@...1227...>, Gert Doering <gert@...1296...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
+From: David Sommerseth <davids@...1347...>
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+This is another systemd implementation clean-up.  It was found that
+SELinux will block OpenVPN from checking /sys/fs/cgroups.  As OpenVPN
+only checked /sys/fs/cgroups and /sys/fs/cgroups/systemd to see if
+systemd was available or not, it was considered better to query
+systemd directly to see whether or not to query for usernames and
+passwords via systemd.
 
+Signed-off-by: David Sommerseth <davids@...1347...>
+---
+ configure.ac            | 37 ++++++++++++++++++++++++++++++++++++-
+ src/openvpn/Makefile.am |  1 +
+ src/openvpn/console.c   | 10 ++++++----
+ 3 files changed, 43 insertions(+), 5 deletions(-)
 
-> On 26.04.2014 23:00, Gert Doering wrote:
->> Hiya,
->>
->> with some arm-twisting, I managed to convince build-snapshot to actually
->> do that (it would prefer to do a git clone, autoconf, tarball, copy
-tarball,
->> ignore the tarball, fetch 2.3.3 source, extract 2.3.3 and build that,
-thus
->> never showing compilation errors...), and here we go...
->>
->> socket.c: In function 'socket_bind':
->> socket.c:1124:40: error: 'IPV6_V6ONLY' undeclared (first use in this
-function)
->> socket.c:1124:40: note: each undeclared identifier is reported only
-once for each function it appears in
->> socket.c:1124:7: warning: passing argument 4 of 'setsockopt' from
-incompatible pointer type [enabled by default]
->>
-/usr/lib/gcc/i686-w64-mingw32/4.6/../../../../i686-w64-mingw32/include/wins=
-ock2.h:1016:34:
-note: expected 'const char *' but argument is of type 'int *'
->> socket.c: In function 'openvpn_connect':
->> socket.c:1218:32: error: 'const struct sockaddr' has no member named
-'addr'
->> socket.c:1218:62: error: 'const struct sockaddr' has no member named
-'addr'
->> socket.c: In function 'socket_recv_queue':
->> socket.c:3135:45: error: 'struct link_socket_addr' has no member
-named 'local'
->>
->> ... I'm posting this here so whoever has time can take a stab at it
->> (I won't be able to work on this for the next couple of days, will focus
->> on 2.3.4 release items).
->>
->>
-> The option seems to be supported since Windows Vista. I think we should
-> add something like this to the windows ifdefs (copied from
-> http://marc.info/?l=3Dapr-dev&m=3D121392734329754&w=3D2):
->
-> +/* Ugly solution - only the Windows 2008 SDK or later have this symbol
-> defined.
-> + * The symbol doesn't guarantee that the socket option is supported on
-> + * the runtime version of Windows, so we define it here (for build
-> systems)
-> + * and always check at runtime if it is supported.
-> + */
-> +#ifndef IPV6_V6ONLY
-> +#define IPV6_V6ONLY 27
-> +#endif
->
->
-I'll revive this old thread because the problem seems to persist. It
-seems we have two issues here. First there's this:
-
-"socket.c:1124:40: error: 'IPV6_V6ONLY' undeclared (first use in this
-function)"
-
-The above error can be fixed by using mingw-w64 that is recent enough -
-version 2.23 seems to work fine.
-
-However, that will not fix this error:
-
-socket.c: In function =91socket_bind=92:
-socket.c:1120:7: warning: passing argument 4 of =91setsockopt=92 from
-incompatible pointer type [enabled by default]
-       if (setsockopt(sd, IPPROTO_IPV6, IPV6_V6ONLY, &v6only,
-sizeof(v6only)))
-       ^
-In file included from ../../src/compat/compat.h:29:0,
-                 from syshead.h:28,
-                 from socket.c:31:
-/usr/share/mingw-w64/include/winsock2.h:999:34: note: expected =91const
-char *=92 but argument is of type =91int *=92
-   WINSOCK_API_LINKAGE int WSAAPI setsockopt(SOCKET s,int level,int
-optname,const char *optval,int optlen);
-                                  ^
-socket.c: In function =91socket_recv_queue=92:
-socket.c:3098:45: error: =91struct link_socket_addr=92 has no member named
-=91local=92
-    int addrlen =3D af_addr_size(sock->info.lsa->local.addr.sa.sa_family);
-                                             ^
-make[4]: *** [socket.o] Error 1
-
-- ---
-
-The above can be reproduced using latest Git sources and Ubuntu 14.04.
-Any ideas how to fix this?
-
-Samuli
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iEYEARECAAYFAlQuh70ACgkQwp2X7RmNIqPqOgCfS9dM5gG2ONr8qZEngqTMOjGf
-V2UAoKq/E0K46tNFjXkuFt6uxCZWw5EO
-=3D4XgJ
------END PGP SIGNATURE-----
-
+diff --git a/configure.ac b/configure.ac
+index 6667019..06371c8 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -997,6 +997,41 @@ if test "$enable_lz4" = "yes" && test "$enable_comp_stub" = "no"; then
+ fi
+ 
+ 
++dnl
++dnl Check for systemd
++dnl
++
++AC_ARG_VAR([SYSTEMD_LIBS], [linker flags for systemd])
++if test "$enable_systemd" = "yes" ; then
++    AC_CHECKING([for systemd Library and Header files])
++    havesystemdlib=1
++
++    # if SYSTEMD_LIBS is set, we assume it will work, otherwise test
++    saved_LIBS="${CFLAGS}"
++    LIBS="${LIBS} ${SYSTEMD_LIBS}"
++    if test -z "${SYSTEMD_LIBS}"; then
++	AC_CHECK_LIB(systemd-daemon, sd_booted,
++	    [ SYSTEMD_LIBS="-lsystemd-daemon" ],
++	    [
++	        AC_MSG_ERROR([systemd-daemon library not found.])
++	        havesystemdlib=0
++	    ])
++    fi
++
++    AC_CHECK_HEADERS(systemd/sd-daemon.h,
++       ,
++       [
++	   AC_MSG_RESULT([systemd headers not found.])
++	   havesnappylib=0
++       ])
++
++    if test $havesnappylib = 0 ; then
++        AC_MSG_ERROR([systemd headers or library not available])
++    fi
++    OPTIONAL_SYSTEMD_LIBS="${SYSTEMD_LIBS}"
++    AC_DEFINE(ENABLE_SYSTEMD, 1, [Enable systemd integration])
++    LIBS="${saved_LIBS}"
++fi
+ 
+ 
+ AC_MSG_CHECKING([git checkout])
+@@ -1037,7 +1072,6 @@ test "${enable_def_auth}" = "yes" && AC_DEFINE([ENABLE_DEF_AUTH], [1], [Enable d
+ test "${enable_pf}" = "yes" && AC_DEFINE([ENABLE_PF], [1], [Enable internal packet filter])
+ test "${enable_strict_options}" = "yes" && AC_DEFINE([ENABLE_STRICT_OPTIONS_CHECK], [1], [Enable strict options check between peers])
+ test "${enable_password_save}" = "yes" && AC_DEFINE([ENABLE_PASSWORD_SAVE], [1], [Allow --askpass and --auth-user-pass passwords to be read from a file])
+-test "${enable_systemd}" = "yes" && AC_DEFINE([ENABLE_SYSTEMD], [1], [Enable systemd support])
+ 
+ case "${with_crypto_library}" in
+ 	openssl)
+@@ -1170,6 +1204,7 @@ AC_SUBST([OPTIONAL_SNAPPY_CFLAGS])
+ AC_SUBST([OPTIONAL_SNAPPY_LIBS])
+ AC_SUBST([OPTIONAL_LZ4_CFLAGS])
+ AC_SUBST([OPTIONAL_LZ4_LIBS])
++AC_SUBST([OPTIONAL_SYSTEMD_LIBS])
+ AC_SUBST([OPTIONAL_PKCS11_HELPER_CFLAGS])
+ AC_SUBST([OPTIONAL_PKCS11_HELPER_LIBS])
+ 
+diff --git a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am
+index fd593c5..d089f50 100644
+--- a/src/openvpn/Makefile.am
++++ b/src/openvpn/Makefile.am
+@@ -126,6 +126,7 @@ openvpn_LDADD = \
+ 	$(OPTIONAL_PKCS11_HELPER_LIBS) \
+ 	$(OPTIONAL_CRYPTO_LIBS) \
+ 	$(OPTIONAL_SELINUX_LIBS) \
++	$(OPTIONAL_SYSTEMD_LIBS) \
+ 	$(OPTIONAL_DL_LIBS)
+ if WIN32
+ openvpn_SOURCES += openvpn_win32_resources.rc
+diff --git a/src/openvpn/console.c b/src/openvpn/console.c
+index 337b1bb..d66d408 100644
+--- a/src/openvpn/console.c
++++ b/src/openvpn/console.c
+@@ -34,6 +34,10 @@
+ #include "buffer.h"
+ #include "misc.h"
+ 
++#ifdef ENABLE_SYSTEMD
++#include <systemd/sd-daemon.h>
++#endif
++
+ #ifdef WIN32
+ 
+ #include "win32.h"
+@@ -143,15 +147,13 @@ close_tty (FILE *fp)
+ static bool
+ check_systemd_running ()
+ {
+-  struct stat a, b, c;
++  struct stat c;
+ 
+   /* We simply test whether the systemd cgroup hierarchy is
+    * mounted, as well as the systemd-ask-password executable
+    * being available */
+ 
+-  return (lstat("/sys/fs/cgroup", &a) == 0)
+-	  && (lstat("/sys/fs/cgroup/systemd", &b) == 0)
+-	  && (a.st_dev != b.st_dev)
++  return (sd_booted() > 0)
+ 	  && (stat(SYSTEMD_ASK_PASSWORD_PATH, &c) == 0);
+ 
+ }
+-- 
+1.8.3.1
 
 
