@@ -1,16 +1,8 @@
-Message-ID: <542EC2B3.6070201@...1114...>
-Date: Fri, 03 Oct 2014 17:37:23 +0200
 From: David Sommerseth <openvpn.list@...1114...>
-MIME-Version: 1.0
-References: <1412344661-26600-1-git-send-email-openvpn.list@...1114...>
-	<CAJ0EP410UgueO4xYY_QohFgA=TLyEghp3ByFVw0pkDDnG1iPEg@...278...>
-In-Reply-To: <CAJ0EP410UgueO4xYY_QohFgA=TLyEghp3ByFVw0pkDDnG1iPEg@...278...>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="N8uckj00hu4lkEUr785esJ4FHJHhlr73K"
-Subject: Re: [Openvpn-devel] [PATCH] systemd: Use systemd functions to
- consider systemd availability
-Reply-To: openvpn-devel@lists.sourceforge.net
+Date: Fri,  3 Oct 2014 19:16:07 +0200
+Message-Id: <1412356567-27125-1-git-send-email-openvpn.list@...1114...>
+Subject: [Openvpn-devel] [PATCH] systemd: Use systemd functions to consider
+	systemd availability
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,63 +11,127 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Mike Gilbert <floppym@...594...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---N8uckj00hu4lkEUr785esJ4FHJHhlr73K
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: David Sommerseth <davids@...1347...>
 
-On 03/10/14 16:47, Mike Gilbert wrote:
->> +AC_ARG_VAR([SYSTEMD_LIBS], [linker flags for systemd])
->> +if test "$enable_systemd" =3D "yes" ; then
->> +    AC_CHECKING([for systemd Library and Header files])
->> +    havesystemdlib=3D1
->> +
->> +    # if SYSTEMD_LIBS is set, we assume it will work, otherwise test
->> +    saved_LIBS=3D"${CFLAGS}"
->> +    LIBS=3D"${LIBS} ${SYSTEMD_LIBS}"
->> +    if test -z "${SYSTEMD_LIBS}"; then
->> +       AC_CHECK_LIB(systemd-daemon, sd_booted,
->> +           [ SYSTEMD_LIBS=3D"-lsystemd-daemon" ],
->> +           [
->> +               AC_MSG_ERROR([systemd-daemon library not found.])
->> +               havesystemdlib=3D0
->> +           ])
->> +    fi
->=20
-> Checking for libsystemd-daemon this way will fail with newer releases
-> of systemd (>=3D 209), where all systemd libs have been consolidated
-> into a single "libsystemd".
+This is another systemd implementation clean-up.  It was found that
+SELinux will block OpenVPN from checking /sys/fs/cgroups.  As OpenVPN
+only checked /sys/fs/cgroups and /sys/fs/cgroups/systemd to see if
+systemd was available or not, it was considered better to query
+systemd directly to see whether or not to query for usernames and
+passwords via systemd.
 
-Whoops!  Didn't know that.
+This patch has been compile tested on Fedora 19 and Fedora 21 alpha and
+function tested on Fedora 19.
 
-> Also, why not use PKG_CHECK_MODULES here?
+  v2 - Use PKG_CHECK_MODULES() + check for libsystemd before
+       libystemd-daemon.  systemd >= 209 use a unified library
 
-Good catch!  Actually, it was a copy-paste of a section earlier in the
-file I knew worked.  But I agree, using PKG_CHECK_MODULES is more
-appropriate.
+Signed-off-by: David Sommerseth <davids@...1347...>
+---
+ configure.ac            | 24 +++++++++++++++++++++++-
+ src/openvpn/Makefile.am |  1 +
+ src/openvpn/console.c   | 10 ++++++----
+ 3 files changed, 30 insertions(+), 5 deletions(-)
 
-/me goes to prepare a v2 patch
+diff --git a/configure.ac b/configure.ac
+index 6667019..608ab6d 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -997,6 +997,28 @@ if test "$enable_lz4" = "yes" && test "$enable_comp_stub" = "no"; then
+ fi
+ 
+ 
++dnl
++dnl Check for systemd
++dnl
++
++if test "$enable_systemd" = "yes" ; then
++    PKG_CHECK_MODULES([libsystemd], [systemd libsystemd],
++                      [],
++                      [PKG_CHECK_MODULES([libsystemd], [libsystemd-daemon])]
++                      )
++    AC_CHECK_HEADERS(systemd/sd-daemon.h,
++       ,
++       [
++	   AC_MSG_ERROR([systemd development headers not found.])
++       ])
++
++    saved_LIBS="${LIBS}"
++    LIBS="${LIBS} ${libsystemd_LIBS}"
++    AC_CHECK_FUNCS([sd_booted], [], [AC_MSG_ERROR([systemd library is missing sd_booted()])])
++    OPTIONAL_SYSTEMD_LIBS="${libsystemd_LIBS}"
++    AC_DEFINE(ENABLE_SYSTEMD, 1, [Enable systemd integration])
++    LIBS="${saved_LIBS}"
++fi
+ 
+ 
+ AC_MSG_CHECKING([git checkout])
+@@ -1037,7 +1059,6 @@ test "${enable_def_auth}" = "yes" && AC_DEFINE([ENABLE_DEF_AUTH], [1], [Enable d
+ test "${enable_pf}" = "yes" && AC_DEFINE([ENABLE_PF], [1], [Enable internal packet filter])
+ test "${enable_strict_options}" = "yes" && AC_DEFINE([ENABLE_STRICT_OPTIONS_CHECK], [1], [Enable strict options check between peers])
+ test "${enable_password_save}" = "yes" && AC_DEFINE([ENABLE_PASSWORD_SAVE], [1], [Allow --askpass and --auth-user-pass passwords to be read from a file])
+-test "${enable_systemd}" = "yes" && AC_DEFINE([ENABLE_SYSTEMD], [1], [Enable systemd support])
+ 
+ case "${with_crypto_library}" in
+ 	openssl)
+@@ -1170,6 +1191,7 @@ AC_SUBST([OPTIONAL_SNAPPY_CFLAGS])
+ AC_SUBST([OPTIONAL_SNAPPY_LIBS])
+ AC_SUBST([OPTIONAL_LZ4_CFLAGS])
+ AC_SUBST([OPTIONAL_LZ4_LIBS])
++AC_SUBST([OPTIONAL_SYSTEMD_LIBS])
+ AC_SUBST([OPTIONAL_PKCS11_HELPER_CFLAGS])
+ AC_SUBST([OPTIONAL_PKCS11_HELPER_LIBS])
+ 
+diff --git a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am
+index fd593c5..d089f50 100644
+--- a/src/openvpn/Makefile.am
++++ b/src/openvpn/Makefile.am
+@@ -126,6 +126,7 @@ openvpn_LDADD = \
+ 	$(OPTIONAL_PKCS11_HELPER_LIBS) \
+ 	$(OPTIONAL_CRYPTO_LIBS) \
+ 	$(OPTIONAL_SELINUX_LIBS) \
++	$(OPTIONAL_SYSTEMD_LIBS) \
+ 	$(OPTIONAL_DL_LIBS)
+ if WIN32
+ openvpn_SOURCES += openvpn_win32_resources.rc
+diff --git a/src/openvpn/console.c b/src/openvpn/console.c
+index 337b1bb..d66d408 100644
+--- a/src/openvpn/console.c
++++ b/src/openvpn/console.c
+@@ -34,6 +34,10 @@
+ #include "buffer.h"
+ #include "misc.h"
+ 
++#ifdef ENABLE_SYSTEMD
++#include <systemd/sd-daemon.h>
++#endif
++
+ #ifdef WIN32
+ 
+ #include "win32.h"
+@@ -143,15 +147,13 @@ close_tty (FILE *fp)
+ static bool
+ check_systemd_running ()
+ {
+-  struct stat a, b, c;
++  struct stat c;
+ 
+   /* We simply test whether the systemd cgroup hierarchy is
+    * mounted, as well as the systemd-ask-password executable
+    * being available */
+ 
+-  return (lstat("/sys/fs/cgroup", &a) == 0)
+-	  && (lstat("/sys/fs/cgroup/systemd", &b) == 0)
+-	  && (a.st_dev != b.st_dev)
++  return (sd_booted() > 0)
+ 	  && (stat(SYSTEMD_ASK_PASSWORD_PATH, &c) == 0);
+ 
+ }
+-- 
+1.8.3.1
 
---=20
-kind regards,
-
-David Sommerseth
-
-
---N8uckj00hu4lkEUr785esJ4FHJHhlr73K
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iEYEARECAAYFAlQuwrYACgkQDC186MBRfrqZbQCfck87ziH1giR36w/hu92s39qG
-eV8AnAxspUP3NSpikbgmOJuI6KvNgvLr
-=W2VQ
------END PGP SIGNATURE-----
-
---N8uckj00hu4lkEUr785esJ4FHJHhlr73K--
 
