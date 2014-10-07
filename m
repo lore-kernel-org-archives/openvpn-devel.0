@@ -1,7 +1,7 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Tue,  7 Oct 2014 20:49:35 +0200
-Message-Id: <1412707775-17304-1-git-send-email-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH] Add documentation for PERSIST_TUN_ACTION
+Date: Tue,  7 Oct 2014 22:04:00 +0200
+Message-Id: <1412712240-3333-1-git-send-email-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH v2] Add documentation for PERSIST_TUN_ACTION
 	(Android specific)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -46,6 +46,6 @@ index 871e399..cf8b3c7 100644
 +- OPEN_AFTER_CLOSE: First close the old fd and then open a new to workaround the bug
 +- OPEN_BEFORE_CLOSE: the normal behaviour when the VPN configuration changed
 -- 
-1.9.3 (Apple Git-50)
+1.8.5.2 (Apple Git-48)
 
 
