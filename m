@@ -1,10 +1,12 @@
-Message-ID: <5432E951.6020405@...1435...>
-Date: Mon, 6 Oct 2014 21:11:13 +0200
-From: Steffan Karger <steffan.karger@...1435...>
+Message-ID: <5433CFD5.5060901@...515...>
+Date: Tue, 07 Oct 2014 14:34:45 +0300
+From: =?windows-1252?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="------------090009090308010801080703"
-Subject: [Openvpn-devel] [PATCH] Fix regression with password protected
-	private keys (polarssl)
+References: <CAPd-S-PVJzdHKfOhMuJMmUG8kEETKweTW46owhAJa6aS4Ny+Qg@...278...>
+In-Reply-To: <CAPd-S-PVJzdHKfOhMuJMmUG8kEETKweTW46owhAJa6aS4Ny+Qg@...278...>
+Content-Type: multipart/alternative;
+	boundary="------------010307000205040206040802"
+Subject: Re: [Openvpn-devel] Paid Engagement
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,150 +15,164 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Sio Poh Tan <fjor72@...277...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---------------090009090308010801080703
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+This is a multi-part message in MIME format.
+--------------010307000205040206040802
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
+
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
 Hi,
 
-Between versions 1.2.7 and 1.2.8, polarssl changed the errors returned
-by the X509 parsing functions, which broke the OpenVPN implementation
-for password protected private keys in polarssl builds. Later, for
-polarssl 1.3, the return codes changed again.
+Have you checked if the OpenVPN Connect client (bundled with the Access
+Server) meets your requirements? See section 5 in here:
 
-The attached patches fix the regression by checking for the new errors
-in OpenVPN. Since the 2.3 and master code is slightly different here, I
-made a patch for each branch.
+<http://openvpn.net/index.php/access-server/as-advantages.html>
 
-The polarssl change for 1.2.8:
-https://github.com/polarssl/polarssl/commit/b495d3a
+- --=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
 
-An later for polarssl 1.3 (search for pk_parse_key()):
-https://github.com/polarssl/polarssl/commit/1a7550a
+irc freenode net: mattock
 
--Steffan
 
---------------090009090308010801080703
-Content-Type: text/x-patch;
-	name="2.3-Fix-regression-with-password-protected-private-keys-.patch"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment;
-	filename*0="2.3-Fix-regression-with-password-protected-private-keys-.pat";
-	filename*1="ch"
 
-From 3c6c25b8c2270ad0af71a8837b60ea40ecfe66be Mon Sep 17 00:00:00 2001
-From: Steffan Karger <steffan.karger@...1435...>
-Date: Fri, 19 Sep 2014 06:43:48 +0200
-Subject: [PATCH (2.3)] Fix regression with password protected private keys
- (polarssl)
 
-Between versions 1.2.7 and 1.2.8, polarssl changed the errors
-returned by the X509 parsing functions, which broke the OpenVPN
-implementation for password protected private keys in polarssl
-builds. This patch fixes that by checking for the new errors in
-OpenVPN.
-
-Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+> Hello OpenVPN Developers,
+>
+> I understand that the current version of OpenVPN supports
+implementation of TLS 1.2 using exported cert and key. However, I have a
+project that requires implementation of TLS 1.2 using cryptoapicert.
+>
+> If any developer is interested to work on this implementation in
+OpenVPN, please email me specifying the cost of doing this. I do respect
+the developer's time and effort and hence, this will be a paid engagement.
+>
+> Thank you.
+>
+> Best Regards,
+> Isaac
+>
+>
+>
+---------------------------------------------------------------------------=
 ---
- src/openvpn/ssl_polarssl.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/src/openvpn/ssl_polarssl.c b/src/openvpn/ssl_polarssl.c
-index e3e3017..aba405b 100644
---- a/src/openvpn/ssl_polarssl.c
-+++ b/src/openvpn/ssl_polarssl.c
-@@ -273,7 +273,7 @@ tls_ctx_load_priv_file (struct tls_root_ctx *ctx, const char *priv_key_file,
-       status = x509parse_key(ctx->priv_key,
- 	  priv_key_file_inline, strlen(priv_key_file_inline),
- 	  NULL, 0);
--      if (POLARSSL_ERR_PEM_PASSWORD_REQUIRED == status)
-+      if (POLARSSL_ERR_X509_PASSWORD_REQUIRED == status)
- 	{
- 	  char passbuf[512] = {0};
- 	  pem_password_callback(passbuf, 512, 0, NULL);
-@@ -285,7 +285,7 @@ tls_ctx_load_priv_file (struct tls_root_ctx *ctx, const char *priv_key_file,
-   else
-     {
-       status = x509parse_keyfile(ctx->priv_key, priv_key_file, NULL);
--      if (POLARSSL_ERR_PEM_PASSWORD_REQUIRED == status)
-+      if (POLARSSL_ERR_X509_PASSWORD_REQUIRED == status)
- 	{
- 	  char passbuf[512] = {0};
- 	  pem_password_callback(passbuf, 512, 0, NULL);
-@@ -295,7 +295,7 @@ tls_ctx_load_priv_file (struct tls_root_ctx *ctx, const char *priv_key_file,
-   if (0 != status)
-     {
- #ifdef ENABLE_MANAGEMENT
--      if (management && (POLARSSL_ERR_PEM_PASSWORD_MISMATCH == status))
-+      if (management && (POLARSSL_ERR_X509_PASSWORD_MISMATCH == status))
- 	  management_auth_failure (management, UP_TYPE_PRIVATE_KEY, NULL);
- #endif
-       msg (M_WARN, "Cannot load private key file %s", priv_key_file);
--- 
-1.9.1
+> Meet PCI DSS 3.0 Compliance Requirements with EventLog Analyzer
+> Achieve PCI DSS 3.0 Compliant Status with Out-of-the-box PCI DSS Reports
+> Are you Audit-Ready for PCI DSS 3.0 Compliance? Download White paper
+> Comply to PCI DSS 3.0 Requirement 10 and 11.5 with EventLog Analyzer
+>
+http://pubads.g.doubleclick.net/gampad/clk?id=3D154622311&iu=3D/4140/ostg.c=
+lktrk
+>
+>
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
 
---------------090009090308010801080703
-Content-Type: text/x-patch;
-	name="master-Fix-regression-with-password-protected-private-keys-.patch"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment;
-	filename*0="master-Fix-regression-with-password-protected-private-keys-.";
-	filename*1="patch"
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
 
-From 5671a73039e94df29fbe07b8250284366ebcda7d Mon Sep 17 00:00:00 2001
-From: Steffan Karger <steffan.karger@...1435...>
-Date: Fri, 19 Sep 2014 06:19:13 +0200
-Subject: [PATCH (master)] Fix regression with password protected private keys
- (polarssl)
-
-Between versions 1.2 and 1.3, polarssl changed the errors
-returned by the X509 parsing functions, which broke the OpenVPN
-implementation for password protected private keys in polarssl
-builds. This patch fixes that by checking for the new errors in
-OpenVPN.
-
-Signed-off-by: Steffan Karger <steffan.karger@...1435...>
----
- src/openvpn/ssl_polarssl.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/src/openvpn/ssl_polarssl.c b/src/openvpn/ssl_polarssl.c
-index 102a5a4..94ae4c3 100644
---- a/src/openvpn/ssl_polarssl.c
-+++ b/src/openvpn/ssl_polarssl.c
-@@ -298,7 +298,7 @@ tls_ctx_load_priv_file (struct tls_root_ctx *ctx, const char *priv_key_file,
- 	  (const unsigned char *) priv_key_inline, strlen(priv_key_inline),
- 	  NULL, 0);
- 
--      if (POLARSSL_ERR_PEM_PASSWORD_REQUIRED == status)
-+      if (POLARSSL_ERR_PK_PASSWORD_REQUIRED == status)
- 	{
- 	  char passbuf[512] = {0};
- 	  pem_password_callback(passbuf, 512, 0, NULL);
-@@ -310,7 +310,7 @@ tls_ctx_load_priv_file (struct tls_root_ctx *ctx, const char *priv_key_file,
-   else
-     {
-       status = pk_parse_keyfile(ctx->priv_key, priv_key_file, NULL);
--      if (POLARSSL_ERR_PEM_PASSWORD_REQUIRED == status)
-+      if (POLARSSL_ERR_PK_PASSWORD_REQUIRED == status)
- 	{
- 	  char passbuf[512] = {0};
- 	  pem_password_callback(passbuf, 512, 0, NULL);
-@@ -320,7 +320,7 @@ tls_ctx_load_priv_file (struct tls_root_ctx *ctx, const char *priv_key_file,
-   if (0 != status)
-     {
- #ifdef ENABLE_MANAGEMENT
--      if (management && (POLARSSL_ERR_PEM_PASSWORD_MISMATCH == status))
-+      if (management && (POLARSSL_ERR_PK_PASSWORD_MISMATCH == status))
- 	  management_auth_failure (management, UP_TYPE_PRIVATE_KEY, NULL);
- #endif
-       msg (M_WARN, "Cannot load private key file %s", priv_key_file);
--- 
-1.9.1
+iEYEARECAAYFAlQzz9UACgkQwp2X7RmNIqMnpwCdGkTeOe9UFqutDBcJz+ZOK38s
+KgIAoIK1FKWFCHZdu2sTiN5laqVkClWD
+=3DdC3b
+-----END PGP SIGNATURE-----
 
 
---------------090009090308010801080703--
+--------------010307000205040206040802
+Content-Type: text/html; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
+
+<html>
+  <head>
+    <meta content=3D"text/html; charset=3Dwindows-1252"
+      http-equiv=3D"Content-Type">
+  </head>
+  <body text=3D"#000000" bgcolor=3D"#FFFFFF">
+    <br>
+    -----BEGIN PGP SIGNED MESSAGE-----<br>
+    Hash: SHA1<br>
+    <br>
+    Hi,<br>
+    <br>
+    Have you checked if the OpenVPN Connect client (bundled with the
+    Access Server) meets your requirements? See section 5 in here:<br>
+    <br>
+<a class=3D"moz-txt-link-rfc2396E" href=3D"http://openvpn.net/index.php/acc=
+ess-server/as-advantages.html">&lt;http://openvpn.net/index.php/access-serv=
+er/as-advantages.html&gt;</a><br>
+    <br>
+    - -- <br>
+    Samuli Sepp=E4nen<br>
+    Community Manager<br>
+    OpenVPN Technologies, Inc<br>
+    <br>
+    irc freenode net: mattock<br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <span style=3D"white-space: pre;">&gt; Hello OpenVPN Developers,<br>
+      &gt;<br>
+      &gt; I understand that the current version of OpenVPN supports
+      implementation of TLS 1.2 using exported cert and key. However, I
+      have a project that requires implementation of TLS 1.2 using
+      cryptoapicert.<br>
+      &gt;<br>
+      &gt; If any developer is interested to work on this implementation
+      in OpenVPN, please email me specifying the cost of doing this. I
+      do respect the developer's time and effort and hence, this will be
+      a paid engagement.<br>
+      &gt;<br>
+      &gt; Thank you.<br>
+      &gt;<br>
+      &gt; Best Regards,<br>
+      &gt; Isaac<br>
+      &gt;<br>
+      &gt;<br>
+      &gt;
+---------------------------------------------------------------------------=
+---<br>
+      &gt; Meet PCI DSS 3.0 Compliance Requirements with EventLog
+      Analyzer<br>
+      &gt; Achieve PCI DSS 3.0 Compliant Status with Out-of-the-box PCI
+      DSS Reports<br>
+      &gt; Are you Audit-Ready for PCI DSS 3.0 Compliance? Download
+      White paper<br>
+      &gt; Comply to PCI DSS 3.0 Requirement 10 and 11.5 with EventLog
+      Analyzer<br>
+      &gt;
+<a class=3D"moz-txt-link-freetext" href=3D"http://pubads.g.doubleclick.net/=
+gampad/clk?id=3D154622311&amp;iu=3D/4140/ostg.clktrk">http://pubads.g.doubl=
+eclick.net/gampad/clk?id=3D154622311&amp;iu=3D/4140/ostg.clktrk</a><br>
+      &gt;<br>
+      &gt;<br>
+      &gt; _______________________________________________<br>
+      &gt; Openvpn-devel mailing list<br>
+      &gt; <a class=3D"moz-txt-link-abbreviated" href=3D"mailto:Openvpn-dev=
+el@lists.sourceforge.net">Openvpn-devel@lists.sourceforge.net</a><br>
+      &gt; <a class=3D"moz-txt-link-freetext" href=3D"https://lists.sourcef=
+orge.net/lists/listinfo/openvpn-devel">https://lists.sourceforge.net/lists/=
+listinfo/openvpn-devel</a></span><br>
+    <br>
+    <br>
+    -----BEGIN PGP SIGNATURE-----<br>
+    Version: GnuPG v1<br>
+    <br>
+    iEYEARECAAYFAlQzz9UACgkQwp2X7RmNIqMnpwCdGkTeOe9UFqutDBcJz+ZOK38s<br>
+    KgIAoIK1FKWFCHZdu2sTiN5laqVkClWD<br>
+    =3DdC3b<br>
+    -----END PGP SIGNATURE-----<br>
+    <br>
+  </body>
+</html>
+
+--------------010307000205040206040802--
 
