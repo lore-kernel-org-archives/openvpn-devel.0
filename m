@@ -1,12 +1,18 @@
-Message-ID: <5434DF55.6090301@...515...>
-Date: Wed, 08 Oct 2014 09:53:09 +0300
-From: =?windows-1252?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
-MIME-Version: 1.0
-References: <1412688204-29265-1-git-send-email-openvpn.list@...1114...>	<1412688204-29265-2-git-send-email-openvpn.list@...1114...>	<CAE4D3A4_33FxfHx_qUF8QHaWd6TzaQqtkq8C317CnCrNXco4=w@...278...>
+Date: Wed, 8 Oct 2014 09:18:53 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20141008071852.GZ396@...1296...>
+References: <1412688204-29265-1-git-send-email-openvpn.list@...1114...>
+	<1412688204-29265-2-git-send-email-openvpn.list@...1114...>
+	<CAE4D3A4_33FxfHx_qUF8QHaWd6TzaQqtkq8C317CnCrNXco4=w@...278...>
 	<20141007201512.GX396@...1296...>
-In-Reply-To: <20141007201512.GX396@...1296...>
+	<543477D2.1070203@...1114...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="pqZtgxSH0iQu6R78"
+Content-Disposition: inline
+In-Reply-To: <543477D2.1070203@...1114...>
 Subject: Re: [Openvpn-devel] [PATCH 2/2] systemd: Do not mask usernames when
- querying for it via systemd-ask-password
+	querying for it via systemd-ask-password
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,86 +21,115 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="windows-1252"
+To: openvpn-devel@lists.sourceforge.net
+
+--pqZtgxSH0iQu6R78
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-To: Gert Doering <gert@...1296...>, Jon Ciesla <limburgher@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Disposition: inline
+
+Hi David,
+
+please take a second to consider what your position on this is - "I like
+systemd a lot, I want to push support for it everywhere" or "I'm maintainer
+of OpenVPN and carefully consider what goes in there".
+
+After that, please take a step back and actually *read* what I proposed:
+
+On Wed, Oct 08, 2014 at 01:31:30AM +0200, David Sommerseth wrote:
+[..]
+> > OTOH, having a *generic* mechanism to run an external "askpass" mechani=
+sm
+> > - which could then be something x11-ssh-askpass, for example, on systems
+> > that are not Linux or have no systemd, is something I'd find generically
+> > useful.  On systemd systems, this would then point to systemd, of cours=
+e.
+>=20
+> That is *exactly* what systemd-ask-password is.  And for Linux, this is
+> the mechanism which is designed for this purpose and it will be the
+> solution the majority of Linux distros will use.
+
+So we seem to be in actual agreement that this is a useful thing - but
+the current code actually is *not* that.  It's "this useful feature, done=20
+in a very particular way, which only works if systemd is running".
+
+And this is my whole point here - it has nothing to do with "do I have
+experience with systemd or not" or "do I like systemd or not".  When you
+asked me to take over maintainership for 2.4, you put responsibility on
+my shoulders, more than just "be the commit-and-push dummy".
+
+When I look at features and patches, I always try to have a broader view
+
+  - will this come back and bite us?
+  - is this code that is very narrow to a particular environment, but might
+    be more useful if done in a more generic way?
+
+So - running a configurable external program which *could* be systemd's
+ask-password, but could be something completely different on, say, FreeBSD,
+would give you what you ask for (systemd integration), but be of larger
+benefit to the OpenVPN project.
+
+Yes, it would be a bit more work to get that API right, well-defined and
+well-documented.  Should that stop us?
+
+[..]
+> So you want a far more complex implementation to solve a situation which
+> is currently relevant to systemd?=20=20
+
+That is actually the point: I try to see the broader picture, and this is
+more useful than "just systemd".  But the way it's currently coded, with
+your last patch (which I admit that I ACKed - my fault, I should have=20
+spend more thought on the design first, and discuss with you beforehand),
+it's "really just systemd".
+
+> In addition, I've not seen any other distros requiring such a feature, but
+> I might just be misinformed.
+
+If you're seeing this not from a RedHat angle but from an OpenVPN maintainer
+point of view, why do you care what "distros require"?  If a Linux distro
+*requires* something, they can very well patch it themselves.
+
+We, as OpenVPN community, should aim for what is good for OpenVPN - both
+for all or user base and for the maintainers ourselves.
 
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+[..]
+> > So fully independent from the patch at hand we have some discussion to
+> > do - and we might want to postpone this particular topic and patchset
+> > to the face to face meeting, as things tend to get out of hand when
+> > discussed purely by mail / IRC.
+>=20
+> I disagree to postpone this.  This is non-sense on such *clearly*
+> *defined* patches which are minimalistic and well contained.
 
+If you think this is so important that the patches need to go in right=20
+now, many months before we even consider a release of 2.4 (=3D many months
+before this will be relevant to any distribution), and it really can't
+wait to discuss the larger picture face to face, well, go ahead and=20
+do so.  You have commit rights, and I won't stop you, as the project
+is too important to me to risk a schism right now.
 
-> Hi,
->
-> On Tue, Oct 07, 2014 at 12:56:55PM -0500, Jon Ciesla wrote:
->> On Tue, Oct 7, 2014 at 8:23 AM, David Sommerseth <
->> openvpn.list@...1114...> wrote:
->>
->>> From: David Sommerseth <davids@...1347...>
->>>
->>> In systemd after version 216, systemd-ask-password will support --echo
->>> which will avoid masking the user input.  As OpenVPN uses this mechanism
->>> collecting usernames when systemd is available, this will avoid the
-> [..]
->>
->> ACK.  Enables systemd features on systemd systems, and looks like a no-op
->> on non-systemd systems.
->
-> Now this is getting interesting.  I had a LONG discussion with David on
-> IRC today, as I do not like where this is going - it's very very specific
-> code (not only "linux specific" but "linux with systemd"), and the more I
-> think about the less I'm convinced that we really want to have this inside
-> OpenVPN, depend on particular versions of systemd in our source (yet
-> another #ifdef that will turn into dead code in a few years), or link
-> against a systemd library.
->
-> OTOH, having a *generic* mechanism to run an external "askpass" mechanism
-> - which could then be something x11-ssh-askpass, for example, on systems
-> that are not Linux or have no systemd, is something I'd find generically
-> useful.  On systemd systems, this would then point to systemd, of course.
->
-> So this might be "./configure --enable-ask-pass=3D$my_program", which
-> could then be /usr/sbin/systemd-askpass, or something private to OpenVPN
-> which would check if systemd is running, and if yes, call systemd-askpass
-> and if not, call "whatever makes sense on that particular environment"
-> (if $DISPLAY, call ssh-askpass, otherwise, not).
-It seems the systemd controversy has now reached OpenVPN :). I also
-would prefer a generic mechanism which could then utilize systemd or
-whatever. Any ideas how much (more) work would that require?
->
->
-> Now, the really interesting thing about this is that we have an ACK for
-> a patch which is not without religion around it - from someone who has
-> never sent an ACK or a patch before.  So, do I take any ACK, no matter
-> who sent it?  Do we require ACKs to come from people that have actual
-> experience with the code, and are willing to work on the code when these
-> bits need maintenance in the future?  "This is the material where project
-> forks are made from"...
-Very good questions. Perhaps the simplest solution is to give a NACK to
-the patch to negate the ACK. I don't think an ACK should mean the code
-_must_ go to the repository _if_ somebody objects it.
->
-> So fully independent from the patch at hand we have some discussion to
-> do - and we might want to postpone this particular topic and patchset
-> to the face to face meeting, as things tend to get out of hand when
-> discussed purely by mail / IRC.
-That makes sense given that the Munich hackthon is only about one month
-away.
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-- --=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
+--pqZtgxSH0iQu6R78
+Content-Type: application/pgp-signature
+Content-Disposition: inline
 
-irc freenode net: mattock
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1
 
-iEYEARECAAYFAlQ031UACgkQwp2X7RmNIqNWvwCg3+ZCc0Y9vWGXEbP6x1iN32fD
-b1QAoJLhluPl033np8OTQHXpKjcO/YO0
-=3DIS4U
+iQCVAwUBVDTlXKkuBuNlUUl1AQL2cgP/QnE8uOMSufM8K/EnhW0ZjtQHn0DtCV6H
+2KPxwKsZut377odnc67bwHzESjLiaFchBxWruGd5+i76Xht9NXa0xCIEQeqOwaho
+DBimVWD6KAgZyuxtnj20vkBNTWoW0evx+0+w2Huo/sHZk5LcJEoF+Oex7HQE5P1F
+tcipUekMcFE=
+=EuMt
 -----END PGP SIGNATURE-----
 
-
+--pqZtgxSH0iQu6R78--
 
