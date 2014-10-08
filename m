@@ -1,16 +1,16 @@
-Message-ID: <54350951.8000801@...1114...>
-Date: Wed, 08 Oct 2014 11:52:17 +0200
-From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <1412688204-29265-1-git-send-email-openvpn.list@...1114...>	<1412688204-29265-2-git-send-email-openvpn.list@...1114...>	<CAE4D3A4_33FxfHx_qUF8QHaWd6TzaQqtkq8C317CnCrNXco4=w@...278...>	<20141007201512.GX396@...1296...>	<543477D2.1070203@...1114...>
-	<20141008071852.GZ396@...1296...>
-In-Reply-To: <20141008071852.GZ396@...1296...>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="PHLF1LcU91TCoObiWtDV0EQFth3i9iFwQ"
-Subject: Re: [Openvpn-devel] [PATCH 2/2] systemd: Do not mask usernames when
- querying for it via systemd-ask-password
-Reply-To: openvpn-devel@lists.sourceforge.net
+In-Reply-To: <54347A1E.20705@...1114...>
+References: <1412688204-29265-1-git-send-email-openvpn.list@...1114...>
+	<CAE4D3A7A=c0gjg6rDvO8D1eKiP045XvKTx2RNbD8ReTr7wB17Q@...278...>
+	<54342558.3070208@...1114...>
+	<CAE4D3A5FVdVFa8Tzc9Pfan2TSJHqgWttJ59DDAUyJVAe0tiqNw@...278...>
+	<54347A1E.20705@...1114...>
+Date: Wed, 8 Oct 2014 05:08:31 -0500
+Message-ID: <CAE4D3A6wE4fngjqSbrTJTKhSW=gcuJ39X+qqixF1m5ozQ5eKaw@...278...>
+From: Jon Ciesla <limburgher@...277...>
+Content-Type: multipart/alternative; boundary=001a11c366607e40e30504e67fdb
+Subject: Re: [Openvpn-devel] [PATCH 1/2] autotools: Add support for
+ extracting version information from pkg-config modules
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,213 +19,366 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---PHLF1LcU91TCoObiWtDV0EQFth3i9iFwQ
-Content-Type: text/plain; charset="ISO-8859-1"
+--001a11c366607e40e30504e67fdb
+Content-Type: text/plain; charset=UTF-8
+
+On Tue, Oct 7, 2014 at 6:41 PM, David Sommerseth <
+openvpn.list@...1114...> wrote:
+
+> On 07/10/14 19:57, Jon Ciesla wrote:
+> >
+> >
+> > On Tue, Oct 7, 2014 at 12:39 PM, David Sommerseth
+> > <openvpn.list@...1114... <mailto:openvpn.list@...1114...>>
+> > wrote:
+> >
+> >     Sorry, could you do that to openvpn-devel@lists.sourceforge.net
+> >     <mailto:openvpn-devel@lists.sourceforge.net> ?
+> >
+> >     David S.
+> >
+> >
+> >
+> >     On 07/10/14 19:37, Jon Ciesla wrote:
+> >     >
+> >     >
+> >     > On Tue, Oct 7, 2014 at 8:23 AM, David Sommerseth
+> >     > <openvpn.list@...1114...
+> >     <mailto:openvpn.list@...1114...>
+> >     <mailto:openvpn.list@...1114...
+> >     <mailto:openvpn.list@...1114...>>>
+> >     > wrote:
+> >     >
+> >     >     From: David Sommerseth <davids@...1347...
+> >     <mailto:davids@...1347...> <mailto:davids@...1347...
+> >     <mailto:davids@...1347...>>>
+> >     >
+> >     >     Signed-off-by: David Sommerseth <davids@...1347...
+> >     <mailto:davids@...1347...>
+> >     >     <mailto:davids@...1347... <mailto:davids@...1347...>>>
+> >     >     ---
+> >     >      m4/pkg.m4 | 7 +++++--
+> >     >      1 file changed, 5 insertions(+), 2 deletions(-)
+> >     >
+> >     >     diff --git a/m4/pkg.m4 b/m4/pkg.m4
+> >     >     index 9a71878..f82496b 100644
+> >     >     --- a/m4/pkg.m4
+> >     >     +++ b/m4/pkg.m4
+> >     >     @@ -107,16 +107,18 @@ AC_DEFUN([PKG_CHECK_MODULES],
+> >     >      [AC_REQUIRE([PKG_PROG_PKG_CONFIG])dnl
+> >     >      AC_ARG_VAR([$1][_CFLAGS], [C compiler flags for $1, overriding
+> >     >     pkg-config])dnl
+> >     >      AC_ARG_VAR([$1][_LIBS], [linker flags for $1, overriding
+> >     >     pkg-config])dnl
+> >     >     +AC_ARG_VAR([$1][_MODVERSION], [module version])dnl
+> >     >
+> >     >      pkg_failed=no
+> >     >      AC_MSG_CHECKING([for $1])
+> >     >
+> >     >      _PKG_CONFIG([$1][_CFLAGS], [cflags], [$2])
+> >     >      _PKG_CONFIG([$1][_LIBS], [libs], [$2])
+> >     >     +_PKG_CONFIG([$1][_MODVERSION], [modversion], [$2])
+> >     >
+> >     >      m4_define([_PKG_TEXT], [Alternatively, you may set the
+> >     environment
+> >     >     variables $1[]_CFLAGS
+> >     >     -and $1[]_LIBS to avoid the need to call pkg-config.
+> >     >     -See the pkg-config man page for more details.])
+> >     >     +and $1[]_LIBS to avoid the need to call pkg-config.  The
+> >     >     $1[]_MODVERSION provides version
+> >     >     +information.  See the pkg-config man page for more details.])
+> >     >
+> >     >      if test $pkg_failed = yes; then
+> >     >             AC_MSG_RESULT([no])
+> >     >     @@ -153,6 +155,7 @@ To get pkg-config, see
+> >     >     <http://pkg-config.freedesktop.org/>.])[]dnl
+> >     >      else
+> >     >             $1[]_CFLAGS=$pkg_cv_[]$1[]_CFLAGS
+> >     >             $1[]_LIBS=$pkg_cv_[]$1[]_LIBS
+> >     >     +       $1[]_MODVERSION=$pkg_cv_[]$1[]_MODVERSION
+> >     >              AC_MSG_RESULT([yes])
+> >     >             $3
+> >     >      fi[]dnl
+> >     >     --
+> >     >     1.8.3.1
+> >     >
+> >     >
+> >     >
+> >
+> ------------------------------------------------------------------------------
+> >     >     Meet PCI DSS 3.0 Compliance Requirements with EventLog Analyzer
+> >     >     Achieve PCI DSS 3.0 Compliant Status with Out-of-the-box PCI
+> >     DSS Reports
+> >     >     Are you Audit-Ready for PCI DSS 3.0 Compliance? Download White
+> >     paper
+> >     >     Comply to PCI DSS 3.0 Requirement 10 and 11.5 with EventLog
+> >     Analyzer
+> >     >
+> >
+> http://pubads.g.doubleclick.net/gampad/clk?id=154622311&iu=/4140/ostg.clktrk
+> >     >     _______________________________________________
+> >     >     Openvpn-devel mailing list
+> >     >     Openvpn-devel@lists.sourceforge.net
+> >     <mailto:Openvpn-devel@lists.sourceforge.net>
+> >     >     <mailto:Openvpn-devel@lists.sourceforge.net
+> >     <mailto:Openvpn-devel@lists.sourceforge.net>>
+> >     >     https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+> >     >
+> >     >
+> >     > ACK.
+> >     >
+> >     > --
+> >     > http://cecinestpasunefromage.wordpress.com/
+> >     > ------------------------------------------------
+> >     > in your fear, seek only peace
+> >     > in your fear, seek only love
+> >     >
+> >     > -d. bowie
+> >
+> >
+> >     --
+> >     kind regards,
+> >
+> >     David Sommerseth
+> >
+> >
+> > Done.  <facepalm>
+>
+> Thanks!  Seems we might have a flamefest on openvpn-devel again ...
+> well, don't worry!  Thanks a lot for your ACK.  It did spark a reaction
+> I did expect.
+>
+>
+> --
+> kind regards,
+>
+> David Sommerseth
+>
+>
+So goes open source development.  Anytime!
+
+-me
+
+-- 
+http://cecinestpasunefromage.wordpress.com/
+------------------------------------------------
+in your fear, seek only peace
+in your fear, seek only love
+
+-d. bowie
+
+--001a11c366607e40e30504e67fdb
+Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On 08/10/14 09:18, Gert Doering wrote:
-> Hi David,
->=20
-> please take a second to consider what your position on this is - "I like
-> systemd a lot, I want to push support for it everywhere" or "I'm maintain=
-er
-> of OpenVPN and carefully consider what goes in there".
+<div dir=3D"ltr"><br><div class=3D"gmail_extra"><br><div class=3D"gmail_quo=
+te">On Tue, Oct 7, 2014 at 6:41 PM, David Sommerseth <span dir=3D"ltr">&lt;=
+<a href=3D"mailto:openvpn.list@...1114..." target=3D"_blank">openvpn.list@...220...=
+..1114...</a>&gt;</span> wrote:<br><blockquote class=3D"gmail_quote" style=
+=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">On 07/10=
+/14 19:57, Jon Ciesla wrote:<br>
+&gt;<br>
+&gt;<br>
+&gt; On Tue, Oct 7, 2014 at 12:39 PM, David Sommerseth<br>
+&gt; &lt;<a href=3D"mailto:openvpn.list@...1114...">openvpn.list@...1114...=
+</a> &lt;mailto:<a href=3D"mailto:openvpn.list@...1114...">openvpn.list@...493...=
+1114...</a>&gt;&gt;<br>
+&gt; wrote:<br>
+&gt;<br>
+&gt;=C2=A0 =C2=A0 =C2=A0Sorry, could you do that to <a href=3D"mailto:openv=
+pn-devel@lists.sourceforge.net">openvpn-devel@lists.sourceforge.net</a><br>
+&gt;=C2=A0 =C2=A0 =C2=A0&lt;mailto:<a href=3D"mailto:openvpn-devel@...1466...=
+urceforge.net">openvpn-devel@lists.sourceforge.net</a>&gt; ?<br>
+&gt;<br>
+&gt;=C2=A0 =C2=A0 =C2=A0David S.<br>
+&gt;<br>
+&gt;<br>
+&gt;<br>
+&gt;=C2=A0 =C2=A0 =C2=A0On 07/10/14 19:37, Jon Ciesla wrote:<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt;<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt;<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt; On Tue, Oct 7, 2014 at 8:23 AM, David Sommerse=
+th<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt; &lt;<a href=3D"mailto:openvpn.list@...1114..."=
+>openvpn.list@...1114...</a><br>
+&gt;=C2=A0 =C2=A0 =C2=A0&lt;mailto:<a href=3D"mailto:openvpn.list@...1332...=
+.">openvpn.list@...1114...</a>&gt;<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&lt;mailto:<a href=3D"mailto:openvpn.list@...1332...=
+.">openvpn.list@...1114...</a><br>
+&gt;=C2=A0 =C2=A0 =C2=A0&lt;mailto:<a href=3D"mailto:openvpn.list@...1332...=
+.">openvpn.list@...1114...</a>&gt;&gt;&gt;<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt; wrote:<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt;<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt;=C2=A0 =C2=A0 =C2=A0From: David Sommerseth &lt;=
+<a href=3D"mailto:davids@...1347...">davids@...1347...</a><br>
+&gt;=C2=A0 =C2=A0 =C2=A0&lt;mailto:<a href=3D"mailto:davids@...1347...">dav=
+ids@...1347...</a>&gt; &lt;mailto:<a href=3D"mailto:davids@...1347...">davi=
+ds@...1347...</a><br>
+&gt;=C2=A0 =C2=A0 =C2=A0&lt;mailto:<a href=3D"mailto:davids@...1347...">dav=
+ids@...1347...</a>&gt;&gt;&gt;<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt;<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt;=C2=A0 =C2=A0 =C2=A0Signed-off-by: David Sommer=
+seth &lt;<a href=3D"mailto:davids@...1347...">davids@...1347...</a><br>
+&gt;=C2=A0 =C2=A0 =C2=A0&lt;mailto:<a href=3D"mailto:davids@...1347...">dav=
+ids@...1347...</a>&gt;<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt;=C2=A0 =C2=A0 =C2=A0&lt;mailto:<a href=3D"mailt=
+o:davids@...1347...">davids@...1347...</a> &lt;mailto:<a href=3D"mailto:dav=
+ids@...1347...">davids@...1347...</a>&gt;&gt;&gt;<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt;=C2=A0 =C2=A0 =C2=A0---<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt;=C2=A0 =C2=A0 =C2=A0 m4/pkg.m4 | 7 +++++--<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt;=C2=A0 =C2=A0 =C2=A0 1 file changed, 5 insertio=
+ns(+), 2 deletions(-)<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt;<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt;=C2=A0 =C2=A0 =C2=A0diff --git a/m4/pkg.m4 b/m4=
+/pkg.m4<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt;=C2=A0 =C2=A0 =C2=A0index 9a71878..f82496b 1006=
+44<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt;=C2=A0 =C2=A0 =C2=A0--- a/m4/pkg.m4<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt;=C2=A0 =C2=A0 =C2=A0+++ b/m4/pkg.m4<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt;=C2=A0 =C2=A0 =C2=A0@@ -107,16 +107,18 @@ AC_DE=
+FUN([PKG_CHECK_MODULES],<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt;=C2=A0 =C2=A0 =C2=A0 [AC_REQUIRE([PKG_PROG_PKG_=
+CONFIG])dnl<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt;=C2=A0 =C2=A0 =C2=A0 AC_ARG_VAR([$1][_CFLAGS], =
+[C compiler flags for $1, overriding<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt;=C2=A0 =C2=A0 =C2=A0pkg-config])dnl<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt;=C2=A0 =C2=A0 =C2=A0 AC_ARG_VAR([$1][_LIBS], [l=
+inker flags for $1, overriding<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt;=C2=A0 =C2=A0 =C2=A0pkg-config])dnl<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt;=C2=A0 =C2=A0 =C2=A0+AC_ARG_VAR([$1][_MODVERSIO=
+N], [module version])dnl<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt;<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt;=C2=A0 =C2=A0 =C2=A0 pkg_failed=3Dno<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt;=C2=A0 =C2=A0 =C2=A0 AC_MSG_CHECKING([for $1])<=
+br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt;<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt;=C2=A0 =C2=A0 =C2=A0 _PKG_CONFIG([$1][_CFLAGS],=
+ [cflags], [$2])<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt;=C2=A0 =C2=A0 =C2=A0 _PKG_CONFIG([$1][_LIBS], [=
+libs], [$2])<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt;=C2=A0 =C2=A0 =C2=A0+_PKG_CONFIG([$1][_MODVERSI=
+ON], [modversion], [$2])<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt;<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt;=C2=A0 =C2=A0 =C2=A0 m4_define([_PKG_TEXT], [Al=
+ternatively, you may set the<br>
+&gt;=C2=A0 =C2=A0 =C2=A0environment<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt;=C2=A0 =C2=A0 =C2=A0variables $1[]_CFLAGS<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt;=C2=A0 =C2=A0 =C2=A0-and $1[]_LIBS to avoid the=
+ need to call pkg-config.<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt;=C2=A0 =C2=A0 =C2=A0-See the pkg-config man pag=
+e for more details.])<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt;=C2=A0 =C2=A0 =C2=A0+and $1[]_LIBS to avoid the=
+ need to call pkg-config.=C2=A0 The<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt;=C2=A0 =C2=A0 =C2=A0$1[]_MODVERSION provides ve=
+rsion<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt;=C2=A0 =C2=A0 =C2=A0+information.=C2=A0 See the=
+ pkg-config man page for more details.])<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt;<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt;=C2=A0 =C2=A0 =C2=A0 if test $pkg_failed =3D ye=
+s; then<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0AC_MSG_RESULT([no])<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt;=C2=A0 =C2=A0 =C2=A0@@ -153,6 +155,7 @@ To get =
+pkg-config, see<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt;=C2=A0 =C2=A0 =C2=A0&lt;<a href=3D"http://pkg-c=
+onfig.freedesktop.org/" target=3D"_blank">http://pkg-config.freedesktop.org=
+/</a>&gt;.])[]dnl<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt;=C2=A0 =C2=A0 =C2=A0 else<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0$1[]_CFLAGS=3D$pkg_cv_[]$1[]_CFLAGS<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0$1[]_LIBS=3D$pkg_cv_[]$1[]_LIBS<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt;=C2=A0 =C2=A0 =C2=A0+=C2=A0 =C2=A0 =C2=A0 =C2=
+=A0$1[]_MODVERSION=3D$pkg_cv_[]$1[]_MODVERSION<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 AC_MSG_RESULT([yes])<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0$3<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt;=C2=A0 =C2=A0 =C2=A0 fi[]dnl<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt;=C2=A0 =C2=A0 =C2=A0--<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt;=C2=A0 =C2=A0 =C2=A01.8.3.1<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt;<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt;<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt;<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 --------------------------------------------------=
+----------------------------<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt;=C2=A0 =C2=A0 =C2=A0Meet PCI DSS 3.0 Compliance=
+ Requirements with EventLog Analyzer<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt;=C2=A0 =C2=A0 =C2=A0Achieve PCI DSS 3.0 Complia=
+nt Status with Out-of-the-box PCI<br>
+&gt;=C2=A0 =C2=A0 =C2=A0DSS Reports<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt;=C2=A0 =C2=A0 =C2=A0Are you Audit-Ready for PCI=
+ DSS 3.0 Compliance? Download White<br>
+&gt;=C2=A0 =C2=A0 =C2=A0paper<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt;=C2=A0 =C2=A0 =C2=A0Comply to PCI DSS 3.0 Requi=
+rement 10 and 11.5 with EventLog<br>
+&gt;=C2=A0 =C2=A0 =C2=A0Analyzer<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt;<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 <a href=3D"http://pubads.g.doubleclick.net/gampad/=
+clk?id=3D154622311&amp;iu=3D/4140/ostg.clktrk" target=3D"_blank">http://pub=
+ads.g.doubleclick.net/gampad/clk?id=3D154622311&amp;iu=3D/4140/ostg.clktrk<=
+/a><br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt;=C2=A0 =C2=A0 =C2=A0___________________________=
+____________________<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt;=C2=A0 =C2=A0 =C2=A0Openvpn-devel mailing list<=
+br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt;=C2=A0 =C2=A0 =C2=A0<a href=3D"mailto:Openvpn-d=
+evel@lists.sourceforge.net">Openvpn-devel@lists.sourceforge.net</a><br>
+&gt;=C2=A0 =C2=A0 =C2=A0&lt;mailto:<a href=3D"mailto:Openvpn-devel@...1466...=
+urceforge.net">Openvpn-devel@lists.sourceforge.net</a>&gt;<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt;=C2=A0 =C2=A0 =C2=A0&lt;mailto:<a href=3D"mailt=
+o:Openvpn-devel@lists.sourceforge.net">Openvpn-devel@lists.sourceforge.net<=
+/a><br>
+&gt;=C2=A0 =C2=A0 =C2=A0&lt;mailto:<a href=3D"mailto:Openvpn-devel@...1466...=
+urceforge.net">Openvpn-devel@lists.sourceforge.net</a>&gt;&gt;<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt;=C2=A0 =C2=A0 =C2=A0<a href=3D"https://lists.so=
+urceforge.net/lists/listinfo/openvpn-devel" target=3D"_blank">https://lists=
+.sourceforge.net/lists/listinfo/openvpn-devel</a><br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt;<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt;<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt; ACK.<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt;<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt; --<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt; <a href=3D"http://cecinestpasunefromage.wordpr=
+ess.com/" target=3D"_blank">http://cecinestpasunefromage.wordpress.com/</a>=
+<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt; ----------------------------------------------=
+--<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt; in your fear, seek only peace<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt; in your fear, seek only love<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt;<br>
+&gt;=C2=A0 =C2=A0 =C2=A0&gt; -d. bowie<br>
+&gt;<br>
+&gt;<br>
+&gt;=C2=A0 =C2=A0 =C2=A0--<br>
+&gt;=C2=A0 =C2=A0 =C2=A0kind regards,<br>
+&gt;<br>
+&gt;=C2=A0 =C2=A0 =C2=A0David Sommerseth<br>
+&gt;<br>
+&gt;<br>
+&gt; Done.=C2=A0 &lt;facepalm&gt;<br>
+<br>
+Thanks!=C2=A0 Seems we might have a flamefest on openvpn-devel again ...<br>
+well, don&#39;t worry!=C2=A0 Thanks a lot for your ACK.=C2=A0 It did spark =
+a reaction<br>
+I did expect.<br>
+<span class=3D"HOEnZb"><font color=3D"#888888"><br>
+<br>
+--<br>
+kind regards,<br>
+<br>
+David Sommerseth<br>
+<br>
+</font></span></blockquote></div><br></div><div class=3D"gmail_extra">So go=
+es open source development.=C2=A0 Anytime!<br><br></div><div class=3D"gmail=
+_extra">-me<br clear=3D"all"></div><div class=3D"gmail_extra"><br>-- <br><a=
+ href=3D"http://cecinestpasunefromage.wordpress.com/" target=3D"_blank">htt=
+p://cecinestpasunefromage.wordpress.com/</a><br>---------------------------=
+---------------------<br>in your fear, seek only peace<br>in your fear, see=
+k only love<br><br>-d. bowie
+</div></div>
 
-I consider myself an OpenVPN maintainer who carefully does consider what
-we do apply.  But I also happen to primarily use Linux, where I see the
-future will be dominated by systemd.  Thus I am concerned about our
-systemd support.
-
-> After that, please take a step back and actually *read* what I proposed:
->=20
-> On Wed, Oct 08, 2014 at 01:31:30AM +0200, David Sommerseth wrote:
-> [..]
->>> OTOH, having a *generic* mechanism to run an external "askpass" mechani=
-sm
->>> - which could then be something x11-ssh-askpass, for example, on systems
->>> that are not Linux or have no systemd, is something I'd find generically
->>> useful.  On systemd systems, this would then point to systemd, of cours=
-e.
->>
->> That is *exactly* what systemd-ask-password is.  And for Linux, this is
->> the mechanism which is designed for this purpose and it will be the
->> solution the majority of Linux distros will use.
->=20
-> So we seem to be in actual agreement that this is a useful thing - but
-> the current code actually is *not* that.  It's "this useful feature, done=
-=20
-> in a very particular way, which only works if systemd is running".
-
-We've had several patches on pastebins which we've discussed in the
-past.  A few times you have actually told me that my *generic*
-implementations where over-engineered.  Once you even told me to make it
-specific and we could broaden the scope once we see the need.  This is
-what I am doing right now.
-
-Currently I am not aware of anyone else needing an ask-password feature.
- But I'm willing to see how we can adopt the systemd implementation we
-already have when that request comes.
-
-> And this is my whole point here - it has nothing to do with "do I have
-> experience with systemd or not" or "do I like systemd or not".  When you
-> asked me to take over maintainership for 2.4, you put responsibility on
-> my shoulders, more than just "be the commit-and-push dummy".
->=20
-> When I look at features and patches, I always try to have a broader view
->=20
->   - will this come back and bite us?
-
-In the current state, we will get complaints about usernames being
-masked.  Enforcing --echo regardless of systemd version will come back
-an bite us on those distros using a too old systemd base.  Hence, I try
-to avoid these two scenarios.
-
-I don't know about systemd versions in other distros than Fedora and
-RHEL 7.  But Fedora 20 which will live alongside Fedora 21 ships with
-v208.  Fedora 19 ships with version 204 but will go EOL some weeks after
-Fedora 21 is released.  RHEL 7 has v208 as the base version.  So if we
-don't consider systemd versions, we will get complaints about OpenVPN
-not working with systemd on these releases.
-
-In fact the --echo feature will come in a release after v216.  So you
-see there is a gap until this feature will be available in systemd distros.
-
->   - is this code that is very narrow to a particular environment, but mig=
-ht
->     be more useful if done in a more generic way?
-
-Okay, should we do the same for setting up IP addresses and routes in
-tun.c too then?  Should we stop fixing issues, isolated to particular
-platforms in that code because we need a more generic approach which
-doesn't bloat the code with #ifdefs?   Because that is all I'm doing
-here.  I'm not extending OpenVPN with new features, just fixing annoyances.
-
-> So - running a configurable external program which *could* be systemd's
-> ask-password, but could be something completely different on, say, FreeBS=
-D,
-> would give you what you ask for (systemd integration), but be of larger
-> benefit to the OpenVPN project.
->
-> Yes, it would be a bit more work to get that API right, well-defined and
-> well-documented.  Should that stop us?
-
-Agreed.  But it's damn hard to get the API right without a reference
-implementation.  Currently we do have that in OpenVPN, but it is not
-optimal.  And once we have requests for similar mechanisms for
-non-systemd distros, yes, I agree we can make things more generic.
-
-But to be honest, I am not convinced making OpenVPN execve() a wrapper
-execve() the ask-pass program is the proper implementation, and then
-pipe the result back and forth.  I think we should have something more
-baked into OpenVPN, similar to what we do with OpenSSL and PolarSSL.
-
->> So you want a far more complex implementation to solve a situation which
->> is currently relevant to systemd?=20=20
->=20
-> That is actually the point: I try to see the broader picture, and this is
-> more useful than "just systemd".  But the way it's currently coded, with
-> your last patch (which I admit that I ACKed - my fault, I should have=20
-> spend more thought on the design first, and discuss with you beforehand),
-> it's "really just systemd".
-
-One of the first things I did when I stepped up as the first community
-maintainer of OpenVPN was to try to reduce the fragmentation of OpenVPN
-on the Linux side.  Almost all distros had their own additional patches.
- The patches which are in the distroes now are, afaik, only adopting
-things which is unique for that distro.  We added a lot of the distro
-patches all could benefit from into the upstream OpenVPN.
-
-I am seeing this from a broader perspective than you probably are aware
-of.  And I want to avoid Linux distros patching OpenVPN on the systemd
-implementation separately due to issues which has been reported or
-issues which I see may show up in the future.
-
-In fact, if systemd had had a library function called sd_version() which
-would return the systemd version, you probably would have ACKed the
-patch fairly quickly.
-
-But because I touched m4/pkg.m4 you suddenly see a big problem.  You
-even told me on one of the previous patches that as long as systemd
-related stuff was isolated inside its own configure.ac block, you didn't
-see any problems.  The pkg.m4 is the only change which is outside the
-systemd scope.  Btw. I'm even considering to submit that patch to
-upstream pkgconfig, to avoid fragmentation (and we can then remove
-pkg.m4 from our repo in the future).
-
->> In addition, I've not seen any other distros requiring such a feature, b=
-ut
->> I might just be misinformed.
->=20
-> If you're seeing this not from a RedHat angle but from an OpenVPN maintai=
-ner
-> point of view, why do you care what "distros require"?  If a Linux distro
-> *requires* something, they can very well patch it themselves.
->=20
-> We, as OpenVPN community, should aim for what is good for OpenVPN - both
-> for all or user base and for the maintainers ourselves.
-
-That is *exactly* what I try to do.  To reduce the risk of Linux distros
-having to add additional patches separately.  To reduce the risk of
-fragmentation among Linux distros.  Which means distros can work more
-closely with upstream OpenVPN, because the gap is minimal.
-
->>> So fully independent from the patch at hand we have some discussion to
->>> do - and we might want to postpone this particular topic and patchset
->>> to the face to face meeting, as things tend to get out of hand when
->>> discussed purely by mail / IRC.
->>
->> I disagree to postpone this.  This is non-sense on such *clearly*
->> *defined* patches which are minimalistic and well contained.
->=20
-> If you think this is so important that the patches need to go in right=20
-> now, many months before we even consider a release of 2.4 (=3D many months
-> before this will be relevant to any distribution), and it really can't
-> wait to discuss the larger picture face to face, well, go ahead and=20
-> do so.  You have commit rights, and I won't stop you, as the project
-> is too important to me to risk a schism right now.
-
-I have too much respect for the community to go rouge.
-
-But once patches are in our trees, if distros need to patch things
-before a 2.4 release due to complaints from their users, they can pick
-our upstream patches instead of having their own approach.  And this
-goes well into the mantra of Fedora and RHEL, where we say: upstream
-first.  Which is why I want to have this solved ASAP.
-
-Fedora 21 currently in Alpha and the final release will be out in a few
-months.  From a Fedora/Red Hat perspective, I want to avoid hacks into
-that release.  For RHEL 7, OpenVPN is no longer part of the base
-packages, but available via EPEL.  Which makes it possible to make
-RHEL 7+ distributions have more recent versions of OpenVPN as well.
-
-Having that said, I think we need to consider to apply some of the
-systemd fixes which are already applied to the 2.3 branch.  Especially
-the waitpid() patches.
-
-
---=20
-kind regards,
-
-David Sommerseth
-
-
-
---PHLF1LcU91TCoObiWtDV0EQFth3i9iFwQ
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iEYEARECAAYFAlQ1CVQACgkQDC186MBRfrpZjACeM+w5d7yr6lCnc6IZs0DzSoyg
-Rp4AoJHYFLoF3V9nF+lBi3sjMHj7JIuf
-=sk8K
------END PGP SIGNATURE-----
-
---PHLF1LcU91TCoObiWtDV0EQFth3i9iFwQ--
+--001a11c366607e40e30504e67fdb--
 
