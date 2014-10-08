@@ -1,12 +1,13 @@
-Message-ID: <5435192F.5000503@...1921...>
-Date: Wed, 08 Oct 2014 12:59:59 +0200
-From: Philipp Hagemeister <phihag@...1921...>
-MIME-Version: 1.0
+Date: Wed, 8 Oct 2014 14:15:36 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20141008121536.GA396@...1296...>
 References: <54259015.2030005@...1921...> <20140926181223.GR396@...1296...>
-In-Reply-To: <20140926181223.GR396@...1296...>
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature";
-	boundary="xU9QbILMcnIWm3Cn9qqVwXdVrXExRfX7M"
+	<5435192F.5000503@...1921...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="KzTpGdFWKkiGyjCs"
+Content-Disposition: inline
+In-Reply-To: <5435192F.5000503@...1921...>
 Subject: Re: [Openvpn-devel] [PATCH] Implement on-link route adding for
 	iproute2
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -17,49 +18,51 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
+To: Philipp Hagemeister <phihag@...1921...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---xU9QbILMcnIWm3Cn9qqVwXdVrXExRfX7M
-Content-Type: text/plain; charset="utf-8"
+--KzTpGdFWKkiGyjCs
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Hi Gert,
+Hi,
 
-On 09/26/2014 08:12 PM, Gert Doering wrote:
-> Looks good to me.  Will test and then commit (might take a few days).
+On Wed, Oct 08, 2014 at 12:59:59PM +0200, Philipp Hagemeister wrote:
+> On 09/26/2014 08:12 PM, Gert Doering wrote:
+> > Looks good to me.  Will test and then commit (might take a few days).
+>=20
+> is there a problem with the patch or could you just not test it yet?
 
-is there a problem with the patch or could you just not test it yet?
+Couldn't test yet, sorry, mostly for "no time to setup laptop + UMTS to
+get a ppp0 interface" - have no other machine right now that has
+openvpn *and* a non-ethernet default gatway.
 
-Best,
+Apologies.
 
-Philipp
+gert
 
 
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
---xU9QbILMcnIWm3Cn9qqVwXdVrXExRfX7M
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+--KzTpGdFWKkiGyjCs
+Content-Type: application/pgp-signature
+Content-Disposition: inline
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1
 
-iQIcBAEBCgAGBQJUNRkvAAoJENtLVMukgmoY9K8QAK/hvRpxq/2gA87Q+Za9lqUt
-dSLzAyQ/MibCX+zYgsxGFxNlQPj5Geqsg8oOSOSChelYaaDBJJG6/6BrS3leRPv9
-VAON+Ex3Wt8hxzmrPDjl9EeKmlJ+amP9ON7oksLhVRdOtIxwruXe3P5pcPCMwpP6
-kL3A3a4DAYh0SmP3vC5qtcDbbA1juXV762KDT2pLe0E4pYylHx3NLY9a1CTfRuT7
-EW0faGns++1ZDr8EOluyoAWAfE1krgbaaOj0RFxonB6QfLyW3IIs9b9jpx0IkTCl
-q3ALFS5wXF32xWLCIDYMgrVPcTy3VkZFJanbqESzd0O6h/fo0BEIvWfPXgQfn8rb
-QN65yomc1I1kCwhJjZTyd5dxC48Kqi13MT03DH5kvVXxOaixqx9JBm7bJnNmslPH
-Y20MVG8anRLedTpozG1zVR4OUCEXja9NZKDaOGE5tJT34652eIeWd8t6LT/EKUn1
-sT/dCiZ43HaONlPwOPLL8VeDnPuZxZDCmwTB+Js0BklL/ysEcKlhN+fDZ9p3mBtm
-rgMmecm9DpMsvBkpetwOWiwzF3o23noDaoCLxQirlkwkV0BSC8XpTa204yw1/Xvz
-oUEWN48VAFnAwVBrsvfjzyxhw8RhwqGwLWb+XNCAl4NvJC/rV6SEutek9h+2YYxG
-W74meQPe9y5C1b7ZiL5H
-=rJwz
+iQCVAwUBVDUq6KkuBuNlUUl1AQKxfgQAmP2IapwYJf3cwRzrGSp6QZvTQlTc8UQm
+eqJpNy05PEemylLX3xCtl5ph1ewsYVavxaRZxS+ysxoLn2tAv9ro95oz/uHsSns2
+hssFkaTmSf2kGFqu3TikQ51DzAsUpySK686ByavPH/6dXEmLihydGSqfM1xIGDHv
+yvPCO9cZQ3s=
+=u/VG
 -----END PGP SIGNATURE-----
 
---xU9QbILMcnIWm3Cn9qqVwXdVrXExRfX7M--
+--KzTpGdFWKkiGyjCs--
 
