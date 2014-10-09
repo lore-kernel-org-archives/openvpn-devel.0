@@ -1,12 +1,11 @@
-Message-ID: <5436E6E5.8060002@...1856...>
-Date: Thu, 09 Oct 2014 21:49:57 +0200
+Message-ID: <5436EB77.3030403@...1856...>
+Date: Thu, 09 Oct 2014 22:09:27 +0200
 From: Steffan Karger <steffan@...1856...>
 MIME-Version: 1.0
-References: <CAGyAFMXhPTamN5tZYr92=re8Bhxky=priWS8UhCU3E_p2D8-mQ@...278...>	<CAGyAFMV6kZzTFwdp21n8GTNa-fbPx_S-TpYjpiC+R862WoMhAA@...278...>	<53B03B43.2040009@...1227...>
-	<53BD10EB.9010509@...1227...>	<alpine.DEB.2.02.1408121108120.3669@...1831...>
-	<CAGyAFMVzDaygh1d-jtZSRXYqq+hm5qphmtEQE8f7eyhpD8Am_w@...278...>
-In-Reply-To: <CAGyAFMVzDaygh1d-jtZSRXYqq+hm5qphmtEQE8f7eyhpD8Am_w@...278...>
-Subject: Re: [Openvpn-devel] session-id implementation
+References: <CAPd-S-PVJzdHKfOhMuJMmUG8kEETKweTW46owhAJa6aS4Ny+Qg@...278...>	<5433CFD5.5060901@...515...>	<CAPd-S-OgUuuFJwkz0Unmszyi1Vmv2WEgBaG+RCJ-bWXBvfNzxg@...278...>	<5433FD92.7020400@...1227...>
+	<5436B36A.1050105@...1147...> <5436B50A.7040004@...1227...>
+In-Reply-To: <5436B50A.7040004@...1227...>
+Subject: Re: [Openvpn-devel] Paid Engagement
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,42 +18,42 @@ Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Hi Lev,
+Hi,
 
-On 02-10-14 13:47, Lev Stipakov wrote:
-> Apologize for the delay. Patch with review suggestions attached.
+On 09-10-14 18:17, Arne Schwabe wrote:
+>> So, it looks like running rsa_sign with a cert/key pair coming out of
+>> the cryptostore store is causing some low level openssl problems.
+>> Don't know how easy it is fix, but most likely it's not inside the
+>> OpenVPN code...
+>>
+> Pretty easy (for OpenSSL standards...). You have to use the lowlevel
+> functions instead of rsa_sign. See also
+> https://code.google.com/p/ics-openvpn/source/browse/main/jni/jbcrypto.cpp
+> 
+> Basically for ics-openvpn the change was to replace
+> 
+> RSA_sign(NID_md5_sha1, (unsigned char*) data, datalen,
+>         sigret, &siglen, pkey->pkey.rsa) <= 0 )
+> 
+> with
+> 
+>     siglen = RSA_private_encrypt(datalen,(unsigned char*)
+> data,sigret,pkey->pkey.rsa,RSA_PKCS1_PADDING);
+> 
+> But I haven't looked at the OpenVPN source code yet which code path is
+> called there.
 
-Thanks for providing the patch, and following up on comments on the
-list. I've been deferring a reply to your first version, because I
-wanted to take a thorough look at the code before replying, but somehow
-did not get to it. Sorry. So, instead of deferring further, I'll just
-mail what's in my head at this point.
+I took a peek at the code, and I think it is the other way around. The
+cryptoapi code (like e.g. openvpn's pkcs11 code), supplies openssl with
+a signing function. OpenSSL then call thet function during the TLS
+handshake to get a valid signature.
 
-I think your approach is a good alternative to the original proposal. I
-like that it requires less bytes in the message. However, I think we
-should arrange maybe a community meeting to discuss your alternative and
-choose our way forward.
-
-For now, some things I noticed while taking a quick peek at your patch.
-Since I mostly focus on the crypto bits of openvpn, my remarks focus on
-the crypto part of your patch too. I haven't looked at the other parts.
-
-1) Your patch introduced a memcmp() call to verify an HMAC. That would
-introduce a timing side channel we just got rid of in commit 11d2134.
-Please *always* use use constant time comparisons when checking HMACs.
-OpenVPN provides a memcmp_constant_time().
-
-2) The crypto_test_hmac() function your patch introduces duplicates a
-lot of code from openvpn_decrypt(). I don't like to maintain more code
-than absolutely necessary ;) So, please add some functions to reuse the
-code. Also, I think the hard-coded offset in that function is a bit ugly.
-
-3) The three-byte offset helps to align the data on 32-bit blocks, but I
-am trying to remember what the specific reason for this was. If it was
-to speed up the crypto, we should make sure its 128-bits aligned,
-because SSE/AES-NI instructions require 128-bits aligned data. (Though
-that would probably only be useful for CBC mode, since in CFB/OFB/GCM,
-the AES-operations are not actually performed the packet data buffer.)
+However, the sign function in openvpn's cryptoapi.c restricts the
+possible signatures to tls 1.0/1.1 signatures and needs to be extended.
+But here's the catch: Microsofts crypto API sign function does not
+understand TLS 1.2 signatures either. Using the encrypt function might
+work here too, but the API is quite different, so you'll have to figure
+out how to retrieve the correct key (reference).
 
 -Steffan
 
