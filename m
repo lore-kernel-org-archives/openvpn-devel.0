@@ -1,11 +1,10 @@
-Message-ID: <5436EB77.3030403@...1856...>
-Date: Thu, 09 Oct 2014 22:09:27 +0200
-From: Steffan Karger <steffan@...1856...>
+Date: Thu, 9 Oct 2014 23:40:49 +0200
+From: Samuel Thibault <samuel.thibault@...1817...>
+Message-ID: <20141009214049.GB4106@...1818...>
 MIME-Version: 1.0
-References: <CAPd-S-PVJzdHKfOhMuJMmUG8kEETKweTW46owhAJa6aS4Ny+Qg@...278...>	<5433CFD5.5060901@...515...>	<CAPd-S-OgUuuFJwkz0Unmszyi1Vmv2WEgBaG+RCJ-bWXBvfNzxg@...278...>	<5433FD92.7020400@...1227...>
-	<5436B36A.1050105@...1147...> <5436B50A.7040004@...1227...>
-In-Reply-To: <5436B50A.7040004@...1227...>
-Subject: Re: [Openvpn-devel] Paid Engagement
+Content-Type: multipart/mixed; boundary="7JfCtLOvnd9MIVvH"
+Content-Disposition: inline
+Subject: [Openvpn-devel] [PATCH] Fix temporary file leak
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,46 +13,54 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
+--7JfCtLOvnd9MIVvH
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-On 09-10-14 18:17, Arne Schwabe wrote:
->> So, it looks like running rsa_sign with a cert/key pair coming out of
->> the cryptostore store is causing some low level openssl problems.
->> Don't know how easy it is fix, but most likely it's not inside the
->> OpenVPN code...
->>
-> Pretty easy (for OpenSSL standards...). You have to use the lowlevel
-> functions instead of rsa_sign. See also
-> https://code.google.com/p/ics-openvpn/source/browse/main/jni/jbcrypto.cpp
-> 
-> Basically for ics-openvpn the change was to replace
-> 
-> RSA_sign(NID_md5_sha1, (unsigned char*) data, datalen,
->         sigret, &siglen, pkey->pkey.rsa) <= 0 )
-> 
-> with
-> 
->     siglen = RSA_private_encrypt(datalen,(unsigned char*)
-> data,sigret,pkey->pkey.rsa,RSA_PKCS1_PADDING);
-> 
-> But I haven't looked at the OpenVPN source code yet which code path is
-> called there.
+Hello,
 
-I took a peek at the code, and I think it is the other way around. The
-cryptoapi code (like e.g. openvpn's pkcs11 code), supplies openssl with
-a signing function. OpenSSL then call thet function during the TLS
-handshake to get a valid signature.
+Our openvpn server got out of free inodes in /tmp, making it quite
+completely nonworking.  This is due to some codepath in multi.c which
+does not remove its temporary file (when a plugin callback returns an
+error, or a client-connect script returns an error).  Please see the
+attached patch which fixes this.
 
-However, the sign function in openvpn's cryptoapi.c restricts the
-possible signatures to tls 1.0/1.1 signatures and needs to be extended.
-But here's the catch: Microsofts crypto API sign function does not
-understand TLS 1.2 signatures either. Using the encrypt function might
-work here too, but the API is quite different, so you'll have to figure
-out how to retrieve the correct key (reference).
+Samuel
 
--Steffan
+--7JfCtLOvnd9MIVvH
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: attachment; filename=patch
+
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index 5910154..d0ed147 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -1699,6 +1705,9 @@ multi_connection_established (struct multi_context *m, struct multi_instance *mi
+ 	    {
+ 	      msg (M_WARN, "WARNING: client-connect plugin call failed");
+ 	      cc_succeeded = false;
++	      if (!platform_unlink (dc_file))
++		msg (D_MULTI_ERRORS, "MULTI: problem deleting temporary file: %s",
++		     dc_file);
+ 	    }
+ 	  else
+ 	    {
+@@ -1757,7 +1766,12 @@ multi_connection_established (struct multi_context *m, struct multi_instance *mi
+ 	      ++cc_succeeded_count;
+ 	    }
+ 	  else
+-	    cc_succeeded = false;
++	    {
++	      cc_succeeded = false;
++	      if (!platform_unlink (dc_file))
++		msg (D_MULTI_ERRORS, "MULTI: problem deleting temporary file: %s",
++		     dc_file);
++	    }
+         script_failed:
+ 	  argv_reset (&argv);
+ 	}
+
+--7JfCtLOvnd9MIVvH--
 
