@@ -1,15 +1,12 @@
-MIME-Version: 1.0
-Sender: fabian@...1547...
-In-Reply-To: <CAGyAFMX8Hf81e5Jom-F4__7ktrA5pyf1ygMff2ixHzqhsTebGQ@...278...>
-References: <CAGyAFMWg5j+ki56=fwOOZwcpAdixE8eDyJXFgktrNsOqrYZRcA@...278...>
-	<CAP+U6tKkiU3FmaPN66s62iZiEoqbmgLjn4J-kJTM9P=0H5qSMg@...278...>
-	<CAGyAFMX8Hf81e5Jom-F4__7ktrA5pyf1ygMff2ixHzqhsTebGQ@...278...>
+Sender: Fabian Knittel <fabian@...1547...>
 From: Fabian Knittel <fabian.knittel@...1547...>
-Date: Fri, 10 Oct 2014 22:43:03 +0200
-Message-ID: <CAP+U6t+djWatsor=OoKuSLEC12Mt5Vin8hJu2S81aRcAtPjk5Q@...278...>
-Content-Type: multipart/alternative; boundary=001a11c11812a2a9240505179990
-Subject: Re: [Openvpn-devel] Async OPENVPN_PLUGIN_CLIENT_CONNECT plugin
-	support
+Date: Sat, 11 Oct 2014 00:09:24 +0200
+Message-Id: <1412978966-15392-8-git-send-email-fabian.knittel@...1547...>
+In-Reply-To: <1412978966-15392-1-git-send-email-fabian.knittel@...1547...>
+References: <5437B156.1020408@...1114...>
+	<1412978966-15392-1-git-send-email-fabian.knittel@...1547...>
+Subject: [Openvpn-devel] [PATCH 7/9] client-connect: Add CC_RET_DEFERRED and
+	cope with deferred client-connect
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,161 +15,362 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Lev Stipakov <lstipakov@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---001a11c11812a2a9240505179990
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+This patch moves the state, that was previously tracked within the
+multi_connection_established() function, into struct client_connect_state.  The
+multi_connection_established() function can now be exited and re-entered as
+many times as necessary - without losing the client-connect handling state.
 
-Hi Lev,
+The patch also adds the new return value CC_RET_DEFERRED which indicates that
+the handler couldn't complete immediately, and needs to be called later.  At
+that point multi_connection_established() will exit without indicating
+completion.
 
-2014-10-07 20:50 GMT+02:00 Lev Stipakov <lstipakov@...277...>:
+Each client-connect handler now has an (optional) additional call-back:  The
+call-back for handling the deferred case.  If the main call-back returns
+CC_RET_DEFERRED, the next call to the handler will be through the deferred
+call-back.
 
-> Patch works great, thanks! I have rebased it a bit and added support
-> for client-connect plugin call.
->
+Signed-off-by: Fabian Knittel <fabian.knittel@...1547...>
+---
+ src/openvpn/multi.c | 255 ++++++++++++++++++++++++++++++++++------------------
+ src/openvpn/multi.h |  18 ++++
+ 2 files changed, 185 insertions(+), 88 deletions(-)
 
-Great to hear that my patch works for you!
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index 7815146..c044d67 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -47,6 +47,9 @@
+ 
+ /*#define MULTI_DEBUG_EVENT_LOOP*/
+ 
++static void delete_client_connect_state (struct multi_instance *mi);
++
++
+ #ifdef MULTI_DEBUG_EVENT_LOOP
+ static const char *
+ id (struct multi_instance *mi)
+@@ -573,6 +576,8 @@ multi_close_instance (struct multi_context *m,
+   set_cc_config (mi, NULL);
+ #endif
+ 
++  delete_client_connect_state (mi);
++
+   multi_client_disconnect_script (m, mi);
+ 
+   if (mi->did_open_context)
+@@ -1583,94 +1588,6 @@ multi_client_connect_setenv (struct multi_context *m,
+ 
+ static void
+ multi_client_connect_early_setup (struct multi_context *m,
+-				  struct multi_instance *mi);
+-static void
+-multi_client_connect_source_ccd (struct multi_context *m,
+-				 struct multi_instance *mi,
+-				 unsigned int *option_types_found);
+-static void
+-multi_client_connect_call_plugin_v1 (struct multi_context *m,
+-				     struct multi_instance *mi,
+-				     unsigned int *option_types_found,
+-				     int *cc_succeeded,
+-				     int *cc_succeeded_count);
+-static void
+-multi_client_connect_call_plugin_v2 (struct multi_context *m,
+-				     struct multi_instance *mi,
+-				     unsigned int *option_types_found,
+-				     int *cc_succeeded,
+-				     int *cc_succeeded_count);
+-static void
+-multi_client_connect_call_script (struct multi_context *m,
+-				  struct multi_instance *mi,
+-				  unsigned int *option_types_found,
+-				  int *cc_succeeded,
+-				  int *cc_succeeded_count);
+-static void
+-multi_client_connect_late_setup (struct multi_context *m,
+-				 struct multi_instance *mi,
+-				 const unsigned int option_types_found,
+-				 int cc_succeeded,
+-				 const int cc_succeeded_count);
+-
+-/*
+- * Called as soon as the SSL/TLS connection authenticates.
+- *
+- * Instance-specific directives to be processed:
+- *
+- *   iroute start-ip end-ip
+- *   ifconfig-push local remote-netmask
+- *   push
+- */
+-static void
+-multi_connection_established (struct multi_context *m, struct multi_instance *mi)
+-{
+-  if (tls_authentication_status (mi->context.c2.tls_multi, 0) == TLS_AUTHENTICATION_SUCCEEDED)
+-    {
+-      typedef enum client_connect_return_t (*multi_client_connect_handler)(struct multi_context *m, struct multi_instance *mi, unsigned int *option_types_found);
+-
+-      multi_client_connect_handler handlers[] = {
+-	  multi_client_connect_source_ccd,
+-	  multi_client_connect_call_plugin_v1,
+-	  multi_client_connect_call_plugin_v2,
+-	  multi_client_connect_call_script,
+-	  multi_client_connect_mda,
+-	  NULL
+-      };
+-
+-      int cur_handler = 0;
+-      unsigned int option_types_found = 0;
+-      int cc_succeeded = true; /* client connect script status */
+-      int cc_succeeded_count = 0;
+-      enum client_connect_return ret;
+-
+-      multi_client_connect_early_setup (m, mi);
+-
+-      while (succeeded && handlers[cur_handler])
+-	{
+-	  ret = handlers[cur_handler] (m, mi, &option_types_found);
+-	  if (ret == CC_RET_SUCCEEDED)
+-	    ++cc_succeeded_count;
+-	  else if (ret == CC_RET_FAILED)
+-	    succeeded = false;
+-	  ++cur_handler;
+-	}
+-
+-      multi_client_connect_late_setup (m, mi, option_types_found, cc_succeeded,
+-				       cc_succeeded_count);
+-
+-      /* set flag so we don't get called again */
+-      mi->connection_established_flag = true;
+-    }
+-
+-  /*
+-   * Reply now to client's PUSH_REQUEST query
+-   */
+-  mi->context.c2.push_reply_deferred = false;
+-}
+-
+-static void
+-multi_client_connect_early_setup (struct multi_context *m,
+ 				  struct multi_instance *mi)
+ {
+   /* lock down the common name and cert hashes so they can't change during
+@@ -2005,6 +1922,168 @@ multi_client_connect_late_setup (struct multi_context *m,
+   gc_free (&gc);
+ }
+ 
++static enum client_connect_return
++multi_client_connect_fail (struct multi_context *m, struct multi_instance *mi,
++			   unsigned int *option_types_found)
++{
++  /* Called null call-back.  This should never happen.  Fail loudly. */
++  return CC_RET_FAILED;
++}
++
++static void
++new_client_connect_state (struct multi_instance *mi)
++{
++  ASSERT (mi);
++  ALLOC_OBJ_CLEAR (mi->client_connect_state, struct client_connect_state);
++
++  mi->client_connect_state->succeeded = true;
++}
++
++static void
++delete_client_connect_state (struct multi_instance *mi)
++{
++  ASSERT (mi);
++  if (mi->client_connect_state)
++    {
++      free (mi->client_connect_state);
++      mi->client_connect_state = NULL;
++    }
++}
++
++typedef enum client_connect_return (*client_connect_handler)
++  (struct multi_context *m, struct multi_instance *mi,
++   unsigned int *option_types_found);
++
++struct client_connect_handlers
++{
++  client_connect_handler main;
++  client_connect_handler deferred;
++};
++
++static const struct client_connect_handlers client_connect_handlers[] = {
++  {
++    main: multi_client_connect_source_ccd,
++    deferred: multi_client_connect_fail
++  },
++  {
++    main: multi_client_connect_call_plugin_v1,
++    deferred: multi_client_connect_fail
++  },
++  {
++    main: multi_client_connect_call_plugin_v2,
++    deferred: multi_client_connect_fail
++  },
++  {
++    main: multi_client_connect_call_script,
++    deferred: multi_client_connect_fail
++  },
++  {
++    main: multi_client_connect_mda,
++    deferred: multi_client_connect_fail
++  },
++  {
++    /* End of list.  */
++  }
++};
++
++static enum client_connect_return
++multi_client_handle_single (client_connect_handler handler,
++			    struct multi_context *m,
++			    struct multi_instance *mi)
++{
++  struct client_connect_state *ccs = mi->client_connect_state;
++  enum client_connect_return ret;
++
++  ret = handler (m, mi, &ccs->option_types_found);
++  if (ret == CC_RET_SUCCEEDED)
++    ++ccs->succeeded_count;
++  else if (ret == CC_RET_FAILED)
++    ccs->succeeded = false;
++  else if (ret == CC_RET_DEFERRED)
++    {
++      /* Signal that we're deferring.  */
++      return ret;
++    }
++  return ret;
++}
++
++/*
++ * Called as soon as the SSL/TLS connection authenticates.
++ *
++ * Instance-specific directives to be processed:
++ *
++ *   iroute start-ip end-ip
++ *   ifconfig-push local remote-netmask
++ *   push
++ */
++static void
++multi_connection_established (struct multi_context *m, struct multi_instance *mi)
++{
++  if (tls_authentication_status (mi->context.c2.tls_multi, 0) == TLS_AUTHENTICATION_SUCCEEDED)
++    {
++      struct client_connect_state *ccs = mi->client_connect_state;
++      enum client_connect_return ret;
++
++      if (!ccs)
++	{
++	  /* This is the first time that we run client-connect handlers
++	     for this connection. */
++
++	  new_client_connect_state (mi);
++	  ccs = mi->client_connect_state;
++
++          multi_client_connect_early_setup (m, mi);
++	}
++      else
++	{
++	  /* We are returning from a deferred handler.  Check whether the
++	     handler has been completed yet.  */
++
++	  ASSERT (client_connect_handlers[ccs->cur_handler_idx].main);
++	  ASSERT (client_connect_handlers[ccs->cur_handler_idx].deferred);
++
++	  ret = multi_client_handle_single
++		  (client_connect_handlers[ccs->cur_handler_idx].deferred, m,
++		   mi);
++	  if (ret == CC_RET_DEFERRED)
++	    return;
++
++	  /* Proceed to next handler.  */
++	  ++ccs->cur_handler_idx;
++	}
++
++
++      /* Cycle through all (remaining) client-connect handlers until all
++	 have completed, one of them fails or one of them defers.  */
++      while (ccs->succeeded &&
++	     client_connect_handlers[ccs->cur_handler_idx].main)
++	{
++	  ret = multi_client_handle_single
++		  (client_connect_handlers[ccs->cur_handler_idx].main, m, mi);
++	  if (ret == CC_RET_DEFERRED)
++	    return;
++
++	  /* Proceed to next handler.  */
++	  ++ccs->cur_handler_idx;
++	}
++
++      /* Done with all client-connect handlers now.  */
++
++      multi_client_connect_late_setup (m, mi, ccs->option_types_found,
++				       ccs->succeeded, ccs->succeeded_count);
++
++      /* Clean-up.  */
++      delete_client_connect_state (mi);
++
++      /* set flag so we don't get called again */
++      mi->connection_established_flag = true;
++    }
++
++  /*
++   * Reply now to client's PUSH_REQUEST query
++   */
++  mi->context.c2.push_reply_deferred = false;
++}
+ 
+ /*
+  * Add a mbuf buffer to a particular
+diff --git a/src/openvpn/multi.h b/src/openvpn/multi.h
+index 0adcd47..16dd99d 100644
+--- a/src/openvpn/multi.h
++++ b/src/openvpn/multi.h
+@@ -54,6 +54,22 @@ struct multi_reap
+   time_t last_call;
+ };
+ 
++/**
++ * Detached client connection state.  This is the state that is tracked while
++ * the client connect hooks are executed.
++ */
++struct client_connect_state
++{
++  /* Index of currently executed handler.  */
++  int cur_handler_idx;
++  /* Did all of the handlers succeed up to now?  */
++  bool succeeded;
++  /* How many handlers succeeded?  */
++  int succeeded_count;
++  /* Remember which option classes where processed for delayed option
++     handling. */
++  unsigned int option_types_found;
++};
+ 
+ /**
+  * Server-mode state structure for one single VPN tunnel.
+@@ -103,6 +119,7 @@ struct multi_instance {
+ 
+   struct context context;       /**< The context structure storing state
+                                  *   for this VPN tunnel. */
++  struct client_connect_state *client_connect_state;
+ };
+ 
+ /**
+@@ -175,6 +192,7 @@ enum client_connect_return
+ {
+   CC_RET_FAILED,
+   CC_RET_SUCCEEDED,
++  CC_RET_DEFERRED,
+   CC_RET_SKIPPED
+ };
+ 
+-- 
+2.1.1
 
-I've finally rebased the patches too, due to my current users complaining
-about the old OpenVPN version and missing security updates. (See
-https://github.com/fknittel/openvpn/tree/feat_deferred_client-connect -
-there's a branch for master and a branch for the OpenVPN 2.3 stable branch.)
-
-You say that you've added support for the client-connect plugin call. May I
-ask what was missing? I'd definitely be interested in any changes you
-needed to make it work. I would have expected the patch titled
-"client-connect: Add deferred support to the client-connect plugin v1
-handler" to provide everything, but as I only ever used the script handler,
-it's not unlikely that I missed something.
-
-I would like to offer a related feature (and implementation) I call
-> async-push.
->
-> Use case: authentication / authorization takes time. I have auth/az
-> code in auth-user-pass-verify and client-connect calls, and sometimes
-> it takes more that second to execute those. The problem is that after
-> auth-user-pass-verify is done, OpenVPN server won=E2=80=99t proceed with
-> client-connect unless some timeout/io event happens for that client.
-> Also, server will not notify client that client-connect returned
-> success unless client sends PULL_REQUEST. Client, in turn, sends
-> PULL_REQUEST one second after connection initiation and after that
-> once per 5 seconds. So, for example, if at the moment when first pull
-> request has arrived, client-connect has not finished yet, we will have
-> to wait another 5 seconds for the next PULL_REQUEST.
->
-
-So this is basically about replacing a 5s poll-interval with something that
-should proceed near instantaneously, correct?
-
-
-> Solution: Inotify. Since OpenVPN creates itself files (auth-contro and
-> client-connect-deferred) which names it passes to the plugin, we
-> create one inotify descriptor for event loop and right after creating
-> those files, we add inotify watch on those. Before calling epoll (or
-> whatever we use) we add inotify descriptor to the list of watched
-> descriptors. We also keep watch descriptor and multi_instance in a
-> hashtable.
->
-> When epoll informs us that an event has happened on inotify
-> descriptor, we get multi_instance by watch descriptor (fetched from
-> poll event) from our new hashtable and call multi_process_post for
-> given multi_instance. This will check result from the file and
-> eventually call multi_connection_established, from where we call
-> send_push_reply.
->
-> Since implementation uses Inotify, it will work on Linux only. Code is
-> under #define, which is set at compile-time (--enable-async-push=3Dyes).
->
-> I have attached an implementation. So far has been working nicely in
-> my test environment. I would love to hear a feedback from the
-> community. Is the whole thing done more or less right? Any bugs got
-> introduced that someone could spot?
->
-
-Thanks for sharing! I'll have a look at it, when time permits. Though my
-focus is currently on getting some or all of the patches from the basic
-patch-set upstream.
-
-Cheers
-Fabian
-
---001a11c11812a2a9240505179990
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr">Hi Lev,<div><br></div><div>2014-10-07 20:50 GMT+02:00 Lev =
-Stipakov <span dir=3D"ltr">&lt;<a href=3D"mailto:lstipakov@...277..." targe=
-t=3D"_blank" onclick=3D"window.open(&#39;https://mail.google.com/mail/?view=
-=3Dcm&amp;tf=3D1&amp;to=3Dlstipakov@...277...&amp;cc=3D&amp;bcc=3D&amp;su=
-=3D&amp;body=3D&#39;,&#39;_blank&#39;);return false;">lstipakov@...277...</=
-a>&gt;</span>:<br></div><div class=3D"gmail_extra"><div class=3D"gmail_quot=
-e"><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;bord=
-er-left-width:1px;border-left-color:rgb(204,204,204);border-left-style:soli=
-d;padding-left:1ex">Patch works great, thanks! I have rebased it a bit and =
-added support<br>
-for client-connect plugin call.<br></blockquote><div><br></div><div><div>Gr=
-eat to hear that my patch works for you!</div><div><br></div><div>I&#39;ve =
-finally rebased the patches too, due to my current users complaining about =
-the old OpenVPN version and missing security updates. (See=C2=A0<a href=3D"=
-https://github.com/fknittel/openvpn/tree/feat_deferred_client-connect">http=
-s://github.com/fknittel/openvpn/tree/feat_deferred_client-connect</a> - the=
-re&#39;s a branch for master and a branch for the OpenVPN 2.3 stable branch=
-.)</div></div><div>=C2=A0<br></div><div>You say that you&#39;ve added suppo=
-rt for the client-connect plugin call. May I ask what was missing? I&#39;d =
-definitely be interested in any changes you needed to make it work. I would=
- have expected the patch titled &quot;client-connect: Add deferred support =
-to the client-connect plugin v1 handler&quot; to provide everything, but as=
- I only ever used the script handler, it&#39;s not unlikely that I missed s=
-omething.</div><div><br></div><blockquote class=3D"gmail_quote" style=3D"ma=
-rgin:0px 0px 0px 0.8ex;border-left-width:1px;border-left-color:rgb(204,204,=
-204);border-left-style:solid;padding-left:1ex">
-I would like to offer a related feature (and implementation) I call async-p=
-ush.<br>
-<br>
-Use case: authentication / authorization takes time. I have auth/az<br>
-code in auth-user-pass-verify and client-connect calls, and sometimes<br>
-it takes more that second to execute those. The problem is that after<br>
-auth-user-pass-verify is done, OpenVPN server won=E2=80=99t proceed with<br>
-client-connect unless some timeout/io event happens for that client.<br>
-Also, server will not notify client that client-connect returned<br>
-success unless client sends PULL_REQUEST. Client, in turn, sends<br>
-PULL_REQUEST one second after connection initiation and after that<br>
-once per 5 seconds. So, for example, if at the moment when first pull<br>
-request has arrived, client-connect has not finished yet, we will have<br>
-to wait another 5 seconds for the next PULL_REQUEST.<br></blockquote><div><=
-br></div><div>So this is basically about replacing a 5s poll-interval with =
-something that should proceed near instantaneously, correct?</div><div>=C2=
-=A0</div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8e=
-x;border-left-width:1px;border-left-color:rgb(204,204,204);border-left-styl=
-e:solid;padding-left:1ex">
-Solution: Inotify. Since OpenVPN creates itself files (auth-contro and<br>
-client-connect-deferred) which names it passes to the plugin, we<br>
-create one inotify descriptor for event loop and right after creating<br>
-those files, we add inotify watch on those. Before calling epoll (or<br>
-whatever we use) we add inotify descriptor to the list of watched<br>
-descriptors. We also keep watch descriptor and multi_instance in a<br>
-hashtable.<br>
-<br>
-When epoll informs us that an event has happened on inotify<br>
-descriptor, we get multi_instance by watch descriptor (fetched from<br>
-poll event) from our new hashtable and call multi_process_post for<br>
-given multi_instance. This will check result from the file and<br>
-eventually call multi_connection_established, from where we call<br>
-send_push_reply.<br>
-<br>
-Since implementation uses Inotify, it will work on Linux only. Code is<br>
-under #define, which is set at compile-time (--enable-async-push=3Dyes).<br>
-<br>
-I have attached an implementation. So far has been working nicely in<br>
-my test environment. I would love to hear a feedback from the<br>
-community. Is the whole thing done more or less right? Any bugs got<br>
-introduced that someone could spot?<br></blockquote><div><br></div><div>Tha=
-nks for sharing! I&#39;ll have a look at it, when time permits. Though my f=
-ocus is currently on getting some or all of the patches from the basic patc=
-h-set upstream.</div><div><br></div><div>Cheers</div><div>Fabian</div></div=
-></div></div>
-
---001a11c11812a2a9240505179990--
 
