@@ -1,12 +1,12 @@
 Sender: Fabian Knittel <fabian@...1547...>
 From: Fabian Knittel <fabian.knittel@...1547...>
-Date: Sat, 11 Oct 2014 00:09:23 +0200
-Message-Id: <1412978966-15392-7-git-send-email-fabian.knittel@...1547...>
+Date: Sat, 11 Oct 2014 00:09:26 +0200
+Message-Id: <1412978966-15392-10-git-send-email-fabian.knittel@...1547...>
 In-Reply-To: <1412978966-15392-1-git-send-email-fabian.knittel@...1547...>
 References: <5437B156.1020408@...1114...>
 	<1412978966-15392-1-git-send-email-fabian.knittel@...1547...>
-Subject: [Openvpn-devel] [PATCH 6/9] client-connect: Refactor client-connect
-	handling to calling a bunch of hooks in a loop
+Subject: [Openvpn-devel] [PATCH 9/9] client-connect: Add deferred support to
+	the client-connect plugin v1 handler
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,93 +19,87 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This patch changes the calling of the client-connect functions into an array
-of hooks and a block of code that calls them in a loop.
+Uses the infrastructure provided and used in the previous patch to provide
+deferral support to the v1 client-connect plugin handler as well.
 
 Signed-off-by: Fabian Knittel <fabian.knittel@...1547...>
 ---
- src/openvpn/multi.c | 57 +++++++++++++++--------------------------------------
- 1 file changed, 16 insertions(+), 41 deletions(-)
+ src/openvpn/multi.c | 30 +++++++++++++++++++-----------
+ 1 file changed, 19 insertions(+), 11 deletions(-)
 
 diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index 4ead41e..7815146 100644
+index a3d94fa..c888e39 100644
 --- a/src/openvpn/multi.c
 +++ b/src/openvpn/multi.c
-@@ -1627,6 +1627,18 @@ multi_connection_established (struct multi_context *m, struct multi_instance *mi
+@@ -1799,6 +1799,7 @@ multi_client_connect_call_plugin_v1 (struct multi_context *m,
  {
-   if (tls_authentication_status (mi->context.c2.tls_multi, 0) == TLS_AUTHENTICATION_SUCCEEDED)
+   enum client_connect_return ret = CC_RET_SKIPPED;
+ #ifdef ENABLE_PLUGIN
++  struct client_connect_state *ccs = mi->client_connect_state;
+   ASSERT (m);
+   ASSERT (mi);
+   ASSERT (option_types_found);
+@@ -1806,34 +1807,41 @@ multi_client_connect_call_plugin_v1 (struct multi_context *m,
+   if (plugin_defined (mi->context.plugins, OPENVPN_PLUGIN_CLIENT_CONNECT))
      {
-+      typedef enum client_connect_return_t (*multi_client_connect_handler)(struct multi_context *m, struct multi_instance *mi, unsigned int *option_types_found);
-+
-+      multi_client_connect_handler handlers[] = {
-+	  multi_client_connect_source_ccd,
-+	  multi_client_connect_call_plugin_v1,
-+	  multi_client_connect_call_plugin_v2,
-+	  multi_client_connect_call_script,
-+	  multi_client_connect_mda,
-+	  NULL
-+      };
-+
-+      int cur_handler = 0;
-       unsigned int option_types_found = 0;
-       int cc_succeeded = true; /* client connect script status */
-       int cc_succeeded_count = 0;
-@@ -1634,51 +1646,14 @@ multi_connection_established (struct multi_context *m, struct multi_instance *mi
+       int plug_ret;
+-      struct gc_arena gc = gc_new ();
+       struct argv argv = argv_new ();
+-      const char *dc_file = create_temp_file (mi->context.options.tmp_dir, "cc", &gc);
  
-       multi_client_connect_early_setup (m, mi);
- 
--      if (cc_succeeded)
-+      while (succeeded && handlers[cur_handler])
+-      if (!dc_file)
++      if (!ccs_gen_config_file (mi) ||
++	  !ccs_gen_deferred_ret_file (mi))
  	{
--	  ret = multi_client_connect_source_ccd (m, mi, &option_types_found);
-+	  ret = handlers[cur_handler] (m, mi, &option_types_found);
- 	  if (ret == CC_RET_SUCCEEDED)
- 	    ++cc_succeeded_count;
- 	  else if (ret == CC_RET_FAILED)
--	    cc_succeeded = false;
--	}
--
--      if (cc_succeeded)
--	{
--	  ret = multi_client_connect_call_plugin_v1 (m, mi,
--						     &option_types_found);
--	  if (ret == CC_RET_SUCCEEDED)
--	    ++cc_succeeded_count;
--	  else if (ret == CC_RET_FAILED)
--	    cc_succeeded = false;
--	}
--
--      if (cc_succeeded)
--	{
--	  ret = multi_client_connect_call_plugin_v2 (m, mi,
--						     &option_types_found);
--	  if (ret == CC_RET_SUCCEEDED)
--	    ++cc_succeeded_count;
--	  else if (ret == CC_RET_FAILED)
--	    cc_succeeded = false;
--	}
--
--      if (cc_succeeded)
--	{
--	  ret = multi_client_connect_call_script (m, mi, &option_types_found);
--	  if (ret == CC_RET_SUCCEEDED)
--	    ++cc_succeeded_count;
--	  else if (ret == CC_RET_FAILED)
--	    cc_succeeded = false;
--	}
--
--      if (cc_succeeded)
--	{
--	  ret = multi_client_connect_mda (m, mi, &option_types_found);
--	  if (ret == CC_RET_SUCCEEDED)
--	    ++cc_succeeded_count;
--	  else if (ret == CC_RET_FAILED)
--	    cc_succeeded = false;
-+	    succeeded = false;
-+	  ++cur_handler;
+ 	  ret = CC_RET_FAILED;
+ 	  goto script_depr_failed;
  	}
  
-       multi_client_connect_late_setup (m, mi, option_types_found, cc_succeeded,
+-      argv_printf (&argv, "%s", dc_file);
++      argv_printf (&argv, "%s", ccs->config_file);
+ 
+       plug_ret = plugin_call (mi->context.plugins,
+ 			      OPENVPN_PLUGIN_CLIENT_CONNECT,
+ 			      &argv, NULL, mi->context.c2.es);
+       argv_reset (&argv);
+-      if (plug_ret != OPENVPN_PLUGIN_FUNC_SUCCESS)
++      if (plug_ret == OPENVPN_PLUGIN_FUNC_SUCCESS)
+ 	{
+-	  msg (M_WARN, "WARNING: client-connect plugin call failed");
+-	  ret = CC_RET_FAILED;
++	  multi_client_connect_post (m, mi, ccs->config_file,
++				     option_types_found);
++	  ret = CC_RET_SUCCEEDED;
+ 	}
++      else if (plug_ret == OPENVPN_PLUGIN_FUNC_DEFERRED)
++	ret = CC_RET_DEFERRED;
+       else
+ 	{
+-	  multi_client_connect_post (m, mi, dc_file, option_types_found);
+-	  ret = CC_RET_SUCCEEDED;
++	  msg (M_WARN, "WARNING: client-connect plugin call failed");
++	  ret = CC_RET_FAILED;
+ 	}
++
+ script_depr_failed:
+-      gc_free (&gc);
++      if (ret != CC_RET_DEFERRED)
++	{
++	  ccs_delete_config_file (mi);
++	  ccs_delete_deferred_ret_file (mi);
++	}
+     }
+ #endif
+   return ret;
+@@ -2126,7 +2134,7 @@ static const struct client_connect_handlers client_connect_handlers[] = {
+   },
+   {
+     main: multi_client_connect_call_plugin_v1,
+-    deferred: multi_client_connect_fail
++    deferred: multi_client_handle_deferred
+   },
+   {
+     main: multi_client_connect_call_plugin_v2,
 -- 
 2.1.1
 
