@@ -1,12 +1,12 @@
 Sender: Fabian Knittel <fabian@...1547...>
 From: Fabian Knittel <fabian.knittel@...1547...>
-Date: Sat, 11 Oct 2014 00:09:25 +0200
-Message-Id: <1412978966-15392-9-git-send-email-fabian.knittel@...1547...>
+Date: Sat, 11 Oct 2014 00:09:19 +0200
+Message-Id: <1412978966-15392-3-git-send-email-fabian.knittel@...1547...>
 In-Reply-To: <1412978966-15392-1-git-send-email-fabian.knittel@...1547...>
 References: <5437B156.1020408@...1114...>
 	<1412978966-15392-1-git-send-email-fabian.knittel@...1547...>
-Subject: [Openvpn-devel] [PATCH 8/9] client-connect: Add deferred support to
-	the client-connect script handler
+Subject: [Openvpn-devel] [PATCH 2/9] client-connect: Properly indent all
+	functions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,269 +19,523 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This patch introduces the concept of a return value file for the client-connect
-handlers. (This is very similar to the auth value file used during deferred
-authentication.)  The file name is stored in the client_connect_state struct.
-
-In addition, the patch also allows the storage of the client config file name
-in struct client_connect_state.
-
-Both changes are used by the client-connect script handler to support deferred
-client-connection handling.  The deferred return value file (deferred_ret_file)
-is passed to the actual script via the environment.  If the script succeeds and
-writes the value for deferral into the deferred_ret_file, the handler knows to
-indicate deferral.  Later on, the deferred handler checks whether the value of
-the deferred_ret_file has been updated to success or failure.
+This patch adds proper indentation to all new helper functions.  No functional
+changes are performed.  Nothing is moved around.
 
 Signed-off-by: Fabian Knittel <fabian.knittel@...1547...>
 ---
- src/openvpn/multi.c | 177 +++++++++++++++++++++++++++++++++++++++++++++++++---
- src/openvpn/multi.h |   3 +
- 2 files changed, 171 insertions(+), 9 deletions(-)
+ src/openvpn/multi.c | 408 ++++++++++++++++++++++++++--------------------------
+ 1 file changed, 204 insertions(+), 204 deletions(-)
 
 diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index c044d67..a3d94fa 100644
+index ed10e20..23b86a5 100644
 --- a/src/openvpn/multi.c
 +++ b/src/openvpn/multi.c
-@@ -1610,6 +1610,125 @@ multi_client_connect_early_setup (struct multi_context *m,
-   multi_client_connect_setenv (m, mi);
+@@ -1686,20 +1686,20 @@ static void
+ multi_client_connect_early_setup (struct multi_context *m,
+ 				  struct multi_instance *mi)
+ {
+-      /* lock down the common name and cert hashes so they can't change during
+-	 future TLS renegotiations */
+-      tls_lock_common_name (mi->context.c2.tls_multi);
+-      tls_lock_cert_hash_set (mi->context.c2.tls_multi);
++  /* lock down the common name and cert hashes so they can't change during
++     future TLS renegotiations */
++  tls_lock_common_name (mi->context.c2.tls_multi);
++  tls_lock_cert_hash_set (mi->context.c2.tls_multi);
+ 
+-      /* generate a msg() prefix for this client instance */
+-      generate_prefix (mi);
++  /* generate a msg() prefix for this client instance */
++  generate_prefix (mi);
+ 
+-      /* delete instances of previous clients with same common-name */
+-      if (!mi->context.options.duplicate_cn)
+-	multi_delete_dup (m, mi);
++  /* delete instances of previous clients with same common-name */
++  if (!mi->context.options.duplicate_cn)
++    multi_delete_dup (m, mi);
+ 
+-      /* reset pool handle to null */
+-      mi->vaddr_handle = -1;
++  /* reset pool handle to null */
++  mi->vaddr_handle = -1;
  }
  
-+
-+static void
-+ccs_delete_deferred_ret_file (struct multi_instance *mi)
-+{
-+  struct client_connect_state *ccs = mi->client_connect_state;
-+  if (ccs->deferred_ret_file)
-+    {
-+      setenv_del (mi->context.c2.es, "client_connect_deferred_file");
-+      platform_unlink (ccs->deferred_ret_file);
-+      free (ccs->deferred_ret_file);
-+      ccs->deferred_ret_file = NULL;
-+    }
-+}
-+
-+static bool
-+ccs_gen_deferred_ret_file (struct multi_instance *mi)
-+{
-+  struct client_connect_state *ccs = mi->client_connect_state;
-+  struct gc_arena gc = gc_new ();
-+  const char *fn;
-+
-+  if (ccs->deferred_ret_file)
-+    ccs_delete_deferred_ret_file (mi);
-+
-+  fn = create_temp_file (mi->context.options.tmp_dir, "ccr", &gc);
-+  if (!fn)
-+    {
-+      gc_free (&gc);
-+      return false;
-+    }
-+  ccs->deferred_ret_file = string_alloc (fn, NULL);
-+
-+  setenv_str (mi->context.c2.es, "client_connect_deferred_file",
-+	      ccs->deferred_ret_file);
-+
-+  gc_free (&gc);
-+  return true;
-+}
-+
-+/*
-+ * Tests whether the deferred return value file exists and returns the
-+ * contained return value.
-+ *
-+ * Returns CC_RET_SKIPPED if the file doesn't exist or is empty.
-+ * Returns CC_RET_DEFERRED, CC_RET_SUCCEEDED or CC_RET_FAILED depending on
-+ * the value stored in the file.
-+ */
-+static enum client_connect_return
-+ccs_test_deferred_ret_file (struct multi_instance *mi)
-+{
-+  struct client_connect_state *ccs = mi->client_connect_state;
-+  enum client_connect_return ret = CC_RET_SKIPPED;
-+  FILE *fp = fopen (ccs->deferred_ret_file, "r");
-+  if (fp)
-+    {
-+      const int c = fgetc (fp);
-+      switch (c)
-+	{
-+	case '0':
-+	  ret = CC_RET_FAILED;
-+	  break;
-+	case '1':
-+	  ret = CC_RET_SUCCEEDED;
-+	  break;
-+	case '2':
-+	  ret = CC_RET_DEFERRED;
-+	  break;
-+	case EOF:
-+	  ret = CC_RET_SKIPPED;
-+	  break;
-+	default:
-+	  /* We received an unknown/unexpected value.  Assume failure. */
-+	  ret = CC_RET_FAILED;
-+	}
-+      fclose (fp);
-+    }
-+  return ret;
-+}
-+
-+
-+static void
-+ccs_delete_config_file (struct multi_instance *mi)
-+{
-+  struct client_connect_state *ccs = mi->client_connect_state;
-+  if (ccs->config_file)
-+    {
-+      setenv_del (mi->context.c2.es, "client_connect_config_file");
-+      platform_unlink (ccs->config_file);
-+      free (ccs->config_file);
-+      ccs->config_file = NULL;
-+    }
-+}
-+
-+static bool
-+ccs_gen_config_file (struct multi_instance *mi)
-+{
-+  struct client_connect_state *ccs = mi->client_connect_state;
-+  struct gc_arena gc = gc_new ();
-+  const char *fn;
-+
-+  if (ccs->config_file)
-+    ccs_delete_config_file (mi);
-+
-+  fn = create_temp_file (mi->context.options.tmp_dir, "cc", &gc);
-+  if (!fn)
-+    {
-+      gc_free (&gc);
-+      return false;
-+    }
-+  ccs->config_file = string_alloc (fn, NULL);
-+
-+  setenv_str (mi->context.c2.es, "client_connect_config_file",
-+	      ccs->config_file);
-+
-+  gc_free (&gc);
-+  return true;
-+}
-+
-+
  /*
-  * Try to source a dynamic config file from the
-  * --client-config-dir directory.
-@@ -1775,14 +1894,14 @@ multi_client_connect_call_script (struct multi_context *m,
- 
-   if (mi->context.options.client_connect_script)
-     {
--      struct gc_arena gc = gc_new ();
-+      struct client_connect_state *ccs = mi->client_connect_state;
-       struct argv argv = argv_new ();
--      const char *dc_file;
-+      ASSERT (ccs);
- 
-       setenv_str (mi->context.c2.es, "script_type", "client-connect");
- 
--      dc_file = create_temp_file (mi->context.options.tmp_dir, "cc", &gc);
--      if (!dc_file)
-+      if (!ccs_gen_config_file (mi) ||
-+	  !ccs_gen_deferred_ret_file (mi))
- 	{
- 	  ret = CC_RET_FAILED;
- 	  goto script_failed;
-@@ -1790,19 +1909,56 @@ multi_client_connect_call_script (struct multi_context *m,
- 
-       argv_printf (&argv, "%sc %s",
- 		   mi->context.options.client_connect_script,
--		   dc_file);
-+		   ccs->config_file);
- 
-       if (openvpn_run_script (&argv, mi->context.c2.es, 0, "--client-connect"))
- 	{
--	  multi_client_connect_post (m, mi, dc_file, option_types_found);
--	  ret = CC_RET_SUCCEEDED;
-+	  if (ccs_test_deferred_ret_file (mi) == CC_RET_DEFERRED)
-+	    ret = CC_RET_DEFERRED;
-+	  else
-+	    {
-+	      multi_client_connect_post (m, mi, ccs->config_file,
-+					 option_types_found);
-+	      ret = CC_RET_SUCCEEDED;
-+	    }
- 	}
-       else
- 	ret = CC_RET_FAILED;
- 
- script_failed:
-+      if (ret != CC_RET_DEFERRED)
-+	{
-+	  ccs_delete_config_file (mi);
-+	  ccs_delete_deferred_ret_file (mi);
-+	}
-+
-       argv_reset (&argv);
--      gc_free (&gc);
-+    }
-+  return ret;
-+}
-+
-+static enum client_connect_return
-+multi_client_handle_deferred (struct multi_context *m,
-+			      struct multi_instance *mi,
-+			      unsigned int *option_types_found)
-+{
-+  struct client_connect_state *ccs = mi->client_connect_state;
-+  enum client_connect_return ret = CC_RET_SKIPPED;
-+  ASSERT (option_types_found);
-+  ASSERT (ccs);
-+
-+  ret = ccs_test_deferred_ret_file (mi);
-+
-+  if (ret == CC_RET_SKIPPED)
-+    /* Skipped and deferred are equivalent in this context. */
-+    ret = CC_RET_DEFERRED;
-+
-+  if (ret != CC_RET_DEFERRED)
+@@ -1711,16 +1711,31 @@ multi_client_connect_source_ccd (struct multi_context *m,
+ 				 struct multi_instance *mi,
+ 				 unsigned int *option_types_found)
+ {
+-      if (mi->context.options.client_config_dir)
++  if (mi->context.options.client_config_dir)
 +    {
-+      ccs_delete_deferred_ret_file (mi);
++      struct gc_arena gc = gc_new ();
++      const char *ccd_file;
++      
++      ccd_file = gen_path (mi->context.options.client_config_dir,
++			   tls_common_name (mi->context.c2.tls_multi, false),
++			   &gc);
 +
-+      multi_client_connect_post (m, mi, ccs->config_file, option_types_found);
-+      ccs_delete_config_file (mi);
-     }
-   return ret;
- }
-@@ -1945,6 +2101,9 @@ delete_client_connect_state (struct multi_instance *mi)
-   ASSERT (mi);
-   if (mi->client_connect_state)
-     {
-+      ccs_delete_deferred_ret_file (mi);
-+      ccs_delete_config_file (mi);
-+
-       free (mi->client_connect_state);
-       mi->client_connect_state = NULL;
-     }
-@@ -1975,7 +2134,7 @@ static const struct client_connect_handlers client_connect_handlers[] = {
-   },
-   {
-     main: multi_client_connect_call_script,
--    deferred: multi_client_connect_fail
-+    deferred: multi_client_handle_deferred
-   },
-   {
-     main: multi_client_connect_mda,
-diff --git a/src/openvpn/multi.h b/src/openvpn/multi.h
-index 16dd99d..137228d 100644
---- a/src/openvpn/multi.h
-+++ b/src/openvpn/multi.h
-@@ -69,6 +69,9 @@ struct client_connect_state
-   /* Remember which option classes where processed for delayed option
-      handling. */
-   unsigned int option_types_found;
-+
-+  char *deferred_ret_file;
-+  char *config_file;
- };
++      /* try common-name file */
++      if (test_file (ccd_file))
++	{
++	  options_server_import (&mi->context.options,
++				 ccd_file,
++				 D_IMPORT_ERRORS|M_OPTERR,
++				 CLIENT_CONNECT_OPT_MASK,
++				 option_types_found,
++				 mi->context.c2.es);
++	}
++      else /* try default file */
+ 	{
+-	  struct gc_arena gc = gc_new ();
+-	  const char *ccd_file;
+-	  
+ 	  ccd_file = gen_path (mi->context.options.client_config_dir,
+-			       tls_common_name (mi->context.c2.tls_multi, false),
++			       CCD_DEFAULT,
+ 			       &gc);
  
- /**
+-	  /* try common-name file */
+ 	  if (test_file (ccd_file))
+ 	    {
+ 	      options_server_import (&mi->context.options,
+@@ -1730,25 +1745,10 @@ multi_client_connect_source_ccd (struct multi_context *m,
+ 				     option_types_found,
+ 				     mi->context.c2.es);
+ 	    }
+-	  else /* try default file */
+-	    {
+-	      ccd_file = gen_path (mi->context.options.client_config_dir,
+-				   CCD_DEFAULT,
+-				   &gc);
+-
+-	      if (test_file (ccd_file))
+-		{
+-		  options_server_import (&mi->context.options,
+-					 ccd_file,
+-					 D_IMPORT_ERRORS|M_OPTERR,
+-					 CLIENT_CONNECT_OPT_MASK,
+-					 option_types_found,
+-					 mi->context.c2.es);
+-		}
+-	    }
+-
+-	  gc_free (&gc);
+ 	}
++
++      gc_free (&gc);
++    }
+ }
+ 
+ /*
+@@ -1764,44 +1764,44 @@ multi_client_connect_call_plugin_v1 (struct multi_context *m,
+ 				     int *cc_succeeded_count)
+ {
+ #ifdef ENABLE_PLUGIN
+-      ASSERT (m);
+-      ASSERT (mi);
+-      ASSERT (option_types_found);
+-      ASSERT (cc_succeeded);
+-      ASSERT (cc_succeeded_count);
++  ASSERT (m);
++  ASSERT (mi);
++  ASSERT (option_types_found);
++  ASSERT (cc_succeeded);
++  ASSERT (cc_succeeded_count);
+ 
+-      if (plugin_defined (mi->context.plugins, OPENVPN_PLUGIN_CLIENT_CONNECT))
+-	{
+-	  int plug_ret;
+-	  struct gc_arena gc = gc_new ();
+-	  struct argv argv = argv_new ();
+-	  const char *dc_file = create_temp_file (mi->context.options.tmp_dir, "cc", &gc);
++  if (plugin_defined (mi->context.plugins, OPENVPN_PLUGIN_CLIENT_CONNECT))
++    {
++      int plug_ret;
++      struct gc_arena gc = gc_new ();
++      struct argv argv = argv_new ();
++      const char *dc_file = create_temp_file (mi->context.options.tmp_dir, "cc", &gc);
+ 
+-          if (!dc_file)
+-	    {
+-	      *cc_succeeded = false;
+-	      goto script_depr_failed;
+-	    }
++      if (!dc_file)
++	{
++	  *cc_succeeded = false;
++	  goto script_depr_failed;
++	}
+ 
+-	  argv_printf (&argv, "%s", dc_file);
++      argv_printf (&argv, "%s", dc_file);
+ 
+-	  plug_ret = plugin_call (mi->context.plugins,
+-				  OPENVPN_PLUGIN_CLIENT_CONNECT,
+-				  &argv, NULL, mi->context.c2.es);
+-	  argv_reset (&argv);
+-	  if (plug_ret != OPENVPN_PLUGIN_FUNC_SUCCESS)
+-	    {
+-	      msg (M_WARN, "WARNING: client-connect plugin call failed");
+-	      *cc_succeeded = false;
+-	    }
+-	  else
+-	    {
+-	      multi_client_connect_post (m, mi, dc_file, option_types_found);
+-	      ++*cc_succeeded_count;
+-	    }
+-script_depr_failed:
+-	  gc_free (&gc);
++      plug_ret = plugin_call (mi->context.plugins,
++			      OPENVPN_PLUGIN_CLIENT_CONNECT,
++			      &argv, NULL, mi->context.c2.es);
++      argv_reset (&argv);
++      if (plug_ret != OPENVPN_PLUGIN_FUNC_SUCCESS)
++	{
++	  msg (M_WARN, "WARNING: client-connect plugin call failed");
++	  *cc_succeeded = false;
+ 	}
++      else
++	{
++	  multi_client_connect_post (m, mi, dc_file, option_types_found);
++	  ++*cc_succeeded_count;
++	}
++script_depr_failed:
++      gc_free (&gc);
++    }
+ #endif
+ }
+ 
+@@ -1818,35 +1818,35 @@ multi_client_connect_call_plugin_v2 (struct multi_context *m,
+ 				     int *cc_succeeded_count)
+ {
+ #ifdef ENABLE_PLUGIN
+-      ASSERT (m);
+-      ASSERT (mi);
+-      ASSERT (option_types_found);
+-      ASSERT (cc_succeeded);
+-      ASSERT (cc_succeeded_count);
+-
+-      if (plugin_defined (mi->context.plugins, OPENVPN_PLUGIN_CLIENT_CONNECT_V2))
+-	{
+-	  int plug_ret;
+-	  struct plugin_return pr;
++  ASSERT (m);
++  ASSERT (mi);
++  ASSERT (option_types_found);
++  ASSERT (cc_succeeded);
++  ASSERT (cc_succeeded_count);
+ 
+-	  plugin_return_init (&pr);
++  if (plugin_defined (mi->context.plugins, OPENVPN_PLUGIN_CLIENT_CONNECT_V2))
++    {
++      int plug_ret;
++      struct plugin_return pr;
+ 
+-	  plug_ret = plugin_call (mi->context.plugins,
+-				  OPENVPN_PLUGIN_CLIENT_CONNECT_V2,
+-				  NULL, &pr, mi->context.c2.es);
+-	  if (plug_ret != OPENVPN_PLUGIN_FUNC_SUCCESS)
+-	    {
+-	      msg (M_WARN, "WARNING: client-connect-v2 plugin call failed");
+-	      *cc_succeeded = false;
+-	    }
+-	  else
+-	    {
+-	      multi_client_connect_post_plugin (m, mi, &pr, option_types_found);
+-	      ++*cc_succeeded_count;
+-	    }
++      plugin_return_init (&pr);
+ 
+-	  plugin_return_free (&pr);
++      plug_ret = plugin_call (mi->context.plugins,
++			      OPENVPN_PLUGIN_CLIENT_CONNECT_V2,
++			      NULL, &pr, mi->context.c2.es);
++      if (plug_ret != OPENVPN_PLUGIN_FUNC_SUCCESS)
++	{
++	  msg (M_WARN, "WARNING: client-connect-v2 plugin call failed");
++	  *cc_succeeded = false;
++	}
++      else
++	{
++	  multi_client_connect_post_plugin (m, mi, &pr, option_types_found);
++	  ++*cc_succeeded_count;
+ 	}
++
++      plugin_return_free (&pr);
++    }
+ #endif
+ }
+ 
+@@ -1857,42 +1857,42 @@ multi_client_connect_call_script (struct multi_context *m,
+ 				  int *cc_succeeded,
+ 				  int *cc_succeeded_count)
+ {
+-      ASSERT (m);
+-      ASSERT (mi);
+-      ASSERT (option_types_found);
+-      ASSERT (cc_succeeded);
+-      ASSERT (cc_succeeded_count);
++  ASSERT (m);
++  ASSERT (mi);
++  ASSERT (option_types_found);
++  ASSERT (cc_succeeded);
++  ASSERT (cc_succeeded_count);
+ 
+-      if (mi->context.options.client_connect_script)
+-	{
+-	  struct gc_arena gc = gc_new ();
+-	  struct argv argv = argv_new ();
+-	  const char *dc_file;
++  if (mi->context.options.client_connect_script)
++    {
++      struct gc_arena gc = gc_new ();
++      struct argv argv = argv_new ();
++      const char *dc_file;
+ 
+-	  setenv_str (mi->context.c2.es, "script_type", "client-connect");
++      setenv_str (mi->context.c2.es, "script_type", "client-connect");
+ 
+-	  dc_file = create_temp_file (mi->context.options.tmp_dir, "cc", &gc);
+-          if (!dc_file)
+-	    {
+-	      cc_succeeded = false;
+-	      goto script_failed;
+-	    }
++      dc_file = create_temp_file (mi->context.options.tmp_dir, "cc", &gc);
++      if (!dc_file)
++	{
++	  cc_succeeded = false;
++	  goto script_failed;
++	}
+ 
+-	  argv_printf (&argv, "%sc %s",
+-		       mi->context.options.client_connect_script,
+-		       dc_file);
++      argv_printf (&argv, "%sc %s",
++		   mi->context.options.client_connect_script,
++		   dc_file);
+ 
+-	  if (openvpn_run_script (&argv, mi->context.c2.es, 0, "--client-connect"))
+-	    {
+-	      multi_client_connect_post (m, mi, dc_file, option_types_found);
+-	      ++cc_succeeded_count;
+-	    }
+-	  else
+-	    cc_succeeded = false;
+-script_failed:
+-	  argv_reset (&argv);
+-	  gc_free (&gc);
++      if (openvpn_run_script (&argv, mi->context.c2.es, 0, "--client-connect"))
++	{
++	  multi_client_connect_post (m, mi, dc_file, option_types_found);
++	  ++cc_succeeded_count;
+ 	}
++      else
++	cc_succeeded = false;
++script_failed:
++      argv_reset (&argv);
++      gc_free (&gc);
++    }
+ }
+ 
+ static void
+@@ -1902,112 +1902,112 @@ multi_client_connect_late_setup (struct multi_context *m,
+ 				 int cc_succeeded,
+ 				 const int cc_succeeded_count)
+ {
+-      struct gc_arena gc = gc_new ();
+-      ASSERT (mi->context.c1.tuntap);
++  struct gc_arena gc = gc_new ();
++  ASSERT (mi->context.c1.tuntap);
+ 
++  /*
++   * Check for "disable" directive in client-config-dir file
++   * or config file generated by --client-connect script.
++   */
++  if (mi->context.options.disable)
++    {
++      msg (D_MULTI_ERRORS, "MULTI: client has been rejected due to 'disable' directive");
++      cc_succeeded = false;
++    }
++
++  if (cc_succeeded)
++    {
+       /*
+-       * Check for "disable" directive in client-config-dir file
+-       * or config file generated by --client-connect script.
++       * Process sourced options.
+        */
+-      if (mi->context.options.disable)
++      do_deferred_options (&mi->context, option_types_found);
++
++      /*
++       * make sure we got ifconfig settings from somewhere
++       */
++      if (!mi->context.c2.push_ifconfig_defined)
+ 	{
+-	  msg (D_MULTI_ERRORS, "MULTI: client has been rejected due to 'disable' directive");
+-	  cc_succeeded = false;
++	  msg (D_MULTI_ERRORS, "MULTI: no dynamic or static remote --ifconfig address is available for %s",
++	       multi_instance_string (mi, false, &gc));
+ 	}
+ 
+-      if (cc_succeeded)
++      /*
++       * make sure that ifconfig settings comply with constraints
++       */
++      if (!ifconfig_push_constraint_satisfied (&mi->context))
+ 	{
+-	  /*
+-	   * Process sourced options.
+-	   */
+-	  do_deferred_options (&mi->context, option_types_found);
++	  /* JYFIXME -- this should cause the connection to fail */
++	  msg (D_MULTI_ERRORS, "MULTI ERROR: primary virtual IP for %s (%s) violates tunnel network/netmask constraint (%s/%s)",
++	       multi_instance_string (mi, false, &gc),
++	       print_in_addr_t (mi->context.c2.push_ifconfig_local, 0, &gc),
++	       print_in_addr_t (mi->context.options.push_ifconfig_constraint_network, 0, &gc),
++	       print_in_addr_t (mi->context.options.push_ifconfig_constraint_netmask, 0, &gc));
++	}
+ 
+-	  /*
+-	   * make sure we got ifconfig settings from somewhere
+-	   */
+-	  if (!mi->context.c2.push_ifconfig_defined)
++      /*
++       * For routed tunnels, set up internal route to endpoint
++       * plus add all iroute routes.
++       */
++      if (TUNNEL_TYPE (mi->context.c1.tuntap) == DEV_TYPE_TUN)
++	{
++	  if (mi->context.c2.push_ifconfig_defined)
+ 	    {
+-	      msg (D_MULTI_ERRORS, "MULTI: no dynamic or static remote --ifconfig address is available for %s",
+-		   multi_instance_string (mi, false, &gc));
++	      multi_learn_in_addr_t (m, mi, mi->context.c2.push_ifconfig_local, -1, true);
++	      msg (D_MULTI_LOW, "MULTI: primary virtual IP for %s: %s",
++		   multi_instance_string (mi, false, &gc),
++		   print_in_addr_t (mi->context.c2.push_ifconfig_local, 0, &gc));
+ 	    }
+ 
+-	  /*
+-	   * make sure that ifconfig settings comply with constraints
+-	   */
+-	  if (!ifconfig_push_constraint_satisfied (&mi->context))
++	  if (mi->context.c2.push_ifconfig_ipv6_defined)
+ 	    {
+-	      /* JYFIXME -- this should cause the connection to fail */
+-	      msg (D_MULTI_ERRORS, "MULTI ERROR: primary virtual IP for %s (%s) violates tunnel network/netmask constraint (%s/%s)",
++	      multi_learn_in6_addr (m, mi, mi->context.c2.push_ifconfig_ipv6_local, -1, true);
++	      /* TODO: find out where addresses are "unlearned"!! */
++	      msg (D_MULTI_LOW, "MULTI: primary virtual IPv6 for %s: %s",
+ 		   multi_instance_string (mi, false, &gc),
+-		   print_in_addr_t (mi->context.c2.push_ifconfig_local, 0, &gc),
+-		   print_in_addr_t (mi->context.options.push_ifconfig_constraint_network, 0, &gc),
+-		   print_in_addr_t (mi->context.options.push_ifconfig_constraint_netmask, 0, &gc));
++		   print_in6_addr (mi->context.c2.push_ifconfig_ipv6_local, 0, &gc));
+ 	    }
+ 
++	  /* add routes locally, pointing to new client, if
++	     --iroute options have been specified */
++	  multi_add_iroutes (m, mi);
++
+ 	  /*
+-	   * For routed tunnels, set up internal route to endpoint
+-	   * plus add all iroute routes.
++	   * iroutes represent subnets which are "owned" by a particular
++	   * client.  Therefore, do not actually push a route to a client
++	   * if it matches one of the client's iroutes.
+ 	   */
+-	  if (TUNNEL_TYPE (mi->context.c1.tuntap) == DEV_TYPE_TUN)
+-	    {
+-	      if (mi->context.c2.push_ifconfig_defined)
+-		{
+-		  multi_learn_in_addr_t (m, mi, mi->context.c2.push_ifconfig_local, -1, true);
+-		  msg (D_MULTI_LOW, "MULTI: primary virtual IP for %s: %s",
+-		       multi_instance_string (mi, false, &gc),
+-		       print_in_addr_t (mi->context.c2.push_ifconfig_local, 0, &gc));
+-		}
+-
+-	      if (mi->context.c2.push_ifconfig_ipv6_defined)
+-		{
+-		  multi_learn_in6_addr (m, mi, mi->context.c2.push_ifconfig_ipv6_local, -1, true);
+-		  /* TODO: find out where addresses are "unlearned"!! */
+-		  msg (D_MULTI_LOW, "MULTI: primary virtual IPv6 for %s: %s",
+-		       multi_instance_string (mi, false, &gc),
+-		       print_in6_addr (mi->context.c2.push_ifconfig_ipv6_local, 0, &gc));
+-		}
+-
+-	      /* add routes locally, pointing to new client, if
+-		 --iroute options have been specified */
+-	      multi_add_iroutes (m, mi);
+-
+-	      /*
+-	       * iroutes represent subnets which are "owned" by a particular
+-	       * client.  Therefore, do not actually push a route to a client
+-	       * if it matches one of the client's iroutes.
+-	       */
+-	      remove_iroutes_from_push_route_list (&mi->context.options);
+-	    }
+-	  else if (mi->context.options.iroutes)
+-	    {
+-	      msg (D_MULTI_ERRORS, "MULTI: --iroute options rejected for %s -- iroute only works with tun-style tunnels",
+-		   multi_instance_string (mi, false, &gc));
+-	    }
+-
+-	  /* set our client's VPN endpoint for status reporting purposes */
+-	  mi->reporting_addr = mi->context.c2.push_ifconfig_local;
+-	  mi->reporting_addr_ipv6 = mi->context.c2.push_ifconfig_ipv6_local;
+-
+-	  /* set context-level authentication flag */
+-	  mi->context.c2.context_auth = CAS_SUCCEEDED;
++	  remove_iroutes_from_push_route_list (&mi->context.options);
+ 	}
+-      else
++      else if (mi->context.options.iroutes)
+ 	{
+-	  /* set context-level authentication flag */
+-	  mi->context.c2.context_auth = cc_succeeded_count ? CAS_PARTIAL : CAS_FAILED;
++	  msg (D_MULTI_ERRORS, "MULTI: --iroute options rejected for %s -- iroute only works with tun-style tunnels",
++	       multi_instance_string (mi, false, &gc));
+ 	}
+ 
+-      /* increment number of current authenticated clients */
+-      ++m->n_clients;
+-      update_mstat_n_clients(m->n_clients);
+-      --mi->n_clients_delta;
++      /* set our client's VPN endpoint for status reporting purposes */
++      mi->reporting_addr = mi->context.c2.push_ifconfig_local;
++      mi->reporting_addr_ipv6 = mi->context.c2.push_ifconfig_ipv6_local;
++
++      /* set context-level authentication flag */
++      mi->context.c2.context_auth = CAS_SUCCEEDED;
++    }
++  else
++    {
++      /* set context-level authentication flag */
++      mi->context.c2.context_auth = cc_succeeded_count ? CAS_PARTIAL : CAS_FAILED;
++    }
++
++  /* increment number of current authenticated clients */
++  ++m->n_clients;
++  update_mstat_n_clients(m->n_clients);
++  --mi->n_clients_delta;
+ 
+ #ifdef MANAGEMENT_DEF_AUTH
+-      if (management)
+-	management_connection_established (management, &mi->context.c2.mda_context, mi->context.c2.es);
++  if (management)
++    management_connection_established (management, &mi->context.c2.mda_context, mi->context.c2.es);
+ #endif
+ 
+-      gc_free (&gc);
++  gc_free (&gc);
+ }
+ 
+ 
 -- 
 2.1.1
 
