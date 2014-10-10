@@ -1,12 +1,12 @@
 Sender: Fabian Knittel <fabian@...1547...>
 From: Fabian Knittel <fabian.knittel@...1547...>
-Date: Sat, 11 Oct 2014 00:09:24 +0200
-Message-Id: <1412978966-15392-8-git-send-email-fabian.knittel@...1547...>
+Date: Sat, 11 Oct 2014 00:09:18 +0200
+Message-Id: <1412978966-15392-2-git-send-email-fabian.knittel@...1547...>
 In-Reply-To: <1412978966-15392-1-git-send-email-fabian.knittel@...1547...>
 References: <5437B156.1020408@...1114...>
 	<1412978966-15392-1-git-send-email-fabian.knittel@...1547...>
-Subject: [Openvpn-devel] [PATCH 7/9] client-connect: Add CC_RET_DEFERRED and
-	cope with deferred client-connect
+Subject: [Openvpn-devel] [PATCH 1/9] client-connect: Split
+	multi_connection_established into separate functions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,301 +19,209 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This patch moves the state, that was previously tracked within the
-multi_connection_established() function, into struct client_connect_state.  The
-multi_connection_established() function can now be exited and re-entered as
-many times as necessary - without losing the client-connect handling state.
+This patch splits up the multi_connection_established() function.  Each new
+helper function does a specific job.  Functions that do a similar job receive a
+similar calling interface.
 
-The patch also adds the new return value CC_RET_DEFERRED which indicates that
-the handler couldn't complete immediately, and needs to be called later.  At
-that point multi_connection_established() will exit without indicating
-completion.
-
-Each client-connect handler now has an (optional) additional call-back:  The
-call-back for handling the deferred case.  If the main call-back returns
-CC_RET_DEFERRED, the next call to the handler will be through the deferred
-call-back.
+The patch tries not to reindent code, so that the real changes are as clearly
+visible as possible.  (A follow-up patch will only do indentation changes.)
 
 Signed-off-by: Fabian Knittel <fabian.knittel@...1547...>
 ---
- src/openvpn/multi.c | 255 ++++++++++++++++++++++++++++++++++------------------
- src/openvpn/multi.h |  18 ++++
- 2 files changed, 185 insertions(+), 88 deletions(-)
+ src/openvpn/multi.c   | 312 +++++++++++++++++++++++++++++++++++---------------
+ src/openvpn/options.h |   6 +
+ 2 files changed, 224 insertions(+), 94 deletions(-)
 
 diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index 7815146..c044d67 100644
+index 5910154..ed10e20 100644
 --- a/src/openvpn/multi.c
 +++ b/src/openvpn/multi.c
-@@ -47,6 +47,9 @@
+@@ -1446,7 +1446,6 @@ static void
+ multi_client_connect_post (struct multi_context *m,
+ 			   struct multi_instance *mi,
+ 			   const char *dc_file,
+-			   unsigned int option_permissions_mask,
+ 			   unsigned int *option_types_found)
+ {
+   /* Did script generate a dynamic config file? */
+@@ -1455,7 +1454,7 @@ multi_client_connect_post (struct multi_context *m,
+       options_server_import (&mi->context.options,
+ 			     dc_file,
+ 			     D_IMPORT_ERRORS|M_OPTERR,
+-			     option_permissions_mask,
++			     CLIENT_CONNECT_OPT_MASK,
+ 			     option_types_found,
+ 			     mi->context.c2.es);
  
- /*#define MULTI_DEBUG_EVENT_LOOP*/
+@@ -1483,7 +1482,6 @@ static void
+ multi_client_connect_post_plugin (struct multi_context *m,
+ 				  struct multi_instance *mi,
+ 				  const struct plugin_return *pr,
+-				  unsigned int option_permissions_mask,
+ 				  unsigned int *option_types_found)
+ {
+   struct plugin_return config;
+@@ -1500,7 +1498,7 @@ multi_client_connect_post_plugin (struct multi_context *m,
+ 	    options_string_import (&mi->context.options,
+ 				   config.list[i]->value,
+ 				   D_IMPORT_ERRORS|M_OPTERR,
+-				   option_permissions_mask,
++				   CLIENT_CONNECT_OPT_MASK,
+ 				   option_types_found,
+ 				   mi->context.c2.es);
+ 	}
+@@ -1518,29 +1516,28 @@ multi_client_connect_post_plugin (struct multi_context *m,
  
-+static void delete_client_connect_state (struct multi_instance *mi);
-+
-+
- #ifdef MULTI_DEBUG_EVENT_LOOP
- static const char *
- id (struct multi_instance *mi)
-@@ -573,6 +576,8 @@ multi_close_instance (struct multi_context *m,
-   set_cc_config (mi, NULL);
  #endif
  
-+  delete_client_connect_state (mi);
-+
-   multi_client_disconnect_script (m, mi);
+-#ifdef MANAGEMENT_DEF_AUTH
+-
+ /*
+  * Called to load management-derived client-connect config
+  */
+ static void
+ multi_client_connect_mda (struct multi_context *m,
+ 			  struct multi_instance *mi,
+-			  const struct buffer_list *config,
+-			  unsigned int option_permissions_mask,
+-			  unsigned int *option_types_found)
++			  unsigned int *option_types_found,
++			  int *cc_succeeded,
++			  int *cc_succeeded_count)
+ {
+-  if (config)
++#ifdef MANAGEMENT_DEF_AUTH
++  if (mi->cc_config)
+     {
+       struct buffer_entry *be;
+   
+-      for (be = config->head; be != NULL; be = be->next)
++      for (be = mi->cc_config->head; be != NULL; be = be->next)
+ 	{
+ 	  const char *opt = BSTR(&be->buf);
+ 	  options_string_import (&mi->context.options,
+ 				 opt,
+ 				 D_IMPORT_ERRORS|M_OPTERR,
+-				 option_permissions_mask,
++				 CLIENT_CONNECT_OPT_MASK,
+ 				 option_types_found,
+ 				 mi->context.c2.es);
+ 	}
+@@ -1553,10 +1550,11 @@ multi_client_connect_mda (struct multi_context *m,
+        */
+       multi_select_virtual_addr (m, mi);
+       multi_set_virtual_addr_env (m, mi);
+-    }
+-}
  
-   if (mi->did_open_context)
-@@ -1583,94 +1588,6 @@ multi_client_connect_setenv (struct multi_context *m,
++      ++*cc_succeeded_count;
++    }
+ #endif
++}
  
  static void
- multi_client_connect_early_setup (struct multi_context *m,
--				  struct multi_instance *mi);
--static void
--multi_client_connect_source_ccd (struct multi_context *m,
--				 struct multi_instance *mi,
--				 unsigned int *option_types_found);
--static void
--multi_client_connect_call_plugin_v1 (struct multi_context *m,
--				     struct multi_instance *mi,
--				     unsigned int *option_types_found,
--				     int *cc_succeeded,
--				     int *cc_succeeded_count);
--static void
--multi_client_connect_call_plugin_v2 (struct multi_context *m,
--				     struct multi_instance *mi,
--				     unsigned int *option_types_found,
--				     int *cc_succeeded,
--				     int *cc_succeeded_count);
--static void
--multi_client_connect_call_script (struct multi_context *m,
--				  struct multi_instance *mi,
--				  unsigned int *option_types_found,
--				  int *cc_succeeded,
--				  int *cc_succeeded_count);
--static void
--multi_client_connect_late_setup (struct multi_context *m,
--				 struct multi_instance *mi,
--				 const unsigned int option_types_found,
--				 int cc_succeeded,
--				 const int cc_succeeded_count);
--
--/*
-- * Called as soon as the SSL/TLS connection authenticates.
-- *
-- * Instance-specific directives to be processed:
-- *
-- *   iroute start-ip end-ip
-- *   ifconfig-push local remote-netmask
-- *   push
-- */
--static void
--multi_connection_established (struct multi_context *m, struct multi_instance *mi)
--{
--  if (tls_authentication_status (mi->context.c2.tls_multi, 0) == TLS_AUTHENTICATION_SUCCEEDED)
--    {
--      typedef enum client_connect_return_t (*multi_client_connect_handler)(struct multi_context *m, struct multi_instance *mi, unsigned int *option_types_found);
--
--      multi_client_connect_handler handlers[] = {
--	  multi_client_connect_source_ccd,
--	  multi_client_connect_call_plugin_v1,
--	  multi_client_connect_call_plugin_v2,
--	  multi_client_connect_call_script,
--	  multi_client_connect_mda,
--	  NULL
--      };
--
--      int cur_handler = 0;
--      unsigned int option_types_found = 0;
--      int cc_succeeded = true; /* client connect script status */
--      int cc_succeeded_count = 0;
--      enum client_connect_return ret;
--
--      multi_client_connect_early_setup (m, mi);
--
--      while (succeeded && handlers[cur_handler])
--	{
--	  ret = handlers[cur_handler] (m, mi, &option_types_found);
--	  if (ret == CC_RET_SUCCEEDED)
--	    ++cc_succeeded_count;
--	  else if (ret == CC_RET_FAILED)
--	    succeeded = false;
--	  ++cur_handler;
--	}
--
--      multi_client_connect_late_setup (m, mi, option_types_found, cc_succeeded,
--				       cc_succeeded_count);
--
--      /* set flag so we don't get called again */
--      mi->connection_established_flag = true;
--    }
--
--  /*
--   * Reply now to client's PUSH_REQUEST query
--   */
--  mi->context.c2.push_reply_deferred = false;
--}
--
--static void
--multi_client_connect_early_setup (struct multi_context *m,
- 				  struct multi_instance *mi)
- {
-   /* lock down the common name and cert hashes so they can't change during
-@@ -2005,6 +1922,168 @@ multi_client_connect_late_setup (struct multi_context *m,
+ multi_client_connect_setenv (struct multi_context *m,
+@@ -1583,6 +1581,38 @@ multi_client_connect_setenv (struct multi_context *m,
    gc_free (&gc);
  }
  
-+static enum client_connect_return
-+multi_client_connect_fail (struct multi_context *m, struct multi_instance *mi,
-+			   unsigned int *option_types_found)
-+{
-+  /* Called null call-back.  This should never happen.  Fail loudly. */
-+  return CC_RET_FAILED;
-+}
-+
 +static void
-+new_client_connect_state (struct multi_instance *mi)
-+{
-+  ASSERT (mi);
-+  ALLOC_OBJ_CLEAR (mi->client_connect_state, struct client_connect_state);
-+
-+  mi->client_connect_state->succeeded = true;
-+}
-+
++multi_client_connect_early_setup (struct multi_context *m,
++				  struct multi_instance *mi);
 +static void
-+delete_client_connect_state (struct multi_instance *mi)
-+{
-+  ASSERT (mi);
-+  if (mi->client_connect_state)
-+    {
-+      free (mi->client_connect_state);
-+      mi->client_connect_state = NULL;
-+    }
-+}
-+
-+typedef enum client_connect_return (*client_connect_handler)
-+  (struct multi_context *m, struct multi_instance *mi,
-+   unsigned int *option_types_found);
-+
-+struct client_connect_handlers
-+{
-+  client_connect_handler main;
-+  client_connect_handler deferred;
-+};
-+
-+static const struct client_connect_handlers client_connect_handlers[] = {
-+  {
-+    main: multi_client_connect_source_ccd,
-+    deferred: multi_client_connect_fail
-+  },
-+  {
-+    main: multi_client_connect_call_plugin_v1,
-+    deferred: multi_client_connect_fail
-+  },
-+  {
-+    main: multi_client_connect_call_plugin_v2,
-+    deferred: multi_client_connect_fail
-+  },
-+  {
-+    main: multi_client_connect_call_script,
-+    deferred: multi_client_connect_fail
-+  },
-+  {
-+    main: multi_client_connect_mda,
-+    deferred: multi_client_connect_fail
-+  },
-+  {
-+    /* End of list.  */
-+  }
-+};
-+
-+static enum client_connect_return
-+multi_client_handle_single (client_connect_handler handler,
-+			    struct multi_context *m,
-+			    struct multi_instance *mi)
-+{
-+  struct client_connect_state *ccs = mi->client_connect_state;
-+  enum client_connect_return ret;
-+
-+  ret = handler (m, mi, &ccs->option_types_found);
-+  if (ret == CC_RET_SUCCEEDED)
-+    ++ccs->succeeded_count;
-+  else if (ret == CC_RET_FAILED)
-+    ccs->succeeded = false;
-+  else if (ret == CC_RET_DEFERRED)
-+    {
-+      /* Signal that we're deferring.  */
-+      return ret;
-+    }
-+  return ret;
-+}
-+
-+/*
-+ * Called as soon as the SSL/TLS connection authenticates.
-+ *
-+ * Instance-specific directives to be processed:
-+ *
-+ *   iroute start-ip end-ip
-+ *   ifconfig-push local remote-netmask
-+ *   push
-+ */
++multi_client_connect_source_ccd (struct multi_context *m,
++				 struct multi_instance *mi,
++				 unsigned int *option_types_found);
 +static void
-+multi_connection_established (struct multi_context *m, struct multi_instance *mi)
-+{
-+  if (tls_authentication_status (mi->context.c2.tls_multi, 0) == TLS_AUTHENTICATION_SUCCEEDED)
-+    {
-+      struct client_connect_state *ccs = mi->client_connect_state;
-+      enum client_connect_return ret;
++multi_client_connect_call_plugin_v1 (struct multi_context *m,
++				     struct multi_instance *mi,
++				     unsigned int *option_types_found,
++				     int *cc_succeeded,
++				     int *cc_succeeded_count);
++static void
++multi_client_connect_call_plugin_v2 (struct multi_context *m,
++				     struct multi_instance *mi,
++				     unsigned int *option_types_found,
++				     int *cc_succeeded,
++				     int *cc_succeeded_count);
++static void
++multi_client_connect_call_script (struct multi_context *m,
++				  struct multi_instance *mi,
++				  unsigned int *option_types_found,
++				  int *cc_succeeded,
++				  int *cc_succeeded_count);
++static void
++multi_client_connect_late_setup (struct multi_context *m,
++				 struct multi_instance *mi,
++				 const unsigned int option_types_found,
++				 int cc_succeeded,
++				 const int cc_succeeded_count);
 +
-+      if (!ccs)
+ /*
+  * Called as soon as the SSL/TLS connection authenticates.
+  *
+@@ -1597,25 +1627,67 @@ multi_connection_established (struct multi_context *m, struct multi_instance *mi
+ {
+   if (tls_authentication_status (mi->context.c2.tls_multi, 0) == TLS_AUTHENTICATION_SUCCEEDED)
+     {
+-      struct gc_arena gc = gc_new ();
+       unsigned int option_types_found = 0;
+-
+-      const unsigned int option_permissions_mask =
+-	  OPT_P_INSTANCE
+-	| OPT_P_INHERIT
+-	| OPT_P_PUSH
+-	| OPT_P_TIMER
+-	| OPT_P_CONFIG
+-	| OPT_P_ECHO
+-	| OPT_P_COMP
+-	| OPT_P_SOCKFLAGS;
+-
+       int cc_succeeded = true; /* client connect script status */
+       int cc_succeeded_count = 0;
+ 
+-      ASSERT (mi->context.c1.tuntap);
++      multi_client_connect_early_setup (m, mi);
++
++      multi_client_connect_source_ccd (m, mi, &option_types_found);
++
++      /*
++       * Select a virtual address from either --ifconfig-push in
++       * --client-config-dir file or --ifconfig-pool.
++       */
++      multi_select_virtual_addr (m, mi);
++
++      /* do --client-connect setenvs */
++      multi_client_connect_setenv (m, mi);
++
++      multi_client_connect_call_plugin_v1 (m, mi, &option_types_found,
++					   &cc_succeeded, &cc_succeeded_count);
++
++      multi_client_connect_call_plugin_v2 (m, mi, &option_types_found,
++					   &cc_succeeded, &cc_succeeded_count);
++
++      /*
++       * Run --client-connect script.
++       */
++      if (cc_succeeded)
 +	{
-+	  /* This is the first time that we run client-connect handlers
-+	     for this connection. */
-+
-+	  new_client_connect_state (mi);
-+	  ccs = mi->client_connect_state;
-+
-+          multi_client_connect_early_setup (m, mi);
++	  multi_client_connect_call_script (m, mi, &option_types_found,
++					    &cc_succeeded,
++					    &cc_succeeded_count);
 +	}
-+      else
+ 
+-      /* lock down the common name and cert hashes so they can't change during future TLS renegotiations */
++      /*
++       * Check for client-connect script left by management interface client
++       */
++      if (cc_succeeded)
 +	{
-+	  /* We are returning from a deferred handler.  Check whether the
-+	     handler has been completed yet.  */
-+
-+	  ASSERT (client_connect_handlers[ccs->cur_handler_idx].main);
-+	  ASSERT (client_connect_handlers[ccs->cur_handler_idx].deferred);
-+
-+	  ret = multi_client_handle_single
-+		  (client_connect_handlers[ccs->cur_handler_idx].deferred, m,
-+		   mi);
-+	  if (ret == CC_RET_DEFERRED)
-+	    return;
-+
-+	  /* Proceed to next handler.  */
-+	  ++ccs->cur_handler_idx;
++	  multi_client_connect_mda (m, mi, &option_types_found,
++				    &cc_succeeded, &cc_succeeded_count);
 +	}
 +
-+
-+      /* Cycle through all (remaining) client-connect handlers until all
-+	 have completed, one of them fails or one of them defers.  */
-+      while (ccs->succeeded &&
-+	     client_connect_handlers[ccs->cur_handler_idx].main)
-+	{
-+	  ret = multi_client_handle_single
-+		  (client_connect_handlers[ccs->cur_handler_idx].main, m, mi);
-+	  if (ret == CC_RET_DEFERRED)
-+	    return;
-+
-+	  /* Proceed to next handler.  */
-+	  ++ccs->cur_handler_idx;
-+	}
-+
-+      /* Done with all client-connect handlers now.  */
-+
-+      multi_client_connect_late_setup (m, mi, ccs->option_types_found,
-+				       ccs->succeeded, ccs->succeeded_count);
-+
-+      /* Clean-up.  */
-+      delete_client_connect_state (mi);
++      multi_client_connect_late_setup (m, mi, option_types_found,
++				       cc_succeeded, cc_succeeded_count);
 +
 +      /* set flag so we don't get called again */
 +      mi->connection_established_flag = true;
@@ -324,52 +232,316 @@ index 7815146..c044d67 100644
 +   */
 +  mi->context.c2.push_reply_deferred = false;
 +}
++
++static void
++multi_client_connect_early_setup (struct multi_context *m,
++				  struct multi_instance *mi)
++{
++      /* lock down the common name and cert hashes so they can't change during
++	 future TLS renegotiations */
+       tls_lock_common_name (mi->context.c2.tls_multi);
+       tls_lock_cert_hash_set (mi->context.c2.tls_multi);
  
+@@ -1628,13 +1700,20 @@ multi_connection_established (struct multi_context *m, struct multi_instance *mi
+ 
+       /* reset pool handle to null */
+       mi->vaddr_handle = -1;
++}
+ 
+-      /*
+-       * Try to source a dynamic config file from the
+-       * --client-config-dir directory.
+-       */
++/*
++ * Try to source a dynamic config file from the
++ * --client-config-dir directory.
++ */
++static void
++multi_client_connect_source_ccd (struct multi_context *m,
++				 struct multi_instance *mi,
++				 unsigned int *option_types_found)
++{
+       if (mi->context.options.client_config_dir)
+ 	{
++	  struct gc_arena gc = gc_new ();
+ 	  const char *ccd_file;
+ 	  
+ 	  ccd_file = gen_path (mi->context.options.client_config_dir,
+@@ -1647,8 +1726,8 @@ multi_connection_established (struct multi_context *m, struct multi_instance *mi
+ 	      options_server_import (&mi->context.options,
+ 				     ccd_file,
+ 				     D_IMPORT_ERRORS|M_OPTERR,
+-				     option_permissions_mask,
+-				     &option_types_found,
++				     CLIENT_CONNECT_OPT_MASK,
++				     option_types_found,
+ 				     mi->context.c2.es);
+ 	    }
+ 	  else /* try default file */
+@@ -1662,90 +1741,142 @@ multi_connection_established (struct multi_context *m, struct multi_instance *mi
+ 		  options_server_import (&mi->context.options,
+ 					 ccd_file,
+ 					 D_IMPORT_ERRORS|M_OPTERR,
+-					 option_permissions_mask,
+-					 &option_types_found,
++					 CLIENT_CONNECT_OPT_MASK,
++					 option_types_found,
+ 					 mi->context.c2.es);
+ 		}
+ 	    }
+-	}
+ 
+-      /*
+-       * Select a virtual address from either --ifconfig-push in --client-config-dir file
+-       * or --ifconfig-pool.
+-       */
+-      multi_select_virtual_addr (m, mi);
+-
+-      /* do --client-connect setenvs */
+-      multi_client_connect_setenv (m, mi);
++	  gc_free (&gc);
++	}
++}
+ 
++/*
++ * Call client-connect plug-in.
++ *
++ * deprecated callback, use a file for passing back return info
++ */
++static void
++multi_client_connect_call_plugin_v1 (struct multi_context *m,
++				     struct multi_instance *mi,
++				     unsigned int *option_types_found,
++				     int *cc_succeeded,
++				     int *cc_succeeded_count)
++{
+ #ifdef ENABLE_PLUGIN
+-      /*
+-       * Call client-connect plug-in.
+-       */
++      ASSERT (m);
++      ASSERT (mi);
++      ASSERT (option_types_found);
++      ASSERT (cc_succeeded);
++      ASSERT (cc_succeeded_count);
+ 
+-      /* deprecated callback, use a file for passing back return info */
+       if (plugin_defined (mi->context.plugins, OPENVPN_PLUGIN_CLIENT_CONNECT))
+ 	{
++	  int plug_ret;
++	  struct gc_arena gc = gc_new ();
+ 	  struct argv argv = argv_new ();
+ 	  const char *dc_file = create_temp_file (mi->context.options.tmp_dir, "cc", &gc);
+ 
+-          if( !dc_file ) {
+-            cc_succeeded = false;
+-            goto script_depr_failed;
+-          }
++          if (!dc_file)
++	    {
++	      *cc_succeeded = false;
++	      goto script_depr_failed;
++	    }
+ 
+ 	  argv_printf (&argv, "%s", dc_file);
+-	  if (plugin_call (mi->context.plugins, OPENVPN_PLUGIN_CLIENT_CONNECT, &argv, NULL, mi->context.c2.es) != OPENVPN_PLUGIN_FUNC_SUCCESS)
++
++	  plug_ret = plugin_call (mi->context.plugins,
++				  OPENVPN_PLUGIN_CLIENT_CONNECT,
++				  &argv, NULL, mi->context.c2.es);
++	  argv_reset (&argv);
++	  if (plug_ret != OPENVPN_PLUGIN_FUNC_SUCCESS)
+ 	    {
+ 	      msg (M_WARN, "WARNING: client-connect plugin call failed");
+-	      cc_succeeded = false;
++	      *cc_succeeded = false;
+ 	    }
+ 	  else
+ 	    {
+-	      multi_client_connect_post (m, mi, dc_file, option_permissions_mask, &option_types_found);
+-	      ++cc_succeeded_count;
++	      multi_client_connect_post (m, mi, dc_file, option_types_found);
++	      ++*cc_succeeded_count;
+ 	    }
+-        script_depr_failed:
+-	  argv_reset (&argv);
++script_depr_failed:
++	  gc_free (&gc);
+ 	}
++#endif
++}
++
++/*
++ * Call client-connect plug-in.
++ *
++ * V2 callback, use a plugin_return struct for passing back return info
++ */
++static void
++multi_client_connect_call_plugin_v2 (struct multi_context *m,
++				     struct multi_instance *mi,
++				     unsigned int *option_types_found,
++				     int *cc_succeeded,
++				     int *cc_succeeded_count)
++{
++#ifdef ENABLE_PLUGIN
++      ASSERT (m);
++      ASSERT (mi);
++      ASSERT (option_types_found);
++      ASSERT (cc_succeeded);
++      ASSERT (cc_succeeded_count);
+ 
+-      /* V2 callback, use a plugin_return struct for passing back return info */
+       if (plugin_defined (mi->context.plugins, OPENVPN_PLUGIN_CLIENT_CONNECT_V2))
+ 	{
++	  int plug_ret;
+ 	  struct plugin_return pr;
+ 
+ 	  plugin_return_init (&pr);
+ 
+-	  if (plugin_call (mi->context.plugins, OPENVPN_PLUGIN_CLIENT_CONNECT_V2, NULL, &pr, mi->context.c2.es) != OPENVPN_PLUGIN_FUNC_SUCCESS)
++	  plug_ret = plugin_call (mi->context.plugins,
++				  OPENVPN_PLUGIN_CLIENT_CONNECT_V2,
++				  NULL, &pr, mi->context.c2.es);
++	  if (plug_ret != OPENVPN_PLUGIN_FUNC_SUCCESS)
+ 	    {
+ 	      msg (M_WARN, "WARNING: client-connect-v2 plugin call failed");
+-	      cc_succeeded = false;
++	      *cc_succeeded = false;
+ 	    }
+ 	  else
+ 	    {
+-	      multi_client_connect_post_plugin (m, mi, &pr, option_permissions_mask, &option_types_found);
+-	      ++cc_succeeded_count;
++	      multi_client_connect_post_plugin (m, mi, &pr, option_types_found);
++	      ++*cc_succeeded_count;
+ 	    }
+ 
+ 	  plugin_return_free (&pr);
+ 	}
+ #endif
++}
+ 
+-      /*
+-       * Run --client-connect script.
+-       */
+-      if (mi->context.options.client_connect_script && cc_succeeded)
++static void
++multi_client_connect_call_script (struct multi_context *m,
++				  struct multi_instance *mi,
++				  unsigned int *option_types_found,
++				  int *cc_succeeded,
++				  int *cc_succeeded_count)
++{
++      ASSERT (m);
++      ASSERT (mi);
++      ASSERT (option_types_found);
++      ASSERT (cc_succeeded);
++      ASSERT (cc_succeeded_count);
++
++      if (mi->context.options.client_connect_script)
+ 	{
++	  struct gc_arena gc = gc_new ();
+ 	  struct argv argv = argv_new ();
+-	  const char *dc_file = NULL;
++	  const char *dc_file;
+ 
+ 	  setenv_str (mi->context.c2.es, "script_type", "client-connect");
+ 
+ 	  dc_file = create_temp_file (mi->context.options.tmp_dir, "cc", &gc);
+-          if( !dc_file ) {
+-            cc_succeeded = false;
+-            goto script_failed;
+-          }
++          if (!dc_file)
++	    {
++	      cc_succeeded = false;
++	      goto script_failed;
++	    }
+ 
+ 	  argv_printf (&argv, "%sc %s",
+ 		       mi->context.options.client_connect_script,
+@@ -1753,25 +1884,26 @@ multi_connection_established (struct multi_context *m, struct multi_instance *mi
+ 
+ 	  if (openvpn_run_script (&argv, mi->context.c2.es, 0, "--client-connect"))
+ 	    {
+-	      multi_client_connect_post (m, mi, dc_file, option_permissions_mask, &option_types_found);
++	      multi_client_connect_post (m, mi, dc_file, option_types_found);
+ 	      ++cc_succeeded_count;
+ 	    }
+ 	  else
+ 	    cc_succeeded = false;
+-        script_failed:
++script_failed:
+ 	  argv_reset (&argv);
++	  gc_free (&gc);
+ 	}
++}
+ 
+-      /*
+-       * Check for client-connect script left by management interface client
+-       */
+-#ifdef MANAGEMENT_DEF_AUTH
+-      if (cc_succeeded && mi->cc_config)
+-	{
+-	  multi_client_connect_mda (m, mi, mi->cc_config, option_permissions_mask, &option_types_found);
+-	  ++cc_succeeded_count;
+-	}
+-#endif
++static void
++multi_client_connect_late_setup (struct multi_context *m,
++				 struct multi_instance *mi,
++				 const unsigned int option_types_found,
++				 int cc_succeeded,
++				 const int cc_succeeded_count)
++{
++      struct gc_arena gc = gc_new ();
++      ASSERT (mi->context.c1.tuntap);
+ 
+       /*
+        * Check for "disable" directive in client-config-dir file
+@@ -1865,9 +1997,6 @@ multi_connection_established (struct multi_context *m, struct multi_instance *mi
+ 	  mi->context.c2.context_auth = cc_succeeded_count ? CAS_PARTIAL : CAS_FAILED;
+ 	}
+ 
+-      /* set flag so we don't get called again */
+-      mi->connection_established_flag = true;
+-
+       /* increment number of current authenticated clients */
+       ++m->n_clients;
+       update_mstat_n_clients(m->n_clients);
+@@ -1879,14 +2008,9 @@ multi_connection_established (struct multi_context *m, struct multi_instance *mi
+ #endif
+ 
+       gc_free (&gc);
+-    }
+-
+-  /*
+-   * Reply now to client's PUSH_REQUEST query
+-   */
+-  mi->context.c2.push_reply_deferred = false;
+ }
+ 
++
  /*
   * Add a mbuf buffer to a particular
-diff --git a/src/openvpn/multi.h b/src/openvpn/multi.h
-index 0adcd47..16dd99d 100644
---- a/src/openvpn/multi.h
-+++ b/src/openvpn/multi.h
-@@ -54,6 +54,22 @@ struct multi_reap
-   time_t last_call;
- };
+  * instance.
+diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+index 5ba4f2f..65ed590 100644
+--- a/src/openvpn/options.h
++++ b/src/openvpn/options.h
+@@ -636,6 +636,12 @@ struct options
  
-+/**
-+ * Detached client connection state.  This is the state that is tracked while
-+ * the client connect hooks are executed.
-+ */
-+struct client_connect_state
-+{
-+  /* Index of currently executed handler.  */
-+  int cur_handler_idx;
-+  /* Did all of the handlers succeed up to now?  */
-+  bool succeeded;
-+  /* How many handlers succeeded?  */
-+  int succeeded_count;
-+  /* Remember which option classes where processed for delayed option
-+     handling. */
-+  unsigned int option_types_found;
-+};
+ #define OPT_P_DEFAULT   (~(OPT_P_INSTANCE|OPT_P_PULL_MODE))
  
- /**
-  * Server-mode state structure for one single VPN tunnel.
-@@ -103,6 +119,7 @@ struct multi_instance {
- 
-   struct context context;       /**< The context structure storing state
-                                  *   for this VPN tunnel. */
-+  struct client_connect_state *client_connect_state;
- };
- 
- /**
-@@ -175,6 +192,7 @@ enum client_connect_return
- {
-   CC_RET_FAILED,
-   CC_RET_SUCCEEDED,
-+  CC_RET_DEFERRED,
-   CC_RET_SKIPPED
- };
- 
++#if P2MP_SERVER
++#define CLIENT_CONNECT_OPT_MASK (OPT_P_INSTANCE | OPT_P_INHERIT	| OPT_P_PUSH | \
++				 OPT_P_TIMER | OPT_P_CONFIG | OPT_P_ECHO | \
++				 OPT_P_COMP | OPT_P_SOCKFLAGS)
++#endif
++
+ #if P2MP
+ #define PULL_DEFINED(opt) ((opt)->pull)
+ #if P2MP_SERVER
 -- 
 2.1.1
 
