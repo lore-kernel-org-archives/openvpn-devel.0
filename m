@@ -1,11 +1,14 @@
-Date: Sun, 12 Oct 2014 21:59:19 +0200
-From: Samuel Thibault <samuel.thibault@...1817...>
-Message-ID: <20141012195919.GU3738@...1819...>
-References: <20141009214049.GB4106@...1818...>
-	<5437B156.1020408@...1114...>
 MIME-Version: 1.0
-In-Reply-To: <5437B156.1020408@...1114...>
-Subject: Re: [Openvpn-devel] [PATCH] Fix temporary file leak
+In-Reply-To: <CAP+U6t+djWatsor=OoKuSLEC12Mt5Vin8hJu2S81aRcAtPjk5Q@...278...>
+References: <CAGyAFMWg5j+ki56=fwOOZwcpAdixE8eDyJXFgktrNsOqrYZRcA@...278...>
+	<CAP+U6tKkiU3FmaPN66s62iZiEoqbmgLjn4J-kJTM9P=0H5qSMg@...278...>
+	<CAGyAFMX8Hf81e5Jom-F4__7ktrA5pyf1ygMff2ixHzqhsTebGQ@...278...>
+	<CAP+U6t+djWatsor=OoKuSLEC12Mt5Vin8hJu2S81aRcAtPjk5Q@...278...>
+Date: Mon, 13 Oct 2014 09:59:24 +0300
+Message-ID: <CAGyAFMWg32tGHEBair6dXvz=rUxN_=8Ou4whd5bjBKyuNTJquA@...278...>
+From: Lev Stipakov <lstipakov@...277...>
+Subject: Re: [Openvpn-devel] Async OPENVPN_PLUGIN_CLIENT_CONNECT plugin
+	support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,61 +17,45 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+To: Fabian Knittel <fabian.knittel@...1547...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-David Sommerseth, le Fri 10 Oct 2014 12:13:42 +0200, a =E9crit :
-> I think it would be better to move the unlink() code from
-> multi_client_connect_post() into multi_connection_established(), where
-> these temp files are created.  This makes the code clearer and easier to
-> understand.
+Hi Fabian,
 
-Right, how about this?
+> You say that you've added support for the client-connect plugin call. May I
+> ask what was missing?
 
-Samuel
+Nothing dramatic, I just added deferred support for client-connect v2.
 
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index 5910154..25e7384 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -1459,10 +1465,6 @@ multi_client_connect_post (struct multi_context *m,
- 			     option_types_found,
- 			     mi->context.c2.es);
-=20
--      if (!platform_unlink (dc_file))
--	msg (D_MULTI_ERRORS, "MULTI: problem deleting temporary file: %s",
--	     dc_file);
--
-       /*
-        * If the --client-connect script generates a config file
-        * with an --ifconfig-push directive, it will override any
-@@ -1705,6 +1707,11 @@ multi_connection_established (struct multi_context *=
-m, struct multi_instance *mi
- 	      multi_client_connect_post (m, mi, dc_file, option_permissions_mask,=
- &option_types_found);
- 	      ++cc_succeeded_count;
- 	    }
-+
-+	  if (!platform_unlink (dc_file))
-+	    msg (D_MULTI_ERRORS, "MULTI: problem deleting temporary file: %s",
-+		 dc_file);
-+
-         script_depr_failed:
- 	  argv_reset (&argv);
- 	}
-@@ -1758,6 +1765,11 @@ multi_connection_established (struct multi_context *=
-m, struct multi_instance *mi
- 	    }
- 	  else
- 	    cc_succeeded =3D false;
-+
-+	  if (!platform_unlink (dc_file))
-+	    msg (D_MULTI_ERRORS, "MULTI: problem deleting temporary file: %s",
-+		 dc_file);
-+
-         script_failed:
- 	  argv_reset (&argv);
- 	}
+> So this is basically about replacing a 5s poll-interval with something that
+> should proceed near instantaneously, correct?
+
+Well, 5 seconds interval is still there, it is client-side thing. I
+made server send
+push_reply immediately after result is ready (written to ccr file)
+without waiting
+for incoming push_request.
+
+I noticed that if authentication / authorization happens fast enough, server may
+send push_reply before push_request is arrived. Sometimes client anyway sends
+push_request and server sends second push_reply. To avoid that and to follow
+the protocol (I haven't noticed any issues, though), in latest version
+I made server wait
+for the first push_request. So, if authorization takes less than
+second, client will get response
+in a second (with first push_request), otherwise immediately when auth is done.
+
+I can probably modify client part and make it not send push_request if
+push_reply
+has already arrived. Would it be the correct way?
+
+> Thanks for sharing! I'll have a look at it, when time permits. Though my
+> focus is currently on getting some or all of the patches from the basic
+> patch-set upstream.
+
+Indeed it would be great to have your patch in upstream master.
+
+-Lev
 
