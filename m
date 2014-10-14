@@ -1,6 +1,6 @@
 From: alp@...1937...
-Date: Tue, 14 Oct 2014 23:43:21 +0400
-Message-Id: <1413315802-62359-4-git-send-email-alp@...1937...>
+Date: Tue, 14 Oct 2014 23:43:22 +0400
+Message-Id: <1413315802-62359-5-git-send-email-alp@...1937...>
 In-Reply-To: <1413315802-62359-1-git-send-email-alp@...1937...>
 References: <20141014151709.GT396@...1296...>
 	<1413315802-62359-1-git-send-email-alp@...1937...>
@@ -28,60 +28,67 @@ is that illumos doesn't provide sa_len field in sockaddr structures.
  1 file changed, 19 insertions(+), 2 deletions(-)
 
 diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index cc85e4d..c7e9ddd 100644
+index e76c2bd..dc10840 100644
 --- a/src/openvpn/route.c
 +++ b/src/openvpn/route.c
-@@ -2601,7 +2601,7 @@ get_default_gateway (struct route_gateway_info *rgi)
+@@ -2626,7 +2626,7 @@ get_default_gateway (struct route_gateway_info *rgi)
    gc_free (&gc);
  }
  
--#elif defined(TARGET_FREEBSD)||defined(TARGET_DRAGONFLY)
-+#elif defined(TARGET_FREEBSD)||defined(TARGET_DRAGONFLY)||defined(TARGET_SOLARIS)
+-#elif defined(TARGET_DARWIN) || \
++#elif defined(TARGET_DARWIN) || defined(TARGET_SOLARIS) || \
+ 	defined(TARGET_FREEBSD) || defined(TARGET_DRAGONFLY) || \
+ 	defined(TARGET_OPENBSD) || defined(TARGET_NETBSD)
  
- #include <sys/types.h>
- #include <sys/socket.h>
-@@ -2629,6 +2629,8 @@ get_default_gateway (struct route_gateway_info *rgi)
-   struct sockaddr *gate = NULL, *sa;
-   struct  rt_msghdr *rtm_aux;
+@@ -2661,12 +2661,21 @@ struct rtmsg {
+         ((a) > 0 ? (1 + (((a) - 1) | (sizeof(long) - 1))) : sizeof(long))
+ #endif
  
-+#if defined(TARGET_FREEBSD)||defined(TARGET_DRAGONFLY)
-+
- #define NEXTADDR(w, u) \
-         if (rtm_addrs & (w)) {\
-             l = ROUNDUP(u.sa_len); memmove(cp, &(u), l); cp += l;\
-@@ -2636,6 +2638,18 @@ get_default_gateway (struct route_gateway_info *rgi)
- 
- #define ADVANCE(x, n) (x += ROUNDUP((n)->sa_len))
- 
-+#else /* TARGET_SOLARIS */
-+
++#if defined(TARGET_SOLARIS)
 +#define NEXTADDR(w, u) \
 +        if (rtm_addrs & (w)) {\
 +            l = ROUNDUP(sizeof(struct sockaddr_in)); memmove(cp, &(u), l); cp += l;\
 +        }
 +
 +#define ADVANCE(x, n) (x += ROUNDUP(sizeof(struct sockaddr_in)))
-+
-+#endif
-+
-+
- #define rtm m_rtmsg.m_rtm
++#else
+ #define NEXTADDR(w, u) \
+         if (rtm_addrs & (w)) {\
+             l = ROUNDUP(u.sa_len); memmove(cp, &(u), l); cp += l;\
+         }
  
-   CLEAR(*rgi);
-@@ -2655,9 +2669,12 @@ get_default_gateway (struct route_gateway_info *rgi)
+ #define ADVANCE(x, n) (x += ROUNDUP((n)->sa_len))
++#endif
+ 
+ #define max(a,b) ((a) > (b) ? (a) : (b))
+ 
+@@ -2703,9 +2712,12 @@ get_default_gateway (struct route_gateway_info *rgi)
    rtm.rtm_addrs = rtm_addrs; 
  
    so_dst.sa_family = AF_INET;
 -  so_dst.sa_len = sizeof(struct sockaddr_in);
    so_mask.sa_family = AF_INET;
 +
-+#if defined(TARGET_FREEBSD)||defined(TARGET_DRAGONFLY)
++#ifndef TARGET_SOLARIS
 +  so_dst.sa_len = sizeof(struct sockaddr_in);
    so_mask.sa_len = sizeof(struct sockaddr_in);
 +#endif
  
    NEXTADDR(RTA_DST, so_dst);
    NEXTADDR(RTA_NETMASK, so_mask);
+@@ -2829,7 +2841,12 @@ get_default_gateway (struct route_gateway_info *rgi)
+       for (cp = buffer; cp <= buffer + ifc.ifc_len - sizeof(struct ifreq); )
+ 	{
+ 	  ifr = (struct ifreq *)cp;
++#if defined(TARGET_SOLARIS)
++	  const size_t len = sizeof(ifr->ifr_name) + sizeof(ifr->ifr_addr);
++#else
+ 	  const size_t len = sizeof(ifr->ifr_name) + max(sizeof(ifr->ifr_addr), ifr->ifr_addr.sa_len);
++#endif
++	
+ 	  if (!ifr->ifr_addr.sa_family)
+ 	    break;
+ 	  if (!strncmp(ifr->ifr_name, rgi->iface, IFNAMSIZ))
 -- 
 1.7.9.2
 
