@@ -1,8 +1,9 @@
 From: alp@...1937...
-Date: Tue, 14 Oct 2014 23:43:18 +0400
-Message-Id: <1413315802-62359-1-git-send-email-alp@...1937...>
-In-Reply-To: <20141014151709.GT396@...1296...>
+Date: Tue, 14 Oct 2014 23:43:20 +0400
+Message-Id: <1413315802-62359-3-git-send-email-alp@...1937...>
+In-Reply-To: <1413315802-62359-1-git-send-email-alp@...1937...>
 References: <20141014151709.GT396@...1296...>
+	<1413315802-62359-1-git-send-email-alp@...1937...>
 Subject: [Openvpn-devel] Default gateway can't be determined on
 	illumos/solaris
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,6 +20,4 @@ To: openvpn-devel@lists.sourceforge.net
 
 
 There are two patches here - against master and against 2.3 branch.
-It seems my first email didn't go to the list, because I used wrong From 
-address...
 
