@@ -1,11 +1,12 @@
-Message-ID: <54428D36.1020007@...1856...>
-Date: Sat, 18 Oct 2014 17:54:30 +0200
-From: Steffan Karger <steffan@...1856...>
+Message-ID: <5444B1A8.1090508@...515...>
+Date: Mon, 20 Oct 2014 09:54:32 +0300
+From: =?UTF-8?B?U2FtdWxpIFNlcHDDpG5lbg==?= <samuli@...515...>
 MIME-Version: 1.0
-References: <1408810901-24715-1-git-send-email-steffan@...1856...>
-In-Reply-To: <1408810901-24715-1-git-send-email-steffan@...1856...>
-Subject: Re: [Openvpn-devel] [PATCH] Add option to disable Diffie Hellman
- key exchange by setting "--dh none"
+References: <13177950.74478.1413544590694.JavaMail.root@...1893...>	<54411BA1.9080402@...1227...>	<17844314.87425.1413555693684.JavaMail.root@...1893...>	<CAFHpkQFXzF6D3X8DYHHLzb+gpvYDcVoHR8JKGG1p+o4w_GtFVw@...278...>	<9453768.108293.1413591263095.JavaMail.root@...1893...>	<CAFHpkQGH3pk1FyLB5bHLPkVQjfwsMhyXyrttJZG_=au5J_Hbpg@...278...>
+	<54423617.2010009@...1856...>
+In-Reply-To: <54423617.2010009@...1856...>
+Subject: Re: [Openvpn-devel] New OpenVPN bundles for Windows platform that
+ incorporate OpenSSL 1.0.1j
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,102 +15,46 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
 
-Anyone willing to review / comment?
 
-On 23-08-14 18:21, Steffan Karger wrote:
-> As requested on the mailing list and in trac ticket #410, add an option to
-> disable 'traditional' Diffie Hellman key exchange. People want to be able
-> to create ecdh-only configurations.
-> 
-> Also update the manpage to reflect the new behaviour, and while touching it
-> change the text to motivate users towards a more secure configuration.
-> 
-> Signed-off-by: Steffan Karger <steffan@...1856...>
-> ---
->  doc/openvpn.8         | 15 ++++++++++-----
->  src/openvpn/options.c | 14 ++++++++++----
->  src/openvpn/ssl.c     |  5 ++++-
->  3 files changed, 24 insertions(+), 10 deletions(-)
-> 
-> diff --git a/doc/openvpn.8 b/doc/openvpn.8
-> index f2911c0..0448d29 100644
-> --- a/doc/openvpn.8
-> +++ b/doc/openvpn.8
-> @@ -4238,13 +4238,18 @@ Not available with PolarSSL.
->  File containing Diffie Hellman parameters
->  in .pem format (required for
->  .B \-\-tls-server
-> -only). Use
-> +only).
->  
-> -.B openssl dhparam -out dh1024.pem 1024
-> +Set
-> +.B file=none
-> +to disable Diffie Hellman key exchange (and use ECDH only). Note that this
-> +requires peers to be using an SSL library that supports ECDH TLS cipher suites
-> +(e.g. OpenSSL 1.0.1+, or PolarSSL 1.3+).
->  
-> -to generate your own, or use the existing dh1024.pem file
-> -included with the OpenVPN distribution.  Diffie Hellman parameters
-> -may be considered public.
-> +Use
-> +.B openssl dhparam -out dh2048.pem 2048
-> +to generate 2048-bit DH parameters. Diffie Hellman parameters may be considered
-> +public.
->  .\"*********************************************************
->  .TP
->  .B \-\-ecdh-curve name
-> diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-> index 84eb6ed..92189a5 100644
-> --- a/src/openvpn/options.c
-> +++ b/src/openvpn/options.c
-> @@ -2149,10 +2149,6 @@ options_postprocess_verify_ce (const struct options *options, const struct conne
->        (options->shared_secret_file != NULL) > 1)
->      msg (M_USAGE, "specify only one of --tls-server, --tls-client, or --secret");
->  
-> -  if (options->tls_server)
-> -    {
-> -      notnull (options->dh_file, "DH file (--dh)");
-> -    }
->    if (options->tls_server || options->tls_client)
->      {
->  #ifdef ENABLE_PKCS11
-> @@ -2504,6 +2500,16 @@ options_postprocess_mutate (struct options *o)
->    for (i = 0; i < o->connection_list->len; ++i)
->  	options_postprocess_mutate_ce (o, o->connection_list->array[i]);
->  
-> +#ifdef ENABLE_SSL
-> +  if (o->tls_server)
-> +    {
-> +      /* Check that DH file is specified, or explicitly disabled */
-> +      notnull (o->dh_file, "DH file (--dh)");
-> +      if (streq (o->dh_file, "none"))
-> +	o->dh_file = NULL;
-> +    }
-> +#endif
-> +
->  #if ENABLE_MANAGEMENT
->    if (o->http_proxy_override)
->  	options_postprocess_http_proxy_override(o);
-> diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-> index 3ce1f60..34f02a7 100644
-> --- a/src/openvpn/ssl.c
-> +++ b/src/openvpn/ssl.c
-> @@ -483,7 +483,10 @@ init_ssl (const struct options *options, struct tls_root_ctx *new_ctx)
->    if (options->tls_server)
->      {
->        tls_ctx_server_new(new_ctx);
-> -      tls_ctx_load_dh_params(new_ctx, options->dh_file, options->dh_file_inline);
-> +
-> +      if (options->dh_file)
-> +	tls_ctx_load_dh_params(new_ctx, options->dh_file,
-> +			       options->dh_file_inline);
->      }
->    else				/* if client */
->      {
-> 
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+
+> Hi,
+>
+> On 18-10-14 05:40, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=B8=D1=
+=86=D0=B8=D0=BD wrote:
+>> how does that affect OpenVPN?
+>>
+>> =D1=81=D1=83=D0=B1=D0=B1=D0=BE=D1=82=D0=B0, 18 =D0=BE=D0=BA=D1=82=D1=8F=
+=D0=B1=D1=80=D1=8F 2014 =D0=B3. =D0=BF=D0=BE=D0=BB=D1=8C=D0=B7=D0=BE=D0=B2=
+=D0=B0=D1=82=D0=B5=D0=BB=D1=8C Lisa Minogue =D0=BD=D0=B0=D0=BF=D0=B8=D1=81=
+=D0=B0=D0=BB:
+>>
+>>     SRTP Memory Leak (CVE-2014-3513)
+>>     Session Ticket Memory Leak (CVE-2014-3567)
+>
+> Denial-of-service only (no integrity or confidentiality breach). Use
+> tls-auth as an extra layer of protection if you worry about DoS attacks.
+>
+I'll generate new Windows installers today.
+
+- --=20
+Samuli Sepp=C3=A4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iEYEARECAAYFAlREsagACgkQwp2X7RmNIqM39wCeK6LuseqQC3quiXdA1dO2gIb9
+wHoAoIyH2dUFYi0VrcTlQGEahpQfYIUO
+=3DGIkJ
+-----END PGP SIGNATURE-----
+
 
