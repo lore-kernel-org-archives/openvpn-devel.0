@@ -1,9 +1,14 @@
-Message-ID: <5444D0B3.2080800@...515...>
-Date: Mon, 20 Oct 2014 12:06:59 +0300
-From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] Topics for next Thursday's (23rd Oct 2014)
-	community meeting
+Date: Mon, 20 Oct 2014 11:54:51 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20141020095451.GV396@...1296...>
+References: <5444CE65.5000901@...515...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="LQv0vi9oZBoYbpa7"
+Content-Disposition: inline
+In-Reply-To: <5444CE65.5000901@...515...>
+Subject: Re: [Openvpn-devel] Regarding OpenVPN 2.3.5 release and
+	tap-windows6-related fixes
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,44 +17,53 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-15"
-Content-Transfer-Encoding: quoted-printable
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Samuli =?iso-8859-1?Q?Sepp=E4nen?= <samuli@...515...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+--LQv0vi9oZBoYbpa7
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
 Hi,
 
-We're having an IRC meeting on Thursday, starting at 18:00 UTC on
-#openvpn-devel@...1422... Current topic list is here:
+On Mon, Oct 20, 2014 at 11:57:09AM +0300, Samuli Sepp=E4nen wrote:
+> However, those fixes are for the Git "master" branch, which cannot
+> currently be built using "openvpn-build" (i.e. for Windows). A few weeks
+> ago I backported the above patches to OpenVPN 2.3.4 and released test
+> installers[1] which apparently fixed the primary issue[2]. Do we / can
+> we merge the patches to "master" without testing based on the fact that
+> they worked for OpenVPN 2.3.4?
 
-<https://community.openvpn.net/openvpn/wiki/Topics-2014-10-23>
+If you can send the patches to the list ("as we require for patches to
+be reviewed") I'll look, merge, and backport.
 
-If you have any other things you'd like to bring up, respond to this
-mail, send me mail privately or add them to the list yourself.
+> Anything blocking 2.3.5 release atm?
 
-In case you can't attend the meeting, please feel free to make comments
-on the topics by responding to this email or to the summary email sent
-after the meeting. Whenever possible, we'll also respond to existing,
-related email threads.
+I'm not aware of anything, except "time" maybe :-) - but this should
+be doable this week.
 
-NOTE: It's required to use a registered Freenode IRC nickname to join
-#openvpn-devel - look here for details:
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-<https://community.openvpn.net/openvpn/wiki/GettingHelp#DeveloperIRCchannel>
+--LQv0vi9oZBoYbpa7
+Content-Type: application/pgp-signature
+Content-Disposition: inline
 
-- --=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1
 
-iEYEARECAAYFAlRE0LMACgkQwp2X7RmNIqNSfACfVpdZ3s37DBOe5Jkt5vIzWDcE
-LGwAoIHnyGWHBcQnDJcqI8jPmN585tNa
-=3D4xWf
+iQCVAwUBVETb66kuBuNlUUl1AQJcWQP/RSh1gYbc3PZa9SK9TJAxdeDMjUBRTG8E
+UKes2JHg04x/VgXg7EKeov4CdGfNPOcNeFUlzASy0L01IKZM/QSHV2V00YX24yJM
+DBbL8o32zEI21PG9/Z1jbwtKVphMpQXMvQX5t+uBSdaUlJLW05Fyq0YrrDaxJTFv
+SzmUl5/wtCU=
+=cKj7
 -----END PGP SIGNATURE-----
+
+--LQv0vi9oZBoYbpa7--
 
