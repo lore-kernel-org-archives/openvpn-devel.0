@@ -1,15 +1,9 @@
-Message-ID: <5444CC1E.80906@...1114...>
-Date: Mon, 20 Oct 2014 10:47:26 +0200
-From: David Sommerseth <openvpn.list@...1114...>
+Message-ID: <5444CE65.5000901@...515...>
+Date: Mon, 20 Oct 2014 11:57:09 +0300
+From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-References: <20141009214049.GB4106@...1818...>	<5437B156.1020408@...1114...>	<20141012195919.GU3738@...1819...>
-	<543D4C0E.1040400@...1114...>
-In-Reply-To: <543D4C0E.1040400@...1114...>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="jGKBhu47Uw3WRaEpV3SlArLKNIHBHhG5w"
-Subject: Re: [Openvpn-devel] [PATCH] Fix temporary file leak
-Reply-To: openvpn-devel@lists.sourceforge.net
+Subject: [Openvpn-devel] Regarding OpenVPN 2.3.5 release and
+	tap-windows6-related fixes
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,66 +12,66 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Samuel Thibault <samuel.thibault@...1817...>, openvpn-devel@lists.sourceforge.net
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---jGKBhu47Uw3WRaEpV3SlArLKNIHBHhG5w
-Content-Type: text/plain; charset="ISO-8859-1"
+Content-Type: text/plain; charset="iso-8859-15"
 Content-Transfer-Encoding: quoted-printable
-
-On 14/10/14 18:15, David Sommerseth wrote:
-> On 12/10/14 21:59, Samuel Thibault wrote:
->> David Sommerseth, le Fri 10 Oct 2014 12:13:42 +0200, a =E9crit :
->>> I think it would be better to move the unlink() code from
->>> multi_client_connect_post() into multi_connection_established(), where
->>> these temp files are created.  This makes the code clearer and easier to
->>> understand.
->>
->> Right, how about this?
->>
->> Samuel
->=20
-> Okay, so I messed up the push.  But it's fixed now, and it really got
-> pushed out this time :)
->=20
-> Your patch has been applied to the master branch.
->=20
-> commit 7da9d40243e0743e2d050ceb6ae34e467dd58973
-> Author: Samuel Thibault
-> Date:   Thu Oct 9 23:40:49 2014 +0200
->=20
->      Ensure that client-connect files are always deleted
->=20
->      Signed-off-by: David Sommerseth <davids@...1347...>
->      Acked-by: David Sommerseth <davids@...1347...>
->      Message-Id: 20141012195919.GU3738@...1819...
->      URL:
-> <http://thread.gmane.org/gmane.network.openvpn.devel/9104/focus=3D9118>
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
 
-We decided to include this in the coming 2.3 release as well.  So the
-patch can be found in the release/2.3 branch as commit 10cbaea91d7d3774
-as well.
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
+Hi all,
 
---=20
-kind regards,
+People have encountered a few rather serious issues with OpenVPN 2.3.x
+for Windows. These issues only materialize when one is using OpenVPN
+2.3.x with tap-windows6:
 
-David Sommerseth
+<https://community.openvpn.net/openvpn/ticket/430>
+<https://community.openvpn.net/openvpn/ticket/432>
 
+The underlying issue is that OpenVPN 2.3.x does not handle return code
+995 from tap-windows6 at all. According to the driver author most s.c.
+tap-windows6 issues stem from this single omission in OpenVPN 2.3.x itself.
 
---jGKBhu47Uw3WRaEpV3SlArLKNIHBHhG5w
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+There are now tentative fixes for the 995 issue here:
 
+<https://github.com/TDivine/openvpn/commit/c391f10e79d88d01405eedbc6822bc92=
+cf8a210d>
+<https://github.com/TDivine/openvpn/commit/44b56c14c66201074805a4c5b97da2cf=
+b1e1f248>
+
+However, those fixes are for the Git "master" branch, which cannot
+currently be built using "openvpn-build" (i.e. for Windows). A few weeks
+ago I backported the above patches to OpenVPN 2.3.4 and released test
+installers[1] which apparently fixed the primary issue[2]. Do we / can
+we merge the patches to "master" without testing based on the fact that
+they worked for OpenVPN 2.3.4?
+
+We'd also need to backport these fixes to 2.3 and make a new release.
+Looks like there's quite a lot of stuff in the pipe for 2.3.5, so it
+probably makes sense to release all of it along with these
+tap-windows6-related fixes in one go. Anything blocking 2.3.5 release atm?
+
+- --=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
+
+[1]
+<http://swupdate.openvpn.org/community/releases/openvpn-install-2.3.4-I603-=
+i686.exe>
+<http://swupdate.openvpn.org/community/releases/openvpn-install-2.3.4-I603-=
+x86_64.exe>
+[2] <https://community.openvpn.net/openvpn/ticket/430#comment:11>
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1
 
-iEYEARECAAYFAlREzB4ACgkQDC186MBRfrrrbgCcCm9s4rmfglH/5E7PogTBtjnn
-ZXcAoKm/1lwzLS4UHNybV/Zfd2nGBDds
-=f27a
+iEYEARECAAYFAlREzmUACgkQwp2X7RmNIqNguACeLDF/720Obl6IrNNs0OWYU88N
+6GoAn3PQSgxKX+M2UxY6WJKujLXtOTOI
+=3DXb+t
 -----END PGP SIGNATURE-----
 
---jGKBhu47Uw3WRaEpV3SlArLKNIHBHhG5w--
+
 
