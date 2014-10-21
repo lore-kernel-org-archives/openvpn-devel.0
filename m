@@ -1,11 +1,14 @@
-Message-ID: <54461F20.5060908@...1147...>
-Date: Tue, 21 Oct 2014 10:53:52 +0200
-From: Jan Just Keijser <janjust@...1147...>
-MIME-Version: 1.0
-References: <54450921.30501@...515...>
-In-Reply-To: <54450921.30501@...515...>
+Date: Tue, 21 Oct 2014 11:11:59 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20141021091159.GY396@...1296...>
+References: <54450921.30501@...515...> <54461F20.5060908@...1147...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="sB5q8U+2Z60V3VP3"
+Content-Disposition: inline
+In-Reply-To: <54461F20.5060908@...1147...>
 Subject: Re: [Openvpn-devel] New OpenVPN Windows installers (I004 and I604)
- released
+	released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,36 +17,49 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-15"; format=flowed
-Content-Transfer-Encoding: quoted-printable
-To: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
+To: Jan Just Keijser <janjust@...1147...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>
 
-Hi Samuli,
+--sB5q8U+2Z60V3VP3
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Samuli Sepp=E4nen wrote:
-> New Windows installers with OpenSSL 1.0.1j have been released:
->
-> <http://openvpn.net/index.php/download/community-downloads.html>
->
-> Two of the issues fixed in OpenSSL may impact OpenVPN. More details here:
->
-> <http://thread.gmane.org/gmane.network.openvpn.devel/9133>
->
-> Let me know if there are any issues with these installers.
->
->=20=20=20
-just downloaded the openvpn-install-2.3.4-i004-x86_64.exe file and=20
-installed it; installation seems successful but afterwards the GUI fails=20
-to start:
+Hi,
 
-cannot create HKLM\Software\Openvpn-GUI key
+On Tue, Oct 21, 2014 at 10:53:52AM +0200, Jan Just Keijser wrote:
+> Running the gui with elevated privileges fixes this issue. Shouldn't the=
+=20
+> installer have created this registry key?
 
-Running the gui with elevated privileges fixes this issue. Shouldn't the=20
-installer have created this registry key?
-This is on Windows 7 Pro 64bit.
+The GUI need to run with elevated privileges anyway, because otherwise=20
+OpenVPN cannot install routes...
 
+This will hopefully be fixed in 2.4 with the interactive service, we just
+need to find time for Heiko to find the code and send it to us :-) (but
+I've already seen it last year)
 
-JJK
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
+--sB5q8U+2Z60V3VP3
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQCVAwUBVEYjXqkuBuNlUUl1AQIZAQP9FvjBkrOcyHGxCozGmVyRTbHp8lIyOLnj
+igHAPEq0XyzU9r2QILkTWRu2Jl8iFwVh/Sb01xI9mV1B9iK2dKADmsGMVqGyJt7m
+yWjPIh3mf7ha+9d57eWtQAioxQxCDEt0UqlcqGqOhIBo4aGbbW3RsEgrQLbcQWsu
+Si9PEhg1W/c=
+=bHwr
+-----END PGP SIGNATURE-----
+
+--sB5q8U+2Z60V3VP3--
 
