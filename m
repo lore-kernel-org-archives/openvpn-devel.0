@@ -1,18 +1,10 @@
 MIME-Version: 1.0
-In-Reply-To: <CAKuzo_gHOM3ZJfK5Shu4XcCcuG3qPadwsbQHpNCNwFBR67N4fg@...278...>
-References: <54450921.30501@...515...> <54461F20.5060908@...1147...>
-	<20141021091159.GY396@...1296...>
-	<CAEsd45SOhJcowu27gs6Be5YShph91pUBwq4eBfhGtpCT2MXo1w@...278...>
-	<20141021104308.GZ396@...1296...>
-	<CAEsd45Qa34HsKZ6rwhuF5qnvBBnsFVeaJcRConfLEjXOdu+StQ@...278...>
-	<CAKuzo_juo92ZC8aGjE4FN=EFnw1WMczE_noX7Aa2m+wQEXeJfQ@...278...>
-	<20141021142617.GD396@...1296...>
-	<CAKuzo_jU0AL9w1MZ-mCfp5_+Q=v2xhYfN1L+eKgN1ZsKtUmzLQ@...278...>
-	<CAKuzo_gHOM3ZJfK5Shu4XcCcuG3qPadwsbQHpNCNwFBR67N4fg@...278...>
-From: Selva Nair <selva.nair@...277...>
-Date: Tue, 21 Oct 2014 12:19:35 -0400
-Message-ID: <CAKuzo_hx2Ba-KP3hYwHkpq_J9VGfxJoRgHNGTE9be9Wj9kFoYA@...278...>
-Content-Type: multipart/alternative; boundary=20cf307cfcc6b29fe60505f1333f
+In-Reply-To: <54461F20.5060908@...1147...>
+References: <54450921.30501@...515...>
+	<54461F20.5060908@...1147...>
+Date: Wed, 22 Oct 2014 00:15:16 +0600
+Message-ID: <CAFHpkQH0b6aEqwhXcAyns2DvzDGuX=MizpU5w5Kf+rT=3x5TKg@...278...>
+From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
 Subject: Re: [Openvpn-devel] New OpenVPN Windows installers (I004 and I604)
 	released
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -23,31 +15,60 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-
---20cf307cfcc6b29fe60505f1333f
-Content-Type: text/plain; charset=UTF-8
-
-Correction:
-> Locally, I have patched it to pass the
-> certificate key as well although we don't normally use that option.
-
-I meant to say respond to  RSA_SIGN requests so that the private key need
-not be in the config.
-
-Selva
-
---20cf307cfcc6b29fe60505f1333f
-Content-Type: text/html; charset="UTF-8"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
+To: Jan Just Keijser <janjust@...1147...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>
 
-<div dir=3D"ltr">Correction:<br><div class=3D"gmail_extra">&gt; Locally, I =
-have patched it to pass the</div><div class=3D"gmail_extra">&gt; certificat=
-e key as well although we don&#39;t normally use that option.</div><div cla=
-ss=3D"gmail_extra"><br></div><div class=3D"gmail_extra">I meant to say resp=
-ond to =C2=A0RSA_SIGN requests so that the private key need not be in the c=
-onfig.</div><div class=3D"gmail_extra"><br></div><div class=3D"gmail_extra"=
- style>Selva<br><br></div></div>
+this is because Heiko rejected merge request:
+http://sourceforge.net/p/openvpn-gui/code/merge-requests/1/
 
---20cf307cfcc6b29fe60505f1333f--
+it is easily fixed by openvpn-gui manifest
+
+<requestedExecutionLevel level=3D"requireAdministrator" uiAccess=3D"false"/>
+
+I keep hearing from Heiko about some magic openvpn service for years.
+it is just couple of minutes to merge that request though...
+
+
+2014-10-21 14:53 GMT+06:00 Jan Just Keijser <janjust@...1147...>:
+> Hi Samuli,
+>
+> Samuli Sepp=C3=A4nen wrote:
+>> New Windows installers with OpenSSL 1.0.1j have been released:
+>>
+>> <http://openvpn.net/index.php/download/community-downloads.html>
+>>
+>> Two of the issues fixed in OpenSSL may impact OpenVPN. More details here:
+>>
+>> <http://thread.gmane.org/gmane.network.openvpn.devel/9133>
+>>
+>> Let me know if there are any issues with these installers.
+>>
+>>
+> just downloaded the openvpn-install-2.3.4-i004-x86_64.exe file and
+> installed it; installation seems successful but afterwards the GUI fails
+> to start:
+>
+> cannot create HKLM\Software\Openvpn-GUI key
+>
+> Running the gui with elevated privileges fixes this issue. Shouldn't the
+> installer have created this registry key?
+> This is on Windows 7 Pro 64bit.
+>
+>
+> JJK
+>
+>
+> -------------------------------------------------------------------------=
+-----
+> Comprehensive Server Monitoring with Site24x7.
+> Monitor 10 servers for $9/Month.
+> Get alerted through email, SMS, voice calls or mobile push notifications.
+> Take corrective actions from your mobile device.
+> http://p.sf.net/sfu/Zoho
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
