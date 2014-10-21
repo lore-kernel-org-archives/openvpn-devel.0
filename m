@@ -1,9 +1,10 @@
-Message-ID: <544625E6.9050508@...515...>
-Date: Tue, 21 Oct 2014 12:22:46 +0300
-From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
+Message-ID: <54462713.9030300@...1147...>
+Date: Tue, 21 Oct 2014 11:27:47 +0200
+From: Jan Just Keijser <janjust@...1147...>
 MIME-Version: 1.0
 References: <54450921.30501@...515...> <54461F20.5060908@...1147...>
-In-Reply-To: <54461F20.5060908@...1147...>
+	<20141021091159.GY396@...1296...>
+In-Reply-To: <20141021091159.GY396@...1296...>
 Subject: Re: [Openvpn-devel] New OpenVPN Windows installers (I004 and I604)
  released
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -14,67 +15,41 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-15"
-Content-Transfer-Encoding: quoted-printable
-To: Jan Just Keijser <janjust@...1147...>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Gert Doering <gert@...1296...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>
 
+Hi,
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
-
-
-> Hi Samuli,
+Gert Doering wrote:
+> Hi,
 >
-> Samuli Sepp=E4nen wrote:
->> New Windows installers with OpenSSL 1.0.1j have been released:
->>
->> <http://openvpn.net/index.php/download/community-downloads.html>
->>
->> Two of the issues fixed in OpenSSL may impact OpenVPN. More details here:
->>
->> <http://thread.gmane.org/gmane.network.openvpn.devel/9133>
->>
->> Let me know if there are any issues with these installers.
->>
->>=20=20=20
-> just downloaded the openvpn-install-2.3.4-i004-x86_64.exe file and
-installed it; installation seems successful but afterwards the GUI fails
-to start:
+> On Tue, Oct 21, 2014 at 10:53:52AM +0200, Jan Just Keijser wrote:
+>   
+>> Running the gui with elevated privileges fixes this issue. Shouldn't the 
+>> installer have created this registry key?
+>>     
 >
-> cannot create HKLM\Software\Openvpn-GUI key
+> The GUI need to run with elevated privileges anyway, because otherwise 
+> OpenVPN cannot install routes...
 >
-> Running the gui with elevated privileges fixes this issue. Shouldn't
-the installer have created this registry key?
-> This is on Windows 7 Pro 64bit.
+> This will hopefully be fixed in 2.4 with the interactive service, we just
+> need to find time for Heiko to find the code and send it to us :-) (but
+> I've already seen it last year)
 >
+>   
+so I guess the installer needs to set up the OpenVPN GUI entries with 
+the "Run as Administrator" bit set - the GUI does not fully function 
+without it anyways
+- cannot create reg keys
+- cannot create log file when starting a connection
+- cannot add routes to the system
 
-Hi Jan,
+All of which makes perfect sense when elevated privileges are not set - 
+it's just that it would be handier if the installer created the 
+OpenVPN-GUI.exe entries with the admin bit set, if at all possible.
 
-Currently the installer does not currently create or update the
-OpenVPN-GUI registry keys. This is primarily for historic reasons -
-OpenVPN-GUI has never had it's own installer, so it sets up it's own
-environment during first startup (as admin).
-
-I've written a separate NSI installer script for OpenVPN-GUI[*], which
-will take care of updating the keys as necessary. The plan is to include
-the OpenVPN-GUI installer in OpenVPN 2.4 installers only to avoid
-introducing installers bugs in our stable releases.
-
-In my opinion the registry key generation should be removed from
-OpenVPN-GUI when the installer is fully functional, tested and
-integrated with OpenVPN.
-
-Samuli
-
-[*] The NSI script should be in openvpn-gui Git repository
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iEYEARECAAYFAlRGJeYACgkQwp2X7RmNIqM6MgCeJjolkqW8gzufaZ+Qj84GfJGr
-ypgAoJrcJLDQQQ49p/dVSSjWHLd0cNwD
-=3DUTHP
------END PGP SIGNATURE-----
-
+JJK
 
 
