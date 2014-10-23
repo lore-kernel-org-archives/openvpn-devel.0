@@ -1,12 +1,12 @@
-Message-ID: <5448A2B6.6020707@...515...>
-Date: Thu, 23 Oct 2014 09:39:50 +0300
-From: =?windows-1252?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
+Message-ID: <5448B3C9.4010403@...1435...>
+Date: Thu, 23 Oct 2014 09:52:41 +0200
+From: Steffan Karger <steffan.karger@...1435...>
 MIME-Version: 1.0
-References: <13177950.74478.1413544590694.JavaMail.root@...1893...>	<54411BA1.9080402@...1227...>
-	<7335745.199240.1414040750776.JavaMail.root@...1893...>
-In-Reply-To: <7335745.199240.1414040750776.JavaMail.root@...1893...>
-Subject: Re: [Openvpn-devel] New OpenVPN bundles for Windows platform that
- incorporate OpenSSL 1.0.1j
+References: <CAGyAFMXhPTamN5tZYr92=re8Bhxky=priWS8UhCU3E_p2D8-mQ@...278...>	<CAGyAFMV6kZzTFwdp21n8GTNa-fbPx_S-TpYjpiC+R862WoMhAA@...278...>	<53B03B43.2040009@...1227...>
+	<53BD10EB.9010509@...1227...>	<alpine.DEB.2.02.1408121108120.3669@...1831...>	<CAGyAFMVzDaygh1d-jtZSRXYqq+hm5qphmtEQE8f7eyhpD8Am_w@...278...>	<5436E6E5.8060002@...1856...>
+	<CAGyAFMUQnZYLNAeLeAw4SR7zJgmqc1k+mgEwBKwL+TXLAOU2ZA@...278...>
+In-Reply-To: <CAGyAFMUQnZYLNAeLeAw4SR7zJgmqc1k+mgEwBKwL+TXLAOU2ZA@...278...>
+Subject: Re: [Openvpn-devel] session-id implementation
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,41 +16,33 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
-To: Lisa Minogue <lminogue@...1892...>, Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
+Hi Lev,
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+On 10/21/2014 09:33 AM, Lev Stipakov wrote:
+> 
+> Thanks for your comments. I have fixed (1) and (2) - well, reusing
+> existing code in (2) has fixed also (1).
 
+Thanks! Do you have the patch somewhere for us to look at?
 
-> Please surf to http://sourceforge.net/p/openvpn/mailman/openvpn-announce/=
- and read the
-post titled "[Openvpn-announce] New OpenVPN Windows installers (I004 and
-I604) released" by Samuli.
->
-> You'll see that OpenVPN needs to apply the latest security fixes from
-OpenSSL.
->
-> Lisa
->
-There is also a Wiki page here:
+> Regarding (3) - I don't have much experience in crypto thing, so it
+> would be nice if someone suggests if we should use another alignment.
 
-<https://community.openvpn.net/openvpn/wiki/VulnerabilitiesFixedInOpenSSL1.=
-0.1j>
+From later discussions I get the feeling the alignment was not crypto
+related.
 
-- --=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
+Also, alignment for crypto is very platform-specific. e.g. AES-NI
+instructions require 128-bit alignment for maximum speed. Though it
+depends on the crypto mode and implementation whether the data we supply
+it is directly used or not.
 
-irc freenode net: mattock
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
+The main accelerated crypto mode currently is AES-GCM, and that does not
+run the data through the crypto (but rather encrypts counters, and then
+XORs the result with the data). So I wouldn't worry too much about that
+for now.
 
-iEYEARECAAYFAlRIorYACgkQwp2X7RmNIqPuKgCgp+Iv4JwX8ZXXkJGYbCyAJQ+F
-104An05iMcfW+DB+cNHzY8whqqXrTUnB
-=3D4QL4
------END PGP SIGNATURE-----
-
+-Steffan
 
