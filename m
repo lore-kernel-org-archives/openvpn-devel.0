@@ -1,5 +1,5 @@
-Date: Fri, 24 Oct 2014 21:00:06 +0200 (CEST)
-Message-Id: <201410241900.s9OJ06Mo006086@...1295...>
+Date: Fri, 24 Oct 2014 21:00:12 +0200 (CEST)
+Message-Id: <201410241900.s9OJ0C01018719@...1295...>
 From: Gert Doering <gert@...1296...>
 In-Reply-To: <5432E951.6020405@...1435...>
 References: <5432E951.6020405@...1435...>
@@ -20,11 +20,11 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 ACK, verifying against the polarssl commit.
 
-Your patch has been applied to the master branch.
+Your patch has been applied to the release/2.3 branch.
 
-commit 4b9eaa1ee40648f101deb4ebf07a04cd5b5400e9
+commit f056c8eadc4d5fcda5d1e861425802f503587f16
 Author: Steffan Karger
-Date:   Fri Sep 19 06:19:13 2014 +0200
+Date:   Fri Sep 19 06:43:48 2014 +0200
 
      Fix regression with password protected private keys (polarssl)
 
