@@ -1,12 +1,19 @@
-From: Steffan Karger <steffan.karger@...1435...>
-Date: Fri, 24 Oct 2014 09:41:23 +0200
-Message-ID: <1CED409804E2164C8104F9E623B08B901865CED597@...1436...>
-Content-Language: en-US
-Content-Type: multipart/mixed;
-	boundary="_003_1CED409804E2164C8104F9E623B08B901865CED597FOXDFT02FOXlo_"
-MIME-Version: 1.0
-Subject: [Openvpn-devel] FW: [PATCH] Fix regression with password protected
- private keys (polarssl)
+Date: Fri, 24 Oct 2014 11:15:29 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20141024091528.GZ396@...1296...>
+References: <CAAA5faEk-YSopL-9L=cWzpcfwk96r+utbWEWuO_=L0=jjvYzRg@...278...>
+	<20141023192811.GU396@...1296...>
+	<CAAA5faFxpQnb7pNd1tSZisVfkGdD4d0xzLBwzwt5acstNfRe0w@...278...>
+	<20141023211259.GV396@...1296...>
+	<CAAA5faFzhCkqxe4j24C25b8JaLSgj2HeD5s2i31Em-UQOPURAg@...278...>
+	<20141024054814.GX396@...1296...>
+	<CAAA5faFEzEUdfixd5bhTY_9wg49VxCO+ZRWHMtoqJ07g6ouDmA@...278...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="EEnv9zyGND1dPpWR"
+Content-Disposition: inline
+In-Reply-To: <CAAA5faFEzEUdfixd5bhTY_9wg49VxCO+ZRWHMtoqJ07g6ouDmA@...278...>
+Subject: Re: [Openvpn-devel] man page and options.c contradict
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,128 +22,57 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Reinoud Koornstra <reinoudkoornstra@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---_003_1CED409804E2164C8104F9E623B08B901865CED597FOXDFT02FOXlo_
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+--EEnv9zyGND1dPpWR
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-QXR0ZW1wdCAyLCBzZWUgYmVsb3cuIEl0IHNlZW1zIHRoYXQgc29tZWhvdyBteSBwcmV2aW91cyBt
-YWlsIGhhcyBkaXNhcHBlYXJlZCBmcm9tIHRoZSBpbnRlcndlYnMsIEkgY2FuJ3QgZmluZCBpdCBp
-biB0aGUgYXJjaGl2ZXMuDQoNCi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQpGcm9tOiBTdGVm
-ZmFuIEthcmdlciBbbWFpbHRvOnN0ZWZmYW4ua2FyZ2VyQC4uLjE0MzUuLi5dIA0KU2VudDogbWFh
-bmRhZyA2IG9rdG9iZXIgMjAxNCAyMToxMQ0KVG86IG9wZW52cG4tZGV2ZWxAbGlzdHMuc291cmNl
-Zm9yZ2UubmV0DQpTdWJqZWN0OiBbUEFUQ0hdIEZpeCByZWdyZXNzaW9uIHdpdGggcGFzc3dvcmQg
-cHJvdGVjdGVkIHByaXZhdGUga2V5cyAocG9sYXJzc2wpDQoNCkhpLA0KDQpCZXR3ZWVuIHZlcnNp
-b25zIDEuMi43IGFuZCAxLjIuOCwgcG9sYXJzc2wgY2hhbmdlZCB0aGUgZXJyb3JzIHJldHVybmVk
-IGJ5IHRoZSBYNTA5IHBhcnNpbmcgZnVuY3Rpb25zLCB3aGljaCBicm9rZSB0aGUgT3BlblZQTiBp
-bXBsZW1lbnRhdGlvbiBmb3IgcGFzc3dvcmQgcHJvdGVjdGVkIHByaXZhdGUga2V5cyBpbiBwb2xh
-cnNzbCBidWlsZHMuIExhdGVyLCBmb3IgcG9sYXJzc2wgMS4zLCB0aGUgcmV0dXJuIGNvZGVzIGNo
-YW5nZWQgYWdhaW4uDQoNClRoZSBhdHRhY2hlZCBwYXRjaGVzIGZpeCB0aGUgcmVncmVzc2lvbiBi
-eSBjaGVja2luZyBmb3IgdGhlIG5ldyBlcnJvcnMgaW4gT3BlblZQTi4gU2luY2UgdGhlIDIuMyBh
-bmQgbWFzdGVyIGNvZGUgaXMgc2xpZ2h0bHkgZGlmZmVyZW50IGhlcmUsIEkgbWFkZSBhIHBhdGNo
-IGZvciBlYWNoIGJyYW5jaC4NCg0KVGhlIHBvbGFyc3NsIGNoYW5nZSBmb3IgMS4yLjg6DQpodHRw
-czovL2dpdGh1Yi5jb20vcG9sYXJzc2wvcG9sYXJzc2wvY29tbWl0L2I0OTVkM2ENCg0KQW4gbGF0
-ZXIgZm9yIHBvbGFyc3NsIDEuMyAoc2VhcmNoIGZvciBwa19wYXJzZV9rZXkoKSk6DQpodHRwczov
-L2dpdGh1Yi5jb20vcG9sYXJzc2wvcG9sYXJzc2wvY29tbWl0LzFhNzU1MGENCg0KLVN0ZWZmYW4N
-Cg==
+Hi,
 
---_003_1CED409804E2164C8104F9E623B08B901865CED597FOXDFT02FOXlo_
-Content-Type: text/x-patch;
-	name="2.3-Fix-regression-with-password-protected-private-keys-.patch"
-Content-Description: 2.3-Fix-regression-with-password-protected-private-keys-.patch
-Content-Disposition: attachment;
-	filename="2.3-Fix-regression-with-password-protected-private-keys-.patch";
-	size=2123; creation-date="Mon, 06 Oct 2014 19:11:10 GMT";
-	modification-date="Mon, 06 Oct 2014 19:11:10 GMT"
-Content-Transfer-Encoding: base64
+On Fri, Oct 24, 2014 at 01:04:17AM -0600, Reinoud Koornstra wrote:
+> I understood the term mode wrong.
+> So the main mode can be p2p or server to denote the openvpn protocol insi=
+de
+> tcp or udp(stateless) session. Initially I thought the term mode is used =
+to
+> denote server, client or udp.
 
-RnJvbSAzYzZjMjViOGMyMjcwYWQwYWY3MWE4ODM3YjYwZWE0MGVjZmU2NmJlIE1vbiBTZXAgMTcg
-MDA6MDA6MDAgMjAwMQ0KRnJvbTogU3RlZmZhbiBLYXJnZXIgPHN0ZWZmYW4ua2FyZ2VyQGZveC1p
-dC5jb20+DQpEYXRlOiBGcmksIDE5IFNlcCAyMDE0IDA2OjQzOjQ4ICswMjAwDQpTdWJqZWN0OiBb
-UEFUQ0ggKDIuMyldIEZpeCByZWdyZXNzaW9uIHdpdGggcGFzc3dvcmQgcHJvdGVjdGVkIHByaXZh
-dGUga2V5cw0KIChwb2xhcnNzbCkNCg0KQmV0d2VlbiB2ZXJzaW9ucyAxLjIuNyBhbmQgMS4yLjgs
-IHBvbGFyc3NsIGNoYW5nZWQgdGhlIGVycm9ycw0KcmV0dXJuZWQgYnkgdGhlIFg1MDkgcGFyc2lu
-ZyBmdW5jdGlvbnMsIHdoaWNoIGJyb2tlIHRoZSBPcGVuVlBODQppbXBsZW1lbnRhdGlvbiBmb3Ig
-cGFzc3dvcmQgcHJvdGVjdGVkIHByaXZhdGUga2V5cyBpbiBwb2xhcnNzbA0KYnVpbGRzLiBUaGlz
-IHBhdGNoIGZpeGVzIHRoYXQgYnkgY2hlY2tpbmcgZm9yIHRoZSBuZXcgZXJyb3JzIGluDQpPcGVu
-VlBOLg0KDQpTaWduZWQtb2ZmLWJ5OiBTdGVmZmFuIEthcmdlciA8c3RlZmZhbi5rYXJnZXJAZm94
-LWl0LmNvbT4NCi0tLQ0KIHNyYy9vcGVudnBuL3NzbF9wb2xhcnNzbC5jIHwgNiArKystLS0NCiAx
-IGZpbGUgY2hhbmdlZCwgMyBpbnNlcnRpb25zKCspLCAzIGRlbGV0aW9ucygtKQ0KDQpkaWZmIC0t
-Z2l0IGEvc3JjL29wZW52cG4vc3NsX3BvbGFyc3NsLmMgYi9zcmMvb3BlbnZwbi9zc2xfcG9sYXJz
-c2wuYw0KaW5kZXggZTNlMzAxNy4uYWJhNDA1YiAxMDA2NDQNCi0tLSBhL3NyYy9vcGVudnBuL3Nz
-bF9wb2xhcnNzbC5jDQorKysgYi9zcmMvb3BlbnZwbi9zc2xfcG9sYXJzc2wuYw0KQEAgLTI3Myw3
-ICsyNzMsNyBAQCB0bHNfY3R4X2xvYWRfcHJpdl9maWxlIChzdHJ1Y3QgdGxzX3Jvb3RfY3R4ICpj
-dHgsIGNvbnN0IGNoYXIgKnByaXZfa2V5X2ZpbGUsDQogICAgICAgc3RhdHVzID0geDUwOXBhcnNl
-X2tleShjdHgtPnByaXZfa2V5LA0KIAkgIHByaXZfa2V5X2ZpbGVfaW5saW5lLCBzdHJsZW4ocHJp
-dl9rZXlfZmlsZV9pbmxpbmUpLA0KIAkgIE5VTEwsIDApOw0KLSAgICAgIGlmIChQT0xBUlNTTF9F
-UlJfUEVNX1BBU1NXT1JEX1JFUVVJUkVEID09IHN0YXR1cykNCisgICAgICBpZiAoUE9MQVJTU0xf
-RVJSX1g1MDlfUEFTU1dPUkRfUkVRVUlSRUQgPT0gc3RhdHVzKQ0KIAl7DQogCSAgY2hhciBwYXNz
-YnVmWzUxMl0gPSB7MH07DQogCSAgcGVtX3Bhc3N3b3JkX2NhbGxiYWNrKHBhc3NidWYsIDUxMiwg
-MCwgTlVMTCk7DQpAQCAtMjg1LDcgKzI4NSw3IEBAIHRsc19jdHhfbG9hZF9wcml2X2ZpbGUgKHN0
-cnVjdCB0bHNfcm9vdF9jdHggKmN0eCwgY29uc3QgY2hhciAqcHJpdl9rZXlfZmlsZSwNCiAgIGVs
-c2UNCiAgICAgew0KICAgICAgIHN0YXR1cyA9IHg1MDlwYXJzZV9rZXlmaWxlKGN0eC0+cHJpdl9r
-ZXksIHByaXZfa2V5X2ZpbGUsIE5VTEwpOw0KLSAgICAgIGlmIChQT0xBUlNTTF9FUlJfUEVNX1BB
-U1NXT1JEX1JFUVVJUkVEID09IHN0YXR1cykNCisgICAgICBpZiAoUE9MQVJTU0xfRVJSX1g1MDlf
-UEFTU1dPUkRfUkVRVUlSRUQgPT0gc3RhdHVzKQ0KIAl7DQogCSAgY2hhciBwYXNzYnVmWzUxMl0g
-PSB7MH07DQogCSAgcGVtX3Bhc3N3b3JkX2NhbGxiYWNrKHBhc3NidWYsIDUxMiwgMCwgTlVMTCk7
-DQpAQCAtMjk1LDcgKzI5NSw3IEBAIHRsc19jdHhfbG9hZF9wcml2X2ZpbGUgKHN0cnVjdCB0bHNf
-cm9vdF9jdHggKmN0eCwgY29uc3QgY2hhciAqcHJpdl9rZXlfZmlsZSwNCiAgIGlmICgwICE9IHN0
-YXR1cykNCiAgICAgew0KICNpZmRlZiBFTkFCTEVfTUFOQUdFTUVOVA0KLSAgICAgIGlmIChtYW5h
-Z2VtZW50ICYmIChQT0xBUlNTTF9FUlJfUEVNX1BBU1NXT1JEX01JU01BVENIID09IHN0YXR1cykp
-DQorICAgICAgaWYgKG1hbmFnZW1lbnQgJiYgKFBPTEFSU1NMX0VSUl9YNTA5X1BBU1NXT1JEX01J
-U01BVENIID09IHN0YXR1cykpDQogCSAgbWFuYWdlbWVudF9hdXRoX2ZhaWx1cmUgKG1hbmFnZW1l
-bnQsIFVQX1RZUEVfUFJJVkFURV9LRVksIE5VTEwpOw0KICNlbmRpZg0KICAgICAgIG1zZyAoTV9X
-QVJOLCAiQ2Fubm90IGxvYWQgcHJpdmF0ZSBrZXkgZmlsZSAlcyIsIHByaXZfa2V5X2ZpbGUpOw0K
-LS0gDQoxLjkuMQ0KDQo=
+OpenVPN has the modes "peer2peer" or "(multi-)client to server".
 
---_003_1CED409804E2164C8104F9E623B08B901865CED597FOXDFT02FOXlo_
-Content-Type: text/x-patch;
-	name="master-Fix-regression-with-password-protected-private-keys-.patch"
-Content-Description: master-Fix-regression-with-password-protected-private-keys-.patch
-Content-Disposition: attachment; filename=
-	"master-Fix-regression-with-password-protected-private-keys-.patch";
-	size=2086; creation-date="Mon, 06 Oct 2014 19:11:10 GMT";
-	modification-date="Mon, 06 Oct 2014 19:11:10 GMT"
-Content-Transfer-Encoding: base64
+The "client" mode differs from "peer2peer" only insofar as it expects
+to receive confings from the server, while the "server" mode is intended
+to handle multiple clients, send them configs, and so on.
 
-RnJvbSA1NjcxYTczMDM5ZTk0ZGYyOWZiZTA3YjgyNTAyODQzNjZlYmNkYTdkIE1vbiBTZXAgMTcg
-MDA6MDA6MDAgMjAwMQ0KRnJvbTogU3RlZmZhbiBLYXJnZXIgPHN0ZWZmYW4ua2FyZ2VyQGZveC1p
-dC5jb20+DQpEYXRlOiBGcmksIDE5IFNlcCAyMDE0IDA2OjE5OjEzICswMjAwDQpTdWJqZWN0OiBb
-UEFUQ0ggKG1hc3RlcildIEZpeCByZWdyZXNzaW9uIHdpdGggcGFzc3dvcmQgcHJvdGVjdGVkIHBy
-aXZhdGUga2V5cw0KIChwb2xhcnNzbCkNCg0KQmV0d2VlbiB2ZXJzaW9ucyAxLjIgYW5kIDEuMywg
-cG9sYXJzc2wgY2hhbmdlZCB0aGUgZXJyb3JzDQpyZXR1cm5lZCBieSB0aGUgWDUwOSBwYXJzaW5n
-IGZ1bmN0aW9ucywgd2hpY2ggYnJva2UgdGhlIE9wZW5WUE4NCmltcGxlbWVudGF0aW9uIGZvciBw
-YXNzd29yZCBwcm90ZWN0ZWQgcHJpdmF0ZSBrZXlzIGluIHBvbGFyc3NsDQpidWlsZHMuIFRoaXMg
-cGF0Y2ggZml4ZXMgdGhhdCBieSBjaGVja2luZyBmb3IgdGhlIG5ldyBlcnJvcnMgaW4NCk9wZW5W
-UE4uDQoNClNpZ25lZC1vZmYtYnk6IFN0ZWZmYW4gS2FyZ2VyIDxzdGVmZmFuLmthcmdlckBmb3gt
-aXQuY29tPg0KLS0tDQogc3JjL29wZW52cG4vc3NsX3BvbGFyc3NsLmMgfCA2ICsrKy0tLQ0KIDEg
-ZmlsZSBjaGFuZ2VkLCAzIGluc2VydGlvbnMoKyksIDMgZGVsZXRpb25zKC0pDQoNCmRpZmYgLS1n
-aXQgYS9zcmMvb3BlbnZwbi9zc2xfcG9sYXJzc2wuYyBiL3NyYy9vcGVudnBuL3NzbF9wb2xhcnNz
-bC5jDQppbmRleCAxMDJhNWE0Li45NGFlNGMzIDEwMDY0NA0KLS0tIGEvc3JjL29wZW52cG4vc3Ns
-X3BvbGFyc3NsLmMNCisrKyBiL3NyYy9vcGVudnBuL3NzbF9wb2xhcnNzbC5jDQpAQCAtMjk4LDcg
-KzI5OCw3IEBAIHRsc19jdHhfbG9hZF9wcml2X2ZpbGUgKHN0cnVjdCB0bHNfcm9vdF9jdHggKmN0
-eCwgY29uc3QgY2hhciAqcHJpdl9rZXlfZmlsZSwNCiAJICAoY29uc3QgdW5zaWduZWQgY2hhciAq
-KSBwcml2X2tleV9pbmxpbmUsIHN0cmxlbihwcml2X2tleV9pbmxpbmUpLA0KIAkgIE5VTEwsIDAp
-Ow0KIA0KLSAgICAgIGlmIChQT0xBUlNTTF9FUlJfUEVNX1BBU1NXT1JEX1JFUVVJUkVEID09IHN0
-YXR1cykNCisgICAgICBpZiAoUE9MQVJTU0xfRVJSX1BLX1BBU1NXT1JEX1JFUVVJUkVEID09IHN0
-YXR1cykNCiAJew0KIAkgIGNoYXIgcGFzc2J1Zls1MTJdID0gezB9Ow0KIAkgIHBlbV9wYXNzd29y
-ZF9jYWxsYmFjayhwYXNzYnVmLCA1MTIsIDAsIE5VTEwpOw0KQEAgLTMxMCw3ICszMTAsNyBAQCB0
-bHNfY3R4X2xvYWRfcHJpdl9maWxlIChzdHJ1Y3QgdGxzX3Jvb3RfY3R4ICpjdHgsIGNvbnN0IGNo
-YXIgKnByaXZfa2V5X2ZpbGUsDQogICBlbHNlDQogICAgIHsNCiAgICAgICBzdGF0dXMgPSBwa19w
-YXJzZV9rZXlmaWxlKGN0eC0+cHJpdl9rZXksIHByaXZfa2V5X2ZpbGUsIE5VTEwpOw0KLSAgICAg
-IGlmIChQT0xBUlNTTF9FUlJfUEVNX1BBU1NXT1JEX1JFUVVJUkVEID09IHN0YXR1cykNCisgICAg
-ICBpZiAoUE9MQVJTU0xfRVJSX1BLX1BBU1NXT1JEX1JFUVVJUkVEID09IHN0YXR1cykNCiAJew0K
-IAkgIGNoYXIgcGFzc2J1Zls1MTJdID0gezB9Ow0KIAkgIHBlbV9wYXNzd29yZF9jYWxsYmFjayhw
-YXNzYnVmLCA1MTIsIDAsIE5VTEwpOw0KQEAgLTMyMCw3ICszMjAsNyBAQCB0bHNfY3R4X2xvYWRf
-cHJpdl9maWxlIChzdHJ1Y3QgdGxzX3Jvb3RfY3R4ICpjdHgsIGNvbnN0IGNoYXIgKnByaXZfa2V5
-X2ZpbGUsDQogICBpZiAoMCAhPSBzdGF0dXMpDQogICAgIHsNCiAjaWZkZWYgRU5BQkxFX01BTkFH
-RU1FTlQNCi0gICAgICBpZiAobWFuYWdlbWVudCAmJiAoUE9MQVJTU0xfRVJSX1BFTV9QQVNTV09S
-RF9NSVNNQVRDSCA9PSBzdGF0dXMpKQ0KKyAgICAgIGlmIChtYW5hZ2VtZW50ICYmIChQT0xBUlNT
-TF9FUlJfUEtfUEFTU1dPUkRfTUlTTUFUQ0ggPT0gc3RhdHVzKSkNCiAJICBtYW5hZ2VtZW50X2F1
-dGhfZmFpbHVyZSAobWFuYWdlbWVudCwgVVBfVFlQRV9QUklWQVRFX0tFWSwgTlVMTCk7DQogI2Vu
-ZGlmDQogICAgICAgbXNnIChNX1dBUk4sICJDYW5ub3QgbG9hZCBwcml2YXRlIGtleSBmaWxlICVz
-IiwgcHJpdl9rZXlfZmlsZSk7DQotLSANCjEuOS4xDQoNCg==
 
---_003_1CED409804E2164C8104F9E623B08B901865CED597FOXDFT02FOXlo_--
+If you run OpenVPN as "--server", it will also default to "--tcp-server"
+if you only tell it "use TCP", because it knows that tcp-client is not
+useful in OpenVPN server mode - but that's just a shortcut to ease the
+config, and it can be a bit confusing, yes.
+
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--EEnv9zyGND1dPpWR
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQCVAwUBVEoYsKkuBuNlUUl1AQJJTAP/UJWLz8LgUh54SFRm2mp4vvHST8i3KWcQ
+c0HY9e7765rF1xnhcXOoGlfP69xji1N3Xp1VIoeliMP8SdNYEQoN095IR0BNsvvm
+axdPxwbI2sjKWW1CjortzVbfjAHmxejJXLiXccIw2gGhoJ3coLkuMZaBn0LvJb5r
+RY6xlNMtZ5s=
+=qgQQ
+-----END PGP SIGNATURE-----
+
+--EEnv9zyGND1dPpWR--
 
