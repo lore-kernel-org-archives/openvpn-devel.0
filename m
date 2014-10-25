@@ -1,10 +1,10 @@
 From: Steffan Karger <steffan@...1856...>
-Date: Sat, 25 Oct 2014 22:35:21 +0200
-Message-Id: <1414269324-14102-4-git-send-email-steffan@...1856...>
+Date: Sat, 25 Oct 2014 22:35:19 +0200
+Message-Id: <1414269324-14102-2-git-send-email-steffan@...1856...>
 In-Reply-To: <1414269324-14102-1-git-send-email-steffan@...1856...>
 References: <1414269324-14102-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH 3/6] polarssl: don't ignore failed
-	ssl_init(), but ASSERT() on failure
+Subject: [Openvpn-devel] [PATCH 1/6] polarssl: add polar_log_err() and
+	polar_ok(), to easily log PolarSSL errors
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,177 +17,98 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Since key_state_ssl_init() returns void, it *must* succeed. By changing the
-'if(a) { success } else ignore' into 'ASSERT(a); success', we make sure we
-don't fail (which we in practice don't do, because otherwise we would have
-had complaining users with hard to trace errors).
-
-This patch just changes the if() to an ASSERT(), but that causes a lot of
-indenting changes, making this patch look a lot bigger than it really is.
-
 Signed-off-by: Steffan Karger <steffan@...1856...>
 ---
- src/openvpn/ssl_polarssl.c | 128 ++++++++++++++++++++++-----------------------
- 1 file changed, 64 insertions(+), 64 deletions(-)
+ src/openvpn/crypto_polarssl.c | 26 ++++++++++++++++++++++++++
+ src/openvpn/crypto_polarssl.h | 40 ++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 66 insertions(+)
 
-diff --git a/src/openvpn/ssl_polarssl.c b/src/openvpn/ssl_polarssl.c
-index b332021..1a77c30 100644
---- a/src/openvpn/ssl_polarssl.c
-+++ b/src/openvpn/ssl_polarssl.c
-@@ -682,89 +682,89 @@ void key_state_ssl_init(struct key_state_ssl *ks_ssl,
-   CLEAR(*ks_ssl);
- 
-   ALLOC_OBJ_CLEAR(ks_ssl->ctx, ssl_context);
--  if (polar_ok(ssl_init(ks_ssl->ctx))) /* FIXME ASSERT() or propagate errors */
--    {
--      /* Initialise SSL context */
--      ssl_set_dbg (ks_ssl->ctx, my_debug, NULL);
--      ssl_set_endpoint (ks_ssl->ctx, ssl_ctx->endpoint);
- 
--      ssl_set_rng (ks_ssl->ctx, ctr_drbg_random, rand_ctx_get());
-+  ASSERT (polar_ok(ssl_init(ks_ssl->ctx)));
-+
-+  /* Initialise SSL context */
-+  ssl_set_dbg (ks_ssl->ctx, my_debug, NULL);
-+  ssl_set_endpoint (ks_ssl->ctx, ssl_ctx->endpoint);
-+
-+  ssl_set_rng (ks_ssl->ctx, ctr_drbg_random, rand_ctx_get());
- 
--      if (ssl_ctx->allowed_ciphers)
--	ssl_set_ciphersuites (ks_ssl->ctx, ssl_ctx->allowed_ciphers);
-+  if (ssl_ctx->allowed_ciphers)
-+    ssl_set_ciphersuites (ks_ssl->ctx, ssl_ctx->allowed_ciphers);
- 
--      /* Initialise authentication information */
--      if (is_server)
--	ASSERT (polar_ok(ssl_set_dh_param_ctx(ks_ssl->ctx, ssl_ctx->dhm_ctx)));
-+  /* Initialise authentication information */
-+  if (is_server)
-+    ASSERT (polar_ok(ssl_set_dh_param_ctx(ks_ssl->ctx, ssl_ctx->dhm_ctx)));
- #if defined(ENABLE_PKCS11)
--      if (ssl_ctx->priv_key_pkcs11 != NULL)
--	ASSERT (polar_ok(ssl_set_own_cert_alt(ks_ssl->ctx, ssl_ctx->crt_chain,
--	    ssl_ctx->priv_key_pkcs11, ssl_pkcs11_decrypt, ssl_pkcs11_sign,
--	    ssl_pkcs11_key_len)));
--      else
-+  if (ssl_ctx->priv_key_pkcs11 != NULL)
-+    ASSERT (polar_ok(ssl_set_own_cert_alt(ks_ssl->ctx, ssl_ctx->crt_chain,
-+	ssl_ctx->priv_key_pkcs11, ssl_pkcs11_decrypt, ssl_pkcs11_sign,
-+	ssl_pkcs11_key_len)));
-+  else
- #endif
- #if defined(MANAGMENT_EXTERNAL_KEY)
--      if (ssl_ctx->external_key != NULL)
--	ASSERT (polar_ok(ssl_set_own_cert_alt(ks_ssl->ctx, ssl_ctx->crt_chain,
--	   ssl_ctx->external_key, NULL, external_pkcs1_sign,
--	   external_key_len)));
--      else
-+  if (ssl_ctx->external_key != NULL)
-+    ASSERT (polar_ok(ssl_set_own_cert_alt(ks_ssl->ctx, ssl_ctx->crt_chain,
-+       ssl_ctx->external_key, NULL, external_pkcs1_sign,
-+       external_key_len)));
-+  else
- #endif
--	ASSERT (polar_ok(ssl_set_own_cert( ks_ssl->ctx, ssl_ctx->crt_chain,
--	    ssl_ctx->priv_key )));
-+    ASSERT (polar_ok(ssl_set_own_cert( ks_ssl->ctx, ssl_ctx->crt_chain,
-+	ssl_ctx->priv_key )));
- 
--      /* Initialise SSL verification */
-+  /* Initialise SSL verification */
- #if P2MP_SERVER
--      if (session->opt->ssl_flags & SSLF_CLIENT_CERT_NOT_REQUIRED)
--	{
--	  msg (M_WARN, "WARNING: POTENTIALLY DANGEROUS OPTION "
--	   "--client-cert-not-required may accept clients which do not present "
--	   "a certificate");
--	}
--      else
-+  if (session->opt->ssl_flags & SSLF_CLIENT_CERT_NOT_REQUIRED)
-+    {
-+      msg (M_WARN, "WARNING: POTENTIALLY DANGEROUS OPTION "
-+       "--client-cert-not-required may accept clients which do not present "
-+       "a certificate");
-+    }
-+  else
- #endif
--      {
--	ssl_set_authmode (ks_ssl->ctx, SSL_VERIFY_REQUIRED);
--	ssl_set_verify (ks_ssl->ctx, verify_callback, session);
--      }
-+  {
-+    ssl_set_authmode (ks_ssl->ctx, SSL_VERIFY_REQUIRED);
-+    ssl_set_verify (ks_ssl->ctx, verify_callback, session);
-+  }
- 
--      /* TODO: PolarSSL does not currently support sending the CA chain to the client */
--      ssl_set_ca_chain (ks_ssl->ctx, ssl_ctx->ca_chain, NULL, NULL );
-+  /* TODO: PolarSSL does not currently support sending the CA chain to the client */
-+  ssl_set_ca_chain (ks_ssl->ctx, ssl_ctx->ca_chain, NULL, NULL );
- 
--      /* Initialize minimum TLS version */
-+  /* Initialize minimum TLS version */
-+  {
-+    const int tls_version_min = (session->opt->ssl_flags >> SSLF_TLS_VERSION_SHIFT) & SSLF_TLS_VERSION_MASK;
-+    int polar_major;
-+    int polar_minor;
-+    switch (tls_version_min)
-       {
--	const int tls_version_min = (session->opt->ssl_flags >> SSLF_TLS_VERSION_SHIFT) & SSLF_TLS_VERSION_MASK;
--	int polar_major;
--	int polar_minor;
--	switch (tls_version_min)
--	  {
--	  case TLS_VER_1_0:
--	  default:
--	    polar_major = SSL_MAJOR_VERSION_3;
--	    polar_minor = SSL_MINOR_VERSION_1;
--	    break;
-+      case TLS_VER_1_0:
-+      default:
-+	polar_major = SSL_MAJOR_VERSION_3;
-+	polar_minor = SSL_MINOR_VERSION_1;
-+	break;
- #if defined(SSL_MAJOR_VERSION_3) && defined(SSL_MINOR_VERSION_2)
--	  case TLS_VER_1_1:
--	    polar_major = SSL_MAJOR_VERSION_3;
--	    polar_minor = SSL_MINOR_VERSION_2;
--	    break;
-+      case TLS_VER_1_1:
-+	polar_major = SSL_MAJOR_VERSION_3;
-+	polar_minor = SSL_MINOR_VERSION_2;
-+	break;
- #endif
- #if defined(SSL_MAJOR_VERSION_3) && defined(SSL_MINOR_VERSION_3)
--	  case TLS_VER_1_2:
--	    polar_major = SSL_MAJOR_VERSION_3;
--	    polar_minor = SSL_MINOR_VERSION_3;
--	    break;
-+      case TLS_VER_1_2:
-+	polar_major = SSL_MAJOR_VERSION_3;
-+	polar_minor = SSL_MINOR_VERSION_3;
-+	break;
- #endif
--	  }
--	ssl_set_min_version(ks_ssl->ctx, polar_major, polar_minor);
-       }
-+    ssl_set_min_version(ks_ssl->ctx, polar_major, polar_minor);
-+  }
- 
--      /* Initialise BIOs */
--      ALLOC_OBJ_CLEAR (ks_ssl->ct_in, endless_buffer);
--      ALLOC_OBJ_CLEAR (ks_ssl->ct_out, endless_buffer);
--      ssl_set_bio (ks_ssl->ctx, endless_buf_read, ks_ssl->ct_in,
--	  endless_buf_write, ks_ssl->ct_out);
--    }
-+  /* Initialise BIOs */
-+  ALLOC_OBJ_CLEAR (ks_ssl->ct_in, endless_buffer);
-+  ALLOC_OBJ_CLEAR (ks_ssl->ct_out, endless_buffer);
-+  ssl_set_bio (ks_ssl->ctx, endless_buf_read, ks_ssl->ct_in,
-+      endless_buf_write, ks_ssl->ct_out);
+diff --git a/src/openvpn/crypto_polarssl.c b/src/openvpn/crypto_polarssl.c
+index 1a986db..ce1abd6 100644
+--- a/src/openvpn/crypto_polarssl.c
++++ b/src/openvpn/crypto_polarssl.c
+@@ -86,6 +86,32 @@ crypto_clear_error (void)
+ {
  }
  
++bool polar_log_err(unsigned int flags, int errval, const char *prefix)
++{
++  if (0 != errval)
++    {
++      char errstr[256];
++      polarssl_strerror(errval, errstr, sizeof(errstr));
++
++      if (NULL == prefix) prefix = "PolarSSL error";
++      msg (flags, "%s: %s", prefix, errstr);
++    }
++
++  return 0 == errval;
++}
++
++bool polar_log_func_line(unsigned int flags, int errval, const char *func,
++    int line)
++{
++  char prefix[256];
++
++  if (!openvpn_snprintf(prefix, sizeof(prefix), "%s:%d", func, line))
++    return polar_log_err(flags, errval, func);
++
++  return polar_log_err(flags, errval, prefix);
++}
++
++
+ #ifdef DMALLOC
  void
+ crypto_init_dmalloc (void)
+diff --git a/src/openvpn/crypto_polarssl.h b/src/openvpn/crypto_polarssl.h
+index b6da436..b7ce682 100644
+--- a/src/openvpn/crypto_polarssl.h
++++ b/src/openvpn/crypto_polarssl.h
+@@ -91,4 +91,44 @@ ctr_drbg_context * rand_ctx_get();
+ void rand_ctx_enable_prediction_resistance();
+ #endif
+ 
++/**
++ * Log the supplied PolarSSL error, then print the supplied error message.
++ *
++ * @param flags		Flags to indicate error type and priority.
++ * @param errval	PolarSSL error code to convert to error message.
++ * @param prefix	Prefix to PolarSSL error message.
++ *
++ * @returns true if no errors are detected, false otherwise.
++ */
++bool polar_log_err(unsigned int flags, int errval, const char *prefix);
++
++/**
++ * Log the supplied PolarSSL error, then print the supplied error message.
++ *
++ * @param flags		Flags to indicate error type and priority.
++ * @param errval	PolarSSL error code to convert to error message.
++ * @param func		Function name where error was reported.
++ * @param line		Line number where error was reported.
++ *
++ * @returns true if no errors are detected, false otherwise.
++ */
++bool polar_log_func_line(unsigned int flags, int errval, const char *func,
++    int line);
++
++/**
++ * Check errval and log on error.
++ *
++ * Convenience wrapper to put around polarssl library calls, e.g.
++ *   if (!polar_ok(polarssl_func())) return 0;
++ * or
++ *   ASSERT (polar_ok(polarssl_func()));
++ *
++ * @param errval	PolarSSL error code to convert to error message.
++ *
++ * @returns true if no errors are detected, false otherwise.
++ */
++#define polar_ok(errval) \
++  polar_log_func_line(D_CRYPT_ERRORS, errval, __func__, __LINE__)
++
++
+ #endif /* CRYPTO_POLARSSL_H_ */
 -- 
 1.9.1
 
