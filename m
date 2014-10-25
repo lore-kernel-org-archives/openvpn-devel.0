@@ -1,10 +1,10 @@
 From: Steffan Karger <steffan@...1856...>
-Date: Sat, 25 Oct 2014 22:35:19 +0200
-Message-Id: <1414269324-14102-2-git-send-email-steffan@...1856...>
+Date: Sat, 25 Oct 2014 22:35:22 +0200
+Message-Id: <1414269324-14102-5-git-send-email-steffan@...1856...>
 In-Reply-To: <1414269324-14102-1-git-send-email-steffan@...1856...>
 References: <1414269324-14102-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH 1/6] polarssl: add polar_log_err() and
-	polar_ok(), to easily log PolarSSL errors
+Subject: [Openvpn-devel] [PATCH 4/6] openssl: add crypto_msg(),
+	to easily log openssl errors
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,98 +17,89 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
+This works towards removing OpenSSL-specific error printing code from
+error.c. The crypto_msg() functions provide convenience wrappers, specific
+to OpenSSL. Instead of passing the magical 'M_SSLERR' flag to msg(), a
+developer now just calls crypto_msg() to get OpenSSL errors dumped to log.
+
 Signed-off-by: Steffan Karger <steffan@...1856...>
 ---
- src/openvpn/crypto_polarssl.c | 26 ++++++++++++++++++++++++++
- src/openvpn/crypto_polarssl.h | 40 ++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 66 insertions(+)
+ src/openvpn/crypto_openssl.c |  9 +++++++++
+ src/openvpn/crypto_openssl.h | 25 +++++++++++++++++++++++++
+ src/openvpn/error.h          |  6 ++++++
+ 3 files changed, 40 insertions(+)
 
-diff --git a/src/openvpn/crypto_polarssl.c b/src/openvpn/crypto_polarssl.c
-index 1a986db..ce1abd6 100644
---- a/src/openvpn/crypto_polarssl.c
-+++ b/src/openvpn/crypto_polarssl.c
-@@ -86,6 +86,32 @@ crypto_clear_error (void)
- {
+diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
+index 0ac89a1..25d8cf9 100644
+--- a/src/openvpn/crypto_openssl.c
++++ b/src/openvpn/crypto_openssl.c
+@@ -195,6 +195,15 @@ crypto_clear_error (void)
+   ERR_clear_error ();
  }
  
-+bool polar_log_err(unsigned int flags, int errval, const char *prefix)
-+{
-+  if (0 != errval)
-+    {
-+      char errstr[256];
-+      polarssl_strerror(errval, errstr, sizeof(errstr));
++void
++crypto_print_openssl_errors(const unsigned int flags) {
++  size_t err = 0;
 +
-+      if (NULL == prefix) prefix = "PolarSSL error";
-+      msg (flags, "%s: %s", prefix, errstr);
-+    }
-+
-+  return 0 == errval;
-+}
-+
-+bool polar_log_func_line(unsigned int flags, int errval, const char *func,
-+    int line)
-+{
-+  char prefix[256];
-+
-+  if (!openvpn_snprintf(prefix, sizeof(prefix), "%s:%d", func, line))
-+    return polar_log_err(flags, errval, func);
-+
-+  return polar_log_err(flags, errval, prefix);
++  while ((err = ERR_get_error ()))
++    msg (flags, "OpenSSL: %s", ERR_error_string (err, NULL));
 +}
 +
 +
- #ifdef DMALLOC
- void
- crypto_init_dmalloc (void)
-diff --git a/src/openvpn/crypto_polarssl.h b/src/openvpn/crypto_polarssl.h
-index b6da436..b7ce682 100644
---- a/src/openvpn/crypto_polarssl.h
-+++ b/src/openvpn/crypto_polarssl.h
-@@ -91,4 +91,44 @@ ctr_drbg_context * rand_ctx_get();
- void rand_ctx_enable_prediction_resistance();
- #endif
+ /*
+  *
+  * OpenSSL memory debugging.  If dmalloc debugging is enabled, tell
+diff --git a/src/openvpn/crypto_openssl.h b/src/openvpn/crypto_openssl.h
+index f883c2a..42c7e9a 100644
+--- a/src/openvpn/crypto_openssl.h
++++ b/src/openvpn/crypto_openssl.h
+@@ -70,4 +70,29 @@ typedef HMAC_CTX hmac_ctx_t;
+ #define DES_KEY_LENGTH 8
+ #define MD4_DIGEST_LENGTH 	16
  
 +/**
-+ * Log the supplied PolarSSL error, then print the supplied error message.
++ * Retrieve any occurred OpenSSL errors and print those errors.
++ *
++ * Note that this function uses the not thread-safe OpenSSL error API.
 + *
 + * @param flags		Flags to indicate error type and priority.
-+ * @param errval	PolarSSL error code to convert to error message.
-+ * @param prefix	Prefix to PolarSSL error message.
-+ *
-+ * @returns true if no errors are detected, false otherwise.
 + */
-+bool polar_log_err(unsigned int flags, int errval, const char *prefix);
++void crypto_print_openssl_errors(const unsigned int flags);
 +
 +/**
-+ * Log the supplied PolarSSL error, then print the supplied error message.
++ * Retrieve any OpenSSL errors, then print the supplied error message.
++ *
++ * This is just a convenience wrapper for often occurring situations.
 + *
 + * @param flags		Flags to indicate error type and priority.
-+ * @param errval	PolarSSL error code to convert to error message.
-+ * @param func		Function name where error was reported.
-+ * @param line		Line number where error was reported.
-+ *
-+ * @returns true if no errors are detected, false otherwise.
++ * @param format	Format string to print.
++ * @param format args	(optional) arguments for the format string.
 + */
-+bool polar_log_func_line(unsigned int flags, int errval, const char *func,
-+    int line);
-+
-+/**
-+ * Check errval and log on error.
-+ *
-+ * Convenience wrapper to put around polarssl library calls, e.g.
-+ *   if (!polar_ok(polarssl_func())) return 0;
-+ * or
-+ *   ASSERT (polar_ok(polarssl_func()));
-+ *
-+ * @param errval	PolarSSL error code to convert to error message.
-+ *
-+ * @returns true if no errors are detected, false otherwise.
-+ */
-+#define polar_ok(errval) \
-+  polar_log_func_line(D_CRYPT_ERRORS, errval, __func__, __LINE__)
++# define crypto_msg(flags, ...) \
++do { \
++  crypto_print_openssl_errors(nonfatal(flags)); \
++  msg((flags), __VA_ARGS__); \
++} while (false)
 +
 +
- #endif /* CRYPTO_POLARSSL_H_ */
+ #endif /* CRYPTO_OPENSSL_H_ */
+diff --git a/src/openvpn/error.h b/src/openvpn/error.h
+index 1e1f2ac..a977f51 100644
+--- a/src/openvpn/error.h
++++ b/src/openvpn/error.h
+@@ -354,6 +354,12 @@ ignore_sys_error (const int err)
+   return false;
+ }
+ 
++/** Convert fatal errors to nonfatal, don't touch other errors */
++static inline const unsigned int
++nonfatal(const unsigned int err) {
++  return err & M_FATAL ? (err ^ M_FATAL) | M_NONFATAL : err;
++}
++
+ #include "errlevel.h"
+ 
+ #endif
 -- 
 1.9.1
 
