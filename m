@@ -1,7 +1,11 @@
-From: Lev Stipakov <lstipakov@...277...>
-Date: Wed, 29 Oct 2014 18:28:44 +0200
-Message-Id: <1414600124-1371-1-git-send-email-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH] Peer-id patch v2
+Message-ID: <1414601810.14213.5.camel@...1866...>
+From: David Woodhouse <dwmw2@...1866...>
+Date: Wed, 29 Oct 2014 16:56:50 +0000
+Content-Type: multipart/signed; micalg="sha-1";
+	protocol="application/x-pkcs7-signature"; 
+	boundary="=-mzanzlv/4v+0H7IFPvOz"
+Mime-Version: 1.0
+Subject: [Openvpn-devel] TAP-Windows MTU issues
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -10,637 +14,144 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Cc: Samuli =?ISO-8859-1?Q?Sepp=E4nen?= <samuli.seppanen@...277...>
 
-Added new packet format P_DATA_V2, which includes peer-id. If server
-supports, client sends all data packets in the new format. When data
-packet arrives, server identifies peer by peer-id. If peer's ip/port has
-changed, server assumes that client has floated, verifies HMAC and
-updates ip/port in internal structs.
----
- src/openvpn/crypto.c     |  66 ++++++++++++++++++++--------
- src/openvpn/crypto.h     |   3 ++
- src/openvpn/init.c       |  10 ++++-
- src/openvpn/mudp.c       | 111 +++++++++++++++++++++++++++++++++++++++++------
- src/openvpn/multi.c      |   6 +++
- src/openvpn/multi.h      |   2 +
- src/openvpn/options.c    |   9 +++-
- src/openvpn/options.h    |   8 +++-
- src/openvpn/push.c       |  16 ++++++-
- src/openvpn/ssl.c        |  66 +++++++++++++++++++++++++---
- src/openvpn/ssl.h        |   9 +++-
- src/openvpn/ssl_common.h |   4 ++
- 12 files changed, 269 insertions(+), 41 deletions(-)
+--=-mzanzlv/4v+0H7IFPvOz
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
-index ef2bde1..0f1a36f 100644
---- a/src/openvpn/crypto.c
-+++ b/src/openvpn/crypto.c
-@@ -223,6 +223,30 @@ err:
-   return;
- }
- 
-+int verify_hmac(struct buffer *buf, struct key_ctx *ctx, int offset)
-+{
-+  uint8_t local_hmac[MAX_HMAC_KEY_LENGTH]; /* HMAC of ciphertext computed locally */
-+  int hmac_len = 0;
-+
-+  hmac_ctx_reset(ctx->hmac);
-+  /* Assume the length of the input HMAC */
-+  hmac_len = hmac_ctx_size (ctx->hmac);
-+
-+  /* Authentication fails if insufficient data in packet for HMAC */
-+  if (buf->len - offset < hmac_len)
-+    return 0;
-+
-+  hmac_ctx_update (ctx->hmac, BPTR (buf) + hmac_len + offset,
-+  	BLEN (buf) - hmac_len - offset);
-+  hmac_ctx_final (ctx->hmac, local_hmac);
-+
-+  /* Compare locally computed HMAC with packet HMAC */
-+  if (memcmp_constant_time (local_hmac, BPTR (buf) + offset, hmac_len) == 0)
-+    return hmac_len;
-+
-+  return 0;
-+}
-+
- /*
-  * If (opt->flags & CO_USE_IV) is not NULL, we will read an IV from the packet.
-  *
-@@ -249,25 +273,9 @@ openvpn_decrypt (struct buffer *buf, struct buffer work,
-       /* Verify the HMAC */
-       if (ctx->hmac)
- 	{
--	  int hmac_len;
--	  uint8_t local_hmac[MAX_HMAC_KEY_LENGTH]; /* HMAC of ciphertext computed locally */
--
--	  hmac_ctx_reset(ctx->hmac);
--
--	  /* Assume the length of the input HMAC */
--	  hmac_len = hmac_ctx_size (ctx->hmac);
--
--	  /* Authentication fails if insufficient data in packet for HMAC */
--	  if (buf->len < hmac_len)
--	    CRYPT_ERROR ("missing authentication info");
--
--	  hmac_ctx_update (ctx->hmac, BPTR (buf) + hmac_len, BLEN (buf) - hmac_len);
--	  hmac_ctx_final (ctx->hmac, local_hmac);
--
--	  /* Compare locally computed HMAC with packet HMAC */
--	  if (memcmp_constant_time (local_hmac, BPTR (buf), hmac_len))
-+	  int hmac_len = verify_hmac(buf, ctx, 0);
-+	  if (hmac_len == 0)
- 	    CRYPT_ERROR ("packet HMAC authentication failed");
--
- 	  ASSERT (buf_advance (buf, hmac_len));
- 	}
- 
-@@ -392,6 +400,28 @@ openvpn_decrypt (struct buffer *buf, struct buffer work,
- }
- 
- /*
-+ * This verifies if a packet and its HMAC fit to a crypto context.
-+ *
-+ * On success true is returned.
-+ */
-+bool
-+crypto_test_hmac (struct buffer *buf, const struct crypto_options *opt)
-+{
-+  if (buf->len > 0 && opt->key_ctx_bi)
-+    {
-+      struct key_ctx *ctx = &opt->key_ctx_bi->decrypt;
-+
-+      /* Verify the HMAC */
-+      if (ctx->hmac)
-+	{
-+	  /* sizeof(uint32_t) comes from peer_id (3 bytes) and opcode (1 byte) */
-+	  return verify_hmac(buf, ctx, sizeof(uint32_t)) != 0;
-+	}
-+    }
-+  return false;
-+}
-+
-+/*
-  * How many bytes will we add to frame buffer for a given
-  * set of crypto options?
-  */
-diff --git a/src/openvpn/crypto.h b/src/openvpn/crypto.h
-index bf2f802..3c4e59d 100644
---- a/src/openvpn/crypto.h
-+++ b/src/openvpn/crypto.h
-@@ -275,6 +275,9 @@ bool openvpn_decrypt (struct buffer *buf, struct buffer work,
- 		      const struct crypto_options *opt,
- 		      const struct frame* frame);
- 
-+
-+bool crypto_test_hmac (struct buffer *buf, const struct crypto_options *opt);
-+
- /** @} name Functions for performing security operations on data channel packets */
- 
- void crypto_adjust_frame_parameters(struct frame *frame,
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index a673be5..3811e09 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -1718,7 +1718,8 @@ pull_permission_mask (const struct context *c)
-     | OPT_P_MESSAGES
-     | OPT_P_EXPLICIT_NOTIFY
-     | OPT_P_ECHO
--    | OPT_P_PULL_MODE;
-+    | OPT_P_PULL_MODE
-+    | OPT_P_PEER_ID;
- 
-   if (!c->options.route_nopull)
-     flags |= (OPT_P_ROUTE | OPT_P_IPWIN32);
-@@ -1795,6 +1796,13 @@ do_deferred_options (struct context *c, const unsigned int found)
-     msg (D_PUSH, "OPTIONS IMPORT: --ip-win32 and/or --dhcp-option options modified");
-   if (found & OPT_P_SETENV)
-     msg (D_PUSH, "OPTIONS IMPORT: environment modified");
-+
-+  if (found & OPT_P_PEER_ID)
-+    {
-+      msg (D_PUSH, "OPTIONS IMPORT: peer-id set");
-+      c->c2.tls_multi->use_peer_id = true;
-+      c->c2.tls_multi->peer_id = c->options.peer_id;
-+    }
- }
- 
- /*
-diff --git a/src/openvpn/mudp.c b/src/openvpn/mudp.c
-index 3468dab..cf3fd0b 100644
---- a/src/openvpn/mudp.c
-+++ b/src/openvpn/mudp.c
-@@ -38,6 +38,55 @@
- #include "memdbg.h"
- 
- /*
-+ * Update instance with new peer address
-+ */
-+void
-+update_floated(struct multi_context *m, struct multi_instance *mi,
-+	       struct mroute_addr real, uint32_t hv)
-+{
-+  struct mroute_addr real_old;
-+
-+  real_old = mi->real;
-+  generate_prefix (mi);
-+
-+  /* remove before modifying mi->real, since it also modifies key in hash */
-+  hash_remove(m->hash, &real_old);
-+  hash_remove(m->iter, &real_old);
-+
-+  /* update address */
-+  memcpy(&mi->real, &real, sizeof(real));
-+
-+  mi->context.c2.from = m->top.c2.from;
-+  mi->context.c2.to_link_addr = &mi->context.c2.from;
-+
-+  /* switch to new log prefix */
-+  generate_prefix (mi);
-+  /* inherit buffers */
-+  mi->context.c2.buffers = m->top.c2.buffers;
-+
-+  /* inherit parent link_socket and link_socket_info */
-+  mi->context.c2.link_socket = m->top.c2.link_socket;
-+  mi->context.c2.link_socket_info->lsa->actual = m->top.c2.from;
-+
-+  /* fix remote_addr in tls structure */
-+  tls_update_remote_addr (mi->context.c2.tls_multi, &mi->context.c2.from);
-+  mi->did_open_context = true;
-+
-+  hash_add(m->hash, &mi->real, mi, false);
-+  hash_add(m->iter, &mi->real, mi, false);
-+
-+  mi->did_real_hash = true;
-+#ifdef MANAGEMENT_DEF_AUTH
-+  hash_remove (m->cid_hash, &mi->context.c2.mda_context.cid);
-+  hash_add (m->cid_hash, &mi->context.c2.mda_context.cid, mi, false);
-+#endif
-+
-+#ifdef MANAGEMENT_DEF_AUTH
-+  mi->did_cid_hash = true;
-+#endif
-+}
-+
-+/*
-  * Get a client instance based on real address.  If
-  * the instance doesn't exist, create it while
-  * maintaining real address hash table atomicity.
-@@ -56,15 +105,47 @@ multi_get_create_instance_udp (struct multi_context *m)
-       struct hash_element *he;
-       const uint32_t hv = hash_value (hash, &real);
-       struct hash_bucket *bucket = hash_bucket (hash, hv);
--  
--      he = hash_lookup_fast (hash, bucket, &real, hv);
-+      uint8_t* ptr = BPTR(&m->top.c2.buf);
-+      uint8_t op = ptr[0] >> P_OPCODE_SHIFT;
-+      uint32_t peer_id;
-+      bool hmac_mismatch = false;
- 
--      if (he)
-+      if (op == P_DATA_V2)
- 	{
--	  mi = (struct multi_instance *) he->value;
-+	  peer_id = ntohl((*(uint32_t*)ptr)) & 0xFFFFFF;
-+	  if ((peer_id < m->max_clients) && (m->instances[peer_id]))
-+	    {
-+	      mi = m->instances[peer_id];
-+
-+	      if (!link_socket_actual_match(&mi->context.c2.from, &m->top.c2.from))
-+		{
-+		  msg(D_MULTI_MEDIUM, "float from %s to %s",
-+		  	print_link_socket_actual (&mi->context.c2.from, &gc), print_link_socket_actual (&m->top.c2.from, &gc));
-+
-+		  /* peer-id is not trusted, so check hmac */
-+		  hmac_mismatch = !(crypto_test_hmac(&m->top.c2.buf, &mi->context.c2.crypto_options));
-+		  if (hmac_mismatch)
-+		    {
-+		      mi = NULL;
-+		      msg (D_MULTI_MEDIUM, "HMAC mismatch for peer-id %d", peer_id);
-+		    }
-+		  else
-+		    {
-+		      update_floated(m, mi, real, hv);
-+		    }
-+		}
-+	    }
- 	}
-       else
- 	{
-+	  he = hash_lookup_fast (hash, bucket, &real, hv);
-+	  if (he)
-+	    {
-+	      mi = (struct multi_instance *) he->value;
-+	    }
-+	}
-+      if (!mi && !hmac_mismatch)
-+	{
- 	  if (!m->top.c2.tls_auth_standalone
- 	      || tls_pre_decrypt_lite (m->top.c2.tls_auth_standalone, &m->top.c2.from, &m->top.c2.buf))
- 	    {
-@@ -75,6 +156,17 @@ multi_get_create_instance_udp (struct multi_context *m)
- 		    {
- 		      hash_add_fast (hash, bucket, &mi->real, hv, mi);
- 		      mi->did_real_hash = true;
-+
-+		      int i;
-+		      for (i = 0; i < m->max_clients; ++ i)
-+			{
-+			  if (!m->instances[i])
-+			    {
-+			      mi->context.c2.tls_multi->peer_id = i;
-+			      m->instances[i] = mi;
-+			      break;
-+			    }
-+			}
- 		    }
- 		}
- 	      else
-@@ -89,15 +181,8 @@ multi_get_create_instance_udp (struct multi_context *m)
- #ifdef ENABLE_DEBUG
-       if (check_debug_level (D_MULTI_DEBUG))
- 	{
--	  const char *status;
--
--	  if (he && mi)
--	    status = "[succeeded]";
--	  else if (!he && mi)
--	    status = "[created]";
--	  else
--	    status = "[failed]";
--	
-+	  const char *status = mi ? "[ok]" : "[failed]";
-+
- 	  dmsg (D_MULTI_DEBUG, "GET INST BY REAL: %s %s",
- 	       mroute_addr_print (&real, &gc),
- 	       status);
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index dc96854..dcc1be4 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -373,6 +373,8 @@ multi_init (struct multi_context *m, struct context *t, bool tcp_mode, int threa
-    */
-   m->max_clients = t->options.max_clients;
- 
-+  m->instances = calloc(m->max_clients, sizeof(struct multi_instance*));
-+
-   /*
-    * Initialize multi-socket TCP I/O wait object
-    */
-@@ -553,6 +555,8 @@ multi_close_instance (struct multi_context *m,
- 	}
- #endif
- 
-+      m->instances[mi->context.c2.tls_multi->peer_id] = NULL;
-+
-       schedule_remove_entry (m->schedule, (struct schedule_entry *) mi);
- 
-       ifconfig_pool_release (m->ifconfig_pool, mi->vaddr_handle, false);
-@@ -629,6 +633,8 @@ multi_uninit (struct multi_context *m)
- #endif
- 	  m->hash = NULL;
- 
-+	  free(m->instances);
-+
- 	  schedule_free (m->schedule);
- 	  mbuf_free (m->mbuf);
- 	  ifconfig_pool_free (m->ifconfig_pool);
-diff --git a/src/openvpn/multi.h b/src/openvpn/multi.h
-index fc2ffb2..0446fbf 100644
---- a/src/openvpn/multi.h
-+++ b/src/openvpn/multi.h
-@@ -125,6 +125,8 @@ struct multi_context {
- # define MC_WORK_THREAD                (MC_MULTI_THREADED_WORKER|MC_MULTI_THREADED_SCHEDULER)
-   int thread_mode;
- 
-+  struct multi_instance** instances;
-+
-   struct hash *hash;            /**< VPN tunnel instances indexed by real
-                                  *   address of the remote peer. */
-   struct hash *vhash;           /**< VPN tunnel instances indexed by
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 84eb6ed..67a93e1 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -3906,7 +3906,8 @@ apply_push_options (struct options *options,
- 		    struct buffer *buf,
- 		    unsigned int permission_mask,
- 		    unsigned int *option_types_found,
--		    struct env_set *es)
-+		    struct env_set *es,
-+		    struct tls_multi *tls_multi)
- {
-   char line[OPTION_PARM_SIZE];
-   int line_num = 0;
-@@ -6985,6 +6986,12 @@ add_option (struct options *options,
-       options->persist_mode = 1;
-     }
- #endif
-+  else if (streq (p[0], "peer-id"))
-+    {
-+      VERIFY_PERMISSION (OPT_P_PEER_ID);
-+      options->use_peer_id = true;
-+      options->peer_id = atoi(p[1]);
-+    }
-   else
-     {
-       int i;
-diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-index 5ba4f2f..2b9666e 100644
---- a/src/openvpn/options.h
-+++ b/src/openvpn/options.h
-@@ -598,6 +598,9 @@ struct options
-   bool show_net_up;
-   int route_method;
- #endif
-+
-+  bool use_peer_id;
-+  uint32_t peer_id;
- };
- 
- #define streq(x, y) (!strcmp((x), (y)))
-@@ -633,6 +636,7 @@ struct options
- #define OPT_P_SOCKBUF         (1<<25)
- #define OPT_P_SOCKFLAGS       (1<<26)
- #define OPT_P_CONNECTION      (1<<27)
-+#define OPT_P_PEER_ID         (1<<28)
- 
- #define OPT_P_DEFAULT   (~(OPT_P_INSTANCE|OPT_P_PULL_MODE))
- 
-@@ -719,11 +723,13 @@ void options_postprocess (struct options *options);
- void pre_pull_save (struct options *o);
- void pre_pull_restore (struct options *o, struct gc_arena *gc);
- 
-+struct tls_multi;
- bool apply_push_options (struct options *options,
- 			 struct buffer *buf,
- 			 unsigned int permission_mask,
- 			 unsigned int *option_types_found,
--			 struct env_set *es);
-+			 struct env_set *es,
-+			 struct tls_multi* tls_multi);
- 
- void options_detach (struct options *o);
- 
-diff --git a/src/openvpn/push.c b/src/openvpn/push.c
-index 1de9f74..6e4bec9 100644
---- a/src/openvpn/push.c
-+++ b/src/openvpn/push.c
-@@ -305,6 +305,19 @@ send_push_reply (struct context *c)
-   if (multi_push)
-     buf_printf (&buf, ",push-continuation 1");
- 
-+  /* Send peer-id if client supports it */
-+  if (c->c2.tls_multi->peer_info)
-+    {
-+      const char* proto_str = strstr(c->c2.tls_multi->peer_info, "IV_PROTO=");
-+      if (proto_str)
-+	{
-+	  int proto = 0;
-+	  int r = sscanf(proto_str, "IV_PROTO=%d", &proto);
-+	  if ((r == 1) && (proto >= 2))
-+	    buf_printf(&buf, ",peer-id %d", c->c2.tls_multi->peer_id);
-+	}
-+  }
-+
-   if (BLEN (&buf) > sizeof(cmd)-1)
-     {
-       const bool status = send_control_channel_string (c, BSTR (&buf), D_PUSH);
-@@ -464,7 +477,8 @@ process_incoming_push_msg (struct context *c,
- 				  &buf,
- 				  permission_mask,
- 				  option_types_found,
--				  c->c2.es))
-+				  c->c2.es,
-+				  c->c2.tls_multi))
- 	    switch (c->options.push_continuation)
- 	      {
- 	      case 0:
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 3ce1f60..25dbd2d 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -624,6 +624,8 @@ packet_opcode_name (int op)
-       return "P_ACK_V1";
-     case P_DATA_V1:
-       return "P_DATA_V1";
-+    case P_DATA_V2:
-+      return "P_DATA_V2";
-     default:
-       return "P_???";
-     }
-@@ -1053,6 +1055,9 @@ tls_multi_init (struct tls_options *tls_options)
-   ret->key_scan[1] = &ret->session[TM_ACTIVE].key[KS_LAME_DUCK];
-   ret->key_scan[2] = &ret->session[TM_LAME_DUCK].key[KS_LAME_DUCK];
- 
-+  /* By default not use P_DATA_V2 */
-+  ret->use_peer_id = false;
-+
-   return ret;
- }
- 
-@@ -1826,6 +1831,9 @@ push_peer_info(struct buffer *buf, struct tls_session *session)
-       buf_printf (&out, "IV_PLAT=win\n");
- #endif
- 
-+      /* support for P_DATA_V2 */
-+      buf_printf(&out, "IV_PROTO=2\n");
-+
-       /* push compression status */
- #ifdef USE_COMP
-       comp_generate_peer_info_string(&session->opt->comp_options, &out);
-@@ -2783,8 +2791,9 @@ tls_pre_decrypt (struct tls_multi *multi,
- 	key_id = c & P_KEY_ID_MASK;
-       }
- 
--      if (op == P_DATA_V1)
--	{			/* data channel packet */
-+      if ((op == P_DATA_V1) || (op == P_DATA_V2))
-+	{
-+	  /* data channel packet */
- 	  for (i = 0; i < KEY_SCAN_SIZE; ++i)
- 	    {
- 	      struct key_state *ks = multi->key_scan[i];
-@@ -2816,7 +2825,19 @@ tls_pre_decrypt (struct tls_multi *multi,
- 		  opt->pid_persist = NULL;
- 		  opt->flags &= multi->opt.crypto_flags_and;
- 		  opt->flags |= multi->opt.crypto_flags_or;
-+
- 		  ASSERT (buf_advance (buf, 1));
-+		  if (op == P_DATA_V2)
-+		    {
-+		      if (buf->len < 4)
-+			{
-+			  msg (D_TLS_ERRORS, "Protocol error: received P_DATA_V2 from %s but length is < 4",
-+			  	print_link_socket_actual (from, &gc));
-+			  goto error;
-+			}
-+		      ASSERT (buf_advance (buf, 3));
-+		    }
-+
- 		  ++ks->n_packets;
- 		  ks->n_bytes += buf->len;
- 		  dmsg (D_TLS_KEYSELECT,
-@@ -3381,14 +3402,24 @@ tls_post_encrypt (struct tls_multi *multi, struct buffer *buf)
- {
-   struct key_state *ks;
-   uint8_t *op;
-+  uint32_t peer;
- 
-   ks = multi->save_ks;
-   multi->save_ks = NULL;
-   if (buf->len > 0)
-     {
-       ASSERT (ks);
--      ASSERT (op = buf_prepend (buf, 1));
--      *op = (P_DATA_V1 << P_OPCODE_SHIFT) | ks->key_id;
-+
-+      if (!multi->opt.server && multi->use_peer_id)
-+	{
-+	  peer = htonl(((P_DATA_V2 << P_OPCODE_SHIFT) | ks->key_id) << 24 | (multi->peer_id & 0xFFFFFF));
-+	  ASSERT (buf_write_prepend (buf, &peer, 4));
-+	}
-+      else
-+	{
-+	  ASSERT (op = buf_prepend (buf, 1));
-+	  *op = (P_DATA_V1 << P_OPCODE_SHIFT) | ks->key_id;
-+	}
-       ++ks->n_packets;
-       ks->n_bytes += buf->len;
-     }
-@@ -3461,6 +3492,31 @@ tls_rec_payload (struct tls_multi *multi,
-   return ret;
- }
- 
-+/* Update the remote_addr, needed if a client floats. */
-+void
-+tls_update_remote_addr (struct tls_multi *multi,
-+const struct link_socket_actual *from)
-+{
-+  struct gc_arena gc = gc_new ();
-+  int i;
-+
-+  for (i = 0; i < KEY_SCAN_SIZE; ++i)
-+    {
-+      struct key_state *ks = multi->key_scan[i];
-+      if (DECRYPT_KEY_ENABLED (multi, ks) && ks->authenticated && link_socket_actual_defined(&ks->remote_addr)) 
-+       {
-+	 if (link_socket_actual_match (from, &ks->remote_addr))
-+	   continue;
-+	 dmsg (D_TLS_KEYSELECT,
-+		"TLS: tls_update_remote_addr from IP=%s to IP=%s",
-+	       print_link_socket_actual (&ks->remote_addr, &gc),
-+	       print_link_socket_actual (from, &gc));
-+	 memcpy(&ks->remote_addr, from, sizeof(*from));
-+       }
-+    }
-+  gc_free (&gc);
-+}
-+
- /*
-  * Dump a human-readable rendition of an openvpn packet
-  * into a garbage collectable string which is returned.
-@@ -3495,7 +3551,7 @@ protocol_dump (struct buffer *buffer, unsigned int flags, struct gc_arena *gc)
-   key_id = c & P_KEY_ID_MASK;
-   buf_printf (&out, "%s kid=%d", packet_opcode_name (op), key_id);
- 
--  if (op == P_DATA_V1)
-+  if ((op == P_DATA_V1) || (op == P_DATA_V2))
-     goto print_data;
- 
-   /*
-diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
-index aaecff4..a338745 100644
---- a/src/openvpn/ssl.h
-+++ b/src/openvpn/ssl.h
-@@ -60,6 +60,7 @@
- #define P_CONTROL_V1                   4     /* control channel packet (usually TLS ciphertext) */
- #define P_ACK_V1                       5     /* acknowledgement for packets received */
- #define P_DATA_V1                      6     /* data channel packet */
-+#define P_DATA_V2                      9     /* data channel packet with peer-id */
- 
- /* indicates key_method >= 2 */
- #define P_CONTROL_HARD_RESET_CLIENT_V2 7     /* initial key from client, forget previous state */
-@@ -67,7 +68,7 @@
- 
- /* define the range of legal opcodes */
- #define P_FIRST_OPCODE                 1
--#define P_LAST_OPCODE                  8
-+#define P_LAST_OPCODE                  9
- 
- /* Should we aggregate TLS
-  * acknowledgements, and tack them onto
-@@ -430,6 +431,12 @@ bool tls_send_payload (struct tls_multi *multi,
- bool tls_rec_payload (struct tls_multi *multi,
- 		      struct buffer *buf);
- 
-+/*
-+ * Update remote address of a tls_multi structure
-+ */
-+void tls_update_remote_addr (struct tls_multi *multi,
-+			     const struct link_socket_actual *from);
-+
- #ifdef MANAGEMENT_DEF_AUTH
- static inline char *
- tls_get_peer_info(const struct tls_multi *multi)
-diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
-index 04ba789..cb0ba62 100644
---- a/src/openvpn/ssl_common.h
-+++ b/src/openvpn/ssl_common.h
-@@ -495,6 +495,10 @@ struct tls_multi
-   char *peer_info;
- #endif
- 
-+  /* For P_DATA_V2 */
-+  uint32_t peer_id;
-+  bool use_peer_id;
-+
-   /*
-    * Our session objects.
-    */
--- 
-1.9.1
+It looks like on Windows, OpenVPN ignores the MTU it's supposed to be
+using and just queries the TAP driver for its MTU.
+
+I suspect this was done in the past because there was no way to *set*
+the MTU that Windows was expected to use.
+
+That is no longer the case; recent versions of Windows let you do it by:
+netsh interface ipv[46] set subinterface $DEVICE mtu=3D$MTU store=3Dactive
+
+I do this in OpenConnect on Windows, and I suspect OpenVPN should too.
+
+I'm left with the question of what to do on older versions of Windows
+where we can't configure the MTU. One option which occurs to me is that
+we could actually send Windows back an ICMP 'too big' message when it
+receives a packet which is larger than the VPN MTU. This is horrid, but
+hey, it's Windows. We *already* do horrider things in TAP-Windows to
+fake ARP and ND.
+
+What do you think?
+
+--=20
+dwmw2
+
+--=-mzanzlv/4v+0H7IFPvOz
+Content-Type: application/x-pkcs7-signature; name="smime.p7s"
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Transfer-Encoding: base64
+
+MIAGCSqGSIb3DQEHAqCAMIACAQExCzAJBgUrDgMCGgUAMIAGCSqGSIb3DQEHAQAAoIISxDCCBjQw
+ggQcoAMCAQICAR4wDQYJKoZIhvcNAQEFBQAwfTELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0
+Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcxKTAn
+BgNVBAMTIFN0YXJ0Q29tIENlcnRpZmljYXRpb24gQXV0aG9yaXR5MB4XDTA3MTAyNDIxMDE1NVoX
+DTE3MTAyNDIxMDE1NVowgYwxCzAJBgNVBAYTAklMMRYwFAYDVQQKEw1TdGFydENvbSBMdGQuMSsw
+KQYDVQQLEyJTZWN1cmUgRGlnaXRhbCBDZXJ0aWZpY2F0ZSBTaWduaW5nMTgwNgYDVQQDEy9TdGFy
+dENvbSBDbGFzcyAxIFByaW1hcnkgSW50ZXJtZWRpYXRlIENsaWVudCBDQTCCASIwDQYJKoZIhvcN
+AQEBBQADggEPADCCAQoCggEBAMcJg8zOLdgasSmkLhOrlr6KMoOMpohBllVHrdRvEg/q6r8jR+EK
+75xCGhR8ToREoqe7zM9/UnC6TS2y9UKTpT1v7RSMzR0t6ndl0TWBuUr/UXBhPk+Kmy7bI4yW4urC
++y7P3/1/X7U8ocb8VpH/Clt+4iq7nirMcNh6qJR+xjOhV+VHzQMALuGYn5KZmc1NbJQYclsGkDxD
+z2UbFqE2+6vIZoL+jb9x4Pa5gNf1TwSDkOkikZB1xtB4ZqtXThaABSONdfmv/Z1pua3FYxnCFmdr
+/+N2JLKutIxMYqQOJebr/f/h5t95m4JgrM3Y/w7YX9d7YAL9jvN4SydHsU6n65cCAwEAAaOCAa0w
+ggGpMA8GA1UdEwEB/wQFMAMBAf8wDgYDVR0PAQH/BAQDAgEGMB0GA1UdDgQWBBRTcu2SnODaywFc
+fH6WNU7y1LhRgjAfBgNVHSMEGDAWgBROC+8apEBbpRdphzDKNGhD0EGu8jBmBggrBgEFBQcBAQRa
+MFgwJwYIKwYBBQUHMAGGG2h0dHA6Ly9vY3NwLnN0YXJ0c3NsLmNvbS9jYTAtBggrBgEFBQcwAoYh
+aHR0cDovL3d3dy5zdGFydHNzbC5jb20vc2ZzY2EuY3J0MFsGA1UdHwRUMFIwJ6AloCOGIWh0dHA6
+Ly93d3cuc3RhcnRzc2wuY29tL3Nmc2NhLmNybDAnoCWgI4YhaHR0cDovL2NybC5zdGFydHNzbC5j
+b20vc2ZzY2EuY3JsMIGABgNVHSAEeTB3MHUGCysGAQQBgbU3AQIBMGYwLgYIKwYBBQUHAgEWImh0
+dHA6Ly93d3cuc3RhcnRzc2wuY29tL3BvbGljeS5wZGYwNAYIKwYBBQUHAgEWKGh0dHA6Ly93d3cu
+c3RhcnRzc2wuY29tL2ludGVybWVkaWF0ZS5wZGYwDQYJKoZIhvcNAQEFBQADggIBAAqDCH14qywG
+XLhjjF6uHLkjd02hcdh9hrw+VUsv+q1eeQWB21jWj3kJ96AUlPCoEGZ/ynJNScWy6QMVQjbbMXlt
+UfO4n4bGGdKo3awPWp61tjAFgraLJgDk+DsSvUD6EowjMTNx25GQgyYJ5RPIzKKR9tQW8gGK+2+R
+HxkUCTbYFnL6kl8Ch507rUdPPipJ9CgJFws3kDS3gOS5WFMxcjO5DwKfKSETEPrHh7p5shuuNktv
+sv6hxHTLhiMKX893gxdT3XLS9OKmCv87vkINQcNEcIIoFWbP9HORz9v3vQwR4e3ksLc2JZOAFK+s
+sS5XMEoznzpihEP0PLc4dCBYjbvSD7kxgDwZ+Aj8Q9PkbvE9sIPP7ON0fz095HdThKjiVJe6vofq
++n6b1NBc8XdrQvBmunwxD5nvtTW4vtN6VY7mUCmxsCieuoBJ9OlqmsVWQvifIYf40dJPZkk9YgGT
+zWLpXDSfLSplbY2LL9C9U0ptvjcDjefLTvqSFc7tw1sEhF0n/qpA2r0GpvkLRDmcSwVyPvmjFBGq
+Up/pNy8ZuPGQmHwFi2/14+xeSUDG2bwnsYJQG2EdJCB6luQ57GEnTA/yKZSTKI8dDQa8Sd3zfXb1
+9mOgSF0bBdXbuKhEpuP9wirslFe6fQ1t5j5R0xi72MZ8ikMu1RQZKCyDbMwazlHiMIIGQjCCBSqg
+AwIBAgIDCdkyMA0GCSqGSIb3DQEBBQUAMIGMMQswCQYDVQQGEwJJTDEWMBQGA1UEChMNU3RhcnRD
+b20gTHRkLjErMCkGA1UECxMiU2VjdXJlIERpZ2l0YWwgQ2VydGlmaWNhdGUgU2lnbmluZzE4MDYG
+A1UEAxMvU3RhcnRDb20gQ2xhc3MgMSBQcmltYXJ5IEludGVybWVkaWF0ZSBDbGllbnQgQ0EwHhcN
+MTQwNTA0MTczMDIyWhcNMTUwNTA0MjM0MTAxWjBdMRkwFwYDVQQNExAzODNCMTVkSHFQSUR0cDZO
+MRwwGgYDVQQDDBNkd213MkBpbmZyYWRlYWQub3JnMSIwIAYJKoZIhvcNAQkBFhNkd213MkBpbmZy
+YWRlYWQub3JnMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAy7K+t+REIdZGFUfgR8Io
+QrJ/VLZil9I00JcwqTo8BiGy1dqSIB2y923siya5SDKMh1YurtCPsX96cNzwPmmN2cs0MKeVPQWz
+iQhHk3uKcB6LvvS7pzTahRWMRmTyW3CH+RphRM9plvyClY23GEeEnpBnGz4GaJJiPcJjGgzyZ/tI
+q473pOlSrDPZnZk43vt/5CJN46nIZOZ2I+PzlgINI+EbiwsXVn3VohHB7nVTwGaRLk5oywGt8ZT7
+tDdxn3BQ3inO1sr5MtkV1o2cHlenIC8mlU8nL/mrqqVve7Vib1YQUycW+Pj4CBYm4FTeuctAvNzK
+U/daeBclOZ8ofgQe2wIDAQABo4IC2TCCAtUwCQYDVR0TBAIwADALBgNVHQ8EBAMCBLAwHQYDVR0l
+BBYwFAYIKwYBBQUHAwIGCCsGAQUFBwMEMB0GA1UdDgQWBBRAjCSCV70BpLBeXge5DXi+mPhHTTAf
+BgNVHSMEGDAWgBRTcu2SnODaywFcfH6WNU7y1LhRgjAeBgNVHREEFzAVgRNkd213MkBpbmZyYWRl
+YWQub3JnMIIBTAYDVR0gBIIBQzCCAT8wggE7BgsrBgEEAYG1NwECAzCCASowLgYIKwYBBQUHAgEW
+Imh0dHA6Ly93d3cuc3RhcnRzc2wuY29tL3BvbGljeS5wZGYwgfcGCCsGAQUFBwICMIHqMCcWIFN0
+YXJ0Q29tIENlcnRpZmljYXRpb24gQXV0aG9yaXR5MAMCAQEagb5UaGlzIGNlcnRpZmljYXRlIHdh
+cyBpc3N1ZWQgYWNjb3JkaW5nIHRvIHRoZSBDbGFzcyAxIFZhbGlkYXRpb24gcmVxdWlyZW1lbnRz
+IG9mIHRoZSBTdGFydENvbSBDQSBwb2xpY3ksIHJlbGlhbmNlIG9ubHkgZm9yIHRoZSBpbnRlbmRl
+ZCBwdXJwb3NlIGluIGNvbXBsaWFuY2Ugb2YgdGhlIHJlbHlpbmcgcGFydHkgb2JsaWdhdGlvbnMu
+MDYGA1UdHwQvMC0wK6ApoCeGJWh0dHA6Ly9jcmwuc3RhcnRzc2wuY29tL2NydHUxLWNybC5jcmww
+gY4GCCsGAQUFBwEBBIGBMH8wOQYIKwYBBQUHMAGGLWh0dHA6Ly9vY3NwLnN0YXJ0c3NsLmNvbS9z
+dWIvY2xhc3MxL2NsaWVudC9jYTBCBggrBgEFBQcwAoY2aHR0cDovL2FpYS5zdGFydHNzbC5jb20v
+Y2VydHMvc3ViLmNsYXNzMS5jbGllbnQuY2EuY3J0MCMGA1UdEgQcMBqGGGh0dHA6Ly93d3cuc3Rh
+cnRzc2wuY29tLzANBgkqhkiG9w0BAQUFAAOCAQEAWS2KNN7O3vZVtNHXVqgbmijeptKwt+8b6yiF
+wT3kJoywInPl5U+OeKRZfQKTHghM4Ohof6lF244ZMxhir/xp7l/zkZ/BUbxLwp6kIL27Gi5pgP4D
+KLnTZheQL9N5Yi/vMONxMWcpcW+ZNv5hnDCfEsfVcLXC8sNLPjx2ezfMIhSSPwBuJpmOun70te4E
+P0YBqjSalPfvc5fC5KgaYtqTDFwo9Mw25X5HHDC0r6BK5aNrF1nD/xYTX7cdvZZWl7cUApr4PCrn
+uI2DEn7OWQ/rY407ytV1c5pjvmuv/IT/ZUb/kXV6Q47UvrJp2Ifi2VhsBcnHHasKavjtRCmpDsGM
+rTCCBkIwggUqoAMCAQICAwnZMjANBgkqhkiG9w0BAQUFADCBjDELMAkGA1UEBhMCSUwxFjAUBgNV
+BAoTDVN0YXJ0Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNp
+Z25pbmcxODA2BgNVBAMTL1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xp
+ZW50IENBMB4XDTE0MDUwNDE3MzAyMloXDTE1MDUwNDIzNDEwMVowXTEZMBcGA1UEDRMQMzgzQjE1
+ZEhxUElEdHA2TjEcMBoGA1UEAwwTZHdtdzJAaW5mcmFkZWFkLm9yZzEiMCAGCSqGSIb3DQEJARYT
+ZHdtdzJAaW5mcmFkZWFkLm9yZzCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAMuyvrfk
+RCHWRhVH4EfCKEKyf1S2YpfSNNCXMKk6PAYhstXakiAdsvdt7IsmuUgyjIdWLq7Qj7F/enDc8D5p
+jdnLNDCnlT0Fs4kIR5N7inAei770u6c02oUVjEZk8ltwh/kaYUTPaZb8gpWNtxhHhJ6QZxs+BmiS
+Yj3CYxoM8mf7SKuO96TpUqwz2Z2ZON77f+QiTeOpyGTmdiPj85YCDSPhG4sLF1Z91aIRwe51U8Bm
+kS5OaMsBrfGU+7Q3cZ9wUN4pztbK+TLZFdaNnB5XpyAvJpVPJy/5q6qlb3u1Ym9WEFMnFvj4+AgW
+JuBU3rnLQLzcylP3WngXJTmfKH4EHtsCAwEAAaOCAtkwggLVMAkGA1UdEwQCMAAwCwYDVR0PBAQD
+AgSwMB0GA1UdJQQWMBQGCCsGAQUFBwMCBggrBgEFBQcDBDAdBgNVHQ4EFgQUQIwkgle9AaSwXl4H
+uQ14vpj4R00wHwYDVR0jBBgwFoAUU3Ltkpzg2ssBXHx+ljVO8tS4UYIwHgYDVR0RBBcwFYETZHdt
+dzJAaW5mcmFkZWFkLm9yZzCCAUwGA1UdIASCAUMwggE/MIIBOwYLKwYBBAGBtTcBAgMwggEqMC4G
+CCsGAQUFBwIBFiJodHRwOi8vd3d3LnN0YXJ0c3NsLmNvbS9wb2xpY3kucGRmMIH3BggrBgEFBQcC
+AjCB6jAnFiBTdGFydENvbSBDZXJ0aWZpY2F0aW9uIEF1dGhvcml0eTADAgEBGoG+VGhpcyBjZXJ0
+aWZpY2F0ZSB3YXMgaXNzdWVkIGFjY29yZGluZyB0byB0aGUgQ2xhc3MgMSBWYWxpZGF0aW9uIHJl
+cXVpcmVtZW50cyBvZiB0aGUgU3RhcnRDb20gQ0EgcG9saWN5LCByZWxpYW5jZSBvbmx5IGZvciB0
+aGUgaW50ZW5kZWQgcHVycG9zZSBpbiBjb21wbGlhbmNlIG9mIHRoZSByZWx5aW5nIHBhcnR5IG9i
+bGlnYXRpb25zLjA2BgNVHR8ELzAtMCugKaAnhiVodHRwOi8vY3JsLnN0YXJ0c3NsLmNvbS9jcnR1
+MS1jcmwuY3JsMIGOBggrBgEFBQcBAQSBgTB/MDkGCCsGAQUFBzABhi1odHRwOi8vb2NzcC5zdGFy
+dHNzbC5jb20vc3ViL2NsYXNzMS9jbGllbnQvY2EwQgYIKwYBBQUHMAKGNmh0dHA6Ly9haWEuc3Rh
+cnRzc2wuY29tL2NlcnRzL3N1Yi5jbGFzczEuY2xpZW50LmNhLmNydDAjBgNVHRIEHDAahhhodHRw
+Oi8vd3d3LnN0YXJ0c3NsLmNvbS8wDQYJKoZIhvcNAQEFBQADggEBAFktijTezt72VbTR11aoG5oo
+3qbSsLfvG+sohcE95CaMsCJz5eVPjnikWX0Ckx4ITODoaH+pRduOGTMYYq/8ae5f85GfwVG8S8Ke
+pCC9uxouaYD+Ayi502YXkC/TeWIv7zDjcTFnKXFvmTb+YZwwnxLH1XC1wvLDSz48dns3zCIUkj8A
+biaZjrp+9LXuBD9GAao0mpT373OXwuSoGmLakwxcKPTMNuV+RxwwtK+gSuWjaxdZw/8WE1+3Hb2W
+Vpe3FAKa+Dwq57iNgxJ+zlkP62ONO8rVdXOaY75rr/yE/2VG/5F1ekOO1L6yadiH4tlYbAXJxx2r
+Cmr47UQpqQ7BjK0xggNvMIIDawIBATCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0
+Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcxODA2
+BgNVBAMTL1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENBAgMJ
+2TIwCQYFKw4DAhoFAKCCAa8wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUx
+DxcNMTQxMDI5MTY1NjUwWjAjBgkqhkiG9w0BCQQxFgQUc/VCPm6bD6IzjvuXYBtXxIJEQSQwgaUG
+CSsGAQQBgjcQBDGBlzCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0Q29tIEx0ZC4x
+KzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcxODA2BgNVBAMTL1N0
+YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENBAgMJ2TIwgacGCyqG
+SIb3DQEJEAILMYGXoIGUMIGMMQswCQYDVQQGEwJJTDEWMBQGA1UEChMNU3RhcnRDb20gTHRkLjEr
+MCkGA1UECxMiU2VjdXJlIERpZ2l0YWwgQ2VydGlmaWNhdGUgU2lnbmluZzE4MDYGA1UEAxMvU3Rh
+cnRDb20gQ2xhc3MgMSBQcmltYXJ5IEludGVybWVkaWF0ZSBDbGllbnQgQ0ECAwnZMjANBgkqhkiG
+9w0BAQEFAASCAQCyHBr0ptuFy+b6Xu4WelEozifTMSWEiRsdUAyjEz3nW0JXZ+qC0U7MU/CwVoXf
+n9c3gmR6CZXHlXXGAvLEAbuX/1z/TYcKIPYN1oIy3J7MxFhR1YRaf6srVz+avHv/51lDtkbUXAGv
+0N/MNaUfVxIAPfSfbxoWdBA/wEwHmWa3O6Q/zrLmfVLhFmKou91knrQ+DEzvzNjCyzewd8a8ud67
+NBut+JILacnePKv265FtuSZmLweaDB3if8LgwgUtyuhBWQdqiuGSeNBX53qrX7KhIyv1uvSDF0TF
+xVbwYIdoJQ/3iIrKSBtfzF+cmzUW4uGKMdbhnBl5eemkilyjfQR6AAAAAAAA
+
+
+--=-mzanzlv/4v+0H7IFPvOz--
 
 
