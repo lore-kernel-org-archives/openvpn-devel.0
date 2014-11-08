@@ -1,7 +1,12 @@
+Message-ID: <545DED2C.5070002@...1856...>
+Date: Sat, 08 Nov 2014 11:15:08 +0100
 From: Steffan Karger <steffan@...1856...>
-Date: Thu,  6 Nov 2014 23:26:59 +0100
-Message-Id: <1415312819-16048-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH] Fix assertion error when using --cipher none
+MIME-Version: 1.0
+References: <1415312819-16048-1-git-send-email-steffan@...1856...>
+In-Reply-To: <1415312819-16048-1-git-send-email-steffan@...1856...>
+Content-Type: multipart/mixed; boundary="------------090000010506090703010303"
+Subject: Re: [Openvpn-devel] [PATCH] Fix assertion error when using --cipher
+	none
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -10,9 +15,35 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
+
+This is a multi-part message in MIME format.
+--------------090000010506090703010303
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+
+
+On 06-11-14 23:26, Steffan Karger wrote:
+> Some commits ago, the cipher mode checks were cleaned up to
+> remove code duplication (and fix the issue in #471), but broke
+> '--cipher none' (reported in #473). This commit fixes that.
+
+Attached a v2 of this patch that removes the (inconsistent) renaming of
+the cipher_kt_mode() parameter. Otherwise this patch is the same.
+
+-Steffan
+
+--------------090000010506090703010303
+Content-Type: text/x-patch;
+	name="0001-Fix-assertion-error-when-using-cipher-none.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+	filename*0="0001-Fix-assertion-error-when-using-cipher-none.patch"
+
+From 1fed00bc54bb9b774bdd7d522a80d0ec83effdfd Mon Sep 17 00:00:00 2001
+From: Steffan Karger <steffan@...1856...>
+Date: Sat, 8 Nov 2014 11:03:52 +0100
+Subject: [PATCH] Fix assertion error when using --cipher none
 
 Some commits ago, the cipher mode checks were cleaned up to
 remove code duplication (and fix the issue in #471), but broke
@@ -20,28 +51,25 @@ remove code duplication (and fix the issue in #471), but broke
 
 Signed-off-by: Steffan Karger <steffan@...1856...>
 ---
- src/openvpn/crypto_backend.h  | 8 ++++----
+ src/openvpn/crypto_backend.h  | 6 +++---
  src/openvpn/crypto_openssl.c  | 4 ++--
  src/openvpn/crypto_polarssl.c | 4 ++--
- 3 files changed, 8 insertions(+), 8 deletions(-)
+ 3 files changed, 7 insertions(+), 7 deletions(-)
 
 diff --git a/src/openvpn/crypto_backend.h b/src/openvpn/crypto_backend.h
-index bc067a7..57830c2 100644
+index bc067a7..8749878 100644
 --- a/src/openvpn/crypto_backend.h
 +++ b/src/openvpn/crypto_backend.h
-@@ -223,17 +223,17 @@ int cipher_kt_block_size (const cipher_kt_t *cipher_kt);
+@@ -223,7 +223,7 @@ int cipher_kt_block_size (const cipher_kt_t *cipher_kt);
  /**
   * Returns the mode that the cipher runs in.
   *
 - * @param cipher_kt 	Static cipher parameters
-+ * @param cipher	Static cipher parameters. May not be NULL.
++ * @param cipher_kt	Static cipher parameters. May not be NULL.
   *
   * @return 		Cipher mode, either \c OPENVPN_MODE_CBC, \c
   * 			OPENVPN_MODE_OFB or \c OPENVPN_MODE_CFB
-  */
--int cipher_kt_mode (const cipher_kt_t *cipher_kt);
-+int cipher_kt_mode (const cipher_kt_t *cipher);
- 
+@@ -233,7 +233,7 @@ int cipher_kt_mode (const cipher_kt_t *cipher_kt);
  /**
   * Check if the supplied cipher is a supported CBC mode cipher.
   *
@@ -104,4 +132,6 @@ index 68e350d..c038f8e 100644
 -- 
 1.9.1
 
+
+--------------090000010506090703010303--
 
