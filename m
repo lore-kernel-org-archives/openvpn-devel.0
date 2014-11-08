@@ -1,12 +1,10 @@
-Message-ID: <545E2710.5000602@...1227...>
-Date: Sat, 08 Nov 2014 15:22:08 +0100
-From: Arne Schwabe <arne@...1227...>
-MIME-Version: 1.0
-References: <1415312819-16048-1-git-send-email-steffan@...1856...>
-	<545DED2C.5070002@...1856...>
+Date: Sat, 8 Nov 2014 18:31:29 +0100 (CET)
+Message-Id: <201411081731.sA8HVTDs006569@...1295...>
+From: Gert Doering <gert@...1296...>
 In-Reply-To: <545DED2C.5070002@...1856...>
-Subject: Re: [Openvpn-devel] [PATCH] Fix assertion error when using --cipher
- none
+References: <545DED2C.5070002@...1856...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix assertion error when using
+	--cipher none
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,20 +13,31 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Steffan Karger <steffan@...1856...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-On 08.11.2014 11:15, Steffan Karger wrote:
-> On 06-11-14 23:26, Steffan Karger wrote:
->> Some commits ago, the cipher mode checks were cleaned up to
->> remove code duplication (and fix the issue in #471), but broke
->> '--cipher none' (reported in #473). This commit fixes that.
-> Attached a v2 of this patch that removes the (inconsistent) renaming of
-> the cipher_kt_mode() parameter. Otherwise this patch is the same.
->
->
-ACK
+Your patch has been applied to the master and release/2.3 branches.
 
-Arne
+commit 4e93e6dc88f4d904a4f2eb90140472a8d8fd68d0 (master)
+commit 44294568a113a7c54ce7fca86b4014c9d1168888 (release/2.3)
+
+Author: Steffan Karger
+Date:   Sat Nov 8 11:15:08 2014 +0100
+
+     Fix assertion error when using --cipher none
+
+     Signed-off-by: Steffan Karger <steffan@...1856...>
+     Acked-by: Arne Schwabe <arne@...1227...>
+     Message-Id: <545DED2C.5070002@...1856...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/9217
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
+
 
