@@ -1,10 +1,9 @@
-Date: Sat, 8 Nov 2014 18:31:29 +0100 (CET)
-Message-Id: <201411081731.sA8HVTDs006569@...1295...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <545DED2C.5070002@...1856...>
-References: <545DED2C.5070002@...1856...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix assertion error when using
-	--cipher none
+Message-ID: <54648EAC.70204@...515...>
+Date: Thu, 13 Nov 2014 11:57:48 +0100
+From: James Yonan <james@...515...>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="------------080808030605090305080009"
+Subject: [Openvpn-devel] OpenVPN Protocol extensions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,31 +12,122 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Steffan Karger <steffan@...1856...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Your patch has been applied to the master and release/2.3 branches.
+This is a multi-part message in MIME format.
+--------------080808030605090305080009
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 
-commit 4e93e6dc88f4d904a4f2eb90140472a8d8fd68d0 (master)
-commit 44294568a113a7c54ce7fca86b4014c9d1168888 (release/2.3)
+In addition to the Peer-ID/DATA_V2 protocol change proposal,
+here are a couple more proposed extensions for AEAD mode and
+Compression V2 that we can discuss at the upcoming Munich
+hackathon.
 
-Author: Steffan Karger
-Date:   Sat Nov 8 11:15:08 2014 +0100
+James
 
-     Fix assertion error when using --cipher none
+--------------080808030605090305080009
+Content-Type: text/plain; charset=UTF-8; name="openvpn-protocol-extensions.txt"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+ filename="openvpn-protocol-extensions.txt"
 
-     Signed-off-by: Steffan Karger <steffan@...1856...>
-     Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <545DED2C.5070002@...1856...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/9217
-     Signed-off-by: Gert Doering <gert@...1296...>
+OpenVPN Protocol extensions
 
+1. DATA_V2 opcode with 24-bit peer ID
 
---
-kind regards,
+2. AEAD mode
 
-Gert Doering
+   To support AEAD crypto modes such as AES-GCM, some protocol
+   changes are in order.  AES-GCM, for example, requires a 12
+   byte unique nonce for every packet.  I would propose that 4
+   bytes be taken from the Packet ID which increments for every
+   packet and therefore provides uniqueness.  The remaining 8
+   bytes would be derived from the random key material that would
+   normally be used to key the HMAC key.  This is possible since
+   AEAD modes use a combined key for encryption and integrity
+   checking, therefore the random key material for HMAC is
+   unused and can be repurposed as an AEAD nonce source.  The 8
+   byte nonce component derived from the HMAC keying material
+   would remain constant for a given Key State.  Only the 4 byte
+   Packet ID would increment for each packet.  Because AEAD
+   encryption can be compromised if the nonce ever repeats for
+   a given key, the implementation MUST disable encryption
+   for a key if the 32-bit packet ID wraps.  In practical usage,
+   renegotiation usually preempts wrapping, so the
+   disable-encryption-on-wrap feature is a failsafe.
 
+   AEAD Nonce:
+
+     [ Packet ID ] [ HMAC keying material ]
+     [ 4 bytes   ] [ 8 bytes              ]
+     [ AEAD nonce total: 12 bytes         ]
+
+   TLS wire protocol:
+
+     [ DATA_V2 opcode ] [ Packet ID ] [ AEAD Auth tag ] [ ciphertext ]
+     [ 4 bytes        ] [ 4 bytes   ] [ 16 bytes      ]
+
+   Static Key wire protocol:
+
+     [ DATA_V2 opcode ] [ Packet ID ] [ Nonce tail (random) ]  [ AEAD Auth tag ] [ ciphertext ]
+                        [           AEAD nonce              ]
+     [ 4 bytes        ] [ 8 bytes   ] [ 4 bytes             ]  [ 16 bytes      ]
+
+   Note that because the HMAC keying material used to derive the
+   last 8 bytes of the AEAD nonce is negotiated once per key
+   as part of the control channel handshake, we can omit it from the
+   data channel packets, thereby saving 8 bytes per packet.  So
+   only the 4-byte Packet ID component of the nonce must be
+   transmitted with every packet.
+
+   Also note that that the TLS wire protocol overhead is only 24
+   bytes, including the new 4 byte DATA_V2 opcode that includes
+   the Peer ID!  Compare that with traditional AES-CBC mode and
+   DATA_V1 opcode: 1 (DATA_V1 opcode) + 20 (HMAC-SHA1 hash)
+   + 8 (IV) + 4 (Packet ID) + 1-8 (PKCS#7 padding) = 34-41 bytes.
+
+3. Compression V2
+
+   I have observed that compression in many cases, even when
+   enabled, often does not produce packet size reduction
+   because much of the packet data typically generated by web
+   sessions is already compressed.  Further, the single byte that
+   precedes the packet and indicates whether or not compression
+   occurred has the unfortunate side effect of misaligning the IP
+   packet in cases where compression did not occur.  To remedy this,
+   I propose a Compression V2 header that is optimized for the
+   case where compression does not occur.
+
+   a. No compression occurred and first byte of IP/Ethernet packet
+      is NOT 0x50 (0 bytes of overhead and maintains alignment):
+
+        [ uncompressed IP/Ethernet packet ]
+
+   b. No compression occurred and first byte of IP/Ethernet packet
+      is 0x50 (2 bytes of overhead but unlikely since no known
+      IP packet can begin with 0x50):
+
+        [ 0x50 ] [ 0x00 ] [ uncompressed IP/Ethernet packet ]
+
+   c. Compression occurred (2 bytes of overhead):
+
+        [ 0x50 ] [ compression Alg ID ] [ compressed IP/Ethernet packet ]
+
+      Compression Alg ID is one-byte algorithm identifier
+      for LZ4 (0x1), LZO (0x2), or Snappy (0x3).
+
+   This approach has several beneficial effects:
+
+   1. In the common case where compression does not occur, no
+      compression op is required, therefore there is zero overhead.
+
+   2. When compression does not occur, the IP/Ethernet packet
+      alignment is retained.
+
+   3. This technique does not require any byte swapping with
+      the tail of the packet which can potentially incur an
+      expensive cache miss.
+
+--------------080808030605090305080009--
 
