@@ -1,5 +1,5 @@
-Date: Fri, 14 Nov 2014 17:16:52 +0100 (CET)
-Message-Id: <201411141616.sAEGGqcD020646@...1295...>
+Date: Fri, 14 Nov 2014 17:16:57 +0100 (CET)
+Message-Id: <201411141616.sAEGGvMR007780@...1295...>
 From: Gert Doering <gert@...1296...>
 In-Reply-To: <544EC052.3080809@...1435...>
 References: <544EC052.3080809@...1435...>
@@ -17,11 +17,11 @@ Content-Transfer-Encoding: 8bit
 To: Steffan Karger <steffan.karger@...1435...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the release/2.3 branch.
+Your patch has been applied to the master branch.
 
-commit c80727650461e49525eefcbc741c8245d7787ba4
+commit 6cb15b908a64b69b715fa8b2d60c71c6d9d3f9fc
 Author: Steffan Karger
-Date:   Fri Sep 5 12:38:04 2014 +0200
+Date:   Tue Aug 26 00:03:23 2014 +0200
 
      Add --tls-version-max
 
