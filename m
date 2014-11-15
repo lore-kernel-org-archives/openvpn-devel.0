@@ -1,9 +1,7 @@
 From: Heiko Hund <heiko.hund@...1489...>
-Date: Sat, 15 Nov 2014 17:25:08 +0100
-Message-Id: <1416068708-6871-2-git-send-email-heiko.hund@...1489...>
-In-Reply-To: <1416068708-6871-1-git-send-email-heiko.hund@...1489...>
-References: <1416068708-6871-1-git-send-email-heiko.hund@...1489...>
-Subject: [Openvpn-devel] [PATCH 2/2] fix warnings on Windows
+Date: Sat, 15 Nov 2014 17:25:07 +0100
+Message-Id: <1416068708-6871-1-git-send-email-heiko.hund@...1489...>
+Subject: [Openvpn-devel] [PATCH 1/2] fix compilation on Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,73 +14,62 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Just add a few valid casts that shut up mingw gcc.
+The local member in struct lick_socket_address went away a while ago.
+Fixing the code to compile again under Windows. While there, also
+fix the code to deal with struct link_socket_info.af == AF_UNSPEC
 
 Signed-off-by: Heiko Hund <heiko.hund@...1489...>
 ---
- src/openvpn/mtu.c    | 5 ++---
- src/openvpn/route.c  | 2 +-
- src/openvpn/socket.c | 4 ++--
- 3 files changed, 5 insertions(+), 6 deletions(-)
+ src/openvpn/socket.c | 15 +++++++--------
+ 1 file changed, 7 insertions(+), 8 deletions(-)
 
-diff --git a/src/openvpn/mtu.c b/src/openvpn/mtu.c
-index 13f3f6c..3665a34 100644
---- a/src/openvpn/mtu.c
-+++ b/src/openvpn/mtu.c
-@@ -158,8 +158,7 @@ set_mtu_discover_type (int sd, int mtu_type)
-   if (mtu_type >= 0)
-     {
- #if defined(HAVE_SETSOCKOPT) && defined(SOL_IP) && defined(IP_MTU_DISCOVER)
--      if (setsockopt
--	  (sd, SOL_IP, IP_MTU_DISCOVER, &mtu_type, sizeof (mtu_type)))
-+      if (setsockopt (sd, SOL_IP, IP_MTU_DISCOVER, (void *) &mtu_type, sizeof (mtu_type)))
- 	msg (M_ERR, "Error setting IP_MTU_DISCOVER type=%d on TCP/UDP socket",
- 	     mtu_type);
- #else
-@@ -288,7 +287,7 @@ void
- set_sock_extended_error_passing (int sd)
- {
-   int on = 1;
--  if (setsockopt (sd, SOL_IP, IP_RECVERR, &on, sizeof (on)))
-+  if (setsockopt (sd, SOL_IP, IP_RECVERR, (void *) &on, sizeof (on)))
-     msg (M_WARN | M_ERRNO,
- 	 "Note: enable extended error passing on TCP/UDP socket failed (IP_RECVERR)");
- }
-diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index e76c2bd..5d18213 100644
---- a/src/openvpn/route.c
-+++ b/src/openvpn/route.c
-@@ -277,7 +277,7 @@ init_route (struct route_ipv4 *r,
-   /* get_special_addr replaces specialaddr with a special ip addr
-      like gw. getaddrinfo is called to convert a a addrinfo struct */
- 
--  if(get_special_addr (rl, ro->network, &special.s_addr, &status))
-+  if(get_special_addr (rl, ro->network, (in_addr_t *) &special.s_addr, &status))
-     {
-       special.s_addr = htonl(special.s_addr);
-       ret = openvpn_getaddrinfo(0, inet_ntoa(special), NULL, 0, NULL,
 diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
-index 9ed8a5a..2499ab0 100644
+index c649d62..9ed8a5a 100644
 --- a/src/openvpn/socket.c
 +++ b/src/openvpn/socket.c
-@@ -729,7 +729,7 @@ static inline void
- socket_set_mark (int sd, int mark)
- {
- #if defined(TARGET_LINUX) && HAVE_DECL_SO_MARK
--  if (mark && setsockopt (sd, SOL_SOCKET, SO_MARK, &mark, sizeof (mark)) != 0)
-+  if (mark && setsockopt (sd, SOL_SOCKET, SO_MARK, (void *) &mark, sizeof (mark)) != 0)
-     msg (M_WARN, "NOTE: setsockopt SO_MARK=%d failed", mark);
+@@ -2916,6 +2916,7 @@ link_socket_read_udp_posix (struct link_socket *sock,
  #endif
- }
-@@ -1117,7 +1117,7 @@ socket_bind (socket_descriptor_t sd,
-       int v6only = ipv6only ? 1: 0;	/* setsockopt must have an "int" */
- 
-       msg (M_INFO, "setsockopt(IPV6_V6ONLY=%d)", v6only);
--      if (setsockopt(sd, IPPROTO_IPV6, IPV6_V6ONLY, &v6only, sizeof(v6only)))
-+      if (setsockopt (sd, IPPROTO_IPV6, IPV6_V6ONLY, (void *) &v6only, sizeof(v6only)))
+     buf->len = recvfrom (sock->sd, BPTR (buf), maxsize, 0,
+ 			 &from->dest.addr.sa, &fromlen);
++  /* FIXME: won't do anything when sock->info.af == AF_UNSPEC */
+   if (buf->len >= 0 && expectedlen && fromlen != expectedlen)
+     bad_address_length (fromlen, expectedlen);
+   return buf->len;
+@@ -3060,10 +3061,7 @@ socket_recv_queue (struct link_socket *sock, int maxsize)
+       if (proto_is_udp(sock->info.proto))
  	{
- 	  msg (M_NONFATAL|M_ERRNO, "Setting IPV6_V6ONLY=%d failed", v6only);
- 	}
+ 	  sock->reads.addr_defined = true;
+-	  if (sock->info.af == AF_INET)
+-	    sock->reads.addrlen = sizeof (sock->reads.addr);
+-	  else
+-	    sock->reads.addrlen = sizeof (sock->reads.addr6);
++	  sock->reads.addrlen = sizeof (sock->reads.addr6);
+ 	  status = WSARecvFrom(
+ 			       sock->sd,
+ 			       wsabuf,
+@@ -3095,9 +3093,10 @@ socket_recv_queue (struct link_socket *sock, int maxsize)
+ 
+       if (!status) /* operation completed immediately? */
+ 	{
+-	  int addrlen = af_addr_size(sock->info.lsa->local.addr.sa.sa_family);
+-	  if (sock->reads.addr_defined && sock->reads.addrlen != addrlen)
+-	    bad_address_length (sock->reads.addrlen, addrlen);
++	  /* FIXME: won't do anything when sock->info.af == AF_UNSPEC */
++	  int af_len = af_addr_size (sock->info.af);
++	  if (sock->reads.addr_defined && af_len && sock->reads.addrlen != af_len)
++	    bad_address_length (sock->reads.addrlen, af_len);
+ 	  sock->reads.iostate = IOSTATE_IMMEDIATE_RETURN;
+ 
+ 	  /* since we got an immediate return, we must signal the event object ourselves */
+@@ -3159,7 +3158,7 @@ socket_send_queue (struct link_socket *sock, struct buffer *buf, const struct li
+ 	{
+ 	  /* set destination address for UDP writes */
+ 	  sock->writes.addr_defined = true;
+-	  if (sock->info.af == AF_INET6)
++	  if (to->dest.addr.sa.sa_family == AF_INET6)
+ 	    {
+ 	      sock->writes.addr6 = to->dest.addr.in6;
+ 	      sock->writes.addrlen = sizeof (sock->writes.addr6);
 -- 
 1.9.1
 
