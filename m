@@ -1,11 +1,8 @@
+Message-ID: <5468BB10.8020609@...1856...>
+Date: Sun, 16 Nov 2014 15:56:16 +0100
+From: Steffan Karger <steffan@...1856...>
 MIME-Version: 1.0
-In-Reply-To: <1416148262-20978-1-git-send-email-openvpn.list@...1114...>
-References: <1416148262-20978-1-git-send-email-openvpn.list@...1114...>
-Date: Sun, 16 Nov 2014 11:30:03 -0500
-Message-ID: <CAJ0EP40K=APViz-h3keWhwj8JAf_K2-2NFZk9bhrzzgSpEzb1g@...278...>
-From: Mike Gilbert <floppym@...594...>
-Subject: Re: [Openvpn-devel] [PATCH] down-root plugin: Replaced system()
- calls with execve()
+Subject: [Openvpn-devel] Removing the --disable-ssl configure flag
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,30 +11,22 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-To: David Sommerseth <openvpn.list@...1114...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+To: openvpn-users@lists.sourceforge.net
 
-On Sun, Nov 16, 2014 at 9:31 AM, David Sommerseth
-<openvpn.list@...1114...> wrote:
-> From: David Sommerseth <davids@...1347...>
->
-> The system() call is prone to shell expansions and provides far more
-> environments variables to the executable run than what is usually
-> preferred.  By moving over to exevce() shell expansions are far more
-> difficult to achieve and only the OpenVPN provided environment
-> variables are available.
->
-> This is a response to the patch submitted to openvpn-devel ML:
-> http://article.gmane.org/gmane.network.openvpn.devel/7919
->
->  v2 - Pulling it up again, fixing a few whitespace and spelling issues
->
-> Signed-off-by: David Sommerseth <davids@...1347...>
+Hi,
 
-Just a general comment on the error handling: Instead of printing
-generic error messages when syscalls fail, wouldn't it be better to
-look up the actual error description using strerror(3)? This would
-include calls to malloc, fork, execve, and possibly others.
+To reduce the code and testing complexity a bit, I'd like to remove the
+--disable-ssl configure option in the master/2.4 branch.
+
+During the community meeting this weekend there were no objections
+amongst he developers present. But before actually removing the flag, we
+wanted to put this out there so anyone who relies on this can step forward.
+
+So, is there anyone out there who needs --disable-ssl?
+
+-Steffan
+
+(BCC to openvpn-devel, keep any discussion within openvpn-users please)
 
