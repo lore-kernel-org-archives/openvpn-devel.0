@@ -1,8 +1,10 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Sun, 16 Nov 2014 11:36:39 +0100
-Message-Id: <1416134199-3143-1-git-send-email-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH] Remove possibility of using --secret with
-	non OpenVPN Static key files
+From: David Sommerseth <openvpn.list@...1114...>
+Date: Sun, 16 Nov 2014 12:55:34 +0100
+Message-Id: <1416138935-12614-4-git-send-email-openvpn.list@...1114...>
+In-Reply-To: <1416138935-12614-1-git-send-email-openvpn.list@...1114...>
+References: <1416138935-12614-1-git-send-email-openvpn.list@...1114...>
+Subject: [Openvpn-devel] [PATCH 3/4] autotools: Add support for extracting
+	version information from pkg-config modules
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,98 +17,47 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-In older version OpenVPN would hash a --secret file if it does not conform to the expected format
----
- src/openvpn/crypto.c | 65 ++++------------------------------------------------
- 1 file changed, 4 insertions(+), 61 deletions(-)
+From: David Sommerseth <davids@...1347...>
 
-diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
-index ef2bde1..eaef964 100644
---- a/src/openvpn/crypto.c
-+++ b/src/openvpn/crypto.c
-@@ -770,22 +770,13 @@ get_tls_handshake_key (const struct key_type *key_type,
- 	  }
- 	else
- 	  {
--	    int hash_size;
--
- 	    CLEAR (key2);
+Signed-off-by: David Sommerseth <davids@...1347...>
+---
+ m4/pkg.m4 | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/m4/pkg.m4 b/m4/pkg.m4
+index 9a71878..f82496b 100644
+--- a/m4/pkg.m4
++++ b/m4/pkg.m4
+@@ -107,16 +107,18 @@ AC_DEFUN([PKG_CHECK_MODULES],
+ [AC_REQUIRE([PKG_PROG_PKG_CONFIG])dnl
+ AC_ARG_VAR([$1][_CFLAGS], [C compiler flags for $1, overriding pkg-config])dnl
+ AC_ARG_VAR([$1][_LIBS], [linker flags for $1, overriding pkg-config])dnl
++AC_ARG_VAR([$1][_MODVERSION], [module version])dnl
  
--	    /* failed, now try to get hash from a freeform file */
--	    hash_size = read_passphrase_hash (passphrase_file,
--					      kt.digest,
--					      key2.keys[0].hmac,
--					      MAX_HMAC_KEY_LENGTH);
--	    ASSERT (hash_size == kt.hmac_length);
--
--	    /* suceeded */
--	    key2.n = 1;
-+	    /* failed, now bail out */
+ pkg_failed=no
+ AC_MSG_CHECKING([for $1])
  
--	    msg (M_INFO,
--		 "Control Channel Authentication: using '%s' as a free-form passphrase file",
-+	    msg (M_ERR,
-+		 "Control Channel Authentication: File '%s' does not have OpenVPN Static Key format. "
-+		 "Using free-form passphrase file is not supported anymore",
- 		 passphrase_file);
- 	  }
-       }
-@@ -1012,54 +1003,6 @@ read_key_file (struct key2 *key2, const char *file, const unsigned int flags)
-   gc_free (&gc);
- }
+ _PKG_CONFIG([$1][_CFLAGS], [cflags], [$2])
+ _PKG_CONFIG([$1][_LIBS], [libs], [$2])
++_PKG_CONFIG([$1][_MODVERSION], [modversion], [$2])
  
--int
--read_passphrase_hash (const char *passphrase_file,
--		      const md_kt_t *digest,
--		      uint8_t *output,
--		      int len)
--{
--  md_ctx_t md;
--
--  ASSERT (len >= md_kt_size(digest));
--  memset (output, 0, len);
--
--  md_ctx_init(&md, digest);
--
--  /* read passphrase file */
--  {
--    const int min_passphrase_size = 8;
--    uint8_t buf[64];
--    int total_size = 0;
--    int fd = platform_open (passphrase_file, O_RDONLY, 0);
--
--    if (fd == -1)
--      msg (M_ERR, "Cannot open passphrase file: '%s'", passphrase_file);
--
--    for (;;)
--      {
--	int size = read (fd, buf, sizeof (buf));
--	if (size == 0)
--	  break;
--	if (size == -1)
--	  msg (M_ERR, "Read error on passphrase file: '%s'",
--	       passphrase_file);
--	md_ctx_update(&md, buf, size);
--	total_size += size;
--      }
--    close (fd);
--
--    warn_if_group_others_accessible (passphrase_file);
--
--    if (total_size < min_passphrase_size)
--      msg (M_FATAL,
--	   "Passphrase file '%s' is too small (must have at least %d characters)",
--	   passphrase_file, min_passphrase_size);
--  }
--  md_ctx_final(&md, output);
--  md_ctx_cleanup(&md);
--  return md_kt_size(digest);
--}
--
- /*
-  * Write key to file, return number of random bits
-  * written.
+ m4_define([_PKG_TEXT], [Alternatively, you may set the environment variables $1[]_CFLAGS
+-and $1[]_LIBS to avoid the need to call pkg-config.
+-See the pkg-config man page for more details.])
++and $1[]_LIBS to avoid the need to call pkg-config.  The $1[]_MODVERSION provides version
++information.  See the pkg-config man page for more details.])
+ 
+ if test $pkg_failed = yes; then
+    	AC_MSG_RESULT([no])
+@@ -153,6 +155,7 @@ To get pkg-config, see <http://pkg-config.freedesktop.org/>.])[]dnl
+ else
+ 	$1[]_CFLAGS=$pkg_cv_[]$1[]_CFLAGS
+ 	$1[]_LIBS=$pkg_cv_[]$1[]_LIBS
++	$1[]_MODVERSION=$pkg_cv_[]$1[]_MODVERSION
+         AC_MSG_RESULT([yes])
+ 	$3
+ fi[]dnl
 -- 
-1.9.3 (Apple Git-50)
+1.8.3.1
 
 
