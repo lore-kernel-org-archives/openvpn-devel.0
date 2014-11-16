@@ -1,11 +1,11 @@
-Message-ID: <5468BEB7.5060300@...1856...>
-Date: Sun, 16 Nov 2014 16:11:51 +0100
-From: Steffan Karger <steffan@...1856...>
 MIME-Version: 1.0
-References: <1416148892-31540-1-git-send-email-arne@...1227...>
-In-Reply-To: <1416148892-31540-1-git-send-email-arne@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH] Remove possibility of using --tls-auth
- with non OpenVPN Static key files
+In-Reply-To: <1416148262-20978-1-git-send-email-openvpn.list@...1114...>
+References: <1416148262-20978-1-git-send-email-openvpn.list@...1114...>
+Date: Sun, 16 Nov 2014 11:30:03 -0500
+Message-ID: <CAJ0EP40K=APViz-h3keWhwj8JAf_K2-2NFZk9bhrzzgSpEzb1g@...278...>
+From: Mike Gilbert <floppym@...594...>
+Subject: Re: [Openvpn-devel] [PATCH] down-root plugin: Replaced system()
+ calls with execve()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,32 +14,30 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+To: David Sommerseth <openvpn.list@...1114...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
+On Sun, Nov 16, 2014 at 9:31 AM, David Sommerseth
+<openvpn.list@...1114...> wrote:
+> From: David Sommerseth <davids@...1347...>
+>
+> The system() call is prone to shell expansions and provides far more
+> environments variables to the executable run than what is usually
+> preferred.  By moving over to exevce() shell expansions are far more
+> difficult to achieve and only the OpenVPN provided environment
+> variables are available.
+>
+> This is a response to the patch submitted to openvpn-devel ML:
+> http://article.gmane.org/gmane.network.openvpn.devel/7919
+>
+>  v2 - Pulling it up again, fixing a few whitespace and spelling issues
+>
+> Signed-off-by: David Sommerseth <davids@...1347...>
 
-Feature-ACK for sure! Some minor comments though:
-
-On 16-11-14 15:41, Arne Schwabe wrote:
-> +Older version supported a freeform passphrase file. This is no longer
-> +support in newer version.
-
-version -> versions.
-
-Also, I think it would be nice to state the actual versions here (i.e.
-supported upto 2.3, dropped in 2.4+). This will help us later with
-deciding when to remove this statement altogether.
-
-> -	    msg (M_INFO,
-> -		 "Control Channel Authentication: using '%s' as a free-form passphrase file",
-> +	    msg (M_ERR,
-> +		 "Control Channel Authentication: File '%s' does not have OpenVPN Static Key format. "
-> +		 "Using free-form passphrase file is not supported anymore",
-
-Fine, but could we also add a big fat 'This stuff is DEPRECATED' to the
-message in the release/2.3 branch?
-
--Steffan
+Just a general comment on the error handling: Instead of printing
+generic error messages when syscalls fail, wouldn't it be better to
+look up the actual error description using strerror(3)? This would
+include calls to malloc, fork, execve, and possibly others.
 
