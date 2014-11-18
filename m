@@ -1,11 +1,9 @@
-Message-ID: <546BCC47.5010205@...68...>
-Date: Tue, 18 Nov 2014 23:46:31 +0100
-From: Matthias Andree <matthias.andree@...68...>
+From: "Abdullah Alshalan (Student)" <aalshala@...1837...>
+Date: Tue, 18 Nov 2014 22:47:15 +0000
+Message-ID: <3219A74B-936B-4A9B-BACF-2B61E77E425F@...2003...>
+Content-Language: en-US
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="BrTBrIdmLSPiDwJ480C4nDfGuL3BukFs3"
-Subject: [Openvpn-devel] AES-NI trouble, and patch - please review/comment
+Subject: [Openvpn-devel] Sending packets from VPN client to VPN server
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,45 +12,36 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
-Cc: =?UTF-8?B?RXJtYWwgTHXDp2k=?= <eri@...2002...>, Renato Botelho <garga@...1249...>, Chris Buechler <cmb@...2002...>
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---BrTBrIdmLSPiDwJ480C4nDfGuL3BukFs3
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-ID: <A33494D77A2ABE41AFFC8336C5BA2C83@...2004...>
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Greetings,
+Hi,
+I was wondering if anyone can help me understanding why my code isn't worki=
+ng. I'm working on  a project for fun modifying openvpn-2.2.2. What i need =
+help with is this:
+I have a packet cached in a buffer structure. And I want the VPN client to =
+send it to the VPN server so it can reach its intended destination.
 
-I received a bug report against the FreeBSD OpenVPN port, but before
-applying a patch (by Ermal Lu=C3=A7i) I do not currently oversee, I would
-like your input.
+What i was trying to do is something like this:
 
-https://redmine.pfsense.org/issues/3966			 original
-https://community.openvpn.net/openvpn/ticket/480	 copy
-https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=3D195004 downstream
+struct buffer *buf =3D cached_buffer;
+buffer_turnover(buf->data, &c->c2.buf, buf, buf);
+pocess_incoming_tun(c);
+process_outgoing_tun(c);
 
-Is this a safe fix, or will it break other features or requirements, in
-the lights of restarts after timeouts, and all that?
+Unfortunately, when I ran Wireshark on the virtual tun of the client I don'=
+t see that cached packet.
 
-Thanks.
+alternatively, I tried:
+struct buffer *buf =3D cached_buffer;
+write_tun(c->c1.tuntap, BPTR(buf), BLEN(buf));
 
-Cheers,
-Matthias
+in this case I can see the packet in Wireshark but it's never received at t=
+he VPN server side.=20
 
+Any insights or suggestion would be highly appreciated.
 
---BrTBrIdmLSPiDwJ480C4nDfGuL3BukFs3
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iEYEARECAAYFAlRrzEwACgkQvmGDOQUufZUKcACdHU2wmUHbJjpPAs8LSPxnO72r
-SDIAn3nnxwiF2q06ZD3Wc5IHslu4QP+T
-=zeZp
------END PGP SIGNATURE-----
-
---BrTBrIdmLSPiDwJ480C4nDfGuL3BukFs3--
-
+Thanks in advance,
+Ab
