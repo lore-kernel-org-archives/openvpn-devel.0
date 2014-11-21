@@ -1,9 +1,7 @@
-From: samuli@...515...
-Date: Fri, 21 Nov 2014 12:09:45 +0200
-Message-Id: <1416564585-14546-1-git-send-email-samuli@...515...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Fix to --shaper documentation on the
-	man-page
+From: Yegor Yefremov <yegorslists@...1030...>
+Date: Fri, 21 Nov 2014 20:40:35 +0100
+Message-Id: <1416598835-5269-1-git-send-email-yegorslists@...1030...>
+Subject: [Openvpn-devel] [PATCH] configure.ac: fix default behavior
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,32 +10,32 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-From: Samuli Sepp=C3=A4nen <samuli@...515...>
+Set enable_password_save to "yes", if the option is not given,
+as stated in the description.
 
-Trac: #413
-Trac-URL: https://community.openvpn.net/openvpn/ticket/413
-Signed-off-by: Samuli Sepp=C3=A4nen <samuli@...515...>
+Signed-off-by: Yegor Yefremov <yegorslists@...1030...>
 ---
- doc/openvpn.8 | 1 +
- 1 file changed, 1 insertion(+)
+ configure.ac | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/doc/openvpn.8 b/doc/openvpn.8
-index 8fca9aa..96ba555 100644
---- a/doc/openvpn.8
-+++ b/doc/openvpn.8
-@@ -1437,6 +1437,7 @@ Currently defaults to 100.
- Limit bandwidth of outgoing tunnel data to
- .B n
- bytes per second on the TCP/UDP port.
-+Note that this will only work if mode is set to p2p.
- If you want to limit the bandwidth
- in both directions, use this option on both peers.
-=20
---=20
-1.9.1
+diff --git a/configure.ac b/configure.ac
+index 608ab6d..9dcd2ab 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -166,7 +166,7 @@ AC_ARG_ENABLE(
+ 	[password-save],
+ 	[AS_HELP_STRING([--enable-password-save], [allow --askpass and --auth-user-pass passwords to be read from a file @<:@default=yes@:>@])],
+ 	,
+-	[enable_password_save="no"]
++	[enable_password_save="yes"]
+ )
+ 
+ AC_ARG_ENABLE(
+-- 
+1.8.3.2
 
 
