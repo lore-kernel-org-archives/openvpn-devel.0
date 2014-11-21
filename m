@@ -1,9 +1,9 @@
-From: "Abdullah Alshalan (Student)" <aalshala@...1837...>
-Date: Tue, 18 Nov 2014 22:47:15 +0000
-Message-ID: <3219A74B-936B-4A9B-BACF-2B61E77E425F@...2003...>
-Content-Language: en-US
+Message-ID: <546EFF1B.3090405@...515...>
+Date: Fri, 21 Nov 2014 11:00:11 +0200
+From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] Sending packets from VPN client to VPN server
+Subject: [Openvpn-devel] Topics for next Monday's (24th Nov 2014) community
+	meeting
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,36 +12,45 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="iso-8859-15"
 Content-Transfer-Encoding: quoted-printable
-Content-ID: <A33494D77A2ABE41AFFC8336C5BA2C83@...2004...>
 To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
 Hi,
-I was wondering if anyone can help me understanding why my code isn't worki=
-ng. I'm working on  a project for fun modifying openvpn-2.2.2. What i need =
-help with is this:
-I have a packet cached in a buffer structure. And I want the VPN client to =
-send it to the VPN server so it can reach its intended destination.
 
-What i was trying to do is something like this:
+We're having an IRC meeting on Monday, starting at 20:00 CET (19:00
+UTC) on #openvpn-devel@...1422... Current topic list along with
+basic information is here:
 
-struct buffer *buf =3D cached_buffer;
-buffer_turnover(buf->data, &c->c2.buf, buf, buf);
-pocess_incoming_tun(c);
-process_outgoing_tun(c);
+<https://community.openvpn.net/openvpn/wiki/Topics-2014-11-24>
 
-Unfortunately, when I ran Wireshark on the virtual tun of the client I don'=
-t see that cached packet.
+If you have any other things you'd like to bring up, respond to this
+mail, send me mail privately or add them to the list yourself.
 
-alternatively, I tried:
-struct buffer *buf =3D cached_buffer;
-write_tun(c->c1.tuntap, BPTR(buf), BLEN(buf));
+In case you can't attend the meeting, please feel free to make comments
+on the topics by responding to this email or to the summary email sent
+after the meeting. Whenever possible, we'll also respond to existing,
+related email threads.
 
-in this case I can see the packet in Wireshark but it's never received at t=
-he VPN server side.=20
+NOTE: It's required to use a registered Freenode IRC nickname to join
+#openvpn-devel - look here for details:
 
-Any insights or suggestion would be highly appreciated.
+<https://community.openvpn.net/openvpn/wiki/GettingHelp#DeveloperIRCchannel>
 
-Thanks in advance,
-Ab
+- --=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iEYEARECAAYFAlRu/xoACgkQwp2X7RmNIqPxigCeJgcFSlJaY2FG9MtCuiajVA2i
+t5QAn1MlKwrqF+9NwiuPFDEDMbgY5qGh
+=3DcnkV
+-----END PGP SIGNATURE-----
+
