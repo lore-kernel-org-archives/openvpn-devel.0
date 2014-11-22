@@ -1,12 +1,16 @@
-Message-ID: <547069A9.6000909@...1227...>
-Date: Sat, 22 Nov 2014 11:47:05 +0100
-From: Arne Schwabe <arne@...1227...>
-MIME-Version: 1.0
-References: <1416598835-5269-1-git-send-email-yegorslists@...1030...>	<CAGm1_kucw-c5wgw3e_BjRros=CyaEUQ-=o2aLSvDr=31oFuKCg@...278...>	<54705AA4.2010105@...1856...>
+Date: Sat, 22 Nov 2014 12:57:28 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20141122115728.GB17158@...1296...>
+References: <1416598835-5269-1-git-send-email-yegorslists@...1030...>
+	<CAGm1_kucw-c5wgw3e_BjRros=CyaEUQ-=o2aLSvDr=31oFuKCg@...278...>
+	<54705AA4.2010105@...1856...>
 	<20141122102138.GA17158@...1296...>
-In-Reply-To: <20141122102138.GA17158@...1296...>
-Content-Type: multipart/alternative;
-	boundary="------------000702090107030402080208"
+	<547069A9.8020306@...1227...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="xkXJwpr35CY/Lc3I"
+Content-Disposition: inline
+In-Reply-To: <547069A9.8020306@...1227...>
 Subject: Re: [Openvpn-devel] [PATCH] configure.ac: fix default behavior
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -16,69 +20,44 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>, Steffan Karger <steffan@...1856...>
+To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-This is a multi-part message in MIME format.
---------------000702090107030402080208
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
+--xkXJwpr35CY/Lc3I
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
+Hiya,
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
- 
-On 22.11.2014 11:21, Gert Doering wrote:
+On Sat, Nov 22, 2014 at 11:47:05AM +0100, Arne Schwabe wrote:
+> Almost anybody always turns this feature on, at least all distribution
+> have it on.
 
-Almost anybody always turns this feature on, at least all distribution
-have it on.
+Which is indeed a strong argument for removing the conditional... maybe
+quickly discuss this ("anyone strongly opposed?") at the next meeting?
 
-Arne
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--xkXJwpr35CY/Lc3I
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (MingW32)
- 
-iEYEARECAAYFAlRwaacACgkQe8+cMNS4zReyrwCgq1gUP6AYs99pGV3M64e6ws/u
-cngAnAyl0sR/tExltgYbzsHRbXW3exe0
-=Sr9B
+Version: GnuPG v1
+
+iQCVAwUBVHB6J6kuBuNlUUl1AQKmvQQAjoy968bZa6kERTmCgJUWTBIwwyt+hSRW
+wQeLDd8c/+Bb+wjpXTT/i9QmREnIQh8p41SY2Ul5v2es3AncLAOnMMwawpLV4t/g
+hcyyCegTOl0QTtE1jwVtlWHwq/8/X8AlTYCWGjNWMDoBkv9N7u7wLMHxqXOsq6sg
+LfhRRJi2Zu0=
+=CB7T
 -----END PGP SIGNATURE-----
 
-
---------------000702090107030402080208
-Content-Type: text/html; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
-
-<html>
-  <head>
-    <meta content=3D"text/html; charset=3Dwindows-1252"
-      http-equiv=3D"Content-Type">
-  </head>
-  <body bgcolor=3D"#FFFFFF" text=3D"#000000">
-    <br>
-    -----BEGIN PGP SIGNED MESSAGE----- <br>
-    Hash: SHA1 <br>
-    =A0<br>
-    On 22.11.2014 11:21, Gert Doering wrote:<br>
-    <br>
-    Almost anybody always turns this feature on, at least all
-    distribution have it on.<br>
-    <br>
-    Arne<br>
-    -----BEGIN PGP SIGNATURE-----
-<br>
-    Version: GnuPG v2.0.22 (MingW32)
-<br>
-    =A0<br>
-    iEYEARECAAYFAlRwaacACgkQe8+cMNS4zReyrwCgq1gUP6AYs99pGV3M64e6ws/u
-<br>
-    cngAnAyl0sR/tExltgYbzsHRbXW3exe0
-<br>
-    =3DSr9B
-<br>
-    -----END PGP SIGNATURE-----
-<br>
-    <br>
-  </body>
-</html>
-
---------------000702090107030402080208--
+--xkXJwpr35CY/Lc3I--
 
