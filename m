@@ -1,4 +1,4 @@
-Message-ID: <547069A9.8020306@...1227...>
+Message-ID: <547069A9.6000909@...1227...>
 Date: Sat, 22 Nov 2014 11:47:05 +0100
 From: Arne Schwabe <arne@...1227...>
 MIME-Version: 1.0
@@ -6,7 +6,7 @@ References: <1416598835-5269-1-git-send-email-yegorslists@...1030...>	<CAGm1_kuc
 	<20141122102138.GA17158@...1296...>
 In-Reply-To: <20141122102138.GA17158@...1296...>
 Content-Type: multipart/alternative;
-	boundary="------------020800000702030500010708"
+	boundary="------------000702090107030402080208"
 Subject: Re: [Openvpn-devel] [PATCH] configure.ac: fix default behavior
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -20,7 +20,7 @@ To: Gert Doering <gert@...1296...>, Steffan Karger <steffan@...1856...>
 Cc: openvpn-devel@lists.sourceforge.net
 
 This is a multi-part message in MIME format.
---------------020800000702030500010708
+--------------000702090107030402080208
 Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
 
@@ -29,35 +29,7 @@ Content-Transfer-Encoding: 7bit
 Hash: SHA1
  
 On 22.11.2014 11:21, Gert Doering wrote:
-> Hi,
->
-> On Sat, Nov 22, 2014 at 10:43:00AM +0100, Steffan Karger wrote:
->> On 21-11-14 20:43, Yegor Yefremov wrote:
->>> This patch is a result of our IRC discussion with Arne. Alternative
->>> approach were to always build with password-save functionality without
->>> configure option at all.
->>
->> Thanks for the patch. But this explanation doesn't help me much in
->> understanding why this feature needs to be enabled by default. Could you
->> please explain?
->>
->> (My first thought would be that locally storing a password defeats the
->> purpose of the password, so it is a good thing this is disabled by
->> default. But good arguments might change my view.)
->
-> My thoughts are along the line - yes, there seems to be a discrepancy
-> between what configure claims to be the default and "the real default",
-> but should we change the actual default here, or the configure help
-> message?
->
-> Given the previous discussions, there seems to be belief that this is
-> a "dangerous feature" that should be "turned off by default" - so I tend
-> to, for the sake of consistency, not change the default but change the
-> configure help output instead.
->
-> ... which makes this a feature-NAK.
->
->
+
 Almost anybody always turns this feature on, at least all distribution
 have it on.
 
@@ -65,13 +37,13 @@ Arne
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (MingW32)
  
-iEYEARECAAYFAlRwaakACgkQe8+cMNS4zRfeUACdG+bFWRPy0WuekfdRSxzZAtJ6
-DhQAoOit70W8Z/M72vCqkOq4bsLJPfVZ
-=uCYv
+iEYEARECAAYFAlRwaacACgkQe8+cMNS4zReyrwCgq1gUP6AYs99pGV3M64e6ws/u
+cngAnAyl0sR/tExltgYbzsHRbXW3exe0
+=Sr9B
 -----END PGP SIGNATURE-----
 
 
---------------020800000702030500010708
+--------------000702090107030402080208
 Content-Type: text/html; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
 
@@ -86,48 +58,7 @@ Content-Transfer-Encoding: quoted-printable
     Hash: SHA1 <br>
     =A0<br>
     On 22.11.2014 11:21, Gert Doering wrote:<br>
-    <span style=3D"white-space: pre;">&gt; Hi,<br>
-      &gt;<br>
-      &gt; On Sat, Nov 22, 2014 at 10:43:00AM +0100, Steffan Karger
-      wrote:<br>
-      &gt;&gt; On 21-11-14 20:43, Yegor Yefremov wrote:<br>
-      &gt;&gt;&gt; This patch is a result of our IRC discussion with
-      Arne. Alternative<br>
-      &gt;&gt;&gt; approach were to always build with password-save
-      functionality without<br>
-      &gt;&gt;&gt; configure option at all.<br>
-      &gt;&gt;<br>
-      &gt;&gt; Thanks for the patch. But this explanation doesn't help
-      me much in<br>
-      &gt;&gt; understanding why this feature needs to be enabled by
-      default. Could you<br>
-      &gt;&gt; please explain?<br>
-      &gt;&gt;<br>
-      &gt;&gt; (My first thought would be that locally storing a
-      password defeats the<br>
-      &gt;&gt; purpose of the password, so it is a good thing this is
-      disabled by<br>
-      &gt;&gt; default. But good arguments might change my view.)<br>
-      &gt;<br>
-      &gt; My thoughts are along the line - yes, there seems to be a
-      discrepancy<br>
-      &gt; between what configure claims to be the default and "the real
-      default",<br>
-      &gt; but should we change the actual default here, or the
-      configure help<br>
-      &gt; message?<br>
-      &gt;<br>
-      &gt; Given the previous discussions, there seems to be belief that
-      this is <br>
-      &gt; a "dangerous feature" that should be "turned off by default"
-      - so I tend<br>
-      &gt; to, for the sake of consistency, not change the default but
-      change the<br>
-      &gt; configure help output instead.<br>
-      &gt;<br>
-      &gt; ... which makes this a feature-NAK.<br>
-      &gt;<br>
-      &gt;</span><br>
+    <br>
     Almost anybody always turns this feature on, at least all
     distribution have it on.<br>
     <br>
@@ -137,11 +68,11 @@ Content-Transfer-Encoding: quoted-printable
     Version: GnuPG v2.0.22 (MingW32)
 <br>
     =A0<br>
-    iEYEARECAAYFAlRwaakACgkQe8+cMNS4zRfeUACdG+bFWRPy0WuekfdRSxzZAtJ6
+    iEYEARECAAYFAlRwaacACgkQe8+cMNS4zReyrwCgq1gUP6AYs99pGV3M64e6ws/u
 <br>
-    DhQAoOit70W8Z/M72vCqkOq4bsLJPfVZ
+    cngAnAyl0sR/tExltgYbzsHRbXW3exe0
 <br>
-    =3DuCYv
+    =3DSr9B
 <br>
     -----END PGP SIGNATURE-----
 <br>
@@ -149,5 +80,5 @@ Content-Transfer-Encoding: quoted-printable
   </body>
 </html>
 
---------------020800000702030500010708--
+--------------000702090107030402080208--
 
