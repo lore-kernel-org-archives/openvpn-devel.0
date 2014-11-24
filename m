@@ -1,11 +1,10 @@
-Message-ID: <54737773.2050009@...68...>
-Date: Mon, 24 Nov 2014 19:22:43 +0100
-From: Matthias Andree <matthias.andree@...68...>
-MIME-Version: 1.0
-References: <1416598835-5269-1-git-send-email-yegorslists@...1030...>	<CAGm1_kucw-c5wgw3e_BjRros=CyaEUQ-=o2aLSvDr=31oFuKCg@...278...>
-	<54705AA4.2010105@...1856...>
-In-Reply-To: <54705AA4.2010105@...1856...>
-Subject: Re: [Openvpn-devel] [PATCH] configure.ac: fix default behavior
+Date: Mon, 24 Nov 2014 20:58:23 +0100 (CET)
+Message-Id: <201411241958.sAOJwNTc006213@...1295...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <1415889817-28049-1-git-send-email-openvpn.list@...1114...>
+References: <1415889817-28049-1-git-send-email-openvpn.list@...1114...>
+Subject: [Openvpn-devel] [PATCH applied] Re: systemd: Reworked the systemd
+	unit file to handle server and client configs better
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,26 +13,31 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: David Sommerseth <davids@...1347...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Am 22.11.2014 um 10:43 schrieb Steffan Karger:
-> Hi Yegor,
-> 
-> On 21-11-14 20:43, Yegor Yefremov wrote:
->> This patch is a result of our IRC discussion with Arne. Alternative
->> approach were to always build with password-save functionality without
->> configure option at all.
-> 
-> Thanks for the patch. But this explanation doesn't help me much in
-> understanding why this feature needs to be enabled by default. Could you
-> please explain?
+ACK. Your patch has been applied to the master and release/2.3 branch.
 
-You can't stop the user doing stupid things, so why bother?
-Print a warning instead, or if the password is read from auto-mounted
-USB keys during boot-up, that might be considered safe enough...
+commit 3341a98c2852d1d0c1eafdc70a3bdb218ec29049 (master)
+commit 28bd79ac980488dbfce2e8136287e38c6f35a043 (release/2.3)
 
-ACK from me.
+Author: David Sommerseth
+Date:   Thu Nov 13 15:43:37 2014 +0100
+
+     systemd: Reworked the systemd unit file to handle server and client configs better
+
+     Signed-off-by: David Sommerseth <davids@...1347...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1415889817-28049-1-git-send-email-openvpn.list@...1114...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/9222
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
