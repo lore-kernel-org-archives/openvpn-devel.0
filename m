@@ -1,8 +1,11 @@
-From: David Sommerseth <openvpn.list@...1114...>
-Date: Mon, 24 Nov 2014 19:09:38 +0100
-Message-Id: <1416852578-7581-1-git-send-email-openvpn.list@...1114...>
-Subject: [Openvpn-devel] [PATCH] autotools: Fix wrong ./configure help
-	screen default values
+Message-ID: <54737773.2050009@...68...>
+Date: Mon, 24 Nov 2014 19:22:43 +0100
+From: Matthias Andree <matthias.andree@...68...>
+MIME-Version: 1.0
+References: <1416598835-5269-1-git-send-email-yegorslists@...1030...>	<CAGm1_kucw-c5wgw3e_BjRros=CyaEUQ-=o2aLSvDr=31oFuKCg@...278...>
+	<54705AA4.2010105@...1856...>
+In-Reply-To: <54705AA4.2010105@...1856...>
+Subject: Re: [Openvpn-devel] [PATCH] configure.ac: fix default behavior
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,55 +14,26 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-From: David Sommerseth <davids@...1347...>
+Am 22.11.2014 um 10:43 schrieb Steffan Karger:
+> Hi Yegor,
+> 
+> On 21-11-14 20:43, Yegor Yefremov wrote:
+>> This patch is a result of our IRC discussion with Arne. Alternative
+>> approach were to always build with password-save functionality without
+>> configure option at all.
+> 
+> Thanks for the patch. But this explanation doesn't help me much in
+> understanding why this feature needs to be enabled by default. Could you
+> please explain?
 
-enable_crypto_ofb_cfb is "yes" by default, so the --help screen
-should show --disable-ofb-cfb and not --enable-ofb-cfb.
+You can't stop the user doing stupid things, so why bother?
+Print a warning instead, or if the password is read from auto-mounted
+USB keys during boot-up, that might be considered safe enough...
 
-enable_small and enable_password_save are both "no" by default, so
-the --help screen should state "default: no".  Now it says "yes" as
-default, but is really disabled in the reality.
-
-Signed-off-by: David Sommerseth <davids@...1347...>
----
- configure.ac | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/configure.ac b/configure.ac
-index 608ab6d..ddaa2b2 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -73,7 +73,7 @@ AC_ARG_ENABLE(
- 
- AC_ARG_ENABLE(
- 	[ofb-cfb],
--	[AS_HELP_STRING([--enable-ofb-cfb], [enable support for OFB and CFB cipher modes @<:@default=yes@:>@])],
-+	[AS_HELP_STRING([--disable-ofb-cfb], [disable support for OFB and CFB cipher modes @<:@default=yes@:>@])],
- 	,
- 	[enable_crypto_ofb_cfb="yes"]
- )
-@@ -157,14 +157,14 @@ AC_ARG_ENABLE(
- 
- AC_ARG_ENABLE(
- 	[small],
--	[AS_HELP_STRING([--enable-small], [enable smaller executable size (disable OCC, usage message, and verb 4 parm list) @<:@default=yes@:>@])],
-+	[AS_HELP_STRING([--enable-small], [enable smaller executable size (disable OCC, usage message, and verb 4 parm list) @<:@default=no@:>@])],
- 	,
- 	[enable_small="no"]
- )
- 
- AC_ARG_ENABLE(
- 	[password-save],
--	[AS_HELP_STRING([--enable-password-save], [allow --askpass and --auth-user-pass passwords to be read from a file @<:@default=yes@:>@])],
-+	[AS_HELP_STRING([--enable-password-save], [allow --askpass and --auth-user-pass passwords to be read from a file @<:@default=no@:>@])],
- 	,
- 	[enable_password_save="no"]
- )
--- 
-1.8.3.1
+ACK from me.
 
 
