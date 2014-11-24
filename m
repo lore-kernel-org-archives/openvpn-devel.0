@@ -1,11 +1,14 @@
-Message-ID: <54724842.2010401@...1856...>
-Date: Sun, 23 Nov 2014 21:49:06 +0100
-From: Steffan Karger <steffan@...1856...>
+Message-ID: <5473551D.3070403@...1114...>
+Date: Mon, 24 Nov 2014 16:56:13 +0100
+From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <1416755831-21250-1-git-send-email-lstipakov@...277...>
-	<1416770250-92680-1-git-send-email-gert@...1296...>
-In-Reply-To: <1416770250-92680-1-git-send-email-gert@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH v2] Add client-only support for peer-id.
+References: <1416598835-5269-1-git-send-email-yegorslists@...1030...>	<CAGm1_kucw-c5wgw3e_BjRros=CyaEUQ-=o2aLSvDr=31oFuKCg@...278...>	<54705AA4.2010105@...1856...>
+	<20141122102138.GA17158@...1296...>	<547069A9.8020306@...1227...>
+	<20141122115728.GB17158@...1296...>
+	<CAGm1_ktj1i_DfuXwBYrKX1qk-sZHpxV8jR6Fbr4TnSJgGdFNvA@...278...>
+In-Reply-To: <CAGm1_ktj1i_DfuXwBYrKX1qk-sZHpxV8jR6Fbr4TnSJgGdFNvA@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] configure.ac: fix default behavior
+Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,234 +19,76 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+To: Yegor Yefremov <yegorslists@...1030...>, Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-ACK. Code is similar to the full-blown patch for master, and float works
-nicely.
+On 23/11/14 20:49, Yegor Yefremov wrote:
+> On Sat, Nov 22, 2014 at 12:57 PM, Gert Doering <gert@...1296...> wrote:
+>> Hiya,
+>>
+>> On Sat, Nov 22, 2014 at 11:47:05AM +0100, Arne Schwabe wrote:
+>>> Almost anybody always turns this feature on, at least all distribution
+>>> have it on.
+>>
+>> Which is indeed a strong argument for removing the conditional... maybe
+>> quickly discuss this ("anyone strongly opposed?") at the next meeting?
+> 
+> Btw another mismatch:
+> 
+> AC_ARG_ENABLE(
+>         [small],
+>         [AS_HELP_STRING([--enable-small], [enable smaller executable
+> size (disable OCC, usage message, and verb 4 parm list)
+> @<:@default=yes@:>@])],
+>         ,
+>         [enable_small="no"]
+> )
 
--Steffan
+That some features are disabled by default is not related to any kind of
+"mismatch".  First things first.
 
-On 23-11-14 20:17, Gert Doering wrote:
-> This is a reduced version of the peer-id patch from Lev Stipakov
-> implementing only the client side bits - send IV_PROTO=2, accept
-> "peer-id <n>" as pushed option, support P_DATA_V2 packets.
-> 
-> v2: remove addition of "struct tls_multi;" to options.h, not needed
-> 
-> Signed-off-by: Gert Doering <gert@...1296...>
-> ---
->  src/openvpn/init.c       | 12 +++++++++++-
->  src/openvpn/options.c    |  6 ++++++
->  src/openvpn/options.h    |  4 ++++
->  src/openvpn/ssl.c        | 40 +++++++++++++++++++++++++++++++++++-----
->  src/openvpn/ssl.h        |  3 ++-
->  src/openvpn/ssl_common.h |  4 ++++
->  6 files changed, 62 insertions(+), 7 deletions(-)
-> 
-> diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-> index 18f506c..4cfa132 100644
-> --- a/src/openvpn/init.c
-> +++ b/src/openvpn/init.c
-> @@ -1711,7 +1711,8 @@ pull_permission_mask (const struct context *c)
->      | OPT_P_MESSAGES
->      | OPT_P_EXPLICIT_NOTIFY
->      | OPT_P_ECHO
-> -    | OPT_P_PULL_MODE;
-> +    | OPT_P_PULL_MODE
-> +    | OPT_P_PEER_ID;
->  
->    if (!c->options.route_nopull)
->      flags |= (OPT_P_ROUTE | OPT_P_IPWIN32);
-> @@ -1790,6 +1791,15 @@ do_deferred_options (struct context *c, const unsigned int found)
->      msg (D_PUSH, "OPTIONS IMPORT: --ip-win32 and/or --dhcp-option options modified");
->    if (found & OPT_P_SETENV)
->      msg (D_PUSH, "OPTIONS IMPORT: environment modified");
-> +
-> +#ifdef ENABLE_SSL
-> +  if (found & OPT_P_PEER_ID)
-> +    {
-> +      msg (D_PUSH, "OPTIONS IMPORT: peer-id set");
-> +      c->c2.tls_multi->use_peer_id = true;
-> +      c->c2.tls_multi->peer_id = c->options.peer_id;
-> +    }
-> +#endif
->  }
->  
->  /*
-> diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-> index d91bb63..5bddca4 100644
-> --- a/src/openvpn/options.c
-> +++ b/src/openvpn/options.c
-> @@ -6996,6 +6996,12 @@ add_option (struct options *options,
->        options->persist_mode = 1;
->      }
->  #endif
-> +  else if (streq (p[0], "peer-id"))
-> +    {
-> +      VERIFY_PERMISSION (OPT_P_PEER_ID);
-> +      options->use_peer_id = true;
-> +      options->peer_id = atoi(p[1]);
-> +    }
->    else
->      {
->        int i;
-> diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-> index 2c18838..af9a47f 100644
-> --- a/src/openvpn/options.h
-> +++ b/src/openvpn/options.h
-> @@ -594,6 +594,9 @@ struct options
->    bool show_net_up;
->    int route_method;
->  #endif
-> +
-> +  bool use_peer_id;
-> +  uint32_t peer_id;
->  };
->  
->  #define streq(x, y) (!strcmp((x), (y)))
-> @@ -629,6 +632,7 @@ struct options
->  #define OPT_P_SOCKBUF         (1<<25)
->  #define OPT_P_SOCKFLAGS       (1<<26)
->  #define OPT_P_CONNECTION      (1<<27)
-> +#define OPT_P_PEER_ID         (1<<28)
->  
->  #define OPT_P_DEFAULT   (~(OPT_P_INSTANCE|OPT_P_PULL_MODE))
->  
-> diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-> index 281176e..2373582 100644
-> --- a/src/openvpn/ssl.c
-> +++ b/src/openvpn/ssl.c
-> @@ -627,6 +627,8 @@ packet_opcode_name (int op)
->        return "P_ACK_V1";
->      case P_DATA_V1:
->        return "P_DATA_V1";
-> +    case P_DATA_V2:
-> +      return "P_DATA_V2";
->      default:
->        return "P_???";
->      }
-> @@ -1053,6 +1055,9 @@ tls_multi_init (struct tls_options *tls_options)
->    ret->key_scan[1] = &ret->session[TM_ACTIVE].key[KS_LAME_DUCK];
->    ret->key_scan[2] = &ret->session[TM_LAME_DUCK].key[KS_LAME_DUCK];
->  
-> +  /* By default not use P_DATA_V2 */
-> +  ret->use_peer_id = false;
-> +
->    return ret;
->  }
->  
-> @@ -1828,6 +1833,8 @@ push_peer_info(struct buffer *buf, struct tls_session *session)
->  #ifdef ENABLE_LZO_STUB
->        buf_printf (&out, "IV_LZO_STUB=1\n");
->  #endif
-> +      /* support for P_DATA_V2 */
-> +      buf_printf(&out, "IV_PROTO=2\n");
->  
->        if (session->opt->push_peer_info_detail >= 2)
->          {
-> @@ -2777,8 +2784,9 @@ tls_pre_decrypt (struct tls_multi *multi,
->  	key_id = c & P_KEY_ID_MASK;
->        }
->  
-> -      if (op == P_DATA_V1)
-> -	{			/* data channel packet */
-> +      if ((op == P_DATA_V1) || (op == P_DATA_V2))
-> +	{
-> +	  /* data channel packet */
->  	  for (i = 0; i < KEY_SCAN_SIZE; ++i)
->  	    {
->  	      struct key_state *ks = multi->key_scan[i];
-> @@ -2810,7 +2818,19 @@ tls_pre_decrypt (struct tls_multi *multi,
->  		  opt->pid_persist = NULL;
->  		  opt->flags &= multi->opt.crypto_flags_and;
->  		  opt->flags |= multi->opt.crypto_flags_or;
-> +
->  		  ASSERT (buf_advance (buf, 1));
-> +		  if (op == P_DATA_V2)
-> +		    {
-> +		      if (buf->len < 4)
-> +			{
-> +			  msg (D_TLS_ERRORS, "Protocol error: received P_DATA_V2 from %s but length is < 4",
-> +				print_link_socket_actual (from, &gc));
-> +			  goto error;
-> +			}
-> +		      ASSERT (buf_advance (buf, 3));
-> +		    }
-> +
->  		  ++ks->n_packets;
->  		  ks->n_bytes += buf->len;
->  		  dmsg (D_TLS_KEYSELECT,
-> @@ -3375,14 +3395,24 @@ tls_post_encrypt (struct tls_multi *multi, struct buffer *buf)
->  {
->    struct key_state *ks;
->    uint8_t *op;
-> +  uint32_t peer;
->  
->    ks = multi->save_ks;
->    multi->save_ks = NULL;
->    if (buf->len > 0)
->      {
->        ASSERT (ks);
-> -      ASSERT (op = buf_prepend (buf, 1));
-> -      *op = (P_DATA_V1 << P_OPCODE_SHIFT) | ks->key_id;
-> +
-> +      if (!multi->opt.server && multi->use_peer_id)
-> +	{
-> +	  peer = htonl(((P_DATA_V2 << P_OPCODE_SHIFT) | ks->key_id) << 24 | (multi->peer_id & 0xFFFFFF));
-> +	  ASSERT (buf_write_prepend (buf, &peer, 4));
-> +	}
-> +      else
-> +	{
-> +	  ASSERT (op = buf_prepend (buf, 1));
-> +	  *op = (P_DATA_V1 << P_OPCODE_SHIFT) | ks->key_id;
-> +	}
->        ++ks->n_packets;
->        ks->n_bytes += buf->len;
->      }
-> @@ -3489,7 +3519,7 @@ protocol_dump (struct buffer *buffer, unsigned int flags, struct gc_arena *gc)
->    key_id = c & P_KEY_ID_MASK;
->    buf_printf (&out, "%s kid=%d", packet_opcode_name (op), key_id);
->  
-> -  if (op == P_DATA_V1)
-> +  if ((op == P_DATA_V1) || (op == P_DATA_V2))
->      goto print_data;
->  
->    /*
-> diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
-> index cd7cae2..6a14768 100644
-> --- a/src/openvpn/ssl.h
-> +++ b/src/openvpn/ssl.h
-> @@ -61,6 +61,7 @@
->  #define P_CONTROL_V1                   4     /* control channel packet (usually TLS ciphertext) */
->  #define P_ACK_V1                       5     /* acknowledgement for packets received */
->  #define P_DATA_V1                      6     /* data channel packet */
-> +#define P_DATA_V2                      9     /* data channel packet with peer-id */
->  
->  /* indicates key_method >= 2 */
->  #define P_CONTROL_HARD_RESET_CLIENT_V2 7     /* initial key from client, forget previous state */
-> @@ -68,7 +69,7 @@
->  
->  /* define the range of legal opcodes */
->  #define P_FIRST_OPCODE                 1
-> -#define P_LAST_OPCODE                  8
-> +#define P_LAST_OPCODE                  9
->  
->  /* Should we aggregate TLS
->   * acknowledgements, and tack them onto
-> diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
-> index ba10459..224df9d 100644
-> --- a/src/openvpn/ssl_common.h
-> +++ b/src/openvpn/ssl_common.h
-> @@ -490,6 +490,10 @@ struct tls_multi
->    time_t tas_last;
->  #endif
->  
-> +  /* For P_DATA_V2 */
-> +  uint32_t peer_id;
-> +  bool use_peer_id;
-> +
->    /*
->     * Our session objects.
->     */
-> 
+Regarding --enable-password-save, I don't see any reasons why we want to
+change that.  I don't buy the argument that "all distros do it", because
+they already have added --enable-password-save in their build tools.  In
+fact, for those who depend on this being disabled by default may get a
+bigger surprise if we change this default.  And it's been off by default
+since the beginning of OpenVPN, iirc, so this may have a bigger impact
+than what we can foresee right now.  Changing defaults are tricky,
+especially when it comes to compile time options.
+
+The only place this is enabled by default is on our Windows binary
+builds, as it would be generally too much to ask Windows users to
+rebuild OpenVPN themselves with this feature enabled + we had several
+queries about this feature from Windows users.  For non-Windows
+environments, people are usually far more capable of building OpenVPN
+themselves and if not, they can report this to the package maintainers
+for their distros and they can decide whether this is a good idea or not
+for their distro.
+
+So I'm saying NACK on --enable-password-save unless I get a really good
+argument why we need to change this default.
+
+
+When it comes to --enable-small.  I encourage you to try that on your
+own box first and to see what happens with --help and the log files.
+Further, go through the source code and look for #ifdef ENABLE_SMALL,
+and you might get yourself a big surprise, especially when playing with
+the --verb option in the config.
+
+The --enable-small feature is here to reduce the size of the openvpn
+binary by reducing information generally not found useful on embedded
+systems - due to people configuring these systems generally have a
+better understand of what they are doing and can do their testing on
+systems without --enable-small.  For "normal" users, it is generally far
+better to have the "fatter" version of OpenVPN.
+
+
+Please don't fall into the trap thinking that "everything should be
+enabled by default".  It's really not that simple.
+
+
+--
+kind regards,
+
+David Sommerseth
 
