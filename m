@@ -1,15 +1,13 @@
-Date: Mon, 1 Dec 2014 09:10:04 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20141201081003.GI17158@...1296...>
-References: <1417366536-27057-1-git-send-email-steffan@...1856...>
-	<CAAA5faGYtBcupVxqNznNomMiwstEJm1BVskiccVSX=RWsD4GbA@...278...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="jo46wx5DSA4a/gWG"
-Content-Disposition: inline
-In-Reply-To: <CAAA5faGYtBcupVxqNznNomMiwstEJm1BVskiccVSX=RWsD4GbA@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] Remove ENABLE_SSL define (and
-	--disable-ssl configure option)
+Message-ID: <547CA65E.50807@...1114...>
+Date: Mon, 01 Dec 2014 18:33:18 +0100
+From: David Sommerseth <openvpn.list@...1114...>
+MIME-Version: 1.0
+References: <1416852578-7581-1-git-send-email-openvpn.list@...1114...>
+	<201411301648.sAUGmn3S007220@...1295...>
+In-Reply-To: <201411301648.sAUGmn3S007220@...1295...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Re: autotools: Fix wrong
+ ./configure help screen default values
+Reply-To: openvpn-users@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,47 +16,35 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Reinoud Koornstra <reinoudkoornstra@...277...>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+To: Gert Doering <gert@...1296...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---jo46wx5DSA4a/gWG
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-Hi,
 
-On Sun, Nov 30, 2014 at 04:08:12PM -0700, Reinoud Koornstra wrote:
-> Will this change be in 2.3.6 that'll be released tomorrow?
+On 30/11/14 17:48, Gert Doering wrote:
+> 
+> As a matter of discussion, I wonder why we have "default=yes" and
+> "no" in our --help text, and not "default=enabled"/"disabled",
+> which might be slightly less confusing... any autoconf style guides
+> here?
 
-No.  2.3 series will get bugfixes, and "small" new features that are
-considered important for long-term stability.
+Do we need the "default=" stuff at all?  Isn't the default state quite
+obvious when you see --enable-feature-abc or --disable-feature-xyz?
 
-This patch is primarily refactoring to ease code maintenance and testing,
-so it goes into 2.4
 
-gert
+- --
+kind regards,
 
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---jo46wx5DSA4a/gWG
-Content-Type: application/pgp-signature
-Content-Disposition: inline
-
+David Sommerseth
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1
 
-iQCVAwUBVHwiW6kuBuNlUUl1AQINHwQAhxVQYvZYGqOeV3Il8aAhOsvPayTWhO9J
-1vdfqSdpr25fI/XuJnSsGLEfR4HiqzJrLPCrEbTJNzKtFVaCtry8BA0VVrHxoH04
-LZJ5XjcUHHi9O4u2g/ew7tnIfaKm9of6dWiOJOCZUS5pR+gYBkgIc9tx+8nrcqXw
-6qZGPGqrvzU=
-=6DQq
+iEYEARECAAYFAlR8plsACgkQDC186MBRfrqzFACbBBY7j7x/FG9GAkij7IKje5KS
+sREAoJygMPmlnZvqIXgchrnY8oA3gHZV
+=jvC0
 -----END PGP SIGNATURE-----
-
---jo46wx5DSA4a/gWG--
 
