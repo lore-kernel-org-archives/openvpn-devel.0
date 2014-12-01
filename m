@@ -1,12 +1,9 @@
-Message-ID: <547CABE3.9000109@...1856...>
-Date: Mon, 01 Dec 2014 18:56:51 +0100
-From: Steffan Karger <steffan@...1856...>
+Message-ID: <547CB1A4.1070708@...515...>
+Date: Mon, 01 Dec 2014 20:21:24 +0200
+From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-References: <1416852578-7581-1-git-send-email-openvpn.list@...1114...>	<201411301648.sAUGmn3S007220@...1295...>
-	<547CA65E.50807@...1114...>
-In-Reply-To: <547CA65E.50807@...1114...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: autotools: Fix wrong
- ./configure help screen default values
+Content-Type: multipart/mixed; boundary="------------060401010004060407040502"
+Subject: [Openvpn-devel] OpenVPN 2.3.6 released - fixes a critical DoS issue
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,38 +12,106 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+To: "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, "openvpn-announce@lists.sourceforge.net" <openvpn-announce@lists.sourceforge.net>
+
+This is a multi-part message in MIME format.
+--------------060401010004060407040502
+Content-Type: text/plain; charset="iso-8859-15"
+Content-Transfer-Encoding: quoted-printable
+
 
 -----BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA256
+Hash: SHA1
 
-On 01-12-14 18:33, David Sommerseth wrote:
-> On 30/11/14 17:48, Gert Doering wrote:
->> As a matter of discussion, I wonder why we have "default=yes"
->> and "no" in our --help text, and not
->> "default=enabled"/"disabled", which might be slightly less
->> confusing... any autoconf style guides here?
-> 
-> Do we need the "default=" stuff at all?  Isn't the default state
-> quite obvious when you see --enable-feature-abc or
-> --disable-feature-xyz?
+The OpenVPN community project team is proud to release OpenVPN 2.3.6. It
+can be downloaded from here:
 
-I don't think we need the "default=" stuff, the --enable/--disable
-makes it clear by itself. Would make it easier to keep things
-consistent too.
+<http://openvpn.net/index.php/open-source/downloads.html>
 
-- -Steffan
+This release fixes a critical denial of service vulnerability in OpenVPN
+servers (CVE-2014-8104). The vulnerability can be exploited by
+authenticated clients only. Also note that confidentiality and
+authenticity of traffic are not affected. More information about this
+vulnerability is available on the Trac Wiki:
+
+<https://community.openvpn.net/openvpn/wiki/SecurityAnnouncement-97597e732b>
+
+This release also includes a few other fixes and enhancements.
+
+A full list of changes is available here:
+
+<https://community.openvpn.net/openvpn/wiki/ChangesInOpenvpn23>
+
+The changelog is also attached to this email.
+
+The 2.2 branch in Git has also been patched for the DoS vulnerability.
+Fixed source packages (2.2.3) are also provided, primarily for the
+benefit of OpenVPN package maintainers. Official Windows installers
+based on 2.2.3 will not be released.
+
+For generic help use these support channels:
+
+- - - Official documentation:
+<http://openvpn.net/index.php/open-source/documentation/howto.html>
+- - - Wiki: <https://community.openvpn.net>
+- - - Forums: <https://forums.openvpn.net>
+- - - User mailing list: <http://sourceforge.net/mail/?group_id=3D48978>
+- - - User IRC channel: #openvpn at irc.freenode.net
+
+Please report bugs and ask development questions here:
+
+- - - Bug tracker and Wiki: <https://community.openvpn.net>
+- - - Developer mailing list: <http://sourceforge.net/mail/?group_id=3D4897=
+8>
+- - - Developer IRC channel: #openvpn-devel at irc.freenode.net (requires
+  Freenode registration)
+
+- - --
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1
 
-iQEcBAEBCAAGBQJUfKvaAAoJEJgCyj0AftKIKTkH/2wDn6M/dTibd6isx9vkXooL
-goGBk7ISMbpzZlVSQ8sOCqc14hVZ0DUhBlXnmtbPwZnTSfGm/Yol6HIWDxX33q15
-rVS6W44BqE7OVeAEfs6JAXccBwNCY/kZfBnaIaX7lrH0PWbEJYeHpgvQg0HILh4Y
-eugv1fs7mjWuuEQRxCsy7GZtZoI/h6gxrkC5BFRezhwnL9zqibFI1GbHlsYOtfQ8
-CkdKLq6vN9AWQnFfrmycm4lZvwvvo6TonEfUjOiL235U/d9PvRGGBCmCftsV+ho2
-BinpGM2wXr9BXYQWdZT3SUpwaCFdCWVoJDSmtYq95CAILc1l8CZ/8iLlvHMpccY=
-=uk55
+iEYEARECAAYFAlR8saQACgkQwp2X7RmNIqN63wCfWzr5rN60BoHuir//x0jSkvtQ
+7n8An2ppL7+1QQ/3VxGMwlYbdEgBzu3q
+=3DX0lz
 -----END PGP SIGNATURE-----
+
+
+--------------060401010004060407040502
+Content-Type: text/plain; charset=UTF-8;
+ name="openvpn-2.3.6-changelog"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: attachment;
+ filename="openvpn-2.3.6-changelog"
+
+David Sommerseth (1):
+      systemd: Reworked the systemd unit file to handle server and client=
+ configs better
+
+Gert Doering (2):
+      Add client-only support for peer-id.
+      Preparing for release v2.3.6 (ChangeLog, version.m4)
+
+Samuli Sepp=C3=A4nen (1):
+      Fix to --shaper documentation on the man-page
+
+Steffan Karger (4):
+      Fix assertion error when using --cipher none
+      Add --tls-version-max
+      Modernize sample keys and sample configs
+      Drop too-short control channel packets instead of asserting out.
+
+
+--------------060401010004060407040502
+Content-Type: application/pgp-signature;
+ name="openvpn-2.3.6-changelog.sig"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment;
+ filename="openvpn-2.3.6-changelog.sig"
+
+iEYEABECAAYFAlR8saQACgkQwp2X7RmNIqMNaQCeK8gq1G+zfpzvF+HTf+jdDx9bIIUAoJgi
+wTsnk4jvt9xoA+qjdSj0IVqT
+--------------060401010004060407040502--
 
