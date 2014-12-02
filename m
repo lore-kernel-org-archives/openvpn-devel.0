@@ -1,8 +1,7 @@
-From: Mike Gilbert <floppym@...594...>
-Date: Tue,  2 Dec 2014 14:34:22 -0500
-Message-Id: <1417548862-24990-1-git-send-email-floppym@...594...>
-Subject: [Openvpn-devel] [PATCH] Include systemd units in the source tarball
-	(make dist)
+From: Steffan Karger <steffan@...1856...>
+Date: Tue,  2 Dec 2014 21:42:00 +0100
+Message-Id: <1417552920-31770-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH] Really fix '--cipher none' regression
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,21 +14,62 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
----
- distro/Makefile.am | 2 ++
- 1 file changed, 2 insertions(+)
+... by not incorrectly hinting to the compiler the function argument of
+cipher_kt_mode_{cbc,ofb_cfb}() is nonnull, since that no longer is the
+case.
 
-diff --git a/distro/Makefile.am b/distro/Makefile.am
-index 2dd6a6e..bd65b79 100644
---- a/distro/Makefile.am
-+++ b/distro/Makefile.am
-@@ -13,3 +13,5 @@ MAINTAINERCLEANFILES = \
- 	$(srcdir)/Makefile.in
+Verified the fix on Debian Wheezy, one of the platforms the reporter in
+trac #473 mentions with a compiler that would optimize out the required
+checks.
+
+Also add a testcase for --cipher none to t_lpback, to prevent further
+regressions.
+
+Signed-off-by: Steffan Karger <steffan@...1856...>
+---
+ src/openvpn/crypto_backend.h | 6 ++----
+ tests/t_lpback.sh            | 3 +++
+ 2 files changed, 5 insertions(+), 4 deletions(-)
+
+diff --git a/src/openvpn/crypto_backend.h b/src/openvpn/crypto_backend.h
+index 8749878..4e45df0 100644
+--- a/src/openvpn/crypto_backend.h
++++ b/src/openvpn/crypto_backend.h
+@@ -237,8 +237,7 @@ int cipher_kt_mode (const cipher_kt_t *cipher_kt);
+  *
+  * @return		true iff the cipher is a CBC mode cipher.
+  */
+-bool cipher_kt_mode_cbc(const cipher_kt_t *cipher)
+-  __attribute__((nonnull));
++bool cipher_kt_mode_cbc(const cipher_kt_t *cipher);
  
- SUBDIRS = rpm
+ /**
+  * Check if the supplied cipher is a supported OFB or CFB mode cipher.
+@@ -247,8 +246,7 @@ bool cipher_kt_mode_cbc(const cipher_kt_t *cipher)
+  *
+  * @return		true iff the cipher is a OFB or CFB mode cipher.
+  */
+-bool cipher_kt_mode_ofb_cfb(const cipher_kt_t *cipher)
+-  __attribute__((nonnull));
++bool cipher_kt_mode_ofb_cfb(const cipher_kt_t *cipher);
+ 
+ 
+ /**
+diff --git a/tests/t_lpback.sh b/tests/t_lpback.sh
+index 8f88ad9..d7792cd 100755
+--- a/tests/t_lpback.sh
++++ b/tests/t_lpback.sh
+@@ -35,6 +35,9 @@ CIPHERS=$(${top_builddir}/src/openvpn/openvpn --show-ciphers | \
+ # GD, 2014-07-06 do not test RC5-* either (fails on NetBSD w/o libcrypto_rc5)
+ CIPHERS=$(echo "$CIPHERS" | egrep -v '^(DES-EDE3-CFB1|DES-CFB1|RC5-)' )
+ 
++# Also test cipher 'none'
++CIPHERS=${CIPHERS}$(printf "\nnone")
 +
-+EXTRA_DIST = systemd/openvpn-client@...1685... systemd/openvpn-server@...1685...
+ "${top_builddir}/src/openvpn/openvpn" --genkey --secret key.$$
+ set +e
+ 
 -- 
-2.1.3
+1.9.1
 
 
