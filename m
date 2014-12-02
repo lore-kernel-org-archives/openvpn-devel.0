@@ -1,10 +1,10 @@
-From: David Sommerseth <openvpn.list@...1114...>
-Date: Tue,  2 Dec 2014 21:45:41 +0100
-Message-Id: <1417553141-24466-1-git-send-email-openvpn.list@...1114...>
-In-Reply-To: <1417548862-24990-1-git-send-email-floppym@...594...>
-References: <1417548862-24990-1-git-send-email-floppym@...594...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Include systemd units in the
-	source tarball (make dist)
+Date: Tue, 2 Dec 2014 22:14:19 +0100 (CET)
+Message-Id: <201412022114.sB2LEJ7O001290@...1295...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <1417552920-31770-1-git-send-email-steffan@...1856...>
+References: <1417552920-31770-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Really fix '--cipher none'
+	regression
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,42 +15,31 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net, Mike Gilbert <floppym@...594...>
+To: Steffan Karger <steffan@...1856...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: David Sommerseth <davids@...1347...>
-
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
-
-
-ACK.  Tested with 'make dist' and the systemd unit files are included in the 
-resulting tarball.
+ACK.
 
 Your patch has been applied to the master and release/2.3 branches.
 
-commit 6ece60c6dc7a3cda58f4dfea4e6cd3016023234f (master)
-commit d9953bde8e5ce55550aabdeaf0893e2115919fc6 (release/2.3)
-Author: Mike Gilbert
-Date:   Tue Dec 2 14:34:22 2014 -0500
+commit 98156e90e1e83133a6a6a020db8e7333ada6156b (master)
+commit 785838614afc20d362b64907b0212e9a779e2287 (release/2.3)
 
-     Include systemd units in the source tarball (make dist)
+Author: Steffan Karger
+Date:   Tue Dec 2 21:42:00 2014 +0100
 
-     Acked-by: David Sommerseth <davids@...1347...>
-     Message-Id: 1417548862-24990-1-git-send-email-floppym@...594...
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/9299
-     Signed-off-by: David Sommerseth <davids@...1347...>
+     Really fix '--cipher none' regression
+
+     Signed-off-by: Steffan Karger <steffan@...1856...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1417552920-31770-1-git-send-email-steffan@...1856...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/9300
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
-- --
+--
 kind regards,
 
-David Sommerseth
+Gert Doering
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iEYEARECAAYFAlR+JFUACgkQDC186MBRfrpSwwCfQBbGbyppwR1h11SBsHXFMDts
-tS4An0ueWgCsIjm2zKncBSc9dUUJ4Wdw
-=eK7S
------END PGP SIGNATURE-----
 
