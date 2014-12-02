@@ -1,9 +1,11 @@
-Message-ID: <547CB1A4.1070708@...515...>
-Date: Mon, 01 Dec 2014 20:21:24 +0200
-From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
+Message-ID: <547DDF5C.7010108@...1937...>
+Date: Tue, 02 Dec 2014 18:48:44 +0300
+From: Alexander Pyhalov <alp@...1937...>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="------------060401010004060407040502"
-Subject: [Openvpn-devel] OpenVPN 2.3.6 released - fixes a critical DoS issue
+References: <543B9FC6.3010800@...1937...>
+In-Reply-To: <543B9FC6.3010800@...1937...>
+Subject: Re: [Openvpn-devel] Default gateway can't be determined on
+	illumos/solaris
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,106 +14,42 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, "openvpn-announce@lists.sourceforge.net" <openvpn-announce@lists.sourceforge.net>
-
-This is a multi-part message in MIME format.
---------------060401010004060407040502
-Content-Type: text/plain; charset="iso-8859-15"
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: quoted-printable
+To: openvpn-devel@lists.sourceforge.net
 
+On 10/13/2014 13:47, Alexander Pyhalov wrote:
+> Hello.
+> In openvpn 2.3.4 on illumos/Solaris clients gateway for client can't be
+> determined, because default stub is used instead of
+> get_default_gateway() function. This means that the following push route
+> option in server config is not working:
+> push "route remote_host 255.255.255.255 net_gateway"
+>
+> OpenVPN  client says that it doesn't know net_gateway.
+> The following patch mostly uses existing FreeBSD code to add
+> get_default_gateway() implementation:
+> https://github.com/pyhalov/oi-userland/blob/openvpn/components/openvpn/pa=
+tches/get_default_gateway.patch
+> .
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
-
-The OpenVPN community project team is proud to release OpenVPN 2.3.6. It
-can be downloaded from here:
-
-<http://openvpn.net/index.php/open-source/downloads.html>
-
-This release fixes a critical denial of service vulnerability in OpenVPN
-servers (CVE-2014-8104). The vulnerability can be exploited by
-authenticated clients only. Also note that confidentiality and
-authenticity of traffic are not affected. More information about this
-vulnerability is available on the Trac Wiki:
-
-<https://community.openvpn.net/openvpn/wiki/SecurityAnnouncement-97597e732b>
-
-This release also includes a few other fixes and enhancements.
-
-A full list of changes is available here:
-
-<https://community.openvpn.net/openvpn/wiki/ChangesInOpenvpn23>
-
-The changelog is also attached to this email.
-
-The 2.2 branch in Git has also been patched for the DoS vulnerability.
-Fixed source packages (2.2.3) are also provided, primarily for the
-benefit of OpenVPN package maintainers. Official Windows installers
-based on 2.2.3 will not be released.
-
-For generic help use these support channels:
-
-- - - Official documentation:
-<http://openvpn.net/index.php/open-source/documentation/howto.html>
-- - - Wiki: <https://community.openvpn.net>
-- - - Forums: <https://forums.openvpn.net>
-- - - User mailing list: <http://sourceforge.net/mail/?group_id=3D48978>
-- - - User IRC channel: #openvpn at irc.freenode.net
-
-Please report bugs and ask development questions here:
-
-- - - Bug tracker and Wiki: <https://community.openvpn.net>
-- - - Developer mailing list: <http://sourceforge.net/mail/?group_id=3D4897=
-8>
-- - - Developer IRC channel: #openvpn-devel at irc.freenode.net (requires
-  Freenode registration)
-
-- - --
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iEYEARECAAYFAlR8saQACgkQwp2X7RmNIqN63wCfWzr5rN60BoHuir//x0jSkvtQ
-7n8An2ppL7+1QQ/3VxGMwlYbdEgBzu3q
-=3DX0lz
------END PGP SIGNATURE-----
-
-
---------------060401010004060407040502
-Content-Type: text/plain; charset=UTF-8;
- name="openvpn-2.3.6-changelog"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: attachment;
- filename="openvpn-2.3.6-changelog"
-
-David Sommerseth (1):
-      systemd: Reworked the systemd unit file to handle server and client=
- configs better
-
-Gert Doering (2):
-      Add client-only support for peer-id.
-      Preparing for release v2.3.6 (ChangeLog, version.m4)
-
-Samuli Sepp=C3=A4nen (1):
-      Fix to --shaper documentation on the man-page
-
-Steffan Karger (4):
-      Fix assertion error when using --cipher none
-      Add --tls-version-max
-      Modernize sample keys and sample configs
-      Drop too-short control channel packets instead of asserting out.
-
-
---------------060401010004060407040502
-Content-Type: application/pgp-signature;
- name="openvpn-2.3.6-changelog.sig"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment;
- filename="openvpn-2.3.6-changelog.sig"
-
-iEYEABECAAYFAlR8saQACgkQwp2X7RmNIqMNaQCeK8gq1G+zfpzvF+HTf+jdDx9bIIUAoJgi
-wTsnk4jvt9xoA+qjdSj0IVqT
---------------060401010004060407040502--
+Hello.
+I've sent two patches (from apyhalov@...277... address) against 2.3 and=20
+master branch), correcting  to the list, implementing=20
+get_default_gateway() for Solaris / illumos platforms. Are there any=20
+issues with them?
+--=20
+=D0=A1 =D1=83=D0=B2=D0=B0=D0=B6=D0=B5=D0=BD=D0=B8=D0=B5=D0=BC,
+=D0=90=D0=BB=D0=B5=D0=BA=D1=81=D0=B0=D0=BD=D0=B4=D1=80 =D0=9F=D1=8B=D1=85=
+=D0=B0=D0=BB=D0=BE=D0=B2,
+=D0=BF=D1=80=D0=BE=D0=B3=D1=80=D0=B0=D0=BC=D0=BC=D0=B8=D1=81=D1=82 =D0=BE=
+=D1=82=D0=B4=D0=B5=D0=BB=D0=B0 =D1=82=D0=B5=D0=BB=D0=B5=D0=BA=D0=BE=D0=BC=
+=D0=BC=D1=83=D0=BD=D0=B8=D0=BA=D0=B0=D1=86=D0=B8=D0=BE=D0=BD=D0=BD=D0=BE=D0=
+=B9 =D0=B8=D0=BD=D1=84=D1=80=D0=B0=D1=81=D1=82=D1=80=D1=83=D0=BA=D1=82=D1=
+=83=D1=80=D1=8B
+=D1=83=D0=BF=D1=80=D0=B0=D0=B2=D0=BB=D0=B5=D0=BD=D0=B8=D1=8F =D0=B8=D0=BD=
+=D1=84=D0=BE=D1=80=D0=BC=D0=B0=D1=86=D0=B8=D0=BE=D0=BD=D0=BD=D0=BE-=D0=BA=
+=D0=BE=D0=BC=D0=BC=D1=83=D0=BD=D0=B8=D0=BA=D0=B0=D1=86=D0=B8=D0=BE=D0=BD=D0=
+=BD=D0=BE=D0=B9 =D0=B8=D0=BD=D1=84=D1=80=D0=B0=D1=81=D1=82=D1=80=D1=83=D0=
+=BA=D1=82=D1=83=D1=80=D1=8B =D0=AE=D0=A4=D0=A3
 
