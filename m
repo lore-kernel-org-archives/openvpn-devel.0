@@ -1,10 +1,11 @@
-Date: Tue, 2 Dec 2014 22:14:19 +0100 (CET)
-Message-Id: <201412022114.sB2LEJ7O001290@...1295...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <1417552920-31770-1-git-send-email-steffan@...1856...>
-References: <1417552920-31770-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Really fix '--cipher none'
-	regression
+Date: Fri, 5 Dec 2014 07:38:16 +0000 (UTC)
+From: Hooman ZGN <ho0olvlan@...109...>
+Message-ID: <1063350867.3350839.1417765096027.JavaMail.yahoo@...2007...>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_3350838_418956.1417765096024"
+Subject: [Openvpn-devel] SHUT UP
+Reply-To: Hooman ZGN <ho0olvlan@...109...>
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,33 +14,18 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Steffan Karger <steffan@...1856...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-ACK.
+------=_Part_3350838_418956.1417765096024
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-Your patch has been applied to the master and release/2.3 branches.
+would u please shutttt the fuck up and stop email me u bastards ????shutttt up and dieeeeeeeeeeeee. u drive me angryyyyy
 
-commit 98156e90e1e83133a6a6a020db8e7333ada6156b (master)
-commit 785838614afc20d362b64907b0212e9a779e2287 (release/2.3)
+------=_Part_3350838_418956.1417765096024
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-Author: Steffan Karger
-Date:   Tue Dec 2 21:42:00 2014 +0100
-
-     Really fix '--cipher none' regression
-
-     Signed-off-by: Steffan Karger <steffan@...1856...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1417552920-31770-1-git-send-email-steffan@...1856...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/9300
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
-
+<html><body><div style="color:#000; background-color:#fff; font-family:HelveticaNeue, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;font-size:14px"><div>would u please shutttt the fuck up and stop email me u bastards ????</div><div dir="ltr">shutttt up and dieeeeeeeeeeeee. u drive me angryyyyy<br></div></div></body></html>
+------=_Part_3350838_418956.1417765096024--
 
