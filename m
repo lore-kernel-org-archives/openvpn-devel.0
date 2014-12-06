@@ -1,8 +1,12 @@
-Message-ID: <54833CC6.8010507@...1490...>
-Date: Sun, 7 Dec 2014 06:28:38 +1300
-From: Jason Haar <Jason_Haar@...1490...>
+Message-ID: <54836D09.5080903@...1856...>
+Date: Sat, 06 Dec 2014 21:54:33 +0100
+From: Steffan Karger <steffan@...1856...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] feature request: get openvpn to use closest server
+References: <5468BEB7.5060300@...1856...>
+	<1417872129-31980-1-git-send-email-arne@...1227...>
+In-Reply-To: <1417872129-31980-1-git-send-email-arne@...1227...>
+Subject: Re: [Openvpn-devel] [PATCH v2] Remove possibility of using
+ --tls-auth with non OpenVPN Static key files
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,73 +15,141 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-Hi there
+ACK
 
-If you have a global network with several openvpn servers, you have a
-problem with getting clients to connect to the "best" server(*).
-Typically you'd either rely on users manually choosing the best server
-(which they can't do well as they don't know the full story), or do
-something easy like have one DNS name with multiple A records - but the
-latter would mean users were using the *wrong* server the majority of
-the time
+-Steffan
 
-Some can manage tricks using geoip DNS - but even that doesn't work
-reliably (eg if a lot of users hardwire Google/OpenDNS DNS servers in
-their client). Really speaking AnyCast is the only "proper" way of doing
-it - but that's a "big boy" solution
-
-So I propose openvpn itself could solve this problem - if it had some
-application layer way of "pinging" all available openvpn servers and
-choosing the one that responds "best". I'd suggest it only be supported
-for sites using "tls-auth" but that it doesn't need the full cert check
-- that way it's one packet from the client and one return packet from
-the server. I'd also suggest the server can respond with a "don't use
-me" message: maybe a new config option "pause-logins /path/filename" so
-that sysadmins can write their own load tests and create/delete that
-file when needed. The client could send "openvpn-pings" to each server
-(when the DNS server name resolves to >1 IP) and try up to 3 times
-before making a decision. ie packet loss means there needs to be a retry
-aspect, 3 failures means the server is down/firewalled, but if the
-server responds with "don't use me" then it's treated as "down" too.
-Then the client can simply figure out which positive return had the
-smallest latency and then use that to influence the order in which it
-tries to log into the servers. ie it doesn't replace the current server
-connection logic, it just re-sorts it before carrying on as usual
-
-I also think it should be done with some "openvpn-ping" instead of icmp
-ping because it confirms the server is available on the protocol/port
-combination, whereas icmp doesn't
-
-Is this something others would find useful? Cisco Anyconnect has this
-feature, so it's not an original idea.
-
-Thanks for listening
-
-Jason
-
-
-Note (*): we've run cisco vpnclient for over a decade and what we've
-discovered is "best" matters. Users who vpn into the closest vpn server
-get off the unpredictable Internet and onto a more
-predictable/consistent WAN link - and get the benefits that implies. eg
-we run VoIP internally and such a realtime application is very latency
-dependent. People who vpn across continents back to their "home" vpn
-router complain that VoIP is awful, whereas those that vpn'ed into the
-corporate site down the road from their hotel, they get much better
-realtime performance. And if they don't - the company can do something
-to fix that - whereas we have no ability to improve the performance of
-random hotels/countries/etc.
-
--- 
-Cheers
-
-Jason Haar
-Corporate Information Security Manager, Trimble Navigation Ltd.
-Phone: +1 408 481 8171
-PGP Fingerprint: 7A2E 0407 C9A6 CAF6 2B9F 8422 C063 5EBB FE1D 66D1
-
+On 06-12-14 14:22, Arne Schwabe wrote:
+> In older version OpenVPN would hash a --tls-auth file
+> if it does not conform to the expected format
+> ---
+>  doc/openvpn.8        | 21 +++--------------
+>  src/openvpn/crypto.c | 65 ++++------------------------------------------------
+>  2 files changed, 7 insertions(+), 79 deletions(-)
+> 
+> diff --git a/doc/openvpn.8 b/doc/openvpn.8
+> index 96ba555..532eda5 100644
+> --- a/doc/openvpn.8
+> +++ b/doc/openvpn.8
+> @@ -4609,26 +4609,11 @@ bearing an incorrect HMAC signature can be dropped immediately without
+>  response.
+>  
+>  .B file
+> -(required) is a key file which can be in one of two formats:
+> -
+> -.B (1)
+> -An OpenVPN static key file generated by
+> +(required) is a file in OpenVPN static key format which can be generated by
+>  .B \-\-genkey
+> -(required if
+> -.B direction
+> -parameter is used).
+> -
+> -.B (2)
+> -A freeform passphrase file.  In this case the HMAC key will
+> -be derived by taking a secure hash of this file, similar to
+> -the
+> -.BR md5sum (1)
+> -or
+> -.BR sha1sum (1)
+> -commands.
+>  
+> -OpenVPN will first try format (1), and if the file fails to parse as
+> -a static key file, format (2) will be used.
+> +Older versions (up to 2.3) supported a freeform passphrase file.
+> +This is no longer supported in newer versions (2.4+).
+>  
+>  See the
+>  .B \-\-secret
+> diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
+> index ef2bde1..eaef964 100644
+> --- a/src/openvpn/crypto.c
+> +++ b/src/openvpn/crypto.c
+> @@ -770,22 +770,13 @@ get_tls_handshake_key (const struct key_type *key_type,
+>  	  }
+>  	else
+>  	  {
+> -	    int hash_size;
+> -
+>  	    CLEAR (key2);
+>  
+> -	    /* failed, now try to get hash from a freeform file */
+> -	    hash_size = read_passphrase_hash (passphrase_file,
+> -					      kt.digest,
+> -					      key2.keys[0].hmac,
+> -					      MAX_HMAC_KEY_LENGTH);
+> -	    ASSERT (hash_size == kt.hmac_length);
+> -
+> -	    /* suceeded */
+> -	    key2.n = 1;
+> +	    /* failed, now bail out */
+>  
+> -	    msg (M_INFO,
+> -		 "Control Channel Authentication: using '%s' as a free-form passphrase file",
+> +	    msg (M_ERR,
+> +		 "Control Channel Authentication: File '%s' does not have OpenVPN Static Key format. "
+> +		 "Using free-form passphrase file is not supported anymore",
+>  		 passphrase_file);
+>  	  }
+>        }
+> @@ -1012,54 +1003,6 @@ read_key_file (struct key2 *key2, const char *file, const unsigned int flags)
+>    gc_free (&gc);
+>  }
+>  
+> -int
+> -read_passphrase_hash (const char *passphrase_file,
+> -		      const md_kt_t *digest,
+> -		      uint8_t *output,
+> -		      int len)
+> -{
+> -  md_ctx_t md;
+> -
+> -  ASSERT (len >= md_kt_size(digest));
+> -  memset (output, 0, len);
+> -
+> -  md_ctx_init(&md, digest);
+> -
+> -  /* read passphrase file */
+> -  {
+> -    const int min_passphrase_size = 8;
+> -    uint8_t buf[64];
+> -    int total_size = 0;
+> -    int fd = platform_open (passphrase_file, O_RDONLY, 0);
+> -
+> -    if (fd == -1)
+> -      msg (M_ERR, "Cannot open passphrase file: '%s'", passphrase_file);
+> -
+> -    for (;;)
+> -      {
+> -	int size = read (fd, buf, sizeof (buf));
+> -	if (size == 0)
+> -	  break;
+> -	if (size == -1)
+> -	  msg (M_ERR, "Read error on passphrase file: '%s'",
+> -	       passphrase_file);
+> -	md_ctx_update(&md, buf, size);
+> -	total_size += size;
+> -      }
+> -    close (fd);
+> -
+> -    warn_if_group_others_accessible (passphrase_file);
+> -
+> -    if (total_size < min_passphrase_size)
+> -      msg (M_FATAL,
+> -	   "Passphrase file '%s' is too small (must have at least %d characters)",
+> -	   passphrase_file, min_passphrase_size);
+> -  }
+> -  md_ctx_final(&md, output);
+> -  md_ctx_cleanup(&md);
+> -  return md_kt_size(digest);
+> -}
+> -
+>  /*
+>   * Write key to file, return number of random bits
+>   * written.
+> 
 
