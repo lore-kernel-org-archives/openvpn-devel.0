@@ -1,14 +1,8 @@
-Date: Sat, 6 Dec 2014 14:57:19 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20141206135719.GM17158@...1296...>
-References: <1416148262-20978-1-git-send-email-openvpn.list@...1114...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="ONmcTkPhtkbQYSLg"
-Content-Disposition: inline
-In-Reply-To: <1416148262-20978-1-git-send-email-openvpn.list@...1114...>
-Subject: Re: [Openvpn-devel] [PATCH] down-root plugin: Replaced system()
-	calls with execve()
+Message-ID: <54833CC6.8010507@...1490...>
+Date: Sun, 7 Dec 2014 06:28:38 +1300
+From: Jason Haar <Jason_Haar@...1490...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] feature request: get openvpn to use closest server
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,72 +11,73 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: David Sommerseth <openvpn.list@...1114...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
---ONmcTkPhtkbQYSLg
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Hi there
 
-Hi,
+If you have a global network with several openvpn servers, you have a
+problem with getting clients to connect to the "best" server(*).
+Typically you'd either rely on users manually choosing the best server
+(which they can't do well as they don't know the full story), or do
+something easy like have one DNS name with multiple A records - but the
+latter would mean users were using the *wrong* server the majority of
+the time
 
-On Sun, Nov 16, 2014 at 03:31:02PM +0100, David Sommerseth wrote:
-> From: David Sommerseth <davids@...1347...>
->=20
-> The system() call is prone to shell expansions and provides far more
-> environments variables to the executable run than what is usually
-> preferred.  By moving over to exevce() shell expansions are far more
-> difficult to achieve and only the OpenVPN provided environment
-> variables are available.
+Some can manage tricks using geoip DNS - but even that doesn't work
+reliably (eg if a lot of users hardwire Google/OpenDNS DNS servers in
+their client). Really speaking AnyCast is the only "proper" way of doing
+it - but that's a "big boy" solution
 
-Since Steffan has ACKed it, I've committed it, but it would be nice if
-you could send a followup patch addressing the remaining warnings in=20
-down-root that Steffan pointed out - and maybe reformat these bits to
-conform to whatever coding style we agreed to (which this is not :-))...
+So I propose openvpn itself could solve this problem - if it had some
+application layer way of "pinging" all available openvpn servers and
+choosing the one that responds "best". I'd suggest it only be supported
+for sites using "tls-auth" but that it doesn't need the full cert check
+- that way it's one packet from the client and one return packet from
+the server. I'd also suggest the server can respond with a "don't use
+me" message: maybe a new config option "pause-logins /path/filename" so
+that sysadmins can write their own load tests and create/delete that
+file when needed. The client could send "openvpn-pings" to each server
+(when the DNS server name resolves to >1 IP) and try up to 3 times
+before making a decision. ie packet loss means there needs to be a retry
+aspect, 3 failures means the server is down/firewalled, but if the
+server responds with "don't use me" then it's treated as "down" too.
+Then the client can simply figure out which positive return had the
+smallest latency and then use that to influence the order in which it
+tries to log into the servers. ie it doesn't replace the current server
+connection logic, it just re-sorts it before carrying on as usual
 
-> +static int
-> +run_script(char * const *argv, char * const *envp) {
-> +  pid_t pid;
-> +  int ret =3D 0;
-> +
-> +  pid =3D fork();
-> +  if (pid =3D=3D (pid_t)0) { /* child side */
-> +    execve(argv[0], argv, envp);
-> +    fprintf(stderr, "DOWN-ROOT: Failed execute: %s\n", argv[0]);
-> +    exit(127);  /* If execve() fails to run, exit child with exit code 1=
-27 */
-> +  } else if (pid < (pid_t)0 ) {
-> +    fprintf(stderr, "DOWN-ROOT: Failed to fork child to run %s\n", argv[=
-0]);
-> +    return -1;
+I also think it should be done with some "openvpn-ping" instead of icmp
+ping because it confirms the server is available on the protocol/port
+combination, whereas icmp doesn't
 
-I think this is called "all-mashed-together" style or so :-)
+Is this something others would find useful? Cisco Anyconnect has this
+feature, so it's not an original idea.
 
-thanks,=20
+Thanks for listening
 
-gert
+Jason
 
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
 
---ONmcTkPhtkbQYSLg
-Content-Type: application/pgp-signature
-Content-Disposition: inline
+Note (*): we've run cisco vpnclient for over a decade and what we've
+discovered is "best" matters. Users who vpn into the closest vpn server
+get off the unpredictable Internet and onto a more
+predictable/consistent WAN link - and get the benefits that implies. eg
+we run VoIP internally and such a realtime application is very latency
+dependent. People who vpn across continents back to their "home" vpn
+router complain that VoIP is awful, whereas those that vpn'ed into the
+corporate site down the road from their hotel, they get much better
+realtime performance. And if they don't - the company can do something
+to fix that - whereas we have no ability to improve the performance of
+random hotels/countries/etc.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
+-- 
+Cheers
 
-iQCVAwUBVIMLP6kuBuNlUUl1AQJ0MgP/fO6GnDl4oHjXn0ZTWrhuyRSHKIACZOYr
-IQyimIxz99v7ziFqCXlyRKy6NcwTStpnBAJ7mts6Jt9oQN5lXe2rxllWupm8neTh
-Sb0q7971nGqYYVr1iuf9cooptguDOUKnbuH+euheUdbRR2V770ybb9Uh3XsF0ZkD
-bjgLsG09hK0=
-=Fv2q
------END PGP SIGNATURE-----
+Jason Haar
+Corporate Information Security Manager, Trimble Navigation Ltd.
+Phone: +1 408 481 8171
+PGP Fingerprint: 7A2E 0407 C9A6 CAF6 2B9F 8422 C063 5EBB FE1D 66D1
 
---ONmcTkPhtkbQYSLg--
 
