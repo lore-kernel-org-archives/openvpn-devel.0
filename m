@@ -1,8 +1,8 @@
 From: Lev Stipakov <lstipakov@...277...>
-Date: Mon,  8 Dec 2014 18:48:45 +0200
-Message-Id: <1418057325-13265-1-git-send-email-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH] Prevent memory drain for long lasting
-	floating sessions
+Date: Mon,  8 Dec 2014 19:06:02 +0200
+Message-Id: <1418058362-13480-1-git-send-email-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH] Add the peer-id to the output of the status
+	command
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,114 +15,58 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-For every float event we generate prefix, which allocates 256 + 64
-bytes. That memory is reclaimed when client disconnects, so long lasting
-and constantly floating sessions drain memory.
-
-As a fix use preallocated buffer inside multi_instance for storing
-multi_prefix.
+This adds peer-id to the status output which might help analyze floating
+logs. This will change the output of status in the same way commit
+662ce6acc065bddf6490b3494725b8b3987b7def did.
 
 Signed-off-by: Lev Stipakov <lstipakov@...277...>
 ---
- src/openvpn/mudp.c  |  4 ++++
- src/openvpn/multi.c | 14 ++++++++++----
- src/openvpn/multi.h |  8 +++++---
- 3 files changed, 19 insertions(+), 7 deletions(-)
+ src/openvpn/multi.c | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
 
-diff --git a/src/openvpn/mudp.c b/src/openvpn/mudp.c
-index 853c08c..3e3f750 100644
---- a/src/openvpn/mudp.c
-+++ b/src/openvpn/mudp.c
-@@ -111,6 +111,10 @@ multi_get_create_instance_udp (struct multi_context *m, bool *floated)
- 			      break;
- 			    }
- 			}
-+
-+		      /* should not really end up here, since multi_create_instance returns null
-+		       * if amount of clients exceeds max_clients */
-+		      ASSERT(i < m->max_clients);
- 		    }
- 		}
- 	      else
 diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index 538f4f1..fd0d0fe 100644
+index 538f4f1..b7785c1 100644
 --- a/src/openvpn/multi.c
 +++ b/src/openvpn/multi.c
-@@ -403,7 +403,7 @@ multi_instance_string (const struct multi_instance *mi, bool null, struct gc_are
- {
-   if (mi)
-     {
--      struct buffer out = alloc_buf_gc (256, gc);
-+      struct buffer out = alloc_buf_gc (MULTI_PREFIX_MAX_LENGTH, gc);
-       const char *cn = tls_common_name (mi->context.c2.tls_multi, true);
- 
-       if (cn)
-@@ -420,21 +420,27 @@ multi_instance_string (const struct multi_instance *mi, bool null, struct gc_are
- void
- generate_prefix (struct multi_instance *mi)
- {
--  mi->msg_prefix = multi_instance_string (mi, true, &mi->gc);
-+  struct gc_arena gc = gc_new();
-+  const char *prefix = multi_instance_string (mi, true, &gc);
-+  if (prefix)
-+    strncpynt(mi->msg_prefix, prefix, sizeof(mi->msg_prefix));
-+  else
-+    mi->msg_prefix[0] = '\0';
-   set_prefix (mi);
-+  gc_free(&gc);
- }
- 
- void
- ungenerate_prefix (struct multi_instance *mi)
- {
--  mi->msg_prefix = NULL;
-+  mi->msg_prefix[0] = '\0';
-   set_prefix (mi);
- }
- 
- static const char *
- mi_prefix (const struct multi_instance *mi)
- {
--  if (mi && mi->msg_prefix)
-+  if (mi && mi->msg_prefix[0])
-     return mi->msg_prefix;
-   else
-     return "UNDEF_I";
-diff --git a/src/openvpn/multi.h b/src/openvpn/multi.h
-index ad7f700..32b89d2 100644
---- a/src/openvpn/multi.h
-+++ b/src/openvpn/multi.h
-@@ -42,6 +42,8 @@
- #include "mtcp.h"
- #include "perf.h"
- 
-+#define MULTI_PREFIX_MAX_LENGTH 256
-+
- /*
-  * Walk (don't run) through the routing table,
-  * deleting old entries, and possibly multi_instance
-@@ -80,7 +82,7 @@ struct multi_instance {
-   struct mroute_addr real;      /**< External network address of the
-                                  *   remote peer. */
-   ifconfig_pool_handle vaddr_handle;
--  const char *msg_prefix;
-+  char msg_prefix[MULTI_PREFIX_MAX_LENGTH];
- 
-   /* queued outgoing data in Server/TCP mode */
-   unsigned int tcp_rwflags;
-@@ -445,10 +447,10 @@ static inline void
- set_prefix (struct multi_instance *mi)
- {
- #ifdef MULTI_DEBUG_EVENT_LOOP
--  if (mi->msg_prefix)
-+  if (mi->msg_prefix[0])
-     printf ("[%s]\n", mi->msg_prefix);
+@@ -815,8 +815,8 @@ multi_print_status (struct multi_context *m, struct status_output *so, const int
+ 	   */
+ 	  status_printf (so, "TITLE%c%s", sep, title_string);
+ 	  status_printf (so, "TIME%c%s%c%u", sep, time_string (now, 0, false, &gc_top), sep, (unsigned int)now);
+-	  status_printf (so, "HEADER%cCLIENT_LIST%cCommon Name%cReal Address%cVirtual Address%cVirtual IPv6 Address%cBytes Received%cBytes Sent%cConnected Since%cConnected Since (time_t)%cUsername%cClient ID",
+-			 sep, sep, sep, sep, sep, sep, sep, sep, sep, sep, sep);
++	  status_printf (so, "HEADER%cCLIENT_LIST%cCommon Name%cReal Address%cVirtual Address%cVirtual IPv6 Address%cBytes Received%cBytes Sent%cConnected Since%cConnected Since (time_t)%cUsername%cClient ID%cPeer ID",
++			 sep, sep, sep, sep, sep, sep, sep, sep, sep, sep, sep, sep);
+ 	  hash_iterator_init (m->hash, &hi);
+ 	  while ((he = hash_iterator_next (&hi)))
+ 	    {
+@@ -827,10 +827,11 @@ multi_print_status (struct multi_context *m, struct status_output *so, const int
+ 		{
+ 		  status_printf (so, "CLIENT_LIST%c%s%c%s%c%s%c%s%c" counter_format "%c" counter_format "%c%s%c%u%c%s%c"
+ #ifdef MANAGEMENT_DEF_AUTH
+-				 "%lu",
++				 "%lu"
+ #else
+-				 "",
++				 ""
  #endif
--  msg_set_prefix (mi->msg_prefix);
-+  msg_set_prefix (mi->msg_prefix[0] ? mi->msg_prefix : NULL);
- }
- 
- static inline void
++				 "%c%"PRIu32,
+ 				 sep, tls_common_name (mi->context.c2.tls_multi, false),
+ 				 sep, mroute_addr_print (&mi->real, &gc),
+ 				 sep, print_in_addr_t (mi->reporting_addr, IA_EMPTY_IF_UNDEF, &gc),
+@@ -841,10 +842,11 @@ multi_print_status (struct multi_context *m, struct status_output *so, const int
+ 				 sep, (unsigned int)mi->created,
+ 				 sep, tls_username (mi->context.c2.tls_multi, false),
+ #ifdef MANAGEMENT_DEF_AUTH
+-				 sep, mi->context.c2.mda_context.cid);
++				 sep, mi->context.c2.mda_context.cid,
+ #else
+-				 sep);
++				 sep,
+ #endif
++				 sep, mi->context.c2.tls_multi ? mi->context.c2.tls_multi->peer_id : UINT32_MAX);
+ 		}
+ 	      gc_free (&gc);
+ 	    }
 -- 
 1.9.1
 
