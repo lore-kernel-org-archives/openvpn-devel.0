@@ -1,11 +1,8 @@
-Message-ID: <5486B561.8080104@...515...>
-Date: Tue, 09 Dec 2014 10:40:01 +0200
-From: =?windows-1252?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
-MIME-Version: 1.0
-References: <54833CC6.8010507@...1490...>
-In-Reply-To: <54833CC6.8010507@...1490...>
-Subject: Re: [Openvpn-devel] feature request: get openvpn to use closest
-	server
+From: David Sommerseth <openvpn.list@...1114...>
+Date: Tue,  9 Dec 2014 10:52:44 +0100
+Message-Id: <1418118764-17846-1-git-send-email-openvpn.list@...1114...>
+Subject: [Openvpn-devel] [PATCH] sockets: Remove the limitation of
+	--tcp-nodelay to be server-only
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,63 +11,58 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
-To: Jason Haar <Jason_Haar@...1490...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
+From: David Sommerseth <davids@...1347...>
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+The assert(0) happening if trying to use --tcp-nodelay in a client
+config is really not helpful at all.  When this assert(0) was removed,
+another warning appeared that this could only be used in server
+configs.  That itself is also quite silly, as clients can choose to
+use --socket-flags TCP_NODELAY in the client config instead.  This
+behaviour does not help the user in any way.
 
-Hi,
->
->
-> So I propose openvpn itself could solve this problem - if it had some
-> application layer way of "pinging" all available openvpn servers and
-> choosing the one that responds "best". I'd suggest it only be supported
-> for sites using "tls-auth" but that it doesn't need the full cert check
-> - that way it's one packet from the client and one return packet from
-> the server. I'd also suggest the server can respond with a "don't use
-> me" message: maybe a new config option "pause-logins /path/filename" so
-> that sysadmins can write their own load tests and create/delete that
-> file when needed. The client could send "openvpn-pings" to each server
-> (when the DNS server name resolves to >1 IP) and try up to 3 times
-> before making a decision. ie packet loss means there needs to be a retry
-> aspect, 3 failures means the server is down/firewalled, but if the
-> server responds with "don't use me" then it's treated as "down" too.
-> Then the client can simply figure out which positive return had the
-> smallest latency and then use that to influence the order in which it
-> tries to log into the servers. ie it doesn't replace the current server
-> connection logic, it just re-sorts it before carrying on as usual
-Would 3 pings and ping replies adequately measure the overall
-performance of OpenVPN server even for one particular VPN session? What
-if there's a temporary congestion somewhere between the "best" server
-and the client? I think that reliably determining the best server (on
-average) would require long-term statistics to be any good, but that
-would only work for clients that don't move around. In a road-warrior
-scenario what you suggest would work better.
->
-> I also think it should be done with some "openvpn-ping" instead of icmp
-> ping because it confirms the server is available on the protocol/port
-> combination, whereas icmp doesn't
-In what kind of scenario would an OpenVPN server not be available, if
-the server itself still responds to pings?
+This patch removes the server-only restriction and rather provides
+a more helpful warning when using --tcp-nodelay on the client side.
 
-Best regards,
+Trac: 489
+Signed-off-by: David Sommerseth <davids@...1347...>
+---
+ src/openvpn/helper.c  | 2 +-
+ src/openvpn/options.c | 4 +++-
+ 2 files changed, 4 insertions(+), 2 deletions(-)
 
-- --=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iEYEARECAAYFAlSGtWEACgkQwp2X7RmNIqOkeACeJb3f5+Rgl/sSVBSi2FRMfTu2
-sgUAoJI65DBooIxLd9t4beYeTUChxUm5
-=3DM0FU
------END PGP SIGNATURE-----
-
+diff --git a/src/openvpn/helper.c b/src/openvpn/helper.c
+index 0ed0b2b..339e2ae 100644
+--- a/src/openvpn/helper.c
++++ b/src/openvpn/helper.c
+@@ -534,7 +534,7 @@ helper_tcp_nodelay (struct options *o)
+ 	}
+       else
+ 	{
+-	  ASSERT (0);
++	  o->sockflags |= SF_TCP_NODELAY;
+ 	}
+     }
+ #endif
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 721b42e..f0091c2 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -2111,7 +2111,9 @@ options_postprocess_verify_ce (const struct options *options, const struct conne
+       if (options->ssl_flags & SSLF_OPT_VERIFY)
+ 	msg (M_USAGE, "--opt-verify requires --mode server");
+       if (options->server_flags & SF_TCP_NODELAY_HELPER)
+-	msg (M_USAGE, "--tcp-nodelay requires --mode server");
++	msg (M_WARN, "WARNING: setting tcp-nodelay on the client side will not "
++             "affect the server. To have TCP_NODELAY in both direction use "
++             "tcp-nodelay in the server configuration instead.");
+       if (options->auth_user_pass_verify_script)
+ 	msg (M_USAGE, "--auth-user-pass-verify requires --mode server");
+ #if PORT_SHARE
+-- 
+1.8.3.1
 
 
