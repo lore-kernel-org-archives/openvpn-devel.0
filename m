@@ -1,10 +1,14 @@
-Date: Tue, 9 Dec 2014 19:11:18 +0100 (CET)
-Message-Id: <201412091811.sB9IBIbb006814@...1295...>
+Date: Tue, 9 Dec 2014 20:09:19 +0100
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1418078751-3614-1-git-send-email-openvpn.list@...1114...>
-References: <1418078751-3614-1-git-send-email-openvpn.list@...1114...>
-Subject: [Openvpn-devel] [PATCH applied] Re: plugins,
-	down-root: Code style clean-up
+Message-ID: <20141209190918.GA17158@...1296...>
+References: <54833CC6.8010507@...1490...> <5486B561.8080104@...515...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="FMJTF8LVhUQkvsEb"
+Content-Disposition: inline
+In-Reply-To: <5486B561.8080104@...515...>
+Subject: Re: [Openvpn-devel] feature request: get openvpn to use closest
+	server
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,33 +17,49 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: David Sommerseth <davids@...1347...>
+To: Samuli =?iso-8859-1?Q?Sepp=E4nen?= <samuli@...515...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Oh!  The sheer beauty of it!
+--FMJTF8LVhUQkvsEb
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Your patch has been applied to the master and release/2.3 branches.
+Hi,
 
-commit e2e9a69c1ecc7142cc17d665076795215b6a8e9a (master)
-commit f682c3d022265207377e327358211b0344f7d490 (release/2.3)
+On Tue, Dec 09, 2014 at 10:40:01AM +0200, Samuli Sepp=E4nen wrote:
+> > I also think it should be done with some "openvpn-ping" instead of icmp
+> > ping because it confirms the server is available on the protocol/port
+> > combination, whereas icmp doesn't
+> In what kind of scenario would an OpenVPN server not be available, if
+> the server itself still responds to pings?
 
-Author: David Sommerseth
-Date:   Mon Dec 8 23:45:51 2014 +0100
+"The server process crashed".
 
-     plugins, down-root: Code style clean-up
+Not that OpenVPN would ever ASSERT() on invalid packets, or crash upon
+bugs, no.  :-)
 
-     Signed-off-by: David Sommerseth <davids@...1347...>
-     Acked-by: Steffan Karger <steffan.karger@...1435...>
-     Message-Id: <1418078751-3614-1-git-send-email-openvpn.list@...1114...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/9331
-     Signed-off-by: Gert Doering <gert@...1296...>
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
+--FMJTF8LVhUQkvsEb
+Content-Type: application/pgp-signature
+Content-Disposition: inline
 
---
-kind regards,
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
 
-Gert Doering
+iQCVAwUBVIdI3qkuBuNlUUl1AQJ8xgP+MVlCOMiMm0fen8squGkQ7I2Bbw29aTaa
+EtjAB1avBfN/d7RYiXGgluLUJzucGQquP8mwVyodRc/svA/a1amKJvwzp5qYNLGM
+tkqkAzJNGO3zX3BhxL+YOWN4HpbZ6QeG06hcZIb2jWCo6qFTwQuhOdmEEYqSr1n+
+QVMOpAOZXxw=
+=TTeF
+-----END PGP SIGNATURE-----
 
+--FMJTF8LVhUQkvsEb--
 
