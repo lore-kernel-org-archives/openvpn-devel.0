@@ -1,11 +1,10 @@
-Message-ID: <5486C7A6.8060001@...1227...>
-Date: Tue, 09 Dec 2014 10:57:58 +0100
-From: Arne Schwabe <arne@...1227...>
-MIME-Version: 1.0
-References: <1418118764-17846-1-git-send-email-openvpn.list@...1114...>
+From: David Sommerseth <openvpn.list@...1114...>
+Date: Tue,  9 Dec 2014 11:01:35 +0100
+Message-Id: <1418119295-18869-1-git-send-email-openvpn.list@...1114...>
 In-Reply-To: <1418118764-17846-1-git-send-email-openvpn.list@...1114...>
-Subject: Re: [Openvpn-devel] [PATCH] sockets: Remove the limitation of
- --tcp-nodelay to be server-only
+References: <1418118764-17846-1-git-send-email-openvpn.list@...1114...>
+Subject: Re: [Openvpn-devel] [PATCH applied] sockets: Remove the limitation
+	of --tcp-nodelay to be server-only
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,27 +13,42 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-To: David Sommerseth <openvpn.list@...1114...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net, David Sommerseth <davids@...1347...>
+
+From: David Sommerseth <davids@...1347...>
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
 
-Am 09.12.14 10:52, schrieb David Sommerseth:
-> From: David Sommerseth <davids@...1347...>
->
-> The assert(0) happening if trying to use --tcp-nodelay in a client
-> config is really not helpful at all.  When this assert(0) was removed,
-> another warning appeared that this could only be used in server
-> configs.  That itself is also quite silly, as clients can choose to
-> use --socket-flags TCP_NODELAY in the client config instead.  This
-> behaviour does not help the user in any way.
->
-> This patch removes the server-only restriction and rather provides
-> a more helpful warning when using --tcp-nodelay on the client side.
->
-> Trac: 489
->
-ACK. As already discussed on #openvpn :)
+Your patch has been applied to the master and release/2.3 branches.
 
-Arne
+commit 706283d3765d1ee62dbd913fbfc191855b92528d (master)
+commit 333566fd9d1951be97397f5f19d8bc78fb025af9 (release/2.3)
+
+Author: David Sommerseth
+Date:   Tue Dec 9 10:52:44 2014 +0100
+
+     sockets: Remove the limitation of --tcp-nodelay to be server-only
+
+     Signed-off-by: David Sommerseth <davids@...1347...>
+     Acked-by: Arne Schwabe <arne@...1227...>
+     Message-Id: 1418118764-17846-1-git-send-email-openvpn.list@...1114...
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/9334
+
+
+- --
+kind regards,
+
+David Sommerseth
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iEYEARECAAYFAlSGyE8ACgkQDC186MBRfrrnDQCfSoCEqihNQyGAF/Qtw6I7oefx
+P3wAoJtMA3n2U9pYNrwIi/OD808rWapE
+=tQwe
+-----END PGP SIGNATURE-----
 
