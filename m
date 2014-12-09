@@ -1,10 +1,14 @@
-Message-ID: <54874E0F.2070400@...1490...>
-Date: Wed, 10 Dec 2014 08:31:27 +1300
-From: Jason Haar <Jason_Haar@...1490...>
-MIME-Version: 1.0
+Date: Tue, 9 Dec 2014 21:51:12 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20141209205112.GB17158@...1296...>
 References: <54833CC6.8010507@...1490...> <5486B561.8080104@...515...>
 	<20141209190918.GA17158@...1296...>
-In-Reply-To: <20141209190918.GA17158@...1296...>
+	<54874E0F.2070400@...1490...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="G2kvLHdEX2DcGdqq"
+Content-Disposition: inline
+In-Reply-To: <54874E0F.2070400@...1490...>
 Subject: Re: [Openvpn-devel] feature request: get openvpn to use closest
 	server
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -15,30 +19,65 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
-To: Gert Doering <gert@...1296...>, =?windows-1252?Q?Samuli_Sepp=E4?= =?windows-1252?Q?nen?= <samuli@...515...>
+To: Jason Haar <Jason_Haar@...1490...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-On 10/12/14 08:09, Gert Doering wrote:
-> In what kind of scenario would an OpenVPN server not be available, if
-> the server itself still responds to pings?
-> "The server process crashed".
+--G2kvLHdEX2DcGdqq
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-LOL! It took Gert to spot the most obvious scenario ;-) That really
-re-enforces what I think about this needing to be an "openvpn ping" type
-solution: it is irrelevant if the server is up or even if openvpn tcp
-ports appear to be open, it's only evidence that openvpn is working that
-should be taken as evidence that openvpn is - well - working :-)
+Hi,
 
+On Wed, Dec 10, 2014 at 08:31:27AM +1300, Jason Haar wrote:
+> LOL! It took Gert to spot the most obvious scenario ;-)=20
+
+I'm good at breaking things :-)
+
+> That really
+> re-enforces what I think about this needing to be an "openvpn ping" type
+> solution: it is irrelevant if the server is up or even if openvpn tcp
+> ports appear to be open, it's only evidence that openvpn is working that
+> should be taken as evidence that openvpn is - well - working :-)
+
+Indeed.
+
+I think what you're proposing is quite a cool feature, but it is not easy
+to implement.
+
+The "ping" could actually be fairly easy, though it might need protocol
+changes (to permit a quick health check - for tls-auth authorized clients -=
+=20
+without a full TLS negotiation taking place).
+
+More work is the connection loop on the client side - right now, OpenVPN
+walks the list of "remotes" sequentially, and if one fails, tries the next
+one.  This would need to be changed to try them "all at once", at least
+for the "ping" check, and then decide on a connection order for the real
+connection...
+
+gert
 
 --=20
-Cheers
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-Jason Haar
-Corporate Information Security Manager, Trimble Navigation Ltd.
-Phone: +1 408 481 8171
-PGP Fingerprint: 7A2E 0407 C9A6 CAF6 2B9F 8422 C063 5EBB FE1D 66D1
+--G2kvLHdEX2DcGdqq
+Content-Type: application/pgp-signature
+Content-Disposition: inline
 
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
 
+iQCVAwUBVIdgwKkuBuNlUUl1AQKtFgP/c/BLrxFYBDkbXsA5rmz7wkZoWNyg6pFZ
+xfTvZusfl3+QUhN3yWs7WfwOebKvfdmOYLG1MN7Gd5blhHaYpPN6au/RNTRrb4NW
+O01SkefGrSuwvfqRaGLNbW+q97OXlRS6m6bj9qGfk+VJdAYwM+5jSgM9jto68i+R
+o+qIU3Q1LZc=
+=1pn1
+-----END PGP SIGNATURE-----
+
+--G2kvLHdEX2DcGdqq--
 
