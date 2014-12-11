@@ -1,12 +1,14 @@
-Message-ID: <1418303015.31745.78.camel@...1866...>
+Message-ID: <1418304072.31745.80.camel@...1866...>
 From: David Woodhouse <dwmw2@...1866...>
-Date: Thu, 11 Dec 2014 13:03:35 +0000
+Date: Thu, 11 Dec 2014 13:21:12 +0000
+In-Reply-To: <1418303015.31745.78.camel@...1866...>
+References: <1418303015.31745.78.camel@...1866...>
 Content-Type: multipart/signed; micalg="sha-1";
 	protocol="application/x-pkcs7-signature"; 
-	boundary="=-kYIKIs+MnjxSmA8sAYIp"
+	boundary="=-4DJ269z2FPUrZ3QU0i81"
 Mime-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] pkcs11: Load p11-kit-proxy.so module by
-	default
+Subject: [Openvpn-devel] [PATCH 2] Make 'provider' option to
+ --show-pkcs11-ids optional where p11-kit is present
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,84 +19,79 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: openvpn-devel@lists.sourceforge.net
 
---=-kYIKIs+MnjxSmA8sAYIp
+--=-4DJ269z2FPUrZ3QU0i81
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-If the user specifies --pkcs11-id or --pkcs-id-management but neglects
-to explicitly provide a --pkcs11-provider argument, and if the system
-has p11-kit installed, then load the p11-kit proxy module so that the
-system-configured tokens are available.
+Following on from the previous patch, this fixes --show-pkcs11-ids too.
 
 Trac: 490
 Signed-off-by: David Woodhouse <David.Woodhouse@...753...>
 ---
- configure.ac          |  7 +++++++
- doc/openvpn.8         | 10 ++++++++++
- src/openvpn/options.c |  9 +++++++++
- 3 files changed, 26 insertions(+)
+ doc/openvpn.8         |  8 +++++++-
+ src/openvpn/options.c | 21 ++++++++++++++++++++-
+ 2 files changed, 27 insertions(+), 2 deletions(-)
 
-diff --git a/configure.ac b/configure.ac
-index ddaa2b2..b549452 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -1139,6 +1139,13 @@ if test "${enable_pkcs11}" =3D "yes"; then
- 	OPTIONAL_PKCS11_HELPER_CFLAGS=3D"${PKCS11_HELPER_CFLAGS}"
- 	OPTIONAL_PKCS11_HELPER_LIBS=3D"${PKCS11_HELPER_LIBS}"
- 	AC_DEFINE([ENABLE_PKCS11], [1], [Enable PKCS11])
-+	PKG_CHECK_MODULES(
-+		[P11KIT],
-+		[p11-kit-1],
-+		[proxy_module=3D"`$PKG_CONFIG --variable=3Dproxy_module p11-kit-1`"
-+		 AC_DEFINE_UNQUOTED([DEFAULT_PKCS11_MODULE], "${proxy_module}", [p11-kit=
- proxy])],
-+		[]
-+	)
- fi
-=20
- if test "${enable_pedantic}" =3D "yes"; then
 diff --git a/doc/openvpn.8 b/doc/openvpn.8
-index 532eda5..0bdea1f 100644
+index 0bdea1f..49183ee 100644
 --- a/doc/openvpn.8
 +++ b/doc/openvpn.8
-@@ -4393,6 +4393,16 @@ This option can be used instead of
- .B \-\-cert, \-\-key,
- and
- .B \-\-pkcs12.
-+
-+If p11-kit is present on the system, its
-+.B p11-kit-proxy.so
-+module will be loaded by default if either the
-+.B \-\-pkcs11\-id
-+or
-+.B \-\-pkcs11\-id\-management
-+options are specified without
-+.B \-\-pkcs11\-provider
-+being given.
+@@ -5490,11 +5490,17 @@ adapter list.
+ .SS PKCS#11 Standalone Options:
  .\"*********************************************************
  .TP
- .B \-\-pkcs11-private-mode mode...
+-.B \-\-show-pkcs11-ids provider [cert_private]
++.B \-\-show-pkcs11-ids [provider] [cert_private]
+ (Standalone)
+ Show PKCS#11 token object list. Specify cert_private as 1
+ if certificates are stored as private objects.
+=20
++If p11-kit is present on the system, the
++.B provider
++argument is optional; if omitted the default
++.B p11-kit-proxy.so
++module will be queried.
++
+ .B \-\-verb
+ option can be used BEFORE this option to produce debugging information.
+ .\"*********************************************************
 diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index f0091c2..b33eb4a 100644
+index b33eb4a..5492516 100644
 --- a/src/openvpn/options.c
 +++ b/src/openvpn/options.c
-@@ -2447,6 +2447,15 @@ options_postprocess_mutate_invariant (struct options=
- *options)
- #endif
-     }
- #endif
-+
-+#ifdef DEFAULT_PKCS11_MODULE
-+  /* If p11-kit is present on the system then load its p11-kit-proxy.so
-+     by default if the user asks for PKCS#11 without otherwise specifying
-+     the module to use. */
-+  if (!options->pkcs11_providers[0] &&
-+      (options->pkcs11_id || options->pkcs11_id_management))
-+    options->pkcs11_providers[0] =3D DEFAULT_PKCS11_MODULE;
+@@ -6935,11 +6935,30 @@ add_option (struct options *options,
+ #endif /* ENABLE_SSL */
+ #endif /* ENABLE_CRYPTO */
+ #ifdef ENABLE_PKCS11
+-  else if (streq (p[0], "show-pkcs11-ids") && p[1])
++  else if (streq (p[0], "show-pkcs11-ids")
++#ifndef DEFAULT_PKCS11_MODULE
++	   && p[1]
 +#endif
- }
++	   )
+     {
+       char *provider =3D  p[1];
+       bool cert_private =3D (p[2] =3D=3D NULL ? false : ( atoi (p[2]) !=3D=
+ 0 ));
 =20
- static void
++#ifdef DEFAULT_PKCS11_MODULE
++      if (!provider)
++	provider =3D DEFAULT_PKCS11_MODULE;
++      else if (!p[2]) {
++	char *endp =3D NULL;
++	int i =3D strtol(provider, &endp, 10);
++
++	if (*endp =3D=3D 0) {
++	  /* There was one argument, and it was purely numeric.
++	     Interpret it as the cert_private argument */
++	  provider =3D DEFAULT_PKCS11_MODULE;
++	  cert_private =3D i;
++	}
++      }
++#endif
+       VERIFY_PERMISSION (OPT_P_GENERAL);
+=20
+       set_debug_level (options->verbosity, SDL_CONSTRAIN);
 --=20
 2.1.0
 
@@ -103,7 +100,7 @@ index f0091c2..b33eb4a 100644
 David Woodhouse                            Open Source Technology Centre
 David.Woodhouse@...753...                              Intel Corporation
 
---=-kYIKIs+MnjxSmA8sAYIp
+--=-4DJ269z2FPUrZ3QU0i81
 Content-Type: application/x-pkcs7-signature; name="smime.p7s"
 Content-Disposition: attachment; filename="smime.p7s"
 Content-Transfer-Encoding: base64
@@ -197,20 +194,20 @@ Cmr47UQpqQ7BjK0xggNvMIIDawIBATCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0
 Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcxODA2
 BgNVBAMTL1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENBAgMJ
 2TIwCQYFKw4DAhoFAKCCAa8wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUx
-DxcNMTQxMjExMTMwMzM1WjAjBgkqhkiG9w0BCQQxFgQUlBLxtcugcnpf6izpLJYadGGbo7gwgaUG
+DxcNMTQxMjExMTMyMTEyWjAjBgkqhkiG9w0BCQQxFgQUb3HJnQfT0/bpPKl1kk1/ZKX5+dowgaUG
 CSsGAQQBgjcQBDGBlzCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0Q29tIEx0ZC4x
 KzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcxODA2BgNVBAMTL1N0
 YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENBAgMJ2TIwgacGCyqG
 SIb3DQEJEAILMYGXoIGUMIGMMQswCQYDVQQGEwJJTDEWMBQGA1UEChMNU3RhcnRDb20gTHRkLjEr
 MCkGA1UECxMiU2VjdXJlIERpZ2l0YWwgQ2VydGlmaWNhdGUgU2lnbmluZzE4MDYGA1UEAxMvU3Rh
 cnRDb20gQ2xhc3MgMSBQcmltYXJ5IEludGVybWVkaWF0ZSBDbGllbnQgQ0ECAwnZMjANBgkqhkiG
-9w0BAQEFAASCAQAJwh5ygbyMnn6LCZC5KIQHKM0pD+5VmbpzV1NYikPoXDKmGGUNl8QTsKFMQ0zX
-p7QThIThElwADw2lnJSWdx0mMDHqBlN9hnOeWMNZs9isE8oO5kBs/k2pPc492D7ScgbPBb0Jgvk3
-cTCD3018Jg2t5E8ryu1GOyBQsLb7w2nU7aXfbsrH8NJTF0eXPNFTr3XpOsYBuvL4vnmTwWzq1lu0
-UDAoeUwS6gGx41X3vpDO3xWW48Z4wsLtJMNAHQvGkPA4TJmygWXR+c1MVEmDmokG9t1szb+GVs1F
-e8BpNYg4TsqX9KBU11I4dBzfD59QnzPodpnh13OY3m/gWCAXFpn8AAAAAAAA
+9w0BAQEFAASCAQDD6vKTRBnlEWLaqpCrzjCdZ14TyKTx31/XYP0cVYwzUXBARCL84isxyhNQrm0v
+W0q8MqXGa78QGfxdZy0XMwd17t4anxM/5AwwjVS90ABUsRobKz2awslS16+uecxuOaRin69oogw6
+2YASe8BMYBZeFMfURPfXyx78gST0f8H1IXkCTOCDb+SvZcMGBpauJsFVwftoig31FfY+Iq2uIU0N
+BdDthdXaDII31DZZ0ckPc8V3uFa46ZWh/PGyaqsKnq5iRtVwbIiErTGftjm3mrQCehmOXeVeCEvB
+uvHsjf+FIOROm/0gnV7ooTqJr/I9zn5/xcnvucSH+kNmEBQ76q+ZAAAAAAAA
 
 
---=-kYIKIs+MnjxSmA8sAYIp--
+--=-4DJ269z2FPUrZ3QU0i81--
 
 
