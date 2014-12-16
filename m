@@ -1,12 +1,11 @@
-Message-ID: <548D9046.5000600@...1856...>
-Date: Sun, 14 Dec 2014 14:27:34 +0100
+Message-ID: <54909E85.8040705@...1856...>
+Date: Tue, 16 Dec 2014 22:05:09 +0100
 From: Steffan Karger <steffan@...1856...>
 MIME-Version: 1.0
-References: <2215306.x9ci9DhAZ9@...2001...>
-In-Reply-To: <2215306.x9ci9DhAZ9@...2001...>
-Content-Type: multipart/mixed; boundary="------------000709070807010109060107"
-Subject: Re: [Openvpn-devel] Make OpenVPN set routes on Windows Vista and
- later
+References: <1418303015.31745.78.camel@...1866...>
+In-Reply-To: <1418303015.31745.78.camel@...1866...>
+Subject: Re: [Openvpn-devel] [PATCH] pkcs11: Load p11-kit-proxy.so module by
+ default
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,127 +14,103 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-This is a multi-part message in MIME format.
---------------000709070807010109060107
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
-
-Hi Heiko,
-
-On 16-11-14 13:51, Heiko Hund wrote:
-> Please review and comment.
-
-This morning I finally found some time to set up a windows build
-environment to cross-compile the windows builds from linux. I'm trying
-to find more time to really review and test. For now just some
-preliminary stuff I came across:
-
-(1) open_tun(), close_tun(), etc :
-Instead of passing the options struct, consider just passing the
-msg_channel. That would require it to be something more generic than
-HANDLE, but I think this model makes sense for other platforms too.
-
-(2) includes: you should include "openvpn-msg.h", instead of
-"include/openvpn-msg.h" (that's how it's done for openvpn-plugin.h too):
-
-openvpn/src/openvpn/route.c:48:33: fatal error: include/openvpn-msg.h:
-No such file or directory
- #include "include/openvpn-msg.h"
-
-Attached a patch with the changes I had to make.
-
-(3) mingw/GCC has a warning for me:
-
-openvpn/src/openvpnserv/interactive.c:708:11: warning: enumeration value
-=91_undo_type_max=92 not handled in switch [-Wswitch]
-           switch (type)
-           ^
-
-For others: if you have Windows build and test setups, please help out.
-Especially Windows users willing to test are welcome. This feature
-deserves more attention :)
+ACK. Using smartcards really improves secuirty, but pkcs11 can have a
+steep learning curve. Making it easier for users is a good thing.
 
 -Steffan
 
---------------000709070807010109060107
-Content-Type: text/x-patch;
- name="0001-Fix-openvpn-msg.h-includes.patch"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: attachment;
-	filename="0001-Fix-openvpn-msg.h-includes.patch"
-
-=46rom 1fa191c9edfdef1b22dc04b789162a275cc507ef Mon Sep 17 00:00:00 2001
-From: Steffan Karger <steffan@...1856...>
-Date: Sun, 14 Dec 2014 14:12:42 +0100
-Subject: [PATCH] Fix openvpn-msg.h includes
-
-Signed-off-by: Steffan Karger <steffan@...1856...>
----
- src/openvpn/route.c           | 2 +-
- src/openvpn/tun.c             | 2 +-
- src/openvpnserv/Makefile.am   | 3 +++
- src/openvpnserv/interactive.c | 2 +-
- 4 files changed, 6 insertions(+), 3 deletions(-)
-
-diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index 6d7e8e2..55ab11e 100644
---- a/src/openvpn/route.c
-+++ b/src/openvpn/route.c
-@@ -45,7 +45,7 @@
-=20
- #include "memdbg.h"
-=20
--#include "include/openvpn-msg.h"
-+#include "openvpn-msg.h"
-=20
- #ifdef WIN32
- #define METRIC_NOT_USED ((DWORD)-1)
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index 9b2fa1a..0b629fa 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -50,7 +50,7 @@
-=20
- #include "memdbg.h"
-=20
--#include "include/openvpn-msg.h"
-+#include "openvpn-msg.h"
-=20
- #include <string.h>
-=20
-diff --git a/src/openvpnserv/Makefile.am b/src/openvpnserv/Makefile.am
-index 6088287..4bb1c27 100644
---- a/src/openvpnserv/Makefile.am
-+++ b/src/openvpnserv/Makefile.am
-@@ -17,6 +17,9 @@ EXTRA_DIST =3D \
- 	openvpnserv.vcxproj \
- 	openvpnserv.vcxproj.filters
-=20
-+AM_CPPFLAGS =3D \
-+	-I$(top_srcdir)/include
-+
- if WIN32
- sbin_PROGRAMS =3D openvpnserv
- openvpnserv_CFLAGS =3D \
-diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.=
-c
-index 368450b..0040d85 100644
---- a/src/openvpnserv/interactive.c
-+++ b/src/openvpnserv/interactive.c
-@@ -34,7 +34,7 @@
- #include <stdio.h>
- #include <sddl.h>
-=20
--#include "include/openvpn-msg.h"
-+#include "openvpn-msg.h"
-=20
- #define IO_TIMEOUT  2000 /*ms*/
-=20
---=20
-1.9.1
-
-
---------------000709070807010109060107--
+On 11-12-14 14:03, David Woodhouse wrote:
+> If the user specifies --pkcs11-id or --pkcs-id-management but neglects
+> to explicitly provide a --pkcs11-provider argument, and if the system
+> has p11-kit installed, then load the p11-kit proxy module so that the
+> system-configured tokens are available.
+> 
+> Trac: 490
+> Signed-off-by: David Woodhouse <David.Woodhouse@...753...>
+> ---
+>  configure.ac          |  7 +++++++
+>  doc/openvpn.8         | 10 ++++++++++
+>  src/openvpn/options.c |  9 +++++++++
+>  3 files changed, 26 insertions(+)
+> 
+> diff --git a/configure.ac b/configure.ac
+> index ddaa2b2..b549452 100644
+> --- a/configure.ac
+> +++ b/configure.ac
+> @@ -1139,6 +1139,13 @@ if test "${enable_pkcs11}" = "yes"; then
+>  	OPTIONAL_PKCS11_HELPER_CFLAGS="${PKCS11_HELPER_CFLAGS}"
+>  	OPTIONAL_PKCS11_HELPER_LIBS="${PKCS11_HELPER_LIBS}"
+>  	AC_DEFINE([ENABLE_PKCS11], [1], [Enable PKCS11])
+> +	PKG_CHECK_MODULES(
+> +		[P11KIT],
+> +		[p11-kit-1],
+> +		[proxy_module="`$PKG_CONFIG --variable=proxy_module p11-kit-1`"
+> +		 AC_DEFINE_UNQUOTED([DEFAULT_PKCS11_MODULE], "${proxy_module}", [p11-kit proxy])],
+> +		[]
+> +	)
+>  fi
+>  
+>  if test "${enable_pedantic}" = "yes"; then
+> diff --git a/doc/openvpn.8 b/doc/openvpn.8
+> index 532eda5..0bdea1f 100644
+> --- a/doc/openvpn.8
+> +++ b/doc/openvpn.8
+> @@ -4393,6 +4393,16 @@ This option can be used instead of
+>  .B \-\-cert, \-\-key,
+>  and
+>  .B \-\-pkcs12.
+> +
+> +If p11-kit is present on the system, its
+> +.B p11-kit-proxy.so
+> +module will be loaded by default if either the
+> +.B \-\-pkcs11\-id
+> +or
+> +.B \-\-pkcs11\-id\-management
+> +options are specified without
+> +.B \-\-pkcs11\-provider
+> +being given.
+>  .\"*********************************************************
+>  .TP
+>  .B \-\-pkcs11-private-mode mode...
+> diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+> index f0091c2..b33eb4a 100644
+> --- a/src/openvpn/options.c
+> +++ b/src/openvpn/options.c
+> @@ -2447,6 +2447,15 @@ options_postprocess_mutate_invariant (struct options *options)
+>  #endif
+>      }
+>  #endif
+> +
+> +#ifdef DEFAULT_PKCS11_MODULE
+> +  /* If p11-kit is present on the system then load its p11-kit-proxy.so
+> +     by default if the user asks for PKCS#11 without otherwise specifying
+> +     the module to use. */
+> +  if (!options->pkcs11_providers[0] &&
+> +      (options->pkcs11_id || options->pkcs11_id_management))
+> +    options->pkcs11_providers[0] = DEFAULT_PKCS11_MODULE;
+> +#endif
+>  }
+>  
+>  static void
+> 
+> 
+> 
+> ------------------------------------------------------------------------------
+> Download BIRT iHub F-Type - The Free Enterprise-Grade BIRT Server
+> from Actuate! Instantly Supercharge Your Business Reports and Dashboards
+> with Interactivity, Sharing, Native Excel Exports, App Integration & more
+> Get technology previously reserved for billion-dollar corporations, FREE
+> http://pubads.g.doubleclick.net/gampad/clk?id=164703151&iu=/4140/ostg.clktrk
+> 
+> 
+> 
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+> 
 
