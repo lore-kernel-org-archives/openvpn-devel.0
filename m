@@ -1,16 +1,17 @@
-Message-ID: <1418812605.15146.263.camel@...1866...>
+Message-ID: <1418905506.21260.6.camel@...1866...>
 From: David Woodhouse <dwmw2@...1866...>
-Date: Wed, 17 Dec 2014 10:36:45 +0000
-In-Reply-To: <54915304.7070204@...1435...>
+Date: Thu, 18 Dec 2014 12:25:06 +0000
+In-Reply-To: <1418812605.15146.263.camel@...1866...>
 References: <1418303015.31745.78.camel@...1866...>
 	<1418304072.31745.80.camel@...1866...> <5490A1C9.6@...1856...>
 	<1418808296.15146.256.camel@...1866...>
 	<54915304.7070204@...1435...>
+	<1418812605.15146.263.camel@...1866...>
 Content-Type: multipart/signed; micalg="sha-1";
 	protocol="application/x-pkcs7-signature"; 
-	boundary="=-C/vPn1dboS6esnhALWRa"
+	boundary="=-xn/kQJKcJupIBQf5NeiS"
 Mime-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 2 v2] Make 'provider' option to
+Subject: [Openvpn-devel] [PATCH 2 v3] Make 'provider' option to
  --show-pkcs11-ids optional where p11-kit is present
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -23,25 +24,21 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: Steffan Karger <steffan.karger@...1435...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---=-C/vPn1dboS6esnhALWRa
+--=-xn/kQJKcJupIBQf5NeiS
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Following on from the previous patch, this fixes --show-pkcs11-ids too.
+
 
 Trac: 490
 Signed-off-by: David Woodhouse <David.Woodhouse@...753...>
 ---
+v2: Nicer error message if no provider given when there's no default.
+v3: Get the usage messages the right way round (s/ifndef/ifdef).
 
-As I compose the email, I spot that we're actually now looking at the
-value of p[2] even when p[1] is NULL. So if the add_option() function is
-supposed to be treating p[] as a traditional NULL-terminated array of
-pointers where it's invalid to access anything after the NULL one,
-that's bad.
-
-In practice, however, it's always an array of MAX_PARMS which has been
-entirely cleared, so it's not really a problem. I can fix it anyway if
-you prefer...
+I did look at cleaning it up to stop looking at p[2] even when p[1]
+isn't set, but it makes it somewhat more complicated for no *real*
+benefit. So unless someone really objects, I'll leave it as it is.
 
  doc/openvpn.8         |  8 +++++++-
  src/openvpn/options.c | 30 ++++++++++++++++++++++++++++--
@@ -71,7 +68,7 @@ index 0bdea1f..49183ee 100644
  option can be used BEFORE this option to produce debugging information.
  .\"*********************************************************
 diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index b33eb4a..66453b5 100644
+index b33eb4a..226b203 100644
 --- a/src/openvpn/options.c
 +++ b/src/openvpn/options.c
 @@ -738,7 +738,11 @@ static const char usage_message[] =3D
@@ -80,7 +77,7 @@ index b33eb4a..66453b5 100644
    "PKCS#11 standalone options:\n"
 -  "--show-pkcs11-ids provider [cert_private] : Show PKCS#11 available ids.=
 \n"=20
-+#ifndef DEFAULT_PKCS11_MODULE
++#ifdef DEFAULT_PKCS11_MODULE
 +  "--show-pkcs11-ids [provider] [cert_private] : Show PKCS#11 available id=
 s.\n"
 +#else
@@ -131,12 +128,11 @@ s.\n"
 2.1.0
 
 
-
 --=20
 David Woodhouse                            Open Source Technology Centre
 David.Woodhouse@...753...                              Intel Corporation
 
---=-C/vPn1dboS6esnhALWRa
+--=-xn/kQJKcJupIBQf5NeiS
 Content-Type: application/x-pkcs7-signature; name="smime.p7s"
 Content-Disposition: attachment; filename="smime.p7s"
 Content-Transfer-Encoding: base64
@@ -230,20 +226,20 @@ Cmr47UQpqQ7BjK0xggNvMIIDawIBATCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0
 Q29tIEx0ZC4xKzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcxODA2
 BgNVBAMTL1N0YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENBAgMJ
 2TIwCQYFKw4DAhoFAKCCAa8wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUx
-DxcNMTQxMjE3MTAzNjQ1WjAjBgkqhkiG9w0BCQQxFgQUuojv1XIGzo8NXb9u2gAAIzRKWQwwgaUG
+DxcNMTQxMjE4MTIyNTA2WjAjBgkqhkiG9w0BCQQxFgQUJetENSezsOrhgL8my6pGPyPqO7AwgaUG
 CSsGAQQBgjcQBDGBlzCBlDCBjDELMAkGA1UEBhMCSUwxFjAUBgNVBAoTDVN0YXJ0Q29tIEx0ZC4x
 KzApBgNVBAsTIlNlY3VyZSBEaWdpdGFsIENlcnRpZmljYXRlIFNpZ25pbmcxODA2BgNVBAMTL1N0
 YXJ0Q29tIENsYXNzIDEgUHJpbWFyeSBJbnRlcm1lZGlhdGUgQ2xpZW50IENBAgMJ2TIwgacGCyqG
 SIb3DQEJEAILMYGXoIGUMIGMMQswCQYDVQQGEwJJTDEWMBQGA1UEChMNU3RhcnRDb20gTHRkLjEr
 MCkGA1UECxMiU2VjdXJlIERpZ2l0YWwgQ2VydGlmaWNhdGUgU2lnbmluZzE4MDYGA1UEAxMvU3Rh
 cnRDb20gQ2xhc3MgMSBQcmltYXJ5IEludGVybWVkaWF0ZSBDbGllbnQgQ0ECAwnZMjANBgkqhkiG
-9w0BAQEFAASCAQBJK19IOSqCYbIMocDAlY7OqhnWkHFOsTNJNSmCD/cXTUnRBbbGOMEh7rSKqHUi
-6KrQr8DU9d2iZ2ejDxAepJNCHgCwepC3RknjawAhQoWWMep2+rq0TBOciMrFUUzMvIq9hbylLtVZ
-PSEjDFLrFtPAvvLhbN+cXiAZrvQVhrjC5sQRmzdXIqLqFJKxKEGcTosGPZNZ+2MoeyHqFTRvy8eF
-zlx4XB31WFrZLw5fT9jCGTjFGFHD0AN20ERCc6P6aGAqZUr/XM5MFstHGliLefINBAJIN/iy7c4S
-bACbz+XQoWFwV1DU/HPMrYjvmSvmu5XVGWqzBTVDRDuwflu2GqurAAAAAAAA
+9w0BAQEFAASCAQAiQMefH3NHfAQ3nZThSZzn9xTOLQbjOjjdQKsvYWUb0cG7vbOs5XDOZCJnI7dH
+OOBOebid8u4wwuwKyN93qiBeiBgF0Agp/KNJt+Rc45xDte4jX9vWGTzSB+IJUMfS4O9VmSEM3D4l
+zrRPS7RhvETVJCRb6bqZfzzXaneXHFbkNXFN9m51gPhN3mFlP1N8bwvUb2duze77UWgCha4Mkjej
+M5F3GEyPXKd6+WKl2ERVHc+qc+5WMJSmmwPgOEbP1TEXySuTNDHpq6SpBGeIAT/8ROf3gQrVr57R
+KPSy7RkatPpnPH0zm6rXF7ArWw0m+irVfQubFWPdhUQ/Vym2sTZdAAAAAAAA
 
 
---=-C/vPn1dboS6esnhALWRa--
+--=-xn/kQJKcJupIBQf5NeiS--
 
 
