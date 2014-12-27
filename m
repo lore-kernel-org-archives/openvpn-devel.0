@@ -1,10 +1,8 @@
-Date: Sat, 27 Dec 2014 15:53:09 +0100 (CET)
-Message-Id: <201412271453.sBREr9VF021807@...1295...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1418905506.21260.6.camel@...1866...>
-References: <1418905506.21260.6.camel@...1866...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Make 'provider' option to
-	--show-pkcs11-ids optional where p11-kit is present
+Date: Sat, 27 Dec 2014 21:59:43 +0100
+Message-Id: <1419713983-16272-1-git-send-email-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH] Remove count_netmask_bits(),
+	convert users to use netmask_to_netbits2()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,35 +13,131 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: David Woodhouse <dwmw2@...1866...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the release/2.3 and master branches.
+The previous Linux/iproute2 code converted binary netmasks to string
+representation (print_in_addr_t()), just to immediately scanf() it back
+to binary to count bits.  netmask_to_netbits2() directly works on the
+in_addr_t.
 
-Thanks for improving our pkcs#11 support.
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+ src/openvpn/misc.c  | 26 --------------------------
+ src/openvpn/misc.h  |  4 ----
+ src/openvpn/route.c |  4 ++--
+ src/openvpn/route.h |  1 +
+ src/openvpn/tun.c   |  4 ++--
+ 5 files changed, 5 insertions(+), 34 deletions(-)
 
-I have taken the liberty to fix up some whitespace to conform to our current
-coding style - which we intend to change, but for the time being, we stick
-to it... - only whitespace, nothing else.
-
-commit a91a06cb291414c9e657377e44f7a57343ae7f5a (release/2.3)
-commit 7c1d614c5c5282a73cb799f919eac6750363783a (master)
-
-Author: David Woodhouse
-Date:   Thu Dec 18 12:25:06 2014 +0000
-
-     Make 'provider' option to --show-pkcs11-ids optional where p11-kit is present
-
-     Signed-off-by: David Woodhouse <David.Woodhouse@...753...>
-     Acked-by: Steffan Karger <steffan.karger@...1435...>
-     Message-Id: <1418905506.21260.6.camel@...1866...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/9355
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
+index 61bc523..5627cb9 100644
+--- a/src/openvpn/misc.c
++++ b/src/openvpn/misc.c
+@@ -827,32 +827,6 @@ setenv_str_i (struct env_set *es, const char *name, const char *value, const int
+   gc_free (&gc);
+ }
+ 
+-/*
+- * taken from busybox networking/ifupdown.c
+- */
+-unsigned int
+-count_bits(unsigned int a)
+-{
+-  unsigned int result;
+-  result = (a & 0x55) + ((a >> 1) & 0x55);
+-  result = (result & 0x33) + ((result >> 2) & 0x33);
+-  return((result & 0x0F) + ((result >> 4) & 0x0F));
+-}
+-
+-int
+-count_netmask_bits(const char *dotted_quad)
+-{
+-  unsigned int result, a, b, c, d;
+-  /* Found a netmask...  Check if it is dotted quad */
+-  if (sscanf(dotted_quad, "%u.%u.%u.%u", &a, &b, &c, &d) != 4)
+-    return -1;
+-  result = count_bits(a);
+-  result += count_bits(b);
+-  result += count_bits(c);
+-  result += count_bits(d);
+-  return ((int)result);
+-}
+-
+ /* return true if filename can be opened for read */
+ bool
+ test_file (const char *filename)
+diff --git a/src/openvpn/misc.h b/src/openvpn/misc.h
+index 41748bd..5fe085e 100644
+--- a/src/openvpn/misc.h
++++ b/src/openvpn/misc.h
+@@ -166,10 +166,6 @@ const char **make_env_array (const struct env_set *es,
+ const char **make_arg_array (const char *first, const char *parms, struct gc_arena *gc);
+ const char **make_extended_arg_array (char **p, struct gc_arena *gc);
+ 
+-/* convert netmasks for iproute2 */
+-int count_netmask_bits(const char *);
+-unsigned int count_bits(unsigned int );
+-
+ /* an analogue to the random() function, but use OpenSSL functions if available */
+ #ifdef ENABLE_CRYPTO
+ long int get_random(void);
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index 5d18213..b56f620 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -1288,7 +1288,7 @@ add_route (struct route_ipv4 *r,
+   argv_printf (&argv, "%s route add %s/%d",
+   	      iproute_path,
+ 	      network,
+-             count_netmask_bits(netmask));
++              netmask_to_netbits2(r->netmask));
+ 
+   if (r->flags & RT_METRIC_DEFINED)
+     argv_printf_cat (&argv, "metric %d", r->metric);
+@@ -1765,7 +1765,7 @@ delete_route (struct route_ipv4 *r,
+   argv_printf (&argv, "%s route del %s/%d",
+   	      iproute_path,
+ 	      network,
+-	      count_netmask_bits(netmask));
++              netmask_to_netbits2(r->netmask));
+ #else
+   argv_printf (&argv, "%s del -net %s netmask %s",
+ 	       ROUTE_PATH,
+diff --git a/src/openvpn/route.h b/src/openvpn/route.h
+index f3c0150..3cec08d 100644
+--- a/src/openvpn/route.h
++++ b/src/openvpn/route.h
+@@ -305,6 +305,7 @@ static inline bool test_routes (const struct route_list *rl, const struct tuntap
+ #endif
+ 
+ bool netmask_to_netbits (const in_addr_t network, const in_addr_t netmask, int *netbits);
++int netmask_to_netbits2 (in_addr_t netmask);
+ 
+ static inline in_addr_t
+ netbits_to_netmask (const int netbits)
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index e92edc2..11a6d71 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -722,7 +722,7 @@ do_ifconfig (struct tuntap *tt,
+ 				  iproute_path,
+ 				  actual,
+ 				  ifconfig_local,
+-				  count_netmask_bits(ifconfig_remote_netmask),
++				  netmask_to_netbits2(tt->remote_netmask),
+ 				  ifconfig_broadcast
+ 				  );
+ 		  argv_msg (M_INFO, &argv);
+@@ -1819,7 +1819,7 @@ close_tun (struct tuntap *tt)
+ 			iproute_path,
+ 			tt->actual_name,
+ 			print_in_addr_t (tt->local, 0, &gc),
+-			count_netmask_bits(print_in_addr_t (tt->remote_netmask, 0, &gc))
++		        netmask_to_netbits2(tt->remote_netmask)
+ 			);
+ 	      }
+ #else
+-- 
+2.0.4
 
 
