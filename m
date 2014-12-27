@@ -1,9 +1,10 @@
-Message-ID: <54942F7B.7020501@...515...>
-Date: Fri, 19 Dec 2014 16:00:27 +0200
-From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] Topics for next Monday's (22nd Dec 2014) community
-	meeting
+Date: Sat, 27 Dec 2014 15:53:03 +0100 (CET)
+Message-Id: <201412271453.sBREr3QG022162@...1295...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <1418303015.31745.78.camel@...1866...>
+References: <1418303015.31745.78.camel@...1866...>
+Subject: [Openvpn-devel] [PATCH applied] Re: pkcs11: Load p11-kit-proxy.so
+	module by default
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,45 +13,31 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-15"
-Content-Transfer-Encoding: quoted-printable
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: David Woodhouse <dwmw2@...1866...>
+Cc: openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+Your patch has been applied to the release/2.3 and master branches.
 
-Hi,
+commit 6f1d3cf062d5c33cbad4d521d157d43d53ffc7d1 (release/2.3)
+commit 3c6d32205db88348c07c720b710b41548497819c (master)
 
-We're having an IRC meeting on Monday, starting at 20:00 CET (19:00
-UTC) on #openvpn-devel@...1422... Current topic list along with
-basic information is here:
+Author: David Woodhouse
+Date:   Thu Dec 11 13:03:35 2014 +0000
 
-<https://community.openvpn.net/openvpn/wiki/Topics-2014-12-22>
+     pkcs11: Load p11-kit-proxy.so module by default
 
-If you have any other things you'd like to bring up, respond to this
-mail, send me mail privately or add them to the list yourself.
+     Signed-off-by: David Woodhouse <David.Woodhouse@...753...>
+     Acked-by: Steffan Karger <steffan.karger@...1435...>
+     Message-Id: <1418303015.31745.78.camel@...1866...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/9342
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-In case you can't attend the meeting, please feel free to make comments
-on the topics by responding to this email or to the summary email sent
-after the meeting. Whenever possible, we'll also respond to existing,
-related email threads.
 
-NOTE: It's required to use a registered Freenode IRC nickname to join
-#openvpn-devel - look here for details:
+--
+kind regards,
 
-<https://community.openvpn.net/openvpn/wiki/GettingHelp#DeveloperIRCchannel>
+Gert Doering
 
-- --=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iEYEARECAAYFAlSUL3sACgkQwp2X7RmNIqO89ACePHV3PzUZ5lMHfCmsglRJA5yw
-TCIAoOSN4M8Q77JbbnXTLY9gDHMSx363
-=3DV4c+
------END PGP SIGNATURE-----
 
