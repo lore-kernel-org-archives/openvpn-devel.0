@@ -1,10 +1,10 @@
-Date: Sat, 27 Dec 2014 15:53:03 +0100 (CET)
-Message-Id: <201412271453.sBREr3QG022162@...1295...>
+Date: Sat, 27 Dec 2014 15:53:09 +0100 (CET)
+Message-Id: <201412271453.sBREr9VF021807@...1295...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1418303015.31745.78.camel@...1866...>
-References: <1418303015.31745.78.camel@...1866...>
-Subject: [Openvpn-devel] [PATCH applied] Re: pkcs11: Load p11-kit-proxy.so
-	module by default
+In-Reply-To: <1418905506.21260.6.camel@...1866...>
+References: <1418905506.21260.6.camel@...1866...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Make 'provider' option to
+	--show-pkcs11-ids optional where p11-kit is present
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,18 +20,24 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Your patch has been applied to the release/2.3 and master branches.
 
-commit 6f1d3cf062d5c33cbad4d521d157d43d53ffc7d1 (release/2.3)
-commit 3c6d32205db88348c07c720b710b41548497819c (master)
+Thanks for improving our pkcs#11 support.
+
+I have taken the liberty to fix up some whitespace to conform to our current
+coding style - which we intend to change, but for the time being, we stick
+to it... - only whitespace, nothing else.
+
+commit a91a06cb291414c9e657377e44f7a57343ae7f5a (release/2.3)
+commit 7c1d614c5c5282a73cb799f919eac6750363783a (master)
 
 Author: David Woodhouse
-Date:   Thu Dec 11 13:03:35 2014 +0000
+Date:   Thu Dec 18 12:25:06 2014 +0000
 
-     pkcs11: Load p11-kit-proxy.so module by default
+     Make 'provider' option to --show-pkcs11-ids optional where p11-kit is present
 
      Signed-off-by: David Woodhouse <David.Woodhouse@...753...>
      Acked-by: Steffan Karger <steffan.karger@...1435...>
-     Message-Id: <1418303015.31745.78.camel@...1866...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/9342
+     Message-Id: <1418905506.21260.6.camel@...1866...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/9355
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
