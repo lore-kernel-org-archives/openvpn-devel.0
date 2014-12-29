@@ -1,10 +1,8 @@
-Date: Sun, 28 Dec 2014 19:34:51 +0100 (CET)
-Message-Id: <201412281834.sBSIYpgD012955@...1295...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1419762313-31233-1-git-send-email-steffan@...1856...>
-References: <1419762313-31233-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Set tls-version-max to 1.1 if
-	cryptoapicert is used
+Date: Mon, 29 Dec 2014 18:48:45 +0100
+Message-Id: <1419875325-96015-1-git-send-email-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH] Print remote IPv4 address on a dual-stack
+	v6 socket in IPv4 format
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,29 +13,77 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Steffan Karger <steffan@...1856...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-ACK. Your patch has been applied to the master and release/2.3 branches.
+Previously, the code would print IPv4-mapped format ("::ffff:1.2.3.4"),
+which is technically correct but adds no extra value, and is confusingly
+different from the output if using a v4 socket.  Print "1.2.3.4" instead,
+whatever socket type is used.
 
-commit 04dcb96cc1f525afee3f830248ecaa22d1b4a4c2 (master)
-commit 77f8a56a1acc1d5e7f042c9bc393e83541155483 (release/2.3)
+Affects client IP address in log file, status output (mroute_addr_print_ex),
+and environment (setenv_sockaddr).
 
-Author: Steffan Karger
-Date:   Sun Dec 28 11:25:13 2014 +0100
+The fact that a dual-stack socket was used is still visible in the initial
+peer connect message in the log:
+  '... Peer Connection Initiated with [AF_INET6]::ffff:1.1.3.4:53779'
 
-     Set tls-version-max to 1.1 if cryptoapicert is used
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+ src/openvpn/mroute.c | 12 ++++++++++--
+ src/openvpn/socket.c | 16 +++++++++++++---
+ 2 files changed, 23 insertions(+), 5 deletions(-)
 
-     Signed-off-by: Steffan Karger <steffan@...1856...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1419762313-31233-1-git-send-email-steffan@...1856...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/9361
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/src/openvpn/mroute.c b/src/openvpn/mroute.c
+index ba4ef46..972f1dd 100644
+--- a/src/openvpn/mroute.c
++++ b/src/openvpn/mroute.c
+@@ -426,8 +426,16 @@ mroute_addr_print_ex (const struct mroute_addr *ma,
+ 	  break;
+ 	case MR_ADDR_IPV6:
+ 	  {
+-	    buf_printf (&out, "%s",
+-		  print_in6_addr( *(struct in6_addr*)&maddr.addr, 0, gc)); 
++	    if ( IN6_IS_ADDR_V4MAPPED( (struct in6_addr*)&maddr.addr ) )
++	      {
++		buf_printf (&out, "%s",
++		     print_in_addr_t( *(in_addr_t*)(&maddr.addr[12]), IA_NET_ORDER, gc));
++	      }
++	    else
++	      {
++	        buf_printf (&out, "%s",
++		      print_in6_addr( *(struct in6_addr*)&maddr.addr, 0, gc));
++	      }
+ 	    if (maddr.type & MR_WITH_NETBITS)
+ 	      {
+ 		buf_printf (&out, "/%d", maddr.netbits);
+diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
+index 331a9d9..f5c740d 100644
+--- a/src/openvpn/socket.c
++++ b/src/openvpn/socket.c
+@@ -2573,9 +2573,19 @@ setenv_sockaddr (struct env_set *es, const char *name_prefix, const struct openv
+ 	}
+       break;
+     case AF_INET6:
+-      openvpn_snprintf (name_buf, sizeof (name_buf), "%s_ip6", name_prefix);
+-      getnameinfo(&addr->addr.sa, sizeof (struct sockaddr_in6),
+-		  buf, sizeof(buf), NULL, 0, NI_NUMERICHOST);
++      if ( IN6_IS_ADDR_V4MAPPED( &addr->addr.in6.sin6_addr ))
++	{
++	  struct in_addr ia;
++	  ia.s_addr = *(in_addr_t *)&addr->addr.in6.sin6_addr.s6_addr[12] ;
++	  openvpn_snprintf (name_buf, sizeof (name_buf), "%s_ip", name_prefix);
++	  openvpn_snprintf (buf, sizeof(buf), "%s", inet_ntoa(ia) );
++	}
++      else
++        {
++	  openvpn_snprintf (name_buf, sizeof (name_buf), "%s_ip6", name_prefix);
++	  getnameinfo(&addr->addr.sa, sizeof (struct sockaddr_in6),
++		      buf, sizeof(buf), NULL, 0, NI_NUMERICHOST);
++	}
+       setenv_str (es, name_buf, buf);
+ 
+       if ((flags & SA_IP_PORT) && addr->addr.in6.sin6_port)
+-- 
+2.1.2
 
 
