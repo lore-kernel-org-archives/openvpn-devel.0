@@ -1,15 +1,10 @@
-Date: Wed, 31 Dec 2014 15:30:43 +0100
+Date: Wed, 31 Dec 2014 15:31:13 +0100 (CET)
+Message-Id: <201412311431.sBVEVDkp012650@...1295...>
 From: Gert Doering <gert@...1296...>
-Message-ID: <20141231143043.GE8134@...1296...>
-References: <1414269324-14102-1-git-send-email-steffan@...1856...>
-	<1414269324-14102-6-git-send-email-steffan@...1856...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="s9fJI615cBHmzTOP"
-Content-Disposition: inline
-In-Reply-To: <1414269324-14102-6-git-send-email-steffan@...1856...>
-Subject: Re: [Openvpn-devel] [PATCH 5/6] openssl: use crypto_msg(),
-	get rid of openssl-specific code in error.c
+In-Reply-To: <1414269324-14102-5-git-send-email-steffan@...1856...>
+References: <1414269324-14102-5-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH applied] Re: openssl: add crypto_msg(),
+	to easily log openssl errors
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,57 +13,29 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: Steffan Karger <steffan@...1856...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---s9fJI615cBHmzTOP
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Your patch has been applied to the master branch.
 
-Hi,
+commit e795d6ba57e6e79bfae941ab048e44e47179865c
+Author: Steffan Karger
+Date:   Sat Oct 25 22:35:22 2014 +0200
 
-On Sat, Oct 25, 2014 at 10:35:23PM +0200, Steffan Karger wrote:
-> @@ -395,17 +396,20 @@ key_des_check (uint8_t *key, int key_len, int ndc)
->        DES_cblock *dc =3D (DES_cblock*) buf_read_alloc (&b, sizeof (DES_c=
-block));
->        if (!dc)
->  	{
-> -	  msg (D_CRYPT_ERRORS, "CRYPTO INFO: check_key_DES: insufficient key ma=
-terial");
-> +	  msg (D_CRYPT_ERRORS, "CRYPTO INFO: check_key_DES: insufficient key "
-> +	      "material");
->  	  goto err;
+     openssl: add crypto_msg(), to easily log openssl errors
 
-Shouldn't that be a "crypto_msg()" here?
+     Signed-off-by: Steffan Karger <steffan@...1856...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1414269324-14102-5-git-send-email-steffan@...1856...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/9199
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-In general, I'd prefer to avoid breaking strings into multiple lines if
-it's just for one or two words - I don't think it improves readability,=20
-and so it's "just an extra change"...
 
-(Besides these, feature-ACK)
+--
+kind regards,
 
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+Gert Doering
 
---s9fJI615cBHmzTOP
-Content-Type: application/pgp-signature
-Content-Disposition: inline
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQCVAwUBVKQIk6kuBuNlUUl1AQKNaQP/Ujm9aIfkl5HcoO1uLd6mEBIQSPhDVQJa
-XFwCPrmdnIR5MXwyrFk04MtArQnibRasaXt2DmYzb9id9lXplbESdrGnGE+DCq3x
-ij8UopQICB/LtRfJH4DMi3ZOmorJ6RavkZYdjacA44p1FY/HKEwS9LvRaHOcm9n+
-1bgpP/IfJdg=
-=0lmk
------END PGP SIGNATURE-----
-
---s9fJI615cBHmzTOP--
 
