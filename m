@@ -1,9 +1,8 @@
-Message-ID: <54AC78FD.3010806@...515...>
-Date: Tue, 06 Jan 2015 17:08:29 -0700
-From: James Yonan <james@...515...>
-MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="------------070601080507090104060703"
-Subject: [Openvpn-devel] OpenVPN protocol extensions update
+From: Lev Stipakov <lstipakov@...277...>
+Date: Wed,  7 Jan 2015 21:26:38 +0200
+Message-Id: <1420658798-29943-1-git-send-email-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH] Disallow lameduck's float to an address
+	taken by another client
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,241 +11,86 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-This is a multi-part message in MIME format.
---------------070601080507090104060703
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+Existing check didn't take into account the case when floated client is
+lame duck (CN for lame duck is NULL), which allowed lame duck to float
+to an address taken by another client.
 
-I've updated the OpenVPN protocol extension doc with additional details, 
-now that more of these features have been implemented in OpenVPN 3.
+As a fix we use cert_hash_compare function which, besides fixing
+mentioned case, also allows lame duck to float to an address already
+taken by the same client.
+---
+ src/openvpn/multi.c      | 13 ++++++++-----
+ src/openvpn/ssl_verify.c |  2 +-
+ src/openvpn/ssl_verify.h |  8 ++++++++
+ 3 files changed, 17 insertions(+), 6 deletions(-)
 
-If you are implementing any of these features in OpenVPN 2.x, please 
-review so we can ensure that OpenVPN 2.x and 3 are on the same page with 
-respect to protocol extensions.
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index 6ddfbb5..4412491 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -2127,17 +2127,20 @@ void multi_process_float (struct multi_context* m, struct multi_instance* mi)
+   const uint32_t hv = hash_value (hash, &real);
+   struct hash_bucket *bucket = hash_bucket (hash, hv);
+ 
++  /* make sure that we don't float to an address taken by another client */
+   struct hash_element *he = hash_lookup_fast (hash, bucket, &real, hv);
+   if (he)
+     {
+       struct multi_instance *ex_mi = (struct multi_instance *) he->value;
+ 
+-      const char *cn = tls_common_name (mi->context.c2.tls_multi, true);
+-      const char *ex_cn = tls_common_name (ex_mi->context.c2.tls_multi, true);
+-      if (cn && ex_cn && strcmp (cn, ex_cn))
++      struct tls_multi *m1 = mi->context.c2.tls_multi;
++      struct tls_multi *m2 = ex_mi->context.c2.tls_multi;
++
++      /* do not float if target address is taken by client with another cert */
++      if (!cert_hash_compare(m1->locked_cert_hash_set, m2->locked_cert_hash_set))
+ 	{
+-	  msg (D_MULTI_MEDIUM, "prevent float to %s",
+-		multi_instance_string (ex_mi, false, &gc));
++	  msg (D_MULTI_MEDIUM, "Disallow float to an address taken by another client %s",
++	       multi_instance_string (ex_mi, false, &gc));
+ 
+ 	  mi->context.c2.buf.len = 0;
+ 
+diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
+index cec5f02..ad50458 100644
+--- a/src/openvpn/ssl_verify.c
++++ b/src/openvpn/ssl_verify.c
+@@ -238,7 +238,7 @@ cert_hash_free (struct cert_hash_set *chs)
+     }
+ }
+ 
+-static bool
++bool
+ cert_hash_compare (const struct cert_hash_set *chs1, const struct cert_hash_set *chs2)
+ {
+   if (chs1 && chs2)
+diff --git a/src/openvpn/ssl_verify.h b/src/openvpn/ssl_verify.h
+index 5f23431..d5bf22e 100644
+--- a/src/openvpn/ssl_verify.h
++++ b/src/openvpn/ssl_verify.h
+@@ -137,6 +137,14 @@ const char *tls_common_name (const struct tls_multi* multi, const bool null);
+  */
+ const char *tls_username (const struct tls_multi *multi, const bool null);
+ 
++/**
++ * Compares certificates hashes, returns true if hashes are equal.
++ *
++ * @param chs1 cert 1 hash set
++ * @param chs2 cert 2 hash set
++ */
++bool cert_hash_compare (const struct cert_hash_set *chs1, const struct cert_hash_set *chs2);
++
+ #ifdef ENABLE_PF
+ 
+ /**
+-- 
+1.9.1
 
-Changes:
-
-1. Added specific details on DATA_V2/peer-id/float support.
-
-2. For AEAD mode, emphasized that the leading 8 bytes (4 bytes for 
-DATA_V2/peer-id and 4 for packet ID) is all included in the AD.
-
-3. Added specific details on protocol negotiation where the client 
-indicates protocol extension availability with IV_x parameters in the 
-peer info string, and the server responds by pushing directives to the 
-client to enable the feature.
-
-4. Added "TCP nonlinear mode" section, a new protocol extension that is 
-needed by multithreaded TCP servers.
-
-James
-
---------------070601080507090104060703
-Content-Type: text/plain; charset=UTF-8; name="openvpn-protocol-extensions.txt"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment;
- filename="openvpn-protocol-extensions.txt"
-
-OpenVPN Protocol extensions
-2015-01-06
-
-1. DATA_V2 opcode with 24-bit peer ID
-
-   * The DATA_V2 opcode is 9.
-   * The DATA_V2 opcode/key_id byte is followed by 3 additional
-     (network endian) bytes indicating the peer ID.
-   * If a 4-byte DATA_V2 header is passed through ntohl,
-     the resulting high 8 bits will be the DATA_V2 opcode/key_id,
-     and the lower 24 bits will be the peer ID.
-   * A disabled peer ID is denoted by 0xFFFFFF.
-   * Server tells the client to use DATA_V2/peer_id by pushing
-     the directive "peer-id ID" where ID is a decimal integer
-     in the range [-1, 16777215].  Setting the peer ID to -1
-     transmits DATA_V2 packets with the peer ID field set to
-     0xFFFFFF.  Setting the peer_id to -1 is the same as
-     setting it to 16777215 (i.e. 0xFFFFFF).
-   * Client never transmits DATA_V2 packets unless the server
-     has pushed a "peer-id" directive.
-   * Server never pushes a "peer-id" directive unless the
-     client has indicated its support for DATA_V2 by
-     including "IV_PROTO=2" in the peer info data.
-   * When DATA_V2 is used for "float" functionality, the server
-     must perform the following checks before allowing
-     a client to float, i.e. to assume a new source address.
-     (a) verify integrity (HMAC or GCM auth tag, replay
-         protection, etc.) of the DATA_V2 packet, and
-     (b) ensure that the float doesn't clobber a pre-existing
-         client (i.e. if the address floated to is already
-         owned by another client) unless it can be verified
-         that the pre-existing client is a previous instance
-         of the floating client.
-
-2. AEAD mode
-
-   To support AEAD crypto modes such as AES-GCM, some protocol
-   changes are in order.  AES-GCM, for example, requires a 12
-   byte unique nonce for every packet.  I would propose that 4
-   bytes be taken from the Packet ID which increments for every
-   packet and therefore provides uniqueness.  The remaining 8
-   bytes would be derived from the random key material that would
-   normally be used to key the HMAC key.  This is possible since
-   AEAD modes use a combined key for encryption and integrity
-   checking, therefore the random key material for HMAC is
-   unused and can be repurposed as an AEAD nonce source.  The 8
-   byte nonce component derived from the HMAC keying material
-   would remain constant for a given Key State.  Only the 4 byte
-   Packet ID would increment for each packet.  Because AEAD
-   encryption can be compromised if the nonce ever repeats for
-   a given key, the implementation MUST disable encryption
-   for a key if the 32-bit packet ID wraps.  In practical usage,
-   renegotiation usually preempts wrapping, so the
-   disable-encryption-on-wrap feature is a failsafe.
-
-   AEAD Nonce:
-
-     [ Packet ID ] [ HMAC keying material ]
-     [ 4 bytes   ] [ 8 bytes              ]
-     [ AEAD nonce total: 12 bytes         ]
-
-   TLS wire protocol:
-
-     [ DATA_V2 opcode ] [ Packet ID ] [ AEAD Auth tag ] [ ciphertext ]
-     [ 4 bytes        ] [ 4 bytes   ] [ 16 bytes      ]
-     [ AEAD additional data (AD)    ]
-
-   Static Key wire protocol:
-
-     [ DATA_V2 opcode ] [ Packet ID ] [ Nonce tail (random) ]  [ AEAD Auth tag ] [ ciphertext ]
-                        [           AEAD nonce              ]
-     [ 4 bytes        ] [ 8 bytes   ] [ 4 bytes             ]  [ 16 bytes      ]
-     [ AEAD additional data (AD)                            ]
-
-   Note that the AEAD additional data (AD) includes all data
-   preceding the AEAD Auth tag including the DATA_V2/peer_id
-   opcode and packet ID.
-
-   Also, note that because the HMAC keying material used to derive
-   the last 8 bytes of the AEAD nonce is negotiated once per key
-   as part of the control channel handshake, we can omit it from the
-   data channel packets, thereby saving 8 bytes per packet.  So
-   only the 4-byte Packet ID component of the nonce must be
-   transmitted with every packet.
-
-   When negotiating AEAD mode, the client indicates its support
-   of AES-128-GCM, AES-192-GCM, and AES-192-GCM by including:
-
-     IV_NCP=2
-
-   in the peer info string (NCP stands for Negotiable Crypto
-   Parameters).
-
-   When the IV_NCP value is 2 or higher, it indicates that
-   the server may push an AEAD "cipher" directive, e.g.:
-
-     push "cipher AES-128-GCM"
-
-   In the future, the IV_NCP value (2 in the current
-   implementation) may be increased to indicate the
-   availability of additional negotiable ciphers.
-
-3. Compression V2
-
-   I have observed that compression in many cases, even when
-   enabled, often does not produce packet size reduction
-   because much of the packet data typically generated by web
-   sessions is already compressed.  Further, the single byte that
-   precedes the packet and indicates whether or not compression
-   occurred has the unfortunate side effect of misaligning the IP
-   packet in cases where compression did not occur.  To remedy this,
-   I propose a Compression V2 header that is optimized for the
-   case where compression does not occur.
-
-   a. No compression occurred and first byte of IP/Ethernet packet
-      is NOT 0x50 (0 bytes of overhead and maintains alignment):
-
-        [ uncompressed IP/Ethernet packet ]
-
-   b. No compression occurred and first byte of IP/Ethernet packet
-      is 0x50 (2 bytes of overhead but unlikely since no known
-      IP packet can begin with 0x50):
-
-        [ 0x50 ] [ 0x00 ] [ uncompressed IP/Ethernet packet ]
-
-   c. Compression occurred (2 bytes of overhead):
-
-        [ 0x50 ] [ compression Alg ID byte ] [ compressed IP/Ethernet packet ]
-
-      Compression Alg ID is one-byte algorithm identifier
-      for LZ4 (0x1), LZO (0x2), or Snappy (0x3).
-
-   This approach has several beneficial effects:
-
-   1. In the common case where compression does not occur, no
-      compression op is required, therefore there is zero overhead.
-
-   2. When compression does not occur, the IP/Ethernet packet
-      alignment is retained.
-
-   3. This technique does not require any byte swapping with
-      the tail of the packet which can potentially incur an
-      expensive cache miss.
-
-   When negotiating Compression V2 mode, the client indicates its
-   support by including the following in the peer info string:
-
-     IV_LZ4v2=1            -> LZ4 compression available in V2 format
-     IV_COMP_STUBv2=1      -> stub compression available in V2 format
-                              (i.e. disable compression but still
-                              retain compression framing)
-
-   In response, the server can push to the client:
-
-     push "compress lz4-v2"   -> enable LZ4 compression in V2 format
-
-   or
-
-     push "compress stub-v2"  -> disable compression but retain
-                                 compression framing in V2 format
-
-4. TCP nonlinear mode
-
-   The OpenVPN 2.x packet ID and replay protection code, when running
-   in TCP mode, requires that the packet ID follows a linearly
-   incrementing sequence, i.e. 1, 2, 2, 3, ...  This was a reasonable
-   requirement, since the reliable nature of TCP guaranteed that a
-   linear sequence of packet IDs transmitted by the sender would be
-   received in the same order by the receiver.
-
-   However, recent work has shown that multithreaded OpenVPN servers
-   may not be able to guarantee TCP packet ID linearity (on the
-   transmit side) without incurring a performance penalty.  This
-   is because the packet ID for transmitted packets must be allocated
-   before the packet is encrypted, while a multithreaded OpenVPN server
-   might be concurrently encrypting and transmitting multiple packets
-   using different threads, where the order that the threads complete
-   encryption and transmit the packet is non-deterministic.  This
-   non-deterministic ordering of packets over the TCP session means
-   that the client might see out-of-order packets and a non-linear
-   packet ID progression, just as clients now see with UDP.
-
-   My proposed solution to the issue is to relax the Packet ID
-   validation on the receiver side to allow non-linear packet ID
-   sequences, even in TCP mode.  This essentially means that the
-   packet ID validation logic is now the same for both UDP and TCP.
-
-   The client indicates its ability to process non-linear packet
-   ID sequences in TCP mode by including the following in the
-   peer info string:
-
-     IV_TCPNL=1            -> TCP non-linear receiver supported
-
-   When the server receives a IV_TCPNL setting of 1 from the
-   client, it may transmit out-of-order packets in TCP mode.
-   Otherwise, servers must use other means (such as using thread
-   synchronization primitives) to ensure strictly linear packet
-   ID ordering in TCP mode.
-
---------------070601080507090104060703--
 
