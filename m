@@ -1,12 +1,12 @@
 Sender: Vasiliy Kulikov <segooon@...277...>
-Date: Thu, 8 Jan 2015 22:04:25 +0300
+Date: Thu, 8 Jan 2015 22:16:39 +0300
 From: Vasily Kulikov <segoon@...2008...>
-Message-ID: <20150108190425.GA6242@...2009...>
+Message-ID: <20150108191639.GA6636@...2009...>
 References: <20141208115202.GA4807@...2009...> <20141212165220.GA4575@...2009...>
 	<548B32D4.1060607@...1227...> <20150105102207.GA9055@...2009...>
-	<1420561439.29022.195.camel@...1866...>
+	<54ABDC74.4000407@...1227...>
 MIME-Version: 1.0
-In-Reply-To: <1420561439.29022.195.camel@...1866...>
+In-Reply-To: <54ABDC74.4000407@...1227...>
 Subject: Re: [Openvpn-devel] [PATCH] Add Mac OS X keychain support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -19,12 +19,13 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
-To: David Woodhouse <dwmw2@...1866...>
+To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net, Anton Karpov <tokza@...2010...>
 
-On Tue, Jan 06, 2015 at 16:23 +0000, David Woodhouse wrote:
-> On Mon, 2015-01-05 at 13:22 +0300, Vasily Kulikov wrote:
-> > 
+On Tue, Jan 06, 2015 at 14:00 +0100, Arne Schwabe wrote:
+> >>> Any comments?
+> > Some ideas about keychain implementation out of OpenVPN core.
+> >
 > > I see 4 possible alternatives here:
 > > 1) implement keychain rsa offloading in Tunnelblick
 > > 2) make my patch use plugin interface
@@ -32,7 +33,7 @@ On Tue, Jan 06, 2015 at 16:23 +0000, David Woodhouse wrote:
 > > management interface
 > > 4) the same as 3) but make openvpn able to handle more than 1
 > > management client
-> > 
+> >
 > > There are problems with all these alternatives:
 > > (1) is limited to Tunnelblick users and doesn't work for users who start
 > > openvpn from the terminal or use any other GUI
@@ -44,30 +45,37 @@ On Tue, Jan 06, 2015 at 16:23 +0000, David Woodhouse wrote:
 > > supports only a single client
 > > (4) needs 'user certificate request' addition and expanding management
 > > interface to support more than a single client
+> >
+> > So, (1) is a no-go as it works only with Tunnelblick (3) is a no-go as
+> > it breaks Tunnelblick and probably someone else.  We stay with only two
+> > interface expantions: plugin interface or management interface.  Either
+> > (a) add 'user certificate request' to plugin interface or (b) add 'user
+> > certificate request' to management interface and support more than a
+> > single client.
+> But if you encapsulate that stuff in a library or something similar you
+> could use that library from TunnelBlick and from a small standalone
+> tool/OpenVPN plugin.
 > 
-> It is perhaps worth noting that OpenVPN already *has* a plugin API which
-> supports the "user certificate request" and "rsa-sign request" methods.
-> 
-> That is, after all, fairly much what PKCS#11 was *designed* to provide.
-> 
-> There are also existing implementations of PKCS#11 RPC such that the
-> actual manipulation of the token can occur in a user-owned process
-> separately from the caller.
+> For (4) Implementing a request for managament ca/cert is relatively
+> easy. At the moment this has not been implemented because nobody needed
+> it so far. All current users managment-query-key (or what the option is
+> called) generate the configuration with the right <ca>, <cert> options
+> instead of querying for these values at startup.
 
-Right, PKCS#11 is a yet-another-interface to extend OpenVPN :)
-I'm not familiar with PKCS#11 and its interface looks too complex for my
-relatively simple task, at least from the first glance it is an
-overkill.
+I'm thinking about using existing 'needstr' command.  Looking at the
+'#ifdef TARGET_ANDROID' code, it should be a very small patch to openvpn
+which adds a command line option like '--management-external-cert' and
+using management_query_user_pass() for certificate request (e.g. BASE64
+encoded).
 
-> Perhaps the way forward is to implement the keychain support in the form
-> of a PKCS#11 provider module, which can either be loaded directly in
-> OpenVPN or proxied to run in a user's context.
-> 
-> In fact, doesn't such an implementation already exist at
-> https://github.com/slushpupie/KeychainToken ?
+> I disagress that (3) is inheritly incompatible with Tunnelblick.
+> Tunnelblick could spawn an openvpn process and the external daemon. On
+> the rsa-sign request, Tunnelblick would just connect to the external
+> daemon ask that daemon to process the rsa-sign request.
 
-Looks like so, but it uses a deprecated CSSM API.  Also the last commit
-was done 4 years ago, probably the code has more issues.
+Right.  I was talking more about breaking current state of affairs
+rather than completely incompatible changes that cannot be fixed on the
+Tunnelblick side.
 
 -- 
 Vasily Kulikov
