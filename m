@@ -1,12 +1,9 @@
-Date: Sat, 17 Jan 2015 12:21:24 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20150117112123.GC8134@...1296...>
-References: <1421434930.394813972@...2013...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="U1t7w//IUm8YcF8e"
-Content-Disposition: inline
+MIME-Version: 1.0
 In-Reply-To: <1421434930.394813972@...2013...>
+References: <1421434930.394813972@...2013...>
+Date: Sat, 17 Jan 2015 17:56:38 +0600
+Message-ID: <CAFHpkQEWRAJhrFYaVSxUnTtBG4T4oJawjU4KUzYbZvi6-EEmNg@...278...>
+From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
 Subject: Re: [Openvpn-devel] Windows TAP driver profiling
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -16,79 +13,50 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Dan Moulding <dan.moulding@...2012...>
-Cc: openvpn-devel@lists.sourceforge.net
-
---U1t7w//IUm8YcF8e
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+To: Dan Moulding <dan.moulding@...2012...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hiya,
+have a look at wire speed of tap adapter,  https://yadi.sk/i/zz4WbnOHe3hJf
+I see 10mb
 
-On Fri, Jan 16, 2015 at 12:02:10PM -0700, Dan Moulding wrote:
-> I have been extensively testing OpenVPN recently, for potential
-> deployment with some other systems I have been developing. One
-> thing I have noticed during this testing is that performance of
-> Windows clients connected to a Linux server is significantly slower
-> than the performance of Linux clients with identical configurations.
-
-This is the nagging suspicion we had, but nobody had enough idle time
-yet to properly quantify it.
-
-One of the things you could do if you have a reliable test bed is to
-test the effects of increasing
-
- --sndbuf
- --rcvbuf
-
-on the windows side (which default to smaller values than under Linux,
-see the log for actual values used).
-
-
-> I'm suspecting that it's either the Windows network stack itself
-> (seems a little doubtful) or the Windows implementation of the TAP
-> driver that is causing the poor performance. I'm hoping I can
-> profile the TAP driver code to see if I can confirm the latter (and
-> maybe contribute some optimizations if it all works out).
-
-Have you tried the old or new TAP driver?  (In the OpenVPN installers, this
-is "I00x" for the old TAP driver, and "I60x" for the NDIS6 based new TAP
-driver).
-
-In any case, the NDIS6 driver *should* perform better, if(!) it is really
-the TAP driver where the bottleneck is.  My gut talks more about sockets
-and buffers and "not saturating available link bandwidth due to small
-buffers", but I have not measured that yet.
-
-> Has anyone here ever tried profiling the Windows TAP driver code
-> before? Any pointers or suggestions from someone who is familiar
-> with the TAP driver would be really appreciated.
-
-I have *no* idea how to do that...  I'm a unix guy :-)
-
-gert
-
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---U1t7w//IUm8YcF8e
-Content-Type: application/pgp-signature
-Content-Disposition: inline
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQCVAwUBVLpFs6kuBuNlUUl1AQJgcwQArrHG1jUGeUO0alDQzhcWV105Avi4u+j3
-QBGg+nD47wp0+K3g6bTQGzpkaZBHvYiASBj9UUTXbCnMdLX6sH1HG+8WpU7Oi32h
-9NsX/ZCJQbNSAr1gytgkvsgZMFf1jgz8pvq/FzdZocwBnygI0LswicljruvOrgPK
-zOWJZChQ7tE=
-=eN/E
------END PGP SIGNATURE-----
-
---U1t7w//IUm8YcF8e--
+2015-01-17 0:02 GMT+05:00 Dan Moulding <dan.moulding@...2012...>:
+> Hello all,
+>
+> I have been extensively testing OpenVPN recently, for potential deploymen=
+t with some other systems I have been developing. One thing I have noticed =
+during this testing is that performance of Windows clients connected to a L=
+inux server is significantly slower than the performance of Linux clients w=
+ith identical configurations.
+>
+> I'm suspecting that it's either the Windows network stack itself (seems a=
+ little doubtful) or the Windows implementation of the TAP driver that is c=
+ausing the poor performance. I'm hoping I can profile the TAP driver code t=
+o see if I can confirm the latter (and maybe contribute some optimizations =
+if it all works out).
+>
+> Has anyone here ever tried profiling the Windows TAP driver code before? =
+Any pointers or suggestions from someone who is familiar with the TAP drive=
+r would be really appreciated.
+>
+> Thanks,
+>
+> Dan Moulding
+> Software Engineer
+> RackWare, Inc.
+>
+>
+>
+> -------------------------------------------------------------------------=
+-----
+> New Year. New Location. New Benefits. New Data Center in Ashburn, VA.
+> GigeNET is offering a free month of service with a new server in Ashburn.
+> Choose from 2 high performing configs, both with 100TB of bandwidth.
+> Higher redundancy.Lower latency.Increased capacity.Completely compliant.
+> http://p.sf.net/sfu/gigenet
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
