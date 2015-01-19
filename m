@@ -1,12 +1,8 @@
-Sender: Fabian Knittel <fabian@...1547...>
-From: Fabian Knittel <fabian.knittel@...1547...>
-Date: Sat, 17 Jan 2015 12:30:26 +0000
-Message-Id: <1421497831-3424-5-git-send-email-fabian.knittel@...1547...>
-In-Reply-To: <1421497831-3424-1-git-send-email-fabian.knittel@...1547...>
-References: <1412978966-15392-1-git-send-email-fabian.knittel@...1547...>
-	<1421497831-3424-1-git-send-email-fabian.knittel@...1547...>
-Subject: [Openvpn-devel] [PATCH v2 4/9] client-connect: Move
-	multi_client_connect_setenv into early_setup
+Message-ID: <54BCAE83.1090203@...515...>
+Date: Mon, 19 Jan 2015 09:13:07 +0200
+From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] Topics for today's (19th Jan 2015) community meeting
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,66 +11,45 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="iso-8859-15"
+Content-Transfer-Encoding: quoted-printable
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-This patch moves multi_client_connect_setenv into
-multi_client_connect_early_setup and makes sure that every client-connect
-handling function updates the virtual address selection.
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-Background: This unifies how the client-connect handling functions work.
+Hi,
 
-Signed-off-by: Fabian Knittel <fabian.knittel@...1547...>
----
- src/openvpn/multi.c | 19 ++++++++++---------
- 1 file changed, 10 insertions(+), 9 deletions(-)
+We're having an IRC meeting today, starting at 20:00 CET (19:00
+UTC) on #openvpn-devel@...1422... Current topic list along with
+basic information is here:
 
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index 8cc61d7..e9fbdc6 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -1646,15 +1646,6 @@ multi_connection_established (struct multi_context *m, struct multi_instance *mi
- 
-       multi_client_connect_source_ccd (m, mi, &option_types_found);
- 
--      /*
--       * Select a virtual address from either --ifconfig-push in
--       * --client-config-dir file or --ifconfig-pool.
--       */
--      multi_select_virtual_addr (m, mi);
--
--      /* do --client-connect setenvs */
--      multi_client_connect_setenv (m, mi);
--
-       multi_client_connect_call_plugin_v1 (m, mi, &option_types_found,
- 					   &cc_succeeded, &cc_succeeded_count);
- 
-@@ -1711,6 +1702,10 @@ multi_client_connect_early_setup (struct multi_context *m,
- 
-   /* reset pool handle to null */
-   mi->vaddr_handle = -1;
-+
-+  /* do --client-connect setenvs */
-+  multi_select_virtual_addr (m, mi);
-+  multi_client_connect_setenv (m, mi);
- }
- 
- /*
-@@ -1753,6 +1748,12 @@ multi_client_connect_source_ccd (struct multi_context *m,
- 				 option_types_found,
- 				 mi->context.c2.es);
- 
-+	  /*
-+	   * Select a virtual address from either --ifconfig-push in
-+	   * --client-config-dir file or --ifconfig-pool.
-+	   */
-+	  multi_select_virtual_addr (m, mi);
-+	  multi_set_virtual_addr_env (m, mi);
- 	}
- 
-       gc_free (&gc);
--- 
-2.1.4
+<https://community.openvpn.net/openvpn/wiki/Topics-2015-01-19>
 
+If you have any other things you'd like to bring up, respond to this
+mail, send me mail privately or add them to the list yourself.
+
+In case you can't attend the meeting, please feel free to make comments
+on the topics by responding to this email or to the summary email sent
+after the meeting. Whenever possible, we'll also respond to existing,
+related email threads.
+
+NOTE: It's required to use a registered Freenode IRC nickname to join
+#openvpn-devel - look here for details:
+
+<https://community.openvpn.net/openvpn/wiki/GettingHelp#DeveloperIRCchannel>
+
+- --=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iEYEARECAAYFAlS8roMACgkQwp2X7RmNIqODcgCfavwmJxK/+oVcvKooSS8zORNg
+MfsAoIAhb9NzRspU0n2KQum9H6zjSg3k
+=3DPWnD
+-----END PGP SIGNATURE-----
 
