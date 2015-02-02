@@ -1,7 +1,7 @@
-Message-ID: <54cd7e8c.2e5bb40a.2772.ffffc39f@...2014...>
+Message-ID: <54ceca3f.425ec20a.35aa.21c6@...2014...>
 MIME-Version: 1.0
 From: duncan atherton <duncanatherton12@...277...>
-Date: Sun, 1 Feb 2015 01:16:59 +0000
+Date: Mon, 2 Feb 2015 00:52:14 +0000
 Subject: [Openvpn-devel] (no subject)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -13,7 +13,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/html; charset="Windows-1252"
 Content-Transfer-Encoding: quoted-printable
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
 <html><head><meta http-equiv=3D"Content-Type" content=3D"text/html; charset=
 =3Dwindows-1252"></head><body><div><div style=3D"font-family: Calibri,sans-=
