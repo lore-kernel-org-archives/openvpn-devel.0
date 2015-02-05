@@ -1,12 +1,11 @@
-Date: Thu, 5 Feb 2015 11:55:44 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20150205105544.GN8134@...1296...>
+MIME-Version: 1.0
+Sender: jorgepeixoto@...277...
+In-Reply-To: <54D34AA7.4030902@...1114...>
 References: <CAB7qsSN2BzxzuY2hfqE59U+5dw4+wdGGOfUrXRQ4YmoMwAt4Mw@...278...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="lvzXnIqIiPbDUI27"
-Content-Disposition: inline
-In-Reply-To: <CAB7qsSN2BzxzuY2hfqE59U+5dw4+wdGGOfUrXRQ4YmoMwAt4Mw@...278...>
+	<54D34AA7.4030902@...1114...>
+From: Jorge Luiz Silva Peixoto <jorge.peixoto@...277...>
+Date: Thu, 5 Feb 2015 18:15:21 -0300
+Message-ID: <CAB7qsSN2+FiBwXb-e+uez+vvCUqngWEQ2k-8-C0qN4XHHrNn=w@...278...>
 Subject: Re: [Openvpn-devel] [PATCH] Fix CN maximum length
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -16,50 +15,53 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Jorge Luiz Silva Peixoto <jorge.peixoto@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net, openvpn.list@...1114...
 
---lvzXnIqIiPbDUI27
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+2015-02-05 7:49 GMT-03:00 David Sommerseth <openvpn.list@...1114...>:
+> On 04/02/15 18:01, Jorge Luiz Silva Peixoto wrote:
+>> The following patch fixes CN maximum length as discussed with Steffan
+>> Kargen at openvpn users mailing list.
+>>
+>>
+>> Signed-off-by: Jorge Peixoto <jorgepeixoto@...277...>
+>> ---
+>>  src/openvpn/ssl_verify.c | 6 +++---
+>>  1 file changed, 3 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
+>> index ad50458..73488fc 100644
+>> --- a/src/openvpn/ssl_verify.c
+>> +++ b/src/openvpn/ssl_verify.c
+>> @@ -47,7 +47,7 @@
+>>  #endif
+>>
+>>  /** Maximum length of common name */
+>> -#define TLS_USERNAME_LEN 64
+>> +#define TLS_USERNAME_LEN 65
+>
+> I've not really followed the discussion you've had with Steffan, but I
+> suspect this is related to NULL-termination.  That the username can be
 
-Hi,
+Yes, it is. ;-)
 
-On Wed, Feb 04, 2015 at 02:01:58PM -0300, Jorge Luiz Silva Peixoto wrote:
->                  subject,
-> -                TLS_USERNAME_LEN);
-> +                TLS_USERNAME_LEN-1);
+> 64 characters according to some specs, but needs to be 65 to allow NULL
+> termination?  I'm speculating here ... so if I'm right I'd appreciate an
+> update to the comment above if it includes NULL termination or not.
 
-As David has remarked, this is not really easy to understand - better
-keep this at 64, and ensure the buffers where it is used are allocated
-as=20
+OK. Do I send this patch again to the list? Comment updated below.
 
-  char[TLS_USERAME_LEN+1];		/* max len + terminating null byte */
+ /** Maximum length of common name (rfc5280) + null character byte */
+-#define TLS_USERNAME_LEN 64
++#define TLS_USERNAME_LEN 65
 
-or something like this.
-
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---lvzXnIqIiPbDUI27
-Content-Type: application/pgp-signature
-Content-Disposition: inline
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQCVAwUBVNNML6kuBuNlUUl1AQLIYQP/ehind2Tk1Byvwn06OzcHiMbzrm2hdj4Q
-vM550zjw4WP2CBw3KrtfHkcO7s9LH0GsrNSWXWHrUIfnNwsC0FJgbHuTPeYRyUld
-RH8XQTvN2kmbjG6RjjWO0ao3fAOSuxjKHyFPJaFVvbZhknwt8kNJYtLe4DNSyWFX
-+Vjw05NuehI=
-=xwDZ
------END PGP SIGNATURE-----
-
---lvzXnIqIiPbDUI27--
+> Also since you do this TLS_USERNAME_LEN-1 a few other places in the
+> code, being explicit would help to avoid any doubts.
+>
+>
+> --
+> kind regards,
+>
+> David Sommerseth
 
