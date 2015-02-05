@@ -1,9 +1,13 @@
-MIME-Version: 1.0
-Date: Thu, 5 Feb 2015 11:53:56 +0100
-Message-ID: <CALufPjX6+4wJvNu2f1C9=S-4dUtcUomSS4z6E69A5i1tQBxjOA@...278...>
-From: Marine B <yunai39@...277...>
-Content-Type: multipart/alternative; boundary=001a11342afee0e364050e551e71
-Subject: [Openvpn-devel] Error
+Date: Thu, 5 Feb 2015 11:55:44 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20150205105544.GN8134@...1296...>
+References: <CAB7qsSN2BzxzuY2hfqE59U+5dw4+wdGGOfUrXRQ4YmoMwAt4Mw@...278...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="lvzXnIqIiPbDUI27"
+Content-Disposition: inline
+In-Reply-To: <CAB7qsSN2BzxzuY2hfqE59U+5dw4+wdGGOfUrXRQ4YmoMwAt4Mw@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] Fix CN maximum length
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,31 +16,50 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+To: Jorge Luiz Silva Peixoto <jorge.peixoto@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---001a11342afee0e364050e551e71
-Content-Type: text/plain; charset=UTF-8
-
-Good Morning,
-
-I would like to know the possible error of openVPN that need to be
-recorded. I want to make a logstash configuration file for OpenVPN. So far
-I have recorded login, diconnection and outdated certificate.
-
-Do you have a list of all the error ar event available on OpenVPN ?
-
-Thank you
-
---001a11342afee0e364050e551e71
-Content-Type: text/html; charset="UTF-8"
+--lvzXnIqIiPbDUI27
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-<div dir=3D"ltr">Good Morning,<div><br></div><div>I would like to know the =
-possible error of openVPN that need to be recorded. I want to make a logsta=
-sh configuration file for OpenVPN. So far I have recorded login, diconnecti=
-on and outdated certificate.</div><div><br></div><div>Do you have a list of=
- all the error ar event available on OpenVPN ?</div><div><br></div><div>Tha=
-nk you</div></div>
+Hi,
 
---001a11342afee0e364050e551e71--
+On Wed, Feb 04, 2015 at 02:01:58PM -0300, Jorge Luiz Silva Peixoto wrote:
+>                  subject,
+> -                TLS_USERNAME_LEN);
+> +                TLS_USERNAME_LEN-1);
+
+As David has remarked, this is not really easy to understand - better
+keep this at 64, and ensure the buffers where it is used are allocated
+as=20
+
+  char[TLS_USERAME_LEN+1];		/* max len + terminating null byte */
+
+or something like this.
+
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--lvzXnIqIiPbDUI27
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQCVAwUBVNNML6kuBuNlUUl1AQLIYQP/ehind2Tk1Byvwn06OzcHiMbzrm2hdj4Q
+vM550zjw4WP2CBw3KrtfHkcO7s9LH0GsrNSWXWHrUIfnNwsC0FJgbHuTPeYRyUld
+RH8XQTvN2kmbjG6RjjWO0ao3fAOSuxjKHyFPJaFVvbZhknwt8kNJYtLe4DNSyWFX
++Vjw05NuehI=
+=xwDZ
+-----END PGP SIGNATURE-----
+
+--lvzXnIqIiPbDUI27--
 
