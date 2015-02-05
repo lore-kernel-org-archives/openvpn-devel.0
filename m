@@ -1,11 +1,9 @@
-Message-ID: <54D34AA7.4030902@...1114...>
-Date: Thu, 05 Feb 2015 11:49:11 +0100
-From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <CAB7qsSN2BzxzuY2hfqE59U+5dw4+wdGGOfUrXRQ4YmoMwAt4Mw@...278...>
-In-Reply-To: <CAB7qsSN2BzxzuY2hfqE59U+5dw4+wdGGOfUrXRQ4YmoMwAt4Mw@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] Fix CN maximum length
-Reply-To: openvpn-devel@lists.sourceforge.net
+Date: Thu, 5 Feb 2015 11:53:56 +0100
+Message-ID: <CALufPjX6+4wJvNu2f1C9=S-4dUtcUomSS4z6E69A5i1tQBxjOA@...278...>
+From: Marine B <yunai39@...277...>
+Content-Type: multipart/alternative; boundary=001a11342afee0e364050e551e71
+Subject: [Openvpn-devel] Error
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,42 +12,31 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-To: Jorge Luiz Silva Peixoto <jorge.peixoto@...277...>, openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-On 04/02/15 18:01, Jorge Luiz Silva Peixoto wrote:
-> The following patch fixes CN maximum length as discussed with Steffan
-> Kargen at openvpn users mailing list.
-> 
-> 
-> Signed-off-by: Jorge Peixoto <jorgepeixoto@...277...>
-> ---
->  src/openvpn/ssl_verify.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
-> index ad50458..73488fc 100644
-> --- a/src/openvpn/ssl_verify.c
-> +++ b/src/openvpn/ssl_verify.c
-> @@ -47,7 +47,7 @@
->  #endif
-> 
->  /** Maximum length of common name */
-> -#define TLS_USERNAME_LEN 64
-> +#define TLS_USERNAME_LEN 65
+--001a11342afee0e364050e551e71
+Content-Type: text/plain; charset=UTF-8
 
-I've not really followed the discussion you've had with Steffan, but I
-suspect this is related to NULL-termination.  That the username can be
-64 characters according to some specs, but needs to be 65 to allow NULL
-termination?  I'm speculating here ... so if I'm right I'd appreciate an
-update to the comment above if it includes NULL termination or not.
-Also since you do this TLS_USERNAME_LEN-1 a few other places in the
-code, being explicit would help to avoid any doubts.
+Good Morning,
 
+I would like to know the possible error of openVPN that need to be
+recorded. I want to make a logstash configuration file for OpenVPN. So far
+I have recorded login, diconnection and outdated certificate.
 
--- 
-kind regards,
+Do you have a list of all the error ar event available on OpenVPN ?
 
-David Sommerseth
+Thank you
+
+--001a11342afee0e364050e551e71
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr">Good Morning,<div><br></div><div>I would like to know the =
+possible error of openVPN that need to be recorded. I want to make a logsta=
+sh configuration file for OpenVPN. So far I have recorded login, diconnecti=
+on and outdated certificate.</div><div><br></div><div>Do you have a list of=
+ all the error ar event available on OpenVPN ?</div><div><br></div><div>Tha=
+nk you</div></div>
+
+--001a11342afee0e364050e551e71--
 
