@@ -1,9 +1,10 @@
-Date: Fri, 6 Feb 2015 20:13:54 +0100 (CET)
-Message-Id: <201502061913.t16JDsBh029124@...1295...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <1423226280-9580-1-git-send-email-lstipakov@...277...>
-References: <1423226280-9580-1-git-send-email-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix NULL dereferencing
+MIME-Version: 1.0
+From: "Jonathan K. Bullard" <jkbullard@...277...>
+Date: Fri, 6 Feb 2015 14:49:10 -0500
+Message-ID: <CAEsd45SoC+h5tcDraZcQN_MUYzqWYOVvNpkwMo190DLpB32StQ@...278...>
+Content-Type: multipart/mixed; boundary=e89a8f503a5c4365da050e70b9a3
+Subject: [Openvpn-devel] [PATCH] Fix mismatch of fprintf format specifier
+	and argument type
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,28 +13,29 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Lev Stipakov <lstipakov@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Your patch has been applied to the master branch.
+--e89a8f503a5c4365da050e70b9a3
+Content-Type: text/plain; charset=UTF-8
 
-commit 2350d709e4d3c28d8850b5106169d799fdad5a29
-Author: Lev Stipakov
-Date:   Fri Feb 6 14:38:00 2015 +0200
+This fixes a warning about a mismatch between a fprintf format string
+and an argument type on Darwin-64-bit builds:
 
-     Fix NULL dereferencing
+%lu specifies type 'unsigned long' but the argument has type
+'__darwin_suseconds_t' (aka 'int')
 
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1423226280-9580-1-git-send-email-lstipakov@...277...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/9444
-     Signed-off-by: Gert Doering <gert@...1296...>
+--e89a8f503a5c4365da050e70b9a3
+Content-Type: text/plain; charset=US-ASCII;
+	name="fix-format-argument-mismatch.diff"
+Content-Disposition: attachment; filename="fix-format-argument-mismatch.diff"
+Content-Transfer-Encoding: base64
+X-Attachment-Id: f_i5tzdoo30
 
-
---
-kind regards,
-
-Gert Doering
-
+LS0tIG9wZW52cG4vc3JjL29wZW52cG4vZXJyb3IuYyAyMDE1LTAxLTIzIDEzOjE3OjUwLjAwMDAw
+MDAwMCAtMDUwMAorKysgcGF0Y2hlZC9zcmMvb3BlbnZwbi9lcnJvci5jIDIwMTUtMDItMDMgMjI6
+MTI6MzIuMDAwMDAwMDAwIC0wNTAwCkBAIC0zMTksNyArMzE5LDcgQEAKIAogCSAgICAgIGZwcmlu
+dGYgKGZwLCAiJWx1LiUwNmx1ICV4ICVzJXMlcyVzIiwKIAkJICAgICAgIHR2LnR2X3NlYywKLQkJ
+ICAgICAgIHR2LnR2X3VzZWMsCisJCSAgICAgICAodW5zaWduZWQgbG9uZyl0di50dl91c2VjLAog
+CQkgICAgICAgZmxhZ3MsCiAJCSAgICAgICBwcmVmaXgsCiAJCSAgICAgICBwcmVmaXhfc2VwLAo=
+--e89a8f503a5c4365da050e70b9a3--
 
