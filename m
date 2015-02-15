@@ -1,15 +1,13 @@
-Date: Sun, 15 Feb 2015 21:39:07 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20150215203906.GO8134@...1296...>
-References: <1419875325-96015-1-git-send-email-gert@...1296...>
-	<54D87803.8090107@...1227...>
-Mime-Version: 1.0
+Message-ID: <54E10A03.3000400@...1227...>
+Date: Sun, 15 Feb 2015 22:05:07 +0100
+From: Arne Schwabe <arne@...1227...>
+MIME-Version: 1.0
+References: <20150124170446.GA504@...2009...>
+In-Reply-To: <20150124170446.GA504@...2009...>
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="XqOulWco09xrjj7X"
-Content-Disposition: inline
-In-Reply-To: <54D87803.8090107@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH] Print remote IPv4 address on a
-	dual-stack v6 socket in IPv4 format
+	protocol="application/pgp-signature";
+	boundary="EFMag9UnbSX6KUPI3KInxUQ8Q35aXqPF4"
+Subject: Re: [Openvpn-devel] [PATCH v3] Mac OS X Keychain management client
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,40 +16,50 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Vasily Kulikov <segoon@...2008...>, openvpn-devel@lists.sourceforge.net
 
---XqOulWco09xrjj7X
-Content-Type: text/plain; charset="us-ascii"
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--EFMag9UnbSX6KUPI3KInxUQ8Q35aXqPF4
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
+Am 24.01.15 um 18:04 schrieb Vasily Kulikov:
+> This patch adds support for using certificates stored in the Mac OSX
+> Keychain to authenticate with the OpenVPN server.  This works with
+> certificates stored on the computer as well as certificates on hardware
+> tokens that support Apple's tokend interface.
+>
+> This patch version implements management client which handles RSA-SIGN
+> command for RSA offloading.  Also it handles new 'NEED-CERTIFICATE'
+> request to pass a certificate from the keychain to OpenVPN.
+>
+> OpenVPN itself gets new 'NEED-CERTIFICATE" command which is called when
+> --management-external-cert is used.  It is implemented as a multiline
+> command very similar to an existing 'RSA-SIGN' command.
+>
+> The patch is against commit 3341a98c2852d1d0c1eafdc70a3bdb218ec29049.
+>
+>
+ACK from me to the OpenVPN part. I also tested the patch in OpenVPN for
+Android and the RSA-SIGN still works as expected. I have not reviewed
+the OS X contrib program (other than a quick glance at the code) but I
+think marking it as contrib it should be allowed to be still included.
 
-On Mon, Feb 09, 2015 at 10:04:03AM +0100, Arne Schwabe wrote:
-> > --- a/src/openvpn/mroute.c
-> > +++ b/src/openvpn/mroute.c
-> > @@ -426,8 +426,16 @@ mroute_addr_print_ex (const struct mroute_addr *ma,
-> >  	  break;
-> >  	case MR_ADDR_IPV6:
-> >  	  {
-> > -	    buf_printf (&out, "%s",
-> > -		  print_in6_addr( *(struct in6_addr*)&maddr.addr, 0, gc));=20
-> > +	    if ( IN6_IS_ADDR_V4MAPPED( (struct in6_addr*)&maddr.addr ) )
-> > +	      {
-> > +		buf_printf (&out, "%s",
-> > +		     print_in_addr_t( *(in_addr_t*)(&maddr.addr[12]), IA_NET_ORDER, =
-gc));
-> Have you checked that this is endian safe?
+Arne
 
-Yep, both by running on i386 and on sparc64 - and then by staring at the
-code and wondering why it works.
 
-Thing is that print_in_addr_t() takes a flag, IA_NET_ORDER, which tells it
-"that 32bit thingie you're printing now is in network byte order", so it
-will not call htonl() on it before passing to inet_ntoa(), which wants
-network byte order.
+--EFMag9UnbSX6KUPI3KInxUQ8Q35aXqPF4
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-(And the IPv6 address is "just an array of 16 octets", no possible confusion
-here with 32bit integer representation)
---XqOulWco09xrjj7X--
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iEYEARECAAYFAlThCgQACgkQe8+cMNS4zRd9XgCcCJ0tcoEF0UqmWyAKruZY87QA
+52IAn2chk5F6oOZVCM5SFH3yIZYqUNzZ
+=538s
+-----END PGP SIGNATURE-----
+
+--EFMag9UnbSX6KUPI3KInxUQ8Q35aXqPF4--
+
