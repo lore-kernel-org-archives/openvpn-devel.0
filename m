@@ -1,12 +1,11 @@
-Sender: Vasiliy Kulikov <segooon@...277...>
-Date: Fri, 20 Feb 2015 12:23:24 +0300
-From: Vasily Kulikov <segoon@...2008...>
-Message-ID: <20150220092324.GA12304@...2009...>
-References: <20150124170446.GA504@...2009...> <54E10A03.3000400@...1227...>
-	<20150215220144.GP8134@...1296...>
+Message-ID: <54E701C9.9050001@...1147...>
+Date: Fri, 20 Feb 2015 10:43:37 +0100
+From: Jan Just Keijser <janjust@...1147...>
 MIME-Version: 1.0
-In-Reply-To: <20150215220144.GP8134@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH v3] Mac OS X Keychain management client
+References: <CAAA5faExMKUpmHNtVjXvvkpWb95-FFpfZ2FKEsUfppJU2Jk8tA@...278...>
+In-Reply-To: <CAAA5faExMKUpmHNtVjXvvkpWb95-FFpfZ2FKEsUfppJU2Jk8tA@...278...>
+Subject: Re: [Openvpn-devel] statistics file format not respected in
+	point-to-point?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,26 +14,65 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Reinoud Koornstra <reinoudkoornstra@...277...>, openvpn-devel@lists.sourceforge.net
 
-Hi Gert,
+Hi,
 
-On Sun, Feb 15, 2015 at 23:01 +0100, Gert Doering wrote:
-> I hear Arne, and James also ACKed this ("based on testing", which Arne
-> did).
-> 
-> I'm not merging it yet, though - Vasily, please provide a v4 of the patch
-> that adds:
-...
-> With that, I'll merge right away :-)
+On 19/02/15 21:52, Reinoud Koornstra wrote:
+> Hi Everyone,
+>
+> I have a side to side (point to point) configuration. Meaning no
+> client or server involved.
+> It comes up fine.
+> I did set this as well in the  config file:
+>
+> status /tmp/openvpn_hello_status.log 5
+> status-version 3
+>
+> When i look at the file:
+>
+> OpenVPN STATISTICS
+> Updated,Thu Feb 19 13:41:29 2015
+> TUN/TAP read bytes,0
+> TUN/TAP write bytes,0
+> TCP/UDP read bytes,1480
+> TCP/UDP write bytes,1647
+> Auth read bytes,1480
+> END
+>
+> This looks like format 1 when looking at the client-server statistics file case.
+> Is this correct or is the actually format 3?
+> The statistics file for server is more like I expected:
+>
+> TITLE   OpenVPN 2.3.4 i486-gnu-linux-gnu [SSL (OpenSSL)] [EPOLL] [MH]
+> [IPv6] built on Feb 19 2015
+> TIME    Thu Feb 19 13:25:08 2015        1424377508
+> HEADER  CLIENT_LIST     Common Name     Real Address    Virtual
+> Address Bytes Received  Bytes Sent      Connected Since Connected
+> Since_(time_t)        Username
+> CLIENT_LIST     blabla   172.21.2.127:1194       192.168.0.6     5701
+>    5769    Thu Feb 19 13:19:07 2015        1424377147      UNDEF
+> HEADER  ROUTING_TABLE   Virtual Address Common Name     Real Address
+>   Last Ref        Last Ref (time_t)
+> ROUTING_TABLE   192.168.0.6     blabla   172.21.2.127:1194       Thu
+> Feb 19 13:19:08 2015        1424377148
+> GLOBAL_STATS    Max bcast/mcast queue length    0
+> END
+>
+>
+In point-to-point mode there are very little statistics reported. Only 
+some global server statistics are printed out, which is what you are 
+seeing. As there is no concept of a client list, there is no report on 
+the connected clients.
 
-Thank you for the review, I'll send the patch during the weekends.
+The code for point-to-point mode does not differentiate on the status 
+version - it simply calls one function which prints out the stats you 
+see above.
 
--- 
-Vasily Kulikov
-http://www.openwall.com - bringing security into open computing environments
+HTH,
+
+JJK
+
 
