@@ -1,14 +1,14 @@
-MIME-Version: 1.0
-In-Reply-To: <1424697012.5437.212.camel@...1866...>
+Sender: Vasiliy Kulikov <segooon@...277...>
+Date: Mon, 23 Feb 2015 17:40:11 +0300
+From: Vasily Kulikov <segoon@...2008...>
+Message-ID: <20150223144011.GA6378@...2009...>
 References: <20150124170446.GA504@...2009...> <54E10A03.3000400@...1227...>
-	<20150215220144.GP8134@...1296...> <20150223080402.GA5068@...2009...>
-	<54EAE4AF.8010009@...1227...>
-	<1424696107.5437.209.camel@...1866...>
-	<54EB243C.1000706@...1227...>
-	<1424697012.5437.212.camel@...1866...>
-From: "Jonathan K. Bullard" <jkbullard@...277...>
-Date: Mon, 23 Feb 2015 08:58:48 -0500
-Message-ID: <CAEsd45R_Z2-0kNtoiMHxS_q1z7Ghd8s46mXUSZvJt03-+1FEmw@...278...>
+	<20150215220144.GP8134@...1296...>
+	<20150223080402.GA5068@...2009...> <54EAE4AF.8010009@...1227...>
+	<20150223090035.GL8134@...1296...>
+	<CAEsd45QKyS8N7Vdg9MQ7EE6g4_h4w7ZC8kNuDsdJ88dpdexNyg@...278...>
+MIME-Version: 1.0
+In-Reply-To: <CAEsd45QKyS8N7Vdg9MQ7EE6g4_h4w7ZC8kNuDsdJ88dpdexNyg@...278...>
 Subject: Re: [Openvpn-devel] [PATCH v3] Mac OS X Keychain management client
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -18,50 +18,63 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 8bit
-To: David Woodhouse <dwmw2@...1866...>
+Content-Disposition: inline
+To: "Jonathan K. Bullard" <jkbullard@...277...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-On Mon, Feb 23, 2015 at 8:10 AM, David Woodhouse <dwmw2@...1866...> wrote:
-> On Mon, 2015-02-23 at 13:59 +0100, Arne Schwabe wrote:
->>
->> All fine. My rationale was like, if I want a certificate with a certain
->> SUBJECT (e.g. CN=schwabe@...2017...) etc. it should not matter for men
->> wether I get it from OS X, Windows or Android Certificate store.
->
-> The canonical way of representing that would be
->  pkcs11:object=schwabe@...2017...
+On Mon, Feb 23, 2015 at 08:04 -0500, Jonathan K. Bullard wrote:
+> On Mon, Feb 23, 2015 at 4:00 AM, Gert Doering <gert@...1296...> wrote:
+> >
+> > On Mon, Feb 23, 2015 at 09:28:31AM +0100, Arne Schwabe wrote:
+> > > > What do you think of the change?
+> > > I like the idea. You could  make the macos-keychain in the string optional.
+> >
+> > What Arne said (both parts of it) :-)
+> 
+> I agree -- the argument to --needs-external-cert should be optional.
 
-That representation loses the "CN=" (and maybe doesn't allow for
-additional search options -- I'm not sure).
+Note: Arne said about 'macos-keychain' prefix in the argument being
+optional, not the argument itself being optional.  Acually, I don't
+think making the argument optional is a good idea -- its parsing would
+be ambiguous unless it is the last argument in argv.
 
-OpenVPN already has an entire set of options that deal with PKCS-11.
-This patch is a completely different, parallel way of dealing with
-certificates, so I'm not sure why a "pkcs11:" scheme is needed. I
-probably would not implement it in Tunnelblick myself.
+> Note: the argument to --needs-external-cert should be passed on to
+> "RSA_SIGN", too. (I think Vasily omitted that from his writeup.)
+> 
+> So the idea would be:
+> 
+>  * Add an optional UTF-8 string argument to --needs-external-cert.
+> (Perhaps the docs should say this requires support from the management
+> interface software and that currently such support is only available
+> when using certain GUIs on OS X.)
 
-There are two things here: (A) what this "select" string is and (B)
-where/how to find the cert.
+Right.
 
-As to "what this 'select' string is" -- well, for "future-proofing", I
-would want it to be labeled as a selection string in case we want to
-pass something else at some time in the future.
+>  * OpenVPN passes that argument to RSA_SIGN and NEEDS-CERTIFICATE,
+> passing an empty string if the argument does not appear.
 
-Adding a scheme makes sense to me -- the "file:" scheme looks
-interesting, but it isn't part of this patch. But I think the scheme
-should be optional, so the configuration could include (the
-platform-independent):
+Why rsa-sign?  I think doing it with NEEDS-CERTIFICATE is enough.
+Identity contains both cert and private key, certificate request is
+made at first.  Rsa-sign uses already chosen identity.
 
-     --management-external-keychain select:CN=schwabe@...2017...
+>  * OS X GUIs such as Tunnelblick and Viscosity see the new RSA_SIGN or
+> NEEDS-CERTIFICATE argument and use keychain-mcd to deal with it. Other
+> GUIs ignore it or use something that does something equivalent to what
+> keychain-mcd does on OS X.
 
-and have it use the Keychain on OS X, Android Certificate Store on
-Android, something-I-don't-know on Windows, etc.
+Right.
 
-The tricky aspect of that is that the default would really depend on
-the management interface software, which really means it depends on
-the GUI. It is conceivable that two GUIs for the same platform could
-have different defaults (although I assume both Tunnelblick and
-Viscosity would use Keychain as the default, accessing it with
-keychain-mcd).
+> I'm not sure exactly how to add an argument to RSA_SIGN and
+> NEEDS-CERTIFICATE without breaking existing management interface
+> software but assume that is possible. (Also, the argument may need to
+> be escaped when it is passed to RSA_SIGN or NEEDS-CERTIFICATE if it
+> contains characters that are used as delimiters.)
+
+IMNSHO don't change rsa-sign at all and have no API breakage.
+
+-- 
+Vasily Kulikov
+http://www.openwall.com - bringing security into open computing environments
 
