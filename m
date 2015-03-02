@@ -1,8 +1,9 @@
-From: Lev Stipakov <lstipakov@...277...>
-Date: Mon,  2 Mar 2015 19:58:31 +0200
-Message-Id: <1425319111-21291-1-git-send-email-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH] Fast recovery when host is in unreachable
-	network
+Message-ID: <54F4BFE0.1000904@...1490...>
+Date: Tue, 3 Mar 2015 08:54:08 +1300
+From: Jason Haar <Jason_Haar@...1490...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] server support for UV_ variables still not present
+	in 2.3.6?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,53 +13,31 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-When client connects to the server which is in unreachable network (for
-example hostname got resolved into ipv6 address and client has no ipv6),
-throw SIGUSR1 and connect to the next server without waiting 60 seconds
-for "TLS key negotiation failed".
----
- src/openvpn/forward.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+Hi there
 
-diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index a3323e9..8eb8434 100644
---- a/src/openvpn/forward.c
-+++ b/src/openvpn/forward.c
-@@ -1090,6 +1090,7 @@ void
- process_outgoing_link (struct context *c)
- {
-   struct gc_arena gc = gc_new ();
-+  int error_code = 0;
- 
-   perf_push (PERF_PROC_OUT_LINK);
- 
-@@ -1177,6 +1178,7 @@ process_outgoing_link (struct context *c)
- 	}
- 
-       /* Check return status */
-+      error_code = openvpn_errno();
-       check_status (size, "write", c->c2.link_socket, NULL);
- 
-       if (size > 0)
-@@ -1193,6 +1195,14 @@ process_outgoing_link (struct context *c)
-       /* if not a ping/control message, indicate activity regarding --inactive parameter */
-       if (c->c2.buf.len > 0 )
-         register_activity (c, size);
-+
-+      /* for unreachable network and "connecting" state switch to the next host */
-+      if (size < 0 && ENETUNREACH == error_code && !tls_initial_packet_received (c->c2.tls_multi)
-+	  && c->options.mode == MODE_POINT_TO_POINT)
-+	{
-+	  msg (M_INFO, "Network unreachable, restarting");
-+	  register_signal (c, SIGUSR1, "network-unreachable");
-+	}
-     }
-   else
-     {
+Back in Aug 2014, I needed the server to support exporting the UV_*
+variables the client sets into external programs the server calls on
+client-connect, so was told to try out openvpn-2.3_git - which had that
+missing code. So I did a clone of that and off I went
+
+I've been happily running on that for some time now - but just tried out
+2.3.6 - and discovered that support still wasn't in there!
+
+Was it dropped for some reason, or was/is 2.3_git not a true
+representation of what ended up in the official 2.3 series? The missing
+code was in src/openvpn/misc.c
+
+Thanks
+
 -- 
-1.9.1
+Cheers
+
+Jason Haar
+Corporate Information Security Manager, Trimble Navigation Ltd.
+Phone: +1 408 481 8171
+PGP Fingerprint: 7A2E 0407 C9A6 CAF6 2B9F 8422 C063 5EBB FE1D 66D1
 
 
