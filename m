@@ -1,10 +1,12 @@
+Message-ID: <54F8DA38.1090603@...1856...>
+Date: Thu, 05 Mar 2015 23:35:36 +0100
 From: Steffan Karger <steffan@...1856...>
-Date: Thu,  5 Mar 2015 22:58:36 +0100
-Message-Id: <1425592716-14243-2-git-send-email-steffan@...1856...>
-In-Reply-To: <1425592716-14243-1-git-send-email-steffan@...1856...>
-References: <1425592716-14243-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH 2/2] polarssl: make sure to always
-	null-terminate the cn
+MIME-Version: 1.0
+References: <20140827093409.GA659@...1900...>	<20150223155132.GA28440@...2018...>	<20150223161832.GN8134@...1296...>	<54EB5549.9050108@...1114...>	<54EE4F19.1000108@...1856...>
+	<CAEW7GUvzbvR1FFSVA86pcY7tM4owucU88xTpLrUybDDCErpnTQ@...278...>
+In-Reply-To: <CAEW7GUvzbvR1FFSVA86pcY7tM4owucU88xTpLrUybDDCErpnTQ@...278...>
+Subject: Re: [Openvpn-devel] Add support for Keying Material Exporter [RFC
+ 5705]
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,35 +15,58 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: daniel kubec <niel@...1898...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Just a precaution, this could never fail in the current code since in the
-one place this function is called, the cn is already zero-initialized.
 
-Signed-off-by: Steffan Karger <steffan@...1856...>
----
- src/openvpn/ssl_verify_polarssl.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+On 02-03-15 01:03, daniel kubec wrote:
+> Greetings Steffan, David and Gert
+>
+> Thank you very much for your comments.
+>
+> 1) log level switched to D_TLS_DEBUG_MED
+> 2) ekm_size removed, ekm_size != 0 condition is used instead.
+> 3) changed to: exported_keying_material
+> 4) minimum set to 16 bytes and maximum set to 4095 bytes.
+>
+> Added 2 patches related to [RFC-5705] (code + docs).
 
-diff --git a/src/openvpn/ssl_verify_polarssl.c b/src/openvpn/ssl_verify_polarssl.c
-index 3e8d712..976df50 100644
---- a/src/openvpn/ssl_verify_polarssl.c
-+++ b/src/openvpn/ssl_verify_polarssl.c
-@@ -115,7 +115,10 @@ backend_x509_get_username (char *cn, int cn_len,
- 
-   /* Found, extract CN */
-   if (cn_len > name->val.len)
--    memcpy( cn, name->val.p, name->val.len );
-+    {
-+      memcpy( cn, name->val.p, name->val.len );
-+      cn[name->val.len] = '\0';
-+    }
-   else
-     {
-       memcpy( cn, name->val.p, cn_len);
--- 
-2.1.0
+Thanks. This looks good, the extra file in doc/ helps.  Still a few 
+remarks though.  Really really minor, but let's get it right anyway :)
 
++.B \-\-keying-material-exporter [label] [len] (min. 16)
+
+I should have spotted this in an earlier patch, but I just noticed the 
+brackets around label and len.  In the manpage such brackets indicate 
+optional arguments, i.e. there should be no brackets in this case.
+
++      to.ekm_size = options->keying_material_exporter_length;
++      if (to.ekm_size < 16 || to.ekm_size > 4095)
++          to.ekm_size = 0;
+
+vs
+
++      if (ekm_length < 16)
++        {
++          msg (msglevel, "Invalid keying material exporter length");
++          goto err;
++        }
+
+Could you add the upper bound to the check in options.c too?
+
++channel bindings is straitforward and well-defined mechanism how to
+
+That is spelled "straightforward".
+
+I'll leave the assessment of the docs to Gert, as he can easier judge 
+whether this is clear enough.
+
+David, can you confirm the plugin aspects of this implementation are 
+correct?
+
+Apart from the remaining nits, ACK on the code.
+
+-Steffan
 
