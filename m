@@ -1,11 +1,7 @@
-Message-ID: <54F85398.90601@...515...>
-Date: Thu, 05 Mar 2015 15:01:12 +0200
-From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="12OGe7SMWpUpeACSmSE7eAAbn6fvDCt8n"
-Subject: [Openvpn-devel] New OpenVPN 2.3.6 Windows installers released
+From: Lev Stipakov <lstipakov@...277...>
+Date: Thu,  5 Mar 2015 22:33:56 +0200
+Message-Id: <1425587636-23338-1-git-send-email-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH] Fix mssfix default value
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,88 +10,39 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>, "openvpn-announce@lists.sourceforge.net" <openvpn-announce@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---12OGe7SMWpUpeACSmSE7eAAbn6fvDCt8n
-Content-Type: multipart/alternative;
-	boundary="------------080004090506050501010809"
+Due to this bug, mssfix hasn't been assigned to fragment value
+and used default value (1450) instead. As a consequence, TCP packets
+get fragmented, which causes performance penalty.
 
-This is a multi-part message in MIME format.
---------------080004090506050501010809
-Content-Type: text/plain; charset="iso-8859-15"
-Content-Transfer-Encoding: quoted-printable
+Since dual stack patch
+https://github.com/OpenVPN/openvpn/commit/23d61c56b9fd218c39ad151b01b7e2d6690e6093
+OpenVPN uses options->connection_list, even for single remote.
 
-Hi all,
+This fix assigns mssfix value to fragment value for connection_entry
+inside connection_list instead of connection_entry inside options struct
+(which does not work for connection_list case).
+---
+ src/openvpn/options.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-New Windows installers were released today, primarily to bundle OpenSSL
-1.0.1l which fixes the FREAK vulnerability. All users of the official
-OpenVPN Windows installers are encouraged to upgrade their systems or to
-take other measures to mitigate the attacks. More details are available
-in our official statement[*]
-<https://community.openvpn.net/openvpn/wiki/SecurityAnnouncement-FREAK>rega=
-rding
-the vulnerability.
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 4ea03d1..20b37db 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -2352,7 +2352,7 @@ options_postprocess_mutate_ce (struct options *o, struct connection_entry *ce)
+     {
+ #ifdef ENABLE_FRAGMENT
+       if (ce->fragment)
+-	o->ce.mssfix = ce->fragment;
++	ce->mssfix = ce->fragment;
+ #else
+       msg (M_USAGE, "--mssfix must specify a parameter");
+ #endif      
+-- 
+1.9.1
 
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
-
-[*] <https://community.openvpn.net/openvpn/wiki/SecurityAnnouncement-FREAK>
-
---------------080004090506050501010809
-Content-Type: text/html; charset="iso-8859-15"
-Content-Transfer-Encoding: quoted-printable
-
-<html>
-  <head>
-
-    <meta http-equiv=3D"content-type" content=3D"text/html; charset=3Diso-8=
-859-15">
-  </head>
-  <body bgcolor=3D"#FFFFFF" text=3D"#000000">
-    Hi all,<br>
-    <br>
-    New Windows installers were released today, primarily to bundle
-    OpenSSL 1.0.1l which fixes the FREAK vulnerability. All users of the
-    official OpenVPN Windows installers are encouraged to upgrade their
-    systems or to take other measures to mitigate the attacks. More
-    details are available in our official statement[*] <a
-href=3D"https://community.openvpn.net/openvpn/wiki/SecurityAnnouncement-FRE=
-AK"
-      class=3D"postlink"></a>regarding the vulnerability.<br>
-    <pre class=3D"moz-signature" cols=3D"72">--=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
-
-</pre>
-    [*]
-<a class=3D"moz-txt-link-rfc2396E" href=3D"https://community.openvpn.net/op=
-envpn/wiki/SecurityAnnouncement-FREAK">&lt;https://community.openvpn.net/op=
-envpn/wiki/SecurityAnnouncement-FREAK&gt;</a><br>
-  </body>
-</html>
-
---------------080004090506050501010809--
-
---12OGe7SMWpUpeACSmSE7eAAbn6fvDCt8n
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iEYEARECAAYFAlT4U5gACgkQwp2X7RmNIqMS5wCg35yPS91i2V6YT4I7QXGis9g9
-BQ4An0YXaexe/Hy+TKNQ7h7nId9hB579
-=izkI
------END PGP SIGNATURE-----
-
---12OGe7SMWpUpeACSmSE7eAAbn6fvDCt8n--
 
