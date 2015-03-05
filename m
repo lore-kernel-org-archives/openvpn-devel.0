@@ -1,7 +1,9 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Wed,  4 Mar 2015 15:23:44 +0100
-Message-Id: <1425479025-7573-1-git-send-email-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH 1/2] Remove unused function sock_addr_set
+MIME-Version: 1.0
+Date: Wed, 4 Mar 2015 18:40:35 -0700
+Message-ID: <CAAA5faFSG-SteiMDoLEVEb-RiC0jdFVSrP0X3md38EWybAfETQ@...278...>
+From: Reinoud Koornstra <reinoudkoornstra@...277...>
+Content-Type: multipart/alternative; boundary=001a1134bd8083306b051080a75c
+Subject: [Openvpn-devel] reading from the status file from another pid
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -10,37 +12,50 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
----
- src/openvpn/ps.c | 11 -----------
- 1 file changed, 11 deletions(-)
+--001a1134bd8083306b051080a75c
+Content-Type: text/plain; charset=UTF-8
 
-diff --git a/src/openvpn/ps.c b/src/openvpn/ps.c
-index 6807aac..fe18a9d 100644
---- a/src/openvpn/ps.c
-+++ b/src/openvpn/ps.c
-@@ -372,17 +372,6 @@ proxy_list_close (struct proxy_connection **list)
-     }
- }
- 
--static void
--sock_addr_set (struct openvpn_sockaddr *osaddr,
--	       const in_addr_t addr,
--	       const int port)
--{
--  CLEAR (*osaddr);
--  osaddr->addr.in4.sin_family = AF_INET;
--  osaddr->addr.in4.sin_addr.s_addr = htonl (addr);
--  osaddr->addr.in4.sin_port = htons (port);
--}
--
- static inline void
- proxy_connection_io_requeue (struct proxy_connection *pc, const int rwflags_new, struct event_set *es)
- {
--- 
-1.9.3 (Apple Git-50)
+Hi Everyone,
 
+I've configured openvpn to write the status every 5 seconds to a status
+file.
+Looking at the code that when openvpn starts you call open()
+
+Then every 5 seconds, the status file is truncated in status_flush.
+
+Only when you close openvpn, the file descriptor will be closed again.
+Hence, the file remains open all the time, but is truncated every 5 seconds.
+
+Now I would the read from the status file periodically as well in another
+process that is running.
+I can open the file just fine, the only issue that makes me incertain is
+the truncating of the file every 5 seconds. Currently I am looking for a
+safe way to read from the status file, while it is opened and truncated
+every 5 seconds.
+Any suggestions?
+Thanks,
+
+Reinoud.
+
+--001a1134bd8083306b051080a75c
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr">Hi Everyone,<div><br></div><div>I&#39;ve configured openvp=
+n to write the status every 5 seconds to a status file.</div><div>Looking a=
+t the code that when openvpn starts you call open()</div><div><br></div><di=
+v>Then every 5 seconds, the status file is truncated in status_flush.</div>=
+<div><br></div><div>Only when you close openvpn, the file descriptor will b=
+e closed again.</div><div>Hence, the file remains open all the time, but is=
+ truncated every 5 seconds.</div><div><br></div><div>Now I would the read f=
+rom the status file periodically as well in another process that is running=
+.</div><div>I can open the file just fine, the only issue that makes me inc=
+ertain is the truncating of the file every 5 seconds. Currently I am lookin=
+g for a safe way to read from the status file, while it is opened and trunc=
+ated every 5 seconds.</div><div>Any suggestions?</div><div>Thanks,</div><di=
+v><br></div><div>Reinoud.</div></div>
+
+--001a1134bd8083306b051080a75c--
 
