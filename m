@@ -1,10 +1,8 @@
-Date: Fri, 6 Mar 2015 19:57:52 +0100 (CET)
-Message-Id: <201503061857.t26IvqWL022213@...1295...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <1425592716-14243-2-git-send-email-steffan@...1856...>
-References: <1425592716-14243-2-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH applied] Re: polarssl: make sure to always
-	null-terminate the cn
+MIME-Version: 1.0
+From: Nicholas Hall <ngharo@...277...>
+Date: Fri, 6 Mar 2015 13:07:38 -0600
+Message-ID: <CAK6ywb+fMsyvOz+saw9XBO4KDx1srdB92H71OwcKFPZnyxHkqw@...278...>
+Subject: [Openvpn-devel] [PATCH] Fix autotools check for res_init
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,30 +11,65 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-To: Steffan Karger <steffan@...1856...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-ACK. Your patch has been applied to the master branch.
+Autotools configure check fails to detect res_init on recent glibc
+versions.  It appears that resolv.h in recent glibc maps res_init to
+__res_init which autotools doesn't catch.
 
-commit 63559e142eb71a5e38dfc55d429f35f6e1af0b7c (master)
+This is my first patch ever to anything autotools related.  I used the
+check that the ntpd uses and tested on Debian 8 x64 (glibc 2.19) and
+LFS 7.4 (glibc 2.18) successfully.
 
-Author: Steffan Karger
-Date:   Thu Mar 5 22:58:36 2015 +0100
+This fixes bug #525
+https://community.openvpn.net/openvpn/ticket/523
+---
+ configure.ac         | 14 ++++++++------
+ src/openvpn/socket.c |  4 ++++
+ 2 files changed, 12 insertions(+), 6 deletions(-)
 
-     polarssl: make sure to always null-terminate the cn
+diff --git a/configure.ac b/configure.ac
+index 9132468..c4db43a 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -613,12 +613,14 @@ AC_SUBST([SOCKETS_LIBS])
+ old_LIBS="${LIBS}"
+ LIBS="${LIBS} ${SOCKETS_LIBS}"
+ AC_CHECK_FUNCS([sendmsg recvmsg inet_ntop inet_pton])
+-AC_CHECK_FUNCS(
+-    [res_init],
+-    ,
+-    ,
+-    [[#include <resolv.h>]]
+-)
++AC_SEARCH_LIBS([res_init], [resolv], [], [], [-lsocket -lnsl])
++case "$host" in
++    *-*-darwin*)
++        AC_CHECK_LIB([resolv],[res_9_init])
++        ;;
++esac
++AC_HEADER_RESOLV
++AC_CHECK_FUNCS([res_init __res_init])
+ # Windows use stdcall for winsock so we cannot auto detect these
+ m4_define(
+     [SOCKET_FUNCS],
+diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
+index f5c740d..5f98f01 100644
+--- a/src/openvpn/socket.c
++++ b/src/openvpn/socket.c
+@@ -41,6 +41,10 @@
+ #include "manage.h"
+ #include "openvpn.h"
 
-     Signed-off-by: Steffan Karger <steffan@...1856...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1425592716-14243-2-git-send-email-steffan@...1856...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/9511
-     Signed-off-by: Gert Doering <gert@...1296...>
++#if !defined(HAVE_RES_INIT) && defined(HAVE___RES_INIT)
++# define HAVE_RES_INIT
++#endif
++
+ #include "memdbg.h"
 
-
---
-kind regards,
-
-Gert Doering
-
+ const int proto_overhead[] = { /* indexed by PROTO_x */
+-- 
+2.1.4
 
