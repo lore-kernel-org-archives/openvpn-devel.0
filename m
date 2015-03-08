@@ -1,10 +1,8 @@
-Date: Sun, 8 Mar 2015 13:15:17 +0100 (CET)
-Message-Id: <201503081215.t28CFHns021007@...1295...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1425745391-8069-1-git-send-email-steffan@...1856...>
-References: <1425745391-8069-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Change float log message to
-	include common name, if available.
+Date: Sun,  8 Mar 2015 13:56:41 +0100
+Message-Id: <1425819401-18465-1-git-send-email-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH] Fix incorrect use of get_ipv6_addr() for
+	iroute options.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,28 +13,29 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Steffan Karger <steffan@...1856...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master branch.
+get_ipv6_addr() returns "bool/false", not "int < 0" to signal error.
 
-commit bacd640f57c935fb8de4efa71be0e8601c48f26f
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+ src/openvpn/options.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Author: Steffan Karger
-Date:   Sat Mar 7 17:23:11 2015 +0100
-
-     Change float log message to include common name, if available.
-
-     Signed-off-by: Steffan Karger <steffan@...1856...>
-     Acked-by: Lev Stipakov <lstipakov@...277...>
-     Message-Id: <1425745391-8069-1-git-send-email-steffan@...1856...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/9526
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 20b37db..df9a641 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -1254,7 +1254,7 @@ option_iroute_ipv6 (struct options *o,
+ 
+   ALLOC_OBJ_GC (ir, struct iroute_ipv6, &o->gc);
+ 
+-  if ( get_ipv6_addr (prefix_str, &ir->network, &ir->netbits, NULL, msglevel ) < 0 )
++  if ( !get_ipv6_addr (prefix_str, &ir->network, &ir->netbits, NULL, msglevel ))
+     {
+       msg (msglevel, "in --iroute-ipv6 %s: Bad IPv6 prefix specification",
+ 	   prefix_str);
+-- 
+2.0.5
 
 
