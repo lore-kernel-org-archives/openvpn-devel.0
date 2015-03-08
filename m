@@ -1,11 +1,10 @@
-Message-ID: <54FC52BB.8070205@...1856...>
-Date: Sun, 08 Mar 2015 14:46:35 +0100
-From: Steffan Karger <steffan@...1856...>
-MIME-Version: 1.0
-References: <1425819401-18465-1-git-send-email-gert@...1296...>
+Date: Sun, 8 Mar 2015 20:23:39 +0100 (CET)
+Message-Id: <201503081923.t28JNdGo017150@...1295...>
+From: Gert Doering <gert@...1296...>
 In-Reply-To: <1425819401-18465-1-git-send-email-gert@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH] Fix incorrect use of get_ipv6_addr()
- for iroute options.
+References: <1425819401-18465-1-git-send-email-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix incorrect use of
+	get_ipv6_addr() for iroute options.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,33 +13,30 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-On 08-03-15 13:56, Gert Doering wrote:
-> get_ipv6_addr() returns "bool/false", not "int < 0" to signal error.
->
-> Signed-off-by: Gert Doering <gert@...1296...>
-> ---
->   src/openvpn/options.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-> index 20b37db..df9a641 100644
-> --- a/src/openvpn/options.c
-> +++ b/src/openvpn/options.c
-> @@ -1254,7 +1254,7 @@ option_iroute_ipv6 (struct options *o,
->
->     ALLOC_OBJ_GC (ir, struct iroute_ipv6, &o->gc);
->
-> -  if ( get_ipv6_addr (prefix_str, &ir->network, &ir->netbits, NULL, msglevel ) < 0 )
-> +  if ( !get_ipv6_addr (prefix_str, &ir->network, &ir->netbits, NULL, msglevel ))
->       {
->         msg (msglevel, "in --iroute-ipv6 %s: Bad IPv6 prefix specification",
->   	   prefix_str);
+Patch has been applied to the master and release/2.3 branch.
 
-ACK
+commit e8562d5531277ee4dd7c517ef68e87af077ac948 (master)
+commit 5f5e49762ccd267af6b82e6bb600fe329d18463e (release/2.3)
 
--Steffan
+Author: Gert Doering
+Date:   Sun Mar 8 13:56:41 2015 +0100
+
+     Fix incorrect use of get_ipv6_addr() for iroute options.
+
+     Signed-off-by: Gert Doering <gert@...1296...>
+     Acked-by: Steffan Karger <steffan.karger@...1435...>
+     Message-Id: <1425819401-18465-1-git-send-email-gert@...1296...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/9532
+
+
+--
+kind regards,
+
+Gert Doering
+
 
