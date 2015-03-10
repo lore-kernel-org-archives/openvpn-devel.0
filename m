@@ -1,8 +1,7 @@
-From: David Sommerseth <openvpn.list@...1114...>
-Date: Tue, 10 Mar 2015 14:57:54 +0100
-Message-Id: <1425995874-2956-1-git-send-email-openvpn.list@...1114...>
-Subject: [Openvpn-devel] [PATCH] Create directory on-the-fly for pid file if
-	it does not exist
+From: Steffan Karger <steffan@...1856...>
+Date: Tue, 10 Mar 2015 20:26:45 +0100
+Message-Id: <1426015605-4068-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH] Re-enable TLS version negotiation by default
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,61 +14,80 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-From: David Sommerseth <davids@...1347...>
+Re-enable TLS version negotiation by default, so that users
+benefit from the stronger and better crypto of TLSv1.1 and
+TLSv1.2, without having to add 'tls-version-min' to their
+config files.
 
-Some distros, like RHEL7, have placed the directory it uses to
-track pid files (/run) on a tmpfs file system.  This results in
-the /run directory to be wiped on each boot.  As the systemd unit
-file may expect OpenVPN pid-files (one for each openvpn connection)
-to reside inside a sub-directory, OpenVPN will then fail to start.
+We tried this before in 2.3.3, but got various reports of people
+no longer being able to connect.  Back then, we did not have a
+way for users to control the TLS version.  We now have
+--tls-version-min and --tls-version-max, and even automatically
+set --tls-version-max to 1.1 if --cryptoapi is used, because
+the cryptoapi code is incompatible with TLS 1.2.
 
-This patch enhanches the check_file_access() function to support
-a CHKACC_MKDIR type flag, which will tell it to create a directory
-if it is missing.
+To make sure users can fall back to the _exact_ old default
+behaviour, not only limit the TLS version to 1.0 if
+--tls-version-max 1.0 is set, but also keep using the API calls
+TLSv1_{client,server}_method(), instead of the ones that support
+negotiation (SSLv23_{client,server}_method()).  (Yes, the naming
+is awkward, but 'SSLv23' really means 'enable negotiation' in
+OpenSSL-API language.
 
-Signed-off-by: David Sommerseth <davids@...1347...>
+This patch is for the release/2.3 branch only.
+
+Signed-off-by: Steffan Karger <steffan@...1856...>
 ---
- src/openvpn/options.c | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+ src/openvpn/ssl_openssl.c | 20 ++++++++++----------
+ 1 file changed, 10 insertions(+), 10 deletions(-)
 
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index df9a641..6a0fbf6 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -2545,6 +2545,7 @@ options_postprocess_mutate (struct options *o)
- #define CHKACC_FILEXSTWR (1<<2)  /** If file exists, is it writable? */
- #define CHKACC_INLINE (1<<3)     /** File is present if it's an inline file */
- #define CHKACC_ACPTSTDIN (1<<4)  /** If filename is stdin, it's allowed and "exists" */
-+#define CHKACC_MKDIR (1<<5)      /** If directory is missing, create it on-the-fly */
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index 5207dfd..fd382fb 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -121,15 +121,15 @@ tmp_rsa_cb (SSL * s, int is_export, int keylength)
+ void
+ tls_ctx_server_new(struct tls_root_ctx *ctx, unsigned int ssl_flags)
+ {
+-  const int tls_version_min =
+-      (ssl_flags >> SSLF_TLS_VERSION_MIN_SHIFT) & SSLF_TLS_VERSION_MIN_MASK;
++  const int tls_version_max =
++      (ssl_flags >> SSLF_TLS_VERSION_MAX_SHIFT) & SSLF_TLS_VERSION_MAX_MASK;
  
- static bool
- check_file_access(const int type, const char *file, const int mode, const char *opt)
-@@ -2571,8 +2572,14 @@ check_file_access(const int type, const char *file, const int mode, const char *
-       char *fullpath = strdup(file);  /* POSIX dirname() implementaion may modify its arguments */
-       char *dirpath = dirname(fullpath);
+   ASSERT(NULL != ctx);
  
--      if (platform_access (dirpath, mode|X_OK) != 0)
-+      if (platform_access (dirpath, mode|X_OK) != 0) {
-+          /* If the directory does not exist, we might have been told to create it */
-+          if (errno == ENOENT && (type & CHKACC_MKDIR)) {
-+            mode_t dirmask =  (R_OK ? S_IRUSR : 0) | (W_OK ? S_IWUSR : 0 ) | S_IXUSR;
-+            errno = (mkdir(dirpath, dirmask) == 0) ? 0 : errno;
-+          }
-           errcode = errno;
-+      }
-       free(fullpath);
-     }
+-  if (tls_version_min > TLS_VER_UNSPEC)
+-    ctx->ctx = SSL_CTX_new (SSLv23_server_method ());
+-  else
++  if (tls_version_max == TLS_VER_1_0)
+     ctx->ctx = SSL_CTX_new (TLSv1_server_method ());
++  else
++    ctx->ctx = SSL_CTX_new (SSLv23_server_method ());
  
-@@ -2738,7 +2745,7 @@ options_postprocess_filechecks (struct options *options)
-   /* ** System related ** */
-   errs |= check_file_access (CHKACC_FILE, options->chroot_dir,
-                              R_OK|X_OK, "--chroot directory");
--  errs |= check_file_access (CHKACC_DIRPATH|CHKACC_FILEXSTWR, options->writepid,
-+  errs |= check_file_access (CHKACC_DIRPATH|CHKACC_FILEXSTWR|CHKACC_MKDIR, options->writepid,
-                              R_OK|W_OK, "--writepid");
+   if (ctx->ctx == NULL)
+     msg (M_SSLERR, "SSL_CTX_new SSLv23_server_method");
+@@ -140,15 +140,15 @@ tls_ctx_server_new(struct tls_root_ctx *ctx, unsigned int ssl_flags)
+ void
+ tls_ctx_client_new(struct tls_root_ctx *ctx, unsigned int ssl_flags)
+ {
+-  const int tls_version_min =
+-      (ssl_flags >> SSLF_TLS_VERSION_MIN_SHIFT) & SSLF_TLS_VERSION_MIN_MASK;
++  const int tls_version_max =
++      (ssl_flags >> SSLF_TLS_VERSION_MAX_SHIFT) & SSLF_TLS_VERSION_MAX_MASK;
  
-   /* ** Log related ** */
+   ASSERT(NULL != ctx);
+ 
+-  if (tls_version_min > TLS_VER_UNSPEC)
+-    ctx->ctx = SSL_CTX_new (SSLv23_client_method ());
+-  else
++  if (tls_version_max == TLS_VER_1_0)
+     ctx->ctx = SSL_CTX_new (TLSv1_client_method ());
++  else
++    ctx->ctx = SSL_CTX_new (SSLv23_client_method ());
+ 
+   if (ctx->ctx == NULL)
+     msg (M_SSLERR, "SSL_CTX_new SSLv23_client_method");
 -- 
-1.8.3.1
+2.1.0
 
 
