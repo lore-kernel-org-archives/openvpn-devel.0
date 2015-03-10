@@ -1,21 +1,8 @@
-Date: Tue, 10 Mar 2015 09:08:15 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20150310080815.GI21893@...1296...>
-References: <20140827093409.GA659@...1900...> <20150223155132.GA28440@...2018...>
-	<20150223161832.GN8134@...1296...>
-	<54EB5549.9050108@...1114...> <54EE4F19.1000108@...1856...>
-	<CAEW7GUvzbvR1FFSVA86pcY7tM4owucU88xTpLrUybDDCErpnTQ@...278...>
-	<20150306184547.GY21893@...1296...>
-	<CAEW7GUsx5JrASMJK1EnWaBRUwbv4jMx82-Sh8t=3b5HU73UEhA@...278...>
-	<20150309190242.GF21893@...1296...>
-	<CAEW7GUvz6gLkj4maQbsbSEFcYRr45yu-U_5RDyGBDsoMDZVvrg@...278...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="pFej7zHSL6C5fFIz"
-Content-Disposition: inline
-In-Reply-To: <CAEW7GUvz6gLkj4maQbsbSEFcYRr45yu-U_5RDyGBDsoMDZVvrg@...278...>
-Subject: Re: [Openvpn-devel] Add support for Keying Material Exporter [RFC
-	5705]
+From: David Sommerseth <openvpn.list@...1114...>
+Date: Tue, 10 Mar 2015 14:57:54 +0100
+Message-Id: <1425995874-2956-1-git-send-email-openvpn.list@...1114...>
+Subject: [Openvpn-devel] [PATCH] Create directory on-the-fly for pid file if
+	it does not exist
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -24,65 +11,65 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: daniel kubec <niel@...1898...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---pFej7zHSL6C5fFIz
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+From: David Sommerseth <davids@...1347...>
 
-Hi,
+Some distros, like RHEL7, have placed the directory it uses to
+track pid files (/run) on a tmpfs file system.  This results in
+the /run directory to be wiped on each boot.  As the systemd unit
+file may expect OpenVPN pid-files (one for each openvpn connection)
+to reside inside a sub-directory, OpenVPN will then fail to start.
 
-On Mon, Mar 09, 2015 at 08:46:10PM +0100, daniel kubec wrote:
-> It is nothing more then generating same keying material for client and
-> server plugins (OPENVPN_PLUGIN_TLS_FINAL callback)
-> without the need of transfer that key throught (D)TLS channel and/or app =
-layer.
+This patch enhanches the check_file_access() function to support
+a CHKACC_MKDIR type flag, which will tell it to create a directory
+if it is missing.
 
-Why is it so hard to describe a good use case along the lines of what=20
-I described here?
+Signed-off-by: David Sommerseth <davids@...1347...>
+---
+ src/openvpn/options.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
-> On 9 March 2015 at 20:02, Gert Doering <gert@...1296...> wrote:
-[..]
-> > No code needed.  Just describe the parts that would be needed to make
-> > this work - like "on the server, you need a plugin that talks to
-> > foobar service to get a blinkenlight, on the client, you need a plugin
-> > that uses EKM to make the light blink, via..."
-[..]
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index df9a641..6a0fbf6 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -2545,6 +2545,7 @@ options_postprocess_mutate (struct options *o)
+ #define CHKACC_FILEXSTWR (1<<2)  /** If file exists, is it writable? */
+ #define CHKACC_INLINE (1<<3)     /** File is present if it's an inline file */
+ #define CHKACC_ACPTSTDIN (1<<4)  /** If filename is stdin, it's allowed and "exists" */
++#define CHKACC_MKDIR (1<<5)      /** If directory is missing, create it on-the-fly */
+ 
+ static bool
+ check_file_access(const int type, const char *file, const int mode, const char *opt)
+@@ -2571,8 +2572,14 @@ check_file_access(const int type, const char *file, const int mode, const char *
+       char *fullpath = strdup(file);  /* POSIX dirname() implementaion may modify its arguments */
+       char *dirpath = dirname(fullpath);
+ 
+-      if (platform_access (dirpath, mode|X_OK) != 0)
++      if (platform_access (dirpath, mode|X_OK) != 0) {
++          /* If the directory does not exist, we might have been told to create it */
++          if (errno == ENOENT && (type & CHKACC_MKDIR)) {
++            mode_t dirmask =  (R_OK ? S_IRUSR : 0) | (W_OK ? S_IWUSR : 0 ) | S_IXUSR;
++            errno = (mkdir(dirpath, dirmask) == 0) ? 0 : errno;
++          }
+           errcode = errno;
++      }
+       free(fullpath);
+     }
+ 
+@@ -2738,7 +2745,7 @@ options_postprocess_filechecks (struct options *options)
+   /* ** System related ** */
+   errs |= check_file_access (CHKACC_FILE, options->chroot_dir,
+                              R_OK|X_OK, "--chroot directory");
+-  errs |= check_file_access (CHKACC_DIRPATH|CHKACC_FILEXSTWR, options->writepid,
++  errs |= check_file_access (CHKACC_DIRPATH|CHKACC_FILEXSTWR|CHKACC_MKDIR, options->writepid,
+                              R_OK|W_OK, "--writepid");
+ 
+   /* ** Log related ** */
+-- 
+1.8.3.1
 
-
-You have written a lot of crypto speak, and added a bit of handwaving why
-this is totally useful - but no specific example, how the bits and pieces
-have to be combined to make it work.
-
-Of course, single-sign-on would be extremely great - but I lack the crypto
-background (or the imagination) to see how this could be implemented using=
-=20
-EKM - so, please explain it to us.
-
-gert
-
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---pFej7zHSL6C5fFIz
-Content-Type: application/pgp-signature
-Content-Disposition: inline
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQCVAwUBVP6mb6kuBuNlUUl1AQI77wQAoP4UdlQjh6+UtfAsAceumjMFnxc1DiB9
-67obI8XWxcgz0VRtwS9YIpdK5jBSdgTGH1hiqS2zgq14meftRwU8aJ+jmjQOntWS
-0hzjpC1iHqmKgvtjBtq5e1xiEGKgs3Sd2V7R9dWLv6LSoKzO0dpBuJ9Mnwjq1FLU
-btckj9ckB2Q=
-=c1Ud
------END PGP SIGNATURE-----
-
---pFej7zHSL6C5fFIz--
 
