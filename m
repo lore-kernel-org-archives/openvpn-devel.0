@@ -1,12 +1,8 @@
-Message-ID: <551067BE.8040304@...515...>
-Date: Mon, 23 Mar 2015 21:21:34 +0200
-From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="beVaiQXD8IWjD1S2UkXdquGpNCxBkVqDU"
-Subject: [Openvpn-devel] Topics for next week's (Monday,
-	30th Mar 2015) community meeting
+From: Steffan Karger <steffan@...1856...>
+Date: Thu, 26 Mar 2015 01:01:29 +0100
+Message-Id: <1427328089-886-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH] Remove unneeded parameter 'first_time' from
+	possibility_become_daemon()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,56 +11,46 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---beVaiQXD8IWjD1S2UkXdquGpNCxBkVqDU
-Content-Type: text/plain; charset="iso-8859-15"
-Content-Transfer-Encoding: quoted-printable
+The static helper function possibily_become_deamon() is called only once,
+by do_init_first_time(), which checks 'first_time' to be true before
+calling possibily_become_daemon().  This makes the parameter useless.
 
-Hi,
+Signed-off-by: Steffan Karger <steffan@...1856...>
+---
+ src/openvpn/init.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-We're going to have an IRC meeting _next_ Monday, 30th March, starting
-at 20:00 CET (19:00 UTC) on #openvpn-devel@...1422... Current
-topic list along with basic information is here:
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index b670a48..b97d2da 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -917,10 +917,10 @@ do_persist_tuntap (const struct options *options)
+  * Return true if we did it.
+  */
+ static bool
+-possibly_become_daemon (const struct options *options, const bool first_time)
++possibly_become_daemon (const struct options *options)
+ {
+   bool ret = false;
+-  if (first_time && options->daemon)
++  if (options->daemon)
+     {
+       ASSERT (!options->inetd);
+       if (daemon (options->cd_dir != NULL, options->log) < 0)
+@@ -2771,7 +2771,7 @@ do_init_first_time (struct context *c)
+       get_pid_file (c->options.writepid, &c0->pid_state);
+ 
+       /* become a daemon if --daemon */
+-      c->did_we_daemonize = possibly_become_daemon (&c->options, c->first_time);
++      c->did_we_daemonize = possibly_become_daemon (&c->options);
+ 
+       /* should we disable paging? */
+       if (c->options.mlock && c->did_we_daemonize)
+-- 
+2.1.0
 
-<https://community.openvpn.net/openvpn/wiki/Topics-2015-03-30>
-
-If you have any other things you'd like to bring up, respond to this
-mail, send me mail privately or add them to the list yourself.
-
-In case you can't attend the meeting, please feel free to make comments
-on the topics by responding to this email or to the summary email sent
-after the meeting. Whenever possible, we'll also respond to existing,
-related email threads.
-
-NOTE: It's required to use a registered Freenode IRC nickname to join
-#openvpn-devel - look here for details:
-
-<https://community.openvpn.net/openvpn/wiki/GettingHelp#DeveloperIRCchannel>
-
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
-
-
-
-
---beVaiQXD8IWjD1S2UkXdquGpNCxBkVqDU
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iEYEARECAAYFAlUQZ74ACgkQwp2X7RmNIqPbNACeO2Sr2s9vTLoYnyp1U9lucVZ8
-kZ4An2J7aW8xiUIP6Zk2cDmKMcpi+FRZ
-=Hr9s
------END PGP SIGNATURE-----
-
---beVaiQXD8IWjD1S2UkXdquGpNCxBkVqDU--
 
