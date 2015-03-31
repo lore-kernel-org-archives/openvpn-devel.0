@@ -1,11 +1,11 @@
-Message-ID: <551A972F.50103@...277...>
-Date: Tue, 31 Mar 2015 14:46:39 +0200
-From: Jiri Horky <jiri.horky@...277...>
+Message-ID: <551AA3A2.5000300@...1800...>
+Date: Tue, 31 Mar 2015 09:39:46 -0400
+From: Mike Tancsa <mike@...1800...>
 MIME-Version: 1.0
-References: <551A5509.702@...277...> <551A6EAA.8010109@...1114...>
-In-Reply-To: <551A6EAA.8010109@...1114...>
-Subject: Re: [Openvpn-devel] Increasing TUN_MTU_MIN to make connection
- establishment faster
+References: <5519B242.2020009@...1856...>
+	<20150330210636.GF21893@...1296...>
+In-Reply-To: <20150330210636.GF21893@...1296...>
+Subject: Re: [Openvpn-devel] [Openvpn-users] FreeBSD+cryptodev testers wanted
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,92 +14,96 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=windows-1252; format=flowed
 Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: FF Systems <ff-system@...2025...>
+To: Gert Doering <gert@...1296...>, Steffan Karger <steffan@...1856...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>, openvpn-users@lists.sourceforge.net
 
-
-On 03/31/2015 11:53 AM, David Sommerseth wrote:
-> On 31/03/15 10:04, Jiri Horky wrote:
->> Hi all,
->>
->> continuing yesterday's IRC discussion. I would like to ask whether you
->> can think of a reason why TUN_MTU_MIN is set to only 100 bytes, and
->> maybe more importantly, why this value is effectively enforced in function
->>
->> static void
->> tls_init_control_channel_frame_parameters(const struct frame
->> *data_channel_frame,
->>                  struct frame *frame)
->> ....
->>   /* set dynamic link MTU to minimum value */
->>   frame_set_mtu_dynamic (frame, 0, SET_MTU_TUN);
->>
->> We were debugging slow connection establishment on links with higher RTT
->> (>200ms), which takes about 7seconds. We tracked the problem down to
->> certificate handshake on a control channel, where client and server need
->> to exchange certificates which are about 3KiB each, and because the
->> enforced low MTU during tls init, and the fact that there are at maximum
->> 4 unacknowledged packets on wire (CONTROL_SEND_ACK_MAX), it takes quite
->> a lot of round trips to transfer it (it is clearly visible in wireshark,
->> that the openvpn fragments are exactly of 100Bytes).
->>
->> I tried to increase the TUN_MTU_MIN to 1000 (which should be safe on
->> nowadays Internet), which immediately helped.
->>
->> Before I make the change on our servers, I would like to understand
->> whether I may not break something by doing so.
->>
-> Just to summarize what was said on the IRC chat as well.
+On 3/30/2015 5:06 PM, Gert Doering wrote:
+> Hi,
 >
-> The frame_set_mtu_dynamic() sets the *dynamic* MTU on the *control
-> channel*.  That should never go below TUN_MTU_MIN.
+> On Mon, Mar 30, 2015 at 10:29:54PM +0200, Steffan Karger wrote:
+>> So, is there anyone with a FreeBSD machine with cryptodev engine
+>> available who is willing to test the patch?
 >
-> It's good that you've found a potential bug, which is improved by
-> increasing the TUN_MTU_MIN.  However, I believe it is wrong to just
-> increase that value and be happy.  We need to understand better why the
-> dynamic MTU on the control channel isn't set to a higher value in the
-> TLS handshake process.
->
-> You mentioned you saw in your logs:
->
->     Control Channel MTU parms [ L:1558 D:138 EF:38 EB:0 ET:0 EL:0 ]
->
-> The D: field says here the dynamic MTU is starting at 138, while the L:
-> is the link MTU.  Could you please enable debug logging and set
-> verbosity level to 7 and see if you find any "MTU DYNAMIC mtu=" messages
-> in your log file?  That should give an indication if the dynamic MTU is
-> changing at all.\
-Actually, this is exactly why I am asking here - to better understand
-why it is enforced to MIN value in tls init.
+> Actually, testing on other platforms using any sort of OpenSSL "engine"
+> (usually hardware crypto accelerators etc.) is welcome - the patch will not
+> affect anyone else, so it's not easy to test.
 
-Here is the log from client:
 
-hotgeorge ~ # tail -n 10000 /var/log/messages | grep openvpn | grep -i MTU
+I am not able to reproduce this. The server
 
-<ar 31 14:42:30 hotgeorge openvpn[719]:   tun_mtu = 1500
-Mar 31 14:42:30 hotgeorge openvpn[719]:   tun_mtu_defined = ENABLED
-Mar 31 14:42:30 hotgeorge openvpn[719]:   link_mtu = 1500
-Mar 31 14:42:30 hotgeorge openvpn[719]:   link_mtu_defined = DISABLED
-Mar 31 14:42:30 hotgeorge openvpn[719]:   tun_mtu_extra = 0
-Mar 31 14:42:30 hotgeorge openvpn[719]:   tun_mtu_extra_defined = DISABLED
-Mar 31 14:42:30 hotgeorge openvpn[719]:   mtu_discover_type = -1
-Mar 31 14:42:30 hotgeorge openvpn[719]:   mtu_test = 0
-Mar 31 14:42:30 hotgeorge openvpn[719]: MTU DYNAMIC mtu=0, flags=1, 0 -> 138
-Mar 31 14:42:30 hotgeorge openvpn[719]: Control Channel MTU parms [
-L:1558 D:138 EF:38 EB:0 ET:0 EL:0 ]
-Mar 31 14:42:30 hotgeorge openvpn[719]: MTU DYNAMIC mtu=1450, flags=2,
-1558 -> 1450
-Mar 31 14:42:30 hotgeorge openvpn[719]: Data Channel MTU parms [ L:1558
-D:1450 EF:58 EB:135 ET:0 EL:0 AF:3/1 ]
-Mar 31 14:42:30 hotgeorge openvpn[719]: Local Options String:
-'V4,dev-type tun,link-mtu 1558,tun-mtu 1500,proto UDPv4,comp-lzo,cipher
-AES-256-CBC,auth SHA1,keysize 256,key-method 2,tls-client'
-Mar 31 14:42:30 hotgeorge openvpn[719]: Expected Remote Options String:
-'V4,dev-type tun,link-mtu 1558,tun-mtu 1500,proto UDPv4,comp-lzo,cipher
-AES-256-CBC,auth SHA1,keysize 256,key-method 2,tls-server'
+# kldstat | grep aes
+  2    1 0xffffffff80fbf000 5a28     aesni.ko
+# sysctl -A dev.aesni
+dev.aesni.%parent:
+dev.aesni.0.%desc: AES-CBC,AES-XTS
+dev.aesni.0.%driver: aesni
+dev.aesni.0.%location:
+dev.aesni.0.%pnpinfo:
+dev.aesni.0.%parent: nexus0
 
-Jirka H.
+tls-server
+mode server
+daemon openvpn-hq
+user root
+group wheel
+local 1.1.1.2
+proto udp
+dev tun102
+engine cryptodev
+cipher AES-128-CBC   # AES
 
+FreeBSD 10.1-STABLE #6 r280386: Mon Mar 23 13:53:00 EDT 2015
+# openvpn  --version
+OpenVPN 2.3.6 amd64-portbld-freebsd10.1 [SSL (OpenSSL)] [LZO] [MH] 
+[IPv6] built on Feb  9 2015
+library versions: OpenSSL 1.0.1m-freebsd 19 Mar 2015, LZO 2.09
+Originally developed by James Yonan
+Copyright (C) 2002-2010 OpenVPN Technologies, Inc. <sales@...515...>
+Compile time defines: enable_crypto=yes enable_crypto_ofb_cfb=yes 
+enable_debug=yes enable_def_auth=yes enable_dlopen=unknown 
+enable_dlopen_self=unknown enable_dlopen_self_static=unknown 
+enable_fast_install=needless enable_fragment=yes enable_http_proxy=yes 
+enable_iproute2=no enable_libtool_lock=yes enable_lzo=yes 
+enable_lzo_stub=no enable_management=yes enable_multi=yes 
+enable_multihome=yes enable_pam_dlopen=no enable_password_save=yes 
+enable_pedantic=no enable_pf=yes enable_pkcs11=no 
+enable_plugin_auth_pam=yes enable_plugin_down_root=yes 
+enable_plugins=yes enable_port_share=yes enable_selinux=no 
+enable_server=yes enable_shared=yes 
+enable_shared_with_static_runtimes=no enable_small=no enable_socks=yes 
+enable_ssl=yes enable_static=yes enable_strict=no 
+enable_strict_options=no enable_systemd=no enable_win32_dll=yes 
+enable_x509_alt_username=no with_crypto_library=openssl with_gnu_ld=yes 
+with_mem_check=no with_plugindir='$(libdir)/openvpn/plugins' with_sysroot=no
+
+I have in the kernel of this server
+
+device  crypto
+device  cryptodev
+options IPSEC
+device pf
+device pflog
+
+Are there any special configs that need to be done to openssl ?
+
+# openssl engine
+(cryptodev) BSD cryptodev engine
+(rsax) RSAX engine support
+(rdrand) Intel RDRAND engine
+(dynamic) Dynamic engine loading support
+
+I had a client connect and disconnect and was able to pass traffic 
+across the tunnel
+
+	---Mike
+
+
+-- 
+-------------------
+Mike Tancsa, tel +1 519 651 3400
+Sentex Communications, mike@...1800...
+Providing Internet services since 1994 www.sentex.net
+Cambridge, Ontario Canada   http://www.tancsa.com/
 
