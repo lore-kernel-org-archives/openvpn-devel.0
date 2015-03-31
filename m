@@ -1,9 +1,15 @@
-Message-ID: <551ABCE6.5090502@...1800...>
-Date: Tue, 31 Mar 2015 11:27:34 -0400
-From: Mike Tancsa <mike@...1800...>
-MIME-Version: 1.0
-References: <5519B242.2020009@...1856...>	<20150330210636.GF21893@...1296...>	<551AA3A2.5000300@...1800...>	<20150331142352.GI21893@...1296...>
+Date: Tue, 31 Mar 2015 19:19:39 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20150331171938.GK21893@...1296...>
+References: <5519B242.2020009@...1856...>
+	<20150330210636.GF21893@...1296...>
+	<551AA3A2.5000300@...1800...>
+	<20150331142352.GI21893@...1296...>
 	<551AAF8F.7010502@...1800...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="pK9RtcSsLPP6O/Rn"
+Content-Disposition: inline
 In-Reply-To: <551AAF8F.7010502@...1800...>
 Subject: Re: [Openvpn-devel] [Openvpn-users] FreeBSD+cryptodev testers wanted
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -14,59 +20,68 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Gert Doering <gert@...1296...>
+To: Mike Tancsa <mike@...1800...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>, openvpn-users@lists.sourceforge.net
 
-On 3/31/2015 10:30 AM, Mike Tancsa wrote:
+--pK9RtcSsLPP6O/Rn
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+
+Hi,
+
+On Tue, Mar 31, 2015 at 10:30:39AM -0400, Mike Tancsa wrote:
 > On 3/31/2015 10:23 AM, Gert Doering wrote:
->> Hi,
->>
->> On Tue, Mar 31, 2015 at 09:39:46AM -0400, Mike Tancsa wrote:
->>> I am not able to reproduce this.
->>
->> You need to use --daemon to make openvpn fork().  Otherwise, it will
->> "just work", but after forking, the cryptodev file descriptor is no
->> longer valid -> boom.  Steffan's patch should fix that.
->
+> >On Tue, Mar 31, 2015 at 09:39:46AM -0400, Mike Tancsa wrote:
+> >>I am not able to reproduce this.
+> >
+> >You need to use --daemon to make openvpn fork().  Otherwise, it will
+> >"just work", but after forking, the cryptodev file descriptor is no
+> >longer valid -> boom.  Steffan's patch should fix that.
+>=20
 > Hi,
 > 	Is having in the config
->
+>=20
 > daemon openvpn-hq
->
+>=20
 > not the same as --daemon from the arguments ?
 
-commenting out daemon in the config, and starting it up with
+It is, sorry, did not look closely enough.
 
-openvpn --daemon --config /usr/local/etc/openvpn/openvpn.conf
+The fact that this just works for you is... surprising.  So maybe it's a=20
+different FreeBSD version, or different openssl, or whatnot...  unfortunate=
+ly,
+the original bug report
 
-also works for me.  Perhaps its the way the engine is loaded with this 
-version of openssl in the base of FreeBSD ?
+  https://redmine.pfsense.org/issues/3966
 
-# openssl engine -t -c
-(cryptodev) BSD cryptodev engine
-  [RSA, DSA, DH, AES-128-CBC, AES-192-CBC, AES-256-CBC]
-      [ available ]
-(rsax) RSAX engine support
-  [RSA]
-      [ available ]
-(rdrand) Intel RDRAND engine
-  [RAND]
-      [ available ]
-(dynamic) Dynamic engine loading support
-      [ unavailable ]
+does not list FreeBSD version or OpenSSL version, only pfsense version
+(2.2) - which does seem to be FreeBSD 10.1-p4, though...
 
-	---Mike
+Mmmh.
 
+gert
 
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
+--pK9RtcSsLPP6O/Rn
+Content-Type: application/pgp-signature
+Content-Disposition: inline
 
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
 
--- 
--------------------
-Mike Tancsa, tel +1 519 651 3400
-Sentex Communications, mike@...1800...
-Providing Internet services since 1994 www.sentex.net
-Cambridge, Ontario Canada   http://www.tancsa.com/
+iQCVAwUBVRrXKqkuBuNlUUl1AQJblQP/a3dm40w0+W/Vl+ZW+PelmyPJ8PSdAQEo
+TDSNL5zEFqJjtucZp3C/TK4QDH3GJfJJzebY/fjeuAyGMpHw8JiBzBvo5KTwsXRn
+B7ugs9vO2Quq87mbhxM244GqbaSOIO3zIjnSFUjgqibC7DRo/whLwRmTRyafdoZD
+S73zEciRc5k=
+=kSRu
+-----END PGP SIGNATURE-----
+
+--pK9RtcSsLPP6O/Rn--
 
