@@ -1,14 +1,9 @@
-Message-ID: <551A4A9B.6010508@...68...>
-Date: Tue, 31 Mar 2015 09:19:55 +0200
-From: Matthias Andree <matthias.andree@...68...>
+Message-ID: <551A5509.702@...277...>
+Date: Tue, 31 Mar 2015 10:04:25 +0200
+From: Jiri Horky <jiri.horky@...277...>
 MIME-Version: 1.0
-References: <1427784294-22175-1-git-send-email-samuli@...515...>
-In-Reply-To: <1427784294-22175-1-git-send-email-samuli@...515...>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="wtlHbhCnN5kK5I383W0MQK4ogFwC7LPlr"
-Subject: Re: [Openvpn-devel] [PATCH] Remove useless dash escapes from the
- man-page
+Subject: [Openvpn-devel] Increasing TUN_MTU_MIN to make connection
+	establishment faster
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,62 +12,40 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
+Cc: FF Systems <ff-system@...2025...>
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---wtlHbhCnN5kK5I383W0MQK4ogFwC7LPlr
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Hi all,
 
-Am 31.03.2015 um 08:44 schrieb samuli@...515...:
-> From: Samuli Sepp=C3=A4nen <samuli@...515...>
->=20
-> This patch is against the release/2.3 branch
->=20
-> Trac: 512
-> Signed-off-by: Samuli Sepp=C3=A4nen <samuli@...515...>
-> ---
->  doc/openvpn.8 | 1800 ++++++++++++++++++++++++++++-----------------------=
-------
->  1 file changed, 900 insertions(+), 900 deletions(-)
->=20
-> diff --git a/doc/openvpn.8 b/doc/openvpn.8
-> index a95d353..bcd2d76 100644
-> --- a/doc/openvpn.8
-> +++ b/doc/openvpn.8
-> @@ -37,7 +37,7 @@
->  .TH openvpn 8 "17 November 2008"
->  .\"*********************************************************
->  .SH NAME
-> -openvpn \- secure IP tunnel daemon.
-> +openvpn - secure IP tunnel daemon.
+continuing yesterday's IRC discussion. I would like to ask whether you
+can think of a reason why TUN_MTU_MIN is set to only 100 bytes, and
+maybe more importantly, why this value is effectively enforced in function
 
-I am concerned this will cause misformattings and inability to search
-for options with leading dashes on some systems - I don't recall
-versions, but I do know that some systems used some sort of Unicode
-(soft?) hyphen for a simple non-escaped MINUS character (ASCII 0x2B).
+static void
+tls_init_control_channel_frame_parameters(const struct frame
+*data_channel_frame,
+                 struct frame *frame)
+....
+  /* set dynamic link MTU to minimum value */
+  frame_set_mtu_dynamic (frame, 0, SET_MTU_TUN);
 
-So, for the release/2.3 branch, NAK for now, and more questions on the
-2.4/trunk.
+We were debugging slow connection establishment on links with higher RTT
+(>200ms), which takes about 7seconds. We tracked the problem down to
+certificate handshake on a control channel, where client and server need
+to exchange certificates which are about 3KiB each, and because the
+enforced low MTU during tls init, and the fact that there are at maximum
+4 unacknowledged packets on wire (CONTROL_SEND_ACK_MAX), it takes quite
+a lot of round trips to transfer it (it is clearly visible in wireshark,
+that the openvpn fragments are exactly of 100Bytes).
 
-My objections will be void the moment that we can be sure that those
-(major) distributions that played with the Unicode outside-ASCII hyphens
-in *roff have gone out of support, and supported versions no longer
-modify the plain ASCII minus, but render it verbatim.
+I tried to increase the TUN_MTU_MIN to 1000 (which should be safe on
+nowadays Internet), which immediately helped.
 
+Before I make the change on our servers, I would like to understand
+whether I may not break something by doing so.
 
---wtlHbhCnN5kK5I383W0MQK4ogFwC7LPlr
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iEYEARECAAYFAlUaSqEACgkQvmGDOQUufZWtawCgumx0uBlLWF/Lca4ujdH7h6wU
-nfIAmQHBOWlyXM6bTKckox4QBOjlHOKt
-=yfRD
------END PGP SIGNATURE-----
-
---wtlHbhCnN5kK5I383W0MQK4ogFwC7LPlr--
+Thank you
+Jiri Horky
 
