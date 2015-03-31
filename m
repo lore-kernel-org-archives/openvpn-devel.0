@@ -1,9 +1,9 @@
-Message-ID: <551A5735.8040900@...1227...>
-Date: Tue, 31 Mar 2015 10:13:41 +0200
-From: Arne Schwabe <arne@...1227...>
+Message-ID: <551A58F9.8090405@...277...>
+Date: Tue, 31 Mar 2015 10:21:13 +0200
+From: Jiri Horky <jiri.horky@...277...>
 MIME-Version: 1.0
-References: <551A5509.702@...277...>
-In-Reply-To: <551A5509.702@...277...>
+References: <551A5509.702@...277...> <551A5735.8040900@...1227...>
+In-Reply-To: <551A5735.8040900@...1227...>
 Subject: Re: [Openvpn-devel] Increasing TUN_MTU_MIN to make connection
  establishment faster
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -16,53 +16,73 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
 
-
-Am 31.03.15 um 10:04 schrieb Jiri Horky:
-> Hi all,
+On 03/31/2015 10:13 AM, Arne Schwabe wrote:
 >
-> continuing yesterday's IRC discussion. I would like to ask whether you
-> can think of a reason why TUN_MTU_MIN is set to only 100 bytes, and
-> maybe more importantly, why this value is effectively enforced in function
+> Am 31.03.15 um 10:04 schrieb Jiri Horky:
+>> Hi all,
+>>
+>> continuing yesterday's IRC discussion. I would like to ask whether you
+>> can think of a reason why TUN_MTU_MIN is set to only 100 bytes, and
+>> maybe more importantly, why this value is effectively enforced in function
+>>
+>> static void
+>> tls_init_control_channel_frame_parameters(const struct frame
+>> *data_channel_frame,
+>>                  struct frame *frame)
+>> ....
+>>   /* set dynamic link MTU to minimum value */
+>>   frame_set_mtu_dynamic (frame, 0, SET_MTU_TUN);
+>>
+>> We were debugging slow connection establishment on links with higher RTT
+>> (>200ms), which takes about 7seconds. We tracked the problem down to
+>> certificate handshake on a control channel, where client and server need
+>> to exchange certificates which are about 3KiB each, and because the
+>> enforced low MTU during tls init, and the fact that there are at maximum
+>> 4 unacknowledged packets on wire (CONTROL_SEND_ACK_MAX), it takes quite
+>> a lot of round trips to transfer it (it is clearly visible in wireshark,
+>> that the openvpn fragments are exactly of 100Bytes).
+>>
+>> I tried to increase the TUN_MTU_MIN to 1000 (which should be safe on
+>> nowadays Internet), which immediately helped.
+>>
+>> Before I make the change on our servers, I would like to understand
+>> whether I may not break something by doing so.
+>>
+> At least for IPv6 the minimum mtu of 1000 should be more than fine (IPv6
+> MTU MUST be at 1280).
 >
-> static void
-> tls_init_control_channel_frame_parameters(const struct frame
-> *data_channel_frame,
->                  struct frame *frame)
-> ....
->   /* set dynamic link MTU to minimum value */
->   frame_set_mtu_dynamic (frame, 0, SET_MTU_TUN);
+> When 56k modems were still common, they often used a MTU of 576, so for
+> a 56k this would break.
 >
-> We were debugging slow connection establishment on links with higher RTT
-> (>200ms), which takes about 7seconds. We tracked the problem down to
-> certificate handshake on a control channel, where client and server need
-> to exchange certificates which are about 3KiB each, and because the
-> enforced low MTU during tls init, and the fact that there are at maximum
-> 4 unacknowledged packets on wire (CONTROL_SEND_ACK_MAX), it takes quite
-> a lot of round trips to transfer it (it is clearly visible in wireshark,
-> that the openvpn fragments are exactly of 100Bytes).
+> But setting to 576 should be fine, from RFC 791:
 >
-> I tried to increase the TUN_MTU_MIN to 1000 (which should be safe on
-> nowadays Internet), which immediately helped.
->
-> Before I make the change on our servers, I would like to understand
-> whether I may not break something by doing so.
->
-At least for IPv6 the minimum mtu of 1000 should be more than fine (IPv6
-MTU MUST be at 1280).
+> All hosts must be prepared
+>     to accept datagrams of up to 576 octets (whether they arrive whole
+>     or in fragments).  It is recommended that hosts only send datagrams
+>     larger than 576 octets if they have assurance that the destination
+>     is prepared to accept the larger datagrams.
+Thanks Arne.
 
-When 56k modems were still common, they often used a MTU of 576, so for
-a 56k this would break.
+Actually, it should be probably set to somehow smaller value, as there
+is a IP/UDP + openvpn headers overhead involved. But 500 should be more
+than fine and it should make the connection establishment much much faster.
 
-But setting to 576 should be fine, from RFC 791:
 
-All hosts must be prepared
-    to accept datagrams of up to 576 octets (whether they arrive whole
-    or in fragments).  It is recommended that hosts only send datagrams
-    larger than 576 octets if they have assurance that the destination
-    is prepared to accept the larger datagrams.
+>
+> Arne
+>
+> ------------------------------------------------------------------------------
+> Dive into the World of Parallel Programming The Go Parallel Website, sponsored
+> by Intel and developed in partnership with Slashdot Media, is your hub for all
+> things parallel software development, from weekly thought leadership blogs to
+> news, videos, case studies, tutorials and more. Take a look and join the 
+> conversation now. http://goparallel.sourceforge.net/
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
-Arne
 
