@@ -1,10 +1,9 @@
-Message-ID: <5526BCAF.2020807@...1227...>
-Date: Thu, 09 Apr 2015 19:53:51 +0200
-From: Arne Schwabe <arne@...1227...>
+Message-ID: <552B52D5.1040200@...515...>
+Date: Mon, 13 Apr 2015 08:23:33 +0300
+From: =?windows-1252?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-References: <20150225160718.GA6306@...2009...>
-In-Reply-To: <20150225160718.GA6306@...2009...>
-Subject: Re: [Openvpn-devel] [PATCH v4] Mac OS X Keychain management client
+Subject: [Openvpn-devel] Topics for today's (Monday,
+	13th Apr 2015) community meeting
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,41 +12,39 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="windows-1252"
+Content-Type: text/plain; charset="windows-1252"; format=flowed
 Content-Transfer-Encoding: quoted-printable
-To: Vasily Kulikov <segoon@...2008...>, openvpn-devel@lists.sourceforge.net
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Am 25.02.15 um 17:07 schrieb Vasily Kulikov:
-> This patch adds support for using certificates stored in the Mac OSX
-> Keychain to authenticate with the OpenVPN server.  This works with
-> certificates stored on the computer as well as certificates on hardware
-> tokens that support Apple's tokend interface.  The patch is based on
-> the Windows Crypto API certificate functionality that currently exists
-> in OpenVPN.
->
-> This patch version implements management client which handles RSA-SIGN
-> command for RSA offloading.  Also it handles new 'NEED-CERTIFICATE'
-> request to pass a certificate from the keychain to OpenVPN.
->
-> OpenVPN itself gets new 'NEED-CERTIFICATE" command which is called when
-> --management-external-cert is used.  It is implemented as a multiline
-> command very similar to an existing 'RSA-SIGN' command.
->
-> The patch is against commit 3341a98c2852d1d0c1eafdc70a3bdb218ec29049.
->
-> v4:
->  - added '--management-external-cert' argument
->  - keychain-mcd now parses NEED-CERTIFICATE argument if 'auto' is passed
->    as cmdline's identity template
->  - fixed typo in help output option name
->  - added '--management-external-cert' info in openvpn(8) manpage
->  - added 'certificate' command documentation into doc/management-notes.txt
+Hi,
 
-Sorry taking soooo long. ACK to v4. (in the same way as v3, I reviewed
-in the openvpn changes in detail and only briefly looked at the
-keychain-mcd changes)
+We're going to have an IRC meeting today, 13th April, starting at 20:00=20
+CEST (18:00 UTC) on #openvpn-devel@...1422... Current topic list=20
+along with basic information is here:
 
-Are
+<https://community.openvpn.net/openvpn/wiki/Topics-2015-04-13>
+
+If you have any other things you'd like to bring up, respond to this
+mail, send me mail privately or add them to the list yourself.
+
+In case you can't attend the meeting, please feel free to make comments
+on the topics by responding to this email or to the summary email sent
+after the meeting. Whenever possible, we'll also respond to existing,
+related email threads.
+
+NOTE: It's required to use a registered Freenode IRC nickname to join
+#openvpn-devel - look here for details:
+
+<https://community.openvpn.net/openvpn/wiki/GettingHelp#DeveloperIRCchannel>
+
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
+
+
 
 
 
