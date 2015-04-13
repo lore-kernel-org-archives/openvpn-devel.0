@@ -1,10 +1,10 @@
-Date: Mon, 13 Apr 2015 21:43:22 +0200 (CEST)
-Message-Id: <201504131943.t3DJhMlc002530@...1295...>
+Date: Mon, 13 Apr 2015 21:43:29 +0200 (CEST)
+Message-Id: <201504131943.t3DJhTxM002627@...1295...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1427745294-31041-1-git-send-email-matthias.andree@...68...>
-References: <1427745294-31041-1-git-send-email-matthias.andree@...68...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Manual page update for
-	Re-enabled TLS version negotiation.
+In-Reply-To: <1427328089-886-1-git-send-email-steffan@...1856...>
+References: <1427328089-886-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Remove unneeded parameter
+	'first_time' from possibility_become_daemon()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,21 +15,25 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Matthias Andree <matthias.andree@...68...>
+To: Steffan Karger <steffan@...1856...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the release/2.3 branch.
+ACK.
 
-commit ca32c1551b05bf4cead7dceae62c412886fded55
-Author: Matthias Andree
-Date:   Mon Mar 30 21:54:54 2015 +0200
+Your patch has been applied to the master and release/2.3 branches.
 
-     Manual page update for Re-enabled TLS version negotiation.
+commit 857c04ef06cd13d59c5b45332f07996e71372576 (master)
+commit c7f3fd9c603bfd9cef600316d5e76210e6cf54a7 (release/2.3)
 
-     Signed-off-by: Matthias Andree <matthias.andree@...68...>
-     Acked-by: Steffan Karger <steffan.karger@...1435...>
-     Message-Id: <1427745294-31041-1-git-send-email-matthias.andree@...68...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/9562
+Author: Steffan Karger
+Date:   Thu Mar 26 01:01:29 2015 +0100
+
+     Remove unneeded parameter 'first_time' from possibility_become_daemon()
+
+     Signed-off-by: Steffan Karger <steffan@...1856...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1427328089-886-1-git-send-email-steffan@...1856...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/9555
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
