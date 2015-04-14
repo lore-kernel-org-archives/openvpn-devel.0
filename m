@@ -1,10 +1,7 @@
-Date: Mon, 13 Apr 2015 21:43:36 +0200 (CEST)
-Message-Id: <201504131943.t3DJharq003452@...1295...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20150225160718.GA6306@...2009...>
-References: <20150225160718.GA6306@...2009...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Mac OS X Keychain management
-	client
+From: Yegor Yefremov <yegorslists@...1030...>
+Date: Tue, 14 Apr 2015 20:34:05 +0200
+Message-Id: <1429036445-17223-1-git-send-email-yegorslists@...1030...>
+Subject: [Openvpn-devel] [PATCH] m4: enable silent build
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,27 +12,28 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Vasily Kulikov <segoon@...2008...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Your v4 patch has been applied to the master branch, thanks.
+Signed-off-by: Yegor Yefremov <yegorslists@...1030...>
+---
+ configure.ac | 3 +++
+ 1 file changed, 3 insertions(+)
 
-commit 39e3d336d4eeab847a3395ddeb430e0a9ca387b9
-Author: Vasily Kulikov
-Date:   Wed Feb 25 19:07:18 2015 +0300
-
-     Mac OS X Keychain management client
-
-     Signed-off-by: Vasily Kulikov <segoon@...2008...>
-     Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <20150225160718.GA6306@...2009...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/9486
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/configure.ac b/configure.ac
+index 9132468..ca0d9c3 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -374,6 +374,9 @@ AC_DEFINE_UNQUOTED([IPROUTE_PATH], ["$IPROUTE"], [Path to iproute tool])
+ AC_DEFINE_UNQUOTED([ROUTE_PATH], ["$ROUTE"], [Path to route tool])
+ AC_DEFINE_UNQUOTED([SYSTEMD_ASK_PASSWORD_PATH], ["$SYSTEMD_ASK_PASSWORD"], [Path to systemd-ask-password tool])
+ 
++# enable silent build
++m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes]]))
++
+ #
+ # Libtool
+ #
+-- 
+2.1.0
 
 
