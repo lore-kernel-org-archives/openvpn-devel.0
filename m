@@ -1,14 +1,12 @@
-Date: Wed, 15 Apr 2015 14:07:04 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20150415120704.GI382@...1296...>
-References: <1429036445-17223-1-git-send-email-yegorslists@...1030...>
-	<552E1111.6010201@...68...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="dkEUBIird37B8yKS"
-Content-Disposition: inline
-In-Reply-To: <552E1111.6010201@...68...>
-Subject: Re: [Openvpn-devel] [PATCH] m4: enable silent build
+Message-ID: <552F6E7A.1000505@...515...>
+Date: Thu, 16 Apr 2015 11:10:34 +0300
+From: =?windows-1252?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
+MIME-Version: 1.0
+References: <1427784294-22175-1-git-send-email-samuli@...515...>
+	<551A4A9B.6010508@...68...>
+In-Reply-To: <551A4A9B.6010508@...68...>
+Subject: Re: [Openvpn-devel] [PATCH] Remove useless dash escapes from the
+ man-page
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,48 +15,67 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Matthias Andree <matthias.andree@...68...>
-Cc: openvpn-devel@lists.sourceforge.net
-
---dkEUBIird37B8yKS
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="windows-1252"; format=flowed
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+To: Matthias Andree <matthias.andree@...68...>, openvpn-devel@lists.sourceforge.net
 
+
+> Am 31.03.2015 um 08:44 schrieb samuli@...515...:
+>> From: Samuli Sepp=E4nen <samuli@...515...>
+>>
+>> This patch is against the release/2.3 branch
+>>
+>> Trac: 512
+>> Signed-off-by: Samuli Sepp=E4nen <samuli@...515...>
+>> ---
+>>   doc/openvpn.8 | 1800 ++++++++++++++++++++++++++++---------------------=
+--------
+>>   1 file changed, 900 insertions(+), 900 deletions(-)
+>>
+>> diff --git a/doc/openvpn.8 b/doc/openvpn.8
+>> index a95d353..bcd2d76 100644
+>> --- a/doc/openvpn.8
+>> +++ b/doc/openvpn.8
+>> @@ -37,7 +37,7 @@
+>>   .TH openvpn 8 "17 November 2008"
+>>   .\"*********************************************************
+>>   .SH NAME
+>> -openvpn \- secure IP tunnel daemon.
+>> +openvpn - secure IP tunnel daemon.
+> I am concerned this will cause misformattings and inability to search
+> for options with leading dashes on some systems - I don't recall
+> versions, but I do know that some systems used some sort of Unicode
+> (soft?) hyphen for a simple non-escaped MINUS character (ASCII 0x2B).
+>
+> So, for the release/2.3 branch, NAK for now, and more questions on the
+> 2.4/trunk.
+>
+> My objections will be void the moment that we can be sure that those
+> (major) distributions that played with the Unicode outside-ASCII hyphens
+> in *roff have gone out of support, and supported versions no longer
+> modify the plain ASCII minus, but render it verbatim.
+>
 Hi,
 
-On Wed, Apr 15, 2015 at 09:19:45AM +0200, Matthias Andree wrote:
-> - it changes policy through the [yes] argument to AM_SILENT_RULES().
-> This flips the switch for the default without good reason, and that
-> makes debugging harder - this is a policy decision, not mechanism.
+Getting back to this after a while... we did quite extensive tests=20
+earlier. I recall testing the following operating systems myself:
 
-Indeed, this we don't want.=20=20
+- Debian 6
+- Debian 7
+- Ubuntu 10.04
+- Ubuntu 12.04
+- CentOS 6
 
-Having "V=3D0" or "--enable-silent-rules" is fine for me, but changing
-the defaults to hide even more detail is not (annoying enough that
-recent autoconfs hide the detailed results from "make test")
+I was unable to reproduce the search issue or to trigger any=20
+misrendering on any of those platforms. I think RedHat 5 was also=20
+tested, but I'm not sure about the BSD-based operating systems.
 
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+In any case the man-page is currently a mishmash of escaped and=20
+unescaped dashes, so if there is a problem, people are already having it=20
+and not caring.
 
---dkEUBIird37B8yKS
-Content-Type: application/pgp-signature
-Content-Disposition: inline
+I suggest we do a few additional tests and if no problems are=20
+encountered then merge the patch.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQCVAwUBVS5UaKkuBuNlUUl1AQIEJwQAmr7daRt2081uREYxRU2sSwN7Iu6ccgoM
-oyTT+RoOdbJJpT3HgEF5eU1W1vTm7Y2tbC5F4H6ZlHKoJPxMfzmr0h5ITFw+cZV3
-MOyZsUid4HHehAuepZ9NofRvfymtxyi3KeD2/0DPTLGGkBqueygnURqM91pNhchX
-U3P5FpGiZaE=
-=xGFy
------END PGP SIGNATURE-----
-
---dkEUBIird37B8yKS--
+Samuli
 
