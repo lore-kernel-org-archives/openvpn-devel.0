@@ -1,12 +1,9 @@
-Message-ID: <552F6E7A.1000505@...515...>
-Date: Thu, 16 Apr 2015 11:10:34 +0300
-From: =?windows-1252?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-References: <1427784294-22175-1-git-send-email-samuli@...515...>
-	<551A4A9B.6010508@...68...>
-In-Reply-To: <551A4A9B.6010508@...68...>
-Subject: Re: [Openvpn-devel] [PATCH] Remove useless dash escapes from the
- man-page
+From: "Jonathan K. Bullard" <jkbullard@...277...>
+Date: Fri, 17 Apr 2015 05:28:45 -0400
+Message-ID: <CAEsd45S8+hwK9mB53mVBLO-1NSJp7YE3tx53Am83pzDL+tr8GQ@...278...>
+Subject: [Openvpn-devel] OpenVPN argument parsing of most options ignores
+	"extra" parameters
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,67 +12,81 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-Content-Transfer-Encoding: quoted-printable
-To: Matthias Andree <matthias.andree@...68...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+
+I would like to propose a patch which complains if OpenVPN options
+include parameters that are not expected.
+
+If possible, I would like to get a "feature ACK" consensus before I
+create the patch. (If I get a "feature NAK" then I won't create the
+patch.)
+
+The patch would be to reject options that are followed by extra parameters.
+
+The error message would change from
+     Options error: Unrecognized option or missing parameter(s)
+to
+     Options error: Unrecognized option or missing or unexpected parameter(s)
+
+Perhaps the current behavior of ignoring "extra" parameters is
+purposeful, to allow options to have parameters that are ignored by
+"old" versions of OpenVPN but accepted and acted on by "new" versions
+of OpenVPN. (I think doing that is not a good idea, but maybe that's
+the way the community wants it.)
+
+The patch would break any configurations that have such "extra"
+parameters. I think that's good, because the configurations are, well,
+wrong. But there could be a lot of such configurations being used with
+current versions of OpenVPN -- who knows?
 
 
-> Am 31.03.2015 um 08:44 schrieb samuli@...515...:
->> From: Samuli Sepp=E4nen <samuli@...515...>
->>
->> This patch is against the release/2.3 branch
->>
->> Trac: 512
->> Signed-off-by: Samuli Sepp=E4nen <samuli@...515...>
->> ---
->>   doc/openvpn.8 | 1800 ++++++++++++++++++++++++++++---------------------=
---------
->>   1 file changed, 900 insertions(+), 900 deletions(-)
->>
->> diff --git a/doc/openvpn.8 b/doc/openvpn.8
->> index a95d353..bcd2d76 100644
->> --- a/doc/openvpn.8
->> +++ b/doc/openvpn.8
->> @@ -37,7 +37,7 @@
->>   .TH openvpn 8 "17 November 2008"
->>   .\"*********************************************************
->>   .SH NAME
->> -openvpn \- secure IP tunnel daemon.
->> +openvpn - secure IP tunnel daemon.
-> I am concerned this will cause misformattings and inability to search
-> for options with leading dashes on some systems - I don't recall
-> versions, but I do know that some systems used some sort of Unicode
-> (soft?) hyphen for a simple non-escaped MINUS character (ASCII 0x2B).
->
-> So, for the release/2.3 branch, NAK for now, and more questions on the
-> 2.4/trunk.
->
-> My objections will be void the moment that we can be sure that those
-> (major) distributions that played with the Unicode outside-ASCII hyphens
-> in *roff have gone out of support, and supported versions no longer
-> modify the plain ASCII minus, but render it verbatim.
->
-Hi,
+**EXAMPLE**
 
-Getting back to this after a while... we did quite extensive tests=20
-earlier. I recall testing the following operating systems myself:
+Here is the code in the add_option routine in src/openvpn/options.c
+that processes "--mtu-test", which has no parameters:
 
-- Debian 6
-- Debian 7
-- Ubuntu 10.04
-- Ubuntu 12.04
-- CentOS 6
+  else if (streq (p[0], "mtu-test"))
+    {
+      VERIFY_PERMISSION (OPT_P_GENERAL);
+      options->mtu_test = true;
+    }
 
-I was unable to reproduce the search issue or to trigger any=20
-misrendering on any of those platforms. I think RedHat 5 was also=20
-tested, but I'm not sure about the BSD-based operating systems.
+If there is an argument at p[1], this argument will be ignored.
 
-In any case the man-page is currently a mishmash of escaped and=20
-unescaped dashes, so if there is a problem, people are already having it=20
-and not caring.
+I tested this by adding a line
+     mtu-test FOO
+to a configuration file. When I try to connect, OpenVPN connects
+normally without indicating anything is wrong.
 
-I suggest we do a few additional tests and if no problems are=20
-encountered then merge the patch.
+Similarly,
+     mtu-test verb 9
+works without a problem. (And ignores the "verb 9", of course.)
 
-Samuli
+My proposed patch would change the above code for mtu-test to:
+
+  else if (streq (p[0], "mtu-test") && !p[1])
+    {
+      VERIFY_PERMISSION (OPT_P_GENERAL);
+      options->mtu_test = true;
+    }
+
+and would include similar changes for most other options. Options that
+take an arbitrary number of parameters or accept the rest of the line
+as a parameter would not be modified, of course.
+
+(In patch format, it would be:
+-  else if (streq (p[0], "mtu-test"))
++  else if (streq (p[0], "mtu-test") && !p[1])
+)
+
+It don't think it is necessary to include "&& !p[2] && !p[3]...",
+although it might be possible to end up with a p[ ] array with
+"skipped" parameters by using a command line like:
+     openvpn --mtu-test "" FOO
+(I don't know if this would work; I haven't examined the code for this
+or tested it.)
+
+Thoughts?
 
