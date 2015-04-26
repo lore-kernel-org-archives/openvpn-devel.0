@@ -1,10 +1,8 @@
-Date: Wed, 22 Apr 2015 17:44:35 +0200 (CEST)
-Message-Id: <201504221544.t3MFiZn9019714@...1295...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1429649352-21034-1-git-send-email-gert@...1296...>
-References: <1429649352-21034-1-git-send-email-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix leftover 'if (false) ;
-	' statements
+Date: Sun, 26 Apr 2015 20:03:58 +0200
+Message-Id: <1430071438-31675-1-git-send-email-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH] Fix FreeBSD ifconfig for topology subnet
+	tunnels.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,26 +13,64 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master branch.
+For "topology subnet", we only pretend to have a subnet and keep
+using the tun if in point-to-point mode - but for that to fully
+work, the "remote" address needs to be different from the "local"
+address.  So just arbitrarily construct one from the on-link
+subnet - base+1, if "that is not us", base+2, otherwise.
 
-commit 0e3f894098f9286ec3e703ce16fe9bda0cd2c74e
-Author: Gert Doering
-Date:   Tue Apr 21 22:49:12 2015 +0200
+Fix trac #481
 
-     Fix leftover 'if (false) ;' statements
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+ src/openvpn/tun.c | 24 +++++++++++++++++++++++-
+ 1 file changed, 23 insertions(+), 1 deletion(-)
 
-     Signed-off-by: Gert Doering <gert@...1296...>
-     Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <1429649352-21034-1-git-send-email-gert@...1296...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/9603
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index 11a6d71..aa7a9f0 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -626,6 +626,28 @@ void delete_route_connected_v6_net(struct tuntap * tt,
+ }
+ #endif
+ 
++#if defined(TARGET_FREEBSD)||defined(TARGET_DRAGONFLY)
++/* we can't use true subnet mode on tun on all platforms, as that
++ * conflicts with IPv6 (wants to use ND then, which we don't do),
++ * but the OSes want "a remote address that is different from ours"
++ * - so we construct one, normally the first in the subnet, but if
++ * this is the same as ours, use the second one.
++ * The actual address does not matter at all, as the tun interface
++ * is still point to point and no layer 2 resolution is done...
++ */
++
++char *
++create_arbitrary_remote( struct tuntap *tt, struct gc_arena * gc )
++{
++  in_addr_t remote;
++
++  remote = (tt->local & tt->remote_netmask) +1;
++
++  if ( remote == tt->local ) remote ++;
++
++  return print_in_addr_t (remote, 0, &gc);
++}
++#endif
+ 
+ /* execute the ifconfig command through the shell */
+ void
+@@ -1150,7 +1172,7 @@ do_ifconfig (struct tuntap *tt,
+ 			  IFCONFIG_PATH,
+ 			  actual,
+ 			  ifconfig_local,
+-			  ifconfig_local,
++			  create_arbitrary_remote( tt, &gc ),
+ 			  tun_mtu,
+ 			  ifconfig_remote_netmask
+ 			  );
+-- 
+2.2.2
 
 
