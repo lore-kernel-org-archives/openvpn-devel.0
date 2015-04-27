@@ -1,14 +1,9 @@
-Date: Mon, 27 Apr 2015 20:25:39 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20150427182539.GS382@...1296...>
-References: <1430144937-4149-1-git-send-email-steffan@...1856...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="m9FEOsnejx470nED"
-Content-Disposition: inline
-In-Reply-To: <1430144937-4149-1-git-send-email-steffan@...1856...>
-Subject: Re: [Openvpn-devel] [PATCH] Call daemon() before initializing
-	crypto library
+Date: Mon, 27 Apr 2015 21:27:21 +0200
+Message-Id: <1430162841-5840-1-git-send-email-gert@...1296...>
+In-Reply-To: <CAK6ywb+fMsyvOz+saw9XBO4KDx1srdB92H71OwcKFPZnyxHkqw@...278...>
+References: <CAK6ywb+fMsyvOz+saw9XBO4KDx1srdB92H71OwcKFPZnyxHkqw@...278...>
+Subject: [Openvpn-devel] [PATCH] assume res_init() is always there.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,61 +12,72 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan@...1856...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---m9FEOsnejx470nED
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Previously, the code tried to find res_init(), and on some systems
+got it wrong in configure, silently not-using res_init(), leading
+to unexpected failures to re-init the resolver.
 
-Hi,
+We know that all supported OSes (except Windows) have res_init(), so
+change the call to "#ifndef WIN32", and adjust configure.ac to just
+find the library to link (if any).  With that, failures to find
+res_init() are no longer "hidden" but clearly visible at link time.
 
-On Mon, Apr 27, 2015 at 04:28:57PM +0200, Steffan Karger wrote:
-> But keep the chdir to / at the place where deamon() was before, to preser=
-ve
-> the current behaviour wrt relative paths in the config.
->=20
-> This should fix the issue reported in trac #480, without changing the
-> behaviour visible to the end user.
->=20
-> Note that by moving the daemon() call to an earlier stage of the init
-> process, we no longer have to call platform_mlockall() again, or do a
-> pkcs11_forkFixup().
+AC_SEARCH_LIBS() bits inspired by CUPS' cups_network.m4 (GPLv2)
 
-I think this is good, so both feature-ACK and code-ACK from me
-(after staring at the patch and the doxygen generated call graphs
-for nearly an hour... whee is this a twisty maze of passages, all
-alike...).
+Fix trac #523
 
-The overamazing thing is that this actually makes the code *more easy*
-in a number of places :-)
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+ configure.ac         | 11 +++++------
+ src/openvpn/socket.c |  2 +-
+ 2 files changed, 6 insertions(+), 7 deletions(-)
 
-I'd still like to hear feedback from the reporter on #480 if it
-actually solves their issue (though I'm confident it does).
+diff --git a/configure.ac b/configure.ac
+index 9132468..a495c0d 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -613,12 +613,6 @@ AC_SUBST([SOCKETS_LIBS])
+ old_LIBS="${LIBS}"
+ LIBS="${LIBS} ${SOCKETS_LIBS}"
+ AC_CHECK_FUNCS([sendmsg recvmsg inet_ntop inet_pton])
+-AC_CHECK_FUNCS(
+-	[res_init],
+-	,
+-	,
+-	[[#include <resolv.h>]]
+-)
+ # Windows use stdcall for winsock so we cannot auto detect these
+ m4_define(
+ 	[SOCKET_FUNCS],
+@@ -646,6 +640,11 @@ else
+ fi
+ LIBS="${old_LIBS}"
+ 
++# we assume res_init() always exist, but need to find out *where*...
++AC_SEARCH_LIBS(__res_init, resolv bind, ,
++    AC_SEARCH_LIBS(res_9_init, resolv bind, ,
++	AC_SEARCH_LIBS(res_init, resolv bind, , )))
++
+ AC_ARG_VAR([TAP_CFLAGS], [C compiler flags for tap])
+ old_CFLAGS="${CFLAGS}"
+ CFLAGS="${CFLAGS} ${TAP_CFLAGS}"
+diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
+index afc1e60..13ed981 100644
+--- a/src/openvpn/socket.c
++++ b/src/openvpn/socket.c
+@@ -314,7 +314,7 @@ openvpn_getaddrinfo (unsigned int flags,
+ 
+   ASSERT(res);
+ 
+-#if defined(HAVE_RES_INIT)
++#ifndef WIN32
+   res_init ();
+ #endif
+ 
+-- 
+2.0.5
 
-gert
-
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---m9FEOsnejx470nED
-Content-Type: application/pgp-signature
-Content-Disposition: inline
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQCVAwUBVT5/IqkuBuNlUUl1AQL/xQP/exYnvCNr61BNBkyfkwXyeIDNqnCGSbfE
-hhGbuELPOXVh6JsA2riDyHEG2dHJeJZWpXBSw+gRYc8Sy+otBhgbw8QvfhmX7VFV
-1wC08yLHQkH4HvYWeFYmDxM+QvOYRfNzyaz2K7drjxKpTqAKIHDXkQJ+URVaANIE
-TKLhU7UXlWw=
-=HMkO
------END PGP SIGNATURE-----
-
---m9FEOsnejx470nED--
 
