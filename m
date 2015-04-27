@@ -1,8 +1,11 @@
-From: Steffan Karger <steffan@...1856...>
-Date: Mon, 27 Apr 2015 10:12:22 +0200
-Message-Id: <1430122342-11742-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH] Remove size limit for files inlined in
-	config
+Message-ID: <553DFE3A.20403@...515...>
+Date: Mon, 27 Apr 2015 12:15:38 +0300
+From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="o365sjXxuHCNrpHAq4v0wUQa8vRxSbBGu"
+Subject: [Openvpn-devel] Today's community IRC meeting moved to next Monday
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,51 +14,46 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-As described in trac #484, the current inline file size limit of 10000
-bytes is becoming an issue for some users.  Since RSA keys and signature
-sizes are increasing, we need to adjust our limits.  As #484 reports,
-10000 can be too small for PKCS#12 files with 4K RSA keys.  Instead of
-postponing this issue by increasing the static limit, dynamically increase
-the buffer size while reading. This keeps the memory usage limited but does
-allow for larger inlined files.
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--o365sjXxuHCNrpHAq4v0wUQa8vRxSbBGu
+Content-Type: text/plain; charset="iso-8859-15"
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Steffan Karger <steffan@...1856...>
----
- src/openvpn/options.c | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+Hi,
 
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index e8cf06a..3195c5a 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -3698,12 +3698,21 @@ static char *
- read_inline_file (struct in_src *is, const char *close_tag, struct gc_arena *gc)
- {
-   char line[OPTION_LINE_SIZE];
--  struct buffer buf = alloc_buf (10000);
-+  struct buffer buf = alloc_buf (8*OPTION_LINE_SIZE);
-   char *ret;
-   while (in_src_get (is, line, sizeof (line)))
-     {
-       if (!strncmp (line, close_tag, strlen (close_tag)))
- 	break;
-+      if (!buf_safe (&buf, strlen(line)))
-+	{
-+	  /* Increase buffer size */
-+	  struct buffer buf2 = alloc_buf (buf.capacity * 2);
-+	  ASSERT (buf_copy (&buf2, &buf));
-+	  buf_clear (&buf);
-+	  free_buf (&buf);
-+	  buf = buf2;
-+	}
-       buf_printf (&buf, "%s", line);
-     }
-   ret = string_alloc (BSTR (&buf), gc);
--- 
-2.1.0
+Unlike claimed earlier[1] we won't have an IRC meeting today. We will
+have a meeting next Monday, though:
 
+<https://community.openvpn.net/openvpn/wiki/Topics-2015-05-04>
+
+As can be seen, the agenda is still pretty empty, so feel free to
+suggest new topics.
+
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
+
+[1] <http://thread.gmane.org/gmane.network.openvpn.devel/9586/focus=3D9587>
+
+
+
+--o365sjXxuHCNrpHAq4v0wUQa8vRxSbBGu
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iEYEARECAAYFAlU9/j4ACgkQwp2X7RmNIqOcawCeMcYdMvLOj6cWIyGUO4RGHioo
+1xcAnj7tjHPKD1LslyHEi4fTnxoMVunz
+=6+Af
+-----END PGP SIGNATURE-----
+
+--o365sjXxuHCNrpHAq4v0wUQa8vRxSbBGu--
 
