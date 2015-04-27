@@ -1,12 +1,14 @@
-Message-ID: <553E78D1.4000500@...68...>
-Date: Mon, 27 Apr 2015 19:58:41 +0200
-From: Matthias Andree <matthias.andree@...68...>
-MIME-Version: 1.0
-References: <1429036445-17223-1-git-send-email-yegorslists@...1030...>	<552E1111.6010201@...68...>
-	<20150415120704.GI382@...1296...>
-	<553E4C46.8050809@...1114...>
-In-Reply-To: <553E4C46.8050809@...1114...>
-Subject: Re: [Openvpn-devel] [PATCH] m4: enable silent build
+Date: Mon, 27 Apr 2015 20:25:39 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20150427182539.GS382@...1296...>
+References: <1430144937-4149-1-git-send-email-steffan@...1856...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="m9FEOsnejx470nED"
+Content-Disposition: inline
+In-Reply-To: <1430144937-4149-1-git-send-email-steffan@...1856...>
+Subject: Re: [Openvpn-devel] [PATCH] Call daemon() before initializing
+	crypto library
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,49 +17,61 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="windows-1252"
+To: Steffan Karger <steffan@...1856...>
+Cc: openvpn-devel@lists.sourceforge.net
+
+--m9FEOsnejx470nED
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net, Yegor Yefremov <yegorslists@...1030...>
+Content-Disposition: inline
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+Hi,
 
-Am 27.04.2015 um 16:48 schrieb David Sommerseth:
-> Having this said, if you do builds on systems with a more modern
-> automake, I do want to encourage people to run 'make V=3D0' or use
-> ./configure --enable-silent-rules.  This will ensure we can capture
-> compiler warnings far easier.  For now I do consider this fine, as you
-> do this explicitly - a different behaviour should be expected when
-> using explicit options.
+On Mon, Apr 27, 2015 at 04:28:57PM +0200, Steffan Karger wrote:
+> But keep the chdir to / at the place where deamon() was before, to preser=
+ve
+> the current behaviour wrt relative paths in the config.
 >=20
-> When the oldest distro we need to support have a modern enough
-> automake, we should revisit this topic of making the 'silent rules'
-> the default behaviour - being consistent across all distros.
+> This should fix the issue reported in trac #480, without changing the
+> behaviour visible to the end user.
+>=20
+> Note that by moving the daemon() call to an earlier stage of the init
+> process, we no longer have to call platform_mlockall() again, or do a
+> pkcs11_forkFixup().
 
-The question is who needs what information.
+I think this is good, so both feature-ACK and code-ACK from me
+(after staring at the patch and the doxygen generated call graphs
+for nearly an hour... whee is this a twisty maze of passages, all
+alike...).
 
-I see the dichotomy as follows:
+The overamazing thing is that this actually makes the code *more easy*
+in a number of places :-)
 
-- - Whilst operating on known terrain, as a developer, you can often
-ignore compiler command-lines because you usually are acquainted with
-what you're doing (and if not, it's time for sleep, sport, or food).
-That's "make -sj10 V=3D0" ground.
+I'd still like to hear feedback from the reporter on #480 if it
+actually solves their issue (though I'm confident it does).
 
-- - Whilst providing end-user builds, perhaps through automated package
-builders, you do want verbose information, in order to avoid round-trips
-for asking further questions.  Some build frameworks trigger verbose
-builds automatically, other's don't.
+gert
 
-(And if you flip the switch for default behaviour, I expect to see other
-consumers/end users show up and complain.)
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-HTH
-Matthias
+--m9FEOsnejx470nED
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
+Version: GnuPG v1
 
-iEYEARECAAYFAlU+eM4ACgkQvmGDOQUufZXmeQCfZzULHSU1evIzOvFp+os7Fdro
-7wMAoOzFI6g9h9tREL/RgNkWnsypiO6I
-=3D3HdT
+iQCVAwUBVT5/IqkuBuNlUUl1AQL/xQP/exYnvCNr61BNBkyfkwXyeIDNqnCGSbfE
+hhGbuELPOXVh6JsA2riDyHEG2dHJeJZWpXBSw+gRYc8Sy+otBhgbw8QvfhmX7VFV
+1wC08yLHQkH4HvYWeFYmDxM+QvOYRfNzyaz2K7drjxKpTqAKIHDXkQJ+URVaANIE
+TKLhU7UXlWw=
+=HMkO
 -----END PGP SIGNATURE-----
+
+--m9FEOsnejx470nED--
 
