@@ -1,11 +1,8 @@
-Message-ID: <553DFE3A.20403@...515...>
-Date: Mon, 27 Apr 2015 12:15:38 +0300
-From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="o365sjXxuHCNrpHAq4v0wUQa8vRxSbBGu"
-Subject: [Openvpn-devel] Today's community IRC meeting moved to next Monday
+From: Steffan Karger <steffan@...1856...>
+Date: Mon, 27 Apr 2015 16:28:57 +0200
+Message-Id: <1430144937-4149-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH] Call daemon() before initializing crypto
+	library
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,46 +11,188 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---o365sjXxuHCNrpHAq4v0wUQa8vRxSbBGu
-Content-Type: text/plain; charset="iso-8859-15"
-Content-Transfer-Encoding: quoted-printable
+But keep the chdir to / at the place where deamon() was before, to preserve
+the current behaviour wrt relative paths in the config.
 
-Hi,
+This should fix the issue reported in trac #480, without changing the
+behaviour visible to the end user.
 
-Unlike claimed earlier[1] we won't have an IRC meeting today. We will
-have a meeting next Monday, though:
+Note that by moving the daemon() call to an earlier stage of the init
+process, we no longer have to call platform_mlockall() again, or do a
+pkcs11_forkFixup().
 
-<https://community.openvpn.net/openvpn/wiki/Topics-2015-05-04>
+Signed-off-by: Steffan Karger <steffan@...1856...>
+---
+ src/openvpn/init.c    | 32 +++++++++++---------------------
+ src/openvpn/init.h    |  2 ++
+ src/openvpn/openvpn.c |  4 ++++
+ src/openvpn/pkcs11.c  |  5 -----
+ src/openvpn/pkcs11.h  |  3 ---
+ 5 files changed, 17 insertions(+), 29 deletions(-)
 
-As can be seen, the agenda is still pretty empty, so feel free to
-suggest new topics.
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 73c6aff..5b22c38 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -916,23 +916,20 @@ do_persist_tuntap (const struct options *options)
+  * Should we become a daemon?
+  * Return true if we did it.
+  */
+-static bool
++bool
+ possibly_become_daemon (const struct options *options)
+ {
+   bool ret = false;
+   if (options->daemon)
+     {
+       ASSERT (!options->inetd);
+-      if (daemon (options->cd_dir != NULL, options->log) < 0)
++      /* Don't chdir immediately, but the end of the init sequence, if needed */
++      if (daemon (1, options->log) < 0)
+ 	msg (M_ERR, "daemon() failed or unsupported");
+       restore_signal_state ();
+       if (options->log)
+ 	set_std_files_to_null (true);
+ 
+-#if defined(ENABLE_PKCS11)
+-      pkcs11_forkFixup ();
+-#endif
+-
+       ret = true;
+     }
+   return ret;
+@@ -1809,15 +1806,11 @@ do_deferred_options (struct context *c, const unsigned int found)
+  * Possible hold on initialization
+  */
+ static bool
+-do_hold (struct context *c)
++do_hold (void)
+ {
+ #ifdef ENABLE_MANAGEMENT
+   if (management)
+     {
+-      /* if c is defined, daemonize before hold */
+-      if (c && c->options.daemon && management_should_daemonize (management))
+-	do_init_first_time (c);
+-
+       /* block until management hold is released */
+       if (management_hold (management))
+ 	return true;
+@@ -1867,7 +1860,7 @@ socket_restart_pause (struct context *c)
+   c->persist.restart_sleep_seconds = 0;
+ 
+   /* do managment hold on context restart, i.e. second, third, fourth, etc. initialization */
+-  if (do_hold (NULL))
++  if (do_hold ())
+     sec = 0;
+ 
+   if (sec)
+@@ -1886,7 +1879,7 @@ do_startup_pause (struct context *c)
+   if (!c->first_time)
+     socket_restart_pause (c);
+   else
+-    do_hold (NULL); /* do management hold on first context initialization */
++    do_hold (); /* do management hold on first context initialization */
+ }
+ 
+ /*
+@@ -2743,7 +2736,7 @@ do_compute_occ_strings (struct context *c)
+ static void
+ do_init_first_time (struct context *c)
+ {
+-  if (c->first_time && !c->did_we_daemonize && !c->c0)
++  if (c->first_time && !c->c0)
+     {
+       struct context_0 *c0;
+ 
+@@ -2758,12 +2751,9 @@ do_init_first_time (struct context *c)
+       /* get --writepid file descriptor */
+       get_pid_file (c->options.writepid, &c0->pid_state);
+ 
+-      /* become a daemon if --daemon */
+-      c->did_we_daemonize = possibly_become_daemon (&c->options);
+-
+-      /* should we disable paging? */
+-      if (c->options.mlock && c->did_we_daemonize)
+-	platform_mlockall (true);	/* call again in case we daemonized */
++      /* perform postponed chdir if --daemon */
++      if (c->did_we_daemonize && c->options.cd_dir == NULL)
++	platform_chdir("/");
+ 
+       /* save process ID in a file */
+       write_pid (&c0->pid_state);
+@@ -3221,7 +3211,7 @@ open_management (struct context *c)
+ 	    }
+ 
+ 	  /* initial management hold, called early, before first context initialization */
+-	  do_hold (c);
++	  do_hold ();
+ 	  if (IS_SIG (c))
+ 	    {
+ 	      msg (M_WARN, "Signal received from management interface, exiting");
+diff --git a/src/openvpn/init.h b/src/openvpn/init.h
+index 5a1d1dc..d1908ed 100644
+--- a/src/openvpn/init.h
++++ b/src/openvpn/init.h
+@@ -55,6 +55,8 @@ bool do_genkey (const struct options *options);
+ 
+ bool do_persist_tuntap (const struct options *options);
+ 
++bool possibly_become_daemon (const struct options *options);
++
+ void pre_setup (const struct options *options);
+ 
+ void init_instance_handle_signals (struct context *c, const struct env_set *env, const unsigned int flags);
+diff --git a/src/openvpn/openvpn.c b/src/openvpn/openvpn.c
+index fd87fc1..2f327f3 100644
+--- a/src/openvpn/openvpn.c
++++ b/src/openvpn/openvpn.c
+@@ -229,6 +229,10 @@ openvpn_main (int argc, char *argv[])
+ 	  if (do_test_crypto (&c.options))
+ 	    break;
+ 	  
++	  /* become a daemon if --daemon */
++	  if (c.first_time)
++	    c.did_we_daemonize = possibly_become_daemon (&c.options);
++
+ #ifdef ENABLE_MANAGEMENT
+ 	  /* open management subsystem */
+ 	  if (!open_management (&c))
+diff --git a/src/openvpn/pkcs11.c b/src/openvpn/pkcs11.c
+index 3a15ef6..a1f13c5 100644
+--- a/src/openvpn/pkcs11.c
++++ b/src/openvpn/pkcs11.c
+@@ -336,11 +336,6 @@ pkcs11_terminate () {
+ 	);
+ }
+ 
+-void
+-pkcs11_forkFixup () {
+-	pkcs11h_forkFixup ();
+-}
+-
+ bool
+ pkcs11_addProvider (
+ 	const char * const provider,
+diff --git a/src/openvpn/pkcs11.h b/src/openvpn/pkcs11.h
+index 4261871..b49401c 100644
+--- a/src/openvpn/pkcs11.h
++++ b/src/openvpn/pkcs11.h
+@@ -38,9 +38,6 @@ pkcs11_initialize (
+ void
+ pkcs11_terminate ();
+ 
+-void
+-pkcs11_forkFixup ();
+-
+ bool
+ pkcs11_addProvider (
+ 	const char * const provider,
+-- 
+2.1.4
 
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
-
-[1] <http://thread.gmane.org/gmane.network.openvpn.devel/9586/focus=3D9587>
-
-
-
---o365sjXxuHCNrpHAq4v0wUQa8vRxSbBGu
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iEYEARECAAYFAlU9/j4ACgkQwp2X7RmNIqOcawCeMcYdMvLOj6cWIyGUO4RGHioo
-1xcAnj7tjHPKD1LslyHEi4fTnxoMVunz
-=6+Af
------END PGP SIGNATURE-----
-
---o365sjXxuHCNrpHAq4v0wUQa8vRxSbBGu--
 
