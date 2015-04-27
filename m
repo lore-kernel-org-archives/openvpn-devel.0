@@ -1,12 +1,15 @@
-Message-ID: <553E4C46.8050809@...1114...>
-Date: Mon, 27 Apr 2015 16:48:38 +0200
-From: David Sommerseth <openvpn.list@...1114...>
-MIME-Version: 1.0
-References: <1429036445-17223-1-git-send-email-yegorslists@...1030...>	<552E1111.6010201@...68...>
-	<20150415120704.GI382@...1296...>
-In-Reply-To: <20150415120704.GI382@...1296...>
+Date: Mon, 27 Apr 2015 18:54:35 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20150427165435.GR382@...1296...>
+References: <1429036445-17223-1-git-send-email-yegorslists@...1030...>
+	<552E1111.6010201@...68...> <20150415120704.GI382@...1296...>
+	<553E4C46.8050809@...1114...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="VgNP6wxEowREGVu+"
+Content-Disposition: inline
+In-Reply-To: <553E4C46.8050809@...1114...>
 Subject: Re: [Openvpn-devel] [PATCH] m4: enable silent build
-Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,68 +18,49 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-To: Yegor Yefremov <yegorslists@...1030...>
-Cc: Matthias Andree <matthias.andree@...68...>, openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
+Cc: Matthias Andree <matthias.andree@...68...>
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+--VgNP6wxEowREGVu+
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-On 15/04/15 14:07, Gert Doering wrote:
-> Hi,
-> 
-> On Wed, Apr 15, 2015 at 09:19:45AM +0200, Matthias Andree wrote:
->> - it changes policy through the [yes] argument to
->> AM_SILENT_RULES(). This flips the switch for the default without
->> good reason, and that makes debugging harder - this is a policy
->> decision, not mechanism.
-> 
-> Indeed, this we don't want.
-> 
-> Having "V=0" or "--enable-silent-rules" is fine for me, but
-> changing the defaults to hide even more detail is not (annoying
-> enough that recent autoconfs hide the detailed results from "make
-> test")
+Hi,
 
-Just tested a ./configure (used automake 1.13.4 on RHEL7) with
-- --enable-silent-rules.  That worked like a charm out-of-the-box
-without any patching.
+On Mon, Apr 27, 2015 at 04:48:38PM +0200, David Sommerseth wrote:
+> Just tested a ./configure (used automake 1.13.4 on RHEL7) with
+> - --enable-silent-rules.  That worked like a charm out-of-the-box
+> without any patching.
 
-I do understand people wanting less output when compiling (which has
-been a Linux kernel compile feature for a very long time too, and many
-other projects as well).  And I don't think that we loose that much
-information building it this way.  In fact we can actually more easily
-see compiler warnings - which I would say is a good thing.  If you
-need the full compile command line, it is available using 'V=1'.
+David, thanks for testing and reporting.  With this, I think we can
+let this thread end - people that want silent output can have it today,
+no patches needed.
 
-But I don't think we should make this behaviour the default yet, and
-at least not if that require dependencies to specific automake
-versions, especially when we know that RHEL5 (the oldest supported
-distro) runs a far older automake.  I think it is best if the default
-behaviour is consistent across all distributions.
+(I, for one, like seeing the actual compiler and especially linker=20
+statements, as they are often needed to understand failures...)
 
-Having this said, if you do builds on systems with a more modern
-automake, I do want to encourage people to run 'make V=0' or use
-./configure --enable-silent-rules.  This will ensure we can capture
-compiler warnings far easier.  For now I do consider this fine, as you
-do this explicitly - a different behaviour should be expected when
-using explicit options.
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-When the oldest distro we need to support have a modern enough
-automake, we should revisit this topic of making the 'silent rules'
-the default behaviour - being consistent across all distros.
+--VgNP6wxEowREGVu+
+Content-Type: application/pgp-signature
+Content-Disposition: inline
 
-
-- -- 
-kind regards,
-
-David Sommerseth
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
+Version: GnuPG v1
 
-iEYEARECAAYFAlU+TEYACgkQDC186MBRfroooACgrl7YapqCtq4NbtNAGRogEHpn
-2zUAnRnyLDgDVMYzXF5DCXEy/ds583yL
-=QNhv
+iQCVAwUBVT5py6kuBuNlUUl1AQKYdwQAwxAR1nXjd+yevyuBZzEimt8xhJ3JX4rw
++NDkgUKXycvLSLlVfj3uinoHEfZd0swVBmg5u/Mcp3EzVbgfTlpq45mL8m1KUm84
+DPqmLmAvFUcr2uCuc0x5lsVwSAvOuFUiz4j8H7JgyVfTvKtoybHF4WAfnqP2qB6b
+L2Z8uDiStJQ=
+=RWRU
 -----END PGP SIGNATURE-----
+
+--VgNP6wxEowREGVu+--
 
