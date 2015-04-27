@@ -1,9 +1,14 @@
+Date: Mon, 27 Apr 2015 21:33:26 +0200
 From: Gert Doering <gert@...1296...>
-Date: Mon, 27 Apr 2015 21:27:21 +0200
-Message-Id: <1430162841-5840-1-git-send-email-gert@...1296...>
-In-Reply-To: <CAK6ywb+fMsyvOz+saw9XBO4KDx1srdB92H71OwcKFPZnyxHkqw@...278...>
+Message-ID: <20150427193326.GU382@...1296...>
 References: <CAK6ywb+fMsyvOz+saw9XBO4KDx1srdB92H71OwcKFPZnyxHkqw@...278...>
-Subject: [Openvpn-devel] [PATCH] assume res_init() is always there.
+	<1430162841-5840-1-git-send-email-gert@...1296...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="gX5Hm7FaHdN5aeGl"
+Content-Disposition: inline
+In-Reply-To: <1430162841-5840-1-git-send-email-gert@...1296...>
+Subject: Re: [Openvpn-devel] [PATCH] assume res_init() is always there.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,72 +17,46 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Previously, the code tried to find res_init(), and on some systems
-got it wrong in configure, silently not-using res_init(), leading
-to unexpected failures to re-init the resolver.
+--gX5Hm7FaHdN5aeGl
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-We know that all supported OSes (except Windows) have res_init(), so
-change the call to "#ifndef WIN32", and adjust configure.ac to just
-find the library to link (if any).  With that, failures to find
-res_init() are no longer "hidden" but clearly visible at link time.
+Hi,
 
-AC_SEARCH_LIBS() bits inspired by CUPS' cups_network.m4 (GPLv2)
+On Mon, Apr 27, 2015 at 09:27:21PM +0200, Gert Doering wrote:
+> Previously, the code tried to find res_init(), and on some systems
+> got it wrong in configure, silently not-using res_init(), leading
+> to unexpected failures to re-init the resolver.
 
-Fix trac #523
+... for the record: tested on FreeBSD 9.1, Gentoo-something, AIX(!),=20
+OpenSolaris and MacOS X - and either it found and added the library
+fine, or discovered that it didn't need to do anything, but in any case,
+the resulting socket.o always referenced res_init() and linking worked.
 
-Signed-off-by: Gert Doering <gert@...1296...>
----
- configure.ac         | 11 +++++------
- src/openvpn/socket.c |  2 +-
- 2 files changed, 6 insertions(+), 7 deletions(-)
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-diff --git a/configure.ac b/configure.ac
-index 9132468..a495c0d 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -613,12 +613,6 @@ AC_SUBST([SOCKETS_LIBS])
- old_LIBS="${LIBS}"
- LIBS="${LIBS} ${SOCKETS_LIBS}"
- AC_CHECK_FUNCS([sendmsg recvmsg inet_ntop inet_pton])
--AC_CHECK_FUNCS(
--	[res_init],
--	,
--	,
--	[[#include <resolv.h>]]
--)
- # Windows use stdcall for winsock so we cannot auto detect these
- m4_define(
- 	[SOCKET_FUNCS],
-@@ -646,6 +640,11 @@ else
- fi
- LIBS="${old_LIBS}"
- 
-+# we assume res_init() always exist, but need to find out *where*...
-+AC_SEARCH_LIBS(__res_init, resolv bind, ,
-+    AC_SEARCH_LIBS(res_9_init, resolv bind, ,
-+	AC_SEARCH_LIBS(res_init, resolv bind, , )))
-+
- AC_ARG_VAR([TAP_CFLAGS], [C compiler flags for tap])
- old_CFLAGS="${CFLAGS}"
- CFLAGS="${CFLAGS} ${TAP_CFLAGS}"
-diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
-index afc1e60..13ed981 100644
---- a/src/openvpn/socket.c
-+++ b/src/openvpn/socket.c
-@@ -314,7 +314,7 @@ openvpn_getaddrinfo (unsigned int flags,
- 
-   ASSERT(res);
- 
--#if defined(HAVE_RES_INIT)
-+#ifndef WIN32
-   res_init ();
- #endif
- 
--- 
-2.0.5
+--gX5Hm7FaHdN5aeGl
+Content-Type: application/pgp-signature
+Content-Disposition: inline
 
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQCVAwUBVT6PBakuBuNlUUl1AQIBgQP9GQRpGxVW4IFo1TNbEoG8sElhxpk/03Qj
+j9SbgITRDF545EkcTUbPTRudXSIjzjAy2bNEgHHsd8dQPWwQn35mwppb3W2cDPRr
+W1T13mvVaH1I+Gmdh/7ifo/sgU10OREwtw8ZS89Bbdes2Ofrk58ORg6U3OpXpq+3
+JHNDjFsEBZ4=
+=3SmY
+-----END PGP SIGNATURE-----
+
+--gX5Hm7FaHdN5aeGl--
 
