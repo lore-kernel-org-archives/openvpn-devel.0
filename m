@@ -1,13 +1,10 @@
-Date: Mon, 27 Apr 2015 18:54:35 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20150427165435.GR382@...1296...>
-References: <1429036445-17223-1-git-send-email-yegorslists@...1030...>
-	<552E1111.6010201@...68...> <20150415120704.GI382@...1296...>
+Message-ID: <553E78D1.4000500@...68...>
+Date: Mon, 27 Apr 2015 19:58:41 +0200
+From: Matthias Andree <matthias.andree@...68...>
+MIME-Version: 1.0
+References: <1429036445-17223-1-git-send-email-yegorslists@...1030...>	<552E1111.6010201@...68...>
+	<20150415120704.GI382@...1296...>
 	<553E4C46.8050809@...1114...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="VgNP6wxEowREGVu+"
-Content-Disposition: inline
 In-Reply-To: <553E4C46.8050809@...1114...>
 Subject: Re: [Openvpn-devel] [PATCH] m4: enable silent build
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -18,49 +15,49 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
-Cc: Matthias Andree <matthias.andree@...68...>
-
---VgNP6wxEowREGVu+
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net, Yegor Yefremov <yegorslists@...1030...>
 
-Hi,
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-On Mon, Apr 27, 2015 at 04:48:38PM +0200, David Sommerseth wrote:
-> Just tested a ./configure (used automake 1.13.4 on RHEL7) with
-> - --enable-silent-rules.  That worked like a charm out-of-the-box
-> without any patching.
+Am 27.04.2015 um 16:48 schrieb David Sommerseth:
+> Having this said, if you do builds on systems with a more modern
+> automake, I do want to encourage people to run 'make V=3D0' or use
+> ./configure --enable-silent-rules.  This will ensure we can capture
+> compiler warnings far easier.  For now I do consider this fine, as you
+> do this explicitly - a different behaviour should be expected when
+> using explicit options.
+>=20
+> When the oldest distro we need to support have a modern enough
+> automake, we should revisit this topic of making the 'silent rules'
+> the default behaviour - being consistent across all distros.
 
-David, thanks for testing and reporting.  With this, I think we can
-let this thread end - people that want silent output can have it today,
-no patches needed.
+The question is who needs what information.
 
-(I, for one, like seeing the actual compiler and especially linker=20
-statements, as they are often needed to understand failures...)
+I see the dichotomy as follows:
 
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+- - Whilst operating on known terrain, as a developer, you can often
+ignore compiler command-lines because you usually are acquainted with
+what you're doing (and if not, it's time for sleep, sport, or food).
+That's "make -sj10 V=3D0" ground.
 
---VgNP6wxEowREGVu+
-Content-Type: application/pgp-signature
-Content-Disposition: inline
+- - Whilst providing end-user builds, perhaps through automated package
+builders, you do want verbose information, in order to avoid round-trips
+for asking further questions.  Some build frameworks trigger verbose
+builds automatically, other's don't.
 
+(And if you flip the switch for default behaviour, I expect to see other
+consumers/end users show up and complain.)
+
+HTH
+Matthias
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
+Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQCVAwUBVT5py6kuBuNlUUl1AQKYdwQAwxAR1nXjd+yevyuBZzEimt8xhJ3JX4rw
-+NDkgUKXycvLSLlVfj3uinoHEfZd0swVBmg5u/Mcp3EzVbgfTlpq45mL8m1KUm84
-DPqmLmAvFUcr2uCuc0x5lsVwSAvOuFUiz4j8H7JgyVfTvKtoybHF4WAfnqP2qB6b
-L2Z8uDiStJQ=
-=RWRU
+iEYEARECAAYFAlU+eM4ACgkQvmGDOQUufZXmeQCfZzULHSU1evIzOvFp+os7Fdro
+7wMAoOzFI6g9h9tREL/RgNkWnsypiO6I
+=3D3HdT
 -----END PGP SIGNATURE-----
-
---VgNP6wxEowREGVu+--
 
