@@ -1,8 +1,8 @@
 From: Gert Doering <gert@...1296...>
-Date: Tue, 28 Apr 2015 12:20:19 +0200
-Message-Id: <1430216419-11943-1-git-send-email-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH] explain effect of --topology subnet on
-	--ifconfig
+Date: Tue, 28 Apr 2015 13:04:23 +0200
+Message-Id: <1430219063-12291-1-git-send-email-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH] Print helpful error message on
+	--mktun/--rmtun if not available.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,72 +15,76 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-The fact that the second parameter of --ifconfig is no longer
-a "remote address" but a "netmask" when using --dev tun and
---topology subnet was not documented clearly enough.
+OpenVPN only supports --mktun/--rmtun to create/destroy persistant
+tunnels on Linux.  On BSD OSes, "ifconfig tun0 create" can do the
+same job, so we do not actually need to support it - but the previous
+error message ("unknown option") wasn't helpful.  So always accept
+the option now, and on non-supported systems, direct user to manpage.
 
-Trac #370
+Trac #85
 
 Signed-off-by: Gert Doering <gert@...1296...>
 ---
- doc/openvpn.8 | 23 ++++++++++++++++++-----
- 1 file changed, 18 insertions(+), 5 deletions(-)
+ src/openvpn/init.c    | 10 ++++++++--
+ src/openvpn/options.c |  2 --
+ 2 files changed, 8 insertions(+), 4 deletions(-)
 
-diff --git a/doc/openvpn.8 b/doc/openvpn.8
-index 8b3e1a2..587b769 100644
---- a/doc/openvpn.8
-+++ b/doc/openvpn.8
-@@ -798,6 +798,12 @@ driver supports an
- command which sets a subnet instead of a remote endpoint IP address.
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index b97d2da..42cb3e2 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -887,7 +887,6 @@ do_genkey (const struct options * options)
+ bool
+ do_persist_tuntap (const struct options *options)
+ {
+-#ifdef ENABLE_FEATURE_TUN_PERSIST
+   if (options->persist_config)
+     {
+       /* sanity check on options for --mktun or --rmtun */
+@@ -901,14 +900,21 @@ do_persist_tuntap (const struct options *options)
+ 	)
+ 	msg (M_FATAL|M_OPTERR,
+ 	     "options --mktun or --rmtun should only be used together with --dev");
++#ifdef ENABLE_FEATURE_TUN_PERSIST
+       tuncfg (options->dev, options->dev_type, options->dev_node,
+ 	      options->persist_mode,
+ 	      options->username, options->groupname, &options->tuntap_options);
+       if (options->persist_mode && options->lladdr)
+         set_lladdr(options->dev, options->lladdr, NULL);
+       return true;
+-    }
++#else
++      msg( M_FATAL|M_OPTERR,
++	"options --mktun and --rmtun are not available on your operating "
++	"system.  Please check 'man tun' (or 'tap'), whether your system "
++        "supports using 'ifconfig %s create' / 'destroy' to create/remove "
++        "persistant tunnel interfaces.", options->dev );
+ #endif
++    }
+   return false;
+ }
  
- This option exists in OpenVPN 2.1 or higher.
-+
-+Note: Using
-+.B \-\-topology subnet
-+changes the interpretation of the arguments of
-+.B \-\-ifconfig
-+to mean "address netmask", no longer "local remote".
- .\"*********************************************************
- .TP
- .B \-\-tun-ipv6
-@@ -861,16 +867,21 @@ May be used in order to execute OpenVPN in unprivileged environment.
- Set TUN/TAP adapter parameters. 
- .B l
- is the IP address of the local VPN endpoint.
--For TUN devices,
-+For TUN devices in point-to-point mode,
- .B rn
- is the IP address of the remote VPN endpoint.
--For TAP devices,
-+For TAP devices, or TUN devices used with
-+.B \-\-topology subnet,
- .B rn
--is the subnet mask of the virtual ethernet segment
-+is the subnet mask of the virtual network segment
- which is being created or connected to.
- 
- For TUN devices, which facilitate virtual
--point-to-point IP connections,
-+point-to-point IP connections (when used in
-+.B \-\-topology net30
-+or
-+.B p2p
-+mode),
- the proper usage of
- .B \-\-ifconfig
- is to use two private IP addresses
-@@ -885,7 +896,9 @@ you will be pinging across the VPN.
- 
- For TAP devices, which provide
- the ability to create virtual
--ethernet segments,
-+ethernet segments, or TUN devices in
-+.B --topology subnet
-+mode (which create virtual "multipoint networks"),
- .B \-\-ifconfig
- is used to set an IP address and
- subnet mask just as a physical
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index e8cf06a..4f27336 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -7023,7 +7023,6 @@ add_option (struct options *options,
+       options->pkcs11_id_management = true;
+     }
+ #endif
+-#ifdef ENABLE_FEATURE_TUN_PERSIST
+   else if (streq (p[0], "rmtun"))
+     {
+       VERIFY_PERMISSION (OPT_P_GENERAL);
+@@ -7036,7 +7035,6 @@ add_option (struct options *options,
+       options->persist_config = true;
+       options->persist_mode = 1;
+     }
+-#endif
+   else if (streq (p[0], "peer-id"))
+     {
+       VERIFY_PERMISSION (OPT_P_PEER_ID);
 -- 
-2.0.5
+2.2.2
 
 
