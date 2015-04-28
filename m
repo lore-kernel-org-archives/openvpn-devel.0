@@ -1,14 +1,8 @@
-Date: Mon, 27 Apr 2015 21:33:26 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20150427193326.GU382@...1296...>
-References: <CAK6ywb+fMsyvOz+saw9XBO4KDx1srdB92H71OwcKFPZnyxHkqw@...278...>
-	<1430162841-5840-1-git-send-email-gert@...1296...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="gX5Hm7FaHdN5aeGl"
-Content-Disposition: inline
-In-Reply-To: <1430162841-5840-1-git-send-email-gert@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH] assume res_init() is always there.
+Date: Tue, 28 Apr 2015 12:20:19 +0200
+Message-Id: <1430216419-11943-1-git-send-email-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH] explain effect of --topology subnet on
+	--ifconfig
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,46 +11,76 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
---gX5Hm7FaHdN5aeGl
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+The fact that the second parameter of --ifconfig is no longer
+a "remote address" but a "netmask" when using --dev tun and
+--topology subnet was not documented clearly enough.
 
-Hi,
+Trac #370
 
-On Mon, Apr 27, 2015 at 09:27:21PM +0200, Gert Doering wrote:
-> Previously, the code tried to find res_init(), and on some systems
-> got it wrong in configure, silently not-using res_init(), leading
-> to unexpected failures to re-init the resolver.
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+ doc/openvpn.8 | 23 ++++++++++++++++++-----
+ 1 file changed, 18 insertions(+), 5 deletions(-)
 
-... for the record: tested on FreeBSD 9.1, Gentoo-something, AIX(!),=20
-OpenSolaris and MacOS X - and either it found and added the library
-fine, or discovered that it didn't need to do anything, but in any case,
-the resulting socket.o always referenced res_init() and linking worked.
+diff --git a/doc/openvpn.8 b/doc/openvpn.8
+index 8b3e1a2..587b769 100644
+--- a/doc/openvpn.8
++++ b/doc/openvpn.8
+@@ -798,6 +798,12 @@ driver supports an
+ command which sets a subnet instead of a remote endpoint IP address.
+ 
+ This option exists in OpenVPN 2.1 or higher.
++
++Note: Using
++.B \-\-topology subnet
++changes the interpretation of the arguments of
++.B \-\-ifconfig
++to mean "address netmask", no longer "local remote".
+ .\"*********************************************************
+ .TP
+ .B \-\-tun-ipv6
+@@ -861,16 +867,21 @@ May be used in order to execute OpenVPN in unprivileged environment.
+ Set TUN/TAP adapter parameters. 
+ .B l
+ is the IP address of the local VPN endpoint.
+-For TUN devices,
++For TUN devices in point-to-point mode,
+ .B rn
+ is the IP address of the remote VPN endpoint.
+-For TAP devices,
++For TAP devices, or TUN devices used with
++.B \-\-topology subnet,
+ .B rn
+-is the subnet mask of the virtual ethernet segment
++is the subnet mask of the virtual network segment
+ which is being created or connected to.
+ 
+ For TUN devices, which facilitate virtual
+-point-to-point IP connections,
++point-to-point IP connections (when used in
++.B \-\-topology net30
++or
++.B p2p
++mode),
+ the proper usage of
+ .B \-\-ifconfig
+ is to use two private IP addresses
+@@ -885,7 +896,9 @@ you will be pinging across the VPN.
+ 
+ For TAP devices, which provide
+ the ability to create virtual
+-ethernet segments,
++ethernet segments, or TUN devices in
++.B --topology subnet
++mode (which create virtual "multipoint networks"),
+ .B \-\-ifconfig
+ is used to set an IP address and
+ subnet mask just as a physical
+-- 
+2.0.5
 
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---gX5Hm7FaHdN5aeGl
-Content-Type: application/pgp-signature
-Content-Disposition: inline
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQCVAwUBVT6PBakuBuNlUUl1AQIBgQP9GQRpGxVW4IFo1TNbEoG8sElhxpk/03Qj
-j9SbgITRDF545EkcTUbPTRudXSIjzjAy2bNEgHHsd8dQPWwQn35mwppb3W2cDPRr
-W1T13mvVaH1I+Gmdh/7ifo/sgU10OREwtw8ZS89Bbdes2Ofrk58ORg6U3OpXpq+3
-JHNDjFsEBZ4=
-=3SmY
------END PGP SIGNATURE-----
-
---gX5Hm7FaHdN5aeGl--
 
