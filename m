@@ -1,11 +1,12 @@
-Message-ID: <55422ED0.7010304@...1227...>
-Date: Thu, 30 Apr 2015 15:32:00 +0200
-From: Arne Schwabe <arne@...1227...>
-MIME-Version: 1.0
-References: <1430398960-10300-1-git-send-email-gert@...1296...>
-In-Reply-To: <1430398960-10300-1-git-send-email-gert@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH] plugin-down-root: only include <err.h>
- if system has it.
+Message-ID: <1430518805.21119.82.camel@...1866...>
+From: David Woodhouse <dwmw2@...1866...>
+Date: Fri, 01 May 2015 23:20:05 +0100
+Content-Type: multipart/signed; micalg="sha-1";
+	protocol="application/x-pkcs7-signature"; 
+	boundary="=-KW6gaUmrqGZh+bbu2CUx"
+Mime-Version: 1.0
+Subject: [Openvpn-devel] [PATCH] Use vfork() in openvpn_execve() instead of
+	fork()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,38 +15,39 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
+Cc: Alon Bar-Lev <alon.barlev@...277...>
+
+--=-KW6gaUmrqGZh+bbu2CUx
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+The pkcs11-helper library installs a pthread_atfork() handler which,
+in the child, will call the C_Initialize() method on any PKCS#11
+provider module which is active in the parent.
+
+I'm going to assume that Alon knows what he's doing and that this is
+actually the correct thing for pkcs11-helper to be doing.
+Nevertheless, it does seem to be central to a number of issues.
+
+Firstly, OpenVPN is forking to spawn systemd-ask-password from
+*within* the PIN request callback, which is expressly forbidden and
+leads directly to a deadlock.
+
+Secondly, even if we work around that by disabling systemd support, we
+find that the OpenSC PKCS#11 module doesn't cope. It ends up confusing
+pcscd by interacting with it over two separate connections, as
+described at=20
+http://sourceforge.net/p/opensc/mailman/message/34073754/
+
+Third, the p11-kit-proxy.so module also doesn't cope, and suffers an
+internal deadlock as described at
+https://www.mail-archive.com/p11-glue@...2028.../msg00126.html
 
 
-
-Am 30.04.15 um 15:02 schrieb Gert Doering:
-> down-root.c was missing an #ifdef HAVE_ERR_H around <err.h>
-> (only relevant on AIX, it seems)
->
-> Trac #495
->
-> Signed-off-by: Gert Doering <gert@...1296...>
-> ---
->  src/plugins/down-root/down-root.c |    2 ++
->  1 files changed, 2 insertions(+), 0 deletions(-)
->
-> diff --git a/src/plugins/down-root/down-root.c b/src/plugins/down-root/down-root.c
-> index 6931bec..42db064 100644
-> --- a/src/plugins/down-root/down-root.c
-> +++ b/src/plugins/down-root/down-root.c
-> @@ -42,7 +42,9 @@
->  #include <signal.h>
->  #include <syslog.h>
->  #include <errno.h>
-> +#ifdef HAVE_ERR_H
->  #include <err.h>
-> +#endif
->  
->  #include <openvpn-plugin.h>
->  
-ACK.
-
-Arne
-
+Even if this behaviour of calling C_Initialize() in the child is
+strictly correct, it doesn't seem that we can rely on provider modules
+to cope with it in the general case. Perhaps it would be safer to not
+actually reinitialise the modules until later, if they are really
+going to be accessed again?
+--=-KW6gaUmrqGZh+bbu2CUx--
