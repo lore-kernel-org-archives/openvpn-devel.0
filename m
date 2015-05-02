@@ -1,10 +1,8 @@
-Date: Sat, 2 May 2015 20:44:37 +0200 (CEST)
-Message-Id: <201505021844.t42IibgK001043@...1295...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1430122342-11742-1-git-send-email-steffan@...1856...>
-References: <1430122342-11742-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Remove size limit for files
-	inlined in config
+Date: Sat,  2 May 2015 21:07:05 +0200
+Message-Id: <1430593625-855-1-git-send-email-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH] Add note about file permissions and
+	--crl-verify to manpage.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,31 +13,32 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Steffan Karger <steffan@...1856...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-ACK.
+Trac #522
 
-Your patch has been applied to the master and release/2.3 branches.
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+ doc/openvpn.8 | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-commit e473b7c4ce41a450645e0f89579bc25b4a7f7d49 (master)
-commit 95f47ab88e1f240984ba3c79f2243ed304b46a94 (release/2.3)
-
-Author: Steffan Karger
-Date:   Mon Apr 27 10:12:22 2015 +0200
-
-     Remove size limit for files inlined in config
-
-     Signed-off-by: Steffan Karger <steffan@...1856...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1430122342-11742-1-git-send-email-steffan@...1856...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/9607
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/doc/openvpn.8 b/doc/openvpn.8
+index 587b769..24f05bb 100644
+--- a/doc/openvpn.8
++++ b/doc/openvpn.8
+@@ -5068,6 +5068,11 @@ is a directory containing files named as revoked serial numbers
+ requests a connection, where the client certificate serial number
+ (decimal string) is the name of a file present in the directory,
+ it will be rejected.
++
++Note: As the crl file (or directory) is read every time a peer connects, 
++if you are dropping root privileges with
++.B --user, 
++make sure that this user has sufficient privileges to read the file.
+ .\"*********************************************************
+ .SS SSL Library information:
+ .\"*********************************************************
+-- 
+2.0.5
 
 
