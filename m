@@ -1,11 +1,10 @@
-Message-ID: <5545222D.5040004@...1856...>
-Date: Sat, 02 May 2015 21:14:53 +0200
-From: Steffan Karger <steffan@...1856...>
-MIME-Version: 1.0
-References: <1430593625-855-1-git-send-email-gert@...1296...>
+Date: Sat, 2 May 2015 22:56:48 +0200 (CEST)
+Message-Id: <201505022056.t42KumYx017269@...1295...>
+From: Gert Doering <gert@...1296...>
 In-Reply-To: <1430593625-855-1-git-send-email-gert@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH] Add note about file permissions and
- --crl-verify to manpage.
+References: <1430593625-855-1-git-send-email-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Add note about file permissions
+	and --crl-verify to manpage.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,37 +13,30 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-On 02-05-15 21:07, Gert Doering wrote:
-> Trac #522
->
-> Signed-off-by: Gert Doering <gert@...1296...>
-> ---
->   doc/openvpn.8 | 5 +++++
->   1 file changed, 5 insertions(+)
->
-> diff --git a/doc/openvpn.8 b/doc/openvpn.8
-> index 587b769..24f05bb 100644
-> --- a/doc/openvpn.8
-> +++ b/doc/openvpn.8
-> @@ -5068,6 +5068,11 @@ is a directory containing files named as revoked serial numbers
->   requests a connection, where the client certificate serial number
->   (decimal string) is the name of a file present in the directory,
->   it will be rejected.
-> +
-> +Note: As the crl file (or directory) is read every time a peer connects,
-> +if you are dropping root privileges with
-> +.B --user,
-> +make sure that this user has sufficient privileges to read the file.
->   .\"*********************************************************
->   .SS SSL Library information:
->   .\"*********************************************************
->
+Patch has been applied to the master and release/2.3 branch.
 
-ACK
+commit d55be0fb8091ff03af1319a27f68401d31ce8571 (master)
+commit 755e12fddf32e6e2bbfce0157d9f17e8f1ff5eb5 (release/2.3)
 
--Steffan
+Author: Gert Doering
+Date:   Sat May 2 21:07:05 2015 +0200
+
+     Add note about file permissions and --crl-verify to manpage.
+
+     Signed-off-by: Gert Doering <gert@...1296...>
+     Acked-by: Steffan Karger <steffan.karger@...1435...>
+     Message-Id: <1430593625-855-1-git-send-email-gert@...1296...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/9634
+
+
+--
+kind regards,
+
+Gert Doering
+
 
