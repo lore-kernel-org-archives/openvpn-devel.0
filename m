@@ -1,11 +1,12 @@
-Message-ID: <55464DBE.4010203@...1856...>
-Date: Sun, 03 May 2015 18:33:02 +0200
-From: Steffan Karger <steffan@...1856...>
+Message-ID: <554756EE.6030407@...515...>
+Date: Mon, 04 May 2015 14:24:30 +0300
+From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-References: <CAEsd45S8+hwK9mB53mVBLO-1NSJp7YE3tx53Am83pzDL+tr8GQ@...278...>
-In-Reply-To: <CAEsd45S8+hwK9mB53mVBLO-1NSJp7YE3tx53Am83pzDL+tr8GQ@...278...>
-Subject: Re: [Openvpn-devel] OpenVPN argument parsing of most options
- ignores "extra" parameters
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="bm3rls1QHona1tgOnJuj78t8TpkavUIFt"
+Subject: [Openvpn-devel] Topics for today's (Monday,
+	4th May 2015) community meeting
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,51 +15,56 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hi Jonathan,
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--bm3rls1QHona1tgOnJuj78t8TpkavUIFt
+Content-Type: text/plain; charset="iso-8859-15"
+Content-Transfer-Encoding: quoted-printable
 
-On 17-04-15 11:28, Jonathan K. Bullard wrote:
-> I would like to propose a patch which complains if OpenVPN options
-> include parameters that are not expected.
->
-> If possible, I would like to get a "feature ACK" consensus before I
-> create the patch. (If I get a "feature NAK" then I won't create the
-> patch.)
->
-> The patch would be to reject options that are followed by extra parameters.
->
-> The error message would change from
->       Options error: Unrecognized option or missing parameter(s)
-> to
->       Options error: Unrecognized option or missing or unexpected parameter(s)
->
-> Perhaps the current behavior of ignoring "extra" parameters is
-> purposeful, to allow options to have parameters that are ignored by
-> "old" versions of OpenVPN but accepted and acted on by "new" versions
-> of OpenVPN. (I think doing that is not a good idea, but maybe that's
-> the way the community wants it.)
->
-> The patch would break any configurations that have such "extra"
-> parameters. I think that's good, because the configurations are, well,
-> wrong. But there could be a lot of such configurations being used with
-> current versions of OpenVPN -- who knows?
->
->
-> **EXAMPLE**
->
-> [...]
->
-> Thoughts?
+Hi,
 
-Always ;-)
+We're going to have an IRC meeting today, 4th May, starting at 20:00
+CEST (18:00 UTC) on #openvpn-devel <at> irc.freenode.net. Current topic
+list
+along with basic information is here:
 
-I agree that silently ignoring extra parameters is not nice. However, I 
-think that breaking configs after they have worked for many years might 
-result in too many unpleasant surprises for our users. How would you 
-feel about just issuing a warning for ignored extra parameters?
+<https://community.openvpn.net/openvpn/wiki/Topics-2015-05-04>
 
--Steffan
+If you have any other things you'd like to bring up, respond to this
+mail, send me mail privately or add them to the list yourself.
+
+In case you can't attend the meeting, please feel free to make comments
+on the topics by responding to this email or to the summary email sent
+after the meeting. Whenever possible, we'll also respond to existing,
+related email threads.
+
+NOTE: It's required to use a registered Freenode IRC nickname to join
+#openvpn-devel - look here for details:
+
+<https://community.openvpn.net/openvpn/wiki/GettingHelp#DeveloperIRCchannel>
+
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
+
+
+
+--bm3rls1QHona1tgOnJuj78t8TpkavUIFt
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iEYEARECAAYFAlVHVu4ACgkQwp2X7RmNIqP9EgCfWM+A6H0+xbHmas0orJxn3FSw
+XGsAmwQ6TYBuTbhxuypMOmR7nTZkYgI6
+=U2h6
+-----END PGP SIGNATURE-----
+
+--bm3rls1QHona1tgOnJuj78t8TpkavUIFt--
 
