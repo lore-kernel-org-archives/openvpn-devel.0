@@ -1,12 +1,12 @@
-Message-ID: <554756EE.6030407@...515...>
-Date: Mon, 04 May 2015 14:24:30 +0300
-From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="bm3rls1QHona1tgOnJuj78t8TpkavUIFt"
-Subject: [Openvpn-devel] Topics for today's (Monday,
-	4th May 2015) community meeting
+In-Reply-To: <55464DBE.4010203@...1856...>
+References: <CAEsd45S8+hwK9mB53mVBLO-1NSJp7YE3tx53Am83pzDL+tr8GQ@...278...>
+	<55464DBE.4010203@...1856...>
+From: "Jonathan K. Bullard" <jkbullard@...277...>
+Date: Mon, 4 May 2015 09:26:49 -0400
+Message-ID: <CAEsd45RoxhHiXGTAQwaPHHPnqfMk=iHjkoJOzeU_WaSU72MKXQ@...278...>
+Subject: Re: [Openvpn-devel] OpenVPN argument parsing of most options
+ ignores "extra" parameters
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,56 +15,50 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+To: Steffan Karger <steffan@...1856...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---bm3rls1QHona1tgOnJuj78t8TpkavUIFt
-Content-Type: text/plain; charset="iso-8859-15"
-Content-Transfer-Encoding: quoted-printable
+On Sun, May 3, 2015 at 12:33 PM, Steffan Karger <steffan@...1856...> wrote:
+> On 17-04-15 11:28, Jonathan K. Bullard wrote:
+> > I would like to propose a patch which complains if OpenVPN options
+> > include parameters that are not expected.
+>
+> I agree that silently ignoring extra parameters is not nice. However, I
+> think that breaking configs after they have worked for many years might
+> result in too many unpleasant surprises for our users. How would you
+> feel about just issuing a warning for ignored extra parameters?
 
-Hi,
+Thanks for your comment. It's a difficult balance.
 
-We're going to have an IRC meeting today, 4th May, starting at 20:00
-CEST (18:00 UTC) on #openvpn-devel <at> irc.freenode.net. Current topic
-list
-along with basic information is here:
+In my opinion a warning is not sufficient: if a configuration has an
+extra parameter, the user probably **thinks** that the parameter is
+doing something. In that situation, I would personally would rather
+have an unpleasant surprise than continue in ignorance. If I have a
+configuration that has worked for many years I might be more likely to
+not notice one warning among all the output in a typical log at the
+default "verb 3" setting.
 
-<https://community.openvpn.net/openvpn/wiki/Topics-2015-05-04>
+The "fix" if a config fails is very simple: remove the extra parameter
+or insert a line break if one is missing. You can then connect, and
+OpenVPN's behavior will not have changed except that if a line break
+was inserted then the previously ignored option will be used. If the
+parameter was supposed to do something important, then more thought
+might be required, but in that case, it is probably even **more**
+important that the configuration breaks.
 
-If you have any other things you'd like to bring up, respond to this
-mail, send me mail privately or add them to the list yourself.
+Perhaps it could go into OpenVPN 2.4 but not 2.3? As I understand it,
+2.3 is gets security and bug fixes, so many people probably don't test
+it as thoroughly as a new release; some probably won't test it at all
+-- those are the ones that you are presumably worried about. When 2.4
+is released, most people will test it at least cursorily before
+deploying it. If extra parameters cause a failure, it will be
+immediately obvious and can be fixed easily.
 
-In case you can't attend the meeting, please feel free to make comments
-on the topics by responding to this email or to the summary email sent
-after the meeting. Whenever possible, we'll also respond to existing,
-related email threads.
-
-NOTE: It's required to use a registered Freenode IRC nickname to join
-#openvpn-devel - look here for details:
-
-<https://community.openvpn.net/openvpn/wiki/GettingHelp#DeveloperIRCchannel>
-
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
-
-
-
---bm3rls1QHona1tgOnJuj78t8TpkavUIFt
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iEYEARECAAYFAlVHVu4ACgkQwp2X7RmNIqP9EgCfWM+A6H0+xbHmas0orJxn3FSw
-XGsAmwQ6TYBuTbhxuypMOmR7nTZkYgI6
-=U2h6
------END PGP SIGNATURE-----
-
---bm3rls1QHona1tgOnJuj78t8TpkavUIFt--
+Although usually ignoring extra parameters would not cause security
+problems, to the extent they do, the concept of OpenVPN being "secure
+by default" is jeopardized by not causing an error. Something like
+ignoring a "--redirect-gateway def1" -- which would cause traffic to
+be "leaked" outside of the VPN -- could be considered a security risk.
 
