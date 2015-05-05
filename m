@@ -1,7 +1,14 @@
-From: Steffan Karger <steffan@...1856...>
-Date: Mon,  4 May 2015 21:06:38 +0200
-Message-Id: <1430766398-17209-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH] polarssl: disable 1/n-1 record splitting
+Message-ID: <55487227.3050001@...515...>
+Date: Tue, 05 May 2015 10:32:55 +0300
+From: =?windows-1252?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
+MIME-Version: 1.0
+References: <554756EE.6030407@...515...>
+In-Reply-To: <554756EE.6030407@...515...>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="reshQjrefN6SGQ6Jqo11IKua1Ea91i0kT"
+Subject: Re: [Openvpn-devel] Topics for today's (Monday,
+ 4th May 2015) community meeting
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -10,45 +17,133 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Disable record splitting (for now).  OpenVPN assumes records are sent
-unfragmented, which is no longer a valid assumption when record splitting
-is enabled (which polarssl/mbedtls did in 1.3.10, see trac #524).
-Changing the code to deal with record splitting will require intrusive
-changes that need thorough review and testing.  Since OpenVPN is not
-susceptible to BEAST (the data transmitted over the control channel is
-very hard to influence for a remote attacker), we can just disable record
-splitting as a quick fix.  This gives us the time to develop a proper
-solution in the mean time, and test that thoroughly.
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--reshQjrefN6SGQ6Jqo11IKua1Ea91i0kT
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Steffan Karger <steffan@...1856...>
+Hi,
+
+Here's the summary of the previous IRC meeting.
+
 ---
- src/openvpn/ssl_polarssl.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
 
-diff --git a/src/openvpn/ssl_polarssl.c b/src/openvpn/ssl_polarssl.c
-index 1a40304..158088f 100644
---- a/src/openvpn/ssl_polarssl.c
-+++ b/src/openvpn/ssl_polarssl.c
-@@ -727,6 +727,14 @@ void key_state_ssl_init(struct key_state_ssl *ks_ssl,
-       if (ssl_ctx->allowed_ciphers)
- 	ssl_set_ciphersuites (ks_ssl->ctx, ssl_ctx->allowed_ciphers);
- 
-+      /* Disable record splitting (for now).  OpenVPN assumes records are sent
-+       * unfragmented, and changing that will require thorough review and
-+       * testing.  Since OpenVPN is not susceptible to BEAST, we can just
-+       * disable record splitting as a quick fix. */
-+#if defined(POLARSSL_SSL_CBC_RECORD_SPLITTING)
-+      ssl_set_cbc_record_splitting (ks_ssl->ctx, SSL_CBC_RECORD_SPLITTING_DISABLED);
-+#endif /* POLARSSL_SSL_CBC_RECORD_SPLITTING */
-+
-       /* Initialise authentication information */
-       if (is_server)
- 	polar_ok(ssl_set_dh_param_ctx(ks_ssl->ctx, ssl_ctx->dhm_ctx));
--- 
-2.1.4
+COMMUNITY MEETING
 
+Place: #openvpn-devel on irc.freenode.net
+Date: Monday 4th May 2015
+Time: 20:00 CEST (18:00 UTC)
+
+Planned meeting topics for this meeting were here:
+
+<https://community.openvpn.net/openvpn/wiki/Topics-2015-05-04>
+
+The next meeting was scheduled to two weeks from this meeting:
+
+<https://community.openvpn.net/openvpn/wiki/Topics-2015-05-18>
+
+Your local meeting time is easy to check from services such as
+
+<http://www.timeanddate.com/worldclock>
+
+SUMMARY
+
+cron2, dazo, mattock and syzzer participated in this meeting
+
+---
+
+Discussed the Access Server and OpenVPN Connect tickets in Trac, for
+which mattock had created a custom report:
+
+<https://community.openvpn.net/openvpn/report/18>
+
+Earlier today mattock managed to close about 25% of the tickets and
+informed James and other OpenVPN Technologies guys about the remainder.
+The tickets should eventually get the attention they deserve.
+
+---
+
+Discussed the OpenVPN man-page. It was agreed that splitting it into
+more manageable segments would make sense. Some examples of more modern
+man-pages were mentioned:
+
+- http://www.freedesktop.org/software/systemd/man/systemd.html
+- http://linux.die.net/man/8/sssd
+
+The latter (sssd) has a summary man-page and more detailed pages on
+specific aspects of sssd - an approach we could possibly also use.
+
+It was agreed that the same documentation should be made available both
+as man- and web-pages. It was also noted that on the current man-page
+there are omissions and part of the content has only historical value.
+
+Mattock will ask for volunteers amongst our users for this man-page
+cleanup project.
+
+---
+
+Talked about our OpenVPN doxygen documentation. Mattock will publish the
+documentation on build.openvpn.net or similar suitable place. Agreed
+that doxygen documentation should be added for all non-obvious functions
+as part of normal development practice.
+
+---
+
+Talked about the active tickets with no associated milestone:
+
+<https://community.openvpn.net/openvpn/report/19>
+
+Mattock agreed to start reviewing these slowly but surely (5 per workday).
+
+---
+
+Reviewed tickets with the release-2.3.7 milestone:
+
+<https://community.openvpn.net/openvpn/wiki/Topics-2015-05-04>
+
+Assigned the tickets to various people and moved some to milestone 2.3.8.
+
+---
+
+Discussed the option of marking tickets with "we could use some help
+with this". This would make it easier for people to know how to help the
+project. It was agreed that this is generally a good idea, but the
+technical implementation was not chosen. Mattock agreed to do some
+research on the best technical approach.
+
+---
+
+Discussed the "Reworking the interface for querying users" patchset:
+
+<http://thread.gmane.org/gmane.network.openvpn.devel/9232>
+
+It was agreed that the approach taken in the patchset is sane. The
+author (dazo) will provide an updated patchset with some fixes, after
+which the code can be reviewed.
+
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
+
+
+
+--reshQjrefN6SGQ6Jqo11IKua1Ea91i0kT
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iEYEARECAAYFAlVIcigACgkQwp2X7RmNIqMuHACgktxaEQYfcuU9p2LXidDZr675
+QCsAn0yc+dX7AD+I/mLJFTOQuvam25rs
+=CDQ4
+-----END PGP SIGNATURE-----
+
+--reshQjrefN6SGQ6Jqo11IKua1Ea91i0kT--
 
