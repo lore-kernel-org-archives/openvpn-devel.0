@@ -1,8 +1,8 @@
 From: David Sommerseth <openvpn.list@...1114...>
-Date: Wed,  6 May 2015 22:06:23 +0200
-Message-Id: <1430942786-31419-2-git-send-email-openvpn.list@...1114...>
-In-Reply-To: <1430942786-31419-1-git-send-email-openvpn.list@...1114...>
-References: <1430942786-31419-1-git-send-email-openvpn.list@...1114...>
+Date: Wed,  6 May 2015 22:06:18 +0200
+Message-Id: <1430942781-31363-2-git-send-email-openvpn.list@...1114...>
+In-Reply-To: <1430942781-31363-1-git-send-email-openvpn.list@...1114...>
+References: <1430942781-31363-1-git-send-email-openvpn.list@...1114...>
 Subject: [Openvpn-devel] [PATCHv2 1/4] Rework the user input interface to
 	make it more modular
 List-Id: <openvpn-devel.lists.sourceforge.net>
