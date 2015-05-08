@@ -1,16 +1,16 @@
-Message-ID: <554D13DE.1010406@...1114...>
-Date: Fri, 08 May 2015 21:51:58 +0200
+Message-ID: <554D4B33.4060401@...1114...>
+Date: Sat, 09 May 2015 01:48:03 +0200
 From: David Sommerseth <openvpn.list@...1114...>
 MIME-Version: 1.0
-References: <1430942786-31419-1-git-send-email-openvpn.list@...1114...>
-	<1430952572.31614.10.camel@...1866...>
-In-Reply-To: <1430952572.31614.10.camel@...1866...>
+References: <1430518805.21119.82.camel@...1866...>	<CAOazyz0KoSiUn=DA_0QBf3JXU=eQ1NJGQgtRw0z7DCo+E066Kw@...278...>
+	<1430523426.21119.113.camel@...1866...>
+In-Reply-To: <1430523426.21119.113.camel@...1866...>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="6ePdnD11Q92VoI8hE6F0UUEr297QsfSdp"
-Subject: Re: [Openvpn-devel] [PATCHv2 0/4] Reworking the interface for
- querying users
-Reply-To: openvpn-users@lists.sourceforge.net
+	boundary="DkMqbMxwSgcmiIF0IDaL2nrOmlc76vo15"
+Subject: Re: [Openvpn-devel] [PATCH] Use vfork() in openvpn_execve() instead
+ of fork()
+Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,103 +20,141 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: David Woodhouse <dwmw2@...1866...>
-Cc: openvpn-devel@lists.sourceforge.net
+Cc: Alon Bar-Lev <alon.barlev@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---6ePdnD11Q92VoI8hE6F0UUEr297QsfSdp
-Content-Type: text/plain; charset="utf-8"
+--DkMqbMxwSgcmiIF0IDaL2nrOmlc76vo15
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
 
-On 07/05/15 00:49, David Woodhouse wrote:
-> On Wed, 2015-05-06 at 22:06 +0200, David Sommerseth wrote:
->>
->> All patches has been tested locally with different configurations,
->> requiring username, password and passphrases to PKCS#12 files.  The
->> challenge/response interface has not been tested, as well as PKCS#11.
->> All runs via valgrind shows no memory leaks with this new
->> implementation.
+On 02/05/15 01:37, David Woodhouse wrote:
+> On Sat, 2015-05-02 at 01:54 +0300, Alon Bar-Lev wrote:
+>> not sure what systemd-ask-password is, but the proper interaction=20
+>> with openvpn process in this case is via the management interface,=20
+>> there is an example here[1].
 >=20
-> I've given some pointers in ticket 538 on how you can test PKCS#11
-> without actually having a hardware token =E2=80=94 you can use GNOME keyr=
-ing in many cases, or in this case where you really want to test=20
-> password input,
-> you can use a NSS "softokn" database.
+> It's a tool which gets spawned to ask the user (sysadmin) for a
+> password. I've never actually seen it working in practice, but I think
+> it's something vaguely similar to ssh-askpass.
+
+systemd-ask-password is a utility which prepares systemd to query the
+user for some information, usually a password or PIN.
+
+Very simply said, it prepares a pipe to a front-end which does the real
+querying.  So consider systemd-ask-password the back-end side.  The
+front-end presents the prompt it received from the back-end, collects
+the user input and  sends the result back to the forked out process
+which then ends up in OpenVPN in the end.  The idea around this concept
+is that systemd (via for example systemd-tty-ask-password-agent) may not
+need to kick off the front-end if it already have cached the information
+needed.
+
+With that said, I mentioned earlier today that there is some talks about
+improving the whole query interface in systemd, where a DBus interface
+will be available.  Thus removing the need to fork out this little
+helper program.
+
+> I think it's designed to work even during a graphical boot sequence
+> before any real UI is present (for example for asking for root file
+> system encryption passphrases).
+
+That is correct.
+
+
+> Perhaps one might argue this is simply a bug in OpenVPN =97 it
+> *shouldn't* be spawning the systemd password request tool in that
+> case. And that's 100% true for the PIN request, since the pkcs11
+> -helper documentation explicitly forbids the application from forking
+> in the PIN callback.
+
+I agree this is a misbehaviour in OpenVPN, when it does things which is
+clearly stated what is forbidden.
+
+
+>> what we do require is to move the entire processing of remote
+>> connection details, certificate enumeration and private key operations
+>> into the management interface, removing the PKCS#11 support from
+>> openvpn core, and move it into the management implementation, hence
+>> will always run at the user context. We discussed that in the past,
+>> not sure if someone promoted it.
 >=20
-> Even if I make these patches build by fixing the issue that leads to
-> libsystemd_MODVERSION being set to '219\n219' when both systemd.pc and
-> libsystemd.pc exist, they still don't solve the problem described in
-> that ticket.
+> I think the management interface has been able to provide a
+> certificate for a while. It's recently also gained the ability to
+> perform the signing step too, so we really can offload it all now.
+
+Yes, there are some features available via the management interface
+which allows an external process to do the RSA signing and verification,
+iirc.  I also believe interface is used on Android, to be able to make
+usage of the keystorage in Android.
+
+> Persuading the OpenVPN developers that such should be the *only*
+> possible mode of operation, however, is a different prospect :0
+
+If it breaks existing users configs and setups, it's generally a no-go.
+ We've already tried that a few times, and reverted when enough users
+started complaining.
+
+> Although I do wonder how many other provider modules are going to
+> suffer similar issues, and it doesn't *hurt* to be defensive in
+> OpenVPN and use vfork() instead of fork(). I don't really see the down
+> -side.
+
+I've spent my evening reading more about vfork() and fork().  I've based
+my trust this time in two books [1] on Linux system programming.
+
+Both books are really clear that vfork() should be avoided, and even
+claiming it was a mistake by introducing that syscall in Linux.  Its
+semantic can in many cases cause other issues, such as the execve()'d
+process not using _exit() but exit().  This can cause plenty of mess in
+regards to flushing of buffers and other file descriptors.
+
+The reason I believe vfork() "works" and fork() "does not work" is
+simply due to the fact that fork() does a copy-on-write-copy to the
+child, which includes the inheritance of the atexit() handlers.  I
+believe also that p11-helper also uses pthreads_atexit(), which is also
+executed when a fork()ed process exits.  When uysing vfork(), this copy
+does not happen at all, and then execve() takes over completely.  So
+when vfork() exits, it doesn't do anything than just "die" (*as long as*
+_exit() is used).  It is in fact utterly important that exit() is not
+used in a process which has been vfork()ed, it has to be _exit() to
+avoid undefined behaviours.
+
+Then regarding to standards and portability.  SUSv3/POSIX.1-2001 lists
+vfork() as deprecated, and SUSv4/POSIX.1-2008 doesn't even include vfork().
+
+[1] - Linux System Programming, Rob Love
+    - The Linux Programming Interface, Michael Kerrisk
+
+
+>> NAK my side, openvpn code is ok.
 >=20
-> You are still calling fork() from a context (the PIN request callback
-> from pkcs11-helper) in which it is forbidden, and in which it
-> deadlocks:
->=20
-> #2  0x00007ffff7d9c096 in _pkcs1h_threading_mutexLockAll () at pkcs11h-th=
-reading.c:306
-> #3  0x00000038412c8362 in __libc_fork () at ../sysdeps/nptl/fork.c:89
-> #4  0x0000003841a0f4a5 in __fork () at pt-fork.c:25
-> #5  0x000000000042893b in openvpn_popen (a=3Da@...1851...=3D0x7fffffff9be=
-0, es=3Des@...1851...=3D0x0) at misc.c:374
-> #6  0x000000000046f0e8 in get_console_input_systemd (capacity=3D4096, inp=
-ut=3D0x7fffffffb1f2 "", echo=3Dfalse,=20
->     prompt=3D0x73cdc8 "Enter PIV_II (PIV Card Holder pin) token Password:=
-") at console_systemd.c:72
-> #7  query_user_exec (setup=3D<optimized out>) at console_systemd.c:111
-> #8  0x0000000000427aed in get_user_pass_cr (up=3Dup@...1851...=3D0x7fffff=
-ffa1f0, auth_file=3D<optimized out>, auth_file@...1851...=3D0x0,=20
->     prefix=3Dprefix@...1851...=3D0x7fffffff9df0 "PIV_II (PIV Card Holder =
-pin) token", flags=3Dflags@...1851...=3D21, auth_challenge=3Dauth_challenge=
-@...1851...=3D0x0) at misc.c:1144
-> #9  0x0000000000435711 in get_user_pass (flags=3D21, prefix=3D0x7fffffff9=
-df0 "PIV_II (PIV Card Holder pin) token", auth_file=3D0x0, up=3D0x7fffffffa=
-1f0) at misc.h:268
-> #10 _pkcs11_openvpn_pin_prompt (global_data=3D<optimized out>, user_data=
-=3D<optimized out>, token=3D<optimized out>, retry=3D<optimized out>, pin=
-=3D0x7fffffffc250 "K{`f=3D",=20
->     pin_max=3D1024) at pkcs11.c:236
-> #11 0x00007ffff7d9e0cb in _pkcs11h_session_login (session=3D0x6e9220, is_=
-publicOnly=3Dis_publicOnly@...1851...=3D0, readonly=3Dreadonly@...1851...=
-=3D1, user_data=3D0x0,=20
->     mask_prompt=3D<optimized out>) at pkcs11h-session.c:1023
->=20
-> Perhaps the solution might be to *always* operate in 'management
-> interface' mode, and to shift all the direct console access out to a
-> separate process. *That* process would be permitted to run fork(),
-> when the core OpenVPN process requests a password...
+> Well, not quite. Even apart from the 'be liberal in what you accept'
+> principle as discussed above, the systemd_ask_password handling is
+> clearly broken. And actually further testing shows that part is *not*
+> fixed by my patch, since I only modified openvpn_execve(). We can't
+> use vfork() in openvpn_popen() because that does other things between
+> the fork and the execve().
 
-THanks a lot for a lot of value input, both here and in the trac ticket!
- I'll go through that and digest it carefully.
+I acknowledge that you have found a potential solution for solving this
+issue.  I'm grateful for that!  But I do question if it is the proper
+solution.
 
-In regards to fork()/vfork().  Personally, I'm not against changing it.
- However, I don't know what the other reviewers may think.  I'll dig
-deeper into this matter and.
+The current patch gets a NAK from me as well.  When two system
+programming books recommend strongly /not/ to use vfork() but fork(),
+plus the deprecation in SUS, it scares me too just much to make this
+change on all systems which supports vfork() - not just Linux systems
+with systemd.
 
-Having that said, looking isolated on systemd and pkcs#11.  I've heard
-from a few of the systemd developers that they are going to retire the
-current approach for quering for user input for something more flexible.
- And they point at some kind of DBus interface as a natural next step
-(it has not yet materialized into code, so I'm currently sitting on the
-fence).  That means that OpenVPN would not fork at all, it would send a
-request via a DBus interface describing what the user (or session) must
-provide. And the result is then returned via DBus.  And this is what
-I've had in mind when changing these code paths.  Which is also the
-reason that console_systemd.c isn't compiled unless configured with
---enable-systemd ... to easier split out code which may make the
-non-Linux guys of the openvpn community scream and panic when seeing
-DBus library dependencies.
+As a temporarily hack, I could maybe accept it if we can contain the
+fork() to vfork() change to a scenario where ENABLE_SYSTEMD in addition
+to HAVE_VFORK_H/HAVE_WORKING_VFORK; I'll have to sleep on that for a
+couple of days first.  But this may just as well get NAK from the other
+developers.
 
-The current management interface works fairly well, but it has
-limitations which can cause some cause some hang-ups due to the single
-threaded nature of OpenVPN - there are also some who claims they notice
-performance drops when management commands are processed.  I've not dug
-into these claims yet, but it doesn't surprise me if there is something
-to it.  In addition the connection to the management interface is
-basically not authenticated (well, you can have a password but it's a
-clear-text connection).
-
-Again, thanks a lot for all your input!  I'm fairly loaded with work, so
-openvpn does unfortunately suffer from that from my part.  But I do
-appreciate your involvement!
+Anyone got better ideas?  The Management interface is one option which
+has been mentioned, but I am not too happy about that implementation
+(mentioned in another e-mail).  But if it can be made to work more
+smoothly, I prefer that over using a deprecated libc/system call.
 
 
 --=20
@@ -125,7 +163,7 @@ kind regards,
 David Sommerseth
 
 
---6ePdnD11Q92VoI8hE6F0UUEr297QsfSdp
+--DkMqbMxwSgcmiIF0IDaL2nrOmlc76vo15
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -133,10 +171,10 @@ Content-Disposition: attachment; filename="signature.asc"
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iEYEARECAAYFAlVNE+AACgkQDC186MBRfrq+zACggcNm91BB2sedmm86TdVOpC6i
-NAUAoIDufjyXfCYUA9oK0H0v3e1BJDSz
-=Dkac
+iEYEARECAAYFAlVNSzQACgkQDC186MBRfrqQ6gCdHnoEI/L1xF0UsBLcQyDXjdBi
+PLQAnAxM7CxGsTc0epf0doDVGOwmHLBC
+=j7j0
 -----END PGP SIGNATURE-----
 
---6ePdnD11Q92VoI8hE6F0UUEr297QsfSdp--
+--DkMqbMxwSgcmiIF0IDaL2nrOmlc76vo15--
 
