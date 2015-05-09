@@ -1,7 +1,7 @@
-Message-ID: <1431209086.23276.8.camel@...1866...>
+Message-ID: <1431213418.23276.56.camel@...1866...>
 From: David Woodhouse <dwmw2@...1866...>
-Date: Sat, 09 May 2015 23:04:46 +0100
-In-Reply-To: <CAOazyz3Gse_yi8cteVCOThUXvLF2F6VZoBtEB9PM=DxZw2e2ug@...278...>
+Date: Sun, 10 May 2015 00:16:58 +0100
+In-Reply-To: <CAOazyz0rFEN=M=pAfcPYFN9=HjfJtFCkB3h965u5O9nJVCAEJA@...278...>
 References: <1430518805.21119.82.camel@...1866...>
 	<CAOazyz0KoSiUn=DA_0QBf3JXU=eQ1NJGQgtRw0z7DCo+E066Kw@...278...>
 	<1430523426.21119.113.camel@...1866...>
@@ -11,6 +11,8 @@ References: <1430518805.21119.82.camel@...1866...>
 	<20150509101724.GQ382@...1296...>
 	<1431206194.4339.32.camel@...1866...>
 	<CAOazyz3Gse_yi8cteVCOThUXvLF2F6VZoBtEB9PM=DxZw2e2ug@...278...>
+	<1431209086.23276.8.camel@...1866...>
+	<CAOazyz0rFEN=M=pAfcPYFN9=HjfJtFCkB3h965u5O9nJVCAEJA@...278...>
 Mime-Version: 1.0
 Subject: Re: [Openvpn-devel] [PATCH] Use vfork() in openvpn_execve() instead
  of fork()
@@ -27,39 +29,38 @@ Content-Transfer-Encoding: 8bit
 To: Alon Bar-Lev <alon.barlev@...277...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-On Sun, 2015-05-10 at 00:57 +0300, Alon Bar-Lev wrote:
-> Are you sure you want to introduce security issues resulting of
-> resource leak into the child process? Example: pcsc-lite socket that
-> is leaking or USB connection? In a way for the child process thus it
-> being able to access the card?
+On Sun, 2015-05-10 at 01:09 +0300, Alon Bar-Lev wrote:
+> 
+> > If an application *knows* that it will never use PKCS#11 after a fork(),
+> > as in this case where we *know* that we're always just going to exec
+> > something else, it certainly doesn't *damage* the well-behaved providers
+> > if we simply refrain from making that C_Initialize() call that we *know*
+> > to be gratuitous in the child.
+> 
+> once again you are wrong and assuming your specific case if valid.
 
-Those should be opened with O_CLOEXEC anyway.
+Can you explain where I'm wrong?
 
-> I already fixed the OpenSC implementation at least twice in the past
-> for this specific issue, and twice helped to fix the pcsc-lite issues,
-> worked with p11-glue at least here[1], worked with aladdin to fix
-> their product, also Siemens, Athena and others,  I guess another cycle
-> is required.
+If there is a specific case in which we *know* that all we're ever going
+to do after a fork() is exec something else, so *everything* is going to
+be thrown away...
 
-Indeed :)
+... and if we *know* that calling C_Initialize() in the child, which we
+know is gratuitous in our case, is actually causing problems in some
+fairly common PKCS#11 provider modules...
 
-I posted a proof-of-concept patch for OpenSC¹ but it was more of a
-demonstration of where the problem lies than a real fix. Partly because
-it *does* still leak file descriptors, AFAICT.
+... and if we *know* that these bugs have actually been fixed before and
+they keep recurring...
 
-> This fix should be in malformed providers, otherwise except of the
-> above, you also damage the well behaved providers.
+... and if we *know* that even if we fix the bugs again, people will
+still be using the existing buggy versions for some time...
 
-If an application *knows* that it will never use PKCS#11 after a fork(),
-as in this case where we *know* that we're always just going to exec
-something else, it certainly doesn't *damage* the well-behaved providers
-if we simply refrain from making that C_Initialize() call that we *know*
-to be gratuitous in the child.
+... why in $DEITY's name would we not want to — in accordance with
+Postel's Law — *avoid* the gratuitous call to C_Initialize() which is
+triggering the issue?
 
 -- 
 dwmw2
-
-¹ http://sourceforge.net/p/opensc/mailman/message/34086897/
 
 
 
