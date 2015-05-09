@@ -1,13 +1,17 @@
-Date: Sat, 9 May 2015 16:06:40 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20150509140640.GS382@...1296...>
-References: <1430766398-17209-1-git-send-email-steffan@...1856...>
+Message-ID: <1431206194.4339.32.camel@...1866...>
+From: David Woodhouse <dwmw2@...1866...>
+Date: Sat, 09 May 2015 22:16:34 +0100
+In-Reply-To: <20150509101724.GQ382@...1296...>
+References: <1430518805.21119.82.camel@...1866...>
+	<CAOazyz0KoSiUn=DA_0QBf3JXU=eQ1NJGQgtRw0z7DCo+E066Kw@...278...>
+	<1430523426.21119.113.camel@...1866...>
+	<554D4B33.4060401@...1114...>
+	<2a24fe1d092410bcd9082565e92c78b2.squirrel@...2027...>
+	<e8658b8ccffc58c2499f792462893012.squirrel@...2027...>
+	<20150509101724.GQ382@...1296...>
 Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="Qf878oECjVTnCF6M"
-Content-Disposition: inline
-In-Reply-To: <1430766398-17209-1-git-send-email-steffan@...1856...>
-Subject: Re: [Openvpn-devel] [PATCH] polarssl: disable 1/n-1 record splitting
+Subject: Re: [Openvpn-devel] [PATCH] Use vfork() in openvpn_execve() instead
+ of fork()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,62 +20,64 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan@...1856...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Gert Doering <gert@...1296...>
+Cc: Alon Bar-Lev <alon.barlev@...277...>, openvpn-devel@lists.sourceforge.net
 
---Qf878oECjVTnCF6M
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+On Sat, 2015-05-09 at 12:17 +0200, Gert Doering wrote:
+> Hi,
+> 
+> On Sat, May 09, 2015 at 07:55:56AM -0000, David Woodhouse wrote:
+> > A better approach would probably be to disable the atfork handlers in
+> > OpenVPN entirely since I believe we don't need them.
+> 
+> With the patch to #480 which moves the only "real fork()" (daemon()) to
+> "before any crypto stuff happens", we should never do any fork() now which
+> will cause crypto operations in the child - so, if these handlers can be
+> disabled (or turned into "assume there will be no crypto in the child, so
+> just plain FAIL if any is attempted"), this could be a possible avenue 
+> out of this mess...
 
-Hi,
+I think that's the best approach, yes.
 
-On Mon, May 04, 2015 at 09:06:38PM +0200, Steffan Karger wrote:
-> Disable record splitting (for now).  OpenVPN assumes records are sent
-> unfragmented, which is no longer a valid assumption when record splitting
-> is enabled (which polarssl/mbedtls did in 1.3.10, see trac #524).
+> I'm not sharing David S.'s concern about vfork() being deprecated, but
+> if it is not actually fixing all aspects of the problem, it's not the
+> right solution anyway - so, no need to really decide about that :-)
 
-ACK.  Had to manually apply it, as the line numbers differed too much
-for git to be comfortable - patch was fine with it, though...
+Yeah, I'm not really scared of vfork, although my patch should have
+switched to using _exit() instead of exit() if the execve() failed in
+the child. I note there *was* no other error handling to worry about in
+that case, so my concern about complexity there was unfounded.
 
-Patching file ssl_polarssl.c using Plan A...
-Hunk #1 succeeded at 738 with fuzz 1 (offset 11 lines).
-Hmm...  Ignoring the trailing garbage.
+Really, it depends on how we solve the other issues. If we kill
+openvpn_popen() and make the systemd thing work some other way (via DBus
+or whatever), then we have fixed the outright *bug* in OpenVPN. But we
+are still left with the issue that some of the *common* PKCS#11
+providers have issues with being re-initialised in the child process
+after a fork (like when we spawn ifconfig).
 
-commit d0f26fb524744a63615a1bf4e7ddcefcd102b328  (master)
+As noted above, the best answer is *not* to do that. But I strongly
+suspect Alon (who owns pkcs11-helper) won't concur. For reasons I can
+understand, if not entirely agree with, he's very keen on requiring
+absolute spec compliance from all PKCS#11 provider modules. He doesn't
+like the idea of working around bugs in them.
 
-Author: Steffan Karger <steffan@...1856...>
-Date:   Mon May 4 21:06:38 2015 +0200
+He is right, of course, that we should *fix* them (where they're open
+source and we can). But I personally think that OpenVPN should be
+tolerant of the known issues *too*. As I said, it's supposed to be a
+useful piece of software in *practice*, not just a PKCS#11 test suite.
 
-    polarssl: disable 1/n-1 record splitting
+So if we can't persuade him to give us a mode in pkcs11-helper which
+disables this pthread_atfork() behaviour, then using vfork() — just to
+avoid *triggering* that unwanted atfork handler — might still be a
+relatively attractive proposition.
 
-    Signed-off-by: Steffan Karger <steffan@...1856...>
-    Acked-by: Gert Doering <gert@...1296...>
-    Message-Id: <1430766398-17209-1-git-send-email-steffan@...1856...>
-    URL: http://article.gmane.org/gmane.network.openvpn.devel/9646
-    Signed-off-by: Gert Doering <gert@...1296...>
+(There's already the 'safe mode' thing in pkcs11-helper but I don't
+think that actually avoids invoking C_Initialize() on the modules.)
+
+-- 
+dwmw2
 
 
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---Qf878oECjVTnCF6M
-Content-Type: application/pgp-signature
-Content-Disposition: inline
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQCVAwUBVU4UcKkuBuNlUUl1AQIQRwP+MmqopK7L0ApSTi9ZjvlwNueNYYy8hXat
-6jzfXxtE5Dx0qYLuHd9zg16C1FmrsTpoYbZnKB4fvDaodNGA665CQyyiZ56LCByF
-Xm/S+yw/zT1Ktf+F5/0Terb8BN2sSdTy7Jxz7xfQP41D6T5WoI01dgtc9+LG0iXk
-IX8aPlOwLvU=
-=CTv7
------END PGP SIGNATURE-----
-
---Qf878oECjVTnCF6M--
 
