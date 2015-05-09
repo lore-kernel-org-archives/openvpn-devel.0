@@ -1,10 +1,10 @@
-Date: Sat, 9 May 2015 15:37:40 +0200 (CEST)
-Message-Id: <201505091337.t49Dbeem020041@...1295...>
+Date: Sat, 9 May 2015 15:49:20 +0200 (CEST)
+Message-Id: <201505091349.t49DnJ1Z014796@...1295...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1430832589-9150-1-git-send-email-samuli@...515...>
-References: <1430832589-9150-1-git-send-email-samuli@...515...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Properly escape dashes on the
-	man-page
+In-Reply-To: <1430840857-6123-1-git-send-email-steffan@...1856...>
+References: <1430840857-6123-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Improve --tls-cipher and
+	--show-tls man page description
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,24 +15,27 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: samuli@...515...
+To: Steffan Karger <steffan@...1856...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-ACK.
+Patch has been applied to the master and release/2.3 branch.  
 
-Your patch has been applied to the release/2.3 branch.
+Applying to release/2.3 took some convincing, as Samuli's doc changes and 
+some differences in ssl_polarssl.c got in the way (but as the change itself
+is trivial, I don't think I could break anything :-) ).
 
-commit e57ab7817a0e4142506b7a23ca8d844b3a4c6dea
-Author: Samuli Seppänen
-Date:   Tue May 5 16:29:49 2015 +0300
+commit 5f66f907cfc57b89110c08e50c7aab228e090911 (master)
+commit 98e8dbbe3d0f8489fee0e814c57122097b16da20 (release/2.3)
 
-     Properly escape dashes on the man-page
+Author: Steffan Karger
+Date:   Tue May 5 17:47:37 2015 +0200
 
-     URL: http://thread.gmane.org/gmane.network.openvpn.devel/9569
-     Signed-off-by: Samuli Seppänen <samuli@...515...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1430832589-9150-1-git-send-email-samuli@...515...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/9648
+     Improve --tls-cipher and --show-tls man page description
+
+     Signed-off-by: Steffan Karger <steffan@...1856...>
+     Acked-by: Arne Schwabe <arne@...1227...>
+     Message-Id: <1430840857-6123-1-git-send-email-steffan@...1856...>
+L/gmane.network.openvpn.devel/9651
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
