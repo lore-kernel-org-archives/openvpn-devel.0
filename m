@@ -1,15 +1,19 @@
-Message-ID: <e8658b8ccffc58c2499f792462893012.squirrel@...2027...>
-In-Reply-To: <2a24fe1d092410bcd9082565e92c78b2.squirrel@...2027...>
+Date: Sat, 9 May 2015 12:17:24 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20150509101724.GQ382@...1296...>
 References: <1430518805.21119.82.camel@...1866...>
 	<CAOazyz0KoSiUn=DA_0QBf3JXU=eQ1NJGQgtRw0z7DCo+E066Kw@...278...>
 	<1430523426.21119.113.camel@...1866...>
 	<554D4B33.4060401@...1114...>
 	<2a24fe1d092410bcd9082565e92c78b2.squirrel@...2027...>
-Date: Sat, 9 May 2015 07:55:56 -0000
-From: "David Woodhouse" <dwmw2@...1866...>
-MIME-Version: 1.0
+	<e8658b8ccffc58c2499f792462893012.squirrel@...2027...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="gKaPnVNVpyX08bAX"
+Content-Disposition: inline
+In-Reply-To: <e8658b8ccffc58c2499f792462893012.squirrel@...2027...>
 Subject: Re: [Openvpn-devel] [PATCH] Use vfork() in openvpn_execve() instead
- of fork()
+	of fork()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,51 +22,52 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain;charset=utf-8
-Content-Transfer-Encoding: 8bit
 To: David Woodhouse <dwmw2@...1866...>
-Cc: Alon Bar-Lev <alon.barlev@...277...>, David Woodhouse <dwmw2@...1866...>, openvpn-devel@lists.sourceforge.net
+Cc: Alon Bar-Lev <alon.barlev@...277...>, openvpn-devel@lists.sourceforge.net
 
+--gKaPnVNVpyX08bAX
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
->
->> I've spent my evening reading more about vfork() and fork().  I've based
->> my trust this time in two books [1] on Linux system programming.
->>
->> Both books are really clear that vfork() should be avoided, and even
->> claiming it was a mistake by introducing that syscall in Linux.  Its
->> semantic can in many cases cause other issues, such as the execve()'d
->> process not using _exit() but exit().  This can cause plenty of mess in
->> regards to flushing of buffers and other file descriptors.
->
-> That's mostly a concern if you only action in the child isn't to call
-> execve().
->
-> On vfork() the parent stops until the child (sharing its VM) either exits
-> or calls execve().
->
-> It is the case the the child process directly exits that you have most
-> fun. We weren't doing that.
+Hi,
 
-Looking back at this with the benefit of a (slightly) larger screen, about
-a pint of coffee, and an absence of small children, I find I was not at my
-most coherent. Let me try that bit again...
+On Sat, May 09, 2015 at 07:55:56AM -0000, David Woodhouse wrote:
+> A better approach would probably be to disable the atfork handlers in
+> OpenVPN entirely since I believe we don't need them.
 
-The interesting caveats of vfork should not bother us when all we do in
-the child is exec. Everything is thrown away then anyway. However my patch
-*would* need to be careful in the case where the exec fails, including
-calling _exit at you say. And any logging or error reporting it does in
-the child would also be "fun" with the vfork restrictions.
+With the patch to #480 which moves the only "real fork()" (daemon()) to
+"before any crypto stuff happens", we should never do any fork() now which
+will cause crypto operations in the child - so, if these handlers can be
+disabled (or turned into "assume there will be no crypto in the child, so
+just plain FAIL if any is attempted"), this could be a possible avenue=20
+out of this mess...
 
-That in itself is probably sufficient reason to drop the idea.
+I'm not sharing David S.'s concern about vfork() being deprecated, but
+if it is not actually fixing all aspects of the problem, it's not the
+right solution anyway - so, no need to really decide about that :-)
 
-It was only a cheap hack that seemed useful. As noted, it wasn't even a
-panacea because we couldn't use it in openvpn_popen() and thus it didn't
-address the systemd thing.
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-A better approach would probably be to disable the atfork handlers in
-OpenVPN entirely since I believe we don't need them.
+--gKaPnVNVpyX08bAX
+Content-Type: application/pgp-signature
+Content-Disposition: inline
 
--- 
-dwmw2
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
 
+iQCVAwUBVU3etKkuBuNlUUl1AQIf+wP/ZjazfMG4Jt/o+ADTOoYzcq5D4C2Ht78U
+opaf21gqljKDdUJR/Ur5eyrJDUMho9P9KlOoLGypexFLIry4DVPBUJcsmQwNHjNa
+y+c5uG47lv9EzLfHCV08/Dz2idhir0qLpMlvF9zkw+A4c/d2EbjrgJ8ubDS8Ilk1
+5PEeXqrXVW0=
+=fWXe
+-----END PGP SIGNATURE-----
+
+--gKaPnVNVpyX08bAX--
 
