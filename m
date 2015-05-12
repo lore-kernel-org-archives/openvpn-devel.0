@@ -1,13 +1,13 @@
-From: Lisa Minogue <lminogue@...1892...>
-Message-ID: <4001174.479134.1431430060517.JavaMail.root@...1893...>
-In-Reply-To: <5551BE33.2010208@...1227...>
+Message-ID: <5551E7A5.6040506@...1227...>
+Date: Tue, 12 May 2015 13:44:37 +0200
+From: Arne Schwabe <arne@...1227...>
+MIME-Version: 1.0
 References: <13470069.462428.1431417550257.JavaMail.root@...1893...>
 	<5551BE33.2010208@...1227...>
-MIME-Version: 1.0
-Date: Tue, 12 May 2015 13:27:40 +0200 (CEST)
+	<4001174.479134.1431430060517.JavaMail.root@...1893...>
+In-Reply-To: <4001174.479134.1431430060517.JavaMail.root@...1893...>
 Subject: Re: [Openvpn-devel] Request peer review of modified OpenVPN client
  software
-Reply-To: Lisa Minogue <lminogue@...1892...>
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,21 +18,22 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+To: Lisa Minogue <lminogue@...1892...>, openvpn-devel@lists.sourceforge.net
 
-> Arne Schwabe <arne@...1227...> wrote:
+
+
+Am 12.05.15 um 13:27 schrieb Lisa Minogue:
+>> Arne Schwabe <arne@...1227...> wrote:
+>>
+>> It has probably some obfuscation/encryption patches applied. There is no official obfuscation capability in OpenVPN yet since the core OpenVPN developers believe that such a mechansim should be either implemented in a plugin or other way (e.g., a proxy) that is flexible enough to change
+>> the mechanism.
+> Thanks Arne, for your prompt reply.
 >
-> It has probably some obfuscation/encryption patches applied. There is no official obfuscation capability in OpenVPN yet since the core OpenVPN developers believe that such a mechansim should be either implemented in a plugin or other way (e.g., a proxy) that is flexible enough to change
-> the mechanism.
+> Can I conclude from your above statements that applying obfuscation patches to the standard OpenVPN client software may actually introduce security vulnerabilities?
+>
+Any patch can introduce security vulnerabilities. Without knowing and
+reviewing the specific patch that has been applied to that version there
+is no way to be sure.
 
-Thanks Arne, for your prompt reply.
-
-Can I conclude from your above statements that applying obfuscation patches to the standard OpenVPN client software may actually introduce security vulnerabilities?
-
-Regards.
-
-Lisa
------------------------------------------------------
-Mail.be, WebMail and Virtual Office
-http://www.mail.be
+Arne
 
