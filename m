@@ -1,12 +1,10 @@
-From: Lisa Minogue <lminogue@...1892...>
-Message-ID: <10206993.113359.1431677067033.JavaMail.root@...1893...>
-In-Reply-To: <5553C59B.5070905@...2030...>
-References: <55529792.8020708@...2030...>
-	<5553C59B.5070905@...2030...>
-MIME-Version: 1.0
-Date: Fri, 15 May 2015 10:04:27 +0200 (CEST)
-Subject: Re: [Openvpn-devel] OpenVPN and XOR patches
-Reply-To: Lisa Minogue <lminogue@...1892...>
+Date: Fri, 15 May 2015 20:19:54 +0200 (CEST)
+Message-Id: <201505151819.t4FIJsbm026520@...1295...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <1431339554-20553-1-git-send-email-samuli@...515...>
+References: <1431339554-20553-1-git-send-email-samuli@...515...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Properly escape dashes on the
+	man-page
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,33 +13,29 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: Tom Kunz <tkunz@...2030...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: samuli@...515...
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi Tom
+ACK. Your patch has been applied to the master branch.
 
-> ----------------------------------------
-> From: Tom Kunz <tkunz@...2030...>
-> Sent: Wed May 13 23:43:55 CEST 2015
-> To: Lisa Minogue <lminogue@...1892...>
-> Subject: Re: OpenVPN and XOR patches
-> 
-> Hi Lisa,
-> One thing to keep in mind with the Tor/obfsproxy and stunnel, is that once you get into lossy networks, you're going to find ovpn can become unusable.
+commit 2d321609674a916c8cd7bbf0090e0342e90cca36
+Author: Samuli Seppänen
+Date:   Mon May 11 13:19:14 2015 +0300
 
-What's your definition of lossy networks?
+     Properly escape dashes on the man-page
 
-> I've done rigorous testing between various types of tunneling techniques in hostile locations and only udp will have good results.
+     Signed-off-by: Samuli Seppänen <samuli@...515...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1431339554-20553-1-git-send-email-samuli@...515...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/9674
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-Were you physically present in those hostile locations when you were conducting tests on the various tunneling techniques?
 
-By the way, are you a developer for Tor too?
+--
+kind regards,
 
-Regards
+Gert Doering
 
-Lisa
------------------------------------------------------
-Mail.be, WebMail and Virtual Office
-http://www.mail.be
 
