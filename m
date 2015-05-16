@@ -1,10 +1,9 @@
-Date: Fri, 15 May 2015 20:19:54 +0200 (CEST)
-Message-Id: <201505151819.t4FIJsbm026520@...1295...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <1431339554-20553-1-git-send-email-samuli@...515...>
-References: <1431339554-20553-1-git-send-email-samuli@...515...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Properly escape dashes on the
-	man-page
+Date: Sat, 16 May 2015 15:59:50 +0200
+From: Felix Janda <felix.janda@...2031...>
+Message-ID: <20150516134604.GA2302@...2032...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH] Use OPENVPN_ETH_P_* so that
+ <netinet/if_ether.h> is unecessary
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,29 +12,66 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 8bit
-To: samuli@...515...
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net
 
-ACK. Your patch has been applied to the master branch.
+Fixes compilation error on linux with musl libc because of
+conflicting ethhdr declarations in <netinet/if_ether.h> and
+<linux/if_ether.h> which is included from <linux/if_tun.h>
 
-commit 2d321609674a916c8cd7bbf0090e0342e90cca36
-Author: Samuli Seppänen
-Date:   Mon May 11 13:19:14 2015 +0300
+Signed-off-by: Felix Janda <felix.janda@...2031...>
+---
+ configure.ac          | 2 +-
+ src/openvpn/syshead.h | 4 ----
+ src/openvpn/tun.c     | 4 ++--
+ 3 files changed, 3 insertions(+), 7 deletions(-)
 
-     Properly escape dashes on the man-page
-
-     Signed-off-by: Samuli Seppänen <samuli@...515...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1431339554-20553-1-git-send-email-samuli@...515...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/9674
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
-
+diff --git a/configure.ac b/configure.ac
+index 9132468..5dccfbb 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -461,7 +461,7 @@ SOCKET_INCLUDES="
+ "
+ 
+ AC_CHECK_HEADERS(
+-	[net/if.h netinet/ip.h netinet/if_ether.h resolv.h sys/un.h net/if_utun.h sys/kern_control.h],
++	[net/if.h netinet/ip.h resolv.h sys/un.h net/if_utun.h sys/kern_control.h],
+ 	,
+ 	,
+ 	[[${SOCKET_INCLUDES}]]
+diff --git a/src/openvpn/syshead.h b/src/openvpn/syshead.h
+index b898bf2..cf29131 100644
+--- a/src/openvpn/syshead.h
++++ b/src/openvpn/syshead.h
+@@ -214,10 +214,6 @@
+ 
+ #if defined(TARGET_LINUX) || defined (TARGET_ANDROID)
+ 
+-#if defined(HAVE_NETINET_IF_ETHER_H)
+-#include <netinet/if_ether.h>
+-#endif
+-
+ #ifdef HAVE_LINUX_IF_TUN_H
+ #include <linux/if_tun.h>
+ #endif
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index 11a6d71..ce3ed85 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -1856,9 +1856,9 @@ write_tun (struct tuntap* tt, uint8_t *buf, int len)
+       pi.flags = 0;
+ 
+       if(iph->version == 6)
+-	pi.proto = htons(ETH_P_IPV6);
++	pi.proto = htons(OPENVPN_ETH_P_IPV6);
+       else
+-	pi.proto = htons(ETH_P_IP);
++	pi.proto = htons(OPENVPN_ETH_P_IPV4);
+ 
+       vect[0].iov_len = sizeof(pi);
+       vect[0].iov_base = &pi;
+-- 
+2.3.6
 
