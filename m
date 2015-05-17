@@ -1,13 +1,17 @@
-Message-ID: <555893F1.9080207@...1856...>
-Date: Sun, 17 May 2015 15:13:21 +0200
-From: Steffan Karger <steffan@...1856...>
-MIME-Version: 1.0
+Date: Sun, 17 May 2015 19:24:23 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20150517172423.GQ382@...1296...>
 References: <CAEsd45S8+hwK9mB53mVBLO-1NSJp7YE3tx53Am83pzDL+tr8GQ@...278...>
 	<55464DBE.4010203@...1856...>
 	<CAEsd45RoxhHiXGTAQwaPHHPnqfMk=iHjkoJOzeU_WaSU72MKXQ@...278...>
-In-Reply-To: <CAEsd45RoxhHiXGTAQwaPHHPnqfMk=iHjkoJOzeU_WaSU72MKXQ@...278...>
+	<555893F1.9080207@...1856...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="xYEba/cIt2nZJmCG"
+Content-Disposition: inline
+In-Reply-To: <555893F1.9080207@...1856...>
 Subject: Re: [Openvpn-devel] OpenVPN argument parsing of most options
- ignores "extra" parameters
+	ignores "extra" parameters
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,33 +20,53 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: "Jonathan K. Bullard" <jkbullard@...277...>
+To: Steffan Karger <steffan@...1856...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
+--xYEba/cIt2nZJmCG
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
+Hi,
 
-On 04-05-15 15:26, Jonathan K. Bullard wrote:
-> Perhaps it could go into OpenVPN 2.4 but not 2.3? As I understand it,
-> 2.3 is gets security and bug fixes, so many people probably don't test
-> it as thoroughly as a new release; some probably won't test it at all
-> -- those are the ones that you are presumably worried about. When 2.4
-> is released, most people will test it at least cursorily before
-> deploying it. If extra parameters cause a failure, it will be
-> immediately obvious and can be fixed easily.
->
-> Although usually ignoring extra parameters would not cause security
-> problems, to the extent they do, the concept of OpenVPN being "secure
-> by default" is jeopardized by not causing an error. Something like
-> ignoring a "--redirect-gateway def1" -- which would cause traffic to
-> be "leaked" outside of the VPN -- could be considered a security risk.
->
+On Sun, May 17, 2015 at 03:13:21PM +0200, Steffan Karger wrote:
+> That sounds reasonable to me.  However, I tend to be easier in accepting=
+=20
+> (potentially) breaking changes than other community members.  So I think=
+=20
+> it makes sense to put this on the agenda for the next IRC meeting.=20
+> Iirc, the next one should be tomorrow at 20:00 CEST.
 
-That sounds reasonable to me.  However, I tend to be easier in accepting 
-(potentially) breaking changes than other community members.  So I think 
-it makes sense to put this on the agenda for the next IRC meeting. 
-Iirc, the next one should be tomorrow at 20:00 CEST.
++1 :-)
 
--Steffan
+I do not have strong feelings on whether this should be a warning or=20
+a hard error, but it's generally good practice to let the user know about
+"unexpected extra arguments" (or, turned around, totally annoying if=20
+software just ignores stuff on the command line without at least telling=20
+you) - so all for "doing something about it".
+
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--xYEba/cIt2nZJmCG
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQCVAwUBVVjOx6kuBuNlUUl1AQIfIAP/dmHs8JUZFlS4B3fp0AM2ChA2EcQVLLhx
+9YQDuGScHG9gHSjZpK+wGHlyUf5v5YDq4UC6I4DojkOR9BFOoP573lwWtK2CYEmG
+rCEDxTFTkcwvTLlnDB5iLCWAPMdm0pyUVgQTsHFYRRuAfNfi0SX828cf2gT88hRH
+vcXNaH6yrtM=
+=iuEa
+-----END PGP SIGNATURE-----
+
+--xYEba/cIt2nZJmCG--
 
