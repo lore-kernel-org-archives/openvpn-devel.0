@@ -1,7 +1,10 @@
-From: Steffan Karger <steffan@...1856...>
-Date: Mon, 18 May 2015 21:21:09 +0200
-Message-Id: <1431976869-4948-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH] Updated manpage for --rport and --lport
+Date: Mon, 18 May 2015 21:31:00 +0200 (CEST)
+Message-Id: <201505181931.t4IJV000001043@...1295...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <1431976869-4948-1-git-send-email-steffan@...1856...>
+References: <1431976869-4948-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Updated manpage for --rport and
+	--lport
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,54 +15,32 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Robert Fischer <ml-openvpn@...2035...>
+To: Steffan Karger <steffan@...1856...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-[SK: v2, patch taken from trac #127 and updated to current master branch]
+ACK.
 
-Signed-off-by: Robert Fischer <ml-openvpn@...2035...>
-Signed-off-by: Steffan Karger <steffan@...1856...>
----
- doc/openvpn.8 | 16 +++++++++++++---
- 1 file changed, 13 insertions(+), 3 deletions(-)
+Your patch has been applied to the master and release/2.3 branch.
 
-diff --git a/doc/openvpn.8 b/doc/openvpn.8
-index 23cc789..b9eee0d 100644
---- a/doc/openvpn.8
-+++ b/doc/openvpn.8
-@@ -670,18 +670,28 @@ peer on its new IP address.
- .\"*********************************************************
- .TP
- .B \-\-port port
--TCP/UDP port number or port name for both local and remote.  The current
-+TCP/UDP port number or port name for both local and remote (sets both
-+.B \-\-lport
-+and
-+.B \-\-rport
-+options to given port).  The current
- default of 1194 represents the official IANA port number
- assignment for OpenVPN and has been used since version 2.0-beta17.
- Previous versions used port 5000 as the default.
- .\"*********************************************************
- .TP
- .B \-\-lport port
--TCP/UDP port number or name for bind.
-+Set local TCP/UDP port number or name.  Cannot be used together with
-+.B \-\-nobind
-+option.
- .\"*********************************************************
- .TP
- .B \-\-rport port
--TCP/UDP port number or name for remote.
-+Set TCP/UDP port number or name used by the
-+.B \-\-remote
-+option. The port can also be set directly using the
-+.B \-\-remote
-+option.
- .\"*********************************************************
- .TP
- .B \-\-bind [ipv6only]
--- 
-2.1.4
+commit d3eacb2d6ebb8a42506343c54e00c72252d683f8 (master)
+commit f1fa7e35cf7c7a11c27031c7eb35c3e730a450b6 (release/2.3)
+
+Author: Robert Fischer
+Date:   Mon May 18 21:21:09 2015 +0200
+
+     Updated manpage for --rport and --lport
+
+     Signed-off-by: Robert Fischer <ml-openvpn@...2035...>
+     Signed-off-by: Steffan Karger <steffan@...1856...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1431976869-4948-1-git-send-email-steffan@...1856...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/9701
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
