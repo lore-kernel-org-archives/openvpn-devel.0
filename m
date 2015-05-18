@@ -1,9 +1,12 @@
-Message-ID: <55599C34.4040300@...515...>
-Date: Mon, 18 May 2015 11:00:52 +0300
-From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
+Message-ID: <5559A4E9.7070004@...515...>
+Date: Mon, 18 May 2015 11:38:01 +0300
+From: =?windows-1252?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] Topics for today's (Monday,
-	18th May 2015) community meeting
+References: <1431871402.459760695@...2033...>
+In-Reply-To: <1431871402.459760695@...2033...>
+Content-Type: multipart/alternative;
+	boundary="------------030007010704020808050004"
+Subject: [Openvpn-devel] Fwd: monit alert -- Resource limit matched rootfs
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,36 +15,100 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-15"; format=flowed
-Content-Transfer-Encoding: quoted-printable
 To: openvpn-devel@lists.sourceforge.net
+
+This is a multi-part message in MIME format.
+--------------030007010704020808050004
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
 
 Hi,
 
-We're going to have an IRC meeting today, 18th May, starting at 20:00=20
-CEST (18:00 UTC) on #openvpn-devel <at> irc.freenode.net. Current topic=20
-list along with basic information is here:
+Diskspace on git.openvpn.in is running out real soon...
 
-<https://community.openvpn.net/openvpn/wiki/Topics-2015-05-18>
+Samuli
 
-If you have any other things you'd like to bring up, respond to this=20
-mail, send me mail privately or add them to the list yourself.
 
-In case you can't attend the meeting, please feel free to make comments=20
-on the topics by responding to this email or to the summary email sent=20
-after the meeting. Whenever possible, we'll also respond to existing,=20
-related email threads.
+-------- Messaggio Inoltrato --------
+Oggetto: 	monit alert -- Resource limit matched rootfs
+Data: 	Sun, 17 May 2015 14:03:22 GMT
+Mittente: 	monit@...2033...
+A: 	status@...2034...
 
-NOTE: It's required to use a registered Freenode IRC nickname to join=20
-#openvpn-devel - look here for details:
 
-<https://community.openvpn.net/openvpn/wiki/GettingHelp#DeveloperIRCchannel>
 
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
+Resource limit matched Service rootfs
 
-irc freenode net: mattock
+	Date:        Sun, 17 May 2015 14:03:22
+	Action:      alert
+	Host:        git.openvpn.in
+	Description: space usage 97.6% matches resource limit [space usage>90.0%]
 
+Your faithful employee,
+Monit
+
+
+
+
+--------------030007010704020808050004
+Content-Type: text/html; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+
+<html>
+  <head>
+
+    <meta http-equiv="content-type" content="text/html; charset=windows-1252">
+  </head>
+  <body bgcolor="#FFFFFF" text="#000000">
+    Hi,<br>
+    <br>
+    Diskspace on git.openvpn.in is running out real soon...<br>
+    <br>
+    Samuli<br>
+    <div class="moz-forward-container"><br>
+      <br>
+      -------- Messaggio Inoltrato --------
+      <table class="moz-email-headers-table" cellspacing="0" border="0"
+        cellpadding="0">
+        <tbody>
+          <tr>
+            <th align="RIGHT" nowrap="nowrap" valign="BASELINE">Oggetto:
+            </th>
+            <td>monit alert -- Resource limit matched rootfs</td>
+          </tr>
+          <tr>
+            <th align="RIGHT" nowrap="nowrap" valign="BASELINE">Data: </th>
+            <td>Sun, 17 May 2015 14:03:22 GMT</td>
+          </tr>
+          <tr>
+            <th align="RIGHT" nowrap="nowrap" valign="BASELINE">Mittente:
+            </th>
+            <td><a class="moz-txt-link-abbreviated" href="mailto:monit@...2033...">monit@...2033...</a></td>
+          </tr>
+          <tr>
+            <th align="RIGHT" nowrap="nowrap" valign="BASELINE">A: </th>
+            <td><a class="moz-txt-link-abbreviated" href="mailto:status@...2034...">status@...2034...</a></td>
+          </tr>
+        </tbody>
+      </table>
+      <br>
+      <br>
+      <pre>Resource limit matched Service rootfs 
+
+	Date:        Sun, 17 May 2015 14:03:22
+	Action:      alert
+	Host:        git.openvpn.in
+	Description: space usage 97.6% matches resource limit [space usage&gt;90.0%]
+
+Your faithful employee,
+Monit
+
+</pre>
+      <br>
+    </div>
+    <br>
+  </body>
+</html>
+
+--------------030007010704020808050004--
 
