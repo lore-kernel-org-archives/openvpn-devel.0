@@ -1,10 +1,13 @@
-MIME-Version: 1.0
-In-Reply-To: <1432404098-29401-1-git-send-email-gert@...1296...>
+Date: Sat, 23 May 2015 21:10:47 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20150523191047.GH382@...1296...>
 References: <555BF270.3090706@...1147...>
 	<1432404098-29401-1-git-send-email-gert@...1296...>
-From: Steffan Karger <steffan@...1856...>
-Date: Sat, 23 May 2015 20:28:15 +0200
-Message-ID: <CAA1Abx+u9fThXJGvMw214w_8rgQnXUj7qMZvLQpD30V_o36E4g@...278...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="GIrCAcOpC7mETZ4T"
+Content-Disposition: inline
+In-Reply-To: <1432404098-29401-1-git-send-email-gert@...1296...>
 Subject: Re: [Openvpn-devel] [PATCH] repair --dev null breakage caused by
 	db950be85d37
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -15,65 +18,55 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
-ACK
+--GIrCAcOpC7mETZ4T
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-On Sat, May 23, 2015 at 8:01 PM, Gert Doering <gert@...1296...> wrote:
+Hi,
+
+On Sat, May 23, 2015 at 08:01:38PM +0200, Gert Doering wrote:
 > "make check" self-test was broken after commit db950be85d37 due to
 > do_ifconfig_setenv() not checking whether tt->did_ifconfig_setup
 > was set (which isn't, for "dev null" type setups)
->
-> Signed-off-by: Gert Doering <gert@...1296...>
-> ---
->  src/openvpn/tun.c | 24 ++++++++++++++----------
->  1 file changed, 14 insertions(+), 10 deletions(-)
->
-> diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-> index 9e853c0..e479d4d 100644
-> --- a/src/openvpn/tun.c
-> +++ b/src/openvpn/tun.c
-> @@ -403,23 +403,27 @@ void
->  do_ifconfig_setenv (const struct tuntap *tt, struct env_set *es)
->  {
->      struct gc_arena gc = gc_new ();
-> -    bool tun = is_tun_p2p (tt);
->      const char *ifconfig_local = print_in_addr_t (tt->local, 0, &gc);
->      const char *ifconfig_remote_netmask = print_in_addr_t (tt->remote_netmask, 0, &gc);
->
->      /*
->       * Set environmental variables with ifconfig parameters.
->       */
-> -    setenv_str (es, "ifconfig_local", ifconfig_local);
-> -    if (tun)
-> +    if (tt->did_ifconfig_setup)
->      {
-> -       setenv_str (es, "ifconfig_remote", ifconfig_remote_netmask);
-> -    }
-> -    else
-> -    {
-> -       const char *ifconfig_broadcast = print_in_addr_t (tt->broadcast, 0, &gc);
-> -       setenv_str (es, "ifconfig_netmask", ifconfig_remote_netmask);
-> -       setenv_str (es, "ifconfig_broadcast", ifconfig_broadcast);
-> +       bool tun = is_tun_p2p (tt);
-> +
-> +       setenv_str (es, "ifconfig_local", ifconfig_local);
-> +       if (tun)
-> +       {
-> +           setenv_str (es, "ifconfig_remote", ifconfig_remote_netmask);
-> +       }
-> +       else
-> +       {
-> +           const char *ifconfig_broadcast = print_in_addr_t (tt->broadcast, 0, &gc);
-> +           setenv_str (es, "ifconfig_netmask", ifconfig_remote_netmask);
-> +           setenv_str (es, "ifconfig_broadcast", ifconfig_broadcast);
-> +       }
->      }
->
->      if (tt->did_ifconfig_ipv6_setup)
-> --
-> 2.3.6
+
+Applied to master and release/2.3 branches.  Tested with "make check".
+
+commit 970c4bd2e473f625699bd56db44c1970a9e10ed9 (master)
+commit 7b285112d22f74c19dd5b1476ddbf1bd83339c84 (release/3.)
+
+Author: Gert Doering <gert@...1296...>
+Date:   Sat May 23 19:35:05 2015 +0200
+
+    repair --dev null breakage caused by db950be85d37
+    Signed-off-by: Gert Doering <gert@...1296...>
+    Acked-by: Steffan Karger <steffan@...1856...>
+    Message-Id: <1432404098-29401-1-git-send-email-gert@...1296...>
+    URL: http://article.gmane.org/gmane.network.openvpn.devel/9718
+
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--GIrCAcOpC7mETZ4T
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQCVAwUBVWDQt6kuBuNlUUl1AQK5GwP+KgqS1bRqkFybDnreE+7LXw174+uTJYCF
+9lOgRp4gw0GvH/YnTvrFVOWk3juvCPsFST8LF5bEHGYbQ6Lxylad0yuIC4y7L8o8
+igasIzSFaLDZ5ErNBzLv/sMTqgvyl6bWy7uZyHNq4ZumUbd3J2tdcqcHoO7cgn7W
+wrAW0JhDwpg=
+=xhMX
+-----END PGP SIGNATURE-----
+
+--GIrCAcOpC7mETZ4T--
 
