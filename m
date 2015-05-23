@@ -1,8 +1,10 @@
-MIME-Version: 1.0
-From: "Jonathan K. Bullard" <jkbullard@...277...>
-Date: Sat, 23 May 2015 15:33:21 -0400
-Message-ID: <CAEsd45SHoEtahdVT95a+N-zmjRG4nH3QPxBZoGpnh1pykjSU4A@...278...>
-Subject: [Openvpn-devel] [Patch] Fix null pointer dereference in options.c
+Date: Sat, 23 May 2015 21:36:47 +0200 (CEST)
+Message-Id: <201505231936.t4NJalGd023780@...1295...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <1430162841-5840-1-git-send-email-gert@...1296...>
+References: <1430162841-5840-1-git-send-email-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: assume res_init() is always
+	there.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,57 +13,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-Cc: James Yonan <james@...515...>
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-(At Gert's request, I am posting this to openvpn-devel.)
+Lazy-ACKed - tested on almost all supported OSes, no objections for nearly
+four weeks (and general support in the discussion beforehand).
 
-This patch fixes a null pointer dereference in options.c.
+Patch has been applied to the master and release/2.3 branches.
 
-Below are versions for openvpn-master and openvpn-2.3; they differ
-only in the line number reference.
+commit 403dc434d245e5df5ae262935aa2e7364547e260 (master)
+commit ae9aff25c5a74e770a29a3a675f5b8f8dd8c5bf8 (release/2.3)
 
-================
-2.3 branch
+Author: Gert Doering
+Date:   Mon Apr 27 21:27:21 2015 +0200
 
-diff -U 4 -r openvpn-release-2.3/src/openvpn/options.c
-openvpn-fix-peer-id-2.3/src/openvpn/options.c
---- openvpn-release-2.3/src/openvpn/options.c 2015-05-18
-12:30:14.000000000 -0400
-+++ openvpn-fix-peer-id-2.3/src/openvpn/options.c 2015-05-21
-06:52:38.000000000 -0400
-@@ -7058,9 +7058,9 @@
-       VERIFY_PERMISSION (OPT_P_GENERAL);
-       options->persist_config = true;
-       options->persist_mode = 1;
-     }
--  else if (streq (p[0], "peer-id"))
-+  else if (streq (p[0], "peer-id") && p[1])
-     {
-       VERIFY_PERMISSION (OPT_P_PEER_ID);
-       options->use_peer_id = true;
-       options->peer_id = atoi(p[1]);
+     assume res_init() is always there.
+
+     Signed-off-by: Gert Doering <gert@...1296...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1430162841-5840-1-git-send-email-gert@...1296...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/9614
 
 
-================
-Master branch
+--
+kind regards,
 
-diff -U4 -r openvpn-master/src/openvpn/options.c
-openvpn-fix-peer-id-master/src/openvpn/options.c
---- openvpn-master/src/openvpn/options.c 2015-05-18 12:25:46.000000000 -0400
-+++ openvpn-fix-peer-id-master/src/openvpn/options.c 2015-05-20
-23:38:41.000000000 -0400
-@@ -7043,9 +7043,9 @@
-       VERIFY_PERMISSION (OPT_P_GENERAL);
-       options->persist_config = true;
-       options->persist_mode = 1;
-     }
--  else if (streq (p[0], "peer-id"))
-+  else if (streq (p[0], "peer-id") && p[1])
-     {
-       VERIFY_PERMISSION (OPT_P_PEER_ID);
-       options->use_peer_id = true;
-       options->peer_id = atoi(p[1]);
+Gert Doering
+
 
