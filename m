@@ -1,12 +1,10 @@
-Message-ID: <555F9165.7020606@...1147...>
-Date: Fri, 22 May 2015 22:28:21 +0200
-From: Jan Just Keijser <janjust@...1147...>
-MIME-Version: 1.0
+Date: Sat, 23 May 2015 13:50:16 +0200 (CEST)
+Message-Id: <201505231150.t4NBoG61011612@...1295...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <555BF270.3090706@...1147...>
 References: <555BF270.3090706@...1147...>
-	<1432319769-26663-1-git-send-email-gert@...1296...>
-In-Reply-To: <1432319769-26663-1-git-send-email-gert@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH] Document differences between
- --up-restart and --up in openvpn.8
+Subject: [Openvpn-devel] [PATCH applied] Re: patch for bug #93: up-restart
+	env vars
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,39 +13,38 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Jan Just Keijser <janjust@...1147...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-On 22/05/15 20:36, Gert Doering wrote:
-> See trac #93 and the discussion starting with <555BF270.3090706@...1147...>
-> on the openvpn-devel mailing list.
->
-> Signed-off-by: Gert Doering <gert@...1296...>
-> ---
->   doc/openvpn.8 | 6 ++++++
->   1 file changed, 6 insertions(+)
->
-> diff --git a/doc/openvpn.8 b/doc/openvpn.8
-> index b9eee0d..ef87bb7 100644
-> --- a/doc/openvpn.8
-> +++ b/doc/openvpn.8
-> @@ -1817,6 +1817,12 @@ has been specified, the up script will be called with
->   .I restart
->   as the last parameter.
->   
-> +NOTE: on restart, OpenVPN will not pass the full set of environment
-> +variables to the script.  Namely, everything related to routing and
-> +gateways will not be passed, as nothing needs to be done anyway - all
-> +the routing setup is already in place.  Additionally, the up\-restart
-> +script will run with the downgraded UID/GID settings (if configured).
-> +
->   The following standalone example shows how the
->   .B \-\-up
->   script can be called in both an initialization and restart context.
+ACK.
 
-ACK
+Your patch has been applied to the master and release/2.3 branches.
 
-JJK
+I have taken a few liberties here - namely, merging the openvpn.8 patch
+into yours as it's sort sort of "one big change" anyway, and reformatting
+do_ifconfig_setenv() according to our new and improved coding style
+(it didn't follow the old one or the new one, and if I reformat it 
+anyway, go for the new one).  The code is unchanged, just indenting.
+
+commit db950be85d37eab40d8fffe0bc2060059f8a7e10 (master)
+commit 30256bede8f7ef6c82f1c2ed0d9f6c2177002926 (release/2.3)
+
+Author: Jan Just Keijser
+Date:   Wed May 20 04:33:20 2015 +0200
+
+     patch for bug #93: up-restart env vars
+
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <555BF270.3090706@...1147...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/9705
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
