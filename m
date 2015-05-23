@@ -1,8 +1,10 @@
-From: Steffan Karger <steffan@...1856...>
-Date: Sat, 23 May 2015 15:02:25 +0200
-Message-Id: <1432386145-15045-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH] Re-read auth-user-pass file on (re)connect
-	if required
+From: Gert Doering <gert@...1296...>
+Date: Sat, 23 May 2015 20:01:38 +0200
+Message-Id: <1432404098-29401-1-git-send-email-gert@...1296...>
+In-Reply-To: <555BF270.3090706@...1147...>
+References: <555BF270.3090706@...1147...>
+Subject: [Openvpn-devel] [PATCH] repair --dev null breakage caused by
+	db950be85d37
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,75 +17,58 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Fixes trac #225 ('--auth-user-pass FILE' and '--auth-nocache' problem).
+"make check" self-test was broken after commit db950be85d37 due to
+do_ifconfig_setenv() not checking whether tt->did_ifconfig_setup
+was set (which isn't, for "dev null" type setups)
 
-This patch is based on the changes suggested by ye_olde_iron in the trac
-ticket.  Also added a note to the manpage to inform people to use
-absolute paths when combining --auth-user-pass file and --auth-nocache.
-
-Signed-off-by: Steffan Karger <steffan@...1856...>
+Signed-off-by: Gert Doering <gert@...1296...>
 ---
- doc/openvpn.8            | 3 +++
- src/openvpn/init.c       | 1 +
- src/openvpn/ssl.c        | 4 ++--
- src/openvpn/ssl_common.h | 1 +
- 4 files changed, 7 insertions(+), 2 deletions(-)
+ src/openvpn/tun.c | 24 ++++++++++++++----------
+ 1 file changed, 14 insertions(+), 10 deletions(-)
 
-diff --git a/doc/openvpn.8 b/doc/openvpn.8
-index b9eee0d..e1e0af2 100644
---- a/doc/openvpn.8
-+++ b/doc/openvpn.8
-@@ -4780,6 +4780,9 @@ when OpenVPN needs a username/password, it will prompt for input
- from stdin, which may be multiple times during the duration of an
- OpenVPN session.
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index 9e853c0..e479d4d 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -403,23 +403,27 @@ void
+ do_ifconfig_setenv (const struct tuntap *tt, struct env_set *es)
+ {
+     struct gc_arena gc = gc_new ();
+-    bool tun = is_tun_p2p (tt);
+     const char *ifconfig_local = print_in_addr_t (tt->local, 0, &gc);
+     const char *ifconfig_remote_netmask = print_in_addr_t (tt->remote_netmask, 0, &gc);
  
-+When using \-\-auth\-nocache in combination with a user/password file
-+and \-\-chroot or \-\-daemon, make sure to use an absolute path.
-+
- This directive does not affect the
- .B \-\-http\-proxy
- username/password.  It is always cached.
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 87c2211..67caec7 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -2242,6 +2242,7 @@ do_init_crypto_tls (struct context *c, const unsigned int flags)
-   to.tmp_dir = options->tmp_dir;
-   if (options->ccd_exclusive)
-     to.client_config_dir_exclusive = options->client_config_dir;
-+  to.auth_user_pass_file = options->auth_user_pass_file;
- #endif
- 
- #ifdef ENABLE_X509_TRACK
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 4ef715a..bc17fd0 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -1921,9 +1921,9 @@ key_method_2_write (struct buffer *buf, struct tls_session *session)
-   if (auth_user_pass_enabled)
+     /*
+      * Set environmental variables with ifconfig parameters.
+      */
+-    setenv_str (es, "ifconfig_local", ifconfig_local);
+-    if (tun)
++    if (tt->did_ifconfig_setup)
      {
- #ifdef ENABLE_CLIENT_CR
--      auth_user_pass_setup (NULL, session->opt->sci);
-+      auth_user_pass_setup (session->opt->auth_user_pass_file, session->opt->sci);
- #else
--      auth_user_pass_setup (NULL, NULL);
-+      auth_user_pass_setup (session->opt->auth_user_pass_file, NULL);
- #endif
-       if (!write_string (buf, auth_user_pass.username, -1))
- 	goto error;
-diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
-index bb1c1c2..95cd2f7 100644
---- a/src/openvpn/ssl_common.h
-+++ b/src/openvpn/ssl_common.h
-@@ -277,6 +277,7 @@ struct tls_options
-   const char *auth_user_pass_verify_script;
-   bool auth_user_pass_verify_script_via_file;
-   const char *tmp_dir;
-+  const char *auth_user_pass_file;
+-	setenv_str (es, "ifconfig_remote", ifconfig_remote_netmask);
+-    }
+-    else
+-    {
+-	const char *ifconfig_broadcast = print_in_addr_t (tt->broadcast, 0, &gc);
+-	setenv_str (es, "ifconfig_netmask", ifconfig_remote_netmask);
+-	setenv_str (es, "ifconfig_broadcast", ifconfig_broadcast);
++	bool tun = is_tun_p2p (tt);
++
++	setenv_str (es, "ifconfig_local", ifconfig_local);
++	if (tun)
++	{
++	    setenv_str (es, "ifconfig_remote", ifconfig_remote_netmask);
++	}
++	else
++	{
++	    const char *ifconfig_broadcast = print_in_addr_t (tt->broadcast, 0, &gc);
++	    setenv_str (es, "ifconfig_netmask", ifconfig_remote_netmask);
++	    setenv_str (es, "ifconfig_broadcast", ifconfig_broadcast);
++	}
+     }
  
-   /* use the client-config-dir as a positive authenticator */
-   const char *client_config_dir_exclusive;
+     if (tt->did_ifconfig_ipv6_setup)
 -- 
-2.1.4
+2.3.6
 
 
