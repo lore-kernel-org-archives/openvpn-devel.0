@@ -1,9 +1,9 @@
-Date: Sun, 24 May 2015 09:09:26 +0200 (CEST)
-Message-Id: <201505240709.t4O79Qv5024488@...1295...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1432414047-28674-1-git-send-email-gert@...1296...>
-References: <1432414047-28674-1-git-send-email-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Correct note about DNS
+Date: Sun, 24 May 2015 09:56:12 +0200
+Message-Id: <1432454172-1318-1-git-send-email-gert@...1296...>
+In-Reply-To: <1432414613-29015-1-git-send-email-gert@...1296...>
+References: <1432414613-29015-1-git-send-email-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH (master) v2] Correct note about DNS
 	randomization in openvpn.8
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -15,26 +15,39 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Patch has been applied to the release/2.3 branch.
+Commit 4880739c17b502d00a removed DNS randomization, and the dual-stack
+patches for 2.4 completely changed the getaddrinfo() result handling again,
+but neither fact ever made it into the man page.
 
-commit 1f5668671992dced602e89634e1890711877fdc4
-Author: Gert Doering
-Date:   Sat May 23 22:47:27 2015 +0200
+Trac #411
 
-     Correct note about DNS randomization in openvpn.8
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+ doc/openvpn.8 | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-     Signed-off-by: Gert Doering <gert@...1296...>
-     Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <1432414047-28674-1-git-send-email-gert@...1296...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/9726
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/doc/openvpn.8 b/doc/openvpn.8
+index 67e6ddd..07219c3 100644
+--- a/doc/openvpn.8
++++ b/doc/openvpn.8
+@@ -268,9 +268,11 @@ not match
+ If
+ .B host
+ is a DNS name which resolves to multiple IP addresses,
+-one will be randomly
+-chosen, providing a sort of basic load-balancing and
+-failover capability.
++OpenVPN will try them in the order that the system getaddrinfo()
++presents them, so priorization and DNS randomization is done
++by the system library.  Unless an IP version is forced by the
++protocol specification (4/6 suffix), OpenVPN will try both IPv4
++and IPv6 addresses, in the order getaddrinfo() returns them.
+ .\"*********************************************************
+ .TP
+ .B \-\-remote\-random\-hostname
+-- 
+2.3.6
 
 
