@@ -1,5 +1,5 @@
-Date: Sun, 24 May 2015 13:43:12 +0200 (CEST)
-Message-Id: <201505241143.t4OBhC0P003285@...1295...>
+Date: Sun, 24 May 2015 13:43:15 +0200 (CEST)
+Message-Id: <201505241143.t4OBhFvW018456@...1295...>
 From: Gert Doering <gert@...1296...>
 In-Reply-To: <55619DC4.2020108@...1856...>
 References: <55619DC4.2020108@...1856...>
@@ -18,9 +18,9 @@ Content-Transfer-Encoding: 8bit
 To: Steffan Karger <steffan@...1856...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master branch.
+Your patch has been applied to the release/2.3 branch.
 
-commit f4684ff2b5622a26c7c2e620e789b7dca8cfd778
+commit 1009df7d51f3fb7f898b2155aa62b8f0336e49e6
 Author: Steffan Karger
 Date:   Sun May 24 11:45:40 2015 +0200
 
