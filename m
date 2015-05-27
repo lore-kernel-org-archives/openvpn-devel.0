@@ -1,14 +1,14 @@
-Message-ID: <5565B65A.1000501@...1114...>
-Date: Wed, 27 May 2015 14:19:38 +0200
-From: David Sommerseth <openvpn.list@...1114...>
-MIME-Version: 1.0
+Date: Wed, 27 May 2015 20:41:25 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20150527184124.GT382@...1296...>
 References: <20150524193011.GK382@...1296...>
-In-Reply-To: <20150524193011.GK382@...1296...>
+	<5565B65A.1000501@...1114...>
+Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="8Oip3gnRoiWlsUcOwmFwPODkCgRjWBGsG"
+	protocol="application/pgp-signature"; boundary="1nWzwthe/g5xaf/W"
+Content-Disposition: inline
+In-Reply-To: <5565B65A.1000501@...1114...>
 Subject: Re: [Openvpn-devel] rfd: 'serial-tests' automake option
-Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,90 +17,71 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---8Oip3gnRoiWlsUcOwmFwPODkCgRjWBGsG
-Content-Type: text/plain; charset="windows-1252"
+--1nWzwthe/g5xaf/W
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-On 24/05/15 21:30, Gert Doering wrote:
-> Hi,
->=20
-> somewhere between automake-1.11 and automake-1.14 the default for handling
-> "make check" changed from "serial-tests" to "parallel-tests" - which=20
-> sounds harmless, but has the interesting side effect of hiding the output
-> of all (potentially parallel-run) test scripts until the summary at the
-> end, and even then, only printing the summary, not the detail output.
->=20
-> I can see that this looks much more pretty (and colours, wooh!), but
-> for my day-to-day regression testing and for analyzing buildbot failures,
-> this just adds extra steps to figure out what it is doing right now, and
-> where and why it failed this time - especially in the buildbot case, the
-> difference is "the reason is right in the mail" vs "I need to login to
-> the buildbot machine, go to the right build directory (of many), and=20
-> grab the log file from there".
->=20
->=20
-> Fortunately, there is an automake option for this, which I'd propose to
-> enable... (well hidden inside "info automake-1.14" -> "Options")
->=20
-> diff --git a/tests/Makefile.am b/tests/Makefile.am
-> index b7980e0..02fa392 100644
-> --- a/tests/Makefile.am
-> +++ b/tests/Makefile.am
-> @@ -9,6 +9,8 @@
->  #  Copyright (C) 2006-2012 Alon Bar-Lev <alon.barlev@...277...>
->  #
->=20=20
-> +AUTOMAKE_OPTIONS =3D serial-tests
-> +
->  MAINTAINERCLEANFILES =3D \
->         $(srcdir)/Makefile.in
->=20=20
->=20
-> ... which brings back the old behaviour.
->=20
-> I'm not sure whether it can be passed on an "autoreconf -vif" command
-> line, and if yes, how, but I presume that really nobody who bothers to
-> run "make check" will be bothered by the normal test output - and especia=
-lly
-> nobody who bothers to set up a t_client.rc test rig in the first place...
->=20
-> But I'm open for discussion and alternative suggestions on this.
->=20
+Hi,
 
-This makes a lot of sense to me.  Our project doesn't really benefit in
-general of running our tests parallel.
+On Wed, May 27, 2015 at 02:19:38PM +0200, David Sommerseth wrote:
+> This makes a lot of sense to me.  Our project doesn't really benefit in
+> general of running our tests parallel.
+>=20
+> This gets an ACK from me.  I just tested your change locally, and it
+> seems to work very well.=20=20
 
-This gets an ACK from me.  I just tested your change locally, and it
-seems to work very well.  And from what I can grasp from the automake
-documentation [1], this seems safe for us to do.
+Thanks :-)  (and of *course* I tested this before posting...  sometimes I
+actually remember to run "make test" before pushing out broken commits...
+*ahem*)
+
+> And from what I can grasp from the automake
+> documentation [1], this seems safe for us to do.
+>=20
+> [1]
+> <https://www.gnu.org/software/automake/manual/html_node/Serial-Test-Harne=
+ss.html>
+
+Thanks for this pointer - while the server seems to be down right now, I've
+included the URL in the commit.
+
+commit fc03ca9d13e35c40bdf1c3c676db2adf48c60223 (master)
+commit c196ea922755bb25f9837080d562ef4d3495999f (release/2.3)
+
+Author: Gert Doering <gert@...1296...>
+Date:   Wed May 27 20:31:38 2015 +0200
+
+    Enforce "serial-tests" behaviour for tests/Makefile
+
+    Signed-off-by: Gert Doering <gert@...1296...>
+    Message-ID: <20150524193011.GK382@...1296...>
+    URL: http://article.gmane.org/gmane.network.openvpn.devel/9738
+    Acked-by: David Sommerseth <openvpn.list@...1114...>
 
 
-[1]
-<https://www.gnu.org/software/automake/manual/html_node/Serial-Test-Harness=
-.html>
 
 --=20
-kind regards,
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-David Sommerseth
-
-
-
---8Oip3gnRoiWlsUcOwmFwPODkCgRjWBGsG
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+--1nWzwthe/g5xaf/W
+Content-Type: application/pgp-signature
+Content-Disposition: inline
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
+Version: GnuPG v1
 
-iEYEARECAAYFAlVltlsACgkQDC186MBRfrol1QCfUUzvkbjIYkrwGsn4hymA+2sX
-7rwAoLGhEYqe2xVlUye6su4J2kz1t01S
-=tiN1
+iQCVAwUBVWYP1KkuBuNlUUl1AQL6pQP9GCnA084PWEib2CIZyi8Ja8U2LFbPFduV
+NuLkhNviGuQ58YcZR1tEBsp5zyY7gT6F1wuaNjOiodphAPzFyhBPNKlnMR07Zp0y
+u6r8GjQzaG6uEVPQdwaxXHlt7m6rAwd39eE9AjrISgmTeGLTOeVMj/VJIFyboeWP
+4PaPHHQXm1k=
+=6HGd
 -----END PGP SIGNATURE-----
 
---8Oip3gnRoiWlsUcOwmFwPODkCgRjWBGsG--
+--1nWzwthe/g5xaf/W--
 
