@@ -1,11 +1,9 @@
-Date: Sun, 31 May 2015 14:03:27 +0200
+Date: Sun, 31 May 2015 14:21:32 +0200 (CEST)
+Message-Id: <201505311221.t4VCLWXp005455@...1295...>
 From: Gert Doering <gert@...1296...>
-Message-ID: <20150531120327.GE382@...1296...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="NRg0qHkDgHfQnopc"
-Content-Disposition: inline
-Subject: [Openvpn-devel] trac#261 / fix for --redirect-private
+In-Reply-To: <1429540256-4906-1-git-send-email-yegorslists@...1030...>
+References: <1429540256-4906-1-git-send-email-yegorslists@...1030...>
+Subject: [Openvpn-devel] [PATCH applied] Re: cert_data: fix memory leak
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,77 +12,34 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Yegor Yefremov <yegorslists@...1030...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---NRg0qHkDgHfQnopc
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Your patch has been applied to the master branch.
 
-Hi,
+Apologies for overlooking patch and ACK on the list - dunno what happened,
+I just saved both mails to my "done!" folder, without actually merging...
+(which might explain my somewhat confused replies later, sorry again)
 
-the following patch was posted to trac#261, and I intend to ACK it
-(patches to track are a bit complicated regarding our standard policy
-and --author :-/ - but it's simple enough, and while a very esoteric
-corner case, fixing a real bug :-) - namely, --redirect-private in
-combination with --dev tap)
+commit 7d30696ac51aa9649f2290ada2c0fb5865cfe859 (master)
 
-Specifically, --redirect-private does half the work of --redirect-gateway,
-namely "install a host route to the VPN server via the current default
-gateway", but not the actual "... and then redirect everything else into
-the VPN".  This can be useful if you push the same private network that
-is used at the client site, but do *not* want to push a default route.
+Author: Yegor Yefremov
+Date:   Mon Apr 20 16:30:56 2015 +0200
 
-This normally works, unless used in tap mode with routes coming from a DHCP
-server, where it complains about missing --route-gateway, which isn't
-actually needed for *this* part of the work.
+     cert_data: fix memory leak
 
-gert
+     Signed-off-by: Yegor Yefremov <yegorslists@...1030...>
+     Acked-by: Vasily Kulikov <segoon@...2008...>
+     Message-Id: <1429540256-4906-1-git-send-email-yegorslists@...1030...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/9600
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
-diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index dd69d8e..df80286 100644
-Index: src/openvpn/route.c
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
---- a/src/openvpn/route.c
-+++ b/src/openvpn/route.c
-@@ -837,7 +837,7 @@ redirect_default_route_to_vpn (struct route_list *rl, c=
-onst struct tuntap *tt, u
-=20
-   if ( rl && rl->flags & RG_ENABLE )
-     {
--      if (!(rl->spec.flags & RTSA_REMOTE_ENDPOINT))
-+      if (!(rl->spec.flags & RTSA_REMOTE_ENDPOINT) && (rl->flags & RG_RERO=
-UTE_GW))
-         {
-           msg (M_WARN, "%s VPN gateway parameter (--route-gateway or --ifc=
-onfig) is missing", err);
-         }
+--
+kind regards,
 
+Gert Doering
 
-
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---NRg0qHkDgHfQnopc
-Content-Type: application/pgp-signature
-Content-Disposition: inline
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQCVAwUBVWr4jqkuBuNlUUl1AQLXxAQAqxXzras92nPG7AaUQxDta3voLZC3yqpg
-y/ATtxvJ/0koDzJrqidvwTmmvd9sRIr5olXfYUs4ulENvLohU6mipgTq2HeqNg3K
-byAq0wsRRaaYmFfKCAvO++kwi8BpmM3l+NdpffKSCFztg8yuFMnV7kd+XnZmQuoc
-mzal58+PgEg=
-=zLM+
------END PGP SIGNATURE-----
-
---NRg0qHkDgHfQnopc--
 
