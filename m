@@ -1,9 +1,8 @@
-Date: Sun, 31 May 2015 14:21:32 +0200 (CEST)
-Message-Id: <201505311221.t4VCLWXp005455@...1295...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1429540256-4906-1-git-send-email-yegorslists@...1030...>
-References: <1429540256-4906-1-git-send-email-yegorslists@...1030...>
-Subject: [Openvpn-devel] [PATCH applied] Re: cert_data: fix memory leak
+Date: Sun, 31 May 2015 15:59:09 +0200
+Message-Id: <1433080749-6892-1-git-send-email-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH] Move res_init() call to inner
+	openvpn_getaddrinfo() loop
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,32 +13,50 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Yegor Yefremov <yegorslists@...1030...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master branch.
+A non-working nameserver in /etc/resolv.conf could lead to endless
+loops inside openvpn_getaddrinfo(), because many systems will only
+pick up changes to resolv.conf if res_init() is called again.
 
-Apologies for overlooking patch and ACK on the list - dunno what happened,
-I just saved both mails to my "done!" folder, without actually merging...
-(which might explain my somewhat confused replies later, sorry again)
+To reproduce, run openvpn with --resolv-retry infinite (2.3) or
+--resolv-retry "a high number" (master) on a BSD system.  Linux
+glibc seems to stat() resolv.conf on calls to getaddrinfo() and
+pick up changes automatically.
 
-commit 7d30696ac51aa9649f2290ada2c0fb5865cfe859 (master)
+Trac #523
 
-Author: Yegor Yefremov
-Date:   Mon Apr 20 16:30:56 2015 +0200
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+ src/openvpn/socket.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-     cert_data: fix memory leak
-
-     Signed-off-by: Yegor Yefremov <yegorslists@...1030...>
-     Acked-by: Vasily Kulikov <segoon@...2008...>
-     Message-Id: <1429540256-4906-1-git-send-email-yegorslists@...1030...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/9600
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
+index 13ed981..f9ee5ad 100644
+--- a/src/openvpn/socket.c
++++ b/src/openvpn/socket.c
+@@ -314,10 +314,6 @@ openvpn_getaddrinfo (unsigned int flags,
+ 
+   ASSERT(res);
+ 
+-#ifndef WIN32
+-  res_init ();
+-#endif
+-
+   ASSERT (hostname || servname);
+   ASSERT (!(flags & GETADDR_HOST_ORDER));
+ 
+@@ -394,6 +390,9 @@ openvpn_getaddrinfo (unsigned int flags,
+        */
+       while (true)
+         {
++#ifndef WIN32
++	  res_init ();
++#endif
+           /* try hostname lookup */
+           hints.ai_flags &= ~AI_NUMERICHOST;
+           dmsg (D_SOCKET_DEBUG, "GETADDRINFO flags=0x%04x ai_family=%d ai_socktype=%d",
+-- 
+2.4.0
 
 
