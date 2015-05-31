@@ -1,12 +1,11 @@
-MIME-Version: 1.0
-In-Reply-To: <CAEsd45TCOgEOYzf3rYq5GrpXWHaL37Mn_4gwtjGrhxH3EjicCw@...278...>
-References: <CAEsd45TNByqmFtmY54eB8506SyE=te7S89WLD3YpwdbLY7-mLA@...278...>
-	<CAEsd45TCOgEOYzf3rYq5GrpXWHaL37Mn_4gwtjGrhxH3EjicCw@...278...>
-From: "Jonathan K. Bullard" <jkbullard@...277...>
-Date: Sat, 30 May 2015 16:37:19 -0400
-Message-ID: <CAEsd45ToQ=NDraEyepx8PBawvEz6L1U6S1w8c1LEEonMjtL_BA@...278...>
-Content-Type: multipart/alternative; boundary=001a1134fad287fb6505175291db
-Subject: Re: [Openvpn-devel] [Patch] Fail if options have extra parameters
+Date: Sun, 31 May 2015 14:03:27 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20150531120327.GE382@...1296...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="NRg0qHkDgHfQnopc"
+Content-Disposition: inline
+Subject: [Openvpn-devel] trac#261 / fix for --redirect-private
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,104 +14,77 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
---001a1134fad287fb6505175291db
-Content-Type: text/plain; charset=UTF-8
-
-Please ignore this patch; it is an old version. I will resubmit. Sorry for
-the noise.
-
-On Fri, May 29, 2015 at 11:54 AM, Jonathan K. Bullard <jkbullard@...277...>
-wrote:
-
-> Sorry, forgot to add a link to the ticket for this:
->
-> https://community.openvpn.net/openvpn/ticket/557
->
-> On Fri, May 29, 2015 at 11:38 AM, Jonathan K. Bullard
-> <jkbullard@...277...> wrote:
-> > The attached patch causes an error if an option has are extra
-> > parameters; previously they were ignored.
-> >
-> > This feature was discussed on the openvpn-devel mailing list:
-> > http://thread.gmane.org/gmane.network.openvpn.devel/9599
-> >
-> > The patch is for the master branch only -- the consensus of the
-> > mailing list discussion was that the patch should not be included in
-> > the 2.3 branch.
-> >
-> > The (modified) message "Unrecognized option or missing or extra
-> > parameter(s)" is used except for a few options:
-> >
-> >      * The --help option: An extra parameter for --help generates a
-> > specific error message after showing the syntax message. This is done
-> > to help a user who tries "--help tls-cipher" or similar, hoping to get
-> > more information about the "tls-cipher" option.
-> >
-> >      * The --dhcp-option option: It has its own similar message, into
-> > which " or extra" has been inserted.
-> >
-> >      * Ten options such as --up that accept a command (instead of a
-> > path) already detect extra parameters and generate specific error
-> > messages that mention double-quoting commands which contain imbedded
-> > spaces.
->
-
---001a1134fad287fb6505175291db
-Content-Type: text/html; charset="UTF-8"
+--NRg0qHkDgHfQnopc
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-<div dir=3D"ltr">Please ignore this patch; it is an old version. I will res=
-ubmit. Sorry for the noise.</div><div class=3D"gmail_extra"><br><div class=
-=3D"gmail_quote">On Fri, May 29, 2015 at 11:54 AM, Jonathan K. Bullard <spa=
-n dir=3D"ltr">&lt;<a href=3D"mailto:jkbullard@...277..." target=3D"_blank">=
-jkbullard@...277...</a>&gt;</span> wrote:<br><blockquote class=3D"gmail_quo=
-te" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex"=
->Sorry, forgot to add a link to the ticket for this:<br>
-<br>
-<a href=3D"https://community.openvpn.net/openvpn/ticket/557" target=3D"_bla=
-nk">https://community.openvpn.net/openvpn/ticket/557</a><br>
-<div class=3D"HOEnZb"><div class=3D"h5"><br>
-On Fri, May 29, 2015 at 11:38 AM, Jonathan K. Bullard<br>
-&lt;<a href=3D"mailto:jkbullard@...277...">jkbullard@...277...</a>&gt; wrot=
-e:<br>
-&gt; The attached patch causes an error if an option has are extra<br>
-&gt; parameters; previously they were ignored.<br>
-&gt;<br>
-&gt; This feature was discussed on the openvpn-devel mailing list:<br>
-&gt; <a href=3D"http://thread.gmane.org/gmane.network.openvpn.devel/9599" t=
-arget=3D"_blank">http://thread.gmane.org/gmane.network.openvpn.devel/9599</=
-a><br>
-&gt;<br>
-&gt; The patch is for the master branch only -- the consensus of the<br>
-&gt; mailing list discussion was that the patch should not be included in<b=
-r>
-&gt; the 2.3 branch.<br>
-&gt;<br>
-&gt; The (modified) message &quot;Unrecognized option or missing or extra<b=
-r>
-&gt; parameter(s)&quot; is used except for a few options:<br>
-&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 * The --help option: An extra parameter for --help=
- generates a<br>
-&gt; specific error message after showing the syntax message. This is done<=
-br>
-&gt; to help a user who tries &quot;--help tls-cipher&quot; or similar, hop=
-ing to get<br>
-&gt; more information about the &quot;tls-cipher&quot; option.<br>
-&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 * The --dhcp-option option: It has its own similar=
- message, into<br>
-&gt; which &quot; or extra&quot; has been inserted.<br>
-&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 * Ten options such as --up that accept a command (=
-instead of a<br>
-&gt; path) already detect extra parameters and generate specific error<br>
-&gt; messages that mention double-quoting commands which contain imbedded<b=
-r>
-&gt; spaces.<br>
-</div></div></blockquote></div><br></div>
+Hi,
 
---001a1134fad287fb6505175291db--
+the following patch was posted to trac#261, and I intend to ACK it
+(patches to track are a bit complicated regarding our standard policy
+and --author :-/ - but it's simple enough, and while a very esoteric
+corner case, fixing a real bug :-) - namely, --redirect-private in
+combination with --dev tap)
+
+Specifically, --redirect-private does half the work of --redirect-gateway,
+namely "install a host route to the VPN server via the current default
+gateway", but not the actual "... and then redirect everything else into
+the VPN".  This can be useful if you push the same private network that
+is used at the client site, but do *not* want to push a default route.
+
+This normally works, unless used in tap mode with routes coming from a DHCP
+server, where it complains about missing --route-gateway, which isn't
+actually needed for *this* part of the work.
+
+gert
+
+
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index dd69d8e..df80286 100644
+Index: src/openvpn/route.c
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -837,7 +837,7 @@ redirect_default_route_to_vpn (struct route_list *rl, c=
+onst struct tuntap *tt, u
+=20
+   if ( rl && rl->flags & RG_ENABLE )
+     {
+-      if (!(rl->spec.flags & RTSA_REMOTE_ENDPOINT))
++      if (!(rl->spec.flags & RTSA_REMOTE_ENDPOINT) && (rl->flags & RG_RERO=
+UTE_GW))
+         {
+           msg (M_WARN, "%s VPN gateway parameter (--route-gateway or --ifc=
+onfig) is missing", err);
+         }
+
+
+
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--NRg0qHkDgHfQnopc
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQCVAwUBVWr4jqkuBuNlUUl1AQLXxAQAqxXzras92nPG7AaUQxDta3voLZC3yqpg
+y/ATtxvJ/0koDzJrqidvwTmmvd9sRIr5olXfYUs4ulENvLohU6mipgTq2HeqNg3K
+byAq0wsRRaaYmFfKCAvO++kwi8BpmM3l+NdpffKSCFztg8yuFMnV7kd+XnZmQuoc
+mzal58+PgEg=
+=zLM+
+-----END PGP SIGNATURE-----
+
+--NRg0qHkDgHfQnopc--
 
