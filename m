@@ -1,8 +1,15 @@
-From: Gert Doering <gert@...1296...>
-Date: Mon,  1 Jun 2015 21:04:47 +0200
-Message-Id: <1433185487-9724-1-git-send-email-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH] Use configure.ac hack to apply serial_test
-	AM option only if supported.
+Message-ID: <556CADD2.90108@...1114...>
+Date: Mon, 01 Jun 2015 21:09:06 +0200
+From: David Sommerseth <openvpn.list@...1114...>
+MIME-Version: 1.0
+References: <1433185487-9724-1-git-send-email-gert@...1296...>
+In-Reply-To: <1433185487-9724-1-git-send-email-gert@...1296...>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="wv5gorc8LmdjRlWFunQtgieqgjAK73k3H"
+Subject: Re: [Openvpn-devel] [PATCH] Use configure.ac hack to apply
+ serial_test AM option only if supported.
+Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,51 +18,57 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
 
-Inspired by libguestfs' configure.ac hack - test automake version,
-and if 1.12 or newer, use m4 magic to pass "serial_tests" option
-to AM_INIT_AUTOMAKE().
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--wv5gorc8LmdjRlWFunQtgieqgjAK73k3H
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
 
-https://www.redhat.com/archives/libguestfs/2013-February/msg00102.html
+On 01/06/15 21:04, Gert Doering wrote:
+> Inspired by libguestfs' configure.ac hack - test automake version,
+> and if 1.12 or newer, use m4 magic to pass "serial_tests" option
+> to AM_INIT_AUTOMAKE().
+>=20
+> https://www.redhat.com/archives/libguestfs/2013-February/msg00102.html
+>=20
+> Trac #427
+>=20
+> Signed-off-by: Gert Doering <gert@...1296...>
+> ---
+>  configure.ac | 16 +++++++++++++++-
+>  1 file changed, 15 insertions(+), 1 deletion(-)
+>=20
 
-Trac #427
+ACK.
 
-Signed-off-by: Gert Doering <gert@...1296...>
----
- configure.ac | 16 +++++++++++++++-
- 1 file changed, 15 insertions(+), 1 deletion(-)
+I've tested on:
 
-diff --git a/configure.ac b/configure.ac
-index 54fe4f5..cd450d3 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -35,7 +35,21 @@ AC_CONFIG_AUX_DIR([.])
- AC_CONFIG_HEADERS([config.h])
- AC_CONFIG_SRCDIR([src/openvpn/syshead.h])
- AC_CONFIG_MACRO_DIR([m4])
--AM_INIT_AUTOMAKE
-+
-+dnl Initialize automake.  automake < 1.12 didn't have serial-tests and
-+dnl gives an error if it sees this, but for automake >= 1.13
-+dnl serial-tests is required so we have to include it.  Solution is to
-+dnl test for the version of automake (by running an external command)
-+dnl and provide it if necessary.  Note we have to do this entirely using
-+dnl m4 macros since automake queries this macro by running
-+dnl 'autoconf --trace ...'.
-+m4_define([serial_tests], [
-+    m4_esyscmd([automake --version |
-+                head -1 |
-+                awk '{split ($NF,a,"."); if (a[1] == 1 && a[2] >= 12) { print "serial-tests" }}'
-+    ])
-+])
-+AM_INIT_AUTOMAKE(foreign serial_tests) dnl NB: Do not [quote] this parameter.
- AC_CANONICAL_HOST
- AC_USE_SYSTEM_EXTENSIONS
- 
--- 
-2.3.6
+  - CentOS 5 with automake 1.9.6
+  - RHEL 7 with automake 1.13.4
+  - Fedora 22 Beta with automake 1.15
 
+Tested autoreconf, ./configure, make and make check successfully.
+
+
+--=20
+kind regards,
+
+David Sommerseth
+
+
+--wv5gorc8LmdjRlWFunQtgieqgjAK73k3H
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iEYEARECAAYFAlVsrdIACgkQDC186MBRfrp6HQCdEWtkbWZvYXCr75EBeZyA2n8T
+0vIAoJSJB7vCGB8IWNTKhENl2L5EvvYH
+=rdW7
+-----END PGP SIGNATURE-----
+
+--wv5gorc8LmdjRlWFunQtgieqgjAK73k3H--
 
