@@ -1,15 +1,10 @@
-Message-ID: <556CADD2.90108@...1114...>
-Date: Mon, 01 Jun 2015 21:09:06 +0200
-From: David Sommerseth <openvpn.list@...1114...>
-MIME-Version: 1.0
-References: <1433185487-9724-1-git-send-email-gert@...1296...>
+Date: Mon, 1 Jun 2015 21:19:38 +0200 (CEST)
+Message-Id: <201506011919.t51JJcYY023072@...1295...>
+From: Gert Doering <gert@...1296...>
 In-Reply-To: <1433185487-9724-1-git-send-email-gert@...1296...>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="wv5gorc8LmdjRlWFunQtgieqgjAK73k3H"
-Subject: Re: [Openvpn-devel] [PATCH] Use configure.ac hack to apply
- serial_test AM option only if supported.
-Reply-To: openvpn-devel@lists.sourceforge.net
+References: <1433185487-9724-1-git-send-email-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Use configure.ac hack to apply
+	serial_test AM option only if supported.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,57 +13,34 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---wv5gorc8LmdjRlWFunQtgieqgjAK73k3H
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
+Patch has been applied to the master and release/2.3 branch.
 
-On 01/06/15 21:04, Gert Doering wrote:
-> Inspired by libguestfs' configure.ac hack - test automake version,
-> and if 1.12 or newer, use m4 magic to pass "serial_tests" option
-> to AM_INIT_AUTOMAKE().
->=20
-> https://www.redhat.com/archives/libguestfs/2013-February/msg00102.html
->=20
-> Trac #427
->=20
-> Signed-off-by: Gert Doering <gert@...1296...>
-> ---
->  configure.ac | 16 +++++++++++++++-
->  1 file changed, 15 insertions(+), 1 deletion(-)
->=20
+(Also tested by using buildbot on the "experimental" branch, plus building
+windows release from that - so we're fairly confident that it will not
+blow up stuff this time - sorry for the noise on the list)
 
-ACK.
+commit c615835aa93701c764c23fc2579d97757c1a9970 (master)
+commit d378850ab70af4c967d099627f0a19ad42ecbdcb (release/2.3)
 
-I've tested on:
+Author: Gert Doering
+Date:   Mon Jun 1 21:04:47 2015 +0200
 
-  - CentOS 5 with automake 1.9.6
-  - RHEL 7 with automake 1.13.4
-  - Fedora 22 Beta with automake 1.15
+     Use configure.ac hack to apply serial_test AM option only if supported.
 
-Tested autoreconf, ./configure, make and make check successfully.
+     Signed-off-by: Gert Doering <gert@...1296...>
+     Acked-by: David Sommerseth <davids@...1347...>
+     Message-Id: <1433185487-9724-1-git-send-email-gert@...1296...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/9769
 
 
---=20
+--
 kind regards,
 
-David Sommerseth
+Gert Doering
 
-
---wv5gorc8LmdjRlWFunQtgieqgjAK73k3H
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iEYEARECAAYFAlVsrdIACgkQDC186MBRfrp6HQCdEWtkbWZvYXCr75EBeZyA2n8T
-0vIAoJSJB7vCGB8IWNTKhENl2L5EvvYH
-=rdW7
------END PGP SIGNATURE-----
-
---wv5gorc8LmdjRlWFunQtgieqgjAK73k3H--
 
