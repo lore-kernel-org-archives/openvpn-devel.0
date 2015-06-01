@@ -1,11 +1,10 @@
-Message-ID: <556C1EEA.6070009@...1227...>
-Date: Mon, 01 Jun 2015 10:59:22 +0200
-From: Arne Schwabe <arne@...1227...>
-MIME-Version: 1.0
-References: <1433104918-9523-1-git-send-email-gert@...1296...>
+Date: Mon, 1 Jun 2015 18:00:36 +0200 (CEST)
+Message-Id: <201506011600.t51G0avS012061@...1295...>
+From: Gert Doering <gert@...1296...>
 In-Reply-To: <1433104918-9523-1-git-send-email-gert@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH] On signal reception,
- return EAI_SYSTEM from openvpn_getaddrinfo().
+References: <1433104918-9523-1-git-send-email-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: On signal reception,
+	return EAI_SYSTEM from openvpn_getaddrinfo().
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,47 +13,30 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
+
+Patch has been applied to the master and release/2.3 branch.
+
+commit 5f6c01ea6172ed1d8ed04e31f9f6c3f8e4696109 (master)
+commit 38c9f980d4f7cb7061f9db3ed8645ab3404e533d (release/2.3)
+
+Author: Gert Doering
+Date:   Sun May 31 22:41:58 2015 +0200
+
+     On signal reception, return EAI_SYSTEM from openvpn_getaddrinfo().
+
+     Signed-off-by: Gert Doering <gert@...1296...>
+     Acked-by: Arne Schwabe <arne@...1227...>
+     Message-Id: <1433104918-9523-1-git-send-email-gert@...1296...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/9764
 
 
+--
+kind regards,
 
-Am 31.05.15 um 22:41 schrieb Gert Doering:
-> A signal (except SIGUSR1) received while waiting for getaddrinfo() is
-> considered fatal, so openvpn_getaddrinfo() is destroying the returned
-> information with freeaddrinfo(), but still signalled "success" (0)
-> to the caller - so if the caller accessed *res before checking
-> *signal_received, it would access just-free()ed memory, which on some
-> platforms still worked and on others caused a crash.
->
-> Also, ensure that *ai is also NULLed in the caller now.
->
-> Signed-off-by: Gert Doering <gert@...1296...>
-> ---
->  src/openvpn/socket.c | 5 ++++-
->  1 file changed, 4 insertions(+), 1 deletion(-)
->
-> diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
-> index cf2dec3..034ccc1 100644
-> --- a/src/openvpn/socket.c
-> +++ b/src/openvpn/socket.c
-> @@ -219,10 +219,13 @@ msg(M_INFO, "if(*signal_received)");
->                      }
->                    else
->                      {
-> +		      /* turn success into failure (interrupted syscall) */
->                        if (0 == status) {
->                            ASSERT(res);
->                            freeaddrinfo(*res);
-> -                          res = NULL;
-> +                          *res = NULL;
-> +                          status = EAI_SYSTEM;
-> +                          errno = EINTR;
->                        }
->                        goto done;
->                      }
-ACK. The patch is doing the right thing.
+Gert Doering
 
-Arne
 
