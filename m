@@ -1,10 +1,10 @@
-Date: Mon, 1 Jun 2015 21:54:11 +0200 (CEST)
-Message-Id: <201506011954.t51JsB8x006932@...1295...>
+Date: Mon, 1 Jun 2015 22:43:31 +0200 (CEST)
+Message-Id: <201506012043.t51KhUq0022328@...1295...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1433178914-7842-1-git-send-email-gert@...1296...>
-References: <1433178914-7842-1-git-send-email-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Use EAI_AGAIN instead of
-	EAI_SYSTEM for openvpn_getaddrinfo().
+In-Reply-To: <20150531120327.GE382@...1296...>
+References: <20150531120327.GE382@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Fix --redirect-gateway in --dev tap
+	mode.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,24 +15,25 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
+To: Guy Yur <guyyur@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Patch has been applied to the master and release/2.3 branch.
+ACK.
 
-commit 8ceb9619a26f8c507bafbc6d59aed3f65a30455d (master)
-commit 874ffde11255beb6873024b24c4231934460f485 (release/2.3)
+Your patch has been applied to the master and release/2.3 branch.
 
-Author: Gert Doering
-Date:   Mon Jun 1 19:15:14 2015 +0200
+commit 1e2b229e5140b784820906feb8446e47c1ecc62e (master)
+commit 5502af840205a8a9342600385fcd4ef2919073ba (release/2.3)
 
-     Use EAI_AGAIN instead of EAI_SYSTEM for openvpn_getaddrinfo().
+Author: Guy Yur <guyyur@...277...>
+Date:   Mon Jun 1 21:51:13 2015 +0200
 
-     Signed-off-by: Gert Doering <gert@...1296...>
-     Acked-by: Steffan Karger <steffan.karger@...1435...>
-     Message-Id: <1433178914-7842-1-git-send-email-gert@...1296...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/9768
+    Fix --redirect-private in --dev tap mode.
 
+    Acked-by: Gert Doering <gert@...1296...>
+    Message-Id: <20150531120327.GE382@...1296...>
+    URL: http://article.gmane.org/gmane.network.openvpn.devel/9761
+    Signed-off-by: Gert Doering <gert@...1296...>
 
 --
 kind regards,
