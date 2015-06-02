@@ -1,10 +1,10 @@
-Date: Tue, 2 Jun 2015 10:03:04 +0200 (CEST)
-Message-Id: <201506020803.t52833kn022495@...1295...>
+Date: Tue, 2 Jun 2015 10:06:36 +0200 (CEST)
+Message-Id: <201506020806.t5286app015210@...1295...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1433080749-6892-1-git-send-email-gert@...1296...>
-References: <1433080749-6892-1-git-send-email-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Move res_init() call to inner
-	openvpn_getaddrinfo() loop
+In-Reply-To: <1433231982-24945-1-git-send-email-samuli@...515...>
+References: <1433231982-24945-1-git-send-email-samuli@...515...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Improve documentation in
+	--script-security section of the man-page
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,23 +15,24 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
+To: samuli@...515...
 Cc: openvpn-devel@lists.sourceforge.net
 
-Patch has been applied to the master and release/2.3 branch.
+ACK. Your patch has been applied to the master and release/2.3 branch.
 
-commit 288a819af7d3a6fab9e0b69ae8dbaac74b36307b (master)
-commit 4e7eb95e43f0daed79e25e0ad6a9a20705b57376 (release/2.3)
+commit 001384e2952b54089e889edbda3196283b21641d (master)
+commit 9f1d4545049bb643bf214498709e2af001bbe106 (release/2.3)
 
-Author: Gert Doering
-Date:   Sun May 31 15:59:09 2015 +0200
+Author: Samuli Seppänen
+Date:   Tue Jun 2 10:59:42 2015 +0300
 
-     Move res_init() call to inner openvpn_getaddrinfo() loop
+     Improve documentation in --script-security section of the man-page
 
+     Signed-off-by: Samuli Seppänen <samuli@...515...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1433231982-24945-1-git-send-email-samuli@...515...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/9777
      Signed-off-by: Gert Doering <gert@...1296...>
-     Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <1433080749-6892-1-git-send-email-gert@...1296...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/9763
 
 
 --
