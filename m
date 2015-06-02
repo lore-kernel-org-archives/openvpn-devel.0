@@ -1,11 +1,10 @@
-Message-ID: <556CC8A1.5010807@...1227...>
-Date: Mon, 01 Jun 2015 23:03:29 +0200
-From: Arne Schwabe <arne@...1227...>
 MIME-Version: 1.0
-References: <1433080749-6892-1-git-send-email-gert@...1296...>
-In-Reply-To: <1433080749-6892-1-git-send-email-gert@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH] Move res_init() call to inner
- openvpn_getaddrinfo() loop
+Date: Tue, 2 Jun 2015 13:17:26 +0530
+Message-ID: <CANXi7D2e1pzQ8JTW47sz=2wgWOmNOpH2e3_NSmSysHwbow0VWA@...278...>
+From: Arun Kumar <mailinform@...277...>
+Content-Type: multipart/alternative; boundary=001a11c3c8424f56a705178427fd
+Subject: [Openvpn-devel] How to create openvpn channel between multiple
+	interface linux machines.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,23 +13,35 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="windows-1252"
+To: openvpn-devel@lists.sourceforge.net
+
+--001a11c3c8424f56a705178427fd
+Content-Type: text/plain; charset=UTF-8
+
+Hi,
+I have two ubuntu machine say host1 and host2.
+Each have two interfaces say eth0 and eth1.
+I want to create seperate openvpn channels between the interfaces of two
+hosts.
+i tried openvpn and create secure key. and add eth0 and eth1 in config
+file, but only one vpn channel created.
+what is my mistake and how to make it.
+please help me on this.
+
+Thanks
+Kumar raj
+
+--001a11c3c8424f56a705178427fd
+Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
 
-Am 31.05.15 um 15:59 schrieb Gert Doering:
-> A non-working nameserver in /etc/resolv.conf could lead to endless
-> loops inside openvpn_getaddrinfo(), because many systems will only
-> pick up changes to resolv.conf if res_init() is called again.
->
-> To reproduce, run openvpn with --resolv-retry infinite (2.3) or
-> --resolv-retry "a high number" (master) on a BSD system.  Linux
-> glibc seems to stat() resolv.conf on calls to getaddrinfo() and
-> pick up changes automatically.
->
-And Android makes even weirder stuff. But if we want to reread the
-resolv.conf on every call this the right way, so ACK.
+<div dir=3D"ltr"><div><div><div><div><div><div><div><div>Hi,<br></div>I hav=
+e two ubuntu machine say host1 and host2.<br></div>Each have two interfaces=
+ say eth0 and eth1.<br></div>I want to create seperate openvpn channels bet=
+ween the interfaces of two hosts.<br></div>i tried openvpn and create secur=
+e key. and add eth0 and eth1 in config file, but only one vpn channel creat=
+ed.<br></div>what is my mistake and how to make it.<br></div>please help me=
+ on this.<br><br></div>Thanks<br></div>Kumar raj<br></div>
 
-Arne
-
+--001a11c3c8424f56a705178427fd--
 
