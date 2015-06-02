@@ -1,10 +1,9 @@
+From: samuli@...515...
+Date: Tue,  2 Jun 2015 10:59:42 +0300
+Message-Id: <1433231982-24945-1-git-send-email-samuli@...515...>
 MIME-Version: 1.0
-Date: Tue, 2 Jun 2015 13:17:26 +0530
-Message-ID: <CANXi7D2e1pzQ8JTW47sz=2wgWOmNOpH2e3_NSmSysHwbow0VWA@...278...>
-From: Arun Kumar <mailinform@...277...>
-Content-Type: multipart/alternative; boundary=001a11c3c8424f56a705178427fd
-Subject: [Openvpn-devel] How to create openvpn channel between multiple
-	interface linux machines.
+Subject: [Openvpn-devel] [PATCH] Improve documentation in --script-security
+	section of the man-page
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,35 +12,40 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 To: openvpn-devel@lists.sourceforge.net
 
---001a11c3c8424f56a705178427fd
-Content-Type: text/plain; charset=UTF-8
+From: Samuli Sepp=C3=A4nen <samuli@...515...>
 
-Hi,
-I have two ubuntu machine say host1 and host2.
-Each have two interfaces say eth0 and eth1.
-I want to create seperate openvpn channels between the interfaces of two
-hosts.
-i tried openvpn and create secure key. and add eth0 and eth1 in config
-file, but only one vpn channel created.
-what is my mistake and how to make it.
-please help me on this.
+Trac: #395
 
-Thanks
-Kumar raj
+Signed-off-by: Samuli Sepp=C3=A4nen <samuli@...515...>
+---
+ doc/openvpn.8 | 5 +++++
+ 1 file changed, 5 insertions(+)
 
---001a11c3c8424f56a705178427fd
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+diff --git a/doc/openvpn.8 b/doc/openvpn.8
+index df16a7f..3eb2493 100644
+--- a/doc/openvpn.8
++++ b/doc/openvpn.8
+@@ -2007,6 +2007,11 @@ or
+ As of OpenVPN v2.3, this flag is no longer accepted.  In most *nix environ=
+ments the execve()
+ approach has been used without any issues.
+=20
++Some directives such as \-\-up allow options to be passed to the external
++script. In these cases make sure the script name does not contain any spac=
+es or
++the configuration parser will choke because it can't determine where the s=
+cript
++name ends and script options start.
++
+ To run scripts in Windows in earlier OpenVPN
+ versions you needed to either add a full path to the script interpreter wh=
+ich can parse the
+ script or use the
+--=20
+2.1.4
 
-<div dir=3D"ltr"><div><div><div><div><div><div><div><div>Hi,<br></div>I hav=
-e two ubuntu machine say host1 and host2.<br></div>Each have two interfaces=
- say eth0 and eth1.<br></div>I want to create seperate openvpn channels bet=
-ween the interfaces of two hosts.<br></div>i tried openvpn and create secur=
-e key. and add eth0 and eth1 in config file, but only one vpn channel creat=
-ed.<br></div>what is my mistake and how to make it.<br></div>please help me=
- on this.<br><br></div>Thanks<br></div>Kumar raj<br></div>
-
---001a11c3c8424f56a705178427fd--
 
