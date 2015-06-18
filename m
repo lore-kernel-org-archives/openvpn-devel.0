@@ -1,11 +1,7 @@
-Date: Wed, 17 Jun 2015 12:07:53 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20150617100752.GG382@...1296...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="68RnY3phKFzO6ir9"
-Content-Disposition: inline
-Subject: [Openvpn-devel] why is "route add failure" considered not an error?
+From: Steffan Karger <steffan@...1856...>
+Date: Fri, 19 Jun 2015 00:08:45 +0200
+Message-Id: <1434665325-3225-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH] write pid file immediately after daemonizing
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,72 +10,141 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
---68RnY3phKFzO6ir9
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Since we split daemonizing from changing directory in commit da9b292
+(f025de005d719201a69ad0313d545a1ddd244752 in release/2.3), we can now
+simply write the pid file immediately after daemonizing.  This not only
+hould fix the bug reported in trac #563, but also furhter simplifies the
+code.
 
-Hi,
+Signed-off-by: Steffan Karger <steffan@...1856...>
+---
+ src/openvpn/init.c    |  6 ------
+ src/openvpn/misc.c    | 27 +++++++++------------------
+ src/openvpn/misc.h    |  9 +--------
+ src/openvpn/openvpn.c |  5 ++++-
+ src/openvpn/openvpn.h |  3 ---
+ 5 files changed, 14 insertions(+), 36 deletions(-)
 
-OpenVPN history confuses me :-) - right now, I am wondering about the
-following:
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index c99e775..7a2c69b 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -2775,16 +2775,10 @@ do_init_first_time (struct context *c)
+ 	platform_group_get (c->options.groupname, &c0->platform_state_group) |
+ 	platform_user_get (c->options.username, &c0->platform_state_user);
+ 
+-      /* get --writepid file descriptor */
+-      get_pid_file (c->options.writepid, &c0->pid_state);
+-
+       /* perform postponed chdir if --daemon */
+       if (c->did_we_daemonize && c->options.cd_dir == NULL)
+ 	platform_chdir("/");
+ 
+-      /* save process ID in a file */
+-      write_pid (&c0->pid_state);
+-
+       /* should we change scheduling priority? */
+       platform_nice (c->options.nice);
+     }
+diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
+index 8408438..8e78117 100644
+--- a/src/openvpn/misc.c
++++ b/src/openvpn/misc.c
+@@ -127,30 +127,21 @@ run_up_down (const char *command,
+   gc_free (&gc);
+ }
+ 
+-/* Get the file we will later write our process ID to */
++/* Write our PID to a file */
+ void
+-get_pid_file (const char* filename, struct pid_state *state)
++write_pid (const char *filename)
+ {
+-  CLEAR (*state);
+   if (filename)
+     {
+-      state->fp = platform_fopen (filename, "w");
+-      if (!state->fp)
++      unsigned int pid = 0;
++      FILE *fp = platform_fopen (filename, "w");
++      if (!fp)
+ 	msg (M_ERR, "Open error on pid file %s", filename);
+-      state->filename = filename;
+-    }
+-}
+ 
+-/* Write our PID to a file */
+-void
+-write_pid (const struct pid_state *state)
+-{
+-  if (state->filename && state->fp)
+-    {
+-      unsigned int pid = platform_getpid (); 
+-      fprintf(state->fp, "%u\n", pid);
+-      if (fclose (state->fp))
+-	msg (M_ERR, "Close error on pid file %s", state->filename);
++      pid = platform_getpid ();
++      fprintf(fp, "%u\n", pid);
++      if (fclose (fp))
++	msg (M_ERR, "Close error on pid file %s", filename);
+     }
+ }
+ 
+diff --git a/src/openvpn/misc.h b/src/openvpn/misc.h
+index 183898e..e67b5e4 100644
+--- a/src/openvpn/misc.h
++++ b/src/openvpn/misc.h
+@@ -73,14 +73,7 @@ void run_up_down (const char *command,
+ 		  const char *script_type,
+ 		  struct env_set *es);
+ 
+-/* workspace for get_pid_file/write_pid */
+-struct pid_state {
+-  FILE *fp;
+-  const char *filename;
+-};
+-
+-void get_pid_file (const char* filename, struct pid_state *state);
+-void write_pid (const struct pid_state *state);
++void write_pid (const char *filename);
+ 
+ /* check file protections */
+ void warn_if_group_others_accessible(const char* filename);
+diff --git a/src/openvpn/openvpn.c b/src/openvpn/openvpn.c
+index 2f327f3..00bd570 100644
+--- a/src/openvpn/openvpn.c
++++ b/src/openvpn/openvpn.c
+@@ -231,7 +231,10 @@ openvpn_main (int argc, char *argv[])
+ 	  
+ 	  /* become a daemon if --daemon */
+ 	  if (c.first_time)
+-	    c.did_we_daemonize = possibly_become_daemon (&c.options);
++	    {
++	      c.did_we_daemonize = possibly_become_daemon (&c.options);
++	      write_pid (c.options.writepid);
++	    }
+ 
+ #ifdef ENABLE_MANAGEMENT
+ 	  /* open management subsystem */
+diff --git a/src/openvpn/openvpn.h b/src/openvpn/openvpn.h
+index bdfa685..10ec859 100644
+--- a/src/openvpn/openvpn.h
++++ b/src/openvpn/openvpn.h
+@@ -137,9 +137,6 @@ struct context_persist
+  */
+ struct context_0
+ {
+-  /* workspace for get_pid_file/write_pid */
+-  struct pid_state pid_state;
+-
+   /* workspace for --user/--group */
+   bool uid_gid_specified;
+   bool uid_gid_set;
+-- 
+2.1.4
 
- - if we call ifconfig to set up the tun device, and that fails, we=20
-   consider it a hard error (openvpn_exec_check(..., S_FATAL, ...) and
-   terminate
-
- - if we then proceed to set up routing, and *that* fails, we just ignore
-   the result (we do take notice that we couldn't add a route, so we don't
-   try to remove it later on - but we do not actually fail)
-
-in some situations, this behaviour is causing problems...
-
-Typical example is windows when not running the gui with admin privileges.=
-=20=20
-Interface config is done by ioctl()->DHCP (which we do have access rights=20
-to...), route add silently fails, VPN is "incomplete".  Another example is
-trac #563, which after quite a bit of discussion seems to boil down to
-"a previous instance of something left around a route to the /28 subnet
-that should have pointed to tun1, but instead it pointed to lo0, causing
-loops and non-working VPN"...
-
-
-So, we have good reasons to *not* do it that way, but I'm missing a reason
-why this is so...?
-
-Shall we change it in 2.4 to make route add failures S_FATAL?
-
-By default?  Or add an option to turn it back into a soft-fail in case
-someone knows what they ar doing?
-
-
-(At least for the FreeBSD "TOP_SUBNET" local route, I'm definitely going
-to make that connected route fatal as it will totally not work otherwise)
-
-gert
-
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---68RnY3phKFzO6ir9
-Content-Type: application/pgp-signature
-Content-Disposition: inline
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQCVAwUBVYFG+KkuBuNlUUl1AQJoVQQAqBtpRLrceb+BFmIAg6737mxdgBkw5Z43
-KhJrzpFkf04DVpEUx2BGkOkj1j+tvXfd/zHfOCkeYJ7jxC7uJerE0R9ein5lKqTu
-Qik0MKUlepEw0ZSUnN+PY3WXFXw27oYjNCpf9B68BOqcuc/mgITk6FBtCosxFv2z
-2CA+ydF6Kks=
-=BLbL
------END PGP SIGNATURE-----
-
---68RnY3phKFzO6ir9--
 
