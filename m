@@ -1,10 +1,10 @@
-Date: Sun, 21 Jun 2015 14:53:02 +0200 (CEST)
-Message-Id: <201506211253.t5LCr29C014727@...1295...>
+Date: Sun, 21 Jun 2015 15:19:36 +0200 (CEST)
+Message-Id: <201506211319.t5LDJa3C010819@...1295...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1434665325-3225-1-git-send-email-steffan@...1856...>
-References: <1434665325-3225-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH applied] Re: write pid file immediately
-	after daemonizing
+In-Reply-To: <CAEsd45RvRfmqetu-EoFjSdyBk5F9X1K5muPGu-+_+30TMNOU_A@...278...>
+References: <CAEsd45RvRfmqetu-EoFjSdyBk5F9X1K5muPGu-+_+30TMNOU_A@...278...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Version 2: Fail if options have
+	extra parameters
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,23 +15,23 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Steffan Karger <steffan@...1856...>
+To: "Jonathan K. Bullard" <jkbullard@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-ACK. Your patch has been applied to the master and release/2.3 branch.
+Your patch has been applied to the master branch.  
 
-commit 659eae7b79e5565bb0c93f6d6d04e2163fea1141 (master)
-commit bce656d27fe06ed364a4acebd3c3d6d996750613 (release/2.3)
+I have taken the liberty to slightly reword the commit message - it was
+a mixture of "introduction mail" and actual commit - removed the intro bits.
 
-Author: Steffan Karger
-Date:   Fri Jun 19 00:08:45 2015 +0200
+commit 3d6a4cded2b20fb816b17d70eb65cd6c14a95eff
+Author: Jonathan K. Bullard
+Date:   Tue Jun 2 08:43:26 2015 -0400
 
-     write pid file immediately after daemonizing
+     Fail if options have extra parameters [v2]
 
-     Signed-off-by: Steffan Karger <steffan@...1856...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1434665325-3225-1-git-send-email-steffan@...1856...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/9793
+     Acked-by: Arne Schwabe <arne@...1227...>
+     Message-Id: <CAEsd45RvRfmqetu-EoFjSdyBk5F9X1K5muPGu-+_+30TMNOU_A@...278...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/9783
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
