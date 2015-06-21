@@ -1,10 +1,11 @@
-Date: Sun, 21 Jun 2015 15:19:36 +0200 (CEST)
-Message-Id: <201506211319.t5LDJa3C010819@...1295...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <CAEsd45RvRfmqetu-EoFjSdyBk5F9X1K5muPGu-+_+30TMNOU_A@...278...>
-References: <CAEsd45RvRfmqetu-EoFjSdyBk5F9X1K5muPGu-+_+30TMNOU_A@...278...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Version 2: Fail if options have
-	extra parameters
+Date: Sun, 21 Jun 2015 15:55:03 +0200
+From: Maximilian Wilhelm <max@...1047...>
+Message-ID: <20150621135503.GO3678@...2038...>
+References: <20150617100752.GG382@...1296...> <55843EAD.6010305@...1147...>
+MIME-Version: 1.0
+In-Reply-To: <55843EAD.6010305@...1147...>
+Subject: Re: [Openvpn-devel] why is "route add failure" considered not an
+ error?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,31 +14,64 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
-To: "Jonathan K. Bullard" <jkbullard@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master branch.  
+Anno domini 2015 Jan Just Keijser scripsit:
 
-I have taken the liberty to slightly reword the commit message - it was
-a mixture of "introduction mail" and actual commit - removed the intro bits.
+Hi,
 
-commit 3d6a4cded2b20fb816b17d70eb65cd6c14a95eff
-Author: Jonathan K. Bullard
-Date:   Tue Jun 2 08:43:26 2015 -0400
+> > OpenVPN history confuses me :-) - right now, I am wondering about the
+> > following:
+> >
+> >   - if we call ifconfig to set up the tun device, and that fails, we
+> >     consider it a hard error (openvpn_exec_check(..., S_FATAL, ...) and
+> >     terminate
+> >
+> >   - if we then proceed to set up routing, and *that* fails, we just ignore
+> >     the result (we do take notice that we couldn't add a route, so we don't
+> >     try to remove it later on - but we do not actually fail)
+> >
+> > in some situations, this behaviour is causing problems...
+> >
+> > Typical example is windows when not running the gui with admin privileges.
+> > Interface config is done by ioctl()->DHCP (which we do have access rights
+> > to...), route add silently fails, VPN is "incomplete".  Another example is
+> > trac #563, which after quite a bit of discussion seems to boil down to
+> > "a previous instance of something left around a route to the /28 subnet
+> > that should have pointed to tun1, but instead it pointed to lo0, causing
+> > loops and non-working VPN"...
+> >
+> >
+> > So, we have good reasons to *not* do it that way, but I'm missing a reason
+> > why this is so...?
+> >
+> > Shall we change it in 2.4 to make route add failures S_FATAL?
+> >
+> > By default?  Or add an option to turn it back into a soft-fail in case
+> > someone knows what they ar doing?
+> >
+> >
+> I don't know what the reasoning was behind making "route failures"
+> non-fatal, but strictly speaking the tunnel is functioning - it's just
+> the routing that failed :)
+> I'd be in favour of adding  YetAnotherOption to override the "route
+> failure" behaviour - but the real solution on e.g. the Windows side is
+> to alter the GUI to pick up any routing failures and warn the user.
 
-     Fail if options have extra parameters [v2]
++1
 
-     Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <CAEsd45RvRfmqetu-EoFjSdyBk5F9X1K5muPGu-+_+30TMNOU_A@...278...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/9783
-     Signed-off-by: Gert Doering <gert@...1296...>
+That would probably safe or at least shorten some support cases :)
 
+Bonus points for pointing out OpenVPN has not been started with
+administrative rights and that that might be the problem.
 
---
-kind regards,
-
-Gert Doering
-
+Best
+Max
+-- 
+"I have to admit I've always suspected that MTBWTF would be a more useful
+ metric of real-world performance."
+ -- Valdis Kletnieks on NANOG
 
