@@ -1,15 +1,8 @@
-Date: Sun, 21 Jun 2015 16:42:19 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20150621144219.GV382@...1296...>
-References: <20150617100752.GG382@...1296...> <55843EAD.6010305@...1147...>
-	<20150621135503.GO3678@...2038...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="NRam5+CokH1YmQkV"
-Content-Disposition: inline
-In-Reply-To: <20150621135503.GO3678@...2038...>
-Subject: Re: [Openvpn-devel] why is "route add failure" considered not an
-	error?
+Message-ID: <55882EBE.9030503@...1147...>
+Date: Mon, 22 Jun 2015 17:50:22 +0200
+From: Jan Just Keijser <janjust@...1147...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] about client-cert-not-required
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,48 +11,56 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---NRam5+CokH1YmQkV
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+hi all,
 
-Hi,
+just found out that when you use 'client-cert-not-required' that the 
+client certificate is not checked at all, even if one is presented. I'm 
+not sure if that's by design but I think it would be handy to check the 
+client certificate if presented by the client.
+This allows an admin to set up a server with multiple levels of access
+- username+password only
+- certificate only
+- certificate + username for extra security
 
-On Sun, Jun 21, 2015 at 03:55:03PM +0200, Maximilian Wilhelm wrote:
-> Bonus points for pointing out OpenVPN has not been started with
-> administrative rights and that that might be the problem.
+Right now , two separate instances of OpenVPN are needed for this. 
+Patching this in for the OpenSSL version is trivial. If you set up the 
+verify callback to use SSL_VERIFY_PEER (instead of SSL_VERIFY_PEER | 
+SSL_VERIFY_FAIL_IF_NO_PEER_CERT)  it *will* check the client side cert, 
+if present, but it will not fail if not present. I can submit a patch 
+for this anytime (tested it already), if people think this is the way 
+forward.
+Also note that if you present an invalid certificate (wrong CA etc) the 
+connection is rejected by the OpenSSL lib.
 
-Patch welcome :-) - this is somewhere on my todo list, but I'm not a
-windows programmer, so I never got started in actually figuring out
-*which* privileges are needed, and how to check whether they are present=20
-or not...
+However, for the polarssl (excuse me, mbedtls) build of OpenVPN this is 
+not so trivial: there is a call to make the verification option, but the 
+docs for the function ssl_set_authmode state:
 
-IOW: I agree that it's useful functionality and will happily merge it,
-but won't be able to code it any time soon.
+Note
+     On client, SSL_VERIFY_REQUIRED is the recommended mode. With 
+SSL_VERIFY_OPTIONAL, the user needs to call ssl_get_verify_result() at 
+the right time(s), which may not be obvious, while REQUIRED always 
+perform the verification as soon as possible. For example, REQUIRED was 
+protecting against the "triple handshake" attack even before it was found.
 
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+and indeed, you can set SSL_VERIFY_OPTIONAL but then there is *NO* 
+certificate check at all unless you call get_verify_result at some point 
+- and the problem is, I have no clue which point that would be....
 
---NRam5+CokH1YmQkV
-Content-Type: application/pgp-signature
-Content-Disposition: inline
+Thus, this mail boils down to two linked questions
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
+1) do we think it's valuable to add something like this (currently NO 
+cert checks are done when 'client-cert-not-required' is used) ?
 
-iQCVAwUBVYbNS6kuBuNlUUl1AQLh+gP9Gw1qg09621wH3J4b4RPoAPnVMzQUxVK0
-PzWSXF5IM4yNCjxGlFrjiVCh783twLo1SjVw4bTQfSJ/eQMEBJxBwCoAZnRDqOel
-rDl2q0FhNcwsUqWW18swZvfi72qjeBkIr/Xxr0Ld29XeCmtGY9ETWpNaVGfYiuPA
-Rdholl1cIcM=
-=z1UN
------END PGP SIGNATURE-----
+2) how do we implement this in mbedtls  ?
 
---NRam5+CokH1YmQkV--
+
+thx,
+
+JJK
+
 
