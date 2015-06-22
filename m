@@ -1,9 +1,9 @@
-Message-ID: <55887C2D.6080203@...1490...>
-Date: Tue, 23 Jun 2015 09:20:45 +1200
-From: Jason Haar <Jason_Haar@...1490...>
+Message-ID: <558881DB.8000704@...1147...>
+Date: Mon, 22 Jun 2015 23:44:59 +0200
+From: Jan Just Keijser <janjust@...1147...>
 MIME-Version: 1.0
-References: <55882EBE.9030503@...1147...>
-In-Reply-To: <55882EBE.9030503@...1147...>
+References: <55882EBE.9030503@...1147...> <55887C2D.6080203@...1490...>
+In-Reply-To: <55887C2D.6080203@...1490...>
 Subject: Re: [Openvpn-devel] about client-cert-not-required
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -13,25 +13,24 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="windows-1252"
+Content-Type: text/plain; charset=windows-1252; format=flowed
 Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+To: Jason Haar <Jason_Haar@...1490...>, openvpn-devel@lists.sourceforge.net
 
-On 23/06/15 03:50, Jan Just Keijser wrote:
-> 1) do we think it's valuable to add something like this (currently NO 
-> cert checks are done when 'client-cert-not-required' is used) ?
+Hi,
 
-sounds like what you really want is for this to be renamed
-"--verify-client-cert (none|optional|required)" - with the
-default still being "required" of course - sort of like Apache's
-SSLVerifyClient
+On 22/06/15 23:20, Jason Haar wrote:
+> On 23/06/15 03:50, Jan Just Keijser wrote:
+>> 1) do we think it's valuable to add something like this (currently NO
+>> cert checks are done when 'client-cert-not-required' is used) ?
+> sounds like what you really want is for this to be renamed
+> "--verify-client-cert (none|optional|required)" - with the
+> default still being "required" of course - sort of like Apache's
+> SSLVerifyClient
+>
+Excellent suggestion - if I go ahead with the patch (pending on approval 
+by others on this list) then I'll implement that as well.
 
--- 
-Cheers
-
-Jason Haar
-Corporate Information Security Manager, Trimble Navigation Ltd.
-Phone: +1 408 481 8171
-PGP Fingerprint: 7A2E 0407 C9A6 CAF6 2B9F 8422 C063 5EBB FE1D 66D1
+JJK
 
 
