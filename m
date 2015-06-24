@@ -1,14 +1,9 @@
-Message-ID: <5589F604.5010508@...1490...>
-Date: Wed, 24 Jun 2015 12:12:52 +1200
-From: Jason Haar <Jason_Haar@...1490...>
+Message-ID: <558AD438.9050105@...515...>
+Date: Wed, 24 Jun 2015 19:00:56 +0300
+From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-References: <55882EBE.9030503@...1147...> <55887C2D.6080203@...1490...>
-	<55890A3E.4010200@...1856...> <20150623073914.GH382@...1296...>
-In-Reply-To: <20150623073914.GH382@...1296...>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="Wt4m2u2ORsc041BXX7sl4mTXXialRFoGa"
-Subject: Re: [Openvpn-devel] about client-cert-not-required
+Subject: [Openvpn-devel] Writing an OpenVPN-specific NSSM configuration
+	frontend?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,45 +12,86 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
-
---Wt4m2u2ORsc041BXX7sl4mTXXialRFoGa
-Content-Type: text/plain; charset="windows-1252"
+Content-Type: text/plain; charset="iso-8859-15"; format=flowed
 Content-Transfer-Encoding: quoted-printable
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-On 23/06/15 19:39, Gert Doering wrote:
-> As far as the feature itself is concerned, I'm not voicing an opinion
-> (as I've never seen a deployment without client certs, so don't
-> understand the implications)=20
+Hi,
 
-I have - it's very useful in particular circumstances. But the few
-people like me who use it will have to move to the new format ;-)
+There is a question at the end, so scroll down if you're impatient :).=20
+Anyways, some of you may know I've been looking into NSSM:
 
-The migration plan Steffan suggested sounds perfect
+<http://nssm.cc>
 
+The idea is to use NSSM to replace the OpenVPN Service Wrapper=20
+("openvpnserv.exe") which is buggy, unmaintained, causes all sorts of=20
+issues and seems disintegrate more and more with every new Windows release.
+
+NSSM on is actively maintained[1] general purpose service manager which=20
+can launch an arbitrary program and restart it if it crashes. NSSM=20
+registers itself as a Windows service and manages a set of services,=20
+which can be arbitrary programs. In our case nssm.exe would run a=20
+command such as this:
+
+..\bin\openvpn.exe --config default.ovpn
+
+The working directory would be set to C:\Program Files\OpenVPN\config.=20
+Should an OpenVPN process die, nssm.exe would respawn it immediately.=20
+Note that each OpenVPN connection is monitored separately.
+
+For the corporate use-case simply bundling nssm.exe along with=20
+instructions and maybe a simple template script would suffice:
+
+<https://community.openvpn.net/openvpn/wiki/IntegratingOpenvpnWithNssm>
+
+However, in the general case we have a problem. OpenVPN connections can=20
+be added and removed by the user at a whim, so the user has to be able=20
+to configure nssm.exe him/herself at any time. All we'd really need is a=20
+GUI similar to this:
+
+---
+"OpenVPN connections to launch and monitor automatically on boot:"
+
+[x] foo
+[x] bar
+[  ] def
+---
+
+Checking or unchecking a checkbox would simply run nssm.exe with=20
+appropriate command-line parameters. If the user needs more fine-grained=20
+control over nssm.exe's behavior he/she can resort to using nssm.exe's=20
+GUI or command-line.
+
+After several hours of research I'm leaning towards one of these options:
+
+1) An interactive batch file
+
+This would do the trick, but would be fairly crude and unsophisticated.=20
+Powershell would be way better, but Windows Vista (not EOL until 2017)=20
+does not have it installed by default.
+
+2) Simple C# GUI application
+
+Write a real C# application would be way more work than #1, but still=20
+not a huge task. In addition this  application could be later extended=20
+for other tasks such as turning on/off openvpnserv.exe and=20
+adding/removing tap-windows adapters.
+
+---
+
+Any other suggestions on how to solve this issue? Am I overlooking some=20
+obvious? And most importantly: does anyone feel like participating in=20
+this fun Windows development adventure? :P
+
+Best regards,
 
 --=20
-Cheers
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
 
-Jason Haar
-Corporate Information Security Manager, Trimble Navigation Ltd.
-Phone: +1 408 481 8171
-PGP Fingerprint: 7A2E 0407 C9A6 CAF6 2B9F 8422 C063 5EBB FE1D 66D1
+irc freenode net: mattock
 
-
-
---Wt4m2u2ORsc041BXX7sl4mTXXialRFoGa
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iEYEARECAAYFAlWJ9gQACgkQwGNeu/4dZtHO1gCffFRSJFnZgkza/68W8aqVbvyy
-dO4An1UKTBFHiWIU3jQIWYEtKT4yvw3p
-=8tC3
------END PGP SIGNATURE-----
-
---Wt4m2u2ORsc041BXX7sl4mTXXialRFoGa--
+[1] That said, according Git logs the project is maintained by a single=20
+person.
 
