@@ -1,13 +1,13 @@
-Date: Tue, 23 Jun 2015 09:39:14 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20150623073914.GH382@...1296...>
+Message-ID: <5589F604.5010508@...1490...>
+Date: Wed, 24 Jun 2015 12:12:52 +1200
+From: Jason Haar <Jason_Haar@...1490...>
+MIME-Version: 1.0
 References: <55882EBE.9030503@...1147...> <55887C2D.6080203@...1490...>
-	<55890A3E.4010200@...1856...>
-Mime-Version: 1.0
+	<55890A3E.4010200@...1856...> <20150623073914.GH382@...1296...>
+In-Reply-To: <20150623073914.GH382@...1296...>
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="1p1NbnqnRmT6HfKI"
-Content-Disposition: inline
-In-Reply-To: <55890A3E.4010200@...1856...>
+	protocol="application/pgp-signature";
+	boundary="Wt4m2u2ORsc041BXX7sl4mTXXialRFoGa"
 Subject: Re: [Openvpn-devel] about client-cert-not-required
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -17,54 +17,45 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan@...1856...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
---1p1NbnqnRmT6HfKI
-Content-Type: text/plain; charset="us-ascii"
+--Wt4m2u2ORsc041BXX7sl4mTXXialRFoGa
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
+On 23/06/15 19:39, Gert Doering wrote:
+> As far as the feature itself is concerned, I'm not voicing an opinion
+> (as I've never seen a deployment without client certs, so don't
+> understand the implications)=20
 
-On Tue, Jun 23, 2015 at 09:26:54AM +0200, Steffan Karger wrote:
-> In 2.3:
->  * Add soon-to-be-deprecated message to --client-cert-not-required man
-> page entry.
->=20
-> In 2.4:
->  * add --verify-client-cert (none|optional|required)
->  * add a clear deprecation message  when client-cert-not-required is used
+I have - it's very useful in particular circumstances. But the few
+people like me who use it will have to move to the new format ;-)
 
-Sounds like a good plan to me.
-
-As far as the feature itself is concerned, I'm not voicing an opinion
-(as I've never seen a deployment without client certs, so don't understand
-the implications)
-
-gert
+The migration plan Steffan suggested sounds perfect
 
 
 --=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+Cheers
 
---1p1NbnqnRmT6HfKI
-Content-Type: application/pgp-signature
-Content-Disposition: inline
+Jason Haar
+Corporate Information Security Manager, Trimble Navigation Ltd.
+Phone: +1 408 481 8171
+PGP Fingerprint: 7A2E 0407 C9A6 CAF6 2B9F 8422 C063 5EBB FE1D 66D1
+
+
+
+--Wt4m2u2ORsc041BXX7sl4mTXXialRFoGa
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
+Version: GnuPG v2
 
-iQCVAwUBVYkNIqkuBuNlUUl1AQKsewQAw69V+nCKZrzBx+tpjM+yXVnpSJtOJrd6
-2H3PBiBQJnSwYTOOPNbUiWiattfq23HavVkWXZqAxWxQykD9u1a7gMUUSeHrd66E
-LBKY61XgprSlDFd3iRHwh5Oe5YdkOerhLVY4JsOevS7PKaPOYtuu4y2lWd8xno+K
-eUJCOzhTtSE=
-=6oiu
+iEYEARECAAYFAlWJ9gQACgkQwGNeu/4dZtHO1gCffFRSJFnZgkza/68W8aqVbvyy
+dO4An1UKTBFHiWIU3jQIWYEtKT4yvw3p
+=8tC3
 -----END PGP SIGNATURE-----
 
---1p1NbnqnRmT6HfKI--
+--Wt4m2u2ORsc041BXX7sl4mTXXialRFoGa--
 
