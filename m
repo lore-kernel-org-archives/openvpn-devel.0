@@ -1,10 +1,9 @@
-Message-ID: <558C217F.7080607@...2039...>
-Date: Thu, 25 Jun 2015 11:42:55 -0400
-From: "Joseph S. Testa II" <jtesta@...2039...>
+From: Holger Kummert <Holger.Kummert@...1516...>
+Date: Thu, 25 Jun 2015 18:01:20 +0200
+Message-ID: <1435248080-12670-1-git-send-email-Holger.Kummert@...1516...>
 MIME-Version: 1.0
-References: <558C0F5D.9060104@...2039...> <558C143F.30400@...1147...>
-In-Reply-To: <558C143F.30400@...1147...>
-Subject: Re: [Openvpn-devel] Windows build fix for CVE-2015-4000
+Subject: [Openvpn-devel] [PATCH] Del ipv6 addr on close of linux tun
+	interface
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,67 +12,59 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Jan Just Keijser <janjust@...1147...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-On 06/25/2015 10:46 AM, Jan Just Keijser wrote:
-> Joseph S. Testa II wrote:
->> Hi all,
->>
->>     I was wondering if an updated Windows build is being planned for
->> release soon to fix CVE-2015-4000, et. al, as described in
->> http://www.openssl.org/news/secadv_20150611.txt.
->>
->>     I haven't seen anyone talk about this on the mailing list since
->> the advisory came out two weeks ago, so I thought I'd ask.
->>
-> I think you're referring to the logjam bug. We've a short discussion on
-> this on May 21st when the vulnerability was announced:
->
-> the main gist of this vulnerability is to use DH param files (on the
-> server) that are at least 1024, preferable 2048 or even 3072 bits in
-> length.
-> As Steffan wrote:
->
-> 1) OpenVPN encourages users to generate their own DH-group using
-> 'openssl dhparam', instead of using common groups. The man page /
-> examples used to provide 1024 bits DH keys (updated to 2048 recently),
-> and although 1024 bits dh params *can* be broken, that is still *very*
-> expensive. Probably too expensive for your data if you don't share the
-> group with others.
-> 2) OpenVPN's tls-auth feature can prevent the downgrade attack on TLS
-> from happening (but, only if you use tls-auth, of course).
->
-> Still, use DH params of at least 2048 bits, please! Upgrading is easy
-> and only needs a change on the server. Generate new params using e.g.:
->
->   openssl dhparam -out dh3072.pem 3072
->
-> update your server config to use this file:
->
->   dh dh3072.pem
->
-> and restart the server.
->
->
->
->
-> So, in view of this I don't think a rebuild of the client is in order,
-> as this bug can be easily circumvented (server-side) by using the
-> appropriate DH file.
->
-> HTH,
->
-> JJK
->
+When a linux tun interface is closed (e.g. on disconnect)
+an optional ipv6 addr that was previously set is deleted now.
+Without this patch a later reconnect would fail with
+'Linux ip -6 addr add failed: external program exited with error status: 2'
+and openvpn would exit.
 
+---
+ src/openvpn/tun.c | 26 ++++++++++++++++++++++++++
+ 1 file changed, 26 insertions(+)
 
-Thanks for the info.  How about the other CVE's listed in that OpenSSL 
-advisory?  I'm not able to tell if they're an issue in conjunction with 
-OpenVPN.  Has anyone done a review on them as well?
-
-    - Joe
-
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+old mode 100644
+new mode 100755
+index ba4b15e..8a2bccc
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -1687,6 +1687,32 @@ close_tun (struct tuntap *tt)
+ 	    argv_msg (M_INFO, &argv);
+ 	    openvpn_execve_check (&argv, NULL, 0, "Linux ip addr del failed");
+ 
++            if (tt->ipv6 && tt->did_ifconfig_ipv6_setup)
++              {
++                const char * ifconfig_ipv6_local = print_in6_addr (tt->local_ipv6, 0, &gc);
++
++#ifdef ENABLE_IPROUTE
++                argv_printf (&argv, "%s -6 addr del %s/%d dev %s",
++                                    iproute_path,
++                                    ifconfig_ipv6_local,
++                                    tt->netbits_ipv6,
++                                    tt->actual_name
++                                    );
++                argv_msg (M_INFO, &argv);
++                openvpn_execve_check (&argv, NULL, 0, "Linux ip -6 addr del failed");
++#else
++                argv_printf (&argv,
++                            "%s %s del %s/%d",
++                            IFCONFIG_PATH,
++                            tt->actual_name,
++                            ifconfig_ipv6_local,
++                            tt->netbits_ipv6
++                            );
++                argv_msg (M_INFO, &argv);
++                openvpn_execve_check (&argv, NULL, 0, "Linux ifconfig inet6 del failed");
++#endif
++              }
++
+ 	    argv_reset (&argv);
+ 	    gc_free (&gc);
+ 	  }
+-- 
+tg: (b8ae847..) c/0007/del_ipv6_on_close (depends on: c/0006/override_common_name)
 
