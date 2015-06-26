@@ -1,14 +1,15 @@
-Date: Fri, 26 Jun 2015 09:35:44 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20150626073544.GT382@...1296...>
-References: <1435248080-12670-1-git-send-email-Holger.Kummert@...1516...>
-Mime-Version: 1.0
+Message-ID: <558D268B.2070809@...1114...>
+Date: Fri, 26 Jun 2015 12:16:43 +0200
+From: David Sommerseth <openvpn.list@...1114...>
+MIME-Version: 1.0
+References: <558C0F5D.9060104@...2039...> <558C143F.30400@...1147...>
+	<558C217F.7080607@...2039...>
+In-Reply-To: <558C217F.7080607@...2039...>
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="5QHW5B18VhxdkQhx"
-Content-Disposition: inline
-In-Reply-To: <1435248080-12670-1-git-send-email-Holger.Kummert@...1516...>
-Subject: Re: [Openvpn-devel] [PATCH] Del ipv6 addr on close of linux tun
-	interface
+	protocol="application/pgp-signature";
+	boundary="g8UgMHT8kPnscFbTA8wjgI7J1h7xNKiuc"
+Subject: Re: [Openvpn-devel] Windows build fix for CVE-2015-4000
+Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,71 +18,99 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Holger Kummert <Holger.Kummert@...1516...>
+To: "Joseph S. Testa II" <jtesta@...2039...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---5QHW5B18VhxdkQhx
-Content-Type: text/plain; charset="us-ascii"
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--g8UgMHT8kPnscFbTA8wjgI7J1h7xNKiuc
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
+On 25/06/15 17:42, Joseph S. Testa II wrote:
+> On 06/25/2015 10:46 AM, Jan Just Keijser wrote:
+>> Joseph S. Testa II wrote:
+>>> Hi all,
+>>>
+>>>     I was wondering if an updated Windows build is being planned for
+>>> release soon to fix CVE-2015-4000, et. al, as described in
+>>> http://www.openssl.org/news/secadv_20150611.txt.
+>>>
+>>>     I haven't seen anyone talk about this on the mailing list since
+>>> the advisory came out two weeks ago, so I thought I'd ask.
 
-On Thu, Jun 25, 2015 at 06:01:20PM +0200, Holger Kummert wrote:
-> When a linux tun interface is closed (e.g. on disconnect)
-> an optional ipv6 addr that was previously set is deleted now.
-> Without this patch a later reconnect would fail with
-> 'Linux ip -6 addr add failed: external program exited with error status: =
-2'
-> and openvpn would exit.
+[...snip...]
 
-There is a trac ticket to that extent already (trac #141,
-http://community.openvpn.net/openvpn/ticket/141) - so thanks for the
-patch :-)
+> Thanks for the info.  How about the other CVE's listed in that OpenSSL=20
+> advisory?  I'm not able to tell if they're an issue in conjunction with=20
+> OpenVPN.  Has anyone done a review on them as well?
 
-I'm not sure I fully understand that usage scenario - which is one of
-the reasons why that ticket did not proceed.
-
-If you use normal nonpersistant tun interfaces, openvpn will destroy the
-tun interface at exit, removing the IPv6 address in the process.
-
-If you use *persistant* tun interfaces, this is usually done for a reason,
-like "bind (nameserver) cannot bind to new interface addresses because
-it is running without privileges" - but in this case, we should not remove
-the address (because then it's gone...) - and arguably not add it either,
-because it should already be there - because if not, the argument with
-"other software needs this address" is moot.
+I'm no security expert, so bear that in mind.  But I believe I have been
+poking long enough in the OpenVPN code base to have a certain overview
+of the SSL/TLS stack used by OpenVPN.
 
 
-So - help me understand the scenario.  Why are you using persistant tun
-interfaces but want dynamically added and removed addresses?
+* Malformed ECParameters causes infinite loop (CVE-2015-1788)
+Elliptic curves support is very limited in OpenVPN and not widely used,
+so I doubt this will be an issue on the client side.  Use of --tls-auth
+should at least reduce the attack vector to one of your own users.
 
-(I can see that OpenVPN misbehaves but I'm not sure I understand what=20
-"the best" solution should be - maybe go for "if that address is already
-there, do not touch it, otherwise, remove existing address and add
-new one" instead?)
 
-gert
+* Exploitable out-of-bounds read in X509_cmp_time (CVE-2015-1789)
+This might be an issue on OpenVPN on the server side.  However,
+--tls-auth will reduce the attack vector to one of your own users.
+
+On the client side, I don't see how it could get a bad CRL file
+installed and configured, and I don't recall any authentication
+callbacks being used on the client side.  In addition, if the client got
+a problem - there is an even bigger problem how the client managed to
+connect to a faulty OpenVPN server.
+
+
+* PKCS7 crash with missing EnvelopedContent (CVE-2015-1790)
+AFAIR, we don't do much PKCS#7 handling, so most likely not an issue for
+OpenVPN.  But this one should be double checked.
+
+
+* CMS verify infinite loop with unknown hash function (CVE-2015-1792)
+I haven't studied how OpenVPN verifies signed data, so this is unknown
+at the moment - unless Steffan or James have investigated this.
+
+
+* Race condition handling NewSessionTicket (CVE-2015-1791)
+This is not an issue for OpenVPN in normal situations.  However, if an
+attacker writes a special attack client using the OpenVPN protocol and
+it uses multiple connections in parallel to the server, this might be an
+issue.  But again, --tls-auth to the rescue, which reduces the possible
+attacker to one of your own users.
+
+
+* Invalid free in DTLS (CVE-2014-8176)
+OpenVPN does not implement DTLS, so this isn't an issue for OpenVPN.
+
+
+Bottom line:  --tls-auth is a fairly good protection layer against
+OpenSSL (or PolarSSL/mbedTLS) issues.  And I would sleep quite well at
+night if clients aren't updated to openssl 1.0.2b or 1.0.1n.
+
+
 --=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+kind regards,
 
---5QHW5B18VhxdkQhx
-Content-Type: application/pgp-signature
-Content-Disposition: inline
+David Sommerseth
+
+
+--g8UgMHT8kPnscFbTA8wjgI7J1h7xNKiuc
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
+Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQCVAwUBVY0A0KkuBuNlUUl1AQIx7gP+NQN7hRpVmRkTFS6f0O/sZtv5/vEjtmNS
-Q3lMIJcy5pZ4jqDlz0sZNlGwUdRZKgHI1eIbyLaQ+f/lZE21J5AwLWfrEFEbstU7
-BZlMOujrZ1PNbVvhTz5Cb6NQLXGphZlw4uAbq6TgWhPBzAv5p2NnwYPFzuVSXiJl
-ji2qgrBY3NY=
-=z7Lb
+iEYEARECAAYFAlWNJowACgkQDC186MBRfrqB5QCfS/fhPTwYCJkLKguB22yPZ4kI
+9esAnRxxonXrDrC3Tx55oZyCi2k6QA8F
+=c7oP
 -----END PGP SIGNATURE-----
 
---5QHW5B18VhxdkQhx--
+--g8UgMHT8kPnscFbTA8wjgI7J1h7xNKiuc--
 
