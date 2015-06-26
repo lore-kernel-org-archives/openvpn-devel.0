@@ -1,8 +1,13 @@
-From: Holger Kummert <Holger.Kummert@...1516...>
-Date: Thu, 25 Jun 2015 18:01:20 +0200
-Message-ID: <1435248080-12670-1-git-send-email-Holger.Kummert@...1516...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Del ipv6 addr on close of linux tun
+Date: Fri, 26 Jun 2015 09:35:44 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20150626073544.GT382@...1296...>
+References: <1435248080-12670-1-git-send-email-Holger.Kummert@...1516...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="5QHW5B18VhxdkQhx"
+Content-Disposition: inline
+In-Reply-To: <1435248080-12670-1-git-send-email-Holger.Kummert@...1516...>
+Subject: Re: [Openvpn-devel] [PATCH] Del ipv6 addr on close of linux tun
 	interface
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -12,59 +17,71 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Holger Kummert <Holger.Kummert@...1516...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-When a linux tun interface is closed (e.g. on disconnect)
-an optional ipv6 addr that was previously set is deleted now.
-Without this patch a later reconnect would fail with
-'Linux ip -6 addr add failed: external program exited with error status: 2'
-and openvpn would exit.
+--5QHW5B18VhxdkQhx
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
----
- src/openvpn/tun.c | 26 ++++++++++++++++++++++++++
- 1 file changed, 26 insertions(+)
+Hi,
 
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-old mode 100644
-new mode 100755
-index ba4b15e..8a2bccc
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -1687,6 +1687,32 @@ close_tun (struct tuntap *tt)
- 	    argv_msg (M_INFO, &argv);
- 	    openvpn_execve_check (&argv, NULL, 0, "Linux ip addr del failed");
- 
-+            if (tt->ipv6 && tt->did_ifconfig_ipv6_setup)
-+              {
-+                const char * ifconfig_ipv6_local = print_in6_addr (tt->local_ipv6, 0, &gc);
-+
-+#ifdef ENABLE_IPROUTE
-+                argv_printf (&argv, "%s -6 addr del %s/%d dev %s",
-+                                    iproute_path,
-+                                    ifconfig_ipv6_local,
-+                                    tt->netbits_ipv6,
-+                                    tt->actual_name
-+                                    );
-+                argv_msg (M_INFO, &argv);
-+                openvpn_execve_check (&argv, NULL, 0, "Linux ip -6 addr del failed");
-+#else
-+                argv_printf (&argv,
-+                            "%s %s del %s/%d",
-+                            IFCONFIG_PATH,
-+                            tt->actual_name,
-+                            ifconfig_ipv6_local,
-+                            tt->netbits_ipv6
-+                            );
-+                argv_msg (M_INFO, &argv);
-+                openvpn_execve_check (&argv, NULL, 0, "Linux ifconfig inet6 del failed");
-+#endif
-+              }
-+
- 	    argv_reset (&argv);
- 	    gc_free (&gc);
- 	  }
--- 
-tg: (b8ae847..) c/0007/del_ipv6_on_close (depends on: c/0006/override_common_name)
+On Thu, Jun 25, 2015 at 06:01:20PM +0200, Holger Kummert wrote:
+> When a linux tun interface is closed (e.g. on disconnect)
+> an optional ipv6 addr that was previously set is deleted now.
+> Without this patch a later reconnect would fail with
+> 'Linux ip -6 addr add failed: external program exited with error status: =
+2'
+> and openvpn would exit.
+
+There is a trac ticket to that extent already (trac #141,
+http://community.openvpn.net/openvpn/ticket/141) - so thanks for the
+patch :-)
+
+I'm not sure I fully understand that usage scenario - which is one of
+the reasons why that ticket did not proceed.
+
+If you use normal nonpersistant tun interfaces, openvpn will destroy the
+tun interface at exit, removing the IPv6 address in the process.
+
+If you use *persistant* tun interfaces, this is usually done for a reason,
+like "bind (nameserver) cannot bind to new interface addresses because
+it is running without privileges" - but in this case, we should not remove
+the address (because then it's gone...) - and arguably not add it either,
+because it should already be there - because if not, the argument with
+"other software needs this address" is moot.
+
+
+So - help me understand the scenario.  Why are you using persistant tun
+interfaces but want dynamically added and removed addresses?
+
+(I can see that OpenVPN misbehaves but I'm not sure I understand what=20
+"the best" solution should be - maybe go for "if that address is already
+there, do not touch it, otherwise, remove existing address and add
+new one" instead?)
+
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--5QHW5B18VhxdkQhx
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQCVAwUBVY0A0KkuBuNlUUl1AQIx7gP+NQN7hRpVmRkTFS6f0O/sZtv5/vEjtmNS
+Q3lMIJcy5pZ4jqDlz0sZNlGwUdRZKgHI1eIbyLaQ+f/lZE21J5AwLWfrEFEbstU7
+BZlMOujrZ1PNbVvhTz5Cb6NQLXGphZlw4uAbq6TgWhPBzAv5p2NnwYPFzuVSXiJl
+ji2qgrBY3NY=
+=z7Lb
+-----END PGP SIGNATURE-----
+
+--5QHW5B18VhxdkQhx--
 
