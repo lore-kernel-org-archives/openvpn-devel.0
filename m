@@ -1,11 +1,14 @@
-Message-ID: <558D72FD.1010707@...2039...>
-Date: Fri, 26 Jun 2015 11:42:53 -0400
-From: "Joseph S. Testa II" <jtesta@...2039...>
+Message-ID: <558D8597.2040501@...1516...>
+Date: Fri, 26 Jun 2015 19:02:15 +0200
+From: Holger Kummert <Holger.Kummert@...1516...>
 MIME-Version: 1.0
-References: <558C0F5D.9060104@...2039...>	<558C143F.30400@...1147...>	<558C217F.7080607@...2039...>	<558D268B.2070809@...1114...>	<20150626112850.GV382@...1296...>
-	<558D3BFF.3020808@...1147...>
-In-Reply-To: <558D3BFF.3020808@...1147...>
-Subject: Re: [Openvpn-devel] Windows build fix for CVE-2015-4000
+References: <1435248080-12670-1-git-send-email-Holger.Kummert@...1516...>
+	<20150626073544.GT382@...1296...> <558D2D98.70905@...1516...>
+	<20150626112401.GU382@...1296...>
+	<20150626143636.GY382@...1296...>
+In-Reply-To: <20150626143636.GY382@...1296...>
+Subject: Re: [Openvpn-devel] [PATCH] Del ipv6 addr on close of linux tun
+	interface
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,43 +17,64 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Type: text/plain; charset="windows-1252"; format=flowed
 Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-On 06/26/2015 07:48 AM, Jan Just Keijser wrote:
-> On 26/06/15 13:28, Gert Doering wrote:
->> Hi,
->>
->> On Fri, Jun 26, 2015 at 12:16:43PM +0200, David Sommerseth wrote:
->>> * Exploitable out-of-bounds read in X509_cmp_time (CVE-2015-1789)
->>> This might be an issue on OpenVPN on the server side.  However,
->>> --tls-auth will reduce the attack vector to one of your own users.
->> As we're not using X509_cmp_time()...
->>
->>
-> that was my initial thought as well, but X509_cmp_time might be (is)
-> called by OpenSSL internally to check the dates on certificates and
-> perhaps CRLs. It would need further investigation, I guess.
 
-Might an in-depth investigation on these issues take more time than 
-building an updated installer?
+Hello,
 
-Also, while David Sommerseth suggested in another email that --tls-auth 
-provides good mitigation, note that not everyone is using that option. 
-When I recently set up pfSense router, I couldn't get tls-auth working 
-for some reason (probably quirks on the pfSense side).
+Am 26.06.2015 um 16:36 schrieb Gert Doering:
+> Hi,
+>
+> On Fri, Jun 26, 2015 at 01:24:02PM +0200, Gert Doering wrote:
+>> This is more wondering about what we *should* do for persistant tun
+>> interfaces...  (and, now, why your tun ifs behave that way even if they
+>> are not actually persistant :) ).
+>
+> Mulling over this for a while, I think I've come to a conclusion on
+> "what we should do", and "what we should do in the 'persistant tun'
+> case" (#141)
+>
+>   - normal case: we do "ip addr add" and "delete" - proper housekeeping,
+>     and having IPv4 and IPv6 in sync  (so, Holger's patch for Linux,
+>     and possible similar additional code for all the other OSes)
 
-Personally, I'd feel better with an updated client since I have 
-customers using it to access patient health information.  OpenVPN is the 
-only entry point into their networks, which worries me because the other 
-proprietary software they have is riddled with security holes 
-(unfortunately I have no control over this).  One successful OpenSSL 
-exploit is all it would take to cause a disaster.
+I looked at some other OSes in tun.c and found no other with this flaw
+at a first glance (other do simply a 'destroy' or 'unplumb' of the 
+interface). But probably I oversaw something here.
 
-I'd offer to help update the installer, but... you don't typically want 
-to accept help from a stranger for building binaries...
+>
+>   - if someone really wants/needs a persistant device (created with
+>     "openvpn --mktun --dev tun3" on Linux / "ifconfig tun3 create"
+>     on *BSD), and expect it to always keep the addresses on it, they
+>     should call "openvpn --ifconfig-noexec".
 
-    - Joe
+Yes, this sounds like a good idea to me. Had also something like
+"--ifconfig-notouch" in mind, but your proposal is shorter.
 
+>
+>     This will then neither add *nor delete* the IP addresses on the
+>     interface (of course, in that case you need to run the ifconfig /
+>     ip addr statements manually before starting OpenVPN, or from an --up
+>     script which can then choose to just ignore the error if the address is
+>     already there).  So this would cover the case "I want <daemon x> to
+>     listen on my tun device, but it cannot rebind if the interface goes
+>     away".
+>
+> Simple and pragmatic enough?
+
+I second this proposal, and it would solve a long outstanding bug.
+
+
+Holger
+
+>
+> (Having OpenVPN check addresses for persistant tun interfaces, and only
+> add them if needed, and actually *change* them if needed would be a cool
+> thing to have, but we have no infrastructure yet to do so)
+>
+> gert
+>
 
