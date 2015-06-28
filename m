@@ -1,10 +1,11 @@
-Date: Fri, 26 Jun 2015 22:18:21 +0200 (CEST)
-Message-Id: <201506262018.t5QKILJd010421@...1295...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <1435248080-12670-1-git-send-email-Holger.Kummert@...1516...>
-References: <1435248080-12670-1-git-send-email-Holger.Kummert@...1516...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Del ipv6 addr on close of linux
-	tun interface
+Date: Sun, 28 Jun 2015 21:24:15 +0300
+From: Pasi =?iso-8859-1?Q?K=E4rkk=E4inen?= <pasik@...124...>
+Message-ID: <20150628182415.GA17713@...1281...>
+References: <558AD438.9050105@...515...>
+MIME-Version: 1.0
+In-Reply-To: <558AD438.9050105@...515...>
+Subject: Re: [Openvpn-devel] Writing an OpenVPN-specific NSSM configuration
+ frontend?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,35 +14,40 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Holger Kummert <Holger.Kummert@...1516...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+To: Samuli =?iso-8859-1?Q?Sepp=E4nen?= <samuli@...515...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-ACK.
+On Wed, Jun 24, 2015 at 07:00:56PM +0300, Samuli Sepp=E4nen wrote:
+> Hi,
+>=20
+> There is a question at the end, so scroll down if you're impatient :).=20
+> Anyways, some of you may know I've been looking into NSSM:
+>=20
+> <http://nssm.cc>
+>=20
+> The idea is to use NSSM to replace the OpenVPN Service Wrapper=20
+> ("openvpnserv.exe") which is buggy, unmaintained, causes all sorts of=20
+> issues and seems disintegrate more and more with every new Windows releas=
+e.
+>=20
+> NSSM on is actively maintained[1] general purpose service manager which=20
+> can launch an arbitrary program and restart it if it crashes. NSSM=20
+> registers itself as a Windows service and manages a set of services,=20
+> which can be arbitrary programs. In our case nssm.exe would run a=20
+> command such as this:
+>=20
+> ..\bin\openvpn.exe --config default.ovpn
+>=20
+> The working directory would be set to C:\Program Files\OpenVPN\config.=20
+>
 
-Your patch has been applied to the master and release/2.3 branch.
+If changing the OpenVPN Windows stuff, please also support having config fi=
+les under user's profile directory,
+not only in the system-wide config-directory.
 
-I've added a bit of text to the commit message to point to trac#141
-and --ifconfig-noexec.
-
-commit e5f71d674e3b119d6a252d7cef1c17b5c2b36a9a (master)
-commit 40e6c586124e6d7a764b859dad8515998c89c693 (master)
-
-Author: Holger Kummert
-Date:   Thu Jun 25 18:01:20 2015 +0200
-
-     Del ipv6 addr on close of linux tun interface
-
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1435248080-12670-1-git-send-email-Holger.Kummert@...1516...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/9810
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+-- Pasi
 
 
