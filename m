@@ -1,11 +1,8 @@
-Date: Sun, 28 Jun 2015 21:24:15 +0300
-From: Pasi =?iso-8859-1?Q?K=E4rkk=E4inen?= <pasik@...124...>
-Message-ID: <20150628182415.GA17713@...1281...>
-References: <558AD438.9050105@...515...>
+Message-ID: <559102CE.6030008@...1147...>
+Date: Mon, 29 Jun 2015 10:33:18 +0200
+From: Jan Just Keijser <janjust@...1147...>
 MIME-Version: 1.0
-In-Reply-To: <558AD438.9050105@...515...>
-Subject: Re: [Openvpn-devel] Writing an OpenVPN-specific NSSM configuration
- frontend?
+Subject: [Openvpn-devel] minor man page issue
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,40 +11,31 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-To: Samuli =?iso-8859-1?Q?Sepp=E4nen?= <samuli@...515...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-On Wed, Jun 24, 2015 at 07:00:56PM +0300, Samuli Sepp=E4nen wrote:
-> Hi,
->=20
-> There is a question at the end, so scroll down if you're impatient :).=20
-> Anyways, some of you may know I've been looking into NSSM:
->=20
-> <http://nssm.cc>
->=20
-> The idea is to use NSSM to replace the OpenVPN Service Wrapper=20
-> ("openvpnserv.exe") which is buggy, unmaintained, causes all sorts of=20
-> issues and seems disintegrate more and more with every new Windows releas=
-e.
->=20
-> NSSM on is actively maintained[1] general purpose service manager which=20
-> can launch an arbitrary program and restart it if it crashes. NSSM=20
-> registers itself as a Windows service and manages a set of services,=20
-> which can be arbitrary programs. In our case nssm.exe would run a=20
-> command such as this:
->=20
-> ..\bin\openvpn.exe --config default.ovpn
->=20
-> The working directory would be set to C:\Program Files\OpenVPN\config.=20
->
+hi all,
 
-If changing the OpenVPN Windows stuff, please also support having config fi=
-les under user's profile directory,
-not only in the system-wide config-directory.
+whilst working on the --verify-client-cert patch I just noticed this in 
+the man page:
 
--- Pasi
+--compat-names [no-remapping] (DEPRECATED)
+
+[....]
+               Please  note: This option is immediately deprecated. It 
+is only implemented to make the tran-
+               sition to the new formatting less intrusive.  It will be 
+removed either  in  OpenVPN  v2.4  or
+               v2.5.   So  please  make sure you use the 
+--verify-x509-name option instead of --tls-remote as
+               soon as possible and update your scripts where necessary.
+
+
+I read it three times and still can't figure out why the disclaimer 
+about --verify-x509-name instead of --tls-remote is included in this 
+option.  Is this a copy+paste error?
+
+JJK
 
 
