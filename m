@@ -1,10 +1,15 @@
-Date: Tue, 30 Jun 2015 09:37:01 +0200 (CEST)
-Message-Id: <201506300737.t5U7b1SZ001795@...1295...>
+Date: Tue, 30 Jun 2015 09:57:27 +0200
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1435581995-11820-1-git-send-email-arne@...1227...>
-References: <1435581995-11820-1-git-send-email-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Report missing endtags of
-	inline files as warnings
+Message-ID: <20150630075727.GO382@...1296...>
+References: <1435611582-26553-1-git-send-email-steffan@...1856...>
+	<55922E18.2060204@...1227...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="w8NEM23WsiTAHpTR"
+Content-Disposition: inline
+In-Reply-To: <55922E18.2060204@...1227...>
+Subject: Re: [Openvpn-devel] [PATCH] Increase control channel packet size
+	for faster handshakes
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,35 +18,70 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
 To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-ACK.
+--w8NEM23WsiTAHpTR
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Your patch has been applied to the master and release/2.3 branch.
+Hi,
 
-I've added a reference to trac #568 and made it M_FATAL / "ERROR:" for
-2.4, while the release/2.3 patch went in "as is".
+On Tue, Jun 30, 2015 at 07:50:16AM +0200, Arne Schwabe wrote:
+> > Note that this patch does *not* yield an optimal solution, but it is a
+> > simple and rather safe change that will improve connection setup times
+> > significantly.
+>
+> I have no experience with the code and what happens on a small MTU
+> connection. Are there still very strange small MTU connections (like 56k
+> dialup modems) around?=20
 
-commit 68eecf76978a80bd5d88e944e4ed5e42bf2fd8e4 (master)
-commit 19475259c92b4747c4c9d3a3d025bdeb170e859c (release/2.3)
+A 56k dialup doesn't *need* to have a strange small MTU - at least not
+unless someone followed the "speed optimization tricks" common at that
+time and messed up their windows 3.1 TCP/IP settings... :-)
 
-Author: Arne Schwabe
-Date:   Mon Jun 29 14:46:35 2015 +0200
+But anyway.  If somone's line has a MTU below 1300 bytes, the control
+packets will end up being fragmented - which is not necessarily a killer,
+but in combination with NAT routers might indeed be a problem.
 
-     Report missing endtags of inline files as warnings
+Now, *if* someone has such a line, and non-working fragmentation, their
+data packets will also run into this.  So I wonder if we can (ab-)use=20
+one of the existing mtu-capping command line arguments, like --link-mtu,
+to set a configurable upper bound for control packets as well (and default
+to 1250 otherwise).
 
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1435581995-11820-1-git-send-email-arne@...1227...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/9830
-     Signed-off-by: Gert Doering <gert@...1296...>
+The option is there, the manpage description of the option "fits", we
+just need to make it visible inside ssl.c... :-) - Steffan?
 
+> On the other hand the OpenVPN 3.0 also uses 1200ish packet.
 
---
-kind regards,
+Indeed...  but then, in a household with 56k Internet, you just do not
+want to use any modern iOS or Android gear anyway...  ("upgrade Angry
+Birds?" - "yes!" - "ok, ready in 36 hours!")
 
-Gert Doering
+gert
 
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--w8NEM23WsiTAHpTR
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQCVAwUBVZJL56kuBuNlUUl1AQLXagP+NejUC5DWPXwPgF9tqqcmbhIPciWLEs1T
+L+cREewKf9DFUqm4ex/npdKQcEfvhvetZfbNuhckOGL0cgObwhkzwa3nAxaMxRjp
+iTeJT5bssXMTM2WQZf3Ls69vD+wHu5p0KLDgdNmgXQ3En93LRmJwjruujWapAHut
+TmogQ0Xxskc=
+=Pnep
+-----END PGP SIGNATURE-----
+
+--w8NEM23WsiTAHpTR--
 
