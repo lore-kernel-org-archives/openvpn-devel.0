@@ -1,11 +1,12 @@
-Message-ID: <55922E18.2060204@...1227...>
-Date: Tue, 30 Jun 2015 07:50:16 +0200
+Message-ID: <55922EC6.6050908@...1227...>
+Date: Tue, 30 Jun 2015 07:53:10 +0200
 From: Arne Schwabe <arne@...1227...>
 MIME-Version: 1.0
-References: <1435611582-26553-1-git-send-email-steffan@...1856...>
-In-Reply-To: <1435611582-26553-1-git-send-email-steffan@...1856...>
-Subject: Re: [Openvpn-devel] [PATCH] Increase control channel packet size
- for faster handshakes
+References: <1435581995-11820-1-git-send-email-arne@...1227...>
+	<20150629182224.GN382@...1296...>
+In-Reply-To: <20150629182224.GN382@...1296...>
+Subject: Re: [Openvpn-devel] [PATCH] Report missing endtags of inline files
+ as warnings
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,31 +15,29 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
-To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Am 29.06.15 um 22:59 schrieb Steffan Karger:
-> Instead of limiting the control channel TCP/UDP packet payload size at
-> '100 bytes + real control channel overhead' (~140 bytes ethernet payload),
-> increase the max TCP/UDP payload size to '1250 bytes - calculated overhea=
-d'
-> (~1210 bytes ethernet payload).  This decreases the number of packets
-> required to establish a connection by a factor 10, but still has a
-> comfortable enough margin to succeed for lower-MTU connections.
+Am 29.06.15 um 20:22 schrieb Gert Doering:
+> Hi,
 >
-> This should especially help out for complex configs (trac #545), but also
-> for high-latency connections (trac #543).
+> On Mon, Jun 29, 2015 at 02:46:35PM +0200, Arne Schwabe wrote:
+>>  	}
+>>        buf_printf (&buf, "%s", line);
+>>      }
+>> +  if (!endtagfound)
+>> +    msg (M_WARN, "WARNING: Endtag %s missing", close_tag);
+> Generally speaking, ACK.  I wonder whether this should be M_WARN or
+> M_FATAL, though?
 >
-> Note that this patch does *not* yield an optimal solution, but it is a
-> simple and rather safe change that will improve connection setup times
-> significantly.
+> Tested, nicely reports the missing </key> in my test case, but then
+> proceeds to "not do what the user intended"...
 >
-I have no experience with the code and what happens on a small MTU
-connection. Are there still very strange small MTU connections (like 56k
-dialup modems) around? On the other hand the OpenVPN 3.0 also uses
-1200ish packet.
+> (Can't commit it anyway, as mid.gmane.org is not giving me URLs right now...)
+>
+Maybe M_WARN for 2.3, M_FATAL for 2.4?
 
 Arne
-
 
