@@ -1,10 +1,11 @@
-Date: Wed, 1 Jul 2015 17:39:43 +0200 (CEST)
-Message-Id: <201507011539.t61FdhZl007032@...1295...>
+Date: Wed, 1 Jul 2015 17:40:39 +0200
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1435693496-10931-1-git-send-email-steffan@...1856...>
-References: <1435693496-10931-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Increase control channel packet
-	size for faster handshakes
+Message-ID: <20150701154039.GG382@...1296...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="r4XptB1irwxzaV4E"
+Content-Disposition: inline
+Subject: [Openvpn-devel] RfD: speed up PUSH_REQUEST...
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,43 +14,82 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Steffan Karger <steffan@...1856...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-ACK.
+--r4XptB1irwxzaV4E
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Your patch has been applied to the master branch.
+Hi,
 
-I intend to apply it to 2.3 as well, but want to give it a bit more
-beating - it looks good, but running in production for a few days should
-give us more data.
+experimenting with the MTU patch, I discovered that we basically sit
+idle for two seconds on the client between "TLS is up!" and "PUSH_REQUEST".
 
-Added "trac #545" to the commit message.
+This is part due to the coarse granularity of, well, our coarse timers,
+but in part due to *two* timers having to fire...
 
-(As you've noted, this is not yet perfect - there is still quite a bit of
-"small packet chatter" going on, even if both sides have the patch - and
-there seems to be an arbitrary delay of 2 seconds between "ok, TLS is good!"
-and "SENT CONTROL.*PUSH_REQUEST"... -> so, more investigation needed)
+- TLS is done, we schedule an "wait_for_connect" timer to fire in +1 second
+  (init.c, do_init_timers())
 
-commit fc91d4b0071178e298052078431fb86f03be84fc (master)
+- when that timer fires, 1 second after TLS completes, we set up *another*
+  timer inside check_connection_established_dowork(), that is intended to
+  fire in +1 second
 
-Author: Steffan Karger
-Date:   Tue Jun 30 21:44:56 2015 +0200
+- +1 second later, we send PUSH_REQUEST
 
-     Increase control channel packet size for faster handshakes
+due to the calling sequence and check_push_request() being called right
+after check_connection_established(), it seems to be fairly safe to just
+set up the event to "fire right away" (*having* the event is needed to
+be able to reset it to "fire again in +5 seconds").
 
-     Signed-off-by: Steffan Karger <steffan@...1856...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1435693496-10931-1-git-send-email-steffan@...1856...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/9841
-     Signed-off-by: Gert Doering <gert@...1296...>
+So, with the patch below on top of the MTU patch, connection times to a
+server which is 150ms away from me went down from 5 seconds to 2 seconds
+- which I consider quite significant :-)
+
+Anyone better versed in the history of this code who can tell me whether
+this is safe, or why the extra delay is there?
+
+gert
 
 
---
-kind regards,
 
-Gert Doering
 
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index 6d459d2..e1571ec 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -212,8 +212,8 @@ check_connection_established_dowork (struct context *c)
+ 					0);
+ 		}
+ #endif
+-	      /* send push request in 1 sec */
+-	      event_timeout_init (&c->c2.push_request_interval, 1, now);
++	      /* fire up push request right away (already 1s delayed) */
++	      event_timeout_init (&c->c2.push_request_interval, 0, now);
+ 	      reset_coarse_timers (c);
+ 	    }
+ 	  else
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--r4XptB1irwxzaV4E
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQCVAwUBVZQJ96kuBuNlUUl1AQK9rwQAorvir4UVB5gCT46UJGk5MWOv4H1+/G0q
+Phg9sKGwDLnQcF562xqrAVmE97MLpgWUWooOfDNbxReWWHKBAKyuLjHaJrJeL+1V
+m1U+AlrFjT963WPPRo/v5E392zqnAMigrZU2ZCHFE5FurWD+X9VAdt/oZ1ovXXOG
+iq5XjZCBUK0=
+=7Vzq
+-----END PGP SIGNATURE-----
+
+--r4XptB1irwxzaV4E--
 
