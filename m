@@ -1,12 +1,10 @@
-Message-ID: <303B83759BE84F7CA2BE9C781DE4BA34@...1853...>
-From: <debbie10t@...277...>
-References: <99A30EB899EB448B846248EC2E9A353A@...1853...>
-	<5593EBF6.4060203@...1114...>
-	<1896EA4F53C84141B287C36403D7DE21@...1853...>
-	<55942AFD.5010407@...1114...>
-Date: Wed, 1 Jul 2015 21:07:03 +0100
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] OpenVPN 2.3.7-I602-x86_64.exe download 404 Error
+In-Reply-To: <015601d0b436$d555ad60$80010820$@gmail.com>
+References: <015601d0b436$d555ad60$80010820$@gmail.com>
+From: Steffan Karger <steffan@...1856...>
+Date: Wed, 1 Jul 2015 23:16:25 +0200
+Message-ID: <CAA1AbxKh_kU4NU2s+4Op9LGTA4cndKcGdCXkt5UXeCgTbpAKTQ@...278...>
+Subject: Re: [Openvpn-devel] Compiling issue on Visual Studio 2010
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,44 +13,22 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; format="flowed"; charset="windows-1252"; reply-type="original"
-Content-Transfer-Encoding: quoted-printable
-To: openvpn.list@...1114...
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+To: Fish Wang <fish.thss@...277...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
+Hi,
 
------ Original Message -----=20
-From: "David Sommerseth" <openvpn.list@...1114...>
-To: <debbie10t@...277...>
-Cc: <openvpn-devel@lists.sourceforge.net>; "Samuli Sepp=E4nen"=20
-<samuli@...515...>
-Sent: Wednesday, July 01, 2015 7:01 PM
-Subject: Re: OpenVPN 2.3.7-I602-x86_64.exe download 404 Error
+On Wed, Jul 1, 2015 at 9:47 PM, Fish Wang <fish.thss@...277...> wrote:
+> Visual Studio 2010 refuses to compile the latest code on branch release/2.3
+> because __func__ is not supported. Microsoft supports __FUNCTION__ instead
+> of __func__ in their compiler. VS 2013 complains the same.
 
->> The *only* link which appears to be broken is
->>
->>   - OpenVPN 2.3.7-I602-x86_64.exe
->>
->> https://swupdate.openvpn.org/community/releases/openvpn-install-2.3.7-I6=
-02-x86_64.exe
->>
->> Tried from various PC at various sites:
->
-> I've done quite some testing ... and there are definitely issues on
-> here.  But I also noticed you use the wrong URL!  Try using
->
->
-> <https://swupdate.openvpn.net/community/releases/openvpn-install-2.3.7-I6=
-02-x86_64.exe>
->
-> That is .NET instead of .ORG.
+Thanks for reporting.  That's probably my fault, sorry.  I think we
+still support VS, so we'll fix it, but you might want to consider
+using mingw.  That's what the current openvpn developers use for
+Windows builds (either native, or cross-compile from linux/BSD).
 
-All the links on the download site are .org and all but this one work ...
-My intention was simply to inform the persons responsible.
-
-However, .net for that link does work.
-In wget and Windows FF
-
-Regards
-
+-Steffan
 
