@@ -1,10 +1,12 @@
-Message-ID: <55952DA2.6010202@...1147...>
-Date: Thu, 02 Jul 2015 14:25:06 +0200
-From: Jan Just Keijser <janjust@...1147...>
-MIME-Version: 1.0
+Date: Thu, 2 Jul 2015 14:38:53 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20150702123852.GS382@...1296...>
 References: <55950ACC.1000909@...1147...>
-	<CAEsd45S8h+Z4tgLh2uDiMbxW+Q2VzLdPzu6jjViUwmVOC0=cUA@...278...>
-In-Reply-To: <CAEsd45S8h+Z4tgLh2uDiMbxW+Q2VzLdPzu6jjViUwmVOC0=cUA@...278...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="fSEfX2LccnY77JEK"
+Content-Disposition: inline
+In-Reply-To: <55950ACC.1000909@...1147...>
 Subject: Re: [Openvpn-devel] [PATCH] Add TFTP and WPAD DHCP options
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -14,71 +16,47 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: "Jonathan K. Bullard" <jkbullard@...277...>
+To: Jan Just Keijser <janjust@...1147...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+
+--fSEfX2LccnY77JEK
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
 Hi,
 
-On 02/07/15 14:16, Jonathan K. Bullard wrote:
-> On Thu, Jul 2, 2015 at 2:56 AM, Jan Just Keijser <janjust@...1147...> wrote:
->> Attached is the patch to add the TFTP and WPAD DHCP options. The patch
->> is based on openvpn 2.3.7 as I did not know how to do a windows mingw
->> build of the git version ...
->> The patch was tested on Windows XP 32bit and Windows 7sp1 64bit.
->> A 64bit windows binary can be found @
->> http://www.nikhef.nl/~janjust/openvpn-2.3.7-dhcp-win64.exe
->>
->> Signed-off-by: Jan Just Keijser <janjust@...1147...>
-> <snip>
->
-> NAK, but easy to fix (I think). Three small problems are described below.
->
->> @@ -6153,6 +6157,14 @@
->>          {
->>            o->disable_nbt = 1;
->>          }
->> +         else if (streq (p[1], "TFTP") && p[2])
->> +       {
->> +         o->tftp = p[2];
->> +       }
->> +         else if (streq (p[1], "WPAD") && p[2])
->> +       {
->> +         o->wpad_url = p[2];
->> +       }
->>         else
->>          {
->>            msg (msglevel, "--dhcp-option: unknown option type '%s' or
->> missing parameter", p[1]);
-> 1. Shouldn't "dhcp_option_address_parse()" be used to set o->tftp and
-> o->wpad_url? (In the code just before this, it is used for NTP, WINS,
-> etc.)
->
-nope : both options are strings, not inet addresses. You can specify a 
-hostname for both (as the RFC states)
->> --- openvpn-2.3.7/src/openvpn/tun.c     2015-06-08 08:16:35.000000000 +0200
->> +++ /tmp/build-x86_64/openvpn-2.3.7/src/openvpn/tun.c   2015-07-02
->> 11:30:19.979658823 +0200
->> @@ -4692,6 +4692,23 @@
->>       buf_write_u8 (buf,  4);  /* length of the vendor specified field */
->>       buf_write_u32 (buf, 0x002);
->>     }
->> +
->> +    write_dhcp_str (buf, 66, o->tftp, &error);
->> +    write_dhcp_str (buf, 150, o->tftp, &error);
->> +
->> +  /* IE6 seems to requires an extra charachter at the end of the URL */
-> <snip>
->
-> 2. This should be "character", not "charachter".
-thx
+On Thu, Jul 02, 2015 at 11:56:28AM +0200, Jan Just Keijser wrote:
+> +    write_dhcp_str (buf, 66, o->tftp, &error);
+> +    write_dhcp_str (buf, 150, o->tftp, &error);
 
-> 3. This should be documented on the man page, too.
-ah, yes, will do
+This does not look safe to me (or I'm overlooking something) - if=20
+o->tftp is not set, it will do "strlen(o->tftp)" inside write_dhcp_str()...
 
-thx for the review,
+(And we generally shouldn't set options that we do not have anything=20
+to say for :) ).
 
-JJK
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
+--fSEfX2LccnY77JEK
+Content-Type: application/pgp-signature
+Content-Disposition: inline
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQCVAwUBVZUw3KkuBuNlUUl1AQJXHwP9F6a4ftHs2b7NkKtiCophF1jiSJq+x9bJ
+oNDCroZyzH6HeBm5MTEtVYj4ZQP316kFX4lBqg6KOkcn3KNxcLzClpk5YTFD3klL
+CCIfepMsS6Jp3jlJPNW9MMWJ3Tr9EHH9CXpYFy5+OY33nnYal1v8QjZK8tExdqAE
+7DSsgnP8nu8=
+=7KZb
+-----END PGP SIGNATURE-----
+
+--fSEfX2LccnY77JEK--
 
