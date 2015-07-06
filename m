@@ -1,8 +1,8 @@
 MIME-Version: 1.0
-Date: Mon, 6 Jul 2015 17:54:35 +0530
-Message-ID: <CANXi7D22CPWQSG74VtCAD0ni4V8eSO2dggQHMx9R7JPGGo=8fQ@...278...>
+Date: Mon, 6 Jul 2015 18:01:25 +0530
+Message-ID: <CANXi7D3zhBEs8horYZ8XQC6vWb+dTbY0dECu6i1NaA9hZ9Yo_w@...278...>
 From: Arun Kumar <mailinform@...277...>
-Subject: [Openvpn-devel] Why TCP connection closed error comes?
+Subject: [Openvpn-devel] how to send real packets via openvpn tunnel.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,41 +16,70 @@ Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
 Hi,
-I installed openvpn and try to create a tap connection.
-So, host1 and host2 both have br0 interface and tap0.
-I created certificates as described and put it in /etc/openvpn dir.
+i am new to openvpn.
 
-When i run openvpn at both server and client side,
-it shows following error,
+i created tap tunnel between two hosts, both host have br0 which eth0 attached,
+br0 has the IP address.
+I attached the tap0 to br0 as given in example.
+when i ping client machine to server br0 (192.168.18.110), the ping is going.
+Client br0 IP address is 192.168.18.75.
 
-Mon Jul  6 18:05:36 2015 TCPv4_CLIENT link local: [undef]
-Mon Jul  6 18:05:36 2015 TCPv4_CLIENT link remote: [AF_INET]10.114.14.190:1194
-Mon Jul  6 18:05:36 2015 Connection reset, restarting [0]
-Mon Jul  6 18:05:36 2015 TCP/UDP: Closing socket
-Mon Jul  6 18:05:36 2015 SIGUSR1[soft,connection-reset] received,
-process restarting
-Mon Jul  6 18:05:36 2015 Restart pause, 5 second(s)
-Mon Jul  6 18:05:41 2015 NOTE: OpenVPN 2.1 requires '--script-security
-2' or higher to call user-defined scripts or executables
-Mon Jul  6 18:05:41 2015 Re-using SSL/TLS context
-Mon Jul  6 18:05:41 2015 Control Channel MTU parms [ L:1575 D:168
-EF:68 EB:0 ET:0 EL:0 ]
-Mon Jul  6 18:05:41 2015 Socket Buffers: R=[87380->131072] S=[16384->131072]
-Mon Jul  6 18:05:41 2015 Data Channel MTU parms [ L:1575 D:1450 EF:43
-EB:4 ET:32 EL:0 ]
-Mon Jul  6 18:05:41 2015 Local Options hash (VER=V4): '8a6c6b5b'
-Mon Jul  6 18:05:41 2015 Expected Remote Options hash (VER=V4): '47106f19'
-Mon Jul  6 18:05:41 2015 Attempting to establish TCP connection with
-[AF_INET]10.114.14.190:1194 [nonblock]
-Mon Jul  6 18:05:42 2015 TCP connection established with
-[AF_INET]10.114.14.190:1194
-Mon Jul  6 18:05:42 2015 TCPv4_CLIENT link local: [undef]
-Mon Jul  6 18:05:42 2015 TCPv4_CLIENT link remote: [AF_INET]10.114.14.190:1194
-Mon Jul  6 18:05:42 2015 Connection reset, restarting [0]
+Is the ping going via openvpn tunnel.
+Because if i stop openvpn also ping is going.
+Tap interfaces not have any IP address.
+Is my setup correct?.
+
+My client file is,
+### Client configuration file for OpenVPN
+
+# Specify that this is a client
+client
+
+# Bridge device setting
+dev tap0
+proto tcp
+# Host name and port for the server (default port is 1194)
+# note: replace with the correct values your server set up
+remote 192.168.18.110 1194
+
+# Client does not need to bind to a specific local port
+nobind
+
+# Keep trying to resolve the host name of OpenVPN server.
+## The windows GUI seems to dislike the following rule.
+##You may need to comment it out.
+resolv-retry infinite
+
+# Preserve state across restarts
+persist-key
+persist-tun
+
+# SSL/TLS parameters - files created previously
+ca ca.crt
+cert client1.crt
+key client1.key
+#secret static.key
+# Since we specified the tls-auth for server, we need it for the client
+# note: 0 = server, 1 = client
+tls-auth /etc/openvpn/ta.key 1
+
+ns-cert-type server
+# Specify same cipher as server
+cipher BF-CBC
+#--duplicate-cn
+# Use compression
+#comp-lzo
+
+# Log verbosity (to help if there are problems)
+verb 3
 
 
-What is the problem and why it comes?.
+If I want to send from external host via client machine, which routing
+address do I needs to give ,
+Is it client br0 address?.
+Please help me on this.
 
 Thanks,
-Kumar raj
+
+Kumar Raj
 
