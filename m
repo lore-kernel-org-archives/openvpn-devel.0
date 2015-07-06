@@ -1,12 +1,8 @@
-Message-ID: <5596980F.6010600@...1147...>
-Date: Fri, 03 Jul 2015 16:11:27 +0200
-From: Jan Just Keijser <janjust@...1147...>
 MIME-Version: 1.0
-References: <55966BE0.5090400@...1147...> <55966F4A.7010008@...1114...>
-	<559672D0.1030904@...1147...> <20150703115639.GC57772@...2041...>
-	<20150703131545.GZ382@...1296...>
-In-Reply-To: <20150703131545.GZ382@...1296...>
-Subject: Re: [Openvpn-devel] Adding routes on Windows using DHCP
+Date: Mon, 6 Jul 2015 17:54:35 +0530
+Message-ID: <CANXi7D22CPWQSG74VtCAD0ni4V8eSO2dggQHMx9R7JPGGo=8fQ@...278...>
+From: Arun Kumar <mailinform@...277...>
+Subject: [Openvpn-devel] Why TCP connection closed error comes?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,43 +11,46 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-Content-Transfer-Encoding: quoted-printable
-To: Gert Doering <gert@...1296...>, =?windows-1252?Q?J=C1K=D3_Andr=E1?= =?windows-1252?Q?s?= <jako.andras@...2041...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
 Hi,
+I installed openvpn and try to create a tap connection.
+So, host1 and host2 both have br0 interface and tap0.
+I created certificates as described and put it in /etc/openvpn dir.
 
-On 03/07/15 15:15, Gert Doering wrote:
-> On Fri, Jul 03, 2015 at 01:56:39PM +0200, J=C1K=D3 Andr=E1s wrote:
->>> yes this is possible; it's possible to push multiple gateways and
->>> multiple (classless) routes (dhcp options 121 & 249).
->>> If the metric on the tap-win adapter is set manually and is set low
->>> enough the redirecting the gateway will also work.
->>> However, changing the metric requires evelated access...
->> Sorry for the noise if that has been discussed before: Instead of
->> modifying the metric, how about pushing two /1 routes (0.0.0.0/1 and
->> 128.0.0.0/1)?
-> Would work *if* windows supports the "classless routes" option (which
-> I'm not sure of) - and if it accepts DHCP on tap to provide a host
-> route for the VPN server to the original gateway on the normal LAN
-> interface.  Without that host route, routing would loop (we'd send
-> packets *to* the VPN server into the tunnel, encapsulate, send
-> to the VPN server, into the tunnel, encapsulate, ... *boom*)
->
-AFAICT windows does support that option (that's what I was referring to=20
-with options 121 or 249) . OTOH, I am *not* sure if it allows you to set=20
-a 0.0.0.0/1 route using that option, but I guess there's only one way to=20
-find out.
+When i run openvpn at both server and client side,
+it shows following error,
 
-As for IPv6: that is going to be a problem indeed, although a draft=20
-exists for handing out IPv6 routes over DHCP(v6); not sure how much work=20
-that would entail though.
-I think Heiko's interactive service is "the way forward" but it does=20
-look like the "DHCP route" is too interesting to ignore. I will have=20
-more time next week to explore it, so I'll get back to the list then.
-
-JJK
+Mon Jul  6 18:05:36 2015 TCPv4_CLIENT link local: [undef]
+Mon Jul  6 18:05:36 2015 TCPv4_CLIENT link remote: [AF_INET]10.114.14.190:1194
+Mon Jul  6 18:05:36 2015 Connection reset, restarting [0]
+Mon Jul  6 18:05:36 2015 TCP/UDP: Closing socket
+Mon Jul  6 18:05:36 2015 SIGUSR1[soft,connection-reset] received,
+process restarting
+Mon Jul  6 18:05:36 2015 Restart pause, 5 second(s)
+Mon Jul  6 18:05:41 2015 NOTE: OpenVPN 2.1 requires '--script-security
+2' or higher to call user-defined scripts or executables
+Mon Jul  6 18:05:41 2015 Re-using SSL/TLS context
+Mon Jul  6 18:05:41 2015 Control Channel MTU parms [ L:1575 D:168
+EF:68 EB:0 ET:0 EL:0 ]
+Mon Jul  6 18:05:41 2015 Socket Buffers: R=[87380->131072] S=[16384->131072]
+Mon Jul  6 18:05:41 2015 Data Channel MTU parms [ L:1575 D:1450 EF:43
+EB:4 ET:32 EL:0 ]
+Mon Jul  6 18:05:41 2015 Local Options hash (VER=V4): '8a6c6b5b'
+Mon Jul  6 18:05:41 2015 Expected Remote Options hash (VER=V4): '47106f19'
+Mon Jul  6 18:05:41 2015 Attempting to establish TCP connection with
+[AF_INET]10.114.14.190:1194 [nonblock]
+Mon Jul  6 18:05:42 2015 TCP connection established with
+[AF_INET]10.114.14.190:1194
+Mon Jul  6 18:05:42 2015 TCPv4_CLIENT link local: [undef]
+Mon Jul  6 18:05:42 2015 TCPv4_CLIENT link remote: [AF_INET]10.114.14.190:1194
+Mon Jul  6 18:05:42 2015 Connection reset, restarting [0]
 
 
+What is the problem and why it comes?.
+
+Thanks,
+Kumar raj
 
