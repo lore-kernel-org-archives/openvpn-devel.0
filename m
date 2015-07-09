@@ -1,10 +1,8 @@
-From: Tim Small <tim@...2042...>
-Date: Wed,  8 Jul 2015 22:37:34 +0100
-Message-Id: <1436391455-4671-4-git-send-email-tim@...2042...>
-In-Reply-To: <1436391455-4671-1-git-send-email-tim@...2042...>
-References: <1436391455-4671-1-git-send-email-tim@...2042...>
-Subject: [Openvpn-devel] [PATCH 3/4] Allow administrator to supply a user to
-	pam_start().
+Message-ID: <559E2029.3080309@...515...>
+Date: Thu, 09 Jul 2015 10:18:01 +0300
+From: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] New OpenSSL release later today
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,71 +11,25 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="iso-8859-15"; format=flowed
+Content-Transfer-Encoding: quoted-printable
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, openvpn-users@lists.sourceforge.net
 
-If the user doesn't supply any arguments to the plugin in the OpenVPN
-configuration file, then it defaults to setting the second argument to
-the pam_start() function with the username that the other end of the
-vpn supplied.  The pam libraries use this as the initial value for the
-PAM_USER pam 'item'.
+Hi,
 
-If the administrator supplies one or more arguments to the auth-pam
-plugin, then this default behaviour is abandoned, and the user argument
-is set to NULL.  The administrator must then supply a match for the
-message text content which the pam module will (hopefully) supply in
-order to try to discover the message (some pam modules will just give
-up at this stage, and fail the authentication e.g. Google Authenticator
-will fail if PAM_USER is set to NULL).
+The OpenSSL project will make a new OpenSSL release that fixes one=20
+"high" severity vulnerability:
 
-The message text which the pam module supplies is intended to be read
-by a human, not parsed by other code (as is the current behaviour of
-the plugin), and as such may be subject to change (e.g. because of
-localisation changes etc.).
+<https://mta.openssl.org/pipermail/openssl-announce/2015-July/000037.html>
 
-This patch allows the user to supply a value for the second argument of
-pam_start, if they have supplied any arguments (by using the special
-value of 'PAM_USER' as the question message).  This allows operation
-with inflexible pam modules, and also decreases the likelihood that
-system configuration changes (e.g. localisation changes, package
-updates etc.) will break the OpenVPN setup by causing existing matches
-to fail.
+We are not sure if the vulnerability affects OpenVPN. Be that as it may,=20
+I will release new OpenVPN Windows installers as soon as possible.
 
-Signed-off-by: Tim Small <tim@...2042...>
----
- src/plugins/auth-pam/auth-pam.c | 14 ++++++++++++--
- 1 file changed, 12 insertions(+), 2 deletions(-)
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
 
-diff --git a/src/plugins/auth-pam/auth-pam.c b/src/plugins/auth-pam/auth-pam.c
-index e0dc029..b14cf06 100644
---- a/src/plugins/auth-pam/auth-pam.c
-+++ b/src/plugins/auth-pam/auth-pam.c
-@@ -693,11 +693,21 @@ pam_auth (const char *service, const struct user_pass *up)
-   int status = PAM_SUCCESS;
-   int ret = 0;
-   const int name_value_list_provided = (up->name_value_list && up->name_value_list->len > 0);
--
-+  char *pam_user = NULL;
-+  if (name_value_list_provided)
-+    {
-+      ret = get_value_with_subst (up, "PAM_USER", &pam_user);
-+      if (ret == PAM_SUCCESS)
-+	fprintf (stderr, "Passing user '%s' in pam_start\n", pam_user);
-+      else
-+	fprintf (stderr, "User didn't specify value for user argument to pam_start()\n");
-+    }
-   /* Initialize PAM */
-   conv.conv = my_conv;
-   conv.appdata_ptr = (void *)up;
--  status = pam_start (service, name_value_list_provided ? NULL : up->username, &conv, &pamh);
-+  status = pam_start (service, name_value_list_provided ? pam_user : up->username, &conv, &pamh);
-+  if (pam_user)
-+    free(pam_user);
-   if (status == PAM_SUCCESS)
-     {
-       /* Call PAM to verify username/password */
--- 
-2.1.4
+irc freenode net: mattock
 
 
