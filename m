@@ -1,13 +1,14 @@
-Message-ID: <559E5EC9.8010106@...1147...>
-Date: Thu, 09 Jul 2015 13:45:13 +0200
-From: Jan Just Keijser <janjust@...1147...>
 MIME-Version: 1.0
+In-Reply-To: <559E5EC9.8010106@...1147...>
 References: <55966BE0.5090400@...1147...> <55966F4A.7010008@...1114...>
 	<559672D0.1030904@...1147...> <20150703115639.GC57772@...2041...>
-	<20150703131545.GZ382@...1296...>
-	<5596980F.6010600@...1147...> <559D4F39.5000603@...1147...>
-	<20150708185945.GV382@...1296...>
-In-Reply-To: <20150708185945.GV382@...1296...>
+	<20150703131545.GZ382@...1296...> <5596980F.6010600@...1147...>
+	<559D4F39.5000603@...1147...> <20150708185945.GV382@...1296...>
+	<559E5EC9.8010106@...1147...>
+From: Selva Nair <selva.nair@...277...>
+Date: Thu, 9 Jul 2015 10:24:43 -0400
+Message-ID: <CAKuzo_ha8p90W7yXgxwfO-DS=LfefHR3S16O2pMfYRBkrNj8Tw@...278...>
+Content-Type: multipart/alternative; boundary=089e0122aaee6fd5fd051a720563
 Subject: Re: [Openvpn-devel] Adding routes on Windows using DHCP
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -17,49 +18,72 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Jan Just Keijser <janjust@...1147...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Yo,
+--089e0122aaee6fd5fd051a720563
+Content-Type: text/plain; charset=UTF-8
 
-Gert Doering wrote:
-> Hi,
+On Thu, Jul 9, 2015 at 7:45 AM, Jan Just Keijser <janjust@...1147...> wrote:
+
+> as usual, Gert is right :(
+> I've added an explicit /32 route to the OpenVPN server via DHCP , which
+> Windows picks up, including the right LAN GW address *BUT* it associates
+> it with the VPN interface, not the regular LAN interface. Thus you end
+> up with a "bite your own tail" route and the VPN collapses.
 >
-> On Wed, Jul 08, 2015 at 06:26:33PM +0200, Jan Just Keijser wrote:
->   
->>> AFAICT windows does support that option (that's what I was referring 
->>> to with options 121 or 249) . OTOH, I am *not* sure if it allows you 
->>> to set a 0.0.0.0/1 route using that option, but I guess there's only 
->>> one way to find out.
->>>       
->> FWIW: I've patched openvpn to set routes using DHCP on Windows and yes, 
->> it works: I can add any route to the system routing tables, including 
->> 0.0.0.0/1 and 128.0.0.1/1 ; this could be used as an alternative to 
->> requiring elevated privileges.
->>     
+> So I guess the only thing this DHCP-trick is useful for is if you're not
+> redirecting all traffic - in that case you can run openvpn in
+> non-privileged mode and set a bunch of routes to go over the VPN, just
+> not the default route.
 >
-> Unless you can also set the host route for the VPN gateway (point to 
-> a gateway on a *different* interface), this is not really helping...  
-> just adding 2x /1 will just cause recursion as packets to the VPN server 
-> will be happily routed into the tap interface again.
->   
+> @Selva: my current patch contains hardcoded addresses and is just a
+> proof-of-concept. I cannot share the executable with you.
+>
 
-as usual, Gert is right :(
-I've added an explicit /32 route to the OpenVPN server via DHCP , which 
-Windows picks up, including the right LAN GW address *BUT* it associates 
-it with the VPN interface, not the regular LAN interface. Thus you end 
-up with a "bite your own tail" route and the VPN collapses.
+No problem, the fact that the route would apply only to the particular
+interface is a major disappointment. Kind of obvious once Gert pointed it
+out, though :)
 
-So I guess the only thing this DHCP-trick is useful for is if you're not 
-redirecting all traffic - in that case you can run openvpn in 
-non-privileged mode and set a bunch of routes to go over the VPN, just 
-not the default route.
+I suppose, going forward, replacing the service by nssm is the best option
+for those of us using the mgmt-interface to control the process as
+non-admin user.
 
-@Selva: my current patch contains hardcoded addresses and is just a 
-proof-of-concept. I cannot share the executable with you.
+Thanks,
 
+Selva
 
-JJK
+--089e0122aaee6fd5fd051a720563
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">=
+On Thu, Jul 9, 2015 at 7:45 AM, Jan Just Keijser <span dir=3D"ltr">&lt;<a h=
+ref=3D"mailto:janjust@...1147..." target=3D"_blank">janjust@...1147...</a>&=
+gt;</span> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 =
+0 .8ex;border-left:1px #ccc solid;padding-left:1ex"><div style=3D"overflow:=
+hidden">as usual, Gert is right :(<br>
+I&#39;ve added an explicit /32 route to the OpenVPN server via DHCP , which=
+<br>
+Windows picks up, including the right LAN GW address *BUT* it associates<br>
+it with the VPN interface, not the regular LAN interface. Thus you end<br>
+up with a &quot;bite your own tail&quot; route and the VPN collapses.<br>
+<br>
+So I guess the only thing this DHCP-trick is useful for is if you&#39;re no=
+t<br>
+redirecting all traffic - in that case you can run openvpn in<br>
+non-privileged mode and set a bunch of routes to go over the VPN, just<br>
+not the default route.<br>
+<br>
+@Selva: my current patch contains hardcoded addresses and is just a<br>
+proof-of-concept. I cannot share the executable with you.<div><div></div></=
+div></div></blockquote></div><br>No problem, the fact that the route would =
+apply only to the particular interface is a major disappointment. Kind of o=
+bvious once Gert pointed it out, though :)=C2=A0 <br><br>I suppose, going f=
+orward, replacing the service by nssm is the best option for those of us us=
+ing the mgmt-interface to control the process as non-admin user.<br></div><=
+div class=3D"gmail_extra"><br></div><div class=3D"gmail_extra">Thanks,<br><=
+br></div><div class=3D"gmail_extra">Selva<br></div></div>
+
+--089e0122aaee6fd5fd051a720563--
 
