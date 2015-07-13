@@ -1,12 +1,12 @@
 From: Tim Small <tim@...2042...>
-Date: Mon, 13 Jul 2015 16:57:54 +0100
-Message-Id: <1436803076-22008-5-git-send-email-tim@...2042...>
+Date: Mon, 13 Jul 2015 16:57:55 +0100
+Message-Id: <1436803076-22008-6-git-send-email-tim@...2042...>
 In-Reply-To: <1436803076-22008-1-git-send-email-tim@...2042...>
 References: <1436803076-22008-1-git-send-email-tim@...2042...>
 In-Reply-To: <1436391455-4671-1-git-send-email-tim@...2042...>
 References: <1436391455-4671-1-git-send-email-tim@...2042...>
-Subject: [Openvpn-devel] [PATCH v2 4/6] Add default password reply with
-	name_value_list
+Subject: [Openvpn-devel] [PATCH v2 5/6] Allow administrator to supply a user
+	to pam_start
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,64 +21,69 @@ To: openvpn-devel@lists.sourceforge.net
 Cc: tim@...2043...
 
 If the user doesn't supply any arguments to the plugin in the OpenVPN
-configuration file, then it defaults to answering any PAM conversation
-'questions' where the pam module sets the message style to
-PAM_PROMPT_ECHO_OFF with the password, and where the style is set to
-PAM_PROMPT_ECHO_ON with the username.
+configuration file, then it defaults to setting the second argument to
+the pam_start() function with the username that the other end of the
+vpn supplied.  The pam libraries use this as the initial value for the
+PAM_USER pam 'item'.
 
 If the administrator supplies one or more arguments to the auth-pam
-plugin, then this simple but robust default behaviour is abandoned,
-and the user must supply a match for the message text content (NOT the
-message style) for ALL messages.  Non-matching messages are answered
-with a NULL.
+plugin, then this default behaviour is abandoned, and the user argument
+is set to NULL.  The administrator must then supply a match for the
+message text content which the pam module will (hopefully) supply in
+order to try to discover the message (some pam modules will just give
+up at this stage, and fail the authentication e.g. Google Authenticator
+will fail if PAM_USER is set to NULL).
 
-This patch returns the password for PAM_PROMPT_ECHO_OFF style questions,
-if no prior match has been found from the explicit list which the
-administrator specified.  The aim is to make the default behaviour less
-surprising for the user, and also to make deployments less likely to
-break from changes in what are indended to be human-readable messages
-(and which may change due to e.g. localisation coverage improvements).
+The message text which the pam module supplies is intended to be read
+by a human, not parsed by other code (as is the current behaviour of
+the plugin), and as such may be subject to change (e.g. because of
+localisation changes etc.).
+
+This patch allows the user to supply a value for the second argument of
+pam_start, if they have supplied any arguments (by using the special
+value of 'PAM_USER' as the question message).  This allows operation
+with inflexible pam modules, and also decreases the likelihood that
+other system changes (e.g. localisation changes, package updates etc.)
+will break an existing OpenVPN setup.
 
 Signed-off-by: Tim Small <tim@...2042...>
 ---
- src/plugins/auth-pam/auth-pam.c | 21 ++++++++++++++++++++-
- 1 file changed, 20 insertions(+), 1 deletion(-)
+ src/plugins/auth-pam/auth-pam.c | 18 +++++++++++++++++-
+ 1 file changed, 17 insertions(+), 1 deletion(-)
 
 diff --git a/src/plugins/auth-pam/auth-pam.c b/src/plugins/auth-pam/auth-pam.c
-index 722d0cf..48279cd 100644
+index 48279cd..2d0f4d0 100644
 --- a/src/plugins/auth-pam/auth-pam.c
 +++ b/src/plugins/auth-pam/auth-pam.c
-@@ -628,10 +628,29 @@ my_conv (int n, const struct pam_message **msg_array,
- 	  /* use name/value list match method */
-           if (!get_value_with_subst (up, msg->msg, &(aresp[i].resp)))
-             {
--              ret = PAM_CONV_ERR;
-               if (DEBUG (up->verb))
-                 fprintf (stderr, "AUTH-PAM: BACKGROUND: Didn't find a match for prompt "
-                              "'%s' which was requested by pam module.\n", msg->msg);
-+              /*
-+               * No match, fall back to responding with the password if the caller is
-+               * prompting for a value, and has requested that the user's answer
-+               * should be displayed.  Won't happen if the system defines an explicit
-+               * match for the pam message in question.
-+               */
-+              if (msg->msg_style != PAM_PROMPT_ECHO_OFF)
-+                {
-+                  ret = PAM_CONV_ERR;
-+                }
-+              else
-+                {
-+                  aresp[i].resp = strdup (up->password);
-+                  if (aresp[i].resp == NULL)
-+                    ret = PAM_CONV_ERR;
-+                  if (DEBUG (up->verb))
-+                    fprintf (stderr, "AUTH-PAM: BACKGROUND: ...but the prompt style "
-+                             "was set to PAM_PROMPT_ECHO_OFF - so responding with "
-+                             "password.\n");
-+                }
- 	    }
- 	}
-       else
+@@ -699,11 +699,27 @@ pam_auth (const char *service, const struct user_pass *up)
+   int status;
+   int ret = 0;
+   const int name_value_list_provided = (up->name_value_list && up->name_value_list->len > 0);
++  char *pam_user = NULL;
++  if (name_value_list_provided)
++    {
++      if (get_value_with_subst (up, "PAM_USER", &pam_user))
++        {
++          if (DEBUG (up->verb))
++            fprintf (stderr, "Passing user '%s' in pam_start\n", pam_user);
++        }
++      else
++        {
++          if (DEBUG (up->verb))
++            fprintf (stderr, "User didn't specify value for user argument to pam_start()\n");
++        }
++    }
+ 
+   /* Initialize PAM */
+   conv.conv = my_conv;
+   conv.appdata_ptr = (void *)up;
+-  status = pam_start (service, name_value_list_provided ? NULL : up->username, &conv, &pamh);
++  status = pam_start (service, name_value_list_provided ? pam_user : up->username, &conv, &pamh);
++  if (pam_user)
++    free(pam_user);
+   if (status != PAM_SUCCESS)
+     {
+       fprintf (stderr, "AUTH-PAM: BACKGROUND: user '%s' / commonname '%s' "
 -- 
 2.1.4
 
