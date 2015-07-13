@@ -1,11 +1,10 @@
-Message-ID: <55A40DA6.7070208@...1856...>
-Date: Mon, 13 Jul 2015 21:12:38 +0200
+Message-ID: <55A41225.2020705@...1856...>
+Date: Mon, 13 Jul 2015 21:31:49 +0200
 From: Steffan Karger <steffan@...1856...>
 MIME-Version: 1.0
-References: <1436814607-16707-1-git-send-email-gert@...1296...>
-In-Reply-To: <1436814607-16707-1-git-send-email-gert@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH] Produce a meaningful error message if
- --daemon gets in the way of asking for passwords.
+Content-Type: multipart/mixed; boundary="------------060703030300060703000901"
+Subject: [Openvpn-devel] [PATCH] Fix --askpass not allowing for password
+	input via stdin
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,48 +13,62 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252; format=flowed
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+
+This is a multi-part message in MIME format.
+--------------060703030300060703000901
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
 
-On 13-07-15 21:10, Gert Doering wrote:
-> With the --daemon / SSL init reordering in da9b292733, we fail if we
-> daemonize first and then try to ask for a private key passphrase (or,
-> for that matter, username+password if --auth-nocache is set) - but
-> no meaningful error message was printed, instead depending on operating
-> system and library versions, either we looped around "ssl init failed"
-> or died with an unspecified "fatal error".
->
-> So: check if get_user_pass_cr() is called in a context that needs
-> "from_stdin", but both stdin and stderr are not connected to a tty
-> device (which getpass() needs).  In that case, print a meaningful
-> error message pointing to --askpass, and die.
->
-> Trac #574 and #576
->
-> Signed-off-by: Gert Doering <gert@...1296...>
-> ---
->   src/openvpn/misc.c | 4 ++++
->   1 file changed, 4 insertions(+)
->
-> diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
-> index 4fdbf17..c4438b6 100644
-> --- a/src/openvpn/misc.c
-> +++ b/src/openvpn/misc.c
-> @@ -1056,6 +1056,10 @@ get_user_pass_cr (struct user_pass *up,
->          */
->         else if (from_stdin)
->   	{
-> +	  /* did we --daemon'ize before asking for passwords? */
-> +	  if ( !isatty(0) && !isatty(2) )
-> +	    { msg(M_FATAL, "neither stdin nor stderr are a tty device, can't ask for %s password.  If you used --daemon, you need to use --askpass to make passphrase-protected keys work, and you can not use --auth-nocache.", prefix ); }
-> +
->   #ifdef ENABLE_CLIENT_CR
->   	  if (auth_challenge && (flags & GET_USER_PASS_DYNAMIC_CHALLENGE))
->   	    {
->
-
-ACK
+ACK to the attached (rebase by me) patch from trac:
+https://community.openvpn.net/openvpn/ticket/248
 
 -Steffan
+
+--------------060703030300060703000901
+Content-Type: text/x-patch;
+	name="0001-Fix-askpass-not-allowing-for-password-input-via-stdi.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+	filename*0="0001-Fix-askpass-not-allowing-for-password-input-via-stdi.pa";
+	filename*1="tch"
+
+From 0e132ca6733ede1f066b0cd717b1886a28e09d32 Mon Sep 17 00:00:00 2001
+From: James Geboski <jgeboski@...277...>
+Date: Tue, 8 Jan 2013 17:52:57 -0500
+Subject: [PATCH] Fix --askpass not allowing for password input via stdin
+
+This resolves --askpass treating stdin as a file during the file access
+check. In turn, this leads to openvpn failing to start if this option is
+set to stdin.
+
+By default, --askpass reads the certificate's password from stdin rather
+than a file. Without passing the CHKACC_ACPTSTDIN flag to
+check_file_access(), stdin is marked as being a nonexistent file.
+
+Signed-off-by: James Geboski <jgeboski@...277...>
+---
+ src/openvpn/options.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 74276d4..cd13aa9 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -2738,8 +2738,8 @@ options_postprocess_filechecks (struct options *options)
+                              options->packet_id_file, R_OK|W_OK, "--replay-persist");
+ 
+   /* ** Password files ** */
+-  errs |= check_file_access (CHKACC_FILE, options->key_pass_file, R_OK,
+-                             "--askpass");
++  errs |= check_file_access (CHKACC_FILE|CHKACC_ACPTSTDIN,
++                             options->key_pass_file, R_OK, "--askpass");
+ #endif /* ENABLE_CRYPTO */
+ #ifdef ENABLE_MANAGEMENT
+   errs |= check_file_access (CHKACC_FILE|CHKACC_ACPTSTDIN,
+-- 
+2.1.4
+
+
+--------------060703030300060703000901--
 
