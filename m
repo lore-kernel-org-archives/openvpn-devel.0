@@ -1,10 +1,10 @@
-Message-ID: <55A41225.2020705@...1856...>
-Date: Mon, 13 Jul 2015 21:31:49 +0200
-From: Steffan Karger <steffan@...1856...>
-MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="------------060703030300060703000901"
-Subject: [Openvpn-devel] [PATCH] Fix --askpass not allowing for password
-	input via stdin
+Date: Mon, 13 Jul 2015 21:32:52 +0200 (CEST)
+Message-Id: <201507131932.t6DJWpAK005816@...1295...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <1436477759-5884-1-git-send-email-steffan@...1856...>
+References: <1436477759-5884-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH applied] Re: fix regression: query password
+	before becoming daemon
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,62 +13,31 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Steffan Karger <steffan@...1856...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-This is a multi-part message in MIME format.
---------------060703030300060703000901
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Your patch has been applied to the master and release/2.3 branch.
 
-ACK to the attached (rebase by me) patch from trac:
-https://community.openvpn.net/openvpn/ticket/248
+commit 315f6fbc7f657a7f1127628bd714f468709d5185 (master)
+commit 7bde2e1b19e66af22c26c90e1187a4365c9087fc (release/2.3)
 
--Steffan
+Author: Steffan Karger
+Date:   Thu Jul 9 23:35:59 2015 +0200
 
---------------060703030300060703000901
-Content-Type: text/x-patch;
-	name="0001-Fix-askpass-not-allowing-for-password-input-via-stdi.patch"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment;
-	filename*0="0001-Fix-askpass-not-allowing-for-password-input-via-stdi.pa";
-	filename*1="tch"
+     fix regression: query password before becoming daemon
 
-From 0e132ca6733ede1f066b0cd717b1886a28e09d32 Mon Sep 17 00:00:00 2001
-From: James Geboski <jgeboski@...277...>
-Date: Tue, 8 Jan 2013 17:52:57 -0500
-Subject: [PATCH] Fix --askpass not allowing for password input via stdin
-
-This resolves --askpass treating stdin as a file during the file access
-check. In turn, this leads to openvpn failing to start if this option is
-set to stdin.
-
-By default, --askpass reads the certificate's password from stdin rather
-than a file. Without passing the CHKACC_ACPTSTDIN flag to
-check_file_access(), stdin is marked as being a nonexistent file.
-
-Signed-off-by: James Geboski <jgeboski@...277...>
----
- src/openvpn/options.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 74276d4..cd13aa9 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -2738,8 +2738,8 @@ options_postprocess_filechecks (struct options *options)
-                              options->packet_id_file, R_OK|W_OK, "--replay-persist");
- 
-   /* ** Password files ** */
--  errs |= check_file_access (CHKACC_FILE, options->key_pass_file, R_OK,
--                             "--askpass");
-+  errs |= check_file_access (CHKACC_FILE|CHKACC_ACPTSTDIN,
-+                             options->key_pass_file, R_OK, "--askpass");
- #endif /* ENABLE_CRYPTO */
- #ifdef ENABLE_MANAGEMENT
-   errs |= check_file_access (CHKACC_FILE|CHKACC_ACPTSTDIN,
--- 
-2.1.4
+     Signed-off-by: Steffan Karger <steffan@...1856...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1436477759-5884-1-git-send-email-steffan@...1856...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/9901
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
---------------060703030300060703000901--
+--
+kind regards,
+
+Gert Doering
+
 
