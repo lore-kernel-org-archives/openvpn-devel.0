@@ -1,10 +1,10 @@
-Date: Tue, 14 Jul 2015 10:14:10 +0200 (CEST)
-Message-Id: <201507140814.t6E8EAn5029091@...1295...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <1436857794-29419-1-git-send-email-gert@...1296...>
-References: <1436857794-29419-1-git-send-email-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Document --daemon changes and
-	consequences (--askpass, --auth-nocache).
+MIME-Version: 1.0
+Date: Wed, 15 Jul 2015 19:43:08 +0100
+Message-ID: <CAN-X3HT5xX0kgJsPQLNNcvcWg+ognu9EHBWjoxw=jZcRLEzPsQ@...278...>
+From: Christian Pellegrin <chripell@...410...>
+Content-Type: multipart/mixed; boundary=f46d0442806e82f30b051aee538b
+Subject: [Openvpn-devel] [PATCH] Fix using management interface to get
+	passwords
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,30 +13,58 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Openvpn-devel@lists.sourceforge.net
 
-Patch has been applied to the master and release/2.3 branch.
+--f46d0442806e82f30b051aee538b
+Content-Type: text/plain; charset=UTF-8
 
-commit b6ec7fbe96f4e200b8962ef6bb572bbb2228133e (master)
-commit dda40aedfb87d77afcef52376cd3e4778ba0370b (release/2.3)
+Commits da9b292733e929a2900dc32d37f0424c3d588366 and
+315f6fbc7f657a7f1127628bd714f468709d5185 broke the use case where we are asking
+password from the management client. The password is always asked before
+daemonization. With this fix we avoid this and ask it via management interface
+in the same spot as before the mentioned commits. Tested on Linux.
 
-Author: Gert Doering
-Date:   Tue Jul 14 09:09:54 2015 +0200
+--f46d0442806e82f30b051aee538b
+Content-Type: text/x-patch; charset=US-ASCII; 
+	name="0001-Fix-using-management-interface-to-get-passwords.patch"
+Content-Disposition: attachment; 
+	filename="0001-Fix-using-management-interface-to-get-passwords.patch"
+Content-Transfer-Encoding: base64
+X-Attachment-Id: f_ic54586d0
 
-     Document --daemon changes and consequences (--askpass, --auth-nocache).
-
-     Signed-off-by: Gert Doering <gert@...1296...>
-     Acked-by: Steffan Karger <steffan.karger@...1435...>
-     Message-Id: <1436857794-29419-1-git-send-email-gert@...1296...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/9923
-
-
---
-kind regards,
-
-Gert Doering
-
+RnJvbSA1NTE3MmI2MTA0YzQ3Mzc0YzA2MmYzNTgxNjE3MDY4ODQwZTViNTFhIE1vbiBTZXAgMTcg
+MDA6MDA6MDAgMjAwMQpGcm9tOiBDaHJpc3RpYW4gUGVsbGVncmluIDxjaHJpcGVsbEBnb29nbGUu
+Y29tPgpEYXRlOiBXZWQsIDE1IEp1bCAyMDE1IDE2OjQ1OjU4ICswMTAwClN1YmplY3Q6IFtQQVRD
+SF0gRml4IHVzaW5nIG1hbmFnZW1lbnQgaW50ZXJmYWNlIHRvIGdldCBwYXNzd29yZHMuCgpDb21t
+aXRzIGRhOWIyOTI3MzNlOTI5YTI5MDBkYzMyZDM3ZjA0MjRjM2Q1ODgzNjYgYW5kCjMxNWY2ZmJj
+N2Y2NTdhN2YxMTI3NjI4YmQ3MTRmNDY4NzA5ZDUxODUgYnJva2UgdGhlIHVzZSBjYXNlIHdoZXJl
+IHdlIGFyZSBhc2tpbmcKcGFzc3dvcmQgZnJvbSB0aGUgbWFuYWdlbWVudCBjbGllbnQuIFRoZSBw
+YXNzd29yZCBpcyBhbHdheXMgYXNrZWQgYmVmb3JlCmRhZW1vbml6YXRpb24uIFdpdGggdGhpcyBm
+aXggd2UgYXZvaWQgdGhpcyBhbmQgYXNrIGl0IHZpYSBtYW5hZ2VtZW50IGludGVyZmFjZQppbiB0
+aGUgc2FtZSBzcG90IGFzIGJlZm9yZSB0aGUgbWVudGlvbmVkIGNvbW1pdHMuIFRlc3RlZCBvbiBM
+aW51eC4KLS0tCiBzcmMvb3BlbnZwbi9pbml0LmMgICAgfCAxMCArKysrKysrKysrCiBzcmMvb3Bl
+bnZwbi9vcGVudnBuLmMgfCAgOCArKysrKystLQogMiBmaWxlcyBjaGFuZ2VkLCAxNiBpbnNlcnRp
+b25zKCspLCAyIGRlbGV0aW9ucygtKQoKZGlmZiAtLWdpdCBhL3NyYy9vcGVudnBuL2luaXQuYyBi
+L3NyYy9vcGVudnBuL2luaXQuYwppbmRleCBjMjRhNjQ2Li43ZDdhMjA5IDEwMDY0NAotLS0gYS9z
+cmMvb3BlbnZwbi9pbml0LmMKKysrIGIvc3JjL29wZW52cG4vaW5pdC5jCkBAIC01MDIsNiArNTAy
+LDE2IEBAIGNvbnRleHRfaW5pdF8xIChzdHJ1Y3QgY29udGV4dCAqYykKIAogICBpbml0X2Nvbm5l
+Y3Rpb25fbGlzdCAoYyk7CiAKKyNpZmRlZiBFTkFCTEVfTUFOQUdFTUVOVAorICBpZiAoYy0+b3B0
+aW9ucy5tYW5hZ2VtZW50X2ZsYWdzICYgTUZfUVVFUllfUEFTU1dPUkRTKSB7CisjaWZkZWYgRU5B
+QkxFX0NMSUVOVF9DUgorICAgIGF1dGhfdXNlcl9wYXNzX3NldHVwICgibWFuYWdlbWVudCIsICZj
+LT5vcHRpb25zLnNjX2luZm8pOworI2Vsc2UKKyAgICBhdXRoX3VzZXJfcGFzc19zZXR1cCAoIm1h
+bmFnZW1lbnQiLCBOVUxMKTsKKyNlbmRpZgorICB9CisjZW5kaWYKKwogI2lmIGRlZmluZWQoRU5B
+QkxFX1BLQ1MxMSkKICAgaWYgKGMtPmZpcnN0X3RpbWUpIHsKICAgICBpbnQgaTsKZGlmZiAtLWdp
+dCBhL3NyYy9vcGVudnBuL29wZW52cG4uYyBiL3NyYy9vcGVudnBuL29wZW52cG4uYwppbmRleCBk
+MDVhY2RlLi4yYTE3NmI2IDEwMDY0NAotLS0gYS9zcmMvb3BlbnZwbi9vcGVudnBuLmMKKysrIGIv
+c3JjL29wZW52cG4vb3BlbnZwbi5jCkBAIC0yMjksOCArMjI5LDEyIEBAIG9wZW52cG5fbWFpbiAo
+aW50IGFyZ2MsIGNoYXIgKmFyZ3ZbXSkKIAkgIGlmIChkb190ZXN0X2NyeXB0byAoJmMub3B0aW9u
+cykpCiAJICAgIGJyZWFrOwogCi0JICAvKiBRdWVyeSBwYXNzd29yZHMgYmVmb3JlIGJlY29taW5n
+IGEgZGFlbW9uICovCi0JICBpbml0X3F1ZXJ5X3Bhc3N3b3JkcyAoJmMpOworCSAgLyogUXVlcnkg
+cGFzc3dvcmRzIGJlZm9yZSBiZWNvbWluZyBhIGRhZW1vbiBpZiB3ZSBkb24ndCB1c2UgdGhlCisg
+ICAgICAgICAgICogbWFuYWdlbWVudCBpbnRlcmZhY2UgdG8gZ2V0IHRoZW0uICovCisjaWZkZWYg
+RU5BQkxFX01BTkFHRU1FTlQKKyAgICAgICAgICBpZiAoISAoYy5vcHRpb25zLm1hbmFnZW1lbnRf
+ZmxhZ3MgJiBNRl9RVUVSWV9QQVNTV09SRFMpKQorI2VuZGlmCisgICAgICAgICAgICBpbml0X3F1
+ZXJ5X3Bhc3N3b3JkcyAoJmMpOwogCiAJICAvKiBiZWNvbWUgYSBkYWVtb24gaWYgLS1kYWVtb24g
+Ki8KIAkgIGlmIChjLmZpcnN0X3RpbWUpCi0tIAoyLjQuMy41NzMuZzRlYWZiZWYKCg==
+--f46d0442806e82f30b051aee538b--
 
