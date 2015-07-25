@@ -1,12 +1,9 @@
-Date: Sat, 25 Jul 2015 21:45:58 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20150725194558.GM382@...1296...>
+Message-ID: <7968A97B00B643C79AB6BEF70152D8F9@...1853...>
+From: <debbie10t@...277...>
 References: <C17CBC9D7B974729BACBF182B77A8C76@...1853...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="nmUdeb9UB7MWpZb1"
-Content-Disposition: inline
-In-Reply-To: <C17CBC9D7B974729BACBF182B77A8C76@...1853...>
+	<20150725194558.GM382@...1296...>
+Date: Sat, 25 Jul 2015 21:16:15 +0100
+MIME-Version: 1.0
 Subject: Re: [Openvpn-devel] Docs or Bug: --push options no longer require
 	double quotes
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -17,42 +14,39 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: debbie10t@...277...
+Content-Type: text/plain; format=flowed; charset="iso-8859-1";
+	reply-type=original
+Content-Transfer-Encoding: 7bit
+To: Gert Doering <gert@...1296...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---nmUdeb9UB7MWpZb1
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+----- Original Message ----- 
+From: "Gert Doering" <gert@...1296...>
+To: <debbie10t@...277...>
+Cc: <openvpn-devel@lists.sourceforge.net>
+Sent: Saturday, July 25, 2015 8:45 PM
+Subject: Re: [Openvpn-devel] Docs or Bug: --push options no longer require 
+double quotes
 
-Hi,
+>Hi,
+>
+>On Sat, Jul 25, 2015 at 01:34:46PM +0100, debbie10t@...277... wrote:
+>> As the title states --push no longer requires options to be double 
+>> quoted.
+>
+>Well, *did* it require double quotes at some point?  If yes, when?
 
-On Sat, Jul 25, 2015 at 01:34:46PM +0100, debbie10t@...277... wrote:
-> As the title states --push no longer requires options to be double quoted.
+>gert
 
-Well, *did* it require double quotes at some point?  If yes, when?
+I presume when the manual was written as per the link included.
+Quoting The manual ...
 
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+--push option
+Push a config file option back to the client for remote execution. Note that 
+option *must* be enclosed in double quotes ("").
 
---nmUdeb9UB7MWpZb1
-Content-Type: application/pgp-signature
-Content-Disposition: inline
+Hence the question: Bug, feature or just docs out of date ?
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
+Thanks
 
-iQCVAwUBVbPndqkuBuNlUUl1AQKY9QP9HCt3C/hG/UuE8uRwr39Am6pPBkM0HhN4
-xDQOAlktDhUov90az1glICMf0lcVMi4GGS6KMygnMa6i1IDvELJwGmjbrvXzJ4NR
-dVjQiHJXYJVly0lCjtZFCkFFiGBXMqjhIWs0Zt6lEltr6Hzp6/1Z4366nIFWiGBh
-SZ8zXzLkn/Q=
-=+hL+
------END PGP SIGNATURE-----
-
---nmUdeb9UB7MWpZb1--
 
