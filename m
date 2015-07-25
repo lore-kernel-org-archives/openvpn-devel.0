@@ -1,14 +1,9 @@
-Message-ID: <COL128-W841AC144AA8D7C2D54C7FCCA800@...512...>
-Content-Type: multipart/alternative;
-	boundary="_f047785f-a111-4301-bbef-7645ce4a63ad_"
-From: li yuqian <liyuqian08@...2047...>
-Date: Sat, 25 Jul 2015 01:11:28 +0000
-In-Reply-To: <20150724085453.GI382@...1296...>
-References: <COL128-W360F356FA6F45FADFFC4D6CA810@...512...>,
-	<20150724085453.GI382@...1296...>
+Message-ID: <C17CBC9D7B974729BACBF182B77A8C76@...1853...>
+From: <debbie10t@...277...>
+Date: Sat, 25 Jul 2015 13:34:46 +0100
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] Does Openvpn really support cryptodev hardware
- accelerators
+Subject: [Openvpn-devel] Docs or Bug: --push options no longer require
+	double quotes
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,84 +12,39 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; format=flowed; charset="iso-8859-1";
+	reply-type=original
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
---_f047785f-a111-4301-bbef-7645ce4a63ad_
-Content-Type: text/plain; charset="gb2312"
-Content-Transfer-Encoding: base64
+Hi
 
-SGkgR2VydCwNCnRoYW5rcyBmb3IgeW91ciByZXBseQ0KPj5hcyBvdXIgd2F5IHRvIGRvIC0tZGFl
-bW9uIHdhc24ndCBjb21wYXRpYmxlIHdpdGggY3J5cHRvZGV2Li4uZG8geW91IG1lYW4gaXQgaXMg
-c3VnZ2VzdGVkIGluIGRhZW1vbiBtb2RlIHdoZW4gcnVubmluZyBvcGVudnBuIHdpdGggY3J5cHRv
-ZGV2Pw0KYWxzbywgaSBmb3VuZCBzb21lIHBvc3Qgc2FpZCB0aGUgT3BlbnZwbiBzdXBwb3J0IGNy
-eXB0b2RldiBpcyBub3QgZ29vZCwgYXMgT3BlbnZwbiBuZWVkIGRvIGxvdCBvZiBqb2IgY29weSBk
-YXRhIHRvL2Zyb20gdXNlciBzcGFjZSB0byBrZXJuZWwsICJIb2V3ZXZlciB0aGUgdXNlci10by1r
-ZXJuZWwgYW5kIGtlcm5lbC10by11c2VyIGNvcHlpbmcgb2YgcGFja2V0cyAoY29udGV4dCBzd2l0
-Y2hlcykgaXMgdGhlIGJvdHRsZW5lY2suIFRoZSBPcGVuVlBOIHNwZWVkIGdldHMgY2FwcGVkIGxv
-bmcgYmVmb3JlIHRoZSBjcnlwdG8gYWNjZWwgd291bGQgbWFrZSBhIGRpZmZlcmVuY2UuIEl0cyBv
-bmx5IHVzZWZ1bCBmb3IgcHVyZSBLZXJuZWwgYmFzZWQgVlBOcyBsaWtlIElQU2VjIG9yIEwyVFAu
-IiAoc291cmNlIGh0dHBzOi8vZm9ydW0ub3BlbndydC5vcmcvdmlld3RvcGljLnBocD9pZD0xOTU4
-NikgDQpUaGFuayB5b3UuDQo+IERhdGU6IEZyaSwgMjQgSnVsIDIwMTUgMTA6NTQ6NTQgKzAyMDAN
-Cj4gRnJvbTogZ2VydEAuLi4xMjk2Li4uDQo+IFRvOiBsaXl1cWlhbjA4QC4uLjIwNDcuLi4NCj4g
-Q0M6IG9wZW52cG4tZGV2ZWxAbGlzdHMuc291cmNlZm9yZ2UubmV0DQo+IFN1YmplY3Q6IFJlOiBb
-T3BlbnZwbi1kZXZlbF0gRG9lcyBPcGVudnBuIHJlYWxseSBzdXBwb3J0IGNyeXB0b2RldiBoYXJk
-d2FyZSBhY2NlbGVyYXRvcnMNCj4gDQo+IEhpLA0KPiANCj4gaWYgb3BlbnNzbCB1c2VzIGNyeXB0
-b2Rldiwgc28gd2lsbCBvcGVudnBuIC0gd2UgZG9uJ3QgZG8gb3VyIG93biBjcnlwdG8sDQo+IGp1
-c3QgY2FsbCB0aGUgb3BlbnZwbiBmdW5jdGlvbnMgdG8gZG8gc28uDQo+IA0KPiAoQW5kIG9uIEZy
-ZWVCU0QsIHRoaXMgaXMgdGhlIHBhcnRpY3VsYXIgcmVhc29uIHdoeSB3ZSBoYWQgc28gbXVjaCB0
-cm91YmxlDQo+IHJlY2VudGx5LCBhcyBvdXIgd2F5IHRvIGRvIC0tZGFlbW9uIHdhc24ndCBjb21w
-YXRpYmxlIHdpdGggY3J5cHRvZGV2Li4uKQ0KPiANCj4gZ2VydA0KPiANCj4gLS0gDQo+IFVTRU5F
-VCBpcyAqbm90KiB0aGUgbm9uLWNsaWNrYWJsZSBwYXJ0IG9mIFdXVyENCj4gICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAvL3d3dy5tdWMu
-ZGUvfmdlcnQvDQo+IEdlcnQgRG9lcmluZyAtIE11bmljaCwgR2VybWFueSAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgZ2VydEAuLi4xMjk2Li4uDQo+IGZheDogKzQ5LTg5LTM1NjU1MDI1ICAg
-ICAgICAgICAgICAgICAgICAgICAgZ2VydEAuLi4xMjk3Li4uDQogCQkgCSAgIAkJICA=
+As the title states --push no longer requires options to be double quoted.
 
---_f047785f-a111-4301-bbef-7645ce4a63ad_
-Content-Type: text/html; charset="gb2312"
-Content-Transfer-Encoding: base64
+First tests:
+https://forums.openvpn.net/topic19323.html#p53583
 
-PGh0bWw+DQo8aGVhZD4NCjxzdHlsZT48IS0tDQouaG1tZXNzYWdlIFANCnsNCm1hcmdpbjowcHg7
-DQpwYWRkaW5nOjBweA0KfQ0KYm9keS5obW1lc3NhZ2UNCnsNCmZvbnQtc2l6ZTogMTJwdDsNCmZv
-bnQtZmFtaWx5OkNhbGlicmkNCn0NCi0tPjwvc3R5bGU+PC9oZWFkPg0KPGJvZHkgY2xhc3M9J2ht
-bWVzc2FnZSc+PGRpdiBkaXI9J2x0cic+SGkgR2VydCw8ZGl2Pjxicj48L2Rpdj48ZGl2PnRoYW5r
-cyBmb3IgeW91ciByZXBseTwvZGl2PjxkaXY+PGJyPjwvZGl2PjxkaXY+Jmd0OyZndDthcyBvdXIg
-d2F5IHRvIGRvIC0tZGFlbW9uIHdhc24ndCBjb21wYXRpYmxlIHdpdGggY3J5cHRvZGV2Li4uPC9k
-aXY+PGRpdj5kbyB5b3UgbWVhbiBpdCBpcyBzdWdnZXN0ZWQgaW4gZGFlbW9uIG1vZGUgd2hlbiBy
-dW5uaW5nIG9wZW52cG4gd2l0aCBjcnlwdG9kZXY/PC9kaXY+PGRpdj48YnI+PC9kaXY+PGRpdj5h
-bHNvLCBpIGZvdW5kIHNvbWUgcG9zdCBzYWlkIHRoZSBPcGVudnBuIHN1cHBvcnQgY3J5cHRvZGV2
-IGlzIG5vdCBnb29kLCBhcyBPcGVudnBuIG5lZWQgZG8gbG90IG9mIGpvYiBjb3B5IGRhdGEgdG8v
-ZnJvbSB1c2VyIHNwYWNlIHRvIGtlcm5lbCwgIjxzcGFuIHN0eWxlPSJjb2xvcjogcmdiKDM0LCAz
-NCwgMzQpOyBmb250LWZhbWlseTogVmVyZGFuYSwgSGVsdmV0aWNhLCBBcmlhbCwgc2Fucy1zZXJp
-ZjsgZm9udC1zaXplOiAxMnB4OyBsaW5lLWhlaWdodDogMThweDsgYmFja2dyb3VuZC1jb2xvcjog
-cmdiKDI1MCwgMjUwLCAyNTApOyI+SG9ld2V2ZXIgdGhlIHVzZXItdG8ta2VybmVsIGFuZCBrZXJu
-ZWwtdG8tdXNlciBjb3B5aW5nIG9mIHBhY2tldHMgKGNvbnRleHQgc3dpdGNoZXMpIGlzIHRoZSBi
-b3R0bGVuZWNrLiBUaGUgT3BlblZQTiBzcGVlZCBnZXRzIGNhcHBlZCBsb25nIGJlZm9yZSB0aGUg
-Y3J5cHRvIGFjY2VsIHdvdWxkIG1ha2UgYSBkaWZmZXJlbmNlLiBJdHMgb25seSB1c2VmdWwgZm9y
-IHB1cmUgS2VybmVsIGJhc2VkIFZQTnMgbGlrZSBJUFNlYyBvciBMMlRQLjwvc3Bhbj48c3BhbiBz
-dHlsZT0iZm9udC1zaXplOiAxMnB0OyI+IiAoc291cmNlJm5ic3A7PC9zcGFuPjxhIGhyZWY9Imh0
-dHBzOi8vZm9ydW0ub3BlbndydC5vcmcvdmlld3RvcGljLnBocD9pZD0xOTU4NiIgdGFyZ2V0PSJf
-YmxhbmsiIHN0eWxlPSJmb250LXNpemU6IDEycHQ7Ij5odHRwczovL2ZvcnVtLm9wZW53cnQub3Jn
-L3ZpZXd0b3BpYy5waHA/aWQ9MTk1ODY8L2E+KSZuYnNwOzwvZGl2PjxkaXY+PGJyPjwvZGl2Pjxk
-aXY+VGhhbmsgeW91Ljxicj48ZGl2PiZndDsgRGF0ZTogRnJpLCAyNCBKdWwgMjAxNSAxMDo1NDo1
-NCArMDIwMDxicj4mZ3Q7IEZyb206IGdlcnRALi4uMTI5Ni4uLjxicj4mZ3Q7IFRvOiBsaXl1cWlh
-bjA4QC4uLjIwNDcuLi48YnI+Jmd0OyBDQzogb3BlbnZwbi1kZXZlbEBsaXN0cy5zb3VyY2Vmb3Jn
-ZS5uZXQ8YnI+Jmd0OyBTdWJqZWN0OiBSZTogW09wZW52cG4tZGV2ZWxdIERvZXMgT3BlbnZwbiBy
-ZWFsbHkgc3VwcG9ydCBjcnlwdG9kZXYgaGFyZHdhcmUgYWNjZWxlcmF0b3JzPGJyPiZndDsgPGJy
-PiZndDsgSGksPGJyPiZndDsgPGJyPiZndDsgaWYgb3BlbnNzbCB1c2VzIGNyeXB0b2Rldiwgc28g
-d2lsbCBvcGVudnBuIC0gd2UgZG9uJ3QgZG8gb3VyIG93biBjcnlwdG8sPGJyPiZndDsganVzdCBj
-YWxsIHRoZSBvcGVudnBuIGZ1bmN0aW9ucyB0byBkbyBzby48YnI+Jmd0OyA8YnI+Jmd0OyAoQW5k
-IG9uIEZyZWVCU0QsIHRoaXMgaXMgdGhlIHBhcnRpY3VsYXIgcmVhc29uIHdoeSB3ZSBoYWQgc28g
-bXVjaCB0cm91YmxlPGJyPiZndDsgcmVjZW50bHksIGFzIG91ciB3YXkgdG8gZG8gLS1kYWVtb24g
-d2Fzbid0IGNvbXBhdGlibGUgd2l0aCBjcnlwdG9kZXYuLi4pPGJyPiZndDsgPGJyPiZndDsgZ2Vy
-dDxicj4mZ3Q7IDxicj4mZ3Q7IC0tIDxicj4mZ3Q7IFVTRU5FVCBpcyAqbm90KiB0aGUgbm9uLWNs
-aWNrYWJsZSBwYXJ0IG9mIFdXVyE8YnI+Jmd0OyAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIC8vd3d3Lm11Yy5kZS9+Z2VydC88YnI+Jmd0
-OyBHZXJ0IERvZXJpbmcgLSBNdW5pY2gsIEdlcm1hbnkgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgIGdlcnRALi4uMTI5Ni4uLjxicj4mZ3Q7IGZheDogKzQ5LTg5LTM1NjU1MDI1ICAgICAgICAg
-ICAgICAgICAgICAgICAgZ2VydEAuLi4xMjk3Li4uPGJyPjwvZGl2PjwvZGl2PiAJCSAJICAgCQkg
-IDwvZGl2PjwvYm9keT4NCjwvaHRtbD4=
+Sebsequent tests
+Windows 2.3.7 i686-w64-mingw32 as either server or client
+Linux 2.3.7 i486-pc-linux-gnu as either server or client
+Linux git master as either server or client
 
---_f047785f-a111-4301-bbef-7645ce4a63ad_--
+From server config or CCD file
+
+No errors generated
+
+Options tested (Server and CCD )
+push route-delay 5
+push route 192.168.222.0 255.255.255.0
+push comp-lzo no
+
+Client log:
+PUSH: Received control message: 'PUSH_REPLY,route-delay 5,route 
+192.168.222.0 255.255.255.0,comp-lzo no,
+
+Is this a bug or a new feature or other ?
+
+Thanks
+
+
 
