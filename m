@@ -1,7 +1,9 @@
-From: Steffan Karger <steffan@...1856...>
-Date: Mon, 27 Jul 2015 21:59:58 +0200
-Message-Id: <1438027198-23305-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH] Fix out-of-tree builds;
+Date: Mon, 27 Jul 2015 22:06:48 +0200 (CEST)
+Message-Id: <201507272006.t6RK6ms8004785@...1295...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <1438027198-23305-1-git-send-email-steffan@...1856...>
+References: <1438027198-23305-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix out-of-tree builds;
 	openvpn-plugin.h should be in AC_CONFIG_HEADERS
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -13,37 +15,27 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Steffan Karger <steffan@...1856...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Was broken in commit 9de35d4.
+Your patch has been applied to the master branch.
 
-Signed-off-by: Steffan Karger <steffan@...1856...>
----
- configure.ac | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+commit 0a51c4f152d0f695a6fb8b605dbfefca65e63838
+Author: Steffan Karger
+Date:   Mon Jul 27 21:59:58 2015 +0200
 
-diff --git a/configure.ac b/configure.ac
-index 7bcbb7c..51ef93b 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -38,7 +38,7 @@ AC_DEFINE([OPENVPN_VERSION_MINOR], [PRODUCT_VERSION_MINOR], [OpenVPN minor versi
- AC_DEFINE([OPENVPN_VERSION_PATCH], ["PRODUCT_VERSION_PATCH"], [OpenVPN patch level - may be a string or integer])
- 
- AC_CONFIG_AUX_DIR([.])
--AC_CONFIG_HEADERS([config.h])
-+AC_CONFIG_HEADERS([config.h include/openvpn-plugin.h])
- AC_CONFIG_SRCDIR([src/openvpn/syshead.h])
- AC_CONFIG_MACRO_DIR([m4])
- 
-@@ -1229,7 +1229,6 @@ AC_CONFIG_FILES([
- 	distro/rpm/Makefile
- 	distro/rpm/openvpn.spec
- 	include/Makefile
--	include/openvpn-plugin.h
- 	src/Makefile
- 	src/compat/Makefile
- 	src/openvpn/Makefile
--- 
-2.1.4
+     Fix out-of-tree builds; openvpn-plugin.h should be in AC_CONFIG_HEADERS
+
+     Signed-off-by: Steffan Karger <steffan@...1856...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1438027198-23305-1-git-send-email-steffan@...1856...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/9964
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
