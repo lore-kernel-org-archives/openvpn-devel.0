@@ -1,12 +1,16 @@
-Message-ID: <55B56435.5090609@...1147...>
-Date: Mon, 27 Jul 2015 00:50:29 +0200
-From: Jan Just Keijser <janjust@...1147...>
+Message-ID: <COL128-W78E15F40935FC606B745D7CA8E0@...512...>
+Content-Type: multipart/alternative;
+	boundary="_0f1736b9-d04e-4c4d-9095-caa8f89b330c_"
+From: li yuqian <liyuqian08@...2047...>
+Date: Mon, 27 Jul 2015 01:28:43 +0000
+In-Reply-To: <55B56347.7010304@...1147...>
+References: <COL128-W360F356FA6F45FADFFC4D6CA810@...512...>,
+	<55B1FF56.4000209@...1147...>
+	<COL128-W59456CBB4B786DDF3AECEECA800@...512...>,
+	<55B56347.7010304@...1147...>
 MIME-Version: 1.0
-References: <C17CBC9D7B974729BACBF182B77A8C76@...1853...>	<20150725194558.GM382@...1296...>
-	<CAEsd45ROXPNs54CBQSnp-N+g=nYhgbqVKCPihAo32qXmB_6OJA@...278...>
-In-Reply-To: <CAEsd45ROXPNs54CBQSnp-N+g=nYhgbqVKCPihAo32qXmB_6OJA@...278...>
-Subject: Re: [Openvpn-devel] Docs or Bug: --push options no longer require
- double quotes
+Subject: Re: [Openvpn-devel] Does Openvpn really support cryptodev hardware
+ accelerators
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,56 +19,123 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-To: "Jonathan K. Bullard" <jkbullard@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Jan Just Keijser <janjust@...1147...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hi Jonathan,
+--_0f1736b9-d04e-4c4d-9095-caa8f89b330c_
+Content-Type: text/plain; charset="gb2312"
+Content-Transfer-Encoding: base64
 
-On 25/07/15 22:24, Jonathan K. Bullard wrote:
-> On Sat, Jul 25, 2015 at 3:45 PM, Gert Doering <gert@...1296...> wrote:
->> Hi,
->>
->> On Sat, Jul 25, 2015 at 01:34:46PM +0100, debbie10t@...277... wrote:
->>> As the title states --push no longer requires options to be double quoted.
->> Well, *did* it require double quotes at some point?  If yes, when?
-> Double-quotes may not be required in a configuration file, but they
-> are required (or single-quotes, or the space must be escaped) if the
-> option is used on a command line, e.g.,
->
->       openvpn --push "redirect-gateway def1" ...
->
-> Otherwise "redirect-gateway" is considered the "option" to --push, and
-> "def1" will be interpreted as something else (a config file? an
-> error?).
->
-> This is true of **any** single argument to an Openvpn command line
-> option: if it contains spaces or tabs, it must be enclosed in
-> double-quotes (or single-quotes, or have the spaces escaped with
-> backslashes).
->
-> It is also true of arguments in a configuration file if there is more
-> than one argument to the option and the first argument contains
-> spaces. For example, --secret file [direction]:
->
->       secret "file-path with spaces" 0
->
-> I think it is best to always enclose any single argument that contains
-> spaces with double-quotes, even in a configuration file. This makes it
-> completely unambiguous, and future-proofs the file if a later version
-> of OpenVPN allows an optional argument to the option.
->
-very nicely put!
-and it shows that the text "--push options no longer require double 
-quotes" is actually false.
-When using "--push" (i.e. a command line argument) you still must use 
-double quotes.
-When using "push" (i.e. inside a config file) then quotes do not seem 
-necessary for some options, but that does not mean you should not use them.
+SGkgSmFuLA0KVGhhbmtzIGZvciB5b3VyIHJlcGxheSA6KQ0KPj5haCBPSzsgSSd2ZSBncmFiYmVk
+IGEgY29weSwgYnVpbHQgYW5kIGluc3RhbGxlZCBpdCBvbiAyIHNlcnZlcnMgYW5kIHJhbiBzb21l
+IHRlc3Q6IEkgZ2V0IHNpbWlsYXIgZmlndXJlcyBmb3IgJ29wZW5zc2wgc3BlZWQnIGJ1dCB0aG9z
+ZSBudW1iZXJzIGFyZSBhcnRpZmljaWFsLCBpLmUuIHRoZXkgZG8gbm90IHJlZmxlY3QgdHJ1ZSBw
+ZXJmb3JtYW5jZSBvZiB0aGUgc3lzdGVtLiBBY2NvcmRpbmcgdG8gdGhlIHNpdGUgaHR0cDovL2Ny
+eXB0b2Rldi1saW51eC5vcmcvaW5kZXguaHRtbCBJIHNob3VsZCBiZSBnZXR0aW5nIHNvbWUgaW1w
+cm92ZW1lbnQgYnV0IG5vdCAqdGhhdCogbXVjaC4NCmkgdGhpbmsgdGhlIGNyeXB0b2RldiBnb3Qg
+bXVjaCBpbXByb3ZlZCB3aXRoIGVuYWJsZWQgaXQsIHRha2UgYSBsb29rIGZvciBmb2xsb3dpbmcg
+d2hhdCBpIGdvdCB0ZXN0IGRhdGEtLS0tLS0tLS0tLS0td2l0aG91dCBjcnlwdG9kZXYtLS0tLS0t
+LS0tLS0tVGhlICdudW1iZXJzJyBhcmUgaW4gMTAwMHMgb2YgYnl0ZXMgcGVyIHNlY29uZCBwcm9j
+ZXNzZWQudHlwZSAgICAgICAgICAgICAxNiBieXRlcyAgICAgNjQgYnl0ZXMgICAgMjU2IGJ5dGVz
+ICAgMTAyNCBieXRlcyAgIDgxOTIgYnl0ZXNhZXMtMTI4LWNiYyAgICAgMTU4NTI1LjA2ayAgIDIx
+NDEyOC42N2sgICAyNDI5MTYuMTBrICAgMjUwMjc5LjU1ayAgIDI1MzM1OS40NWstLS0tLS0tLS0t
+LS0td2l0aCBjcnlwdG9kZXYtLS0tLS0tLS0tLS0tVGhlICdudW1iZXJzJyBhcmUgaW4gMTAwMHMg
+b2YgYnl0ZXMgcGVyIHNlY29uZCBwcm9jZXNzZWQudHlwZSAgICAgICAgICAgICAxNiBieXRlcyAg
+ICAgNjQgYnl0ZXMgICAgMjU2IGJ5dGVzICAgMTAyNCBieXRlcyAgIDgxOTIgYnl0ZXNhZXMtMTI4
+LWNiYyAgICAgIDQ1MDg0LjUzayAgIDE5MTI4Ni4zMGsgICA2NTY4NzEuNzVrICAzMjI4Mzg1LjI4
+ayAxODI4MjkwNS42MGstLS0tLS0tLS0tLS0tLWNvbXBhcmUgdGhlIDgxOTIgYnl0ZXMgcGVyIHNl
+Y29uZCBwcm9jZXNzZWQsIHdpdGggY3J5cHRvZGV2IHVwIHRvIDE4MjgyOTA1LjYwaywgd2l0aG91
+dCBpcyBvbmx5IDI1MzM1OS40NWssIHRoaXMgaXMgdmVyeSBnb29kIGltcHJvdmVkLiBkb24ndCBs
+b29rIGF0IHRoYXQgdGltZXMgb2Ygb3BlbnNzbCBzcGVlZCAtZXZwIGFlcy0xMjgtY2JjDQoNCj4+
+dGhpcyBpcyBwYXJ0bHkgdHJ1ZSAtIG9wZW52cG4gbWluaW1pemVzIHRoZSB1c2VyLXRvLWtlcm5l
+bCBhbmQga2VybmVsLXRvLXVzZXIgY29weWluZyBvZiBwYWNrZXRzIGJ1dCBpdCBkb2VzIGhhcHBl
+biBhbmQgeWVzIHRoaXMgaXMgaW5kZWVkIHRoZSBib3R0bGVuZWNrLiBUaGVyZSBpcyBsaXR0bGUg
+d2UgY2FuIGRvIGFib3V0IHRoaXMsIGFsdGhvdWdoIG90aGVyIHRvb2xzIHN1Y2ggYXMgdnR1biBn
+ZXQgc2xpZ2h0bHkgYmV0dGVyIHBlcmZvcm1hbmNlLiANCmRvIHlvdSBtZWFuIGlmIHdlIHdhbnQg
+dGhyb3VnaCAiaGFyZHdhcmUgZW5jcnlwdGlvbiBhY2NlbGVyYXRvciA8LS0+IGNyeXB0b2Rldihr
+ZXJuZWwpIDwtLT4gb3BlbnZwbih1c2VyIHNwYWNlKSIgaXMgbm90IGdvb2QgYXMgdGhlIGJvdHRs
+ZW5lY2sgZXhpc3RlZD8gd2hhdCBpcyB5b3VyIHN1Z2dlc3Rpb24/IGhvdyBhYm91dCB3ZSBkbyB0
+aGF0IGluIHRoaXMgd2F5ICJoYXJkd2FyZSBlbmNyeXB0aW9uIGFjY2VsZXJhdG9yIDwtLT4gb3Bl
+bnZwbih1c2VyIHNwYWNlKSIgdGhhdCBtZWFuIHdlIGN1c3RvbWl6ZSBPcGVudnBuIGxldCBpdCBj
+YWxsIHRvIENQVSBtYW51ZmFjdHVyZXIgcHJvdmlkZXMgQVBJIGJ5IGRpcmVjdGx5Pw0KVGhhbmsg
+eW91IHZlcnkgbXVjaC4NCll1cWlhbg0KDQogCQkgCSAgIAkJICA=
 
-So, neither bug or documentation error.
+--_0f1736b9-d04e-4c4d-9095-caa8f89b330c_
+Content-Type: text/html; charset="gb2312"
+Content-Transfer-Encoding: base64
 
-JJK
+PGh0bWw+DQo8aGVhZD4NCjxzdHlsZT48IS0tDQouaG1tZXNzYWdlIFANCnsNCm1hcmdpbjowcHg7
+DQpwYWRkaW5nOjBweA0KfQ0KYm9keS5obW1lc3NhZ2UNCnsNCmZvbnQtc2l6ZTogMTJwdDsNCmZv
+bnQtZmFtaWx5OkNhbGlicmkNCn0NCi0tPjwvc3R5bGU+PC9oZWFkPg0KPGJvZHkgY2xhc3M9J2ht
+bWVzc2FnZSc+PGRpdiBkaXI9J2x0cic+SGkgSmFuLDxkaXY+PGJyPjwvZGl2PjxkaXY+VGhhbmtz
+IGZvciB5b3VyIHJlcGxheSA6KTwvZGl2PjxkaXY+PGJyPjwvZGl2PjxkaXY+Jmd0OyZndDs8c3Bh
+biBzdHlsZT0iZm9udC1zaXplOiAxMnB0OyI+YWggT0s7IEkndmUgZ3JhYmJlZCBhIGNvcHksIGJ1
+aWx0IGFuZCBpbnN0YWxsZWQgaXQgb24gMiBzZXJ2ZXJzIGFuZCByYW4gc29tZSB0ZXN0OiBJIGdl
+dCBzaW1pbGFyIGZpZ3VyZXMgZm9yICdvcGVuc3NsIHNwZWVkJyBidXQgdGhvc2UgbnVtYmVycyBh
+cmUgYXJ0aWZpY2lhbCwgaS5lLiB0aGV5IGRvIG5vdCByZWZsZWN0IHRydWUgcGVyZm9ybWFuY2Ug
+b2YgdGhlIHN5c3RlbS4gQWNjb3JkaW5nIHRvIHRoZSBzaXRlPC9zcGFuPjxzcGFuIHN0eWxlPSJm
+b250LXNpemU6IDEycHQ7Ij4mbmJzcDs8L3NwYW4+PGEgY2xhc3M9ImVjeG1vei10eHQtbGluay1m
+cmVldGV4dCIgaHJlZj0iaHR0cDovL2NyeXB0b2Rldi1saW51eC5vcmcvaW5kZXguaHRtbCIgdGFy
+Z2V0PSJfYmxhbmsiIHN0eWxlPSJmb250LXNpemU6IDEycHQ7Ij5odHRwOi8vY3J5cHRvZGV2LWxp
+bnV4Lm9yZy9pbmRleC5odG1sPC9hPjxzcGFuIHN0eWxlPSJmb250LXNpemU6IDEycHQ7Ij4mbmJz
+cDs8L3NwYW4+PHNwYW4gc3R5bGU9ImZvbnQtc2l6ZTogMTJwdDsiPkkgc2hvdWxkIGJlIGdldHRp
+bmcgc29tZSBpbXByb3ZlbWVudCBidXQgbm90ICp0aGF0KiBtdWNoLjwvc3Bhbj48L2Rpdj48ZGl2
+PjxzcGFuIHN0eWxlPSJmb250LXNpemU6IDEycHQ7Ij48YnI+PC9zcGFuPjwvZGl2PjxkaXY+PHNw
+YW4gc3R5bGU9ImZvbnQtc2l6ZTogMTJwdDsiPmkgdGhpbmsgdGhlIGNyeXB0b2RldiBnb3QgbXVj
+aCBpbXByb3ZlZCB3aXRoJm5ic3A7PC9zcGFuPmVuYWJsZWQ8c3BhbiBzdHlsZT0iZm9udC1zaXpl
+OiAxMnB0OyI+Jm5ic3A7aXQsIHRha2UgYSBsb29rIGZvciBmb2xsb3dpbmcgd2hhdCBpIGdvdCB0
+ZXN0IGRhdGE8L3NwYW4+PC9kaXY+PGRpdj48c3BhbiBzdHlsZT0iZm9udC1zaXplOiAxMnB0OyI+
+LS0tLS0tLS0tLS0tLTwvc3Bhbj48L2Rpdj48ZGl2PjxzcGFuIHN0eWxlPSJmb250LXNpemU6IDEy
+cHQ7Ij53aXRob3V0IGNyeXB0b2Rldjwvc3Bhbj48L2Rpdj48ZGl2PjxzcGFuIHN0eWxlPSJmb250
+LXNpemU6IDEycHQ7Ij4tLS0tLS0tLS0tLS0tPC9zcGFuPjwvZGl2PjxkaXY+PGRpdj5UaGUgJ251
+bWJlcnMnIGFyZSBpbiAxMDAwcyBvZiBieXRlcyBwZXIgc2Vjb25kIHByb2Nlc3NlZC48L2Rpdj48
+ZGl2PnR5cGUgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgMTYgYnl0
+ZXMgJm5ic3A7ICZuYnNwOyA2NCBieXRlcyAmbmJzcDsgJm5ic3A7MjU2IGJ5dGVzICZuYnNwOyAx
+MDI0IGJ5dGVzICZuYnNwOyA4MTkyIGJ5dGVzPC9kaXY+PGRpdj5hZXMtMTI4LWNiYyAmbmJzcDsg
+Jm5ic3A7IDE1ODUyNS4wNmsgJm5ic3A7IDIxNDEyOC42N2sgJm5ic3A7IDI0MjkxNi4xMGsgJm5i
+c3A7IDI1MDI3OS41NWsgJm5ic3A7IDI1MzM1OS40NWs8L2Rpdj48L2Rpdj48ZGl2PjxkaXY+PHNw
+YW4gc3R5bGU9ImZvbnQtc2l6ZTogMTJwdDsiPi0tLS0tLS0tLS0tLS08L3NwYW4+PC9kaXY+PGRp
+dj48c3BhbiBzdHlsZT0iZm9udC1zaXplOiAxMnB0OyI+d2l0aCBjcnlwdG9kZXY8L3NwYW4+PC9k
+aXY+PGRpdj48c3BhbiBzdHlsZT0iZm9udC1zaXplOiAxMnB0OyI+LS0tLS0tLS0tLS0tLTwvc3Bh
+bj48L2Rpdj48ZGl2PjxkaXY+PGRpdj5UaGUgJ251bWJlcnMnIGFyZSBpbiAxMDAwcyBvZiBieXRl
+cyBwZXIgc2Vjb25kIHByb2Nlc3NlZC48L2Rpdj48ZGl2PnR5cGUgJm5ic3A7ICZuYnNwOyAmbmJz
+cDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgMTYgYnl0ZXMgJm5ic3A7ICZuYnNwOyA2NCBieXRlcyAm
+bmJzcDsgJm5ic3A7MjU2IGJ5dGVzICZuYnNwOyAxMDI0IGJ5dGVzICZuYnNwOyA4MTkyIGJ5dGVz
+PC9kaXY+PGRpdj5hZXMtMTI4LWNiYyAmbmJzcDsgJm5ic3A7ICZuYnNwOzQ1MDg0LjUzayAmbmJz
+cDsgMTkxMjg2LjMwayAmbmJzcDsgNjU2ODcxLjc1ayAmbmJzcDszMjI4Mzg1LjI4ayAxODI4Mjkw
+NS42MGs8L2Rpdj48L2Rpdj48L2Rpdj48ZGl2Pi0tLS0tLS0tLS0tLS0tPC9kaXY+PGRpdj5jb21w
+YXJlIHRoZSA4MTkyIGJ5dGVzIHBlciBzZWNvbmQgcHJvY2Vzc2VkLCB3aXRoIGNyeXB0b2RldiB1
+cCB0byZuYnNwOzxzcGFuIHN0eWxlPSJmb250LXNpemU6IDEycHQ7Ij4xODI4MjkwNS42MGssIHdp
+dGhvdXQgaXMgb25seSZuYnNwOzwvc3Bhbj48c3BhbiBzdHlsZT0iZm9udC1zaXplOiAxMnB0OyI+
+MjUzMzU5LjQ1aywgdGhpcyBpcyB2ZXJ5IGdvb2QgaW1wcm92ZWQuIGRvbid0IGxvb2sgYXQgdGhh
+dCB0aW1lcyBvZiBvcGVuc3NsIHNwZWVkIC1ldnAgYWVzLTEyOC1jYmM8L3NwYW4+PC9kaXY+PGRp
+dj48c3BhbiBzdHlsZT0iZm9udC1zaXplOiAxMnB0OyI+PGJyPjwvc3Bhbj48L2Rpdj48ZGl2Pjxz
+cGFuIHN0eWxlPSJmb250LXNpemU6IDEycHQ7Ij48YnI+PC9zcGFuPjwvZGl2PjxkaXY+Jmd0OyZn
+dDs8c3BhbiBzdHlsZT0iZm9udC1zaXplOiAxMnB0OyI+dGhpcyBpcyBwYXJ0bHkgdHJ1ZSAtIG9w
+ZW52cG4gbWluaW1pemVzIHRoZSB1c2VyLXRvLWtlcm5lbCBhbmQga2VybmVsLXRvLXVzZXIgY29w
+eWluZyBvZiBwYWNrZXRzIGJ1dCBpdCBkb2VzIGhhcHBlbiBhbmQgeWVzIHRoaXMgaXMgaW5kZWVk
+IHRoZSBib3R0bGVuZWNrLiBUaGVyZSBpcyBsaXR0bGUgd2UgY2FuIGRvIGFib3V0IHRoaXMsIGFs
+dGhvdWdoIG90aGVyIHRvb2xzIHN1Y2ggYXMgdnR1biBnZXQgc2xpZ2h0bHkgYmV0dGVyIHBlcmZv
+cm1hbmNlLjwvc3Bhbj48c3BhbiBzdHlsZT0iZm9udC1zaXplOiAxMnB0OyI+Jm5ic3A7PC9zcGFu
+PjwvZGl2PjxkaXY+PHNwYW4gc3R5bGU9ImZvbnQtc2l6ZTogMTJwdDsiPjxicj48L3NwYW4+PC9k
+aXY+PGRpdj48c3BhbiBzdHlsZT0iZm9udC1zaXplOiAxMnB0OyI+ZG8geW91IG1lYW4gaWYgd2Ug
+d2FudCB0aHJvdWdoICJoYXJkd2FyZSBlbmNyeXB0aW9uIGFjY2VsZXJhdG9yICZsdDstLSZndDsg
+Y3J5cHRvZGV2KGtlcm5lbCkgJmx0Oy0tJmd0OyBvcGVudnBuKHVzZXIgc3BhY2UpIiBpcyBub3Qg
+Z29vZCBhcyB0aGUgYm90dGxlbmVjayBleGlzdGVkPyB3aGF0IGlzIHlvdXIgc3VnZ2VzdGlvbj8g
+aG93IGFib3V0IHdlIGRvIHRoYXQgaW4gdGhpcyB3YXkmbmJzcDs8L3NwYW4+PHNwYW4gc3R5bGU9
+ImZvbnQtc2l6ZTogMTJwdDsiPiJoYXJkd2FyZSBlbmNyeXB0aW9uIGFjY2VsZXJhdG9yICZsdDst
+LSZndDsgb3BlbnZwbih1c2VyIHNwYWNlKSIgdGhhdCBtZWFuIHdlIGN1c3RvbWl6ZSBPcGVudnBu
+IGxldCBpdCBjYWxsIHRvIENQVSBtYW51ZmFjdHVyZXIgcHJvdmlkZXMgQVBJIGJ5IGRpcmVjdGx5
+Pzwvc3Bhbj48L2Rpdj48ZGl2PjxzcGFuIHN0eWxlPSJmb250LXNpemU6IDEycHQ7Ij48YnI+PC9z
+cGFuPjwvZGl2PjxkaXY+PHNwYW4gc3R5bGU9ImZvbnQtc2l6ZTogMTJwdDsiPlRoYW5rIHlvdSB2
+ZXJ5IG11Y2guPC9zcGFuPjwvZGl2PjxkaXY+PHNwYW4gc3R5bGU9ImZvbnQtc2l6ZTogMTJwdDsi
+Pjxicj48L3NwYW4+PC9kaXY+PGRpdj48c3BhbiBzdHlsZT0iZm9udC1zaXplOiAxMnB0OyI+WXVx
+aWFuPC9zcGFuPjwvZGl2Pjxicj48ZGl2Pjxicj48L2Rpdj48L2Rpdj48c3R5bGU+PCEtLQouRXh0
+ZXJuYWxDbGFzcyAuZWN4aG1tZXNzYWdlIFAgewpwYWRkaW5nOjBweDsKfQoKLkV4dGVybmFsQ2xh
+c3MgYm9keS5lY3hobW1lc3NhZ2Ugewpmb250LXNpemU6MTJwdDsKZm9udC1mYW1pbHk6Q2FsaWJy
+aTsKfQoKLS0+PC9zdHlsZT48c3R5bGU+PCEtLQouRXh0ZXJuYWxDbGFzcyAuZWN4aG1tZXNzYWdl
+IFAgewpwYWRkaW5nOjBweDsKfQoKLkV4dGVybmFsQ2xhc3MgYm9keS5lY3hobW1lc3NhZ2Ugewpm
+b250LXNpemU6MTJwdDsKZm9udC1mYW1pbHk6Q2FsaWJyaTsKfQoKCi0tPjwvc3R5bGU+IAkJIAkg
+ICAJCSAgPC9kaXY+PC9ib2R5Pg0KPC9odG1sPg==
 
+--_0f1736b9-d04e-4c4d-9095-caa8f89b330c_--
 
