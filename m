@@ -1,10 +1,10 @@
-Date: Mon, 27 Jul 2015 21:02:46 +0200 (CEST)
-Message-Id: <201507271902.t6RJ2kfa012872@...1295...>
+Date: Mon, 27 Jul 2015 21:02:50 +0200 (CEST)
+Message-Id: <201507271902.t6RJ2ofw019931@...1295...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1436534548-21507-2-git-send-email-openvpn.list@...1114...>
-References: <1436534548-21507-2-git-send-email-openvpn.list@...1114...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Provide compile time OpenVPN
-	version information to plug-ins
+In-Reply-To: <1436534548-21507-3-git-send-email-openvpn.list@...1114...>
+References: <1436534548-21507-3-git-send-email-openvpn.list@...1114...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Provide OpenVPN runtime version
+	information to plug-ins
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,18 +18,18 @@ Content-Transfer-Encoding: 8bit
 To: David Sommerseth <davids@...1347...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master branch.
+ACK. Your patch has been applied to the master branch.
 
-commit 9de35d4633ce3035b048957b2e20b81e31a40cd6
+commit 6a40276c7500c2d0a2fe44b1a450ffe9cb2f37cd
 Author: David Sommerseth
-Date:   Fri Jul 10 15:22:27 2015 +0200
+Date:   Fri Jul 10 15:22:28 2015 +0200
 
-     Provide compile time OpenVPN version information to plug-ins
+     Provide OpenVPN runtime version information to plug-ins
 
      Signed-off-by: David Sommerseth <davids@...1347...>
-     Acked-by: Steffan Karger <steffan.karger@...1435...>
-     Message-Id: <1436534548-21507-2-git-send-email-openvpn.list@...1114...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/9905
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1436534548-21507-3-git-send-email-openvpn.list@...1114...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/9904
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
