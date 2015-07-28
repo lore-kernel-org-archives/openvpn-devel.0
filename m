@@ -1,10 +1,13 @@
-Date: Mon, 27 Jul 2015 23:07:20 +0200 (CEST)
-Message-Id: <201507272107.t6RL7K40028561@...1295...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <1438030010-953-1-git-send-email-gert@...1296...>
-References: <1438030010-953-1-git-send-email-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix build on OpenSolaris
-	(non-gmake)
+Message-ID: <55B772EF.1000008@...1114...>
+Date: Tue, 28 Jul 2015 14:17:51 +0200
+From: David Sommerseth <openvpn.list@...1114...>
+MIME-Version: 1.0
+References: <1436534548-21507-2-git-send-email-openvpn.list@...1114...>	<201507271902.t6RJ2kfa012872@...1295...>
+	<20150727192224.GP382@...1296...>
+In-Reply-To: <20150727192224.GP382@...1296...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Re: Provide compile time
+ OpenVPN version information to plug-ins
+Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,28 +16,48 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net, Gert Doering <gert@...1296...>
 
-Patch has been applied to the master branch.
+On 27/07/15 21:22, Gert Doering wrote:
+> Hi,
+> 
+> On Mon, Jul 27, 2015 at 09:02:46PM +0200, Gert Doering wrote:
+>> Your patch has been applied to the master branch.
+> 
+> Actually, not... this breaks out of tree builds...
+> 
+> gcc -DHAVE_CONFIG_H -I. -I../../../openvpn/src/openvpn -I../..  -I../../../openvpn/include -I../../../openvpn/src/compat         -g -O2 -MT error.o -MD -MP -MF .deps/error.Tpo -c -o error.o ../../../openvpn/src/openvpn/error.c
+> In file included from ../../../openvpn/src/openvpn/options.h:39:0,
+>                  from ../../../openvpn/src/openvpn/ssl.h:43,
+>                  from ../../../openvpn/src/openvpn/ps.h:32,
+>                  from ../../../openvpn/src/openvpn/error.c:43:
+> ../../../openvpn/src/openvpn/plugin.h:38:28: fatal error: openvpn-plugin.h: No such file or directory
+>  #include "openvpn-plugin.h"
+>                             ^
+> compilation terminated.
+> 
+> 
+> openvpn-plugin.h is nicely built from openvpn-plugin.h.in, but it is 
+> built in the *build* tree, and the -I statements above do not look
+> there - it would need an "-I../../include" to work...
 
-commit 710c439817522ac8f4dfa7411baa787c5e2e2f89
-Author: Gert Doering
-Date:   Mon Jul 27 22:46:50 2015 +0200
+Hmmm ... That's surprising, as I'd expect we would have the same troubles also
+without these patches - as openvpn-plugin.h isn't really touched.
 
-     Fix build on OpenSolaris (non-gmake)
+> config.h is built in the root directory of the build tree, so "-I../.."
+> catches that.  Since we have nothing else in ../../include/, nothing
+> adds it to the compile statement (and I'm not overly eager to see it there,
+> already quite a bit of stuff on the command line).
+> 
+> So... patches, or revert time?
 
-     Signed-off-by: Gert Doering <gert@...1296...>
-     Acked-by: Steffan Karger <steffan.karger@...1435...>
-     Message-Id: <1438030010-953-1-git-send-email-gert@...1296...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/9967
+I'll do some more investigation and fix this ASAP (at least within this week).
 
 
---
+-- 
 kind regards,
 
-Gert Doering
-
+David Sommerseth
 
