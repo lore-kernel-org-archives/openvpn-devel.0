@@ -1,9 +1,9 @@
 MIME-Version: 1.0
 In-Reply-To: <20150730233727.GW3676@...2049...>
 References: <20150730233727.GW3676@...2049...>
-Date: Fri, 31 Jul 2015 11:19:15 +0300
-Message-ID: <CAGyAFMWagBfdJtNvX_sK9CGH-SvvxgsnVBX3xx1Z2Ym41hhaGw@...278...>
-From: Lev Stipakov <lstipakov@...277...>
+Date: Fri, 31 Jul 2015 14:09:51 +0500
+Message-ID: <CAFHpkQGqdJdpz_FTPWzsziNHbMCt3DOwkLHA8BXU9M+-+Cv_mA@...278...>
+From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
 Subject: Re: [Openvpn-devel] Packet loss due to radius issues
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -17,29 +17,17 @@ Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 To: Samuel Thibault <samuel.thibault@...1817...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hello Samuel,
+Hello,
 
-Do you use radius plugin from http://www.nongnu.org/radiusplugin/ ? I
-think the way OpenVPN delegates authentication to a plugin
-(OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY hook) is asynchronous, as well
-as plugin implementation, i. e. OpenVPN does not wait for a response.
-Instead it periodically checks a tmp file to where plugin is supposed
-to write authentication result (1 or 0).
+I've rewritten radius thing with .net, my plugin performs queries to
+multiple radius servers in parallel, I'm using it with Mono in
+production for few months:
 
-However, plugin may also hook on OPENVPN_PLUGIN_CLIENT_CONNECT_V2,
-which is called after authentication has been done. OpenVPN calls that
-hook synchronously, which may cause traffic to stall. There is a patch
-that makes OpenVPN behave asynchronously, however it is not (yet)
-merger to the master branch.
+https://github.com/skbkontur/openvpn-auth-radius
 
-http://sourceforge.net/p/openvpn/mailman/message/33244190/
+I can help with that plugin if you are interested
 
-We used to have a packet loss issue due to synchronous nature of
-client-connect and that patch has solved it.
-
--Lev
-
-2015-07-31 2:37 GMT+03:00 Samuel Thibault <samuel.thibault@...1817...>:
+2015-07-31 4:37 GMT+05:00 Samuel Thibault <samuel.thibault@...1817...>:
 > Hello,
 >
 > We've been having issues on our VPN server due to the way authentication
@@ -87,9 +75,4 @@ client-connect and that patch has solved it.
 > Openvpn-devel mailing list
 > Openvpn-devel@lists.sourceforge.net
 > https://lists.sourceforge.net/lists/listinfo/openvpn-devel
-
-
-
--- 
--Lev
 
