@@ -1,11 +1,12 @@
-MIME-Version: 1.0
-In-Reply-To: <20150731091257.GC3164@...2050...>
+Date: Fri, 31 Jul 2015 11:54:18 +0200
+From: Samuel Thibault <samuel.thibault@...1817...>
+Message-ID: <20150731095418.GK3164@...2050...>
 References: <20150730233727.GW3676@...2049...>
-	<CAFHpkQGqdJdpz_FTPWzsziNHbMCt3DOwkLHA8BXU9M+-+Cv_mA@...278...>
-	<20150731091257.GC3164@...2050...>
-Date: Fri, 31 Jul 2015 14:54:02 +0500
-Message-ID: <CAFHpkQFk5nB9U655hh3TKn_BsVVBR_q8tibVDc7XhYTgKC1Jkg@...278...>
-From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
+	<CAGyAFMWagBfdJtNvX_sK9CGH-SvvxgsnVBX3xx1Z2Ym41hhaGw@...278...>
+	<20150731092451.GD3164@...2050...>
+	<20150731093206.GE3164@...2050...>
+MIME-Version: 1.0
+In-Reply-To: <20150731093206.GE3164@...2050...>
 Subject: Re: [Openvpn-devel] Packet loss due to radius issues
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -15,34 +16,48 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
-To: Samuel Thibault <samuel.thibault@...1817...>, =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Disposition: inline
+To: Lev Stipakov <lstipakov@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-auth-user-pass-verify  is not as powerfull as "so" plugin.
-my plugin is synchronous by nature.
+Samuel Thibault, le Fri 31 Jul 2015 11:32:06 +0200, a =E9crit :
+> # Allows the plugin to use auth control files if OpenVPN (>=3D 2.1 rc8) p=
+rovides them.
+> # default is false
+> # useauthcontrolfile=3Dfalse
+>=20
+> Why is the default false??
 
-however, if your are familiar with c#, it might be easier to implement
-things like username manipulation,
+And still... The main loop uses
 
-for instance, we used to transform usernames like 'domain\user' and
-'user@...2051...' to just 'user'
-it is too early to talk about central repository, currently I'm the
-only user of that plugin
+   pthread_mutex_lock(context->getMutexSend());
+   context->addNewUser(newuser);
+   pthread_cond_signal( context->getCondSend( ));
+   pthread_mutex_unlock (context->getMutexSend());
+   return OPENVPN_PLUGIN_FUNC_DEFERRED;
 
-2015-07-31 14:12 GMT+05:00 Samuel Thibault <samuel.thibault@...1817...>:
-> =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=B8=D1=86=D0=B8=D0=BD, le F=
-ri 31 Jul 2015 14:09:51 +0500, a =C3=A9crit :
->> I've rewritten radius thing with .net, my plugin performs queries to
->> multiple radius servers in parallel, I'm using it with Mono in
->> production for few months:
->>
->> https://github.com/skbkontur/openvpn-auth-radius
->>
->> I can help with that plugin if you are interested
->
-> Mmm, it'd be great if the openvpn-auth-radius plugin could have a
-> central repository, instead of a flurry of patched versions...
->
-> Samuel
+to signal the auth thread that a new connection is being tried, and the
+auth thread basically does
+
+   pthread_mutex_lock(context->getMutexSend());
+   while(1)
+   {
+     if (nobody_yet)
+       pthread_cond_wait(context->getCondSend(),context->getMutexSend());
+     ...
+     Do auth
+     ...
+   }
+   pthread_mutex_unlock(context->getMutexSend());
+
+I.e. it keeps the MutexSend busy all along the authentication! So even
+with deferred authentication, the main loop can not manage to grasp the
+mutex until the auth thread has finished authenticating the previous
+user...
+
+Anyway, this is an issue in the plugin, I'll switch over to the plugin
+mailing list.
+
+Samuel
 
