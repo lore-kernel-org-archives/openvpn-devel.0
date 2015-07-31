@@ -1,14 +1,17 @@
-Message-ID: <55BAC7D7.6080506@...1147...>
-Date: Fri, 31 Jul 2015 02:56:55 +0200
+Message-ID: <55BAC85D.1050703@...1147...>
+Date: Fri, 31 Jul 2015 02:59:09 +0200
 From: Jan Just Keijser <janjust@...1147...>
 MIME-Version: 1.0
-References: <CALKXstsZLjqxCrzo3E-qGiyhJo3yi9bW1Jf2bKGYphkB+4b0Qg@...278...>	<CALKXsttsrkPxgrT1A+gpRh5WoxTxw6djkBQJh7BjKTSk5itDig@...278...>	<20150730114818.GE382@...1296...>
-	<CALKXstt-DBKbwiaheOWCTmFgeTYMok13TnrHnZMyzaUP26H4PA@...278...>
-In-Reply-To: <CALKXstt-DBKbwiaheOWCTmFgeTYMok13TnrHnZMyzaUP26H4PA@...278...>
+References: <COL128-W360F356FA6F45FADFFC4D6CA810@...512...>,
+	<55B1FF56.4000209@...1147...>
+	<COL128-W59456CBB4B786DDF3AECEECA800@...512...>,
+	<55B56347.7010304@...1147...>
+	<COL128-W78E15F40935FC606B745D7CA8E0@...512...>
+In-Reply-To: <COL128-W78E15F40935FC606B745D7CA8E0@...512...>
 Content-Type: multipart/alternative;
-	boundary="------------090602070300020308080108"
-Subject: Re: [Openvpn-devel] Openvpn is not working with hardware encryption
- enabled CPU.
+	boundary="------------040106020507070208040407"
+Subject: Re: [Openvpn-devel] Does Openvpn really support cryptodev hardware
+ accelerators
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,34 +20,54 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Rahul Arora <rahul1991.arora@...277...>
-Cc: openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
+To: li yuqian <liyuqian08@...2047...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
 This is a multi-part message in MIME format.
---------------090602070300020308080108
-Content-Type: text/plain; charset=windows-1252; format=flowed
+--------------040106020507070208040407
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 Hi,
 
-On 30/07/15 19:04, Rahul Arora wrote:
-> Hi
+On 27/07/15 03:28, li yuqian wrote:
+> Hi Jan,
 >
-> Thanks for the reply.
+> Thanks for your replay :)
 >
-> I am already using "--engine cryptodev" in the configuration file.
+> >>ah OK; I've grabbed a copy, built and installed it on 2 servers and 
+> ran some test: I get similar figures for 'openssl speed' but those 
+> numbers are artificial, i.e. they do not reflect true performance of 
+> the system. According to the 
+> sitehttp://cryptodev-linux.org/index.htmlI should be getting some 
+> improvement but not *that* much.
 >
-> I am using "aes-128-cbc"  cipher algorithm and it is supported in my 
-> hardware as i am running "openssl speed test" using these ciphers only 
-> and in case of "openssl speed test" throughput is increasing but with 
-> openvpn it is not so.
+> i think the cryptodev got much improved with enabled it, take a look 
+> for following what i got test data
+> -------------
+> without cryptodev
+> -------------
+> The 'numbers' are in 1000s of bytes per second processed.
+> type             16 bytes     64 bytes    256 bytes 1024 bytes   8192 
+> bytes
+> aes-128-cbc     158525.06k   214128.67k   242916.10k 250279.55k   
+> 253359.45k
+> -------------
+> with cryptodev
+> -------------
+> The 'numbers' are in 1000s of bytes per second processed.
+> type             16 bytes     64 bytes    256 bytes 1024 bytes   8192 
+> bytes
+> aes-128-cbc      45084.53k   191286.30k   656871.75k  3228385.28k 
+> 18282905.60k
+> --------------
+> compare the 8192 bytes per second processed, with cryptodev up to 
+> 18282905.60k, without is only 253359.45k, this is very good improved. 
+> don't look at that times of openssl speed -evp aes-128-cbc
 >
 >
-this was reported by someone on the list a few days ago as well.
-the problem is not with openvpn , but with the openssl speed command 
-used:  the cryptodev engine (and kernel device) do not provide a factor 
-of 100+ speedup. It's the "openssl speed -evp aes-256-cbc" command that 
-reports erroneous results.
+as I wrote in another mail on this list, it's not openvpn but the 
+'openssl speed' command which fails here:
+
 Try running this openssl command on your box:
 
 date ; cat bigfile | openssl enc -e -aes-256-cbc -bufsize 8192 -pass 
@@ -56,8 +79,10 @@ Then rerun it using
 date ; cat bigfile | openssl enc -engine cryptodev -e -aes-256-cbc 
 -bufsize 8192 -pass pass:testing123 >  /dev/null ; date
 
-and compare the results. On my hardware I get zero difference whether I 
-use cryptodev or not, whereas 'openssl speed' reports a 100+ % improvement:
+and compare the results of the dates of 'before' and 'after'. On my 
+hardware I takes ~ 10 seconds to encrypt a 3.3 GB file , with zero 
+difference whether I use cryptodev or not, whereas 'openssl speed' 
+reports a 100+ % improvement:
 
 with cryptodev module loaded:
     aes-256-cbc     286337.65k  1048423.31k  4589489.60k 19596646.40k 
@@ -77,112 +102,135 @@ hope this clears things up,
 JJK
 
 
-
->
->
-> On Thu, Jul 30, 2015 at 5:18 PM, Gert Doering <gert@...1296... 
-> <mailto:gert@...1296...>> wrote:
->
->     Hi,
->
->     On Thu, Jul 30, 2015 at 12:55:00PM +0530, Rahul Arora wrote:
->     > *Openvpn --version*
->     > OpenVPN 2.1.3 arm-fsl-linux-gnueabi [SSL] [LZO2] [EPOLL] built on Jul 29
->     > 2015
->
->     This is, uh, ancient.  2.3.7 is the current stable release.
->
->     (It might or might not related, but we're certainly not going back
->     to 2.2
->     or even 2.1 releases to debug anything.  OpenVPN *should* use the
->     crypto
->     accelerator just fine, if OpenSSL can use it - if you need to use an
->     OpenSSL engine, tell OpenVPN with "--engine yourengine".  It might not
->     make an overwhelming difference in speed if you use the wrong crypto
->     algorithms - like, your hardware accelerates 3DES and you use
->     --cipher blowfish...)
->
->     gert
->
->     --
->     USENET is *not* the non-clickable part of WWW!
->        //www.muc.de/~gert/ <http://www.muc.de/%7Egert/>
->     Gert Doering - Munich, Germany gert@...1296...
->     <mailto:gert@...1296...>
->
-
-
---------------090602070300020308080108
+--------------040106020507070208040407
 X-MIME-Autoconverted: from 8bit to quoted-printable by
-	outgoing3-ams.mf.surf.net id t6V0xfxp029364
-Content-Type: text/html; charset="windows-1252"
+	outgoing1-ams.mf.surf.net id t6V0xLIM001916
+Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <html>
   <head>
-    <meta content=3D"text/html; charset=3Dwindows-1252"
-      http-equiv=3D"Content-Type">
+    <meta content=3D"text/html; charset=3DUTF-8" http-equiv=3D"Content-Type=
+">
   </head>
   <body bgcolor=3D"#FFFFFF" text=3D"#000000">
     <div class=3D"moz-cite-prefix">Hi,<br>
       <br>
-      On 30/07/15 19:04, Rahul Arora wrote:<br>
+      On 27/07/15 03:28, li yuqian wrote:<br>
     </div>
-    <blockquote
-cite=3D"mid:CALKXstt-DBKbwiaheOWCTmFgeTYMok13TnrHnZMyzaUP26H4PA@...278..."
+    <blockquote cite=3D"mid:COL128-W78E15F40935FC606B745D7CA8E0@...512..."
       type=3D"cite">
-      <div dir=3D"ltr">
-        <div>
-          <div>
-            <div>Hi<br>
-              <br>
-            </div>
-            Thanks for the reply.<br>
-            <br>
-          </div>
-          I am already using "--engine cryptodev" in the configuration
-          file.<br>
-          <br>
-        </div>
-        <div>I am using "aes-128-cbc"=A0 cipher algorithm and it is
-          supported in my hardware as i am running "openssl speed test"
-          using these ciphers only and in case of "openssl speed test"
-          throughput is increasing but with openvpn it is not so.<br>
-        </div>
+      <style><!--
+.hmmessage P
+{
+margin:0px;
+padding:0px
+}
+body.hmmessage
+{
+font-size: 12pt;
+font-family:Calibri
+}
+--></style>
+      <div dir=3D"ltr">Hi Jan,
         <div><br>
-          <br>
+        </div>
+        <div>Thanks for your replay :)</div>
+        <div><br>
+        </div>
+        <div>&gt;&gt;<span style=3D"font-size: 12pt;">ah OK; I've grabbed
+            a copy, built and installed it on 2 servers and ran some
+            test: I get similar figures for 'openssl speed' but those
+            numbers are artificial, i.e. they do not reflect true
+            performance of the system. According to the site</span><span
+            style=3D"font-size: 12pt;">=C2=A0</span><a moz-do-not-send=3D"t=
+rue"
+            class=3D"ecxmoz-txt-link-freetext"
+            href=3D"http://cryptodev-linux.org/index.html" target=3D"_blank"
+            style=3D"font-size: 12pt;">http://cryptodev-linux.org/index.htm=
+l</a><span
+            style=3D"font-size: 12pt;">=C2=A0</span><span style=3D"font-siz=
+e:
+            12pt;">I should be getting some improvement but not *that*
+            much.</span></div>
+        <div><span style=3D"font-size: 12pt;"><br>
+          </span></div>
+        <div><span style=3D"font-size: 12pt;">i think the cryptodev got
+            much improved with=C2=A0</span>enabled<span style=3D"font-size:
+            12pt;">=C2=A0it, take a look for following what i got test data=
+</span></div>
+        <div><span style=3D"font-size: 12pt;">-------------</span></div>
+        <div><span style=3D"font-size: 12pt;">without cryptodev</span></div>
+        <div><span style=3D"font-size: 12pt;">-------------</span></div>
+        <div>
+          <div>The 'numbers' are in 1000s of bytes per second processed.</d=
+iv>
+          <div>type =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 16 bytes =C2=
+=A0 =C2=A0 64 bytes =C2=A0 =C2=A0256 bytes =C2=A0
+            1024 bytes =C2=A0 8192 bytes</div>
+          <div>aes-128-cbc =C2=A0 =C2=A0 158525.06k =C2=A0 214128.67k =C2=
+=A0 242916.10k =C2=A0
+            250279.55k =C2=A0 253359.45k</div>
+        </div>
+        <div>
+          <div><span style=3D"font-size: 12pt;">-------------</span></div>
+          <div><span style=3D"font-size: 12pt;">with cryptodev</span></div>
+          <div><span style=3D"font-size: 12pt;">-------------</span></div>
+          <div>
+            <div>
+              <div>The 'numbers' are in 1000s of bytes per second
+                processed.</div>
+              <div>type =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 16 bytes =
+=C2=A0 =C2=A0 64 bytes =C2=A0 =C2=A0256 bytes =C2=A0
+                1024 bytes =C2=A0 8192 bytes</div>
+              <div>aes-128-cbc =C2=A0 =C2=A0 =C2=A045084.53k =C2=A0 191286.=
+30k =C2=A0 656871.75k
+                =C2=A03228385.28k 18282905.60k</div>
+            </div>
+          </div>
+          <div>--------------</div>
+          <div>compare the 8192 bytes per second processed, with
+            cryptodev up to=C2=A0<span style=3D"font-size: 12pt;">18282905.=
+60k,
+              without is only=C2=A0</span><span style=3D"font-size: 12pt;">=
+253359.45k,
+              this is very good improved. don't look at that times of
+              openssl speed -evp aes-128-cbc</span></div>
+          <div><span style=3D"font-size: 12pt;"><br>
+            </span></div>
+          <div><span style=3D"font-size: 12pt;"><br>
+            </span></div>
         </div>
       </div>
     </blockquote>
-    this was reported by someone on the list a few days ago as well.<br>
-    the problem is not with openvpn , but with the openssl speed command
-    used:=A0 the cryptodev engine (and kernel device) do not provide a
-    factor of 100+ speedup. It's the "openssl speed -evp aes-256-cbc"
-    command that reports erroneous results.<br>
+    as I wrote in another mail on this list, it's not openvpn but the
+    'openssl speed' command which fails here:<br>
+    <br>
     Try running this openssl command on your box:<br>
     <br>
     date ; cat bigfile | openssl enc -e -aes-256-cbc -bufsize 8192 -pass
-    pass:testing123 &gt;=A0 /dev/null ; date<br>
+    pass:testing123 &gt;=C2=A0 /dev/null ; date<br>
     <br>
     where 'bigfile' is some large file of &gt; 2 GB in size.<br>
     Then rerun it using<br>
     <br>
     date ; cat bigfile | openssl enc -engine cryptodev -e -aes-256-cbc
-    -bufsize 8192 -pass pass:testing123 &gt;=A0 /dev/null ; date<br>
+    -bufsize 8192 -pass pass:testing123 &gt;=C2=A0 /dev/null ; date<br>
     <br>
-    and compare the results. On my hardware I get zero difference
-    whether I use cryptodev or not, whereas 'openssl speed' reports a
-    100+ % improvement:<br>
+    and compare the results of the dates of 'before' and 'after'. On my
+    hardware I takes ~ 10 seconds to encrypt a 3.3 GB file , with zero
+    difference whether I use cryptodev or not, whereas 'openssl speed'
+    reports a 100+ % improvement:<br>
     <br>
     with cryptodev module loaded:<br>
-    =A0=A0 aes-256-cbc=A0=A0=A0=A0 286337.65k=A0 1048423.31k=A0 4589489.60k=
- 19596646.40k
+    =C2=A0=C2=A0 aes-256-cbc=C2=A0=C2=A0=C2=A0=C2=A0 286337.65k=C2=A0 10484=
+23.31k=C2=A0 4589489.60k 19596646.40k
     141238272.00k<br>
     <br>
     without cryptodev:<br>
-    =A0=A0 aes-256-cbc=A0=A0=A0=A0 465276.57k=A0=A0 487043.33k=A0=A0 493990=
-.87k=A0=A0
-    493776.90k=A0=A0 495720.11k<br>
+    =C2=A0=C2=A0 aes-256-cbc=C2=A0=C2=A0=C2=A0=C2=A0 465276.57k=C2=A0=C2=A0=
+ 487043.33k=C2=A0=C2=A0 493990.87k=C2=A0=C2=A0
+    493776.90k=C2=A0=C2=A0 495720.11k<br>
     <br>
     <br>
     so, apart from the fact that openvpn's speed limitations are not
@@ -194,68 +242,8 @@ cite=3D"mid:CALKXstt-DBKbwiaheOWCTmFgeTYMok13TnrHnZMyzaUP26H4PA@...278..."
     <br>
     JJK <br>
     <br>
-    <br>
-    <br>
-    <blockquote
-cite=3D"mid:CALKXstt-DBKbwiaheOWCTmFgeTYMok13TnrHnZMyzaUP26H4PA@...278..."
-      type=3D"cite">
-      <div dir=3D"ltr">
-        <div>=A0<br>
-        </div>
-      </div>
-      <div class=3D"gmail_extra"><br>
-        <div class=3D"gmail_quote">On Thu, Jul 30, 2015 at 5:18 PM, Gert
-          Doering <span dir=3D"ltr">&lt;<a moz-do-not-send=3D"true"
-              href=3D"mailto:gert@...1296..." target=3D"_blank">gert@...1826...=
-6...</a>&gt;</span>
-          wrote:<br>
-          <blockquote class=3D"gmail_quote" style=3D"margin:0 0 0
-            .8ex;border-left:1px #ccc solid;padding-left:1ex">Hi,<br>
-            <br>
-            On Thu, Jul 30, 2015 at 12:55:00PM +0530, Rahul Arora wrote:<br>
-            &gt; *Openvpn --version*<br>
-            <span class=3D"">&gt; OpenVPN 2.1.3 arm-fsl-linux-gnueabi
-              [SSL] [LZO2] [EPOLL] built on Jul 29<br>
-              &gt; 2015<br>
-              <br>
-            </span>This is, uh, ancient.=A0 2.3.7 is the current stable
-            release.<br>
-            <br>
-            (It might or might not related, but we're certainly not
-            going back to 2.2<br>
-            or even 2.1 releases to debug anything.=A0 OpenVPN *should*
-            use the crypto<br>
-            accelerator just fine, if OpenSSL can use it - if you need
-            to use an<br>
-            OpenSSL engine, tell OpenVPN with "--engine yourengine".=A0 It
-            might not<br>
-            make an overwhelming difference in speed if you use the
-            wrong crypto<br>
-            algorithms - like, your hardware accelerates 3DES and you
-            use<br>
-            --cipher blowfish...)<br>
-            <span class=3D"HOEnZb"><font color=3D"#888888"><br>
-                gert<br>
-                <br>
-                --<br>
-                USENET is *not* the non-clickable part of WWW!<br>
-                =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0=
- =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0
-                =A0 =A0//<a moz-do-not-send=3D"true"
-                  href=3D"http://www.muc.de/%7Egert/" rel=3D"noreferrer"
-                  target=3D"_blank">www.muc.de/~gert/</a><br>
-                Gert Doering - Munich, Germany=A0 =A0 =A0 =A0 =A0 =A0 =A0 =
-=A0 =A0 =A0 =A0 =A0 =A0
-                =A0 =A0<a moz-do-not-send=3D"true"
-                  href=3D"mailto:gert@...1296...">gert@...1296...</a></font=
-></span><br>
-          </blockquote>
-        </div>
-      </div>
-    </blockquote>
-    <br>
   </body>
 </html>
 
---------------090602070300020308080108--
+--------------040106020507070208040407--
 
