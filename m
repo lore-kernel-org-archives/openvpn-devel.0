@@ -1,10 +1,10 @@
-Message-ID: <55C0D8D7.9070106@...1435...>
-Date: Tue, 4 Aug 2015 17:23:03 +0200
-From: Steffan Karger <steffan.karger@...1435...>
-MIME-Version: 1.0
-References: <1438692796-14663-1-git-send-email-gert@...1296...>
+Date: Tue, 4 Aug 2015 17:44:52 +0200 (CEST)
+Message-Id: <201508041544.t74FiqOW010381@...1295...>
+From: Gert Doering <gert@...1296...>
 In-Reply-To: <1438692796-14663-1-git-send-email-gert@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH] Un-break --auth-user-pass on windows
+References: <1438692796-14663-1-git-send-email-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Un-break --auth-user-pass on
+	windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,44 +13,30 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
+
+Patch has been applied to the master and release/2.3 branch.
+
+commit 0ffd744332f51878c4df430ab14aca3126bdfc8a (master)
+commit 0a1bb0f40f660efaabd7ee2a857791da6254337d (release/2.3)
+
+Author: Gert Doering
+Date:   Tue Aug 4 14:53:16 2015 +0200
+
+     Un-break --auth-user-pass on windows
+
+     Signed-off-by: Gert Doering <gert@...1296...>
+     Acked-by: Steffan Karger <steffan.karger@...1435...>
+     Message-Id: <1438692796-14663-1-git-send-email-gert@...1296...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/10000
 
 
-On 04-08-15 14:53, Gert Doering wrote:
-> Commit b131c7b974d9d4d3f0 introduced a check to create a meaningful
-> warning if we try to read a password after daemon()izing (by checking
-> whether stdin or stderr is connected to a tty).  For some reason this
-> breaks on Windows builds if run under GUI control - but since Windows
-> doesn't have this particular daemon() issue anyway, just #ifndef WIN32
-> the offending code.
->
-> Signed-off-by: Gert Doering <gert@...1296...>
-> ---
->   src/openvpn/misc.c | 2 ++
->   1 file changed, 2 insertions(+)
->
-> diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
-> index 21e54b4..f20d059 100644
-> --- a/src/openvpn/misc.c
-> +++ b/src/openvpn/misc.c
-> @@ -1088,9 +1088,11 @@ get_user_pass_cr (struct user_pass *up,
->          */
->         else if (from_stdin)
->   	{
-> +#ifndef WIN32
->   	  /* did we --daemon'ize before asking for passwords? */
->   	  if ( !isatty(0) && !isatty(2) )
->   	    { msg(M_FATAL, "neither stdin nor stderr are a tty device, can't ask for %s password.  If you used --daemon, you need to use --askpass to make passphrase-protected keys work, and you can not use --auth-nocache.", prefix ); }
-> +#endif
->
->   #ifdef ENABLE_CLIENT_CR
->   	  if (auth_challenge && (flags & GET_USER_PASS_DYNAMIC_CHALLENGE))
->
+--
+kind regards,
 
-ACK.  Patch looks fine and mattock reported (on IRC) that this indeed 
-fixes the issue on Windows.
+Gert Doering
 
--Steffan
 
