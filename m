@@ -1,10 +1,8 @@
-Date: Tue, 4 Aug 2015 17:44:52 +0200 (CEST)
-Message-Id: <201508041544.t74FiqOW010381@...1295...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <1438692796-14663-1-git-send-email-gert@...1296...>
-References: <1438692796-14663-1-git-send-email-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Un-break --auth-user-pass on
-	windows
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <55C0FC40.109@...515...>
+Date: Tue, 4 Aug 2015 20:54:08 +0300
+MIME-Version: 1.0
+Subject: [Openvpn-devel] OpenVPN 2.3.8 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,30 +11,47 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="iso-8859-15"; format=flowed
+Content-Transfer-Encoding: quoted-printable
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, "openvpn users list (openvpn-users@lists.sourceforge.net)" <openvpn-users@lists.sourceforge.net>, openvpn-announce@lists.sourceforge.net
 
-Patch has been applied to the master and release/2.3 branch.
+Hi all,
 
-commit 0ffd744332f51878c4df430ab14aca3126bdfc8a (master)
-commit 0a1bb0f40f660efaabd7ee2a857791da6254337d (release/2.3)
+The OpenVPN community project team is proud to release OpenVPN 2.3.8. It=20
+can be downloaded from here:
 
-Author: Gert Doering
-Date:   Tue Aug 4 14:53:16 2015 +0200
+<http://openvpn.net/index.php/open-source/downloads.html>
 
-     Un-break --auth-user-pass on windows
+This release fixes a number of small issues and one regression=20
+introduced in 2.3.7. A full list of changes is available here:
 
-     Signed-off-by: Gert Doering <gert@...1296...>
-     Acked-by: Steffan Karger <steffan.karger@...1435...>
-     Message-Id: <1438692796-14663-1-git-send-email-gert@...1296...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/10000
+<https://community.openvpn.net/openvpn/wiki/ChangesInOpenvpn23>
 
+Note that the Git tag "v2.3.8" is not exactly the same as 2.3.8-based=20
+source packages. This is of importance to those building OpenVPN for=20
+Windows themselves. All the details are in the changelog above.
 
---
-kind regards,
+For generic help use these support channels:
 
-Gert Doering
+- Official documentation:=20
+<http://openvpn.net/index.php/open-source/documentation/howto.html>
+- Wiki: <https://community.openvpn.net>
+- Forums: <https://forums.openvpn.net>
+- User mailing list: <http://sourceforge.net/mail/?group_id=3D48978>
+- User IRC channel: #openvpn at irc.freenode.net
+
+Please report bugs and ask development questions here:
+
+- Bug tracker and Wiki: <https://community.openvpn.net>
+- Developer mailing list: <http://sourceforge.net/mail/?group_id=3D48978>
+- Developer IRC channel: #openvpn-devel at irc.freenode.net (requires=20
+Freenode registration)
+
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
 
 
