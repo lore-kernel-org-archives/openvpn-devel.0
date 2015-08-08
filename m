@@ -1,14 +1,10 @@
-Date: Sat, 8 Aug 2015 14:53:40 +0200
+Date: Sat, 8 Aug 2015 15:07:49 +0200 (CEST)
+Message-Id: <201508081307.t78D7ns8026133@...1295...>
 From: Gert Doering <gert@...1296...>
-Message-ID: <20150808125340.GA13114@...1296...>
-References: <CAEsd45RvRfmqetu-EoFjSdyBk5F9X1K5muPGu-+_+30TMNOU_A@...278...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="fdj2RfSjLxBAspz7"
-Content-Disposition: inline
-In-Reply-To: <CAEsd45RvRfmqetu-EoFjSdyBk5F9X1K5muPGu-+_+30TMNOU_A@...278...>
-Subject: Re: [Openvpn-devel] [Patch] Version 2: Fail if options have extra
-	parameters
+In-Reply-To: <1438859835-3977-1-git-send-email-arne@...1227...>
+References: <1438859835-3977-1-git-send-email-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Show extra-certs in current
+	parameters, fix clang warning and logic error in preresolve
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,73 +13,34 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "Jonathan K. Bullard" <jkbullard@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---fdj2RfSjLxBAspz7
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+ACK.
 
-Hi,
+Your patch has been applied to the master and release/2.3 branch
+(release/2.3 only gets the - trivial - SHOW_STR() chunk, the bugfix
+for --preresolve does not apply and isn't needed anyway)
 
-coming back to this, due to a bug introduced by this (Arne sent a patch),
-me not finding the original patch in release/2.3 (so I can't apply the
-fix), and I think there was a misunderstanding here :-)
+commit 291c227d2ccecaa92602eaa5259a23c7093e30e5 (master)
+commit d7ab314c57a0b851e0e714c903c2bc5ececac3ae (release/2.3)
 
-On Tue, Jun 02, 2015 at 08:43:26AM -0400, Jonathan K. Bullard wrote:
-> This is a new thread with version 2 of the patch; the first submission
-> included the wrong .patch file and was withdrawn.
->=20
-> The attached patch causes an error if an option has extra
-> parameters; previously they were ignored (ticket #557 at
-> https://community.openvpn.net/openvpn/ticket/557).
->=20
-> This feature was discussed on the openvpn-devel mailing list (
-> http://thread.gmane.org/gmane.network.openvpn.devel/9599).
->=20
-> The patch is for the master branch only -- the consensus of the
-> mailing list discussion was that the patch should not be included in
-> the 2.3 branch.
+Author: Arne Schwabe
+Date:   Thu Aug 6 13:17:15 2015 +0200
 
-I seem to remember that we said "no hard errors in 2.3", but *warnings*
-for 2.3 would be certainly acceptable and welcome.
+     Show extra-certs in current parameters, fix clang warning and logic error in preresolve
 
-OTOH, looking at the current patch, it cannot reasonably easy turned into
-something that prints warnings only (because if there are extra arguments,
-the current patch will just ignore the option in question and all its
-arguments) - so we'd need to instrument every single clause with an
-
-   if (p[MAXFORTHIS])
-     { msg(M_WARN, "WARNING: too many arguments for --xxx"); }
-
-which would be quite a lot of extra code...
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1438859835-3977-1-git-send-email-arne@...1227...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/10005
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
-So, for the time being, I'll split Arne's patch from yesterday into=20
-"the master" and "the 2.3" fix (one of two chunks :) )
+--
+kind regards,
 
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+Gert Doering
 
---fdj2RfSjLxBAspz7
-Content-Type: application/pgp-signature
-Content-Disposition: inline
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQCVAwUBVcX71KkuBuNlUUl1AQKMGQP/aZV7yGjrg6Yuq0owLQ4OQeJJN6ULuMNK
-haqMOsV80nolXWfyq/xIGrY+ZsXf3jUPteNvwLO04DpnvXeEafHv/J/Yxh3s2vc/
-5rczIwk12R+z8C962jNWnm6XJrygtxYoWGhzhIZ2FYRB2A1TUMOUPw0gXJw2CJGb
-9YZW2wMc2JU=
-=vWrr
------END PGP SIGNATURE-----
-
---fdj2RfSjLxBAspz7--
 
