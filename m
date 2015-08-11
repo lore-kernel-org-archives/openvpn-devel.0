@@ -1,10 +1,10 @@
 From: David Sommerseth <openvpn.list@...1114...>
-Date: Tue, 11 Aug 2015 18:41:52 +0200
-Message-Id: <1439311312-2682-5-git-send-email-openvpn.list@...1114...>
+Date: Tue, 11 Aug 2015 18:41:50 +0200
+Message-Id: <1439311312-2682-3-git-send-email-openvpn.list@...1114...>
 In-Reply-To: <1439311312-2682-1-git-send-email-openvpn.list@...1114...>
 References: <1439311312-2682-1-git-send-email-openvpn.list@...1114...>
-Subject: [Openvpn-devel] [PATCH v3 4/4] systemd: Do not mask usernames when
-	querying for it via systemd-ask-password
+Subject: [Openvpn-devel] [PATCH v3 2/4] Re-implement the systemd support
+	using the new query user API
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,76 +19,174 @@ To: openvpn-devel@lists.sourceforge.net
 
 From: David Sommerseth <davids@...1347...>
 
-In systemd after version 216, systemd-ask-password will support --echo which
-will avoid masking the user input.  As OpenVPN uses this mechanism collecting
-usernames when systemd is available, this will avoid the input of usernames to
-be masked.
+This provides exactly the same systemd functionality which existed
+before the query user infrastructure got implemented.
 
-This patch also adds the --icon argument, which is aimed at graphical inputs.
-For example when OpenVPN is started at system boot-time using a graphical boot
-interface such as Plymouth.
-
-The patch also fixes an issue with pkg-config if both systemd.pc and
-libsystemd.pc is installed, which would result in the systemd version number
-being reported twice.  The autotools check for sd_booted() is also removed,
-as this check doesn't really provide much of value.
+ [v2 - Removed the QUERY_USER_FOREACH macro]
 
 Signed-off-by: David Sommerseth <davids@...1347...>
 ---
- configure.ac                  | 11 +++++++----
- src/openvpn/console_systemd.c |  7 +++++++
- 2 files changed, 14 insertions(+), 4 deletions(-)
+ configure.ac                  |   2 +-
+ src/openvpn/Makefile.am       |  13 +++++
+ src/openvpn/console_systemd.c | 112 ++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 126 insertions(+), 1 deletion(-)
+ create mode 100644 src/openvpn/console_systemd.c
 
 diff --git a/configure.ac b/configure.ac
-index 182e116..133d35e 100644
+index 5dccfbb..182e116 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -995,10 +995,13 @@ dnl Check for systemd
+@@ -993,7 +993,7 @@ fi
  dnl
- AM_CONDITIONAL([ENABLE_SYSTEMD], [test "${enable_systemd}" = "yes"])
+ dnl Check for systemd
+ dnl
+-
++AM_CONDITIONAL([ENABLE_SYSTEMD], [test "${enable_systemd}" = "yes"])
  if test "$enable_systemd" = "yes" ; then
--    PKG_CHECK_MODULES([libsystemd], [systemd libsystemd],
-+    PKG_CHECK_MODULES([libsystemd], [systemd],
+     PKG_CHECK_MODULES([libsystemd], [systemd libsystemd],
                        [],
--                      [PKG_CHECK_MODULES([libsystemd], [libsystemd-daemon])]
--                      )
-+                      [PKG_CHECK_MODULES([libsystemd], [libsystemd],
-+                                         [],
-+                                         [PKG_CHECK_MODULES([libsystemd], [libsystemd-daemon])]
-+                                         )]
-+                      ])
-     AC_CHECK_HEADERS(systemd/sd-daemon.h,
-        ,
-        [
-@@ -1007,9 +1010,9 @@ if test "$enable_systemd" = "yes" ; then
- 
-     saved_LIBS="${LIBS}"
-     LIBS="${LIBS} ${libsystemd_LIBS}"
--    AC_CHECK_FUNCS([sd_booted], [], [AC_MSG_ERROR([systemd library is missing sd_booted()])])
-     OPTIONAL_SYSTEMD_LIBS="${libsystemd_LIBS}"
-     AC_DEFINE(ENABLE_SYSTEMD, 1, [Enable systemd integration])
-+    AC_DEFINE_UNQUOTED(SYSTEMD_VERSION, [`echo ${libsystemd_MODVERSION}`], [systemd version installed])
-     LIBS="${saved_LIBS}"
- fi
- 
+diff --git a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am
+index e07389f..29cafd7 100644
+--- a/src/openvpn/Makefile.am
++++ b/src/openvpn/Makefile.am
+@@ -117,6 +117,19 @@ openvpn_SOURCES = \
+ 	tun.c tun.h \
+ 	win32.h win32.c \
+ 	cryptoapi.h cryptoapi.c
++
++
++if ENABLE_SYSTEMD
++#
++# If --enable-systemd have been used, build the alternative systemd mechanism
++# The CFLAGS macro set here ensures the alternative mechanism is being used.
++# See console.h for more information.
++#
++AM_CFLAGS += -DQUERY_USER_EXEC_ALTERNATIVE
++openvpn_SOURCES += console_systemd.c
++endif
++
++
+ openvpn_LDADD = \
+ 	$(top_builddir)/src/compat/libcompat.la \
+ 	$(SOCKETS_LIBS) \
 diff --git a/src/openvpn/console_systemd.c b/src/openvpn/console_systemd.c
-index a9cfbe6..5a85e38 100644
---- a/src/openvpn/console_systemd.c
+new file mode 100644
+index 0000000..a9cfbe6
+--- /dev/null
 +++ b/src/openvpn/console_systemd.c
-@@ -61,6 +61,13 @@ get_console_input_systemd (const char *prompt, const bool echo, char *input, con
- 
-     argv_init (&argv);
-     argv_printf (&argv, SYSTEMD_ASK_PASSWORD_PATH);
-+#if SYSTEMD_VERSION > 216
-+    if( echo )
-+    {
-+	argv_printf_cat(&argv, "--echo");
+@@ -0,0 +1,112 @@
++/*
++ *  OpenVPN -- An application to securely tunnel IP networks
++ *             over a single UDP port, with support for SSL/TLS-based
++ *             session authentication and key exchange,
++ *             packet encryption, packet authentication, and
++ *             packet compression.
++ *
++ *  Copyright (C) 2014-2015 David Sommerseth <davids@...1347...>
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License version 2
++ *  as published by the Free Software Foundation.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License
++ *  along with this program (see the file COPYING included with this
++ *  distribution); if not, write to the Free Software Foundation, Inc.,
++ *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
++ */
++
++/**
++ * @file Alternative method to query for user input, using systemd
++ *
++ */
++
++#include "config.h"
++#include "syshead.h"
++#include "console.h"
++#include "misc.h"
++
++#include <systemd/sd-daemon.h>
++
++/*
++ * is systemd running
++ */
++
++static bool
++check_systemd_running ()
++{
++    struct stat c;
++
++    /* We simply test whether the systemd cgroup hierarchy is
++     * mounted, as well as the systemd-ask-password executable
++     * being available */
++
++    return (sd_booted() > 0)
++	&& (stat(SYSTEMD_ASK_PASSWORD_PATH, &c) == 0);
++
++}
++
++static bool
++get_console_input_systemd (const char *prompt, const bool echo, char *input, const int capacity)
++{
++    int std_out;
++    bool ret = false;
++    struct argv argv;
++
++    argv_init (&argv);
++    argv_printf (&argv, SYSTEMD_ASK_PASSWORD_PATH);
++    argv_printf_cat (&argv, "%s", prompt);
++
++    if ((std_out = openvpn_popen (&argv, NULL)) < 0) {
++	return false;
 +    }
-+#endif
-+    argv_printf_cat (&argv, "--icon network-vpn");
-     argv_printf_cat (&argv, "%s", prompt);
- 
-     if ((std_out = openvpn_popen (&argv, NULL)) < 0) {
++    CLEAR (*input);
++    if (read (std_out, input, capacity) != 0)
++    {
++	chomp (input);
++	ret = true;
++    }
++    close (std_out);
++
++    argv_reset (&argv);
++
++    return ret;
++}
++
++/**
++ *  Systemd aware implementation of query_user_exec().  If systemd is not running
++ *  it will fall back to use query_user_exec_builtin() instead.
++ *
++ */
++bool query_user_exec(struct query_user * setup)
++{
++    struct query_user *p;
++    bool ret = true;
++
++    ASSERT( setup != NULL );
++
++    /* If systemd is not available, use the default built-in mechanism */
++    if (!check_systemd_running())
++    {
++        return query_user_exec_builtin(setup);
++    }
++
++    /* Loop through the complete query setup and when needed, collect the information */
++    for (p = setup; p->next != NULL; p = p->next)
++    {
++        if( p->query )
++        {
++            ret &= get_console_input_systemd(p->prompt, p->echo, p->response, p->response_len);
++        } else {
++            msg(M_INFO|M_NOPREFIX, "%s", p->prompt);
++        }
++    }
++
++    return ret;
++}
 -- 
 1.8.3.1
 
