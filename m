@@ -1,10 +1,8 @@
-Message-ID: <55CA0FDC.6020004@...1227...>
-Date: Tue, 11 Aug 2015 17:08:12 +0200
-From: Arne Schwabe <arne@...1227...>
-MIME-Version: 1.0
-References: <55CA09E0.3020503@...2052...>
-In-Reply-To: <55CA09E0.3020503@...2052...>
-Subject: Re: [Openvpn-devel] SRV record support
+From: David Sommerseth <openvpn.list@...1114...>
+Date: Tue, 11 Aug 2015 18:41:48 +0200
+Message-Id: <1439311312-2682-1-git-send-email-openvpn.list@...1114...>
+Subject: [Openvpn-devel] [PATCH v3 0/4] Reworking the interface for querying
+	users
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,72 +11,59 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-To: Gergely Czuczy <gergely.czuczy@...2052...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
+From: David Sommerseth <davids@...1347...>
 
+This is the third round of improving the API for querying users for information,
+after it was discussed in the developer meeting August 10 2015.
 
-Am 11.08.15 um 16:42 schrieb Gergely Czuczy:
-> Hello,
->
-> I would like to ask some help, I'm looking at the OpenVPN source tree
-> from GitHub as I would like to see how much effort would it be me to add
-> SRV record support, as it has increasing demand these days (and really
-> makes sense, especially for enterprises).
->
-> So, the question is, what would be the best place to hook up the support
-> for SRV records?
-> SRV record mechanism/requirements are the following:
->   - It's protocol-specific, so at lookup time it has to be known whether
-> it's for UDP or TCP
-If proto were optional that would fit OpenVPN better. But SRV records
-seem not support that.
->   - The SRV records supply the service port, so in this case it's not
-> taken from the configuration file.
->   - Basically for a service it's one or more DNS records in the
-> following format:
->    _service._proto.name. TTL class SRV priority weight port target.
->    I guess _service should be _openvpn, _proto is either _tcp or _udp.
-> port is obvious, and target is the target host to connect to using the
-> previously specified port.
->    If there are multiple records, then priority makes sense, first the
-> hosts with the lowest values have to be tried, then rest increasingly
->    If there are multiple hosts with the same priority then weight kicks
-> in, a host to be chosen is determined by the weight factors. Attempts to
-> a different priority can be made after all hosts from this priority are
-> exhausted.
+The previous patch set can be found here:
+ <http://thread.gmane.org/gmane.network.openvpn.devel/9657>
 
-Multiple records are difficult. At the moment we have a list of
-connection entries in the config which may expand into multiple
-addresses (from getaddrinfo). The question if we do a dns lookup at the
-start for SRV enabled connection entries and mutate these entries into
-multiple entries or this should be done as part of the normal resolve
-process for each entry, introducing the concept of subconnections or
-something like this.
+Most of the changes was in patch 1/4, where the most important changes are
+replacing QUERY_USER_FOREACH macro with a for() loop and the query_user_init() 
+function was changed to a void function which will do msg(M_FATAL,...) on
+malloc() failures directly.  The QUERY_USER_FOREACH change also required a
+minor adoptation in patch 2/4 too.
 
-Doing a one reordering after priority and doing a weighted randomizing
-between connections with same priority should not be a problem.
->
-> So, basically first there has to be a lookup against the server's SRV
-> record, once that lookup returned results, and the priority/weight
-> algorithm returns the first candidate, the existing connection mechanism
-> can be used to check it. If it succeeds, life goes on as it is
-> currently, if it fails, then the prio/weight algorithm's next target has
-> to be tried.
->
-> So, where should I be looking at the source that would probably be a
-> good place to hook this up?
->
-We should have a design idea before doing that and a fair warning the
-connnection connect logic is not for the faint hearted. In init.c is the
-next_connection method that iterates through the server. Almost all
-resolv related functions call openvpn_getaddrinfo, so going back from
-there is also a good starting point.
+It was also reported build issues [1] if both systemd.pc and libsystemd.pc files
+were installed.  This has also been fixed in patch 4/4.  The issue was that
+the previous PKG_CHECK_MODULES() check would do call 
+'pkg-config --modversion systemd libsystemd' which would return the mod-version
+twice, separated by a newline.  The check for systemd, libsystemd and
+libsystemd-daemon have now been split into separate checks.
 
-And if you modify anything use -master and not 2.3 as starting point.
-The code in question has changed a lot between releases (dual stack
-client patches).
+[1] <http://thread.gmane.org/gmane.network.openvpn.devel/9657/focus=9661>
 
-Arne
+During the review it was also discovered that the announced --icon argument
+was not present in patch 4/4.  This had just slipped in the patches sent to
+the mailing list.
+
+David Sommerseth (4):
+  Rework the user input interface to make it more modular
+  Re-implement the systemd support using the new query user API
+  autotools: Add support for extracting version information from
+    pkg-config modules
+  systemd: Do not mask usernames when querying for it via
+    systemd-ask-password
+
+ configure.ac                  |  13 ++-
+ m4/pkg.m4                     |   7 +-
+ src/openvpn/Makefile.am       |  15 ++-
+ src/openvpn/console.c         | 224 ++++++--------------------------------
+ src/openvpn/console.h         |  83 +++++++++++++-
+ src/openvpn/console_builtin.c | 246 ++++++++++++++++++++++++++++++++++++++++++
+ src/openvpn/console_systemd.c | 119 ++++++++++++++++++++
+ src/openvpn/misc.c            |  64 ++++++++---
+ src/openvpn/pkcs11.c          |  12 ++-
+ 9 files changed, 562 insertions(+), 221 deletions(-)
+ create mode 100644 src/openvpn/console_builtin.c
+ create mode 100644 src/openvpn/console_systemd.c
+
+-- 
+1.8.3.1
+
 
