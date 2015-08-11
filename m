@@ -1,13 +1,8 @@
-Date: Tue, 11 Aug 2015 08:53:02 +0200
-From: Samuel Thibault <samuel.thibault@...1817...>
-Message-ID: <20150811065302.GH3494@...2049...>
-References: <20150730233727.GW3676@...2049...>
-	<CAGyAFMWagBfdJtNvX_sK9CGH-SvvxgsnVBX3xx1Z2Ym41hhaGw@...278...>
-	<20150810232802.GX3494@...2049...>
-	<20150811055906.GX382@...1296...>
+From: Gergely Czuczy <gergely.czuczy@...2052...>
+Message-ID: <55CA09E0.3020503@...2052...>
+Date: Tue, 11 Aug 2015 16:42:40 +0200
 MIME-Version: 1.0
-In-Reply-To: <20150811055906.GX382@...1296...>
-Subject: Re: [Openvpn-devel] Packet loss due to radius issues
+Subject: [Openvpn-devel] SRV record support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,27 +11,52 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-To: Gert Doering <gert@...1296...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
-Gert Doering, le Tue 11 Aug 2015 07:59:06 +0200, a =E9crit :
-> > I can see that when accounting fails, an
-> > exception is thrown, to return an error to openvpn and thus prevent
-> > the connection.  I guess this is an important part that shouldn't be
-> > dropped, but I don't see a way to make it asynchronous without modifying
-> > the openvpn core.
-> >=20
-> > In our case we don't actually make use of radius accounting...
->=20
-> ... you could modify the radiusplugin to just "do not do accounting" -
-> just return "success!" right away, and quickly so...
+Hello,
 
-Yep, already done so on our platform, so we at least avoid the issue :)
+I would like to ask some help, I'm looking at the OpenVPN source tree
+from GitHub as I would like to see how much effort would it be me to add
+SRV record support, as it has increasing demand these days (and really
+makes sense, especially for enterprises).
 
-It still needs to be fixed upstream :)
+So, the question is, what would be the best place to hook up the support
+for SRV records?
+SRV record mechanism/requirements are the following:
+  - It's protocol-specific, so at lookup time it has to be known whether
+it's for UDP or TCP
+  - The SRV records supply the service port, so in this case it's not
+taken from the configuration file.
+  - Basically for a service it's one or more DNS records in the
+following format:
+   _service._proto.name. TTL class SRV priority weight port target.
+   I guess _service should be _openvpn, _proto is either _tcp or _udp.
+port is obvious, and target is the target host to connect to using the
+previously specified port.
+   If there are multiple records, then priority makes sense, first the
+hosts with the lowest values have to be tried, then rest increasingly
+   If there are multiple hosts with the same priority then weight kicks
+in, a host to be chosen is determined by the weight factors. Attempts to
+a different priority can be made after all hosts from this priority are
+exhausted.
 
-Samuel
+So, basically first there has to be a lookup against the server's SRV
+record, once that lookup returned results, and the priority/weight
+algorithm returns the first candidate, the existing connection mechanism
+can be used to check it. If it succeeds, life goes on as it is
+currently, if it fails, then the prio/weight algorithm's next target has
+to be tried.
+
+So, where should I be looking at the source that would probably be a
+good place to hook this up?
+
+Thanks in advance,
+Gergely
+
+PS: Please see the wikipedia article on SRV records:
+https://en.wikipedia.org/wiki/SRV_record
+
+
 
