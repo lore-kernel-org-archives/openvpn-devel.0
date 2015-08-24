@@ -1,11 +1,13 @@
+Date: Mon, 24 Aug 2015 23:10:25 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20150824211025.GE34798@...1296...>
 References: <551A5509.702@...277...> <20150824181826.GD34798@...1296...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <55DB85F9.3000502@...1227...>
-Date: Mon, 24 Aug 2015 23:00:41 +0200
+	<55DB6DD8.4040203@...277...>
 MIME-Version: 1.0
-In-Reply-To: <20150824181826.GD34798@...1296...>
-Content-Type: multipart/alternative;
-	boundary="------------020809030109040701080600"
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="h9WqFG8zn/Mwlkpe"
+Content-Disposition: inline
+In-Reply-To: <55DB6DD8.4040203@...277...>
 Subject: Re: [Openvpn-devel] Increasing TUN_MTU_MIN to make connection
  establishment faster
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -16,71 +18,60 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>, Jiri Horky <jiri.horky@...277...>
+To: Jiri Horky <jiri.horky@...277...>
 Cc: FF Systems <ff-system@...2025...>, openvpn-devel@lists.sourceforge.net
 
-This is a multi-part message in MIME format.
---------------020809030109040701080600
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
+--h9WqFG8zn/Mwlkpe
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
+Hi,
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
- 
-On 24.08.2015 20:18, Gert Doering wrote:
+On Mon, Aug 24, 2015 at 09:17:44PM +0200, Jiri Horky wrote:
+> thanks for the information. I see you effectively increased the size to
+> 1.2k which, as far as I know, will not work for people with dial ups.
 
-OpenVPN Android also uses this patch (and Gert's faster connect patch)
-for two weeks now and bad reports about the new version (apart from a
-lot of broken config with extra arguments ... :( )
+If that wouldn't work, openvpn data transfers would not work either - but
+surprisingly, they do :-) - data packets are 1500+ bytes in size, unless
+specifically told (--link-mtu) to be smaller.  We do cap the control channel
+MTU to a smaller value to give particularily broken setups (like, 1400 MTU
+*and* broken fragments) the chance to push smaller --link-mtu from the
+server.
 
-Arne
+"Dial-Up", per se, does not imply a smaller-than-1500 MTU - some folks
+do that, for "performance reasons" (reducing MTU actually reduces
+performance, as it increases TCP overhead, but what do I know against
+glossy computer magazine advice...), but even a 574 byte MTU will still
+work *if* fragmentation works.=20=20
+
+Which it normally does in this combination - fragmentation tends to break
+if stupid NAT routers are involved, but "dialup with modem links and=20
+574 mtu" is usually not connected to a NAT router but modem->PC...
+
+But as I said - I'm waiting for feedback.
+
+gert
+
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--h9WqFG8zn/Mwlkpe
+Content-Type: application/pgp-signature
+
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (MingW32)
- 
-iEYEARECAAYFAlXbfzUACgkQe8+cMNS4zRf0AACcDSs8JwyWKFY2rKOHnyOint5y
-FyMAn1YcL7dr+bEPshPWiYyQLHzxJPOa
-=WYOi
+Version: GnuPG v1
+
+iQCUAwUBVduIQKkuBuNlUUl1AQKSHAP4tEEksHC3fQkg+bURajXjdDRSXgln51Ek
+EuKgqjZBrO8X7zvC6pncn+ItHu0w55dpj+XysBjH27RQsS1qelfdZqHrqB54QyWh
+tsI++qbFNPEz6ZhsALHaOpCkwlqQnKTA7yhPmJj7SrCNfQfl35jJfeRFBdsfdQ6u
++z+DIAKvXw==
+=E5hY
 -----END PGP SIGNATURE-----
 
-
---------------020809030109040701080600
-Content-Type: text/html; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
-
-<html>
-  <head>
-    <meta content=3D"text/html; charset=3Dwindows-1252"
-      http-equiv=3D"Content-Type">
-  </head>
-  <body bgcolor=3D"#FFFFFF" text=3D"#000000">
-    <br>
-    -----BEGIN PGP SIGNED MESSAGE----- <br>
-    Hash: SHA1 <br>
-    =A0<br>
-    On 24.08.2015 20:18, Gert Doering wrote:<br>
-    <br>
-    OpenVPN Android also uses this patch (and Gert's faster connect
-    patch) for two weeks now and bad reports about the new version
-    (apart from a lot of broken config with extra arguments ... :( )<br>
-    <br>
-    Arne<br>
-    -----BEGIN PGP SIGNATURE-----
-<br>
-    Version: GnuPG v2.0.22 (MingW32)
-<br>
-    =A0<br>
-    iEYEARECAAYFAlXbfzUACgkQe8+cMNS4zRf0AACcDSs8JwyWKFY2rKOHnyOint5y
-<br>
-    FyMAn1YcL7dr+bEPshPWiYyQLHzxJPOa
-<br>
-    =3DWYOi
-<br>
-    -----END PGP SIGNATURE-----
-<br>
-    <br>
-  </body>
-</html>
-
---------------020809030109040701080600--
+--h9WqFG8zn/Mwlkpe--
 
