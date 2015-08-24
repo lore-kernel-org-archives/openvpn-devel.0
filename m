@@ -1,12 +1,13 @@
-References: <55DB0ADA.7000801@...515...>
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <55DB735B.9030508@...515...>
-Date: Mon, 24 Aug 2015 22:41:15 +0300
+References: <551A5509.702@...277...> <20150824181826.GD34798@...1296...>
+From: Arne Schwabe <arne@...1227...>
+Message-ID: <55DB85F9.60706@...1227...>
+Date: Mon, 24 Aug 2015 23:00:41 +0200
 MIME-Version: 1.0
-In-Reply-To: <55DB0ADA.7000801@...515...>
-Content-Type: multipart/mixed; boundary="------------060404070000020901000105"
-Subject: Re: [Openvpn-devel] Topics for today's (24th Aug 2015) community
- meeting
+In-Reply-To: <20150824181826.GD34798@...1296...>
+Content-Type: multipart/alternative;
+	boundary="------------080607000300000308010402"
+Subject: Re: [Openvpn-devel] Increasing TUN_MTU_MIN to make connection
+ establishment faster
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,283 +16,124 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Gert Doering <gert@...1296...>, Jiri Horky <jiri.horky@...277...>
+Cc: FF Systems <ff-system@...2025...>, openvpn-devel@lists.sourceforge.net
 
 This is a multi-part message in MIME format.
---------------060404070000020901000105
-Content-Type: text/plain; charset=UTF-8; format=flowed
+--------------080607000300000308010402
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
 
-Hi,
 
-Here's the summary of today's IRC meeting.
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+ 
+On 24.08.2015 20:18, Gert Doering wrote:
+> Hi, > > On Tue, Mar 31, 2015 at 10:04:25AM +0200, Jiri Horky wrote: >>
+continuing yesterday's IRC discussion. I would like to ask whether you
+>> can think of a reason why TUN_MTU_MIN is set to only 100 bytes, and
+>> maybe more importantly, why this value is effectively enforced in
+function > > I'm not sure if you've been following the list and/or git
+master > commits, but we have somehing in master for a while now... > >
+commit fc91d4b0071178e298052078431fb86f03be84fc (master) > > Author:
+Steffan Karger > Date:   Tue Jun 30 21:44:56 2015 +0200 > >     
+Increase control channel packet size for faster handshakes > >     
+Signed-off-by: Steffan Karger <steffan@...1856...> >      Acked-by: Gert
+Doering <gert@...1296...> >      Message-Id:
+<1435693496-10931-1-git-send-email-steffan@...1856...> >      URL:
+http://article.gmane.org/gmane.network.openvpn.devel/9841 >     
+Signed-off-by: Gert Doering <gert@...1296...> > > > ... and as far
+as we can see, this "just works" (and OpenVPN 3 on iOS > and Android
+also uses larger packets for the control channel, so we're > just
+following suit here). >
+OpenVPN Android also uses this patch (and Gert's faster connect patch)
+for two weeks now and bad reports about the new version (apart from a
+lot of broken config with extra arguments ... :( )
 
----
+Arne
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (MingW32)
+ 
+iEYEARECAAYFAlXbhfkACgkQe8+cMNS4zRcDgQCgqWq2swsrCjleyNDV/5pAJFpx
+x5IAoM9j/ZH1Tbu3BC4GvlFbUkZU85Yn
+=IRXC
+-----END PGP SIGNATURE-----
 
-COMMUNITY MEETING
 
-Place: #openvpn-devel on irc.freenode.net
-Date: Monday 24th Aug 2015
-Time: 20:00 CEST (18:00 UTC)
+--------------080607000300000308010402
+Content-Type: text/html; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
 
-Planned meeting topics for this meeting were here:
+<html>
+  <head>
+    <meta content=3D"text/html; charset=3Dwindows-1252"
+      http-equiv=3D"Content-Type">
+  </head>
+  <body bgcolor=3D"#FFFFFF" text=3D"#000000">
+    <br>
+    -----BEGIN PGP SIGNED MESSAGE----- <br>
+    Hash: SHA1 <br>
+    =A0<br>
+    On 24.08.2015 20:18, Gert Doering wrote:<br>
+    <span style=3D"white-space: pre;">&gt; Hi,
+&gt;
+&gt; On Tue, Mar 31, 2015 at 10:04:25AM +0200, Jiri Horky wrote:
+&gt;&gt; continuing yesterday's IRC discussion. I would like to ask whether=
+ you
+&gt;&gt; can think of a reason why TUN_MTU_MIN is set to only 100 bytes, and
+&gt;&gt; maybe more importantly, why this value is effectively enforced in =
+function
+&gt;
+&gt; I'm not sure if you've been following the list and/or git master
+&gt; commits, but we have somehing in master for a while now...
+&gt;
+&gt; commit fc91d4b0071178e298052078431fb86f03be84fc (master)
+&gt;
+&gt; Author: Steffan Karger
+&gt; Date:=A0=A0 Tue Jun 30 21:44:56 2015 +0200
+&gt;
+&gt;=A0=A0=A0=A0=A0 Increase control channel packet size for faster handsha=
+kes
+&gt;
+&gt;=A0=A0=A0=A0=A0 Signed-off-by: Steffan Karger <a class=3D"moz-txt-link-=
+rfc2396E" href=3D"mailto:steffan@...1856...">&lt;steffan@...1856...&gt;</a>
+&gt;=A0=A0=A0=A0=A0 Acked-by: Gert Doering <a class=3D"moz-txt-link-rfc2396=
+E" href=3D"mailto:gert@...1296...">&lt;gert@...1296...&gt;</a>
+&gt;=A0=A0=A0=A0=A0 Message-Id: <a class=3D"moz-txt-link-rfc2396E" href=3D"=
+mailto:1435693496-10931-1-git-send-email-steffan@...1856...">&lt;1435693496=
+-10931-1-git-send-email-steffan@...1856...&gt;</a>
+&gt;=A0=A0=A0=A0=A0 URL: <a class=3D"moz-txt-link-freetext" href=3D"http://=
+article.gmane.org/gmane.network.openvpn.devel/9841">http://article.gmane.or=
+g/gmane.network.openvpn.devel/9841</a>
+&gt;=A0=A0=A0=A0=A0 Signed-off-by: Gert Doering <a class=3D"moz-txt-link-rf=
+c2396E" href=3D"mailto:gert@...1296...">&lt;gert@...1296...&gt;</a>
+&gt;
+&gt;
+&gt; ... and as far as we can see, this "just works" (and OpenVPN 3 on iOS
+&gt; and Android also uses larger packets for the control channel, so we're
+&gt; just following suit here).
+&gt;</span><br>
+    OpenVPN Android also uses this patch (and Gert's faster connect
+    patch) for two weeks now and bad reports about the new version
+    (apart from a lot of broken config with extra arguments ... :( )<br>
+    <br>
+    Arne<br>
+    -----BEGIN PGP SIGNATURE-----
+<br>
+    Version: GnuPG v2.0.22 (MingW32)
+<br>
+    =A0<br>
+    iEYEARECAAYFAlXbhfkACgkQe8+cMNS4zRcDgQCgqWq2swsrCjleyNDV/5pAJFpx
+<br>
+    x5IAoM9j/ZH1Tbu3BC4GvlFbUkZU85Yn
+<br>
+    =3DIRXC
+<br>
+    -----END PGP SIGNATURE-----
+<br>
+    <br>
+  </body>
+</html>
 
-<https://community.openvpn.net/openvpn/wiki/Topics-2015-08-24>
-
-The next meeting has been scheduled to two weeks from this meeting:
-
-<https://community.openvpn.net/openvpn/wiki/Topics-2015-09-07>
-
-Your local meeting time is easy to check from services such as
-
-<http://www.timeanddate.com/worldclock>
-
-SUMMARY
-
-cron2, janjust and mattock participated in this meeting.
-
----
-
-Discussed some of the unreviewed patches. There is a patch from today 
-sent by Boris Lytochkind, which looks reasonable, but "it is crypto" and 
-needs syzzer's review. Then there's the radiusplugin thread... which 
-hints at "we want to merge Lev's async plugin call stuff" and 
-"radiusplugin needs some loving". The "RfD: speed up PUSH_REQUEST" has 
-to wait two more weeks for more feedback from plaisthos.
-
----
-
-Discussed the NSSM configuration frontend for OpenVPN:
-
-<https://github.com/mattock/ovpnsvcsetup>
-
-The tool is progressing slowly but surely. Contributions and help are 
-most welcome.
-
---
-
-Noted that there may be routing issues at Amazon EC2, which make 
-services such as <https://community.openvpn.net> seem a tad slow. The 
-suspicions could not be confirmed at meeting time.
-
----
-
-Noted that "Mastering OpenVPN" by Jan Just Keijser and Eric Crist will 
-be published soon. OpenVPN 2.3.8 will be covered in the book.
-
----
-
-Full chatlog has been attached to this email. Note that the signal-noise 
-ratio is fairly low this time, as the meeting was fairly informal.
-
---------------060404070000020901000105
-Content-Type: text/plain; charset=UTF-8;
-	name="openvpn_irc_meeting_chatlog_2015-08-24.txt"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment;
-	filename="openvpn_irc_meeting_chatlog_2015-08-24.txt"
-
-KDIxOjA1OjUwKSBtYXR0b2NrOiBoaSBndXlzIQooMjE6MDY6MTUpIGNyb24yOiBoaSA6KQoo
-MjE6MDY6MzkpIG1hdHRvY2s6IDYgbWlucyBwYXN0IG1lZXRpbmcgdGltZSwgc28gc2hhbGwg
-d2Ugc3RhclQ/CigyMTowNjo0OSkgY3JvbjI6IG5vYm9keSBoZXJlIHlldAooMjE6MDc6MTAp
-IG1hdHRvY2s6IG9oCigyMTowNzoyMCkgY3JvbjI6IHdlbGwsIGV4Y2VwdCB5b3UgYW5kIG1l
-IDopCigyMTowNzoyNSkgbWF0dG9jazogc28gc3l6emVyIGlzIGNvbWluZwooMjE6MDc6MzAp
-IG1hdHRvY2s6IGFueW9uZSBlbHNlPwooMjE6MDg6MzApIGNyb24yOiBJIGhhdmUgdGhlIGZl
-ZWxpbmcgdGhpcyBpcyBnb2luZyB0byBiZSBhIHNob3J0IG1lZXRpbmcgOikKKDIxOjA4OjM2
-KSBtYXR0b2NrOiB0aGUgdG9waWMgbGlzdCBpcyBhbHNvIHByZXR0eSBzcGFyc2UgKD1ubyB0
-b3BpY3MpLCBzbyBzdWdnZXN0aW9ucyBhcmUgdGFrZW4gOkQKKDIxOjA4OjM3KSBjcm9uMjog
-YW55IHdvcmQgZnJvbSBkYXpvIHJlY2VudGx5PwooMjE6MDg6NDEpIG1hdHRvY2s6IG5vCigy
-MTowODo0MykgY3JvbjI6IFQtU2hpcnRzIQooMjE6MDg6NDgpIG1hdHRvY2s6IDpQCigyMTow
-OTo1NykgKioqY3JvbjIgbG9va3Mgb24gdGhlIG9wZW52cG4tZGV2ZWwgbGlzdCBmb3IgcmVj
-ZW50IGFjdGl2aXR5CigyMToxMDowMikgbWF0dG9jazogbGV0J3Mgd2FpdCBhIHdoaWxlIGZv
-ciBzeXp6ZXIKKDIxOjEwOjA0KSBtYXR0b2NrOiB5ZWFoCigyMToxMDo1NikgY3JvbjI6IHRo
-ZXJlJ3MgYSBwYXRjaCB0b2RheSBmcm1vIEJvcmlzIEx5dG9jaGtpbmQsIHdoaWNoIGxvb2tz
-IHJlYXNvbmFibGUsIGJ1dCAiaXQgaXMgY3J5cHRvIiwgc28gLT4gc3l6emVyCigyMToxMTo0
-OSkgY3JvbjI6IHRoZXJlJ3MgdGhlIHJhZGl1c3BsdWdpbiB0aHJlYWQuLi4gd2hpY2ggaGlu
-dHMgYXQgIndlIHdhbnQgdG8gbWVyZ2UgTGV2J3MgYXN5bmMgcGx1Z2luIGNhbGwgc3R1ZmYi
-IGFuZCAicmFkaXVzcGx1Z2luIG5lZWRzIHNvbWUgbG92aW5nIgooMjE6MTI6MjcpIGNyb24y
-OiBSZkQ6IHNwZWVkIHVwIFBVU0hfUkVRVUVTVCB3YWl0cyB0d28gbW9yZSB3ZWVrcyBmb3Ig
-bW9yZSBmZWVkYmFjayBmcm9tIHBsYWlzdGhvcwooMjE6MTQ6MTUpIG1hdHRvY2s6IEkgd29u
-ZGVyIGlmIGxldiBrbm93cyBhYm91dCB0aGUgZGV2ZWxvcGVyIG1lZXR1cC4uLiBoZSBtaWdo
-dCBoYXZlIHNvbWUgZ29vZCBzdHVmZiBmb3IgdGhpcyB5ZWFyIGFsc28KKDIxOjE0OjQxKSBj
-cm9uMjogeWVzLiAgRG8geW91IHdhbnQgdG8gbWFpbCBoaW0/CigyMToxNDo0NikgbWF0dG9j
-azogSSBzdXJlIGNhbgooMjE6MTQ6NTUpIG1hdHRvY2s6IEknbGwgZG8gaXQgbm93CigyMToy
-MjozMSkgbWF0dG9jazogZG9uZQooMjE6Mjg6MTgpIGNyb24yOiBzbywgYWxsIHRoZSB3b3Jr
-IGRvbmUsIGNhbGwgaXQgYSBkYXk/IDotKQooMjE6Mjg6MjYpIGNyb24yOiBob3cncyB5b3Vy
-IHdpbmRvd3MgbnNzbSBmcm9udGVuZCBjb21pbmcgYWxvbmc/CigyMTozMDoyNykgbWF0dG9j
-azogc2xvd2x5IGJ1dCBzdXJlbHkKKDIxOjMwOjQ3KSBtYXR0b2NrOiBJJ3ZlIGhhZCB0aGUg
-cGxlYXN1cmUgb2YgbGVhcm5pbmcgaG93IHRvIHJlYWQgdGhlIHJlZ2lzdHJ5IHVzaW5nIEMj
-CigyMTozMDo1MSkgbWF0dG9jazogYW1vbmcgb3RoZXIgdGhpbmdzCigyMTozMTowMykgbWF0
-dG9jazogSSB3aWxsIGhhdmUgbWFueSBtb3JlIGxlYXJuaW5nIG9wcHVydHVuaXRpZXMgdG8g
-Y29tZQooMjE6MzE6NDgpIG1hdHRvY2s6IGFzIGZvciB0aGUgbWVldGluZy4uLiBJIHRoaW5r
-IGl0IHNob3VsZCBnbyB0byBzdXNwZW5kIG1vZGUgYW5kIGlmIHN5enplciBhcHBlYXIsIHRo
-ZW4gaXQgY2FuIHJlc3VtZSBpZiB3ZSdyZSBzdGlsbCBoZXJlCigyMTozMzo1NikgamFuanVz
-dCBbfmphbmp1c3RAb3BlbnZwbi9jb21tdW5pdHkvc3VwcG9ydC9qYW5qdXN0XSDDqCBlbnRy
-YXRvIG5lbGxhIHN0YW56YS4KKDIxOjMzOjU2KSBtb2RhbGl0w6AgKCt2IGphbmp1c3QpIGRh
-IENoYW5TZXJ2CigyMTozNDo0MCkgamFuanVzdDogbWVldGluZydzIG92ZXI/CigyMTozNDo1
-OCkgY3JvbjI6IHN1c3BlbmRlZAooMjE6MzU6MDApIGphbmp1c3Q6IGFoCigyMTozNTowNCkg
-amFuanVzdDogZ29vZCBldmVuaW5nLCBidHcKKDIxOjM1OjA5KSBjcm9uMjogc3l6emVyIGlz
-IG1pc3NpbmcgYW5kIHdlIGhhdmUgbm8gdG9waWNzIDotKQooMjE6MzU6MDkpIG1hdHRvY2s6
-IGhpIGphbmp1c3QhCigyMTozNToxNykgbWF0dG9jazoganVzdCBhIGZldyBwYXRjaGVzCigy
-MTozNToxNykgY3JvbjI6IGFuZCBpbmRlZWQsIGdvb2QgZXZlbmluZyEKKDIxOjM1OjMxKSBq
-YW5qdXN0OiBhbmQgdGh4IGZvciBzbGFtbWluZyBteSBwYXRjaCwgYnR3IDspCigyMTozNToz
-OCkgamFuanVzdDogKHJpZ2h0ZnVsbHkgc28pCigyMTozNTo0MikgbWF0dG9jazogSSBzZWUg
-YSB0b3BpYyBlbWVyZ2luZyA6UAooMjE6MzU6NDIpIGNyb24yOiBocmhyIDopCigyMTozNTo0
-NCkgc3l6emVyOiBoaSwgc29ycnksIHN0aWxsIGF0IHdvcmsuLi4KKDIxOjM1OjUxKSBtYXR0
-b2NrOiBoaSBzeXp6ZXIhCigyMTozNjoxNykgc3l6emVyOiB3b3JraW5nIHRvIGdldCB0aGUg
-ZGVtbyBydW5uaW5nIChuZWVkcyB0byB3b3JrIHRvbW9ycm93IG1vcm5pbmcpLCBhbGwgc29y
-dCBvZiBsYXN0LW1pbnV0ZSBmYWxsb3V0IG9mYy4uLgooMjE6MzY6NTUpIGNyb24yOiBzeXp6
-ZXI6IGhhdmUgZnVuLCBhbmQgc2VlIHlvdSBhZnRlciB0aGUgZGVtbywgdGhlbiA6LSkKKDIx
-OjM3OjE3KSBqYW5qdXN0OiBqdXN0IGdvdCBiYWNrIGZyb20gaG9saWRheXMsIGFtIGNhdGNo
-aW5nIHVwIG9uIHNvbWUgdHJhYyB0aWNrZXRzIGFuZCBteSBwYXRjaGVzCigyMTozNzo0NCkg
-amFuanVzdDogaXQgc2VlbXMgdGhhdCB3ZSBuZWVkIGEgZ29vZCB3cml0ZS11cCBvZiBwZXJm
-b3JtYW5jZSBjaGFyYWN0ZXJpc3RpY3MKKDIxOjM4OjA5KSBjcm9uMjogdGhhdCB3b3VsZCBi
-ZSB1c2VmdWwgaW5kZWVkCigyMTozODoyMSkgY3JvbjI6IGFuZCBob3cgdG8gcGlucG9pbnQg
-Ym90dGxlbmVja3MKKDIxOjM4OjM1KSBqYW5qdXN0OiB5ZXAKKDIxOjM4OjQ2KSBqYW5qdXN0
-OiBCVFcsIHRoZSBib29rIHRoYXQgRXJpYyBhbmQgSSBhcmUgd3JpdGluZyBpcyBuZWFybHkg
-ZmluaXNoZWQKKDIxOjM5OjAwKSBjcm9uMjogYSBuZXcgT3BlblZQTiBib29rPwooMjE6Mzk6
-MDgpIGphbmp1c3Q6IHllcCwgTWFzdGVyaW5nIE9wZW5WUE4KKDIxOjM5OjE1KSBjcm9uMjog
-Y29vbAooMjE6Mzk6MTYpIGphbmp1c3Q6IGFsc28gZm9yIFBhY2t0LCBjb3ZlcnMgdXAgdG8g
-djIuMy43CigyMTozOToyNSkgamFuanVzdDogdjIuMy44IAooMjE6Mzk6MzgpIGphbmp1c3Q6
-IEkgaG9wZSB0byBoYXZlIGEgaGFyZGNvcHkgcmVhZHkgZm9yIHRoZSBoYWNrYXRob24KKDIx
-OjM5OjU3KSAqKipjcm9uMiBsb29rcyBmb3J3YXJkIHRvIGJ1eSBvbmUgdG8gZ2V0IGl0IHNp
-Z25lZCA6LSkgLSBhbmQgdGhlbiBkaXNjb3ZlciBpbnRlcmVzdGluZyBuZXcgYXBwbGljYXRp
-b25zCigyMTo0MDoxOCkgamFuanVzdDogbG9sLCBhY3R1YWxseSwgeW91ciBuYW1lIGlzIG1l
-bnRpb25lZCBpbiB0aGUgYm9vayBtb3JlIHRoYW4gb25jZQooMjE6NDA6MjUpIGNyb24yOiBJ
-IHN0aWxsIGRvIG5vdCBrbm93IGFsbCB0aGUgb3B0aW9ucy4uLiByZWNlbnRseSBkaXNjb3Zl
-cmVkIC0tcmVkaXJlY3QtcHJpdmF0ZSAtIGJ1dCBvbmx5IGJlY2F1c2UgYSBidWcgcmVwb3J0
-IG1lbnRpb25lZCBpdAooMjE6NDA6MzgpIGNyb24yOiBcby8KKDIxOjQxOjA1KSBqYW5qdXN0
-OiAiaWYgeW91IHRoaW5rIHRoaXMgaXMgYW5ub3lpbmcsIGNvbnRhY3QgY3JvbjIsIGFzIGhl
-IGltcGxlbWVudGVkIHRoaXMgLi4uIG9mIGNvZGUiIDpQCigyMTo0MToyMSkgY3JvbjI6IGhl
-aCEKKDIxOjQxOjQyKSBqYW5qdXN0OiBhbmQgeW91ciBuYW1lIGlzIG1lbnRpb25lZCBhcyB3
-ZWxsLCBtYXR0b2NrIAooMjE6NDE6NTYpIGphbmp1c3Q6IGFuZCBzeXp6ZXIgdG9vCigyMTo0
-MjowMykgY3JvbjI6IHRoZSBtYXN0ZXIgbWFrZXIgb2YgVC1TaGlydHMKKDIxOjQyOjQ4KSBt
-YXR0b2NrOiBqYW5qdXN0OiBhaCwgaW4gdGhlIGNvbnRleHQgb2YgInByb2plY3RzIHJlbGF0
-ZWQgdG8gT3BlblZQTiBhbmQgd3JpdHRlbiBpbiBDIyI/CigyMTo0Mjo1NCkgbWF0dG9jazog
-OlAKKDIxOjQzOjA2KSBqYW5qdXN0OiBvb3BzLCBmaXJzdCB0eXBvLCB3ZSB0aG91Z2h0IHlv
-dSBkaWQgdGhlIFZCIHZlcnNpb24KKDIxOjQzOjE0KSBtYXR0b2NrOiBsb2wKKDIxOjQzOjIy
-KSBqYW5qdXN0OiBTdG9wIHRoZSBwcmVzcyEKKDIxOjQzOjQ1KSBtYXR0b2NrOiBJIHNob3Vs
-ZCBoYXZlIGdvbmUgdGhlIEMjIHJvdXRlIGltbWVkaWF0ZWx5Li4uIGFsbCB0aGUgb3RoZXIg
-b3B0aW9ucyBzdWNrIGV2ZW4gbW9yZQooMjE6NDQ6MDIpIG1hdHRvY2s6IGJlY2F1c2UgdXNp
-bmcgYSBjcm9zcy1wbGF0Zm9ybSB0b29sa2l0L2xhbmd1YWdlIHdhcyByZWFsbHkgbm90IGFu
-IG9wdGlvbgooMjE6NDU6MDQpIGRhem8gw6ggb3JhIGNvbm9zY2l1dG8gY29tZSBkYXpvX2Fm
-awooMjE6NDU6NDEpIGNyb24yOiBub3QgZm9yIGRvaW5nIHdpbmRvd3MgaW50ZXJuYWxzLCBu
-by4uLgooMjE6NDY6MDQpIG1hdHRvY2s6IHdlbGwsIGl0J3Mgbm90IGFib3V0IHRoYXQsIGJ1
-dCB0aGUgaW5zdGFsbGVyIHNpemUgYW5kIHNwZWVkCigyMTo0NjozOSkgbWF0dG9jazogd2Ug
-Y2FuJ3QgaW5jcmVhc2UgdGhlIGluc3RhbGxlciBzaXplIGJ5IGJ1bmRsaW5nIFB5dGhvbiBh
-bmQgUXQgb3Igc29tZXRoaW5nIGp1c3QgdG8gbWFuYWdlIE9wZW5WUE4gc2VydmljZXMKKDIx
-OjQ2OjU0KSBtYXR0b2NrOiBpbmNyZWFzZSBzZXZlcmFsIG1lZ2FieXRlcyBvciBzbywgYXQg
-bWluaW11bQooMjE6NDc6MzYpIG1hdHRvY2s6IHRoZSBleGVjdXRhYmxlIGJ5dGVjb2RlIHRo
-YXQgQyMgaXMgY29udmVydGVkIGludG8gaXMgdmVyeSBzbWFsbCwgc28gdGhlIGFwcCBzaG91
-bGQgYmUgdmVyeSBsZWFuCigyMTo0ODowMikgbWF0dG9jazogaXQgbG9va3MgbGlrZSBJIGhh
-dmUgdG8gaGF2ZSB0d28gdmVyc2lvbnMgYXQgbGVhc3QsIG9uZSBmb3IgLk5FVCAzLnggYW5k
-IG9uZSBmb3IgLk5FVCA0LngKKDIxOjQ4OjE2KSBqYW5qdXN0OiBsb2wKKDIxOjQ4OjI5KSBq
-YW5qdXN0OiBhIC5ORVQgaW5zdGFsbGVyIGlzIHNtYWxsIGJlY2F1c2UgZmlyc3QgeW91IGhh
-dmUgdG8gZG93bmxvYWQgMjAwTUIgb2YgLk5FVAooMjE6NDg6NDMpIGphbmp1c3Q6IHRoYXQn
-cyBzaW1pbGFyIHRvIGphdmEgYXBwcyBiZWluZyBsaWdodHdlaWdodCBhbmQgc21hbGwgdG9v
-IDspCigyMTo0ODo0NikgbWF0dG9jazogbHVja2lseSBhbGwgdmVyc2lvbnMgb2YgV2luZG93
-cyBzaW5jZSBWaXN0YSBoYXZlIC5ORVQKKDIxOjQ4OjUwKSBtYXR0b2NrOiBvdXQgb2YgdGhl
-IGJveAooMjE6NDk6MDApIG1hdHRvY2s6IFdpbmRvd3MgNyBoYXMgMy41IEkgYmVsaWV2ZQoo
-MjE6NDk6MDkpIGNyb24yOiB0aGF0IGlzIHZlcnkgZ29vZC4uLiBJIGRvIHJlbWVtYmVyIHRo
-ZSAuTkVUIGluc3RhbGxhdGlvbiBvcmd5cyBmb3IgWFAKKDIxOjQ5OjIwKSBqYW5qdXN0OiBp
-IHRoaW5rIEkgZGUtaW5zdGFsbGVkIC5ORVQgZnJvbSBteSB3aW43IGluc3RhbGwgLi4uLgoo
-MjE6NDk6MjgpIG1hdHRvY2s6IHRoZSBtb2Rlcm4gV2luZG93cyBVSSBzdHVmZiAoPVdpbmRv
-d3MgUHJlc2VudGF0aW9uIEZvdW5kYXRpb24pIHJlcXVpcmVkIC5ORVQKKDIxOjQ5OjMzKSBj
-cm9uMjogYW5kIGZvciBzb21lIHdlaXJkIHJlYXNvbiwgaW5zdGFsbGF0aW9uIGFuZCB1cGdy
-YWRpbmcgLk5FVCBhbHdheXMgdGFrZXMgbG9vb29vbmchCigyMTo0OTo1OSkgbWF0dG9jazog
-amFuanVzdDogYWgsIHNvIGl0IGlzIHBvc3NpYmxlIHRvIHJlbW92ZSBpdAooMjE6NTA6MTUp
-IGphbmp1c3Q6IEkgKip0aGluayoqIEkgZGlkLi4uIAooMjE6NTE6MDQpIGphbmp1c3Q6IGxl
-bW1lIGNoZWNrIG15IG9sZCBsYXB0b3AgbGF0ZXIKKDIxOjUxOjA3KSBtYXR0b2NrOiBvawoo
-MjE6NTE6MzEpIG1hdHRvY2s6IHRoZXJlIGlzIG9mIGNvdXJzZSB0aGUgcG9zc2liaWxpdHkg
-dGhhdCBzb21lIE9FTXMgaGF2ZSByZW1vdmVkIC5ORVQgZnJvbSB0aGVpciBpbnN0YWxsYXRp
-b24gZm9yIHNvbWUgcmVhc29uCigyMTo1MjoyMikgbWF0dG9jazogYnV0IGZvciBhbG1vc3Qg
-YWxsIHVzZXJzIHRoZSBDIyArIFdQRiB0aGluZ3kgc2hvdWxkIHdvcmsganVzdCBmaW5lCigy
-MTo1MjoyNikgbWF0dG9jazoga25vY2sga25vY2sKKDIxOjUyOjM0KSBjcm9uMjogKmtub2Nr
-KgooMjE6NTI6NDIpIGNyb24yOiBidXQgeWVzLCB0aGlzIHNvdW5kcyBnb29kIDopCigyMTo1
-MzoyMykgamFuanVzdDoga25vY2sga25vY2s/IHdobydzIHRoZXJlIAooMjE6NTM6MjYpIG1h
-dHRvY2s6IEknbSBzdXJlIHRoYXQgd2hlbiBJIGdldCB0aGUgdGhpbmcgdG8gc2VtaS1mdW5j
-dGlvbmFsIG9yZGVyIHNvbWVib2R5IHdobyBrbm93cyBDIyBpbnNpZGUgb3V0IGNvbWVzIGFs
-b25nIGFuZCBzYXlzOiAiVGhpcyBpcyBuaWNlLCBidXQgcHJldHR5IGJhZGx5IHdyaXR0ZW4u
-IEhlcmUncyBhIHJld3JpdGUuIgooMjE6NTM6MjgpIG1hdHRvY2s6IDpQCigyMTo1Mzo0MCkg
-bWF0dG9jazogb2ssIHNvICJrbm9ja2luZyB0aGUgd29vZCIKKDIxOjUzOjQ3KSBjcm9uMjog
-SSB0aGluayB0aGlzIGlzIHRoZSBiYXNpYyBpZGVhIG9mIGxvdHMgb2Ygb3BlbiBzb3VyY2Ug
-cHJvamVjdHMgOi0pCigyMTo1Mzo1NikgbWF0dG9jazogeWVhaCA6UAooMjE6NTQ6MDYpIGNy
-b24yOiB1bmZvcnR1bmF0ZWx5LCBtYW55IHN0YXkgaW4gdGhlICJ0aGlzIGlzIHVnbHksIGFu
-ZCBzbG93LCBidXQgZ2V0cyB0aGUgam9iIGRvbmUsIHNvIHdlJ2xsIGdvIGZpc2hpbmcgaW5z
-dGVhZCIgY2F0ZWdvcnkKKDIxOjU0OjQxKSBtYXR0b2NrOiBvbmUga25vY2tzIHRoZSB3b29k
-IChlLmcuIGEgdGFibGUpIHRvIHByZXZlbnQgb25lJ3MgZmVhciBmcm9tIGNvbWluZyB0cnVl
-CigyMTo1NTowNykgbWF0dG9jazogaHR0cHM6Ly9lbi53aWtpcGVkaWEub3JnL3dpa2kvS25v
-Y2tpbmdfb25fd29vZAooMjE6NTU6MDgpIHZwbkhlbHBlcjogVGl0bGU6IEtub2NraW5nIG9u
-IHdvb2QgLSBXaWtpcGVkaWEsIHRoZSBmcmVlIGVuY3ljbG9wZWRpYSAoYXQgZW4ud2lraXBl
-ZGlhLm9yZykKKDIxOjU1OjA5KSBtYXR0b2NrOiBqdXN0IGluIGNhc2UKKDIxOjU1OjI0KSBq
-YW5qdXN0OiBJIGtub3csIG1hdHRvY2sgOikgICBidXQgd2hlbmV2ZXIgc29tZW9uZSB0eXBl
-cyAna25vY2sga25vY2snIEknbSB0aGlua2luZyBvZiBrbm9jay1rbm9jayBqb2tlcwooMjE6
-NTU6MjgpIG1hdHRvY2s6IGFoIDopCigyMTo1NTo0MCkgbWF0dG9jazogc28gY3JvbjIsIGph
-bmp1c3Q6IGFueXRoaW5nIHlvdSdkIG5lZWQgdG8gZGlzY3VzcyByZWdhcmRpbmcgamFuanVz
-dCdzIHBhdGNoZXM/CigyMTo1NjowMCkgamFuanVzdDogSSBuZWVkIHRvIHJlZG8gbXkgcGF0
-Y2gsIGJhc2ljYWxseQooMjE6NTY6MTkpIGphbmp1c3Q6IHRoZSB3cGFkL3RmdHAgb25lLCB0
-aGF0IGlzLiBJIG5ldmVyIHNhdyBmZWVkYmFjayBvbiB0aGUgdmVyaWZ5LWNsaWVudC1jZXJ0
-IHRoaW5naWUKKDIxOjU3OjQ5KSBjcm9uMjogdGhhdCB3b3VsZCBiZSBzeXp6ZXIncyB0ZXJy
-aXRvcnksIGJ1dCBoZSdzIHRvbyBidXN5CigyMTo1ODowNCkgY3JvbjI6IHRoZSB3cGFkL3Rm
-dHAgb25lIGZhbGxzIG1vcmUgaW50byAicGFja2V0IGxhbmQiIC0+IG1pbmUgOikKKDIxOjU5
-OjIzKSBzeXp6ZXI6IGphbmp1c3Q6IEkgaGF2ZSBpdCBmbGFnZ2VkLCBidXQgdG9vIG11Y2gg
-c3R1ZmYgdG8gZG8gYXRtIDooCigyMjowMDozNykgamFuanVzdDogbnAsIHN5enplciwgbm8g
-cnVzaAooMjI6MDE6MzQpIGNyb24yOiBtbW1oCigyMjowMTo0NSkgY3JvbjI6IGNvbW11bml0
-eS5vcGVudnBuLm5ldCBpcyBhIGJpdCBmbGFreSB0aGVzZSBkYXlzCigyMjowMTo1NCkgY3Jv
-bjI6IGFzIGluICJyb3V0aW5nIGlzIHVuc3RhYmxlIgooMjI6MDI6MTEpIGNyb24yOiBhbmQg
-aXQncyBub3QgcmVhbGx5IHBpbmdpbmcgdGhhdCB3ZWxsIGVpdGhlcgooMjI6MDI6MTEpIG1h
-dHRvY2s6IGludGVyZXN0aW5nCigyMjowMjoxNikgY3JvbjI6IDY0IGJ5dGVzIGZyb20gNTQu
-MjQxLjE3OC4xMDM6IGljbXBfc2VxPTEgdHRsPTUxIHRpbWU9MTg0LjQzNyBtcwooMjI6MDI6
-MTYpIGNyb24yOiA2NCBieXRlcyBmcm9tIDU0LjI0MS4xNzguMTAzOiBpY21wX3NlcT0zIHR0
-bD01MSB0aW1lPTIxNy4yNDUgbXMKKDIyOjAyOjE2KSBjcm9uMjogNjQgYnl0ZXMgZnJvbSA1
-NC4yNDEuMTc4LjEwMzogaWNtcF9zZXE9NSB0dGw9NTEgdGltZT0yMjUuOTYyIG1zCigyMjow
-MjoyNykgbWF0dG9jazogSSBzdXNwZWN0IHRoaXMgaXMgQW1hem9uJ3MgZmF1bHQKKDIyOjAy
-OjU1KSBtYXR0b2NrOiBhdCBsZWFzdCBJJ20gbm90IGF3YXJlIG9mIGFueSBjaGFuZ2VzIG1h
-ZGUgYnkgbWUgb3Igb3RoZXJzIGF0IHRoZSBjb21wYW55CigyMjowMzowMCkgY3JvbjI6IHll
-YWgsIHBhY2tldCBsb3NzIGhhcHBlbnMgaW5zaWRlIGFtYXpvbgooMjI6MDM6NDcpIGNyb24y
-OiBpZiBJIGRvIGFuICJtdHIgLXQgLTQgY29tbXVuaXR5Lm9wZW52cG4ubmV0IiwgcGFja2V0
-cyBsZWF2ZSB2aWEgbnR0Lm5ldCwgYW5kIGFzIHNvb24gYXMgdGhleSBoaXQgYW1hem9uICJp
-bnRlcm5hbCIsIHF1aXRlIHNvbWUgbG9zcwooMjI6MDQ6MjUpIG1hdHRvY2s6IG10ciwgaW50
-ZXJlc3RpbmcsIGhhdmVuJ3QgdXNlZCB0aGF0IGJlZm9yZQooMjI6MDQ6MzMpIGNyb24yOiBh
-bmQgaXQncyBub3QgdXMuLi4gdHJhY2luZyBmcm9tIGEgZGlmZmVyZW50IElTUCBoYXMgbGVz
-cyBsb3NzLCBidXQgc3RpbGwKKDIyOjA0OjQ0KSBjcm9uMjogbXRyIGlzIHNvcnQgb2YgY29u
-dGludW91c2x5IHVwZGF0aW5nIHRyYWNlcm91dGUgd2l0aCBnb29kIHN0YXRpc3RpY3MKKDIy
-OjA1OjQ4KSBqYW5qdXN0OiBJJ20gZ2V0dGluZyAxNTMgbXMgKHN0YWJsZSkgdXNpbmcgcGlu
-ZywgMTQwbXMgdXNpbmcgcGluZzYKKDIyOjA1OjU0KSBjcm9uMjogaW50ZXJlc3RpbmcgZW5v
-dWdoLCBJUHY2IHNlZW1zIHRvIGJlIGZpbmUuLi4KKDIyOjA1OjU4KSBjcm9uMjogamFuanVz
-dDogbm8gbG9zcz8KKDIyOjA2OjA2KSBqYW5qdXN0OiBpbmRlZWQsIG5vIGxvc3MKKDIyOjA2
-OjEzKSBqYW5qdXN0OiBidXQgMTAwKyBtcyBpcyBxdWl0ZSBoaWdoCigyMjowNjo0NSkgY3Jv
-bjI6IHdlbGwsIHNlZW1zIHRvIGJlIHVzIHdlc3QgY29hc3Qgb3Igc3VjaAooMjI6MDY6NTEp
-IG1hdHRvY2s6IHllYWgsIGl0IGlzIHdlc3QgY29hc3QKKDIyOjA3OjAxKSBtYXR0b2NrOiAx
-MDBtcysgaXMgdGhlIG5vcm0gZm9yIG1lCigyMjowNzowMSkgamFuanVzdDogLS0tIGNvbW11
-bml0eS5vcGVudnBuLm5ldCBwaW5nIHN0YXRpc3RpY3MgLS0tCigyMjowNzowMSkgamFuanVz
-dDogMjAgcGFja2V0cyB0cmFuc21pdHRlZCwgMjAgcmVjZWl2ZWQsIDAlIHBhY2tldCBsb3Nz
-LCB0aW1lIDE5MTc4bXMKKDIyOjA3OjAxKSBqYW5qdXN0OiBydHQgbWluL2F2Zy9tYXgvbWRl
-diA9IDE1Mi45MjUvMTUzLjE4OC8xNTMuNDc4LzAuMzc5IG1zCigyMjowODowNCkgY3JvbjI6
-IG1pZ2h0IGJlIG50dDwtPmFtYXpvbiB0aGVuCigyMjowODo1MSkgKioqY3JvbjIgZGlzYWJs
-ZXMgbW9uaXRvcmluZyBpcHY0IGZvciB0aGUgbW9tZW50Li4uIGRvbgooMjI6MDk6MDApIGNy
-b24yOiBkb24ndCB0cnVseSBoYXZlIHRpbWUgdG8gZGlhZ25vc2UgdGhpcyByaWdodCBub3cK
-KDIyOjExOjE1KSBqYW5qdXN0OiBtdHIgaXMgcHJldHR5IGN1dGUgOikgICBJIGRpZCBub3Qg
-a25vdyB0aGF0IHRvb2wgZWl0aGVyCigyMjoxNDoxMCkgbWF0dG9jazogbWF5YmUgdGhlIG1l
-ZXRpbmcgc2hvdWxkIG5vdyBlbnRlciB0aGUgaGliZXJuYXRlIHN0YXRlIHVudGlsIG5leHQg
-d2VlayBvciB0aGUgd2VlayBhZnRlciB0aGF0PwooMjI6MTQ6MjcpIG1hdHRvY2s6IHVubGVz
-cyBzeXp6ZXIgaXMgYWJsZSB0byBwb3AgaW4gcHJldHR5IHF1aWNrbHkKKDIyOjE0OjM0KSBj
-cm9uMjogd2VlayBhZnRlciB0aGF0IGlzIGJldHRlciAtIHRoZW4gSSdtIGJhY2sgaG9tZSwg
-YW5kIHNob3VsZCBoYXZlIGEgYml0IG9mIHN0dWZmIGZvciB5b3UgdG8gcmV2aWV3CigyMjox
-NTowMSkgY3JvbjI6IGhlcmUsIHBlb3BsZSBhcmUgbG9va2luZyBmdW5uaWx5IGF0IG1lIGZv
-ciBzaXR0aW5nIGF0IGEgY2FtcGluZyBzaXRlIHdpdGggbXkgbGFwdG9wIGFuZCB0eXBpbmcg
-YWxsIHRoZSB0aW1lCigyMjoxNToyOCkgbWF0dG9jazogbG9sIDpECigyMjoxNTozMCkgamFu
-anVzdDogaGVoZSBjcm9uMiwgZW5qb3kgeW91ciB2YWNhdGlvbgooMjI6MTU6MzUpIGNyb24y
-OiBJIGRvIDopCigyMjoxNTo0MikgbWF0dG9jazogb2ssIHR3byB3ZWVrcyBmcm9tIG5vdwoo
-MjI6MTU6NDYpIGphbmp1c3Q6IEkgc2hvdWxkIGhhdmUgdGhlIHdwYWQgcGF0Y2ggcmVhZHkg
-bmV4dCB3ZWVrLCBidXQgMiB3ZWVrcyBmcm9tIG5vdyBpcyBhbHNvIGZpbmUKKDIyOjE2OjAx
-KSBjcm9uMjogc3BlbnQgeWVzdGVyZGF5IGV2ZW5pbmcgYWZ0ZXIgZmFtaWx5IHdhcyBhc2xl
-ZXAgY29kaW5nICItLXJlZGlyZWN0LWdhdGV3YXkgaXB2NiIgOikKKDIyOjE2OjAzKSBtYXR0
-b2NrOiBJIHdpbGwgc2VuZCBzb21lIHNvcnQgb2Ygc3VtbWFyeSBvZiB0b2RheSdzIG1lZXRp
-bmcKKDIyOjE2OjQyKSBqYW5qdXN0OiBhbmQgSSBtaWdodCBoYXZlIGFub3RoZXIgcGF0Y2gg
-cmVhZHkgKGJhc2VkIG9uIGNvbW0gdGlja2V0ICM5MSkgOiAgLS1zaGFwZXIgb24gdGhlIGNs
-aWVudCBzaWRlCigyMjoxNjo0OCkgY3JvbjI6IGNvb2wKKDIyOjE3OjAxKSBjcm9uMjogdGhl
-biAtIGhhdmUgYSBnb29kIG5pZ2h0IDopCigyMjoxOTo0NCkgbWF0dG9jazogZ29vZCBuaWdo
-dCEK
---------------060404070000020901000105--
+--------------080607000300000308010402--
 
