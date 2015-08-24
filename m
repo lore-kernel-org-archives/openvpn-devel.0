@@ -1,9 +1,14 @@
-From: Boris Lytochkin <lytboris@...2010...>
-Message-ID: <55DB4C39.9040105@...2010...>
-Date: Mon, 24 Aug 2015 19:54:17 +0300
+Date: Mon, 24 Aug 2015 20:18:26 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20150824181826.GD34798@...1296...>
+References: <551A5509.702@...277...>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="------------000402090409050205030203"
-Subject: [Openvpn-devel] Log cert serial no if it is revoked
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="DRfr/2Y1Zz/5r+Kb"
+Content-Disposition: inline
+In-Reply-To: <551A5509.702@...277...>
+Subject: Re: [Openvpn-devel] Increasing TUN_MTU_MIN to make connection
+ establishment faster
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,82 +17,69 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+To: Jiri Horky <jiri.horky@...277...>
+Cc: FF Systems <ff-system@...2025...>, openvpn-devel@lists.sourceforge.net
 
-This is a multi-part message in MIME format.
---------------000402090409050205030203
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+--DRfr/2Y1Zz/5r+Kb
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Hi.
+Hi,
 
-Author: Boris Lytochkin <lytboris@...2010...>
-Sponsored-by: Yandex LLC
+On Tue, Mar 31, 2015 at 10:04:25AM +0200, Jiri Horky wrote:
+> continuing yesterday's IRC discussion. I would like to ask whether you
+> can think of a reason why TUN_MTU_MIN is set to only 100 bytes, and
+> maybe more importantly, why this value is effectively enforced in function
 
-Log serial number of revoked certificate
+I'm not sure if you've been following the list and/or git master
+commits, but we have somehing in master for a while now...
 
-In most of situations admin of OpenVPN server needs to know which particular certificate is used by client.
-In the case when certificate is OK, environment variable can be used for that but once it is revoked no user scripts are invoked so there is no way to get serial number: only subject is printed in 
-logs. Patch attached addresses this issue logging certificate directly on the line with certificate subject.
+commit fc91d4b0071178e298052078431fb86f03be84fc (master)
 
-Tested with OpenSSL but PolarSSL should be good too.
+Author: Steffan Karger
+Date:   Tue Jun 30 21:44:56 2015 +0200
 
-Signed-off-by Boris Lytochkin <lytboris@...2010...>
+     Increase control channel packet size for faster handshakes
 
--- 
-Boris Lytochkin
-Yandex NOC
-+7 (495) 739 70 00 ext. 7671
+     Signed-off-by: Steffan Karger <steffan@...1856...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1435693496-10931-1-git-send-email-steffan@...1856...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/9841
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
---------------000402090409050205030203
-Content-Type: text/plain; charset=UTF-8;
-	name="openvpn-log-cert-serial-for-revoked.patch"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment;
-	filename="openvpn-log-cert-serial-for-revoked.patch"
+... and as far as we can see, this "just works" (and OpenVPN 3 on iOS
+and Android also uses larger packets for the control channel, so we're
+just following suit here).
 
-ZGlmZiAtLWdpdCBhL3NyYy9vcGVudnBuL3NzbF92ZXJpZnlfb3BlbnNzbC5jIGIvc3JjL29w
-ZW52cG4vc3NsX3ZlcmlmeV9vcGVuc3NsLmMKaW5kZXggODFiMmUzOC4uMGEzY2JlNiAxMDA2
-NDQKLS0tIGEvc3JjL29wZW52cG4vc3NsX3ZlcmlmeV9vcGVuc3NsLmMKKysrIGIvc3JjL29w
-ZW52cG4vc3NsX3ZlcmlmeV9vcGVuc3NsLmMKQEAgLTU4NSw2ICs1ODUsNyBAQCB4NTA5X3Zl
-cmlmeV9jcmwoY29uc3QgY2hhciAqY3JsX2ZpbGUsIFg1MDkgKnBlZXJfY2VydCwgY29uc3Qg
-Y2hhciAqc3ViamVjdCkKICAgQklPICppbj1OVUxMOwogICBpbnQgbixpOwogICByZXN1bHRf
-dCByZXR2YWwgPSBGQUlMVVJFOworICBzdHJ1Y3QgZ2NfYXJlbmEgZ2MgPSBnY19uZXcoKTsK
-IAogICBpbiA9IEJJT19uZXdfZmlsZSAoY3JsX2ZpbGUsICJyIik7CiAKQEAgLTYwOSw3ICs2
-MTAsNyBAQCB4NTA5X3ZlcmlmeV9jcmwoY29uc3QgY2hhciAqY3JsX2ZpbGUsIFg1MDkgKnBl
-ZXJfY2VydCwgY29uc3QgY2hhciAqc3ViamVjdCkKICAgZm9yIChpID0gMDsgaSA8IG47IGkr
-KykgewogICAgIHJldm9rZWQgPSAoWDUwOV9SRVZPS0VEICopc2tfWDUwOV9SRVZPS0VEX3Zh
-bHVlKFg1MDlfQ1JMX2dldF9SRVZPS0VEKGNybCksIGkpOwogICAgIGlmIChBU04xX0lOVEVH
-RVJfY21wKHJldm9rZWQtPnNlcmlhbE51bWJlciwgWDUwOV9nZXRfc2VyaWFsTnVtYmVyKHBl
-ZXJfY2VydCkpID09IDApIHsKLSAgICAgIG1zZyAoRF9IQU5EU0hBS0UsICJDUkwgQ0hFQ0sg
-RkFJTEVEOiAlcyBpcyBSRVZPS0VEIixzdWJqZWN0KTsKKyAgICAgIG1zZyAoRF9IQU5EU0hB
-S0UsICJDUkwgQ0hFQ0sgRkFJTEVEOiAlcyAoc2VyaWFsICVzKSBpcyBSRVZPS0VEIiwgc3Vi
-amVjdCwgYmFja2VuZF94NTA5X2dldF9zZXJpYWxfaGV4KHBlZXJfY2VydCwgJmdjKSk7CiAg
-ICAgICBnb3RvIGVuZDsKICAgICB9CiAgIH0KQEAgLTYxOCw2ICs2MTksNyBAQCB4NTA5X3Zl
-cmlmeV9jcmwoY29uc3QgY2hhciAqY3JsX2ZpbGUsIFg1MDkgKnBlZXJfY2VydCwgY29uc3Qg
-Y2hhciAqc3ViamVjdCkKICAgbXNnIChEX0hBTkRTSEFLRSwgIkNSTCBDSEVDSyBPSzogJXMi
-LHN1YmplY3QpOwogCiBlbmQ6CisgIGdjX2ZyZWUoJmdjKTsKICAgQklPX2ZyZWUoaW4pOwog
-ICBpZiAoY3JsKQogICAgIFg1MDlfQ1JMX2ZyZWUgKGNybCk7CmRpZmYgLS1naXQgYS9zcmMv
-b3BlbnZwbi9zc2xfdmVyaWZ5X3BvbGFyc3NsLmMgYi9zcmMvb3BlbnZwbi9zc2xfdmVyaWZ5
-X3BvbGFyc3NsLmMKaW5kZXggMmVkZjIxZC4uMTQ3MzBmMiAxMDA2NDQKLS0tIGEvc3JjL29w
-ZW52cG4vc3NsX3ZlcmlmeV9wb2xhcnNzbC5jCisrKyBiL3NyYy9vcGVudnBuL3NzbF92ZXJp
-ZnlfcG9sYXJzc2wuYwpAQCAtMzczLDYgKzM3Myw3IEBAIHg1MDlfdmVyaWZ5X2NybChjb25z
-dCBjaGFyICpjcmxfZmlsZSwgeDUwOV9jcnQgKmNlcnQsIGNvbnN0IGNoYXIgKnN1YmplY3Qp
-CiB7CiAgIHJlc3VsdF90IHJldHZhbCA9IEZBSUxVUkU7CiAgIHg1MDlfY3JsIGNybCA9IHsw
-fTsKKyAgc3RydWN0IGdjX2FyZW5hIGdjID0gZ2NfbmV3KCk7CiAKICAgaW50IHBvbGFyX3Jl
-dHZhbCA9IHg1MDlfY3JsX3BhcnNlX2ZpbGUoJmNybCwgY3JsX2ZpbGUpOwogICBpZiAocG9s
-YXJfcmV0dmFsICE9IDApCkBAIC0zOTQsNyArMzk1LDcgQEAgeDUwOV92ZXJpZnlfY3JsKGNv
-bnN0IGNoYXIgKmNybF9maWxlLCB4NTA5X2NydCAqY2VydCwgY29uc3QgY2hhciAqc3ViamVj
-dCkKIAogICBpZiAoMCAhPSB4NTA5X2NydF9yZXZva2VkKGNlcnQsICZjcmwpKQogICAgIHsK
-LSAgICAgIG1zZyAoRF9IQU5EU0hBS0UsICJDUkwgQ0hFQ0sgRkFJTEVEOiAlcyBpcyBSRVZP
-S0VEIiwgc3ViamVjdCk7CisgICAgICBtc2cgKERfSEFORFNIQUtFLCAiQ1JMIENIRUNLIEZB
-SUxFRDogJXMgKHNlcmlhbCAlcykgaXMgUkVWT0tFRCIsIHN1YmplY3QsIGJhY2tlbmRfeDUw
-OV9nZXRfc2VyaWFsX2hleChjZXJ0LCAmZ2MpKTsKICAgICAgIGdvdG8gZW5kOwogICAgIH0K
-IApAQCAtNDAyLDYgKzQwMyw3IEBAIHg1MDlfdmVyaWZ5X2NybChjb25zdCBjaGFyICpjcmxf
-ZmlsZSwgeDUwOV9jcnQgKmNlcnQsIGNvbnN0IGNoYXIgKnN1YmplY3QpCiAgIG1zZyAoRF9I
-QU5EU0hBS0UsICJDUkwgQ0hFQ0sgT0s6ICVzIixzdWJqZWN0KTsKIAogZW5kOgorICBnY19m
-cmVlKCZnYyk7CiAgIHg1MDlfY3JsX2ZyZWUoJmNybCk7CiAgIHJldHVybiByZXR2YWw7CiB9
-Cg==
---------------000402090409050205030203--
+So, if you run git master, you already have it :-) - and if you run 2.3.x,
+you can just cherry-pick the patch, it should apply easily.
+
+(It will eventually hit 2.3.9 or 2.3.10, but I want to wait for a bit
+more feedback from the "early testers")
+
+gert
+
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--DRfr/2Y1Zz/5r+Kb
+Content-Type: application/pgp-signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQCVAwUBVdtf8KkuBuNlUUl1AQJQnwP9FMgBrOMJ3YFe3dB6/ly4Ep9waDYfQwTd
+urQSDDwHGENpyWbdsVQ9aktsjQmbcQPt1l2UgoWx+MNa+aiLA5XFvm7Qn8lMw0Bp
+4hWVZJU6MbcuV2oYMqZ+zROHZZ4+9nZhPq6/zQ0NOl7M/cu+fVDcryuRx5D6DN+H
+eYTwlwJKpjM=
+=72Cp
+-----END PGP SIGNATURE-----
+
+--DRfr/2Y1Zz/5r+Kb--
 
