@@ -1,14 +1,7 @@
-Date: Tue, 25 Aug 2015 14:04:45 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20150825120445.GG34798@...1296...>
-References: <55DB4C39.9040105@...2010...>
-	<CAD2Ti2975xFpu4FrozJgptc4nti3V7aXGebZGfnRS1ynTgaZyw@...278...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="cnBsrynPgIOyCJkL"
-Content-Disposition: inline
-In-Reply-To: <CAD2Ti2975xFpu4FrozJgptc4nti3V7aXGebZGfnRS1ynTgaZyw@...278...>
-Subject: Re: [Openvpn-devel] Log cert serial no if it is revoked
+From: Steffan Karger <steffan@...1856...>
+Date: Wed, 26 Aug 2015 00:29:13 +0200
+Message-Id: <1440541753-9172-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH] Add missing strdup() return value checks
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,48 +10,88 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: grarpamp <grarpamp@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---cnBsrynPgIOyCJkL
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+As reported by Bill Parker in trac #600, strdup() return values are not
+always correctly checked for failed allocations.  This patch adds missing
+checks.
 
-Hi,
+Note that in misc.c and options.c, the check is after the dirname() or
+basename() call, because these can deal with NULL params and we need to
+keep MSVC happy with its ancient no-declaration-after-statement policy.
 
-On Tue, Aug 25, 2015 at 02:38:20AM -0400, grarpamp wrote:
-> Cert serial numbers found in the wild are hardly unique (witness
+Signed-off-by: Steffan Karger <steffan@...1856...>
+---
+ src/openvpn/cryptoapi.c    | 1 +
+ src/openvpn/init.c         | 1 +
+ src/openvpn/misc.c         | 1 +
+ src/openvpn/options.c      | 1 +
+ src/openvpn/ssl_polarssl.c | 1 +
+ 5 files changed, 5 insertions(+)
 
-They are not "in the wild" in this context, as the issueing CA in
-OpenVPN contexts is typically in-house - and serial numbers for certs
-issued by a single CA(!) *are* unique.
+diff --git a/src/openvpn/cryptoapi.c b/src/openvpn/cryptoapi.c
+index b7fc11e..62f30be 100644
+--- a/src/openvpn/cryptoapi.c
++++ b/src/openvpn/cryptoapi.c
+@@ -127,6 +127,7 @@ static char *ms_error_text(DWORD ms_err)
+ 		    break;
+ 	    }
+     }
++    check_malloc_return(rv);
+     return rv;
+ }
+ 
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index b7c153b..0809cc7 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -817,6 +817,7 @@ init_options_dev (struct options *options)
+ {
+   if (!options->dev && options->dev_node) {
+     char *dev_node = strdup(options->dev_node); /* POSIX basename() implementaions may modify its arguments */
++    check_malloc_return(dev_node);
+     options->dev = basename (dev_node);
+   }
+ }
+diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
+index a5bad0d..b543b65 100644
+--- a/src/openvpn/misc.c
++++ b/src/openvpn/misc.c
+@@ -1608,6 +1608,7 @@ argv_extract_cmd_name (const char *path)
+     {
+       char *path_cp = strdup(path); /* POSIX basename() implementaions may modify its arguments */
+       const char *bn = basename (path_cp);
++      check_malloc_return(path_cp);
+       if (bn)
+ 	{
+ 	  char *ret = string_alloc (bn, NULL);
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 2784580..dba7c9d 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -2588,6 +2588,7 @@ check_file_access(const int type, const char *file, const int mode, const char *
+     {
+       char *fullpath = strdup(file);  /* POSIX dirname() implementaion may modify its arguments */
+       char *dirpath = dirname(fullpath);
++      check_malloc_return(fullpath);
+ 
+       if (platform_access (dirpath, mode|X_OK) != 0)
+           errcode = errno;
+diff --git a/src/openvpn/ssl_polarssl.c b/src/openvpn/ssl_polarssl.c
+index 3fc811e..673dbbe 100644
+--- a/src/openvpn/ssl_polarssl.c
++++ b/src/openvpn/ssl_polarssl.c
+@@ -198,6 +198,7 @@ tls_ctx_restrict_ciphers(struct tls_root_ctx *ctx, const char *ciphers)
+   /* Parse allowed ciphers, getting IDs */
+   i = 0;
+   tmp_ciphers_orig = tmp_ciphers = strdup(ciphers);
++  check_malloc_return(tmp_ciphers);
+ 
+   token = strtok (tmp_ciphers, ":");
+   while(token)
+-- 
+2.1.4
 
-If the cert cannot be verified at all (not revoked, but "issued by
-another CA" or "not signed at all"), I agree, the serial number does not
-carry meaningful information - but this is not the case this patch is
-about.
-
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---cnBsrynPgIOyCJkL
-Content-Type: application/pgp-signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQCVAwUBVdxZ3KkuBuNlUUl1AQLrSgQAxHl8cxnjdUjrLVPmhZBoriz75gw3slA4
-lS7Jz9ZlrUwn1u0lFtx9QsXm+LUDzdYEK5WfqUQyn4pI5mIkC6new6QfM6bLdZ3O
-oUknMeX2b0VlKxTYOShKYgZznKS+K4nURFas3Lv8PVank3sr/mXhYNnJmvMHwXPi
-usdDC8KsCzc=
-=a0PC
------END PGP SIGNATURE-----
-
---cnBsrynPgIOyCJkL--
 
