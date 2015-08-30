@@ -1,12 +1,12 @@
-Date: Sun, 30 Aug 2015 22:35:18 +0200
+Date: Sun, 30 Aug 2015 22:37:49 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20150830203518.GV34798@...1296...>
+Message-ID: <20150830203749.GW34798@...1296...>
 References: <20150830002336.32791c7b.movrax-dev@...2061...>
 	<20150830115444.GU34798@...1296...>
 	<20150830162534.4ee0c9f2.movrax-dev@...2061...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="ONmcTkPhtkbQYSLg"
+	protocol="application/pgp-signature"; boundary="wwSFAA0Com6UqrPP"
 Content-Disposition: inline
 In-Reply-To: <20150830162534.4ee0c9f2.movrax-dev@...2061...>
 Subject: Re: [Openvpn-devel] [PATCH] Privileges not being dropped if the
@@ -22,7 +22,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: "Lukasz K." <movrax-dev@...2061...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---ONmcTkPhtkbQYSLg
+--wwSFAA0Com6UqrPP
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
@@ -30,20 +30,25 @@ Content-Disposition: inline
 Hi,
 
 On Sun, Aug 30, 2015 at 04:25:34PM +0200, Lukasz K. wrote:
-> > Which OpenVPN version is this about?  2.3.x up to 2.3.5, or
-> > 2.3.6/.7/.8, or git master?
-[..]
->=20
-> Affected versions that I've checked so far:
-> 2.1.3, 2.2.1, 2.3.4, 2.3.6, 2.3.7, 2.3.8, git (OpenVPN 2.3_git
-> [git:master/291c227d2ccecaa9+])
+> -  if (c->first_time && c0 && !c0->uid_gid_set)
+> +  if (c0 && !c0->uid_gid_set)
+>      {
+>        /* chroot if requested */
+>        if (c->options.chroot_dir)
+>  	{
+>  	  if (no_delay)
+>  	    platform_chroot (c->options.chroot_dir);
+> -	  else
+> +	  else if (c->first_time)
+>  	    msg (M_INFO, "NOTE: chroot %s", why_not);
+>  	}
 
-Thanks, this is way more than I expected :-) - and it seems that we did
-not fiddle with this part of the code yet, so it's time to do so.
+Looking a bit more closely at this one.  What happens if you do not
+set uid/gid, but *do* set --chroot?  Will it then execute the chroot
+call every single time (since effectively the first_time check is
+removed, and c0->uid_git_set will never be set)?
 
-On a first glance this v2 version looks good to me, but I need to look
-a bit more into details at the surrounding code to check whether it
-might have interesting side effects (we're good at that).
+Or am I misreading this?
 
 gert
 
@@ -54,18 +59,18 @@ rt/
 Gert Doering - Munich, Germany                             gert@...1296...
 fax: +49-89-35655025                        gert@...1297...
 
---ONmcTkPhtkbQYSLg
+--wwSFAA0Com6UqrPP
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1
 
-iQCVAwUBVeNpBakuBuNlUUl1AQK5pAQAk4zXURvHicEzepnq0/pZc3eawwwoBgPB
-2AFhvFUqLPrPF+zVWEfAvhMyPB+TF6asqWoXx4Xfia54KzLFhVIfxjkYE9rQVGgw
-Nh5uTwL03F2WEJgkkOyNDxMaCfNcZsmo9wQEdZDODfSu5O1m6r3neoimCy5A2LR1
-dqeZ1mX7u9I=
-=Kwi6
+iQCVAwUBVeNpnKkuBuNlUUl1AQKkqQP/RIGZ3LF9DiV1tNT7gjk09prE4aaRinEc
+FEI2yvWMWOCajbF2t5/S+kZRQkSLrvn0TnHF3IwRE7S7VmfxS0VmbQlIkkxUcNmn
+l+mkVbiLy2q4KW4CoFVn6sAH5b5w0CmxVqZNMivtxezqDdESu9ZcKOWGSBknTenA
+CUXOyERCbCw=
+=EmUn
 -----END PGP SIGNATURE-----
 
---ONmcTkPhtkbQYSLg--
+--wwSFAA0Com6UqrPP--
 
