@@ -1,10 +1,10 @@
 From: Gert Doering <gert@...1296...>
-Date: Fri, 11 Sep 2015 17:33:39 +0200
-Message-Id: <1441985627-14822-3-git-send-email-gert@...1296...>
+Date: Fri, 11 Sep 2015 17:33:42 +0200
+Message-Id: <1441985627-14822-6-git-send-email-gert@...1296...>
 In-Reply-To: <1441985627-14822-1-git-send-email-gert@...1296...>
 References: <1441985627-14822-1-git-send-email-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH 02/10] refactor struct route_ipv6_list,
-	bring in line with struct route_list again
+Subject: [Openvpn-devel] [PATCH 05/10] get_default_gateway_ipv6(): Linux /
+	Netlink implementation.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,154 +17,191 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-adjust "struct route_ipv6_list" (and all users) to reflect changes
-to "struct route_list" done in commit 7fb0e07e, namely:
-
- - new member "rl6->iflags"            (RL_* flags)
- - new member "rl6->spec_flags"        (RTSA_* flags)
- - new member "rl6->remote_host_ipv6"  (--remote address we're talking to)
- - "rl6->routes_added"
-              --> "rl6->iflags & RL_ROUTES_ADDED"
- - "rl6->did_redirect_default_gateway"
-              --> "rl6->iflags & RL_DID_REDIRECT_DEFAULT_GATEWAY"
- - "rl6->did_local"
-              --> "rl6->iflags & RL_DID_LOCAL"
- - "rl6->remote_endpoint_defined"
-              --> "rl6->spec_flags & RTSA_REMOTE_ENDPOINT"
- - "rl6->default_metric_defined"
-              --> "rl6->spec_flags & RTSA_DEFAULT_METRIC"
-
-deviating from IPv4 route_list, there is no "route_special_addr spec"
-sub-struct, because it's not considered useful (rl->spec.flags becomes
-rl6->spec_flags, the IPv6 equivalent of everything else in rl->spec just
-lives inside struct route_ipv6_list)
-
 Signed-off-by: Gert Doering <gert@...1296...>
 ---
- src/openvpn/route.c | 19 ++++++++-----------
- src/openvpn/route.h | 16 ++++++++--------
- 2 files changed, 16 insertions(+), 19 deletions(-)
+ src/openvpn/route.c | 147 +++++++++++++++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 135 insertions(+), 12 deletions(-)
 
 diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index 0f91652..6b2af3c 100644
+index fd8209d..cca5cfe 100644
 --- a/src/openvpn/route.c
 +++ b/src/openvpn/route.c
-@@ -387,7 +387,7 @@ init_route_ipv6 (struct route_ipv6 *r6,
- 	  msg( M_WARN, PACKAGE_NAME "ROUTE6: cannot parse gateway spec '%s'", r6o->gateway );
-         }
-     }
--  else if (rl6->remote_endpoint_defined)
-+  else if (rl6->spec_flags & RTSA_REMOTE_ENDPOINT)
-     {
-       r6->gateway = rl6->remote_endpoint_ipv6;
-     }
-@@ -412,7 +412,7 @@ init_route_ipv6 (struct route_ipv6 *r6,
- 	}
-       r6->flags |= RT_METRIC_DEFINED;
-     }
--  else if (rl6->default_metric_defined)
-+  else if (rl6->spec_flags & RTSA_DEFAULT_METRIC)
-     {
-       r6->metric = rl6->default_metric;
-       r6->flags |= RT_METRIC_DEFINED;
-@@ -671,7 +671,7 @@ init_route_ipv6_list (struct route_ipv6_list *rl6,
-   if (default_metric >= 0 )
-     {
-       rl6->default_metric = default_metric;
--      rl6->default_metric_defined = true;
-+      rl6->spec_flags |= RTSA_DEFAULT_METRIC;
-     }
+@@ -45,6 +45,10 @@
  
-   /* "default_gateway" is stuff for "redirect-gateway", which we don't
-@@ -686,7 +686,7 @@ init_route_ipv6_list (struct route_ipv6_list *rl6,
-       if ( inet_pton( AF_INET6, remote_endpoint, 
- 			&rl6->remote_endpoint_ipv6) == 1 )
-         {
--	  rl6->remote_endpoint_defined = true;
-+	  rl6->spec_flags |= RTSA_REMOTE_ENDPOINT;
-         }
-       else
- 	{
-@@ -694,9 +694,6 @@ init_route_ipv6_list (struct route_ipv6_list *rl6,
-           ret = false;
- 	}
-     }
--  else
--    rl6->remote_endpoint_defined = false;
--
+ #include "memdbg.h"
  
-   /* parse the routes from opt6 to rl6 */
-   {
-@@ -1003,7 +1000,7 @@ add_routes (struct route_list *rl, struct route_ipv6_list *rl6, const struct tun
- 	}
-       rl->iflags |= RL_ROUTES_ADDED;
-     }
--  if (rl6 && !rl6->routes_added)
-+  if (rl6 && !(rl6->iflags & RL_ROUTES_ADDED) )
++#if defined(TARGET_LINUX) || defined(TARGET_ANDROID)
++#include <linux/rtnetlink.h>		/* RTM_GETROUTE etc. */
++#endif
++
+ #ifdef WIN32
+ #define METRIC_NOT_USED ((DWORD)-1)
+ #endif
+@@ -1115,10 +1119,9 @@ print_default_gateway(const int msglevel,
      {
-       struct route_ipv6 *r;
-       for (r = rl6->routes_ipv6; r; r = r->next)
-@@ -1012,7 +1009,7 @@ add_routes (struct route_list *rl, struct route_ipv6_list *rl6, const struct tun
- 	    delete_route_ipv6 (r, tt, flags, es);
- 	  add_route_ipv6 (r, tt, flags, es);
- 	}
--      rl6->routes_added = true;
-+      rl6->iflags |= RL_ROUTES_ADDED;
-     }
+       struct buffer out = alloc_buf_gc (256, &gc);
+       buf_printf (&out, "ROUTE6_GATEWAY");
++      buf_printf (&out, " %s", print_in6_addr (rgi6->gateway.addr_ipv6, 0, &gc));
+       if (rgi6->flags & RGI_ON_LINK)
+ 	buf_printf (&out, " ON_LINK");
+-      else
+-	buf_printf (&out, " %s", print_in6_addr (rgi6->gateway.addr_ipv6, 0, &gc));
+       if (rgi6->flags & RGI_NETMASK_DEFINED)
+ 	buf_printf (&out, "/%d", rgi6->gateway.netbits_ipv6);
+ #ifdef WIN32
+@@ -2659,22 +2662,142 @@ get_default_gateway (struct route_gateway_info *rgi)
+   gc_free (&gc);
  }
  
-@@ -1037,14 +1034,14 @@ delete_routes (struct route_list *rl, struct route_ipv6_list *rl6,
-       clear_route_list (rl);
-     }
- 
--  if ( rl6 && rl6->routes_added )
-+  if ( rl6 && (rl6->iflags & RL_ROUTES_ADDED) )
-     {
-       struct route_ipv6 *r6;
-       for (r6 = rl6->routes_ipv6; r6; r6 = r6->next)
- 	{
- 	  delete_route_ipv6 (r6, tt, flags, es);
- 	}
--      rl6->routes_added = false;
-+      rl6->iflags &= ~RL_ROUTES_ADDED;
-     }
- 
-   if ( rl6 )
-diff --git a/src/openvpn/route.h b/src/openvpn/route.h
-index 13882a4..7e96a2f 100644
---- a/src/openvpn/route.h
-+++ b/src/openvpn/route.h
-@@ -103,7 +103,7 @@ struct route_ipv6_option {
- };
- 
- struct route_ipv6_option_list {
--  unsigned int flags;
-+  unsigned int flags;		/* RG_x flags, see route_option-list */
-   struct route_ipv6_option *routes_ipv6;
-   struct gc_arena *gc;
- };
-@@ -131,14 +131,14 @@ struct route_ipv6 {
- };
- 
- struct route_ipv6_list {
--  bool routes_added;
--  unsigned int flags;
-+  unsigned int iflags;			/* RL_ flags, see route_list */
+-/* IPv6 implementation using netlink (TBD)
++/* IPv6 implementation using netlink
++ * http://www.linuxjournal.com/article/7356
++ * netlink(3), netlink(7), rtnetlink(7)
++ * http://www.virtualbox.org/svn/vbox/trunk/src/VBox/NetworkServices/NAT/rtmon_linux.c
+  */
++struct rtreq {
++	struct nlmsghdr nh;
++	struct rtmsg rtm;
++	char attrbuf[512];
++};
 +
-+  unsigned int spec_flags;		/* RTSA_ flags, route_special_addr */
-+  struct in6_addr remote_endpoint_ipv6;	/* inside tun */
-+  struct in6_addr remote_host_ipv6;	/* --remote address */
-   int default_metric;
--  bool default_metric_defined;
--  struct in6_addr remote_endpoint_ipv6;
--  bool remote_endpoint_defined;
--  bool did_redirect_default_gateway;			/* TODO (?) */
--  bool did_local;					/* TODO (?) */
+ void
+ get_default_gateway_ipv6(struct route_ipv6_gateway_info *rgi6,
+ 			 struct in6_addr *dest)
+ {
+-    msg(D_ROUTE, "no support for get_default_gateway_ipv6() on this system (Linux and Android)");
++    int nls = -1;
++    struct rtreq rtreq;
++    struct rtattr *rta;
 +
-+  unsigned int flags;			/* RG_x flags, see route_option_list */
-   struct route_ipv6 *routes_ipv6;
-   struct gc_arena gc;
- };
++    char rtbuf[2000];
++    ssize_t ssize;
++
+     CLEAR(*rgi6);
+-    struct in6_addr g = IN6ADDR_LOOPBACK_INIT;
+-
+-    rgi6->flags = RGI_ADDR_DEFINED | RGI_IFACE_DEFINED | RGI_HWADDR_DEFINED | 
+-    		RGI_NETMASK_DEFINED;
+-    rgi6->gateway.addr_ipv6 = g;
+-    rgi6->gateway.netbits_ipv6 = 64;
+-    memcpy( rgi6->hwaddr, "\1\2\3\4\5\6", 6 );
+-    strcpy( rgi6->iface, "eth1" );
++
++    nls = socket( PF_NETLINK, SOCK_RAW, NETLINK_ROUTE );
++    if ( nls < 0 )
++	{ msg(M_WARN|M_ERRNO, "GDG6: socket() failed" ); goto done; }
++
++    /* bind() is not needed, no unsolicited msgs coming in */
++
++    /* this will give us the best match only, not a full dump */
++    CLEAR(rtreq);
++    rtreq.nh.nlmsg_type = RTM_GETROUTE;
++    rtreq.nh.nlmsg_flags = NLM_F_REQUEST;			/* XXX */
++    rtreq.rtm.rtm_family = AF_INET6;
++    rtreq.rtm.rtm_src_len = 0;
++    rtreq.rtm.rtm_dst_len = 128;				/* exact dst */
++    rtreq.rtm.rtm_table = RT_TABLE_MAIN;
++    rtreq.rtm.rtm_protocol = RTPROT_UNSPEC;
++    rtreq.nh.nlmsg_len = NLMSG_SPACE(sizeof(rtreq.rtm));
++
++    /* set RTA_DST for target IPv6 address we want */
++    rta = (struct rtattr *)(((char *) &rtreq)+NLMSG_ALIGN(rtreq.nh.nlmsg_len));
++    rta->rta_type = RTA_DST;
++    rta->rta_len = RTA_LENGTH(16);
++    rtreq.nh.nlmsg_len = NLMSG_ALIGN(rtreq.nh.nlmsg_len) +
++                                             RTA_LENGTH(16);
++
++    if ( dest == NULL )			/* ::, unspecified */
++	memset( RTA_DATA(rta), 0, 16 );	/* :: = all-zero */
++    else
++	memcpy( RTA_DATA(rta), (void *)dest, 16 );
++
++    /* send and receive reply */
++    if ( send( nls, &rtreq, rtreq.nh.nlmsg_len, 0 ) < 0 )
++	{ msg(M_WARN|M_ERRNO, "GDG6: send() failed" ); goto done; }
++
++    ssize = recv(nls, rtbuf, sizeof(rtbuf), MSG_TRUNC);
++
++    if (ssize < 0)
++	{ msg(M_WARN|M_ERRNO, "GDG6: recv() failed" ); goto done; }
++
++    if (ssize > sizeof(rtbuf))
++    {
++	msg(M_WARN, "get_default_gateway_ipv6: returned message too big for buffer (%d>%d)", (int)ssize, (int)sizeof(rtbuf) );
++	goto done;
++    }
++
++    struct nlmsghdr *nh;
++
++    for (nh = (struct nlmsghdr *)rtbuf;
++         NLMSG_OK(nh, ssize);
++         nh = NLMSG_NEXT(nh, ssize))
++    {
++	struct rtmsg *rtm;
++	int attrlen;
++
++	if (nh->nlmsg_type == NLMSG_DONE) { break; }
++
++	if (nh->nlmsg_type == NLMSG_ERROR) {
++	    struct nlmsgerr *ne = (struct nlmsgerr *)NLMSG_DATA(nh);
++	    msg(M_WARN, "GDG6: NLSMG_ERROR: error %d\n", ne->error);
++	    break;
++	}
++
++	if (nh->nlmsg_type != RTM_NEWROUTE) {
++	    /* shouldn't happen */
++	    msg(M_WARN, "GDG6: unexpected msg_type %d", nh->nlmsg_type );
++	    continue;
++	}
++
++	rtm = (struct rtmsg *)NLMSG_DATA(nh);
++	attrlen = RTM_PAYLOAD(nh);
++
++	/* we're only looking for routes in the main table, as "we have
++	 * no IPv6" will lead to a lookup result in "Local" (::/0 reject)
++	 */
++	if (rtm->rtm_family != AF_INET6 ||
++	    rtm->rtm_table != RT_TABLE_MAIN)
++		{ continue; }		/* we're not interested */
++
++	for (rta = RTM_RTA(rtm);
++	     RTA_OK(rta, attrlen);
++	     rta = RTA_NEXT(rta, attrlen))
++	{
++	    if (rta->rta_type == RTA_GATEWAY) {
++		if ( RTA_PAYLOAD(rta) != sizeof(struct in6_addr) )
++			{ msg(M_WARN, "GDG6: RTA_GW size mismatch"); continue; }
++		rgi6->gateway.addr_ipv6 = *(struct in6_addr*) RTA_DATA(rta);
++		rgi6->flags |= RGI_ADDR_DEFINED;
++	    }
++	    else if (rta->rta_type == RTA_OIF) {
++		char ifname[IF_NAMESIZE+1];
++		int oif;
++		if ( RTA_PAYLOAD(rta) != sizeof(oif) )
++			{ msg(M_WARN, "GDG6: oif size mismatch"); continue; }
++
++		memcpy(&oif, RTA_DATA(rta), sizeof(oif));
++		if_indextoname(oif,ifname);
++		strncpy( rgi6->iface, ifname, sizeof(rgi6->iface)-1 );
++		rgi6->flags |= RGI_IFACE_DEFINED;
++	    }
++	}
++    }
++
++    /* if we have an interface but no gateway, the destination is on-link */
++    if ( ( rgi6->flags & (RGI_IFACE_DEFINED|RGI_ADDR_DEFINED) ) ==
++              RGI_IFACE_DEFINED )
++    {
++	rgi6->flags |= (RGI_ADDR_DEFINED | RGI_ON_LINK);
++	rgi6->gateway.addr_ipv6 = *dest;
++    }
++
++  done:
++    if (nls >= 0)
++	close (nls);
+ }
+ 
+ #elif defined(TARGET_DARWIN) || defined(TARGET_SOLARIS) || \
 -- 
 2.3.6
 
