@@ -1,9 +1,10 @@
 From: Gert Doering <gert@...1296...>
-Date: Fri, 11 Sep 2015 17:33:44 +0200
-Message-Id: <1441985627-14822-8-git-send-email-gert@...1296...>
+Date: Fri, 11 Sep 2015 17:33:39 +0200
+Message-Id: <1441985627-14822-3-git-send-email-gert@...1296...>
 In-Reply-To: <1441985627-14822-1-git-send-email-gert@...1296...>
 References: <1441985627-14822-1-git-send-email-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH 07/10] Implement '--redirect-gateway ipv6'
+Subject: [Openvpn-devel] [PATCH 02/10] refactor struct route_ipv6_list,
+	bring in line with struct route_list again
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,91 +17,154 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Add "ipv6" and "!ipv4" sub-options to "--redirect-gateway" option.
+adjust "struct route_ipv6_list" (and all users) to reflect changes
+to "struct route_list" done in commit 7fb0e07e, namely:
 
-This is done in the same way as in the OpenVPN 3 code base, so
-"--redirect-gateway ipv6" will redirect both IPv4 and IPv6 - if you
-want v6-only, use "--redirect-gateway ipv6 !ipv4".
+ - new member "rl6->iflags"            (RL_* flags)
+ - new member "rl6->spec_flags"        (RTSA_* flags)
+ - new member "rl6->remote_host_ipv6"  (--remote address we're talking to)
+ - "rl6->routes_added"
+              --> "rl6->iflags & RL_ROUTES_ADDED"
+ - "rl6->did_redirect_default_gateway"
+              --> "rl6->iflags & RL_DID_REDIRECT_DEFAULT_GATEWAY"
+ - "rl6->did_local"
+              --> "rl6->iflags & RL_DID_LOCAL"
+ - "rl6->remote_endpoint_defined"
+              --> "rl6->spec_flags & RTSA_REMOTE_ENDPOINT"
+ - "rl6->default_metric_defined"
+              --> "rl6->spec_flags & RTSA_DEFAULT_METRIC"
 
-The actual implementation is much simpler than for IPv4 - we just
-add a few extra routes to the route_ipv6_option_list and leave it to
-init_route_ipv6_list() to figure out whether there is an overlap with
-IPv6 transport, and if yes, insert a host route to the VPN server
-via the current IPv6 default gateway.
+deviating from IPv4 route_list, there is no "route_special_addr spec"
+sub-struct, because it's not considered useful (rl->spec.flags becomes
+rl6->spec_flags, the IPv6 equivalent of everything else in rl->spec just
+lives inside struct route_ipv6_list)
 
 Signed-off-by: Gert Doering <gert@...1296...>
 ---
- doc/openvpn.8         | 11 +++++++++++
- src/openvpn/init.c    | 15 +++++++++++++++
- src/openvpn/options.c |  7 +++++++
- 3 files changed, 33 insertions(+)
+ src/openvpn/route.c | 19 ++++++++-----------
+ src/openvpn/route.h | 16 ++++++++--------
+ 2 files changed, 16 insertions(+), 19 deletions(-)
 
-diff --git a/doc/openvpn.8 b/doc/openvpn.8
-index 0692a80..98378aa 100644
---- a/doc/openvpn.8
-+++ b/doc/openvpn.8
-@@ -1240,6 +1240,17 @@ on non-Windows clients).
- Block access to local LAN when the tunnel is active, except for
- the LAN gateway itself.  This is accomplished by routing the local
- LAN (except for the LAN gateway address) into the tunnel.
-+
-+.B ipv6 --
-+Redirect IPv6 routing into the tunnel.  This works similar to the
-+.B def1
-+flag, that is, more specific IPv6 routes are added (2000::/4, 3000::/4),
-+covering the whole IPv6 unicast space.
-+
-+.B !ipv4 --
-+Do not redirect IPv4 traffic - typically used in the flag pair
-+.B "ipv6 !ipv4"
-+to redirect IPv6-only.
- .\"*********************************************************
- .TP
- .B \-\-link\-mtu n
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 0416e35..c47f4a8 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -1195,6 +1195,21 @@ do_init_route_ipv6_list (const struct options *options,
-   if (options->route_default_metric)
-     metric = options->route_default_metric;
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index 0f91652..6b2af3c 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -387,7 +387,7 @@ init_route_ipv6 (struct route_ipv6 *r6,
+ 	  msg( M_WARN, PACKAGE_NAME "ROUTE6: cannot parse gateway spec '%s'", r6o->gateway );
+         }
+     }
+-  else if (rl6->remote_endpoint_defined)
++  else if (rl6->spec_flags & RTSA_REMOTE_ENDPOINT)
+     {
+       r6->gateway = rl6->remote_endpoint_ipv6;
+     }
+@@ -412,7 +412,7 @@ init_route_ipv6 (struct route_ipv6 *r6,
+ 	}
+       r6->flags |= RT_METRIC_DEFINED;
+     }
+-  else if (rl6->default_metric_defined)
++  else if (rl6->spec_flags & RTSA_DEFAULT_METRIC)
+     {
+       r6->metric = rl6->default_metric;
+       r6->flags |= RT_METRIC_DEFINED;
+@@ -671,7 +671,7 @@ init_route_ipv6_list (struct route_ipv6_list *rl6,
+   if (default_metric >= 0 )
+     {
+       rl6->default_metric = default_metric;
+-      rl6->default_metric_defined = true;
++      rl6->spec_flags |= RTSA_DEFAULT_METRIC;
+     }
  
-+  /* redirect (IPv6) gateway to VPN?  if yes, add a few more specifics
-+   */
-+  if ( options->routes_ipv6->flags & RG_REROUTE_GW )
-+    {
-+      char *opt_list[] = { "::/3", "2000::/4", "3000::/4", "fc00::/7", NULL };
-+      int i;
+   /* "default_gateway" is stuff for "redirect-gateway", which we don't
+@@ -686,7 +686,7 @@ init_route_ipv6_list (struct route_ipv6_list *rl6,
+       if ( inet_pton( AF_INET6, remote_endpoint, 
+ 			&rl6->remote_endpoint_ipv6) == 1 )
+         {
+-	  rl6->remote_endpoint_defined = true;
++	  rl6->spec_flags |= RTSA_REMOTE_ENDPOINT;
+         }
+       else
+ 	{
+@@ -694,9 +694,6 @@ init_route_ipv6_list (struct route_ipv6_list *rl6,
+           ret = false;
+ 	}
+     }
+-  else
+-    rl6->remote_endpoint_defined = false;
+-
+ 
+   /* parse the routes from opt6 to rl6 */
+   {
+@@ -1003,7 +1000,7 @@ add_routes (struct route_list *rl, struct route_ipv6_list *rl6, const struct tun
+ 	}
+       rl->iflags |= RL_ROUTES_ADDED;
+     }
+-  if (rl6 && !rl6->routes_added)
++  if (rl6 && !(rl6->iflags & RL_ROUTES_ADDED) )
+     {
+       struct route_ipv6 *r;
+       for (r = rl6->routes_ipv6; r; r = r->next)
+@@ -1012,7 +1009,7 @@ add_routes (struct route_list *rl, struct route_ipv6_list *rl6, const struct tun
+ 	    delete_route_ipv6 (r, tt, flags, es);
+ 	  add_route_ipv6 (r, tt, flags, es);
+ 	}
+-      rl6->routes_added = true;
++      rl6->iflags |= RL_ROUTES_ADDED;
+     }
+ }
+ 
+@@ -1037,14 +1034,14 @@ delete_routes (struct route_list *rl, struct route_ipv6_list *rl6,
+       clear_route_list (rl);
+     }
+ 
+-  if ( rl6 && rl6->routes_added )
++  if ( rl6 && (rl6->iflags & RL_ROUTES_ADDED) )
+     {
+       struct route_ipv6 *r6;
+       for (r6 = rl6->routes_ipv6; r6; r6 = r6->next)
+ 	{
+ 	  delete_route_ipv6 (r6, tt, flags, es);
+ 	}
+-      rl6->routes_added = false;
++      rl6->iflags &= ~RL_ROUTES_ADDED;
+     }
+ 
+   if ( rl6 )
+diff --git a/src/openvpn/route.h b/src/openvpn/route.h
+index 13882a4..7e96a2f 100644
+--- a/src/openvpn/route.h
++++ b/src/openvpn/route.h
+@@ -103,7 +103,7 @@ struct route_ipv6_option {
+ };
+ 
+ struct route_ipv6_option_list {
+-  unsigned int flags;
++  unsigned int flags;		/* RG_x flags, see route_option-list */
+   struct route_ipv6_option *routes_ipv6;
+   struct gc_arena *gc;
+ };
+@@ -131,14 +131,14 @@ struct route_ipv6 {
+ };
+ 
+ struct route_ipv6_list {
+-  bool routes_added;
+-  unsigned int flags;
++  unsigned int iflags;			/* RL_ flags, see route_list */
 +
-+      for (i=0; opt_list[i]; i++)
-+	{
-+	  add_route_ipv6_to_option_list( options->routes_ipv6,
-+		      string_alloc (opt_list[i], options->routes_ipv6->gc),
-+		      NULL, NULL );
-+	}
-+    }
++  unsigned int spec_flags;		/* RTSA_ flags, route_special_addr */
++  struct in6_addr remote_endpoint_ipv6;	/* inside tun */
++  struct in6_addr remote_host_ipv6;	/* --remote address */
+   int default_metric;
+-  bool default_metric_defined;
+-  struct in6_addr remote_endpoint_ipv6;
+-  bool remote_endpoint_defined;
+-  bool did_redirect_default_gateway;			/* TODO (?) */
+-  bool did_local;					/* TODO (?) */
 +
-   if (!init_route_ipv6_list (route_ipv6_list,
- 			options->routes_ipv6,
- 			gw,
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 93ea415..dc8985b 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -5380,6 +5380,13 @@ add_option (struct options *options,
- 	    options->routes->flags |= RG_BYPASS_DNS;
- 	  else if (streq (p[j], "block-local"))
- 	    options->routes->flags |= RG_BLOCK_LOCAL;
-+	  else if (streq (p[j], "ipv6"))
-+	    {
-+	      rol6_check_alloc (options);
-+	      options->routes_ipv6->flags |= RG_REROUTE_GW;
-+	    }
-+	  else if (streq (p[j], "!ipv4"))
-+	    options->routes->flags &= ~RG_REROUTE_GW;
- 	  else
- 	    {
- 	      msg (msglevel, "unknown --%s flag: %s", p[0], p[j]);
++  unsigned int flags;			/* RG_x flags, see route_option_list */
+   struct route_ipv6 *routes_ipv6;
+   struct gc_arena gc;
+ };
 -- 
 2.3.6
 
