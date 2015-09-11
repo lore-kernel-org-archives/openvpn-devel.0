@@ -1,10 +1,10 @@
 From: Gert Doering <gert@...1296...>
-Date: Fri, 11 Sep 2015 17:33:41 +0200
-Message-Id: <1441985627-14822-5-git-send-email-gert@...1296...>
+Date: Fri, 11 Sep 2015 17:33:45 +0200
+Message-Id: <1441985627-14822-9-git-send-email-gert@...1296...>
 In-Reply-To: <1441985627-14822-1-git-send-email-gert@...1296...>
 References: <1441985627-14822-1-git-send-email-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH 04/10] Create basic infrastructure for IPv6
-	default gateway handling / redirection.
+Subject: [Openvpn-devel] [PATCH 08/10] get_default_gateway_ipv6(): *BSD /
+	MacOS / Solaris PF_ROUTE implementation
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,215 +17,254 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-- introduce get_default_gateway_ipv6() and add stub functions with the
-  implementation plan to the 4 major code blocks here (Windows,
-  Linux/Android, *BSD and Solaris, "others")
+As for IPv4, a common implementation for all (supported) BSD families
+and Solaris.  Supporting the latter requires separate implementations
+for IPv4 and IPv6, unfortunately, so it's quite a bit of duplicate
+code.
 
-- add &rgi6 to print_default_gateway(), and teach it to print v4, v6
-  or both, depending on the calling environment
+Further, extend add_route_ipv6() and delete_route_ipv6() to handle
+link-local gateway addresses that require "gateway + interface" in
+scoped notation ("fe80::1%em0").
 
-- unlike IPv4 (today), get_default_gateway_ipv6() is passed the actual
-  target IPv6 address of the server we're looking for, so we can handle
-  more complicated routing setups ("default to eth0, vpn server to ppp0")
-  correctly
+Tested on FreeBSD 7.4/amd64, 9.3/sparc64, 10.0/amd64, NetBSD 5.1/amd64,
+OpenBSD 4.9/i386, MacOS X 10.5/32 and 10.10/64 and OpenSolaris 10.11/i386.
 
-- consequently, --get-default-gateway has an optional parameter now, the
-  IPv6 address to look up (for debugging)
+Signed-off-by: Gert Doering <gert@...1296...>
 ---
- src/openvpn/init.c    |  4 ++-
- src/openvpn/options.c |  9 ++++--
- src/openvpn/route.c   | 76 +++++++++++++++++++++++++++++++++++++++++++++++++--
- src/openvpn/route.h   |  6 +++-
- 4 files changed, 88 insertions(+), 7 deletions(-)
+ src/openvpn/route.c | 187 ++++++++++++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 183 insertions(+), 4 deletions(-)
 
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index fe00918..4c17905 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -639,8 +639,10 @@ init_static (void)
- #ifdef TEST_GET_DEFAULT_GATEWAY
-   {
-     struct route_gateway_info rgi;
-+    struct route_ipv6_gateway_info rgi6;
-     get_default_gateway(&rgi);
--    print_default_gateway(M_INFO, &rgi);
-+    get_default_gateway_ipv6(&rgi6, NULL);
-+    print_default_gateway(M_INFO, &rgi, &rgi6);
-     return false;
-   }
- #endif
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index caf1394..93ea415 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -4156,12 +4156,17 @@ add_option (struct options *options,
-       read_config_file (options, p[1], level, file, line, msglevel, permission_mask, option_types_found, es);
-     }
- #if defined(ENABLE_DEBUG) && !defined(ENABLE_SMALL)
--  else if (streq (p[0], "show-gateway") && !p[1])
-+  else if (streq (p[0], "show-gateway") && !p[2])
-     {
-       struct route_gateway_info rgi;
-+      struct route_ipv6_gateway_info rgi6;
-+      struct in6_addr remote = IN6ADDR_ANY_INIT;
-       VERIFY_PERMISSION (OPT_P_GENERAL);
-+      if (p[1])
-+	  get_ipv6_addr (p[1], &remote, NULL, NULL, M_WARN);
-       get_default_gateway(&rgi);
--      print_default_gateway(M_INFO, &rgi);
-+      get_default_gateway_ipv6(&rgi6, &remote);
-+      print_default_gateway(M_INFO, &rgi, &rgi6);
-       openvpn_exit (OPENVPN_EXIT_STATUS_GOOD); /* exit point */
-     }
- #endif
 diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index 6b2af3c..fd8209d 100644
+index 555c3a6..29dd3fa 100644
 --- a/src/openvpn/route.c
 +++ b/src/openvpn/route.c
-@@ -578,7 +578,7 @@ init_route_list (struct route_list *rl,
-     {
-       setenv_route_addr (es, "net_gateway", rl->rgi.gateway.addr, -1);
- #if defined(ENABLE_DEBUG) && !defined(ENABLE_SMALL)
--      print_default_gateway (D_ROUTE, &rl->rgi);
-+      print_default_gateway (D_ROUTE, &rl->rgi, NULL);
- #endif
-     }
-   else
-@@ -1084,10 +1084,12 @@ print_route_options (const struct route_option_list *rol,
- }
+@@ -1677,6 +1677,24 @@ add_route_ipv6 (struct route_ipv6 *r6, const struct tuntap *tt, unsigned int fla
+   network = print_in6_addr_netbits_only( r6->network, r6->netbits, &gc);
+   gateway = print_in6_addr( r6->gateway, 0, &gc);
  
- void
--print_default_gateway(const int msglevel, const struct route_gateway_info *rgi)
-+print_default_gateway(const int msglevel,
-+	              const struct route_gateway_info *rgi,
-+	              const struct route_ipv6_gateway_info *rgi6)
- {
-   struct gc_arena gc = gc_new ();
--  if (rgi->flags & RGI_ADDR_DEFINED)
-+  if (rgi && (rgi->flags & RGI_ADDR_DEFINED))
-     {
-       struct buffer out = alloc_buf_gc (256, &gc);
-       buf_printf (&out, "ROUTE_GATEWAY");
-@@ -1108,6 +1110,28 @@ print_default_gateway(const int msglevel, const struct route_gateway_info *rgi)
- 	buf_printf (&out, " HWADDR=%s", format_hex_ex (rgi->hwaddr, 6, 0, 1, ":", &gc));
-       msg (msglevel, "%s", BSTR (&out));
-     }
++#if defined(TARGET_DARWIN) || \
++	defined(TARGET_FREEBSD) || defined(TARGET_DRAGONFLY) || \
++	defined(TARGET_OPENBSD) || defined(TARGET_NETBSD)
 +
-+  if (rgi6 && (rgi6->flags & RGI_ADDR_DEFINED))
++  /* the BSD platforms cannot specify gateway and interface independently,
++   * but for link-local destinations, we MUST specify the interface, so
++   * we build a combined "$gateway%$interface" gateway string
++   */
++  if ( r6->iface != NULL && gateway_needed &&
++       IN6_IS_ADDR_LINKLOCAL(&r6->gateway) )		/* fe80::...%intf */
 +    {
-+      struct buffer out = alloc_buf_gc (256, &gc);
-+      buf_printf (&out, "ROUTE6_GATEWAY");
-+      if (rgi6->flags & RGI_ON_LINK)
-+	buf_printf (&out, " ON_LINK");
-+      else
-+	buf_printf (&out, " %s", print_in6_addr (rgi6->gateway.addr_ipv6, 0, &gc));
-+      if (rgi6->flags & RGI_NETMASK_DEFINED)
-+	buf_printf (&out, "/%d", rgi6->gateway.netbits_ipv6);
-+#ifdef WIN32
-+      if (rgi6->flags & RGI_IFACE_DEFINED)
-+	buf_printf (&out, " I=%u", (unsigned int)rgi6->adapter_index);
-+#else
-+      if (rgi6->flags & RGI_IFACE_DEFINED)
-+	buf_printf (&out, " IFACE=%s", rgi6->iface);
-+#endif
-+      if (rgi6->flags & RGI_HWADDR_DEFINED)
-+	buf_printf (&out, " HWADDR=%s", format_hex_ex (rgi6->hwaddr, 6, 0, 1, ":", &gc));
-+      msg (msglevel, "%s", BSTR (&out));
++      int len = strlen(gateway) + 1 + strlen(r6->iface)+1;
++      char * tmp = gc_malloc( len, true, &gc );
++      snprintf( tmp, len, "%s%%%s", gateway, r6->iface );
++      gateway = tmp;
 +    }
-   gc_free (&gc);
- }
- 
-@@ -2308,6 +2332,17 @@ windows_route_find_if_index (const struct route_ipv4 *r, const struct tuntap *tt
-   return ret;
- }
- 
-+/* IPv6 implementation using GetIpForwardTable2() and dynamic linking (TBD)
-+ * https://msdn.microsoft.com/en-us/library/windows/desktop/aa814416(v=vs.85).aspx
-+ */
-+void
-+get_default_gateway_ipv6(struct route_ipv6_gateway_info *rgi6,
-+			 struct in6_addr *dest)
-+{
-+    msg(D_ROUTE, "no support for get_default_gateway_ipv6() on this system (windows)");
-+    CLEAR(*rgi6);
-+}
++#endif
 +
- bool
- add_route_ipapi (const struct route_ipv4 *r, const struct tuntap *tt, DWORD adapter_index)
- {
-@@ -2624,6 +2659,24 @@ get_default_gateway (struct route_gateway_info *rgi)
-   gc_free (&gc);
- }
+   if ( !tt->ipv6 )
+     {
+       msg( M_INFO, "add_route_ipv6(): not adding %s/%d, no IPv6 on if %s",
+@@ -2059,6 +2077,24 @@ delete_route_ipv6 (const struct route_ipv6 *r6, const struct tuntap *tt, unsigne
+   network = print_in6_addr_netbits_only( r6->network, r6->netbits, &gc);
+   gateway = print_in6_addr( r6->gateway, 0, &gc);
  
-+/* IPv6 implementation using netlink (TBD)
-+ */
-+void
-+get_default_gateway_ipv6(struct route_ipv6_gateway_info *rgi6,
-+			 struct in6_addr *dest)
-+{
-+    msg(D_ROUTE, "no support for get_default_gateway_ipv6() on this system (Linux and Android)");
-+    CLEAR(*rgi6);
-+    struct in6_addr g = IN6ADDR_LOOPBACK_INIT;
++#if defined(TARGET_DARWIN) || \
++	defined(TARGET_FREEBSD) || defined(TARGET_DRAGONFLY) || \
++	defined(TARGET_OPENBSD) || defined(TARGET_NETBSD)
 +
-+    rgi6->flags = RGI_ADDR_DEFINED | RGI_IFACE_DEFINED | RGI_HWADDR_DEFINED | 
-+    		RGI_NETMASK_DEFINED;
-+    rgi6->gateway.addr_ipv6 = g;
-+    rgi6->gateway.netbits_ipv6 = 64;
-+    memcpy( rgi6->hwaddr, "\1\2\3\4\5\6", 6 );
-+    strcpy( rgi6->iface, "eth1" );
-+}
++  /* the BSD platforms cannot specify gateway and interface independently,
++   * but for link-local destinations, we MUST specify the interface, so
++   * we build a combined "$gateway%$interface" gateway string
++   */
++  if ( r6->iface != NULL && gateway_needed &&
++       IN6_IS_ADDR_LINKLOCAL(&r6->gateway) )		/* fe80::...%intf */
++    {
++      int len = strlen(gateway) + 1 + strlen(r6->iface)+1;
++      char * tmp = gc_malloc( len, true, &gc );
++      snprintf( tmp, len, "%s%%%s", gateway, r6->iface );
++      gateway = tmp;
++    }
++#endif
 +
- #elif defined(TARGET_DARWIN) || defined(TARGET_SOLARIS) || \
- 	defined(TARGET_FREEBSD) || defined(TARGET_DRAGONFLY) || \
- 	defined(TARGET_OPENBSD) || defined(TARGET_NETBSD)
-@@ -2866,6 +2919,16 @@ get_default_gateway (struct route_gateway_info *rgi)
-   gc_free (&gc);
- }
+   if ( !tt->ipv6 )
+     {
+       msg( M_INFO, "delete_route_ipv6(): not deleting %s/%d, no IPv6 on if %s",
+@@ -2948,14 +2984,14 @@ struct rtmsg {
+ #if defined(TARGET_SOLARIS)
+ #define NEXTADDR(w, u) \
+         if (rtm_addrs & (w)) {\
+-            l = ROUNDUP(sizeof(struct sockaddr_in)); memmove(cp, &(u), l); cp += l;\
++            l = ROUNDUP(sizeof(u)); memmove(cp, &(u), l); cp += l;\
+         }
  
-+/* BSD implementation using routing socket (as does IPv4) (TBD)
-+ */
-+void
-+get_default_gateway_ipv6(struct route_ipv6_gateway_info *rgi6,
-+			 struct in6_addr *dest)
-+{
-+    msg(D_ROUTE, "no support for get_default_gateway_ipv6() on this system (BSD and OSX)");
-+    CLEAR(*rgi6);
-+}
-+
- #undef max
- 
+ #define ADVANCE(x, n) (x += ROUNDUP(sizeof(struct sockaddr_in)))
  #else
-@@ -2899,6 +2962,13 @@ get_default_gateway (struct route_gateway_info *rgi)
- {
-   CLEAR(*rgi);
+ #define NEXTADDR(w, u) \
+         if (rtm_addrs & (w)) {\
+-            l = ROUNDUP(u.sa_len); memmove(cp, &(u), l); cp += l;\
++            l = ROUNDUP( ((struct sockaddr *)&(u))->sa_len); memmove(cp, &(u), l); cp += l;\
+         }
+ 
+ #define ADVANCE(x, n) (x += ROUNDUP((n)->sa_len))
+@@ -3152,14 +3188,157 @@ get_default_gateway (struct route_gateway_info *rgi)
+   gc_free (&gc);
  }
-+void
-+get_default_gateway_ipv6(struct route_ipv6_gateway_info *rgi6,
-+			 struct in6_addr *dest)
-+{
-+    msg(D_ROUTE, "no support for get_default_gateway_ipv6() on this system");
-+    CLEAR(*rgi6);
-+}
  
- #endif
+-/* BSD implementation using routing socket (as does IPv4) (TBD)
++/* BSD implementation using routing socket (as does IPv4)
++ * (the code duplication is somewhat unavoidable if we want this to
++ * work on OpenSolaris as well.  *sigh*)
+  */
++
++/* Solaris has no length field - this is ugly, but less #ifdef in total
++ */
++#if defined(TARGET_SOLARIS)
++# undef ADVANCE
++# define ADVANCE(x, n) (x += ROUNDUP(sizeof(struct sockaddr_in6)))
++#endif
++
+ void
+ get_default_gateway_ipv6(struct route_ipv6_gateway_info *rgi6,
+ 			 const struct in6_addr *dest)
+ {
+-    msg(D_ROUTE, "no support for get_default_gateway_ipv6() on this system (BSD and OSX)");
++
++    struct rtmsg m_rtmsg;
++    int sockfd = -1;
++    int seq, l, pid, rtm_addrs, i;
++    struct sockaddr_in6 so_dst, so_mask;
++    char *cp = m_rtmsg.m_space;
++    struct sockaddr *gate = NULL, *ifp = NULL, *sa;
++    struct rt_msghdr *rtm_aux;
++
+     CLEAR(*rgi6);
++
++    /* setup data to send to routing socket */
++    pid = getpid();
++    seq = 0;
++    rtm_addrs = RTA_DST | RTA_NETMASK | RTA_IFP;
++
++    bzero(&m_rtmsg, sizeof(m_rtmsg));
++    bzero(&so_dst, sizeof(so_dst));
++    bzero(&so_mask, sizeof(so_mask));
++    bzero(&rtm, sizeof(struct rt_msghdr));
++
++    rtm.rtm_type = RTM_GET;
++    rtm.rtm_flags = RTF_UP;
++    rtm.rtm_version = RTM_VERSION;
++    rtm.rtm_seq = ++seq;
++
++    so_dst.sin6_family = AF_INET6;
++    so_mask.sin6_family = AF_INET6;
++
++    if ( dest != NULL &&		/* specific host? */
++	 !IN6_IS_ADDR_UNSPECIFIED(dest) )
++    {
++	so_dst.sin6_addr = *dest;
++	/* :: needs /0 "netmask", host route wants "no netmask */
++	rtm_addrs &= ~RTA_NETMASK;
++    }
++
++    rtm.rtm_addrs = rtm_addrs;
++
++#ifndef TARGET_SOLARIS
++    so_dst.sin6_len = sizeof(struct sockaddr_in6);
++    so_mask.sin6_len = sizeof(struct sockaddr_in6);
++#endif
++
++    NEXTADDR(RTA_DST, so_dst);
++    NEXTADDR(RTA_NETMASK, so_mask);
++
++    rtm.rtm_msglen = l = cp - (char *)&m_rtmsg;
++
++    /* transact with routing socket */
++    sockfd = socket(PF_ROUTE, SOCK_RAW, 0);
++    if (sockfd < 0)
++    {
++	msg (M_WARN, "GDG6: socket #1 failed");
++	goto done;
++    }
++    if (write(sockfd, (char *)&m_rtmsg, l) < 0)
++    {
++	msg (M_WARN, "GDG6: problem writing to routing socket");
++	goto done;
++    }
++
++    do
++    {
++	l = read(sockfd, (char *)&m_rtmsg, sizeof(m_rtmsg));
++    }
++    while (l > 0 && (rtm.rtm_seq != seq || rtm.rtm_pid != pid));
++
++    close(sockfd);
++    sockfd = -1;
++
++    /* extract return data from routing socket */
++    rtm_aux = &rtm;
++    cp = ((char *)(rtm_aux + 1));
++    if (rtm_aux->rtm_addrs)
++    {
++	for (i = 1; i; i <<= 1)
++	{
++	    if (i & rtm_aux->rtm_addrs)
++	    {
++		sa = (struct sockaddr *)cp;
++		if (i == RTA_GATEWAY )
++		    gate = sa;
++		else if (i == RTA_IFP)
++		    ifp = sa;
++		ADVANCE(cp, sa);
++	    }
++	}
++    }
++    else
++      goto done;
++
++    /* get gateway addr and interface name */
++    if (gate != NULL )
++    {
++	struct sockaddr_in6 * s6 = (struct sockaddr_in6 *)gate;
++	struct in6_addr gw = s6->sin6_addr;
++
++#ifndef TARGET_SOLARIS
++	/* You do not really want to know... from FreeBSD's route.c
++	 * (KAME encodes the 16 bit scope_id in s6_addr[2] + [3],
++         * but for a correct link-local address these must be :0000: )
++	 */
++	if ( gate->sa_len == sizeof(struct sockaddr_in6) &&
++	     IN6_IS_ADDR_LINKLOCAL(&gw) )
++        {
++	    gw.s6_addr[2] = gw.s6_addr[3] = 0;
++	}
++
++	if ( gate->sa_len != sizeof(struct sockaddr_in6) ||
++	     IN6_IS_ADDR_UNSPECIFIED(&gw) )
++	{
++	    rgi6->flags |= RGI_ON_LINK;
++	}
++	else
++#endif
++
++	rgi6->gateway.addr_ipv6 = gw;
++	rgi6->flags |= RGI_ADDR_DEFINED;
++
++	if (ifp)
++	{
++	    /* get interface name */
++	    const struct sockaddr_dl *adl = (struct sockaddr_dl *) ifp;
++	    if (adl->sdl_nlen && adl->sdl_nlen < sizeof(rgi6->iface))
++	    {
++		memcpy (rgi6->iface, adl->sdl_data, adl->sdl_nlen);
++		rgi6->flags |= RGI_IFACE_DEFINED;
++	    }
++	}
++    }
++
++  done:
++    if (sockfd >= 0)
++	close(sockfd);
+ }
  
-diff --git a/src/openvpn/route.h b/src/openvpn/route.h
-index 5ab5f98..95cf99f 100644
---- a/src/openvpn/route.h
-+++ b/src/openvpn/route.h
-@@ -300,7 +300,11 @@ void setenv_routes_ipv6 (struct env_set *es, const struct route_ipv6_list *rl6);
- bool is_special_addr (const char *addr_str);
- 
- void get_default_gateway (struct route_gateway_info *rgi);
--void print_default_gateway(const int msglevel, const struct route_gateway_info *rgi);
-+void get_default_gateway_ipv6 (struct route_ipv6_gateway_info *rgi,
-+				struct in6_addr *dest);
-+void print_default_gateway(const int msglevel,
-+                           const struct route_gateway_info *rgi,
-+                           const struct route_ipv6_gateway_info *rgi6);
- 
- /*
-  * Test if addr is reachable via a local interface (return ILA_LOCAL),
+ #undef max
 -- 
 2.3.6
 
