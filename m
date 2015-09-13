@@ -1,16 +1,16 @@
-Date: Sun, 13 Sep 2015 14:27:26 +0200
+Date: Sun, 13 Sep 2015 14:31:07 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20150913122726.GI34798@...1296...>
+Message-ID: <20150913123107.GJ34798@...1296...>
 References: <1441985627-14822-1-git-send-email-gert@...1296...>
-	<1441985627-14822-7-git-send-email-gert@...1296...>
-	<55F54134.1010902@...1227...>
+	<1441985627-14822-5-git-send-email-gert@...1296...>
+	<55F54320.5070206@...1227...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="CPQPFrYXiKmg9EuQ"
+	protocol="application/pgp-signature"; boundary="SDQiEKxzCZ35UpgS"
 Content-Disposition: inline
-In-Reply-To: <55F54134.1010902@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH 06/10] Implement handling of overlapping
- IPv6 routes with IPv6 remote VPN server address
+In-Reply-To: <55F54320.5070206@...1227...>
+Subject: Re: [Openvpn-devel] [PATCH 04/10] Create basic infrastructure for
+ IPv6 default gateway handling / redirection.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,43 +22,28 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---CPQPFrYXiKmg9EuQ
+--SDQiEKxzCZ35UpgS
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Sun, Sep 13, 2015 at 11:26:12AM +0200, Arne Schwabe wrote:
-> I think we may need an (explicit) opt out of the mechanism. Currently
-> the code that inserts the IPv6 host route will always run.
+On Sun, Sep 13, 2015 at 11:34:24AM +0200, Arne Schwabe wrote:
+> > - consequently, --get-default-gateway has an optional parameter now, the
+> >   IPv6 address to look up (for debugging)
+>=20
+> We should document this.
+>=20
+> ACK.
 
-It will only insert the host route if you connect over IPv6, and you=20
-try to install IPv6 routes that overlap with the server address=20
-(need_remote_ipv6_route=3Dtrue in init_route_ipv6_list()).  If there=20
-is no overlap, or you connect over IPv4, it won't do anything (just=20
-re-tested to ensure that I did not forget the "we don't need this now"=20
-case :-) )
+Yes, right you are.  I'll add --show-gateway to openvpn.8 - right now it
+seems to be totally undocumented, with or without the option :-)
 
-That it auto-activates is intentional - with IPv4, if you do not set=20
---redirect-private, and have overlapping pushed routes with the VPN server=
-=20
-address, it will silently fail due to recursive routing (unless you
-have a VPN API to do the right thing).  So I wanted this to do the=20
-right thing automatically on the other platforms as well...
-
-But I can be convinced to add an opt-out switch - what use case do you
-have in mind where this would be needed?  In some cases, the logic is=20
-not actually *necessary* (if you have a more-specific route for the VPN=20
-server than what is pushed), but it won't do *harm* in that case either=20
-(tested with /64 routes and pushing /32).
-
-
-(In any case, thanks for reviewing the first few patches in the set and
-the feedback)
+(The commit message is also not correct here, as the option is called=20
+"--show-gateway" - to be fixed on commit)
 
 gert
-
 --=20
 USENET is *not* the non-clickable part of WWW!
                                                            //www.muc.de/~ge=
@@ -66,18 +51,18 @@ rt/
 Gert Doering - Munich, Germany                             gert@...1296...
 fax: +49-89-35655025                        gert@...1297...
 
---CPQPFrYXiKmg9EuQ
+--SDQiEKxzCZ35UpgS
 Content-Type: application/pgp-signature
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1
 
-iQCVAwUBVfVrrakuBuNlUUl1AQK3egQAiWkGpoVu5N8OmAg1K+YAq42JK0cdQXEN
-lcERl3FsyStwSGvA7z5/9B0V2Tod6BNPiWtPmj434+V/PO3RvvIT9WI1w0Ptnzvt
-UsLI/mg3Akd5Bmimc55GOuBAunfSnUP/Ozv9QdspCWGwZsz5lomRX3Tl6kSorShS
-5w7b8S+nsHY=
-=jk9G
+iQCVAwUBVfVsiqkuBuNlUUl1AQJTQwP8CASMqVFjzdcPq9Tfdr7o8926i4ADPDlQ
+OKK0297KjM+9Ae5hSN/FXoGotWHRz2krfnTKoR2yY93e2mAz4Tx7wHVEX6+i9YTO
+hoAvaOC8SQcmNJQa0ESzf3Q57CkxWzg1vOC8xXVGykHg0oVHL+vFqZLXjHDeRRBj
+1/dmaBeVA2A=
+=qOow
 -----END PGP SIGNATURE-----
 
---CPQPFrYXiKmg9EuQ--
+--SDQiEKxzCZ35UpgS--
 
