@@ -1,5 +1,5 @@
-Date: Tue, 15 Sep 2015 13:04:33 +0200 (CEST)
-Message-Id: <201509151104.t8FB4XRQ079032@...2054...>
+Date: Tue, 15 Sep 2015 13:05:47 +0200 (CEST)
+Message-Id: <201509151105.t8FB5lGC079049@...2054...>
 From: Gert Doering <gert@...1296...>
 In-Reply-To: <1442309019-7586-4-git-send-email-arne@...1227...>
 References: <1442309019-7586-4-git-send-email-arne@...1227...>
@@ -17,6 +17,15 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
+
+Argh, too fast...
+
+"ACK!"
+
+And I expect we'll need a similar patch for the IPv6 routing bits, as soon 
+as they are fully merged - the code is not needed on Android, and the best
+thing it can do is "get in the way", so #ifndef is good :)
+
 
 Your patch has been applied to the master branch.
 
