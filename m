@@ -1,12 +1,10 @@
-References: <1441985627-14822-1-git-send-email-gert@...1296...>
-	<1441985627-14822-7-git-send-email-gert@...1296...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <55F7FABF.6040701@...1227...>
-Date: Tue, 15 Sep 2015 12:02:23 +0100
-MIME-Version: 1.0
-In-Reply-To: <1441985627-14822-7-git-send-email-gert@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH 06/10] Implement handling of overlapping
- IPv6 routes with IPv6 remote VPN server address
+Date: Tue, 15 Sep 2015 13:04:33 +0200 (CEST)
+Message-Id: <201509151104.t8FB4XRQ079032@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <1442309019-7586-4-git-send-email-arne@...1227...>
+References: <1442309019-7586-4-git-send-email-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Don't redirect the gateway on
+	Android even if requested
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,30 +13,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
+
+Your patch has been applied to the master branch.
+
+(I've taken the liberty to replace the UTF-8 apostroph in "Don't" with
+a 7 bit one... still living in ISO8859-1 land and this messes up my 
+terminals :) )
+
+commit ad80d6779488e77bc81f395f61d4052184f9a589
+
+Author: Arne Schwabe
+Date:   Tue Sep 15 11:23:34 2015 +0200
+
+     Don?t redirect the gateway on Android even if requested
+
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1442309019-7586-4-git-send-email-arne@...1227...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/10113
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
-+ * "good enough")
-+ */
-+static bool
-+route_ipv6_match_host( const struct route_ipv6 *r6,
-+		       const struct in6_addr *host )
-+{
-+    int bits = r6->netbits;
-+    int i;
-+    unsigned int mask;
-+
-+    if ( bits<0 || bits>128 )
-+	return false;
+--
+kind regards,
 
-
-bits should be unisgned int since r6->netbits is unsigned int and also
-drop the bits <0
-
-Rest looks fine to me. So ACK.
-
-Arne
+Gert Doering
 
 
