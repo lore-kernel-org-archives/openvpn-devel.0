@@ -1,10 +1,12 @@
-Date: Tue, 15 Sep 2015 12:50:26 +0200 (CEST)
-Message-Id: <201509151050.t8FAoQrG078943@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <1442309019-7586-2-git-send-email-arne@...1227...>
-References: <1442309019-7586-2-git-send-email-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Add support for requesting the
-	fd again to rebind to the next interface.
+References: <1441985627-14822-1-git-send-email-gert@...1296...>
+	<1441985627-14822-7-git-send-email-gert@...1296...>
+From: Arne Schwabe <arne@...1227...>
+Message-ID: <55F7FABF.6040701@...1227...>
+Date: Tue, 15 Sep 2015 12:02:23 +0100
+MIME-Version: 1.0
+In-Reply-To: <1441985627-14822-7-git-send-email-gert@...1296...>
+Subject: Re: [Openvpn-devel] [PATCH 06/10] Implement handling of overlapping
+ IPv6 routes with IPv6 remote VPN server address
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,34 +15,30 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
-
-ACK.
-
-As discussed, I've changed the two occurances of "managmenet" into 
-"management".  Otherwise, unchanged.
-
-Your patch has been applied to the master branch.
-
-commit 300039789b23216f1733890063cef3120722f4cf
-
-Author: Arne Schwabe
-Date:   Tue Sep 15 11:23:32 2015 +0200
-
-     Add support for requesting the fd again to rebind to the next interface.
-
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1442309019-7586-2-git-send-email-arne@...1227...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/10110
-     Signed-off-by: Gert Doering <gert@...1296...>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
 
 
---
-kind regards,
++ * "good enough")
++ */
++static bool
++route_ipv6_match_host( const struct route_ipv6 *r6,
++		       const struct in6_addr *host )
++{
++    int bits = r6->netbits;
++    int i;
++    unsigned int mask;
++
++    if ( bits<0 || bits>128 )
++	return false;
 
-Gert Doering
+
+bits should be unisgned int since r6->netbits is unsigned int and also
+drop the bits <0
+
+Rest looks fine to me. So ACK.
+
+Arne
 
 
