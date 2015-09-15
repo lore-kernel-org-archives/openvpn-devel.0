@@ -1,15 +1,8 @@
-Date: Tue, 15 Sep 2015 12:13:55 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20150915101355.GN34798@...1296...>
-References: <1442309019-7586-1-git-send-email-arne@...1227...>
-	<1442309019-7586-2-git-send-email-arne@...1227...>
+From: Arne Schwabe <arne@...1227...>
+Date: Tue, 15 Sep 2015 11:23:31 +0200
+Message-Id: <1442309019-7586-1-git-send-email-arne@...1227...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="JjpRhe3EFs1LrwYV"
-Content-Disposition: inline
-In-Reply-To: <1442309019-7586-2-git-send-email-arne@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH 1/8] Add support for requesting the fd
- again to rebind to the next interface.
+Subject: [Openvpn-devel] [PATCH 0/8] Miscallenous patches for OpenVPN
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,64 +11,58 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---JjpRhe3EFs1LrwYV
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Submission of multiple patches that are still in my OpenVPN for Android
+"fork" of OpenVPN for Android.
 
-Hi,
+Some of the patches are specific for the Android version (1, 3-6)
 
-On Tue, Sep 15, 2015 at 11:23:32AM +0200, Arne Schwabe wrote:
-> This not done via android_control since calling management from managemen=
-t leads to an infinitive loop
+2 and 7 are cleanup patches (remove unused function and remove an Inline).
 
-I'm all willing to ACK it, but...
+The only major patch is the timeout patch. (8). We talked about changing it
+this way in the Munich meeting.
 
-> +#ifdef TARGET_ANDROID
-> +int
-> +managmenet_callback_network_change (void *arg)
-       ^^^
-... the typo police is not letting me.
+Arne Schwabe (8):
+  Add support for requesting the fd again to rebind to the next
+    interface.
+  Remove #ifdefs for client nat support.
+  Don’t redirect the gateway on Android even if requested
+  Use pseudo gw as default gw on Android as a workaround for not being
+    able to read /proc/net/route
+  Fix loglevel of protect socket message
+  Extend network-change command to allow reprotecting on the same
+    network (for short connection losses)
+  Remove unused function h_errno_msg
+  Remove http-proxy-timeout, socks timeout and set default of
+    server-poll-timeout to 120s
 
-> @@ -3173,6 +3204,9 @@ init_management_callback_p2p (struct context *c)
->        cb.show_net =3D management_show_net_callback;
->        cb.proxy_cmd =3D management_callback_proxy_cmd;
->        cb.remote_cmd =3D management_callback_remote_cmd;
-> +#ifdef TARGET_ANDROID
-> +      cb.network_change =3D managmenet_callback_network_change;
-> +#endif
+ doc/openvpn.8                | 33 ++++++----------------
+ src/openvpn/clinat.c         |  4 ---
+ src/openvpn/clinat.h         |  2 +-
+ src/openvpn/forward-inline.h |  2 +-
+ src/openvpn/forward.c        | 19 +++++++++----
+ src/openvpn/forward.h        |  2 +-
+ src/openvpn/init.c           | 67 +++++++++++++++++++++++++++++++++-----------
+ src/openvpn/interval.h       |  9 ++++++
+ src/openvpn/manage.c         | 31 ++++++++++++++++++++
+ src/openvpn/manage.h         |  3 ++
+ src/openvpn/multi.c          |  2 --
+ src/openvpn/openvpn.h        |  8 +++---
+ src/openvpn/options.c        | 56 ++++++------------------------------
+ src/openvpn/options.h        | 10 -------
+ src/openvpn/proxy.c          | 22 +++++++++------
+ src/openvpn/proxy.h          |  2 +-
+ src/openvpn/push.c           |  2 --
+ src/openvpn/route.c          | 18 ++++++++++++
+ src/openvpn/socket.c         | 31 ++++++--------------
+ src/openvpn/socket.h         |  7 +++--
+ src/openvpn/syshead.h        |  5 ----
+ 21 files changed, 177 insertions(+), 158 deletions(-)
 
-As the typo is here as well, it *works*, but we should still fix it :)
+-- 
+2.3.2 (Apple Git-55)
 
-All the rest looks good, as in "only touches Android anyway, but even
-there, pointer accesses are checked, in line with the rest, etc."
-
-Shall I just fix the typo, ACK and commit, or do you want to re-send?
-
-gert
-
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---JjpRhe3EFs1LrwYV
-Content-Type: application/pgp-signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQCVAwUBVffvYqkuBuNlUUl1AQKg7wP+KgEJ8xJe6lYikKaQpCwqDQxnkfUe1r82
-TI0QpQU3NN43FiJEXLRySeVlDAGCFLDUoXnimoO33lWA1YkhWmDqNQ6MNtUdio7a
-1YMXnGawIFpdTQc4DyzGJrG+W55Bml8OOp3NC0VHBjcDnKrWA/sh7tHmCRKCDFMm
-sro0y3ejUA0=
-=XHP7
------END PGP SIGNATURE-----
-
---JjpRhe3EFs1LrwYV--
 
