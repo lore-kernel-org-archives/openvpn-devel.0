@@ -1,10 +1,10 @@
-Date: Tue, 15 Sep 2015 13:27:50 +0200 (CEST)
-Message-Id: <201509151127.t8FBRoIb079211@...2054...>
+Date: Tue, 15 Sep 2015 13:34:35 +0200 (CEST)
+Message-Id: <201509151134.t8FBYZLV079264@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1442309019-7586-5-git-send-email-arne@...1227...>
-References: <1442309019-7586-5-git-send-email-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Use pseudo gw as default gw on
-	Android as a workaround for not being able to read /proc/net/route
+In-Reply-To: <1442309019-7586-3-git-send-email-arne@...1227...>
+References: <1442309019-7586-3-git-send-email-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Remove #ifdefs for client nat
+	support.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,24 +18,24 @@ Content-Transfer-Encoding: 8bit
 To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-ACK.  To be expected :-) - and why bother creating error messages
-when the VPN API does not need this information anyway.
+ACK.  I can't remember when we discussed this (some IRC meeting), but as
+this is always enabled anyway, and all the #ifdefs are really hurting the
+eyes, away with it :-)
 
-I wondered why the part after "   /* scan adapter list */" is still
-active, but this is about "which locally connected networks exist?"
-(--redirect-gateway block-local), so that's still useful.
+(I admit I have never used it and have no idea what nice stuff one can
+do with it... should set up a test case for it!)
 
 Your patch has been applied to the master branch.
 
-commit 429f0560e3a908ffa00f18ba1a81af03ba05751e
+commit 8db23a57c878abd5b01c784c7db570176de555ef
 Author: Arne Schwabe
-Date:   Tue Sep 15 11:23:35 2015 +0200
+Date:   Tue Sep 15 11:23:33 2015 +0200
 
-     Use pseudo gw as default gw on Android as a workaround for not being able to read /proc/net/route
+     Remove #ifdefs for client nat support.
 
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1442309019-7586-5-git-send-email-arne@...1227...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/10111
+     Message-Id: <1442309019-7586-3-git-send-email-arne@...1227...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/10109
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
