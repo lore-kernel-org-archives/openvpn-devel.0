@@ -1,9 +1,10 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Tue, 15 Sep 2015 11:23:33 +0200
-Message-Id: <1442309019-7586-3-git-send-email-arne@...1227...>
+Date: Tue, 15 Sep 2015 11:23:35 +0200
+Message-Id: <1442309019-7586-5-git-send-email-arne@...1227...>
 In-Reply-To: <1442309019-7586-1-git-send-email-arne@...1227...>
 References: <1442309019-7586-1-git-send-email-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH 2/8] Remove #ifdefs for client nat support.
+Subject: [Openvpn-devel] [PATCH 4/8] Use pseudo gw as default gw on Android
+	as a workaround for not being able to read /proc/net/route
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,299 +17,42 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-The client-nat feature was always unconditionally enabled
 ---
- src/openvpn/clinat.c  |  4 ----
- src/openvpn/clinat.h  |  2 +-
- src/openvpn/forward.c | 12 +++++++-----
- src/openvpn/multi.c   |  2 --
- src/openvpn/openvpn.h |  2 --
- src/openvpn/options.c | 18 +-----------------
- src/openvpn/options.h |  7 -------
- src/openvpn/push.c    |  2 --
- src/openvpn/syshead.h |  5 -----
- 9 files changed, 9 insertions(+), 45 deletions(-)
+ src/openvpn/route.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
-diff --git a/src/openvpn/clinat.c b/src/openvpn/clinat.c
-index af75fc9..ddefe12 100644
---- a/src/openvpn/clinat.c
-+++ b/src/openvpn/clinat.c
-@@ -30,8 +30,6 @@
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index 03f8332..56cce07 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -2474,6 +2474,7 @@ get_default_gateway (struct route_gateway_info *rgi)
  
- #include "syshead.h"
+   CLEAR(*rgi);
  
--#if defined(ENABLE_CLIENT_NAT)
--
- #include "clinat.h"
- #include "proto.h"
- #include "socket.h"
-@@ -265,5 +263,3 @@ client_nat_transform (const struct client_nat_option_list *list,
- 	}
-     }
- }
--
--#endif
-diff --git a/src/openvpn/clinat.h b/src/openvpn/clinat.h
-index d55a727..a5779e1 100644
---- a/src/openvpn/clinat.h
-+++ b/src/openvpn/clinat.h
-@@ -22,7 +22,7 @@
-  *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-  */
++#ifndef TARGET_ANDROID
+   /* get default gateway IP addr */
+   {
+     FILE *fp = fopen ("/proc/net/route", "r");
+@@ -2530,6 +2531,19 @@ get_default_gateway (struct route_gateway_info *rgi)
+ 	  }
+       }
+   }
++#else
++  /* Android, set some pseudo GW, addr is in host byte order,
++   * Determining the default GW on Android 5.0+ is non trivial
++   * and serves almost no purpose since OpenVPN only uses the
++   * default GW address to add routes for networks that should
++   * NOT be routed over the VPN. Using a well known address
++   * (127.'d'.'g'.'w') for the default GW make detecting
++   * these routes easier from the controlling app.
++   */
++  rgi->gateway.addr = 127 << 24 | 'd' << 16 | 'g' << 8 | 'w';
++  rgi->flags |= RGI_ADDR_DEFINED;
++  strcpy(best_name, "android-gw");
++#endif
  
--#if !defined(CLINAT_H) && defined(ENABLE_CLIENT_NAT)
-+#if !defined(CLINAT_H)
- #define CLINAT_H
- 
- #include "buffer.h"
-diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index 6d459d2..92e443a 100644
---- a/src/openvpn/forward.c
-+++ b/src/openvpn/forward.c
-@@ -1029,6 +1029,8 @@ process_ip_header (struct context *c, unsigned int flags, struct buffer *buf)
-   if (!c->options.passtos)
-     flags &= ~PIPV4_PASSTOS;
- #endif
-+  if (!c->options.client_nat)
-+    flags &= ~PIPV4_CLIENT_NAT;
-   if (!c->options.route_gateway_via_dhcp)
-     flags &= ~PIPV4_EXTRACT_DHCP_ROUTER;
- 
-@@ -1038,11 +1040,13 @@ process_ip_header (struct context *c, unsigned int flags, struct buffer *buf)
-        * The --passtos and --mssfix options require
-        * us to examine the IPv4 header.
-        */
-+
-+      if (flags & (PIP_MSSFIX
- #if PASSTOS_CAPABILITY
--      if (flags & (PIPV4_PASSTOS|PIP_MSSFIX))
--#else
--      if (flags & PIP_MSSFIX)
-+	  | PIPV4_PASSTOS
- #endif
-+	  | PIPV4_CLIENT_NAT
-+	  ))
- 	{
- 	  struct buffer ipbuf = *buf;
- 	  if (is_ipv4 (TUNNEL_TYPE (c->c1.tuntap), &ipbuf))
-@@ -1057,14 +1061,12 @@ process_ip_header (struct context *c, unsigned int flags, struct buffer *buf)
- 	      if (flags & PIP_MSSFIX)
- 		mss_fixup_ipv4 (&ipbuf, MTU_TO_MSS (TUN_MTU_SIZE_DYNAMIC (&c->c2.frame)));
- 
--#ifdef ENABLE_CLIENT_NAT
- 	      /* possibly do NAT on packet */
- 	      if ((flags & PIPV4_CLIENT_NAT) && c->options.client_nat)
- 		{
- 		  const int direction = (flags & PIPV4_OUTGOING) ? CN_INCOMING : CN_OUTGOING;
- 		  client_nat_transform (c->options.client_nat, &ipbuf, direction);
- 		}
--#endif
- 	      /* possibly extract a DHCP router message */
- 	      if (flags & PIPV4_EXTRACT_DHCP_ROUTER)
- 		{
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index b0f66ca..902c4dc 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -1311,9 +1311,7 @@ multi_select_virtual_addr (struct multi_context *m, struct multi_instance *mi)
-       mi->context.c2.push_ifconfig_defined = true;
-       mi->context.c2.push_ifconfig_local = mi->context.options.push_ifconfig_local;
-       mi->context.c2.push_ifconfig_remote_netmask = mi->context.options.push_ifconfig_remote_netmask;
--#ifdef ENABLE_CLIENT_NAT
-       mi->context.c2.push_ifconfig_local_alias = mi->context.options.push_ifconfig_local_alias;
--#endif
- 
-       /* the current implementation does not allow "static IPv4, pool IPv6",
-        * (see below) so issue a warning if that happens - don't break the
-diff --git a/src/openvpn/openvpn.h b/src/openvpn/openvpn.h
-index 1c2a80b..ef22269 100644
---- a/src/openvpn/openvpn.h
-+++ b/src/openvpn/openvpn.h
-@@ -440,9 +440,7 @@ struct context_2
-   time_t sent_push_reply_expiry;
-   in_addr_t push_ifconfig_local;
-   in_addr_t push_ifconfig_remote_netmask;
--#ifdef ENABLE_CLIENT_NAT
-   in_addr_t push_ifconfig_local_alias;
--#endif
- 
-   bool            push_ifconfig_ipv6_defined;
-   struct in6_addr push_ifconfig_ipv6_local;
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index caf1394..d2fd5ff 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -225,9 +225,7 @@ static const char usage_message[] =
-   "                  Add 'bypass-dns' flag to similarly bypass tunnel for DNS.\n"
-   "--redirect-private [flags]: Like --redirect-gateway, but omit actually changing\n"
-   "                  the default gateway.  Useful when pushing private subnets.\n"
--#ifdef ENABLE_CLIENT_NAT
-   "--client-nat snat|dnat network netmask alias : on client add 1-to-1 NAT rule.\n"
--#endif
- #ifdef ENABLE_PUSH_PEER_INFO
-   "--push-peer-info : (client only) push client info to server.\n"
- #endif
-@@ -1299,9 +1297,7 @@ options_detach (struct options *o)
- {
-   gc_detach (&o->gc);
-   o->routes = NULL;
--#ifdef ENABLE_CLIENT_NAT
-   o->client_nat = NULL;
--#endif
- #if P2MP_SERVER
-   clone_push_list(o);
- #endif
-@@ -1321,14 +1317,12 @@ rol6_check_alloc (struct options *options)
-     options->routes_ipv6 = new_route_ipv6_option_list (&options->gc);
- }
- 
--#ifdef ENABLE_CLIENT_NAT
- static void
- cnol_check_alloc (struct options *options)
- {
-   if (!options->client_nat)
-     options->client_nat = new_client_nat_list (&options->gc);
- }
--#endif
- 
- #ifndef ENABLE_SMALL
- static void
-@@ -1524,11 +1518,9 @@ show_settings (const struct options *o)
-   SHOW_BOOL (allow_pull_fqdn);
-   if (o->routes)
-     print_route_options (o->routes, D_SHOW_PARMS);
--  
--#ifdef ENABLE_CLIENT_NAT
-+
-   if (o->client_nat)
-     print_client_nat_list(o->client_nat, D_SHOW_PARMS);
--#endif
- 
- #ifdef ENABLE_MANAGEMENT
-   SHOW_STR (management_addr);
-@@ -2821,13 +2813,11 @@ pre_pull_save (struct options *o)
- 	  o->pre_pull->routes_ipv6 = clone_route_ipv6_option_list(o->routes_ipv6, &o->gc);
- 	  o->pre_pull->routes_ipv6_defined = true;
- 	}
--#ifdef ENABLE_CLIENT_NAT
-       if (o->client_nat)
- 	{
- 	  o->pre_pull->client_nat = clone_client_nat_option_list(o->client_nat, &o->gc);
- 	  o->pre_pull->client_nat_defined = true;
- 	}
--#endif
-     }
- }
- 
-@@ -2857,7 +2847,6 @@ pre_pull_restore (struct options *o, struct gc_arena *gc)
-       else
- 	o->routes_ipv6 = NULL;
- 
--#ifdef ENABLE_CLIENT_NAT
-       if (pp->client_nat_defined)
- 	{
- 	  cnol_check_alloc (o);
-@@ -2865,7 +2854,6 @@ pre_pull_restore (struct options *o, struct gc_arena *gc)
- 	}
-       else
- 	o->client_nat = NULL;
--#endif
- 
-       o->foreign_option_index = pp->foreign_option_index;
-     }
-@@ -5221,14 +5209,12 @@ add_option (struct options *options,
-       VERIFY_PERMISSION (OPT_P_PERSIST_IP);
-       options->persist_remote_ip = true;
-     }
--#ifdef ENABLE_CLIENT_NAT
-   else if (streq (p[0], "client-nat") && p[1] && p[2] && p[3] && p[4] && !p[5])
-     {
-       VERIFY_PERMISSION (OPT_P_ROUTE);
-       cnol_check_alloc (options);
-       add_client_nat_to_option_list(options->client_nat, p[1], p[2], p[3], p[4], msglevel);
-     }
--#endif
-   else if (streq (p[0], "route") && p[1] && !p[5])
-     {
-       VERIFY_PERMISSION (OPT_P_ROUTE);
-@@ -5814,10 +5800,8 @@ add_option (struct options *options,
- 	  options->push_ifconfig_defined = true;
- 	  options->push_ifconfig_local = local;
- 	  options->push_ifconfig_remote_netmask = remote_netmask;
--#ifdef ENABLE_CLIENT_NAT
- 	  if (p[3])
- 	    options->push_ifconfig_local_alias = getaddr (GETADDR_HOST_ORDER|GETADDR_RESOLVE, p[3], 0, NULL, NULL);
--#endif
- 	}
-       else
- 	{
-diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-index 25b9e3c..abec83f 100644
---- a/src/openvpn/options.h
-+++ b/src/openvpn/options.h
-@@ -71,10 +71,8 @@ struct options_pre_pull
-   bool routes_ipv6_defined;
-   struct route_ipv6_option_list *routes_ipv6;
- 
--#ifdef ENABLE_CLIENT_NAT
-   bool client_nat_defined;
-   struct client_nat_option_list *client_nat;
--#endif
- 
-   int foreign_option_index;
- };
-@@ -346,10 +344,7 @@ struct options
-   bool route_nopull;
-   bool route_gateway_via_dhcp;
-   bool allow_pull_fqdn; /* as a client, allow server to push a FQDN for certain parameters */
--
--#ifdef ENABLE_CLIENT_NAT
-   struct client_nat_option_list *client_nat;
--#endif
- 
- #ifdef ENABLE_OCC
-   /* Enable options consistency check between peers */
-@@ -431,9 +426,7 @@ struct options
-   bool push_ifconfig_defined;
-   in_addr_t push_ifconfig_local;
-   in_addr_t push_ifconfig_remote_netmask;
--#ifdef ENABLE_CLIENT_NAT
-   in_addr_t push_ifconfig_local_alias;
--#endif
-   bool push_ifconfig_constraint_defined;
-   in_addr_t push_ifconfig_constraint_network;
-   in_addr_t push_ifconfig_constraint_netmask;
-diff --git a/src/openvpn/push.c b/src/openvpn/push.c
-index 8706166..b9d0c4c 100644
---- a/src/openvpn/push.c
-+++ b/src/openvpn/push.c
-@@ -294,10 +294,8 @@ send_push_reply (struct context *c)
-   if (c->c2.push_ifconfig_defined && c->c2.push_ifconfig_local && c->c2.push_ifconfig_remote_netmask)
-     {
-       in_addr_t ifconfig_local = c->c2.push_ifconfig_local;
--#ifdef ENABLE_CLIENT_NAT
-       if (c->c2.push_ifconfig_local_alias)
- 	ifconfig_local = c->c2.push_ifconfig_local_alias;
--#endif
-       buf_printf (&buf, ",ifconfig %s %s",
- 		  print_in_addr_t (ifconfig_local, 0, &gc),
- 		  print_in_addr_t (c->c2.push_ifconfig_remote_netmask, 0, &gc));
-diff --git a/src/openvpn/syshead.h b/src/openvpn/syshead.h
-index ff0bf41..4bebb25 100644
---- a/src/openvpn/syshead.h
-+++ b/src/openvpn/syshead.h
-@@ -702,11 +702,6 @@ socket_defined (const socket_descriptor_t sd)
- #endif
- 
- /*
-- * Do we support internal client-side NAT?
-- */
--#define ENABLE_CLIENT_NAT
--
--/*
-  * Compression support
-  */
- #if defined(ENABLE_SNAPPY) || defined(ENABLE_LZO) || defined(ENABLE_LZ4) || \
+   /* scan adapter list */
+   if (rgi->flags & RGI_ADDR_DEFINED)
 -- 
 2.3.2 (Apple Git-55)
 
