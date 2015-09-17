@@ -1,12 +1,8 @@
 From: Arne Schwabe <arne@...1227...>
-References: <1441985627-14822-1-git-send-email-gert@...1296...>
-	<1441985627-14822-9-git-send-email-gert@...1296...>
-Message-ID: <55FA8799.6000205@...1227...>
-Date: Thu, 17 Sep 2015 10:27:53 +0100
-MIME-Version: 1.0
-In-Reply-To: <1441985627-14822-9-git-send-email-gert@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH 08/10] get_default_gateway_ipv6(): *BSD
- / MacOS / Solaris PF_ROUTE implementation
+Date: Thu, 17 Sep 2015 11:55:00 +0200
+Message-Id: <1442483700-8716-1-git-send-email-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH v2] Do not install a host route for the VPN
+	on Android
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,26 +11,41 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
+Routing loops are avoided using the VPNService API protect API
+---
+ src/openvpn/route.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index 3959abd..0142c58 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -768,6 +768,10 @@ init_route_ipv6_list (struct route_ipv6_list *rl6,
+             r6->next = rl6->routes_ipv6;
+             rl6->routes_ipv6 = r6;
+ 
++#ifndef TARGET_ANDROID
++	    /* On Android the VPNService protect function call will take of
++	       avoiding routing loops, so ignore this part and let
++	       remote_host_ipv6 always evaluate to false */
+ 	    if ( remote_host_ipv6 &&
+ 		  route_ipv6_match_host( r6, remote_host_ipv6 ) )
+ 	      {
+@@ -776,7 +780,8 @@ init_route_ipv6_list (struct route_ipv6_list *rl6,
+ 			print_in6_addr (r6->network, 0, &gc), r6->netbits,
+ 			print_in6_addr (*remote_host_ipv6, 0, &gc));
+ 	      }
+-          }
++#endif
++	  }
+       }
+   }
+ 
+-- 
+2.3.2 (Apple Git-55)
 
-Am 11.09.15 um 16:33 schrieb Gert Doering:
-> As for IPv4, a common implementation for all (supported) BSD families
-> and Solaris.  Supporting the latter requires separate implementations
-> for IPv4 and IPv6, unfortunately, so it's quite a bit of duplicate
-> code.
->
-> Further, extend add_route_ipv6() and delete_route_ipv6() to handle
-> link-local gateway addresses that require "gateway + interface" in
-> scoped notation ("fe80::1%em0").
->
-> Tested on FreeBSD 7.4/amd64, 9.3/sparc64, 10.0/amd64, NetBSD 5.1/amd64,
-> OpenBSD 4.9/i386, MacOS X 10.5/32 and 10.10/64 and OpenSolaris 10.11/i386.
->
-Code looks good and tested on OS X 10.10.5
-
-Arne
 
