@@ -1,14 +1,14 @@
-From: "Morris, Russell" <rmorris@...1315...>
-Date: Thu, 17 Sep 2015 16:53:02 +0000
-Message-ID: <SN1PR08MB13915925D95194CC3366634DB95A0@...2065...>
-References: <SN1PR08MB13915962F96B3A4CF8329954B95A0@...2065...>
-	<55FAEE8B.7070801@...1227...>
-In-Reply-To: <55FAEE8B.7070801@...1227...>
-Content-Language: en-US
-Content-Type: multipart/alternative;
-	boundary="_000_SN1PR08MB13915925D95194CC3366634DB95A0SN1PR08MB1391namp_"
+References: <SN1PR08MB13914E4EC23A602C38DBBA94B95A0@...2065...>
+	<55FAEE58.9020202@...1400...>
+	<SN1PR08MB13910492A84C58EFEBC8F662B95A0@...2065...>
+From: Arne Schwabe <arne@...1227...>
+Message-ID: <55FAF40C.7050108@...1227...>
+Date: Thu, 17 Sep 2015 18:10:36 +0100
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] Management Interface, Read from File
+In-Reply-To: <SN1PR08MB13910492A84C58EFEBC8F662B95A0@...2065...>
+Content-Type: multipart/alternative;
+	boundary="------------090701020707010703020409"
+Subject: Re: [Openvpn-devel] Hold Release / Proxy Sequence
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,53 +17,62 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: "Morris, Russell" <rmorris@...1315...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---_000_SN1PR08MB13915925D95194CC3366634DB95A0SN1PR08MB1391namp_
-Content-Type: text/plain; charset="us-ascii"
+This is a multi-part message in MIME format.
+--------------090701020707010703020409
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
 
-Hi,
-
-Only because I'm struggling to send commands fast enough to get a connectio=
-n up (related to my struggles with setting the proxy).
-
-Thanks,
-... Russell
 
 
-From: Arne Schwabe [mailto:arne@...1227...]
-Sent: Thursday, September 17, 2015 11:47 AM
-To: Morris, Russell <rmorris@...1315...>; openvpn-devel@...1223...=
-et
-Subject: Re: [Openvpn-devel] Management Interface, Read from File
-
-
-Am 17.09.15 um 17:21 schrieb Morris, Russell:
-Hi,
-
-Is there any way to have the management interface take a list of commands f=
-rom a text / script file? That would be very helpful.
-
-
-That makes no sense though. I cannot think of a use case where this is usef=
-ul.
+Am 17.09.15 um 17:52 schrieb Morris, Russell:
+>
+> Hi,
+>
+> =20
+>
+> Nope =85 J. I don=92t want to =96 only because the proxy changes, dependi=
+ng
+> win where I am. So I detect and set it (i.e. it=92s dynamic), but if I=92m
+> too slow =85 L.
+>
+> =20
+>
+>
+Either you do managment-query-proxy or you set http-proxy in your config
+file. Even applications using the management interface do it this way.
+management-query-proxy is designed exactly for your usecase.
 
 Arne
 
---_000_SN1PR08MB13915925D95194CC3366634DB95A0SN1PR08MB1391namp_
-Content-Type: text/html; charset="us-ascii"
+--------------090701020707010703020409
+Content-Type: text/html; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
 
-<html xmlns:v=3D"urn:schemas-microsoft-com:vml" xmlns:o=3D"urn:schemas-micr=
-osoft-com:office:office" xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
-xmlns:m=3D"http://schemas.microsoft.com/office/2004/12/omml" xmlns=3D"http:=
-//www.w3.org/TR/REC-html40">
-<head>
-<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3Dus-ascii">
-<meta name=3D"Generator" content=3D"Microsoft Word 15 (filtered medium)">
-<style><!--
+<html>
+  <head>
+    <meta content=3D"text/html; charset=3Dwindows-1252"
+      http-equiv=3D"Content-Type">
+  </head>
+  <body bgcolor=3D"#FFFFFF" text=3D"#000000">
+    <br>
+    <br>
+    <div class=3D"moz-cite-prefix">Am 17.09.15 um 17:52 schrieb Morris,
+      Russell:<br>
+    </div>
+    <blockquote
+cite=3D"mid:SN1PR08MB13910492A84C58EFEBC8F662B95A0@...2065..."
+      type=3D"cite">
+      <meta http-equiv=3D"Content-Type" content=3D"text/html;
+        charset=3Dwindows-1252">
+      <meta name=3D"Generator" content=3D"Microsoft Word 15 (filtered
+        medium)">
+      <style><!--
 /* Font Definitions */
+@font-face
+	{font-family:Wingdings;
+	panose-1:5 0 0 0 0 0 0 0 0 0;}
 @font-face
 	{font-family:"Cambria Math";
 	panose-1:2 4 5 3 5 4 6 3 2 4;}
@@ -114,82 +123,43 @@ div.WordSection1
 <o:shapelayout v:ext=3D"edit">
 <o:idmap v:ext=3D"edit" data=3D"1" />
 </o:shapelayout></xml><![endif]-->
-</head>
-<body bgcolor=3D"white" lang=3D"EN-US" link=3D"#0563C1" vlink=3D"#954F72">
-<div class=3D"WordSection1">
-<p class=3D"MsoNormal"><span style=3D"font-size:11.0pt;font-family:&quot;Ca=
-libri&quot;,sans-serif;color:#1F497D">Hi,<o:p></o:p></span></p>
-<p class=3D"MsoNormal"><span style=3D"font-size:11.0pt;font-family:&quot;Ca=
-libri&quot;,sans-serif;color:#1F497D"><o:p>&nbsp;</o:p></span></p>
-<p class=3D"MsoNormal"><span style=3D"font-size:11.0pt;font-family:&quot;Ca=
-libri&quot;,sans-serif;color:#1F497D">Only because I&#8217;m struggling to =
-send commands fast enough to get a connection up (related to my struggles w=
-ith setting the proxy).<o:p></o:p></span></p>
-<p class=3D"MsoNormal"><span style=3D"font-size:11.0pt;font-family:&quot;Ca=
-libri&quot;,sans-serif;color:#1F497D"><o:p>&nbsp;</o:p></span></p>
-<p class=3D"MsoNormal"><span style=3D"font-size:11.0pt;font-family:&quot;Ca=
-libri&quot;,sans-serif;color:#1F497D">Thanks,<o:p></o:p></span></p>
-<p class=3D"MsoNormal"><span style=3D"font-size:11.0pt;font-family:&quot;Ca=
-libri&quot;,sans-serif;color:#1F497D">&#8230; Russell<o:p></o:p></span></p>
-<p class=3D"MsoNormal"><span style=3D"font-size:11.0pt;font-family:&quot;Ca=
-libri&quot;,sans-serif;color:#1F497D"><o:p>&nbsp;</o:p></span></p>
-<p class=3D"MsoNormal"><span style=3D"font-size:11.0pt;font-family:&quot;Ca=
-libri&quot;,sans-serif;color:#1F497D"><o:p>&nbsp;</o:p></span></p>
-<div>
-<div style=3D"border:none;border-top:solid #E1E1E1 1.0pt;padding:3.0pt 0in =
-0in 0in">
-<p class=3D"MsoNormal" style=3D"margin-left:.5in"><b><span style=3D"font-si=
-ze:11.0pt;font-family:&quot;Calibri&quot;,sans-serif;color:windowtext">From=
-:</span></b><span style=3D"font-size:11.0pt;font-family:&quot;Calibri&quot;=
-,sans-serif;color:windowtext"> Arne Schwabe [mailto:arne@...1227...]
-<br>
-<b>Sent:</b> Thursday, September 17, 2015 11:47 AM<br>
-<b>To:</b> Morris, Russell &lt;rmorris@...1315...&gt;; openvpn-devel@...1199...=
-sourceforge.net<br>
-<b>Subject:</b> Re: [Openvpn-devel] Management Interface, Read from File<o:=
-p></o:p></span></p>
-</div>
-</div>
-<p class=3D"MsoNormal" style=3D"margin-left:.5in"><o:p>&nbsp;</o:p></p>
-<p class=3D"MsoNormal" style=3D"mso-margin-top-alt:0in;margin-right:0in;mar=
-gin-bottom:12.0pt;margin-left:.5in">
-<o:p>&nbsp;</o:p></p>
-<div>
-<p class=3D"MsoNormal" style=3D"margin-left:.5in">Am 17.09.15 um 17:21 schr=
-ieb Morris, Russell:<o:p></o:p></p>
-</div>
-<blockquote style=3D"margin-top:5.0pt;margin-bottom:5.0pt">
-<div>
-<p class=3D"MsoNormal" style=3D"margin-left:.5in"><span style=3D"font-size:=
-11.0pt;font-family:&quot;Calibri&quot;,sans-serif">Hi,<o:p></o:p></span></p>
-</div>
-<div>
-<p class=3D"MsoNormal" style=3D"margin-left:.5in"><span style=3D"font-size:=
-11.0pt;font-family:&quot;Calibri&quot;,sans-serif">&nbsp;<o:p></o:p></span>=
-</p>
-</div>
-<div>
-<p class=3D"MsoNormal" style=3D"margin-left:.5in"><span style=3D"font-size:=
-11.0pt;font-family:&quot;Calibri&quot;,sans-serif">Is there any way to have=
- the management interface take a list of commands from a text / script file=
-? That would be very helpful.<o:p></o:p></span></p>
-</div>
-<p class=3D"MsoNormal" style=3D"margin-left:.5in"><span style=3D"font-size:=
-11.0pt;font-family:&quot;Calibri&quot;,sans-serif">&nbsp;
-<o:p></o:p></span></p>
-<div>
-<p class=3D"MsoNormal" style=3D"margin-left:.5in"><span style=3D"font-size:=
-11.0pt;font-family:&quot;Calibri&quot;,sans-serif"><o:p>&nbsp;</o:p></span>=
-</p>
-</div>
-</blockquote>
-<p class=3D"MsoNormal" style=3D"margin-left:.5in">That makes no sense thoug=
-h. I cannot think of a use case where this is useful.<br>
-<br>
-Arne<o:p></o:p></p>
-</div>
-</body>
+      <div class=3D"WordSection1">
+        <p class=3D"MsoNormal"><span
+style=3D"font-size:11.0pt;font-family:&quot;Calibri&quot;,sans-serif;color:=
+#1F497D">Hi,<o:p></o:p></span></p>
+        <p class=3D"MsoNormal"><span
+style=3D"font-size:11.0pt;font-family:&quot;Calibri&quot;,sans-serif;color:=
+#1F497D"><o:p>=A0</o:p></span></p>
+        <p class=3D"MsoNormal"><span
+style=3D"font-size:11.0pt;font-family:&quot;Calibri&quot;,sans-serif;color:=
+#1F497D">Nope
+            =85
+          </span><span
+            style=3D"font-size:11.0pt;font-family:Wingdings;color:#1F497D">=
+J</span><span
+style=3D"font-size:11.0pt;font-family:&quot;Calibri&quot;,sans-serif;color:=
+#1F497D">.
+            I don=92t want to =96 only because the proxy changes, depending
+            win where I am. So I detect and set it (i.e. it=92s dynamic),
+            but if I=92m too slow =85 </span><span
+            style=3D"font-size:11.0pt;font-family:Wingdings;color:#1F497D">=
+L</span><span
+style=3D"font-size:11.0pt;font-family:&quot;Calibri&quot;,sans-serif;color:=
+#1F497D">.<o:p></o:p></span></p>
+        <p class=3D"MsoNormal"><span
+style=3D"font-size:11.0pt;font-family:&quot;Calibri&quot;,sans-serif;color:=
+#1F497D"><o:p>=A0</o:p></span></p>
+        <br>
+      </div>
+    </blockquote>
+    Either you do managment-query-proxy or you set http-proxy in your
+    config file. Even applications using the management interface do it
+    this way. management-query-proxy is designed exactly for your
+    usecase.<br>
+    <br>
+    Arne<br>
+  </body>
 </html>
 
---_000_SN1PR08MB13915925D95194CC3366634DB95A0SN1PR08MB1391namp_--
+--------------090701020707010703020409--
 
