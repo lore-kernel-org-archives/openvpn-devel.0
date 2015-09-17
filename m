@@ -1,7 +1,9 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Thu, 17 Sep 2015 11:55:00 +0200
-Message-Id: <1442483700-8716-1-git-send-email-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH v2] Do not install a host route for the VPN
+Date: Thu, 17 Sep 2015 12:23:58 +0200
+Message-Id: <1442485438-15704-1-git-send-email-arne@...1227...>
+In-Reply-To: <1442483700-8716-1-git-send-email-arne@...1227...>
+References: <1442483700-8716-1-git-send-email-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH v3] Do not install a host route for the VPN
 	on Android
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
