@@ -1,14 +1,16 @@
-References: <SN1PR08MB13914E4EC23A602C38DBBA94B95A0@...2065...>
-	<55FAEE58.9020202@...1400...>
-	<SN1PR08MB13910492A84C58EFEBC8F662B95A0@...2065...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <55FAF40C.7050108@...1227...>
-Date: Thu, 17 Sep 2015 18:10:36 +0100
+Date: Thu, 17 Sep 2015 19:19:34 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20150917171933.GP34798@...1296...>
+References: <1441985627-14822-1-git-send-email-gert@...1296...>
+	<1441985627-14822-6-git-send-email-gert@...1296...>
+	<55F7E8CC.8000908@...1227...>
 MIME-Version: 1.0
-In-Reply-To: <SN1PR08MB13910492A84C58EFEBC8F662B95A0@...2065...>
-Content-Type: multipart/alternative;
-	boundary="------------090701020707010703020409"
-Subject: Re: [Openvpn-devel] Hold Release / Proxy Sequence
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="zpKbRLlnGgG674Bt"
+Content-Disposition: inline
+In-Reply-To: <55F7E8CC.8000908@...1227...>
+Subject: Re: [Openvpn-devel] [PATCH 05/10] get_default_gateway_ipv6(): Linux
+ / Netlink implementation.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,149 +19,128 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "Morris, Russell" <rmorris@...1315...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-This is a multi-part message in MIME format.
---------------090701020707010703020409
-Content-Type: text/plain; charset="windows-1252"
+--zpKbRLlnGgG674Bt
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+
+Hi,
+
+thanks for your review.  Some comments before I go committing :-)
+
+On Tue, Sep 15, 2015 at 10:45:48AM +0100, Arne Schwabe wrote:
+>=20
+> +    CLEAR(rtreq);
+> +    rtreq.nh.nlmsg_type =3D RTM_GETROUTE;
+> +    rtreq.nh.nlmsg_flags =3D NLM_F_REQUEST;			/* XXX */
+>=20
+> There should an indication why this is XXX, some kind of comment.
+
+Thanks.  This is indeed a leftover.  I copied that code from=20
+
+http://www.virtualbox.org/svn/vbox/trunk/src/VBox/NetworkServices/NAT/rtmon=
+_linux.c
+
+which uses NLM_F_REQUEST | NLM_F_ROOT here, and the "XXX" was a reminder
+for myself to figure out which is the right thing to do.
+
+netlink(7) documents this field as:
+
+       Standard flag bits in nlmsg_flags
+       ----------------------------------------------------------
+       NLM_F_REQUEST   Must be set on all request messages.
+       NLM_F_MULTI     The  message  is part of a multipart mes-
+                       sage terminated by NLMSG_DONE.
+       NLM_F_ACK       Request for an acknowledgment on success.
+       NLM_F_ECHO      Echo this request.
 
 
+       Additional flag bits for GET requests
+       --------------------------------------------------------------------
+       NLM_F_ROOT     Return the complete table instead of a single entry.
+       NLM_F_MATCH    Return all entries matching criteria passed in  mes-
+                      sage content.  Not implemented yet.
+       NLM_F_ATOMIC   Return an atomic snapshot of the table.
+       NLM_F_DUMP     Convenience macro; equivalent to
+                      (NLM_F_ROOT|NLM_F_MATCH).
 
-Am 17.09.15 um 17:52 schrieb Morris, Russell:
->
-> Hi,
->
-> =20
->
-> Nope =85 J. I don=92t want to =96 only because the proxy changes, dependi=
-ng
-> win where I am. So I detect and set it (i.e. it=92s dynamic), but if I=92m
-> too slow =85 L.
->
-> =20
->
->
-Either you do managment-query-proxy or you set http-proxy in your config
-file. Even applications using the management interface do it this way.
-management-query-proxy is designed exactly for your usecase.
+so, for virtualbox use ("we want the full table"), NLM_F_ROOT is right,
+and for the way I tackle this ("just give me the matching route"),=20
+NLM_F_REQUEST *only* is the right thing.
 
-Arne
+I'll remove the /* XXX */ and point to netlink(7) for explanations.
 
---------------090701020707010703020409
-Content-Type: text/html; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
 
-<html>
-  <head>
-    <meta content=3D"text/html; charset=3Dwindows-1252"
-      http-equiv=3D"Content-Type">
-  </head>
-  <body bgcolor=3D"#FFFFFF" text=3D"#000000">
-    <br>
-    <br>
-    <div class=3D"moz-cite-prefix">Am 17.09.15 um 17:52 schrieb Morris,
-      Russell:<br>
-    </div>
-    <blockquote
-cite=3D"mid:SN1PR08MB13910492A84C58EFEBC8F662B95A0@...2065..."
-      type=3D"cite">
-      <meta http-equiv=3D"Content-Type" content=3D"text/html;
-        charset=3Dwindows-1252">
-      <meta name=3D"Generator" content=3D"Microsoft Word 15 (filtered
-        medium)">
-      <style><!--
-/* Font Definitions */
-@font-face
-	{font-family:Wingdings;
-	panose-1:5 0 0 0 0 0 0 0 0 0;}
-@font-face
-	{font-family:"Cambria Math";
-	panose-1:2 4 5 3 5 4 6 3 2 4;}
-@font-face
-	{font-family:Calibri;
-	panose-1:2 15 5 2 2 2 4 3 2 4;}
-/* Style Definitions */
-p.MsoNormal, li.MsoNormal, div.MsoNormal
-	{margin:0in;
-	margin-bottom:.0001pt;
-	font-size:12.0pt;
-	font-family:"Times New Roman",serif;
-	color:black;}
-a:link, span.MsoHyperlink
-	{mso-style-priority:99;
-	color:#0563C1;
-	text-decoration:underline;}
-a:visited, span.MsoHyperlinkFollowed
-	{mso-style-priority:99;
-	color:#954F72;
-	text-decoration:underline;}
-p.emailquote, li.emailquote, div.emailquote
-	{mso-style-name:emailquote;
-	mso-margin-top-alt:auto;
-	margin-right:0in;
-	mso-margin-bottom-alt:auto;
-	margin-left:1.0pt;
-	border:none;
-	padding:0in;
-	font-size:12.0pt;
-	font-family:"Times New Roman",serif;
-	color:black;}
-span.EmailStyle18
-	{mso-style-type:personal-reply;
-	font-family:"Calibri",sans-serif;
-	color:#1F497D;}
-.MsoChpDefault
-	{mso-style-type:export-only;
-	font-size:10.0pt;}
-@page WordSection1
-	{size:8.5in 11.0in;
-	margin:1.0in 1.0in 1.0in 1.0in;}
-div.WordSection1
-	{page:WordSection1;}
---></style><!--[if gte mso 9]><xml>
-<o:shapedefaults v:ext=3D"edit" spidmax=3D"1026" />
-</xml><![endif]--><!--[if gte mso 9]><xml>
-<o:shapelayout v:ext=3D"edit">
-<o:idmap v:ext=3D"edit" data=3D"1" />
-</o:shapelayout></xml><![endif]-->
-      <div class=3D"WordSection1">
-        <p class=3D"MsoNormal"><span
-style=3D"font-size:11.0pt;font-family:&quot;Calibri&quot;,sans-serif;color:=
-#1F497D">Hi,<o:p></o:p></span></p>
-        <p class=3D"MsoNormal"><span
-style=3D"font-size:11.0pt;font-family:&quot;Calibri&quot;,sans-serif;color:=
-#1F497D"><o:p>=A0</o:p></span></p>
-        <p class=3D"MsoNormal"><span
-style=3D"font-size:11.0pt;font-family:&quot;Calibri&quot;,sans-serif;color:=
-#1F497D">Nope
-            =85
-          </span><span
-            style=3D"font-size:11.0pt;font-family:Wingdings;color:#1F497D">=
-J</span><span
-style=3D"font-size:11.0pt;font-family:&quot;Calibri&quot;,sans-serif;color:=
-#1F497D">.
-            I don=92t want to =96 only because the proxy changes, depending
-            win where I am. So I detect and set it (i.e. it=92s dynamic),
-            but if I=92m too slow =85 </span><span
-            style=3D"font-size:11.0pt;font-family:Wingdings;color:#1F497D">=
-L</span><span
-style=3D"font-size:11.0pt;font-family:&quot;Calibri&quot;,sans-serif;color:=
-#1F497D">.<o:p></o:p></span></p>
-        <p class=3D"MsoNormal"><span
-style=3D"font-size:11.0pt;font-family:&quot;Calibri&quot;,sans-serif;color:=
-#1F497D"><o:p>=A0</o:p></span></p>
-        <br>
-      </div>
-    </blockquote>
-    Either you do managment-query-proxy or you set http-proxy in your
-    config file. Even applications using the management interface do it
-    this way. management-query-proxy is designed exactly for your
-    usecase.<br>
-    <br>
-    Arne<br>
-  </body>
-</html>
+[..]
+> > +	if (nh->nlmsg_type =3D=3D NLMSG_DONE) { break; }
+> The coding style here is different ithan in other parts of OpenVPN.
 
---------------090701020707010703020409--
+As this is new 2.4-only code, and we want to change the coding style
+anyway, I've decided to add new code in the new style already *if* it
+is a completely new function (which this is).  "In the middle of a=20
+function" code bits will be kept old-style.
+
+I agree that this leads to somewhat inconsistent intermediate style, but=20
+it is less reformatting, and 2.4 is "near" (I hope... Steffan? :-) )
+
+> > +
+> > +	/* we're only looking for routes in the main table, as "we have
+> > +	 * no IPv6" will lead to a lookup result in "Local" (::/0 reject)
+> > +	 */
+> > +	if (rtm->rtm_family !=3D AF_INET6 ||
+> > +	    rtm->rtm_table !=3D RT_TABLE_MAIN)
+> > +		{ continue; }		/* we're not interested */
+> > +
+> We night want to revisit this with more complex routing scenarios.
+> Android for example uses the main routing table only to jump more
+> specific routing tables. Other system might do the same.
+
+I expect I'll have to revisit get_route_gateway_ipv6() on all the platforms
+eventually - right now, it works for the "easy case".  If someone uses
+multiple routing tables, it will need adjustments on Linux and *BSD.
+
+OTOH, we currently don't do multiple routing tables at all - neither
+for ifconfig, nor for route addition, so this would need some serious
+thought how to do this properly (which route table to use for openvpn
+itself, which table to install tun routes into, etc.).  I think there is
+quite interesting possibilities to make things work even more nice
+(like, roaming to new interfaces for the "outside" connection, while
+the tun just stays up, without having to adjust host routes).  We're not
+there today yet, though.
+
+So - on Android, that code is not exactly relevant (it will print what
+it finds, which I'm actually somewhat curious to see :-) - but the result
+will not be used after your #ifndef TARGET_ANDROID patch goes in) and for=20
+other platforms, I do keep that in mind and will tackle it when someone=20
+comes up with a use case I can look into.
+
+> Aside from these comment, this gets an ACK from me.
+
+Thanks for the review.
+
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--zpKbRLlnGgG674Bt
+Content-Type: application/pgp-signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQCVAwUBVfr2JKkuBuNlUUl1AQL+DAP+OY8ZzKNU0CQCfQqUFwxzDQ2XrS56eb//
+mHKFXKsXXvqylk4ZREzaQ1Q91ue8LxPDoSAmDKy3OY4VUbgrHXLEIxLSFY8BnSHq
+5Vyu5npIyCnyJuraSEwPHzAsSeVrrltYKt4crRLiv0GJIOVXK7YN8ejPPOuYepKQ
+D+tjJnlxYIQ=
+=QRQI
+-----END PGP SIGNATURE-----
+
+--zpKbRLlnGgG674Bt--
 
