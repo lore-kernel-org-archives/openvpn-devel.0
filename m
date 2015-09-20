@@ -1,10 +1,11 @@
-Date: Sun, 20 Sep 2015 18:57:43 +0200 (CEST)
-Message-Id: <201509201657.t8KGvhRi015346@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <55FEBF7E.3010209@...2010...>
-References: <55FEBF7E.3010209@...2010...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Log serial number of revoked
-	certificate
+Mime-Version: 1.0 (1.0)
+From: Eric Crist <ecrist@...1286...>
+In-Reply-To: <mtleik$gs4$1@...1062...>
+Date: Sun, 20 Sep 2015 11:55:16 -0500
+Message-Id: <C781C932-0A4C-42F8-8A64-066088B1B3E8@...1286...>
+References: <mtleik$gs4$1@...1062...>
+Subject: Re: [Openvpn-devel] vpn server's IP is not the same as the result
+	given by https://www.whatismyip.com.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,31 +14,41 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Boris Lytochkin <lytboris@...2010...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+To: Hongyi Zhao <hongyi.zhao@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Your patch has been applied to the master and release/2.3 branch.
-
-commit 767e4c56becbfeea525e4695a810593f373883cd (master)
-commit 1e4a3ba3e751017e29db37676e7d3b78d46a97a2 (release/2.3)
-
-Author: Boris Lytochkin
-Date:   Sun Sep 20 17:05:22 2015 +0300
-
-     Log serial number of revoked certificate
-
-     Signed-off-by: Boris Lytochkin <lytboris@...2010...>
-     Acked-by: Steffan Karger <steffan.karger@...1435...>
-     Message-Id: <55FEBF7E.3010209@...2010...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/10154
-     Signed-off-by: Gert Doering <gert@...1296...>
+You need to enable default gateway in the server config. See redirect-gatew=
+ay in the man page.=20
 
 
---
-kind regards,
 
-Gert Doering
-
+> On Sep 20, 2015, at 12:01 AM, Hongyi Zhao <hongyi.zhao@...277...> wrote:
+>=20
+> Hi all,
+>=20
+> I use openvpn client to connect to the vpn server 139.226.101.101, after=
+=20
+> I have connected to the server, I use https://www.whatismyip.com to=20
+> inspect my IP address, and find the following result:
+>=20
+> Your IP Address Is:
+> 103.41.63.9
+>=20
+> As you can see, the vpn server's IP is not the same as the result given=20
+> by https://www.whatismyip.com, could you please give me some hints on=20
+> this thing?
+>=20
+> Regards
+> --=20
+> .: Hongyi Zhao [ hongyi.zhao AT gmail.com ] Free as in Freedom :.
+>=20
+>=20
+> -------------------------------------------------------------------------=
+-----
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
