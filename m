@@ -1,11 +1,11 @@
-References: <1440680402-96548-1-git-send-email-gert@...1296...>
-From: Steffan Karger <steffan@...1856...>
-Message-ID: <5600591E.1090908@...1856...>
-Date: Mon, 21 Sep 2015 21:23:10 +0200
+Message-ID: <56006549.9010809@...515...>
+Date: Mon, 21 Sep 2015 23:15:05 +0300
+From: =?UTF-8?B?U2FtdWxpIFNlcHDDpG5lbg==?= <samuli@...515...>
 MIME-Version: 1.0
-In-Reply-To: <1440680402-96548-1-git-send-email-gert@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH] Replace unaligned 16bit access to TCP
- MSS value with bytewise access
+References: <56002293.9080800@...515...>
+In-Reply-To: <56002293.9080800@...515...>
+Subject: Re: [Openvpn-devel] Topics for today's (21st Sep 2015) community
+ meeting
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,64 +14,113 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: quoted-printable
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
+Hi,
 
+Here's the summary of today's IRC meeting.
 
-On 27-08-15 15:00, Gert Doering wrote:
-> TCP options are not always word-aligned, and accessing a 16bit value
-> at an odd memory address will cause a "bus error" crash on some
-> architectures, e.g. Linux/Sparc(64)
->
-> Trac #497
->
-> Signed-off-by: Gert Doering <gert@...1296...>
-> ---
->   src/openvpn/mss.c | 17 ++++++++---------
->   1 file changed, 8 insertions(+), 9 deletions(-)
->
-> diff --git a/src/openvpn/mss.c b/src/openvpn/mss.c
-> index 64fd722..7298c7b 100644
-> --- a/src/openvpn/mss.c
-> +++ b/src/openvpn/mss.c
-> @@ -129,7 +129,7 @@ mss_fixup_dowork (struct buffer *buf, uint16_t maxmss)
->   {
->     int hlen, olen, optlen;
->     uint8_t *opt;
-> -  uint16_t *mss;
-> +  uint16_t mssval;
->     int accumulate;
->     struct openvpn_tcphdr *tc;
->
-> @@ -159,14 +159,13 @@ mss_fixup_dowork (struct buffer *buf, uint16_t maxmss)
->         if (*opt == OPENVPN_TCPOPT_MAXSEG) {
->           if (optlen != OPENVPN_TCPOLEN_MAXSEG)
->             continue;
-> -        mss = (uint16_t *)(opt + 2);
-> -        if (ntohs (*mss) > maxmss) {
-> -          dmsg (D_MSS, "MSS: %d -> %d",
-> -               (int) ntohs (*mss),
-> -	       (int) maxmss);
-> -          accumulate = *mss;
-> -          *mss = htons (maxmss);
-> -          accumulate -= *mss;
-> +	mssval = (opt[2]<<8)+opt[3];
-> +	if (mssval > maxmss) {
-> +	  dmsg (D_MSS, "MSS: %d -> %d", (int) mssval, (int) maxmss);
-> +	  accumulate = htons(mssval);
-> +	  opt[2] = (maxmss>>8)&0xff;
-> +	  opt[3] = maxmss&0xff;
-> +	  accumulate -= htons(maxmss);
->             ADJUST_CHECKSUM (accumulate, tc->check);
->           }
->         }
->
+---
 
-ACK.  Change looks fine.  Though I don't have a platform to 
-experimentally verify the fix.
+COMMUNITY MEETING
 
--Steffan
+Place: #openvpn-devel on irc.freenode.net
+Date: Monday 21st Sep 2015
+Time: 20:00 CEST (18:00 UTC)
 
+Planned meeting topics for this meeting were here:
+
+<https://community.openvpn.net/openvpn/wiki/Topics-2015-09-21>
+
+The next meeting has been scheduled to two weeks from this meeting:
+
+<https://community.openvpn.net/openvpn/wiki/Topics-2015-10-05>
+
+Your local meeting time is easy to check from services such as
+
+<http://www.timeanddate.com/worldclock>
+
+SUMMARY
+
+cron2, gava100, syzzer, mattock and plaisthos participated in this meeting.
+
+---
+
+Discussed Windows builds. Agreed that --disable-debug should be removed,=20
+so that debugging can be enabled using a runtime option. This should not=20
+affect performance in any significant way. Mattock made this change to=20
+openvpn-build during the meeting, so that all future OpenVPN Windows=20
+builds will have debugging capabilities.
+
+--
+
+Discussed the "Added two feature to Network Address Translator" patchset:
+
+<http://thread.gmane.org/gmane.network.openvpn.devel/10047>
+
+The NAT code adds quite a bit of code, which could bring with it=20
+security vulnerabilities. For example FTP NAT code in other products has=20
+historically had security issues. Cron2 will review the patches a bit=20
+more before any decisions are made. Rafael will split the patch into two=20
+to ease review and merging.
+
+--
+
+Discussed the "=E2=80=8Bfix unaligned access to TCP MSS" patch:
+
+<http://thread.gmane.org/gmane.network.openvpn.devel/10047>
+<https://community.openvpn.net/openvpn/ticket/497>
+
+Syzzer gave the patch an ACK.
+
+--
+
+Discussed the "get_default_gateway_ipv6() for Windows (10/10)" patch:
+
+<http://thread.gmane.org/gmane.network.openvpn.devel/10085>
+
+The patch drops support for building for Windows XP, so it can only be=20
+merged into Git "master", not 2.3.x.
+
+Cron2 has tested the patch somewhat and has a few potential testers=20
+waiting. Special Windows builds with this patch will be built by mattock=20
+soon.
+
+--
+
+Discussed merging the "=E2=80=8Bredirect-gateway ipv6" patch to 2.3.x:
+
+<http://thread.gmane.org/gmane.network.openvpn.devel/10086>
+
+Cron2 will provide a patch against 2.3 and send it to the devel list.
+
+--
+
+Discussed the "strdup() return checks" patch:
+
+<http://thread.gmane.org/gmane.network.openvpn.devel/10046>
+<https://community.openvpn.net/openvpn/ticket/600>
+
+Syzzer will provide two patches to replace this one.
+
+--
+
+Discussed merging the "control packet MTU increase" patch to 2.3:
+
+<http://thread.gmane.org/gmane.network.openvpn.devel/9841>
+<https://community.openvpn.net/openvpn/ticket/545>
+
+Syzzer ACKed merging the patch to 2.3.
+
+--
+
+Review of the "=E2=80=8Bfix privilege dropping if first connection attempt=
+=20
+unsuccessful" patch had to be postponed, because it was getting too late.
+
+---
+
+Full chatlog has been attached to this email.
 
