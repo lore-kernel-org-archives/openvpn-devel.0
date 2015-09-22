@@ -1,14 +1,10 @@
-Mime-Version: 1.0 (Mac OS X Mail 8.2 \(2104\))
-Content-Type: multipart/signed;
-	boundary="Apple-Mail=_E1D108B2-87D2-4F30-9C8D-DCEDF84601EC";
-	protocol="application/pgp-signature"; micalg=pgp-sha256
-From: Eric Crist <ecrist@...1286...>
-In-Reply-To: <A2B75CF4ED3C43189180BFA68A9F3876@...1853...>
-Date: Tue, 22 Sep 2015 07:05:52 -0500
-Message-Id: <F7154A25-F874-485F-9DF7-04D58795876B@...1286...>
-References: <A2B75CF4ED3C43189180BFA68A9F3876@...1853...>
-Subject: Re: [Openvpn-devel] Fw: Easy-RSA3.0.0 Windows Version batch file
-	missing
+From: Gert Doering <gert@...1296...>
+Date: Tue, 22 Sep 2015 22:31:24 +0200
+Message-Id: <1442953884-54602-1-git-send-email-gert@...1296...>
+In-Reply-To: <1441985627-14822-11-git-send-email-gert@...1296...>
+References: <1441985627-14822-11-git-send-email-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH] Add custom check for
+	inet_pton()/inet_ntop() on MinGW/WIN32
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,92 +13,73 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: debbie10t@...277...
-Cc: openvpn-devel@lists.sourceforge.net
-
---Apple-Mail=_E1D108B2-87D2-4F30-9C8D-DCEDF84601EC
-X-Eric-Conspiracy: There is no conspiracy.
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-I=E2=80=99ll publish corrected zip files today.
+More recent MinGW versions have these functions (if compiling at
+_VISTA level or higher), but the normal AC_CHECK_FUNCS() check does
+not find them because the necessary header file is not #include'd and
+the libws2_32 not linked - and our compat functions are incompatible
+with the definitions in <ws2tcpip.h>, so compilation fails.
 
------
-Eric F Crist
+Fix with a custom AC_LINK_IFELSE()/AC_LANG_PROGRAM() construct.
 
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+ configure.ac | 24 +++++++++++++++++++++++-
+ 1 file changed, 23 insertions(+), 1 deletion(-)
 
+diff --git a/configure.ac b/configure.ac
+index 0a8255c..2e651d8 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -632,7 +632,7 @@ AC_SUBST([SOCKETS_LIBS])
+ 
+ old_LIBS="${LIBS}"
+ LIBS="${LIBS} ${SOCKETS_LIBS}"
+-AC_CHECK_FUNCS([sendmsg recvmsg inet_ntop inet_pton])
++AC_CHECK_FUNCS([sendmsg recvmsg])
+ # Windows use stdcall for winsock so we cannot auto detect these
+ m4_define(
+ 	[SOCKET_FUNCS],
+@@ -644,6 +644,27 @@ m4_define(
+ 	[setsockopt getsockopt getsockname poll]dnl
+ )
+ if test "${WIN32}" = "yes"; then
++# normal autoconf function checking does not find inet_ntop/inet_pton
++# because they need to include the actual header file and link ws2_32.dll
++	LIBS="${LIBS} -lws2_32"
++	AC_MSG_CHECKING([for MinGW inet_ntop()/inet_pton()])
++	AC_LINK_IFELSE(
++		[AC_LANG_PROGRAM(
++			[[
++#include <ws2tcpip.h>
++			]],
++			[[
++int r = (int) inet_ntop (0, NULL, NULL, 0);
++    r += inet_pton(AF_INET, NULL, NULL);
++return r;
++			]]
++		)],
++		[AC_MSG_RESULT([OK])
++		 AC_DEFINE([HAVE_INET_NTOP],[1],[MinGW inet_ntop])
++		 AC_DEFINE([HAVE_INET_PTON],[1],[MinGW inet_pton])
++		],
++		[AC_MSG_RESULT([not found])]
++	)
+ 	m4_foreach(
+ 		[F],
+ 		m4_split(SOCKET_FUNCS SOCKET_OPT_FUNCS),
+@@ -651,6 +672,7 @@ if test "${WIN32}" = "yes"; then
+ 			AC_DEFINE([UF], [1], [Win32 builtin])
+ 	)
+ else
++	AC_CHECK_FUNCS([inet_ntop inet_pton])
+ 	AC_CHECK_FUNCS(
+ 		SOCKET_FUNCS,
+ 		,
+-- 
+2.4.6
 
-> On Sep 22, 2015, at 06:39:35, <debbie10t@...277...> <debbie10t@...277...>=
- wrote:
->=20
-> See also:
->=20
-> https://forums.openvpn.net/topic19770.html#p54980
->=20
-> The Windows .zip file is missing the entire /bin directory as well.
->=20
-> Windows zip file download size v3.0.0 =3D 42kb
-> Windows zip file download size v3.0.0-rc2 =3D 606kb
->=20
->=20
-> ----- Original Message -----
-> From: <debbie10t@...277...>
-> To: <openvpn-devel@lists.sourceforge.net>
-> Sent: Monday, September 21, 2015 12:49 PM
-> Subject: Easy-RSA3.0.0 Windows Version batch file missing
->=20
->=20
->> Source:
->> https://github.com/OpenVPN/easy-rsa/releases
->>=20
->> Version:
->> https://github.com/OpenVPN/easy-rsa/releases/download/3.0.0/EasyRSA-3.0.=
-0.zip
->>=20
->> * Downloaded today *
->>=20
->> EasyRSA-Readme.md:
->> #### Running Easy-RSA
->>=20
->> Invoking Easy-RSA is done through your preferred shell. Under Windows,
->> you
->> will use the `EasyRSA Start.bat`
->>=20
->> Problem:
->> EasyRSA Start.bat is missing from acrhive.
->>=20
->> Regards
->>=20
->=20
->=20
-> -------------------------------------------------------------------------=
------
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
-
-
---Apple-Mail=_E1D108B2-87D2-4F30-9C8D-DCEDF84601EC
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment;
-	filename=signature.asc
-X-Eric-Conspiracy: There is no conspiracy.
-Content-Type: application/pgp-signature;
-	name=signature.asc
-Content-Description: Message signed with OpenPGP using GPGMail
-
------BEGIN PGP SIGNATURE-----
-Comment: GPGTools - http://gpgtools.org
-
-iQEcBAEBCAAGBQJWAUQgAAoJEHKWQhk5DQ0O8osIAMQzLZmVwZu85qZCp2eUVqeM
-SZO56pNCy/Lcqymp6WnVr/LQXpbwJdaOYF+lhlcR3oD6dDMOArEkU4k7LUfx/YvI
-RxS70RNBmfE9Kqytlo0g6De7RXemTgsiiwDlRcZyEeAgkwsa34I7suy9fZbdq2nZ
-nMwqc4h+NX3qYrg6BgZxaS/Yqc91HC6rcLG3W1ErQfnZbKPg8laJBdjC7Wh18o4S
-y3TfnlgCCOrBRsgHS2lEYj4uMoxsIXsdQLxLgr/T90z9X33V2sTgK+eWhbKQFbcW
-kM6cHFThAvk/ztLmVEWN2a7pLLE3p37e3W6puoWNFMxp3WOElc11IWlAszO64Hk=
-=no7I
------END PGP SIGNATURE-----
-
---Apple-Mail=_E1D108B2-87D2-4F30-9C8D-DCEDF84601EC--
 
