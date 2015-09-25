@@ -1,10 +1,9 @@
-Date: Fri, 25 Sep 2015 09:51:57 +0200 (CEST)
-Message-Id: <201509250751.t8P7pvtF075401@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <1443162970-38210-1-git-send-email-gert@...1296...>
-References: <1443162970-38210-1-git-send-email-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Repair test_local_addr() on
-	WIN32
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <5605377D.9040401@...515...>
+Date: Fri, 25 Sep 2015 15:01:01 +0300
+MIME-Version: 1.0
+Subject: [Openvpn-devel] Help with build-testing a patched OpenVPN tree with
+ Cygwin and Visual Studio?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,30 +12,35 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="iso-8859-15"; format=flowed
+Content-Transfer-Encoding: quoted-printable
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Patch has been applied to the master and release/2.3 branch.
+Hi,
 
-commit c40f088e52132273f6d4e83d05fa64bbaedd860f (master)
-commit 60287662bbdb1a29d9bd6244917a050410fa6b49 (release/2.3)
+We'd need some help build-testing a patched[*] OpenVPN version with=20
+Cygwin and Visual Studio:
 
-Author: Gert Doering
-Date:   Fri Sep 25 08:36:10 2015 +0200
+<http://build.openvpn.net/downloads/temp/openvpn-2.3_git.tar.gz>
 
-     Repair test_local_addr() on WIN32
+This tree already builds fine on mingw_w64 which is enough for doing the=20
+official builds.
 
-     Signed-off-by: Gert Doering <gert@...1296...>
-     Acked-by: Steffan Karger <steffan.karger@...1435...>
-     Message-Id: <1443162970-38210-1-git-send-email-gert@...1296...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/10168
+So please test these sources using Cygwin and/or Visual Studio and=20
+report back how it went. If we do not get any "does not work reports"=20
+within a week or so we'll have to merge the patch as-is and fix build=20
+breakages later.
+
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
 
 
---
-kind regards,
+[*] The relevant patches are these:
 
-Gert Doering
-
+<http://article.gmane.org/gmane.network.openvpn.devel/10165>
+<http://article.gmane.org/gmane.network.openvpn.devel/10085>
 
