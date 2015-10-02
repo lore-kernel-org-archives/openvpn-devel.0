@@ -1,12 +1,8 @@
-From: ValdikSS <iam@...2070...>
-Message-ID: <5605B40D.6080106@...2070...>
-Date: Fri, 25 Sep 2015 23:52:29 +0300
+From: Lev Stipakov <lstipakov@...277...>
+Date: Fri,  2 Oct 2015 14:46:41 +0300
+Message-Id: <1443786401-30416-1-git-send-email-lstipakov@...277...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature";
-	boundary="QRFKS2BJK4eXtLp24mpuU2utFcS8mtaCr"
-Subject: [Openvpn-devel] Radiusplugin fully asynchronous fork with
-	additional patches
+Subject: [Openvpn-devel] [PATCH] This fixes MSVS 2013 compilation.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,60 +11,162 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net, openvpn-users@...647...
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---QRFKS2BJK4eXtLp24mpuU2utFcS8mtaCr
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-Hello!
-I'd like to introduce my radiusplugin fork which contain several patches:
-* IPv6 Accounting fix by Comic Chang
-* iroute netmask computation fix by Samuel Thibault
-* IPv6 support patches by Samuel Thibault
-* Accounting and memory leak related patches by Dmytro Vasylenko
-* Accounting fixes by Yafeng Shan
-* Asynchronous client-connect and instant client-disconnect by me
+ * Tools version changed to 12
+ * Added comp.c/h and compat.c/h to project files
+ * Workaround for missing __attribute__ support
 
-With the latest patch, radiusplugin won't stall OpenVPN's main thread when =
-clients are connecting or disconnecting.
+Also, as a preparation for MSVS2015, ensured that snprintf is not defined for that VS version.
+---
+ config-msvc.h                       |  3 +++
+ src/compat/compat.vcxproj           |  6 ++++--
+ src/openvpn/openvpn.vcxproj         | 10 ++++++++--
+ src/openvpn/syshead.h               |  1 +
+ src/openvpnserv/openvpnserv.vcxproj |  6 ++++--
+ 5 files changed, 20 insertions(+), 6 deletions(-)
 
-https://github.com/ValdikSS/openvpn-radiusplugin
+diff --git a/config-msvc.h b/config-msvc.h
+index 8294c2c..ffd35f4 100644
+--- a/config-msvc.h
++++ b/config-msvc.h
+@@ -90,7 +90,10 @@
+ 
+ #define strncasecmp strnicmp
+ #define strcasecmp _stricmp
++
++#if _MSC_VER<1900
+ #define snprintf _snprintf
++#endif
+ 
+ #if _MSC_VER < 1800
+ #define strtoull strtoul
+diff --git a/src/compat/compat.vcxproj b/src/compat/compat.vcxproj
+index 42979c1..7fca62f 100644
+--- a/src/compat/compat.vcxproj
++++ b/src/compat/compat.vcxproj
+@@ -1,5 +1,5 @@
+ ﻿<?xml version="1.0" encoding="utf-8"?>
+-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
++<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+   <ItemGroup Label="ProjectConfigurations">
+     <ProjectConfiguration Include="Debug|Win32">
+       <Configuration>Debug</Configuration>
+@@ -20,10 +20,12 @@
+     <ConfigurationType>StaticLibrary</ConfigurationType>
+     <CharacterSet>MultiByte</CharacterSet>
+     <WholeProgramOptimization>true</WholeProgramOptimization>
++    <PlatformToolset>v120</PlatformToolset>
+   </PropertyGroup>
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+     <ConfigurationType>StaticLibrary</ConfigurationType>
+     <CharacterSet>MultiByte</CharacterSet>
++    <PlatformToolset>v120</PlatformToolset>
+   </PropertyGroup>
+   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+   <ImportGroup Label="ExtensionSettings">
+@@ -84,4 +86,4 @@
+   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+   <ImportGroup Label="ExtensionTargets">
+   </ImportGroup>
+-</Project>
+\ No newline at end of file
++</Project>
+diff --git a/src/openvpn/openvpn.vcxproj b/src/openvpn/openvpn.vcxproj
+index 3b2340e..b117b0b 100755
+--- a/src/openvpn/openvpn.vcxproj
++++ b/src/openvpn/openvpn.vcxproj
+@@ -1,5 +1,5 @@
+ ﻿<?xml version="1.0" encoding="utf-8"?>
+-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
++<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+   <ItemGroup Label="ProjectConfigurations">
+     <ProjectConfiguration Include="Debug|Win32">
+       <Configuration>Debug</Configuration>
+@@ -20,10 +20,12 @@
+     <ConfigurationType>Application</ConfigurationType>
+     <WholeProgramOptimization>true</WholeProgramOptimization>
+     <CharacterSet>Unicode</CharacterSet>
++    <PlatformToolset>v120</PlatformToolset>
+   </PropertyGroup>
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+     <ConfigurationType>Application</ConfigurationType>
+     <CharacterSet>Unicode</CharacterSet>
++    <PlatformToolset>v120</PlatformToolset>
+   </PropertyGroup>
+   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+   <ImportGroup Label="ExtensionSettings">
+@@ -100,6 +102,8 @@
+     <ClCompile Include="base64.c" />
+     <ClCompile Include="buffer.c" />
+     <ClCompile Include="clinat.c" />
++    <ClCompile Include="comp.c" />
++    <ClCompile Include="compstub.c" />
+     <ClCompile Include="console.c" />
+     <ClCompile Include="crypto.c" />
+     <ClCompile Include="crypto_openssl.c" />
+@@ -168,6 +172,8 @@
+     <ClInclude Include="buffer.h" />
+     <ClInclude Include="circ_list.h" />
+     <ClInclude Include="clinat.h" />
++    <ClInclude Include="comp.h" />
++    <ClInclude Include="compstub.h" />
+     <ClInclude Include="common.h" />
+     <ClInclude Include="console.h" />
+     <ClInclude Include="crypto.h" />
+@@ -260,4 +266,4 @@
+   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+   <ImportGroup Label="ExtensionTargets">
+   </ImportGroup>
+-</Project>
+\ No newline at end of file
++</Project>
+diff --git a/src/openvpn/syshead.h b/src/openvpn/syshead.h
+index 4bebb25..92f5834 100644
+--- a/src/openvpn/syshead.h
++++ b/src/openvpn/syshead.h
+@@ -47,6 +47,7 @@
+ 
+ #ifdef _MSC_VER // Visual Studio
+ #define __func__ __FUNCTION__
++#define __attribute__(x)
+ #endif
+ 
+ #if defined(__APPLE__)
+diff --git a/src/openvpnserv/openvpnserv.vcxproj b/src/openvpnserv/openvpnserv.vcxproj
+index 0b75ed0..c6760da 100644
+--- a/src/openvpnserv/openvpnserv.vcxproj
++++ b/src/openvpnserv/openvpnserv.vcxproj
+@@ -1,5 +1,5 @@
+ ﻿<?xml version="1.0" encoding="utf-8"?>
+-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
++<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+   <ItemGroup Label="ProjectConfigurations">
+     <ProjectConfiguration Include="Debug|Win32">
+       <Configuration>Debug</Configuration>
+@@ -20,10 +20,12 @@
+     <ConfigurationType>Application</ConfigurationType>
+     <CharacterSet>MultiByte</CharacterSet>
+     <WholeProgramOptimization>true</WholeProgramOptimization>
++    <PlatformToolset>v120</PlatformToolset>
+   </PropertyGroup>
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+     <ConfigurationType>Application</ConfigurationType>
+     <CharacterSet>MultiByte</CharacterSet>
++    <PlatformToolset>v120</PlatformToolset>
+   </PropertyGroup>
+   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+   <ImportGroup Label="ExtensionSettings">
+@@ -109,4 +111,4 @@
+   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+   <ImportGroup Label="ExtensionTargets">
+   </ImportGroup>
+-</Project>
+\ No newline at end of file
++</Project>
+-- 
+1.9.1
 
-Asynchronous client-connect requires additional OpenVPN patch by Fabian Kni=
-ttel which you can get here
-https://github.com/fknittel/openvpn/tree/feat_deferred_client-connect
-
-Or you can grab latest stable OpenVPN with this and other patches in my rep=
-ository
-https://github.com/ValdikSS/openvpn-with-patches
-
-
-
---QRFKS2BJK4eXtLp24mpuU2utFcS8mtaCr
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-Comment: https://keybase.io/valdikss
-
-iQIcBAEBCAAGBQJWBbQNAAoJEFzXIC7viPdyiXEP/1gr5W1MqcZxf6FVJdFq/w0o
-eFrM4dioN+tV67k3cgZ5wqbGWzjpBEjiTb1KSe1DSKnXsDs5yyVbCUc5IHOcPFYR
-+1LVZj850zucFt4qcewU5kk3XkDfimWAnYdRw9mXLCTS8vVuH5y478I5U0BQxA0D
-02WbvvGZNHJc5HGpHI03mIoFbY3Jcx1FAJlrF/TvfTYWvVzXE/G8M2evil//CpzX
-5Z47jBVxRllUyCk9tit53HS3/keqnkHR8TBr92glCD8urooVXvjGcuOy5qoORUM4
-pMxZCEJcNBClWRBJK6z6jKk0ET1XSPNReBadSSMUuA6gKajkyIfmAst3D+ogZUvs
-pTDbKOtp1SUDo7f0hhf0fS1TqN5jK2d4nq9NBE6U0CAAAGAK7gBXkoGwXXysi2IZ
-LdtJQq5EVTUX4LOPleCaeaAzSSFySx0KfsR24j5GBU3y6i2VAKIXOXScfv+/Dq25
-tHFj5GyCkxmscvenerjPaypVXFNBKK1A+xGmK75uTEYuJ+bnlomNa/OTrB5hoBeN
-y5bfAH0+X0wrV8p+C8hj14bIMMjfK+fKzvJScEv7Wm4EE74U5eYONoNYcPenJ6h8
-IHm+WxZ7sMoqXTbR303ueK2VRxmDKXI5zmSB4C1d25nE2+l3J3+a07+u+WSTsC7A
-RR6eoMX/joXCrSON6G5J
-=ZXXR
------END PGP SIGNATURE-----
-
---QRFKS2BJK4eXtLp24mpuU2utFcS8mtaCr--
 
