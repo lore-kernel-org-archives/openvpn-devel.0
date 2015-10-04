@@ -1,10 +1,10 @@
-References: <55910777.10206@...1147...>
-From: Steffan Karger <steffan@...1856...>
-Message-ID: <5611375D.9050905@...1856...>
-Date: Sun, 4 Oct 2015 16:27:41 +0200
-MIME-Version: 1.0
-In-Reply-To: <55910777.10206@...1147...>
-Subject: Re: [Openvpn-devel] verify-client-cert patch
+Date: Sun, 4 Oct 2015 22:33:46 +0200 (CEST)
+Message-Id: <201510042033.t94KXkaj060238@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <561130FC.8090008@...1856...>
+References: <561130FC.8090008@...1856...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Replace strdup() calls for
+	string_alloc() calls
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,28 +13,47 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Steffan Karger <steffan@...1856...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-On 29-06-15 10:53, Jan Just Keijser wrote:
-> From: Jan Just Keijser <janjust@...1147...>
-> Date: Mon, 29 Jun 2015 10:48:12 +0200
-> Subject: [PATCH] Author: Jan Just Keijser <janjust@...1147...>
->
-> Add extended client certificate verification support.
->
-> Replace --client-cert-not-required with a more flexible option,
-> that allows for no, optional or mandatory client certificate
-> verification.
+ACK.
 
-I just tried to apply this patch to see if I could start on the polarssl 
-counterpart, but I could not get the patch to apply.  Even after some 
-manual de-mangling.  It seems that your email client has been playing 
-with whitespace and line wrapping a bit too much for git's taste.  Could 
-you please resend the original git format-patch output either using git 
-send-email, or as an attachment?
+Your patches have been applied to the master and release/2.3 branch.
 
-Thanks,
--Steffan
+commit ddc7692d245017c71adc40ad5cc195617e39fce0 (master)
+commit 6d4920e9d36675ff515da17c1eb301d22d07b489 (release/2.3)
+
+Author: Steffan Karger
+Date:   Mon Sep 21 20:48:33 2015 +0200
+
+     Replace strdup() calls for string_alloc() calls
+
+     Signed-off-by: Steffan Karger <steffan@...1856...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <561130FC.8090008@...1856...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/10176
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+commit 5584b738a332d0abc740d9303c275764c2ca13f1 (master)
+commit ad71fe5f79ffbd4c86afa79d4559b08617b41dfb (release/2.3)
+
+Author: Steffan Karger
+Date:   Mon Sep 21 22:04:19 2015 +0200
+
+     Check return value of ms_error_text()
+
+     Signed-off-by: Steffan Karger <steffan@...1856...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <561130FC.8090008@...1856...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/10176
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
+
 
