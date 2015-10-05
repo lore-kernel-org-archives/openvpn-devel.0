@@ -1,13 +1,9 @@
-Date: Sun, 4 Oct 2015 22:39:59 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20151004203959.GC22054@...1296...>
-References: <1443786401-30416-1-git-send-email-lstipakov@...277...>
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <56125675.3060109@...515...>
+Date: Mon, 5 Oct 2015 13:52:37 +0300
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="Rmm1Stw9KgbdL9/H"
-Content-Disposition: inline
-In-Reply-To: <1443786401-30416-1-git-send-email-lstipakov@...277...>
-Subject: Re: [Openvpn-devel] [PATCH] This fixes MSVS 2013 compilation.
+Subject: [Openvpn-devel] Topics for today's (Monday,
+ 5th Oct 2015) community meeting (note: 30 mins early)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,55 +12,35 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Lev Stipakov <lstipakov@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
-
---Rmm1Stw9KgbdL9/H
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="iso-8859-15"; format=flowed
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
 Hi,
 
-On Fri, Oct 02, 2015 at 02:46:41PM +0300, Lev Stipakov wrote:
->  * Tools version changed to 12
+We're going to have an IRC meeting today, 10th August, starting at 19:30=20
+CEST (17:30 UTC) on #openvpn-devel <at> irc.freenode.net. Current topic=20
+list along with basic information is here:
 
-What exactly does this do?  ("I should understand the side effects" :) )
+<https://community.openvpn.net/openvpn/wiki/Topics-2015-10-05>
 
->  * Added comp.c/h and compat.c/h to project files
+If you have any other things you'd like to bring up, respond to this=20
+mail, send me mail privately or add them to the list yourself.
 
-The description is wrong, as it is compstub.c/.h - I'll fix this on
-merging, so no need to re-send.
+In case you can't attend the meeting, please feel free to make comments=20
+on the topics by responding to this email or to the summary email sent=20
+after the meeting. Whenever possible, we'll also respond to existing,=20
+related email threads.
 
-Did you also test building with the GetIpRoute2() patch in
-http://thread.gmane.org/gmane.network.openvpn.devel/10085 ?  I'd like
-to merge that, but it might break MSVC compilation due to the stray
-typedef (which is needed because MinGW headers are incomplete in that
-respect)
+NOTE: It's required to use a registered Freenode IRC nickname to join=20
+#openvpn-devel - look here for details:
 
-thanks,
-
-gert
+<https://community.openvpn.net/openvpn/wiki/GettingHelp#DeveloperIRCchannel>
 
 --=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
 
---Rmm1Stw9KgbdL9/H
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQCVAwUBVhGOn6kuBuNlUUl1AQIZTwP8DLj5yH7Re74LzFtO3sGcME5YIqaeowHZ
-Ap1uggOCdWNCw79Np/6LWz84ANClH6ioYUZ6A91iO9MXk5iuQVDv8x1tuwq1w30m
-1+chwLc1080L8D18UCAFOZ/59B8wLOGg2huQRoS+D2Kuz8Sry4/j4IIcE1vYb2La
-6ps5glHAmWo=
-=wd79
------END PGP SIGNATURE-----
-
---Rmm1Stw9KgbdL9/H--
+irc freenode net: mattock
 
