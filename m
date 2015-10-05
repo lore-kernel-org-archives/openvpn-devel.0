@@ -1,10 +1,15 @@
-Message-ID: <3B4D7C4721E440638557053D7FED6601@...1853...>
-From: <debbie10t@...277...>
+Date: Mon, 5 Oct 2015 13:23:13 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20151005112313.GH22054@...1296...>
 References: <56125675.3060109@...515...>
-Date: Mon, 5 Oct 2015 12:16:14 +0100
+	<3B4D7C4721E440638557053D7FED6601@...1853...>
 MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="I4VOKWutKNZEOIPu"
+Content-Disposition: inline
+In-Reply-To: <3B4D7C4721E440638557053D7FED6601@...1853...>
 Subject: Re: [Openvpn-devel] Topics for today's (Monday,
-	5th Oct 2015) community meeting (note: 30 mins early)
+ 5th Oct 2015) community meeting (note: 30 mins early)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,31 +18,41 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; format="flowed"; charset="iso-8859-15"; reply-type="original"
+To: debbie10t@...277...
+Cc: openvpn-devel@lists.sourceforge.net
+
+--I4VOKWutKNZEOIPu
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-To: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>, openvpn-devel@lists.sourceforge.net
-
-Can we have an answer regarding easy-rsa-3 please.
-
-
------ Original Message -----=20
-From: "Samuli Sepp=E4nen" <samuli@...515...>
-To: <openvpn-devel@lists.sourceforge.net>
-Sent: Monday, October 05, 2015 11:52 AM
-Subject: [Openvpn-devel] Topics for today's (Monday, 5th Oct 2015) communit=
-y=20
-meeting (note: 30 mins early)
-
+Content-Disposition: inline
 
 Hi,
 
-We're going to have an IRC meeting today, 10th August, starting at 19:30
-CEST (17:30 UTC) on #openvpn-devel <at> irc.freenode.net. Current topic
-list along with basic information is here:
+On Mon, Oct 05, 2015 at 12:16:14PM +0100, debbie10t@...277... wrote:
+> Can we have an answer regarding easy-rsa-3 please.
 
-<https://community.openvpn.net/openvpn/wiki/Topics-2015-10-05>
+ecrist is living in a different timezone, so he won't be in the meeting=20
 
-If you have any other things you'd like to bring up, respond to this
-mail,=20
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
+--I4VOKWutKNZEOIPu
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQCVAwUBVhJdoakuBuNlUUl1AQL6DwQAl/yvsmyBd5SgDMWoLE+8pMFLr2GMtdTd
+OPHbphdpmmJqnGp2mV+Lj6zgfPr+YPU5Pp5zsT/osxH7OmyCE0zPRYcQw5idFD7b
+fdVYgSlOyY60nbDokk4Zyj8DPIGBjBH1gQSx5Y9RbJGp3qG5L3K6ppN5WB0Js10j
+CtYz5Bz/QJk=
+=YtPE
+-----END PGP SIGNATURE-----
+
+--I4VOKWutKNZEOIPu--
 
