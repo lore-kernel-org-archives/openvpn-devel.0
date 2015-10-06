@@ -1,10 +1,10 @@
-Date: Tue, 6 Oct 2015 12:40:55 +0200 (CEST)
-Message-Id: <201510061040.t96AetD3097749@...2054...>
+Date: Tue, 6 Oct 2015 12:46:40 +0200 (CEST)
+Message-Id: <201510061046.t96Ake9e097814@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1442953884-54602-1-git-send-email-gert@...1296...>
-References: <1442953884-54602-1-git-send-email-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Add custom check for
-	inet_pton()/inet_ntop() on MinGW/WIN32
+In-Reply-To: <1443786401-30416-1-git-send-email-lstipakov@...277...>
+References: <1443786401-30416-1-git-send-email-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: This fixes MSVS 2013
+	compilation.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,26 +15,23 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
+To: Lev Stipakov <lstipakov@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Lazy-ACK rules have been applied ("nobody screamed for two weeks", and it
-got tested on various mingw versions plus cygwin).
+ACK.
 
-Patch has been applied to the master branch.
+Your patch has been applied to the master branch.
 
-commit f96baabc6cf10edddedda1819a27a6927f274d8e
-Author: Gert Doering
-Date:   Tue Sep 22 22:31:24 2015 +0200
+commit 123092a7a95f13f0509d2dc52ec049f91a02686d
+Author: Lev Stipakov
+Date:   Fri Oct 2 14:46:41 2015 +0300
 
-     Add custom check for inet_pton()/inet_ntop() on MinGW/WIN32
+     This fixes MSVS 2013 compilation.
 
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1443786401-30416-1-git-send-email-lstipakov@...277...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/10174
      Signed-off-by: Gert Doering <gert@...1296...>
-     Lazy-ACK-by: Gert Doering <gert@...1296...>
-     Tested-by: Heiko Hund <heiko.hund@...1489...>
-     Tested-by: Samuli Seppänen <samuli@...515...>
-     Message-Id: <1442953884-54602-1-git-send-email-gert@...1296...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/10165
 
 
 --
