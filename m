@@ -1,10 +1,14 @@
-Date: Tue, 6 Oct 2015 13:12:39 +0200 (CEST)
-Message-Id: <201510061112.t96BCd5N098171@...2054...>
+Date: Tue, 6 Oct 2015 13:13:22 +0200
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1425810005-11893-1-git-send-email-steffan@...1856...>
+Message-ID: <20151006111322.GW22054@...1296...>
 References: <1425810005-11893-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH applied] Re: polarssl: add easy logging for
-	PolarSSL errors
+	<1425810005-11893-2-git-send-email-steffan@...1856...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="1BKOZKwX7DAU5odC"
+Content-Disposition: inline
+In-Reply-To: <1425810005-11893-2-git-send-email-steffan@...1856...>
+Subject: Re: [Openvpn-devel] [PATCH 2/2] polarssl: Improve PolarSSL logging
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,32 +17,48 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
 To: Steffan Karger <steffan@...1856...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-ACK.  This one is nicely trivial, as it just adds easily verifiable stuff
-without *changing* anything.
+--1BKOZKwX7DAU5odC
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Your patch has been applied to the master branch.
+Hi,
 
-commit 6ef5df14917500f107fd843a6dba61355edaeea0
-Author: Steffan Karger
-Date:   Sun Mar 8 11:20:04 2015 +0100
+On Sun, Mar 08, 2015 at 11:20:05AM +0100, Steffan Karger wrote:
+> Use the new polar_log_err() and polar_ok() functions introduced in the
+> previous commit to provide more log/debug output for polarssl errors.
 
-     polarssl: add easy logging for PolarSSL errors
+For the record on the list - this one looks good, but got left in the sun
+for so long that it's not applying any longer :(
 
-     Signed-off-by: Steffan Karger <steffan@...1856...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1425810005-11893-1-git-send-email-steffan@...1856...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/9528
-     Signed-off-by: Gert Doering <gert@...1296...>
+13:10 <@syzzer> I can send rebased versions when I get home tonight
 
+"please" :-)
 
---
-kind regards,
+gert
 
-Gert Doering
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
+--1BKOZKwX7DAU5odC
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQCVAwUBVhOs0akuBuNlUUl1AQKeHwP/UvECxFC0QHLcbhv9GlnPsghlm+dQa0Ku
+jGyhNMLQHPJaB7ftPBH8Ncpq8R5WVa79vTassOewWq6jjQ55oE7p7sgP3z9Di74y
+hK3D+H3IJ3moQSp1GlnIasxDDFfv1ftYi93XoDTUqLX7o3boMKZlwx7FZY8n3tpF
+PoELhKxgwSM=
+=KAdM
+-----END PGP SIGNATURE-----
+
+--1BKOZKwX7DAU5odC--
 
