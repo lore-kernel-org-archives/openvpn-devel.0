@@ -1,14 +1,7 @@
-Date: Tue, 6 Oct 2015 13:13:22 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20151006111322.GW22054@...1296...>
-References: <1425810005-11893-1-git-send-email-steffan@...1856...>
-	<1425810005-11893-2-git-send-email-steffan@...1856...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="1BKOZKwX7DAU5odC"
-Content-Disposition: inline
-In-Reply-To: <1425810005-11893-2-git-send-email-steffan@...1856...>
-Subject: Re: [Openvpn-devel] [PATCH 2/2] polarssl: Improve PolarSSL logging
+From: Lev Stipakov <lstipakov@...277...>
+Date: Tue,  6 Oct 2015 14:15:13 +0300
+Message-Id: <1444130113-23387-1-git-send-email-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH] Continuation of MSVS fixes
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,48 +10,47 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan@...1856...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---1BKOZKwX7DAU5odC
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+ * Upgrade API level to Vista to implement get_default_gateway_ipv6
+ * Define HAVE_INET_NTOP/PTON since Vista has its own implementation of those
 
-Hi,
+Signed-off-by: Lev Stipakov <lstipakov@...277...>
+---
+ config-msvc.h | 6 ++++++
+ msvc-env.bat  | 2 +-
+ 2 files changed, 7 insertions(+), 1 deletion(-)
 
-On Sun, Mar 08, 2015 at 11:20:05AM +0100, Steffan Karger wrote:
-> Use the new polar_log_err() and polar_ok() functions introduced in the
-> previous commit to provide more log/debug output for polarssl errors.
+diff --git a/config-msvc.h b/config-msvc.h
+index ffd35f4..07032ce 100644
+--- a/config-msvc.h
++++ b/config-msvc.h
+@@ -128,3 +128,9 @@ typedef __int8		int8_t;
+ #include <config-msvc-local.h>
+ #endif
+ 
++// Vista and above has implementation of inet_ntop / inet_pton
++#if _WIN32_WINNT >= _WIN32_WINNT_VISTA
++    #define HAVE_INET_NTOP
++    #define HAVE_INET_PTON
++#endif
++
+diff --git a/msvc-env.bat b/msvc-env.bat
+index 2dd0f00..aabed75 100644
+--- a/msvc-env.bat
++++ b/msvc-env.bat
+@@ -12,7 +12,7 @@ if "%VCHOME%"=="" SET VCHOME=%VSHOME%\VC
+ set SOURCEBASE=%cd%
+ set SOLUTION=openvpn.sln
+ set CPPFLAGS=%CPPFLAGS%;_CRT_SECURE_NO_WARNINGS;WIN32_LEAN_AND_MEAN;_CRT_NONSTDC_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS
+-set CPPFLAGS=%CPPFLAGS%;NTDDI_VERSION=NTDDI_WINXP;_WIN32_WINNT=_WIN32_WINNT_WINXP
++set CPPFLAGS=%CPPFLAGS%;NTDDI_VERSION=NTDDI_VISTA;_WIN32_WINNT=_WIN32_WINNT_VISTA
+ set CPPFLAGS=%CPPFLAGS%;_USE_32BIT_TIME_T
+ set CPPFLAGS=%CPPFLAGS%;%EXTRA_CPPFLAGS%
+ 
+-- 
+1.9.1
 
-For the record on the list - this one looks good, but got left in the sun
-for so long that it's not applying any longer :(
-
-13:10 <@syzzer> I can send rebased versions when I get home tonight
-
-"please" :-)
-
-gert
-
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---1BKOZKwX7DAU5odC
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQCVAwUBVhOs0akuBuNlUUl1AQKeHwP/UvECxFC0QHLcbhv9GlnPsghlm+dQa0Ku
-jGyhNMLQHPJaB7ftPBH8Ncpq8R5WVa79vTassOewWq6jjQ55oE7p7sgP3z9Di74y
-hK3D+H3IJ3moQSp1GlnIasxDDFfv1ftYi93XoDTUqLX7o3boMKZlwx7FZY8n3tpF
-PoELhKxgwSM=
-=KAdM
------END PGP SIGNATURE-----
-
---1BKOZKwX7DAU5odC--
 
