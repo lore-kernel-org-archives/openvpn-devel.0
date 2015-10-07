@@ -1,12 +1,11 @@
-Message-ID: <5614C94A.4040900@...515...>
-Date: Wed, 07 Oct 2015 10:27:06 +0300
+Message-ID: <5614C973.6090400@...515...>
+Date: Wed, 07 Oct 2015 10:27:47 +0300
 From: =?windows-1252?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-References: <5605377D.9040401@...515...>	<20151006113144.GX22054@...1296...>
-	<5614C4BB.2000006@...515...>
-In-Reply-To: <5614C4BB.2000006@...515...>
-Subject: Re: [Openvpn-devel] Help with build-testing a patched OpenVPN tree
- with Cygwin and Visual Studio?
+References: <CADxRZqx68w6zJ1-fAt7Mn=TC0B6n6fkBt4U0WO=ECrz546iOQw@...278...>	<CADxRZqyfmK5k9dFZetHkrFmuiVQ7Z1tZ2wVsEiYyqdHKKZkwtw@...278...>	<CADxRZqyq7SqNUOgW8Vg7SCBmox-CKxkUfMEcLy6FtNAeAJnZrg@...278...>
+	<56138ACC.6090508@...2070...>
+In-Reply-To: <56138ACC.6090508@...2070...>
+Subject: Re: [Openvpn-devel] russian language fixes
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,80 +16,71 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="windows-1252"; format=flowed
 Content-Transfer-Encoding: quoted-printable
-To: Gert Doering <gert@...1296...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: ValdikSS <iam@...2070...>, Anatoly Pugachev <matorola@...277...>, openvpn-devel@lists.sourceforge.net
 
-I also updated information on these pages:
+Hi,
 
-<https://community.openvpn.net/openvpn/wiki/Contributing>
-<https://community.openvpn.net/openvpn/wiki/TesterDocumentation>
+It seems that openvpn-gui development has stalled for quite a while, and=20
+I've had my own share of issues with getting patches in. To simplify the=20
+OpenVPN release process at my end I forked openvpn-gui a while back:
 
-Both had some pretty badly outdated information.
+<https://github.com/mattock/openvpn-gui>
 
-Samuli
+We may want to use my private openvpn-gui fork for now - the official=20
+openvpn-gui tarballs[1] are already built from my own Git repo. If=20
+something happens in the official SF.net openvpn-gui Git repo we can=20
+always merge those changes back to my fork.
+
+As discussed in previous community meeting we also need to consider to=20
+option of replacing openvpn-gui with something that's more actively=20
+maintained.
+
+Thoughts?
+
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
+
+[1] <http://build.openvpn.net/downloads/releases/>
 
 
-> I added this as a Trac "volunteer" task:
+> I posted the similar patch a year ago directly to openvpn-gui
+> sourceforge page and it seems to be gone.
+> So please apply this.
 >
-> <https://community.openvpn.net/openvpn/ticket/615>
->
-> We have not advertised the "[needs] volunteer" tasks much, so here they a=
-re:
->
-> <https://community.openvpn.net/openvpn/report/20>
->
-> Samuli
->
->
->> Hi,
+> On 06.10.2015 11:45, Anatoly Pugachev wrote:
 >>
->> jftr...
+>> Hello!
 >>
->> On Fri, Sep 25, 2015 at 03:01:01PM +0300, Samuli Sepp=E4nen wrote:
->>> We'd need some help build-testing a patched[*] OpenVPN version with
->>> Cygwin and Visual Studio:
->>>
->>> <http://build.openvpn.net/downloads/temp/openvpn-2.3_git.tar.gz>
->>>
->>> This tree already builds fine on mingw_w64 which is enough for doing the
->>> official builds.
+>> Can you please apply patch from trac ticket 446. Thanks.
 >>
->> Heiko tested on Cygwin, Lev made it work on MSVC2013 (and the necessary
->> changes for that have been merged).
+>> https://community.openvpn.net/openvpn/ticket/446
 >>
->> So, now this needs people to actually run IPv6-over-IPv6 to *use* the
->> functionality and report whether it breaks in their setup.
 >>
->> What you need: IPv6 connectivity between OpenVPN client and server, and
->> IPv6 routing *into* the tunnel, with a route that overlaps the IPv6 addr=
-ess
->> of the server - either using "redirect-gateway ipv6", or pushing things
->> like "route-ipv6 2000::/3" with a server inside 2000::/3...  if you do
->> this, you should see something like this in the log:
 >>
->> Tue Oct  6 13:28:57 2015 GDG6: remote_host_ipv6=3D2607:fc50:1001:5200::4
->> Tue Oct  6 13:28:57 2015 ROUTE6_GATEWAY 2001:608:4::1 IFACE=3Deth0
->> Tue Oct  6 13:28:57 2015 ROUTE6: 2607:fc50:1001::/48 overlaps IPv6 remot=
-e 2607:fc50:1001:5200::4, adding host route to VPN endpoint
->> Tue Oct  6 13:28:57 2015 add_route_ipv6(2607:fc50:1001:5200::4/128 -> 20=
-01:608:4::1 metric 1) dev eth0
->> Tue Oct  6 13:28:57 2015 /bin/route -A inet6 add 2607:fc50:1001:5200::4/=
-128 dev eth0 gw 2001:608:4::1 metric 1
+>> ------------------------------------------------------------------------=
+------
 >>
->> the first line is "this is the IPv6 address of the VPN server", the
->> "ROUTE6_GATEWAY" line is "this is the gateway and interface we have
->> discovered!".  The "overlap" notice means the feature will actually
->> kick in - it won't, if you have no overlapping routes into the tunnel,
->> or connect over IPv4 - and the last two lines are the installing of
->> the /128 host route, which better should work as well :-)
 >>
->> I tested this for 6 scenarios on 9 (!) platforms, so I'm reasonably sure
->> it works for the common case - but there will be unexpected cases...
->>
->> gert
->>
+>> _______________________________________________
+>> Openvpn-devel mailing list
+>> Openvpn-devel@lists.sourceforge.net
+>> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 >
 >
-
+>
+> -------------------------------------------------------------------------=
+-----
+>
+>
+>
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+>
 
 
