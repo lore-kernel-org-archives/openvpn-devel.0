@@ -1,9 +1,7 @@
 From: Jan Just Keijser <janjust@...1147...>
-Date: Fri,  9 Oct 2015 17:43:01 +0200
-Message-Id: <1444405381-27502-1-git-send-email-janjust@...1147...>
-Subject: [Openvpn-devel] [PATCH] Add support for TFTP and WPAD DHCP options.
-	These DHCP options are picked up by the client-side (Windows)
-	adapter and made available to other applications.
+Date: Fri,  9 Oct 2015 17:53:23 +0200
+Message-Id: <1444406003-27660-1-git-send-email-janjust@...1147...>
+Subject: [Openvpn-devel] [PATCH] Add TFTP and WPAD DHCP options V4
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,12 +14,22 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
+These DHCP options will
+be added on the client to the (Windows) tun adapter and will be
+available to other applications.
+
+This allows the server to push out a TFTP address to use for
+applications like Cisco's IP Phone.
+
+WPAD stands for Windows Proxy Auto Detection and it allows
+Internet Explorer to automatically pick up a proxy address
+via the  URL http://<WPAD-IP>/wpad.dat
 ---
  doc/openvpn.8         |    8 ++++++++
  src/openvpn/options.c |   14 ++++++++++++++
- src/openvpn/tun.c     |   29 +++++++++++++++++++++++++++++
+ src/openvpn/tun.c     |   20 ++++++++++++++++++++
  src/openvpn/tun.h     |    9 ++++++++-
- 4 files changed, 59 insertions(+), 1 deletions(-)
+ 4 files changed, 50 insertions(+), 1 deletions(-)
 
 diff --git a/doc/openvpn.8 b/doc/openvpn.8
 index e213f5a..87ac26c 100644
@@ -99,7 +107,7 @@ index de4fa38..fb0cd71 100644
  	{
  	  msg (msglevel, "--dhcp-option: unknown option type '%s' or missing or unknown parameter", p[1]);
 diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index 24a61ec..0ba3e8a 100644
+index 24a61ec..21e0138 100644
 --- a/src/openvpn/tun.c
 +++ b/src/openvpn/tun.c
 @@ -4967,6 +4967,11 @@ static bool
@@ -114,7 +122,7 @@ index 24a61ec..0ba3e8a 100644
    if (o->domain)
      write_dhcp_str (buf, 15, o->domain, &error);
  
-@@ -4997,6 +5002,30 @@ build_dhcp_options_string (struct buffer *buf, const struct tuntap_options *o)
+@@ -4997,6 +5002,21 @@ build_dhcp_options_string (struct buffer *buf, const struct tuntap_options *o)
      buf_write_u8 (buf,  4);  /* length of the vendor specified field */
      buf_write_u32 (buf, 0x002);
    }
@@ -129,16 +137,7 @@ index 24a61ec..0ba3e8a 100644
 +  
 +  /* IE6 seems to requires an extra character at the end of the URL */
 +  if (o->wpad_url)
-+  {
-+#ifdef WIN32
-+    char str[256];
-+    strncpy( str, o->wpad_url, 255 );
-+    strcat( str, "\r" );
-+    write_dhcp_str (buf, 252, str, &error);
-+#else
 +    write_dhcp_str (buf, 252, o->wpad_url, &error);
-+#endif
-+  }
 +
 +  gc_free (&gc);
 +
