@@ -1,13 +1,7 @@
-Date: Fri, 9 Oct 2015 15:39:50 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20151009133950.GN22054@...1296...>
-References: <1444393757-21376-1-git-send-email-lstipakov@...277...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="ZQ93ZA/51YEIDw4/"
-Content-Disposition: inline
-In-Reply-To: <1444393757-21376-1-git-send-email-lstipakov@...277...>
-Subject: Re: [Openvpn-devel] [PATCH] Support for disabled peer-id
+From: Lev Stipakov <lstipakov@...277...>
+Date: Fri,  9 Oct 2015 17:13:45 +0300
+Message-Id: <1444400025-22289-1-git-send-email-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH v2] Support for disabled peer-id
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,49 +10,85 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Lev Stipakov <lstipakov@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---ZQ93ZA/51YEIDw4/
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+v2:
+ * Add round brackets for clarity.
+ * Rephrase comment.
 
-Hi,
+v1:
+ * When peer-id value is 0xFFFFFF, server should ignore it and treat packet
+in a same way as P_DATA_V1.
+ * Make sure that issued peer-id does not exceed 0xFFFFFF.
+---
+ src/openvpn/mudp.c  | 14 +++++++++++---
+ src/openvpn/multi.c |  3 ++-
+ 2 files changed, 13 insertions(+), 4 deletions(-)
 
-On Fri, Oct 09, 2015 at 03:29:17PM +0300, Lev Stipakov wrote:
-> +	  peer_id_disabled =3D peer_id =3D=3D 0xFFFFFF;
+diff --git a/src/openvpn/mudp.c b/src/openvpn/mudp.c
+index 57118f8..fcbb47d 100644
+--- a/src/openvpn/mudp.c
++++ b/src/openvpn/mudp.c
+@@ -60,12 +60,16 @@ multi_get_create_instance_udp (struct multi_context *m, bool *floated)
+       struct hash_bucket *bucket = hash_bucket (hash, hv);
+       uint8_t* ptr = BPTR(&m->top.c2.buf);
+       uint8_t op = ptr[0] >> P_OPCODE_SHIFT;
++      bool v2 = (op == P_DATA_V2) && (m->top.c2.buf.len >= (1 + 3));
++      bool peer_id_disabled = false;
+ 
+       /* make sure buffer has enough length to read opcode (1 byte) and peer-id (3 bytes) */
+-      if (op == P_DATA_V2 && m->top.c2.buf.len >= (1 + 3))
++      if (v2)
+ 	{
+ 	  uint32_t peer_id = ntohl(*(uint32_t*)ptr) & 0xFFFFFF;
+-	  if ((peer_id < m->max_clients) && (m->instances[peer_id]))
++	  peer_id_disabled = (peer_id == 0xFFFFFF);
++
++	  if (!peer_id_disabled && (peer_id < m->max_clients) && (m->instances[peer_id]))
+ 	    {
+ 	      mi = m->instances[peer_id];
+ 
+@@ -80,7 +84,7 @@ multi_get_create_instance_udp (struct multi_context *m, bool *floated)
+ 	      }
+ 	    }
+ 	}
+-      else
++      if (!v2 || peer_id_disabled)
+ 	{
+ 	  he = hash_lookup_fast (hash, bucket, &real, hv);
+ 	  if (he)
+@@ -103,10 +107,14 @@ multi_get_create_instance_udp (struct multi_context *m, bool *floated)
+ 		      hash_add_fast (hash, bucket, &mi->real, hv, mi);
+ 		      mi->did_real_hash = true;
+ 
++		      /* In future we might want to use P_DATA_V2 but not need peer-id/float functionality */
+ 		      for (i = 0; i < m->max_clients; ++i)
+ 			{
+ 			  if (!m->instances[i])
+ 			    {
++			      /* issued peer-id should fit into 3 bytes to avoid wrap and cannot have reserved value 0xFFFFFF */
++			      ASSERT(i < 0xFFFFFF);
++
+ 			      mi->context.c2.tls_multi->peer_id = i;
+ 			      m->instances[i] = mi;
+ 			      break;
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index 902c4dc..76f5a44 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -562,7 +562,8 @@ multi_close_instance (struct multi_context *m,
+ 	}
+ #endif
+ 
+-      m->instances[mi->context.c2.tls_multi->peer_id] = NULL;
++      if (mi->context.c2.tls_multi->peer_id != 0xFFFFFF)
++        m->instances[mi->context.c2.tls_multi->peer_id] = NULL;
+ 
+       schedule_remove_entry (m->schedule, (struct schedule_entry *) mi);
+ 
+-- 
+1.9.1
 
-The general patch is fine, but while this line is technical correct, I don't
-think we should do so...  please add least add some brackets...
-
-	  peer_id_disabled =3D (peer_id =3D=3D 0xFFFFFF);
-
-
-> +		      /* TODO: support for disabled peer-id */
-
-What is this TODO about?
-
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---ZQ93ZA/51YEIDw4/
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQCVAwUBVhfDpqkuBuNlUUl1AQKkwQP/XtN3oXuBhP2ZtZkqw1SYhQA1nV+380k+
-Fi6qRZOlIAfGlY6Y/AKKtaEUnnCRisyqSOvjvd9ilQFoOUK9S9AI1bcsNgdwOEii
-5RSJv4IniSbR12bKvts9j1vVh+I8SfW689OuS/g2SQxVzx4Kuj6fXoCPMZkknJQ6
-EjGkqZPSkWo=
-=8GAv
------END PGP SIGNATURE-----
-
---ZQ93ZA/51YEIDw4/--
 
