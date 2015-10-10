@@ -1,12 +1,11 @@
-References: <20140526132551.GA9011@...1915...>
-From: David Sommerseth <openvpn.list@...1114...>
-Message-ID: <56183D5A.5070805@...1114...>
-Date: Sat, 10 Oct 2015 00:19:06 +0200
+References: <etPan.52df80ec.2901d82.13bb7@...1863...>
+From: Arne Schwabe <arne@...1227...>
+Message-ID: <5618CEAC.5070509@...1227...>
+Date: Sat, 10 Oct 2015 10:39:08 +0200
 MIME-Version: 1.0
-In-Reply-To: <20140526132551.GA9011@...1915...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Add support for Keying Material
- Exporter [RFC 5705]
-Reply-To: openvpn-devel@lists.sourceforge.net
+In-Reply-To: <etPan.52df80ec.2901d82.13bb7@...1863...>
+Subject: Re: [Openvpn-devel] [PATCH] Update expiry date in management event
+ loop
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,58 +16,16 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-To: Daniel Kubec <niel@...1898...>, openvpn-devel@lists.sourceforge.net
+To: Thomas Veerman <thomas.veerman@...1862...>, openvpn-devel@lists.sourceforge.net
 
-On 26/05/14 15:25, Daniel Kubec wrote:
-> Add support for TLS Keying Material Exporters [RFC 5705].
->     
-> Keying Material Exporter allow additional keying material to be derived from existing TLS channel. 
-> This exported keying material can then be used for a variety of purposes.
+Am 22.01.14 um 09:27 schrieb Thomas Veerman:
+> When there are events from the management console with an interval shorter
+> than 1 second, the event loop never stops as it keeps resetting event_wait.
+> 
 
-These patches have been applied to the git master branch:
+ACK. It is a strange cornercase and the patch does not change behaviour
+otherwise.
 
-* openvpn-rfc5705-v3.patch
-commit 685e486e8b8f70c25f09590c24762ff734f94a51
-Author: Daniel Kubec <niel@...1898...>
-Date:   Thu Mar 12 15:14:20 2015 +0100
+Arne
 
-    Added support for TLS Keying Material Exporters [RFC-5705]
-
-    Signed-off-by: Daniel Kubec <niel@...1898...>
-    Signed-off-by: David Sommerseth <davids@...1347...>
-    Acked-by: Steffan Karger <steffan.karger@...1435...
-    Acked-by: David Sommerseth <davids@...1347...>
-
-
-* openvpn-rfc5705-doc-v3.patch
-commit 84604e0bae7216b46642d5a1a443b86f712d53aa
-Author: Daniel Kubec <niel@...1898...>
-Date:   Thu Mar 12 15:25:42 2015 +0100
-
-    Added document for TLS Keying Material Exporters [RFC-5705]
-
-    [DS: Fixed option prefix from '-' to '--']
-
-    Signed-off-by: Daniel Kubec <niel@...1898...>
-    Signed-off-by: David Sommerseth <davids@...1347...>
-    Acked-by: Steffan Karger <steffan.karger@...1435...
-    Acked-by: David Sommerseth <davids@...1347...>
-
-
-* openvpn-rfc5705-sample.patch
-commit f7ef7522f5c7e6d4abfa5a0378c2e2ad265c65ec
-Author: Daniel Kubec <niel@...1898...>
-Date:   Sun Apr 5 00:10:37 2015 +0200
-
-    sample-plugin: TLS Keying Material Exporter [RFC-5705] demonstration plug-in
-
-    Signed-off-by: Daniel Kubec <niel@...1898...>
-    Signed-off-by: David Sommerseth <davids@...1347...>
-    Acked-by: David Sommerseth <davids@...1347...>
-
-
--- 
-kind regards,
-
-David Sommerseth
 
