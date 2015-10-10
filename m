@@ -1,8 +1,8 @@
 From: samuli@...515...
-Date: Sat, 10 Oct 2015 16:36:24 +0300
-Message-Id: <1444484184-6219-1-git-send-email-samuli@...515...>
+Date: Sat, 10 Oct 2015 16:38:36 +0300
+Message-Id: <1444484316-6329-1-git-send-email-samuli@...515...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH: tap-windows6] Added CONTRIBUTING.rst
+Subject: [Openvpn-devel] [PATCH: openvpn-build] Added CONTRIBUTING.rst
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,43 +19,42 @@ From: Samuli Sepp=C3=A4nen <samuli@...515...>
 
 Signed-off-by: Samuli Sepp=C3=A4nen <samuli@...515...>
 ---
- CONTRIBUTING.rst | 26 ++++++++++++++++++++++++++
- 1 file changed, 26 insertions(+)
+ CONTRIBUTING.rst | 25 +++++++++++++++++++++++++
+ 1 file changed, 25 insertions(+)
  create mode 100644 CONTRIBUTING.rst
 
 diff --git a/CONTRIBUTING.rst b/CONTRIBUTING.rst
 new file mode 100644
-index 0000000..6ee5908
+index 0000000..70f4d15
 --- /dev/null
 +++ b/CONTRIBUTING.rst
-@@ -0,0 +1,26 @@
-+Contributing to tap-windows6
+@@ -0,0 +1,25 @@
++CONTRIBUTING TO OPENVPN-BUILD
 +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D
+=3D=3D=3D=3D=3D
 +
-+To contribute to tap-windows6 please send your patches to openvpn-devel ma=
-iling=20
-+list:
++The suggested way to contribute is to fork the repo and issue a pull reque=
+st on=20
++GitHub. Alternatively you can send your patch to openvpn-devel mailing lis=
+t:
 +
 +- https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 +
 +The subject line should look like this:
 +
-+  [PATCH: tap-windows6] summary of the patch
++  [PATCH: openvpn-build] summary of the patch
 +
 +To avoid merging issues patches should be created with git-format-patch or=
- sent
+ sent=20
 +using git-send-email. The easiest way to add the subject line prefix is to=
- use
+ use=20
 +this option:
 +
-+  --subject-prefix=3D'PATCH: tap-windows6'
++  --subject-prefix=3D'PATCH: openvpn-build'
 +
-+Patches that do not modify the actual driver code can be sent as GitHub pu=
-ll=20
-+requests. Try to split large patches into small, atomic pieces to make rev=
-iews=20
-+and merging easier.
++Please try to split large patches into small, atomic pieces to make review=
+s=20
++easier.
 +
 +If you want quick feedback on a patch, you can visit the #openvpn-devel ch=
 annel=20
