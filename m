@@ -1,11 +1,11 @@
-Message-ID: <561929E7.8020701@...515...>
-Date: Sat, 10 Oct 2015 18:08:23 +0300
+Message-ID: <56192A05.8040108@...515...>
+Date: Sat, 10 Oct 2015 18:08:53 +0300
 From: =?windows-1252?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
 MIME-Version: 1.0
-References: <1444484316-6329-1-git-send-email-samuli@...515...>
-	<20151010134920.GA22054@...1296...>
-In-Reply-To: <20151010134920.GA22054@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH: openvpn-build] Added CONTRIBUTING.rst
+References: <1444484184-6219-1-git-send-email-samuli@...515...>
+	<20151010134440.GZ22054@...1296...>
+In-Reply-To: <20151010134440.GZ22054@...1296...>
+Subject: Re: [Openvpn-devel] [PATCH: tap-windows6] Added CONTRIBUTING.rst
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,20 +22,19 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 > Hi,
 >
-> On Sat, Oct 10, 2015 at 04:38:36PM +0300, samuli@...515... wrote:
+> On Sat, Oct 10, 2015 at 04:36:24PM +0300, samuli@...515... wrote:
 >> From: Samuli Sepp=E4nen <samuli@...515...>
 >>
 >> Signed-off-by: Samuli Sepp=E4nen <samuli@...515...>
->> ---
->>   CONTRIBUTING.rst | 25 +++++++++++++++++++++++++
->>   1 file changed, 25 insertions(+)
->>   create mode 100644 CONTRIBUTING.rst
 >
-> Looks good to me. ACK, if I may :)
+> Sounds good to me.  I'm not sure if I have formal authority for tap-windo=
+ws6,
+> but anyway "ACK" :-)
 >
 > gert
+>
 
-Pushed to openvpn-build.
+Pushed to tap-windows6.
 
 --=20
 Samuli Sepp=E4nen
