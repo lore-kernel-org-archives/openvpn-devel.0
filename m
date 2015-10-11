@@ -1,10 +1,9 @@
-References: <1444494889-28925-1-git-send-email-gert@...1296...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <561A1470.40900@...1227...>
-Date: Sun, 11 Oct 2015 09:49:04 +0200
-MIME-Version: 1.0
-In-Reply-To: <1444494889-28925-1-git-send-email-gert@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH] Remove support for snappy compression.
+Date: Sun, 11 Oct 2015 10:23:18 +0200 (CEST)
+Message-Id: <201510110823.t9B8NItV033662@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <1444493569-24026-1-git-send-email-janjust@...1147...>
+References: <1444493569-24026-1-git-send-email-janjust@...1147...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix trac ticket #569
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,23 +12,32 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: janjust <janjust@...1147...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Am 10.10.15 um 18:34 schrieb Gert Doering:
-> LZ4 is using less CPU at similar performance, and it is easier to
-> build and support for binary installs (as it does not require C++
-> and a C++ runtime).  Since it was never supported in any formally
-> released OpenVPN version, just drop it again.
-> 
-> This leaves in the compression opcode for Snappy for documentation
-> purposes.
-> 
-> trac #617
+Your patch has been applied to the master and release/2.3 branch.
 
-ACK from me. Snappy is probably not used outside from testscripts.
+commit c67acea173dc9ee37220f5b9ff14ede081181992 (master)
+commit a3160fc1bd7368395745b9cee6e40fb819f5564c (release/2.3)
 
-Arne
+Author: janjust <janjust@...1147...>
+Date:   Sat Oct 10 18:12:49 2015 +0200
+
+    Fix "White space before end tags can break the config parser"
+    
+    trac #569
+    
+    Acked-by: Arne Schwabe <arne@...1227...>
+    Message-Id: <1444493569-24026-1-git-send-email-janjust@...1147...>
+    URL: http://article.gmane.org/gmane.network.openvpn.devel/10249
+    
+    Signed-off-by: Gert Doering <gert@...1296...>
+
+--
+kind regards,
+
+Gert Doering
 
 
