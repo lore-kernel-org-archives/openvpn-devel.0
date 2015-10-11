@@ -1,10 +1,10 @@
 From: Adriaan de Jong <dejong@...1435...>
-Date: Sun, 11 Oct 2015 10:44:20 +0200
-Message-ID: <1444553060-15946-1-git-send-email-dejong@...1435...>
-In-Reply-To: <1373890626-13943-1-git-send-email-mludvig@...1388...>
-References: <1373890626-13943-1-git-send-email-mludvig@...1388...>
+Date: Sun, 11 Oct 2015 10:48:52 +0200
+Message-ID: <1444553332-16205-1-git-send-email-dejong@...1435...>
+In-Reply-To: <52598DAD.7040603@...1832...>
+References: <52598DAD.7040603@...1832...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Support for username-only auth file.
+Subject: [Openvpn-devel] [PATCH] Allow inlining of --auth-user-pass
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,219 +16,324 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@...350...
-Cc: Michal Ludvig <mludvig@...1388...>
 
-Make OpenVPN read the username from the auth file
-parameter of --auth-user-pass and prompt for a
-password if it's not in the file.
+This patch allows inlining of the --auth-user-pass directive, so it is now
+possible to do
 
-Rationale: Prior to this change OpenVPN either
-required both username and password present in the
-auth file or prompted for both on the console.
-Unlike passwords usernames usually don't change and
-can therefore be "hardcoded" in the config.
+<auth-user-pass>
+myusername
+mypassword
+</auth-user-pass>
 
-Signed-off-by: Michal Ludvig <mludvig@...1388...>
+or supply just the username, eg
 
-Reviewed and updated to current master.
+<auth-user-pass>
+myusername
+</auth-user-pass>
+
+(in this case the user is prompted for the password only).
+The most changed files are options.c (sanity check of inlined credentials)
+and ssl.c (actual parsing of the inlined credentials).
+
+Udates to the documentation will be provided in a separate patch if and when
+the present patch is accepted.
+
+As discussed on IRC, for the time being the non-inlined syntax
+
+auth-user-pass [up]
+
+is still supported and [up] is expected to contain username and password
+on two lines.
+
+Signed-off-by: Davide Brini <dave_br@...1278...>
+
+Updated patch to current master, removed printing of the username/password.
 
 Signed-off-by: Adriaan de Jong <dejong@...1435...>
 ---
- doc/openvpn.8         |   3 +-
- src/openvpn/misc.c    | 110 ++++++++++++++++++++++++++------------------------
- src/openvpn/options.c |   6 ++-
- 3 files changed, 64 insertions(+), 55 deletions(-)
+ doc/openvpn.8            |  3 +--
+ src/openvpn/init.c       |  5 ++--
+ src/openvpn/misc.c       |  2 +-
+ src/openvpn/options.c    | 43 +++++++++++++++++++++++++++++++++-
+ src/openvpn/options.h    |  2 ++
+ src/openvpn/ssl.c        | 61 +++++++++++++++++++++++++++++++++++++++++++-----
+ src/openvpn/ssl.h        |  2 +-
+ src/openvpn/ssl_common.h |  1 +
+ 8 files changed, 106 insertions(+), 13 deletions(-)
 
 diff --git a/doc/openvpn.8 b/doc/openvpn.8
-index 422b426..1b7606c 100644
+index 829b09c..422b426 100644
 --- a/doc/openvpn.8
 +++ b/doc/openvpn.8
-@@ -3754,7 +3754,8 @@ over the client's routing table.
- .B \-\-auth\-user\-pass [up]
- Authenticate with server using username/password.
- .B up
--is a file containing username/password on 2 lines (Note: OpenVPN
-+is a file containing username/password on 2 lines. If the
-+password line is missing, OpenVPN will prompt for one. (Note: OpenVPN
- will only read passwords from a file if it has been built
- with the \-\-enable\-password\-save configure option, or on Windows
- by defining ENABLE_PASSWORD_SAVE in win/settings.in).
+@@ -6399,8 +6399,7 @@ X509_1_C=KG
+ .SH INLINE FILE SUPPORT
+ OpenVPN allows including files in the main configuration for the
+ .B \-\-ca, \-\-cert, \-\-dh, \-\-extra\-certs, \-\-key, \-\-pkcs12, \-\-secret
+-and
+-.B \-\-tls\-auth
++.B \-\-tls\-auth and \-\-auth-user-pass
+ options.
+ 
+ Each inline file started by the line
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index c32a809..ade8cae 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -421,9 +421,9 @@ init_query_passwords (const struct context *c)
+   if (c->options.auth_user_pass_file)
+     {
+ #ifdef ENABLE_CLIENT_CR
+-      auth_user_pass_setup (c->options.auth_user_pass_file, &c->options.sc_info);
++      auth_user_pass_setup (c->options.auth_user_pass_file, c->options.auth_user_pass_file_inline, &c->options.sc_info);
+ #else
+-      auth_user_pass_setup (c->options.auth_user_pass_file, NULL);
++      auth_user_pass_setup (c->options.auth_user_pass_file, c->options.auth_user_pass_file_inline, NULL);
+ #endif
+     }
+ #endif
+@@ -2263,6 +2263,7 @@ do_init_crypto_tls (struct context *c, const unsigned int flags)
+   if (options->ccd_exclusive)
+     to.client_config_dir_exclusive = options->client_config_dir;
+   to.auth_user_pass_file = options->auth_user_pass_file;
++  to.auth_user_pass_file_inline = options->auth_user_pass_file_inline;
+ #endif
+ 
+ #ifdef ENABLE_X509_TRACK
 diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
-index 5158f66..b6c8854 100644
+index fd1930a..5158f66 100644
 --- a/src/openvpn/misc.c
 +++ b/src/openvpn/misc.c
-@@ -1003,7 +1003,9 @@ get_user_pass_cr (struct user_pass *up,
+@@ -1003,7 +1003,7 @@ get_user_pass_cr (struct user_pass *up,
  
    if (!up->defined)
      {
--      const bool from_stdin = (!auth_file || streq (auth_file, "stdin"));
-+      bool from_authfile = (auth_file && !streq (auth_file, "stdin"));
-+      bool username_from_stdin = !from_authfile;
-+      bool password_from_stdin = !from_authfile;
+-      const bool from_stdin = (!auth_file || !strcmp (auth_file, "stdin"));
++      const bool from_stdin = (!auth_file || streq (auth_file, "stdin"));
  
        if (flags & GET_USER_PASS_PREVIOUS_CREDS_FAILED)
  	msg (M_WARN, "Note: previous '%s' credentials failed", prefix);
-@@ -1013,7 +1015,7 @@ get_user_pass_cr (struct user_pass *up,
-        * Get username/password from management interface?
-        */
-       if (management
--	  && ((auth_file && streq (auth_file, "management")) || (from_stdin && (flags & GET_USER_PASS_MANAGEMENT)))
-+	  && ((auth_file && streq (auth_file, "management")) || (!from_authfile && (flags & GET_USER_PASS_MANAGEMENT)))
- 	  && management_query_user_pass_enabled (management))
- 	{
- 	  const char *sc = NULL;
-@@ -1050,11 +1052,61 @@ get_user_pass_cr (struct user_pass *up,
- 	  if (!strlen (up->password))
- 	    strcpy (up->password, "ok");
- 	}
--	  
-+      else if (from_authfile)
-+        {
-+          /*
-+           * Try to get username/password from a file.
-+           */
-+          FILE *fp;
-+          char password_buf[USER_PASS_LEN] = { '\0' };
-+
-+          warn_if_group_others_accessible (auth_file);
-+
-+          fp = platform_fopen (auth_file, "r");
-+          if (!fp)
-+            msg (M_ERR, "Error opening '%s' auth file: %s", prefix, auth_file);
-+
-+          if ((flags & GET_USER_PASS_PASSWORD_ONLY) == 0)
-+            {
-+              /* Read username first */
-+               if (fgets (up->username, USER_PASS_LEN, fp) == NULL)
-+                 msg (M_FATAL, "Error reading username from %s authfile: %s",
-+                      prefix,
-+                      auth_file);
-+             }
-+          chomp (up->username);
-+
-+          if (fgets (password_buf, USER_PASS_LEN, fp) != NULL)
-+            {
-+#ifndef ENABLE_PASSWORD_SAVE
-+              /*
-+               * Unless ENABLE_PASSWORD_SAVE is defined, don't allow sensitive passwords
-+               * to be read from a file.
-+               */
-+              if (flags & GET_USER_PASS_SENSITIVE)
-+                msg (M_FATAL, "Sorry, '%s' password cannot be read from a file", prefix);
-+#endif
-+              chomp (password_buf);
-+            }
-+
-+          if (flags & GET_USER_PASS_PASSWORD_ONLY && !password_buf[0])
-+                msg (M_FATAL, "Error reading password from %s authfile: %s", prefix, auth_file);
-+
-+          if (password_buf[0])
-+            strncpy(up->password, password_buf, USER_PASS_LEN);
-+          else
-+            password_from_stdin = 1;
-+
-+          fclose (fp);
-+
-+          if (!(flags & GET_USER_PASS_PASSWORD_ONLY) && strlen (up->username) == 0)
-+            msg (M_FATAL, "ERROR: username from %s authfile '%s' is empty", prefix, auth_file);
-+        }
-+
-       /*
-        * Get username/password from standard input?
-        */
--      else if (from_stdin)
-+      if (username_from_stdin || password_from_stdin)
- 	{
- #ifndef WIN32
- 	  /* did we --daemon'ize before asking for passwords? */
-@@ -1092,7 +1144,7 @@ get_user_pass_cr (struct user_pass *up,
- 	      buf_printf (&user_prompt, "Enter %s Username:", prefix);
- 	      buf_printf (&pass_prompt, "Enter %s Password:", prefix);
- 
--	      if (!(flags & GET_USER_PASS_PASSWORD_ONLY))
-+	      if (username_from_stdin && !(flags & GET_USER_PASS_PASSWORD_ONLY))
- 		{
- 		  if (!get_console_input (BSTR (&user_prompt), true, up->username, USER_PASS_LEN))
- 		    msg (M_FATAL, "ERROR: could not read %s username from stdin", prefix);
-@@ -1100,7 +1152,7 @@ get_user_pass_cr (struct user_pass *up,
- 		    msg (M_FATAL, "ERROR: %s username is empty", prefix);
- 		}
- 
--	      if (!get_console_input (BSTR (&pass_prompt), false, up->password, USER_PASS_LEN))
-+	      if (password_from_stdin && !get_console_input (BSTR (&pass_prompt), false, up->password, USER_PASS_LEN))
- 		msg (M_FATAL, "ERROR: could not not read %s password from stdin", prefix);
- 
- #ifdef ENABLE_CLIENT_CR
-@@ -1126,52 +1178,6 @@ get_user_pass_cr (struct user_pass *up,
- #endif
- 	    }
- 	}
--      else
--	{
--	  /*
--	   * Get username/password from a file.
--	   */
--	  FILE *fp;
--      
--#ifndef ENABLE_PASSWORD_SAVE
--	  /*
--	   * Unless ENABLE_PASSWORD_SAVE is defined, don't allow sensitive passwords
--	   * to be read from a file.
--	   */
--	  if (flags & GET_USER_PASS_SENSITIVE)
--	    msg (M_FATAL, "Sorry, '%s' password cannot be read from a file", prefix);
--#endif
--
--	  warn_if_group_others_accessible (auth_file);
--
--	  fp = platform_fopen (auth_file, "r");
--	  if (!fp)
--	    msg (M_ERR, "Error opening '%s' auth file: %s", prefix, auth_file);
--
--	  if (flags & GET_USER_PASS_PASSWORD_ONLY)
--	    {
--	      if (fgets (up->password, USER_PASS_LEN, fp) == NULL)
--		msg (M_FATAL, "Error reading password from %s authfile: %s",
--		     prefix,
--		     auth_file);
--	    }
--	  else
--	    {
--	      if (fgets (up->username, USER_PASS_LEN, fp) == NULL
--		  || fgets (up->password, USER_PASS_LEN, fp) == NULL)
--		msg (M_FATAL, "Error reading username and password (must be on two consecutive lines) from %s authfile: %s",
--		     prefix,
--		     auth_file);
--	    }
--      
--	  fclose (fp);
--      
--	  chomp (up->username);
--	  chomp (up->password);
--      
--	  if (!(flags & GET_USER_PASS_PASSWORD_ONLY) && strlen (up->username) == 0)
--	    msg (M_FATAL, "ERROR: username from %s authfile '%s' is empty", prefix, auth_file);
--	}
- 
-       string_mod (up->username, CC_PRINT, CC_CRLF, 0);
-       string_mod (up->password, CC_PRINT, CC_CRLF, 0);
 diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 86b7a83..d7e1edf 100644
+index 7906f46..86b7a83 100644
 --- a/src/openvpn/options.c
 +++ b/src/openvpn/options.c
-@@ -479,8 +479,10 @@ static const char usage_message[] =
-   "Client options (when connecting to a multi-client server):\n"
-   "--client         : Helper option to easily configure client mode.\n"
-   "--auth-user-pass [up] : Authenticate with server using username/password.\n"
--  "                  up is a file containing username/password on 2 lines,\n"
--  "                  or omit to prompt from console.\n"
-+  "                  up is a file containing the username on the first line,\n"
-+  "                  and a password on the second. If either the password or both\n"
-+  "                  the username and the password are omitted OpenVPN will prompt\n"
-+  "                  for them from console.\n"
-   "--pull           : Accept certain config file options from the peer as if they\n"
-   "                  were part of the local config file.  Must be specified\n"
-   "                  when connecting to a '--mode server' remote host.\n"
+@@ -2320,6 +2320,41 @@ options_postprocess_verify_ce (const struct options *options, const struct conne
+ #if P2MP
+   if (options->auth_user_pass_file && !options->pull)
+     msg (M_USAGE, "--auth-user-pass requires --pull");
++  if (options->auth_user_pass_file)
++    {
++      if ( (!streq(options->auth_user_pass_file, "stdin") || options->auth_user_pass_file_inline) && options->auth_nocache)
++        msg (M_USAGE, "Cannot use --auth-nocache with credentials from file");
++#ifdef ENABLE_CLIENT_CR
++      if ( (!streq(options->auth_user_pass_file, "stdin") || options->auth_user_pass_file_inline) && options->sc_info.challenge_text)
++        msg (M_USAGE, "Credentials cannot be in a file if using --static-challenge");
++#endif
++    }
++  if (options->auth_user_pass_file_inline)
++    {
++      int n_inlined = 0;
++      const char *pos = options->auth_user_pass_file_inline;
++      const char *prev = pos;
++
++      if ( strlen(pos) == 0 )
++        msg (M_USAGE, "Invalid format for inlined --auth-user-pass");
++
++      while( (pos = strchr(pos, '\n')) != NULL )
++        {
++          n_inlined++;
++
++          if (n_inlined > 2)
++            msg (M_USAGE, "Too many lines in inlined --auth-user-pass");
++
++          if ( pos - prev > USER_PASS_LEN - 1 )
++            msg (M_USAGE, "Line too long in inlined --auth-user-pass");
++
++          pos++;
++          prev = pos;
++        }
++
++      if ( (n_inlined == 0) || (*prev != '\0') )
++        msg (M_USAGE, "Invalid format for inlined --auth-user-pass");
++    }
+ #endif
+ 
+   uninit_options (&defaults);
+@@ -2744,7 +2779,7 @@ options_postprocess_filechecks (struct options *options)
+                              "--management user/password file");
+ #endif /* ENABLE_MANAGEMENT */
+ #if P2MP
+-  errs |= check_file_access (CHKACC_FILE|CHKACC_ACPTSTDIN,
++  errs |= check_file_access (CHKACC_FILE|CHKACC_ACPTSTDIN|CHKACC_INLINE,
+                              options->auth_user_pass_file, R_OK,
+                              "--auth-user-pass");
+ #endif /* P2MP */
+@@ -5938,6 +5973,11 @@ add_option (struct options *options,
+       if (p[1])
+ 	{
+ 	  options->auth_user_pass_file = p[1];
++          if (streq (p[1], INLINE_FILE_TAG) && p[2])
++            {
++              options->auth_user_pass_file = "stdin";
++              options->auth_user_pass_file_inline = p[2];
++            }
+ 	}
+       else
+ 	options->auth_user_pass_file = "stdin";
+@@ -6665,6 +6705,7 @@ add_option (struct options *options,
+   else if (streq (p[0], "auth-nocache") && !p[1])
+     {
+       VERIFY_PERMISSION (OPT_P_GENERAL);
++      options->auth_nocache = true;
+       ssl_set_auth_nocache ();
+     }
+   else if (streq (p[0], "auth-token") && p[1] && !p[2])
+diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+index c642aa0..903c663 100644
+--- a/src/openvpn/options.h
++++ b/src/openvpn/options.h
+@@ -292,6 +292,7 @@ struct options
+   bool up_delay;
+   bool up_restart;
+   bool daemon;
++  bool auth_nocache;
+ 
+   int remap_sigusr1;
+ 
+@@ -457,6 +458,7 @@ struct options
+   int push_continuation;
+   unsigned int push_option_types_found;
+   const char *auth_user_pass_file;
++  const char *auth_user_pass_file_inline;
+   struct options_pre_pull *pre_pull;
+ 
+   int server_poll_timeout;
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 86eda77..7debaf8 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -362,11 +362,57 @@ static char *auth_challenge; /* GLOBAL */
+ #endif
+ 
+ void
+-auth_user_pass_setup (const char *auth_file, const struct static_challenge_info *sci)
++auth_user_pass_setup (const char *auth_file, const char *auth_file_inline, const struct static_challenge_info *sci)
+ {
++  int extra_flags = 0;
++  int n_inlined = 0;
++  char inlined_username[USER_PASS_LEN];
++  char inlined_password[USER_PASS_LEN];
++
+   auth_user_pass_enabled = true;
++
+   if (!auth_user_pass.defined)
+     {
++      if (auth_file && streq (auth_file, "stdin") && auth_file_inline)
++        {
++          /* check how much is inlined. */
++          const char *pos = auth_file_inline;
++          const char *prev = pos;
++
++          while( (pos = strchr(pos, '\n')) != NULL)
++            {
++              n_inlined++;
++
++              if (n_inlined == 1)
++                {
++                  strncpy(inlined_username, prev, pos - prev);
++                  inlined_username[pos - prev] = '\0';
++                  msg (M_INFO, "Using inlined username: %s", inlined_username);
++                }
++              else
++                {
++                  strncpy(inlined_password, prev, pos - prev);
++                  inlined_password[pos - prev] = '\0';
++                  msg (M_INFO, "Using inlined password: ... ");
++                }
++
++              pos++;
++              prev = pos;
++            }
++
++          if (n_inlined == 1)
++            extra_flags = GET_USER_PASS_PASSWORD_ONLY;
++        }
++
++      if (n_inlined == 2)
++        {
++          strcpy(auth_user_pass.username, inlined_username);
++          strcpy(auth_user_pass.password, inlined_password);
++          auth_user_pass.defined = true;
++        }
++      else
++        {
++
+ #if AUTO_USERID
+       get_user_pass_auto_userid (&auth_user_pass, auth_file);
+ #else
+@@ -375,11 +421,11 @@ auth_user_pass_setup (const char *auth_file, const struct static_challenge_info
+        get_user_pass_cr (&auth_user_pass,
+                          auth_file,
+                          UP_TYPE_AUTH,
+-                         GET_USER_PASS_MANAGEMENT|GET_USER_PASS_SENSITIVE|GET_USER_PASS_DYNAMIC_CHALLENGE,
++                         GET_USER_PASS_MANAGEMENT|GET_USER_PASS_SENSITIVE|GET_USER_PASS_DYNAMIC_CHALLENGE|extra_flags,
+                          auth_challenge);
+       else if (sci) /* static challenge response */
+        {
+-         int flags = GET_USER_PASS_MANAGEMENT|GET_USER_PASS_SENSITIVE|GET_USER_PASS_STATIC_CHALLENGE;
++         int flags = GET_USER_PASS_MANAGEMENT|GET_USER_PASS_SENSITIVE|GET_USER_PASS_STATIC_CHALLENGE|extra_flags;
+          if (sci->flags & SC_ECHO)
+            flags |= GET_USER_PASS_STATIC_CHALLENGE_ECHO;
+          get_user_pass_cr (&auth_user_pass,
+@@ -390,8 +436,11 @@ auth_user_pass_setup (const char *auth_file, const struct static_challenge_info
+        }
+       else
+ # endif
+-       get_user_pass (&auth_user_pass, auth_file, UP_TYPE_AUTH, GET_USER_PASS_MANAGEMENT|GET_USER_PASS_SENSITIVE);
++       get_user_pass (&auth_user_pass, auth_file, UP_TYPE_AUTH, GET_USER_PASS_MANAGEMENT|GET_USER_PASS_SENSITIVE|extra_flags);
+ #endif
++        }
++        if (n_inlined == 1)
++          strcpy(auth_user_pass.username, inlined_username);
+     }
+ }
+ 
+@@ -1925,9 +1974,9 @@ key_method_2_write (struct buffer *buf, struct tls_session *session)
+   if (auth_user_pass_enabled)
+     {
+ #ifdef ENABLE_CLIENT_CR
+-      auth_user_pass_setup (session->opt->auth_user_pass_file, session->opt->sci);
++      auth_user_pass_setup (session->opt->auth_user_pass_file, session->opt->auth_user_pass_file_inline, session->opt->sci);
+ #else
+-      auth_user_pass_setup (session->opt->auth_user_pass_file, NULL);
++      auth_user_pass_setup (session->opt->auth_user_pass_file, session->opt->auth_user_pass_file_inline, NULL);
+ #endif
+       if (!write_string (buf, auth_user_pass.username, -1))
+ 	goto error;
+diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
+index 797c3e5..9473c35 100644
+--- a/src/openvpn/ssl.h
++++ b/src/openvpn/ssl.h
+@@ -389,7 +389,7 @@ void pem_password_setup (const char *auth_file);
+  * Setup authentication username and password. If auth_file is given, use the
+  * credentials stored in the file.
+  */
+-void auth_user_pass_setup (const char *auth_file, const struct static_challenge_info *sc_info);
++void auth_user_pass_setup (const char *auth_file, const char *auth_file_inline, const struct static_challenge_info *sc_info);
+ 
+ /*
+  * Ensure that no caching is performed on authentication information
+diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
+index 86e4ac8..01f7a30 100644
+--- a/src/openvpn/ssl_common.h
++++ b/src/openvpn/ssl_common.h
+@@ -278,6 +278,7 @@ struct tls_options
+   bool auth_user_pass_verify_script_via_file;
+   const char *tmp_dir;
+   const char *auth_user_pass_file;
++  const char *auth_user_pass_file_inline;
+ 
+   /* use the client-config-dir as a positive authenticator */
+   const char *client_config_dir_exclusive;
 -- 
 2.1.4
 
