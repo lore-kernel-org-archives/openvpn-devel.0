@@ -1,7 +1,7 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Wed, 14 Oct 2015 12:55:03 +0200
-Message-Id: <1444820103-4054-1-git-send-email-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH] Fix commit
+Date: Wed, 14 Oct 2015 15:05:56 +0200
+Message-Id: <1444827956-2169-1-git-send-email-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH V2] Fix commit
 	c67acea173dc9ee37220f5b9ff14ede081181992
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -14,6 +14,9 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
+
+Move things to the proper place, ensure that line_ptr is actually properly
+initialized for *every* line read, not just for the first one
 
 ---
  src/openvpn/options.c | 2 +-
