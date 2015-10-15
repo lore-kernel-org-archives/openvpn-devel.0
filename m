@@ -1,9 +1,15 @@
+References: <1444827956-2169-1-git-send-email-arne@...1227...>
+	<1444920658-12859-1-git-send-email-openvpn.list@...1114...>
 From: David Sommerseth <openvpn.list@...1114...>
-Date: Thu, 15 Oct 2015 16:54:20 +0200
-Message-Id: <1444920860-13678-1-git-send-email-openvpn.list@...1114...>
-In-Reply-To: <1444909182-11785-1-git-send-email-lstipakov@...277...>
-References: <1444909182-11785-1-git-send-email-lstipakov@...277...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Refine float logging
+Message-ID: <561FBF45.9030804@...1114...>
+Date: Thu, 15 Oct 2015 16:59:17 +0200
+MIME-Version: 1.0
+In-Reply-To: <1444920658-12859-1-git-send-email-openvpn.list@...1114...>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="t659T7lH9h1TDmkIiN0196cdlomg6j6vw"
+Subject: Re: [Openvpn-devel] [PATCH applied] Fix commit
+ c67acea173dc9ee37220f5b9ff14ede081181992
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,40 +18,55 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net, Lev Stipakov <lstipakov@...277...>
+To: openvpn-devel@lists.sourceforge.net, Arne Schwabe <arne@...1227...>
 
-From: David Sommerseth <davids@...1347...>
-
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--t659T7lH9h1TDmkIiN0196cdlomg6j6vw
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
 
 
-Your patch has been applied to the master branch.
+Forgot release/2.3 ... it's added there too as
+commit f417db630353648a0bd1cd9d634413ce446fe900
 
-commit 5203d8094f38a9d23d983377171c11b1d3a82ad2
-Author: Lev Stipakov
-Date:   Thu Oct 15 14:39:42 2015 +0300
+I changed the subject line in the release/2.3 commit to match the proper
+cherry picked commit in that branch.
 
-     Refine float logging
+On 15/10/15 16:50, David Sommerseth wrote:
+> From: David Sommerseth <davids@...1347...>
+>=20
+>=20
+> Your patch has been applied to the master branch.
+>=20
+> commit cba33989101175ac07434b9c5cceba116bf38127
+> Author: Arne Schwabe
+> Date:   Wed Oct 14 15:05:56 2015 +0200
+>=20
+>      Fix commit c67acea173dc9ee37220f5b9ff14ede081181992
+>=20
+>      Acked-by: Lev Stipakov <lstipakov@...277...>
+>      Message-Id: 1444827956-2169-1-git-send-email-arne@...1227...
+>      URL: http://article.gmane.org/gmane.network.openvpn.devel/10271
+>      Signed-off-by: David Sommerseth <davids@...1347...>
 
-     Signed-off-by: Lev Stipakov <lstipakov@...277...>
-     Acked-by: Steffan Karger <steffan.karger@...1435...>
-     Message-Id: 1444909182-11785-1-git-send-email-lstipakov@...277...
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/10276
-     Signed-off-by: David Sommerseth <davids@...1347...>
-
-- --
+--=20
 kind regards,
 
 David Sommerseth
 
+
+--t659T7lH9h1TDmkIiN0196cdlomg6j6vw
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iEYEARECAAYFAlYfvhUACgkQDC186MBRfroFDwCfbG96a12WyLwwvtUXERXnNH5m
-5WcAn30rIfWxNfBfkdlxXPmDRvD07+La
-=zRPD
+iEYEARECAAYFAlYfv0UACgkQDC186MBRfrqsWwCdG+ce5boBWHN98vBXViLzMKpa
+igAAoIGxaj7ODdR0tH7uv/Z2RhsqkWxU
+=BKDd
 -----END PGP SIGNATURE-----
+
+--t659T7lH9h1TDmkIiN0196cdlomg6j6vw--
 
