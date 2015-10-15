@@ -1,10 +1,9 @@
 From: David Sommerseth <openvpn.list@...1114...>
-Date: Thu, 15 Oct 2015 16:50:58 +0200
-Message-Id: <1444920658-12859-1-git-send-email-openvpn.list@...1114...>
-In-Reply-To: <1444827956-2169-1-git-send-email-arne@...1227...>
-References: <1444827956-2169-1-git-send-email-arne@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Fix commit
-	c67acea173dc9ee37220f5b9ff14ede081181992
+Date: Thu, 15 Oct 2015 16:54:20 +0200
+Message-Id: <1444920860-13678-1-git-send-email-openvpn.list@...1114...>
+In-Reply-To: <1444909182-11785-1-git-send-email-lstipakov@...277...>
+References: <1444909182-11785-1-git-send-email-lstipakov@...277...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Refine float logging
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,7 +14,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net, Arne Schwabe <arne@...1227...>
+To: openvpn-devel@lists.sourceforge.net, Lev Stipakov <lstipakov@...277...>
 
 From: David Sommerseth <davids@...1347...>
 
@@ -25,15 +24,16 @@ Hash: SHA1
 
 Your patch has been applied to the master branch.
 
-commit cba33989101175ac07434b9c5cceba116bf38127
-Author: Arne Schwabe
-Date:   Wed Oct 14 15:05:56 2015 +0200
+commit 5203d8094f38a9d23d983377171c11b1d3a82ad2
+Author: Lev Stipakov
+Date:   Thu Oct 15 14:39:42 2015 +0300
 
-     Fix commit c67acea173dc9ee37220f5b9ff14ede081181992
+     Refine float logging
 
-     Acked-by: Lev Stipakov <lstipakov@...277...>
-     Message-Id: 1444827956-2169-1-git-send-email-arne@...1227...
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/10271
+     Signed-off-by: Lev Stipakov <lstipakov@...277...>
+     Acked-by: Steffan Karger <steffan.karger@...1435...>
+     Message-Id: 1444909182-11785-1-git-send-email-lstipakov@...277...
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/10276
      Signed-off-by: David Sommerseth <davids@...1347...>
 
 - --
@@ -44,8 +44,8 @@ David Sommerseth
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iEYEARECAAYFAlYfvTsACgkQDC186MBRfrpY3gCffS0SPSnNevLssNasbI0bX00S
-X5IAoJkFGC+Yvk3IBSKTpn4+ilQ6MB0X
-=yV5l
+iEYEARECAAYFAlYfvhUACgkQDC186MBRfroFDwCfbG96a12WyLwwvtUXERXnNH5m
+5WcAn30rIfWxNfBfkdlxXPmDRvD07+La
+=zRPD
 -----END PGP SIGNATURE-----
 
