@@ -1,10 +1,11 @@
 From: Steffan Karger <steffan@...1856...>
-Date: Fri, 16 Oct 2015 00:43:14 +0200
-Message-Id: <1444948995-18720-2-git-send-email-steffan@...1856...>
+Date: Fri, 16 Oct 2015 00:43:15 +0200
+Message-Id: <1444948995-18720-3-git-send-email-steffan@...1856...>
 In-Reply-To: <1444948995-18720-1-git-send-email-steffan@...1856...>
 References: <1444383559-15788-1-git-send-email-janjust@...1147...>
 	<1444948995-18720-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH 1/2] polarssl: fix --client-cert-not-required
+Subject: [Openvpn-devel] [PATCH 2/2] polarssl: add --verify-client-cert
+	optional support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,109 +18,108 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-PolarSSL 1.3 determines whether to use a client key/cert based on the
-private key and/or certificate structs being allocated or not.  We
-previously would always allocate the structs in
-tls_ctx_{client,server}_new(), which made polarssl clients without a
-client key/cert (can also be mgmt-external-key or pkcs11) fail to connect.
+This adds support for the --verify-client-cert optional option in PolarSSL
+builds, as was earlier added for OpenSSL builds by Jan-Just Keijser.
 
-Note that this bug is not present in OpenVPN 2.3, because PolarSSL 1.2
-does not contain the 'pk' abtraction layer and therefore behaves slightly
-different.
+This patch also adds an additional sanity check that this option may only
+be used in combination with some other authentication method, and changes
+the warning message about this option to be displayed only once on startup,
+instead of for each connecting client.
 
 Signed-off-by: Steffan Karger <steffan@...1856...>
 ---
- src/openvpn/ssl_polarssl.c | 33 +++++++++++++++++++++++----------
- 1 file changed, 23 insertions(+), 10 deletions(-)
+ src/openvpn/options.c      | 13 ++++++++++---
+ src/openvpn/ssl_openssl.c  |  8 +++-----
+ src/openvpn/ssl_polarssl.c | 10 ++++------
+ 3 files changed, 17 insertions(+), 14 deletions(-)
 
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index b2248b0..c88a180 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -2053,8 +2053,8 @@ options_postprocess_verify_ce (const struct options *options, const struct conne
+ 			     || PLUGIN_OPTION_LIST (options)
+ 			     || MAN_CLIENT_AUTH_ENABLED (options));
+ 	  const char *postfix = "must be used with --management-client-auth, an --auth-user-pass-verify script, or plugin";
+-	  if ((options->ssl_flags & SSLF_CLIENT_CERT_NOT_REQUIRED) && !ccnr)
+-	    msg (M_USAGE, "--client-cert-not-required %s", postfix);
++	  if ((options->ssl_flags & (SSLF_CLIENT_CERT_NOT_REQUIRED|SSLF_CLIENT_CERT_OPTIONAL)) && !ccnr)
++	    msg (M_USAGE, "--verify-client-cert none|optional %s", postfix);
+ 	  if ((options->ssl_flags & SSLF_USERNAME_AS_COMMON_NAME) && !ccnr)
+ 	    msg (M_USAGE, "--username-as-common-name %s", postfix);
+ 	  if ((options->ssl_flags & SSLF_AUTH_USER_PASS_OPTIONAL) && !ccnr)
+@@ -2088,7 +2088,7 @@ options_postprocess_verify_ce (const struct options *options, const struct conne
+ 	msg (M_USAGE, "--duplicate-cn requires --mode server");
+       if (options->cf_max || options->cf_per)
+ 	msg (M_USAGE, "--connect-freq requires --mode server");
+-      if (options->ssl_flags & SSLF_CLIENT_CERT_NOT_REQUIRED || options->ssl_flags & SSLF_CLIENT_CERT_OPTIONAL)
++      if (options->ssl_flags & (SSLF_CLIENT_CERT_NOT_REQUIRED|SSLF_CLIENT_CERT_OPTIONAL))
+ 	msg (M_USAGE, "--client-cert-not-required and --verify-client-cert require --mode server");
+       if (options->ssl_flags & SSLF_USERNAME_AS_COMMON_NAME)
+ 	msg (M_USAGE, "--username-as-common-name requires --mode server");
+@@ -2136,6 +2136,13 @@ options_postprocess_verify_ce (const struct options *options, const struct conne
+       (options->shared_secret_file != NULL) > 1)
+     msg (M_USAGE, "specify only one of --tls-server, --tls-client, or --secret");
+ 
++  if (options->ssl_flags & (SSLF_CLIENT_CERT_NOT_REQUIRED|SSLF_CLIENT_CERT_OPTIONAL))
++    {
++      msg (M_WARN, "WARNING: POTENTIALLY DANGEROUS OPTION "
++	  "--verify-client-cert none|optional (or --client-cert-not-required) "
++	  "may accept clients which do not present a certificate");
++    }
++
+   if (options->tls_server || options->tls_client)
+     {
+ #ifdef ENABLE_PKCS11
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index 3528ed4..3462d34 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -256,14 +256,12 @@ tls_ctx_set_options (struct tls_root_ctx *ctx, unsigned int ssl_flags)
+ #if P2MP_SERVER
+   if (ssl_flags & SSLF_CLIENT_CERT_NOT_REQUIRED)
+     {
+-      msg (M_WARN, "WARNING: POTENTIALLY DANGEROUS OPTION "
+-	  "--client-cert-not-required and --verify-client-cert none "
+-      "may accept clients which do not present a certificate");
+-
+       flags = 0;
+     }
+   else if (ssl_flags & SSLF_CLIENT_CERT_OPTIONAL)
+-    flags = SSL_VERIFY_PEER;
++    {
++      flags = SSL_VERIFY_PEER;
++    }
+ #endif
+   SSL_CTX_set_verify (ctx->ctx, flags, verify_callback);
+ 
 diff --git a/src/openvpn/ssl_polarssl.c b/src/openvpn/ssl_polarssl.c
-index cd77aa5..27cd735 100644
+index 27cd735..cf38e69 100644
 --- a/src/openvpn/ssl_polarssl.c
 +++ b/src/openvpn/ssl_polarssl.c
-@@ -77,11 +77,8 @@ tls_ctx_server_new(struct tls_root_ctx *ctx)
-   CLEAR(*ctx);
+@@ -776,18 +776,16 @@ void key_state_ssl_init(struct key_state_ssl *ks_ssl,
  
-   ALLOC_OBJ_CLEAR(ctx->dhm_ctx, dhm_context);
--  ALLOC_OBJ_CLEAR(ctx->priv_key, pk_context);
+       /* Initialise SSL verification */
+ #if P2MP_SERVER
+-      if (session->opt->ssl_flags & SSLF_CLIENT_CERT_NOT_REQUIRED)
++      if (session->opt->ssl_flags & SSLF_CLIENT_CERT_OPTIONAL)
+ 	{
+-	  msg (M_WARN, "WARNING: POTENTIALLY DANGEROUS OPTION "
+-	   "--client-cert-not-required may accept clients which do not present "
+-	   "a certificate");
++	  ssl_set_authmode(ks_ssl->ctx, SSL_VERIFY_OPTIONAL);
+ 	}
+-      else
++      else if (!(session->opt->ssl_flags & SSLF_CLIENT_CERT_NOT_REQUIRED))
+ #endif
+       {
+ 	ssl_set_authmode (ks_ssl->ctx, SSL_VERIFY_REQUIRED);
+-	ssl_set_verify (ks_ssl->ctx, verify_callback, session);
+       }
++      ssl_set_verify (ks_ssl->ctx, verify_callback, session);
  
-   ALLOC_OBJ_CLEAR(ctx->ca_chain, x509_crt);
--  ALLOC_OBJ_CLEAR(ctx->crt_chain, x509_crt);
--
- 
-   ctx->endpoint = SSL_IS_SERVER;
-   ctx->initialised = true;
-@@ -94,10 +91,7 @@ tls_ctx_client_new(struct tls_root_ctx *ctx)
-   CLEAR(*ctx);
- 
-   ALLOC_OBJ_CLEAR(ctx->dhm_ctx, dhm_context);
--  ALLOC_OBJ_CLEAR(ctx->priv_key, pk_context);
--
-   ALLOC_OBJ_CLEAR(ctx->ca_chain, x509_crt);
--  ALLOC_OBJ_CLEAR(ctx->crt_chain, x509_crt);
- 
-   ctx->endpoint = SSL_IS_CLIENT;
-   ctx->initialised = true;
-@@ -109,16 +103,20 @@ tls_ctx_free(struct tls_root_ctx *ctx)
-   if (ctx)
-     {
-       pk_free(ctx->priv_key);
--      free(ctx->priv_key);
-+      if (ctx->priv_key)
-+	free(ctx->priv_key);
- 
-       x509_crt_free(ctx->ca_chain);
--      free(ctx->ca_chain);
-+      if (ctx->ca_chain)
-+	free(ctx->ca_chain);
- 
-       x509_crt_free(ctx->crt_chain);
--      free(ctx->crt_chain);
-+      if (ctx->crt_chain)
-+	free(ctx->crt_chain);
- 
-       dhm_free(ctx->dhm_ctx);
--      free(ctx->dhm_ctx);
-+      if (ctx->dhm_ctx)
-+	free(ctx->dhm_ctx);
- 
- #if defined(ENABLE_PKCS11)
-       if (ctx->priv_key_pkcs11 != NULL) {
-@@ -272,6 +270,11 @@ tls_ctx_load_cert_file (struct tls_root_ctx *ctx, const char *cert_file,
- {
-   ASSERT(NULL != ctx);
- 
-+  if (!ctx->crt_chain)
-+    {
-+      ALLOC_OBJ_CLEAR(ctx->crt_chain, x509_crt);
-+    }
-+
-   if (!strcmp (cert_file, INLINE_FILE_TAG) && cert_inline)
-     {
-       if (!polar_ok(x509_crt_parse(ctx->crt_chain,
-@@ -295,6 +298,11 @@ tls_ctx_load_priv_file (struct tls_root_ctx *ctx, const char *priv_key_file,
-   int status;
-   ASSERT(NULL != ctx);
- 
-+  if (!ctx->priv_key)
-+    {
-+      ALLOC_OBJ_CLEAR(ctx->priv_key, pk_context);
-+    }
-+
-   if (!strcmp (priv_key_file, INLINE_FILE_TAG) && priv_key_inline)
-     {
-       status = pk_parse_key(ctx->priv_key,
-@@ -527,6 +535,11 @@ tls_ctx_load_extra_certs (struct tls_root_ctx *ctx, const char *extra_certs_file
- {
-   ASSERT(NULL != ctx);
- 
-+  if (!ctx->crt_chain)
-+    {
-+      ALLOC_OBJ_CLEAR (ctx->crt_chain, x509_crt);
-+    }
-+
-   if (!strcmp (extra_certs_file, INLINE_FILE_TAG) && extra_certs_inline)
-     {
-       if (!polar_ok(x509_crt_parse(ctx->crt_chain,
+       /* TODO: PolarSSL does not currently support sending the CA chain to the client */
+       ssl_set_ca_chain (ks_ssl->ctx, ssl_ctx->ca_chain, NULL, NULL );
 -- 
 2.1.4
 
