@@ -1,9 +1,8 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Thu, 15 Oct 2015 16:38:38 +0200
-Message-Id: <1444919918-4525-1-git-send-email-arne@...1227...>
-References: <1444571266-6598-1-git-send-email-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH V2] Do not set the buffer size by default
-	but rely on the operation system default.
+Date: Thu, 15 Oct 2015 16:44:58 +0200
+Message-Id: <1444920298-5972-1-git-send-email-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH] Start Changes.rst that lists changes in
+	2.4.0
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,105 +15,84 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Also remove SOCKET_SND_RCV_BUF_MAX since limiting the buffer to 1000k is
-arbitrary and all OSes impose a maximum that can be set anyway.
-
-closes trac ticket #461
-
-V2: SOCKET_SND_RCV_BUF_MAX removal
+This list is proably incomplete but should give a good starting point
 ---
- doc/openvpn.8         |  4 ++--
- src/openvpn/options.c |  4 ----
- src/openvpn/socket.c  | 16 +++++-----------
- src/openvpn/socket.h  |  5 -----
- 4 files changed, 7 insertions(+), 22 deletions(-)
+ Changes.rst | 66 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 66 insertions(+)
+ create mode 100644 Changes.rst
 
-diff --git a/doc/openvpn.8 b/doc/openvpn.8
-index b8fb2e5..f305c58 100644
---- a/doc/openvpn.8
-+++ b/doc/openvpn.8
-@@ -1418,12 +1418,12 @@ connection problems) with the following options:
- .TP
- .B \-\-sndbuf size
- Set the TCP/UDP socket send buffer size.
--Currently defaults to 65536 bytes.
-+Defaults to operation system default.
- .\"*********************************************************
- .TP
- .B \-\-rcvbuf size
- Set the TCP/UDP socket receive buffer size.
--Currently defaults to 65536 bytes.
-+Defaults to operation system default.
- .\"*********************************************************
- .TP
- .B \-\-mark value
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 55db81a..086dcea 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -783,10 +783,6 @@ init_options (struct options *o, const bool init_gc)
- #ifdef ENABLE_FEATURE_TUN_PERSIST
-   o->persist_mode = 1;
- #endif
--#ifndef WIN32
--  o->rcvbuf = 65536;
--  o->sndbuf = 65536;
--#endif
- #ifdef TARGET_LINUX
-   o->tuntap_options.txqueuelen = 100;
- #endif
-diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
-index b4032b8..dd8ea29 100644
---- a/src/openvpn/socket.c
-+++ b/src/openvpn/socket.c
-@@ -624,12 +624,9 @@ static void
- socket_set_sndbuf (int sd, int size)
- {
- #if defined(HAVE_SETSOCKOPT) && defined(SOL_SOCKET) && defined(SO_SNDBUF)
--  if (size > 0 && size < SOCKET_SND_RCV_BUF_MAX)
-+  if (setsockopt (sd, SOL_SOCKET, SO_SNDBUF, (void *) &size, sizeof (size)) != 0)
-     {
--      if (setsockopt (sd, SOL_SOCKET, SO_SNDBUF, (void *) &size, sizeof (size)) != 0)
--	{
--	  msg (M_WARN, "NOTE: setsockopt SO_SNDBUF=%d failed", size);
--	}
-+      msg (M_WARN, "NOTE: setsockopt SO_SNDBUF=%d failed", size);
-     }
- #endif
- }
-@@ -653,13 +650,10 @@ static bool
- socket_set_rcvbuf (int sd, int size)
- {
- #if defined(HAVE_SETSOCKOPT) && defined(SOL_SOCKET) && defined(SO_RCVBUF)
--  if (size > 0 && size < SOCKET_SND_RCV_BUF_MAX)
-+  if (setsockopt (sd, SOL_SOCKET, SO_RCVBUF, (void *) &size, sizeof (size)) != 0)
-     {
--      if (setsockopt (sd, SOL_SOCKET, SO_RCVBUF, (void *) &size, sizeof (size)) != 0)
--	{
--	  msg (M_WARN, "NOTE: setsockopt SO_RCVBUF=%d failed", size);
--	  return false;
--	}
-+      msg (M_WARN, "NOTE: setsockopt SO_RCVBUF=%d failed", size);
-+      return false;
-     }
-   return true;
- #endif
-diff --git a/src/openvpn/socket.h b/src/openvpn/socket.h
-index 30b6ace..da224dd 100644
---- a/src/openvpn/socket.h
-+++ b/src/openvpn/socket.h
-@@ -42,11 +42,6 @@
- #define OPENVPN_PORT "1194"
- 
- /*
-- * Maximum size passed passed to setsockopt SNDBUF/RCVBUF
-- */
--#define SOCKET_SND_RCV_BUF_MAX 1000000
--
--/*
-  * Number of seconds that "resolv-retry infinite"
-  * represents.
-  */
+diff --git a/Changes.rst b/Changes.rst
+new file mode 100644
+index 0000000..24afb5c
+--- /dev/null
++++ b/Changes.rst
+@@ -0,0 +1,66 @@
++Version 2.4.0
++=============
++
++
++New features
++------------
++
++keying-material-exporter
++    Keying Material Exporter [RFC-5705] allow additional keying material to be
++    derived from existing TLS channel. 
++
++redirect-gateway ipv6
++    OpenVPN has now feature parity between IPv4 and IPv6 for redirect
++    gateway including the handling of overlapping IPv6 routes with
++    IPv6 remote VPN server address
++
++Mac OS X Keychain management client
++    add contrib/keychain-mcd which allows to use Mac OS X keychain
++    certificates with OpenVPN
++
++Peer ID support
++    Added new packet format P_DATA_V2, which includes peer-id. If
++    server and client  support it, client sends all data packets in
++    the new format. When data packet arrives, server identifies peer
++    by peer-id. If peer's ip/port has changed, server assumes that
++    client has floated, verifies HMAC and updates ip/port in internal structs.
++
++Dualstack client connect
++    Instead of only using the first address of each --remote OpenVPN
++    will now try all addresses (IPv6 and IPv4) of a --remote entry.
++
++LZ4 Compression
++    Additionally to LZO compression OpenVPN now also supports LZ4
++    compression.
++
++Changes
++-------
++- proto udp and proto tcp specify to use IPv4 and IPv6. The new
++  options proto udp4 and tcp4 specify to use IPv4 only.
++
++- connect-timeout specifies now the timeout until the first TLS packet
++  is received (identical to server-poll-timeout) and this timeout now
++  includes the removed socks proxy timeout and http proxy timeout.
++
++  In --static mode connect-timeout specifies the timeout for TCP and
++  proxy connection establishment 
++
++
++- connect-retry now specifies the maximum number of unsucessfully
++  trying all remote/connection entries before exiting.
++
++- sndbuf and recvbuf default now to OS default instead of 64k
++
++- OpenVPN exits with  an error if an option has extra parameters;
++  previously they were silently ignored
++
++- The default of tls-cipher is now "DEFAULT:!EXP:!PSK:!SRP:!kRSA"
++  instead of "DEFAULT" to always select perfect forward security
++  cipher suites
++
++- --tls-auth always requires OpenVPN static key files and will no
++  longer work with free form files
++
++- proto udp6/tcp6 in server mode will now try to always listen to
++  both IPv4 and IPv6 on platforms that allow it. Use bind ipv6only
++  to explicitly listen only on IPv6.
 -- 
 2.3.8 (Apple Git-58)
 
