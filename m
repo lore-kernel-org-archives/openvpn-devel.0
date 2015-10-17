@@ -1,8 +1,10 @@
 From: Heiko Hund <heiko.hund@...1489...>
-Date: Sat, 17 Oct 2015 08:59:15 +0200
-Message-ID: <18065708.JIrWLiTMeq@...2001...>
-In-Reply-To: <56211F0D.2010806@...515...>
+Date: Sat, 17 Oct 2015 09:01:45 +0200
+Message-ID: <1766820.cUrimeke5O@...2001...>
+In-Reply-To: <562175A3.7060407@...1114...>
 References: <56211F0D.2010806@...515...>
+	<20151016162729.GW22054@...1296...>
+	<562175A3.7060407@...1114...>
 MIME-Version: 1.0
 Subject: Re: [Openvpn-devel] Creating a Windows team for OpenVPN?
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -17,41 +19,17 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 To: openvpn-devel@lists.sourceforge.net
 
-Hi Samuli
+On Saturday 17 October 2015 0:09:39 David Sommerseth wrote:
+> And while we're at it ... can someone manage to shutdown the openvpn.se
+> site?  It still ships OpenVPN 2.0.9 as the latest stable release for
+> Windows without pointing people to a better place to look.  At least get
+> a big fat "Nothing to see here, please move along"-warning.
 
-On Friday 16 October 2015 19:00:13 Samuli Sepp=C3=A4nen wrote:
-> - The service wrapper (openvpnserv.exe) is effectively broken for
-> Windows 8 and later
-> - The service wrapper has very limited functionality
-> - The OpenVPN-GUI we bundle has several major issues, most related to
-> having to run it as an admin
-
-The interactive service that I posted a year ago solves all these problems.
-
-> I'm thinking it might make sense to create a dedicated Windows team that
-> could share the burden of Windows issues amongst themselves, without any
-> one person gettings tagged the "Windows guy".
-
-Judging from the review the Windows patches received I think this might be =
-an
-too ambitious goal. Obviously not many care besides the regulars who make a
-one time exception every now and then and get their hands dirty on Windows
-code if they feel it matters.
-
-> am working on a replacement for openvpnserv.exe.
-
-Please consider reviewing and improving the interactive service patch inste=
-ad
-of duplicating work.
-
-> The Windows team could have a separate board on OpenVPN forums and maybe
-> even a separate IRC channel. This is fairly typical arrangement in Linux
-> distributions, which have topic- and language-specific groups. We could
-> then point people with Windows issues/patches/development questions etc.
-> to the Windows team.
-
-I think that's rather counter productive. Dev work on different systems has
-too much common ground to completely separate the ppl by OS.
+Tried it a while ago, but the guy has been too busy. I came as far as getti=
+ng
+a shell on openvpn.se, but lacked the required filesystem access to modify =
+the
+site. There the contact went cold. =3D/
 
 Heiko
 
