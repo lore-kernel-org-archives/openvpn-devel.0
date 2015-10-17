@@ -1,12 +1,10 @@
 From: Heiko Hund <heiko.hund@...1489...>
-Date: Sat, 17 Oct 2015 09:01:45 +0200
-Message-ID: <1766820.cUrimeke5O@...2001...>
-In-Reply-To: <562175A3.7060407@...1114...>
-References: <56211F0D.2010806@...515...>
-	<20151016162729.GW22054@...1296...>
-	<562175A3.7060407@...1114...>
+Date: Sat, 17 Oct 2015 08:46:52 +0200
+Message-ID: <1574825.z6HBGkPp10@...2001...>
+In-Reply-To: <562103AD.1090907@...1114...>
+References: <562103AD.1090907@...1114...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] Creating a Windows team for OpenVPN?
+Subject: Re: [Openvpn-devel] The OpenVPN git repositories
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,17 +17,19 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 To: openvpn-devel@lists.sourceforge.net
 
-On Saturday 17 October 2015 0:09:39 David Sommerseth wrote:
-> And while we're at it ... can someone manage to shutdown the openvpn.se
-> site?  It still ships OpenVPN 2.0.9 as the latest stable release for
-> Windows without pointing people to a better place to look.  At least get
-> a big fat "Nothing to see here, please move along"-warning.
+On Friday 16 October 2015 16:03:25 David Sommerseth wrote:
+> What needs to be done
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+>
+> - Push needed/interesting branches from openvpn-testing to the stable
+>   git repos - both on sourceforge.net and github
+> - Update developers documentation on the wiki page
+> - Review any documented processes we may have documented elsewhere
+> - Remove the openvpn-testing.git repository from sourceforge.net
 
-Tried it a while ago, but the guy has been too busy. I came as far as getti=
-ng
-a shell on openvpn.se, but lacked the required filesystem access to modify =
-the
-site. There the contact went cold. =3D/
+Wouldn't it make sense to have the repo for the GUI in the same project on
+Github then? Especially with a OpwnVPN Windows team in mind this makes sense
+as both repos will be affected by changes.
 
 Heiko
 
