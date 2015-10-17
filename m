@@ -1,10 +1,9 @@
-From: Heiko Hund <heiko.hund@...1489...>
-Date: Sat, 17 Oct 2015 08:46:52 +0200
-Message-ID: <1574825.z6HBGkPp10@...2001...>
-In-Reply-To: <562103AD.1090907@...1114...>
-References: <562103AD.1090907@...1114...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] The OpenVPN git repositories
+From: Selva Nair <selva.nair@...277...>
+Date: Sat, 17 Oct 2015 11:44:07 -0400
+Message-ID: <CAKuzo_h6uyi5sGLJ0agkjYNHsG9p+DW=-LCa+0Q6Wjwz7mCqtQ@...278...>
+Content-Type: multipart/alternative; boundary=001a11c3f588850c7f05224ec9c4
+Subject: [Openvpn-devel] Interactive windows service
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,38 +12,91 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
+To: Heiko Hund <heiko.hund@...1489...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-On Friday 16 October 2015 16:03:25 David Sommerseth wrote:
-> What needs to be done
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--001a11c3f588850c7f05224ec9c4
+Content-Type: text/plain; charset=UTF-8
+
+Starting a new thread as this is somewhat tangential to the original
+
+On Sat, Oct 17, 2015 at 2:59 AM, Heiko Hund <heiko.hund@...1489...> wrote:
+
+> > - The OpenVPN-GUI we bundle has several major issues, most related to
+> > having to run it as an admin
 >
-> - Push needed/interesting branches from openvpn-testing to the stable
->   git repos - both on sourceforge.net and github
-> - Update developers documentation on the wiki page
-> - Review any documented processes we may have documented elsewhere
-> - Remove the openvpn-testing.git repository from sourceforge.net
+> The interactive service that I posted a year ago solves all these problems.
+>
+> > I'm thinking it might make sense to create a dedicated Windows team that
+> > could share the burden of Windows issues amongst themselves, without any
+> > one person gettings tagged the "Windows guy".
+>
+> Judging from the review the Windows patches received I think this might be
+> an
+> too ambitious goal. Obviously not many care besides the regulars who make a
+> one time exception every now and then and get their hands dirty on Windows
+> code if they feel it matters.
+>
+> > am working on a replacement for openvpnserv.exe.
+>
+> Please consider reviewing and improving the interactive service patch
+> instead
+> of duplicating work.
 
-Wouldn't it make sense to have the repo for the GUI in the same project on
-Github then? Especially with a OpwnVPN Windows team in mind this makes sense
-as both repos will be affected by changes.
 
-Heiko
+Is there a public repo where I can access this?  I have been using a
+patched MI-GUI to avoid needing admin priv on windows  but working towards
+a solution that could come bundled with "official" releases would be great.
 
+I've a vested interest in getting this work to support a few windows
+clients. At the same time, like most, I too avoid the bad taste of windows
+coding..
 
-Sophos Technology GmbH, Amalienbadstra=E1=BA=9Ee 41/Bau 52, D-76227 Karlsru=
-he, Deutschland
-Tel +49 (0)721 25516 0 Fax +49 (0)721 25516 200 E-Mail info@...2075... www.=
-sophos.de
-Sitz der Gesellschaft: Karlsruhe, Amtsgericht Mannheim HRB 712658
-Gesch=C3=A4ftsf=C3=BChrer: Nicholas Bray, Pino von Kienlin, Wolfgang Hilper=
-t, Jennifer Onslow.
-Sophos GmbH, Gustav-Stresemann-Ring 1, 65189 Wiesbaden, Deutschland
-Tel +49 (0) 611 5858-0 Fax +49 (0) 611 5858-1042 E-Mail info@...2075... www=
-.sophos.de
-Sitz der Gesellschaft: Wiesbaden, Amtsgericht Wiesbaden HRB 25915 Gesch=C3=
-=A4ftsf=C3=BChrer: Nicholas Bray, Wolfgang Hilpert, Pino von Kienlin, Jenni=
-fer Onslow
+Selva
+
+--001a11c3f588850c7f05224ec9c4
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div class=3D"gmail_extra">Starting a new thread as this i=
+s somewhat tangential to the original<br><br></div><div class=3D"gmail_extr=
+a"><div class=3D"gmail_quote">On Sat, Oct 17, 2015 at 2:59 AM, Heiko Hund <=
+span dir=3D"ltr">&lt;<a href=3D"mailto:heiko.hund@...1489..." target=3D"_bl=
+ank">heiko.hund@...1489...</a>&gt;</span> wrote:<br><blockquote class=3D"gm=
+ail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-le=
+ft:1ex"><span class=3D"">&gt; - The OpenVPN-GUI we bundle has several major=
+ issues, most related to<br>
+&gt; having to run it as an admin<br>
+<br>
+</span>The interactive service that I posted a year ago solves all these pr=
+oblems.<br>
+<span class=3D""><br>
+&gt; I&#39;m thinking it might make sense to create a dedicated Windows tea=
+m that<br>
+&gt; could share the burden of Windows issues amongst themselves, without a=
+ny<br>
+&gt; one person gettings tagged the &quot;Windows guy&quot;.<br>
+<br>
+</span>Judging from the review the Windows patches received I think this mi=
+ght be an<br>
+too ambitious goal. Obviously not many care besides the regulars who make a=
+<br>
+one time exception every now and then and get their hands dirty on Windows<=
+br>
+code if they feel it matters.<br>
+<span class=3D""><br>
+&gt; am working on a replacement for openvpnserv.exe.<br>
+<br>
+</span>Please consider reviewing and improving the interactive service patc=
+h instead<br>
+of duplicating work.</blockquote><div>=C2=A0</div></div></div><div class=3D=
+"gmail_extra">Is there a public repo where I can access this?=C2=A0 I have =
+been using a patched MI-GUI to avoid needing admin priv on windows=C2=A0 bu=
+t working towards a solution that could come bundled with &quot;official&qu=
+ot; releases would be great. <br><br></div><div class=3D"gmail_extra">I&#39=
+;ve a vested interest in getting this work to support a few windows clients=
+. At the same time, like most, I too avoid the bad taste of windows coding.=
+.<br><br></div><div class=3D"gmail_extra">Selva<br></div></div>
+
+--001a11c3f588850c7f05224ec9c4--
 
