@@ -1,6 +1,4 @@
-Date: Sun, 18 Oct 2015 10:34:46 +0200
-From: "Lukasz K." <movrax-dev@...2061...>
-Message-ID: <20151018103446.5fed9f97.movrax-dev@...2061...>
+MIME-Version: 1.0
 In-Reply-To: <20151017215022.6ce3cdab.movrax-dev@...2061...>
 References: <20150830002336.32791c7b.movrax-dev@...2061...>
 	<20150830115444.GU34798@...1296...>
@@ -9,8 +7,10 @@ References: <20150830002336.32791c7b.movrax-dev@...2061...>
 	<20150903221836.04306e51.movrax-dev@...2061...>
 	<5612D2DB.8090007@...1856...>
 	<20151017215022.6ce3cdab.movrax-dev@...2061...>
-MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="MP_/Roiib2oRZ5QwHTyMk4lMnhe"
+Date: Sun, 18 Oct 2015 10:51:28 +0200
+Message-ID: <CAA1AbxKHnESbkSVRtHNmWKx5AYFLztRAp-35wJFsLcPqsktH5w@...278...>
+From: Steffan Karger <steffan@...1856...>
+Content-Type: multipart/alternative; boundary=94eb2c030e18732cfb05225d224c
 Subject: Re: [Openvpn-devel] [PATCH] Privileges not being dropped if the
  first connection is not successful
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -21,122 +21,45 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+To: "Lukasz K." <movrax-dev@...2061...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---MP_/Roiib2oRZ5QwHTyMk4lMnhe
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+--94eb2c030e18732cfb05225d224c
+Content-Type: text/plain; charset=UTF-8
 
-On Sat, 17 Oct 2015 21:50:22 +0200
-"Lukasz K." <movrax-dev@...2061...> wrote:
+Hi,
 
-> On Mon, 5 Oct 2015 21:43:23 +0200
-> Steffan Karger <steffan@...1856...> wrote:
-> 
-> > Thanks.  This version looks good to me, but the patch won't apply.
-> > Most likely your MUA messed up line wrapping.  Could you resend the
-> > patch using 'git send-email', or alternatively as an attachment?
-> > 
-> > -Steffan  
-> 
-> Hi,
-> 
-> You're right, my mail client is wrapping lines once they go past 72
-> characters, so it broke the patch.
-> 
-> I'm really surprised I haven't noticed that.
-> 
+On 17 Oct 2015 21:50, "Lukasz K." <movrax-dev@...2061...> wrote:
 > This time I've used 'git format-patch', and included resulting file as
 > a separate attachment (as you requested).
-> 
+
+ACK.  Code (still) looks good, patch applies just fine, and testing
+confirms this does fix the bug.
+
 > I'm sorry for the delay, I was unavailable lately.
-> 
-> Lukasz K.
 
-I'm resending my previous message (as a quote) with attachment, using
-different headers and no signing, as it appears it has been incorrectly
-handled by mailman.
+I think most of the delay has been on our side actually ;)  Thanks for the
+patch, and for following up.
 
-Lukasz K.
+-Steffan
 
---MP_/Roiib2oRZ5QwHTyMk4lMnhe
-Content-Type: text/plain
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment;
-	filename=0001-Fix-privilege-drop-if-first-connection-attempt-fails.patch
+--94eb2c030e18732cfb05225d224c
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-RnJvbSAzNWQyNjgyMzRmYzY1Yjc1MjM5YjJkZmY4ZjllYjE1YzhjNGE2NDJhIE1vbiBTZXAgMTcg
-MDA6MDA6MDAgMjAwMQ0KRnJvbTogTHVrYXN6IEt1dHlsYSA8bW92cmF4LWRldkBjcnlwdG9sYWIu
-bmV0Pg0KRGF0ZTogU2F0LCAxNyBPY3QgMjAxNSAyMToxNToxNSArMDIwMA0KU3ViamVjdDogW1BB
-VENIXSBGaXggcHJpdmlsZWdlIGRyb3AgaWYgZmlyc3QgY29ubmVjdGlvbiBhdHRlbXB0IGZhaWxz
-DQoNCk9wZW5WUE4gZG9lcyBub3QgZHJvcCBwcml2aWxlZ2VzIChVSUQvR0lEL2Nocm9vdCkgYXMg
-cmVxdWVzdGVkIGFjY29yZGluZyB0byB0aGUgY29uZmlndXJhdGlvbiBmaWxlIGFuZC9vciBwYXNz
-ZWQgYXJndW1lbnRzIGlmIHRoZSBmaXJzdCBjb25uZWN0aW9uIGF0dGVtcHQgaXMgbm90IGVzdGFi
-bGlzaGVkIHN1Y2Nlc3NmdWxseSwgdGhpcyBhbHNvIGluY2x1ZGVzIGFwcGx5aW5nIFNFTGludXgg
-Y29udGV4dC4NClNpZ25hbHMgYW5kIHJlc3RhcnRzIGFyZSBwcm9jZXNzZWQgYWZ0ZXIgImNvbnRl
-eHQuZmlyc3RfdGltZSIgaXMgc2V0IHRvICJmYWxzZSIsIHdoaWNoIHJlc3VsdHMgaW4gb21pdHRp
-bmcgZW50aXJlIHByaXZpbGVnZSBkcm9wcGluZyBibG9jayBpbiAiZG9fdWlkX2dpZF9jaHJvb3Qo
-KSIgd2hlbiBzdWNjZXNzZnVsIGNvbm5lY3Rpb24gaXMgZmluYWxseSBtYWRlIChldmVyeXRoaW5n
-IGlzIGluaXRpYWxpemVkIGNvcnJlY3RseSBhbmQgc2FpZCBmdW5jdGlvbiBpcyBjYWxsZWQpLCBz
-aW5jZSAiY29udGV4dC5maXJzdF90aW1lIiBpcyB1c2VkIGFzIGJsb2NrIGVudHJ5IGNvbmRpdGlv
-bi4NCg0KV2UgbW9kaWZ5ICJkb191aWRfZ2lkX2Nocm9vdCgpIiBpbiBzdWNoIGEgd2F5IHRoYXQg
-YWxsb3dzIHVzIHRvIGRyb3AgcHJpdmlsZWdlcyBldmVuIHdoZW4gZmlyc3QgY29ubmVjdGlvbiBh
-dHRlbXB0IHdhcyB1bnN1Y2Nlc3NmdWwuDQoNClNpZ25lZC1vZmYtYnk6IEx1a2FzeiBLdXR5bGEg
-PG1vdnJheC1kZXZAY3J5cHRvbGFiLm5ldD4NCi0tLQ0KIHNyYy9vcGVudnBuL2luaXQuYyAgICB8
-IDMxICsrKysrKysrKysrKysrKysrKy0tLS0tLS0tLS0tLS0NCiBzcmMvb3BlbnZwbi9vcGVudnBu
-LmggfCAgNiArKysrLS0NCiAyIGZpbGVzIGNoYW5nZWQsIDIyIGluc2VydGlvbnMoKyksIDE1IGRl
-bGV0aW9ucygtKQ0KDQpkaWZmIC0tZ2l0IGEvc3JjL29wZW52cG4vaW5pdC5jIGIvc3JjL29wZW52
-cG4vaW5pdC5jDQppbmRleCA1ZGQ4NzgxLi5jNWMwYWI2IDEwMDY0NA0KLS0tIGEvc3JjL29wZW52
-cG4vaW5pdC5jDQorKysgYi9zcmMvb3BlbnZwbi9pbml0LmMNCkBAIC05NTAsMzEgKzk1MCwzMCBA
-QCBkb191aWRfZ2lkX2Nocm9vdCAoc3RydWN0IGNvbnRleHQgKmMsIGJvb2wgbm9fZGVsYXkpDQog
-ICBzdGF0aWMgY29uc3QgY2hhciB3aHlfbm90W10gPSAid2lsbCBiZSBkZWxheWVkIGJlY2F1c2Ug
-b2YgLS1jbGllbnQsIC0tcHVsbCwgb3IgLS11cC1kZWxheSI7DQogICBzdHJ1Y3QgY29udGV4dF8w
-ICpjMCA9IGMtPmMwOw0KIA0KLSAgaWYgKGMtPmZpcnN0X3RpbWUgJiYgYzAgJiYgIWMwLT51aWRf
-Z2lkX3NldCkNCisgIGlmIChjMCAmJiAhYzAtPnVpZF9naWRfY2hyb290X3NldCkNCiAgICAgew0K
-ICAgICAgIC8qIGNocm9vdCBpZiByZXF1ZXN0ZWQgKi8NCiAgICAgICBpZiAoYy0+b3B0aW9ucy5j
-aHJvb3RfZGlyKQ0KIAl7DQogCSAgaWYgKG5vX2RlbGF5KQ0KIAkgICAgcGxhdGZvcm1fY2hyb290
-IChjLT5vcHRpb25zLmNocm9vdF9kaXIpOw0KLQkgIGVsc2UNCisJICBlbHNlIGlmIChjLT5maXJz
-dF90aW1lKQ0KIAkgICAgbXNnIChNX0lORk8sICJOT1RFOiBjaHJvb3QgJXMiLCB3aHlfbm90KTsN
-CiAJfQ0KIA0KLSAgICAgIC8qIHNldCB1c2VyIGFuZC9vciBncm91cCB0aGF0IHdlIHdhbnQgdG8g
-c2V0dWlkL3NldGdpZCB0byAqLw0KLSAgICAgIGlmIChub19kZWxheSkNCisgICAgICAvKiBzZXQg
-dXNlciBhbmQvb3IgZ3JvdXAgaWYgd2Ugd2FudCB0byBzZXR1aWQvc2V0Z2lkICovDQorICAgICAg
-aWYgKGMwLT51aWRfZ2lkX3NwZWNpZmllZCkNCiAJew0KLQkgIHBsYXRmb3JtX2dyb3VwX3NldCAo
-JmMwLT5wbGF0Zm9ybV9zdGF0ZV9ncm91cCk7DQotCSAgcGxhdGZvcm1fdXNlcl9zZXQgKCZjMC0+
-cGxhdGZvcm1fc3RhdGVfdXNlcik7DQotCSAgYzAtPnVpZF9naWRfc2V0ID0gdHJ1ZTsNCi0JfQ0K
-LSAgICAgIGVsc2UgaWYgKGMwLT51aWRfZ2lkX3NwZWNpZmllZCkNCi0Jew0KLQkgIG1zZyAoTV9J
-TkZPLCAiTk9URTogVUlEL0dJRCBkb3duZ3JhZGUgJXMiLCB3aHlfbm90KTsNCisJICBpZiAobm9f
-ZGVsYXkpIHsNCisJICAgIHBsYXRmb3JtX2dyb3VwX3NldCAoJmMwLT5wbGF0Zm9ybV9zdGF0ZV9n
-cm91cCk7DQorCSAgICBwbGF0Zm9ybV91c2VyX3NldCAoJmMwLT5wbGF0Zm9ybV9zdGF0ZV91c2Vy
-KTsNCisJICB9DQorCSAgZWxzZSBpZiAoYy0+Zmlyc3RfdGltZSkNCisJICAgIG1zZyAoTV9JTkZP
-LCAiTk9URTogVUlEL0dJRCBkb3duZ3JhZGUgJXMiLCB3aHlfbm90KTsNCiAJfQ0KIA0KICNpZmRl
-ZiBFTkFCTEVfTUVNU1RBVFMNCi0gICAgICBpZiAoYy0+b3B0aW9ucy5tZW1zdGF0c19mbikNCisg
-ICAgICBpZiAoYy0+Zmlyc3RfdGltZSAmJiBjLT5vcHRpb25zLm1lbXN0YXRzX2ZuKQ0KIAltc3Rh
-dHNfb3BlbihjLT5vcHRpb25zLm1lbXN0YXRzX2ZuKTsNCiAjZW5kaWYNCiANCkBAIC05OTMsMTAg
-Kzk5MiwxNiBAQCBkb191aWRfZ2lkX2Nocm9vdCAoc3RydWN0IGNvbnRleHQgKmMsIGJvb2wgbm9f
-ZGVsYXkpDQogCSAgICBlbHNlDQogCSAgICAgIG1zZyAoTV9JTkZPLCAic2V0Y29uIHRvICclcycg
-c3VjY2VlZGVkIiwgYy0+b3B0aW9ucy5zZWxpbnV4X2NvbnRleHQpOw0KIAkgIH0NCi0JICBlbHNl
-DQorCSAgZWxzZSBpZiAoYy0+Zmlyc3RfdGltZSkNCiAJICAgIG1zZyAoTV9JTkZPLCAiTk9URTog
-c2V0Y29uICVzIiwgd2h5X25vdCk7DQogCX0NCiAjZW5kaWYNCisNCisgICAgICAvKiBQcml2aWxl
-Z2VzIGFyZSBnb2luZyB0byBiZSBkcm9wcGVkIGJ5IG5vdyAoaWYgcmVxdWVzdGVkKSwgYmUgc3Vy
-ZQ0KKyAgICAgICAqIHRvIHByZXZlbnQgYW55IGZ1dHVyZSBwcml2aWxlZ2UgZHJvcHBpbmcgYXR0
-ZW1wdHMgZnJvbSBub3cgb24uDQorICAgICAgICovDQorICAgICAgaWYgKG5vX2RlbGF5KQ0KKwlj
-MC0+dWlkX2dpZF9jaHJvb3Rfc2V0ID0gdHJ1ZTsNCiAgICAgfQ0KIH0NCiANCmRpZmYgLS1naXQg
-YS9zcmMvb3BlbnZwbi9vcGVudnBuLmggYi9zcmMvb3BlbnZwbi9vcGVudnBuLmgNCmluZGV4IDRm
-YWIwMGIuLjNmMWRmNmUgMTAwNjQ0DQotLS0gYS9zcmMvb3BlbnZwbi9vcGVudnBuLmgNCisrKyBi
-L3NyYy9vcGVudnBuL29wZW52cG4uaA0KQEAgLTEzMCwxMyArMTMwLDE1IEBAIHN0cnVjdCBjb250
-ZXh0X3BlcnNpc3QNCiAgKg0KICAqIExldmVsIDAgc3RhdGUgaXMgaW5pdGlhbGl6ZWQgb25jZSBh
-dCBwcm9ncmFtIHN0YXJ0dXAsIGFuZCB0aGVuIHJlbWFpbnMNCiAgKiB0aHJvdWdob3V0IHRoZSBs
-aWZldGltZSBvZiB0aGUgT3BlblZQTiBwcm9jZXNzLiAgVGhpcyBzdHJ1Y3R1cmUNCi0gKiBjb250
-YWlucyBpbmZvcm1hdGlvbiByZWxhdGVkIHRvIHRoZSBwcm9jZXNzJ3MgUElELCB1c2VyLCBhbmQg
-Z3JvdXAuDQorICogY29udGFpbnMgaW5mb3JtYXRpb24gcmVsYXRlZCB0byB0aGUgcHJvY2Vzcydz
-IFBJRCwgdXNlciwgZ3JvdXAsIGFuZA0KKyAqIHByaXZpbGVnZXMuDQogICovDQogc3RydWN0IGNv
-bnRleHRfMA0KIHsNCiAgIC8qIHdvcmtzcGFjZSBmb3IgLS11c2VyLy0tZ3JvdXAgKi8NCiAgIGJv
-b2wgdWlkX2dpZF9zcGVjaWZpZWQ7DQotICBib29sIHVpZF9naWRfc2V0Ow0KKyAgLyogaGVscGVy
-IHdoaWNoIHRlbGxzIHVzIHdoZXRoZXIgd2Ugc2hvdWxkIGtlZXAgdHJ5aW5nIHRvIGRyb3AgcHJp
-dmlsZWdlcyAqLw0KKyAgYm9vbCB1aWRfZ2lkX2Nocm9vdF9zZXQ7DQogICBzdHJ1Y3QgcGxhdGZv
-cm1fc3RhdGVfdXNlciBwbGF0Zm9ybV9zdGF0ZV91c2VyOw0KICAgc3RydWN0IHBsYXRmb3JtX3N0
-YXRlX2dyb3VwIHBsYXRmb3JtX3N0YXRlX2dyb3VwOw0KIH07DQotLSANCjIuNi4xDQoNCg==
+<p dir=3D"ltr">Hi, </p>
+<p dir=3D"ltr">On 17 Oct 2015 21:50, &quot;Lukasz K.&quot; &lt;<a href=3D"m=
+ailto:movrax-dev@...2061...">movrax-dev@...2061...</a>&gt; wrote:<br>
+&gt; This time I&#39;ve used &#39;git format-patch&#39;, and included resul=
+ting file as<br>
+&gt; a separate attachment (as you requested).</p>
+<p dir=3D"ltr">ACK.=C2=A0 Code (still) looks good, patch applies just fine,=
+ and testing confirms this does fix the bug. </p>
+<p dir=3D"ltr">&gt; I&#39;m sorry for the delay, I was unavailable lately.<=
+/p>
+<p dir=3D"ltr">I think most of the delay has been on our side actually ;)=
+=C2=A0 Thanks for the patch, and for following up. </p>
+<p dir=3D"ltr">-Steffan </p>
 
---MP_/Roiib2oRZ5QwHTyMk4lMnhe--
+--94eb2c030e18732cfb05225d224c--
 
