@@ -1,5 +1,6 @@
-MIME-Version: 1.0
-In-Reply-To: <20151017215022.6ce3cdab.movrax-dev@...2061...>
+Date: Sun, 18 Oct 2015 13:46:33 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20151018114633.GB22054@...1296...>
 References: <20150830002336.32791c7b.movrax-dev@...2061...>
 	<20150830115444.GU34798@...1296...>
 	<20150830162534.4ee0c9f2.movrax-dev@...2061...>
@@ -7,10 +8,12 @@ References: <20150830002336.32791c7b.movrax-dev@...2061...>
 	<20150903221836.04306e51.movrax-dev@...2061...>
 	<5612D2DB.8090007@...1856...>
 	<20151017215022.6ce3cdab.movrax-dev@...2061...>
-Date: Sun, 18 Oct 2015 10:51:28 +0200
-Message-ID: <CAA1AbxKHnESbkSVRtHNmWKx5AYFLztRAp-35wJFsLcPqsktH5w@...278...>
-From: Steffan Karger <steffan@...1856...>
-Content-Type: multipart/alternative; boundary=94eb2c030e18732cfb05225d224c
+	<20151018103446.5fed9f97.movrax-dev@...2061...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="PvO6gVpe2R1m8PYV"
+Content-Disposition: inline
+In-Reply-To: <20151018103446.5fed9f97.movrax-dev@...2061...>
 Subject: Re: [Openvpn-devel] [PATCH] Privileges not being dropped if the
  first connection is not successful
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -22,44 +25,57 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: "Lukasz K." <movrax-dev@...2061...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: openvpn-devel@lists.sourceforge.net
 
---94eb2c030e18732cfb05225d224c
-Content-Type: text/plain; charset=UTF-8
+--PvO6gVpe2R1m8PYV
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
 Hi,
 
-On 17 Oct 2015 21:50, "Lukasz K." <movrax-dev@...2061...> wrote:
-> This time I've used 'git format-patch', and included resulting file as
-> a separate attachment (as you requested).
+On Sun, Oct 18, 2015 at 10:34:46AM +0200, Lukasz K. wrote:
+> I'm resending my previous message (as a quote) with attachment, using
+> different headers and no signing, as it appears it has been incorrectly
+> handled by mailman.
 
-ACK.  Code (still) looks good, patch applies just fine, and testing
-confirms this does fix the bug.
+The way that really works best is "git send-email ..." - it can handle
+remote servers (smtp+auth) if needed, or just feed to local MTA, and
+it will always get the formatting and whitespaceing and mail headers=20
+and everything right :-)
 
-> I'm sorry for the delay, I was unavailable lately.
+Your e-mail, for example, was again a bit weird, as the original mail
+was just "included" and not "attached" (message/rfc822 attachment), plus,
+it had CR+NL line endings in the "attachment" part - so "git am" had
+a hard time extracting the actual patch as it stopped searching when
+it hit the second "From " line...
 
-I think most of the delay has been on our side actually ;)  Thanks for the
-patch, and for following up.
+Anyway, since it wasn't whitespace-garbled, it applied, but really and
+truly, git send-email is what everyone wants :-)
 
--Steffan
+Merging right now...
 
---94eb2c030e18732cfb05225d224c
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+gert
 
-<p dir=3D"ltr">Hi, </p>
-<p dir=3D"ltr">On 17 Oct 2015 21:50, &quot;Lukasz K.&quot; &lt;<a href=3D"m=
-ailto:movrax-dev@...2061...">movrax-dev@...2061...</a>&gt; wrote:<br>
-&gt; This time I&#39;ve used &#39;git format-patch&#39;, and included resul=
-ting file as<br>
-&gt; a separate attachment (as you requested).</p>
-<p dir=3D"ltr">ACK.=C2=A0 Code (still) looks good, patch applies just fine,=
- and testing confirms this does fix the bug. </p>
-<p dir=3D"ltr">&gt; I&#39;m sorry for the delay, I was unavailable lately.<=
-/p>
-<p dir=3D"ltr">I think most of the delay has been on our side actually ;)=
-=C2=A0 Thanks for the patch, and for following up. </p>
-<p dir=3D"ltr">-Steffan </p>
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
---94eb2c030e18732cfb05225d224c--
+--PvO6gVpe2R1m8PYV
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQCVAwUBViOFOakuBuNlUUl1AQJ+TQQApLdcL7d9QBObH2LuYv93zvbCgBgDtE1N
+sTJCn1mZQ1KaYYSCtkZzpCdhGhDInLM82doq2+nBm++hjEhzNIr9ILyBysfda2Eu
+u1kLWoA24okJ+kHwa66u5JnFKMTUd8esn/kByd+oVBRodLxijoLvauzUyySXYU0c
+waKEny5+Fpc=
+=2v/0
+-----END PGP SIGNATURE-----
+
+--PvO6gVpe2R1m8PYV--
 
