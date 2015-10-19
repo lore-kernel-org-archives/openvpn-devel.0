@@ -1,10 +1,10 @@
-Date: Mon, 19 Oct 2015 22:19:24 +0200 (CEST)
-Message-Id: <201510192019.t9JKJO9j040175@...2054...>
+Date: Mon, 19 Oct 2015 22:17:17 +0200
+Message-Id: <201510192017.t9JKHH2s031390@...1729...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1444919918-4525-1-git-send-email-arne@...1227...>
-References: <1444919918-4525-1-git-send-email-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Do not set the buffer size by
-	default but rely on the operation system default.
+In-Reply-To: <1444920298-5972-1-git-send-email-arne@...1227...>
+References: <1444920298-5972-1-git-send-email-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Start Changes.rst that lists
+	changes in 2.4.0
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,19 +20,21 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 ACK.
 
-Your patch has been applied to the master and release/2.3 branch.
+Your patch has been applied to the master branch.
 
-commit f0b64e5dc00f35e3b0fe8c53a316ee74c9cbf15f (master)
-commit c72dbb8b470ab7b25fc74e41aed4212db48a9d2f (release/2.3)
+I have changed the wording to "User-visible Changes" to make it
+more explicit (there are are LOTS of changes :-) ).  Otherwise,
+thanks for getting this started.
 
+commit c345ffb34c48a8df8d2728303864d5e1884c00f0
 Author: Arne Schwabe
-Date:   Thu Oct 15 16:38:38 2015 +0200
+Date:   Thu Oct 15 16:44:58 2015 +0200
 
-     Do not set the buffer size by default but rely on the operation system default.
+     Start Changes.rst that lists changes in 2.4.0
 
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1444919918-4525-1-git-send-email-arne@...1227...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/10280
+     Message-Id: <1444920298-5972-1-git-send-email-arne@...1227...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/10283
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
