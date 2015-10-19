@@ -1,8 +1,9 @@
-From: samuli@...515...
-In-Reply-To: <18065708.JIrWLiTMeq@...2001...>
+From: Heiko Hund <heiko.hund@...1489...>
+Date: Mon, 19 Oct 2015 16:15:55 +0200
+Message-ID: <2892922.l0hsuaC9oU@...2001...>
+In-Reply-To: <ac7rqc.nwgq22.2u3ktu-qmf@...2076...>
 References: <56211F0D.2010806@...515...> <18065708.JIrWLiTMeq@...2001...>
-Date: Mon, 19 Oct 2015 10:20:23 +0000
-Message-ID: <ac7rqc.nwgq22.2u3ktu-qmf@...2076...>
+	<ac7rqc.nwgq22.2u3ktu-qmf@...2076...>
 MIME-Version: 1.0
 Subject: Re: [Openvpn-devel] Creating a Windows team for OpenVPN?
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -14,82 +15,67 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-To: heiko.hund@...1489...
+Content-Transfer-Encoding: quoted-printable
+To: samuli@...515...
 Cc: openvpn-devel@lists.sourceforge.net
 
-DQpIaSwNCg0KSSdtIHJlc3BvbmRpbmcgdG8gR2VydCBhbmQgRGF2aWQgaGVyZSBhcyB3ZWxsLi4u
-DQoNCklsIHNhYiBvdHQgMTcgMDk6NTk6MTUgMjAxNSBHTVQrMDMwMCwgSGVpa28gSHVuZCBzY3Jp
-dmU6DQo+IEhpIFNhbXVsaQ0KPiANCj4gT24gRnJpZGF5IDE2IE9jdG9iZXIgMjAxNSAxOTowMDox
-MyBTYW11bGkgU2VwcMOkbmVuIHdyb3RlOg0KPiA+IC0gVGhlIHNlcnZpY2Ugd3JhcHBlciAob3Bl
-bnZwbnNlcnYuZXhlKSBpcyBlZmZlY3RpdmVseSBicm9rZW4gZm9yDQo+ID4gV2luZG93cyA4IGFu
-ZCBsYXRlcg0KPiA+IC0gVGhlIHNlcnZpY2Ugd3JhcHBlciBoYXMgdmVyeSBsaW1pdGVkIGZ1bmN0
-aW9uYWxpdHkNCj4gPiAtIFRoZSBPcGVuVlBOLUdVSSB3ZSBidW5kbGUgaGFzIHNldmVyYWwgbWFq
-b3IgaXNzdWVzLCBtb3N0IHJlbGF0ZWQgdG8NCj4gPiBoYXZpbmcgdG8gcnVuIGl0IGFzIGFuIGFk
-bWluDQo+IA0KPiBUaGUgaW50ZXJhY3RpdmUgc2VydmljZSB0aGF0IEkgcG9zdGVkIGEgeWVhciBh
-Z28gc29sdmVzIGFsbCB0aGVzZSBwcm9ibGVtcy4NCj4gDQo+ID4gSSdtIHRoaW5raW5nIGl0IG1p
-Z2h0IG1ha2Ugc2Vuc2UgdG8gY3JlYXRlIGEgZGVkaWNhdGVkIFdpbmRvd3MgdGVhbSB0aGF0DQo+
-ID4gY291bGQgc2hhcmUgdGhlIGJ1cmRlbiBvZiBXaW5kb3dzIGlzc3VlcyBhbW9uZ3N0IHRoZW1z
-ZWx2ZXMsIHdpdGhvdXQgYW55DQo+ID4gb25lIHBlcnNvbiBnZXR0aW5ncyB0YWdnZWQgdGhlICJX
-aW5kb3dzIGd1eSIuDQo+IA0KPiBKdWRnaW5nIGZyb20gdGhlIHJldmlldyB0aGUgV2luZG93cyBw
-YXRjaGVzIHJlY2VpdmVkIEkgdGhpbmsgdGhpcyBtaWdodCBiZSBhbg0KPiB0b28gYW1iaXRpb3Vz
-IGdvYWwuIE9idmlvdXNseSBub3QNCiBtYW55IGNhcmUgYmVzaWRlcyB0aGUgcmVndWxhcnMgd2hv
-IG1ha2UgYQ0KDQpBbWJpdGlvdXMgbWF5YmUuIEFyZSB5b3Ugc2F5aW5nIHRoYXQgd2Ugc2hvdWxk
-IGJlIGNvbnRlbnQgd2l0aCB0aGUgY3VycmVudCBzaXR1YXRpb24gYW5kIGRyb3AgYWxsIGFtYml0
-aW91cyBwbGFucyA6KT8NCg0KQW55d2F5cywgbm90IG1hbnkgc2VlbWVkIHRvIGNhcmUgYWJvdXQg
-YWJvdXQgZWFzeS1yc2EgYmVmb3JlIGl0IGJlY2FtZSBhIHNlcGFyYXRlIHByb2plY3QgaW4gR2l0
-SHViLiBOb3cgd2UgaGF2ZSBlYXN5LXJzYSAzIGJ5IHBla3N0ZXIgYW5kIGVjcmlzdC4gU2ltaWxh
-cmx5IGZvciBvcGVudnBuLWJ1aWxkIHdlIGhhdmUvaGFkIEFsb24sIHBla3N0ZXIsIG1lIGFuZCBz
-eXp6ZXIuIEknbSBzdXJlIG1vcmUgZXhhbXBsZXMgY291bGQgYmUgZm91bmQgZnJvbSBvdGhlciBw
-cm9qZWN0cy4NCg0KSSdtIGFsc28gbm90IHNwZWFraW5nIHByaW1hcmlseSBvZiBXaW5kb3dzIHBh
-dGNoZXMsIGJ1dCBhbHNvIGFsbCB0aGUgb3RoZXIgc3R1ZmYgc3VjaCBhcyBkZWJ1Z2dpbmcsIHVz
-ZXIgc3VwcG9ydCwgdGlja2V0IHJldmlldywgcGFja2FnaW5nLCBldGMuICAgDQoNCkkgYmVsaWV2
-ZSBqb2luaW5nIGEgV2luZG93cyB0ZWFtIChvciB3aGF0ZXZlciBzdWJ0ZWFtIGZvciB0aGF0IG1h
-dHRlcikgbG93ZXJzIHRoZSBiYXJyaWVyIG9mIGVudHJ5IHNpZ25pZmljYW50bHkgY29tcGFyZWQg
-dG8gam9pbmluZyB0aGUg4oCdY29yZeKAnSB0ZWFtLCB3aGljaCBpcyBmdWxsIG9mIGhhcmRjb3Jl
-IGRldmVsb3BlcnMgKHdobyBwcm9iYWJseSBzZWVtIGludGltaWRhdGluZyB0byBtYW55IHBlb3Bs
-ZSB0aGF0IGNvdWxkIHN0aWxsIHRhY2tsZSBtYW55IG9mIHRoZSBhYm92ZSB0YXNrcykuDQoNClNv
-IG15IHJhdGlvbmFsZSBoZXJlIGJvaWxzIGRvd24gdG8gcHJvdmlkaW5nIGEgc2VwYXJhdGUgcGxh
-eWdyb3VuZCBmb3IgcG90ZW50aWFsIChuZXcpIGNvbnRyaWJ1dG9ycy4gU29tZSBwYXJ0IG9mIHRo
-ZSBvcGVudnBuIHByb2plY3QgdGhleSBjb3VsZCBjYWxsIHRoZWlyICAib3duIiBhbmQgdGFrZSBw
-cmltYXJ5IHJlc3BvbnNpYmlsaXR5IG9mZi4gQW5kIGNvbW11Y2F0aW9uIGNoYW5uZWxzIHdoZXJl
-IHRoZXkgY291bGQgb3JnYW5pemUgd29yayB3aGljaCB0aGUgImNvcmUiIHRlYW0gaXMgbm90IChw
-cm92YWJseSkgbm90IHZlcnkgaW50ZXJlc3RlZCBpbi4gT25jZSB0aGV5IGdldCB0aGF0IGZhciB0
-aGV5IHNob3VsZCBoYXZlIGZldyBpc3N1ZXMgam9pbmluZyB0aGUgImNvcmUiICB0ZWFtIGFsc28u
-DQoNCj4gb25lIHRpbWUgZXhjZXB0aW9uIGV2ZXJ5IG5vdyBhbmQgdGhlbiBhbmQgZ2V0IHRoZWly
-IGhhbmRzIGRpcnR5IG9uIFdpbmRvd3MNCj4gY29kZSBpZiB0aGV5IGZlZWwgaXQgbWF0dGVycy4N
-Cj4gDQo+ID4gYW0gd29ya2luZyBvbiBhIHJlcGxhY2VtZW50IGZvciBvcGVudnBuc2Vydi5leGUu
-DQo+IA0KPiBQbGVhc2UgY29uc2lkZXIgcmV2aWV3aW5nIGFuZCBpbXByb3ZpbmcgdGhlIGludGVy
-YWN0aXZlIHNlcnZpY2UgcGF0Y2ggaW5zdGVhZA0KPiBvZiBkdXBsaWNhdGluZyB3b3JrLg0KDQpB
-cmUgeW91IHNheWluZyB0aGF0IHRoZSBpbnRlcmFjdGl2ZSBzZXJ2aWNlIGFsc28gZG91YmxlcyBh
-cyBhIFdpbmRvd3Mgc3lzdGVtIHNlcnZpY2U/IElmIHNvLCBjYW4gaXQgYmUgIGNvbmZpZ3VyZWQg
-dG8gYXV0b3N0YXJ0IHNlbGVjdGVkIG9wZW52cG4gY29ubmVjdGlvbnMgb24gYm9vdCBhbmQgcmVz
-dGFydCB0aGVtIGlmIHRoZXkgY3Jhc2gvc3RvcD8gDQoNCj4gDQo+ID4gVGhlIFdpbmRvd3MgdGVh
-bSBjb3VsZCBoYXZlIGEgc2VwYXJhdGUgYm9hcmQgb24gT3BlblZQTiBmb3J1bXMgYW5kIG1heWJl
-DQo+ID4gZXZlbiBhIHNlcGFyYXRlIElSQyBjaGFubmVsLiBUaGlzIGlzIGZhaXJseSB0eXBpY2Fs
-IGFycmFuZ2VtZW50IGluIExpbnV4DQo+ID4gZGlzdHJpYnV0aW9ucywgd2hpY2ggaGF2ZSB0b3Bp
-Yy0gYW5kIGxhbmd1YWdlLXNwZWNpZmljIGdyb3Vwcy4gV2UgY291bGQNCj4gPiB0aGVuIHBvaW50
-IHBlb3BsZSB3aXRoIFdpbmRvd3MgaXNzdWVzL3BhdGNoZXMvZGV2ZWxvcG1lbnQgcXVlc3Rpb25z
-IGV0Yy4NCj4gPiB0byB0aGUgV2luZG93cyB0ZWFtLg0KPiANCj4gSSB0aGluayB0aGF0J3MgcmF0
-aGVyIGNvdW50ZXIgcHJvZHVjdGl2ZS4gRGV2IHdvcmsgb24gZGlmZmVyZW50IHN5c3RlbXMgaGFz
-DQo+IHRvbyBtdWNoIGNvbW1vbiBncm91bmQgdG8gY29tcGxldGVseSBzZXBhcmF0ZSB0aGUgcHBs
-IGJ5IE9TLg0KPg0KDQpGb3IgZGV2IHdvcmsgeWVzLiBJJ20gbm90IHNwZWFraW5nIG9mIGRldiB3
-b3JrLCBidXQgYWRkaXRpb25hbCBjb21tdW5pY2F0aW9uIGNoYW5uZWxzIGZvciBjZXJ0YWluIHR5
-cGVzIG9mIGRpc2N1c3Npb24uIElmIHdlIGdldCBtb3JlIFdpbmRvd3MgZGV2ZWxvcGVycyBpbnRv
-IHRoZSBXaW5kb3dzIHRlYW0sIEknbSBzdXJlIHRoZXkgd2lsbCBiZSBmaW5lIHdpdGggb3VyIGV4
-aXN0aW5nIGRldmVsb3BtZW50IHByb2Nlc3Nlcy4NCg0KTm93LCBjYW4gYW55b25lIHByb3ZpZGUg
-cHJvb2YgdGhhdCBoYXZpbmcgYSBXaW5kb3dzIHRlYW0gd291bGQgYWN0dWFsbHkgX2h1cnRfIHRo
-ZSBwcm9qZWN0PyBJZiBub3QsIHdoYXQgZG9lcyBpdCBtYXR0ZXIgaWYgaXQgZmFpbHM/IFdlIGNv
-dWxkIGp1c3Qgc2NyYXAgdGhlIGlkZWEgcmV0cm9hY3RpdmVseS4NCg0KU2FtdWxpIA0KIA0KPiBI
-ZWlrbw0KPiANCj4gDQo+IFNvcGhvcyBUZWNobm9sb2d5IEdtYkgsIEFtYWxpZW5iYWRzdHJh4bqe
-ZSA0MS9CYXUgNTIsIEQtNzYyMjcgS2FybHNydWhlLCBEZXV0c2NobGFuZA0KPiBUZWwgKzQ5ICgw
-KTcyMSAyNTUxNiAwIEZheCArNDkgKDApNzIxIDI1NTE2IDIwMCBFLU1haWwgaW5mb0AuLi4yMDc1
-Li4uIHd3dy5zb3Bob3MuZGUNCj4gU2l0eiBkZXIgR2VzZWxsc2NoYWZ0OiBLYXJsc3J1aGUsIEFt
-dHNnZXJpY2h0IE1hbm5oZWltIEhSQiA3MTI2NTgNCj4gR2VzY2jDpGZ0c2bDvGhyZXI6IE5pY2hv
-bGFzIEJyYXksIFBpbm8gdm9uIEtpZW5saW4sIFdvbGZnYW5nIEhpbHBlcnQsIEplbm5pZmVyIE9u
-c2xvdy4NCj4gU29waG9zIEdtYkgsIEd1c3Rhdi1TdHJlc2VtYW5uLVJpbmcgMSwgNjUxODkgV2ll
-c2JhZGVuLCBEZXV0c2NobGFuZA0KPiBUZWwgKzQ5ICgwKSA2MTEgNTg1OC0wIEZheCArNDkgKDAp
-IDYxMSA1ODU4LTEwNDIgRS1NYWlsIGluZm9ALi4uMjA3NS4uLiB3d3cuc29waG9zLmRlDQo+IFNp
-dHogZGVyIEdlc2VsbHNjaGFmdDogV2llc2JhZGVuLCBBbXRzZ2VyaWNodCBXaWVzYmFkZW4gSFJC
-IDI1OTE1IEdlc2Now6RmdHNmw7xocmVyOiBOaWNob2xhcyBCcmF5LCBXb2xmZ2FuZyBIaWxwZXJ0
-LCBQaW5vIHZvbiBLaWVubGluLCBKZW5uaWZlciBPbnNsb3cNCj4=
+On Monday 19 October 2015 10:20:23 samuli@...515... wrote:
+> > > I'm thinking it might make sense to create a dedicated Windows team
+> > > that could share the burden of Windows issues amongst themselves,
+> > > without any one person gettings tagged the "Windows guy".
+> >
+> > Judging from the review the Windows patches received I think this might=
+ be
+> > an  too ambitious goal. Obviously not  many care besides the regulars w=
+ho
+> > make a
+>
+> Anyways, not many seemed to care about about easy-rsa before it became a
+> separate project in GitHub. Now we have easy-rsa 3 by pekster and ecrist.
+> Similarly for openvpn-build we have/had Alon, pekster, me and syzzer. I'm
+> sure more examples could be found from other projects.
+>
+> I'm also not speaking primarily of Windows patches, but also all the other
+> stuff such as debugging, user support, ticket review, packaging, etc.
+
+Ok, I think here is the main misunderstanding. My understanding was that you
+want a Windows development team. That I think would be counter productive. =
+For
+the other topics I do not have a opinion.
+
+> > > am working on a replacement for openvpnserv.exe.
+> >
+> > Please consider reviewing and improving the interactive service patch
+> > instead of duplicating work.
+>
+> Are you saying that the interactive service also doubles as a Windows sys=
+tem
+> service? If so, can it be  configured to autostart selected openvpn
+> connections on boot and restart them if they crash/stop?
+
+No, and I do not think that the service should take care of that. That's
+rather things that can be handled by the GUI.
+
+> Now, can anyone provide proof that having a Windows team would actually
+> _hurt_ the project? If not, what does it matter if it fails? We could just
+> scrap the idea retroactively.
+
+Hehe nice turn demanding proof, that'll shut up ppl. =3D)
+
+Heiko
+
+
+Sophos Technology GmbH, Amalienbadstra=E1=BA=9Ee 41/Bau 52, D-76227 Karlsru=
+he, Deutschland
+Tel +49 (0)721 25516 0 Fax +49 (0)721 25516 200 E-Mail info@...2075... www.=
+sophos.de
+Sitz der Gesellschaft: Karlsruhe, Amtsgericht Mannheim HRB 712658
+Gesch=C3=A4ftsf=C3=BChrer: Nicholas Bray, Pino von Kienlin, Wolfgang Hilper=
+t, Jennifer Onslow.
+Sophos GmbH, Gustav-Stresemann-Ring 1, 65189 Wiesbaden, Deutschland
+Tel +49 (0) 611 5858-0 Fax +49 (0) 611 5858-1042 E-Mail info@...2075... www=
+.sophos.de
+Sitz der Gesellschaft: Wiesbaden, Amtsgericht Wiesbaden HRB 25915 Gesch=C3=
+=A4ftsf=C3=BChrer: Nicholas Bray, Wolfgang Hilpert, Pino von Kienlin, Jenni=
+fer Onslow
+
