@@ -1,13 +1,8 @@
-From: "Morris, Russell" <rmorris@...1315...>
-Date: Mon, 19 Oct 2015 14:58:48 +0000
-Message-ID: <SN1PR08MB1391C6A8CA4653A464FAC48EB93A0@...2065...>
-References: <56211F0D.2010806@...515...> <18065708.JIrWLiTMeq@...2001...>
-	<ac7rqc.nwgq22.2u3ktu-qmf@...2076...>
-	<2892922.l0hsuaC9oU@...2001...>
-In-Reply-To: <2892922.l0hsuaC9oU@...2001...>
-Content-Language: en-US
-MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] Creating a Windows team for OpenVPN?
+From: Gert Doering <gert@...1296...>
+Date: Mon, 19 Oct 2015 20:06:19 +0200
+Message-Id: <1445277979-21591-1-git-send-email-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH] Add option --push-suppress-ipv6 to stop
+	sending IPv6 info to clients.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,77 +12,140 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-To: Heiko Hund <heiko.hund@...1489...>, "samuli@...515..." <samuli@...515...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-SGksDQoNCkp1c3QgYSBjb3VwbGUgdGhvdWdodHMgaGVyZSwgZnJvbSBhIChhYnNvbHV0ZWx5ISkg
-bm9uLWV4cGVydCAuLi4gOi0oLg0KDQpJIGhhdmUgYmVlbiB0cnlpbmcgdG8gZGV2ZWxvcCBteSBv
-d24gIkdVSSIgLSBub3QgYmVjYXVzZSB0aGUgY3VycmVudCBvbmUgZG9lc24ndCB3b3JrIChub3Qg
-YXQgYWxsISksIGJ1dCBiZWNhdXNlIEkgd2FudCBhIGJpdCBvZiBhbiBleHRlbmRlZCBmZWF0dXJl
-IHNldCAuLi4gdG8gYmUgYWJsZSB0byBjaGFuZ2UgVHJheSBJY29uIGNvbG9yIHdpdGggdHJhZmZp
-YyAoVHgvUngpLCBhbmQgcGxvdCBwaW5nIHRpbWluZyB0byBhIHJlbW90ZSBtYWNoaW5lIG92ZXIg
-dGhlIGxpbmssIGFuZCBhcyB3ZWxsIHRyYWZmaWMgYW5kIGJpdCByYXRlIHBsb3RzIGluIHRoZSBV
-TCBhbmQgREwuDQoNClRoYXQgYWxsIHNhaWQsIEkgY2FuIGRlZmluaXRlbHkgc2VlIHRoYXQgdGhl
-IG5ldHdvcmsgYWRhcHRlciAoVEFQKSBhbmQgb3BlbnZwbi5leGUgcmVhbGx5IGFyZSB1cCBhbmQg
-ZG93biAoYSBsb3QhKSBvbiBXaW5kb3dzIC4uLiA6LSguIEkgYW0gdHJ5aW5nIHRvIHVzZSBOU1NN
-IHRvIGF0IGxlYXN0IGtlZXAgb3BlbnZwbi5leGUgdXAgKGkuZS4gcmVzdGFydCBpdCksIGJ1dCB0
-aGUgbmV0d29yayBjb25uZWN0aW9uIGlzIGEgY2hhbGxlbmdlIGFsc28gLSBvZnRlbiBoYXZpbmcg
-dG8gYmUgcmVzZXQgKGRpc2FibGVkIGFuZCBlbmFibGVkKS4gU28gdG8gdGhlIHF1ZXN0aW9uIGJl
-bG93IC4uLiB5ZXMsIFdpbmRvd3MgZG9lcyBuZWVkIHNvbWUgd29yay4NCg0KSSdkIGJlIGhhcHB5
-IHRvIGhlbHAgb3V0IC0gYnV0IGFzIGFib3ZlLCBJJ20gbm90IGFuIGV4cGVydC4gU28gZGVmaW5p
-dGVseSB3aWxsaW5nLCBidXQgdXNlZnVsbmVzcyBtYXkgYmUgcXVlc3Rpb25hYmxlIHVuZm9ydHVu
-YXRlbHkgLi4uIDstKS4NCg0KVGhhbmtzIQ0KDQouLi4gUnVzc2VsbA0KDQoNCg0KLS0tLS1Pcmln
-aW5hbCBNZXNzYWdlLS0tLS0NCkZyb206IEhlaWtvIEh1bmQgW21haWx0bzpoZWlrby5odW5kQC4u
-LjE0ODkuLi5dIA0KU2VudDogTW9uZGF5LCBPY3RvYmVyIDE5LCAyMDE1IDk6MTYgQU0NClRvOiBz
-YW11bGlALi4uNTE1Li4uDQpDYzogb3BlbnZwbi1kZXZlbEBsaXN0cy5zb3VyY2Vmb3JnZS5uZXQN
-ClN1YmplY3Q6IFJlOiBbT3BlbnZwbi1kZXZlbF0gQ3JlYXRpbmcgYSBXaW5kb3dzIHRlYW0gZm9y
-IE9wZW5WUE4/DQoNCk9uIE1vbmRheSAxOSBPY3RvYmVyIDIwMTUgMTA6MjA6MjMgc2FtdWxpQC4u
-LjUxNS4uLiB3cm90ZToNCj4gPiA+IEknbSB0aGlua2luZyBpdCBtaWdodCBtYWtlIHNlbnNlIHRv
-IGNyZWF0ZSBhIGRlZGljYXRlZCBXaW5kb3dzIHRlYW0NCj4gPiA+IHRoYXQgY291bGQgc2hhcmUg
-dGhlIGJ1cmRlbiBvZiBXaW5kb3dzIGlzc3VlcyBhbW9uZ3N0IHRoZW1zZWx2ZXMsDQo+ID4gPiB3
-aXRob3V0IGFueSBvbmUgcGVyc29uIGdldHRpbmdzIHRhZ2dlZCB0aGUgIldpbmRvd3MgZ3V5Ii4N
-Cj4gPg0KPiA+IEp1ZGdpbmcgZnJvbSB0aGUgcmV2aWV3IHRoZSBXaW5kb3dzIHBhdGNoZXMgcmVj
-ZWl2ZWQgSSB0aGluayB0aGlzIG1pZ2h0IGJlDQo+ID4gYW4gIHRvbyBhbWJpdGlvdXMgZ29hbC4g
-T2J2aW91c2x5IG5vdCAgbWFueSBjYXJlIGJlc2lkZXMgdGhlIHJlZ3VsYXJzIHdobw0KPiA+IG1h
-a2UgYQ0KPg0KPiBBbnl3YXlzLCBub3QgbWFueSBzZWVtZWQgdG8gY2FyZSBhYm91dCBhYm91dCBl
-YXN5LXJzYSBiZWZvcmUgaXQgYmVjYW1lIGENCj4gc2VwYXJhdGUgcHJvamVjdCBpbiBHaXRIdWIu
-IE5vdyB3ZSBoYXZlIGVhc3ktcnNhIDMgYnkgcGVrc3RlciBhbmQgZWNyaXN0Lg0KPiBTaW1pbGFy
-bHkgZm9yIG9wZW52cG4tYnVpbGQgd2UgaGF2ZS9oYWQgQWxvbiwgcGVrc3RlciwgbWUgYW5kIHN5
-enplci4gSSdtDQo+IHN1cmUgbW9yZSBleGFtcGxlcyBjb3VsZCBiZSBmb3VuZCBmcm9tIG90aGVy
-IHByb2plY3RzLg0KPg0KPiBJJ20gYWxzbyBub3Qgc3BlYWtpbmcgcHJpbWFyaWx5IG9mIFdpbmRv
-d3MgcGF0Y2hlcywgYnV0IGFsc28gYWxsIHRoZSBvdGhlcg0KPiBzdHVmZiBzdWNoIGFzIGRlYnVn
-Z2luZywgdXNlciBzdXBwb3J0LCB0aWNrZXQgcmV2aWV3LCBwYWNrYWdpbmcsIGV0Yy4NCg0KT2ss
-IEkgdGhpbmsgaGVyZSBpcyB0aGUgbWFpbiBtaXN1bmRlcnN0YW5kaW5nLiBNeSB1bmRlcnN0YW5k
-aW5nIHdhcyB0aGF0IHlvdQ0Kd2FudCBhIFdpbmRvd3MgZGV2ZWxvcG1lbnQgdGVhbS4gVGhhdCBJ
-IHRoaW5rIHdvdWxkIGJlIGNvdW50ZXIgcHJvZHVjdGl2ZS4gRm9yDQp0aGUgb3RoZXIgdG9waWNz
-IEkgZG8gbm90IGhhdmUgYSBvcGluaW9uLg0KDQo+ID4gPiBhbSB3b3JraW5nIG9uIGEgcmVwbGFj
-ZW1lbnQgZm9yIG9wZW52cG5zZXJ2LmV4ZS4NCj4gPg0KPiA+IFBsZWFzZSBjb25zaWRlciByZXZp
-ZXdpbmcgYW5kIGltcHJvdmluZyB0aGUgaW50ZXJhY3RpdmUgc2VydmljZSBwYXRjaA0KPiA+IGlu
-c3RlYWQgb2YgZHVwbGljYXRpbmcgd29yay4NCj4NCj4gQXJlIHlvdSBzYXlpbmcgdGhhdCB0aGUg
-aW50ZXJhY3RpdmUgc2VydmljZSBhbHNvIGRvdWJsZXMgYXMgYSBXaW5kb3dzIHN5c3RlbQ0KPiBz
-ZXJ2aWNlPyBJZiBzbywgY2FuIGl0IGJlICBjb25maWd1cmVkIHRvIGF1dG9zdGFydCBzZWxlY3Rl
-ZCBvcGVudnBuDQo+IGNvbm5lY3Rpb25zIG9uIGJvb3QgYW5kIHJlc3RhcnQgdGhlbSBpZiB0aGV5
-IGNyYXNoL3N0b3A/DQoNCk5vLCBhbmQgSSBkbyBub3QgdGhpbmsgdGhhdCB0aGUgc2VydmljZSBz
-aG91bGQgdGFrZSBjYXJlIG9mIHRoYXQuIFRoYXQncw0KcmF0aGVyIHRoaW5ncyB0aGF0IGNhbiBi
-ZSBoYW5kbGVkIGJ5IHRoZSBHVUkuDQoNCj4gTm93LCBjYW4gYW55b25lIHByb3ZpZGUgcHJvb2Yg
-dGhhdCBoYXZpbmcgYSBXaW5kb3dzIHRlYW0gd291bGQgYWN0dWFsbHkNCj4gX2h1cnRfIHRoZSBw
-cm9qZWN0PyBJZiBub3QsIHdoYXQgZG9lcyBpdCBtYXR0ZXIgaWYgaXQgZmFpbHM/IFdlIGNvdWxk
-IGp1c3QNCj4gc2NyYXAgdGhlIGlkZWEgcmV0cm9hY3RpdmVseS4NCg0KSGVoZSBuaWNlIHR1cm4g
-ZGVtYW5kaW5nIHByb29mLCB0aGF0J2xsIHNodXQgdXAgcHBsLiA9KQ0KDQpIZWlrbw0KDQoNClNv
-cGhvcyBUZWNobm9sb2d5IEdtYkgsIEFtYWxpZW5iYWRzdHJh4bqeZSA0MS9CYXUgNTIsIEQtNzYy
-MjcgS2FybHNydWhlLCBEZXV0c2NobGFuZA0KVGVsICs0OSAoMCk3MjEgMjU1MTYgMCBGYXggKzQ5
-ICgwKTcyMSAyNTUxNiAyMDAgRS1NYWlsIGluZm9ALi4uMjA3NS4uLiB3d3cuc29waG9zLmRlDQpT
-aXR6IGRlciBHZXNlbGxzY2hhZnQ6IEthcmxzcnVoZSwgQW10c2dlcmljaHQgTWFubmhlaW0gSFJC
-IDcxMjY1OA0KR2VzY2jDpGZ0c2bDvGhyZXI6IE5pY2hvbGFzIEJyYXksIFBpbm8gdm9uIEtpZW5s
-aW4sIFdvbGZnYW5nIEhpbHBlcnQsIEplbm5pZmVyIE9uc2xvdy4NClNvcGhvcyBHbWJILCBHdXN0
-YXYtU3RyZXNlbWFubi1SaW5nIDEsIDY1MTg5IFdpZXNiYWRlbiwgRGV1dHNjaGxhbmQNClRlbCAr
-NDkgKDApIDYxMSA1ODU4LTAgRmF4ICs0OSAoMCkgNjExIDU4NTgtMTA0MiBFLU1haWwgaW5mb0Au
-Li4yMDc1Li4uIHd3dy5zb3Bob3MuZGUNClNpdHogZGVyIEdlc2VsbHNjaGFmdDogV2llc2JhZGVu
-LCBBbXRzZ2VyaWNodCBXaWVzYmFkZW4gSFJCIDI1OTE1IEdlc2Now6RmdHNmw7xocmVyOiBOaWNo
-b2xhcyBCcmF5LCBXb2xmZ2FuZyBIaWxwZXJ0LCBQaW5vIHZvbiBLaWVubGluLCBKZW5uaWZlciBP
-bnNsb3cNCg0KLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tDQpfX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fXw0KT3BlbnZwbi1kZXZlbCBtYWlsaW5nIGxpc3QNCk9wZW52
-cG4tZGV2ZWxAbGlzdHMuc291cmNlZm9yZ2UubmV0DQpodHRwczovL2xpc3RzLnNvdXJjZWZvcmdl
-Lm5ldC9saXN0cy9saXN0aW5mby9vcGVudnBuLWRldmVsDQo=
+Workaround option for servers that have IPv6 working just fine, but
+need to turn it off for individual clients - in that case, set this
+option in the --client-config-dir file for a particular user, or
+via --client-connect script/plugin hook for a particular platform
+(like IOS 9.0.2)
+
+Trac #614
+
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+ doc/openvpn.8         |  8 ++++++++
+ src/openvpn/options.c |  6 ++++++
+ src/openvpn/options.h |  1 +
+ src/openvpn/push.c    | 33 +++++++++++++++++++++++++--------
+ 4 files changed, 40 insertions(+), 8 deletions(-)
+
+diff --git a/doc/openvpn.8 b/doc/openvpn.8
+index 3a86409..4cfc796 100644
+--- a/doc/openvpn.8
++++ b/doc/openvpn.8
+@@ -5704,6 +5704,14 @@ for more details how to setup and use this, and how
+ and
+ .B \-\-route
+ interact.
++.TP
++.B \-\-push\-suppress\-ipv6
++remove all IPv6 related options from the list of options that the
++server will send to a client.  Only needed if the server has IPv6 in
++general, but one particular client (or client OS) is known to have 
++problems with IPv6 - so this can be sent from a \-\-client\-config\-dir
++file (for a particular user), or a \-\-client\-connect script (evaluating
++peer-info variables, like IV_PLAT=)
+ 
+ .\"*********************************************************
+ .SH SCRIPTING AND ENVIRONMENTAL VARIABLES
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 5654830..ee2615a 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -409,6 +409,7 @@ static const char usage_message[] =
+   "                  execution.  Peer must specify --pull in its config file.\n"
+   "--push-reset    : Don't inherit global push list for specific\n"
+   "                  client instance.\n"
++  "--push-suppress-ipv6 : do not send IPv6 config to client instance.\n"
+   "--ifconfig-pool start-IP end-IP [netmask] : Set aside a pool of subnets\n"
+   "                  to be dynamically allocated to connecting clients.\n"
+   "--ifconfig-pool-linear : Use individual addresses rather than /30 subnets\n"
+@@ -5881,6 +5882,11 @@ add_option (struct options *options,
+       options->push_ifconfig_ipv6_netbits = netbits;
+       options->push_ifconfig_ipv6_remote = remote;
+     }
++  else if (streq (p[0], "push-suppress-ipv6") && !p[1])
++    {
++      VERIFY_PERMISSION (OPT_P_INSTANCE);
++      options->push_suppress_ipv6 = true;
++    }
+   else if (streq (p[0], "disable") && !p[1])
+     {
+       VERIFY_PERMISSION (OPT_P_INSTANCE);
+diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+index c642aa0..dee5994 100644
+--- a/src/openvpn/options.h
++++ b/src/openvpn/options.h
+@@ -434,6 +434,7 @@ struct options
+   struct in6_addr push_ifconfig_ipv6_local;		/* IPv6 */
+   int 		  push_ifconfig_ipv6_netbits;		/* IPv6 */
+   struct in6_addr push_ifconfig_ipv6_remote;		/* IPv6 */
++  bool push_suppress_ipv6;				/* no-IPv6 */
+   bool enable_c2c;
+   bool duplicate_cn;
+   int cf_max;
+diff --git a/src/openvpn/push.c b/src/openvpn/push.c
+index a4cb726..cdfafe4 100644
+--- a/src/openvpn/push.c
++++ b/src/openvpn/push.c
+@@ -251,15 +251,22 @@ send_push_reply (struct context *c)
+ 
+   if ( c->c2.push_ifconfig_ipv6_defined )
+     {
+-      /* IPv6 is put into buffer first, could be lengthy */
+-      buf_printf( &buf, ",ifconfig-ipv6 %s/%d %s",
+-		    print_in6_addr( c->c2.push_ifconfig_ipv6_local, 0, &gc),
+-		    c->c2.push_ifconfig_ipv6_netbits,
+-		    print_in6_addr( c->c2.push_ifconfig_ipv6_remote, 0, &gc) );
+-      if (BLEN (&buf) >= safe_cap)
++      if ( c->options.push_suppress_ipv6 )
+ 	{
+-	  msg (M_WARN, "--push ifconfig-ipv6 option is too long");
+-	  goto fail;
++	  msg( M_INFO, "send_push_reply(): suppress sending ifconfig-ipv6" );
++	}
++      else
++	{
++	  /* IPv6 is put into buffer first, could be lengthy */
++	  buf_printf( &buf, ",ifconfig-ipv6 %s/%d %s",
++			print_in6_addr( c->c2.push_ifconfig_ipv6_local, 0, &gc),
++			c->c2.push_ifconfig_ipv6_netbits,
++			print_in6_addr( c->c2.push_ifconfig_ipv6_remote, 0, &gc) );
++	  if (BLEN (&buf) >= safe_cap)
++	    {
++	      msg (M_WARN, "--push ifconfig-ipv6 option is too long");
++	      goto fail;
++	    }
+ 	}
+     }
+ 
+@@ -268,6 +275,15 @@ send_push_reply (struct context *c)
+       if (e->enable)
+ 	{
+ 	  const int l = strlen (e->option);
++
++	  if ( c->options.push_suppress_ipv6 &&
++		( strncmp( e->option, "tun-ipv6", 8 ) == 0 ||
++		  strncmp( e->option, "route-ipv6", 10 ) == 0 ) )
++	    {
++	      msg( M_INFO, "send_push_reply(): suppress sending '%s'", e->option );
++	      goto next;
++	    }
++
+ 	  if (BLEN (&buf) + l >= safe_cap)
+ 	    {
+ 	      buf_printf (&buf, ",push-continuation 2");
+@@ -288,6 +304,7 @@ send_push_reply (struct context *c)
+ 	    }
+ 	  buf_printf (&buf, ",%s", e->option);
+ 	}
++next:
+       e = e->next;
+     }
+ 
+-- 
+2.4.6
+
+
