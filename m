@@ -1,11 +1,15 @@
-Message-ID: <4898CF2D5F74411A9CD02CCE11BF34AE@...1853...>
-From: <debbie10t@...277...>
-References: <56211F0D.2010806@...515...>
-	<18065708.JIrWLiTMeq@...2001...><ac7rqc.nwgq22.2u3ktu-qmf@...2076...><2892922.l0hsuaC9oU@...2001...><SN1PR08MB1391C6A8CA4653A464FAC48EB93A0@...2065...><56254BEE.4080606@...1114...>
-	<SN1PR08MB13917AEA32760F38C9EBEF77B93A0@...2065...>
-Date: Tue, 20 Oct 2015 22:06:09 +0100
+Date: Tue, 20 Oct 2015 23:28:27 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20151020212827.GN22054@...1296...>
+References: <1445277979-21591-1-git-send-email-gert@...1296...>
+	<5625FF23.70203@...1400...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] Creating a Windows team for OpenVPN?
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="u1miaA4NINTr2SbH"
+Content-Disposition: inline
+In-Reply-To: <5625FF23.70203@...1400...>
+Subject: Re: [Openvpn-devel] [PATCH] Add option --push-suppress-ipv6 to stop
+ sending IPv6 info to clients.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,40 +18,67 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; format=flowed; charset="iso-8859-1";
-	reply-type=original
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <schwabe@...1400...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-ho hum
+--u1miaA4NINTr2SbH
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-> -----Original Message-----
-> From: David Sommerseth [mailto:openvpn.list@...1114...]
-> Sent: Monday, October 19, 2015 3:01 PM
-> To: Morris, Russell <rmorris@...1315...>; Heiko Hund 
-> <heiko.hund@...1489...>; samuli@...515...
-> Cc: openvpn-devel@lists.sourceforge.net
-> Subject: Re: [Openvpn-devel] Creating a Windows team for OpenVPN?
->
+Hi,
 
-> My point is that nobody really expects anyone to be a fully experienced 
-> OpenVPN developer to get involved.  Not at all.  We are a community, which 
-> help each other.
+On Tue, Oct 20, 2015 at 10:45:23AM +0200, Arne Schwabe wrote:
+> Am 19.10.15 um 20:06 schrieb Gert Doering:
+> > Workaround option for servers that have IPv6 working just fine, but
+> > need to turn it off for individual clients - in that case, set this
+> > option in the --client-config-dir file for a particular user, or
+> > via --client-connect script/plugin hook for a particular platform
+> > (like IOS 9.0.2)
+> >
+> ACK from me.=20
 
-> Don't be afraid, take that chance and share your thoughts and ideas.  Hang 
-> out on the #openvpn-devel IRC channel if you can, share your opinions on 
-> the mailing list ...
+Heh :-) - this was more thought of an "here, what do you think?" patch
+(plus "fix valdikss' headache in #614 quickly"), and I didn't expect an
+ACK so quickly...
 
-I Disagree
+... and then a discussion on IRC later.
 
-If past experience is anything to go by ..
-Don't expect help !
+But Arne actually had a very good idea which I'm going to implement and
+send "soon":
 
-I have always considered myself a cynic ..
-The OpenVPN "community" cemented my opinion quite firmly.
+ --push-filter <keyword list>
 
-(with a few exceptions)
+like,
 
-regards
+ --push-filter ifconfig-ipv6 tun-ipv6 route-ipv6
 
+which would do exactly what the current patch did, but is much more flexible
+depending on what exactly needs to be worked around with *this* client...
+
+(There's a trac ticket about "--push-reset", which we might resolve with
+this as well :-) )
+
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--u1miaA4NINTr2SbH
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQCVAwUBViax+qkuBuNlUUl1AQJFwAP+IxyvM5yNDOykntsY66Cglf6mT4BtU9Wa
+XARmjisrXzga2I7LRP8ZiHmzChdyfrDf0lDEg4mOZpmMmpC7qqQDjIiwFY8ZBkfH
+DmVC98fd4BHMpPVTuGQOLPBA83bkh/cpnWPwyHrYKPi5N/MFaxk0hoJUHa0l44Gl
+6SxZ0cJGl1A=
+=QsJJ
+-----END PGP SIGNATURE-----
+
+--u1miaA4NINTr2SbH--
 
