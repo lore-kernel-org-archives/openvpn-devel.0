@@ -1,10 +1,10 @@
 From: Heiko Hund <heiko.hund@...1489...>
-Date: Tue, 20 Oct 2015 12:47:12 +0200
-Message-ID: <6878665.sd75Cde7O9@...1526...>
-In-Reply-To: <CAKuzo_gOdaxDv0q5k=0mk=_gyvhtCN4w=FAanULT1fV1WVufaQ@...278...>
+Date: Tue, 20 Oct 2015 12:50:10 +0200
+Message-ID: <1529592.JvAXLHLVMm@...1526...>
+In-Reply-To: <56260084.50903@...515...>
 References: <56211F0D.2010806@...515...>
-	<001101d10aaa$ca65c3c0$5f314b40$@gmail.com>
-	<CAKuzo_gOdaxDv0q5k=0mk=_gyvhtCN4w=FAanULT1fV1WVufaQ@...278...>
+	<SN1PR08MB1391C6A8CA4653A464FAC48EB93A0@...2065...>
+	<56260084.50903@...515...>
 MIME-Version: 1.0
 Subject: Re: [Openvpn-devel] Creating a Windows team for OpenVPN?
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -17,23 +17,21 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
+To: Samuli =?ISO-8859-1?Q?Sepp=E4nen?= <samuli@...515...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-On Monday 19 October 2015 16:57:02 Selva Nair wrote:
-> I feel a framework such as the "interactive service" -- which is now and
-> again mentioned in the mailing lists but no idea what it is --- with new
-> GUI or a partial rewrite of the current one to effectively use the
-> management interface plus a stable service is needed. Alternatively the
-> current GUI could be adapted to use the "interactive service" if its ready
-> for prime time.
+On Tuesday 20 October 2015 11:51:16 Samuli Sepp=C3=A4nen wrote:
+> 3) Adding OpenVPN-GUI to OpenVPN's GitHub page
+>
+> This was proposed by someone else earlier. If nothing else, it would
+> allow sharing responsibility of OpenVPN-GUI development among more
+> people, like what happened with easy-rsa, openvpn-build, etc. earlier. I
+> actually created my own GitHub fork a while back to make my work easier,
+> as well as to be able to merge trivial patches (e.g. language fixes)
+> more easily. The versioning in my OpenVPN-GUI tree had diverged from the
+> "official" one a long time before that.
 
-The fun part is that the GUI already is capable of working with the
-interactive service and our customers use it for a couple of years without
-complaints. So, this is actually stable enough. The code just needs some
-eyeballs from Windows people so the maintainers are sufficiently convinced =
-to
-merge it. Chances are also higher that things happen if more than one person
-understands the code and could fix things in case I get hit by a bus.
+That was me. Let's do that then.
 
 Heiko
 
