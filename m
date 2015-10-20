@@ -1,14 +1,11 @@
-From: "Morris, Russell" <rmorris@...1315...>
-Date: Mon, 19 Oct 2015 22:19:16 +0000
-Message-ID: <SN1PR08MB13917AEA32760F38C9EBEF77B93A0@...2065...>
 References: <56211F0D.2010806@...515...> <18065708.JIrWLiTMeq@...2001...>
 	<ac7rqc.nwgq22.2u3ktu-qmf@...2076...>
 	<2892922.l0hsuaC9oU@...2001...>
-	<SN1PR08MB1391C6A8CA4653A464FAC48EB93A0@...2065...>
-	<56254BEE.4080606@...1114...>
-In-Reply-To: <56254BEE.4080606@...1114...>
-Content-Language: en-US
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <5625EA0A.3000908@...515...>
+Date: Tue, 20 Oct 2015 10:15:22 +0300
 MIME-Version: 1.0
+In-Reply-To: <2892922.l0hsuaC9oU@...2001...>
 Subject: Re: [Openvpn-devel] Creating a Windows team for OpenVPN?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -18,48 +15,52 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, Heiko Hund <heiko.hund@...1489...>, "samuli@...515..." <samuli@...515...>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: quoted-printable
+To: Heiko Hund <heiko.hund@...1489...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-SGksDQoNCkkgbGlrZSB0aGUgdGhvdWdodHMgLSBhbmQgdmVyeSBtdWNoIGFncmVlIHdpdGggdGhl
-bS4gSSdkIHNheSAiY291bnQgbWUgaW4iIC0gb25jZSBvZiBjb3Vyc2Ugd2UgZmlndXJlIG91dCB3
-aGF0IGl0IGV4YWN0bHkgaXMgLi4uIDstKS4gVGhhdCBzYWlkLCBJIHNlZSBzb21lIHRob3VnaHRz
-IG9uIHRoaXMgYXMgd2VsbCBpbiBmb2xsb3cgb24gZW1haWwuIExldCdzIHRyeSB0byBnZXQgYSBo
-YW5kbGUgb24gdGhlICJpdCIgZmlyc3QsIHRoZW4gcGVyaGFwcyBoYW5kbGUgaG93Lg0KDQpUaGFu
-a3MgYWdhaW4sDQouLi4gUnVzc2VsbA0KDQoNCg0KLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0N
-CkZyb206IERhdmlkIFNvbW1lcnNldGggW21haWx0bzpvcGVudnBuLmxpc3RALi4uMTExNC4uLl0g
-DQpTZW50OiBNb25kYXksIE9jdG9iZXIgMTksIDIwMTUgMzowMSBQTQ0KVG86IE1vcnJpcywgUnVz
-c2VsbCA8cm1vcnJpc0AuLi4xMzE1Li4uPjsgSGVpa28gSHVuZCA8aGVpa28uaHVuZEAuLi4xNDg5
-Li4uPjsgc2FtdWxpQC4uLjUxNS4uLg0KQ2M6IG9wZW52cG4tZGV2ZWxAbGlzdHMuc291cmNlZm9y
-Z2UubmV0DQpTdWJqZWN0OiBSZTogW09wZW52cG4tZGV2ZWxdIENyZWF0aW5nIGEgV2luZG93cyB0
-ZWFtIGZvciBPcGVuVlBOPw0KDQpPbiAxOS8xMC8xNSAxNjo1OCwgTW9ycmlzLCBSdXNzZWxsIHdy
-b3RlOg0KPiBJJ2QgYmUgaGFwcHkgdG8gaGVscCBvdXQgLSBidXQgYXMgYWJvdmUsIEknbSBub3Qg
-YW4gZXhwZXJ0LiBTbyANCj4gZGVmaW5pdGVseSB3aWxsaW5nLCBidXQgdXNlZnVsbmVzcyBtYXkg
-YmUgcXVlc3Rpb25hYmxlIHVuZm9ydHVuYXRlbHkgLi4uIDstKS4NCg0KVGhhdCBpc24ndCB0b28g
-ZmFyIGF3YXkgZnJvbSB3aGVyZSBJIHN0YXJ0ZWQgYW5kIGdvdCBpbnZvbHZlZCBpbnRvIHRoZSBP
-cGVuVlBOIGNvcmUgZGV2LXRlYW0uICBJIHdhcyBmYXIgZnJvbSBhbiBPcGVuVlBOIGV4cGVydC4g
-IEkgaGFkIHZlcnkgbGl0dGxlIE9wZW5WUE4gZGV2ZWxvcG1lbnQgZXhwZXJpZW5jZSBidXQgaGFk
-IHdvcmtlZCBvbiBhIHBhdGNoIGZvciBPcGVuVlBOIHRvIHNvbHZlIGFuIGlzc3VlIGZvciBJIGhh
-ZCB3aXRoIGEgcGx1Zy1pbiBJIHdhcyB3b3JraW5nIG9uIGZvciBPcGVuVlBOLg0KDQpCdXQgSSB0
-b29rIHRoZSByaXNrIG9mIHN0ZXBwaW5nIHVwLCBzYXlpbmcgIkkgY2FuIGhlbHAiIC4uLiBhbmQg
-c29tZSBtb250aHMgbGF0ZXIgSSBoYWQgZ2FpbmVkIGVub3VnaCB0cnVzdCBpbiB0aGUgY29tbXVu
-aXR5IHRvIGJlIG9uZSBvZiB0aGUgZmlyc3QgZ2F0ZWtlZXBlcnMgb2YgdGhlIG5ld2x5IGVzdGFi
-bGlzaGVkIGdpdCByZXBvc2l0b3J5IGZvciBPcGVuVlBOLg0KDQpNeSBwb2ludCBpcyB0aGF0IG5v
-Ym9keSByZWFsbHkgZXhwZWN0cyBhbnlvbmUgdG8gYmUgYSBmdWxseSBleHBlcmllbmNlZCBPcGVu
-VlBOIGRldmVsb3BlciB0byBnZXQgaW52b2x2ZWQuICBOb3QgYXQgYWxsLiAgV2UgYXJlIGEgY29t
-bXVuaXR5LCB3aGljaCBoZWxwIGVhY2ggb3RoZXIuICBJZiB5b3UgaGF2ZSBzb21lIGJhc2ljIHNr
-aWxscyAoZm9yIG15IHBhcnQsIEkga25vdyBDIGZhaXJseSB3ZWxsIGJ1dCBieSBubyBtZWFucyBh
-biBleHBlcnQpIGFuZCBpbnRlcmVzdCB0byBoZWxwIC4uLiBJIG1lYW4sIHdoYXQgZWxzZSBjYW4g
-d2UgYXNrIGZvciBpZiB5b3UgYXJlIHdpbGxpbmcgdG8gaGVscCBvdXQ/IDopDQoNCkRvbid0IGJl
-IGFmcmFpZCwgdGFrZSB0aGF0IGNoYW5jZSBhbmQgc2hhcmUgeW91ciB0aG91Z2h0cyBhbmQgaWRl
-YXMuICBIYW5nIG91dCBvbiB0aGUgI29wZW52cG4tZGV2ZWwgSVJDIGNoYW5uZWwgaWYgeW91IGNh
-biwgc2hhcmUgeW91ciBvcGluaW9ucyBvbiB0aGUgbWFpbGluZyBsaXN0IC4uLiByZXZpZXcgYW5k
-IHRlc3QgcGF0Y2hlcyB5b3UgdGhpbmsgYXJlIHZhbHVhYmxlIGZvciBPcGVuVlBOLCBzdWJtaXQg
-eW91ciBvd24gcGF0Y2hlcyBvZiB3aGljaCB5b3UgYmVsaWV2ZSBpbXByb3ZlIE9wZW5WUE4gLi4u
-IHRoYXQncyBob3cgdGhpcyBvcGVuIHNvdXJjZSBnYW1lIHdvcmtzLiAgQW5kIHRoaXMgaXMgZXhh
-Y3RseSBob3cgR2VydCwgSGVpa28sIFN0ZWZmYW4sIEFybmUsIGFuZCBtYW55IG1hbnkgbW9yZSBh
-bHNvIGdvdCBpbnZvbHZlZC4NCg0KQW5kIGhlcmUncyBhIHByb21vIHZpZGVvIHNheWluZyBwcmV0
-dHkgbXVjaCB0aGUgc2FtZSBpbiBhIGNvb2xlciB3YXk6DQo8aHR0cHM6Ly93d3cueW91dHViZS5j
-b20vd2F0Y2g/dj15U3lQSW95WEotaz4NCg0KDQotLQ0Ka2luZCByZWdhcmRzLA0KDQpEYXZpZCBT
-b21tZXJzZXRoDQo=
+Hi,
+
+>> Are you saying that the interactive service also doubles as a Windows sy=
+stem
+>> service? If so, can it be  configured to autostart selected openvpn
+>> connections on boot and restart them if they crash/stop?
+>
+> No, and I do not think that the service should take care of that. That's
+> rather things that can be handled by the GUI.
+
+What about persistent connections, especially on Windows servers?
+
+I've already done a proof of concept "openvpnserv.exe" replacement using=20
+NSSM:
+
+<https://community.openvpn.net/openvpn/wiki/IntegratingOpenvpnWithNssm>
+
+I also started writing a small C# program that can manage OpenVPN=20
+connections in NSSM in a user-friendly fashion, because the standard=20
+NSSM GUI is way too complex and generic for our well-specified use-case.
+
+>> Now, can anyone provide proof that having a Windows team would actually
+>> _hurt_ the project? If not, what does it matter if it fails? We could ju=
+st
+>> scrap the idea retroactively.
+>
+> Hehe nice turn demanding proof, that'll shut up ppl. =3D)
+
+Yes, that was the idea, because I know you guys don't have any proof. It=20
+seemed to have worked fine :).
+
+That said, I don't have any proof either, but I think we all can agree=20
+that the situation with Windows in OpenVPN is not optimal, and that we=20
+should try to do something about it.
+
+Best regards,
+
+--=20
+Samuli Sepp=C3=A4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
+
