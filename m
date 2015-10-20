@@ -1,10 +1,11 @@
 From: Heiko Hund <heiko.hund@...1489...>
-Date: Tue, 20 Oct 2015 12:30:29 +0200
-Message-ID: <5545275.0Ntl7Y3TZb@...1526...>
-In-Reply-To: <CAKuzo_h6uyi5sGLJ0agkjYNHsG9p+DW=-LCa+0Q6Wjwz7mCqtQ@...278...>
-References: <CAKuzo_h6uyi5sGLJ0agkjYNHsG9p+DW=-LCa+0Q6Wjwz7mCqtQ@...278...>
+Date: Tue, 20 Oct 2015 12:38:18 +0200
+Message-ID: <2421664.qQJpUDo69u@...1526...>
+In-Reply-To: <5625EA0A.3000908@...515...>
+References: <56211F0D.2010806@...515...> <2892922.l0hsuaC9oU@...2001...>
+	<5625EA0A.3000908@...515...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] Interactive windows service
+Subject: Re: [Openvpn-devel] Creating a Windows team for OpenVPN?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,19 +16,25 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
-To: Selva Nair <selva.nair@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Samuli =?ISO-8859-1?Q?Sepp=E4nen?= <samuli@...515...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-On Saturday 17 October 2015 11:44:07 Selva Nair wrote:
-> Is there a public repo where I can access this?  I have been using a
-> patched MI-GUI to avoid needing admin priv on windows  but working towards
-> a solution that could come bundled with "official" releases would be grea=
-t.
+On Tuesday 20 October 2015 10:15:22 Samuli Sepp=C3=A4nen wrote:
+> >> Are you saying that the interactive service also doubles as a Windows
+> >> system service? If so, can it be  configured to autostart selected
+> >> openvpn connections on boot and restart them if they crash/stop?
+> >
+> > No, and I do not think that the service should take care of that. That's
+> > rather things that can be handled by the GUI.
+>
+> What about persistent connections, especially on Windows servers?
 
-Currently it is still on sourceforge, but I've got myself a Github account =
-on
-the weekend and will move the openvpn and GUI code as I noticed sf.net went
-uncool. For now you can clone: git://git.code.sf.net/p/openvpn-gui/openvpn
+The interactive service patch doesn't remove the currently available servic=
+e.
+So, you still can fire up any connections the way it was before. I personal=
+ly
+do not care about the original service though, it may very well be that it
+lacks decent functionality.
 
 Heiko
 
