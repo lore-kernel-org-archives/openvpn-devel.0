@@ -1,12 +1,11 @@
-References: <56211F0D.2010806@...515...> <18065708.JIrWLiTMeq@...2001...>
-	<ac7rqc.nwgq22.2u3ktu-qmf@...2076...>
-	<2892922.l0hsuaC9oU@...2001...>
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <5625EA0A.3000908@...515...>
-Date: Tue, 20 Oct 2015 10:15:22 +0300
+From: Arne Schwabe <arne@...1227...>
+References: <1445277979-21591-1-git-send-email-gert@...1296...>
+Message-ID: <5625FF9E.4080407@...1227...>
+Date: Tue, 20 Oct 2015 10:47:26 +0200
 MIME-Version: 1.0
-In-Reply-To: <2892922.l0hsuaC9oU@...2001...>
-Subject: Re: [Openvpn-devel] Creating a Windows team for OpenVPN?
+In-Reply-To: <1445277979-21591-1-git-send-email-gert@...1296...>
+Subject: Re: [Openvpn-devel] [PATCH] Add option --push-suppress-ipv6 to stop
+ sending IPv6 info to clients.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,52 +14,24 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: quoted-printable
-To: Heiko Hund <heiko.hund@...1489...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
 
-Hi,
 
->> Are you saying that the interactive service also doubles as a Windows sy=
-stem
->> service? If so, can it be  configured to autostart selected openvpn
->> connections on boot and restart them if they crash/stop?
+
+Am 19.10.15 um 20:06 schrieb Gert Doering:
+> Workaround option for servers that have IPv6 working just fine, but
+> need to turn it off for individual clients - in that case, set this
+> option in the --client-config-dir file for a particular user, or
+> via --client-connect script/plugin hook for a particular platform
+> (like IOS 9.0.2)
 >
-> No, and I do not think that the service should take care of that. That's
-> rather things that can be handled by the GUI.
+ACK from me. Patch looks good and is small enough not to cause
+headaches. Ideally, this would be solved on the client (not accepting
+these variables). The client still complain about other options like
+redirect-gateway ipv6 but since this is a workaround anyway, it should
+be fine.
 
-What about persistent connections, especially on Windows servers?
-
-I've already done a proof of concept "openvpnserv.exe" replacement using=20
-NSSM:
-
-<https://community.openvpn.net/openvpn/wiki/IntegratingOpenvpnWithNssm>
-
-I also started writing a small C# program that can manage OpenVPN=20
-connections in NSSM in a user-friendly fashion, because the standard=20
-NSSM GUI is way too complex and generic for our well-specified use-case.
-
->> Now, can anyone provide proof that having a Windows team would actually
->> _hurt_ the project? If not, what does it matter if it fails? We could ju=
-st
->> scrap the idea retroactively.
->
-> Hehe nice turn demanding proof, that'll shut up ppl. =3D)
-
-Yes, that was the idea, because I know you guys don't have any proof. It=20
-seemed to have worked fine :).
-
-That said, I don't have any proof either, but I think we all can agree=20
-that the situation with Windows in OpenVPN is not optimal, and that we=20
-should try to do something about it.
-
-Best regards,
-
---=20
-Samuli Sepp=C3=A4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
+Arne
 
