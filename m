@@ -1,11 +1,10 @@
-From: Heiko Hund <heiko.hund@...1489...>
-Date: Tue, 20 Oct 2015 12:50:10 +0200
-Message-ID: <1529592.JvAXLHLVMm@...1526...>
-In-Reply-To: <56260084.50903@...515...>
-References: <56211F0D.2010806@...515...>
-	<SN1PR08MB1391C6A8CA4653A464FAC48EB93A0@...2065...>
-	<56260084.50903@...515...>
+References: <56211F0D.2010806@...515...> <2892922.l0hsuaC9oU@...2001...>
+	<5625EA0A.3000908@...515...> <2421664.qQJpUDo69u@...1526...>
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <56261F0D.9020208@...515...>
+Date: Tue, 20 Oct 2015 14:01:33 +0300
 MIME-Version: 1.0
+In-Reply-To: <2421664.qQJpUDo69u@...1526...>
 Subject: Re: [Openvpn-devel] Creating a Windows team for OpenVPN?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -15,38 +14,43 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: quoted-printable
-To: Samuli =?ISO-8859-1?Q?Sepp=E4nen?= <samuli@...515...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Heiko Hund <heiko.hund@...1489...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-On Tuesday 20 October 2015 11:51:16 Samuli Sepp=C3=A4nen wrote:
-> 3) Adding OpenVPN-GUI to OpenVPN's GitHub page
+
+> On Tuesday 20 October 2015 10:15:22 Samuli Sepp=C3=A4nen wrote:
+>>>> Are you saying that the interactive service also doubles as a Windows
+>>>> system service? If so, can it be  configured to autostart selected
+>>>> openvpn connections on boot and restart them if they crash/stop?
+>>>
+>>> No, and I do not think that the service should take care of that. That's
+>>> rather things that can be handled by the GUI.
+>>
+>> What about persistent connections, especially on Windows servers?
 >
-> This was proposed by someone else earlier. If nothing else, it would
-> allow sharing responsibility of OpenVPN-GUI development among more
-> people, like what happened with easy-rsa, openvpn-build, etc. earlier. I
-> actually created my own GitHub fork a while back to make my work easier,
-> as well as to be able to merge trivial patches (e.g. language fixes)
-> more easily. The versioning in my OpenVPN-GUI tree had diverged from the
-> "official" one a long time before that.
+> The interactive service patch doesn't remove the currently available serv=
+ice.
+> So, you still can fire up any connections the way it was before. I person=
+ally
+> do not care about the original service though, it may very well be that it
+> lacks decent functionality.
 
-That was me. Let's do that then.
+The original openvpnserv.exe is truly crappy. It will not quit if all=20
+connections have died. It will not restart a connection should it crash.=20
+A single non-functional OpenVPN connection prevents it from launching=20
+the others (afaik). It will not work on Windows 10 in any reasonable=20
+fashion and works badly on anything post-Windows 7. It also does not=20
+handle resuming from suspend/hibernate properly.
 
-Heiko
+My NSSM-based replacement thingie aims to address all these=20
+shortcomings. I believe the interactive service and NSSM are complementary.
 
+--=20
+Samuli Sepp=C3=A4nen
+Community Manager
+OpenVPN Technologies, Inc
 
-Sophos Technology GmbH, Amalienbadstra=E1=BA=9Ee 41/Bau 52, D-76227 Karlsru=
-he, Deutschland
-Tel +49 (0)721 25516 0 Fax +49 (0)721 25516 200 E-Mail info@...2075... www.=
-sophos.de
-Sitz der Gesellschaft: Karlsruhe, Amtsgericht Mannheim HRB 712658
-Gesch=C3=A4ftsf=C3=BChrer: Nicholas Bray, Pino von Kienlin, Wolfgang Hilper=
-t, Jennifer Onslow.
-Sophos GmbH, Gustav-Stresemann-Ring 1, 65189 Wiesbaden, Deutschland
-Tel +49 (0) 611 5858-0 Fax +49 (0) 611 5858-1042 E-Mail info@...2075... www=
-.sophos.de
-Sitz der Gesellschaft: Wiesbaden, Amtsgericht Wiesbaden HRB 25915 Gesch=C3=
-=A4ftsf=C3=BChrer: Nicholas Bray, Wolfgang Hilpert, Pino von Kienlin, Jenni=
-fer Onslow
+irc freenode net: mattock
 
