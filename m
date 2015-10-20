@@ -1,6 +1,6 @@
 From: Lev Stipakov <lstipakov@...277...>
-Date: Tue, 20 Oct 2015 17:26:32 +0300
-Message-ID: <56264F18.8000105@...277...>
+Date: Tue, 20 Oct 2015 17:28:17 +0300
+Message-ID: <56264F81.1080603@...277...>
 References: <1445347379-29943-1-git-send-email-lstipakov@...277...>
 	<20151020135234.GM22054@...1296...>
 Mime-Version: 1.0
@@ -19,7 +19,7 @@ Content-Type: text/plain; charset=windows-1252; format=flowed
 Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
- > Why OPENSSL_malloc() in particular?
+> Why OPENSSL_malloc() in particular?
 
 I looked for other malloc calls in that file and only example I've found 
 was OPENSSL_malloc in show_available_curves().
@@ -28,7 +28,7 @@ On the other side Dr. Stephen Henson says (quote unedited):
 
 http://permalink.gmane.org/gmane.comp.encryption.openssl.user/11291
 
- > You don't have to use OPENSSL_malloc() in an application but you do 
+> You don't have to use OPENSSL_malloc() in an application but you do
 you can make use of OpenSSLs memory leak checking routines if you do.
 
 -Lev
