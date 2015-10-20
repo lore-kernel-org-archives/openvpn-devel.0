@@ -1,11 +1,8 @@
-References: <56211F0D.2010806@...515...> <2892922.l0hsuaC9oU@...2001...>
-	<5625EA0A.3000908@...515...> <2421664.qQJpUDo69u@...1526...>
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <56261F0D.9020208@...515...>
-Date: Tue, 20 Oct 2015 14:01:33 +0300
+Message-ID: <562636A3.1050100@...1147...>
+Date: Tue, 20 Oct 2015 14:42:11 +0200
+From: Jan Just Keijser <janjust@...1147...>
 MIME-Version: 1.0
-In-Reply-To: <2421664.qQJpUDo69u@...1526...>
-Subject: Re: [Openvpn-devel] Creating a Windows team for OpenVPN?
+Subject: [Openvpn-devel] Interesting link related to OpenVPN on Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,41 +13,28 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: quoted-printable
-To: Heiko Hund <heiko.hund@...1489...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+
+Hi,
+
+just read this post:
+http://www.theregister.co.uk/2015/10/19/microsoft_openssh_code_release/
+
+Here's Redmond's rough road map for the OpenSSH port:
+
+         Update NoMachine port to OpenSSH 7.1 [Done]
+         Leverage Windows crypto api=E2=80=99s instead of OpenSSL/LibreSSL =
+and=20
+run as Windows Service
 
 
-> On Tuesday 20 October 2015 10:15:22 Samuli Sepp=C3=A4nen wrote:
->>>> Are you saying that the interactive service also doubles as a Windows
->>>> system service? If so, can it be  configured to autostart selected
->>>> openvpn connections on boot and restart them if they crash/stop?
->>>
->>> No, and I do not think that the service should take care of that. That's
->>> rather things that can be handled by the GUI.
->>
->> What about persistent connections, especially on Windows servers?
->
-> The interactive service patch doesn't remove the currently available serv=
-ice.
-> So, you still can fire up any connections the way it was before. I person=
-ally
-> do not care about the original service though, it may very well be that it
-> lacks decent functionality.
+[...]
+esp the second bullet is interesting - if Microsoft created an=20
+(opensource) patch for OpenSSH to use Windows crypto api's then we can=20
+leverage this for OpenVPN-on-Windows as well.
 
-The original openvpnserv.exe is truly crappy. It will not quit if all=20
-connections have died. It will not restart a connection should it crash.=20
-A single non-functional OpenVPN connection prevents it from launching=20
-the others (afaik). It will not work on Windows 10 in any reasonable=20
-fashion and works badly on anything post-Windows 7. It also does not=20
-handle resuming from suspend/hibernate properly.
+share and enjoy,
 
-My NSSM-based replacement thingie aims to address all these=20
-shortcomings. I believe the interactive service and NSSM are complementary.
+JJK
 
---=20
-Samuli Sepp=C3=A4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
 
