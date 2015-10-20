@@ -1,9 +1,10 @@
 From: Heiko Hund <heiko.hund@...1489...>
-Date: Tue, 20 Oct 2015 12:38:18 +0200
-Message-ID: <2421664.qQJpUDo69u@...1526...>
-In-Reply-To: <5625EA0A.3000908@...515...>
-References: <56211F0D.2010806@...515...> <2892922.l0hsuaC9oU@...2001...>
-	<5625EA0A.3000908@...515...>
+Date: Tue, 20 Oct 2015 12:47:12 +0200
+Message-ID: <6878665.sd75Cde7O9@...1526...>
+In-Reply-To: <CAKuzo_gOdaxDv0q5k=0mk=_gyvhtCN4w=FAanULT1fV1WVufaQ@...278...>
+References: <56211F0D.2010806@...515...>
+	<001101d10aaa$ca65c3c0$5f314b40$@gmail.com>
+	<CAKuzo_gOdaxDv0q5k=0mk=_gyvhtCN4w=FAanULT1fV1WVufaQ@...278...>
 MIME-Version: 1.0
 Subject: Re: [Openvpn-devel] Creating a Windows team for OpenVPN?
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -16,25 +17,23 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
-To: Samuli =?ISO-8859-1?Q?Sepp=E4nen?= <samuli@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-On Tuesday 20 October 2015 10:15:22 Samuli Sepp=C3=A4nen wrote:
-> >> Are you saying that the interactive service also doubles as a Windows
-> >> system service? If so, can it be  configured to autostart selected
-> >> openvpn connections on boot and restart them if they crash/stop?
-> >
-> > No, and I do not think that the service should take care of that. That's
-> > rather things that can be handled by the GUI.
->
-> What about persistent connections, especially on Windows servers?
+On Monday 19 October 2015 16:57:02 Selva Nair wrote:
+> I feel a framework such as the "interactive service" -- which is now and
+> again mentioned in the mailing lists but no idea what it is --- with new
+> GUI or a partial rewrite of the current one to effectively use the
+> management interface plus a stable service is needed. Alternatively the
+> current GUI could be adapted to use the "interactive service" if its ready
+> for prime time.
 
-The interactive service patch doesn't remove the currently available servic=
-e.
-So, you still can fire up any connections the way it was before. I personal=
-ly
-do not care about the original service though, it may very well be that it
-lacks decent functionality.
+The fun part is that the GUI already is capable of working with the
+interactive service and our customers use it for a couple of years without
+complaints. So, this is actually stable enough. The code just needs some
+eyeballs from Windows people so the maintainers are sufficiently convinced =
+to
+merge it. Chances are also higher that things happen if more than one person
+understands the code and could fix things in case I get hit by a bus.
 
 Heiko
 
