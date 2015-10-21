@@ -1,16 +1,11 @@
+References: <mailman.84319.1445380747.12779.openvpn-devel@lists.sourceforge.net>
+From: Christian Rank <christian.rank@...1420...>
+Message-ID: <562734CD.6080706@...1420...>
+Date: Wed, 21 Oct 2015 08:46:37 +0200
 MIME-Version: 1.0
-In-Reply-To: <4898CF2D5F74411A9CD02CCE11BF34AE@...1853...>
-References: <56211F0D.2010806@...515...> <18065708.JIrWLiTMeq@...2001...>
-	<ac7rqc.nwgq22.2u3ktu-qmf@...2076...>
-	<2892922.l0hsuaC9oU@...2001...>
-	<SN1PR08MB1391C6A8CA4653A464FAC48EB93A0@...2065...>
-	<56254BEE.4080606@...1114...>
-	<SN1PR08MB13917AEA32760F38C9EBEF77B93A0@...2065...>
-	<4898CF2D5F74411A9CD02CCE11BF34AE@...1853...>
-From: Selva Nair <selva.nair@...277...>
-Date: Tue, 20 Oct 2015 23:13:46 -0400
-Message-ID: <CAKuzo_ifgX_WD-VdCGFPkbKnL4ff-tXgWFqSd+gYe1tnGG9xLg@...278...>
-Content-Type: multipart/alternative; boundary=047d7bea3a24672728052294c5bb
+In-Reply-To: <mailman.84319.1445380747.12779.openvpn-devel@lists.sourceforge.net>
+Content-Type: multipart/signed; protocol="application/pkcs7-signature";
+	micalg=sha-256; boundary="------------ms080509000604080005050606"
 Subject: Re: [Openvpn-devel] Creating a Windows team for OpenVPN?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -20,127 +15,147 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Debbie Tent <debbie10t@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
---047d7bea3a24672728052294c5bb
-Content-Type: text/plain; charset=UTF-8
+This is a cryptographically signed message in MIME format.
 
-Hi Debbie,
-
-On Tue, Oct 20, 2015 at 5:06 PM, <debbie10t@...277...> wrote:
-
-> ho hum
->
-> > -----Original Message-----
-> > From: David Sommerseth [mailto:openvpn.list@...1114...]
-> > Sent: Monday, October 19, 2015 3:01 PM
-> > To: Morris, Russell <rmorris@...1315...>; Heiko Hund
-> > <heiko.hund@...1489...>; samuli@...515...
-> > Cc: openvpn-devel@lists.sourceforge.net
-> > Subject: Re: [Openvpn-devel] Creating a Windows team for OpenVPN?
-> >
->
-> > My point is that nobody really expects anyone to be a fully experienced
-> > OpenVPN developer to get involved.  Not at all.  We are a community,
-> which
-> > help each other.
->
-> > Don't be afraid, take that chance and share your thoughts and ideas.
-> Hang
-> > out on the #openvpn-devel IRC channel if you can, share your opinions on
-> > the mailing list ...
->
-> I Disagree
->
-> If past experience is anything to go by ..
-> Don't expect help !
->
-> I have always considered myself a cynic ..nt give
-> The OpenVPN "community" cemented my opinion quite firmly.
->
-
-Don't give up hope..
-
-I'm only a lurker here, so just speaking from observation, not on behalf of
-anyone: most developers here appear to be extremely busy people devoting
-their little precious free time to openvpn. It took sometime for me to
-realize that. Just be patient and you will get replies. If not, rephrase
-and post again..
-
-In fact, in my experience, this is one of the few lists where you seldom
-get a rude response or a slap on the wrist for mistakenly posting to the
-wrong list, or for asking a trivial question. You may know how caustic is
-the atmosphere of many developer and user lists. People here are very
-polite but can be very slow to respond, that just how it is..
-
-Also I think we need more experienced users in the users list to take care
-of questions that don't need the developers' attention.
-
-Did I say don't give up?
-
-Cheers,
-
-Selva
-
---047d7bea3a24672728052294c5bb
-Content-Type: text/html; charset="UTF-8"
+--------------ms080509000604080005050606
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr">Hi Debbie,<br><div><div class=3D"gmail_extra"><br><div cla=
-ss=3D"gmail_quote">On Tue, Oct 20, 2015 at 5:06 PM,  <span dir=3D"ltr">&lt;=
-<a href=3D"mailto:debbie10t@...277..." target=3D"_blank">debbie10t@...1663...=
-.</a>&gt;</span> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margi=
-n:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">ho hum<br>
-<span><br>
-&gt; -----Original Message-----<br>
-&gt; From: David Sommerseth [mailto:<a href=3D"mailto:openvpn.list@...1910...=
-.." target=3D"_blank">openvpn.list@...1114...</a>]<br>
-&gt; Sent: Monday, October 19, 2015 3:01 PM<br>
-&gt; To: Morris, Russell &lt;<a href=3D"mailto:rmorris@...1315..." target=
-=3D"_blank">rmorris@...1315...</a>&gt;; Heiko Hund<br>
-&gt; &lt;<a href=3D"mailto:heiko.hund@...1489..." target=3D"_blank">heiko.h=
-und@...1489...</a>&gt;; <a href=3D"mailto:samuli@...515..." target=3D"_blan=
-k">samuli@...515...</a><br>
-&gt; Cc: <a href=3D"mailto:openvpn-devel@lists.sourceforge.net" target=3D"_=
-blank">openvpn-devel@lists.sourceforge.net</a><br>
-&gt; Subject: Re: [Openvpn-devel] Creating a Windows team for OpenVPN?<br>
-&gt;<br>
-<br>
-</span><span>&gt; My point is that nobody really expects anyone to be a ful=
-ly experienced<br>
-&gt; OpenVPN developer to get involved.=C2=A0 Not at all.=C2=A0 We are a co=
-mmunity, which<br>
-&gt; help each other.<br>
-<br>
-</span><span>&gt; Don&#39;t be afraid, take that chance and share your thou=
-ghts and ideas.=C2=A0 Hang<br>
-&gt; out on the #openvpn-devel IRC channel if you can, share your opinions =
-on<br>
-&gt; the mailing list ...<br>
-<br>
-</span>I Disagree<br>
-<br>
-If past experience is anything to go by ..<br>
-Don&#39;t expect help !<br>
-<br>
-I have always considered myself a cynic ..nt give <br>
-The OpenVPN &quot;community&quot; cemented my opinion quite firmly.<br></bl=
-ockquote><div><br></div><div>Don&#39;t give up hope.. <br><br>I&#39;m only =
-a lurker here, so just speaking from observation, not on behalf of anyone: =
-most developers here appear to be extremely busy people devoting their litt=
-le precious free time to <span>openvpn</span>. It took sometime for me to r=
-ealize that. Just be patient and you will get replies. If not, rephrase and=
- post again..<br><br></div><div>In fact, in my experience, this is one of t=
-he few lists where you seldom get a rude response or a slap on the wrist fo=
-r mistakenly posting to the wrong list, or for asking a trivial question. Y=
-ou may know how caustic is the atmosphere of many developer and user lists.=
- People here are very polite but can be very slow to respond, that just how=
- it is..<br><br></div><div>Also I think we need more experienced users in t=
-he users list to take care of questions that don&#39;t need the developers&=
-#39; attention.<br><br></div><div>Did I say don&#39;t give up?<br><br></div=
-><div>Cheers,<br><br></div><div><span>Selva</span><br></div></div></div></d=
-iv></div>
+On 21.10.2015 00:39, openvpn-devel-request@lists.sourceforge.net wrote:
+> From: ValdikSS <iam@...2070...>
+>=20
+> By the way, there is an open-source SecurePoint VPN client (https://sourc=
+eforge.net/projects/securepoint/) which handles current versions of Windows=
+ very well.
 
---047d7bea3a24672728052294c5bb--
+Hi,
+
+it seems that the current version of Securepoint's VPN client is no
+longer open source. The repo at
+> https://github.com/Securepoint/openvpn-client
+has the source for version 1.0.3 (last commit 2 years ago), whereas the
+current version (binaries) on sf.net is 2.0.10.
+
+Securepoint's website
+http://www.securepoint.cc/products-vpn-clients.html
+says "The Securepoint OpenVPN client is free of charge" - the term "open
+source" is not mentioned.
+
+Regards,
+	Christian
+
+--=20
+Dr. Christian Rank
+Rechenzentrum Universit=E4t Passau
+Bereich Netzwerk und Telekommunikation
+IT-Sicherheitsbeauftragter der Universit=E4t
+Innstr. 33
+D-94032 Passau
+GERMANY
+
+
+--------------ms080509000604080005050606
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
+
+MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAAKCC
+D4AwggQhMIIDCaADAgECAgIAxzANBgkqhkiG9w0BAQUFADBxMQswCQYDVQQGEwJERTEcMBoG
+A1UEChMTRGV1dHNjaGUgVGVsZWtvbSBBRzEfMB0GA1UECxMWVC1UZWxlU2VjIFRydXN0IENl
+bnRlcjEjMCEGA1UEAxMaRGV1dHNjaGUgVGVsZWtvbSBSb290IENBIDIwHhcNMDYxMjE5MTAy
+OTAwWhcNMTkwNjMwMjM1OTAwWjBaMQswCQYDVQQGEwJERTETMBEGA1UEChMKREZOLVZlcmVp
+bjEQMA4GA1UECxMHREZOLVBLSTEkMCIGA1UEAxMbREZOLVZlcmVpbiBQQ0EgR2xvYmFsIC0g
+RzAxMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA6ZvDZ4X5Da71jVTDllA1PWLp
+bkztlNcAW5UidNQg6zSP1uzAMQQLmYHiphTSUqAoI4SLdIkEXlvg4njBeMsWyyg1OXstkEXQ
+7aAAeny/Sg4bAMOG6VwrMRF7DPOCJEOMHDiLamgAmu7cT3ir0sYTm3at7t4m6O8Br3QPwQmi
+9mvOvdPNFDBP9eXjpMhim4IaAycwDQJlYE3t0QkjKpY1WCfTdsZxtpAdxO3/NYZ9bzOz2w/F
+EcKKg6GUXUFr2NIQ9Uz9ylGs2b3vkoO72uuLFlZWQ8/h1RM9ph8nMM1JVNvJEzSacXXFbOqn
+C5j5IZ0nrz6jOTlIaoytyZn7wxLyvQIDAQABo4HZMIHWMHAGA1UdHwRpMGcwZaBjoGGGX2h0
+dHA6Ly9wa2kudGVsZXNlYy5kZS9jZ2ktYmluL3NlcnZpY2UvYWZfRG93bmxvYWRBUkwuY3Js
+Py1jcmxfZm9ybWF0PVhfNTA5Ji1pc3N1ZXI9RFRfUk9PVF9DQV8yMB0GA1UdDgQWBBRJt8bP
+6D0ff+pEexMp9/EKcD7eZDAfBgNVHSMEGDAWgBQxw3kbuvVT1xfgiXotF2wKsyudMzAOBgNV
+HQ8BAf8EBAMCAQYwEgYDVR0TAQH/BAgwBgEB/wIBAjANBgkqhkiG9w0BAQUFAAOCAQEAO+Fa
+d8BIF9ypGOyBr1qJ8L0okqbKWRgScOwo8ueuf5Ys5/JdGTH2Eyt0vb2Asrn3Z8k5onk74RER
+7mt4kTN+O18mJ3VTZY4zY+7Pc8OwkiNJIVB1I6EfGOKUhT0/M+l3II2iveahhSlA9j9zMlgN
+CWum2oVswD+7jWZkViROrg0/MjUBW+mMgtlyWU+xhoXxdIVW5cP4XPON7kezUwVw5+VNimmD
+KOETCYaeXsjqWB4MH/mk1FoEaP0oPosCtli19qEsN1cAZ6sjaI1jpe+Za1z9S1b2q0CHNNQR
+kmzsh8UKCwczcrRvDB1ULNhRx8y/MNNDcvEyv4zOSWOoAPfyHDCCBX0wggRloAMCAQICBxeQ
+YOVCFU4wDQYJKoZIhvcNAQELBQAwWjELMAkGA1UEBhMCREUxEzARBgNVBAoTCkRGTi1WZXJl
+aW4xEDAOBgNVBAsTB0RGTi1QS0kxJDAiBgNVBAMTG0RGTi1WZXJlaW4gUENBIEdsb2JhbCAt
+IEcwMTAeFw0xNDA1MTIxNTA1NThaFw0xOTA3MDkyMzU5MDBaMIGfMQswCQYDVQQGEwJERTEP
+MA0GA1UEBxMGUGFzc2F1MRwwGgYDVQQKExNVbml2ZXJzaXRhZXQgUGFzc2F1MRYwFAYDVQQL
+Ew1SZWNoZW56ZW50cnVtMSUwIwYDVQQDExxVbml2ZXJzaXRhZXQgUGFzc2F1IENBIC0gRzAx
+MSIwIAYJKoZIhvcNAQkBFhNjYUByei51bmktcGFzc2F1LmRlMIIBIjANBgkqhkiG9w0BAQEF
+AAOCAQ8AMIIBCgKCAQEAh4DRNOwFFDWK9XxbqOO25JjP+kfkj0wx2cWvfoJVwmzqwRKmcE/x
+rpsxt169iF4pjl+urlEReSUmRiMYtAdkKBNvIPphUnq9N8GkDwVrIXQe+hfRVEwoGrv5lSfQ
+8xTZOsfIfYKDnITHcG2wNrlT2/1E35xn8xPqqiPYSw0Ev9Q++dKVzSXLuAqTO5cvH2FtJ/Bg
+Jat0RTZC/LoDz/ZLzMTYTs01XThbEYR0d2fquY4fszwdPEkZhTsieDDMEfcIeAKscIaBjRua
+5nOkqrzS5HqYInbU34jFY3AvXQ+yZ4knvAQ1b1/HMd17Dm4bCVZ5WxZ6pW0mW3PcpcMjNSTr
+zwIDAQABo4ICADCCAfwwEgYDVR0TAQH/BAgwBgEB/wIBATAOBgNVHQ8BAf8EBAMCAQYwEQYD
+VR0gBAowCDAGBgRVHSAAMB0GA1UdDgQWBBQJsd+h6GFdoc3G9IN5OiwGDIzsCDAfBgNVHSME
+GDAWgBRJt8bP6D0ff+pEexMp9/EKcD7eZDAeBgNVHREEFzAVgRNjYUByei51bmktcGFzc2F1
+LmRlMIGIBgNVHR8EgYAwfjA9oDugOYY3aHR0cDovL2NkcDEucGNhLmRmbi5kZS9nbG9iYWwt
+cm9vdC1jYS9wdWIvY3JsL2NhY3JsLmNybDA9oDugOYY3aHR0cDovL2NkcDIucGNhLmRmbi5k
+ZS9nbG9iYWwtcm9vdC1jYS9wdWIvY3JsL2NhY3JsLmNybDCB1wYIKwYBBQUHAQEEgcowgccw
+MwYIKwYBBQUHMAGGJ2h0dHA6Ly9vY3NwLnBjYS5kZm4uZGUvT0NTUC1TZXJ2ZXIvT0NTUDBH
+BggrBgEFBQcwAoY7aHR0cDovL2NkcDEucGNhLmRmbi5kZS9nbG9iYWwtcm9vdC1jYS9wdWIv
+Y2FjZXJ0L2NhY2VydC5jcnQwRwYIKwYBBQUHMAKGO2h0dHA6Ly9jZHAyLnBjYS5kZm4uZGUv
+Z2xvYmFsLXJvb3QtY2EvcHViL2NhY2VydC9jYWNlcnQuY3J0MA0GCSqGSIb3DQEBCwUAA4IB
+AQCB2nZe/CNqgXUbA9LzudQpb4t8yTWGnCjCeYUFyqPe35Ct5OSGzpEgHfEDBlBO+W5JICzr
+LEWEWcSC07e6TMqDuASbTvQlDY7jNSotqL44Mvkpypf2UJilb/pYaM/dDW4gQvC6JebFZhNJ
+ud7+ZlER6q85WxQSzwi8uuM/S+fMaoqmwp1b0UF8Blv0h9kuylW44WO4E6lcjwpKIjPFjMVr
+VoO4LHzed0SOqG2Ko+PJagr8DIal+DMyeLQIYco2OrRjzUrFFYHvs00AENhKmc85l0l4Ee0v
+MO1YaEw26m/CKpD69mF/apUQ8YoZvpqJDD6mHNfYyfoCaj1Ll+qwX2aTMIIF1jCCBL6gAwIB
+AgIHGXzu8rSjyzANBgkqhkiG9w0BAQsFADCBnzELMAkGA1UEBhMCREUxDzANBgNVBAcTBlBh
+c3NhdTEcMBoGA1UEChMTVW5pdmVyc2l0YWV0IFBhc3NhdTEWMBQGA1UECxMNUmVjaGVuemVu
+dHJ1bTElMCMGA1UEAxMcVW5pdmVyc2l0YWV0IFBhc3NhdSBDQSAtIEcwMTEiMCAGCSqGSIb3
+DQEJARYTY2FAcnoudW5pLXBhc3NhdS5kZTAeFw0xNTA1MjEwNTQ3MTVaFw0xNjA1MjAwNTQ3
+MTVaMG0xCzAJBgNVBAYTAkRFMQ8wDQYDVQQHDAZQYXNzYXUxHDAaBgNVBAoME1VuaXZlcnNp
+dGFldCBQYXNzYXUxFjAUBgNVBAsMDVJlY2hlbnplbnRydW0xFzAVBgNVBAMMDkNocmlzdGlh
+biBSYW5rMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwypJgpDMM9/jHse0txZr
+xvtzaCd+8rZejWG6VltNTeU3ONM5fkIQdORctCCwtquHKWzik/2kInDDeoTiuv61ocsZuIO1
+ia0I4pKntAAT8BLi+E/6ofKiAB8yGXs08TWmgK42/gZ07Mik0o8BPACIL2L/p8GiDGqMNcI4
+XWTu/DeT+w2NIOtOrzmGu4BYWEuVh2t9Rye4HFSlXe3D/o/96jYwOZIQlJTI6fU3RMnBs2WN
+982FOnimtwSucvFqcziBNrXrQWZd/39EHNVjqidQ6XGjlkzVjOu7ko0HPUPw56bbf+Dfj0Oc
+QzjDN0DpVCmhcqd8ZDfZBrfd/fD0wJBe6wIDAQABo4ICRjCCAkIwQAYDVR0gBDkwNzARBg8r
+BgEEAYGtIYIsAQEEAwMwEQYPKwYBBAGBrSGCLAIBBAMBMA8GDSsGAQQBga0hgiwBAQQwCQYD
+VR0TBAIwADALBgNVHQ8EBAMCBeAwHQYDVR0lBBYwFAYIKwYBBQUHAwIGCCsGAQUFBwMEMB0G
+A1UdDgQWBBQB/E7oHfngRUkhxlDnyhcHyhjbqTAfBgNVHSMEGDAWgBQJsd+h6GFdoc3G9IN5
+OiwGDIzsCDAnBgNVHREEIDAegRxjaHJpc3RpYW4ucmFua0B1bmktcGFzc2F1LmRlMIGFBgNV
+HR8EfjB8MDygOqA4hjZodHRwOi8vY2RwMS5wY2EuZGZuLmRlL3VuaS1wYXNzYXUtY2EvcHVi
+L2NybC9jYWNybC5jcmwwPKA6oDiGNmh0dHA6Ly9jZHAyLnBjYS5kZm4uZGUvdW5pLXBhc3Nh
+dS1jYS9wdWIvY3JsL2NhY3JsLmNybDCB1QYIKwYBBQUHAQEEgcgwgcUwMwYIKwYBBQUHMAGG
+J2h0dHA6Ly9vY3NwLnBjYS5kZm4uZGUvT0NTUC1TZXJ2ZXIvT0NTUDBGBggrBgEFBQcwAoY6
+aHR0cDovL2NkcDEucGNhLmRmbi5kZS91bmktcGFzc2F1LWNhL3B1Yi9jYWNlcnQvY2FjZXJ0
+LmNydDBGBggrBgEFBQcwAoY6aHR0cDovL2NkcDIucGNhLmRmbi5kZS91bmktcGFzc2F1LWNh
+L3B1Yi9jYWNlcnQvY2FjZXJ0LmNydDANBgkqhkiG9w0BAQsFAAOCAQEACCaBY1QKcVttnIqY
+fFT6SF69S+OPvoo+g7BRrGA319rPsklu3i4lw70pliPV07r6BDY0KikWTUaOmB134G1f3cnA
+xGa/aeI+Zp7PvHJwHFMEB5YRf3bP3Rgv6dIu6vr/P4mYFmKHAzalLVR8HZ7m/BFkyQgz5HwH
+9QxKIBGhVcfKsl55ERQz04HoMCq94z1SrHf1c5bAo6/9S0QurXekLZdyZmAciw5+4oToRa0K
+v2A6gzeGz6qZKLJQJTfvZmFwkLLVnHH0Tznw/uNcJi+KxrBJib1nlbPSk2eIzgezbZrituh+
+j4CYP5G5Z2vQ0pLWgbcDhGzlV4YRUfVCerNvlTGCBDIwggQuAgEBMIGrMIGfMQswCQYDVQQG
+EwJERTEPMA0GA1UEBxMGUGFzc2F1MRwwGgYDVQQKExNVbml2ZXJzaXRhZXQgUGFzc2F1MRYw
+FAYDVQQLEw1SZWNoZW56ZW50cnVtMSUwIwYDVQQDExxVbml2ZXJzaXRhZXQgUGFzc2F1IENB
+IC0gRzAxMSIwIAYJKoZIhvcNAQkBFhNjYUByei51bmktcGFzc2F1LmRlAgcZfO7ytKPLMA0G
+CWCGSAFlAwQCAQUAoIICVzAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqGSIb3DQEJ
+BTEPFw0xNTEwMjEwNjQ2MzdaMC8GCSqGSIb3DQEJBDEiBCB19IdJd38q2wXcMhNYFbw5CthY
+VZHouxMwx0udde4uUzBsBgkqhkiG9w0BCQ8xXzBdMAsGCWCGSAFlAwQBKjALBglghkgBZQME
+AQIwCgYIKoZIhvcNAwcwDgYIKoZIhvcNAwICAgCAMA0GCCqGSIb3DQMCAgFAMAcGBSsOAwIH
+MA0GCCqGSIb3DQMCAgEoMIG8BgkrBgEEAYI3EAQxga4wgaswgZ8xCzAJBgNVBAYTAkRFMQ8w
+DQYDVQQHEwZQYXNzYXUxHDAaBgNVBAoTE1VuaXZlcnNpdGFldCBQYXNzYXUxFjAUBgNVBAsT
+DVJlY2hlbnplbnRydW0xJTAjBgNVBAMTHFVuaXZlcnNpdGFldCBQYXNzYXUgQ0EgLSBHMDEx
+IjAgBgkqhkiG9w0BCQEWE2NhQHJ6LnVuaS1wYXNzYXUuZGUCBxl87vK0o8swgb4GCyqGSIb3
+DQEJEAILMYGuoIGrMIGfMQswCQYDVQQGEwJERTEPMA0GA1UEBxMGUGFzc2F1MRwwGgYDVQQK
+ExNVbml2ZXJzaXRhZXQgUGFzc2F1MRYwFAYDVQQLEw1SZWNoZW56ZW50cnVtMSUwIwYDVQQD
+ExxVbml2ZXJzaXRhZXQgUGFzc2F1IENBIC0gRzAxMSIwIAYJKoZIhvcNAQkBFhNjYUByei51
+bmktcGFzc2F1LmRlAgcZfO7ytKPLMA0GCSqGSIb3DQEBAQUABIIBACSNNPLifWfmtOkflKsg
+s3PztIcFE2Lm077VaZM6hV7rL8yBYGlpwBY82ZMhNAVKXINxfP0zFnr+VJ3dl/drLn/jBRjT
+dAVFoj0BsrOyxj2k/PalNptwvJGSAehN2HcDAatF9eBtaa4V+FJBEH7mTMAV1EO2A55ZtGfu
+zW7WPf18UnmSEHUi8BYPmliZFOjRoe9/D3saMQ+ciVq/+rotqspUfFHShXDxcUdoIETugTZH
+NOCGzuTexH8jRTOcOuRcgdrWFzORL9dqe1ThssGljh6mfQ0/hpQGAwYeKK6nbh/2AArVYQsy
+sywOr6Ur1nv/SZI9JJTbZliclXqOlD8ElYoAAAAAAAA=
+--------------ms080509000604080005050606--
 
