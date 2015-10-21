@@ -1,10 +1,11 @@
-From: Lev Stipakov <lstipakov@...277...>
-Date: Wed, 21 Oct 2015 10:54:16 +0300
-Message-ID: <562744A8.1020306@...277...>
-References: <1445380706-20864-1-git-send-email-steffan@...1856...>
-Mime-Version: 1.0
-In-Reply-To: <1445380706-20864-1-git-send-email-steffan@...1856...>
-Subject: Re: [Openvpn-devel] [PATCH] Fix memory leak in auth-pam plugin
+References: <1445380656-20654-1-git-send-email-steffan@...1856...>
+From: Arne Schwabe <arne@...1227...>
+Message-ID: <56274654.1090608@...1227...>
+Date: Wed, 21 Oct 2015 10:01:24 +0200
+MIME-Version: 1.0
+In-Reply-To: <1445380656-20654-1-git-send-email-steffan@...1856...>
+Subject: Re: [Openvpn-devel] [PATCH] hardening: add insurance to exit on a
+ failed ASSERT()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,39 +14,23 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
-
-ACK from me. My Clang static analyzer concurs.
-
-On 21.10.2015 01:38, Steffan Karger wrote:
-> As it says on the tin.  aresp would not be free'd nor returned by
-> my_conv() on errors.  Note that we never reach this code if allocation
-> of aresp failed.
->
-> Found with the Clang static analyzer.
->
-> Signed-off-by: Steffan Karger <steffan@...1856...>
-> ---
->   src/plugins/auth-pam/auth-pam.c | 3 +++
->   1 file changed, 3 insertions(+)
->
-> diff --git a/src/plugins/auth-pam/auth-pam.c b/src/plugins/auth-pam/auth-pam.c
-> index bd71792..95692ab 100644
-> --- a/src/plugins/auth-pam/auth-pam.c
-> +++ b/src/plugins/auth-pam/auth-pam.c
-> @@ -642,6 +642,9 @@ my_conv (int n, const struct pam_message **msg_array,
->
->     if (ret == PAM_SUCCESS)
->       *response_array = aresp;
-> +  else
-> +    free(aresp);
-> +
->     return ret;
->   }
->
->
+To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
 
 
+
+Am 21.10.15 um 00:37 schrieb Steffan Karger:
+> The code behind our ASSERT() macro is pretty complex.  Although it seems
+> to be correct, make it trivially clear we will never return from a failed
+> assert by adding an _exit(1) call.  As was suggested by Sebastian Krahmer
+> of the SuSE security team.
+>
+> A secondary benefit is that tools like clang static analyzer and coverity
+> can now understand our ASSERT() macros too.  To make sure they do, change
+> assert_failed() to a static inline function.
+>
+This change makes absolute sense. ACK from me.
+
+Arne
 
