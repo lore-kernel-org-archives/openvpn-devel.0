@@ -1,12 +1,9 @@
-References: <mailman.84319.1445380747.12779.openvpn-devel@lists.sourceforge.net>
-From: Christian Rank <christian.rank@...1420...>
-Message-ID: <562734CD.6080706@...1420...>
-Date: Wed, 21 Oct 2015 08:46:37 +0200
-MIME-Version: 1.0
-In-Reply-To: <mailman.84319.1445380747.12779.openvpn-devel@lists.sourceforge.net>
-Content-Type: multipart/signed; protocol="application/pkcs7-signature";
-	micalg=sha-256; boundary="------------ms080509000604080005050606"
-Subject: Re: [Openvpn-devel] Creating a Windows team for OpenVPN?
+From: Lev Stipakov <lstipakov@...277...>
+Date: Wed, 21 Oct 2015 10:13:26 +0300
+Message-Id: <1445411606-13369-1-git-send-email-lstipakov@...277...>
+In-Reply-To: <56264F18.8000105@...277...>
+References: <56264F18.8000105@...277...>
+Subject: [Openvpn-devel] [PATCH v2] Replace variable length array with malloc
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,147 +12,58 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This is a cryptographically signed message in MIME format.
+Commit https://github.com/OpenVPN/openvpn/commit/685e486e8b8f70c25f09590c24762ff734f94a51
+introduced a variable length array. Although C99 supports that, MSVS 2013 still requires
+size of array to be compiler time constant. As a fix, use malloc/free.
 
---------------ms080509000604080005050606
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
+v2:
+ Replace OPENSSL_malloc with gc_malloc
 
-On 21.10.2015 00:39, openvpn-devel-request@lists.sourceforge.net wrote:
-> From: ValdikSS <iam@...2070...>
->=20
-> By the way, there is an open-source SecurePoint VPN client (https://sourc=
-eforge.net/projects/securepoint/) which handles current versions of Windows=
- very well.
+Signed-off-by: Lev Stipakov <lstipakov@...277...>
+---
+ src/openvpn/ssl_openssl.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-Hi,
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index c08d4fe..3c8d41f 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -141,12 +141,12 @@ key_state_export_keying_material(struct key_state_ssl *ssl,
+     {
+ #if (OPENSSL_VERSION_NUMBER >= 0x10001000)
+       unsigned int size = session->opt->ekm_size;
+-      unsigned char ekm[size];
++      struct gc_arena gc = gc_new();
++      unsigned char* ekm = (unsigned char*) gc_malloc(size, true, &gc);
+ 
+       if (SSL_export_keying_material(ssl->ssl, ekm, sizeof(ekm),
+           session->opt->ekm_label, session->opt->ekm_label_size, NULL, 0, 0))
+        {
+-         struct gc_arena gc = gc_new();
+          unsigned int len = (size * 2) + 2;
+ 
+          const char *key = format_hex_ex (ekm, size, len, 0, NULL, &gc);
+@@ -154,14 +154,13 @@ key_state_export_keying_material(struct key_state_ssl *ssl,
+ 
+          dmsg(D_TLS_DEBUG_MED, "%s: exported keying material: %s",
+               __func__, key);
+-
+-         gc_free(&gc);
+        }
+       else
+        {
+          msg (M_WARN, "WARNING: Export keying material failed!");
+          setenv_del (session->opt->es, "exported_keying_material");
+        }
++      gc_free(&gc);
+ #endif
+     }
+ }
+-- 
+1.9.1
 
-it seems that the current version of Securepoint's VPN client is no
-longer open source. The repo at
-> https://github.com/Securepoint/openvpn-client
-has the source for version 1.0.3 (last commit 2 years ago), whereas the
-current version (binaries) on sf.net is 2.0.10.
-
-Securepoint's website
-http://www.securepoint.cc/products-vpn-clients.html
-says "The Securepoint OpenVPN client is free of charge" - the term "open
-source" is not mentioned.
-
-Regards,
-	Christian
-
---=20
-Dr. Christian Rank
-Rechenzentrum Universit=E4t Passau
-Bereich Netzwerk und Telekommunikation
-IT-Sicherheitsbeauftragter der Universit=E4t
-Innstr. 33
-D-94032 Passau
-GERMANY
-
-
---------------ms080509000604080005050606
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
-
-MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAAKCC
-D4AwggQhMIIDCaADAgECAgIAxzANBgkqhkiG9w0BAQUFADBxMQswCQYDVQQGEwJERTEcMBoG
-A1UEChMTRGV1dHNjaGUgVGVsZWtvbSBBRzEfMB0GA1UECxMWVC1UZWxlU2VjIFRydXN0IENl
-bnRlcjEjMCEGA1UEAxMaRGV1dHNjaGUgVGVsZWtvbSBSb290IENBIDIwHhcNMDYxMjE5MTAy
-OTAwWhcNMTkwNjMwMjM1OTAwWjBaMQswCQYDVQQGEwJERTETMBEGA1UEChMKREZOLVZlcmVp
-bjEQMA4GA1UECxMHREZOLVBLSTEkMCIGA1UEAxMbREZOLVZlcmVpbiBQQ0EgR2xvYmFsIC0g
-RzAxMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA6ZvDZ4X5Da71jVTDllA1PWLp
-bkztlNcAW5UidNQg6zSP1uzAMQQLmYHiphTSUqAoI4SLdIkEXlvg4njBeMsWyyg1OXstkEXQ
-7aAAeny/Sg4bAMOG6VwrMRF7DPOCJEOMHDiLamgAmu7cT3ir0sYTm3at7t4m6O8Br3QPwQmi
-9mvOvdPNFDBP9eXjpMhim4IaAycwDQJlYE3t0QkjKpY1WCfTdsZxtpAdxO3/NYZ9bzOz2w/F
-EcKKg6GUXUFr2NIQ9Uz9ylGs2b3vkoO72uuLFlZWQ8/h1RM9ph8nMM1JVNvJEzSacXXFbOqn
-C5j5IZ0nrz6jOTlIaoytyZn7wxLyvQIDAQABo4HZMIHWMHAGA1UdHwRpMGcwZaBjoGGGX2h0
-dHA6Ly9wa2kudGVsZXNlYy5kZS9jZ2ktYmluL3NlcnZpY2UvYWZfRG93bmxvYWRBUkwuY3Js
-Py1jcmxfZm9ybWF0PVhfNTA5Ji1pc3N1ZXI9RFRfUk9PVF9DQV8yMB0GA1UdDgQWBBRJt8bP
-6D0ff+pEexMp9/EKcD7eZDAfBgNVHSMEGDAWgBQxw3kbuvVT1xfgiXotF2wKsyudMzAOBgNV
-HQ8BAf8EBAMCAQYwEgYDVR0TAQH/BAgwBgEB/wIBAjANBgkqhkiG9w0BAQUFAAOCAQEAO+Fa
-d8BIF9ypGOyBr1qJ8L0okqbKWRgScOwo8ueuf5Ys5/JdGTH2Eyt0vb2Asrn3Z8k5onk74RER
-7mt4kTN+O18mJ3VTZY4zY+7Pc8OwkiNJIVB1I6EfGOKUhT0/M+l3II2iveahhSlA9j9zMlgN
-CWum2oVswD+7jWZkViROrg0/MjUBW+mMgtlyWU+xhoXxdIVW5cP4XPON7kezUwVw5+VNimmD
-KOETCYaeXsjqWB4MH/mk1FoEaP0oPosCtli19qEsN1cAZ6sjaI1jpe+Za1z9S1b2q0CHNNQR
-kmzsh8UKCwczcrRvDB1ULNhRx8y/MNNDcvEyv4zOSWOoAPfyHDCCBX0wggRloAMCAQICBxeQ
-YOVCFU4wDQYJKoZIhvcNAQELBQAwWjELMAkGA1UEBhMCREUxEzARBgNVBAoTCkRGTi1WZXJl
-aW4xEDAOBgNVBAsTB0RGTi1QS0kxJDAiBgNVBAMTG0RGTi1WZXJlaW4gUENBIEdsb2JhbCAt
-IEcwMTAeFw0xNDA1MTIxNTA1NThaFw0xOTA3MDkyMzU5MDBaMIGfMQswCQYDVQQGEwJERTEP
-MA0GA1UEBxMGUGFzc2F1MRwwGgYDVQQKExNVbml2ZXJzaXRhZXQgUGFzc2F1MRYwFAYDVQQL
-Ew1SZWNoZW56ZW50cnVtMSUwIwYDVQQDExxVbml2ZXJzaXRhZXQgUGFzc2F1IENBIC0gRzAx
-MSIwIAYJKoZIhvcNAQkBFhNjYUByei51bmktcGFzc2F1LmRlMIIBIjANBgkqhkiG9w0BAQEF
-AAOCAQ8AMIIBCgKCAQEAh4DRNOwFFDWK9XxbqOO25JjP+kfkj0wx2cWvfoJVwmzqwRKmcE/x
-rpsxt169iF4pjl+urlEReSUmRiMYtAdkKBNvIPphUnq9N8GkDwVrIXQe+hfRVEwoGrv5lSfQ
-8xTZOsfIfYKDnITHcG2wNrlT2/1E35xn8xPqqiPYSw0Ev9Q++dKVzSXLuAqTO5cvH2FtJ/Bg
-Jat0RTZC/LoDz/ZLzMTYTs01XThbEYR0d2fquY4fszwdPEkZhTsieDDMEfcIeAKscIaBjRua
-5nOkqrzS5HqYInbU34jFY3AvXQ+yZ4knvAQ1b1/HMd17Dm4bCVZ5WxZ6pW0mW3PcpcMjNSTr
-zwIDAQABo4ICADCCAfwwEgYDVR0TAQH/BAgwBgEB/wIBATAOBgNVHQ8BAf8EBAMCAQYwEQYD
-VR0gBAowCDAGBgRVHSAAMB0GA1UdDgQWBBQJsd+h6GFdoc3G9IN5OiwGDIzsCDAfBgNVHSME
-GDAWgBRJt8bP6D0ff+pEexMp9/EKcD7eZDAeBgNVHREEFzAVgRNjYUByei51bmktcGFzc2F1
-LmRlMIGIBgNVHR8EgYAwfjA9oDugOYY3aHR0cDovL2NkcDEucGNhLmRmbi5kZS9nbG9iYWwt
-cm9vdC1jYS9wdWIvY3JsL2NhY3JsLmNybDA9oDugOYY3aHR0cDovL2NkcDIucGNhLmRmbi5k
-ZS9nbG9iYWwtcm9vdC1jYS9wdWIvY3JsL2NhY3JsLmNybDCB1wYIKwYBBQUHAQEEgcowgccw
-MwYIKwYBBQUHMAGGJ2h0dHA6Ly9vY3NwLnBjYS5kZm4uZGUvT0NTUC1TZXJ2ZXIvT0NTUDBH
-BggrBgEFBQcwAoY7aHR0cDovL2NkcDEucGNhLmRmbi5kZS9nbG9iYWwtcm9vdC1jYS9wdWIv
-Y2FjZXJ0L2NhY2VydC5jcnQwRwYIKwYBBQUHMAKGO2h0dHA6Ly9jZHAyLnBjYS5kZm4uZGUv
-Z2xvYmFsLXJvb3QtY2EvcHViL2NhY2VydC9jYWNlcnQuY3J0MA0GCSqGSIb3DQEBCwUAA4IB
-AQCB2nZe/CNqgXUbA9LzudQpb4t8yTWGnCjCeYUFyqPe35Ct5OSGzpEgHfEDBlBO+W5JICzr
-LEWEWcSC07e6TMqDuASbTvQlDY7jNSotqL44Mvkpypf2UJilb/pYaM/dDW4gQvC6JebFZhNJ
-ud7+ZlER6q85WxQSzwi8uuM/S+fMaoqmwp1b0UF8Blv0h9kuylW44WO4E6lcjwpKIjPFjMVr
-VoO4LHzed0SOqG2Ko+PJagr8DIal+DMyeLQIYco2OrRjzUrFFYHvs00AENhKmc85l0l4Ee0v
-MO1YaEw26m/CKpD69mF/apUQ8YoZvpqJDD6mHNfYyfoCaj1Ll+qwX2aTMIIF1jCCBL6gAwIB
-AgIHGXzu8rSjyzANBgkqhkiG9w0BAQsFADCBnzELMAkGA1UEBhMCREUxDzANBgNVBAcTBlBh
-c3NhdTEcMBoGA1UEChMTVW5pdmVyc2l0YWV0IFBhc3NhdTEWMBQGA1UECxMNUmVjaGVuemVu
-dHJ1bTElMCMGA1UEAxMcVW5pdmVyc2l0YWV0IFBhc3NhdSBDQSAtIEcwMTEiMCAGCSqGSIb3
-DQEJARYTY2FAcnoudW5pLXBhc3NhdS5kZTAeFw0xNTA1MjEwNTQ3MTVaFw0xNjA1MjAwNTQ3
-MTVaMG0xCzAJBgNVBAYTAkRFMQ8wDQYDVQQHDAZQYXNzYXUxHDAaBgNVBAoME1VuaXZlcnNp
-dGFldCBQYXNzYXUxFjAUBgNVBAsMDVJlY2hlbnplbnRydW0xFzAVBgNVBAMMDkNocmlzdGlh
-biBSYW5rMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwypJgpDMM9/jHse0txZr
-xvtzaCd+8rZejWG6VltNTeU3ONM5fkIQdORctCCwtquHKWzik/2kInDDeoTiuv61ocsZuIO1
-ia0I4pKntAAT8BLi+E/6ofKiAB8yGXs08TWmgK42/gZ07Mik0o8BPACIL2L/p8GiDGqMNcI4
-XWTu/DeT+w2NIOtOrzmGu4BYWEuVh2t9Rye4HFSlXe3D/o/96jYwOZIQlJTI6fU3RMnBs2WN
-982FOnimtwSucvFqcziBNrXrQWZd/39EHNVjqidQ6XGjlkzVjOu7ko0HPUPw56bbf+Dfj0Oc
-QzjDN0DpVCmhcqd8ZDfZBrfd/fD0wJBe6wIDAQABo4ICRjCCAkIwQAYDVR0gBDkwNzARBg8r
-BgEEAYGtIYIsAQEEAwMwEQYPKwYBBAGBrSGCLAIBBAMBMA8GDSsGAQQBga0hgiwBAQQwCQYD
-VR0TBAIwADALBgNVHQ8EBAMCBeAwHQYDVR0lBBYwFAYIKwYBBQUHAwIGCCsGAQUFBwMEMB0G
-A1UdDgQWBBQB/E7oHfngRUkhxlDnyhcHyhjbqTAfBgNVHSMEGDAWgBQJsd+h6GFdoc3G9IN5
-OiwGDIzsCDAnBgNVHREEIDAegRxjaHJpc3RpYW4ucmFua0B1bmktcGFzc2F1LmRlMIGFBgNV
-HR8EfjB8MDygOqA4hjZodHRwOi8vY2RwMS5wY2EuZGZuLmRlL3VuaS1wYXNzYXUtY2EvcHVi
-L2NybC9jYWNybC5jcmwwPKA6oDiGNmh0dHA6Ly9jZHAyLnBjYS5kZm4uZGUvdW5pLXBhc3Nh
-dS1jYS9wdWIvY3JsL2NhY3JsLmNybDCB1QYIKwYBBQUHAQEEgcgwgcUwMwYIKwYBBQUHMAGG
-J2h0dHA6Ly9vY3NwLnBjYS5kZm4uZGUvT0NTUC1TZXJ2ZXIvT0NTUDBGBggrBgEFBQcwAoY6
-aHR0cDovL2NkcDEucGNhLmRmbi5kZS91bmktcGFzc2F1LWNhL3B1Yi9jYWNlcnQvY2FjZXJ0
-LmNydDBGBggrBgEFBQcwAoY6aHR0cDovL2NkcDIucGNhLmRmbi5kZS91bmktcGFzc2F1LWNh
-L3B1Yi9jYWNlcnQvY2FjZXJ0LmNydDANBgkqhkiG9w0BAQsFAAOCAQEACCaBY1QKcVttnIqY
-fFT6SF69S+OPvoo+g7BRrGA319rPsklu3i4lw70pliPV07r6BDY0KikWTUaOmB134G1f3cnA
-xGa/aeI+Zp7PvHJwHFMEB5YRf3bP3Rgv6dIu6vr/P4mYFmKHAzalLVR8HZ7m/BFkyQgz5HwH
-9QxKIBGhVcfKsl55ERQz04HoMCq94z1SrHf1c5bAo6/9S0QurXekLZdyZmAciw5+4oToRa0K
-v2A6gzeGz6qZKLJQJTfvZmFwkLLVnHH0Tznw/uNcJi+KxrBJib1nlbPSk2eIzgezbZrituh+
-j4CYP5G5Z2vQ0pLWgbcDhGzlV4YRUfVCerNvlTGCBDIwggQuAgEBMIGrMIGfMQswCQYDVQQG
-EwJERTEPMA0GA1UEBxMGUGFzc2F1MRwwGgYDVQQKExNVbml2ZXJzaXRhZXQgUGFzc2F1MRYw
-FAYDVQQLEw1SZWNoZW56ZW50cnVtMSUwIwYDVQQDExxVbml2ZXJzaXRhZXQgUGFzc2F1IENB
-IC0gRzAxMSIwIAYJKoZIhvcNAQkBFhNjYUByei51bmktcGFzc2F1LmRlAgcZfO7ytKPLMA0G
-CWCGSAFlAwQCAQUAoIICVzAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqGSIb3DQEJ
-BTEPFw0xNTEwMjEwNjQ2MzdaMC8GCSqGSIb3DQEJBDEiBCB19IdJd38q2wXcMhNYFbw5CthY
-VZHouxMwx0udde4uUzBsBgkqhkiG9w0BCQ8xXzBdMAsGCWCGSAFlAwQBKjALBglghkgBZQME
-AQIwCgYIKoZIhvcNAwcwDgYIKoZIhvcNAwICAgCAMA0GCCqGSIb3DQMCAgFAMAcGBSsOAwIH
-MA0GCCqGSIb3DQMCAgEoMIG8BgkrBgEEAYI3EAQxga4wgaswgZ8xCzAJBgNVBAYTAkRFMQ8w
-DQYDVQQHEwZQYXNzYXUxHDAaBgNVBAoTE1VuaXZlcnNpdGFldCBQYXNzYXUxFjAUBgNVBAsT
-DVJlY2hlbnplbnRydW0xJTAjBgNVBAMTHFVuaXZlcnNpdGFldCBQYXNzYXUgQ0EgLSBHMDEx
-IjAgBgkqhkiG9w0BCQEWE2NhQHJ6LnVuaS1wYXNzYXUuZGUCBxl87vK0o8swgb4GCyqGSIb3
-DQEJEAILMYGuoIGrMIGfMQswCQYDVQQGEwJERTEPMA0GA1UEBxMGUGFzc2F1MRwwGgYDVQQK
-ExNVbml2ZXJzaXRhZXQgUGFzc2F1MRYwFAYDVQQLEw1SZWNoZW56ZW50cnVtMSUwIwYDVQQD
-ExxVbml2ZXJzaXRhZXQgUGFzc2F1IENBIC0gRzAxMSIwIAYJKoZIhvcNAQkBFhNjYUByei51
-bmktcGFzc2F1LmRlAgcZfO7ytKPLMA0GCSqGSIb3DQEBAQUABIIBACSNNPLifWfmtOkflKsg
-s3PztIcFE2Lm077VaZM6hV7rL8yBYGlpwBY82ZMhNAVKXINxfP0zFnr+VJ3dl/drLn/jBRjT
-dAVFoj0BsrOyxj2k/PalNptwvJGSAehN2HcDAatF9eBtaa4V+FJBEH7mTMAV1EO2A55ZtGfu
-zW7WPf18UnmSEHUi8BYPmliZFOjRoe9/D3saMQ+ciVq/+rotqspUfFHShXDxcUdoIETugTZH
-NOCGzuTexH8jRTOcOuRcgdrWFzORL9dqe1ThssGljh6mfQ0/hpQGAwYeKK6nbh/2AArVYQsy
-sywOr6Ur1nv/SZI9JJTbZliclXqOlD8ElYoAAAAAAAA=
---------------ms080509000604080005050606--
 
