@@ -1,9 +1,11 @@
 From: Lev Stipakov <lstipakov@...277...>
-Date: Wed, 21 Oct 2015 10:13:26 +0300
-Message-Id: <1445411606-13369-1-git-send-email-lstipakov@...277...>
-In-Reply-To: <56264F18.8000105@...277...>
-References: <56264F18.8000105@...277...>
-Subject: [Openvpn-devel] [PATCH v2] Replace variable length array with malloc
+Date: Wed, 21 Oct 2015 10:33:37 +0300
+Message-ID: <56273FD1.30200@...277...>
+References: <1445380744-21086-1-git-send-email-steffan@...1856...>
+Mime-Version: 1.0
+In-Reply-To: <1445380744-21086-1-git-send-email-steffan@...1856...>
+Subject: Re: [Openvpn-devel] [PATCH] openssl: remove usage of
+ OPENSSL_malloc() from show_available_curves
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,58 +14,71 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-Commit https://github.com/OpenVPN/openvpn/commit/685e486e8b8f70c25f09590c24762ff734f94a51
-introduced a variable length array. Although C99 supports that, MSVS 2013 still requires
-size of array to be compiler time constant. As a fix, use malloc/free.
+ACK from me. Less code is better.
 
-v2:
- Replace OPENSSL_malloc with gc_malloc
+On 21.10.2015 01:39, Steffan Karger wrote:
+> There is no need to use OPENSSL_malloc(), so use our own functions that
+> automatically check for NULL and remove the now redundant NULL check.
+>
+> Signed-off-by: Steffan Karger <steffan@...1856...>
+> ---
+>   src/openvpn/ssl_openssl.c | 33 +++++++++++++--------------------
+>   1 file changed, 13 insertions(+), 20 deletions(-)
+>
+> diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+> index c08d4fe..c5543fe 100644
+> --- a/src/openvpn/ssl_openssl.c
+> +++ b/src/openvpn/ssl_openssl.c
+> @@ -1447,31 +1447,24 @@ show_available_curves()
+>     size_t n = 0;
+>
+>     crv_len = EC_get_builtin_curves(NULL, 0);
+> -
+> -  curves = OPENSSL_malloc((int)(sizeof(EC_builtin_curve) * crv_len));
+> -
+> -  if (curves == NULL)
+> -    crypto_msg (M_FATAL, "Cannot create EC_builtin_curve object");
+> -  else
+> +  ALLOC_ARRAY(curves, EC_builtin_curve, crv_len);
+> +  if (EC_get_builtin_curves(curves, crv_len))
+>     {
+> -    if (EC_get_builtin_curves(curves, crv_len))
+> +    printf ("Available Elliptic curves:\n");
+> +    for (n = 0; n < crv_len; n++)
+>       {
+> -      printf ("Available Elliptic curves:\n");
+> -      for (n = 0; n < crv_len; n++)
+> -      {
+> -        const char *sname;
+> -        sname   = OBJ_nid2sn(curves[n].nid);
+> -        if (sname == NULL) sname = "";
+> +      const char *sname;
+> +      sname   = OBJ_nid2sn(curves[n].nid);
+> +      if (sname == NULL) sname = "";
+>
+> -        printf("%s\n", sname);
+> -      }
+> +      printf("%s\n", sname);
+>       }
+> -    else
+> -    {
+> -      crypto_msg (M_FATAL, "Cannot get list of builtin curves");
+> -    }
+> -    OPENSSL_free(curves);
+>     }
+> +  else
+> +  {
+> +    crypto_msg (M_FATAL, "Cannot get list of builtin curves");
+> +  }
+> +  free(curves);
+>   #else
+>     msg (M_WARN, "Your OpenSSL library was built without elliptic curve support. "
+>   	       "No curves available.");
+>
 
-Signed-off-by: Lev Stipakov <lstipakov@...277...>
----
- src/openvpn/ssl_openssl.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
-
-diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-index c08d4fe..3c8d41f 100644
---- a/src/openvpn/ssl_openssl.c
-+++ b/src/openvpn/ssl_openssl.c
-@@ -141,12 +141,12 @@ key_state_export_keying_material(struct key_state_ssl *ssl,
-     {
- #if (OPENSSL_VERSION_NUMBER >= 0x10001000)
-       unsigned int size = session->opt->ekm_size;
--      unsigned char ekm[size];
-+      struct gc_arena gc = gc_new();
-+      unsigned char* ekm = (unsigned char*) gc_malloc(size, true, &gc);
- 
-       if (SSL_export_keying_material(ssl->ssl, ekm, sizeof(ekm),
-           session->opt->ekm_label, session->opt->ekm_label_size, NULL, 0, 0))
-        {
--         struct gc_arena gc = gc_new();
-          unsigned int len = (size * 2) + 2;
- 
-          const char *key = format_hex_ex (ekm, size, len, 0, NULL, &gc);
-@@ -154,14 +154,13 @@ key_state_export_keying_material(struct key_state_ssl *ssl,
- 
-          dmsg(D_TLS_DEBUG_MED, "%s: exported keying material: %s",
-               __func__, key);
--
--         gc_free(&gc);
-        }
-       else
-        {
-          msg (M_WARN, "WARNING: Export keying material failed!");
-          setenv_del (session->opt->es, "exported_keying_material");
-        }
-+      gc_free(&gc);
- #endif
-     }
- }
--- 
-1.9.1
 
 
