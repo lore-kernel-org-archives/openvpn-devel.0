@@ -1,12 +1,16 @@
 MIME-Version: 1.0
-In-Reply-To: <56261F0D.9020208@...515...>
-References: <56211F0D.2010806@...515...> <2892922.l0hsuaC9oU@...2001...>
-	<5625EA0A.3000908@...515...> <2421664.qQJpUDo69u@...1526...>
-	<56261F0D.9020208@...515...>
+In-Reply-To: <4898CF2D5F74411A9CD02CCE11BF34AE@...1853...>
+References: <56211F0D.2010806@...515...> <18065708.JIrWLiTMeq@...2001...>
+	<ac7rqc.nwgq22.2u3ktu-qmf@...2076...>
+	<2892922.l0hsuaC9oU@...2001...>
+	<SN1PR08MB1391C6A8CA4653A464FAC48EB93A0@...2065...>
+	<56254BEE.4080606@...1114...>
+	<SN1PR08MB13917AEA32760F38C9EBEF77B93A0@...2065...>
+	<4898CF2D5F74411A9CD02CCE11BF34AE@...1853...>
 From: Selva Nair <selva.nair@...277...>
-Date: Tue, 20 Oct 2015 22:12:06 -0400
-Message-ID: <CAKuzo_jSiw75PaTed_5DWMbM=X313b75EH6vh9erXS2Q-3fK8Q@...278...>
-Content-Type: multipart/alternative; boundary=001a11c3879ae6afb2052293e808
+Date: Tue, 20 Oct 2015 23:13:46 -0400
+Message-ID: <CAKuzo_ifgX_WD-VdCGFPkbKnL4ff-tXgWFqSd+gYe1tnGG9xLg@...278...>
+Content-Type: multipart/alternative; boundary=047d7bea3a24672728052294c5bb
 Subject: Re: [Openvpn-devel] Creating a Windows team for OpenVPN?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -16,125 +20,127 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
+To: Debbie Tent <debbie10t@...277...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---001a11c3879ae6afb2052293e808
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+--047d7bea3a24672728052294c5bb
+Content-Type: text/plain; charset=UTF-8
 
-On Tue, Oct 20, 2015 at 7:01 AM, Samuli Sepp=C3=A4nen <samuli@...515...> wr=
-ote:
+Hi Debbie,
 
+On Tue, Oct 20, 2015 at 5:06 PM, <debbie10t@...277...> wrote:
+
+> ho hum
 >
-> > On Tuesday 20 October 2015 10:15:22 Samuli Sepp=C3=A4nen wrote:
-> >>>> Are you saying that the interactive service also doubles as a Windows
-> >>>> system service? If so, can it be  configured to autostart selected
-> >>>> openvpn connections on boot and restart them if they crash/stop?
-> >>>
-> >>> No, and I do not think that the service should take care of that.
-> That's
-> >>> rather things that can be handled by the GUI.
-> >>
-> >> What about persistent connections, especially on Windows servers?
+> > -----Original Message-----
+> > From: David Sommerseth [mailto:openvpn.list@...1114...]
+> > Sent: Monday, October 19, 2015 3:01 PM
+> > To: Morris, Russell <rmorris@...1315...>; Heiko Hund
+> > <heiko.hund@...1489...>; samuli@...515...
+> > Cc: openvpn-devel@lists.sourceforge.net
+> > Subject: Re: [Openvpn-devel] Creating a Windows team for OpenVPN?
 > >
-> > The interactive service patch doesn't remove the currently available
-> service.
-> > So, you still can fire up any connections the way it was before. I
-> personally
-> > do not care about the original service though, it may very well be that
-> it
-> > lacks decent functionality.
 >
-> The original openvpnserv.exe is truly crappy. It will not quit if all
-> connections have died. It will not restart a connection should it crash.
-> A single non-functional OpenVPN connection prevents it from launching
-> the others (afaik). It will not work on Windows 10 in any reasonable
-> fashion and works badly on anything post-Windows 7. It also does not
-> handle resuming from suspend/hibernate properly.
+> > My point is that nobody really expects anyone to be a fully experienced
+> > OpenVPN developer to get involved.  Not at all.  We are a community,
+> which
+> > help each other.
 >
-> My NSSM-based replacement thingie aims to address all these
-> shortcomings. I believe the interactive service and NSSM are complementar=
-y.
+> > Don't be afraid, take that chance and share your thoughts and ideas.
+> Hang
+> > out on the #openvpn-devel IRC channel if you can, share your opinions on
+> > the mailing list ...
+>
+> I Disagree
+>
+> If past experience is anything to go by ..
+> Don't expect help !
+>
+> I have always considered myself a cynic ..nt give
+> The OpenVPN "community" cemented my opinion quite firmly.
 >
 
-I totally agree. Both are necessary.
+Don't give up hope..
 
-The interactive service (based on a quick scan through the code) looks to
-be very useful on a desktop with a single user, allowing the GUI and openvpn
-to run with user privileges. I hope the "windows team" would soon start
-working on making the GUI to work with this new service :)
+I'm only a lurker here, so just speaking from observation, not on behalf of
+anyone: most developers here appear to be extremely busy people devoting
+their little precious free time to openvpn. It took sometime for me to
+realize that. Just be patient and you will get replies. If not, rephrase
+and post again..
 
-But a sever admin would not want it in the system as it can allow any user
-with some VPN server account to change the routes etc using the
-service..(please correct me if I'm mistaken).
+In fact, in my experience, this is one of the few lists where you seldom
+get a rude response or a slap on the wrist for mistakenly posting to the
+wrong list, or for asking a trivial question. You may know how caustic is
+the atmosphere of many developer and user lists. People here are very
+polite but can be very slow to respond, that just how it is..
 
-That means for "non-interactive" servers and non-desktop clients, one would
-still need an improved version of the old service or  NSSM.
+Also I think we need more experienced users in the users list to take care
+of questions that don't need the developers' attention.
+
+Did I say don't give up?
+
+Cheers,
 
 Selva
 
---001a11c3879ae6afb2052293e808
+--047d7bea3a24672728052294c5bb
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr"><br><div class=3D"gmail_extra"><br><div class=3D"gmail_quo=
-te">On Tue, Oct 20, 2015 at 7:01 AM, <span tabindex=3D"-1" id=3D":8jo.17" s=
-tyle=3D"" class=3D"">Samuli</span> <span tabindex=3D"-1" id=3D":8jo.18" sty=
-le=3D"" class=3D"">Sepp=C3=A4nen</span> <span dir=3D"ltr">&lt;<a href=3D"ma=
-ilto:samuli@...515..." target=3D"_blank"><span tabindex=3D"-1" id=3D":8jo.1=
-9" style=3D"" class=3D"">samuli</span>@<span tabindex=3D"-1" id=3D":8jo.20"=
- style=3D"" class=3D"">openvpn</span>.net</a>&gt;</span> wrote:<br><blockqu=
-ote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc s=
-olid;padding-left:1ex"><span class=3D""><br>
-&gt; On Tuesday 20 October 2015 10:15:22 Samuli Sepp=C3=A4nen wrote:<br>
-&gt;&gt;&gt;&gt; Are you saying that the interactive service also doubles a=
-s a Windows<br>
-&gt;&gt;&gt;&gt; system service? If so, can it be=C2=A0 configured to autos=
-tart selected<br>
-&gt;&gt;&gt;&gt; openvpn connections on boot and restart them if they crash=
-/stop?<br>
-&gt;&gt;&gt;<br>
-&gt;&gt;&gt; No, and I do not think that the service should take care of th=
-at. That&#39;s<br>
-&gt;&gt;&gt; rather things that can be handled by the GUI.<br>
-&gt;&gt;<br>
-&gt;&gt; What about persistent connections, especially on Windows servers?<=
-br>
+<div dir=3D"ltr">Hi Debbie,<br><div><div class=3D"gmail_extra"><br><div cla=
+ss=3D"gmail_quote">On Tue, Oct 20, 2015 at 5:06 PM,  <span dir=3D"ltr">&lt;=
+<a href=3D"mailto:debbie10t@...277..." target=3D"_blank">debbie10t@...1663...=
+.</a>&gt;</span> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margi=
+n:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">ho hum<br>
+<span><br>
+&gt; -----Original Message-----<br>
+&gt; From: David Sommerseth [mailto:<a href=3D"mailto:openvpn.list@...1910...=
+.." target=3D"_blank">openvpn.list@...1114...</a>]<br>
+&gt; Sent: Monday, October 19, 2015 3:01 PM<br>
+&gt; To: Morris, Russell &lt;<a href=3D"mailto:rmorris@...1315..." target=
+=3D"_blank">rmorris@...1315...</a>&gt;; Heiko Hund<br>
+&gt; &lt;<a href=3D"mailto:heiko.hund@...1489..." target=3D"_blank">heiko.h=
+und@...1489...</a>&gt;; <a href=3D"mailto:samuli@...515..." target=3D"_blan=
+k">samuli@...515...</a><br>
+&gt; Cc: <a href=3D"mailto:openvpn-devel@lists.sourceforge.net" target=3D"_=
+blank">openvpn-devel@lists.sourceforge.net</a><br>
+&gt; Subject: Re: [Openvpn-devel] Creating a Windows team for OpenVPN?<br>
 &gt;<br>
-&gt; The interactive service patch doesn&#39;t remove the currently availab=
-le service.<br>
-&gt; So, you still can fire up any connections the way it was before. I per=
-sonally<br>
-&gt; do not care about the original service though, it may very well be tha=
-t it<br>
-&gt; lacks decent functionality.<br>
 <br>
-</span>The original openvpnserv.exe is truly crappy. It will not quit if al=
-l<br>
-connections have died. It will not restart a connection should it crash.<br>
-A single non-functional OpenVPN connection prevents it from launching<br>
-the others (afaik). It will not work on Windows 10 in any reasonable<br>
-fashion and works badly on anything post-Windows 7. It also does not<br>
-handle resuming from suspend/hibernate properly.<br>
+</span><span>&gt; My point is that nobody really expects anyone to be a ful=
+ly experienced<br>
+&gt; OpenVPN developer to get involved.=C2=A0 Not at all.=C2=A0 We are a co=
+mmunity, which<br>
+&gt; help each other.<br>
 <br>
-My NSSM-based replacement thingie aims to address all these<br>
-shortcomings. I believe the interactive service and NSSM are complementary.=
-<br></blockquote><div><br></div><div>I totally agree. Both are necessary.<b=
-r><br>The interactive service (based on a quick scan through the code) look=
-s to be very useful on a desktop with a single user, allowing the GUI and <=
-span tabindex=3D"-1" id=3D":8jo.21" style=3D"" class=3D"">openvpn</span> to=
- run with user privileges. I hope the &quot;windows team&quot; would soon s=
-tart working on making the GUI to work with this new service :)<br><br>But =
-a sever admin would not want it in the system as it can allow any user with=
- some <span tabindex=3D"-1" id=3D":8jo.22" style=3D"" class=3D"">VPN</span>=
- server account to change the routes etc using the service..(please correct=
- me if I&#39;m mistaken).<br><br></div><div>That means for &quot;non-intera=
-ctive&quot; servers and non-desktop clients, one would still need an improv=
-ed version of the old service or=C2=A0 <span tabindex=3D"-1" id=3D":8jo.23"=
- style=3D"" class=3D"">NSSM</span>. <br></div></div><br></div><div class=3D=
-"gmail_extra"><span tabindex=3D"-1" id=3D":8jo.24" style=3D"" class=3D"">Se=
-lva</span><br></div></div>
+</span><span>&gt; Don&#39;t be afraid, take that chance and share your thou=
+ghts and ideas.=C2=A0 Hang<br>
+&gt; out on the #openvpn-devel IRC channel if you can, share your opinions =
+on<br>
+&gt; the mailing list ...<br>
+<br>
+</span>I Disagree<br>
+<br>
+If past experience is anything to go by ..<br>
+Don&#39;t expect help !<br>
+<br>
+I have always considered myself a cynic ..nt give <br>
+The OpenVPN &quot;community&quot; cemented my opinion quite firmly.<br></bl=
+ockquote><div><br></div><div>Don&#39;t give up hope.. <br><br>I&#39;m only =
+a lurker here, so just speaking from observation, not on behalf of anyone: =
+most developers here appear to be extremely busy people devoting their litt=
+le precious free time to <span>openvpn</span>. It took sometime for me to r=
+ealize that. Just be patient and you will get replies. If not, rephrase and=
+ post again..<br><br></div><div>In fact, in my experience, this is one of t=
+he few lists where you seldom get a rude response or a slap on the wrist fo=
+r mistakenly posting to the wrong list, or for asking a trivial question. Y=
+ou may know how caustic is the atmosphere of many developer and user lists.=
+ People here are very polite but can be very slow to respond, that just how=
+ it is..<br><br></div><div>Also I think we need more experienced users in t=
+he users list to take care of questions that don&#39;t need the developers&=
+#39; attention.<br><br></div><div>Did I say don&#39;t give up?<br><br></div=
+><div>Cheers,<br><br></div><div><span>Selva</span><br></div></div></div></d=
+iv></div>
 
---001a11c3879ae6afb2052293e808--
+--047d7bea3a24672728052294c5bb--
 
