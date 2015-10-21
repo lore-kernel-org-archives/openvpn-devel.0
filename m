@@ -1,8 +1,6 @@
-Message-ID: <7CC35FED174E49C7B6444527BEDFF494@...1853...>
+Message-ID: <9474823DE651481FB735D20FE340C247@...1853...>
 From: <debbie10t@...277...>
-References: <A2B75CF4ED3C43189180BFA68A9F3876@...1853...>
-	<F7154A25-F874-485F-9DF7-04D58795876B@...1286...>
-Date: Wed, 21 Oct 2015 23:31:42 +0100
+Date: Thu, 22 Oct 2015 00:02:17 +0100
 MIME-Version: 1.0
 Subject: Re: [Openvpn-devel] Fw: Easy-RSA3.0.0 Windows Version batch file
 	missing
@@ -14,29 +12,41 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; format=flowed; charset="utf-8"; reply-type=original
+Content-Type: text/plain; format=flowed; charset="utf-8"; reply-type=response
 Content-Transfer-Encoding: 7bit
-To: Eric Crist <ecrist@...1286...>
+To: debbie10t@...277..., Eric Crist <ecrist@...1286...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Hi // You must be
+Apologies for the "You must be" comment ..
 
 ----- Original Message ----- 
-From: "Eric Crist" <ecrist@...1286...>
-To: <debbie10t@...277...>
+From: <debbie10t@...277...>
+To: "Eric Crist" <ecrist@...1286...>
 Cc: <openvpn-devel@lists.sourceforge.net>
-Sent: Tuesday, September 22, 2015 1:05 PM
+Sent: Wednesday, October 21, 2015 11:31 PM
 Subject: Re: [Openvpn-devel] Fw: Easy-RSA3.0.0 Windows Version batch file 
 missing
 
-http://sourceforge.net/p/openvpn/mailman/message/34480727/
 
-https://forums.openvpn.net/topic19629.html
-
-It has only been one month.
-
-http://sourceforge.net/p/openvpn/mailman/message/34556607/
-
-
+> Hi // You must be
+>
+> ----- Original Message ----- 
+> From: "Eric Crist" <ecrist@...1286...>
+> To: <debbie10t@...277...>
+> Cc: <openvpn-devel@lists.sourceforge.net>
+> Sent: Tuesday, September 22, 2015 1:05 PM
+> Subject: Re: [Openvpn-devel] Fw: Easy-RSA3.0.0 Windows Version batch file 
+> missing
+>
+> http://sourceforge.net/p/openvpn/mailman/message/34480727/
+>
+> https://forums.openvpn.net/topic19629.html
+>
+> It has only been one month.
+>
+> http://sourceforge.net/p/openvpn/mailman/message/34556607/
+>
+>
+> 
 
 
