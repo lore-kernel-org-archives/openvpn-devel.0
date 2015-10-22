@@ -1,10 +1,10 @@
-Date: Thu, 22 Oct 2015 19:49:24 +0200 (CEST)
-Message-Id: <201510221749.t9MHnOeb061834@...2054...>
+Date: Thu, 22 Oct 2015 19:52:26 +0200 (CEST)
+Message-Id: <201510221752.t9MHqQKf061856@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1445500282-23129-1-git-send-email-lstipakov@...277...>
-References: <1445500282-23129-1-git-send-email-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Generate openvpn-plugin.h for
-	MSVC build
+In-Reply-To: <1445380706-20864-1-git-send-email-steffan@...1856...>
+References: <1445380706-20864-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix memory leak in auth-pam
+	plugin
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,25 +15,23 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Lev Stipakov <lstipakov@...277...>
+To: Steffan Karger <steffan@...1856...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-ACK.  I have no idea what it does in particular, but as it does only
-touch files for MSVC build and this basically affects only you and
-(possibly) James, I just trust you :-)
+Your patch has been applied to the master and release/2.3 branch.
 
-Your patch has been applied to the master branch.
+commit cfc13b38bc6504b9768e4cc43311807d6b074672 (master)
+commit 6a5e978085cc721bb09796ab44d77c3142b5f78b (release/2.3)
 
-commit dd8d351dbc92ede6726b7090ed4eceb9b95318c6
-Author: Lev Stipakov
-Date:   Thu Oct 22 10:51:22 2015 +0300
+Author: Steffan Karger
+Date:   Wed Oct 21 00:38:26 2015 +0200
 
-     Generate openvpn-plugin.h for MSVC build
+     Fix memory leak in auth-pam plugin
 
-     Signed-off-by: Lev Stipakov <lstipakov@...277...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1445500282-23129-1-git-send-email-lstipakov@...277...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/10360
+     Signed-off-by: Steffan Karger <steffan@...1856...>
+     Acked-by: Lev Stipakov <lstipakov@...277...>
+     Message-Id: <1445380706-20864-1-git-send-email-steffan@...1856...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/10338
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
