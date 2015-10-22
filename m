@@ -1,3 +1,6 @@
+From: "Morris, Russell" <rmorris@...1315...>
+Date: Thu, 22 Oct 2015 19:58:11 +0000
+Message-ID: <SN1PR08MB1391BB977BF308697478D928B9270@...2065...>
 References: <56211F0D.2010806@...515...> <2421664.qQJpUDo69u@...1526...>
 	<56261F0D.9020208@...515...> <1921973.yRGlOPzy2x@...2001...>
 	<20151022075000.GD22054@...1296...>
@@ -6,11 +9,10 @@ References: <56211F0D.2010806@...515...> <2421664.qQJpUDo69u@...1526...>
 	<SN1PR08MB13915E4AEE4D1046CE7953AFB9270@...2065...>
 	<20151022182439.GS22054@...1296...>
 	<SN1PR08MB13916305A3CB7B167CC0B1A7B9270@...2065...>
-From: Jan Just Keijser <janjust@...1147...>
-Message-ID: <56293AC9.7010702@...1147...>
-Date: Thu, 22 Oct 2015 21:36:41 +0200
+	<56293AC9.7010702@...1147...>
+In-Reply-To: <56293AC9.7010702@...1147...>
+Content-Language: en-US
 MIME-Version: 1.0
-In-Reply-To: <SN1PR08MB13916305A3CB7B167CC0B1A7B9270@...2065...>
 Subject: Re: [Openvpn-devel] Creating a Windows team for OpenVPN?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -20,48 +22,50 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-To: "Morris, Russell" <rmorris@...1315...>, Gert Doering <gert@...1296...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+To: Jan Just Keijser <janjust@...1147...>, Gert Doering <gert@...1296...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hi,
-
-
-On 22-Oct-15 20:28, Morris, Russell wrote:
-> Hi,
->
-> 90% sure it's I60x ... but I installed it a little bit ago, and didn't keep the installer. Is there an easy way to check (to be 100% sure, so I don't accidentally lie to you)?
->
-try looking in the list of installed programs
-    Control Panel -> Programs and Features
-
-Otherwise, look at the driver file for the tun adapter (tap0901.sys); 
-I've got the 060x version installed and it has version 9.0.0.21 ; I am 
-not entirely sure but I think the 010x version has a different (lower) 
-version number.
-
-HTH,
-
-JJK
-
->
->
-> -----Original Message-----
-> From: Gert Doering [mailto:gert@...1296...]
-> Sent: Thursday, October 22, 2015 1:25 PM
-> To: Morris, Russell <rmorris@...1315...>
-> Cc: Gert Doering <gert@...1296...>; Heiko Hund <heiko.hund@...1489...>; openvpn-devel@lists.sourceforge.net
-> Subject: Re: [Openvpn-devel] Creating a Windows team for OpenVPN?
->
-> Hi,
->
-> On Thu, Oct 22, 2015 at 06:22:02PM +0000, Morris, Russell wrote:
->> Actually, I already have nobind in my config file (and am running v2.3.8). I tend to see 2 errors,
->> - CONNECTION, but with ERROR (TAP adapter hung, have to close openvpn.exe, disable / enable TAP, restart openvpn.exe)
->> - TAP adapter exited
-> Is this the old or new tap adapter?  (Windows installers I60x or I00x?)
->
-> gert
-
-
+SGksDQoNCkp1c3QgY2hlY2tlZCAtIHllcCwgOS4wLjAuMjEuIEl0IHNlZW1zIHRvIGJlIGZyb20g
+MjAxNCB0aG91Z2g/DQoNCkFuZCB0byB0aGUgb3RoZXIgZW1haWwgSSBqdXN0IHNlbnQgKHRoYXQg
+c2VlbWVkIHRvIGJvdW5jZT8pLA0KDQpZZXMsIHRoaXMgaXMgYSBXaW5kb3dzIDcgbWFjaGluZS4g
+SSB0aGluayB0aGUgaXNzdWUgaXMgc3RhbmRieSAvIG5ldHdvcmsgY2hhbmdlIHJlbGF0ZWQuIElu
+IHBhcnRpY3VsYXIsIHN0YW5kYnkgLyByZXN1bWUgc2VlbXMgdG8gY2F1c2UgYSBsb3Qgb2YgZ3Jp
+ZWYuIEkgYWxzbyBydW4gb24gYSBkZXNrdG9wLCBub3QgbmVhciBhcyBtYW55IChvciByZWFsbHkg
+YW55KSBpc3N1ZXMuIEJ1dCBzdGFuZGJ5IC8gcmVzdW1lIC0+IGNyYXNoIQ0KDQpGWUksIGp1c3Qg
+aGFkIHRoaXMgZXhhY3QgaXNzdWUsIDEgbWludXRlIGFnby4gR290IGFuIE9wZW5WUE4gY29ubmVj
+dGlvbiwgYnV0IG5vIElQIGFkZHJlc3MgKERIQ1ApLiBLaWxsZWQgb3BlbnZwbiwgZGlzYWJsZSAv
+IGVuYWJsZSBUQVAsIHN0YXJ0IG9wZW52cG4gYW5kIHJlY29ubmVjdCAtPiBsaWZlIGlzIGdvb2Qg
+YWdhaW4uIFByZXR0eSByZWxpYWJsZSB0byBtYWtlIHRoaXMgaGFwcGVuIOKApiDvgYwuDQoNClBl
+cmhhcHMgc29tZSBtb3JlIGRldGFpbGVkIGxvZ3MgdG8gZGVidWc/DQoNClRoYW5rcywNCi4uLiBS
+dXNzZWxsDQoNCg0KLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCkZyb206IEphbiBKdXN0IEtl
+aWpzZXIgW21haWx0bzpqYW5qdXN0QC4uLjExNDcuLi5dIA0KU2VudDogVGh1cnNkYXksIE9jdG9i
+ZXIgMjIsIDIwMTUgMjozNyBQTQ0KVG86IE1vcnJpcywgUnVzc2VsbCA8cm1vcnJpc0AuLi4xMzE1
+Li4uPjsgR2VydCBEb2VyaW5nIDxnZXJ0QC4uLjEyOTYuLi4+DQpDYzogb3BlbnZwbi1kZXZlbEBs
+aXN0cy5zb3VyY2Vmb3JnZS5uZXQNClN1YmplY3Q6IFJlOiBbT3BlbnZwbi1kZXZlbF0gQ3JlYXRp
+bmcgYSBXaW5kb3dzIHRlYW0gZm9yIE9wZW5WUE4/DQoNCkhpLA0KDQoNCk9uIDIyLU9jdC0xNSAy
+MDoyOCwgTW9ycmlzLCBSdXNzZWxsIHdyb3RlOg0KPiBIaSwNCj4NCj4gOTAlIHN1cmUgaXQncyBJ
+NjB4IC4uLiBidXQgSSBpbnN0YWxsZWQgaXQgYSBsaXR0bGUgYml0IGFnbywgYW5kIGRpZG4ndCBr
+ZWVwIHRoZSBpbnN0YWxsZXIuIElzIHRoZXJlIGFuIGVhc3kgd2F5IHRvIGNoZWNrICh0byBiZSAx
+MDAlIHN1cmUsIHNvIEkgZG9uJ3QgYWNjaWRlbnRhbGx5IGxpZSB0byB5b3UpPw0KPg0KdHJ5IGxv
+b2tpbmcgaW4gdGhlIGxpc3Qgb2YgaW5zdGFsbGVkIHByb2dyYW1zDQogICAgQ29udHJvbCBQYW5l
+bCAtPiBQcm9ncmFtcyBhbmQgRmVhdHVyZXMNCg0KT3RoZXJ3aXNlLCBsb29rIGF0IHRoZSBkcml2
+ZXIgZmlsZSBmb3IgdGhlIHR1biBhZGFwdGVyICh0YXAwOTAxLnN5cyk7IA0KSSd2ZSBnb3QgdGhl
+IDA2MHggdmVyc2lvbiBpbnN0YWxsZWQgYW5kIGl0IGhhcyB2ZXJzaW9uIDkuMC4wLjIxIDsgSSBh
+bSANCm5vdCBlbnRpcmVseSBzdXJlIGJ1dCBJIHRoaW5rIHRoZSAwMTB4IHZlcnNpb24gaGFzIGEg
+ZGlmZmVyZW50IChsb3dlcikgDQp2ZXJzaW9uIG51bWJlci4NCg0KSFRILA0KDQpKSksNCg0KPg0K
+Pg0KPiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBHZXJ0IERvZXJpbmcgW21h
+aWx0bzpnZXJ0QC4uLjEyOTYuLi5dDQo+IFNlbnQ6IFRodXJzZGF5LCBPY3RvYmVyIDIyLCAyMDE1
+IDE6MjUgUE0NCj4gVG86IE1vcnJpcywgUnVzc2VsbCA8cm1vcnJpc0AuLi4xMzE1Li4uPg0KPiBD
+YzogR2VydCBEb2VyaW5nIDxnZXJ0QC4uLjEyOTYuLi4+OyBIZWlrbyBIdW5kIDxoZWlrby5odW5k
+QC4uLjE0ODkuLi4+OyBvcGVudnBuLWRldmVsQGxpc3RzLnNvdXJjZWZvcmdlLm5ldA0KPiBTdWJq
+ZWN0OiBSZTogW09wZW52cG4tZGV2ZWxdIENyZWF0aW5nIGEgV2luZG93cyB0ZWFtIGZvciBPcGVu
+VlBOPw0KPg0KPiBIaSwNCj4NCj4gT24gVGh1LCBPY3QgMjIsIDIwMTUgYXQgMDY6MjI6MDJQTSAr
+MDAwMCwgTW9ycmlzLCBSdXNzZWxsIHdyb3RlOg0KPj4gQWN0dWFsbHksIEkgYWxyZWFkeSBoYXZl
+IG5vYmluZCBpbiBteSBjb25maWcgZmlsZSAoYW5kIGFtIHJ1bm5pbmcgdjIuMy44KS4gSSB0ZW5k
+IHRvIHNlZSAyIGVycm9ycywNCj4+IC0gQ09OTkVDVElPTiwgYnV0IHdpdGggRVJST1IgKFRBUCBh
+ZGFwdGVyIGh1bmcsIGhhdmUgdG8gY2xvc2Ugb3BlbnZwbi5leGUsIGRpc2FibGUgLyBlbmFibGUg
+VEFQLCByZXN0YXJ0IG9wZW52cG4uZXhlKQ0KPj4gLSBUQVAgYWRhcHRlciBleGl0ZWQNCj4gSXMg
+dGhpcyB0aGUgb2xkIG9yIG5ldyB0YXAgYWRhcHRlcj8gIChXaW5kb3dzIGluc3RhbGxlcnMgSTYw
+eCBvciBJMDB4PykNCj4NCj4gZ2VydA0KDQo=
