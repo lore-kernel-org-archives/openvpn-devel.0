@@ -1,10 +1,10 @@
-Date: Thu, 22 Oct 2015 19:52:26 +0200 (CEST)
-Message-Id: <201510221752.t9MHqQKf061856@...2054...>
+Date: Thu, 22 Oct 2015 20:01:23 +0200 (CEST)
+Message-Id: <201510221801.t9MI1NpS061925@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1445380706-20864-1-git-send-email-steffan@...1856...>
-References: <1445380706-20864-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix memory leak in auth-pam
-	plugin
+In-Reply-To: <1445380744-21086-1-git-send-email-steffan@...1856...>
+References: <1445380744-21086-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH applied] Re: openssl: remove usage of
+	OPENSSL_malloc() from show_available_curves
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,20 +18,18 @@ Content-Transfer-Encoding: 8bit
 To: Steffan Karger <steffan@...1856...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master and release/2.3 branch.
+Your patch has been applied to the master branch.
 
-commit cfc13b38bc6504b9768e4cc43311807d6b074672 (master)
-commit 6a5e978085cc721bb09796ab44d77c3142b5f78b (release/2.3)
-
+commit 470eb8b6b6a9970a68cb17a185359adffbaeabf5
 Author: Steffan Karger
-Date:   Wed Oct 21 00:38:26 2015 +0200
+Date:   Wed Oct 21 00:39:04 2015 +0200
 
-     Fix memory leak in auth-pam plugin
+     openssl: remove usage of OPENSSL_malloc() from show_available_curves
 
      Signed-off-by: Steffan Karger <steffan@...1856...>
      Acked-by: Lev Stipakov <lstipakov@...277...>
-     Message-Id: <1445380706-20864-1-git-send-email-steffan@...1856...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/10338
+     Message-Id: <1445380744-21086-1-git-send-email-steffan@...1856...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/10339
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
