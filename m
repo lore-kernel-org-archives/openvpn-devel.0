@@ -1,6 +1,6 @@
-Date: Thu, 22 Oct 2015 17:21:27 +0200
+Date: Thu, 22 Oct 2015 17:25:24 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20151022152127.GJ22054@...1296...>
+Message-ID: <20151022152524.GK22054@...1296...>
 References: <1445519360-24866-1-git-send-email-lstipakov@...277...>
 	<20151022132635.GF22054@...1296...>
 	<1445521155.4113.71.camel@...1866...>
@@ -8,14 +8,12 @@ References: <1445519360-24866-1-git-send-email-lstipakov@...277...>
 	<20151022135158.GG22054@...1296...>
 	<1445522144.4113.79.camel@...1866...>
 	<20151022135935.GH22054@...1296...>
-	<1445522997.4113.84.camel@...1866...>
-	<20151022141709.GI22054@...1296...>
-	<1445523893.4113.92.camel@...1866...>
+	<5628F2E2.1050500@...277...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="Ysxpgsskrg70M4rk"
+	protocol="application/pgp-signature"; boundary="DPGiAlqRWFF+9Gvq"
 Content-Disposition: inline
-In-Reply-To: <1445523893.4113.92.camel@...1866...>
+In-Reply-To: <5628F2E2.1050500@...277...>
 Subject: Re: [Openvpn-devel] [PATCH] Use adapter index instead of name
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -25,29 +23,31 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: David Woodhouse <dwmw2@...1866...>
-Cc: Martin Pauly <pauly@...2079...>, Olli =?iso-8859-1?Q?M=E4nnist=F6?= <olmannisto@...277...>, openvpn-devel@lists.sourceforge.net
+To: Lev Stipakov <lstipakov@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---Ysxpgsskrg70M4rk
+--DPGiAlqRWFF+9Gvq
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Thu, Oct 22, 2015 at 03:24:53PM +0100, David Woodhouse wrote:
-> I don't understand why you're feeding get_adapter_index_method_1() a
-> GUID prefixed with \DEVICE\TCPIP_ instead of a name, either, since the
-> MSDN documentation for GetAdapterIndex() suggests that it takes the
-> interface name. Hey, maybe that's why it didn't work and you had to
-> invent a new method? Maybe I'm best not looking at your code at all :)
+On Thu, Oct 22, 2015 at 05:29:54PM +0300, Lev Stipakov wrote:
+>  > And with interface indexes, it works all the time?
+>=20
+> We have tested it on a few machines which previously have had this=20
+> problem and this patch has fixed that. We will test it for larger=20
+> audience in near future and report results.
 
-I hav *so* no idea...  this code is all much older than my involvement
-here :-) - but the method_2 approach looks halfway sane.
+As a side note: the new IPv6 "redirect gateway ipv6" stuff also only
+uses adapter indexes, so I'm pretty confident that "install route and
+ifconfig via adapter index" is a good approach (if only to avoid spaces
+and national characters on the command line :-) ) - I was mainly wondering
+whether there is any case when the get_adapter_index() could fail on us...
 
-> But still, I'm not booting Windows today. Not for all the tea in China.
-
-Cross-compiling indeed only gets one half-way here...
+Going to "ifindex only" will actually make the route.c code in master
+less complex, as it has to deal with name-or-index today.
 
 gert
 
@@ -59,18 +59,18 @@ rt/
 Gert Doering - Munich, Germany                             gert@...1296...
 fax: +49-89-35655025                        gert@...1297...
 
---Ysxpgsskrg70M4rk
+--DPGiAlqRWFF+9Gvq
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1
 
-iQCVAwUBVij+96kuBuNlUUl1AQImLwP+KEP7LKHFIWQbdWUP5TKYCEnRUG+71nlF
-0tFwID1KqXb/ZPtFo0UShErU2zAjRvYkSttaRyl40c6O231Dn5jJrNxEvD8TWkNB
-v2wtZOKHL3agAZCnCQSmSwAC09VEgeUlPNC7G2fGXrdiyglORhvofyz7QES958qb
-+x4yELf1oAw=
-=831b
+iQCVAwUBVij/46kuBuNlUUl1AQJOUgP9HdPK8x9cYwfT7hKB8v9EeSV2rNtzU6b5
+1DvUHdJ6q8ITk2NmdjvSjCff2zd7C1sqcGuWTmidpTEs61MLUUZ7/u0UiHapQga/
+MXIsZbRvr16cBXxeEHaqxSDZ8olVBaoB9OXIrFjJmbYI78ZRGK+2MVrQ1jDxTWGT
+WT5cg9TWiiQ=
+=74IR
 -----END PGP SIGNATURE-----
 
---Ysxpgsskrg70M4rk--
+--DPGiAlqRWFF+9Gvq--
 
