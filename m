@@ -1,22 +1,13 @@
-Date: Thu, 22 Oct 2015 18:42:08 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20151022164208.GN22054@...1296...>
-References: <1445519360-24866-1-git-send-email-lstipakov@...277...>
-	<20151022132635.GF22054@...1296...>
-	<1445521155.4113.71.camel@...1866...>
-	<CA+UdHn9f9reNrCCdtw8+Ei2KZ9_2beDPCL9Vb-JGs2jJ5nnrXw@...278...>
-	<20151022135158.GG22054@...1296...>
-	<1445522144.4113.79.camel@...1866...>
-	<20151022135935.GH22054@...1296...>
-	<5628F2E2.1050500@...277...>
-	<20151022152524.GK22054@...1296...>
-	<20151022161657.5386323.15988.1924@...2070...>
+From: "Morris, Russell" <rmorris@...1315...>
+Date: Thu, 22 Oct 2015 16:43:05 +0000
+Message-ID: <SN1PR08MB1391D82901BB0F9F4C8CB5E9B9270@...2065...>
+References: <56211F0D.2010806@...515...> <2421664.qQJpUDo69u@...1526...>
+	<56261F0D.9020208@...515...> <1921973.yRGlOPzy2x@...2001...>
+	<20151022075000.GD22054@...1296...>
+In-Reply-To: <20151022075000.GD22054@...1296...>
+Content-Language: en-US
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="BnVMiy1li7hAqCmz"
-Content-Disposition: inline
-In-Reply-To: <20151022161657.5386323.15988.1924@...2070...>
-Subject: Re: [Openvpn-devel] [PATCH] Use adapter index instead of name
+Subject: Re: [Openvpn-devel] Creating a Windows team for OpenVPN?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -25,22 +16,45 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: ValdikSS ValdikSS <iam@...2070...>
-Cc: openvpn-devel@lists.sourceforge.net
-
---BnVMiy1li7hAqCmz
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+To: Gert Doering <gert@...1296...>, Heiko Hund <heiko.hund@...1489...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+
+Sorry, catching up, but to the comments previously ... I do see openvpn.exe=
+ crash quite regularly. I run it on a laptop, sleeping / resuming and movin=
+g from wired to wireless (and) back quite a bit. These tend to break openvp=
+n.exe, and in some cases can hang the TAP adapter also ... :-(.
+
+Thanks,
+... Russell
+
+
+-----Original Message-----
+From: Gert Doering [mailto:gert@...1296...]=20
+Sent: Thursday, October 22, 2015 2:50 AM
+To: Heiko Hund <heiko.hund@...1489...>
+Cc: openvpn-devel@lists.sourceforge.net
+Subject: Re: [Openvpn-devel] Creating a Windows team for OpenVPN?
 
 Hi,
 
-On Thu, Oct 22, 2015 at 07:16:57PM +0300, ValdikSS ValdikSS wrote:
-> Actually, we should have used indexes and not interface names from the be=
-ginning.
+On Thu, Oct 22, 2015 at 07:49:45AM +0200, Heiko Hund wrote:
+> On Tuesday 20 October 2015 14:01:33 Samuli Sepp=E4nen wrote:
+> > My NSSM-based replacement thingie aims to address all these
+> > shortcomings. I believe the interactive service and NSSM are complement=
+ary.
+>=20
+> Or we extend the GUI to make it start tunnels automatically on startup, t=
+hen
+> the additional service is no longer needed, is it?
 
-This particular code was out there for review and comments for a few=20
-years now...
+I've heard people ask for "we need the VPN to be up before user login so
+windows domain login works!" - so the GUI won't be around yet.
+
+Now, not being a windows person and not running this domain stuff I'm=20
+not sure if there are other ways to achieve that - but this is what has
+been told to me...
 
 gert
 --=20
@@ -49,19 +63,4 @@ USENET is *not* the non-clickable part of WWW!
 rt/
 Gert Doering - Munich, Germany                             gert@...1296...
 fax: +49-89-35655025                        gert@...1297...
-
---BnVMiy1li7hAqCmz
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQCVAwUBVikR4KkuBuNlUUl1AQJdngQAtuAL5NnAvGfq/l+Q0mU0j69LWVVUwUzH
-VjDLOUdXyJPBYtfdkon/tFdp13Q9uoTMq3+KvRHCy8lajkWj33jYhK27VbnLLDUc
-sJi5mWQ9fp6JMq7ojeRbYX9MA3nPa1nk8hD7YAqQXS75xu4+Jjl9Zw09CWqSmNna
-tYCnl/y8GMw=
-=EuOS
------END PGP SIGNATURE-----
-
---BnVMiy1li7hAqCmz--
 
