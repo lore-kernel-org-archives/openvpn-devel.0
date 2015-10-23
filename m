@@ -1,6 +1,5 @@
-From: "Morris, Russell" <rmorris@...1315...>
-Date: Fri, 23 Oct 2015 12:46:24 +0000
-Message-ID: <SN1PR08MB139154DAEBBDDF72D187B1E8B9260@...2065...>
+MIME-Version: 1.0
+In-Reply-To: <SN1PR08MB139154DAEBBDDF72D187B1E8B9260@...2065...>
 References: <56211F0D.2010806@...515...> <2421664.qQJpUDo69u@...1526...>
 	<56261F0D.9020208@...515...> <1921973.yRGlOPzy2x@...2001...>
 	<20151022075000.GD22054@...1296...>
@@ -12,11 +11,11 @@ References: <56211F0D.2010806@...515...> <2421664.qQJpUDo69u@...1526...>
 	<56293AC9.7010702@...1147...>
 	<SN1PR08MB1391BB977BF308697478D928B9270@...2065...>
 	<CAKuzo_iV6NQJSGWORxLTY4+YLLE8u+ccAHTfVrpJtX0=TVZnWQ@...278...>
-In-Reply-To: <CAKuzo_iV6NQJSGWORxLTY4+YLLE8u+ccAHTfVrpJtX0=TVZnWQ@...278...>
-Content-Language: en-US
-Content-Type: multipart/alternative;
-	boundary="_000_SN1PR08MB139154DAEBBDDF72D187B1E8B9260SN1PR08MB1391namp_"
-MIME-Version: 1.0
+	<SN1PR08MB139154DAEBBDDF72D187B1E8B9260@...2065...>
+From: Selva Nair <selva.nair@...277...>
+Date: Fri, 23 Oct 2015 13:45:23 -0400
+Message-ID: <CAKuzo_jigkF3R8XcxDaHM6GuKvr=M7y41RVpH8w0XmcdzF2xzg@...278...>
+Content-Type: multipart/alternative; boundary=047d7bb04a623ed5e80522c92e7f
 Subject: Re: [Openvpn-devel] Creating a Windows team for OpenVPN?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -26,241 +25,142 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>
+To: "Morris, Russell" <rmorris@...1315...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---_000_SN1PR08MB139154DAEBBDDF72D187B1E8B9260SN1PR08MB1391namp_
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+--047d7bb04a623ed5e80522c92e7f
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-SGksDQoNCkxldCBtZSB0cnkgdG8gY29sbGVjdCBzb21lIGxvZ3Mg4oCTIHRoZSBpc3N1ZSBpcyB0
-aGF0IEnigJltIHVzaW5nIE5TU00g4oCmIHNvIGl0IHJlc3RhcnRzIG9wZW52cG4gb24gYSBjcmFz
-aCwgYW5kIHdpcGVzIG91dCB0aGUgbG9nIChyZXNldHMpLiBGWUksIGhlcmUgaXMgd2hhdCBJIHNl
-ZSBmcm9tIHRoZSBtYW5hZ2VtZW50IGludGVyZmFjZSAoYXMgdGhpcyBpcyB3aGF0IG15IGFwcCBp
-cyB1c2luZykg4oCTIGZpcnN0IGxpbmUgaXMgZnJvbSB0aGUgbWFuYWdlbWVudCBpbnRlcmZhY2Ug
-KHNlY29uZCBvbmUgZnJvbSBteSBhcHApLA0KWyAgMzQ0XSBNYW5nZW1lbnQgRkFUQUwgTWVzc2Fn
-ZSBSZWNlaXZlZDogPkZBVEFMOlRVTi9UQVAgSS9PIG9wZXJhdGlvbiBhYm9ydGVkLCBleGl0aW5n
-DQpbICAzNDVdIEVSUk9SOiBPcGVuVlBOIEV4aXRpbmcsIEV2ZW50IFJhaXNlZCB0byBhbGxvdyBS
-ZWNvbm5lY3Rpb24gdG8gTWFuYWdlbWVudCBJbnRlcmZhY2UhDQoNClNvIGl0IGlzIGV4aXRpbmcs
-IGp1c3QgbmVlZCBtb3JlIGRldGFpbHMgaWYgcG9zc2libGUuDQoNCkFuZCB0byBjbGFyaWZ5IGJl
-bG93IOKApiBESENQIGlzIGZvciB0aGUgSVAgYWRkcmVzcyBmcm9tIG15IHNlcnZlciwgaW5zaWRl
-IHRoZSBzdWJuZXQgKHNvIEnigJltIG9uIHRoZSBzYW1lIHN1Ym5ldCBhcyBteSBuZXR3b3JrKS4g
-TWFrZSBzZW5zZT8gVGhlIGV4dGVybmFsIGludGVyZmFjZSBpcyBmaXhlZCAoSVAgYW5kIHBvcnQp
-Lg0KDQpUaGFua3MsDQrigKYgUnVzc2VsbA0KDQoNCkZyb206IFNlbHZhIE5haXIgW21haWx0bzpz
-ZWx2YS5uYWlyQC4uLjI3Ny4uLl0NClNlbnQ6IFRodXJzZGF5LCBPY3RvYmVyIDIyLCAyMDE1IDM6
-NTIgUE0NClRvOiBNb3JyaXMsIFJ1c3NlbGwgPHJtb3JyaXNALi4uMTMxNS4uLj4NCkNjOiBvcGVu
-dnBuLWRldmVsQGxpc3RzLnNvdXJjZWZvcmdlLm5ldA0KU3ViamVjdDogUmU6IFtPcGVudnBuLWRl
-dmVsXSBDcmVhdGluZyBhIFdpbmRvd3MgdGVhbSBmb3IgT3BlblZQTj8NCg0KSGksDQoNCk9uIFRo
-dSwgT2N0IDIyLCAyMDE1IGF0IDM6NTggUE0sIE1vcnJpcywgUnVzc2VsbCA8cm1vcnJpc0AuLi4x
-MzE1Li4uPG1haWx0bzpybW9ycmlzQC4uLjEzMTUuLi4+PiB3cm90ZToNCkhpLA0KDQpKdXN0IGNo
-ZWNrZWQgLSB5ZXAsIDkuMC4wLjIxLiBJdCBzZWVtcyB0byBiZSBmcm9tIDIwMTQgdGhvdWdoPw0K
-DQpBbmQgdG8gdGhlIG90aGVyIGVtYWlsIEkganVzdCBzZW50ICh0aGF0IHNlZW1lZCB0byBib3Vu
-Y2U/KSwNCg0KUHJvYmFibHkgbXkgbWlzdGFrZSwgaW4gb25lIG9mIHRoZSBwb3N0cyBJIGNoYW5n
-ZWQgdGhlIGFkZHJlc3MgZnJvbSBkZXZlbCB0byB1c2VycyB1bmludGVudGlvbmFsbHkuLg0KDQoN
-ClllcywgdGhpcyBpcyBhIFdpbmRvd3MgNyBtYWNoaW5lLiBJIHRoaW5rIHRoZSBpc3N1ZSBpcyBz
-dGFuZGJ5IC8gbmV0d29yayBjaGFuZ2UgcmVsYXRlZC4gSW4gcGFydGljdWxhciwgc3RhbmRieSAv
-IHJlc3VtZSBzZWVtcyB0byBjYXVzZSBhIGxvdCBvZiBncmllZi4gSSBhbHNvIHJ1biBvbiBhIGRl
-c2t0b3AsIG5vdCBuZWFyIGFzIG1hbnkgKG9yIHJlYWxseSBhbnkpIGlzc3Vlcy4gQnV0IHN0YW5k
-YnkgLyByZXN1bWUgLT4gY3Jhc2ghDQoNCkZZSSwganVzdCBoYWQgdGhpcyBleGFjdCBpc3N1ZSwg
-MSBtaW51dGUgYWdvLiBHb3QgYW4gT3BlblZQTiBjb25uZWN0aW9uLCBidXQgbm8gSVAgYWRkcmVz
-cyAoREhDUCkuIEtpbGxlZCBvcGVudnBuLCBkaXNhYmxlIC8gZW5hYmxlIFRBUCwgc3RhcnQgb3Bl
-bnZwbiBhbmQgcmVjb25uZWN0IC0+IGxpZmUgaXMgZ29vZCBhZ2Fpbi4gUHJldHR5IHJlbGlhYmxl
-IHRvIG1ha2UgdGhpcyBoYXBwZW4g4oCmIOKAoi4NCltYXQ0KDQoNCk91ciBob21lIGxhcHRvcCBn
-b2VzIGZyb20gc2xlZXAgdG8gcmVzdW1lIGFsbCB0aGUgdGltZSB3aXRob3V0IG1ham9yIGlzc3Vl
-cy4gQnV0IHdlIGFyZSBub3QgY29ubmVjdGluZyB0byBhbnkgcHVibGljIHNlcnZlcnMgLS0gcHJp
-dmF0ZSBzZXJ2ZXJzIHRoYXQgcnVuIG9uIGEgZml4ZWQgSVAgYW5kIHBvcnQsIG5vIERIQ1AsIHNv
-IG1heSBiZSB0aGF0IGlzIG9uZSBkaWZmZXJlbmNlPw0KDQpXZSBoYXZlIG9uZSBXaW5kb3dzIDcg
-bGFwdG9wIGluIGEgcmVhbGx5IHJlYWxseSByZW1vdGUgbG9jYXRpb24gdGhhdCBpcyBzZXQgdG8g
-c3RheSBjb25uZWN0ZWQgYWxsIHRoZSB0aW1lLi4gVGhlIGxvY2FsIG5ldHdvcmsgYXQgdGhhdCBz
-aXRlIGNyYXNoZXMgYXQgbGVhc3QgdHdpY2UgYSBkYXkgYW5kIHN0aWxsIHRoZSBWUE4gY29tZXMg
-YmFjayBldmVyeSB0aW1lIHRoZSBuZXR3b3JrIGlzIGJhY2suIEl0cyBzZXQgbm90IHRvIHNsZWVw
-LCBzbyBtb3JlIGxpa2UgYSBkZXNrdG9wLCBidXQgaXQgZG9lcyBvY2Nhc2lvbmFsbHkgbW92ZSBm
-cm9tIG9uZSBzaXRlIHRvIGFub3RoZXIuICBDb25zaWRlcmluZyB0aGUgcmVtb3RlbmVzcyBvZiB0
-aGUgbG9jYXRpb24gYW5kIHRoZSBmbGFraW5lc3Mgb2YgdGhlIHJlbW90ZSBuZXR3b3JrIEkgaGF2
-ZSBiZWVuIG1vcmUgdGhhbiBpbXByZXNzZWQgYnkgdGhlIHdheSBvcGVudnBuIGhhcyBzZXJ2ZWQg
-dXMgZm9yIGxhc3QgMyB5ZWFycy4NCg0KQnV0IHJvYW1pbmcgaXMgc29tZXRoaW5nIEkgaGF2ZW4n
-dCB0ZXN0ZWQgbXVjaCBhdCBhbGwuIFdoZW4gdXNlcnMgdHJhdmVsIHRoZXkgZG8gZ2V0IGNvbm5l
-Y3Rpdml0eSBmcm9tIGhvdGVscyBldGMuLCBzbyB0aGF0IGtpbmQgb2YgIm5ldHdvcmsgY2hhbmdl
-IiB3b3JrcyB3ZWxsIHRvby4NCg0KDQpQZXJoYXBzIHNvbWUgbW9yZSBkZXRhaWxlZCBsb2dzIHRv
-IGRlYnVnPw0KDQpTdXJlLCB3b3VsZCBoZWxwLg0KDQpSZWdhcmRzLA0KDQpTZWx2YQ0KDQo=
+Hi,
 
---_000_SN1PR08MB139154DAEBBDDF72D187B1E8B9260SN1PR08MB1391namp_
-Content-Type: text/html; charset="utf-8"
-Content-Transfer-Encoding: base64
+This may be getting way too off-topic for this thread...
 
-PGh0bWwgeG1sbnM6dj0idXJuOnNjaGVtYXMtbWljcm9zb2Z0LWNvbTp2bWwiIHhtbG5zOm89InVy
-bjpzY2hlbWFzLW1pY3Jvc29mdC1jb206b2ZmaWNlOm9mZmljZSIgeG1sbnM6dz0idXJuOnNjaGVt
-YXMtbWljcm9zb2Z0LWNvbTpvZmZpY2U6d29yZCIgeG1sbnM6bT0iaHR0cDovL3NjaGVtYXMubWlj
-cm9zb2Z0LmNvbS9vZmZpY2UvMjAwNC8xMi9vbW1sIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcv
-VFIvUkVDLWh0bWw0MCI+DQo8aGVhZD4NCjxtZXRhIGh0dHAtZXF1aXY9IkNvbnRlbnQtVHlwZSIg
-Y29udGVudD0idGV4dC9odG1sOyBjaGFyc2V0PXV0Zi04Ij4NCjxtZXRhIG5hbWU9IkdlbmVyYXRv
-ciIgY29udGVudD0iTWljcm9zb2Z0IFdvcmQgMTUgKGZpbHRlcmVkIG1lZGl1bSkiPg0KPCEtLVtp
-ZiAhbXNvXT48c3R5bGU+dlw6KiB7YmVoYXZpb3I6dXJsKCNkZWZhdWx0I1ZNTCk7fQ0Kb1w6KiB7
-YmVoYXZpb3I6dXJsKCNkZWZhdWx0I1ZNTCk7fQ0Kd1w6KiB7YmVoYXZpb3I6dXJsKCNkZWZhdWx0
-I1ZNTCk7fQ0KLnNoYXBlIHtiZWhhdmlvcjp1cmwoI2RlZmF1bHQjVk1MKTt9DQo8L3N0eWxlPjwh
-W2VuZGlmXS0tPjxzdHlsZT48IS0tDQovKiBGb250IERlZmluaXRpb25zICovDQpAZm9udC1mYWNl
-DQoJe2ZvbnQtZmFtaWx5OiJDYW1icmlhIE1hdGgiOw0KCXBhbm9zZS0xOjIgNCA1IDMgNSA0IDYg
-MyAyIDQ7fQ0KQGZvbnQtZmFjZQ0KCXtmb250LWZhbWlseTpDYWxpYnJpOw0KCXBhbm9zZS0xOjIg
-MTUgNSAyIDIgMiA0IDMgMiA0O30NCi8qIFN0eWxlIERlZmluaXRpb25zICovDQpwLk1zb05vcm1h
-bCwgbGkuTXNvTm9ybWFsLCBkaXYuTXNvTm9ybWFsDQoJe21hcmdpbjowaW47DQoJbWFyZ2luLWJv
-dHRvbTouMDAwMXB0Ow0KCWZvbnQtc2l6ZToxMi4wcHQ7DQoJZm9udC1mYW1pbHk6IlRpbWVzIE5l
-dyBSb21hbiIsc2VyaWY7fQ0KYTpsaW5rLCBzcGFuLk1zb0h5cGVybGluaw0KCXttc28tc3R5bGUt
-cHJpb3JpdHk6OTk7DQoJY29sb3I6Ymx1ZTsNCgl0ZXh0LWRlY29yYXRpb246dW5kZXJsaW5lO30N
-CmE6dmlzaXRlZCwgc3Bhbi5Nc29IeXBlcmxpbmtGb2xsb3dlZA0KCXttc28tc3R5bGUtcHJpb3Jp
-dHk6OTk7DQoJY29sb3I6cHVycGxlOw0KCXRleHQtZGVjb3JhdGlvbjp1bmRlcmxpbmU7fQ0Kc3Bh
-bi5pbQ0KCXttc28tc3R5bGUtbmFtZTppbTt9DQpzcGFuLkVtYWlsU3R5bGUxOA0KCXttc28tc3R5
-bGUtdHlwZTpwZXJzb25hbDsNCglmb250LWZhbWlseToiQ2FsaWJyaSIsc2Fucy1zZXJpZjsNCglj
-b2xvcjojMUY0OTdEO30NCnNwYW4uRW1haWxTdHlsZTE5DQoJe21zby1zdHlsZS10eXBlOnBlcnNv
-bmFsLWNvbXBvc2U7DQoJZm9udC1mYW1pbHk6IkNhbGlicmkiLHNhbnMtc2VyaWY7DQoJY29sb3I6
-d2luZG93dGV4dDt9DQouTXNvQ2hwRGVmYXVsdA0KCXttc28tc3R5bGUtdHlwZTpleHBvcnQtb25s
-eTsNCglmb250LWZhbWlseToiQ2FsaWJyaSIsc2Fucy1zZXJpZjt9DQpAcGFnZSBXb3JkU2VjdGlv
-bjENCgl7c2l6ZTo4LjVpbiAxMS4waW47DQoJbWFyZ2luOjEuMGluIDEuMGluIDEuMGluIDEuMGlu
-O30NCmRpdi5Xb3JkU2VjdGlvbjENCgl7cGFnZTpXb3JkU2VjdGlvbjE7fQ0KLS0+PC9zdHlsZT48
-IS0tW2lmIGd0ZSBtc28gOV0+PHhtbD4NCjxvOnNoYXBlZGVmYXVsdHMgdjpleHQ9ImVkaXQiIHNw
-aWRtYXg9IjEwMjYiIC8+DQo8L3htbD48IVtlbmRpZl0tLT48IS0tW2lmIGd0ZSBtc28gOV0+PHht
-bD4NCjxvOnNoYXBlbGF5b3V0IHY6ZXh0PSJlZGl0Ij4NCjxvOmlkbWFwIHY6ZXh0PSJlZGl0IiBk
-YXRhPSIxIiAvPg0KPC9vOnNoYXBlbGF5b3V0PjwveG1sPjwhW2VuZGlmXS0tPg0KPC9oZWFkPg0K
-PGJvZHkgbGFuZz0iRU4tVVMiIGxpbms9ImJsdWUiIHZsaW5rPSJwdXJwbGUiPg0KPGRpdiBjbGFz
-cz0iV29yZFNlY3Rpb24xIj4NCjxwIGNsYXNzPSJNc29Ob3JtYWwiPjxzcGFuIHN0eWxlPSJmb250
-LXNpemU6MTEuMHB0O2ZvbnQtZmFtaWx5OiZxdW90O0NhbGlicmkmcXVvdDssc2Fucy1zZXJpZjtj
-b2xvcjojMUY0OTdEIj5IaSw8bzpwPjwvbzpwPjwvc3Bhbj48L3A+DQo8cCBjbGFzcz0iTXNvTm9y
-bWFsIj48c3BhbiBzdHlsZT0iZm9udC1zaXplOjExLjBwdDtmb250LWZhbWlseTomcXVvdDtDYWxp
-YnJpJnF1b3Q7LHNhbnMtc2VyaWY7Y29sb3I6IzFGNDk3RCI+PG86cD4mbmJzcDs8L286cD48L3Nw
-YW4+PC9wPg0KPHAgY2xhc3M9Ik1zb05vcm1hbCI+PHNwYW4gc3R5bGU9ImZvbnQtc2l6ZToxMS4w
-cHQ7Zm9udC1mYW1pbHk6JnF1b3Q7Q2FsaWJyaSZxdW90OyxzYW5zLXNlcmlmO2NvbG9yOiMxRjQ5
-N0QiPkxldCBtZSB0cnkgdG8gY29sbGVjdCBzb21lIGxvZ3Mg4oCTIHRoZSBpc3N1ZSBpcyB0aGF0
-IEnigJltIHVzaW5nIE5TU00g4oCmIHNvIGl0IHJlc3RhcnRzIG9wZW52cG4gb24gYSBjcmFzaCwg
-YW5kIHdpcGVzIG91dCB0aGUgbG9nIChyZXNldHMpLiBGWUksIGhlcmUgaXMgd2hhdCBJIHNlZQ0K
-IGZyb20gdGhlIG1hbmFnZW1lbnQgaW50ZXJmYWNlIChhcyB0aGlzIGlzIHdoYXQgbXkgYXBwIGlz
-IHVzaW5nKSDigJMgZmlyc3QgbGluZSBpcyBmcm9tIHRoZSBtYW5hZ2VtZW50IGludGVyZmFjZSAo
-c2Vjb25kIG9uZSBmcm9tIG15IGFwcCksPG86cD48L286cD48L3NwYW4+PC9wPg0KPHAgY2xhc3M9
-Ik1zb05vcm1hbCIgc3R5bGU9Im1hcmdpbi1sZWZ0Oi41aW4iPjxzcGFuIHN0eWxlPSJmb250LXNp
-emU6MTEuMHB0O2ZvbnQtZmFtaWx5OiZxdW90O0NhbGlicmkmcXVvdDssc2Fucy1zZXJpZiI+WyZu
-YnNwOyAzNDRdIE1hbmdlbWVudCBGQVRBTCBNZXNzYWdlIFJlY2VpdmVkOiAmZ3Q7RkFUQUw6VFVO
-L1RBUCBJL08gb3BlcmF0aW9uIGFib3J0ZWQsIGV4aXRpbmc8bzpwPjwvbzpwPjwvc3Bhbj48L3A+
-DQo8cCBjbGFzcz0iTXNvTm9ybWFsIiBzdHlsZT0ibWFyZ2luLWxlZnQ6LjVpbiI+PHNwYW4gc3R5
-bGU9ImZvbnQtc2l6ZToxMS4wcHQ7Zm9udC1mYW1pbHk6JnF1b3Q7Q2FsaWJyaSZxdW90OyxzYW5z
-LXNlcmlmIj5bJm5ic3A7IDM0NV0gRVJST1I6IE9wZW5WUE4gRXhpdGluZywgRXZlbnQgUmFpc2Vk
-IHRvIGFsbG93IFJlY29ubmVjdGlvbiB0byBNYW5hZ2VtZW50IEludGVyZmFjZSE8bzpwPjwvbzpw
-Pjwvc3Bhbj48L3A+DQo8cCBjbGFzcz0iTXNvTm9ybWFsIj48c3BhbiBzdHlsZT0iZm9udC1zaXpl
-OjExLjBwdDtmb250LWZhbWlseTomcXVvdDtDYWxpYnJpJnF1b3Q7LHNhbnMtc2VyaWY7Y29sb3I6
-IzFGNDk3RCI+PG86cD4mbmJzcDs8L286cD48L3NwYW4+PC9wPg0KPHAgY2xhc3M9Ik1zb05vcm1h
-bCI+PHNwYW4gc3R5bGU9ImZvbnQtc2l6ZToxMS4wcHQ7Zm9udC1mYW1pbHk6JnF1b3Q7Q2FsaWJy
-aSZxdW90OyxzYW5zLXNlcmlmO2NvbG9yOiMxRjQ5N0QiPlNvIGl0IGlzIGV4aXRpbmcsIGp1c3Qg
-bmVlZCBtb3JlIGRldGFpbHMgaWYgcG9zc2libGUuPG86cD48L286cD48L3NwYW4+PC9wPg0KPHAg
-Y2xhc3M9Ik1zb05vcm1hbCI+PHNwYW4gc3R5bGU9ImZvbnQtc2l6ZToxMS4wcHQ7Zm9udC1mYW1p
-bHk6JnF1b3Q7Q2FsaWJyaSZxdW90OyxzYW5zLXNlcmlmO2NvbG9yOiMxRjQ5N0QiPjxvOnA+Jm5i
-c3A7PC9vOnA+PC9zcGFuPjwvcD4NCjxwIGNsYXNzPSJNc29Ob3JtYWwiPjxzcGFuIHN0eWxlPSJm
-b250LXNpemU6MTEuMHB0O2ZvbnQtZmFtaWx5OiZxdW90O0NhbGlicmkmcXVvdDssc2Fucy1zZXJp
-Zjtjb2xvcjojMUY0OTdEIj5BbmQgdG8gY2xhcmlmeSBiZWxvdyDigKYgREhDUCBpcyBmb3IgdGhl
-IElQIGFkZHJlc3MgZnJvbSBteSBzZXJ2ZXIsIGluc2lkZSB0aGUgc3VibmV0IChzbyBJ4oCZbSBv
-biB0aGUgc2FtZSBzdWJuZXQgYXMgbXkgbmV0d29yaykuIE1ha2Ugc2Vuc2U/IFRoZSBleHRlcm5h
-bCBpbnRlcmZhY2UNCiBpcyBmaXhlZCAoSVAgYW5kIHBvcnQpLjxvOnA+PC9vOnA+PC9zcGFuPjwv
-cD4NCjxwIGNsYXNzPSJNc29Ob3JtYWwiPjxzcGFuIHN0eWxlPSJmb250LXNpemU6MTEuMHB0O2Zv
-bnQtZmFtaWx5OiZxdW90O0NhbGlicmkmcXVvdDssc2Fucy1zZXJpZjtjb2xvcjojMUY0OTdEIj48
-bzpwPiZuYnNwOzwvbzpwPjwvc3Bhbj48L3A+DQo8cCBjbGFzcz0iTXNvTm9ybWFsIj48c3BhbiBz
-dHlsZT0iZm9udC1zaXplOjExLjBwdDtmb250LWZhbWlseTomcXVvdDtDYWxpYnJpJnF1b3Q7LHNh
-bnMtc2VyaWY7Y29sb3I6IzFGNDk3RCI+VGhhbmtzLDxvOnA+PC9vOnA+PC9zcGFuPjwvcD4NCjxw
-IGNsYXNzPSJNc29Ob3JtYWwiPjxzcGFuIHN0eWxlPSJmb250LXNpemU6MTEuMHB0O2ZvbnQtZmFt
-aWx5OiZxdW90O0NhbGlicmkmcXVvdDssc2Fucy1zZXJpZjtjb2xvcjojMUY0OTdEIj7igKYgUnVz
-c2VsbDxvOnA+PC9vOnA+PC9zcGFuPjwvcD4NCjxwIGNsYXNzPSJNc29Ob3JtYWwiPjxzcGFuIHN0
-eWxlPSJmb250LXNpemU6MTEuMHB0O2ZvbnQtZmFtaWx5OiZxdW90O0NhbGlicmkmcXVvdDssc2Fu
-cy1zZXJpZjtjb2xvcjojMUY0OTdEIj48bzpwPiZuYnNwOzwvbzpwPjwvc3Bhbj48L3A+DQo8cCBj
-bGFzcz0iTXNvTm9ybWFsIj48c3BhbiBzdHlsZT0iZm9udC1zaXplOjExLjBwdDtmb250LWZhbWls
-eTomcXVvdDtDYWxpYnJpJnF1b3Q7LHNhbnMtc2VyaWY7Y29sb3I6IzFGNDk3RCI+PG86cD4mbmJz
-cDs8L286cD48L3NwYW4+PC9wPg0KPHAgY2xhc3M9Ik1zb05vcm1hbCIgc3R5bGU9Im1hcmdpbi1s
-ZWZ0Oi41aW4iPjxiPjxzcGFuIHN0eWxlPSJmb250LXNpemU6MTEuMHB0O2ZvbnQtZmFtaWx5OiZx
-dW90O0NhbGlicmkmcXVvdDssc2Fucy1zZXJpZiI+RnJvbTo8L3NwYW4+PC9iPjxzcGFuIHN0eWxl
-PSJmb250LXNpemU6MTEuMHB0O2ZvbnQtZmFtaWx5OiZxdW90O0NhbGlicmkmcXVvdDssc2Fucy1z
-ZXJpZiI+IFNlbHZhIE5haXIgW21haWx0bzpzZWx2YS5uYWlyQC4uLjI3Ny4uLl0NCjxicj4NCjxi
-PlNlbnQ6PC9iPiBUaHVyc2RheSwgT2N0b2JlciAyMiwgMjAxNSAzOjUyIFBNPGJyPg0KPGI+VG86
-PC9iPiBNb3JyaXMsIFJ1c3NlbGwgJmx0O3Jtb3JyaXNALi4uMTMxNS4uLiZndDs8YnI+DQo8Yj5D
-Yzo8L2I+IG9wZW52cG4tZGV2ZWxAbGlzdHMuc291cmNlZm9yZ2UubmV0PGJyPg0KPGI+U3ViamVj
-dDo8L2I+IFJlOiBbT3BlbnZwbi1kZXZlbF0gQ3JlYXRpbmcgYSBXaW5kb3dzIHRlYW0gZm9yIE9w
-ZW5WUE4/PG86cD48L286cD48L3NwYW4+PC9wPg0KPHAgY2xhc3M9Ik1zb05vcm1hbCIgc3R5bGU9
-Im1hcmdpbi1sZWZ0Oi41aW4iPjxvOnA+Jm5ic3A7PC9vOnA+PC9wPg0KPGRpdj4NCjxkaXY+DQo8
-cCBjbGFzcz0iTXNvTm9ybWFsIiBzdHlsZT0ibWFyZ2luLWxlZnQ6LjVpbiI+SGksPG86cD48L286
-cD48L3A+DQo8L2Rpdj4NCjxkaXY+DQo8cCBjbGFzcz0iTXNvTm9ybWFsIiBzdHlsZT0ibWFyZ2lu
-LWxlZnQ6LjVpbiI+PG86cD4mbmJzcDs8L286cD48L3A+DQo8ZGl2Pg0KPHAgY2xhc3M9Ik1zb05v
-cm1hbCIgc3R5bGU9Im1hcmdpbi1sZWZ0Oi41aW4iPk9uIFRodSwgT2N0IDIyLCAyMDE1IGF0IDM6
-NTggUE0sIE1vcnJpcywgUnVzc2VsbCAmbHQ7PGEgaHJlZj0ibWFpbHRvOnJtb3JyaXNALi4uMTMx
-NS4uLiIgdGFyZ2V0PSJfYmxhbmsiPnJtb3JyaXNALi4uMTMxNS4uLjwvYT4mZ3Q7IHdyb3RlOjxv
-OnA+PC9vOnA+PC9wPg0KPGJsb2NrcXVvdGUgc3R5bGU9ImJvcmRlcjpub25lO2JvcmRlci1sZWZ0
-OnNvbGlkICNDQ0NDQ0MgMS4wcHQ7cGFkZGluZzowaW4gMGluIDBpbiA2LjBwdDttYXJnaW4tbGVm
-dDo0LjhwdDttYXJnaW4tcmlnaHQ6MGluIj4NCjxkaXYgaWQ9Ijo0ejYiPg0KPHAgY2xhc3M9Ik1z
-b05vcm1hbCIgc3R5bGU9Im1hcmdpbi1sZWZ0Oi41aW4iPkhpLDxicj4NCjxicj4NCkp1c3QgY2hl
-Y2tlZCAtIHllcCwgOS4wLjAuMjEuIEl0IHNlZW1zIHRvIGJlIGZyb20gMjAxNCB0aG91Z2g/PGJy
-Pg0KPGJyPg0KQW5kIHRvIHRoZSBvdGhlciBlbWFpbCBJIGp1c3Qgc2VudCAodGhhdCBzZWVtZWQg
-dG8gYm91bmNlPyksPG86cD48L286cD48L3A+DQo8L2Rpdj4NCjwvYmxvY2txdW90ZT4NCjxkaXY+
-DQo8cCBjbGFzcz0iTXNvTm9ybWFsIiBzdHlsZT0ibWFyZ2luLWxlZnQ6LjVpbiI+PG86cD4mbmJz
-cDs8L286cD48L3A+DQo8L2Rpdj4NCjxkaXY+DQo8cCBjbGFzcz0iTXNvTm9ybWFsIiBzdHlsZT0i
-bWFyZ2luLWxlZnQ6LjVpbiI+UHJvYmFibHkgbXkgbWlzdGFrZSwgaW4gb25lIG9mIHRoZSBwb3N0
-cyBJIGNoYW5nZWQgdGhlIGFkZHJlc3MgZnJvbSBkZXZlbCB0byB1c2VycyB1bmludGVudGlvbmFs
-bHkuLjxvOnA+PC9vOnA+PC9wPg0KPC9kaXY+DQo8ZGl2Pg0KPHAgY2xhc3M9Ik1zb05vcm1hbCIg
-c3R5bGU9Im1hcmdpbi1sZWZ0Oi41aW4iPiZuYnNwOzxvOnA+PC9vOnA+PC9wPg0KPC9kaXY+DQo8
-YmxvY2txdW90ZSBzdHlsZT0iYm9yZGVyOm5vbmU7Ym9yZGVyLWxlZnQ6c29saWQgI0NDQ0NDQyAx
-LjBwdDtwYWRkaW5nOjBpbiAwaW4gMGluIDYuMHB0O21hcmdpbi1sZWZ0OjQuOHB0O21hcmdpbi1y
-aWdodDowaW4iPg0KPGRpdiBpZD0iOjR6NiI+DQo8cCBjbGFzcz0iTXNvTm9ybWFsIiBzdHlsZT0i
-bWFyZ2luLWxlZnQ6LjVpbiI+PGJyPg0KWWVzLCB0aGlzIGlzIGEgV2luZG93cyA3IG1hY2hpbmUu
-IEkgdGhpbmsgdGhlIGlzc3VlIGlzIHN0YW5kYnkgLyBuZXR3b3JrIGNoYW5nZSByZWxhdGVkLiBJ
-biBwYXJ0aWN1bGFyLCBzdGFuZGJ5IC8gcmVzdW1lIHNlZW1zIHRvIGNhdXNlIGEgbG90IG9mIGdy
-aWVmLiBJIGFsc28gcnVuIG9uIGEgZGVza3RvcCwgbm90IG5lYXIgYXMgbWFueSAob3IgcmVhbGx5
-IGFueSkgaXNzdWVzLiBCdXQgc3RhbmRieSAvIHJlc3VtZSAtJmd0OyBjcmFzaCE8YnI+DQo8YnI+
-DQpGWUksIGp1c3QgaGFkIHRoaXMgZXhhY3QgaXNzdWUsIDEgbWludXRlIGFnby4gR290IGFuIE9w
-ZW5WUE4gY29ubmVjdGlvbiwgYnV0IG5vIElQIGFkZHJlc3MgKERIQ1ApLiBLaWxsZWQgb3BlbnZw
-biwgZGlzYWJsZSAvIGVuYWJsZSBUQVAsIHN0YXJ0IG9wZW52cG4gYW5kIHJlY29ubmVjdCAtJmd0
-OyBsaWZlIGlzIGdvb2QgYWdhaW4uIFByZXR0eSByZWxpYWJsZSB0byBtYWtlIHRoaXMgaGFwcGVu
-IOKApg0KPHNwYW4gc3R5bGU9ImZvbnQtZmFtaWx5OlN5bWJvbCI+TDwvc3Bhbj4uPG86cD48L286
-cD48L3A+DQo8ZGl2Pg0KPGRpdiBpZD0iOjVjdyI+DQo8cCBjbGFzcz0iTXNvTm9ybWFsIiBzdHls
-ZT0ibWFyZ2luLWxlZnQ6LjVpbiI+PGltZyBib3JkZXI9IjAiIGlkPSJfeDAwMDBfaTEwMjUiIHNy
-Yz0iLy9zc2wuZ3N0YXRpYy5jb20vdWkvdjEvaWNvbnMvbWFpbC9pbWFnZXMvY2xlYXJkb3QuZ2lm
-Ij48bzpwPjwvbzpwPjwvcD4NCjwvZGl2Pg0KPC9kaXY+DQo8ZGl2Pg0KPHAgY2xhc3M9Ik1zb05v
-cm1hbCIgc3R5bGU9Im1hcmdpbi1sZWZ0Oi41aW4iPjxvOnA+Jm5ic3A7PC9vOnA+PC9wPg0KPC9k
-aXY+DQo8L2Rpdj4NCjwvYmxvY2txdW90ZT4NCjxkaXY+DQo8cCBjbGFzcz0iTXNvTm9ybWFsIiBz
-dHlsZT0ibWFyZ2luLWxlZnQ6LjVpbiI+Jm5ic3A7PG86cD48L286cD48L3A+DQo8L2Rpdj4NCjxk
-aXY+DQo8ZGl2Pg0KPHAgY2xhc3M9Ik1zb05vcm1hbCIgc3R5bGU9Im1hcmdpbi1sZWZ0Oi41aW4i
-Pk91ciBob21lIGxhcHRvcCBnb2VzIGZyb20gc2xlZXAgdG8gcmVzdW1lIGFsbCB0aGUgdGltZSB3
-aXRob3V0IG1ham9yIGlzc3Vlcy4gQnV0IHdlIGFyZSBub3QgY29ubmVjdGluZyB0byBhbnkgcHVi
-bGljIHNlcnZlcnMgLS0gcHJpdmF0ZSBzZXJ2ZXJzIHRoYXQgcnVuIG9uIGEgZml4ZWQgSVAgYW5k
-IHBvcnQsIG5vIERIQ1AsIHNvIG1heSBiZSB0aGF0IGlzIG9uZSBkaWZmZXJlbmNlPyZuYnNwOzxv
-OnA+PC9vOnA+PC9wPg0KPC9kaXY+DQo8ZGl2Pg0KPHAgY2xhc3M9Ik1zb05vcm1hbCIgc3R5bGU9
-Im1hcmdpbi1sZWZ0Oi41aW4iPjxvOnA+Jm5ic3A7PC9vOnA+PC9wPg0KPC9kaXY+DQo8ZGl2Pg0K
-PHAgY2xhc3M9Ik1zb05vcm1hbCIgc3R5bGU9Im1hcmdpbi1sZWZ0Oi41aW4iPldlIGhhdmUgb25l
-IFdpbmRvd3MgNyBsYXB0b3AgaW4gYSByZWFsbHkgcmVhbGx5IHJlbW90ZSBsb2NhdGlvbiB0aGF0
-IGlzIHNldCB0byBzdGF5IGNvbm5lY3RlZCBhbGwgdGhlIHRpbWUuLiBUaGUgbG9jYWwgbmV0d29y
-ayBhdCB0aGF0IHNpdGUgY3Jhc2hlcyBhdCBsZWFzdCB0d2ljZSBhIGRheSBhbmQgc3RpbGwgdGhl
-IFZQTiBjb21lcyBiYWNrIGV2ZXJ5IHRpbWUgdGhlDQogbmV0d29yayBpcyBiYWNrLiBJdHMgc2V0
-IG5vdCB0byBzbGVlcCwgc28gbW9yZSBsaWtlIGEgZGVza3RvcCwgYnV0IGl0IGRvZXMgb2NjYXNp
-b25hbGx5IG1vdmUgZnJvbSBvbmUgc2l0ZSB0byBhbm90aGVyLiZuYnNwOyBDb25zaWRlcmluZyB0
-aGUgcmVtb3RlbmVzcyBvZiB0aGUgbG9jYXRpb24gYW5kIHRoZSBmbGFraW5lc3Mgb2YgdGhlIHJl
-bW90ZSBuZXR3b3JrIEkgaGF2ZSBiZWVuIG1vcmUgdGhhbiBpbXByZXNzZWQgYnkgdGhlIHdheSBv
-cGVudnBuIGhhcw0KIHNlcnZlZCB1cyBmb3IgbGFzdCAzIHllYXJzLiZuYnNwOzxvOnA+PC9vOnA+
-PC9wPg0KPC9kaXY+DQo8ZGl2Pg0KPHAgY2xhc3M9Ik1zb05vcm1hbCIgc3R5bGU9Im1hcmdpbi1s
-ZWZ0Oi41aW4iPjxvOnA+Jm5ic3A7PC9vOnA+PC9wPg0KPC9kaXY+DQo8ZGl2Pg0KPHAgY2xhc3M9
-Ik1zb05vcm1hbCIgc3R5bGU9Im1hcmdpbi1sZWZ0Oi41aW4iPkJ1dCByb2FtaW5nIGlzIHNvbWV0
-aGluZyBJIGhhdmVuJ3QgdGVzdGVkIG11Y2ggYXQgYWxsLiBXaGVuIHVzZXJzIHRyYXZlbCB0aGV5
-IGRvIGdldCBjb25uZWN0aXZpdHkgZnJvbSBob3RlbHMgZXRjLiwgc28gdGhhdCBraW5kIG9mICZx
-dW90O25ldHdvcmsgY2hhbmdlJnF1b3Q7IHdvcmtzIHdlbGwgdG9vLiZuYnNwOzxvOnA+PC9vOnA+
-PC9wPg0KPC9kaXY+DQo8L2Rpdj4NCjxkaXY+DQo8cCBjbGFzcz0iTXNvTm9ybWFsIiBzdHlsZT0i
-bWFyZ2luLWxlZnQ6LjVpbiI+PG86cD4mbmJzcDs8L286cD48L3A+DQo8L2Rpdj4NCjxibG9ja3F1
-b3RlIHN0eWxlPSJib3JkZXI6bm9uZTtib3JkZXItbGVmdDpzb2xpZCAjQ0NDQ0NDIDEuMHB0O3Bh
-ZGRpbmc6MGluIDBpbiAwaW4gNi4wcHQ7bWFyZ2luLWxlZnQ6NC44cHQ7bWFyZ2luLXJpZ2h0OjBp
-biI+DQo8ZGl2IGlkPSI6NHo2Ij4NCjxwIGNsYXNzPSJNc29Ob3JtYWwiIHN0eWxlPSJtYXJnaW4t
-bGVmdDouNWluIj48YnI+DQo8c3BhbiBjbGFzcz0iaW0iPlBlcmhhcHMgc29tZSBtb3JlIGRldGFp
-bGVkIGxvZ3MgdG8gZGVidWc/PC9zcGFuPjxvOnA+PC9vOnA+PC9wPg0KPC9kaXY+DQo8L2Jsb2Nr
-cXVvdGU+DQo8ZGl2Pg0KPHAgY2xhc3M9Ik1zb05vcm1hbCIgc3R5bGU9Im1hcmdpbi1sZWZ0Oi41
-aW4iPjxvOnA+Jm5ic3A7PC9vOnA+PC9wPg0KPC9kaXY+DQo8ZGl2Pg0KPHAgY2xhc3M9Ik1zb05v
-cm1hbCIgc3R5bGU9Im1hcmdpbi1sZWZ0Oi41aW4iPlN1cmUsIHdvdWxkIGhlbHAuPG86cD48L286
-cD48L3A+DQo8L2Rpdj4NCjxkaXY+DQo8cCBjbGFzcz0iTXNvTm9ybWFsIiBzdHlsZT0ibWFyZ2lu
-LWxlZnQ6LjVpbiI+PG86cD4mbmJzcDs8L286cD48L3A+DQo8L2Rpdj4NCjxkaXY+DQo8cCBjbGFz
-cz0iTXNvTm9ybWFsIiBzdHlsZT0ibWFyZ2luLWxlZnQ6LjVpbiI+UmVnYXJkcyw8bzpwPjwvbzpw
-PjwvcD4NCjwvZGl2Pg0KPGRpdj4NCjxwIGNsYXNzPSJNc29Ob3JtYWwiIHN0eWxlPSJtYXJnaW4t
-bGVmdDouNWluIj48bzpwPiZuYnNwOzwvbzpwPjwvcD4NCjwvZGl2Pg0KPGRpdj4NCjxwIGNsYXNz
-PSJNc29Ob3JtYWwiIHN0eWxlPSJtYXJnaW4tbGVmdDouNWluIj5TZWx2YTxvOnA+PC9vOnA+PC9w
-Pg0KPC9kaXY+DQo8L2Rpdj4NCjxwIGNsYXNzPSJNc29Ob3JtYWwiIHN0eWxlPSJtc28tbWFyZ2lu
-LXRvcC1hbHQ6MGluO21hcmdpbi1yaWdodDowaW47bWFyZ2luLWJvdHRvbToxMi4wcHQ7bWFyZ2lu
-LWxlZnQ6LjVpbiI+DQo8bzpwPiZuYnNwOzwvbzpwPjwvcD4NCjwvZGl2Pg0KPC9kaXY+DQo8L2Rp
-dj4NCjwvYm9keT4NCjwvaHRtbD4NCg==
+Please consider starting a new thread on this TAP I/O error.
 
---_000_SN1PR08MB139154DAEBBDDF72D187B1E8B9260SN1PR08MB1391namp_--
+On Fri, Oct 23, 2015 at 8:46 AM, Morris, Russell <rmorris@...1315...>
+wrote:
+
+> Hi,
+>
+>
+>
+> Let me try to collect some logs =E2=80=93 the issue is that I=E2=80=99m u=
+sing NSSM =E2=80=A6 so it
+> restarts openvpn on a crash, and wipes out the log (resets).
+>
+
+Use log-append
+
+
+> FYI, here is what I see from the management interface (as this is what my
+> app is using) =E2=80=93 first line is from the management interface (seco=
+nd one
+> from my app),
+>
+> [  344] Mangement FATAL Message Received: >FATAL:TUN/TAP I/O operation
+> aborted, exiting
+>
+[  345] ERROR: OpenVPN Exiting, Event Raised to allow Reconnection to
+> Management Interface!
+>
+
+>
+> So it is exiting, just need more details if possible.
+>
+>
+>
+> And to clarify below =E2=80=A6 DHCP is for the IP address from my server,=
+ inside
+> the subnet (so I=E2=80=99m on the same subnet as my network). Make sense?=
+ The
+> external interface is fixed (IP and port).
+>
+
+You mean using the bridge mode? We never use bridging, so no idea how well
+that works..
+
+If you start a new thread please post the config and more error log.
+Including the users-list may be a good idea too as there may be other
+Windows users who have seen such behaviour.
+
+Regards,
+
+Selva
+
+--047d7bb04a623ed5e80522c92e7f
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div class=3D"gmail_extra">Hi,</div><div class=3D"gmail_ex=
+tra"><br></div><div class=3D"gmail_extra">This may be getting way too off-t=
+opic for this thread...</div><div class=3D"gmail_extra"><br></div><div clas=
+s=3D"gmail_extra">Please consider starting a new thread on this TAP I/O err=
+or.<br></div><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">On F=
+ri, Oct 23, 2015 at 8:46 AM, Morris, Russell <span dir=3D"ltr">&lt;<a href=
+=3D"mailto:rmorris@...1315..." target=3D"_blank">rmorris@...1315...</a>&gt;=
+</span> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .=
+8ex;border-left:1px #ccc solid;padding-left:1ex"><div class=3D"adM">
+
+
+
+
+
+</div><div lang=3D"EN-US" link=3D"blue" vlink=3D"purple"><div class=3D"adM">
+</div><div><div class=3D"adM">
+</div><p class=3D"MsoNormal"><span style=3D"font-size:11.0pt;font-family:&q=
+uot;Calibri&quot;,sans-serif;color:#1f497d">Hi,<u></u><u></u></span></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:11.0pt;font-family:&quot;Ca=
+libri&quot;,sans-serif;color:#1f497d"><u></u>=C2=A0<u></u></span></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:11.0pt;font-family:&quot;Ca=
+libri&quot;,sans-serif;color:#1f497d">Let me try to collect some logs =E2=
+=80=93 the issue is that I=E2=80=99m using NSSM =E2=80=A6 so it restarts op=
+envpn on a crash, and wipes out the log (resets). </span></p></div></div></=
+blockquote><div><br></div><div>Use log-append</div><div>=C2=A0</div><blockq=
+uote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc =
+solid;padding-left:1ex"><div lang=3D"EN-US" link=3D"blue" vlink=3D"purple">=
+<div><p class=3D"MsoNormal"><span style=3D"font-size:11.0pt;font-family:&qu=
+ot;Calibri&quot;,sans-serif;color:#1f497d">FYI, here is what I see
+ from the management interface (as this is what my app is using) =E2=80=93 =
+first line is from the management interface (second one from my app),<u></u=
+><u></u></span></p>
+<p class=3D"MsoNormal" style=3D"margin-left:.5in"><span style=3D"font-size:=
+11.0pt;font-family:&quot;Calibri&quot;,sans-serif">[=C2=A0 344] Mangement F=
+ATAL Message Received: &gt;FATAL:TUN/TAP I/O operation aborted, exiting</sp=
+an>=C2=A0</p></div></div></blockquote><blockquote class=3D"gmail_quote" sty=
+le=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex"><div l=
+ang=3D"EN-US" link=3D"blue" vlink=3D"purple"><div><p class=3D"MsoNormal" st=
+yle=3D"margin-left:.5in"><span style=3D"font-size:11.0pt;font-family:&quot;=
+Calibri&quot;,sans-serif"><u></u><u></u></span></p>
+<p class=3D"MsoNormal" style=3D"margin-left:.5in"><span style=3D"font-size:=
+11.0pt;font-family:&quot;Calibri&quot;,sans-serif">[=C2=A0 345] ERROR: Open=
+VPN Exiting, Event Raised to allow Reconnection to Management Interface!</s=
+pan>=C2=A0</p></div></div></blockquote><blockquote class=3D"gmail_quote" st=
+yle=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex"><div =
+lang=3D"EN-US" link=3D"blue" vlink=3D"purple"><div><p class=3D"MsoNormal" s=
+tyle=3D"margin-left:.5in"><span style=3D"font-size:11.0pt;font-family:&quot=
+;Calibri&quot;,sans-serif"><u></u><u></u></span></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:11.0pt;font-family:&quot;Ca=
+libri&quot;,sans-serif;color:#1f497d"><u></u>=C2=A0<u></u></span></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:11.0pt;font-family:&quot;Ca=
+libri&quot;,sans-serif;color:#1f497d">So it is exiting, just need more deta=
+ils if possible.<u></u><u></u></span></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:11.0pt;font-family:&quot;Ca=
+libri&quot;,sans-serif;color:#1f497d"><u></u>=C2=A0<u></u></span></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:11.0pt;font-family:&quot;Ca=
+libri&quot;,sans-serif;color:#1f497d">And to clarify below =E2=80=A6 DHCP i=
+s for the IP address from my server, inside the subnet (so I=E2=80=99m on t=
+he same subnet as my network). Make sense? The external interface
+ is fixed (IP and port).</span></p></div></div></blockquote></div><br>You m=
+ean using the bridge mode? We never use bridging, so no idea how well that =
+works..</div><div class=3D"gmail_extra"><br></div><div class=3D"gmail_extra=
+">If you start a new thread please post the config and more error log. Incl=
+uding the users-list may be a good idea too as there may be other Windows u=
+sers who have seen such behaviour.</div><div class=3D"gmail_extra"><br></di=
+v><div class=3D"gmail_extra">Regards,</div><div class=3D"gmail_extra"><br><=
+/div><div class=3D"gmail_extra">Selva</div><div class=3D"gmail_extra"><br><=
+/div><div class=3D"gmail_extra"><br></div><div class=3D"gmail_extra"><br></=
+div></div>
+
+--047d7bb04a623ed5e80522c92e7f--
 
