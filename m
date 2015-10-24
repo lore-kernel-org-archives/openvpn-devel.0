@@ -1,11 +1,24 @@
+From: "Morris, Russell" <rmorris@...1315...>
+Date: Sat, 24 Oct 2015 11:48:42 +0000
+Message-ID: <SN1PR08MB139114E171F30536A281A9CAB9250@...2065...>
 References: <56211F0D.2010806@...515...> <2421664.qQJpUDo69u@...1526...>
 	<56261F0D.9020208@...515...> <1921973.yRGlOPzy2x@...2001...>
 	<20151022075000.GD22054@...1296...>
-From: Jason Haar <Jason_Haar@...1490...>
-Message-ID: <562B67B2.30808@...1490...>
-Date: Sun, 25 Oct 2015 00:12:50 +1300
+	<SN1PR08MB1391D82901BB0F9F4C8CB5E9B9270@...2065...>
+	<20151022173701.GP22054@...1296...>
+	<SN1PR08MB13915E4AEE4D1046CE7953AFB9270@...2065...>
+	<20151022182439.GS22054@...1296...>
+	<SN1PR08MB13916305A3CB7B167CC0B1A7B9270@...2065...>
+	<56293AC9.7010702@...1147...>
+	<SN1PR08MB1391BB977BF308697478D928B9270@...2065...>
+	<CAKuzo_iV6NQJSGWORxLTY4+YLLE8u+ccAHTfVrpJtX0=TVZnWQ@...278...>
+	<SN1PR08MB139154DAEBBDDF72D187B1E8B9260@...2065...>
+	<CAKuzo_jigkF3R8XcxDaHM6GuKvr=M7y41RVpH8w0XmcdzF2xzg@...278...>
+	<SN1PR08MB139196F7C77EBE15084FAD92B9260@...2065...>
+	<a6c10091eef62436a094ccb970fcbbf4@...2082...>
+In-Reply-To: <a6c10091eef62436a094ccb970fcbbf4@...2082...>
+Content-Language: en-US
 MIME-Version: 1.0
-In-Reply-To: <20151022075000.GD22054@...1296...>
 Subject: Re: [Openvpn-devel] Creating a Windows team for OpenVPN?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -15,28 +28,56 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+To: gert <gert@...2081...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-On 22/10/15 20:50, Gert Doering wrote:
-> I've heard people ask for "we need the VPN to be up before user login so
-> windows domain login works!" - so the GUI won't be around yet.
->
-> Now, not being a windows person and not running this domain stuff I'm=20
-> not sure if there are other ways to achieve that - but this is what has
-> been told to me...
-I can confirm that is precisely the way we use openvpn. We use it as an
-"always on vpn" and so it needs to be running via a service at boot
-time. nssm works well for us in that regard
-
---=20
-Cheers
-
-Jason Haar
-Corporate Information Security Manager, Trimble Navigation Ltd.
-Phone: +1 408 481 8171
-PGP Fingerprint: 7A2E 0407 C9A6 CAF6 2B9F 8422 C063 5EBB FE1D 66D1
-
-
-
+SGksDQoNCkEgZmV3IHRob3VnaHRzLCBiZWxvdy4NCg0KVGhhbmtzIQ0KDQouLi4gUnVzc2VsbA0K
+DQoNCi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQpGcm9tOiBnZXJ0IFttYWlsdG86Z2VydEAu
+Li4yMDgxLi4uXSANClNlbnQ6IFNhdHVyZGF5LCBPY3RvYmVyIDI0LCAyMDE1IDI6MjAgQU0NClRv
+OiBNb3JyaXMsIFJ1c3NlbGwgPHJtb3JyaXNALi4uMTMxNS4uLj4NCkNjOiBTZWx2YSBOYWlyIDxz
+ZWx2YS5uYWlyQC4uLjI3Ny4uLj47IG9wZW52cG4tZGV2ZWxAbGlzdHMuc291cmNlZm9yZ2UubmV0
+DQpTdWJqZWN0OiBSZTogW09wZW52cG4tZGV2ZWxdIENyZWF0aW5nIGEgV2luZG93cyB0ZWFtIGZv
+ciBPcGVuVlBOPw0KDQpIaSwNCk9uIDIwMTUtMTAtMjMgMjI6MjIsIE1vcnJpcywgUnVzc2VsbCB3
+cm90ZToNCj4gSnVzdCBhIGJpdCBtb3JlIG9uIHRoaXMuIEkgaW5pdGlhdGVkIGFuIE9wZW5WUE4g
+Y29ubmVjdGlvbiDigJMgaXQgDQo+IGNvbm5lY3RzLCBzYXlzIGFsbCBpcyBoYXBweSwgZXhjZXB0
+IHRoZSBvdXRwdXQgZnJvbSB0aGUgbWFuYWdlbWVudCANCj4gaW50ZXJmYWNlIGlzLA0KPiANCj4g
+w5ggU1RBVEU6MTQ0NTYwNTUyMSxDT05ORUNURUQsRVJST1IsLDEwLjEzOC4xNS4xMA0KDQpJJ2Qg
+bG92ZSB0byBzZWUgdGhlIG9wZW52cG4gbG9nIG9uIHRoaXMuICBUaGlzIG1lc3NhZ2UgaW4gaXRz
+ZWxmIGlzIG5vdCBlbm91Z2ggdG8gZmlndXJlIG91dCB3aGF0IGl0IGRpZCBub3QgbGlrZS4NCltS
+LiBNb3JyaXNdIFllcCwgdHJ5aW5nIHRvIGNhcHR1cmUgdGhpcy4gTG9ncyB3ZXJlIGJlaW5nIHJl
+c2V0LCB3aWxsIGNhcHR1cmUgdGhpcyBhbmQgcHJvdmlkZSBtb3JlIGRldGFpbHMuDQoNCj4gQW5k
+IHRoZSBUQVAgSVAgaXMgZ2FyYmFnZSAoMTY5LngueC54KS4gU28gSSByZXNldCB0aGUgVEFQIGFk
+YXB0ZXIgDQo+IChkaXNhYmxlKSwNCg0KV2VsbCwgMTY5LjI1NC54LnggaXMgIkkgd2FudCB0byBk
+byBESENQLCBidXQgbm9ib2R5IGlzIHRhbGtpbmcgdG8gbWUiIC0gc28gdGhpcyBpcyB0byBiZSBl
+eHBlY3RlZCBpZiBPcGVuVlBOIGlzIHVuaGFwcHkuDQpbUi4gTW9ycmlzXSBBZ3JlZWQhIEp1c3Qg
+bGV0dGluZyB5b3Uga25vdyB0aGUgc3RlcHMgSSBzZWUuDQoNCj4gw5ggRkFUQUw6VFVOL1RBUCBJ
+L08gb3BlcmF0aW9uIGFib3J0ZWQsIGV4aXRpbmcNCj4gDQo+IE9wZW5WUE4gZXhpdHMgd2hlbiBU
+QVAgaXMgZGlzYWJsZWQgKHNob3VsZCBpdD8pLg0KDQpXZWxsLiAgRG9uJ3QgZG8gdGhpcyA6LSkg
+LSByZW1vdmluZyBhbiBhY3RpdmUgaW50ZXJmYWNlIGJlaGluZCB0aGUgYmFjayBvZiBhIHByb2dy
+YW0gdGFsa2luZyB0byBpdCBpcyBub3QgYSBub3JtYWwgc2l0dWF0aW9uLCBhbmQgYXMgc3VjaCwg
+T3BlblZQTiBkb2VzIHRoZSBvbmx5IHRoaW5nIGl0IGNhbjogdGVybWluYXRlLiAgVGhlcmUgaXMg
+bm8gd2F5IHRvIGdvIG9uIGlmIGJhc2ljIGFzc3VtcHRpb25zICgiSSBjYW4gdGFsayB0byBteSB0
+YXAgYWRhcHRlciIpIGFyZSBubyBsb25nZXIgdmFsaWQuDQpbUi4gTW9ycmlzXSBBbHNvIGFncmVl
+ZCwgYnV0IEknbSBub3QgZG9pbmcgdGhpcyBvbiBwdXJwb3NlIC4uLiA6LSkuIFNlZW1zIHRvIGhh
+cHBlbiBvbiBzdGFuZGJ5IC8gcmVzdW1lLiBBZ2Fpbiwgd2lsbCB0cnkgdG8gZHVwbGljYXRlIHdp
+dGggZGV0YWlsZWQgbG9ncy4NCg0KPiBTbyB0aGVyZSBhcmUgc29tZSBzdGFiaWxpdHkgcmVsYXRl
+ZCBpc3N1ZXMgd2UgbWF5IG5lZWQgdG8gY29ycmVjdC4NCg0KVGhlcmUgaXMgYSBjb25uZWN0aW9u
+IGlzc3VlIHdoaWNoIG5lZWRzIHRvIGJlIHNvbHZlZCwgcmlnaHQuICBCdXQgSSB3b3VsZCBub3Qg
+Y2FsbCBpdCBhICJzdGFiaWxpdHkgaXNzdWUiLi4uDQpbUi4gTW9ycmlzXSBOUCwgcGVyaGFwcyBw
+b29yIHdvcmRpbmcgb24gbXkgcGFydC4NCg0KPiBJbiBwYXJ0aWN1bGFyLCBpZiBUQVAgaXMgZGlz
+YWJsZWQsIHNob3VsZCBPcGVuVlBOIGV4aXQ/DQoNClllcywgYmVjYXVzZSByZWNvdmVyaW5nIGZy
+b20gdGhhdCB3b3VsZCBiYXNpY2FsbHkgbWVhbiAidW5kbyBldmVyeXRoaW5nIHRoYXQgaGFzIGhh
+cHBlbmVkIGluIHRoZSBjb2RlIHNvIGZhciBhbmQgc3RhcnQgZnJvbSBzY3JhdGNoIiAoc2luY2Ug
+d2UgaGF2ZSBubyBpZGVhIHdoeSB0aGUgVEFQIGFkYXB0ZXIgc3VkZGVubHkgaXMgbm8gbG9uZ2Vy
+IHdvcmtpbmcpLiAgU28gImV4aXQsIGFuZCBsZXQgdGhlIGNhbGxlciByZXN0YXJ0IHVzIiBpcyB0
+aGUgc2Vuc2libGUgd2F5IHRvIGFjaGlldmUgdGhhdC4NCltSLiBNb3JyaXNdIE1ha2VzIHNlbnNl
+Lg0KDQo+IFBlcmhhcHMgaXQNCj4gc2hvdWxkLiBCdXQgYWxzbywgYWZ0ZXIgYSBjb25uZWN0aW9u
+IHRoZSBUQVAgYWRhcHRlciBzaG91bGRu4oCZdCBiZSANCj4g4oCcaHVuZ+KAnSwgcmlnaHQ/DQoN
+CkxvZyA6LSkgLSBzaW5jZSBPcGVuVlBOIGtub3dzIHRoYXQgdGhlcmUgaXMgYW4gRVJST1IsIGFs
+bCB0aGUgZGV0YWlscyBzaG91bGQgYmUgaW4gdGhlIG9wZW52cG4gbG9nLg0KDQooUmVzdGFydGlu
+ZyBvcGVudnBuIGl0c2VsZiB3aXRob3V0IGZpZGRsaW5nIHdpdGggdGhlIHRhcCBhZGFwdGVyIHdp
+bGwgbW9zdCBsaWtlbHkgaGF2ZSB0aGUgc2FtZSBlZmZlY3QgLSAibWFrZSBpdCB0cnkgYWdhaW4g
+YW5kIHRoZW4gaXQNCndvcmtzIikNCltSLiBNb3JyaXNdIFllcCwgd2lsbCB0cnkgdG8gY2FwdHVy
+ZSBtb3JlIGRldGFpbGVkIGxvZ3MuIFRoYW5rcyENCg0KZ2VydA0K
