@@ -1,25 +1,10 @@
-From: "Morris, Russell" <rmorris@...1315...>
-Date: Sun, 25 Oct 2015 19:07:03 +0000
-Message-ID: <SN1PR08MB1391C20062748E2BAAD38E25B9240@...2065...>
-References: <56211F0D.2010806@...515...> <2421664.qQJpUDo69u@...1526...>
-	<56261F0D.9020208@...515...> <1921973.yRGlOPzy2x@...2001...>
-	<20151022075000.GD22054@...1296...>
-	<SN1PR08MB1391D82901BB0F9F4C8CB5E9B9270@...2065...>
-	<20151022173701.GP22054@...1296...>
-	<SN1PR08MB13915E4AEE4D1046CE7953AFB9270@...2065...>
-	<20151022182439.GS22054@...1296...>
-	<SN1PR08MB13916305A3CB7B167CC0B1A7B9270@...2065...>
-	<56293AC9.7010702@...1147...>
-	<SN1PR08MB1391BB977BF308697478D928B9270@...2065...>
-	<CAKuzo_iV6NQJSGWORxLTY4+YLLE8u+ccAHTfVrpJtX0=TVZnWQ@...278...>
-	<SN1PR08MB139154DAEBBDDF72D187B1E8B9260@...2065...>
-	<CAKuzo_jigkF3R8XcxDaHM6GuKvr=M7y41RVpH8w0XmcdzF2xzg@...278...>
-	<SN1PR08MB139196F7C77EBE15084FAD92B9260@...2065...>
-	<a6c10091eef62436a094ccb970fcbbf4@...2082...>
-In-Reply-To: <a6c10091eef62436a094ccb970fcbbf4@...2082...>
-Content-Language: en-US
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] Creating a Windows team for OpenVPN?
+In-Reply-To: <1445597397.4113.184.camel@...1866...>
+References: <1445597397.4113.184.camel@...1866...>
+From: Steffan Karger <steffan@...1856...>
+Date: Mon, 26 Oct 2015 00:09:25 +0100
+Message-ID: <CAA1Abx+fvhCoDNhKF44UmwZm7Xm-k_+gQ8gTCwCrw2UDtdPsDg@...278...>
+Subject: Re: [Openvpn-devel] [RFC] --passtos default on/off, and IPv6.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -28,91 +13,79 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-To: gert <gert@...2081...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+To: David Woodhouse <dwmw2@...1866...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-SGksDQoNClRvIHlvdXIgcXVlc3Rpb25zIGJlbG93IC0gYSBtb3JlIGRldGFpbGVkIGxvZywgYmVs
-b3cuIEkgY29ubmVjdGVkIHRvIHNlcnZlciwgdGhlbiBqdXN0IHB1dCBXaW5kb3dzIGluIFN0YW5k
-YnksIGFuZCB0aGVuIHJlc3VtZWQuIE5TU00gcmVzdGFydGVkIG9wZW52cG4uZXhlIGF1dG9tYXRp
-Y2FsbHkgKGFzIHlvdSBjYW4gc2VlKS4NCg0KU3VuIE9jdCAyNSAxMzo1Njo1MCAyMDE1IE1BTkFH
-RU1FTlQ6ID5TVEFURToxNDQ1Nzk5NDEwLEdFVF9DT05GSUcsLCwNClN1biBPY3QgMjUgMTM6NTY6
-NTEgMjAxNSBTRU5UIENPTlRST0wgW3h4eHh4XTogJ1BVU0hfUkVRVUVTVCcgKHN0YXR1cz0xKQ0K
-U3VuIE9jdCAyNSAxMzo1Njo1MSAyMDE1IFBVU0g6IFJlY2VpdmVkIGNvbnRyb2wgbWVzc2FnZTog
-J1BVU0hfUkVQTFkscGluZyAxMCxwaW5nLXJlc3RhcnQgMTIwJw0KU3VuIE9jdCAyNSAxMzo1Njo1
-MSAyMDE1IE9QVElPTlMgSU1QT1JUOiB0aW1lcnMgYW5kL29yIHRpbWVvdXRzIG1vZGlmaWVkDQpT
-dW4gT2N0IDI1IDEzOjU2OjUxIDIwMTUgb3Blbl90dW4sIHR0LT5pcHY2PTANClN1biBPY3QgMjUg
-MTM6NTY6NTEgMjAxNSBUQVAtV0lOMzIgZGV2aWNlIFtUQVAgQWRhcHRlcl0gb3BlbmVkOiBcXC5c
-R2xvYmFsXHtFQUUyQjM2OS0yOTdDLTQxODEtQkE2Qi1CQUVCODBERUZDODB9LnRhcA0KU3VuIE9j
-dCAyNSAxMzo1Njo1MSAyMDE1IFRBUC1XaW5kb3dzIERyaXZlciBWZXJzaW9uIDkuMjEgDQpTdW4g
-T2N0IDI1IDEzOjU2OjUxIDIwMTUgU3VjY2Vzc2Z1bCBBUlAgRmx1c2ggb24gaW50ZXJmYWNlIFsx
-Nl0ge0VBRTJCMzY5LTI5N0MtNDE4MS1CQTZCLUJBRUI4MERFRkM4MH0NClN1biBPY3QgMjUgMTM6
-NTY6NTYgMjAxNSBURVNUIFJPVVRFUzogMS8xIHN1Y2NlZWRlZCBsZW49MSByZXQ9MSBhPTEgdS9k
-PXVwDQpTdW4gT2N0IDI1IDEzOjU2OjU2IDIwMTUgTUFOQUdFTUVOVDogPlNUQVRFOjE0NDU3OTk0
-MTYsQUREX1JPVVRFUywsLA0KU3VuIE9jdCAyNSAxMzo1Njo1NiAyMDE1IEM6XFdJTkRPV1Ncc3lz
-dGVtMzJccm91dGUuZXhlIEFERCAxOTIuMTY4LjEuMCBNQVNLIDI1NS4yNTUuMjU1LjAgMTkyLjE2
-OC4yLjENClN1biBPY3QgMjUgMTM6NTY6NTYgMjAxNSBST1VURTogQ3JlYXRlSXBGb3J3YXJkRW50
-cnkgc3VjY2VlZGVkIHdpdGggZHdGb3J3YXJkTWV0cmljMT02NCBhbmQgZHdGb3J3YXJkVHlwZT00
-DQpTdW4gT2N0IDI1IDEzOjU2OjU2IDIwMTUgUm91dGUgYWRkaXRpb24gdmlhIElQQVBJIHN1Y2Nl
-ZWRlZCBbYWRhcHRpdmVdDQpTdW4gT2N0IDI1IDEzOjU2OjU2IDIwMTUgSW5pdGlhbGl6YXRpb24g
-U2VxdWVuY2UgQ29tcGxldGVkDQpTdW4gT2N0IDI1IDEzOjU2OjU2IDIwMTUgTUFOQUdFTUVOVDog
-PlNUQVRFOjE0NDU3OTk0MTYsQ09OTkVDVEVELFNVQ0NFU1MsLHgueC54LngNClN1biBPY3QgMjUg
-MTM6NTc6NTQgMjAxNSBNQU5BR0VNRU5UOiBDbGllbnQgZGlzY29ubmVjdGVkDQpTdW4gT2N0IDI1
-IDEzOjU3OjU0IDIwMTUgVFVOL1RBUCBJL08gb3BlcmF0aW9uIGFib3J0ZWQsIGV4aXRpbmcNClN1
-biBPY3QgMjUgMTM6NTc6NTQgMjAxNSBFeGl0aW5nIGR1ZSB0byBmYXRhbCBlcnJvcg0KU3VuIE9j
-dCAyNSAxMzo1Nzo1NCAyMDE1IEM6XFdJTkRPV1Ncc3lzdGVtMzJccm91dGUuZXhlIERFTEVURSAx
-OTIuMTY4LjEuMCBNQVNLIDI1NS4yNTUuMjU1LjAgMTkyLjE2OC4yLjENClN1biBPY3QgMjUgMTM6
-NTc6NTQgMjAxNSBST1VURTogcm91dGUgZGVsZXRpb24gZmFpbGVkIHVzaW5nIERlbGV0ZUlwRm9y
-d2FyZEVudHJ5OiBFbGVtZW50IG5vdCBmb3VuZC4gIA0KU3VuIE9jdCAyNSAxMzo1Nzo1NCAyMDE1
-IFJvdXRlIGRlbGV0aW9uIHZpYSBJUEFQSSBmYWlsZWQgW2FkYXB0aXZlXQ0KU3VuIE9jdCAyNSAx
-Mzo1Nzo1NCAyMDE1IFJvdXRlIGRlbGV0aW9uIGZhbGxiYWNrIHRvIHJvdXRlLmV4ZQ0KU3VuIE9j
-dCAyNSAxMzo1Nzo1NCAyMDE1IGVudl9ibG9jazogYWRkIFBBVEg9QzpcV2luZG93c1xTeXN0ZW0z
-MjtDOlxXSU5ET1dTO0M6XFdJTkRPV1NcU3lzdGVtMzJcV2JlbQ0KU3VuIE9jdCAyNSAxMzo1Nzo1
-NCAyMDE1IENsb3NpbmcgVFVOL1RBUCBpbnRlcmZhY2UNClN1biBPY3QgMjUgMTM6NTc6NTQgMjAx
-NSBPcGVuVlBOIDIuMy43IHg4Nl82NC13NjQtbWluZ3czMiBbU1NMIChPcGVuU1NMKV0gW0xaT10g
-W1BLQ1MxMV0gW0lQdjZdIGJ1aWx0IG9uIEp1bCAgOSAyMDE1DQpTdW4gT2N0IDI1IDEzOjU3OjU0
-IDIwMTUgbGlicmFyeSB2ZXJzaW9uczogT3BlblNTTCAxLjAuMXAgOSBKdWwgMjAxNSwgTFpPIDIu
-MDgNClN1biBPY3QgMjUgMTM6NTc6NTQgMjAxNSBNQU5BR0VNRU5UOiBUQ1AgU29ja2V0IGxpc3Rl
-bmluZyBvbiBbQUZfSU5FVF0xMjcuMC4wLjE6ODAwMA0KU3VuIE9jdCAyNSAxMzo1Nzo1NCAyMDE1
-IE5lZWQgaG9sZCByZWxlYXNlIGZyb20gbWFuYWdlbWVudCBpbnRlcmZhY2UsIHdhaXRpbmcuLi4N
-Cg0KVGhhbmtzLA0KLi4uIFJ1c3NlbGwNCg0KDQoNCi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0t
-DQpGcm9tOiBnZXJ0IFttYWlsdG86Z2VydEAuLi4yMDgxLi4uXSANClNlbnQ6IFNhdHVyZGF5LCBP
-Y3RvYmVyIDI0LCAyMDE1IDI6MjAgQU0NClRvOiBNb3JyaXMsIFJ1c3NlbGwgPHJtb3JyaXNALi4u
-MTMxNS4uLj4NCkNjOiBTZWx2YSBOYWlyIDxzZWx2YS5uYWlyQC4uLjI3Ny4uLj47IG9wZW52cG4t
-ZGV2ZWxAbGlzdHMuc291cmNlZm9yZ2UubmV0DQpTdWJqZWN0OiBSZTogW09wZW52cG4tZGV2ZWxd
-IENyZWF0aW5nIGEgV2luZG93cyB0ZWFtIGZvciBPcGVuVlBOPw0KDQpIaSwNCk9uIDIwMTUtMTAt
-MjMgMjI6MjIsIE1vcnJpcywgUnVzc2VsbCB3cm90ZToNCj4gSnVzdCBhIGJpdCBtb3JlIG9uIHRo
-aXMuIEkgaW5pdGlhdGVkIGFuIE9wZW5WUE4gY29ubmVjdGlvbiDigJMgaXQNCj4gY29ubmVjdHMs
-IHNheXMgYWxsIGlzIGhhcHB5LCBleGNlcHQgdGhlIG91dHB1dCBmcm9tIHRoZSBtYW5hZ2VtZW50
-DQo+IGludGVyZmFjZSBpcywNCj4gDQo+IMOYIFNUQVRFOjE0NDU2MDU1MjEsQ09OTkVDVEVELEVS
-Uk9SLCwxMC4xMzguMTUuMTANCg0KSSdkIGxvdmUgdG8gc2VlIHRoZSBvcGVudnBuIGxvZyBvbiB0
-aGlzLiAgVGhpcyBtZXNzYWdlIGluIGl0c2VsZiBpcyBub3QgDQplbm91Z2ggdG8gZmlndXJlIG91
-dCB3aGF0IGl0IGRpZCBub3QgbGlrZS4NCg0KPiBBbmQgdGhlIFRBUCBJUCBpcyBnYXJiYWdlICgx
-NjkueC54LngpLiBTbyBJIHJlc2V0IHRoZSBUQVAgYWRhcHRlcg0KPiAoZGlzYWJsZSksDQoNCldl
-bGwsIDE2OS4yNTQueC54IGlzICJJIHdhbnQgdG8gZG8gREhDUCwgYnV0IG5vYm9keSBpcyB0YWxr
-aW5nIHRvIG1lIiAtIA0Kc28NCnRoaXMgaXMgdG8gYmUgZXhwZWN0ZWQgaWYgT3BlblZQTiBpcyB1
-bmhhcHB5Lg0KDQo+IMOYIEZBVEFMOlRVTi9UQVAgSS9PIG9wZXJhdGlvbiBhYm9ydGVkLCBleGl0
-aW5nDQo+IA0KPiBPcGVuVlBOIGV4aXRzIHdoZW4gVEFQIGlzIGRpc2FibGVkIChzaG91bGQgaXQ/
-KS4NCg0KV2VsbC4gIERvbid0IGRvIHRoaXMgOi0pIC0gcmVtb3ZpbmcgYW4gYWN0aXZlIGludGVy
-ZmFjZSBiZWhpbmQgdGhlIGJhY2sgDQpvZiBhIHByb2dyYW0gdGFsa2luZyB0byBpdCBpcyBub3Qg
-YSBub3JtYWwgc2l0dWF0aW9uLCBhbmQgYXMgc3VjaCwgDQpPcGVuVlBOIGRvZXMgdGhlIG9ubHkg
-dGhpbmcgaXQgY2FuOiB0ZXJtaW5hdGUuICBUaGVyZSBpcyBubyB3YXkgdG8gZ28gb24gDQppZiBi
-YXNpYyBhc3N1bXB0aW9ucyAoIkkgY2FuIHRhbGsgdG8gbXkgdGFwIGFkYXB0ZXIiKSBhcmUgbm8g
-bG9uZ2VyIA0KdmFsaWQuDQoNCj4gU28gdGhlcmUgYXJlIHNvbWUgc3RhYmlsaXR5IHJlbGF0ZWQg
-aXNzdWVzIHdlIG1heSBuZWVkIHRvIGNvcnJlY3QuDQoNClRoZXJlIGlzIGEgY29ubmVjdGlvbiBp
-c3N1ZSB3aGljaCBuZWVkcyB0byBiZSBzb2x2ZWQsIHJpZ2h0LiAgQnV0IEkgDQp3b3VsZCBub3Qg
-Y2FsbCBpdCBhICJzdGFiaWxpdHkgaXNzdWUiLi4uDQoNCj4gSW4gcGFydGljdWxhciwgaWYgVEFQ
-IGlzIGRpc2FibGVkLCBzaG91bGQgT3BlblZQTiBleGl0Pw0KDQpZZXMsIGJlY2F1c2UgcmVjb3Zl
-cmluZyBmcm9tIHRoYXQgd291bGQgYmFzaWNhbGx5IG1lYW4gInVuZG8gZXZlcnl0aGluZyANCnRo
-YXQgaGFzIGhhcHBlbmVkIGluIHRoZSBjb2RlIHNvIGZhciBhbmQgc3RhcnQgZnJvbSBzY3JhdGNo
-IiAoc2luY2Ugd2UgDQpoYXZlIG5vIGlkZWEgd2h5IHRoZSBUQVAgYWRhcHRlciBzdWRkZW5seSBp
-cyBubyBsb25nZXIgd29ya2luZykuICBTbyANCiJleGl0LCBhbmQgbGV0IHRoZSBjYWxsZXIgcmVz
-dGFydCB1cyIgaXMgdGhlIHNlbnNpYmxlIHdheSB0byBhY2hpZXZlIA0KdGhhdC4NCg0KPiBQZXJo
-YXBzIGl0DQo+IHNob3VsZC4gQnV0IGFsc28sIGFmdGVyIGEgY29ubmVjdGlvbiB0aGUgVEFQIGFk
-YXB0ZXIgc2hvdWxkbuKAmXQgYmUNCj4g4oCcaHVuZ+KAnSwgcmlnaHQ/DQoNCkxvZyA6LSkgLSBz
-aW5jZSBPcGVuVlBOIGtub3dzIHRoYXQgdGhlcmUgaXMgYW4gRVJST1IsIGFsbCB0aGUgZGV0YWls
-cyANCnNob3VsZCBiZSBpbiB0aGUgb3BlbnZwbiBsb2cuDQoNCihSZXN0YXJ0aW5nIG9wZW52cG4g
-aXRzZWxmIHdpdGhvdXQgZmlkZGxpbmcgd2l0aCB0aGUgdGFwIGFkYXB0ZXIgd2lsbCANCm1vc3Qg
-bGlrZWx5IGhhdmUgdGhlIHNhbWUgZWZmZWN0IC0gIm1ha2UgaXQgdHJ5IGFnYWluIGFuZCB0aGVu
-IGl0IA0Kd29ya3MiKQ0KDQpnZXJ0DQo=
+Hi,
+
+On Fri, Oct 23, 2015 at 12:49 PM, David Woodhouse <dwmw2@...1866...> wrote:
+> I prefer to remain consistent with OpenVPN and other tools where
+> possible, so we've renamed the option to '--passtos' and my first
+> reaction was to disable it by default, like OpenVPN does.
+>
+> Looking at it harder, though, I'm not sure I really want it disabled by
+> default. It's useful for those who run VoIP over the VPN, and quite
+> frankly the information leakage is minimal =E2=80=94 if the attacker can't
+> infer from those tiny packets at regular 20ms intervals that you're
+> using VoIP, then they're probably clueless enough that they won't work
+> it out from the QoS bits either :)
+
+It's not just about traffic analysis, it is also about covert
+channels.  An adversary on the protected network could use --passtos
+(or indeed packet size / timing) to create a covert channel to the
+unprotected network, thereby exfiltrating data.
+
+> Anyone seriously suggesting that --passtos should be off by default for
+> security reasons should probably also need to submit a patch to pad all
+> encrypted packets to the full MTU "to prevent information leakage
+> through packet sizes" before they're taken seriously. Or taken away.
+> Either works for me.
+
+"Since my tires have barely any profile left, I'll just disable the
+brakes" (Yes, I know, car analogies don't really hold, but I couldn't
+resist.)  Don't forget that OpenVPN in CBC mode pads packets to the
+cipher block size, which is 64 bits for the default BF-CBC, and 128
+bits for the popular AES-CBC.  That does help with disguising the
+*contents* of your voip call (without any padding, is has been shown
+to be possible to recover transcripts of actual voip calls [0]).  For
+covert channels, it means 23 possible values per 1500-byte packet, or
+~5 bits for BF, and 12 possible values (~4 bits) for AES-CBC. That is
+still less than the 8 bits QoS/ToS.
+
+But yes, it would be nice to add a padding mode to OpenVPN.
+Especially with the upcoming AES-GCM mode, which will no longer pad
+packets to block size.  Perhaps implemented as a 'compression'
+algorithm?  We already have the required infrastructure in place
+there.
+
+> So actually my preferred path for "being consistent with OpenVPN" is
+> probably to enable it by default in OpenVPN too... unless I'm missing
+> something?
+
+Yes, and apart from my concerns above, we should be very careful about
+changing this kind of behaviour.  Suddenly bypassing more data might
+get people into problematic situations.
+
+> Also, I note that OpenVPN only supports this for Legacy IP =E2=80=94 we s=
+hould
+> be copying the TCLASS bits from IPv6 packets too, right?
+>
+> And does it also make sense to copy the TOS/TCLASS bits from IPv6
+> payload into Legacy IP tunnel encapsulation, and vice versa? Despite
+> the different names, are the bits expected to have the same meanings?
+>
+> Finally, what about ECN? Does it makes sense to copy the ECN bits? Will
+> routers act upon those even for non-TCP packets, and does that then
+> leave us wanting to deal with the resulting ICMP and convey the message
+> back inside the VPN (which frankly fills me with horror, so let's not).
+
+I'll leave it to the networking experts whether this makes as sense
+for IPv6 as it does for IPv4.  To my untrained eye, ECN seems painful,
+but something equivalent to --passtos for IPv6 might make sense.
+
+-Steffan
+
+[0] http://www.cs.unc.edu/~fabian/papers/foniks-oak11.pdf
+
