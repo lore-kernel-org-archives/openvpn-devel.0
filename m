@@ -1,10 +1,14 @@
-Date: Mon, 26 Oct 2015 13:12:23 +0200
-From: Pasi =?iso-8859-1?Q?K=E4rkk=E4inen?= <pasik@...124...>
-Message-ID: <20151026111223.GL23835@...1281...>
-References: <56211F0D.2010806@...515...>
+References: <1445597397.4113.184.camel@...1866...>
+	<CAA1Abx+fvhCoDNhKF44UmwZm7Xm-k_+gQ8gTCwCrw2UDtdPsDg@...278...>
+	<CAA1Abx+z_BmrZgR-2MFBmqFS8QK6LOeN1FDDfZSGQw1_EUgq4w@...278...>
+	<1445816672.3405.17.camel@...1866...>
+	<CAA1AbxLVK6r-_YKARZSOO_naqyLZXYmSj7eeUqsicX6gJ47tBg@...278...>
+From: Arne Schwabe <arne@...1227...>
+Message-ID: <562E13B4.8070501@...1227...>
+Date: Mon, 26 Oct 2015 12:51:16 +0100
 MIME-Version: 1.0
-In-Reply-To: <56211F0D.2010806@...515...>
-Subject: Re: [Openvpn-devel] Creating a Windows team for OpenVPN?
+In-Reply-To: <CAA1AbxLVK6r-_YKARZSOO_naqyLZXYmSj7eeUqsicX6gJ47tBg@...278...>
+Subject: Re: [Openvpn-devel] [RFC] --passtos default on/off, and IPv6.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,38 +17,35 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-1"
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-To: Samuli =?iso-8859-1?Q?Sepp=E4nen?= <samuli@...515...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Steffan Karger <steffan@...1856...>, David Woodhouse <dwmw2@...1866...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-On Fri, Oct 16, 2015 at 07:00:13PM +0300, Samuli Sepp=E4nen wrote:
-> Hi,
->=20
-> In Delft we talked about issues with Windows version of OpenVPN quite a=20
-> lot. Of the top of my hat I can recall the following isuses:
->=20
-> - The tap-windows/tap-windows6 drivers have fairly bad performance
-> - In Windows 10 there are DNS leaks
-> - The service wrapper (openvpnserv.exe) is effectively broken for=20
-> Windows 8 and later
-> - The service wrapper has very limited functionality
-> - The OpenVPN-GUI we bundle has several major issues, most related to=20
-> having to run it as an admin
+
+> > I'm actually *more* interested in the potential for incompatibilities
+> > if we start setting the TOS bits =97 as we saw with stupid firewalls
+> > dropping packets when ECN was in use. That sounds like a much more
+> > reasonable argument for not doing --passtos by default, although even
+> > that is somewhat diminished these days =97 I think most such firewalls
+> > have been fixed now.
 >
+> I am actually very interested in this part too, but lack the
+> experience to make any statements here.  *waiting for Gert and/or Arne
+> to chime in*
+>
+>
+QoS and therefore TOS is almost not used in public network. A lot of
+switches will actually reset the TOS bit to 0x00 in the default config.
 
-Please add this to the list of missing features:
+But very few apps do set ToS bits anyway so for most people passtos is
+probably a NOOP anyway.
 
-- Windows OpenVPN-GUI needs to be able to read config files from under user=
-'s profile directory, not only from the system-wide c:\program files\openvp=
-n\config\ directory.
+And the Android (and iOS?) apps will not do passtos anyway, since
+setting TOS requires root capabilities (another reason that tos is not
+used).
 
-
-
-Thanks,
-
--- Pasi
+Arne
 
 
 
