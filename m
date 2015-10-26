@@ -1,9 +1,10 @@
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <562DF8BA.1090406@...515...>
-Date: Mon, 26 Oct 2015 11:56:10 +0200
+Date: Mon, 26 Oct 2015 13:12:23 +0200
+From: Pasi =?iso-8859-1?Q?K=E4rkk=E4inen?= <pasik@...124...>
+Message-ID: <20151026111223.GL23835@...1281...>
+References: <56211F0D.2010806@...515...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] Topics for today's (Monday,
-	26th Oct 2015) community meeting
+In-Reply-To: <56211F0D.2010806@...515...>
+Subject: Re: [Openvpn-devel] Creating a Windows team for OpenVPN?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,35 +13,38 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-15"; format=flowed
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Disposition: inline
+To: Samuli =?iso-8859-1?Q?Sepp=E4nen?= <samuli@...515...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hi,
+On Fri, Oct 16, 2015 at 07:00:13PM +0300, Samuli Sepp=E4nen wrote:
+> Hi,
+>=20
+> In Delft we talked about issues with Windows version of OpenVPN quite a=20
+> lot. Of the top of my hat I can recall the following isuses:
+>=20
+> - The tap-windows/tap-windows6 drivers have fairly bad performance
+> - In Windows 10 there are DNS leaks
+> - The service wrapper (openvpnserv.exe) is effectively broken for=20
+> Windows 8 and later
+> - The service wrapper has very limited functionality
+> - The OpenVPN-GUI we bundle has several major issues, most related to=20
+> having to run it as an admin
+>
 
-We're going to have an IRC meeting today starting at 20:00 CET (19:00=20
-UTC) on #openvpn-devel <at> irc.freenode.net. Current topic list along=20
-with basic information is here:
+Please add this to the list of missing features:
 
-<https://community.openvpn.net/openvpn/wiki/Topics-2015-10-26>
+- Windows OpenVPN-GUI needs to be able to read config files from under user=
+'s profile directory, not only from the system-wide c:\program files\openvp=
+n\config\ directory.
 
-If you have any other things you'd like to bring up, respond to this=20
-mail, send me mail privately or add them to the list yourself.
 
-In case you can't attend the meeting, please feel free to make comments=20
-on the topics by responding to this email or to the summary email sent=20
-after the meeting. Whenever possible, we'll also respond to existing,=20
-related email threads.
 
-NOTE: It's required to use a registered Freenode IRC nickname to join=20
-#openvpn-devel - look here for details:
+Thanks,
 
-<https://community.openvpn.net/openvpn/wiki/GettingHelp#DeveloperIRCchannel>
+-- Pasi
 
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
 
-irc freenode net: mattock
 
