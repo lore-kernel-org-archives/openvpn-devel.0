@@ -1,12 +1,9 @@
-From: ValdikSS <iam@...2070...>
-Message-ID: <562EB0A1.8010403@...2070...>
-Date: Tue, 27 Oct 2015 02:00:49 +0300
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature";
-	boundary="X06WpsUqPvWmVxCwOvwp9ExfLucGirueN"
-Subject: [Openvpn-devel] [PATCH] Add Windows DNS Leak fix using WFP
-	('block-outside-dns')
+Date: Mon, 26 Oct 2015 21:38:53 -0200
+Message-ID: <CAAWBBYMWbgCy74zU6OWT+T9eopRNbBF-K7HeD27KRGwGXOkAeg@...278...>
+From: Rafael Gava <gava100@...277...>
+Content-Type: multipart/alternative; boundary=047d7bb03a6ec8b43105230a7666
+Subject: [Openvpn-devel] [PATCH] Added client-ip option to NAT
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,482 +12,264 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---X06WpsUqPvWmVxCwOvwp9ExfLucGirueN
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+--047d7bb03a6ec8b43105230a7666
+Content-Type: text/plain; charset=UTF-8
 
-This option is silently ignored on non-Windows platforms and works on Vista=
-+.
-External DNS is blocked even if no DNS server configured (user may configur=
-e it in the tap interface itself).
-This option could be ignored from server push using route-nopull.
+Allow the user to use the string 'client-ip' on the client-nat network
+configuration as a convenient way to use  the leased IP address received
+from OpenVPN server. Usage  Example:
+
+client-nat snat client-ip 255.255.255.255 172.20.1.15 # replaces the
+'client-ip' string with the leased IP address received from OpenVPN server
+
+
 ---
- doc/openvpn.8           |  11 ++-
- src/openvpn/Makefile.am |   2 +-
- src/openvpn/init.c      |  24 +++++++
- src/openvpn/options.c   |  14 ++++
- src/openvpn/options.h   |   1 +
- src/openvpn/win32.c     | 175 ++++++++++++++++++++++++++++++++++++++++++++=
-++++
- src/openvpn/win32.h     |  62 +++++++++++++++++
- 7 files changed, 286 insertions(+), 3 deletions(-)
 
-diff --git a/doc/openvpn.8 b/doc/openvpn.8
-index b6d5aed..1f60451 100644
---- a/doc/openvpn.8
-+++ b/doc/openvpn.8
-@@ -1129,8 +1129,8 @@ When used with
- .B \-\-client
- or
- .B \-\-pull,
--accept options pushed by server EXCEPT for routes and dhcp options
--like DNS servers.
-+accept options pushed by server EXCEPT for routes, block-outside-dns and d=
-hcp
-+options like DNS servers.
-  When used on the client, this option effectively bars the
- server from adding routes to the client's routing table,
-@@ -5517,6 +5517,13 @@ adapter list to the syslog or log file after the TUN=
-/TAP adapter
- has been brought up and any routes have been added.
- .\"*********************************************************
- .TP
-+.B \-\-block\-outside\-dns
-+Block external DNS servers on other network adapters to prevent
-+DNS leaks. This option blocks svchost.exe from accessing
-+any DNS server except one inside the tunnel. It uses WFP and
-+could be used on Windows Vista and newer.
-+.\"*********************************************************
-+.TP
- .B \-\-dhcp\-renew
- Ask Windows to renew the TAP adapter lease on startup.
- This option is normally unnecessary, as Windows automatically
-diff --git a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am
-index c840f16..c55a520 100644
---- a/src/openvpn/Makefile.am
-+++ b/src/openvpn/Makefile.am
-@@ -127,5 +127,5 @@ openvpn_LDADD =3D \
- 	$(OPTIONAL_DL_LIBS)
- if WIN32
- openvpn_SOURCES +=3D openvpn_win32_resources.rc
--openvpn_LDADD +=3D -lgdi32 -lws2_32 -lwininet -lcrypt32 -liphlpapi -lwinmm
-+openvpn_LDADD +=3D -lgdi32 -lws2_32 -lwininet -lcrypt32 -liphlpapi -lwinmm=
- -lfwpuclnt -lrpcrt4
- endif
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index c5c0ab6..b1c23fd 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -1468,6 +1468,22 @@ do_open_tun (struct context *c)
- 		   "up",
- 		   c->c2.es);
- +#if _WIN32_WINNT >=3D 0x0600
-+      if (c->options.block_outside_dns)
-+      {
-+          if (!win_wfp_init())
-+            msg (M_NONFATAL, "Initialising WFP failed!");
-+            else
-+            {
-+                dmsg (D_LOW, "Blocking outside DNS");
-+                if (!win_wfp_block_dns(c->c1.tuntap->adapter_index))
-+                    msg (M_NONFATAL, "Blocking DNS failed!");
-+            }
-+      }
-+      else
-+           msg (M_NONFATAL, "Can't block outside DNS without configured DN=
-S server");
-+#endif
-+
-       /* possibly add routes */
-       if ((route_order() =3D=3D ROUTE_AFTER_TUN) && (!c->options.route_del=
-ay_defined))
- 	do_route (&c->options, c->c1.route_list, c->c1.route_ipv6_list,
-@@ -1596,6 +1612,14 @@ do_close_tun (struct context *c, bool force)
- 		       "down",
- 		       c->c2.es);
- +#if _WIN32_WINNT >=3D 0x0600
-+            if (c->options.block_outside_dns)
-+            {
-+                if (!win_wfp_uninit())
-+                    msg (M_NONFATAL, "Uninitialising WFP failed!");
-+            }
-+#endif
-+
- 	  /* actually close tun/tap device based on --down-pre flag */
- 	  if (c->options.down_pre)
- 	    do_close_tun_simple (c);
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 2f8915d..a7f50cc 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -696,6 +696,9 @@ static const char usage_message[] =3D
-   "                       optional parameter controls the initial state of=
- ex.\n"
-   "--show-net-up   : Show " PACKAGE_NAME "'s view of routing table and net=
- adapter list\n"
-   "                  after TAP adapter is up and routes have been added.\n"
-+#if _WIN32_WINNT >=3D 0x0600
-+  "--block-outside-dns   : Block DNS on other network adapters to prevent =
-DNS leaks\n"
-+#endif
-   "Windows Standalone Options:\n"
-   "\n"
-   "--show-adapters : Show all TAP-Windows adapters.\n"
-@@ -797,6 +800,7 @@ init_options (struct options *o, const bool init_gc)
-   o->tuntap_options.dhcp_lease_time =3D 31536000; /* one year */
-   o->tuntap_options.dhcp_masq_offset =3D 0;       /* use network address a=
-s internal DHCP server address */
-   o->route_method =3D ROUTE_METHOD_ADAPTIVE;
-+  o->block_outside_dns =3D false;
- #endif
- #if P2MP_SERVER
-   o->real_hash_size =3D 256;
-@@ -1651,6 +1655,9 @@ show_settings (const struct options *o)
- #ifdef WIN32
-   SHOW_BOOL (show_net_up);
-   SHOW_INT (route_method);
-+#if _WIN32_WINNT >=3D 0x0600
-+  SHOW_BOOL (block_outside_dns);
-+#endif
-   show_tuntap_options (&o->tuntap_options);
- #endif
- #endif
-@@ -6222,6 +6229,13 @@ add_option (struct options *options,
-       VERIFY_PERMISSION (OPT_P_ROUTE_EXTRAS);
+From 2774d25c4c2947be7d1516f01cd520856e683db2 Mon Sep 17 00:00:00 2001
+From: Rafael Gava <rafael.oliveira@...2056...>
+Date: Mon, 26 Oct 2015 18:31:12 -0200
+Subject: [PATCH] Allow the user to use the string 'client-ip' on the
+ client-nat network configuration as a convenient way to use
+ the leased IP address received from OpenVPN server. Usage
+ Example:
+
+client-nat snat client-ip 255.255.255.255 172.20.1.15 # replaces the
+'client-ip' string with the leased IP address received from OpenVPN server
+
+Signed-off-by: Rafael Gava <rafael.oliveira@...2056...>
+---
+ src/openvpn/clinat.c  |   38 ++++++++++++++++++++++++++++++++++++++
+ src/openvpn/clinat.h  |    2 ++
+ src/openvpn/init.c    |    2 ++
+ src/openvpn/options.c |    1 +
+ 4 files changed, 43 insertions(+)
+ mode change 100644 => 100755 src/openvpn/clinat.c
+ mode change 100644 => 100755 src/openvpn/clinat.h
+ mode change 100644 => 100755 src/openvpn/init.c
+ mode change 100644 => 100755 src/openvpn/options.c
+
+diff --git a/src/openvpn/clinat.c b/src/openvpn/clinat.c
+old mode 100644
+new mode 100755
+index ddefe12..2ff4166
+--- a/src/openvpn/clinat.c
++++ b/src/openvpn/clinat.c
+@@ -124,12 +124,19 @@ add_client_nat_to_option_list (struct
+client_nat_option_list *dest,
+       return;
      }
- #endif
-+  else if (streq (p[0], "block-outside-dns") && !p[1])
+
++  if (network && !strcmp(network, "client-ip"))
 +    {
-+      VERIFY_PERMISSION (OPT_P_IPWIN32);
-+#if _WIN32_WINNT >=3D 0x0600
-+      options->block_outside_dns =3D true;
-+#endif
-+    }
- #if PASSTOS_CAPABILITY
-   else if (streq (p[0], "passtos") && !p[1])
++      msg (M_INFO, "*** client-nat client-ip detected...");
++      e.network = 0xFFFFFFFF;
++    } else {
+   e.network = getaddr(0, network, 0, &ok, NULL);
+   if (!ok)
      {
-diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-index c642aa0..873c159 100644
---- a/src/openvpn/options.h
-+++ b/src/openvpn/options.h
-@@ -587,6 +587,7 @@ struct options
-   bool exit_event_initial_state;
-   bool show_net_up;
-   int route_method;
-+  bool block_outside_dns;
- #endif
-    bool use_peer_id;
-diff --git a/src/openvpn/win32.c b/src/openvpn/win32.c
-index 7c89a5a..aa477fa 100644
---- a/src/openvpn/win32.c
-+++ b/src/openvpn/win32.c
-@@ -37,6 +37,10 @@
-  #ifdef WIN32
- +#include <fwpmu.h>
-+#include <fwpmtypes.h>
-+#include <iphlpapi.h>
+       msg(msglevel, "client-nat: bad network: %s", network);
+       return;
+     }
++    }
 +
- #include "buffer.h"
- #include "error.h"
- #include "mtu.h"
-@@ -57,6 +61,17 @@ static struct WSAData wsa_state; /* GLOBAL */
- static bool pause_exit_enabled =3D false; /* GLOBAL */
-  /*
-+ * WFP firewall name.
-+ */
-+wchar_t * FIREWALL_NAME =3D L"OpenVPN"; /* GLOBAL */
-+
-+/*
-+ * WFP handle and GUID.
-+ */
-+static HANDLE m_hEngineHandle =3D NULL; /* GLOBAL */
-+static GUID m_subLayerGUID; /* GLOBAL */
-+
-+/*
-  * win32_signal is used to get input from the keyboard
-  * if we are running in a console, or get input from an
-  * event object if we are running as a service.
-@@ -1019,4 +1034,164 @@ win_get_tempdir()
-   WideCharToMultiByte (CP_UTF8, 0, wtmpdir, -1, tmpdir, sizeof (tmpdir), N=
-ULL, NULL);
-   return tmpdir;
+   e.netmask = getaddr(0, netmask, 0, &ok, NULL);
+   if (!ok)
+     {
+@@ -263,3 +270,34 @@ client_nat_transform (const struct
+client_nat_option_list *list,
+  }
+     }
  }
 +
-+#if _WIN32_WINNT >=3D 0x0600
++/*
++* Replaces the client_ip token with the IP received from OpenVPN
++*/
 +bool
-+win_wfp_init()
++update_client_ip_nat(struct client_nat_option_list *dest, in_addr_t
+local_ip)
 +{
-+    ZeroMemory(&m_subLayerGUID, sizeof(GUID));
-+    DWORD dwFwAPiRetCode =3D ERROR_BAD_COMMAND;
-+    FWPM_SESSION0 session =3D {0};
-+    RPC_STATUS rpcStatus =3D {0};
-+    FWPM_SUBLAYER0 SubLayer =3D {0};
++  int i;
++  bool ret = false;
 +
-+    /* Add temporary filters which don't survive reboots or crashes. */
-+    session.flags =3D FWPM_SESSION_FLAG_DYNAMIC;
++  if (!dest)
++    return ret;
 +
-+    dmsg (D_LOW, "Opening WFP engine");
-+    dwFwAPiRetCode =3D FwpmEngineOpen0(NULL, RPC_C_AUTHN_WINNT, NULL, &ses=
-sion, &m_hEngineHandle);
-+
-+    if (dwFwAPiRetCode !=3D ERROR_SUCCESS)
++  for (i=0; i <= dest->n; i++)
 +    {
-+        msg (M_NONFATAL, "Can't open WFP engine");
-+        return false;
++      struct client_nat_entry *nat_entry = &dest->entries[i];
++      if (nat_entry && nat_entry->network == 0xFFFFFFFF)
++        {
++          struct in_addr addr;
++
++          nat_entry->network = ntohl(local_ip);
++          addr.s_addr = nat_entry->network;
++          char *dot_ip = inet_ntoa(addr);
++
++          msg (M_INFO, "CNAT - Updating NAT table from client-ip to: %s",
+dot_ip);
++          ret = true;
++        }
 +    }
 +
-+    rpcStatus =3D UuidCreate(&SubLayer.subLayerKey);
-+    if (rpcStatus !=3D NO_ERROR)
-+        return false;
-+    CopyMemory(&m_subLayerGUID, &SubLayer.subLayerKey, sizeof(SubLayer.sub=
-LayerKey));
-+
-+    /* Populate packet filter layer information. */
-+    SubLayer.displayData.name =3D FIREWALL_NAME;
-+    SubLayer.displayData.description =3D FIREWALL_NAME;
-+    SubLayer.flags =3D 0;
-+    SubLayer.weight =3D 0x100;
-+
-+    /* Add packet filter to our interface. */
-+    dmsg (D_LOW, "Adding WFP sublayer");
-+    dwFwAPiRetCode =3D FwpmSubLayerAdd0(m_hEngineHandle, &SubLayer, NULL);
-+    if (dwFwAPiRetCode !=3D ERROR_SUCCESS)
-+    {
-+        msg (M_NONFATAL, "Can't add WFP sublayer");
-+        return false;
-+    }
-+    return true;
++  return ret;
 +}
+diff --git a/src/openvpn/clinat.h b/src/openvpn/clinat.h
+old mode 100644
+new mode 100755
+index a5779e1..156e84c
+--- a/src/openvpn/clinat.h
++++ b/src/openvpn/clinat.h
+@@ -62,4 +62,6 @@ void client_nat_transform (const struct
+client_nat_option_list *list,
+    struct buffer *ipbuf,
+    const int direction);
+
++bool update_client_ip_nat(struct client_nat_option_list *dest, in_addr_t
+local_ip);
 +
-+bool
-+win_wfp_uninit()
-+{
-+    dmsg (D_LOW, "Uninitializing WFP");
-+    DWORD dwFwAPiRetCode =3D ERROR_BAD_COMMAND;
-+    if (m_hEngineHandle) {
-+        FwpmSubLayerDeleteByKey0(m_hEngineHandle, &m_subLayerGUID);
-+        ZeroMemory(&m_subLayerGUID, sizeof(GUID));
-+        FwpmEngineClose0(m_hEngineHandle);
-+        m_hEngineHandle =3D NULL;
-+    }
-+    return true;
-+}
-+
-+bool
-+win_wfp_add_filter (HANDLE engineHandle,
-+                    const FWPM_FILTER0 *filter,
-+                    PSECURITY_DESCRIPTOR sd,
-+                    UINT64 *id)
-+{
-+    if (FwpmFilterAdd0(engineHandle, filter, sd, id) !=3D ERROR_SUCCESS)
-+    {
-+        msg (M_NONFATAL, "Can't add WFP filter");
-+        return false;
-+    }
-+    return true;
-+}
-+
-+bool
-+win_wfp_block_dns (const NET_IFINDEX index)
-+{
-+    dmsg (D_LOW, "Blocking DNS using WFP");
-+    NET_LUID tapluid;
-+    NETIO_STATUS ret;
-+    DWORD dwFwAPiRetCode =3D ERROR_BAD_COMMAND;
-+    UINT64 filterid;
-+    WCHAR svchostpath[MAX_PATH];
-+    FWP_BYTE_BLOB *svchostblob =3D NULL;
-+
-+    FWPM_FILTER0 Filter =3D {0};
-+    FWPM_FILTER_CONDITION0 Condition[2] =3D {0};
-+
-+    ret =3D ConvertInterfaceIndexToLuid(index, &tapluid);
-+    if (ret =3D=3D NO_ERROR)
-+        dmsg (D_LOW, "Tap Luid: %I64d", tapluid.Value);
-+
-+    /* Get system32 path. */
-+    GetSystemDirectoryW(svchostpath, MAX_PATH);
-+    /* Add svchost.exe to the path */
-+    wcscat(svchostpath, L"\\svchost.exe");
-+
-+    if (FwpmGetAppIdFromFileName0(svchostpath, &svchostblob) !=3D ERROR_SU=
-CCESS)
-+        return false;
-+
-+    /* Prepare filter. */
-+    Filter.subLayerKey =3D m_subLayerGUID;
-+    Filter.displayData.name =3D FIREWALL_NAME;
-+    Filter.weight.type =3D FWP_EMPTY;
-+    Filter.filterCondition =3D Condition;
-+    Filter.numFilterConditions =3D 2;
-+
-+    /* First filter. Block IPv4 DNS requests from svchost.exe. */
-+    Filter.layerKey =3D FWPM_LAYER_ALE_AUTH_CONNECT_V4;
-+    Filter.action.type =3D FWP_ACTION_BLOCK;
-+
-+    Condition[0].fieldKey =3D FWPM_CONDITION_IP_REMOTE_PORT;
-+    Condition[0].matchType =3D FWP_MATCH_EQUAL;
-+    Condition[0].conditionValue.type =3D FWP_UINT16;
-+    Condition[0].conditionValue.uint16 =3D 53;
-+
-+    Condition[1].fieldKey =3D FWPM_CONDITION_ALE_APP_ID;
-+    Condition[1].matchType =3D FWP_MATCH_EQUAL;
-+    Condition[1].conditionValue.type =3D FWP_BYTE_BLOB_TYPE;
-+    Condition[1].conditionValue.byteBlob =3D svchostblob;
-+
-+    /* Add filter condition to our interface. */
-+    if (!win_wfp_add_filter(m_hEngineHandle, &Filter, NULL, &filterid))
-+        return false;
-+    dmsg (D_LOW, "Filter (Block IPv4 DNS) added with ID=3D%I64d", filterid=
-);
-+
-+    /* Second filter. Block IPv6 DNS requests from svchost.exe. */
-+    Filter.layerKey =3D FWPM_LAYER_ALE_AUTH_CONNECT_V6;
-+
-+    /* Add filter condition to our interface. */
-+    if (!win_wfp_add_filter(m_hEngineHandle, &Filter, NULL, &filterid))
-+        return false;
-+    dmsg (D_LOW, "Filter (Block IPv6 DNS) added with ID=3D%I64d", filterid=
-);
-+
-+    /* Third filter. Permit all IPv4 traffic from TAP from svchost.exe. */
-+    Filter.action.type =3D FWP_ACTION_PERMIT;
-+
-+    Condition[0].fieldKey =3D FWPM_CONDITION_IP_LOCAL_INTERFACE;
-+    Condition[0].matchType =3D FWP_MATCH_EQUAL;
-+    Condition[0].conditionValue.type =3D FWP_UINT64;
-+
-+    Filter.layerKey =3D FWPM_LAYER_ALE_AUTH_CONNECT_V4;
-+    Condition[0].conditionValue.uint64 =3D &tapluid.Value;
-+
-+    /* Add filter condition to our interface. */
-+    if (!win_wfp_add_filter(m_hEngineHandle, &Filter, NULL, &filterid))
-+        return false;
-+    dmsg (D_LOW, "Filter (Permit all IPv4 traffic from TAP) added with ID=
-=3D%I64d", filterid);
-+
-+    /* Forth filter. Permit all IPv6 traffic from TAP. */
-+    Filter.layerKey =3D FWPM_LAYER_ALE_AUTH_CONNECT_V6;
-+
-+    /* Add filter condition to our interface. */
-+    if (!win_wfp_add_filter(m_hEngineHandle, &Filter, NULL, &filterid))
-+        return false;
-+    dmsg (D_LOW, "Filter (Permit all IPv6 traffic from TAP) added with ID=
-=3D%I64d", filterid);
-+
-+    return true;
-+}
-+
-+#endif
  #endif
-diff --git a/src/openvpn/win32.h b/src/openvpn/win32.h
-index cc18f02..008ed69 100644
---- a/src/openvpn/win32.h
-+++ b/src/openvpn/win32.h
-@@ -27,6 +27,10 @@
- #define OPENVPN_WIN32_H
-  #include "mtu.h"
-+#if _WIN32_WINNT >=3D 0x0600
-+#include <initguid.h>
-+#include <fwpmtypes.h>
-+#endif
-  /* location of executables */
- #define SYS_PATH_ENV_VAR_NAME "SystemRoot"  /* environmental variable name=
- that normally contains the system path */
-@@ -271,5 +275,63 @@ const char *win_get_tempdir();
- /* Convert a string from UTF-8 to UCS-2 */
- WCHAR *wide_string (const char* utf8, struct gc_arena *gc);
- +#if _WIN32_WINNT >=3D 0x0600
-+bool win_wfp_block_dns(const NET_IFINDEX index);
-+bool win_wfp_add_filter (HANDLE engineHandle,
-+                        const FWPM_FILTER0 *filter,
-+                        PSECURITY_DESCRIPTOR sd,
-+                        UINT64 *id);
-+bool win_wfp_uninit();
-+bool win_wfp_init();
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+old mode 100644
+new mode 100755
+index c5c0ab6..f54bc14
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -1481,6 +1481,8 @@ do_open_tun (struct context *c)
+        c->c1.tuntap->post_open_mtu,
+        SET_MTU_TUN | SET_MTU_UPPER_BOUND);
+
++ update_client_ip_nat(c->options.client_nat, c->c1.tuntap->local);
 +
-+/* WFP-related define and GUIDs */
-+#define FWPM_SESSION_FLAG_DYNAMIC 0x00000001
-+
-+// c38d57d1-05a7-4c33-904f-7fbceee60e82
-+DEFINE_GUID(
-+   FWPM_LAYER_ALE_AUTH_CONNECT_V4,
-+   0xc38d57d1,
-+   0x05a7,
-+   0x4c33,
-+   0x90, 0x4f, 0x7f, 0xbc, 0xee, 0xe6, 0x0e, 0x82
-+);
-+
-+// 4a72393b-319f-44bc-84c3-ba54dcb3b6b4
-+DEFINE_GUID(
-+   FWPM_LAYER_ALE_AUTH_CONNECT_V6,
-+   0x4a72393b,
-+   0x319f,
-+   0x44bc,
-+   0x84, 0xc3, 0xba, 0x54, 0xdc, 0xb3, 0xb6, 0xb4
-+);
-+
-+// d78e1e87-8644-4ea5-9437-d809ecefc971
-+DEFINE_GUID(
-+   FWPM_CONDITION_ALE_APP_ID,
-+   0xd78e1e87,
-+   0x8644,
-+   0x4ea5,
-+   0x94, 0x37, 0xd8, 0x09, 0xec, 0xef, 0xc9, 0x71
-+);
-+
-+// c35a604d-d22b-4e1a-91b4-68f674ee674b
-+DEFINE_GUID(
-+   FWPM_CONDITION_IP_REMOTE_PORT,
-+   0xc35a604d,
-+   0xd22b,
-+   0x4e1a,
-+   0x91, 0xb4, 0x68, 0xf6, 0x74, 0xee, 0x67, 0x4b
-+);
-+
-+// 4cd62a49-59c3-4969-b7f3-bda5d32890a4
-+DEFINE_GUID(
-+   FWPM_CONDITION_IP_LOCAL_INTERFACE,
-+   0x4cd62a49,
-+   0x59c3,
-+   0x4969,
-+   0xb7, 0xf3, 0xbd, 0xa5, 0xd3, 0x28, 0x90, 0xa4
-+);
-+
-+#endif
+       ret = true;
+       static_context = c;
+ #ifndef TARGET_ANDROID
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+old mode 100644
+new mode 100755
+index 2f8915d..c08e775
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -223,6 +223,7 @@ static const char usage_message[] =
+   "--redirect-private [flags]: Like --redirect-gateway, but omit actually
+changing\n"
+   "                  the default gateway.  Useful when pushing private
+subnets.\n"
+   "--client-nat snat|dnat network netmask alias : on client add 1-to-1 NAT
+rule.\n"
++  "                  Set the network parameter to 'client-ip' to use the
+received ip from OpenVPN Server.\n"
+ #ifdef ENABLE_PUSH_PEER_INFO
+   "--push-peer-info : (client only) push client info to server.\n"
  #endif
- #endif
---=20
-2.6.2
+-- 
+1.7.9.5
 
+--047d7bb03a6ec8b43105230a7666
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
+<div dir=3D"ltr"><div><div>Allow the user to use the string &#39;client-ip&=
+#39; on the client-nat network configuration as a convenient way to use =C2=
+=A0the leased IP address received from OpenVPN server. Usage =C2=A0Example:=
+</div><div><br></div><div>client-nat snat client-ip 255.255.255.255 172.20.=
+1.15 # replaces the &#39;client-ip&#39; string with the leased IP address r=
+eceived from OpenVPN server</div></div><div><br></div><div><br></div><div>-=
+--</div><div><br></div><div>From 2774d25c4c2947be7d1516f01cd520856e683db2 M=
+on Sep 17 00:00:00 2001</div><div>From: Rafael Gava &lt;<a href=3D"mailto:r=
+afael.oliveira@...2056...">rafael.oliveira@...2056...</a>&gt;</div><div>Dat=
+e: Mon, 26 Oct 2015 18:31:12 -0200</div><div>Subject: [PATCH] Allow the use=
+r to use the string &#39;client-ip&#39; on the</div><div>=C2=A0client-nat n=
+etwork configuration as a convenient way to use</div><div>=C2=A0the leased =
+IP address received from OpenVPN server. Usage</div><div>=C2=A0Example:</di=
+v><div><br></div><div>client-nat snat client-ip 255.255.255.255 172.20.1.15=
+ # replaces the &#39;client-ip&#39; string with the leased IP address recei=
+ved from OpenVPN server</div><div><br></div><div>Signed-off-by: Rafael Gava=
+ &lt;<a href=3D"mailto:rafael.oliveira@...2056...">rafael.oliveira@...2059...=
+..</a>&gt;</div><div>---</div><div>=C2=A0src/openvpn/clinat.c =C2=A0| =C2=
+=A0 38 ++++++++++++++++++++++++++++++++++++++</div><div>=C2=A0src/openvpn/c=
+linat.h =C2=A0| =C2=A0 =C2=A02 ++</div><div>=C2=A0src/openvpn/init.c =C2=A0=
+ =C2=A0| =C2=A0 =C2=A02 ++</div><div>=C2=A0src/openvpn/options.c | =C2=A0 =
+=C2=A01 +</div><div>=C2=A04 files changed, 43 insertions(+)</div><div>=C2=
+=A0mode change 100644 =3D&gt; 100755 src/openvpn/clinat.c</div><div>=C2=A0m=
+ode change 100644 =3D&gt; 100755 src/openvpn/clinat.h</div><div>=C2=A0mode =
+change 100644 =3D&gt; 100755 src/openvpn/init.c</div><div>=C2=A0mode change=
+ 100644 =3D&gt; 100755 src/openvpn/options.c</div><div><br></div><div>diff =
+--git a/src/openvpn/clinat.c b/src/openvpn/clinat.c</div><div>old mode 1006=
+44</div><div>new mode 100755</div><div>index ddefe12..2ff4166</div><div>---=
+ a/src/openvpn/clinat.c</div><div>+++ b/src/openvpn/clinat.c</div><div>@@ -=
+124,12 +124,19 @@ add_client_nat_to_option_list (struct client_nat_option_l=
+ist *dest,</div><div>=C2=A0 =C2=A0 =C2=A0 =C2=A0return;</div><div>=C2=A0 =
+=C2=A0 =C2=A0}</div><div>=C2=A0</div><div>+ =C2=A0if (network &amp;&amp; !s=
+trcmp(network, &quot;client-ip&quot;))</div><div>+ =C2=A0 =C2=A0{</div><div=
+>+ =C2=A0 =C2=A0 =C2=A0msg (M_INFO, &quot;*** client-nat client-ip detected=
+...&quot;);</div><div>+ =C2=A0 =C2=A0 =C2=A0e.network =3D 0xFFFFFFFF;</div>=
+<div>+ =C2=A0 =C2=A0} else {</div><div>=C2=A0 =C2=A0e.network =3D getaddr(0=
+, network, 0, &amp;ok, NULL);</div><div>=C2=A0 =C2=A0if (!ok)</div><div>=C2=
+=A0 =C2=A0 =C2=A0{</div><div>=C2=A0 =C2=A0 =C2=A0 =C2=A0msg(msglevel, &quot=
+;client-nat: bad network: %s&quot;, network);</div><div>=C2=A0 =C2=A0 =C2=
+=A0 =C2=A0return;</div><div>=C2=A0 =C2=A0 =C2=A0}</div><div>+ =C2=A0 =C2=A0=
+}</div><div>+ =C2=A0 =C2=A0</div><div>=C2=A0 =C2=A0e.netmask =3D getaddr(0,=
+ netmask, 0, &amp;ok, NULL);</div><div>=C2=A0 =C2=A0if (!ok)</div><div>=C2=
+=A0 =C2=A0 =C2=A0{</div><div>@@ -263,3 +270,34 @@ client_nat_transform (con=
+st struct client_nat_option_list *list,</div><div>=C2=A0<span class=3D"" st=
+yle=3D"white-space:pre">	</span>}</div><div>=C2=A0 =C2=A0 =C2=A0}</div><div=
+>=C2=A0}</div><div>+</div><div>+/*</div><div>+* Replaces the client_ip toke=
+n with the IP received from OpenVPN</div><div>+*/</div><div>+bool=C2=A0</di=
+v><div>+update_client_ip_nat(struct client_nat_option_list *dest, in_addr_t=
+ local_ip)</div><div>+{</div><div>+ =C2=A0int i;</div><div>+ =C2=A0bool ret=
+ =3D false;</div><div>+</div><div>+ =C2=A0if (!dest)</div><div>+ =C2=A0 =C2=
+=A0return ret;</div><div>+</div><div>+ =C2=A0for (i=3D0; i &lt;=3D dest-&gt=
+;n; i++)=C2=A0</div><div>+ =C2=A0 =C2=A0{</div><div>+ =C2=A0 =C2=A0 =C2=A0s=
+truct client_nat_entry *nat_entry =3D &amp;dest-&gt;entries[i];</div><div>+=
+ =C2=A0 =C2=A0 =C2=A0if (nat_entry &amp;&amp; nat_entry-&gt;network =3D=3D =
+0xFFFFFFFF)=C2=A0</div><div>+ =C2=A0 =C2=A0 =C2=A0 =C2=A0{</div><div>+ =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0struct in_addr addr;</div><div>+ =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0</div><div>+ =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0nat_=
+entry-&gt;network =3D ntohl(local_ip);</div><div>+ =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0addr.s_addr =3D nat_entry-&gt;network;</div><div>+ =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0char *dot_ip =3D inet_ntoa(addr);</div><div>+</div><div=
+>+ =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0msg (M_INFO, &quot;CNAT - Updating NAT=
+ table from client-ip to: %s&quot;, dot_ip);=C2=A0</div><div>+ =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0ret =3D true;</div><div>+ =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0}</div><div>+ =C2=A0 =C2=A0}</div><div>+</div><div>+ =C2=A0return ret;</=
+div><div>+}</div><div>diff --git a/src/openvpn/clinat.h b/src/openvpn/clina=
+t.h</div><div>old mode 100644</div><div>new mode 100755</div><div>index a57=
+79e1..156e84c</div><div>--- a/src/openvpn/clinat.h</div><div>+++ b/src/open=
+vpn/clinat.h</div><div>@@ -62,4 +62,6 @@ void client_nat_transform (const s=
+truct client_nat_option_list *list,</div><div>=C2=A0<span class=3D"" style=
+=3D"white-space:pre">			</span> =C2=A0 struct buffer *ipbuf,</div><div>=C2=
+=A0<span class=3D"" style=3D"white-space:pre">			</span> =C2=A0 const int d=
+irection);</div><div>=C2=A0</div><div>+bool update_client_ip_nat(struct cli=
+ent_nat_option_list *dest, in_addr_t local_ip);</div><div>+</div><div>=C2=
+=A0#endif</div><div>diff --git a/src/openvpn/init.c b/src/openvpn/init.c</d=
+iv><div>old mode 100644</div><div>new mode 100755</div><div>index c5c0ab6..=
+f54bc14</div><div>--- a/src/openvpn/init.c</div><div>+++ b/src/openvpn/init=
+.c</div><div>@@ -1481,6 +1481,8 @@ do_open_tun (struct context *c)</div><di=
+v>=C2=A0<span class=3D"" style=3D"white-space:pre">			</span> =C2=A0 =C2=A0=
+ =C2=A0 c-&gt;c1.tuntap-&gt;post_open_mtu,</div><div>=C2=A0<span class=3D""=
+ style=3D"white-space:pre">			</span> =C2=A0 =C2=A0 =C2=A0 SET_MTU_TUN | SE=
+T_MTU_UPPER_BOUND);</div><div>=C2=A0</div><div>+<span class=3D"" style=3D"w=
+hite-space:pre">	</span>update_client_ip_nat(c-&gt;options.client_nat, c-&g=
+t;c1.tuntap-&gt;local);</div><div>+</div><div>=C2=A0 =C2=A0 =C2=A0 =C2=A0re=
+t =3D true;</div><div>=C2=A0 =C2=A0 =C2=A0 =C2=A0static_context =3D c;</div=
+><div>=C2=A0#ifndef TARGET_ANDROID</div><div>diff --git a/src/openvpn/optio=
+ns.c b/src/openvpn/options.c</div><div>old mode 100644</div><div>new mode 1=
+00755</div><div>index 2f8915d..c08e775</div><div>--- a/src/openvpn/options.=
+c</div><div>+++ b/src/openvpn/options.c</div><div>@@ -223,6 +223,7 @@ stati=
+c const char usage_message[] =3D</div><div>=C2=A0 =C2=A0&quot;--redirect-pr=
+ivate [flags]: Like --redirect-gateway, but omit actually changing\n&quot;<=
+/div><div>=C2=A0 =C2=A0&quot; =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0the default gateway.=C2=A0 Useful when pushing private sub=
+nets.\n&quot;</div><div>=C2=A0 =C2=A0&quot;--client-nat snat|dnat network n=
+etmask alias : on client add 1-to-1 NAT rule.\n&quot;</div><div>+ =C2=A0&qu=
+ot; =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0Set the n=
+etwork parameter to &#39;client-ip&#39; to use the received ip from OpenVPN=
+ Server.\n&quot;</div><div>=C2=A0#ifdef ENABLE_PUSH_PEER_INFO</div><div>=C2=
+=A0 =C2=A0&quot;--push-peer-info : (client only) push client info to server=
+.\n&quot;</div><div>=C2=A0#endif</div><div>--=C2=A0</div><div>1.7.9.5</div>=
+<div><br></div></div>
 
---X06WpsUqPvWmVxCwOvwp9ExfLucGirueN
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-Comment: https://keybase.io/valdikss
-
-iQIcBAEBCAAGBQJWLrCnAAoJEFzXIC7viPdy2Z4P/RRZI5jhLNumQPaCIGgd8a91
-z8mpV8PQVu0oTFfCiWMkao4Bq9urTppaQ9ozxsc2X4+6nOv1zkPFMbNa0btj/O8q
-tgS7qBi3/nkcpWzypJCS+098zhrBV0U93ZwRz4NF1L+PX3fewluz+zUWY7m0SLIF
-GNEJ7FOOz7ECHcc4DoH4f4/PCcm+rsz6jtrLIesYr9igB+F6MJI5uN6xtQb+xdYB
-Tq+EzEQTr7zYhl+pvoLOqAsjmczfy8aQwPLJ+bbys6JcO+/dOPof1gWo/ohPcByK
-SmqzZLrWAEeufUirE40sixKLgiKC9SABzhRnWsTwTZGRvXpChVVddxkyq3P+PwDo
-0dswDaatvVGwiLNCvsdae+KyyrefRBT/pygRR9qpKRLO/8LcOBxo34Z32DDgxbYY
-STw1ZTF4cZ+9GGFGjSAp3RZP5H9MLK6m1UMs2U/10NUlVYeHigyWfJQfwRJAndkp
-zYRV1zK5U6skIq/ZImsqM8CwJiia64HZSIwxxqrYjH3vBWNl7EnEgqZHqic2IoUL
-ljsFHXbSVzsw98qA+LSPTcVhMFbIc6mo0DYLHXsOx+g6Syyo2VfvtJ7lOPDEN9cs
-ahfWYRflvy1JaeAOQj4tis8W08MXdvJ5FpCtNa6LHrDzPilroigiV7vhZUAEjF7z
-X9ZBy8k5tPPpbKn++l/X
-=GQDM
------END PGP SIGNATURE-----
-
---X06WpsUqPvWmVxCwOvwp9ExfLucGirueN--
+--047d7bb03a6ec8b43105230a7666--
 
