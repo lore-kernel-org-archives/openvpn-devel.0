@@ -1,12 +1,11 @@
 From: "Morris, Russell" <rmorris@...1315...>
-Date: Wed, 28 Oct 2015 12:39:33 +0000
-Message-ID: <BY2PR08MB13808E465DF30E92364A69C3B9210@...2086...>
+Date: Thu, 29 Oct 2015 16:53:37 +0000
+Message-ID: <SN1PR08MB1391E582BB5D8D29997D84A3B9200@...2065...>
 References: <562DF8BA.1090406@...515...>
 	<071C5EF6-E94A-422D-9456-0E6015C10F8D@...277...>
 	<CAKuzo_if_4L81xNZKDPJhek_FicxM-c2ZvWkYcZq1tMjGpXXvw@...278...>
 	<E8664D21-2E83-4E50-AB23-B0B36533F7E0@...277...>
-	<5630AE4D.8040401@...2080...>
-In-Reply-To: <5630AE4D.8040401@...2080...>
+	<5630AE4D.8040401@...2080...> 
 Content-Language: en-US
 MIME-Version: 1.0
 Subject: Re: [Openvpn-devel] Topics for today's (Monday,
@@ -22,6 +21,24 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, Gmail <volleynbike@...277...>, Selva Nair <selva.nair@...277...>
+
+Hi,
+
+One more thought on this - is there a way to get debug / logging output fro=
+m the TAP adapter? Trying to understand the "shutdown" of the TAP adapter w=
+ith standby / resume of Windows.
+
+Thanks,
+... Russell
+
+
+-----Original Message-----
+From: Morris, Russell=20
+Sent: Wednesday, October 28, 2015 7:39 AM
+To: openvpn-devel@lists.sourceforge.net; Gmail <volleynbike@...277...>; Sel=
+va Nair <selva.nair@...277...>
+Subject: RE: [Openvpn-devel] Topics for today's (Monday, 26th Oct 2015) com=
+munity meeting
 
 Hi,
 
