@@ -1,11 +1,13 @@
-Message-ID: <B461DFA92EAF449D9D5D8F6941B4E1EB@...1853...>
-From: <debbie10t@...277...>
-References: <562DF8BA.1090406@...515...><071C5EF6-E94A-422D-9456-0E6015C10F8D@...277...><CAKuzo_if_4L81xNZKDPJhek_FicxM-c2ZvWkYcZq1tMjGpXXvw@...278...><E8664D21-2E83-4E50-AB23-B0B36533F7E0@...277...><5630AE4D.8040401@...2080...>
-	<SN1PR08MB1391E582BB5D8D29997D84A3B9200@...2065...>
-Date: Thu, 29 Oct 2015 20:35:30 -0000
+References: <1397645317-20116-2-git-send-email-Holger.Kummert@...1516...>
+	<1404459325-11064-1-git-send-email-Holger.Kummert@...1516...>
+	<561D8BCF.60304@...1856...>
+From: Holger Kummert <Holger.Kummert@...1516...>
+Message-ID: <563371FD.70206@...1516...>
+Date: Fri, 30 Oct 2015 14:34:53 +0100
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] Topics for today's (Monday,
-	26th Oct 2015) community meeting
+In-Reply-To: <561D8BCF.60304@...1856...>
+Subject: Re: [Openvpn-devel] [PATCHv2 1/2] Get NTLMv1 and NTLMv2 up and
+ running
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,124 +16,107 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; format=flowed; charset="iso-8859-1";
-	reply-type=original
+Content-Type: text/plain; charset="windows-1252"; format=flowed
 Content-Transfer-Encoding: 7bit
-To: "Morris, Russell" <rmorris@...1315...>, openvpn-devel@lists.sourceforge.net, Gmail <volleynbike@...277...>, Selva Nair <selva.nair@...277...>
-
-I would like to help on this
-
-I run a W7 PC which goes into standby 10 or more times per day
-and it *Never* has an issue on resume. I will post full details soon
-(when I can remember what I did to solve it)..
-Regards
+To: openvpn-devel@lists.sourceforge.net
 
 
------ Original Message ----- 
-From: "Morris, Russell" <rmorris@...1315...>
-To: <openvpn-devel@lists.sourceforge.net>; "Gmail" <volleynbike@...277...>; 
-"Selva Nair" <selva.nair@...277...>
-Sent: Thursday, October 29, 2015 4:53 PM
-Subject: Re: [Openvpn-devel] Topics for today's (Monday, 26th Oct 2015) 
-community meeting
+Hello Steffan,
+
+Am 14.10.2015 um 00:55 schrieb Steffan Karger:
+> Hi Holgert,
+>
+> Apologies for taking so long to respond.  This patch came up again at
+> the hackathon last weekend.  Since we can not thoroughly test this
+
+no problem. I'm glad that someone picks this topic up.
+
+> ourselves, but the patch is coming from a known source and you report
+> successful tests, we decided that 'stare at code' should suffice.
+> Hereby the results of my staring.
+>
+> First, ntlm.c was a type mess before your patch, and still is after.
+> I'll not comment on that any further, but will send a follow-up patch to
+> fix it later on.  It would be highly appreciated if you could give that
+> patch a test spin for me.
+
+Hmm, setting up an environment for testing is a bit lengthy.
+But let's see ...
+
+>
+> On 04-07-14 09:35, Holger Kummert wrote:
+>> +  const char trailingBytesForUTF8[256] = {
+>> +              0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+>> +              0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+>> +              0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+>> +              0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+>> +              0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+>> +              0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+>> +              1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+>> +              2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2, 3,3,3,3,3,3,3,3,4,4,4,4,5,5,5,5
+>> +  };
+>
+> Not sure if the compiler will actually put this on the stack, but this
+> can be static const.
+>
+>> +        if (ch >= UNI_SUR_HIGH_START && ch <= UNI_SUR_LOW_END) {
+>> +          msg (M_INFO, "Warning: Illegal character value: %x is in reserved area of UTF-16 [%x, %x]", UNI_SUR_HIGH_START, UNI_SUR_LOW_END);
+>> +          return -1;
+>> +        }
+>
+> This msg() call is missing an argument (I think 'ch').
+
+Yes, obviously true.
+
+>
+>>    static void
+>> -add_security_buffer(int sb_offset, void *data, int length, unsigned char *msg_buf, int *msg_bufpos)
+>> +add_security_buffer(int sb_offset, void *data, int length, unsigned char *msg_buf, int *msg_bufpos, int msg_buflen)
+>>    {
+>> +  if ((*msg_bufpos - *msg_buf) + length > msg_buflen) {
+>> +    msg (M_INFO, "Warning: Not enough space in destination buffer");
+>> +    return;
+>> +  }
+>> +
+>
+> I don't think this is what you intended, or does *msg_buf contain some
+> magic length field?  You probably want something like:
+>
+>     ASSERT (length > 0 && *msg_bufpos > 0 && msg_buflen > 0);
+>     if (msg_buflen - length < msg_bufpos) { /* error */ }
+>
+> That should be an integer-overflow safe overflow check.
+
+Hmm, I think it won't work as msg_bufpos is a pointer into memory, right?
+What about improving the first version with
+
+   ASSERT (length > 0 && *msg_bufpos > 0 && msg_buflen > 0);
+   if ((msg_bufpos - msg_buf) + length > msg_buflen) {
+     ...
+?
+
+>
+> Since we're also writing to sb_offset to sb_offset+5, we should also add
+> a check on sb_offset:
+>
+>     if (msg_buflen - 5 >= sb_offset) { /* error */ }
+
+Yes, makes sense.
 
 
-> Hi,
+Regards,
+Holger
+
 >
-> One more thought on this - is there a way to get debug / logging output 
-> from the TAP adapter? Trying to understand the "shutdown" of the TAP 
-> adapter with standby / resume of Windows.
+> (And wow, this function was/is absolutely terrifying.  It seems like a
+> miracle that this code ever worked...)
 >
-> Thanks,
-> ... Russell
->
->
-> -----Original Message-----
-> From: Morris, Russell
-> Sent: Wednesday, October 28, 2015 7:39 AM
-> To: openvpn-devel@lists.sourceforge.net; Gmail <volleynbike@...277...>; 
-> Selva Nair <selva.nair@...277...>
-> Subject: RE: [Openvpn-devel] Topics for today's (Monday, 26th Oct 2015) 
-> community meeting
->
-> Hi,
->
-> Agreed! Fix the underlying problem, don't put a band-aid on it ... ;-). So 
-> do we start from the TAP adapter, which seems to "fail" first, then there 
-> is a ripple effect? Or look at OpenVPN - should it really exit, or just 
-> report TAP not present, and keep trying to reconnect (would address 
-> standby / resume)?
->
-> Thoughts?
->
-> Thanks,
-> ... Russell
->
->
-> -----Original Message-----
-> From: David Sommerseth [mailto:openvpn@...2080...]
-> Sent: Wednesday, October 28, 2015 6:15 AM
-> To: Gmail <volleynbike@...277...>; Selva Nair <selva.nair@...277...>
-> Cc: openvpn-devel@lists.sourceforge.net
-> Subject: Re: [Openvpn-devel] Topics for today's (Monday, 26th Oct 2015) 
-> community meeting
->
-> On 27/10/15 07:07, Gmail wrote:
->> On Oct 26, 2015, at 8:41 AM, Selva Nair <selva.nair@...277...
->> <mailto:selva.nair@...277...>> wrote:
->>
->>>
->>> On Mon, Oct 26, 2015 at 11:17 AM, Gmail <volleynbike@...277...
->>> <mailto:volleynbike@...277...>> wrote:
->>>
->>>     Regarding the instability of connection in the windows version:  I
->>>     overcame this long ago (and works well to this date) by building a
->>>     tiny script that periodically pings the the ovpn gateway (server).
->>>     If no ping reply then restart the service. Very simple. Perhaps
->>>     this could be built into the code as an option?
->>>
->>>
->>> Oh, please, no... If the TAP driver has stability woes it needs to be
->>> fixed. True loss of network connectivity is already handled by
->>> internal pings and ping-restarts. It would be a grave mistake to add
->>> such options to hide any stability issues.
->>>
->>> Cheers,
->>>
->>> Selva
->>>
->> Your concern is understood and acknowledged. Perhaps the ping-restart
->> idea is useful in the interim until the cause is located?
->
-> This will work in regards to ensure that openvpn client and server will
-> have a working connection.  Configuring OpenVPN with
-> --ping/--ping-restart (or the --keepalive "macro", which does it even
-> better), is generally recommended and is the best way to provide a more
-> "stable" VPN experience.
->
-> If anything happens with the TAP driver, OpenVPN will not re-initialize
-> the TAP adapter - thus OpenVPN should stop running.  When the TAP driver
-> have an issue, it is just like your Ethernet or WIFI driver have an
-> issue.  If the TAP adapter "disappears", it's just like unplugging your
-> network adapter in your computer, in these situations OpenVPN should
-> really stop.
->
-> So I do agree with Selva, if there are stability issues with the TAP
-> driver, those issues should be fixed in the driver.  If there are things
-> outside of OpenVPN or the TAP driver which does funky stuff, that should
-> as far as possible be fixed there.
->
->
-> -- 
-> kind regards,
->
-> David Sommerseth
->
+> -Steffan
 >
 > ------------------------------------------------------------------------------
 > _______________________________________________
 > Openvpn-devel mailing list
 > Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel 
-
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+>
 
