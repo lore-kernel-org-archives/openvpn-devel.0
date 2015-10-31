@@ -1,14 +1,9 @@
-References: <1397645317-20116-2-git-send-email-Holger.Kummert@...1516...>
-	<1404459325-11064-1-git-send-email-Holger.Kummert@...1516...>
-	<561D8BCF.60304@...1856...> <563371FD.70206@...1516...>
-	<CAA1AbxKuF3ewuhn_XTvymCfq_my8vqK+-Q1mj59VBZp4jOK7VA@...278...>
-From: Holger Kummert <Holger.Kummert@...1516...>
-Message-ID: <563379B3.90905@...1516...>
-Date: Fri, 30 Oct 2015 15:07:47 +0100
 MIME-Version: 1.0
-In-Reply-To: <CAA1AbxKuF3ewuhn_XTvymCfq_my8vqK+-Q1mj59VBZp4jOK7VA@...278...>
-Subject: Re: [Openvpn-devel] [PATCHv2 1/2] Get NTLMv1 and NTLMv2 up and
- running
+From: Selva Nair <selva.nair@...277...>
+Date: Sat, 31 Oct 2015 13:03:42 -0400
+Message-ID: <CAKuzo_hdohByd29VTjx=Q7bM9zZCqp85W=u=nJwJ3-HLqN1zSg@...278...>
+Content-Type: multipart/alternative; boundary=001a11443346dff50405236987e3
+Subject: [Openvpn-devel] Windows: stopping openvpn using nssm
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,59 +12,41 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Steffan Karger <steffan@...1856...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
+--001a11443346dff50405236987e3
+Content-Type: text/plain; charset=UTF-8
 
+Hi,
 
-Am 30.10.2015 um 14:58 schrieb Steffan Karger:
-> Hi Holger,
->
-> On Fri, Oct 30, 2015 at 2:34 PM, Holger Kummert
-> <Holger.Kummert@...1489...> wrote:
->>>>     static void
->>>> -add_security_buffer(int sb_offset, void *data, int length, unsigned char *msg_buf, int *msg_bufpos)
->>>> +add_security_buffer(int sb_offset, void *data, int length, unsigned char *msg_buf, int *msg_bufpos, int msg_buflen)
->>>>     {
->>>> +  if ((*msg_bufpos - *msg_buf) + length > msg_buflen) {
->>>> +    msg (M_INFO, "Warning: Not enough space in destination buffer");
->>>> +    return;
->>>> +  }
->>>> +
->>>
->>> I don't think this is what you intended, or does *msg_buf contain some
->>> magic length field?  You probably want something like:
->>>
->>>      ASSERT (length > 0 && *msg_bufpos > 0 && msg_buflen > 0);
->>>      if (msg_buflen - length < msg_bufpos) { /* error */ }
->>>
->>> That should be an integer-overflow safe overflow check.
->>
->> Hmm, I think it won't work as msg_bufpos is a pointer into memory, right?
->> What about improving the first version with
->>
->>     ASSERT (length > 0 && *msg_bufpos > 0 && msg_buflen > 0);
->>     if ((msg_bufpos - msg_buf) + length > msg_buflen) {
->>       ...
->
-> Seems I forgot the * before the second msg_bufpos, sorry.  msg_bufpos
-> itself is a pointer indeed, but *msg_bufpos is (used as) an offset
-> into msg_buf:
->
->     memcpy(&msg_buf[*msg_bufpos], data, msg_buf[sb_offset]);
->
-> msg_bufpos (without the *) is not related to msg_buf.
+When nssm is used to start openvpn, "nssm stop service-name" appears to
+terminate the process not so gracefully. Especially, the log doesn't show
+the usual "SIGTERM received, sending exit-notify" (for example) nor does
+the the management interface get the state change message saying EXITING.
+(Tested on version 2.3.6)
 
-Ah, then your first proposal makes sense
-(i.e. if (msg_buflen - length < *msg_bufpos) )
+I thought adding --service to the command line may cure this, but it
+doesn't. Any suggestions on how to teach openvpn to process termination by
+nssm as a SIGTERM, or make nssm send a SIGTERM?
 
-We could take that.
+Thanks,
 
-Sry, didn't look into the ntlm-code ...
+Selva
 
+--001a11443346dff50405236987e3
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Regards,
-Holger
+<div dir=3D"ltr"><div><div>Hi,<br><br></div>When nssm is used to start open=
+vpn, &quot;nssm stop service-name&quot; appears to terminate the process no=
+t so gracefully. Especially, the log doesn&#39;t show the usual &quot;SIGTE=
+RM received, sending exit-notify&quot; (for example) nor does the the manag=
+ement interface get the state change message saying EXITING.=C2=A0 (Tested =
+on version 2.3.6)<br><br></div><div>I thought adding --service to the comma=
+nd line may cure this, but it doesn&#39;t. Any suggestions on how to teach =
+openvpn to process termination by nssm as a SIGTERM, or make nssm send a SI=
+GTERM?<br><br></div><div>Thanks,<br><br></div><div>Selva<br></div><div><br>=
+</div><br></div>
+
+--001a11443346dff50405236987e3--
 
