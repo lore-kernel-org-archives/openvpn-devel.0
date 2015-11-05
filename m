@@ -1,9 +1,8 @@
-From: Selva Nair <selva.nair@...277...>
-Date: Wed,  4 Nov 2015 13:59:38 -0500
-Message-Id: <1446663578-14471-1-git-send-email-selva.nair@...277...>
-In-Reply-To: <20151104162034.GH24952@...1296...>
-References: <20151104162034.GH24952@...1296...>
-Subject: [Openvpn-devel] [PATCH] Fix termination when windows suspends/sleeps
+From: Lev Stipakov <lstipakov@...277...>
+Date: Thu,  5 Nov 2015 18:06:26 +0200
+Message-Id: <1446739586-18192-1-git-send-email-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH] Enable replay-window usage for
+	configurations with both UDP and TCP remotes
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,34 +15,32 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-When TUN/TAP I/O operation is aborted, restart with a SIGHUP instead of
-terminate. The abort error from TAP is often triggered by system suspend
-which is fully recoverable on resume. Catastrophic events will get caught
-later during the restart.  This solves the abnormal termination during
-suspend/resume.
-
-Signed-off-by: Selva Nair <selva.nair@...277...>
+Signed-off-by: Lev Stipakov <lstipakov@...277...>
 ---
- src/openvpn/forward.c | 5 +++--
+ src/openvpn/options.c | 5 +++--
  1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index 62eb6fc..cef063d 100644
---- a/src/openvpn/forward.c
-+++ b/src/openvpn/forward.c
-@@ -958,8 +958,9 @@ read_incoming_tun (struct context *c)
-   /* Was TUN/TAP I/O operation aborted? */
-   if (tuntap_abort(c->c2.buf.len))
-   {
--     register_signal(c, SIGTERM, "tun-abort");
--     msg(M_FATAL, "TUN/TAP I/O operation aborted, exiting");
-+     register_signal(c, SIGHUP, "tun-abort");
-+     c->persist.restart_sleep_seconds = 10;
-+     msg(M_INFO, "TUN/TAP I/O operation aborted, restarting");
-      perf_pop();
-      return;
-   }
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 2f8915d..de6e453 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -2110,12 +2110,13 @@ options_postprocess_verify_ce (const struct options *options, const struct conne
+ #ifdef ENABLE_CRYPTO
+ 
+   /*
+-   * Check consistency of replay options
++   * Check consistency of replay options.
++   * Use nonfatal warning in case of config contains both UDP and TCP remotes.
+    */
+   if ((!proto_is_udp(ce->proto))
+       && (options->replay_window != defaults.replay_window
+ 	  || options->replay_time != defaults.replay_time))
+-    msg (M_USAGE, "--replay-window only makes sense with --proto udp");
++    msg (M_WARN, "--replay-window only makes sense with --proto udp");
+ 
+   if (!options->replay
+       && (options->replay_window != defaults.replay_window
 -- 
-2.6.2
+1.9.1
 
 
