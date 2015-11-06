@@ -1,8 +1,10 @@
 From: Steffan Karger <steffan@...1856...>
-Date: Thu,  5 Nov 2015 23:17:01 +0100
-Message-Id: <1446761821-14013-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH (2.3)] Fix (potential) memory leak in
-	init_route_list()
+Date: Fri,  6 Nov 2015 08:42:39 +0100
+Message-Id: <1446795759-3288-1-git-send-email-steffan@...1856...>
+In-Reply-To: <1446761780-13816-1-git-send-email-steffan@...1856...>
+References: <1446761780-13816-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH (master,
+	v2)] Fix (potential) memory leak in init_route_list()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,10 +21,12 @@ init_route() can allocate memory in netlist, but fail in many more ways
 than just fail to allocate.  Thus, always check and clean up netlist if
 needed, instead of just when init_route() succeeds.
 
-This fix is for release/2.3 only.  The master branch uses a gc to clean
-up the netlist, and needs a different patch for a similar problem.
+This fix is for master only.  The release/2.3 branch cleans up netlist
+immediately, and needs a different patch for a similar problem.
 
 Found using coverity.
+
+v2: initialize netlist to NULL
 
 Signed-off-by: Steffan Karger <steffan@...1856...>
 ---
@@ -30,29 +34,35 @@ Signed-off-by: Steffan Karger <steffan@...1856...>
  1 file changed, 3 insertions(+), 2 deletions(-)
 
 diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index bb998cb..a3d4b71 100644
+index 096e3bc..58b16c0 100644
 --- a/src/openvpn/route.c
 +++ b/src/openvpn/route.c
-@@ -648,7 +648,7 @@ init_route_list (struct route_list *rl,
-     bool warned = false;
-     for (i = 0; i < opt->n; ++i)
+@@ -634,7 +634,7 @@ init_route_list (struct route_list *rl,
+     struct route_option *ro;
+     for (ro = opt->routes; ro; ro = ro->next)
        {
 -        struct addrinfo* netlist;
 +        struct addrinfo* netlist = NULL;
  	struct route_ipv4 r;
  
- 	if (!init_route (&r,
-@@ -675,8 +675,9 @@ init_route_list (struct route_list *rl,
- 		      }
- 		  }
+ 	if (!init_route (&r, &netlist, ro, rl))
+@@ -642,7 +642,6 @@ init_route_list (struct route_list *rl,
+ 	else
+ 	  {
+             struct addrinfo* curele;
+-            gc_addspecial(netlist, &gc_freeaddrinfo_callback, &gc);
+             for (curele	= netlist; curele; curele = curele->ai_next)
+ 	      {
+                 struct route_ipv4 *new;
+@@ -653,6 +652,8 @@ init_route_list (struct route_list *rl,
+                 rl->routes = new;
  	      }
--            freeaddrinfo(netlist);
  	  }
 +	if (netlist)
-+	  freeaddrinfo(netlist);
++	  gc_addspecial(netlist, &gc_freeaddrinfo_callback, &gc);
        }
-     rl->n = j;
    }
+ 
 -- 
 2.5.0
 
