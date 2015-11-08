@@ -1,8 +1,7 @@
-MIME-Version: 1.0
-From: Selva Nair <selva.nair@...277...>
-Date: Sat, 7 Nov 2015 00:35:12 -0500
-Message-ID: <CAKuzo_hsHus7dgLMi8D=SzQn4f+2GNQJjx8HACvD3xmsD=Ux5w@...278...>
-Subject: [Openvpn-devel] Adding a ctrl-C handler in windows
+From: Steffan Karger <steffan@...1856...>
+Date: Sun,  8 Nov 2015 13:04:27 +0100
+Message-Id: <1446984267-3323-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH] Fix unintialized variable in plugin_vlog()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,28 +10,41 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+Does not seem to be a problem in normal usage, because one of the PLOG_ERR,
+PLOG_WARN, PLOG_NOTE or PLOG_DEBUG will be set, and will cause msg_flags
+to be initialized.  In the worst case, msg_flags might accidentally
+end up having M_FATAL set, causing openvpn to exit.
 
-I plan to add a control-C handler in win32.c. The handler will simply
-map it to SIGTERM. Is there any particular reason why control-C is not
-currently handled?
+This was previously fixed in the master branch (5ead2ae0), but was not
+backported to release/2.3, probably because that commit fixed other parts
+of the code too, and those parts are quite different between master and
+release/2.3.
 
-We need this functionality to use nssm properly. When
-openvpn is started by nssm, the service has no good ways of
-gracefully terminating the process. "nssm stop service-name" can send
-control-C but that is not handled by openvpn. So the default handler
-catches the signal and just kills the process -- thus the MI or the logs
-get no reports of the exit, no exit-notify to the remote are
-generated etc..
+Re-discovered by coverity.
 
-Hope I'm not missing some obvious ways to correctly terminate the
-process from nssm.
+Signed-off-by: Steffan Karger <steffan@...1856...>
+---
+ src/openvpn/plugin.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Thanks,
+diff --git a/src/openvpn/plugin.c b/src/openvpn/plugin.c
+index 0948f23..54c5b52 100644
+--- a/src/openvpn/plugin.c
++++ b/src/openvpn/plugin.c
+@@ -291,7 +291,7 @@ plugin_init_item (struct plugin *p, const struct plugin_option *o)
+ static void
+ plugin_vlog (openvpn_plugin_log_flags_t flags, const char *name, const char *format, va_list arglist)
+ {
+-  unsigned int msg_flags;
++  unsigned int msg_flags = 0;
+ 
+   if (!format)
+     return;
+-- 
+2.5.0
 
-Selva
 
