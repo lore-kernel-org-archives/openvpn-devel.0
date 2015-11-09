@@ -1,14 +1,10 @@
-References: <1447093954-5508-1-git-send-email-dpb@...2087...>
-From: ValdikSS <iam@...2070...>
-Message-ID: <5640F3F4.5060302@...2070...>
-Date: Mon, 9 Nov 2015 22:28:52 +0300
-MIME-Version: 1.0
-In-Reply-To: <1447093954-5508-1-git-send-email-dpb@...2087...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature";
-	boundary="9WGQaO5SRNxspKC7FQN15Me5h0StSSqHC"
-Subject: Re: [Openvpn-devel] [PATCH] Fix a few typos in the Russian
- localization
+From: Selva Nair <selva.nair@...277...>
+Date: Mon,  9 Nov 2015 15:35:23 -0500
+Message-Id: <1447101323-1727-1-git-send-email-selva.nair@...277...>
+In-Reply-To: <56404FD0.9060100@...515...>
+References: <56404FD0.9060100@...515...>
+Subject: [Openvpn-devel] [PATCH for gui] Do not disconnect on suspend by
+	default
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,93 +13,38 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: =?UTF-8?B?0KDQvtC80LDQvSDQlNC+0L3Rh9C10L3QutC+?= <dpb@...2087...>, openvpn-devel@lists.sourceforge.net
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---9WGQaO5SRNxspKC7FQN15Me5h0StSSqHC
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net, samuli@...515...
 
-VGhhbmtzIGZvciB0aGUgcGF0Y2ggYnV0IGFsbCB0aGVzZSBhbmQgYW5vdGhlciB0eXBvcyBhcmUg
-YWxyZWFkeSBmaXhlZCBpbiB0aGUgbWF0dG9jaydzIHJlcG9zaXRvcnkKaHR0cHM6Ly9naXRodWIu
-Y29tL21hdHRvY2svb3BlbnZwbi1ndWkvY29tbWl0L2I1YjAwYzI3MjY3NDIzM2M1Yzk1MWMwZTQ3
-M2YyMzQxMDY1YTlmYzQKYW5kIHdvdWxkIGJlIGluY2x1ZGVkIGluIG5leHQgcmVsZWFzZS4KCk9u
-IDA5LjExLjIwMTUgMjE6MzIsINCg0L7QvNCw0L0g0JTQvtC90YfQtdC90LrQviB3cm90ZToKPiAt
-LS0KPiAgcmVzL29wZW52cG4tZ3VpLXJlcy1ydS5yYyB8IDggKysrKy0tLS0KPiAgMSBmaWxlIGNo
-YW5nZWQsIDQgaW5zZXJ0aW9ucygrKSwgNCBkZWxldGlvbnMoLSkKPgo+IGRpZmYgLS1naXQgYS9y
-ZXMvb3BlbnZwbi1ndWktcmVzLXJ1LnJjIGIvcmVzL29wZW52cG4tZ3VpLXJlcy1ydS5yYwo+IGlu
-ZGV4IGE5ZjhmNDguLjA4ZTdmOTcgMTAwNjQ0Cj4gLS0tIGEvcmVzL29wZW52cG4tZ3VpLXJlcy1y
-dS5yYwo+ICsrKyBiL3Jlcy9vcGVudnBuLWd1aS1yZXMtcnUucmMKPiBAQCAtMTIzLDEyICsxMjMs
-MTIgQEAgRk9OVCA4LCAiTWljcm9zb2Z0IFNhbnMgU2VyaWYiCj4gIExBTkdVQUdFIExBTkdfUlVT
-U0lBTiwgU1VCTEFOR19ERUZBVUxUCj4gIEJFR0lOCj4gICAgICBJQ09OIElEX0lDT19BUFAsIDAs
-IDgsIDE2LCAyMSwgMjAKPiAtICAgIExURVhUICJPcGVuVlBOIEdVSSB2IiBQQUNLQUdFX1ZFUlNJ
-T04gIiAtINCz0YDQsNGE0LjRh9GB0LXQutC40Lkg0LjQvdGC0LXRgNGE0LXQudGBIFdpbmRvd3Mg
-0LTQu9GPIE9wZW5WUE5cbiIgXAo+ICsgICAgTFRFWFQgIk9wZW5WUE4gR1VJIHYiIFBBQ0tBR0Vf
-VkVSU0lPTiAiIC0g0LPRgNCw0YTQuNGH0LXRgdC60LjQuSDQuNC90YLQtdGA0YTQtdC50YEgV2lu
-ZG93cyDQtNC70Y8gT3BlblZQTlxuIiBcCj4gICAgICAgICAgICAiQ29weXJpZ2h0IChDKSAyMDA0
-LTIwMDUgTWF0aGlhcyBTdW5kbWFuIDxpbmZvQC4uLjQ1NC4uLj5cbiIgXAo+ICAgICAgICAgICAg
-Imh0dHA6Ly9vcGVudnBuLnNlLyIsIDAsIDM2LCAxNSwgMjA2LCAyNgo+ICAgICAgTFRFWFQgIk9w
-ZW5WUE4gLSDQv9GA0LjQu9C+0LbQtdC90LjQtSDQtNC70Y8g0LHQtdC30L7Qv9Cw0YHQvdC+0LPQ
-viDRgtGD0L3QvdC10LvQuNGA0L7QstCw0L3QuNGPIElQLdGB0LXRgtC10LkgIiBcCj4gICAgICAg
-ICAgICAi0YfQtdGA0LXQtyDQtdC00LjQvdGB0YLQstC10L3QvdGL0LkgVURQLdC/0L7RgNGCINGB
-INC/0L7QtNC00LXRgNC20LrQvtC5INCw0YPRgtC10L3RgtC40YTQuNC60LDRhtC40Lgg0YHQtdGB
-0YHQuNC5ICIgXAo+IC0gICAgICAgICAgItC4INC+0LHQvNC10L3QsCDQutC70Y7Rh9Cw0LzQuCDQ
-vdCwINC+0YHQvdC+0LLQtSBTU0wvVExTLCDRiNC40YTRgNC+0LLQsNC90LjRjywg0LDRg9GC0LXQ
-vdGG0LjRhNC40LrQsNGG0LjQuCAiIFwKPiArICAgICAgICAgICLQuCDQvtCx0LzQtdC90LAg0LrQ
-u9GO0YfQsNC80Lgg0L3QsCDQvtGB0L3QvtCy0LUgU1NML1RMUywg0YjQuNGE0YDQvtCy0LDQvdC4
-0Y8sINCw0YPRgtC10L3RgtC40YTQuNC60LDRhtC40LggIiBcCj4gICAgICAgICAgICAi0Lgg0YHQ
-ttCw0YLQuNGPINC/0LDQutC10YLQvtCyLlxuIiBcCj4gICAgICAgICAgICAiXG4iIFwKPiAgICAg
-ICAgICAgICJDb3B5cmlnaHQgKEMpIDIwMDItMjAwNSBPcGVuVlBOIFNvbHV0aW9ucyBMTEMgPGlu
-Zm9ALi4uNTE1Li4uPlxuIiBcCj4gQEAgLTE2NCw3ICsxNjQsNyBAQCBCRUdJTgo+ICAgICAgSURT
-X01FTlVfU0VUVElOR1MgItCd0LDRgdGC0YDQvtC50LrQuOKApiIKPiAgICAgIElEU19NRU5VX0NM
-T1NFICLQktGL0YXQvtC0Igo+ICAgICAgSURTX01FTlVfQ09OTkVDVCAi0J/QvtC00LrQu9GO0YfQ
-uNGC0YzRgdGPIgo+IC0gICAgSURTX01FTlVfRElTQ09OTkVDVCAi0J7RgtC60LvRjtGH0LjRgtGB
-0Y8iCj4gKyAgICBJRFNfTUVOVV9ESVNDT05ORUNUICLQntGC0LrQu9GO0YfQuNGC0YzRgdGPIgo+
-ICAgICAgSURTX01FTlVfU1RBVFVTICLQntGC0L7QsdGA0LDQt9C40YLRjCDRgdC+0YHRgtC+0Y/Q
-vdC40LUiCj4gICAgICBJRFNfTUVOVV9WSUVXTE9HICLQn9C+0LrQsNC30LDRgtGMINC20YPRgNC9
-0LDQuyIKPiAgICAgIElEU19NRU5VX0VESVRDT05GSUcgItCg0LXQtNCw0LrRgtC40YDQvtCy0LDR
-gtGMINC60L7QvdGE0LjQs9GD0YDQsNGG0LjRjiIKPiBAQCAtMjUzLDcgKzI1Myw3IEBAIEJFR0lO
-Cj4gICAgICAgICAgICAgICAgICAgICItLWxvZ19kaXJcdFx0XHQ6INCf0YPRgtGMINC6INC/0LDQ
-v9C60LUg0YEg0YTQsNC50LvQsNC80Lgg0LbRg9GA0L3QsNC70LAuXG4iIFwKPiAgICAgICAgICAg
-ICAgICAgICAgIi0tcHJpb3JpdHlfc3RyaW5nXHRcdDog0KHRgtGA0L7QutCwINC/0YDQuNC+0YDQ
-uNGC0LXRgtCwICjQodC8LiBpbnN0YWxsLnR4dCDQtNC70Y8g0LTQvtC/LiDQuNC90YTQvtGA0LzQ
-sNGG0LjQuCkuXG4iIFwKPiAgICAgICAgICAgICAgICAgICAgIi0tYXBwZW5kX3N0cmluZ1x0XHQ6
-IDE90J/RgNC40YHQvtC10LTQuNC90Y/RgtGMINC6INGE0LDQudC70YMg0LbRg9GA0L3QsNC70LAu
-IDA90J7Rh9C40YnQsNGC0Ywg0YTQsNC50Lsg0LbRg9GA0L3QsNC70LAg0L/RgNC4INGB0L7QtdC0
-0LjQvdC10L3QuNC4LlxuIiBcCj4gLSAgICAgICAgICAgICAgICAgICItLWxvZ192aWV3ZXJcdFx0
-OiDQn9GD0YLRjCDQuiDQv9GA0L7RgdC80L7RgtGA0L7QstGJ0LjQutGDINC20YPRgNC90LDQu9Cw
-ci5cbiIgXAo+ICsgICAgICAgICAgICAgICAgICAiLS1sb2dfdmlld2VyXHRcdDog0J/Rg9GC0Ywg
-0Log0L/RgNC+0YHQvNC+0YLRgNC+0LLRidC40LrRgyDQttGD0YDQvdCw0LvQsC5cbiIgXAo+ICAg
-ICAgICAgICAgICAgICAgICAiLS1lZGl0b3JcdFx0XHQ6INCf0YPRgtGMINC6INGA0LXQtNCw0LrR
-gtC+0YDRgyDQutC+0L3RhNC40LPRg9GA0LDRhtC40LguXG4iIFwKPiAgICAgICAgICAgICAgICAg
-ICAgIi0tYWxsb3dfZWRpdFx0XHQ6IDE90J/QvtC60LDQt9Cw0YLRjCDQv9GD0L3QutGCINC80LXQ
-vdGOINCg0LXQtNCw0LrRgtC40YDQvtCy0LDRgtGMINC60L7QvdGE0LjQs9GD0YDQsNGG0LjRji5c
-biIgXAo+ICAgICAgICAgICAgICAgICAgICAiLS1hbGxvd19zZXJ2aWNlXHRcdDogMT3Qn9C+0LrQ
-sNC30LDRgtGMINC80LXQvdGOINCh0LvRg9C20LHQsCBPcGVuVlBOLlxuIiBcCgo=
+With commit ea66a2b5c.. openvpn restarts instead of terminate on suspend.
+This conflicts with the stop/restart logic in the gui during windows power
+state change events. Here we change the default behaviour so that SIGTERM
+is not triggered during windows suspend.
 
---9WGQaO5SRNxspKC7FQN15Me5h0StSSqHC
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+Requires the installer to update the registry during an upgrade of exisitng
+installations, or notify the end user of the change in the default value of
+disconnect_on_suspend (0).
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-Comment: https://keybase.io/valdikss
+Signed-off-by: Selva Nair <selva.nair@...277...>
+---
+ registry.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-iQIcBAEBCAAGBQJWQPP0AAoJEFzXIC7viPdymjsQAIyMetdU0FBHyzKlnFvoYQ+4
-kaB7HPH7rPDEjlCWxl5NO2zKXBdpoTdiv0u/QFGwPOwAUE/+8QQOwuHQIb22BSTm
-+p28QQJpqTCP3zlzOLCSBt3h7KV7fzLdfI2VDMfwBXo6LMkYHMiw6qGWOMOn0ULu
-FrjtDA6bf8DNcmr5sJb6+3SCvQguSsZQJYwdcxQ+uBg4Zf5S2TN7p9hyR/W8Cp/m
-y4Qucf4l5ReZjl3E4MRnD72dTUW8HO4VdOsmE9vNG+6ZtyaeJVIApawZpsaoca4M
-aIUiIcuLHR+g/+oEOmMo9xmP3ZyrEGo+8kS80AI+C20LK1/JKJn+voD+1q9eP/+U
-2hBT7lGmTfmTltmQUyvjXKR8rwftWVf7Cc8dVlRYtIQ5mldCezrAP0g8H8ceOee2
-f+1Vr80lmgDx4HrA4w7tTFqAHSUQjEZLPWXrUH2YMm8slzbBIwhgb064qusXOH8F
-FcDpG6bOMAiLt7lyHU86ms974HP5YFOGBkjm6w+0A45Gw8LIKLAfslpBP1Q8ZxH3
-vsSHHAnXPw+XG779HNBQxdYiCalddzo7YB0CetpmibcM/7GkHV9PkO1QQsICC/O6
-+cRI+fnG+4I+IGHF0akmgrn9tziYpYvemxUZkBNl12NpU8f0BkowosSGw0nUzz7b
-04ROf7U3BCq5jr5DA1X/
-=4AY7
------END PGP SIGNATURE-----
+diff --git a/registry.c b/registry.c
+index f96827a..16af368 100644
+--- a/registry.c
++++ b/registry.c
+@@ -111,7 +111,7 @@ GetRegistryKeys()
+ 
+   if (!GetRegKey(_T("show_script_window"), o.show_script_window, _T("1"), _countof(o.show_script_window))) return(false);
+ 
+-  if (!GetRegKey(_T("disconnect_on_suspend"), o.disconnect_on_suspend, _T("1"), 
++  if (!GetRegKey(_T("disconnect_on_suspend"), o.disconnect_on_suspend, _T("0"), 
+       _countof(o.disconnect_on_suspend))) return(false);
+ 
+   if (!GetRegKey(_T("passphrase_attempts"), o.psw_attempts_string, _T("3"), 
+-- 
+2.6.2
 
---9WGQaO5SRNxspKC7FQN15Me5h0StSSqHC--
 
