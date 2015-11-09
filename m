@@ -1,9 +1,11 @@
-From: =?UTF-8?q?=D0=A0=D0=BE=D0=BC=D0=B0=D0=BD=20=D0=94=D0=BE=D0=BD=D1=87=D0=B5=D0=BD=D0=BA=D0=BE?=
-	<dpb@...2087...>
-Date: Mon,  9 Nov 2015 21:32:34 +0300
-Message-Id: <1447093954-5508-1-git-send-email-dpb@...2087...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Fix a few typos in the Russian localization
+In-Reply-To: <5640E018.8030306@...515...>
+References: <CAKuzo_hsHus7dgLMi8D=SzQn4f+2GNQJjx8HACvD3xmsD=Ux5w@...278...>
+	<56404D65.1030704@...515...> <5640E018.8030306@...515...>
+From: Selva Nair <selva.nair@...277...>
+Date: Mon, 9 Nov 2015 14:03:48 -0500
+Message-ID: <CAKuzo_i7tOuGT87h2wQmCG1ivx9NDB5K0J8Z0sXxzTKO-oMHxw@...278...>
+Subject: Re: [Openvpn-devel] Adding a ctrl-C handler in windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,103 +14,58 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+To: James Yonan <james@...515...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
----
- res/openvpn-gui-res-ru.rc | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+Hi,
 
-diff --git a/res/openvpn-gui-res-ru.rc b/res/openvpn-gui-res-ru.rc
-index a9f8f48..08e7f97 100644
---- a/res/openvpn-gui-res-ru.rc
-+++ b/res/openvpn-gui-res-ru.rc
-@@ -123,12 +123,12 @@ FONT 8, "Microsoft Sans Serif"
- LANGUAGE LANG_RUSSIAN, SUBLANG_DEFAULT
- BEGIN
-     ICON ID_ICO_APP, 0, 8, 16, 21, 20
--    LTEXT "OpenVPN GUI v" PACKAGE_VERSION " - =D0=B3=D1=80=D0=B0=D1=84=D0=
-=B8=D1=87=D1=81=D0=B5=D0=BA=D0=B8=D0=B9 =D0=B8=D0=BD=D1=82=D0=B5=D1=80=D1=
-=84=D0=B5=D0=B9=D1=81 Windows =D0=B4=D0=BB=D1=8F OpenVPN\n" \
-+    LTEXT "OpenVPN GUI v" PACKAGE_VERSION " - =D0=B3=D1=80=D0=B0=D1=84=D0=
-=B8=D1=87=D0=B5=D1=81=D0=BA=D0=B8=D0=B9 =D0=B8=D0=BD=D1=82=D0=B5=D1=80=D1=
-=84=D0=B5=D0=B9=D1=81 Windows =D0=B4=D0=BB=D1=8F OpenVPN\n" \
-           "Copyright (C) 2004-2005 Mathias Sundman <info@...454...>\n" \
-           "http://openvpn.se/", 0, 36, 15, 206, 26
-     LTEXT "OpenVPN - =D0=BF=D1=80=D0=B8=D0=BB=D0=BE=D0=B6=D0=B5=D0=BD=D0=
-=B8=D0=B5 =D0=B4=D0=BB=D1=8F =D0=B1=D0=B5=D0=B7=D0=BE=D0=BF=D0=B0=D1=81=D0=
-=BD=D0=BE=D0=B3=D0=BE =D1=82=D1=83=D0=BD=D0=BD=D0=B5=D0=BB=D0=B8=D1=80=D0=
-=BE=D0=B2=D0=B0=D0=BD=D0=B8=D1=8F IP-=D1=81=D0=B5=D1=82=D0=B5=D0=B9 " \
-           "=D1=87=D0=B5=D1=80=D0=B5=D0=B7 =D0=B5=D0=B4=D0=B8=D0=BD=D1=81=
-=D1=82=D0=B2=D0=B5=D0=BD=D0=BD=D1=8B=D0=B9 UDP-=D0=BF=D0=BE=D1=80=D1=82 =D1=
-=81 =D0=BF=D0=BE=D0=B4=D0=B4=D0=B5=D1=80=D0=B6=D0=BA=D0=BE=D0=B9 =D0=B0=D1=
-=83=D1=82=D0=B5=D0=BD=D1=82=D0=B8=D1=84=D0=B8=D0=BA=D0=B0=D1=86=D0=B8=D0=B8=
- =D1=81=D0=B5=D1=81=D1=81=D0=B8=D0=B9 " \
--          "=D0=B8 =D0=BE=D0=B1=D0=BC=D0=B5=D0=BD=D0=B0 =D0=BA=D0=BB=D1=8E=
-=D1=87=D0=B0=D0=BC=D0=B8 =D0=BD=D0=B0 =D0=BE=D1=81=D0=BD=D0=BE=D0=B2=D0=B5 =
-SSL/TLS, =D1=88=D0=B8=D1=84=D1=80=D0=BE=D0=B2=D0=B0=D0=BD=D0=B8=D1=8F, =D0=
-=B0=D1=83=D1=82=D0=B5=D0=BD=D1=86=D0=B8=D1=84=D0=B8=D0=BA=D0=B0=D1=86=D0=B8=
-=D0=B8 " \
-+          "=D0=B8 =D0=BE=D0=B1=D0=BC=D0=B5=D0=BD=D0=B0 =D0=BA=D0=BB=D1=8E=
-=D1=87=D0=B0=D0=BC=D0=B8 =D0=BD=D0=B0 =D0=BE=D1=81=D0=BD=D0=BE=D0=B2=D0=B5 =
-SSL/TLS, =D1=88=D0=B8=D1=84=D1=80=D0=BE=D0=B2=D0=B0=D0=BD=D0=B8=D1=8F, =D0=
-=B0=D1=83=D1=82=D0=B5=D0=BD=D1=82=D0=B8=D1=84=D0=B8=D0=BA=D0=B0=D1=86=D0=B8=
-=D0=B8 " \
-           "=D0=B8 =D1=81=D0=B6=D0=B0=D1=82=D0=B8=D1=8F =D0=BF=D0=B0=D0=BA=
-=D0=B5=D1=82=D0=BE=D0=B2.\n" \
-           "\n" \
-           "Copyright (C) 2002-2005 OpenVPN Solutions LLC <info@...515...>\=
-n" \
-@@ -164,7 +164,7 @@ BEGIN
-     IDS_MENU_SETTINGS "=D0=9D=D0=B0=D1=81=D1=82=D1=80=D0=BE=D0=B9=D0=BA=D0=
-=B8=E2=80=A6"
-     IDS_MENU_CLOSE "=D0=92=D1=8B=D1=85=D0=BE=D0=B4"
-     IDS_MENU_CONNECT "=D0=9F=D0=BE=D0=B4=D0=BA=D0=BB=D1=8E=D1=87=D0=B8=D1=
-=82=D1=8C=D1=81=D1=8F"
--    IDS_MENU_DISCONNECT "=D0=9E=D1=82=D0=BA=D0=BB=D1=8E=D1=87=D0=B8=D1=82=
-=D1=81=D1=8F"
-+    IDS_MENU_DISCONNECT "=D0=9E=D1=82=D0=BA=D0=BB=D1=8E=D1=87=D0=B8=D1=82=
-=D1=8C=D1=81=D1=8F"
-     IDS_MENU_STATUS "=D0=9E=D1=82=D0=BE=D0=B1=D1=80=D0=B0=D0=B7=D0=B8=D1=
-=82=D1=8C =D1=81=D0=BE=D1=81=D1=82=D0=BE=D1=8F=D0=BD=D0=B8=D0=B5"
-     IDS_MENU_VIEWLOG "=D0=9F=D0=BE=D0=BA=D0=B0=D0=B7=D0=B0=D1=82=D1=8C =D0=
-=B6=D1=83=D1=80=D0=BD=D0=B0=D0=BB"
-     IDS_MENU_EDITCONFIG "=D0=A0=D0=B5=D0=B4=D0=B0=D0=BA=D1=82=D0=B8=D1=80=
-=D0=BE=D0=B2=D0=B0=D1=82=D1=8C =D0=BA=D0=BE=D0=BD=D1=84=D0=B8=D0=B3=D1=83=
-=D1=80=D0=B0=D1=86=D0=B8=D1=8E"
-@@ -253,7 +253,7 @@ BEGIN
-                   "--log_dir\t\t\t: =D0=9F=D1=83=D1=82=D1=8C =D0=BA =D0=BF=
-=D0=B0=D0=BF=D0=BA=D0=B5 =D1=81 =D1=84=D0=B0=D0=B9=D0=BB=D0=B0=D0=BC=D0=B8 =
-=D0=B6=D1=83=D1=80=D0=BD=D0=B0=D0=BB=D0=B0.\n" \
-                   "--priority_string\t\t: =D0=A1=D1=82=D1=80=D0=BE=D0=BA=
-=D0=B0 =D0=BF=D1=80=D0=B8=D0=BE=D1=80=D0=B8=D1=82=D0=B5=D1=82=D0=B0 (=D0=A1=
-=D0=BC. install.txt =D0=B4=D0=BB=D1=8F =D0=B4=D0=BE=D0=BF. =D0=B8=D0=BD=D1=
-=84=D0=BE=D1=80=D0=BC=D0=B0=D1=86=D0=B8=D0=B8).\n" \
-                   "--append_string\t\t: 1=3D=D0=9F=D1=80=D0=B8=D1=81=D0=BE=
-=D0=B5=D0=B4=D0=B8=D0=BD=D1=8F=D1=82=D1=8C =D0=BA =D1=84=D0=B0=D0=B9=D0=BB=
-=D1=83 =D0=B6=D1=83=D1=80=D0=BD=D0=B0=D0=BB=D0=B0. 0=3D=D0=9E=D1=87=D0=B8=
-=D1=89=D0=B0=D1=82=D1=8C =D1=84=D0=B0=D0=B9=D0=BB =D0=B6=D1=83=D1=80=D0=BD=
-=D0=B0=D0=BB=D0=B0 =D0=BF=D1=80=D0=B8 =D1=81=D0=BE=D0=B5=D0=B4=D0=B8=D0=BD=
-=D0=B5=D0=BD=D0=B8=D0=B8.\n" \
--                  "--log_viewer\t\t: =D0=9F=D1=83=D1=82=D1=8C =D0=BA =D0=
-=BF=D1=80=D0=BE=D1=81=D0=BC=D0=BE=D1=82=D1=80=D0=BE=D0=B2=D1=89=D0=B8=D0=BA=
-=D1=83 =D0=B6=D1=83=D1=80=D0=BD=D0=B0=D0=BB=D0=B0r.\n" \
-+                  "--log_viewer\t\t: =D0=9F=D1=83=D1=82=D1=8C =D0=BA =D0=
-=BF=D1=80=D0=BE=D1=81=D0=BC=D0=BE=D1=82=D1=80=D0=BE=D0=B2=D1=89=D0=B8=D0=BA=
-=D1=83 =D0=B6=D1=83=D1=80=D0=BD=D0=B0=D0=BB=D0=B0.\n" \
-                   "--editor\t\t\t: =D0=9F=D1=83=D1=82=D1=8C =D0=BA =D1=80=
-=D0=B5=D0=B4=D0=B0=D0=BA=D1=82=D0=BE=D1=80=D1=83 =D0=BA=D0=BE=D0=BD=D1=84=
-=D0=B8=D0=B3=D1=83=D1=80=D0=B0=D1=86=D0=B8=D0=B8.\n" \
-                   "--allow_edit\t\t: 1=3D=D0=9F=D0=BE=D0=BA=D0=B0=D0=B7=D0=
-=B0=D1=82=D1=8C =D0=BF=D1=83=D0=BD=D0=BA=D1=82 =D0=BC=D0=B5=D0=BD=D1=8E =D0=
-=A0=D0=B5=D0=B4=D0=B0=D0=BA=D1=82=D0=B8=D1=80=D0=BE=D0=B2=D0=B0=D1=82=D1=8C=
- =D0=BA=D0=BE=D0=BD=D1=84=D0=B8=D0=B3=D1=83=D1=80=D0=B0=D1=86=D0=B8=D1=8E.\=
-n" \
-                   "--allow_service\t\t: 1=3D=D0=9F=D0=BE=D0=BA=D0=B0=D0=B7=
-=D0=B0=D1=82=D1=8C =D0=BC=D0=B5=D0=BD=D1=8E =D0=A1=D0=BB=D1=83=D0=B6=D0=B1=
-=D0=B0 OpenVPN.\n" \
---=20
-2.6.1.windows.1
+On Mon, Nov 9, 2015 at 1:04 PM, James Yonan <james@...515...> wrote:
+>>> I plan to add a control-C handler in win32.c. The handler will simply
+>>> map it to SIGTERM. Is there any particular reason why control-C is not
+>>> currently handled?
+>>
+>> Hi,
+>>
+>> I forwarded this email to James - he might have a clue.
+>
+> Currently the Windows implementation, when running in console mode, uses
+> function keys to trigger various Unix signals (see win32_signal_get()
+> function in win32.c).
+>
+> The current code looks like this:
+>
+>    switch (win32_keyboard_get (ws))
+>      {
+>      case 0x3B: /* F1 -> USR1 */
+>        ret = SIGUSR1;
+>        break;
+>      case 0x3C: /* F2 -> USR2 */
+>        ret = SIGUSR2;
+>        break;
+>      case 0x3D: /* F3 -> HUP */
+>        ret = SIGHUP;
+>        break;
+>      case 0x3E: /* F4 -> TERM */
+>        ret = SIGTERM;
+>        break;
+>      }
+>
+>
+> It's probably okay to just make CTRL-c generate a SIGTERM as F4 is
+> already doing.
+>
+> James
 
+Thanks for the comment.
+
+In the interactive mode, the console is opened with no
+ENABLE_PROCESSED_INPUT so ctrl-C will be delivered as key-board input
+and could be handled just like F4.
+
+With nssm, the console is shared with nssm, so ctrl-C is delivered as
+a signal. I'll send a patch handling both cases.
+
+Selva
 
