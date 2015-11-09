@@ -1,10 +1,13 @@
-Date: Sun, 8 Nov 2015 15:14:34 +0100 (CET)
-Message-Id: <201511081414.tA8EEYWG045372@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <1446984267-3323-1-git-send-email-steffan@...1856...>
-References: <1446984267-3323-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix unintialized variable in
-	plugin_vlog()
+References: <1446761780-13816-1-git-send-email-steffan@...1856...>
+	<1446795759-3288-1-git-send-email-steffan@...1856...>
+	<20151106205635.GA24952@...1296...>
+From: Arne Schwabe <arne@...1227...>
+Message-ID: <56403904.10006@...1227...>
+Date: Mon, 9 Nov 2015 07:11:16 +0100
+MIME-Version: 1.0
+In-Reply-To: <20151106205635.GA24952@...1296...>
+Subject: Re: [Openvpn-devel] [PATCH (master,
+ v2)] Fix (potential) memory leak in init_route_list()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,29 +16,27 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 8bit
-To: Steffan Karger <steffan@...1856...>
+To: Gert Doering <gert@...1296...>, Steffan Karger <steffan@...1856...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the release/2.3 branch.
 
-commit acc74694293b85dd9d8ef129c068b8ce5058dee1
-Author: Steffan Karger
-Date:   Sun Nov 8 13:04:27 2015 +0100
+> I can see why we do this gc_addspecial() dance in socket.c (because the
+> elements returned by getaddrinfo() are being pointed at, not copied).
+> 
+> This usage here seems unneeded, as the code will walk netlist, copy
+> out the IPv4 addresses into a separate (gc-allocated) struct route_ipv4,
+> and never use parts of netlist again - so freeaddrinfo() *should* work,
+> and make the code slightly less complex.
+> 
+> Arne, this came from you in commit e719a053534 (and I ACKed it) - could
+> you revisit this particular use and check whether it's truly needed?
+> 
 
-     Fix unintialized variable in plugin_vlog()
+I don't think it is really needed. It is more consistency and we try to
+use gc functions instead of free/malloc.
 
-     Signed-off-by: Steffan Karger <steffan@...1856...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1446984267-3323-1-git-send-email-steffan@...1856...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/10450
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+Arne
 
 
