@@ -1,14 +1,9 @@
-References: <1446663578-14471-1-git-send-email-selva.nair@...277...>
-	<201511062108.tA6L8x2n034456@...2054...>
-	<20151106211238.GB24952@...1296...>
-	<CAKuzo_h83eRood+NuzD=tDWdirXg996tcfegsGT32tFhdJ=wTw@...278...>
 From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <56404FD0.9060100@...515...>
-Date: Mon, 9 Nov 2015 09:48:32 +0200
+Message-ID: <56408EB4.70900@...515...>
+Date: Mon, 9 Nov 2015 14:16:52 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAKuzo_h83eRood+NuzD=tDWdirXg996tcfegsGT32tFhdJ=wTw@...278...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: Fix termination when
- windows suspends/sleeps
+Subject: [Openvpn-devel]  Topics for today's (Monday,
+ 9th Nov 2015) community meeting
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,41 +12,38 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Selva Nair <selva.nair@...277...>, Gert Doering <gert@...1296...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-
-
-> Hi,
->
-> On Fri, Nov 6, 2015 at 4:12 PM, Gert Doering <gert@...1296...> wrote:
->> On Fri, Nov 06, 2015 at 10:08:59PM +0100, Gert Doering wrote:
->>> ACK.  Explanation makes sense, logs and testers demonstrate that it indeed
->>> fixes a significant problem, and the code is sane :-) - thanks.
->>>
->>> Your patch has been applied to the master and release/2.3 branch.
->>>
->>> commit ea66a2b5cdb21422139c421b4d3733e1c1c3937e (master)
->>> commit 0d4ba251879c702b9474e26ff73a4f559d922d4f (release/2.3)
->>
->> Uh, and because I forgot to mention it - Samuli's buildbot will build a
->> windows snapshot from git master containing this, and it will be part
->> of 2.3.9 when we release this (no timeline yet).
->
-> Thanks.
->
-> Speaking of the windows installer, the GUI needs a small change to
-> play nice with this patch. Else the GUI will end up killing openvpn on
-> resume.. Not sure where to send patches for the GUI.
+Content-Type: text/plain; charset="iso-8859-15"; format=flowed
+Content-Transfer-Encoding: quoted-printable
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
 Hi,
 
-For now you can send the patch to this list. I'll add OpenVPN-GUI to 
-OpenVPN project's GitHub page soon, after which you can just issue a 
-pull request.
+We're going to have an IRC meeting today starting at 20:00 CET (19:00=20
+UTC) on #openvpn-meeting <at> irc.freenode.net. Note that the meeting=20
+channel has changed and that you do _not_ have to be logged in to=20
+Freenode to join the channel.
 
-Samuli
+Current topic list along with basic information is here:
 
+<https://community.openvpn.net/openvpn/wiki/Topics-2015-11-09>
 
+If you have any other things you'd like to bring up, respond to this=20
+mail, send me mail privately or add them to the list yourself.
+
+In case you can't attend the meeting, please feel free to make comments=20
+on the topics by responding to this email or to the summary email sent=20
+after the meeting. Whenever possible, we'll also respond to existing,=20
+related email threads.
+
+NOTE: It's required to use a registered Freenode IRC nickname to join=20
+#openvpn-devel - look here for details:
+
+<https://community.openvpn.net/openvpn/wiki/GettingHelp#DeveloperIRCchannel>
+
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
 
