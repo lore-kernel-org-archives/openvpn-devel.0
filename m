@@ -1,10 +1,10 @@
-Date: Mon, 9 Nov 2015 17:34:22 +0100 (CET)
-Message-Id: <201511091634.tA9GYM2a097921@...2054...>
+Date: Mon, 9 Nov 2015 17:34:23 +0100 (CET)
+Message-Id: <201511091634.tA9GYNoA097925@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1444383559-15788-1-git-send-email-janjust@...1147...>
-References: <1444383559-15788-1-git-send-email-janjust@...1147...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Author: Jan Just Keijser
-	<janjust@...1147...>
+In-Reply-To: <1444948995-18720-3-git-send-email-steffan@...1856...>
+References: <1444948995-18720-3-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH applied] Re: polarssl: add
+	--verify-client-cert optional support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,21 +15,21 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Jan Just Keijser <janjust@...1147...>
+To: Steffan Karger <steffan@...1856...>
 Cc: openvpn-devel@lists.sourceforge.net
 
 Your patch has been applied to the master branch.
 
-commit b8cdb213d4fa5a56074115faceb2e0da373bab8f
-Author: Jan Just Keijser
-Date:   Fri Oct 9 11:39:19 2015 +0200
+commit f107c62051ebbf4a2b661fcba8703fe26485c7af
+Author: Steffan Karger
+Date:   Fri Oct 16 00:43:15 2015 +0200
 
-     Author: Jan Just Keijser <janjust@...1147...>
+     polarssl: add --verify-client-cert optional support
 
-     Signed-off-by: Jan Just Keijser <janjust@...1147...>
-     Acked-by: Steffan Karger <steffan.karger@...1435...>
-     Message-Id: <1444383559-15788-1-git-send-email-janjust@...1147...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/10213
+     Signed-off-by: Steffan Karger <steffan@...1856...>
+     Acked-by: Jan Just Keijser <janjust@...1147...>
+     Message-Id: <1444948995-18720-3-git-send-email-steffan@...1856...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/10288
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
