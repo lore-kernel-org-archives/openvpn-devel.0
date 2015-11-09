@@ -1,15 +1,12 @@
-Date: Mon, 9 Nov 2015 21:56:39 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20151109205639.GL24952@...1296...>
-References: <56404FD0.9060100@...515...>
-	<1447101323-1727-1-git-send-email-selva.nair@...277...>
+References: <1447093954-5508-1-git-send-email-dpb@...2087...>
+	<5640F3F4.5060302@...2070...>
+Date: Mon, 09 Nov 2015 23:57:46 +0300
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="A2x6GFCQWVc4i5ud"
-Content-Disposition: inline
-In-Reply-To: <1447101323-1727-1-git-send-email-selva.nair@...277...>
-Subject: Re: [Openvpn-devel] [PATCH for gui] Do not disconnect on suspend by
- default
+From: =?utf-8?B?0KDQvtC80LDQvSDQlNC+0L3Rh9C10L3QutC+?= <dpb@...2087...>
+Message-ID: <op.x7upukdanngjn5@...2088...>
+In-Reply-To: <5640F3F4.5060302@...2070...>
+Subject: Re: [Openvpn-devel] [PATCH] Fix a few typos in the Russian
+ localization
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,53 +15,69 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"; delsp=yes; format=flowed
+Content-Transfer-Encoding: base64
+To: openvpn-devel@lists.sourceforge.net, ValdikSS <iam@...2070...>
 
---A2x6GFCQWVc4i5ud
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-
-Hi,
-
-On Mon, Nov 09, 2015 at 03:35:23PM -0500, Selva Nair wrote:
-> With commit ea66a2b5c.. openvpn restarts instead of terminate on suspend.
-> This conflicts with the stop/restart logic in the gui during windows power
-> state change events. Here we change the default behaviour so that SIGTERM
-> is not triggered during windows suspend.
->=20
-> Requires the installer to update the registry during an upgrade of exisit=
-ng
-> installations, or notify the end user of the change in the default value =
-of
-> disconnect_on_suspend (0).
-
-What does this patch *do*?  Is this the "set up registry key on first
-start" part (so we set the default differently now)?
-
-But that implies that an upgrade will not change the default, right?
-
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---A2x6GFCQWVc4i5ud
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQCVAwUBVkEICqkuBuNlUUl1AQLuOAP/V9asWYjKgbKKSVOZynvqf7tLswKkNo04
-ALVQSMdLHb8AtRMgWEIlNf8TRXdSMbJZ7Z8T7mGzrLx9ne50lqFgkdiNN9g/J+G4
-YRpiA7ev9IJ7p5JAJJc0POAG+pmJPtaKAJqqfKFJqz+prNqmI3+2GDrnfxqZTEpP
-B6Ybswgrj6w=
-=UZUG
------END PGP SIGNATURE-----
-
---A2x6GFCQWVc4i5ud--
-
+T2gsIE9LIHRoZW4uIEkgZGlkbid0IGtub3cgYWJvdXQgdGhlIGZvcmsuDQoNClZhbGRpa1NTIDxp
+YW1ALi4uMjA3MC4uLj4g0L/QuNGB0LDQuyDQsiDRgdCy0L7RkdC8INC/0LjRgdGM0LzQtSBNb24s
+IDA5IE5vdiAyMDE1ICANCjIyOjI4OjUyICswMzAwOg0KDQo+IFRoYW5rcyBmb3IgdGhlIHBhdGNo
+IGJ1dCBhbGwgdGhlc2UgYW5kIGFub3RoZXIgdHlwb3MgYXJlIGFscmVhZHkgZml4ZWQgIA0KPiBp
+biB0aGUgbWF0dG9jaydzIHJlcG9zaXRvcnkNCj4gaHR0cHM6Ly9naXRodWIuY29tL21hdHRvY2sv
+b3BlbnZwbi1ndWkvY29tbWl0L2I1YjAwYzI3MjY3NDIzM2M1Yzk1MWMwZTQ3M2YyMzQxMDY1YTlm
+YzQNCj4gYW5kIHdvdWxkIGJlIGluY2x1ZGVkIGluIG5leHQgcmVsZWFzZS4NCj4NCj4gT24gMDku
+MTEuMjAxNSAyMTozMiwg0KDQvtC80LDQvSDQlNC+0L3Rh9C10L3QutC+IHdyb3RlOg0KPj4gLS0t
+DQo+PiAgcmVzL29wZW52cG4tZ3VpLXJlcy1ydS5yYyB8IDggKysrKy0tLS0NCj4+ICAxIGZpbGUg
+Y2hhbmdlZCwgNCBpbnNlcnRpb25zKCspLCA0IGRlbGV0aW9ucygtKQ0KPj4NCj4+IGRpZmYgLS1n
+aXQgYS9yZXMvb3BlbnZwbi1ndWktcmVzLXJ1LnJjIGIvcmVzL29wZW52cG4tZ3VpLXJlcy1ydS5y
+Yw0KPj4gaW5kZXggYTlmOGY0OC4uMDhlN2Y5NyAxMDA2NDQNCj4+IC0tLSBhL3Jlcy9vcGVudnBu
+LWd1aS1yZXMtcnUucmMNCj4+ICsrKyBiL3Jlcy9vcGVudnBuLWd1aS1yZXMtcnUucmMNCj4+IEBA
+IC0xMjMsMTIgKzEyMywxMiBAQCBGT05UIDgsICJNaWNyb3NvZnQgU2FucyBTZXJpZiINCj4+ICBM
+QU5HVUFHRSBMQU5HX1JVU1NJQU4sIFNVQkxBTkdfREVGQVVMVA0KPj4gIEJFR0lODQo+PiAgICAg
+IElDT04gSURfSUNPX0FQUCwgMCwgOCwgMTYsIDIxLCAyMA0KPj4gLSAgICBMVEVYVCAiT3BlblZQ
+TiBHVUkgdiIgUEFDS0FHRV9WRVJTSU9OICIgLSDQs9GA0LDRhNC40YfRgdC10LrQuNC5INC40L3R
+gtC10YDRhNC10LnRgSAgDQo+PiBXaW5kb3dzINC00LvRjyBPcGVuVlBOXG4iIFwNCj4+ICsgICAg
+TFRFWFQgIk9wZW5WUE4gR1VJIHYiIFBBQ0tBR0VfVkVSU0lPTiAiIC0g0LPRgNCw0YTQuNGH0LXR
+gdC60LjQuSDQuNC90YLQtdGA0YTQtdC50YEgIA0KPj4gV2luZG93cyDQtNC70Y8gT3BlblZQTlxu
+IiBcDQo+PiAgICAgICAgICAgICJDb3B5cmlnaHQgKEMpIDIwMDQtMjAwNSBNYXRoaWFzIFN1bmRt
+YW4gIA0KPj4gPGluZm9ALi4uNDU0Li4uPlxuIiBcDQo+PiAgICAgICAgICAgICJodHRwOi8vb3Bl
+bnZwbi5zZS8iLCAwLCAzNiwgMTUsIDIwNiwgMjYNCj4+ICAgICAgTFRFWFQgIk9wZW5WUE4gLSDQ
+v9GA0LjQu9C+0LbQtdC90LjQtSDQtNC70Y8g0LHQtdC30L7Qv9Cw0YHQvdC+0LPQviDRgtGD0L3Q
+vdC10LvQuNGA0L7QstCw0L3QuNGPICANCj4+IElQLdGB0LXRgtC10LkgIiBcDQo+PiAgICAgICAg
+ICAgICLRh9C10YDQtdC3INC10LTQuNC90YHRgtCy0LXQvdC90YvQuSBVRFAt0L/QvtGA0YIg0YEg
+0L/QvtC00LTQtdGA0LbQutC+0Lkg0LDRg9GC0LXQvdGC0LjRhNC40LrQsNGG0LjQuCAgDQo+PiDR
+gdC10YHRgdC40LkgIiBcDQo+PiAtICAgICAgICAgICLQuCDQvtCx0LzQtdC90LAg0LrQu9GO0YfQ
+sNC80Lgg0L3QsCDQvtGB0L3QvtCy0LUgU1NML1RMUywg0YjQuNGE0YDQvtCy0LDQvdC40Y8sICAN
+Cj4+INCw0YPRgtC10L3RhtC40YTQuNC60LDRhtC40LggIiBcDQo+PiArICAgICAgICAgICLQuCDQ
+vtCx0LzQtdC90LAg0LrQu9GO0YfQsNC80Lgg0L3QsCDQvtGB0L3QvtCy0LUgU1NML1RMUywg0YjQ
+uNGE0YDQvtCy0LDQvdC40Y8sICANCj4+INCw0YPRgtC10L3RgtC40YTQuNC60LDRhtC40LggIiBc
+DQo+PiAgICAgICAgICAgICLQuCDRgdC20LDRgtC40Y8g0L/QsNC60LXRgtC+0LIuXG4iIFwNCj4+
+ICAgICAgICAgICAgIlxuIiBcDQo+PiAgICAgICAgICAgICJDb3B5cmlnaHQgKEMpIDIwMDItMjAw
+NSBPcGVuVlBOIFNvbHV0aW9ucyBMTEMgIA0KPj4gPGluZm9ALi4uNTE1Li4uPlxuIiBcDQo+PiBA
+QCAtMTY0LDcgKzE2NCw3IEBAIEJFR0lODQo+PiAgICAgIElEU19NRU5VX1NFVFRJTkdTICLQndCw
+0YHRgtGA0L7QudC60LjigKYiDQo+PiAgICAgIElEU19NRU5VX0NMT1NFICLQktGL0YXQvtC0Ig0K
+Pj4gICAgICBJRFNfTUVOVV9DT05ORUNUICLQn9C+0LTQutC70Y7Rh9C40YLRjNGB0Y8iDQo+PiAt
+ICAgIElEU19NRU5VX0RJU0NPTk5FQ1QgItCe0YLQutC70Y7Rh9C40YLRgdGPIg0KPj4gKyAgICBJ
+RFNfTUVOVV9ESVNDT05ORUNUICLQntGC0LrQu9GO0YfQuNGC0YzRgdGPIg0KPj4gICAgICBJRFNf
+TUVOVV9TVEFUVVMgItCe0YLQvtCx0YDQsNC30LjRgtGMINGB0L7RgdGC0L7Rj9C90LjQtSINCj4+
+ICAgICAgSURTX01FTlVfVklFV0xPRyAi0J/QvtC60LDQt9Cw0YLRjCDQttGD0YDQvdCw0LsiDQo+
+PiAgICAgIElEU19NRU5VX0VESVRDT05GSUcgItCg0LXQtNCw0LrRgtC40YDQvtCy0LDRgtGMINC6
+0L7QvdGE0LjQs9GD0YDQsNGG0LjRjiINCj4+IEBAIC0yNTMsNyArMjUzLDcgQEAgQkVHSU4NCj4+
+ICAgICAgICAgICAgICAgICAgICAiLS1sb2dfZGlyXHRcdFx0OiDQn9GD0YLRjCDQuiDQv9Cw0L/Q
+utC1INGBINGE0LDQudC70LDQvNC4INC20YPRgNC90LDQu9CwLlxuIiAgDQo+PiBcDQo+PiAgICAg
+ICAgICAgICAgICAgICAgIi0tcHJpb3JpdHlfc3RyaW5nXHRcdDog0KHRgtGA0L7QutCwINC/0YDQ
+uNC+0YDQuNGC0LXRgtCwICjQodC8LiAgDQo+PiBpbnN0YWxsLnR4dCDQtNC70Y8g0LTQvtC/LiDQ
+uNC90YTQvtGA0LzQsNGG0LjQuCkuXG4iIFwNCj4+ICAgICAgICAgICAgICAgICAgICAiLS1hcHBl
+bmRfc3RyaW5nXHRcdDogMT3Qn9GA0LjRgdC+0LXQtNC40L3Rj9GC0Ywg0Log0YTQsNC50LvRgyAg
+DQo+PiDQttGD0YDQvdCw0LvQsC4gMD3QntGH0LjRidCw0YLRjCDRhNCw0LnQuyDQttGD0YDQvdCw
+0LvQsCDQv9GA0Lgg0YHQvtC10LTQuNC90LXQvdC40LguXG4iIFwNCj4+IC0gICAgICAgICAgICAg
+ICAgICAiLS1sb2dfdmlld2VyXHRcdDog0J/Rg9GC0Ywg0Log0L/RgNC+0YHQvNC+0YLRgNC+0LLR
+idC40LrRgyAgDQo+PiDQttGD0YDQvdCw0LvQsHIuXG4iIFwNCj4+ICsgICAgICAgICAgICAgICAg
+ICAiLS1sb2dfdmlld2VyXHRcdDog0J/Rg9GC0Ywg0Log0L/RgNC+0YHQvNC+0YLRgNC+0LLRidC4
+0LrRgyDQttGD0YDQvdCw0LvQsC5cbiIgIA0KPj4gXA0KPj4gICAgICAgICAgICAgICAgICAgICIt
+LWVkaXRvclx0XHRcdDog0J/Rg9GC0Ywg0Log0YDQtdC00LDQutGC0L7RgNGDINC60L7QvdGE0LjQ
+s9GD0YDQsNGG0LjQuC5cbiIgXA0KPj4gICAgICAgICAgICAgICAgICAgICItLWFsbG93X2VkaXRc
+dFx0OiAxPdCf0L7QutCw0LfQsNGC0Ywg0L/Rg9C90LrRgiDQvNC10L3RjiAgDQo+PiDQoNC10LTQ
+sNC60YLQuNGA0L7QstCw0YLRjCDQutC+0L3RhNC40LPRg9GA0LDRhtC40Y4uXG4iIFwNCj4+ICAg
+ICAgICAgICAgICAgICAgICAiLS1hbGxvd19zZXJ2aWNlXHRcdDogMT3Qn9C+0LrQsNC30LDRgtGM
+INC80LXQvdGOINCh0LvRg9C20LHQsCAgDQo+PiBPcGVuVlBOLlxuIiBc
