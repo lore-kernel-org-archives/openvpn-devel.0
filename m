@@ -1,10 +1,11 @@
-Date: Mon, 9 Nov 2015 17:34:23 +0100 (CET)
-Message-Id: <201511091634.tA9GYNoA097925@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <1444948995-18720-3-git-send-email-steffan@...1856...>
-References: <1444948995-18720-3-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH applied] Re: polarssl: add
-	--verify-client-cert optional support
+References: <CAKuzo_hsHus7dgLMi8D=SzQn4f+2GNQJjx8HACvD3xmsD=Ux5w@...278...>
+	<56404D65.1030704@...515...>
+From: James Yonan <james@...515...>
+Message-ID: <5640E018.8030306@...515...>
+Date: Mon, 9 Nov 2015 11:04:08 -0700
+MIME-Version: 1.0
+In-Reply-To: <56404D65.1030704@...515...>
+Subject: Re: [Openvpn-devel] Adding a ctrl-C handler in windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,29 +14,47 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Steffan Karger <steffan@...1856...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Transfer-Encoding: quoted-printable
+To: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master branch.
+On 09/11/2015 00:38, Samuli Sepp=E4nen wrote:
+>
+>> Hi,
+>>
+>> I plan to add a control-C handler in win32.c. The handler will simply
+>> map it to SIGTERM. Is there any particular reason why control-C is not
+>> currently handled?
+>
+> Hi,
+>
+> I forwarded this email to James - he might have a clue.
 
-commit f107c62051ebbf4a2b661fcba8703fe26485c7af
-Author: Steffan Karger
-Date:   Fri Oct 16 00:43:15 2015 +0200
+Currently the Windows implementation, when running in console mode, uses=20
+function keys to trigger various Unix signals (see win32_signal_get()=20
+function in win32.c).
 
-     polarssl: add --verify-client-cert optional support
+The current code looks like this:
 
-     Signed-off-by: Steffan Karger <steffan@...1856...>
-     Acked-by: Jan Just Keijser <janjust@...1147...>
-     Message-Id: <1444948995-18720-3-git-send-email-steffan@...1856...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/10288
-     Signed-off-by: Gert Doering <gert@...1296...>
+   switch (win32_keyboard_get (ws))
+     {
+     case 0x3B: /* F1 -> USR1 */
+       ret =3D SIGUSR1;
+       break;
+     case 0x3C: /* F2 -> USR2 */
+       ret =3D SIGUSR2;
+       break;
+     case 0x3D: /* F3 -> HUP */
+       ret =3D SIGHUP;
+       break;
+     case 0x3E: /* F4 -> TERM */
+       ret =3D SIGTERM;
+       break;
+     }
 
 
---
-kind regards,
+It's probably okay to just make CTRL-c generate a SIGTERM as F4 is=20
+already doing.
 
-Gert Doering
-
+James
 
