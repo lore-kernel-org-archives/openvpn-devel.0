@@ -1,10 +1,14 @@
-References: <CAKuzo_hsHus7dgLMi8D=SzQn4f+2GNQJjx8HACvD3xmsD=Ux5w@...278...>
+References: <1446663578-14471-1-git-send-email-selva.nair@...277...>
+	<201511062108.tA6L8x2n034456@...2054...>
+	<20151106211238.GB24952@...1296...>
+	<CAKuzo_h83eRood+NuzD=tDWdirXg996tcfegsGT32tFhdJ=wTw@...278...>
 From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <56404D65.1030704@...515...>
-Date: Mon, 9 Nov 2015 09:38:13 +0200
+Message-ID: <56404FD0.9060100@...515...>
+Date: Mon, 9 Nov 2015 09:48:32 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAKuzo_hsHus7dgLMi8D=SzQn4f+2GNQJjx8HACvD3xmsD=Ux5w@...278...>
-Subject: Re: [Openvpn-devel] Adding a ctrl-C handler in windows
+In-Reply-To: <CAKuzo_h83eRood+NuzD=tDWdirXg996tcfegsGT32tFhdJ=wTw@...278...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Re: Fix termination when
+ windows suspends/sleeps
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,19 +19,39 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=windows-1252; format=flowed
 Content-Transfer-Encoding: 7bit
-To: Selva Nair <selva.nair@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Selva Nair <selva.nair@...277...>, Gert Doering <gert@...1296...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
 
 > Hi,
 >
-> I plan to add a control-C handler in win32.c. The handler will simply
-> map it to SIGTERM. Is there any particular reason why control-C is not
-> currently handled?
+> On Fri, Nov 6, 2015 at 4:12 PM, Gert Doering <gert@...1296...> wrote:
+>> On Fri, Nov 06, 2015 at 10:08:59PM +0100, Gert Doering wrote:
+>>> ACK.  Explanation makes sense, logs and testers demonstrate that it indeed
+>>> fixes a significant problem, and the code is sane :-) - thanks.
+>>>
+>>> Your patch has been applied to the master and release/2.3 branch.
+>>>
+>>> commit ea66a2b5cdb21422139c421b4d3733e1c1c3937e (master)
+>>> commit 0d4ba251879c702b9474e26ff73a4f559d922d4f (release/2.3)
+>>
+>> Uh, and because I forgot to mention it - Samuli's buildbot will build a
+>> windows snapshot from git master containing this, and it will be part
+>> of 2.3.9 when we release this (no timeline yet).
+>
+> Thanks.
+>
+> Speaking of the windows installer, the GUI needs a small change to
+> play nice with this patch. Else the GUI will end up killing openvpn on
+> resume.. Not sure where to send patches for the GUI.
 
 Hi,
 
-I forwarded this email to James - he might have a clue.
+For now you can send the patch to this list. I'll add OpenVPN-GUI to 
+OpenVPN project's GitHub page soon, after which you can just issue a 
+pull request.
 
 Samuli
+
 
 
