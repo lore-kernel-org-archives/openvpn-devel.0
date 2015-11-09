@@ -1,13 +1,10 @@
-References: <1446761780-13816-1-git-send-email-steffan@...1856...>
-	<1446795759-3288-1-git-send-email-steffan@...1856...>
-	<20151106205635.GA24952@...1296...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <56403904.10006@...1227...>
-Date: Mon, 9 Nov 2015 07:11:16 +0100
+References: <CAKuzo_hsHus7dgLMi8D=SzQn4f+2GNQJjx8HACvD3xmsD=Ux5w@...278...>
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <56404D65.1030704@...515...>
+Date: Mon, 9 Nov 2015 09:38:13 +0200
 MIME-Version: 1.0
-In-Reply-To: <20151106205635.GA24952@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH (master,
- v2)] Fix (potential) memory leak in init_route_list()
+In-Reply-To: <CAKuzo_hsHus7dgLMi8D=SzQn4f+2GNQJjx8HACvD3xmsD=Ux5w@...278...>
+Subject: Re: [Openvpn-devel] Adding a ctrl-C handler in windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,27 +13,21 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>, Steffan Karger <steffan@...1856...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Selva Nair <selva.nair@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
 
-> I can see why we do this gc_addspecial() dance in socket.c (because the
-> elements returned by getaddrinfo() are being pointed at, not copied).
-> 
-> This usage here seems unneeded, as the code will walk netlist, copy
-> out the IPv4 addresses into a separate (gc-allocated) struct route_ipv4,
-> and never use parts of netlist again - so freeaddrinfo() *should* work,
-> and make the code slightly less complex.
-> 
-> Arne, this came from you in commit e719a053534 (and I ACKed it) - could
-> you revisit this particular use and check whether it's truly needed?
-> 
+> Hi,
+>
+> I plan to add a control-C handler in win32.c. The handler will simply
+> map it to SIGTERM. Is there any particular reason why control-C is not
+> currently handled?
 
-I don't think it is really needed. It is more consistency and we try to
-use gc functions instead of free/malloc.
+Hi,
 
-Arne
+I forwarded this email to James - he might have a clue.
+
+Samuli
 
 
