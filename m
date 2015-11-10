@@ -1,18 +1,10 @@
-Date: Tue, 10 Nov 2015 20:48:53 +0100
+Date: Tue, 10 Nov 2015 20:56:48 +0100 (CET)
+Message-Id: <201511101956.tAAJumRj007493@...2054...>
 From: Gert Doering <gert@...1296...>
-Message-ID: <20151110194853.GR24952@...1296...>
-References: <1397645317-20116-2-git-send-email-Holger.Kummert@...1516...>
-	<1404459325-11064-1-git-send-email-Holger.Kummert@...1516...>
-	<561D8BCF.60304@...1856...> <563371FD.70206@...1516...>
-	<CAA1AbxKuF3ewuhn_XTvymCfq_my8vqK+-Q1mj59VBZp4jOK7VA@...278...>
-	<563379B3.90905@...1516...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="i/CQJCAqWP/GQJtX"
-Content-Disposition: inline
-In-Reply-To: <563379B3.90905@...1516...>
-Subject: Re: [Openvpn-devel] [PATCHv2 1/2] Get NTLMv1 and NTLMv2 up and
- running
+In-Reply-To: <1446795759-3288-1-git-send-email-steffan@...1856...>
+References: <1446795759-3288-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix (potential) memory leak in
+	init_route_list()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,59 +13,29 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Holger Kummert <Holger.Kummert@...1516...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Steffan Karger <steffan@...1856...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---i/CQJCAqWP/GQJtX
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Your patch has been applied to the master branch.
 
-Hi,
+commit 3671bd185a914dc1d91c8a967e1c3a14dedacd32
+Author: Steffan Karger
+Date:   Fri Nov 6 08:42:39 2015 +0100
 
-On Fri, Oct 30, 2015 at 03:07:47PM +0100, Holger Kummert wrote:
-> Am 30.10.2015 um 14:58 schrieb Steffan Karger:
-[..]
-> > Seems I forgot the * before the second msg_bufpos, sorry.  msg_bufpos
-> > itself is a pointer indeed, but *msg_bufpos is (used as) an offset
-> > into msg_buf:
-> >
-> >     memcpy(&msg_buf[*msg_bufpos], data, msg_buf[sb_offset]);
-> >
-> > msg_bufpos (without the *) is not related to msg_buf.
->=20
-> Ah, then your first proposal makes sense
-> (i.e. if (msg_buflen - length < *msg_bufpos) )
->=20
-> We could take that.
+     Fix (potential) memory leak in init_route_list()
 
-So, how do we move onward here?  Holger, can you send a new patch (set)=20
-incorporating Steffan's comments?
+     Signed-off-by: Steffan Karger <steffan@...1856...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1446795759-3288-1-git-send-email-steffan@...1856...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/10443
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-Since we found a proper reviewer now, merging this looks possible, after
-all the time... ;-)
 
-gert
+--
+kind regards,
 
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+Gert Doering
 
---i/CQJCAqWP/GQJtX
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQCVAwUBVkJKI6kuBuNlUUl1AQKOXgQAoaYMKVajJEkn2WXStHFOb5GNiWYlAOnp
-7tkiOqsxX+8vocS3uw9XDdMmqaEgbGhVk9oM3DKj7FuL81jrvappcKafwLba3Wtx
-rxMnwiThSHKq1wyN5IkaumleOwzAEV/fuFnIL7m1Yxt64bL+VbkTulBleZqtecpP
-0QPZu8jUNlg=
-=m4Q5
------END PGP SIGNATURE-----
-
---i/CQJCAqWP/GQJtX--
 
