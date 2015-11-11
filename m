@@ -1,14 +1,10 @@
-Date: Wed, 11 Nov 2015 20:40:06 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20151111194006.GB24952@...1296...>
-References: <20151111081604.GU24952@...1296...>
-	<1447242487-30243-1-git-send-email-lstipakov@...277...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="BfbbJsf3thGkpLcA"
-Content-Disposition: inline
-In-Reply-To: <1447242487-30243-1-git-send-email-lstipakov@...277...>
-Subject: Re: [Openvpn-devel] [PATCH v3] Use adapter index instead of name
+From: Selva Nair <selva.nair@...277...>
+Date: Wed, 11 Nov 2015 14:46:10 -0500
+Message-Id: <1447271171-29141-1-git-send-email-selva.nair@...277...>
+In-Reply-To: <CAKuzo_i7tOuGT87h2wQmCG1ivx9NDB5K0J8Z0sXxzTKO-oMHxw@...278...>
+References: <CAKuzo_i7tOuGT87h2wQmCG1ivx9NDB5K0J8Z0sXxzTKO-oMHxw@...278...>
+Subject: [Openvpn-devel] [PATCH] Handle ctrl-C and ctrl-break events on
+	Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,78 +13,42 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Lev Stipakov <lstipakov@...277...>
-Cc: Olli Mannisto <olmannisto@...277...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---BfbbJsf3thGkpLcA
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+On Mon, Nov 9, 2015 at 2:03 PM, Selva Nair <selva.nair@...277...> wrote:
+>> It's probably okay to just make CTRL-c generate a SIGTERM as F4 is
+>> already doing.
+>>
+>> James
+>
+> Thanks for the comment.
+>
+> In the interactive mode, the console is opened with no
+> ENABLE_PROCESSED_INPUT so ctrl-C will be delivered as key-board input
+> and could be handled just like F4.
+>
+> With nssm, the console is shared with nssm, so ctrl-C is delivered as
+> a signal. I'll send a patch handling both cases.
 
-Hi,
+The patch is in the next email. 
 
-On Wed, Nov 11, 2015 at 01:48:07PM +0200, Lev Stipakov wrote:
-> @@ -1301,18 +1303,20 @@ do_ifconfig (struct tuntap *tt,
->      if ( do_ipv6 )
->        {
->  	char * saved_actual;
-> +	char iface[64];
->=20=20
->  	if (!strcmp (actual, "NULL"))
->  	  msg (M_FATAL, "Error: When using --tun-ipv6, if you have more than on=
-e TAP-Windows adapter, you must also specify --dev-node");
->=20=20
-> -	/* example: netsh interface ipv6 set address MyTap 2001:608:8003::d sto=
-re=3Dactive */
-> +	openvpn_snprintf(iface, sizeof(iface), "interface=3D%lu", get_adapter_i=
-ndex_flexible(actual));
+Handling the key-board input is easy, but making the callback interrupt the event loop
+looks tricky. I am not well versed with the event handling in the code, so 
+opted to generate a key-pressed event. If there is a better way please suggest.
 
-Uh.  I'm afraid if I speak up once more, you'll stop talking to me...
-(or not give me any beer next time we meet :) )
+Simply calling throw_signal in the callback will work, but could take several seconds
+before its noticed.
 
-> +	/* example: netsh interface ipv6 set address interface=3D42 2001:608:80=
-03::d store=3Dactive */
->  	argv_printf (&argv,
-> -		    "%s%sc interface ipv6 set address %s %s store=3Dactive",
-> +		     "%s%sc interface ipv6 set address %s %s store=3Dactive",
->  		     get_win_sys_path(),
->  		     NETSH_PATH_SUFFIX,
-> -		     actual,
-> -		     ifconfig_ipv6_local );
-> -
+Tested on windows 7 with cmd-line use and start/stop with nssm. For nssm, the default 
+delay after ctrl-C is 1500 msec which is not enough for the process to exit if exit-notify
+is being used. About 1 second per extit notify trials + an extra 1 second is suggested. 
 
-... but wouldn't
+ src/openvpn/win32.c | 54 +++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 54 insertions(+)
 
-  	argv_printf (&argv,
-		    "%s%sc interface ipv6 set address interface=3D%lu %s store=3Dactive",
-  		     get_win_sys_path(),
-  		     NETSH_PATH_SUFFIX,
-		     get_adapter_index_flexible(actual),
-		     ifconfig_ipv6_local);
+-- 
+2.6.2
 
-(without storing into a temp variable) work "just fine"?
-
-gert
-
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---BfbbJsf3thGkpLcA
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQCVAwUBVkOZlakuBuNlUUl1AQKpkQP/dsjPxOLVgQ7NQpXb0CVSp5tkcKINmlZl
-a8Gh/xhtRuGyP692Njmj7BkYlR5JN4OezQfrfyOndwR0jcqEP5LRXg6oz0pa2bLs
-gfuIUwSG2Xc8N9ngIfBbrfT/tpkD2+ZH3S7bG0/q71a13YPm6iVH6nnoDDTrktIo
-mlLSXValWmI=
-=aXa0
------END PGP SIGNATURE-----
-
---BfbbJsf3thGkpLcA--
 
