@@ -1,11 +1,10 @@
-From: Selva Nair <selva.nair@...277...>
-Date: Wed, 11 Nov 2015 14:46:11 -0500
-Message-Id: <1447271171-29141-2-git-send-email-selva.nair@...277...>
-In-Reply-To: <1447271171-29141-1-git-send-email-selva.nair@...277...>
-References: <CAKuzo_i7tOuGT87h2wQmCG1ivx9NDB5K0J8Z0sXxzTKO-oMHxw@...278...>
-	<1447271171-29141-1-git-send-email-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH] Handle ctrl-C and ctrl-break events on
-	Windows
+References: <1444400025-22289-1-git-send-email-lstipakov@...277...>
+From: Steffan Karger <steffan@...1856...>
+Message-ID: <5643AC41.6090501@...1856...>
+Date: Wed, 11 Nov 2015 21:59:45 +0100
+MIME-Version: 1.0
+In-Reply-To: <1444400025-22289-1-git-send-email-lstipakov@...277...>
+Subject: Re: [Openvpn-devel] [PATCH v2] Support for disabled peer-id
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,100 +13,43 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-Handle ctrl-C or ctrl-Break sent to the console as a SIGTERM.
-Depending on the console mode, windows delivers ctrl-C as a
-keyboard input or as a signal.  We handle both cases. This allows
-graceful termination of the openvpn from programs such as nssm.
+Hi,
 
-Signed-off-by: Selva Nair <selva.nair@...277...>
----
- src/openvpn/win32.c | 54 +++++++++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 54 insertions(+)
+The patch looks functionally ok.  Just one minor remark:
 
-diff --git a/src/openvpn/win32.c b/src/openvpn/win32.c
-index 7c89a5a..feae73c 100644
---- a/src/openvpn/win32.c
-+++ b/src/openvpn/win32.c
-@@ -324,6 +324,55 @@ net_event_win32_close (struct net_event_win32 *ne)
-  * (2) Service mode -- map Windows event object to SIGTERM
-  */
- 
-+static bool
-+win_keyboard_put_ctrlC (HANDLE stdin_handle)
-+{
-+  DWORD tmp;
-+  INPUT_RECORD ir;
-+
-+  CLEAR(ir);
-+  ir.EventType = KEY_EVENT;
-+  ir.Event.KeyEvent.bKeyDown = true;
-+  ir.Event.KeyEvent.wRepeatCount = 1;
-+  ir.Event.KeyEvent.uChar.AsciiChar = 0x03; /* ctrl-C */
-+  if (WriteConsoleInput(stdin_handle, &ir, 1, &tmp))
-+     return true;
-+  else
-+     return false;
-+}
-+
-+/*
-+ * Callback to handle console ctrl events
-+ */
-+static bool
-+win_ctrl_handler (DWORD signum)
-+{
-+  msg(D_LOW, "win_ctrl_handler: signal received (code=%d)", signum);
-+
-+  HANDLE stdin_handle = GetStdHandle (STD_INPUT_HANDLE);
-+  if (stdin_handle == INVALID_HANDLE_VALUE)
-+  {
-+     msg(M_WARN, "Warning: win_ctrl_handler: no console input, signal not handled");
-+     return false;
-+  }
-+
-+  switch (signum)
-+    {
-+    case CTRL_C_EVENT:
-+    case CTRL_BREAK_EVENT:
-+      if (win_keyboard_put_ctrlC (stdin_handle))
-+        return true;
-+      else
-+        msg(M_NONFATAL, "win_ctrl_handler: write to console input failed");
-+      break;
-+    default:
-+      msg(D_LOW, "win_ctrl_handler: unknown signal (code=%d) not handled", signum);
-+      break;
-+    }
-+  /* pass all other signals to the next handler */
-+  return false;
-+}
-+
- void
- win32_signal_clear (struct win32_signal *ws)
- {
-@@ -369,6 +418,8 @@ win32_signal_open (struct win32_signal *ws,
- 		  ws->console_mode_save_defined = true;
- 		}
- 	      ws->mode = WSO_MODE_CONSOLE;
-+             if (!SetConsoleCtrlHandler ((PHANDLER_ROUTINE) win_ctrl_handler, true))
-+                msg (M_NONFATAL, "Error: win32_signal_open: SetConsoleCtrlHandler failed");
- 	    }
- 	  else
- 	    ws->in.read = INVALID_HANDLE_VALUE; /* probably running as a service */
-@@ -512,6 +563,9 @@ win32_signal_get (struct win32_signal *ws)
- 	    case 0x3E: /* F4 -> TERM */
- 	      ret = SIGTERM;
- 	      break;
-+           case 0x03: /* CTRL-C -> TERM */
-+             ret = SIGTERM;
-+             break;
- 	    }
- 	}
-       if (ret)
--- 
-2.6.2
+On 09-10-15 16:13, Lev Stipakov wrote:
+> @@ -103,10 +107,14 @@ multi_get_create_instance_udp (struct multi_context *m, bool *floated)
+>   		      hash_add_fast (hash, bucket, &mi->real, hv, mi);
+>   		      mi->did_real_hash = true;
+>
+> +		      /* In future we might want to use P_DATA_V2 but not need peer-id/float functionality */
+>   		      for (i = 0; i < m->max_clients; ++i)
+>   			{
+>   			  if (!m->instances[i])
+>   			    {
+> +			      /* issued peer-id should fit into 3 bytes to avoid wrap and cannot have reserved value 0xFFFFFF */
+> +			      ASSERT(i < 0xFFFFFF);
+> +
+>   			      mi->context.c2.tls_multi->peer_id = i;
+>   			      m->instances[i] = mi;
+>   			      break;
 
+Checking against the max peer-id indeed makes sense, but this assert can 
+be made simpler by just putting
+
+    ASSERT (m->max-clients < 0xFFFFFF);
+
+before the loop.  Additionally, I think we should add a user-friendly 
+check in options.c, to give a proper error message on startup when a 
+user tries to set --max-clients >= 0xFFFFFF.
+
+Finally, why did you put this comment at this location?  Shouldn't it be 
+in the place where we *send* the peer-id?  (That is the part that is not 
+implemented now, right?)
+
+-Steffan
 
