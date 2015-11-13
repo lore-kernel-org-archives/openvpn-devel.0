@@ -1,18 +1,15 @@
-Date: Fri, 13 Nov 2015 16:38:32 +0100
+Date: Fri, 13 Nov 2015 20:36:20 +0100
 From: Gert Doering <gert@...1296...>
-Message-ID: <20151113153832.GT24952@...1296...>
-References: <1447382487-26031-1-git-send-email-selva.nair@...277...>
-	<20151113073802.GK24952@...1296...>
-	<CAKuzo_iCjV9sa=7=+2cz7JLxYNQ6-K6QYFgv67u31=aV-fQrmQ@...278...>
-	<20151113152758.GS24952@...1296...>
-	<CAKuzo_hC4E1jXS_7t4D4C=w1SqE+G-efYAE8Wvfo1verMkwt4Q@...278...>
+Message-ID: <20151113193620.GW24952@...1296...>
+References: <CAKuzo_i7tOuGT87h2wQmCG1ivx9NDB5K0J8Z0sXxzTKO-oMHxw@...278...>
+	<1447271171-29141-1-git-send-email-selva.nair@...277...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="bSr84fpmRhc6ULjY"
+	protocol="application/pgp-signature"; boundary="stFzI3XAseUQ09UW"
 Content-Disposition: inline
-In-Reply-To: <CAKuzo_hC4E1jXS_7t4D4C=w1SqE+G-efYAE8Wvfo1verMkwt4Q@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] Do not hard-code windows systemroot in
- env_block
+In-Reply-To: <1447271171-29141-1-git-send-email-selva.nair@...277...>
+Subject: Re: [Openvpn-devel] [PATCH] Handle ctrl-C and ctrl-break events on
+ Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,35 +19,43 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: Selva Nair <selva.nair@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Cc: openvpn-devel@lists.sourceforge.net
 
---bSr84fpmRhc6ULjY
+--stFzI3XAseUQ09UW
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Fri, Nov 13, 2015 at 10:34:49AM -0500, Selva Nair wrote:
-> On Fri, Nov 13, 2015 at 10:27 AM, Gert Doering <gert@...1296...> wrote:
-> >> However, if the user specifies --win-sys some_cruft, win_sys_path will
-> >> get set to that "some_cruft" (in options.c). User is the king.
-> >
-> > Yes.  In this case, I do not worry at all - "you get what you ask for".
+On Wed, Nov 11, 2015 at 02:46:10PM -0500, Selva Nair wrote:
+> > With nssm, the console is shared with nssm, so ctrl-C is delivered as
+> > a signal. I'll send a patch handling both cases.
 >=20
-> In the current setup its perfectly fine. But I am adding it to my list
-> of genies when the privilege separation aka iService can is
-> opened...:)
+> The patch is in the next email.=20
+>=20
+> Handling the key-board input is easy, but making the callback interrupt t=
+he event loop
+> looks tricky. I am not well versed with the event handling in the code, s=
+o=20
+> opted to generate a key-pressed event. If there is a better way please su=
+ggest.
 
-That *should* actually still be a non-issue, as openvpn.exe is run with
-the privileges of the requesting user (and the route handling is requested
-via service pipe from the iService).  Unlike today, where openvpn.exe has
-to run with admin privileges.
+Arne might have an idea here... I do not understand the event handling
+that well either.
 
-But of course there will be surprises in the details.
+[..]
+> Tested on windows 7 with cmd-line use and start/stop with nssm. For nssm,=
+ the default=20
+> delay after ctrl-C is 1500 msec which is not enough for the process to ex=
+it if exit-notify
+> is being used. About 1 second per extit notify trials + an extra 1 second=
+ is suggested.=20
+
+So this would be something for Samuli to adjust when setting up NSSM?  Like,
+2500 ms?
 
 gert
-
 --=20
 USENET is *not* the non-clickable part of WWW!
                                                            //www.muc.de/~ge=
@@ -58,18 +63,18 @@ rt/
 Gert Doering - Munich, Germany                             gert@...1296...
 fax: +49-89-35655025                        gert@...1297...
 
---bSr84fpmRhc6ULjY
+--stFzI3XAseUQ09UW
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1
 
-iQCVAwUBVkYD1KkuBuNlUUl1AQLp/AQAlEx0MmOBqpFBB2T1S1yVLObNrp0C42wb
-z94emvFmEDjH8WTsZFBu4hjD+0R15Sq9oeGYXs8qiZZLGtReMp0V+1vNZMUtO1lR
-xqOWgBUQxdUTgo7+8P51Mz7q/FG/fEiwYCmmRDCosYnpUchj37VlBiEiYWewnExG
-T/GRTHCegV0=
-=ZG12
+iQCVAwUBVkY7n6kuBuNlUUl1AQITuAP/Ss6nKqFbQXq1IxsJay2yN+PHEyFug+Zr
+TgAawv7pFNnYF+2qZg6XZuoulXra4z6lXdFycNcvJQQtbrSKapGLaHnaHfQrqTJm
+w8COJUoYyyiWS3STrRSTWQfXfwltCcUuWVEOg7PmdKKScEMQtm/Pnz98WsMEm43i
+oI6Nf+A9Bs0=
+=1fZC
 -----END PGP SIGNATURE-----
 
---bSr84fpmRhc6ULjY--
+--stFzI3XAseUQ09UW--
 
