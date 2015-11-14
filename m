@@ -1,13 +1,15 @@
+Date: Sat, 14 Nov 2015 20:05:45 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20151114190545.GY24952@...1296...>
+References: <1373890626-13943-1-git-send-email-mludvig@...1388...>
+	<1444553060-15946-1-git-send-email-dejong@...1435...>
 MIME-Version: 1.0
-In-Reply-To: <20151113193620.GW24952@...1296...>
-References: <CAKuzo_i7tOuGT87h2wQmCG1ivx9NDB5K0J8Z0sXxzTKO-oMHxw@...278...>
-	<1447271171-29141-1-git-send-email-selva.nair@...277...>
-	<20151113193620.GW24952@...1296...>
-From: Selva Nair <selva.nair@...277...>
-Date: Fri, 13 Nov 2015 15:19:38 -0500
-Message-ID: <CAKuzo_iX9Qgkp7jvHvRGWX=FBGa56XOTEZ-hr9t6NCzQQx-jpA@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] Handle ctrl-C and ctrl-break events on
-	Windows
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="kUmo4NyTJbuJZ752"
+Content-Disposition: inline
+In-Reply-To: <1444553060-15946-1-git-send-email-dejong@...1435...>
+Subject: Re: [Openvpn-devel] [PATCH APPLIED] Support for username-only auth
+ file.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,25 +18,63 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Adriaan de Jong <dejong@...1435...>
+Cc: openvpn-devel@lists.sourceforge.net, Michal Ludvig <mludvig@...1388...>
+
+--kUmo4NyTJbuJZ752
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
 Hi,
 
-On Fri, Nov 13, 2015 at 2:36 PM, Gert Doering <gert@...1296...> wrote:
-> On Wed, Nov 11, 2015 at 02:46:10PM -0500, Selva Nair wrote:
-> [..]
->> Tested on windows 7 with cmd-line use and start/stop with nssm. For nssm, the default
->> delay after ctrl-C is 1500 msec which is not enough for the process to exit if exit-notify
->> is being used. About 1 second per extit notify trials + an extra 1 second is suggested.
->
-> So this would be something for Samuli to adjust when setting up NSSM?  Like,
-> 2500 ms?
+On Sun, Oct 11, 2015 at 10:44:20AM +0200, Adriaan de Jong wrote:
+> Make OpenVPN read the username from the auth file
+> parameter of --auth-user-pass and prompt for a
+> password if it's not in the file.
 
-That is correct. It could be added to the nssm info page that Samuli
-maintains. I use 3000 msec with "--explicit-exit-notify 2" and works well.
+ACK, applied and merged to master.
 
-Selva
+commit 6e9373c84639382c16d9eb8f1f78f60079bb89df
+Author: Michal Ludvig <mludvig@...1388...>
+Date:   Sun Oct 11 10:44:20 2015 +0200
+
+    Support for username-only auth file.
+
+    Signed-off-by: Michal Ludvig <mludvig@...1388...>
+=20=20=20=20
+    Reviewed and updated to current master.
+=20=20=20=20
+    Signed-off-by: Adriaan de Jong <dejong@...1435...>
+    Acked-by: Gert Doering <gert@...1296...>
+    Message-Id: <1444553060-15946-1-git-send-email-dejong@...1435...>
+    URL: http://article.gmane.org/gmane.network.openvpn.devel/10255
+
+
+(I have changed --author to point to Michal, as he's the original
+author, even if the rebased patch from Adriaan says "From: Adriaan de Jong"
+- contributor's history is clear enough from the commit message, I think)
+
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--kUmo4NyTJbuJZ752
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQCVAwUBVkeGCKkuBuNlUUl1AQKA/gP/Uy2D9WKUqIoNfos3+3KNoPOVVYEUNUZv
+hi7IZQ+vUQM39BE7tx0AL3INcvK0fh1EromQ87Sbwd871t2ikje7ihWXayU8Zrhx
+D/r9EjcysNUm6V5PFviiQuDan0JJBXNxSQTdyj8DVYTQW4vCr/+UgwCq+OCG4r4x
+ZpjQDijgOGc=
+=20U7
+-----END PGP SIGNATURE-----
+
+--kUmo4NyTJbuJZ752--
 
