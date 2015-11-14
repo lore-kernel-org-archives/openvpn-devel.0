@@ -1,14 +1,12 @@
-Date: Sat, 14 Nov 2015 20:23:39 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20151114192338.GZ24952@...1296...>
-References: <1444553332-16205-1-git-send-email-dejong@...1435...>
-	<1444557137-19267-1-git-send-email-dejong@...1435...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="7cXxibKNEnJOqEg4"
-Content-Disposition: inline
-In-Reply-To: <1444557137-19267-1-git-send-email-dejong@...1435...>
-Subject: Re: [Openvpn-devel] [PATCH v2] Allow inlining of --auth-user-pass
+In-Reply-To: <56307DAA.30700@...2070...>
+References: <562EB0A1.8010403@...2070...> <56307DAA.30700@...2070...>
+From: Selva Nair <selva.nair@...277...>
+Date: Sat, 14 Nov 2015 15:01:50 -0500
+Message-ID: <CAKuzo_hn+jSim98XcDSUPpMmvCiqEtfRBVjpPouHn__qFciErA@...278...>
+Content-Type: multipart/alternative; boundary=001a11443346b69184052485a6ec
+Subject: Re: [Openvpn-devel] [PATCH v2] Add Windows DNS Leak fix using WFP
+	('block-outside-dns')
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,78 +15,139 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Adriaan de Jong <dejong@...1435...>
-Cc: openvpn-devel@...350...
+To: ValdikSS <iam@...2070...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---7cXxibKNEnJOqEg4
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+--001a11443346b69184052485a6ec
+Content-Type: text/plain; charset=UTF-8
 
 Hi,
 
-On Sun, Oct 11, 2015 at 11:52:17AM +0200, Adriaan de Jong wrote:
-> This patch allows inlining of the --auth-user-pass directive, so it is now
-> possible to do
+On Wed, Oct 28, 2015 at 3:47 AM, ValdikSS <iam@...2070...> wrote:
 
-Streams have somewhat crossed here, and I'm not sure if this patch=20
-is conflict-free with commit
+> This option is silently ignored on non-Windows platforms and works on
+> Vista+.
+> External DNS is blocked even if no DNS server configured (user may
+> configure it in the tap interface itself).
+> This option could be ignored from server push using route-nopull.
+>
+> v2:
+> * Add missing libs to MSVC project file.
+> * Add ifndef for FWPM_SESSION_FLAG_DYNAMIC to silence warning in MSVC.
+> * Use const WCHAR for firewall name.
+> * Block all traffic to TCP/UDP port 53 except for OpenVPN itself. Blocking
+> only svchost.exe is not reliable as user could disable dnscache service
+> making all applications resolve DNS from their processes.
+>
 
-commit 6e9373c84639382c16d9eb8f1f78f60079bb89df
-Author: Michal Ludvig <mludvig@...1388...>
-Date:   Sun Oct 11 10:44:20 2015 +0200
+I tested this on Windows 7 and ran into some problems.
 
-    Support for username-only auth file.
+Blocking dns through all interfaces except the tun/tap works (tested by
+sniffing the traffic etc.).
 
+But most often (see below) name resolution fails after the vpn is connected:
 
-"it *should*", but at least one change is causing a conflict:
+openvpn: git-master + this patch locally compiled using mingw (64bit)
+LAN: IP (dhcp): 192.168.0.110  dns (dhcp): 1192.168.0.30
+TUN/TAP: IP (automatic): 10.9.0.10 dns (fixed): 8.8.8.8
+Windows firewall: disabled
 
-> --- a/src/openvpn/misc.c
-> +++ b/src/openvpn/misc.c
-> @@ -1003,7 +1003,7 @@ get_user_pass_cr (struct user_pass *up,
->=20=20
->    if (!up->defined)
->      {
-> -      const bool from_stdin =3D (!auth_file || !strcmp (auth_file, "stdi=
-n"));
-> +      const bool from_stdin =3D (!auth_file || streq (auth_file, "stdin"=
-));
->=20=20
->        if (flags & GET_USER_PASS_PREVIOUS_CREDS_FAILED)
->  	msg (M_WARN, "Note: previous '%s' credentials failed", prefix);
+openvpn --config some-config.ovpn --block-outside-dns --verb4
+--redirect-gateway def1
 
-This one does no longer apply, as this line is no longer there - OTOH,
-it's basically just cleanup and no functional change, so the hunk could
-be left off.
+Name resolution times-out  after connect (checked by ping and browser).
+But nslookup continues to work, so direct connection to 8.8.8.8:53 via the
+tun is working. In this state, the only strange thing I notice is
 
+ipconfig /displaydns
+returns "Could not display the resolver cache".
+as if  the dnscache service is stopped, but it is running.
 
-Since you've reviewed this already - could you give it a quick check=20
-whether it still does the right thing with the misc.c hunk left off?
-"I think it does", but would welcome a second opinion.
+Name resolution starts to work again after a
+(i) ipconfig /registerdns
+OR
+(ii) sc stop dnscache (starting it again is also ok)
+OR
+(iii) wait for several minutes
+/displaydns also displlays the cache correctly after that.
 
-(No need to re-send the patch, I can just take out this part)
+On restarting the vpn (SIGHUP or SIGUSR1), it goes back to the non
+resolving state again. Once start working there are no obvious delays with
+dns -- tested only on a fast connection to the vpn server.
 
-gert
+I could not enable logging of the firewall without which its hard to say
+what's going on. I can only guess the system continues to try only
+192.168.0.30 which gets blocked by the filter.
 
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+So, how to enable firewall logging? -- enabling via netsh or Windows
+firewall UI (wf.msc) does not generate any logs. Also the firewall rules
+added by the program does not show up in the firewall UI or in netsh
+advfirewall outputs. How to make these filters visible in the UI and how to
+log the dropped connections? The filters are in place and do work, but
+doesnt show up in the UI -- is that expected? The UI continues to show
+firewall as disabled with no filters in place.
 
---7cXxibKNEnJOqEg4
-Content-Type: application/pgp-signature; name="signature.asc"
+I couldn't find anything wrong with the code, but I'm not familiar with
+WFP.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
+Thanks
+,
 
-iQCVAwUBVkeJ86kuBuNlUUl1AQKs+gP+KhYcX5+3/3/GpevhAPcMo8E92GLiYALW
-hvE6h0Op1fyFA4d/zU2nLmNt+pCuh1MXBlo7Palzvbi/mGGKQxNnolGK+cwNxNMf
-A4GDxE6YdNOP0YRGvb+ffI1Y+rVQq2+t8UDH7bFAVlWnxqpy/Te7pzDHVvaIwaZR
-s+K4tAt0JF4=
-=38d6
------END PGP SIGNATURE-----
+--001a11443346b69184052485a6ec
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
---7cXxibKNEnJOqEg4--
+<div dir=3D"ltr"><div>Hi,<br></div><br><div><div><div class=3D"gmail_extra"=
+><div class=3D"gmail_quote">On Wed, Oct 28, 2015 at 3:47 AM, ValdikSS <span=
+ dir=3D"ltr">&lt;<a href=3D"mailto:iam@...2070..." target=3D"_blank">iam@...1186...=
+.2070...</a>&gt;</span> wrote:<br><blockquote class=3D"gmail_quote" style=
+=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">This opt=
+ion is silently ignored on non-Windows platforms and works on Vista+.<br>
+External DNS is blocked even if no DNS server configured (user may configur=
+e it in the tap interface itself).<br>
+This option could be ignored from server push using route-nopull.<br>
+<br>
+v2:<br>
+* Add missing libs to MSVC project file.<br>
+* Add ifndef for FWPM_SESSION_FLAG_DYNAMIC to silence warning in MSVC.<br>
+* Use const WCHAR for firewall name.<br>
+* Block all traffic to TCP/UDP port 53 except for OpenVPN itself. Blocking =
+only svchost.exe is not reliable as user could disable dnscache service mak=
+ing all applications resolve DNS from their processes.<br>
+</blockquote><div><br></div><div>I tested this on Windows 7 and ran into so=
+me problems.<br><br></div><div>Blocking dns through all interfaces except t=
+he tun/tap works (tested by sniffing the traffic etc.). <br><br>But most of=
+ten (see below) name resolution fails after the vpn is connected:<br><br></=
+div><div>openvpn: git-master + this patch locally compiled using mingw (64b=
+it)<br></div><div>LAN: IP (dhcp): 192.168.0.110=C2=A0 dns (dhcp): 1192.168.=
+0.30<br></div><div>TUN/TAP: IP (automatic): 10.9.0.10 dns (fixed): 8.8.8.8<=
+br></div><div>Windows firewall: disabled<br><br></div><div>openvpn --config=
+ some-config.ovpn --block-outside-dns --verb4 --redirect-gateway def1<br><b=
+r></div><div>Name resolution times-out=C2=A0 after connect (checked by ping=
+ and browser).=C2=A0 But nslookup continues to work, so direct connection t=
+o <a href=3D"http://8.8.8.8:53">8.8.8.8:53</a> via the tun is working. In t=
+his state, the only strange thing I notice is<br>=C2=A0<br>ipconfig /displa=
+ydns <br>returns &quot;Could not display the resolver cache&quot;. <br></di=
+v><div>as if=C2=A0 the dnscache service is stopped, but it is running. <br>=
+</div><div><br>Name resolution starts to work again after a<br></div><div>(=
+i) ipconfig /registerdns<br></div><div>OR<br></div><div>(ii) sc stop dnscac=
+he (starting it again is also ok)<br></div><div>OR<br></div><div>(iii) wait=
+ for several minutes<br></div><div>/displaydns also displlays the cache cor=
+rectly after that.<br><br></div><div>On restarting the vpn (SIGHUP or SIGUS=
+R1), it goes back to the non resolving state again. Once start working ther=
+e are no obvious delays with dns -- tested only on a fast connection to the=
+ vpn server.<br><br></div><div>I could not enable logging of the firewall w=
+ithout which its hard to say what&#39;s going on. I can only guess the syst=
+em continues to try only 192.168.0.30 which gets blocked by the filter.<br>=
+<br></div><div>So, how to enable firewall logging? -- enabling via netsh or=
+ Windows firewall UI (wf.msc) does not generate any logs. Also the firewall=
+ rules added by the program does not show up in the firewall UI or in netsh=
+ advfirewall outputs. How to make these filters visible in the UI and how t=
+o log the dropped connections? The filters are in place and do work, but do=
+esnt show up in the UI -- is that expected? The UI continues to show firewa=
+ll as disabled with no filters in place.<br><br></div><div>I couldn&#39;t f=
+ind anything wrong with the code, but I&#39;m not familiar with WFP. <br><b=
+r></div><div>Thanks<br>,<br></div></div></div></div></div></div>
+
+--001a11443346b69184052485a6ec--
 
