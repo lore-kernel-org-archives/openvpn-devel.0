@@ -1,13 +1,16 @@
-From: Lev Stipakov <lstipakov@...277...>
-Date: Mon, 16 Nov 2015 11:06:58 +0200
-Message-ID: <56499CB2.9020405@...277...>
-References: <1425307803-14166-1-git-send-email-lstipakov@...277...>
-	<1444747558-23291-1-git-send-email-lstipakov@...277...>
-	<20151114194047.GA24952@...1296...>
-Mime-Version: 1.0
-In-Reply-To: <20151114194047.GA24952@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH v3] Notify clients about server's
-	exit/restart
+References: <562EB0A1.8010403@...2070...>
+	<56307DAA.30700@...2070...> <563083B1.2020908@...2070...>
+	<CAKuzo_hhRVGfPkEaE93oqGO89baPD1=9qVFYZ2=yQSuHC7Fs9g@...278...>
+From: ValdikSS <iam@...2070...>
+Message-ID: <5649B56C.6050506@...2070...>
+Date: Mon, 16 Nov 2015 13:52:28 +0300
+MIME-Version: 1.0
+In-Reply-To: <CAKuzo_hhRVGfPkEaE93oqGO89baPD1=9qVFYZ2=yQSuHC7Fs9g@...278...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature";
+	boundary="Dc8jMHUlGGUuBUgj5qNNrSjdldh52ktax"
+Subject: Re: [Openvpn-devel] [PATCH v2] Add Windows DNS Leak fix using WFP
+ ('block-outside-dns')
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,39 +19,86 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+To: Selva Nair <selva.nair@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hi,
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--Dc8jMHUlGGUuBUgj5qNNrSjdldh52ktax
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 
->     Since the new server side code does not actually *do* OCC any more we
->     are just #ifdef'ing it to access options->ce.explicit_exit_notify
->     because that one is only compiled in #ifdef ENABLE_OCC ... so we're
->     coupling this new functionality to an #ifdef which is not really
->     relevant.
+On 16.11.2015 09:17, Selva Nair wrote:
+> Hi,
 >
->     No good suggestion yet, just expressing thoughts...
+> Here are some comments on the code -- there is one apparent memory leak (=
+see below).
 >
+>
+> the word "external" is not required nor appropriate as it blocks all, isn=
+'t it?
 
-Since connection_entry->explicit_exit_notification is now used also 
-outside of OCC context, I suggest to:
+I'm not a native speaker. If you say that, probably you're right.
 
-1) Remove #ifdef ENABLE_OCC around it's definition.
+>=20=20
+>
+> This error/warning is unnecessary and confusing. If the user does not wan=
+t to block-outside-dns, why say "can't block"? And why the "without configu=
+red DNS
+> server" remark?
 
-2) Fix comment there:
+That's a garbage. There used to be a check for configured 'dhcp-option DNS'=
+ and I forgot to remove that. Thanks.
 
-/* Explicitly tell peer when we are exiting via OCC_EXIT or control 
-channel [RESTART] message */
+>
+> in win32.c
+> +
+> +    ret =3D ConvertInterfaceIndexToLuid(index, &tapluid);
+> +    if (ret =3D=3D NO_ERROR)
+> +        dmsg (D_LOW, "Tap Luid: %I64d", tapluid.Value);
+> +
+>
+> Is it safe to ignore the ret !=3D NO_ERROR case? May be it is...
+>
+>
+> openvpnblob is allocated here, but not freed anywhere. Need to free it be=
+fore return.
+>
+> Finally, to nitpick,
+> There are a couple of unused variables
+> Some local vars could be eliminated (rpcStatus, dwFwAPIRetCode, ret)
+> FIREWALL_NAME defined as const, but passed to non-const
+> ZeroMemory --> CLEAR
+> CopyMemory --> memcpy
+>
+> Regards,
+>
+> Selva
 
-3) Remove (unneeded anymore) #ifdef in multi_process_signal around 
-accessing explicit_exit_notification.
-
-What do you think?
-
--Lev
 
 
+--Dc8jMHUlGGUuBUgj5qNNrSjdldh52ktax
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+Comment: https://keybase.io/valdikss
 
+iQIcBAEBCAAGBQJWSbVuAAoJEFzXIC7viPdyTnMQAKi5JJ6Uw/x5Jee9vLFQ8AEw
+7dOIbfRHbCUHv5IM9mzM+0sDkt7y/xoKYIs3DT1ECG3V1p6hlexHj0mYGB6smaKZ
+BLqnl9vDQ9Vn9eAH1eqkrJy0yueQqNhjZGtmMRUVwJANVZRYbrR21Z5OsiuUm8dS
+U+4IqZoph/KDSKzwPMquuFlU0EySV5TciyLHoq9HQ8Lza/jsOgCM8EcHYUDyMX+e
+ZgeGES9i6Y9t3VYVZFznRPPfc2FspLd80iW2CRDyucQ/qNDL2lGB1QMSU+VxAu6q
+Rqjc4iI1UnlIZzeguyHVqblBnQip+u7vn2wiXw1zgJU7GknwKDMPLTdiCAQ8Of9y
+98CpWKeWDpHP6vinYylBf9EqSFaQ99WYWZDpsGsc81fRtz+HT67DkVOTXSHu54be
+MSrrJspjmaTDFDaiuiQUJITka3ZCD/jelf4hPBLM/x4D7IDzneHN4LsNO9mWFT5h
+4iBtGfTX2M7pvprKknobHSToppALvuz3l1Q/C+uSJl2LiQqgblc/okxlsbgl3d9T
+NkK5VHRHM4BvLGi47P1b5AjDBt5DJe2GD3N3owR8PdJFVmphjXPXuRMlXrmtG8QP
+rBak6Ych73+MyNgNk6jG6PYAHQOEYRJg5l4b1LtCL07DEmU/YR2u/12Tgskt0noN
+ga0CVOUyQNVjqd0fuuX0
+=Gp35
+-----END PGP SIGNATURE-----
+
+--Dc8jMHUlGGUuBUgj5qNNrSjdldh52ktax--
 
