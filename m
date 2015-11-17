@@ -1,12 +1,12 @@
+From: "Morris, Russell" <rmorris@...1315...>
+Date: Tue, 17 Nov 2015 13:44:23 +0000
+Message-ID: <SN1PR08MB1391C054994551CB11B84DADB91D0@...2065...>
+References: <564AFAF5.4030004@...515...>
+In-Reply-To: <564AFAF5.4030004@...515...>
+Content-Language: en-US
 MIME-Version: 1.0
-In-Reply-To: <20151117130353.GO24952@...1296...>
-References: <CAN-X3HSXj9a1kiKGBJ1eHgoTeA97WmpqQJPCYf5esKYQa8fLjA@...278...>
-	<20151117130353.GO24952@...1296...>
-Date: Tue, 17 Nov 2015 13:43:50 +0000
-Message-ID: <CAN-X3HQ4Rf7RaCY27cLkdPo1kLtAHmXtXeM1jh=j=mPgQGeR6A@...278...>
-From: Christian Pellegrin <chripell@...410...>
-Subject: Re: [Openvpn-devel] [PATCH] Fix info.af == AF_UNSPEC case after
- commit 2bed089d31a12c2d0277e36a64964ebab6640f75
+Subject: Re: [Openvpn-devel] OpenVPN-GUI now on GitHub + other Windows
+	team	things
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,39 +15,62 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+To: =?iso-8859-1?Q?Samuli_Sepp=E4nen?= <samuli@...515...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-On Tue, Nov 17, 2015 at 1:03 PM, Gert Doering <gert@...1296...> wrote:
-> Why are you seeing AF_UNSPEC there?  This is actually more interesting
-> to me right now than debating possible avenues to fix this :-)
+Hi,
 
-I also see: "Could not determine IPv4/IPv6 protocol. Using AF_INET" in
-the logs (which points in an quite explicative conditional in
-socket.c). The configuration entries that might affect this and that
-are present in my configuration are:
+I do see the notes about " Building OpenVPN GUI from source" - but is there=
+ a way to build this under Linux (may be easier for some)?
 
-local [IPv4 address]
-lport 443
-mode server
-proto udp
-server [IPv4 subnet]
-topology subnet
+Thanks,
+... Russell
 
-and this happens on a host where I configured just IPv4 (even if the
-host itself is dual homed). Interestingly, if I configure full IPv6,
-i.e. I add:
 
-local [IPv6 address]
-proto udp6
-server [IPv6 netblock]
+-----Original Message-----
+From: Samuli Sepp=E4nen [mailto:samuli@...515...]=20
+Sent: Tuesday, November 17, 2015 4:01 AM
+To: openvpn-devel@lists.sourceforge.net
+Subject: [Openvpn-devel] OpenVPN-GUI now on GitHub + other Windows team thi=
+ngs
 
-the problem (and of course above message) goes away. I mistakenly
-assumed that seeing AF_UNSPEC is OK (from various comments when you
-grep for AF_UNSPEC). If you think the root of all evil is this value,
-I will dig further.
+Hi all,
 
-Thanks!
+I migrated my private fork of openvpn-gui on GitHub to the OpenVPN=20
+organization:
+
+<https://github.com/OpenVPN/openvpn-gui>
+
+You can now issue pull requests and all that. An official=20
+CONTRIBUTING.rst file is still missing so we need to create one.
+
+---
+
+I also officially announced the #openvpn-windows IRC channel on forums:
+
+<https://forums.openvpn.net/topic20238.html>
+
+I also asked opinions about having a separate forum board for Windows=20
+questions:
+
+<https://forums.openvpn.net/topic20240.html>
+
+Feel free to chime in!
+
+Best regards,
+
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
+
+---------------------------------------------------------------------------=
+---
+_______________________________________________
+Openvpn-devel mailing list
+Openvpn-devel@lists.sourceforge.net
+https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
