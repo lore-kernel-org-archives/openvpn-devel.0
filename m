@@ -1,16 +1,10 @@
-References: <562EB0A1.8010403@...2070...>
-	<56307DAA.30700@...2070...> <563083B1.2020908@...2070...>
-	<CAKuzo_hhRVGfPkEaE93oqGO89baPD1=9qVFYZ2=yQSuHC7Fs9g@...278...>
-From: ValdikSS <iam@...2070...>
-Message-ID: <5649B56C.6050506@...2070...>
-Date: Mon, 16 Nov 2015 13:52:28 +0300
-MIME-Version: 1.0
-In-Reply-To: <CAKuzo_hhRVGfPkEaE93oqGO89baPD1=9qVFYZ2=yQSuHC7Fs9g@...278...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature";
-	boundary="Dc8jMHUlGGUuBUgj5qNNrSjdldh52ktax"
-Subject: Re: [Openvpn-devel] [PATCH v2] Add Windows DNS Leak fix using WFP
- ('block-outside-dns')
+From: Selva Nair <selva.nair@...277...>
+Date: Mon, 16 Nov 2015 21:48:09 -0500
+Message-Id: <1447728489-14991-1-git-send-email-selva.nair@...277...>
+In-Reply-To: <1447271171-29141-2-git-send-email-selva.nair@...277...>
+References: <1447271171-29141-2-git-send-email-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH] Handle ctrl-C and ctrl-break events on
+	Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,86 +13,105 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---Dc8jMHUlGGUuBUgj5qNNrSjdldh52ktax
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-On 16.11.2015 09:17, Selva Nair wrote:
-> Hi,
->
-> Here are some comments on the code -- there is one apparent memory leak (=
-see below).
->
->
-> the word "external" is not required nor appropriate as it blocks all, isn=
-'t it?
+v2 changes
+ - cleaner, hopefully easier to get a code review :)
+ - handles both console mode and service mode
+-- >8 --
 
-I'm not a native speaker. If you say that, probably you're right.
+Handle ctrl-C or ctrl-Break sent to the console as a SIGTERM.
+Depending on the console mode, windows delivers ctrl-C as a
+keyboard input or as a signal. We handle both cases. This allows
+graceful termination of openvpn from programs such as nssm.
+Works in both console mode and service mode.
 
->=20=20
->
-> This error/warning is unnecessary and confusing. If the user does not wan=
-t to block-outside-dns, why say "can't block"? And why the "without configu=
-red DNS
-> server" remark?
+Signed-off-by: Selva Nair <selva.nair@...277...>
+---
+ src/openvpn/win32.c | 53 +++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 52 insertions(+)
 
-That's a garbage. There used to be a check for configured 'dhcp-option DNS'=
- and I forgot to remove that. Thanks.
+diff --git a/src/openvpn/win32.c b/src/openvpn/win32.c
+index d06b41f..1f9bda0 100644
+--- a/src/openvpn/win32.c
++++ b/src/openvpn/win32.c
+@@ -324,6 +324,53 @@ net_event_win32_close (struct net_event_win32 *ne)
+  * (2) Service mode -- map Windows event object to SIGTERM
+  */
+ 
++static void
++win_trigger_event(struct win32_signal *ws)
++{
++  if (ws->mode == WSO_MODE_SERVICE && HANDLE_DEFINED(ws->in.read))
++    SetEvent (ws->in.read);
++  else /* generate a key-press event */
++    {
++      DWORD tmp;
++      INPUT_RECORD ir;
++      HANDLE stdin_handle = GetStdHandle(STD_INPUT_HANDLE);
++
++      CLEAR(ir);
++      ir.EventType = KEY_EVENT;
++      ir.Event.KeyEvent.bKeyDown = true;
++      if (!stdin_handle || !WriteConsoleInput(stdin_handle, &ir, 1, &tmp))
++        msg(M_WARN|M_ERRNO, "WARN: win_trigger_event: WriteConsoleInput");
++    }
++}
++
++/*
++ * Callback to handle console ctrl events
++ */
++static bool WINAPI
++win_ctrl_handler (DWORD signum)
++{
++  msg(D_LOW, "win_ctrl_handler: signal received (code=%lu)", (unsigned long) signum);
++
++  if (siginfo_static.signal_received == SIGTERM)
++     return true;
++
++  switch (signum)
++    {
++    case CTRL_C_EVENT:
++    case CTRL_BREAK_EVENT:
++      throw_signal(SIGTERM);
++      /* trigget the win32_signal to interrupt the event loop */
++      win_trigger_event(&win32_signal);
++      return true;
++      break;
++    default:
++      msg(D_LOW, "win_ctrl_handler: signal (code=%lu) not handled", (unsigned long) signum);
++      break;
++    }
++  /* pass all other signals to the next handler */
++  return false;
++}
++
+ void
+ win32_signal_clear (struct win32_signal *ws)
+ {
+@@ -403,6 +450,9 @@ win32_signal_open (struct win32_signal *ws,
+ 	    ws->mode = WSO_MODE_SERVICE;
+ 	}
+     }
++    /* set the ctrl handler in both console and service modes */
++    if (!SetConsoleCtrlHandler ((PHANDLER_ROUTINE) win_ctrl_handler, true))
++       msg (M_WARN|M_ERRNO, "WARN: SetConsoleCtrlHandler failed");
+ }
+ 
+ static bool
+@@ -512,6 +562,9 @@ win32_signal_get (struct win32_signal *ws)
+ 	    case 0x3E: /* F4 -> TERM */
+ 	      ret = SIGTERM;
+ 	      break;
++           case 0x03: /* CTRL-C -> TERM */
++             ret = SIGTERM;
++             break;
+ 	    }
+ 	}
+       if (ret)
+-- 
+2.6.2
 
->
-> in win32.c
-> +
-> +    ret =3D ConvertInterfaceIndexToLuid(index, &tapluid);
-> +    if (ret =3D=3D NO_ERROR)
-> +        dmsg (D_LOW, "Tap Luid: %I64d", tapluid.Value);
-> +
->
-> Is it safe to ignore the ret !=3D NO_ERROR case? May be it is...
->
->
-> openvpnblob is allocated here, but not freed anywhere. Need to free it be=
-fore return.
->
-> Finally, to nitpick,
-> There are a couple of unused variables
-> Some local vars could be eliminated (rpcStatus, dwFwAPIRetCode, ret)
-> FIREWALL_NAME defined as const, but passed to non-const
-> ZeroMemory --> CLEAR
-> CopyMemory --> memcpy
->
-> Regards,
->
-> Selva
-
-
-
---Dc8jMHUlGGUuBUgj5qNNrSjdldh52ktax
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-Comment: https://keybase.io/valdikss
-
-iQIcBAEBCAAGBQJWSbVuAAoJEFzXIC7viPdyTnMQAKi5JJ6Uw/x5Jee9vLFQ8AEw
-7dOIbfRHbCUHv5IM9mzM+0sDkt7y/xoKYIs3DT1ECG3V1p6hlexHj0mYGB6smaKZ
-BLqnl9vDQ9Vn9eAH1eqkrJy0yueQqNhjZGtmMRUVwJANVZRYbrR21Z5OsiuUm8dS
-U+4IqZoph/KDSKzwPMquuFlU0EySV5TciyLHoq9HQ8Lza/jsOgCM8EcHYUDyMX+e
-ZgeGES9i6Y9t3VYVZFznRPPfc2FspLd80iW2CRDyucQ/qNDL2lGB1QMSU+VxAu6q
-Rqjc4iI1UnlIZzeguyHVqblBnQip+u7vn2wiXw1zgJU7GknwKDMPLTdiCAQ8Of9y
-98CpWKeWDpHP6vinYylBf9EqSFaQ99WYWZDpsGsc81fRtz+HT67DkVOTXSHu54be
-MSrrJspjmaTDFDaiuiQUJITka3ZCD/jelf4hPBLM/x4D7IDzneHN4LsNO9mWFT5h
-4iBtGfTX2M7pvprKknobHSToppALvuz3l1Q/C+uSJl2LiQqgblc/okxlsbgl3d9T
-NkK5VHRHM4BvLGi47P1b5AjDBt5DJe2GD3N3owR8PdJFVmphjXPXuRMlXrmtG8QP
-rBak6Ych73+MyNgNk6jG6PYAHQOEYRJg5l4b1LtCL07DEmU/YR2u/12Tgskt0noN
-ga0CVOUyQNVjqd0fuuX0
-=Gp35
------END PGP SIGNATURE-----
-
---Dc8jMHUlGGUuBUgj5qNNrSjdldh52ktax--
 
