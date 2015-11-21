@@ -1,10 +1,9 @@
-Date: Sat, 21 Nov 2015 13:24:52 +0100 (CET)
-Message-Id: <201511211224.tALCOq2u023167@...2054...>
+Date: Sat, 21 Nov 2015 13:50:54 +0100 (CET)
+Message-Id: <201511211250.tALCosjF023281@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1448101324-20310-1-git-send-email-steffan@...1856...>
-References: <1448101324-20310-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH applied] Re: polarssl: also allocate PKCS#11
-	certificate object on demand
+In-Reply-To: <20151119124723.GA10830@...2091...>
+References: <20151119124723.GA10830@...2091...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Adjust server-ipv6 documentation
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,23 +14,25 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Steffan Karger <steffan@...1856...>
+To: Christos Trochalakis <yatiohi@...2090...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-ACK, makes sense :-).
+ACK, thanks.
 
-Your patch has been applied to the master branch.
+Your patch has been applied to the master and release/2.3 branch.
 
-commit 9571010a14533a0f8abc6b25834fe3413755f2e8
-Author: Steffan Karger
-Date:   Sat Nov 21 11:22:04 2015 +0100
+commit e60849a708c7b70f0d7d2363489863e4c5c9c893 (master)
+commit 68cc5e7f34d824057819662954336bc6328dcaca (release/2.3)
 
-     polarssl: also allocate PKCS#11 certificate object on demand
+Author: Christos Trochalakis
+Date:   Thu Nov 19 14:47:23 2015 +0200
 
-     Signed-off-by: Steffan Karger <steffan@...1856...>
+     Adjust server-ipv6 documentation
+
+     Signed-off-by: Christos Trochalakis <yatiohi@...2090...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1448101324-20310-1-git-send-email-steffan@...1856...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/10543
+     Message-Id: <20151119124723.GA10830@...2091...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/10537
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
