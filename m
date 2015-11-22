@@ -1,16 +1,19 @@
+From: "Morris, Russell" <rmorris@...1315...>
+Date: Sun, 22 Nov 2015 17:33:49 +0000
+Message-ID: <SN1PR08MB13913AC34E4A579F21ED0576B9180@...2065...>
+References: <564AFAF5.4030004@...515...>
+	<SN1PR08MB1391C054994551CB11B84DADB91D0@...2065...>
+	<CAKuzo_gAHMwvboZnHoJ7+m9ebdkxjxJQufHMjF=fxqsRimyB8Q@...278...>
+	<564EDA4B.9010708@...515...>
+	<SN1PR08MB1391783FD7541D07688C88D0B91A0@...2065...>
+	<CAKuzo_gJH63sBcxo1rV7Kwh6CPnfgVYhv90TJ777XJ8iE9BGtA@...278...>
+In-Reply-To: <CAKuzo_gJH63sBcxo1rV7Kwh6CPnfgVYhv90TJ777XJ8iE9BGtA@...278...>
+Content-Language: en-US
+Content-Type: multipart/alternative;
+	boundary="_000_SN1PR08MB13913AC34E4A579F21ED0576B9180SN1PR08MB1391namp_"
 MIME-Version: 1.0
-In-Reply-To: <20151122163048.GI24952@...1296...>
-References: <1447271171-29141-2-git-send-email-selva.nair@...277...>
-	<1447728489-14991-1-git-send-email-selva.nair@...277...>
-	<20151122151858.GH24952@...1296...>
-	<CAKuzo_jFMSQb98pS8mEeujbRs6WXi9a+aaFGbc6GwKa0ANyD6A@...278...>
-	<20151122163048.GI24952@...1296...>
-From: Selva Nair <selva.nair@...277...>
-Date: Sun, 22 Nov 2015 11:50:06 -0500
-Message-ID: <CAKuzo_goXu48At9MJzSy=FcAvXhQ5fL2mCKU=nQ+UbdTDUbSHA@...278...>
-Content-Type: multipart/alternative; boundary=001a1147471cbe861f052523e78f
-Subject: Re: [Openvpn-devel] [PATCH] Handle ctrl-C and ctrl-break events on
-	Windows
+Subject: Re: [Openvpn-devel] OpenVPN-GUI now on GitHub + other Windows team
+ things
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,89 +22,152 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
+To: Selva Nair <selva.nair@...277...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---001a1147471cbe861f052523e78f
-Content-Type: text/plain; charset=UTF-8
+--_000_SN1PR08MB13913AC34E4A579F21ED0576B9180SN1PR08MB1391namp_
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 
-Hi,
+SGksDQoNCldlbnQgdG8gZ2V0IHN0YXJ0ZWQgb24gdGhpcywgYW5kIEkgYWRtaXQg4oCTIGEgbG90
+IG9mIGRpZmZlcmVudCBhbmQgY29uZnVzaW5nIGluZm9ybWF0aW9uIGFib3V0IHRoZSBsaWJyYXJp
+ZXMgYW5kIGluY2x1ZGUgZmlsZXMgKGFuZCBhIGxvdCBvZiBpdCBjb250cmFkaWN0cyBpdCBzZWVt
+cykuIERvIHlvdSBoYXZlIGEgZ29vZCBzb3VyY2UgZm9yIHRoZSDigJxyaWdodOKAnSBmaWxlcyB0
+byBncmFiPw0KDQpUaGFua3MhDQoNCuKApiBSdXNzZWxsDQoNCg0KRnJvbTogU2VsdmEgTmFpciBb
+bWFpbHRvOnNlbHZhLm5haXJALi4uMjc3Li4uXQ0KU2VudDogRnJpZGF5LCBOb3ZlbWJlciAyMCwg
+MjAxNSAxMDowNCBBTQ0KVG86IE1vcnJpcywgUnVzc2VsbCA8cm1vcnJpc0AuLi4xMzE1Li4uPg0K
+Q2M6IFNhbXVsaSBTZXBww6RuZW4gPHNhbXVsaUAuLi41MTUuLi4+OyBvcGVudnBuLWRldmVsQGxp
+c3RzLnNvdXJjZWZvcmdlLm5ldA0KU3ViamVjdDogUmU6IFtPcGVudnBuLWRldmVsXSBPcGVuVlBO
+LUdVSSBub3cgb24gR2l0SHViICsgb3RoZXIgV2luZG93cyB0ZWFtIHRoaW5ncw0KDQpIaSwNCg0K
+T24gRnJpLCBOb3YgMjAsIDIwMTUgYXQgMzozMSBBTSwgU2FtdWxpIFNlcHDDpG5lbiA8c2FtdWxp
+QC4uLjUxNS4uLjxtYWlsdG86c2FtdWxpQC4uLjUxNS4uLj4+IHdyb3RlOg0KDQpJIGFkZGVkIHRo
+ZXNlIGluc3RydWN0aW9ucyArIERhdmlkJ3Mgbm90ZXMgaGVyZToNCjxodHRwczovL2NvbW11bml0
+eS5vcGVudnBuLm5ldC9vcGVudnBuL3dpa2kvQnVpbGRpbmdPcGVuVlBOLUdVST4NCg0KVGhhbmtz
+LiBJIG1hZGUgc29tZSBlZGl0cyB0byB0aGUgd2lraSAoaG9wZSBpdHMgb2spLiBUaGVyZSB3ZXJl
+IG51bWVyb3VzIHR5cG9zIGluIG15IGVtYWlsOyBhbHNvIG1hZGUgaXQgcmVhZCBsZXNzIGxpa2Ug
+YW4gZW1haWwgZXRjLi4NCg0KT24gRnJpLCBOb3YgMjAsIDIwMTUgYXQgMTA6MTUgQU0sIE1vcnJp
+cywgUnVzc2VsbCA8cm1vcnJpc0AuLi4xMzE1Li4uPG1haWx0bzpybW9ycmlzQC4uLjEzMTUuLi4+
+PiB3cm90ZToNCkknbGwgZ2l2ZSB0aGlzIGEgdHJ5IHRoaXMgd2Vla2VuZCwgd2lsbCBjb25maXJt
+IHRoYXQgdGhlIHN0ZXBzIHdvcmsgKHN0YXJ0aW5nIGZyb20gc2NyYXRjaCkuDQoNClRoYXQgd291
+bGQgYmUgZ3JlYXQuDQoNClJlZ2FyZHMNCg0KU2VsdmENCg==
 
-On Sun, Nov 22, 2015 at 11:30 AM, Gert Doering <gert@...1296...> wrote:
+--_000_SN1PR08MB13913AC34E4A579F21ED0576B9180SN1PR08MB1391namp_
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: base64
 
-> On Sun, Nov 22, 2015 at 10:49:13AM -0500, Selva Nair wrote:
-> >its safer to setup nssm with a delay of  2500 msec
-> > between ctrl-C and 'kill without prejudice' (aka Terminate).
->
-> Ah, yes.  Thanks :-)  (you and Samuli need to work on the NSSM setup stuff
-> then, I don't have an eye on the windows stuff, so won't be able to track
-> this so it's not getting lost)
->
+PGh0bWwgeG1sbnM6dj0idXJuOnNjaGVtYXMtbWljcm9zb2Z0LWNvbTp2bWwiIHhtbG5zOm89InVy
+bjpzY2hlbWFzLW1pY3Jvc29mdC1jb206b2ZmaWNlOm9mZmljZSIgeG1sbnM6dz0idXJuOnNjaGVt
+YXMtbWljcm9zb2Z0LWNvbTpvZmZpY2U6d29yZCIgeG1sbnM6bT0iaHR0cDovL3NjaGVtYXMubWlj
+cm9zb2Z0LmNvbS9vZmZpY2UvMjAwNC8xMi9vbW1sIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcv
+VFIvUkVDLWh0bWw0MCI+DQo8aGVhZD4NCjxtZXRhIGh0dHAtZXF1aXY9IkNvbnRlbnQtVHlwZSIg
+Y29udGVudD0idGV4dC9odG1sOyBjaGFyc2V0PXV0Zi04Ij4NCjxtZXRhIG5hbWU9IkdlbmVyYXRv
+ciIgY29udGVudD0iTWljcm9zb2Z0IFdvcmQgMTUgKGZpbHRlcmVkIG1lZGl1bSkiPg0KPHN0eWxl
+PjwhLS0NCi8qIEZvbnQgRGVmaW5pdGlvbnMgKi8NCkBmb250LWZhY2UNCgl7Zm9udC1mYW1pbHk6
+IkNhbWJyaWEgTWF0aCI7DQoJcGFub3NlLTE6MiA0IDUgMyA1IDQgNiAzIDIgNDt9DQpAZm9udC1m
+YWNlDQoJe2ZvbnQtZmFtaWx5OkNhbGlicmk7DQoJcGFub3NlLTE6MiAxNSA1IDIgMiAyIDQgMyAy
+IDQ7fQ0KLyogU3R5bGUgRGVmaW5pdGlvbnMgKi8NCnAuTXNvTm9ybWFsLCBsaS5Nc29Ob3JtYWws
+IGRpdi5Nc29Ob3JtYWwNCgl7bWFyZ2luOjBpbjsNCgltYXJnaW4tYm90dG9tOi4wMDAxcHQ7DQoJ
+Zm9udC1zaXplOjEyLjBwdDsNCglmb250LWZhbWlseToiVGltZXMgTmV3IFJvbWFuIixzZXJpZjt9
+DQphOmxpbmssIHNwYW4uTXNvSHlwZXJsaW5rDQoJe21zby1zdHlsZS1wcmlvcml0eTo5OTsNCglj
+b2xvcjpibHVlOw0KCXRleHQtZGVjb3JhdGlvbjp1bmRlcmxpbmU7fQ0KYTp2aXNpdGVkLCBzcGFu
+Lk1zb0h5cGVybGlua0ZvbGxvd2VkDQoJe21zby1zdHlsZS1wcmlvcml0eTo5OTsNCgljb2xvcjpw
+dXJwbGU7DQoJdGV4dC1kZWNvcmF0aW9uOnVuZGVybGluZTt9DQpwLm1zb25vcm1hbDAsIGxpLm1z
+b25vcm1hbDAsIGRpdi5tc29ub3JtYWwwDQoJe21zby1zdHlsZS1uYW1lOm1zb25vcm1hbDsNCglt
+c28tbWFyZ2luLXRvcC1hbHQ6YXV0bzsNCgltYXJnaW4tcmlnaHQ6MGluOw0KCW1zby1tYXJnaW4t
+Ym90dG9tLWFsdDphdXRvOw0KCW1hcmdpbi1sZWZ0OjBpbjsNCglmb250LXNpemU6MTIuMHB0Ow0K
+CWZvbnQtZmFtaWx5OiJUaW1lcyBOZXcgUm9tYW4iLHNlcmlmO30NCnNwYW4uRW1haWxTdHlsZTE4
+DQoJe21zby1zdHlsZS10eXBlOnBlcnNvbmFsLXJlcGx5Ow0KCWZvbnQtZmFtaWx5OiJDYWxpYnJp
+IixzYW5zLXNlcmlmOw0KCWNvbG9yOiMxRjQ5N0Q7fQ0KLk1zb0NocERlZmF1bHQNCgl7bXNvLXN0
+eWxlLXR5cGU6ZXhwb3J0LW9ubHk7DQoJZm9udC1mYW1pbHk6IkNhbGlicmkiLHNhbnMtc2VyaWY7
+fQ0KQHBhZ2UgV29yZFNlY3Rpb24xDQoJe3NpemU6OC41aW4gMTEuMGluOw0KCW1hcmdpbjoxLjBp
+biAxLjBpbiAxLjBpbiAxLjBpbjt9DQpkaXYuV29yZFNlY3Rpb24xDQoJe3BhZ2U6V29yZFNlY3Rp
+b24xO30NCi0tPjwvc3R5bGU+PCEtLVtpZiBndGUgbXNvIDldPjx4bWw+DQo8bzpzaGFwZWRlZmF1
+bHRzIHY6ZXh0PSJlZGl0IiBzcGlkbWF4PSIxMDI2IiAvPg0KPC94bWw+PCFbZW5kaWZdLS0+PCEt
+LVtpZiBndGUgbXNvIDldPjx4bWw+DQo8bzpzaGFwZWxheW91dCB2OmV4dD0iZWRpdCI+DQo8bzpp
+ZG1hcCB2OmV4dD0iZWRpdCIgZGF0YT0iMSIgLz4NCjwvbzpzaGFwZWxheW91dD48L3htbD48IVtl
+bmRpZl0tLT4NCjwvaGVhZD4NCjxib2R5IGxhbmc9IkVOLVVTIiBsaW5rPSJibHVlIiB2bGluaz0i
+cHVycGxlIj4NCjxkaXYgY2xhc3M9IldvcmRTZWN0aW9uMSI+DQo8cCBjbGFzcz0iTXNvTm9ybWFs
+Ij48c3BhbiBzdHlsZT0iZm9udC1zaXplOjExLjBwdDtmb250LWZhbWlseTomcXVvdDtDYWxpYnJp
+JnF1b3Q7LHNhbnMtc2VyaWY7Y29sb3I6IzFGNDk3RCI+SGksPG86cD48L286cD48L3NwYW4+PC9w
+Pg0KPHAgY2xhc3M9Ik1zb05vcm1hbCI+PHNwYW4gc3R5bGU9ImZvbnQtc2l6ZToxMS4wcHQ7Zm9u
+dC1mYW1pbHk6JnF1b3Q7Q2FsaWJyaSZxdW90OyxzYW5zLXNlcmlmO2NvbG9yOiMxRjQ5N0QiPjxv
+OnA+Jm5ic3A7PC9vOnA+PC9zcGFuPjwvcD4NCjxwIGNsYXNzPSJNc29Ob3JtYWwiPjxzcGFuIHN0
+eWxlPSJmb250LXNpemU6MTEuMHB0O2ZvbnQtZmFtaWx5OiZxdW90O0NhbGlicmkmcXVvdDssc2Fu
+cy1zZXJpZjtjb2xvcjojMUY0OTdEIj5XZW50IHRvIGdldCBzdGFydGVkIG9uIHRoaXMsIGFuZCBJ
+IGFkbWl0IOKAkyBhIGxvdCBvZiBkaWZmZXJlbnQgYW5kIGNvbmZ1c2luZyBpbmZvcm1hdGlvbiBh
+Ym91dCB0aGUgbGlicmFyaWVzIGFuZCBpbmNsdWRlIGZpbGVzIChhbmQgYSBsb3Qgb2YgaXQgY29u
+dHJhZGljdHMgaXQNCiBzZWVtcykuIERvIHlvdSBoYXZlIGEgZ29vZCBzb3VyY2UgZm9yIHRoZSDi
+gJxyaWdodOKAnSBmaWxlcyB0byBncmFiPzxvOnA+PC9vOnA+PC9zcGFuPjwvcD4NCjxwIGNsYXNz
+PSJNc29Ob3JtYWwiPjxzcGFuIHN0eWxlPSJmb250LXNpemU6MTEuMHB0O2ZvbnQtZmFtaWx5OiZx
+dW90O0NhbGlicmkmcXVvdDssc2Fucy1zZXJpZjtjb2xvcjojMUY0OTdEIj48bzpwPiZuYnNwOzwv
+bzpwPjwvc3Bhbj48L3A+DQo8cCBjbGFzcz0iTXNvTm9ybWFsIj48c3BhbiBzdHlsZT0iZm9udC1z
+aXplOjExLjBwdDtmb250LWZhbWlseTomcXVvdDtDYWxpYnJpJnF1b3Q7LHNhbnMtc2VyaWY7Y29s
+b3I6IzFGNDk3RCI+VGhhbmtzITxvOnA+PC9vOnA+PC9zcGFuPjwvcD4NCjxwIGNsYXNzPSJNc29O
+b3JtYWwiPjxzcGFuIHN0eWxlPSJmb250LXNpemU6MTEuMHB0O2ZvbnQtZmFtaWx5OiZxdW90O0Nh
+bGlicmkmcXVvdDssc2Fucy1zZXJpZjtjb2xvcjojMUY0OTdEIj48bzpwPiZuYnNwOzwvbzpwPjwv
+c3Bhbj48L3A+DQo8cCBjbGFzcz0iTXNvTm9ybWFsIj48c3BhbiBzdHlsZT0iZm9udC1zaXplOjEx
+LjBwdDtmb250LWZhbWlseTomcXVvdDtDYWxpYnJpJnF1b3Q7LHNhbnMtc2VyaWY7Y29sb3I6IzFG
+NDk3RCI+4oCmIFJ1c3NlbGw8bzpwPjwvbzpwPjwvc3Bhbj48L3A+DQo8cCBjbGFzcz0iTXNvTm9y
+bWFsIj48c3BhbiBzdHlsZT0iZm9udC1zaXplOjExLjBwdDtmb250LWZhbWlseTomcXVvdDtDYWxp
+YnJpJnF1b3Q7LHNhbnMtc2VyaWY7Y29sb3I6IzFGNDk3RCI+PG86cD4mbmJzcDs8L286cD48L3Nw
+YW4+PC9wPg0KPHAgY2xhc3M9Ik1zb05vcm1hbCI+PHNwYW4gc3R5bGU9ImZvbnQtc2l6ZToxMS4w
+cHQ7Zm9udC1mYW1pbHk6JnF1b3Q7Q2FsaWJyaSZxdW90OyxzYW5zLXNlcmlmO2NvbG9yOiMxRjQ5
+N0QiPjxvOnA+Jm5ic3A7PC9vOnA+PC9zcGFuPjwvcD4NCjxwIGNsYXNzPSJNc29Ob3JtYWwiIHN0
+eWxlPSJtYXJnaW4tbGVmdDouNWluIj48Yj48c3BhbiBzdHlsZT0iZm9udC1zaXplOjExLjBwdDtm
+b250LWZhbWlseTomcXVvdDtDYWxpYnJpJnF1b3Q7LHNhbnMtc2VyaWYiPkZyb206PC9zcGFuPjwv
+Yj48c3BhbiBzdHlsZT0iZm9udC1zaXplOjExLjBwdDtmb250LWZhbWlseTomcXVvdDtDYWxpYnJp
+JnF1b3Q7LHNhbnMtc2VyaWYiPiBTZWx2YSBOYWlyIFttYWlsdG86c2VsdmEubmFpckAuLi4yNzcu
+Li5dDQo8YnI+DQo8Yj5TZW50OjwvYj4gRnJpZGF5LCBOb3ZlbWJlciAyMCwgMjAxNSAxMDowNCBB
+TTxicj4NCjxiPlRvOjwvYj4gTW9ycmlzLCBSdXNzZWxsICZsdDtybW9ycmlzQC4uLjEzMTUuLi4m
+Z3Q7PGJyPg0KPGI+Q2M6PC9iPiBTYW11bGkgU2VwcMOkbmVuICZsdDtzYW11bGlALi4uNTE1Li4u
+Jmd0Ozsgb3BlbnZwbi1kZXZlbEBsaXN0cy5zb3VyY2Vmb3JnZS5uZXQ8YnI+DQo8Yj5TdWJqZWN0
+OjwvYj4gUmU6IFtPcGVudnBuLWRldmVsXSBPcGVuVlBOLUdVSSBub3cgb24gR2l0SHViICYjNDM7
+IG90aGVyIFdpbmRvd3MgdGVhbSB0aGluZ3M8bzpwPjwvbzpwPjwvc3Bhbj48L3A+DQo8cCBjbGFz
+cz0iTXNvTm9ybWFsIiBzdHlsZT0ibWFyZ2luLWxlZnQ6LjVpbiI+PG86cD4mbmJzcDs8L286cD48
+L3A+DQo8ZGl2Pg0KPGRpdj4NCjxwIGNsYXNzPSJNc29Ob3JtYWwiIHN0eWxlPSJtYXJnaW4tbGVm
+dDouNWluIj5IaSw8bzpwPjwvbzpwPjwvcD4NCjwvZGl2Pg0KPGRpdj4NCjxwIGNsYXNzPSJNc29O
+b3JtYWwiIHN0eWxlPSJtYXJnaW4tbGVmdDouNWluIj48bzpwPiZuYnNwOzwvbzpwPjwvcD4NCjwv
+ZGl2Pg0KPGRpdj4NCjxwIGNsYXNzPSJNc29Ob3JtYWwiIHN0eWxlPSJtYXJnaW4tbGVmdDouNWlu
+Ij5PbiBGcmksIE5vdiAyMCwgMjAxNSBhdCAzOjMxIEFNLCBTYW11bGkgU2VwcMOkbmVuICZsdDs8
+YSBocmVmPSJtYWlsdG86c2FtdWxpQC4uLjUxNS4uLiI+c2FtdWxpQC4uLjUxNS4uLjwvYT4mZ3Q7
+IHdyb3RlOjxvOnA+PC9vOnA+PC9wPg0KPC9kaXY+DQo8ZGl2Pg0KPHAgY2xhc3M9Ik1zb05vcm1h
+bCIgc3R5bGU9Im1hcmdpbi1sZWZ0Oi41aW4iPjxvOnA+Jm5ic3A7PC9vOnA+PC9wPg0KPC9kaXY+
+DQo8YmxvY2txdW90ZSBzdHlsZT0iYm9yZGVyOm5vbmU7Ym9yZGVyLWxlZnQ6c29saWQgI0NDQ0ND
+QyAxLjBwdDtwYWRkaW5nOjBpbiAwaW4gMGluIDYuMHB0O21hcmdpbi1sZWZ0OjQuOHB0O21hcmdp
+bi1yaWdodDowaW4iPg0KPHAgY2xhc3M9Ik1zb05vcm1hbCIgc3R5bGU9Im1hcmdpbi1sZWZ0Oi41
+aW4iPjxzcGFuIHN0eWxlPSJmb250LXNpemU6OS41cHQiPkkgYWRkZWQgdGhlc2UgaW5zdHJ1Y3Rp
+b25zICYjNDM7IERhdmlkJ3Mgbm90ZXMgaGVyZTo8YnI+DQombHQ7PC9zcGFuPjxhIGhyZWY9Imh0
+dHBzOi8vY29tbXVuaXR5Lm9wZW52cG4ubmV0L29wZW52cG4vd2lraS9CdWlsZGluZ09wZW5WUE4t
+R1VJIiB0YXJnZXQ9Il9ibGFuayI+PHNwYW4gc3R5bGU9ImZvbnQtc2l6ZTo5LjVwdCI+aHR0cHM6
+Ly9jb21tdW5pdHkub3BlbnZwbi5uZXQvb3BlbnZwbi93aWtpL0J1aWxkaW5nT3BlblZQTi1HVUk8
+L3NwYW4+PC9hPjxzcGFuIHN0eWxlPSJmb250LXNpemU6OS41cHQiPiZndDs8L3NwYW4+PG86cD48
+L286cD48L3A+DQo8L2Jsb2NrcXVvdGU+DQo8ZGl2Pg0KPHAgY2xhc3M9Ik1zb05vcm1hbCIgc3R5
+bGU9Im1hcmdpbi1sZWZ0Oi41aW4iPjxvOnA+Jm5ic3A7PC9vOnA+PC9wPg0KPC9kaXY+DQo8ZGl2
+Pg0KPHAgY2xhc3M9Ik1zb05vcm1hbCIgc3R5bGU9Im1hcmdpbi1sZWZ0Oi41aW4iPjxzcGFuIHN0
+eWxlPSJmb250LXNpemU6OS41cHQiPlRoYW5rcy4gSSBtYWRlIHNvbWUgZWRpdHMgdG8gdGhlIHdp
+a2kgKGhvcGUgaXRzIG9rKS4gVGhlcmUgd2VyZSBudW1lcm91cyB0eXBvcyBpbiBteSBlbWFpbDsg
+YWxzbyBtYWRlIGl0IHJlYWQgbGVzcyBsaWtlIGFuIGVtYWlsIGV0Yy4uPC9zcGFuPjxvOnA+PC9v
+OnA+PC9wPg0KPC9kaXY+DQo8ZGl2Pg0KPHAgY2xhc3M9Ik1zb05vcm1hbCIgc3R5bGU9Im1hcmdp
+bi1sZWZ0Oi41aW4iPjxvOnA+Jm5ic3A7PC9vOnA+PC9wPg0KPGRpdj4NCjxwIGNsYXNzPSJNc29O
+b3JtYWwiIHN0eWxlPSJtYXJnaW4tbGVmdDouNWluIj5PbiBGcmksIE5vdiAyMCwgMjAxNSBhdCAx
+MDoxNSBBTSwgTW9ycmlzLCBSdXNzZWxsICZsdDs8YSBocmVmPSJtYWlsdG86cm1vcnJpc0AuLi4x
+MzE1Li4uIiB0YXJnZXQ9Il9ibGFuayI+cm1vcnJpc0AuLi4xMzE1Li4uPC9hPiZndDsgd3JvdGU6
+PG86cD48L286cD48L3A+DQo8YmxvY2txdW90ZSBzdHlsZT0iYm9yZGVyOm5vbmU7Ym9yZGVyLWxl
+ZnQ6c29saWQgI0NDQ0NDQyAxLjBwdDtwYWRkaW5nOjBpbiAwaW4gMGluIDYuMHB0O21hcmdpbi1s
+ZWZ0OjQuOHB0O21hcmdpbi1yaWdodDowaW4iPg0KPHAgY2xhc3M9Ik1zb05vcm1hbCIgc3R5bGU9
+Im1hcmdpbi1sZWZ0Oi41aW4iPkknbGwgZ2l2ZSB0aGlzIGEgdHJ5IHRoaXMgd2Vla2VuZCwgd2ls
+bCBjb25maXJtIHRoYXQgdGhlIHN0ZXBzIHdvcmsgKHN0YXJ0aW5nIGZyb20gc2NyYXRjaCkuPG86
+cD48L286cD48L3A+DQo8L2Jsb2NrcXVvdGU+DQo8L2Rpdj4NCjxkaXY+DQo8cCBjbGFzcz0iTXNv
+Tm9ybWFsIiBzdHlsZT0ibWFyZ2luLWxlZnQ6LjVpbiI+PG86cD4mbmJzcDs8L286cD48L3A+DQo8
+L2Rpdj4NCjxwIGNsYXNzPSJNc29Ob3JtYWwiIHN0eWxlPSJtYXJnaW4tbGVmdDouNWluIj5UaGF0
+IHdvdWxkIGJlIGdyZWF0LjxvOnA+PC9vOnA+PC9wPg0KPC9kaXY+DQo8ZGl2Pg0KPHAgY2xhc3M9
+Ik1zb05vcm1hbCIgc3R5bGU9Im1hcmdpbi1sZWZ0Oi41aW4iPjxvOnA+Jm5ic3A7PC9vOnA+PC9w
+Pg0KPC9kaXY+DQo8ZGl2Pg0KPHAgY2xhc3M9Ik1zb05vcm1hbCIgc3R5bGU9Im1hcmdpbi1sZWZ0
+Oi41aW4iPlJlZ2FyZHM8bzpwPjwvbzpwPjwvcD4NCjwvZGl2Pg0KPGRpdj4NCjxwIGNsYXNzPSJN
+c29Ob3JtYWwiIHN0eWxlPSJtYXJnaW4tbGVmdDouNWluIj48bzpwPiZuYnNwOzwvbzpwPjwvcD4N
+CjwvZGl2Pg0KPGRpdj4NCjxwIGNsYXNzPSJNc29Ob3JtYWwiIHN0eWxlPSJtYXJnaW4tbGVmdDou
+NWluIj5TZWx2YTxvOnA+PC9vOnA+PC9wPg0KPC9kaXY+DQo8L2Rpdj4NCjwvZGl2Pg0KPC9ib2R5
+Pg0KPC9odG1sPg0K
 
-For now we only need to add it in the wiki entry on nssm -- I'll try to
-edit it or request Samuli. Then if/when we replace the 'aService' with nssm
-or start shipping an nssm script, it could be taken from the wiki example.
-
-
->
-> > [*} actually with exit-notify n, it should only take n-1 seconds to send
-> n
-> > notifies, but integer arithmetic makes it always a little more than n-1.
-> > And for some reason it appears to wait a second even if another notify
-> > doesn't have to be sent. I've not looked into that part of the code
-> > carefully...
->
-> Our timer granularity is "1 second" for most stuff, and we tend to add
-> another second "just to be sure"... ran into this when trying to speed
-> up client PUSH_REQUEST sending in commit afb93fac803f
->
-
-Well, that explains it. Thanks.
-
-Selva
-
---001a1147471cbe861f052523e78f
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr">Hi,<br><div><div class=3D"gmail_extra"><br><div class=3D"g=
-mail_quote">On Sun, Nov 22, 2015 at 11:30 AM, Gert Doering <span dir=3D"ltr=
-">&lt;<a href=3D"mailto:gert@...1296..." target=3D"_blank">gert@...1296...<=
-/a>&gt;</span> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:=
-0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex"><span class=3D"">
-On Sun, Nov 22, 2015 at 10:49:13AM -0500, Selva Nair wrote:<br>&gt;its safe=
-r to setup nssm with a delay of=C2=A0 2500 msec<br>
-&gt; between ctrl-C and &#39;kill without prejudice&#39; (aka Terminate).<b=
-r>
-<br>
-</span>Ah, yes.=C2=A0 Thanks :-)=C2=A0 (you and Samuli need to work on the =
-NSSM setup stuff<br>
-then, I don&#39;t have an eye on the windows stuff, so won&#39;t be able to=
- track<br>
-this so it&#39;s not getting lost)<br></blockquote><div><br></div><div>For =
-now we only need to add it in the wiki entry on nssm -- I&#39;ll try to edi=
-t it or request Samuli. Then if/when we replace the &#39;aService&#39; with=
- nssm or start shipping an nssm script, it could be taken from the wiki exa=
-mple.<br>=C2=A0<br></div><blockquote class=3D"gmail_quote" style=3D"margin:=
-0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">
-<span class=3D""><br>
-&gt; [*} actually with exit-notify n, it should only take n-1 seconds to se=
-nd n<br>
-&gt; notifies, but integer arithmetic makes it always a little more than n-=
-1.<br>
-&gt; And for some reason it appears to wait a second even if another notify=
-<br>
-&gt; doesn&#39;t have to be sent. I&#39;ve not looked into that part of the=
- code<br>
-&gt; carefully...<br>
-<br>
-</span>Our timer granularity is &quot;1 second&quot; for most stuff, and we=
- tend to add<br>
-another second &quot;just to be sure&quot;... ran into this when trying to =
-speed<br>
-up client PUSH_REQUEST sending in commit afb93fac803f<br></blockquote><div>=
-<br></div><div>Well, that explains it. Thanks.<br><br></div><div class=3D"h=
-5">Selva<br></div></div></div></div></div>
-
---001a1147471cbe861f052523e78f--
+--_000_SN1PR08MB13913AC34E4A579F21ED0576B9180SN1PR08MB1391namp_--
 
