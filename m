@@ -1,8 +1,9 @@
-From: Lev Stipakov <lstipakov@...277...>
-Date: Mon, 23 Nov 2015 13:38:13 +0200
-Message-Id: <1448278693-29322-1-git-send-email-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH] Client-side part for server restart
-	notification
+Date: Mon, 23 Nov 2015 12:48:54 +0100 (CET)
+Message-Id: <201511231148.tANBmskJ077143@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <1448274384-22953-1-git-send-email-steffan.karger@...1435...>
+References: <1448274384-22953-1-git-send-email-steffan.karger@...1435...>
+Subject: [Openvpn-devel] [PATCH applied] Re: polarssl: require >= 1.3.8
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,43 +14,29 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Steffan Karger <steffan.karger@...1435...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-When client receives "RESTART,N", it advances to the next remote.
+ACK.  Much better than having unresolved symbols at link time :-)
 
-Whole patch (server + client) has been merged to master and will be part of 2.4.
+Your patch has been applied to the master branch.
 
-Signed-off-by: Lev Stipakov <lstipakov@...277...>
----
- src/openvpn/push.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+commit 9d3b7cec5270b2aebf62e80ccaa564aab93fcb37
+Author: Steffan Karger
+Date:   Mon Nov 23 11:26:24 2015 +0100
 
-diff --git a/src/openvpn/push.c b/src/openvpn/push.c
-index 11505cb..e4f3984 100644
---- a/src/openvpn/push.c
-+++ b/src/openvpn/push.c
-@@ -103,6 +103,7 @@ server_pushed_signal (struct context *c, const struct buffer *buffer, const bool
- 	m = BSTR (&buf);
- 
-       /* preserve cached passwords? */
-+      /* advance to next server? */
-       {
- 	bool purge = true;
- 
-@@ -113,6 +114,12 @@ server_pushed_signal (struct context *c, const struct buffer *buffer, const bool
- 	      {
- 		if (m[i] == 'P')
- 		  purge = false;
-+		else if (m[i] == 'N')
-+		  {
-+		    /* next server? */
-+		    if (c->options.connection_list)
-+		      c->options.connection_list->no_advance = false;
-+		  }
- 	      }
- 	  }
- 	if (purge)
--- 
-1.9.1
+     polarssl: require >= 1.3.8
+
+     Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1448274384-22953-1-git-send-email-steffan.karger@...1435...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/10563
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
