@@ -1,16 +1,16 @@
-Date: Mon, 23 Nov 2015 21:05:30 +0100
+Date: Mon, 23 Nov 2015 21:48:28 +0100
 From: Gert Doering <gert@...1296...>
-Message-ID: <20151123200530.GT24952@...1296...>
-References: <CAN-X3HSXj9a1kiKGBJ1eHgoTeA97WmpqQJPCYf5esKYQa8fLjA@...278...>
-	<20151121200637.GD24952@...1296...>
-	<CAN-X3HQ3jwUxchW=m-57TPBtfyv6E7bfY9fQJ3MH8godvf9nVQ@...278...>
+Message-ID: <20151123204828.GU24952@...1296...>
+References: <1373890626-13943-1-git-send-email-mludvig@...1388...>
+	<1444553060-15946-1-git-send-email-dejong@...1435...>
+	<20151114190545.GY24952@...1296...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="KCGU/3tJP9FZjbY4"
+	protocol="application/pgp-signature"; boundary="6GRFrjYdWqOKrmmZ"
 Content-Disposition: inline
-In-Reply-To: <CAN-X3HQ3jwUxchW=m-57TPBtfyv6E7bfY9fQJ3MH8godvf9nVQ@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] Fix info.af == AF_UNSPEC case after
- commit 2bed089d31a12c2d0277e36a64964ebab6640f75
+In-Reply-To: <20151114190545.GY24952@...1296...>
+Subject: Re: [Openvpn-devel] [PATCH APPLIED] Support for username-only auth
+ file.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,33 +19,60 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Christian Pellegrin <chripell@...410...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Adriaan de Jong <dejong@...1435...>
+Cc: openvpn-devel@lists.sourceforge.net, Michal Ludvig <mludvig@...1388...>
 
---KCGU/3tJP9FZjbY4
+--6GRFrjYdWqOKrmmZ
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Mon, Nov 23, 2015 at 11:51:43AM +0000, Christian Pellegrin wrote:
-> On Sat, Nov 21, 2015 at 8:06 PM, Gert Doering <gert@...1296...> wrote:
-> >             if (sock->info.af =3D=3D AF_UNSPEC)
-> > +               {
-> >                    msg (M_WARN, "Could not determine IPv4/IPv6 protocol=
-. Using %s",
-> >                      addr_family_name(sock->info.lsa->bind_local->ai_fa=
-mily));
-> > +                  sock->info.af =3D sock->info.lsa->bind_local->ai_fam=
-ily;
-> > +               }
+On Sat, Nov 14, 2015 at 08:05:45PM +0100, Gert Doering wrote:
+> On Sun, Oct 11, 2015 at 10:44:20AM +0200, Adriaan de Jong wrote:
+> > Make OpenVPN read the username from the auth file
+> > parameter of --auth-user-pass and prompt for a
+> > password if it's not in the file.
 >=20
-> Just tested, I ack it works perfectly. Thanks!
+> ACK, applied and merged to master.
+>=20
+> commit 6e9373c84639382c16d9eb8f1f78f60079bb89df
+> Author: Michal Ludvig <mludvig@...1388...>
+> Date:   Sun Oct 11 10:44:20 2015 +0200
 
-Thanks.  So I've committed the patch as appended (slightly different
-format than the "usual" process as the original patch was no formal=20
-commit yet, but message-id and ack etc. preserved)
+... and cherry-picked to release/2.3 - useful feature, fairly non-intrusive
+patch.
+
+commit 76b82f0e9d272a703624b102bd2e2b38d9947afb
+Author: Michal Ludvig <mludvig@...1388...>
+Date:   Sun Oct 11 10:44:20 2015 +0200
+
+    Support for username-only auth file.
+
+(as discussed in the IRC meeting just now)
 
 gert
---KCGU/3tJP9FZjbY4--
+
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--6GRFrjYdWqOKrmmZ
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQCVAwUBVlN7m6kuBuNlUUl1AQKdCAQAoWLT+AKvISBZjDcR0wrF+rrYmFf3u/wp
+u5Sgcbe5vCwU7IJgIb7WRNioQ9uf96DXJfnx722lLsUpvd3escSSrbXySepTfSG5
+JLB3ZQGgAYkiEkwG4pdY+fqwk48XcXfklBNav+hxNbkDRgqnOCaZzgzNcbN376fy
+OdiIhocKFEc=
+=VMiC
+-----END PGP SIGNATURE-----
+
+--6GRFrjYdWqOKrmmZ--
+
