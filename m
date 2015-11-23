@@ -1,9 +1,8 @@
-Date: Mon, 23 Nov 2015 12:00:58 +0200
-From: Samuli =?ISO-8859-1?Q?Sepp=E4nen?= <samuli@...515...>
-Message-Id: <20151123120058.b809b16797a7f9db28ea6d3c@...515...>
-Mime-Version: 1.0
-Subject: [Openvpn-devel] Topics for today's (Monday,
-	23rd Nov 2015) community meeting
+From: <steffan.karger@...1435...>
+Date: Mon, 23 Nov 2015 11:26:24 +0100
+Message-ID: <1448274384-22953-1-git-send-email-steffan.karger@...1435...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH] polarssl: require >= 1.3.8
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,43 +11,41 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+From: Steffan Karger <steffan.karger@...1435...>
 
-Hi,
+Since commit 67a67e39, we use API calls that were introduced in polarssl
+1.3.8.  Update the configure check to reflect that.
 
-We're going to have an IRC meeting today starting at 20:00 CET (19:00=20
-UTC) on #openvpn-meeting <at> irc.freenode.net. Note that the meeting=20
-channel has changed and that you do _not_ have to be logged in to=20
-Freenode to join the channel.
+Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+---
+ configure.ac | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Current topic list along with basic information is here:
+diff --git a/configure.ac b/configure.ac
+index 3424584..d3cacc8 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -871,13 +871,13 @@ if test "${with_crypto_library}" = "polarssl" ; then
+ #include <polarssl/version.h>
+ 			]],
+ 			[[
+-#if POLARSSL_VERSION_NUMBER < 0x01030300 || POLARSSL_VERSION_NUMBER >= 0x01040000
++#if POLARSSL_VERSION_NUMBER < 0x01030800 || POLARSSL_VERSION_NUMBER >= 0x01040000
+ #error invalid version
+ #endif
+ 			]]
+ 		)],
+ 		[AC_MSG_RESULT([ok])],
+-		[AC_MSG_ERROR([PolarSSL 1.3.x required and must be 1.3.3 or later])]
++		[AC_MSG_ERROR([PolarSSL 1.3.x required and must be 1.3.8 or later])]
+ 	)
+ 
+ 	polarssl_with_pkcs11="no"
+-- 
+2.1.4
 
-<https://community.openvpn.net/openvpn/wiki/Topics-2015-11-23>
-
-If you have any other things you'd like to bring up, respond to this=20
-mail, send me mail privately or add them to the list yourself.
-
-In case you can't attend the meeting, please feel free to make comments=20
-on the topics by responding to this email or to the summary email sent=20
-after the meeting. Whenever possible, we'll also respond to existing,=20
-related email threads.
-
-- --=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iEYEARECAAYFAlZS49oACgkQwp2X7RmNIqO9tQCfSYT3z5GUfQvIwbEKkuTwBR4Y
-ViYAoMWaoWHeWZyR6pamWPZwU9RIHngO
-=3DuZpD
------END PGP SIGNATURE-----
 
