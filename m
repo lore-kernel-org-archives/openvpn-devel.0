@@ -1,8 +1,8 @@
-From: <steffan.karger@...1435...>
-Date: Mon, 23 Nov 2015 11:26:24 +0100
-Message-ID: <1448274384-22953-1-git-send-email-steffan.karger@...1435...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] polarssl: require >= 1.3.8
+From: Lev Stipakov <lstipakov@...277...>
+Date: Mon, 23 Nov 2015 13:38:13 +0200
+Message-Id: <1448278693-29322-1-git-send-email-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH] Client-side part for server restart
+	notification
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,37 +15,41 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-From: Steffan Karger <steffan.karger@...1435...>
+When client receives "RESTART,N", it advances to the next remote.
 
-Since commit 67a67e39, we use API calls that were introduced in polarssl
-1.3.8.  Update the configure check to reflect that.
+Whole patch (server + client) has been merged to master and will be part of 2.4.
 
-Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+Signed-off-by: Lev Stipakov <lstipakov@...277...>
 ---
- configure.ac | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ src/openvpn/push.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/configure.ac b/configure.ac
-index 3424584..d3cacc8 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -871,13 +871,13 @@ if test "${with_crypto_library}" = "polarssl" ; then
- #include <polarssl/version.h>
- 			]],
- 			[[
--#if POLARSSL_VERSION_NUMBER < 0x01030300 || POLARSSL_VERSION_NUMBER >= 0x01040000
-+#if POLARSSL_VERSION_NUMBER < 0x01030800 || POLARSSL_VERSION_NUMBER >= 0x01040000
- #error invalid version
- #endif
- 			]]
- 		)],
- 		[AC_MSG_RESULT([ok])],
--		[AC_MSG_ERROR([PolarSSL 1.3.x required and must be 1.3.3 or later])]
-+		[AC_MSG_ERROR([PolarSSL 1.3.x required and must be 1.3.8 or later])]
- 	)
+diff --git a/src/openvpn/push.c b/src/openvpn/push.c
+index 11505cb..e4f3984 100644
+--- a/src/openvpn/push.c
++++ b/src/openvpn/push.c
+@@ -103,6 +103,7 @@ server_pushed_signal (struct context *c, const struct buffer *buffer, const bool
+ 	m = BSTR (&buf);
  
- 	polarssl_with_pkcs11="no"
+       /* preserve cached passwords? */
++      /* advance to next server? */
+       {
+ 	bool purge = true;
+ 
+@@ -113,6 +114,12 @@ server_pushed_signal (struct context *c, const struct buffer *buffer, const bool
+ 	      {
+ 		if (m[i] == 'P')
+ 		  purge = false;
++		else if (m[i] == 'N')
++		  {
++		    /* next server? */
++		    if (c->options.connection_list)
++		      c->options.connection_list->no_advance = false;
++		  }
+ 	      }
+ 	  }
+ 	if (purge)
 -- 
-2.1.4
+1.9.1
 
 
