@@ -1,10 +1,10 @@
-Date: Tue, 24 Nov 2015 16:33:26 +0100 (CET)
-Message-Id: <201511241533.tAOFXQ1H085074@...2054...>
+Date: Tue, 24 Nov 2015 16:38:58 +0100 (CET)
+Message-Id: <201511241538.tAOFcwEv085134@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1448373635-21649-1-git-send-email-steffan.karger@...1435...>
-References: <1448373635-21649-1-git-send-email-steffan.karger@...1435...>
-Subject: [Openvpn-devel] [PATCH applied] Re: remove nonsense const specifier
-	in nonfatal() return value
+In-Reply-To: <1448370550-23897-1-git-send-email-gert@...1296...>
+References: <1448370550-23897-1-git-send-email-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: remove unused gc_arena in
+	FreeBSD close_tun()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,22 +15,23 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Steffan Karger <steffan.karger@...1435...>
+To: Gert Doering <gert@...1296...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-ACK. Your patch has been applied to the master branch.
+Patch has been applied to the master and release/2.3 branch.
 
-commit f544e388527066dcf17ea0e257b9182a7286e821
-Author: Steffan Karger
-Date:   Tue Nov 24 15:00:35 2015 +0100
+commit cef57449b98c38deb35e885bd8958fe09f6a2b02 (master)
+commit 5731a570c4f089371578445f6deadfb4189f3e9e (release/2.3)
 
-     remove nonsense const specifier in nonfatal() return value
+Author: Gert Doering
+Date:   Tue Nov 24 14:09:10 2015 +0100
 
-     Signed-off-by: Steffan Karger <steffan.karger@...1435...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1448373635-21649-1-git-send-email-steffan.karger@...1435...>
+     remove unused gc_arena in FreeBSD close_tun()
+
      Signed-off-by: Gert Doering <gert@...1296...>
-
+     Acked-by: Steffan Karger <steffan.karger@...1435...>
+     Message-Id: <1448370550-23897-1-git-send-email-gert@...1296...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/10581
 
 --
 kind regards,
