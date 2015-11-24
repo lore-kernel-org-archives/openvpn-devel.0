@@ -1,15 +1,15 @@
-Date: Tue, 24 Nov 2015 09:39:44 +0100
+Date: Tue, 24 Nov 2015 09:42:31 +0100
 From: Gert Doering <gert@...1296...>
-Message-ID: <20151124083944.GY24952@...1296...>
-References: <564BA6DB.4070703@...2070...>
-	<564DE8B3.9030803@...2070...>
+Message-ID: <20151124084231.GA24952@...1296...>
+References: <1447807884-3734-1-git-send-email-fukawi2@...277...>
+	<CAKAE9iRth_T67hYed=a9feNz2zZ-bwaqJfhMavM_aTyiRfEvUQ@...278...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="WZeJG8ZfZjbXm/g1"
+	protocol="application/pgp-signature"; boundary="m+Z5/NEwv9nnRDo7"
 Content-Disposition: inline
-In-Reply-To: <564DE8B3.9030803@...2070...>
-Subject: Re: [Openvpn-devel] [PATCH v4-master] Add Windows DNS Leak fix
- using WFP ('block-outside-dns')
+In-Reply-To: <CAKAE9iRth_T67hYed=a9feNz2zZ-bwaqJfhMavM_aTyiRfEvUQ@...278...>
+Subject: Re: [Openvpn-devel] Fwd: [PATCH] Use example.com to improve clarity
+ of documentation
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,35 +18,25 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: ValdikSS <iam@...2070...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Phillip Smith <fukawi2@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---WZeJG8ZfZjbXm/g1
+--m+Z5/NEwv9nnRDo7
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Thu, Nov 19, 2015 at 06:20:19PM +0300, ValdikSS wrote:
-> This option blocks all out-of-tunnel communication on TCP/UDP port 53 (ex=
-cept
-> for OpenVPN itself), preventing DNS Leaks on Windows 8.1 and 10.
+On Tue, Nov 24, 2015 at 09:53:21AM +1100, Phillip Smith wrote:
+> I sent the below patch last week, but it doesn't seem to have made it to
+> the mail list for some reason, despite being delivered to SourceForge:
+> 18 Nov 2015 12:07:31    openvpn-devel@lists.sourceforge.net
+>  216.34.181.68 accepted message./Remote host said: 250 OK
+> id=3D1ZyrDo-0007pR-Cm/
 
-Indeed, what Selva said - the patch is whitespace-mangled.  Valdikss,=20
-could you please send it with "git-send-email"?
-
-> --- a/src/openvpn/init.c
-> +++ b/src/openvpn/init.c
-> @@ -1468,6 +1468,20 @@ do_open_tun (struct context *c)
->   		   "up",
->   		   c->c2.es);
->   +#if defined(WIN32)
-> +      if (c->options.block_outside_dns)
-> +      {
-
-these extra blanks should not be there...  thus it won't apply without
-force.
+It made it to me via the list just fine.  It's just that nobody had time
+to look at it and form an opinion yet.
 
 gert
 --=20
@@ -56,18 +46,18 @@ rt/
 Gert Doering - Munich, Germany                             gert@...1296...
 fax: +49-89-35655025                        gert@...1297...
 
---WZeJG8ZfZjbXm/g1
+--m+Z5/NEwv9nnRDo7
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1
 
-iQCVAwUBVlQiT6kuBuNlUUl1AQLRWgP5ASlTQdPzqk4zMk68ptb07MIzFFmujJQt
-8dkw8T2xthVFPR+bB72CyK0nP6sC1rfeb6AkuBwXgqQQjcsWMSkNLYO8U7xL1Mh6
-ADtHVou/EGqUIgLaHOsfBewDQrNFiLd4AMIs8CdqWSA27DMRsFfQMZvs3YNu5Dag
-q+4vA069fiE=
-=PrrA
+iQCVAwUBVlQi9qkuBuNlUUl1AQL6mQP9HVq5XNjpSHnkXlhN/0nBq+6Tq6DN1Im6
+dihT5VQYrgM0jxIzLWdp6GYVvxZL5e876fGLjvBudjKIcdef7wBfDTm5NkAU3olx
+PodjbpmaKzhgwknEIMB46FJNLJ8CMvDza2svQvNJZHeII2GHh2R3wW3LriELD/Yy
+kZmSqFdlIvM=
+=Gc5j
 -----END PGP SIGNATURE-----
 
---WZeJG8ZfZjbXm/g1--
+--m+Z5/NEwv9nnRDo7--
 
