@@ -1,9 +1,10 @@
-From: <steffan.karger@...1435...>
-Date: Tue, 24 Nov 2015 15:00:35 +0100
-Message-ID: <1448373635-21649-1-git-send-email-steffan.karger@...1435...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] remove nonsense const specifier in
-	nonfatal() return value
+Date: Tue, 24 Nov 2015 16:33:18 +0100 (CET)
+Message-Id: <201511241533.tAOFXIEg085069@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <1448312335-25908-1-git-send-email-steffan@...1856...>
+References: <1448312335-25908-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix memory leak in add_option()
+	by simplifying get_ipv6_addr
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,32 +15,29 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Steffan Karger <steffan@...1856...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Steffan Karger <steffan.karger@...1435...>
+Your patch has been applied to the release/2.3 branch and cherry-picked to
+master (with some minor massaging...).
 
-Return values are rvalues, and can not be changed anyway.  Adding const
-does not make sense here at all.  (What was I thinking...?)
+commit 7e618994f3112ff4b29b9f08d087fb558636a6af (release/2.3)
+commit 4f19cd1ddde3929d4a715ad59cd603eff16c66bf (master)
 
-Signed-off-by: Steffan Karger <steffan.karger@...1435...>
----
- src/openvpn/error.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Author: Steffan Karger
+Date:   Mon Nov 23 21:58:55 2015 +0100
 
-diff --git a/src/openvpn/error.h b/src/openvpn/error.h
-index e6c55f0..1dc0864 100644
---- a/src/openvpn/error.h
-+++ b/src/openvpn/error.h
-@@ -353,7 +353,7 @@ ignore_sys_error (const int err)
- }
- 
- /** Convert fatal errors to nonfatal, don't touch other errors */
--static inline const unsigned int
-+static inline unsigned int
- nonfatal(const unsigned int err) {
-   return err & M_FATAL ? (err ^ M_FATAL) | M_NONFATAL : err;
- }
--- 
-2.1.4
+     Fix memory leak in add_option() by simplifying get_ipv6_addr
+
+     Signed-off-by: Steffan Karger <steffan@...1856...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1448312335-25908-1-git-send-email-steffan@...1856...>
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
