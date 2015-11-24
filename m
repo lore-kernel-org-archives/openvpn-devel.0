@@ -1,17 +1,10 @@
-Date: Tue, 24 Nov 2015 21:11:35 +0100
+Date: Tue, 24 Nov 2015 21:27:45 +0100 (CET)
+Message-Id: <201511242027.tAOKRjZA086256@...2054...>
 From: Gert Doering <gert@...1296...>
-Message-ID: <20151124201135.GM24952@...1296...>
-References: <564BA6DB.4070703@...2070...>
-	<564DE8B3.9030803@...2070...>
-	<20151124083944.GY24952@...1296...>
-	<5654A314.3080607@...2070...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="Zxhbmr+fMFEUWeNp"
-Content-Disposition: inline
-In-Reply-To: <5654A314.3080607@...2070...>
-Subject: Re: [Openvpn-devel] [PATCH v4-master] Add Windows DNS Leak fix
- using WFP ('block-outside-dns')
+In-Reply-To: <1447246899-22769-1-git-send-email-openvpn@...2080...>
+References: <1447246899-22769-1-git-send-email-openvpn@...2080...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Avoid partial authentication
+	state when using --disabled in CCD configs
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,68 +13,37 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: ValdikSS <iam@...2070...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: David Sommerseth <davids@...1347...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---Zxhbmr+fMFEUWeNp
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+ACK, thanks.  As discussed in #521 and #180, I'm thinking more along the
+lines of a more radical approach to this (removing CAS_PARTIAL, or at
+least make it do the right thing - call plugin destructors, and send
+AUTH_FAILED).  But for the time being this one fixes nicely and cleanly
+the issue at hand, with no possibly intended consequences.
 
-Hi,
+Your patch has been applied to the master and release/2.3 branch.
 
-On Tue, Nov 24, 2015 at 08:49:08PM +0300, ValdikSS wrote:
-> I can't figure out why Thunderbird corrupts my patches.
+commit 6c2d790ad8f10029e95aecb0d39377ef06ea8b2a (master)
+commit 4b0a6f808e20f1d6d6a0b60391f053bc8ab94772 (release/2.3)
 
-Because you're not using git send-email :)
+Author: David Sommerseth
+Date:   Wed Nov 11 14:01:39 2015 +0100
 
- $ git send-email --to=3Dopenvpn-devel@lists.sourceforge.net -1
+     Avoid partial authentication state when using --disabled in CCD configs
 
-will magically do everything perfectly (added options available to set=20
-in-reply-to: to make threading work, etc., and you can configure it via=20
-.git/config to use the right SMTP server with authentication etc).
+     Signed-off-by: David Sommerseth <davids@...1347...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1447246899-22769-1-git-send-email-openvpn@...2080...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/10486
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-It's mostly there because clients are just too brain damaged to leave
-patches alone.  *Attachment* sometimes works, and sometimes not
-(supposedly thunderbird gets that part right, but gmail for example
-fails even this)
 
-> Please use the attached version.
+--
+kind regards,
 
-I'll see if that applies...
+Gert Doering
 
-> I still need help with 2.3 build system. If somebody willing to help me, =
-please use the attached version.
-
-Well, the 2.3 version would need all the #ifdefs around the code if not
-running at VISTA level, and *no* changes to the build system part (so,
-2.3 out of the box would simply not "see" this code at all).=20=20
-
-Samuli would then have to change part of his build system to enable VISTA=20
-API level and add these extra libraries - but that would have to be an=20
-out-of-tree patch applied only to the Vista-and-up installers.
-
-gert
-
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---Zxhbmr+fMFEUWeNp
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQCVAwUBVlTEdqkuBuNlUUl1AQJdrgP9EwGGyFVhSi/uHJD0rmAbCJLgz8Mc6hrh
-/wiiX5vLW5+Oy3BD77N4HHtODbBnlnOLjAEm3X1ps/9Ey2CHIbCGTWcZ/eJkkk0I
-mu11nQHgeU+oMcY+DBJ2MHEmWUYmKuw152rcHxWoe3oVwbWqmPZln6JlE/tEHxYJ
-FBR2C0ZqdGg=
-=/x4a
------END PGP SIGNATURE-----
-
---Zxhbmr+fMFEUWeNp--
 
