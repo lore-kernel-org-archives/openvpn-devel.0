@@ -1,11 +1,13 @@
-MIME-Version: 1.0
-In-Reply-To: <564DE8B3.9030803@...2070...>
+Date: Tue, 24 Nov 2015 09:39:44 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20151124083944.GY24952@...1296...>
 References: <564BA6DB.4070703@...2070...>
 	<564DE8B3.9030803@...2070...>
-From: Selva Nair <selva.nair@...277...>
-Date: Mon, 23 Nov 2015 22:07:59 -0500
-Message-ID: <CAKuzo_iAXpkCSEOaF+q2EN4=Rav5jf1mjCFh4EXLJG7EtX=PAw@...278...>
-Content-Type: multipart/alternative; boundary=001a114b2a524b2a9f052540a770
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="WZeJG8ZfZjbXm/g1"
+Content-Disposition: inline
+In-Reply-To: <564DE8B3.9030803@...2070...>
 Subject: Re: [Openvpn-devel] [PATCH v4-master] Add Windows DNS Leak fix
  using WFP ('block-outside-dns')
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,54 +21,53 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: ValdikSS <iam@...2070...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---001a114b2a524b2a9f052540a770
-Content-Type: text/plain; charset=UTF-8
+--WZeJG8ZfZjbXm/g1
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
 Hi,
 
-On Thu, Nov 19, 2015 at 10:20 AM, ValdikSS <iam@...2070...> wrote:
-
-> This option blocks all out-of-tunnel communication on TCP/UDP port 53
-> (except
+On Thu, Nov 19, 2015 at 06:20:19PM +0300, ValdikSS wrote:
+> This option blocks all out-of-tunnel communication on TCP/UDP port 53 (ex=
+cept
 > for OpenVPN itself), preventing DNS Leaks on Windows 8.1 and 10.
->
 
-This version looks fine and works as promised (tested on Win 7 and 10).
+Indeed, what Selva said - the patch is whitespace-mangled.  Valdikss,=20
+could you please send it with "git-send-email"?
 
-I'm told many win10 users badly need this, so ACK from me.
+> --- a/src/openvpn/init.c
+> +++ b/src/openvpn/init.c
+> @@ -1468,6 +1468,20 @@ do_open_tun (struct context *c)
+>   		   "up",
+>   		   c->c2.es);
+>   +#if defined(WIN32)
+> +      if (c->options.block_outside_dns)
+> +      {
 
-Note: The patch appears damaged by the mailer. To test I had to pull the
-block-external-dns-master branch (with last
-commit 76dddc52cc3da95a0681ca660d264e297bf39039)
-from https://github.com/ValdikSS/openvpn-with-patches
+these extra blanks should not be there...  thus it won't apply without
+force.
 
-Selva
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
---001a114b2a524b2a9f052540a770
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+--WZeJG8ZfZjbXm/g1
+Content-Type: application/pgp-signature; name="signature.asc"
 
-<div dir=3D"ltr"><div class=3D"gmail_extra">Hi,</div><div class=3D"gmail_ex=
-tra"><br><div class=3D"gmail_quote">On Thu, Nov 19, 2015 at 10:20 AM, Valdi=
-kSS <span dir=3D"ltr">&lt;<a href=3D"mailto:iam@...2070..." target=3D"_blan=
-k">iam@...2070...</a>&gt;</span> wrote:<br><blockquote class=3D"gmail_quote=
-" style=3D"margin:0px 0px 0px 0.8ex;border-left-width:1px;border-left-color=
-:rgb(204,204,204);border-left-style:solid;padding-left:1ex"><div style=3D"o=
-verflow:hidden">This option blocks all out-of-tunnel communication on TCP/U=
-DP port 53 (except<br>
-for OpenVPN itself), preventing DNS Leaks on Windows 8.1 and 10.</div></blo=
-ckquote></div><div class=3D"gmail_extra"><br></div>This version looks fine =
-and works as promised (tested on Win 7 and 10).=C2=A0</div><div class=3D"gm=
-ail_extra"><br></div><div class=3D"gmail_extra">I&#39;m told many win10 use=
-rs badly need this, so ACK from me.</div><div class=3D"gmail_extra"><div cl=
-ass=3D"gmail_extra"><br></div><div class=3D"gmail_extra">Note: The patch ap=
-pears damaged by the mailer. To test I had to pull the=C2=A0</div><div clas=
-s=3D"gmail_extra">block-external-dns-master branch (with last commit=C2=A07=
-6dddc52cc3da95a0681ca660d264e297bf39039)</div></div><div class=3D"gmail_ext=
-ra">from=C2=A0<a href=3D"https://github.com/ValdikSS/openvpn-with-patches" =
-target=3D"_blank">https://github.com/ValdikSS/openvpn-with-patches</a></div=
-><div class=3D"gmail_extra"><br></div><div class=3D"gmail_extra">Selva</div=
-></div>
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
 
---001a114b2a524b2a9f052540a770--
+iQCVAwUBVlQiT6kuBuNlUUl1AQLRWgP5ASlTQdPzqk4zMk68ptb07MIzFFmujJQt
+8dkw8T2xthVFPR+bB72CyK0nP6sC1rfeb6AkuBwXgqQQjcsWMSkNLYO8U7xL1Mh6
+ADtHVou/EGqUIgLaHOsfBewDQrNFiLd4AMIs8CdqWSA27DMRsFfQMZvs3YNu5Dag
+q+4vA069fiE=
+=PrrA
+-----END PGP SIGNATURE-----
+
+--WZeJG8ZfZjbXm/g1--
 
