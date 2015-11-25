@@ -1,13 +1,16 @@
-From: "Fish Wang" <fish.thss@...277...>
-References: <564BA6DB.4070703@...2070...>	<564DE8B3.9030803@...2070...>	<20151124083944.GY24952@...1296...>	<5654A314.3080607@...2070...>	<20151124201135.GM24952@...1296...>	<CAKuzo_jdcOjunyVmpT8er3HqWG7yh6pr+i8Tn8kD3omj=G_Pqw@...278...>	<565547AB.9030607@...2070...>	<20151125075416.GR24952@...1296...>	<CAKuzo_iUzeYSWWvbpyV5RY_FwoNMm=97cfo0-uzeMFQKki3sWg@...278...>	<5655C387.40805@...1227...>
-	<20151125145439.GV24952@...1296...>
-In-Reply-To: <20151125145439.GV24952@...1296...>
-Date: Wed, 25 Nov 2015 08:52:09 -0800
-Message-ID: <052201d127a1$a07c65a0$e17530e0$@gmail.com>
 MIME-Version: 1.0
-Content-Language: zh-cn
-Subject: Re: [Openvpn-devel] [PATCH v4-master] Add Windows DNS Leak fix
-	using WFP ('block-outside-dns')
+In-Reply-To: <SN1PR08MB1391EA7CA6193754DBB6DAEEB9050@...2065...>
+References: <564AFAF5.4030004@...515...>
+	<CAKuzo_ga8AhYyRHDTktndfXFeP9Yzfw-SBGx4J6ZkBcEGg9tcw@...278...>
+	<SN1PR08MB1391C6F144144362BB6BA1B9B9050@...2065...>
+	<1584543.znVl45ZabU@...1526...>
+	<SN1PR08MB1391EA7CA6193754DBB6DAEEB9050@...2065...>
+From: Selva Nair <selva.nair@...277...>
+Date: Wed, 25 Nov 2015 12:08:09 -0500
+Message-ID: <CAKuzo_iewE=FPgN=CzRiBKvhJnABZhF2Yy0sr8Nzaaa0COnUew@...278...>
+Content-Type: multipart/alternative; boundary=001a11443d9edc829805256081ba
+Subject: Re: [Openvpn-devel] OpenVPN-GUI now on GitHub + other Windows team
+	things
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,58 +19,66 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain;
-	charset="Windows-1252"
-Content-Transfer-Encoding: 7bit
-To: 'Gert Doering' <gert@...1296...>, 'Arne Schwabe' <arne@...1227...>
-Cc: 'openvpn-devel' <openvpn-devel@lists.sourceforge.net>
+To: "Morris, Russell" <rmorris@...1315...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Just a small suggestion: I think the following will work:
+--001a11443d9edc829805256081ba
+Content-Type: text/plain; charset=UTF-8
 
-- Check the version of the current operating system.
-- Dynamically loading related DLLs (in this case, should be WFP-related
-libraries) using LoadLibrary() only if OpenVPN is running Windows Vista+,
-and pops a warning for XP users who has that option enabled.
-- On Vista+, get addresses of those APIs that we want to call (via
-GetProcAddress() ), and then use them as function pointers.
+On Wed, Nov 25, 2015 at 11:48 AM, Morris, Russell <rmorris@...1315...>
+wrote:
 
-Pros: one binary works for all Windows.
-Cons: the code is a bit messier. 
+> Hi,
+>
+> Yep, that makes sense - but Selva was thinking this would ignore the
+> libraries for now ... or did I misunderstand?
+>
 
-I've done this before for my own projects that must be running on both XP
-and later versions of Windows, and it works reliably. I can look into this
-later this week (if ValdikSS doesn't have cycles).
+Yes, as a first test its easier to build without openssl and with my
+suggested configure command you shouldn't need openssl.
 
-Best,
-Fish
+But just found out it needs a small tweak (the original worked for me
+because pkg-config was finding the native libcrypto on my machine and thus
+not triggering the error you see)
 
------Original Message-----
-From: Gert Doering [mailto:gert@...1296...] 
-Sent: Wednesday, November 25, 2015 6:55 AM
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Subject: Re: [Openvpn-devel] [PATCH v4-master] Add Windows DNS Leak fix
-using WFP ('block-outside-dns')
+So please run configure again as
 
-Hi,
+./configure --prefix=/ --host=x86_64-w64-mingw32
+--build=x86_64-pc-linux-gnu --program-prefix=''
+CFLAGS=-DDISABLE_CHANGE_PASSWORD OPENSSL_CRYPTO_LIBS="-L./"
+ OPENSSL_CRYPTO_CFLAGS="-I./"
 
-On Wed, Nov 25, 2015 at 03:19:51PM +0100, Arne Schwabe wrote:
-> I am not sure if we want to ship separate WIN XP and Vista+ versions.
+Its a hack, but should work.
 
-We are in agremeent that we do *not* want that :-) - but we *do* want this 
-patch to work around Win10 DNS brokenness, and that binary won't run on XP.
+Selva
 
-Which of the options do we want less...?
+--001a11443d9edc829805256081ba
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-gert
+<div dir=3D"ltr"><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">=
+On Wed, Nov 25, 2015 at 11:48 AM, Morris, Russell <span dir=3D"ltr">&lt;<a =
+href=3D"mailto:rmorris@...1315..." target=3D"_blank">rmorris@...1315...</a>=
+&gt;</span> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0px=
+ 0px 0px 0.8ex;border-left-width:1px;border-left-color:rgb(204,204,204);bor=
+der-left-style:solid;padding-left:1ex"><div id=3D":2xa" class=3D"" style=3D=
+"overflow:hidden">Hi,<br>
+<br>
+Yep, that makes sense - but Selva was thinking this would ignore the librar=
+ies for now ... or did I misunderstand?<br></div></blockquote></div><br>Yes=
+, as a first test its easier to build without openssl and with my suggested=
+ configure command you shouldn&#39;t need openssl.=C2=A0</div><div class=3D=
+"gmail_extra"><br></div><div class=3D"gmail_extra">But just found out it ne=
+eds a small tweak (the original worked for me because pkg-config was findin=
+g the native libcrypto on my machine and thus not triggering the error you =
+see)</div><div class=3D"gmail_extra"><br></div><div class=3D"gmail_extra">S=
+o please run configure again as</div><div class=3D"gmail_extra"><div class=
+=3D"gmail_extra"><br></div><div class=3D"gmail_extra">./configure --prefix=
+=3D/ --host=3Dx86_64-w64-mingw32 --build=3Dx86_64-pc-linux-gnu --program-pr=
+efix=3D&#39;&#39; CFLAGS=3D-DDISABLE_CHANGE_PASSWORD OPENSSL_CRYPTO_LIBS=3D=
+&quot;-L./&quot; =C2=A0OPENSSL_CRYPTO_CFLAGS=3D&quot;-I./&quot;</div><div><=
+br></div><div>Its a hack, but should work.</div><div><br></div><div>Selva</=
+div></div><div class=3D"gmail_extra"><br></div></div>
 
--- 
-USENET is *not* the non-clickable part of WWW!
- 
-//www.muc.de/~gert/
-Gert Doering - Munich, Germany
-gert@...1296...
-fax: +49-89-35655025
-gert@...1297...
-
+--001a11443d9edc829805256081ba--
 
