@@ -1,10 +1,10 @@
+References: <5655DE5E.2080701@...1147...>
+From: Steffan Karger <steffan.karger@...1435...>
+Message-ID: <5655E49D.4000804@...1435...>
+Date: Wed, 25 Nov 2015 17:41:01 +0100
 MIME-Version: 1.0
-From: Selva Nair <selva.nair@...277...>
-Date: Wed, 25 Nov 2015 11:37:36 -0500
-Message-ID: <CAKuzo_iO98eF9LGuVjo=cMAeHEzWtanq3DmqZq2PVJbg=PfV-g@...278...>
-Content-Type: multipart/alternative; boundary=001a1144424e8cc50d0525601449
-Subject: Re: [Openvpn-devel] [PATCH retract] Unbreak reading
-	username-password from management
+In-Reply-To: <5655DE5E.2080701@...1147...>
+Subject: Re: [Openvpn-devel] FoxIT acquired by NCC group
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,41 +13,26 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-
---001a1144424e8cc50d0525601449
-Content-Type: text/plain; charset=UTF-8
-
-Hi,
-
-On Wed, Nov 25, 2015 at 1:34 AM, Selva Nair <selva.nair@...277...> wrote:
-
-> Fix a bug introduced by commit 6e9373c84639382c16d9eb8f1f78f60079bb89df
->
->
-My patch was DOA. While it fixes management-query-passwords it does so by
-crippling the "username-only auth-file" feature. Sorry about that.
-
-Will post another patch after more testing.
-
-Selva
-
---001a1144424e8cc50d0525601449
-Content-Type: text/html; charset="UTF-8"
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
+To: Jan Just Keijser <janjust@...1147...>, Adriaan de Jong <dejong@...1435...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-<div dir=3D"ltr"><div class=3D"gmail_extra">Hi,</div><div class=3D"gmail_ex=
-tra"><br></div><div class=3D"gmail_extra"><div class=3D"gmail_quote">On Wed=
-, Nov 25, 2015 at 1:34 AM, Selva Nair <span dir=3D"ltr">&lt;<a href=3D"mail=
-to:selva.nair@...277..." target=3D"_blank">selva.nair@...277...</a>&gt;</sp=
-an> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;=
-border-left:1px #ccc solid;padding-left:1ex">Fix a bug introduced by commit=
- 6e9373c84639382c16d9eb8f1f78f60079bb89df<br>
-<br></blockquote><div><br></div><div>My patch was DOA. While it fixes manag=
-ement-query-passwords it does so by crippling the &quot;username-only auth-=
-file&quot; feature. Sorry about that.</div><div><br></div><div>Will post an=
-other patch after more testing.</div><div><br></div><div>Selva</div></div><=
-/div></div>
+Hi Jan Just,
 
---001a1144424e8cc50d0525601449--
+On 25-11-15 17:14, Jan Just Keijser wrote:
+> just saw this:
+> https://www.fox-it.com/en/press-releases/acquisition-of-fox-it-by-ncc-gro=
+up/=20=20
+>=20
+> Congratulation, I guess. Does this mean that you guys are now multi
+> millionaires and no longer have to work ?
+> What does this mean for your efforts related to OpenVPN?
+
+Haha, nope.  Would have been nice though, that would have meant a lot
+more available OpenVPN hacking time ;)
+
+For us basically nothing has changed.  I do not expect this to change
+our efforts related to OpenVPN, or OpenVPN-NL, in any way.
+
+-Steffan
 
