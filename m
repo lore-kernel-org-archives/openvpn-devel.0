@@ -1,15 +1,13 @@
-From: "Morris, Russell" <rmorris@...1315...>
-Date: Wed, 25 Nov 2015 16:48:28 +0000
-Message-ID: <SN1PR08MB1391EA7CA6193754DBB6DAEEB9050@...2065...>
-References: <564AFAF5.4030004@...515...>
-	<CAKuzo_ga8AhYyRHDTktndfXFeP9Yzfw-SBGx4J6ZkBcEGg9tcw@...278...>
-	<SN1PR08MB1391C6F144144362BB6BA1B9B9050@...2065...>
-	<1584543.znVl45ZabU@...1526...>
-In-Reply-To: <1584543.znVl45ZabU@...1526...>
-Content-Language: en-US
+From: "Fish Wang" <fish.thss@...277...>
+References: <564BA6DB.4070703@...2070...>	<564DE8B3.9030803@...2070...>	<20151124083944.GY24952@...1296...>	<5654A314.3080607@...2070...>	<20151124201135.GM24952@...1296...>	<CAKuzo_jdcOjunyVmpT8er3HqWG7yh6pr+i8Tn8kD3omj=G_Pqw@...278...>	<565547AB.9030607@...2070...>	<20151125075416.GR24952@...1296...>	<CAKuzo_iUzeYSWWvbpyV5RY_FwoNMm=97cfo0-uzeMFQKki3sWg@...278...>	<5655C387.40805@...1227...>
+	<20151125145439.GV24952@...1296...>
+In-Reply-To: <20151125145439.GV24952@...1296...>
+Date: Wed, 25 Nov 2015 08:52:09 -0800
+Message-ID: <052201d127a1$a07c65a0$e17530e0$@gmail.com>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] OpenVPN-GUI now on GitHub + other Windows team
- things
+Content-Language: zh-cn
+Subject: Re: [Openvpn-devel] [PATCH v4-master] Add Windows DNS Leak fix
+	using WFP ('block-outside-dns')
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,61 +16,58 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-To: Heiko Hund <heiko.hund@...1489...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain;
+	charset="Windows-1252"
+Content-Transfer-Encoding: 7bit
+To: 'Gert Doering' <gert@...1296...>, 'Arne Schwabe' <arne@...1227...>
+Cc: 'openvpn-devel' <openvpn-devel@lists.sourceforge.net>
 
-SGksDQoNClllcCwgdGhhdCBtYWtlcyBzZW5zZSAtIGJ1dCBTZWx2YSB3YXMgdGhpbmtpbmcgdGhp
-cyB3b3VsZCBpZ25vcmUgdGhlIGxpYnJhcmllcyBmb3Igbm93IC4uLiBvciBkaWQgSSBtaXN1bmRl
-cnN0YW5kPw0KDQpUaGFua3MsDQouLi4gUnVzc2VsbA0KDQoNCg0KLS0tLS1PcmlnaW5hbCBNZXNz
-YWdlLS0tLS0NCkZyb206IEhlaWtvIEh1bmQgW21haWx0bzpoZWlrby5odW5kQC4uLjE0ODkuLi5d
-IA0KU2VudDogV2VkbmVzZGF5LCBOb3ZlbWJlciAyNSwgMjAxNSAxMDo0MiBBTQ0KVG86IG9wZW52
-cG4tZGV2ZWxAbGlzdHMuc291cmNlZm9yZ2UubmV0DQpDYzogTW9ycmlzLCBSdXNzZWxsIDxybW9y
-cmlzQC4uLjEzMTUuLi4+OyBTZWx2YSBOYWlyIDxzZWx2YS5uYWlyQC4uLjI3Ny4uLj4NClN1Ympl
-Y3Q6IFJlOiBbT3BlbnZwbi1kZXZlbF0gT3BlblZQTi1HVUkgbm93IG9uIEdpdEh1YiArIG90aGVy
-IFdpbmRvd3MgdGVhbSB0aGluZ3MNCg0KWW91IHNlZW0gdG8gaGF2ZSBnb3R0ZW4gdGhlIHBhdGgg
-dG8gdGhlIGNyb3NzIGNvbXBpbGVkIG9wZW5zc2wgd3JvbmcuDQoNCk9uIFdlZG5lc2RheSAyNSBO
-b3ZlbWJlciAyMDE1IDE2OjA3OjEyIE1vcnJpcywgUnVzc2VsbCB3cm90ZToNCj4gRllJLCBubyBq
-b3kg4oCmIOKYuS4gQ29uZmlndXJlIGJlbG93IGdpdmVzIHRoZSBmb2xsb3dpbmcgZXJyb3IsDQo+
-IGNvbmZpZ3VyZTogZXJyb3I6IENhbm5vdCBmaW5kIE9wZW5TU0wgbGlicmFyeQ0KPg0KPiBTbyBz
-dGlsbCBsb29raW5nIGZvciBPcGVuU1NMLg0KPg0KPiBUaGFua3MhDQo+DQo+IOKApiBSdXNzZWxs
-DQo+DQo+DQo+IEZyb206IFNlbHZhIE5haXIgW21haWx0bzpzZWx2YS5uYWlyQC4uLjI3Ny4uLl0N
-Cj4gU2VudDogU3VuZGF5LCBOb3ZlbWJlciAyMiwgMjAxNSAxOjIyIFBNDQo+IFRvOiBNb3JyaXMs
-IFJ1c3NlbGwgPHJtb3JyaXNALi4uMTMxNS4uLj4NCj4gQ2M6IFNhbXVsaSBTZXBww6RuZW4gPHNh
-bXVsaUAuLi41MTUuLi4+OyANCj4gb3BlbnZwbi1kZXZlbEBsaXN0cy5zb3VyY2Vmb3JnZS5uZXQN
-CiBTdWJqZWN0OiBSZTogW09wZW52cG4tZGV2ZWxdDQo+IE9wZW5WUE4tR1VJIG5vdyBvbiBHaXRI
-dWIgKyBvdGhlciBXaW5kb3dzIHRlYW0gdGhpbmdzDQo+DQo+IE9uIFN1biwgTm92IDIyLCAyMDE1
-IGF0IDEyOjMzIFBNLCBNb3JyaXMsIFJ1c3NlbGwgDQo+IDxybW9ycmlzQC4uLjEzMTUuLi48bWFp
-bHRvOnJtb3JyaXNALi4uMTMxNS4uLj4+IHdyb3RlOg0KIEhpLA0KPg0KPiBXZW50IHRvIGdldCBz
-dGFydGVkIG9uIHRoaXMsIGFuZCBJIGFkbWl0IOKAkyBhIGxvdCBvZiBkaWZmZXJlbnQgYW5kIA0K
-PiBjb25mdXNpbmcgaW5mb3JtYXRpb24gYWJvdXQgdGhlIGxpYnJhcmllcyBhbmQgaW5jbHVkZSBm
-aWxlcyAoYW5kIGEgbG90IA0KPiBvZiBpdCBjb250cmFkaWN0cyBpdCBzZWVtcykuIERvIHlvdSBo
-YXZlIGEgZ29vZCBzb3VyY2UgZm9yIHRoZSDigJxyaWdodOKAnSANCj4gZmlsZXMgdG8gZ3JhYj8N
-Cg0KPiBUaGFua3MhDQo+DQo+IFRvIHN0YXJ0IHdpdGggdHJ5IHdpdGhvdXQgb3BlbnNzbC4NCj4g
-KGVhY2ggY29tbWFuZCBiZWxvdyBpcyBvbiBvbmUgbGluZSAtLSBnbWFpbCBtYXkgYnJlYWsgdGhl
-IGxpbmVzKSAkIGdpdCANCj4gY2xvbmUgaHR0cHM6Ly9naXRodWIuY29tL09wZW5WUE4vb3BlbnZw
-bi1ndWkuZ2l0DQo+ICQgY2Qgb3BlbnZwbi1ndWkNCj4gJCBhdXRvcmVjb25mIC1pIC12DQo+ICQg
-Li9jb25maWd1cmUgLS1wcmVmaXg9LyAtLWhvc3Q9eDg2XzY0LXc2NC1taW5ndzMyIA0KPiAtLWJ1
-aWxkPXg4Nl82NC1wYy1saW51eC1nbnUgLS1wcm9ncmFtLXByZWZpeD0nJw0KPiBDRkxBR1M9LURE
-SVNBQkxFX0NIQU5HRV9QQVNTV09SRCBPUEVOU1NMX0NSWVBUT19MSUJTPSItTC4vIg0KICQgbWFr
-ZQ0KPg0KPiBUaGF0IHdpbGwgYnVpbGQgd2lsbCBnZXQgb3BlbnZwbi1ndWkuZXhlLiBDb3B5IGl0
-IHRvIHdpbmRvd3MgYXMgcnVuIGFzIA0KPiBhZG1pbmlzdHJhdG9yLg0KDQo+IEFsbCB0aGlzIGFz
-c3VtZXMgeW91IGhhdmUgYSBzZXR1cCB3aXRoIGdpdCwgbWluZ3ctdzY0LCBhdXRvbWFrZSwgDQo+
-IGxpYnRvb2wgaW5zdGFsbGVkLg0KDQo+IFNlbHZhDQoNCkhlaWtvIEh1bmQNCg0KRGV2ZWxvcG1l
-bnQgTWFuYWdlciwgUiZEDQp0ZWwgKzQ5LTcyMS0yNTUxNi0yMzcNClNPUEhPUyBTZWN1cml0eSBt
-YWRlIHNpbXBsZQ0KLS0NClNvcGhvcyBUZWNobm9sb2d5IEdtYkgsIENvbW1lcmNpYWwgUmVnaXN0
-ZXI6IE1hbm5oZWltIEhSQiA3MTI2NTggSGVhZHF1YXJ0ZXIgTG9jYXRpb246IEFtYWxpZW5iYWRz
-dHIuIDQxL0JhdSA1MiB8IDc2MjI3IEthcmxzcnVoZSB8IEdlcm1hbnkgRXhlY3V0aXZlIEJvYXJk
-OiBOaWNob2xhcyBCcmF5LCBQaW5vIHZvbiBLaWVubGluLCBKb2FjaGltIEZyb3N0DQoNCg0KU29w
-aG9zIFRlY2hub2xvZ3kgR21iSCwgQW1hbGllbmJhZHN0cmHhup5lIDQxL0JhdSA1MiwgRC03NjIy
-NyBLYXJsc3J1aGUsIERldXRzY2hsYW5kIFRlbCArNDkgKDApNzIxIDI1NTE2IDAgRmF4ICs0OSAo
-MCk3MjEgMjU1MTYgMjAwIEUtTWFpbCBpbmZvQC4uLjIwNzUuLi4gd3d3LnNvcGhvcy5kZSBTaXR6
-IGRlciBHZXNlbGxzY2hhZnQ6IEthcmxzcnVoZSwgQW10c2dlcmljaHQgTWFubmhlaW0gSFJCIDcx
-MjY1OA0KR2VzY2jDpGZ0c2bDvGhyZXI6IE5pY2hvbGFzIEJyYXksIFBpbm8gdm9uIEtpZW5saW4s
-IFdvbGZnYW5nIEhpbHBlcnQsIEplbm5pZmVyIE9uc2xvdy4NClNvcGhvcyBHbWJILCBHdXN0YXYt
-U3RyZXNlbWFubi1SaW5nIDEsIDY1MTg5IFdpZXNiYWRlbiwgRGV1dHNjaGxhbmQgVGVsICs0OSAo
-MCkgNjExIDU4NTgtMCBGYXggKzQ5ICgwKSA2MTEgNTg1OC0xMDQyIEUtTWFpbCBpbmZvQC4uLjIw
-NzUuLi4gd3d3LnNvcGhvcy5kZSBTaXR6IGRlciBHZXNlbGxzY2hhZnQ6IFdpZXNiYWRlbiwgQW10
-c2dlcmljaHQgV2llc2JhZGVuIEhSQiAyNTkxNSBHZXNjaMOkZnRzZsO8aHJlcjogTmljaG9sYXMg
-QnJheSwgV29sZmdhbmcgSGlscGVydCwgUGlubyB2b24gS2llbmxpbiwgSmVubmlmZXIgT25zbG93
-DQo=
+Just a small suggestion: I think the following will work:
+
+- Check the version of the current operating system.
+- Dynamically loading related DLLs (in this case, should be WFP-related
+libraries) using LoadLibrary() only if OpenVPN is running Windows Vista+,
+and pops a warning for XP users who has that option enabled.
+- On Vista+, get addresses of those APIs that we want to call (via
+GetProcAddress() ), and then use them as function pointers.
+
+Pros: one binary works for all Windows.
+Cons: the code is a bit messier. 
+
+I've done this before for my own projects that must be running on both XP
+and later versions of Windows, and it works reliably. I can look into this
+later this week (if ValdikSS doesn't have cycles).
+
+Best,
+Fish
+
+-----Original Message-----
+From: Gert Doering [mailto:gert@...1296...] 
+Sent: Wednesday, November 25, 2015 6:55 AM
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Subject: Re: [Openvpn-devel] [PATCH v4-master] Add Windows DNS Leak fix
+using WFP ('block-outside-dns')
+
+Hi,
+
+On Wed, Nov 25, 2015 at 03:19:51PM +0100, Arne Schwabe wrote:
+> I am not sure if we want to ship separate WIN XP and Vista+ versions.
+
+We are in agremeent that we do *not* want that :-) - but we *do* want this 
+patch to work around Win10 DNS brokenness, and that binary won't run on XP.
+
+Which of the options do we want less...?
+
+gert
+
+-- 
+USENET is *not* the non-clickable part of WWW!
+ 
+//www.muc.de/~gert/
+Gert Doering - Munich, Germany
+gert@...1296...
+fax: +49-89-35655025
+gert@...1297...
+
+
