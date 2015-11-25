@@ -1,19 +1,18 @@
-From: "Morris, Russell" <rmorris@...1315...>
-Date: Wed, 25 Nov 2015 21:14:20 +0000
-Message-ID: <SN1PR08MB13917513FA918C484146CA13B9050@...2065...>
+MIME-Version: 1.0
+In-Reply-To: <SN1PR08MB13917513FA918C484146CA13B9050@...2065...>
 References: <564AFAF5.4030004@...515...>
 	<CAKuzo_ga8AhYyRHDTktndfXFeP9Yzfw-SBGx4J6ZkBcEGg9tcw@...278...>
 	<SN1PR08MB1391C6F144144362BB6BA1B9B9050@...2065...>
 	<1584543.znVl45ZabU@...1526...>
 	<SN1PR08MB1391EA7CA6193754DBB6DAEEB9050@...2065...>
 	<CAKuzo_iewE=FPgN=CzRiBKvhJnABZhF2Yy0sr8Nzaaa0COnUew@...278...>
-In-Reply-To: <CAKuzo_iewE=FPgN=CzRiBKvhJnABZhF2Yy0sr8Nzaaa0COnUew@...278...>
-Content-Language: en-US
-Content-Type: multipart/alternative;
-	boundary="_000_SN1PR08MB13917513FA918C484146CA13B9050SN1PR08MB1391namp_"
-MIME-Version: 1.0
+	<SN1PR08MB13917513FA918C484146CA13B9050@...2065...>
+From: Selva Nair <selva.nair@...277...>
+Date: Wed, 25 Nov 2015 16:23:29 -0500
+Message-ID: <CAKuzo_hKjbxMu4U9rFYXUAfnV=FYR991JXS3CUqTefDx0L0=cA@...278...>
+Content-Type: multipart/alternative; boundary=001a11443d9ef9052905256412ad
 Subject: Re: [Openvpn-devel] OpenVPN-GUI now on GitHub + other Windows team
- things
+	things
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,146 +21,74 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>
+To: "Morris, Russell" <rmorris@...1315...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---_000_SN1PR08MB13917513FA918C484146CA13B9050SN1PR08MB1391namp_
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+--001a11443d9ef9052905256412ad
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-WWVwLCB0aGF0IHdvcmtzIGJldHRlciDigKYg4pi6LiBUaGFua3MhDQoNCkFueSBwb2ludGVycyBv
-biBmaXhpbmcgdGhlIE9wZW5TU0wg4oCcbGltaXRhdGlvbuKAnT8NCg0K4oCmIFJ1c3NlbGwNCg0K
-DQpGcm9tOiBTZWx2YSBOYWlyIFttYWlsdG86c2VsdmEubmFpckAuLi4yNzcuLi5dDQpTZW50OiBX
-ZWRuZXNkYXksIE5vdmVtYmVyIDI1LCAyMDE1IDExOjA4IEFNDQpUbzogTW9ycmlzLCBSdXNzZWxs
-IDxybW9ycmlzQC4uLjEzMTUuLi4+DQpDYzogSGVpa28gSHVuZCA8aGVpa28uaHVuZEAuLi4xNDg5
-Li4uPjsgb3BlbnZwbi1kZXZlbEBsaXN0cy5zb3VyY2Vmb3JnZS5uZXQNClN1YmplY3Q6IFJlOiBb
-T3BlbnZwbi1kZXZlbF0gT3BlblZQTi1HVUkgbm93IG9uIEdpdEh1YiArIG90aGVyIFdpbmRvd3Mg
-dGVhbSB0aGluZ3MNCg0KDQpPbiBXZWQsIE5vdiAyNSwgMjAxNSBhdCAxMTo0OCBBTSwgTW9ycmlz
-LCBSdXNzZWxsIDxybW9ycmlzQC4uLjEzMTUuLi48bWFpbHRvOnJtb3JyaXNALi4uMTMxNS4uLj4+
-IHdyb3RlOg0KSGksDQoNClllcCwgdGhhdCBtYWtlcyBzZW5zZSAtIGJ1dCBTZWx2YSB3YXMgdGhp
-bmtpbmcgdGhpcyB3b3VsZCBpZ25vcmUgdGhlIGxpYnJhcmllcyBmb3Igbm93IC4uLiBvciBkaWQg
-SSBtaXN1bmRlcnN0YW5kPw0KDQpZZXMsIGFzIGEgZmlyc3QgdGVzdCBpdHMgZWFzaWVyIHRvIGJ1
-aWxkIHdpdGhvdXQgb3BlbnNzbCBhbmQgd2l0aCBteSBzdWdnZXN0ZWQgY29uZmlndXJlIGNvbW1h
-bmQgeW91IHNob3VsZG4ndCBuZWVkIG9wZW5zc2wuDQoNCkJ1dCBqdXN0IGZvdW5kIG91dCBpdCBu
-ZWVkcyBhIHNtYWxsIHR3ZWFrICh0aGUgb3JpZ2luYWwgd29ya2VkIGZvciBtZSBiZWNhdXNlIHBr
-Zy1jb25maWcgd2FzIGZpbmRpbmcgdGhlIG5hdGl2ZSBsaWJjcnlwdG8gb24gbXkgbWFjaGluZSBh
-bmQgdGh1cyBub3QgdHJpZ2dlcmluZyB0aGUgZXJyb3IgeW91IHNlZSkNCg0KU28gcGxlYXNlIHJ1
-biBjb25maWd1cmUgYWdhaW4gYXMNCg0KLi9jb25maWd1cmUgLS1wcmVmaXg9LyAtLWhvc3Q9eDg2
-XzY0LXc2NC1taW5ndzMyIC0tYnVpbGQ9eDg2XzY0LXBjLWxpbnV4LWdudSAtLXByb2dyYW0tcHJl
-Zml4PScnIENGTEFHUz0tRERJU0FCTEVfQ0hBTkdFX1BBU1NXT1JEIE9QRU5TU0xfQ1JZUFRPX0xJ
-QlM9Ii1MLi8iICBPUEVOU1NMX0NSWVBUT19DRkxBR1M9Ii1JLi8iDQoNCkl0cyBhIGhhY2ssIGJ1
-dCBzaG91bGQgd29yay4NCg0KU2VsdmENCg0K
+Hi,
 
---_000_SN1PR08MB13917513FA918C484146CA13B9050SN1PR08MB1391namp_
-Content-Type: text/html; charset="utf-8"
-Content-Transfer-Encoding: base64
+On Wed, Nov 25, 2015 at 4:14 PM, Morris, Russell <rmorris@...1315...>
+wrote:
 
-PGh0bWwgeG1sbnM6dj0idXJuOnNjaGVtYXMtbWljcm9zb2Z0LWNvbTp2bWwiIHhtbG5zOm89InVy
-bjpzY2hlbWFzLW1pY3Jvc29mdC1jb206b2ZmaWNlOm9mZmljZSIgeG1sbnM6dz0idXJuOnNjaGVt
-YXMtbWljcm9zb2Z0LWNvbTpvZmZpY2U6d29yZCIgeG1sbnM6bT0iaHR0cDovL3NjaGVtYXMubWlj
-cm9zb2Z0LmNvbS9vZmZpY2UvMjAwNC8xMi9vbW1sIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcv
-VFIvUkVDLWh0bWw0MCI+DQo8aGVhZD4NCjxtZXRhIGh0dHAtZXF1aXY9IkNvbnRlbnQtVHlwZSIg
-Y29udGVudD0idGV4dC9odG1sOyBjaGFyc2V0PXV0Zi04Ij4NCjxtZXRhIG5hbWU9IkdlbmVyYXRv
-ciIgY29udGVudD0iTWljcm9zb2Z0IFdvcmQgMTUgKGZpbHRlcmVkIG1lZGl1bSkiPg0KPHN0eWxl
-PjwhLS0NCi8qIEZvbnQgRGVmaW5pdGlvbnMgKi8NCkBmb250LWZhY2UNCgl7Zm9udC1mYW1pbHk6
-V2luZ2RpbmdzOw0KCXBhbm9zZS0xOjUgMCAwIDAgMCAwIDAgMCAwIDA7fQ0KQGZvbnQtZmFjZQ0K
-CXtmb250LWZhbWlseToiQ2FtYnJpYSBNYXRoIjsNCglwYW5vc2UtMToyIDQgNSAzIDUgNCA2IDMg
-MiA0O30NCkBmb250LWZhY2UNCgl7Zm9udC1mYW1pbHk6Q2FsaWJyaTsNCglwYW5vc2UtMToyIDE1
-IDUgMiAyIDIgNCAzIDIgNDt9DQovKiBTdHlsZSBEZWZpbml0aW9ucyAqLw0KcC5Nc29Ob3JtYWws
-IGxpLk1zb05vcm1hbCwgZGl2Lk1zb05vcm1hbA0KCXttYXJnaW46MGluOw0KCW1hcmdpbi1ib3R0
-b206LjAwMDFwdDsNCglmb250LXNpemU6MTIuMHB0Ow0KCWZvbnQtZmFtaWx5OiJUaW1lcyBOZXcg
-Um9tYW4iLHNlcmlmO30NCmE6bGluaywgc3Bhbi5Nc29IeXBlcmxpbmsNCgl7bXNvLXN0eWxlLXBy
-aW9yaXR5Ojk5Ow0KCWNvbG9yOmJsdWU7DQoJdGV4dC1kZWNvcmF0aW9uOnVuZGVybGluZTt9DQph
-OnZpc2l0ZWQsIHNwYW4uTXNvSHlwZXJsaW5rRm9sbG93ZWQNCgl7bXNvLXN0eWxlLXByaW9yaXR5
-Ojk5Ow0KCWNvbG9yOnB1cnBsZTsNCgl0ZXh0LWRlY29yYXRpb246dW5kZXJsaW5lO30NCnAubXNv
-bm9ybWFsMCwgbGkubXNvbm9ybWFsMCwgZGl2Lm1zb25vcm1hbDANCgl7bXNvLXN0eWxlLW5hbWU6
-bXNvbm9ybWFsOw0KCW1zby1tYXJnaW4tdG9wLWFsdDphdXRvOw0KCW1hcmdpbi1yaWdodDowaW47
-DQoJbXNvLW1hcmdpbi1ib3R0b20tYWx0OmF1dG87DQoJbWFyZ2luLWxlZnQ6MGluOw0KCWZvbnQt
-c2l6ZToxMi4wcHQ7DQoJZm9udC1mYW1pbHk6IlRpbWVzIE5ldyBSb21hbiIsc2VyaWY7fQ0Kc3Bh
-bi5FbWFpbFN0eWxlMTgNCgl7bXNvLXN0eWxlLXR5cGU6cGVyc29uYWwtcmVwbHk7DQoJZm9udC1m
-YW1pbHk6IkNhbGlicmkiLHNhbnMtc2VyaWY7DQoJY29sb3I6IzFGNDk3RDt9DQouTXNvQ2hwRGVm
-YXVsdA0KCXttc28tc3R5bGUtdHlwZTpleHBvcnQtb25seTsNCglmb250LWZhbWlseToiQ2FsaWJy
-aSIsc2Fucy1zZXJpZjt9DQpAcGFnZSBXb3JkU2VjdGlvbjENCgl7c2l6ZTo4LjVpbiAxMS4waW47
-DQoJbWFyZ2luOjEuMGluIDEuMGluIDEuMGluIDEuMGluO30NCmRpdi5Xb3JkU2VjdGlvbjENCgl7
-cGFnZTpXb3JkU2VjdGlvbjE7fQ0KLS0+PC9zdHlsZT48IS0tW2lmIGd0ZSBtc28gOV0+PHhtbD4N
-CjxvOnNoYXBlZGVmYXVsdHMgdjpleHQ9ImVkaXQiIHNwaWRtYXg9IjEwMjYiIC8+DQo8L3htbD48
-IVtlbmRpZl0tLT48IS0tW2lmIGd0ZSBtc28gOV0+PHhtbD4NCjxvOnNoYXBlbGF5b3V0IHY6ZXh0
-PSJlZGl0Ij4NCjxvOmlkbWFwIHY6ZXh0PSJlZGl0IiBkYXRhPSIxIiAvPg0KPC9vOnNoYXBlbGF5
-b3V0PjwveG1sPjwhW2VuZGlmXS0tPg0KPC9oZWFkPg0KPGJvZHkgbGFuZz0iRU4tVVMiIGxpbms9
-ImJsdWUiIHZsaW5rPSJwdXJwbGUiPg0KPGRpdiBjbGFzcz0iV29yZFNlY3Rpb24xIj4NCjxwIGNs
-YXNzPSJNc29Ob3JtYWwiPjxzcGFuIHN0eWxlPSJmb250LXNpemU6MTEuMHB0O2ZvbnQtZmFtaWx5
-OiZxdW90O0NhbGlicmkmcXVvdDssc2Fucy1zZXJpZjtjb2xvcjojMUY0OTdEIj5ZZXAsIHRoYXQg
-d29ya3MgYmV0dGVyIOKApg0KPC9zcGFuPjxzcGFuIHN0eWxlPSJmb250LXNpemU6MTEuMHB0O2Zv
-bnQtZmFtaWx5OldpbmdkaW5ncztjb2xvcjojMUY0OTdEIj5KPC9zcGFuPjxzcGFuIHN0eWxlPSJm
-b250LXNpemU6MTEuMHB0O2ZvbnQtZmFtaWx5OiZxdW90O0NhbGlicmkmcXVvdDssc2Fucy1zZXJp
-Zjtjb2xvcjojMUY0OTdEIj4uIFRoYW5rcyE8bzpwPjwvbzpwPjwvc3Bhbj48L3A+DQo8cCBjbGFz
-cz0iTXNvTm9ybWFsIj48c3BhbiBzdHlsZT0iZm9udC1zaXplOjExLjBwdDtmb250LWZhbWlseTom
-cXVvdDtDYWxpYnJpJnF1b3Q7LHNhbnMtc2VyaWY7Y29sb3I6IzFGNDk3RCI+PG86cD4mbmJzcDs8
-L286cD48L3NwYW4+PC9wPg0KPHAgY2xhc3M9Ik1zb05vcm1hbCI+PHNwYW4gc3R5bGU9ImZvbnQt
-c2l6ZToxMS4wcHQ7Zm9udC1mYW1pbHk6JnF1b3Q7Q2FsaWJyaSZxdW90OyxzYW5zLXNlcmlmO2Nv
-bG9yOiMxRjQ5N0QiPkFueSBwb2ludGVycyBvbiBmaXhpbmcgdGhlIE9wZW5TU0wg4oCcbGltaXRh
-dGlvbuKAnT88bzpwPjwvbzpwPjwvc3Bhbj48L3A+DQo8cCBjbGFzcz0iTXNvTm9ybWFsIj48c3Bh
-biBzdHlsZT0iZm9udC1zaXplOjExLjBwdDtmb250LWZhbWlseTomcXVvdDtDYWxpYnJpJnF1b3Q7
-LHNhbnMtc2VyaWY7Y29sb3I6IzFGNDk3RCI+PG86cD4mbmJzcDs8L286cD48L3NwYW4+PC9wPg0K
-PHAgY2xhc3M9Ik1zb05vcm1hbCI+PHNwYW4gc3R5bGU9ImZvbnQtc2l6ZToxMS4wcHQ7Zm9udC1m
-YW1pbHk6JnF1b3Q7Q2FsaWJyaSZxdW90OyxzYW5zLXNlcmlmO2NvbG9yOiMxRjQ5N0QiPuKApiBS
-dXNzZWxsPG86cD48L286cD48L3NwYW4+PC9wPg0KPHAgY2xhc3M9Ik1zb05vcm1hbCI+PHNwYW4g
-c3R5bGU9ImZvbnQtc2l6ZToxMS4wcHQ7Zm9udC1mYW1pbHk6JnF1b3Q7Q2FsaWJyaSZxdW90Oyxz
-YW5zLXNlcmlmO2NvbG9yOiMxRjQ5N0QiPjxvOnA+Jm5ic3A7PC9vOnA+PC9zcGFuPjwvcD4NCjxw
-IGNsYXNzPSJNc29Ob3JtYWwiPjxzcGFuIHN0eWxlPSJmb250LXNpemU6MTEuMHB0O2ZvbnQtZmFt
-aWx5OiZxdW90O0NhbGlicmkmcXVvdDssc2Fucy1zZXJpZjtjb2xvcjojMUY0OTdEIj48bzpwPiZu
-YnNwOzwvbzpwPjwvc3Bhbj48L3A+DQo8cCBjbGFzcz0iTXNvTm9ybWFsIiBzdHlsZT0ibWFyZ2lu
-LWxlZnQ6LjVpbiI+PGI+PHNwYW4gc3R5bGU9ImZvbnQtc2l6ZToxMS4wcHQ7Zm9udC1mYW1pbHk6
-JnF1b3Q7Q2FsaWJyaSZxdW90OyxzYW5zLXNlcmlmIj5Gcm9tOjwvc3Bhbj48L2I+PHNwYW4gc3R5
-bGU9ImZvbnQtc2l6ZToxMS4wcHQ7Zm9udC1mYW1pbHk6JnF1b3Q7Q2FsaWJyaSZxdW90OyxzYW5z
-LXNlcmlmIj4gU2VsdmEgTmFpciBbbWFpbHRvOnNlbHZhLm5haXJALi4uMjc3Li4uXQ0KPGJyPg0K
-PGI+U2VudDo8L2I+IFdlZG5lc2RheSwgTm92ZW1iZXIgMjUsIDIwMTUgMTE6MDggQU08YnI+DQo8
-Yj5Ubzo8L2I+IE1vcnJpcywgUnVzc2VsbCAmbHQ7cm1vcnJpc0AuLi4xMzE1Li4uJmd0Ozxicj4N
-CjxiPkNjOjwvYj4gSGVpa28gSHVuZCAmbHQ7aGVpa28uaHVuZEAuLi4xNDg5Li4uJmd0Ozsgb3Bl
-bnZwbi1kZXZlbEBsaXN0cy5zb3VyY2Vmb3JnZS5uZXQ8YnI+DQo8Yj5TdWJqZWN0OjwvYj4gUmU6
-IFtPcGVudnBuLWRldmVsXSBPcGVuVlBOLUdVSSBub3cgb24gR2l0SHViICYjNDM7IG90aGVyIFdp
-bmRvd3MgdGVhbSB0aGluZ3M8bzpwPjwvbzpwPjwvc3Bhbj48L3A+DQo8cCBjbGFzcz0iTXNvTm9y
-bWFsIiBzdHlsZT0ibWFyZ2luLWxlZnQ6LjVpbiI+PG86cD4mbmJzcDs8L286cD48L3A+DQo8ZGl2
-Pg0KPGRpdj4NCjxwIGNsYXNzPSJNc29Ob3JtYWwiIHN0eWxlPSJtYXJnaW4tbGVmdDouNWluIj48
-bzpwPiZuYnNwOzwvbzpwPjwvcD4NCjxkaXY+DQo8cCBjbGFzcz0iTXNvTm9ybWFsIiBzdHlsZT0i
-bWFyZ2luLWxlZnQ6LjVpbiI+T24gV2VkLCBOb3YgMjUsIDIwMTUgYXQgMTE6NDggQU0sIE1vcnJp
-cywgUnVzc2VsbCAmbHQ7PGEgaHJlZj0ibWFpbHRvOnJtb3JyaXNALi4uMTMxNS4uLiIgdGFyZ2V0
-PSJfYmxhbmsiPnJtb3JyaXNALi4uMTMxNS4uLjwvYT4mZ3Q7IHdyb3RlOjxvOnA+PC9vOnA+PC9w
-Pg0KPGJsb2NrcXVvdGUgc3R5bGU9ImJvcmRlcjpub25lO2JvcmRlci1sZWZ0OnNvbGlkICNDQ0ND
-Q0MgMS4wcHQ7cGFkZGluZzowaW4gMGluIDBpbiA2LjBwdDttYXJnaW4tbGVmdDo0LjhwdDttYXJn
-aW4tcmlnaHQ6MGluIj4NCjxkaXYgaWQ9IjoyeGEiPg0KPHAgY2xhc3M9Ik1zb05vcm1hbCIgc3R5
-bGU9Im1hcmdpbi1sZWZ0Oi41aW4iPkhpLDxicj4NCjxicj4NClllcCwgdGhhdCBtYWtlcyBzZW5z
-ZSAtIGJ1dCBTZWx2YSB3YXMgdGhpbmtpbmcgdGhpcyB3b3VsZCBpZ25vcmUgdGhlIGxpYnJhcmll
-cyBmb3Igbm93IC4uLiBvciBkaWQgSSBtaXN1bmRlcnN0YW5kPzxvOnA+PC9vOnA+PC9wPg0KPC9k
-aXY+DQo8L2Jsb2NrcXVvdGU+DQo8L2Rpdj4NCjxwIGNsYXNzPSJNc29Ob3JtYWwiIHN0eWxlPSJt
-YXJnaW4tbGVmdDouNWluIj48YnI+DQpZZXMsIGFzIGEgZmlyc3QgdGVzdCBpdHMgZWFzaWVyIHRv
-IGJ1aWxkIHdpdGhvdXQgb3BlbnNzbCBhbmQgd2l0aCBteSBzdWdnZXN0ZWQgY29uZmlndXJlIGNv
-bW1hbmQgeW91IHNob3VsZG4ndCBuZWVkIG9wZW5zc2wuJm5ic3A7PG86cD48L286cD48L3A+DQo8
-L2Rpdj4NCjxkaXY+DQo8cCBjbGFzcz0iTXNvTm9ybWFsIiBzdHlsZT0ibWFyZ2luLWxlZnQ6LjVp
-biI+PG86cD4mbmJzcDs8L286cD48L3A+DQo8L2Rpdj4NCjxkaXY+DQo8cCBjbGFzcz0iTXNvTm9y
-bWFsIiBzdHlsZT0ibWFyZ2luLWxlZnQ6LjVpbiI+QnV0IGp1c3QgZm91bmQgb3V0IGl0IG5lZWRz
-IGEgc21hbGwgdHdlYWsgKHRoZSBvcmlnaW5hbCB3b3JrZWQgZm9yIG1lIGJlY2F1c2UgcGtnLWNv
-bmZpZyB3YXMgZmluZGluZyB0aGUgbmF0aXZlIGxpYmNyeXB0byBvbiBteSBtYWNoaW5lIGFuZCB0
-aHVzIG5vdCB0cmlnZ2VyaW5nIHRoZSBlcnJvciB5b3Ugc2VlKTxvOnA+PC9vOnA+PC9wPg0KPC9k
-aXY+DQo8ZGl2Pg0KPHAgY2xhc3M9Ik1zb05vcm1hbCIgc3R5bGU9Im1hcmdpbi1sZWZ0Oi41aW4i
-PjxvOnA+Jm5ic3A7PC9vOnA+PC9wPg0KPC9kaXY+DQo8ZGl2Pg0KPHAgY2xhc3M9Ik1zb05vcm1h
-bCIgc3R5bGU9Im1hcmdpbi1sZWZ0Oi41aW4iPlNvIHBsZWFzZSBydW4gY29uZmlndXJlIGFnYWlu
-IGFzPG86cD48L286cD48L3A+DQo8L2Rpdj4NCjxkaXY+DQo8ZGl2Pg0KPHAgY2xhc3M9Ik1zb05v
-cm1hbCIgc3R5bGU9Im1hcmdpbi1sZWZ0Oi41aW4iPjxvOnA+Jm5ic3A7PC9vOnA+PC9wPg0KPC9k
-aXY+DQo8ZGl2Pg0KPHAgY2xhc3M9Ik1zb05vcm1hbCIgc3R5bGU9Im1hcmdpbi1sZWZ0Oi41aW4i
-Pi4vY29uZmlndXJlIC0tcHJlZml4PS8gLS1ob3N0PXg4Nl82NC13NjQtbWluZ3czMiAtLWJ1aWxk
-PXg4Nl82NC1wYy1saW51eC1nbnUgLS1wcm9ncmFtLXByZWZpeD0nJyBDRkxBR1M9LURESVNBQkxF
-X0NIQU5HRV9QQVNTV09SRCBPUEVOU1NMX0NSWVBUT19MSUJTPSZxdW90Oy1MLi8mcXVvdDsgJm5i
-c3A7T1BFTlNTTF9DUllQVE9fQ0ZMQUdTPSZxdW90Oy1JLi8mcXVvdDs8bzpwPjwvbzpwPjwvcD4N
-CjwvZGl2Pg0KPGRpdj4NCjxwIGNsYXNzPSJNc29Ob3JtYWwiIHN0eWxlPSJtYXJnaW4tbGVmdDou
-NWluIj48bzpwPiZuYnNwOzwvbzpwPjwvcD4NCjwvZGl2Pg0KPGRpdj4NCjxwIGNsYXNzPSJNc29O
-b3JtYWwiIHN0eWxlPSJtYXJnaW4tbGVmdDouNWluIj5JdHMgYSBoYWNrLCBidXQgc2hvdWxkIHdv
-cmsuPG86cD48L286cD48L3A+DQo8L2Rpdj4NCjxkaXY+DQo8cCBjbGFzcz0iTXNvTm9ybWFsIiBz
-dHlsZT0ibWFyZ2luLWxlZnQ6LjVpbiI+PG86cD4mbmJzcDs8L286cD48L3A+DQo8L2Rpdj4NCjxk
-aXY+DQo8cCBjbGFzcz0iTXNvTm9ybWFsIiBzdHlsZT0ibWFyZ2luLWxlZnQ6LjVpbiI+U2VsdmE8
-bzpwPjwvbzpwPjwvcD4NCjwvZGl2Pg0KPC9kaXY+DQo8ZGl2Pg0KPHAgY2xhc3M9Ik1zb05vcm1h
-bCIgc3R5bGU9Im1hcmdpbi1sZWZ0Oi41aW4iPjxvOnA+Jm5ic3A7PC9vOnA+PC9wPg0KPC9kaXY+
-DQo8L2Rpdj4NCjwvZGl2Pg0KPC9ib2R5Pg0KPC9odG1sPg0K
+> Yep, that works better =E2=80=A6 J. Thanks!
+>
+>
+So did it compile?
 
---_000_SN1PR08MB13917513FA918C484146CA13B9050SN1PR08MB1391namp_--
+
+>
+>
+> Any pointers on fixing the OpenSSL =E2=80=9Climitation=E2=80=9D?
+>
+
+Its not a limitation. You just need cross-compiled  openssl library and
+include files to build with CHANGE_PASSWORD enabled.
+
+The build process of the whole package (openvpn + gui) using openvpn-build
+does compile openssl starting from upstream sources. If you have that build
+environment setup, you can point to those while configuring the GUI and
+remove the DISABLE_CHANGE_PASSWORD option.
+
+Regards,
+
+Selva
+
+--001a11443d9ef9052905256412ad
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div class=3D"gmail_extra">Hi,</div><div class=3D"gmail_ex=
+tra"><br><div class=3D"gmail_quote">On Wed, Nov 25, 2015 at 4:14 PM, Morris=
+, Russell <span dir=3D"ltr">&lt;<a href=3D"mailto:rmorris@...1315..." targe=
+t=3D"_blank">rmorris@...1315...</a>&gt;</span> wrote:<br><blockquote class=
+=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padd=
+ing-left:1ex"><p class=3D"MsoNormal"><span style=3D"font-size:11.0pt;font-f=
+amily:&quot;Calibri&quot;,sans-serif;color:#1f497d">Yep, that works better =
+=E2=80=A6
+</span><span style=3D"font-size:11.0pt;font-family:Wingdings;color:#1f497d"=
+>J</span><span style=3D"font-size:11.0pt;font-family:&quot;Calibri&quot;,sa=
+ns-serif;color:#1f497d">. Thanks!<u></u><u></u></span></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:11.0pt;font-family:&quot;Ca=
+libri&quot;,sans-serif;color:#1f497d"><u></u></span></p></blockquote><div><=
+br></div><div>So did it compile?</div><div>=C2=A0</div><blockquote class=3D=
+"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding=
+-left:1ex"><p class=3D"MsoNormal"><span style=3D"font-size:11.0pt;font-fami=
+ly:&quot;Calibri&quot;,sans-serif;color:#1f497d">=C2=A0<u></u></span></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:11.0pt;font-family:&quot;Ca=
+libri&quot;,sans-serif;color:#1f497d">Any pointers on fixing the OpenSSL =
+=E2=80=9Climitation=E2=80=9D?</span></p></blockquote></div><br>Its not a li=
+mitation. You just need cross-compiled =C2=A0openssl library and include fi=
+les to build with CHANGE_PASSWORD enabled.</div><div class=3D"gmail_extra">=
+<br></div><div class=3D"gmail_extra">The build process of the whole package=
+ (openvpn + gui) using openvpn-build does compile openssl starting from ups=
+tream sources. If you have that build environment setup, you can point to t=
+hose while configuring the GUI and remove the DISABLE_CHANGE_PASSWORD optio=
+n.</div><div class=3D"gmail_extra"><br></div><div class=3D"gmail_extra">Reg=
+ards,</div><div class=3D"gmail_extra"><br></div><div class=3D"gmail_extra">=
+Selva</div></div>
+
+--001a11443d9ef9052905256412ad--
 
