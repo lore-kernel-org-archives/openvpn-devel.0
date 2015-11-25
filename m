@@ -1,15 +1,15 @@
 References: <20151125082651.GT24952@...1296...>
-	<1448477731-21421-1-git-send-email-iam@...2070...>
+	<1448477781-21564-1-git-send-email-iam@...2070...>
 From: ValdikSS <iam@...2070...>
-Message-ID: <56560509.1070205@...2070...>
-Date: Wed, 25 Nov 2015 21:59:21 +0300
+Message-ID: <565605D5.8070406@...2070...>
+Date: Wed, 25 Nov 2015 22:02:45 +0300
 MIME-Version: 1.0
-In-Reply-To: <1448477731-21421-1-git-send-email-iam@...2070...>
+In-Reply-To: <1448477781-21564-1-git-send-email-iam@...2070...>
 Content-Type: multipart/signed; micalg=pgp-sha256;
 	protocol="application/pgp-signature";
-	boundary="M8tGtJmnr240V3S30DQKxL046FFu4Rd2S"
-Subject: Re: [Openvpn-devel] [PATCH v5-master] Add Windows DNS Leak fix
- using WFP ('block-outside-dns')
+	boundary="J8jcqFs1MMXi54NnQL2Gt51C92K9a87bF"
+Subject: Re: [Openvpn-devel] [PATCH v5-2.3] Add Windows DNS Leak fix using
+ WFP ('block-outside-dns')
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,16 +21,18 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: openvpn-devel@lists.sourceforge.net, gert@...1296...
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---M8tGtJmnr240V3S30DQKxL046FFu4Rd2S
+--J8jcqFs1MMXi54NnQL2Gt51C92K9a87bF
 Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
 
-Sorry for double post. This patch comes with removed wfp_init, moved define=
-s to win32.c from win32.h, whitespace fix in documentation.
+This patch for release/2.3 has vista ifdefs in code and no build system mod=
+ifications, so the linking would fail if it is compiled for vista+, so you =
+need to
+add LIBS=3D'-lfwpuclnt -lrpcrt4' to configure as Gert suggested.
 
 
 
---M8tGtJmnr240V3S30DQKxL046FFu4Rd2S
+--J8jcqFs1MMXi54NnQL2Gt51C92K9a87bF
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -39,20 +41,20 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v2
 Comment: https://keybase.io/valdikss
 
-iQIcBAEBCAAGBQJWVgUJAAoJEFzXIC7viPdyXMwP/RnvguVwJeWWqHlK8OYCOH8z
-IvtE6mtKBG99YyDXvwVGIgjtEa9aEi0R+yTTR3e4vo+JbwINev3CZrJlN70/Fa1O
-TbvFWcB/PoSurJZbcU50RYrorfM6mCjxgGJODDKK0lYZ3xSnC1ZLTqnE9zEpTgqW
-ZvtuLr6UHuufVgL4FkWiL2gzz/4iA0dyEiph1D7irmZmaNFTN+Yr/1E0Q/wzL/x3
-ED/rXUBIc4hlTaLBmcRB1PV50mctsxEYQ3bu3thIwtfs5hDEKMZUxecdzDH1Af8f
-O1zO1l0yNwOtYm7El1KDGYy9D03oatIDEFgxjAPpCxzVzymtgZICgYlD4m18RzqV
-uSSifySLmUVE30GLbvW7/gif7/eznEUL/jMlN5U+BZi66T4OUMJy4sDONnFuIjLb
-4voJos1x8rS46YECmjWViHvttFFhrEkL5OGSN0TOVHttr+UdmuqliQL49WW9LJKZ
-IUet0huUWc7KLofbA8JYNvzRQx4KRdig4UD8ZqBetqp9UDedAN2kK0qn7w5zAiL1
-4XZoVKlqs7L/kq6p5tdq9idQXyg1hMvVpMI81ohWgQ3CN8A77nOxtwgxuzj2j/We
-67rrsziIeS4mzAPC5ohLqlWUgnrTBDnbZ4uABthEBg96jQX96jnq2hPUKXed3H+o
-wth5VB46qPGbQ8PdpUpr
-=cbkk
+iQIcBAEBCAAGBQJWVgXVAAoJEFzXIC7viPdyKl0QALxLFGR9/kSxoJDrryQ8IY8V
+q5Hsvl2GsjC1veH489+UdQeAv1dYQXo9gglfEMuMVGoKa+ui8L+wa+LP0RHUtqCn
+uwbjLG985M6NHk3S5bSDuv2LDFnXyI0jOnHRGh2P48rAhKolYAD6vYlyxx2VB4HY
+JqAjO98Ik6WYwIluV9nKt/b9ScpZ7RDWrBMDop2+xBlcctLcMU/H9tsbgpeMCWtb
+cLiM7AAXMxOZcJXWiv8ieTKvaO+HtsGTxDnUd7DoI/lkd6LhrkMBSKcUatqU3I9D
+O+UHuoldiqBunDPiez8qQ8I1qcJIe1nDFVGLm2ha1lhT7rudEBaxuNyeZLHBz7Z9
+24hEoOU1JumbuDByfSaKCRsDBE3jOtVqOlVGzyf8Vxhen66VjjHHKJk3Z6xu5lU6
+fZ5/Ubthq2b+g+A6+r8h54GM4ekS5gc2mtkDVWqmq35QhVG7ru9qnbt4eOMifMLJ
+kMcm+6SX8VW/gNBC//R94mDA59pzUIn28YR17aVn7QsoRMeaLVL8zDO6TscBZtZm
+85xBpT/4eepUVhw52vECuOuhl68CpXWEr96D8L6WTMIe6IwIxt4UB9tWZO35T3vM
+auZVCMtpEH28qp94tJONDMJ0eUegj2j0lFNHMBxPLgJGz5RnKhjX3xJOwADnGTKP
+rRX7v7iXU/Ovsc2Rl5Bd
+=rbDu
 -----END PGP SIGNATURE-----
 
---M8tGtJmnr240V3S30DQKxL046FFu4Rd2S--
+--J8jcqFs1MMXi54NnQL2Gt51C92K9a87bF--
 
