@@ -1,13 +1,9 @@
 From: Heiko Hund <heiko.hund@...1489...>
-Date: Wed, 25 Nov 2015 17:41:42 +0100
-Message-ID: <1584543.znVl45ZabU@...1526...>
-In-Reply-To: <SN1PR08MB1391C6F144144362BB6BA1B9B9050@...2065...>
-References: <564AFAF5.4030004@...515...>
-	<CAKuzo_ga8AhYyRHDTktndfXFeP9Yzfw-SBGx4J6ZkBcEGg9tcw@...278...>
-	<SN1PR08MB1391C6F144144362BB6BA1B9B9050@...2065...>
-MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] OpenVPN-GUI now on GitHub + other Windows team
-	things
+Date: Wed, 25 Nov 2015 17:46:49 +0100
+Message-Id: <1448470009-5243-1-git-send-email-heiko.hund@...1489...>
+In-Reply-To: <1448383504-20376-1-git-send-email-heiko.hund@...1489...>
+References: <1448383504-20376-1-git-send-email-heiko.hund@...1489...>
+Subject: [Openvpn-devel] [PATCHv3] put virtual IPv6 addresses into env
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,84 +13,99 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-You seem to have gotten the path to the cross compiled openssl wrong.
+Add missing environment variables for IPv6 virtual addresses:
 
-On Wednesday 25 November 2015 16:07:12 Morris, Russell wrote:
-> FYI, no joy =E2=80=A6 =E2=98=B9. Configure below gives the following erro=
-r,
-> configure: error: Cannot find OpenSSL library
->
-> So still looking for OpenSSL.
->
-> Thanks!
->
-> =E2=80=A6 Russell
->
->
-> From: Selva Nair [mailto:selva.nair@...277...]
-> Sent: Sunday, November 22, 2015 1:22 PM
-> To: Morris, Russell <rmorris@...1315...>
-> Cc: Samuli Sepp=C3=A4nen <samuli@...515...>;
-> openvpn-devel@lists.sourceforge.net
- Subject: Re: [Openvpn-devel]
-> OpenVPN-GUI now on GitHub + other Windows team things
->
-> On Sun, Nov 22, 2015 at 12:33 PM, Morris, Russell
-> <rmorris@...1315...<mailto:rmorris@...1315...>> wrote:
- Hi,
->
-> Went to get started on this, and I admit =E2=80=93 a lot of different and=
- confusing
-> information about the libraries and include files (and a lot of it
-> contradicts it seems). Do you have a good source for the =E2=80=9Cright=
-=E2=80=9D files to
-> grab?
+  * ifconfig_pool_local_ip6
+  * ifconfig_pool_remote_ip6
+  * ifconfig_pool_ip6_netbits
 
-> Thanks!
->
-> To start with try without openssl.
-> (each command below is on one line -- gmail may break the lines)
-> $ git clone https://github.com/OpenVPN/openvpn-gui.git
-> $ cd openvpn-gui
-> $ autoreconf -i -v
-> $ ./configure --prefix=3D/ --host=3Dx86_64-w64-mingw32
-> --build=3Dx86_64-pc-linux-gnu --program-prefix=3D''
-> CFLAGS=3D-DDISABLE_CHANGE_PASSWORD OPENSSL_CRYPTO_LIBS=3D"-L./"
- $ make
->
-> That will build will get openvpn-gui.exe. Copy it to windows as run as
-> administrator.
+Signed-off-by: Heiko Hund <heiko.hund@...1489...>
+---
+ src/openvpn/multi.c  |   22 ++++++++++++++++++----
+ src/openvpn/socket.c |   16 ++++++++++++++++
+ src/openvpn/socket.h |    5 +++++
+ 3 files changed, 39 insertions(+), 4 deletions(-)
 
-> All this assumes you have a setup with git, mingw-w64, automake, libtool
-> installed.
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index a2ab16e..6e6d457 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -1506,10 +1506,24 @@ multi_set_virtual_addr_env (struct multi_context *m, struct multi_instance *mi)
+ 	}
+     }
+ 
+-    /* TODO: I'm not exactly sure what these environment variables are
+-     *       used for, but if we have them for IPv4, we should also have
+-     *       them for IPv6, no?
+-     */
++  setenv_del (mi->context.c2.es, "ifconfig_pool_local_ip6");
++  setenv_del (mi->context.c2.es, "ifconfig_pool_remote_ip6");
++  setenv_del (mi->context.c2.es, "ifconfig_pool_ip6_netbits");
++
++  if (mi->context.c1.tuntap->ipv6 && mi->context.c2.push_ifconfig_ipv6_defined)
++    {
++      setenv_in6_addr (mi->context.c2.es,
++                       "ifconfig_pool_remote",
++                       &mi->context.c2.push_ifconfig_ipv6_local,
++                       SA_SET_IF_NONZERO);
++      setenv_in6_addr (mi->context.c2.es,
++                       "ifconfig_pool_local",
++                       &mi->context.c2.push_ifconfig_ipv6_remote,
++                       SA_SET_IF_NONZERO);
++      setenv_int (mi->context.c2.es,
++                  "ifconfig_pool_ip6_netbits",
++                  mi->context.c2.push_ifconfig_ipv6_netbits);
++    }
+ }
+ 
+ /*
+diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
+index 8e6b4bc..bc2a80c 100644
+--- a/src/openvpn/socket.c
++++ b/src/openvpn/socket.c
+@@ -2611,6 +2611,22 @@ setenv_in_addr_t (struct env_set *es, const char *name_prefix, in_addr_t addr, c
+ }
+ 
+ void
++setenv_in6_addr (struct env_set *es,
++                 const char *name_prefix,
++                 const struct in6_addr *addr,
++                 const unsigned int flags)
++{
++  if (!IN6_IS_ADDR_UNSPECIFIED (addr) || !(flags & SA_SET_IF_NONZERO))
++    {
++      struct openvpn_sockaddr si;
++      CLEAR (si);
++      si.addr.in6.sin6_family = AF_INET6;
++      si.addr.in6.sin6_addr = *addr;
++      setenv_sockaddr (es, name_prefix, &si, flags);
++    }
++}
++
++void
+ setenv_link_socket_actual (struct env_set *es,
+ 			   const char *name_prefix,
+ 			   const struct link_socket_actual *act,
+diff --git a/src/openvpn/socket.h b/src/openvpn/socket.h
+index 54cdc88..3a540df 100644
+--- a/src/openvpn/socket.h
++++ b/src/openvpn/socket.h
+@@ -402,6 +402,11 @@ void setenv_in_addr_t (struct env_set *es,
+ 		       in_addr_t addr,
+ 		       const unsigned int flags);
+ 
++void setenv_in6_addr (struct env_set *es,
++                      const char *name_prefix,
++                      const struct in6_addr *addr,
++                      const unsigned int flags);
++
+ void setenv_link_socket_actual (struct env_set *es,
+ 				const char *name_prefix,
+ 				const struct link_socket_actual *act,
+-- 
+1.7.9.5
 
-> Selva
-
-Heiko Hund
-
-Development Manager, R&D
-tel +49-721-25516-237
-SOPHOS Security made simple
---
-Sophos Technology GmbH, Commercial Register: Mannheim HRB 712658
-Headquarter Location: Amalienbadstr. 41/Bau 52 | 76227 Karlsruhe | Germany
-Executive Board: Nicholas Bray, Pino von Kienlin, Joachim Frost
-
-
-Sophos Technology GmbH, Amalienbadstra=E1=BA=9Ee 41/Bau 52, D-76227 Karlsru=
-he, Deutschland
-Tel +49 (0)721 25516 0 Fax +49 (0)721 25516 200 E-Mail info@...2075... www.=
-sophos.de
-Sitz der Gesellschaft: Karlsruhe, Amtsgericht Mannheim HRB 712658
-Gesch=C3=A4ftsf=C3=BChrer: Nicholas Bray, Pino von Kienlin, Wolfgang Hilper=
-t, Jennifer Onslow.
-Sophos GmbH, Gustav-Stresemann-Ring 1, 65189 Wiesbaden, Deutschland
-Tel +49 (0) 611 5858-0 Fax +49 (0) 611 5858-1042 E-Mail info@...2075... www=
-.sophos.de
-Sitz der Gesellschaft: Wiesbaden, Amtsgericht Wiesbaden HRB 25915 Gesch=C3=
-=A4ftsf=C3=BChrer: Nicholas Bray, Wolfgang Hilpert, Pino von Kienlin, Jenni=
-fer Onslow
 
