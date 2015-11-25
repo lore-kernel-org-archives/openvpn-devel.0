@@ -1,19 +1,15 @@
-Date: Wed, 25 Nov 2015 08:57:24 +0100
+Date: Wed, 25 Nov 2015 09:26:51 +0100
 From: Gert Doering <gert@...1296...>
-Message-ID: <20151125075724.GS24952@...1296...>
+Message-ID: <20151125082651.GT24952@...1296...>
 References: <564BA6DB.4070703@...2070...>
 	<564DE8B3.9030803@...2070...>
 	<20151124083944.GY24952@...1296...>
 	<5654A314.3080607@...2070...>
-	<20151124201135.GM24952@...1296...>
-	<CAKuzo_jdcOjunyVmpT8er3HqWG7yh6pr+i8Tn8kD3omj=G_Pqw@...278...>
-	<565547AB.9030607@...2070...>
-	<CAKuzo_j6LMPKAkLDpJWiMLCerZ5ORhheUXNPhyRsbEqC6jZaEg@...278...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="SAeLYP8kwBCGlqB7"
+	protocol="application/pgp-signature"; boundary="mb9HKoJ6ED9lkHVp"
 Content-Disposition: inline
-In-Reply-To: <CAKuzo_j6LMPKAkLDpJWiMLCerZ5ORhheUXNPhyRsbEqC6jZaEg@...278...>
+In-Reply-To: <5654A314.3080607@...2070...>
 Subject: Re: [Openvpn-devel] [PATCH v4-master] Add Windows DNS Leak fix
  using WFP ('block-outside-dns')
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -24,39 +20,52 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>
+To: ValdikSS <iam@...2070...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---SAeLYP8kwBCGlqB7
+--mb9HKoJ6ED9lkHVp
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Wed, Nov 25, 2015 at 01:32:38AM -0500, Selva Nair wrote:
-> On Wed, Nov 25, 2015 at 12:31 AM, ValdikSS <iam@...2070...> wrote:
->=20
-> > It's cron2 who wanted clear ifdefs for master, because there's no WinXP
-> > support there.
->=20
-> If WinXP support is really going away in 2.4,=20
+On Tue, Nov 24, 2015 at 08:49:08PM +0300, ValdikSS wrote:
+> I can't figure out why Thunderbird corrupts my patches.
+> Please use the attached version.
+> I still need help with 2.3 build system. If somebody willing to help me, =
+please use the attached version.
 
-It already is - the GetBestRoute2() stuff is not available on XP, and since
-we decide long ago that we'll stop XP support in 2.4 if it becomes too
-painful, this was the point of no return.
+Thanks for the attachments, this should work out nicely.
 
-Theoretically, this could be handled at runtime (try to open the right
-library and find the symbol, and if the library is not there, just disable
-the functionality) but this is something we did not consider important - we
-do not care about XP in 2.4, period :-)
+There is something I'd ask you to change, though - all these new
+additions to win32.h are really only needed for the benefit of win32.c
+(the DEFINE_GUID stuff), but win32.h is included from a LOT of places
+- so it would be much cleaner to have this inside win32.c, and only
+export the function prototypes
 
-If someone really *really* cares about XP support in 2.4 and submits clean
-patches that do not cause extra build work for Samuli, we might reconsider
-- but hey, XP is really dead (and who wants XP can still just stick to 2.3.x
-which we'll continue supporting for a while)
+> +bool win_wfp_block_dns(const NET_IFINDEX index);
+> +bool win_wfp_uninit();
+> +bool win_wfp_init();
+
+towards users.
+
+Another thing I wonder - why have two functions for _init() and _block_dns(=
+),
+which in the end is either called both, or not at all.  Couldn't this be
+just folded into one function (_block_dns()) which calls _init() internally?
+
+This would reduce the impact on other code paths even further...
+
+
+Lastly, not all of the new #include files are #ifdef'ed for _WIN32_WINNT=20
+- are these all available on XP already, even if the libraries are not?
+
+thanks,
 
 gert
+
+
 --=20
 USENET is *not* the non-clickable part of WWW!
                                                            //www.muc.de/~ge=
@@ -64,18 +73,18 @@ rt/
 Gert Doering - Munich, Germany                             gert@...1296...
 fax: +49-89-35655025                        gert@...1297...
 
---SAeLYP8kwBCGlqB7
+--mb9HKoJ6ED9lkHVp
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1
 
-iQCVAwUBVlVp46kuBuNlUUl1AQK8awQAnZBJ+gNjLMQ5iFR4Ss6+9B7pELkdod2r
-VbqCUu3QqSGT/Zo1VWqgG1BIyJkBE85iyW+jTIdMcjXtA+f7poai0lY/5Bni6zyP
-0hkFSjIe96kVKSuY3o7pHCpyu59yjP5qDLHYN+zF3PHL8Oow2Dh3CgVnHcOvsf/A
-XkpgjribYxw=
-=TH2q
+iQCVAwUBVlVwyqkuBuNlUUl1AQJwWAP/QkFak2k/zAUuLwLA5H3UxBG0daeo91N8
+WHKXuw96M2ce7NToSOZ8qtb070YvrXHIPKwQlqUbW1rnTssx56VbUpIyjK73cXRK
+MznwbKCvARV5S23f328ZjHuc+9dA63riuid5gA2ZzbgUZXlQSncZO0OKOvN5h5zF
+KPRrFLIg5lQ=
+=0RQ7
 -----END PGP SIGNATURE-----
 
---SAeLYP8kwBCGlqB7--
+--mb9HKoJ6ED9lkHVp--
 
