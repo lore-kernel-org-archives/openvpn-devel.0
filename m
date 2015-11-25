@@ -1,14 +1,16 @@
-Date: Tue, 24 Nov 2015 22:56:05 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20151124215605.GP24952@...1296...>
-References: <1448040238-21813-1-git-send-email-heiko.hund@...1489...>
-	<1448383504-20376-1-git-send-email-heiko.hund@...1489...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="HE8xRhbuhm5Vuapo"
-Content-Disposition: inline
-In-Reply-To: <1448383504-20376-1-git-send-email-heiko.hund@...1489...>
-Subject: Re: [Openvpn-devel] [PATCHv2] put virtual IPv6 addresses into env
+In-Reply-To: <20151124201135.GM24952@...1296...>
+References: <564BA6DB.4070703@...2070...>
+	<564DE8B3.9030803@...2070...>
+	<20151124083944.GY24952@...1296...>
+	<5654A314.3080607@...2070...>
+	<20151124201135.GM24952@...1296...>
+From: Selva Nair <selva.nair@...277...>
+Date: Tue, 24 Nov 2015 19:13:17 -0500
+Message-ID: <CAKuzo_jdcOjunyVmpT8er3HqWG7yh6pr+i8Tn8kD3omj=G_Pqw@...278...>
+Content-Type: multipart/alternative; boundary=001a1144424e61d97d052552540a
+Subject: Re: [Openvpn-devel] [PATCH v4-master] Add Windows DNS Leak fix
+ using WFP ('block-outside-dns')
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,89 +19,78 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Heiko Hund <heiko.hund@...1489...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---HE8xRhbuhm5Vuapo
-Content-Type: text/plain; charset="us-ascii"
+--001a1144424e61d97d052552540a
+Content-Type: text/plain; charset=UTF-8
+
+Hi,
+
+On Tue, Nov 24, 2015 at 3:11 PM, Gert Doering <gert@...1296...> wrote:
+
+> > I still need help with 2.3 build system. If somebody willing to help me,
+> please use the attached version.
+>
+> Well, the 2.3 version would need all the #ifdefs around the code if not
+> running at VISTA level, and *no* changes to the build system part (so,
+> 2.3 out of the box would simply not "see" this code at all).
+>
+> Samuli would then have to change part of his build system to enable VISTA
+> API level and add these extra libraries - but that would have to be an
+> out-of-tree patch applied only to the Vista-and-up installers.
+
+
+Not sure I understand this.  The patch I had tested all along had ifdef
+_WINNT_WIN32 >= 0x0600 around everything. So the code nicely silences
+itself when built for XP (I did not try this though). I built only 64 bit
+version for vista+.
+
+And this was against the master. Now the new sets of patches have different
+ifdefs: _WINNT_WIN32 >= 0x600 for 2.3, and if defined(WIN32) for master.
+This appears unnecessary. Two patches are still needed as some context
+lines have changed between 2.3 and master, but the code could be the same,
+and, in particular, the ifdefs could be just _WINNT_WIN32 >= 0x600.
+
+May be you mean the same?
+
+Selva
+
+--001a1144424e61d97d052552540a
+Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Ho Hum,
+<div dir=3D"ltr"><div class=3D"gmail_extra">Hi,</div><div class=3D"gmail_ex=
+tra"><br><div class=3D"gmail_quote">On Tue, Nov 24, 2015 at 3:11 PM, Gert D=
+oering <span dir=3D"ltr">&lt;<a href=3D"mailto:gert@...1296..." target=3D"_=
+blank">gert@...1296...</a>&gt;</span> wrote:<br><blockquote class=3D"gmail_=
+quote" style=3D"margin:0px 0px 0px 0.8ex;border-left-width:1px;border-left-=
+color:rgb(204,204,204);border-left-style:solid;padding-left:1ex"><span>&gt;=
+ I still need help with 2.3 build system. If somebody willing to help me, p=
+lease use the attached version.<br>
+<br>
+</span>Well, the 2.3 version would need all the #ifdefs around the code if =
+not<br>
+running at VISTA level, and *no* changes to the build system part (so,<br>
+2.3 out of the box would simply not &quot;see&quot; this code at all).<br>
+<br>
+Samuli would then have to change part of his build system to enable VISTA<b=
+r>
+API level and add these extra libraries - but that would have to be an<br>
+out-of-tree patch applied only to the Vista-and-up installers.</blockquote>=
+</div><br>Not sure I understand this.=C2=A0 The patch I had tested all alon=
+g had ifdef _WINNT_WIN32 &gt;=3D 0x0600 around everything. So the code nice=
+ly silences itself when built for XP (I did not try this though). I built o=
+nly 64 bit version for vista+.=C2=A0</div><div class=3D"gmail_extra"><br></=
+div><div class=3D"gmail_extra">And this was against the master. Now the new=
+ sets of patches have different ifdefs: _WINNT_WIN32 &gt;=3D 0x600 for 2.3,=
+ and if defined(WIN32) for master. This appears unnecessary. Two patches ar=
+e still needed as some context lines have changed between 2.3 and master, b=
+ut the code could be the same, and, in particular, the ifdefs could be just=
+=C2=A0_WINNT_WIN32 &gt;=3D 0x600.</div><div class=3D"gmail_extra"><br></div=
+><div class=3D"gmail_extra">May be you mean the same?</div><div class=3D"gm=
+ail_extra">=C2=A0</div><div class=3D"gmail_extra">Selva</div><div class=3D"=
+gmail_extra">=C2=A0</div></div>
 
-On Tue, Nov 24, 2015 at 05:45:04PM +0100, Heiko Hund wrote:
-> Add missing environment variables for IPv6 virtual addresses:
->=20
->   * ifconfig_pool_local_ipv6
->   * ifconfig_pool_remote_ipv6
->   * ifconfig_pool_ipv6_netbits
->=20
-> Signed-off-by: Heiko Hund <heiko.hund@...1489...>
-[..]
-
-There's two problems with it, unfortunately... first problem is that your
-exchange server ("Received:" header #1) seems to stubbornly mangle all=20
-tabs into 8 spaces - so the context of the patch does not match the=20
-context in tree, and the patch doesn't apply.  Since sophos *does* have
-a real MTA (postfix) further down the line - could that one be used
-directly...?
-
-But this is just a secondary thing for this patch as the patch is small
-(so I could fix this by hand) - more complicated is this one:
-
-
->  void
-> +setenv_in6_addr (struct env_set *es,
-> +                 const char *name_prefix,
-> +                 const struct in6_addr *addr,
-> +                 const unsigned int flags)
-> +{
-> +  if (!IN6_IS_ADDR_UNSPECIFIED (addr) || !(flags & SA_SET_IF_NONZERO))
-> +    {
-> +      struct openvpn_sockaddr si;
-> +      CLEAR (si);
-> +      si.addr.in6.sin6_family =3D AF_INET6;
-> +      si.addr.in6.sin6_addr =3D *addr;
-> +      setenv_sockaddr (es, name_prefix, &si, flags|SA_NO_IP_SUFFIX);
-
-... what does "SA_NO_IP_SUFFIX" do?  I've searched release/2.2, 2.3 and
-git master, and couldn't find any trace of it - so it's not something
-we lost during socket.c rewrite, but seemingly something we never=20
-received...
-
-I assume it is related to this stuff...
-
-          openvpn_snprintf (name_buf, sizeof (name_buf), "%s_ip", name_pref=
-ix);
-          openvpn_snprintf (name_buf, sizeof (name_buf), "%s_ip6", name_pre=
-fix);
-
-... tacking a _ip(6) suffix to the name_prefix (or specifically, "not").
-
-Where else do you use that?  Is this something we'd want to have?
-
-thanks,
-
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---HE8xRhbuhm5Vuapo
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQCVAwUBVlTc9KkuBuNlUUl1AQITZwP/ezqq+eTb7rfXo47zQn8EJzs5t88mxln8
-+P84+IuJd+SxcRcREJcTD/tpUMPbNQZN+qKzEPKpGR8R7YrGSDeISRZXoLdtQh79
-QZFdg+OTSxx+GAPTd9tH83fBghzMslrZ/bcQGxKBavEj4r1nZLGsDKAh5l/dTjQx
-5++wsyRUa24=
-=qjGG
------END PGP SIGNATURE-----
-
---HE8xRhbuhm5Vuapo--
+--001a1144424e61d97d052552540a--
 
