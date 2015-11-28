@@ -1,9 +1,8 @@
-From: Gert Doering <gert@...1296...>
-Date: Sat, 28 Nov 2015 20:58:37 +0100
-Message-Id: <1448740717-60914-1-git-send-email-gert@...1296...>
-In-Reply-To: <1448456220-2042-1-git-send-email-heiko.hund@...1489...>
-References: <1448456220-2042-1-git-send-email-heiko.hund@...1489...>
-Subject: [Openvpn-devel] [PATCH] Un-break compilation on *BSD
+From: Steffan Karger <steffan@...1856...>
+Date: Sat, 28 Nov 2015 23:48:01 +0100
+Message-Id: <1448750881-10767-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH] Fix openssl builds with custom-built
+	library: specify most-dependent first
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,35 +15,32 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Commit 2191c47165 introduced code to handle IP address query on
-multihoming hosts for IP_PKTINFO-supporting OSes, but all the BSDs
-need the "#elsif IP_RECVDSTADDR" variant... add code equivalent
-to what we have in socket.c/print_link_socket_actual_ex()
+Libraries should be specified from left-to-right as most-dependent to
+least-dependent.  Thus, -lssl comes first, then -lcrypto.
 
-Tested on FreeBSD 9.3/sparc64
+(This does not fail when pkg-config finds your libraries for you, since
+we tell it '-lssl needs -lcrypto' and we then end up with
+"-lcrypto -lssl -lcrypto", which is not pretty but does work.)
 
-Signed-off-by: Gert Doering <gert@...1296...>
+Signed-off-by: Steffan Karger <steffan@...1856...>
 ---
- src/openvpn/init.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ configure.ac | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 5c17087..179c7ef 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -1293,7 +1293,11 @@ initialization_sequence_completed (struct context *c, const unsigned int flags)
-           switch (local.addr.sa.sa_family)
-             {
-             case AF_INET:
-+#ifdef IP_PKTINFO
-               local.addr.in4.sin_addr = actual->pi.in4.ipi_spec_dst;
-+#else
-+              local.addr.in4.sin_addr = actual->pi.in4;
-+#endif
-               break;
-             case AF_INET6:
-               local.addr.in6.sin6_addr = actual->pi.in6.ipi6_addr;
+diff --git a/configure.ac b/configure.ac
+index 40df8a1..d3b3fa9 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -1110,7 +1110,7 @@ if test "${enable_crypto}" = "yes"; then
+ 		test "${have_crypto_aead_modes}" != "yes" && AC_MSG_ERROR([AEAD modes required but missing])
+ 	fi
+ 	OPTIONAL_CRYPTO_CFLAGS="${OPTIONAL_CRYPTO_CFLAGS} ${CRYPTO_CRYPTO_CFLAGS} ${CRYPTO_SSL_CFLAGS}"
+-	OPTIONAL_CRYPTO_LIBS="${OPTIONAL_CRYPTO_LIBS} ${CRYPTO_CRYPTO_LIBS} ${CRYPTO_SSL_LIBS}"
++	OPTIONAL_CRYPTO_LIBS="${OPTIONAL_CRYPTO_LIBS} ${CRYPTO_SSL_LIBS} ${CRYPTO_CRYPTO_LIBS}"
+ 	AC_DEFINE([ENABLE_CRYPTO], [1], [Enable crypto library])
+ fi
+ 
 -- 
-2.6.2
+2.5.0
 
 
