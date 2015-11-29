@@ -1,13 +1,10 @@
-MIME-Version: 1.0
+Date: Sun, 29 Nov 2015 21:46:17 +0100 (CET)
+Message-Id: <201511292046.tATKkH29020123@...2054...>
+From: Gert Doering <gert@...1296...>
 In-Reply-To: <1448825901-12294-1-git-send-email-arne@...1227...>
-References: <CAEsd45QjsjNDWFkoHG2O0ycO2pNGxj115TH+SLiUD__jf=WWpQ@...278...>
-	<1448825901-12294-1-git-send-email-arne@...1227...>
-From: Selva Nair <selva.nair@...277...>
-Date: Sun, 29 Nov 2015 15:30:04 -0500
-Message-ID: <CAKuzo_gVnEL5MO1Qvk=k5h6v=cdTd9wF-ASULUcgNA87vOMc-A@...278...>
-Content-Type: multipart/alternative; boundary=001a11443d9e495f990525b3cb45
-Subject: Re: [Openvpn-devel] [PATCH] Also remove second Instanz von
- enable-password-save in the manage
+References: <1448825901-12294-1-git-send-email-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Also remove second Instanz von
+	enable-password-save in the manage
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,72 +13,30 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: Arne Schwabe <arne@...1227...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Cc: openvpn-devel@lists.sourceforge.net
 
---001a11443d9e495f990525b3cb45
-Content-Type: text/plain; charset=UTF-8
+Your patch has been applied to the master and release/2.3 branch.
 
-On Sun, Nov 29, 2015 at 2:38 PM, Arne Schwabe <arne@...1227...> wrote:
+commit 80442aeed408f26700ea7570ced2409e7dd3e98b (master)
+commit 0a9f866f78b5287e9996978898ccf213afd6b8d2 (release/2.3)
 
-> ---
->  doc/openvpn.8 | 5 +----
->  1 file changed, 1 insertion(+), 4 deletions(-)
->
-> diff --git a/doc/openvpn.8 b/doc/openvpn.8
-> index 3519e7d..1b9dcae 100644
-> --- a/doc/openvpn.8
-> +++ b/doc/openvpn.8
-> @@ -4886,10 +4886,7 @@ is specified, read the password from the first line
-> of
->  .B file.
->  Keep in mind that storing your password in a file
->  to a certain extent invalidates the extra security provided by
-> -using an encrypted key (Note: OpenVPN
-> -will only read passwords from a file if it has been built
-> -with the \-\-enable\-password\-save configure option, or on Windows
-> -by defining ENABLE_PASSWORD_SAVE in win/settings.in).
-> +using an encrypted key.
+Author: Arne Schwabe
+Date:   Sun Nov 29 20:38:21 2015 +0100
+
+     Also remove second Instanz von enable-password-save in the manage
+
+     Acked-by: Selva Nair <selva.nair@...277...>
+     Message-Id: <1448825901-12294-1-git-send-email-arne@...1227...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/10671
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
-Thanks. That takes care of the manpage. The committer could correct the
-typo in commit msg "manage" to "manpage" if that's ok.
+--
+kind regards,
 
-Cheers,
+Gert Doering
 
-Selva
-
---001a11443d9e495f990525b3cb45
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><br><div class=3D"gmail_extra"><div class=3D"gmail_quote">=
-On Sun, Nov 29, 2015 at 2:38 PM, Arne Schwabe <span dir=3D"ltr">&lt;<a href=
-=3D"mailto:arne@...1227..." target=3D"_blank">arne@...1227...</a>&gt;</span=
-> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;bo=
-rder-left:1px #ccc solid;padding-left:1ex">---<br>
-=C2=A0doc/openvpn.8 | 5 +----<br>
-=C2=A01 file changed, 1 insertion(+), 4 deletions(-)<br>
-<br>
-diff --git a/doc/openvpn.8 b/doc/openvpn.8<br>
-index 3519e7d..1b9dcae 100644<br>
---- a/doc/openvpn.8<br>
-+++ b/doc/openvpn.8<br>
-@@ -4886,10 +4886,7 @@ is specified, read the password from the first line =
-of<br>
-=C2=A0.B file.<br>
-=C2=A0Keep in mind that storing your password in a file<br>
-=C2=A0to a certain extent invalidates the extra security provided by<br>
--using an encrypted key (Note: OpenVPN<br>
--will only read passwords from a file if it has been built<br>
--with the \-\-enable\-password\-save configure option, or on Windows<br>
--by defining ENABLE_PASSWORD_SAVE in win/<a href=3D"http://settings.in" rel=
-=3D"noreferrer" target=3D"_blank">settings.in</a>).<br>
-+using an encrypted key.<span class=3D"HOEnZb"></span></blockquote><div><br=
-></div><div>Thanks. That takes care of the manpage. The committer could cor=
-rect the typo in commit msg &quot;manage&quot; to &quot;manpage&quot; if th=
-at&#39;s ok.<br><br></div><div>Cheers,<br><br></div><div>Selva<br></div></d=
-iv></div></div>
-
---001a11443d9e495f990525b3cb45--
 
