@@ -1,11 +1,11 @@
-References: <1448750881-10767-1-git-send-email-steffan@...1856...>
+References: <1448456220-2042-1-git-send-email-heiko.hund@...1489...>
+	<1448740717-60914-1-git-send-email-gert@...1296...>
 From: Arne Schwabe <arne@...1227...>
-Message-ID: <565ACDDC.5060205@...1227...>
-Date: Sun, 29 Nov 2015 11:05:16 +0100
+Message-ID: <565AD7F7.4020700@...1227...>
+Date: Sun, 29 Nov 2015 11:48:23 +0100
 MIME-Version: 1.0
-In-Reply-To: <1448750881-10767-1-git-send-email-steffan@...1856...>
-Subject: Re: [Openvpn-devel] [PATCH] Fix openssl builds with custom-built
- library: specify most-dependent first
+In-Reply-To: <1448740717-60914-1-git-send-email-gert@...1296...>
+Subject: Re: [Openvpn-devel] [PATCH] Un-break compilation on *BSD
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,20 +15,18 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
+Content-Transfer-Encoding: 8bit
+To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
 
-Am 28.11.15 um 23:48 schrieb Steffan Karger:
-> Libraries should be specified from left-to-right as most-dependent to
-> least-dependent.  Thus, -lssl comes first, then -lcrypto.
-> 
-> (This does not fail when pkg-config finds your libraries for you, since
-> we tell it '-lssl needs -lcrypto' and we then end up with
-> "-lcrypto -lssl -lcrypto", which is not pretty but does work.)
+Am 28.11.15 um 20:58 schrieb Gert Doering:
+> Commit 2191c47165 introduced code to handle IP address query on
+> multihoming hosts for IP_PKTINFO-supporting OSes, but all the BSDs
+> need the "#elsif IP_RECVDSTADDR" variant... add code equivalent
+> to what we have in socket.c/print_link_socket_actual_ex()
 > 
 
-ACK from me.
+
+ACK code looks sane.
 
 Arne
-
 
