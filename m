@@ -1,9 +1,14 @@
-Date: Sun, 29 Nov 2015 21:46:17 +0100 (CET)
-Message-Id: <201511292046.tATKkH29020123@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <1448825901-12294-1-git-send-email-arne@...1227...>
-References: <1448825901-12294-1-git-send-email-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Also remove second Instanz von
+Message-ID: <BLU406-EAS1346AD398DCF1426CEF730DDA010@...512...>
+Content-Type: multipart/related;
+	boundary="_5d64b048-a146-4127-abe3-6bd351919466_"
+From: lorena meneses <lorena89@...2097...>
+MIME-Version: 1.0 (1.0)
+Date: Sun, 29 Nov 2015 15:34:11 -0500
+References: <CAEsd45QjsjNDWFkoHG2O0ycO2pNGxj115TH+SLiUD__jf=WWpQ@...278...>
+	<1448825901-12294-1-git-send-email-arne@...1227...>
+	<CAKuzo_gVnEL5MO1Qvk=k5h6v=cdTd9wF-ASULUcgNA87vOMc-A@...278...>
+In-Reply-To: <CAKuzo_gVnEL5MO1Qvk=k5h6v=cdTd9wF-ASULUcgNA87vOMc-A@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] Also remove second Instanz von
 	enable-password-save in the manage
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -13,30 +18,112 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: Selva Nair <selva.nair@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+
+--_5d64b048-a146-4127-abe3-6bd351919466_
+Content-Type: multipart/alternative;
+	boundary="Apple-Mail-C7305447-DFDD-416B-B34A-04A53E1DFFAD"
+Content-Transfer-Encoding: 7bit
+
+--Apple-Mail-C7305447-DFDD-416B-B34A-04A53E1DFFAD
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Transfer-Encoding: base64
 
-Your patch has been applied to the master and release/2.3 branch.
+SSB3YW5uYSBiZSBvdXQgb2YgdGhpcyBwbGVhc2UhISEhIA0KTk8gTU9SRSBNRVNTQUdFUyANCg0K
+RW52b3nDqSBkZSBtb24gaVBob25lDQoNCj4gTGUgMjkgbm92LiAyMDE1IMOgIDE1OjMwLCBTZWx2
+YSBOYWlyIDxzZWx2YS5uYWlyQC4uLjI3Ny4uLj4gYSDDqWNyaXQgOg0KPiANCj4gDQo+PiBPbiBT
+dW4sIE5vdiAyOSwgMjAxNSBhdCAyOjM4IFBNLCBBcm5lIFNjaHdhYmUgPGFybmVALi4uMTIyNy4u
+Lj4gd3JvdGU6DQo+PiAtLS0NCj4+ICBkb2Mvb3BlbnZwbi44IHwgNSArLS0tLQ0KPj4gIDEgZmls
+ZSBjaGFuZ2VkLCAxIGluc2VydGlvbigrKSwgNCBkZWxldGlvbnMoLSkNCj4+IA0KPj4gZGlmZiAt
+LWdpdCBhL2RvYy9vcGVudnBuLjggYi9kb2Mvb3BlbnZwbi44DQo+PiBpbmRleCAzNTE5ZTdkLi4x
+YjlkY2FlIDEwMDY0NA0KPj4gLS0tIGEvZG9jL29wZW52cG4uOA0KPj4gKysrIGIvZG9jL29wZW52
+cG4uOA0KPj4gQEAgLTQ4ODYsMTAgKzQ4ODYsNyBAQCBpcyBzcGVjaWZpZWQsIHJlYWQgdGhlIHBh
+c3N3b3JkIGZyb20gdGhlIGZpcnN0IGxpbmUgb2YNCj4+ICAuQiBmaWxlLg0KPj4gIEtlZXAgaW4g
+bWluZCB0aGF0IHN0b3JpbmcgeW91ciBwYXNzd29yZCBpbiBhIGZpbGUNCj4+ICB0byBhIGNlcnRh
+aW4gZXh0ZW50IGludmFsaWRhdGVzIHRoZSBleHRyYSBzZWN1cml0eSBwcm92aWRlZCBieQ0KPj4g
+LXVzaW5nIGFuIGVuY3J5cHRlZCBrZXkgKE5vdGU6IE9wZW5WUE4NCj4+IC13aWxsIG9ubHkgcmVh
+ZCBwYXNzd29yZHMgZnJvbSBhIGZpbGUgaWYgaXQgaGFzIGJlZW4gYnVpbHQNCj4+IC13aXRoIHRo
+ZSBcLVwtZW5hYmxlXC1wYXNzd29yZFwtc2F2ZSBjb25maWd1cmUgb3B0aW9uLCBvciBvbiBXaW5k
+b3dzDQo+PiAtYnkgZGVmaW5pbmcgRU5BQkxFX1BBU1NXT1JEX1NBVkUgaW4gd2luL3NldHRpbmdz
+LmluKS4NCj4+ICt1c2luZyBhbiBlbmNyeXB0ZWQga2V5Lg0KPiANCj4gVGhhbmtzLiBUaGF0IHRh
+a2VzIGNhcmUgb2YgdGhlIG1hbnBhZ2UuIFRoZSBjb21taXR0ZXIgY291bGQgY29ycmVjdCB0aGUg
+dHlwbyBpbiBjb21taXQgbXNnICJtYW5hZ2UiIHRvICJtYW5wYWdlIiBpZiB0aGF0J3Mgb2suDQo+
+IA0KPiBDaGVlcnMsDQo+IA0KPiBTZWx2YQ0KPiAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0NCj4gX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18NCj4gT3BlbnZwbi1k
+ZXZlbCBtYWlsaW5nIGxpc3QNCj4gT3BlbnZwbi1kZXZlbEBsaXN0cy5zb3VyY2Vmb3JnZS5uZXQN
+Cj4gaHR0cHM6Ly9saXN0cy5zb3VyY2Vmb3JnZS5uZXQvbGlzdHMvbGlzdGluZm8vb3BlbnZwbi1k
+ZXZlbA0K
 
-commit 80442aeed408f26700ea7570ced2409e7dd3e98b (master)
-commit 0a9f866f78b5287e9996978898ccf213afd6b8d2 (release/2.3)
+--Apple-Mail-C7305447-DFDD-416B-B34A-04A53E1DFFAD
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: base64
 
-Author: Arne Schwabe
-Date:   Sun Nov 29 20:38:21 2015 +0100
+PGh0bWw+PGhlYWQ+PG1ldGEgaHR0cC1lcXVpdj0iY29udGVudC10eXBlIiBjb250ZW50PSJ0ZXh0
+L2h0bWw7IGNoYXJzZXQ9dXRmLTgiPjwvaGVhZD48Ym9keSBkaXI9ImF1dG8iPjxkaXY+SSB3YW5u
+YSBiZSBvdXQgb2YgdGhpcyBwbGVhc2UhISEhJm5ic3A7PC9kaXY+PGRpdiBpZD0iQXBwbGVNYWls
+U2lnbmF0dXJlIj5OTyBNT1JFIE1FU1NBR0VTJm5ic3A7PGJyPjxicj5FbnZvecOpIGRlIG1vbiBp
+UGhvbmU8L2Rpdj48ZGl2Pjxicj5MZSAyOSBub3YuIDIwMTUgw6AgMTU6MzAsIFNlbHZhIE5haXIg
+Jmx0OzxhIGhyZWY9Im1haWx0bzpzZWx2YS5uYWlyQC4uLjI3Ny4uLiI+c2VsdmEubmFpckAuLi4y
+NzcuLi48L2E+Jmd0OyBhIMOpY3JpdCZuYnNwOzo8YnI+PGJyPjwvZGl2PjxibG9ja3F1b3RlIHR5
+cGU9ImNpdGUiPjxkaXY+PGRpdiBkaXI9Imx0ciI+PGJyPjxkaXYgY2xhc3M9ImdtYWlsX2V4dHJh
+Ij48ZGl2IGNsYXNzPSJnbWFpbF9xdW90ZSI+T24gU3VuLCBOb3YgMjksIDIwMTUgYXQgMjozOCBQ
+TSwgQXJuZSBTY2h3YWJlIDxzcGFuIGRpcj0ibHRyIj4mbHQ7PGEgaHJlZj0ibWFpbHRvOmFybmVA
+Li4uMTIyNy4uLiIgdGFyZ2V0PSJfYmxhbmsiPmFybmVALi4uMTIyNy4uLjwvYT4mZ3Q7PC9zcGFu
+PiB3cm90ZTo8YnI+PGJsb2NrcXVvdGUgY2xhc3M9ImdtYWlsX3F1b3RlIiBzdHlsZT0ibWFyZ2lu
+OjAgMCAwIC44ZXg7Ym9yZGVyLWxlZnQ6MXB4ICNjY2Mgc29saWQ7cGFkZGluZy1sZWZ0OjFleCI+
+LS0tPGJyPg0KJm5ic3A7ZG9jL29wZW52cG4uOCB8IDUgKy0tLS08YnI+DQombmJzcDsxIGZpbGUg
+Y2hhbmdlZCwgMSBpbnNlcnRpb24oKyksIDQgZGVsZXRpb25zKC0pPGJyPg0KPGJyPg0KZGlmZiAt
+LWdpdCBhL2RvYy9vcGVudnBuLjggYi9kb2Mvb3BlbnZwbi44PGJyPg0KaW5kZXggMzUxOWU3ZC4u
+MWI5ZGNhZSAxMDA2NDQ8YnI+DQotLS0gYS9kb2Mvb3BlbnZwbi44PGJyPg0KKysrIGIvZG9jL29w
+ZW52cG4uODxicj4NCkBAIC00ODg2LDEwICs0ODg2LDcgQEAgaXMgc3BlY2lmaWVkLCByZWFkIHRo
+ZSBwYXNzd29yZCBmcm9tIHRoZSBmaXJzdCBsaW5lIG9mPGJyPg0KJm5ic3A7LkIgZmlsZS48YnI+
+DQombmJzcDtLZWVwIGluIG1pbmQgdGhhdCBzdG9yaW5nIHlvdXIgcGFzc3dvcmQgaW4gYSBmaWxl
+PGJyPg0KJm5ic3A7dG8gYSBjZXJ0YWluIGV4dGVudCBpbnZhbGlkYXRlcyB0aGUgZXh0cmEgc2Vj
+dXJpdHkgcHJvdmlkZWQgYnk8YnI+DQotdXNpbmcgYW4gZW5jcnlwdGVkIGtleSAoTm90ZTogT3Bl
+blZQTjxicj4NCi13aWxsIG9ubHkgcmVhZCBwYXNzd29yZHMgZnJvbSBhIGZpbGUgaWYgaXQgaGFz
+IGJlZW4gYnVpbHQ8YnI+DQotd2l0aCB0aGUgXC1cLWVuYWJsZVwtcGFzc3dvcmRcLXNhdmUgY29u
+ZmlndXJlIG9wdGlvbiwgb3Igb24gV2luZG93czxicj4NCi1ieSBkZWZpbmluZyBFTkFCTEVfUEFT
+U1dPUkRfU0FWRSBpbiB3aW4vPGEgaHJlZj0iaHR0cDovL3NldHRpbmdzLmluIiByZWw9Im5vcmVm
+ZXJyZXIiIHRhcmdldD0iX2JsYW5rIj5zZXR0aW5ncy5pbjwvYT4pLjxicj4NCit1c2luZyBhbiBl
+bmNyeXB0ZWQga2V5LjxzcGFuIGNsYXNzPSJIT0VuWmIiPjwvc3Bhbj48L2Jsb2NrcXVvdGU+PGRp
+dj48YnI+PC9kaXY+PGRpdj5UaGFua3MuIFRoYXQgdGFrZXMgY2FyZSBvZiB0aGUgbWFucGFnZS4g
+VGhlIGNvbW1pdHRlciBjb3VsZCBjb3JyZWN0IHRoZSB0eXBvIGluIGNvbW1pdCBtc2cgIm1hbmFn
+ZSIgdG8gIm1hbnBhZ2UiIGlmIHRoYXQncyBvay48YnI+PGJyPjwvZGl2PjxkaXY+Q2hlZXJzLDxi
+cj48YnI+PC9kaXY+PGRpdj5TZWx2YTxicj48L2Rpdj48L2Rpdj48L2Rpdj48L2Rpdj4NCjwvZGl2
+PjwvYmxvY2txdW90ZT48YmxvY2txdW90ZSB0eXBlPSJjaXRlIj48ZGl2PjxzcGFuPi0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLTwvc3Bhbj48YnI+PC9kaXY+PC9ibG9ja3F1b3RlPjxibG9ja3F1b3RlIHR5
+cGU9ImNpdGUiPjxkaXY+PHNwYW4+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX188L3NwYW4+PGJyPjxzcGFuPk9wZW52cG4tZGV2ZWwgbWFpbGluZyBsaXN0PC9z
+cGFuPjxicj48c3Bhbj48YSBocmVmPSJtYWlsdG86T3BlbnZwbi1kZXZlbEBsaXN0cy5zb3VyY2Vm
+b3JnZS5uZXQiPk9wZW52cG4tZGV2ZWxAbGlzdHMuc291cmNlZm9yZ2UubmV0PC9hPjwvc3Bhbj48
+YnI+PHNwYW4+PGEgaHJlZj0iaHR0cHM6Ly9saXN0cy5zb3VyY2Vmb3JnZS5uZXQvbGlzdHMvbGlz
+dGluZm8vb3BlbnZwbi1kZXZlbCI+aHR0cHM6Ly9saXN0cy5zb3VyY2Vmb3JnZS5uZXQvbGlzdHMv
+bGlzdGluZm8vb3BlbnZwbi1kZXZlbDwvYT48L3NwYW4+PGJyPjwvZGl2PjwvYmxvY2txdW90ZT48
+L2JvZHk+PC9odG1sPg==
 
-     Also remove second Instanz von enable-password-save in the manage
+--Apple-Mail-C7305447-DFDD-416B-B34A-04A53E1DFFAD--
 
-     Acked-by: Selva Nair <selva.nair@...277...>
-     Message-Id: <1448825901-12294-1-git-send-email-arne@...1227...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/10671
-     Signed-off-by: Gert Doering <gert@...1296...>
+--_5d64b048-a146-4127-abe3-6bd351919466_
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
+------------------------------------------------------------------------------
 
---
-kind regards,
+--_5d64b048-a146-4127-abe3-6bd351919466_
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-Gert Doering
+_______________________________________________
+Openvpn-devel mailing list
+Openvpn-devel@lists.sourceforge.net
+https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
+--_5d64b048-a146-4127-abe3-6bd351919466_--
 
