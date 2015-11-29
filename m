@@ -1,9 +1,10 @@
-Date: Sun, 29 Nov 2015 13:24:45 +0100 (CET)
-Message-Id: <201511291224.tATCOjvK017927@...2054...>
+Date: Sun, 29 Nov 2015 13:46:49 +0100 (CET)
+Message-Id: <201511291246.tATCknvr018057@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1448740717-60914-1-git-send-email-gert@...1296...>
-References: <1448740717-60914-1-git-send-email-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Un-break compilation on *BSD
+In-Reply-To: <1448750881-10767-1-git-send-email-steffan@...1856...>
+References: <1448750881-10767-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix openssl builds with
+	custom-built library: specify most-dependent first
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,22 +15,23 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
+To: Steffan Karger <steffan@...1856...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Thanks for review. Patch has been applied to the master branch.
+Your patch has been applied to the master branch (with some massaging as
+the context has the aead_modes stuff in your tree...).
 
-commit 4a82a9ac0bef6db58858a42b4dc500ae9e09682d (master)
+commit 09f2670ce27158f81b4983c06f63870a5188d4aa
+Author: Steffan Karger
+Date:   Sat Nov 28 23:48:01 2015 +0100
 
-Author: Gert Doering
-Date:   Sat Nov 28 20:58:37 2015 +0100
+     Fix openssl builds with custom-built library: specify most-dependent first
 
-     Un-break compilation on *BSD
-
-     Signed-off-by: Gert Doering <gert@...1296...>
+     Signed-off-by: Steffan Karger <steffan@...1856...>
      Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <1448740717-60914-1-git-send-email-gert@...1296...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/10648
+     Message-Id: <1448750881-10767-1-git-send-email-steffan@...1856...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/10649
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
 --
