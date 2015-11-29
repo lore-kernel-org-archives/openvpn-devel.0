@@ -1,10 +1,11 @@
 MIME-Version: 1.0
-In-Reply-To: <1448705029-9062-1-git-send-email-steffan@...1856...>
+In-Reply-To: <CAKuzo_h10E+5UfjZDuvRQADeTuryG+meropr=uXt6L90DvPwOA@...278...>
 References: <1448705029-9062-1-git-send-email-steffan@...1856...>
-From: Selva Nair <selva.nair@...277...>
-Date: Sun, 29 Nov 2015 00:29:14 -0500
-Message-ID: <CAKuzo_h10E+5UfjZDuvRQADeTuryG+meropr=uXt6L90DvPwOA@...278...>
-Content-Type: multipart/alternative; boundary=089e01176623a6b5130525a735d5
+	<CAKuzo_h10E+5UfjZDuvRQADeTuryG+meropr=uXt6L90DvPwOA@...278...>
+From: Steffan Karger <steffan@...1856...>
+Date: Sun, 29 Nov 2015 10:43:34 +0100
+Message-ID: <CAA1AbxLoZpanyqfpJuroMeOj_M=gU5JB+pqZqRxYqaiNP754-g@...278...>
+Content-Type: multipart/mixed; boundary=001a114daf3442af770525aac372
 Subject: Re: [Openvpn-devel] [PATCH] Support duplicate x509 field values in
 	environment
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -15,97 +16,132 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan@...1856...>
+To: Selva Nair <selva.nair@...277...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---089e01176623a6b5130525a735d5
+--001a114daf3442af770525aac372
 Content-Type: text/plain; charset=UTF-8
 
 Hi,
 
-On Sat, Nov 28, 2015 at 5:03 AM, Steffan Karger <steffan@...1856...> wrote:
+On Sun, Nov 29, 2015 at 6:29 AM, Selva Nair <selva.nair@...277...> wrote:
+> A useful change and clean code. A couple of places could benefit from const
+> qualifiers, though
 
-> As reported in trac #387, an x509 DN can contain duplicate fields.
-> Previously, we would overwrite any previous field value with a new one if
-> we would process a second same-name field.  Now, instead, append _$N,
-> starting at N=1 to the name for each consequent field to export all fields
-> to the enviroment.
->
+You're absolutely right.  Thanks.  Attached a v2 patch that adds the
+suggested const qualifiers.
 
-A useful change and clean code. A couple of places could benefit from const
-qualifiers, though:
+Now that I was looking at my own code again, I also realized a
+strcpy() makes more sense in setenv_str_incr() than the memcpy() from
+the previous patch.  (Both work just fine, but this should be easier
+to read.)
 
---- a/src/openvpn/misc.c
-> +++ b/src/openvpn/misc.c
-> @@ -607,6 +607,16 @@ env_set_add (struct env_set *es, const char *str)
->    env_set_add_nolock (es, str);
->  }
->
-> +const char*
-> +env_set_get (struct env_set *es, const char *name)
->
+-Steffan
 
-... (const struct env_set *es,....   )      <to be matched in misc.h>
+--001a114daf3442af770525aac372
+Content-Type: text/x-diff; charset=US-ASCII; 
+	name="0001-Support-duplicate-x509-field-values-in-environment.patch"
+Content-Disposition: attachment; 
+	filename="0001-Support-duplicate-x509-field-values-in-environment.patch"
+Content-Transfer-Encoding: base64
+X-Attachment-Id: f_ihkc9ekr0
 
-+{
-> +  struct env_item *item = es->list;
->
-
-const struct env_item *item = ...
-
-+  while (item && !envstring_equal(item->string, name)) {
-> +      item = item->next;
-> +  }
-> +  return item ? item->string : NULL;
-> +}
->
-
-Thanks,
-
-Selva
-
---089e01176623a6b5130525a735d5
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><div class=3D"gmail_extra">Hi,<br><br></div><div class=3D"=
-gmail_extra"><div class=3D"gmail_quote">On Sat, Nov 28, 2015 at 5:03 AM, St=
-effan Karger <span dir=3D"ltr">&lt;<a href=3D"mailto:steffan@...1856..." ta=
-rget=3D"_blank">steffan@...1856...</a>&gt;</span> wrote:<br><blockquote cla=
-ss=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid =
-rgb(204,204,204);padding-left:1ex"><div style=3D"overflow:hidden">As report=
-ed in trac #387, an x509 DN can contain duplicate fields.<br>
-Previously, we would overwrite any previous field value with a new one if<b=
-r>
-we would process a second same-name field.=C2=A0 Now, instead, append _$N,<=
-br>
-starting at N=3D1 to the name for each consequent field to export all field=
-s<br>
-to the enviroment.</div></blockquote></div><br></div><div class=3D"gmail_ex=
-tra">A useful change and clean code. A couple of places could benefit from =
-const qualifiers, though:<br><br><blockquote style=3D"margin:0px 0px 0px 0.=
-8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex" class=3D"gmail=
-_quote">--- a/src/openvpn/misc.c<br>
-+++ b/src/openvpn/misc.c<br>
-@@ -607,6 +607,16 @@ env_set_add (struct env_set *es, const char *str)<br>
-=C2=A0 =C2=A0env_set_add_nolock (es, str);<br>
-=C2=A0}<br><br>+const char*<br>
-+env_set_get (struct env_set *es, const char *name)<br></blockquote>
-<br></div><div class=3D"gmail_extra">... (const struct env_set *es,.... =C2=
-=A0 )=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 &lt;to be matched in misc.h&gt;<br><br>=
-</div><div class=3D"gmail_extra"><blockquote style=3D"margin:0px 0px 0px 0.=
-8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex" class=3D"gmail=
-_quote">+{<br>
-+=C2=A0 struct env_item *item =3D es-&gt;list;<br></blockquote>
-<br>const struct env_item *item =3D ...<br><br><blockquote style=3D"margin:=
-0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex" =
-class=3D"gmail_quote">+=C2=A0 while (item &amp;&amp; !envstring_equal(item-=
-&gt;string, name)) {<br>
-+=C2=A0 =C2=A0 =C2=A0 item =3D item-&gt;next;<br>
-+=C2=A0 }<br>
-+=C2=A0 return item ? item-&gt;string : NULL;<br>
-+}<br></blockquote><br></div><div class=3D"gmail_extra">Thanks,<br><br></di=
-v><div class=3D"gmail_extra">Selva<br></div></div>
-
---089e01176623a6b5130525a735d5--
+RnJvbSA0NGE1YWY1ODU5NTNkNTM4NGQzYmJkNjRlNTVjMWRlNjM0MzkxOWQ4IE1vbiBTZXAgMTcg
+MDA6MDA6MDAgMjAwMQpGcm9tOiBTdGVmZmFuIEthcmdlciA8c3RlZmZhbkBrYXJnZXIubWU+CkRh
+dGU6IFN1biwgMjkgTm92IDIwMTUgMTA6Mzk6MjQgKzAxMDAKU3ViamVjdDogW1BBVENIXSBTdXBw
+b3J0IGR1cGxpY2F0ZSB4NTA5IGZpZWxkIHZhbHVlcyBpbiBlbnZpcm9ubWVudAoKQXMgcmVwb3J0
+ZWQgaW4gdHJhYyAjMzg3LCBhbiB4NTA5IEROIGNhbiBjb250YWluIGR1cGxpY2F0ZSBmaWVsZHMu
+ClByZXZpb3VzbHksIHdlIHdvdWxkIG92ZXJ3cml0ZSBhbnkgcHJldmlvdXMgZmllbGQgdmFsdWUg
+d2l0aCBhIG5ldyBvbmUgaWYKd2Ugd291bGQgcHJvY2VzcyBhIHNlY29uZCBzYW1lLW5hbWUgZmll
+bGQuICBOb3csIGluc3RlYWQsIGFwcGVuZCBfJE4sCnN0YXJ0aW5nIGF0IE49MSB0byB0aGUgbmFt
+ZSBmb3IgZWFjaCBjb25zZXF1ZW50IGZpZWxkIHRvIGV4cG9ydCBhbGwgZmllbGRzCnRvIHRoZSBl
+bnZpcm9tZW50LgoKdjIgLSBtYWtlIGJldHRlciB1c2Ugb2YgY29uc3QgcXVhbGlmaWVycyBpbiBl
+bnZfc2V0X2dldCgpLCBhbmQgdXNlIHN0cmNweSgpCiAgICAgaW5zdGVhZCBvZiBtZW1jcHkoKSBp
+biBzZXRlbnZfc3RyX2luY3IoKQoKU2lnbmVkLW9mZi1ieTogU3RlZmZhbiBLYXJnZXIgPHN0ZWZm
+YW5Aa2FyZ2VyLm1lPgotLS0KIENoYW5nZXMucnN0ICAgICAgICAgICAgICAgICAgICAgICB8ICA3
+ICsrKysrKysKIHNyYy9vcGVudnBuL21pc2MuYyAgICAgICAgICAgICAgICB8IDMyICsrKysrKysr
+KysrKysrKysrKysrKysrKysrKysrKysrCiBzcmMvb3BlbnZwbi9taXNjLmggICAgICAgICAgICAg
+ICAgfCAgNyArKysrKysrCiBzcmMvb3BlbnZwbi9zc2xfdmVyaWZ5X29wZW5zc2wuYyAgfCAgMiAr
+LQogc3JjL29wZW52cG4vc3NsX3ZlcmlmeV9wb2xhcnNzbC5jIHwgIDIgKy0KIDUgZmlsZXMgY2hh
+bmdlZCwgNDggaW5zZXJ0aW9ucygrKSwgMiBkZWxldGlvbnMoLSkKCmRpZmYgLS1naXQgYS9DaGFu
+Z2VzLnJzdCBiL0NoYW5nZXMucnN0CmluZGV4IGM2NzRkYTUuLmU3MTJmNjMgMTAwNjQ0Ci0tLSBh
+L0NoYW5nZXMucnN0CisrKyBiL0NoYW5nZXMucnN0CkBAIC0zNiw2ICszNiwxMyBAQCBMWjQgQ29t
+cHJlc3Npb24KIAogVXNlci12aXNpYmxlIENoYW5nZXMKIC0tLS0tLS0tLS0tLS0tLS0tLS0tCist
+IEZvciBjZXJ0aWZpY2F0ZSBETnMgd2l0aCBkdXBsaWNhdGUgZmllbGRzLCBlLmcuICJPVT1vbmUs
+T1U9dHdvIiwgYm90aCBmaWVsZHMKKyAgYXJlIG5vdyBleHBvcnRlZCB0byB0aGUgZW52aXJvbm1l
+bnQsIHdoZXJlIGVhY2ggc2Vjb25kIGFuZCBsYXRlciBvY2N1cnJlbmNlCisgIG9mIGEgZmllbGQg
+Z2V0IF8kTiBhcHBlbmRlZCB0byBpdCdzIGZpZWxkIG5hbWUsIHN0YXJ0aW5nIGF0IE49MS4gIEZv
+ciB0aGUKKyAgZXhhbXBsZSBhYm92ZSwgdGhhdCB3b3VsZCByZXN1bHQgaW4gZS5nLiBYNTA5XzBf
+T1U9b25lLCBYNTA5XzBfT1VfMT10d28uCisgIE5vdGUgdGhhdCB0aGlzIGJyZWFrcyBzZXR1cHMg
+dGhhdCByZWx5IG9uIHRoZSBmYWN0IHRoYXQgT3BlblZQTiB3b3VsZAorICBwcmV2aW91c2x5IChp
+bmNvcnJlY3RseSkgb25seSBleHBvcnQgdGhlIGxhc3Qgb2NjdXJlbmNlIG9mIGEgZmllbGQuCisK
+IC0gcHJvdG8gdWRwIGFuZCBwcm90byB0Y3Agc3BlY2lmeSB0byB1c2UgSVB2NCBhbmQgSVB2Ni4g
+VGhlIG5ldwogICBvcHRpb25zIHByb3RvIHVkcDQgYW5kIHRjcDQgc3BlY2lmeSB0byB1c2UgSVB2
+NCBvbmx5LgogCmRpZmYgLS1naXQgYS9zcmMvb3BlbnZwbi9taXNjLmMgYi9zcmMvb3BlbnZwbi9t
+aXNjLmMKaW5kZXggMGYwNGQwOS4uNmJmNDZjZSAxMDA2NDQKLS0tIGEvc3JjL29wZW52cG4vbWlz
+Yy5jCisrKyBiL3NyYy9vcGVudnBuL21pc2MuYwpAQCAtNjA3LDYgKzYwNywxNiBAQCBlbnZfc2V0
+X2FkZCAoc3RydWN0IGVudl9zZXQgKmVzLCBjb25zdCBjaGFyICpzdHIpCiAgIGVudl9zZXRfYWRk
+X25vbG9jayAoZXMsIHN0cik7CiB9CiAKK2NvbnN0IGNoYXIqCitlbnZfc2V0X2dldCAoY29uc3Qg
+c3RydWN0IGVudl9zZXQgKmVzLCBjb25zdCBjaGFyICpuYW1lKQoreworICBjb25zdCBzdHJ1Y3Qg
+ZW52X2l0ZW0gKml0ZW0gPSBlcy0+bGlzdDsKKyAgd2hpbGUgKGl0ZW0gJiYgIWVudl9zdHJpbmdf
+ZXF1YWwoaXRlbS0+c3RyaW5nLCBuYW1lKSkgeworICAgICAgaXRlbSA9IGl0ZW0tPm5leHQ7Cisg
+IH0KKyAgcmV0dXJuIGl0ZW0gPyBpdGVtLT5zdHJpbmcgOiBOVUxMOworfQorCiB2b2lkCiBlbnZf
+c2V0X3ByaW50IChpbnQgbXNnbGV2ZWwsIGNvbnN0IHN0cnVjdCBlbnZfc2V0ICplcykKIHsKQEAg
+LTc0MSw2ICs3NTEsMjggQEAgc2V0ZW52X3N0cl9zYWZlIChzdHJ1Y3QgZW52X3NldCAqZXMsIGNv
+bnN0IGNoYXIgKm5hbWUsIGNvbnN0IGNoYXIgKnZhbHVlKQogICAgIG1zZyAoTV9XQVJOLCAic2V0
+ZW52X3N0cl9zYWZlOiBuYW1lIG92ZXJmbG93Iik7CiB9CiAKK3ZvaWQgc2V0ZW52X3N0cl9pbmNy
+KHN0cnVjdCBlbnZfc2V0ICplcywgY29uc3QgY2hhciAqbmFtZSwgY29uc3QgY2hhciAqdmFsdWUp
+Cit7CisgIHVuc2lnbmVkIGludCBjb3VudGVyID0gMTsKKyAgY29uc3Qgc2l6ZV90IHRtcG5hbWVf
+bGVuID0gc3RybGVuKG5hbWUpICsgNTsgLyogMyBkaWdpdHMgY291bnRlciBtYXggKi8KKyAgY2hh
+ciAqdG1wbmFtZSA9IGdjX21hbGxvYyh0bXBuYW1lX2xlbiwgdHJ1ZSwgTlVMTCk7CisgIHN0cmNw
+eSh0bXBuYW1lLCBuYW1lKTsKKyAgd2hpbGUgKE5VTEwgIT0gZW52X3NldF9nZXQoZXMsIHRtcG5h
+bWUpICYmIGNvdW50ZXIgPCAxMDAwKQorICAgIHsKKyAgICAgIEFTU0VSVCAob3BlbnZwbl9zbnBy
+aW50ZiAodG1wbmFtZSwgdG1wbmFtZV9sZW4sICIlc18ldSIsIG5hbWUsIGNvdW50ZXIpKTsKKyAg
+ICAgIGNvdW50ZXIrKzsKKyAgICB9CisgIGlmIChjb3VudGVyIDwgMTAwMCkKKyAgICB7CisgICAg
+ICBzZXRlbnZfc3RyIChlcywgdG1wbmFtZSwgdmFsdWUpOworICAgIH0KKyAgZWxzZQorICAgIHsK
+KyAgICAgIG1zZyAoRF9UTFNfREVCVUdfTUVELCAiVG9vIG1hbnkgc2FtZS1uYW1lIGVudiB2YXJp
+YWJsZXMsIGlnbm9yaW5nOiAlcyIsIG5hbWUpOworICAgIH0KKyAgZnJlZSAodG1wbmFtZSk7Cit9
+CisKIHZvaWQKIHNldGVudl9kZWwgKHN0cnVjdCBlbnZfc2V0ICplcywgY29uc3QgY2hhciAqbmFt
+ZSkKIHsKZGlmZiAtLWdpdCBhL3NyYy9vcGVudnBuL21pc2MuaCBiL3NyYy9vcGVudnBuL21pc2Mu
+aAppbmRleCBlYzJlNDE3Li43Njg2Mzk5IDEwMDY0NAotLS0gYS9zcmMvb3BlbnZwbi9taXNjLmgK
+KysrIGIvc3JjL29wZW52cG4vbWlzYy5oCkBAIC0xMzMsNiArMTMzLDEyIEBAIHZvaWQgc2V0ZW52
+X3N0ciAoc3RydWN0IGVudl9zZXQgKmVzLCBjb25zdCBjaGFyICpuYW1lLCBjb25zdCBjaGFyICp2
+YWx1ZSk7CiB2b2lkIHNldGVudl9zdHJfc2FmZSAoc3RydWN0IGVudl9zZXQgKmVzLCBjb25zdCBj
+aGFyICpuYW1lLCBjb25zdCBjaGFyICp2YWx1ZSk7CiB2b2lkIHNldGVudl9kZWwgKHN0cnVjdCBl
+bnZfc2V0ICplcywgY29uc3QgY2hhciAqbmFtZSk7CiAKKy8qKgorICogU3RvcmUgdGhlIHN1cHBs
+aWVkIG5hbWUgdmFsdWUgcGFpciBpbiB0aGUgZW52X3NldC4gIElmIHRoZSB2YXJpYWJsZSB3aXRo
+IHRoZQorICogc3VwcGxpZWQgbmFtZSAgYWxyZWFkeSBleGlzdHMsIGFwcGVuZCBfTiB0byB0aGUg
+bmFtZSwgc3RhcnRpbmcgYXQgTj0xLgorICovCit2b2lkIHNldGVudl9zdHJfaW5jcihzdHJ1Y3Qg
+ZW52X3NldCAqZXMsIGNvbnN0IGNoYXIgKm5hbWUsIGNvbnN0IGNoYXIgKnZhbHVlKTsKKwogdm9p
+ZCBzZXRlbnZfaW50X2kgKHN0cnVjdCBlbnZfc2V0ICplcywgY29uc3QgY2hhciAqbmFtZSwgY29u
+c3QgaW50IHZhbHVlLCBjb25zdCBpbnQgaSk7CiB2b2lkIHNldGVudl9zdHJfaSAoc3RydWN0IGVu
+dl9zZXQgKmVzLCBjb25zdCBjaGFyICpuYW1lLCBjb25zdCBjaGFyICp2YWx1ZSwgY29uc3QgaW50
+IGkpOwogCkBAIC0xNDIsNiArMTQ4LDcgQEAgc3RydWN0IGVudl9zZXQgKmVudl9zZXRfY3JlYXRl
+IChzdHJ1Y3QgZ2NfYXJlbmEgKmdjKTsKIHZvaWQgZW52X3NldF9kZXN0cm95IChzdHJ1Y3QgZW52
+X3NldCAqZXMpOwogYm9vbCBlbnZfc2V0X2RlbCAoc3RydWN0IGVudl9zZXQgKmVzLCBjb25zdCBj
+aGFyICpzdHIpOwogdm9pZCBlbnZfc2V0X2FkZCAoc3RydWN0IGVudl9zZXQgKmVzLCBjb25zdCBj
+aGFyICpzdHIpOworY29uc3QgY2hhciogZW52X3NldF9nZXQgKGNvbnN0IHN0cnVjdCBlbnZfc2V0
+ICplcywgY29uc3QgY2hhciAqbmFtZSk7CiAKIHZvaWQgZW52X3NldF9wcmludCAoaW50IG1zZ2xl
+dmVsLCBjb25zdCBzdHJ1Y3QgZW52X3NldCAqZXMpOwogCmRpZmYgLS1naXQgYS9zcmMvb3BlbnZw
+bi9zc2xfdmVyaWZ5X29wZW5zc2wuYyBiL3NyYy9vcGVudnBuL3NzbF92ZXJpZnlfb3BlbnNzbC5j
+CmluZGV4IGJmNTM1MjIuLmQwMTRmOWQgMTAwNjQ0Ci0tLSBhL3NyYy9vcGVudnBuL3NzbF92ZXJp
+Znlfb3BlbnNzbC5jCisrKyBiL3NyYy9vcGVudnBuL3NzbF92ZXJpZnlfb3BlbnNzbC5jCkBAIC00
+NDgsNyArNDQ4LDcgQEAgeDUwOV9zZXRlbnYgKHN0cnVjdCBlbnZfc2V0ICplcywgaW50IGNlcnRf
+ZGVwdGgsIG9wZW52cG5feDUwOV9jZXJ0X3QgKnBlZXJfY2VydCkKIAkgIG9iamJ1Zik7CiAgICAg
+ICBzdHJpbmdfbW9kIChuYW1lX2V4cGFuZCwgQ0NfUFJJTlQsIENDX0NSTEYsICdfJyk7CiAgICAg
+ICBzdHJpbmdfbW9kICgoY2hhciopYnVmLCBDQ19QUklOVCwgQ0NfQ1JMRiwgJ18nKTsKLSAgICAg
+IHNldGVudl9zdHIgKGVzLCBuYW1lX2V4cGFuZCwgKGNoYXIqKWJ1Zik7CisgICAgICBzZXRlbnZf
+c3RyX2luY3IgKGVzLCBuYW1lX2V4cGFuZCwgKGNoYXIqKWJ1Zik7CiAgICAgICBmcmVlIChuYW1l
+X2V4cGFuZCk7CiAgICAgICBPUEVOU1NMX2ZyZWUgKGJ1Zik7CiAgICAgfQpkaWZmIC0tZ2l0IGEv
+c3JjL29wZW52cG4vc3NsX3ZlcmlmeV9wb2xhcnNzbC5jIGIvc3JjL29wZW52cG4vc3NsX3Zlcmlm
+eV9wb2xhcnNzbC5jCmluZGV4IDYyODE4YWQuLmEyZTZhOGUgMTAwNjQ0Ci0tLSBhL3NyYy9vcGVu
+dnBuL3NzbF92ZXJpZnlfcG9sYXJzc2wuYworKysgYi9zcmMvb3BlbnZwbi9zc2xfdmVyaWZ5X3Bv
+bGFyc3NsLmMKQEAgLTI0NSw3ICsyNDUsNyBAQCB4NTA5X3NldGVudiAoc3RydWN0IGVudl9zZXQg
+KmVzLCBpbnQgY2VydF9kZXB0aCwgb3BlbnZwbl94NTA5X2NlcnRfdCAqY2VydCkKIAkvKiBDaGVj
+ayBib3RoIHN0cmluZ3MsIHNldCBlbnZpcm9ubWVudCB2YXJpYWJsZSAqLwogCXN0cmluZ19tb2Qg
+KG5hbWVfZXhwYW5kLCBDQ19QUklOVCwgQ0NfQ1JMRiwgJ18nKTsKIAlzdHJpbmdfbW9kICgoY2hh
+ciopcywgQ0NfUFJJTlQsIENDX0NSTEYsICdfJyk7Ci0Jc2V0ZW52X3N0ciAoZXMsIG5hbWVfZXhw
+YW5kLCAoY2hhciopcyk7CisJc2V0ZW52X3N0cl9pbmNyIChlcywgbmFtZV9leHBhbmQsIChjaGFy
+KilzKTsKIAogCW5hbWUgPSBuYW1lLT5uZXh0OwogICAgIH0KLS0gCjIuNS4wCgo=
+--001a114daf3442af770525aac372--
 
