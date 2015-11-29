@@ -1,14 +1,10 @@
-Date: Sun, 29 Nov 2015 17:29:43 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20151129162942.GL24952@...1296...>
-References: <1448808959-10565-1-git-send-email-arne@...1227...>
-	<CAEsd45QjsjNDWFkoHG2O0ycO2pNGxj115TH+SLiUD__jf=WWpQ@...278...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="gi8aKAu241S2WqNd"
-Content-Disposition: inline
+From: Arne Schwabe <arne@...1227...>
+Date: Sun, 29 Nov 2015 19:52:24 +0100
+Message-Id: <1448823144-1497-1-git-send-email-arne@...1227...>
 In-Reply-To: <CAEsd45QjsjNDWFkoHG2O0ycO2pNGxj115TH+SLiUD__jf=WWpQ@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] Remove --enable-password-save option
+References: <CAEsd45QjsjNDWFkoHG2O0ycO2pNGxj115TH+SLiUD__jf=WWpQ@...278...>
+Subject: [Openvpn-devel] [PATCH] Reflect enable-password-save change in
+	documentation
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,43 +13,43 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "Jonathan K. Bullard" <jkbullard@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---gi8aKAu241S2WqNd
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+---
+ Changes.rst   | 3 +++
+ doc/openvpn.8 | 5 +----
+ 2 files changed, 4 insertions(+), 4 deletions(-)
 
-Hi,
+diff --git a/Changes.rst b/Changes.rst
+index a791ca3..c2142fa 100644
+--- a/Changes.rst
++++ b/Changes.rst
+@@ -72,3 +72,6 @@ User-visible Changes
+ - proto udp6/tcp6 in server mode will now try to always listen to
+   both IPv4 and IPv6 on platforms that allow it. Use bind ipv6only
+   to explicitly listen only on IPv6.
++
++- Removed --enable-password-save from configure. This option is now
++  always enabled.
+diff --git a/doc/openvpn.8 b/doc/openvpn.8
+index 9889540..4297513 100644
+--- a/doc/openvpn.8
++++ b/doc/openvpn.8
+@@ -3800,10 +3800,7 @@ over the client's routing table.
+ Authenticate with server using username/password.
+ .B up
+ is a file containing username/password on 2 lines. If the
+-password line is missing, OpenVPN will prompt for one. (Note: OpenVPN
+-will only read passwords from a file if it has been built
+-with the \-\-enable\-password\-save configure option, or on Windows
+-by defining ENABLE_PASSWORD_SAVE in win/settings.in).
++password line is missing, OpenVPN will prompt for one. 
+ 
+ If
+ .B up
+-- 
+2.4.9 (Apple Git-60)
 
-On Sun, Nov 29, 2015 at 10:52:37AM -0500, Jonathan K. Bullard wrote:
-> But please update the man page, too; it references
-> "--enable-password-save". (Then again, the man page doesn't mention
-> allowing username-only files, so it is already inaccurate.
-
-Good point.  I'll see to that "ASAP".
-
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---gi8aKAu241S2WqNd
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQCVAwUBVlsn9qkuBuNlUUl1AQKV/AP/ROid910Y3sGgBw6R7I1L15ioEn71bZ3u
-BD2+qiGRrePXbiJaAOromGBKyxeOwh5HS+k4mf6SdzYcf4/AVDOnShW0XYAuK9wH
-nPRHKG5g7xf/RsioL4ANHkYT/Z1oaPLnDi7vwf7kzw1zqJBBRoCskVrOa2O+BhB9
-deqTF2G6p6Y=
-=1Uo9
------END PGP SIGNATURE-----
-
---gi8aKAu241S2WqNd--
 
