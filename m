@@ -1,13 +1,14 @@
 MIME-Version: 1.0
-In-Reply-To: <20151207154740.GD24952@...1296...>
+In-Reply-To: <CAKuzo_hQ4MDGuAoSnabFxL9UnTnPznSMOBLUDRnoomGThoaU+w@...278...>
 References: <1449446507-16654-1-git-send-email-selva.nair@...277...>
 	<20151207071641.GR24952@...1296...>
 	<CAKuzo_iriPYgazMiq=FKwvYbvVE39t9X8zheKP4PqOVwbtjQ7Q@...278...>
 	<20151207154740.GD24952@...1296...>
+	<CAKuzo_hQ4MDGuAoSnabFxL9UnTnPznSMOBLUDRnoomGThoaU+w@...278...>
 From: Selva Nair <selva.nair@...277...>
-Date: Mon, 7 Dec 2015 11:45:42 -0500
-Message-ID: <CAKuzo_hQ4MDGuAoSnabFxL9UnTnPznSMOBLUDRnoomGThoaU+w@...278...>
-Content-Type: multipart/alternative; boundary=089e012298ecaeb8240526519707
+Date: Mon, 7 Dec 2015 12:31:57 -0500
+Message-ID: <CAKuzo_jH=TfcwY7Y9Lsi7t6JZmNxiWq0FZyC+1JU57gSD2qz4w@...278...>
+Content-Type: multipart/alternative; boundary=047d7ba97a880f75820526523dbb
 Subject: Re: [Openvpn-devel] [PATCH master] Add an autoconf macro to check
  WINAPI functions
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -21,143 +22,51 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: Gert Doering <gert@...1296...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---089e012298ecaeb8240526519707
+--047d7ba97a880f75820526523dbb
 Content-Type: text/plain; charset=UTF-8
 
 Hi,
 
 
+>> > > Which environments did you test this on?  It needs to work on mingw as
+>> > I use debian jessie, but it should work elsewhere.
+>> >
+>> > > shipped with ubuntu 12.04 (no inet_pton), mingw as shipped with 14.04
+>> > > (inet_pton, *and* the definition its using conflicts with our compat/
+>> > > libraries, so a false negative will fail later) and cygwin.
+>>
+>> Well, the reason why I pointed out these two is that they are different
+>> regarding header file brokenness - I'm not sure I remember the details,
+>> but stuff that broke for me on 12.04 worked for samuli on 14.04.
+>>
 >
-> > AC_CHECK_DECL would detect inet_pton etc., because it only looks for the
-> > declaration in a header. The macro I submitted works almost exactly like
-> > AC_CHECK_DECL but defines HAVE_symbol instead of HAVE_DECL_symbol.
->
-> Not good enough.  I want to be sure that the symbol is there, and that
-> we actually have the right libraries (so maybe a double check "the symbol
-> is there, but we cannot link, so fail" might be even better).
->
-
-Agree with the "not good enough" part. But every AC_CHECK_FUNC test is also
-equally not good enough. Headers are not included (and cannot be included,
-the way it works), so no guarantee that the  detected symbol is the right
-one. But the purpose of autoconf is to only to get heuristics that may to
-combined with other independent knowledge about the OS to make a decision.
-
-
-> > > Which environments did you test this on?  It needs to work on mingw as
-> > I use debian jessie, but it should work elsewhere.
-> >
-> > > shipped with ubuntu 12.04 (no inet_pton), mingw as shipped with 14.04
-> > > (inet_pton, *and* the definition its using conflicts with our compat/
-> > > libraries, so a false negative will fail later) and cygwin.
->
-> Well, the reason why I pointed out these two is that they are different
-> regarding header file brokenness - I'm not sure I remember the details,
-> but stuff that broke for me on 12.04 worked for samuli on 14.04.
+> I don't think AC_FUNC_CHECK can detect intet_pton in any version of
+> windows API. It just tries to link
 >
 
-I don't think AC_FUNC_CHECK can detect intet_pton in any version of windows
-API. It just tries to link
+Regarding the mingw-specific issue: I forgot to add that those two appear
+to be the only WINAPI functions tested using AC_CHECK_FUNC in configure.ac.
+These wont be detected though present in vista+. So, the build tries to use
+the replacement functions even on vista, which should have been ok except
+for the declaration mismatch with some mingw headers for vista+ --- such a
+mismatch is not expected, so is very likely specific to some versions of
+mingw, I don't know.
 
-(all defines so far goes here)
-char inet_pton();
-int main()
-{
-  return inet_pton();
-}
-
-That will succeed on linux, fail on windows (cross compiled or otherwise).
-
-This test is "not good enough" even on linux/unix --- the ultimate test is
-building of the application which will fail if the detected inet_pton
-symbol was something else.
-
-
->
-> So it's building a test program that does this?
->
-> #include <ws2tcpip.h>
-> main()
-> {
->   (void) inet_ntop;
-> }
->
-> ... which shouldn't compile at all...?
->
-
-Make it "int main" , and add a return 0; (both provided by AC_COMPILE..)
-That will compile for vista, but fail for winxp (which doesn't have
-inet_ntop). The actual test will also include all defines so far, but
-that's details.
-
-
-> > If you prefer I can rewrite the macro completely in terms of
-> AC_CHECK_DECL
->
-> Convince me that it improves things :-)
->
-
-I think the current macro already improves things :) Except that it shows
-how the test is done.
-
-Just as AC_CHECK_FUNC hides all the gory details (or absence of details),
-use of .._DECL it will hide the program that will be tested :) I said that
-just because one seldom questions macros included in autoconf distribution.
-
-
->
-> Right now, it makes stuff *less* clear to the autoconf-non-enlightened,
-> like me.  I do understand the check that we have
-
-
-That opinion may change after looking through configure to see how any
-function is checked for.
-
-
-> no, I do not understand
-
-your stuff (quite obvious from my dumb questions)...
->
-
-The first time skimming through a configure script generated by autoconf is
-kind of shocking. Over time one gets used to it, no enlightenment...
-
-(I agree that we shouldn't force-define HAVE_POLL if we don't use that
-> stuff on windows at all - so I'm happy to see such things just go out...)
-
-
-Totally agree..
+The failure to detect a function, but then find a mismatch while building
+is a good example of the limitations of AC_CHECK_FUNC -- one being, headers
+not included (cannot be included) during the test.
 
 Selva
 
---089e012298ecaeb8240526519707
+--047d7ba97a880f75820526523dbb
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <div dir=3D"ltr"><div class=3D"gmail_extra">Hi,</div><div class=3D"gmail_ex=
-tra"><br><div class=3D"gmail_quote"><blockquote class=3D"gmail_quote" style=
-=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex"><br>
-<span class=3D""><br>
-&gt; AC_CHECK_DECL would detect inet_pton etc., because it only looks for t=
-he<br>
-&gt; declaration in a header. The macro I submitted works almost exactly li=
-ke<br>
-&gt; AC_CHECK_DECL but defines HAVE_symbol instead of HAVE_DECL_symbol.<br>
-<br>
-</span>Not good enough.=C2=A0 I want to be sure that the symbol is there, a=
-nd that<br>
-we actually have the right libraries (so maybe a double check &quot;the sym=
-bol<br>
-is there, but we cannot link, so fail&quot; might be even better).<br></blo=
-ckquote><div><br></div><div>Agree with the &quot;not good enough&quot; part=
-. But every AC_CHECK_FUNC test is also equally not good enough. Headers are=
- not included (and cannot be included, the way it works), so no guarantee t=
-hat the =C2=A0detected symbol is the right one. But the purpose of autoconf=
- is to only to get heuristics that may to combined with other independent k=
-nowledge about the OS to make a decision.=C2=A0</div><div><br></div><blockq=
-uote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc =
-solid;padding-left:1ex">
-<span class=3D""><br>
+tra"><div class=3D"gmail_quote"><br><blockquote class=3D"gmail_quote" style=
+=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex"><span cl=
+ass=3D""><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;borde=
+r-left:1px #ccc solid;padding-left:1ex"><span><br>
 &gt; &gt; Which environments did you test this on?=C2=A0 It needs to work o=
 n mingw as<br>
 &gt; I use debian jessie, but it should work elsewhere.<br>
@@ -173,62 +82,20 @@ ent<br>
 regarding header file brokenness - I&#39;m not sure I remember the details,=
 <br>
 but stuff that broke for me on 12.04 worked for samuli on 14.04.<br></block=
-quote><div><br></div><div>I don&#39;t think AC_FUNC_CHECK can detect intet_=
-pton in any version of windows API. It just tries to link</div><div><br></d=
-iv><div>(all defines so far goes here)</div><div>char inet_pton();</div><di=
-v>int main()</div><div>{</div><div>=C2=A0 return inet_pton();</div><div>}</=
-div><div><br></div><div>That will succeed on linux, fail on windows (cross =
-compiled or otherwise).</div><div><br></div><div>This test is &quot;not goo=
-d enough&quot; even on linux/unix --- the ultimate test is building of the =
-application which will fail if the detected inet_pton symbol was something =
-else.</div><div><br></div><blockquote class=3D"gmail_quote" style=3D"margin=
-:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex"><span class=3D""><=
-br>
-<br>
-</span>So it&#39;s building a test program that does this?<br>
-<br>
-#include &lt;ws2tcpip.h&gt;<br>
-main()<br>
-{<br>
-=C2=A0 (void) inet_ntop;<br>
-}<br>
-<br>
-... which shouldn&#39;t compile at all...?<br></blockquote><div><br></div><=
-div>Make it &quot;int main&quot; , and add a return 0; (both provided by AC=
-_COMPILE..) That will compile for vista, but fail for winxp (which doesn&#3=
-9;t have inet_ntop). The actual test will also include all defines so far, =
-but that&#39;s details.</div><div><br></div><blockquote class=3D"gmail_quot=
-e" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">
-<span class=3D""><br>
-&gt; If you prefer I can rewrite the macro completely in terms of AC_CHECK_=
-DECL<br>
-<br>
-</span>Convince me that it improves things :-)<br></blockquote><div><br></d=
-iv><div>I think the current macro already improves things :) Except that it=
- shows how the test is done.=C2=A0</div><div><br></div><div>Just as AC_CHEC=
-K_FUNC hides all the gory details (or absence of details), use of .._DECL i=
-t will hide the program that will be tested :) I said that just because one=
- seldom questions macros included in autoconf distribution.=C2=A0</div><div=
->=C2=A0</div><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;b=
-order-left:1px #ccc solid;padding-left:1ex">
-<br>
-Right now, it makes stuff *less* clear to the autoconf-non-enlightened,<br>
-like me.=C2=A0 I do understand the check that we have </blockquote><div><br=
-></div><div>That opinion may change after looking through configure to see =
-how any function is checked for.</div><div>=C2=A0</div><blockquote class=3D=
-"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding=
--left:1ex">no, I do not understand</blockquote><blockquote class=3D"gmail_q=
-uote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1e=
-x">
-your stuff (quite obvious from my dumb questions)...<br></blockquote><div><=
-br></div><div>The first time skimming through a configure script generated =
-by autoconf is kind of shocking. Over time one gets used to it, no enlighte=
-nment...<br></div><div><br></div><blockquote class=3D"gmail_quote" style=3D=
-"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">(I agree th=
-at we shouldn&#39;t force-define HAVE_POLL if we don&#39;t use that<br>
-stuff on windows at all - so I&#39;m happy to see such things just go out..=
-.)</blockquote><div><br></div><div>Totally agree..</div><div><br></div><div=
->Selva</div></div></div></div>
+quote><div><br></div></span><div>I don&#39;t think AC_FUNC_CHECK can detect=
+ intet_pton in any version of windows API. It just tries to link</div></blo=
+ckquote></div><br>Regarding the mingw-specific issue: I forgot to add that =
+those two appear to be the only WINAPI functions tested using AC_CHECK_FUNC=
+ in <a href=3D"http://configure.ac">configure.ac</a>. These wont be detecte=
+d though present in vista+. So, the build tries to use the replacement func=
+tions even on vista, which should have been ok except for the declaration m=
+ismatch with some mingw headers for vista+ --- such a mismatch is not expec=
+ted, so is very likely specific to some versions of mingw, I don&#39;t know=
+.=C2=A0</div><div class=3D"gmail_extra"><br></div><div class=3D"gmail_extra=
+">The failure to detect a function, but then find a mismatch while building=
+ is a good example of the limitations of AC_CHECK_FUNC -- one being, header=
+s not included (cannot be included) during the test.=C2=A0</div><div class=
+=3D"gmail_extra"><br></div><div class=3D"gmail_extra">Selva</div></div>
 
---089e012298ecaeb8240526519707--
+--047d7ba97a880f75820526523dbb--
 
