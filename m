@@ -1,15 +1,14 @@
-Date: Mon, 7 Dec 2015 08:19:06 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20151207071906.GS24952@...1296...>
+MIME-Version: 1.0
+In-Reply-To: <20151207071906.GS24952@...1296...>
 References: <1449446507-16654-1-git-send-email-selva.nair@...277...>
 	<1449446507-16654-2-git-send-email-selva.nair@...277...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="SIAOfPybDqHGMRuo"
-Content-Disposition: inline
-In-Reply-To: <1449446507-16654-2-git-send-email-selva.nair@...277...>
+	<20151207071906.GS24952@...1296...>
+From: Selva Nair <selva.nair@...277...>
+Date: Mon, 7 Dec 2015 10:10:55 -0500
+Message-ID: <CAKuzo_irs7y+41FMM6i3T6Y1Xo-bA+DXgN7hxuS1TXvPFKWFwQ@...278...>
+Content-Type: multipart/alternative; boundary=001a114b2a52a61c3b052650446a
 Subject: Re: [Openvpn-devel] [PATCH 2.3] Add an autoconf macro to check
- WINAPI functions
+	WINAPI functions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,45 +17,52 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---SIAOfPybDqHGMRuo
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+--001a114b2a52a61c3b052650446a
+Content-Type: text/plain; charset=UTF-8
 
 Hi,
 
-On Sun, Dec 06, 2015 at 07:01:47PM -0500, Selva Nair wrote:
-> Signed-off-by: Selva Nair <selva.nair@...277...>
 
-NAK for 2.3 - what we have there works well enough.=20=20
+> On Sun, Dec 06, 2015 at 07:01:47PM -0500, Selva Nair wrote:
+> > Signed-off-by: Selva Nair <selva.nair@...277...>
+>
+> NAK for 2.3 - what we have there works well enough.
+>
 
-Prettyfying things will only be done in master (unless the 2.3 stuff
-does not *work*, in which case "cleanup when fixing bugs" is fine - but
-it does work)
+The reason for adding it to 2.3 was anticipating it will have to be built
+for vista+ if the dns-leak patch goes in.
 
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+In fact I wrote it the intet_ntop issue showed up (fixed by commit
+f96baabc6cf1.. in master)  -- had I seen that commit first, wouldn't have
+though of this macro, probably.
 
---SIAOfPybDqHGMRuo
-Content-Type: application/pgp-signature; name="signature.asc"
+As for how the macro works, will write separately.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
+Selva
 
-iQCVAwUBVmUy6qkuBuNlUUl1AQJxrAP+M6Bxnc6AXRkQ4IDWgU0w91iKZ6C1LzNC
-KaMEjzYyj5LccUgrbzLkH1FIdm+vSXARakbNJ2jGgZAThfQvuNmek+mI8QHQNnWh
-+LDJ66QXY0NzxkP+GhS1JPYxePGPlrBBWlbyr8CngIQWZxCH468F4ixuACpWo00t
-6nPTBaNuDdI=
-=7DNK
------END PGP SIGNATURE-----
+--001a114b2a52a61c3b052650446a
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
---SIAOfPybDqHGMRuo--
+<div dir=3D"ltr"><div class=3D"gmail_extra"><div class=3D"gmail_quote"><div=
+>Hi,</div><div>=C2=A0</div><blockquote class=3D"gmail_quote" style=3D"margi=
+n:0px 0px 0px 0.8ex;border-left-width:1px;border-left-color:rgb(204,204,204=
+);border-left-style:solid;padding-left:1ex">
+On Sun, Dec 06, 2015 at 07:01:47PM -0500, Selva Nair wrote:<br>
+&gt; Signed-off-by: Selva Nair &lt;<a href=3D"mailto:selva.nair@...277..." =
+target=3D"_blank">selva.nair@...277...</a>&gt;<br>
+<br>
+NAK for 2.3 - what we have there works well enough.<br></blockquote><div><b=
+r></div><div>The reason for adding it to 2.3 was anticipating it will have =
+to be built for vista+ if the dns-leak patch goes in.=C2=A0<br></div><div><=
+br></div><div>In fact I wrote it the intet_ntop issue showed up (fixed by c=
+ommit f96baabc6cf1.. in master) =C2=A0-- had I seen that commit first, woul=
+dn&#39;t have though of this macro, probably.</div><div><br></div><div>As f=
+or how the macro works, will write separately.</div><div><br></div><div>Sel=
+va</div></div></div></div>
+
+--001a114b2a52a61c3b052650446a--
 
