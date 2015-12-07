@@ -1,14 +1,13 @@
 MIME-Version: 1.0
-In-Reply-To: <CAKuzo_hQ4MDGuAoSnabFxL9UnTnPznSMOBLUDRnoomGThoaU+w@...278...>
+In-Reply-To: <20151207154740.GD24952@...1296...>
 References: <1449446507-16654-1-git-send-email-selva.nair@...277...>
 	<20151207071641.GR24952@...1296...>
 	<CAKuzo_iriPYgazMiq=FKwvYbvVE39t9X8zheKP4PqOVwbtjQ7Q@...278...>
 	<20151207154740.GD24952@...1296...>
-	<CAKuzo_hQ4MDGuAoSnabFxL9UnTnPznSMOBLUDRnoomGThoaU+w@...278...>
 From: Selva Nair <selva.nair@...277...>
-Date: Mon, 7 Dec 2015 12:31:57 -0500
-Message-ID: <CAKuzo_jH=TfcwY7Y9Lsi7t6JZmNxiWq0FZyC+1JU57gSD2qz4w@...278...>
-Content-Type: multipart/alternative; boundary=047d7ba97a880f75820526523dbb
+Date: Mon, 7 Dec 2015 13:57:20 -0500
+Message-ID: <CAKuzo_hBQPwTeko0+DfkzdztyHJj=FaYOPqkbxzh8kGE3FnrpA@...278...>
+Content-Type: multipart/alternative; boundary=001a1144424e6442cd0526536e5e
 Subject: Re: [Openvpn-devel] [PATCH master] Add an autoconf macro to check
  WINAPI functions
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -22,80 +21,71 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: Gert Doering <gert@...1296...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---047d7ba97a880f75820526523dbb
+--001a1144424e6442cd0526536e5e
 Content-Type: text/plain; charset=UTF-8
 
 Hi,
 
+Sorry for the piece-meal replies.
 
->> > > Which environments did you test this on?  It needs to work on mingw as
->> > I use debian jessie, but it should work elsewhere.
->> >
->> > > shipped with ubuntu 12.04 (no inet_pton), mingw as shipped with 14.04
->> > > (inet_pton, *and* the definition its using conflicts with our compat/
->> > > libraries, so a false negative will fail later) and cygwin.
->>
->> Well, the reason why I pointed out these two is that they are different
->> regarding header file brokenness - I'm not sure I remember the details,
->> but stuff that broke for me on 12.04 worked for samuli on 14.04.
->>
+On Mon, Dec 7, 2015 at 10:47 AM, Gert Doering <gert@...1296...> wrote:
+
+> > AC_CHECK_DECL would detect inet_pton etc., because it only looks for the
+> > declaration in a header. The macro I submitted works almost exactly like
+> > AC_CHECK_DECL but defines HAVE_symbol instead of HAVE_DECL_symbol.
 >
-> I don't think AC_FUNC_CHECK can detect intet_pton in any version of
-> windows API. It just tries to link
->
+> Not good enough.  I want to be sure that the symbol is there, and that
+> we actually have the right libraries (so maybe a double check "the symbol
+> is there, but we cannot link, so fail" might be even better).
 
-Regarding the mingw-specific issue: I forgot to add that those two appear
-to be the only WINAPI functions tested using AC_CHECK_FUNC in configure.ac.
-These wont be detected though present in vista+. So, the build tries to use
-the replacement functions even on vista, which should have been ok except
-for the declaration mismatch with some mingw headers for vista+ --- such a
-mismatch is not expected, so is very likely specific to some versions of
-mingw, I don't know.
 
-The failure to detect a function, but then find a mismatch while building
-is a good example of the limitations of AC_CHECK_FUNC -- one being, headers
-not included (cannot be included) during the test.
+When pushed to a corner anything is possible...
+
+It turns out that libws2_32 exports all the required function names without
+any mangling (as if cdecl). Not sure this is mingw32 speciifc or not. Also
+unlike I wrote inet_ntop is not redefined, its InetNtopA that is redfined.
+Though Microsoft docs appears to indicate as if InetNtopA is the actual
+name.
+
+What it means is that a simple check without my much hated macro should be
+possible. I'll post a version 2 tonight.
+
+Thanks for the patience.
 
 Selva
 
---047d7ba97a880f75820526523dbb
+--001a1144424e6442cd0526536e5e
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <div dir=3D"ltr"><div class=3D"gmail_extra">Hi,</div><div class=3D"gmail_ex=
-tra"><div class=3D"gmail_quote"><br><blockquote class=3D"gmail_quote" style=
-=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex"><span cl=
-ass=3D""><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;borde=
-r-left:1px #ccc solid;padding-left:1ex"><span><br>
-&gt; &gt; Which environments did you test this on?=C2=A0 It needs to work o=
-n mingw as<br>
-&gt; I use debian jessie, but it should work elsewhere.<br>
-&gt;<br>
-&gt; &gt; shipped with ubuntu 12.04 (no inet_pton), mingw as shipped with 1=
-4.04<br>
-&gt; &gt; (inet_pton, *and* the definition its using conflicts with our com=
-pat/<br>
-&gt; &gt; libraries, so a false negative will fail later) and cygwin.<br>
+tra"><br></div><div class=3D"gmail_extra">Sorry for the piece-meal replies.=
+</div><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">On Mon, Dec=
+ 7, 2015 at 10:47 AM, Gert Doering <span dir=3D"ltr">&lt;<a href=3D"mailto:=
+gert@...1296..." target=3D"_blank">gert@...1296...</a>&gt;</span> wrote:<br=
+><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1=
+px #ccc solid;padding-left:1ex"><span class=3D"">&gt; AC_CHECK_DECL would d=
+etect inet_pton etc., because it only looks for the<br>
+&gt; declaration in a header. The macro I submitted works almost exactly li=
+ke<br>
+&gt; AC_CHECK_DECL but defines HAVE_symbol instead of HAVE_DECL_symbol.<br>
 <br>
-</span>Well, the reason why I pointed out these two is that they are differ=
-ent<br>
-regarding header file brokenness - I&#39;m not sure I remember the details,=
-<br>
-but stuff that broke for me on 12.04 worked for samuli on 14.04.<br></block=
-quote><div><br></div></span><div>I don&#39;t think AC_FUNC_CHECK can detect=
- intet_pton in any version of windows API. It just tries to link</div></blo=
-ckquote></div><br>Regarding the mingw-specific issue: I forgot to add that =
-those two appear to be the only WINAPI functions tested using AC_CHECK_FUNC=
- in <a href=3D"http://configure.ac">configure.ac</a>. These wont be detecte=
-d though present in vista+. So, the build tries to use the replacement func=
-tions even on vista, which should have been ok except for the declaration m=
-ismatch with some mingw headers for vista+ --- such a mismatch is not expec=
-ted, so is very likely specific to some versions of mingw, I don&#39;t know=
-.=C2=A0</div><div class=3D"gmail_extra"><br></div><div class=3D"gmail_extra=
-">The failure to detect a function, but then find a mismatch while building=
- is a good example of the limitations of AC_CHECK_FUNC -- one being, header=
-s not included (cannot be included) during the test.=C2=A0</div><div class=
-=3D"gmail_extra"><br></div><div class=3D"gmail_extra">Selva</div></div>
+</span>Not good enough.=C2=A0 I want to be sure that the symbol is there, a=
+nd that<br>
+we actually have the right libraries (so maybe a double check &quot;the sym=
+bol<br>
+is there, but we cannot link, so fail&quot; might be even better).</blockqu=
+ote></div><br>When pushed to a corner anything is possible...</div><div cla=
+ss=3D"gmail_extra"><br></div><div class=3D"gmail_extra">It turns out that l=
+ibws2_32 exports all the required function names without any mangling (as i=
+f cdecl). Not sure this is mingw32 speciifc or not. Also unlike I wrote ine=
+t_ntop is not redefined, its InetNtopA that is redfined. Though Microsoft d=
+ocs appears to indicate as if InetNtopA is the actual name.</div><div class=
+=3D"gmail_extra"><br></div><div class=3D"gmail_extra">What it means is that=
+ a simple check without my much hated macro should be possible. I&#39;ll po=
+st a version 2 tonight.</div><div class=3D"gmail_extra"><br></div><div clas=
+s=3D"gmail_extra">Thanks for the patience.</div><div class=3D"gmail_extra">=
+<br></div><div class=3D"gmail_extra">Selva</div></div>
 
---047d7ba97a880f75820526523dbb--
+--001a1144424e6442cd0526536e5e--
 
