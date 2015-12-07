@@ -1,8 +1,10 @@
 From: Selva Nair <selva.nair@...277...>
-Date: Sun,  6 Dec 2015 19:01:46 -0500
-Message-Id: <1449446507-16654-1-git-send-email-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH master] Add an autoconf macro to check
-	WINAPI functions
+Date: Sun,  6 Dec 2015 19:01:47 -0500
+Message-Id: <1449446507-16654-2-git-send-email-selva.nair@...277...>
+In-Reply-To: <1449446507-16654-1-git-send-email-selva.nair@...277...>
+References: <1449446507-16654-1-git-send-email-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH 2.3] Add an autoconf macro to check WINAPI
+	functions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,17 +17,11 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This adds a macro file with a permissive license. Its small so I don't
-mind inlining the macro into configure.ac if that is preferred.
--------8<--------
-
-Makes configure tests for Windows API neater and consistent.
-
 Signed-off-by: Selva Nair <selva.nair@...277...>
 ---
  check_symbols_in.m4 |   43 +++++++++++++++++++++++++++++++++++++++++++
- configure.ac        |   35 +++++++----------------------------
- 2 files changed, 50 insertions(+), 28 deletions(-)
+ configure.ac        |   17 +++++++++--------
+ 2 files changed, 52 insertions(+), 8 deletions(-)
  create mode 100644 check_symbols_in.m4
 
 diff --git a/check_symbols_in.m4 b/check_symbols_in.m4
@@ -78,44 +74,25 @@ index 0000000..339ac59
 +done
 +])dnl
 diff --git a/configure.ac b/configure.ac
-index 721395d..1fb81d1 100644
+index 338ac9c..b5c1cfa 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -627,7 +627,8 @@ AC_SUBST([SOCKETS_LIBS])
+@@ -609,8 +609,9 @@ AC_SUBST([SOCKETS_LIBS])
+ 
  old_LIBS="${LIBS}"
  LIBS="${LIBS} ${SOCKETS_LIBS}"
- AC_CHECK_FUNCS([sendmsg recvmsg])
+-AC_CHECK_FUNCS([sendmsg recvmsg inet_ntop inet_pton])
 -# Windows use stdcall for winsock so we cannot auto detect these
++AC_CHECK_FUNCS([sendmsg recvmsg])
 +# Windows use stdcall for winsock so use AX_CHECK_SYMBOLS_IN to detect these
 +m4_include(check_symbols_in.m4)
  m4_define(
  	[SOCKET_FUNCS],
  [socket recv recvfrom send sendto listen dnl
-@@ -638,33 +639,11 @@ m4_define(
+@@ -621,13 +622,13 @@ m4_define(
  	[setsockopt getsockopt getsockname poll]dnl
  )
  if test "${WIN32}" = "yes"; then
--# normal autoconf function checking does not find inet_ntop/inet_pton
--# because they need to include the actual header file and link ws2_32.dll
--	LIBS="${LIBS} -lws2_32"
--	AC_MSG_CHECKING([for MinGW inet_ntop()/inet_pton()])
--	AC_LINK_IFELSE(
--		[AC_LANG_PROGRAM(
--			[[
--#include <ws2tcpip.h>
--			]],
--			[[
--int r = (int) inet_ntop (0, NULL, NULL, 0);
--    r += inet_pton(AF_INET, NULL, NULL);
--return r;
--			]]
--		)],
--		[AC_MSG_RESULT([OK])
--		 AC_DEFINE([HAVE_INET_NTOP],[1],[MinGW inet_ntop])
--		 AC_DEFINE([HAVE_INET_PTON],[1],[MinGW inet_pton])
--		],
--		[AC_MSG_RESULT([not found])]
--	)
 -	m4_foreach(
 -		[F],
 -		m4_split(SOCKET_FUNCS SOCKET_OPT_FUNCS),
@@ -128,8 +105,10 @@ index 721395d..1fb81d1 100644
 +        )
 +        AX_CHECK_SYMBOLS_IN(SOCKET_OPT_FUNCS, [ws2tcpip.h])
  else
- 	AC_CHECK_FUNCS([inet_ntop inet_pton])
++        AC_CHECK_FUNCS([inet_ntop inet_pton])
  	AC_CHECK_FUNCS(
+ 		SOCKET_FUNCS,
+ 		,
 -- 
 1.7.10.4
 
