@@ -1,13 +1,7 @@
-MIME-Version: 1.0
-In-Reply-To: <CAKuzo_j3hUf7NUzwvDd5V_x9kS-0RUtpi_sYek_SCjHg8jMqrQ@...278...>
-References: <5667EF00.9000409@...515...>
-	<CAKuzo_j3hUf7NUzwvDd5V_x9kS-0RUtpi_sYek_SCjHg8jMqrQ@...278...>
-From: Selva Nair <selva.nair@...277...>
-Date: Wed, 9 Dec 2015 13:06:14 -0500
-Message-ID: <CAKuzo_im3eVTZsmkxgmcs_nXpqQHFRK+W0R47c1L6boq7vS6uw@...278...>
-Content-Type: multipart/alternative; boundary=001a1148ce1c5132d605267af308
-Subject: Re: [Openvpn-devel] Kickstarter campaign for auditing and improving
- security software, including OpenVPN
+From: Gert Doering <gert@...1296...>
+Date: Wed,  9 Dec 2015 21:03:55 +0100
+Message-Id: <1449691435-5928-1-git-send-email-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH] Fix isatty() check for good.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,53 +10,70 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, "openvpn users list (openvpn-users@lists.sourceforge.net)" <openvpn-users@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---001a1148ce1c5132d605267af308
-Content-Type: text/plain; charset=UTF-8
+Commit 079e5b9c13 introduced a check to see if we --daemon'ized before
+trying to ask for a password (which would then fail with a non-intuitive
+error), breaking querying systemd under certain conditions.
 
-Hi,
+Move check from get_user_pass_cr() to get_console_input() and make it
+"full featured" by not only checking isatty() for stdin/stderr but also
+trying to open /dev/tty in case we still have a controlling tty - which
+is what getpass() does under the hood, so if either of this works, we're
+fine.
 
-Just to be on record, I managed to get in touch with ostif and got a
-response.
+Trac #618 and #630
 
-Is this OSTIF a really serious organization?
->
-> I ask this because no contact addresses on their webpage though they
-> solicit donation. Email to webmaster@...2095... bounces (no such user)
-> etc. etc.. Many pages on their website most often return something like
-> "limited access because max request exceeded by crawlers or humans".
->
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+ src/openvpn/console.c | 13 +++++++++++++
+ src/openvpn/misc.c    |  6 ------
+ 2 files changed, 13 insertions(+), 6 deletions(-)
 
-It was caused by a misconfiguration of their cloudfare hosting setup. I'm
-sorry if my post made anyone doubt their intentions. Derek from ostif says
-he may be contacted at derek _AT_ ostif.org if any one here has queries
-about this project.
+diff --git a/src/openvpn/console.c b/src/openvpn/console.c
+index d66d408..e1d46c4 100644
+--- a/src/openvpn/console.c
++++ b/src/openvpn/console.c
+@@ -208,6 +208,19 @@ get_console_input (const char *prompt, const bool echo, char *input, const int c
+ #if defined(WIN32)
+   return get_console_input_win32 (prompt, echo, input, capacity);
+ #elif defined(HAVE_GETPASS)
++
++  /* did we --daemon'ize before asking for passwords?
++   * (in which case neither stdin or stderr are connected to a tty and
++   * /dev/tty can not be open()ed anymore)
++   */
++  if ( !isatty(0) && !isatty(2) )
++    {
++      int fd = open( "/dev/tty", O_RDWR );
++      if ( fd < 0 )
++	{ msg(M_FATAL, "neither stdin nor stderr are a tty device and you have neither a controlling tty nor systemd - can't ask for '%s'.  If you used --daemon, you need to use --askpass to make passphrase-protected keys work, and you can not use --auth-nocache.", prompt ); }
++      close(fd);
++    }
++
+   if (echo)
+     {
+       FILE *fp;
+diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
+index 5713d2e..bc411bf 100644
+--- a/src/openvpn/misc.c
++++ b/src/openvpn/misc.c
+@@ -1137,12 +1137,6 @@ get_user_pass_cr (struct user_pass *up,
+        */
+       if (username_from_stdin || password_from_stdin)
+ 	{
+-#ifndef WIN32
+-	  /* did we --daemon'ize before asking for passwords? */
+-	  if ( !isatty(0) && !isatty(2) )
+-	    { msg(M_FATAL, "neither stdin nor stderr are a tty device, can't ask for %s password.  If you used --daemon, you need to use --askpass to make passphrase-protected keys work, and you can not use --auth-nocache.", prefix ); }
+-#endif
+-
+ #ifdef ENABLE_CLIENT_CR
+ 	  if (auth_challenge && (flags & GET_USER_PASS_DYNAMIC_CHALLENGE))
+ 	    {
+-- 
+2.4.9
 
-Selva
-
---001a1148ce1c5132d605267af308
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><div class=3D"gmail_extra">Hi,<br><br></div><div class=3D"=
-gmail_extra">Just to be on record, I managed to get in touch with ostif and=
- got a response.<br><br></div><div class=3D"gmail_extra"><div class=3D"gmai=
-l_quote"><span></span><blockquote style=3D"margin:0px 0px 0px 0.8ex;border-=
-left:1px solid rgb(204,204,204);padding-left:1ex" class=3D"gmail_quote"><di=
-v>Is this OSTIF a really serious organization?=C2=A0</div><div><br></div><d=
-iv>I ask this because no contact addresses on their webpage though they sol=
-icit donation. Email to <a href=3D"mailto:webmaster@...2095..." target=3D"_=
-blank">webmaster@...2095...</a> bounces (no such user) etc. etc.. Many page=
-s on their website most often return something like &quot;limited access be=
-cause max request exceeded by crawlers or humans&quot;.=C2=A0 </div></block=
-quote></div><br></div><div class=3D"gmail_extra">It was caused by a misconf=
-iguration of their cloudfare hosting setup. I&#39;m sorry if my post made a=
-nyone doubt their intentions. Derek from ostif says he may be contacted at =
-derek _AT_ <a href=3D"http://ostif.org" target=3D"_blank">ostif.org</a> if =
-any one here has queries about this project.<br></div><div class=3D"gmail_e=
-xtra"><br></div><div class=3D"gmail_extra">Selva<br></div></div>
-
---001a1148ce1c5132d605267af308--
 
