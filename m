@@ -1,10 +1,12 @@
-From: ValdikSS <iam@...2070...>
-Date: Wed,  9 Dec 2015 13:18:38 +0300
-Message-Id: <1449656318-25092-1-git-send-email-iam@...2070...>
-In-Reply-To: <5661686A.4090305@...2070...>
-References: <5661686A.4090305@...2070...>
-Subject: [Openvpn-devel] [PATCH v8-2.3] Add Windows DNS Leak fix using WFP
-	('block-outside-dns')
+MIME-Version: 1.0
+In-Reply-To: <5667EF00.9000409@...515...>
+References: <5667EF00.9000409@...515...>
+From: Selva Nair <selva.nair@...277...>
+Date: Wed, 9 Dec 2015 11:22:05 -0500
+Message-ID: <CAKuzo_j3hUf7NUzwvDd5V_x9kS-0RUtpi_sYek_SCjHg8jMqrQ@...278...>
+Content-Type: multipart/alternative; boundary=001a11478ae0d7705c0526797eb1
+Subject: Re: [Openvpn-devel] Kickstarter campaign for auditing and improving
+ security software, including OpenVPN
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,399 +15,66 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, "openvpn users list (openvpn-users@lists.sourceforge.net)" <openvpn-users@lists.sourceforge.net>
 
-This option blocks all out-of-tunnel communication on TCP/UDP port 53 (except
-for OpenVPN itself), preventing DNS Leaks on Windows 8.1 and 10.
----
- doc/openvpn.8               |  12 ++-
- src/openvpn/init.c          |  17 ++++
- src/openvpn/openvpn.vcxproj |   0
- src/openvpn/options.c       |  14 +++
- src/openvpn/options.h       |   1 +
- src/openvpn/win32.c         | 220 ++++++++++++++++++++++++++++++++++++++++++++
- src/openvpn/win32.h         |   3 +
- 7 files changed, 265 insertions(+), 2 deletions(-)
- mode change 100755 => 100644 src/openvpn/openvpn.vcxproj
+--001a11478ae0d7705c0526797eb1
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/doc/openvpn.8 b/doc/openvpn.8
-index 46c1e0c..95aafdd 100644
---- a/doc/openvpn.8
-+++ b/doc/openvpn.8
-@@ -1119,8 +1119,8 @@ When used with
- .B \-\-client
- or
- .B \-\-pull,
--accept options pushed by server EXCEPT for routes and dhcp options
--like DNS servers.
-+accept options pushed by server EXCEPT for routes, block-outside-dns and dhcp
-+options like DNS servers.
- 
- When used on the client, this option effectively bars the
- server from adding routes to the client's routing table,
-@@ -5454,6 +5454,14 @@ adapter list to the syslog or log file after the TUN/TAP adapter
- has been brought up and any routes have been added.
- .\"*********************************************************
- .TP
-+.B \-\-block\-outside\-dns
-+Block DNS servers on other network adapters to prevent
-+DNS leaks. This option prevents any application from accessing
-+TCP or UDP port 53 except one inside the tunnel. It uses
-+Windows Filtering Platform (WFP) and works on Windows Vista or
-+later.
-+.\"*********************************************************
-+.TP
- .B \-\-dhcp\-renew
- Ask Windows to renew the TAP adapter lease on startup.
- This option is normally unnecessary, as Windows automatically
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index ceef4f7..e8a96c2 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -1468,6 +1468,15 @@ do_open_tun (struct context *c)
- 		   "up",
- 		   c->c2.es);
- 
-+#if _WIN32_WINNT >= 0x0600
-+      if (c->options.block_outside_dns)
-+      {
-+        dmsg (D_LOW, "Blocking outside DNS");
-+        if (!win_wfp_block_dns(c->c1.tuntap->adapter_index))
-+            msg (M_FATAL, "Blocking DNS failed!");
-+      }
-+#endif
-+
-       /* possibly add routes */
-       if (!c->options.route_delay_defined)
- 	do_route (&c->options, c->c1.route_list, c->c1.route_ipv6_list,
-@@ -1594,6 +1603,14 @@ do_close_tun (struct context *c, bool force)
- 		       "down",
- 		       c->c2.es);
- 
-+#if _WIN32_WINNT >= 0x0600
-+            if (c->options.block_outside_dns)
-+            {
-+                if (!win_wfp_uninit())
-+                    msg (M_FATAL, "Uninitialising WFP failed!");
-+            }
-+#endif
-+
- 	  /* actually close tun/tap device based on --down-pre flag */
- 	  if (c->options.down_pre)
- 	    do_close_tun_simple (c);
-diff --git a/src/openvpn/openvpn.vcxproj b/src/openvpn/openvpn.vcxproj
-old mode 100755
-new mode 100644
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index f609aa6..457ff3e 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -715,6 +715,9 @@ static const char usage_message[] =
-   "                       optional parameter controls the initial state of ex.\n"
-   "--show-net-up   : Show " PACKAGE_NAME "'s view of routing table and net adapter list\n"
-   "                  after TAP adapter is up and routes have been added.\n"
-+#if _WIN32_WINNT >= 0x0600
-+  "--block-outside-dns   : Block DNS on other network adapters to prevent DNS leaks\n"
-+#endif
-   "Windows Standalone Options:\n"
-   "\n"
-   "--show-adapters : Show all TAP-Windows adapters.\n"
-@@ -814,6 +817,7 @@ init_options (struct options *o, const bool init_gc)
-   o->tuntap_options.dhcp_lease_time = 31536000; /* one year */
-   o->tuntap_options.dhcp_masq_offset = 0;       /* use network address as internal DHCP server address */
-   o->route_method = ROUTE_METHOD_ADAPTIVE;
-+  o->block_outside_dns = false;
- #endif
- #if P2MP_SERVER
-   o->real_hash_size = 256;
-@@ -1678,6 +1682,9 @@ show_settings (const struct options *o)
- #ifdef WIN32
-   SHOW_BOOL (show_net_up);
-   SHOW_INT (route_method);
-+#if _WIN32_WINNT >= 0x0600
-+  SHOW_BOOL (block_outside_dns);
-+#endif
-   show_tuntap_options (&o->tuntap_options);
- #endif
- #endif
-@@ -6241,6 +6248,13 @@ add_option (struct options *options,
-       VERIFY_PERMISSION (OPT_P_IPWIN32);
-       options->tuntap_options.register_dns = true;
-     }
-+#if _WIN32_WINNT >= 0x0600
-+  else if (streq (p[0], "block-outside-dns") && !p[1])
-+    {
-+      VERIFY_PERMISSION (OPT_P_IPWIN32);
-+      options->block_outside_dns = true;
-+    }
-+#endif
-   else if (streq (p[0], "rdns-internal"))
-      /* standalone method for internal use
-       *
-diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-index 40cf71e..622706a 100644
---- a/src/openvpn/options.h
-+++ b/src/openvpn/options.h
-@@ -593,6 +593,7 @@ struct options
-   bool exit_event_initial_state;
-   bool show_net_up;
-   int route_method;
-+  bool block_outside_dns;
- #endif
- 
-   bool use_peer_id;
-diff --git a/src/openvpn/win32.c b/src/openvpn/win32.c
-index 5e7f13c..5cd943e 100644
---- a/src/openvpn/win32.c
-+++ b/src/openvpn/win32.c
-@@ -47,6 +47,76 @@
- #include "memdbg.h"
- 
- /*
-+ * WFP-related defines and GUIDs.
-+ */
-+#if _WIN32_WINNT >= 0x0600
-+#include <fwpmu.h>
-+#include <initguid.h>
-+#include <fwpmtypes.h>
-+#include <iphlpapi.h>
-+
-+#ifndef FWPM_SESSION_FLAG_DYNAMIC
-+#define FWPM_SESSION_FLAG_DYNAMIC 0x00000001
-+#endif
-+
-+// c38d57d1-05a7-4c33-904f-7fbceee60e82
-+DEFINE_GUID(
-+   FWPM_LAYER_ALE_AUTH_CONNECT_V4,
-+   0xc38d57d1,
-+   0x05a7,
-+   0x4c33,
-+   0x90, 0x4f, 0x7f, 0xbc, 0xee, 0xe6, 0x0e, 0x82
-+);
-+
-+// 4a72393b-319f-44bc-84c3-ba54dcb3b6b4
-+DEFINE_GUID(
-+   FWPM_LAYER_ALE_AUTH_CONNECT_V6,
-+   0x4a72393b,
-+   0x319f,
-+   0x44bc,
-+   0x84, 0xc3, 0xba, 0x54, 0xdc, 0xb3, 0xb6, 0xb4
-+);
-+
-+// d78e1e87-8644-4ea5-9437-d809ecefc971
-+DEFINE_GUID(
-+   FWPM_CONDITION_ALE_APP_ID,
-+   0xd78e1e87,
-+   0x8644,
-+   0x4ea5,
-+   0x94, 0x37, 0xd8, 0x09, 0xec, 0xef, 0xc9, 0x71
-+);
-+
-+// c35a604d-d22b-4e1a-91b4-68f674ee674b
-+DEFINE_GUID(
-+   FWPM_CONDITION_IP_REMOTE_PORT,
-+   0xc35a604d,
-+   0xd22b,
-+   0x4e1a,
-+   0x91, 0xb4, 0x68, 0xf6, 0x74, 0xee, 0x67, 0x4b
-+);
-+
-+// 4cd62a49-59c3-4969-b7f3-bda5d32890a4
-+DEFINE_GUID(
-+   FWPM_CONDITION_IP_LOCAL_INTERFACE,
-+   0x4cd62a49,
-+   0x59c3,
-+   0x4969,
-+   0xb7, 0xf3, 0xbd, 0xa5, 0xd3, 0x28, 0x90, 0xa4
-+);
-+
-+/*
-+ * WFP firewall name.
-+ */
-+WCHAR * FIREWALL_NAME = L"OpenVPN"; /* GLOBAL */
-+
-+/*
-+ * WFP handle and GUID.
-+ */
-+static HANDLE m_hEngineHandle = NULL; /* GLOBAL */
-+static GUID m_subLayerGUID; /* GLOBAL */
-+#endif
-+
-+/*
-  * Windows internal socket API state (opaque).
-  */
- static struct WSAData wsa_state; /* GLOBAL */
-@@ -1077,4 +1147,154 @@ win_get_tempdir()
-   WideCharToMultiByte (CP_UTF8, 0, wtmpdir, -1, tmpdir, sizeof (tmpdir), NULL, NULL);
-   return tmpdir;
- }
-+
-+#if _WIN32_WINNT >= 0x0600
-+bool
-+win_wfp_add_filter (HANDLE engineHandle,
-+                    const FWPM_FILTER0 *filter,
-+                    PSECURITY_DESCRIPTOR sd,
-+                    UINT64 *id)
-+{
-+    if (FwpmFilterAdd0(engineHandle, filter, sd, id) != ERROR_SUCCESS)
-+    {
-+        msg (M_NONFATAL, "Can't add WFP filter");
-+        return false;
-+    }
-+    return true;
-+}
-+
-+bool
-+win_wfp_block_dns (const NET_IFINDEX index)
-+{
-+    CLEAR(m_subLayerGUID);
-+    FWPM_SESSION0 session = {0};
-+    FWPM_SUBLAYER0 SubLayer = {0};
-+    NET_LUID tapluid;
-+    UINT64 filterid;
-+    WCHAR openvpnpath[MAX_PATH];
-+    FWP_BYTE_BLOB *openvpnblob = NULL;
-+    FWPM_FILTER0 Filter = {0};
-+    FWPM_FILTER_CONDITION0 Condition[2] = {0};
-+
-+    /* Add temporary filters which don't survive reboots or crashes. */
-+    session.flags = FWPM_SESSION_FLAG_DYNAMIC;
-+
-+    dmsg (D_LOW, "Opening WFP engine");
-+
-+    if (FwpmEngineOpen0(NULL, RPC_C_AUTHN_WINNT, NULL, &session, &m_hEngineHandle) != ERROR_SUCCESS)
-+    {
-+        msg (M_NONFATAL, "Can't open WFP engine");
-+        return false;
-+    }
-+
-+    if (UuidCreate(&SubLayer.subLayerKey) != NO_ERROR)
-+        return false;
-+    memcpy(&m_subLayerGUID, &SubLayer.subLayerKey, sizeof(SubLayer.subLayerKey));
-+
-+    /* Populate packet filter layer information. */
-+    SubLayer.displayData.name = FIREWALL_NAME;
-+    SubLayer.displayData.description = FIREWALL_NAME;
-+    SubLayer.flags = 0;
-+    SubLayer.weight = 0x100;
-+
-+    /* Add packet filter to our interface. */
-+    dmsg (D_LOW, "Adding WFP sublayer");
-+    if (FwpmSubLayerAdd0(m_hEngineHandle, &SubLayer, NULL) != ERROR_SUCCESS)
-+    {
-+        msg (M_NONFATAL, "Can't add WFP sublayer");
-+        return false;
-+    }
-+
-+    dmsg (D_LOW, "Blocking DNS using WFP");
-+    if (ConvertInterfaceIndexToLuid(index, &tapluid) != NO_ERROR)
-+    {
-+        msg (M_NONFATAL, "Can't convert interface index to LUID");
-+        return false;
-+    }
-+    dmsg (D_LOW, "Tap Luid: %I64d", tapluid.Value);
-+
-+    /* Get OpenVPN path. */
-+    GetModuleFileNameW(NULL, openvpnpath, MAX_PATH);
-+
-+    if (FwpmGetAppIdFromFileName0(openvpnpath, &openvpnblob) != ERROR_SUCCESS)
-+        return false;
-+
-+    /* Prepare filter. */
-+    Filter.subLayerKey = m_subLayerGUID;
-+    Filter.displayData.name = FIREWALL_NAME;
-+    Filter.weight.type = FWP_EMPTY;
-+    Filter.filterCondition = Condition;
-+    Filter.numFilterConditions = 2;
-+
-+    /* First filter. Block IPv4 DNS queries except from OpenVPN itself. */
-+    Filter.layerKey = FWPM_LAYER_ALE_AUTH_CONNECT_V4;
-+    Filter.action.type = FWP_ACTION_BLOCK;
-+
-+    Condition[0].fieldKey = FWPM_CONDITION_IP_REMOTE_PORT;
-+    Condition[0].matchType = FWP_MATCH_EQUAL;
-+    Condition[0].conditionValue.type = FWP_UINT16;
-+    Condition[0].conditionValue.uint16 = 53;
-+
-+    Condition[1].fieldKey = FWPM_CONDITION_ALE_APP_ID;
-+    Condition[1].matchType = FWP_MATCH_NOT_EQUAL;
-+    Condition[1].conditionValue.type = FWP_BYTE_BLOB_TYPE;
-+    Condition[1].conditionValue.byteBlob = openvpnblob;
-+
-+    /* Add filter condition to our interface. */
-+    if (!win_wfp_add_filter(m_hEngineHandle, &Filter, NULL, &filterid))
-+        goto err;
-+    dmsg (D_LOW, "Filter (Block IPv4 DNS) added with ID=%I64d", filterid);
-+
-+    /* Second filter. Block IPv6 DNS queries except from OpenVPN itself. */
-+    Filter.layerKey = FWPM_LAYER_ALE_AUTH_CONNECT_V6;
-+
-+    /* Add filter condition to our interface. */
-+    if (!win_wfp_add_filter(m_hEngineHandle, &Filter, NULL, &filterid))
-+        goto err;
-+    dmsg (D_LOW, "Filter (Block IPv6 DNS) added with ID=%I64d", filterid);
-+
-+    /* Third filter. Permit IPv4 DNS queries from TAP. */
-+    Filter.layerKey = FWPM_LAYER_ALE_AUTH_CONNECT_V4;
-+    Filter.action.type = FWP_ACTION_PERMIT;
-+
-+    Condition[1].fieldKey = FWPM_CONDITION_IP_LOCAL_INTERFACE;
-+    Condition[1].matchType = FWP_MATCH_EQUAL;
-+    Condition[1].conditionValue.type = FWP_UINT64;
-+    Condition[1].conditionValue.uint64 = &tapluid.Value;
-+
-+    /* Add filter condition to our interface. */
-+    if (!win_wfp_add_filter(m_hEngineHandle, &Filter, NULL, &filterid))
-+        goto err;
-+    dmsg (D_LOW, "Filter (Permit IPv4 DNS queries from TAP) added with ID=%I64d", filterid);
-+
-+    /* Forth filter. Permit IPv6 DNS queries from TAP. */
-+    Filter.layerKey = FWPM_LAYER_ALE_AUTH_CONNECT_V6;
-+
-+    /* Add filter condition to our interface. */
-+    if (!win_wfp_add_filter(m_hEngineHandle, &Filter, NULL, &filterid))
-+        goto err;
-+    dmsg (D_LOW, "Filter (Permit IPv6 DNS queries from TAP) added with ID=%I64d", filterid);
-+
-+    FwpmFreeMemory0((void **)&openvpnblob);
-+    return true;
-+
-+    err:
-+        FwpmFreeMemory0((void **)&openvpnblob);
-+        return false;
-+}
-+
-+bool
-+win_wfp_uninit()
-+{
-+    dmsg (D_LOW, "Uninitializing WFP");
-+    if (m_hEngineHandle) {
-+        FwpmSubLayerDeleteByKey0(m_hEngineHandle, &m_subLayerGUID);
-+        CLEAR(m_subLayerGUID);
-+        FwpmEngineClose0(m_hEngineHandle);
-+        m_hEngineHandle = NULL;
-+    }
-+    return true;
-+}
-+
-+#endif
- #endif
-diff --git a/src/openvpn/win32.h b/src/openvpn/win32.h
-index cc18f02..a5baebd 100644
---- a/src/openvpn/win32.h
-+++ b/src/openvpn/win32.h
-@@ -271,5 +271,8 @@ const char *win_get_tempdir();
- /* Convert a string from UTF-8 to UCS-2 */
- WCHAR *wide_string (const char* utf8, struct gc_arena *gc);
- 
-+bool win_wfp_block_dns(const NET_IFINDEX index);
-+bool win_wfp_uninit();
-+
- #endif
- #endif
--- 
-2.6.3
+Hi
 
+On Wed, Dec 9, 2015 at 4:06 AM, Samuli Sepp=C3=A4nen <samuli@...515...> wro=
+te:
+
+>
+> OSTIF.org's website contains lost of information about OSTIF.org itself:
+>
+> <https://ostif.org/>
+>
+> The founder of OSTIF.org participated in our previous community meeting,
+> explaining the goals of their project:
+
+
+Is this OSTIF a really serious organization?
+
+I ask this because no contact addresses on their webpage though they
+solicit donation. Email to webmaster@...2095... bounces (no such user) etc.
+etc.. Many pages on their website most often return something like "limited
+access because max request exceeded by crawlers or humans".  Likely
+misconfigured wordfence/wordpress. All signs of a shady business with a
+shiny web site.
+
+Thanks,
+
+Selva
+
+--001a11478ae0d7705c0526797eb1
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr">Hi<br><div class=3D"gmail_extra"><br><div class=3D"gmail_q=
+uote">On Wed, Dec 9, 2015 at 4:06 AM, Samuli Sepp=C3=A4nen <span dir=3D"ltr=
+">&lt;<a href=3D"mailto:samuli@...515..." target=3D"_blank">samuli@...1699...=
+.</a>&gt;</span> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margi=
+n:0px 0px 0px 0.8ex;border-left-width:1px;border-left-color:rgb(204,204,204=
+);border-left-style:solid;padding-left:1ex"><br>
+OSTIF.org&#39;s website contains lost of information about OSTIF.org itself=
+:<br>
+<br>
+&lt;<a href=3D"https://ostif.org/" rel=3D"noreferrer" target=3D"_blank">htt=
+ps://ostif.org/</a>&gt;<br>
+<br>
+The founder of OSTIF.org participated in our previous community meeting,<br>
+explaining the goals of their project:</blockquote><div><br></div><div>Is t=
+his OSTIF a really serious organization?=C2=A0</div><div><br></div><div>I a=
+sk this because no contact addresses on their webpage though they solicit d=
+onation. Email to <a href=3D"mailto:webmaster@...2095...">webmaster@...2100...=
+...</a> bounces (no such user) etc. etc.. Many pages on their website most =
+often return something like &quot;limited access because max request exceed=
+ed by crawlers or humans&quot;.=C2=A0 Likely misconfigured wordfence/wordpr=
+ess. All signs of a shady business with a shiny web site.</div><div><br></d=
+iv><div>Thanks,</div><div><br>Selva</div><div>=C2=A0</div></div></div></div>
+
+--001a11478ae0d7705c0526797eb1--
 
