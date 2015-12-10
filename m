@@ -1,14 +1,10 @@
-MIME-Version: 1.0
-In-Reply-To: <5669A816.70603@...1227...>
-References: <1449599329-12968-1-git-send-email-wayne@...2099...>
-	<1449599329-12968-2-git-send-email-wayne@...2099...>
-	<5669A816.70603@...1227...>
 From: Wayne Davison <wayne@...2099...>
-Date: Thu, 10 Dec 2015 08:56:14 -0800
-Message-ID: <CAHSx_StWk=Es9qg9TSq6yXACPhTLneeeUWNDDaKqp06S0x6R=w@...278...>
-Content-Type: multipart/alternative; boundary=047d7b343a30d20a7005268e1647
-Subject: Re: [Openvpn-devel] [PATCH 1/2] Fix CR prompt with --auth-user-pass
- & support reading response.
+Date: Thu, 10 Dec 2015 16:57:26 +0000
+Message-Id: <1449766646-3519-1-git-send-email-wayne@...2099...>
+In-Reply-To: <CAHSx_StWk=Es9qg9TSq6yXACPhTLneeeUWNDDaKqp06S0x6R=w@...278...>
+References: <CAHSx_StWk=Es9qg9TSq6yXACPhTLneeeUWNDDaKqp06S0x6R=w@...278...>
+Subject: [Openvpn-devel] [PATCH] Improve stdin prompting section,
+	fixing CR prompting.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,57 +13,151 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---047d7b343a30d20a7005268e1647
-Content-Type: text/plain; charset=UTF-8
+---
+ src/openvpn/misc.c | 119 +++++++++++++++++++++++++----------------------------
+ 1 file changed, 57 insertions(+), 62 deletions(-)
 
-On Thu, Dec 10, 2015 at 8:28 AM, Arne Schwabe <arne@...1227...> wrote:
+diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
+index bc411bf..83e10f7 100644
+--- a/src/openvpn/misc.c
++++ b/src/openvpn/misc.c
+@@ -1132,74 +1132,69 @@ get_user_pass_cr (struct user_pass *up,
+           password_from_stdin = true;
+         }
+ 
+-      /*
+-       * Get username/password from standard input?
+-       */
+-      if (username_from_stdin || password_from_stdin)
+-	{
+ #ifdef ENABLE_CLIENT_CR
+-	  if (auth_challenge && (flags & GET_USER_PASS_DYNAMIC_CHALLENGE))
+-	    {
+-	      struct auth_challenge_info *ac = get_auth_challenge (auth_challenge, &gc);
+-	      if (ac)
+-		{
+-		  char *response = (char *) gc_malloc (USER_PASS_LEN, false, &gc);
+-		  struct buffer packed_resp;
+-
+-		  buf_set_write (&packed_resp, (uint8_t*)up->password, USER_PASS_LEN);
+-		  msg (M_INFO|M_NOPREFIX, "CHALLENGE: %s", ac->challenge_text);
+-		  if (!get_console_input ("Response:", BOOL_CAST(ac->flags&CR_ECHO), response, USER_PASS_LEN))
+-		    msg (M_FATAL, "ERROR: could not read challenge response from stdin");
+-		  strncpynt (up->username, ac->user, USER_PASS_LEN);
+-		  buf_printf (&packed_resp, "CRV1::%s::%s", ac->state_id, response);
+-		}
+-	      else
+-		{
+-		  msg (M_FATAL, "ERROR: received malformed challenge request from server");
+-		}
+-	    }
+-	  else
++      if (auth_challenge && (flags & GET_USER_PASS_DYNAMIC_CHALLENGE))
++        {
++          struct auth_challenge_info *ac = get_auth_challenge (auth_challenge, &gc);
++          if (ac)
++            {
++              char *response = (char *) gc_malloc (USER_PASS_LEN, false, &gc);
++              struct buffer packed_resp;
++
++              buf_set_write (&packed_resp, (uint8_t*)up->password, USER_PASS_LEN);
++              msg (M_INFO|M_NOPREFIX, "CHALLENGE: %s", ac->challenge_text);
++              if (!get_console_input ("Response:", BOOL_CAST(ac->flags&CR_ECHO), response, USER_PASS_LEN))
++                msg (M_FATAL, "ERROR: could not read challenge response from stdin");
++              strncpynt (up->username, ac->user, USER_PASS_LEN);
++              buf_printf (&packed_resp, "CRV1::%s::%s", ac->state_id, response);
++            }
++          else
++            {
++              msg (M_FATAL, "ERROR: received malformed challenge request from server");
++            }
++        }
++      else
+ #endif
+-	    {
+-	      struct buffer user_prompt = alloc_buf_gc (128, &gc);
+-	      struct buffer pass_prompt = alloc_buf_gc (128, &gc);
+-
+-	      buf_printf (&user_prompt, "Enter %s Username:", prefix);
+-	      buf_printf (&pass_prompt, "Enter %s Password:", prefix);
+-
+-	      if (username_from_stdin && !(flags & GET_USER_PASS_PASSWORD_ONLY))
+-		{
+-		  if (!get_console_input (BSTR (&user_prompt), true, up->username, USER_PASS_LEN))
+-		    msg (M_FATAL, "ERROR: could not read %s username from stdin", prefix);
+-		  if (strlen (up->username) == 0)
+-		    msg (M_FATAL, "ERROR: %s username is empty", prefix);
+-		}
++        {
++          if (username_from_stdin && !(flags & GET_USER_PASS_PASSWORD_ONLY))
++            {
++              struct buffer user_prompt = alloc_buf_gc (128, &gc);
++              buf_printf (&user_prompt, "Enter %s Username:", prefix);
++              if (!get_console_input (BSTR (&user_prompt), true, up->username, USER_PASS_LEN))
++                msg (M_FATAL, "ERROR: could not read %s username from stdin", prefix);
++              if (strlen (up->username) == 0)
++                msg (M_FATAL, "ERROR: %s username is empty", prefix);
++            }
+ 
+-	      if (password_from_stdin && !get_console_input (BSTR (&pass_prompt), false, up->password, USER_PASS_LEN))
+-		msg (M_FATAL, "ERROR: could not not read %s password from stdin", prefix);
++          if (password_from_stdin)
++            {
++              struct buffer pass_prompt = alloc_buf_gc (128, &gc);
++              buf_printf (&pass_prompt, "Enter %s Password:", prefix);
++              if (!get_console_input (BSTR (&pass_prompt), false, up->password, USER_PASS_LEN))
++                msg (M_FATAL, "ERROR: could not not read %s password from stdin", prefix);
++            }
+ 
+ #ifdef ENABLE_CLIENT_CR
+-	      if (auth_challenge && (flags & GET_USER_PASS_STATIC_CHALLENGE))
+-		{
+-		  char *response = (char *) gc_malloc (USER_PASS_LEN, false, &gc);
+-		  struct buffer packed_resp;
+-		  char *pw64=NULL, *resp64=NULL;
+-
+-		  msg (M_INFO|M_NOPREFIX, "CHALLENGE: %s", auth_challenge);
+-		  if (!get_console_input ("Response:", BOOL_CAST(flags & GET_USER_PASS_STATIC_CHALLENGE_ECHO), response, USER_PASS_LEN))
+-		    msg (M_FATAL, "ERROR: could not read static challenge response from stdin");
+-		  if (openvpn_base64_encode(up->password, strlen(up->password), &pw64) == -1
+-		      || openvpn_base64_encode(response, strlen(response), &resp64) == -1)
+-		    msg (M_FATAL, "ERROR: could not base64-encode password/static_response");
+-		  buf_set_write (&packed_resp, (uint8_t*)up->password, USER_PASS_LEN);
+-		  buf_printf (&packed_resp, "SCRV1:%s:%s", pw64, resp64);
+-		  string_clear(pw64);
+-		  free(pw64);
+-		  string_clear(resp64);
+-		  free(resp64);
+-		}
+-#endif
++          if (auth_challenge && (flags & GET_USER_PASS_STATIC_CHALLENGE))
++            {
++              char *response = (char *) gc_malloc (USER_PASS_LEN, false, &gc);
++              struct buffer packed_resp;
++              char *pw64=NULL, *resp64=NULL;
++
++              msg (M_INFO|M_NOPREFIX, "CHALLENGE: %s", auth_challenge);
++              if (!get_console_input ("Response:", BOOL_CAST(flags & GET_USER_PASS_STATIC_CHALLENGE_ECHO), response, USER_PASS_LEN))
++                msg (M_FATAL, "ERROR: could not read static challenge response from stdin");
++              if (openvpn_base64_encode(up->password, strlen(up->password), &pw64) == -1
++                  || openvpn_base64_encode(response, strlen(response), &resp64) == -1)
++                msg (M_FATAL, "ERROR: could not base64-encode password/static_response");
++              buf_set_write (&packed_resp, (uint8_t*)up->password, USER_PASS_LEN);
++              buf_printf (&packed_resp, "SCRV1:%s:%s", pw64, resp64);
++              string_clear(pw64);
++              free(pw64);
++              string_clear(resp64);
++              free(resp64);
+ 	    }
++#endif
+ 	}
+ 
+       string_mod (up->username, CC_PRINT, CC_CRLF, 0);
+-- 
+1.9.1
 
-> The scenario read the password from file and then ask the password per
-> console seems a bit strange.
->
-
-You mean read the password from a file and then ask for the CR from the
-console.  If someone combines a server that issues a challenge with the
-"--auth-user-pass FILE" option, neither dynamic nor static CR prompts ever
-happen, and auth always fails.  This is because those CR sections are
-inside the block that is only entered if username_from_stdin ||
-password_from_stdin is true, and they are false when a file supplies the
-values.  I'll post a patch that separates out just this fix and make it on
-the change that moves the isatty() checks out of misc.c.  It is also
-improved a bit from my prior patch set in that it moves the user_prompt and
-pass_prompt vars into code blocks where they are used (so they don't get
-set when they aren't needed).
-
-..wayne..
-
---047d7b343a30d20a7005268e1647
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">=
-On Thu, Dec 10, 2015 at 8:28 AM, Arne Schwabe <span dir=3D"ltr">&lt;<a href=
-=3D"mailto:arne@...1227..." target=3D"_blank">arne@...1227...</a>&gt;</span=
-> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0=
-.8ex;border-left-width:1px;border-left-color:rgb(204,204,204);border-left-s=
-tyle:solid;padding-left:1ex">The scenario read the password from file and t=
-hen ask the password per<br>
-console seems a bit strange.<br></blockquote><div><br></div><div>You mean r=
-ead the password from a file and then ask for the CR from the console.=C2=
-=A0 If someone combines a server that issues a challenge with the &quot;--a=
-uth-user-pass FILE&quot; option, neither dynamic nor static CR prompts ever=
- happen, and auth always fails.=C2=A0 This is because those CR sections are=
- inside the block that is only entered if username_from_stdin || password_f=
-rom_stdin is true, and they are false when a file supplies the values.=C2=
-=A0 I&#39;ll post a patch that separates out just this fix and make it on t=
-he change that moves the isatty() checks out of misc.c.=C2=A0 It is also im=
-proved a bit from my prior patch set in that it moves the user_prompt and p=
-ass_prompt vars into code blocks where they are used (so they don&#39;t get=
- set when they aren&#39;t needed).</div></div></div><div class=3D"gmail_ext=
-ra"><br clear=3D"all"><div><div class=3D"gmail_signature">..wayne..</div></=
-div><div><br></div></div></div>
-
---047d7b343a30d20a7005268e1647--
 
