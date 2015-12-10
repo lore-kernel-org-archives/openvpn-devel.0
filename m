@@ -1,13 +1,14 @@
 MIME-Version: 1.0
-In-Reply-To: <20151210084614.GA24952@...1296...>
-References: <1449691435-5928-1-git-send-email-gert@...1296...>
-	<CAKuzo_iHtJjJRfubaBbSCn1=sTa9R_WUFR68JLj4p9as71_EDA@...278...>
-	<20151210084614.GA24952@...1296...>
+In-Reply-To: <56694C04.6020904@...277...>
+References: <5661686A.4090305@...2070...>
+	<1449656275-24934-1-git-send-email-iam@...2070...>
+	<56694C04.6020904@...277...>
 From: Selva Nair <selva.nair@...277...>
-Date: Thu, 10 Dec 2015 09:42:34 -0500
-Message-ID: <CAKuzo_gW1vvu4-Cv=WZz-EREwzzd8gr7Hvn5PQrodECwJb-Ydg@...278...>
-Content-Type: multipart/alternative; boundary=089e012298ecd6f5a505268c3875
-Subject: Re: [Openvpn-devel] [PATCH] Fix isatty() check for good.
+Date: Thu, 10 Dec 2015 10:53:30 -0500
+Message-ID: <CAKuzo_j6+gjt+_EDVt3CeOR89mAnDNdYtMFfzXDMHbiTjumgnA@...278...>
+Content-Type: multipart/alternative; boundary=047d7bfcefb0834b3805268d36d3
+Subject: Re: [Openvpn-devel] [PATCH v8-master] Add Windows DNS Leak fix
+ using WFP ('block-outside-dns')
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,59 +17,73 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
+To: Lev Stipakov <lstipakov@...277...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---089e012298ecd6f5a505268c3875
+--047d7bfcefb0834b3805268d36d3
 Content-Type: text/plain; charset=UTF-8
 
-Hi,
+On Thu, Dec 10, 2015 at 4:55 AM, Lev Stipakov <lstipakov@...277...> wrote:
 
-As this fixes an important bug, please do merge as is.
-
-I vaguely recall askpass behaves differently on linux than, say, bsd, so
-even if reading from a pipe (when no controlling tty) is possible, it may
-not always work. Will test it some other time..
-
-On Thu, Dec 10, 2015 at 3:46 AM, Gert Doering <gert@...1296...> wrote:
-
-> > Other than that, the patch does the right thing, and works well. Tested
-> > using git- master with and without systemd. ACK from me.
+> +bool
+> +win_wfp_uninit()
+> +{
+> +    dmsg (D_LOW, "Uninitializing WFP");
+> +    if (m_hEngineHandle) {
+> +        FwpmSubLayerDeleteByKey0(m_hEngineHandle, &m_subLayerGUID);
+> +        CLEAR(m_subLayerGUID);
+> +        FwpmEngineClose0(m_hEngineHandle);
+> +        m_hEngineHandle = NULL;
 >
-> Given these two comments, shall we merge it "as it is", or do you want to
-> suggest different text?  I'm fine with changing the text, but have no
-> good suggestions.
+>
+> FwpmSubLayerDeleteByKey0 will likely fail if there is a filter
+> associated with sublayer. On the other side, FwpmEngineClose0 seems to
+> be enough to remove blocking.
+>
+> I think the correct way would be to create GUID for filter same way as
+> you did for sublayer and copy it to filter.filterKey. In uninit method,
+> before deleting sublayer you call FwpmFilterDeleteByKey0 with that guid.
 
 
-Well, any wording is going to be incomplete, perhaps, so leave it as is..
+That sounds useful for yet another reason as well. Its only necessary to
+delete and recreate the permit filters when the tun restarts. The block
+filters need be set up only once.
 
 Selva
 
---089e012298ecd6f5a505268c3875
+--047d7bfcefb0834b3805268d36d3
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr"><div class=3D"gmail_extra">Hi,<br></div><div class=3D"gmai=
-l_extra"><br></div><div class=3D"gmail_extra">As this fixes an important bu=
-g, please do merge as is.<br><br></div><div class=3D"gmail_extra">I vaguely=
- recall askpass behaves differently on linux than, say, bsd, so even if rea=
-ding from a pipe (when no controlling tty) is possible, it may not always w=
-ork. Will test it some other time..<br><br></div><div class=3D"gmail_extra"=
-><div class=3D"gmail_quote">On Thu, Dec 10, 2015 at 3:46 AM, Gert Doering <=
-span dir=3D"ltr">&lt;<a href=3D"mailto:gert@...1296..." target=3D"_blank">g=
-ert@...1296...</a>&gt;</span> wrote:<br><blockquote class=3D"gmail_quote" s=
-tyle=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex"><spa=
-n class=3D"">&gt; Other than that, the patch does the right thing, and work=
-s well. Tested<br>
-&gt; using git- master with and without systemd. ACK from me.<br>
+<div dir=3D"ltr"><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">=
+On Thu, Dec 10, 2015 at 4:55 AM, Lev Stipakov <span dir=3D"ltr">&lt;<a href=
+=3D"mailto:lstipakov@...277..." target=3D"_blank">lstipakov@...277...</a>&g=
+t;</span> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0=
+ .8ex;border-left:1px #ccc solid;padding-left:1ex"><span class=3D"">+bool<b=
+r>
++win_wfp_uninit()<br>
++{<br>
++=C2=A0 =C2=A0 dmsg (D_LOW, &quot;Uninitializing WFP&quot;);<br>
++=C2=A0 =C2=A0 if (m_hEngineHandle) {<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 FwpmSubLayerDeleteByKey0(m_hEngineHandle, &amp=
+;m_subLayerGUID);<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 CLEAR(m_subLayerGUID);<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 FwpmEngineClose0(m_hEngineHandle);<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 m_hEngineHandle =3D NULL;<br>
 <br>
-</span>Given these two comments, shall we merge it &quot;as it is&quot;, or=
- do you want to<br>
-suggest different text?=C2=A0 I&#39;m fine with changing the text, but have=
- no<br>
-good suggestions.</blockquote><div><br></div><div>Well, any wording is goin=
-g to be incomplete, perhaps, so leave it as is..<br><br></div><div>Selva<br=
-></div></div><br><br></div></div>
+<br>
+</span>FwpmSubLayerDeleteByKey0 will likely fail if there is a filter<br>
+associated with sublayer. On the other side, FwpmEngineClose0 seems to<br>
+be enough to remove blocking.<br>
+<br>
+I think the correct way would be to create GUID for filter same way as<br>
+you did for sublayer and copy it to filter.filterKey. In uninit method,<br>
+before deleting sublayer you call FwpmFilterDeleteByKey0 with that guid.</b=
+lockquote><div><br></div><div>That sounds useful for yet another reason as =
+well. Its only necessary to delete and recreate the permit filters when the=
+ tun restarts. The block filters need be set up only once.<br></div></div><=
+br></div><div class=3D"gmail_extra">Selva<br></div><div class=3D"gmail_extr=
+a"><br></div></div>
 
---089e012298ecd6f5a505268c3875--
+--047d7bfcefb0834b3805268d36d3--
 
