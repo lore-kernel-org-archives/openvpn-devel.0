@@ -1,14 +1,17 @@
 References: <5661686A.4090305@...2070...>
 	<1449656275-24934-1-git-send-email-iam@...2070...>
-	<56694C04.6020904@...277...> <20151210162651.GI24952@...1296...>
+	<56694C04.6020904@...277...>
+	<CAKuzo_j6+gjt+_EDVt3CeOR89mAnDNdYtMFfzXDMHbiTjumgnA@...278...>
+	<5669A739.2030901@...2070...>
+	<CAKuzo_iu2ucwr5KrKwv56DJ_wYZ1Qkku=k7M_OcU2qJXRUNeOw@...278...>
 From: ValdikSS <iam@...2070...>
-Message-ID: <5669AD21.4000301@...2070...>
-Date: Thu, 10 Dec 2015 19:49:37 +0300
+Message-ID: <5669AD8A.3060202@...2070...>
+Date: Thu, 10 Dec 2015 19:51:22 +0300
 MIME-Version: 1.0
-In-Reply-To: <20151210162651.GI24952@...1296...>
+In-Reply-To: <CAKuzo_iu2ucwr5KrKwv56DJ_wYZ1Qkku=k7M_OcU2qJXRUNeOw@...278...>
 Content-Type: multipart/signed; micalg=pgp-sha256;
 	protocol="application/pgp-signature";
-	boundary="DnWQooLpRO3CHlTE17dABccG17uF24ljt"
+	boundary="vG9kcOw6VnHrdMMsck6BHcEahPKEh02EF"
 Subject: Re: [Openvpn-devel] [PATCH v8-master] Add Windows DNS Leak fix
  using WFP ('block-outside-dns')
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,50 +22,35 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>, Lev Stipakov <lstipakov@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Selva Nair <selva.nair@...277...>, ValdikSS <iam@...2070...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---DnWQooLpRO3CHlTE17dABccG17uF24ljt
+--vG9kcOw6VnHrdMMsck6BHcEahPKEh02EF
 Content-Type: multipart/alternative;
-	boundary="------------010204090409080002060904"
+	boundary="------------070705030802040904060504"
 
 This is a multi-part message in MIME format.
---------------010204090409080002060904
+--------------070705030802040904060504
 Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
 
-It's a very minor actually, FwpmSubLayerDeleteByKey0 is indeed fails every =
-time but it doesn't break anything since we close the engine right after. L=
-ev
-suggested to use a correct way with making a filter GUID and deleting it be=
-fore deleting sublayer, but I'd better go with just closing the engine with=
-out
-deleting everything. I don't see any drawbacks, that should be perfectly OK=
- for a dynamic session.
+No, I'm afraid it would fail by default  since DNS queries are (usually) ma=
+de from svchost.exe. Whitelisting openvpn.exe is done to not to break OpenV=
+PN on UDP
+port 53. I could be incorrect tho.
 
-Is this correct, Lev? If yes, I'll push v9 today or tomorrow morning.
-
-On 12/10/2015 07:26 PM, Gert Doering wrote:
-> Hi,
+On 12/10/2015 07:31 PM, Selva Nair wrote:
 >
-> On Thu, Dec 10, 2015 at 11:55:16AM +0200, Lev Stipakov wrote:
-> [..]
-> So, is this something that needs to be fixed before we release 2.3.9, or
-> can it wait for improvement later on?
+> On Thu, Dec 10, 2015 at 11:24 AM, ValdikSS <iam@...2070... <mailto:iam@...1186...=
+.2070...>> wrote:
 >
-> I just agreed with Samuli that we are going to release 2.3.9 on Monday,
-> and this should go in - so either I get a v9 "with nice and shiny" until
-> Sunday, or someone tells me "v8 is good enough, go for it"...
+> Yes, I meant to leave the block all and permit openvpn.exe filters always=
+ on and delete/re-add only the filters for the tun/tap interface. Well, its=
+ probably
+> just a cosmetic change, so no strong opinion.
 >
-> Thanks :-)
->
-> gert
->
->
-> -------------------------------------------------------------------------=
------
->
+> Selva
 >
 > _______________________________________________
 > Openvpn-devel mailing list
@@ -70,7 +58,7 @@ On 12/10/2015 07:26 PM, Gert Doering wrote:
 > https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
 
---------------010204090409080002060904
+--------------070705030802040904060504
 Content-Type: text/html; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
 
@@ -80,48 +68,35 @@ Content-Transfer-Encoding: quoted-printable
       http-equiv=3D"Content-Type">
   </head>
   <body bgcolor=3D"#FFFFFF" text=3D"#000000">
-    It's a very minor actually, FwpmSubLayerDeleteByKey0 is indeed fails
-    every time but it doesn't break anything since we close the engine
-    right after. Lev suggested to use a correct way with making a filter
-    GUID and deleting it before deleting sublayer, but I'd better go
-    with just closing the engine without deleting everything. I don't
-    see any drawbacks, that should be perfectly OK for a dynamic
-    session.<br>
+    No, I'm afraid it would fail by default=A0 since DNS queries are
+    (usually) made from svchost.exe. Whitelisting openvpn.exe is done to
+    not to break OpenVPN on UDP port 53. I could be incorrect tho.<br>
     <br>
-    Is this correct, Lev? If yes, I'll push v9 today or tomorrow
-    morning.<br>
-    <br>
-    <div class=3D"moz-cite-prefix">On 12/10/2015 07:26 PM, Gert Doering
+    <div class=3D"moz-cite-prefix">On 12/10/2015 07:31 PM, Selva Nair
       wrote:<br>
     </div>
-    <blockquote cite=3D"mid:20151210162651.GI24952@...1296..."
+    <blockquote
+cite=3D"mid:CAKuzo_iu2ucwr5KrKwv56DJ_wYZ1Qkku=3Dk7M_OcU2qJXRUNeOw@...278..."
       type=3D"cite">
-      <pre wrap=3D"">Hi,
-
-On Thu, Dec 10, 2015 at 11:55:16AM +0200, Lev Stipakov wrote:
-</pre>
-      <pre wrap=3D"">[..]
-</pre>
-      <pre wrap=3D"">
-So, is this something that needs to be fixed before we release 2.3.9, or
-can it wait for improvement later on?
-
-I just agreed with Samuli that we are going to release 2.3.9 on Monday,
-and this should go in - so either I get a v9 "with nice and shiny" until
-Sunday, or someone tells me "v8 is good enough, go for it"...
-
-Thanks :-)
-
-gert
-</pre>
-      <br>
-      <fieldset class=3D"mimeAttachmentHeader"></fieldset>
-      <br>
-      <pre wrap=3D"">------------------------------------------------------=
-------------------------
-</pre>
-      <br>
-      <fieldset class=3D"mimeAttachmentHeader"></fieldset>
+      <div dir=3D"ltr">
+        <div class=3D"gmail_extra"><br>
+          <div class=3D"gmail_quote">On Thu, Dec 10, 2015 at 11:24 AM,
+            ValdikSS <span dir=3D"ltr">&lt;<a moz-do-not-send=3D"true"
+                href=3D"mailto:iam@...2070..." target=3D"_blank">iam@...2098...=
+0...</a>&gt;</span>
+            wrote:<br>
+          </div>
+          <br>
+        </div>
+        <div class=3D"gmail_extra">Yes, I meant to leave the block all and
+          permit openvpn.exe filters always on and delete/re-add only
+          the filters for the tun/tap interface. Well, its probably just
+          a cosmetic change, so no strong opinion.<br>
+          <br>
+        </div>
+        <div class=3D"gmail_extra">Selva<br>
+        </div>
+      </div>
       <br>
       <pre wrap=3D"">_______________________________________________
 Openvpn-devel mailing list
@@ -136,9 +111,9 @@ envpn-devel</a>
   </body>
 </html>
 
---------------010204090409080002060904--
+--------------070705030802040904060504--
 
---DnWQooLpRO3CHlTE17dABccG17uF24ljt
+--vG9kcOw6VnHrdMMsck6BHcEahPKEh02EF
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -147,20 +122,20 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v2
 Comment: https://keybase.io/valdikss
 
-iQIcBAEBCAAGBQJWaa0hAAoJEFzXIC7viPdy37gP/2pQp+ctDChVigoPUdZJ9/De
-kYwD6qtUjR/mnk2xN0t5auVzubM/6c2vjr5vzNc48td9qtPd6HGKNk7NSthxf2WG
-rbNENUXTABA2LnPKvLHprrDu2I75RTM6iD0m29A2/er1rnLF/qrocDhia5nAObbQ
-81QRQDCSH13vnCAhxR4Hz/kIe14uYPfVa6H+Zc5/SjoDo8snc+mwdSeVqTUVd2Lc
-x+kNgbPkSR28p4riEcvfMDyojHd+5d6mvjN44N/SAPbY8AzsjOcapPtNzXmeTbKb
-bQCSUR5e3zI1uWuHoqpElzFvmuAYkxpk2V4VkpAB+16UcKqQZ7E+7yadELeXr9Uo
-8KLDPPt18CT7LTfjd+43lbcgnGod/EHX8yyj1H3QqWDYunXfBmuSvWJL0mHe6Dy4
-9njqpPKyj7zqs+roDiq+VUlgeYnO00DFvq2dGgHAWL3gZ0Xr8ZvBLv9riUOtxtdn
-XTRZMJhEXTb3JaY+zOerD6rfd1ifOV2Q8z0PPxI2iT8Di90sYBqOArZDXoeDR6GK
-KwnwyQUGo5cxcv4TAQC0vFga8lLVrRyZxduVndjFNnBXYoEzHxaQ4WzLQ0YyzZRK
-H19vfV2j64bqlpABB35t92IgvdbRqc/MlH8aKup1Xm1OlCFqrzqBvQQJ6SqTilbG
-iGF2u7efuvZ6pC8+bSYn
-=Fp+E
+iQIcBAEBCAAGBQJWaa2KAAoJEFzXIC7viPdyXi8P/Ru0Vq7rtzdyN+ZcJfv8cdAp
+v1hZsbD/Z6r5Zgw2+8MdifKKDOKOvfQK56N+FsrEPrF6FxCdvME/FrfnnXBwP6Wf
+0UExLKBJuWfxVf/mgtHOlxkyvnW4lEQ2FoPxH62PmeCGvLCTrXiujyAsE/aq82HD
+R1wh59Q2zwIunARDcl5kKKT/78bl4GJFGq2ymF5g3lHHoEIvAMhVcaD2S8FiRm7h
+pRcEHamib5EZSwE9yWgGlF2l6ml6suBF8/rMrusKRx3p/+Blf8YTPf4XxfeWle95
+ir4uWoNjHve2I7K7KQfsPgj77EEcbaX8Kfc5+SfTQ1k3U5IGNVNLap7unKSFwbZH
+gw2ux/Uxw+EmtC5vS7IABSpaYtbQPIae/3K3F+JsuKFZnuEZmZrH3JlKsCb4+o7p
+kqrI9xuC9Wg8ZbXeApObHofISeV1OdP8dzRquKvH4CoHvANrEwA4JDpRuyXGYqZo
+rKiUUkhDVTGpnhmDRQQgIJINwTGIqQbDDo5oiDej8pbYxPP21/74Kyo+NoRUjZR5
+we2DFwGUSKFyB/Djo8EBDtH1prNSJTPgBuBUJcoyWbvIMhmkhLPy2KSzkS73akDp
+Ag7PB2vLL5CHrr1Wo6cvMwsf8yk5LgeoLnCYFVWIANU91mQvwIam109DoYbfql29
+lnNCmh3OJjJIworW82QD
+=8/aT
 -----END PGP SIGNATURE-----
 
---DnWQooLpRO3CHlTE17dABccG17uF24ljt--
+--vG9kcOw6VnHrdMMsck6BHcEahPKEh02EF--
 
