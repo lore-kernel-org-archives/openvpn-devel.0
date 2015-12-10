@@ -1,15 +1,14 @@
+Date: Thu, 10 Dec 2015 17:26:51 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20151210162651.GI24952@...1296...>
 References: <5661686A.4090305@...2070...>
 	<1449656275-24934-1-git-send-email-iam@...2070...>
 	<56694C04.6020904@...277...>
-	<CAKuzo_j6+gjt+_EDVt3CeOR89mAnDNdYtMFfzXDMHbiTjumgnA@...278...>
-From: ValdikSS <iam@...2070...>
-Message-ID: <5669A739.2030901@...2070...>
-Date: Thu, 10 Dec 2015 19:24:25 +0300
 MIME-Version: 1.0
-In-Reply-To: <CAKuzo_j6+gjt+_EDVt3CeOR89mAnDNdYtMFfzXDMHbiTjumgnA@...278...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature";
-	boundary="fI2eWlAbc7vWaksDqWXrI6q5O0MLt25gm"
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="ZLPkqyGOTypMs5ma"
+Content-Disposition: inline
+In-Reply-To: <56694C04.6020904@...277...>
 Subject: Re: [Openvpn-devel] [PATCH v8-master] Add Windows DNS Leak fix
  using WFP ('block-outside-dns')
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,117 +19,52 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>, Lev Stipakov <lstipakov@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Lev Stipakov <lstipakov@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---fI2eWlAbc7vWaksDqWXrI6q5O0MLt25gm
-Content-Type: multipart/alternative;
-	boundary="------------020602040103080704080700"
-
-This is a multi-part message in MIME format.
---------------020602040103080704080700
-Content-Type: text/plain; charset="windows-1252"
+--ZLPkqyGOTypMs5ma
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-That would break name resolver on reconnection if remote is a hostname.
+Hi,
 
-On 12/10/2015 06:53 PM, Selva Nair wrote:
->
-> On Thu, Dec 10, 2015 at 4:55 AM, Lev Stipakov <lstipakov@...277... <mailt=
-o:lstipakov@...277...>> wrote:
->
-> That sounds useful for yet another reason as well. Its only necessary to =
-delete and recreate the permit filters when the tun restarts. The block fil=
-ters need
-> be set up only once.
->
-> Selva
->
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+On Thu, Dec 10, 2015 at 11:55:16AM +0200, Lev Stipakov wrote:
+> Sorry for the late response.
+[..]
+> FwpmSubLayerDeleteByKey0 will likely fail if there is a filter=20
+> associated with sublayer. On the other side, FwpmEngineClose0 seems to=20
+> be enough to remove blocking.
 
+So, is this something that needs to be fixed before we release 2.3.9, or
+can it wait for improvement later on?
 
---------------020602040103080704080700
-Content-Type: text/html; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
+I just agreed with Samuli that we are going to release 2.3.9 on Monday,
+and this should go in - so either I get a v9 "with nice and shiny" until
+Sunday, or someone tells me "v8 is good enough, go for it"...
 
-<html>
-  <head>
-    <meta content=3D"text/html; charset=3Dwindows-1252"
-      http-equiv=3D"Content-Type">
-  </head>
-  <body bgcolor=3D"#FFFFFF" text=3D"#000000">
-    That would break name resolver on reconnection if remote is a
-    hostname.<br>
-    <br>
-    <div class=3D"moz-cite-prefix">On 12/10/2015 06:53 PM, Selva Nair
-      wrote:<br>
-    </div>
-    <blockquote
-cite=3D"mid:CAKuzo_j6+gjt+_EDVt3CeOR89mAnDNdYtMFfzXDMHbiTjumgnA@...278..."
-      type=3D"cite">
-      <div dir=3D"ltr">
-        <div class=3D"gmail_extra"><br>
-          <div class=3D"gmail_quote">On Thu, Dec 10, 2015 at 4:55 AM, Lev
-            Stipakov <span dir=3D"ltr">&lt;<a moz-do-not-send=3D"true"
-                href=3D"mailto:lstipakov@...277..." target=3D"_blank">lstip=
-akov@...277...</a>&gt;</span>
-            wrote:<br>
-            <div><br>
-            </div>
-            <div>That sounds useful for yet another reason as well. Its
-              only necessary to delete and recreate the permit filters
-              when the tun restarts. The block filters need be set up
-              only once.<br>
-            </div>
-          </div>
-          <br>
-        </div>
-        <div class=3D"gmail_extra">Selva<br>
-        </div>
-      </div>
-      <br>
-      <pre wrap=3D"">_______________________________________________
-Openvpn-devel mailing list
-<a class=3D"moz-txt-link-abbreviated" href=3D"mailto:Openvpn-devel@...1466...=
-urceforge.net">Openvpn-devel@lists.sourceforge.net</a>
-<a class=3D"moz-txt-link-freetext" href=3D"https://lists.sourceforge.net/li=
-sts/listinfo/openvpn-devel">https://lists.sourceforge.net/lists/listinfo/op=
-envpn-devel</a>
-</pre>
-    </blockquote>
-    <br>
-  </body>
-</html>
+Thanks :-)
 
---------------020602040103080704080700--
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
---fI2eWlAbc7vWaksDqWXrI6q5O0MLt25gm
+--ZLPkqyGOTypMs5ma
 Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-Comment: https://keybase.io/valdikss
+Version: GnuPG v1
 
-iQIcBAEBCAAGBQJWaac5AAoJEFzXIC7viPdyqMYP+wSsfFBZQYOPEueTlSIwek5g
-94uPM4BoFCHugu+gjEXyvw3tOve3yk9fLiwESBsCcacqGj1CU8GxaerDINiVNRWl
-6cYkcZfyzWHJne4Q/+ZWWI3VOWHwwgNiaonlk5o8u/aXkJPK2TEDcVFgFV1AC9Jg
-xukdr8Quz2Y4HY2YUdhNkHMXCV8Qik1hXqBQF6xaBLWaECZzmKvwstbpRtfp7zfo
-o0/JqqOhb+7tqOOgd+JAIhkVPe0fUPqkjMxikJaPvtItwmVnvr4vyUO7sknN8tFY
-37K5aCH66Hv6u8RqIcLtXp1KtJN9pA4sOW7IJgv3BZMdfHeV/8JF8iRmeE90cVSo
-aDQz/6kOftj5PYTwdyMsnaK+ApWI9MeIEsBRwEgvznLeI1bRlpoxXCmKAsudYkyS
-Qv/So5niriqsd9TS9f7i2F98GCOKHmE/NLFnYOh1xbi3MrezzR0zMuxK3Qcbjt9x
-lCUdbonjgXFhKU6k3E4DoL5E7Bfiq+hosqzTFgFBftwxBTB7LaJmhJtrzCeY7+u5
-sKTIPmLAEOp/6Hg2uhaCOOfzywkxLCJE+K4zE+4XKrjdeRY8A4COyXk7owmMilH+
-6Iv8iwPM4nJKSe8hyGPh8RzaGYanAel66ByBr4Gqe2OgOwahxj7pg8TgAvAdfHRF
-Cic/dlWIC2uVVtuhlnHT
-=NREh
+iQCVAwUBVmmnyqkuBuNlUUl1AQIzAgP9G62wMUxrLx9qHNpwZJYI1vhsqkucIAA4
+ON4ad5O8Ar0GwW+rn21CQTGpGdGWf2UljwKljyBWT2zmjPgXgfcsMOJuIZG8kjhO
+29oS9LbZPIHFLPfwdyInoZy2YtALuU7D96EkLlELfvaBFLmZe+zcq0+NSb4pfGPA
+lDDIGLaK3bY=
+=vDr4
 -----END PGP SIGNATURE-----
 
---fI2eWlAbc7vWaksDqWXrI6q5O0MLt25gm--
+--ZLPkqyGOTypMs5ma--
 
