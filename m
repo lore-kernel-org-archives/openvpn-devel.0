@@ -1,19 +1,14 @@
-References: <5661686A.4090305@...2070...>
-	<1449656275-24934-1-git-send-email-iam@...2070...>
-	<56694C04.6020904@...277...>
-	<CAKuzo_j6+gjt+_EDVt3CeOR89mAnDNdYtMFfzXDMHbiTjumgnA@...278...>
-	<5669A739.2030901@...2070...>
-	<CAKuzo_iu2ucwr5KrKwv56DJ_wYZ1Qkku=k7M_OcU2qJXRUNeOw@...278...>
-From: ValdikSS <iam@...2070...>
-Message-ID: <5669AD8A.3060202@...2070...>
-Date: Thu, 10 Dec 2015 19:51:22 +0300
 MIME-Version: 1.0
-In-Reply-To: <CAKuzo_iu2ucwr5KrKwv56DJ_wYZ1Qkku=k7M_OcU2qJXRUNeOw@...278...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature";
-	boundary="vG9kcOw6VnHrdMMsck6BHcEahPKEh02EF"
-Subject: Re: [Openvpn-devel] [PATCH v8-master] Add Windows DNS Leak fix
- using WFP ('block-outside-dns')
+In-Reply-To: <5669A816.70603@...1227...>
+References: <1449599329-12968-1-git-send-email-wayne@...2099...>
+	<1449599329-12968-2-git-send-email-wayne@...2099...>
+	<5669A816.70603@...1227...>
+From: Wayne Davison <wayne@...2099...>
+Date: Thu, 10 Dec 2015 08:56:14 -0800
+Message-ID: <CAHSx_StWk=Es9qg9TSq6yXACPhTLneeeUWNDDaKqp06S0x6R=w@...278...>
+Content-Type: multipart/alternative; boundary=047d7b343a30d20a7005268e1647
+Subject: Re: [Openvpn-devel] [PATCH 1/2] Fix CR prompt with --auth-user-pass
+ & support reading response.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,120 +17,57 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>, ValdikSS <iam@...2070...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---vG9kcOw6VnHrdMMsck6BHcEahPKEh02EF
-Content-Type: multipart/alternative;
-	boundary="------------070705030802040904060504"
+--047d7b343a30d20a7005268e1647
+Content-Type: text/plain; charset=UTF-8
 
-This is a multi-part message in MIME format.
---------------070705030802040904060504
-Content-Type: text/plain; charset="windows-1252"
+On Thu, Dec 10, 2015 at 8:28 AM, Arne Schwabe <arne@...1227...> wrote:
+
+> The scenario read the password from file and then ask the password per
+> console seems a bit strange.
+>
+
+You mean read the password from a file and then ask for the CR from the
+console.  If someone combines a server that issues a challenge with the
+"--auth-user-pass FILE" option, neither dynamic nor static CR prompts ever
+happen, and auth always fails.  This is because those CR sections are
+inside the block that is only entered if username_from_stdin ||
+password_from_stdin is true, and they are false when a file supplies the
+values.  I'll post a patch that separates out just this fix and make it on
+the change that moves the isatty() checks out of misc.c.  It is also
+improved a bit from my prior patch set in that it moves the user_prompt and
+pass_prompt vars into code blocks where they are used (so they don't get
+set when they aren't needed).
+
+..wayne..
+
+--047d7b343a30d20a7005268e1647
+Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-No, I'm afraid it would fail by default  since DNS queries are (usually) ma=
-de from svchost.exe. Whitelisting openvpn.exe is done to not to break OpenV=
-PN on UDP
-port 53. I could be incorrect tho.
+<div dir=3D"ltr"><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">=
+On Thu, Dec 10, 2015 at 8:28 AM, Arne Schwabe <span dir=3D"ltr">&lt;<a href=
+=3D"mailto:arne@...1227..." target=3D"_blank">arne@...1227...</a>&gt;</span=
+> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0=
+.8ex;border-left-width:1px;border-left-color:rgb(204,204,204);border-left-s=
+tyle:solid;padding-left:1ex">The scenario read the password from file and t=
+hen ask the password per<br>
+console seems a bit strange.<br></blockquote><div><br></div><div>You mean r=
+ead the password from a file and then ask for the CR from the console.=C2=
+=A0 If someone combines a server that issues a challenge with the &quot;--a=
+uth-user-pass FILE&quot; option, neither dynamic nor static CR prompts ever=
+ happen, and auth always fails.=C2=A0 This is because those CR sections are=
+ inside the block that is only entered if username_from_stdin || password_f=
+rom_stdin is true, and they are false when a file supplies the values.=C2=
+=A0 I&#39;ll post a patch that separates out just this fix and make it on t=
+he change that moves the isatty() checks out of misc.c.=C2=A0 It is also im=
+proved a bit from my prior patch set in that it moves the user_prompt and p=
+ass_prompt vars into code blocks where they are used (so they don&#39;t get=
+ set when they aren&#39;t needed).</div></div></div><div class=3D"gmail_ext=
+ra"><br clear=3D"all"><div><div class=3D"gmail_signature">..wayne..</div></=
+div><div><br></div></div></div>
 
-On 12/10/2015 07:31 PM, Selva Nair wrote:
->
-> On Thu, Dec 10, 2015 at 11:24 AM, ValdikSS <iam@...2070... <mailto:iam@...1186...=
-.2070...>> wrote:
->
-> Yes, I meant to leave the block all and permit openvpn.exe filters always=
- on and delete/re-add only the filters for the tun/tap interface. Well, its=
- probably
-> just a cosmetic change, so no strong opinion.
->
-> Selva
->
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
-
-
---------------070705030802040904060504
-Content-Type: text/html; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
-
-<html>
-  <head>
-    <meta content=3D"text/html; charset=3Dwindows-1252"
-      http-equiv=3D"Content-Type">
-  </head>
-  <body bgcolor=3D"#FFFFFF" text=3D"#000000">
-    No, I'm afraid it would fail by default=A0 since DNS queries are
-    (usually) made from svchost.exe. Whitelisting openvpn.exe is done to
-    not to break OpenVPN on UDP port 53. I could be incorrect tho.<br>
-    <br>
-    <div class=3D"moz-cite-prefix">On 12/10/2015 07:31 PM, Selva Nair
-      wrote:<br>
-    </div>
-    <blockquote
-cite=3D"mid:CAKuzo_iu2ucwr5KrKwv56DJ_wYZ1Qkku=3Dk7M_OcU2qJXRUNeOw@...278..."
-      type=3D"cite">
-      <div dir=3D"ltr">
-        <div class=3D"gmail_extra"><br>
-          <div class=3D"gmail_quote">On Thu, Dec 10, 2015 at 11:24 AM,
-            ValdikSS <span dir=3D"ltr">&lt;<a moz-do-not-send=3D"true"
-                href=3D"mailto:iam@...2070..." target=3D"_blank">iam@...2098...=
-0...</a>&gt;</span>
-            wrote:<br>
-          </div>
-          <br>
-        </div>
-        <div class=3D"gmail_extra">Yes, I meant to leave the block all and
-          permit openvpn.exe filters always on and delete/re-add only
-          the filters for the tun/tap interface. Well, its probably just
-          a cosmetic change, so no strong opinion.<br>
-          <br>
-        </div>
-        <div class=3D"gmail_extra">Selva<br>
-        </div>
-      </div>
-      <br>
-      <pre wrap=3D"">_______________________________________________
-Openvpn-devel mailing list
-<a class=3D"moz-txt-link-abbreviated" href=3D"mailto:Openvpn-devel@...1466...=
-urceforge.net">Openvpn-devel@lists.sourceforge.net</a>
-<a class=3D"moz-txt-link-freetext" href=3D"https://lists.sourceforge.net/li=
-sts/listinfo/openvpn-devel">https://lists.sourceforge.net/lists/listinfo/op=
-envpn-devel</a>
-</pre>
-    </blockquote>
-    <br>
-  </body>
-</html>
-
---------------070705030802040904060504--
-
---vG9kcOw6VnHrdMMsck6BHcEahPKEh02EF
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-Comment: https://keybase.io/valdikss
-
-iQIcBAEBCAAGBQJWaa2KAAoJEFzXIC7viPdyXi8P/Ru0Vq7rtzdyN+ZcJfv8cdAp
-v1hZsbD/Z6r5Zgw2+8MdifKKDOKOvfQK56N+FsrEPrF6FxCdvME/FrfnnXBwP6Wf
-0UExLKBJuWfxVf/mgtHOlxkyvnW4lEQ2FoPxH62PmeCGvLCTrXiujyAsE/aq82HD
-R1wh59Q2zwIunARDcl5kKKT/78bl4GJFGq2ymF5g3lHHoEIvAMhVcaD2S8FiRm7h
-pRcEHamib5EZSwE9yWgGlF2l6ml6suBF8/rMrusKRx3p/+Blf8YTPf4XxfeWle95
-ir4uWoNjHve2I7K7KQfsPgj77EEcbaX8Kfc5+SfTQ1k3U5IGNVNLap7unKSFwbZH
-gw2ux/Uxw+EmtC5vS7IABSpaYtbQPIae/3K3F+JsuKFZnuEZmZrH3JlKsCb4+o7p
-kqrI9xuC9Wg8ZbXeApObHofISeV1OdP8dzRquKvH4CoHvANrEwA4JDpRuyXGYqZo
-rKiUUkhDVTGpnhmDRQQgIJINwTGIqQbDDo5oiDej8pbYxPP21/74Kyo+NoRUjZR5
-we2DFwGUSKFyB/Djo8EBDtH1prNSJTPgBuBUJcoyWbvIMhmkhLPy2KSzkS73akDp
-Ag7PB2vLL5CHrr1Wo6cvMwsf8yk5LgeoLnCYFVWIANU91mQvwIam109DoYbfql29
-lnNCmh3OJjJIworW82QD
-=8/aT
------END PGP SIGNATURE-----
-
---vG9kcOw6VnHrdMMsck6BHcEahPKEh02EF--
+--047d7b343a30d20a7005268e1647--
 
