@@ -1,12 +1,10 @@
-From: Lev Stipakov <lstipakov@...277...>
-Date: Thu, 10 Dec 2015 11:55:16 +0200
-Message-ID: <56694C04.6020904@...277...>
-References: <5661686A.4090305@...2070...>
-	<1449656275-24934-1-git-send-email-iam@...2070...>
-Mime-Version: 1.0
-In-Reply-To: <1449656275-24934-1-git-send-email-iam@...2070...>
-Subject: Re: [Openvpn-devel] [PATCH v8-master] Add Windows DNS Leak fix
- using WFP ('block-outside-dns')
+References: <5668A592.8080802@...2101...> <20151210083641.GZ24952@...1296...>
+From: Gisle Vanem <gvanem@...2101...>
+Message-ID: <56694CC9.6020103@...2101...>
+Date: Thu, 10 Dec 2015 10:58:33 +0100
+MIME-Version: 1.0
+In-Reply-To: <20151210083641.GZ24952@...1296...>
+Subject: Re: [Openvpn-devel] MSVC "parser stack overflow"
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,33 +13,21 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+Gert Doering wrote:
 
-Sorry for the late response.
+> For the time being we just use a compiler that is not mainly a pain in the
+> back, solidly stuck in the last century before C99 - as in, none of the
+> core developers compile on windows, we all do cross-compilation with 
+> mingw64 on Linux.
 
-+bool
-+win_wfp_uninit()
-+{
-+    dmsg (D_LOW, "Uninitializing WFP");
-+    if (m_hEngineHandle) {
-+        FwpmSubLayerDeleteByKey0(m_hEngineHandle, &m_subLayerGUID);
-+        CLEAR(m_subLayerGUID);
-+        FwpmEngineClose0(m_hEngineHandle);
-+        m_hEngineHandle = NULL;
+Well, MSVC 2015 is pretty up-to-date WRT C99. So I think you should remove
+all the *.vcxproj and msvc-*.bat files to prevent more people getting
+the impression you care about Windows.
 
-
-FwpmSubLayerDeleteByKey0 will likely fail if there is a filter 
-associated with sublayer. On the other side, FwpmEngineClose0 seems to 
-be enough to remove blocking.
-
-I think the correct way would be to create GUID for filter same way as 
-you did for sublayer and copy it to filter.filterKey. In uninit method, 
-before deleting sublayer you call FwpmFilterDeleteByKey0 with that guid.
-
--Lev
-
+-- 
+--gv
 
