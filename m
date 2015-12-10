@@ -1,16 +1,10 @@
-MIME-Version: 1.0
-In-Reply-To: <5669A739.2030901@...2070...>
-References: <5661686A.4090305@...2070...>
-	<1449656275-24934-1-git-send-email-iam@...2070...>
-	<56694C04.6020904@...277...>
-	<CAKuzo_j6+gjt+_EDVt3CeOR89mAnDNdYtMFfzXDMHbiTjumgnA@...278...>
-	<5669A739.2030901@...2070...>
-From: Selva Nair <selva.nair@...277...>
-Date: Thu, 10 Dec 2015 11:31:19 -0500
-Message-ID: <CAKuzo_iu2ucwr5KrKwv56DJ_wYZ1Qkku=k7M_OcU2qJXRUNeOw@...278...>
-Content-Type: multipart/alternative; boundary=047d7bfcefb0bc0cd805268dbd64
-Subject: Re: [Openvpn-devel] [PATCH v8-master] Add Windows DNS Leak fix
-	using WFP ('block-outside-dns')
+Date: Thu, 10 Dec 2015 17:46:46 +0100 (CET)
+Message-Id: <201512101646.tBAGkkUD085025@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <1449751030-10703-1-git-send-email-arne@...1227...>
+References: <1449751030-10703-1-git-send-email-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Detect config lines that are
+	too long and give a warning/error
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,39 +13,32 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: ValdikSS <iam@...2070...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---047d7bfcefb0bc0cd805268dbd64
-Content-Type: text/plain; charset=UTF-8
+ACK.  Thanks.
 
-On Thu, Dec 10, 2015 at 11:24 AM, ValdikSS <iam@...2070...> wrote:
+Your patch has been applied to the master and release/2.3 branch.
 
-> That would break name resolver on reconnection if remote is a hostname.
->
+commit 4baec3ee10b8d6826d5f076a9832a92a5cfe3676 (master)
+commit 305c16c28d0ce7bc48c6e0abb18653241ddb910b (release/2.3)
 
-Yes, I meant to leave the block all and permit openvpn.exe filters always
-on and delete/re-add only the filters for the tun/tap interface. Well, its
-probably just a cosmetic change, so no strong opinion.
+Author: Arne Schwabe
+Date:   Thu Dec 10 13:37:10 2015 +0100
 
-Selva
+     Detect config lines that are too long and give a warning/error
 
---047d7bfcefb0bc0cd805268dbd64
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1449751030-10703-1-git-send-email-arne@...1227...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/10723
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-<div dir=3D"ltr"><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">=
-On Thu, Dec 10, 2015 at 11:24 AM, ValdikSS <span dir=3D"ltr">&lt;<a href=3D=
-"mailto:iam@...2070..." target=3D"_blank">iam@...2070...</a>&gt;</span> wro=
-te:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-=
-left:1px #ccc solid;padding-left:1ex"><div bgcolor=3D"#FFFFFF" text=3D"#000=
-000">That would break name resolver on reconnection if remote is a
-    hostname.<span><br>
-    </span></div></blockquote></div><br></div><div class=3D"gmail_extra">Ye=
-s, I meant to leave the block all and permit openvpn.exe filters always on =
-and delete/re-add only the filters for the tun/tap interface. Well, its pro=
-bably just a cosmetic change, so no strong opinion.<br><br></div><div class=
-=3D"gmail_extra">Selva<br></div></div>
 
---047d7bfcefb0bc0cd805268dbd64--
+--
+kind regards,
+
+Gert Doering
+
 
