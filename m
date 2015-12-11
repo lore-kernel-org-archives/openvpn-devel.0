@@ -1,12 +1,13 @@
-Message-ID: <C74F1CC282A64BBAB8F17F430B43CA35@...2089...>
-From: <debbie10t@...277...>
-References: <AF48117BC12D429393E4D93EFBA7E72E@...2089...>
-	<20151211193817.GT24952@...1296...>
-	<BAEB59A88E964992802EAD23559AB9E4@...2089...>
-	<20151211200834.GV24952@...1296...>
-Date: Fri, 11 Dec 2015 20:23:38 -0000
-MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] Opttion "client-nat" not recognised
+From: Lev Stipakov <lstipakov@...277...>
+Date: Fri, 11 Dec 2015 22:29:33 +0200
+Message-ID: <566B322D.1040300@...277...>
+References: <1447079709-17806-1-git-send-email-lstipakov@...277...>
+	<20151109145555.GE24952@...1296...> <5642F6B7.7090902@...277...>
+	<20151111081604.GU24952@...1296...> <566B2704.8070500@...277...>
+	<20151211200722.GU24952@...1296...>
+Mime-Version: 1.0
+In-Reply-To: <20151211200722.GU24952@...1296...>
+Subject: Re: [Openvpn-devel] [PATCH v2] Use adapter index instead of name
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,31 +16,36 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; format=flowed; charset="iso-8859-1";
-	reply-type=original
+Content-Type: text/plain; charset=windows-1252; format=flowed
 Content-Transfer-Encoding: 7bit
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
+Thanks, I think (I think!) I got it now.
 
------ Original Message ----- 
-From: "Gert Doering" <gert@...1296...>
-To: <debbie10t@...277...>
-Cc: "Gert Doering" <gert@...1296...>; 
-<openvpn-devel@lists.sourceforge.net>
-Sent: Friday, December 11, 2015 8:08 PM
-Subject: Re: [Openvpn-devel] Opttion "client-nat" not recognised
+1) Since we have tt->adapter_index (which temporarily disappeared from 
+my perception of reality), no need to add new member to tuntap or 
+tuntap_options.
 
-> the code says "four arguments
-> have to be there" and the git master code says "four arguments have
-> to be there, and if a fifth is given, it is a syntax error".
->
-> So just leave off the last argument - it was silently ignored all along.
+2) tt->adapter_index has nothing to do with rgi->adapter_index, first 
+one is windows adapter index (which we pass to netsh), last one is for 
+routing (which we pass to netsh too in special case).
 
-Very well, I have dropped the second mask argument and the push is
-at least accepted now.  Checking logs at --verb 6 for details ..
-Thanks.
+3) In add/del_route* we (try to) use tt->adapter_index.
 
+Regarding master's "special case" code. Should it be something like this:
 
+   if ( r6->adapter_index )		/* vpn server special route */
+     {
+       struct buffer out = alloc_buf_gc (64, &gc);
+       buf_printf (&out, "interface=%d", r6->adapter_index );
+       device = buf_bptr(&out);
+       gateway_needed = true;
+     }
+   else
+     {
+       /* device = interface=tt->adapter_index */
+     }
+
+-Lev
 
 
