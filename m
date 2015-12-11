@@ -1,13 +1,8 @@
 From: Lev Stipakov <lstipakov@...277...>
-Date: Fri, 11 Dec 2015 22:29:33 +0200
-Message-ID: <566B322D.1040300@...277...>
-References: <1447079709-17806-1-git-send-email-lstipakov@...277...>
-	<20151109145555.GE24952@...1296...> <5642F6B7.7090902@...277...>
-	<20151111081604.GU24952@...1296...> <566B2704.8070500@...277...>
-	<20151211200722.GU24952@...1296...>
-Mime-Version: 1.0
-In-Reply-To: <20151211200722.GU24952@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH v2] Use adapter index instead of name
+Date: Fri, 11 Dec 2015 23:55:53 +0200
+Message-Id: <1449870953-14049-1-git-send-email-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH master] Use adapter index for
+	add/delete_route_ipv6
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,36 +11,76 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Thanks, I think (I think!) I got it now.
+Trac #637
 
-1) Since we have tt->adapter_index (which temporarily disappeared from 
-my perception of reality), no need to add new member to tuntap or 
-tuntap_options.
+Signed-off-by: Lev Stipakov <lstipakov@...277...>
+---
+ src/openvpn/route.c | 16 ++++++++++++----
+ src/openvpn/tun.c   |  2 ++
+ 2 files changed, 14 insertions(+), 4 deletions(-)
 
-2) tt->adapter_index has nothing to do with rgi->adapter_index, first 
-one is windows adapter index (which we pass to netsh), last one is for 
-routing (which we pass to netsh too in special case).
-
-3) In add/del_route* we (try to) use tt->adapter_index.
-
-Regarding master's "special case" code. Should it be something like this:
-
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index 4a60345..2012b5c 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -1770,13 +1770,17 @@ add_route_ipv6 (struct route_ipv6 *r6, const struct tuntap *tt, unsigned int fla
+ 
+ #elif defined (WIN32)
+ 
++  struct buffer out = alloc_buf_gc (64, &gc);
    if ( r6->adapter_index )		/* vpn server special route */
      {
-       struct buffer out = alloc_buf_gc (64, &gc);
+-      struct buffer out = alloc_buf_gc (64, &gc);
        buf_printf (&out, "interface=%d", r6->adapter_index );
-       device = buf_bptr(&out);
+-      device = buf_bptr(&out);
        gateway_needed = true;
      }
-   else
++  else
++    {
++      buf_printf (&out, "interface=%d", tt->adapter_index );
++    }
++  device = buf_bptr(&out);
+ 
+   /* netsh interface ipv6 add route 2001:db8::/32 MyTunDevice */
+   argv_printf (&argv, "%s%sc interface ipv6 add route %s/%d %s",
+@@ -2168,13 +2172,17 @@ delete_route_ipv6 (const struct route_ipv6 *r6, const struct tuntap *tt, unsigne
+ 
+ #elif defined (WIN32)
+ 
++  struct buffer out = alloc_buf_gc (64, &gc);
+   if ( r6->adapter_index )		/* vpn server special route */
      {
-       /* device = interface=tt->adapter_index */
+-      struct buffer out = alloc_buf_gc (64, &gc);
+       buf_printf (&out, "interface=%d", r6->adapter_index );
+-      device = buf_bptr(&out);
+       gateway_needed = true;
      }
-
--Lev
++  else
++    {
++      buf_printf (&out, "interface=%d", tt->adapter_index );
++    }
++  device = buf_bptr(&out);
+ 
+   /* netsh interface ipv6 delete route 2001:db8::/32 MyTunDevice */
+   argv_printf (&argv, "%s%sc interface ipv6 delete route %s/%d %s",
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index 014d988..aed5e75 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -1328,6 +1328,8 @@ do_ifconfig (struct tuntap *tt,
+ 	 */
+ 	saved_actual = tt->actual_name;
+ 	tt->actual_name = (char*) actual;
++	/* we use adapter_index in add_route_ipv6 */
++	tt->adapter_index = idx;
+ 	add_route_connected_v6_net(tt, es);
+ 	tt->actual_name = saved_actual;
+       }
+-- 
+1.9.1
 
 
