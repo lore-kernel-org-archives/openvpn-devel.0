@@ -1,13 +1,12 @@
-Date: Fri, 11 Dec 2015 20:38:17 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20151211193817.GT24952@...1296...>
-References: <AF48117BC12D429393E4D93EFBA7E72E@...2089...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="4k8fn04TlfgxNKWT"
-Content-Disposition: inline
-In-Reply-To: <AF48117BC12D429393E4D93EFBA7E72E@...2089...>
-Subject: Re: [Openvpn-devel] Opttion "client-nat" not recognised
+From: Lev Stipakov <lstipakov@...277...>
+Date: Fri, 11 Dec 2015 21:41:56 +0200
+Message-ID: <566B2704.8070500@...277...>
+References: <1447079709-17806-1-git-send-email-lstipakov@...277...>
+	<20151109145555.GE24952@...1296...> <5642F6B7.7090902@...277...>
+	<20151111081604.GU24952@...1296...>
+Mime-Version: 1.0
+In-Reply-To: <20151111081604.GU24952@...1296...>
+Subject: Re: [Openvpn-devel] [PATCH v2] Use adapter index instead of name
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,86 +15,37 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: debbie10t@...277...
-Cc: openvpn-devel@lists.sourceforge.net
-
---4k8fn04TlfgxNKWT
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-On Fri, Dec 11, 2015 at 07:35:18PM -0000, debbie10t@...277... wrote:
-> today, I was working with an old config which uses --client-nat
-> I upgraded that particular client to git-master for testing and
-> discovered that git-master currently does not support --client-nat
-[..]
-> Fri Dec 11 19:08:12 2015 us=3D645088 PUSH: Received control message:=20
-> 'PUSH_REPLY,ifconfig-ipv6 2001:db8:0:123::101/64=20
-> 2001:db8:0:123::86,route-gateway 10.234.64.86,topology=20
-> subnet,explicit-exit-notify 3,ping 10,ping-restart 30,tun-ipv6,client-nat=
-=20
-> snat   10.1.101.0 255.255.255.0 10.201.101.0 255.255.255.0,client-nat dna=
-t=20
-> 10.201.101.0 255.255.255.0   10.1.101.0 255.255.255.0,setenv-safe=20
-> client_dynamic 1,ifconfig 10.234.64.101 255.255.255.0,peer-id 0'
+>> So, if we want to use index also for "add/del route", I'd gently modify
+>> add/del_route_ipv6 and make it use "interface=<idx>" (without breaking
+>> "vpn server special route" case).
+>
+> For consistency, I think we should do that.  What I'd avoid is to do
+> the adapter_index lookup for every single route - which would imply adding
+> the index to struct tuntap_options or something like that which is
+> available in add/del_route[_ipv6]() already.  But this is less elegant
+> than I hoped for, and might have to look different for 2.3 and master.
 
-According to the (slightly confusing, admittedly) man page entry,=20
-the way you are calling the option is not correct, and as such,=20
-git master will refuse the lines.  "client-nat" has *four* arguments,
-not *five*.
+Adding the index - you probably meant to "struct tuntap"?
 
-This is backed by the 2.3 and git master code...
+Master has member "adapter_index", which seems to be used for "special 
+case", release/2.3 does not have that.
 
-2.3:
+Do you think it is safe to store adapter index there (would have to add 
+it to 2.3) without breaking "special case"? I personally not so sure, 
+since that "adapter_index" is obtained via "adapter_index_of_ip" in 
+tun.c, which looks quite different from "get_adapter_index_flexible".
 
-#ifdef ENABLE_CLIENT_NAT
-  else if (streq (p[0], "client-nat") && p[1] && p[2] && p[3] && p[4])
-    {
-      VERIFY_PERMISSION (OPT_P_ROUTE);
-      cnol_check_alloc (options);
-      add_client_nat_to_option_list(options->client_nat, p[1], p[2], p[3], =
-p[4],
- msglevel);
-    }
-#endif
+We might have a semantic problem here.
 
-(so, argument 5 is silently ignored)
+-Lev
 
-git master:
 
-  else if (streq (p[0], "client-nat") && p[1] && p[2] && p[3] && p[4] && !p=
-[5])
-    {
-      VERIFY_PERMISSION (OPT_P_ROUTE);
-      cnol_check_alloc (options);
-      add_client_nat_to_option_list(options->client_nat, p[1], p[2], p[3], =
-p[4], msglevel);
-    }
 
-"if a 5th argument is given, refuse this option".
 
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---4k8fn04TlfgxNKWT
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQCVAwUBVmsmKakuBuNlUUl1AQJj/gP+KpA76hFPqUsvnjZXOVA2erIUDpMgTgg/
-6GnKiB9z9RHABP7V1bG3tZSehKdeFu46i5kBk3CUhL9rA5e9Au5xPP8g5i4Vknt7
-E7YgNyWlbc3ybR7UExbOPSAisUxTxBb7ZB5NMe9xdi3qFxrVqZ8/e5CMWSqdAvlw
-lBVQqQLmWPo=
-=oc+o
------END PGP SIGNATURE-----
-
---4k8fn04TlfgxNKWT--
 
