@@ -1,8 +1,13 @@
-Message-ID: <AF48117BC12D429393E4D93EFBA7E72E@...2089...>
-From: <debbie10t@...277...>
-Date: Fri, 11 Dec 2015 19:35:18 -0000
+Date: Fri, 11 Dec 2015 20:38:17 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20151211193817.GT24952@...1296...>
+References: <AF48117BC12D429393E4D93EFBA7E72E@...2089...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] Opttion "client-nat" not recognised
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="4k8fn04TlfgxNKWT"
+Content-Disposition: inline
+In-Reply-To: <AF48117BC12D429393E4D93EFBA7E72E@...2089...>
+Subject: Re: [Openvpn-devel] Opttion "client-nat" not recognised
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,123 +16,86 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; format=flowed; charset="iso-8859-1";
-	reply-type=original
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+To: debbie10t@...277...
+Cc: openvpn-devel@lists.sourceforge.net
+
+--4k8fn04TlfgxNKWT
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
 Hi,
 
-today, I was working with an old config which uses --client-nat
-I upgraded that particular client to git-master for testing and
-discovered that git-master currently does not support --client-nat
+On Fri, Dec 11, 2015 at 07:35:18PM -0000, debbie10t@...277... wrote:
+> today, I was working with an old config which uses --client-nat
+> I upgraded that particular client to git-master for testing and
+> discovered that git-master currently does not support --client-nat
+[..]
+> Fri Dec 11 19:08:12 2015 us=3D645088 PUSH: Received control message:=20
+> 'PUSH_REPLY,ifconfig-ipv6 2001:db8:0:123::101/64=20
+> 2001:db8:0:123::86,route-gateway 10.234.64.86,topology=20
+> subnet,explicit-exit-notify 3,ping 10,ping-restart 30,tun-ipv6,client-nat=
+=20
+> snat   10.1.101.0 255.255.255.0 10.201.101.0 255.255.255.0,client-nat dna=
+t=20
+> 10.201.101.0 255.255.255.0   10.1.101.0 255.255.255.0,setenv-safe=20
+> client_dynamic 1,ifconfig 10.234.64.101 255.255.255.0,peer-id 0'
 
-This config works perfectly with older versions,
-details follow:
+According to the (slightly confusing, admittedly) man page entry,=20
+the way you are calling the option is not correct, and as such,=20
+git master will refuse the lines.  "client-nat" has *four* arguments,
+not *five*.
 
-GIT-master versions which --client-nat does *not* work:
-- dated 2015Nov25 (My first test)
-- dated 2015Aug02 (Another clone I had available)
-- dated 2015Dec11 (make sure i was not going more nuts! than usual)
+This is backed by the 2.3 and git master code...
 
-GIT-mater versions which --client-nat *does* work:
-- dated 2015Jun12
+2.3:
 
-Official version which --client-nat *does* work:
-Linux-Mint: Ubuntu 14.04.1
-- OpenVPN 2.3.2 x86_64-pc-linux-gnu <..> built on Dec  1 2014
+#ifdef ENABLE_CLIENT_NAT
+  else if (streq (p[0], "client-nat") && p[1] && p[2] && p[3] && p[4])
+    {
+      VERIFY_PERMISSION (OPT_P_ROUTE);
+      cnol_check_alloc (options);
+      add_client_nat_to_option_list(options->client_nat, p[1], p[2], p[3], =
+p[4],
+ msglevel);
+    }
+#endif
 
-If you prefer this reported on trac please let me know.
+(so, argument 5 is silently ignored)
 
-CLIENT LOG FILE WORKING:
+git master:
 
-Fri Dec 11 18:36:50 2015 us=948077 OpenVPN 2.3_git 12.June.2015 
-[git:master/60fd44e501f20024+] x86_64-unknown-linux-gnu [SSL (OpenSSL)] 
-[LZO] [LZ4] [EPOLL] [MH] [IPv
-6] built on Dec 11 2015
-Fri Dec 11 18:36:50 2015 us=948133 library versions: OpenSSL 1.0.1f 6 Jan 
-2014, LZO 2.06
+  else if (streq (p[0], "client-nat") && p[1] && p[2] && p[3] && p[4] && !p=
+[5])
+    {
+      VERIFY_PERMISSION (OPT_P_ROUTE);
+      cnol_check_alloc (options);
+      add_client_nat_to_option_list(options->client_nat, p[1], p[2], p[3], =
+p[4], msglevel);
+    }
 
-<..>
+"if a 5th argument is given, refuse this option".
 
-Fri Dec 11 18:36:54 2015 us=118430 PUSH: Received control message: 
-'PUSH_REPLY,ifconfig-ipv6 2001:db8:0:123::101/64 
-2001:db8:0:123::86,route-gateway 10.234.64.86,topology 
-subnet,explicit-exit-notify 3,ping 10,ping-restart 30,tun-ipv6,client-nat 
-snat   10.1.101.0 255.255.255.0 10.201.101.0 255.255.255.0,client-nat dnat 
-10.201.101.0 255.255.255.0   10.1.101.0 255.255.255.0,setenv-safe 
-client_dynamic 1,ifconfig 10.234.64.101 255.255.255.0,peer-id 0'
-Fri Dec 11 18:36:54 2015 us=118553 Option 'explicit-exit-notify' in 
-[PUSH-OPTIONS]:4 is ignored by previous <connection> blocks
-Fri Dec 11 18:36:54 2015 us=118691 OPTIONS IMPORT: timers and/or timeouts 
-modified
-Fri Dec 11 18:36:54 2015 us=118726 OPTIONS IMPORT: explicit notify parm(s) 
-modified
-Fri Dec 11 18:36:54 2015 us=118764 OPTIONS IMPORT: --ifconfig/up options 
-modified
-Fri Dec 11 18:36:54 2015 us=118798 OPTIONS IMPORT: route options modified
-Fri Dec 11 18:36:54 2015 us=118832 OPTIONS IMPORT: route-related options 
-modified
-Fri Dec 11 18:36:54 2015 us=118867 OPTIONS IMPORT: environment modified
-Fri Dec 11 18:36:54 2015 us=118904 OPTIONS IMPORT: peer-id set
-Fri Dec 11 18:36:54 2015 us=118938 OPTIONS IMPORT: adjusting link_mtu to 
-1605
-Fri Dec 11 18:36:54 2015 us=119710 TUN/TAP device tun23464 opened
-Fri Dec 11 18:36:54 2015 us=119802 TUN/TAP TX queue length set to 100
-Fri Dec 11 18:36:54 2015 us=119873 do_ifconfig, tt->ipv6=1, 
-tt->did_ifconfig_ipv6_setup=1
-Fri Dec 11 18:36:54 2015 us=119971 /sbin/ifconfig tun23464 10.234.64.101 
-netmask 255.255.255.0 mtu 1500 broadcast 10.234.64.255
-Fri Dec 11 18:36:54 2015 us=125237 /sbin/ifconfig tun23464 add 
-2001:db8:0:123::101/64
-Fri Dec 11 18:36:54 2015 us=134693 Initialization Sequence Completed
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
+--4k8fn04TlfgxNKWT
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
 
-CLIENT LOG FILE *NOT* WORKING:
+iQCVAwUBVmsmKakuBuNlUUl1AQJj/gP+KpA76hFPqUsvnjZXOVA2erIUDpMgTgg/
+6GnKiB9z9RHABP7V1bG3tZSehKdeFu46i5kBk3CUhL9rA5e9Au5xPP8g5i4Vknt7
+E7YgNyWlbc3ybR7UExbOPSAisUxTxBb7ZB5NMe9xdi3qFxrVqZ8/e5CMWSqdAvlw
+lBVQqQLmWPo=
+=oc+o
+-----END PGP SIGNATURE-----
 
-Fri Dec 11 19:08:10 2015 us=348536 OpenVPN 2.3_git 
-[git:master/4baec3ee10b8d682] x86_64-unknown-linux-gnu [SSL (OpenSSL)] [LZO] 
-[LZ4] [EPOLL] [MH] [IPv6] built on De
-c 11 2015
-Fri Dec 11 19:08:10 2015 us=348583 library versions: OpenSSL 1.0.1f 6 Jan 
-2014, LZO 2.06
-
-<..>
-
-Fri Dec 11 19:08:12 2015 us=645088 PUSH: Received control message: 
-'PUSH_REPLY,ifconfig-ipv6 2001:db8:0:123::101/64 
-2001:db8:0:123::86,route-gateway 10.234.64.86,topology 
-subnet,explicit-exit-notify 3,ping 10,ping-restart 30,tun-ipv6,client-nat 
-snat   10.1.101.0 255.255.255.0 10.201.101.0 255.255.255.0,client-nat dnat 
-10.201.101.0 255.255.255.0   10.1.101.0 255.255.255.0,setenv-safe 
-client_dynamic 1,ifconfig 10.234.64.101 255.255.255.0,peer-id 0'
-Fri Dec 11 19:08:12 2015 us=645213 Option 'explicit-exit-notify' in 
-[PUSH-OPTIONS]:4 is ignored by previous <connection> blocks
-Fri Dec 11 19:08:12 2015 us=645281 Options error: Unrecognized option or 
-missing or extra parameter(s) in [PUSH-OPTIONS]:8: client-nat (2.3_git)
-Fri Dec 11 19:08:12 2015 us=645328 Options error: Unrecognized option or 
-missing or extra parameter(s) in [PUSH-OPTIONS]:9: client-nat (2.3_git)
-Fri Dec 11 19:08:12 2015 us=645418 OPTIONS IMPORT: timers and/or timeouts 
-modified
-Fri Dec 11 19:08:12 2015 us=645445 OPTIONS IMPORT: explicit notify parm(s) 
-modified
-Fri Dec 11 19:08:12 2015 us=645470 OPTIONS IMPORT: --ifconfig/up options 
-modified
-Fri Dec 11 19:08:12 2015 us=645494 OPTIONS IMPORT: route-related options 
-modified
-Fri Dec 11 19:08:12 2015 us=645519 OPTIONS IMPORT: environment modified
-Fri Dec 11 19:08:12 2015 us=645543 OPTIONS IMPORT: peer-id set
-Fri Dec 11 19:08:12 2015 us=645568 OPTIONS IMPORT: adjusting link_mtu to 
-1605
-Fri Dec 11 19:08:12 2015 us=646219 TUN/TAP device tun23464 opened
-Fri Dec 11 19:08:12 2015 us=646324 TUN/TAP TX queue length set to 100
-Fri Dec 11 19:08:12 2015 us=646403 do_ifconfig, tt->ipv6=1, 
-tt->did_ifconfig_ipv6_setup=1
-Fri Dec 11 19:08:12 2015 us=646506 /sbin/ifconfig tun23464 10.234.64.101 
-netmask 255.255.255.0 mtu 1500 broadcast 10.234.64.255
-Fri Dec 11 19:08:12 2015 us=663984 /sbin/ifconfig tun23464 add 
-2001:db8:0:123::101/64
-Fri Dec 11 19:08:12 2015 us=669056 Initialization Sequence Completed
-
+--4k8fn04TlfgxNKWT--
 
