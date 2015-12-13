@@ -1,12 +1,10 @@
-References: <CAEsd45Q9S_V137M5Db5jNT2ZFGju8XKMAUYqBeDYifjC5y=-MQ@...278...>
-	<566C9E48.1040806@...1227...>
-	<CAEsd45TE8ktqJtHw-+ZYHnS9m4VJR9A_kCaN-OQB8UaSeo4YAg@...278...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <566D52BD.6000205@...1227...>
-Date: Sun, 13 Dec 2015 12:13:01 +0100
-MIME-Version: 1.0
-In-Reply-To: <CAEsd45TE8ktqJtHw-+ZYHnS9m4VJR9A_kCaN-OQB8UaSeo4YAg@...278...>
-Subject: Re: [Openvpn-devel] Options that are "safe" for users to modify?
+Date: Sun, 13 Dec 2015 20:00:26 +0100 (CET)
+Message-Id: <201512131900.tBDJ0QHK007100@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <1449873472-14954-1-git-send-email-lstipakov@...277...>
+References: <1449873472-14954-1-git-send-email-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Use adapter index for
+	add/delete_route_ipv6
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,31 +13,38 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: "Jonathan K. Bullard" <jkbullard@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Lev Stipakov <lstipakov@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Am 12.12.15 um 23:37 schrieb Jonathan K. Bullard:
-> Hi.
-> 
-> On Sat, Dec 12, 2015 at 5:23 PM, Arne Schwabe <arne@...1227...> wrote:
->> Might not really be related to this but have looked into the work that
->> provides the certificates and keys via the managment console? We have
->> even have a contrib program that gets certificates from the Mac OS X
->> keychain and provides them to OpenVPN.
-> 
-> Thanks, but I think that should be a separate discussion. That would
-> work for some situations, but the keychain (actually, OS X has several
-> keychains) may not be accessible to OpenVPN; files are always
-> accessible, even before a user is logged in. And I don't think (I'm
-> doing this from memory, so I might be wrong) that the Keychain patch
-> allows **all** of the encryption info to be taken from the keychain: I
-> don't think it allows --secret, --ta, etc.
+ACK, and thanks.  Code looks good and I'm reasonably sure that it will
+do the right thing - waiting for buildbot now to produce a windows binary
+to actually test it :-) - then applying the 2.3 version to 2.3
 
-Yes. But the only reason that --secrect, --ta? etc. is not implmented
-yet is that nobody needed it so far.
+Chances are good that this will break compilation with older MSVC versions,
+though (as the "struct buffer out = ..." part is now right in the middle
+of a block which wasn't allowed in earlier versions).
 
-Arne
+Your patch has been applied to the master branch.
+
+commit 6417a6f8a01c702e7c8f19f01b696c3b0d2dc1f1 (master)
+
+Author: Lev Stipakov
+Date:   Sat Dec 12 00:37:52 2015 +0200
+
+     Use adapter index for add/delete_route_ipv6
+
+     Signed-off-by: Lev Stipakov <lstipakov@...277...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1449873472-14954-1-git-send-email-lstipakov@...277...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/10759
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
