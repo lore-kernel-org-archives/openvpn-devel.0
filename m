@@ -1,10 +1,13 @@
-Date: Sun, 13 Dec 2015 22:04:10 +0100 (CET)
-Message-Id: <201512132104.tBDL4ACI007670@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <1449780715-4027-1-git-send-email-iam@...2070...>
-References: <1449780715-4027-1-git-send-email-iam@...2070...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Add Windows DNS Leak fix using
-	WFP ('block-outside-dns')
+MIME-Version: 1.0
+In-Reply-To: <201512132100.tBDL0Ywm007645@...2054...>
+References: <1449780695-3879-1-git-send-email-iam@...2070...>
+	<201512132100.tBDL0Ywm007645@...2054...>
+From: Selva Nair <selva.nair@...277...>
+Date: Sun, 13 Dec 2015 16:08:28 -0500
+Message-ID: <CAKuzo_hxNdw5kk5Raix1nFbPR9TUoHXyPU1EbjsLeb=fZ4juZQ@...278...>
+Content-Type: multipart/alternative; boundary=001a11443d9e7890190526cdf638
+Subject: Re: [Openvpn-devel] [PATCH applied] Re: Add Windows DNS Leak fix
+ using WFP ('block-outside-dns')
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,36 +16,42 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: ValdikSS <iam@...2070...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>
+Cc: ValdikSS <iam@...2070...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-ACK.  I verified that this patch is identical to the 2.3 patch except
-for the option check in options.c, and the #ifdef for VISTA+ - so same
-ACK here, and same list of reviewers.  Thanks.
+--001a11443d9e7890190526cdf638
+Content-Type: text/plain; charset=UTF-8
 
-Your patch has been applied to the master branch.
+On Sun, Dec 13, 2015 at 4:00 PM, Gert Doering <gert@...1296...> wrote:
 
-commit 38c8565810f892a41a2ea0d18a707676119f1af0 (master)
-
-Author: ValdikSS
-Date:   Thu Dec 10 23:51:55 2015 +0300
-
-     Add Windows DNS Leak fix using WFP ('block-outside-dns')
-
-     Reviewed-by: Selva Nair <selva.nair@...277...>
-     Reviewed-by: Lev Stipakov <lstipakov@...277...>
-     Reviewed-by: James Yonan <james@...515...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1449780715-4027-1-git-send-email-iam@...2070...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/10744
-     Signed-off-by: Gert Doering <gert@...1296...>
+> ACK.  Lots of people have reviewed this, and it made the patch better :-)
+> - so I list them all, and take the final blame (ACK) on me...
+>
 
 
---
-kind regards,
+Thanks (for assuming the blame :). And, ValdikSS, thanks for putting up
+with all the opinionated comments.
 
-Gert Doering
+Cheers,
 
+Selva
+
+--001a11443d9e7890190526cdf638
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">=
+On Sun, Dec 13, 2015 at 4:00 PM, Gert Doering <span dir=3D"ltr">&lt;<a href=
+=3D"mailto:gert@...1296..." target=3D"_blank">gert@...1296...</a>&gt;</span=
+> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;bo=
+rder-left:1px #ccc solid;padding-left:1ex"><div style=3D"overflow:hidden">A=
+CK.=C2=A0 Lots of people have reviewed this, and it made the patch better :=
+-)<br>
+- so I list them all, and take the final blame (ACK) on me...</div></blockq=
+uote></div><br><br></div><div class=3D"gmail_extra">Thanks (for assuming th=
+e blame :). And, ValdikSS, thanks for putting up <br>with all the opinionat=
+ed comments.<br><br></div><div class=3D"gmail_extra">Cheers,<br><br></div><=
+div class=3D"gmail_extra">Selva <br></div></div>
+
+--001a11443d9e7890190526cdf638--
 
