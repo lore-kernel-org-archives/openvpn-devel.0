@@ -1,8 +1,8 @@
-Date: Sun, 13 Dec 2015 22:00:34 +0100 (CET)
-Message-Id: <201512132100.tBDL0Ywm007645@...2054...>
+Date: Sun, 13 Dec 2015 22:04:10 +0100 (CET)
+Message-Id: <201512132104.tBDL4ACI007670@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1449780695-3879-1-git-send-email-iam@...2070...>
-References: <1449780695-3879-1-git-send-email-iam@...2070...>
+In-Reply-To: <1449780715-4027-1-git-send-email-iam@...2070...>
+References: <1449780715-4027-1-git-send-email-iam@...2070...>
 Subject: [Openvpn-devel] [PATCH applied] Re: Add Windows DNS Leak fix using
 	WFP ('block-outside-dns')
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -18,14 +18,16 @@ Content-Transfer-Encoding: 8bit
 To: ValdikSS <iam@...2070...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-ACK.  Lots of people have reviewed this, and it made the patch better :-)
-- so I list them all, and take the final blame (ACK) on me...
+ACK.  I verified that this patch is identical to the 2.3 patch except
+for the option check in options.c, and the #ifdef for VISTA+ - so same
+ACK here, and same list of reviewers.  Thanks.
 
-Your patch has been applied to the release/2.3 branch.
+Your patch has been applied to the master branch.
 
-commit dd628d2e0d786e478fd99d54000dceaa42d53855 (release/2.3)
+commit 38c8565810f892a41a2ea0d18a707676119f1af0 (master)
+
 Author: ValdikSS
-Date:   Thu Dec 10 23:51:35 2015 +0300
+Date:   Thu Dec 10 23:51:55 2015 +0300
 
      Add Windows DNS Leak fix using WFP ('block-outside-dns')
 
@@ -33,8 +35,8 @@ Date:   Thu Dec 10 23:51:35 2015 +0300
      Reviewed-by: Lev Stipakov <lstipakov@...277...>
      Reviewed-by: James Yonan <james@...515...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1449780695-3879-1-git-send-email-iam@...2070...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/10743
+     Message-Id: <1449780715-4027-1-git-send-email-iam@...2070...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/10744
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
