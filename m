@@ -1,16 +1,10 @@
-From: "Fish Wang" <fish.thss@...277...>
-References: <1450055187-17397-1-git-send-email-fish.thss@...277...>
-	<1450056335-18444-1-git-send-email-fish.thss@...277...>
-	<CAKuzo_jwN79GhubM4Dgp4=dnZwJVvTiEMEzUp4k-FWBqQ2dwPA@...278...>
+From: Fish <fish.thss@...277...>
+Date: Mon, 14 Dec 2015 09:19:41 -0800
+Message-Id: <1450113581-30900-1-git-send-email-fish.thss@...277...>
 In-Reply-To: <CAKuzo_jwN79GhubM4Dgp4=dnZwJVvTiEMEzUp4k-FWBqQ2dwPA@...278...>
-Date: Mon, 14 Dec 2015 09:12:39 -0800
-Message-ID: <01c501d13692$a42af9a0$ec80ece0$@gmail.com>
-MIME-Version: 1.0
-Content-Type: multipart/alternative;
-	boundary="----=_NextPart_000_01C6_01D1364F.960855E0"
-Content-Language: zh-cn
-Subject: Re: [Openvpn-devel] [PATCH] Make "block-outside-dns" option
-	platform agnostic
+References: <CAKuzo_jwN79GhubM4Dgp4=dnZwJVvTiEMEzUp4k-FWBqQ2dwPA@...278...>
+Subject: [Openvpn-devel] [PATCH v2] Make "block-outside-dns" option platform
+	agnostic
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,180 +13,645 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: 'Selva Nair' <selva.nair@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
-
-This is a multipart message in MIME format.
-
-------=_NextPart_000_01C6_01D1364F.960855E0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-I see, let me add that file to Makefile.am. My modified build system does n=
-ot create the dist tarball :-(
-
-=20
-
-Best,
-
-Fish
-
-=20
-
-From: Selva Nair [mailto:selva.nair@...277...]=20
-Sent: Monday, December 14, 2015 9:01 AM
-To: Fish <fish.thss@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
-Subject: Re: [PATCH] Make "block-outside-dns" option platform agnostic
-
-=20
-
-Hi,
-
-On Sun, Dec 13, 2015 at 8:25 PM, Fish <fish.thss@...277... <mailto:fish.ths=
-s@...277...> > wrote:
-
-Make the "block-outside-dns" option agnostic of Windows versions by dynamic=
-ally
+Make the "block-outside-dns" option agnostic of Windows versions by dynamically
 loading WFP-related functions. Cross-compiled on Linux and tested on Windows
 XP/10.
 ---
- src/openvpn/Makefile.am |   2 +-
+ src/openvpn/Makefile.am |   4 +-
  src/openvpn/init.c      |   4 -
  src/openvpn/options.c   |  17 ++-
  src/openvpn/win32.c     | 114 ++++++++-------
  src/openvpn/win32.h     |   1 +
- src/openvpn/win32_wfp.h | 359 ++++++++++++++++++++++++++++++++++++++++++++=
-++++
+ src/openvpn/win32_wfp.h | 359 ++++++++++++++++++++++++++++++++++++++++++++++++
+ 6 files changed, 426 insertions(+), 73 deletions(-)
+ create mode 100644 src/openvpn/win32_wfp.h
 
-=20
-
-Looks good, including the attribution to the right mingw upstream..
-
-But won't build, as the new header (win32_wfp.h) is not added to=20
-src/openvpn/Makefile.am --- without that it wont get into the=20
-dist tarball etc..
-
-Next time please append a version number to the mail header:=20
-something like [PATCH v2] would do. I'm getting confused with=20
-too many versions :)
-
-=20
-
-Thanks,
-
-Selva
-
-=20
-
-=20
-
-
-------=_NextPart_000_01C6_01D1364F.960855E0
-Content-Type: text/html; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-
-<html xmlns:v=3D"urn:schemas-microsoft-com:vml" xmlns:o=3D"urn:schemas-micr=
-osoft-com:office:office" xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
-xmlns:m=3D"http://schemas.microsoft.com/office/2004/12/omml" xmlns=3D"http:=
-//www.w3.org/TR/REC-html40"><head><meta http-equiv=3DContent-Type content=
-=3D"text/html; charset=3Dutf-8"><meta name=3DGenerator content=3D"Microsoft=
- Word 15 (filtered medium)"><style><!--
-/* Font Definitions */
-@font-face
-	{font-family:=E5=AE=8B=E4=BD=93;
-	panose-1:2 1 6 0 3 1 1 1 1 1;}
-@font-face
-	{font-family:"Cambria Math";
-	panose-1:2 4 5 3 5 4 6 3 2 4;}
-@font-face
-	{font-family:Calibri;
-	panose-1:2 15 5 2 2 2 4 3 2 4;}
-@font-face
-	{font-family:"\@=E5=AE=8B=E4=BD=93";
-	panose-1:2 1 6 0 3 1 1 1 1 1;}
-/* Style Definitions */
-p.MsoNormal, li.MsoNormal, div.MsoNormal
-	{margin:0cm;
-	margin-bottom:.0001pt;
-	font-size:12.0pt;
-	font-family:=E5=AE=8B=E4=BD=93;}
-a:link, span.MsoHyperlink
-	{mso-style-priority:99;
-	color:blue;
-	text-decoration:underline;}
-a:visited, span.MsoHyperlinkFollowed
-	{mso-style-priority:99;
-	color:purple;
-	text-decoration:underline;}
-span.EmailStyle17
-	{mso-style-type:personal-reply;
-	font-family:"Calibri",sans-serif;
-	color:#1F497D;}
-.MsoChpDefault
-	{mso-style-type:export-only;
-	font-family:"Calibri",sans-serif;}
-@page WordSection1
-	{size:612.0pt 792.0pt;
-	margin:72.0pt 90.0pt 72.0pt 90.0pt;}
-div.WordSection1
-	{page:WordSection1;}
---></style><!--[if gte mso 9]><xml>
-<o:shapedefaults v:ext=3D"edit" spidmax=3D"1026" />
-</xml><![endif]--><!--[if gte mso 9]><xml>
-<o:shapelayout v:ext=3D"edit">
-<o:idmap v:ext=3D"edit" data=3D"1" />
-</o:shapelayout></xml><![endif]--></head><body lang=3DZH-CN link=3Dblue vli=
-nk=3Dpurple><div class=3DWordSection1><p class=3DMsoNormal><span lang=3DEN-=
-US style=3D'font-size:10.5pt;font-family:"Calibri",sans-serif;color:#1F497D=
-'>I see, let me add that file to Makefile.am. My modified build system does=
- not create the dist tarball :-(<o:p></o:p></span></p><p class=3DMsoNormal>=
-<span lang=3DEN-US style=3D'font-size:10.5pt;font-family:"Calibri",sans-ser=
-if;color:#1F497D'><o:p>&nbsp;</o:p></span></p><p class=3DMsoNormal><span la=
-ng=3DEN-US style=3D'font-size:10.5pt;font-family:"Calibri",sans-serif;color=
-:#1F497D'>Best,<o:p></o:p></span></p><p class=3DMsoNormal><span lang=3DEN-U=
-S style=3D'font-size:10.5pt;font-family:"Calibri",sans-serif;color:#1F497D'=
->Fish<o:p></o:p></span></p><p class=3DMsoNormal><span lang=3DEN-US style=3D=
-'font-size:10.5pt;font-family:"Calibri",sans-serif;color:#1F497D'><o:p>&nbs=
-p;</o:p></span></p><p class=3DMsoNormal><b><span lang=3DEN-US style=3D'font=
--size:11.0pt;font-family:"Calibri",sans-serif'>From:</span></b><span lang=
-=3DEN-US style=3D'font-size:11.0pt;font-family:"Calibri",sans-serif'> Selva=
- Nair [mailto:selva.nair@...277...] <br><b>Sent:</b> Monday, December 14, 2=
-015 9:01 AM<br><b>To:</b> Fish &lt;fish.thss@...277...&gt;<br><b>Cc:</b> op=
-envpn-devel@lists.sourceforge.net<br><b>Subject:</b> Re: [PATCH] Make &quot=
-;block-outside-dns&quot; option platform agnostic<o:p></o:p></span></p><p c=
-lass=3DMsoNormal><span lang=3DEN-US><o:p>&nbsp;</o:p></span></p><div><div><=
-p class=3DMsoNormal style=3D'margin-bottom:12.0pt'><span lang=3DEN-US>Hi,<o=
-:p></o:p></span></p></div><div><div><p class=3DMsoNormal><span lang=3DEN-US=
->On Sun, Dec 13, 2015 at 8:25 PM, Fish &lt;<a href=3D"mailto:fish.thss@...1665...=
-77..." target=3D"_blank">fish.thss@...277...</a>&gt; wrote:<o:p></o:p></spa=
-n></p><blockquote style=3D'border:none;border-left:solid #CCCCCC 1.0pt;padd=
-ing:0cm 0cm 0cm 6.0pt;margin-left:4.8pt;margin-right:0cm'><p class=3DMsoNor=
-mal><span lang=3DEN-US>Make the &quot;block-outside-dns&quot; option agnost=
-ic of Windows versions by dynamically<br>loading WFP-related functions. Cro=
-ss-compiled on Linux and tested on Windows<br>XP/10.<br>---<br>&nbsp;src/op=
-envpn/Makefile.am |&nbsp; &nbsp;2 +-<br>&nbsp;src/openvpn/init.c&nbsp; &nbs=
-p; &nbsp; |&nbsp; &nbsp;4 -<br>&nbsp;src/openvpn/options.c&nbsp; &nbsp;|&nb=
-sp; 17 ++-<br>&nbsp;src/openvpn/win32.c&nbsp; &nbsp; &nbsp;| 114 ++++++++--=
------<br>&nbsp;src/openvpn/win32.h&nbsp; &nbsp; &nbsp;|&nbsp; &nbsp;1 +<br>=
-&nbsp;src/openvpn/win32_wfp.h | 359 +++++++++++++++++++++++++++++++++++++++=
-+++++++++<o:p></o:p></span></p></blockquote></div><p class=3DMsoNormal><spa=
-n lang=3DEN-US><o:p>&nbsp;</o:p></span></p></div><div><p class=3DMsoNormal =
-style=3D'margin-bottom:12.0pt'><span lang=3DEN-US>Looks good, including the=
- attribution to the right mingw upstream..<o:p></o:p></span></p></div><div>=
-<p class=3DMsoNormal><span lang=3DEN-US>But won't build, as the new header =
-(win32_wfp.h) is not added to <br>src/openvpn/Makefile.am --- without that =
-it wont get into the <br>dist tarball etc..<br><br>Next time please append =
-a version number to the mail header: <br>something like [PATCH v2] would do=
-. I'm getting confused with <br>too many versions :)<o:p></o:p></span></p><=
-/div><div><p class=3DMsoNormal><span lang=3DEN-US><o:p>&nbsp;</o:p></span><=
-/p></div><div><p class=3DMsoNormal style=3D'margin-bottom:12.0pt'><span lan=
-g=3DEN-US>Thanks,<o:p></o:p></span></p></div><div><p class=3DMsoNormal><spa=
-n lang=3DEN-US>Selva<o:p></o:p></span></p></div><div><p class=3DMsoNormal><=
-span lang=3DEN-US><o:p>&nbsp;</o:p></span></p></div><div><p class=3DMsoNorm=
-al><span lang=3DEN-US><o:p>&nbsp;</o:p></span></p></div></div></div></body>=
-</html>=
-
-------=_NextPart_000_01C6_01D1364F.960855E0--
+diff --git a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am
+index 2e602f1..6d02fea 100644
+--- a/src/openvpn/Makefile.am
++++ b/src/openvpn/Makefile.am
+@@ -110,7 +110,7 @@ openvpn_SOURCES = \
+ 	status.c status.h \
+ 	syshead.h \
+ 	tun.c tun.h \
+-	win32.h win32.c \
++	win32.h win32_wfp.h win32.c \
+ 	cryptoapi.h cryptoapi.c
+ openvpn_LDADD = \
+ 	$(top_builddir)/src/compat/libcompat.la \
+@@ -123,5 +123,5 @@ openvpn_LDADD = \
+ 	$(OPTIONAL_DL_LIBS)
+ if WIN32
+ openvpn_SOURCES += openvpn_win32_resources.rc
+-openvpn_LDADD += -lgdi32 -lws2_32 -lwininet -lcrypt32 -liphlpapi -lwinmm
++openvpn_LDADD += -lgdi32 -lws2_32 -lwininet -lcrypt32 -liphlpapi -lrpcrt4 -lwinmm
+ endif
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index e8a96c2..960535d 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -1468,14 +1468,12 @@ do_open_tun (struct context *c)
+ 		   "up",
+ 		   c->c2.es);
+ 
+-#if _WIN32_WINNT >= 0x0600
+       if (c->options.block_outside_dns)
+       {
+         dmsg (D_LOW, "Blocking outside DNS");
+         if (!win_wfp_block_dns(c->c1.tuntap->adapter_index))
+             msg (M_FATAL, "Blocking DNS failed!");
+       }
+-#endif
+ 
+       /* possibly add routes */
+       if (!c->options.route_delay_defined)
+@@ -1603,13 +1601,11 @@ do_close_tun (struct context *c, bool force)
+ 		       "down",
+ 		       c->c2.es);
+ 
+-#if _WIN32_WINNT >= 0x0600
+             if (c->options.block_outside_dns)
+             {
+                 if (!win_wfp_uninit())
+                     msg (M_FATAL, "Uninitialising WFP failed!");
+             }
+-#endif
+ 
+ 	  /* actually close tun/tap device based on --down-pre flag */
+ 	  if (c->options.down_pre)
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 3a6aacd..8d85502 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -715,9 +715,7 @@ static const char usage_message[] =
+   "                       optional parameter controls the initial state of ex.\n"
+   "--show-net-up   : Show " PACKAGE_NAME "'s view of routing table and net adapter list\n"
+   "                  after TAP adapter is up and routes have been added.\n"
+-#if _WIN32_WINNT >= 0x0600
+   "--block-outside-dns   : Block DNS on other network adapters to prevent DNS leaks\n"
+-#endif
+   "Windows Standalone Options:\n"
+   "\n"
+   "--show-adapters : Show all TAP-Windows adapters.\n"
+@@ -1682,9 +1680,7 @@ show_settings (const struct options *o)
+ #ifdef WIN32
+   SHOW_BOOL (show_net_up);
+   SHOW_INT (route_method);
+-#if _WIN32_WINNT >= 0x0600
+   SHOW_BOOL (block_outside_dns);
+-#endif
+   show_tuntap_options (&o->tuntap_options);
+ #endif
+ #endif
+@@ -6252,13 +6248,20 @@ add_option (struct options *options,
+       VERIFY_PERMISSION (OPT_P_IPWIN32);
+       options->tuntap_options.register_dns = true;
+     }
+-#if _WIN32_WINNT >= 0x0600
+   else if (streq (p[0], "block-outside-dns") && !p[1])
+     {
+       VERIFY_PERMISSION (OPT_P_IPWIN32);
+-      options->block_outside_dns = true;
++      if (win_wfp_init_funcs())
++      {
++        options->block_outside_dns = true;
++      }
++      else
++      {
++        msg (msglevel_fc, "Failed to enable --block-outside-dns. "
++                       "Maybe WFP is not supported on your system?");
++	      goto err;
++      }
+     }
+-#endif
+   else if (streq (p[0], "rdns-internal"))
+      /* standalone method for internal use
+       *
+diff --git a/src/openvpn/win32.c b/src/openvpn/win32.c
+index 9402361..449d512 100644
+--- a/src/openvpn/win32.c
++++ b/src/openvpn/win32.c
+@@ -46,63 +46,17 @@
+ 
+ #include "memdbg.h"
+ 
+-/*
+- * WFP-related defines and GUIDs.
+- */
+-#if _WIN32_WINNT >= 0x0600
+-#include <fwpmu.h>
+-#include <initguid.h>
+-#include <fwpmtypes.h>
+-#include <iphlpapi.h>
+-
+-#ifndef FWPM_SESSION_FLAG_DYNAMIC
+-#define FWPM_SESSION_FLAG_DYNAMIC 0x00000001
+-#endif
+-
+-// c38d57d1-05a7-4c33-904f-7fbceee60e82
+-DEFINE_GUID(
+-   FWPM_LAYER_ALE_AUTH_CONNECT_V4,
+-   0xc38d57d1,
+-   0x05a7,
+-   0x4c33,
+-   0x90, 0x4f, 0x7f, 0xbc, 0xee, 0xe6, 0x0e, 0x82
+-);
+-
+-// 4a72393b-319f-44bc-84c3-ba54dcb3b6b4
+-DEFINE_GUID(
+-   FWPM_LAYER_ALE_AUTH_CONNECT_V6,
+-   0x4a72393b,
+-   0x319f,
+-   0x44bc,
+-   0x84, 0xc3, 0xba, 0x54, 0xdc, 0xb3, 0xb6, 0xb4
+-);
+-
+-// d78e1e87-8644-4ea5-9437-d809ecefc971
+-DEFINE_GUID(
+-   FWPM_CONDITION_ALE_APP_ID,
+-   0xd78e1e87,
+-   0x8644,
+-   0x4ea5,
+-   0x94, 0x37, 0xd8, 0x09, 0xec, 0xef, 0xc9, 0x71
+-);
+-
+-// c35a604d-d22b-4e1a-91b4-68f674ee674b
+-DEFINE_GUID(
+-   FWPM_CONDITION_IP_REMOTE_PORT,
+-   0xc35a604d,
+-   0xd22b,
+-   0x4e1a,
+-   0x91, 0xb4, 0x68, 0xf6, 0x74, 0xee, 0x67, 0x4b
+-);
+-
+-// 4cd62a49-59c3-4969-b7f3-bda5d32890a4
+-DEFINE_GUID(
+-   FWPM_CONDITION_IP_LOCAL_INTERFACE,
+-   0x4cd62a49,
+-   0x59c3,
+-   0x4969,
+-   0xb7, 0xf3, 0xbd, 0xa5, 0xd3, 0x28, 0x90, 0xa4
+-);
++#include "win32_wfp.h"
++
++/* WFP function pointers. Initialized in win_wfp_init_funcs() */
++func_ConvertInterfaceIndexToLuid ConvertInterfaceIndexToLuid = NULL;
++func_FwpmEngineOpen0 FwpmEngineOpen0 = NULL;
++func_FwpmEngineClose0 FwpmEngineClose0 = NULL;
++func_FwpmFilterAdd0 FwpmFilterAdd0 = NULL;
++func_FwpmSubLayerAdd0 FwpmSubLayerAdd0 = NULL;
++func_FwpmSubLayerDeleteByKey0 FwpmSubLayerDeleteByKey0 = NULL;
++func_FwpmFreeMemory0 FwpmFreeMemory0 = NULL;
++func_FwpmGetAppIdFromFileName0 FwpmGetAppIdFromFileName0 = NULL;
+ 
+ /*
+  * WFP firewall name.
+@@ -113,7 +67,6 @@ WCHAR * FIREWALL_NAME = L"OpenVPN"; /* GLOBAL */
+  * WFP handle and GUID.
+  */
+ static HANDLE m_hEngineHandle = NULL; /* GLOBAL */
+-#endif
+ 
+ /*
+  * Windows internal socket API state (opaque).
+@@ -1147,7 +1100,49 @@ win_get_tempdir()
+   return tmpdir;
+ }
+ 
+-#if _WIN32_WINNT >= 0x0600
++bool
++win_wfp_init_funcs ()
++{
++  /* Initialize all WFP-related function pointers */
++  HMODULE iphlpapiHandle = LoadLibrary("iphlpapi.dll");
++  if (iphlpapiHandle == NULL)
++  {
++    msg (M_NONFATAL, "Can't load iphlpapi.dll");
++    return false;
++  }
++
++  HMODULE fwpuclntHandle = LoadLibrary("fwpuclnt.dll");
++  if (fwpuclntHandle == NULL)
++  {
++    msg (M_NONFATAL, "Can't load fwpuclnt.dll");
++    return false;
++  }
++
++  ConvertInterfaceIndexToLuid = (func_ConvertInterfaceIndexToLuid)GetProcAddress(iphlpapiHandle, "ConvertInterfaceIndexToLuid");
++  FwpmFilterAdd0 = (func_FwpmFilterAdd0)GetProcAddress(fwpuclntHandle, "FwpmFilterAdd0");
++  FwpmEngineOpen0 = (func_FwpmEngineOpen0)GetProcAddress(fwpuclntHandle, "FwpmEngineOpen0");
++  FwpmEngineClose0 = (func_FwpmEngineClose0)GetProcAddress(fwpuclntHandle, "FwpmEngineClose0");
++  FwpmSubLayerAdd0 = (func_FwpmSubLayerAdd0)GetProcAddress(fwpuclntHandle, "FwpmSubLayerAdd0");
++  FwpmSubLayerDeleteByKey0 = (func_FwpmSubLayerDeleteByKey0)GetProcAddress(fwpuclntHandle, "FwpmSubLayerDeleteByKey0");
++  FwpmFreeMemory0 = (func_FwpmFreeMemory0)GetProcAddress(fwpuclntHandle, "FwpmFreeMemory0");
++  FwpmGetAppIdFromFileName0 = (func_FwpmGetAppIdFromFileName0)GetProcAddress(fwpuclntHandle, "FwpmGetAppIdFromFileName0");
++
++  if (!ConvertInterfaceIndexToLuid ||
++      !FwpmFilterAdd0 ||
++      !FwpmEngineOpen0 ||
++      !FwpmEngineClose0 ||
++      !FwpmSubLayerAdd0 ||
++      !FwpmSubLayerDeleteByKey0 ||
++      !FwpmFreeMemory0 ||
++      !FwpmGetAppIdFromFileName0)
++  {
++    msg (M_NONFATAL, "Can't get address for all WFP-related procedures.");
++    return false;
++  }
++
++  return true;
++}
++
+ bool
+ win_wfp_add_filter (HANDLE engineHandle,
+                     const FWPM_FILTER0 *filter,
+@@ -1292,4 +1287,3 @@ win_wfp_uninit()
+ }
+ 
+ #endif
+-#endif
+diff --git a/src/openvpn/win32.h b/src/openvpn/win32.h
+index a5baebd..776ef36 100644
+--- a/src/openvpn/win32.h
++++ b/src/openvpn/win32.h
+@@ -271,6 +271,7 @@ const char *win_get_tempdir();
+ /* Convert a string from UTF-8 to UCS-2 */
+ WCHAR *wide_string (const char* utf8, struct gc_arena *gc);
+ 
++bool win_wfp_init_funcs();
+ bool win_wfp_block_dns(const NET_IFINDEX index);
+ bool win_wfp_uninit();
+ 
+diff --git a/src/openvpn/win32_wfp.h b/src/openvpn/win32_wfp.h
+new file mode 100644
+index 0000000..b75ccf0
+--- /dev/null
++++ b/src/openvpn/win32_wfp.h
+@@ -0,0 +1,359 @@
++/*
++ This Software is provided under the Zope Public License (ZPL) Version 2.1.
++
++ Copyright (c) 2009, 2010 by the mingw-w64 project
++
++ See the AUTHORS file for the list of contributors to the mingw-w64 project.
++
++ This license has been certified as open source. It has also been designated
++ as GPL compatible by the Free Software Foundation (FSF).
++
++ Redistribution and use in source and binary forms, with or without
++ modification, are permitted provided that the following conditions are met:
++
++   1. Redistributions in source code must retain the accompanying copyright
++      notice, this list of conditions, and the following disclaimer.
++   2. Redistributions in binary form must reproduce the accompanying
++      copyright notice, this list of conditions, and the following disclaimer
++      in the documentation and/or other materials provided with the
++      distribution.
++   3. Names of the copyright holders must not be used to endorse or promote
++      products derived from this software without prior written permission
++      from the copyright holders.
++   4. The right to distribute this software or to use it for any purpose does
++      not give you the right to use Servicemarks (sm) or Trademarks (tm) of
++      the copyright holders.  Use of them is covered by separate agreement
++      with the copyright holders.
++   5. If any files are modified, you must cause the modified files to carry
++      prominent notices stating that you changed the files and the date of
++      any change.
++
++ Disclaimer
++
++ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ``AS IS'' AND ANY EXPRESSED
++ OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
++ OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
++ EVENT SHALL THE COPYRIGHT HOLDERS BE LIABLE FOR ANY DIRECT, INDIRECT,
++ INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
++ LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, 
++ OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
++ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
++ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
++ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
++*/
++
++/*
++ * Windows Filtering Platform (WFP) related prototypes, mostly stripped out of
++ * mingw-w64.
++ */
++
++/*
++ * WFP-related defines and GUIDs.
++ */
++
++#ifndef WIN32_WFP_H
++#define WIN32_WFP_H
++
++#include <initguid.h>
++#include <iphlpapi.h>
++#include <rpc.h>
++#include <rpcdce.h>
++
++#ifndef FWPM_SESSION_FLAG_DYNAMIC
++#define FWPM_SESSION_FLAG_DYNAMIC 0x00000001
++#endif
++
++// c38d57d1-05a7-4c33-904f-7fbceee60e82
++DEFINE_GUID(
++   FWPM_LAYER_ALE_AUTH_CONNECT_V4,
++   0xc38d57d1,
++   0x05a7,
++   0x4c33,
++   0x90, 0x4f, 0x7f, 0xbc, 0xee, 0xe6, 0x0e, 0x82
++);
++
++// 4a72393b-319f-44bc-84c3-ba54dcb3b6b4
++DEFINE_GUID(
++   FWPM_LAYER_ALE_AUTH_CONNECT_V6,
++   0x4a72393b,
++   0x319f,
++   0x44bc,
++   0x84, 0xc3, 0xba, 0x54, 0xdc, 0xb3, 0xb6, 0xb4
++);
++
++// d78e1e87-8644-4ea5-9437-d809ecefc971
++DEFINE_GUID(
++   FWPM_CONDITION_ALE_APP_ID,
++   0xd78e1e87,
++   0x8644,
++   0x4ea5,
++   0x94, 0x37, 0xd8, 0x09, 0xec, 0xef, 0xc9, 0x71
++);
++
++// c35a604d-d22b-4e1a-91b4-68f674ee674b
++DEFINE_GUID(
++   FWPM_CONDITION_IP_REMOTE_PORT,
++   0xc35a604d,
++   0xd22b,
++   0x4e1a,
++   0x91, 0xb4, 0x68, 0xf6, 0x74, 0xee, 0x67, 0x4b
++);
++
++// 4cd62a49-59c3-4969-b7f3-bda5d32890a4
++DEFINE_GUID(
++   FWPM_CONDITION_IP_LOCAL_INTERFACE,
++   0x4cd62a49,
++   0x59c3,
++   0x4969,
++   0xb7, 0xf3, 0xbd, 0xa5, 0xd3, 0x28, 0x90, 0xa4
++);
++
++/* From fwptypes.h */
++
++#define FWP_ACTION_FLAG_TERMINATING     (0x00001000)
++#define FWP_ACTION_FLAG_NON_TERMINATING (0x00002000)
++
++#define FWP_ACTION_BLOCK  (0x1 | FWP_ACTION_FLAG_TERMINATING)
++#define FWP_ACTION_PERMIT (0x2 | FWP_ACTION_FLAG_TERMINATING)
++
++typedef UINT32 FWP_ACTION_TYPE;
++
++typedef enum FWP_DATA_TYPE_ {
++    FWP_EMPTY = 0,
++    FWP_UINT8 = 1,
++    FWP_UINT16 = 2,
++    FWP_UINT32 = 3,
++    FWP_UINT64 = 4,
++    FWP_INT8 = 5,
++    FWP_INT16 = 6,
++    FWP_INT32 = 7,
++    FWP_INT64 = 8,
++    FWP_FLOAT = 9,
++    FWP_DOUBLE = 10,
++    FWP_BYTE_ARRAY16_TYPE = 11,
++    FWP_BYTE_BLOB_TYPE = 12,
++    FWP_SID = 13,
++    FWP_SECURITY_DESCRIPTOR_TYPE = 14,
++    FWP_TOKEN_INFORMATION_TYPE = 15,
++    FWP_TOKEN_ACCESS_INFORMATION_TYPE = 16,
++    FWP_UNICODE_STRING_TYPE = 17,
++    FWP_BYTE_ARRAY6_TYPE = 18,
++    FWP_SINGLE_DATA_TYPE_MAX = 0xff,
++    FWP_V4_ADDR_MASK = 0x100,
++    FWP_V6_ADDR_MASK = 0x101,
++    FWP_RANGE_TYPE = 0x102,
++    FWP_DATA_TYPE_MAX = 0x103
++} FWP_DATA_TYPE;
++
++typedef enum FWP_MATCH_TYPE_ {
++    FWP_MATCH_EQUAL = 0,
++    FWP_MATCH_GREATER = 1,
++    FWP_MATCH_LESS = 2,
++    FWP_MATCH_GREATER_OR_EQUAL = 3,
++    FWP_MATCH_LESS_OR_EQUAL = 4,
++    FWP_MATCH_RANGE = 5,
++    FWP_MATCH_FLAGS_ALL_SET = 6,
++    FWP_MATCH_FLAGS_ANY_SET = 7,
++    FWP_MATCH_FLAGS_NONE_SET = 8,
++    FWP_MATCH_EQUAL_CASE_INSENSITIVE = 9,
++    FWP_MATCH_NOT_EQUAL = 10,
++    FWP_MATCH_TYPE_MAX = 11
++} FWP_MATCH_TYPE;
++
++typedef struct FWP_BYTE_ARRAY6_ {
++    UINT8 byteArray6[6];
++} FWP_BYTE_ARRAY6;
++
++typedef struct FWP_BYTE_ARRAY16_ {
++    UINT8 byteArray16[16];
++} FWP_BYTE_ARRAY16;
++
++typedef struct FWP_BYTE_BLOB_ {
++    UINT32 size;
++    UINT8 *data;
++} FWP_BYTE_BLOB;
++
++typedef struct FWP_TOKEN_INFORMATION_ {
++    ULONG sidCount;
++    PSID_AND_ATTRIBUTES sids;
++    ULONG restrictedSidCount;
++    PSID_AND_ATTRIBUTES restrictedSids;
++} FWP_TOKEN_INFORMATION;
++
++typedef struct FWP_VALUE0_ {
++    FWP_DATA_TYPE type;
++    __C89_NAMELESS union {
++        UINT8 uint8;
++        UINT16 uint16;
++        UINT32 uint32;
++        UINT64 *uint64;
++        INT8 int8;
++        INT16 int16;
++        INT32 int32;
++        INT64 *int64;
++        float float32;
++        double *double64;
++        FWP_BYTE_ARRAY16 *byteArray16;
++        FWP_BYTE_BLOB *byteBlob;
++        SID *sid;
++        FWP_BYTE_BLOB *sd;
++        FWP_TOKEN_INFORMATION *tokenInformation;
++        FWP_BYTE_BLOB *tokenAccessInformation;
++        LPWSTR unicodeString;
++        FWP_BYTE_ARRAY6 *byteArray6;
++    } __C89_NAMELESSUNIONNAME;
++} FWP_VALUE0;
++
++typedef struct FWP_V4_ADDR_AND_MASK_ {
++    UINT32 addr;
++    UINT32 mask;
++} FWP_V4_ADDR_AND_MASK;
++
++typedef struct FWP_V6_ADDR_AND_MASK_ {
++    UINT8 addr[16];
++    UINT8 prefixLength;
++} FWP_V6_ADDR_AND_MASK;
++
++typedef struct FWP_RANGE0_ {
++    FWP_VALUE0 valueLow;
++    FWP_VALUE0 valueHigh;
++} FWP_RANGE0;
++
++typedef struct FWP_CONDITION_VALUE0_ {
++    FWP_DATA_TYPE type;
++    __C89_NAMELESS union {
++        UINT8 uint8;
++        UINT16 uint16;
++        UINT32 uint32;
++        UINT64 *uint64;
++        INT8 int8;
++        INT16 int16;
++        INT32 int32;
++        INT64 *int64;
++        float float32;
++        double *double64;
++        FWP_BYTE_ARRAY16 *byteArray16;
++        FWP_BYTE_BLOB *byteBlob;
++        SID *sid;
++        FWP_BYTE_BLOB *sd;
++        FWP_TOKEN_INFORMATION *tokenInformation;
++        FWP_BYTE_BLOB *tokenAccessInformation;
++        LPWSTR unicodeString;
++        FWP_BYTE_ARRAY6 *byteArray6;
++        FWP_V4_ADDR_AND_MASK *v4AddrMask;
++        FWP_V6_ADDR_AND_MASK *v6AddrMask;
++        FWP_RANGE0 *rangeValue;
++    } __C89_NAMELESSUNIONNAME;
++} FWP_CONDITION_VALUE0;
++
++typedef struct FWPM_DISPLAY_DATA0_ {
++    wchar_t *name;
++    wchar_t *description;
++} FWPM_DISPLAY_DATA0;
++
++/* From fwpmtypes.h */
++
++typedef struct FWPM_ACTION0_ {
++  FWP_ACTION_TYPE type;
++  __C89_NAMELESS union {
++    GUID filterType;
++    GUID calloutKey;
++  };
++} FWPM_ACTION0;
++
++typedef struct FWPM_SESSION0_ {
++  GUID               sessionKey;
++  FWPM_DISPLAY_DATA0 displayData;
++  UINT32             flags;
++  UINT32             txnWaitTimeoutInMSec;
++  DWORD              processId;
++  SID                *sid;
++  wchar_t            *username;
++  WINBOOL            kernelMode;
++} FWPM_SESSION0;
++
++typedef struct FWPM_SUBLAYER0_ {
++  GUID               subLayerKey;
++  FWPM_DISPLAY_DATA0 displayData;
++  UINT16             flags;
++  GUID               *providerKey;
++  FWP_BYTE_BLOB      providerData;
++  UINT16             weight;
++} FWPM_SUBLAYER0;
++
++typedef struct FWPM_FILTER_CONDITION0_ {
++  GUID                 fieldKey;
++  FWP_MATCH_TYPE       matchType;
++  FWP_CONDITION_VALUE0 conditionValue;
++} FWPM_FILTER_CONDITION0;
++
++typedef struct FWPM_FILTER0_ {
++  GUID                   filterKey;
++  FWPM_DISPLAY_DATA0     displayData;
++  UINT32                 flags;
++  GUID                   *providerKey;
++  FWP_BYTE_BLOB          providerData;
++  GUID                   layerKey;
++  GUID                   subLayerKey;
++  FWP_VALUE0             weight;
++  UINT32                 numFilterConditions;
++  FWPM_FILTER_CONDITION0 *filterCondition;
++  FWPM_ACTION0           action;
++  __C89_NAMELESS union {
++    UINT64 rawContext;
++    GUID   providerContextKey;
++  };
++  GUID                   *reserved;
++  UINT64                 filterId;
++  FWP_VALUE0             effectiveWeight;
++} FWPM_FILTER0;
++
++/* Typedefs of WFP functions */
++
++#define NETIO_STATUS DWORD
++
++typedef NETIO_STATUS WINAPI *(*func_ConvertInterfaceIndexToLuid)(
++  NET_IFINDEX InterfaceIndex,
++  PNET_LUID InterfaceLuid
++);
++
++typedef DWORD WINAPI *(*func_FwpmEngineOpen0)(
++  const wchar_t *serverName,
++  UINT32 authnService,
++  SEC_WINNT_AUTH_IDENTITY_W *authIdentity,
++  const FWPM_SESSION0 *session,
++  HANDLE *engineHandle
++);
++
++typedef DWORD WINAPI *(*func_FwpmEngineClose0)(
++  HANDLE engineHandle
++);
++
++typedef DWORD WINAPI *(*func_FwpmFilterAdd0)(
++  HANDLE engineHandle,
++  const FWPM_FILTER0 *filter,
++  PSECURITY_DESCRIPTOR sd,
++  UINT64 *id
++);
++
++typedef DWORD WINAPI *(*func_FwpmSubLayerAdd0)(
++  HANDLE engineHandle,
++  const FWPM_SUBLAYER0 *subLayer,
++  PSECURITY_DESCRIPTOR sd
++);
++
++typedef DWORD WINAPI *(*func_FwpmSubLayerDeleteByKey0)(
++  HANDLE engineHandle,
++  const GUID *key
++);
++
++typedef void WINAPI *(*func_FwpmFreeMemory0)(
++  void **p
++);
++
++typedef DWORD WINAPI *(*func_FwpmGetAppIdFromFileName0)(
++  const wchar_t *fileName,
++  FWP_BYTE_BLOB **appId
++);
++
++#endif
+-- 
+2.6.4
 
 
