@@ -1,9 +1,13 @@
-Date: Mon, 14 Dec 2015 17:23:40 +0200
-From: Samuli =?ISO-8859-1?Q?Sepp=E4nen?= <samuli@...515...>
-Message-Id: <20151214172340.9332784c61ebaccf5b94a6ae@...515...>
-Mime-Version: 1.0
-Subject: [Openvpn-devel] Topics for today's (Monday,
-	14th Dec 2015) community meeting
+MIME-Version: 1.0
+In-Reply-To: <1450056335-18444-1-git-send-email-fish.thss@...277...>
+References: <1450055187-17397-1-git-send-email-fish.thss@...277...>
+	<1450056335-18444-1-git-send-email-fish.thss@...277...>
+From: Selva Nair <selva.nair@...277...>
+Date: Mon, 14 Dec 2015 12:01:18 -0500
+Message-ID: <CAKuzo_jwN79GhubM4Dgp4=dnZwJVvTiEMEzUp4k-FWBqQ2dwPA@...278...>
+Content-Type: multipart/alternative; boundary=089e012298ec564b3b0526dea0d6
+Subject: Re: [Openvpn-devel] [PATCH] Make "block-outside-dns" option
+	platform agnostic
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,43 +16,76 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
+To: Fish <fish.thss@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+--089e012298ec564b3b0526dea0d6
+Content-Type: text/plain; charset=UTF-8
 
 Hi,
 
-We're going to have an IRC meeting today starting at 20:00 CET (19:00=20
-UTC) on #openvpn-meeting <at> irc.freenode.net. Note that the meeting=20
-channel has changed and that you do _not_ have to be logged in to=20
-Freenode to join the channel.
+On Sun, Dec 13, 2015 at 8:25 PM, Fish <fish.thss@...277...> wrote:
 
-Current topic list along with basic information is here:
+> Make the "block-outside-dns" option agnostic of Windows versions by
+> dynamically
+> loading WFP-related functions. Cross-compiled on Linux and tested on
+> Windows
+> XP/10.
+> ---
+>  src/openvpn/Makefile.am |   2 +-
+>  src/openvpn/init.c      |   4 -
+>  src/openvpn/options.c   |  17 ++-
+>  src/openvpn/win32.c     | 114 ++++++++-------
+>  src/openvpn/win32.h     |   1 +
+>  src/openvpn/win32_wfp.h | 359
+> ++++++++++++++++++++++++++++++++++++++++++++++++
 
-<https://community.openvpn.net/openvpn/wiki/Topics-2015-12-14>
 
-If you have any other things you'd like to bring up, respond to this=20
-mail, send me mail privately or add them to the list yourself.
+Looks good, including the attribution to the right mingw upstream..
 
-In case you can't attend the meeting, please feel free to make comments=20
-on the topics by responding to this email or to the summary email sent=20
-after the meeting. Whenever possible, we'll also respond to existing,=20
-related email threads.
+But won't build, as the new header (win32_wfp.h) is not added to
+src/openvpn/Makefile.am --- without that it wont get into the
+dist tarball etc..
 
-- - --=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
+Next time please append a version number to the mail header:
+something like [PATCH v2] would do. I'm getting confused with
+too many versions :)
 
-irc freenode net: mattock
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
+Thanks,
 
-iEYEARECAAYFAlZu3wMACgkQwp2X7RmNIqO8QwCfbS8OG5l/tAX4w7bah0SKdejb
-gU0An0sowDdhFn0MSTReND9Qi9SGBVxG
-=3DiA74
------END PGP SIGNATURE-----
+Selva
+
+--089e012298ec564b3b0526dea0d6
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div class=3D"gmail_extra">Hi,<br><br></div><div class=3D"=
+gmail_extra"><div class=3D"gmail_quote">On Sun, Dec 13, 2015 at 8:25 PM, Fi=
+sh <span dir=3D"ltr">&lt;<a href=3D"mailto:fish.thss@...277..." target=3D"_=
+blank">fish.thss@...277...</a>&gt;</span> wrote:<br><blockquote class=3D"gm=
+ail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-le=
+ft:1ex"><span>Make the &quot;block-outside-dns&quot; option agnostic of Win=
+dows versions by dynamically<br>
+loading WFP-related functions. Cross-compiled on Linux and tested on Window=
+s<br>
+XP/10.<br>
+---<br>
+=C2=A0src/openvpn/Makefile.am |=C2=A0 =C2=A02 +-<br>
+=C2=A0src/openvpn/init.c=C2=A0 =C2=A0 =C2=A0 |=C2=A0 =C2=A04 -<br>
+=C2=A0src/openvpn/options.c=C2=A0 =C2=A0|=C2=A0 17 ++-<br>
+=C2=A0src/openvpn/win32.c=C2=A0 =C2=A0 =C2=A0| 114 ++++++++-------<br>
+=C2=A0src/openvpn/win32.h=C2=A0 =C2=A0 =C2=A0|=C2=A0 =C2=A01 +<br>
+</span>=C2=A0src/openvpn/win32_wfp.h | 359 ++++++++++++++++++++++++++++++++=
+++++++++++++++++</blockquote></div><br></div><div class=3D"gmail_extra">Loo=
+ks good, including the attribution to the right mingw upstream..<br><br></d=
+iv><div class=3D"gmail_extra">But won&#39;t build, as the new header (win32=
+_wfp.h) is not added to <br>src/openvpn/Makefile.am --- without that it won=
+t get into the <br>dist tarball etc..<br><br>Next time please append a vers=
+ion number to the mail header: <br>something like [PATCH v2] would do. I&#3=
+9;m getting confused with <br>too many versions :)<br></div><div class=3D"g=
+mail_extra"><br></div><div class=3D"gmail_extra">Thanks,<br><br></div><div =
+class=3D"gmail_extra">Selva<br></div><div class=3D"gmail_extra"><br></div><=
+div class=3D"gmail_extra"><br></div></div>
+
+--089e012298ec564b3b0526dea0d6--
 
