@@ -1,13 +1,9 @@
-References: <CAKuzo_ikg1My8wt2nbycosHvOwKhrRQPO18hjdgqDreCMDbeoQ@...278...>
-	<1450055187-17397-1-git-send-email-fish.thss@...277...>
-	<20151214082619.GB24952@...1296...>
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <566ED6C6.8040001@...515...>
-Date: Mon, 14 Dec 2015 16:48:38 +0200
-MIME-Version: 1.0
-In-Reply-To: <20151214082619.GB24952@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH] Make "block-outside-dns" option
- platform agnostic
+Date: Mon, 14 Dec 2015 17:23:40 +0200
+From: Samuli =?ISO-8859-1?Q?Sepp=E4nen?= <samuli@...515...>
+Message-Id: <20151214172340.9332784c61ebaccf5b94a6ae@...515...>
+Mime-Version: 1.0
+Subject: [Openvpn-devel] Topics for today's (Monday,
+	14th Dec 2015) community meeting
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,46 +12,43 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: quoted-printable
-To: Gert Doering <gert@...1296...>, Fish <fish.thss@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-> Hi,
->
-> On Sun, Dec 13, 2015 at 05:06:27PM -0800, Fish wrote:
->> Make the "block-outside-dns" option agnostic of Windows versions by dyna=
-mically
->> loading WFP-related functions. Cross-compiled on Linux and tested on Win=
-dows
->> XP/10.
->> ---
->>   src/openvpn/Makefile.am |   2 +-
->>   src/openvpn/init.c      |   4 -
->>   src/openvpn/options.c   |  17 ++-
->>   src/openvpn/win32.c     | 114 ++++++++-------
->>   src/openvpn/win32.h     |   1 +
->>   src/openvpn/win32_wfp.h | 361 ++++++++++++++++++++++++++++++++++++++++=
-++++++++
->
-> This layout of "all the copied API bits go to win32_wfp.h" is good enough
-> for me (so, mails crossed here).  Thanks.
->
-> I leave the final decision on "how do we want 2.3 binaries to look like"
-> (single openvpn binary with copied-API bits or xp-binary and vista+ binar=
-y)
-> to the windows team.  Both would work for me.
+Hi,
 
-The build team (=3Dme) would definitely prefer a single binary. Building=20
-separate binaries would be lots of hassle. I can give this patch a=20
-feature-ACK - can't comment on the code quality due to lack of C-fu. I=20
-also don't have a Windows XP to test this on.
+We're going to have an IRC meeting today starting at 20:00 CET (19:00=20
+UTC) on #openvpn-meeting <at> irc.freenode.net. Note that the meeting=20
+channel has changed and that you do _not_ have to be logged in to=20
+Freenode to join the channel.
 
---=20
+Current topic list along with basic information is here:
+
+<https://community.openvpn.net/openvpn/wiki/Topics-2015-12-14>
+
+If you have any other things you'd like to bring up, respond to this=20
+mail, send me mail privately or add them to the list yourself.
+
+In case you can't attend the meeting, please feel free to make comments=20
+on the topics by responding to this email or to the summary email sent=20
+after the meeting. Whenever possible, we'll also respond to existing,=20
+related email threads.
+
+- - --=20
 Samuli Sepp=E4nen
 Community Manager
 OpenVPN Technologies, Inc
 
 irc freenode net: mattock
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iEYEARECAAYFAlZu3wMACgkQwp2X7RmNIqO8QwCfbS8OG5l/tAX4w7bah0SKdejb
+gU0An0sowDdhFn0MSTReND9Qi9SGBVxG
+=3DiA74
+-----END PGP SIGNATURE-----
 
