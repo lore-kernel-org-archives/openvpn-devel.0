@@ -1,7 +1,10 @@
-From: Fish <fish.thss@...277...>
-Date: Mon, 14 Dec 2015 13:06:16 -0800
-Message-Id: <1450127176-43837-1-git-send-email-fish.thss@...277...>
-Subject: [Openvpn-devel] [PATCH] Make MSVC happy about route.c
+Date: Mon, 14 Dec 2015 22:21:02 +0100 (CET)
+Message-Id: <201512142121.tBELL2kC057304@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <1450125695-36596-1-git-send-email-fish.thss@...277...>
+References: <1450125695-36596-1-git-send-email-fish.thss@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Make block-outside-dns option
+	platform agnostic
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,58 +15,29 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Fish <fish.thss@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Move the definition of out to the beginning of functions to comply with
-old-style C compilers. Tested on MSVC 2010.
----
- src/openvpn/route.c | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
+ACK, thanks a lot (and thanks to valdikss and lev for this a thorough
+testing)
 
-diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index cf5a067..c4459f9 100644
---- a/src/openvpn/route.c
-+++ b/src/openvpn/route.c
-@@ -1551,6 +1551,9 @@ add_route_ipv6 (struct route_ipv6 *r6, const struct tuntap *tt, unsigned int fla
- {
-   struct gc_arena gc;
-   struct argv argv;
-+#ifdef WIN32
-+  struct buffer out;
-+#endif
- 
-   const char *network;
-   const char *gateway;
-@@ -1622,8 +1625,7 @@ add_route_ipv6 (struct route_ipv6 *r6, const struct tuntap *tt, unsigned int fla
-   status = openvpn_execve_check (&argv, es, 0, "ERROR: Linux route -6/-A inet6 add command failed");
- 
- #elif defined (WIN32)
--
--  struct buffer out = alloc_buf_gc (64, &gc);
-+  out = alloc_buf_gc(64, &gc);
-   buf_printf (&out, "interface=%d", tt->adapter_index );
-   device = buf_bptr(&out);
- 
-@@ -1900,6 +1902,9 @@ delete_route_ipv6 (const struct route_ipv6 *r6, const struct tuntap *tt, unsigne
- {
-   struct gc_arena gc;
-   struct argv argv;
-+#ifdef WIN32
-+  struct buffer out;
-+#endif
-   const char *network;
-   const char *gateway;
-   const char *device = tt->actual_name;
-@@ -1958,7 +1963,7 @@ delete_route_ipv6 (const struct route_ipv6 *r6, const struct tuntap *tt, unsigne
- 
- #elif defined (WIN32)
- 
--  struct buffer out = alloc_buf_gc (64, &gc);
-+  out = alloc_buf_gc(64, &gc);
-   buf_printf (&out, "interface=%d", tt->adapter_index );
-   device = buf_bptr(&out);
- 
--- 
-2.6.4
+Your patch has been applied to the release/2.3 branch.
+
+commit 367067f3cb29785338686426667df30c86663ed1 (release/2.3)
+Author: Fish
+Date:   Mon Dec 14 12:41:35 2015 -0800
+
+     Make block-outside-dns option platform agnostic
+
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1450125695-36596-1-git-send-email-fish.thss@...277...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/10795
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
