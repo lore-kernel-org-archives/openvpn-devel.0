@@ -1,17 +1,15 @@
-Date: Mon, 14 Dec 2015 09:22:15 +0100
+Date: Mon, 14 Dec 2015 09:26:19 +0100
 From: Gert Doering <gert@...1296...>
-Message-ID: <20151214082215.GA24952@...1296...>
-References: <CADCH5Ogh2ROBNti_hmBUBcQYBz4SuHJo_-cii14_E6aj9jmj-A@...278...>
-	<1449794790-45430-1-git-send-email-fish.thss@...277...>
-	<CAKuzo_ikg1My8wt2nbycosHvOwKhrRQPO18hjdgqDreCMDbeoQ@...278...>
-	<014001d13605$2dec6ae0$89c540a0$@gmail.com>
+Message-ID: <20151214082619.GB24952@...1296...>
+References: <CAKuzo_ikg1My8wt2nbycosHvOwKhrRQPO18hjdgqDreCMDbeoQ@...278...>
+	<1450055187-17397-1-git-send-email-fish.thss@...277...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="4WBDOB4Uaxoy/HSp"
+	protocol="application/pgp-signature"; boundary="yPZwCHe6H+6rrYXo"
 Content-Disposition: inline
-In-Reply-To: <014001d13605$2dec6ae0$89c540a0$@gmail.com>
-Subject: Re: [Openvpn-devel] [PATCH] Make ValdikSS's DNS leak fix platform
- agnostic
+In-Reply-To: <1450055187-17397-1-git-send-email-fish.thss@...277...>
+Subject: Re: [Openvpn-devel] [PATCH] Make "block-outside-dns" option
+ platform agnostic
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,34 +18,39 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Fish Wang <fish.thss@...277...>
+To: Fish <fish.thss@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---4WBDOB4Uaxoy/HSp
+--yPZwCHe6H+6rrYXo
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Sun, Dec 13, 2015 at 04:20:03PM -0800, Fish Wang wrote:
-> Will do. However, I???m by no means a license expert. Based on Licensing =
-Terms page on MinGW???s website ([1], win32api), I believe the code I strip=
-ped out of MinGW should be fine as long as a copy of the notice and its lic=
-ense [2] is included. Please correct me if I???m wrong.
+On Sun, Dec 13, 2015 at 05:06:27PM -0800, Fish wrote:
+> Make the "block-outside-dns" option agnostic of Windows versions by dynam=
+ically
+> loading WFP-related functions. Cross-compiled on Linux and tested on Wind=
+ows
+> XP/10.
+> ---
+>  src/openvpn/Makefile.am |   2 +-
+>  src/openvpn/init.c      |   4 -
+>  src/openvpn/options.c   |  17 ++-
+>  src/openvpn/win32.c     | 114 ++++++++-------
+>  src/openvpn/win32.h     |   1 +
+>  src/openvpn/win32_wfp.h | 361 ++++++++++++++++++++++++++++++++++++++++++=
+++++++
 
-By no means a license expert myself, I think it would be good to have=20
-something like "win32-api.h" (name stands to be discussed) which has all
-the bits we take from MinGW with a comment and their license included
-(your [2], if I'm not mistaken) - so it's totally clear where the stuff=20
-came from.  Less of a "technical" design issue, but being nice about
-attribution.
+This layout of "all the copied API bits go to win32_wfp.h" is good enough
+for me (so, mails crossed here).  Thanks.
 
-> [2] http://sourceforge.net/p/mingw/mingw-org-wsl/ci/21762bb4a1bd0c88c38ee=
-ad03f59e8d994349e83/tree/LICENSE
+I leave the final decision on "how do we want 2.3 binaries to look like"
+(single openvpn binary with copied-API bits or xp-binary and vista+ binary)
+to the windows team.  Both would work for me.
 
 gert
-
 --=20
 USENET is *not* the non-clickable part of WWW!
                                                            //www.muc.de/~ge=
@@ -55,18 +58,18 @@ rt/
 Gert Doering - Munich, Germany                             gert@...1296...
 fax: +49-89-35655025                        gert@...1297...
 
---4WBDOB4Uaxoy/HSp
+--yPZwCHe6H+6rrYXo
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1
 
-iQCUAwUBVm58NqkuBuNlUUl1AQJvBAP0CjdAegcX5isyXfhO69zw2B8DPtzWY75k
-s/U7mJhxeiI75OiH4ssxD5mLXeKwrHTXpZMJGNolHiWTbdgWI/pzUOsNaYaEBG4U
-s9NyyB+7ivKzMf8fVJqLcbfMiNgQUFG1ZoRbr+kZ3WrNRpqUVv5xKkorMLFZGNZM
-0A1fnxPN5w==
-=0y8k
+iQCVAwUBVm59KqkuBuNlUUl1AQKFKgP9EZIFcv00Q+xqWsxzSLX/0+swSTJNJmXj
+OsQkuRAnpfvxl7petDfNJQQUm/ZR8pgsYGCdkn6qxO6VnvGdoGGWb7pwcJPEhbZf
+JhveQg6Steh+MGvqJ2aSZWlaRL+xXM6qKxIBU54MVIRjCa5/zb69ALhS306wequI
+/3CCe9IqJuM=
+=5xZg
 -----END PGP SIGNATURE-----
 
---4WBDOB4Uaxoy/HSp--
+--yPZwCHe6H+6rrYXo--
 
