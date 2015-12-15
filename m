@@ -1,16 +1,12 @@
-Date: Tue, 15 Dec 2015 21:32:00 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20151215203200.GT24952@...1296...>
-References: <1448852638-2644-1-git-send-email-fukawi2@...277...>
-	<56706E28.8030900@...2080...>
-	<CAA1AbxKm2cjH3EahH4pdjdRsN9W06aRXAybgWZb1MQc7+X6qYA@...278...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="o7NjMogxFLDDVZJd"
-Content-Disposition: inline
-In-Reply-To: <CAA1AbxKm2cjH3EahH4pdjdRsN9W06aRXAybgWZb1MQc7+X6qYA@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] Use example.com to improve clarity of
- documentation
+In-Reply-To: <1449751187-11395-1-git-send-email-arne@...1227...>
+References: <1444571495-7670-1-git-send-email-arne@...1227...>
+	<1449751187-11395-1-git-send-email-arne@...1227...>
+From: Steffan Karger <steffan@...1856...>
+Date: Tue, 15 Dec 2015 21:33:21 +0100
+Message-ID: <CAA1AbxKJwx5fckOpDMA7=9UB6NKtCET_ajkMav65YKNy791eOw@...278...>
+Subject: Re: [Openvpn-devel] [PATCHv2] Implement the compression V2 data
+ format for stub and lz4.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,44 +15,89 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan@...1856...>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---o7NjMogxFLDDVZJd
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Hi Arne,
 
-Hi,
+Some comments after a first review:
 
-On Tue, Dec 15, 2015 at 08:54:23PM +0100, Steffan Karger wrote:
-> Ooh, I like using alice and bob!=20=20
+On Thu, Dec 10, 2015 at 1:39 PM, Arne Schwabe <arne@...1227...> wrote:
+> V2: Fix an unintended change in the old lz4 decompress code.
+>
+> [..snip...]
+>
+> +static void
+> +lz4_compress (struct buffer *buf, struct buffer work,
+> +             struct compress_context *compctx,
+> +             const struct frame* frame)
+> +{
+> +  if (buf->len <= 0)
+> +    return;
+> +  bool compressed = do_lz4_compress(buf, &work, compctx, frame);
 
-+1
+This looks like it will blow up on compilers that still not properly
+support C99 (ie MSVC); declaration-after-statement.
 
-I'm fine with using example.com, but "host1" and "host2" just didn't
-ring true (but I was too busy to spell this out).
+> @@ -128,13 +141,73 @@ lz4_compress (struct buffer *buf, struct buffer work,
+>    }
+>  }
+>
+> +
+> +static void
+> +lz4v2_compress (struct buffer *buf, struct buffer work,
+> +               struct compress_context *compctx,
+> +               const struct frame* frame)
+> +{
+> +  bool compressed;
+> +  if (buf->len <= 0)
+> +    return;
+> +
+> +   compressed = do_lz4_compress(buf, &work, compctx, frame);
+> +  if (buf->len <= 0)
+> +    return;
+> +
+> +  /* On Error just return */
+> +  if (buf->len == 0)
+> +    return;
 
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+A space too many before compressed.  And the second check on buf->len
+seems pointless.
 
---o7NjMogxFLDDVZJd
-Content-Type: application/pgp-signature; name="signature.asc"
+> +  /* did compression save us anything? */
+> +  {
+> +    if (compressed && work.len < buf->len)
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
+We could also check against work.len + 2, since we will be adding two
+bytes of we are going to use compression. Should save some more bytes.
 
-iQCVAwUBVnB4v6kuBuNlUUl1AQI8IwQAj222Gsty6Wh6QtJ3p7HxfKEFhJeFLPQr
-kigbTMHNs0ul7RFubmQ3lTwhoYsBVkxhtCGKSdtG7lD8/BWsFWEFf3EUK8krVoVO
-Lxp9RVnsjslrEsuyGpV/UCqiYrXG7Znv6s3vPaH7JYTbWQtdwdA7ndWuOnkiBBQG
-Bi2wMiUrrlU=
-=/Lnz
------END PGP SIGNATURE-----
+> @@ -176,7 +233,57 @@ lz4_decompress (struct buffer *buf, struct buffer work,
+>      }
+>    else
+>      {
+> +        struct gc_arena gc = gc_new ();
+>        dmsg (D_COMP_ERRORS, "Bad LZ4 decompression header byte: %d", c);
+> +      msg (M_INFO, "PKT_DUMP: %s", format_hex (BPTR (buf), buf->len, 0, &gc));
+> +      buf->len = 0;
+> +    }
+> +}
 
---o7NjMogxFLDDVZJd--
+Indenting looks off.  And don't forget to call gc_free().
+
+> diff --git a/src/openvpn/compstub.c b/src/openvpn/compstub.c
+> index 2ab7163..0f21a6f 100644
+> --- a/src/openvpn/compstub.c
+> +++ b/src/openvpn/compstub.c
+> @@ -73,6 +73,8 @@ stub_compress (struct buffer *buf, struct buffer work,
+>      }
+>  }
+>
+> +
+> +
+
+Pure whitespace change?
+
+-Steffan
 
