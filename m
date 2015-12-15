@@ -1,9 +1,11 @@
-Date: Tue, 15 Dec 2015 09:34:05 +0100 (CET)
-Message-Id: <201512150834.tBF8Y5mb061321@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <1450167502-13471-1-git-send-email-lstipakov@...277...>
-References: <1450167502-13471-1-git-send-email-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix VS2013 compilation
+Message-ID: <566FD25F.7080804@...1147...>
+Date: Tue, 15 Dec 2015 09:42:07 +0100
+From: Jan Just Keijser <janjust@...1147...>
+MIME-Version: 1.0
+References: <1450131285-30182-1-git-send-email-steffan@...1856...>
+In-Reply-To: <1450131285-30182-1-git-send-email-steffan@...1856...>
+Subject: Re: [Openvpn-devel] [PATCH] Disable certificate notBefore/notAfter
+ sanity check on OpenSSL < 1.0.2
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,31 +14,57 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Lev Stipakov <lstipakov@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
 
-ACK, as this is basically the "2.3" parts of commit 123092a7a95.  Thanks.
+Hi,
 
-Your patch has been applied to the release/2.3 branch.
+On 14/12/15 23:14, Steffan Karger wrote:
+> The SSL_CTX_get0_certificate() function I used in 091edd8e is available in
+> OpenSSL 1.0.2+ only.  Older versions seem to not have a useful alternative.
+> The remaining option would then be to create a cache for our parsed
+> certificate, but that would mean adding more struct members and code for
+> the select group of people that do use an up-to-date openvpn, but do not
+> update their openssl.  I don't think that's worth it.  So just disable the
+> code for older openssl versions.
+I have code lying around for checking certificate dates for openssl 
+v0.9.7+  ; you can find it here:
+   https://www.nikhef.nl/~janjust/proxy-verify/
 
-commit 723c7c3d3a95f04a233449efd3ccd647eb0e1bf6 (release/2.3)
-Author: Lev Stipakov
-Date:   Tue Dec 15 10:18:22 2015 +0200
+the function of interest is grid_asn1TimeToTimeT ; it was/is on my TODO 
+list to convert this code into a similar patch - perhaps we can 
+integrate the two?
 
-     Fix VS2013 compilation
+cheers,
 
-     Signed-off-by: Lev Stipakov <lstipakov@...277...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1450167502-13471-1-git-send-email-lstipakov@...277...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/10809
-     Signed-off-by: Gert Doering <gert@...1296...>
+JJK
 
 
---
-kind regards,
-
-Gert Doering
+> Signed-off-by: Steffan Karger <steffan@...1856...>
+> ---
+>   src/openvpn/ssl_openssl.c | 2 ++
+>   1 file changed, 2 insertions(+)
+>
+> diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+> index 2b74818..4792b08 100644
+> --- a/src/openvpn/ssl_openssl.c
+> +++ b/src/openvpn/ssl_openssl.c
+> @@ -353,6 +353,7 @@ tls_ctx_restrict_ciphers(struct tls_root_ctx *ctx, const char *ciphers)
+>   void
+>   tls_ctx_check_cert_time (const struct tls_root_ctx *ctx)
+>   {
+> +#if OPENSSL_VERSION_NUMBER >= 0x10002000L
+>     int ret;
+>     const X509 *cert = SSL_CTX_get0_certificate(ctx->ctx);
+>   
+> @@ -375,6 +376,7 @@ tls_ctx_check_cert_time (const struct tls_root_ctx *ctx)
+>       {
+>         msg (M_WARN, "WARNING: Your certificate has expired!");
+>       }
+> +#endif
+>   }
+>   
+>   void
 
 
