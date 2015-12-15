@@ -1,10 +1,15 @@
-Date: Tue, 15 Dec 2015 08:49:23 +0100 (CET)
-Message-Id: <201512150749.tBF7nNI1060789@...2054...>
+Date: Tue, 15 Dec 2015 08:53:12 +0100
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1450131285-30182-1-git-send-email-steffan@...1856...>
-References: <1450131285-30182-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Disable certificate
-	notBefore/notAfter sanity check on OpenSSL < 1.0.2
+Message-ID: <20151215075312.GN24952@...1296...>
+References: <1450123758-31641-1-git-send-email-steffan@...1856...>
+	<566F5B01.8020109@...2080...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="QusHdSTmowIXBQA5"
+Content-Disposition: inline
+In-Reply-To: <566F5B01.8020109@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH] Warn user if their certificate has
+ expired
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,31 +18,47 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Steffan Karger <steffan@...1856...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-ACK (grumble...)
+--QusHdSTmowIXBQA5
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Your patch has been applied to the master branch.
+Hi,
 
-commit 644f2cdd13f49cd374aebc1fc506474104aac372
-Author: Steffan Karger
-Date:   Mon Dec 14 23:14:45 2015 +0100
+On Tue, Dec 15, 2015 at 01:12:49AM +0100, David Sommerseth wrote:
+> Just tried to build openvpn on one of my laptops (Scientific Linux 7.1,
+> openssl-1.0.1e-42.el7).  And it explodes when reaching the
+> SSL_CTX_get0_certificate(), it seems that support arrived in OpenSSL 1.0.=
+2?
+> Could that be right?  Haven't had brainpower yet to dig deeper.
 
-     Disable certificate notBefore/notAfter sanity check on OpenSSL < 1.0.2
+Yeah, we noticed.  Sorry for that.  Never seen so much red on the buildbot
+list before... :-)
 
-     Signed-off-by: Steffan Karger <steffan@...1856...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1450131285-30182-1-git-send-email-steffan@...1856...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/10802
-     Signed-off-by: Gert Doering <gert@...1296...>
+Committed and pushed the "not before 1.0.2" workaround.
 
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
---
-kind regards,
+--QusHdSTmowIXBQA5
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Gert Doering
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
 
+iQCVAwUBVm/G56kuBuNlUUl1AQLNjwP+Npr1L/WCBBO618Ozd4hBm8t+He6XJfMz
+vhVySFqTsn3u4U/h0P5XJlNBDKNmBVD1pJDemwvOm+eFXXmDpeMj7xPB7uYQwIcG
+U/e64Q6xVGu8pTsLG2oPIkRaDHy5xIIuJiWKrwbePp0sIgaztI1E5lrUVJ6xF1Nq
+T46k27ZpsiQ=
+=jV+B
+-----END PGP SIGNATURE-----
+
+--QusHdSTmowIXBQA5--
 
