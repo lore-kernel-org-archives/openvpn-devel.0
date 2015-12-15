@@ -1,15 +1,8 @@
-Date: Tue, 15 Dec 2015 08:53:12 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20151215075312.GN24952@...1296...>
-References: <1450123758-31641-1-git-send-email-steffan@...1856...>
-	<566F5B01.8020109@...2080...>
+From: Lev Stipakov <lstipakov@...277...>
+Date: Tue, 15 Dec 2015 10:18:22 +0200
+Message-Id: <1450167502-13471-1-git-send-email-lstipakov@...277...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="QusHdSTmowIXBQA5"
-Content-Disposition: inline
-In-Reply-To: <566F5B01.8020109@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH] Warn user if their certificate has
- expired
+Subject: [Openvpn-devel] [PATCH 2.3] Fix VS2013 compilation
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,47 +11,112 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
---QusHdSTmowIXBQA5
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Update toolset, define __attribute__.
 
-Hi,
+Signed-off-by: Lev Stipakov <lstipakov@...277...>
+---
+ src/compat/compat.vcxproj           | 4 +++-
+ src/openvpn/openvpn.vcxproj         | 6 ++++--
+ src/openvpn/syshead.h               | 1 +
+ src/openvpnserv/openvpnserv.vcxproj | 4 +++-
+ 4 files changed, 11 insertions(+), 4 deletions(-)
 
-On Tue, Dec 15, 2015 at 01:12:49AM +0100, David Sommerseth wrote:
-> Just tried to build openvpn on one of my laptops (Scientific Linux 7.1,
-> openssl-1.0.1e-42.el7).  And it explodes when reaching the
-> SSL_CTX_get0_certificate(), it seems that support arrived in OpenSSL 1.0.=
-2?
-> Could that be right?  Haven't had brainpower yet to dig deeper.
+diff --git a/src/compat/compat.vcxproj b/src/compat/compat.vcxproj
+index 42979c1..1dedb33 100644
+--- a/src/compat/compat.vcxproj
++++ b/src/compat/compat.vcxproj
+@@ -1,5 +1,5 @@
+ ﻿<?xml version="1.0" encoding="utf-8"?>
+-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
++<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+   <ItemGroup Label="ProjectConfigurations">
+     <ProjectConfiguration Include="Debug|Win32">
+       <Configuration>Debug</Configuration>
+@@ -20,10 +20,12 @@
+     <ConfigurationType>StaticLibrary</ConfigurationType>
+     <CharacterSet>MultiByte</CharacterSet>
+     <WholeProgramOptimization>true</WholeProgramOptimization>
++    <PlatformToolset>v120</PlatformToolset>
+   </PropertyGroup>
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+     <ConfigurationType>StaticLibrary</ConfigurationType>
+     <CharacterSet>MultiByte</CharacterSet>
++    <PlatformToolset>v120</PlatformToolset>
+   </PropertyGroup>
+   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+   <ImportGroup Label="ExtensionSettings">
+diff --git a/src/openvpn/openvpn.vcxproj b/src/openvpn/openvpn.vcxproj
+index 0b1b3fd..d691500 100644
+--- a/src/openvpn/openvpn.vcxproj
++++ b/src/openvpn/openvpn.vcxproj
+@@ -1,5 +1,5 @@
+ ﻿<?xml version="1.0" encoding="utf-8"?>
+-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
++<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+   <ItemGroup Label="ProjectConfigurations">
+     <ProjectConfiguration Include="Debug|Win32">
+       <Configuration>Debug</Configuration>
+@@ -20,10 +20,12 @@
+     <ConfigurationType>Application</ConfigurationType>
+     <WholeProgramOptimization>true</WholeProgramOptimization>
+     <CharacterSet>Unicode</CharacterSet>
++    <PlatformToolset>v120</PlatformToolset>
+   </PropertyGroup>
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+     <ConfigurationType>Application</ConfigurationType>
+     <CharacterSet>Unicode</CharacterSet>
++    <PlatformToolset>v120</PlatformToolset>
+   </PropertyGroup>
+   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+   <ImportGroup Label="ExtensionSettings">
+@@ -260,4 +262,4 @@
+   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+   <ImportGroup Label="ExtensionTargets">
+   </ImportGroup>
+-</Project>
++</Project>
+\ No newline at end of file
+diff --git a/src/openvpn/syshead.h b/src/openvpn/syshead.h
+index ffba4e8..24926ae 100644
+--- a/src/openvpn/syshead.h
++++ b/src/openvpn/syshead.h
+@@ -47,6 +47,7 @@
+ 
+ #ifdef _MSC_VER // Visual Studio
+ #define __func__ __FUNCTION__
++#define __attribute__(x)
+ #endif
+ 
+ #if defined(__APPLE__)
+diff --git a/src/openvpnserv/openvpnserv.vcxproj b/src/openvpnserv/openvpnserv.vcxproj
+index 0b75ed0..2a8943d 100644
+--- a/src/openvpnserv/openvpnserv.vcxproj
++++ b/src/openvpnserv/openvpnserv.vcxproj
+@@ -1,5 +1,5 @@
+ ﻿<?xml version="1.0" encoding="utf-8"?>
+-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
++<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+   <ItemGroup Label="ProjectConfigurations">
+     <ProjectConfiguration Include="Debug|Win32">
+       <Configuration>Debug</Configuration>
+@@ -20,10 +20,12 @@
+     <ConfigurationType>Application</ConfigurationType>
+     <CharacterSet>MultiByte</CharacterSet>
+     <WholeProgramOptimization>true</WholeProgramOptimization>
++    <PlatformToolset>v120</PlatformToolset>
+   </PropertyGroup>
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+     <ConfigurationType>Application</ConfigurationType>
+     <CharacterSet>MultiByte</CharacterSet>
++    <PlatformToolset>v120</PlatformToolset>
+   </PropertyGroup>
+   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+   <ImportGroup Label="ExtensionSettings">
+-- 
+1.9.1
 
-Yeah, we noticed.  Sorry for that.  Never seen so much red on the buildbot
-list before... :-)
-
-Committed and pushed the "not before 1.0.2" workaround.
-
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---QusHdSTmowIXBQA5
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQCVAwUBVm/G56kuBuNlUUl1AQLNjwP+Npr1L/WCBBO618Ozd4hBm8t+He6XJfMz
-vhVySFqTsn3u4U/h0P5XJlNBDKNmBVD1pJDemwvOm+eFXXmDpeMj7xPB7uYQwIcG
-U/e64Q6xVGu8pTsLG2oPIkRaDHy5xIIuJiWKrwbePp0sIgaztI1E5lrUVJ6xF1Nq
-T46k27ZpsiQ=
-=jV+B
------END PGP SIGNATURE-----
-
---QusHdSTmowIXBQA5--
 
