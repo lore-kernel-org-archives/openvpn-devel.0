@@ -1,12 +1,15 @@
-From: David Sommerseth <openvpn@...2080...>
-References: <1450123758-31641-1-git-send-email-steffan@...1856...>
-Message-ID: <566F5B01.8020109@...2080...>
-Date: Tue, 15 Dec 2015 01:12:49 +0100
 MIME-Version: 1.0
-In-Reply-To: <1450123758-31641-1-git-send-email-steffan@...1856...>
-Subject: Re: [Openvpn-devel] [PATCH] Warn user if their certificate has
- expired
-Reply-To: openvpn-devel@lists.sourceforge.net
+In-Reply-To: <CAKuzo_i9gn_0f0cvKAgp2t3Gi2UL5GcLJRrUiZDEZYLpHM=RWA@...278...>
+References: <CAHSx_StWk=Es9qg9TSq6yXACPhTLneeeUWNDDaKqp06S0x6R=w@...278...>
+	<1449766646-3519-1-git-send-email-wayne@...2099...>
+	<CAHSx_SuDffEw7Ufn6ehXJpjLvh8HPtaTxVnnaMBcKMHA5qRuZA@...278...>
+	<CAKuzo_i9gn_0f0cvKAgp2t3Gi2UL5GcLJRrUiZDEZYLpHM=RWA@...278...>
+From: Wayne Davison <wayne@...2099...>
+Date: Mon, 14 Dec 2015 23:01:57 -0800
+Message-ID: <CAHSx_SuALAAmshBFD6WDy5c_pT9AD6TE2XUzoLjna-V3BTY_Yg@...278...>
+Content-Type: multipart/alternative; boundary=089e013cba0eba8ef20526ea5e1a
+Subject: Re: [Openvpn-devel] [PATCH] Improve stdin prompting section,
+ fixing CR prompting.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,59 +18,68 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
+To: Selva Nair <selva.nair@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
+--089e013cba0eba8ef20526ea5e1a
+Content-Type: text/plain; charset=UTF-8
 
-On 14/12/15 21:09, Steffan Karger wrote:
-> Previously, client certificate expiry warnings would only visible in the
-> server log, and server certificate expiry warnings in the client log.
-> Both after a (failed) connection attempt.  This patch adds a warning to
-> log when a users own certificate has expired (or is not yet valid) to ease
-> problem diagnosis / error reporting.
-> 
-> Note that this is just a warning, since on some systems (notably embedded
-> devices) there might be no correct time available.
-> 
-> Signed-off-by: Steffan Karger <steffan@...1856...>
-> ---
->  src/openvpn/ssl.c          |  3 +++
->  src/openvpn/ssl_backend.h  |  9 +++++++++
->  src/openvpn/ssl_openssl.c  | 27 +++++++++++++++++++++++++++
->  src/openvpn/ssl_polarssl.c | 14 ++++++++++++++
->  4 files changed, 53 insertions(+)
-> 
-> diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-> index 887bd75..665fdd7 100644
-> --- a/src/openvpn/ssl.c
-> +++ b/src/openvpn/ssl.c
-[...snip...]
->  
->  void
-> +tls_ctx_check_cert_time (const struct tls_root_ctx *ctx)
-> +{
-> +  int ret;
-> +  const X509 *cert = SSL_CTX_get0_certificate(ctx->ctx);
+On Mon, Dec 14, 2015 at 4:10 PM, Selva Nair <selva.nair@...277...> wrote:
 
-Hi,
+> I took a quick look and it seems a simplified patch that addresses the
+> most critical-sounding issue (challenge/reponse not prompted for
+> from stdin) may be more useful.
+>
 
-Just tried to build openvpn on one of my laptops (Scientific Linux 7.1,
-openssl-1.0.1e-42.el7).  And it explodes when reaching the
-SSL_CTX_get0_certificate(), it seems that support arrived in OpenSSL 1.0.2?
-Could that be right?  Haven't had brainpower yet to dig deeper.
+That's exactly what that patch is.
 
-I will retry a build on my work laptop too (RHEL 7.2) tomorrow, to see if this
-is an issue there too.
+From the cover-letter to the patches:
+>
 
+That's the older patch set.  The newer one (based on newer master changes
+in misc.c) separates the fix from the feature.
 
--- 
-kind regards,
+If the response is unchanging, its a misuse of challenge/response.
+>
 
-David Sommerseth
+It's only mostly unchanging.  The user can respond "push", "sms", "phone",
+or enter a number from the generator app as they see fit. For me, I use
+"push" most of the time.  I figure if the app is going to support reading
+the prompts from a file, it should support all the prompts the same way for
+consistency.
 
--- 
-kind regards,
+..wayne..
 
-David Sommerseth
+--089e013cba0eba8ef20526ea5e1a
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div class=3D"gmail_extra"><div class=3D"gmail_quote">On M=
+on, Dec 14, 2015 at 4:10 PM, Selva Nair <span dir=3D"ltr">&lt;<a href=3D"ma=
+ilto:selva.nair@...277..." target=3D"_blank">selva.nair@...277...</a>&gt;</=
+span> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8e=
+x;border-left:1px #ccc solid;padding-left:1ex"><div dir=3D"ltr"><div><div c=
+lass=3D"gmail_extra"><div class=3D"gmail_quote"><div>I took a quick look an=
+d it seems a simplified patch that addresses the most critical-sounding iss=
+ue (challenge/reponse not prompted for</div><div>from stdin) may be more us=
+eful.<br></div></div></div></div></div></blockquote><div><br></div><div>Tha=
+t&#39;s exactly what that patch is.</div><div><br></div><blockquote class=
+=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padd=
+ing-left:1ex"><div dir=3D"ltr"><div><div class=3D"gmail_extra"><div class=
+=3D"gmail_quote"><div>From the cover-letter to the patches:<br></div></div>=
+</div></div></div></blockquote><div><br></div><div>That&#39;s the older pat=
+ch set.=C2=A0 The newer one (based on newer master changes in misc.c) separ=
+ates the fix from the feature.</div><div><br></div><blockquote class=3D"gma=
+il_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-lef=
+t:1ex"><div dir=3D"ltr"><div><div class=3D"gmail_extra"><div class=3D"gmail=
+_quote"><div>If the response is unchanging, its a misuse of challenge/respo=
+nse.<br></div></div></div></div></div></blockquote><div><br></div><div>It&#=
+39;s only mostly unchanging.=C2=A0 The user can respond &quot;push&quot;, &=
+quot;sms&quot;, &quot;phone&quot;, or enter a number from the generator app=
+ as they see fit. For me, I use &quot;push&quot; most of the time.=C2=A0 I =
+figure if the app is going to support reading the prompts from a file, it s=
+hould support all the prompts the same way for consistency.</div><div><br><=
+/div><div>..wayne..</div></div></div></div>
+
+--089e013cba0eba8ef20526ea5e1a--
 
