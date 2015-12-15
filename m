@@ -1,10 +1,11 @@
 From: Wayne Davison <wayne@...2099...>
-Date: Tue, 15 Dec 2015 22:16:31 +0000
-Message-Id: <1450217793-17974-1-git-send-email-wayne@...2099...>
-In-Reply-To: <CAHSx_SuB8wu8_RWcfTfDhFQhrek89-Wu-pBo1FXbBNfHxRUTYg@...278...>
+Date: Tue, 15 Dec 2015 22:16:32 +0000
+Message-Id: <1450217793-17974-2-git-send-email-wayne@...2099...>
+In-Reply-To: <1450217793-17974-1-git-send-email-wayne@...2099...>
 References: <CAHSx_SuB8wu8_RWcfTfDhFQhrek89-Wu-pBo1FXbBNfHxRUTYg@...278...>
-Subject: [Openvpn-devel] [PATCH 1/3] Fix CR prompting when user & pass are
-	read from a file.
+	<1450217793-17974-1-git-send-email-wayne@...2099...>
+Subject: [Openvpn-devel] [PATCH 2/3] Move 2 prompt buffers into deeper
+	blocks.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,39 +18,49 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-The code that reads the challenge response (both dynamic & static) will
-not prompt the user if the username and password information was read
-from a file.  In the latest code this can be fixed by simply removing
-the "if (username_from_stdin || password_from_stdin)" condition because
-all the deeper code is already conditionalized adequately to only prompt
-for the missing information.
-
-NOTE: indentation left too deep so that changes are clearly seen.
+Two buffers used for username/password prompting can be moved into a
+deeper block so that they don't get set if they are not going to be
+used.
 ---
- src/openvpn/misc.c | 3 ---
- 1 file changed, 3 deletions(-)
+ src/openvpn/misc.c | 17 +++++++++--------
+ 1 file changed, 9 insertions(+), 8 deletions(-)
 
 diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
-index 05ed073..a9259f0 100644
+index a9259f0..e0aa5f9 100644
 --- a/src/openvpn/misc.c
 +++ b/src/openvpn/misc.c
-@@ -1141,8 +1141,6 @@ get_user_pass_cr (struct user_pass *up,
-       /*
-        * Get username/password from standard input?
-        */
--      if (username_from_stdin || password_from_stdin)
--	{
- #ifdef ENABLE_CLIENT_CR
- 	  if (auth_challenge && (flags & GET_USER_PASS_DYNAMIC_CHALLENGE))
- 	    {
-@@ -1206,7 +1204,6 @@ get_user_pass_cr (struct user_pass *up,
- 		}
+@@ -1165,22 +1165,23 @@ get_user_pass_cr (struct user_pass *up,
+ 	  else
  #endif
- 	    }
--	}
+ 	    {
+-	      struct buffer user_prompt = alloc_buf_gc (128, &gc);
+-	      struct buffer pass_prompt = alloc_buf_gc (128, &gc);
+-
+-	      buf_printf (&user_prompt, "Enter %s Username:", prefix);
+-	      buf_printf (&pass_prompt, "Enter %s Password:", prefix);
+-
+ 	      if (username_from_stdin && !(flags & GET_USER_PASS_PASSWORD_ONLY))
+ 		{
++		  struct buffer user_prompt = alloc_buf_gc (128, &gc);
++		  buf_printf (&user_prompt, "Enter %s Username:", prefix);
+ 		  if (!get_console_input (BSTR (&user_prompt), true, up->username, USER_PASS_LEN))
+ 		    msg (M_FATAL, "ERROR: could not read %s username from stdin", prefix);
+ 		  if (strlen (up->username) == 0)
+ 		    msg (M_FATAL, "ERROR: %s username is empty", prefix);
+ 		}
  
-       string_mod (up->username, CC_PRINT, CC_CRLF, 0);
-       string_mod (up->password, CC_PRINT, CC_CRLF, 0);
+-	      if (password_from_stdin && !get_console_input (BSTR (&pass_prompt), false, up->password, USER_PASS_LEN))
+-		msg (M_FATAL, "ERROR: could not not read %s password from stdin", prefix);
++              if (password_from_stdin)
++                {
++		  struct buffer pass_prompt = alloc_buf_gc (128, &gc);
++		  buf_printf (&pass_prompt, "Enter %s Password:", prefix);
++		  if (!get_console_input (BSTR (&pass_prompt), false, up->password, USER_PASS_LEN))
++                    msg (M_FATAL, "ERROR: could not not read %s password from stdin", prefix);
++                }
+ 
+ #ifdef ENABLE_CLIENT_CR
+ 	      if (auth_challenge && (flags & GET_USER_PASS_STATIC_CHALLENGE))
 -- 
 1.9.1
 
