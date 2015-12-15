@@ -1,14 +1,14 @@
 MIME-Version: 1.0
-In-Reply-To: <5670890D.7050501@...1147...>
-References: <1450123758-31641-1-git-send-email-steffan@...1856...>
-	<566F5B01.8020109@...2080...>
-	<20151215075312.GN24952@...1296...>
-	<5670890D.7050501@...1147...>
-From: Steffan Karger <steffan@...1856...>
-Date: Tue, 15 Dec 2015 23:15:24 +0100
-Message-ID: <CAA1AbxJbKeLqeDgBVLJ4HB22NPv+rbL=nB6bXiTqv+d_BLuRbg@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] Warn user if their certificate has
-	expired
+In-Reply-To: <CAKuzo_jrxgCRMjYA3T_tJNmNsHXy+MqqVMo8NK3KEDgmseMMBg@...278...>
+References: <CAHSx_StWk=Es9qg9TSq6yXACPhTLneeeUWNDDaKqp06S0x6R=w@...278...>
+	<1449766646-3519-1-git-send-email-wayne@...2099...>
+	<CAKuzo_jrxgCRMjYA3T_tJNmNsHXy+MqqVMo8NK3KEDgmseMMBg@...278...>
+From: Wayne Davison <wayne@...2099...>
+Date: Tue, 15 Dec 2015 14:15:26 -0800
+Message-ID: <CAHSx_SuB8wu8_RWcfTfDhFQhrek89-Wu-pBo1FXbBNfHxRUTYg@...278...>
+Content-Type: multipart/alternative; boundary=089e013cba0e99aecd0526f721a6
+Subject: Re: [Openvpn-devel] [PATCH] Improve stdin prompting section,
+ fixing CR prompting.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,58 +17,41 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: Selva Nair <selva.nair@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+
+--089e013cba0e99aecd0526f721a6
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-To: Jan Just Keijser <janjust@...1147...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-On Tue, Dec 15, 2015 at 10:41 PM, Jan Just Keijser <janjust@...1147...> wrote:
-> On 15/12/15 08:53, Gert Doering wrote:
->> On Tue, Dec 15, 2015 at 01:12:49AM +0100, David Sommerseth wrote:
->>> Just tried to build openvpn on one of my laptops (Scientific Linux 7.1,
->>> openssl-1.0.1e-42.el7).  And it explodes when reaching the
->>> SSL_CTX_get0_certificate(), it seems that support arrived in OpenSSL 1.0.2?
->>> Could that be right?  Haven't had brainpower yet to dig deeper.
->> Yeah, we noticed.  Sorry for that.  Never seen so much red on the buildbot
->> list before... :-)
->>
->> Committed and pushed the "not before 1.0.2" workaround.
->>
->>
-> hmmmm I think this feature is actually worth adding to systems based on
-> OpenSSL 1.0.1 as well (think RHEL 7 etc). The problem is, the current
-> fix is very 1.0.2 specific and there seems to be no easy work-around.
-> Another approach is to check the certificate expiry time when the cert
-> is loaded, but - as Steffan pointed out - this would mean that multiple
-> places need a function call to check this:
-> - when loading an x509 file
-> - when loading a pkcs12 file
-> - when loading an inline blob
-> - when loading something from pkcs11
-> - when loading something via cryptostore
-> - when loading something using the management interface
+On Tue, Dec 15, 2015 at 12:51 PM, Selva Nair <selva.nair@...277...> wrote:
+
+> This could be a small ~2 line patch -- easier to review and test.
 >
-> the problem lies in the 'reachability' of the actual X509 certificate
-> structure in OpenSSL
-> - the SSL_CTX context contains the X509 cert, but you cannot get at it
-> until 1.0.2
-> - at connection time the SSL struct also contains it, but this is too
-> late in the process.
->
-> I'm inclined to alter the patch to check it at all items listed above -
-> what do you guys think?
-> Having to wait for openssl 1.0.2 (which even my fedora 22 box does not
-> yet have) seems a bit like "so close, yet so far ..."
 
-Just use mbedtls ;-)
+I'll post a 3-part patch as a reply to this email. They are: (1) the "if"
+removal that fixes the bug, (2) the prompt buffer moves, and (3) the
+reindentation.  If you end up wanting to consider the CR-from-a-file
+feature, that patch would be unchanged from the last one I posted.
 
-OpenSSL 1.0.2 has been released almost a year ago, so upcoming distro
-releases will probably contain 1.0.2+ (e.g. Ubuntu 15.10 already has
-it, 16.04 LTS will have it too).  Should not take too long, right?
+..wayne..
 
-As you've probably noticed in the other thread, I don't particularly
-like the idea of adding that extra code.  But I won't actively oppose
-such a patch either.
+--089e013cba0e99aecd0526f721a6
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
--Steffan
+<div dir=3D"ltr"><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">=
+On Tue, Dec 15, 2015 at 12:51 PM, Selva Nair <span dir=3D"ltr">&lt;<a href=
+=3D"mailto:selva.nair@...277..." target=3D"_blank">selva.nair@...277...</a>=
+&gt;</span> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0=
+ 0 .8ex;border-left:1px #ccc solid;padding-left:1ex"><div class=3D"gmail_qu=
+ote">This could be a small ~2 line patch -- easier to review and test.</div=
+></blockquote></div><br>I&#39;ll post a 3-part patch as a reply to this ema=
+il. They are: (1) the &quot;if&quot; removal that fixes the bug, (2) the pr=
+ompt buffer moves, and (3) the reindentation.=C2=A0 If you end up wanting t=
+o consider the CR-from-a-file feature, that patch would be unchanged from t=
+he last one I posted.<br><br clear=3D"all"><div><div class=3D"gmail_signatu=
+re">..wayne..</div></div>
+</div></div>
+
+--089e013cba0e99aecd0526f721a6--
 
