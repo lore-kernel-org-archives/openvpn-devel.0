@@ -1,16 +1,11 @@
 MIME-Version: 1.0
-In-Reply-To: <56704CD4.5030402@...1147...>
-References: <1450131285-30182-1-git-send-email-steffan@...1856...>
-	<566FD25F.7080804@...1147...>
-	<CAA1AbxJVpBGqOLVzqPpbTPMcO4DQzM=_a9=i+yMHpcPnApDG_A@...278...>
-	<566FE713.2090208@...1147...>
-	<CAA1AbxJQTFPumc5y3OvGdendwsx7zWhLD4+RWmAYf=FGj7bpeQ@...278...>
-	<56704CD4.5030402@...1147...>
+In-Reply-To: <1448852638-2644-1-git-send-email-fukawi2@...277...>
+References: <1448852638-2644-1-git-send-email-fukawi2@...277...>
 From: Steffan Karger <steffan@...1856...>
-Date: Tue, 15 Dec 2015 20:02:23 +0100
-Message-ID: <CAA1AbxJM1Ek01Gp5RT4gbhWE06wL4HtT1ORDcareppB4hV3nhQ@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] Disable certificate notBefore/notAfter
- sanity check on OpenSSL < 1.0.2
+Date: Tue, 15 Dec 2015 20:16:33 +0100
+Message-ID: <CAA1AbxKxit-x3qb4Ybbqfqrrszn6Qkd+u5K98xDxkm3wQcB6UA@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] Use example.com to improve clarity of
+	documentation
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,30 +16,44 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-To: Jan Just Keijser <janjust@...1147...>
+To: Phillip Smith <fukawi2@...277...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Hi,
+Hi Philip,
 
-On Tue, Dec 15, 2015 at 6:24 PM, Jan Just Keijser <janjust@...1147...> wrote:
-> ah well, in that case I would simply write out get0_certificate again: the
-> code for that function actually is:
->
-> 3011 X509 *SSL_CTX_get0_certificate(const SSL_CTX *ctx)
-> 3012 {
-> 3013     if (ctx->cert != NULL)
-> 3014         return ctx->cert->key->x509;
-> 3015     else
-> 3016         return NULL;
-> 3017 }
->
->
-> and as far as I can tell that "struct-path" is also valid for openssl <
-> 1.0.2
+On Mon, Nov 30, 2015 at 4:03 AM, Phillip Smith <fukawi2@...277...> wrote:
+> This patch uses the generic "host1.example.com" and "host2.example.com" to
+> replace the current "may" and "june" hostname examples. Generic names chosen
+> rather than other names like "server"/"client" or "head-office"/"remote-office"
+> etc which may create other unintended or implicit meanings to the reader.
+> The example.com domain is set aside defined by IANA for use as documentation
+> examples. Refer to: http://www.iana.org/domains/reserved
+> Using this well-known domain makes comprehension of documentation easier.
 
-Yes that was my first attempt to work around it, but ctx->cert is an
-opaque struct cert_st (declared in ssl.h, but defined in ssl_locl.h,
-which is not in include/openssl/).
+Feature-ACK to using example.com (or .net, or .org, I don't care).
+
+> @@ -6741,12 +6742,11 @@ option to use OpenVPN's default key renegotiation interval of one hour.
+>  .SS Routing:
+>  Assuming you can ping across the tunnel,
+>  the next step is to route a real subnet over
+> -the secure tunnel.  Suppose that may and june have two network
+> -interfaces each, one connected
+> -to the internet, and the other to a private
+> -network.  Our goal is to securely connect
+> -both private networks.  We will assume that may's private subnet
+> -is 10.0.0.0/24 and june's is 10.0.1.0/24.
+> +the secure tunnel.  Suppose that On host1.example.com and host2.example.com
+> +have two network interfaces each, one connected to the internet, and the other
+> +to a private network.  Our goal is to securely connect both private networks.
+> +We will assume that host1.example.com's private subnet is 10.0.0.0/24 and
+> +host2.example.com's is 10.0.1.0/24.
+
+An extra 'On' seems to have slipped in there.
+
+Finally, we should probably do the same for the sample keys, and the
+gen-sample-key.sh script.  You could either do that in a new version
+of your patch, or I will send a follow-up patch to do so.  Both are
+fine with me.
 
 -Steffan
 
