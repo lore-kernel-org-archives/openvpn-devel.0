@@ -1,13 +1,12 @@
+From: David Sommerseth <openvpn@...2080...>
+References: <1450123758-31641-1-git-send-email-steffan@...1856...>
+Message-ID: <566F5B01.8020109@...2080...>
+Date: Tue, 15 Dec 2015 01:12:49 +0100
 MIME-Version: 1.0
-In-Reply-To: <20151214234504.9c3a73e36096e05d8df2a1cb@...515...>
-References: <20151214172340.9332784c61ebaccf5b94a6ae@...515...>
-	<20151214234504.9c3a73e36096e05d8df2a1cb@...515...>
-From: Selva Nair <selva.nair@...277...>
-Date: Mon, 14 Dec 2015 19:11:52 -0500
-Message-ID: <CAKuzo_hkPeFij2V9sYtaBMwTwCfRbSG1n0PAo7oLhiEsGZg5uw@...278...>
-Content-Type: multipart/alternative; boundary=047d7b8738a4297b920526e4a425
-Subject: Re: [Openvpn-devel] Topics for today's (Monday,
- 14th Dec 2015) community meeting
+In-Reply-To: <1450123758-31641-1-git-send-email-steffan@...1856...>
+Subject: Re: [Openvpn-devel] [PATCH] Warn user if their certificate has
+ expired
+Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,79 +15,59 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
 
---047d7b8738a4297b920526e4a425
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+
+On 14/12/15 21:09, Steffan Karger wrote:
+> Previously, client certificate expiry warnings would only visible in the
+> server log, and server certificate expiry warnings in the client log.
+> Both after a (failed) connection attempt.  This patch adds a warning to
+> log when a users own certificate has expired (or is not yet valid) to ease
+> problem diagnosis / error reporting.
+> 
+> Note that this is just a warning, since on some systems (notably embedded
+> devices) there might be no correct time available.
+> 
+> Signed-off-by: Steffan Karger <steffan@...1856...>
+> ---
+>  src/openvpn/ssl.c          |  3 +++
+>  src/openvpn/ssl_backend.h  |  9 +++++++++
+>  src/openvpn/ssl_openssl.c  | 27 +++++++++++++++++++++++++++
+>  src/openvpn/ssl_polarssl.c | 14 ++++++++++++++
+>  4 files changed, 53 insertions(+)
+> 
+> diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+> index 887bd75..665fdd7 100644
+> --- a/src/openvpn/ssl.c
+> +++ b/src/openvpn/ssl.c
+[...snip...]
+>  
+>  void
+> +tls_ctx_check_cert_time (const struct tls_root_ctx *ctx)
+> +{
+> +  int ret;
+> +  const X509 *cert = SSL_CTX_get0_certificate(ctx->ctx);
 
 Hi,
 
-On Mon, Dec 14, 2015 at 4:45 PM, Samuli Sepp=C3=A4nen <samuli@...515...> wr=
-ote:
+Just tried to build openvpn on one of my laptops (Scientific Linux 7.1,
+openssl-1.0.1e-42.el7).  And it explodes when reaching the
+SSL_CTX_get0_certificate(), it seems that support arrived in OpenSSL 1.0.2?
+Could that be right?  Haven't had brainpower yet to dig deeper.
 
-Discussed OpenVPN 2.3.9 release. Here is the release plan:
->
- [..]
+I will retry a build on my work laptop too (RHEL 7.2) tomorrow, to see if this
+is an issue there too.
 
-> In addition:
->
->
-> - - the initial windows installers will not have the openvpn-gui changes
-> - - mattock will provide test installers with the changes and send a link
-> to the list
-> - - if the test installers work fine for people, new official installers
-> will released
->
 
-Probably this is a good place to post this reminder, mainly for Samuli:
+-- 
+kind regards,
 
-The next windows installer needs to remove the "disconnect_on_suspend =3D 1"
-registry entry for the GUI (remove or re-write to =3D 0). Otherwise  GUI
-users will experience weired disconnections after suspend/resume.
+David Sommerseth
 
-This is because of the way openvpn.exe now handles suspend/resume and the
-way GUI treats delayed response from the app.
+-- 
+kind regards,
 
-I thought I had submitted a patch for this to openvpn-build, but can't find
-it... Anyway, its a one liner.
-
-Thanks,
-
-Selva
-
---047d7b8738a4297b920526e4a425
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><div class=3D"gmail_extra">Hi,<br><br></div><div class=3D"=
-gmail_extra"><div class=3D"gmail_quote">On Mon, Dec 14, 2015 at 4:45 PM, <s=
-pan>Samuli</span> <span>Sepp=C3=A4nen</span> <span dir=3D"ltr">&lt;<a href=
-=3D"mailto:samuli@...515..." target=3D"_blank"><span>samuli</span>@<span>op=
-envpn</span>.net</a>&gt;</span> wrote:<br><br><blockquote style=3D"margin:0=
-px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex" c=
-lass=3D"gmail_quote">Discussed OpenVPN 2.3.9 release. Here is the release p=
-lan:<br></blockquote><div>=C2=A0[..] <br></div><blockquote class=3D"gmail_q=
-uote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,2=
-04);padding-left:1ex"><div style=3D"overflow:hidden">In addition:<br><br>
-<br>
-- - the initial windows installers will not have the openvpn-gui changes<br>
-- - mattock will provide test installers with the changes and send a link t=
-o the list<br>
-- - if the test installers work fine for people, new official installers wi=
-ll released<br>
-</div></blockquote></div><br>Probably this is a good place to post this rem=
-inder, mainly for <span>Samuli</span>:<br><br></div><div class=3D"gmail_ext=
-ra">The next windows installer needs to remove the &quot;disconnect_on_susp=
-end =3D 1&quot; registry entry for the GUI (remove or re-write to =3D 0). O=
-therwise=C2=A0 GUI users will experience weired disconnections after suspen=
-d/resume. <br><br>This is because of the way openvpn.exe now handles suspen=
-d/resume and the way GUI treats delayed response from the app.<br><br></div=
-><div class=3D"gmail_extra">I thought I had submitted a patch for this to <=
-span>openvpn</span>-build, but can&#39;t find it... Anyway, its a one liner=
-.<br><br></div><div class=3D"gmail_extra">Thanks,<br><br></div><div class=
-=3D"gmail_extra"><span>Selva</span><br></div></div>
-
---047d7b8738a4297b920526e4a425--
+David Sommerseth
 
