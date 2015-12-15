@@ -1,14 +1,15 @@
-Date: Tue, 15 Dec 2015 18:10:20 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20151215171020.GS24952@...1296...>
-References: <1450191626-24633-1-git-send-email-samuli@...515...>
-	<A9F464ED000E41E49522FF9AE5BCBC84@...2089...>
+Message-ID: <56704CD4.5030402@...1147...>
+Date: Tue, 15 Dec 2015 18:24:36 +0100
+From: Jan Just Keijser <janjust@...1147...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="1QL4jGRxByiKIEnz"
-Content-Disposition: inline
-In-Reply-To: <A9F464ED000E41E49522FF9AE5BCBC84@...2089...>
-Subject: Re: [Openvpn-devel] [PATCH] Updates to Changes.rst
+References: <1450131285-30182-1-git-send-email-steffan@...1856...>
+	<566FD25F.7080804@...1147...>
+	<CAA1AbxJVpBGqOLVzqPpbTPMcO4DQzM=_a9=i+yMHpcPnApDG_A@...278...>
+	<566FE713.2090208@...1147...>
+	<CAA1AbxJQTFPumc5y3OvGdendwsx7zWhLD4+RWmAYf=FGj7bpeQ@...278...>
+In-Reply-To: <CAA1AbxJQTFPumc5y3OvGdendwsx7zWhLD4+RWmAYf=FGj7bpeQ@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] Disable certificate notBefore/notAfter
+ sanity check on OpenSSL < 1.0.2
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,89 +18,71 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: debbie10t@...277...
-Cc: openvpn-devel@lists.sourceforge.net
-
---1QL4jGRxByiKIEnz
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Steffan Karger <steffan@...1856...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
 Hi,
 
-On Tue, Dec 15, 2015 at 04:29:21PM -0000, debbie10t@...277... wrote:
-> > From: Samuli Sepp=E4nen <samuli@...515...>
-> >
-> > This patch is for the release/2.3 branch
-[..]
-> > -Peer ID support
-> > +Windows DNS leak fix
-> > +    This feature allows blocking all out-of-tunnel communication on=20
-> > TCP/UDP port
-> > +    53 (except for OpenVPN itself), preventing DNS Leaks on Windows 8.=
-1=20
-> > and 10.
-> > +
->=20
-> is WXP no longer supported by git-master ?
+On 15/12/15 13:21, Steffan Karger wrote:
+>>>>> The SSL_CTX_get0_certificate() function I used in 091edd8e is available
+>>>>> in
+>>>>> OpenSSL 1.0.2+ only.  Older versions seem to not have a useful
+>>>>> alternative.
+>>>>> The remaining option would then be to create a cache for our parsed
+>>>>> certificate, but that would mean adding more struct members and code for
+>>>>> the select group of people that do use an up-to-date openvpn, but do not
+>>>>> update their openssl.  I don't think that's worth it.  So just disable
+>>>>> the
+>>>>> code for older openssl versions.
+>>>> I have code lying around for checking certificate dates for openssl
+>>>> v0.9.7+
+>>>> ; you can find it here:
+>>>>     https://www.nikhef.nl/~janjust/proxy-verify/
+>>>>
+>>>> the function of interest is grid_asn1TimeToTimeT ; it was/is on my TODO
+>>>> list
+>>>> to convert this code into a similar patch - perhaps we can integrate the
+>>>> two?
+>>> But before we extract the time from the certificate, we need to either
+>>> cache our own x509 certificate (in the certificate file reading code,
+>>> the pkcs11 code, the management-external-key code, the ms crapi code,
+>>> etc...) or find a way to extract our own x509 cert from an SSL_CTX
+>>> (which SSL_CTX_get0_certificate() does, since from that part of the
+>>> code it *can* peek into the opaque 'struct cert_st').
+>>>
+>>> Looking at the mess, I still think it is just not worth the extra
+>>> code.  But if you (or someone else) manage to find a clean and simple
+>>> way to perform the check pre-1.0.2, I will gladly review a patch :)
+>>>
+>> err, isn't it much easier to check the certificate expiry date when loading
+>> the cert, e.g. in "tls_ctx_load_cert_file_and_copy"  in ssl_openssl.c ? or
+>> am I missing something here?
+> Yes, we could do that.  But we would have to do that for both crypto
+> libraries separately, and at each place where we load certificates
+> (same list as above; file, pkcs#11, ms crapi,
+> management-external-cert, maybe more?).  Not as nice as a single check
+> after all certificate processing.
+>
+>
+ah well, in that case I would simply write out get0_certificate again: 
+the code for that function actually is:
 
-"this patch is for release/2.3 branch" - nobody is talking about master her=
-e.
+3011 X509 *SSL_CTX_get0_certificate(const SSL_CTX *ctx)
+3012 {
+3013     if (ctx->cert != NULL)
+3014         return ctx->cert->key->x509;
+3015     else
+3016         return NULL;
+3017 }
 
-[..]
-> I thought I would give this a shot for WXP but I cannot get it to compile=
-=20
-> for win32
 
-Just use 2.3.9 as will be released in binary tomorrow :-) - but more
-comments below.
+and as far as I can tell that "struct-path" is also valid for openssl < 
+1.0.2
 
-> Any clarity on what to expect of the --block-outside-dns option
-> and what windows version it is/will be support would help.
+cheers,
 
-It will work on Vista+, and give an error on XP.
+JJK
 
-[..]
->                  from /usr/share/mingw-w64/include/fwpmu.h:10,
->                  from win32.c:52:
-> /usr/share/mingw-w64/include/iketypes.h:747:2: error: #endif without #if
->  #endif /* __iketypes_h__ */
-
-This is a bug in the mingw header files.  You need a patch for it
-(or upgrade to a newer version than contained in ubuntu).  Annoying
-indeed.
-
-> In file included from /usr/share/mingw-w64/include/fwpmu.h:10:0,
->                  from win32.c:52:
-> /usr/share/mingw-w64/include/fwpmtypes.h:54:3: error: conflicting types f=
-or=20
-> ???FWPM_DISPLAY_DATA0???
->  } FWPM_DISPLAY_DATA0;
->    ^
-
-Same thing: buggy header files that do not properly protect against
-multi-inclusion.
-
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---1QL4jGRxByiKIEnz
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQCVAwUBVnBJe6kuBuNlUUl1AQJPGgP/SlaqFw/dIiayl1SeZKroCGj6xbjZWPw2
-yYWThd1xbZQXfHVGPhE11i/FjV7Esb9FU2TFhmnRg3P8TTIkJlWLhjdHAcCW3e6u
-a+jBk6a6iZ6lhtZc+KeC4FjiH9DiWR15wi0LnuFLnb56bniF+Q17SfiMdi5WIqI6
-PRGAJEfqkGc=
-=H5EV
------END PGP SIGNATURE-----
-
---1QL4jGRxByiKIEnz--
 
