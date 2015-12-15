@@ -1,17 +1,12 @@
-Date: Tue, 15 Dec 2015 22:18:53 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20151215211853.GW24952@...1296...>
-References: <1450191626-24633-1-git-send-email-samuli@...515...>
-	<A9F464ED000E41E49522FF9AE5BCBC84@...2089...>
-	<CAKuzo_j-nHghOXSW67kmQyQVk1zOH6tij=Tdf5pD-wFYwn-yUg@...278...>
-	<20151215205402.GV24952@...1296...>
-	<CAKuzo_g4J=4ZYV9CiWhm5B3LCASxdRTL7jkKHcFby0WA7x88vA@...278...>
+Message-ID: <5670890D.7050501@...1147...>
+Date: Tue, 15 Dec 2015 22:41:33 +0100
+From: Jan Just Keijser <janjust@...1147...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="SAq4wbarO1ybdq7f"
-Content-Disposition: inline
-In-Reply-To: <CAKuzo_g4J=4ZYV9CiWhm5B3LCASxdRTL7jkKHcFby0WA7x88vA@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] Updates to Changes.rst
+References: <1450123758-31641-1-git-send-email-steffan@...1856...>	<566F5B01.8020109@...2080...>
+	<20151215075312.GN24952@...1296...>
+In-Reply-To: <20151215075312.GN24952@...1296...>
+Subject: Re: [Openvpn-devel] [PATCH] Warn user if their certificate has
+	expired
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,61 +15,52 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-
---SAq4wbarO1ybdq7f
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-On Tue, Dec 15, 2015 at 04:12:25PM -0500, Selva Nair wrote:
-> > Make that "setenv opt block-outside-dns".  ignore-unknown-option will
-> > *not* help here, as it is not "unknown", but just "not working".
->=20
-> You are right, ignore-unknown .. would have worked with valdikSS patch,
-> but not any more as its handled right away at msglevel_fc. Which is a
-> bit disconcerting as on non-windows platforms ignore-unknown-option will
-> make it non-FATAL but not on XP.
+On 15/12/15 08:53, Gert Doering wrote:
+> Hi,
+>
+> On Tue, Dec 15, 2015 at 01:12:49AM +0100, David Sommerseth wrote:
+>> Just tried to build openvpn on one of my laptops (Scientific Linux 7.1,
+>> openssl-1.0.1e-42.el7).  And it explodes when reaching the
+>> SSL_CTX_get0_certificate(), it seems that support arrived in OpenSSL 1.0.2?
+>> Could that be right?  Haven't had brainpower yet to dig deeper.
+> Yeah, we noticed.  Sorry for that.  Never seen so much red on the buildbot
+> list before... :-)
+>
+> Committed and pushed the "not before 1.0.2" workaround.
+>
+>
+hmmmm I think this feature is actually worth adding to systems based on 
+OpenSSL 1.0.1 as well (think RHEL 7 etc). The problem is, the current 
+fix is very 1.0.2 specific and there seems to be no easy work-around.
+Another approach is to check the certificate expiry time when the cert 
+is loaded, but - as Steffan pointed out - this would mean that multiple 
+places need a function call to check this:
+- when loading an x509 file
+- when loading a pkcs12 file
+- when loading an inline blob
+- when loading something from pkcs11
+- when loading something via cryptostore
+- when loading something using the management interface
 
-Right.  So, just use "setenv opt" always here, and don't worry any longer :)
+the problem lies in the 'reachability' of the actual X509 certificate 
+structure in OpenSSL
+- the SSL_CTX context contains the X509 cert, but you cannot get at it 
+until 1.0.2
+- at connection time the SSL struct also contains it, but this is too 
+late in the process.
 
-> My original comment about this to an early version of valdikSS' patch
-> was on a different level -- if the user want DNS blocked, failure to block
-> should be FATAL. But not respecting ignore-unknown-option only on
-> some platforms doesn't look right.
+I'm inclined to alter the patch to check it at all items listed above - 
+what do you guys think?
+Having to wait for openssl 1.0.2 (which even my fedora 22 box does not 
+yet have) seems a bit like "so close, yet so far ..."
 
-Well, it is not an "unknown option" on XP...  and the code doesn't really
-lend itself to "just claim it's an unknown option if it cannot be enabled"
-without being truly ugly...
+JJK
 
-(setenv opt wouldn't make it non-fatal if the functionality is *there*=20
-but cannot be enabled for whatever reason - so on Vista+, you still have
-the "failure to block is FATAL")
 
-gert
-
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---SAq4wbarO1ybdq7f
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQCVAwUBVnCDvakuBuNlUUl1AQKAWAP/Ww+H9jYQ1IuVHPdu8OnxHKwWa/9TEy2i
-CInZH3OchbZvebaEcj98nDj/AyxBt/QlWqUdxZWaVgJrw4R9Kx4/q8c+RJKYTjL9
-JRVTRZgIcKj5mfcVMRmVfu/q+yzL3VnHHYlNrRhSlzOqpO9g1csHZzOY2tr8Eyrb
-moQ1wTOeXdA=
-=0kKF
------END PGP SIGNATURE-----
-
---SAq4wbarO1ybdq7f--
 
