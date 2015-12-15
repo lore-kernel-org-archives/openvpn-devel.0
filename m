@@ -1,8 +1,9 @@
-From: Lev Stipakov <lstipakov@...277...>
-Date: Tue, 15 Dec 2015 10:18:22 +0200
-Message-Id: <1450167502-13471-1-git-send-email-lstipakov@...277...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 2.3] Fix VS2013 compilation
+Date: Tue, 15 Dec 2015 09:34:05 +0100 (CET)
+Message-Id: <201512150834.tBF8Y5mb061321@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <1450167502-13471-1-git-send-email-lstipakov@...277...>
+References: <1450167502-13471-1-git-send-email-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix VS2013 compilation
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,110 +14,29 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Lev Stipakov <lstipakov@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Update toolset, define __attribute__.
+ACK, as this is basically the "2.3" parts of commit 123092a7a95.  Thanks.
 
-Signed-off-by: Lev Stipakov <lstipakov@...277...>
----
- src/compat/compat.vcxproj           | 4 +++-
- src/openvpn/openvpn.vcxproj         | 6 ++++--
- src/openvpn/syshead.h               | 1 +
- src/openvpnserv/openvpnserv.vcxproj | 4 +++-
- 4 files changed, 11 insertions(+), 4 deletions(-)
+Your patch has been applied to the release/2.3 branch.
 
-diff --git a/src/compat/compat.vcxproj b/src/compat/compat.vcxproj
-index 42979c1..1dedb33 100644
---- a/src/compat/compat.vcxproj
-+++ b/src/compat/compat.vcxproj
-@@ -1,5 +1,5 @@
- ﻿<?xml version="1.0" encoding="utf-8"?>
--<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-   <ItemGroup Label="ProjectConfigurations">
-     <ProjectConfiguration Include="Debug|Win32">
-       <Configuration>Debug</Configuration>
-@@ -20,10 +20,12 @@
-     <ConfigurationType>StaticLibrary</ConfigurationType>
-     <CharacterSet>MultiByte</CharacterSet>
-     <WholeProgramOptimization>true</WholeProgramOptimization>
-+    <PlatformToolset>v120</PlatformToolset>
-   </PropertyGroup>
-   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-     <ConfigurationType>StaticLibrary</ConfigurationType>
-     <CharacterSet>MultiByte</CharacterSet>
-+    <PlatformToolset>v120</PlatformToolset>
-   </PropertyGroup>
-   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
-   <ImportGroup Label="ExtensionSettings">
-diff --git a/src/openvpn/openvpn.vcxproj b/src/openvpn/openvpn.vcxproj
-index 0b1b3fd..d691500 100644
---- a/src/openvpn/openvpn.vcxproj
-+++ b/src/openvpn/openvpn.vcxproj
-@@ -1,5 +1,5 @@
- ﻿<?xml version="1.0" encoding="utf-8"?>
--<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-   <ItemGroup Label="ProjectConfigurations">
-     <ProjectConfiguration Include="Debug|Win32">
-       <Configuration>Debug</Configuration>
-@@ -20,10 +20,12 @@
-     <ConfigurationType>Application</ConfigurationType>
-     <WholeProgramOptimization>true</WholeProgramOptimization>
-     <CharacterSet>Unicode</CharacterSet>
-+    <PlatformToolset>v120</PlatformToolset>
-   </PropertyGroup>
-   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-     <ConfigurationType>Application</ConfigurationType>
-     <CharacterSet>Unicode</CharacterSet>
-+    <PlatformToolset>v120</PlatformToolset>
-   </PropertyGroup>
-   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
-   <ImportGroup Label="ExtensionSettings">
-@@ -260,4 +262,4 @@
-   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-   <ImportGroup Label="ExtensionTargets">
-   </ImportGroup>
--</Project>
-+</Project>
-\ No newline at end of file
-diff --git a/src/openvpn/syshead.h b/src/openvpn/syshead.h
-index ffba4e8..24926ae 100644
---- a/src/openvpn/syshead.h
-+++ b/src/openvpn/syshead.h
-@@ -47,6 +47,7 @@
- 
- #ifdef _MSC_VER // Visual Studio
- #define __func__ __FUNCTION__
-+#define __attribute__(x)
- #endif
- 
- #if defined(__APPLE__)
-diff --git a/src/openvpnserv/openvpnserv.vcxproj b/src/openvpnserv/openvpnserv.vcxproj
-index 0b75ed0..2a8943d 100644
---- a/src/openvpnserv/openvpnserv.vcxproj
-+++ b/src/openvpnserv/openvpnserv.vcxproj
-@@ -1,5 +1,5 @@
- ﻿<?xml version="1.0" encoding="utf-8"?>
--<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-   <ItemGroup Label="ProjectConfigurations">
-     <ProjectConfiguration Include="Debug|Win32">
-       <Configuration>Debug</Configuration>
-@@ -20,10 +20,12 @@
-     <ConfigurationType>Application</ConfigurationType>
-     <CharacterSet>MultiByte</CharacterSet>
-     <WholeProgramOptimization>true</WholeProgramOptimization>
-+    <PlatformToolset>v120</PlatformToolset>
-   </PropertyGroup>
-   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-     <ConfigurationType>Application</ConfigurationType>
-     <CharacterSet>MultiByte</CharacterSet>
-+    <PlatformToolset>v120</PlatformToolset>
-   </PropertyGroup>
-   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
-   <ImportGroup Label="ExtensionSettings">
--- 
-1.9.1
+commit 723c7c3d3a95f04a233449efd3ccd647eb0e1bf6 (release/2.3)
+Author: Lev Stipakov
+Date:   Tue Dec 15 10:18:22 2015 +0200
+
+     Fix VS2013 compilation
+
+     Signed-off-by: Lev Stipakov <lstipakov@...277...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1450167502-13471-1-git-send-email-lstipakov@...277...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/10809
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
