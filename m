@@ -1,9 +1,13 @@
-Date: Tue, 15 Dec 2015 18:02:57 +0100 (CET)
-Message-Id: <201512151702.tBFH2vgY063482@...2054...>
+Date: Tue, 15 Dec 2015 18:06:38 +0100
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1450191626-24633-1-git-send-email-samuli@...515...>
-References: <1450191626-24633-1-git-send-email-samuli@...515...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Updates to Changes.rst
+Message-ID: <20151215170638.GR24952@...1296...>
+References: <1450190432-23460-1-git-send-email-samuli@...515...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="Z3jiOto4UaMfBKvM"
+Content-Disposition: inline
+In-Reply-To: <1450190432-23460-1-git-send-email-samuli@...515...>
+Subject: Re: [Openvpn-devel] [PATCH] Updates to Changes.rst
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,35 +16,52 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
 To: samuli@...515...
 Cc: openvpn-devel@lists.sourceforge.net
 
-ACK, and thanks for getting this started.
+--Z3jiOto4UaMfBKvM
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Your patch has been applied to the release/2.3 branch.
+Hi,
 
-(I have added a bit more to it, some of the user-visible changes were
-missing)
+On Tue, Dec 15, 2015 at 04:40:32PM +0200, samuli@...515... wrote:
+> From: Samuli Sepp=E4nen <samuli@...515...>
+>=20
+> This patch is for the "master" branch
 
-commit 3b1fa7f6ebe5d4bedfe66aac33222e7e1e3e420a
+This one does not apply to my "master" branch...
 
-Author: Samuli Seppänen
-Date:   Tue Dec 15 17:00:26 2015 +0200
+Applying: Updates to Changes.rst
+error: patch failed: Changes.rst:34
+error: Changes.rst: patch does not apply
+Patch failed at 0001 Updates to Changes.rst
 
-     Updates to Changes.rst
+... but I'll apply the changes manually (and add Arne's important
+remark "drop XP support").
 
-     Signed-off-by: Samuli Seppänen <samuli@...515...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1450191626-24633-1-git-send-email-samuli@...515...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/10816
-     Signed-off-by: Gert Doering <gert@...1296...>
+gert
 
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
---
-kind regards,
+--Z3jiOto4UaMfBKvM
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Gert Doering
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
 
+iQCVAwUBVnBInakuBuNlUUl1AQLSAAQAggp/Pw/xN3/UXEVGuwqUCWnZZnSGmJ99
+krorvmHQcSJFmLGAURdD+/Z35DLkAwQUZypvyrua3Ie2SV6/UyNZYdrmBiO43Dbb
+kVmZdZSSGsBif1DAQ3GADLKycrTmneTFZGgRe4748KHvadL/AMVYdD+Gh6GHn2Ni
+ZTqHgsHpCwA=
+=ExKg
+-----END PGP SIGNATURE-----
+
+--Z3jiOto4UaMfBKvM--
 
