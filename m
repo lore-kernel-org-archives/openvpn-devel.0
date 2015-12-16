@@ -1,18 +1,8 @@
-References: <1450123758-31641-1-git-send-email-steffan@...1856...>
-	<566F5B01.8020109@...2080...>
-	<20151215075312.GN24952@...1296...> <5670890D.7050501@...1147...>
-	<20151216082452.GY24952@...1296...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <5671677A.8060809@...2080...>
-Date: Wed, 16 Dec 2015 14:30:34 +0100
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <567169E3.2030401@...515...>
+Date: Wed, 16 Dec 2015 15:40:51 +0200
 MIME-Version: 1.0
-In-Reply-To: <20151216082452.GY24952@...1296...>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="Vm9w7FQWGbavhd4LmnDxkEMaWpePgTs2k"
-Subject: Re: [Openvpn-devel] [PATCH] Warn user if their certificate has
- expired
-Reply-To: openvpn-devel@lists.sourceforge.net
+Subject: [Openvpn-devel] OpenVPN 2.3.9 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,62 +11,51 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>, Jan Just Keijser <janjust@...1147...>
-Cc: openvpn-devel@lists.sourceforge.net
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---Vm9w7FQWGbavhd4LmnDxkEMaWpePgTs2k
-Content-Type: text/plain; charset="windows-1252"
+Content-Type: text/plain; charset="iso-8859-15"; format=flowed
 Content-Transfer-Encoding: quoted-printable
+To: "openvpn users list (openvpn-users@lists.sourceforge.net)" <openvpn-users@lists.sourceforge.net>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, openvpn-announce@lists.sourceforge.net
 
-On 16/12/15 09:24, Gert Doering wrote:
->
-> OTOH, 0.9.8 and 1.0.0 will be discontinued end of this year, so we should
-> see vendor upgrades.
+The OpenVPN community project team is proud to release OpenVPN 2.3.9. It=20
+can be downloaded from here:
 
-Enterprise distributions will not rebase OpenSSL on their supported
-distroes.  RHEL5 will continue to ship the openssl-0.9.8 base.  But it
-will be, as it always has, maintained by Red Hat.  So security and
-critical bugs will be provided.  I expect SuSE does something similar to
-their enterprise release as well.
+<http://openvpn.net/index.php/open-source/downloads.html>
 
-FTR ... RHEL 5 is fully supported until end of March 2017.  Customers
-paying for an extended life cycle support  add-on (ELS) will get
-critical-impact security fixes.  For more information:
-<https://access.redhat.com/support/policy/updates/errata>
+This release includes many small improvements and fixes. The biggest=20
+change is the addition of --block-outside-dns option, which can be used=20
+to fix DNS leaks in Windows 8.1 and 10. There are also improvements to=20
+behavior during suspend/resume on Windows and integration with external=20
+service managers such as NSSM. Client-side part of server restart=20
+notification is also included. A full list of changes is available here:
 
-Even though I know it would be good to get rid of the support for these
-old OpenSSL versions ... we can't just kick them out like that.  Not
-yet.  James have asked us to keep RHEL 5 support as long as it is
-supported by Red Hat.  I think it is fine for us to aim for March 2017.
- Then it will be RHEL 6 which is our next target (openssl-1.0.1 base).
+<https://community.openvpn.net/openvpn/wiki/ChangesInOpenvpn23>
 
-With that said.  I do not not think it is necessarily worthwhile to
-insist on 'git master' being supported on RHEL 5, especially if it
-begins to be painful to support RHEL 5 on our bleeding edge code base.
-In that perspective I would not mind if we consider the coming OpenVPN
-2.4 to be the newest OpenVPN release we support on RHEL 5.  I would
-prefer not going any older than 2.4 though.
+For generic help use these support channels:
 
+Official documentation:=20
+<http://openvpn.net/index.php/open-source/documentation/howto.html>
+Wiki: <https://community.openvpn.net>
+Forums: <https://forums.openvpn.net>
+User mailing list: <http://sourceforge.net/mail/?group_id=3D48978>
+User IRC channel: #openvpn at irc.freenode.net
+
+Please report bugs and ask development questions here:
+
+Bug tracker and wiki: <https://community.openvpn.net>
+Developer mailing list: <http://sourceforge.net/mail/?group_id=3D48978>
+Developer IRC channel: #openvpn-devel at irc.freenode.net (requires=20
+Freenode registration)
 
 --=20
-kind regards,
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
 
-David Sommerseth
+irc freenode net: mattock
 
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
 
---Vm9w7FQWGbavhd4LmnDxkEMaWpePgTs2k
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iEYEARECAAYFAlZxZ30ACgkQDC186MBRfrqKgQCdGqFx93yVa2U5NpoCEMSSs8DB
-tMAAn28QKBjYLnLbkVmbSm/7P7mRTc6R
-=JEML
------END PGP SIGNATURE-----
-
---Vm9w7FQWGbavhd4LmnDxkEMaWpePgTs2k--
+irc freenode net: mattock
 
