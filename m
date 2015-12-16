@@ -1,12 +1,19 @@
+Date: Wed, 16 Dec 2015 09:21:28 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20151216082128.GX24952@...1296...>
+References: <1450191626-24633-1-git-send-email-samuli@...515...>
+	<A9F464ED000E41E49522FF9AE5BCBC84@...2089...>
+	<CAKuzo_j-nHghOXSW67kmQyQVk1zOH6tij=Tdf5pD-wFYwn-yUg@...278...>
+	<20151215205402.GV24952@...1296...>
+	<CAKuzo_g4J=4ZYV9CiWhm5B3LCASxdRTL7jkKHcFby0WA7x88vA@...278...>
+	<20151215211853.GW24952@...1296...>
+	<CAKuzo_hMGML9Jrmd7OXVt5aW8CpeX2qzrXNN08rN8k+wCkkdFw@...278...>
 MIME-Version: 1.0
-In-Reply-To: <1449751018-10634-1-git-send-email-arne@...1227...>
-References: <1449751018-10634-1-git-send-email-arne@...1227...>
-From: Selva Nair <selva.nair@...277...>
-Date: Tue, 15 Dec 2015 22:41:27 -0500
-Message-ID: <CAKuzo_isBP22Xh1xyBr4oaXZBWaCsW_-myQAhbHvBd-NJ9n_zg@...278...>
-Content-Type: multipart/alternative; boundary=089e012298ec7e6d480526fbaf71
-Subject: Re: [Openvpn-devel] [PATCH] Replace ENABLE_CLIENT_CR with
- ENABLE_MANAGMENT with unconditionally enables it
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="2B6zolKEgOVs0/v4"
+Content-Disposition: inline
+In-Reply-To: <CAKuzo_hMGML9Jrmd7OXVt5aW8CpeX2qzrXNN08rN8k+wCkkdFw@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] Updates to Changes.rst
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,75 +22,61 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
+To: Selva Nair <selva.nair@...277...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---089e012298ec7e6d480526fbaf71
-Content-Type: text/plain; charset=UTF-8
+--2B6zolKEgOVs0/v4
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
 Hi,
 
-Though nothing breaks, this leads to confusing code fragments like the one
-around this one
+On Tue, Dec 15, 2015 at 05:10:57PM -0500, Selva Nair wrote:
+> > Well, it is not an "unknown option" on XP...  and the code doesn't real=
+ly
+> > lend itself to "just claim it's an unknown option if it cannot be enabl=
+ed"
+> > without being truly ugly...
+>=20
+> Well,
+> else if (streq (p[0], "block-outside-dns") && !p[1] && win_wfp_init_funcs=
+())
+> {..
+> }
+> will do it, but then one can't print a helpful error for the XP folks.=20
 
-@@ -1143,7 +1142,7 @@ get_user_pass_cr (struct user_pass *up,
->             { msg(M_FATAL, "neither stdin nor stderr are a tty device,
-> can't ask for %s password.  If you used --daemon, you need to use --askpass
-> to make passphrase-protected keys work, and you can not use
-> --auth-nocache.", prefix ); }
->  #endif
->
-> -#ifdef ENABLE_CLIENT_CR
-> +#ifdef ENABLE_MANAGEMENT
->           if (auth_challenge && (flags & GET_USER_PASS_DYNAMIC_CHALLENGE))
->             {
->               struct auth_challenge_info *ac = get_auth_challenge
-> (auth_challenge, &gc);
->
+Thinking about it again, we could indeed print the "helpful error for XP"
+inside win_wfp_init_funcs(), and then use the code the way you propose
+(and it's less ugly than I feared).
 
+But it will still be confusing then, to see a message about "cannot load
+WFP modules!" and, after that, "unknown option!"...
 
-would read as "Ifdef ENABLE_MANAGEMENT, read the challenge response from
-stdin".
+For 2.3.9, let's just leave it as it is and get it *out*.  Revisit later,
+if sufficient user confusion is detected :-)
 
-Why not unconditionally enable the challenge-response support irrespective
-of whether MANAGEMENT is enabled or not? That will get rid of all those
-ifdefs. I don't see any obvious downsides.
+gert
 
-Thanks,
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-Selva
+--2B6zolKEgOVs0/v4
+Content-Type: application/pgp-signature; name="signature.asc"
 
---089e012298ec7e6d480526fbaf71
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
 
-<div dir=3D"ltr"><br><div class=3D"gmail_quote">Hi,<br><br>Though nothing b=
-reaks, this leads to confusing code fragments like the one around this one<=
-br><br><blockquote style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid =
-rgb(204,204,204);padding-left:1ex" class=3D"gmail_quote">@@ -1143,7 +1142,7=
- @@ get_user_pass_cr (struct user_pass *up,<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 { msg(M_FATAL, &quot;neither stdi=
-n nor stderr are a tty device,=20
-can&#39;t ask for %s password.=C2=A0 If you used --daemon, you need to use=
-=20
---askpass to make passphrase-protected keys work, and you can not use=20
---auth-nocache.&quot;, prefix ); }<br>
-=C2=A0#endif<br>
-<br>
--#ifdef <span class=3D"">ENABLE_CLIENT_CR</span><br>
-+#ifdef ENABLE_MANAGEMENT<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 if (auth_challenge &amp;&amp; (flags &am=
-p; GET_USER_PASS_DYNAMIC_CHALLENGE))<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 {<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 struct auth_challenge_info=
- *ac =3D get_auth_challenge (auth_challenge, &amp;gc);<br></blockquote><div=
->=C2=A0</div><div><br></div><div>would read as &quot;Ifdef ENABLE_MANAGEMEN=
-T, read the challenge response from stdin&quot;.<br><br></div><div>Why not =
-unconditionally enable the challenge-response support irrespective of wheth=
-er MANAGEMENT is enabled or not? That will get rid of all those ifdefs. I d=
-on&#39;t see any obvious downsides.<br></div><div><br></div><div>Thanks,<br=
-><br></div><div>Selva<br></div></div><div class=3D"gmail_extra"><br></div><=
-/div>
+iQCVAwUBVnEfCKkuBuNlUUl1AQKUPgQAnYuBFvr40Xdp0RKEKm4VWZzpiAlPSCEd
+qJX1fs1kG8uLFpuVcSoFiMH3MXcGvhEa03k5QCaLNyNiZzBJUQSrCsSB/VO7aduc
+DUsthPKZ1h+Dom3LGTep1tgFR9xTQmaa2tUiu145jDPwWYpHTSHZnFwWeNoT+pGm
+IwUV7snEnHg=
+=snrD
+-----END PGP SIGNATURE-----
 
---089e012298ec7e6d480526fbaf71--
+--2B6zolKEgOVs0/v4--
 
