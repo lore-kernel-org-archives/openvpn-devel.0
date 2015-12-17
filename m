@@ -1,10 +1,12 @@
 MIME-Version: 1.0
-From: Selva Nair <selva.nair@...277...>
-Date: Thu, 17 Dec 2015 16:22:37 -0500
-Message-ID: <CAKuzo_gVUcS+j0jfoUjSYknd+G_wOqGttxTV60tuB=3RLakg4A@...278...>
-Content-Type: multipart/alternative; boundary=047d7b8738a46441ff05271ea0ec
-Subject: [Openvpn-devel] Issues with challenge-response when user/pass is
-	read from a file
+In-Reply-To: <CAKuzo_gVUcS+j0jfoUjSYknd+G_wOqGttxTV60tuB=3RLakg4A@...278...>
+References: <CAKuzo_gVUcS+j0jfoUjSYknd+G_wOqGttxTV60tuB=3RLakg4A@...278...>
+From: Wayne Davison <wayne@...2099...>
+Date: Thu, 17 Dec 2015 14:45:07 -0800
+Message-ID: <CAHSx_StE=b4GB28JO46Vzrdh6CYKTEZCr_sU62VzSHX6nH0r+Q@...278...>
+Content-Type: multipart/alternative; boundary=089e015370846ba70b05271fc788
+Subject: Re: [Openvpn-devel] Issues with challenge-response when user/pass
+ is read from a file
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,76 +15,77 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Selva Nair <selva.nair@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---047d7b8738a46441ff05271ea0ec
+--089e015370846ba70b05271fc788
 Content-Type: text/plain; charset=UTF-8
 
-Hi,
+On Thu, Dec 17, 2015 at 1:22 PM, Selva Nair <selva.nair@...277...> wrote:
 
-While reviewing the series of patches from Wayne Davison, I've come to
-realize that, until the recent changes in get_user_pass_cr, the use of
-challenge-response was incompatible with reading auth-user-pass from a
-file. As this goes back to early 2.3-alpha, it may be by design, but not
-documented as such?
+> (a) leave as is and document that challenge-response is incompatible with
+> user and pass from file
+>
 
-Anyway, as a side effect of the "username-only" commit (6e9373c846..), now
-static-challenge gets prompted from console when only username is read from
-a file. Dynamic challenge remains incompatible (i.e., broken if auth_file
-is defined).  It looks useful and worthwhile to make this more consistent
-by reading the response to the challenge from console in all cases (except
-when query from management is enabled, of course).
-
-This can be done by a few lines of changes to the code, but I would like to
-hear what others think about the following options:
-
-(a) leave as is and document that challenge-response is incompatible with
-user and pass from file
-
-OR
+If people lean this way I think the code would still need to be changed to
+fail instead of endlessly looping, sending bad answers back to the server.
 
 (b) prompt for the response from console in both dynamic and static cases
+>
 
-OR
-
-(c) something else
+That gets my vote, for what that's worth.
 
 Prompting from management works fine as long as auth-user-pass file is not
-set.
+> set.
+>
 
-If there is no strong preference, I'll submit a patch for (b) acknowledging
-Wayne Davison who brought this up.
+I assume that would be something you'd fix (or make the program reject).
+The current code does not prompt on the management interface for a
+challenge/response if someone combines --management,
+--management-query-passwords, and an auth-user-pass file.
 
-Thanks,
+Ultimately, though, I've switched over to a simple perl script I wrote that
+runs a managed openvpn and gives me full control w/o using --auth-user-pass
+(since the official release is not going to support reading the
+challenge/response from a file).
 
-Selva
+..wayne..
 
---047d7b8738a46441ff05271ea0ec
+--089e015370846ba70b05271fc788
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr"><div><div><div><div><div><div><div>Hi,<br><br>While review=
-ing the series of patches from Wayne <span>Davison</span>, I&#39;ve come to=
- realize that, until the recent changes in get_user_pass_<span>cr</span>, t=
-he use of challenge-response was incompatible with reading <span>auth</span=
->-user-pass from a file. As this goes back to early 2.3-alpha, it may be by=
- design, but not documented as such?<br></div><br>Anyway, as a side effect =
-of the &quot;<span>username</span>-only&quot; commit (6e9373c846..), now st=
-atic-challenge gets prompted from console when only <span>username</span> i=
-s read from a file. Dynamic challenge remains incompatible (i.e., broken if=
- auth_file is defined).=C2=A0 It looks useful and worthwhile to make this m=
-ore consistent by reading the response to the challenge from console in all=
- cases (except when query from management is enabled, of course).<br><br></=
-div>This can be done by a few lines of changes to the code, but I would lik=
-e to hear what others think about the following options:<br><br></div>(a) l=
-eave as is and document that challenge-response is incompatible with user a=
-nd pass from file<br></div><br>OR<br><br>(b) prompt for the response from <=
-span>console</span> in both dynamic and static cases<br></div><br>OR<br><br=
->(c) something else<br><br></div><div>Prompting from management works fine =
-as long as auth-user-pass file is not set.<br><br></div><div>If there is no=
- strong preference, I&#39;ll submit a patch for (b) acknowledging Wayne <sp=
-an>Davison</span> who brought this up.<br><br></div>Thanks,<br><br></div><s=
-pan>Selva</span><br></div>
+<div dir=3D"ltr"><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">=
+On Thu, Dec 17, 2015 at 1:22 PM, Selva Nair <span dir=3D"ltr">&lt;<a href=
+=3D"mailto:selva.nair@...277..." target=3D"_blank">selva.nair@...277...</a>=
+&gt;</span> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0px=
+ 0px 0px 0.8ex;border-left-width:1px;border-left-color:rgb(204,204,204);bor=
+der-left-style:solid;padding-left:1ex"><div dir=3D"ltr"><div><div><div><div=
+><div><div><div>(a) leave as is and document that challenge-response is inc=
+ompatible with user and pass from file<br></div></div></div></div></div></d=
+iv></div></div></blockquote><div><br></div><div>If people lean this way I t=
+hink the code would still need to be changed to fail instead of endlessly l=
+ooping, sending bad answers back to the server.</div><div><br></div><blockq=
+uote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left-wi=
+dth:1px;border-left-color:rgb(204,204,204);border-left-style:solid;padding-=
+left:1ex"><div dir=3D"ltr"><div><div><div><div><div><div><div></div></div><=
+/div></div>(b) prompt for the response from <span>console</span> in both dy=
+namic and static cases</div></div></div></div></blockquote><div><br></div><=
+div>That gets my vote, for what that&#39;s worth.</div><div><br></div><bloc=
+kquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left-=
+width:1px;border-left-color:rgb(204,204,204);border-left-style:solid;paddin=
+g-left:1ex"><div dir=3D"ltr"><div><div>Prompting from management works fine=
+ as long as auth-user-pass file is not set.<br></div></div></div></blockquo=
+te><div><br></div><div>I assume that would be something you&#39;d fix (or m=
+ake the program reject).=C2=A0 The current code does not prompt on the mana=
+gement interface for a challenge/response if someone combines --management,=
+ --management-query-passwords, and an auth-user-pass file.</div><div><br></=
+div><div>Ultimately, though, I&#39;ve switched over to a simple perl script=
+ I wrote that runs a managed openvpn and gives me full control w/o using --=
+auth-user-pass (since the official release is not going to support reading =
+the challenge/response from a file).</div></div></div><div class=3D"gmail_e=
+xtra"><br clear=3D"all"><div><div class=3D"gmail_signature">..wayne..</div>=
+</div></div></div>
 
---047d7b8738a46441ff05271ea0ec--
+--089e015370846ba70b05271fc788--
 
