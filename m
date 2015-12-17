@@ -1,8 +1,14 @@
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <567169E3.2030401@...515...>
-Date: Wed, 16 Dec 2015 15:40:51 +0200
 MIME-Version: 1.0
-Subject: [Openvpn-devel] OpenVPN 2.3.9 released
+In-Reply-To: <CAKuzo_gSB_9ET=LEJmrJpbhzzhLNCm3xFeUsgwR5HYtFH7FNqA@...278...>
+References: <CAHSx_SuB8wu8_RWcfTfDhFQhrek89-Wu-pBo1FXbBNfHxRUTYg@...278...>
+	<1450217793-17974-1-git-send-email-wayne@...2099...>
+	<CAKuzo_gSB_9ET=LEJmrJpbhzzhLNCm3xFeUsgwR5HYtFH7FNqA@...278...>
+From: Wayne Davison <wayne@...2099...>
+Date: Wed, 16 Dec 2015 16:16:39 -0800
+Message-ID: <CAHSx_SsSrmdcv8Ae-wnZKNSe5gNp_PmBhe=1GTadbOyOh2CSOw@...278...>
+Content-Type: multipart/alternative; boundary=089e013cba0ee88bc005270cf010
+Subject: Re: [Openvpn-devel] [PATCH 1/3] Fix CR prompting when user & pass
+ are read from a file.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,51 +17,43 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-15"; format=flowed
+To: Selva Nair <selva.nair@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+
+--089e013cba0ee88bc005270cf010
+Content-Type: text/plain; charset=UTF-8
+
+On Tue, Dec 15, 2015 at 7:09 PM, Selva Nair <selva.nair@...277...> wrote:
+
+> This doesn't work: it messes up any response already read from the
+> management interface.
+>
+
+Given what options? I tested --management with --management-query-passwords
+without issue.  Are you combining that with --auth-user-pass FILENAME? I
+can't get that combo to work even without my changes.  I guess I'll let you
+guys fix it up the right way.
+
+..wayne..
+
+--089e013cba0ee88bc005270cf010
+Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-To: "openvpn users list (openvpn-users@lists.sourceforge.net)" <openvpn-users@lists.sourceforge.net>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, openvpn-announce@lists.sourceforge.net
 
-The OpenVPN community project team is proud to release OpenVPN 2.3.9. It=20
-can be downloaded from here:
+<div dir=3D"ltr"><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">=
+On Tue, Dec 15, 2015 at 7:09 PM, Selva Nair <span dir=3D"ltr">&lt;<a href=
+=3D"mailto:selva.nair@...277..." target=3D"_blank">selva.nair@...277...</a>=
+&gt;</span> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0px=
+ 0px 0px 0.8ex;border-left-width:1px;border-left-color:rgb(204,204,204);bor=
+der-left-style:solid;padding-left:1ex"><div>This doesn&#39;t work: it messe=
+s up any response already read from the management interface.<br></div><div=
+></div></blockquote></div><br>Given what options? I tested --management wit=
+h --management-query-passwords without issue.=C2=A0 Are you combining that =
+with=C2=A0--auth-user-pass FILENAME? I can&#39;t get that combo to work eve=
+n without my changes.=C2=A0 I guess I&#39;ll let you guys fix it up the rig=
+ht way.<br><br clear=3D"all"><div><div class=3D"gmail_signature">..wayne..<=
+/div></div>
+</div></div>
 
-<http://openvpn.net/index.php/open-source/downloads.html>
-
-This release includes many small improvements and fixes. The biggest=20
-change is the addition of --block-outside-dns option, which can be used=20
-to fix DNS leaks in Windows 8.1 and 10. There are also improvements to=20
-behavior during suspend/resume on Windows and integration with external=20
-service managers such as NSSM. Client-side part of server restart=20
-notification is also included. A full list of changes is available here:
-
-<https://community.openvpn.net/openvpn/wiki/ChangesInOpenvpn23>
-
-For generic help use these support channels:
-
-Official documentation:=20
-<http://openvpn.net/index.php/open-source/documentation/howto.html>
-Wiki: <https://community.openvpn.net>
-Forums: <https://forums.openvpn.net>
-User mailing list: <http://sourceforge.net/mail/?group_id=3D48978>
-User IRC channel: #openvpn at irc.freenode.net
-
-Please report bugs and ask development questions here:
-
-Bug tracker and wiki: <https://community.openvpn.net>
-Developer mailing list: <http://sourceforge.net/mail/?group_id=3D48978>
-Developer IRC channel: #openvpn-devel at irc.freenode.net (requires=20
-Freenode registration)
-
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
-
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
+--089e013cba0ee88bc005270cf010--
 
