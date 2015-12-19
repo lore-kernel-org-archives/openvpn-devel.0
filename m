@@ -1,10 +1,8 @@
-Date: Sat, 19 Dec 2015 14:28:16 +0100 (CET)
-Message-Id: <201512191328.tBJDSGgv092195@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <1450525169-12961-2-git-send-email-steffan@...1856...>
-References: <1450525169-12961-2-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Warn user if their certificate
-	has expired
+From: Steffan Karger <steffan@...1856...>
+Date: Sat, 19 Dec 2015 16:41:34 +0100
+Message-Id: <1450539694-20262-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH] cleanup: get rid of httpdigest.c type
+	warnings
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,31 +13,105 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Steffan Karger <steffan@...1856...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-ACK (as this is basically just the combined and already-ACKed patches 
-from master, 644f2cdd13f4 + 091edd8e29968, which we did not cherrypick
-because the PolarSSL 1.3 upgrade needed to be done first).
+When I compile with --enable-strict, I only want to see warnings that are
+relevant.  So, change httpdigest.c to use the correct types when possible
+and make any remaining casts explicit.
 
-Your patch has been applied to the release/2.3 branch.
+This commit should not change behaviour.
 
-commit dfd940bb008feb2fe981ceab3ed66fdb3cf21bdb
-Author: Steffan Karger
-Date:   Sat Dec 19 12:39:29 2015 +0100
+Signed-off-by: Steffan Karger <steffan@...1856...>
+---
+ src/openvpn/httpdigest.c | 46 ++++++++++++++++++++++++----------------------
+ 1 file changed, 24 insertions(+), 22 deletions(-)
 
-     Warn user if their certificate has expired
-
-     Signed-off-by: Steffan Karger <steffan@...1856...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1450525169-12961-2-git-send-email-steffan@...1856...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/10855
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/src/openvpn/httpdigest.c b/src/openvpn/httpdigest.c
+index 78b8344..a0dfee0 100644
+--- a/src/openvpn/httpdigest.c
++++ b/src/openvpn/httpdigest.c
+@@ -74,22 +74,23 @@ DigestCalcHA1(
+   HASH HA1;
+   md_ctx_t md5_ctx;
+   const md_kt_t *md5_kt = md_kt_get("MD5");
++  const uint8_t colon = ':';
+ 
+   md_ctx_init(&md5_ctx, md5_kt);
+-  md_ctx_update(&md5_ctx, pszUserName, strlen(pszUserName));
+-  md_ctx_update(&md5_ctx, ":", 1);
+-  md_ctx_update(&md5_ctx, pszRealm, strlen(pszRealm));
+-  md_ctx_update(&md5_ctx, ":", 1);
+-  md_ctx_update(&md5_ctx, pszPassword, strlen(pszPassword));
++  md_ctx_update(&md5_ctx, (const uint8_t *) pszUserName, strlen(pszUserName));
++  md_ctx_update(&md5_ctx, &colon, 1);
++  md_ctx_update(&md5_ctx, (const uint8_t *) pszRealm, strlen(pszRealm));
++  md_ctx_update(&md5_ctx, &colon, 1);
++  md_ctx_update(&md5_ctx, (const uint8_t *) pszPassword, strlen(pszPassword));
+   md_ctx_final(&md5_ctx, HA1);
+   if (pszAlg && strcasecmp(pszAlg, "md5-sess") == 0)
+     {
+       md_ctx_init(&md5_ctx, md5_kt);
+       md_ctx_update(&md5_ctx, HA1, HASHLEN);
+-      md_ctx_update(&md5_ctx, ":", 1);
+-      md_ctx_update(&md5_ctx, pszNonce, strlen(pszNonce));
+-      md_ctx_update(&md5_ctx, ":", 1);
+-      md_ctx_update(&md5_ctx, pszCNonce, strlen(pszCNonce));
++      md_ctx_update(&md5_ctx, &colon, 1);
++      md_ctx_update(&md5_ctx, (const uint8_t *) pszNonce, strlen(pszNonce));
++      md_ctx_update(&md5_ctx, &colon, 1);
++      md_ctx_update(&md5_ctx, (const uint8_t *) pszCNonce, strlen(pszCNonce));
+       md_ctx_final(&md5_ctx, HA1);
+     };
+   md_ctx_cleanup(&md5_ctx);
+@@ -116,15 +117,16 @@ DigestCalcResponse(
+ 
+   md_ctx_t md5_ctx;
+   const md_kt_t *md5_kt = md_kt_get("MD5");
++  const uint8_t colon = ':';
+ 
+   /* calculate H(A2) */
+   md_ctx_init(&md5_ctx, md5_kt);
+-  md_ctx_update(&md5_ctx, pszMethod, strlen(pszMethod));
+-  md_ctx_update(&md5_ctx, ":", 1);
+-  md_ctx_update(&md5_ctx, pszDigestUri, strlen(pszDigestUri));
++  md_ctx_update(&md5_ctx, (const uint8_t *) pszMethod, strlen(pszMethod));
++  md_ctx_update(&md5_ctx, &colon, 1);
++  md_ctx_update(&md5_ctx, (const uint8_t *) pszDigestUri, strlen(pszDigestUri));
+   if (strcasecmp(pszQop, "auth-int") == 0)
+     {
+-      md_ctx_update(&md5_ctx, ":", 1);
++      md_ctx_update(&md5_ctx, &colon, 1);
+       md_ctx_update(&md5_ctx, HEntity, HASHHEXLEN);
+     };
+   md_ctx_final(&md5_ctx, HA2);
+@@ -133,17 +135,17 @@ DigestCalcResponse(
+   /* calculate response */
+   md_ctx_init(&md5_ctx, md5_kt);
+   md_ctx_update(&md5_ctx, HA1, HASHHEXLEN);
+-  md_ctx_update(&md5_ctx, ":", 1);
+-  md_ctx_update(&md5_ctx, pszNonce, strlen(pszNonce));
+-  md_ctx_update(&md5_ctx, ":", 1);
++  md_ctx_update(&md5_ctx, &colon, 1);
++  md_ctx_update(&md5_ctx, (const uint8_t *) pszNonce, strlen(pszNonce));
++  md_ctx_update(&md5_ctx, &colon, 1);
+   if (*pszQop)
+     {
+-      md_ctx_update(&md5_ctx, pszNonceCount, strlen(pszNonceCount));
+-      md_ctx_update(&md5_ctx, ":", 1);
+-      md_ctx_update(&md5_ctx, pszCNonce, strlen(pszCNonce));
+-      md_ctx_update(&md5_ctx, ":", 1);
+-      md_ctx_update(&md5_ctx, pszQop, strlen(pszQop));
+-      md_ctx_update(&md5_ctx, ":", 1);
++      md_ctx_update(&md5_ctx, (const uint8_t *) pszNonceCount, strlen(pszNonceCount));
++      md_ctx_update(&md5_ctx, &colon, 1);
++      md_ctx_update(&md5_ctx, (const uint8_t *) pszCNonce, strlen(pszCNonce));
++      md_ctx_update(&md5_ctx, &colon, 1);
++      md_ctx_update(&md5_ctx, (const uint8_t *) pszQop, strlen(pszQop));
++      md_ctx_update(&md5_ctx, &colon, 1);
+     };
+   md_ctx_update(&md5_ctx, HA2Hex, HASHHEXLEN);
+   md_ctx_final(&md5_ctx, RespHash);
+-- 
+2.5.0
 
 
