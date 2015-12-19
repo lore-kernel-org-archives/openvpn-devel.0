@@ -1,10 +1,10 @@
-Date: Sat, 19 Dec 2015 14:24:18 +0100 (CET)
-Message-Id: <201512191324.tBJDOIq5092171@...2054...>
+Date: Sat, 19 Dec 2015 14:28:16 +0100 (CET)
+Message-Id: <201512191328.tBJDSGgv092195@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1450525169-12961-1-git-send-email-steffan@...1856...>
-References: <1450525169-12961-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Upgrade OpenVPN 2.3 to PolarSSL
-	1.3
+In-Reply-To: <1450525169-12961-2-git-send-email-steffan@...1856...>
+References: <1450525169-12961-2-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Warn user if their certificate
+	has expired
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,30 +18,22 @@ Content-Transfer-Encoding: 8bit
 To: Steffan Karger <steffan@...1856...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-ACK, based on
-
- - most of the changes are fairly mechanical (cert->crt, rsa->pk, and so on)
- - some of the larger "changes" are mostly whitespace changes, and the
-   actual change makes sense (using features of 1.3 not available before)
- - I remember (and ACKed) half of the other changes from master
- - not touching stuff outside PolarSSL
- - and works for my tests built with 1.3(.9) :-)
+ACK (as this is basically just the combined and already-ACKed patches 
+from master, 644f2cdd13f4 + 091edd8e29968, which we did not cherrypick
+because the PolarSSL 1.3 upgrade needed to be done first).
 
 Your patch has been applied to the release/2.3 branch.
 
-I have added the change to Changes.rst, and committed that separately.
-
-commit a40b2304fe967053debb4249704a344223707c96 (release/2.3)
-
+commit dfd940bb008feb2fe981ceab3ed66fdb3cf21bdb
 Author: Steffan Karger
-Date:   Sat Dec 19 12:39:28 2015 +0100
+Date:   Sat Dec 19 12:39:29 2015 +0100
 
-     Upgrade OpenVPN 2.3 to PolarSSL 1.3
+     Warn user if their certificate has expired
 
      Signed-off-by: Steffan Karger <steffan@...1856...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1450525169-12961-1-git-send-email-steffan@...1856...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/10856
+     Message-Id: <1450525169-12961-2-git-send-email-steffan@...1856...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/10855
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
