@@ -1,11 +1,10 @@
-References: <1450602641-26831-1-git-send-email-steffan@...1856...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <56768324.7050003@...1227...>
-Date: Sun, 20 Dec 2015 11:29:56 +0100
-MIME-Version: 1.0
-In-Reply-To: <1450602641-26831-1-git-send-email-steffan@...1856...>
-Subject: Re: [Openvpn-devel] [PATCH] Make assert_failed() print the failed
- condition
+From: Steffan Karger <steffan@...1856...>
+Date: Sun, 20 Dec 2015 11:44:09 +0100
+Message-Id: <1450608249-9947-1-git-send-email-steffan@...1856...>
+In-Reply-To: <56768324.7050003@...1227...>
+References: <56768324.7050003@...1227...>
+Subject: [Openvpn-devel] [PATCH v2] Make assert_failed() print the failed
+	condition
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,15 +13,61 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-On 20.12.2015 10:10, Steffan Karger wrote:
-> Easy change to make logging output more useful.
->
-ACK. BUt I think if we keep the minimal build option, this should be
-disabled int that option since the extra strings will increase code size.
+Easy change to make logging output more useful.
 
-Arne
+v2: don't print the failed condition if ENABLE_SMALL is defined.
+
+Signed-off-by: Steffan Karger <steffan@...1856...>
+---
+ src/openvpn/error.c | 7 +++++--
+ src/openvpn/error.h | 9 +++++++--
+ 2 files changed, 12 insertions(+), 4 deletions(-)
+
+diff --git a/src/openvpn/error.c b/src/openvpn/error.c
+index 66f37f3..cfd5a41 100644
+--- a/src/openvpn/error.c
++++ b/src/openvpn/error.c
+@@ -394,9 +394,12 @@ dont_mute (unsigned int flags)
+ }
+ 
+ void
+-assert_failed (const char *filename, int line)
++assert_failed (const char *filename, int line, const char *condition)
+ {
+-  msg (M_FATAL, "Assertion failed at %s:%d", filename, line);
++  if (condition)
++    msg (M_FATAL, "Assertion failed at %s:%d (%s)", filename, line, condition);
++  else
++    msg (M_FATAL, "Assertion failed at %s:%d", filename, line);
+   _exit(1);
+ }
+ 
+diff --git a/src/openvpn/error.h b/src/openvpn/error.h
+index 1dc0864..dd5ccf7 100644
+--- a/src/openvpn/error.h
++++ b/src/openvpn/error.h
+@@ -211,9 +211,14 @@ const char *msg_flags_string (const unsigned int flags, struct gc_arena *gc);
+ FILE *msg_fp(const unsigned int flags);
+ 
+ /* Fatal logic errors */
+-#define ASSERT(x) do { if (!(x)) assert_failed(__FILE__, __LINE__); } while (false)
++#ifndef ENABLE_SMALL
++#define ASSERT(x) do { if (!(x)) assert_failed(__FILE__, __LINE__, #x); } while (false)
++#else
++#define ASSERT(x) do { if (!(x)) assert_failed(__FILE__, __LINE__, NULL); } while (false)
++#endif
+ 
+-void assert_failed (const char *filename, int line) __attribute__((__noreturn__));
++void assert_failed (const char *filename, int line, const char *condition)
++  __attribute__((__noreturn__));
+ 
+ #ifdef ENABLE_DEBUG
+ void crash (void); /* force a segfault (debugging only) */
+-- 
+2.5.0
+
 
