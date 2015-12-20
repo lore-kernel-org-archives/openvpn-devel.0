@@ -1,10 +1,10 @@
 From: Steffan Karger <steffan@...1856...>
-Date: Sun, 20 Dec 2015 11:44:09 +0100
-Message-Id: <1450608249-9947-1-git-send-email-steffan@...1856...>
-In-Reply-To: <56768324.7050003@...1227...>
-References: <56768324.7050003@...1227...>
-Subject: [Openvpn-devel] [PATCH v2] Make assert_failed() print the failed
-	condition
+Date: Sun, 20 Dec 2015 11:49:33 +0100
+Message-Id: <1450608573-12164-1-git-send-email-steffan@...1856...>
+In-Reply-To: <1450539694-20262-1-git-send-email-steffan@...1856...>
+References: <1450539694-20262-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH v2] cleanup: get rid of httpdigest.c type
+	warnings
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,56 +17,105 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Easy change to make logging output more useful.
+When I compile with --enable-strict, I only want to see warnings that are
+relevant.  So, change httpdigest.c to use the correct type when possible
+and make any remaining casts explicit.
 
-v2: don't print the failed condition if ENABLE_SMALL is defined.
+This commit should not change behaviour.
+
+v2: as discussed on #openvpn-devel, make colon a const uint8_t *, instead
+    of uint8_t.
 
 Signed-off-by: Steffan Karger <steffan@...1856...>
 ---
- src/openvpn/error.c | 7 +++++--
- src/openvpn/error.h | 9 +++++++--
- 2 files changed, 12 insertions(+), 4 deletions(-)
+ src/openvpn/httpdigest.c | 46 ++++++++++++++++++++++++----------------------
+ 1 file changed, 24 insertions(+), 22 deletions(-)
 
-diff --git a/src/openvpn/error.c b/src/openvpn/error.c
-index 66f37f3..cfd5a41 100644
---- a/src/openvpn/error.c
-+++ b/src/openvpn/error.c
-@@ -394,9 +394,12 @@ dont_mute (unsigned int flags)
- }
+diff --git a/src/openvpn/httpdigest.c b/src/openvpn/httpdigest.c
+index 78b8344..908d259 100644
+--- a/src/openvpn/httpdigest.c
++++ b/src/openvpn/httpdigest.c
+@@ -74,22 +74,23 @@ DigestCalcHA1(
+   HASH HA1;
+   md_ctx_t md5_ctx;
+   const md_kt_t *md5_kt = md_kt_get("MD5");
++  const uint8_t *colon = (const uint8_t *) ":";
  
- void
--assert_failed (const char *filename, int line)
-+assert_failed (const char *filename, int line, const char *condition)
- {
--  msg (M_FATAL, "Assertion failed at %s:%d", filename, line);
-+  if (condition)
-+    msg (M_FATAL, "Assertion failed at %s:%d (%s)", filename, line, condition);
-+  else
-+    msg (M_FATAL, "Assertion failed at %s:%d", filename, line);
-   _exit(1);
- }
+   md_ctx_init(&md5_ctx, md5_kt);
+-  md_ctx_update(&md5_ctx, pszUserName, strlen(pszUserName));
+-  md_ctx_update(&md5_ctx, ":", 1);
+-  md_ctx_update(&md5_ctx, pszRealm, strlen(pszRealm));
+-  md_ctx_update(&md5_ctx, ":", 1);
+-  md_ctx_update(&md5_ctx, pszPassword, strlen(pszPassword));
++  md_ctx_update(&md5_ctx, (const uint8_t *) pszUserName, strlen(pszUserName));
++  md_ctx_update(&md5_ctx, colon, 1);
++  md_ctx_update(&md5_ctx, (const uint8_t *) pszRealm, strlen(pszRealm));
++  md_ctx_update(&md5_ctx, colon, 1);
++  md_ctx_update(&md5_ctx, (const uint8_t *) pszPassword, strlen(pszPassword));
+   md_ctx_final(&md5_ctx, HA1);
+   if (pszAlg && strcasecmp(pszAlg, "md5-sess") == 0)
+     {
+       md_ctx_init(&md5_ctx, md5_kt);
+       md_ctx_update(&md5_ctx, HA1, HASHLEN);
+-      md_ctx_update(&md5_ctx, ":", 1);
+-      md_ctx_update(&md5_ctx, pszNonce, strlen(pszNonce));
+-      md_ctx_update(&md5_ctx, ":", 1);
+-      md_ctx_update(&md5_ctx, pszCNonce, strlen(pszCNonce));
++      md_ctx_update(&md5_ctx, colon, 1);
++      md_ctx_update(&md5_ctx, (const uint8_t *) pszNonce, strlen(pszNonce));
++      md_ctx_update(&md5_ctx, colon, 1);
++      md_ctx_update(&md5_ctx, (const uint8_t *) pszCNonce, strlen(pszCNonce));
+       md_ctx_final(&md5_ctx, HA1);
+     };
+   md_ctx_cleanup(&md5_ctx);
+@@ -116,15 +117,16 @@ DigestCalcResponse(
  
-diff --git a/src/openvpn/error.h b/src/openvpn/error.h
-index 1dc0864..dd5ccf7 100644
---- a/src/openvpn/error.h
-+++ b/src/openvpn/error.h
-@@ -211,9 +211,14 @@ const char *msg_flags_string (const unsigned int flags, struct gc_arena *gc);
- FILE *msg_fp(const unsigned int flags);
+   md_ctx_t md5_ctx;
+   const md_kt_t *md5_kt = md_kt_get("MD5");
++  const uint8_t *colon = (const uint8_t *) ":";
  
- /* Fatal logic errors */
--#define ASSERT(x) do { if (!(x)) assert_failed(__FILE__, __LINE__); } while (false)
-+#ifndef ENABLE_SMALL
-+#define ASSERT(x) do { if (!(x)) assert_failed(__FILE__, __LINE__, #x); } while (false)
-+#else
-+#define ASSERT(x) do { if (!(x)) assert_failed(__FILE__, __LINE__, NULL); } while (false)
-+#endif
- 
--void assert_failed (const char *filename, int line) __attribute__((__noreturn__));
-+void assert_failed (const char *filename, int line, const char *condition)
-+  __attribute__((__noreturn__));
- 
- #ifdef ENABLE_DEBUG
- void crash (void); /* force a segfault (debugging only) */
+   /* calculate H(A2) */
+   md_ctx_init(&md5_ctx, md5_kt);
+-  md_ctx_update(&md5_ctx, pszMethod, strlen(pszMethod));
+-  md_ctx_update(&md5_ctx, ":", 1);
+-  md_ctx_update(&md5_ctx, pszDigestUri, strlen(pszDigestUri));
++  md_ctx_update(&md5_ctx, (const uint8_t *) pszMethod, strlen(pszMethod));
++  md_ctx_update(&md5_ctx, colon, 1);
++  md_ctx_update(&md5_ctx, (const uint8_t *) pszDigestUri, strlen(pszDigestUri));
+   if (strcasecmp(pszQop, "auth-int") == 0)
+     {
+-      md_ctx_update(&md5_ctx, ":", 1);
++      md_ctx_update(&md5_ctx, colon, 1);
+       md_ctx_update(&md5_ctx, HEntity, HASHHEXLEN);
+     };
+   md_ctx_final(&md5_ctx, HA2);
+@@ -133,17 +135,17 @@ DigestCalcResponse(
+   /* calculate response */
+   md_ctx_init(&md5_ctx, md5_kt);
+   md_ctx_update(&md5_ctx, HA1, HASHHEXLEN);
+-  md_ctx_update(&md5_ctx, ":", 1);
+-  md_ctx_update(&md5_ctx, pszNonce, strlen(pszNonce));
+-  md_ctx_update(&md5_ctx, ":", 1);
++  md_ctx_update(&md5_ctx, colon, 1);
++  md_ctx_update(&md5_ctx, (const uint8_t *) pszNonce, strlen(pszNonce));
++  md_ctx_update(&md5_ctx, colon, 1);
+   if (*pszQop)
+     {
+-      md_ctx_update(&md5_ctx, pszNonceCount, strlen(pszNonceCount));
+-      md_ctx_update(&md5_ctx, ":", 1);
+-      md_ctx_update(&md5_ctx, pszCNonce, strlen(pszCNonce));
+-      md_ctx_update(&md5_ctx, ":", 1);
+-      md_ctx_update(&md5_ctx, pszQop, strlen(pszQop));
+-      md_ctx_update(&md5_ctx, ":", 1);
++      md_ctx_update(&md5_ctx, (const uint8_t *) pszNonceCount, strlen(pszNonceCount));
++      md_ctx_update(&md5_ctx, colon, 1);
++      md_ctx_update(&md5_ctx, (const uint8_t *) pszCNonce, strlen(pszCNonce));
++      md_ctx_update(&md5_ctx, colon, 1);
++      md_ctx_update(&md5_ctx, (const uint8_t *) pszQop, strlen(pszQop));
++      md_ctx_update(&md5_ctx, colon, 1);
+     };
+   md_ctx_update(&md5_ctx, HA2Hex, HASHHEXLEN);
+   md_ctx_final(&md5_ctx, RespHash);
 -- 
 2.5.0
 
