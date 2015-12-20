@@ -1,8 +1,11 @@
-From: Steffan Karger <steffan@...1856...>
-Date: Sun, 20 Dec 2015 18:10:44 +0100
-Message-Id: <1450631444-19754-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH] Add Travis CI config for automatic builds
-	and static analysis
+MIME-Version: 1.0
+In-Reply-To: <20151220134642.GY24952@...1296...>
+References: <CAGyAFMXoH2aXQwn84AiV0c=OP2Rhv6i1-D_E+RXMXu8ZQFTvVA@...278...>
+	<20151220134642.GY24952@...1296...>
+Date: Sun, 20 Dec 2015 19:32:56 +0200
+Message-ID: <CAGyAFMW_qSWu=Y1DfYai=ENLP-nk1hebMaYykAa5HJXVfQy3qA@...278...>
+From: Lev Stipakov <lstipakov@...277...>
+Subject: Re: [Openvpn-devel] XP broken
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,67 +14,74 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Cc: ValdikSS ValdikSS <iam@...2070...>
 
-Adding a .travis.yml file with config for automated builds enables
-travis-ci to perform some basic continuous integration.  This does not
-replace our existing build and test infrastructure, since that tests
-many more combinations and platforms.
+Hi,
 
-When added to the repository, this enables automated builds and (basic)
-tests for all branches this commit is applied to, and enables coverity
-analysis for the coverity_scan branch (since we can only do a limited
-number of coverity scans per week with our FOSS account).
+Screenshot seems to be lost in transmission.
 
-Signed-off-by: Steffan Karger <steffan@...1856...>
----
- .travis.yml | 34 ++++++++++++++++++++++++++++++++++
- 1 file changed, 34 insertions(+)
- create mode 100644 .travis.yml
+Moving to openvpn-devel.
 
-diff --git a/.travis.yml b/.travis.yml
-new file mode 100644
-index 0000000..5141182
---- /dev/null
-+++ b/.travis.yml
-@@ -0,0 +1,34 @@
-+language: c
-+
-+compiler:
-+  - gcc
-+  - clang
-+
-+sudo: no
-+
-+env:
-+  global:
-+   # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
-+   #   via the "travis encrypt" command using the project repo's public key
-+   - secure: "l9mSnEW4LJqjxftH5i1NdDaYfGmQB1mPXnSB3DXnsjzkCWZ+yJLfBemfQ0tx/wS7chBYxqUaUIMT0hw4zJVp/LANFJo2vfh//ymTS6h0uApRY1ofg9Pp1BFcV1laG6/u8pwSZ2EBy/GhCd3DS436oE8sYBRaFM9FU62L/oeQBfJ7r4ID/0eB1b8bqlbD4paty9MHui2P8EZJwR+KAD84prtfpZOcrSMxPh9OUhJxzxUvvVoP4s4+lZ5Kgg1bBQ3yzKGDqe8VOgK2BWCEuezqhMMc8oeKmAe7CUkoz5gsGYH++k3I9XzP9Z4xeJKoQnC/82qi4xkJmlaOxdionej9bHIcjfRt7D8j1J0U+wOj4p8VrDy7yHaxuN2fi0K5MGa/CaXQSrkna8dePniCng+xQ2MY/zxuRX2gA6xPNLUyQLU9LqIug7wj4z84Hk9iWib4L20MoPjeEo+vAUNq8FtjOPxMuHNpv4iGGx6kgJm7RXl5vC5hxfK6MprrnYe2U5Mcd8jpzagKBaKHL3zV2FxX9k0jRO9Mccz7M2WnaV0MQ6zcngzTN4+s0kCjhfGKd2F2ANT2Gkhj3Me36eNHfuE0dBbvYCMh4b3Mgd7b/OuXwQWdJ8PjJ1WHXjSOw5sHw1suaV6cEO2Meyz5j1tOkyOi0M9QF+LFenQ9vLH4sBCww8U="
-+
-+addons:
-+  apt:
-+    packages:
-+      - liblzo2-dev
-+      - libpam0g-dev
-+  coverity_scan:
-+    project:
-+      name: "OpenVPN/openvpn"
-+      version: 2.3.x
-+      description: "Open Source VPN daemon"
-+    notification_email: scan-reports@...515...
-+    build_command_prepend: "autoreconf -vi && ./configure --enable-iproute2 && make clean"
-+    build_command: "make"
-+    branch_pattern: coverity_scan
-+
-+script:
-+  - autoreconf -vi
-+  # We need to use --enable-iproute2 to run on the new (faster) Travis CI infra.
-+  - ./configure --enable-strict --enable-iproute2
-+  - make check
+We could probably detect XP only (or technically "less then Vista") by
+checking that IsWindowsVistaOrGreater() == false which seems to be
+simpler. It should fix the problem.
+
+However I like the idea that server will be able to know client's win
+version, which might help with troubleshooting. I wouldn't not change
+"IV_PLAT" value, so shall we add something like "IV_PLAT_WINVER=6.1"?
+
+-Lev
+
+2015-12-20 15:46 GMT+02:00 Gert Doering <gert@...1296...>:
+
+> Unfortunately, this is a bit complicated.
+>
+> First, XP really doesn't *do* interface indexes in netsh (*rant*) - I
+> have attached a screen shot.  German, unfortunately, but "Zeichenkette"
+> is "string", and the example clearly has an interface name there...
+>
+> We *could* introduce yet another option ("--ip-win32 netsh-names"),
+> but the usefulness of that would depend on "whoever writes the .conf file
+> knows what client OS it is for" (plus, we add an option that 2.4 won't
+> have because it has no XP support anyway).  This does not sound like
+> the way forward.
+>
+> So, I think we need to do this in two steps:
+>
+>  - add (in win32.c) a "win32_version_info()" function that will do the
+>    necessary things to figure out what Windows version we're running on.
+>    Stackoverflow suggests that this is complicated, as Windows will lie
+>    to programs most of the time, so "Win10" is reported as "Win8" unless
+>    there is something in the manifest (whatever that is) that tells windows
+>    "this program is prepared to deal with THE TRUTH"
+>
+>  - while at it, add "win32_version_string()" which would produce a printed
+>    version of this - so we can log it at startup, to help people diagnose
+>    why something isn't working for a user - and we could send it to the
+>    server as well if --push-peer-info is enabled (ssl.c, push_peer_info())
+>
+>  - and then, make the interface index bit conditional...
+>
+>     if ( win32_version_info() == WIN_XP )
+>         device = tt->actual;
+>     else
+>       {
+>         buf_printf (&out, "interface=%d", tt->adapter_index );
+>         device = buf_bptr(&out);
+>       }
+>
+>    (for add/delete_route_ipv6(), but ifconfig would look the same)
+>
+>
+> the win32_version_* stuff would go into 2.3 and master, because having
+> that information is generally useful - the conditional setting only into
+> 2.3.10
+>
+> what do you think?
+
 -- 
-2.5.0
-
+-Lev
 
