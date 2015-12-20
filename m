@@ -1,8 +1,8 @@
 From: Steffan Karger <steffan@...1856...>
-Date: Sat, 19 Dec 2015 16:41:34 +0100
-Message-Id: <1450539694-20262-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH] cleanup: get rid of httpdigest.c type
-	warnings
+Date: Sun, 20 Dec 2015 10:10:41 +0100
+Message-Id: <1450602641-26831-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH] Make assert_failed() print the failed
+	condition
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,102 +15,47 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-When I compile with --enable-strict, I only want to see warnings that are
-relevant.  So, change httpdigest.c to use the correct types when possible
-and make any remaining casts explicit.
-
-This commit should not change behaviour.
+Easy change to make logging output more useful.
 
 Signed-off-by: Steffan Karger <steffan@...1856...>
 ---
- src/openvpn/httpdigest.c | 46 ++++++++++++++++++++++++----------------------
- 1 file changed, 24 insertions(+), 22 deletions(-)
+ src/openvpn/error.c | 4 ++--
+ src/openvpn/error.h | 5 +++--
+ 2 files changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/src/openvpn/httpdigest.c b/src/openvpn/httpdigest.c
-index 78b8344..a0dfee0 100644
---- a/src/openvpn/httpdigest.c
-+++ b/src/openvpn/httpdigest.c
-@@ -74,22 +74,23 @@ DigestCalcHA1(
-   HASH HA1;
-   md_ctx_t md5_ctx;
-   const md_kt_t *md5_kt = md_kt_get("MD5");
-+  const uint8_t colon = ':';
+diff --git a/src/openvpn/error.c b/src/openvpn/error.c
+index 66f37f3..6daf465 100644
+--- a/src/openvpn/error.c
++++ b/src/openvpn/error.c
+@@ -394,9 +394,9 @@ dont_mute (unsigned int flags)
+ }
  
-   md_ctx_init(&md5_ctx, md5_kt);
--  md_ctx_update(&md5_ctx, pszUserName, strlen(pszUserName));
--  md_ctx_update(&md5_ctx, ":", 1);
--  md_ctx_update(&md5_ctx, pszRealm, strlen(pszRealm));
--  md_ctx_update(&md5_ctx, ":", 1);
--  md_ctx_update(&md5_ctx, pszPassword, strlen(pszPassword));
-+  md_ctx_update(&md5_ctx, (const uint8_t *) pszUserName, strlen(pszUserName));
-+  md_ctx_update(&md5_ctx, &colon, 1);
-+  md_ctx_update(&md5_ctx, (const uint8_t *) pszRealm, strlen(pszRealm));
-+  md_ctx_update(&md5_ctx, &colon, 1);
-+  md_ctx_update(&md5_ctx, (const uint8_t *) pszPassword, strlen(pszPassword));
-   md_ctx_final(&md5_ctx, HA1);
-   if (pszAlg && strcasecmp(pszAlg, "md5-sess") == 0)
-     {
-       md_ctx_init(&md5_ctx, md5_kt);
-       md_ctx_update(&md5_ctx, HA1, HASHLEN);
--      md_ctx_update(&md5_ctx, ":", 1);
--      md_ctx_update(&md5_ctx, pszNonce, strlen(pszNonce));
--      md_ctx_update(&md5_ctx, ":", 1);
--      md_ctx_update(&md5_ctx, pszCNonce, strlen(pszCNonce));
-+      md_ctx_update(&md5_ctx, &colon, 1);
-+      md_ctx_update(&md5_ctx, (const uint8_t *) pszNonce, strlen(pszNonce));
-+      md_ctx_update(&md5_ctx, &colon, 1);
-+      md_ctx_update(&md5_ctx, (const uint8_t *) pszCNonce, strlen(pszCNonce));
-       md_ctx_final(&md5_ctx, HA1);
-     };
-   md_ctx_cleanup(&md5_ctx);
-@@ -116,15 +117,16 @@ DigestCalcResponse(
+ void
+-assert_failed (const char *filename, int line)
++assert_failed (const char *filename, int line, const char *condition)
+ {
+-  msg (M_FATAL, "Assertion failed at %s:%d", filename, line);
++  msg (M_FATAL, "Assertion failed at %s:%d (%s)", filename, line, condition);
+   _exit(1);
+ }
  
-   md_ctx_t md5_ctx;
-   const md_kt_t *md5_kt = md_kt_get("MD5");
-+  const uint8_t colon = ':';
+diff --git a/src/openvpn/error.h b/src/openvpn/error.h
+index 1dc0864..5ad75e2 100644
+--- a/src/openvpn/error.h
++++ b/src/openvpn/error.h
+@@ -211,9 +211,10 @@ const char *msg_flags_string (const unsigned int flags, struct gc_arena *gc);
+ FILE *msg_fp(const unsigned int flags);
  
-   /* calculate H(A2) */
-   md_ctx_init(&md5_ctx, md5_kt);
--  md_ctx_update(&md5_ctx, pszMethod, strlen(pszMethod));
--  md_ctx_update(&md5_ctx, ":", 1);
--  md_ctx_update(&md5_ctx, pszDigestUri, strlen(pszDigestUri));
-+  md_ctx_update(&md5_ctx, (const uint8_t *) pszMethod, strlen(pszMethod));
-+  md_ctx_update(&md5_ctx, &colon, 1);
-+  md_ctx_update(&md5_ctx, (const uint8_t *) pszDigestUri, strlen(pszDigestUri));
-   if (strcasecmp(pszQop, "auth-int") == 0)
-     {
--      md_ctx_update(&md5_ctx, ":", 1);
-+      md_ctx_update(&md5_ctx, &colon, 1);
-       md_ctx_update(&md5_ctx, HEntity, HASHHEXLEN);
-     };
-   md_ctx_final(&md5_ctx, HA2);
-@@ -133,17 +135,17 @@ DigestCalcResponse(
-   /* calculate response */
-   md_ctx_init(&md5_ctx, md5_kt);
-   md_ctx_update(&md5_ctx, HA1, HASHHEXLEN);
--  md_ctx_update(&md5_ctx, ":", 1);
--  md_ctx_update(&md5_ctx, pszNonce, strlen(pszNonce));
--  md_ctx_update(&md5_ctx, ":", 1);
-+  md_ctx_update(&md5_ctx, &colon, 1);
-+  md_ctx_update(&md5_ctx, (const uint8_t *) pszNonce, strlen(pszNonce));
-+  md_ctx_update(&md5_ctx, &colon, 1);
-   if (*pszQop)
-     {
--      md_ctx_update(&md5_ctx, pszNonceCount, strlen(pszNonceCount));
--      md_ctx_update(&md5_ctx, ":", 1);
--      md_ctx_update(&md5_ctx, pszCNonce, strlen(pszCNonce));
--      md_ctx_update(&md5_ctx, ":", 1);
--      md_ctx_update(&md5_ctx, pszQop, strlen(pszQop));
--      md_ctx_update(&md5_ctx, ":", 1);
-+      md_ctx_update(&md5_ctx, (const uint8_t *) pszNonceCount, strlen(pszNonceCount));
-+      md_ctx_update(&md5_ctx, &colon, 1);
-+      md_ctx_update(&md5_ctx, (const uint8_t *) pszCNonce, strlen(pszCNonce));
-+      md_ctx_update(&md5_ctx, &colon, 1);
-+      md_ctx_update(&md5_ctx, (const uint8_t *) pszQop, strlen(pszQop));
-+      md_ctx_update(&md5_ctx, &colon, 1);
-     };
-   md_ctx_update(&md5_ctx, HA2Hex, HASHHEXLEN);
-   md_ctx_final(&md5_ctx, RespHash);
+ /* Fatal logic errors */
+-#define ASSERT(x) do { if (!(x)) assert_failed(__FILE__, __LINE__); } while (false)
++#define ASSERT(x) do { if (!(x)) assert_failed(__FILE__, __LINE__, #x); } while (false)
+ 
+-void assert_failed (const char *filename, int line) __attribute__((__noreturn__));
++void assert_failed (const char *filename, int line, const char *condition)
++  __attribute__((__noreturn__));
+ 
+ #ifdef ENABLE_DEBUG
+ void crash (void); /* force a segfault (debugging only) */
 -- 
 2.5.0
 
