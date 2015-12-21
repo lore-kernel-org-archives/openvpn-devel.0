@@ -1,17 +1,10 @@
-Date: Mon, 21 Dec 2015 09:39:59 +0100
+Date: Mon, 21 Dec 2015 20:13:04 +0100 (CET)
+Message-Id: <201512211913.tBLJD4gb048511@...2054...>
 From: Gert Doering <gert@...1296...>
-Message-ID: <20151221083959.GC24952@...1296...>
-References: <CAGyAFMXoH2aXQwn84AiV0c=OP2Rhv6i1-D_E+RXMXu8ZQFTvVA@...278...>
-	<20151220134642.GY24952@...1296...>
-	<CAGyAFMW_qSWu=Y1DfYai=ENLP-nk1hebMaYykAa5HJXVfQy3qA@...278...>
-	<20151220181920.GZ24952@...1296...>
-	<56772B1B.1090905@...2070...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="GPC7egbJCFmkdyTz"
-Content-Disposition: inline
-In-Reply-To: <56772B1B.1090905@...2070...>
-Subject: Re: [Openvpn-devel] XP broken (wrt IPv6 in 2.3.9)
+In-Reply-To: <1450646868-15346-1-git-send-email-steffan@...1856...>
+References: <1450646868-15346-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH applied] Re: cleanup: get rid of
+	httpdigest.c type warnings
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,43 +13,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: ValdikSS <iam@...2070...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Steffan Karger <steffan@...1856...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---GPC7egbJCFmkdyTz
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+ACK.
 
-Hi,
+Your patch has been applied to the master and release/2.3 branch.
 
-On Mon, Dec 21, 2015 at 01:26:35AM +0300, ValdikSS wrote:
-> I don't like the idea with additional win32-route option, it really shoul=
-d just use interface name on XP and index on Vista+.
+commit 0385cd4804c133d48857e4b3fbfe93a75ecc68a5 (master)
+commit f4fd75fb01ae583b21af4daa18789c60ebe338ef (release/2.3)
 
-That's why I suggested doing exactly this :-)
+Author: Steffan Karger
+Date:   Sun Dec 20 22:27:48 2015 +0100
 
-gert
+     cleanup: get rid of httpdigest.c type warnings
 
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+     Signed-off-by: Steffan Karger <steffan@...1856...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1450646868-15346-1-git-send-email-steffan@...1856...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/10871
+     Signed-off-by: Gert Doering <gert@...1296...>
 
---GPC7egbJCFmkdyTz
-Content-Type: application/pgp-signature; name="signature.asc"
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
+--
+kind regards,
 
-iQCVAwUBVne63qkuBuNlUUl1AQLEBAP+LxN5w19IacQdyIosZk6E02pnqQMQzCGd
-HLu2yPdASaA8csxVmE+Oi+iJiGIfV11Bs80mIWUCniRUGOw1+GGIXWOOhjbEiuRw
-dX4qvBjv6TfWGsTZPAjtu3SVmWB61xwAJ1GWpWVS+GafGK9EiKaZDfN5HPPL8q3D
-lIRieh4XBjA=
-=MLZL
------END PGP SIGNATURE-----
+Gert Doering
 
---GPC7egbJCFmkdyTz--
 
