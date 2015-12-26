@@ -1,16 +1,15 @@
-Date: Sat, 26 Dec 2015 10:35:50 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20151226093550.GW24952@...1296...>
-References: <CAGyAFMXoH2aXQwn84AiV0c=OP2Rhv6i1-D_E+RXMXu8ZQFTvVA@...278...>
-	<20151220134642.GY24952@...1296...>
-	<CAGyAFMW_qSWu=Y1DfYai=ENLP-nk1hebMaYykAa5HJXVfQy3qA@...278...>
-	<20151220181920.GZ24952@...1296...>
+References: <1450123758-31641-1-git-send-email-steffan@...1856...>
+	<566F5B01.8020109@...2080...>
+	<20151215075312.GN24952@...1296...> <5670890D.7050501@...1147...>
+	<CAA1AbxJbKeLqeDgBVLJ4HB22NPv+rbL=nB6bXiTqv+d_BLuRbg@...278...>
+	<567AB995.70204@...1147...> <20151226091900.GU24952@...1296...>
+From: Steffan Karger <steffan@...1856...>
+Message-ID: <567E60A9.6020006@...1856...>
+Date: Sat, 26 Dec 2015 10:40:57 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="ocM1+gwOPYoc7a3K"
-Content-Disposition: inline
-In-Reply-To: <20151220181920.GZ24952@...1296...>
-Subject: Re: [Openvpn-devel] XP broken  (wrt IPv6 in 2.3.9)
+In-Reply-To: <20151226091900.GU24952@...1296...>
+Subject: Re: [Openvpn-devel] [PATCH] Warn user if their certificate has
+ expired
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,52 +18,30 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Lev Stipakov <lstipakov@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, ValdikSS ValdikSS <iam@...2070...>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Gert Doering <gert@...1296...>, Jan Just Keijser <janjust@...1147...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---ocM1+gwOPYoc7a3K
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+On 26-12-15 10:19, Gert Doering wrote:
+> On Wed, Dec 23, 2015 at 04:11:17PM +0100, Jan Just Keijser wrote:
+>> I justed wanted to get back to this one one more time: attached is a
+>> patch to ssl_openssl.c that works in combination with Steffan's patch to
+>> check for expired certificates. This new patch-patch works on my CentOS
+>> 6 (openssl 1.0.1e) box :)  This patch was done against the v2.3.9 code
+>> base and I have no clue how to get it into proper git formatting ;)
+>
+> Great discovery :-) - and it nicely works for me:
+>
+> Sat Dec 26 10:11:14 2015 OpenVPN 2.3_git [git:ssl-expire/0f7319906a9dff58+] amd64-unknown-freebsd7.4 [SSL (OpenSSL)] [LZO] [LZ4] [MH] [IPv6] built on Dec 26 2015
+> Sat Dec 26 10:11:14 2015 library versions: OpenSSL 0.9.8q 2 Dec 2010, LZO 2.04
+> Sat Dec 26 10:11:16 2015 WARNING: Your certificate has expired!
+>
+> this is about as old as it gets - thanks a lot.  Mogrified into a patch
+> against git master with the SSL_free() moved to the right place attached
+> below, for Steffan to ACK.
 
-Hi,
+ACK, much wanted functionality and code looks good.
 
-On Sun, Dec 20, 2015 at 07:19:20PM +0100, Gert Doering wrote:
-> > Moving to openvpn-devel.
-> >=20
-> > We could probably detect XP only (or technically "less then Vista") by
-> > checking that IsWindowsVistaOrGreater() =3D=3D false which seems to be
-> > simpler. It should fix the problem.
->=20
-> That would help with "part 2", right...  (XP has a function=20
-> "IsWindowsVistaOrGreater"?  wtf!?)
-
-JFTR, Microsoft documentation says that this is available in=20
-<VersionHelpers.h> starting with Windows2000 (!) - but, unfortunately,
-it is not available in MinGW.  Not a *real* problem as this seems to be
-just a wrapper around windowsVersion() anyway...
-
-gert
-
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---ocM1+gwOPYoc7a3K
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQCVAwUBVn5fdakuBuNlUUl1AQJsvwP+PyC5OjzalBzf4dJGGQrgzF3pFubs0Kbd
-FiKBzTrXrouGLhHOdm5WZAQI0ln4gK7777SXK7Titr2zyzOj/HvzbtUn78ZMaIAV
-Fn1Mvdaa0d9gU8Jcb4tSsVki25y30iDjGiQseOemqT0lJfaa3ONHlKvc38eq8mWi
-xs4jfWkQEQk=
-=Gurl
------END PGP SIGNATURE-----
-
---ocM1+gwOPYoc7a3K--
+-Steffan
 
