@@ -1,9 +1,9 @@
-Date: Mon, 28 Dec 2015 10:04:04 +0200
-From: Samuli =?ISO-8859-1?Q?Sepp=E4nen?= <samuli@...515...>
-Message-Id: <20151228100404.176a540305d85a7d3e2a2107@...515...>
-Mime-Version: 1.0
-Subject: [Openvpn-devel] Topics for today's (Monday,
-	28th Dec 2015) community meeting
+MIME-Version: 1.0
+Date: Mon, 28 Dec 2015 17:37:39 +0500
+Message-ID: <CAFHpkQGWspO+vHhOiy9CCvxxOoGKNje5mhDVfrS1S-fjqdm1Xg@...278...>
+From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
+Content-Type: multipart/alternative; boundary=047d7b3a85c811846b0527f49221
+Subject: [Openvpn-devel] windows team ?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,43 +12,34 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="ISO-8859-1"
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+
+--047d7b3a85c811846b0527f49221
+Content-Type: text/plain; charset=UTF-8
+
+Hello,
+
+I've heard about "things need some loving" and "let us create windows team".
+can you please pay some attention to pull requests
+https://github.com/OpenVPN/openvpn-gui/pulls ?
+
+it is no good when PR stay without any attention. looks like there's no
+loving for windows things.
+
+Cheers,
+Ilya Shipitsin
+
+--047d7b3a85c811846b0527f49221
+Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+<div dir=3D"ltr"><div><div><div><div><div>Hello,<br><br></div>I&#39;ve hear=
+d about &quot;things need some loving&quot; and &quot;let us create windows=
+ team&quot;.<br></div>can you please pay some attention to pull requests <a=
+ href=3D"https://github.com/OpenVPN/openvpn-gui/pulls">https://github.com/O=
+penVPN/openvpn-gui/pulls</a> ?<br><br></div>it is no good when PR stay with=
+out any attention. looks like there&#39;s no loving for windows things.<br>=
+<br></div>Cheers,<br></div>Ilya Shipitsin<br></div>
 
-Hi,
-
-We're going to have an IRC meeting today starting at 20:00 CET (19:00=20
-UTC) on #openvpn-meeting <at> irc.freenode.net. Note that the meeting=20
-channel has changed and that you do _not_ have to be logged in to=20
-Freenode to join the channel.
-
-Current topic list along with basic information is here:
-
-<https://community.openvpn.net/openvpn/wiki/Topics-2015-12-28>
-
-If you have any other things you'd like to bring up, respond to this=20
-mail, send me mail privately or add them to the list yourself.
-
-In case you can't attend the meeting, please feel free to make comments=20
-on the topics by responding to this email or to the summary email sent=20
-after the meeting. Whenever possible, we'll also respond to existing,=20
-related email threads.
-
-- - - --=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iEYEARECAAYFAlaA7PkACgkQwp2X7RmNIqOzDQCeJYgc7qJkKa/yaNYfTsLTq+x9
-OpUAn3mWJn5WTTilI3yfRsfISAWyX2F1
-=3DCwdf
------END PGP SIGNATURE-----
+--047d7b3a85c811846b0527f49221--
 
