@@ -1,10 +1,10 @@
 From: Lev Stipakov <lstipakov@...277...>
-Date: Tue, 29 Dec 2015 22:56:01 +0200
-Message-Id: <1451422561-23635-1-git-send-email-lstipakov@...277...>
+Date: Tue, 29 Dec 2015 23:02:37 +0200
+Message-Id: <1451422957-23951-1-git-send-email-lstipakov@...277...>
 In-Reply-To: <20151229200710.GP24952@...1296...>
 References: <20151229200710.GP24952@...1296...>
-Subject: [Openvpn-devel] [PATCH v2 2.3] Repair IPv6 netsh calls if Win XP is
-	detected
+Subject: [Openvpn-devel] [PATCH master] Detecting and logging Windows
+	versions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,14 +17,7 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-v2:
-* Add compat-versionhelpers.h to compat/Makefile.am so that "make dist" will include it into tarball.
-* Indentation
-
-v1:
-* Use adapter name instead of index on WinXP - sadly XP does not support indexes
-* Write Windows version to log
-* Send it with peer-info as IV_PLAT_VER
+Also send it with peer-info as IV_PLAT_VER.
 
 Signed-off-by: Lev Stipakov <lstipakov@...277...>
 ---
@@ -35,19 +28,17 @@ Signed-off-by: Lev Stipakov <lstipakov@...277...>
  src/openvpn/openvpn.c              |  3 ++
  src/openvpn/options.c              | 12 ++++++
  src/openvpn/options.h              |  4 ++
- src/openvpn/route.c                | 19 ++++++---
  src/openvpn/ssl.c                  |  3 ++
- src/openvpn/tun.c                  |  2 +-
  src/openvpn/win32.c                | 63 +++++++++++++++++++++++++++++
  src/openvpn/win32.h                | 13 ++++++
- 12 files changed, 197 insertions(+), 8 deletions(-)
+ 10 files changed, 183 insertions(+), 1 deletion(-)
  create mode 100644 src/compat/compat-versionhelpers.h
 
 diff --git a/config-msvc.h b/config-msvc.h
-index fa99384..ae43a5f 100644
+index aa0eeff..0bcf719 100644
 --- a/config-msvc.h
 +++ b/config-msvc.h
-@@ -45,6 +45,7 @@
+@@ -44,6 +44,7 @@
  #define HAVE_SYS_STAT_H 1
  #define HAVE_LZO_LZO1X_H 1
  #define HAVE_LZO_LZOUTIL_H 1
@@ -56,10 +47,10 @@ index fa99384..ae43a5f 100644
  #define HAVE_ACCESS 1
  #define HAVE_CHDIR 1
 diff --git a/configure.ac b/configure.ac
-index 87d9116..773cded 100644
+index 721395d..4b2eb01 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -423,6 +423,7 @@ AC_CHECK_HEADERS([ \
+@@ -434,6 +434,7 @@ AC_CHECK_HEADERS([ \
  	netinet/in.h netinet/in_systm.h \
  	netinet/tcp.h arpa/inet.h netdb.h \
  	windows.h winsock2.h ws2tcpip.h \
@@ -68,15 +59,15 @@ index 87d9116..773cded 100644
  AC_CHECK_HEADERS([ \
  	sys/time.h sys/ioctl.h sys/stat.h \
 diff --git a/src/compat/Makefile.am b/src/compat/Makefile.am
-index 7ad4452..273389e 100644
+index 4591b85..06bab5c 100644
 --- a/src/compat/Makefile.am
 +++ b/src/compat/Makefile.am
-@@ -26,4 +26,5 @@ libcompat_la_SOURCES = \
- 	compat-gettimeofday.c \
+@@ -27,4 +27,5 @@ libcompat_la_SOURCES = \
  	compat-daemon.c \
  	compat-inet_ntop.c \
--	compat-inet_pton.c
-+	compat-inet_pton.c \
+ 	compat-inet_pton.c \
+-	compat-lz4.c compat-lz4.h
++	compat-lz4.c compat-lz4.h \
 +	compat-versionhelpers.h
 diff --git a/src/compat/compat-versionhelpers.h b/src/compat/compat-versionhelpers.h
 new file mode 100644
@@ -180,10 +171,10 @@ index 32e326e..823c3dd 100644
  
  	  /* misc stuff */
 diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 1832bc5..652fdc4 100644
+index 46aa824..daa311d 100644
 --- a/src/openvpn/options.c
 +++ b/src/openvpn/options.c
-@@ -3489,6 +3489,15 @@ usage_small (void)
+@@ -3438,6 +3438,15 @@ usage_small (void)
    openvpn_exit (OPENVPN_EXIT_STATUS_USAGE); /* exit point */
  }
  
@@ -199,7 +190,7 @@ index 1832bc5..652fdc4 100644
  void
  show_library_versions(const unsigned int flags)
  {
-@@ -3514,6 +3523,9 @@ usage_version (void)
+@@ -3463,6 +3472,9 @@ usage_version (void)
  {
    msg (M_INFO|M_NOPREFIX, "%s", title_string);
    show_library_versions( M_INFO|M_NOPREFIX );
@@ -210,10 +201,10 @@ index 1832bc5..652fdc4 100644
    msg (M_INFO|M_NOPREFIX, "Copyright (C) 2002-2010 OpenVPN Technologies, Inc. <sales@...515...>");
  #ifndef ENABLE_SMALL
 diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-index 622706a..26b09ea 100644
+index 2f6c8b4..9e8a6a0 100644
 --- a/src/openvpn/options.h
 +++ b/src/openvpn/options.h
-@@ -690,6 +690,10 @@ void usage_small (void);
+@@ -688,6 +688,10 @@ void usage_small (void);
  
  void show_library_versions(const unsigned int flags);
  
@@ -224,63 +215,19 @@ index 622706a..26b09ea 100644
  void init_options (struct options *o, const bool init_gc);
  void uninit_options (struct options *o);
  
-diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index cf5a067..f35bc85 100644
---- a/src/openvpn/route.c
-+++ b/src/openvpn/route.c
-@@ -42,6 +42,7 @@
- #include "manage.h"
- #include "win32.h"
- #include "options.h"
-+#include "win32.h"
- 
- #include "memdbg.h"
- 
-@@ -1623,9 +1624,12 @@ add_route_ipv6 (struct route_ipv6 *r6, const struct tuntap *tt, unsigned int fla
- 
- #elif defined (WIN32)
- 
--  struct buffer out = alloc_buf_gc (64, &gc);
--  buf_printf (&out, "interface=%d", tt->adapter_index );
--  device = buf_bptr(&out);
-+  if (win32_version_info() != WIN_XP)
-+    {
-+      struct buffer out = alloc_buf_gc (64, &gc);
-+      buf_printf (&out, "interface=%d", tt->adapter_index );
-+      device = buf_bptr(&out);
-+    }
- 
-   /* netsh interface ipv6 add route 2001:db8::/32 MyTunDevice */
-   argv_printf (&argv, "%s%sc interface ipv6 add route %s/%d %s",
-@@ -1958,9 +1962,12 @@ delete_route_ipv6 (const struct route_ipv6 *r6, const struct tuntap *tt, unsigne
- 
- #elif defined (WIN32)
- 
--  struct buffer out = alloc_buf_gc (64, &gc);
--  buf_printf (&out, "interface=%d", tt->adapter_index );
--  device = buf_bptr(&out);
-+  if (win32_version_info() != WIN_XP)
-+    {
-+      struct buffer out = alloc_buf_gc (64, &gc);
-+      buf_printf (&out, "interface=%d", tt->adapter_index );
-+      device = buf_bptr(&out);
-+    }
- 
-   /* netsh interface ipv6 delete route 2001:db8::/32 MyTunDevice */
-   argv_printf (&argv, "%s%sc interface ipv6 delete route %s/%d %s",
 diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index f728ffb..0d52dc0 100644
+index 665fdd7..443661c 100644
 --- a/src/openvpn/ssl.c
 +++ b/src/openvpn/ssl.c
-@@ -43,6 +43,7 @@
+@@ -42,6 +42,7 @@
  #endif
  
  #include "syshead.h"
 +#include "win32.h"
  
- #if defined(ENABLE_CRYPTO) && defined(ENABLE_SSL)
+ #if defined(ENABLE_CRYPTO)
  
-@@ -1848,6 +1849,8 @@ push_peer_info(struct buffer *buf, struct tls_session *session)
+@@ -1868,6 +1869,8 @@ push_peer_info(struct buffer *buf, struct tls_session *session)
  	  if (rgi.flags & RGI_HWADDR_DEFINED)
  	    buf_printf (&out, "IV_HWADDR=%s\n", format_hex_ex (rgi.hwaddr, 6, 0, 1, ":", &gc));
  	  buf_printf (&out, "IV_SSL=%s\n", get_ssl_library_version() );
@@ -289,26 +236,13 @@ index f728ffb..0d52dc0 100644
          }
  
        /* push env vars that begin with UV_ and IV_GUI_VER */
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index b08c827..bb019c0 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -1244,7 +1244,7 @@ do_ifconfig (struct tuntap *tt,
- 		     "%s%sc interface ipv6 set address %s %s store=active",
- 		     get_win_sys_path(),
- 		     NETSH_PATH_SUFFIX,
--		     iface,
-+		     win32_version_info() == WIN_XP ? actual : iface,
- 		     ifconfig_ipv6_local);
- 	netsh_command (&argv, 4);
- 
 diff --git a/src/openvpn/win32.c b/src/openvpn/win32.c
-index e87cb7f..6c6ac4c 100644
+index 64dc1f7..a01121b 100644
 --- a/src/openvpn/win32.c
 +++ b/src/openvpn/win32.c
-@@ -48,6 +48,12 @@
+@@ -46,6 +46,12 @@
  
- #include "win32_wfp.h"
+ #include "memdbg.h"
  
 +#ifdef HAVE_VERSIONHELPERS_H
 +#include <versionhelpers.h>
@@ -316,10 +250,10 @@ index e87cb7f..6c6ac4c 100644
 +#include "compat-versionhelpers.h"
 +#endif
 +
- /* WFP function pointers. Initialized in win_wfp_init_funcs() */
- func_ConvertInterfaceIndexToLuid ConvertInterfaceIndexToLuid = NULL;
- func_FwpmEngineOpen0 FwpmEngineOpen0 = NULL;
-@@ -1289,4 +1295,61 @@ win_wfp_uninit()
+ /*
+  * WFP-related defines and GUIDs.
+  */
+@@ -1288,4 +1294,61 @@ win_wfp_uninit()
      return true;
  }
  
@@ -382,10 +316,10 @@ index e87cb7f..6c6ac4c 100644
 +
  #endif
 diff --git a/src/openvpn/win32.h b/src/openvpn/win32.h
-index 776ef36..0990182 100644
+index a5baebd..1e98207 100644
 --- a/src/openvpn/win32.h
 +++ b/src/openvpn/win32.h
-@@ -275,5 +275,18 @@ bool win_wfp_init_funcs();
+@@ -274,5 +274,18 @@ WCHAR *wide_string (const char* utf8, struct gc_arena *gc);
  bool win_wfp_block_dns(const NET_IFINDEX index);
  bool win_wfp_uninit();
  
