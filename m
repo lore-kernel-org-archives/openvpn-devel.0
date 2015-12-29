@@ -1,9 +1,12 @@
-Message-ID: <40E8913B96374DB4B26A5A7945462CE9@...2089...>
-From: <debbie10t@...277...>
+Date: Tue, 29 Dec 2015 14:56:34 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20151229135634.GL24952@...1296...>
 References: <D361D4D8184C40E2A8E222238EA0BE35@...2089...>
-	<8170c580-8303-08e3-ca4c-be1aa85b64fc@...1227...>
-Date: Tue, 29 Dec 2015 13:15:57 -0000
 MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="WrtKk81rkeSMEfHB"
+Content-Disposition: inline
+In-Reply-To: <D361D4D8184C40E2A8E222238EA0BE35@...2089...>
 Subject: Re: [Openvpn-devel] man openvpn(8): --block-outside-dns
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -13,46 +16,47 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; format=flowed; charset="Windows-1252";
-	reply-type=original
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net, Arne Schwabe <arne@...1227...>
+To: debbie10t@...277...
+Cc: openvpn-devel@lists.sourceforge.net
 
+--WrtKk81rkeSMEfHB
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
------ Original Message ----- 
-From: "Arne Schwabe" <arne@...1227...>
-To: <debbie10t@...277...>; <openvpn-devel@lists.sourceforge.net>
-Sent: Tuesday, December 29, 2015 12:36 PM
-Subject: Re: [Openvpn-devel] man openvpn(8): --block-outside-dns
+Hi,
 
+On Tue, Dec 29, 2015 at 12:31:35PM -0000, debbie10t@...277... wrote:
+> --block-outside-dns is not an openvpn directive ...=20
 
-> On 29.12.2015 13:31, debbie10t@...277... wrote:
->> Is this considered to be sufficient documentation:
->>
->> https://community.openvpn.net/openvpn/wiki/Openvpn23ManPage
->>
->> --block-outside-dns
->>
->> Block DNS servers on other network adapters to prevent DNS leaks. This
->> option prevents any application from accessing TCP or UDP port 53 except 
->> one
->> inside the tunnel. It uses Windows Filtering Platform (WFP) and works on
->> Windows Vista or later.
->>
->> --block-outside-dns is not an openvpn directive ... it cannot be used in 
->> a
->> config file as such.
-> At least as I understood it, it is.
+Uh, what?
 
-Ahh ..
-it is not ' push "setenv-safe opt block-outside-dns" '
-( I presume this was a method used prior to 2.3.9 )
+> it cannot be used in a config file as such.
 
-simply ' push "block-outside-dns" '
-or in the client config "block-outside-dns"
+By that logic, quite a lot of things that are platform specific would
+not be "an openvpn directive" - most other windows specific options will=20
+also cause parse errors when used on linux.
 
-I must have missed something .. doh!
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-Thanks :)
+--WrtKk81rkeSMEfHB
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQCVAwUBVoKREakuBuNlUUl1AQJ2NQQArMhFOo7UPsahKz4rFcuYgYKWLceJlKnF
+WVSd1DY0sZMvM0V+u+BoE+No/IJNSrFrqMqXtYipWWJZB5BeYeNNNvhK7FNytyW/
+retF1cXVniDj/CCccsplxvyEX9cSHJm2DZUm2fegtA8f3hVaZAAlAc2LJyNp6t++
+z08ZRnDTY6s=
+=EO8G
+-----END PGP SIGNATURE-----
+
+--WrtKk81rkeSMEfHB--
 
