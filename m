@@ -1,9 +1,9 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Fri,  1 Jan 2016 14:43:02 +0100
-Message-Id: <1451655782-24088-1-git-send-email-arne@...1227...>
+Date: Fri,  1 Jan 2016 15:40:10 +0100
+Message-Id: <1451659210-5583-1-git-send-email-arne@...1227...>
 In-Reply-To: <CAA1AbxKJwx5fckOpDMA7=9UB6NKtCET_ajkMav65YKNy791eOw@...278...>
 References: <CAA1AbxKJwx5fckOpDMA7=9UB6NKtCET_ajkMav65YKNy791eOw@...278...>
-Subject: [Openvpn-devel] [PATCH v2] Implement the compression V2 data format
+Subject: [Openvpn-devel] [PATCH v3] Implement the compression V2 data format
 	for stub and lz4.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -18,6 +18,7 @@ Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
 Patch V2: Fix minor issues found by Steffan
+Patch V3: split wire codes and compression flags
 
 It has been tested against v3 server and again itself. From James Mail:
 
@@ -63,50 +64,61 @@ It has been tested against v3 server and again itself. From James Mail:
       the tail of the packet which can potentially incur an
       expensive cache miss.
 ---
- src/openvpn/comp-lz4.c | 198 ++++++++++++++++++++++++++++++++++++++-----------
+ src/openvpn/comp-lz4.c | 203 ++++++++++++++++++++++++++++++++++++++-----------
  src/openvpn/comp-lz4.h |   1 +
- src/openvpn/comp.c     |  81 +++++++++++++++-----
- src/openvpn/comp.h     |  13 ++++
+ src/openvpn/comp.c     |  31 ++++++++
+ src/openvpn/comp.h     |  25 ++++++
  src/openvpn/compstub.c |  52 +++++++++++++
- src/openvpn/options.c  |  10 +++
- 6 files changed, 294 insertions(+), 61 deletions(-)
+ src/openvpn/lzo.c      |   3 -
+ src/openvpn/options.c  |   8 ++
+ 7 files changed, 277 insertions(+), 46 deletions(-)
 
 diff --git a/src/openvpn/comp-lz4.c b/src/openvpn/comp-lz4.c
-index 4651148..9274535 100644
+index 4651148..dad123b 100644
 --- a/src/openvpn/comp-lz4.c
 +++ b/src/openvpn/comp-lz4.c
-@@ -51,7 +51,7 @@ static void
+@@ -44,9 +44,6 @@
+ 
+ #include "memdbg.h"
+ 
+-/* Initial command byte to tell our peer if we compressed */
+-#define LZ4_COMPRESS_BYTE 0x69
+-
+ static void
  lz4_compress_init (struct compress_context *compctx)
  {
-   msg (D_INIT_MEDIUM, "LZ4 compression initializing");
--  ASSERT(compctx->flags & COMP_F_SWAP);
-+  ASSERT(compctx->flags & COMP_F_SWAP || compctx->flags & COMP_F_COMPV2);
+@@ -55,20 +52,22 @@ lz4_compress_init (struct compress_context *compctx)
  }
  
  static void
-@@ -59,16 +59,12 @@ lz4_compress_uninit (struct compress_context *compctx)
+-lz4_compress_uninit (struct compress_context *compctx)
++lz4_compress_initv2 (struct compress_context *compctx)
  {
++  msg (D_INIT_MEDIUM, "LZ4 compression initializing");
  }
  
--static void
+ static void
 -lz4_compress (struct buffer *buf, struct buffer work,
 -	       struct compress_context *compctx,
 -	       const struct frame* frame)
-+static bool
-+do_lz4_compress (struct buffer *buf,
-+		 struct buffer *work,
-+		 struct compress_context *compctx,
-+		 const struct frame* frame)
++lz4_compress_uninit (struct compress_context *compctx)
  {
 -  bool compressed = false;
 -
 -  if (buf->len <= 0)
 -    return;
--
++}
+ 
++static bool
++do_lz4_compress (struct buffer *buf,
++		 struct buffer *work,
++		 struct compress_context *compctx,
++		 const struct frame* frame)
++{
    /*
     * In order to attempt compression, length must be at least COMPRESS_THRESHOLD.
     */
-@@ -78,38 +74,58 @@ lz4_compress (struct buffer *buf, struct buffer work,
+@@ -78,38 +77,58 @@ lz4_compress (struct buffer *buf, struct buffer work,
        int zlen_max = ps + COMP_EXTRA_BUFFER (ps);
        int zlen;
  
@@ -164,7 +176,7 @@ index 4651148..9274535 100644
 +
 +  compressed = do_lz4_compress(buf, &work, compctx, frame);
 +
-+  /* On Error just return */
++  /* On error do_lz4_compress sets buf len to zero, just return */
 +  if (buf->len == 0)
 +    return;
 +
@@ -177,7 +189,7 @@ index 4651148..9274535 100644
        {
  	*buf = work;
  	comp_head_byte = LZ4_COMPRESS_BYTE;
-@@ -128,13 +144,73 @@ lz4_compress (struct buffer *buf, struct buffer work,
+@@ -128,13 +147,73 @@ lz4_compress (struct buffer *buf, struct buffer work,
    }
  }
  
@@ -206,7 +218,7 @@ index 4651148..9274535 100644
 +	ASSERT(buf_prepend(&work, 2));
 +	uint8_t *head = BPTR (&work);
 +	head[0] = COMP_ALGV2_INDICATOR_BYTE;
-+	head[1] = COMP_ALGV2_LZ4;
++	head[1] = COMP_ALGV2_LZ4_BYTE;
 +	*buf = work;
 +      }
 +    else
@@ -254,7 +266,7 @@ index 4651148..9274535 100644
    uint8_t c;		/* flag indicating whether or not our peer compressed */
  
    if (buf->len <= 0)
-@@ -152,23 +228,7 @@ lz4_decompress (struct buffer *buf, struct buffer work,
+@@ -152,23 +231,7 @@ lz4_decompress (struct buffer *buf, struct buffer work,
  
    if (c == LZ4_COMPRESS_BYTE)	/* packet was compressed */
      {
@@ -279,7 +291,7 @@ index 4651148..9274535 100644
      }
    else if (c == NO_COMPRESS_BYTE_SWAP)	/* packet was not compressed */
      {
-@@ -181,6 +241,52 @@ lz4_decompress (struct buffer *buf, struct buffer work,
+@@ -181,6 +244,52 @@ lz4_decompress (struct buffer *buf, struct buffer work,
      }
  }
  
@@ -313,12 +325,12 @@ index 4651148..9274535 100644
 +    }
 +
 +  c = head[1];
-+  if (c == COMP_ALGV2_LZ4)	/* packet was compressed */
++  if (c == COMP_ALGV2_LZ4_BYTE) /* packet was compressed */
 +    {
 +      buf_advance(buf,2);
 +      do_lz4_decompress(zlen_max, &work, buf, compctx);
 +    }
-+  else if (c == COMP_ALGV2_UNCOMPRESSED)
++  else if (c == COMP_ALGV2_UNCOMPRESSED_BYTE)
 +    {
 +      buf_advance(buf,2);
 +    }
@@ -332,13 +344,13 @@ index 4651148..9274535 100644
  const struct compress_alg lz4_alg = {
    "lz4",
    lz4_compress_init,
-@@ -189,6 +295,14 @@ const struct compress_alg lz4_alg = {
+@@ -189,6 +298,14 @@ const struct compress_alg lz4_alg = {
    lz4_decompress
  };
  
 +const struct compress_alg lz4v2_alg = {
 +  "lz4v2",
-+  lz4_compress_init,
++  lz4_compress_initv2,
 +  lz4_compress_uninit,
 +  lz4v2_compress,
 +  lz4v2_decompress
@@ -360,78 +372,31 @@ index ca1dfa9..9d3c664 100644
  struct lz4_workspace
  {
 diff --git a/src/openvpn/comp.c b/src/openvpn/comp.c
-index 706ad7e..6cf9a83 100644
+index 706ad7e..809c83d 100644
 --- a/src/openvpn/comp.c
 +++ b/src/openvpn/comp.c
-@@ -42,34 +42,75 @@ struct compress_context *
- comp_init(const struct compress_options *opt)
- {
-   struct compress_context *compctx = NULL;
--  switch (opt->alg)
-+  if (opt->flags & COMP_F_COMPV2) {
-+    switch (opt->alg)
-+      {
-+      case COMP_ALGV2_UNCOMPRESSED:
-+	ALLOC_OBJ_CLEAR (compctx, struct compress_context);
-+	compctx->flags = opt->flags;
-+	compctx->alg = compv2_stub_alg;
-+	break;
-+#ifdef ENABLE_LZ4
-+      case COMP_ALGV2_LZ4:
-+	ALLOC_OBJ_CLEAR (compctx, struct compress_context);
-+	compctx->flags = opt->flags;
-+	compctx->alg = lz4v2_alg;
-+	break;
-+#endif
-+      default:
-+	break;
-+    }
-+  }
-+  else
-     {
--    case COMP_ALG_STUB:
--      ALLOC_OBJ_CLEAR (compctx, struct compress_context);
--      compctx->flags = opt->flags;
--      compctx->alg = comp_stub_alg;
--      (*compctx->alg.compress_init)(compctx);
--      break;
-+      switch (opt->alg)
-+	{
-+	case COMP_ALG_STUB:
-+	  ALLOC_OBJ_CLEAR (compctx, struct compress_context);
-+	  compctx->flags = opt->flags;
-+	  compctx->alg = comp_stub_alg;
-+	  (*compctx->alg.compress_init)(compctx);
-+	  break;
+@@ -50,6 +50,11 @@ comp_init(const struct compress_options *opt)
+       compctx->alg = comp_stub_alg;
+       (*compctx->alg.compress_init)(compctx);
+       break;
++    case COMP_ALGV2_UNCOMPRESSED:
++      ALLOC_OBJ_CLEAR (compctx, struct compress_context);
++      compctx->flags = opt->flags;
++      compctx->alg = compv2_stub_alg;
++      break;
  #ifdef ENABLE_LZO
--    case COMP_ALG_LZO:
--      ALLOC_OBJ_CLEAR (compctx, struct compress_context);
--      compctx->flags = opt->flags;
--      compctx->alg = lzo_alg;
--      (*compctx->alg.compress_init)(compctx);
--      break;
-+	case COMP_ALG_LZO:
-+	  ALLOC_OBJ_CLEAR (compctx, struct compress_context);
-+	  compctx->flags = opt->flags;
-+	  compctx->alg = lzo_alg;
-+	  (*compctx->alg.compress_init)(compctx);
-+	  break;
+     case COMP_ALG_LZO:
+       ALLOC_OBJ_CLEAR (compctx, struct compress_context);
+@@ -65,11 +70,35 @@ comp_init(const struct compress_options *opt)
+       compctx->alg = lz4_alg;
+       (*compctx->alg.compress_init)(compctx);
+       break;
++    case COMP_ALGV2_LZ4:
++      ALLOC_OBJ_CLEAR (compctx, struct compress_context);
++      compctx->flags = opt->flags;
++      compctx->alg = lz4v2_alg;
++      break;
  #endif
- #ifdef ENABLE_LZ4
--    case COMP_ALG_LZ4:
--      ALLOC_OBJ_CLEAR (compctx, struct compress_context);
--      compctx->flags = opt->flags;
--      compctx->alg = lz4_alg;
--      (*compctx->alg.compress_init)(compctx);
--      break;
-+	case COMP_ALG_LZ4:
-+	  ALLOC_OBJ_CLEAR (compctx, struct compress_context);
-+	  compctx->flags = opt->flags;
-+	  compctx->alg = lz4_alg;
-+	  (*compctx->alg.compress_init)(compctx);
-+	  break;
- #endif
-+	}
      }
    return compctx;
  }
@@ -458,7 +423,7 @@ index 706ad7e..6cf9a83 100644
  void
  comp_uninit(struct compress_context *compctx)
  {
-@@ -120,6 +161,7 @@ comp_generate_peer_info_string(const struct compress_options *opt, struct buffer
+@@ -120,6 +149,7 @@ comp_generate_peer_info_string(const struct compress_options *opt, struct buffer
  	{
  #if defined(ENABLE_LZ4)
  	  buf_printf (out, "IV_LZ4=1\n");
@@ -466,7 +431,7 @@ index 706ad7e..6cf9a83 100644
  #endif
  #if defined(ENABLE_LZO)
  	  buf_printf (out, "IV_LZO=1\n");
-@@ -129,6 +171,7 @@ comp_generate_peer_info_string(const struct compress_options *opt, struct buffer
+@@ -129,6 +159,7 @@ comp_generate_peer_info_string(const struct compress_options *opt, struct buffer
        if (!lzo_avail)
  	buf_printf (out, "IV_LZO_STUB=1\n");
        buf_printf (out, "IV_COMP_STUB=1\n");
@@ -475,32 +440,55 @@ index 706ad7e..6cf9a83 100644
  }
  
 diff --git a/src/openvpn/comp.h b/src/openvpn/comp.h
-index 716b1c0..2cfabef 100644
+index 716b1c0..56590b7 100644
 --- a/src/openvpn/comp.h
 +++ b/src/openvpn/comp.h
-@@ -43,11 +43,21 @@
+@@ -43,12 +43,22 @@
  #define COMP_ALG_SNAPPY 3 /* Snappy algorithm (no longer supported) */
  #define COMP_ALG_LZ4    4 /* LZ4 algorithm */
  
 +
 +/* algorithm v2 */
-+#define COMP_ALGV2_INDICATOR_BYTE 0x50
-+#define COMP_ALGV2_UNCOMPRESSED 0
-+#define COMP_ALGV2_LZ4	    1
-+#define COMP_ALGV2_LZO	    2
-+#define COMP_ALGV2_SNAPPY   3
++#define COMP_ALGV2_UNCOMPRESSED 10
++#define COMP_ALGV2_LZ4	    11
++/*
++#define COMP_ALGV2_LZO	    12
++#define COMP_ALGV2_SNAPPY   13
++*/
 +
  /* Compression flags */
  #define COMP_F_ADAPTIVE   (1<<0) /* COMP_ALG_LZO only */
  #define COMP_F_ASYM       (1<<1) /* only downlink is compressed, not uplink */
  #define COMP_F_SWAP       (1<<2) /* initial command byte is swapped with last byte in buffer to preserve payload alignment */
  #define COMP_F_ADVERTISE_STUBS_ONLY (1<<3) /* tell server that we only support compression stubs */
-+#define COMP_F_COMPV2	  (1<<8) /* Use the V2 compression methode that only uses opcodes if compression is actually needed */
-+
  
++
  /*
   * Length of prepended prefix on compressed packets
-@@ -145,6 +155,7 @@ struct compress_context
+  */
+@@ -57,9 +67,21 @@
+ /*
+  * Prefix bytes
+  */
++
++/* V1 on wire codes */
++/* Initial command byte to tell our peer if we compressed */
++#define LZO_COMPRESS_BYTE 0x66
++#define LZ4_COMPRESS_BYTE 0x69
+ #define NO_COMPRESS_BYTE      0xFA
+ #define NO_COMPRESS_BYTE_SWAP 0xFB /* to maintain payload alignment, replace this byte with last byte of packet */
+ 
++/* V2 on wire code */
++#define COMP_ALGV2_INDICATOR_BYTE	0x50
++#define COMP_ALGV2_UNCOMPRESSED_BYTE	1
++#define COMP_ALGV2_LZ4_BYTE		1
++#define COMP_ALGV2_LZO_BYTE		2
++#define COMP_ALGV2_SNAPPY_BYTE		3
++
+ /*
+  * Compress worst case size expansion (for any algorithm)
+  *
+@@ -145,6 +167,7 @@ struct compress_context
  };
  
  extern const struct compress_alg comp_stub_alg;
@@ -508,7 +496,7 @@ index 716b1c0..2cfabef 100644
  
  struct compress_context *comp_init(const struct compress_options *opt);
  
-@@ -157,6 +168,8 @@ void comp_print_stats (const struct compress_context *compctx, struct status_out
+@@ -157,6 +180,8 @@ void comp_print_stats (const struct compress_context *compctx, struct status_out
  
  void comp_generate_peer_info_string(const struct compress_options *opt, struct buffer *out);
  
@@ -518,7 +506,7 @@ index 716b1c0..2cfabef 100644
  comp_enabled(const struct compress_options *info)
  {
 diff --git a/src/openvpn/compstub.c b/src/openvpn/compstub.c
-index 2ab7163..0f21a6f 100644
+index 2ab7163..b8d8112 100644
 --- a/src/openvpn/compstub.c
 +++ b/src/openvpn/compstub.c
 @@ -73,6 +73,8 @@ stub_compress (struct buffer *buf, struct buffer work,
@@ -569,7 +557,7 @@ index 2ab7163..0f21a6f 100644
 +    return;
 +
 +  head = BPTR (buf);
-+  if (head[0] != COMP_ALGV2_UNCOMPRESSED) {
++  if (head[0] != COMP_ALGV2_UNCOMPRESSED_BYTE) {
 +    dmsg (D_COMP_ERRORS, "Bad compression stubv2 decompression header byte: %d", *head);
 +    buf->len = 0;
 +  }
@@ -587,30 +575,42 @@ index 2ab7163..0f21a6f 100644
  const struct compress_alg comp_stub_alg = {
    "stub",
    stub_compress_init,
+diff --git a/src/openvpn/lzo.c b/src/openvpn/lzo.c
+index daa02ed..25a839b 100644
+--- a/src/openvpn/lzo.c
++++ b/src/openvpn/lzo.c
+@@ -42,9 +42,6 @@
+ 
+ #include "memdbg.h"
+ 
+-/* Initial command byte to tell our peer if we compressed */
+-#define LZO_COMPRESS_BYTE 0x66
+-
+ /**
+  * Perform adaptive compression housekeeping.
+  *
 diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 5a83897..2b29704 100644
+index 5a83897..eb4942b 100644
 --- a/src/openvpn/options.c
 +++ b/src/openvpn/options.c
-@@ -6323,6 +6323,11 @@ add_option (struct options *options,
+@@ -6323,6 +6323,10 @@ add_option (struct options *options,
  	      options->comp.alg = COMP_ALG_STUB;
  	      options->comp.flags = (COMP_F_SWAP|COMP_F_ADVERTISE_STUBS_ONLY);
  	    }
 +	  else if (streq(p[1], "stub-v2"))
 +	    {
 +	      options->comp.alg = COMP_ALGV2_UNCOMPRESSED;
-+	      options->comp.flags = (COMP_F_COMPV2);
 +	    }
  #if defined(ENABLE_LZO)
  	  else if (streq (p[1], "lzo"))
  	    {
-@@ -6336,6 +6341,11 @@ add_option (struct options *options,
+@@ -6336,6 +6340,10 @@ add_option (struct options *options,
  	      options->comp.alg = COMP_ALG_LZ4;
  	      options->comp.flags = COMP_F_SWAP;
  	    }
 +	  else if (streq (p[1], "lz4-v2"))
 +	    {
 +	      options->comp.alg = COMP_ALGV2_LZ4;
-+	      options->comp.flags = COMP_F_COMPV2;
 +	    }
  #endif
  	  else
