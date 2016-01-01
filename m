@@ -1,9 +1,9 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Fri,  1 Jan 2016 15:40:10 +0100
-Message-Id: <1451659210-5583-1-git-send-email-arne@...1227...>
+Date: Fri,  1 Jan 2016 16:10:08 +0100
+Message-Id: <1451661008-12738-1-git-send-email-arne@...1227...>
 In-Reply-To: <CAA1AbxKJwx5fckOpDMA7=9UB6NKtCET_ajkMav65YKNy791eOw@...278...>
 References: <CAA1AbxKJwx5fckOpDMA7=9UB6NKtCET_ajkMav65YKNy791eOw@...278...>
-Subject: [Openvpn-devel] [PATCH v3] Implement the compression V2 data format
+Subject: [Openvpn-devel] [PATCH v4] Implement the compression V2 data format
 	for stub and lz4.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -19,6 +19,7 @@ To: openvpn-devel@lists.sourceforge.net
 
 Patch V2: Fix minor issues found by Steffan
 Patch V3: split wire codes and compression flags
+Patch V4: Fix further issues reported by Gert
 
 It has been tested against v3 server and again itself. From James Mail:
 
@@ -68,13 +69,13 @@ It has been tested against v3 server and again itself. From James Mail:
  src/openvpn/comp-lz4.h |   1 +
  src/openvpn/comp.c     |  31 ++++++++
  src/openvpn/comp.h     |  25 ++++++
- src/openvpn/compstub.c |  52 +++++++++++++
+ src/openvpn/compstub.c |  51 +++++++++++++
  src/openvpn/lzo.c      |   3 -
- src/openvpn/options.c  |   8 ++
- 7 files changed, 277 insertions(+), 46 deletions(-)
+ src/openvpn/options.c  |  10 ++-
+ 7 files changed, 277 insertions(+), 47 deletions(-)
 
 diff --git a/src/openvpn/comp-lz4.c b/src/openvpn/comp-lz4.c
-index 4651148..dad123b 100644
+index 4651148..1d3dc20 100644
 --- a/src/openvpn/comp-lz4.c
 +++ b/src/openvpn/comp-lz4.c
 @@ -44,9 +44,6 @@
@@ -92,9 +93,9 @@ index 4651148..dad123b 100644
  
  static void
 -lz4_compress_uninit (struct compress_context *compctx)
-+lz4_compress_initv2 (struct compress_context *compctx)
++lz4v2_compress_init (struct compress_context *compctx)
  {
-+  msg (D_INIT_MEDIUM, "LZ4 compression initializing");
++  msg (D_INIT_MEDIUM, "LZ4v2 compression initializing");
  }
  
  static void
@@ -350,7 +351,7 @@ index 4651148..dad123b 100644
  
 +const struct compress_alg lz4v2_alg = {
 +  "lz4v2",
-+  lz4_compress_initv2,
++  lz4v2_compress_init,
 +  lz4_compress_uninit,
 +  lz4v2_compress,
 +  lz4v2_decompress
@@ -440,7 +441,7 @@ index 706ad7e..809c83d 100644
  }
  
 diff --git a/src/openvpn/comp.h b/src/openvpn/comp.h
-index 716b1c0..56590b7 100644
+index 716b1c0..9ed9532 100644
 --- a/src/openvpn/comp.h
 +++ b/src/openvpn/comp.h
 @@ -43,12 +43,22 @@
@@ -480,7 +481,7 @@ index 716b1c0..56590b7 100644
  
 +/* V2 on wire code */
 +#define COMP_ALGV2_INDICATOR_BYTE	0x50
-+#define COMP_ALGV2_UNCOMPRESSED_BYTE	1
++#define COMP_ALGV2_UNCOMPRESSED_BYTE	0
 +#define COMP_ALGV2_LZ4_BYTE		1
 +#define COMP_ALGV2_LZO_BYTE		2
 +#define COMP_ALGV2_SNAPPY_BYTE		3
@@ -506,19 +507,10 @@ index 716b1c0..56590b7 100644
  comp_enabled(const struct compress_options *info)
  {
 diff --git a/src/openvpn/compstub.c b/src/openvpn/compstub.c
-index 2ab7163..b8d8112 100644
+index 2ab7163..9c6aad2 100644
 --- a/src/openvpn/compstub.c
 +++ b/src/openvpn/compstub.c
-@@ -73,6 +73,8 @@ stub_compress (struct buffer *buf, struct buffer work,
-     }
- }
- 
-+
-+
- static void
- stub_decompress (struct buffer *buf, struct buffer work,
- 		 struct compress_context *compctx,
-@@ -105,6 +107,56 @@ stub_decompress (struct buffer *buf, struct buffer work,
+@@ -105,6 +105,57 @@ stub_decompress (struct buffer *buf, struct buffer work,
      }
  }
  
@@ -539,13 +531,12 @@ index 2ab7163..b8d8112 100644
 +		   struct compress_context *compctx,
 +		   const struct frame* frame)
 +{
-+  struct gc_arena gc = gc_new();
 +  if (buf->len <= 0)
 +    return;
 +
 +  uint8_t *head = BPTR (buf);
 +
-+  /* no compression */
++  /* no compression or packet to short*/
 +  if (head[0] != COMP_ALGV2_INDICATOR_BYTE)
 +    return;
 +
@@ -557,11 +548,13 @@ index 2ab7163..b8d8112 100644
 +    return;
 +
 +  head = BPTR (buf);
++  buf_advance(buf, 1);
++
 +  if (head[0] != COMP_ALGV2_UNCOMPRESSED_BYTE) {
 +    dmsg (D_COMP_ERRORS, "Bad compression stubv2 decompression header byte: %d", *head);
 +    buf->len = 0;
++    return;
 +  }
-+  gc_free(&gc);
 +}
 +
 +const struct compress_alg compv2_stub_alg = {
@@ -590,10 +583,16 @@ index daa02ed..25a839b 100644
   * Perform adaptive compression housekeeping.
   *
 diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 5a83897..eb4942b 100644
+index 5a83897..b00059a 100644
 --- a/src/openvpn/options.c
 +++ b/src/openvpn/options.c
-@@ -6323,6 +6323,10 @@ add_option (struct options *options,
+@@ -6318,16 +6318,20 @@ add_option (struct options *options,
+       VERIFY_PERMISSION (OPT_P_COMP);
+       if (p[1])
+ 	{
++	  options->comp.flags = 0;
+ 	  if (streq (p[1], "stub"))
+ 	    {
  	      options->comp.alg = COMP_ALG_STUB;
  	      options->comp.flags = (COMP_F_SWAP|COMP_F_ADVERTISE_STUBS_ONLY);
  	    }
@@ -604,6 +603,11 @@ index 5a83897..eb4942b 100644
  #if defined(ENABLE_LZO)
  	  else if (streq (p[1], "lzo"))
  	    {
+ 	      options->comp.alg = COMP_ALG_LZO;
+-	      options->comp.flags = 0;
+ 	    }
+ #endif
+ #if defined(ENABLE_LZ4)
 @@ -6336,6 +6340,10 @@ add_option (struct options *options,
  	      options->comp.alg = COMP_ALG_LZ4;
  	      options->comp.flags = COMP_F_SWAP;
