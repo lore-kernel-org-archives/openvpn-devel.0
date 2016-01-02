@@ -1,9 +1,9 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Fri,  1 Jan 2016 16:10:08 +0100
-Message-Id: <1451661008-12738-1-git-send-email-arne@...1227...>
+Date: Sat,  2 Jan 2016 11:20:42 +0100
+Message-Id: <1451730042-25063-1-git-send-email-arne@...1227...>
 In-Reply-To: <CAA1AbxKJwx5fckOpDMA7=9UB6NKtCET_ajkMav65YKNy791eOw@...278...>
 References: <CAA1AbxKJwx5fckOpDMA7=9UB6NKtCET_ajkMav65YKNy791eOw@...278...>
-Subject: [Openvpn-devel] [PATCH v4] Implement the compression V2 data format
+Subject: [Openvpn-devel] [PATCH v5] Implement the compression V2 data format
 	for stub and lz4.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -20,6 +20,7 @@ To: openvpn-devel@lists.sourceforge.net
 Patch V2: Fix minor issues found by Steffan
 Patch V3: split wire codes and compression flags
 Patch V4: Fix further issues reported by Gert
+Patch V5: really fix the issues that should be fixed in v2
 
 It has been tested against v3 server and again itself. From James Mail:
 
@@ -65,17 +66,17 @@ It has been tested against v3 server and again itself. From James Mail:
       the tail of the packet which can potentially incur an
       expensive cache miss.
 ---
- src/openvpn/comp-lz4.c | 203 ++++++++++++++++++++++++++++++++++++++-----------
+ src/openvpn/comp-lz4.c | 199 ++++++++++++++++++++++++++++++++++++++-----------
  src/openvpn/comp-lz4.h |   1 +
  src/openvpn/comp.c     |  31 ++++++++
- src/openvpn/comp.h     |  25 ++++++
+ src/openvpn/comp.h     |  25 +++++++
  src/openvpn/compstub.c |  51 +++++++++++++
  src/openvpn/lzo.c      |   3 -
  src/openvpn/options.c  |  10 ++-
- 7 files changed, 277 insertions(+), 47 deletions(-)
+ 7 files changed, 274 insertions(+), 46 deletions(-)
 
 diff --git a/src/openvpn/comp-lz4.c b/src/openvpn/comp-lz4.c
-index 4651148..1d3dc20 100644
+index 4651148..ddd8e28 100644
 --- a/src/openvpn/comp-lz4.c
 +++ b/src/openvpn/comp-lz4.c
 @@ -44,9 +44,6 @@
@@ -119,7 +120,7 @@ index 4651148..1d3dc20 100644
    /*
     * In order to attempt compression, length must be at least COMPRESS_THRESHOLD.
     */
-@@ -78,38 +77,58 @@ lz4_compress (struct buffer *buf, struct buffer work,
+@@ -78,38 +77,57 @@ lz4_compress (struct buffer *buf, struct buffer work,
        int zlen_max = ps + COMP_EXTRA_BUFFER (ps);
        int zlen;
  
@@ -163,8 +164,7 @@ index 4651148..1d3dc20 100644
      }
 +  return false;
 +}
- 
--  /* did compression save us anything? */
++
 +
 +static void
 +lz4_compress (struct buffer *buf, struct buffer work,
@@ -180,9 +180,8 @@ index 4651148..1d3dc20 100644
 +  /* On error do_lz4_compress sets buf len to zero, just return */
 +  if (buf->len == 0)
 +    return;
-+
-+  /* did compression save us anything? Include 2 byte compression header
-+     in calculation */
+ 
+   /* did compression save us anything? */
    {
      uint8_t comp_head_byte = NO_COMPRESS_BYTE_SWAP;
 -    if (compressed && work.len < buf->len)
@@ -190,7 +189,7 @@ index 4651148..1d3dc20 100644
        {
  	*buf = work;
  	comp_head_byte = LZ4_COMPRESS_BYTE;
-@@ -128,13 +147,73 @@ lz4_compress (struct buffer *buf, struct buffer work,
+@@ -128,13 +146,72 @@ lz4_compress (struct buffer *buf, struct buffer work,
    }
  }
  
@@ -205,16 +204,15 @@ index 4651148..1d3dc20 100644
 +    return;
 +
 +  compressed = do_lz4_compress(buf, &work, compctx, frame);
-+  if (buf->len <= 0)
-+    return;
 +
 +  /* On Error just return */
 +  if (buf->len == 0)
 +    return;
 +
-+  /* did compression save us anything? */
++  /* did compression save us anything?  Include 2 byte compression header
++     in calculation */
 +  {
-+    if (compressed && work.len < buf->len)
++    if (compressed && work.len + 2 < buf->len)
 +      {
 +	ASSERT(buf_prepend(&work, 2));
 +	uint8_t *head = BPTR (&work);
@@ -267,7 +265,7 @@ index 4651148..1d3dc20 100644
    uint8_t c;		/* flag indicating whether or not our peer compressed */
  
    if (buf->len <= 0)
-@@ -152,23 +231,7 @@ lz4_decompress (struct buffer *buf, struct buffer work,
+@@ -152,23 +229,7 @@ lz4_decompress (struct buffer *buf, struct buffer work,
  
    if (c == LZ4_COMPRESS_BYTE)	/* packet was compressed */
      {
@@ -292,7 +290,7 @@ index 4651148..1d3dc20 100644
      }
    else if (c == NO_COMPRESS_BYTE_SWAP)	/* packet was not compressed */
      {
-@@ -181,6 +244,52 @@ lz4_decompress (struct buffer *buf, struct buffer work,
+@@ -181,6 +242,52 @@ lz4_decompress (struct buffer *buf, struct buffer work,
      }
  }
  
@@ -345,7 +343,7 @@ index 4651148..1d3dc20 100644
  const struct compress_alg lz4_alg = {
    "lz4",
    lz4_compress_init,
-@@ -189,6 +298,14 @@ const struct compress_alg lz4_alg = {
+@@ -189,6 +296,14 @@ const struct compress_alg lz4_alg = {
    lz4_decompress
  };
  
