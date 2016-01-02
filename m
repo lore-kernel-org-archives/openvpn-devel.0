@@ -7,10 +7,10 @@ References: <1450123758-31641-1-git-send-email-steffan@...1856...>
 	<CAA1AbxJbKeLqeDgBVLJ4HB22NPv+rbL=nB6bXiTqv+d_BLuRbg@...278...>
 	<567AB995.70204@...1147...> <20151226091900.GU24952@...1296...>
 	<567E60A9.6020006@...1856...>
-Date: Sat, 2 Jan 2016 21:11:05 +0300
-Message-ID: <CAFHpkQHvDRP8vgBBjBbnf8GJJbk8OzcVcgXxf=u7zMTHqzFw5Q@...278...>
+Date: Sat, 2 Jan 2016 21:14:21 +0300
+Message-ID: <CAFHpkQEiJevqD7+jQ0+MdFh2Q0XmbFR3=8vTeAYz6meH1pFGAA@...278...>
 From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Content-Type: multipart/alternative; boundary=001a114028a6b6389905285dcfd3
+Content-Type: multipart/alternative; boundary=001a11c3783266eb3805285ddbab
 Subject: Re: [Openvpn-devel] [PATCH] Warn user if their certificate has
 	expired
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -24,42 +24,15 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: Steffan Karger <steffan@...1856...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---001a114028a6b6389905285dcfd3
+--001a11c3783266eb3805285ddbab
 Content-Type: text/plain; charset=UTF-8
 
-I'm getting "segmentation fault" after that commit.
-well, I suspect you beleive that user _always_ has client cert, which is
-not true.
+also, does it make sence to perform unit testing on build like
 
-obviously, for preshared keys there''s no user cert, and for user/password
-auth there's also no user cert (which is our case)
+setup server with user/password auth on localhost, connect to is using
+client, see whether it is ok....
 
-is Valgrind I see the following:
-
-https://community.openvpn.net/openvpn/ticket/644#ticket
-
-==19381== Invalid read of size 8
-==19381==    at 0x487454: tls_ctx_check_cert_time (ssl_openssl.c:368)
-==19381==    by 0x47F619: init_ssl (ssl.c:571)
-==19381==    by 0x420F45: do_init_crypto_tls_c1 (init.c:2160)
-==19381==    by 0x4211F6: do_init_crypto_tls (init.c:2240)
-==19381==    by 0x42197B: do_init_crypto (init.c:2428)
-==19381==    by 0x423C92: init_instance (init.c:3550)
-==19381==    by 0x423855: init_instance_handle_signals (init.c:3405)
-==19381==    by 0x443788: tunnel_point_to_point (openvpn.c:70)
-==19381==    by 0x443BAD: openvpn_main (openvpn.c:270)
-==19381==    by 0x443CC0: main (openvpn.c:345)
-==19381==  Address 0x0 is not stack'd, malloc'd or (recently) free'd
-
-
-does that mean "I'm trying to read a cert which does not exist" ?
-
-
-I investigated, I'm getting crash dumps since
-https://github.com/OpenVPN/openvpn/commit/091edd8e2996867447eeb665af957547aa8b3107
-
-can you please fix that before 2.3.10 ?
-
+?
 
 2015-12-26 12:40 GMT+03:00 Steffan Karger <steffan@...1856...>:
 
@@ -96,42 +69,18 @@ can you please fix that before 2.3.10 ?
 > https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 >
 
---001a114028a6b6389905285dcfd3
+--001a11c3783266eb3805285ddbab
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr"><div><div><div><div><div><div><div>I&#39;m getting &quot;s=
-egmentation fault&quot; after that commit.<br></div>well, I suspect you bel=
-eive that user _always_ has client cert, which is not true.<br><br></div>ob=
-viously, for preshared keys there&#39;&#39;s no user cert, and for user/pas=
-sword auth there&#39;s also no user cert (which is our case)<br><br></div>i=
-s Valgrind I see the following:<br><br><a href=3D"https://community.openvpn=
-.net/openvpn/ticket/644#ticket">https://community.openvpn.net/openvpn/ticke=
-t/644#ticket</a><br><br>=3D=3D19381=3D=3D Invalid read of size 8<br>=3D=3D1=
-9381=3D=3D=C2=A0=C2=A0=C2=A0 at 0x487454: tls_ctx_check_cert_time (ssl_open=
-ssl.c:368)<br>=3D=3D19381=3D=3D=C2=A0=C2=A0=C2=A0 by 0x47F619: init_ssl (ss=
-l.c:571)<br>=3D=3D19381=3D=3D=C2=A0=C2=A0=C2=A0 by 0x420F45: do_init_crypto=
-_tls_c1 (init.c:2160)<br>=3D=3D19381=3D=3D=C2=A0=C2=A0=C2=A0 by 0x4211F6: d=
-o_init_crypto_tls (init.c:2240)<br>=3D=3D19381=3D=3D=C2=A0=C2=A0=C2=A0 by 0=
-x42197B: do_init_crypto (init.c:2428)<br>=3D=3D19381=3D=3D=C2=A0=C2=A0=C2=
-=A0 by 0x423C92: init_instance (init.c:3550)<br>=3D=3D19381=3D=3D=C2=A0=C2=
-=A0=C2=A0 by 0x423855: init_instance_handle_signals (init.c:3405)<br>=3D=3D=
-19381=3D=3D=C2=A0=C2=A0=C2=A0 by 0x443788: tunnel_point_to_point (openvpn.c=
-:70)<br>=3D=3D19381=3D=3D=C2=A0=C2=A0=C2=A0 by 0x443BAD: openvpn_main (open=
-vpn.c:270)<br>=3D=3D19381=3D=3D=C2=A0=C2=A0=C2=A0 by 0x443CC0: main (openvp=
-n.c:345)<br>=3D=3D19381=3D=3D=C2=A0 Address 0x0 is not stack&#39;d, malloc&=
-#39;d or (recently) free&#39;d<br><br><br></div>does that mean &quot;I&#39;=
-m trying to read a cert which does not exist&quot; ?<br></div><br><br></div=
->I investigated, I&#39;m getting crash dumps since <a href=3D"https://githu=
-b.com/OpenVPN/openvpn/commit/091edd8e2996867447eeb665af957547aa8b3107">http=
-s://github.com/OpenVPN/openvpn/commit/091edd8e2996867447eeb665af957547aa8b3=
-107</a><br><br></div>can you please fix that before 2.3.10 ?<br><div><div><=
-div><div><br></div></div></div></div></div><div class=3D"gmail_extra"><br><=
-div class=3D"gmail_quote">2015-12-26 12:40 GMT+03:00 Steffan Karger <span d=
-ir=3D"ltr">&lt;<a href=3D"mailto:steffan@...1856..." target=3D"_blank">stef=
-fan@...1856...</a>&gt;</span>:<br><blockquote class=3D"gmail_quote" style=
-=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex"><span cl=
-ass=3D"">On 26-12-15 10:19, Gert Doering wrote:<br>
+<div dir=3D"ltr"><div>also, does it make sence to perform unit testing on b=
+uild like<br><br></div>setup server with user/password auth on localhost, c=
+onnect to is using client, see whether it is ok....<br><br>?<br></div><div =
+class=3D"gmail_extra"><br><div class=3D"gmail_quote">2015-12-26 12:40 GMT+0=
+3:00 Steffan Karger <span dir=3D"ltr">&lt;<a href=3D"mailto:steffan@...2111...=
+..." target=3D"_blank">steffan@...1856...</a>&gt;</span>:<br><blockquote cl=
+ass=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;p=
+adding-left:1ex">On 26-12-15 10:19, Gert Doering wrote:<br>
 &gt; On Wed, Dec 23, 2015 at 04:11:17PM +0100, Jan Just Keijser wrote:<br>
 &gt;&gt; I justed wanted to get back to this one one more time: attached is=
  a<br>
@@ -159,8 +108,8 @@ LZO 2.04<br>
 ed<br>
 &gt; below, for Steffan to ACK.<br>
 <br>
-</span>ACK, much wanted functionality and code looks good.<br>
-<div class=3D"HOEnZb"><div class=3D"h5"><br>
+ACK, much wanted functionality and code looks good.<br>
+<br>
 -Steffan<br>
 <br>
 ---------------------------------------------------------------------------=
@@ -172,7 +121,7 @@ sourceforge.net</a><br>
 <a href=3D"https://lists.sourceforge.net/lists/listinfo/openvpn-devel" rel=
 =3D"noreferrer" target=3D"_blank">https://lists.sourceforge.net/lists/listi=
 nfo/openvpn-devel</a><br>
-</div></div></blockquote></div><br></div>
+</blockquote></div><br></div>
 
---001a114028a6b6389905285dcfd3--
+--001a11c3783266eb3805285ddbab--
 
