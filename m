@@ -1,20 +1,8 @@
-MIME-Version: 1.0
-In-Reply-To: <20160102184746.GV24952@...1296...>
-References: <1450123758-31641-1-git-send-email-steffan@...1856...>
-	<566F5B01.8020109@...2080...>
-	<20151215075312.GN24952@...1296...>
-	<5670890D.7050501@...1147...>
-	<CAA1AbxJbKeLqeDgBVLJ4HB22NPv+rbL=nB6bXiTqv+d_BLuRbg@...278...>
-	<567AB995.70204@...1147...> <20151226091900.GU24952@...1296...>
-	<567E60A9.6020006@...1856...>
-	<CAFHpkQEiJevqD7+jQ0+MdFh2Q0XmbFR3=8vTeAYz6meH1pFGAA@...278...>
-	<20160102184746.GV24952@...1296...>
-Date: Sat, 2 Jan 2016 21:53:11 +0300
-Message-ID: <CAFHpkQHkLNvC8f7oPP98pen1sAb=TOsJtPkyGi0ZWuXe2vZrTw@...278...>
-From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Content-Type: multipart/alternative; boundary=001a11c3cb3443b18105285e6623
-Subject: Re: [Openvpn-devel] [PATCH] Warn user if their certificate has
-	expired
+From: Steffan Karger <steffan@...1856...>
+Date: Sun,  3 Jan 2016 10:22:46 +0100
+Message-Id: <1451812966-26727-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH] Fix regression in setups without a client
+	certificate
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -23,89 +11,82 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---001a11c3cb3443b18105285e6623
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+This fixes a null-pointer dereference in tls_ctx_cert_time(), which will
+occur on clients that do not use a client certificate (ie that only have
+auth-user-pass in the config, but no key and cert).  This bug was
+introduced by commit 091edd8e on the master branch, and commit dfd940bb
+on the release/2.3 branch (which is part of 2.3.9).
 
-as for my observation, people share password with coworkers, they will
-share cert in the same way :)
+While touching this function, I also made this function conform to the
+openvpn coding style.
 
-well, password-only is legitimate setup, so I would add test case for it.
-maybe bit later.
-where can I have a look at existing test cases you are talking about?
+Signed-off-by: Steffan Karger <steffan@...1856...>
+---
+ src/openvpn/ssl_openssl.c  | 15 +++++++++++----
+ src/openvpn/ssl_polarssl.c |  6 ++++++
+ 2 files changed, 17 insertions(+), 4 deletions(-)
 
-=D1=81=D1=83=D0=B1=D0=B1=D0=BE=D1=82=D0=B0, 2 =D1=8F=D0=BD=D0=B2=D0=B0=D1=
-=80=D1=8F 2016 =D0=B3. =D0=BF=D0=BE=D0=BB=D1=8C=D0=B7=D0=BE=D0=B2=D0=B0=D1=
-=82=D0=B5=D0=BB=D1=8C Gert Doering =D0=BD=D0=B0=D0=BF=D0=B8=D1=81=D0=B0=D0=
-=BB:
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index 0a7f14b..5cf6d7f 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -356,15 +356,22 @@ tls_ctx_check_cert_time (const struct tls_root_ctx *ctx)
+   int ret;
+   const X509 *cert;
+ 
++  ASSERT (ctx);
++
+ #if OPENSSL_VERSION_NUMBER >= 0x10002000L
+   /* OpenSSL 1.0.2 and up */
+-  cert = SSL_CTX_get0_certificate(ctx->ctx);
++  cert = SSL_CTX_get0_certificate (ctx->ctx);
+ #else
+   /* OpenSSL 1.0.1 and earlier need an SSL object to get at the certificate */
+-  SSL *ssl = SSL_new(ctx->ctx);
+-  cert = SSL_get_certificate(ssl);
++  SSL *ssl = SSL_new (ctx->ctx);
++  cert = SSL_get_certificate (ssl);
+ #endif
+ 
++  if (cert == NULL)
++    {
++      return; /* Nothing to check if there is no certificate */
++    }
++
+   ret = X509_cmp_time (X509_get_notBefore (cert), NULL);
+   if (ret == 0)
+     {
+@@ -385,7 +392,7 @@ tls_ctx_check_cert_time (const struct tls_root_ctx *ctx)
+       msg (M_WARN, "WARNING: Your certificate has expired!");
+     }
+ #if OPENSSL_VERSION_NUMBER < 0x10002000L
+-  SSL_free(ssl);
++  SSL_free (ssl);
+ #endif
+ }
+ 
+diff --git a/src/openvpn/ssl_polarssl.c b/src/openvpn/ssl_polarssl.c
+index 4782469..58b2116 100644
+--- a/src/openvpn/ssl_polarssl.c
++++ b/src/openvpn/ssl_polarssl.c
+@@ -219,6 +219,12 @@ tls_ctx_restrict_ciphers(struct tls_root_ctx *ctx, const char *ciphers)
+ void
+ tls_ctx_check_cert_time (const struct tls_root_ctx *ctx)
+ {
++  ASSERT (ctx);
++  if (ctx->crt_chain == NULL)
++    {
++      return; /* Nothing to check if there is no certificate */
++    }
++
+   if (x509_time_future (&ctx->crt_chain->valid_from))
+     {
+       msg (M_WARN, "WARNING: Your certificate is not yet valid!");
+-- 
+2.5.0
 
-> Hi,
->
-> On Sat, Jan 02, 2016 at 09:14:21PM +0300, ???????? ?????????????? wrote:
-> > also, does it make sence to perform unit testing on build like
-> >
-> > setup server with user/password auth on localhost, connect to is using
-> > client, see whether it is ok....
->
-> We do, but we don't run test setups without certificates (my auth/pass
-> users *also* have to have a certificate - helps against lost passwords,
-> because you also need to steal key+cert)
->
-> gert
-> --
-> USENET is *not* the non-clickable part of WWW!
->                                                            //
-> www.muc.de/~gert/
-> Gert Doering - Munich, Germany
-> gert@...1296... <javascript:;>
-> fax: +49-89-35655025
-> gert@...1297... <javascript:;>
->
-
---001a11c3cb3443b18105285e6623
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-as for my observation, people share password with coworkers, they will shar=
-e cert in the same way :)<div><br></div><div>well, password-only is legitim=
-ate setup, so I would add test case for it. maybe bit later.</div><div>wher=
-e can I have a look at existing test cases you are talking about?<br><br>=
-=D1=81=D1=83=D0=B1=D0=B1=D0=BE=D1=82=D0=B0, 2 =D1=8F=D0=BD=D0=B2=D0=B0=D1=
-=80=D1=8F 2016 =D0=B3. =D0=BF=D0=BE=D0=BB=D1=8C=D0=B7=D0=BE=D0=B2=D0=B0=D1=
-=82=D0=B5=D0=BB=D1=8C Gert Doering  =D0=BD=D0=B0=D0=BF=D0=B8=D1=81=D0=B0=D0=
-=BB:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border=
--left:1px #ccc solid;padding-left:1ex">Hi,<br>
-<br>
-On Sat, Jan 02, 2016 at 09:14:21PM +0300, ???????? ?????????????? wrote:<br>
-&gt; also, does it make sence to perform unit testing on build like<br>
-&gt;<br>
-&gt; setup server with user/password auth on localhost, connect to is using=
-<br>
-&gt; client, see whether it is ok....<br>
-<br>
-We do, but we don&#39;t run test setups without certificates (my auth/pass<=
-br>
-users *also* have to have a certificate - helps against lost passwords,<br>
-because you also need to steal key+cert)<br>
-<br>
-gert<br>
---<br>
-USENET is *not* the non-clickable part of WWW!<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0//<a href=3D"=
-http://www.muc.de/~gert/" target=3D"_blank">www.muc.de/~gert/</a><br>
-Gert Doering - Munich, Germany=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0<a href=3D"javas=
-cript:;" onclick=3D"_e(event, &#39;cvml&#39;, &#39;gert@...1296...&#39;)">g=
-ert@...1296...</a><br>
-fax: +49-89-35655025=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
- =C2=A0 =C2=A0 =C2=A0 =C2=A0 <a href=3D"javascript:;" onclick=3D"_e(event, =
-&#39;cvml&#39;, &#39;gert@...1297...&#39;)">gert@...1297...</a><br>
-</blockquote></div>
-
---001a11c3cb3443b18105285e6623--
 
