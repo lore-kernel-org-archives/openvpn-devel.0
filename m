@@ -1,9 +1,9 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Sun,  3 Jan 2016 18:16:34 +0100
-Message-Id: <1451841394-10572-1-git-send-email-arne@...1227...>
+Date: Sun,  3 Jan 2016 18:27:46 +0100
+Message-Id: <1451842066-13475-1-git-send-email-arne@...1227...>
 In-Reply-To: <CAA1AbxKJwx5fckOpDMA7=9UB6NKtCET_ajkMav65YKNy791eOw@...278...>
 References: <CAA1AbxKJwx5fckOpDMA7=9UB6NKtCET_ajkMav65YKNy791eOw@...278...>
-Subject: [Openvpn-devel] [PATCH v5] Implement the compression V2 data format
+Subject: [Openvpn-devel] [PATCH v6] Implement the compression V2 data format
 	for stub and lz4.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -21,6 +21,7 @@ Patch V2: Fix minor issues found by Steffan
 Patch V3: split wire codes and compression flags
 Patch V4: Fix further issues reported by Gert
 Patch V5: really fix the issues that should be fixed in v2
+Patch V6: fix more minor things
 
 It has been tested against v3 server and again itself. From James Mail:
 
@@ -66,17 +67,17 @@ It has been tested against v3 server and again itself. From James Mail:
       the tail of the packet which can potentially incur an
       expensive cache miss.
 ---
- src/openvpn/comp-lz4.c | 199 ++++++++++++++++++++++++++++++++++++++-----------
+ src/openvpn/comp-lz4.c | 195 ++++++++++++++++++++++++++++++++++++++-----------
  src/openvpn/comp-lz4.h |   1 +
  src/openvpn/comp.c     |  31 ++++++++
  src/openvpn/comp.h     |  25 +++++++
  src/openvpn/compstub.c |  51 +++++++++++++
  src/openvpn/lzo.c      |   3 -
- src/openvpn/options.c  |  10 ++-
- 7 files changed, 274 insertions(+), 46 deletions(-)
+ src/openvpn/options.c  |  11 ++-
+ 7 files changed, 272 insertions(+), 45 deletions(-)
 
 diff --git a/src/openvpn/comp-lz4.c b/src/openvpn/comp-lz4.c
-index 4651148..ddd8e28 100644
+index 4651148..88e4ef7 100644
 --- a/src/openvpn/comp-lz4.c
 +++ b/src/openvpn/comp-lz4.c
 @@ -44,9 +44,6 @@
@@ -120,7 +121,7 @@ index 4651148..ddd8e28 100644
    /*
     * In order to attempt compression, length must be at least COMPRESS_THRESHOLD.
     */
-@@ -78,38 +77,57 @@ lz4_compress (struct buffer *buf, struct buffer work,
+@@ -78,33 +77,52 @@ lz4_compress (struct buffer *buf, struct buffer work,
        int zlen_max = ps + COMP_EXTRA_BUFFER (ps);
        int zlen;
  
@@ -183,13 +184,7 @@ index 4651148..ddd8e28 100644
  
    /* did compression save us anything? */
    {
-     uint8_t comp_head_byte = NO_COMPRESS_BYTE_SWAP;
--    if (compressed && work.len < buf->len)
-+    if (compressed && work.len +2 < buf->len)
-       {
- 	*buf = work;
- 	comp_head_byte = LZ4_COMPRESS_BYTE;
-@@ -128,13 +146,72 @@ lz4_compress (struct buffer *buf, struct buffer work,
+@@ -128,13 +146,70 @@ lz4_compress (struct buffer *buf, struct buffer work,
    }
  }
  
@@ -221,9 +216,7 @@ index 4651148..ddd8e28 100644
 +	*buf = work;
 +      }
 +    else
-+      {
-+	compv2_escape_data_ifneeded(buf);
-+      }
++      compv2_escape_data_ifneeded(buf);
 +  }
 +}
 +
@@ -265,7 +258,7 @@ index 4651148..ddd8e28 100644
    uint8_t c;		/* flag indicating whether or not our peer compressed */
  
    if (buf->len <= 0)
-@@ -152,23 +229,7 @@ lz4_decompress (struct buffer *buf, struct buffer work,
+@@ -152,23 +227,7 @@ lz4_decompress (struct buffer *buf, struct buffer work,
  
    if (c == LZ4_COMPRESS_BYTE)	/* packet was compressed */
      {
@@ -290,7 +283,7 @@ index 4651148..ddd8e28 100644
      }
    else if (c == NO_COMPRESS_BYTE_SWAP)	/* packet was not compressed */
      {
-@@ -181,6 +242,52 @@ lz4_decompress (struct buffer *buf, struct buffer work,
+@@ -181,6 +240,52 @@ lz4_decompress (struct buffer *buf, struct buffer work,
      }
  }
  
@@ -343,7 +336,7 @@ index 4651148..ddd8e28 100644
  const struct compress_alg lz4_alg = {
    "lz4",
    lz4_compress_init,
-@@ -189,6 +296,14 @@ const struct compress_alg lz4_alg = {
+@@ -189,6 +294,14 @@ const struct compress_alg lz4_alg = {
    lz4_decompress
  };
  
@@ -581,10 +574,10 @@ index daa02ed..25a839b 100644
   * Perform adaptive compression housekeeping.
   *
 diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 5a83897..b00059a 100644
+index 5a83897..af60850 100644
 --- a/src/openvpn/options.c
 +++ b/src/openvpn/options.c
-@@ -6318,16 +6318,20 @@ add_option (struct options *options,
+@@ -6318,16 +6318,21 @@ add_option (struct options *options,
        VERIFY_PERMISSION (OPT_P_COMP);
        if (p[1])
  	{
@@ -597,6 +590,7 @@ index 5a83897..b00059a 100644
 +	  else if (streq(p[1], "stub-v2"))
 +	    {
 +	      options->comp.alg = COMP_ALGV2_UNCOMPRESSED;
++	      options->comp.flags = COMP_F_ADVERTISE_STUBS_ONLY;
 +	    }
  #if defined(ENABLE_LZO)
  	  else if (streq (p[1], "lzo"))
@@ -606,7 +600,7 @@ index 5a83897..b00059a 100644
  	    }
  #endif
  #if defined(ENABLE_LZ4)
-@@ -6336,6 +6340,10 @@ add_option (struct options *options,
+@@ -6336,6 +6341,10 @@ add_option (struct options *options,
  	      options->comp.alg = COMP_ALG_LZ4;
  	      options->comp.flags = COMP_F_SWAP;
  	    }
