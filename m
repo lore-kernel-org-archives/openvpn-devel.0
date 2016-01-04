@@ -1,7 +1,9 @@
 From: Lev Stipakov <lstipakov@...277...>
-Date: Mon,  4 Jan 2016 14:02:25 +0200
-Message-Id: <1451908945-12244-1-git-send-email-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH] Drop recursively routed packets
+Date: Mon,  4 Jan 2016 14:43:44 +0200
+Message-Id: <1451911424-12970-1-git-send-email-lstipakov@...277...>
+In-Reply-To: <1451908945-12244-1-git-send-email-lstipakov@...277...>
+References: <1451908945-12244-1-git-send-email-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH v2] Drop recursively routed packets
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,6 +15,8 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
+
+v2: better method naming
 
 On certain OSes (Windows, OS X) when network adapter is
 disabled (ethernet cable pulled off, Wi-Fi hardware switch disabled),
@@ -36,7 +40,7 @@ Signed-off-by: Lev Stipakov <lstipakov@...277...>
  1 file changed, 63 insertions(+)
 
 diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index 36a99e6..05445a1 100644
+index 36a99e6..af05bd0 100644
 --- a/src/openvpn/forward.c
 +++ b/src/openvpn/forward.c
 @@ -973,6 +973,68 @@ read_incoming_tun (struct context *c)
@@ -52,7 +56,7 @@ index 36a99e6..05445a1 100644
 + * and sent to routing table, which sends it again to tun.
 + */
 +static void
-+drop_recursive (struct context *c, struct buffer *buf)
++drop_if_recursive_routing (struct context *c, struct buffer *buf)
 +{
 +  bool drop = false;
 +  struct openvpn_sockaddr tun_sa = c->c2.to_link_addr->dest;
@@ -112,7 +116,7 @@ index 36a99e6..05445a1 100644
  
    if (c->c2.buf.len > 0)
      {
-+      drop_recursive (c, &c->c2.buf);
++      drop_if_recursive_routing (c, &c->c2.buf);
        /*
         * The --passtos and --mssfix options require
         * us to examine the IP header (IPv4 or IPv6).
