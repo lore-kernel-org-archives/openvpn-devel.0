@@ -1,8 +1,9 @@
 From: samuli@...515...
-Date: Mon,  4 Jan 2016 20:22:21 +0200
-Message-Id: <1451931741-4126-1-git-send-email-samuli@...515...>
+Date: Mon,  4 Jan 2016 20:25:20 +0200
+Message-Id: <1451931920-4248-1-git-send-email-samuli@...515...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Update INSTALL-win32.txt for OpenVPN 2.3.10
+Subject: [Openvpn-devel] [PATCHv2] Update INSTALL-win32.txt for OpenVPN
+	2.3.10
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -23,19 +24,14 @@ privileges using UAC. Modified INSTALL-win32.txt to reflect this behavior.
 
 Signed-off-by: Samuli Sepp=C3=A4nen <samuli@...515...>
 ---
- INSTALL-win32.txt | 15 +++++++++------
- 1 file changed, 9 insertions(+), 6 deletions(-)
+ INSTALL-win32.txt | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
 
 diff --git a/INSTALL-win32.txt b/INSTALL-win32.txt
-index 7c05685..ce08e63 100644
+index 7c05685..142f368 100644
 --- a/INSTALL-win32.txt
 +++ b/INSTALL-win32.txt
-@@ -1,3 +1,4 @@
-+
- UPGRADING FROM 2.3-ALPHA1 AND EARLIER
-=20
- OpenVPN Windows installer went through major changes in
-@@ -23,13 +24,15 @@ your configuration files and certificates, which now go=
+@@ -23,13 +23,15 @@ your configuration files and certificates, which now go=
  to
  provided you did not install the 32-bit version on 64-bit
  Windows.
