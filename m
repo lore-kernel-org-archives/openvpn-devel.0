@@ -1,9 +1,10 @@
-From: samuli@...515...
-Date: Mon,  4 Jan 2016 20:25:20 +0200
-Message-Id: <1451931920-4248-1-git-send-email-samuli@...515...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCHv2] Update INSTALL-win32.txt for OpenVPN
-	2.3.10
+Date: Mon, 4 Jan 2016 20:40:37 +0100 (CET)
+Message-Id: <201601041940.u04Jebxf026098@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <1451842066-13475-1-git-send-email-arne@...1227...>
+References: <1451842066-13475-1-git-send-email-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Implement the compression V2
+	data format for stub and lz4.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,49 +13,40 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Samuli Sepp=C3=A4nen <samuli@...515...>
+ACK from me as well (and thanks for bearing with Steffan and me).  
 
-OpenVPN 2.3.10 includes an OpenVPN-GUI which automatically requests elevati=
-on of
-privileges using UAC. Modified INSTALL-win32.txt to reflect this behavior.
+I have stared at the code, and ran my test suite - I have not yet 
+run end-to-end lz4v2 or stubv2, but my test server will pick up the 
+change tomorrow and we'll see... :-)
 
-Signed-off-by: Samuli Sepp=C3=A4nen <samuli@...515...>
----
- INSTALL-win32.txt | 14 ++++++++------
- 1 file changed, 8 insertions(+), 6 deletions(-)
+Your patch has been applied to the master branch.
 
-diff --git a/INSTALL-win32.txt b/INSTALL-win32.txt
-index 7c05685..142f368 100644
---- a/INSTALL-win32.txt
-+++ b/INSTALL-win32.txt
-@@ -23,13 +23,15 @@ your configuration files and certificates, which now go=
- to
- provided you did not install the 32-bit version on 64-bit
- Windows.
-=20
--IMPORTANT NOTE FOR WINDOWS VISTA/7 USERS
-+IMPORTANT NOTE FOR USERS OF WINDOWS VISTA AND ABOVE
-+
-+Note that on Windows Vista and above, you will need to run the
-+OpenVPN-GUI as a user with administrator privileges, so that
-+it can add routes to the routing table. Admin privileges are
-+requested automatically in OpenVPN 2.3.10 and later; older
-+versions require right-clicking on the OpenVPN-GUI desktop icon
-+and selecting "Run as administrator".
-=20
--Note that on Windows Vista, you will need to run the OpenVPN
--GUI with administrator privileges, so that it can add routes
--to the routing table that are pulled from the OpenVPN server.
--You can do this by right-clicking on the OpenVPN GUI
--desktop icon, and selecting "Run as administrator".
-=20
- GENERAL QUICKSTART FOR WINDOWS
-=20
---=20
-2.1.0
+The {} brackets in lz4v2_compress() have been moved around as suggested 
+by Steffan.  Also, I have fixed a typo ("compression schmemes") that
+managed to evade earlier review.
+
+commit a75bb2e40a431e053ea1ef328ec022aaf851ccc0 (master)
+
+Author: Arne Schwabe
+Date:   Sun Jan 3 18:27:46 2016 +0100
+
+     Implement the compression V2 data format for stub and lz4.
+
+     Acked-by: Steffan Karger <steffan.karger@...1435...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1451842066-13475-1-git-send-email-arne@...1227...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/10925
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
