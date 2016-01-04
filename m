@@ -1,10 +1,8 @@
-Date: Mon, 4 Jan 2016 20:40:37 +0100 (CET)
-Message-Id: <201601041940.u04Jebxf026098@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <1451842066-13475-1-git-send-email-arne@...1227...>
-References: <1451842066-13475-1-git-send-email-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Implement the compression V2
-	data format for stub and lz4.
+Message-ID: <9F7E042146FF4C9E896F23DB80BE0330@...2089...>
+From: <debbie10t@...277...>
+Date: Mon, 4 Jan 2016 23:51:29 -0000
+MIME-Version: 1.0
+Subject: [Openvpn-devel] ics-openvpn - route not added ?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,40 +11,42 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; format=flowed; charset="iso-8859-1";
+	reply-type=original
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
-ACK from me as well (and thanks for bearing with Steffan and me).  
+Hi
 
-I have stared at the code, and ran my test suite - I have not yet 
-run end-to-end lz4v2 or stubv2, but my test server will pick up the 
-change tomorrow and we'll see... :-)
+having read this about ics-openvpn :
 
-Your patch has been applied to the master branch.
+https://github.com/schwabe/ics-openvpn/blob/master/doc/README.txt
 
-The {} brackets in lz4v2_compress() have been moved around as suggested 
-by Steffan.  Also, I have fixed a typo ("compression schmemes") that
-managed to evade earlier review.
+I decided I was not in a position to add any further comments to this:
 
-commit a75bb2e40a431e053ea1ef328ec022aaf851ccc0 (master)
+https://forums.openvpn.net/topic20654.html#p57367
 
-Author: Arne Schwabe
-Date:   Sun Jan 3 18:27:46 2016 +0100
+So I thought to ask if Arne could add any thing
 
-     Implement the compression V2 data format for stub and lz4.
+The gist is that: the server & client are connecting ok
+but the server LAN is not being added to the client RT
+even though the route is successfully pushed.
 
-     Acked-by: Steffan Karger <steffan.karger@...1435...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1451842066-13475-1-git-send-email-arne@...1227...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/10925
-     Signed-off-by: Gert Doering <gert@...1296...>
+Specific versions are:
+
+official build 0.6.46 running on samsung SM-G900F (MSM8974), Android 5.0
+(LRX21T) API 21, ABI armeabi-v7a,
+(samsung/kltexx/klte:5.0/LRX21T/G900FXXU1BOJ1:user/release-keys)
+
+and
+
+OpenVPN 2.4-icsopenvpn [git:icsopenvpn_645-e6b5e62e37c02d5b]
+android-14-armeabi-v7a [SSL (OpenSSL)] [LZO] [LZ4] [EPOLL] [MH] [IPv6] built
+on Dec  8 2015
 
 
---
-kind regards,
+My presumption is .. this is not a version we support ?
 
-Gert Doering
+Thanks
 
 
