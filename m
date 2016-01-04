@@ -1,8 +1,8 @@
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <568A8624.3020004@...515...>
-Date: Mon, 4 Jan 2016 16:48:04 +0200
+From: samuli@...515...
+Date: Mon,  4 Jan 2016 20:22:21 +0200
+Message-Id: <1451931741-4126-1-git-send-email-samuli@...515...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] OpenVPN 2.3.10 released
+Subject: [Openvpn-devel] [PATCH] Update INSTALL-win32.txt for OpenVPN 2.3.10
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,45 +11,54 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-15"; format=flowed
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-To: "openvpn users list (openvpn-users@lists.sourceforge.net)" <openvpn-users@lists.sourceforge.net>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, openvpn-announce@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-The OpenVPN community project team is proud to release OpenVPN 2.3.10.=20
-It can be downloaded from here:
+From: Samuli Sepp=C3=A4nen <samuli@...515...>
 
-<http://openvpn.net/index.php/open-source/downloads.html>
+OpenVPN 2.3.10 includes an OpenVPN-GUI which automatically requests elevati=
+on of
+privileges using UAC. Modified INSTALL-win32.txt to reflect this behavior.
 
-This release fixes IPv6 on WIndows XP and warns users about expired=20
-certificates. A few other small fixes and improvements are included. In=20
-addition, PolarSSL 1.3 is now required for PolarSSL builds. The Windows=20
-installers now bundle OpenVPN-GUI 10, which automatically requests=20
-administrator privileges using UAC, instead of launching as a normal=20
-user and then failing at route creation time. A full list of changes is=20
-available here:
+Signed-off-by: Samuli Sepp=C3=A4nen <samuli@...515...>
+---
+ INSTALL-win32.txt | 15 +++++++++------
+ 1 file changed, 9 insertions(+), 6 deletions(-)
 
-<https://community.openvpn.net/openvpn/wiki/ChangesInOpenvpn23>
-
-For generic help use these support channels:
-
-Official documentation:=20
-<http://openvpn.net/index.php/open-source/documentation/howto.html>
-Wiki: <https://community.openvpn.net>
-Forums: <https://forums.openvpn.net>
-User mailing list: <http://sourceforge.net/mail/?group_id=3D48978>
-User IRC channel: #openvpn at irc.freenode.net
-
-Please report bugs and ask development questions here:
-
-Bug tracker and wiki: <https://community.openvpn.net>
-Developer mailing list: <http://sourceforge.net/mail/?group_id=3D48978>
-Developer IRC channel: #openvpn-devel at irc.freenode.net (requires=20
-Freenode registration)
-
+diff --git a/INSTALL-win32.txt b/INSTALL-win32.txt
+index 7c05685..ce08e63 100644
+--- a/INSTALL-win32.txt
++++ b/INSTALL-win32.txt
+@@ -1,3 +1,4 @@
++
+ UPGRADING FROM 2.3-ALPHA1 AND EARLIER
+=20
+ OpenVPN Windows installer went through major changes in
+@@ -23,13 +24,15 @@ your configuration files and certificates, which now go=
+ to
+ provided you did not install the 32-bit version on 64-bit
+ Windows.
+=20
+-IMPORTANT NOTE FOR WINDOWS VISTA/7 USERS
++IMPORTANT NOTE FOR USERS OF WINDOWS VISTA AND ABOVE
++
++Note that on Windows Vista and above, you will need to run the
++OpenVPN-GUI as a user with administrator privileges, so that
++it can add routes to the routing table. Admin privileges are
++requested automatically in OpenVPN 2.3.10 and later; older
++versions require right-clicking on the OpenVPN-GUI desktop icon
++and selecting "Run as administrator".
+=20
+-Note that on Windows Vista, you will need to run the OpenVPN
+-GUI with administrator privileges, so that it can add routes
+-to the routing table that are pulled from the OpenVPN server.
+-You can do this by right-clicking on the OpenVPN GUI
+-desktop icon, and selecting "Run as administrator".
+=20
+ GENERAL QUICKSTART FOR WINDOWS
+=20
 --=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
+2.1.0
 
-irc freenode net: mattock
 
