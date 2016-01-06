@@ -1,10 +1,7 @@
-Date: Tue, 5 Jan 2016 18:19:33 +0100 (CET)
-Message-Id: <201601051719.u05HJXiC032965@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <1452005761-5503-1-git-send-email-arne@...1227...>
-References: <1452005761-5503-1-git-send-email-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix assert when comp is called
-	with unknown algorithm, always call comp init method
+From: Steffan Karger <steffan@...1856...>
+Date: Wed,  6 Jan 2016 21:03:59 +0100
+Message-Id: <1452110639-18262-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH] polarssl: optimize polar_ok() for non-errors
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,26 +12,37 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master branch.
+Adding polar_ok() was a good plan for improving error reporting, but also
+added two function calls (one to polar_log_func_line() and one to
+polar_log_err()) for each function call wrapped with polar_ok().
+Especially in the critical path, this is a waste of time.
 
-commit 67b3de98e3b5327a9330b499d6cff179624b8ec2
-Author: Arne Schwabe
-Date:   Tue Jan 5 15:56:01 2016 +0100
+To avoid this overhead, add a simple check to the polar_ok() macro that
+reduces it to a single branch.
 
-     Fix assert when comp is called with unknown algorithm, always call comp init method
+Signed-off-by: Steffan Karger <steffan@...1856...>
+---
+ src/openvpn/crypto_polarssl.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1452005761-5503-1-git-send-email-arne@...1227...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/10939
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/src/openvpn/crypto_polarssl.h b/src/openvpn/crypto_polarssl.h
+index 92c2c30..e6db445 100644
+--- a/src/openvpn/crypto_polarssl.h
++++ b/src/openvpn/crypto_polarssl.h
+@@ -130,8 +130,8 @@ bool polar_log_func_line(unsigned int flags, int errval, const char *func,
+  *
+  * @returns true if no errors are detected, false otherwise.
+  */
+-#define polar_ok(errval) \
+-  polar_log_func_line(D_CRYPT_ERRORS, errval, __func__, __LINE__)
++#define polar_ok(errval) ((0 == errval) || \
++  polar_log_func_line(D_CRYPT_ERRORS, errval, __func__, __LINE__))
+ 
+ 
+ #endif /* CRYPTO_POLARSSL_H_ */
+-- 
+2.5.0
 
 
