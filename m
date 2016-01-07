@@ -1,9 +1,8 @@
-Date: Thu, 7 Jan 2016 15:13:43 +0100 (CET)
-Message-Id: <201601071413.u07EDhAh046032@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <1452171690-26822-1-git-send-email-steffan.karger@...1435...>
-References: <1452171690-26822-1-git-send-email-steffan.karger@...1435...>
-Subject: [Openvpn-devel] [PATCH applied] Re: polarssl: improve logging
+From: Steffan Karger <steffan@...1856...>
+Date: Thu,  7 Jan 2016 20:52:44 +0100
+Message-Id: <1452196364-18786-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH] Update manpage: OpenSSL might also need
+	/dev/urandom inside chroot
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,33 +13,43 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Steffan Karger <steffan.karger@...1435...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-ACK, same arguments as for the openssl patch.
+As reported in trac ticket #646, OpenSSL might also need /dev/urandom to
+be available in the chroot.  This depends on OS, OS version and ssl library
+configuration.  Update the manpage to better explain this.
 
-Thanks for working all these patches into one big one for 2.3 - less work,
-and the history makes still clear where the stuff is coming from and who
-originally accepted it.
+Signed-off-by: Steffan Karger <steffan@...1856...>
+---
+ doc/openvpn.8 | 13 +++++--------
+ 1 file changed, 5 insertions(+), 8 deletions(-)
 
-Your patch has been applied to the release/2.3 branch.
-
-commit a9226fbdd90ac37891937b396c9c3212cd324262
-Author: Steffan Karger
-Date:   Thu Jan 7 14:01:30 2016 +0100
-
-     polarssl: improve logging
-
-     Signed-off-by: Steffan Karger <steffan.karger@...1435...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1452171690-26822-1-git-send-email-steffan.karger@...1435...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/10952
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/doc/openvpn.8 b/doc/openvpn.8
+index 368bd4c..9760e8b 100644
+--- a/doc/openvpn.8
++++ b/doc/openvpn.8
+@@ -2139,15 +2139,12 @@ parameter can point to an empty directory, however
+ complications can result when scripts or restarts
+ are executed after the chroot operation.
+ 
+-Note: if OpenVPN is built using the PolarSSL SSL
+-library,
+-.B \-\-chroot
+-will only work if a /dev/urandom device node is available
+-inside the chroot directory
++Note: The SSL library will probably need /dev/urandom to be available inside
++the chroot directory
+ .B dir.
+-This is due to the way PolarSSL works (it wants to open
+-/dev/urandom every time randomness is needed, not just once
+-at startup) and nothing OpenVPN can influence.
++This is because SSL libraries occasionally need to collect fresh random.  Newer
++linux kernels and some BSDs implement a getrandom() or getentropy() syscall
++that removes the need for /dev/urandom to be available.
+ .\"*********************************************************
+ .TP
+ .B \-\-setcon context
+-- 
+2.5.0
 
 
