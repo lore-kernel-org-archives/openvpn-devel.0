@@ -1,11 +1,9 @@
-From: <steffan.karger@...1435...>
-Date: Thu, 7 Jan 2016 10:15:16 +0100
-Message-ID: <1452158116-17363-1-git-send-email-steffan.karger@...1435...>
-In-Reply-To: <20160107084439.GO24952@...1296...>
-References: <20160107084439.GO24952@...1296...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] polarssl: optimize polar_ok() for
-	non-errors
+Date: Thu, 7 Jan 2016 11:02:41 +0100 (CET)
+Message-Id: <201601071002.u07A2ft9044863@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <1452113464-28062-2-git-send-email-steffan@...1856...>
+References: <1452113464-28062-2-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH applied] Re: openssl: improve logging
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,56 +14,30 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Steffan Karger <steffan@...1856...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Steffan Karger <steffan.karger@...1435...>
+ACK.  It made sense for master, got quite a bit of testing by now, and
+trac #646 clearly demonstrates we want it in 2.3 as well.
 
-Adding polar_ok() was a good plan for improving error reporting, but also
-added two function calls (one to polar_log_func_line() and one to
-polar_log_err()) for each function call wrapped with polar_ok().
-Especially in the critical path, this is a waste of time.
+Your patch has been applied to the release/2.3 branch.
 
-To avoid this overhead, add a simple static inline wrapper to reduce it to
-a single branch.
+commit 8e95e2091397283d3fa64507a0e444fdc4359d57
+Author: Steffan Karger
+Date:   Wed Jan 6 21:51:04 2016 +0100
 
-v2 - use a static inline wrapper to prevent evaluating 'errval' twice in
-     the macro.
+     openssl: improve logging
 
-Signed-off-by: Steffan Karger <steffan.karger@...1435...>
----
- src/openvpn/crypto_polarssl.h | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+     Signed-off-by: Steffan Karger <steffan@...1856...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1452113464-28062-2-git-send-email-steffan@...1856...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/10944
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-diff --git a/src/openvpn/crypto_polarssl.h b/src/openvpn/crypto_polarssl.h
-index bd0f8b8..94306ed 100644
---- a/src/openvpn/crypto_polarssl.h
-+++ b/src/openvpn/crypto_polarssl.h
-@@ -115,6 +115,15 @@ bool polar_log_err(unsigned int flags, int errval, const char *prefix);
- bool polar_log_func_line(unsigned int flags, int errval, const char *func,
-     int line);
- 
-+/** Wraps polar_log_func_line() to prevent function calls for non-errors */
-+static inline bool polar_log_func_line_lite(unsigned int flags, int errval,
-+    const char *func, int line) {
-+  if (errval) {
-+    return polar_log_func_line (flags, errval, func, line);
-+  }
-+  return true;
-+}
-+
- /**
-  * Check errval and log on error.
-  *
-@@ -128,7 +137,7 @@ bool polar_log_func_line(unsigned int flags, int errval, const char *func,
-  * @returns true if no errors are detected, false otherwise.
-  */
- #define polar_ok(errval) \
--  polar_log_func_line(D_CRYPT_ERRORS, errval, __func__, __LINE__)
-+  polar_log_func_line_lite(D_CRYPT_ERRORS, errval, __func__, __LINE__)
- 
- 
- #endif /* CRYPTO_POLARSSL_H_ */
--- 
-2.5.0
+
+--
+kind regards,
+
+Gert Doering
 
 
