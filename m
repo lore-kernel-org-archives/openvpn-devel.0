@@ -1,8 +1,8 @@
 From: Steffan Karger <steffan@...1856...>
-Date: Thu,  7 Jan 2016 21:22:12 +0100
-Message-Id: <1452198132-25560-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH] polarssl: use wrappers to access md_info_t
-	member functions
+Date: Thu,  7 Jan 2016 21:24:33 +0100
+Message-Id: <1452198273-26493-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH] polarssl: remove now redundant 128-bit
+	blowfish key override
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,39 +15,27 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-The md_info_t will become an opaque struct in mbed TLS 2.x, start using
-the wrapper function in preparation to a future upgrade to 2.x.
+As of 1.3.0, polarssl/mbedtls now by default uses a 128 bit key for the
+blowfish cipher (as opposed to the 32-bit (!) default they had previously).
+Since we require polar 1.3+, we no longer need this fixup code.
 
 Signed-off-by: Steffan Karger <steffan@...1856...>
 ---
- src/openvpn/crypto_polarssl.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ src/openvpn/crypto_polarssl.c | 2 --
+ 1 file changed, 2 deletions(-)
 
 diff --git a/src/openvpn/crypto_polarssl.c b/src/openvpn/crypto_polarssl.c
-index cd50fe5..407a176 100644
+index f0ad81a..407a176 100644
 --- a/src/openvpn/crypto_polarssl.c
 +++ b/src/openvpn/crypto_polarssl.c
-@@ -214,7 +214,7 @@ show_available_digests ()
+@@ -415,8 +415,6 @@ cipher_kt_key_size (const cipher_info_t *cipher_kt)
+ {
+   if (NULL == cipher_kt)
+     return 0;
+-  if (POLARSSL_CIPHER_ID_BLOWFISH == cipher_kt->base->cipher)
+-    return 128/8; /* Override PolarSSL 32 bit default key size with sane 128 bit default */
  
-       if (info)
- 	printf ("%s %d bit default key\n",
--		info->name, info->size * 8);
-+		md_get_name(info), md_get_size(info) * 8);
-       digests++;
-     }
-   printf ("\n");
-@@ -576,10 +576,10 @@ md_kt_get (const char *digest)
-   md = md_info_from_string(digest);
-   if (!md)
-     msg (M_FATAL, "Message hash algorithm '%s' not found", digest);
--  if (md->size > MAX_HMAC_KEY_LENGTH)
-+  if (md_get_size(md) > MAX_HMAC_KEY_LENGTH)
-     msg (M_FATAL, "Message hash algorithm '%s' uses a default hash size (%d bytes) which is larger than " PACKAGE_NAME "'s current maximum hash size (%d bytes)",
- 	 digest,
--	 md->size,
-+	 md_get_size(md),
- 	 MAX_HMAC_KEY_LENGTH);
-   return md;
+   return cipher_kt->key_length/8;
  }
 -- 
 2.5.0
