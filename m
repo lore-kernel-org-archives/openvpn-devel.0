@@ -1,8 +1,8 @@
 From: Steffan Karger <steffan@...1856...>
-Date: Thu,  7 Jan 2016 20:52:44 +0100
-Message-Id: <1452196364-18786-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH] Update manpage: OpenSSL might also need
-	/dev/urandom inside chroot
+Date: Thu,  7 Jan 2016 21:22:12 +0100
+Message-Id: <1452198132-25560-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH] polarssl: use wrappers to access md_info_t
+	member functions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,40 +15,40 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-As reported in trac ticket #646, OpenSSL might also need /dev/urandom to
-be available in the chroot.  This depends on OS, OS version and ssl library
-configuration.  Update the manpage to better explain this.
+The md_info_t will become an opaque struct in mbed TLS 2.x, start using
+the wrapper function in preparation to a future upgrade to 2.x.
 
 Signed-off-by: Steffan Karger <steffan@...1856...>
 ---
- doc/openvpn.8 | 13 +++++--------
- 1 file changed, 5 insertions(+), 8 deletions(-)
+ src/openvpn/crypto_polarssl.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/doc/openvpn.8 b/doc/openvpn.8
-index 368bd4c..9760e8b 100644
---- a/doc/openvpn.8
-+++ b/doc/openvpn.8
-@@ -2139,15 +2139,12 @@ parameter can point to an empty directory, however
- complications can result when scripts or restarts
- are executed after the chroot operation.
+diff --git a/src/openvpn/crypto_polarssl.c b/src/openvpn/crypto_polarssl.c
+index cd50fe5..407a176 100644
+--- a/src/openvpn/crypto_polarssl.c
++++ b/src/openvpn/crypto_polarssl.c
+@@ -214,7 +214,7 @@ show_available_digests ()
  
--Note: if OpenVPN is built using the PolarSSL SSL
--library,
--.B \-\-chroot
--will only work if a /dev/urandom device node is available
--inside the chroot directory
-+Note: The SSL library will probably need /dev/urandom to be available inside
-+the chroot directory
- .B dir.
--This is due to the way PolarSSL works (it wants to open
--/dev/urandom every time randomness is needed, not just once
--at startup) and nothing OpenVPN can influence.
-+This is because SSL libraries occasionally need to collect fresh random.  Newer
-+linux kernels and some BSDs implement a getrandom() or getentropy() syscall
-+that removes the need for /dev/urandom to be available.
- .\"*********************************************************
- .TP
- .B \-\-setcon context
+       if (info)
+ 	printf ("%s %d bit default key\n",
+-		info->name, info->size * 8);
++		md_get_name(info), md_get_size(info) * 8);
+       digests++;
+     }
+   printf ("\n");
+@@ -576,10 +576,10 @@ md_kt_get (const char *digest)
+   md = md_info_from_string(digest);
+   if (!md)
+     msg (M_FATAL, "Message hash algorithm '%s' not found", digest);
+-  if (md->size > MAX_HMAC_KEY_LENGTH)
++  if (md_get_size(md) > MAX_HMAC_KEY_LENGTH)
+     msg (M_FATAL, "Message hash algorithm '%s' uses a default hash size (%d bytes) which is larger than " PACKAGE_NAME "'s current maximum hash size (%d bytes)",
+ 	 digest,
+-	 md->size,
++	 md_get_size(md),
+ 	 MAX_HMAC_KEY_LENGTH);
+   return md;
+ }
 -- 
 2.5.0
 
