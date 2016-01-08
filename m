@@ -1,14 +1,10 @@
-Date: Fri, 8 Jan 2016 08:41:24 +0100
+Date: Fri, 8 Jan 2016 08:48:43 +0100 (CET)
+Message-Id: <201601080748.u087mhtI051783@...2054...>
 From: Gert Doering <gert@...1296...>
-Message-ID: <20160108074124.GR24952@...1296...>
-References: <71715370-6FF1-41BC-94FA-12EBE8E33A40@...277...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="EnKxfBJhHVAs8tak"
-Content-Disposition: inline
-In-Reply-To: <71715370-6FF1-41BC-94FA-12EBE8E33A40@...277...>
-Subject: Re: [Openvpn-devel] Code to confirm "FIPS MODE" throwing compile
- error
+In-Reply-To: <1452196364-18786-1-git-send-email-steffan@...1856...>
+References: <1452196364-18786-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Update manpage: OpenSSL might
+	also need /dev/urandom inside chroot
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,68 +13,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Kevin Long <kevinlong206@...277...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Steffan Karger <steffan@...1856...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---EnKxfBJhHVAs8tak
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+ACK.
 
-Hi
+Your patch has been applied to the master and release/2.3 branch.
 
-On Thu, Jan 07, 2016 at 02:57:34PM -0800, Kevin Long wrote:
->=20
-> I believe I have successfully compiled openvpn on debian , using static o=
-penssl library containing the FIPS compliance module.
->=20
->=20
-> However, I have followed this instruction found online:
->=20
-> "Now you should have a FIPS capable OpenSSL (NOTE: OpenSSL itself is not =
-FIPS validated, only FIPS capable along with the FIPS Object Module). To ma=
-ke OpenVPN FIPS compliant, you need to add:
->=20
-> #ifdef OPENSSL_FIPS=20
->         if(options.no_fips <=3D 0) {
->                 if(!FIPS_mode_set(1) {
->                         ERR_load_crypto_strings();
->                         ERR_print_errors_fp(stderr);
->                         exit(1);
->=20
->                }
->        }
->        else
->                fprintf(stderr,"*** IN FIPS MODE ***\n");
-> #endif
+commit 0609eb477bdcd7b23bd8072f69714592323cab2e (master)
+commit 945388590f8244f912850ce87a0fe2003ef36e25 (release/2.3)
 
-I'm not sure where this is coming from (it's not something I've seen
-before) but it is at least broken C code - the "if (!FIPS_mode_set(1)" line
-is missing a closing bracket - and it is based on patches to options.c
-and options.h that are missing - as you've noticed, there is no "no_fips"
-field in the "options" structure (and, at this place in the code, there
-is not even an "options" variable around).
+Author: Steffan Karger
+Date:   Thu Jan 7 20:52:44 2016 +0100
 
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+     Update manpage: OpenSSL might also need /dev/urandom inside chroot
 
---EnKxfBJhHVAs8tak
-Content-Type: application/pgp-signature; name="signature.asc"
+     Signed-off-by: Steffan Karger <steffan@...1856...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1452196364-18786-1-git-send-email-steffan@...1856...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/10954
+     Signed-off-by: Gert Doering <gert@...1296...>
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
 
-iQCVAwUBVo9oI6kuBuNlUUl1AQIWqgP9Hu4iJu3nsP+m4vl11l+oax1pORcY7Jd4
-R8v03fB0Rm2P1BLsRHr5/zR+i1sMiwObQnCMuIP/T511T3AlEO6/yjrFu7GpjBgc
-cyUqxxhI348s8Zo6AwcEZ6FVO9PRZjyiLg+UsG8xjtufbLG7q4lts7eW1Ry7VCDf
-vXn3zhoVb/Q=
-=K3sL
------END PGP SIGNATURE-----
+--
+kind regards,
 
---EnKxfBJhHVAs8tak--
+Gert Doering
+
 
