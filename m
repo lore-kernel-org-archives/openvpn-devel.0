@@ -1,12 +1,11 @@
-Date: Fri, 8 Jan 2016 16:22:31 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20160108152231.GI24952@...1296...>
+From: "Fish Wang" <fish.thss@...277...>
 References: <1450127176-43837-1-git-send-email-fish.thss@...277...>
+	<20160108152231.GI24952@...1296...>
+In-Reply-To: <20160108152231.GI24952@...1296...>
+Date: Fri, 8 Jan 2016 10:30:09 -0500
+Message-ID: <010b01d14a29$76e1d040$64a570c0$@gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="IGH6DwWgOn9XAAl6"
-Content-Disposition: inline
-In-Reply-To: <1450127176-43837-1-git-send-email-fish.thss@...277...>
+Content-Language: zh-cn
 Subject: Re: [Openvpn-devel] [PATCH] Make MSVC happy about route.c
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -16,13 +15,23 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Fish <fish.thss@...277...>
+Content-Type: text/plain;
+	charset="Windows-1252"
+Content-Transfer-Encoding: 7bit
+To: 'Gert Doering' <gert@...1296...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---IGH6DwWgOn9XAAl6
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Thanks for your response. I'll ship a patch for master soon :-)
+
+Best,
+Fish
+
+-----Original Message-----
+From: Gert Doering [mailto:gert@...1296...] 
+Sent: Friday, January 8, 2016 10:23 AM
+To: Fish <fish.thss@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
+Subject: Re: [Openvpn-devel] [PATCH] Make MSVC happy about route.c
 
 Hi,
 
@@ -32,23 +41,23 @@ On Mon, Dec 14, 2015 at 01:06:16PM -0800, Fish wrote:
 [..]
 >  #elif defined (WIN32)
 > -
-> -  struct buffer out =3D alloc_buf_gc (64, &gc);
-> +  out =3D alloc_buf_gc(64, &gc);
->    buf_printf (&out, "interface=3D%d", tt->adapter_index );
->    device =3D buf_bptr(&out);
+> -  struct buffer out = alloc_buf_gc (64, &gc);
+> +  out = alloc_buf_gc(64, &gc);
+>    buf_printf (&out, "interface=%d", tt->adapter_index );
+>    device = buf_bptr(&out);
 
-As things turns out, this is now actually no longer needed in the=20
+As things turns out, this is now actually no longer needed in the 
 release/2.3 branch, as with the new code from Lev, this looks like:
 
 #elif defined (WIN32)
-=20
-  if (win32_version_info() !=3D WIN_XP)
+ 
+  if (win32_version_info() != WIN_XP)
     {
-      struct buffer out =3D alloc_buf_gc (64, &gc);
-      buf_printf (&out, "interface=3D%d", tt->adapter_index );
-      device =3D buf_bptr(&out);
+      struct buffer out = alloc_buf_gc (64, &gc);
+      buf_printf (&out, "interface=%d", tt->adapter_index );
+      device = buf_bptr(&out);
     }
-=20
+ 
 ... and as such, avoids this VS2010 pitfall (thanks anyway!).
 
 Master still has problematic code here, so if VS2010 compatibility is
@@ -56,25 +65,13 @@ desired, I'd appreciate a patch for it.
 
 gert
 
---=20
+-- 
 USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+ 
+//www.muc.de/~gert/
+Gert Doering - Munich, Germany
+gert@...1296...
+fax: +49-89-35655025
+gert@...1297...
 
---IGH6DwWgOn9XAAl6
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQCVAwUBVo/UNqkuBuNlUUl1AQLwzwP/Zt5Qk5ERmwlRd+DMGmRNGYwxkLCsIfD1
-tJCfGyhOYYXGVikccD2JaAV1QofvuJyXqCNNbPuz7QsQ+79kWvvHlR4g3TUFhjKA
-6BEoJ6pGGGT6TmH6YNsKejZRKJG++inKFECVgaMpC6d3r4Pfp/ODINeFyt8rcYHU
-zu8dSBLdno8=
-=g2wr
------END PGP SIGNATURE-----
-
---IGH6DwWgOn9XAAl6--
 
