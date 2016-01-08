@@ -1,12 +1,13 @@
-From: "Fish Wang" <fish.thss@...277...>
-References: <1450127176-43837-1-git-send-email-fish.thss@...277...>
-	<20160108152231.GI24952@...1296...>
-In-Reply-To: <20160108152231.GI24952@...1296...>
-Date: Fri, 8 Jan 2016 10:30:09 -0500
-Message-ID: <010b01d14a29$76e1d040$64a570c0$@gmail.com>
+Date: Fri, 8 Jan 2016 19:53:12 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20160108185312.GO24952@...1296...>
+References: <567EA6B5.9040108@...277...>
 MIME-Version: 1.0
-Content-Language: zh-cn
-Subject: Re: [Openvpn-devel] [PATCH] Make MSVC happy about route.c
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="s599DUe1LoD7GyL8"
+Content-Disposition: inline
+In-Reply-To: <567EA6B5.9040108@...277...>
+Subject: Re: [Openvpn-devel] Fabian Knittel's 802.1q/VLAN tagging support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,63 +16,68 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain;
-	charset="Windows-1252"
-Content-Transfer-Encoding: 7bit
-To: 'Gert Doering' <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Mike Auty <mike.auty@...277...>
+Cc: openvpn-devel@lists.sourceforge.net, David Sommerseth <dazo@...2108...>
 
-Thanks for your response. I'll ship a patch for master soon :-)
-
-Best,
-Fish
-
------Original Message-----
-From: Gert Doering [mailto:gert@...1296...] 
-Sent: Friday, January 8, 2016 10:23 AM
-To: Fish <fish.thss@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
-Subject: Re: [Openvpn-devel] [PATCH] Make MSVC happy about route.c
+--s599DUe1LoD7GyL8
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
 Hi,
 
-On Mon, Dec 14, 2015 at 01:06:16PM -0800, Fish wrote:
-> Move the definition of out to the beginning of functions to comply with
-> old-style C compilers. Tested on MSVC 2010.
+On Sat, Dec 26, 2015 at 02:39:49PM +0000, Mike Auty wrote:
 [..]
->  #elif defined (WIN32)
-> -
-> -  struct buffer out = alloc_buf_gc (64, &gc);
-> +  out = alloc_buf_gc(64, &gc);
->    buf_printf (&out, "interface=%d", tt->adapter_index );
->    device = buf_bptr(&out);
+> Given I didn't author most of these patches (I fixed up a tiny bit of
+> documentation at the end), I was wondering how best to supply these so
+> that they could be considered for inclusion in the main tree?  Should
+> I submit a pull request from my repo with all the patches applied [4],
+> or post the git format-patches to this mailing list, or is there
+> another method I should be using?
 
-As things turns out, this is now actually no longer needed in the 
-release/2.3 branch, as with the new code from Lev, this looks like:
+I'm aware of these patches (as is David), but so far the interest has not
+been high enough to prioritize them and get them properly reviewed and
+tested.  As you have noticed, the patch set is fairly big, and touches
+quite a bit of code - and since we'll have to maintain that code from
+that point on, it needs to fulfill "enough interest" and "the currently
+active maintainers understand it well enough" (for the packet code, that
+would be mostly Arne and I...)
 
-#elif defined (WIN32)
- 
-  if (win32_version_info() != WIN_XP)
-    {
-      struct buffer out = alloc_buf_gc (64, &gc);
-      buf_printf (&out, "interface=%d", tt->adapter_index );
-      device = buf_bptr(&out);
-    }
- 
-... and as such, avoids this VS2010 pitfall (thanks anyway!).
+Process-wise, we do not deal in pull requests but patches need to be sent
+(with git send-email) to the openvpn-devel list for public review, and
+merging with a reference to the public list archive.
 
-Master still has problematic code here, so if VS2010 compatibility is
-desired, I'd appreciate a patch for it.
+I'm not saying that these patches won't go in - but it will not happen
+in the close future.  Main focus right now is to get lots of small things
+fixed, get AEAD, pushable ciphers and iservice in, and release 2.4.0
+(so people can enjoy proper dual-stack support, proper IPv6-over-IPv6
+support, full peer-id floating, etc.) - and since interest for vlan=20
+tagging has not been that high, it's likely not going in.
+
+Sorry if that wasn't the reply you wanted to hear.  We're doing our best,
+but days are short...
 
 gert
 
--- 
+--=20
 USENET is *not* the non-clickable part of WWW!
- 
-//www.muc.de/~gert/
-Gert Doering - Munich, Germany
-gert@...1296...
-fax: +49-89-35655025
-gert@...1297...
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
+--s599DUe1LoD7GyL8
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQCVAwUBVpAFl6kuBuNlUUl1AQLAqQP8CprHq+lF5SouUctXZLsELbEJo/5xIQVt
+6R5vR9tAumYqagQBtfP+nHlfS0Uxq1lL5pfH6AKy+5rCUwd9eY7lIdySNbK8ii/b
+hVMJix/L0LRb/WTER2jq+ZKqXrIurSKWZ4wm9d0YNPbJNZJ/udr7lK1R/gXy6/2K
+XAa9MhVV2Rg=
+=G1hP
+-----END PGP SIGNATURE-----
+
+--s599DUe1LoD7GyL8--
 
