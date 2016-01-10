@@ -1,11 +1,9 @@
-References: <1452354825-5096-1-git-send-email-iam@...2070...>
-	<56913031.8070201@...1147...> <56913099.4000908@...2070...>
-From: Jan Just Keijser <janjust@...1147...>
-Message-ID: <56913236.7090109@...1147...>
-Date: Sat, 9 Jan 2016 17:15:50 +0100
 MIME-Version: 1.0
-In-Reply-To: <56913099.4000908@...2070...>
-Subject: Re: [Openvpn-devel] [PATCH] Clarify mssfix documentation
+Date: Sun, 10 Jan 2016 13:14:41 +0500
+Message-ID: <CAFHpkQGwYbtTii7kZkv=UjXRRW0VnkbJcg-2Fg_JQW5A-De0WA@...278...>
+From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
+Content-Type: multipart/alternative; boundary=001a114028a68f34d50528f669c5
+Subject: [Openvpn-devel] some cleanup on openvpn-build
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,28 +12,32 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-To: ValdikSS <iam@...2070...>, openvpn-devel@lists.sourceforge.net
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-On 09/01/16 17:08, ValdikSS wrote:
-> This is applicable to both --mssfix and --fragment options I believe.
-> Yes, it affects both tun and tap modes.
-ah, I thought the additional text would show up under --fragment, but I 
-did not check the 2.4 manual page yet.
-Other than that, ACK from me.
+--001a114028a68f34d50528f669c5
+Content-Type: text/plain; charset=UTF-8
 
-JJK
+Hello,
 
-> On 01/09/2016 07:07 PM, Jan Just Keijser wrote:
->> Hi,
->>
->> On 09/01/16 16:53, ValdikSS wrote:
->>
->> this is a clarification for the --fragment option, right?   and is the 28/48 bytes also applicable in TAP mode?
->>
->> JJK
->>
->
+please someone have a look at
+https://github.com/OpenVPN/openvpn-build/pull/16
 
+it seems there few more files with --enable-password-save or
+--disable-snappy
+
+
+Cheers,
+Ilya Shipitsin
+
+--001a114028a68f34d50528f669c5
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div><div><div>Hello,<br><br></div>please someone have a l=
+ook at <a href=3D"https://github.com/OpenVPN/openvpn-build/pull/16">https:/=
+/github.com/OpenVPN/openvpn-build/pull/16</a><br><br>it seems there few mor=
+e files with --enable-password-save or --disable-snappy <br><br><br></div>C=
+heers,<br></div>Ilya Shipitsin<br></div>
+
+--001a114028a68f34d50528f669c5--
 
