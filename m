@@ -1,12 +1,12 @@
-References: <CAFHpkQEM5LAALcJKc8cfaon3orJKWtV3EQShk7KXf9MztQ-ocA@...278...>
-	<5684FA04.5050800@...515...>
-	<CAFHpkQGRiiFRDmLtH2oNf1xuT+vA16Eav5M-w18jaNjLtbGwCw@...278...>
+References: <1451931920-4248-1-git-send-email-samuli@...515...>
+	<20160108135150.GG24952@...1296...>
 From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <5693676E.80309@...515...>
-Date: Mon, 11 Jan 2016 10:27:26 +0200
+Message-ID: <569368FF.6070005@...515...>
+Date: Mon, 11 Jan 2016 10:34:07 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAFHpkQGRiiFRDmLtH2oNf1xuT+vA16Eav5M-w18jaNjLtbGwCw@...278...>
-Subject: Re: [Openvpn-devel] link to openvpn.se ?
+In-Reply-To: <20160108135150.GG24952@...1296...>
+Subject: Re: [Openvpn-devel] [PATCHv2] Update INSTALL-win32.txt for OpenVPN
+ 2.3.10
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,58 +15,39 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Type: text/plain; charset="windows-1252"; format=flowed
 Content-Transfer-Encoding: quoted-printable
-To: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-No progress. The task is on my Kanban board, so it won't be forgotten=20
-about. I've just had other (arguably more important) things to do.
+
+> Hi,
+>
+> On Mon, Jan 04, 2016 at 08:25:20PM +0200, samuli@...515... wrote:
+>> From: Samuli Sepp=E4nen <samuli@...515...>
+>>
+>> OpenVPN 2.3.10 includes an OpenVPN-GUI which automatically requests elev=
+ation of
+>> privileges using UAC. Modified INSTALL-win32.txt to reflect this behavio=
+r.
+>
+> I wonder if these bits should not be removed from the INSTALL-win32.txt
+> we ship in the main openvpn repo - since this is a gui thing and happens
+> totally outside the main repo...  move it to the windows build tree,
+> maybe, and show it from the installer upon installation?
+>
+> gert
+
+Hi,
+
+Looking at the the full contents of INSTALL-win32.txt your suggestion=20
+makes sense. I'll migrate the file to openvpn-build and then send a=20
+removal patch for openvpn/INSTALL-win32.txt.
 
 --=20
-Samuli Sepp=C3=A4nen
+Samuli Sepp=E4nen
 Community Manager
 OpenVPN Technologies, Inc
 
 irc freenode net: mattock
-
-
-> Hello,
->
-> any progress here ?
->
-> 2015-12-31 14:48 GMT+05:00 Samuli Sepp=C3=A4nen <samuli@...515...
-> <mailto:samuli@...515...>>:
->
->
->      > Hello,
->
->
->         I mentioned that you want to shut down openvpn.se
->         <http://openvpn.se> <http://openvpn.se>,
->         because of beeing too old.
->         however, there're links to it, for instance,
->         https://github.com/OpenVPN/openvpn-gui/blob/master/README
->
->         more links, higher google page rank, so people will see it in sea=
-rch
->         results.
->         should we remove that link ?
->
->
->     It seems the README is horribly obsolete and should be rewritten,
->     probably as README.rst. I can do most of the modernization, but I'll
->     need a bit of advise regarding the internal technical changes for
->     d12fk and others. We can work on this on #openvpn-windows.
->
->     --
->     Samuli Sepp=C3=A4nen
->     Community Manager
->     OpenVPN Technologies, Inc
->
->     irc freenode net: mattock
->
->
-
-
 
