@@ -1,9 +1,15 @@
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <56938BD7.7070205@...515...>
-Date: Mon, 11 Jan 2016 13:02:47 +0200
+References: <56936C78.3020505@...515...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <5693BE57.2020505@...2080...>
+Date: Mon, 11 Jan 2016 15:38:15 +0100
 MIME-Version: 1.0
-Subject: [Openvpn-devel] Patch review sprint today at 20:00 CET (19:00 UTC)
- on #openvpn-meeting
+In-Reply-To: <56936C78.3020505@...515...>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="NgsLr2paBDta9huRWUcCq7GjQ7G7aAgHr"
+Subject: Re: [Openvpn-devel] Disabling auth_pam plugin by default in
+ openvpn-build?
+Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,30 +18,59 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-15"; format=flowed
+To: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--NgsLr2paBDta9huRWUcCq7GjQ7G7aAgHr
+Content-Type: text/plain; charset="iso-8859-15"
 Content-Transfer-Encoding: quoted-printable
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hi,
+On 11/01/16 09:48, Samuli Sepp=E4nen wrote:
+> Hi,
+>=20
+> There is a pull request in GitHub to openvpn-build, which disables=20
+> auth_pam plugin by default:
+>=20
+> <https://github.com/OpenVPN/openvpn-build/pull/10/files>
+>=20
+> For Windows this makes sense, as PAM is not present. However,=20
+> openvpn-build can also be used to cross-compile for the ARM=20
+> architecture, in which case PAM might be useful.
+>=20
+> Does the pull request makes sense, or should we just fix this with=20
+> better documentation, e.g.
+>=20
+> "If you're cross-compiling for ARM, make sure you add=20
+> --disable-plugin-auth-pam to EXTRA_OPENVPN_CONFIG"
+>=20
+> Thoughts?
 
-We're having a patch review sprint today at 20:00 CET (19:00 UTC) on=20
-#openvpn-meeting channel on Freenode. The idea is to have no other=20
-topics, so that we can focus on shortening our backlog of unreviewed=20
-patches. The "topic" list is here:
+You'll most likely upset quite some Linux distro maintainers.
+Especially if such a change is not properly communicated.
 
-<https://community.openvpn.net/openvpn/wiki/Topics-2016-01-11>
+I know at least RPM packaging will start failing when it detects that
+files expected to be installed by 'make install' is missing.  Other
+packaging systems may behave differently.
 
-If want to join the sprint, it would be great if you could let me know=20
-about that via a private email, or by saying "I will be present" on=20
-#openvpn-meeting channel. This helps us determine which patches we=20
-can/should review today.
-
-Best regards,
 
 --=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
+kind regards,
 
-irc freenode net: mattock
+David Sommerseth
+
+
+--NgsLr2paBDta9huRWUcCq7GjQ7G7aAgHr
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iEYEARECAAYFAlaTvloACgkQDC186MBRfrreGwCfRaWr60GW/kQ/Y0UNaVJuzSKA
+koEAniVspbnasaQW/benQXClM/OAEu+g
+=NFjG
+-----END PGP SIGNATURE-----
+
+--NgsLr2paBDta9huRWUcCq7GjQ7G7aAgHr--
 
