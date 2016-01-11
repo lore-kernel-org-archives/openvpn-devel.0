@@ -1,15 +1,15 @@
+Date: Mon, 11 Jan 2016 16:22:53 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20160111152253.GX24952@...1296...>
 References: <56936C78.3020505@...515...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <5693BE57.2020505@...2080...>
-Date: Mon, 11 Jan 2016 15:38:15 +0100
+	<5693BE57.2020505@...2080...>
 MIME-Version: 1.0
-In-Reply-To: <56936C78.3020505@...515...>
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="NgsLr2paBDta9huRWUcCq7GjQ7G7aAgHr"
+	protocol="application/pgp-signature"; boundary="y0gFD7xD8qWl5Ra4"
+Content-Disposition: inline
+In-Reply-To: <5693BE57.2020505@...2080...>
 Subject: Re: [Openvpn-devel] Disabling auth_pam plugin by default in
  openvpn-build?
-Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,59 +18,48 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---NgsLr2paBDta9huRWUcCq7GjQ7G7aAgHr
-Content-Type: text/plain; charset="iso-8859-15"
+--y0gFD7xD8qWl5Ra4
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-On 11/01/16 09:48, Samuli Sepp=E4nen wrote:
-> Hi,
->=20
-> There is a pull request in GitHub to openvpn-build, which disables=20
-> auth_pam plugin by default:
->=20
-> <https://github.com/OpenVPN/openvpn-build/pull/10/files>
->=20
-> For Windows this makes sense, as PAM is not present. However,=20
-> openvpn-build can also be used to cross-compile for the ARM=20
-> architecture, in which case PAM might be useful.
->=20
-> Does the pull request makes sense, or should we just fix this with=20
-> better documentation, e.g.
->=20
-> "If you're cross-compiling for ARM, make sure you add=20
-> --disable-plugin-auth-pam to EXTRA_OPENVPN_CONFIG"
->=20
-> Thoughts?
+Hi,
 
-You'll most likely upset quite some Linux distro maintainers.
-Especially if such a change is not properly communicated.
+On Mon, Jan 11, 2016 at 03:38:15PM +0100, David Sommerseth wrote:
+> You'll most likely upset quite some Linux distro maintainers.
+> Especially if such a change is not properly communicated.
+>=20
+> I know at least RPM packaging will start failing when it detects that
+> files expected to be installed by 'make install' is missing.  Other
+> packaging systems may behave differently.
 
-I know at least RPM packaging will start failing when it detects that
-files expected to be installed by 'make install' is missing.  Other
-packaging systems may behave differently.
+I would be very surprised to see "standard" distro maintainers use the=20
+openvpn-build script set - as it's totally unneeded unless you do
+cross-building...
 
+gert
 
 --=20
-kind regards,
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-David Sommerseth
-
-
---NgsLr2paBDta9huRWUcCq7GjQ7G7aAgHr
+--y0gFD7xD8qWl5Ra4
 Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
+Version: GnuPG v1
 
-iEYEARECAAYFAlaTvloACgkQDC186MBRfrreGwCfRaWr60GW/kQ/Y0UNaVJuzSKA
-koEAniVspbnasaQW/benQXClM/OAEu+g
-=NFjG
+iQCVAwUBVpPIzKkuBuNlUUl1AQIs2QP9HI9K4m9wPVcHoKr4Cw+dUy6VdRsYKbbL
+htHj8eE+v7pVgxJYJ/s/1gcTrCSevsMsOQNYku2MkxuKtorY+9Z54F3MKQIqgl3w
+YZ5MFn22RLGQ8JxwVaUcJgCm6akMU1DKUQcXCdstFuc4cj2Uip5t9sULN1SiIAXu
+Lpi/4Uvjngc=
+=V5nG
 -----END PGP SIGNATURE-----
 
---NgsLr2paBDta9huRWUcCq7GjQ7G7aAgHr--
+--y0gFD7xD8qWl5Ra4--
 
