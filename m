@@ -1,13 +1,11 @@
-Date: Mon, 11 Jan 2016 16:22:53 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20160111152253.GX24952@...1296...>
 References: <56936C78.3020505@...515...>
 	<5693BE57.2020505@...2080...>
+	<20160111152253.GX24952@...1296...>
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <5693EB68.3000504@...515...>
+Date: Mon, 11 Jan 2016 19:50:32 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="y0gFD7xD8qWl5Ra4"
-Content-Disposition: inline
-In-Reply-To: <5693BE57.2020505@...2080...>
+In-Reply-To: <20160111152253.GX24952@...1296...>
 Subject: Re: [Openvpn-devel] Disabling auth_pam plugin by default in
  openvpn-build?
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -18,48 +16,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
-
---y0gFD7xD8qWl5Ra4
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="windows-1252"; format=flowed
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
 
-Hi,
 
-On Mon, Jan 11, 2016 at 03:38:15PM +0100, David Sommerseth wrote:
-> You'll most likely upset quite some Linux distro maintainers.
-> Especially if such a change is not properly communicated.
->=20
-> I know at least RPM packaging will start failing when it detects that
-> files expected to be installed by 'make install' is missing.  Other
-> packaging systems may behave differently.
+> Hi,
+>
+> On Mon, Jan 11, 2016 at 03:38:15PM +0100, David Sommerseth wrote:
+>> You'll most likely upset quite some Linux distro maintainers.
+>> Especially if such a change is not properly communicated.
+>>
+>> I know at least RPM packaging will start failing when it detects that
+>> files expected to be installed by 'make install' is missing.  Other
+>> packaging systems may behave differently.
+>
+> I would be very surprised to see "standard" distro maintainers use the
+> openvpn-build script set - as it's totally unneeded unless you do
+> cross-building...
 
-I would be very surprised to see "standard" distro maintainers use the=20
-openvpn-build script set - as it's totally unneeded unless you do
-cross-building...
-
-gert
+Yeah, exactly. This might one of those "ask around in vain, then turn it=20
+off, and suddenly everyone is complaining". I have no strong feelings=20
+one way or the other.
 
 --=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
 
---y0gFD7xD8qWl5Ra4
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQCVAwUBVpPIzKkuBuNlUUl1AQIs2QP9HI9K4m9wPVcHoKr4Cw+dUy6VdRsYKbbL
-htHj8eE+v7pVgxJYJ/s/1gcTrCSevsMsOQNYku2MkxuKtorY+9Z54F3MKQIqgl3w
-YZ5MFn22RLGQ8JxwVaUcJgCm6akMU1DKUQcXCdstFuc4cj2Uip5t9sULN1SiIAXu
-Lpi/4Uvjngc=
-=V5nG
------END PGP SIGNATURE-----
-
---y0gFD7xD8qWl5Ra4--
+irc freenode net: mattock
 
