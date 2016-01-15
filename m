@@ -1,10 +1,14 @@
-Date: Fri, 15 Jan 2016 16:43:45 +0100 (CET)
-Message-Id: <201601151543.u0FFhjOu054310@...2054...>
+Date: Fri, 15 Jan 2016 20:10:25 +0100
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1452701348-9577-1-git-send-email-steffan@...1856...>
-References: <1452701348-9577-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH applied] Re: socks.c: fix check on
-	get_user_pass() return value(s)
+Message-ID: <20160115191024.GA24952@...1296...>
+References: <56936C78.3020505@...515...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="z6NZ5wE66EeS4ZZd"
+Content-Disposition: inline
+In-Reply-To: <56936C78.3020505@...515...>
+Subject: Re: [Openvpn-devel] Disabling auth_pam plugin by default in
+ openvpn-build?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,33 +17,64 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Steffan Karger <steffan@...1856...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Samuli =?iso-8859-1?Q?Sepp=E4nen?= <samuli@...515...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-ACK.  Makes sense.
+--z6NZ5wE66EeS4ZZd
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Your patch has been applied to the master and release/2.3 branch.
+Hi,
 
-commit 982ab2364a68f2fca0cb9219b31bdabcd5aa4b49 (master)
-commit 8a64911dbce0718ac2737a172d6e94d21e277621 (release/2.3)
+On Mon, Jan 11, 2016 at 10:48:56AM +0200, Samuli Sepp=E4nen wrote:
+> There is a pull request in GitHub to openvpn-build, which disables=20
+> auth_pam plugin by default:
+>=20
+> <https://github.com/OpenVPN/openvpn-build/pull/10/files>
+>=20
+> For Windows this makes sense, as PAM is not present. However,=20
+> openvpn-build can also be used to cross-compile for the ARM=20
+> architecture, in which case PAM might be useful.
+>=20
+> Does the pull request makes sense, or should we just fix this with=20
+> better documentation, e.g.
+>=20
+> "If you're cross-compiling for ARM, make sure you add=20
+> --disable-plugin-auth-pam to EXTRA_OPENVPN_CONFIG"
+>=20
+> Thoughts?
 
-Author: Steffan Karger
-Date:   Wed Jan 13 17:09:08 2016 +0100
+What happens if you run openvpn-build "as is" for windows?  Will it=20
+abort (because there is no PAM) or just print out a warning and compile
+fine without requiring --disable-plugin-auth-pam?
 
-     socks.c: fix check on get_user_pass() return value(s)
+I tend to "leave everything as it is", and (if needed) document for
+which platforms the switch is needed, and where to put it.
 
-     Signed-off-by: Steffan Karger <steffan@...1856...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1452701348-9577-1-git-send-email-steffan@...1856...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/10993
-     Signed-off-by: Gert Doering <gert@...1296...>
+(Removing --disable-snappy would be a good idea, though, as there is no=20
+such option...)
 
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
---
-kind regards,
+--z6NZ5wE66EeS4ZZd
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Gert Doering
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
 
+iQCVAwUBVplEHqkuBuNlUUl1AQK5UQQAn0QI0e0LBQ3ZkFiFW+lx43uN+x21fii+
+1MQ/jd7am5mOVQl+f7OGTvh7XdbJKncn8aJm/tCTQ3a9JO+fxwQPPvridZRmxoXw
+8FHD0PnycdtFHobf1ar82LwpCp/ny0rnzASbf8xWdlZuCMRIblFsHxR4RIZZyD06
+20LNjRZ/NOA=
+=NOru
+-----END PGP SIGNATURE-----
+
+--z6NZ5wE66EeS4ZZd--
 
