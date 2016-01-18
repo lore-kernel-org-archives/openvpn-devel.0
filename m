@@ -1,10 +1,9 @@
-Date: Sat, 16 Jan 2016 21:53:58 +0100 (CET)
-Message-Id: <201601162053.u0GKrwrC062545@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <1452436639-16838-1-git-send-email-steffan@...1856...>
-References: <1452436639-16838-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH applied] Re: configure.ac: simplify crypto
-	library configuration
+MIME-Version: 1.0
+Date: Mon, 18 Jan 2016 11:39:03 +0500
+Message-ID: <CAFHpkQEQL-+D8jLEYQSC5ucg+eT0ZjTDEZMuEeO7Mjb5PAFqFg@...278...>
+From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
+Content-Type: multipart/alternative; boundary=001a113fbcd83f556c05299602bb
+Subject: [Openvpn-devel] travis-ci for openvpn-gui
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,39 +12,25 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Steffan Karger <steffan@...1856...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-ACK.  I'm no autoconf expert, but it looks reasonable to me, and works on
-my test system...  Samuli might have to check whether it affects/breaks
-building for windows (but his buildslave will tell us in a few minutes :) ).
+--001a113fbcd83f556c05299602bb
+Content-Type: text/plain; charset=UTF-8
 
-It does change behaviour in some cases - my polarssl build only set
-POLARSSL_CFLAGS=-I..., and it still found the library - with this patch,
-POLARSSL_LIBS=-lpolarssl is now needed as well.  But I think that was
-the intended usage all the time ("if you set one, you need to set both"),
-so I'm not complaining.
+Hello,
 
-Your patch has been applied to the master branch.
+https://github.com/OpenVPN/openvpn-gui/pull/12
 
-commit 31b0bebef61413151af9ded55aa985798d4f7666
-Author: Steffan Karger
-Date:   Sun Jan 10 15:37:19 2016 +0100
+should we add build configuration under https://travis-ci.org/openvpn/ ?
 
-     configure.ac: simplify crypto library configuration
+--001a113fbcd83f556c05299602bb
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-     Signed-off-by: Steffan Karger <steffan@...1856...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1452436639-16838-1-git-send-email-steffan@...1856...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/10978
-     Signed-off-by: Gert Doering <gert@...1296...>
+<div dir=3D"ltr"><div>Hello,<br><br><a href=3D"https://github.com/OpenVPN/o=
+penvpn-gui/pull/12">https://github.com/OpenVPN/openvpn-gui/pull/12</a><br><=
+br></div>should we add build configuration under <a href=3D"https://travis-=
+ci.org/openvpn/">https://travis-ci.org/openvpn/</a> ?<br></div>
 
-
---
-kind regards,
-
-Gert Doering
-
+--001a113fbcd83f556c05299602bb--
 
