@@ -1,7 +1,10 @@
-From: Steffan Karger <steffan@...1856...>
-Date: Mon, 18 Jan 2016 21:49:40 +0100
-Message-Id: <1453150181-21453-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH] configure.ac: fix polarssl autodetection
+Date: Mon, 18 Jan 2016 22:24:17 +0100 (CET)
+Message-Id: <201601182124.u0ILOHZx028143@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <1453150181-21453-1-git-send-email-steffan@...1856...>
+References: <1453150181-21453-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH applied] Re: configure.ac: fix polarssl
+	autodetection
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,64 +15,33 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Steffan Karger <steffan@...1856...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-A missing , in the previous configure.ac patch caused the autodetection to
-fail.  While fixing that, I noticed I can simplify the check by using the
-documented ${ac_cv_search_function} cache variable instead of the nested
-AC_SEARCH_LIBS.
+ACK, fixes the problem with polarssl library autodetection for systems 
+that need -lpolarssl.  If POLARSSL_CFLAGS= is set, it still need 
+POLARSSL_LIBS= to be set as well - usually, you need both anyway, so
+that's a particular special case that is now different - hereby 
+documented.
 
-Signed-off-by: Steffan Karger <steffan@...1856...>
----
- configure.ac | 22 ++++++++++------------
- 1 file changed, 10 insertions(+), 12 deletions(-)
+Your patch has been applied to the master branch.
 
-diff --git a/configure.ac b/configure.ac
-index 73dd032..7ff2435 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -832,30 +832,28 @@ elif test "${with_crypto_library}" = "polarssl"; then
- 	AC_ARG_VAR([POLARSSL_CFLAGS], [C compiler flags for polarssl])
- 	AC_ARG_VAR([POLARSSL_LIBS], [linker flags for polarssl])
- 
-+	saved_CFLAGS="${CFLAGS}"
-+	saved_LIBS="${LIBS}"
-+
- 	if test -z "${POLARSSL_CFLAGS}" -a -z "${POLARSSL_LIBS}"; then
-         # if the user did not explicitly specify flags, try to autodetect
- 		AC_SEARCH_LIBS(
- 			[ssl_init],
--			[mbedtls],
--			[POLARSSL_LIBS=-lmbedtls]
-+			[mbedtls polarssl],
- 			[
--				AC_SEARCH_LIBS(
--					[ssl_init],
--					[polarssl],
--					[POLARSSL_LIBS=-lpolarssl]
--					[],
--					[${PKCS11_HELPER_LIBS}]
--				)
-+				if test "${ac_cv_search_ssl_init}" != "none required"; then
-+					POLARSSL_LIBS=${ac_cv_search_ssl_init}
-+				fi
- 			],
-+			[AC_MSG_ERROR([Could not find PolarSSL/mbed TLS.])],
- 			[${PKCS11_HELPER_LIBS}]
- 		)
- 	fi
- 
--	AC_MSG_CHECKING([polarssl version])
--	saved_CFLAGS="${CFLAGS}"
--	saved_LIBS="${LIBS}"
- 	CFLAGS="${POLARSSL_CFLAGS} ${PKCS11_HELPER_CFLAGS} ${CFLAGS}"
- 	LIBS="${POLARSSL_LIBS} ${PKCS11_HELPER_LIBS} ${LIBS}"
-+
-+	AC_MSG_CHECKING([polarssl version])
- 	AC_COMPILE_IFELSE(
- 		[AC_LANG_PROGRAM(
- 			[[
--- 
-2.5.0
+commit 417fe4a72c82accca8d95fb0488427f5b6dc4157
+Author: Steffan Karger
+Date:   Mon Jan 18 21:49:40 2016 +0100
+
+     configure.ac: fix polarssl autodetection
+
+     Signed-off-by: Steffan Karger <steffan@...1856...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1453150181-21453-1-git-send-email-steffan@...1856...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/11010
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
