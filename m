@@ -2,10 +2,10 @@ MIME-Version: 1.0
 In-Reply-To: <1453099472.2403.0.camel@...277...>
 References: <CAFHpkQEQL-+D8jLEYQSC5ucg+eT0ZjTDEZMuEeO7Mjb5PAFqFg@...278...>
 	<1453099472.2403.0.camel@...277...>
-Date: Mon, 18 Jan 2016 11:54:25 +0500
-Message-ID: <CAFHpkQE_85HgrjzrmX6V6fFLZtk5d9Hxqs6UOxPJZ54ErWRSUw@...278...>
+Date: Mon, 18 Jan 2016 11:56:45 +0500
+Message-ID: <CAFHpkQES-pHx2AsBjT9Gxm09f+7UEA-PP2+TzC5oVK-1kajurA@...278...>
 From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Content-Type: multipart/alternative; boundary=001a11401b3841ad6a0529963984
+Content-Type: multipart/alternative; boundary=001a11c378328b9f170529964111
 Subject: Re: [Openvpn-devel] travis-ci for openvpn-gui
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -18,14 +18,11 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: yo@...2114...
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---001a11401b3841ad6a0529963984
+--001a11c378328b9f170529964111
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-for now, there are no tests.
-it will be visible whether project builds or not (for pull requests as
-well).
-
+and, I'm going to add coverity to openvpn-gui later.
 
 2016-01-18 11:44 GMT+05:00 Jacky Alcine <jackyalcine@...277...>:
 
@@ -78,17 +75,16 @@ istinfo/openvpn-devel
 >
 >
 
---001a11401b3841ad6a0529963984
+--001a11c378328b9f170529964111
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr"><div><div>for now, there are no tests.<br></div>it will be=
- visible whether project builds or not (for pull requests as well).<br><br>=
-</div></div><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">2016-=
-01-18 11:44 GMT+05:00 Jacky Alcine <span dir=3D"ltr">&lt;<a href=3D"mailto:=
-jackyalcine@...277..." target=3D"_blank">jackyalcine@...277...</a>&gt;</spa=
-n>:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-=
-left:1px #ccc solid;padding-left:1ex"><u></u>
+<div dir=3D"ltr">and, I&#39;m going to add coverity to openvpn-gui later.<b=
+r></div><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">2016-01-1=
+8 11:44 GMT+05:00 Jacky Alcine <span dir=3D"ltr">&lt;<a href=3D"mailto:jack=
+yalcine@...277..." target=3D"_blank">jackyalcine@...277...</a>&gt;</span>:<=
+br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left=
+:1px #ccc solid;padding-left:1ex"><u></u>
 
 
 =20=20
@@ -169,5 +165,5 @@ sourceforge.net</a><br>
 nfo/openvpn-devel</a><br>
 <br></blockquote></div><br></div>
 
---001a11401b3841ad6a0529963984--
+--001a11c378328b9f170529964111--
 
