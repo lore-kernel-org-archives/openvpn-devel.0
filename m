@@ -1,10 +1,7 @@
-References: <CAFHpkQEQL-+D8jLEYQSC5ucg+eT0ZjTDEZMuEeO7Mjb5PAFqFg@...278...>
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <569CDC56.2080808@...515...>
-Date: Mon, 18 Jan 2016 14:36:38 +0200
-MIME-Version: 1.0
-In-Reply-To: <CAFHpkQEQL-+D8jLEYQSC5ucg+eT0ZjTDEZMuEeO7Mjb5PAFqFg@...278...>
-Subject: Re: [Openvpn-devel] travis-ci for openvpn-gui
+From: Steffan Karger <steffan@...1856...>
+Date: Mon, 18 Jan 2016 21:49:40 +0100
+Message-Id: <1453150181-21453-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH] configure.ac: fix polarssl autodetection
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,26 +10,66 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-Content-Transfer-Encoding: quoted-printable
-To: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+A missing , in the previous configure.ac patch caused the autodetection to
+fail.  While fixing that, I noticed I can simplify the check by using the
+documented ${ac_cv_search_function} cache variable instead of the nested
+AC_SEARCH_LIBS.
 
-> Hello,
->
-> https://github.com/OpenVPN/openvpn-gui/pull/12
+Signed-off-by: Steffan Karger <steffan@...1856...>
+---
+ configure.ac | 22 ++++++++++------------
+ 1 file changed, 10 insertions(+), 12 deletions(-)
 
-I merged this one, it looked good afaict.
+diff --git a/configure.ac b/configure.ac
+index 73dd032..7ff2435 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -832,30 +832,28 @@ elif test "${with_crypto_library}" = "polarssl"; then
+ 	AC_ARG_VAR([POLARSSL_CFLAGS], [C compiler flags for polarssl])
+ 	AC_ARG_VAR([POLARSSL_LIBS], [linker flags for polarssl])
+ 
++	saved_CFLAGS="${CFLAGS}"
++	saved_LIBS="${LIBS}"
++
+ 	if test -z "${POLARSSL_CFLAGS}" -a -z "${POLARSSL_LIBS}"; then
+         # if the user did not explicitly specify flags, try to autodetect
+ 		AC_SEARCH_LIBS(
+ 			[ssl_init],
+-			[mbedtls],
+-			[POLARSSL_LIBS=-lmbedtls]
++			[mbedtls polarssl],
+ 			[
+-				AC_SEARCH_LIBS(
+-					[ssl_init],
+-					[polarssl],
+-					[POLARSSL_LIBS=-lpolarssl]
+-					[],
+-					[${PKCS11_HELPER_LIBS}]
+-				)
++				if test "${ac_cv_search_ssl_init}" != "none required"; then
++					POLARSSL_LIBS=${ac_cv_search_ssl_init}
++				fi
+ 			],
++			[AC_MSG_ERROR([Could not find PolarSSL/mbed TLS.])],
+ 			[${PKCS11_HELPER_LIBS}]
+ 		)
+ 	fi
+ 
+-	AC_MSG_CHECKING([polarssl version])
+-	saved_CFLAGS="${CFLAGS}"
+-	saved_LIBS="${LIBS}"
+ 	CFLAGS="${POLARSSL_CFLAGS} ${PKCS11_HELPER_CFLAGS} ${CFLAGS}"
+ 	LIBS="${POLARSSL_LIBS} ${PKCS11_HELPER_LIBS} ${LIBS}"
++
++	AC_MSG_CHECKING([polarssl version])
+ 	AC_COMPILE_IFELSE(
+ 		[AC_LANG_PROGRAM(
+ 			[[
+-- 
+2.5.0
 
-> should we add build configuration under https://travis-ci.org/openvpn/ ?
-
-I think that makes sense. Syzzer can do it I believe.
-
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
 
