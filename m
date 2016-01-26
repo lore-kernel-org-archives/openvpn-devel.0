@@ -2,8 +2,8 @@ References: <2215306.x9ci9DhAZ9@...2001...>
 	<1453835508-26119-1-git-send-email-gert@...1296...>
 	<20160126191913.GV24952@...1296...>
 From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <56A7C880.50702@...515...>
-Date: Tue, 26 Jan 2016 21:26:56 +0200
+Message-ID: <56A7D1F6.8030805@...515...>
+Date: Tue, 26 Jan 2016 22:07:18 +0200
 MIME-Version: 1.0
 In-Reply-To: <20160126191913.GV24952@...1296...>
 Subject: Re: [Openvpn-devel] [PATCH v3] interactive service v3
@@ -19,8 +19,7 @@ Content-Type: text/plain; charset="windows-1252"; format=flowed
 Content-Transfer-Encoding: quoted-printable
 To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
 
-
-> Hi,
+ > Hi,
 >
 > so, this took quite a while - barely 2.5 years, but we're getting
 > there.  v3 of the patch has been rebased to git master, and all comments
@@ -56,13 +55,12 @@ gh
 > as well...
 >
 > gert
->
 
-When this code gets into Git "master" the Windows buildslave will start=20
-producing installers with this functionality. We can then point people=20
-at those. I suspect enterprises in particular are interested in the this=20
-functionality so I think we'll get a fair amount of testing before we=20
-even reach 2.4.0.
+One question, primarily to Heiko... does the interactive service solve=20
+the use-case where the administrator/user wants to have persistent=20
+connections that come up on boot and are not closed or managed in any=20
+way in the meantime? In this use-case no user interaction is wanted,=20
+needed or expected.
 
 --=20
 Samuli Sepp=E4nen
