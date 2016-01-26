@@ -1,14 +1,13 @@
 MIME-Version: 1.0
-In-Reply-To: <20160126212614.GX24952@...1296...>
+In-Reply-To: <20160126212431.GW24952@...1296...>
 References: <2215306.x9ci9DhAZ9@...2001...>
 	<1453835508-26119-1-git-send-email-gert@...1296...>
-	<20160126191913.GV24952@...1296...>
-	<CAKuzo_g3X1yTDV8MrstynxCqZWOy1GBqHyi_jTVRM+jJwU9Xog@...278...>
-	<20160126212614.GX24952@...1296...>
+	<20160126191913.GV24952@...1296...> <56A7D1F6.8030805@...515...>
+	<20160126212431.GW24952@...1296...>
 From: Selva Nair <selva.nair@...277...>
-Date: Tue, 26 Jan 2016 17:49:46 -0500
-Message-ID: <CAKuzo_h2N0vZaeyNKQB4zkwyS_qrvZUKQbr-u=fYS1hqZZdYpw@...278...>
-Content-Type: multipart/alternative; boundary=089e011762d1bcf0cd052a4481ba
+Date: Tue, 26 Jan 2016 17:54:22 -0500
+Message-ID: <CAKuzo_jKX6+KAw3cfPR-VTGe1A_bMh=R93i+4p=eC4BbCqWtAg@...278...>
+Content-Type: multipart/alternative; boundary=089e01493abe2ce9e8052a449211
 Subject: Re: [Openvpn-devel] [PATCH v3] interactive service v3
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -21,60 +20,80 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: Gert Doering <gert@...1296...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---089e011762d1bcf0cd052a4481ba
+--089e01493abe2ce9e8052a449211
 Content-Type: text/plain; charset=UTF-8
 
-On Tue, Jan 26, 2016 at 4:26 PM, Gert Doering <gert@...1296...> wrote:
+On Tue, Jan 26, 2016 at 4:24 PM, Gert Doering <gert@...1296...> wrote:
 
-> Cool.  Was afraid you went silent after I neglected to follow up on
-> your configure.ac patch in November (*sigh* - too busy myself)
->
->
-That can wait -- may be I'll come up with version 2 on it some time..
-
-
-> > Its a fairly large
-> > chunk of code and I had only glanced through parts of it in the past.
-> Will
-> > try to take a look.
->
-> I'll go and look at the "do network stuff" and "parse messages from the
-> socket" bits - those are "just plain C stuff".  Just the service and
-> event handling eludes me...
+> Since Heiko has reworked the "classic" code (in automatic.c now, as
+> he called this "automatic service") maybe we can just use the opportunity
+> to get the remaining issues fixed - is there more than "restart openvpn.exe
+> when it dies"?
 >
 
-Sure, will look through the service stuff.
+Haven't look at the new code, but of  if the "automatic service" logic is
+the same as before, it would take some work to make it behave like a
+watchdog of openvpn.exe processes. Using NSSM for "automatic" uses and this
+one only for interactive start ups by the GUI may be a better option. NSSM
+has the added advantage of one service per config which could be
+independently stopped and restarted etc.
+
+The original service starts all the configs and then sits there waiting for
+the exit event to trigger, at which point the service will just stop. For
+one, the exit event will not trigger when openvpn.exe quits and even if we
+make the event to trigger, there is only one common event for multiple
+configs, and the service just stopping at such an event serves no purpose.
+
+Instead of fixing it why not just use NSSM? Then the interactive service
+patch could be decoupled from openvpnserv and provided as a new feature
+independent of the original service.
 
 Selva
 
---089e011762d1bcf0cd052a4481ba
+--089e01493abe2ce9e8052a449211
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr"><div class=3D"gmail_extra"><div class=3D"gmail_quote" styl=
-e=3D"font-size:12.8px"><span class=3D"im">On Tue, Jan 26, 2016 at 4:26 PM, =
-Gert Doering=C2=A0<span dir=3D"ltr">&lt;<a href=3D"mailto:gert@...1296..." =
-target=3D"_blank">gert@...1296...</a>&gt;</span>=C2=A0wrote:<br><blockquote=
- class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left-width:=
-1px;border-left-color:rgb(204,204,204);border-left-style:solid;padding-left=
-:1ex"><div style=3D"overflow:hidden">Cool.=C2=A0 Was afraid you went silent=
- after I neglected to follow up on<br>your=C2=A0<a href=3D"http://configure=
-.ac/" rel=3D"noreferrer" target=3D"_blank">configure.ac</a>=C2=A0patch in N=
-ovember (*sigh* - too busy myself)<br><br></div></blockquote><div><br></div=
-></span><div>That can wait -- may be I&#39;ll come up with version 2 on it =
-some time..</div><span class=3D"im"><div>=C2=A0</div><blockquote class=3D"g=
-mail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left-width:1px;border-=
-left-color:rgb(204,204,204);border-left-style:solid;padding-left:1ex"><div =
-style=3D"overflow:hidden">&gt; Its a fairly large<br>&gt; chunk of code and=
- I had only glanced through parts of it in the past. Will<br>&gt; try to ta=
-ke a look.<br><br>I&#39;ll go and look at the &quot;do network stuff&quot; =
-and &quot;parse messages from the<br>socket&quot; bits - those are &quot;ju=
-st plain C stuff&quot;.=C2=A0 Just the service and<br>event handling eludes=
- me...</div></blockquote></span></div><div class=3D"gmail_extra" style=3D"f=
-ont-size:12.8px"><br></div><span style=3D"font-size:12.8px">Sure, will look=
- through the service stuff.</span><br></div><div class=3D"gmail_extra"><spa=
-n style=3D"font-size:12.8px"><br></span></div><div class=3D"gmail_extra"><s=
-pan style=3D"font-size:12.8px">Selva</span></div></div>
+<div dir=3D"ltr"><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">=
+On Tue, Jan 26, 2016 at 4:24 PM, Gert <span class=3D"" id=3D":aii.1" tabind=
+ex=3D"-1">Doering</span> <span dir=3D"ltr">&lt;<a href=3D"mailto:gert@...1711...=
+96..." target=3D"_blank"><span class=3D"" id=3D":aii.2" tabindex=3D"-1">ger=
+t</span>@<span class=3D"" id=3D":aii.3" tabindex=3D"-1">greenie</span>.<spa=
+n class=3D"" id=3D":aii.4" tabindex=3D"-1">muc</span>.<span class=3D"" id=
+=3D":aii.5" tabindex=3D"-1">de</span></a>&gt;</span> wrote:<br><blockquote =
+class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid=
+;padding-left:1ex"><div style=3D"overflow:hidden">Since Heiko has reworked =
+the &quot;classic&quot; code (in automatic.c now, as<br>
+he called this &quot;automatic service&quot;) maybe we can just use the opp=
+ortunity<br>
+to get the remaining issues fixed - is there more than &quot;restart openvp=
+n.exe<br>
+when it dies&quot;?</div></blockquote></div><div class=3D"gmail_extra"><br>=
+</div>Haven&#39;t look at the new code, but of =C2=A0if the &quot;automatic=
+ service&quot; logic is the same as before, it would take some work to make=
+ it behave like a watchdog of <span class=3D"" id=3D":aii.6" tabindex=3D"-1=
+">openvpn</span>.<span class=3D"" id=3D":aii.7" tabindex=3D"-1">exe</span> =
+processes. Using <span style=3D"background-color:rgb(255,255,0)">NSSM</span=
+>=C2=A0for &quot;automatic&quot; uses and this one only for interactive sta=
+rt ups by the GUI may be a better option. <span class=3D"" id=3D":aii.9" ta=
+bindex=3D"-1">NSSM</span> has the added advantage of one service per <span =
+class=3D"" id=3D":aii.10" tabindex=3D"-1">config</span> which could be inde=
+pendently stopped and restarted etc. =C2=A0</div><div class=3D"gmail_extra"=
+><br>The original service starts all the <span class=3D"" id=3D":aii.11" ta=
+bindex=3D"-1">configs</span> and then sits there waiting for the exit event=
+ to trigger, at which point the service will just stop. For one, the exit e=
+vent will not trigger when <span class=3D"" id=3D":aii.12" tabindex=3D"-1">=
+openvpn</span>.<span class=3D"" id=3D":aii.13" tabindex=3D"-1">exe</span> q=
+uits and even if we make the event to trigger, there is only one common eve=
+nt for multiple <span class=3D"" id=3D":aii.14" tabindex=3D"-1">configs</sp=
+an>, and the service just stopping at such an event serves no purpose.=C2=
+=A0</div><div class=3D"gmail_extra"><br></div><div class=3D"gmail_extra">In=
+stead of fixing it why not just use <span class=3D"" id=3D":aii.15" tabinde=
+x=3D"-1">NSSM</span>? Then the interactive service patch could be decoupled=
+ from <span class=3D"" id=3D":aii.16" tabindex=3D"-1">openvpnserv</span> an=
+d provided as a new feature independent of the original service.</div><div =
+class=3D"gmail_extra"><br></div><div class=3D"gmail_extra"><span class=3D""=
+ id=3D":aii.17" tabindex=3D"-1">Selva</span></div></div>
 
---089e011762d1bcf0cd052a4481ba--
+--089e01493abe2ce9e8052a449211--
 
