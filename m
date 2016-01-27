@@ -1,19 +1,15 @@
 MIME-Version: 1.0
-In-Reply-To: <20160127134656.GZ24952@...1296...>
+In-Reply-To: <20160127082046.GY24952@...1296...>
 References: <2215306.x9ci9DhAZ9@...2001...>
 	<1453835508-26119-1-git-send-email-gert@...1296...>
-	<20160126191913.GV24952@...1296...>
-	<56A7D1F6.8030805@...515...>
+	<20160126191913.GV24952@...1296...> <56A7D1F6.8030805@...515...>
 	<20160126212431.GW24952@...1296...>
 	<CAKuzo_jKX6+KAw3cfPR-VTGe1A_bMh=R93i+4p=eC4BbCqWtAg@...278...>
-	<56A87C5A.3050104@...515...>
-	<20160127082046.GY24952@...1296...>
-	<CAPTYJtuHGBZ2UvQKsX3wKyxpACj0Xh-Xbn1u6qzE0XdP3Waqsw@...278...>
-	<20160127134656.GZ24952@...1296...>
-Date: Wed, 27 Jan 2016 22:07:43 +0800
-Message-ID: <CAPTYJttJ0Z+c0zGcm4g1hRwp1w02SL2W-nFqHgUHyudYf0SuYg@...278...>
-From: Daniel Sim <daniel.ssq89@...277...>
-Content-Type: multipart/alternative; boundary=089e0153686e60a4bc052a5153f4
+	<56A87C5A.3050104@...515...> <20160127082046.GY24952@...1296...>
+From: Selva Nair <selva.nair@...277...>
+Date: Wed, 27 Jan 2016 10:37:33 -0500
+Message-ID: <CAKuzo_gzKE9p+fev58_5dJZps=8tKXbLVu6jEnCH0wBdhHWMnA@...278...>
+Content-Type: multipart/alternative; boundary=001a1137d28adb6ad7052a529553
 Subject: Re: [Openvpn-devel] [PATCH v3] interactive service v3
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -23,108 +19,108 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---089e0153686e60a4bc052a5153f4
-Content-Type: text/plain; charset=UTF-8
+--001a1137d28adb6ad7052a529553
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-(forgot to CC the mailing list earlier)
+On Wed, Jan 27, 2016 at 3:20 AM, Gert Doering <gert@...1296...> wrote:
 
+> Hi,
 >
-> In case we stay with openvpnserv2, I think some followup questions
-> need to be asked...
+> On Wed, Jan 27, 2016 at 10:14:18AM +0200, Samuli Sepp=C3=A4nen wrote:
+> > An added bonus is that openvpnserv2 is written in C#, which means it can
+> > be developed on Linux using Mono, and the language choice probably helps
+> > getting new contributions from people not fluent with C.
 >
->  - do we want to migrate "interactive service" functionality into
->    openvpnserv2 as well?  More code, but not overly complex stuff
->    (if the network/route API in C# isn't totally different from C) -
->    and all the arguments from above apply to the interactive service
->    as well, of course
->
-
-Interesting question that warrants more discussion. Other implementations
-(NSSM, Openvpnwinserv) implement this by creating multiple services.
-Personally I prefer a single service managing multiple instances (in the
-style of IIS, Windows file sharing, etc.). Firstly, backward compatibility.
-Secondly, services should only be interactive when something exceptional
-happens.
-
-But to implement anything of that sort, the question is how we could
-implement interprocess communication? Do we watch registry values? Open
-some port? Security issues?
-
-
->
->  - should "the service(s)" live inside the main openvpn repo, in the
->    GUI repo, in their own repo, ...?
+> I'm not totally convinced that "mixing in a new language" is a *bonus*
+> (as it means that the core team won't be able to help unless also fluent
+> with the other language).
 >
 
-Definitely main repo. But I'm not in a position to decide.
+Currently the service is a part of the openvpn repo, but there is no reason
+to keep it thus. In fact, once the interactive service is available, in my
+view, it may not be even necessary to ship the original service with the
+windows binary distribution. Only advanced users would need the original
+service or its equivalent (openvpnserv2 or NSSM) usage of which could be
+made available as documentation in the wiki pages.
+
 
 >
->  - what code change rules apply?  I tend to opt for "openvpn main repo"
->    rules, that is, no change goes in without review & ACK - a bad or
->    malicious commit to the service could compromise the system security
->    about as badly as a bad commit inside openvpn.  I am aware that this
->    is a totally annoying process, especially if the code author has to
->    wait for months for an ACK to a trivial change - but hopefully a
->    somewhat larger active developer base can improve on this.
+> Given that services run with maximum privileges, strong review is as
+> important there as for core openvpn...
 >
+> If the only reason why everyone is disliking the old openvpnserv is
+> "it is not restarting openvpn.exe when it breaks" - *that* should be
+> fairly easy to add.  So, what is that people consider "broken"?
 >
 
---089e0153686e60a4bc052a5153f4
+Although it is called a service, it only works like a one time task or an
+rc script. However, unlike a startup script, it does not terminate after
+spawning openvpn.exe processes, giving it the appearance of a service. It
+does not keep track of the spawned processes, has no way of knowing any of
+the processes stopped or crashed, has no way of editing one config and then
+restart only that connection leaving others up etc.
+
+Having said that, on the only windows 10 machine I have, the original
+service works the same way as on Windows 7. Early reports of "not working
+on windows 10" might have had more to do with unrelated TAP6 issues.
+
+Selva
+
+--001a1137d28adb6ad7052a529553
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr">(forgot to CC the mailing list earlier)<br><div class=3D"g=
-mail_extra"><div class=3D"gmail_quote"><blockquote class=3D"gmail_quote" st=
-yle=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex"><span=
- class=3D""><br>
-</span>In case we stay with openvpnserv2, I think some followup questions<b=
-r>
-need to be asked...<br>
+<div dir=3D"ltr"><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">=
+On Wed, Jan 27, 2016 at 3:20 AM, Gert Doering <span dir=3D"ltr">&lt;<a href=
+=3D"mailto:gert@...1296..." target=3D"_blank">gert@...1296...</a>&gt;</span=
+> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;bo=
+rder-left:1px #ccc solid;padding-left:1ex"><div style=3D"overflow:hidden">H=
+i,<br>
+<span><br>
+On Wed, Jan 27, 2016 at 10:14:18AM +0200, Samuli Sepp=C3=A4nen wrote:<br>
+&gt; An added bonus is that openvpnserv2 is written in C#, which means it c=
+an<br>
+&gt; be developed on Linux using Mono, and the language choice probably hel=
+ps<br>
+&gt; getting new contributions from people not fluent with C.<br>
 <br>
-=C2=A0- do we want to migrate &quot;interactive service&quot; functionality=
- into<br>
-=C2=A0 =C2=A0openvpnserv2 as well?=C2=A0 More code, but not overly complex =
-stuff<br>
-=C2=A0 =C2=A0(if the network/route API in C# isn&#39;t totally different fr=
-om C) -<br>
-=C2=A0 =C2=A0and all the arguments from above apply to the interactive serv=
-ice<br>
-=C2=A0 =C2=A0as well, of course<br></blockquote><div><br></div><div>Interes=
-ting question that warrants more discussion. Other implementations (NSSM, O=
-penvpnwinserv) implement this by creating multiple services. Personally I p=
-refer a single service managing multiple instances (in the style of IIS, Wi=
-ndows file sharing, etc.). Firstly, backward compatibility. Secondly, servi=
-ces should only be interactive when something exceptional happens.</div><di=
-v><br></div><div>But to implement anything of that sort, the question is ho=
-w we could implement interprocess communication? Do we watch registry value=
-s? Open some port? Security issues?</div><div>=C2=A0</div><blockquote class=
-=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padd=
-ing-left:1ex">
+</span>I&#39;m not totally convinced that &quot;mixing in a new language&qu=
+ot; is a *bonus*<br>
+(as it means that the core team won&#39;t be able to help unless also fluen=
+t<br>
+with the other language).<br></div></blockquote><div><br></div><div>Current=
+ly the service is a part of the openvpn repo, but there is no reason to kee=
+p it thus. In fact, once the interactive service is available, in my view, =
+it may not be even necessary to ship the original service with the windows =
+binary distribution. Only advanced users would need the original service or=
+ its equivalent (openvpnserv2 or NSSM) usage of which could be made availab=
+le as documentation in the wiki pages.</div><div>=C2=A0</div><blockquote cl=
+ass=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;p=
+adding-left:1ex"><div style=3D"overflow:hidden">
 <br>
-=C2=A0- should &quot;the service(s)&quot; live inside the main openvpn repo=
-, in the<br>
-=C2=A0 =C2=A0GUI repo, in their own repo, ...?<br></blockquote><div><br></d=
-iv><div>Definitely main repo. But I&#39;m not in a position to decide.</div=
-><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1=
-px #ccc solid;padding-left:1ex">
+Given that services run with maximum privileges, strong review is as<br>
+important there as for core openvpn...<br>
 <br>
-=C2=A0- what code change rules apply?=C2=A0 I tend to opt for &quot;openvpn=
- main repo&quot;<br>
-=C2=A0 =C2=A0rules, that is, no change goes in without review &amp; ACK - a=
- bad or<br>
-=C2=A0 =C2=A0malicious commit to the service could compromise the system se=
-curity<br>
-=C2=A0 =C2=A0about as badly as a bad commit inside openvpn.=C2=A0 I am awar=
-e that this<br>
-=C2=A0 =C2=A0is a totally annoying process, especially if the code author h=
-as to<br>
-=C2=A0 =C2=A0wait for months for an ACK to a trivial change - but hopefully=
- a<br>
-=C2=A0 =C2=A0somewhat larger active developer base can improve on this.<br>
-<div class=3D"HOEnZb"><div class=3D"h5"><br></div></div></blockquote><div>=
-=C2=A0</div></div></div></div>
+If the only reason why everyone is disliking the old openvpnserv is<br>
+&quot;it is not restarting openvpn.exe when it breaks&quot; - *that* should=
+ be<br>
+fairly easy to add.=C2=A0 So, what is that people consider &quot;broken&quo=
+t;?</div></blockquote></div><br>Although it is called a service, it only wo=
+rks like a one time task or an rc script. However, unlike a startup script,=
+ it does not terminate after spawning openvpn.exe processes, giving it the =
+appearance of a service. It does not keep track of the spawned processes, h=
+as no way of knowing any of the processes stopped or crashed, has no way of=
+ editing one config and then restart only that connection leaving others up=
+ etc.</div><div class=3D"gmail_extra"><br></div><div class=3D"gmail_extra">=
+Having said that, on the only windows 10 machine I have, the original servi=
+ce works the same way as on Windows 7. Early reports of &quot;not working o=
+n windows 10&quot; might have had more to do with unrelated TAP6 issues.</d=
+iv><div class=3D"gmail_extra"><br></div><div class=3D"gmail_extra">Selva</d=
+iv></div>
 
---089e0153686e60a4bc052a5153f4--
+--001a1137d28adb6ad7052a529553--
 
