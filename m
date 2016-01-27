@@ -1,15 +1,19 @@
+Resent-Message-ID: <20160205083627.GJ24952@...1296...>
+Resent-To: openvpn-devel@lists.sourceforge.net
+Date: Wed, 27 Jan 2016 14:46:56 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20160127134656.GZ24952@...1296...>
 References: <2215306.x9ci9DhAZ9@...2001...>
 	<1453835508-26119-1-git-send-email-gert@...1296...>
-	<20160126191913.GV24952@...1296...> <56A7D1F6.8030805@...515...>
+	<20160126191913.GV24952@...1296...>
+	<56A7D1F6.8030805@...515...>
 	<20160126212431.GW24952@...1296...>
 	<CAKuzo_jKX6+KAw3cfPR-VTGe1A_bMh=R93i+4p=eC4BbCqWtAg@...278...>
-	<56A87C5A.3050104@...515...> <20160127082046.GY24952@...1296...>
-	<CAKuzo_gzKE9p+fev58_5dJZps=8tKXbLVu6jEnCH0wBdhHWMnA@...278...>
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <56AB2C34.3010606@...515...>
-Date: Fri, 29 Jan 2016 11:09:08 +0200
+	<56A87C5A.3050104@...515...>
+	<20160127082046.GY24952@...1296...>
+	<CAPTYJtuHGBZ2UvQKsX3wKyxpACj0Xh-Xbn1u6qzE0XdP3Waqsw@...278...>
 MIME-Version: 1.0
-In-Reply-To: <CAKuzo_gzKE9p+fev58_5dJZps=8tKXbLVu6jEnCH0wBdhHWMnA@...278...>
+In-Reply-To: <CAPTYJtuHGBZ2UvQKsX3wKyxpACj0Xh-Xbn1u6qzE0XdP3Waqsw@...278...>
 Subject: Re: [Openvpn-devel] [PATCH v3] interactive service v3
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -19,85 +23,60 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: quoted-printable
-To: Selva Nair <selva.nair@...277...>, Gert Doering <gert@...1296...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+To: Daniel Sim <daniel.ssq89@...277...>
 
+Hi,
 
->
-> On Wed, Jan 27, 2016 at 3:20 AM, Gert Doering <gert@...1296...
-> <mailto:gert@...1296...>> wrote:
->
->     Hi,
->
->     On Wed, Jan 27, 2016 at 10:14:18AM +0200, Samuli Sepp=C3=A4nen wrote:
->     > An added bonus is that openvpnserv2 is written in C#, which means i=
-t can
->     > be developed on Linux using Mono, and the language choice probably =
-helps
->     > getting new contributions from people not fluent with C.
->
->     I'm not totally convinced that "mixing in a new language" is a *bonus*
->     (as it means that the core team won't be able to help unless also flu=
-ent
->     with the other language).
->
->
-> Currently the service is a part of the openvpn repo, but there is no
-> reason to keep it thus. In fact, once the interactive service is
-> available, in my view, it may not be even necessary to ship the original
-> service with the windows binary distribution. Only advanced users would
-> need the original service or its equivalent (openvpnserv2 or NSSM) usage
-> of which could be made available as documentation in the wiki pages.
+On Wed, Jan 27, 2016 at 05:34:57PM +0800, Daniel Sim wrote:
+> Unless there are undiscovered vulnerabilities in the .NET framework itself,
+> 
+>    1. It is necessary to move away from pure C programs for Windows.
+>    Microsoft's documentation for the services API apart from the .NET
+>    framework is non-existent / hard to find. The lack of documentation will
+>    make such programs increasingly hard to maintain. Fact is, GUIs written in
+>    pure C/C++ are not really encouraged by Microsoft anymore, and even
+>    openvpn-gui would benefit from moving to C#.
 
-This would be a novel idea. The service component has very few ties to=20
-OpenVPN, and is a very simple piece of software. I don't think it=20
-_needs_ to be in the main OpenVPN repo, either. Splitting the project=20
-into smaller chunks both code- and organization-vise has been beneficial=20
-in the past by allowing us to get more people onboard. Plus we've been=20
-able to optimize the development processes per subproject, so that the=20
-strict patch review regime in the main project has not slowed down the=20
-development of less critical components.
+This is actually a fairly strong (I would even say "compelling") argument
+for the C# rewrite.  "Working and reliably supported API" is a killer :-)
 
-I have no idea how large a percentage of our users use the service.=20
-Probably the only way to _really_ find that out would be to deselect the=20
-service in the installer by default and see how loudly people scream. We=20
-could have a poll, but in my experience only a few people would answer,=20
-and we wouldn't be any better off. If most people would be basically ok=20
-without the service, we could still provide it as a separate download on=20
-the official download pages. That said, I have no strong opinions one=20
-way or the other.
+("Having to install .NET runtime" might not be such a big issue nowadays,
+as most of the machines should have it already)
 
->
->     Given that services run with maximum privileges, strong review is as
->     important there as for core openvpn...
->
->     If the only reason why everyone is disliking the old openvpnserv is
->     "it is not restarting openvpn.exe when it breaks" - *that* should be
->     fairly easy to add.  So, what is that people consider "broken"?
->
->
-> Although it is called a service, it only works like a one time task or
-> an rc script. However, unlike a startup script, it does not terminate
-> after spawning openvpn.exe processes, giving it the appearance of a
-> service. It does not keep track of the spawned processes, has no way of
-> knowing any of the processes stopped or crashed, has no way of editing
-> one config and then restart only that connection leaving others up etc.
+[..]
+> The source code for openvpnserv.exe (C) isn't long, and neither is the
+> source code for openvpnserv2 (C#). I think one could review it in less than
+> an hour. However, to implement the same features in the old openvpnserv
+> would have required quite a bit of low-level juggling.
 
-I believe openvpnserv2 - or rather the more generic MS code upon which=20
-it builds - can monitor the individual processes and restart them as=20
-necessary. So it definitely a more complete solution than what=20
-openvpnserv.exe provides.
+In case we stay with openvpnserv2, I think some followup questions
+need to be asked...
 
-> Having said that, on the only windows 10 machine I have, the original
-> service works the same way as on Windows 7. Early reports of "not
-> working on windows 10" might have had more to do with unrelated TAP6 issu=
-es.
+ - do we want to migrate "interactive service" functionality into 
+   openvpnserv2 as well?  More code, but not overly complex stuff
+   (if the network/route API in C# isn't totally different from C) - 
+   and all the arguments from above apply to the interactive service
+   as well, of course
 
-Quite likely. Also some issues seem to have been related to specific=20
-problematic Windows 10 builds.
+ - should "the service(s)" live inside the main openvpn repo, in the
+   GUI repo, in their own repo, ...?
 
-Samuli
+ - what code change rules apply?  I tend to opt for "openvpn main repo"
+   rules, that is, no change goes in without review & ACK - a bad or
+   malicious commit to the service could compromise the system security 
+   about as badly as a bad commit inside openvpn.  I am aware that this 
+   is a totally annoying process, especially if the code author has to
+   wait for months for an ACK to a trivial change - but hopefully a 
+   somewhat larger active developer base can improve on this.
+
+gert
+-- 
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~gert/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
 
