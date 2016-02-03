@@ -1,14 +1,10 @@
+Message-ID: <0BD23D4B562943FD8C84B960FD3F4FA3@...2089...>
+From: <debbie10t@...277...>
+References: <6A88A2ADF6B64829BF9DA9EAA97BF3B0@...2089...>
+	<9C407472-153C-40F9-ACE4-0A1045B23F19@...1127...>
+Date: Wed, 3 Feb 2016 01:44:10 -0000
 MIME-Version: 1.0
-In-Reply-To: <42777399.uRlGseOKiX@...2001...>
-References: <2215306.x9ci9DhAZ9@...2001...>
-	<1453835508-26119-1-git-send-email-gert@...1296...>
-	<CAKuzo_iSwvk8MTW0ACT+n5JRkNDNyOoHHvmYw+fonN=ASUPuCw@...278...>
-	<42777399.uRlGseOKiX@...2001...>
-From: Selva Nair <selva.nair@...277...>
-Date: Tue, 2 Feb 2016 14:31:03 -0500
-Message-ID: <CAKuzo_h6+EbVeUUz3Ab2ygWb9OGVr0yM+xbXaUnoYMqdUzhvVw@...278...>
-Content-Type: multipart/alternative; boundary=089e013a2a26f5d447052ace8bee
-Subject: Re: [Openvpn-devel] [PATCH v3] interactive service v3
+Subject: Re: [Openvpn-devel] Just a thought - config hashing
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,90 +13,81 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Heiko Hund <heiko.hund@...1489...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; format=flowed; charset="utf-8"; reply-type=original
+Content-Transfer-Encoding: 7bit
+To: David Sommerseth <david@...1127...>, openvpn-devel@lists.sourceforge.net
 
---089e013a2a26f5d447052ace8bee
-Content-Type: text/plain; charset=UTF-8
+Hi David,
 
-On Mon, Feb 1, 2016 at 1:41 PM, Heiko Hund <heiko.hund@...1489...> wrote:
+thankyou for your detailed reply ..I looked up eurephia :-) nice
+and did a little more research and discovered anonyproz.com
+The idea has some merit but it is not for the core openvpn team.
+I see that now .. I am, as ever, still learning and, on this occasion,
+maybe seeing things a little more clearly ..
+Ironically, this maybe one idea where open vs closed source
+"shows it's teeth" a little. C'est la vie and thanks for your time ..
+mvh :D
 
-> On Monday 1 February 2016 11:34:47 Selva Nair wrote:
-> > A more serious problem is related to the the service requiring
-> connections
-> > from UI with impersonation allowed. Again, an unprivileged process
-> > pretending to be the service could escalate privileges if an OpenVPNGUI
-> > instance running as admin connects to it. This looks easy to exploit.
-> >
-> > Possible mitigation:
-> > (i) The GUI should not connect to the interactive service if running with
-> > elevated privileges
-> > (ii) openvpn.exe should not honor the --msg-channel option if running
-> with
-> > elevated privileges
+
+----- Original Message ----- 
+From: "David Sommerseth" <david@...1127...>
+To: <debbie10t@...277...>; <openvpn-devel@lists.sourceforge.net>
+Sent: Tuesday, February 02, 2016 5:20 PM
+Subject: Re: [Openvpn-devel] Just a thought - config hashing
+
+
+On 2 February 2016 00:01:58 CET, debbie10t@...277... wrote:
+>Hi
 >
-> Yeah. The point is no to run the GUI as admin anymore in the first place.
-> So
-> we could just do (ii) and be sure that this is circumvented.
+>I sat in on the meeting today 2016-02-01 as manhaton
+>
+>Watching the discussion about elevated privileges regarding
+>a non-admin user interacting with the iservice, a subject to which
+>I am ignorant with regard to programming ..
+>
+>Anyway, an idea struck me ...
+>
+>It is a *little* off-piste so .. new thread.
+>
+>Why not .. (pleaze shoot me down if this is stupid)
+>
+>OpenVPN could HASH the *current* config file on the fly:
 
 
-As discussed in the IRC meeting, the critical issue was whether the GUI
-(running as admin) connecting to a rogue named pipe server could allow
-privilege escalation by that server process. I did some tests on this.
+I had a similar "bright" idea a few years ago too.  And it was shut down
+quite quickly back then too, with very good reasons.  Because I hadn't
+really thought this through properly.
 
-On Windows XP this is exploitable --- i.e., with a pipe server running as a
-limited user with the GUI started using runas admin. However, on Windows 7
-and 10 attempts at elevation failed at least by the approach I imagined.
-And based on what I hear, Vista and above appear to be immune from this
-attack.
+Basically, you cannot trust the client at all.  Bottom line is that the
+server needs to verify whatever the client does, but you can never trust the
+client to provide the information the server asks for *and* at the same time
+be sure the client didn't modify what it sent to the server first.  In fact,
+the client can send whatever it believes the server expects and do something
+completely different locally - because the server can not validate what is
+really happening on the client side.  This is open source software, so you
+cannot be 100% sure the client runs exactly a particular version of OpenVPN.
+What the client tells the server cannot be verified in any way.
 
-It may be better to make the GUI not connect to the service pipe if running
-as admin.
+I honestly believe OpenConnect is into something better.  You just provide a
+server URL and the server pushes the config to the client on-the-fly.  But
+again, even here the client can do what it wants with that data.
 
-Thanks,
+Another way "around" this is that you push a binary blob which the client
+needs to execute ... but don't get me started on the security issues related
+to this.  Plus the nightmare of supporting different CPU architectures,
+different glibc, openssl/polarssl/mbdtls libraries, etc, etc .... So that's
+also never gonna fly.
 
-Selva
+The only to be sure the client does what it is supposed to, is to controll
+the VPN network traffic it tries to push over the tunnel to the server,
+which means firewall rules.  This is one (of several) reasons I started the
+eurephia project ages ago, which still runs very well on latest openvpn
+2.3.10 servers.
 
---089e013a2a26f5d447052ace8bee
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr"><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">=
-On Mon, Feb 1, 2016 at 1:41 PM, Heiko Hund <span dir=3D"ltr">&lt;<a href=3D=
-"mailto:heiko.hund@...1489..." target=3D"_blank">heiko.hund@...1489...</a>&=
-gt;</span> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 =
-0 .8ex;border-left:1px #ccc solid;padding-left:1ex"><span>On Monday 1 Febru=
-ary 2016 11:34:47 Selva Nair wrote:</span><span><br>
-&gt; A more serious problem is related to the the service requiring connect=
-ions<br>
-&gt; from UI with impersonation allowed. Again, an unprivileged process<br>
-&gt; pretending to be the service could escalate privileges if an OpenVPNGU=
-I<br>
-&gt; instance running as admin connects to it. This looks easy to exploit.<=
-br>
-&gt;<br>
-&gt; Possible mitigation:<br>
-&gt; (i) The GUI should not connect to the interactive service if running w=
-ith<br>
-&gt; elevated privileges<br>
-&gt; (ii) openvpn.exe should not honor the --msg-channel option if running =
-with<br>
-&gt; elevated privileges<br>
-<br>
-</span>Yeah. The point is no to run the GUI as admin anymore in the first p=
-lace. So<br>
-we could just do (ii) and be sure that this is circumvented.=C2=A0</blockqu=
-ote><div><br></div><div>As discussed in the IRC meeting, the critical issue=
- was whether the GUI (running as admin) connecting to a rogue named pipe se=
-rver could allow privilege escalation by that server process. I did some te=
-sts on this.=C2=A0</div><div><br></div><div>On Windows XP this is exploitab=
-le --- i.e., with a pipe server running as a limited user with the GUI star=
-ted using runas admin. However, on Windows 7 and 10 attempts at elevation f=
-ailed at least by the approach I imagined. And based on what I hear, Vista =
-and above appear to be immune from this attack.</div><div><br></div><div>It=
- may be better to make the GUI not connect to the service pipe if running a=
-s admin.=C2=A0</div><div><br></div><div>Thanks,</div><div><br></div><div>Se=
-lva</div></div></div></div>
+-- 
+mvh.
 
---089e013a2a26f5d447052ace8bee--
+David Sommerseth
+
 
