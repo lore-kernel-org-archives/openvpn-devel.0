@@ -1,12 +1,16 @@
+Date: Thu, 4 Feb 2016 10:38:23 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20160204093823.GX24952@...1296...>
+References: <2215306.x9ci9DhAZ9@...2001...>
+	<1453835508-26119-1-git-send-email-gert@...1296...>
+	<CAKuzo_iSwvk8MTW0ACT+n5JRkNDNyOoHHvmYw+fonN=ASUPuCw@...278...>
+	<CAKuzo_hLdWaxZau_KtBhO1LvTivmurinrdqPsNTrjUfWnrZBvA@...278...>
 MIME-Version: 1.0
-In-Reply-To: <56B0ECA6.3000902@...515...>
-References: <56B0ECA6.3000902@...515...>
-From: Selva Nair <selva.nair@...277...>
-Date: Wed, 3 Feb 2016 22:05:38 -0500
-Message-ID: <CAKuzo_grryDNAqf1vSoMJUrGVYnZEg_S-GHuZARazjnP5YVsFg@...278...>
-Content-Type: multipart/alternative; boundary=001a113d4b907aec24052ae903ec
-Subject: Re: [Openvpn-devel] Test installers with the Interactive service /
- Vista-compatible block-outside-dns
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="u0WGpcS7tYnCwot9"
+Content-Disposition: inline
+In-Reply-To: <CAKuzo_hLdWaxZau_KtBhO1LvTivmurinrdqPsNTrjUfWnrZBvA@...278...>
+Subject: Re: [Openvpn-devel] [PATCH v3] interactive service v3
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,89 +19,86 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
-Cc: ValdikSS ValdikSS <iam@...2070...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Selva Nair <selva.nair@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---001a113d4b907aec24052ae903ec
-Content-Type: text/plain; charset=UTF-8
+--u0WGpcS7tYnCwot9
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
 Hi,
 
-A second pair of installers contain a patch which makes the new
-> --block-outside-dns work with Windows Vista:
->
-> <
-> http://build.openvpn.net/downloads/temp/openvpn-install-2.3_blockoutsidedns-I601-i686.exe
-> >
-> <
-> http://build.openvpn.net/downloads/temp/openvpn-install-2.3_blockoutsidedns-I601-x86_64.exe
-> >
->
+On Wed, Feb 03, 2016 at 08:57:18PM -0500, Selva Nair wrote:
+> On Mon, Feb 1, 2016 at 11:34 AM, Selva Nair <selva.nair@...277...> wrote:
+>=20
+> > Other comments I have are more specific to code snippets and of minor
+> > consequence. Will send them after compile/test runs
+>=20
+> Following up on that, a couple of comments below:
+>=20
+>       HMODULE iphlpapi =3D GetModuleHandle (TEXT("iphlpapi.dll"));
+> >       if (iphlpapi =3D=3D NULL)
+> >         return GetLastError ();
+> >       CreateIpForwardEntry2 =3D (CreateIpForwardEntry2Fn) GetProcAddress
+> > (iphlpapi, "CreateIpForwardEntry2");
+> >       if (!CreateIpForwardEntry2)
+> >         return GetLastError ();
+>=20
+> Is this run-time lookup necessary?
 
-I tested this on Windows 10. While it works same as before as far as
-blocking dns is concerned, the filter that allows openvpn.exe to do name
-resolution through all interfaces does not appear to work.
+I don't think so - it might be a leftover of "we try to make this=20
+compatible with windows XP", which we decided later to be a non-goal
+for 2.4.
 
-When a openvpn connection is running with block-outside-dns and no DNS
-server is defined on the TAP adapter, all dns queries fail as expected. But
-starting a second openvpn.exe also fails at name resolution although the
-apparent purpose of the permit filter is to allow that traffic through the
-LAN or any other interface
+So we might replace this with just calling CreateIpForwardEntry2()=20
+directly.
 
-> @@ -1236,26 +1237,44 @@ win_wfp_block_dns (const NET_IFINDEX index)
->      Condition[0].conditionValue.uint16 = 53;
->
->      Condition[1].fieldKey = FWPM_CONDITION_ALE_APP_ID;
-> -    Condition[1].matchType = FWP_MATCH_NOT_EQUAL;
-> +    Condition[1].matchType = FWP_MATCH_EQUAL;
->      Condition[1].conditionValue.type = FWP_BYTE_BLOB_TYPE;
->      Condition[1].conditionValue.byteBlob = openvpnblob;
->
-> Valdikss: Is this filter useful at all? When openvpn does name resolution,
-I suppose its the dns client service that would open the port 53 connection.
+> Anyway, the iservice works well and the only real problem I ran into was
+> lack of write access to the default log_dir. That leads to a log-jam as t=
+he
+> stdout is now a pipe which the service is not actively reading from. Could
+> be handled in the GUI + registry by making sure openvpn is started with a
+> writable log file..
 
-Selva
+Yes, I've seen this as well.  As far as I understand, there's a registry
+key that can be changed to include the user's home in the log path - it's
+on a piece of paper on my desk, while I'm at work, so can't look right
+now... Heiko?
 
---001a113d4b907aec24052ae903ec
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+(And yes, this needs to be adjusted in the installer, whichever way we
+go - globally writeable log directory, or user-individual logging)
 
-<div dir=3D"ltr">Hi,<br><div class=3D"gmail_extra"><br></div><div class=3D"=
-gmail_extra"><div class=3D"gmail_quote"><blockquote class=3D"gmail_quote" s=
-tyle=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);pad=
-ding-left:1ex">
-A second pair of installers contain a patch which makes the new<br>
---block-outside-dns work with Windows Vista:<br>
-<br>
-&lt;<a href=3D"http://build.openvpn.net/downloads/temp/openvpn-install-2.3_=
-blockoutsidedns-I601-i686.exe" rel=3D"noreferrer" target=3D"_blank">http://=
-build.openvpn.net/downloads/temp/openvpn-install-2.3_blockoutsidedns-I601-i=
-686.exe</a>&gt;<br>
-&lt;<a href=3D"http://build.openvpn.net/downloads/temp/openvpn-install-2.3_=
-blockoutsidedns-I601-x86_64.exe" rel=3D"noreferrer" target=3D"_blank">http:=
-//build.openvpn.net/downloads/temp/openvpn-install-2.3_blockoutsidedns-I601=
--x86_64.exe</a>&gt;<br></blockquote><div><br></div><div>I tested this on Wi=
-ndows 10. While it works same as before as far as blocking dns is concerned=
-, the filter that allows openvpn.exe to do name resolution through all inte=
-rfaces does not appear to work.<br><br>When a openvpn connection is running=
- with block-outside-dns and no DNS server is defined on the TAP adapter, al=
-l dns queries fail as expected. But starting a second openvpn.exe also fail=
-s at name resolution although the apparent purpose of the permit filter is =
-to allow that traffic through the LAN or any other interface<br><blockquote=
- style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);p=
-adding-left:1ex" class=3D"gmail_quote"><pre>@@ -1236,26 +1237,44 @@ win_wfp=
-_block_dns (const NET_IFINDEX index)
-     Condition[0].conditionValue.uint16 =3D 53;
-=20
-     Condition[1].fieldKey =3D FWPM_CONDITION_ALE_APP_ID;
--    Condition[1].matchType =3D FWP_MATCH_NOT_EQUAL;
-+    Condition[1].matchType =3D FWP_MATCH_EQUAL;
-     Condition[1].conditionValue.type =3D FWP_BYTE_BLOB_TYPE;
-     Condition[1].conditionValue.byteBlob =3D openvpnblob;</pre></blockquot=
-e></div><div>Valdikss: Is this filter useful at all? When openvpn does name=
- resolution, I suppose its the dns client service that would open the port =
-53 connection.<br></div><div><br></div><div>Selva<br></div></div></div></di=
-v>
+> Anyway, the service part of the code looks good and does well what it
+> promises to do.
 
---001a113d4b907aec24052ae903ec--
+Thanks.  I take this as an ACK from your for the service change, and=20
+Arne's mail as an ACK for the openvpn side, and merge it tonight.
+
+Then we can go about improving things further (... while we wait for
+the other large 2.4 feature to fully show up, AEAD...)
+
+gert
+
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--u0WGpcS7tYnCwot9
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQCVAwUBVrMcDqkuBuNlUUl1AQJYHQP/cLH+2BXaC8FS0gezTypsdUSSZVT031Bj
+cZANZagBg7wNY7kpKTbyMh8TcyYjS27xR81+J9iQxVuaNoV9+vJSxn10cdIBuoIs
+xm+IRCHXAcgKXqiGZUIrmjjoQm/IAuZOh/+Qklpu9TCpE7Q2xGUZ2iYS2tPkrc7v
+5/0g5W9ilzs=
+=RKLM
+-----END PGP SIGNATURE-----
+
+--u0WGpcS7tYnCwot9--
 
