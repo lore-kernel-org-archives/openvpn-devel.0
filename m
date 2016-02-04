@@ -1,13 +1,12 @@
 MIME-Version: 1.0
-In-Reply-To: <CAKuzo_iSwvk8MTW0ACT+n5JRkNDNyOoHHvmYw+fonN=ASUPuCw@...278...>
-References: <2215306.x9ci9DhAZ9@...2001...>
-	<1453835508-26119-1-git-send-email-gert@...1296...>
-	<CAKuzo_iSwvk8MTW0ACT+n5JRkNDNyOoHHvmYw+fonN=ASUPuCw@...278...>
+In-Reply-To: <56B0ECA6.3000902@...515...>
+References: <56B0ECA6.3000902@...515...>
 From: Selva Nair <selva.nair@...277...>
-Date: Wed, 3 Feb 2016 20:57:18 -0500
-Message-ID: <CAKuzo_hLdWaxZau_KtBhO1LvTivmurinrdqPsNTrjUfWnrZBvA@...278...>
-Content-Type: multipart/alternative; boundary=089e0115f28e265c7c052ae80f63
-Subject: Re: [Openvpn-devel] [PATCH v3] interactive service v3
+Date: Wed, 3 Feb 2016 22:05:38 -0500
+Message-ID: <CAKuzo_grryDNAqf1vSoMJUrGVYnZEg_S-GHuZARazjnP5YVsFg@...278...>
+Content-Type: multipart/alternative; boundary=001a113d4b907aec24052ae903ec
+Subject: Re: [Openvpn-devel] Test installers with the Interactive service /
+ Vista-compatible block-outside-dns
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,75 +15,89 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, Heiko Hund <heiko.hund@...1489...>
+To: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
+Cc: ValdikSS ValdikSS <iam@...2070...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---089e0115f28e265c7c052ae80f63
+--001a113d4b907aec24052ae903ec
 Content-Type: text/plain; charset=UTF-8
 
 Hi,
 
-On Mon, Feb 1, 2016 at 11:34 AM, Selva Nair <selva.nair@...277...> wrote:
+A second pair of installers contain a patch which makes the new
+> --block-outside-dns work with Windows Vista:
+>
+> <
+> http://build.openvpn.net/downloads/temp/openvpn-install-2.3_blockoutsidedns-I601-i686.exe
+> >
+> <
+> http://build.openvpn.net/downloads/temp/openvpn-install-2.3_blockoutsidedns-I601-x86_64.exe
+> >
+>
 
-> Other comments I have are more specific to code snippets and of minor
-> consequence. Will send them after compile/test runs
+I tested this on Windows 10. While it works same as before as far as
+blocking dns is concerned, the filter that allows openvpn.exe to do name
+resolution through all interfaces does not appear to work.
 
+When a openvpn connection is running with block-outside-dns and no DNS
+server is defined on the TAP adapter, all dns queries fail as expected. But
+starting a second openvpn.exe also fails at name resolution although the
+apparent purpose of the permit filter is to allow that traffic through the
+LAN or any other interface
 
-Following up on that, a couple of comments below:
-
-      HMODULE iphlpapi = GetModuleHandle (TEXT("iphlpapi.dll"));
->       if (iphlpapi == NULL)
->         return GetLastError ();
->       CreateIpForwardEntry2 = (CreateIpForwardEntry2Fn) GetProcAddress
-> (iphlpapi, "CreateIpForwardEntry2");
->       if (!CreateIpForwardEntry2)
->         return GetLastError ();
-
-
-Is this run-time lookup necessary?
-
-Anyway, the iservice works well and the only real problem I ran into was
-lack of write access to the default log_dir. That leads to a log-jam as the
-stdout is now a pipe which the service is not actively reading from. Could
-be handled in the GUI + registry by making sure openvpn is started with a
-writable log file..
-
-Anyway, the service part of the code looks good and does well what it
-promises to do.
+> @@ -1236,26 +1237,44 @@ win_wfp_block_dns (const NET_IFINDEX index)
+>      Condition[0].conditionValue.uint16 = 53;
+>
+>      Condition[1].fieldKey = FWPM_CONDITION_ALE_APP_ID;
+> -    Condition[1].matchType = FWP_MATCH_NOT_EQUAL;
+> +    Condition[1].matchType = FWP_MATCH_EQUAL;
+>      Condition[1].conditionValue.type = FWP_BYTE_BLOB_TYPE;
+>      Condition[1].conditionValue.byteBlob = openvpnblob;
+>
+> Valdikss: Is this filter useful at all? When openvpn does name resolution,
+I suppose its the dns client service that would open the port 53 connection.
 
 Selva
 
---089e0115f28e265c7c052ae80f63
+--001a113d4b907aec24052ae903ec
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr"><div class=3D"gmail_extra">Hi,</div><div class=3D"gmail_ex=
-tra"><br><div class=3D"gmail_quote">On Mon, Feb 1, 2016 at 11:34 AM, Selva =
-Nair <span dir=3D"ltr">&lt;<a href=3D"mailto:selva.nair@...277..." target=
-=3D"_blank">selva.nair@...277...</a>&gt;</span> wrote:<br><blockquote class=
-=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left-width:1px;bo=
-rder-left-color:rgb(204,204,204);border-left-style:solid;padding-left:1ex">=
-Other comments I have are more specific to code snippets and of minor conse=
-quence. Will send them after compile/test runs</blockquote></div><div class=
-=3D"gmail_extra"><br></div>Following up on that, a couple of comments below=
-:</div><div class=3D"gmail_extra"><br></div><div class=3D"gmail_extra"><blo=
-ckquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left=
--width:1px;border-left-color:rgb(204,204,204);border-left-style:solid;paddi=
-ng-left:1ex">=C2=A0 =C2=A0 =C2=A0 HMODULE iphlpapi =3D GetModuleHandle (TEX=
-T(&quot;iphlpapi.dll&quot;));<br>=C2=A0 =C2=A0 =C2=A0 if (iphlpapi =3D=3D N=
-ULL)<br>=C2=A0 =C2=A0 =C2=A0 =C2=A0 return GetLastError ();<br>=C2=A0 =C2=
-=A0 =C2=A0 CreateIpForwardEntry2 =3D (CreateIpForwardEntry2Fn) GetProcAddre=
-ss (iphlpapi, &quot;CreateIpForwardEntry2&quot;);<br>=C2=A0 =C2=A0 =C2=A0 i=
-f (!CreateIpForwardEntry2)<br>=C2=A0 =C2=A0 =C2=A0 =C2=A0 return GetLastErr=
-or ();</blockquote><div class=3D"gmail_extra">=C2=A0</div></div><div class=
-=3D"gmail_extra">Is this run-time lookup necessary?<br></div><div class=3D"=
-gmail_extra"><br>Anyway, the iservice works well and the only real problem =
-I ran into was lack of write access to the default log_dir. That leads to a=
- log-jam as the stdout is now a pipe which the service is not actively read=
-ing from. Could be handled in the GUI + registry by making sure openvpn is =
-started with a writable log file..<br></div><div class=3D"gmail_extra"><br>=
-</div><div class=3D"gmail_extra">Anyway, the service part of the code looks=
- good and does well what it promises to do.=C2=A0<br></div><div class=3D"gm=
-ail_extra"><br></div><div class=3D"gmail_extra">Selva</div></div>
+<div dir=3D"ltr">Hi,<br><div class=3D"gmail_extra"><br></div><div class=3D"=
+gmail_extra"><div class=3D"gmail_quote"><blockquote class=3D"gmail_quote" s=
+tyle=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);pad=
+ding-left:1ex">
+A second pair of installers contain a patch which makes the new<br>
+--block-outside-dns work with Windows Vista:<br>
+<br>
+&lt;<a href=3D"http://build.openvpn.net/downloads/temp/openvpn-install-2.3_=
+blockoutsidedns-I601-i686.exe" rel=3D"noreferrer" target=3D"_blank">http://=
+build.openvpn.net/downloads/temp/openvpn-install-2.3_blockoutsidedns-I601-i=
+686.exe</a>&gt;<br>
+&lt;<a href=3D"http://build.openvpn.net/downloads/temp/openvpn-install-2.3_=
+blockoutsidedns-I601-x86_64.exe" rel=3D"noreferrer" target=3D"_blank">http:=
+//build.openvpn.net/downloads/temp/openvpn-install-2.3_blockoutsidedns-I601=
+-x86_64.exe</a>&gt;<br></blockquote><div><br></div><div>I tested this on Wi=
+ndows 10. While it works same as before as far as blocking dns is concerned=
+, the filter that allows openvpn.exe to do name resolution through all inte=
+rfaces does not appear to work.<br><br>When a openvpn connection is running=
+ with block-outside-dns and no DNS server is defined on the TAP adapter, al=
+l dns queries fail as expected. But starting a second openvpn.exe also fail=
+s at name resolution although the apparent purpose of the permit filter is =
+to allow that traffic through the LAN or any other interface<br><blockquote=
+ style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);p=
+adding-left:1ex" class=3D"gmail_quote"><pre>@@ -1236,26 +1237,44 @@ win_wfp=
+_block_dns (const NET_IFINDEX index)
+     Condition[0].conditionValue.uint16 =3D 53;
+=20
+     Condition[1].fieldKey =3D FWPM_CONDITION_ALE_APP_ID;
+-    Condition[1].matchType =3D FWP_MATCH_NOT_EQUAL;
++    Condition[1].matchType =3D FWP_MATCH_EQUAL;
+     Condition[1].conditionValue.type =3D FWP_BYTE_BLOB_TYPE;
+     Condition[1].conditionValue.byteBlob =3D openvpnblob;</pre></blockquot=
+e></div><div>Valdikss: Is this filter useful at all? When openvpn does name=
+ resolution, I suppose its the dns client service that would open the port =
+53 connection.<br></div><div><br></div><div>Selva<br></div></div></div></di=
+v>
 
---089e0115f28e265c7c052ae80f63--
+--001a113d4b907aec24052ae903ec--
 
