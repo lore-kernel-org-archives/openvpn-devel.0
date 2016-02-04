@@ -1,16 +1,15 @@
-Date: Thu, 4 Feb 2016 10:38:23 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20160204093823.GX24952@...1296...>
-References: <2215306.x9ci9DhAZ9@...2001...>
-	<1453835508-26119-1-git-send-email-gert@...1296...>
-	<CAKuzo_iSwvk8MTW0ACT+n5JRkNDNyOoHHvmYw+fonN=ASUPuCw@...278...>
-	<CAKuzo_hLdWaxZau_KtBhO1LvTivmurinrdqPsNTrjUfWnrZBvA@...278...>
+References: <56B0ECA6.3000902@...515...>
+	<CAKuzo_grryDNAqf1vSoMJUrGVYnZEg_S-GHuZARazjnP5YVsFg@...278...>
+From: ValdikSS <iam@...2070...>
+Message-ID: <56B32D16.9010005@...2070...>
+Date: Thu, 4 Feb 2016 13:51:02 +0300
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="u0WGpcS7tYnCwot9"
-Content-Disposition: inline
-In-Reply-To: <CAKuzo_hLdWaxZau_KtBhO1LvTivmurinrdqPsNTrjUfWnrZBvA@...278...>
-Subject: Re: [Openvpn-devel] [PATCH v3] interactive service v3
+In-Reply-To: <CAKuzo_grryDNAqf1vSoMJUrGVYnZEg_S-GHuZARazjnP5YVsFg@...278...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature";
+	boundary="0gjiq2euM0P5Rmnws7qvekiTQ1sKniJar"
+Subject: Re: [Openvpn-devel] Test installers with the Interactive service /
+ Vista-compatible block-outside-dns
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,86 +18,66 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Selva Nair <selva.nair@...277...>, =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Cc: ValdikSS ValdikSS <iam@...2070...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---u0WGpcS7tYnCwot9
-Content-Type: text/plain; charset="us-ascii"
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--0gjiq2euM0P5Rmnws7qvekiTQ1sKniJar
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
+It's not for DNS resolution (although it should work if "DNS Client" servic=
+e is disabled), it's not to break OpenVPN servers on TCP/UDP port 53.
 
-On Wed, Feb 03, 2016 at 08:57:18PM -0500, Selva Nair wrote:
-> On Mon, Feb 1, 2016 at 11:34 AM, Selva Nair <selva.nair@...277...> wrote:
->=20
-> > Other comments I have are more specific to code snippets and of minor
-> > consequence. Will send them after compile/test runs
->=20
-> Following up on that, a couple of comments below:
->=20
->       HMODULE iphlpapi =3D GetModuleHandle (TEXT("iphlpapi.dll"));
-> >       if (iphlpapi =3D=3D NULL)
-> >         return GetLastError ();
-> >       CreateIpForwardEntry2 =3D (CreateIpForwardEntry2Fn) GetProcAddress
-> > (iphlpapi, "CreateIpForwardEntry2");
-> >       if (!CreateIpForwardEntry2)
-> >         return GetLastError ();
->=20
-> Is this run-time lookup necessary?
+On 02/04/2016 06:05 AM, Selva Nair wrote:
+> Hi,
+>
+>
+> I tested this on Windows 10. While it works same as before as far as bloc=
+king dns is concerned, the filter that allows openvpn.exe to do name resolu=
+tion
+> through all interfaces does not appear to work.
+>
+> When a openvpn connection is running with block-outside-dns and no DNS se=
+rver is defined on the TAP adapter, all dns queries fail as expected. But s=
+tarting a
+> second openvpn.exe also fails at name resolution although the apparent pu=
+rpose of the permit filter is to allow that traffic through the LAN or any =
+other
+> interface
+> Valdikss: Is this filter useful at all? When openvpn does name resolution=
+, I suppose its the dns client service that would open the port 53 connecti=
+on.
+>
+> Selva
+>
+>
 
-I don't think so - it might be a leftover of "we try to make this=20
-compatible with windows XP", which we decided later to be a non-goal
-for 2.4.
 
-So we might replace this with just calling CreateIpForwardEntry2()=20
-directly.
 
-> Anyway, the iservice works well and the only real problem I ran into was
-> lack of write access to the default log_dir. That leads to a log-jam as t=
-he
-> stdout is now a pipe which the service is not actively reading from. Could
-> be handled in the GUI + registry by making sure openvpn is started with a
-> writable log file..
-
-Yes, I've seen this as well.  As far as I understand, there's a registry
-key that can be changed to include the user's home in the log path - it's
-on a piece of paper on my desk, while I'm at work, so can't look right
-now... Heiko?
-
-(And yes, this needs to be adjusted in the installer, whichever way we
-go - globally writeable log directory, or user-individual logging)
-
-> Anyway, the service part of the code looks good and does well what it
-> promises to do.
-
-Thanks.  I take this as an ACK from your for the service change, and=20
-Arne's mail as an ACK for the openvpn side, and merge it tonight.
-
-Then we can go about improving things further (... while we wait for
-the other large 2.4 feature to fully show up, AEAD...)
-
-gert
-
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---u0WGpcS7tYnCwot9
+--0gjiq2euM0P5Rmnws7qvekiTQ1sKniJar
 Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
+Version: GnuPG v2
+Comment: https://keybase.io/valdikss
 
-iQCVAwUBVrMcDqkuBuNlUUl1AQJYHQP/cLH+2BXaC8FS0gezTypsdUSSZVT031Bj
-cZANZagBg7wNY7kpKTbyMh8TcyYjS27xR81+J9iQxVuaNoV9+vJSxn10cdIBuoIs
-xm+IRCHXAcgKXqiGZUIrmjjoQm/IAuZOh/+Qklpu9TCpE7Q2xGUZ2iYS2tPkrc7v
-5/0g5W9ilzs=
-=RKLM
+iQIcBAEBCAAGBQJWsy0WAAoJEFzXIC7viPdy0aAP/iIYKJKf6VVBjtkoubTado9U
+28Ehs7xmdVaOprpG54QGxGfS96LCvgjoNZ1IYaQ59uBtDzWTiOhZ9rObrWXf2Q58
+J5rqec6PpOgCHNNBmFYCs6z9273cyBG3nzysXbb2fHBlYzWZnVUhMc89jK+v4nHJ
+n5hL+cZ5yI4Cs749gRNsX9POjbE2GR/frTc2JxTkYL6pVPiEfj+1Tx5Ugj+sEawY
+3Jp3Xh6nFLHZLclUKy2tF8jugcI3Frxx7V5oV9YuO21Tv9c0Qvc3obE9VZDKpzgu
+y+itUd4+c6auP8u2+HtIumTljg17uTwkRioC39/XSRQHY+OLTU+UtQsLH5SUmUWf
+0R04ab6GpHQ+X1WeMLONA+hCA1XeN/ds13wA1tQwcy8urkt1qX4YrFok7ryD5HNW
+EjOpLIiV1ux9MyHfxBCQ5QIL4uYh5TtSBX/0UOXtSs8bvjxMPurVMOhaF20TyPt6
+I1ECsjUeGDE8H/WzyqO8fVRyhJkUnl6pBaUSsKWOdzKanZrqhFJVDq1WIurp0MRB
+k3oFHwmXkbBEU7WlDTsSirX0UGJbnndOr2TfAVvaMUiyT9dgT4haWbLmBeMMiVVV
+Z5ZTN4D0fFFOjfXDUIqEwXUQNaURxmTV18fAC5wdsCphDUzHLy6P767hMdqnGhHF
+ppsHIAGPlujmYGOHh7c9
+=MqTK
 -----END PGP SIGNATURE-----
 
---u0WGpcS7tYnCwot9--
+--0gjiq2euM0P5Rmnws7qvekiTQ1sKniJar--
 
