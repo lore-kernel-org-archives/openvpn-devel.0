@@ -1,14 +1,7 @@
-Date: Sun, 7 Feb 2016 20:27:53 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20160207192752.GZ24952@...1296...>
-References: <CAKuzo_gC70Sozt1BZyf6NhMgPi-NpDWR5G-_fcXx0GKk1_JVmg@...278...>
-	<CAFHpkQFyVUfK_QLgou0559-MdWn1TD51xda9kf9vYtHuhB6seg@...278...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="/jkVpn98IfgsYGE5"
-Content-Disposition: inline
-In-Reply-To: <CAFHpkQFyVUfK_QLgou0559-MdWn1TD51xda9kf9vYtHuhB6seg@...278...>
-Subject: Re: [Openvpn-devel] GUI repo
+From: Steffan Karger <steffan@...1856...>
+Date: Sun,  7 Feb 2016 20:47:08 +0100
+Message-Id: <1454874438-5081-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH] Add support for AEAD (GCM) cipher mode
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,48 +10,45 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: ???????? ?????????????? <chipitsine@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-
---/jkVpn98IfgsYGE5
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-On Sun, Feb 07, 2016 at 09:00:28PM +0500, ???????? ?????????????? wrote:
-> if you mean interactive service, keep in mind that people sometimes start
-> openvpn as a child of openvpn-gui, not as a service
+These patches add support for GCM mode ciphers to OpenVPN.  These are
+originally inspired by the patch from kruton (trac #301, and
+http://thread.gmane.org/gmane.network.openvpn.devel/7653), but most of the
+original code has been rewritten.
 
-Interactive Service is running openvpn.exe under control of openvpn-gui,
-and you won't notice anything different - except that it magically works
-even if the user has no permissions to set routes, and the "want admin!"
-flag is not set on the GUI.
+As discussed in various IRC meetings and at the hackathons, we used this
+opportunity to introduce a new - more efficient - packet format.  See
+http://sourceforge.net/p/openvpn/mailman/message/33210313/ and the commit
+message of patch 8 for more details.
 
-And, of course, that bugs in openvpn-gui or openvpn will not lead to a
-privilege breach anymore.
+The first patches (1-7) are refactoring in preparation of adding AEAD modes.
+Not all of the changes are strictly required, but they made it easier for me to
+understand what was going on and debug my AEAD code.  I think they improve the
+understandability of the code.  These should not change any behaviour (apart
+from adding better log messages).
 
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+Patch 8 actually adds the GCM cipher mode.  See it's commit message for more
+information on the implementation.
 
---/jkVpn98IfgsYGE5
-Content-Type: application/pgp-signature; name="signature.asc"
+Patch 9 provides polarssl/mbedtls and openssl config file interoperability.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
+Patch 10 adds a (very) preliminary version of cipher negotation.  I'm not
+entirely sure if we should already apply this patch or wait for full cipher
+negotiation support.  I'm also not sure when I will have proper negotiation
+patches available.
 
-iQCVAwUBVreauKkuBuNlUUl1AQJvqgQAlU465zZLLcysGMXeilMrjoDOcP5euUAe
-g52mrp3F0A+O8TeZtD2qgb5HZmPQ0GOH2BLjVWoo6AMPzryze8MmvxM1tu0UqGlQ
-eIzuYCEEJmO+oDZxqgnExDKfAJZQZhPPOKT97NmJq12PMeCjdF4Q3xBsvG6Fdj1n
-wbTqcZyuNhM=
-=b/qW
------END PGP SIGNATURE-----
+This implementation has been verified to be compatible with openvpn 3 clients
+and servers.  To test this you'll need to pretend to fully support IV_NCP and
+IV_TCPNL, see e.g. https://github.com/syzzer/openvpn/tree/aead-cipher-modes13.
 
---/jkVpn98IfgsYGE5--
+This has been a spare-time project, and did not yet receive any thorough review
+or field testing.  So both are still very much needed.
+
+-Steffan
+
 
