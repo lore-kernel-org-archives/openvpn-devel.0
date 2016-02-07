@@ -1,11 +1,14 @@
+Date: Sun, 7 Feb 2016 20:27:53 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20160207192752.GZ24952@...1296...>
+References: <CAKuzo_gC70Sozt1BZyf6NhMgPi-NpDWR5G-_fcXx0GKk1_JVmg@...278...>
+	<CAFHpkQFyVUfK_QLgou0559-MdWn1TD51xda9kf9vYtHuhB6seg@...278...>
 MIME-Version: 1.0
-In-Reply-To: <CACqLfMnrWmytCz9Oz9ES1qsQienJXbxOjGAHydx2RS=5sL=waQ@...278...>
-References: <CACqLfMnrWmytCz9Oz9ES1qsQienJXbxOjGAHydx2RS=5sL=waQ@...278...>
-From: Leonardo <leobasilio@...277...>
-Date: Sun, 7 Feb 2016 16:43:27 -0200
-Message-ID: <CACqLfMkwi_Y+jQg4zyivzwyTkPApNVQx6XWYBXiSxBANYC5nOg@...278...>
-Subject: [Openvpn-devel] Fwd: [PATCH] Fix misleading socket error code on
-	Windows
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="/jkVpn98IfgsYGE5"
+Content-Disposition: inline
+In-Reply-To: <CAFHpkQFyVUfK_QLgou0559-MdWn1TD51xda9kf9vYtHuhB6seg@...278...>
+Subject: Re: [Openvpn-devel] GUI repo
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,65 +17,48 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: ???????? ?????????????? <chipitsine@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hi. First of all, this is my first contribution ever to an open source
-project. I hope I'm doing this right.
+--/jkVpn98IfgsYGE5
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-After installing OpenVPN 2.3.10 on my Windows computer and trying to
-connect to a VPN server, I was getting this error message:
+Hi,
 
-TCP: connect to [AF_INET]x.x.x.x:80 failed, will try again in 5
-seconds: The system tried to join a drive to a directory on a joined
-drive.
+On Sun, Feb 07, 2016 at 09:00:28PM +0500, ???????? ?????????????? wrote:
+> if you mean interactive service, keep in mind that people sometimes start
+> openvpn as a child of openvpn-gui, not as a service
 
-Hours of googling and no real solution later, I've decided to check
-the source code and see if I could find the real cause of this error.
-It was a timeout error. Indeed there's a mismapping going on, as
-suggested here:
+Interactive Service is running openvpn.exe under control of openvpn-gui,
+and you won't notice anything different - except that it magically works
+even if the user has no permissions to set routes, and the "want admin!"
+flag is not set on the GUI.
 
-http://sourceforge.net/p/openvpn/mailman/message/33101265/
+And, of course, that bugs in openvpn-gui or openvpn will not lead to a
+privilege breach anymore.
 
-I have both MinGW-w64 and Visual Studio 2015, and in both headers
-WSAETIMEDOUT is defined as ETIMEDOUT which is defined as 138, despite
-the online documentation saying that WSAETIMEDOUT should be 10060.
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-https://msdn.microsoft.com/en-us/library/windows/desktop/ms740668%28v=vs.85%29.aspx
+--/jkVpn98IfgsYGE5
+Content-Type: application/pgp-signature; name="signature.asc"
 
-I couldn't find any explanation about this, but based on other
-threads, this issue seems to be around for quite some time now. After
-the patch below, the right error message comes out:
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
 
-TCP: connect to [AF_INET]x.x.x.x:80 failed: Connection timed out (WSAETIMEDOUT)
+iQCVAwUBVreauKkuBuNlUUl1AQJvqgQAlU465zZLLcysGMXeilMrjoDOcP5euUAe
+g52mrp3F0A+O8TeZtD2qgb5HZmPQ0GOH2BLjVWoo6AMPzryze8MmvxM1tu0UqGlQ
+eIzuYCEEJmO+oDZxqgnExDKfAJZQZhPPOKT97NmJq12PMeCjdF4Q3xBsvG6Fdj1n
+wbTqcZyuNhM=
+=b/qW
+-----END PGP SIGNATURE-----
 
-I understand that's not the most elegant solution, but given the above
-said, I don't see an alternative. There are many forum threads out
-there just because of this misleading error message.
-
-
-Signed-off-by: Leonardo Basilio <leobasilio@...277...>
----
- src/openvpn/socket.c | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
-index 396fa54..c01ef3d 100644
---- a/src/openvpn/socket.c
-+++ b/src/openvpn/socket.c
-@@ -1177,7 +1177,11 @@ openvpn_connect (socket_descriptor_t sd,
-         {
-           if (--connect_timeout < 0)
-         {
-+#ifdef WIN32
-+          status = 10060;
-+#else
-           status = ETIMEDOUT;
-+#endif
-           break;
-         }
-           openvpn_sleep (1);
---
-2.7.0.windows.1
+--/jkVpn98IfgsYGE5--
 
