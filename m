@@ -1,10 +1,10 @@
 From: Steffan Karger <steffan@...1856...>
-Date: Sun,  7 Feb 2016 20:47:17 +0100
-Message-Id: <1454874438-5081-10-git-send-email-steffan@...1856...>
+Date: Sun,  7 Feb 2016 20:47:18 +0100
+Message-Id: <1454874438-5081-11-git-send-email-steffan@...1856...>
 In-Reply-To: <1454874438-5081-1-git-send-email-steffan@...1856...>
 References: <1454874438-5081-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH 09/10] Add cipher name translation for
-	OpenSSL.
+Subject: [Openvpn-devel] [PATCH 10/10] Add preliminary server-side support
+	for negotiable crypto parameters
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,236 +17,200 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This keeps naming consistent. For example, instead of id-aes128-GCM use
-AES-128-GCM, which is more like AES-128-CBC.
+Add preliminary support for Negotiable Crypto Parameters 'level 2'
+(IV_NCP=2), as proposed by James Yonan on the openvpn-devel mailinglist:
+http://comments.gmane.org/gmane.network.openvpn.devel/9385
+
+This patch:
+ * Makes the server advertise "IV_NCP=2", if --push-peer-info 2 is enabled.
+ * Pushes a 'cipher XXX' directive to the client, if the client advertises
+   "IV_NCP=2", where XXX is the cipher set in the server config file.
+
+This enables clients that have support for IV_NCP to connect to a server,
+even when the client does not have the correct cipher specified in it's
+config file.
+
+Since pushing the cipher directive is quite similar to pushing peer-id, I
+moved peer-id pushing to same prepare_push_reply() function I created for
+pushing cipher.  Adding these directives as regular push options allows us
+to use the existing 'push-continuation' infrastructure.  Note that we
+should not reduce safe_cap in send_push_reply, because it was never
+increased to account for peer-id.
+
+This is a preliminary patch, which will be followed by more patches to add
+client support, and configurability.
 
 Signed-off-by: Steffan Karger <steffan@...1856...>
 ---
- src/openvpn/crypto.c          | 40 +++++++++++++++++++++++++++++++++++++++-
- src/openvpn/crypto_backend.h  | 30 ++++++++++++++++++++++++++++++
- src/openvpn/crypto_openssl.c  | 23 ++++++++++-------------
- src/openvpn/crypto_polarssl.c | 43 +++----------------------------------------
- src/openvpn/options.c         |  3 ++-
- 5 files changed, 84 insertions(+), 55 deletions(-)
+ src/openvpn/push.c | 97 +++++++++++++++++++++++++++++++++++++++++++++---------
+ src/openvpn/push.h |  2 --
+ src/openvpn/ssl.c  |  4 +++
+ 3 files changed, 86 insertions(+), 17 deletions(-)
 
-diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
-index 21790a2..9620f72 100644
---- a/src/openvpn/crypto.c
-+++ b/src/openvpn/crypto.c
-@@ -797,7 +797,7 @@ init_key_ctx (struct key_ctx *ctx, struct key *key,
+diff --git a/src/openvpn/push.c b/src/openvpn/push.c
+index d4f3cb6..051aef6 100644
+--- a/src/openvpn/push.c
++++ b/src/openvpn/push.c
+@@ -40,6 +40,30 @@
  
-       msg (D_HANDSHAKE, "%s: Cipher '%s' initialized with %d bit key",
-           prefix,
--          cipher_kt_name(kt->cipher),
-+          translate_cipher_name_to_openvpn(cipher_kt_name(kt->cipher)),
-           kt->cipher_length *8);
+ #if P2MP
  
-       dmsg (D_SHOW_KEYS, "%s: CIPHER KEY: %s", prefix,
-@@ -1670,4 +1670,42 @@ get_random()
-   return l;
- }
- 
-+static const cipher_name_pair *
-+get_cipher_name_pair(const char *cipher_name) {
-+  const cipher_name_pair *pair;
-+  size_t i = 0;
-+
-+  /* Search for a cipher name translation */
-+  for (; i < cipher_name_translation_table_count; i++)
-+    {
-+      pair = &cipher_name_translation_table[i];
-+      if (0 == strcmp (cipher_name, pair->openvpn_name) ||
-+	  0 == strcmp (cipher_name, pair->lib_name))
-+	  return pair;
-+    }
-+
-+  /* Nothing found, return null */
-+  return NULL;
-+}
-+
-+const char *
-+translate_cipher_name_from_openvpn (const char *cipher_name) {
-+  const cipher_name_pair *pair = get_cipher_name_pair(cipher_name);
-+
-+  if (NULL == pair)
-+    return cipher_name;
-+
-+  return pair->lib_name;
-+}
-+
-+const char *
-+translate_cipher_name_to_openvpn (const char *cipher_name) {
-+  const cipher_name_pair *pair = get_cipher_name_pair(cipher_name);
-+
-+  if (NULL == pair)
-+    return cipher_name;
-+
-+  return pair->openvpn_name;
-+}
-+
- #endif /* ENABLE_CRYPTO */
-diff --git a/src/openvpn/crypto_backend.h b/src/openvpn/crypto_backend.h
-index 3e030d1..d389ba4 100644
---- a/src/openvpn/crypto_backend.h
-+++ b/src/openvpn/crypto_backend.h
-@@ -41,6 +41,16 @@
- /* TLS uses a tag of 128 bytes, let's do the same for OpenVPN */
- #define OPENVPN_AEAD_TAG_LENGTH 16
- 
-+/** Struct used in cipher name translation table */
-+typedef struct {
-+  const char *openvpn_name;	/**< Cipher name used by OpenVPN */
-+  const char *lib_name;		/**< Cipher name used by crypto library */
-+} cipher_name_pair;
-+
-+/** Cipher name translation table */
-+extern const cipher_name_pair cipher_name_translation_table[];
-+extern const size_t cipher_name_translation_table_count;
++/**
++ * Add an option to the push list by providing a format string.
++ *
++ * The string added to the push options is allocated in o->gc, so fmt may be
++ * free'd by the caller before the option is sent to the peer.
++ *
++ * @param o		The current connection's options
++ * @param msglevel	The message level to use when printing errors
++ * @param fmt		Format string for the option
++ * @param ...		Format string arguments
++ *
++ * @return true on success, false on failure.
++ */
++static bool push_option_fmt(struct options *o, int msglevel,
++    const char *fmt, ...)
++#ifdef __GNUC__
++#if __USE_MINGW_ANSI_STDIO
++    __attribute__ ((format (gnu_printf, 3, 4)))
++#else
++    __attribute__ ((format (__printf__, 3, 4)))
++#endif
++#endif
++    ;
 +
  /*
-  * This routine should have additional OpenSSL crypto library initialisations
-  * used by both crypto and ssl components of OpenVPN.
-@@ -594,4 +604,24 @@ void hmac_ctx_update (hmac_ctx_t *ctx, const uint8_t *src, int src_len);
-  */
- void hmac_ctx_final (hmac_ctx_t *ctx, uint8_t *dst);
+  * Auth username/password
+  *
+@@ -239,7 +263,47 @@ send_push_request (struct context *c)
  
+ #if P2MP_SERVER
+ 
+-bool
 +/**
-+ * Translate an OpenVPN cipher name to a crypto library cipher name.
++ * Prepare push options, based on local options and available peer info.
 + *
-+ * @param cipher_name	An OpenVPN cipher name
++ * @param options	Connection options
++ * @param tls_multi	TLS state structure for the current tunnel
 + *
-+ * @return		The corresponding crypto library cipher name, or NULL
-+ * 			if no matching cipher name was found.
++ * @return true on success, false on failure.
 + */
-+const char * translate_cipher_name_from_openvpn (const char *cipher_name);
++static bool
++prepare_push_reply (struct options *o, struct tls_multi *tls_multi)
++{
++  const char *optstr = NULL;
++  const char * const peer_info = tls_multi->peer_info;
 +
-+/**
-+ * Translate a crypto library cipher name to an OpenVPN cipher name.
-+ *
-+ * @param cipher_name	A crypto library cipher name
-+ *
-+ * @return		The corresponding OpenVPN cipher name, or NULL if no
-+ * 			matching cipher name was found.
-+ */
-+const char * translate_cipher_name_to_openvpn (const char *cipher_name);
++  /* Send peer-id if client supports it */
++  optstr = peer_info ? strstr(peer_info, "IV_PROTO=") : NULL;
++  if (optstr)
++    {
++      int proto = 0;
++      int r = sscanf(optstr, "IV_PROTO=%d", &proto);
++      if ((r == 1) && (proto >= 2))
++	{
++	  push_option_fmt(o, M_USAGE, "peer-id %d", tls_multi->peer_id);
++	}
++    }
 +
- #endif /* CRYPTO_BACKEND_H_ */
-diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
-index 6fdff4f..d73634c 100644
---- a/src/openvpn/crypto_openssl.c
-+++ b/src/openvpn/crypto_openssl.c
-@@ -240,17 +240,14 @@ crypto_init_dmalloc (void)
- }
- #endif /* DMALLOC */
++  /* Push cipher if client supports Negotiable Crypto Parameters */
++  optstr = peer_info ? strstr(peer_info, "IV_NCP=") : NULL;
++  if (optstr)
++    {
++      int ncp = 0;
++      int r = sscanf(optstr, "IV_NCP=%d", &ncp);
++      if ((r == 1) && (ncp == 2))
++	{
++	  push_option_fmt(o, M_USAGE, "cipher %s", o->ciphername);
++	}
++    }
++  return true;
++}
++
++static bool
+ send_push_reply (struct context *c)
+ {
+   struct gc_arena gc = gc_new ();
+@@ -309,19 +373,6 @@ send_push_reply (struct context *c)
+   if (multi_push)
+     buf_printf (&buf, ",push-continuation 1");
  
--const char *
--translate_cipher_name_from_openvpn (const char *cipher_name) {
--  // OpenSSL doesn't require any translation
--  return cipher_name;
--}
-+const cipher_name_pair cipher_name_translation_table[] = {
-+    { "AES-128-GCM", "id-aes128-GCM" },
-+    { "AES-192-GCM", "id-aes192-GCM" },
-+    { "AES-256-GCM", "id-aes256-GCM" },
-+};
-+const size_t cipher_name_translation_table_count =
-+    sizeof (cipher_name_translation_table) / sizeof (*cipher_name_translation_table);
- 
--const char *
--translate_cipher_name_to_openvpn (const char *cipher_name) {
--  // OpenSSL doesn't require any translation
--  return cipher_name;
--}
- 
- void
- show_available_ciphers ()
-@@ -286,9 +283,9 @@ show_available_ciphers ()
- 	      const char *ssl_only = cipher_kt_mode_cbc(cipher) ?
- 		  "" : " (TLS client/server mode)";
- 
--	      printf ("%s %d bit default key (%s)%s\n", OBJ_nid2sn (nid),
--		      EVP_CIPHER_key_length (cipher) * 8, var_key_size,
--		      ssl_only);
-+	      printf ("%s %d bit default key (%s)%s\n",
-+		  translate_cipher_name_to_openvpn(OBJ_nid2sn (nid)),
-+		  EVP_CIPHER_key_length (cipher) * 8, var_key_size, ssl_only);
- 	    }
- 	}
-     }
-diff --git a/src/openvpn/crypto_polarssl.c b/src/openvpn/crypto_polarssl.c
-index ade92e2..d683d49 100644
---- a/src/openvpn/crypto_polarssl.c
-+++ b/src/openvpn/crypto_polarssl.c
-@@ -121,52 +121,15 @@ crypto_init_dmalloc (void)
- }
- #endif /* DMALLOC */
- 
--typedef struct { const char * openvpn_name; const char * polarssl_name; } cipher_name_pair;
--cipher_name_pair cipher_name_translation_table[] = {
-+const cipher_name_pair cipher_name_translation_table[] = {
-     { "BF-CBC", "BLOWFISH-CBC" },
-     { "BF-CFB", "BLOWFISH-CFB64" },
-     { "CAMELLIA-128-CFB", "CAMELLIA-128-CFB128" },
-     { "CAMELLIA-192-CFB", "CAMELLIA-192-CFB128" },
-     { "CAMELLIA-256-CFB", "CAMELLIA-256-CFB128" }
- };
--
--const cipher_name_pair *
--get_cipher_name_pair(const char *cipher_name) {
--  cipher_name_pair *pair;
--  size_t i = 0;
--
--  /* Search for a cipher name translation */
--  for (; i < sizeof (cipher_name_translation_table) / sizeof (*cipher_name_translation_table); i++)
+-  /* Send peer-id if client supports it */
+-  if (c->c2.tls_multi->peer_info)
 -    {
--      pair = &cipher_name_translation_table[i];
--      if (0 == strcmp (cipher_name, pair->openvpn_name) ||
--	  0 == strcmp (cipher_name, pair->polarssl_name))
--	  return pair;
--    }
+-      const char* proto_str = strstr(c->c2.tls_multi->peer_info, "IV_PROTO=");
+-      if (proto_str)
+-	{
+-	  int proto = 0;
+-	  int r = sscanf(proto_str, "IV_PROTO=%d", &proto);
+-	  if ((r == 1) && (proto >= 2))
+-	    buf_printf(&buf, ",peer-id %d", c->c2.tls_multi->peer_id);
+-	}
+-  }
 -
--  /* Nothing found, return null */
--  return NULL;
--}
--
--const char *
--translate_cipher_name_from_openvpn (const char *cipher_name) {
--  const cipher_name_pair *pair = get_cipher_name_pair(cipher_name);
--
--  if (NULL == pair)
--    return cipher_name;
--
--  return pair->polarssl_name;
--}
--
--const char *
--translate_cipher_name_to_openvpn (const char *cipher_name) {
--  const cipher_name_pair *pair = get_cipher_name_pair(cipher_name);
--
--  if (NULL == pair)
--    return cipher_name;
--
--  return pair->openvpn_name;
--}
-+const size_t cipher_name_translation_table_count =
-+    sizeof (cipher_name_translation_table) / sizeof (*cipher_name_translation_table);
+   if (BLEN (&buf) > sizeof(cmd)-1)
+     {
+       const bool status = send_control_channel_string (c, BSTR (&buf), D_PUSH);
+@@ -409,6 +460,21 @@ push_options (struct options *o, char **p, int msglevel, struct gc_arena *gc)
+   push_option (o, opt, msglevel);
+ }
  
++static bool push_option_fmt(struct options *o, int msglevel,
++    const char *format, ...)
++{
++  va_list arglist;
++  char tmp[256] = {0};
++  int len = -1;
++  va_start (arglist, format);
++  len = vsnprintf (tmp, sizeof(tmp), format, arglist);
++  va_end (arglist);
++  if (len > sizeof(tmp)-1)
++    return false;
++  push_option (o, string_alloc (tmp, &o->gc), msglevel);
++  return true;
++}
++
  void
- show_available_ciphers ()
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 6d97b4f..02def3a 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -3039,7 +3039,8 @@ options_string (const struct options *o,
- 		       o->authname, o->authname_defined,
- 		       o->keysize, true, false);
+ push_reset (struct options *o)
+ {
+@@ -442,7 +508,8 @@ process_incoming_push_request (struct context *c)
+ 	}
+       else
+ 	{
+-	  if (send_push_reply (c))
++	  if (prepare_push_reply(&c->options, c->c2.tls_multi) &&
++	      send_push_reply (c))
+ 	    {
+ 	      ret = PUSH_MSG_REQUEST;
+ 	      c->c2.sent_push_reply_expiry = now + 30;
+diff --git a/src/openvpn/push.h b/src/openvpn/push.h
+index fa06e08..19bbf5e 100644
+--- a/src/openvpn/push.h
++++ b/src/openvpn/push.h
+@@ -62,8 +62,6 @@ void push_options (struct options *o, char **p, int msglevel, struct gc_arena *g
  
--	buf_printf (&out, ",cipher %s", cipher_kt_name (kt.cipher));
-+	buf_printf (&out, ",cipher %s",
-+	    translate_cipher_name_to_openvpn(cipher_kt_name (kt.cipher)));
- 	buf_printf (&out, ",auth %s", md_kt_name (kt.digest));
- 	buf_printf (&out, ",keysize %d", kt.cipher_length * 8);
- 	if (o->shared_secret_file)
+ void push_reset (struct options *o);
+ 
+-bool send_push_reply (struct context *c);
+-
+ void remove_iroutes_from_push_route_list (struct options *o);
+ 
+ void send_auth_failed (struct context *c, const char *client_reason);
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 7156030..1d811b1 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -1883,6 +1883,10 @@ push_peer_info(struct buffer *buf, struct tls_session *session)
+       /* support for P_DATA_V2 */
+       buf_printf(&out, "IV_PROTO=2\n");
+ 
++      /* support for Negotiable Crypto Paramters */
++      if (session->opt->server)
++	buf_printf(&out, "IV_NCP=2\n");
++
+       /* push compression status */
+ #ifdef USE_COMP
+       comp_generate_peer_info_string(&session->opt->comp_options, &out);
 -- 
 2.5.0
 
