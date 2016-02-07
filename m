@@ -1,13 +1,12 @@
 MIME-Version: 1.0
-In-Reply-To: <20160207192752.GZ24952@...1296...>
-References: <CAKuzo_gC70Sozt1BZyf6NhMgPi-NpDWR5G-_fcXx0GKk1_JVmg@...278...>
-	<CAFHpkQFyVUfK_QLgou0559-MdWn1TD51xda9kf9vYtHuhB6seg@...278...>
-	<20160207192752.GZ24952@...1296...>
-Date: Mon, 8 Feb 2016 01:12:37 +0500
-Message-ID: <CAFHpkQEpOn0OBHVjJjQJPazHw8a+OPncDKt5jJVSi6cKpzkeJQ@...278...>
-From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Content-Type: multipart/alternative; boundary=001a114103b6ab783f052b33b41c
-Subject: Re: [Openvpn-devel] GUI repo
+In-Reply-To: <CACqLfMkwi_Y+jQg4zyivzwyTkPApNVQx6XWYBXiSxBANYC5nOg@...278...>
+References: <CACqLfMnrWmytCz9Oz9ES1qsQienJXbxOjGAHydx2RS=5sL=waQ@...278...>
+	<CACqLfMkwi_Y+jQg4zyivzwyTkPApNVQx6XWYBXiSxBANYC5nOg@...278...>
+From: Leonardo <leobasilio@...277...>
+Date: Sun, 7 Feb 2016 18:21:49 -0200
+Message-ID: <CACqLfMnBXwSY=MXyc7B1oMKwYE2Z_49G3mpkEPxbSAuG61tgZA@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] Fix misleading socket error code on
+	Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,105 +15,108 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-
---001a114103b6ab783f052b33b41c
 Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-there's still "Start OpenVPN directly"
+Hi. I've made some mistakes on my previous message. I should have been
+more patient. After further investigation, I realized that ETIMEDOUT
+is defined in several header files:
 
-https://github.com/OpenVPN/openvpn-gui/blob/master/openvpn.c#L724
+#define ETIMEDOUT WSAETIMEDOUT - WinSock2.h
+#define ETIMEDOUT 138 - winsock.h
+#define ETIMEDOUT WSAETIMEDOUT - winerror.h
 
-in such case admin rights are still required for routes manipulation.
+WSAETIMEDOUT has the right value:
+
+#define WSAETIMEDOUT (WSABASEERR+60) - WinSock2.h
+#define WSAETIMEDOUT (WSABASEERR+60) - winsock.h
+#define WSAETIMEDOUT 10060L - winerror.h
+
+So it seems like socket.c is getting its value from winsock.h. Here's
+a better patch:
+
+Signed-off-by: Leonardo Basilio <leobasilio@...277...>
+---
+ src/openvpn/socket.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
+index 396fa54..37fa129 100644
+--- a/src/openvpn/socket.c
++++ b/src/openvpn/socket.c
+@@ -1177,7 +1177,11 @@ openvpn_connect (socket_descriptor_t sd,
+         {
+           if (--connect_timeout < 0)
+         {
++#ifdef WIN32
++          status = WSAETIMEDOUT;
++#else
+           status = ETIMEDOUT;
++#endif
+           break;
+         }
+           openvpn_sleep (1);
+-- 
+2.7.0.windows.1
 
 
-maybe we should release two installers (or make a checkbox in installer?)
-
-1) regular mode (with highest priv manifest)
-2) paranoya mode (without highest priv)
-
-
-those who really care will choose whatever they want to
-
-
-2016-02-08 0:27 GMT+05:00 Gert Doering <gert@...1296...>:
-
-> Hi,
+2016-02-07 16:43 GMT-02:00 Leonardo <leobasilio@...277...>:
+> Hi. First of all, this is my first contribution ever to an open source
+> project. I hope I'm doing this right.
 >
-> On Sun, Feb 07, 2016 at 09:00:28PM +0500, ???????? ?????????????? wrote:
-> > if you mean interactive service, keep in mind that people sometimes start
-> > openvpn as a child of openvpn-gui, not as a service
+> After installing OpenVPN 2.3.10 on my Windows computer and trying to
+> connect to a VPN server, I was getting this error message:
 >
-> Interactive Service is running openvpn.exe under control of openvpn-gui,
-> and you won't notice anything different - except that it magically works
-> even if the user has no permissions to set routes, and the "want admin!"
-> flag is not set on the GUI.
+> TCP: connect to [AF_INET]x.x.x.x:80 failed, will try again in 5
+> seconds: The system tried to join a drive to a directory on a joined
+> drive.
 >
-> And, of course, that bugs in openvpn-gui or openvpn will not lead to a
-> privilege breach anymore.
+> Hours of googling and no real solution later, I've decided to check
+> the source code and see if I could find the real cause of this error.
+> It was a timeout error. Indeed there's a mismapping going on, as
+> suggested here:
 >
-> gert
+> http://sourceforge.net/p/openvpn/mailman/message/33101265/
+>
+> I have both MinGW-w64 and Visual Studio 2015, and in both headers
+> WSAETIMEDOUT is defined as ETIMEDOUT which is defined as 138, despite
+> the online documentation saying that WSAETIMEDOUT should be 10060.
+>
+> https://msdn.microsoft.com/en-us/library/windows/desktop/ms740668%28v=vs.85%29.aspx
+>
+> I couldn't find any explanation about this, but based on other
+> threads, this issue seems to be around for quite some time now. After
+> the patch below, the right error message comes out:
+>
+> TCP: connect to [AF_INET]x.x.x.x:80 failed: Connection timed out (WSAETIMEDOUT)
+>
+> I understand that's not the most elegant solution, but given the above
+> said, I don't see an alternative. There are many forum threads out
+> there just because of this misleading error message.
+>
+>
+> Signed-off-by: Leonardo Basilio <leobasilio@...277...>
+> ---
+>  src/openvpn/socket.c | 4 ++++
+>  1 file changed, 4 insertions(+)
+>
+> diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
+> index 396fa54..c01ef3d 100644
+> --- a/src/openvpn/socket.c
+> +++ b/src/openvpn/socket.c
+> @@ -1177,7 +1177,11 @@ openvpn_connect (socket_descriptor_t sd,
+>          {
+>            if (--connect_timeout < 0)
+>          {
+> +#ifdef WIN32
+> +          status = 10060;
+> +#else
+>            status = ETIMEDOUT;
+> +#endif
+>            break;
+>          }
+>            openvpn_sleep (1);
 > --
-> USENET is *not* the non-clickable part of WWW!
->                                                            //
-> www.muc.de/~gert/
-> Gert Doering - Munich, Germany
-> gert@...1296...
-> fax: +49-89-35655025
-> gert@...1297...
->
-
---001a114103b6ab783f052b33b41c
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><div><div>there&#39;s still &quot;<span class=3D"">Start O=
-penVPN directly&quot;</span><br><br><a href=3D"https://github.com/OpenVPN/o=
-penvpn-gui/blob/master/openvpn.c#L724">https://github.com/OpenVPN/openvpn-g=
-ui/blob/master/openvpn.c#L724</a><br><br></div>in such case admin rights ar=
-e still required for routes manipulation.<br><br><br></div><div>maybe we sh=
-ould release two installers (or make a checkbox in installer?)<br><br></div=
-><div>1) regular mode (with highest priv manifest)<br></div><div>2) paranoy=
-a mode (without highest priv)<br><br><br></div><div>those who really care w=
-ill choose whatever they want to<br></div><div><br></div></div><div class=
-=3D"gmail_extra"><br><div class=3D"gmail_quote">2016-02-08 0:27 GMT+05:00 G=
-ert Doering <span dir=3D"ltr">&lt;<a href=3D"mailto:gert@...1296..." target=
-=3D"_blank">gert@...1296...</a>&gt;</span>:<br><blockquote class=3D"gmail_q=
-uote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1e=
-x">Hi,<br>
-<span class=3D""><br>
-On Sun, Feb 07, 2016 at 09:00:28PM +0500, ???????? ?????????????? wrote:<br>
-&gt; if you mean interactive service, keep in mind that people sometimes st=
-art<br>
-&gt; openvpn as a child of openvpn-gui, not as a service<br>
-<br>
-</span>Interactive Service is running openvpn.exe under control of openvpn-=
-gui,<br>
-and you won&#39;t notice anything different - except that it magically work=
-s<br>
-even if the user has no permissions to set routes, and the &quot;want admin=
-!&quot;<br>
-flag is not set on the GUI.<br>
-<br>
-And, of course, that bugs in openvpn-gui or openvpn will not lead to a<br>
-privilege breach anymore.<br>
-<span class=3D"HOEnZb"><font color=3D"#888888"><br>
-gert<br>
---<br>
-USENET is *not* the non-clickable part of WWW!<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0//<a href=3D"=
-http://www.muc.de/~gert/" rel=3D"noreferrer" target=3D"_blank">www.muc.de/~=
-gert/</a><br>
-Gert Doering - Munich, Germany=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0<a href=3D"mailt=
-o:gert@...1296...">gert@...1296...</a><br>
-fax: +49-89-35655025=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
- =C2=A0 =C2=A0 =C2=A0 =C2=A0 <a href=3D"mailto:gert@...1297...">gert@...1826...=
-7...</a><br>
-</font></span></blockquote></div><br></div>
-
---001a114103b6ab783f052b33b41c--
+> 2.7.0.windows.1
 
