@@ -1,12 +1,12 @@
-From: Arne Schwabe <arne@...1227...>
 References: <1454874438-5081-1-git-send-email-steffan@...1856...>
-	<1454874438-5081-7-git-send-email-steffan@...1856...>
-Message-ID: <56B8BB2B.9060905@...1227...>
-Date: Mon, 8 Feb 2016 16:58:35 +0100
+	<1454874438-5081-10-git-send-email-steffan@...1856...>
+From: Arne Schwabe <arne@...1227...>
+Message-ID: <56B8BC53.40805@...1227...>
+Date: Mon, 8 Feb 2016 17:03:31 +0100
 MIME-Version: 1.0
-In-Reply-To: <1454874438-5081-7-git-send-email-steffan@...1856...>
-Subject: Re: [Openvpn-devel] [PATCH 06/10] Change openvpn_encrypt() to
- append to work buffer only
+In-Reply-To: <1454874438-5081-10-git-send-email-steffan@...1856...>
+Subject: Re: [Openvpn-devel] [PATCH 09/10] Add cipher name translation for
+ OpenSSL.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,15 +22,17 @@ To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
 
 
 Am 07.02.16 um 20:47 schrieb Steffan Karger:
-> Preparation for AEAD cipher modes, which also have to authenticate the
-> opcode and peer-id of packets.  To supply that information to
-> openvpn_encrypt(), I want to simply write those to the work buffer
-> before calling openvpn_encrypt().  That however requires that
-> openvpn_encrypt() never prepends something to the work buffer.
+> This keeps naming consistent. For example, instead of id-aes128-GCM use
+> AES-128-GCM, which is more like AES-128-CBC.
+>
+> +
+> +  if (NULL == pair)
+> +    return cipher_name;
+> +
+I like the pair == NULL style more.
 
-ACK.
+Otherwise ACK from me.
 
-Arne
-
+arne
 
 
