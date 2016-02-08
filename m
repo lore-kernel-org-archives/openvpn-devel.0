@@ -1,10 +1,13 @@
-Date: Mon, 8 Feb 2016 22:42:13 +0100
-From: Samuel Thibault <samuel.thibault@...1817...>
-Message-ID: <20160208214213.GB20623@...2120...>
-References: <20160208213929.GA20623@...2120...>
 MIME-Version: 1.0
-In-Reply-To: <20160208213929.GA20623@...2120...>
-Subject: Re: [Openvpn-devel] route / route-ipv6 can not be used in ccd
+In-Reply-To: <56B8BA7C.4020707@...1400...>
+References: <1454874438-5081-1-git-send-email-steffan@...1856...>
+	<1454874438-5081-8-git-send-email-steffan@...1856...>
+	<56B8BA7C.4020707@...1400...>
+From: Steffan Karger <steffan@...1856...>
+Date: Mon, 8 Feb 2016 22:54:51 +0100
+Message-ID: <CAA1Abx+9W7vXSOgN=qk6f1oJJGmrXdn6fLQNzZjcsEZcGxEnUQ@...278...>
+Subject: Re: [Openvpn-devel] [PATCH 07/10] Create separate function for
+	replay check
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,15 +16,27 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <schwabe@...1400...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Samuel Thibault, on Mon 08 Feb 2016 22:39:29 +0100, wrote:
-> We could of course use the --up script to set the routes,
+Hi,
 
-Oops, sorry, I didn't mean --up, but client-connect of course.
+On Mon, Feb 8, 2016 at 4:55 PM, Arne Schwabe <schwabe@...1400...> wrote:
+> Am 07.02.16 um 20:47 schrieb Steffan Karger:
+>> In preparation for AEAD cipher modes, which will need the same
+>> functionality.
+>>
+>> Should not change any behaviour.
+>
+> ACK. Passing gc instead of using an own gc does not really matter in
+> this case.
 
-Samuel
+I chose to pass the gc for performance reasons.  Passing the gc should
+be faster (even 'free' if the compiler decides to inline).  This is in
+the critical path for packet processing, so I tried to keep overhead
+to a minimum.
+
+-Steffan
 
