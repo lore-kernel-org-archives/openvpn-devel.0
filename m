@@ -1,12 +1,8 @@
-References: <1454874438-5081-1-git-send-email-steffan@...1856...>
-	<1454874438-5081-10-git-send-email-steffan@...1856...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <56B8BC53.40805@...1227...>
-Date: Mon, 8 Feb 2016 17:03:31 +0100
+Date: Mon, 8 Feb 2016 22:39:29 +0100
+From: Samuel Thibault <samuel.thibault@...1817...>
+Message-ID: <20160208213929.GA20623@...2120...>
 MIME-Version: 1.0
-In-Reply-To: <1454874438-5081-10-git-send-email-steffan@...1856...>
-Subject: Re: [Openvpn-devel] [PATCH 09/10] Add cipher name translation for
- OpenSSL.
+Subject: [Openvpn-devel] route / route-ipv6 can not be used in ccd
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,24 +11,40 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net
 
+Hello,
 
+Is there a reason for not being allowed to set route / route-ipv6
+options in the ccd?
 
-Am 07.02.16 um 20:47 schrieb Steffan Karger:
-> This keeps naming consistent. For example, instead of id-aes128-GCM use
-> AES-128-GCM, which is more like AES-128-CBC.
->
-> +
-> +  if (NULL == pair)
-> +    return cipher_name;
-> +
-I like the pair == NULL style more.
+Here is our need: we have two openvpn daemons running on the same
+server, one in udp mode, the other in tcp mode. Both have the same
+configuration, that setup is meant for our users to use whichever
+happens to be working from their network, preferring udp whenever
+possible. The server thus has tun0 and tun1. Our users may have some
+additional IPs routed to them, so we record these in the ccd files, for
+instance:
 
-Otherwise ACK from me.
+iroute-ipv6 2a01:474:5:100::/56
+route-ipv6 2a01:474:5:100::/56
 
-arne
+However, while iroute-ipv6 is accepted by openvpn, route-ipv6 is not
+accepted:
 
+samuel.thibault/::ffff:83.200.171.86 Options error: option 'route-ipv6' cannot be used in this context
+
+The problem is that since one can not know in advance which openvpn
+daemon users will connect to (and thus which of tun0 or tun1 should have
+the route), we can not set these routes statically before the users
+connect.
+
+We could of course use the --up script to set the routes, but it looks
+much simpler and straightforward to set it from the ccd, since we need
+to set the iroute there already anyway.
+
+Samuel
 
