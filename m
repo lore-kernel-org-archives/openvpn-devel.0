@@ -1,9 +1,13 @@
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <56B86D5C.5070506@...515...>
-Date: Mon, 8 Feb 2016 12:26:36 +0200
+From: Arne Schwabe <arne@...1227...>
+References: <CACqLfMnrWmytCz9Oz9ES1qsQienJXbxOjGAHydx2RS=5sL=waQ@...278...>
+	<CACqLfMkwi_Y+jQg4zyivzwyTkPApNVQx6XWYBXiSxBANYC5nOg@...278...>
+	<CACqLfMnBXwSY=MXyc7B1oMKwYE2Z_49G3mpkEPxbSAuG61tgZA@...278...>
+Message-ID: <56B8A008.2000702@...1227...>
+Date: Mon, 8 Feb 2016 15:02:48 +0100
 MIME-Version: 1.0
-Subject: [Openvpn-devel] OpenVPN installers with openvpn-gui pull request
-	#13's code included
+In-Reply-To: <CACqLfMnBXwSY=MXyc7B1oMKwYE2Z_49G3mpkEPxbSAuG61tgZA@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] Fix misleading socket error code on
+ Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,37 +16,54 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-15"; format=flowed
-Content-Transfer-Encoding: quoted-printable
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+To: Leonardo <leobasilio@...277...>, openvpn-devel@lists.sourceforge.net
 
-Hi,
 
-Selva has a pending pull request to openvpn-gui, which completes the=20
-integration of interactive service into OpenVPN installers:
 
-<https://github.com/OpenVPN/openvpn-gui/pull/13>
+Am 07.02.16 um 21:21 schrieb Leonardo:
+> Hi. I've made some mistakes on my previous message. I should have been
+> more patient. After further investigation, I realized that ETIMEDOUT
+> is defined in several header files:
+>
+> #define ETIMEDOUT WSAETIMEDOUT - WinSock2.h
+> #define ETIMEDOUT 138 - winsock.h
+> #define ETIMEDOUT WSAETIMEDOUT - winerror.h
+>
+> WSAETIMEDOUT has the right value:
+>
+> #define WSAETIMEDOUT (WSABASEERR+60) - WinSock2.h
+> #define WSAETIMEDOUT (WSABASEERR+60) - winsock.h
+> #define WSAETIMEDOUT 10060L - winerror.h
+>
+> So it seems like socket.c is getting its value from winsock.h. Here's
+> a better patch:
+>
+> Signed-off-by: Leonardo Basilio <leobasilio@...277...>
+> ---
+>  src/openvpn/socket.c | 4 ++++
+>  1 file changed, 4 insertions(+)
+>
+> diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
+> index 396fa54..37fa129 100644
+> --- a/src/openvpn/socket.c
+> +++ b/src/openvpn/socket.c
+> @@ -1177,7 +1177,11 @@ openvpn_connect (socket_descriptor_t sd,
+>          {
+>            if (--connect_timeout < 0)
+>          {
+> +#ifdef WIN32
+> +          status = WSAETIMEDOUT;
+> +#else
+>            status = ETIMEDOUT;
+> +#endif
+>            break;
+>          }
+>            openvpn_sleep (1);
+I give a cautionary ACK to this. I have not tested this but the code
+looks good and the explaination sounds valid.
 
-The pull request contains several changes which need testing:
+Arne
 
-<https://github.com/OpenVPN/openvpn-gui/pull/13/commits>
-
-I built test installers which include the new openvpn-gui code:
-
-<http://build.openvpn.net/downloads/temp/openvpn-install-2.3_guipr13-I601-i=
-686.exe>
-<http://build.openvpn.net/downloads/temp/openvpn-install-2.3_guipr13-I601-x=
-86_64.exe>
-
-If you test these installers please report back and tell how things=20
-went. I'll try to do testing on my own later today.
-
-Best regards,
-
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
 
