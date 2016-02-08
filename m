@@ -1,12 +1,12 @@
 From: Arne Schwabe <arne@...1227...>
 References: <1454874438-5081-1-git-send-email-steffan@...1856...>
-	<1454874438-5081-8-git-send-email-steffan@...1856...>
-Message-ID: <56B8BA8E.9000809@...1227...>
-Date: Mon, 8 Feb 2016 16:55:58 +0100
+	<1454874438-5081-7-git-send-email-steffan@...1856...>
+Message-ID: <56B8BB2B.9060905@...1227...>
+Date: Mon, 8 Feb 2016 16:58:35 +0100
 MIME-Version: 1.0
-In-Reply-To: <1454874438-5081-8-git-send-email-steffan@...1856...>
-Subject: Re: [Openvpn-devel] [PATCH 07/10] Create separate function for
- replay check
+In-Reply-To: <1454874438-5081-7-git-send-email-steffan@...1856...>
+Subject: Re: [Openvpn-devel] [PATCH 06/10] Change openvpn_encrypt() to
+ append to work buffer only
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,14 +22,15 @@ To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
 
 
 Am 07.02.16 um 20:47 schrieb Steffan Karger:
-> In preparation for AEAD cipher modes, which will need the same
-> functionality.
->
-> Should not change any behaviour.
+> Preparation for AEAD cipher modes, which also have to authenticate the
+> opcode and peer-id of packets.  To supply that information to
+> openvpn_encrypt(), I want to simply write those to the work buffer
+> before calling openvpn_encrypt().  That however requires that
+> openvpn_encrypt() never prepends something to the work buffer.
 
-ACK. Passing gc instead of using an own gc does not really matter in
-this case.
+ACK.
 
 Arne
+
 
 
