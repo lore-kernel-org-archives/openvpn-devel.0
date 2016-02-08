@@ -1,12 +1,17 @@
+Date: Mon, 8 Feb 2016 08:40:01 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20160208074001.GD24952@...1296...>
+References: <CAKuzo_gC70Sozt1BZyf6NhMgPi-NpDWR5G-_fcXx0GKk1_JVmg@...278...>
+	<CAFHpkQFyVUfK_QLgou0559-MdWn1TD51xda9kf9vYtHuhB6seg@...278...>
+	<20160207192752.GZ24952@...1296...>
+	<CAFHpkQEpOn0OBHVjJjQJPazHw8a+OPncDKt5jJVSi6cKpzkeJQ@...278...>
+	<20160207215510.GB24952@...1296...>
+	<CAFHpkQFN2Gif6NVF88F78G5ervVEb-BhBdSSrgSeJDN1aAksTQ@...278...>
 MIME-Version: 1.0
-In-Reply-To: <CAFHpkQEzCUDpHgRZhxYqTBUkvSe7ra5-CiS06Auzke+6vB=dkg@...278...>
-References: <CAKuzo_gX4qwZg01UR2k=_g1yEY93z3wc1LiyqTXn=WBm3aZvwQ@...278...>
-	<20160207215605.GC24952@...1296...>
-	<CAFHpkQEzCUDpHgRZhxYqTBUkvSe7ra5-CiS06Auzke+6vB=dkg@...278...>
-From: Selva Nair <selva.nair@...277...>
-Date: Mon, 8 Feb 2016 00:05:42 -0500
-Message-ID: <CAKuzo_hOLJh88w8294MpHgafmO_rT5Dv_ONamaze1v_p+J8Yhg@...278...>
-Content-Type: multipart/alternative; boundary=047d7b4179214244cf052b3b280c
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="hUcuS7450/3bZpMw"
+Content-Disposition: inline
+In-Reply-To: <CAFHpkQFN2Gif6NVF88F78G5ervVEb-BhBdSSrgSeJDN1aAksTQ@...278...>
 Subject: Re: [Openvpn-devel] GUI repo
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -16,69 +21,45 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
+To: ???????? ?????????????? <chipitsine@...277...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---047d7b4179214244cf052b3b280c
-Content-Type: text/plain; charset="UTF-8"
+--hUcuS7450/3bZpMw
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
 Hi,
 
-On Sun, Feb 7, 2016 at 10:35 PM, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=
-=BF=D0=B8=D1=86=D0=B8=D0=BD <chipitsine@...277...> wrote:
+On Mon, Feb 08, 2016 at 08:27:13AM +0500, ???????? ?????????????? wrote:
+> but how does it look from user point of view ? why do we show that to user
+> ? how do you we want user to interact with that ?
 
-> what about that PR. there might be cases when
->
-> 1) interactive service installed
-> 2) user is administrator
->
+Installer installs iservice, GUI uses it, done.
 
-It will just work in all cases that worked before (as Gert said, 1, 2 and
-1&&2). The pull request only does three things:
+If someone wants expert mode and clicks on "do not install iservice!"
+at installation time, this is what they get: expert mode.
 
-1. Attempt iService if the process is not elevated, else directly start
-openvpn
-2. Use HKCU to store GUI-specific registry keys
-3. Save logs in %UserProfile%\OpenVPN\log
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-'highestPrivilege' in the manifest is not removed -- not yet.
+--hUcuS7450/3bZpMw
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
 
-> how many openvpn processes will be running ? how many of them will attempt
-> to bind to 1194 ?
->
+iQCVAwUBVrhGUKkuBuNlUUl1AQKCcQP+Jsh4D404fSS4bG1fHUFffDGgKdL8te4F
+PPOqVGw9+wBP0SeIprE1BHnzx8lL6yZhTiSwSZs4NmWljybbGSOyZtpIVqXaVD8S
+m1b6MaXB52rcE9jg8OLZ+kGyNX6Jv1YLoDix1N1ydzV2IpxX9RiVjQbgGFyDY8yG
+rhSgbcQptdE=
+=ADc8
+-----END PGP SIGNATURE-----
 
-Though tempting, this has nothing to do with the PR so I'll pass.
-
-Selva
-
---047d7b4179214244cf052b3b280c
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><div class=3D"gmail_extra">Hi,<br><br></div><div class=3D"=
-gmail_extra"><div class=3D"gmail_quote">On Sun, Feb 7, 2016 at 10:35 PM, =
-=D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=B8=D1=86=D0=B8=D0=BD <span d=
-ir=3D"ltr">&lt;<a href=3D"mailto:chipitsine@...277..." target=3D"_blank">ch=
-ipitsine@...277...</a>&gt;</span> wrote:<br><blockquote class=3D"gmail_quot=
-e" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204)=
-;padding-left:1ex"><div dir=3D"ltr"><div><div><div>what about that PR. ther=
-e might be cases when <br><br></div>1) interactive service installed<br></d=
-iv>2) user is administrator<br></div></div></blockquote><div><br></div><div=
->It will just work in all cases that worked before (as Gert said, 1, 2 and =
-1&amp;&amp;2). The pull request only does three things:<br><br><div class=
-=3D"gmail_extra">1. Attempt iService if the process is not elevated, else d=
-irectly start openvpn<br></div><div class=3D"gmail_extra">2. Use HKCU to st=
-ore GUI-specific registry keys <br></div>3. Save logs in %UserProfile%\Open=
-VPN\log<br><br></div><div>&#39;highestPrivilege&#39; in the manifest is not=
- removed -- not yet.<br>=C2=A0<br></div><blockquote class=3D"gmail_quote" s=
-tyle=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);pad=
-ding-left:1ex"><div dir=3D"ltr">how many openvpn processes will be running =
-? how many of them will attempt to bind to 1194 ?<br></div></blockquote><di=
-v class=3D"gmail_extra"><br>Though tempting, this has nothing to do with th=
-e PR so I&#39;ll pass.<br><br></div><div class=3D"gmail_extra">Selva<br></d=
-iv></div></div></div>
-
---047d7b4179214244cf052b3b280c--
+--hUcuS7450/3bZpMw--
 
