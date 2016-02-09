@@ -1,10 +1,13 @@
-Date: Tue, 9 Feb 2016 09:53:52 +0100 (CET)
-Message-Id: <201602090853.u198rqOU012116@...2054...>
+Date: Tue, 9 Feb 2016 10:28:21 +0100
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1454874438-5081-8-git-send-email-steffan@...1856...>
-References: <1454874438-5081-8-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Create separate function for
-	replay check
+Message-ID: <20160209092821.GH24952@...1296...>
+References: <20160208213929.GA20623@...2120...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="Q4WxCQx2XCrgJ/td"
+Content-Disposition: inline
+In-Reply-To: <20160208213929.GA20623@...2120...>
+Subject: Re: [Openvpn-devel] route / route-ipv6 can not be used in ccd
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,29 +16,53 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Steffan Karger <steffan@...1856...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Samuel Thibault <samuel.thibault@...1817...>, openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master branch.
+--Q4WxCQx2XCrgJ/td
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-commit de4cbd62b7d120e1ec083eaf7688ef3d18e03288
-Author: Steffan Karger
-Date:   Sun Feb 7 20:47:15 2016 +0100
+Hi,
 
-     Create separate function for replay check
+On Mon, Feb 08, 2016 at 10:39:29PM +0100, Samuel Thibault wrote:
+> Is there a reason for not being allowed to set route / route-ipv6
+> options in the ccd?
 
-     Signed-off-by: Steffan Karger <steffan@...1856...>
-     Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <1454874438-5081-8-git-send-email-steffan@...1856...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/11076
-     Signed-off-by: Gert Doering <gert@...1296...>
+"Nobody has implemented it yet" - plain and simple...
 
+So - someone would need to implement this (including route/route-ipv6=20
+cleanup at client disconnect), someone else needs to review and test it...
 
---
-kind regards,
+I've run into this myself and cursed - and then used --client-connect to
+achieve the same result (if not exactly pretty).  Alternatively, using
+--learn-address might actually be much easier than --client-connect, as
+it will already tell you which networks are "new for this client" - from
+the description, I'm fairly sure it handles iroute/iroute-ipv6 as well,
+but for whatever reason I've never actually used this combination...
+(I use --learn-address to enable statically-addressed clients to connect
+to different OpenVPN processes, but these do not have subnets routed)
 
-Gert Doering
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
+--Q4WxCQx2XCrgJ/td
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQCVAwUBVrmxNakuBuNlUUl1AQIWtQP/cm76ZNeaQzDtObpCZxwd1QHSwv0ThTTh
+1v/aA3D7DoRcDS6YGYkD9OaDoEkXCHqKRF012KpPfknpo2JDCW5+SGKaW0g7fg9L
+fq0aIDi2qqONPNfifZ0sr9KdRgSJMBnDrsb5Z+4JMCXqKd+7t5d3bdF4bHviO/7A
+KjmAkN+4qm4=
+=tKLO
+-----END PGP SIGNATURE-----
+
+--Q4WxCQx2XCrgJ/td--
 
