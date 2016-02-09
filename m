@@ -1,18 +1,11 @@
-Date: Tue, 9 Feb 2016 18:01:30 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20160209170130.GU24952@...1296...>
-References: <1454874438-5081-1-git-send-email-steffan@...1856...>
-	<1454874438-5081-10-git-send-email-steffan@...1856...>
-	<56B8BC53.40805@...1227...>
-	<56BA02BF.5090208@...2080...>
-	<CAA1AbxLu+P5-Vn3kPYFgrVZFHpY1WtD3+0TkFZzDTdOkLJgB-Q@...278...>
+Date: Wed, 10 Feb 2016 00:12:07 +0100
+From: Samuel Thibault <samuel.thibault@...1817...>
+Message-ID: <20160209231207.GC2673@...2120...>
+References: <20160208213929.GA20623@...2120...>
+	<20160209092821.GH24952@...1296...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="t0K3MTE2gCquMEb7"
-Content-Disposition: inline
-In-Reply-To: <CAA1AbxLu+P5-Vn3kPYFgrVZFHpY1WtD3+0TkFZzDTdOkLJgB-Q@...278...>
-Subject: Re: [Openvpn-devel] [PATCH 09/10] Add cipher name translation for
- OpenSSL.
+In-Reply-To: <20160209092821.GH24952@...1296...>
+Subject: Re: [Openvpn-devel] route / route-ipv6 can not be used in ccd
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,56 +14,42 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan@...1856...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-
---t0K3MTE2gCquMEb7
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
+Hello,
 
-On Tue, Feb 09, 2016 at 05:46:21PM +0100, Steffan Karger wrote:
-> gcc 5.2.1:
-> $ clang -o no-yoda no-yoda.c
-> no-yoda.c:5:9: warning: using the result of an assignment as a condition =
-without
->       parentheses [-Wparentheses]
->   if (a =3D NULL) {
->       ~~^~~~~~
+Gert Doering, on Tue 09 Feb 2016 10:28:21 +0100, wrote:
+> Alternatively, using
+> --learn-address might actually be much easier than --client-connect, as
+> it will already tell you which networks are "new for this client" - from
+> the description, I'm fairly sure it handles iroute/iroute-ipv6 as well,
+> but for whatever reason I've never actually used this combination...
 
-I noticed this as well, and find it really useful (without needing -Wall).
+That works indeed:
 
-> So, I do not have any strong preference.
+#!/bin/bash
 
-In that case, my preference always is "match existing coding style"
-(which would mean "it depends on the module" - the ssl_*.c / crypto*.c code=
-=20
-tends to "if ( NULL =3D=3D ...)" while most of the rest uses "if ( ... =3D=
-=3D NULL )"
-- so much for "existing coding style"...)
+add_del="$1"
+route="$2"
+cname="$3"
 
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+case "$route" in 
+	*:*) six=-6 ;;
+        *)   six="" ;;
+esac
 
---t0K3MTE2gCquMEb7
-Content-Type: application/pgp-signature; name="signature.asc"
+if [ -n "$dev" ]
+then
+  device="dev $dev"
+else
+  device=""
+fi
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
+ip $six route "$add_del" "$route" $device
 
-iQCVAwUBVrobaakuBuNlUUl1AQIEzQP+JuKqZNqfX2VDfnV7lh/GC2Sp3qKDALfx
-akmvkhsc6Wo0byFo2qNlVprqb4UM32A+QZw5iBt591nSpHHo47w/bXgPL2zegFjy
-6gsMnrQ5FySbTidgeXqUaPhvwIc3CXT0FFqVcIcy5FkAETr0kRoj0I/E8zyd9iMG
-+ANxGxnCGw8=
-=Kz13
------END PGP SIGNATURE-----
-
---t0K3MTE2gCquMEb7--
+Samuel
 
