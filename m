@@ -1,16 +1,16 @@
-Date: Tue, 9 Feb 2016 12:57:46 +0100
+Date: Tue, 9 Feb 2016 12:58:26 +0100
 From: Gert Doering <gert@...1296...>
-Message-ID: <20160209115746.GO24952@...1296...>
+Message-ID: <20160209115825.GP24952@...1296...>
 References: <20160208213929.GA20623@...2120...>
 	<20160209092821.GH24952@...1296...>
 	<20160209101533.GJ3102@...2121...>
 	<20160209104625.GL24952@...1296...>
-	<56B9C5B0.2010908@...1147...>
+	<20160209105839.GP3102@...2121...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="Gn0jpdOhRbNsHTk+"
+	protocol="application/pgp-signature"; boundary="f7hTBRK9VATTLb5J"
 Content-Disposition: inline
-In-Reply-To: <56B9C5B0.2010908@...1147...>
+In-Reply-To: <20160209105839.GP3102@...2121...>
 Subject: Re: [Openvpn-devel] route / route-ipv6 can not be used in ccd
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -20,32 +20,46 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Jan Just Keijser <janjust@...1147...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Samuel Thibault <samuel.thibault@...1817...>, Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
 
---Gn0jpdOhRbNsHTk+
+--f7hTBRK9VATTLb5J
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Tue, Feb 09, 2016 at 11:55:44AM +0100, Jan Just Keijser wrote:
-> > Could you test and report whether --learn-address does the job for you?
->
-> a 'learn-address' script is an entirely different beast than a=20
-> 'client-connect' script: you cannot write out new openvpn directives in=20
-> a 'learn-address' script. In both a 'client-connect' script (not a CCD=20
-> file) and in a 'learn-address' script you can add routes to the system=20
-> routing table provided that you're not running with "user nobody" - it's=
-=20
-> just that you cannot use the "normal" openvpn stuff for this.
+On Tue, Feb 09, 2016 at 11:58:39AM +0100, Samuel Thibault wrote:
+> I have tried putting
+>=20
+> iroute-ipv6 2a01:474:5:1100::/56
+>=20
+> in the ccd, but from the learn-address script the environment does not
+> contain this route.
 
-The main difference (in relevance to this thread) is that --learn-address=20
-will *tell* the script what routes might be required for a specific client,
-while --client-connect would have to do some sort of database lookup...
+       --learn-address cmd
+              Run  command cmd to validate client virtual addresses or rout=
+es.
+...
+              Three arguments will be appended to any arguments in cmd as f=
+ol-
+              lows:
 
-Or are iroutes exported?  Manpage doesn't mention anything in that regard.
+              [1] operation -- "add", "update", or "delete" based  on  whet=
+her
+              or  not the address is being added to, modified, or deleted f=
+rom
+              OpenVPN's internal routing table.
+              [2] address -- The address being learned or unlearned.  This =
+can
+              be  an IPv4 address such as "198.162.10.14", an IPv4 subnet s=
+uch
+              as "198.162.10.0/24", or an ethernet MAC address (when --dev =
+tap
+              is being used) such as "00:FF:01:02:03:04".
+...
+
+"it's not in the environment" :-)
 
 gert
 --=20
@@ -55,18 +69,18 @@ rt/
 Gert Doering - Munich, Germany                             gert@...1296...
 fax: +49-89-35655025                        gert@...1297...
 
---Gn0jpdOhRbNsHTk+
+--f7hTBRK9VATTLb5J
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1
 
-iQCVAwUBVrnUOakuBuNlUUl1AQK2tAP+OrpnTdm0pwaKs6XEBne1iRBf/rODGaId
-gxw3CkkWWeu04fuC1B7QZQUl2b2ZE2eyzzavhMylGeavEer7Z2YRCiC8UJVhF1iq
-otatmqSZY/oyrlzeTKzrbuDU3XJgmK2k6ONt1Qab1jXNzFuHRW/EZWtnAmm4I7u2
-7Mx4wKeg6Us=
-=X0wt
+iQCVAwUBVrnUYakuBuNlUUl1AQICXQQAoLPD3zWBwCLWqaHkySdFFZUsEZxxio7o
+mz7JhgP2YM78TQYPvXrmjHqYWVrLiOs4fJedOTBppKjs8KP4Vz89Qkycwisdtr7u
+26G1VdquXBE9WcrooGLb4Zx2a9s5c1cNvSnVRTY7G//JQjjsKsISQa1mEyo0G01g
+jVmtUlIXdcM=
+=DsYD
 -----END PGP SIGNATURE-----
 
---Gn0jpdOhRbNsHTk+--
+--f7hTBRK9VATTLb5J--
 
