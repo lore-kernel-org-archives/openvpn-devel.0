@@ -1,14 +1,18 @@
-MIME-Version: 1.0
-In-Reply-To: <56BA02BF.5090208@...2080...>
+Date: Tue, 9 Feb 2016 18:01:30 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20160209170130.GU24952@...1296...>
 References: <1454874438-5081-1-git-send-email-steffan@...1856...>
 	<1454874438-5081-10-git-send-email-steffan@...1856...>
 	<56B8BC53.40805@...1227...>
 	<56BA02BF.5090208@...2080...>
-From: Steffan Karger <steffan@...1856...>
-Date: Tue, 9 Feb 2016 17:46:21 +0100
-Message-ID: <CAA1AbxLu+P5-Vn3kPYFgrVZFHpY1WtD3+0TkFZzDTdOkLJgB-Q@...278...>
+	<CAA1AbxLu+P5-Vn3kPYFgrVZFHpY1WtD3+0TkFZzDTdOkLJgB-Q@...278...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="t0K3MTE2gCquMEb7"
+Content-Disposition: inline
+In-Reply-To: <CAA1AbxLu+P5-Vn3kPYFgrVZFHpY1WtD3+0TkFZzDTdOkLJgB-Q@...278...>
 Subject: Re: [Openvpn-devel] [PATCH 09/10] Add cipher name translation for
-	OpenSSL.
+ OpenSSL.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,58 +21,56 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Steffan Karger <steffan@...1856...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-On Tue, Feb 9, 2016 at 4:16 PM, David Sommerseth
-<openvpn@...2080...> wrote:
-> On 08/02/16 17:03, Arne Schwabe wrote:
->> Am 07.02.16 um 20:47 schrieb Steffan Karger:
->>> This keeps naming consistent. For example, instead of id-aes128-GCM use
->>> AES-128-GCM, which is more like AES-128-CBC.
->>>
->>> +
->>> +  if (NULL == pair)
->>> +    return cipher_name;
->>> +
->> I like the pair == NULL style more.
->
-> I "kind of" agree, as that's what we've grown up with.  However, from a
-> defensive programming style, this is a far better approach.  A mistyping using
-> '=' will in 'NULL = pair' case cause a compile failure.  The other way around
-> will compile just fine with a nice ugly bug attached with it ... So I'm trying
-> to get used to his "flipped around" style.
+--t0K3MTE2gCquMEb7
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-This indeed the motivation is.
+Hi,
 
-But, modern compilers do detect this (given the correct flags):
+On Tue, Feb 09, 2016 at 05:46:21PM +0100, Steffan Karger wrote:
+> gcc 5.2.1:
+> $ clang -o no-yoda no-yoda.c
+> no-yoda.c:5:9: warning: using the result of an assignment as a condition =
+without
+>       parentheses [-Wparentheses]
+>   if (a =3D NULL) {
+>       ~~^~~~~~
 
-gcc 5.2.1:
-$ clang -o no-yoda no-yoda.c
-no-yoda.c:5:9: warning: using the result of an assignment as a condition without
-      parentheses [-Wparentheses]
-  if (a = NULL) {
-      ~~^~~~~~
-no-yoda.c:5:9: note: place parentheses around the assignment to silence this
-      warning
-  if (a = NULL) {
-        ^
-      (       )
-no-yoda.c:5:9: note: use '==' to turn this assignment into an equality
-      comparison
-  if (a = NULL) {
-        ^
-        ==
+I noticed this as well, and find it really useful (without needing -Wall).
 
-clang 3.6.2:
-$ clang -o no-yoda no-yoda.c
-no-yoda.c:5:9: warning: using the result of an assignment as a condition without
-      parentheses [-Wparentheses]
-  if (a = NULL) {
-      ~~^~~~~~
+> So, I do not have any strong preference.
 
-So, I do not have any strong preference.
+In that case, my preference always is "match existing coding style"
+(which would mean "it depends on the module" - the ssl_*.c / crypto*.c code=
+=20
+tends to "if ( NULL =3D=3D ...)" while most of the rest uses "if ( ... =3D=
+=3D NULL )"
+- so much for "existing coding style"...)
 
--Steffan
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--t0K3MTE2gCquMEb7
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQCVAwUBVrobaakuBuNlUUl1AQIEzQP+JuKqZNqfX2VDfnV7lh/GC2Sp3qKDALfx
+akmvkhsc6Wo0byFo2qNlVprqb4UM32A+QZw5iBt591nSpHHo47w/bXgPL2zegFjy
+6gsMnrQ5FySbTidgeXqUaPhvwIc3CXT0FFqVcIcy5FkAETr0kRoj0I/E8zyd9iMG
++ANxGxnCGw8=
+=Kz13
+-----END PGP SIGNATURE-----
+
+--t0K3MTE2gCquMEb7--
 
