@@ -1,9 +1,16 @@
-Date: Wed, 10 Feb 2016 11:18:04 +0100 (CET)
-Message-Id: <201602101018.u1AAI4mK027218@...2054...>
+Date: Wed, 10 Feb 2016 11:27:41 +0100
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1454876492-6588-1-git-send-email-lstipakov@...277...>
-References: <1454876492-6588-1-git-send-email-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Report Windows bitness
+Message-ID: <20160210102741.GA24952@...1296...>
+References: <CACqLfMnrWmytCz9Oz9ES1qsQienJXbxOjGAHydx2RS=5sL=waQ@...278...>
+	<CACqLfMkwi_Y+jQg4zyivzwyTkPApNVQx6XWYBXiSxBANYC5nOg@...278...>
+	<CACqLfMnBXwSY=MXyc7B1oMKwYE2Z_49G3mpkEPxbSAuG61tgZA@...278...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="AeEJ77ig2uhsXvTj"
+Content-Disposition: inline
+In-Reply-To: <CACqLfMnBXwSY=MXyc7B1oMKwYE2Z_49G3mpkEPxbSAuG61tgZA@...278...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Fix misleading socket error
+ code on Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,37 +19,58 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Lev Stipakov <lstipakov@...277...>
+To: Leonardo <leobasilio@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-ACK.  Looks reasonable, tested with a 32bit binary on 64bit windows, works
-(have not tested all possible combinations due to resource constraints,
-will test as soon as buildbot provides installers)
+--AeEJ77ig2uhsXvTj
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Your patch has been applied to the master branch.
+Hi,
 
-I'll apply this to release/2.3 as well as it nicely complements 84eb66bf78b0
-(but want to have this tested on all platforms first)
+your patch has been committed to master and release/2.3 branch:
 
-commit 15f78acfae2f99b74a72b5766559f28c2d1d3cac (master)
+commit 5f5229e41d134b659e502bb2597c711aedaf8096 (master)
+commit 7107fef4adaf6d7b139270a6e33f54466fbb9b05 (release/2.3)
 
-Author: Lev Stipakov
-Date:   Sun Feb 7 22:21:32 2016 +0200
+Author: Leonardo Basilio <leobasilio@...277...>
+Date:   Wed Feb 10 11:19:39 2016 +0100
 
-     Report Windows bitness
+    Correctly report TCP connection timeout on windows.
 
-     Signed-off-by: Lev Stipakov <lstipakov@...277...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1454876492-6588-1-git-send-email-lstipakov@...277...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/11086
-     Signed-off-by: Gert Doering <gert@...1296...>
+    Signed-off-by: Leonardo Basilio <leobasilio@...277...>
+=20=20=20=20
+    Acked-by: Arne Schwabe <arne@...1227...>
+    Message-Id: <CACqLfMnBXwSY=3DMXyc7B1oMKwYE2Z_49G3mpkEPxbSAuG61tgZA@...1665...=
+78...>
+    URL: http://article.gmane.org/gmane.network.openvpn.devel/11085
+    Signed-off-by: Gert Doering <gert@...1296...>
+
+thanks.
+
+gert
 
 
---
-kind regards,
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-Gert Doering
+--AeEJ77ig2uhsXvTj
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQCVAwUBVrsQnKkuBuNlUUl1AQIeDAP/S61xApj8d+OMfYwMd64gkzS9pBADWRSo
+4oXig/TsvyRz2yhYLTA5jvUwO0mlGLJgw71bdXgTvveGcXuLCWj5GYecbF2Mi7Eg
+BoVt1fEY2LI+bRteZRMrBDqy4DcdUQxGksJ90yhKHLKkly2XqYMJKygpeHbG4N0m
+hOAgs/i7UmI=
+=n7t4
+-----END PGP SIGNATURE-----
+
+--AeEJ77ig2uhsXvTj--
 
