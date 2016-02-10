@@ -1,16 +1,11 @@
-Date: Wed, 10 Feb 2016 11:27:41 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20160210102741.GA24952@...1296...>
-References: <CACqLfMnrWmytCz9Oz9ES1qsQienJXbxOjGAHydx2RS=5sL=waQ@...278...>
-	<CACqLfMkwi_Y+jQg4zyivzwyTkPApNVQx6XWYBXiSxBANYC5nOg@...278...>
-	<CACqLfMnBXwSY=MXyc7B1oMKwYE2Z_49G3mpkEPxbSAuG61tgZA@...278...>
+References: <1454874438-5081-1-git-send-email-steffan@...1856...>
+	<1454874438-5081-9-git-send-email-steffan@...1856...>
+From: Arne Schwabe <arne@...1227...>
+Message-ID: <56BB3775.5010801@...1227...>
+Date: Wed, 10 Feb 2016 14:13:25 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="AeEJ77ig2uhsXvTj"
-Content-Disposition: inline
-In-Reply-To: <CACqLfMnBXwSY=MXyc7B1oMKwYE2Z_49G3mpkEPxbSAuG61tgZA@...278...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Fix misleading socket error
- code on Windows
+In-Reply-To: <1454874438-5081-9-git-send-email-steffan@...1856...>
+Subject: Re: [Openvpn-devel] [PATCH 08/10] Add AEAD cipher support (GCM)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,58 +14,81 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Leonardo <leobasilio@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
-
---AeEJ77ig2uhsXvTj
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
 
-Hi,
+Overall the code looks good and works well in my tests. A few remarks
+(but ACK otherwise):
 
-your patch has been committed to master and release/2.3 branch:
+> AC_ARG_ENABLE(
+>     [aead-modes],
+>     [AS_HELP_STRING([--disable-aead-modes], [disable AEAD crypto modes
+> @<:@default=3Dyes@:>@])],
+>     ,
+>     [enable_aead_modes=3D"yes"]
+> )
 
-commit 5f5229e41d134b659e502bb2597c711aedaf8096 (master)
-commit 7107fef4adaf6d7b139270a6e33f54466fbb9b05 (release/2.3)
-
-Author: Leonardo Basilio <leobasilio@...277...>
-Date:   Wed Feb 10 11:19:39 2016 +0100
-
-    Correctly report TCP connection timeout on windows.
-
-    Signed-off-by: Leonardo Basilio <leobasilio@...277...>
-=20=20=20=20
-    Acked-by: Arne Schwabe <arne@...1227...>
-    Message-Id: <CACqLfMnBXwSY=3DMXyc7B1oMKwYE2Z_49G3mpkEPxbSAuG61tgZA@...1665...=
-78...>
-    URL: http://article.gmane.org/gmane.network.openvpn.devel/11085
-    Signed-off-by: Gert Doering <gert@...1296...>
-
-thanks.
-
-gert
+I would not make this user configurable. If it wasn't for RHEL5 I even
+would throw out 0.9.8 support and always compile it in.
 
 
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+     {
++      /* Get the key we will use to encrypt the packet. */
+       tls_pre_encrypt (c->c2.tls_multi, &c->c2.buf, &co);
++      /* If using P_DATA_V2, prepend the 1-byte opcode and 3-byte peer-id =
+to the
++       * packet before openvpn_encrypt(), so we can authenticate the opcod=
+e too.
++       */
++      if (c->c2.buf.len > 0 && !c->c2.tls_multi->opt.server && c->c2.tls_m=
+ulti->use_peer_id)
 
---AeEJ77ig2uhsXvTj
-Content-Type: application/pgp-signature; name="signature.asc"
+The latter part of that if might be turned into a small inline fuction
+to make it clearer. Or alternatively a local boolean variable to be used
+in both if places.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
 
-iQCVAwUBVrsQnKkuBuNlUUl1AQIeDAP/S61xApj8d+OMfYwMd64gkzS9pBADWRSo
-4oXig/TsvyRz2yhYLTA5jvUwO0mlGLJgw71bdXgTvveGcXuLCWj5GYecbF2Mi7Eg
-BoVt1fEY2LI+bRteZRMrBDqy4DcdUQxGksJ90yhKHLKkly2XqYMJKygpeHbG4N0m
-hOAgs/i7UmI=
-=n7t4
------END PGP SIGNATURE-----
+>   /* Prepare IV */
+>   {
+>     struct buffer iv_buffer;
+>     struct packet_id_net pin;
+>     const int iv_len =3D cipher_ctx_iv_length (ctx->cipher);
+>
+>     ASSERT (iv_len >=3D 12 && iv_len <=3D OPENVPN_MAX_IV_LENGTH);
+A comment about the 12 would be nice here. (=3D> 96 bits ....)
 
---AeEJ77ig2uhsXvTj--
+>     /* set_tag() call required for older OpenSSL versions only */
+What does older mean in this context? Add an idef or atleast specify the
+version in the file.
+
+>     const int ad_size =3D BPTR (buf) - ad_start - tag_size;
+
+ad_size can be 0. Did you check what hte PolarSSL/OpenSSL function do on
+a 0 byte call?
+
+
+Also add for the manpage:
+
+diff --git a/doc/openvpn.8 b/doc/openvpn.8
+index 6b97fc9..30faff3 100644
+--- a/doc/openvpn.8
++++ b/doc/openvpn.8
+@@ -3991,6 +3991,10 @@ Set
+ .B alg=3Dnone
+ to disable authentication.
+=20
++If a AEAD
++.B \-\-cipher
++is selected like AES-128-GCM is used the authentication of that cipher
+is used for the data channel packets.
++
+ For more information on HMAC see
+ .I http://www.cs.ucsd.edu/users/mihir/papers/hmac.html
+ .\"*********************************************************
+
+Arne
+
+
+
 
