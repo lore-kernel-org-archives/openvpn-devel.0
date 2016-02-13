@@ -1,9 +1,8 @@
-MIME-Version: 1.0
 From: Selva Nair <selva.nair@...277...>
-Date: Fri, 12 Feb 2016 14:47:26 -0500
-Message-ID: <CAKuzo_iGh60f6nhKL39pgLVjYsuq479V1cU8_N9NPccJ1_2+8A@...278...>
-Content-Type: multipart/alternative; boundary=001a113d54f8ec8af7052b97f039
-Subject: [Openvpn-devel] interactive service and stdout/stderr pipes
+Date: Sat, 13 Feb 2016 16:15:07 -0500
+Message-Id: <1455398109-28880-1-git-send-email-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH 0/2] Support "block-outside-dns" through
+	interactive service
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,43 +11,22 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-
---001a113d54f8ec8af7052b97f039
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-Currently the interactive service uses anonymous pipes for stdout and
-stderr in CreateProcess to start OpenVPN. But the service doesn't actively
-read from these pipes until the process exits with a non-zero error code.
-Any output thus read goes to the service pipe and EventLog which a casual
-end user never sees.
+The patch is split into two commits for ease of review
+(i) Refactor the code changing no functionality
+    -- most of win_wfp_block_dns is moved to a new  file and
+       made independent of the rest of the code
 
-The bad side of this is the potential for deadlock which is especially bad
-when verb > 3: the pipe buffer may run out early causing write to block in
-msg (), with no or little output in the management interface.
+(ii) Implement a handler for blocking dns in the interactive service
 
-Shall we change this to use /dev/null (i.e, "NUL" on windows) for both
-stdout/stderr ?
 
-Selva
+With (i) and (ii) --block-outside-dns should work without admin privileges
+if the interactive service installed and running and GUI is started as user.
 
---001a113d54f8ec8af7052b97f039
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr">Hi,<div><br></div><div>Currently the interactive service u=
-ses anonymous pipes for stdout and stderr in CreateProcess to start OpenVPN=
-. But the service doesn&#39;t actively read from these pipes until the proc=
-ess exits with a non-zero error code. Any output thus read goes to the serv=
-ice pipe and EventLog which a casual end user never sees.</div><div><br></d=
-iv><div>The bad side of this is the potential for deadlock which is especia=
-lly bad when verb &gt; 3: the pipe buffer may run out early causing write t=
-o block in msg (), with no or little output in the management interface.</d=
-iv><div><br></div><div>Shall we change this to use /dev/null (i.e, &quot;NU=
-L&quot; on windows) for both stdout/stderr ?</div><div><br></div><div>Selva=
-</div></div>
-
---001a113d54f8ec8af7052b97f039--
+Tested on Win7/Win10
 
