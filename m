@@ -1,9 +1,10 @@
-Date: Mon, 15 Feb 2016 21:05:02 +0100 (CET)
-Message-Id: <201602152005.u1FK527j004287@...2054...>
+Date: Mon, 15 Feb 2016 21:05:18 +0100 (CET)
+Message-Id: <201602152005.u1FK5IFG004291@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <CAA1AbxL_S4umZr5Nd0VTvUvXEHjoWmji18GqM6FgmWqntOKqaA@...278...>
-References: <CAA1AbxL_S4umZr5Nd0VTvUvXEHjoWmji18GqM6FgmWqntOKqaA@...278...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Add AEAD cipher support (GCM)
+In-Reply-To: <1454874438-5081-10-git-send-email-steffan@...1856...>
+References: <1454874438-5081-10-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Add cipher name translation for
+	OpenSSL.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,18 +20,16 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Your patch has been applied to the master branch.
 
-I have added the "Changes.rst" patch to the commit, as requested.
-
-commit 66407e11c4746e564bd4285e9c1a1805ecfd82bd (master)
+commit 44dc5d309cf04ebd9fc35b5f97be631fd99e22d6
 Author: Steffan Karger
-Date:   Sat Oct 24 16:44:09 2015 +0200
+Date:   Sun Feb 7 20:47:17 2016 +0100
 
-     Add AEAD cipher support (GCM)
+     Add cipher name translation for OpenSSL.
 
      Signed-off-by: Steffan Karger <steffan@...1856...>
      Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <CAA1AbxL_S4umZr5Nd0VTvUvXEHjoWmji18GqM6FgmWqntOKqaA@...278...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/11162
+     Message-Id: <1454874438-5081-10-git-send-email-steffan@...1856...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/11081
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
