@@ -1,12 +1,15 @@
+Date: Mon, 15 Feb 2016 20:58:11 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20160215195811.GA24952@...1296...>
+References: <1454874438-5081-1-git-send-email-steffan@...1856...>
+	<1454874438-5081-11-git-send-email-steffan@...1856...>
 MIME-Version: 1.0
-In-Reply-To: <56C194ED.9030508@...515...>
-References: <5052BCEE4D2D42CBABE65B18A5C7C795@...2089...>
-	<56C194ED.9030508@...515...>
-Date: Tue, 16 Feb 2016 00:39:02 +0500
-Message-ID: <CAFHpkQFV7wgy01o2hH+3kAGR79HiNaNKWXNpWPOLZMdvGxb29Q@...278...>
-From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Content-Type: multipart/alternative; boundary=001a11c3869a44e8b2052bd42b94
-Subject: Re: [Openvpn-devel] Micro-sha-ft
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="L6+jdixQxvr87aHm"
+Content-Disposition: inline
+In-Reply-To: <1454874438-5081-11-git-send-email-steffan@...1856...>
+Subject: Re: [Openvpn-devel] [PATCH 10/10] Add preliminary server-side
+ support for negotiable crypto parameters
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,110 +18,95 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Steffan Karger <steffan@...1856...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---001a11c3869a44e8b2052bd42b94
-Content-Type: text/plain; charset="UTF-8"
+--L6+jdixQxvr87aHm
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-we sign our software here. actually it works like SHA-2 sign + SHA-1
-timestamp.
-we use "signtool" for that. I'll have a look how to do that with openvpn
-release system
+Hiya,
 
-2016-02-15 14:05 GMT+05:00 Samuli Sepp=C3=A4nen <samuli@...515...>:
+On Sun, Feb 07, 2016 at 08:47:18PM +0100, Steffan Karger wrote:
+> This patch:
+>  * Makes the server advertise "IV_NCP=3D2", if --push-peer-info 2 is enab=
+led.
 
->
->
->
-> > I presume you are aware but just in case
-> > microsoft no more SHA1 authenticode
-> >
-> > https://forums.openvpn.net/topic20987.html
->
-> Hi,
->
-> This was not entirely unexpected. I'll try to get this fixed this week
-> and then release new installers. I suppose Microsoft has finally fixed
-> Windows 7 so that it can handle SHA-2.
->
-> Thanks!
->
-> --
-> Samuli Sepp=C3=A4nen
-> Community Manager
-> OpenVPN Technologies, Inc
->
-> irc freenode net: mattock
->
->
-> -------------------------------------------------------------------------=
------
-> Site24x7 APM Insight: Get Deep Visibility into Application Performance
-> APM + Mobile APM + RUM: Monitor 3 App instances at just $35/Month
-> Monitor end-to-end web transactions and take corrective actions now
-> Troubleshoot faster and improve end-user experience. Signup Now!
-> http://pubads.g.doubleclick.net/gampad/clk?id=3D272487151&iu=3D/4140
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->
+I'd rather not do that - it won't do harm, but technically, it's not
+correct (we don't support "negotiable" ciphers in that direction either) -
+and then, nothing at the client ever *looks* at the peer-info variables,
+so it's somewhat moot.  And that makes it "unneccessary extra code"...
 
---001a11c3869a44e8b2052bd42b94
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+>  * Pushes a 'cipher XXX' directive to the client, if the client advertises
+>    "IV_NCP=3D2", where XXX is the cipher set in the server config file.
+>=20
+> This enables clients that have support for IV_NCP to connect to a server,
+> even when the client does not have the correct cipher specified in it's
+> config file.
+>=20
+> Since pushing the cipher directive is quite similar to pushing peer-id, I
+> moved peer-id pushing to same prepare_push_reply() function I created for
+> pushing cipher.  Adding these directives as regular push options allows us
+> to use the existing 'push-continuation' infrastructure.  Note that we
+> should not reduce safe_cap in send_push_reply, because it was never
+> increased to account for peer-id.
+>=20
+> This is a preliminary patch, which will be followed by more patches to add
+> client support, and configurability.
 
-<div dir=3D"ltr"><div>we sign our software here. actually it works like SHA=
--2 sign + SHA-1 timestamp.<br></div>we use &quot;signtool&quot; for that. I=
-&#39;ll have a look how to do that with openvpn release system<br><div><div=
-><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">2016-02-15 14:05=
- GMT+05:00 Samuli Sepp=C3=A4nen <span dir=3D"ltr">&lt;<a href=3D"mailto:sam=
-uli@...515..." target=3D"_blank">samuli@...515...</a>&gt;</span>:<br><block=
-quote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc=
- solid;padding-left:1ex"><span class=3D""><br>
-<br>
-<br>
-&gt; I presume you are aware but just in case<br>
-&gt; microsoft no more SHA1 authenticode<br>
-&gt;<br>
-&gt; <a href=3D"https://forums.openvpn.net/topic20987.html" rel=3D"noreferr=
-er" target=3D"_blank">https://forums.openvpn.net/topic20987.html</a><br>
-<br>
-</span>Hi,<br>
-<br>
-This was not entirely unexpected. I&#39;ll try to get this fixed this week<=
-br>
-and then release new installers. I suppose Microsoft has finally fixed<br>
-Windows 7 so that it can handle SHA-2.<br>
-<br>
-Thanks!<br>
-<span class=3D"HOEnZb"><font color=3D"#888888"><br>
---<br>
-Samuli Sepp=C3=A4nen<br>
-Community Manager<br>
-OpenVPN Technologies, Inc<br>
-<br>
-irc freenode net: mattock<br>
-</font></span><div class=3D"HOEnZb"><div class=3D"h5"><br>
----------------------------------------------------------------------------=
----<br>
-Site24x7 APM Insight: Get Deep Visibility into Application Performance<br>
-APM + Mobile APM + RUM: Monitor 3 App instances at just $35/Month<br>
-Monitor end-to-end web transactions and take corrective actions now<br>
-Troubleshoot faster and improve end-user experience. Signup Now!<br>
-<a href=3D"http://pubads.g.doubleclick.net/gampad/clk?id=3D272487151&amp;iu=
-=3D/4140" rel=3D"noreferrer" target=3D"_blank">http://pubads.g.doubleclick.=
-net/gampad/clk?id=3D272487151&amp;iu=3D/4140</a><br>
-_______________________________________________<br>
-Openvpn-devel mailing list<br>
-<a href=3D"mailto:Openvpn-devel@lists.sourceforge.net">Openvpn-devel@...1199...=
-sourceforge.net</a><br>
-<a href=3D"https://lists.sourceforge.net/lists/listinfo/openvpn-devel" rel=
-=3D"noreferrer" target=3D"_blank">https://lists.sourceforge.net/lists/listi=
-nfo/openvpn-devel</a><br>
-</div></div></blockquote></div><br></div></div></div></div>
+For the rest, this looks good to me.  Especially introducing the=20
+intermediate step with push_option_fmt() simplifies the extra buffer
+handling and fixes the potential overflow if "peer-id" happens to be
+put at the exactly wrong spot...
 
---001a11c3869a44e8b2052bd42b94--
+So, feature- and code-ACK, except for pushing "IV_NCP=3D2"...
+
+As a side note: I was wondering if o->gc is save to use here (when is it
+cleaned up?  is it ever cleaned up?) and under the assumption that the
+existing code in push_option_ex() is correct, the new code is correct
+as well - the existing code uses o->gc too.
+
+
+A minor comment comment:
+
+>  #if P2MP
+>=20=20
+> +/**
+> + * Add an option to the push list by providing a format string.
+> + *
+> + * The string added to the push options is allocated in o->gc, so fmt ma=
+y be
+> + * free'd by the caller before the option is sent to the peer.
+
+Since nobody ever free()s *fmt*, maybe word that slightly differently,
+like:
+
+ * The resulting string added to the push options is allocated in o->gc,
+ * so the caller does not have to preserve anything
+
+or so
+
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--L6+jdixQxvr87aHm
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQCVAwUBVsIt06kuBuNlUUl1AQI2yQP9HzYzlHzTgSYhAKzpPIuyH5YeqQ2qVHrp
+qnxONwv/CQC0cwhVA1uVrByit5KP8jaD28uS8QRX4w9jbHPZXP26oBWEkQZ4AA+P
+/nCQqOMwKk9yzbTFp9LrEWTvmklfjZVhjgw8Sk+GAhW7Dz3r1jzbMLPp1lSI4i4D
+kwD3ph51Lac=
+=Fjg0
+-----END PGP SIGNATURE-----
+
+--L6+jdixQxvr87aHm--
 
