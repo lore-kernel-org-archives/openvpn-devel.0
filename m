@@ -1,12 +1,14 @@
+MIME-Version: 1.0
+In-Reply-To: <56C0F10F.2080803@...1227...>
 References: <1454874438-5081-1-git-send-email-steffan@...1856...>
 	<1454874438-5081-9-git-send-email-steffan@...1856...>
 	<56BB3775.5010801@...1227...>
 	<CAA1AbxL_S4umZr5Nd0VTvUvXEHjoWmji18GqM6FgmWqntOKqaA@...278...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <56C0F10F.2080803@...1227...>
-Date: Sun, 14 Feb 2016 22:26:39 +0100
-MIME-Version: 1.0
-In-Reply-To: <CAA1AbxL_S4umZr5Nd0VTvUvXEHjoWmji18GqM6FgmWqntOKqaA@...278...>
+	<56C0F10F.2080803@...1227...>
+From: Steffan Karger <steffan@...1856...>
+Date: Mon, 15 Feb 2016 08:11:29 +0100
+Message-ID: <CAA1AbxJVCjP=wvtobKamDaroaVX+4VpnuAq1L4v0iRn=DiWKAw@...278...>
+Content-Type: multipart/mixed; boundary=001a11409402f97986052bc9ba5e
 Subject: Re: [Openvpn-devel] [PATCH 08/10] Add AEAD cipher support (GCM)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -16,64 +18,46 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-To: Steffan Karger <steffan@...1856...>
+To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Am 14.02.16 um 21:59 schrieb Steffan Karger:
-> Hi Arne,
-> 
-> Thanks for reviewing.  Attached a v2, and below inline responses to
-> your remarks.
-> 
+--001a11409402f97986052bc9ba5e
+Content-Type: text/plain; charset=UTF-8
 
-ACK. I looked through the changes and it is now good to go.
+On Sun, Feb 14, 2016 at 10:26 PM, Arne Schwabe <arne@...1227...> wrote:
+> And we may need another patch for the Changes.rst
 
-> On Wed, Feb 10, 2016 at 2:13 PM, Arne Schwabe <arne@...1227...> wrote:
->>> AC_ARG_ENABLE(
->>>     [aead-modes],
->>>     [AS_HELP_STRING([--disable-aead-modes], [disable AEAD crypto modes
->>> @<:@default=yes@:>@])],
->>>     ,
->>>     [enable_aead_modes="yes"]
->>> )
->>
->> I would not make this user configurable. If it wasn't for RHEL5 I even
->> would throw out 0.9.8 support and always compile it in.
-> 
-> I agree.  I removed the configurability.
-> 
-> Now that OpenSSL has officially stopped supporting 0.9.8 and 1.0.0 (as
-> of 31st Dec 2015), we might want to revisit our decision to support
-> those in 2.4/master, but let's not do that as a part of this patch set
-> :)
+Woops, forgot this *again*...  Attached a patch for Changes.rst.  Feel
+free to squash this into 8/10 when committing.
 
->>      {
->> +      /* Get the key we will use to encrypt the packet. */
->>        tls_pre_encrypt (c->c2.tls_multi, &c->c2.buf, &co);
->> +      /* If using P_DATA_V2, prepend the 1-byte opcode and 3-byte peer-id to the
->> +       * packet before openvpn_encrypt(), so we can authenticate the opcode too.
->> +       */
->> +      if (c->c2.buf.len > 0 && !c->c2.tls_multi->opt.server && c->c2.tls_multi->use_peer_id)
->>
->> The latter part of that if might be turned into a small inline fuction
->> to make it clearer. Or alternatively a local boolean variable to be used
->> in both if places.
-> 
-> Hm, I tried that but don't really like it.  I'd rather simplify this
-> by making server->client traffic use P_DATA_V2 too (but didn't want to
-> do that in this patch set).
+-Steffan
 
-Yes. Also better alignment for those packets.
+--001a11409402f97986052bc9ba5e
+Content-Type: text/x-diff; charset=US-ASCII; 
+	name="0001-Add-Changes.rst-entry-for-AEAD-cipher-modes.patch"
+Content-Disposition: attachment; 
+	filename="0001-Add-Changes.rst-entry-for-AEAD-cipher-modes.patch"
+Content-Transfer-Encoding: base64
+X-Attachment-Id: f_iknn6ng00
 
-> Good point.  I took the opportunity to also explain a bit more about
-> the relation between --auth and --tls-auth.
-
-Good idea.
-
-
-And we may need another patch for the Changes.rst
-
-Arne
+RnJvbSBkMjY0MDk2MjczYjgyMTNhYzdkNjVmYWIwMDA4MTBiMjdkY2FlNTY1IE1vbiBTZXAgMTcg
+MDA6MDA6MDAgMjAwMQpGcm9tOiBTdGVmZmFuIEthcmdlciA8c3RlZmZhbkBrYXJnZXIubWU+CkRh
+dGU6IE1vbiwgMTUgRmViIDIwMTYgMDg6MDg6NDEgKzAxMDAKU3ViamVjdDogW1BBVENIXSBBZGQg
+Q2hhbmdlcy5yc3QgZW50cnkgZm9yIEFFQUQgY2lwaGVyIG1vZGVzCgpTaWduZWQtb2ZmLWJ5OiBT
+dGVmZmFuIEthcmdlciA8c3RlZmZhbkBrYXJnZXIubWU+Ci0tLQogQ2hhbmdlcy5yc3QgfCA3ICsr
+KysrKysKIDEgZmlsZSBjaGFuZ2VkLCA3IGluc2VydGlvbnMoKykKCmRpZmYgLS1naXQgYS9DaGFu
+Z2VzLnJzdCBiL0NoYW5nZXMucnN0CmluZGV4IGRkOWI5YjIuLmFmNzBkMTQgMTAwNjQ0Ci0tLSBh
+L0NoYW5nZXMucnN0CisrKyBiL0NoYW5nZXMucnN0CkBAIC0zNyw2ICszNywxMyBAQCBXaW5kb3dz
+IHZlcnNpb24KICAgICBXaW5kb3dzIHZlcnNpb24gaXMgZGV0ZWN0ZWQsIGxvZ2dlZCBhbmQgcG9z
+c2libHkgc2lnbmFsbGVkIHRvIHNlcnZlcgogICAgIChJVl9QTEFUX1ZFUj08bm4+IGlmIC0tcHVz
+aC1wZWVyLWluZm8gaXMgc2V0IG9uIGNsaWVudCkKIAorQUVBRCAoR0NNKSBkYXRhIGNoYW5uZWwg
+Y2lwaGVyIHN1cHBvcnQKKyAgICBUaGUgZGF0YSBjaGFubmVsIG5vdyBzdXBwb3J0cyBBRUFEIGNp
+cGhlcnMgKGN1cnJlbnRseSBvbmx5IEdDTSkuICBUaGUgQUVBRAorICAgIHBhY2tldCBmb3JtYXQg
+aGFzIGEgc21hbGxlciBvdmVyaGVhZCB0aGFuIHRoZSBDQkMgcGFja2V0IGZvcm1hdCwgKGUuZy4g
+MjAKKyAgICBieXRlcyBwZXIgcGFja2V0IGZvciBBRVMtMTI4LUdDTSBpbnN0ZWFkIG9mIDM2IGJ5
+dGVzIHBlciBwYWNrZXQgZm9yCisgICAgQUVTLTEyOC1DQkMgKyBITUFDLVNIQTEpLgorCisKIFVz
+ZXItdmlzaWJsZSBDaGFuZ2VzCiAtLS0tLS0tLS0tLS0tLS0tLS0tLQogLSBGb3IgY2VydGlmaWNh
+dGUgRE5zIHdpdGggZHVwbGljYXRlIGZpZWxkcywgZS5nLiAiT1U9b25lLE9VPXR3byIsIGJvdGgg
+ZmllbGRzCi0tIAoyLjUuMAoK
+--001a11409402f97986052bc9ba5e--
 
