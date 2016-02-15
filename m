@@ -1,10 +1,8 @@
-Date: Mon, 15 Feb 2016 21:22:01 +0100 (CET)
-Message-Id: <201602152022.u1FKM11B004398@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <CAA1Abx+gSgFH3=+xO6QN4NDAYwf8jctYhe8VyRxD8e1L=D6LWg@...278...>
-References: <CAA1Abx+gSgFH3=+xO6QN4NDAYwf8jctYhe8VyRxD8e1L=D6LWg@...278...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Add preliminary server-side
-	support for negotiable crypto parameters
+From: naf.nafise2@...277...
+Message-Id: <05B99A34-1F3B-4C80-B349-73D473439500@...277...>
+Date: Tue, 16 Feb 2016 02:40:07 +0330
+Mime-Version: 1.0 (1.0)
+Subject: [Openvpn-devel] Election
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,31 +11,12 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Steffan Karger <steffan@...1856...>
-Cc: openvpn-devel@lists.sourceforge.net
-
-ACK!
-
-Your patch has been applied to the master branch.
-
-commit 3a5a46cf2b7f6a8b8520c2513a8054deb48bfcbe
-Author: Steffan Karger
-Date:   Mon Feb 15 21:07:11 2016 +0100
-
-     Add preliminary server-side support for negotiable crypto parameters
-
-     Signed-off-by: Steffan Karger <steffan@...1856...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <CAA1Abx+gSgFH3=+xO6QN4NDAYwf8jctYhe8VyRxD8e1L=D6LWg@...278...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/11170
-     Signed-off-by: Gert Doering <gert@...1296...>
+Content-Type: text/plain;
+	charset=us-ascii
+Content-Transfer-Encoding: 7bit
+To: Openvpn-devel@lists.sourceforge.net
 
 
---
-kind regards,
 
-Gert Doering
-
+Sent from my iPad
 
