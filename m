@@ -1,10 +1,12 @@
+Date: Tue, 16 Feb 2016 15:11:18 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20160216141118.GB24952@...1296...>
 References: <56C3205A.6050408@...515...>
-	<1455629142.4832.121.camel@...1866...>
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <56C32CB4.5020705@...515...>
-Date: Tue, 16 Feb 2016 16:05:40 +0200
 MIME-Version: 1.0
-In-Reply-To: <1455629142.4832.121.camel@...1866...>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="0i9UvN4f6MWot87p"
+Content-Disposition: inline
+In-Reply-To: <56C3205A.6050408@...515...>
 Subject: Re: [Openvpn-devel] Always including tap-windows6,
  openvpn-gui and easy-rsa in openvpn-build -generated Windows
  installers?
@@ -16,44 +18,56 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"; format=flowed
+To: Samuli =?iso-8859-1?Q?Sepp=E4nen?= <samuli@...515...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+
+--0i9UvN4f6MWot87p
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
-To: David Woodhouse <dwmw2@...1866...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-
-
-> On Tue, 2016-02-16 at 15:12 +0200, Samuli Sepp=C3=A4nen wrote:
->> Hi,
->>
->> Currently openvpn-build allows producing installers which do not
->> _contain_ tap-windows6, openvpn-gui or easy-rsa at all. On top of this
->> one can - at install time - select which of the contained components are
->> intalled.
->>
->> Let me know if you have good arguments on why we should have the option
->> to generate installers without the said components. If nobody speaks up,
->> I'll remove the conditional code from openvpn.nsi while preparing for
->> the OpenVPN 2.4 release.
->
-> It's nice to have a standalone signed installer for tap-windows6
-> without OpenVPN. Not sure if your question really covered that one... ?
+Content-Disposition: inline
 
 Hi,
 
-There is and will be a standalone tap-windows6 installer. I'm just=20
-suggesting we remove the option to generate installers which do not=20
-include tap-windows6.
+On Tue, Feb 16, 2016 at 03:12:58PM +0200, Samuli Sepp=E4nen wrote:
+> Currently openvpn-build allows producing installers which do not=20
+> _contain_ tap-windows6, openvpn-gui or easy-rsa at all. On top of this=20
+> one can - at install time - select which of the contained components are=
+=20
+> intalled.
+>=20
+> Let me know if you have good arguments on why we should have the option=20
+> to generate installers without the said components. If nobody speaks up,=
+=20
+> I'll remove the conditional code from openvpn.nsi while preparing for=20
+> the OpenVPN 2.4 release.
 
-So basically we have two layers here:
+I do not think maintaining these options makes much sense - at install
+time, yes!, but at build-time - this stuff should have what we want=20
+*our* installers to contain.  The rest could go to comments in the
+code maybe ("if you want to make this optional, remove the following
+lines") or so.
 
-1) Include tap-windows6 in the installer? (yes/no)
-2) Install tap-windows6 _if_ it is included in the installer? (yes/no)
-
-I suggest we remove layer #1 to simplify things.
+gert
 
 --=20
-Samuli Sepp=C3=A4nen
-Community Manager
-OpenVPN Technologies, Inc
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-irc freenode net: mattock
+--0i9UvN4f6MWot87p
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQCVAwUBVsMuBqkuBuNlUUl1AQJOXwP+K47O590oxCWkY1WU2XBE5+T/zMo4IC3e
++ylSHMHTE3O97XWvFoqjQFgPJ1TWUZRUnZM+uvhcI9f3371SAIi7CJJkPYrIsbih
+GbPTHj8URBAc5sl4VyNtNHsiYlxG/QXt35GcPr4A5NSwuWA7mO87/eZtsJHdyGP9
+sw67QelT9vs=
+=3fG5
+-----END PGP SIGNATURE-----
+
+--0i9UvN4f6MWot87p--
 
