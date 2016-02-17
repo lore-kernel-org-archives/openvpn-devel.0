@@ -1,12 +1,12 @@
-References: <5052BCEE4D2D42CBABE65B18A5C7C795@...2089...>
-	<56C194ED.9030508@...515...>
-	<CAFHpkQFV7wgy01o2hH+3kAGR79HiNaNKWXNpWPOLZMdvGxb29Q@...278...>
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <56C4A43C.5010100@...515...>
-Date: Wed, 17 Feb 2016 18:47:56 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAFHpkQFV7wgy01o2hH+3kAGR79HiNaNKWXNpWPOLZMdvGxb29Q@...278...>
-Subject: Re: [Openvpn-devel] Micro-sha-ft
+In-Reply-To: <1449454660-20050-1-git-send-email-selva.nair@...277...>
+References: <1449454660-20050-1-git-send-email-selva.nair@...277...>
+From: Selva Nair <selva.nair@...277...>
+Date: Wed, 17 Feb 2016 17:16:56 -0500
+Message-ID: <CAKuzo_ieowadKGNzRgCUNkMLJBhEYjTWqQKiVs7bWHK9UrqbbA@...278...>
+Content-Type: multipart/alternative; boundary=089e011762d1cfa7bb052bfe9c69
+Subject: Re: [Openvpn-devel] [PATCH] Make default dhcp server ip offset = 0
+	for subnet topology
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,93 +15,74 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: quoted-printable
-To: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+
+--089e011762d1cfa7bb052bfe9c69
+Content-Type: text/plain; charset=UTF-8
 
 Hi,
 
-We just got an EV certificate token thingy, which certainly does not=20
-have SHA-1. The problem is that the token makes it impossible to safely=20
-automate the signing process. So basically we have to turn off automated=20
-signing in openvpn-build and just sign the files we absolutely have to.=20
-This probably boils down to
+On Sun, Dec 6, 2015 at 9:17 PM, Selva Nair <selva.nair@...277...> wrote:
 
-openvpn-installer-*.exe
-tap-windows6 drivers
-tap-windows6 installer
-
-It would be nice to sign openvpn-gui, but then openvpn-build would have=20
-to fetch a pre-built and signed openvpn-gui.exe instead of building and=20
-signing it itself.
-
-According to Microsoft documentation[*] we _could_ continue using non-EV=20
-certs (+ automated signing) for non-driver code, but that would probably=20
-mean paying for two certificates. I'll ask around to see if this is=20
-indeed the case.
-
-I'm not entirely sure all this "increases security" which Microsoft=20
-claims to be the goal of EV certs. Currently we sign every single=20
-library and binary we distribute (including OpenSSL, LZO, etc) already,=20
-and soon we can only sign a subset.
-
---=20
-Samuli Sepp=C3=A4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
-
-[*]=20
-<https://msdn.microsoft.com/en-us/library/windows/hardware/hh801887%28v=3Dv=
-s.85%29.aspx>
-
-> we sign our software here. actually it works like SHA-2 sign + SHA-1
-> timestamp.
-> we use "signtool" for that. I'll have a look how to do that with openvpn
-> release system
+> This makes the default choice for the emulated dhcp server
+> address to be the network address, same as in the TAP mode. Also
+> change the default ifconfig_pool_end to broadcast - 1.
 >
-> 2016-02-15 14:05 GMT+05:00 Samuli Sepp=C3=A4nen <samuli@...515...
-> <mailto:samuli@...515...>>:
+> Currently the default ip for the dhcp server is the broadcast
+> address - 1, making that address not available for windows clients.
+> This change also brings the code in agreement with the comments in
+> helper.c and the documentation.
 >
->
->
->
->     > I presume you are aware but just in case
->     > microsoft no more SHA1 authenticode
->     >
->     >https://forums.openvpn.net/topic20987.html
->
->     Hi,
->
->     This was not entirely unexpected. I'll try to get this fixed this week
->     and then release new installers. I suppose Microsoft has finally fixed
->     Windows 7 so that it can handle SHA-2.
->
->     Thanks!
->
->     --
->     Samuli Sepp=C3=A4nen
->     Community Manager
->     OpenVPN Technologies, Inc
->
->     irc freenode net: mattock
->
->     ---------------------------------------------------------------------=
----------
->     Site24x7 APM Insight: Get Deep Visibility into Application Performance
->     APM + Mobile APM + RUM: Monitor 3 App instances at just $35/Month
->     Monitor end-to-end web transactions and take corrective actions now
->     Troubleshoot faster and improve end-user experience. Signup Now!
->     http://pubads.g.doubleclick.net/gampad/clk?id=3D272487151&iu=3D/4140
->     _______________________________________________
->     Openvpn-devel mailing list
->     Openvpn-devel@lists.sourceforge.net
->     <mailto:Openvpn-devel@lists.sourceforge.net>
->     https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->
+> Signed-off-by: Selva Nair <selva.nair@...277...>
+> ---
+>  src/openvpn/helper.c |    2 +-
+>  src/openvpn/tun.c    |    2 +-
+>  2 files changed, 2 insertions(+), 2 deletions(-)
 >
 
+A gentle nudge to see if anyone can review this. If you don't like the
+change we could edit the manpage to match the code..
 
+Ref: http://article.gmane.org/gmane.network.openvpn.devel/10687
+
+Thanks,
+
+Selva
+
+--089e011762d1cfa7bb052bfe9c69
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div class=3D"gmail_extra">Hi,</div><div class=3D"gmail_ex=
+tra"><br></div><div class=3D"gmail_extra"><div class=3D"gmail_quote">On Sun=
+, Dec 6, 2015 at 9:17 PM, Selva Nair <span dir=3D"ltr">&lt;<a href=3D"mailt=
+o:selva.nair@...277..." target=3D"_blank">selva.nair@...277...</a>&gt;</spa=
+n> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px =
+0.8ex;border-left-width:1px;border-left-color:rgb(204,204,204);border-left-=
+style:solid;padding-left:1ex"><div style=3D"overflow:hidden">This makes the=
+ default choice for the emulated dhcp server<br>
+address to be the network address, same as in the TAP mode. Also<br>
+change the default ifconfig_pool_end to broadcast - 1.<br>
+<br>
+Currently the default ip for the dhcp server is the broadcast<br>
+address - 1, making that address not available for windows clients.<br>
+This change also brings the code in agreement with the comments in<br>
+helper.c and the documentation.<br>
+<br>
+Signed-off-by: Selva Nair &lt;<a href=3D"mailto:selva.nair@...277..." targe=
+t=3D"_blank">selva.nair@...277...</a>&gt;<br>
+---<br>
+=C2=A0src/openvpn/helper.c |=C2=A0 =C2=A0 2 +-<br>
+=C2=A0src/openvpn/tun.c=C2=A0 =C2=A0 |=C2=A0 =C2=A0 2 +-<br>
+=C2=A02 files changed, 2 insertions(+), 2 deletions(-)</div></blockquote></=
+div><div class=3D"gmail_extra"><br></div>A gentle nudge to see if anyone ca=
+n review this. If you don&#39;t like the change we could edit the manpage t=
+o match the code..</div><div class=3D"gmail_extra"><br></div><div class=3D"=
+gmail_extra">Ref: <a href=3D"http://article.gmane.org/gmane.network.openvpn=
+.devel/10687">http://article.gmane.org/gmane.network.openvpn.devel/10687</a=
+><br></div><div class=3D"gmail_extra"><br></div><div class=3D"gmail_extra">=
+Thanks,</div><div class=3D"gmail_extra"><br></div><div class=3D"gmail_extra=
+">Selva<br><br></div></div>
+
+--089e011762d1cfa7bb052bfe9c69--
 
