@@ -1,13 +1,12 @@
-References: <56C3205A.6050408@...515...>
-	<20160216141118.GB24952@...1296...> <56C49349.9090102@...515...>
+References: <5052BCEE4D2D42CBABE65B18A5C7C795@...2089...>
+	<56C194ED.9030508@...515...>
+	<CAFHpkQFV7wgy01o2hH+3kAGR79HiNaNKWXNpWPOLZMdvGxb29Q@...278...>
 From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <56C49C65.8000100@...515...>
-Date: Wed, 17 Feb 2016 18:14:29 +0200
+Message-ID: <56C4A43C.5010100@...515...>
+Date: Wed, 17 Feb 2016 18:47:56 +0200
 MIME-Version: 1.0
-In-Reply-To: <56C49349.9090102@...515...>
-Subject: Re: [Openvpn-devel] Always including tap-windows6,
- openvpn-gui and easy-rsa in openvpn-build -generated Windows
- installers?
+In-Reply-To: <CAFHpkQFV7wgy01o2hH+3kAGR79HiNaNKWXNpWPOLZMdvGxb29Q@...278...>
+Subject: Re: [Openvpn-devel] Micro-sha-ft
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,46 +15,93 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: quoted-printable
-To: Gert Doering <gert@...1296...>
+To: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
+Hi,
 
->
->> Hi,
->>
->> On Tue, Feb 16, 2016 at 03:12:58PM +0200, Samuli Sepp=E4nen wrote:
->>> Currently openvpn-build allows producing installers which do not
->>> _contain_ tap-windows6, openvpn-gui or easy-rsa at all. On top of this
->>> one can - at install time - select which of the contained components are
->>> intalled.
->>>
->>> Let me know if you have good arguments on why we should have the option
->>> to generate installers without the said components. If nobody speaks up,
->>> I'll remove the conditional code from openvpn.nsi while preparing for
->>> the OpenVPN 2.4 release.
->>
->> I do not think maintaining these options makes much sense - at install
->> time, yes!, but at build-time - this stuff should have what we want
->> *our* installers to contain.  The rest could go to comments in the
->> code maybe ("if you want to make this optional, remove the following
->> lines") or so.
->
-> I will remove this functionality in my next batch of modifications to
-> openvpn.nsi.
->
+We just got an EV certificate token thingy, which certainly does not=20
+have SHA-1. The problem is that the token makes it impossible to safely=20
+automate the signing process. So basically we have to turn off automated=20
+signing in openvpn-build and just sign the files we absolutely have to.=20
+This probably boils down to
 
-I was quicker than I thought:
+openvpn-installer-*.exe
+tap-windows6 drivers
+tap-windows6 installer
 
-<https://github.com/OpenVPN/openvpn-build/pull/19>
+It would be nice to sign openvpn-gui, but then openvpn-build would have=20
+to fetch a pre-built and signed openvpn-gui.exe instead of building and=20
+signing it itself.
 
-All the details in the pull request.
+According to Microsoft documentation[*] we _could_ continue using non-EV=20
+certs (+ automated signing) for non-driver code, but that would probably=20
+mean paying for two certificates. I'll ask around to see if this is=20
+indeed the case.
+
+I'm not entirely sure all this "increases security" which Microsoft=20
+claims to be the goal of EV certs. Currently we sign every single=20
+library and binary we distribute (including OpenSSL, LZO, etc) already,=20
+and soon we can only sign a subset.
 
 --=20
-Samuli Sepp=E4nen
+Samuli Sepp=C3=A4nen
 Community Manager
 OpenVPN Technologies, Inc
 
 irc freenode net: mattock
+
+[*]=20
+<https://msdn.microsoft.com/en-us/library/windows/hardware/hh801887%28v=3Dv=
+s.85%29.aspx>
+
+> we sign our software here. actually it works like SHA-2 sign + SHA-1
+> timestamp.
+> we use "signtool" for that. I'll have a look how to do that with openvpn
+> release system
+>
+> 2016-02-15 14:05 GMT+05:00 Samuli Sepp=C3=A4nen <samuli@...515...
+> <mailto:samuli@...515...>>:
+>
+>
+>
+>
+>     > I presume you are aware but just in case
+>     > microsoft no more SHA1 authenticode
+>     >
+>     >https://forums.openvpn.net/topic20987.html
+>
+>     Hi,
+>
+>     This was not entirely unexpected. I'll try to get this fixed this week
+>     and then release new installers. I suppose Microsoft has finally fixed
+>     Windows 7 so that it can handle SHA-2.
+>
+>     Thanks!
+>
+>     --
+>     Samuli Sepp=C3=A4nen
+>     Community Manager
+>     OpenVPN Technologies, Inc
+>
+>     irc freenode net: mattock
+>
+>     ---------------------------------------------------------------------=
+---------
+>     Site24x7 APM Insight: Get Deep Visibility into Application Performance
+>     APM + Mobile APM + RUM: Monitor 3 App instances at just $35/Month
+>     Monitor end-to-end web transactions and take corrective actions now
+>     Troubleshoot faster and improve end-user experience. Signup Now!
+>     http://pubads.g.doubleclick.net/gampad/clk?id=3D272487151&iu=3D/4140
+>     _______________________________________________
+>     Openvpn-devel mailing list
+>     Openvpn-devel@lists.sourceforge.net
+>     <mailto:Openvpn-devel@lists.sourceforge.net>
+>     https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+>
+>
+
+
 
