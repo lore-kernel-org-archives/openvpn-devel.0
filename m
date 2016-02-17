@@ -1,9 +1,10 @@
-Message-ID: <56C47D96.4060402@...1147...>
-Date: Wed, 17 Feb 2016 15:03:02 +0100
-From: Jan Just Keijser <janjust@...1147...>
-MIME-Version: 1.0
 References: <56C46A02.2080506@...515...>
-In-Reply-To: <56C46A02.2080506@...515...>
+	<025901d16981$9b0b4600$d121d200$@gmail.com>
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <56C4802F.104@...515...>
+Date: Wed, 17 Feb 2016 16:14:07 +0200
+MIME-Version: 1.0
+In-Reply-To: <025901d16981$9b0b4600$d121d200$@gmail.com>
 Subject: Re: [Openvpn-devel] Need help testing installers on Windows XP
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -15,23 +16,19 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="iso-8859-15"; format=flowed
 Content-Transfer-Encoding: quoted-printable
-To: =?ISO-8859-15?Q?Samuli_Sepp=E4nen?= <samuli@...515...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Fish Wang <fish.thss@...277...>, openvpn-devel@lists.sourceforge.net
 
-On 17/02/16 13:39, Samuli Sepp=E4nen wrote:
-> Hi,
+ > Just tested on Windows XP SP3 32-bit. Both are behaving as expected.
 >
-> Could someone quickly test these installers on Windows XP?
->
-> <http://build.openvpn.net/downloads/temp/openvpn-install-2.3_guipr14and15=
-andtrac632-I605-i686.exe>
-> <http://build.openvpn.net/downloads/temp/openvpn-install-2.3_guipr14and15=
-andtrac632-I605-x86_64.exe>
->
-> The installer should pop up a message "This installer only works on
-> Windows Vista, Windows Server 2008 and above", and then quit immediately.
-confirmed for Win XP SP3 32bit.
+> Best,
+> Fish
 
+Great, thanks! And thanks to Jan also!
 
-JJK
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
 
+irc freenode net: mattock
 
