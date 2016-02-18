@@ -1,15 +1,14 @@
+Date: Thu, 18 Feb 2016 18:03:12 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20160218170312.GV24952@...1296...>
 References: <56C5C6F7.1020903@...277...>
 	<CAA1AbxJEJyrzJLOXLN2gO6EbA2=QSAbJf3pEr0SUAgVReT5xXA@...278...>
 	<56C5EE36.5080906@...277...>
-	<007901d16a6d$3e9f1e90$bbdd5bb0$@gmail.com>
-From: Jacek Wielemborek <d33tah@...277...>
-Message-ID: <56C5F836.90409@...277...>
-Date: Thu, 18 Feb 2016 17:58:30 +0100
 MIME-Version: 1.0
-In-Reply-To: <007901d16a6d$3e9f1e90$bbdd5bb0$@gmail.com>
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature";
-	boundary="fdHPC1u9eRI6tqAPfMXcaQCFjJdAlV5e0"
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="kHKsahEiDmOCqjtw"
+Content-Disposition: inline
+In-Reply-To: <56C5EE36.5080906@...277...>
 Subject: Re: [Openvpn-devel] Has openvpn been fuzzed?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -19,57 +18,56 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Fish Wang <fish.thss@...277...>, 'Steffan Karger' <steffan@...1856...>
-Cc: 'openvpn-devel' <openvpn-devel@lists.sourceforge.net>
+To: Jacek Wielemborek <d33tah@...277...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---fdHPC1u9eRI6tqAPfMXcaQCFjJdAlV5e0
-Content-Type: text/plain; charset="utf-8"
+--kHKsahEiDmOCqjtw
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-W dniu 18.02.2016 o 17:55, Fish Wang pisze:
-> Hi Jacek,
->=20
-> I'm definitely no expert in AFL, but it's a great tool that has shown gre=
-at potential.
->=20
->> ... it would be good
->> to modify the server to use stdin/stdout (or dev null) for network I/O
->=20
-> You might want to try https://github.com/zardus/preeny .
->=20
-> Best,
-> Fish
+Hi,
 
-Yes, preeny would definitely help, but still some projects make some
-network operations or use stdin before they handle network, which is why
-I explicitly mention that this has to be done. It might be easy, it
-might be not - depends on what OpenVPN actually does (I hadn't looked at
-its protocol yet)
+On Thu, Feb 18, 2016 at 05:15:50PM +0100, Jacek Wielemborek wrote:
+> The thing is that in order to fuzz it most efficiently, it would be good
+> to modify the server to use stdin/stdout (or dev null) for network I/O
+> and terminate after handling a single connection. Also, we would need to
+> disable any checksums, compression or encryption.
 
+OpenVPN can be called from inetd, so it can sort of handle "an already
+connected socket on stdin/stdout".
 
---fdHPC1u9eRI6tqAPfMXcaQCFjJdAlV5e0
+"sort of" because the backend refuses most normal options in this case
+(it can only handle tap interfaces, and no --ifconfig, because the
+assumption is that this only makes sense if you attach to a pre-configured
+bridge) - but for fuzzing the network side, this should work.
+
+Of course, if you take out checksumming, encryption and tls-auth, you
+take away two layers of hardening against funny packets... - but I'm still
+fairly confident that the worst thing our code will do is ASSERT() on
+you :-)
+
+gert
+
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--kHKsahEiDmOCqjtw
 Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
+Version: GnuPG v1
 
-iQIcBAEBCAAGBQJWxfg2AAoJEGlViymZXJRvWk4P+gO9cN13pUjC2XjGwrRoCHnK
-iMfAPztLYTV4B5ZucshbmUStkVz13y4gn8hX1knDRuyjNxJtfm1XK9z8Ns+4FSbI
-Nj0E2C8SMWJ12/Z0k5l8JrCp4W1JuV5DH4ubUnzcN0L76CK7zfW+o2IM8KhvYfYw
-SrHd4SFKgUq5jRtO7Cq9Wu2WaksBKThC+EjrbtIPbSe/l9MCLKkm/rI9jjphxpnJ
-mH1FYtFHhUKy2vX+ZGI+jETZKP5Xk7B/h5ZCyxCzG4vmdJHvUad17sbUA0Vy60gZ
-ql6mUTfJojZUG3REiRjNizUsc30wm6RfMqq5Rug9A+uftWo4JDAFF+Mb1z5j0O/K
-CYXkmy9tk09iiSd0jdOi8knZzLAJ+f87Z7WTqUFu7Io/nGB5tDj88oL6OBmXOYYF
-PG8EzxxmYQgFgJGLclp1g/qj/mCrO37Z5maMs+tUA4OPAR/La09zDbYTQ8ldgCte
-CHqAubKRD/Zb/bQNQ486WWtHirztiRgHyZKMZEMuRLX9mwoTfDZa8AD8YDT/IeB5
-f7zMFhd3OUaDjEz8MoGgcfsusjAXpaVVhL8rMOq1PnP1on46/YKSaaYew864xUl5
-QsNFs8VHbst6lgaG3Tv9r5eLpGrltbAx/UBRvOElFFVNMZXZgs+KeCTIdbv+SrJI
-ShZNMn5XBWiJg5UconFR
-=L7os
+iQCVAwUBVsX5UKkuBuNlUUl1AQJxNQQAkBR/zkA60OddeNtTWh+XIu28h5fU2TWZ
+P/c4RtiCEY+mYu091HgAmdCyoyeQ3i6wW3wQbB+qP06iF5mBXzO/hRKqeCSqzkYR
+bXj6YGMPC4WIXxGwQ5QCoe1GyquyUOxOopeoCmpJHE5Moq/rOjC54lTdnzIEXHgT
+jvO+TD4G3zU=
+=hQCR
 -----END PGP SIGNATURE-----
 
---fdHPC1u9eRI6tqAPfMXcaQCFjJdAlV5e0--
+--kHKsahEiDmOCqjtw--
 
