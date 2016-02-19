@@ -1,13 +1,11 @@
 MIME-Version: 1.0
-In-Reply-To: <56C724C7.1020603@...1227...>
+In-Reply-To: <56C71B50.4040502@...1227...>
 References: <CAP=zTkOduThZFBXdewpYv1RQyi9z0Hzaz6MPuRXSt5HkbMTewQ@...278...>
 	<56C71B50.4040502@...1227...>
-	<CAP=zTkPMdCrhn16pLOmmGCrZ=tbpP=1mwewULove_tXF-QqH6Q@...278...>
-	<56C724C7.1020603@...1227...>
-Date: Fri, 19 Feb 2016 19:58:39 +0530
-Message-ID: <CAP=zTkMC4M6woOgLcv7yNXG0nPTKy2YDkOAtX8W+7jYHAZsR6g@...278...>
+Date: Fri, 19 Feb 2016 19:30:06 +0530
+Message-ID: <CAP=zTkPMdCrhn16pLOmmGCrZ=tbpP=1mwewULove_tXF-QqH6Q@...278...>
 From: Shubham Chauhan <shubham13099@...2124...>
-Content-Type: multipart/alternative; boundary=001a1140769c979246052c204c4f
+Content-Type: multipart/alternative; boundary=001a11c3eb767fab19052c1fe679
 Subject: Re: [Openvpn-devel] Enabling TLS Session Resumption in OpenVPN
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -20,96 +18,119 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---001a1140769c979246052c204c4f
+--001a11c3eb767fab19052c1fe679
 Content-Type: text/plain; charset=UTF-8
 
-Thanks. I didn't knew about this. This will be helpful.
+Thank you for such a quick reply.
 
-I am specifically looking for enabling TLS session resumptions though.
-Resuming the session with  session IDs stored in a cache at server side
-(the general process of an abbreviated handshake).
-On Feb 19, 2016 7:50 PM, "Arne Schwabe" <arne@...1227...> wrote:
+I agree that VPN sessions and SSL sessions are not necessarily the same.
+Let me be more specific with my question for a better discussion.
+
+In an active OpenVPN session, at regular intervals, a full SSL handshake
+takes place (because the SSL session expires). I checked this by capturing
+packets with "openvpn && ssl" filter.
+In my implementation I don't want those regular full SSL negotiations to
+take place.
+It should ideally check if the SSL session key or the session context is
+present in the cache (or some storage place), and if it is present, then
+full handshake should NOT take place. Instead an abbreviated handshake
+should take place which happens during TLS session resumption.
+I am looking for changes in the code that can be made to do this task (as
+minimal as possible).
+
+I understand the use of SSL_OP_NO_TICKET by OpenVPN against the triple
+handshake vulnerability, but my project is really specific and wants some
+specific functionality, which includes Session Resumptions.
+
+Thanks
+
+On Fri, Feb 19, 2016 at 7:10 PM, Arne Schwabe <arne@...1227...> wrote:
 
 >
 >
-> Am 19.02.16 um 15:00 schrieb Shubham Chauhan:
-> > Thank you for such a quick reply.
+> Am 19.02.16 um 14:32 schrieb Shubham Chauhan:
+> > Hello,
 > >
-> > I agree that VPN sessions and SSL sessions are not necessarily the same.
-> > Let me be more specific with my question for a better discussion.
+> > I am currently working on a project that requires SSL VPN to use
+> > session resumptions.
 > >
-> > In an active OpenVPN session, at regular intervals, a full SSL
-> > handshake takes place (because the SSL session expires). I checked
-> > this by capturing packets with "openvpn && ssl" filter.
-> > In my implementation I don't want those regular full SSL negotiations
-> > to take place.
-> > It should ideally check if the SSL session key or the session context
-> > is present in the cache (or some storage place), and if it is present,
-> > then full handshake should NOT take place. Instead an abbreviated
-> > handshake should take place which happens during TLS session resumption.
-> > I am looking for changes in the code that can be made to do this task
-> > (as minimal as possible).
+> > I need to add the TLS Session Resumption functionality to OpenVPN. Any
+> > starters as in how I could achieve this?
+> > I know about the SSL_OP_NO_TICKET flag added to disable the resumption
+> > process. Will deleting it from the code enable SSL resumption
+> > automatically?
 > >
-> > I understand the use of SSL_OP_NO_TICKET by OpenVPN against the triple
-> > handshake vulnerability, but my project is really specific and wants
-> > some specific functionality, which includes Session Resumptions.
-> >
-> Note that this interval is defined by --reneg-sec and you can disable
-> them by setting that to 0.
+> VPN session and SSL session are not necessarily the same. You can
+> restablish a VPN session with a new TLS session.
+>
+> I think OpenVPN will still insist on a full authentication in a new
+> session, even with SSL_OP_NO_TICKET removed.  I would have to the check
+> the code myself to be sure.
 >
 > Arne
 >
 
---001a1140769c979246052c204c4f
+
+
+-- 
+Regards
+Shubham Chauhan
+2013099
+B.Tech CSE
+
+--001a11c3eb767fab19052c1fe679
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<p dir=3D"ltr">Thanks. I didn&#39;t knew about this. This will be helpful. =
-</p>
-<p dir=3D"ltr">I am specifically looking for enabling TLS session resumptio=
-ns though. Resuming the session with=C2=A0 session IDs stored in a cache at=
- server side (the general process of an abbreviated handshake). </p>
-<div class=3D"gmail_quote">On Feb 19, 2016 7:50 PM, &quot;Arne Schwabe&quot=
-; &lt;<a href=3D"mailto:arne@...1227...">arne@...1227...</a>&gt; wrote:<br =
-type=3D"attribution"><blockquote class=3D"gmail_quote" style=3D"margin:0 0 =
-0 .8ex;border-left:1px #ccc solid;padding-left:1ex"><br>
+<div dir=3D"ltr">Thank you for such a quick reply.=C2=A0<br><div><br></div>=
+<div>I agree that VPN sessions and SSL sessions are not necessarily the sam=
+e.</div><div>Let me be more specific with my question for a better discussi=
+on.</div><div><br></div><div>In an active OpenVPN session, at regular inter=
+vals, a full SSL handshake takes place (because the SSL session expires). I=
+ checked this by capturing packets with &quot;openvpn &amp;&amp; ssl&quot; =
+filter.</div><div>In my implementation I don&#39;t want those regular full =
+SSL negotiations to take place.=C2=A0</div><div>It should ideally check if =
+the SSL session key or the session context is present in the cache (or some=
+ storage place), and if it is present, then full handshake should NOT take =
+place. Instead an abbreviated handshake should take place which happens dur=
+ing TLS session resumption.</div><div>I am looking for changes in the code =
+that can be made to do this task (as minimal as possible).<br></div><div><b=
+r></div><div>I understand the use of SSL_OP_NO_TICKET by OpenVPN against th=
+e triple handshake vulnerability, but my project is really specific and wan=
+ts some specific functionality, which includes Session Resumptions.</div><d=
+iv><br></div><div>Thanks</div></div><div class=3D"gmail_extra"><br><div cla=
+ss=3D"gmail_quote">On Fri, Feb 19, 2016 at 7:10 PM, Arne Schwabe <span dir=
+=3D"ltr">&lt;<a href=3D"mailto:arne@...1227..." target=3D"_blank">arne@...1386...=
+227...</a>&gt;</span> wrote:<br><blockquote class=3D"gmail_quote" style=3D"=
+margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex"><br>
 <br>
-Am 19.02.16 um 15:00 schrieb Shubham Chauhan:<br>
-&gt; Thank you for such a quick reply.<br>
+Am 19.02.16 um 14:32 schrieb Shubham Chauhan:<br>
+<span class=3D"">&gt; Hello,<br>
 &gt;<br>
-&gt; I agree that VPN sessions and SSL sessions are not necessarily the sam=
-e.<br>
-&gt; Let me be more specific with my question for a better discussion.<br>
+&gt; I am currently working on a project that requires SSL VPN to use<br>
+&gt; session resumptions.<br>
 &gt;<br>
-&gt; In an active OpenVPN session, at regular intervals, a full SSL<br>
-&gt; handshake takes place (because the SSL session expires). I checked<br>
-&gt; this by capturing packets with &quot;openvpn &amp;&amp; ssl&quot; filt=
-er.<br>
-&gt; In my implementation I don&#39;t want those regular full SSL negotiati=
-ons<br>
-&gt; to take place.<br>
-&gt; It should ideally check if the SSL session key or the session context<=
-br>
-&gt; is present in the cache (or some storage place), and if it is present,=
+&gt; I need to add the TLS Session Resumption functionality to OpenVPN. Any=
 <br>
-&gt; then full handshake should NOT take place. Instead an abbreviated<br>
-&gt; handshake should take place which happens during TLS session resumptio=
-n.<br>
-&gt; I am looking for changes in the code that can be made to do this task<=
-br>
-&gt; (as minimal as possible).<br>
-&gt;<br>
-&gt; I understand the use of SSL_OP_NO_TICKET by OpenVPN against the triple=
+&gt; starters as in how I could achieve this?<br>
+&gt; I know about the SSL_OP_NO_TICKET flag added to disable the resumption=
 <br>
-&gt; handshake vulnerability, but my project is really specific and wants<b=
-r>
-&gt; some specific functionality, which includes Session Resumptions.<br>
+&gt; process. Will deleting it from the code enable SSL resumption<br>
+&gt; automatically?<br>
 &gt;<br>
-Note that this interval is defined by --reneg-sec and you can disable<br>
-them by setting that to 0.<br>
+</span>VPN session and SSL session are not necessarily the same. You can<br>
+restablish a VPN session with a new TLS session.<br>
 <br>
+I think OpenVPN will still insist on a full authentication in a new<br>
+session, even with SSL_OP_NO_TICKET removed.=C2=A0 I would have to the chec=
+k<br>
+the code myself to be sure.<br>
+<span class=3D"HOEnZb"><font color=3D"#888888"><br>
 Arne<br>
-</blockquote></div>
+</font></span></blockquote></div><br><br clear=3D"all"><div><br></div>-- <b=
+r><div class=3D"gmail_signature"><div dir=3D"ltr">Regards<br>Shubham Chauha=
+n<br>2013099<br>B.Tech CSE</div></div>
+</div>
 
---001a1140769c979246052c204c4f--
+--001a11c3eb767fab19052c1fe679--
 
