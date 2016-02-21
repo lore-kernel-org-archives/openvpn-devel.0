@@ -1,7 +1,9 @@
 From: Steffan Karger <steffan@...1856...>
-Date: Sun, 21 Feb 2016 02:08:11 +0100
-Message-Id: <1456016892-8671-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH 1/2] Minor AEAD patch cleanup
+Date: Sun, 21 Feb 2016 02:08:12 +0100
+Message-Id: <1456016892-8671-2-git-send-email-steffan@...1856...>
+In-Reply-To: <1456016892-8671-1-git-send-email-steffan@...1856...>
+References: <1456016892-8671-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH 2/2] Clean up get_tls_handhake_key()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,65 +16,89 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
- * Remove stale function declaration.
-   This slipped into the AEAD cipher modes patch, but the function is
-   now implemented as a static function is ssl.c.
- * Add ASSERT() to ensure frame is not NULL.
- * Fix "ENCRYPT TO" log message in openvpn_encrypt_aead().
+This function contained *much* more code than required.  This commit
+cleans up the function:
+ * Merge the handling of inline and non-inline code.
+ * Don't double-check key.2, must_have_n_keys() already checks that
+ * Remove stale references to 'passphrase' - we no longer support those
+
+This commit should not change any behaviour except for log messages.
 
 Signed-off-by: Steffan Karger <steffan@...1856...>
 ---
- src/openvpn/crypto.c |  5 +++--
- src/openvpn/crypto.h | 11 -----------
- 2 files changed, 3 insertions(+), 13 deletions(-)
+ src/openvpn/crypto.c | 44 ++++++++------------------------------------
+ 1 file changed, 8 insertions(+), 36 deletions(-)
 
 diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
-index e8ab27a..6d9c119 100644
+index 6d9c119..308b886 100644
 --- a/src/openvpn/crypto.c
 +++ b/src/openvpn/crypto.c
-@@ -161,10 +161,10 @@ openvpn_encrypt_aead (struct buffer *buf, struct buffer work,
-   /* Write authentication tag */
-   ASSERT (cipher_ctx_get_tag (ctx->cipher, mac_out, mac_len));
+@@ -1080,57 +1080,29 @@ test_crypto (struct crypto_options *co, struct frame* frame)
+ void
+ get_tls_handshake_key (const struct key_type *key_type,
+ 		       struct key_ctx_bi *ctx,
+-		       const char *passphrase_file,
++		       const char *key_file,
+ 		       const int key_direction,
+ 		       const unsigned int flags)
+ {
+-  if (passphrase_file && key_type->hmac_length)
++  if (key_file)
+     {
+       struct key2 key2;
+       struct key_direction_state kds;
  
--  dmsg (D_PACKET_CONTENT, "ENCRYPT TO: %s", format_hex (BPTR (buf), BLEN (buf), 80, &gc));
+       if (flags & GHK_INLINE)
+ 	{
+-	  /* key was specified inline, key text is in passphrase_file */
+-	  read_key_file (&key2, passphrase_file, RKF_INLINE|RKF_MUST_SUCCEED);
 -
-   *buf = work;
- 
-+  dmsg (D_PACKET_CONTENT, "ENCRYPT TO: %s", format_hex (BPTR (buf), BLEN (buf), 80, &gc));
-+
- cleanup:
-   gc_free (&gc);
-   return;
-@@ -397,6 +397,7 @@ openvpn_decrypt_aead (struct buffer *buf, struct buffer work,
-   gc_init (&gc);
- 
-   ASSERT (opt);
-+  ASSERT (frame);
-   ASSERT (buf->len > 0);
-   ASSERT (ctx->cipher);
-   ASSERT (cipher_kt_mode_aead (cipher_kt));
-diff --git a/src/openvpn/crypto.h b/src/openvpn/crypto.h
-index 14b6ab7..d3e08c1 100644
---- a/src/openvpn/crypto.h
-+++ b/src/openvpn/crypto.h
-@@ -311,17 +311,6 @@ void free_key_ctx (struct key_ctx *ctx);
- 
- void free_key_ctx_bi (struct key_ctx_bi *ctx);
- 
--/**
-- * Set an implicit IV for a key context.
-- *
-- * @param ctx	The key context to update
-- * @param iv	The implicit IV to load into ctx
-- * @param len	The length (in bytes) of iv
-- */
--bool key_ctx_set_implicit_iv (struct key_ctx *ctx, const uint8_t *iv,
--    size_t len);
+-	  /* succeeded? */
+-	  if (key2.n == 2)
+-	    msg (M_INFO, "Control Channel Authentication: tls-auth using INLINE static key file");
+-	  else
+-	    msg (M_FATAL, "INLINE tls-auth file lacks the requisite 2 keys");
++	  read_key_file (&key2, key_file, RKF_INLINE|RKF_MUST_SUCCEED);
+ 	}
+       else
+-      {
+-	/* first try to parse as an OpenVPN static key file */
+-	read_key_file (&key2, passphrase_file, 0);
 -
+-	/* succeeded? */
+-	if (key2.n == 2)
+-	  {
+-	    msg (M_INFO,
+-		 "Control Channel Authentication: using '%s' as a " PACKAGE_NAME " static key file",
+-		 passphrase_file);
+-	  }
+-	else
+-	  {
+-	    CLEAR (key2);
 -
+-	    /* failed, now bail out */
++	{
++	  read_key_file (&key2, key_file, RKF_MUST_SUCCEED);
++	}
  
- /**************************************************************************/
- /** @name Functions for performing security operations on data channel packets
+-	    msg (M_ERR,
+-		 "Control Channel Authentication: File '%s' does not have OpenVPN Static Key format. "
+-		 "Using free-form passphrase file is not supported anymore",
+-		 passphrase_file);
+-	  }
+-      }
+       /* handle key direction */
+-
+       key_direction_state_init (&kds, key_direction);
+-      must_have_n_keys (passphrase_file, "tls-auth", &key2, kds.need_keys);
+-
+-      /* initialize hmac key in both directions */
++      must_have_n_keys (key_file, "tls-auth", &key2, kds.need_keys);
+ 
++      /* initialize key in both directions */
+       init_key_ctx (&ctx->encrypt, &key2.keys[kds.out_key], key_type, OPENVPN_OP_ENCRYPT,
+ 		    "Outgoing Control Channel Authentication");
+       init_key_ctx (&ctx->decrypt, &key2.keys[kds.in_key], key_type, OPENVPN_OP_DECRYPT,
 -- 
 2.5.0
 
