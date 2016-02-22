@@ -1,11 +1,9 @@
-References: <1456016892-8671-1-git-send-email-steffan@...1856...>
-	<1456016892-8671-2-git-send-email-steffan@...1856...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <56CB1220.5040803@...1227...>
-Date: Mon, 22 Feb 2016 14:50:24 +0100
-MIME-Version: 1.0
-In-Reply-To: <1456016892-8671-2-git-send-email-steffan@...1856...>
-Subject: Re: [Openvpn-devel] [PATCH 2/2] Clean up get_tls_handhake_key()
+From: Steffan Karger <steffan@...1856...>
+Date: Mon, 22 Feb 2016 15:24:06 +0100
+Message-Id: <1456151046-16047-1-git-send-email-steffan@...1856...>
+In-Reply-To: <56CB1220.5040803@...1227...>
+References: <56CB1220.5040803@...1227...>
+Subject: [Openvpn-devel] [PATCH 2/2 v2] Clean up get_tls_handhake_key()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,29 +12,102 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=iso-8859-15
-Content-Transfer-Encoding: 7bit
-To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
+This function has *much* more code than required.  This commit cleans up
+the function:
+ * Merge the handling of inline and non-inline code.
+ * Don't double-check key.2, since must_have_n_keys() already does that
+   (but keep the message about dropped passphrase support in 2.4).
+ * Remove stale references to 'passphrase' - we no longer support those
 
+This commit should not change any behaviour except for log messages.
 
-Am 21.02.16 um 02:08 schrieb Steffan Karger:
-> This function contained *much* more code than required.  This commit
-> cleans up the function:
->  * Merge the handling of inline and non-inline code.
->  * Don't double-check key.2, must_have_n_keys() already checks that
->  * Remove stale references to 'passphrase' - we no longer support those
->
-> This commit should not change any behaviour except for log messages.
->
->
-I would like to keep that error message about free-form files in 2.4
-since 2.4 is the first version not to warn but also to bail out on this
-change with an error message.
-We can change the error message not have the filename in it, something
-like "tls-auth option does have not static key format ... "
-                     
-Otherwise it gets an ACK from me.
+v2: Leave message about dropped passphrase support in place - this option
+    was dropped in 2.4, so it is indeed better to be clear about it.
 
-Arne
+Signed-off-by: Steffan Karger <steffan@...1856...>
+---
+ src/openvpn/crypto.c | 46 ++++++++++++----------------------------------
+ 1 file changed, 12 insertions(+), 34 deletions(-)
+
+diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
+index 6d9c119..bd86679 100644
+--- a/src/openvpn/crypto.c
++++ b/src/openvpn/crypto.c
+@@ -1080,57 +1080,35 @@ test_crypto (struct crypto_options *co, struct frame* frame)
+ void
+ get_tls_handshake_key (const struct key_type *key_type,
+ 		       struct key_ctx_bi *ctx,
+-		       const char *passphrase_file,
++		       const char *key_file,
+ 		       const int key_direction,
+ 		       const unsigned int flags)
+ {
+-  if (passphrase_file && key_type->hmac_length)
++  if (key_file)
+     {
+       struct key2 key2;
+       struct key_direction_state kds;
+ 
+       if (flags & GHK_INLINE)
+ 	{
+-	  /* key was specified inline, key text is in passphrase_file */
+-	  read_key_file (&key2, passphrase_file, RKF_INLINE|RKF_MUST_SUCCEED);
+-
+-	  /* succeeded? */
+-	  if (key2.n == 2)
+-	    msg (M_INFO, "Control Channel Authentication: tls-auth using INLINE static key file");
+-	  else
+-	    msg (M_FATAL, "INLINE tls-auth file lacks the requisite 2 keys");
++	  read_key_file (&key2, key_file, RKF_INLINE|RKF_MUST_SUCCEED);
+ 	}
+       else
+-      {
+-	/* first try to parse as an OpenVPN static key file */
+-	read_key_file (&key2, passphrase_file, 0);
++	{
++	  read_key_file (&key2, key_file, RKF_MUST_SUCCEED);
++	}
+ 
+-	/* succeeded? */
+-	if (key2.n == 2)
++	if (key2.n != 2)
+ 	  {
+-	    msg (M_INFO,
+-		 "Control Channel Authentication: using '%s' as a " PACKAGE_NAME " static key file",
+-		 passphrase_file);
++	    msg (M_ERR, "Control Channel Authentication: File '%s' does not "
++		"have OpenVPN Static Key format.  Using free-form passphrase "
++		"file is not supported anymore.", key_file);
+ 	  }
+-	else
+-	  {
+-	    CLEAR (key2);
+-
+-	    /* failed, now bail out */
+-
+-	    msg (M_ERR,
+-		 "Control Channel Authentication: File '%s' does not have OpenVPN Static Key format. "
+-		 "Using free-form passphrase file is not supported anymore",
+-		 passphrase_file);
+-	  }
+-      }
+       /* handle key direction */
+-
+       key_direction_state_init (&kds, key_direction);
+-      must_have_n_keys (passphrase_file, "tls-auth", &key2, kds.need_keys);
+-
+-      /* initialize hmac key in both directions */
++      must_have_n_keys (key_file, "tls-auth", &key2, kds.need_keys);
+ 
++      /* initialize key in both directions */
+       init_key_ctx (&ctx->encrypt, &key2.keys[kds.out_key], key_type, OPENVPN_OP_ENCRYPT,
+ 		    "Outgoing Control Channel Authentication");
+       init_key_ctx (&ctx->decrypt, &key2.keys[kds.in_key], key_type, OPENVPN_OP_DECRYPT,
+-- 
+2.5.0
+
 
