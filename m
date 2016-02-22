@@ -1,9 +1,10 @@
-Date: Sun, 21 Feb 2016 13:28:45 +0100 (CET)
-Message-Id: <201602211228.u1LCSjn6046212@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <1456016892-8671-1-git-send-email-steffan@...1856...>
-References: <1456016892-8671-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Minor AEAD patch cleanup
+References: <CAKuzo_gG7539X6ASTsM2ruO_BrQDtMuNV640CNhFtSMp_sJykQ@...278...>
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <56CAE83E.8030609@...515...>
+Date: Mon, 22 Feb 2016 12:51:42 +0200
+MIME-Version: 1.0
+In-Reply-To: <CAKuzo_gG7539X6ASTsM2ruO_BrQDtMuNV640CNhFtSMp_sJykQ@...278...>
+Subject: Re: [Openvpn-devel] openvpn-gui
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,31 +13,37 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Steffan Karger <steffan@...1856...>
-Cc: openvpn-devel@lists.sourceforge.net
-
-ACK "straightforward enough" ;-)
-
-Your patch has been applied to the master branch.
-
-commit b3560c98d7e4877f3ff6283dde1751654e6f7d6d
-Author: Steffan Karger
-Date:   Sun Feb 21 02:08:11 2016 +0100
-
-     Minor AEAD patch cleanup
-
-     Signed-off-by: Steffan Karger <steffan@...1856...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1456016892-8671-1-git-send-email-steffan@...1856...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/11233
-     Signed-off-by: Gert Doering <gert@...1296...>
+Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Transfer-Encoding: quoted-printable
+To: Selva Nair <selva.nair@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
 
---
-kind regards,
+> Hi,
+>
+> We have a few pending pull requests in openvpn-gui. At least one of them
+> (put --log first in the command line) is tiny and may be reviewed
+> without getting sullied by association to windows:-)
+>
+> Could anyone from here please take a look? Here is a link:
+>
+> https://github.com/OpenVPN/openvpn-gui/pull/15
 
-Gert Doering
+Oh well. As managing the numerous pull requests and patches had gotten=20
+rather complicated and more kept coming in, I merged that PR earlier=20
+today based on "lazy-ACK". That was before reading this email,=20
+obviously. That said, retroactive review would be most welcome!
 
+In the future we need to decide how to manage OpenVPN-GUI reviews. I've=20
+been able to review some of the code patches because they've been fairly=20
+trivial. And I'm able usually able to test the PRs / patches to ensure=20
+they work as advertised. However, oftentimes review from a (Windows) C=20
+developer would be very beneficial or even required to help ensure=20
+correctness.
+
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
 
