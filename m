@@ -1,10 +1,17 @@
-Date: Thu, 25 Feb 2016 17:32:51 +0100 (CET)
-Message-Id: <201602251632.u1PGWpNw022607@...2054...>
+Date: Thu, 25 Feb 2016 17:34:42 +0100
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1456412312-21936-1-git-send-email-gert@...1296...>
-References: <1456412312-21936-1-git-send-email-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix openserv/validate.o linking
-	issues on mingw.
+Message-ID: <20160225163442.GJ24952@...1296...>
+References: <1455937988-12414-1-git-send-email-selva.nair@...277...>
+	<201602251201.u1PC1qiO020709@...2054...>
+	<20160225125742.GA21087@...1296...>
+	<CAKuzo_h4TxqCnQ9jzQ1D07jKjvfGJJAhjJR-OpPUU_cpNw20WA@...278...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="lsD+SzsxON+tebmm"
+Content-Disposition: inline
+In-Reply-To: <CAKuzo_h4TxqCnQ9jzQ1D07jKjvfGJJAhjJR-OpPUU_cpNw20WA@...278...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Re: Restrict options/configs
+ for startup through interactive service
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,28 +20,55 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Selva Nair <selva.nair@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Patch has been applied to the master branch.
+--lsD+SzsxON+tebmm
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-commit 9b9187031b742258b518dbde648326b3e3a8d8d8
-Author: Gert Doering
-Date:   Thu Feb 25 15:58:32 2016 +0100
+Hi,
 
-     Fix openserv/validate.o linking issues on mingw.
+On Thu, Feb 25, 2016 at 10:57:52AM -0500, Selva Nair wrote:
+> > I'm a bit at a loss why it is bombing here...
+>=20
+> Ah, sorry I should have checked 32 bit compilation. Its due to missing
+> includes, not a big problem for 64 bit as dll import names are not mangle=
+d,
+> but in 32 bit linker may be looking for _PathIsRelativeW etc.. (I think..)
+> Anyway my mistake.. Will do a patch..
 
-     Signed-off-by: Gert Doering <gert@...1296...>
-     Acked-by: Selva Nair <selva.nair@...277...>
-     Message-Id: <1456412312-21936-1-git-send-email-gert@...1296...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/11255
+Ah!  Learned something new today.
 
+(Unixy systems usually only break on missing includes if functions are not=
+=20
+real "functions" but macros instead...)
 
---
-kind regards,
+Thanks for the quick explanation and ACK, buildbot should be happy again
+now - and I can push stuff again without being hit by build failure
+complaints :-)
 
-Gert Doering
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
+--lsD+SzsxON+tebmm
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQCVAwUBVs8tIqkuBuNlUUl1AQLKuQP/ZleqPuYRqR7Sjvlz1h8L9PxnISf2YYHz
+Be6NwZpcF1KGL4jHca3oGiC+cX403oxo8JM/PQUNC2Uej8c+jpnPJiI6G5RfbWUM
+loS1kQT1FGmMwD56QnVXUUnY6AAuS5/KeLFiCgOebnSlevU+PPKMQMf95z4C97dX
+qVr6e7NH980=
+=Vyhz
+-----END PGP SIGNATURE-----
+
+--lsD+SzsxON+tebmm--
 
