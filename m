@@ -1,14 +1,15 @@
-Date: Thu, 25 Feb 2016 13:50:08 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20160225125008.GD24952@...1296...>
-References: <1455398109-28880-1-git-send-email-selva.nair@...277...>
+References: <1456171763-44172-1-git-send-email-fish.thss@...277...>
+	<20160225122928.GC24952@...1296...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <56CEF9E5.3090508@...2080...>
+Date: Thu, 25 Feb 2016 13:56:05 +0100
 MIME-Version: 1.0
+In-Reply-To: <20160225122928.GC24952@...1296...>
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="AgfKiFnDqiC530Rn"
-Content-Disposition: inline
-In-Reply-To: <1455398109-28880-1-git-send-email-selva.nair@...277...>
-Subject: Re: [Openvpn-devel] [PATCH 0/2] Support "block-outside-dns" through
- interactive service
+	protocol="application/pgp-signature";
+	boundary="s8ifRuuLlSpL5ShQ2da970OWjOAQpCCKS"
+Subject: [Openvpn-devel] The puprose of the Signed-off-by: line
+Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,60 +18,57 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>
+To: Fish <fish.thss@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---AgfKiFnDqiC530Rn
-Content-Type: text/plain; charset="us-ascii"
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--s8ifRuuLlSpL5ShQ2da970OWjOAQpCCKS
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
+On 25/02/16 13:29, Gert Doering wrote:
+> Please re-send (and it would be nice if you could do "git commit -s"
+> for the signed-off-by: - David can explain better what the significance
+> of that is, but "since we all do it", it's convention)
 
-On Sat, Feb 13, 2016 at 04:15:07PM -0500, Selva Nair wrote:
-> The patch is split into two commits for ease of review
-> (i) Refactor the code changing no functionality
->     -- most of win_wfp_block_dns is moved to a new  file and
->        made independent of the rest of the code
->=20
-> (ii) Implement a handler for blocking dns in the interactive service
->=20
->=20
-> With (i) and (ii) --block-outside-dns should work without admin privileges
-> if the interactive service installed and running and GUI is started as us=
-er.
+The reason of adding the Signed-off-by is to have a better understanding
+of whom have been involved in particular commits/patches.  While the
+"Author field" in the git log (git log --pretty=3Dfuller) can only have
+one name, more people can have been involved in the patch.  Using the
+Signed-off-by is a way to credit them as well.
 
-This looks good to me.  Alas, I also need to ask you for a v2 of the
-(i) patch - I've just merged Valdikss' patch to make the block-outside-dns
-code work on Vista (trac #648), and now the code slab that gets moved=20
-out of win32.c has been changed.
+And when everyone is consistent using the Signed-off-by line, writing
+tools which parses our git log is also far more easier.
 
-Of course I could adjust (i) accordingly, but for maximum transparency,
-I would perfer to have the actual change on the list and in the archives...
+The other aspect of the Signed-off-by: line has to do with juridical
+stuff, to protect the OpenVPN project.  By adding the Signed-off-by:
+line you basically sign-off to "Yes, I am the author of these changes
+and I am permitted to share them with the project".  For more
+information, these pages explains it even better (same info, two
+different sources):
+<https://git.eclipse.org/r/Documentation/user-signedoffby.html>
+<https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/Docum=
+entation/SubmittingPatches#n409>
 
-thanks
-
-gert
 
 --=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+kind regards,
 
---AgfKiFnDqiC530Rn
+David Sommerseth
+
+
+--s8ifRuuLlSpL5ShQ2da970OWjOAQpCCKS
 Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
+Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQCVAwUBVs74f6kuBuNlUUl1AQI3NAQAvmI8flIzgheGkptZ3dQpAhFUGm8ZtyPK
-6GWHCmm/5Fn7MxDAdtm6/gwFvZ0Dxltkzjr3l1xaX3pBNhoZZenRR0kcKJ8Ri41P
-LJ3Yuwyl2tI19/lHWcRrmEvqBsdFivUqT52ESuIYUp2mOYr+ibylEs+5v5+W3eEY
-UCuUfEf0t08=
-=VYuH
+iEYEARECAAYFAlbO+egACgkQDC186MBRfrq0LACfcM6ijX5+c0zzcvDAPd16ICh3
+RqMAn1ACpWvc7fF2J7dHzuCykrd4gWmX
+=nR2E
 -----END PGP SIGNATURE-----
 
---AgfKiFnDqiC530Rn--
+--s8ifRuuLlSpL5ShQ2da970OWjOAQpCCKS--
 
