@@ -1,9 +1,13 @@
-From: Fish <fish.thss@...277...>
-Date: Thu, 25 Feb 2016 16:14:42 -0500
-Message-Id: <1456434882-6009-1-git-send-email-fish.thss@...277...>
-In-Reply-To: <20160225122928.GC24952@...1296...>
-References: <20160225122928.GC24952@...1296...>
-Subject: [Openvpn-devel] [PATCH v2] Add lz4 support to MSVC.
+MIME-Version: 1.0
+In-Reply-To: <1456434007-5361-1-git-send-email-fish.thss@...277...>
+References: <20160225120415.GB24952@...1296...>
+	<1456434007-5361-1-git-send-email-fish.thss@...277...>
+From: Selva Nair <selva.nair@...277...>
+Date: Thu, 25 Feb 2016 17:59:02 -0500
+Message-ID: <CAKuzo_i5PNj4uXfeYTyEZss3vzRhU-77u0CiBvTY6Jox4P9quw@...278...>
+Content-Type: multipart/alternative; boundary=001a113d54f81f4dae052ca02280
+Subject: Re: [Openvpn-devel] [PATCH v4] Make openvpnserv compilable under
+ Visual Studio.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,139 +16,87 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Fish <fish.thss@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-- Include lz4 code and header in VC project files.
-- Fix an issue in comp-lz4.h that prevents it from compiling under MSVC.
+--001a113d54f81f4dae052ca02280
+Content-Type: text/plain; charset=UTF-8
 
-Signed-off-by: Fish <fish.thss@...277...>
----
- config-msvc.h                       |  2 ++
- src/compat/compat.vcxproj           |  1 +
- src/compat/compat.vcxproj.filters   |  3 +++
- src/openvpn/comp-lz4.h              |  1 +
- src/openvpn/openvpn.vcxproj         |  4 +++-
- src/openvpn/openvpn.vcxproj.filters | 17 ++++++++++++++++-
- 6 files changed, 26 insertions(+), 2 deletions(-)
+Hi,
 
-diff --git a/config-msvc.h b/config-msvc.h
-index 0bcf719..9c8d423 100644
---- a/config-msvc.h
-+++ b/config-msvc.h
-@@ -12,6 +12,8 @@
- #define ENABLE_FRAGMENT 1
- #define ENABLE_HTTP_PROXY 1
- #define ENABLE_LZO 1
-+#define ENABLE_LZ4 1
-+#define NEED_COMPAT_LZ4 1
- #define ENABLE_MANAGEMENT 1
- #define ENABLE_MULTIHOME 1
- #define ENABLE_PKCS11 1
-diff --git a/src/compat/compat.vcxproj b/src/compat/compat.vcxproj
-index 7fca62f..d2695e6 100644
---- a/src/compat/compat.vcxproj
-+++ b/src/compat/compat.vcxproj
-@@ -79,6 +79,7 @@
-     <ClCompile Include="compat-inet_ntop.c" />
-     <ClCompile Include="compat-inet_pton.c" />
-     <ClCompile Include="compat-daemon.c" />
-+    <ClCompile Include="compat-lz4.c" />
-   </ItemGroup>
-   <ItemGroup>
-     <ClInclude Include="compat.h" />
-diff --git a/src/compat/compat.vcxproj.filters b/src/compat/compat.vcxproj.filters
-index 00bb0ff..0f78e86 100644
---- a/src/compat/compat.vcxproj.filters
-+++ b/src/compat/compat.vcxproj.filters
-@@ -33,6 +33,9 @@
-     <ClCompile Include="compat-daemon.c">
-       <Filter>Source Files</Filter>
-     </ClCompile>
-+    <ClCompile Include="compat-lz4.c">
-+      <Filter>Source Files</Filter>
-+    </ClCompile>
-   </ItemGroup>
-   <ItemGroup>
-     <ClInclude Include="compat.h">
-diff --git a/src/openvpn/comp-lz4.h b/src/openvpn/comp-lz4.h
-index 9d3c664..7774ca5 100644
---- a/src/openvpn/comp-lz4.h
-+++ b/src/openvpn/comp-lz4.h
-@@ -35,6 +35,7 @@ extern const struct compress_alg lz4v2_alg;
- 
- struct lz4_workspace
- {
-+  int dummy;
- };
- 
- #endif /* ENABLE_LZ4 */
-diff --git a/src/openvpn/openvpn.vcxproj b/src/openvpn/openvpn.vcxproj
-index 821c46c..8dfbea5 100644
---- a/src/openvpn/openvpn.vcxproj
-+++ b/src/openvpn/openvpn.vcxproj
-@@ -102,6 +102,7 @@
-     <ClCompile Include="base64.c" />
-     <ClCompile Include="buffer.c" />
-     <ClCompile Include="clinat.c" />
-+    <ClCompile Include="comp-lz4.c" />
-     <ClCompile Include="comp.c" />
-     <ClCompile Include="compstub.c" />
-     <ClCompile Include="console.c" />
-@@ -172,9 +173,10 @@
-     <ClInclude Include="buffer.h" />
-     <ClInclude Include="circ_list.h" />
-     <ClInclude Include="clinat.h" />
-+    <ClInclude Include="common.h" />
-+    <ClInclude Include="comp-lz4.h" />
-     <ClInclude Include="comp.h" />
-     <ClInclude Include="compstub.h" />
--    <ClInclude Include="common.h" />
-     <ClInclude Include="console.h" />
-     <ClInclude Include="crypto.h" />
-     <ClInclude Include="crypto_backend.h" />
-diff --git a/src/openvpn/openvpn.vcxproj.filters b/src/openvpn/openvpn.vcxproj.filters
-index 40336ba..8b6a269 100644
---- a/src/openvpn/openvpn.vcxproj.filters
-+++ b/src/openvpn/openvpn.vcxproj.filters
-@@ -207,6 +207,15 @@
-     <ClCompile Include="win32.c">
-       <Filter>Source Files</Filter>
-     </ClCompile>
-+    <ClCompile Include="comp.c">
-+      <Filter>Source Files</Filter>
-+    </ClCompile>
-+    <ClCompile Include="compstub.c">
-+      <Filter>Source Files</Filter>
-+    </ClCompile>
-+    <ClCompile Include="comp-lz4.c">
-+      <Filter>Source Files</Filter>
-+    </ClCompile>
-   </ItemGroup>
-   <ItemGroup>
-     <ClInclude Include="base64.h">
-@@ -227,6 +236,12 @@
-     <ClInclude Include="common.h">
-       <Filter>Header Files</Filter>
-     </ClInclude>
-+    <ClInclude Include="comp.h">
-+      <Filter>Header Files</Filter>
-+    </ClInclude>
-+    <ClInclude Include="comp-lz4.h">
-+      <Filter>Header Files</Filter>
-+    </ClInclude>
-     <ClInclude Include="console.h">
-       <Filter>Header Files</Filter>
-     </ClInclude>
-@@ -455,4 +470,4 @@
-       <Filter>Resource Files</Filter>
-     </ResourceCompile>
-   </ItemGroup>
--</Project>
-\ No newline at end of file
-+</Project>
--- 
-2.6.4
+On Thu, Feb 25, 2016 at 4:00 PM, Fish <fish.thss@...277...> wrote:
 
+> +#ifndef _WIN32_H
+> +#define _WIN32_H
+> +
+> +#if defined(_MSC_VER)
+> +#define snwprintf _snwprintf
+> +#endif
+> +
+> +#endif
+>
+
+We could've just used _snwprintf directly in the sources and avoided a new
+header file. mingw has both. Well, may be someone would care to write an
+openvpn_snwprintf wrapper like the openvpn_sntprintf..
+
+     const WCHAR *msg1 = L"You have specified a config file location (%s
+> relative to %s)"
+> -                        " that requires admin approval. This error may be
+> avoided"
+> -                        " by adding your account to the \"%s\" group";
+> +                        L" that requires admin approval. This error may
+> be avoided"
+> +                        L" by adding your account to the \"%s\" group";
+
+
+Good to know MS has its own standards :-)
+
+By the way, I'm going to submit the rebased patch for block-outside-dns
+through iservice later tonight. But no idea what is required to make it
+compile with Visual Studio.
+
+Selva
+
+--001a113d54f81f4dae052ca02280
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div class=3D"gmail_extra">Hi,</div><div class=3D"gmail_ex=
+tra"><br><div class=3D"gmail_quote">On Thu, Feb 25, 2016 at 4:00 PM, Fish <=
+span dir=3D"ltr">&lt;<a href=3D"mailto:fish.thss@...277..." target=3D"_blan=
+k">fish.thss@...277...</a>&gt;</span> wrote:<br><blockquote class=3D"gmail_=
+quote" style=3D"margin:0px 0px 0px 0.8ex;border-left-width:1px;border-left-=
+color:rgb(204,204,204);border-left-style:solid;padding-left:1ex"><div style=
+=3D"overflow:hidden">+#ifndef _WIN32_H<br>
++#define _WIN32_H<br>
++<br>
++#if defined(_MSC_VER)<br>
++#define snwprintf _snwprintf<br>
++#endif<br>
++<br>
++#endif</div></blockquote></div><br>We could&#39;ve just used _snwprintf di=
+rectly in the sources and avoided a new header file. mingw has both. Well, =
+may be someone would care to write an openvpn_snwprintf wrapper like the op=
+envpn_sntprintf..</div><div class=3D"gmail_extra"><br></div><div class=3D"g=
+mail_extra"><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0=
+.8ex;border-left-width:1px;border-left-color:rgb(204,204,204);border-left-s=
+tyle:solid;padding-left:1ex">=C2=A0 =C2=A0 =C2=A0const WCHAR *msg1 =3D L&qu=
+ot;You have specified a config file location (%s relative to %s)&quot;<br>-=
+ =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0&quot; that requires admin approval. This error may be avoided&qu=
+ot;<br>- =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0&quot; by adding your account to the \&quot;%s\&quot; grou=
+p&quot;;<br>+ =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0L&quot; that requires admin approval. This error ma=
+y be avoided&quot;<br>+ =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0L&quot; by adding your account to the \&q=
+uot;%s\&quot; group&quot;;</blockquote><div><br></div><div>Good to know MS =
+has its own standards :-)=C2=A0</div><div><br></div><div>By the way, I&#39;=
+m going to submit the rebased patch for block-outside-dns through iservice =
+later tonight. But no idea what is required to make it compile with Visual =
+Studio.</div><div><br></div></div><div class=3D"gmail_extra">Selva</div></d=
+iv>
+
+--001a113d54f81f4dae052ca02280--
 
