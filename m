@@ -1,15 +1,13 @@
-Date: Thu, 25 Feb 2016 13:04:15 +0100
+Date: Thu, 25 Feb 2016 13:29:29 +0100
 From: Gert Doering <gert@...1296...>
-Message-ID: <20160225120415.GB24952@...1296...>
-References: <1456171237-43673-1-git-send-email-fish.thss@...277...>
-	<1456173717-45378-1-git-send-email-fish.thss@...277...>
+Message-ID: <20160225122928.GC24952@...1296...>
+References: <1456171763-44172-1-git-send-email-fish.thss@...277...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="ldkySQ/AwNMpyl5X"
+	protocol="application/pgp-signature"; boundary="3RuZSzpzy06PzMYS"
 Content-Disposition: inline
-In-Reply-To: <1456173717-45378-1-git-send-email-fish.thss@...277...>
-Subject: Re: [Openvpn-devel] [PATCH v3] Make openvpn and openvpnserv
- compilable under Visual Studio.
+In-Reply-To: <1456171763-44172-1-git-send-email-fish.thss@...277...>
+Subject: Re: [Openvpn-devel] [PATCH] Add lz4 support to MSVC project.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,36 +19,45 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: Fish <fish.thss@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---ldkySQ/AwNMpyl5X
+--3RuZSzpzy06PzMYS
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Mon, Feb 22, 2016 at 03:41:57PM -0500, Fish wrote:
-> Compiled under VS 2010/2013 and Windows 10.
->=20
-> The following major changes are made:
-> - Remove all runtime function resolving code since OpenVPN 2.4 is
->   targeting Vista+.
-> - Make sure local header inclusion uses double-quotes instead of angle
->   brackets.
-> - Update openvpnserv.vcxproj to include new source files and headers, as
->   well as additional lib files.
-> - Include <netioapi.h> in two source files.
+On Mon, Feb 22, 2016 at 03:09:23PM -0500, Fish wrote:
+> - Include lz4 code and header in VC project files.
+> - Fix an issue in comp-lz4.h that prevents it from compiling under MSVC.
 
-I'm all willing to merge this (it makes sense) but want to ask you for
-a v4 nevertheless - I've just merged & pushed Selva's "validate options"
-patch, which adds new source files (validate.c, validate.h) so more=20
-changes are needed.  So it would be nice to have this all in one slightly
-larger change set...
+The patch does not apply for me
 
-(The patch itself looks good, it just conflicted with the other change)
+Applying: Add lz4 support to MSVC project.
+error: patch failed: src/openvpn/openvpn.vcxproj.filters:461
+error: src/openvpn/openvpn.vcxproj.filters: patch does not apply
 
-thanks,
+... because my vcxproj.filters file looks totally different in the
+surrounding code - mine ends with:
+
+    <ClInclude Include=3D"tun.h">^M
+      <Filter>Header Files</Filter>^M
+    </ClInclude>^M
+    <ClInclude Include=3D"win32.h">^M
+      <Filter>Header Files</Filter>^M
+    </ClInclude>^M
+  </ItemGroup>^M
+  <ItemGroup>^M
+    <ResourceCompile Include=3D"openvpn_win32_resources.rc">^M
+      <Filter>Resource Files</Filter>^M
+
+while your context has "resource.h" as previously-last file in there...
+
+Please re-send (and it would be nice if you could do "git commit -s"
+for the signed-off-by: - David can explain better what the significance
+of that is, but "since we all do it", it's convention)
 
 gert
+
 --=20
 USENET is *not* the non-clickable part of WWW!
                                                            //www.muc.de/~ge=
@@ -58,18 +65,18 @@ rt/
 Gert Doering - Munich, Germany                             gert@...1296...
 fax: +49-89-35655025                        gert@...1297...
 
---ldkySQ/AwNMpyl5X
+--3RuZSzpzy06PzMYS
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1
 
-iQCVAwUBVs7tvqkuBuNlUUl1AQJzXwP/TPcBK1/pi83F8Lr2j9GkbipxxFysnvNv
-0CX9pg7IKIaF9XotvQmVdnBvYlaa82Dl4PIhMLop5mKCoNyI81y3qa03vo/QqKyY
-NFxDM1ZwrC0FIJqD6I8RvBVSz/JiIf8MFccOGJ/5AlD6gzK81aU5gmsWvBI7ljAr
-qDZ/5eeMvsM=
-=nWxX
+iQCVAwUBVs7zqKkuBuNlUUl1AQIQ4wQAgg7mqqTuVTnNA9dE60Uk1Vn0cQlqWtOs
+rq/WQqSpwRNDoVrUmJBx7dc3kSbNX6iF3bXQ2dq2A0jHG/BawrFgb/SeteIvlxqj
+krHZ1Byx1faY87y1H30esjrmGx3L+DCtdbMIwJXVnw3BJTsL6zPgMg0JTtCVGZ0Y
+Z6ywtS6bU0A=
+=pLzD
 -----END PGP SIGNATURE-----
 
---ldkySQ/AwNMpyl5X--
+--3RuZSzpzy06PzMYS--
 
