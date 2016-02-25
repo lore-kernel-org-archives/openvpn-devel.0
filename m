@@ -1,13 +1,11 @@
-Date: Thu, 25 Feb 2016 13:29:29 +0100
+Date: Thu, 25 Feb 2016 13:47:11 +0100 (CET)
+Message-Id: <201602251247.u1PClB13021015@...2054...>
 From: Gert Doering <gert@...1296...>
-Message-ID: <20160225122928.GC24952@...1296...>
-References: <1456171763-44172-1-git-send-email-fish.thss@...277...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="3RuZSzpzy06PzMYS"
-Content-Disposition: inline
-In-Reply-To: <1456171763-44172-1-git-send-email-fish.thss@...277...>
-Subject: Re: [Openvpn-devel] [PATCH] Add lz4 support to MSVC project.
+In-Reply-To: <1452900938-3636-1-git-send-email-iam@...2070...>
+References: <1452900938-3636-1-git-send-email-iam@...2070...>
+	<CAKuzo_gEU6OvYZXDdoWPo6pjhzD6yG5REQVWBbG9Pyjmeg8Apw@...278...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Update --block-outside-dns to
+	work on Windows Vista
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,67 +14,38 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Fish <fish.thss@...277...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: ValdikSS <iam@...2070...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---3RuZSzpzy06PzMYS
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Thanks, and sorry for the long delay.
 
-Hi,
+The ACK from Selva is in a different thread, but referring to this patch 
+(Message-ID: <CAKuzo_gEU6OvYZXDdoWPo6pjhzD6yG5REQVWBbG9Pyjmeg8Apw@...278...>)
 
-On Mon, Feb 22, 2016 at 03:09:23PM -0500, Fish wrote:
-> - Include lz4 code and header in VC project files.
-> - Fix an issue in comp-lz4.h that prevents it from compiling under MSVC.
+I have added a reference to trac #648 and reformatted the commit message
+slightly (too-long lines get wrapped in weird ways by git am).
 
-The patch does not apply for me
+Your patch has been applied to the master and release/2.3 branch.
 
-Applying: Add lz4 support to MSVC project.
-error: patch failed: src/openvpn/openvpn.vcxproj.filters:461
-error: src/openvpn/openvpn.vcxproj.filters: patch does not apply
+commit 236769150f64087c590c718c76916ee3c8c9d3b5 (master)
+commit 0209fafea2a4205c43d7952dcc5d32d2dbd353e5 (release/2.3)
 
-... because my vcxproj.filters file looks totally different in the
-surrounding code - mine ends with:
+Author: ValdikSS
+Date:   Sat Jan 16 02:35:38 2016 +0300
 
-    <ClInclude Include=3D"tun.h">^M
-      <Filter>Header Files</Filter>^M
-    </ClInclude>^M
-    <ClInclude Include=3D"win32.h">^M
-      <Filter>Header Files</Filter>^M
-    </ClInclude>^M
-  </ItemGroup>^M
-  <ItemGroup>^M
-    <ResourceCompile Include=3D"openvpn_win32_resources.rc">^M
-      <Filter>Resource Files</Filter>^M
+     Update --block-outside-dns to work on Windows Vista
 
-while your context has "resource.h" as previously-last file in there...
+     Acked-by: Selva Nair <selva.nair@...277...>
+     Message-Id: <1452900938-3636-1-git-send-email-iam@...2070...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/10998
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-Please re-send (and it would be nice if you could do "git commit -s"
-for the signed-off-by: - David can explain better what the significance
-of that is, but "since we all do it", it's convention)
 
-gert
+--
+kind regards,
 
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+Gert Doering
 
---3RuZSzpzy06PzMYS
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQCVAwUBVs7zqKkuBuNlUUl1AQIQ4wQAgg7mqqTuVTnNA9dE60Uk1Vn0cQlqWtOs
-rq/WQqSpwRNDoVrUmJBx7dc3kSbNX6iF3bXQ2dq2A0jHG/BawrFgb/SeteIvlxqj
-krHZ1Byx1faY87y1H30esjrmGx3L+DCtdbMIwJXVnw3BJTsL6zPgMg0JTtCVGZ0Y
-Z6ywtS6bU0A=
-=pLzD
------END PGP SIGNATURE-----
-
---3RuZSzpzy06PzMYS--
 
