@@ -1,10 +1,7 @@
-Date: Thu, 25 Feb 2016 14:36:03 +0100 (CET)
-Message-Id: <201602251336.u1PDa3Ys021449@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <1455470881-32341-1-git-send-email-selva.nair@...277...>
-References: <1455470881-32341-1-git-send-email-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Send stdout and stderr of
-	OpenVPN started by interactive service to NUL
+From: Steffan Karger <steffan@...1856...>
+Date: Thu, 25 Feb 2016 15:10:34 +0100
+Message-Id: <1456409434-14784-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH] Fix OCSP_check.sh
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,35 +12,33 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Selva Nair <selva.nair@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-ACK.  Fixes the "OpenVPN.exe hanging with no understandable reason when
-the log file cannot be written to" issue for good (logging on management
-interface will still work).
+As reported in trac #582, the OCSP_check.sh script should use grep -E,
+instead of grep -F when it uses ^ in the expression.
 
-Again, I might overlook something Windows special, but from a generic
-C and "on unix, the equivalent stuff would work correctly" perspective,
-the code looks good.  More review welcome, though.
+Signed-off-by: Steffan Karger <steffan@...1856...>
+---
+ contrib/OCSP_check/OCSP_check.sh | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Your patch has been applied to the master branch.
-
-commit 852f1e49c7e692c6392fe07160cfbc8d6b17f0d0
-Author: Selva Nair
-Date:   Sun Feb 14 12:28:01 2016 -0500
-
-     Send stdout and stderr of OpenVPN started by interactive service to NUL
-
-     Signed-off-by: Selva Nair <selva.nair@...277...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1455470881-32341-1-git-send-email-selva.nair@...277...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/11161
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/contrib/OCSP_check/OCSP_check.sh b/contrib/OCSP_check/OCSP_check.sh
+index 6876c6d..2675788 100644
+--- a/contrib/OCSP_check/OCSP_check.sh
++++ b/contrib/OCSP_check/OCSP_check.sh
+@@ -105,9 +105,9 @@ if [ $check_depth -eq -1 ] || [ $cur_depth -eq $check_depth ]; then
+           exit 1
+       fi
+       # check that the reported status of certificate is ok
+-      if echo "$status" | grep -Fq "^${serial}: good"; then
++      if echo "$status" | grep -Eq "^${serial}: good"; then
+         # check if signature on the OCSP response verified correctly
+-        if echo "$status" | grep -Fq "^Response verify OK"; then
++        if echo "$status" | grep -Eq "^Response verify OK"; then
+             exit 0
+         fi
+       fi
+-- 
+2.5.0
 
 
