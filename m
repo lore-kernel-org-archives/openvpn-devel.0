@@ -1,10 +1,9 @@
+Date: Thu, 25 Feb 2016 16:05:12 +0100 (CET)
+Message-Id: <201602251505.u1PF5CRU022056@...2054...>
 From: Gert Doering <gert@...1296...>
-Date: Thu, 25 Feb 2016 15:58:32 +0100
-Message-Id: <1456412312-21936-1-git-send-email-gert@...1296...>
-In-Reply-To: <20160225125742.GA21087@...1296...>
-References: <20160225125742.GA21087@...1296...>
-Subject: [Openvpn-devel] [PATCH] Fix openserv/validate.o linking issues on
-	mingw.
+In-Reply-To: <1456409434-14784-1-git-send-email-steffan@...1856...>
+References: <1456409434-14784-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix OCSP_check.sh
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,30 +14,31 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Steffan Karger <steffan@...1856...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-MinGW fails linking after f3c8a04d6021 if the right header files
-(<lm.h> and <shlwapi.h>) are not included.
+ACK, thanks.
 
-Signed-off-by: Gert Doering <gert@...1296...>
----
- src/openvpnserv/validate.c | 2 ++
- 1 file changed, 2 insertions(+)
+Your patch has been applied to the master and release/2.3 branch.  
 
-diff --git a/src/openvpnserv/validate.c b/src/openvpnserv/validate.c
-index d7446de..b5809b3 100644
---- a/src/openvpnserv/validate.c
-+++ b/src/openvpnserv/validate.c
-@@ -25,6 +25,8 @@
- #include "validate.h"
- 
- #include <lmaccess.h>
-+#include <shlwapi.h>
-+#include <lm.h>
- 
- static const WCHAR *white_list[] =
-     {
--- 
-1.9.1
+commit ab0f846de6991345c30f5b69817304183d347e0e (master)
+commit 22f399f5509a56c7aaa57779b14a650d33d30e5e (master)
+
+Author: Steffan Karger
+Date:   Thu Feb 25 15:10:34 2016 +0100
+
+     Fix OCSP_check.sh
+
+     Signed-off-by: Steffan Karger <steffan@...1856...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1456409434-14784-1-git-send-email-steffan@...1856...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/11254
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
