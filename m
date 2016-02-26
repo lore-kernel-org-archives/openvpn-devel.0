@@ -1,12 +1,9 @@
-References: <1456171763-44172-1-git-send-email-fish.thss@...277...>
-	<20160225122928.GC24952@...1296...>
-	<56CEF9E5.3090508@...2080...>
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <56CFFC9F.2010506@...515...>
-Date: Fri, 26 Feb 2016 09:19:59 +0200
-MIME-Version: 1.0
-In-Reply-To: <56CEF9E5.3090508@...2080...>
-Subject: Re: [Openvpn-devel] The puprose of the Signed-off-by: line
+Date: Fri, 26 Feb 2016 08:44:15 +0100 (CET)
+Message-Id: <201602260744.u1Q7iFEL029197@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <1456434882-6009-1-git-send-email-fish.thss@...277...>
+References: <1456434882-6009-1-git-send-email-fish.thss@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Add lz4 support to MSVC.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,43 +12,31 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net, Fish <fish.thss@...277...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Fish <fish.thss@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
+
+ACK, thanks.
+
+Your patch has been applied to the master branch.
+
+commit 6a4edc7fc09d6a321f87d4dcf331c7d5c3082a8f
+Author: Fish
+Date:   Thu Feb 25 16:14:42 2016 -0500
+
+     Add lz4 support to MSVC.
+
+     Signed-off-by: Fish <fish.thss@...277...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1456434882-6009-1-git-send-email-fish.thss@...277...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/11262
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
-> The reason of adding the Signed-off-by is to have a better understanding
-> of whom have been involved in particular commits/patches.  While the
-> "Author field" in the git log (git log --pretty=3Dfuller) can only have
-> one name, more people can have been involved in the patch.  Using the
-> Signed-off-by is a way to credit them as well.
->
-> And when everyone is consistent using the Signed-off-by line, writing
-> tools which parses our git log is also far more easier.
->
-> The other aspect of the Signed-off-by: line has to do with juridical
-> stuff, to protect the OpenVPN project.  By adding the Signed-off-by:
-> line you basically sign-off to "Yes, I am the author of these changes
-> and I am permitted to share them with the project".  For more
-> information, these pages explains it even better (same info, two
-> different sources):
-> <https://git.eclipse.org/r/Documentation/user-signedoffby.html>
-> <https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/Doc=
-umentation/SubmittingPatches#n409>
+--
+kind regards,
 
-Hi David,
+Gert Doering
 
-Looks like the rationale for Signed-off-by by is not properly documented=20
-in Trac:
-
-<https://community.openvpn.net/openvpn/wiki/DeveloperDocumentation>
-
-David: do you want to integrate above explanation to Trac or shall I?
-
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
 
