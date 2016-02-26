@@ -1,10 +1,11 @@
 From: Selva Nair <selva.nair@...277...>
-Date: Thu, 25 Feb 2016 22:24:50 -0500
-Message-Id: <1456457091-3872-1-git-send-email-selva.nair@...277...>
-In-Reply-To: <20160225125008.GD24952@...1296...>
+Date: Thu, 25 Feb 2016 22:24:51 -0500
+Message-Id: <1456457091-3872-2-git-send-email-selva.nair@...277...>
+In-Reply-To: <1456457091-3872-1-git-send-email-selva.nair@...277...>
 References: <20160225125008.GD24952@...1296...>
-Subject: [Openvpn-devel] [PATCH v2 1/2] Refactor and move the
-	block-outside-dns code to a new file (block_dns.[ch])
+	<1456457091-3872-1-git-send-email-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH 2/2] Add support for block-outside-dns
+	through the interactive service
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,633 +18,363 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-- Move the core of win_wfp_block_dns() to a new function
-- Remove globals and make it independent of the rest of the code
+- Add a new message type in openvpn-msg.h
+- Pass msg_channel HANDLE to win_wfp_block_dns and win_wfp_uninit
+- Add a handler in interactive.c for block_dns request
 
-This facilitates implementing support for block-outside-dns through
-the interactive service. Should not change any functionality.
+The service build now depends on block_dns.[ch] in src/openvpn
 
 v2 changes:
-- In comments, correct DeleteBlockDNS() to delete_block_dns_filters
+- Make CmpEngine non-nested (be nice with non-gcc compilers)
+- Print error code in hex
 
 Signed-off-by: Selva Nair <selva.nair@...277...>
 ---
- src/openvpn/Makefile.am |    2 +-
- src/openvpn/block_dns.c |  265 +++++++++++++++++++++++++++++++++++++++++++++++
- src/openvpn/block_dns.h |   40 +++++++
- src/openvpn/win32.c     |  232 ++++++-----------------------------------
- 4 files changed, 337 insertions(+), 202 deletions(-)
- create mode 100644 src/openvpn/block_dns.c
- create mode 100644 src/openvpn/block_dns.h
+ include/openvpn-msg.h         |    9 ++++-
+ src/openvpn/init.c            |    4 +-
+ src/openvpn/win32.c           |   62 +++++++++++++++++++++++++++--
+ src/openvpn/win32.h           |    4 +-
+ src/openvpnserv/Makefile.am   |    7 ++--
+ src/openvpnserv/interactive.c |   88 ++++++++++++++++++++++++++++++++++++++++-
+ 6 files changed, 161 insertions(+), 13 deletions(-)
 
-diff --git a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am
-index c55a520..bf1d749 100644
---- a/src/openvpn/Makefile.am
-+++ b/src/openvpn/Makefile.am
-@@ -126,6 +126,6 @@ openvpn_LDADD = \
- 	$(OPTIONAL_SYSTEMD_LIBS) \
- 	$(OPTIONAL_DL_LIBS)
- if WIN32
--openvpn_SOURCES += openvpn_win32_resources.rc
-+openvpn_SOURCES += openvpn_win32_resources.rc block_dns.c block_dns.h
- openvpn_LDADD += -lgdi32 -lws2_32 -lwininet -lcrypt32 -liphlpapi -lwinmm -lfwpuclnt -lrpcrt4
- endif
-diff --git a/src/openvpn/block_dns.c b/src/openvpn/block_dns.c
-new file mode 100644
-index 0000000..9f964b4
---- /dev/null
-+++ b/src/openvpn/block_dns.c
-@@ -0,0 +1,265 @@
-+/*
-+ *  OpenVPN -- An application to securely tunnel IP networks
-+ *             over a single TCP/UDP port, with support for SSL/TLS-based
-+ *             session authentication and key exchange,
-+ *             packet encryption, packet authentication, and
-+ *             packet compression.
-+ *
-+ *  Copyright (C) 2002-2010 OpenVPN Technologies, Inc. <sales@...515...>
-+ *                2015-2016  <iam@...2070...>
-+ *                2016 Selva Nair <selva.nair@...277...>
-+ *
-+ *  This program is free software; you can redistribute it and/or modify
-+ *  it under the terms of the GNU General Public License version 2
-+ *  as published by the Free Software Foundation.
-+ *
-+ *  This program is distributed in the hope that it will be useful,
-+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ *  GNU General Public License for more details.
-+ *
-+ *  You should have received a copy of the GNU General Public License
-+ *  along with this program (see the file COPYING included with this
-+ *  distribution); if not, write to the Free Software Foundation, Inc.,
-+ *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-+ */
+diff --git a/include/openvpn-msg.h b/include/openvpn-msg.h
+index 0dcc72f..7470512 100644
+--- a/include/openvpn-msg.h
++++ b/include/openvpn-msg.h
+@@ -35,7 +35,9 @@ typedef enum {
+   msg_del_dns_cfg,
+   msg_add_nbt_cfg,
+   msg_del_nbt_cfg,
+-  msg_flush_neighbors
++  msg_flush_neighbors,
++  msg_add_block_dns,
++  msg_del_block_dns
+ } message_type_t;
+ 
+ typedef struct {
+@@ -105,4 +107,9 @@ typedef struct {
+   int error_number;
+ } ack_message_t;
+ 
++typedef struct {
++  message_header_t header;
++  interface_t iface;
++} block_dns_message_t;
 +
-+#ifdef WIN32
-+
-+#include <fwpmu.h>
-+#include <initguid.h>
-+#include <fwpmtypes.h>
-+#include <iphlpapi.h>
-+#include "block_dns.h"
-+
-+/*
-+ * WFP-related defines and GUIDs not in mingw32
-+ */
-+
-+#ifndef FWPM_SESSION_FLAG_DYNAMIC
-+#define FWPM_SESSION_FLAG_DYNAMIC 0x00000001
-+#endif
-+
-+// c38d57d1-05a7-4c33-904f-7fbceee60e82
-+DEFINE_GUID(
-+   FWPM_LAYER_ALE_AUTH_CONNECT_V4,
-+   0xc38d57d1,
-+   0x05a7,
-+   0x4c33,
-+   0x90, 0x4f, 0x7f, 0xbc, 0xee, 0xe6, 0x0e, 0x82
-+);
-+
-+// 4a72393b-319f-44bc-84c3-ba54dcb3b6b4
-+DEFINE_GUID(
-+   FWPM_LAYER_ALE_AUTH_CONNECT_V6,
-+   0x4a72393b,
-+   0x319f,
-+   0x44bc,
-+   0x84, 0xc3, 0xba, 0x54, 0xdc, 0xb3, 0xb6, 0xb4
-+);
-+
-+// d78e1e87-8644-4ea5-9437-d809ecefc971
-+DEFINE_GUID(
-+   FWPM_CONDITION_ALE_APP_ID,
-+   0xd78e1e87,
-+   0x8644,
-+   0x4ea5,
-+   0x94, 0x37, 0xd8, 0x09, 0xec, 0xef, 0xc9, 0x71
-+);
-+
-+// c35a604d-d22b-4e1a-91b4-68f674ee674b
-+DEFINE_GUID(
-+   FWPM_CONDITION_IP_REMOTE_PORT,
-+   0xc35a604d,
-+   0xd22b,
-+   0x4e1a,
-+   0x91, 0xb4, 0x68, 0xf6, 0x74, 0xee, 0x67, 0x4b
-+);
-+
-+// 4cd62a49-59c3-4969-b7f3-bda5d32890a4
-+DEFINE_GUID(
-+   FWPM_CONDITION_IP_LOCAL_INTERFACE,
-+   0x4cd62a49,
-+   0x59c3,
-+   0x4969,
-+   0xb7, 0xf3, 0xbd, 0xa5, 0xd3, 0x28, 0x90, 0xa4
-+);
-+
-+/*
-+ * Default msg handler does nothing
-+ */
-+static inline void
-+default_msg_handler (DWORD err, const char *msg)
-+{
-+  return;
-+}
-+
-+#define CHECK_ERROR(err, msg) \
-+   if (err) { msg_handler (err, msg); goto out; }
-+
-+/*
-+ * Block outgoing port 53 traffic except for
-+ * (i) adapter with the specified index
-+ * OR
-+ * (ii) processes with the specified executable path
-+ * The firewall filters added here are automatically removed when the process exits or
-+ * on calling delete_block_dns_filters().
-+ * Arguments:
-+ *   engine_handle : On successful return contains the handle for a newly opened fwp session
-+ *                   in which the filters are added.
-+ *                   May be closed by passing to delete_block_dns_filters to remove the filters.
-+ *   index         : The index of adapter for which traffic is permitted.
-+ *   exe_path      : Path of executable for which traffic is permitted.
-+ *   msg_handler   : An optional callback function for error reporting.
-+ * Returns 0 on success, a non-zero status code of the last failed action on failure.
-+ */
-+
-+DWORD
-+add_block_dns_filters (HANDLE *engine_handle,
-+                       int index,
-+                       const WCHAR *exe_path,
-+                       block_dns_msg_handler_t msg_handler
-+                      )
-+{
-+  FWPM_SESSION0 session = {0};
-+  FWPM_SUBLAYER0 SubLayer = {0};
-+  NET_LUID tapluid;
-+  UINT64 filterid;
-+  FWP_BYTE_BLOB *openvpnblob = NULL;
-+  FWPM_FILTER0 Filter = {0};
-+  FWPM_FILTER_CONDITION0 Condition[2] = {0};
-+  WCHAR *FIREWALL_NAME = L"OpenVPN";
-+  DWORD err = 0;
-+
-+  if (!msg_handler)
-+    msg_handler = default_msg_handler;
-+
-+  /* Add temporary filters which don't survive reboots or crashes. */
-+  session.flags = FWPM_SESSION_FLAG_DYNAMIC;
-+
-+  *engine_handle = NULL;
-+
-+  err = FwpmEngineOpen0 (NULL, RPC_C_AUTHN_WINNT, NULL, &session, engine_handle);
-+  CHECK_ERROR (err, "FwpEngineOpen: open fwp session failed");
-+
-+  err = UuidCreate (&SubLayer.subLayerKey);
-+  CHECK_ERROR (err, "UuidCreate: create sublayer key failed");
-+
-+  /* Populate packet filter layer information. */
-+  SubLayer.displayData.name = FIREWALL_NAME;
-+  SubLayer.displayData.description = FIREWALL_NAME;
-+  SubLayer.flags = 0;
-+  SubLayer.weight = 0x100;
-+
-+  /* Add sublayer to the session */
-+  err = FwpmSubLayerAdd0 (*engine_handle, &SubLayer, NULL);
-+  CHECK_ERROR (err, "FwpmSubLayerAdd: add sublayer to session failed");
-+
-+  msg_handler (0, "Block_DNS: WFP engine opened");
-+
-+  err = ConvertInterfaceIndexToLuid (index, &tapluid);
-+  CHECK_ERROR (err, "Convert interface index to luid failed");
-+
-+  err = FwpmGetAppIdFromFileName0 (exe_path, &openvpnblob);
-+  CHECK_ERROR (err, "Get byte blob for openvpn executable name failed");
-+
-+  /* Prepare filter. */
-+  Filter.subLayerKey = SubLayer.subLayerKey;
-+  Filter.displayData.name = FIREWALL_NAME;
-+  Filter.weight.type = FWP_UINT8;
-+  Filter.weight.uint8 = 0xF;
-+  Filter.filterCondition = Condition;
-+  Filter.numFilterConditions = 2;
-+
-+  /* First filter. Permit IPv4 DNS queries from OpenVPN itself. */
-+  Filter.layerKey = FWPM_LAYER_ALE_AUTH_CONNECT_V4;
-+  Filter.action.type = FWP_ACTION_PERMIT;
-+
-+  Condition[0].fieldKey = FWPM_CONDITION_IP_REMOTE_PORT;
-+  Condition[0].matchType = FWP_MATCH_EQUAL;
-+  Condition[0].conditionValue.type = FWP_UINT16;
-+  Condition[0].conditionValue.uint16 = 53;
-+
-+  Condition[1].fieldKey = FWPM_CONDITION_ALE_APP_ID;
-+  Condition[1].matchType = FWP_MATCH_EQUAL;
-+  Condition[1].conditionValue.type = FWP_BYTE_BLOB_TYPE;
-+  Condition[1].conditionValue.byteBlob = openvpnblob;
-+
-+  err = FwpmFilterAdd0(*engine_handle, &Filter, NULL, &filterid);
-+  CHECK_ERROR (err, "Add filter to permit IPv4 port 53 traffic from OpenVPN failed");
-+
-+  /* Second filter. Permit IPv6 DNS queries from OpenVPN itself. */
-+  Filter.layerKey = FWPM_LAYER_ALE_AUTH_CONNECT_V6;
-+
-+  err = FwpmFilterAdd0(*engine_handle, &Filter, NULL, &filterid);
-+  CHECK_ERROR (err, "Add filter to permit IPv6 port 53 traffic from OpenVPN failed");
-+
-+  msg_handler (0, "Block_DNS: Added permit filters for exe_path");
-+
-+  /* Third filter. Block all IPv4 DNS queries. */
-+  Filter.layerKey = FWPM_LAYER_ALE_AUTH_CONNECT_V4;
-+  Filter.action.type = FWP_ACTION_BLOCK;
-+  Filter.weight.type = FWP_EMPTY;
-+  Filter.numFilterConditions = 1;
-+
-+  err = FwpmFilterAdd0(*engine_handle, &Filter, NULL, &filterid);
-+  CHECK_ERROR (err, "Add filter to block IPv4 DNS traffic failed");
-+
-+  msg_handler (0, "Block_DNS: Added block filters for all");
-+
-+  /* Forth filter. Block all IPv6 DNS queries. */
-+  Filter.layerKey = FWPM_LAYER_ALE_AUTH_CONNECT_V6;
-+
-+  err = FwpmFilterAdd0(*engine_handle, &Filter, NULL, &filterid);
-+  CHECK_ERROR (err, "Add filter to block IPv6 DNS traffic failed");
-+
-+  /* Fifth filter. Permit IPv4 DNS queries from TAP. */
-+  Filter.layerKey = FWPM_LAYER_ALE_AUTH_CONNECT_V4;
-+  Filter.action.type = FWP_ACTION_PERMIT;
-+  Filter.numFilterConditions = 2;
-+
-+  Condition[1].fieldKey = FWPM_CONDITION_IP_LOCAL_INTERFACE;
-+  Condition[1].matchType = FWP_MATCH_EQUAL;
-+  Condition[1].conditionValue.type = FWP_UINT64;
-+  Condition[1].conditionValue.uint64 = &tapluid.Value;
-+
-+  err = FwpmFilterAdd0(*engine_handle, &Filter, NULL, &filterid);
-+  CHECK_ERROR (err, "Add filter to permit IPv4 DNS traffic through TAP failed");
-+
-+  /* Sixth filter. Permit IPv6 DNS queries from TAP. */
-+  Filter.layerKey = FWPM_LAYER_ALE_AUTH_CONNECT_V6;
-+
-+  err = FwpmFilterAdd0(*engine_handle, &Filter, NULL, &filterid);
-+  CHECK_ERROR (err, "Add filter to permit IPv6 DNS traffic through TAP failed");
-+
-+  msg_handler (0, "Block_DNS: Added permit filters for TAP interface");
-+
-+out:
-+
-+  if (openvpnblob)
-+    FwpmFreeMemory0 ((void **)&openvpnblob);
-+
-+  if (err && *engine_handle)
-+    {
-+      FwpmEngineClose0 (*engine_handle);
-+      *engine_handle = NULL;
-+    }
-+
-+  return err;
-+}
-+
-+DWORD
-+delete_block_dns_filters (HANDLE engine_handle)
-+{
-+  DWORD err = 0;
-+  /*
-+   * For dynamic sessions closing the engine removes all filters added in the session
-+   */
-+  if (engine_handle)
-+    {
-+      err = FwpmEngineClose0(engine_handle);
-+    }
-+  return err;
-+}
-+
-+#endif
-diff --git a/src/openvpn/block_dns.h b/src/openvpn/block_dns.h
-new file mode 100644
-index 0000000..e945351
---- /dev/null
-+++ b/src/openvpn/block_dns.h
-@@ -0,0 +1,40 @@
-+/*
-+ *  OpenVPN -- An application to securely tunnel IP networks
-+ *             over a single TCP/UDP port, with support for SSL/TLS-based
-+ *             session authentication and key exchange,
-+ *             packet encryption, packet authentication, and
-+ *             packet compression.
-+ *
-+ *  Copyright (C) 2016 Selva Nair <selva.nair@...277...>
-+ *
-+ *  This program is free software; you can redistribute it and/or modify
-+ *  it under the terms of the GNU General Public License version 2
-+ *  as published by the Free Software Foundation.
-+ *
-+ *  This program is distributed in the hope that it will be useful,
-+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ *  GNU General Public License for more details.
-+ *
-+ *  You should have received a copy of the GNU General Public License
-+ *  along with this program (see the file COPYING included with this
-+ *  distribution); if not, write to the Free Software Foundation, Inc.,
-+ *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-+ */
-+
-+#ifdef WIN32
-+
-+#ifndef OPENVPN_BLOCK_DNS_H
-+#define OPENVPN_BLOCK_DNS_H
-+
-+typedef void (*block_dns_msg_handler_t) (DWORD err, const char *msg);
-+
-+DWORD
-+delete_block_dns_filters (HANDLE engine);
-+
-+DWORD
-+add_block_dns_filters (HANDLE *engine, int iface_index, const WCHAR *exe_path,
-+                       block_dns_msg_handler_t msg_handler_callback);
-+
-+#endif
-+#endif
+ #endif
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index cb73a3d..7f54c3c 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -1508,7 +1508,7 @@ do_open_tun (struct context *c)
+       if (c->options.block_outside_dns)
+       {
+         dmsg (D_LOW, "Blocking outside DNS");
+-        if (!win_wfp_block_dns(c->c1.tuntap->adapter_index))
++        if (!win_wfp_block_dns(c->c1.tuntap->adapter_index, c->options.msg_channel))
+             msg (M_FATAL, "Blocking DNS failed!");
+       }
+ #endif
+@@ -1656,7 +1656,7 @@ do_close_tun (struct context *c, bool force)
+ #if defined(WIN32)
+             if (c->options.block_outside_dns)
+             {
+-                if (!win_wfp_uninit())
++                if (!win_wfp_uninit(c->options.msg_channel))
+                     msg (M_FATAL, "Uninitialising WFP failed!");
+             }
+ #endif
 diff --git a/src/openvpn/win32.c b/src/openvpn/win32.c
-index 72243a8..9efc0bc 100644
+index 9efc0bc..f4d3237 100644
 --- a/src/openvpn/win32.c
 +++ b/src/openvpn/win32.c
-@@ -43,6 +43,7 @@
- #include "sig.h"
- #include "win32.h"
- #include "misc.h"
-+#include "openvpn-msg.h"
- 
- #include "memdbg.h"
- 
-@@ -52,70 +53,10 @@
- #include "compat-versionhelpers.h"
- #endif
- 
--/*
-- * WFP-related defines and GUIDs.
-- */
--#include <fwpmu.h>
--#include <initguid.h>
--#include <fwpmtypes.h>
--#include <iphlpapi.h>
--
--#ifndef FWPM_SESSION_FLAG_DYNAMIC
--#define FWPM_SESSION_FLAG_DYNAMIC 0x00000001
--#endif
--
--// c38d57d1-05a7-4c33-904f-7fbceee60e82
--DEFINE_GUID(
--   FWPM_LAYER_ALE_AUTH_CONNECT_V4,
--   0xc38d57d1,
--   0x05a7,
--   0x4c33,
--   0x90, 0x4f, 0x7f, 0xbc, 0xee, 0xe6, 0x0e, 0x82
--);
--
--// 4a72393b-319f-44bc-84c3-ba54dcb3b6b4
--DEFINE_GUID(
--   FWPM_LAYER_ALE_AUTH_CONNECT_V6,
--   0x4a72393b,
--   0x319f,
--   0x44bc,
--   0x84, 0xc3, 0xba, 0x54, 0xdc, 0xb3, 0xb6, 0xb4
--);
--
--// d78e1e87-8644-4ea5-9437-d809ecefc971
--DEFINE_GUID(
--   FWPM_CONDITION_ALE_APP_ID,
--   0xd78e1e87,
--   0x8644,
--   0x4ea5,
--   0x94, 0x37, 0xd8, 0x09, 0xec, 0xef, 0xc9, 0x71
--);
--
--// c35a604d-d22b-4e1a-91b4-68f674ee674b
--DEFINE_GUID(
--   FWPM_CONDITION_IP_REMOTE_PORT,
--   0xc35a604d,
--   0xd22b,
--   0x4e1a,
--   0x91, 0xb4, 0x68, 0xf6, 0x74, 0xee, 0x67, 0x4b
--);
--
--// 4cd62a49-59c3-4969-b7f3-bda5d32890a4
--DEFINE_GUID(
--   FWPM_CONDITION_IP_LOCAL_INTERFACE,
--   0x4cd62a49,
--   0x59c3,
--   0x4969,
--   0xb7, 0xf3, 0xbd, 0xa5, 0xd3, 0x28, 0x90, 0xa4
--);
--
--/*
-- * WFP firewall name.
-- */
--WCHAR * FIREWALL_NAME = L"OpenVPN"; /* GLOBAL */
-+#include "block_dns.h"
- 
- /*
-- * WFP handle and GUID.
-+ * WFP handle
-  */
- static HANDLE m_hEngineHandle = NULL; /* GLOBAL */
- 
-@@ -1151,165 +1092,54 @@ win_get_tempdir()
+@@ -1092,6 +1092,45 @@ win_get_tempdir()
    return tmpdir;
  }
  
--bool
--win_wfp_add_filter (HANDLE engineHandle,
--                    const FWPM_FILTER0 *filter,
--                    PSECURITY_DESCRIPTOR sd,
--                    UINT64 *id)
-+static void
-+block_dns_msg_handler (DWORD err, const char *msg)
- {
--    if (FwpmFilterAdd0(engineHandle, filter, sd, id) != ERROR_SUCCESS)
++static bool
++win_block_dns_service (bool add, int index, const HANDLE pipe)
++{
++  DWORD len;
++  bool ret = false;
++  ack_message_t ack;
 +  struct gc_arena gc = gc_new ();
 +
-+  if (err == 0)
-     {
--        msg (M_NONFATAL, "Can't add WFP filter");
--        return false;
-+      msg (M_INFO, "%s", msg);
-     }
--    return true;
-+  else
++  block_dns_message_t data = {
++    .header = {
++      (add ? msg_add_block_dns : msg_del_block_dns),
++      sizeof (block_dns_message_t),
++      0 },
++    .iface = { .index = index, .name = "" }
++  };
++
++  if (!WriteFile (pipe, &data, sizeof (data), &len, NULL) ||
++      !ReadFile (pipe, &ack, sizeof (ack), &len, NULL))
 +    {
-+      msg (M_WARN, "Error in add_block_dns_filters(): %s : %s [status=%lu]",
-+           msg, strerror_win32 (err, &gc), err);
++      msg (M_WARN, "Block_DNS: could not talk to service: %s [%lu]",
++           strerror_win32 (GetLastError (), &gc), GetLastError ());
++      goto out;
 +    }
 +
-+  gc_free (&gc);
- }
- 
- bool
- win_wfp_block_dns (const NET_IFINDEX index)
- {
--    FWPM_SESSION0 session = {0};
--    FWPM_SUBLAYER0 SubLayer = {0};
--    NET_LUID tapluid;
--    UINT64 filterid;
--    WCHAR openvpnpath[MAX_PATH];
--    FWP_BYTE_BLOB *openvpnblob = NULL;
--    FWPM_FILTER0 Filter = {0};
--    FWPM_FILTER_CONDITION0 Condition[2] = {0};
--
--    /* Add temporary filters which don't survive reboots or crashes. */
--    session.flags = FWPM_SESSION_FLAG_DYNAMIC;
--
--    dmsg (D_LOW, "Opening WFP engine");
-+  WCHAR openvpnpath[MAX_PATH];
-+  bool ret = false;
-+  DWORD status;
- 
--    if (FwpmEngineOpen0(NULL, RPC_C_AUTHN_WINNT, NULL, &session, &m_hEngineHandle) != ERROR_SUCCESS)
-+  status = GetModuleFileNameW (NULL, openvpnpath, sizeof(openvpnpath));
-+  if (status == 0 || status == sizeof(openvpnpath))
-     {
--        msg (M_NONFATAL, "Can't open WFP engine");
--        return false;
-+      msg (M_WARN|M_ERRNO, "block_dns: cannot get executable path");
++  if (ack.error_number != NO_ERROR)
++    {
++      msg (M_WARN, "Block_DNS: %s block dns filters using service failed: %s [status=0x%x if_index=%d]",
++           (add ? "adding" : "deleting"), strerror_win32 (ack.error_number, &gc),
++           ack.error_number, data.iface.index);
 +      goto out;
++    }
++
++  ret = true;
++  msg (M_INFO, "%s outside dns using service succeeded.", (add ? "Blocking" : "Unblocking"));
++out:
++  gc_free (&gc);
++  return ret;
++}
++
+ static void
+ block_dns_msg_handler (DWORD err, const char *msg)
+ {
+@@ -1103,7 +1142,7 @@ block_dns_msg_handler (DWORD err, const char *msg)
+     }
+   else
+     {
+-      msg (M_WARN, "Error in add_block_dns_filters(): %s : %s [status=%lu]",
++      msg (M_WARN, "Error in add_block_dns_filters(): %s : %s [status=0x%lx]",
+            msg, strerror_win32 (err, &gc), err);
      }
  
--    if (UuidCreate(&SubLayer.subLayerKey) != NO_ERROR)
--        return false;
--
--    /* Populate packet filter layer information. */
--    SubLayer.displayData.name = FIREWALL_NAME;
--    SubLayer.displayData.description = FIREWALL_NAME;
--    SubLayer.flags = 0;
--    SubLayer.weight = 0x100;
--
--    /* Add packet filter to our interface. */
--    dmsg (D_LOW, "Adding WFP sublayer");
--    if (FwpmSubLayerAdd0(m_hEngineHandle, &SubLayer, NULL) != ERROR_SUCCESS)
--    {
--        msg (M_NONFATAL, "Can't add WFP sublayer");
--        return false;
--    }
-+  status = add_block_dns_filters (&m_hEngineHandle, index, openvpnpath,
-+                                 block_dns_msg_handler);
-+  ret = (status == 0);
- 
--    dmsg (D_LOW, "Blocking DNS using WFP");
--    if (ConvertInterfaceIndexToLuid(index, &tapluid) != NO_ERROR)
--    {
--        msg (M_NONFATAL, "Can't convert interface index to LUID");
--        return false;
--    }
--    dmsg (D_LOW, "Tap Luid: %I64d", tapluid.Value);
--
--    /* Get OpenVPN path. */
--    GetModuleFileNameW(NULL, openvpnpath, MAX_PATH);
--
--    if (FwpmGetAppIdFromFileName0(openvpnpath, &openvpnblob) != ERROR_SUCCESS)
--        return false;
--
--    /* Prepare filter. */
--    Filter.subLayerKey = SubLayer.subLayerKey;
--    Filter.displayData.name = FIREWALL_NAME;
--    Filter.weight.type = FWP_UINT8;
--    Filter.weight.uint8 = 0xF;
--    Filter.filterCondition = Condition;
--    Filter.numFilterConditions = 2;
--
--    /* First filter. Permit IPv4 DNS queries from OpenVPN itself. */
--    Filter.layerKey = FWPM_LAYER_ALE_AUTH_CONNECT_V4;
--    Filter.action.type = FWP_ACTION_PERMIT;
--
--    Condition[0].fieldKey = FWPM_CONDITION_IP_REMOTE_PORT;
--    Condition[0].matchType = FWP_MATCH_EQUAL;
--    Condition[0].conditionValue.type = FWP_UINT16;
--    Condition[0].conditionValue.uint16 = 53;
--
--    Condition[1].fieldKey = FWPM_CONDITION_ALE_APP_ID;
--    Condition[1].matchType = FWP_MATCH_EQUAL;
--    Condition[1].conditionValue.type = FWP_BYTE_BLOB_TYPE;
--    Condition[1].conditionValue.byteBlob = openvpnblob;
--
--    /* Add filter condition to our interface. */
--    if (!win_wfp_add_filter(m_hEngineHandle, &Filter, NULL, &filterid))
--        goto err;
--    dmsg (D_LOW, "Filter (Permit OpenVPN IPv4 DNS) added with ID=%I64d", filterid);
--
--    /* Second filter. Permit IPv6 DNS queries from OpenVPN itself. */
--    Filter.layerKey = FWPM_LAYER_ALE_AUTH_CONNECT_V6;
--
--    /* Add filter condition to our interface. */
--    if (!win_wfp_add_filter(m_hEngineHandle, &Filter, NULL, &filterid))
--        goto err;
--    dmsg (D_LOW, "Filter (Permit OpenVPN IPv6 DNS) added with ID=%I64d", filterid);
--
--    /* Third filter. Block all IPv4 DNS queries. */
--    Filter.layerKey = FWPM_LAYER_ALE_AUTH_CONNECT_V4;
--    Filter.action.type = FWP_ACTION_BLOCK;
--    Filter.weight.type = FWP_EMPTY;
--    Filter.numFilterConditions = 1;
--
--    if (!win_wfp_add_filter(m_hEngineHandle, &Filter, NULL, &filterid))
--        goto err;
--    dmsg (D_LOW, "Filter (Block IPv4 DNS) added with ID=%I64d", filterid);
--
--    /* Forth filter. Block all IPv6 DNS queries. */
--    Filter.layerKey = FWPM_LAYER_ALE_AUTH_CONNECT_V6;
--
--    if (!win_wfp_add_filter(m_hEngineHandle, &Filter, NULL, &filterid))
--        goto err;
--    dmsg (D_LOW, "Filter (Block IPv6 DNS) added with ID=%I64d", filterid);
--
--    /* Fifth filter. Permit IPv4 DNS queries from TAP. */
--    Filter.layerKey = FWPM_LAYER_ALE_AUTH_CONNECT_V4;
--    Filter.action.type = FWP_ACTION_PERMIT;
--    Filter.numFilterConditions = 2;
--
--    Condition[1].fieldKey = FWPM_CONDITION_IP_LOCAL_INTERFACE;
--    Condition[1].matchType = FWP_MATCH_EQUAL;
--    Condition[1].conditionValue.type = FWP_UINT64;
--    Condition[1].conditionValue.uint64 = &tapluid.Value;
--
--    /* Add filter condition to our interface. */
--    if (!win_wfp_add_filter(m_hEngineHandle, &Filter, NULL, &filterid))
--        goto err;
--    dmsg (D_LOW, "Filter (Permit IPv4 DNS queries from TAP) added with ID=%I64d", filterid);
--
--    /* Sixth filter. Permit IPv6 DNS queries from TAP. */
--    Filter.layerKey = FWPM_LAYER_ALE_AUTH_CONNECT_V6;
--
--    /* Add filter condition to our interface. */
--    if (!win_wfp_add_filter(m_hEngineHandle, &Filter, NULL, &filterid))
--        goto err;
--    dmsg (D_LOW, "Filter (Permit IPv6 DNS queries from TAP) added with ID=%I64d", filterid);
--
--    FwpmFreeMemory0((void **)&openvpnblob);
--    return true;
-+out:
- 
--    err:
--        FwpmFreeMemory0((void **)&openvpnblob);
--        return false;
-+  return ret;
+@@ -1111,12 +1150,19 @@ block_dns_msg_handler (DWORD err, const char *msg)
  }
  
  bool
- win_wfp_uninit()
+-win_wfp_block_dns (const NET_IFINDEX index)
++win_wfp_block_dns (const NET_IFINDEX index, const HANDLE msg_channel)
  {
-     dmsg (D_LOW, "Uninitializing WFP");
--    if (m_hEngineHandle) {
--        FwpmEngineClose0(m_hEngineHandle);
--        m_hEngineHandle = NULL;
--    }
+   WCHAR openvpnpath[MAX_PATH];
+   bool ret = false;
+   DWORD status;
+ 
++  if (msg_channel)
++    {
++      dmsg (D_LOW, "Using service to add block dns filters");
++      ret = win_block_dns_service (true, index, msg_channel);
++      goto out;
++    }
 +
-+    delete_block_dns_filters (m_hEngineHandle);
-+
-     return true;
+   status = GetModuleFileNameW (NULL, openvpnpath, sizeof(openvpnpath));
+   if (status == 0 || status == sizeof(openvpnpath))
+     {
+@@ -1134,11 +1180,19 @@ out:
  }
  
+ bool
+-win_wfp_uninit()
++win_wfp_uninit(const HANDLE msg_channel)
+ {
+     dmsg (D_LOW, "Uninitializing WFP");
+ 
+-    delete_block_dns_filters (m_hEngineHandle);
++    if (msg_channel)
++      {
++        msg (D_LOW, "Using service to delete block dns filters");
++        win_block_dns_service (false, -1, msg_channel);
++      }
++    else
++      {
++        delete_block_dns_filters (m_hEngineHandle);
++      }
+ 
+     return true;
+ }
+diff --git a/src/openvpn/win32.h b/src/openvpn/win32.h
+index 1e98207..619878f 100644
+--- a/src/openvpn/win32.h
++++ b/src/openvpn/win32.h
+@@ -271,8 +271,8 @@ const char *win_get_tempdir();
+ /* Convert a string from UTF-8 to UCS-2 */
+ WCHAR *wide_string (const char* utf8, struct gc_arena *gc);
+ 
+-bool win_wfp_block_dns(const NET_IFINDEX index);
+-bool win_wfp_uninit();
++bool win_wfp_block_dns(const NET_IFINDEX index, const HANDLE msg_channel);
++bool win_wfp_uninit(const HANDLE msg_channel);
+ 
+ #define WIN_XP 0
+ #define WIN_VISTA 1
+diff --git a/src/openvpnserv/Makefile.am b/src/openvpnserv/Makefile.am
+index 5aba53a..3c757d6 100644
+--- a/src/openvpnserv/Makefile.am
++++ b/src/openvpnserv/Makefile.am
+@@ -18,7 +18,7 @@ EXTRA_DIST = \
+ 	openvpnserv.vcxproj.filters
+ 
+ AM_CPPFLAGS = \
+-	-I$(top_srcdir)/include
++	-I$(top_srcdir)/include -I$(top_srcdir)/src/openvpn
+ 
+ if WIN32
+ sbin_PROGRAMS = openvpnserv
+@@ -26,7 +26,7 @@ openvpnserv_CFLAGS = \
+ 	-municode -D_UNICODE \
+ 	-UNTDDI_VERSION -U_WIN32_WINNT \
+ 	-D_WIN32_WINNT=_WIN32_WINNT_VISTA
+-openvpnserv_LDADD = -ladvapi32 -luserenv -liphlpapi -lshlwapi -lnetapi32 -lws2_32
++openvpnserv_LDADD = -ladvapi32 -luserenv -liphlpapi -lfwpuclnt -lrpcrt4 -lshlwapi -lnetapi32 -lws2_32
+ endif
+ 
+ openvpnserv_SOURCES = \
+@@ -34,5 +34,6 @@ openvpnserv_SOURCES = \
+ 	automatic.c \
+ 	interactive.c \
+ 	service.c service.h \
+-        validate.c validate.h \
++	validate.c validate.h \
++	$(top_srcdir)/src/openvpn/block_dns.c $(top_srcdir)/src/openvpn/block_dns.h \
+ 	openvpnserv_resources.rc
+diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
+index 22239b2..dc8faf4 100644
+--- a/src/openvpnserv/interactive.c
++++ b/src/openvpnserv/interactive.c
+@@ -37,6 +37,7 @@
+ 
+ #include "openvpn-msg.h"
+ #include "validate.h"
++#include "block_dns.h"
+ 
+ #define IO_TIMEOUT  2000 /*ms*/
+ 
+@@ -77,6 +78,7 @@ typedef struct _list_item {
+ typedef enum {
+   address,
+   route,
++  block_dns,
+   _undo_type_max
+ } undo_type_t;
+ typedef list_item_t* undo_lists_t[_undo_type_max];
+@@ -601,7 +603,6 @@ out:
+   return err;
+ }
+ 
+-
+ static BOOL
+ CmpRoute (LPVOID item, LPVOID route)
+ {
+@@ -729,6 +730,78 @@ HandleFlushNeighborsMessage (flush_neighbors_message_t *msg)
+   return flush_fn (msg->family, msg->iface.index);
+ }
+ 
++static void
++BlockDNSErrHandler (DWORD err, const char *msg)
++{
++  TCHAR buf[256];
++  LPCTSTR err_str;
++
++  if (!err) return;
++
++  err_str = TEXT("Unknown Win32 Error");
++
++  if (FormatMessage (FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_FROM_SYSTEM
++                          | FORMAT_MESSAGE_ARGUMENT_ARRAY,
++                          NULL, err, 0, buf, sizeof (buf), NULL))
++    {
++      err_str = buf;
++    }
++
++#ifdef UNICODE
++  MsgToEventLog (M_ERR, L"%S (status = %lu): %s", msg, err, err_str);
++#else
++  MsgToEventLog (M_ERR, "%s (status = %lu): %s", msg, err, err_str);
++#endif
++
++}
++
++/* Use an always-true match_fn to get the head of the list */
++static BOOL
++CmpEngine (LPVOID item, LPVOID any)
++{
++  return TRUE;
++}
++
++static DWORD
++HandleBlockDNSMessage (const block_dns_message_t *msg, undo_lists_t *lists)
++{
++  DWORD err = 0;
++  HANDLE engine = NULL;
++  LPCWSTR exe_path;
++
++#ifdef UNICODE
++  exe_path = settings.exe_path;
++#else
++  WCHAR wide_path[MAX_PATH];
++  MultiByteToWideChar (CP_UTF8, 0, settings.exe_path, MAX_PATH, wide_path, MAX_PATH);
++  exe_path = wide_path;
++#endif
++
++  if (msg->header.type == msg_add_block_dns)
++    {
++      err = add_block_dns_filters (&engine, msg->iface.index, exe_path, BlockDNSErrHandler);
++      if (!err)
++        err = AddListItem (&(*lists)[block_dns], engine);
++    }
++  else
++    {
++      engine = RemoveListItem (&(*lists)[block_dns], CmpEngine, NULL);
++      if (engine)
++        {
++          err = delete_block_dns_filters (engine);
++          engine = NULL;
++        }
++      else
++        MsgToEventLog (M_ERR, TEXT("No previous block DNS filters to delete"));
++    }
++
++  if (err && engine)
++    {
++      delete_block_dns_filters (engine);
++    }
++
++  return err;
++}
+ 
+ static VOID
+ HandleMessage (HANDLE pipe, DWORD bytes, DWORD count, LPHANDLE events, undo_lists_t *lists)
+@@ -739,6 +812,7 @@ HandleMessage (HANDLE pipe, DWORD bytes, DWORD count, LPHANDLE events, undo_list
+     address_message_t address;
+     route_message_t route;
+     flush_neighbors_message_t flush_neighbors;
++    block_dns_message_t block_dns;
+   } msg;
+   ack_message_t ack = {
+     .header = {
+@@ -774,8 +848,15 @@ HandleMessage (HANDLE pipe, DWORD bytes, DWORD count, LPHANDLE events, undo_list
+         ack.error_number = HandleFlushNeighborsMessage (&msg.flush_neighbors);
+       break;
+ 
++    case msg_add_block_dns:
++    case msg_del_block_dns:
++      if (msg.header.size == sizeof (msg.block_dns))
++        ack.error_number = HandleBlockDNSMessage (&msg.block_dns, lists);
++      break;
++
+     default:
+       ack.error_number = ERROR_MESSAGE_TYPE;
++      MsgToEventLog (MSG_FLAGS_ERROR, TEXT("Unknown message type %d"), msg.header.type);
+       break;
+     }
+ 
+@@ -803,6 +884,11 @@ Undo (undo_lists_t *lists)
+             case route:
+               DeleteRoute (item->data);
+               break;
++
++            case block_dns:
++              delete_block_dns_filters (item->data);
++              item->data = NULL;
++              break;
+             }
+ 
+           /* Remove from the list and free memory */
 -- 
 1.7.10.4
 
