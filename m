@@ -1,13 +1,8 @@
-References: <1456171763-44172-1-git-send-email-fish.thss@...277...>
-	<20160225122928.GC24952@...1296...>
-	<56CEF9E5.3090508@...2080...>
-	<56D0496A.2050301@...2080...>
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <56D3FE0D.5010107@...515...>
-Date: Mon, 29 Feb 2016 10:15:09 +0200
-MIME-Version: 1.0
-In-Reply-To: <56D0496A.2050301@...2080...>
-Subject: Re: [Openvpn-devel] The puprose of the Signed-off-by: line
+From: Steffan Karger <steffan@...1856...>
+Date: Mon, 29 Feb 2016 20:02:13 +0100
+Message-Id: <1456772533-7654-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH] Don't limit max incoming message size based
+	on c2->frame
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,122 +11,118 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
+"Be conservative in what you send, be liberal in what you accept"
 
->>> The reason of adding the Signed-off-by is to have a better understanding
->>> of whom have been involved in particular commits/patches.  While the
->>> "Author field" in the git log (git log --pretty=3Dfuller) can only have
->>> one name, more people can have been involved in the patch.  Using the
->>> Signed-off-by is a way to credit them as well.
->>>
->>> And when everyone is consistent using the Signed-off-by line, writing
->>> tools which parses our git log is also far more easier.
->>>
->>> The other aspect of the Signed-off-by: line has to do with juridical
->>> stuff, to protect the OpenVPN project.  By adding the Signed-off-by:
->>> line you basically sign-off to "Yes, I am the author of these changes
->>> and I am permitted to share them with the project".  For more
->>> information, these pages explains it even better (same info, two
->>> different sources):
->>> <https://git.eclipse.org/r/Documentation/user-signedoffby.html>
->>> <https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/D=
-ocumentation/SubmittingPatches#n409>
->>
->> Hi David,
->>
->> Looks like the rationale for Signed-off-by by is not properly documented=
- in Trac:
->>
->> <https://community.openvpn.net/openvpn/wiki/DeveloperDocumentation>
->>
->> David: do you want to integrate above explanation to Trac or shall I?
->
-> I intended to update the wiki page as well.  It should be updated.  The
-> trouble is that I started thinking.  But I think we should do some more
-> modifications to more of this process.
->
-> There are two things I think we should agree upon first, which is
-> slightly different compared to the wiki page.
->
->
-> 1) It probably makes more sense to use Reviewed-by: instead of
->     Signed-off-by: when someone have reviewed and not added code to the
->     commit.
+When receiving packets, the real limitation of how much data we can accept
+is the size of our internal buffers, not the maximum size we expect
+incoming packets to have.
 
-Makes sense.
+I ran into this while working on cipher negotiation, which will need
+separate bookkeeping for the required internal buffer size, and the
+link/tun MTU.  Basing this code on the buffer size instead of c2->frame
+makes that easier.  A nice side-effect of this change is that it
+simplifies the code.
 
-> 2) We should probably rethink the need of Signed-off-by: lines when
->     Gert or I do commits without modifying the patch in any way.  Whom
->     committed the patch is now also easily accessible using
->     the --pretty=3Dfuller argument to git log.
+This should also reduce the impact of using asymmetric tun/link MTU's,
+such as in trac ticket #647.
 
-Indeed:
+Signed-off-by: Steffan Karger <steffan@...1856...>
+---
+ src/openvpn/forward.c | 1 -
+ src/openvpn/socket.c  | 9 +++------
+ src/openvpn/socket.h  | 4 +---
+ 3 files changed, 4 insertions(+), 10 deletions(-)
 
-commit 5f5229e41d134b659e502bb2597c711aedaf8096
-Author:     Leonardo Basilio <leobasilio@...277...>
-AuthorDate: Wed Feb 10 11:19:39 2016 +0100
-Commit:     Gert Doering <gert@...1296...>
-CommitDate: Wed Feb 10 11:19:39 2016 +0100
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index 4a91f92..2c9a082 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -669,7 +669,6 @@ read_incoming_link (struct context *c)
+ 
+   status = link_socket_read (c->c2.link_socket,
+ 			     &c->c2.buf,
+-			     MAX_RW_SIZE_LINK (&c->c2.frame),
+ 			     &c->c2.from);
+ 
+   if (socket_connection_reset (c->c2.link_socket, status))
+diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
+index 714a847..040b27d 100644
+--- a/src/openvpn/socket.c
++++ b/src/openvpn/socket.c
+@@ -2880,7 +2880,6 @@ union openvpn_pktinfo {
+ static socklen_t
+ link_socket_read_udp_posix_recvmsg (struct link_socket *sock,
+ 				    struct buffer *buf,
+-				    int maxsize,
+ 				    struct link_socket_actual *from)
+ {
+   struct iovec iov;
+@@ -2889,7 +2888,7 @@ link_socket_read_udp_posix_recvmsg (struct link_socket *sock,
+   socklen_t fromlen = sizeof (from->dest.addr);
+ 
+   iov.iov_base = BPTR (buf);
+-  iov.iov_len = maxsize;
++  iov.iov_len = buf_forward_capacity_total (buf);
+   mesg.msg_iov = &iov;
+   mesg.msg_iovlen = 1;
+   mesg.msg_name = &from->dest.addr;
+@@ -2948,20 +2947,18 @@ link_socket_read_udp_posix_recvmsg (struct link_socket *sock,
+ int
+ link_socket_read_udp_posix (struct link_socket *sock,
+ 			    struct buffer *buf,
+-			    int maxsize,
+ 			    struct link_socket_actual *from)
+ {
+   socklen_t fromlen = sizeof (from->dest.addr);
+   socklen_t expectedlen = af_addr_size(sock->info.af);
+   addr_zero_host(&from->dest);
+-  ASSERT (buf_safe (buf, maxsize));
+ #if ENABLE_IP_PKTINFO
+   /* Both PROTO_UDPv4 and PROTO_UDPv6 */
+   if (sock->info.proto == PROTO_UDP && sock->sockflags & SF_USE_IP_PKTINFO)
+-    fromlen = link_socket_read_udp_posix_recvmsg (sock, buf, maxsize, from);
++    fromlen = link_socket_read_udp_posix_recvmsg (sock, buf, from);
+   else
+ #endif
+-    buf->len = recvfrom (sock->sd, BPTR (buf), maxsize, 0,
++    buf->len = recvfrom (sock->sd, BPTR (buf), buf_forward_capacity(buf), 0,
+ 			 &from->dest.addr.sa, &fromlen);
+   /* FIXME: won't do anything when sock->info.af == AF_UNSPEC */
+   if (buf->len >= 0 && expectedlen && fromlen != expectedlen)
+diff --git a/src/openvpn/socket.h b/src/openvpn/socket.h
+index b154bc0..6f4d34f 100644
+--- a/src/openvpn/socket.h
++++ b/src/openvpn/socket.h
+@@ -961,7 +961,6 @@ link_socket_read_udp_win32 (struct link_socket *sock,
+ 
+ int link_socket_read_udp_posix (struct link_socket *sock,
+ 				struct buffer *buf,
+-				int maxsize,
+ 				struct link_socket_actual *from);
+ 
+ #endif
+@@ -970,7 +969,6 @@ int link_socket_read_udp_posix (struct link_socket *sock,
+ static inline int
+ link_socket_read (struct link_socket *sock,
+ 		  struct buffer *buf,
+-		  int maxsize,
+ 		  struct link_socket_actual *from)
+ {
+   if (proto_is_udp(sock->info.proto)) /* unified UDPv4 and UDPv6 */
+@@ -980,7 +978,7 @@ link_socket_read (struct link_socket *sock,
+ #ifdef WIN32
+       res = link_socket_read_udp_win32 (sock, buf, from);
+ #else
+-      res = link_socket_read_udp_posix (sock, buf, maxsize, from);
++      res = link_socket_read_udp_posix (sock, buf, from);
+ #endif
+       return res;
+     }
+-- 
+2.5.0
 
-     Correctly report TCP connection timeout on windows.
-
-     ---snip---
-
-Let's scrap the Signed-off-by lines except when actual changes have been=20
-made.
-
->     And it should be an explicit note which states that the committer
->     which adds a Signed-off-by: line to an unmodified commit does not
->     mean the same as when a patch contributor does so.  The committer's
->     Signed-off-by: basically means "Yes, this patch has been accepted by
->     N.N" ... That was the intention of this last Signed-off-by: line.
-
-The difference between Acked-by and Reviewed-by seems to be the=20
-completeness of the review:
-
-"Acked-by: does not necessarily indicate acknowledgment of the entire=20
-patch. For example, if a patch affects multiple subsystems and has an=20
-Acked-by: from one subsystem maintainer then this usually indicates=20
-acknowledgment of just the part which affects that maintainer=92s code."
-
-"A Reviewed-by tag is a statement of opinion that the patch is an=20
-appropriate modification of the kernel without any remaining serious=20
-technical issues."
-
-These quotes are from
-
-<https://git.eclipse.org/r/Documentation/user-signedoffby.html>
-
-We've typically been using Acked-by for acknowledging the full patch,=20
-where we could have used Reviewed-by. And we've essentially used the=20
-committers Signed-off-by in place of Acked-by, if I'm not mistaken.
-
-> If we drop the additional Signed-off-by: line, we are much closer to
-> what other projects using Signed-off-by does.
-
-Sounds good to me. They make little sense because of "--pretty=3Dfuller".
-
-> I know I'm the one to blame for all this, as I believe it was my initial
-> suggestion.  But that was many years ago; where both the git tool have
-> improved vastly and the way git is used are nowadays somewhat more
-> unified across projects then what it was around in 2010-ish.  And I
-> think we have all learned to use git far better over all these years as
-> well.
-
-+1 for following / trying to follow the instructions given here:
-
-<https://git.eclipse.org/r/Documentation/user-signedoffby.html>
-
-The tags (e.g. Signed-off-by) are not being used for analysis purposes,=20
-so this change of practice will not break anything.
-
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
 
