@@ -1,10 +1,10 @@
 From: James Yonan <james@...515...>
-Date: Thu,  3 Mar 2016 01:18:58 -0700
-Message-Id: <1456993146-63968-2-git-send-email-james@...515...>
+Date: Thu,  3 Mar 2016 01:18:59 -0700
+Message-Id: <1456993146-63968-3-git-send-email-james@...515...>
 In-Reply-To: <1456993146-63968-1-git-send-email-james@...515...>
 References: <1456993146-63968-1-git-send-email-james@...515...>
-Subject: [Openvpn-devel] [PATCH 02/10] Added PIP_OPT_MASK for
-	process_ip_header fast exit path.
+Subject: [Openvpn-devel] [PATCH 03/10] tls_serial_{n} value should be
+	distinguishable as hex or decimal.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,54 +18,47 @@ Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 Cc: James Yonan <james@...515...>
 
-Define PIP_OPT_MASK to represent all flags of interest to
-process_ip_header, so that it can have a fast exit path
-if no flags are set.
+To accomplish this, prepend 'x' before hex serial numbers, so they
+can be distinguished from decimal serial numbers.  For example:
 
-Merged from OpenVPN 2.1
+  tls_serial_1 = "x4D:9B:7C:94"
+
+is equivalent to:
+
+  tls_serial_1 = "1302035604"
+
+Currently, only PolarSSL generates hex serial numbers while
+OpenSSL returns decimal serial numbers.
+
+RFC 5280, published in 2008, decrees that serial numbers can be
+up to 20 bytes long, hence it is necessary to support SSL
+libraries that return the serial number as a hex string.
 
 Signed-off-by: James Yonan <james@...515...>
 ---
- src/openvpn/forward.c | 8 +-------
- src/openvpn/forward.h | 4 +++-
- 2 files changed, 4 insertions(+), 8 deletions(-)
+ src/openvpn/ssl_verify_polarssl.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index 4a91f92..ef554fc 100644
---- a/src/openvpn/forward.c
-+++ b/src/openvpn/forward.c
-@@ -1054,13 +1054,7 @@ process_ip_header (struct context *c, unsigned int flags, struct buffer *buf)
-        * The --passtos and --mssfix options require
-        * us to examine the IPv4 header.
-        */
--
--      if (flags & (PIP_MSSFIX
--#if PASSTOS_CAPABILITY
--	  | PIPV4_PASSTOS
--#endif
--	  | PIPV4_CLIENT_NAT
--	  ))
-+      if (flags & PIP_OPT_MASK)
- 	{
- 	  struct buffer ipbuf = *buf;
- 	  if (is_ipv4 (TUNNEL_TYPE (c->c1.tuntap), &ipbuf))
-diff --git a/src/openvpn/forward.h b/src/openvpn/forward.h
-index af3b0a6..7debcb1 100644
---- a/src/openvpn/forward.h
-+++ b/src/openvpn/forward.h
-@@ -249,9 +249,11 @@ bool send_control_channel_string (struct context *c, const char *str, int msglev
+diff --git a/src/openvpn/ssl_verify_polarssl.c b/src/openvpn/ssl_verify_polarssl.c
+index a2e6a8e..e87d2e2 100644
+--- a/src/openvpn/ssl_verify_polarssl.c
++++ b/src/openvpn/ssl_verify_polarssl.c
+@@ -161,11 +161,12 @@ char *
+ backend_x509_get_serial_hex (openvpn_x509_cert_t *cert, struct gc_arena *gc)
+ {
+   char *buf = NULL;
+-  size_t len = cert->serial.len * 3 + 1;
++  size_t len = cert->serial.len * 3;
  
- #define PIPV4_PASSTOS         (1<<0)
- #define PIP_MSSFIX            (1<<1)         /* v4 and v6 */
--#define PIPV4_OUTGOING        (1<<2)
- #define PIPV4_EXTRACT_DHCP_ROUTER (1<<3)
- #define PIPV4_CLIENT_NAT      (1<<4)
-+#define PIP_OPT_MASK          0xFFFF         /* all possible options for */
-+                                             /* process_ip_header() */
-+#define PIPV4_OUTGOING        (1<<16)
+-  buf = gc_malloc(len, true, gc);
++  buf = gc_malloc(len+1, true, gc);
  
- void process_ip_header (struct context *c, unsigned int flags, struct buffer *buf);
+-  if(x509_serial_gets(buf, len-1, &cert->serial) < 0)
++  buf[0] = 'x';
++  if(x509_serial_gets(buf+1, len, &cert->serial) < 0)
+     buf = NULL;
  
+   return buf;
 -- 
 1.9.1
 
