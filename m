@@ -1,8 +1,8 @@
-From: Steffan Karger <steffan@...1856...>
-Date: Mon, 29 Feb 2016 20:02:13 +0100
-Message-Id: <1456772533-7654-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH] Don't limit max incoming message size based
-	on c2->frame
+From: James Yonan <james@...515...>
+Date: Thu,  3 Mar 2016 01:18:57 -0700
+Message-Id: <1456993146-63968-1-git-send-email-james@...515...>
+Subject: [Openvpn-devel] [PATCH 01/10] Added "remote-override" config
+	directive.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,115 +14,83 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
+Cc: James Yonan <james@...515...>
 
-"Be conservative in what you send, be liberal in what you accept"
+remote-override <alt-remote> -- replace the hostname in all remote
+directives with alt-remote.
 
-When receiving packets, the real limitation of how much data we can accept
-is the size of our internal buffers, not the maximum size we expect
-incoming packets to have.
+Merged from OpenVPN 2.1
 
-I ran into this while working on cipher negotiation, which will need
-separate bookkeeping for the required internal buffer size, and the
-link/tun MTU.  Basing this code on the buffer size instead of c2->frame
-makes that easier.  A nice side-effect of this change is that it
-simplifies the code.
-
-This should also reduce the impact of using asymmetric tun/link MTU's,
-such as in trac ticket #647.
-
-Signed-off-by: Steffan Karger <steffan@...1856...>
+Signed-off-by: James Yonan <james@...515...>
 ---
- src/openvpn/forward.c | 1 -
- src/openvpn/socket.c  | 9 +++------
- src/openvpn/socket.h  | 4 +---
- 3 files changed, 4 insertions(+), 10 deletions(-)
+ doc/openvpn.8         | 5 +++++
+ src/openvpn/options.c | 8 +++++++-
+ src/openvpn/options.h | 2 ++
+ 3 files changed, 14 insertions(+), 1 deletion(-)
 
-diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index 4a91f92..2c9a082 100644
---- a/src/openvpn/forward.c
-+++ b/src/openvpn/forward.c
-@@ -669,7 +669,6 @@ read_incoming_link (struct context *c)
- 
-   status = link_socket_read (c->c2.link_socket,
- 			     &c->c2.buf,
--			     MAX_RW_SIZE_LINK (&c->c2.frame),
- 			     &c->c2.from);
- 
-   if (socket_connection_reset (c->c2.link_socket, status))
-diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
-index 714a847..040b27d 100644
---- a/src/openvpn/socket.c
-+++ b/src/openvpn/socket.c
-@@ -2880,7 +2880,6 @@ union openvpn_pktinfo {
- static socklen_t
- link_socket_read_udp_posix_recvmsg (struct link_socket *sock,
- 				    struct buffer *buf,
--				    int maxsize,
- 				    struct link_socket_actual *from)
- {
-   struct iovec iov;
-@@ -2889,7 +2888,7 @@ link_socket_read_udp_posix_recvmsg (struct link_socket *sock,
-   socklen_t fromlen = sizeof (from->dest.addr);
- 
-   iov.iov_base = BPTR (buf);
--  iov.iov_len = maxsize;
-+  iov.iov_len = buf_forward_capacity_total (buf);
-   mesg.msg_iov = &iov;
-   mesg.msg_iovlen = 1;
-   mesg.msg_name = &from->dest.addr;
-@@ -2948,20 +2947,18 @@ link_socket_read_udp_posix_recvmsg (struct link_socket *sock,
- int
- link_socket_read_udp_posix (struct link_socket *sock,
- 			    struct buffer *buf,
--			    int maxsize,
- 			    struct link_socket_actual *from)
- {
-   socklen_t fromlen = sizeof (from->dest.addr);
-   socklen_t expectedlen = af_addr_size(sock->info.af);
-   addr_zero_host(&from->dest);
--  ASSERT (buf_safe (buf, maxsize));
- #if ENABLE_IP_PKTINFO
-   /* Both PROTO_UDPv4 and PROTO_UDPv6 */
-   if (sock->info.proto == PROTO_UDP && sock->sockflags & SF_USE_IP_PKTINFO)
--    fromlen = link_socket_read_udp_posix_recvmsg (sock, buf, maxsize, from);
-+    fromlen = link_socket_read_udp_posix_recvmsg (sock, buf, from);
-   else
- #endif
--    buf->len = recvfrom (sock->sd, BPTR (buf), maxsize, 0,
-+    buf->len = recvfrom (sock->sd, BPTR (buf), buf_forward_capacity(buf), 0,
- 			 &from->dest.addr.sa, &fromlen);
-   /* FIXME: won't do anything when sock->info.af == AF_UNSPEC */
-   if (buf->len >= 0 && expectedlen && fromlen != expectedlen)
-diff --git a/src/openvpn/socket.h b/src/openvpn/socket.h
-index b154bc0..6f4d34f 100644
---- a/src/openvpn/socket.h
-+++ b/src/openvpn/socket.h
-@@ -961,7 +961,6 @@ link_socket_read_udp_win32 (struct link_socket *sock,
- 
- int link_socket_read_udp_posix (struct link_socket *sock,
- 				struct buffer *buf,
--				int maxsize,
- 				struct link_socket_actual *from);
- 
- #endif
-@@ -970,7 +969,6 @@ int link_socket_read_udp_posix (struct link_socket *sock,
- static inline int
- link_socket_read (struct link_socket *sock,
- 		  struct buffer *buf,
--		  int maxsize,
- 		  struct link_socket_actual *from)
- {
-   if (proto_is_udp(sock->info.proto)) /* unified UDPv4 and UDPv6 */
-@@ -980,7 +978,7 @@ link_socket_read (struct link_socket *sock,
- #ifdef WIN32
-       res = link_socket_read_udp_win32 (sock, buf, from);
- #else
--      res = link_socket_read_udp_posix (sock, buf, maxsize, from);
-+      res = link_socket_read_udp_posix (sock, buf, from);
- #endif
-       return res;
+diff --git a/doc/openvpn.8 b/doc/openvpn.8
+index 628d877..249100d 100644
+--- a/doc/openvpn.8
++++ b/doc/openvpn.8
+@@ -281,6 +281,11 @@ DNS caching.  For example, "foo.bar.gov" would be modified to
+ "<random-chars>.foo.bar.gov".
+ .\"*********************************************************
+ .TP
++.B \-\-remote-override [alt-remote]
++Replace the hostname in all remote directives with
++.B alt-remote.
++.\"*********************************************************
++.TP
+ .B <connection>
+ Define a client connection
+ profile.  Client connection profiles are groups of OpenVPN options that
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 02def3a..0942a4d 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -118,6 +118,7 @@ static const char usage_message[] =
+   "--remote host [port] : Remote host name or ip address.\n"
+   "--remote-random : If multiple --remote options specified, choose one randomly.\n"
+   "--remote-random-hostname : Add a random string to remote DNS name.\n"
++  "--remote-override a : Replace the hostname in all remote directives with a.\n"
+   "--mode m        : Major mode, m = 'p2p' (default, point-to-point) or 'server'.\n"
+   "--proto p       : Use protocol p for communicating with peer.\n"
+   "                  p = udp (default), tcp-server, or tcp-client\n"
+@@ -4565,6 +4566,11 @@ add_option (struct options *options,
+ 	goto err;
      }
+ #endif
++  else if (streq (p[0], "remote-override") && p[1])
++    {
++      VERIFY_PERMISSION (OPT_P_GENERAL);
++      options->remote_override = p[1];
++    }
+   else if (streq (p[0], "remote") && p[1] && !p[4])
+     {
+       struct remote_entry re;
+@@ -4573,7 +4579,7 @@ add_option (struct options *options,
+       re.af=0;
+ 
+       VERIFY_PERMISSION (OPT_P_GENERAL|OPT_P_CONNECTION);
+-      re.remote = p[1];
++      re.remote = options->remote_override ? options->remote_override : p[1];
+       if (p[2])
+ 	{
+ 	  re.remote_port = p[2];
+diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+index 23d3992..e281069 100644
+--- a/src/openvpn/options.h
++++ b/src/openvpn/options.h
+@@ -213,6 +213,8 @@ struct options
+ 
+   struct remote_host_store *rh_store;
+ 
++  const char *remote_override;
++
+   bool remote_random;
+   const char *ipchange;
+   const char *dev;
 -- 
-2.5.0
+1.9.1
 
 
