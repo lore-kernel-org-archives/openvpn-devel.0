@@ -1,10 +1,10 @@
 From: James Yonan <james@...515...>
-Date: Thu,  3 Mar 2016 01:18:59 -0700
-Message-Id: <1456993146-63968-3-git-send-email-james@...515...>
+Date: Thu,  3 Mar 2016 01:19:00 -0700
+Message-Id: <1456993146-63968-4-git-send-email-james@...515...>
 In-Reply-To: <1456993146-63968-1-git-send-email-james@...515...>
 References: <1456993146-63968-1-git-send-email-james@...515...>
-Subject: [Openvpn-devel] [PATCH 03/10] tls_serial_{n} value should be
-	distinguishable as hex or decimal.
+Subject: [Openvpn-devel] [PATCH 04/10] Added flags parameter to
+	format_hex_ex.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,47 +18,68 @@ Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 Cc: James Yonan <james@...515...>
 
-To accomplish this, prepend 'x' before hex serial numbers, so they
-can be distinguished from decimal serial numbers.  For example:
+We add the flags parameter without changing the signature of
+the function by repurposing the space_break parameter into
+space_break_flags where the lower 8 bits are used for the
+previous space_break parameter and the higher bits are used
+for flag values.
 
-  tls_serial_1 = "x4D:9B:7C:94"
-
-is equivalent to:
-
-  tls_serial_1 = "1302035604"
-
-Currently, only PolarSSL generates hex serial numbers while
-OpenSSL returns decimal serial numbers.
-
-RFC 5280, published in 2008, decrees that serial numbers can be
-up to 20 bytes long, hence it is necessary to support SSL
-libraries that return the serial number as a hex string.
+Added new flag FHE_CAPS that formats the generated hex string
+in upper case.
 
 Signed-off-by: James Yonan <james@...515...>
 ---
- src/openvpn/ssl_verify_polarssl.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ src/openvpn/buffer.c | 11 +++++++----
+ src/openvpn/buffer.h |  4 +++-
+ 2 files changed, 10 insertions(+), 5 deletions(-)
 
-diff --git a/src/openvpn/ssl_verify_polarssl.c b/src/openvpn/ssl_verify_polarssl.c
-index a2e6a8e..e87d2e2 100644
---- a/src/openvpn/ssl_verify_polarssl.c
-+++ b/src/openvpn/ssl_verify_polarssl.c
-@@ -161,11 +161,12 @@ char *
- backend_x509_get_serial_hex (openvpn_x509_cert_t *cert, struct gc_arena *gc)
+diff --git a/src/openvpn/buffer.c b/src/openvpn/buffer.c
+index bc67d65..52c6ab9 100644
+--- a/src/openvpn/buffer.c
++++ b/src/openvpn/buffer.c
+@@ -435,18 +435,21 @@ gc_transfer (struct gc_arena *dest, struct gc_arena *src)
+ 
+ char *
+ format_hex_ex (const uint8_t *data, int size, int maxoutput,
+-	       int space_break, const char* separator,
++	       unsigned int space_break_flags, const char* separator,
+ 	       struct gc_arena *gc)
  {
-   char *buf = NULL;
--  size_t len = cert->serial.len * 3 + 1;
-+  size_t len = cert->serial.len * 3;
+   struct buffer out = alloc_buf_gc (maxoutput ? maxoutput :
+-				    ((size * 2) + (size / space_break) * (int) strlen (separator) + 2),
++				    ((size * 2) + (size / (space_break_flags & FHE_SPACE_BREAK_MASK)) * (int) strlen (separator) + 2),
+ 				    gc);
+   int i;
+   for (i = 0; i < size; ++i)
+     {
+-      if (separator && i && !(i % space_break))
++      if (separator && i && !(i % (space_break_flags & FHE_SPACE_BREAK_MASK)))
+ 	buf_printf (&out, "%s", separator);
+-      buf_printf (&out, "%02x", data[i]);
++      if (space_break_flags & FHE_CAPS)
++	buf_printf (&out, "%02X", data[i]);
++      else
++	buf_printf (&out, "%02x", data[i]);
+     }
+   buf_catrunc (&out, "[more...]");
+   return (char *)out.data;
+diff --git a/src/openvpn/buffer.h b/src/openvpn/buffer.h
+index 24f52aa..8070439 100644
+--- a/src/openvpn/buffer.h
++++ b/src/openvpn/buffer.h
+@@ -403,9 +403,11 @@ bool buf_parse (struct buffer *buf, const int delim, char *line, const int size)
+ /*
+  * Hex dump -- Output a binary buffer to a hex string and return it.
+  */
++#define FHE_SPACE_BREAK_MASK 0xFF /* space_break parameter in lower 8 bits */
++#define FHE_CAPS 0x100            /* output hex in caps */
+ char *
+ format_hex_ex (const uint8_t *data, int size, int maxoutput,
+-	       int space_break, const char* separator,
++	       unsigned int space_break_flags, const char* separator,
+ 	       struct gc_arena *gc);
  
--  buf = gc_malloc(len, true, gc);
-+  buf = gc_malloc(len+1, true, gc);
- 
--  if(x509_serial_gets(buf, len-1, &cert->serial) < 0)
-+  buf[0] = 'x';
-+  if(x509_serial_gets(buf+1, len, &cert->serial) < 0)
-     buf = NULL;
- 
-   return buf;
+ static inline char *
 -- 
 1.9.1
 
