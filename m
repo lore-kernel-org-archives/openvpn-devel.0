@@ -1,10 +1,9 @@
-From: James Yonan <james@...515...>
-Date: Thu,  3 Mar 2016 01:19:06 -0700
-Message-Id: <1456993146-63968-10-git-send-email-james@...515...>
-In-Reply-To: <1456993146-63968-1-git-send-email-james@...515...>
-References: <1456993146-63968-1-git-send-email-james@...515...>
-Subject: [Openvpn-devel] [PATCH 10/10] Bind to local socket before dropping
-	privileges
+From: <steffan.karger@...1435...>
+Date: Thu, 3 Mar 2016 10:22:48 +0100
+Message-ID: <1456996968-29472-1-git-send-email-steffan.karger@...1435...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH] hardening: add safe FD_SET() wrapper
+	openvpn_fd_set()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,42 +15,151 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: James Yonan <james@...515...>
 
-Bind the local TCP/UDP socket before UID/GID downgrade,
-otherwise we cannot bind to ports < 1024.
+From: Steffan Karger <steffan.karger@...1435...>
 
-Signed-off-by: James Yonan <james@...515...>
+On many platforms (not Windows, for once), FD_SET() can write outside the
+given fd_set if an fd >= FD_SETSIZE is given.  To make sure we don't do
+that, add an ASSERT() to error out with a clear error message when this
+does happen.
+
+This patch was inspired by remarks about FD_SET() from Sebastian Krahmer
+of the SuSE Security Team.
+
+Signed-off-by: Steffan Karger <steffan.karger@...1435...>
 ---
- src/openvpn/init.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ src/openvpn/event.c  |  8 ++++----
+ src/openvpn/fdmisc.h | 16 ++++++++++++++++
+ src/openvpn/proxy.c  |  2 +-
+ src/openvpn/socket.c |  4 ++--
+ src/openvpn/socks.c  |  6 +++---
+ 5 files changed, 26 insertions(+), 10 deletions(-)
 
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index cb73a3d..9658895 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -3630,16 +3630,16 @@ init_instance (struct context *c, const struct env_set *env, const unsigned int
-     open_plugins (c, false, OPENVPN_PLUGIN_INIT_POST_DAEMON);
- #endif
+diff --git a/src/openvpn/event.c b/src/openvpn/event.c
+index 34a3c45..c642691 100644
+--- a/src/openvpn/event.c
++++ b/src/openvpn/event.c
+@@ -873,18 +873,18 @@ se_ctl (struct event_set *es, event_t event, unsigned int rwflags, void *arg)
+       if (ses->fast)
+ 	{
+ 	  if (rwflags & EVENT_READ)
+-	    FD_SET (event, &ses->readfds);
++	    openvpn_fd_set (event, &ses->readfds);
+ 	  if (rwflags & EVENT_WRITE)
+-	    FD_SET (event, &ses->writefds);
++	    openvpn_fd_set (event, &ses->writefds);
+ 	}
+       else
+ 	{
+ 	  if (rwflags & EVENT_READ)
+-	    FD_SET (event, &ses->readfds);
++	    openvpn_fd_set (event, &ses->readfds);
+ 	  else
+ 	    FD_CLR (event, &ses->readfds);
+ 	  if (rwflags & EVENT_WRITE)
+-	    FD_SET (event, &ses->writefds);
++	    openvpn_fd_set (event, &ses->writefds);
+ 	  else
+ 	    FD_CLR (event, &ses->writefds);
+ 	}
+diff --git a/src/openvpn/fdmisc.h b/src/openvpn/fdmisc.h
+index 4b6b6d0..13d6552 100644
+--- a/src/openvpn/fdmisc.h
++++ b/src/openvpn/fdmisc.h
+@@ -22,10 +22,26 @@
+  *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+  */
  
-+  /* finalize the TCP/UDP socket */
-+  if (c->mode == CM_P2P || c->mode == CM_TOP || c->mode == CM_CHILD_TCP)
-+    do_init_socket_2 (c);
++#ifndef FD_MISC_H
++#define FD_MISC_H
 +
-   /*
-    * Actually do UID/GID downgrade, and chroot, if requested.
-    * May be delayed by --client, --pull, or --up-delay.
-    */
-   do_uid_gid_chroot (c, c->c2.did_open_tun);
+ #include "basic.h"
++#include "error.h"
++#include "syshead.h"
  
--  /* finalize the TCP/UDP socket */
--  if (c->mode == CM_P2P || c->mode == CM_TOP || c->mode == CM_CHILD_TCP)
--    do_init_socket_2 (c);
--
-   /* initialize timers */
-   if (c->mode == CM_P2P || child)
-     do_init_timers (c, false);
+ bool set_nonblock_action (int fd);
+ bool set_cloexec_action (int fd);
+ 
+ void set_nonblock (int fd);
+ void set_cloexec (int fd);
++
++static inline void openvpn_fd_set(int fd, fd_set *setp)
++{
++#ifndef WIN32 /* The Windows FD_SET() implementation does not overflow */
++  ASSERT (fd >= 0 && fd < FD_SETSIZE);
++#endif
++  FD_SET (fd, setp);
++}
++#undef FD_SET /* prevent direct use of FD_SET() */
++
++#endif /* FD_MISC_H */
+diff --git a/src/openvpn/proxy.c b/src/openvpn/proxy.c
+index 2568e19..8ff6458 100644
+--- a/src/openvpn/proxy.c
++++ b/src/openvpn/proxy.c
+@@ -92,7 +92,7 @@ recv_line (socket_descriptor_t sd,
+ 	}
+ 
+       FD_ZERO (&reads);
+-      FD_SET (sd, &reads);
++      openvpn_fd_set (sd, &reads);
+       tv.tv_sec = timeout_sec;
+       tv.tv_usec = 0;
+ 
+diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
+index 714a847..9bcf4d4 100644
+--- a/src/openvpn/socket.c
++++ b/src/openvpn/socket.c
+@@ -1003,7 +1003,7 @@ socket_listen_accept (socket_descriptor_t sd,
+       struct timeval tv;
+ 
+       FD_ZERO (&reads);
+-      FD_SET (sd, &reads);
++      openvpn_fd_set (sd, &reads);
+       tv.tv_sec = 0;
+       tv.tv_usec = 0;
+ 
+@@ -1153,7 +1153,7 @@ openvpn_connect (socket_descriptor_t sd,
+ 	  struct timeval tv;
+ 
+ 	  FD_ZERO (&writes);
+-	  FD_SET (sd, &writes);
++	  openvpn_fd_set (sd, &writes);
+ 	  tv.tv_sec = 0;
+ 	  tv.tv_usec = 0;
+ 
+diff --git a/src/openvpn/socks.c b/src/openvpn/socks.c
+index cef7a35..a9d04ae 100644
+--- a/src/openvpn/socks.c
++++ b/src/openvpn/socks.c
+@@ -134,7 +134,7 @@ socks_username_password_auth (struct socks_proxy_info *p,
+       char c;
+ 
+       FD_ZERO (&reads);
+-      FD_SET (sd, &reads);
++      openvpn_fd_set (sd, &reads);
+       tv.tv_sec = timeout_sec;
+       tv.tv_usec = 0;
+ 
+@@ -213,7 +213,7 @@ socks_handshake (struct socks_proxy_info *p,
+       char c;
+ 
+       FD_ZERO (&reads);
+-      FD_SET (sd, &reads);
++      openvpn_fd_set (sd, &reads);
+       tv.tv_sec = timeout_sec;
+       tv.tv_usec = 0;
+ 
+@@ -319,7 +319,7 @@ recv_socks_reply (socket_descriptor_t sd,
+       char c;
+ 
+       FD_ZERO (&reads);
+-      FD_SET (sd, &reads);
++      openvpn_fd_set (sd, &reads);
+       tv.tv_sec = timeout_sec;
+       tv.tv_usec = 0;
+ 
 -- 
-1.9.1
+2.5.0
 
 
