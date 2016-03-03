@@ -1,11 +1,12 @@
-From: ValdikSS <iam@...2070...>
-Message-ID: <56D8A6C4.5080803@...2070...>
-Date: Fri, 4 Mar 2016 00:04:04 +0300
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature";
-	boundary="vkBa6Cfgpcd043pCGvFcFLCG5q8XgNAcv"
-Subject: [Openvpn-devel] Pushing multiple certificates from server
+In-Reply-To: <1456993146-63968-9-git-send-email-james@...515...>
+References: <1456993146-63968-1-git-send-email-james@...515...>
+	<1456993146-63968-9-git-send-email-james@...515...>
+From: "Jonathan K. Bullard" <jkbullard@...277...>
+Date: Thu, 3 Mar 2016 18:21:48 -0500
+Message-ID: <CAEsd45SxnPokhHmkHe38AZghkhh=xVB-h9ODYHU1zfvkz9i=Pw@...278...>
+Subject: Re: [Openvpn-devel] [PATCH 09/10] Added directive to specify HTTP
+ proxy credentials in config.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,24 +15,32 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Cc: James Yonan <james@...515...>
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---vkBa6Cfgpcd043pCGvFcFLCG5q8XgNAcv
-Content-Type: multipart/mixed; boundary="mrBNd3jnnCC9DCNWTUeiTWsCWN3UI88Sk"
-From: ValdikSS <iam@...2070...>
-To: openvpn-devel@lists.sourceforge.net
-Message-ID: <56D8A6C4.5080803@...2070...>
-Subject: Pushing multiple certificates from server
+On Thu, Mar 3, 2016 at 3:19 AM, James Yonan <james@...515...> wrote:
+>
+> The inline directive http-proxy-user-pass can be used to
+> specify proxy credentials in config, e.g.:
+>
+> http-proxy proxy.tld 3128 auto-nct
+> <http-proxy-user-pass>
+> foo
+> bar
+> </http-proxy-user-pass>
+>
+> This usage is already supported by OpenVPN 3.
+>
+> Signed-off-by: James Yonan <james@...515...>
+> ---
+>  src/openvpn/misc.c    |  8 ++++++++
+>  src/openvpn/misc.h    |  2 ++
+>  src/openvpn/options.c | 13 +++++++++++++
+>  src/openvpn/proxy.c   |  2 ++
+>  src/openvpn/proxy.h   |  1 +
+>  5 files changed, 26 insertions(+)
 
---mrBNd3jnnCC9DCNWTUeiTWsCWN3UI88Sk
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+No man page documentation?
 
-Hello everyone,
-
-I'm trying to leisurely move from an old existing 1024 bit CA to a new 4096=
- bit one without a hassle for a clients.
---mrBNd3jnnCC9DCNWTUeiTWsCWN3UI88Sk--
-
---vkBa6Cfgpcd043pCGvFcFLCG5q8XgNAcv--
