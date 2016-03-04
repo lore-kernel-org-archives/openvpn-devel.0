@@ -1,13 +1,9 @@
-Message-ID: <1457096221.43867.161.camel@...1866...>
-From: David Woodhouse <dwmw2@...1866...>
-Date: Fri, 04 Mar 2016 12:57:01 +0000
-In-Reply-To: <56D98171.7040103@...2070...>
-References: <56D8A6C4.5080803@...2070...> <56D97EFA.9010207@...1147...>
-	<56D98171.7040103@...2070...>
-Content-Type: multipart/signed; micalg="sha-1";
-	protocol="application/x-pkcs7-signature"; 
-	boundary="=-WZGpnoEvaTVh6DuomrGo"
-Mime-Version: 1.0
+References: <56D8A6C4.5080803@...2070...>
+From: Arne Schwabe <arne@...1227...>
+Message-ID: <56D989C7.5040403@...1227...>
+Date: Fri, 4 Mar 2016 14:12:39 +0100
+MIME-Version: 1.0
+In-Reply-To: <56D8A6C4.5080803@...2070...>
 Subject: Re: [Openvpn-devel] Pushing multiple certificates from server
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -17,15 +13,26 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: ValdikSS <iam@...2070...>, Jan Just Keijser <janjust@...1147...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+To: ValdikSS <iam@...2070...>, openvpn-devel@lists.sourceforge.net
 
---=-WZGpnoEvaTVh6DuomrGo
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-On Fri, 2016-03-04 at 15:37 +0300, ValdikSS wrote:
-> Thanks for the information. It definitely doesn't work for any
-> certificate, probably only for chained certificates.
 
-What you described *was* chained certificates, wasn't it?
---=-WZGpnoEvaTVh6DuomrGo--
+Am 03.03.16 um 22:04 schrieb ValdikSS:
+> Hello everyone,
+>
+> I'm trying to leisurely move from an old existing 1024 bit CA to a new 4096 bit one without a hassle for a clients.
+> From a X.509 perspective it shouldn't be a problem, and I already have new CA self-signed and cross-signed with old CA, it should work just fine.
+>
+> While there's no problem authenticating clients from both old and new CA using single instance (multiple certificates in --ca are supported, this information is
+> documented), I need to send two certificates from OpenVPN server: server certificate, which is signed by new CA, and cross-signed new CA with old CA. This way
+> it should work for clients either with old or new CA in configuration files.
+>
+>
+Shouldn't sending the new CA chain only be enough? Since it is
+(cross)signed by the old CA, the client will accept it. For the old
+clients the new CA will look like an intermediate certificate.
+
+Arne
+
