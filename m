@@ -1,14 +1,12 @@
-References: <56D8A6C4.5080803@...2070...> <56D989C7.5040403@...1227...>
-	<56D98B2E.20903@...2070...> <56D98CA8.8060307@...1227...>
-	<56D9EB59.8010507@...1147...>
+References: <56D8A6C4.5080803@...2070...>
 From: ValdikSS <iam@...2070...>
-Message-ID: <56D9ED9D.4010302@...2070...>
-Date: Fri, 4 Mar 2016 23:18:37 +0300
+Message-ID: <56DA04EE.8000200@...2070...>
+Date: Sat, 5 Mar 2016 00:58:06 +0300
 MIME-Version: 1.0
-In-Reply-To: <56D9EB59.8010507@...1147...>
+In-Reply-To: <56D8A6C4.5080803@...2070...>
 Content-Type: multipart/signed; micalg=pgp-sha256;
 	protocol="application/pgp-signature";
-	boundary="WMolKdvsRTnxTk5TBuEuoP2UVSPGdAXLv"
+	boundary="JWHUWJdEJ62E3cCxO9QEANCfnn9tifBGC"
 Subject: Re: [Openvpn-devel] Pushing multiple certificates from server
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -18,100 +16,115 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Jan Just Keijser <janjust@...1147...>, openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---WMolKdvsRTnxTk5TBuEuoP2UVSPGdAXLv
-Content-Type: multipart/mixed; boundary="XjjmdnaI6Nn4AsN86IAK5U96EDBiGB2ah"
+--JWHUWJdEJ62E3cCxO9QEANCfnn9tifBGC
+Content-Type: multipart/mixed; boundary="1SJ9wBqRS7gVeH2CAiPuMmk0hHvCi3kbU"
 From: ValdikSS <iam@...2070...>
-To: Jan Just Keijser <janjust@...1147...>, openvpn-devel@lists.sourceforge.net
-Message-ID: <56D9ED9D.4010302@...2070...>
-Subject: Re: [Openvpn-devel] Pushing multiple certificates from server
-References: <56D8A6C4.5080803@...2070...> <56D989C7.5040403@...1227...>
-	<56D98B2E.20903@...2070...> <56D98CA8.8060307@...1227...>
-	<56D9EB59.8010507@...1147...>
-In-Reply-To: <56D9EB59.8010507@...1147...>
+To: openvpn-devel@lists.sourceforge.net
+Message-ID: <56DA04EE.8000200@...2070...>
+Subject: Re: Pushing multiple certificates from server
+References: <56D8A6C4.5080803@...2070...>
+In-Reply-To: <56D8A6C4.5080803@...2070...>
 
---XjjmdnaI6Nn4AsN86IAK5U96EDBiGB2ah
-Content-Type: text/plain; charset="windows-1252"
+--1SJ9wBqRS7gVeH2CAiPuMmk0hHvCi3kbU
+Content-Type: multipart/alternative;
+	boundary="------------090705000504010103040906"
+
+This is a multi-part message in MIME format.
+--------------090705000504010103040906
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
-On 03/04/2016 11:08 PM, Jan Just Keijser wrote:
-> Hi,
+I have good news and bad news:
+
+Good news:
+
+  * OpenVPN sends all certificates from the server supplied for --server di=
+rective (although with a small bug that a certificate which you have privat=
+e key for
+    must be supplied on the top)
+  * OpenVPN Connect for Android can successfully connect to my server with =
+a chain
+
+
+Bad news:
+
+  * OpenVPN 2.3 and master can't connect to this server, with both OpenSSL =
+and PolarSSL backends. Maybe if I supply certificates in correct order, cli=
+ent would
+    work.
+
+
+
+On 03/04/2016 12:04 AM, ValdikSS wrote:
+> Hello everyone,
 >
-> On 04/03/16 14:24, Arne Schwabe wrote:
-> the more I think about it, the more I think that what you are trying to a=
-chieve ought not to work:
+> I'm trying to leisurely move from an old existing 1024 bit CA to a new 40=
+96 bit one without a hassle for a clients.
+> From a X.509 perspective it shouldn't be a problem, and I already have ne=
+w CA self-signed and cross-signed with old CA, it should work just fine.
 >
-> your current situation is this:
-> - clients are equipped with a 1024bit CA cert; the server certificate (ch=
-ain) must be signed using this end-entity CA cert for the client to trust t=
-he server
-> - the server supplies this 1024bit CA cert, as well as a cross-signed 409=
-6bit CA cert and a server cert.
-> - The client will never "accept" the 4K CA cert as the new end-entity, as=
- that is not configured in the config file.
-
-This is correct, except that server doesn't send CA.
-
+> While there's no problem authenticating clients from both old and new CA =
+using single instance (multiple certificates in --ca are supported, this in=
+formation is
+> documented), I need to send two certificates from OpenVPN server: server =
+certificate, which is signed by new CA, and cross-signed new CA with old CA=
+. This way
+> it should work for clients either with old or new CA in configuration fil=
+es.
 >
-> *but*
-> anything signed using a 1K cert should be considered insecure, as it's fe=
-asible nowadays to brute-force generate a key that will match that certific=
-ate. That
-> means that an attacker can grab your 1K CA cert, generate a new CA key fo=
-r it, then generate new server cert (or even a 4K cross-signed CA cert) and=
- lure an
-> unsuspecting client to the server - your shiny new cross-signed CA cert w=
-ill not prevent this.
-
-This is also correct.
-
->
-> The only way to prevent this from happening is by getting the clients to =
-stop trusting/using the 1K CA cert - thus, you must alter the client-side
-> configuration for this, painstaking as it is...
-
-This is only to easily move to a new CA. New clients will get configuration=
- files with new 4096 bit CA, old clients would update their configuration f=
-iles in 2
-months. I'd like both old and new clients to be able to connect to the serv=
-er without any hassle. Then, in 2 months, when all clients use 4096 bit CA,=
- I'll
-remove old chain from server.
-
+> I can't manage server to send more than one certificate to the client. It=
+ seems that multiple certificates in --cert directive are supported only on=
+ client
+> side. Am I missing something, is there a way to push multiple certificate=
+s from server? If there isn't a way currently, are there any protocol limit=
+ations which
+> allows only one certificate to be sent?
 >
 >
-> JJK
->
 
 
+--------------090705000504010103040906
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 
---XjjmdnaI6Nn4AsN86IAK5U96EDBiGB2ah--
+<html>
+  <head>
+    <meta content=3D"text/html; charset=3Dutf-8" http-equiv=3D"Content-Type=
+">
+  </head>
+  <body text=3D"#000000" bgcolor=3D"#FFFFFF">
+    I have good news and bad news:<br>
+    <br>
+    Good news:<br>
+    <ul>
+      <li>OpenVPN sends all certificates from the server supplied for
+        --server directive (although with a small bug that a certificate
+        which you have private key for must be supplied on the top)</li>
+      <li>OpenVPN Connect for Android can successfully connect to my
+        server with a chain</li>
+    </ul>
+    <br>
+    Bad news:<br>
+    <ul>
+      <li>OpenVPN 2.3 and master can't connect to this server, with both
+        OpenSSL and PolarSSL backends. Maybe if I supply certificates in
+        correct order, client would work. </li>
+    </ul>
+    <br>
+    <br>
+    <div class=3D"moz-cite-prefix">On 03/04/2016 12:04 AM, ValdikSS wrote:<=
+br>
+    </div>
+    <blockquote cite=3D"mid:56D8A6C4.5080803@...2070..." type=3D"cite">
+      <pre wrap=3D"">Hello everyone,
 
---WMolKdvsRTnxTk5TBuEuoP2UVSPGdAXLv
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+I'm trying to leisurely move from an old existing 1024 bit CA to a new 4096=
+ bit one without a hassle for a clients.
+--------------090705000504010103040906--
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-Comment: https://keybase.io/valdikss
+--1SJ9wBqRS7gVeH2CAiPuMmk0hHvCi3kbU--
 
-iQIcBAEBCAAGBQJW2e2fAAoJEFzXIC7viPdyZOMQAMAoaaVAHTKSkhPkDckQgvUu
-NVseYE1TJwgL4d6Uq5A4zauOVdRRJKbuopWIuXhNY39tQhSmu76h4g11WFfzSJ2f
-oH8cUyCjEN6M7Ppcw1vjKN+8O5Yu+MS2IkzdYDoNIqXTtDoBA/mIbBsqfQq0lZk4
-eTP7axORWRMQQXg1HvxlZ2HBdUs31q73pdy5s9AxJ4w6PmB06vpjOre7BDK2ySKJ
-2YK0nAKNkiW+UR1TqphzykQ0wHxQ75Z0YgWSL0sO+g3j+N0Cd5E4trR2o6x+rXWb
-ZMUEpqdlrsHhDn3bShp+j+q+PUv1p5VrTfTbcIPmP+TY8MzzRrg4SkuzuTj7zOIG
-LQ0pkV4GqwrrRNZH/DPpACSljibyOKTLGs6JoALEUtlBqoVxNA265+c34qs9wC/m
-ExkyjpVtzef6YSdQ+QI/nFOKEXuyMP82WraAOQaG8hb7D66h+0TWq36xAql7S1zg
-M7/hhr+xn7/6KyXS4dyhhKmUXx4PEzGr/6suKgwpsltnRSeD5TBf3FHbD+Sblz0+
-jd4PU3FaVE9pH6ff7HzI6IzHBfVysWXaV7/8F5ZHzYfARyzCvPwRgI26xT32CPLE
-pOas4tW9k72IdvNIWj7cHGKHHmNvOSLNM4AIbW5mPTdyCTEJ/eR7cDAoArjGT0vN
-9HZ8mnBzwnYJQadhTlBM
-=306J
------END PGP SIGNATURE-----
-
---WMolKdvsRTnxTk5TBuEuoP2UVSPGdAXLv--
-
+--JWHUWJdEJ62E3cCxO9QEANCfnn9tifBGC--
