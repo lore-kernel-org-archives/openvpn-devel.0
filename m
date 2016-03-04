@@ -1,14 +1,12 @@
-References: <56D8A6C4.5080803@...2070...> <56D97EFA.9010207@...1147...>
-	<56D98171.7040103@...2070...>
-	<1457096221.43867.161.camel@...1866...>
+References: <56D8A6C4.5080803@...2070...> <56D989C7.5040403@...1227...>
 From: ValdikSS <iam@...2070...>
-Message-ID: <56D98A8F.7060702@...2070...>
-Date: Fri, 4 Mar 2016 16:15:59 +0300
+Message-ID: <56D98B2E.20903@...2070...>
+Date: Fri, 4 Mar 2016 16:18:38 +0300
 MIME-Version: 1.0
-In-Reply-To: <1457096221.43867.161.camel@...1866...>
+In-Reply-To: <56D989C7.5040403@...1227...>
 Content-Type: multipart/signed; micalg=pgp-sha256;
 	protocol="application/pgp-signature";
-	boundary="SjgwtD8crj2flUiAdwMIqRIaE4LRBFWA5"
+	boundary="QbFsp2jAVgEq85KgXiMC1nLRaoS1AeSXc"
 Subject: Re: [Openvpn-devel] Pushing multiple certificates from server
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -18,50 +16,40 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: David Woodhouse <dwmw2@...1866...>, Jan Just Keijser <janjust@...1147...>, openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---SjgwtD8crj2flUiAdwMIqRIaE4LRBFWA5
-Content-Type: multipart/mixed; boundary="84SwFPwsaSGV0Kx3qwIhtXwtQJAcn09p2"
+--QbFsp2jAVgEq85KgXiMC1nLRaoS1AeSXc
+Content-Type: multipart/mixed; boundary="SqltodpcPwmjm7Pci2aOuQX5hL8m205wM"
 From: ValdikSS <iam@...2070...>
-To: David Woodhouse <dwmw2@...1866...>,
-	Jan Just Keijser <janjust@...1147...>, openvpn-devel@lists.sourceforge.net
-Message-ID: <56D98A8F.7060702@...2070...>
+To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+Message-ID: <56D98B2E.20903@...2070...>
 Subject: Re: [Openvpn-devel] Pushing multiple certificates from server
-References: <56D8A6C4.5080803@...2070...> <56D97EFA.9010207@...1147...>
-	<56D98171.7040103@...2070...>
-	<1457096221.43867.161.camel@...1866...>
-In-Reply-To: <1457096221.43867.161.camel@...1866...>
+References: <56D8A6C4.5080803@...2070...> <56D989C7.5040403@...1227...>
+In-Reply-To: <56D989C7.5040403@...1227...>
 
---84SwFPwsaSGV0Kx3qwIhtXwtQJAcn09p2
-Content-Type: text/plain; charset="utf-8"
+--SqltodpcPwmjm7Pci2aOuQX5hL8m205wM
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
 
-On 03/04/2016 03:57 PM, David Woodhouse wrote:
-> On Fri, 2016-03-04 at 15:37 +0300, ValdikSS wrote:
-> What you described *was* chained certificates, wasn't it?
+On 03/04/2016 04:12 PM, Arne Schwabe wrote:
 >
-> From the point of view of a client which only trusts the old CA, the
-> server is presenting a chain =E2=80=94 its own cert, followed by the
-> "intermediate" new CA which is in turn signed by the trusted 'old CA'.
->
-> And from the point of view of a client which trusts the new CA, the
-> server is presenting its own certificate, followed by something which
-> can (and should) be ignored.
->
-> Major CAs have done this, haven't they, resulting in a few crypto
-> libraries having to be modified to back up the chain and look for
-> *alternative* reasons to trust a cert from further back.
->
+> Am 03.03.16 um 22:04 schrieb ValdikSS:
+> Shouldn't sending the new CA chain only be enough? Since it is
+> (cross)signed by the old CA, the client will accept it. For the old
+> clients the new CA will look like an intermediate certificate.
 
-Yes, I'm trying to do exactly the same, and it doesn't work. It seems that =
-OpenVPN don't want to load multiple certificates on the server side for me.
-I'll investigate it further.
+Please clarify what do you mean. I'm trying to send new CA (signed by old C=
+A) and a server certificate.
+
+>
+> Arne
 
 
---84SwFPwsaSGV0Kx3qwIhtXwtQJAcn09p2--
 
---SjgwtD8crj2flUiAdwMIqRIaE4LRBFWA5
+--SqltodpcPwmjm7Pci2aOuQX5hL8m205wM--
+
+--QbFsp2jAVgEq85KgXiMC1nLRaoS1AeSXc
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -70,20 +58,20 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v2
 Comment: https://keybase.io/valdikss
 
-iQIcBAEBCAAGBQJW2YqPAAoJEFzXIC7viPdyKSEQAIDQDttrirnUm4//oW4VgsNv
-ESP/c4ifGPV/k9O5yfhQWf4Ki7SRxySlcNJbCWWvduPMpPD604EnN1rWbC3hAomP
-fq5yv+VpM826Pv3NLdPJyr8khOku2c02IOJvgxZ9XrASZZvL8Yl7c2cSHJVqoId6
-5M5mrQre653+OFUJ8P0ocuLgAMwJLm4iUbXSpbNbCyD5hciWPxzugG2Nb2UgYL5i
-VhQngOGfSrLCDkJR1I+JHePX3TjDr2XOnhPLxSBim/2tz/GdFDuMspRYBodtaxaI
-A+CBdEg4/UMqeYyRNs/fSFHKJbjnZ1SBU9POaC+fZg8/PZw9jSCo+zhFh9mU9bkB
-0ozpC7Sv1dQ2t+GGZqeoOFoCOadkgHb0DswEInUX5IpVNnIOupGhh1eUo97RTdUB
-8aZqJauzs/5PuwetVHBhS85IlHjzCjtOkUzEsdilYvlfHCGQHFCeFZCO2gPZPVh4
-otDoyV+Iy/QYE+k0PBem7AYcVklysPMgWY9PDTzQ+CD+1DbCRBKCRmoOhebpbNQA
-gY6nyeltrCmlb3COkG5FDh9PYIYLfgiTf7R0S0Ks8dLGWpckz95trgDaKrvkXCCz
-zQiM1wJOXoIbWA1GiHad8FgSt7F+LFOyyq6dh/mXiNMncNLDI7sc701S/38f7dXh
-+Fgnv+D92UO8gilYGw5x
-=PKS0
+iQIcBAEBCAAGBQJW2YsvAAoJEFzXIC7viPdyMOsP/RniHWYZTqZIR7iWps+Wd8n7
+SE5N6GGlNzURuBmNASU2WWwWl0jSdgt7TuAb2DIgnswwYwNyUF804QIoHXrIvaAy
+n93mBnTK93zBkhE+zzQ9+LSjLatz6rX9OhlsUzlw0KxsuufDLbG/yKs3fJQ6WZRY
+jh+xEYOJ4MH3wG821YfbVQnwY84OlVrA1pBzb472HS5LGP2otuTKxOQCnn8wCDfU
+uwJw7SQf8DZVtsV/6mhMa//Fz8NlRHUVegN50q4BCSuvG7IEqmrTgHXmLtDtu/++
+X0ia5ao9SwucuSwbpavyElXHqltoeeTm5GXix+f+92WUIE51LiKwFHad5mjRuZal
+EcKzhIHjZSVE5xSRoaIqLR9kRQC7JaJj7E+LCdP6gawskwz5fxJmN19a1KaRnut/
+2ZW0q9QvqOLUqt8nM1JHBTvEQ+kuiAcXHOZ8Lmwoy+qmbHywXSMkotqnAxObIVeh
+58DajEojmnv1FMQxSfi0+FTlgRqoIuNGU1MhIL1rhmMFK5ysjZ/4tIn4WPPAStnH
+E4GcF2HIjeqPg7ZBsw8lmh/MQS81YXE26w1Ooc7lo21MCjubXlbOKq7L8W11yu/I
+907MFop76G6pV5584YRkvniOoKzYXI9hJk2nEjvGkkybigCglrpGk+lUqCxnd8dU
+Y48QKOdNloJp2OhAbzou
+=xYNG
 -----END PGP SIGNATURE-----
 
---SjgwtD8crj2flUiAdwMIqRIaE4LRBFWA5--
+--QbFsp2jAVgEq85KgXiMC1nLRaoS1AeSXc--
 
