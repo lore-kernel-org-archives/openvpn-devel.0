@@ -1,13 +1,10 @@
-References: <1456993146-63968-1-git-send-email-james@...515...>
-	<1456993146-63968-2-git-send-email-james@...515...>
-	<56D8CD3E.2070403@...1227...> <56D93976.1090906@...515...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <56D95A46.9060802@...1227...>
-Date: Fri, 4 Mar 2016 10:49:58 +0100
+Message-ID: <56D97EFA.9010207@...1147...>
+Date: Fri, 04 Mar 2016 13:26:34 +0100
+From: Jan Just Keijser <janjust@...1147...>
 MIME-Version: 1.0
-In-Reply-To: <56D93976.1090906@...515...>
-Subject: Re: [Openvpn-devel] [PATCH 02/10] Added PIP_OPT_MASK for
- process_ip_header fast exit path.
+References: <56D8A6C4.5080803@...2070...>
+In-Reply-To: <56D8A6C4.5080803@...2070...>
+Subject: Re: [Openvpn-devel] Pushing multiple certificates from server
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,67 +13,40 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=windows-1252; format=flowed
 Content-Transfer-Encoding: 7bit
-To: James Yonan <james@...515...>, openvpn-devel@lists.sourceforge.net
+To: ValdikSS <iam@...2070...>, openvpn-devel@lists.sourceforge.net
 
+Hi,
 
-
-Am 04.03.16 um 08:29 schrieb James Yonan:
-> On 03/03/2016 16:48, Arne Schwabe wrote:
->> Am 03.03.16 um 09:18 schrieb James Yonan:
->>> Define PIP_OPT_MASK to represent all flags of interest to
->>> process_ip_header, so that it can have a fast exit path
->>> if no flags are set.
->> Basically what this patch does is to change the condition to
->>
->> if (flags)
->>
->> and if for example PASSTOS_CAPABILITY is not 1, the following path will
->> always be taken:
->>
->>        process_ip_header (c, PIPV4_PASSTOS|PIP_MSSFIX|PIPV4_CLIENT_NAT,
->> &c->c2.buf);
->>
->> flags mean that possible passtos, mssfix and client_nat should be
->> applied here.
->>
->> #if PASSTOS_CAPABILITY
->>    if (!c->options.passtos)
->>      flags &= ~PIPV4_PASSTOS;
->> #endif
->>
->> is not compiled in. So flags is at least PIPV4_PASSTOS
->>
->> So if (flags & 0xffff) is still true.
->>
->> So NACK from me butthe code is very confusing...
->>
->> Arne
+On 03/03/16 22:04, ValdikSS wrote:
+> Hello everyone,
 >
-> I think what makes this patch confusing is that it's really a patch
-> that facilitates another patch that we've used in the past at OpenVPN
-> Tech. for some custom NAT algs.  This patch reduces the footprint of
-> the second patch, making it easier to maintain.
+> I'm trying to leisurely move from an old existing 1024 bit CA to a new 4096 bit one without a hassle for a clients.
+>  From a X.509 perspective it shouldn't be a problem, and I already have new CA self-signed and cross-signed with old CA, it should work just fine.
 >
-Yes. I think I get the intention of the patch. But if this patch should
-work in OpenVPN now we need to replace
+> While there's no problem authenticating clients from both old and new CA using single instance (multiple certificates in --ca are supported, this information is
+> documented), I need to send two certificates from OpenVPN server: server certificate, which is signed by new CA, and cross-signed new CA with old CA. This way
+> it should work for clients either with old or new CA in configuration files.
+>
+> I can't manage server to send more than one certificate to the client. It seems that multiple certificates in --cert directive are supported only on client
+> side. Am I missing something, is there a way to push multiple certificates from server? If there isn't a way currently, are there any protocol limitations which allows only one certificate to be sent?
+>
 
-#if PASSTOS_CAPABILITY
-  if (!c->options.passtos)
-    flags &= ~PIPV4_PASSTOS;
-#endif
+it's possible to send a stacked CA certificate (i.e. server certificate 
+and intermediate CA cert) from server to the client. We use this in 
+production, and it is done by simply stacking (cat'ing) the server cert 
+and intermediary CA cert file into a single pem file. The intermediary 
+CA is verified using the client-side ca.crt file and the server cert is 
+signed by the intermediary CA.
+I'm not sure what would happen if you stick two CA certs into the file, 
+however.
+If this does not work: when looking thru the openssl s_server code I see 
+a -dcert option which does something similar - looks like it would be 
+trivial to add to OpenVPN.
 
-with 
+JM2CW,
 
-#if PASSTOS_CAPABILITY
-  if (!c->options.passtos)
-#endif
- flags &= ~PIPV4_PASSTOS;
-
-to have the correct behaviour if PASSTOS_CAPABILITY is missing.
-
-Arne
- 
+JJK
 
 
