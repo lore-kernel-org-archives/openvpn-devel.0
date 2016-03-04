@@ -1,12 +1,13 @@
-From: Arne Schwabe <arne@...1227...>
 References: <1456993146-63968-1-git-send-email-james@...515...>
-	<1456993146-63968-9-git-send-email-james@...515...>
-Message-ID: <56D959C9.8050802@...1227...>
-Date: Fri, 4 Mar 2016 10:47:53 +0100
+	<1456993146-63968-2-git-send-email-james@...515...>
+	<56D8CD3E.2070403@...1227...> <56D93976.1090906@...515...>
+From: Arne Schwabe <arne@...1227...>
+Message-ID: <56D95A46.9060802@...1227...>
+Date: Fri, 4 Mar 2016 10:49:58 +0100
 MIME-Version: 1.0
-In-Reply-To: <1456993146-63968-9-git-send-email-james@...515...>
-Subject: Re: [Openvpn-devel] [PATCH 09/10] Added directive to specify HTTP
- proxy credentials in config.
+In-Reply-To: <56D93976.1090906@...515...>
+Subject: Re: [Openvpn-devel] [PATCH 02/10] Added PIP_OPT_MASK for
+ process_ip_header fast exit path.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,21 +22,61 @@ To: James Yonan <james@...515...>, openvpn-devel@lists.sourceforge.net
 
 
 
-Am 03.03.16 um 09:19 schrieb James Yonan:
-> The inline directive http-proxy-user-pass can be used to
-> specify proxy credentials in config, e.g.:
+Am 04.03.16 um 08:29 schrieb James Yonan:
+> On 03/03/2016 16:48, Arne Schwabe wrote:
+>> Am 03.03.16 um 09:18 schrieb James Yonan:
+>>> Define PIP_OPT_MASK to represent all flags of interest to
+>>> process_ip_header, so that it can have a fast exit path
+>>> if no flags are set.
+>> Basically what this patch does is to change the condition to
+>>
+>> if (flags)
+>>
+>> and if for example PASSTOS_CAPABILITY is not 1, the following path will
+>> always be taken:
+>>
+>>        process_ip_header (c, PIPV4_PASSTOS|PIP_MSSFIX|PIPV4_CLIENT_NAT,
+>> &c->c2.buf);
+>>
+>> flags mean that possible passtos, mssfix and client_nat should be
+>> applied here.
+>>
+>> #if PASSTOS_CAPABILITY
+>>    if (!c->options.passtos)
+>>      flags &= ~PIPV4_PASSTOS;
+>> #endif
+>>
+>> is not compiled in. So flags is at least PIPV4_PASSTOS
+>>
+>> So if (flags & 0xffff) is still true.
+>>
+>> So NACK from me butthe code is very confusing...
+>>
+>> Arne
 >
-> http-proxy proxy.tld 3128 auto-nct
-> <http-proxy-user-pass>
-> foo
-> bar
-> </http-proxy-user-pass>
+> I think what makes this patch confusing is that it's really a patch
+> that facilitates another patch that we've used in the past at OpenVPN
+> Tech. for some custom NAT algs.  This patch reduces the footprint of
+> the second patch, making it easier to maintain.
 >
-> This usage is already supported by OpenVPN 3.
->
-ACK. But it really should come with manpage (and a short note in
-Changes.rst)
+Yes. I think I get the intention of the patch. But if this patch should
+work in OpenVPN now we need to replace
+
+#if PASSTOS_CAPABILITY
+  if (!c->options.passtos)
+    flags &= ~PIPV4_PASSTOS;
+#endif
+
+with 
+
+#if PASSTOS_CAPABILITY
+  if (!c->options.passtos)
+#endif
+ flags &= ~PIPV4_PASSTOS;
+
+to have the correct behaviour if PASSTOS_CAPABILITY is missing.
 
 Arne
+ 
 
 
