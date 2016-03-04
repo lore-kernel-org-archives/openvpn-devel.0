@@ -1,15 +1,13 @@
-Date: Fri, 4 Mar 2016 07:57:13 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20160304065713.GJ24952@...1296...>
 References: <1456993146-63968-1-git-send-email-james@...515...>
-	<1456993146-63968-3-git-send-email-james@...515...>
+	<1456993146-63968-2-git-send-email-james@...515...>
+	<56D8CD3E.2070403@...1227...>
+From: James Yonan <james@...515...>
+Message-ID: <56D93976.1090906@...515...>
+Date: Fri, 4 Mar 2016 00:29:58 -0700
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="UnethLbBSDNDuU+2"
-Content-Disposition: inline
-In-Reply-To: <1456993146-63968-3-git-send-email-james@...515...>
-Subject: Re: [Openvpn-devel] [PATCH 03/10] tls_serial_{n} value should be
- distinguishable as hex or decimal.
+In-Reply-To: <56D8CD3E.2070403@...1227...>
+Subject: Re: [Openvpn-devel] [PATCH 02/10] Added PIP_OPT_MASK for
+ process_ip_header fast exit path.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,72 +16,94 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: James Yonan <james@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
---UnethLbBSDNDuU+2
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+On 03/03/2016 16:48, Arne Schwabe wrote:
+> Am 03.03.16 um 09:18 schrieb James Yonan:
+>> Define PIP_OPT_MASK to represent all flags of interest to
+>> process_ip_header, so that it can have a fast exit path
+>> if no flags are set.
+> Basically what this patch does is to change the condition to
+>
+> if (flags)
+>
+> and if for example PASSTOS_CAPABILITY is not 1, the following path will
+> always be taken:
+>
+>        process_ip_header (c, PIPV4_PASSTOS|PIP_MSSFIX|PIPV4_CLIENT_NAT,
+> &c->c2.buf);
+>
+> flags mean that possible passtos, mssfix and client_nat should be
+> applied here.
+>
+> #if PASSTOS_CAPABILITY
+>    if (!c->options.passtos)
+>      flags &= ~PIPV4_PASSTOS;
+> #endif
+>
+> is not compiled in. So flags is at least PIPV4_PASSTOS
+>
+> So if (flags & 0xffff) is still true.
+>
+> So NACK from me butthe code is very confusing...
+>
+> Arne
 
-Hi,
+I think what makes this patch confusing is that it's really a patch that 
+facilitates another patch that we've used in the past at OpenVPN Tech. 
+for some custom NAT algs.  This patch reduces the footprint of the 
+second patch, making it easier to maintain.
 
-On Thu, Mar 03, 2016 at 01:18:59AM -0700, James Yonan wrote:
-> To accomplish this, prepend 'x' before hex serial numbers, so they
-> can be distinguished from decimal serial numbers.  For example:
->=20
->   tls_serial_1 =3D "x4D:9B:7C:94"
->=20
-> is equivalent to:
->=20
->   tls_serial_1 =3D "1302035604"
->=20
-> Currently, only PolarSSL generates hex serial numbers while
-> OpenSSL returns decimal serial numbers.
+James
 
-we have this one in the community tree today:
+>
+>
+>> Merged from OpenVPN 2.1
+>>
+>> Signed-off-by: James Yonan <james@...515...>
+>> ---
+>>   src/openvpn/forward.c | 8 +-------
+>>   src/openvpn/forward.h | 4 +++-
+>>   2 files changed, 4 insertions(+), 8 deletions(-)
+>>
+>> diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+>> index 4a91f92..ef554fc 100644
+>> --- a/src/openvpn/forward.c
+>> +++ b/src/openvpn/forward.c
+>> @@ -1054,13 +1054,7 @@ process_ip_header (struct context *c, unsigned int flags, struct buffer *buf)
+>>          * The --passtos and --mssfix options require
+>>          * us to examine the IPv4 header.
+>>          */
+>> -
+>> -      if (flags & (PIP_MSSFIX
+>> -#if PASSTOS_CAPABILITY
+>> -	  | PIPV4_PASSTOS
+>> -#endif
+>> -	  | PIPV4_CLIENT_NAT
+>> -	  ))
+>> +      if (flags & PIP_OPT_MASK)
+>>   	{
+>>   	  struct buffer ipbuf = *buf;
+>>   	  if (is_ipv4 (TUNNEL_TYPE (c->c1.tuntap), &ipbuf))
+>> diff --git a/src/openvpn/forward.h b/src/openvpn/forward.h
+>> index af3b0a6..7debcb1 100644
+>> --- a/src/openvpn/forward.h
+>> +++ b/src/openvpn/forward.h
+>> @@ -249,9 +249,11 @@ bool send_control_channel_string (struct context *c, const char *str, int msglev
+>>   
+>>   #define PIPV4_PASSTOS         (1<<0)
+>>   #define PIP_MSSFIX            (1<<1)         /* v4 and v6 */
+>> -#define PIPV4_OUTGOING        (1<<2)
+>>   #define PIPV4_EXTRACT_DHCP_ROUTER (1<<3)
+>>   #define PIPV4_CLIENT_NAT      (1<<4)
+>> +#define PIP_OPT_MASK          0xFFFF         /* all possible options for */
+>> +                                             /* process_ip_header() */
+>> +#define PIPV4_OUTGOING        (1<<16)
+>>   
+>>   void process_ip_header (struct context *c, unsigned int flags, struct buffer *buf);
+>>   
+>>
 
-commit f80a52b09eed8e5e0cad990c56ec99256d6cc2d0 (master)
-commit 142d4dd2e98317a03ca9827f03fc4643fe922834 (release/2.3)
-
-Author: Steffan Karger <steffan@...1856...>
-Date:   Sun Apr 27 10:49:20 2014 +0200
-
-    Make serial env exporting consistent amongst OpenSSL and PolarSSL build=
-s.
-=20=20=20=20
-    This changes the representation of the tls_serial_{n} environment varia=
-ble
-    from hex to decimal for PolarSSL builds, to match OpenSSL build behavio=
-ur.
-=20=20=20=20
-    Because hex representation for serials makes sense too, and to ease
-    transition for PolarSSL users, added tls_serial_hex_{n} that exports the
-    serial in hex represenation for both crypto library backends.
-
-
-so I think the intention of your patch has been achieved already.
-
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---UnethLbBSDNDuU+2
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQCVAwUBVtkxyakuBuNlUUl1AQJGkwQAsJbKsWkSpI1z0JJjAgpZ4vWSoTjipnWy
-+SlBrDH2ralkynV9ljmjS8byvcbYdxIFJDcJG7neQbnHlwPjNDyoGPiQb6PKkUx4
-X97S7XP6w2vCKJ0i0Ia9rbN0nQZP25TKlxm7YBbZHbVmMmn0B0SM42kuvpmM99tw
-qfzDiaJMac8=
-=uRAk
------END PGP SIGNATURE-----
-
---UnethLbBSDNDuU+2--
 
