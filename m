@@ -1,13 +1,15 @@
+Date: Sun, 6 Mar 2016 14:44:02 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20160306134402.GW24952@...1296...>
+References: <20160225125008.GD24952@...1296...>
+	<1456457091-3872-1-git-send-email-selva.nair@...277...>
 MIME-Version: 1.0
-In-Reply-To: <201603060931.u269VG0n045886@...2054...>
-References: <1457241722-23433-1-git-send-email-selva.nair@...277...>
-	<201603060931.u269VG0n045886@...2054...>
-From: Selva Nair <selva.nair@...277...>
-Date: Sun, 6 Mar 2016 08:34:38 -0500
-Message-ID: <CAKuzo_h+RsgPKVJDCYf+5V5RBacdfHwYDxm9eTpoWbD4JmzJVw@...278...>
-Content-Type: multipart/alternative; boundary=001a113d526c07b7f9052d616a92
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: Use appropriate buffer size
- for WideCharToMultiByte output in interactive.c
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="pagWpRLPtWkQX8eB"
+Content-Disposition: inline
+In-Reply-To: <1456457091-3872-1-git-send-email-selva.nair@...277...>
+Subject: Re: [Openvpn-devel] [PATCH v2 1/2] Refactor and move the
+ block-outside-dns code to a new file (block_dns.[ch])
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,57 +18,67 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Selva Nair <selva.nair@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---001a113d526c07b7f9052d616a92
-Content-Type: text/plain; charset=UTF-8
+--pagWpRLPtWkQX8eB
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
 Hi,
 
-On Sun, Mar 6, 2016 at 4:31 AM, Gert Doering <gert@...1296...> wrote:
+On Thu, Feb 25, 2016 at 10:24:50PM -0500, Selva Nair wrote:
+> - Move the core of win_wfp_block_dns() to a new function
+> - Remove globals and make it independent of the rest of the code
 
->
-> I'm not sure if I understand in which scenarios data is fed to the
-> nascent openvpn.exe on stdin - buf if done at all, we should better do
-> it right :-) - I do wonder, though, if WriteFile() could block here,
-> leading to a dead worker thread...  all other pipe operations seem to
-> go through AsyncPipeOp() - but that is orthogonal to this fix)
+Trying to compile this on mingw 32bit, block_dns.c blows up for me
+unless I add two more header files to get definitions for ADDRESS_FAMILY
+and SOCKADDR_INET (which are referenced by iphlpapi.c)
 
+--- a/src/openvpn/block_dns.c
++++ b/src/openvpn/block_dns.c
+@@ -29,6 +29,8 @@
+ #include <fwpmu.h>
+ #include <initguid.h>
+ #include <fwpmtypes.h>
++#include <winsock2.h>
++#include <ws2ipdef.h>
+ #include <iphlpapi.h>
+ #include "block_dns.h"
 
-This is used for writing the management password to stdin. The GUI sends an
-"ascii" password, but a client could potentially use some char set that
-needs 3 or 4 bytes per char.
+... with these changes, both openvpn.exe and openvpnserv.exe compile=20
+and link nicely.
 
-And you are right, the write should not block. We don't see any deadlock
-even when openvpn errros out early, because of buffering, I suppose.. But
-bettter to make this non-blocking.
+MS documentation says one should include <winsock2.h>, but that is not
+sufficient for me.
 
-Selva
+So, question 1: is this a mingw issue, or just a 32bit windows requirement
+and you only tested on 64bit?
 
---001a113d526c07b7f9052d616a92
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+question 2: shall I just add these two header files and take note in
+the ACK-and-merge e-mail, or do you want to re-send a v3?
 
-<div dir=3D"ltr"><div class=3D"gmail_extra">Hi,<br><br></div><div class=3D"=
-gmail_extra"><div class=3D"gmail_quote">On Sun, Mar 6, 2016 at 4:31 AM, Ger=
-t Doering <span dir=3D"ltr">&lt;<a href=3D"mailto:gert@...1296..." target=
-=3D"_blank">gert@...1296...</a>&gt;</span> wrote:<br><blockquote class=3D"g=
-mail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-l=
-eft:1ex"><br>
-I&#39;m not sure if I understand in which scenarios data is fed to the<br>
-nascent openvpn.exe on stdin - buf if done at all, we should better do<br>
-it right :-) - I do wonder, though, if WriteFile() could block here,<br>
-leading to a dead worker thread...=C2=A0 all other pipe operations seem to<=
-br>
-go through AsyncPipeOp() - but that is orthogonal to this fix)</blockquote>=
-</div><br></div><div class=3D"gmail_extra">This is used for writing the man=
-agement password to stdin. The GUI sends an &quot;ascii&quot; password, but=
- a client could potentially use some char set that needs 3 or 4 bytes per c=
-har.<br><br></div><div class=3D"gmail_extra">And you are right, the write s=
-hould not block. We don&#39;t see any deadlock even when openvpn errros out=
- early, because of buffering, I suppose.. But bettter to make this non-bloc=
-king.<br><br></div><div class=3D"gmail_extra">Selva<br></div></div>
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
---001a113d526c07b7f9052d616a92--
+--pagWpRLPtWkQX8eB
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQCVAwUBVtw0IakuBuNlUUl1AQJasAQAjmVOMnGLal2kl3quARr/8aYq9WTOTIDl
+efIsT87nhqYj0BASc7WNvQcJOcKrz9PE0cjgQ9jGhXOae5YwMaRepdgxta125FgY
+jRdEfutnFTQcAukuQd9MYafqU5S/UdvcufuWu6EPMkkkWR0FcW2kocFQCFLpO1DQ
+zLkTCEh0ef8=
+=wpAr
+-----END PGP SIGNATURE-----
+
+--pagWpRLPtWkQX8eB--
 
