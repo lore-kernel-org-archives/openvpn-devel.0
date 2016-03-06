@@ -1,16 +1,14 @@
-Date: Sun, 6 Mar 2016 14:48:36 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20160306134836.GX24952@...1296...>
-References: <1457241722-23433-1-git-send-email-selva.nair@...277...>
-	<201603060931.u269VG0n045886@...2054...>
-	<CAKuzo_h+RsgPKVJDCYf+5V5RBacdfHwYDxm9eTpoWbD4JmzJVw@...278...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="jvbbzz+93Hvb4jrV"
-Content-Disposition: inline
-In-Reply-To: <CAKuzo_h+RsgPKVJDCYf+5V5RBacdfHwYDxm9eTpoWbD4JmzJVw@...278...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: Use appropriate buffer size
- for WideCharToMultiByte output in interactive.c
+In-Reply-To: <20160306134402.GW24952@...1296...>
+References: <20160225125008.GD24952@...1296...>
+	<1456457091-3872-1-git-send-email-selva.nair@...277...>
+	<20160306134402.GW24952@...1296...>
+From: Selva Nair <selva.nair@...277...>
+Date: Sun, 6 Mar 2016 09:20:48 -0500
+Message-ID: <CAKuzo_jvCxAs8zrNABX02BENdsk+hk=KpwzXB8NA1J_8av-bQA@...278...>
+Content-Type: multipart/alternative; boundary=089e01538c3c3113ba052d620f41
+Subject: Re: [Openvpn-devel] [PATCH v2 1/2] Refactor and move the
+ block-outside-dns code to a new file (block_dns.[ch])
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,67 +17,110 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>
+To: Gert Doering <gert@...1296...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---jvbbzz+93Hvb4jrV
-Content-Type: text/plain; charset="us-ascii"
+--089e01538c3c3113ba052d620f41
+Content-Type: text/plain; charset=UTF-8
+
+On Sun, Mar 6, 2016 at 8:44 AM, Gert Doering <gert@...1296...> wrote:
+
+> Trying to compile this on mingw 32bit, block_dns.c blows up for me
+> unless I add two more header files to get definitions for ADDRESS_FAMILY
+> and SOCKADDR_INET (which are referenced by iphlpapi.c)
+>
+> --- a/src/openvpn/block_dns.c
+> +++ b/src/openvpn/block_dns.c
+> @@ -29,6 +29,8 @@
+>  #include <fwpmu.h>
+>  #include <initguid.h>
+>  #include <fwpmtypes.h>
+> +#include <winsock2.h>
+> +#include <ws2ipdef.h>
+>  #include <iphlpapi.h>
+>  #include "block_dns.h"
+>
+> ... with these changes, both openvpn.exe and openvpnserv.exe compile
+> and link nicely.
+>
+
+It must have been my sloppiness. I copied the relevant snippets from
+win32.c and only the headers needed to compile cleanly. Did not check the
+docs thoroughly..
+
+
+>
+> MS documentation says one should include <winsock2.h>, but that is not
+> sufficient for me.
+>
+> So, question 1: is this a mingw issue, or just a 32bit windows requirement
+> and you only tested on 64bit?
+>
+
+Strange thing is that it compiles and links without error (even with -Wall)
+using mingw I have here (uses gcc 4.6.3).
+
+
+>
+> question 2: shall I just add these two header files and take note in
+> the ACK-and-merge e-mail, or do you want to re-send a v3?
+>
+
+Please add the headers and the note. Thanks.
+
+Selva
+
+--089e01538c3c3113ba052d620f41
+Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
+<div dir=3D"ltr"><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">=
+On Sun, Mar 6, 2016 at 8:44 AM, Gert Doering <span dir=3D"ltr">&lt;<a href=
+=3D"mailto:gert@...1296..." target=3D"_blank">gert@...1296...</a>&gt;</span=
+> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;bo=
+rder-left:1px #ccc solid;padding-left:1ex"><div id=3D":1bd" class=3D"a3s" s=
+tyle=3D"overflow:hidden">Trying to compile this on mingw 32bit, block_dns.c=
+ blows up for me<br>
+unless I add two more header files to get definitions for ADDRESS_FAMILY<br>
+and SOCKADDR_INET (which are referenced by iphlpapi.c)<br>
+<br>
+--- a/src/openvpn/block_dns.c<br>
++++ b/src/openvpn/block_dns.c<br>
+@@ -29,6 +29,8 @@<br>
+=C2=A0#include &lt;fwpmu.h&gt;<br>
+=C2=A0#include &lt;initguid.h&gt;<br>
+=C2=A0#include &lt;fwpmtypes.h&gt;<br>
++#include &lt;winsock2.h&gt;<br>
++#include &lt;ws2ipdef.h&gt;<br>
+=C2=A0#include &lt;iphlpapi.h&gt;<br>
+=C2=A0#include &quot;block_dns.h&quot;<br>
+<br>
+... with these changes, both openvpn.exe and openvpnserv.exe compile<br>
+and link nicely.<br></div></blockquote><div><br></div><div>It must have bee=
+n my sloppiness. I copied the relevant snippets from win32.c and only the h=
+eaders needed to compile cleanly. Did not check the docs thoroughly..<br>=
+=C2=A0<br></div><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8e=
+x;border-left:1px #ccc solid;padding-left:1ex"><div id=3D":1bd" class=3D"a3=
+s" style=3D"overflow:hidden">
+<br>
+MS documentation says one should include &lt;winsock2.h&gt;, but that is no=
+t<br>
+sufficient for me.<br>
+<br>
+So, question 1: is this a mingw issue, or just a 32bit windows requirement<=
+br>
+and you only tested on 64bit?<br></div></blockquote><div><br></div><div>Str=
+ange thing is that it compiles and links without error (even with -Wall) us=
+ing mingw I have here (uses gcc 4.6.3).<br></div><div>=C2=A0<br></div><bloc=
+kquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #cc=
+c solid;padding-left:1ex"><div id=3D":1bd" class=3D"a3s" style=3D"overflow:=
+hidden">
+<br>
+question 2: shall I just add these two header files and take note in<br>
+the ACK-and-merge e-mail, or do you want to re-send a v3?</div></blockquote=
+></div><br></div><div class=3D"gmail_extra">Please add the headers and the =
+note. Thanks.<br><br></div><div class=3D"gmail_extra">Selva<br></div><div c=
+lass=3D"gmail_extra"><br></div></div>
 
-On Sun, Mar 06, 2016 at 08:34:38AM -0500, Selva Nair wrote:
-> On Sun, Mar 6, 2016 at 4:31 AM, Gert Doering <gert@...1296...> wrote:
->=20
-> > I'm not sure if I understand in which scenarios data is fed to the
-> > nascent openvpn.exe on stdin - buf if done at all, we should better do
-> > it right :-) - I do wonder, though, if WriteFile() could block here,
-> > leading to a dead worker thread...  all other pipe operations seem to
-> > go through AsyncPipeOp() - but that is orthogonal to this fix)
->=20
->=20
-> This is used for writing the management password to stdin. The GUI sends =
-an
-> "ascii" password, but a client could potentially use some char set that
-> needs 3 or 4 bytes per char.
-
-Ah!  Tanks for the explanation, this is showing my lack of familiarity=20
-with using the management interface in a programmatic fashion...  (I use
-it on the server side and manually telnet to it, having the password in
-a file)
-
-> And you are right, the write should not block. We don't see any deadlock
-> even when openvpn errros out early, because of buffering, I suppose.. But
-> bettter to make this non-blocking.
-
-For "short" writes, it shouldn't block, no.  On a unix pipe, you'd get
-blocking if the buffers fill up and the reader is just sitting there and
-not fetching the data - if the reader *dies*, the server would get an=20
-error back (since nobody could ever read it).
-
-Probably not very important, just wondering.
-
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---jvbbzz+93Hvb4jrV
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQCVAwUBVtw1M6kuBuNlUUl1AQIwtwQAvkUrCIy2eFTa+EJQDjh+XOquSUAm+Vcl
-3ShivDfvmO/S95gwqyFpvqcTiEJDHtYdgXfAQ4dy3K148dAXyZaVqd2TLRT9ctSU
-hg09g6lKLbs/XtXiru7AoE8jhwydGGw5I8TOtX2r95cx81HEYfFcQXZ9y9HfO94N
-vhy3kOAlg1Q=
-=U6Wo
------END PGP SIGNATURE-----
-
---jvbbzz+93Hvb4jrV--
+--089e01538c3c3113ba052d620f41--
 
