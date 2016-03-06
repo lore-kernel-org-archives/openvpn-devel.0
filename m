@@ -1,8 +1,10 @@
 From: Selva Nair <selva.nair@...277...>
-Date: Sun,  6 Mar 2016 00:19:19 -0500
-Message-Id: <1457241559-23374-1-git-send-email-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH 1/2] Fix interactive service ignoring stop
-	command if openvpn is running
+Date: Sun,  6 Mar 2016 00:22:02 -0500
+Message-Id: <1457241722-23433-1-git-send-email-selva.nair@...277...>
+In-Reply-To: <1457241559-23374-1-git-send-email-selva.nair@...277...>
+References: <1457241559-23374-1-git-send-email-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH 2/2] Use appropriate buffer size for
+	WideCharToMultiByte output in interactive.c
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,37 +17,38 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Make the exit event not auto-reset so that the signal propagates to
-all worker threads and finally to the main thread.
-
-Fixes Trac #666
+A widechar can potentially take more than 2 bytes in UTF-8.
 
 Signed-off-by: Selva Nair <selva.nair@...277...>
 ---
- src/openvpnserv/interactive.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ src/openvpnserv/interactive.c |    7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
 diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
-index 22239b2..39397d1 100644
+index 39397d1..6a7227b 100644
 --- a/src/openvpnserv/interactive.c
 +++ b/src/openvpnserv/interactive.c
-@@ -1289,7 +1289,7 @@ ServiceStartInteractive (DWORD dwArgc, LPTSTR *lpszArgv)
-     goto out;
+@@ -1063,17 +1063,16 @@ RunOpenvpn (LPVOID p)
+   CloseHandleEx (&stdin_read);
+   CloseHandleEx (&svc_pipe);
  
-   io_event = InitOverlapped (&overlapped);
--  exit_event = CreateEvent (NULL, FALSE, FALSE, NULL);
-+  exit_event = CreateEvent (NULL, TRUE, FALSE, NULL);
-   if (!exit_event || !io_event)
+-  DWORD input_size = wcslen (sud.std_input) * 2;
+-  if (input_size)
++  DWORD input_size = WideCharToMultiByte (CP_UTF8, 0, sud.std_input, -1, NULL, 0, NULL, NULL);
++  LPSTR input = NULL;
++  if (input_size && (input = malloc (input_size)))
      {
-       error = MsgToEventLog (M_SYSERR, TEXT("Could not create event"));
-@@ -1356,6 +1356,7 @@ ServiceStartInteractive (DWORD dwArgc, LPTSTR *lpszArgv)
-             {
-               /* exit event signaled */
-               CloseHandleEx (&pipe);
-+              ResetEvent (exit_event);
-               error = NO_ERROR;
-               break;
-             }
+       DWORD written;
+-      LPSTR input = malloc (input_size);
+       WideCharToMultiByte (CP_UTF8, 0, sud.std_input, -1, input, input_size, NULL, NULL);
+       WriteFile (stdin_write, input, strlen (input), &written, NULL);
+       free (input);
+     }
+ 
+-
+   while (TRUE)
+     {
+       DWORD bytes = PeekNamedPipeAsync (ovpn_pipe, 1, &exit_event);
 -- 
 1.7.10.4
 
