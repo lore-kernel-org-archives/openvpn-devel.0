@@ -1,16 +1,8 @@
-References: <56C5C6F7.1020903@...277...>
-	<CAA1AbxJEJyrzJLOXLN2gO6EbA2=QSAbJf3pEr0SUAgVReT5xXA@...278...>
-	<56C5EE36.5080906@...277...> <20160218170312.GV24952@...1296...>
-	<56C5FA72.9040607@...277...> <20160218180846.GW24952@...1296...>
-From: Jacek Wielemborek <d33tah@...277...>
-Message-ID: <56E215FC.2090608@...277...>
-Date: Fri, 11 Mar 2016 01:49:00 +0100
-MIME-Version: 1.0
-In-Reply-To: <20160218180846.GW24952@...1296...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature";
-	boundary="QOKXM6Sp8496cOUNsFV2TS5jtNhhjIBwF"
-Subject: Re: [Openvpn-devel] Has openvpn been fuzzed?
+From: Selva Nair <selva.nair@...277...>
+Date: Thu, 10 Mar 2016 23:47:26 -0500
+Message-Id: <1457671646-4322-1-git-send-email-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH] Add support for register-dns through
+	interactive service
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,57 +11,288 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---QOKXM6Sp8496cOUNsFV2TS5jtNhhjIBwF
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-W dniu 18.02.2016 o 19:08, Gert Doering pisze:
-> Hi,
->=20
-> On Thu, Feb 18, 2016 at 06:08:02PM +0100, Jacek Wielemborek wrote:
->> Well the attacker could send a funny packet with a valid checksum,
->> encrypted and authenticated, right?=20
->=20
-> Indeed, but that would be someone we trust enough to let him talk to
-> our network - protects against Joe Random from the Internet crashing
-> our servers (or burning CPU resources trying to).
->=20
-> But yeah.  Mistakes do happen :-) - so software shouldn't ever crash
-> on malformed packets.
->=20
-> gert
+The call to the service returns promptly after delegating the job to
+a thread, before the task is completed. In the thread, "net stop dnscache",
+"net start dnscache", "ipconfig /flushdns" and "ipconfig /register-dns"
+are executed in that order.
 
-For the record, I'm unsubscribing I hadn't heard a response for quite a
-while and I'm not interested in other openvpn-devel topic. Please CC me
-if you'd like to continue the discussion with me.
+Parallel execution of these commands is prevented by a lock that is
+common to all connections started by the service.
 
+Note: "net stop .." is used instead of "sc stop.." as the latter can
+return before the service has fully stopped (in STOP_PENDING state),
+causing the subsequent start to fail.
 
---QOKXM6Sp8496cOUNsFV2TS5jtNhhjIBwF
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+Signed-off-by: Selva Nair <selva.nair@...277...>
+---
+ include/openvpn-msg.h         |    3 +-
+ src/openvpn/tun.c             |   35 ++++++++-
+ src/openvpnserv/interactive.c |  156 +++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 192 insertions(+), 2 deletions(-)
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
+diff --git a/include/openvpn-msg.h b/include/openvpn-msg.h
+index 7470512..4c13acf 100644
+--- a/include/openvpn-msg.h
++++ b/include/openvpn-msg.h
+@@ -37,7 +37,8 @@ typedef enum {
+   msg_del_nbt_cfg,
+   msg_flush_neighbors,
+   msg_add_block_dns,
+-  msg_del_block_dns
++  msg_del_block_dns,
++  msg_register_dns
+ } message_type_t;
+ 
+ typedef struct {
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index eaeb6cc..dd9bdaf 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -5101,10 +5101,43 @@ fork_dhcp_action (struct tuntap *tt)
+     }
+ }
+ 
++static void
++register_dns_service (const struct tuntap *tt)
++{
++  DWORD len;
++  HANDLE msg_channel = tt->options.msg_channel;
++  ack_message_t ack;
++  struct gc_arena gc = gc_new ();
++
++  message_header_t rdns = { msg_register_dns, sizeof(message_header_t), 0 };
++
++  if (!WriteFile (msg_channel, &rdns, sizeof (rdns), &len, NULL) ||
++      !ReadFile (msg_channel, &ack, sizeof (ack), &len, NULL))
++    {
++      msg (M_WARN, "Register_dns: could not talk to service: %s [status=0x%lx]",
++           strerror_win32 (GetLastError (), &gc), GetLastError ());
++    }
++
++  else if (ack.error_number != NO_ERROR)
++    {
++      msg (M_WARN, "Register_dns failed using service: %s [status=0x%x]",
++           strerror_win32 (ack.error_number, &gc), ack.error_number);
++    }
++
++  else
++      msg (M_INFO, "Register_dns request sent to the service");
++
++  gc_free (&gc);
++}
++
+ void
+ fork_register_dns_action (struct tuntap *tt)
+ {
+-  if (tt && tt->options.register_dns)
++  if (tt && tt->options.register_dns && tt->options.msg_channel)
++    {
++       register_dns_service (tt);
++    }
++  else if (tt && tt->options.register_dns)
+     {
+       struct gc_arena gc = gc_new ();
+       struct buffer cmd = alloc_buf_gc (256, &gc);
+diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
+index d83ea65..df30ad7 100644
+--- a/src/openvpnserv/interactive.c
++++ b/src/openvpnserv/interactive.c
+@@ -50,6 +50,9 @@ static SERVICE_STATUS_HANDLE service;
+ static SERVICE_STATUS status;
+ static HANDLE exit_event = NULL;
+ static settings_t settings;
++static HANDLE rdns_semaphore = NULL;
++#define RDNS_TIMEOUT 600  /* seconds to wait for the semaphore */
++
+ 
+ openvpn_service_t interactive_service = {
+   interactive,
+@@ -803,6 +806,147 @@ HandleBlockDNSMessage (const block_dns_message_t *msg, undo_lists_t *lists)
+   return err;
+ }
+ 
++/*
++ * Execute a command and return its exit code. If timeout > 0, terminate
++ * the process if still running after timeout milliseconds. In that case
++ * the return value is the windows error code WAIT_TIMEOUT = 0x102
++ */
++static DWORD
++ExecCommand (const WCHAR *argv0, const WCHAR *cmdline, DWORD timeout)
++{
++  DWORD exit_code;
++  STARTUPINFOW si;
++  PROCESS_INFORMATION pi;
++  DWORD proc_flags = CREATE_NO_WINDOW|CREATE_UNICODE_ENVIRONMENT;
++  WCHAR *cmdline_dup = NULL;
++
++  ZeroMemory (&si, sizeof(si));
++  ZeroMemory (&pi, sizeof(pi));
++
++  si.cb = sizeof(si);
++
++  /* CreateProcess needs a modifiable cmdline: make a copy */
++  cmdline_dup = wcsdup (cmdline);
++  if ( cmdline_dup && CreateProcessW (argv0, cmdline_dup, NULL, NULL, FALSE,
++                                      proc_flags, NULL, NULL, &si, &pi) )
++    {
++      WaitForSingleObject (pi.hProcess, timeout ? timeout : INFINITE);
++      if (!GetExitCodeProcess (pi.hProcess, &exit_code))
++        {
++          MsgToEventLog (M_SYSERR, TEXT("ExecCommand: Error getting exit_code:"));
++          exit_code = GetLastError();
++        }
++      else if (exit_code == STILL_ACTIVE)
++        {
++          exit_code = WAIT_TIMEOUT;  /* Windows error code 0x102 */
++
++          /* kill without impunity */
++          TerminateProcess (pi.hProcess, exit_code);
++          MsgToEventLog (M_ERR, TEXT("ExecCommand: \"%s %s\" killed after timeout"),
++            argv0, cmdline);
++        }
++      else if (exit_code)
++          MsgToEventLog (M_ERR, TEXT("ExecCommand: \"%s %s\" exited with status = %lu"),
++                          argv0, cmdline, exit_code);
++      else
++          MsgToEventLog (M_INFO, TEXT("ExecCommand: \"%s %s\" completed"), argv0, cmdline);
++
++      CloseHandle(pi.hProcess);
++      CloseHandle(pi.hThread);
++    }
++  else
++    {
++      exit_code = GetLastError();
++      MsgToEventLog (M_SYSERR, TEXT("ExecCommand: could not run \"%s %s\" :"),
++                                      argv0, cmdline);
++    }
++
++  free (cmdline_dup);
++  return exit_code;
++}
++
++/*
++ * Entry point for register-dns thread.
++ */
++static DWORD WINAPI
++RegisterDNS (LPVOID unused)
++{
++  DWORD err;
++  DWORD i;
++  WCHAR sys_path[MAX_PATH];
++  DWORD timeout = RDNS_TIMEOUT * 1000; /* in milliseconds */
++
++  /* default paths of net and ipconfig commands */
++  WCHAR net[MAX_PATH]   = L"C:\\Windows\\system32\\net.exe";
++  WCHAR ipcfg[MAX_PATH] = L"C:\\Windows\\system32\\ipconfig.exe";
++
++  struct
++    {
++      WCHAR *argv0;
++      WCHAR *cmdline;
++      DWORD timeout;
++    } cmds [] = {
++                  { net,   L"net stop dnscache",     timeout },
++                  { net,   L"net start dnscache",    timeout },
++                  { ipcfg, L"ipconfig /flushdns",    timeout },
++                  { ipcfg, L"ipconfig /registerdns", timeout },
++                };
++  int ncmds = sizeof (cmds) / sizeof (cmds[0]);
++
++  HANDLE wait_handles[2] = {rdns_semaphore, exit_event};
++
++  if(GetSystemDirectory(sys_path, MAX_PATH))
++    {
++      _snwprintf (net, MAX_PATH, L"%s\\%s", sys_path, L"net.exe");
++      net[MAX_PATH-1] = L'\0';
++
++      _snwprintf (ipcfg, MAX_PATH, L"%s\\%s", sys_path, L"ipconfig.exe");
++      ipcfg[MAX_PATH-1] = L'\0';
++    }
++
++  if (WaitForMultipleObjects (2, wait_handles, FALSE, timeout) == WAIT_OBJECT_0)
++    {
++      /* Semaphore locked */
++      for (i = 0; i < ncmds; ++i)
++        {
++          ExecCommand (cmds[i].argv0, cmds[i].cmdline, cmds[i].timeout);
++        }
++      err = 0;
++      if ( !ReleaseSemaphore (rdns_semaphore, 1, NULL) )
++        err = MsgToEventLog (M_SYSERR, TEXT("RegisterDNS: Failed to release regsiter-dns semaphore:"));
++    }
++  else
++    {
++      MsgToEventLog (M_ERR, TEXT("RegisterDNS: Failed to lock register-dns semaphore"));
++      err = ERROR_SEM_TIMEOUT;  /* Windows error code 0x79 */
++    }
++  return err;
++}
++
++static DWORD
++HandleRegisterDNSMessage (void)
++{
++  DWORD err;
++  HANDLE thread = NULL;
++
++  /* Delegate this job to a sub-thread */
++  thread = CreateThread (NULL, 0, RegisterDNS, NULL, 0, NULL);
++
++  /*
++   * We don't add these thread handles to the undo list -- the thread and
++   * processes it spawns are all supposed to terminate or timeout by themselves.
++   */
++  if (thread)
++    {
++      err = 0;
++      CloseHandle (thread);
++    }
++  else
++    err = GetLastError();
++
++  return err;
++}
++
+ static VOID
+ HandleMessage (HANDLE pipe, DWORD bytes, DWORD count, LPHANDLE events, undo_lists_t *lists)
+ {
+@@ -854,6 +998,10 @@ HandleMessage (HANDLE pipe, DWORD bytes, DWORD count, LPHANDLE events, undo_list
+         ack.error_number = HandleBlockDNSMessage (&msg.block_dns, lists);
+       break;
+ 
++    case msg_register_dns:
++        ack.error_number = HandleRegisterDNSMessage ();
++        break;
++
+     default:
+       ack.error_number = ERROR_MESSAGE_TYPE;
+       MsgToEventLog (MSG_FLAGS_ERROR, TEXT("Unknown message type %d"), msg.header.type);
+@@ -1381,6 +1529,13 @@ ServiceStartInteractive (DWORD dwArgc, LPTSTR *lpszArgv)
+       goto out;
+     }
+ 
++  rdns_semaphore = CreateSemaphoreW (NULL, 1, 1, NULL);
++  if (!rdns_semaphore)
++  {
++      error = MsgToEventLog (M_SYSERR, TEXT("Could not create semaphore for register-dns"));
++      goto out;
++  }
++
+   error = UpdateWaitHandles (&handles, &handle_count, io_event, exit_event, threads);
+   if (error != NO_ERROR)
+     goto out;
+@@ -1458,6 +1613,7 @@ out:
+   FreeWaitHandles (handles);
+   CloseHandleEx (&io_event);
+   CloseHandleEx (&exit_event);
++  CloseHandleEx (&rdns_semaphore);
+ 
+   status.dwCurrentState = SERVICE_STOPPED;
+   status.dwWin32ExitCode = error;
+-- 
+1.7.10.4
 
-iQIcBAEBCAAGBQJW4hX8AAoJEGlViymZXJRvNNkP/3Axk5tiHsSVKMIxwBTR19Sd
-4PPTAIBtpSMIllZfao3+OjZZ3zkKpus2YZzW2GQAyTzikFEmbRO6n/engem6F97m
-7Q1I9v0AqhXimKYJ4AVpzjDH3ofbvoZqE2eCbd9aaiSPM49eBGRcgawsQU4sXniN
-bT3Eb+P/Gcd7k102R4v4yiMJ9HMw5TN1nk9lHTOgtfhGYwL8K46xPBuNQWcnzqrf
-Pn4seV0ulKdY2NEvCoglD0dCTM+CFmVV/3+cPQQoa23EyhJreipLg5wgwCAHqit/
-vBhwSbxEHtKTqiO19v5CTBGQfzKzHPu/xtdGm1Oet0TnUMr3N2XdanZYc3kGZp7L
-dXTdLHCPmyQB8odXUapxPvVX6EuDu/tRxCczEak+XMokE+FDckRg8JzG5nvw9Q9W
-y9WtKgcNoYPit88HDmMlbfoO5mgMDqASgzgXYT3R63/Msvp5gOrjiZEzLh0fh+6O
-xb9DirpQ8mM4Jf5KFNS+Xo1iz4wp+ueXyckAX8dzTzcfr6AohmHK7V8d06PBOhD/
-AUlM50a75/VMJ6mmAooiub/Huxy7BAZ/HeveQ1v4aFzdiq0kVqEz0IR+iCEtpc66
-2l1smdoU29ul1KLME7SeWtjrD/wd7opPWdiEbnfkgO672U2H+wKUbRkusPU3bf11
-QqQKYcJ3q2rlFNvO7ZtR
-=wqIS
------END PGP SIGNATURE-----
-
---QOKXM6Sp8496cOUNsFV2TS5jtNhhjIBwF--
 
