@@ -1,14 +1,8 @@
-References: <56E185E9.60506@...515...>
-	<1457945194.124630.191.camel@...1866...>
-	<56E6AC00.4090700@...515...>
-	<20160314195809.GQ24952@...1296...>
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <56F25198.8050107@...515...>
-Date: Wed, 23 Mar 2016 10:19:36 +0200
-MIME-Version: 1.0
-In-Reply-To: <20160314195809.GQ24952@...1296...>
-Subject: Re: [Openvpn-devel] Windows installer with SHA-256 signatures ready
- for testing
+From: Steffan Karger <steffan@...1856...>
+Date: Sun, 27 Mar 2016 16:18:16 +0200
+Message-Id: <1459088296-5046-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH] Replace MSG_TEST() macro for static inline
+	msg_test()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,66 +11,94 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-Content-Transfer-Encoding: quoted-printable
-To: Gert Doering <gert@...1296...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, David Woodhouse <dwmw2@...1866...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
+Using a static inline function instead of a macro has the advantages that
+(1) 'flags' is not evaluated twice and (2) coverity will stop complaining
+that 'Macro compares unsigned to 0 (NO_EFFECT)' each time we use flags
+with loglevel 0 (e.g. M_FATAL or M_WARN).
 
-> Hi,
->
-> On Mon, Mar 14, 2016 at 02:18:08PM +0200, Samuli Sepp=E4nen wrote:
->> Lack of the update might become more problematic after I rebuild the
->> tap-windows6 driver and sign it with our new key, in which case Windows
->> 7 might reject the driver altogether. So that part requires more
->> thorough pre-release testing.
->
-> The old key is still valid, just not "good enough" for win8+, right?
->
-> In that case we might consider building two tap driver packages, one
-> signed with the vista/win7 key, one with the win8+ key.
->
-> Or maybe I'm totally misunderstanding this, so ignore me :)
->
-> gert
->
+This has a performance impact when compiler optimizations are fully
+disabled ('-O0'), but should otherwise be as fast as using a macro.
 
-In case I did not respond to this earlier (my email client claims that)...
+Signed-off-by: Steffan Karger <steffan@...1856...>
+---
+ src/openvpn/error.c  |  2 +-
+ src/openvpn/error.h  | 17 +++++++++++------
+ src/openvpn/plugin.c |  2 +-
+ 3 files changed, 13 insertions(+), 8 deletions(-)
 
-Old tap-windows6 signatures will be as valid as they were before. We=20
-might run into trouble whe we sign tap-windows6 with the EV dongle,=20
-which probably generates SHA-2 signatures. The same goes for our new=20
-generic code-signing certificate, which was recently rekeyed to SHA-2.
+diff --git a/src/openvpn/error.c b/src/openvpn/error.c
+index cfd5a41..bb0ab5b 100644
+--- a/src/openvpn/error.c
++++ b/src/openvpn/error.c
+@@ -228,7 +228,7 @@ void x_msg_va (const unsigned int flags, const char *format, va_list arglist)
+ 
+ #ifndef HAVE_VARARG_MACROS
+   /* the macro has checked this otherwise */
+-  if (!MSG_TEST (flags))
++  if (!msg_test (flags))
+     return;
+ #endif
+ 
+diff --git a/src/openvpn/error.h b/src/openvpn/error.h
+index dd5ccf7..76515d6 100644
+--- a/src/openvpn/error.h
++++ b/src/openvpn/error.h
+@@ -135,26 +135,31 @@ extern int x_msg_line_num;
+  * msg() as a macro for optimization win.
+  */
+ 
+-bool dont_mute (unsigned int flags); /* check muting filter */
++/** Check muting filter */
++bool dont_mute (unsigned int flags);
+ 
+-#define MSG_TEST(flags) (unlikely((((unsigned int)flags) & M_DEBUG_LEVEL) <= x_debug_level) && dont_mute (flags))
++/** Return true if flags represent an enabled, not muted log level */
++static inline bool msg_test (unsigned int flags)
++{
++  return ((flags & M_DEBUG_LEVEL) <= x_debug_level) && dont_mute (flags);
++}
+ 
+ /* Macro to ensure (and teach static analysis tools) we exit on fatal errors */
+ #define EXIT_FATAL(flags) do { if ((flags) & M_FATAL) _exit(1); } while (false)
+ 
+ #if defined(HAVE_CPP_VARARG_MACRO_ISO) && !defined(__LCLINT__)
+ # define HAVE_VARARG_MACROS
+-# define msg(flags, ...) do { if (MSG_TEST(flags)) x_msg((flags), __VA_ARGS__); EXIT_FATAL(flags); } while (false)
++# define msg(flags, ...) do { if (msg_test(flags)) x_msg((flags), __VA_ARGS__); EXIT_FATAL(flags); } while (false)
+ # ifdef ENABLE_DEBUG
+-#  define dmsg(flags, ...) do { if (MSG_TEST(flags)) x_msg((flags), __VA_ARGS__); EXIT_FATAL(flags); } while (false)
++#  define dmsg(flags, ...) do { if (msg_test(flags)) x_msg((flags), __VA_ARGS__); EXIT_FATAL(flags); } while (false)
+ # else
+ #  define dmsg(flags, ...)
+ # endif
+ #elif defined(HAVE_CPP_VARARG_MACRO_GCC) && !defined(__LCLINT__)
+ # define HAVE_VARARG_MACROS
+-# define msg(flags, args...) do { if (MSG_TEST(flags)) x_msg((flags), args); EXIT_FATAL(flags); } while (false)
++# define msg(flags, args...) do { if (msg_test(flags)) x_msg((flags), args); EXIT_FATAL(flags); } while (false)
+ # ifdef ENABLE_DEBUG
+-#  define dmsg(flags, args...) do { if (MSG_TEST(flags)) x_msg((flags), args); EXIT_FATAL(flags); } while (false)
++#  define dmsg(flags, args...) do { if (msg_test(flags)) x_msg((flags), args); EXIT_FATAL(flags); } while (false)
+ # else
+ #  define dmsg(flags, args...)
+ # endif
+diff --git a/src/openvpn/plugin.c b/src/openvpn/plugin.c
+index 9be0b0c..542e5b1 100644
+--- a/src/openvpn/plugin.c
++++ b/src/openvpn/plugin.c
+@@ -319,7 +319,7 @@ plugin_vlog (openvpn_plugin_log_flags_t flags, const char *name, const char *for
+   if (flags & PLOG_NOMUTE)
+     msg_flags |= M_NOMUTE;
+ 
+-  if (MSG_TEST (msg_flags))
++  if (msg_test (msg_flags))
+     {
+       struct gc_arena gc;
+       char* msg_fmt;
+-- 
+2.5.0
 
-My view of what will happen once we fully move to SHA-2 for signing the=20
-executables, libraries and drivers:
-
-- Windows XP will show "Unknown publisher" for everything
-- Some Windows 7 installations _might_ have issues:
-   - Might not recognize the SHA-2 signatures ("Unknown publisher")
-   - Might fail to install the SHA-2 tap-windows6 driver
-- Windows 8.1+ should work just fine
-
-That said, the Windows 7 issue has not been verified. So far nobody has=20
-complained about the new SHA-2 based Windows installers I published. The=20
-tap-windows6 driver contained in the installers was still signed with=20
-the non-EV SHA-1 key, so at worst we'd see the "Unknown publisher" problem.
-
-I can probably sign Windows XP (I00x) installers with the old SHA-1 key=20
-until it expires in September. After that I will need to sign everything=20
-with SHA-2. I think that at that point we should consider dropping=20
-official Windows XP support, namely:
-
-- Stop publishing tap-windows-based (I00x) OpenVPN installers
-- Stop caring about "Unknown publisher" warnings on Windows XP
-
-We could still allow use of I60x installers on Windows XP, and let=20
-people downgrade to tap-windows manually.
-
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
 
