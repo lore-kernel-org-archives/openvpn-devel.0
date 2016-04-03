@@ -1,9 +1,9 @@
 From: Mike Auty <mike.auty@...277...>
-Message-ID: <5701663A.9020501@...277...>
-Date: Sun, 3 Apr 2016 19:51:38 +0100
+Message-ID: <5701665D.2010208@...277...>
+Date: Sun, 3 Apr 2016 19:52:13 +0100
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 2/7] vlan: Add various definitions and
-	802.1Q structure
+Subject: [Openvpn-devel] [PATCH 7/7] vlan: document the --vlan-* flags in
+	openvpn.8 man page
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,156 +16,139 @@ Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This patch provides all the #DEFINES necessary for the 802.1q.
+Documents the --vlan-tagging, --vlan-accept and --vlan-pvid tags
+in the openvpn man page.
 
-sf.net tracker:
-<https://sourceforge.net/tracker/?func=detail&aid=2829878&group_id=48978&atid=45
-4721>
+Patch authored by Fabian Knittel <fabian.knittel@...2126...>.
 
-Discussed on the IRC meeting March 4, 2010 in #openvpn-discussions.
-<http://thread.gmane.org/gmane.network.openvpn.devel/3242>
-
-This includes an additional length check that was not in the original
-patch:
-
-Currently is_ipv4() only checks whether the frame is large enough for
-struct openvpn_ethhdr. In case of an 802.1Q packet the function now
-also checks whether the frame is large enough for struct openvpn_8021qhdr,
-which is 4 bytes larger than struct openvpn_ethhdr.
-
-Patch authored by David Sommerseth <dazo@...384...> and 
-Fabian Knittel <fabian.knittel@...2126...>.
-
-Co-authored-by: David Sommerseth <dazo@...384...>
+Co-authored-by: Mike Auty <mike.auty@...277...>
 Signed-off-by: Fabian Knittel <fabian.knittel@...1547...>
 ---
- src/openvpn/errlevel.h |  2 ++
- src/openvpn/options.h  | 15 +++++++++++++++
- src/openvpn/proto.c    | 19 ++++++++++++++++---
- src/openvpn/proto.h    | 26 ++++++++++++++++++++++++++
- 4 files changed, 59 insertions(+), 3 deletions(-)
+ doc/openvpn.8 | 104 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 104 insertions(+)
 
-diff --git a/src/openvpn/errlevel.h b/src/openvpn/errlevel.h
-index da600ab..191c763 100644
---- a/src/openvpn/errlevel.h
-+++ b/src/openvpn/errlevel.h
-@@ -148,6 +148,8 @@
- #define D_PF_DROPPED_BCAST   LOGLEV(7, 71, M_DEBUG)  /* packet filter dropped a broadcast packet */
- #define D_PF_DEBUG           LOGLEV(7, 72, M_DEBUG)  /* packet filter debugging, must also define PF_DEBUG in pf.h */
+diff --git a/doc/openvpn.8 b/doc/openvpn.8
+index 628d877..a5ac3a8 100644
+--- a/doc/openvpn.8
++++ b/doc/openvpn.8
+@@ -3290,6 +3290,7 @@ without needing to restart the server.
+ The following
+ options are legal in a client-specific context:
+ .B \-\-push, \-\-push\-reset, \-\-iroute, \-\-ifconfig\-push,
++.B \-\-vlan\-pvid
+ and
+ .B \-\-config.
+ .\"*********************************************************
+@@ -3753,6 +3754,109 @@ connection is torn down.
  
-+#define D_VLAN_DEBUG         LOGLEV(7, 72, M_DEBUG)  /* show VLAN tagging/untagging debug info */
+ Not implemented on Windows.
+ .\"*********************************************************
++.TP
++.B \-\-vlan\-tagging
++Turns the OpenVPN server instance into a switch that understands VLAN-tagging,
++based on IEEE 802.1Q.
 +
- #define D_HANDSHAKE_VERBOSE  LOGLEV(8, 70, M_DEBUG)  /* show detailed description of each handshake */
- #define D_TLS_DEBUG_MED      LOGLEV(8, 70, M_DEBUG)  /* limited info from tls_session routines */
- #define D_INTERVAL           LOGLEV(8, 70, M_DEBUG)  /* show interval.h debugging info */
-diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-index 23d3992..72ee702 100644
---- a/src/openvpn/options.h
-+++ b/src/openvpn/options.h
-@@ -155,6 +155,15 @@ struct remote_list
-   struct remote_entry *array[CONNECTION_LIST_SIZE];
- };
- 
-+#ifdef ENABLE_VLAN_TAGGING
-+enum vlan_acceptable_frames
-+{
-+  VAF_ONLY_VLAN_TAGGED,
-+  VAF_ONLY_UNTAGGED_OR_PRIORITY,
-+  VAF_ALL,
-+};
-+#endif
++The tap device and each of the connecting clients is seen as a port of the
++switch. All client ports are in untagged mode and the tap device is
++VLAN-tagged, untagged or accepts both, depending on the
++.B \-\-vlan\-accept
++setting.
 +
- struct remote_host_store
- {
- # define RH_HOST_LEN 80
-@@ -597,6 +606,12 @@ struct options
-   const char *keying_material_exporter_label;
-   int keying_material_exporter_length;
- #endif
++Ethernet frames with a prepended 802.1Q tag are called "tagged". If the VLAN
++Identifier (VID) field in such a tag is non-zero, the frame is called
++"VLAN-tagged". If the VID is zero, but the Priority Control Point (PCP) field
++is non-zero, the frame is called "prio-tagged". If there is no 802.1Q tag, the
++frame is "untagged".
 +
-+#ifdef ENABLE_VLAN_TAGGING
-+  bool vlan_tagging;
-+  enum vlan_acceptable_frames vlan_accept;
-+  uint16_t vlan_pvid;
-+#endif
- };
- 
- #define streq(x, y) (!strcmp((x), (y)))
-diff --git a/src/openvpn/proto.c b/src/openvpn/proto.c
-index 7b58e6a..2921a6e 100644
---- a/src/openvpn/proto.c
-+++ b/src/openvpn/proto.c
-@@ -60,9 +60,22 @@ is_ipv_X ( int tunnel_type, struct buffer *buf, int ip_ver )
- 	  + sizeof (struct openvpn_iphdr)))
- 	return false;
-       eh = (const struct openvpn_ethhdr *) BPTR (buf);
--      if (ntohs (eh->proto) != (ip_ver == 6 ? OPENVPN_ETH_P_IPV6 : OPENVPN_ETH_P_IPV4))
--	return false;
--      offset = sizeof (struct openvpn_ethhdr);
-+      if (ntohs (eh->proto) == OPENVPN_ETH_P_8021Q) {
-+        const struct openvpn_8021qhdr *evh;
-+        if (BLEN (buf) < (int)(sizeof (struct openvpn_8021qhdr)
-+	    + sizeof (struct openvpn_iphdr)))
-+	  return false;
-+        evh = (const struct openvpn_8021qhdr *) BPTR (buf);
-+        if (ntohs (evh->proto) !=
-+	    (ip_ver == 6 ? OPENVPN_ETH_P_IPV6 : OPENVPN_ETH_P_IPV4))
-+          return false;
-+        else
-+          offset = sizeof (struct openvpn_8021qhdr);
-+      } else if (ntohs (eh->proto) !=
-+	  (ip_ver == 6 ? OPENVPN_ETH_P_IPV6 : OPENVPN_ETH_P_IPV4))
-+        return false;
-+      else
-+        offset = sizeof (struct openvpn_ethhdr);
-     }
-   else
-     return false;
-diff --git a/src/openvpn/proto.h b/src/openvpn/proto.h
-index f91e787..428d10f 100644
---- a/src/openvpn/proto.h
-+++ b/src/openvpn/proto.h
-@@ -61,9 +61,29 @@ struct openvpn_ethhdr
- # define OPENVPN_ETH_P_IPV4   0x0800  /* IPv4 protocol */
- # define OPENVPN_ETH_P_IPV6   0x86DD  /* IPv6 protocol */
- # define OPENVPN_ETH_P_ARP    0x0806  /* ARP protocol */
-+# define OPENVPN_ETH_P_8021Q  0x8100  /* 802.1Q protocol */
-   uint16_t proto;                     /* packet type ID field */
- };
- 
-+struct openvpn_8021qhdr
-+{
-+  uint8_t dest[OPENVPN_ETH_ALEN];     /* destination ethernet addr */
-+  uint8_t source[OPENVPN_ETH_ALEN];   /* source ethernet addr	*/
++Using the
++.B \-\-vlan\-pvid v
++option once per client, each port can be associated with a certain VID. Packets
++can only be distributed between ports with a matching VID. Therefore, clients
++with differing VIDs are completely separated from one-another, even if
++.B \-\-client-to-client
++is activated.
 +
-+  uint16_t tpid;                      /* 802.1Q Tag Protocol Identifier */
-+# define OPENVPN_8021Q_MASK_VID htons (0x0FFF) /* mask VID out of pcp_cfi_vid */
-+# define OPENVPN_8021Q_MASK_PCP htons (0xE000) /* mask PCP out of pcp_cfi_vid */
-+# define OPENVPN_8021Q_MASK_CFI htons (0x1000) /* mask CFI out of pcp_cfi_vid */
-+  uint16_t pcp_cfi_vid;               /* bit fields, see IEEE 802.1Q */
-+  uint16_t proto;                     /* contained packet type ID field */
-+};
++The filtering of packets takes place in the OpenVPN server. Clients do not
++need support for VLAN tagging.
 +
-+/*
-+ * Size difference between a regular Ethernet II header and an Ethernet II
-+ * header with additional IEEE 802.1Q tagging.
-+ */
-+#define SIZE_ETH_TO_8021Q_HDR (sizeof (struct openvpn_8021qhdr) - sizeof (struct openvpn_ethhdr))
++The
++.B \-\-vlan\-tagging
++option is off by default. While turned off, OpenVPN
++does no parsing and accepts any Ethernet frames.
 +
- struct openvpn_arp {
- # define ARP_MAC_ADDR_TYPE 0x0001
-   uint16_t mac_addr_type;       /* 0x0001 */
-@@ -234,4 +254,10 @@ void ipv4_packet_size_verify (const uint8_t *data,
- 			      counter_type *errors);
- #endif
- 
-+#ifdef ENABLE_VLAN_TAGGING
-+# define OPENVPN_8021Q_MIN_VID 1
-+# define OPENVPN_8021Q_MAX_VID 4094
++The option can only be activated in
++.B \-\-dev tap
++mode.
 +
-+#endif
++.\"*********************************************************
++.TP
++.B \-\-vlan\-accept all | tagged | untagged
++Allows the tap device's VLAN tagging policy to be configured. You can choose
++between the following modes:
 +
- #endif
++.B all
++(default) -- Admit all frames.
++.br
++.B tagged
++-- Admit only VLAN-tagged frames.
++.br
++.B untagged
++-- Admit only untagged and priority-tagged frames.
++
++(Note: Some vendors refer to switch ports running in
++.B tagged
++mode as "trunk ports" and switch ports running in
++.B untagged
++mode as "access ports".)
++
++Incoming untagged or priority-tagged packets from clients are assigned with the
++client's Port VLAN Identifier (PVID) as their VID. In
++.B untagged
++mode, incoming untagged or priority-tagged packets on the tap device are
++associated with the global
++.B \-\-vlan\-pvid
++setting. In
++.B tagged
++mode, any incoming untagged or priority-tagged packets are dropped. For
++VLAN-tagged packets, any priority information is lost as soon as the
++VLAN-tagging is removed.
++
++In
++.B tagged
++mode, packets going out through the tap device are VLAN-tagged with the
++originating client's VID.
++
++In
++.B all
++mode, incoming tagged packets are handled the same way as in
++.B tagged
++mode. Incoming untagged packets are handled as in
++.B untagged
++mode. Outgoing packets are tagged, unless the VID matches the global PVID, in
++which case the packets go out untagged.
++.\"*********************************************************
++.TP
++.B \-\-vlan\-pvid v
++Specifies which VLAN identifier a "port" is associated with. Not valid without
++\fB\-\-vlan\-tagging\fR.
++
++In client context, the setting specifies which VLAN identifier a client is
++associated with. In global context, the tap device's VLAN identifier is set.
++The latter only makes sense in
++.B \-\-vlan\-accept untagged
++and
++.B \-\-vlan\-accept all
++mode.
++
++Valid values for
++.B v
++go from 1 through to 4094. Defaults to 1.
++
++In some switch implementations, the PVID is also referred to as "Native VLAN".
++.\"*********************************************************
+ .SS Client Mode
+ Use client mode when connecting to an OpenVPN server
+ which has
 -- 
 2.7.1
 
