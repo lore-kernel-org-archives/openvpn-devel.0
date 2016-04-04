@@ -1,10 +1,10 @@
-Date: Mon, 4 Apr 2016 20:27:39 +0200 (CEST)
-Message-Id: <201604041827.u34IRdUo041876@...2054...>
+Date: Mon, 4 Apr 2016 20:57:30 +0200 (CEST)
+Message-Id: <201604041857.u34IvU1n042975@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1459092130-19905-1-git-send-email-steffan@...1856...>
-References: <1459092130-19905-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix memory leak in
-	argv_extract_cmd_name()
+In-Reply-To: <1459088296-5046-1-git-send-email-steffan@...1856...>
+References: <1459088296-5046-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Replace MSG_TEST() macro for
+	static inline msg_test()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,23 +18,20 @@ Content-Transfer-Encoding: 8bit
 To: Steffan Karger <steffan@...1856...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-ACK.  (The code in question is today only ever called from a context where 
-it is not leaking, but then, we might change this one day...)
+ACK.  For the reasons you named :-)
 
-Your patch has been applied to the master and release/2.3 branch.
+Your patch has been applied to the master branch.
 
-commit be16d5f6b050248f503455e4a0e8f3aaaa38bdc7 (master)
-commit f8da74920998a8fa1125ec73c5e3397707b43017 (release/2.3)
-
+commit bbde0a766c69f573746461415c6f5cd289272fff
 Author: Steffan Karger
-Date:   Sun Mar 27 17:22:10 2016 +0200
+Date:   Sun Mar 27 16:18:16 2016 +0200
 
-     Fix memory leak in argv_extract_cmd_name()
+     Replace MSG_TEST() macro for static inline msg_test()
 
      Signed-off-by: Steffan Karger <steffan@...1856...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1459092130-19905-1-git-send-email-steffan@...1856...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/11369
+     Message-Id: <1459088296-5046-1-git-send-email-steffan@...1856...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/11368
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
