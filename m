@@ -1,13 +1,15 @@
-Date: Mon, 4 Apr 2016 21:06:55 +0200
+Date: Mon, 4 Apr 2016 21:11:44 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20160404190655.GE53051@...1296...>
-References: <56E6E33D.5010909@...277...>
+Message-ID: <20160404191144.GF53051@...1296...>
+References: <1459088296-5046-1-git-send-email-steffan@...1856...>
+	<201604041857.u34IvU1n042975@...2054...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="YgGp9RfepglW4nsE"
+	protocol="application/pgp-signature"; boundary="xnH/NIbSm9ew9GxF"
 Content-Disposition: inline
-In-Reply-To: <56E6E33D.5010909@...277...>
-Subject: Re: [Openvpn-devel] IOS custom URL scheme for 3rd party launching
+In-Reply-To: <201604041857.u34IvU1n042975@...2054...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Re: Replace MSG_TEST() macro
+ for static inline msg_test()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,28 +18,28 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: debbie10t <debbie10t@...277...>
+To: Steffan Karger <steffan@...1856...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---YgGp9RfepglW4nsE
+--xnH/NIbSm9ew9GxF
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Mon, Mar 14, 2016 at 04:13:49PM +0000, debbie10t wrote:
-> Just thought Arne might be interested:
+On Mon, Apr 04, 2016 at 08:57:30PM +0200, Gert Doering wrote:
+> ACK.  For the reasons you named :-)
 >=20
-> https://forums.openvpn.net/topic21272.html
+> Your patch has been applied to the master branch.
 
-Well, that is about Connect, which is "James".
+And also to release/2.3 (after feedback on IRC) - since that is the=20
+current branch used for coverity.
 
-As far as I understand, "OpenVPN for Android" (=3D Arne) already supports
-being launched by 3rd parties - there's an old trac ticket about that
-already.
+commit 68a8c3a26c25ab478611a7fee209a9ecc65c59ce (release/2.3)
 
 gert
+
 --=20
 USENET is *not* the non-clickable part of WWW!
                                                            //www.muc.de/~ge=
@@ -45,18 +47,18 @@ rt/
 Gert Doering - Munich, Germany                             gert@...1296...
 fax: +49-89-35655025                        gert@...1297...
 
---YgGp9RfepglW4nsE
+--xnH/NIbSm9ew9GxF
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1
 
-iQCVAwUBVwK7R6kuBuNlUUl1AQIRFQQAjQ0KksW1hDECQbCLjrPqhYLqOsGVaZnT
-eXSJN3pgDdgNuT/lPdph8E5dGaxHzLXOiJS52MFwrvJgGUfHk6NIbNHUVyfxKuuF
-tvvjYKrO1U4NIDKPm4JGbUsVeLQuRs0DI6E9jMtky3kU+lx1bAVSuXwpa7+uQ809
-y4TPEbLN3D4=
-=kiR3
+iQCVAwUBVwK8Z6kuBuNlUUl1AQLkIwQAnaflAsGQ1yD6xjuS9aUVz/6f1bHHY7sQ
+S6CuhVdLHmZp3gBP9ttyJ81Thaau31ZkXun6JiFMEJizYfnfkmOQlJgm6GQjPITm
+G+oXot2l8n92091R0KSsaTk6Q4RzlAt+2crBeW2nto9MvKs0jizDDFvRY/5tYnNy
+RGKrTry1tKE=
+=+F1S
 -----END PGP SIGNATURE-----
 
---YgGp9RfepglW4nsE--
+--xnH/NIbSm9ew9GxF--
 
