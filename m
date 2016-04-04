@@ -1,14 +1,10 @@
+From: Mike Auty <mike.auty@...277...>
+References: <5701661B.80904@...277...> <20160404065418.GA53051@...1296...>
+Message-ID: <5702CF6B.3000100@...277...>
+Date: Mon, 4 Apr 2016 21:32:43 +0100
 MIME-Version: 1.0
-In-Reply-To: <CAA1AbxKk7Mb-s823PprMKL-xVCoD2qQa5EEQNED_F6YDLRTNfw@...278...>
-References: <1456993146-63968-1-git-send-email-james@...515...>
-	<1456993146-63968-6-git-send-email-james@...515...>
-	<CAA1AbxKk7Mb-s823PprMKL-xVCoD2qQa5EEQNED_F6YDLRTNfw@...278...>
-From: Steffan Karger <steffan@...1856...>
-Date: Mon, 4 Apr 2016 22:01:06 +0200
-Message-ID: <CAA1AbxL=QYUy6N+jKgxVVuftmF=75mSEz3rYUbisT245UfB5Dg@...278...>
-Content-Type: multipart/mixed; boundary=001a113dc9a296f89e052fae3134
-Subject: Re: [Openvpn-devel] [PATCH 06/10] PolarSSL x509_get_sha1_hash now
- returns correct SHA1 fingerprint.
+In-Reply-To: <20160404065418.GA53051@...1296...>
+Subject: Re: [Openvpn-devel] [PATCH 0/7] Vlan support for openvpn
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,115 +13,145 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: James Yonan <james@...515...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 8bit
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---001a113dc9a296f89e052fae3134
-Content-Type: text/plain; charset=UTF-8
+On 04/04/16 07:54, Gert Doering wrote:
+> Hi,
 
-Hi list,
+Hello!
 
-I just noticed I sent my previous reply only to James, instead of to
-the list.  See below.
+> On Sun, Apr 03, 2016 at 07:51:07PM +0100, Mike Auty wrote:
+> Well.  Thanks for maintaining, and squashing this.
 
-On Sat, Mar 5, 2016 at 10:23 AM, Steffan Karger <steffan@...1856...> wrote:
-> Hi James,
->
-> On Thu, Mar 3, 2016 at 9:19 AM, James Yonan <james@...515...> wrote:
->> Signed-off-by: James Yonan <james@...515...>
->> ---
->>  src/openvpn/ssl_verify_polarssl.c | 2 +-
->>  1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/src/openvpn/ssl_verify_polarssl.c b/src/openvpn/ssl_verify_polarssl.c
->> index e87d2e2..9d0d086 100644
->> --- a/src/openvpn/ssl_verify_polarssl.c
->> +++ b/src/openvpn/ssl_verify_polarssl.c
->> @@ -176,7 +176,7 @@ unsigned char *
->>  x509_get_sha1_hash (x509_crt *cert, struct gc_arena *gc)
->>  {
->>    unsigned char *sha1_hash = gc_malloc(SHA_DIGEST_LENGTH, false, gc);
->> -  sha1(cert->tbs.p, cert->tbs.len, sha1_hash);
->> +  sha1(cert->raw.p, cert->raw.len, sha1_hash);
->>    return sha1_hash;
->>  }
->
-> I agree with the change, but this needs a bit more explanation in the
-> commit msg and a note in Changes.rst, because it changes
-> externally-visible behaviour for PolarSSL/mbedTLS builds  (at least
-> for --verify-hash, maybe more?).
->
-> It took me a bit of time to figure out *why* this is the correct, so
-> I'll jot down my findings here.
->
-> At first, this didn't not look correct to me.  A certificate digest is
-> calculated over the TBSCertificate/cert.tbs (TBS = To Be Signed), not
-> the Certificate/cert.raw field. This must be, because the Certificate
-> field contains the TBSCertificate and the signatureValue (which
-> depends on the hash).  Also see section 4.1 of RFC5280
-> (https://tools.ietf.org/html/rfc5280#page-16).
->
-> However, a certificate *fingerprint* (i.e. the output op openssl x509
-> -fingerprint) is calculated over the (contents of the) Certificate
-> field.  And this is what this function should be doing.  To make this
-> more clear I suggest renaming this function to
-> x509_get_sha1_fingerprint(), and updating the doxygen.
->
-> -Steffan
+My pleasure!  5:)
 
-So, since Gert is looking into applying these, ACK to the code, and
-attached an updated patch with suggestions for the commit msg and
-Changes.rst.
+> Overall, I think it's still too many patches - like the doc patch and the
+> configure patch, these do not make sense on their own, so maybe squashing
+> the patch set even further (after some feedback) might be the way to go.
 
--Steffan
+Ah, I was worried about the patches being too big, the granularity for
+other patches that have been past recently seemed very small, sorry, I'm
+happy to squash it more.
 
---001a113dc9a296f89e052fae3134
-Content-Type: text/x-diff; charset=US-ASCII; 
-	name="0001-PolarSSL-x509_get_sha1_hash-now-returns-correct-SHA1.patch"
-Content-Disposition: attachment; 
-	filename="0001-PolarSSL-x509_get_sha1_hash-now-returns-correct-SHA1.patch"
-Content-Transfer-Encoding: base64
-X-Attachment-Id: f_immf9hsf0
+> Usually we try to have patches in logical units - like, "one bug fix", or
+> "one manageable chunk of refactoring", or "one new feature, with header,
+> code, configure, and documentation".  Very complex new features do get
+> spread across multiple patches, of course, but splitting off configure and
+> documentatation does not really make sense - without documentation, the
+> patch is incomplete, and the configure change without the code change is
+> not useful.  Of course this is not a hard rule, but you might look at
+> the commit log to get an idea how "this is usually done".
 
-RnJvbSA2ZjM3MmJlNDQ5MjZmNTU1ZWM5Zjg2MDc0NmRkYThjNWUwMDY0MGY4IE1vbiBTZXAgMTcg
-MDA6MDA6MDAgMjAwMQpGcm9tOiBTdGVmZmFuIEthcmdlciA8c3RlZmZhbkBrYXJnZXIubWU+CkRh
-dGU6IE1vbiwgNCBBcHIgMjAxNiAyMTo1OTozOCArMDIwMApTdWJqZWN0OiBbUEFUQ0hdIFBvbGFy
-U1NMIHg1MDlfZ2V0X3NoYTFfaGFzaCBub3cgcmV0dXJucyBjb3JyZWN0IFNIQTEKIGZpbmdlcnBy
-aW50LgoKNTA5X2dldF9zaGExX2hhc2goKSBpcyBzdXBwb3NlZCB0byByZXR1cm4gdGhlIGNlcnRp
-ZmljYXRlIGZpbmdlcnByaW50LAp3aGljaCBpcyB0aGUgaGFzaCBvZiB0aGUgZW50aXJlIGNlcnRp
-ZmljYXRlIC0gaW5jbHVkaW5nIHRoZSBzaWduYXR1cmUgLQphbmQgbm90IGp1c3QgdGhlICd0byBi
-ZSBzaWduZWQnIGRhdGEgKGNlcnQtPnRicyBpbiBwb2xhcnNzbCkuCgpUaGlzIGNoYW5nZXMgZXh0
-ZXJuYWxseSB2aXNpYmxlIGJlaGF2aW9yIGZvciBwb2xhcnNzbCBidWlsZHM6IGl0IHdpbGwKY2hh
-bmdlIHRoZSB2YWx1ZSBvZiB0aGUgdGxzX2RpZ2VzdF9OIHZhbHVlcyBleHBvcnRlZCB0byB0aGUg
-ZW52aXJvbm1lbnQKZm9yIHNjcmlwdHMuCgp2MiBTdGVmZmFuIEthcmdlcjogYWRkZWQgY29tbWl0
-IG1lc3NhZ2UgYW5kIENoYW5nZXMucnN0IGVudHJ5LgogICAgICAgICAgICAgICAgICAgQ29kZSB1
-bmNoYW5nZWQgZnJvbSB2MSBieSBKYW1lcy4KClNpZ25lZC1vZmYtYnk6IEphbWVzIFlvbmFuIDxq
-YW1lc0BvcGVudnBuLm5ldD4KU2lnbmVkLW9mZi1ieTogU3RlZmZhbiBLYXJnZXIgPHN0ZWZmYW5A
-a2FyZ2VyLm1lPgotLS0KIENoYW5nZXMucnN0ICAgICAgICAgICAgICAgICAgICAgICB8IDYgKysr
-KystCiBzcmMvb3BlbnZwbi9zc2xfdmVyaWZ5X3BvbGFyc3NsLmMgfCAyICstCiAyIGZpbGVzIGNo
-YW5nZWQsIDYgaW5zZXJ0aW9ucygrKSwgMiBkZWxldGlvbnMoLSkKCmRpZmYgLS1naXQgYS9DaGFu
-Z2VzLnJzdCBiL0NoYW5nZXMucnN0CmluZGV4IGFmNzBkMTQuLmNiOTAwZGMgMTAwNjQ0Ci0tLSBh
-L0NoYW5nZXMucnN0CisrKyBiL0NoYW5nZXMucnN0CkBAIC02Myw3ICs2Myw2IEBAIFVzZXItdmlz
-aWJsZSBDaGFuZ2VzCiAgIEluIC0tc3RhdGljIG1vZGUgY29ubmVjdC10aW1lb3V0IHNwZWNpZmll
-cyB0aGUgdGltZW91dCBmb3IgVENQIGFuZAogICBwcm94eSBjb25uZWN0aW9uIGVzdGFibGlzaG1l
-bnQKIAotCiAtIGNvbm5lY3QtcmV0cnkgbm93IHNwZWNpZmllcyB0aGUgbWF4aW11bSBudW1iZXIg
-b2YgdW5zdWNlc3NmdWxseQogICB0cnlpbmcgYWxsIHJlbW90ZS9jb25uZWN0aW9uIGVudHJpZXMg
-YmVmb3JlIGV4aXRpbmcuCiAKQEAgLTg2LDYgKzg1LDExIEBAIFVzZXItdmlzaWJsZSBDaGFuZ2Vz
-CiAtIFJlbW92ZWQgLS1lbmFibGUtcGFzc3dvcmQtc2F2ZSBmcm9tIGNvbmZpZ3VyZS4gVGhpcyBv
-cHRpb24gaXMgbm93CiAgIGFsd2F5cyBlbmFibGVkLgogCistIFBvbGFyU1NMIGJ1aWxkczogY2hh
-bmdlZCB0aGUgdGxzX2RpZ2VzdF9OIHZhbHVlcyBleHBvcnRlZCB0byB0aGUgc2NyaXB0CisgIGVu
-dmlyb25tZW50IHRvIGJlIGVxdWFsIHRvIHRoZSBvbmVzIGV4cG9ydGVkIGJ5IE9wZW5TU0wgYnVp
-bGRzLCBuYW1lbHkKKyAgdGhlIGNlcnRpZmljYXRlIGZpbmdlcnByaW50ICh3YXMgdGhlIGhhc2gg
-b2YgdGhlICd0byBiZSBzaWduZWQnIGRhdGEpLgorCisKIE1haW50YWluZXItdmlzaWJsZSBjaGFu
-Z2VzCiAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQogLSBPcGVuVlBOIG5vIGxvbmdlciBzdXBw
-b3J0cyBidWlsZGluZyB3aXRoIGNyeXB0byBzdXBwb3J0LCBidXQgd2l0aG91dCBUTFMKZGlmZiAt
-LWdpdCBhL3NyYy9vcGVudnBuL3NzbF92ZXJpZnlfcG9sYXJzc2wuYyBiL3NyYy9vcGVudnBuL3Nz
-bF92ZXJpZnlfcG9sYXJzc2wuYwppbmRleCBhMmU2YThlLi5iZjFhNmVjIDEwMDY0NAotLS0gYS9z
-cmMvb3BlbnZwbi9zc2xfdmVyaWZ5X3BvbGFyc3NsLmMKKysrIGIvc3JjL29wZW52cG4vc3NsX3Zl
-cmlmeV9wb2xhcnNzbC5jCkBAIC0xNzUsNyArMTc1LDcgQEAgdW5zaWduZWQgY2hhciAqCiB4NTA5
-X2dldF9zaGExX2hhc2ggKHg1MDlfY3J0ICpjZXJ0LCBzdHJ1Y3QgZ2NfYXJlbmEgKmdjKQogewog
-ICB1bnNpZ25lZCBjaGFyICpzaGExX2hhc2ggPSBnY19tYWxsb2MoU0hBX0RJR0VTVF9MRU5HVEgs
-IGZhbHNlLCBnYyk7Ci0gIHNoYTEoY2VydC0+dGJzLnAsIGNlcnQtPnRicy5sZW4sIHNoYTFfaGFz
-aCk7CisgIHNoYTEoY2VydC0+cmF3LnAsIGNlcnQtPnJhdy5sZW4sIHNoYTFfaGFzaCk7CiAgIHJl
-dHVybiBzaGExX2hhc2g7CiB9CiAKLS0gCjIuNS4wCgo=
---001a113dc9a296f89e052fae3134--
+My reason for splitting the configure options and the documentation was
+that they were extremely easy self-contained units (and they'd work
+as standalone commits without disrupting any of the other code, but I
+guess the #ifdefs do that too).
+
+> I have not done a full review, but I noticed that at least for the 
+> "is_ipv4()" patch, the documentation isn't correct anymore - it talks
+> about is_ipv4(), but the function has been merged with IPv6 and is called
+> is_ipv_X() - which the code change acknowledges, but the commit message
+> doesn't.  Further, that particular change creates quite a bit of messy
+> code - we do have a style guide, and the code should follow it (I'm aware
+> that the original code is more "compact" than according to style guide,
+> but when extending by extra branch levels, this gets non-pretty quickly).
+
+Ok, thanks for spotting that, I must've grabbed the commit message from
+an earlier commit because it seemed relevant.  I'll take a look at
+what's going on and the style guide to see if I can sort the code (as
+well as the documentation).
+
+> 
+> But these are all minor things - "the big thing" missing here is "the success
+> story".  
+> 
+> So - what is it that you can do with it that you can not do with tun mode?  
+> How would the configuration look like on the host side?  etc.  - please 
+> describe this to an audience that has no idea whatsoever about vlan 
+> stuff(*), and has mostly moved from tap mode to tun mode in the previous 
+> years (since tun has less overhead, *and* both Android and iOS do not 
+> support tap mode unless rooted).
+> 
+> So we have somewhat of a niche feature for a niche corner of OpenVPN 
+> (tap mode) - which will land on our plates for maintenance if we take it,
+> and the balance between "useful new code" and "maintenance chore" needs
+> to be on the side of "useful"...
+> 
+> Right now, we have about 47123 strange options and compile-time features
+> that hardly anyone is using, but every time we change one of the more
+> mainstream features in a bigger way, one of the exotic things breaks
+> (and we feel stupid about it).  Which makes us a bit reluctant about adding
+> new "special feature" code.
+
+Yep, I understand there's a maintenance cost associated with adding the
+code to the project, but it's the maintenance cost of layer 3 management
+that this is trying to offset somewhat.  Layer 2 VPNs, whilst
+potentially less efficient due to additional traffic (is there another
+reason the tap adaptor is less efficient?), allow for simpler management
+and configuration, and do not require significant changes to the VPN
+configuration if the network topology changes.
+
+We've implemented 802.1x with dynamic vlan assignment already, meaning
+that when a user connects either wired or wirelessly they get shunted
+into the appropriate segment of the network (and potentially into
+overlapping subnets).  This ensures strong segregation based on their
+identity/certificate.  So we really want to plug openvpn into that and
+allow users a single certificate to always end up in their same
+segregated section of the network without having to create separate VPN
+subnets for them.  This can be achieved using Fabian's patches and the
+following server config (with no changes to the client software or config!):
+
+vlan-tagging
+vlan-accept tagged
+client-connect /path/to/radius_auth_script.sh
+
+The radius auth script would echo out "vlan-pvid 2", for example, for a
+user who belongs in vlan 2, whilst it will push a different user into
+vlan 3 if appropriate.  It means that users can talk within their own
+VLAN but not with everybody using the VPN (which at the moment
+client-to-client won't allow, and would be complex firewall rules
+otherwise).  This also allows us to use a single trunk port, rather than
+having to split all the various networks out into their own connections
+to feed into the VPN server or for us to run multiple VPN servers on
+different ports/IPs for different sets of users.
+
+So our users see a single VPN configuration, connect with their existing
+certificates, and end up in the network they expected to with DHCP
+provided by the network itself (allowing us to change DNS servers,
+routers, etc from a single central point rather than distributing that
+information out to DHCP servers and openvpn servers, etc).
+
+It would be possible, but in our opinion much more of a burden, to
+implement, manage and maintain a single endpoint in tun mode that could
+achieve the same effect, and make use of the existing network topology
+that we're already using.  I'd like to think this capability ranks over
+some of the existing 47123 strange options that have already been
+accepted into OpenVPN in terms of usefulness, and that's just my
+use-case scenario alone.
+
+Allowing bridged mode to have knowledge of vlan tags and be able to
+manipulate them based on the user is an advanced, but extremely valuable
+facility that I was genuinely surprised OpenVPN didn't already have,
+given its flexibility.  These existing, tested patches would add that
+support.
+
+Hopefully that sounds like a success story?  5:)
+
+> gert
+> 
+> (*) I do understand VLANs - being a network guy - but I'm missing the 
+> big picture "how would the configuration on the host and client (and ccd/)
+> side look like?  what can you do with it?  why is this cool?"
+> 
+> PS: I promise a more detailed review per-chunk, so don't send new patches
+> yet.  I'm not making promises which month this is going to happen - sorry.
+> 
+
+It'll take me a bit of time to get the changes requested done too, but
+thank you for reviewing these, it's much appreciated.  5:)
+
+Mike  5:)
 
