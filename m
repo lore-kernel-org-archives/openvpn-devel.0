@@ -1,10 +1,10 @@
-Date: Sun, 17 Apr 2016 12:09:29 +0200 (CEST)
-Message-Id: <201604171009.u3HA9T3m015594@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <1460886980-12925-1-git-send-email-steffan@...1856...>
-References: <1460886980-12925-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH applied] Re: fixup: change init_key_type()
-	param name in declaration too
+Content-Type: multipart/alternative;
+	boundary="----sinikael-?=_1-14608945665220.5524458391591907"
+From: Christopher Ghadanian <rawkoe1@...277...>
+Date: Sun, 17 Apr 2016 05:02:46 -0700
+Message-Id: <1460894566612-20943512-ba532fc0-03d77be4@...277...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] (no subject)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,31 +13,22 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Steffan Karger <steffan@...1856...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-ACK. Obviously correct :)
+------sinikael-?=_1-14608945665220.5524458391591907
+Content-Type: text/plain; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Your patch has been applied to the master branch.
+Sent using CloudMagic Email 
+[https://cloudmagic.com/k/d/mailapp?ct=pi&cv=7.9.8&pv=9.2&source=email_footer_2]
+------sinikael-?=_1-14608945665220.5524458391591907
+Content-Type: text/html; format=flowed
+Content-Transfer-Encoding: 7bit
 
-commit 0f99269711e2aa8a2f88c5991381ea7e52c7485e
-Author: Steffan Karger
-Date:   Sun Apr 17 11:56:20 2016 +0200
-
-     fixup: change init_key_type() param name in declaration too
-
-     Signed-off-by: Steffan Karger <steffan@...1856...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1460886980-12925-1-git-send-email-steffan@...1856...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/11445
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
-
+<div dir="auto"><br><br><div id="cm_footer" class="cm_footer"><div 
+id="cm_sent_from">Sent using <a 
+href="https://cloudmagic.com/k/d/mailapp?ct=pi&amp;cv=7.9.8&amp;pv=9.2&amp;source=email_footer_2">CloudMagic 
+Email</a></div></div><br><div id="cm_replymail_content_wrap">               
+          </div>            </div>
+------sinikael-?=_1-14608945665220.5524458391591907--
 
