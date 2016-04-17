@@ -1,11 +1,8 @@
-References: <56E6E33D.5010909@...277...>
-	<20160404190655.GE53051@...1296...>
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <57034D37.2080007@...515...>
-Date: Tue, 5 Apr 2016 08:29:27 +0300
-MIME-Version: 1.0
-In-Reply-To: <20160404190655.GE53051@...1296...>
-Subject: Re: [Openvpn-devel] IOS custom URL scheme for 3rd party launching
+From: Steffan Karger <steffan@...1856...>
+Date: Sun, 17 Apr 2016 11:56:20 +0200
+Message-Id: <1460886980-12925-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH] fixup: change init_key_type() param name in
+	declaration too
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,27 +11,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-Content-Transfer-Encoding: quoted-printable
-To: Gert Doering <gert@...1296...>, debbie10t <debbie10t@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
+Commit 66407e11 changed the name of the cfb_ofb_allowed parameter of the
+init_key_type() implementation to 'tls_mode', but forgot to do the same in
+the function declaration.
 
-> Hi,
->
-> On Mon, Mar 14, 2016 at 04:13:49PM +0000, debbie10t wrote:
->> Just thought Arne might be interested:
->>
->> https://forums.openvpn.net/topic21272.html
->
-> Well, that is about Connect, which is "James".
+Signed-off-by: Steffan Karger <steffan@...1856...>
+---
+ src/openvpn/crypto.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Yes, and this is for iOS, so definitely James.
+diff --git a/src/openvpn/crypto.h b/src/openvpn/crypto.h
+index d3e08c1..63d7040 100644
+--- a/src/openvpn/crypto.h
++++ b/src/openvpn/crypto.h
+@@ -297,7 +297,7 @@ int read_key (struct key *key, const struct key_type *kt, struct buffer *buf);
+ 
+ void init_key_type (struct key_type *kt, const char *ciphername,
+     bool ciphername_defined, const char *authname, bool authname_defined,
+-    int keysize, bool cfb_ofb_allowed, bool warn);
++    int keysize, bool tls_mode, bool warn);
+ 
+ /*
+  * Key context functions
+-- 
+2.5.0
 
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
 
