@@ -1,11 +1,10 @@
-References: <1460910164-7044-1-git-send-email-steffan@...1856...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <5713C473.7070206@...1227...>
-Date: Sun, 17 Apr 2016 19:14:27 +0200
-MIME-Version: 1.0
-In-Reply-To: <1460910164-7044-1-git-send-email-steffan@...1856...>
-Subject: Re: [Openvpn-devel] [PATCH (master)] Further restrict default TLS
- cipher list
+Date: Sun, 17 Apr 2016 19:15:00 +0200 (CEST)
+Message-Id: <201604171715.u3HHF0dp023540@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <3365AB24-33FD-4D9D-A57C-BF9240DC3D69@...2127...>
+References: <3365AB24-33FD-4D9D-A57C-BF9240DC3D69@...2127...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Make intent of device name
+	validation clear
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,24 +13,34 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Jens <openvpn-devel@...2127...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Am 17.04.16 um 18:22 schrieb Steffan Karger:
-> In the past years, the internet has been moving forward wrt deprecating
-> older and less secure ciphers.  Let's follow this example in OpenVPN and
-> further restrict the default list of negotiable TLS ciphers.
-> 
-> Compared to earlier, this disables the following:
->  * Ciphers in the LOW and MEDIUM security cipher list of OpenSSL
->    The LOW suite will be completely removed from OpenSSL in 1.1.0,
->    the MEDIUM suite contains ciphers like RC4 and SEED.
->  * Ciphers that do not provide forward secrecy (static DH/ECDH keys)
->  * DSA private keys (rarely used, and usually restricted to 1024 bits)
+Thanks.
+
+Your patch has been applied to the master and release/2.3 branch.
+
+("Reluctantly-Acked-By: Arne Schwabe <arne@...1227...>" :) )
+
+commit 6be0f0015d7485f0bf3c14a3a381a6f6496270a5 (master)
+commit b582af4b62325596231e9e34135b49c5115519e5 (release/2.3)
+
+Author: Jens
+Date:   Thu Apr 14 19:58:07 2016 +0200
+
+     Make intent of device name validation clear
+
+     Signed-off-by: Jens Neuhalfen <jens@...2127...>
+     Message-Id: <3365AB24-33FD-4D9D-A57C-BF9240DC3D69@...2127...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/11440
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
-ACK from me. The code looks good and the change makes sense to me.
+--
+kind regards,
 
-Arne
+Gert Doering
+
 
