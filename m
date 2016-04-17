@@ -1,13 +1,8 @@
-References: <3365AB24-33FD-4D9D-A57C-BF9240DC3D69@...2127...>
-	<5710E5C6.6070104@...1227...>
-	<CAKuzo_hWVecv2v9+ecHBC7PtbVkOgo3vMgCkGn1JPYVp-CjuEA@...278...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <57137D23.40100@...1227...>
-Date: Sun, 17 Apr 2016 14:10:11 +0200
-MIME-Version: 1.0
-In-Reply-To: <CAKuzo_hWVecv2v9+ecHBC7PtbVkOgo3vMgCkGn1JPYVp-CjuEA@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] Make intent of device name validation
- clear
+From: Steffan Karger <steffan@...1856...>
+Date: Sun, 17 Apr 2016 18:22:44 +0200
+Message-Id: <1460910164-7044-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH (master)] Further restrict default TLS
+	cipher list
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,50 +11,68 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: Selva Nair <selva.nair@...277...>
-Cc: Jens <openvpn-devel@...2127...>, openvpn-devel <Openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-Am 15.04.16 um 18:41 schrieb Selva Nair:
-> 
-> On Fri, Apr 15, 2016 at 8:59 AM, Arne Schwabe <arne@...1227...
-> <mailto:arne@...1227...>> wrote:
-> 
->     Am 14.04.16 um 19:58 schrieb Jens:
->     > Hi,
->     >
->     > please review the following patch for a compiler warning on MacOS X. The program logic is unchanged.
->     Thanks for the patch.
->     Program logic is unchanged and the patch is fine but reading the fixed
->     code is more difficult.
-> 
->     Instead of error of if not A you have now need to stare bit more to get
->     that meaning.
-> 
-> 
-> I disagree.
-> 
-> Although if ( !strcmp() ) is a common usage in C, ( !srtcmp() == 0 ) is
-> not, and such double negatives are best avoided. strcmp() == 0 and
-> strcmp() != 0 are easily understood by C-programmers. 
-> 
-> As for the scanf line, the original is
-> 
-> if (!sscanf (dev_node, "utun%d", &utunnum)==1)
-> 
-> Here sscanf can potentially return EOF or 0 for failure or 1 for
-> success, but the test catches only 0. EOF can result if dev_node == ""
-> or "tun", so probably unlikely (?) because of previous checks. In any
-> case. the intent appears to be to catch sscanf() != 1. And the latter is
-> much better and easier to read.
-> 
-> If its only a question of style, the patch clearly improves the unusual
-> usage in the original, imo.
+In the past years, the internet has been moving forward wrt deprecating
+older and less secure ciphers.  Let's follow this example in OpenVPN and
+further restrict the default list of negotiable TLS ciphers.
 
-Fine. I am not going to nitpick here. Lets just say ACK to the original
-patch as it fixes the compiler warnings.
+Compared to earlier, this disables the following:
+ * Ciphers in the LOW and MEDIUM security cipher list of OpenSSL
+   The LOW suite will be completely removed from OpenSSL in 1.1.0,
+   the MEDIUM suite contains ciphers like RC4 and SEED.
+ * Ciphers that do not provide forward secrecy (static DH/ECDH keys)
+ * DSA private keys (rarely used, and usually restricted to 1024 bits)
 
-Arne
+Signed-off-by: Steffan Karger <steffan@...1856...>
+---
+ doc/openvpn.8             |  4 +++-
+ src/openvpn/ssl_openssl.c | 14 ++++++++++++--
+ 2 files changed, 15 insertions(+), 3 deletions(-)
+
+diff --git a/doc/openvpn.8 b/doc/openvpn.8
+index 76b04f6..7d5dc5b 100644
+--- a/doc/openvpn.8
++++ b/doc/openvpn.8
+@@ -4696,7 +4696,9 @@ your VPN connection.  But it is also easy to unwittingly use it to carefully
+ align a gun with your foot, or just break your connection.  Use with care!
+ 
+ The default for \-\-tls\-cipher is to use PolarSSL's default cipher list
+-when using PolarSSL or "DEFAULT:!EXP:!PSK:!SRP:!kRSA" when using OpenSSL.
++when using PolarSSL or
++"DEFAULT:!EXP:!LOW:!MEDIUM:!kDH:!kECDH:!DSS:!PSK:!SRP:!kRSA" when using
++OpenSSL.
+ .\"*********************************************************
+ .TP
+ .B \-\-tls\-timeout n
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index e390f4d..ca9b67b 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -272,8 +272,18 @@ tls_ctx_restrict_ciphers(struct tls_root_ctx *ctx, const char *ciphers)
+ {
+   if (ciphers == NULL)
+     {
+-      /* Use sane default (disable export, and unsupported cipher modes) */
+-      if(!SSL_CTX_set_cipher_list(ctx->ctx, "DEFAULT:!EXP:!PSK:!SRP:!kRSA"))
++      /* Use sane default TLS cipher list */
++      if(!SSL_CTX_set_cipher_list(ctx->ctx,
++	  /* Use openssl's default list as a basis */
++	  "DEFAULT"
++	  /* Disable export ciphers and openssl's 'low' and 'medium' ciphers */
++	  ":!EXP:!LOW:!MEDIUM"
++	  /* Disable static (EC)DH keys (no forward secrecy) */
++	  ":!kDH:!kECDH"
++	  /* Disable DSA private keys */
++	  ":!DSS"
++	  /* Disable unsupported TLS modes */
++	  ":!PSK:!SRP:!kRSA"))
+ 	crypto_msg (M_FATAL, "Failed to set default TLS cipher list.");
+       return;
+     }
+-- 
+2.5.0
 
 
