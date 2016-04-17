@@ -1,6 +1,6 @@
 From: Steffan Karger <steffan@...1856...>
-Date: Sun, 17 Apr 2016 20:29:19 +0200
-Message-Id: <1460917759-30935-1-git-send-email-steffan@...1856...>
+Date: Sun, 17 Apr 2016 20:32:07 +0200
+Message-Id: <1460917927-31645-1-git-send-email-steffan@...1856...>
 In-Reply-To: <5713C473.7070206@...1227...>
 References: <5713C473.7070206@...1227...>
 Subject: [Openvpn-devel] [PATCH v2 (master)] Further restrict default cipher
@@ -28,14 +28,32 @@ Compared to earlier, this disables the following:
  * Ciphers that do not provide forward secrecy (static DH/ECDH keys)
  * DSA private keys (rarely used, and usually restricted to 1024 bits)
 
-v2: add Changes.rst entry.
+v2: added Changes.rst entry.
 
 Signed-off-by: Steffan Karger <steffan@...1856...>
 ---
+ Changes.rst               |  6 ++++++
  doc/openvpn.8             |  4 +++-
  src/openvpn/ssl_openssl.c | 14 ++++++++++++--
- 2 files changed, 15 insertions(+), 3 deletions(-)
+ 3 files changed, 21 insertions(+), 3 deletions(-)
 
+diff --git a/Changes.rst b/Changes.rst
+index cb900dc..64b134e 100644
+--- a/Changes.rst
++++ b/Changes.rst
+@@ -89,6 +89,12 @@ User-visible Changes
+   environment to be equal to the ones exported by OpenSSL builds, namely
+   the certificate fingerprint (was the hash of the 'to be signed' data).
+ 
++- Stricter default TLS cipher list (override with ``--tls-cipher``), that now
++  also disables:
++
++  * Non-ephemeral key exchange using static (EC)DH keys
++  * DSS private keys
++
+ 
+ Maintainer-visible changes
+ --------------------------
 diff --git a/doc/openvpn.8 b/doc/openvpn.8
 index 76b04f6..7d5dc5b 100644
 --- a/doc/openvpn.8
