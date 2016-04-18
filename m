@@ -1,9 +1,10 @@
-Date: Mon, 18 Apr 2016 20:41:31 +0200 (CEST)
-Message-Id: <201604181841.u3IIfVXt091263@...2054...>
+Date: Mon, 18 Apr 2016 21:47:33 +0200 (CEST)
+Message-Id: <201604181947.u3IJlXks092537@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1461003958-14726-1-git-send-email-steffan@...1856...>
-References: <1461003958-14726-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Various Changes.rst fixes
+In-Reply-To: <1450638773-11376-1-git-send-email-selva.nair@...277...>
+References: <1450638773-11376-1-git-send-email-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Support reading the
+	challenge-response from console
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,21 +15,25 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Steffan Karger <steffan@...1856...>
+To: Selva Nair <selva.nair@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the release/2.3 branch.
+Your patch has been applied to the master and release/2.3 branch.
 
-commit fab3856ff5100ff5ccbcb2d1f9dca08fd85fdcf0
-Author: Steffan Karger
-Date:   Mon Apr 18 20:25:58 2016 +0200
+Thanks for your patience with us :-)
 
-     Various Changes.rst fixes
+commit 9b0f1df2560441ab5ea80f053acd0161de8b6c7a (master)
+commit 6f31a83827627bbef58aaf073911e331369919b7 (release/2.3)
 
-     Signed-off-by: Steffan Karger <steffan@...1856...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1461003958-14726-1-git-send-email-steffan@...1856...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/11467
+Author: Selva Nair
+Date:   Sun Dec 20 14:12:53 2015 -0500
+
+     Support reading the challenge-response from console
+
+     Signed-off-by: Selva Nair <selva.nair@...277...>
+     Acked-by: Steffan Karger <steffan.karger@...1435...>
+     Message-Id: <1450638773-11376-1-git-send-email-selva.nair@...277...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/10868
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
