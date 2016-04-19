@@ -1,10 +1,14 @@
-Date: Mon, 18 Apr 2016 21:47:33 +0200 (CEST)
-Message-Id: <201604181947.u3IJlXks092537@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <1450638773-11376-1-git-send-email-selva.nair@...277...>
-References: <1450638773-11376-1-git-send-email-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Support reading the
-	challenge-response from console
+References: <5710B96E.6070603@...515...>
+	<CAKuzo_gObagUmAuwRzh8vRPiP0Z0YG5GtOamtyKQX3W4q6xNfA@...278...>
+	<5714AA48.8090507@...515...>
+	<CAKuzo_gS7BXxkHZ1X0sqWEnhXieKSS3d4W1QSQV+sujpod1yxQ@...278...>
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <5715ED48.2010005@...515...>
+Date: Tue, 19 Apr 2016 11:33:12 +0300
+MIME-Version: 1.0
+In-Reply-To: <CAKuzo_gS7BXxkHZ1X0sqWEnhXieKSS3d4W1QSQV+sujpod1yxQ@...278...>
+Subject: Re: [Openvpn-devel] New EV-signed tap-windows6 driver ready for
+ testing
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,33 +17,85 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: quoted-printable
 To: Selva Nair <selva.nair@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Your patch has been applied to the master and release/2.3 branch.
+Hi,
 
-Thanks for your patience with us :-)
+I just received a report from a colleague that the tap6-ev-signed driver=20
+failed on one particular instance of Windows 10. I will query for more=20
+details. In any case, there seems to be little coherence in Windows'=20
+behavior with the signatures.
 
-commit 9b0f1df2560441ab5ea80f053acd0161de8b6c7a (master)
-commit 6f31a83827627bbef58aaf073911e331369919b7 (release/2.3)
+Another colleague of mine had noticed strange behavior on Windows 10:=20
+when Windows updates are being downloaded/installed, tapinstall.exe just=20
+hangs, and the driver is in a non-functional state, and tap-windows6=20
+installation times out in 5 minutes or so. When the Windows updates are=20
+finished, tap-windows6 installation completes automatically. However, if=20
+the update are not stopped, then the tap-windows6 driver will remain in=20
+non-functional state indefinitely, unless Windows update is disabled=20
+completely. I assume that Windows update can be re-enabled after=20
+tap-windows6 installation completes.
 
-Author: Selva Nair
-Date:   Sun Dec 20 14:12:53 2015 -0500
+Anyways, I created a Wiki page with current test results and more=20
+thorough instructions:
 
-     Support reading the challenge-response from console
+<https://community.openvpn.net/openvpn/wiki/TapWindows6CodesignTests>
 
-     Signed-off-by: Selva Nair <selva.nair@...277...>
-     Acked-by: Steffan Karger <steffan.karger@...1435...>
-     Message-Id: <1450638773-11376-1-git-send-email-selva.nair@...277...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/10868
-     Signed-off-by: Gert Doering <gert@...1296...>
+Hopefully we can figure out a way to make all Windows versions accept a=20
+single driver package. If that fails, the least bad approach is probably=20
+to have three drivers embedded into one installer:
 
+- tap-windows  (NDIS5), non-EV SHA1 for Windows XP
+- tap-windows6 (NDIS6), non-EV SHA1 for Windows Vista - 8.1
+- tap-windows6 (NDIS6), EV SHA2 for Windows 10
 
---
-kind regards,
+Hopefully we can avoid that mess...
 
-Gert Doering
+> Only the old 32-bit vista machine is badly out-of-date and bringing it
+> up-to-date is a major pain. Will try.
 
+Ok, great! Based on my experiences with updating badly out-of-date=20
+Windows 7 installations we'll be hearing more about this in 2 weeks or=20
+so :).
+
+> Dual signatures sounds like a good plan provided all these older windows
+> versions are capable of reading dual signatures.  We should test this.
+
+Definitely. I will produce two different driver packages today:
+
+1) tap6-dual-sha2ev-sha1
+
+Primary signature is EV SHA2, secondary non-ev SHA1.
+
+2) tap6-dual-sha1-sha2ev
+
+Same as above, but the other way around. I suspect this will be more=20
+likely to succeed.
+
+---
+
+That said, I can see several ways how even the dual signature strategy=20
+could fail. For example:
+
+- Cross-certificates cannot be added to the secondary certificate,=20
+possibly resulting in incomplete certification path.
+
+- When adding a secondary certificate Signtool.exe does not allow=20
+timestamping, which may or may not be an issue.
+
+- Older / unupdated Windows versions might get confused about the=20
+primary/secondary certificates and/or unsupported hashes. This is just a=20
+hunch.
+
+I'll report back when the drivers are ready.
+
+--=20
+Samuli Sepp=C3=A4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
 
