@@ -1,10 +1,13 @@
-References: <950C8167-A5FF-4F56-9020-C956EED49557@...2127...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <5718879E.8050007@...1227...>
-Date: Thu, 21 Apr 2016 09:56:14 +0200
 MIME-Version: 1.0
-In-Reply-To: <950C8167-A5FF-4F56-9020-C956EED49557@...2127...>
-Subject: Re: [Openvpn-devel] Unit testing in openvpn?
+In-Reply-To: <A4F03DE4-3E70-4815-B4B4-CC185E35CF2C@...2127...>
+References: <B32C1FDE-D0CF-49A7-A231-28267BB89B46@...2127...>
+	<CAA1AbxL3ZRGrig+j9uTdn17NDaM=WGbE4XgZf1nAyvXBxTwfBg@...278...>
+	<A4F03DE4-3E70-4815-B4B4-CC185E35CF2C@...2127...>
+From: Steffan Karger <steffan@...1856...>
+Date: Thu, 21 Apr 2016 10:11:17 +0200
+Message-ID: <CAA1AbxKk4wz46dJzr4QSUWePF-egVwkQfpRpv5HdxhRtvQFO=A@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] auth-pam:Fix buffer overflow by user
+ supplied data
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,76 +16,79 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-To: Jens <openvpn-devel@...2127...>, openvpn-devel <Openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+To: Jens <openvpn-devel@...2127...>
+Cc: openvpn-devel <Openvpn-devel@lists.sourceforge.net>
 
+On Thu, Apr 21, 2016 at 8:51 AM, Jens <openvpn-devel@...2127...> wrote:
+> Passing very long usernames/passwords for pam authentication could possibly lead to a stack based buffer overrun in the auth-pam plugin.
+>
+> Adds a dependency to C99 (includes stdbool.h)
+>
+> Signed-off-by: Jens Neuhalfen <jens@...2127...>
+> ---
+>  src/plugins/auth-pam/auth-pam.c | 29 +++++++++++++++++++++++++----
+>  1 file changed, 25 insertions(+), 4 deletions(-)
+>
+> diff --git a/src/plugins/auth-pam/auth-pam.c b/src/plugins/auth-pam/auth-pam.c
+> index 95692ab..159fd07 100644
+> --- a/src/plugins/auth-pam/auth-pam.c
+> +++ b/src/plugins/auth-pam/auth-pam.c
+> @@ -39,6 +39,7 @@
+>  #include <stdio.h>
+>  #include <string.h>
+>  #include <ctype.h>
+> +#include <stdbool.h>
+>  #include <unistd.h>
+>  #include <stdlib.h>
+>  #include <sys/types.h>
+> @@ -119,17 +120,37 @@ static void pam_server (int fd, const char *service, int verb, const struct name
+>   *  a pointer to the NEW string.  Does not modify the input strings.  Will not enter an
+>   *  infinite loop with clever 'searchfor' and 'replacewith' strings.
+>   *  Daniel Johnson - Progman2000@...1085... / djohnson@...1167...
+> + *
+> + *  Retuns NULL when
+> + *   - any parameter is NULL
+> + *   - the worst-case result is to large ( >= SIZE_MAX)
+>   */
+>  static char *
+>  searchandreplace(const char *tosearch, const char *searchfor, const char *replacewith)
+>  {
+> +  if (!tosearch || !searchfor || !replacewith) return NULL;
+> +
+> +  size_t tosearchlen = strlen(tosearch);
+> +  size_t replacewithlen = strlen(replacewith);
+> +  size_t templen = tosearchlen * replacewithlen;
+> +
+> +  if (tosearchlen == 0 || strlen(searchfor) == 0 || replacewithlen == 0) {
+> +    return NULL;
+> +  }
+> +
+> +  bool is_potential_integer_overflow =  (templen == SIZE_MAX) || (templen / tosearchlen != replacewithlen);
+> +
+> +  if (is_potential_integer_overflow) {
+> +       return NULL;
+> +  }
+> +
+> +  // state: all parameters are valid
+> +
+>    const char *searching=tosearch;
+>    char *scratch;
+> -  char temp[strlen(tosearch)*10];
+> -  temp[0]=0;
+>
+> -  if (!tosearch || !searchfor || !replacewith) return 0;
+> -  if (!strlen(tosearch) || !strlen(searchfor) || !strlen(replacewith)) return 0;
+> +  char temp[templen+1];
+> +  temp[0]=0;
+>
+>    scratch = strstr(searching,searchfor);
+>    if (!scratch) return strdup(tosearch);
 
+Thanks for following up.
 
-Am 21.04.16 um 09:12 schrieb Jens:
-> Hi
->
-> I think that adding unit tests would greatly improve the ease of implemen=
-ting new features for openvpn.  I have spend a lot of time coding Java (and=
- others), and unit testing greatly improved my code quality, my throughput,=
- and last, but not least, my confidence in the code. Indeed I have become v=
-ery humble when it comes to the question of =E2=80=98what could possibly go=
- wrong with this small change?=E2=80=99
->
-> What would be the steps to include unit testing?
-> =E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=
-=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=
-=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=
-=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94
->
-> 1) Decide /if/ we want unit tests
-> 2) Decide /how/ we want unit tests (this includes questions like dependen=
-cy management, and the build system)
-> 3) Decide /which/ framework to use
-> 4) do it
-The problem with unit tests and existing software is that, if the
-software hasn't been written with testing in mind, it is often hard
-without major refactoring to do the small java style unit tests. Also
-someone has to write these unit tests and free time is currently sparse
-among the OpenVPN developers.
+ACK
 
-A more realistic first step for OpenVPN is a automated testing suite
-that goes beyond what we have at the moment in shell scripts. Setting up
-a mininet for example and automatically cofingure client and server, and
-see if everything works as expected as an example.
-> How: Dependency management
-> =E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=
-=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=
-=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=
-=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94=E2=80=94
->
-> Adding a test framework would require a way to include & track this depen=
-dency.
->
-> I see three possibilities
->
-> * Copy-and-forget: Add a copy the upstream testing framework and add it a=
-s-is to the source code repo.
-> * Include-dependency-management: Add some kind of dependency management, =
-e.g. cmake packages.
-cmake vs autoconf/automake is somehwat heated discussion. At the moment
-the project is using autoconf/automake since it has always been using that.
-> * Use-the-SCM: Use git submodules to add the dependency.
->
-> I dislike Copy-and-forget because it pollutes the repository, and makes t=
-racking upstream changes very hard.
->
-> I have no experience with Makefile based dependency management
->
-> But I do know how to handle a git submodule.
->
-> I have a very strong preference to using a git submodule for unit testing=
-.=20
->
-I think how to put a testing framework into git is secondary. If unit
-tests are useful in the current state, we can discuss about how to
-include them.
-
-Arne
-
+-Steffan
 
