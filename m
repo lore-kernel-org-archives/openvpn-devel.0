@@ -1,14 +1,17 @@
-Date: Thu, 21 Apr 2016 22:36:43 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20160421203643.GM53051@...1296...>
-References: <1461270286-3549-1-git-send-email-janjust@...1147...>
-	<571937C6.5000102@...1147...>
+References: <950C8167-A5FF-4F56-9020-C956EED49557@...2127...>
+	<5718879E.8050007@...1227...> <57189BF4.7040400@...515...>
+	<5E0364AE-B4E5-45B7-A30D-4CB6C018BF1C@...2127...>
+	<20160421180125.GK53051@...1296...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <57194638.5060409@...2080...>
+Date: Thu, 21 Apr 2016 23:29:28 +0200
 MIME-Version: 1.0
+In-Reply-To: <20160421180125.GK53051@...1296...>
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="NV8Q+b3U03j8aVmL"
-Content-Disposition: inline
-In-Reply-To: <571937C6.5000102@...1147...>
-Subject: Re: [Openvpn-devel] Add support for pushable encryption.
+	protocol="application/pgp-signature";
+	boundary="S4ucdriaCsABL0PVeD8C7x9eUH7E68C51"
+Subject: Re: [Openvpn-devel] Unit testing in openvpn?
+Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,54 +20,75 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Jan Just Keijser <janjust@...1147...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>, Jens Neuhalfen <openvpn-devel@...2127...>
+Cc: openvpn-devel <Openvpn-devel@lists.sourceforge.net>
 
---NV8Q+b3U03j8aVmL
-Content-Type: text/plain; charset="us-ascii"
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--S4ucdriaCsABL0PVeD8C7x9eUH7E68C51
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
-
-On Thu, Apr 21, 2016 at 10:27:50PM +0200, Jan Just Keijser wrote:
-> there are a few notes about this patch:
+On 21/04/16 20:01, Gert Doering wrote:
+> Hi,
 >=20
-> - I've tested it on Linux only
-> - it works when pushing both --cipher andi/or --auth
-> - works by re-doing part of the encryption setup (you'll see some=20
-> messages fly by twice )
-> - pushing an HMAC (e.g. push "auth SHA256"") does **not** work in=20
-> combination with --tls-auth: when tls-auth is used all incoming packets=20
-> are signed using the "original" HMAC cipher and you won't even get to=20
-> the "push" stage to get the correct cipher.
+> On Thu, Apr 21, 2016 at 07:40:16PM +0200, Jens Neuhalfen wrote:
+>> The first candidate would be the U2F integration that I???d like
+>> to write. A proven strategy for starting unit testing is to write
+>> tests for all new features. This way the up-front cost is reduced
+>> to the invest for ???the first test???.
+>=20
+> A test driver for the plugin API is actually something which might=20
+> work reasonably well as test rig...
+>=20
 
-Does it work on the server side, that is, having a ccd/ file or script
-that tells the server "cipher <foo>" for a given client?
+I have started working on a patch set to make it possible to unit test
+plug-ins more easily.  But for this to make sense, I need to clean up
+the OpenVPN code somewhat so it is possible to base it on much of the
+code base already existing in OpenVPN.  That's a good way to also test
+the OpenVPN side of the plug-in API.
 
-Otherwise: impressive :-) (I leave the actual code review to Steffan)
+Now all that sounds easy enough.  Then I realised a massive code
+clean-up is needed, as there are some cross-dependencies where the
+plug-in unit test framework would suddenly need the full network stack
+in OpenVPN (which plug-in code paths never cross - yes socket.c, route.c
+and forward.c was needed in my first attempts).  I did come quite a good
+step forward on the last hackathon ... unfortunately my work+family
+situation have made it hard to hack further on that in a long while.
+But I have good hopes to believe I'll be able to spend more time on this
+in not very far future.
 
-gert
+The reason for looking into a test framework for plug-ins is that we
+have some auth-pam patches we've been very cautious with due to lack of
+testability.  And many more plug-ins can benefit from such a test
+framework too.
+
+> OTOH, testing one-time-passwords in an automated manner sounds
+> complicated.
+
+Not really, there are pretty solid TOTP/HOTP libraries which can be
+integrated into test frameworks without too much hassle.  You just need
+some keying material to be consistent between server side and client
+side of the test.  I've already poked into this a few times.
+
 
 --=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+kind regards,
 
---NV8Q+b3U03j8aVmL
+David Sommerseth
+
+
+--S4ucdriaCsABL0PVeD8C7x9eUH7E68C51
 Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
+Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQCVAwUBVxk52qkuBuNlUUl1AQIM7gQAhKV/G8g37j1cWE+LWjY64JFW07cHl2RD
-bO3phKgUhZejG+iK/ntlrOm3q7ELz9CYLIrV45aUzF95ZssFqVnZaDEbrK6eNKBG
-uEtpbGFGp+f7JuJipHDy624JQfwVxUnnG3HLHS0lGwR0SUUNz0HgzTMfR10oDDnM
-TNJM67Eh+LU=
-=4AsA
+iEYEARECAAYFAlcZRjsACgkQDC186MBRfrof/gCeJk74T5Blr7lvhhHtGjDAHUML
+mXoAniSLa/jJW2h5dZgeO8/BeKsdiaDc
+=Aowr
 -----END PGP SIGNATURE-----
 
---NV8Q+b3U03j8aVmL--
+--S4ucdriaCsABL0PVeD8C7x9eUH7E68C51--
 
