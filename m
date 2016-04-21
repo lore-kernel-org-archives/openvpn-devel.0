@@ -1,10 +1,13 @@
-Date: Thu, 21 Apr 2016 19:48:27 +0200 (CEST)
-Message-Id: <201604211748.u3LHmRAq025797@...2054...>
+Date: Thu, 21 Apr 2016 19:59:53 +0200
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <A4F03DE4-3E70-4815-B4B4-CC185E35CF2C@...2127...>
-References: <A4F03DE4-3E70-4815-B4B4-CC185E35CF2C@...2127...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix buffer overflow by user
-	supplied data
+Message-ID: <20160421175953.GJ53051@...1296...>
+References: <950C8167-A5FF-4F56-9020-C956EED49557@...2127...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="UkJByDtiyhV6M6Gk"
+Content-Disposition: inline
+In-Reply-To: <950C8167-A5FF-4F56-9020-C956EED49557@...2127...>
+Subject: Re: [Openvpn-devel] Unit testing in openvpn?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,34 +16,96 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Jens Neuhalfen <jens@...2127...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Jens <openvpn-devel@...2127...>
+Cc: openvpn-devel <Openvpn-devel@lists.sourceforge.net>
 
-Your patch has been applied to the master and release/2.3 branch.
+--UkJByDtiyhV6M6Gk
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-As discussed downthread, I've added <stdint.h> to fix the MAX_SIZE
-compilation error on Linux and FreeBSD.
+Hi,
 
-commit 7c0ecd1191e66fa242708f93baa4006ba0a73c7a (master)
-commit b15d511aa6ca75c643a46b703b5536016a77d395 (release/2.3)
+On Thu, Apr 21, 2016 at 09:12:28AM +0200, Jens wrote:
+> I think that adding unit tests would greatly improve the ease of
+> implementing new features for openvpn.  I have spend a lot of time
+> coding Java (and others), and unit testing greatly improved my code
+> quality, my throughput, and last, but not least, my confidence in
+> the code. Indeed I have become very humble when it comes to the
+> question of ???what could possibly go wrong with this small change????
 
-Author: Jens Neuhalfen
-Date:   Tue Apr 19 20:42:55 2016 +0200
+I'm somewhat of a mixed mind on this.
 
-     Fix buffer overflow by user supplied data
+Experience in the last few years after the current development team
+sort of "inherited" the OpenVPN code base was that *these* things that
+have blown up in a spectactular way were usually
 
-     Signed-off-by: Jens Neuhalfen <jens@...2127...>
-     Acked-by: Steffan Karger <steffan.karger@...1435...>
-     Message-Id: <A4F03DE4-3E70-4815-B4B4-CC185E35CF2C@...2127...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/11477
-     Signed-off-by: Gert Doering <gert@...1296...>
+ - (unexpected) system dependencies - like, a totally harmless and well-tes=
+ted
+   change to the socket stuff which broke compilation on all *BSDs
+
+ - too many options, and users using "unexpected" combinations of options -=
+=20
+   so you change something, you are aware that it's an intrusive change, and
+   all your individual tests work out nicely - but then, incoming user=20
+   complaint, because "if I use this with systemd *and* a password-protected
+   key *and* <x>, it fails!"
+
+ - operating systems changing behind us, like MacOS 64 bit keeping binary
+   compatibility with MacOS 32 bit for some structures, thus breaking=20
+   source API compatibility (use uint32_t instead of "int" now)
 
 
---
-kind regards,
+some of theses can be fairly well tested in our current buildbot framework
+(=3D each commit is built on nearly all supported platforms, and runs
+"make check", which does a full "setup network, transfer data, close down
+network, see if it cleans up properly" check if t_client.rc is there),
+but some are really hard to test for, like the constant --multihome=20
+brokenness on one or the other platform (because you need that platform,
+more than one IP address configured, and actual UDP packets being sent
+back and forth to excercise the problem)...
 
-Gert Doering
 
+So, I'm all for doing more extensive testing, but unit testing will not
+catch those things that have bitten us big time in the past - because=20
+when we do "big changes", on purpose, but forget about combinations of
+options, all the unit tests will succeed (because the individual units
+are all well-behaved, just the combination isn't)
+
+> What would be the steps to include unit testing?
+> ?????????????????????????????????????????????????????????????????????????=
+??????????????????????????
+>=20
+> 1) Decide /if/ we want unit tests
+
+Yes :-)
+
+But it will be hard.  The current source code does not lend itself very
+nicely to unit testing (and those bits that *do*, like buffer.c, are so
+well established and tested by now that we tend to never having to touch=20
+anything there anyway)...
+
+gert
+
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--UkJByDtiyhV6M6Gk
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQCVAwUBVxkVGakuBuNlUUl1AQJrBwQAtNSRPwvXj9IOncGHQQZtykhIiwCqVqc5
+akgiqdS5LHUvh8AoetbNmsh+Zdb59UBZU9a6OHsqXfrq61vEO6idfSNnKDMEE4Z2
+aW0PG/u1rL7ddrZiz7TX8isEbnaPeWs+DCsaF6Kv3GWTHOP9mxJeAkE0YVQU/Nna
+UKhdwYeeyj0=
+=TIdI
+-----END PGP SIGNATURE-----
+
+--UkJByDtiyhV6M6Gk--
 
