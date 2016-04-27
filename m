@@ -1,10 +1,15 @@
-Date: Wed, 27 Apr 2016 20:02:19 +0200 (CEST)
-Message-Id: <201604271802.u3RI2JCG036189@...2054...>
+Date: Wed, 27 Apr 2016 20:14:33 +0200
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <49496.109.81.184.65.1461736834.squirrel@...1899...>
-References: <49496.109.81.184.65.1461736834.squirrel@...1899...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Exported keying material is
-	always sizeof(unsigned char*)
+Message-ID: <20160427181433.GZ53051@...1296...>
+References: <1451931741-4126-1-git-send-email-samuli@...515...>
+	<572092B5.8090908@...1227...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="6s/G0Ait2f6IH9MX"
+Content-Disposition: inline
+In-Reply-To: <572092B5.8090908@...1227...>
+Subject: Re: [Openvpn-devel] [PATCH] Update INSTALL-win32.txt for OpenVPN
+ 2.3.10
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,34 +18,71 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Daniel Kubec <niel@...1898...>
+To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-ACK!
+--6s/G0Ait2f6IH9MX
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Your patch has been applied to the master branch.
+Hi,
 
-Sorry for ACKing the patch that broke the code - ACKing the fix now :-)
-(I've taken the liberty to make the commit message more readable - no
-code changes)
+On Wed, Apr 27, 2016 at 01:21:41PM +0300, Arne Schwabe wrote:
+> Am 04.01.16 um 20:22 schrieb samuli@...515...:
+> > From: Samuli Sepp=E4nen <samuli@...515...>
+> >=20
+> > OpenVPN 2.3.10 includes an OpenVPN-GUI which automatically requests ele=
+vation of
+> > privileges using UAC. Modified INSTALL-win32.txt to reflect this behavi=
+or.
+>=20
+> ACK from me. This seems to be still not applied.
 
-commit 13a882ae39efb7144d9a9c5ac61100b1e27b1003
-Author: Daniel Kubec
-Date:   Wed Apr 27 08:00:34 2016 +0200
+Well, it isn't, but I answered Samuli's mail, and he agreed that we do
+not want to go there:
 
-     Fix buffer size parameter for exported keying material.
+---------------------------------------------------
+[..]
+> I wonder if these bits should not be removed from the INSTALL-win32.txt
+> we ship in the main openvpn repo - since this is a gui thing and happens
+> totally outside the main repo...  move it to the windows build tree,
+> maybe, and show it from the installer upon installation?
+>
+> gert
 
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <49496.109.81.184.65.1461736834.squirrel@...1899...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/11509
-     Signed-off-by: Gert Doering <gert@...1296...>
+Hi,
 
+Looking at the the full contents of INSTALL-win32.txt your suggestion makes
+sense. I'll migrate the file to openvpn-build and then send a removal patch
+for openvpn/INSTALL-win32.txt.
+---------------------------------------------------
 
---
-kind regards,
+... and this patch never came... :-)
 
-Gert Doering
+So, what next?  Samuli?  Apply, based on Arne's ACK, or remove?
 
+gert
+
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--6s/G0Ait2f6IH9MX
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQCVAwUBVyEBiakuBuNlUUl1AQJWeAP/TtaRL/4/G0Lgzh7cN2vhrhd5Mb5hg3uZ
+az3OkuKOuj3zS01MnsP9E9x3swB/wVPNJD60G+UHePPoOUoXoIqC14ilTjmhuioO
+pfaF5axteWhR4wKca2h4GgGYZplUuZ3SWqlLXqcsrxjbPykEW4lIi0GJ7+AOi/+P
+7VUkK4PB0qI=
+=LRfM
+-----END PGP SIGNATURE-----
+
+--6s/G0Ait2f6IH9MX--
 
