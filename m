@@ -1,11 +1,10 @@
-References: <1451931741-4126-1-git-send-email-samuli@...515...>
+References: <1460918143-408-1-git-send-email-steffan@...1856...>
 From: Arne Schwabe <arne@...1227...>
-Message-ID: <572092B5.8090908@...1227...>
-Date: Wed, 27 Apr 2016 13:21:41 +0300
+Message-ID: <572096EB.9080703@...1227...>
+Date: Wed, 27 Apr 2016 13:39:39 +0300
 MIME-Version: 1.0
-In-Reply-To: <1451931741-4126-1-git-send-email-samuli@...515...>
-Subject: Re: [Openvpn-devel] [PATCH] Update INSTALL-win32.txt for OpenVPN
- 2.3.10
+In-Reply-To: <1460918143-408-1-git-send-email-steffan@...1856...>
+Subject: Re: [Openvpn-devel] [PATCH 1/2] Migrate to mbed TLS 2.x
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,19 +13,14 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: samuli@...515..., openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
 
-Am 04.01.16 um 20:22 schrieb samuli@...515...:
-> From: Samuli Seppänen <samuli@...515...>
-> 
-> OpenVPN 2.3.10 includes an OpenVPN-GUI which automatically requests elevation of
-> privileges using UAC. Modified INSTALL-win32.txt to reflect this behavior.
-> 
+Am 17.04.16 um 21:35 schrieb Steffan Karger:
+>  #ifdef HAVE_AEAD_CIPHER_MODES
 
-ACK from me. This seems to be still not applied.
+Are there actually mbedTLS version >= 2 without AEAD?
 
 Arne
-
 
