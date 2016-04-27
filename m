@@ -1,14 +1,10 @@
-Date: Wed, 27 Apr 2016 19:51:18 +0200
+Date: Wed, 27 Apr 2016 20:02:19 +0200 (CEST)
+Message-Id: <201604271802.u3RI2JCG036189@...2054...>
 From: Gert Doering <gert@...1296...>
-Message-ID: <20160427175118.GY53051@...1296...>
-References: <1460918143-408-1-git-send-email-steffan@...1856...>
-	<57209BDF.4030202@...1227...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="YzytRCpZNWCht94M"
-Content-Disposition: inline
-In-Reply-To: <57209BDF.4030202@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH 1/2] Migrate to mbed TLS 2.x
+In-Reply-To: <49496.109.81.184.65.1461736834.squirrel@...1899...>
+References: <49496.109.81.184.65.1461736834.squirrel@...1899...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Exported keying material is
+	always sizeof(unsigned char*)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,66 +13,34 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Daniel Kubec <niel@...1898...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---YzytRCpZNWCht94M
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+ACK!
 
-Hi,
+Your patch has been applied to the master branch.
 
-On Wed, Apr 27, 2016 at 02:00:47PM +0300, Arne Schwabe wrote:
-> The rest looks fine, so ACK for me.
+Sorry for ACKing the patch that broke the code - ACKing the fix now :-)
+(I've taken the liberty to make the commit message more readable - no
+code changes)
 
-While I totally love to just merge stuff other folks have reviewed, this
-patch just doesn't apply to my tree :-( - and the rejects are too many
-to try to mangle by hand.
+commit 13a882ae39efb7144d9a9c5ac61100b1e27b1003
+Author: Daniel Kubec
+Date:   Wed Apr 27 08:00:34 2016 +0200
 
-Patching file configure.ac using Plan A...
-Hunk #1 failed at 291.
-Patching file src/openvpn/options.c using Plan A...
-Hunk #11 failed at 6584.
-Patching file src/openvpn/ssl_verify_polarssl.c using Plan A...
-Hunk #2 failed at 35.
-Hunk #6 failed at 160.
-Hunk #7 failed at 216.
-Hunk #8 failed at 232.
-Hunk #9 failed at 263.
-No such line 417 in input file, ignoring
+     Fix buffer size parameter for exported keying material.
+
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <49496.109.81.184.65.1461736834.squirrel@...1899...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/11509
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
-I'm fairly sure I understand why this is happening - Steffan has polar-
-related patches in his tree that have not yet been merged - but "as is",
-I can't merge this...
+--
+kind regards,
 
-OTOH, it might apply if we get the James-reworked-by-Steffan patch series
-in... Arne, did you find time to take a look at them?
+Gert Doering
 
-(Sorry for having such a messy tree with too many open patches out there)
-
-gert
-
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---YzytRCpZNWCht94M
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQCVAwUBVyD8FakuBuNlUUl1AQIsWAP/VUUGOCfuK2i7/afp6+eXb9wy4nYUaR96
-r1HDJbvUov7KN6Jea+YYpqyZG/IgWI1r3aPHkNTl4OaA8nDobtLs4NU7PtG4gRfm
-diV5i3aCh3HRZm0db/OsQKIrrrTX5dPIvUfNGKLD6w1Eio81+YwtB+FzSZAQ7lsi
-5jxiTSoR2CE=
-=vAkX
------END PGP SIGNATURE-----
-
---YzytRCpZNWCht94M--
 
