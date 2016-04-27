@@ -1,11 +1,11 @@
-References: <1444393757-21376-1-git-send-email-lstipakov@...277...>
-	<20151009133950.GN22054@...1296...> <5720755F.8020504@...1227...>
-From: Lev Stipakov <lstipakov@...277...>
-Message-ID: <572090F8.1030605@...277...>
-Date: Wed, 27 Apr 2016 13:14:16 +0300
+References: <1451931741-4126-1-git-send-email-samuli@...515...>
+From: Arne Schwabe <arne@...1227...>
+Message-ID: <572092B5.8090908@...1227...>
+Date: Wed, 27 Apr 2016 13:21:41 +0300
 MIME-Version: 1.0
-In-Reply-To: <5720755F.8020504@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH] Support for disabled peer-id
+In-Reply-To: <1451931741-4126-1-git-send-email-samuli@...515...>
+Subject: Re: [Openvpn-devel] [PATCH] Update INSTALL-win32.txt for OpenVPN
+ 2.3.10
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,18 +14,19 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: samuli@...515..., openvpn-devel@lists.sourceforge.net
 
-Yep, was a bit busy with other stuff last weeks.
+Am 04.01.16 um 20:22 schrieb samuli@...515...:
+> From: Samuli Seppänen <samuli@...515...>
+> 
+> OpenVPN 2.3.10 includes an OpenVPN-GUI which automatically requests elevation of
+> privileges using UAC. Modified INSTALL-win32.txt to reflect this behavior.
+> 
 
-On 27.04.2016 11:16, Arne Schwabe wrote:
->
-> I am just going through the patches. Lev, do you plan a follow up for this?
->
-> Arne
->
+ACK from me. This seems to be still not applied.
+
+Arne
 
 
