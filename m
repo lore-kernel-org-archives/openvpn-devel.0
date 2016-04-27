@@ -1,10 +1,10 @@
 MIME-Version: 1.0
-In-Reply-To: <20160427175118.GY53051@...1296...>
+In-Reply-To: <57209BDF.4030202@...1227...>
 References: <1460918143-408-1-git-send-email-steffan@...1856...>
-	<57209BDF.4030202@...1227...> <20160427175118.GY53051@...1296...>
+	<57209BDF.4030202@...1227...>
 From: Steffan Karger <steffan@...1856...>
-Date: Wed, 27 Apr 2016 21:51:08 +0200
-Message-ID: <CAA1AbxJbtifDyaDOfUugyRmhM+X0xPoyK3fd-zE7OdQ-OZPPPg@...278...>
+Date: Wed, 27 Apr 2016 21:55:39 +0200
+Message-ID: <CAA1Abx+AOw9ekvzxzW4YkF6x-K2S2rZ_Ne_z_PLaGaJJBgAG0Q@...278...>
 Subject: Re: [Openvpn-devel] [PATCH 1/2] Migrate to mbed TLS 2.x
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -16,35 +16,26 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
+To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-On Wed, Apr 27, 2016 at 7:51 PM, Gert Doering <gert@...1296...> wrote:
-> While I totally love to just merge stuff other folks have reviewed, this
-> patch just doesn't apply to my tree :-( - and the rejects are too many
-> to try to mangle by hand.
+On Wed, Apr 27, 2016 at 1:00 PM, Arne Schwabe <arne@...1227...> wrote:
+> Am 17.04.16 um 21:35 schrieb Steffan Karger:
+>>  #ifdef HAVE_AEAD_CIPHER_MODES
 >
-> Patching file configure.ac using Plan A...
-> Hunk #1 failed at 291.
-> Patching file src/openvpn/options.c using Plan A...
-> Hunk #11 failed at 6584.
-> Patching file src/openvpn/ssl_verify_polarssl.c using Plan A...
-> Hunk #2 failed at 35.
-> Hunk #6 failed at 160.
-> Hunk #7 failed at 216.
-> Hunk #8 failed at 232.
-> Hunk #9 failed at 263.
-> No such line 417 in input file, ignoring
->
->
-> I'm fairly sure I understand why this is happening - Steffan has polar-
-> related patches in his tree that have not yet been merged - but "as is",
-> I can't merge this...
->
-> OTOH, it might apply if we get the James-reworked-by-Steffan patch series
-> in...
+> Are there  actually mBedTLS >=2.0 without this?
 
-This should indeed be the case.
+It's possible to compile mbed TLS without GCM, yes.  Though I could
+imagine getting rid of HAVE_AEAD_CIPHER_MODES, and just fail if GCM
+support is missing.  If there are more in favour of that approach,
+I'll either send a v2, or a follow-up patch.
+
+> P.S.: This was probably one of the most boring reviews I did (for most
+> part of the changes).
+
+Hehe, yes, I can imagine.  Writing this patch wasn't exactly exciting
+either ;)  Let's hope mbed TLS sticks to this naming scheme for a
+while...
 
 -Steffan
 
