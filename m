@@ -1,13 +1,10 @@
-References: <1456993146-63968-1-git-send-email-james@...515...>
-	<1456993146-63968-7-git-send-email-james@...515...>
-	<CAA1AbxL1w8e_o-GjS2jETZWxYdMbS2iKABPc6OZBA8bOVycjtA@...278...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <5721F7AE.3050307@...1227...>
-Date: Thu, 28 Apr 2016 14:44:46 +0300
-MIME-Version: 1.0
-In-Reply-To: <CAA1AbxL1w8e_o-GjS2jETZWxYdMbS2iKABPc6OZBA8bOVycjtA@...278...>
-Subject: Re: [Openvpn-devel] [PATCH 07/10] Implemented x509-track for
- PolarSSL.
+Date: Thu, 28 Apr 2016 13:54:06 +0200 (CEST)
+Message-Id: <201604281154.u3SBs6Lf056469@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <CAA1AbxL=QYUy6N+jKgxVVuftmF=75mSEz3rYUbisT245UfB5Dg@...278...>
+References: <CAA1AbxL=QYUy6N+jKgxVVuftmF=75mSEz3rYUbisT245UfB5Dg@...278...>
+Subject: [Openvpn-devel] [PATCH applied] Re: PolarSSL x509_get_sha1_hash now
+	returns correct SHA1 fingerprint.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,21 +13,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-To: Steffan Karger <steffan@...1856...>, James Yonan <james@...515...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Steffan Karger <steffan@...1856...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Am 09.03.16 um 00:10 schrieb Steffan Karger:
-> Hi,
-> 
-> This addition is welcome and the code does the job it promises to do,
-> but after reviewing the code I would like to propose a different
-> implementation.  The reasons for this are gives as inline replies
-> below.  The alternative patch proposal is attached.
+Your patch has been applied to the master branch.  
 
-Code looks good to me, ACK.
+(Changes.rst had to be manually applied as it conflicted with an 
+intermediate change)
 
-Arne
+commit dd2fbc26eb7b32325793ae3f7d215f46e881e68c (master)
+Author: Steffan Karger
+Date:   Mon Apr 4 21:59:38 2016 +0200
+
+     PolarSSL x509_get_sha1_hash now returns correct SHA1 fingerprint.
+
+     Signed-off-by: James Yonan <james@...515...>
+     Signed-off-by: Steffan Karger <steffan@...1856...>
+     Acked-by: Arne Schwabe <arne@...1227...>
+     Message-Id: <CAA1AbxL=QYUy6N+jKgxVVuftmF=75mSEz3rYUbisT245UfB5Dg@...278...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/11396
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
