@@ -1,10 +1,12 @@
-Date: Thu, 28 Apr 2016 17:02:37 +0200 (CEST)
-Message-Id: <201604281502.u3SF2bEJ059778@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <1460918143-408-2-git-send-email-steffan@...1856...>
-References: <1460918143-408-2-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Rename files with 'polarssl' in
-	the name to 'mbedtls'
+References: <CAAWBBYMWbgCy74zU6OWT+T9eopRNbBF-K7HeD27KRGwGXOkAeg@...278...>
+	<5720822C.20407@...1227...>
+	<CAAWBBYP006xxfrHtRMjpg=5JE3eMj9qibHExeJ7SZqK5S=3PZg@...278...>
+From: Arne Schwabe <arne@...1227...>
+Message-ID: <57223833.70806@...1227...>
+Date: Thu, 28 Apr 2016 19:20:03 +0300
+MIME-Version: 1.0
+In-Reply-To: <CAAWBBYP006xxfrHtRMjpg=5JE3eMj9qibHExeJ7SZqK5S=3PZg@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] Added client-ip option to NAT
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,29 +15,23 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Steffan Karger <steffan@...1856...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+To: Rafael Gava <gava100@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Your patch has been applied to the master branch.
+Am 28.04.16 um 04:01 schrieb Rafael Gava:
+> Hi Arne, 
+> 
+> what a surprise I thought that the NAT patch had been dropped. :-)
 
-commit 74586c6508e5dd283eaef9d098644a7800beec01
-Author: Steffan Karger
-Date:   Sun Apr 17 20:35:43 2016 +0200
+More or less forgotten. IIrc the active FTP part was controversal. This
+part is okay.
 
-     Rename files with 'polarssl' in the name to 'mbedtls'
+> So, please, should I change the code based on your comments and resend
+> the patch?
 
-     Signed-off-by: Steffan Karger <steffan@...1856...>
-     Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <1460918143-408-2-git-send-email-steffan@...1856...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/11459
-     Signed-off-by: Gert Doering <gert@...1296...>
+Yes, please.
 
-
---
-kind regards,
-
-Gert Doering
-
+Arne
 
