@@ -1,10 +1,11 @@
-References: <5723626E.3030401@...277...> <57247232.2040608@...515...>
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <5724B2AA.7020700@...515...>
-Date: Sat, 30 Apr 2016 16:27:06 +0300
+From: "Morris, Russell" <rmorris@...1315...>
+Date: Sat, 30 Apr 2016 15:53:42 +0000
+Message-ID: <SN1PR08MB1391DBF25C130ACE3DB1CFC3B9670@...2065...>
+Content-Language: en-US
+Content-Type: multipart/alternative;
+	boundary="_000_SN1PR08MB1391DBF25C130ACE3DB1CFC3B9670SN1PR08MB1391namp_"
 MIME-Version: 1.0
-In-Reply-To: <57247232.2040608@...515...>
-Subject: Re: [Openvpn-devel] SPAM on trac
+Subject: [Openvpn-devel] Ubuntu Repository
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,67 +14,91 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+
+--_000_SN1PR08MB1391DBF25C130ACE3DB1CFC3B9670SN1PR08MB1391namp_
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-To: debbie10t <debbie10t@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-
-
-> Wow. Previously nothing of this magnitude has been encountered. Luckily
-> this crap is, afaik, invisible to normal users, because the pages are
-> linked to from anywhere (except the TitleIndex).
->
-> Based on the history of the spam pages the spammer(s) used many user
-> accounts, and the edits were spread over a period of over 32 hours at
-> least. Assuming bots have not found a way around the Google reCAPTCHA we
-> use in the registration webapp these are real human spammers.
->
-> Anyways, I'll turn on a bunch of other spam filtering services in Trac
-> today, then add a few more on Monday. I'll also get rid of this crap
-> after more spam filtering is in place.
->
-> I hope we can avoid the situation where all edits have to be made by
-> known-good people. Right now Wiki edits are disabled for everyone except
-> a select few.
 
 Hi,
 
-I turned on several new external content scanning spamfilters. In the=20
-process I had to upgrade Trac and the Trac spam filtering plugin. We=20
-used to only have Akismet, because we didn't really have any big spam=20
-issues. Now we have all of these activated:
+Just curious - any plans to update the repository (at http://swupdate.openv=
+pn.net/apt), now that Ubuntu 16.04 LTS is out?
 
-- Akismet (http://akismet.com/)
-- Blogspam (http://blogspam.net/)
-- StopForumSpam (http://stopforumspam.com/)
-- BotScout (http://botscout.com/)
-- Fspamlist (http://www.fspamlist.com/)
+Thanks!
 
-Based on spam monitoring and Trac logs the filters seem to work, but=20
-we'd need actual spam attempts to prove that[*]. Right now the "karma"=20
-setup on Trac is such that if one service thinks the content is spam=20
-then the edit will be rejected. I also reduced the maximum number of=20
-edits per IP to 5 per hour, and activated Google reCAPTCHA. I did not=20
-see reCAPTCHAs, though, when doing ticket test edits, so it might only=20
-apply to anonymous edits; in that case it would be useless for us.
+... Russell
 
-There are a few other spam detection services which we can probably=20
-activate later:
 
-- Spamwipe (http://spamwipe.com/): registration does not work atm
-- Mollom (http://mollom.com/)
 
-I also did a mass removal of the spam Wiki pages (500+). The bastards=20
-had contaminated some of our useful Wiki pages, but deducing which ones=20
-was fairly easy given direct access to the database. I believe I managed=20
-to delete all the contaminated revisions.
+--_000_SN1PR08MB1391DBF25C130ACE3DB1CFC3B9670SN1PR08MB1391namp_
+Content-Type: text/html; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
+<html xmlns:v=3D"urn:schemas-microsoft-com:vml" xmlns:o=3D"urn:schemas-micr=
+osoft-com:office:office" xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
+xmlns:m=3D"http://schemas.microsoft.com/office/2004/12/omml" xmlns=3D"http:=
+//www.w3.org/TR/REC-html40">
+<head>
+<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3Dus-ascii">
+<meta name=3D"Generator" content=3D"Microsoft Word 15 (filtered medium)">
+<style><!--
+/* Font Definitions */
+@font-face
+	{font-family:"Cambria Math";
+	panose-1:2 4 5 3 5 4 6 3 2 4;}
+@font-face
+	{font-family:Calibri;
+	panose-1:2 15 5 2 2 2 4 3 2 4;}
+/* Style Definitions */
+p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0in;
+	margin-bottom:.0001pt;
+	font-size:11.0pt;
+	font-family:"Calibri",sans-serif;}
+a:link, span.MsoHyperlink
+	{mso-style-priority:99;
+	color:#0563C1;
+	text-decoration:underline;}
+a:visited, span.MsoHyperlinkFollowed
+	{mso-style-priority:99;
+	color:#954F72;
+	text-decoration:underline;}
+span.EmailStyle17
+	{mso-style-type:personal-compose;
+	font-family:"Calibri",sans-serif;
+	color:windowtext;}
+.MsoChpDefault
+	{mso-style-type:export-only;}
+@page WordSection1
+	{size:8.5in 11.0in;
+	margin:1.0in 1.0in 1.0in 1.0in;}
+div.WordSection1
+	{page:WordSection1;}
+--></style><!--[if gte mso 9]><xml>
+<o:shapedefaults v:ext=3D"edit" spidmax=3D"1026" />
+</xml><![endif]--><!--[if gte mso 9]><xml>
+<o:shapelayout v:ext=3D"edit">
+<o:idmap v:ext=3D"edit" data=3D"1" />
+</o:shapelayout></xml><![endif]-->
+</head>
+<body lang=3D"EN-US" link=3D"#0563C1" vlink=3D"#954F72">
+<div class=3D"WordSection1">
+<p class=3D"MsoNormal">Hi,<o:p></o:p></p>
+<p class=3D"MsoNormal"><o:p>&nbsp;</o:p></p>
+<p class=3D"MsoNormal">Just curious &#8211; any plans to update the reposit=
+ory (at <a href=3D"http://swupdate.openvpn.net/apt">
+http://swupdate.openvpn.net/apt</a>), now that Ubuntu 16.04 LTS is out?<o:p=
+></o:p></p>
+<p class=3D"MsoNormal"><o:p>&nbsp;</o:p></p>
+<p class=3D"MsoNormal">Thanks!<o:p></o:p></p>
+<p class=3D"MsoNormal"><o:p>&nbsp;</o:p></p>
+<p class=3D"MsoNormal">&#8230; Russell<o:p></o:p></p>
+<p class=3D"MsoNormal"><o:p>&nbsp;</o:p></p>
+<p class=3D"MsoNormal"><o:p>&nbsp;</o:p></p>
+</div>
+</body>
+</html>
 
-irc freenode net: mattock
-
-[*] I did not want my own IP to get added to various IP blacklists, so I=20
-did not try "spamming" myself.
+--_000_SN1PR08MB1391DBF25C130ACE3DB1CFC3B9670SN1PR08MB1391namp_--
 
