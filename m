@@ -1,10 +1,8 @@
-Date: Sun, 1 May 2016 19:08:14 +0200 (CEST)
-Message-Id: <201605011708.u41H8E62088701@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <80711231-C760-410A-B8A5-F2B1D46C22CE@...2127...>
-References: <80711231-C760-410A-B8A5-F2B1D46C22CE@...2127...>
-Subject: [Openvpn-devel] [PATCH applied] Re: ignore the local config file
-	t_client.rc in git
+From: Steffan Karger <steffan@...1856...>
+Date: Sun,  1 May 2016 20:23:06 +0200
+Message-Id: <1462126986-2686-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH] configure.ac: link to all mbed TLS libs
+	during library detection
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,26 +13,36 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Jens Neuhalfen <jens@...2127...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master branch.
+When for some reason the dependencies of the compiled mbed TLS libaries
+(libmbedtls, libmbedcrypto and libmbedx509) are not correct, the configure
+script will fail to link against libmbedcrypto and/or libmbedx509.  This
+is reported to happen after using 'make install' to install mbedtls.
 
-commit 645071ae9fac091a62eecd43d6ac5d5fdd4ab91c
-Author: Jens Neuhalfen
-Date:   Fri Apr 29 13:16:36 2016 +0200
+This patch makes sure the configure tests link to all three.  The build
+process itself already did.
 
-     ignore the local config file t_client.rc in git
+Signed-off-by: Steffan Karger <steffan@...1856...>
+---
+ configure.ac | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-     Signed-off-by: Jens Neuhalfen <jens@...2127...>
-     Acked-by: Steffan Karger <steffan.karger@...1435...>
-     Message-Id: <80711231-C760-410A-B8A5-F2B1D46C22CE@...2127...>
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/configure.ac b/configure.ac
+index 3b8bf96..f1dc8af 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -843,7 +843,8 @@ elif test "${with_crypto_library}" = "mbedtls"; then
+ 	saved_LIBS="${LIBS}"
+ 
+ 	if test -z "${MBEDTLS_CFLAGS}" -a -z "${MBEDTLS_LIBS}"; then
+-	# if the user did not explicitly specify flags, try to autodetect
++		# if the user did not explicitly specify flags, try to autodetect
++		LIBS="${LIBS} -lmbedtls -lmbedcrypto -lmbedx509"
+ 		AC_CHECK_LIB(
+ 			[mbedtls],
+ 			[mbedtls_ssl_init],
+-- 
+2.7.4
 
 
