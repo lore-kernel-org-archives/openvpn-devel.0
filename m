@@ -1,8 +1,10 @@
-From: Steffan Karger <steffan@...1856...>
-Date: Sun,  1 May 2016 20:23:06 +0200
-Message-Id: <1462126986-2686-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH] configure.ac: link to all mbed TLS libs
-	during library detection
+Date: Sun, 1 May 2016 22:29:23 +0200 (CEST)
+Message-Id: <201605012029.u41KTNr6089848@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <1462126986-2686-1-git-send-email-steffan@...1856...>
+References: <1462126986-2686-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH applied] Re: configure.ac: link to all mbed
+	TLS libs during library detection
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,36 +15,32 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Steffan Karger <steffan@...1856...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-When for some reason the dependencies of the compiled mbed TLS libaries
-(libmbedtls, libmbedcrypto and libmbedx509) are not correct, the configure
-script will fail to link against libmbedcrypto and/or libmbedx509.  This
-is reported to happen after using 'make install' to install mbedtls.
+ACK.  Tested on ubuntu 14.04 with "default Makefile"-installed mbedtls 
+(it works if you have cmake build your Makefile first...)
 
-This patch makes sure the configure tests link to all three.  The build
-process itself already did.
+Your patch has been applied to the master branch.
 
-Signed-off-by: Steffan Karger <steffan@...1856...>
----
- configure.ac | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+gmane archive lookup is broken right now, so no URL: below - but the
+message ID is there.
 
-diff --git a/configure.ac b/configure.ac
-index 3b8bf96..f1dc8af 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -843,7 +843,8 @@ elif test "${with_crypto_library}" = "mbedtls"; then
- 	saved_LIBS="${LIBS}"
- 
- 	if test -z "${MBEDTLS_CFLAGS}" -a -z "${MBEDTLS_LIBS}"; then
--	# if the user did not explicitly specify flags, try to autodetect
-+		# if the user did not explicitly specify flags, try to autodetect
-+		LIBS="${LIBS} -lmbedtls -lmbedcrypto -lmbedx509"
- 		AC_CHECK_LIB(
- 			[mbedtls],
- 			[mbedtls_ssl_init],
--- 
-2.7.4
+commit e860059baa912ced7acf00f9b1e85a3d80dc0b1f
+Author: Steffan Karger
+Date:   Sun May 1 20:23:06 2016 +0200
+
+     configure.ac: link to all mbed TLS libs during library detection
+
+     Signed-off-by: Steffan Karger <steffan@...1856...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1462126986-2686-1-git-send-email-steffan@...1856...>
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
