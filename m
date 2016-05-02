@@ -1,14 +1,14 @@
-Date: Mon, 2 May 2016 09:50:06 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20160502075006.GM53051@...1296...>
-References: <CAFHpkQHwNFdNm1WjApkby4h4C-_R-pEhVT3sZgE2XfQ1HUaOwQ@...278...>
-	<D881287C-058C-495C-888E-1EE40262550F@...2127...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="71H8RJdeoX6JglLe"
-Content-Disposition: inline
-In-Reply-To: <D881287C-058C-495C-888E-1EE40262550F@...2127...>
-Subject: Re: [Openvpn-devel] automatically close PR
+In-Reply-To: <CAFHpkQHzTQSUqLP2o=x5LPDWJrPtaUVo5JDfsFfhFUK_P4FbQA@...278...>
+References: <CAFHpkQENgyAaaWCsWOS1vj+9YR=Cc65muXmsYfmcKc8n09BkPQ@...278...>
+	<5727056E.1000701@...515...>
+	<CAFHpkQEtWE-4MJ_djqgQtqXSJTKxkfEXnOoAbhebYGwmLKwR-Q@...278...>
+	<CAFHpkQHzTQSUqLP2o=x5LPDWJrPtaUVo5JDfsFfhFUK_P4FbQA@...278...>
+Date: Mon, 2 May 2016 12:51:28 +0500
+Message-ID: <CAFHpkQFwQFn4B6AQzNuBAmaY1OyKLhrysXbQiatSGQazkNRt3Q@...278...>
+From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
+Content-Type: multipart/alternative; boundary=047d7bacb0aa9577640531d74249
+Subject: Re: [Openvpn-devel] CI for openvpn
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,70 +17,109 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Jens Neuhalfen <openvpn-devel@...2127...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---71H8RJdeoX6JglLe
-Content-Type: text/plain; charset="us-ascii"
+--047d7bacb0aa9577640531d74249
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
+I can prepare .travis.yml for openvpn, however, I'm not prepared for "pack
+your commit so and so... We are short on time to merge it"
 
-On Mon, May 02, 2016 at 09:14:02AM +0200, Jens Neuhalfen wrote:
-> I kind of understand why openvpn does not use github pull requests to mer=
-ge (although I might debate that).
->=20
-> Personally I like the github PR workflow, because it makes it
-> much easier to view larger changes in context. Especially more
-> complex patches typically need a few roundtrips.
-
-This is true (though we usually succeeded quite well with "discuss the
-idea by mail or IRC, and then base the first round of patch on that,=20
-and the second round gets in" :-) )
-
-> What I would like to know is: Wether ???please give feedback to this PR, =
-before I send it to the list??? is considered a viable (maybe even polite) =
-way to only send (large) patches that have already been peer reviewed on th=
-e list.
-
-I've seen you do it, but as we're notoriously short of reviewer brain=20
-cycles, nothing has happened yet - but that does not mean it's a bad
-idea (or a good idea)...
+Is it ok if I send .travis.yml to you? Can you proceed with commit/review
+procedure?
+2 =D0=BC=D0=B0=D1=8F 2016 =D0=B3. 12:44 =D0=BF=D0=BE=D0=BB=D1=8C=D0=B7=D0=
+=BE=D0=B2=D0=B0=D1=82=D0=B5=D0=BB=D1=8C "Samuli Sepp=C3=A4nen" <samuli@...1696...=
+15...>
+=D0=BD=D0=B0=D0=BF=D0=B8=D1=81=D0=B0=D0=BB:
 
 
-> IMHO: If there is consent that we do not want to allow GitHub PRs for any=
- use case - disable it.
->=20
-> I have a strong preference for using GitHub at least for vetting out most=
- bugs.
+Hello,
+>
+> I just run cppcheck and ...
+>
+> [src/openvpnserv/interactive.c:601]: (error) Memory pointed to by
+> 'addr_row' is freed twice.
+> [src/openvpnserv/interactive.c:700]: (error) Memory pointed to by
+> 'fwd_row' is freed twice.
+> [src/openvpnserv/interactive.c:1329]: (error) Common realloc mistake:
+> 'handles' nulled but not freed upon failure
+>
+> I suggest to either
+>
+> 1) add travis-ci support (there are few tests in "t" and we can run
+> cppcheck)
+> 2) add cppcheck to buildbot (however it is not transparent, I've no idea
+> where can I have a look at buildbot logs, for example)
+>
 
-We're not going to use GitHub for the actual patch merging process - that
-is "mailing list, public ACK, merge, push to github + sourceforge", at
-least today.
+I assume cppcheck produces the same results regardless of the
+OS/distribution it is running on. If this is the case, then we should add
+cppcheck tests to Travis-CI.
 
-For review, PRs should be doable.
+Using buildbot to running an identical check 150+ times per commit makes no
+sense.
 
-gert
 --=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+Samuli Sepp=C3=A4nen
+Community Manager
+OpenVPN Technologies, Inc
 
---71H8RJdeoX6JglLe
-Content-Type: application/pgp-signature; name="signature.asc"
+irc freenode net: mattock
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
+--047d7bacb0aa9577640531d74249
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-iQCVAwUBVycGrakuBuNlUUl1AQL2ZgQAjra83koMfALkeefFQybEbA9mlScyNDrb
-woFH6XmjNDyZ8zXXN156OvhNcue/iGyLCowlGPp/quzKzb9V9UYo7mH0BUkt3q7N
-JVvEJQ0FPoGo+kE7e5O0yfJbsu/7FzSosXP2Tsi7cA2d3uCUVhF2xTk8DFqslG8N
-/rolv3oVGwg=
-=7J/a
------END PGP SIGNATURE-----
+<p dir=3D"ltr">I can prepare .travis.yml for openvpn, however, I&#39;m not =
+prepared for &quot;pack your commit so and so... We are short on time to me=
+rge it&quot;</p>
+<p dir=3D"ltr">Is it ok if I send .travis.yml to you? Can you proceed with =
+commit/review procedure?</p>
+<div class=3D"gmail_quote">2 =D0=BC=D0=B0=D1=8F 2016 =D0=B3. 12:44 =D0=BF=
+=D0=BE=D0=BB=D1=8C=D0=B7=D0=BE=D0=B2=D0=B0=D1=82=D0=B5=D0=BB=D1=8C &quot;Sa=
+muli Sepp=C3=A4nen&quot; &lt;<a href=3D"mailto:samuli@...515...">samuli@...493...=
+515...</a>&gt; =D0=BD=D0=B0=D0=BF=D0=B8=D1=81=D0=B0=D0=BB:<br type=3D"attri=
+bution"><blockquote class=3D"quote" style=3D"margin:0 0 0 .8ex;border-left:=
+1px #ccc solid;padding-left:1ex"><div class=3D"elided-text"><br>
+<blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1p=
+x #ccc solid;padding-left:1ex">
+Hello,<br>
+<br>
+I just run cppcheck and ...<br>
+<br>
+[src/openvpnserv/interactive.c:601]: (error) Memory pointed to by<br>
+&#39;addr_row&#39; is freed twice.<br>
+[src/openvpnserv/interactive.c:700]: (error) Memory pointed to by<br>
+&#39;fwd_row&#39; is freed twice.<br>
+[src/openvpnserv/interactive.c:1329]: (error) Common realloc mistake:<br>
+&#39;handles&#39; nulled but not freed upon failure<br>
+<br>
+I suggest to either<br>
+<br>
+1) add travis-ci support (there are few tests in &quot;t&quot; and we can r=
+un<br>
+cppcheck)<br>
+2) add cppcheck to buildbot (however it is not transparent, I&#39;ve no ide=
+a<br>
+where can I have a look at buildbot logs, for example)<br>
+</blockquote>
+<br></div>
+I assume cppcheck produces the same results regardless of the OS/distributi=
+on it is running on. If this is the case, then we should add cppcheck tests=
+ to Travis-CI.<br>
+<br>
+Using buildbot to running an identical check 150+ times per commit makes no=
+ sense.<font color=3D"#888888"><br>
+<br>
+-- <br>
+Samuli Sepp=C3=A4nen<br>
+Community Manager<br>
+OpenVPN Technologies, Inc<br>
+<br>
+irc freenode net: mattock<br>
+</font></blockquote></div>
 
---71H8RJdeoX6JglLe--
+--047d7bacb0aa9577640531d74249--
 
