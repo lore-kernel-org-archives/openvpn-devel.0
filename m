@@ -1,5 +1,6 @@
-MIME-Version: 1.0
-In-Reply-To: <20160502094733.GQ53051@...1296...>
+Date: Mon, 2 May 2016 12:09:24 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20160502100924.GR53051@...1296...>
 References: <CAFHpkQENgyAaaWCsWOS1vj+9YR=Cc65muXmsYfmcKc8n09BkPQ@...278...>
 	<5727056E.1000701@...515...>
 	<CAA1Abx+hbUT6ZpdeCrYVEiRdQ+awA7woZyTm7DD=Lv8OyPDQ2Q@...278...>
@@ -8,10 +9,12 @@ References: <CAFHpkQENgyAaaWCsWOS1vj+9YR=Cc65muXmsYfmcKc8n09BkPQ@...278...>
 	<CAFHpkQG+gvd9cTMphjp6Y8AnaZ3Vn_2rt=XJaAOvfEA4tuH-Og@...278...>
 	<572717AD.8060102@...515...>
 	<20160502094733.GQ53051@...1296...>
-Date: Mon, 2 May 2016 14:55:52 +0500
-Message-ID: <CAFHpkQFoch_tEXiQjd5RgSQOokU7093rpNbtt_0nwaGK7=B5Vw@...278...>
-From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Content-Type: multipart/alternative; boundary=001a1145b6667d21ef0531d8ff03
+	<CAFHpkQFoch_tEXiQjd5RgSQOokU7093rpNbtt_0nwaGK7=B5Vw@...278...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="B104er4HUrzUbM9g"
+Content-Disposition: inline
+In-Reply-To: <CAFHpkQFoch_tEXiQjd5RgSQOokU7093rpNbtt_0nwaGK7=B5Vw@...278...>
 Subject: Re: [Openvpn-devel] CI for openvpn
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -21,99 +24,45 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
+To: ???????? ?????????????? <chipitsine@...277...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---001a1145b6667d21ef0531d8ff03
-Content-Type: text/plain; charset="UTF-8"
+--B104er4HUrzUbM9g
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-sf.net  mailing list can go away as well.
-I do not see why relying on sf.net is any better than relying on github.com
+Hi,
 
-2016-05-02 14:47 GMT+05:00 Gert Doering <gert@...1296...>:
+On Mon, May 02, 2016 at 02:55:52PM +0500, ???????? ?????????????? wrote:
+> sf.net  mailing list can go away as well.
+> I do not see why relying on sf.net is any better than relying on github.c=
+om
 
-> Hi,
->
-> On Mon, May 02, 2016 at 12:02:37PM +0300, Samuli Sepp=C3=A4nen wrote:
-> > At minimum we should clearly state why we prefer email patches
-> > over GitHub PRs. Then revisit the arguments every now and then, and
-> > adapt as necessary.
->
-> "Our workflow relies on public availability of patch and ACK, referenced
-> by Message-ID:"
->
-> Github could go away any day, and then any documentation based on github
-> PRs
-> is just gone.
->
-> Right now, if github (or sf.net, for that matter) goes away, we just push
-> elsewhere, or set up our own official git repo server.
->
-> (I wonder if we should start running our own mailing list archive, and
-> point *there* for the commit URLs - gmane is down again, which is quite
-> a bit inconvenient for me)
->
-> gert
-> --
-> USENET is *not* the non-clickable part of WWW!
->                                                            //
-> www.muc.de/~gert/
-> Gert Doering - Munich, Germany
-> gert@...1296...
-> fax: +49-89-35655025
-> gert@...1297...
->
+It isn't.  Thus, we do not rely on sf.net - the mailing list archive
+is referenced only at gmane.org, and even if that blows up, google can
+find the messages by ID.
 
---001a1145b6667d21ef0531d8ff03
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-<div dir=3D"ltr"><div><a href=3D"http://sf.net">sf.net</a>=C2=A0 mailing li=
-st can go away as well.<br></div>I do not see why relying on <a href=3D"htt=
-p://sf.net">sf.net</a> is any better than relying on <a href=3D"http://gith=
-ub.com">github.com</a><br></div><div class=3D"gmail_extra"><br><div class=
-=3D"gmail_quote">2016-05-02 14:47 GMT+05:00 Gert Doering <span dir=3D"ltr">=
-&lt;<a href=3D"mailto:gert@...1296..." target=3D"_blank">gert@...1296...</a=
->&gt;</span>:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8=
-ex;border-left:1px #ccc solid;padding-left:1ex">Hi,<br>
-<span class=3D""><br>
-On Mon, May 02, 2016 at 12:02:37PM +0300, Samuli Sepp=C3=A4nen wrote:<br>
-&gt; At minimum we should clearly state why we prefer email patches<br>
-&gt; over GitHub PRs. Then revisit the arguments every now and then, and<br>
-&gt; adapt as necessary.<br>
-<br>
-</span>&quot;Our workflow relies on public availability of patch and ACK, r=
-eferenced<br>
-by Message-ID:&quot;<br>
-<br>
-Github could go away any day, and then any documentation based on github PR=
-s<br>
-is just gone.<br>
-<br>
-Right now, if github (or <a href=3D"http://sf.net" rel=3D"noreferrer" targe=
-t=3D"_blank">sf.net</a>, for that matter) goes away, we just push<br>
-elsewhere, or set up our own official git repo server.<br>
-<br>
-(I wonder if we should start running our own mailing list archive, and<br>
-point *there* for the commit URLs - gmane is down again, which is quite<br>
-a bit inconvenient for me)<br>
-<span class=3D"HOEnZb"><font color=3D"#888888"><br>
-gert<br>
---<br>
-USENET is *not* the non-clickable part of WWW!<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0//<a href=3D"=
-http://www.muc.de/~gert/" rel=3D"noreferrer" target=3D"_blank">www.muc.de/~=
-gert/</a><br>
-Gert Doering - Munich, Germany=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0<a href=3D"mailt=
-o:gert@...1296...">gert@...1296...</a><br>
-fax: +49-89-35655025=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
- =C2=A0 =C2=A0 =C2=A0 =C2=A0 <a href=3D"mailto:gert@...1297...">gert@...1826...=
-7...</a><br>
-</font></span></blockquote></div><br></div>
+--B104er4HUrzUbM9g
+Content-Type: application/pgp-signature; name="signature.asc"
 
---001a1145b6667d21ef0531d8ff03--
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQCVAwUBVycnVKkuBuNlUUl1AQKTjwQAoosPHdrCcscjRrpnGxPrrUpCR1Z4qi8Y
+sZAbpD7xJvAa06pW1fIsR8pHY1dlgEOu0ksSY83TWcUvFSycS2jAB6jcc3lb2Y9J
+uMyfwiMT+syAQEWus7/Kgu0JmnVTQsZpr4ZE+E+GkcHgLTgh9ge0uOOTMyq6PB01
+/QXV3+f9K1Y=
+=tg1Q
+-----END PGP SIGNATURE-----
+
+--B104er4HUrzUbM9g--
 
