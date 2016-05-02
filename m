@@ -1,10 +1,10 @@
-References: <CAFHpkQHwNFdNm1WjApkby4h4C-_R-pEhVT3sZgE2XfQ1HUaOwQ@...278...>
+References: <CAFHpkQENgyAaaWCsWOS1vj+9YR=Cc65muXmsYfmcKc8n09BkPQ@...278...>
 From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <57270186.7040200@...515...>
-Date: Mon, 2 May 2016 10:28:06 +0300
+Message-ID: <5727056E.1000701@...515...>
+Date: Mon, 2 May 2016 10:44:46 +0300
 MIME-Version: 1.0
-In-Reply-To: <CAFHpkQHwNFdNm1WjApkby4h4C-_R-pEhVT3sZgE2XfQ1HUaOwQ@...278...>
-Subject: Re: [Openvpn-devel] automatically close PR
+In-Reply-To: <CAFHpkQENgyAaaWCsWOS1vj+9YR=Cc65muXmsYfmcKc8n09BkPQ@...278...>
+Subject: Re: [Openvpn-devel] CI for openvpn
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,25 +20,28 @@ To: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>, "openvp
 
 > Hello,
 >
-> it is not very ethical to allow people to open PR in order to say later
-> "hey, you know, we do not accept PR"
+> I just run cppcheck and ...
 >
-> I suggest to enable https://nopullrequests.appspot.com/ on
-> https://github.com/openvpn/openvpn repo, it looks like a polite way of
-> saying things.
+> [src/openvpnserv/interactive.c:601]: (error) Memory pointed to by
+> 'addr_row' is freed twice.
+> [src/openvpnserv/interactive.c:700]: (error) Memory pointed to by
+> 'fwd_row' is freed twice.
+> [src/openvpnserv/interactive.c:1329]: (error) Common realloc mistake:
+> 'handles' nulled but not freed upon failure
 >
-> ideas?
+> I suggest to either
+>
+> 1) add travis-ci support (there are few tests in "t" and we can run
+> cppcheck)
+> 2) add cppcheck to buildbot (however it is not transparent, I've no idea
+> where can I have a look at buildbot logs, for example)
 
-I added nopullrequests to my GitHub account as a test. Now I seem to=20
-have the ability to disable PRs for OpenVPN/openvpn. Any reason why we=20
-would want to keep pull requests open (and never review them)?
+I assume cppcheck produces the same results regardless of the=20
+OS/distribution it is running on. If this is the case, then we should=20
+add cppcheck tests to Travis-CI.
 
-If we disable pull requests, I think it would make sense to
-
-a) Mention our contribution procedure in README
-b) Convert README into README.rst (so that it looks nicer on GitHub)
-
-Thoughts?
+Using buildbot to running an identical check 150+ times per commit makes=20
+no sense.
 
 --=20
 Samuli Sepp=E4nen
