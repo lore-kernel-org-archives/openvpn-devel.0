@@ -1,13 +1,21 @@
+Date: Mon, 2 May 2016 14:02:17 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20160502120217.GZ53051@...1296...>
+References: <20160502094733.GQ53051@...1296...>
+	<CAFHpkQFoch_tEXiQjd5RgSQOokU7093rpNbtt_0nwaGK7=B5Vw@...278...>
+	<20160502100924.GR53051@...1296...>
+	<CAFHpkQE5EavzNgumLVC8Mg6HjSqDx2RgDWR+w=c-pALuRjm=qA@...278...>
+	<20160502105615.GW53051@...1296...>
+	<CAFHpkQFVFs8hvq-tdFXWOuw9azJfV9MZPfVVKsOcR7OVUefeyw@...278...>
+	<20160502105957.GX53051@...1296...>
+	<CAFHpkQGk-D1RL9=Fq8goiTbKaqpjn5QYR3qrT0AXSOtbiaU0gQ@...278...>
+	<20160502111748.GY53051@...1296...>
+	<CAFHpkQHwS0R3eWsCf3jKMJXqC9a55-mQnp_b=5zRg9kAW3qimw@...278...>
 MIME-Version: 1.0
-In-Reply-To: <CAFHpkQFxYTwQhaSENzVQwuQCZLHvGWemh0Hdxtb9MmvQBeCEAA@...278...>
-References: <CAFHpkQENgyAaaWCsWOS1vj+9YR=Cc65muXmsYfmcKc8n09BkPQ@...278...>
-	<5727056E.1000701@...515...>
-	<CAA1Abx+hbUT6ZpdeCrYVEiRdQ+awA7woZyTm7DD=Lv8OyPDQ2Q@...278...>
-	<572716F5.5010909@...515...>
-	<CAFHpkQFxYTwQhaSENzVQwuQCZLHvGWemh0Hdxtb9MmvQBeCEAA@...278...>
-From: Steffan Karger <steffan@...1856...>
-Date: Mon, 2 May 2016 13:33:21 +0200
-Message-ID: <CAA1AbxKZrc7W8_an_-G3_BQdjPeTmOR5ORdCes9t46af9knu9A@...278...>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="3d1h++6StbrqEHAg"
+Content-Disposition: inline
+In-Reply-To: <CAFHpkQHwS0R3eWsCf3jKMJXqC9a55-mQnp_b=5zRg9kAW3qimw@...278...>
 Subject: Re: [Openvpn-devel] CI for openvpn
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -17,35 +25,47 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
+To: ???????? ?????????????? <chipitsine@...277...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-HI,
+--3d1h++6StbrqEHAg
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-On Mon, May 2, 2016 at 11:38 AM, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=
-=BF=D0=B8=D1=86=D0=B8=D0=BD <chipitsine@...277...> wrote:
-> it is already running at "coverity_scan" branch:
-> https://travis-ci.org/OpenVPN/openvpn/builds/120718429
->
-> so, it definitely good
+Hi,
 
-Well, "it seems to work" is one thing, but a review should also cover
-whether some change or addition is doing the right thing and doing it
-the right way.  Given your remark below, it seems that you just did
-that.  So thanks for that.
+On Mon, May 02, 2016 at 04:23:40PM +0500, ???????? ?????????????? wrote:
+> and, there's no point in having variables uninitialized actually. you
+> depend on vary strange issues like OS decision to initialize them with NU=
+LL
+> or whatever.
 
-> however, I would add (to make build running on ubuntu trusty)
->
-> sudo: required
-> dist: trusty
+Well, there's a C standard, and that *requires* variables in BSS or DATA
+segment to be initialized with 0.  So if a global (or static local) variabl=
+e=20
+ever ends up uninitialized, it's a C compiler or runtime bug.
 
-Running on Trusty would be nicer indeed (more recent compilers and
-tools), but the Trusty environment is still in Beta. I'd suggest to
-switch once travis-ci removes the 'beta' label.
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-(As a side note, please don't top-post in mailinglist conversations.)
+--3d1h++6StbrqEHAg
+Content-Type: application/pgp-signature; name="signature.asc"
 
--Steffan
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQCVAwUBVydByakuBuNlUUl1AQInnAQAjEFM1WPx20Gi6b/HV24zQPWSklYJoec1
+pf/VEXGEHiAaIND/D1pZ2e1oyXbrz4+htG6yCiBW88YpPsCf1Au1Z6uUyO1Dw/2Z
+OLghwzO+WmeSfEu3EDJ2P9niS5BK8+6kxtllIqIi3Y39IW2+BnIKB4BNuFJnxZdN
+tmbjlHo+aZs=
+=aenF
+-----END PGP SIGNATURE-----
+
+--3d1h++6StbrqEHAg--
 
