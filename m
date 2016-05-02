@@ -1,10 +1,9 @@
-Date: Sun, 1 May 2016 22:29:23 +0200 (CEST)
-Message-Id: <201605012029.u41KTNr6089848@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <1462126986-2686-1-git-send-email-steffan@...1856...>
-References: <1462126986-2686-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH applied] Re: configure.ac: link to all mbed
-	TLS libs during library detection
+MIME-Version: 1.0
+Date: Mon, 2 May 2016 10:53:23 +0500
+Message-ID: <CAFHpkQH9Jq2bvXbCFh-xHfRBZWU4kkPW61U6BThWA5yiC1=_MA@...278...>
+From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
+Content-Type: multipart/alternative; boundary=047d7bea40cc51f5a00531d59ceb
+Subject: [Openvpn-devel] compiling openvpn-gui artifacts on PR
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,34 +12,41 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Steffan Karger <steffan@...1856...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
 
-ACK.  Tested on ubuntu 14.04 with "default Makefile"-installed mbedtls 
-(it works if you have cmake build your Makefile first...)
+--047d7bea40cc51f5a00531d59ceb
+Content-Type: text/plain; charset=UTF-8
 
-Your patch has been applied to the master branch.
+Hello,
 
-gmane archive lookup is broken right now, so no URL: below - but the
-message ID is there.
+what do you think if we involve circle ci for compiling PR ?
+it is know to keep artifacts
 
-commit e860059baa912ced7acf00f9b1e85a3d80dc0b1f
-Author: Steffan Karger
-Date:   Sun May 1 20:23:06 2016 +0200
+https://circleci.com/gh/chipitsine/openvpn-gui-circleci/12#artifacts
 
-     configure.ac: link to all mbed TLS libs during library detection
+https://circleci.com/gh/chipitsine/openvpn-gui-circleci/10#artifacts
 
-     Signed-off-by: Steffan Karger <steffan@...1856...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1462126986-2686-1-git-send-email-steffan@...1856...>
-     Signed-off-by: Gert Doering <gert@...1296...>
+I haven't figured out how to report automatically to github "test just
+compiled exe", but it look better (currently Samuli compiles exe and upload
+them somewhere)
 
+Cheers,
+Ilya Shipitsin
 
---
-kind regards,
+--047d7bea40cc51f5a00531d59ceb
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Gert Doering
+<div dir=3D"ltr"><div><div><div><div><div>Hello,<br><br></div>what do you t=
+hink if we involve circle ci for compiling PR ?<br></div>it is know to keep=
+ artifacts <br><br><a href=3D"https://circleci.com/gh/chipitsine/openvpn-gu=
+i-circleci/12#artifacts">https://circleci.com/gh/chipitsine/openvpn-gui-cir=
+cleci/12#artifacts</a><br><br><a href=3D"https://circleci.com/gh/chipitsine=
+/openvpn-gui-circleci/10#artifacts">https://circleci.com/gh/chipitsine/open=
+vpn-gui-circleci/10#artifacts</a><br><br></div>I haven&#39;t figured out ho=
+w to report automatically to github &quot;test just compiled exe&quot;, but=
+ it look better (currently Samuli compiles exe and upload them somewhere)<b=
+r><br></div>Cheers,<br></div>Ilya Shipitsin<br></div>
 
+--047d7bea40cc51f5a00531d59ceb--
 
