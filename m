@@ -1,6 +1,7 @@
 MIME-Version: 1.0
-In-Reply-To: <20160502104627.GT53051@...1296...>
-References: <5727056E.1000701@...515...>
+In-Reply-To: <20160502100924.GR53051@...1296...>
+References: <CAFHpkQENgyAaaWCsWOS1vj+9YR=Cc65muXmsYfmcKc8n09BkPQ@...278...>
+	<5727056E.1000701@...515...>
 	<CAA1Abx+hbUT6ZpdeCrYVEiRdQ+awA7woZyTm7DD=Lv8OyPDQ2Q@...278...>
 	<CAFHpkQFtepY8_FD24+VBWV8e6OAe_Ka=eU_n1yHNpMcP-6YSVQ@...278...>
 	<CAFHpkQH448HotUH2JwKAPd2ZD6_8cnAf7Ly8Uvmqhtwv7Akv6w@...278...>
@@ -9,12 +10,10 @@ References: <5727056E.1000701@...515...>
 	<20160502094733.GQ53051@...1296...>
 	<CAFHpkQFoch_tEXiQjd5RgSQOokU7093rpNbtt_0nwaGK7=B5Vw@...278...>
 	<20160502100924.GR53051@...1296...>
-	<CAFHpkQG+d69eiQcOMkQhx8fbjiisc2DiMqmvXbcAGjS5erri8g@...278...>
-	<20160502104627.GT53051@...1296...>
-Date: Mon, 2 May 2016 15:51:06 +0500
-Message-ID: <CAFHpkQEsrY2CHD=yiaRqKMgRXLfEufPP2fm9C-AU+7UALWWcVA@...278...>
+Date: Mon, 2 May 2016 15:54:46 +0500
+Message-ID: <CAFHpkQE5EavzNgumLVC8Mg6HjSqDx2RgDWR+w=c-pALuRjm=qA@...278...>
 From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Content-Type: multipart/alternative; boundary=14dae93a11eb05e9630531d9c5b4
+Content-Type: multipart/alternative; boundary=047d7bea40cc1fa63e0531d9d29a
 Subject: Re: [Openvpn-devel] CI for openvpn
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -27,44 +26,30 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: Gert Doering <gert@...1296...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---14dae93a11eb05e9630531d9c5b4
+--047d7bea40cc1fa63e0531d9d29a
 Content-Type: text/plain; charset=UTF-8
 
-if we would have been using PR, anyone would be able to have a look at
-single place and find opened PRs.
+there's nothing to be afraid of.
 
-can you find unmerged patches ?
+http://doc.gitlab.com/ee/workflow/importing/import_projects_from_github.html
 
-2016-05-02 15:46 GMT+05:00 Gert Doering <gert@...1296...>:
+we can export all issues, pr, whatever from github to gitlab if github will
+decide to follow code.google.com
 
-> Hi
+2016-05-02 15:09 GMT+05:00 Gert Doering <gert@...1296...>:
+
+> Hi,
 >
-> On Mon, May 02, 2016 at 03:19:54PM +0500, ???????? ?????????????? wrote:
-> > when using mailing list there's no way to clearly determine what was done
-> > and needs to pay attention to.
-> >
-> > and people get disappointed "I sent a patch and nothing happened"
-> >
-> > how that is supposed to work in mailing list paradigma?
+> On Mon, May 02, 2016 at 02:55:52PM +0500, ???????? ?????????????? wrote:
+> > sf.net  mailing list can go away as well.
+> > I do not see why relying on sf.net is any better than relying on
+> github.com
 >
-> how's that different from a PR which gets opened and nothing happend?
->
-> *If* something happens, someone will respond - both to the list, and
-> to the PR.
->
-> Having more people work on code and review instead of spending discussions
-> on the "how to submit patches" would help more :-)
->
-> Don't forget that this is not your standard open source project - we have
-> massively higher reviewing requirements than "send PR, description makes
-> sense, merge" - and so far, our track record of security issues in OpenVPN
-> seems to agree that this is not the worst approach.  (Sometimes it is
-> totally annoying to have to wait for an ACK for an "obviously correct"
-> one-line fix, but *transparency* is the ultimate goal here, so nobody can
-> sneak something in with two mouse clicks)
+> It isn't.  Thus, we do not rely on sf.net - the mailing list archive
+> is referenced only at gmane.org, and even if that blows up, google can
+> find the messages by ID.
 >
 > gert
->
 > --
 > USENET is *not* the non-clickable part of WWW!
 >                                                            //
@@ -75,54 +60,36 @@ can you find unmerged patches ?
 > gert@...1297...
 >
 
---14dae93a11eb05e9630531d9c5b4
+--047d7bea40cc1fa63e0531d9d29a
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr"><div>if we would have been using PR, anyone would be able =
-to have a look at single place and find opened PRs.<br><br></div>can you fi=
-nd unmerged patches ?<br></div><div class=3D"gmail_extra"><br><div class=3D=
-"gmail_quote">2016-05-02 15:46 GMT+05:00 Gert Doering <span dir=3D"ltr">&lt=
-;<a href=3D"mailto:gert@...1296..." target=3D"_blank">gert@...1296...</a>&g=
-t;</span>:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;=
-border-left:1px #ccc solid;padding-left:1ex">Hi<br>
+<div dir=3D"ltr"><div>there&#39;s nothing to be afraid of.<br><br><a href=
+=3D"http://doc.gitlab.com/ee/workflow/importing/import_projects_from_github=
+.html">http://doc.gitlab.com/ee/workflow/importing/import_projects_from_git=
+hub.html</a><br><br></div>we can export all issues, pr, whatever from githu=
+b to gitlab if github will decide to follow <a href=3D"http://code.google.c=
+om">code.google.com</a><br></div><div class=3D"gmail_extra"><br><div class=
+=3D"gmail_quote">2016-05-02 15:09 GMT+05:00 Gert Doering <span dir=3D"ltr">=
+&lt;<a href=3D"mailto:gert@...1296..." target=3D"_blank">gert@...1296...</a=
+>&gt;</span>:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8=
+ex;border-left:1px #ccc solid;padding-left:1ex">Hi,<br>
 <span class=3D""><br>
-On Mon, May 02, 2016 at 03:19:54PM +0500, ???????? ?????????????? wrote:<br>
-&gt; when using mailing list there&#39;s no way to clearly determine what w=
-as done<br>
-&gt; and needs to pay attention to.<br>
-&gt;<br>
-&gt; and people get disappointed &quot;I sent a patch and nothing happened&=
-quot;<br>
-&gt;<br>
-&gt; how that is supposed to work in mailing list paradigma?<br>
+On Mon, May 02, 2016 at 02:55:52PM +0500, ???????? ?????????????? wrote:<br>
+&gt; <a href=3D"http://sf.net" rel=3D"noreferrer" target=3D"_blank">sf.net<=
+/a>=C2=A0 mailing list can go away as well.<br>
+&gt; I do not see why relying on <a href=3D"http://sf.net" rel=3D"noreferre=
+r" target=3D"_blank">sf.net</a> is any better than relying on <a href=3D"ht=
+tp://github.com" rel=3D"noreferrer" target=3D"_blank">github.com</a><br>
 <br>
-</span>how&#39;s that different from a PR which gets opened and nothing hap=
-pend?<br>
-<br>
-*If* something happens, someone will respond - both to the list, and<br>
-to the PR.<br>
-<br>
-Having more people work on code and review instead of spending discussions<=
-br>
-on the &quot;how to submit patches&quot; would help more :-)<br>
-<br>
-Don&#39;t forget that this is not your standard open source project - we ha=
-ve<br>
-massively higher reviewing requirements than &quot;send PR, description mak=
-es<br>
-sense, merge&quot; - and so far, our track record of security issues in Ope=
-nVPN<br>
-seems to agree that this is not the worst approach.=C2=A0 (Sometimes it is<=
-br>
-totally annoying to have to wait for an ACK for an &quot;obviously correct&=
-quot;<br>
-one-line fix, but *transparency* is the ultimate goal here, so nobody can<b=
-r>
-sneak something in with two mouse clicks)<br>
+</span>It isn&#39;t.=C2=A0 Thus, we do not rely on <a href=3D"http://sf.net=
+" rel=3D"noreferrer" target=3D"_blank">sf.net</a> - the mailing list archiv=
+e<br>
+is referenced only at <a href=3D"http://gmane.org" rel=3D"noreferrer" targe=
+t=3D"_blank">gmane.org</a>, and even if that blows up, google can<br>
+find the messages by ID.<br>
 <div class=3D"HOEnZb"><div class=3D"h5"><br>
 gert<br>
-<br>
 --<br>
 USENET is *not* the non-clickable part of WWW!<br>
 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
@@ -138,5 +105,5 @@ fax: +49-89-35655025=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
 7...</a><br>
 </div></div></blockquote></div><br></div>
 
---14dae93a11eb05e9630531d9c5b4--
+--047d7bea40cc1fa63e0531d9d29a--
 
