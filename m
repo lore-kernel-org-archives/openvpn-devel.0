@@ -1,21 +1,19 @@
-Date: Mon, 2 May 2016 14:09:40 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20160502120940.GA53051@...1296...>
-References: <20160502094733.GQ53051@...1296...>
+References: <5727056E.1000701@...515...>
+	<CAA1Abx+hbUT6ZpdeCrYVEiRdQ+awA7woZyTm7DD=Lv8OyPDQ2Q@...278...>
+	<CAFHpkQFtepY8_FD24+VBWV8e6OAe_Ka=eU_n1yHNpMcP-6YSVQ@...278...>
+	<CAFHpkQH448HotUH2JwKAPd2ZD6_8cnAf7Ly8Uvmqhtwv7Akv6w@...278...>
+	<CAFHpkQG+gvd9cTMphjp6Y8AnaZ3Vn_2rt=XJaAOvfEA4tuH-Og@...278...>
+	<572717AD.8060102@...515...> <20160502094733.GQ53051@...1296...>
 	<CAFHpkQFoch_tEXiQjd5RgSQOokU7093rpNbtt_0nwaGK7=B5Vw@...278...>
 	<20160502100924.GR53051@...1296...>
 	<CAFHpkQE5EavzNgumLVC8Mg6HjSqDx2RgDWR+w=c-pALuRjm=qA@...278...>
 	<20160502105615.GW53051@...1296...>
 	<CAFHpkQFVFs8hvq-tdFXWOuw9azJfV9MZPfVVKsOcR7OVUefeyw@...278...>
-	<20160502105957.GX53051@...1296...>
-	<CAFHpkQGk-D1RL9=Fq8goiTbKaqpjn5QYR3qrT0AXSOtbiaU0gQ@...278...>
-	<20160502111748.GY53051@...1296...>
-	<CAFHpkQEGY3WvwjGqtYXL9=EKXBFYa5J7FVYqN7XOfZCxdrUC-w@...278...>
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <57275302.8040706@...515...>
+Date: Mon, 2 May 2016 16:15:46 +0300
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="GyBFFrpYHGV4SYp0"
-Content-Disposition: inline
-In-Reply-To: <CAFHpkQEGY3WvwjGqtYXL9=EKXBFYa5J7FVYqN7XOfZCxdrUC-w@...278...>
+In-Reply-To: <CAFHpkQFVFs8hvq-tdFXWOuw9azJfV9MZPfVVKsOcR7OVUefeyw@...278...>
 Subject: Re: [Openvpn-devel] CI for openvpn
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -25,59 +23,51 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: ???????? ?????????????? <chipitsine@...277...>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: quoted-printable
+To: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>, Gert Doering <gert@...1296...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---GyBFFrpYHGV4SYp0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
+> well, I'm not prepared to pass commit procedures, I'm awaiting for
+> Samuli response whether or not he can handle those if I will send
+> patches directly to him
 
-On Mon, May 02, 2016 at 04:25:26PM +0500, ???????? ?????????????? wrote:
-> the point is "if there were PR ... and some friendly developers behaviour=
-",
-> so that issue wouldn't get lost "in mailing list archives"
->=20
-> currently, it was definitely lost. nobody knows where it is
+Well, if the patches would be 100% perfect all the time I probably would=20
+not mind relaying them to the list. However, in that case you could more=20
+easily just send them to the list yourself. I don't see much value for=20
+you in me acting as a proxy. And I do see pain for me for doing that.
 
-Of course I know where it is
+Now, Ilya is right in that we _could_ export all the data we want from=20
+GitHub. So, one of the reasons why we originally chose mailing list=20
+-based review is moot. The rest of the reasons should be written=20
+somewhere, because people are increasingly using GitHub, and asking why=20
+we don't accept PRs. I can probably dig up the previous rather lengthy=20
+discussion on the topic and convert it to a Wiki page or add it to the=20
+README, so that GitHub users can see it. What we have now is clearly=20
+inadequate given the amount of complaints/discussion we get:
 
-https://sourceforge.net/p/openvpn/mailman/message/31717505/
+---
 
-(unfortunately, the search engine of gmane.org is down right now, otherwise
-their threaded view is much nicer)
+NOTE: Patches or "git pull requests" sent directly to a development tree=20
+maintainer will be rejected.
 
-In that thread, you can also see that you got a NAK on that patch - and
-that's no different from sending a patch via PR that gets NAKed.
+ From <https://community.openvpn.net/openvpn/wiki/DeveloperDocumentation>
 
+---
 
-As a side note - we do trace open bug reports in our trac, and patches
-can be attached to that.  It won't help if a patch is not accepted, but
-if you think you need github PR to avoid "things getting lost", put them
-in trac.
+I think these "GitHub PR discussions" go off the track almost the minute=20
+they start. Before even starting them we should fully understand what=20
+our goals as a project are. Then we could assess the tools and process=20
+we use now, and those which we have at our disposal. Then, finally, we=20
+could make an informed decision on where to go next. Or we could just=20
+continue doing what we're doing.
 
-gert
 --=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+Samuli Sepp=C3=A4nen
+Community Manager
+OpenVPN Technologies, Inc
 
---GyBFFrpYHGV4SYp0
-Content-Type: application/pgp-signature; name="signature.asc"
+irc freenode net: mattock
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQCVAwUBVydDg6kuBuNlUUl1AQLLJAQAnl02Ci4mqBVrgpFBP0Ufq96DBxlo+MH7
-11SX98Dec60mnLen6/gN6BDJqCSPZMcEzx9W/mgEQt0a1gbEP2CFYB9AIF8ccw7V
-oTLK8Uc8fun/8QDiytM9NG1YuaaSl+vwwWG0LpAHfI7VgRkdN5ebhvPVgeTVC2dU
-hPbsrABZ2/0=
-=Nz/O
------END PGP SIGNATURE-----
-
---GyBFFrpYHGV4SYp0--
 
