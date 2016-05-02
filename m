@@ -11,10 +11,10 @@ References: <CAFHpkQG+gvd9cTMphjp6Y8AnaZ3Vn_2rt=XJaAOvfEA4tuH-Og@...278...>
 	<20160502105957.GX53051@...1296...>
 	<CAFHpkQGk-D1RL9=Fq8goiTbKaqpjn5QYR3qrT0AXSOtbiaU0gQ@...278...>
 	<20160502111748.GY53051@...1296...>
-Date: Mon, 2 May 2016 16:23:40 +0500
-Message-ID: <CAFHpkQHwS0R3eWsCf3jKMJXqC9a55-mQnp_b=5zRg9kAW3qimw@...278...>
+Date: Mon, 2 May 2016 16:25:26 +0500
+Message-ID: <CAFHpkQEGY3WvwjGqtYXL9=EKXBFYa5J7FVYqN7XOfZCxdrUC-w@...278...>
 From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Content-Type: multipart/alternative; boundary=14dae93a11eb7c6b670531da3933
+Content-Type: multipart/alternative; boundary=047d7bacb0aac6a3300531da3f86
 Subject: Re: [Openvpn-devel] CI for openvpn
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -27,22 +27,13 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: Gert Doering <gert@...1296...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---14dae93a11eb7c6b670531da3933
+--047d7bacb0aac6a3300531da3f86
 Content-Type: text/plain; charset=UTF-8
 
-ok, we are running 1000+ users installation, just couple of them
-experienced that behaviour.
+the point is "if there were PR ... and some friendly developers behaviour",
+so that issue wouldn't get lost "in mailing list archives"
 
-and, after I investigated it in details, I came to uninitilized variable
-(which by chance was "almost always" initialized with NULL)
-
-from that point of view, 2 out of 1000 is almost nothing and I could tell
-to them "have a look at other 998, everything works, what do you want from
-me"
-
-and, there's no point in having variables uninitialized actually. you
-depend on vary strange issues like OS decision to initialize them with NULL
-or whatever.
+currently, it was definitely lost. nobody knows where it is
 
 2016-05-02 16:17 GMT+05:00 Gert Doering <gert@...1296...>:
 
@@ -73,23 +64,18 @@ or whatever.
 > gert@...1297...
 >
 
---14dae93a11eb7c6b670531da3933
+--047d7bacb0aac6a3300531da3f86
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr"><div><div><div>ok, we are running 1000+ users installation=
-, just couple of them experienced that behaviour.<br><br></div>and, after I=
- investigated it in details, I came to uninitilized variable (which by chan=
-ce was &quot;almost always&quot; initialized with NULL)<br><br></div>from t=
-hat point of view, 2 out of 1000 is almost nothing and I could tell to them=
- &quot;have a look at other 998, everything works, what do you want from me=
-&quot;<br><br></div>and, there&#39;s no point in having variables uninitial=
-ized actually. you depend on vary strange issues like OS decision to initia=
-lize them with NULL or whatever.<br></div><div class=3D"gmail_extra"><br><d=
-iv class=3D"gmail_quote">2016-05-02 16:17 GMT+05:00 Gert Doering <span dir=
-=3D"ltr">&lt;<a href=3D"mailto:gert@...1296..." target=3D"_blank">gert@...1386...=
-296...</a>&gt;</span>:<br><blockquote class=3D"gmail_quote" style=3D"margin=
-:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">Hi,<br>
+<div dir=3D"ltr"><div>the point is &quot;if there were PR ... and some frie=
+ndly developers behaviour&quot;, so that issue wouldn&#39;t get lost &quot;=
+in mailing list archives&quot;<br><br></div>currently, it was definitely lo=
+st. nobody knows where it is<br></div><div class=3D"gmail_extra"><br><div c=
+lass=3D"gmail_quote">2016-05-02 16:17 GMT+05:00 Gert Doering <span dir=3D"l=
+tr">&lt;<a href=3D"mailto:gert@...1296..." target=3D"_blank">gert@...2132...=
+.</a>&gt;</span>:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 =
+0 .8ex;border-left:1px #ccc solid;padding-left:1ex">Hi,<br>
 <span class=3D""><br>
 On Mon, May 02, 2016 at 04:14:23PM +0500, ???????? ?????????????? wrote:<br>
 &gt; I was very disapointed with what happened to my report in mailing list=
@@ -124,5 +110,5 @@ fax: +49-89-35655025=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
 7...</a><br>
 </div></div></blockquote></div><br></div>
 
---14dae93a11eb7c6b670531da3933--
+--047d7bacb0aac6a3300531da3f86--
 
