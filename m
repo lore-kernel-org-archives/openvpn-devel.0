@@ -1,6 +1,6 @@
-Date: Mon, 2 May 2016 14:02:17 +0200
+Date: Mon, 2 May 2016 14:09:40 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20160502120217.GZ53051@...1296...>
+Message-ID: <20160502120940.GA53051@...1296...>
 References: <20160502094733.GQ53051@...1296...>
 	<CAFHpkQFoch_tEXiQjd5RgSQOokU7093rpNbtt_0nwaGK7=B5Vw@...278...>
 	<20160502100924.GR53051@...1296...>
@@ -10,12 +10,12 @@ References: <20160502094733.GQ53051@...1296...>
 	<20160502105957.GX53051@...1296...>
 	<CAFHpkQGk-D1RL9=Fq8goiTbKaqpjn5QYR3qrT0AXSOtbiaU0gQ@...278...>
 	<20160502111748.GY53051@...1296...>
-	<CAFHpkQHwS0R3eWsCf3jKMJXqC9a55-mQnp_b=5zRg9kAW3qimw@...278...>
+	<CAFHpkQEGY3WvwjGqtYXL9=EKXBFYa5J7FVYqN7XOfZCxdrUC-w@...278...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="3d1h++6StbrqEHAg"
+	protocol="application/pgp-signature"; boundary="GyBFFrpYHGV4SYp0"
 Content-Disposition: inline
-In-Reply-To: <CAFHpkQHwS0R3eWsCf3jKMJXqC9a55-mQnp_b=5zRg9kAW3qimw@...278...>
+In-Reply-To: <CAFHpkQEGY3WvwjGqtYXL9=EKXBFYa5J7FVYqN7XOfZCxdrUC-w@...278...>
 Subject: Re: [Openvpn-devel] CI for openvpn
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -28,23 +28,35 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: ???????? ?????????????? <chipitsine@...277...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---3d1h++6StbrqEHAg
+--GyBFFrpYHGV4SYp0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Mon, May 02, 2016 at 04:23:40PM +0500, ???????? ?????????????? wrote:
-> and, there's no point in having variables uninitialized actually. you
-> depend on vary strange issues like OS decision to initialize them with NU=
-LL
-> or whatever.
+On Mon, May 02, 2016 at 04:25:26PM +0500, ???????? ?????????????? wrote:
+> the point is "if there were PR ... and some friendly developers behaviour=
+",
+> so that issue wouldn't get lost "in mailing list archives"
+>=20
+> currently, it was definitely lost. nobody knows where it is
 
-Well, there's a C standard, and that *requires* variables in BSS or DATA
-segment to be initialized with 0.  So if a global (or static local) variabl=
-e=20
-ever ends up uninitialized, it's a C compiler or runtime bug.
+Of course I know where it is
+
+https://sourceforge.net/p/openvpn/mailman/message/31717505/
+
+(unfortunately, the search engine of gmane.org is down right now, otherwise
+their threaded view is much nicer)
+
+In that thread, you can also see that you got a NAK on that patch - and
+that's no different from sending a patch via PR that gets NAKed.
+
+
+As a side note - we do trace open bug reports in our trac, and patches
+can be attached to that.  It won't help if a patch is not accepted, but
+if you think you need github PR to avoid "things getting lost", put them
+in trac.
 
 gert
 --=20
@@ -54,18 +66,18 @@ rt/
 Gert Doering - Munich, Germany                             gert@...1296...
 fax: +49-89-35655025                        gert@...1297...
 
---3d1h++6StbrqEHAg
+--GyBFFrpYHGV4SYp0
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1
 
-iQCVAwUBVydByakuBuNlUUl1AQInnAQAjEFM1WPx20Gi6b/HV24zQPWSklYJoec1
-pf/VEXGEHiAaIND/D1pZ2e1oyXbrz4+htG6yCiBW88YpPsCf1Au1Z6uUyO1Dw/2Z
-OLghwzO+WmeSfEu3EDJ2P9niS5BK8+6kxtllIqIi3Y39IW2+BnIKB4BNuFJnxZdN
-tmbjlHo+aZs=
-=aenF
+iQCVAwUBVydDg6kuBuNlUUl1AQLLJAQAnl02Ci4mqBVrgpFBP0Ufq96DBxlo+MH7
+11SX98Dec60mnLen6/gN6BDJqCSPZMcEzx9W/mgEQt0a1gbEP2CFYB9AIF8ccw7V
+oTLK8Uc8fun/8QDiytM9NG1YuaaSl+vwwWG0LpAHfI7VgRkdN5ebhvPVgeTVC2dU
+hPbsrABZ2/0=
+=Nz/O
 -----END PGP SIGNATURE-----
 
---3d1h++6StbrqEHAg--
+--GyBFFrpYHGV4SYp0--
 
