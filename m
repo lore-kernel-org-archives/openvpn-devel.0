@@ -1,12 +1,11 @@
+References: <5723626E.3030401@...277...> <57247232.2040608@...515...>
+	<5724B2AA.7020700@...515...>
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <57284BBE.2040907@...515...>
+Date: Tue, 3 May 2016 09:57:02 +0300
 MIME-Version: 1.0
-In-Reply-To: <CAKuzo_hB4ASxbjXyujU0sCsKhdw+js-xKEzH-hL_XjJCjiJ4cA@...278...>
-References: <CAKBOYXcP4hwNAAm2M_7EubbUmRpGe9G5-dLQKM=_pS4cOQmm1Q@...278...>
-	<CAKuzo_hB4ASxbjXyujU0sCsKhdw+js-xKEzH-hL_XjJCjiJ4cA@...278...>
-From: Selva Nair <selva.nair@...277...>
-Date: Mon, 2 May 2016 20:04:35 -0400
-Message-ID: <CAKuzo_hRhNzdLkCFkkJDfnm4qw5r_fGWu0DwmTFRyi7jaPC+2A@...278...>
-Content-Type: multipart/alternative; boundary=047d7bd75984dcb1b20531e4db27
-Subject: Re: [Openvpn-devel] [PATCH] Prompt for challenge properly
+In-Reply-To: <5724B2AA.7020700@...515...>
+Subject: Re: [Openvpn-devel] SPAM on trac
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,66 +14,69 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Joshua Deare <josh@...2133...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-
---047d7bd75984dcb1b20531e4db27
-Content-Type: text/plain; charset=UTF-8
-
-On Tue, Apr 12, 2016 at 8:01 PM, Selva Nair <selva.nair@...277...> wrote:
-
->
->  http://article.gmane.org/gmane.network.openvpn.devel/10868
-> On Tue, Apr 12, 2016 at 7:20 PM, Joshua Deare <josh@...2133...> wrote:
->
->> Currently, when a client provides a file to auth-user-pass OpenVPN
->> won't prompt for a challenge code if it is expecting a
->> static-challenge or dynamic-challenge.  This patch simply prompts for
->> the challenge token if an auth file is provided AND we need a
->> challenge token.
->>
->
-> I have a patch on this waiting for review
->
->  http://article.gmane.org/gmane.network.openvpn.devel/10868
->
-> Does it work for you? Could you please provide a review?
->
-
-Just to complete this thread, the patch referred to above is now in master
-and 2.3. It should take care of the bug reported here.
-
-Selva
-
---047d7bd75984dcb1b20531e4db27
-Content-Type: text/html; charset="UTF-8"
+Content-Type: text/plain; charset="windows-1252"; format=flowed
 Content-Transfer-Encoding: quoted-printable
+To: debbie10t <debbie10t@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-<div dir=3D"ltr"><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">=
-On Tue, Apr 12, 2016 at 8:01 PM, Selva Nair <span dir=3D"ltr">&lt;<a href=
-=3D"mailto:selva.nair@...277..." target=3D"_blank">selva.nair@...277...</a>=
-&gt;</span> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0=
- 0 .8ex;border-left:1px #ccc solid;padding-left:1ex"><div dir=3D"ltr"><br><=
-div class=3D"gmail_extra">=C2=A0<a href=3D"http://article.gmane.org/gmane.n=
-etwork.openvpn.devel/10868" target=3D"_blank">http://article.gmane.org/gman=
-e.network.openvpn.devel/10868</a><div class=3D"gmail_quote"><span class=3D"=
-">On Tue, Apr 12, 2016 at 7:20 PM, Joshua Deare <span dir=3D"ltr">&lt;<a hr=
-ef=3D"mailto:josh@...2133..." target=3D"_blank">josh@...2133...</a>&gt;</sp=
-an> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px=
- 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">Currently, =
-when a client provides a file to auth-user-pass OpenVPN<br>
-won&#39;t prompt for a challenge code if it is expecting a<br>
-static-challenge or dynamic-challenge.=C2=A0 This patch simply prompts for<=
-br>
-the challenge token if an auth file is provided AND we need a<br>
-challenge token.<br></blockquote><div><br></div></span><div>I have a patch =
-on this waiting for review<br><br>=C2=A0<a href=3D"http://article.gmane.org=
-/gmane.network.openvpn.devel/10868" target=3D"_blank">http://article.gmane.=
-org/gmane.network.openvpn.devel/10868</a><br><br></div><div>Does it work fo=
-r you? Could you please provide a review?<br></div></div></div></div></bloc=
-kquote><div><br></div><div>Just to complete this thread, the patch referred=
- to above is now in master and 2.3. It should take care of the bug reported=
- here.<br><br></div><div>Selva <br></div></div><br></div></div>
+> Hi,
+>
+> I turned on several new external content scanning spamfilters. In the
+> process I had to upgrade Trac and the Trac spam filtering plugin. We
+> used to only have Akismet, because we didn't really have any big spam
+> issues. Now we have all of these activated:
+>
+> - Akismet (http://akismet.com/)
+> - Blogspam (http://blogspam.net/)
+> - StopForumSpam (http://stopforumspam.com/)
+> - BotScout (http://botscout.com/)
+> - Fspamlist (http://www.fspamlist.com/)
+>
+> Based on spam monitoring and Trac logs the filters seem to work, but
+> we'd need actual spam attempts to prove that[*]. Right now the "karma"
+> setup on Trac is such that if one service thinks the content is spam
+> then the edit will be rejected. I also reduced the maximum number of
+> edits per IP to 5 per hour, and activated Google reCAPTCHA. I did not
+> see reCAPTCHAs, though, when doing ticket test edits, so it might only
+> apply to anonymous edits; in that case it would be useless for us.
+>
+> There are a few other spam detection services which we can probably
+> activate later:
+>
+> - Spamwipe (http://spamwipe.com/): registration does not work atm
+> - Mollom (http://mollom.com/)
+>
+> I also did a mass removal of the spam Wiki pages (500+). The bastards
+> had contaminated some of our useful Wiki pages, but deducing which ones
+> was fairly easy given direct access to the database. I believe I managed
+> to delete all the contaminated revisions.
+>
 
---047d7bd75984dcb1b20531e4db27--
+Hi,
+
+I setup urlwatch to watch the "Recent changes" page every ten minutes:
+
+<https://community.openvpn.net/openvpn/wiki/RecentChanges>
+
+Adding, deleting or modifying a Wiki page will now trigger an email=20
+notification. The attack such as the last one would have triggered a=20
+huge number of emails and would have allowed us respond much faster. The=20
+Trac front page has been successfully monitored for a long while,=20
+resulting in removal of quite a bit of attachment spam. Notifications to=20
+Trac tickets are already sent to #openvpn-devel IRC channel, so that=20
+part is covered already.
+
+Right now the notification emails go only to me, but sending them to=20
+additional people would improve our response time. I don't expect a huge=20
+number of emails, even though RecentChanges page will see more activity=20
+than Wikistart.
+
+Let me know if you want to help monitor the Wiki and I'll add your email=20
+to the urlwatch list.
+
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
 
