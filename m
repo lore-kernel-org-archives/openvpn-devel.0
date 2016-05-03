@@ -1,8 +1,8 @@
 From: Steffan Karger <steffan@...1856...>
-Date: Tue,  3 May 2016 22:14:38 +0200
-Message-Id: <1462306478-21059-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH] mbedtls: improve error reporting in tls
-	verify callback
+Date: Tue,  3 May 2016 22:39:19 +0200
+Message-Id: <1462307959-26991-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH] mbedtls: check that private key and
+	certificate match on start
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,73 +15,33 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Instead of just printing the contents of the flags variable, try to
-convert it to a human-readable error string and print that instead.
-
-This will for example print "The certificate is signed with an
-unacceptable key (eg bad curve, RSA too short).", instead of
-"flags=10000".
+Implement a long standing todo in the code, now that we use mbed TLS 2.x,
+which provides an interface for the check.
 
 Signed-off-by: Steffan Karger <steffan@...1856...>
 ---
- Changes.rst                      |  5 ++++-
- src/openvpn/ssl_verify_mbedtls.c | 20 +++++++++++++++++---
- 2 files changed, 21 insertions(+), 4 deletions(-)
+ src/openvpn/ssl_mbedtls.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
-diff --git a/Changes.rst b/Changes.rst
-index 5034b15..dc9131b 100644
---- a/Changes.rst
-+++ b/Changes.rst
-@@ -91,10 +91,13 @@ User-visible Changes
-   * Non-ephemeral key exchange using static (EC)DH keys
-   * DSS private keys
+diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
+index 9da33ad..50148ad 100644
+--- a/src/openvpn/ssl_mbedtls.c
++++ b/src/openvpn/ssl_mbedtls.c
+@@ -363,11 +363,9 @@ tls_ctx_load_priv_file (struct tls_root_ctx *ctx, const char *priv_key_file,
  
--- PolarSSL builds: changed the tls_digest_N values exported to the script
-+- mbed TLS builds: changed the tls_digest_N values exported to the script
-   environment to be equal to the ones exported by OpenSSL builds, namely
-   the certificate fingerprint (was the hash of the 'to be signed' data).
+   warn_if_group_others_accessible (priv_key_file);
  
-+- mbed TLS builds: minimum RSA key size is now 2048 bits.  Shorter keys will
-+  not be accepted, both local and from the peer.
+-  /* TODO: Check Private Key */
+-#if 0
+-  if (!SSL_CTX_check_private_key (ctx))
+-    msg (M_SSLERR, "Private key does not match the certificate");
+-#endif
++  if (!mbed_ok(mbedtls_pk_check_pair(&ctx->crt_chain->pk, ctx->priv_key)))
++    msg (M_WARN, "Private key does not match the certificate");
 +
+   return 0;
+ }
  
- Maintainer-visible changes
- --------------------------
-diff --git a/src/openvpn/ssl_verify_mbedtls.c b/src/openvpn/ssl_verify_mbedtls.c
-index ffe196e..e59dedb 100644
---- a/src/openvpn/ssl_verify_mbedtls.c
-+++ b/src/openvpn/ssl_verify_mbedtls.c
-@@ -65,13 +65,27 @@ verify_callback (void *session_obj, mbedtls_x509_crt *cert, int cert_depth,
-   /* did peer present cert which was signed by our root cert? */
-   if (*flags != 0)
-     {
-+      int ret = 0;
-+      char errstr[512] = { 0 };
-       char *subject = x509_get_subject(cert, &gc);
- 
-+      ret = mbedtls_x509_crt_verify_info (errstr, sizeof(errstr)-1, "", *flags);
-+      if (ret <= 0 && !openvpn_snprintf(errstr, sizeof(errstr),
-+	    "Could not retrieve error string, flags=%"PRIx32, *flags))
-+	{
-+	  errstr[0] = '\0';
-+	}
-+
-       if (subject)
--	msg (D_TLS_ERRORS, "VERIFY ERROR: depth=%d, flags=%x, %s", cert_depth, *flags, subject);
-+	{
-+	  msg (D_TLS_ERRORS, "VERIFY ERROR: depth=%d, subject=%s: %s",
-+	      cert_depth, subject, errstr);
-+	}
-       else
--	msg (D_TLS_ERRORS, "VERIFY ERROR: depth=%d, flags=%x, could not extract X509 "
--	      "subject string from certificate", *flags, cert_depth);
-+	{
-+	  msg (D_TLS_ERRORS, "VERIFY ERROR: depth=%d, (could not extract X509 "
-+	      "subject string from certificate): %s", cert_depth, errstr);
-+	}
- 
-       /* Leave flags set to non-zero to indicate that the cert is not ok */
-     }
 -- 
 2.7.4
 
