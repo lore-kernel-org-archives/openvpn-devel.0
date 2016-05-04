@@ -1,12 +1,9 @@
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <5729BA8F.4090602@...515...>
+Date: Wed, 4 May 2016 12:02:07 +0300
 MIME-Version: 1.0
-In-Reply-To: <5729B2F2.2090201@...1400...>
-References: <1462307959-26991-1-git-send-email-steffan@...1856...>
-	<5729B2F2.2090201@...1400...>
-From: Steffan Karger <steffan@...1856...>
-Date: Wed, 4 May 2016 10:43:07 +0200
-Message-ID: <CAA1AbxJbSppAHLtDiD3mVRee9Qk=p0dWeDyfix-f4YjVW-snjw@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] mbedtls: check that private key and
- certificate match on start
+Subject: [Openvpn-devel] New OpenVPN 2.3.10 Windows installers (I604/I003)
+	released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,18 +12,27 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <schwabe@...1400...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="iso-8859-15"; format=flowed
+Content-Transfer-Encoding: quoted-printable
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, openvpn-users@lists.sourceforge.net, openvpn-announce@lists.sourceforge.net
 
-On Wed, May 4, 2016 at 10:29 AM, Arne Schwabe <schwabe@...1400...> wrote:
-> Is there a reason to only warn? I have not tested this
-> but OpenVPN fail later in combination or does the tls auth just "not work"?
+Hi all,
 
-It will fail later on (as it did before), but there is no good reason
-to only warn here.  This should just fail right away.  I'll send a v2
-(probably tonight or tomorrow).
+New OpenVPN Windows installers have been released. The I003 and I604=20
+installers bundle OpenSSL 1.0.1t which fixes some security=20
+vulnerabilities. The I604 installers also bundle a new tap-windows6=20
+driver (9.21.2) which has dual authenticode signatures (SHA1/SHA2) for=20
+the best possible compatibility across Windows versions (Vista ->=20
+Windows 10). In addition, the 9.21.2 driver fixes a security=20
+vulnerability which, however, required local admin rights to be=20
+exploitable. OpenVPN-GUI has also seen minor changes.
 
--Steffan
+Best regards,
+
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
 
