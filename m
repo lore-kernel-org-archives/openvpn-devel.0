@@ -1,10 +1,14 @@
-Date: Thu, 5 May 2016 12:57:50 +0200 (CEST)
-Message-Id: <201605051057.u45Avonb081315@...2054...>
+Date: Thu, 5 May 2016 13:50:50 +0200
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1462306478-21059-1-git-send-email-steffan@...1856...>
-References: <1462306478-21059-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH applied] Re: mbedtls: improve error
-	reporting in tls verify callback
+Message-ID: <20160505115050.GA81579@...1296...>
+References: <1462126986-2686-1-git-send-email-steffan@...1856...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="sdtB3X0nJg68CQEu"
+Content-Disposition: inline
+In-Reply-To: <1462126986-2686-1-git-send-email-steffan@...1856...>
+Subject: Re: [Openvpn-devel] [PATCH] configure.ac: link to all mbed TLS libs
+ during library detection
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,38 +17,45 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
 To: Steffan Karger <steffan@...1856...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master branch.
+--sdtB3X0nJg68CQEu
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-ACK from me as well, as it nicely shows the problem with our test certs
-in the logs now....
+Hi,
 
-Thu May  5 12:53:54 2016 VERIFY ERROR: depth=0, subject=C=US, ST=California, L=P
-leasanton, O=OpenVPN community project, CN=server, emailAddress=samuli@...2134...
-et: The certificate is signed with an unacceptable key (eg bad curve, RSA too sh
-ort).
+On Sun, May 01, 2016 at 08:23:06PM +0200, Steffan Karger wrote:
+> When for some reason the dependencies of the compiled mbed TLS libaries
+> (libmbedtls, libmbedcrypto and libmbedx509) are not correct, the configure
+> script will fail to link against libmbedcrypto and/or libmbedx509.  This
+> is reported to happen after using 'make install' to install mbedtls.
+>=20
+> This patch makes sure the configure tests link to all three.  The build
+> process itself already did.
 
-commit 524999ab35c79f0d9732647756ad6e4d4e11d73d
-Author: Steffan Karger
-Date:   Tue May 3 22:14:38 2016 +0200
+It originally looked good on my test systems, but I found more caveats -=20
+when you have static libraries, dependency resolving only happens=20
+left-to-right, and libmbedx509.a wants stuff from libmbedcrypto.a - so
+we end up with
 
-     mbedtls: improve error reporting in tls verify callback
+configure:28582: gcc -o conftest -g -O2   conftest.c -lmbedtls
+                 -lresolv  -lmbedtls -lmbedcrypto -lmbedx509 >&5
+Undefined                       first referenced
+ symbol                             in file
+mbedtls_pk_load_file                /usr/lib/libmbedx509.a(x509_crt.o)
+mbedtls_pk_parse_subpubkey          /usr/lib/libmbedx509.a(x509_crt.o)
+ld: fatal: symbol referencing errors. No output written to conftest
 
-     Signed-off-by: Steffan Karger <steffan@...1856...>
-     Acked-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1462306478-21059-1-git-send-email-steffan@...1856...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/11594
-     Signed-off-by: Gert Doering <gert@...1296...>
+... unless we change the ordering.  Patch below.
 
+(Linking the final openvpn seems to work no matter what library order,
+because some .o "further to the left" already uses these functions, so
+when the linker looks at libmedx509.a unresolved symbols, it already
+knows where to find them.  Still changing both places to be consistent)
 
---
-kind regards,
+gert
 
-Gert Doering
-
-
+--sdtB3X0nJg68CQEu--
