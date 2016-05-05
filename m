@@ -1,10 +1,9 @@
-From: Steffan Karger <steffan@...1856...>
-Date: Thu,  5 May 2016 11:02:13 +0200
-Message-Id: <1462438933-14902-1-git-send-email-steffan@...1856...>
-In-Reply-To: <CAA1AbxJbSppAHLtDiD3mVRee9Qk=p0dWeDyfix-f4YjVW-snjw@...278...>
-References: <CAA1AbxJbSppAHLtDiD3mVRee9Qk=p0dWeDyfix-f4YjVW-snjw@...278...>
-Subject: [Openvpn-devel] [PATCH v2] mbedtls: check that private key and
-	certificate match on start
+MIME-Version: 1.0
+Date: Thu, 5 May 2016 15:56:21 +0530
+Message-ID: <CAP=zTkNE-53SstE=tobE9xKWbpT=ERgstxQNy0EqxrN4GMs0Eg@...278...>
+From: Shubham Chauhan <shubham13099@...2124...>
+Content-Type: multipart/alternative; boundary=001a114036780d3615053215c6ab
+Subject: [Openvpn-devel] SSL handshake and OpenVPN config cipher none
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,43 +12,43 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net, openvpn-users@lists.sourceforge.net
 
-Implement a long standing todo in the code, now that we use mbed TLS 2.x,
-which provides an interface for the check.
+--001a114036780d3615053215c6ab
+Content-Type: text/plain; charset=UTF-8
 
-v2: bail out immediately on failure.
+Hello,
 
-Signed-off-by: Steffan Karger <steffan@...1856...>
----
- src/openvpn/ssl_mbedtls.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+I had a doubt about the cipher none config in OpenVPN.
+I realized that OpenVPN initiates an SSL handshake, even if I choose not to
+use any encryption-decryption operations through the cipher none config. It
+chooses a particular cipher in the handshake as well.
 
-diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
-index 9da33ad..b5e7a6a 100644
---- a/src/openvpn/ssl_mbedtls.c
-+++ b/src/openvpn/ssl_mbedtls.c
-@@ -363,11 +363,12 @@ tls_ctx_load_priv_file (struct tls_root_ctx *ctx, const char *priv_key_file,
- 
-   warn_if_group_others_accessible (priv_key_file);
- 
--  /* TODO: Check Private Key */
--#if 0
--  if (!SSL_CTX_check_private_key (ctx))
--    msg (M_SSLERR, "Private key does not match the certificate");
--#endif
-+  if (!mbed_ok(mbedtls_pk_check_pair(&ctx->crt_chain->pk, ctx->priv_key)))
-+    {
-+      msg (M_WARN, "Private key does not match the certificate");
-+      return 1;
-+    }
-+
-   return 0;
- }
- 
+Is it supposed to happen this way? If yes then why does this exactly
+happen? What is the significance of the SSL/TLS handshake and negotiating a
+session, if I am not using any encryption?
+
+
 -- 
-2.7.4
+Regards
+Shubham Chauhan
+2013099
+B.Tech CSE
 
+--001a114036780d3615053215c6ab
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr">Hello,=C2=A0<div><br></div><div>I had a doubt about the ci=
+pher none config in OpenVPN.</div><div>I realized that OpenVPN initiates an=
+ SSL handshake, even if I choose not to use any encryption-decryption opera=
+tions through the cipher none config. It chooses a particular cipher in the=
+ handshake as well.</div><div><br></div><div>Is it supposed to happen this =
+way? If yes then why does this exactly happen? What is the significance of =
+the SSL/TLS handshake and negotiating a session, if I am not using any encr=
+yption?</div><div><br clear=3D"all"><div><br></div>-- <br><div><div dir=3D"=
+ltr">Regards<br>Shubham Chauhan<br>2013099<br>B.Tech CSE</div></div>
+</div></div>
+
+--001a114036780d3615053215c6ab--
 
