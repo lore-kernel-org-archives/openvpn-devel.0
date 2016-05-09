@@ -1,10 +1,11 @@
-Date: Mon, 9 May 2016 20:19:03 +0200 (CEST)
-Message-Id: <201605091819.u49IJ39T073686@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <280154CA-9468-429B-BCAC-DB632C0AFB32@...2127...>
-References: <280154CA-9468-429B-BCAC-DB632C0AFB32@...2127...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Prevent integration test
-	timeout bc. of sudo
+MIME-Version: 1.0
+In-Reply-To: <1456991293-63729-1-git-send-email-james@...515...>
+References: <1456991293-63729-1-git-send-email-james@...515...>
+From: Steffan Karger <steffan@...1856...>
+Date: Mon, 9 May 2016 20:54:25 +0200
+Message-ID: <CAA1Abx+2E2FZN-y6P=mkKpSuZ7bOV5m6rUMTx3V7UP2qPMjZPg@...278...>
+Subject: Re: [Openvpn-devel] [PATCH 1/2] Fixed port-share bug with DoS
+	potential
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,37 +14,61 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-To: Jens Neuhalfen <jens@...2127...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-ACK.
+On Thu, Mar 3, 2016 at 8:48 AM, James Yonan <james@...515...> wrote:
+> Fixed port-share bug that can cause segfault when the number
+> of concurrent connections is large.
+>
+> The issue is that the port-share code calls openvpn_connect()
+> which in turn calls select().  When there are a high number
+> of concurrent port-share connections, the fd passed to select
+> can potentially exceed FD_SETSIZE, causing undefined behavior.
+>
+> The fix is to use poll() (if available) instead of select().
+>
+> Signed-off-by: James Yonan <james@...515...>
+> ---
+>  src/openvpn/socket.c | 8 +++++++-
+>  1 file changed, 7 insertions(+), 1 deletion(-)
+>
+> diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
+> index 714a847..d33bccd 100644
+> --- a/src/openvpn/socket.c
+> +++ b/src/openvpn/socket.c
+> @@ -1149,6 +1149,12 @@ openvpn_connect (socket_descriptor_t sd,
+>      {
+>        while (true)
+>         {
+> +#if POLL
+> +         struct pollfd fds[1];
+> +         fds[0].fd = sd;
+> +         fds[0].events = POLLOUT;
+> +         status = poll(fds, 1, 0);
+> +#else
+>           fd_set writes;
+>           struct timeval tv;
+>
+> @@ -1158,7 +1164,7 @@ openvpn_connect (socket_descriptor_t sd,
+>           tv.tv_usec = 0;
+>
+>           status = select (sd + 1, NULL, &writes, NULL, &tv);
+> -
+> +#endif
+>           if (signal_received)
+>             {
+>               get_signal (signal_received);
 
-Your patch has been applied to the master branch.
+ACK
 
-I found out what the issue is: your mailer chops off whitespace at the
-beginning of the line, so the patch is corrupt ("^fi" instead of "^ fi"),
-and after adding a blank to every single line that has no "^+", it worked.
+Note that since patch e0b3fd49 in master and 1746908f in release/2.3
+this no longer causes a segfault, but triggers an ASSERT().
 
-So, please use "git send-email" - it will get this right, always.
+In the long run, we should migrate away from select() completely.
 
-commit f40f10ea9607934faeb2b8cd84aefff0e0790189
-Author: Jens Neuhalfen
-Date:   Sun May 8 18:17:48 2016 +0200
+-Steffan
 
-     Prevent integration test timeout bc. of sudo
-
-     Signed-off-by: Jens Neuhalfen <jens@...2127...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <280154CA-9468-429B-BCAC-DB632C0AFB32@...2127...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/11622
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
-
+(This patch was first discussed and reviewed on the closed security@ list)
 
