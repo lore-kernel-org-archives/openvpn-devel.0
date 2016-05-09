@@ -1,11 +1,8 @@
+From: samuli@...515...
+Date: Mon,  9 May 2016 21:55:45 +0300
+Message-Id: <1462820145-24669-1-git-send-email-samuli@...515...>
 MIME-Version: 1.0
-In-Reply-To: <1456991293-63729-1-git-send-email-james@...515...>
-References: <1456991293-63729-1-git-send-email-james@...515...>
-From: Steffan Karger <steffan@...1856...>
-Date: Mon, 9 May 2016 20:54:25 +0200
-Message-ID: <CAA1Abx+2E2FZN-y6P=mkKpSuZ7bOV5m6rUMTx3V7UP2qPMjZPg@...278...>
-Subject: Re: [Openvpn-devel] [PATCH 1/2] Fixed port-share bug with DoS
-	potential
+Subject: [Openvpn-devel] [PATCH] Improve LZO, PAM and OpenSSL documentation
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,61 +11,66 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+To: openvpn-devel@lists.sourceforge.net
 
-On Thu, Mar 3, 2016 at 8:48 AM, James Yonan <james@...515...> wrote:
-> Fixed port-share bug that can cause segfault when the number
-> of concurrent connections is large.
->
-> The issue is that the port-share code calls openvpn_connect()
-> which in turn calls select().  When there are a high number
-> of concurrent port-share connections, the fd passed to select
-> can potentially exceed FD_SETSIZE, causing undefined behavior.
->
-> The fix is to use poll() (if available) instead of select().
->
-> Signed-off-by: James Yonan <james@...515...>
-> ---
->  src/openvpn/socket.c | 8 +++++++-
->  1 file changed, 7 insertions(+), 1 deletion(-)
->
-> diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
-> index 714a847..d33bccd 100644
-> --- a/src/openvpn/socket.c
-> +++ b/src/openvpn/socket.c
-> @@ -1149,6 +1149,12 @@ openvpn_connect (socket_descriptor_t sd,
->      {
->        while (true)
->         {
-> +#if POLL
-> +         struct pollfd fds[1];
-> +         fds[0].fd = sd;
-> +         fds[0].events = POLLOUT;
-> +         status = poll(fds, 1, 0);
-> +#else
->           fd_set writes;
->           struct timeval tv;
->
-> @@ -1158,7 +1164,7 @@ openvpn_connect (socket_descriptor_t sd,
->           tv.tv_usec = 0;
->
->           status = select (sd + 1, NULL, &writes, NULL, &tv);
-> -
-> +#endif
->           if (signal_received)
->             {
->               get_signal (signal_received);
+From: Samuli Sepp=C3=A4nen <samuli@...515...>
 
-ACK
+Patch provided by Trac user dogbert2
 
-Note that since patch e0b3fd49 in master and 1746908f in release/2.3
-this no longer causes a segfault, but triggers an ASSERT().
+Trac #590
 
-In the long run, we should migrate away from select() completely.
+Signed-off-by: Samuli Sepp=C3=A4nen <samuli@...515...>
+---
+ INSTALL | 21 ++++++++++++++++++++-
+ 1 file changed, 20 insertions(+), 1 deletion(-)
 
--Steffan
+diff --git a/INSTALL b/INSTALL
+index 2401f7c..5be2ad5 100644
+--- a/INSTALL
++++ b/INSTALL
+@@ -16,6 +16,10 @@ QUICK START:
+=20
+     See INSTALL-win32.txt
+=20
++  Compile OpenVPN with OpenSSL/LZO built from source tarballs
++
++    See INSTALL-nonstandard.txt
++
+ *************************************************************************
+=20
+ To download OpenVPN, go to:
+@@ -71,11 +75,26 @@ REQUIRES:
+       a virtual point-to-point IP or Ethernet device.  See
+       TUN/TAP Driver Configuration section below for more info.
+=20
++  (2) PAM/PAM-Devel (Pluggable Authentication Modules).  In most
++      Linux distributions, these packages are usually listed as
++      the following (here is what they look like on Fedora):
++
++      pam-1.1.8-18.fc22.x86_64.rpm (64-bit package)
++      pam-devel-1.1.8-18.fc.22.x86_64.rpm (64-bit package)
++
+ OPTIONAL (but recommended):
+   (1) OpenSSL library, necessary for encryption, version 0.9.8 or higher
+-      required, available from http://www.openssl.org/
++      required, available from http://www.openssl.org/.  If you build
++      OpenSSL from source tarball, you will need to let OpenVPN-2.3.x
++      know where the libraries and header files were installed to:
++
++      If you configured OpenSSL with stock options, it will install
++      the headers (i.e. - .h files) in /usr/local/ssl/include and
++      the libraries (i.e. - .a or .so files) in /usr/local/ssl/lib/openssl
++
+   (2) PolarSSL library, an alternative for encryption, version 1.1 or high=
+er
+       required, available from https://polarssl.org/
++
+   (3) LZO real-time compression library, required for link compression,
+       available from http://www.oberhumer.com/opensource/lzo/
+       OpenBSD users can use ports or packages to install lzo, but remember
+--=20
+2.5.5
 
-(This patch was first discussed and reviewed on the closed security@ list)
 
