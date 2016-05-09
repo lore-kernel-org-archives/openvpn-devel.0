@@ -1,10 +1,10 @@
-Date: Mon, 9 May 2016 21:09:39 +0200 (CEST)
-Message-Id: <201605091909.u49J9dJS075071@...2054...>
+Date: Mon, 9 May 2016 21:09:45 +0200 (CEST)
+Message-Id: <201605091909.u49J9jxr075075@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1462820145-24669-1-git-send-email-samuli@...515...>
-References: <1462820145-24669-1-git-send-email-samuli@...515...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Improve LZO,
-	PAM and OpenSSL documentation
+In-Reply-To: <CAA1Abx+2E2FZN-y6P=mkKpSuZ7bOV5m6rUMTx3V7UP2qPMjZPg@...278...>
+References: <CAA1Abx+2E2FZN-y6P=mkKpSuZ7bOV5m6rUMTx3V7UP2qPMjZPg@...278...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fixed port-share bug with DoS
+	potential
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,25 +15,26 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: samuli@...515...
+To: James Yonan <james@...515...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the release/2.3 branch.
+ACK.
 
-(I decided that it makes more sense to apply it to 2.3 only, as the
-git master INSTALL needs much larger changes - like, current PolarSSL /
-mbedTLS versions, etc.)
+Your patch has been applied to the master and release/2.3 branch.
 
-commit 7369420d5db6ebe7dc2f1ae596193f1ea6066f23
-Author: Samuli Seppänen
-Date:   Mon May 9 21:55:45 2016 +0300
+commit 007738e9d6030c8989713543e4f7308ff57be30f (master)
+commit 9030fd4cc6283e30f927f950310fc0f83edb5e4d (release/2.3)
 
-     Improve LZO, PAM and OpenSSL documentation
+Author: James Yonan
+Date:   Thu Mar 3 00:48:12 2016 -0700
 
-     Signed-off-by: Samuli Seppänen <samuli@...515...>
+     Fixed port-share bug with DoS potential
+
+     Signed-off-by: James Yonan <james@...515...>
+     Acked-by: Steffan Karger <steffan.karger@...1435...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1462820145-24669-1-git-send-email-samuli@...515...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/11627
+     Message-Id: <CAA1Abx+2E2FZN-y6P=mkKpSuZ7bOV5m6rUMTx3V7UP2qPMjZPg@...278...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/11626
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
