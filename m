@@ -1,10 +1,12 @@
-Date: Mon, 9 May 2016 21:09:45 +0200 (CEST)
-Message-Id: <201605091909.u49J9jxr075075@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <CAA1Abx+2E2FZN-y6P=mkKpSuZ7bOV5m6rUMTx3V7UP2qPMjZPg@...278...>
-References: <CAA1Abx+2E2FZN-y6P=mkKpSuZ7bOV5m6rUMTx3V7UP2qPMjZPg@...278...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fixed port-share bug with DoS
-	potential
+Mime-Version: 1.0 (Mac OS X Mail 9.3 \(3124\))
+From: Jens Neuhalfen <openvpn-devel@...2127...>
+In-Reply-To: <20160509180427.GL53051@...1296...>
+Date: Mon, 9 May 2016 22:39:24 +0200
+Message-Id: <58D68395-BFC5-4D6F-91A3-4A973008EB37@...2127...>
+References: <280154CA-9468-429B-BCAC-DB632C0AFB32@...2127...>
+	<20160509180427.GL53051@...1296...>
+Subject: Re: [Openvpn-devel] [PATCH] Prevent integration test timeout bc. of
+	sudo
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,33 +16,38 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: James Yonan <james@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Transfer-Encoding: quoted-printable
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel <Openvpn-devel@lists.sourceforge.net>
 
-ACK.
+Hi Gert,
 
-Your patch has been applied to the master and release/2.3 branch.
+[=E2=80=A6]
 
-commit 007738e9d6030c8989713543e4f7308ff57be30f (master)
-commit 9030fd4cc6283e30f927f950310fc0f83edb5e4d (release/2.3)
+>=20
+> Git isn't liking the way you send your patches - I'll apply it manually
+> (because it makes sense), but please take a look at "git send-email",
+> which will ensure that patches and mail headers, blank encoding, and
+> everything is perfect?
+>=20
+> If I try to feed your mail into "git am", it complains about
+>=20
+> Applying: Prevent integration test timeout bc. of sudo
+> fatal: corrupt patch at line 19
+> Patch failed at 0001 Prevent integration test timeout bc. of sudo
+>=20
+> - not sure what it is, but it's usually fixed by "git send-email"... than=
+ks.
 
-Author: James Yonan
-Date:   Thu Mar 3 00:48:12 2016 -0700
+strange, I use "git format-patch". I guess that "git am=E2=80=9D gets confu=
+sed about the =E2=80=9Cduplicate" Subject/From/.. lines (mail header and pa=
+tch header).
 
-     Fixed port-share bug with DoS potential
+I=E2=80=99ll switch to send-email
 
-     Signed-off-by: James Yonan <james@...515...>
-     Acked-by: Steffan Karger <steffan.karger@...1435...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <CAA1Abx+2E2FZN-y6P=mkKpSuZ7bOV5m6rUMTx3V7UP2qPMjZPg@...278...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/11626
-     Signed-off-by: Gert Doering <gert@...1296...>
+Cheers
+Jens=20
 
-
---
-kind regards,
-
-Gert Doering
+[=E2=80=A6]
 
 
