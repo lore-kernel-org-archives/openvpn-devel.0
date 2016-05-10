@@ -1,14 +1,16 @@
+Date: Tue, 10 May 2016 09:12:07 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20160510071207.GO53051@...1296...>
 References: <280154CA-9468-429B-BCAC-DB632C0AFB32@...2127...>
 	<20160509180427.GL53051@...1296...>
 	<58D68395-BFC5-4D6F-91A3-4A973008EB37@...2127...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <5731141A.3000506@...2080...>
-Date: Tue, 10 May 2016 00:50:02 +0200
 MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="HrSaiTVTrTHIlYwZ"
+Content-Disposition: inline
 In-Reply-To: <58D68395-BFC5-4D6F-91A3-4A973008EB37@...2127...>
 Subject: Re: [Openvpn-devel] [PATCH] Prevent integration test timeout bc. of
  sudo
-Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,49 +19,61 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-To: Jens Neuhalfen <openvpn-devel@...2127...>, Gert Doering <gert@...1296...>
+To: Jens Neuhalfen <openvpn-devel@...2127...>
 Cc: openvpn-devel <Openvpn-devel@lists.sourceforge.net>
 
-On 09/05/16 22:39, Jens Neuhalfen wrote:
-> Hi Gert,
+--HrSaiTVTrTHIlYwZ
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+
+Hi,
+
+On Mon, May 09, 2016 at 10:39:24PM +0200, Jens Neuhalfen wrote:
+> > - not sure what it is, but it's usually fixed by "git send-email"... th=
+anks.
 >=20
-> [=E2=80=A6]
+> strange, I use "git format-patch". I guess that "git am??? gets confused =
+about the ???duplicate" Subject/From/.. lines (mail header and patch header=
+).
 >=20
->>
->> Git isn't liking the way you send your patches - I'll apply it manually
->> (because it makes sense), but please take a look at "git send-email",
->> which will ensure that patches and mail headers, blank encoding, and
->> everything is perfect?
->>
->> If I try to feed your mail into "git am", it complains about
->>
->> Applying: Prevent integration test timeout bc. of sudo
->> fatal: corrupt patch at line 19
->> Patch failed at 0001 Prevent integration test timeout bc. of sudo
->>
->> - not sure what it is, but it's usually fixed by "git send-email"... tha=
-nks.
->=20
-> strange, I use "git format-patch". I guess that "git am=E2=80=9D gets con=
-fused about the =E2=80=9Cduplicate" Subject/From/.. lines (mail header and =
-patch header).
+> I???ll switch to send-email
 
-Generally MUAs are not trustworthy in how they process copy-pasted text.  E=
-ach
-MUA behaves differently and requires different tweaks.  In this case, I
-believe it is the first 'From' line in your patch which confuses your Apple
-Mail, which somehow gets prefixed with a '>'.
+It wasn't the duplicate Subject/From lines, but the whitespace mangling -=20
+which is something mail clients *love* to do, and git send-email knows
+how to avoid.
 
-> I=E2=80=99ll switch to send-email
+It was not only "git am" - I tried with plain old "patch -p1 <$file",=20
+and that first barfed about "invalid patch", and after I fixed the
+lines that had no space in the first column, complained about "does not
+apply" because the context was not matching - "patch -l" (ignore=20
+whitespace) worked, and that's a fairly good hint that a mail client
+messed up whitespace...
 
-Thanks!  That's the most sane MUA for patches.  It does everything correctly
-(at least for the git universe).
+Note: if you use exchange as your outbound mail server, even git send-email
+will fail, because exchange *loves* to "fix" leading tabs in mails - Heiko
+ran into this a while ago.
 
-
+gert
 --=20
-kind regards,
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-David Sommerseth
+--HrSaiTVTrTHIlYwZ
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQCVAwUBVzGJx6kuBuNlUUl1AQLnZwP9HhOyhefL2w2t1XOHboLyYBmFD67VbR6I
+C7BzWPprZO47GK6AjU6B/yA1LVHpLcI8qq3jfIdCa48niWD4HDeyPlUEtTkuMx7h
+u0MNDxjW4oNkxkZknthDuvbohXoGeRfzynX3mGsnfQJoA7s3s5g3jV3JJ7467Olx
+TXceXFHFolo=
+=GDzm
+-----END PGP SIGNATURE-----
+
+--HrSaiTVTrTHIlYwZ--
 
