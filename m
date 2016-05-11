@@ -1,9 +1,10 @@
 MIME-Version: 1.0
-Date: Wed, 11 May 2016 17:41:19 +0200
-Message-ID: <CAAM7bARYZSecZZb2aU7dTaRc1a6rP8dz4hsHR=tDUbTmSTpgFg@...278...>
-From: Paul Garnier <paul.garnier3@...277...>
-Content-Type: multipart/alternative; boundary=001a11393e907dde95053292dff5
-Subject: [Openvpn-devel] Need help for adding feature: Selecting remote
+Date: Wed, 11 May 2016 10:54:20 -0500
+From: Eric F Crist <ecrist@...1286...>
+In-Reply-To: <CAAM7bARYZSecZZb2aU7dTaRc1a6rP8dz4hsHR=tDUbTmSTpgFg@...278...>
+References: <CAAM7bARYZSecZZb2aU7dTaRc1a6rP8dz4hsHR=tDUbTmSTpgFg@...278...>
+Message-ID: <cf21397207efaf34f82aa44ea0082180@...1286...>
+Subject: Re: [Openvpn-devel] Need help for adding feature: Selecting remote
 	servers by best latency
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -13,140 +14,73 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-
---001a11393e907dde95053292dff5
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: quoted-printable
+To: Paul Garnier <paul.garnier3@...277...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Hello,
+Why try to connect to the process itself?  I think a standard ICMP ping=20
+to the server address should be sufficient for your test.
+
+---
+Eric F Crist
 
 
-I=E2=80=99m actually trying to add an option in openvpn which will allow th=
-e client
-to connect to the server with the lowest latency in his remote list. For
-now there are only two options to choose between servers : =E2=80=9C
-*--remote-random*=E2=80=9D  which randomize the order of the address list, =
+On 2016-05-11 10:41, Paul Garnier wrote:
+> Hello,
+>=20
+> I=E2=80=99m actually trying to add an option in openvpn which will allow =
 the
-default one which will try the hosts in the order of the config file, and I
-want to add  a 3rd one. To start I want to do it for udp and unix servers
-and clients.
-
-
-I=E2=80=99m a beginner in things like this so I started  very simply : I wr=
-ote a
-little program in C to ping a host:port using udp but I can=E2=80=99t get a=
-n answer
-from an openvpn server. The only way I found to get an answer was to make
-the packet I send look like the start of a TLS transaction, but because of
-the TLS processing I can only get the first ping right, after it takes way
-too long to come back to be accurate.
-
-
-So I started digging  in the source code to find where my packet is thrown
-away and why I don=E2=80=99t get any answer (even an error message would be
-enough). I=E2=80=99ve found how a =E2=80=9Cnormal=E2=80=9D packet is sent b=
-ut what I want is the
-latency with the server, not in the tunnel.  I don=E2=80=99t want to establ=
-ish a
-connection to test my link with each server and, how I understand it, if I
-want use function like *encrypt_sign*() so my packet is recognized I need
-to have a tunnel set. I can=E2=80=99t replicate how the existing *ping *and
-*occ *packets
-are sent.
-
-
-What I would like to know is :
-
-
-- where my packet is processed and rejected ?
-
-- why I don't get any answer at all nor an error message on my server ?
-
-- is there a major issue making what I want to do impossible ?
-
-Kind regards,
-
-
-Paul Garnier
-
---001a11393e907dde95053292dff5
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr">
-
-<p class=3D"MsoNormal">Hello,</p><p class=3D"MsoNormal"><br></p>
-
-<p class=3D"MsoNormal">I=E2=80=99m actually trying to add an option in open=
-vpn which will
-allow the client to connect to the server with the lowest latency in his re=
-mote
-list. For now there are only two options to choose between servers : =E2=80=
-=9C<b>--remote-random</b><span style=3D"mso-bidi-font-weight:bold">=E2=80=
-=9D<span style=3D"mso-spacerun:yes">=C2=A0
-</span>which randomize the order of the address list, the default one which
-will try the hosts in the order of the config file, and I want to add<span =
-style=3D"mso-spacerun:yes">=C2=A0 </span>a 3<sup>rd</sup> one. To start I w=
-ant to do
-it for udp and unix servers and clients.</span></p><p class=3D"MsoNormal"><=
-span style=3D"mso-bidi-font-weight:bold"><br></span></p>
-
-<p class=3D"MsoNormal"><span style=3D"mso-bidi-font-weight:bold">I=E2=80=99=
-m a beginner in things
-like this so I started<span style=3D"mso-spacerun:yes">=C2=A0 </span>very s=
-imply : I
-wrote a little program in C to ping a host:port using udp but I can=E2=80=
-=99t get an
-answer from an openvpn server. The only way I found to get an answer was to
-make the packet I send look like the start of a TLS transaction, but becaus=
-e of
-the TLS processing I can only get the first ping right, after it takes way =
-too
-long to come back to be accurate. <br></span></p><p class=3D"MsoNormal"><sp=
-an style=3D"mso-bidi-font-weight:bold"><br></span></p>
-
-<p class=3D"MsoNormal"><span style=3D"mso-bidi-font-weight:bold">So I start=
-ed
-digging<span style=3D"mso-spacerun:yes">=C2=A0 </span>in the source code to=
- find where
-my packet is thrown away and why I don=E2=80=99t get any answer (even an er=
-ror message
-would be enough). I=E2=80=99ve found how a =E2=80=9Cnormal=E2=80=9D packet =
-is sent but what I want is
-the latency with the server, not in the tunnel. <span style=3D"mso-spacerun=
-:yes">=C2=A0</span>I don=E2=80=99t want to establish a connection to test
-my link with each server and, how I understand it, if I want use function l=
-ike <b>encrypt_sign</b>()
-so my packet is recognized<b> </b>I need to have a tunnel <span style=3D"ms=
-o-spacerun:yes"></span>set. I can=E2=80=99t replicate how the existing <b>p=
-ing
-</b>and <b>occ </b>packets are sent.</span></p><p class=3D"MsoNormal"><span=
- style=3D"mso-bidi-font-weight:bold"><br></span></p>
-
-<p class=3D"MsoNormal"><span style=3D"mso-bidi-font-weight:bold">What I wou=
-ld like to
-know is :<span style=3D"mso-spacerun:yes">=C2=A0 <br></span></span></p><p c=
-lass=3D"MsoNormal"><br><span style=3D"mso-bidi-font-weight:bold"><span styl=
-e=3D"mso-spacerun:yes"></span></span></p><p class=3D"MsoNormal"><span style=
-=3D"mso-bidi-font-weight:bold"><span style=3D"mso-spacerun:yes">- where my =
-packet is processed and rejected ?</span></span></p><p class=3D"MsoNormal">=
-<span style=3D"mso-bidi-font-weight:bold"><span style=3D"mso-spacerun:yes">=
-- why I don&#39;t get any answer at all nor an error message on my server ?=
-</span></span></p><p class=3D"MsoNormal"><span style=3D"mso-bidi-font-weigh=
-t:bold"><span style=3D"mso-spacerun:yes">- is there a major issue making wh=
-at I want to do impossible ?</span></span><span style=3D"font-size:11pt;lin=
-e-height:115%;font-family:&quot;Calibri&quot;,&quot;sans-serif&quot;"><br><=
-/span></p><br><p class=3D"MsoNormal"><span style=3D"font-family:Symbol"><sp=
-an style=3D"mso-list:Ignore"><span style=3D"font:7pt &quot;Times New Roman&=
-quot;"></span></span></span><span style=3D"mso-bidi-font-weight:bold"></spa=
-n>Kind regards,</p><span style=3D"mso-bidi-font-weight:bold"></span><p clas=
-s=3D"MsoNormal"><span style=3D"mso-bidi-font-weight:bold"><br></span></p>
-
-<p class=3D"MsoNormal"><span style=3D"mso-bidi-font-weight:bold">Paul Garni=
-er</span></p>
-
-</div>
-
---001a11393e907dde95053292dff5--
+> client to connect to the server with the lowest latency in his remote
+> list. For now there are only two options to choose between servers :
+> =E2=80=9C--REMOTE-RANDOM=E2=80=9D  which randomize the order of the addre=
+ss list,
+> the default one which will try the hosts in the order of the config
+> file, and I want to add  a 3rd one. To start I want to do it for udp
+> and unix servers and clients.
+>=20
+> I=E2=80=99m a beginner in things like this so I started  very simply : I
+> wrote a little program in C to ping a host:port using udp but I
+> can=E2=80=99t get an answer from an openvpn server. The only way I found =
+to
+> get an answer was to make the packet I send look like the start of a
+> TLS transaction, but because of the TLS processing I can only get the
+> first ping right, after it takes way too long to come back to be
+> accurate.
+>=20
+> So I started digging  in the source code to find where my packet is
+> thrown away and why I don=E2=80=99t get any answer (even an error message
+> would be enough). I=E2=80=99ve found how a =E2=80=9Cnormal=E2=80=9D packe=
+t is sent but
+> what I want is the latency with the server, not in the tunnel.  I
+> don=E2=80=99t want to establish a connection to test my link with each
+> server and, how I understand it, if I want use function like
+> ENCRYPT_SIGN() so my packet is recognized I need to have a tunnel set.
+> I can=E2=80=99t replicate how the existing PING and OCC packets are sent.
+>=20
+> What I would like to know is :
+>=20
+> - where my packet is processed and rejected ?
+>=20
+> - why I don't get any answer at all nor an error message on my server
+> ?
+>=20
+> - is there a major issue making what I want to do impossible ?
+>=20
+> Kind regards,
+>=20
+> Paul Garnier
+> -------------------------------------------------------------------------=
+-----
+> Mobile security can be enabling, not merely restricting. Employees who
+> bring their own devices (BYOD) to work are irked by the imposition of=20
+> MDM
+> restrictions. Mobile Device Manager Plus allows you to control only the
+> apps on BYO-devices by containerizing them, leaving personal data=20
+> untouched!
+> https://ad.doubleclick.net/ddm/clk/304595813;131938128;j
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
