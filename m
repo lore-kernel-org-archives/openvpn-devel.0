@@ -1,12 +1,8 @@
-References: <5713C4DE.50701@...1227...>
-	<1460917412-29741-1-git-send-email-steffan@...1856...>
-From: Matthias Andree <matthias.andree@...68...>
-Message-ID: <57351238.2030602@...68...>
-Date: Fri, 13 May 2016 01:31:04 +0200
-MIME-Version: 1.0
-In-Reply-To: <1460917412-29741-1-git-send-email-steffan@...1856...>
-Subject: Re: [Openvpn-devel] [PATCH v2 (2.3)] Restrict default TLS cipher
-	list
+From: Selva Nair <selva.nair@...277...>
+Date: Thu, 12 May 2016 22:40:44 -0400
+Message-Id: <1463107245-30999-1-git-send-email-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH v2.3] Make error non-fatal while deleting
+	address using netsh
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,123 +11,103 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Am 17.04.2016 um 20:23 schrieb Steffan Karger:
-> In the past years, the internet has been moving forward wrt deprecating
-> older and less secure ciphers.  Let's follow this example in OpenVPN and
-> also restrict the default list of negotiable TLS ciphers in 2.3.x.
-> 
-> This disables the following:
->  * Export ciphers (these are broken on purpose...)
->  * Ciphers in the LOW and MEDIUM security cipher list of OpenSSL
->    The LOW suite will be completely removed from OpenSSL in 1.1.0,
->    the MEDIUM suite contains ciphers like RC4 and SEED.
->  * Ciphers that are not supported by OpenVPN anyway (cleans up the list)
-> 
-> Note that users are able to override this default, using --tls-cipher, if
-> they for some reason need ciphers that are now disabled by default.
-> 
-> v2: add Changes.rst entry.
-> 
-> Signed-off-by: Steffan Karger <steffan@...1856...>
+Fixes Trac #71 (see comments 37 to 43)
 
-Sorry, too late for my
-NAK - reasons below the code patch.
+Signed-off-by: Selva Nair <selva.nair@...277...>
+---
+ src/openvpn/tun.c |   18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
 
-Causes SIGSEGV on PolarSSL-based builds unless --tls-cipher is specified
-in a useful way.
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index b70410d..11027dd 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -62,7 +62,7 @@ static void netsh_ifconfig (const struct tuntap_options *to,
+ 			    const in_addr_t ip,
+ 			    const in_addr_t netmask,
+ 			    const unsigned int flags);
+-static void netsh_command (const struct argv *a, int n);
++static void netsh_command (const struct argv *a, int n, int msglevel);
+ 
+ static const char *netsh_get_id (const char *dev_node, struct gc_arena *gc);
+ 
+@@ -1246,7 +1246,7 @@ do_ifconfig (struct tuntap *tt,
+ 		     NETSH_PATH_SUFFIX,
+ 		     win32_version_info() == WIN_XP ? actual : iface,
+ 		     ifconfig_ipv6_local);
+-	netsh_command (&argv, 4);
++	netsh_command (&argv, 4, M_FATAL);
+ 
+ 	/* explicit route needed */
+ 	/* on windows, OpenVPN does ifconfig first, open_tun later, so
+@@ -4246,7 +4246,7 @@ dhcp_renew (const struct tuntap *tt)
+  */
+ 
+ static void
+-netsh_command (const struct argv *a, int n)
++netsh_command (const struct argv *a, int n, int msglevel)
+ {
+   int i;
+   for (i = 0; i < n; ++i)
+@@ -4261,7 +4261,7 @@ netsh_command (const struct argv *a, int n)
+ 	return;
+       openvpn_sleep (4);
+     }
+-  msg (M_FATAL, "NETSH: command failed");
++  msg (msglevel, "NETSH: command failed");
+ }
+ 
+ void
+@@ -4411,7 +4411,7 @@ netsh_ifconfig_options (const char *type,
+ 		   NETSH_PATH_SUFFIX,
+ 		   type,
+ 		   flex_name);
+-      netsh_command (&argv, 2);
++      netsh_command (&argv, 2, M_FATAL);
+     }
+ 
+   /* add new DNS/WINS settings to TAP interface */
+@@ -4432,7 +4432,7 @@ netsh_ifconfig_options (const char *type,
+ 			 type,
+ 			 flex_name,
+ 			 print_in_addr_t (addr_list[i], 0, &gc));
+-	    netsh_command (&argv, 2);
++	    netsh_command (&argv, 2, M_FATAL);
+ 	  
+ 	    ++count;
+ 	  }
+@@ -4507,7 +4507,7 @@ netsh_ifconfig (const struct tuntap_options *to,
+ 		       print_in_addr_t (ip, 0, &gc),
+ 		       print_in_addr_t (netmask, 0, &gc));
+ 
+-	  netsh_command (&argv, 4);
++	  netsh_command (&argv, 4, M_FATAL);
+ 	}
+     }
+ 
+@@ -4553,7 +4553,7 @@ netsh_enable_dhcp (const struct tuntap_options *to,
+ 	       NETSH_PATH_SUFFIX,
+ 	       actual_name);
+ 
+-  netsh_command (&argv, 4);
++  netsh_command (&argv, 4, M_FATAL);
+ 
+   argv_reset (&argv);
+ }
+@@ -5269,7 +5269,7 @@ close_tun (struct tuntap *tt)
+ 		     tt->actual_name,
+ 		     ifconfig_ipv6_local );
+ 
+-	  netsh_command (&argv, 1);
++	  netsh_command (&argv, 1, M_WARN);
+           argv_reset (&argv);
+ 	}
+ #if 1
+-- 
+1.7.10.4
 
-"Too late for NAK" because this code has already been committed and
-released in 2.3.11.
-
-I am not sure if the corresponding master branch code is OK, please
-double check.  I'm too tired for an assessment, and too busy to hold
-this back for as long as I'd have to.
-
-> ---
->  doc/openvpn.8             |  5 +++--
->  src/openvpn/ssl.c         |  5 +----
->  src/openvpn/ssl_openssl.c | 17 +++++++++++++++--
->  3 files changed, 19 insertions(+), 8 deletions(-)
-> 
-> diff --git a/doc/openvpn.8 b/doc/openvpn.8
-> index 148a62a..1cad9be 100644
-> --- a/doc/openvpn.8
-> +++ b/doc/openvpn.8
-> @@ -4555,8 +4555,9 @@ is an expert feature, which - if used correcly - can improve the security of
->  your VPN connection.  But it is also easy to unwittingly use it to carefully
->  align a gun with your foot, or just break your connection.  Use with care!
->  
-> -The default for --tls-cipher is to use PolarSSL's default cipher list
-> -when using PolarSSL or "DEFAULT:!EXP:!PSK:!SRP:!kRSA" when using OpenSSL.
-> +The default for \-\-tls\-cipher is to use PolarSSL's default cipher list
-> +when using PolarSSL or "DEFAULT:!EXP:!LOW:!MEDIUM:!PSK:!SRP:!kRSA" when using
-> +OpenSSL.
->  .\"*********************************************************
->  .TP
->  .B \-\-tls\-timeout n
-> diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-> index 0679890..9e31c3c 100644
-> --- a/src/openvpn/ssl.c
-> +++ b/src/openvpn/ssl.c
-> @@ -561,10 +561,7 @@ init_ssl (const struct options *options, struct tls_root_ctx *new_ctx)
->    tls_ctx_check_cert_time(new_ctx);
->  
->    /* Allowable ciphers */
-> -  if (options->cipher_list)
-> -    {
-> -      tls_ctx_restrict_ciphers(new_ctx, options->cipher_list);
-> -    }
-> +  tls_ctx_restrict_ciphers(new_ctx, options->cipher_list);
->  
->  #ifdef ENABLE_CRYPTO_POLARSSL
->    /* Personalise the random by mixing in the certificate */
-> diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-> index e67f60e..1dfbb23 100644
-> --- a/src/openvpn/ssl_openssl.c
-> +++ b/src/openvpn/ssl_openssl.c
-> @@ -267,6 +267,20 @@ tls_ctx_set_options (struct tls_root_ctx *ctx, unsigned int ssl_flags)
->  void
->  tls_ctx_restrict_ciphers(struct tls_root_ctx *ctx, const char *ciphers)
->  {
-> +  if (ciphers == NULL)
-> +    {
-> +      /* Use sane default TLS cipher list */
-> +      if(!SSL_CTX_set_cipher_list(ctx->ctx,
-> +	  /* Use openssl's default list as a basis */
-> +	  "DEFAULT"
-> +	  /* Disable export ciphers and openssl's 'low' and 'medium' ciphers */
-> +	  ":!EXP:!LOW:!MEDIUM"
-> +	  /* Disable unsupported TLS modes */
-> +	  ":!PSK:!SRP:!kRSA"))
-> +	crypto_msg (M_FATAL, "Failed to set default TLS cipher list.");
-> +      return;
-> +    }
-> +
->    size_t begin_of_cipher, end_of_cipher;
->  
->    const char *current_cipher;
-> @@ -1383,8 +1397,7 @@ show_available_tls_ciphers (const char *cipher_list)
->    if (!ssl)
->      crypto_msg (M_FATAL, "Cannot create SSL object");
->  
-> -  if (cipher_list)
-> -    tls_ctx_restrict_ciphers(&tls_ctx, cipher_list);
-> +  tls_ctx_restrict_ciphers(&tls_ctx, cipher_list);
->  
->    printf ("Available TLS Ciphers,\n");
->    printf ("listed in order of preference:\n\n");
-> 
-
-Similar code needs to be implemented for PolarSSL 1.3 on the OpenVPN 2.3
-branch, and my attempt at just porting this cipher list into some "if
-(NULL == cipher) cipher = "DEFAULT:..." (copied from above) did NOT work
-(no ciphers shared between client and server, or possibly this created
-an empty cipher set in the first place - I am unfamiliar with PolarSSL's
-cipher suite selection logic).
-
-Someone please fix this up, we need 2.3.12 ASAP.
 
