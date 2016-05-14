@@ -1,11 +1,8 @@
 From: Selva Nair <selva.nair@...277...>
-Date: Fri, 13 May 2016 20:31:24 -0400
-Message-Id: <1463185884-4355-2-git-send-email-selva.nair@...277...>
-In-Reply-To: <1463185884-4355-1-git-send-email-selva.nair@...277...>
-References: <1463107245-30999-1-git-send-email-selva.nair@...277...>
-	<1463185884-4355-1-git-send-email-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH v2 (master)] Make error non-fatal while
-	deleting address using netsh
+Date: Fri, 13 May 2016 23:12:50 -0400
+Message-Id: <1463195570-27908-1-git-send-email-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH (master)] Properly handle possible realloc
+	failure
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,108 +15,38 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-During windows power events such as sleep or suspend, the TUN/TAP 
-I/O aborts and openvpn signals SIGHUP so as to automatically reconnect
-on resume (since commit ea66a2b5cdb2..). During the SIGHUP processing 
-operations such as address and route deletion are expected to fail. Such
-failures should be treated as non-fatal to allow for this automatic
-recovery logic to work. Currently, when the address deletion is handled
-by netsh, errors are treated as M_FATAL. This patch changes the error
-level to M_WARN.
-
-Resolves Trac #71 (comments 37 to 43)
-
 Signed-off-by: Selva Nair <selva.nair@...277...>
 ---
- src/openvpn/tun.c |   18 +++++++++---------
- 1 file changed, 9 insertions(+), 9 deletions(-)
+ src/openvpnserv/interactive.c |   10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index c87fb36..f79d067 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -68,7 +68,7 @@ static void netsh_ifconfig (const struct tuntap_options *to,
- 			    const in_addr_t ip,
- 			    const in_addr_t netmask,
- 			    const unsigned int flags);
--static void netsh_command (const struct argv *a, int n);
-+static void netsh_command (const struct argv *a, int n, int msglevel);
- 
- static const char *netsh_get_id (const char *dev_node, struct gc_arena *gc);
- 
-@@ -1398,7 +1398,7 @@ do_ifconfig (struct tuntap *tt,
- 			 NETSH_PATH_SUFFIX,
- 			 iface,
- 			 ifconfig_ipv6_local );
--	    netsh_command (&argv, 4);
-+	    netsh_command (&argv, 4, M_FATAL);
- 	  }
- 
- 	/* explicit route needed */
-@@ -4597,7 +4597,7 @@ dhcp_renew (const struct tuntap *tt)
-  */
- 
- static void
--netsh_command (const struct argv *a, int n)
-+netsh_command (const struct argv *a, int n, int msglevel)
- {
-   int i;
-   for (i = 0; i < n; ++i)
-@@ -4612,7 +4612,7 @@ netsh_command (const struct argv *a, int n)
- 	return;
-       openvpn_sleep (4);
+diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
+index d83ea65..5ff80fa 100644
+--- a/src/openvpnserv/interactive.c
++++ b/src/openvpnserv/interactive.c
+@@ -1326,15 +1326,19 @@ UpdateWaitHandles (LPHANDLE *handles_ptr, LPDWORD count,
+       if (pos == size)
+         {
+           size += 10;
+-          handles = realloc (handles, size * sizeof (HANDLE));
+-          if (handles == NULL)
++          LPHANDLE tmp = realloc (handles, size * sizeof (HANDLE));
++          if (tmp == NULL)
+             return ERROR_OUTOFMEMORY;
++          else
++            {
++              handles = tmp;
++              *handles_ptr = handles;
++            }
+         }
+       handles[pos++] = threads->data;
+       threads = threads->next;
      }
--  msg (M_FATAL, "NETSH: command failed");
-+  msg (msglevel, "NETSH: command failed");
+ 
+-  *handles_ptr = handles;
+   *count = pos;
+   return NO_ERROR;
  }
- 
- void
-@@ -4762,7 +4762,7 @@ netsh_ifconfig_options (const char *type,
- 		   NETSH_PATH_SUFFIX,
- 		   type,
- 		   flex_name);
--      netsh_command (&argv, 2);
-+      netsh_command (&argv, 2, M_FATAL);
-     }
- 
-   /* add new DNS/WINS settings to TAP interface */
-@@ -4783,7 +4783,7 @@ netsh_ifconfig_options (const char *type,
- 			 type,
- 			 flex_name,
- 			 print_in_addr_t (addr_list[i], 0, &gc));
--	    netsh_command (&argv, 2);
-+	    netsh_command (&argv, 2, M_FATAL);
- 	  
- 	    ++count;
- 	  }
-@@ -4858,7 +4858,7 @@ netsh_ifconfig (const struct tuntap_options *to,
- 		       print_in_addr_t (ip, 0, &gc),
- 		       print_in_addr_t (netmask, 0, &gc));
- 
--	  netsh_command (&argv, 4);
-+	  netsh_command (&argv, 4, M_FATAL);
- 	}
-     }
- 
-@@ -4904,7 +4904,7 @@ netsh_enable_dhcp (const struct tuntap_options *to,
- 	       NETSH_PATH_SUFFIX,
- 	       actual_name);
- 
--  netsh_command (&argv, 4);
-+  netsh_command (&argv, 4, M_FATAL);
- 
-   argv_reset (&argv);
- }
-@@ -5648,7 +5648,7 @@ close_tun (struct tuntap *tt)
-                            tt->actual_name,
-                            ifconfig_ipv6_local);
- 
--              netsh_command (&argv, 1);
-+              netsh_command (&argv, 1, M_WARN);
-               argv_reset (&argv);
-             }
- 	}
 -- 
 1.7.10.4
-
 
