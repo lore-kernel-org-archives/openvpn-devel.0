@@ -1,11 +1,12 @@
-References: <5731B295.4040301@...515...> <5736E6CF.7030205@...68...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <573706D9.8020107@...2080...>
-Date: Sat, 14 May 2016 13:07:05 +0200
 MIME-Version: 1.0
-In-Reply-To: <5736E6CF.7030205@...68...>
-Subject: Re: [Openvpn-devel] OpenVPN 2.3.11 released
-Reply-To: openvpn-devel@lists.sourceforge.net
+In-Reply-To: <1463195570-27908-1-git-send-email-selva.nair@...277...>
+References: <1463195570-27908-1-git-send-email-selva.nair@...277...>
+From: Selva Nair <selva.nair@...277...>
+Date: Sat, 14 May 2016 08:31:49 -0400
+Message-ID: <CAKuzo_iuc6HAJJv6ec99TiUYSpcSichHJfD50an9s9EtZQ=1Hw@...278...>
+Content-Type: multipart/alternative; boundary=001a11348a7a6f155f0532cc9403
+Subject: Re: [Openvpn-devel] [PATCH (master)] Properly handle possible
+	realloc failure
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,41 +15,42 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-15"
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+
+--001a11348a7a6f155f0532cc9403
+Content-Type: text/plain; charset=UTF-8
+
+On Fri, May 13, 2016 at 11:12 PM, Selva Nair <selva.nair@...277...> wrote:
+
+> ---
+>  src/openvpnserv/interactive.c |   10 +++++++---
+>  1 file changed, 7 insertions(+), 3 deletions(-)
+>
+
+
+Please ignore this patch. It is broken -- patch made prematurely before a
+fixup was committed,
+
+My apologies for the noise..
+
+Selva
+
+--001a11348a7a6f155f0532cc9403
+Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-To: Matthias Andree <matthias.andree@...68...>, openvpn-devel@lists.sourceforge.net
 
-On 14/05/16 10:50, Matthias Andree wrote:
-> Am 10.05.2016 um 12:06 schrieb Samuli Sepp=E4nen:
->> The OpenVPN community project team is proud to release OpenVPN 2.3.11.=20
->> It can be downloaded from here:
->>
->> <http://openvpn.net/index.php/open-source/downloads.html>
->>
->> This release fixes two vulnerabilities: a port-share bug with DoS=20
->> potential and a buffer overflow by user supplied data when using pam=20
->> authentication. In addition a number of small fixes and improvements are=
-=20
->> included. A full list of changes is available here:
->>
->> <https://community.openvpn.net/openvpn/wiki/ChangesInOpenvpn23>
->=20
-> I was wondering... do we have CVE references or similar unique
-> identifiers, which I could then use - for instance - in the FreeBSD
-> vulnerability database?
+<div dir=3D"ltr"><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">=
+On Fri, May 13, 2016 at 11:12 PM, Selva Nair <span dir=3D"ltr">&lt;<a href=
+=3D"mailto:selva.nair@...277..." target=3D"_blank">selva.nair@...277...</a>=
+&gt;</span> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0=
+ 0 .8ex;border-left:1px #ccc solid;padding-left:1ex"><div id=3D":1x8" class=
+=3D"a3s aXjCH">---<br>
+=C2=A0src/openvpnserv/interactive.c |=C2=A0 =C2=A010 +++++++---<br>
+=C2=A01 file changed, 7 insertions(+), 3 deletions(-)</div></blockquote></d=
+iv><br><br></div><div class=3D"gmail_extra">Please ignore this patch. It is=
+ broken -- patch made prematurely before a fixup was committed,<br><br></di=
+v><div class=3D"gmail_extra">My apologies for the noise..<br><br></div><div=
+ class=3D"gmail_extra">Selva<br></div></div>
 
-We have a few annotations to commits which references CVEs.  The tricky thi=
-ng
-is that we might have committed fixes before a CVE number have been assigne=
-d.
-
-In addition we also have the security announcements wiki page which mentions
-CVE references: <https://community.openvpn.net/openvpn/wiki/SecurityAnnounc=
-ements>
-
-
---=20
-kind regards,
-
-David Sommerseth
+--001a11348a7a6f155f0532cc9403--
 
