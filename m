@@ -1,12 +1,11 @@
 MIME-Version: 1.0
-In-Reply-To: <1463195570-27908-1-git-send-email-selva.nair@...277...>
-References: <1463195570-27908-1-git-send-email-selva.nair@...277...>
-From: Selva Nair <selva.nair@...277...>
-Date: Sat, 14 May 2016 08:31:49 -0400
-Message-ID: <CAKuzo_iuc6HAJJv6ec99TiUYSpcSichHJfD50an9s9EtZQ=1Hw@...278...>
-Content-Type: multipart/alternative; boundary=001a11348a7a6f155f0532cc9403
-Subject: Re: [Openvpn-devel] [PATCH (master)] Properly handle possible
-	realloc failure
+In-Reply-To: <1463157892-701-1-git-send-email-dorian@...2138...>
+References: <1463157892-701-1-git-send-email-dorian@...2138...>
+From: Steffan Karger <steffan@...1856...>
+Date: Sun, 15 May 2016 13:48:50 +0200
+Message-ID: <CAA1AbxKQwkXZeQ7K9JHoGvQHsPGZ0grJ9RY_q7BXC9H0jNFY6g@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] Add CHACHA20-POLY1305 ciphersuite IANA
+ name translations.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,42 +14,48 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-
---001a11348a7a6f155f0532cc9403
 Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+To: Dorian Harmans <dorian@...2138...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-On Fri, May 13, 2016 at 11:12 PM, Selva Nair <selva.nair@...277...> wrote:
+Hi,
 
+On Fri, May 13, 2016 at 6:44 PM, Dorian Harmans <dorian@...2138...> wrote:
 > ---
->  src/openvpnserv/interactive.c |   10 +++++++---
->  1 file changed, 7 insertions(+), 3 deletions(-)
+>  src/openvpn/ssl.c | 3 +++
+>  1 file changed, 3 insertions(+)
 >
+> diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+> index ddd0c9b..4291314 100644
+> --- a/src/openvpn/ssl.c
+> +++ b/src/openvpn/ssl.c
+> @@ -146,6 +146,7 @@ static const tls_cipher_name_pair tls_cipher_name_translation_table[] = {
+>      {"DHE-RSA-CAMELLIA128-SHA", "TLS-DHE-RSA-WITH-CAMELLIA-128-CBC-SHA"},
+>      {"DHE-RSA-CAMELLIA256-SHA256", "TLS-DHE-RSA-WITH-CAMELLIA-256-CBC-SHA256"},
+>      {"DHE-RSA-CAMELLIA256-SHA", "TLS-DHE-RSA-WITH-CAMELLIA-256-CBC-SHA"},
+> +    {"DHE-RSA-CHACHA20-POLY1305", "TLS-DHE-RSA-WITH-CHACHA20-POLY1305-SHA256"},
+>      {"DHE-RSA-SEED-SHA", "TLS-DHE-RSA-WITH-SEED-CBC-SHA"},
+>      {"DH-RSA-SEED-SHA", "TLS-DH-RSA-WITH-SEED-CBC-SHA"},
+>      {"ECDH-ECDSA-AES128-GCM-SHA256", "TLS-ECDH-ECDSA-WITH-AES-128-GCM-SHA256"},
+> @@ -174,6 +175,7 @@ static const tls_cipher_name_pair tls_cipher_name_translation_table[] = {
+>      {"ECDHE-ECDSA-CAMELLIA128-SHA", "TLS-ECDHE-ECDSA-WITH-CAMELLIA-128-CBC-SHA"},
+>      {"ECDHE-ECDSA-CAMELLIA256-SHA256", "TLS-ECDHE-ECDSA-WITH-CAMELLIA-256-CBC-SHA256"},
+>      {"ECDHE-ECDSA-CAMELLIA256-SHA", "TLS-ECDHE-ECDSA-WITH-CAMELLIA-256-CBC-SHA"},
+> +    {"ECDHE-ECDSA-CHACHA20-POLY1305", "TLS-ECDHE-ECDSA-WITH-CHACHA20-POLY1305-SHA256"},
+>      {"ECDHE-ECDSA-DES-CBC3-SHA", "TLS-ECDHE-ECDSA-WITH-3DES-EDE-CBC-SHA"},
+>      {"ECDHE-ECDSA-DES-CBC-SHA", "TLS-ECDHE-ECDSA-WITH-DES-CBC-SHA"},
+>      {"ECDHE-ECDSA-RC4-SHA", "TLS-ECDHE-ECDSA-WITH-RC4-128-SHA"},
+> @@ -189,6 +191,7 @@ static const tls_cipher_name_pair tls_cipher_name_translation_table[] = {
+>      {"ECDHE-RSA-CAMELLIA128-SHA", "TLS-ECDHE-RSA-WITH-CAMELLIA-128-CBC-SHA"},
+>      {"ECDHE-RSA-CAMELLIA256-SHA256", "TLS-ECDHE-RSA-WITH-CAMELLIA-256-CBC-SHA256"},
+>      {"ECDHE-RSA-CAMELLIA256-SHA", "TLS-ECDHE-RSA-WITH-CAMELLIA-256-CBC-SHA"},
+> +    {"ECDHE-RSA-CHACHA20-POLY1305", "TLS-ECDHE-RSA-WITH-CHACHA20-POLY1305-SHA256"},
+>      {"ECDHE-RSA-DES-CBC3-SHA", "TLS-ECDHE-RSA-WITH-3DES-EDE-CBC-SHA"},
+>      {"ECDHE-RSA-DES-CBC-SHA", "TLS-ECDHE-RSA-WITH-DES-CBC-SHA"},
+>      {"ECDHE-RSA-RC4-SHA", "TLS-ECDHE-RSA-WITH-RC4-128-SHA"},
 
+ACK and thanks.
 
-Please ignore this patch. It is broken -- patch made prematurely before a
-fixup was committed,
-
-My apologies for the noise..
-
-Selva
-
---001a11348a7a6f155f0532cc9403
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">=
-On Fri, May 13, 2016 at 11:12 PM, Selva Nair <span dir=3D"ltr">&lt;<a href=
-=3D"mailto:selva.nair@...277..." target=3D"_blank">selva.nair@...277...</a>=
-&gt;</span> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0=
- 0 .8ex;border-left:1px #ccc solid;padding-left:1ex"><div id=3D":1x8" class=
-=3D"a3s aXjCH">---<br>
-=C2=A0src/openvpnserv/interactive.c |=C2=A0 =C2=A010 +++++++---<br>
-=C2=A01 file changed, 7 insertions(+), 3 deletions(-)</div></blockquote></d=
-iv><br><br></div><div class=3D"gmail_extra">Please ignore this patch. It is=
- broken -- patch made prematurely before a fixup was committed,<br><br></di=
-v><div class=3D"gmail_extra">My apologies for the noise..<br><br></div><div=
- class=3D"gmail_extra">Selva<br></div></div>
-
---001a11348a7a6f155f0532cc9403--
+-Steffan
 
