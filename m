@@ -1,10 +1,14 @@
-Date: Mon, 16 May 2016 13:42:52 +0200 (CEST)
-Message-Id: <201605161142.u4GBgquF030397@...2054...>
+Date: Mon, 16 May 2016 14:03:32 +0200
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1463185884-4355-1-git-send-email-selva.nair@...277...>
-References: <1463185884-4355-1-git-send-email-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Make error non-fatal while
-	deleting address using netsh
+Message-ID: <20160516120332.GH53051@...1296...>
+References: <5731B295.4040301@...515...>
+ <5736E6CF.7030205@...68...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="5kMEDl2nh7y6XqcI"
+Content-Disposition: inline
+In-Reply-To: <5736E6CF.7030205@...68...>
+Subject: Re: [Openvpn-devel] OpenVPN 2.3.11 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,35 +17,68 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Selva Nair <selva.nair@...277...>
+To: Matthias Andree <matthias.andree@...68...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-ACK.
+--5kMEDl2nh7y6XqcI
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-The patch is effectively exactly the same changes as for master, but the
-context is different enough (due to the XP-related stuff in 2.3) that I'm 
-not sure if cherrypicking would work - so, just taking your 2.3 patch :-)
+Hi,
 
-Your patch has been applied to the release/2.3 branch.
+On Sat, May 14, 2016 at 10:50:23AM +0200, Matthias Andree wrote:
+> Am 10.05.2016 um 12:06 schrieb Samuli Sepp=E4nen:
+> > The OpenVPN community project team is proud to release OpenVPN 2.3.11.=
+=20
+> > It can be downloaded from here:
+> >=20
+> > <http://openvpn.net/index.php/open-source/downloads.html>
+> >=20
+> > This release fixes two vulnerabilities: a port-share bug with DoS=20
+> > potential and a buffer overflow by user supplied data when using pam=20
+> > authentication. In addition a number of small fixes and improvements ar=
+e=20
+> > included. A full list of changes is available here:
+> >=20
+> > <https://community.openvpn.net/openvpn/wiki/ChangesInOpenvpn23>
+>=20
+> I was wondering... do we have CVE references or similar unique
+> identifiers, which I could then use - for instance - in the FreeBSD
+> vulnerability database?
 
-commit d368abbecf0a67ba5c29dec28fc724655629ef70 (release/2.3)
-Author: Selva Nair
-Date:   Fri May 13 20:31:23 2016 -0400
+Not for these two - these sound scary, but are really edge cases that
+are very unlikely to be a problem for most users in practice.  So we
+didn't go out and fetch a CVS number - maybe we should have, but we're
+still learning.  And we need more people to do the routine chores, like,
+"organize proper handling of possibly security relevant patches"...
 
-     Make error non-fatal while deleting address using netsh
+After release, I saw a note about Fedora issueing updates, which referenced
+"OPENVPN-2311-1" and "OPENVPN-2311-2" - though I'm not sure if these are
+Fedora-assigned or DFN-CERT...
 
-     Signed-off-by: Selva Nair <selva.nair@...277...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1463185884-4355-1-git-send-email-selva.nair@...277...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/11655
-     Signed-off-by: Gert Doering <gert@...1296...>
+https://portal.cert.dfn.de/adv/DFN-CERT-2016-0739/
 
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
---
-kind regards,
+--5kMEDl2nh7y6XqcI
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Gert Doering
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
 
+iQCVAwUBVzm3FKkuBuNlUUl1AQLlXwP/RIfh1s1v5OqBoeCudWWSsmgwTb6LIUWo
+PtNnMhz8woE2oIrSZxyVk0Pj6kscY1kB4g64cCjmb7fHBad54h9v7GSjc0gnEYsE
+sWFolw5gV4Sj1eT0pqJfWzuTVP66o/Njp1TMRliC4CZceFKHxQYe2THz3YFcLj6x
+G8V2RuPlT1Y=
+=bUnR
+-----END PGP SIGNATURE-----
+
+--5kMEDl2nh7y6XqcI--
 
