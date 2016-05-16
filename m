@@ -1,8 +1,8 @@
-Date: Mon, 16 May 2016 13:40:04 +0200 (CEST)
-Message-Id: <201605161140.u4GBe4Mj030335@...2054...>
+Date: Mon, 16 May 2016 13:42:52 +0200 (CEST)
+Message-Id: <201605161142.u4GBgquF030397@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1463185884-4355-2-git-send-email-selva.nair@...277...>
-References: <1463185884-4355-2-git-send-email-selva.nair@...277...>
+In-Reply-To: <1463185884-4355-1-git-send-email-selva.nair@...277...>
+References: <1463185884-4355-1-git-send-email-selva.nair@...277...>
 Subject: [Openvpn-devel] [PATCH applied] Re: Make error non-fatal while
 	deleting address using netsh
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -18,25 +18,24 @@ Content-Transfer-Encoding: 8bit
 To: Selva Nair <selva.nair@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-ACK, thanks for taking this on.
+ACK.
 
-I've stared at the patch and compiled on MinGW - did not actually test
-the suspend/resume/tap gone/address deletion fail situation (hard to
-reproduce with my current test setups), but the code looks sane and it
-compiles fine.
+The patch is effectively exactly the same changes as for master, but the
+context is different enough (due to the XP-related stuff in 2.3) that I'm 
+not sure if cherrypicking would work - so, just taking your 2.3 patch :-)
 
-Your patch has been applied to the master branch.
+Your patch has been applied to the release/2.3 branch.
 
-commit e3420d5683ffcc4386f78485bae3288a48f5cc17 (master)
+commit d368abbecf0a67ba5c29dec28fc724655629ef70 (release/2.3)
 Author: Selva Nair
-Date:   Fri May 13 20:31:24 2016 -0400
+Date:   Fri May 13 20:31:23 2016 -0400
 
      Make error non-fatal while deleting address using netsh
 
      Signed-off-by: Selva Nair <selva.nair@...277...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1463185884-4355-2-git-send-email-selva.nair@...277...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/11656
+     Message-Id: <1463185884-4355-1-git-send-email-selva.nair@...277...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/11655
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
