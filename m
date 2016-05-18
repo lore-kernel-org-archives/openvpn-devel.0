@@ -1,12 +1,10 @@
-References: <CAFHpkQHwNFdNm1WjApkby4h4C-_R-pEhVT3sZgE2XfQ1HUaOwQ@...278...>
-	<D881287C-058C-495C-888E-1EE40262550F@...2127...>
-	<20160502075006.GM53051@...1296...> <573AD4B5.6010303@...515...>
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <573AD716.8000104@...515...>
-Date: Tue, 17 May 2016 11:32:22 +0300
-MIME-Version: 1.0
-In-Reply-To: <573AD4B5.6010303@...515...>
-Subject: Re: [Openvpn-devel] automatically close PR
+Date: Wed, 18 May 2016 08:37:11 +0200 (CEST)
+Message-Id: <201605180637.u4I6bBLA049723@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <53F1DA95.7020701@...1085...>
+References: <53F1DA95.7020701@...1085...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Push an IPv6 CIDR mask used by
+	the server, not the pool's size
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,57 +13,43 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-Content-Transfer-Encoding: quoted-printable
-To: Gert Doering <gert@...1296...>, Jens Neuhalfen <openvpn-devel@...2127...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Josh Cepek <josh.cepek@...1085...>
+Cc: openvpn-devel@lists.sourceforge.net
+
+Well, thanks for cleaning up my not-so-well-considered code... this is
+quite obviously the right fix (and I never noticed, because I always only
+do --server-ipv6, not call --ifconfig-ipv6 and --ifconfig-ipv6-pool
+individually... need to change one of my test systems here).  So, another
+ACK from me - and thanks to Arne for digging this up and making sure it's
+not forgotten.
+
+Your patch has been applied to the master and release/2.3 branch.
+
+I've taken the liberty of fixing two whitespace errors in the original
+code right next to the multi.c line that has been changed - "git complained, 
+so I obeyed".
+
+commit c4ed931a70502a351ff1089aa1bfb8001586f788 (master)
+commit b8c4684f01701742eceb9dc6bfc4e2564278f6fd (release/2.3)
+
+Author: Josh Cepek
+Date:   Mon Aug 18 05:51:01 2014 -0500
+
+     Push an IPv6 CIDR mask used by the server, not the pool's size
+
+     Signed-off-by: Josh Cepek <josh.cepek@...1085...>
+     Acked-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <53F1DA95.7020701@...1085...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/8990
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
->>> I have a strong preference for using GitHub at least for vetting out mo=
-st bugs.
->>
->> We're not going to use GitHub for the actual patch merging process - that
->> is "mailing list, public ACK, merge, push to github + sourceforge", at
->> least today.
->>
->> For review, PRs should be doable.
->
-> Speaking of reviewing PRs... there are many of those, and some could be
-> merged trivially or  closed with "feature-NACK". I can have a quick look.
->
-> I'm sure there are tons of other things to do besides reviewing these
-> PRs, However, reviewing PRs in timely manner would probably get more
-> developers involved in the OpenVPN project. This is not purely
-> speculation: when OpenVPN-GUI was moved to GitHub it was stagnating. Now
-> there are five people with 5+ commits:
->
-> <https://github.com/OpenVPN/openvpn-gui/graphs/contributors>
->
-> All of the people except me came pretty much out of nowhere. Two of them
-> (ffes, leobasileo) are not involved in any other OpenVPN-related
-> projects afaics, and there was no way to know they even existed.
->
-> As Gert said, the reviewed patch should be sent to the mailing list. It
-> can stay there for a few days waiting for further comments and if there
-> are none, then get merged based on lazy-ACK.
->
-> At first, the reviewed patches could be relayed by people already on the
-> list, for example by me. When we identify the people who contribute to
-> OpenVPN often, we can suggest that they subscribe to the mailing list
-> and send their patches themselves.
->
-> It might also be possible to generate an email (to openvpn-devel ml)
-> from each PR. This would fit better with our current workflow, and
-> ensure people are notified when PRs arrive.
+--
+kind regards,
 
-Oh well, perhaps clicking on the "Watch" button for the OpenVPN project=20
-is easy enough :). No need to pollute the mailing list with PR=20
-notifications.
+Gert Doering
 
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
 
