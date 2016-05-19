@@ -1,9 +1,10 @@
-From: samuli@...515...
-Date: Thu, 19 May 2016 11:51:49 +0300
-Message-Id: <1463647909-18383-1-git-send-email-samuli@...515...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Update CONTRIBUTING.rst to allow GitHub PRs
-	for code review purposes
+Date: Thu, 19 May 2016 11:24:25 +0200 (CEST)
+Message-Id: <201605190924.u4J9OP0F060744@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <1463647909-18383-1-git-send-email-samuli@...515...>
+References: <1463647909-18383-1-git-send-email-samuli@...515...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Update CONTRIBUTING.rst to
+	allow GitHub PRs for code review purposes
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,61 +13,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: samuli@...515...
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Samuli Sepp=C3=A4nen <samuli@...515...>
+ACK, as discussed on IRC.
 
-Signed-off-by: Samuli Sepp=C3=A4nen <samuli@...515...>
----
- CONTRIBUTING.rst | 16 ++++++++++------
- 1 file changed, 10 insertions(+), 6 deletions(-)
+Your patch has been applied to the master and release/2.3 branch.
 
-diff --git a/CONTRIBUTING.rst b/CONTRIBUTING.rst
-index 6033097..f87293c 100644
---- a/CONTRIBUTING.rst
-+++ b/CONTRIBUTING.rst
-@@ -4,15 +4,19 @@ CONTRIBUTING TO THE OPENVPN PROJECT
- Patches should be written against the Git "master" branch. Some patches ma=
-y get
- backported to a release branch.
-=20
--We do not currently accept GitHub pull requests for the core OpenVPN proje=
-ct.
--Instead, all patches must be sent to "openvpn-devel" mailing list for revi=
-ew:
-+The preferred procedure to send patches to the "openvpn-devel" mailing lis=
-t:
-=20
- - https://lists.sourceforge.net/lists/listinfo/openvpn-devel
-=20
--The subject line should preferably be prefixed with [PATCH]. To avoid merg=
-ing
--issues the patches should be generated with git-format-patch or sent using
--git-send-email. Try to split large patches into small, atomic pieces to ma=
-ke
--reviews easier.
-+While we do not merge GitHub pull requests as-is, we do allow their use fo=
-r code
-+review purposes. After the patch has been ACKed (reviewed and accepted), i=
-t must
-+be sent to the mailing list. This last step does not necessarily need to b=
-e done
-+by the patch author, although that is definitely recommended.
-+
-+When sending patches to "openvpn-devel" the subject line should be prefixe=
-d with
-+[PATCH]. To avoid merging issues the patches should be generated with
-+git-format-patch or sent using git-send-email. Try to split large patches =
-into
-+small, atomic pieces to make reviews easier.
-=20
- If you want quick feedback on a patch before sending it to openvpn-devel m=
-ailing
- list, you can visit the #openvpn-devel channel on irc.freenode.net. Note t=
-hat
---=20
-2.5.5
+commit 698f0dab76741f4ce8c1a98236786d59eca338ef (master)
+commit 85f6a2b49db5544732b14ee3f0798e84329d6da1 (release/2.3)
+
+Author: Samuli Seppänen
+Date:   Thu May 19 11:51:49 2016 +0300
+
+     Update CONTRIBUTING.rst to allow GitHub PRs for code review purposes
+
+     Signed-off-by: Samuli Seppänen <samuli@...515...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1463647909-18383-1-git-send-email-samuli@...515...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/11679
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
