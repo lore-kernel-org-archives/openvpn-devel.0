@@ -1,14 +1,13 @@
-Date: Sat, 21 May 2016 11:54:24 +0200
+Date: Sat, 21 May 2016 11:57:34 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20160521095424.GQ53051@...1296...>
-References: <1463822525-2532-1-git-send-email-openvpn-devel@...2127...>
-	<1463822525-2532-2-git-send-email-openvpn-devel@...2127...>
+Message-ID: <20160521095734.GR53051@...1296...>
+References: <5DDE3F3A-A3CA-4A68-9F23-8C4F10835E22@...2127...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="+KjDhyVkVl9ZTxoC"
+	protocol="application/pgp-signature"; boundary="y7POr9vWFtFGh+o2"
 Content-Disposition: inline
-In-Reply-To: <1463822525-2532-2-git-send-email-openvpn-devel@...2127...>
-Subject: Re: [Openvpn-devel] [PATCH 1/2] Refactor t_client.sh
+In-Reply-To: <5DDE3F3A-A3CA-4A68-9F23-8C4F10835E22@...2127...>
+Subject: Re: [Openvpn-devel] Test documentation: What does t_cltsrv.sh do?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,43 +16,34 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@...2127...
-Cc: openvpn-devel@lists.sourceforge.net
+To: Jens Neuhalfen <openvpn-devel@...2127...>
+Cc: openvpn-devel <Openvpn-devel@lists.sourceforge.net>
 
---+KjDhyVkVl9ZTxoC
+--y7POr9vWFtFGh+o2
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Sat, May 21, 2016 at 11:22:04AM +0200, openvpn-devel@...2127... wrote:
-> +# ----------------------------------------------------------
-> +# global variables
-> +# ----------------------------------------------------------
-> +
-> +# list of succeeded tests (e.g. 1 2 3)
-> +declare  SUMMARY_OK=3D""
-> +
-> +# list of failed tests
-> +declare  SUMMARY_FAIL=3D""
-> +
-> +# number of failed checks for a test (# of calls to fail())
-> +declare -i fail_count=3D0
+On Sat, May 21, 2016 at 10:59:23AM +0200, Jens Neuhalfen wrote:
+> * t_client.sh runs connect & ping tests against servers
+> * t_lpback.sh runs the built-in crypto tests
+> * Can anybody tell me what ???t_cltsrv.sh??? tests?
 
-Generally speaking, I'm in favour of reworking t_client.sh and making
-the output more readable, etc. - it was a quick hack, and more polishing
-would be welcome.
+It's a basic TLS test that does not need external test infrastructure -
+basically, it runs a test server and test client that talk to each other
+via 127.0.0.1, eventually timeout and exit.
 
-I'm not exactly sure about the shell constructs you use, specifically
-arrays and varaible declarations - is that posix shell, or "bash"?
+This is good to quickly see if we broke TLS handshaking (on some platform
+or build combination) without having to setup a "proper" test server.
 
-This script needs to run on all platforms we support, and that includes
-more esoteric ones like AIX and Solaris - OpenSolaris /bin/sh is a ksh93
-variant (nowadays), so if it works in ksh and dash (Debian /bin/sh), I'm=20
-fine...
+t_client.sh does full "see if ifconfig+route works, if everything is
+properly cleaned up afterwards, and data transfer works" - but needs=20
+root (or sudo) privileges to test that, and a properly set up test rig.
 
 gert
+
 --=20
 USENET is *not* the non-clickable part of WWW!
                                                            //www.muc.de/~ge=
@@ -61,18 +51,18 @@ rt/
 Gert Doering - Munich, Germany                             gert@...1296...
 fax: +49-89-35655025                        gert@...1297...
 
---+KjDhyVkVl9ZTxoC
+--y7POr9vWFtFGh+o2
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1
 
-iQCVAwUBV0AwUKkuBuNlUUl1AQIuwQQAkc0T3cVinBoBIls0m09tAIfbOQo1TW1G
-Qi9O1jiQkEav0LpjvB7MMeARRpJuxpZbvVqmPfM1zWLciHinw5salyNpD3bYqtra
-am0HRxxMw5sRKLCo6tKGRRgfmiqbm/EY2i/Nn0T8ON65RPrmlmThcUV/EiAvjWSt
-bOg4JGdlpfg=
-=i0D8
+iQCVAwUBV0AxDqkuBuNlUUl1AQIeCgQAi7jJgM1JqBw5/IVbnyU/nLSSvXNbr1ZB
+yBALZjwaG2r/3bx3rf9G/s/Zcwkif4MhdBtg7IsWu9WE313HngvjL3y4GTGxQeqR
+pj32nHmZSg1gKpPn9l4mfOX2+gzbZbbeCbKiVN5aB8MhXOO/cTtREFGJxdBHoOwQ
+uMxFnw/dpHY=
+=DANX
 -----END PGP SIGNATURE-----
 
---+KjDhyVkVl9ZTxoC--
+--y7POr9vWFtFGh+o2--
 
