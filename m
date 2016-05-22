@@ -1,15 +1,14 @@
-Date: Sun, 22 May 2016 18:56:20 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20160522165620.GC53051@...1296...>
+MIME-Version: 1.0
+In-Reply-To: <20160522165620.GC53051@...1296...>
 References: <CAKuzo_g1jx2JkxP2BSVYPW4axnMUQgVe=WvBSzC+x8n6LR_A9g@...278...>
 	<1463892387-4793-1-git-send-email-selva.nair@...277...>
 	<20160522073101.GV53051@...1296...>
 	<CAKuzo_gcP+YiNE9tHqkW1aVtsm=wy=wg9yPf0PpUwL1_vDXuYA@...278...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="bjP1ynumGsNfxNCR"
-Content-Disposition: inline
-In-Reply-To: <CAKuzo_gcP+YiNE9tHqkW1aVtsm=wy=wg9yPf0PpUwL1_vDXuYA@...278...>
+	<20160522165620.GC53051@...1296...>
+From: Selva Nair <selva.nair@...277...>
+Date: Sun, 22 May 2016 13:14:06 -0400
+Message-ID: <CAKuzo_jBA2PEv=Y8N1CHheeO9DFmHdCeLbNca-pnBQbHJmk8Mw@...278...>
+Content-Type: multipart/alternative; boundary=001a11448a96b7624905337174a5
 Subject: Re: [Openvpn-devel] [PATCH] Fix handling of out of memory error in
  interactive service
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,79 +19,52 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>
+To: Gert Doering <gert@...1296...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---bjP1ynumGsNfxNCR
-Content-Type: text/plain; charset="us-ascii"
+--001a11448a96b7624905337174a5
+Content-Type: text/plain; charset=UTF-8
+
+On Sun, May 22, 2016 at 12:56 PM, Gert Doering <gert@...1296...> wrote:
+
+> Mmmh, anyway, I have two options now :-) - ask you for a v2 that is
+> MSVC 2010 compatible, and has the initial value reverted to "10", or
+> just apply...
+>
+
+Let's make life easy -- will do a v2 with both those changes:-) and just
+hope if/when we touch that realloc loop in future we'll test it by
+exercising it... I normally run 2 connections on my laptop (sometimes 3),
+never 10.
+
+As a general rule, which MSVC version to target is still useful to know as
+there are a few places in the code requiring ugly scoping brackets as seen
+in some pending patches for MSVC compliance.
+
+Selva
+
+--001a11448a96b7624905337174a5
+Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
+<div dir=3D"ltr"><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">=
+On Sun, May 22, 2016 at 12:56 PM, Gert Doering <span dir=3D"ltr">&lt;<a hre=
+f=3D"mailto:gert@...1296..." target=3D"_blank">gert@...1296...</a>&gt;</spa=
+n> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;b=
+order-left:1px #ccc solid;padding-left:1ex"><div id=3D":4qt" class=3D"a3s a=
+XjCH m154d9656cd6bf6b4">Mmmh, anyway, I have two options now :-) - ask you =
+for a v2 that is<br>
+MSVC 2010 compatible, and has the initial value reverted to &quot;10&quot;,=
+ or<br>
+just apply...</div></blockquote></div><br></div><div class=3D"gmail_extra">=
+Let&#39;s make life easy -- will do a v2 with both those changes:-) and jus=
+t hope if/when we touch that realloc loop in future we&#39;ll test it by ex=
+ercising it... I normally run 2 connections on my laptop (sometimes 3), nev=
+er 10.<br><br></div><div class=3D"gmail_extra">As a general rule, which MSV=
+C version to target is still useful to know as there are a few places in th=
+e code requiring ugly scoping brackets as seen in some pending patches for =
+MSVC compliance.<br><br></div><div class=3D"gmail_extra">Selva<br></div></d=
+iv>
 
-On Sun, May 22, 2016 at 11:00:22AM -0400, Selva Nair wrote:
-> > On Sun, May 22, 2016 at 12:46:27AM -0400, Selva Nair wrote:
-> > >          {
-> > >            size +=3D 10;
-> > > -          handles =3D realloc (handles, size * sizeof (HANDLE));
-> > > -          if (handles =3D=3D NULL)
-> > > -            return ERROR_OUTOFMEMORY;
-> > > +          LPHANDLE tmp =3D realloc (handles, size * sizeof (HANDLE));
-> > > +          if (tmp =3D=3D NULL)
-> >
-> > ... oh, and this might actually fail MSVC compilation, due to
-> > "variable declared after other code parts" (size +=3D 10)...
->=20
-> Isn't it time to deprecate support for visual studio older than 2013? MSVC
-> in VS-2015 supports C99 constructs and VS2013 may also do.
->=20
-> If not, I'll submit a version 2.
-
-Dunno... the only time I compiled on windows, I was using mingw+msys... but
-since I get yelled at if we break MSVC compatibility, I started to look
-out for such constructs.
-
-Lev, what are you compiling with?
-
-[..]
-> > So we do not exit anymore when this fails, except if WAIT_FAILED?
->=20
-> That is correct.  I tested it and works nicely -- i.e., on realloc error,
-> all previous connections continue while new connections get an error
-> message.
-
-This is very nice indeed!
-
-(Not that a realloc() failure for +40 bytes would ever happen on its
-own - if memory is that tight, other stuff will explode as well :-) - but
-I really really like such defensive code that just works with what it
-has, instead of "oh, panic, just crash")
-
-
-Mmmh, anyway, I have two options now :-) - ask you for a v2 that is
-MSVC 2010 compatible, and has the initial value reverted to "10", or
-just apply...
-
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---bjP1ynumGsNfxNCR
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQCVAwUBV0HkqKkuBuNlUUl1AQLYLwP6A3o0eGDsk3RRzD9zEfts/QQUtZwuRAmT
-hqMC3Zz6Vg6dtCcK7AAQF0HkPZib8s6jcERf8bFHg/KtUWssP/04U2SliQTob8/v
-GyC/jooD0cV9/TL/nBtaRLqJXqBSTg/RY89wCN244ur3t67Pp7znt23jxL8Yo9a/
-PO63QA94Juc=
-=4Mod
------END PGP SIGNATURE-----
-
---bjP1ynumGsNfxNCR--
+--001a11448a96b7624905337174a5--
 
