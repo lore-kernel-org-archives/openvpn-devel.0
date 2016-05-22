@@ -1,17 +1,14 @@
-Date: Sun, 22 May 2016 12:04:41 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20160522100441.GX53051@...1296...>
-References: <AE97EF71-3179-4CA9-859C-EE9F2A5DEFBA@...2127...>
-	<20160521185940.GT53051@...1296...>
-	<A72247F4-3D1B-42B1-AD1E-EC1E28EF5346@...2127...>
-	<20160522082443.GW53051@...1296...>
-	<BD6C53FB-4C60-4B13-A4D8-40F54D844B22@...2127...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="Wo/ynhz8QE6g68Jq"
-Content-Disposition: inline
-In-Reply-To: <BD6C53FB-4C60-4B13-A4D8-40F54D844B22@...2127...>
-Subject: Re: [Openvpn-devel] Solaris 11: t_lpback.sh coredump on AES-GCM
+Mime-Version: 1.0 (Mac OS X Mail 9.3 \(3124\))
+From: Jens Neuhalfen <openvpn-devel@...2127...>
+In-Reply-To: <20160521111016.GS53051@...1296...>
+Date: Sun, 22 May 2016 14:38:05 +0200
+Message-Id: <9715E28C-0B26-4EAE-907A-B8A326BF98A7@...2127...>
+References: <1463822525-2532-1-git-send-email-openvpn-devel@...2127...>
+	<1463822525-2532-2-git-send-email-openvpn-devel@...2127...>
+	<20160521095424.GQ53051@...1296...>
+	<BF0BE230-3DDA-4CF6-A8DB-CABBE0825CF4@...2127...>
+	<20160521111016.GS53051@...1296...>
+Subject: Re: [Openvpn-devel] [PATCH 1/2] Refactor t_client.sh
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,41 +17,27 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Jens Neuhalfen <openvpn-devel@...2127...>
-Cc: openvpn-devel <Openvpn-devel@lists.sourceforge.net>
-
---Wo/ynhz8QE6g68Jq
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+To: Gert Doering <gert@...1296...>, =?utf-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
+Gert, Samuli
 
-On Sun, May 22, 2016 at 10:44:41AM +0200, Jens Neuhalfen wrote:
-> A broken ssl library and openvpn - What could possibly go wrong?=20
+[=E2=80=A6]
 
-We could recommend building with mbedtls... :-)
+>=20
+> My buildbots test on "all the BSDs" (Free, Net, Open, and they have a
+> /bin/sh which is "It only supports features designated by POSIX plus a fe=
+w=20
+> Berkeley extensions") and OpenSolaris 11 (ksh93).  Samuli's buildbot
+> test on various Linux variants, so "dash" should work.
 
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
 
---Wo/ynhz8QE6g68Jq
-Content-Type: application/pgp-signature; name="signature.asc"
+Are these buildbots available vor the general public? Being able to easily =
+test
+lowers the bar for new contributors considerable.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
+[=E2=80=A6]
 
-iQCUAwUBV0GEOakuBuNlUUl1AQLoJgP2Ot5N96dKba5rzDx0/X9Q/ti34uMLKgJ+
-g2g2shwL++z3kJUH5M3DUV7+cMRd0MPFj9TSrsVpgJ7uhYu+4U6bJXXMXnul7Q5o
-0VF1DZ+wVVu/XUuvDDOZsXtGqVLMG77q47xF4tV/3DXkxaOqaS5oQLflXYhQTKMk
-XVrf0EOPJg==
-=EHA6
------END PGP SIGNATURE-----
-
---Wo/ynhz8QE6g68Jq--
-
+Jens
