@@ -1,15 +1,15 @@
-Date: Sun, 22 May 2016 09:31:01 +0200
+Date: Sun, 22 May 2016 10:24:43 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20160522073101.GV53051@...1296...>
-References: <CAKuzo_g1jx2JkxP2BSVYPW4axnMUQgVe=WvBSzC+x8n6LR_A9g@...278...>
-	<1463892387-4793-1-git-send-email-selva.nair@...277...>
+Message-ID: <20160522082443.GW53051@...1296...>
+References: <AE97EF71-3179-4CA9-859C-EE9F2A5DEFBA@...2127...>
+	<20160521185940.GT53051@...1296...>
+	<A72247F4-3D1B-42B1-AD1E-EC1E28EF5346@...2127...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="JWR1SOPHjVEF5txq"
+	protocol="application/pgp-signature"; boundary="xZKnUbRADYQzAXzS"
 Content-Disposition: inline
-In-Reply-To: <1463892387-4793-1-git-send-email-selva.nair@...277...>
-Subject: Re: [Openvpn-devel] [PATCH] Fix handling of out of memory error in
- interactive service
+In-Reply-To: <A72247F4-3D1B-42B1-AD1E-EC1E28EF5346@...2127...>
+Subject: Re: [Openvpn-devel] Solaris 11: t_lpback.sh coredump on AES-GCM
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,45 +18,64 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Jens Neuhalfen <openvpn-devel@...2127...>
+Cc: openvpn-devel <Openvpn-devel@lists.sourceforge.net>
 
---JWR1SOPHjVEF5txq
+--xZKnUbRADYQzAXzS
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Sun, May 22, 2016 at 12:46:27AM -0400, Selva Nair wrote:
->          {
->            size +=3D 10;
-> -          handles =3D realloc (handles, size * sizeof (HANDLE));
-> -          if (handles =3D=3D NULL)
-> -            return ERROR_OUTOFMEMORY;
-> +          LPHANDLE tmp =3D realloc (handles, size * sizeof (HANDLE));
-> +          if (tmp =3D=3D NULL)
+On Sat, May 21, 2016 at 11:32:40PM +0200, Jens Neuhalfen wrote:
+> This is=20
+> * Solaris 11.3 on Intel 64 bit (isainfo -k ???> amd64), fresh from Sun^H^=
+H^HOracle
+>=20
+> * OpenSSL 1.0.1p.  openssl is compiled as 32 bit library (file /lib/libcr=
+ypto.so.1.0.0 ???> /lib/libcrypto.so.1.0.0:        ELF 32-bit LSB dynamic l=
+ib 80386 Version 1 [SSE2 SSE MMX CMOV FPU], dynamically linked, not strippe=
+d).
 
-... oh, and this might actually fail MSVC compilation, due to=20
-"variable declared after other code parts" (size +=3D 10)...
+Tried building with 1.0.1p (using gcc), and the first thing to notice is=20
+that *openssl* fails its own "make test" run (something in the RSA key test
+aborts with "keys do not match").  So something is fishy with that version.
 
->                if (error)
->                  {
-> +                  ReturnError (pipe, error, L"Insufficient reources to s=
-ervice new clients", 1, &exit_event);
-> +                  /* Update wait handles again after removing the last w=
-orker thread */
-> +                  RemoveListItem (&threads, CmpHandle, thread);
-> +                  UpdateWaitHandles (&handles, &handle_count, io_event, =
-exit_event, threads);
->                    TerminateThread (thread, 1);
->                    CloseHandleEx (&thread);
->                    CloseHandleEx (&pipe);
-> -                  SetEvent (exit_event);
+Interesting enough, our "make check" *still* works nicely for me...
 
-So we do not exit anymore when this fails, except if WAIT_FAILED?
+-n Testing cipher AES-128-GCM...=20
+OK
+-n Testing cipher AES-192-GCM...=20
+OK
+-n Testing cipher AES-256-GCM...=20
+OK
+...
+All 2 tests passed
+
+So it does look like that 1.0.1p and Solaris do not get along well, but
+it might depend on compiler used (I use gcc, Oracle surely does not).
+
+
+The most recent version is 1.0.1t, which interestingly enough, has the
+same self test error...
+
+CMS consistency test
+/opt/csw/bin/perl cms-test.pl
+CMS =3D> PKCS#7 compatibility tests
+signed content DER format, RSA key: verify error
+make[1]: *** [test_cms] Error 1
+
+(this works in 1.0.2, so I think it's not my local system that is funny)
+
+
+Ceterum censeo: I acknowledge that something is funny here, but I do not
+think it's OpenVPN's fault (otherwise it should show up for me), so not
+much we can do about it.
 
 gert
+
+
 --=20
 USENET is *not* the non-clickable part of WWW!
                                                            //www.muc.de/~ge=
@@ -64,18 +83,18 @@ rt/
 Gert Doering - Munich, Germany                             gert@...1296...
 fax: +49-89-35655025                        gert@...1297...
 
---JWR1SOPHjVEF5txq
+--xZKnUbRADYQzAXzS
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1
 
-iQCVAwUBV0FgNKkuBuNlUUl1AQKBzQP/X1O+ehCh/JOcj/Z1EyAFo2rOJ6wLHk/6
-ySp4F7Unb1zVDLMAndpeMprxUbwgPl07Ubmm/0Hb77j776bFDOOJDM7GnTsr6GQ7
-mvHqrbOxUt+BHa5G5I1uGXWFCBb/Ypltg7DFEuST132GBWmrkvPo35QWqOZw7moY
-2U+MSUdNTSo=
-=D9QA
+iQCVAwUBV0FsyqkuBuNlUUl1AQKh/AQAwNbE3xbM9YpSm9yBlifesAlSwRQXCuS0
+N/xCGxgWA0Z67ipK5rQ/zjyr75a0gFBs4wULJc3iHeyut/E4P96LdrVyPexxPiDA
+THd8pyXyMTQuaFmooNOq88vmOdT6C7Zbx1R5sSPNckQZP7rNSUG7BhYJKt/HfEcz
+1/3U3TqOYK0=
+=HWsx
 -----END PGP SIGNATURE-----
 
---JWR1SOPHjVEF5txq--
+--xZKnUbRADYQzAXzS--
 
