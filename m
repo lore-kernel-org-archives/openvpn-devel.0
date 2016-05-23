@@ -1,10 +1,6 @@
-Content-Type: multipart/alternative;
-	boundary="Apple-Mail=_1D7D6385-C220-4739-91E2-E41E1D7D5DD1"
-Mime-Version: 1.0 (Mac OS X Mail 9.3 \(3124\))
-From: Jens Neuhalfen <openvpn-devel@...2127...>
-In-Reply-To: <5742C2E1.2060407@...515...>
-Date: Mon, 23 May 2016 17:43:58 +0200
-Message-Id: <53A330A9-AA2C-4545-A854-0EF7A9B79A1C@...2127...>
+Date: Mon, 23 May 2016 18:04:27 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20160523160426.GL53051@...1296...>
 References: <1463822525-2532-1-git-send-email-openvpn-devel@...2127...>
 	<1463822525-2532-2-git-send-email-openvpn-devel@...2127...>
 	<20160521095424.GQ53051@...1296...>
@@ -13,6 +9,12 @@ References: <1463822525-2532-1-git-send-email-openvpn-devel@...2127...>
 	<9715E28C-0B26-4EAE-907A-B8A326BF98A7@...2127...>
 	<20160522124546.GA53051@...1296...>
 	<5742C2E1.2060407@...515...>
+	<53A330A9-AA2C-4545-A854-0EF7A9B79A1C@...2127...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="B9zg3lic507r8Z8j"
+Content-Disposition: inline
+In-Reply-To: <53A330A9-AA2C-4545-A854-0EF7A9B79A1C@...2127...>
 Subject: Re: [Openvpn-devel] [PATCH 1/2] Refactor t_client.sh
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -22,49 +24,50 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: =?utf-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>, Gert Doering <gert@...1296...>
+To: Jens Neuhalfen <openvpn-devel@...2127...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---Apple-Mail=_1D7D6385-C220-4739-91E2-E41E1D7D5DD1
-Content-Type: text/plain; charset="windows-1252"
+--B9zg3lic507r8Z8j
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
 Hi,
 
-> I'd prefer to keep the actual buildslave infrastructure private, with acc=
-ess granted to only a select few. We already get email notifications to a p=
-ublic list for each build failure.
+On Mon, May 23, 2016 at 05:43:58PM +0200, Jens Neuhalfen wrote:
+> > I'd prefer to keep the actual buildslave infrastructure private, with a=
+ccess granted to only a select few. We already get email notifications to a=
+ public list for each build failure.
+>=20
+> Is there some kind of instruction to ?reproduce? the build infrastructure=
+? Some kind of document or - even better - something executable (Vagrant/Do=
+cker/Salt/Puppet/..)?
 
-Is there some kind of instruction to =93reproduce=94 the build infrastructu=
-re? Some kind of document or - even better - something executable (Vagrant/=
-Docker/Salt/Puppet/..)?
+https://community.openvpn.net/openvpn/wiki/SettingUpBuildslave
 
-Jens=
+is what we currently have, but it only describes the slaves (talking to
+Samuli's build master) - not sure if the master is documented anywhere.
 
---Apple-Mail=_1D7D6385-C220-4739-91E2-E41E1D7D5DD1
-Content-Type: text/html; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-<html><head><meta http-equiv=3D"Content-Type" content=3D"text/html charset=
-=3Dwindows-1252"></head><body style=3D"word-wrap: break-word; -webkit-nbsp-=
-mode: space; -webkit-line-break: after-white-space;" class=3D""><div>Hi,</d=
-iv><div><br class=3D""></div><div><blockquote type=3D"cite" class=3D""><div=
- class=3D""><span style=3D"font-family: Helvetica; font-size: 12px; font-st=
-yle: normal; font-variant-caps: normal; font-weight: normal; letter-spacing=
-: normal; orphans: auto; text-align: start; text-indent: 0px; text-transfor=
-m: none; white-space: normal; widows: auto; word-spacing: 0px; -webkit-text=
--stroke-width: 0px; float: none; display: inline !important;" class=3D"">I'=
-d prefer to keep the actual buildslave infrastructure private, with access =
-granted to only a select few. We already get email notifications to a publi=
-c list for each build failure.</span><br style=3D"font-family: Helvetica; f=
-ont-size: 12px; font-style: normal; font-variant-caps: normal; font-weight:=
- normal; letter-spacing: normal; orphans: auto; text-align: start; text-ind=
-ent: 0px; text-transform: none; white-space: normal; widows: auto; word-spa=
-cing: 0px; -webkit-text-stroke-width: 0px;" class=3D""></div></blockquote><=
-/div><br class=3D""><div class=3D"">Is there some kind of instruction to =
-=93reproduce=94 the build infrastructure? Some kind of document or - even b=
-etter - something executable (Vagrant/Docker/Salt/Puppet/..)?</div><div cla=
-ss=3D""><br class=3D""></div><div class=3D"">Jens</div></body></html>=
+--B9zg3lic507r8Z8j
+Content-Type: application/pgp-signature; name="signature.asc"
 
---Apple-Mail=_1D7D6385-C220-4739-91E2-E41E1D7D5DD1--
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQCVAwUBV0MqCqkuBuNlUUl1AQKrXwP+K669J2REFuxU7Fma9udPqEvojgsCCzYR
+6yN3hXTabXZawP7xFdu+W9wscyAoLo/rXxsCAleMRDfvrFy6vRVy8Hxic/pO4n8D
+7Y4FkB0iEdQOozXvLQlEOzOlP7RADItFl0lmdioK17NazNw0+LTk89dYriXkOHWo
+Gl76MXx6hW8=
+=PxxE
+-----END PGP SIGNATURE-----
+
+--B9zg3lic507r8Z8j--
 
