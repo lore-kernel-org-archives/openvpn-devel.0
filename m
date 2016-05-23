@@ -1,3 +1,10 @@
+Content-Type: multipart/alternative;
+	boundary="Apple-Mail=_1D7D6385-C220-4739-91E2-E41E1D7D5DD1"
+Mime-Version: 1.0 (Mac OS X Mail 9.3 \(3124\))
+From: Jens Neuhalfen <openvpn-devel@...2127...>
+In-Reply-To: <5742C2E1.2060407@...515...>
+Date: Mon, 23 May 2016 17:43:58 +0200
+Message-Id: <53A330A9-AA2C-4545-A854-0EF7A9B79A1C@...2127...>
 References: <1463822525-2532-1-git-send-email-openvpn-devel@...2127...>
 	<1463822525-2532-2-git-send-email-openvpn-devel@...2127...>
 	<20160521095424.GQ53051@...1296...>
@@ -5,11 +12,7 @@ References: <1463822525-2532-1-git-send-email-openvpn-devel@...2127...>
 	<20160521111016.GS53051@...1296...>
 	<9715E28C-0B26-4EAE-907A-B8A326BF98A7@...2127...>
 	<20160522124546.GA53051@...1296...>
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <5742C2E1.2060407@...515...>
-Date: Mon, 23 May 2016 11:44:17 +0300
-MIME-Version: 1.0
-In-Reply-To: <20160522124546.GA53051@...1296...>
+	<5742C2E1.2060407@...515...>
 Subject: Re: [Openvpn-devel] [PATCH 1/2] Refactor t_client.sh
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -19,69 +22,49 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-Content-Transfer-Encoding: quoted-printable
-To: Gert Doering <gert@...1296...>, Jens Neuhalfen <openvpn-devel@...2127...>
+To: =?utf-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>, Gert Doering <gert@...1296...>
 Cc: openvpn-devel@lists.sourceforge.net
 
+--Apple-Mail=_1D7D6385-C220-4739-91E2-E41E1D7D5DD1
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
 
-> Hi,
->
-> On Sun, May 22, 2016 at 02:38:05PM +0200, Jens Neuhalfen wrote:
->> [???]
->>
->>> My buildbots test on "all the BSDs" (Free, Net, Open, and they have a
->>> /bin/sh which is "It only supports features designated by POSIX plus a =
-few
->>> Berkeley extensions") and OpenSolaris 11 (ksh93).  Samuli's buildbot
->>> test on various Linux variants, so "dash" should work.
->>
->> Are these buildbots available vor the general public? Being able to easi=
-ly test
->> lowers the bar for new contributors considerable.
->
-> Right now, not for "general public".  They auto-build (+test) every relea=
-se
-> that gets commited to "master" - which, of course, means "it is too late
-> if it breaks platform <x>".
->
-> We have discussed building from test branches (on-demand), and widening t=
-he
-> access to these branches - but nothing specific has been decided yet.  Ma=
-ybe
-> we should put that on the agenda for the monday meeting on May 30...
->
->   - addition of new branches (at github), with more liberal commit rights
->   - having the buildbots pull from github (right now they use sf, AFAIR)
->   - opening the buildbot "build revision <x> on platform <y>" API for
->     a wider circle (right now, I think only Samuli, David and I have acce=
-ss
->     to that host, it's on private addresses in Samuli's VPN)
->
-> I'm a bit reluctant giving "full user account" access rights to developers
-> I have not met in person yet - but with the approach outlined above, at
-> least sanity checking "I think the patch is good, will it break one of the
-> more esoteric platforms?" will be possible.
->
-> Samuli, are you listening? ;-)
->
-> gert
+Hi,
 
-Yes. I think a separate testing branch with more liberal commit rights=20
-combined with pulling from GitHub makes sense. I'm not sure what happens=20
-at the buildslaves if we decide rewind history - rewinding would be=20
-quite useful when working with pure testing branches in that we could=20
-make "testing" track master and whenever a bad patch is found, simply=20
-rewind back to the last known-good state.
+> I'd prefer to keep the actual buildslave infrastructure private, with acc=
+ess granted to only a select few. We already get email notifications to a p=
+ublic list for each build failure.
 
-I'd prefer to keep the actual buildslave infrastructure private, with=20
-access granted to only a select few. We already get email notifications=20
-to a public list for each build failure.
+Is there some kind of instruction to =93reproduce=94 the build infrastructu=
+re? Some kind of document or - even better - something executable (Vagrant/=
+Docker/Salt/Puppet/..)?
 
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
+Jens=
 
-irc freenode net: mattock
+--Apple-Mail=_1D7D6385-C220-4739-91E2-E41E1D7D5DD1
+Content-Type: text/html; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
+
+<html><head><meta http-equiv=3D"Content-Type" content=3D"text/html charset=
+=3Dwindows-1252"></head><body style=3D"word-wrap: break-word; -webkit-nbsp-=
+mode: space; -webkit-line-break: after-white-space;" class=3D""><div>Hi,</d=
+iv><div><br class=3D""></div><div><blockquote type=3D"cite" class=3D""><div=
+ class=3D""><span style=3D"font-family: Helvetica; font-size: 12px; font-st=
+yle: normal; font-variant-caps: normal; font-weight: normal; letter-spacing=
+: normal; orphans: auto; text-align: start; text-indent: 0px; text-transfor=
+m: none; white-space: normal; widows: auto; word-spacing: 0px; -webkit-text=
+-stroke-width: 0px; float: none; display: inline !important;" class=3D"">I'=
+d prefer to keep the actual buildslave infrastructure private, with access =
+granted to only a select few. We already get email notifications to a publi=
+c list for each build failure.</span><br style=3D"font-family: Helvetica; f=
+ont-size: 12px; font-style: normal; font-variant-caps: normal; font-weight:=
+ normal; letter-spacing: normal; orphans: auto; text-align: start; text-ind=
+ent: 0px; text-transform: none; white-space: normal; widows: auto; word-spa=
+cing: 0px; -webkit-text-stroke-width: 0px;" class=3D""></div></blockquote><=
+/div><br class=3D""><div class=3D"">Is there some kind of instruction to =
+=93reproduce=94 the build infrastructure? Some kind of document or - even b=
+etter - something executable (Vagrant/Docker/Salt/Puppet/..)?</div><div cla=
+ss=3D""><br class=3D""></div><div class=3D"">Jens</div></body></html>=
+
+--Apple-Mail=_1D7D6385-C220-4739-91E2-E41E1D7D5DD1--
 
