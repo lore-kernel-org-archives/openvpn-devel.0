@@ -1,11 +1,20 @@
-MIME-Version: 1.0
-In-Reply-To: <1464130427-25002-1-git-send-email-selva.nair@...277...>
-References: <1464130427-25002-1-git-send-email-selva.nair@...277...>
-From: Selva Nair <selva.nair@...277...>
-Date: Wed, 25 May 2016 13:14:54 -0400
-Message-ID: <CAKuzo_hOQ5COpp=RuvpHSP3WjVH_45A6Mv0M6OTuyEzp8We9Rg@...278...>
-Content-Type: multipart/alternative; boundary=001a114ac8f8206d400533add170
-Subject: Re: [Openvpn-devel] [PATCH] Pass echo option to systemd-ask-password
+Mime-Version: 1.0 (Mac OS X Mail 9.3 \(3124\))
+From: Jens Neuhalfen <openvpn-devel@...2127...>
+In-Reply-To: <57455384.2020007@...515...>
+Date: Wed, 25 May 2016 19:32:20 +0200
+Message-Id: <F7A2C190-9AB4-4527-8570-10F62E86E56E@...2127...>
+References: <1463822525-2532-1-git-send-email-openvpn-devel@...2127...>
+	<1463822525-2532-2-git-send-email-openvpn-devel@...2127...>
+	<20160521095424.GQ53051@...1296...>
+	<BF0BE230-3DDA-4CF6-A8DB-CABBE0825CF4@...2127...>
+	<20160521111016.GS53051@...1296...>
+	<9715E28C-0B26-4EAE-907A-B8A326BF98A7@...2127...>
+	<20160522124546.GA53051@...1296...>
+	<5742C2E1.2060407@...515...>
+	<53A330A9-AA2C-4545-A854-0EF7A9B79A1C@...2127...>
+	<20160523160426.GL53051@...1296...>
+	<57455384.2020007@...515...>
+Subject: Re: [Openvpn-devel] [PATCH 1/2] Refactor t_client.sh
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,44 +23,27 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-
---001a114ac8f8206d400533add170
-Content-Type: text/plain; charset=UTF-8
-
-On Tue, May 24, 2016 at 6:53 PM, Selva Nair <selva.nair@...277...> wrote:
-
-> Do not mask input when echo is requested. Useful for username
-> input and sometimes for challenge response.
->
-> Signed-off-by: Selva Nair <selva.nair@...277...>
-
-
-Patch withdrawn in deference to David's pending patches that address this
-among other things..
-Also this one lacks a necessary version check to ensure --echo is supported
-by systemd-ask-password
-
-Selva
-
---001a114ac8f8206d400533add170
-Content-Type: text/html; charset="UTF-8"
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
+To: =?windows-1252?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-<div dir=3D"ltr"><br><div class=3D"gmail_extra"><br><div class=3D"gmail_quo=
-te">On Tue, May 24, 2016 at 6:53 PM, Selva Nair <span dir=3D"ltr">&lt;<a hr=
-ef=3D"mailto:selva.nair@...277..." target=3D"_blank">selva.nair@...277...</=
-a>&gt;</span> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0=
- 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">Do not mask input wh=
-en echo is requested. Useful for username<br>
-input and sometimes for challenge response.<br>
-<br>
-Signed-off-by: Selva Nair &lt;<a href=3D"mailto:selva.nair@...277...">selva=
-.nair@...277...</a>&gt;</blockquote><div><br></div><div>Patch withdrawn in =
-deference to David&#39;s pending patches that address this among other thin=
-gs..=C2=A0</div><div>Also this one lacks a necessary version check to ensur=
-e --echo is supported by systemd-ask-password</div><div><br></div><div>Selv=
-a</div></div></div></div>
 
---001a114ac8f8206d400533add170--
+...
+>=20
+> The buildmaster part is not documented anywhere. I have shared the master=
+ config once when someone requested it - there is nothing inherently privat=
+e in there, once the passwords are removed. Setting up buildmaster + builds=
+laves could definitely be automated, but it would be a rather massive task.
 
+Samuli, could you send me the scripts? I=92d like to have a look. Maybe the=
+re is something that can be replicated. This is something I=92d try to add =
+to the scripted integration tests (Vagrant) already in the pipeline.
+
+[=85]
+
+>=20
+> Could we use Travis CI with a huge combination of operating systems and b=
+uild flags? Or does this kind of use go outside its scope? Right now each c=
+ommit triggers something like 150 builds on the buildslaves (in total).
+>=20
