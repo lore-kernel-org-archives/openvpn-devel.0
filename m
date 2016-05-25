@@ -1,20 +1,16 @@
-Mime-Version: 1.0 (Mac OS X Mail 9.3 \(3124\))
-From: Jens Neuhalfen <openvpn-devel@...2127...>
-In-Reply-To: <57455384.2020007@...515...>
-Date: Wed, 25 May 2016 19:32:20 +0200
-Message-Id: <F7A2C190-9AB4-4527-8570-10F62E86E56E@...2127...>
-References: <1463822525-2532-1-git-send-email-openvpn-devel@...2127...>
-	<1463822525-2532-2-git-send-email-openvpn-devel@...2127...>
-	<20160521095424.GQ53051@...1296...>
-	<BF0BE230-3DDA-4CF6-A8DB-CABBE0825CF4@...2127...>
-	<20160521111016.GS53051@...1296...>
-	<9715E28C-0B26-4EAE-907A-B8A326BF98A7@...2127...>
-	<20160522124546.GA53051@...1296...>
-	<5742C2E1.2060407@...515...>
-	<53A330A9-AA2C-4545-A854-0EF7A9B79A1C@...2127...>
-	<20160523160426.GL53051@...1296...>
-	<57455384.2020007@...515...>
-Subject: Re: [Openvpn-devel] [PATCH 1/2] Refactor t_client.sh
+Resent-To: "openvpn-devel@lists.sourceforge.net"
+	<openvpn-devel@lists.sourceforge.net>
+Resent-Message-ID: <5745E29A.8060204@...1127...>
+References: <1464130427-25002-1-git-send-email-selva.nair@...277...>
+	<57457A80.4030506@...2080...>
+	<CAKuzo_jawxTrgwQtzOhb7vqHJ3LEvULjPNphTRugYmyWMZenSQ@...278...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <5745D00F.1030309@...2080...>
+Date: Wed, 25 May 2016 18:17:19 +0200
+MIME-Version: 1.0
+In-Reply-To: <CAKuzo_jawxTrgwQtzOhb7vqHJ3LEvULjPNphTRugYmyWMZenSQ@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] Pass echo option to systemd-ask-password
+Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -23,27 +19,67 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
-To: =?windows-1252?Q?Samuli_Sepp=E4nen?= <samuli@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+To: Selva Nair <selva.nair@...277...>
+
+On 25/05/16 17:27, Selva Nair wrote:
+> 
+> Well, if a major rewrite of console input is planned, consider
+> replacing getpass() as well. It has arbitrary password length
+> limitations on some platforms. At the same time I'm not sure I
+> understand the need for this overhaul.
+
+Currently the interface is basically stdio/stdout.  But with a more
+modular API for querying user, you can enable more fancy ways of
+querying the user.  In the systemd team, they're talking about moving
+away from systemd-tty-ask-password's API to a DBus oriented API (but it
+is dragging, as they can't do that without kdbus in place for querying
+users at boot time).  The idea is that OpenVPN should be completely
+agnostic to if the user input is from a tty console or a fancy graphical
+GUI.  The OS/distribution just needs to support a method through this API.
+
+The other advantage this new API has is that it can be expanded to ask
+for all the information at once, instead of the current sequential
+approach (first username, then password, then key passphrase or PKCS11
+PIN, etc, etc).  I've barely started looking at that, but I would need
+to get the overall API in place first before starting to rearrange the
+code sections where OpenVPN needs user input.
+
+So combined, it can support a more simpler interaction with the OpenVPN
+daemon.
+
+In regards to the getpass() issues, that should be possible to improve
+though.
+
+> Your patch has
+> 
+> +#if SYSTEMD_VERSION > 216
+> +    if( echo )
+> +    {
+> +argv_printf_cat(&argv, "--echo");
+> +    }
+> +#endif
+> 
+> How would such a compile time check be any useful -- the version will
+> have to be checked at run-time, isn't it?
+> 
+> So, should I withdraw the patch or try to fix it by hacking up a
+> run-time version check?
+
+There exists no way to query at runtime which version systemd is running
+(or at least it didn't when I started poking at that).  And it was
+considered that if you have version newer than 216 you would never
+downgrade systemd, so a compile time check would generally be good
+enough.  This works at least very well in the RHEL/Fedora build
+environments where all builds happens in chroots managed by mock, where
+the buildroots have the same package versions installed as the
+distribution the build is targeted at.
 
 
-...
->=20
-> The buildmaster part is not documented anywhere. I have shared the master=
- config once when someone requested it - there is nothing inherently privat=
-e in there, once the passwords are removed. Setting up buildmaster + builds=
-laves could definitely be automated, but it would be a rather massive task.
+-- 
+kind regards,
 
-Samuli, could you send me the scripts? I=92d like to have a look. Maybe the=
-re is something that can be replicated. This is something I=92d try to add =
-to the scripted integration tests (Vagrant) already in the pipeline.
+David Sommerseth
 
-[=85]
 
->=20
-> Could we use Travis CI with a huge combination of operating systems and b=
-uild flags? Or does this kind of use go outside its scope? Right now each c=
-ommit triggers something like 150 builds on the buildslaves (in total).
->=20
