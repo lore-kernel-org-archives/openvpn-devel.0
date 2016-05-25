@@ -1,9 +1,9 @@
 From: openvpn-devel@...2127...
-Date: Wed, 25 May 2016 19:57:55 +0200
-Message-Id: <20160525175756.56186-2-openvpn-devel@...2127...>
+Date: Wed, 25 May 2016 19:57:56 +0200
+Message-Id: <20160525175756.56186-3-openvpn-devel@...2127...>
 In-Reply-To: <20160525175756.56186-1-openvpn-devel@...2127...>
 References: <20160525175756.56186-1-openvpn-devel@...2127...>
-Subject: [Openvpn-devel] [PATCH 1/2] Add unit testing support via cmocka
+Subject: [Openvpn-devel] [PATCH 2/2] Add a test for auth-pam searchandreplace
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,220 +18,393 @@ To: openvpn-devel@lists.sourceforge.net
 
 From: Jens Neuhalfen <jens@...2127...>
 
-cmocka [1,2] is a testing framework for C. Adding unit test capabilities to the
-openvpn repository will greatly ease the task of writing correct code.
+No functional changes.
 
-cmocka source code is added as git submodule in ./vendor. A submodule approach
-has been chosen over a classical library dependency because libcmocka is not
-available, or only available in very old versions (e.g. on Ubuntu).
+Utility functions of auth-pam are split into a dedicated file. This allows
+the test programs to easily test these functions without adding dependencies.
 
-cmocka is build during 'make check' and installed in vendor/dist/.
-
-[1] https://cmocka.org/
-[2] https://lwn.net/Articles/558106/
+Add a minimal test for searchandreplace as a proof of concept.
 
 Signed-off-by: Jens Neuhalfen <jens@...2127...>
 ---
- .gitmodules                               |  4 +++
- Makefile.am                               |  2 +-
- configure.ac                              | 16 +++++++++++
- tests/Makefile.am                         |  3 +-
- tests/unit_tests/.gitignore               |  1 +
- tests/unit_tests/Makefile.am              |  3 ++
- tests/unit_tests/README.md                | 40 ++++++++++++++++++++++++++
- tests/unit_tests/example_test/Makefile.am | 13 +++++++++
- tests/unit_tests/example_test/README.md   |  3 ++
- tests/unit_tests/example_test/test.c      | 47 +++++++++++++++++++++++++++++++
- tests/unit_tests/example_test/test2.c     | 22 +++++++++++++++
- vendor/.gitignore                         |  2 ++
- vendor/Makefile.am                        | 24 ++++++++++++++++
- vendor/README.md                          |  9 ++++++
- vendor/cmocka                             |  1 +
- 15 files changed, 188 insertions(+), 2 deletions(-)
- create mode 100644 .gitmodules
- create mode 100644 tests/unit_tests/.gitignore
- create mode 100644 tests/unit_tests/Makefile.am
- create mode 100644 tests/unit_tests/README.md
- create mode 100644 tests/unit_tests/example_test/Makefile.am
- create mode 100644 tests/unit_tests/example_test/README.md
- create mode 100644 tests/unit_tests/example_test/test.c
- create mode 100644 tests/unit_tests/example_test/test2.c
- create mode 100644 vendor/.gitignore
- create mode 100644 vendor/Makefile.am
- create mode 100644 vendor/README.md
- create mode 160000 vendor/cmocka
+ configure.ac                                       |   2 +
+ src/plugins/auth-pam/Makefile.am                   |   1 +
+ src/plugins/auth-pam/auth-pam.c                    |  91 +----------------
+ src/plugins/auth-pam/utils.c                       | 113 +++++++++++++++++++++
+ src/plugins/auth-pam/utils.h                       |  54 ++++++++++
+ tests/unit_tests/Makefile.am                       |   2 +-
+ tests/unit_tests/plugins/Makefile.am               |   3 +
+ tests/unit_tests/plugins/auth-pam/Makefile.am      |  12 +++
+ .../plugins/auth-pam/test_search_and_replace.c     |  79 ++++++++++++++
+ 9 files changed, 266 insertions(+), 91 deletions(-)
+ create mode 100644 src/plugins/auth-pam/utils.c
+ create mode 100644 src/plugins/auth-pam/utils.h
+ create mode 100644 tests/unit_tests/plugins/Makefile.am
+ create mode 100644 tests/unit_tests/plugins/auth-pam/Makefile.am
+ create mode 100644 tests/unit_tests/plugins/auth-pam/test_search_and_replace.c
 
-diff --git a/.gitmodules b/.gitmodules
-new file mode 100644
-index 0000000..e9c6388
---- /dev/null
-+++ b/.gitmodules
-@@ -0,0 +1,4 @@
-+[submodule "vendor/cmocka"]
-+	path = vendor/cmocka
-+	url = git://git.cryptomilk.org/projects/cmocka.git
-+	branch = master
-diff --git a/Makefile.am b/Makefile.am
-index 66d9f23..364785c 100644
---- a/Makefile.am
-+++ b/Makefile.am
-@@ -54,7 +54,7 @@ BUILT_SOURCES = \
- 	config-version.h
- endif
- 
--SUBDIRS = build distro include src sample doc tests
-+SUBDIRS = build distro include src sample doc vendor tests
- 
- dist_doc_DATA = \
- 	README \
 diff --git a/configure.ac b/configure.ac
-index 97ad856..fb3fa3c 100644
+index fb3fa3c..5e69f91 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -1198,6 +1198,19 @@ sampledir="\$(docdir)/sample"
- AC_SUBST([plugindir])
- AC_SUBST([sampledir])
- 
-+VENDOR_SRC_ROOT="\$(abs_top_srcdir)/vendor/"
-+VENDOR_DIST_ROOT="\$(abs_top_builddir)/vendor/dist"
-+VENDOR_BUILD_ROOT="\$(abs_top_builddir)/vendor/.build"
-+AC_SUBST([VENDOR_SRC_ROOT])
-+AC_SUBST([VENDOR_BUILD_ROOT])
-+AC_SUBST([VENDOR_DIST_ROOT])
-+
-+TEST_LDFLAGS="-lcmocka -L\$(abs_top_builddir)/vendor/dist/lib -Wl,-rpath,\$(abs_top_builddir)/vendor/dist/lib"
-+TEST_CFLAGS="-I\$(top_srcdir)/include -I\$(abs_top_builddir)/vendor/dist/include"
-+
-+AC_SUBST([TEST_LDFLAGS])
-+AC_SUBST([TEST_CFLAGS])
-+
- AC_CONFIG_FILES([
- 	version.sh
- 	Makefile
-@@ -1216,6 +1229,9 @@ AC_CONFIG_FILES([
- 	src/plugins/auth-pam/Makefile
+@@ -1230,6 +1230,8 @@ AC_CONFIG_FILES([
  	src/plugins/down-root/Makefile
  	tests/Makefile
-+        tests/unit_tests/Makefile
-+        tests/unit_tests/example_test/Makefile
-+        vendor/Makefile
+         tests/unit_tests/Makefile
++        tests/unit_tests/plugins/Makefile
++        tests/unit_tests/plugins/auth-pam/Makefile
+         tests/unit_tests/example_test/Makefile
+         vendor/Makefile
  	sample/Makefile
- 	doc/Makefile
- ])
-diff --git a/tests/Makefile.am b/tests/Makefile.am
-index b7980e0..2cba9e6 100644
---- a/tests/Makefile.am
-+++ b/tests/Makefile.am
-@@ -12,6 +12,8 @@
- MAINTAINERCLEANFILES = \
- 	$(srcdir)/Makefile.in
+diff --git a/src/plugins/auth-pam/Makefile.am b/src/plugins/auth-pam/Makefile.am
+index 2aef311..e6dc27e 100644
+--- a/src/plugins/auth-pam/Makefile.am
++++ b/src/plugins/auth-pam/Makefile.am
+@@ -18,6 +18,7 @@ dist_doc_DATA = README.auth-pam
+ endif
  
-+SUBDIRS = unit_tests
-+
- test_scripts = t_client.sh t_lpback.sh t_cltsrv.sh
+ openvpn_plugin_auth_pam_la_SOURCES = \
++	utils.c \
+ 	auth-pam.c \
+ 	pamdl.c  pamdl.h \
+ 	auth-pam.exports
+diff --git a/src/plugins/auth-pam/auth-pam.c b/src/plugins/auth-pam/auth-pam.c
+index 710accc..5ad3ec8 100644
+--- a/src/plugins/auth-pam/auth-pam.c
++++ b/src/plugins/auth-pam/auth-pam.c
+@@ -39,7 +39,6 @@
+ #include <stdio.h>
+ #include <string.h>
+ #include <ctype.h>
+-#include <stdbool.h>
+ #include <unistd.h>
+ #include <stdlib.h>
+ #include <sys/types.h>
+@@ -48,7 +47,7 @@
+ #include <fcntl.h>
+ #include <signal.h>
+ #include <syslog.h>
+-#include <stdint.h>
++#include "utils.h"
  
- TESTS_ENVIRONMENT = top_srcdir="$(top_srcdir)"
-@@ -20,4 +22,3 @@ TESTS = $(test_scripts)
- dist_noinst_SCRIPTS = \
- 	$(test_scripts) \
- 	t_cltsrv-down.sh
+ #include <openvpn-plugin.h>
+ 
+@@ -117,94 +116,6 @@ struct user_pass {
+ /* Background process function */
+ static void pam_server (int fd, const char *service, int verb, const struct name_value_list *name_value_list);
+ 
+-/*  Read 'tosearch', replace all occurences of 'searchfor' with 'replacewith' and return
+- *  a pointer to the NEW string.  Does not modify the input strings.  Will not enter an
+- *  infinite loop with clever 'searchfor' and 'replacewith' strings.
+- *  Daniel Johnson - Progman2000@...1085... / djohnson@...1167...
+- *
+- *  Retuns NULL when
+- *   - any parameter is NULL
+- *   - the worst-case result is to large ( >= SIZE_MAX)
+- */
+-static char *
+-searchandreplace(const char *tosearch, const char *searchfor, const char *replacewith)
+-{
+-  if (!tosearch || !searchfor || !replacewith) return NULL;
 -
-diff --git a/tests/unit_tests/.gitignore b/tests/unit_tests/.gitignore
+-  size_t tosearchlen = strlen(tosearch);
+-  size_t replacewithlen = strlen(replacewith);
+-  size_t templen = tosearchlen * replacewithlen;
+-
+-  if (tosearchlen == 0 || strlen(searchfor) == 0 || replacewithlen == 0) {
+-    return NULL;
+-  }
+-
+-  bool is_potential_integer_overflow =  (templen == SIZE_MAX) || (templen / tosearchlen != replacewithlen);
+-
+-  if (is_potential_integer_overflow) {
+-       return NULL;
+-  }
+-
+-  // state: all parameters are valid
+-
+-  const char *searching=tosearch;
+-  char *scratch;
+-
+-  char temp[templen+1];
+-  temp[0]=0;
+-
+-  scratch = strstr(searching,searchfor);
+-  if (!scratch) return strdup(tosearch);
+-
+-  while (scratch) {
+-    strncat(temp,searching,scratch-searching);
+-    strcat(temp,replacewith);
+-
+-    searching=scratch+strlen(searchfor);
+-    scratch = strstr(searching,searchfor);
+-  }
+-  return strdup(temp);
+-}
+-
+-/*
+- * Given an environmental variable name, search
+- * the envp array for its value, returning it
+- * if found or NULL otherwise.
+- */
+-static const char *
+-get_env (const char *name, const char *envp[])
+-{
+-  if (envp)
+-    {
+-      int i;
+-      const int namelen = strlen (name);
+-      for (i = 0; envp[i]; ++i)
+-	{
+-	  if (!strncmp (envp[i], name, namelen))
+-	    {
+-	      const char *cp = envp[i] + namelen;
+-	      if (*cp == '=')
+-		return cp + 1;
+-	    }
+-	}
+-    }
+-  return NULL;
+-}
+-
+-/*
+- * Return the length of a string array
+- */
+-static int
+-string_array_len (const char *array[])
+-{
+-  int i = 0;
+-  if (array)
+-    {
+-      while (array[i])
+-	++i;
+-    }
+-  return i;
+-}
+ 
+ /*
+  * Socket read/write functions.
+diff --git a/src/plugins/auth-pam/utils.c b/src/plugins/auth-pam/utils.c
 new file mode 100644
-index 0000000..8655de8
+index 0000000..4f2bec1
 --- /dev/null
-+++ b/tests/unit_tests/.gitignore
-@@ -0,0 +1 @@
-+*_testdriver
++++ b/src/plugins/auth-pam/utils.c
+@@ -0,0 +1,113 @@
++/*
++ *  OpenVPN -- An application to securely tunnel IP networks
++ *             over a single TCP/UDP port, with support for SSL/TLS-based
++ *             session authentication and key exchange,
++ *             packet encryption, packet authentication, and
++ *             packet compression.
++ *
++ *  Copyright (C) 2002-2010 OpenVPN Technologies, Inc. <sales@...515...>
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License version 2
++ *  as published by the Free Software Foundation.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License
++ *  along with this program (see the file COPYING included with this
++ *  distribution); if not, write to the Free Software Foundation, Inc.,
++ *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
++ */
++
++/*
++ * OpenVPN plugin module to do PAM authentication using a split
++ * privilege model.
++ */
++#ifdef HAVE_CONFIG_H
++#include <config.h>
++#endif
++
++
++#include <string.h>
++#include <ctype.h>
++#include <stdbool.h>
++#include <stdlib.h>
++#include <sys/types.h>
++#include <stdint.h>
++
++#include "utils.h"
++
++char *
++searchandreplace(const char *tosearch, const char *searchfor, const char *replacewith)
++{
++  if (!tosearch || !searchfor || !replacewith) return NULL;
++
++  size_t tosearchlen = strlen(tosearch);
++  size_t replacewithlen = strlen(replacewith);
++  size_t templen = tosearchlen * replacewithlen;
++
++  if (tosearchlen == 0 || strlen(searchfor) == 0 || replacewithlen == 0) {
++    return NULL;
++  }
++
++  bool is_potential_integer_overflow =  (templen == SIZE_MAX) || (templen / tosearchlen != replacewithlen);
++
++  if (is_potential_integer_overflow) {
++       return NULL;
++  }
++
++  // state: all parameters are valid
++
++  const char *searching=tosearch;
++  char *scratch;
++
++  char temp[templen+1];
++  temp[0]=0;
++
++  scratch = strstr(searching,searchfor);
++  if (!scratch) return strdup(tosearch);
++
++  while (scratch) {
++    strncat(temp,searching,scratch-searching);
++    strcat(temp,replacewith);
++
++    searching=scratch+strlen(searchfor);
++    scratch = strstr(searching,searchfor);
++  }
++  return strdup(temp);
++}
++
++const char *
++get_env (const char *name, const char *envp[])
++{
++  if (envp)
++    {
++      int i;
++      const int namelen = strlen (name);
++      for (i = 0; envp[i]; ++i)
++	{
++	  if (!strncmp (envp[i], name, namelen))
++	    {
++	      const char *cp = envp[i] + namelen;
++	      if (*cp == '=')
++		return cp + 1;
++	    }
++	}
++    }
++  return NULL;
++}
++
++int
++string_array_len (const char *array[])
++{
++  int i = 0;
++  if (array)
++    {
++      while (array[i])
++	++i;
++    }
++  return i;
++}
+diff --git a/src/plugins/auth-pam/utils.h b/src/plugins/auth-pam/utils.h
+new file mode 100644
+index 0000000..d896f89
+--- /dev/null
++++ b/src/plugins/auth-pam/utils.h
+@@ -0,0 +1,54 @@
++/*
++ *  OpenVPN -- An application to securely tunnel IP networks
++ *             over a single TCP/UDP port, with support for SSL/TLS-based
++ *             session authentication and key exchange,
++ *             packet encryption, packet authentication, and
++ *             packet compression.
++ *
++ *  Copyright (C) 2002-2010 OpenVPN Technologies, Inc. <sales@...515...>
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License version 2
++ *  as published by the Free Software Foundation.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License
++ *  along with this program (see the file COPYING included with this
++ *  distribution); if not, write to the Free Software Foundation, Inc.,
++ *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
++ */
++
++#ifndef _PLUGIN_AUTH_PAM_UTILS__H
++#define _PLUGIN_AUTH_PAM_UTILS__H
++
++/*  Read 'tosearch', replace all occurences of 'searchfor' with 'replacewith' and return
++ *  a pointer to the NEW string.  Does not modify the input strings.  Will not enter an
++ *  infinite loop with clever 'searchfor' and 'replacewith' strings.
++ *  Daniel Johnson - Progman2000@...1085... / djohnson@...1167...
++ *
++ *  Retuns NULL when
++ *   - any parameter is NULL
++ *   - the worst-case result is to large ( >= SIZE_MAX)
++ */
++char *
++searchandreplace(const char *tosearch, const char *searchfor, const char *replacewith);
++
++/*
++ * Given an environmental variable name, search
++ * the envp array for its value, returning it
++ * if found or NULL otherwise.
++ */
++const char *
++get_env (const char *name, const char *envp[]);
++
++/*
++ * Return the length of a string array
++ */
++int
++string_array_len (const char *array[]);
++
++#endif
 diff --git a/tests/unit_tests/Makefile.am b/tests/unit_tests/Makefile.am
-new file mode 100644
-index 0000000..18267bd
---- /dev/null
+index 18267bd..e076db8 100644
+--- a/tests/unit_tests/Makefile.am
 +++ b/tests/unit_tests/Makefile.am
+@@ -1,3 +1,3 @@
+ AUTOMAKE_OPTIONS = foreign
+ 
+-SUBDIRS = example_test
++SUBDIRS = example_test plugins
+diff --git a/tests/unit_tests/plugins/Makefile.am b/tests/unit_tests/plugins/Makefile.am
+new file mode 100644
+index 0000000..a3696d5
+--- /dev/null
++++ b/tests/unit_tests/plugins/Makefile.am
 @@ -0,0 +1,3 @@
 +AUTOMAKE_OPTIONS = foreign
 +
-+SUBDIRS = example_test
-diff --git a/tests/unit_tests/README.md b/tests/unit_tests/README.md
++SUBDIRS = auth-pam
+diff --git a/tests/unit_tests/plugins/auth-pam/Makefile.am b/tests/unit_tests/plugins/auth-pam/Makefile.am
 new file mode 100644
-index 0000000..ef81b23
+index 0000000..07233ee
 --- /dev/null
-+++ b/tests/unit_tests/README.md
-@@ -0,0 +1,40 @@
-+Unit Tests
-+===========
-+
-+This directory contains unit tests for openvpn. New features/bugfixes should be written in a test friendly way and come with corresponding tests.
-+
-+Run tests
-+----------
-+
-+Tests are run by `make check`. A failed tests stops test execution. To run all
-+tests regardless of errors call `make -k check`.
-+
-+Add new tests to existing test suite
-+-------------------------------------
-+
-+Test suites are organized in directories. [example_test/](example_test/) is an example
-+for a test suite with two test executables. Feel free to use it as a template for new tests.
-+
-+Test suites
-+--------------------
-+
-+Test suites live inside a subdirectory of `$ROOT/tests/unit_tests`, e.g. `$ROOT/tests/unit_tests/my_feature`.
-+
-+Test suites are configured by a `Makefile.am`. Tests are executed by testdrivers. One testsuite can contain more than one testdriver.
-+
-+### Hints
-+* Name suites & testdrivers in a way that the name of the driver says something about which component/feature is tested
-+* Name the testdriver executable `*_testdriver`. This way it gets picked up by the default `.gitignore`
-+  * If this is not feasible: Add all output to a `.gitignore`* Use descriptive test names: `coffee_brewing__with_no_beans__fails` vs. `test34`
-+* Testing a configurable feature?  Wrap test execution with a conditional (see [auth_pam](plugins/auth-pam/Makefile.am) for an example)
-+* Add multiple test-drivers when one testdriver looks crowded with tests
-+
-+### New Test Suites
-+1.  Organize tests in folders for features.
-+2.  Add the new test directory to `SUBDIRS` in `Makefile.am`
-+3.  Edit `configure.ac` and add the new `Makefile` to `AC_CONFIG_FILES`
-+4.  Run `./configure`, and *enable* the feature you'd like to test
-+5.  Make sure that `make check` runs your tests
-+6.  Check: Would a stranger be able to easily find your tests by you looking at the test output?  
-+7. Run `./configure`, and *disable* the feature you'd like to test
-+8.  Make sure that `make check` does *not run* your tests
-diff --git a/tests/unit_tests/example_test/Makefile.am b/tests/unit_tests/example_test/Makefile.am
-new file mode 100644
-index 0000000..04a5ad3
---- /dev/null
-+++ b/tests/unit_tests/example_test/Makefile.am
-@@ -0,0 +1,13 @@
++++ b/tests/unit_tests/plugins/auth-pam/Makefile.am
+@@ -0,0 +1,12 @@
 +AUTOMAKE_OPTIONS = foreign
 +
-+check_PROGRAMS = example_testdriver example2_testdriver
-+
++if ENABLE_PLUGIN_AUTH_PAM
++check_PROGRAMS = auth_pam_testdriver
 +TESTS = $(check_PROGRAMS)
++endif
 +
-+example_testdriver_CFLAGS  = @TEST_CFLAGS@
-+example_testdriver_LDFLAGS = @TEST_LDFLAGS@
-+example_testdriver_SOURCES = test.c
++sut_sourcedir = $(top_srcdir)/src/plugins/auth-pam
 +
-+example2_testdriver_CFLAGS  = @TEST_CFLAGS@
-+example2_testdriver_LDFLAGS = @TEST_LDFLAGS@
-+example2_testdriver_SOURCES = test2.c
-diff --git a/tests/unit_tests/example_test/README.md b/tests/unit_tests/example_test/README.md
++auth_pam_testdriver_SOURCES = test_search_and_replace.c  $(sut_sourcedir)/utils.h $(sut_sourcedir)/utils.c
++auth_pam_testdriver_CFLAGS  = @TEST_CFLAGS@ -I$(sut_sourcedir)
++auth_pam_testdriver_LDFLAGS = @TEST_LDFLAGS@
+diff --git a/tests/unit_tests/plugins/auth-pam/test_search_and_replace.c b/tests/unit_tests/plugins/auth-pam/test_search_and_replace.c
 new file mode 100644
-index 0000000..cb75d68
+index 0000000..d6b8a91
 --- /dev/null
-+++ b/tests/unit_tests/example_test/README.md
-@@ -0,0 +1,3 @@
-+This test only checks that test compilation works. This example contains two test executables.
-+
-+These tests can be used as template for 'real' tests.
-diff --git a/tests/unit_tests/example_test/test.c b/tests/unit_tests/example_test/test.c
-new file mode 100644
-index 0000000..c746b8b
---- /dev/null
-+++ b/tests/unit_tests/example_test/test.c
-@@ -0,0 +1,47 @@
++++ b/tests/unit_tests/plugins/auth-pam/test_search_and_replace.c
+@@ -0,0 +1,79 @@
 +#include <stdio.h>
 +#include <unistd.h>
 +#include <stdlib.h>
@@ -240,133 +413,77 @@ index 0000000..c746b8b
 +#include <setjmp.h>
 +#include <cmocka.h>
 +
-+static int setup(void **state) {
-+     int *answer  = malloc(sizeof(int));
++#include "utils.h"
 +
-+     *answer=42;
-+     *state=answer;
++static void pass_any_null_param__returns_null() {
 +
-+     return 0;
++  char DUMMY[] = "DUMMY";
++
++  assert_null(searchandreplace(NULL,DUMMY,DUMMY));
++  assert_null(searchandreplace(DUMMY,NULL,DUMMY));
++  assert_null(searchandreplace(DUMMY,DUMMY,NULL));
 +}
 +
-+static int teardown(void **state) {
-+     free(*state);
++static void pass_any_empty_string__returns_null() {
 +
-+     return 0;
++  char DUMMY[] = "DUMMY";
++  char EMPTY[] = "";
++
++  assert_null(searchandreplace(EMPTY,DUMMY,DUMMY));
++  assert_null(searchandreplace(DUMMY,EMPTY,DUMMY));
++  assert_null(searchandreplace(DUMMY,DUMMY,EMPTY));
 +}
 +
-+static void null_test_success(void **state) {
-+    (void) state;
++static void replace_single_char__one_time__match_is_replaced() {
++  char *replaced = searchandreplace("X","X","Y");
++
++  assert_non_null(replaced);
++  assert_string_equal("Y", replaced);
++
++  free(replaced);
 +}
 +
-+static void int_test_success(void **state) {
-+     int *answer = *state;
-+     assert_int_equal(*answer, 42);
++static void replace_single_char__multiple_times__match_all_matches_are_replaced() {
++  char *replaced = searchandreplace("XaX","X","Y");
++
++  assert_non_null(replaced);
++  assert_string_equal ("YaY", replaced);
++
++  free(replaced);
 +}
 +
-+static void failing_test(void **state) {
-+     // This tests fails to test that make check fails
-+     assert_int_equal(0, 42);
++static void replace_longer_text__multiple_times__match_all_matches_are_replaced() {
++  char *replaced = searchandreplace("XXaXX","XX","YY");
++
++  assert_non_null(replaced);
++  assert_string_equal ("YYaYY", replaced);
++
++  free(replaced);
 +}
++
++static void pattern_not_found__returns_original() {
++  char *replaced = searchandreplace("abc","X","Y");
++
++  assert_non_null(replaced);
++  assert_string_equal ("abc", replaced);
++
++  free(replaced);
++}
++
 +
 +int main(void) {
 +    const struct CMUnitTest tests[] = {
-+        cmocka_unit_test(null_test_success),
-+        cmocka_unit_test_setup_teardown(int_test_success, setup, teardown),
-+//        cmocka_unit_test(failing_test),
++        cmocka_unit_test(pass_any_null_param__returns_null),
++        cmocka_unit_test(pass_any_empty_string__returns_null),
++        cmocka_unit_test(replace_single_char__one_time__match_is_replaced),
++        cmocka_unit_test(replace_single_char__multiple_times__match_all_matches_are_replaced),
++        cmocka_unit_test(replace_longer_text__multiple_times__match_all_matches_are_replaced),
++        cmocka_unit_test(pattern_not_found__returns_original),
 +    };
 +
-+    return cmocka_run_group_tests_name("success_test", tests, NULL, NULL);
++    return cmocka_run_group_tests_name("searchandreplace", tests, NULL, NULL);
 +}
 +
-diff --git a/tests/unit_tests/example_test/test2.c b/tests/unit_tests/example_test/test2.c
-new file mode 100644
-index 0000000..2924c61
---- /dev/null
-+++ b/tests/unit_tests/example_test/test2.c
-@@ -0,0 +1,22 @@
-+#include <stdio.h>
-+#include <unistd.h>
-+#include <stdlib.h>
-+#include <stdarg.h>
-+#include <string.h>
-+#include <setjmp.h>
-+#include <cmocka.h>
-+
-+
-+static void test_true(void **state) {
-+    (void) state;
-+}
-+
-+
-+int main(void) {
-+    const struct CMUnitTest tests[] = {
-+        cmocka_unit_test(test_true),
-+    };
-+
-+    return cmocka_run_group_tests_name("success_test2", tests, NULL, NULL);
-+}
-+
-diff --git a/vendor/.gitignore b/vendor/.gitignore
-new file mode 100644
-index 0000000..e11dfec
---- /dev/null
-+++ b/vendor/.gitignore
-@@ -0,0 +1,2 @@
-+.build/
-+dist/
-diff --git a/vendor/Makefile.am b/vendor/Makefile.am
-new file mode 100644
-index 0000000..f68240e
---- /dev/null
-+++ b/vendor/Makefile.am
-@@ -0,0 +1,24 @@
-+AUTOMAKE_OPTIONS = foreign
-+
-+cmockasrc     = @VENDOR_SRC_ROOT@/cmocka  # needs an absolute path bc. of the cmake invocation
-+cmockabuild   = @VENDOR_BUILD_ROOT@/cmocka
-+cmockainstall = @VENDOR_DIST_ROOT@
-+
-+MAINTAINERCLEANFILES = \
-+	$(srcdir)/Makefile.in \
-+	$(cmockabuild) \
-+	$(cmockainstall) \
-+	@VENDOR_BUILD_ROOT@
-+
-+distdir:
-+	mkdir -p $(cmockainstall)
-+
-+libcmocka: distdir
-+	mkdir -p $(cmockabuild)
-+	(cd $(cmockabuild) && cmake -DCMAKE_INSTALL_PREFIX=$(cmockainstall) $(cmockasrc) && make && make install)
-+
-+check: libcmocka
-+
-+clean:
-+	rm -rf $(cmockabuild)
-+	rm -rf $(cmockainstall)
-diff --git a/vendor/README.md b/vendor/README.md
-new file mode 100644
-index 0000000..6a46b35
---- /dev/null
-+++ b/vendor/README.md
-@@ -0,0 +1,9 @@
-+Vendor
-+========
-+
-+Vendor source libraries are included in this directory. Libraries are included
-+when there is no good way to ensure that the package is available on all 
-+systems.
-+
-+`Makefile.am` compiles these libraries and installs them into ./dist.
-+
-diff --git a/vendor/cmocka b/vendor/cmocka
-new file mode 160000
-index 0000000..b2732b5
---- /dev/null
-+++ b/vendor/cmocka
-@@ -0,0 +1 @@
-+Subproject commit b2732b52202ae48f866a024c633466efdbb8e85a
 -- 
 2.8.3
 
