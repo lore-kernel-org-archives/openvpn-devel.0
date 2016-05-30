@@ -1,12 +1,9 @@
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <574BF4FF.9090502@...515...>
+Date: Mon, 30 May 2016 11:08:31 +0300
 MIME-Version: 1.0
-In-Reply-To: <20160525175756.56186-3-openvpn-devel@...2127...>
-References: <20160525175756.56186-1-openvpn-devel@...2127...>
-	<20160525175756.56186-3-openvpn-devel@...2127...>
-From: Steffan Karger <steffan@...1856...>
-Date: Thu, 26 May 2016 22:53:33 +0200
-Message-ID: <CAA1AbxJ5zmSBzsW7ythLMX1O6KP9C0zF4OcDxHFroqyUoVpGdg@...278...>
-Subject: Re: [Openvpn-devel] [PATCH 2/2] Add a test for auth-pam
-	searchandreplace
+Subject: [Openvpn-devel] Topics for today's (Monday,
+	30th May 2016) community meeting
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,46 +12,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-To: Jens <openvpn-devel@...2127...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Transfer-Encoding: quoted-printable
+To: openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-Sorry for not noticing before, but one last nit:
+We're going to have an IRC meeting today starting at 20:00 CEST (18:00=20
+UTC) on #openvpn-meeting <at> irc.freenode.net. Note that the meeting=20
+channel has changed and that you do _not_ have to be logged in to=20
+Freenode to join the channel.
 
-On Wed, May 25, 2016 at 7:57 PM,  <openvpn-devel@...2127...> wrote:
-> +/*  Read 'tosearch', replace all occurences of 'searchfor' with 'replacewith' and return
-> + *  a pointer to the NEW string.  Does not modify the input strings.  Will not enter an
-> + *  infinite loop with clever 'searchfor' and 'replacewith' strings.
-> + *  Daniel Johnson - Progman2000@...1085... / djohnson@...1167...
-> + *
-> + *  Retuns NULL when
-> + *   - any parameter is NULL
-> + *   - the worst-case result is to large ( >= SIZE_MAX)
-> + */
+Current topic list along with basic information is here:
 
-Now that you're touching these anyway, let's turn these into
-doxygen-style comments (/** */).  But maybe Gert/David can do that
-when applying the patch, a v2 just for this seems a bit too much.
-Also goes for:
+<https://community.openvpn.net/openvpn/wiki/Topics-2016-05-30>
 
-> +/*
-> + * Given an environmental variable name, search
-> + * the envp array for its value, returning it
-> + * if found or NULL otherwise.
-> + */
+If you have any other things you'd like to bring up, respond to this=20
+mail, send me mail privately or add them to the list yourself.
 
-and
+In case you can't attend the meeting, please feel free to make comments=20
+on the topics by responding to this email or to the summary email sent=20
+after the meeting. Whenever possible, we'll also respond to existing,=20
+related email threads.
 
-> +/*
-> + * Return the length of a string array
-> + */
+--
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
 
-But for everything else: ACK.  Cool to have the infrastructure for
-unit testing in place.  Let's hope others will now thankfully make use
-of this.
-
--Steffan
+irc freenode net: mattock
 
