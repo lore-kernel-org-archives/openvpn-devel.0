@@ -1,9 +1,8 @@
 From: samuli@...515...
-Date: Mon, 30 May 2016 22:54:11 +0300
-Message-Id: <1464638051-19135-1-git-send-email-samuli@...515...>
+Date: Mon, 30 May 2016 22:54:58 +0300
+Message-Id: <1464638098-19187-1-git-send-email-samuli@...515...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] Clarify the fact that build instructions
-	in README are for release tarballs
+Subject: [Openvpn-devel] [PATCH v2] Add link to bug tracker
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,34 +14,31 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 To: openvpn-devel@lists.sourceforge.net
+Cc: Leon Klingele <git@...2143...>
 
-From: Samuli Sepp=C3=A4nen <samuli@...515...>
+From: Leon Klingele <git@...2143...>
 
-URL: https://github.com/OpenVPN/openvpn/pull/51
+URL: https://github.com/OpenVPN/openvpn/pull/25
 Signed-off-by: Samuli Sepp=C3=A4nen <samuli@...515...>
 ---
- README | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ README | 3 +++
+ 1 file changed, 3 insertions(+)
 
 diff --git a/README b/README
-index 349e08a..e1caad1 100644
+index e1caad1..09da268 100644
 --- a/README
 +++ b/README
-@@ -7,12 +7,13 @@ as published by the Free Software Foundation.
+@@ -28,6 +28,9 @@ For detailed information on OpenVPN, including examples, =
+see the man page
+ For a sample VPN configuration, see
+   http://openvpn.net/howto.html
 =20
- *************************************************************************
++To report an issue, see
++  https://community.openvpn.net/openvpn/report
++
+ For a description of OpenVPN's underlying protocol,
+   see the file ssl.h included in the source distribution.
 =20
--For the latest version of OpenVPN, go to:
-+To get the latest release of OpenVPN, go to:
-=20
- 	http://openvpn.net/
-=20
- To Build and Install,
-=20
-+	tar -zxf openvpn-<version>.tar.gz
- 	./configure
- 	make
- 	make install
 --=20
 2.5.5
 
