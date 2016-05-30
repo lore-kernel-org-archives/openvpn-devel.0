@@ -1,9 +1,10 @@
-From: samuli@...515...
-Date: Mon, 30 May 2016 23:03:50 +0300
-Message-Id: <1464638630-19744-1-git-send-email-samuli@...515...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3] Clarify the fact that build instructions
-	in README are for release tarballs
+From: David Sommerseth <openvpn@...2080...>
+Date: Mon, 30 May 2016 23:31:26 +0200
+Message-Id: <1464643886-5369-1-git-send-email-openvpn@...2080...>
+In-Reply-To: <20160525175756.56186-3-openvpn-devel@...2127...>
+References: <20160525175756.56186-3-openvpn-devel@...2127...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Add a test for auth-pam
+	searchandreplace
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,39 +13,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net, Jens Neuhalfen <jens@...2127...>
 
-From: Samuli Sepp=C3=A4nen <samuli@...515...>
+Your patch has been applied to the master and release/2.3 branch.
 
-URL: https://github.com/OpenVPN/openvpn/pull/51
-Signed-off-by: Samuli Sepp=C3=A4nen <samuli@...515...>
----
- README | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+commit 4ae44ef456c5d6f133ba0a059c6af3a7988868c7 master
+commit 0b8e0f53faa19bb1c326587bc8e612e4b1e8897d release/2.3
+Author: Jens Neuhalfen
+Date:   Wed May 25 19:57:56 2016 +0200
 
-diff --git a/README b/README
-index 349e08a..de4036a 100644
---- a/README
-+++ b/README
-@@ -7,12 +7,14 @@ as published by the Free Software Foundation.
-=20
- *************************************************************************
-=20
--For the latest version of OpenVPN, go to:
-+To get the latest release of OpenVPN, go to:
-=20
- 	http://openvpn.net/
-=20
- To Build and Install,
-=20
-+	tar -zxf openvpn-<version>.tar.gz
-+	cd openvpn-<version>
- 	./configure
- 	make
- 	make install
---=20
-2.5.5
+     Add a test for auth-pam searchandreplace
+
+     Signed-off-by: Jens Neuhalfen <jens@...2127...>
+     Acked-by: Steffan Karger <steffan@...1856...>
+     Message-Id: <20160525175756.56186-3-openvpn-devel@...2127...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/11724
+     Signed-off-by: David Sommerseth <dazo@...2145...>
+
+
+[ Modified during commit: Enhanced documentation of functions in utils.h
+  to comply with doxygen standards ]
+
+
+--
+kind regards,
+
+David Sommerseth
 
 
