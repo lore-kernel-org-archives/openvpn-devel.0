@@ -1,10 +1,12 @@
+References: <1464638630-19744-1-git-send-email-samuli@...515...>
 From: David Sommerseth <openvpn@...2080...>
-Date: Mon, 30 May 2016 23:31:15 +0200
-Message-Id: <1464643875-5317-1-git-send-email-openvpn@...2080...>
-In-Reply-To: <20160525175756.56186-2-openvpn-devel@...2127...>
-References: <20160525175756.56186-2-openvpn-devel@...2127...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Add unit testing support via
-	cmocka
+Message-ID: <574CB60B.1060403@...2080...>
+Date: Mon, 30 May 2016 23:52:11 +0200
+MIME-Version: 1.0
+In-Reply-To: <1464638630-19744-1-git-send-email-samuli@...515...>
+Subject: Re: [Openvpn-devel] [PATCH v3] Clarify the fact that build
+ instructions in README are for release tarballs
+Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,28 +16,38 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net, Jens Neuhalfen <jens@...2127...>
+Content-Transfer-Encoding: quoted-printable
+To: samuli@...515..., openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master and release/2.3 branch.
+On 30/05/16 22:03, samuli@...515... wrote:
+> From: Samuli Sepp=C3=A4nen <samuli@...515...>
+>=20
+> URL: https://github.com/OpenVPN/openvpn/pull/51
+> Signed-off-by: Samuli Sepp=C3=A4nen <samuli@...515...>
+> ---
+>  README | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
+>=20
+> diff --git a/README b/README
+> index 349e08a..de4036a 100644
+> --- a/README
+> +++ b/README
+> @@ -7,12 +7,14 @@ as published by the Free Software Foundation.
+>=20=20
+>  *************************************************************************
+>=20=20
+> -For the latest version of OpenVPN, go to:
+> +To get the latest release of OpenVPN, go to:
+>=20=20
+>  	http://openvpn.net/
 
-commit 1ca6bd4284e64ab3822f9e28fa16cb35499f2232 master
-commit 1739c102a5c7db510f0ae3c125501a3d1ba3e85f release/2.3
-Author: Jens Neuhalfen
-Date:   Wed May 25 19:57:55 2016 +0200
+Once we're at it, wouldn't it make sense to use this URL instead?
 
-     Add unit testing support via cmocka
-
-     Signed-off-by: Jens Neuhalfen <jens@...2127...>
-     Acked-by: Steffan Karger <steffan@...1856...>
-     Message-Id: <20160525175756.56186-2-openvpn-devel@...2127...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/11725
-     Signed-off-by: David Sommerseth <dazo@...2145...>
+<https://openvpn.net/index.php/open-source/downloads.html>
 
 
---
+--=20
 kind regards,
 
 David Sommerseth
-
 
