@@ -1,12 +1,10 @@
-References: <1464638630-19744-1-git-send-email-samuli@...515...>
 From: David Sommerseth <openvpn@...2080...>
-Message-ID: <574CB60B.1060403@...2080...>
-Date: Mon, 30 May 2016 23:52:11 +0200
+Date: Tue, 31 May 2016 00:10:37 +0200
+Message-Id: <1464646237-10646-1-git-send-email-openvpn@...2080...>
+In-Reply-To: <1464638098-19187-1-git-send-email-samuli@...515...>
+References: <1464638098-19187-1-git-send-email-samuli@...515...>
 MIME-Version: 1.0
-In-Reply-To: <1464638630-19744-1-git-send-email-samuli@...515...>
-Subject: Re: [Openvpn-devel] [PATCH v3] Clarify the fact that build
- instructions in README are for release tarballs
-Reply-To: openvpn-devel@lists.sourceforge.net
+Subject: [Openvpn-devel] [PATCH applied] Re: Add link to bug tracker
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,39 +13,32 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-To: samuli@...515..., openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net, Leon Klingele <git@...2143...>
+Cc: David Sommerseth <dazo@...2145...>
 
-On 30/05/16 22:03, samuli@...515... wrote:
-> From: Samuli Sepp=C3=A4nen <samuli@...515...>
->=20
-> URL: https://github.com/OpenVPN/openvpn/pull/51
-> Signed-off-by: Samuli Sepp=C3=A4nen <samuli@...515...>
-> ---
->  README | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
->=20
-> diff --git a/README b/README
-> index 349e08a..de4036a 100644
-> --- a/README
-> +++ b/README
-> @@ -7,12 +7,14 @@ as published by the Free Software Foundation.
->=20=20
->  *************************************************************************
->=20=20
-> -For the latest version of OpenVPN, go to:
-> +To get the latest release of OpenVPN, go to:
->=20=20
->  	http://openvpn.net/
+From: David Sommerseth <dazo@...2145...>
 
-Once we're at it, wouldn't it make sense to use this URL instead?
+Your patch has been applied to the master branch.
 
-<https://openvpn.net/index.php/open-source/downloads.html>
+commit ac2309b889552f2a0382414ff46b2682c2101674
+Author: Leon Klingele
+Date:   Mon May 30 22:54:58 2016 +0300
+
+     Add link to bug tracker
+
+     URL: https://github.com/OpenVPN/openvpn/pull/25
+     Signed-off-by: Samuli Sepp=C3=A4nen <samuli@...515...>
+     Acked-by: David Sommerseth <dazo@...2145...>
+     Message-Id: <1464638098-19187-1-git-send-email-samuli@...515...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/11735
+     Signed-off-by: David Sommerseth <dazo@...2145...>
 
 
---=20
+--
 kind regards,
 
 David Sommerseth
+
 
