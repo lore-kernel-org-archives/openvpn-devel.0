@@ -1,10 +1,14 @@
+Date: Tue, 31 May 2016 08:50:28 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20160531065028.GL53051@...1296...>
 References: <1464638630-19744-1-git-send-email-samuli@...515...>
 	<574CB60B.1060403@...2080...>
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <93fcbd96-76e8-557f-c42d-e5fa20034dc1@...515...>
-Date: Tue, 31 May 2016 09:45:12 +0300
+	<93fcbd96-76e8-557f-c42d-e5fa20034dc1@...515...>
 MIME-Version: 1.0
-In-Reply-To: <574CB60B.1060403@...2080...>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="HkHroYjkQwVPCEQE"
+Content-Disposition: inline
+In-Reply-To: <93fcbd96-76e8-557f-c42d-e5fa20034dc1@...515...>
 Subject: Re: [Openvpn-devel] [PATCH v3] Clarify the fact that build
  instructions in README are for release tarballs
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -15,51 +19,51 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"; format=flowed
+To: Samuli =?iso-8859-1?Q?Sepp=E4nen?= <samuli@...515...>
+Cc: openvpn-devel@lists.sourceforge.net
+
+--HkHroYjkQwVPCEQE
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
+Content-Disposition: inline
 
+Hi,
 
-> On 30/05/16 22:03, samuli@...515... wrote:
->> From: Samuli Sepp=C3=A4nen <samuli@...515...>
->>
->> URL: https://github.com/OpenVPN/openvpn/pull/51
->> Signed-off-by: Samuli Sepp=C3=A4nen <samuli@...515...>
->> ---
->>  README | 4 +++-
->>  1 file changed, 3 insertions(+), 1 deletion(-)
->>
->> diff --git a/README b/README
->> index 349e08a..de4036a 100644
->> --- a/README
->> +++ b/README
->> @@ -7,12 +7,14 @@ as published by the Free Software Foundation.
->>
->>  ***********************************************************************=
-**
->>
->> -For the latest version of OpenVPN, go to:
->> +To get the latest release of OpenVPN, go to:
->>
->>  	http://openvpn.net/
->
-> Once we're at it, wouldn't it make sense to use this URL instead?
->
-> <https://openvpn.net/index.php/open-source/downloads.html>
->
+On Tue, May 31, 2016 at 09:45:12AM +0300, Samuli Sepp=E4nen wrote:
+> > Once we're at it, wouldn't it make sense to use this URL instead?
+> >
+> > <https://openvpn.net/index.php/open-source/downloads.html>
+>=20
+> Yes, except that the URL is bound to change soon. I'm not sure what=20
+> "soon" in this context means, because it depends more on other people=20
+> than me. If we're fine with changing the URL again later, then I think=20
+> the change you propose makes sense. In any case the URL should start=20
+> with https instead of http.
+>=20
+> Thoughts?
 
-Yes, except that the URL is bound to change soon. I'm not sure what=20
-"soon" in this context means, because it depends more on other people=20
-than me. If we're fine with changing the URL again later, then I think=20
-the change you propose makes sense. In any case the URL should start=20
-with https instead of http.
+Do the "proper" URL (with https) now, if it changes, update.
 
-Thoughts?
-
+gert
 --=20
-Samuli Sepp=C3=A4nen
-Community Manager
-OpenVPN Technologies, Inc
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-irc freenode net: mattock
+--HkHroYjkQwVPCEQE
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQCVAwUBV000M6kuBuNlUUl1AQKI1wP/SkBefjsMAqO8nM4CVcvqd1Ah+sFvM6Cm
+jdjeSyafXyHUxtb1k2LQKXw3GblF5+RvQP6x3NNv2158SsMNFoDuuN1w0gox1O7U
+/npPTCThBb6na1L56POxsARnjSm5Q+TjmlDkiUbWudD28Zvm6XzWfZPVbLk9h3+q
+Otc6IHCdHG0=
+=GUT5
+-----END PGP SIGNATURE-----
+
+--HkHroYjkQwVPCEQE--
 
