@@ -1,11 +1,15 @@
-From: Arne Schwabe <arne@...1227...>
-References: <1464694953-3681-1-git-send-email-pinkel@...277...>
-	<574D81F8.9000607@...1435...>
-Message-ID: <6ce4e0d0-f71c-636e-4440-39ef9b89891d@...1227...>
-Date: Tue, 31 May 2016 14:47:51 +0200
+Date: Tue, 31 May 2016 15:02:34 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20160531130234.GV53051@...1296...>
+References: <1464694920-3624-1-git-send-email-pinkel@...277...>
+	<574D81DE.1040204@...1435...>
 MIME-Version: 1.0
-In-Reply-To: <574D81F8.9000607@...1435...>
-Subject: Re: [Openvpn-devel] [PATCH 2.3] Plug memory leak in mbedTLS backend
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="nkMSImF/AKWoFNFm"
+Content-Disposition: inline
+In-Reply-To: <574D81DE.1040204@...1435...>
+Subject: Re: [Openvpn-devel] [PATCH master] Plug memory leak in mbedTLS
+ backend
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,51 +18,48 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-To: Steffan Karger <steffan.karger@...1435...>, openvpn-devel@lists.sourceforge.net
+To: Steffan Karger <steffan.karger@...1435...>
+Cc: openvpn-devel@lists.sourceforge.net
 
+--nkMSImF/AKWoFNFm
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
+Hi,
 
-Am 31.05.16 um 14:22 schrieb Steffan Karger:
-> On 31-05-16 13:42, Ivo Manca wrote:
->> Signed-off-by: Ivo Manca <pinkel@...277...>
->> ---
->>  src/openvpn/ssl_verify_polarssl.c | 7 +++++--
->>  1 file changed, 5 insertions(+), 2 deletions(-)
->>
->> diff --git a/src/openvpn/ssl_verify_polarssl.c b/src/openvpn/ssl_verify_polarssl.c
->> index 7ed87d6..cc46b75 100644
->> --- a/src/openvpn/ssl_verify_polarssl.c
->> +++ b/src/openvpn/ssl_verify_polarssl.c
->> @@ -137,7 +137,7 @@ backend_x509_get_serial (openvpn_x509_cert_t *cert, struct gc_arena *gc)
->>    if (!polar_ok(mpi_read_binary(&serial_mpi, cert->serial.p, cert->serial.len)))
->>      {
->>        msg(M_WARN, "Failed to retrieve serial from certificate.");
->> -      return NULL;
->> +      goto end;
->>      }
->>  
->>    /* Determine decimal representation length, allocate buffer */
->> @@ -148,9 +148,12 @@ backend_x509_get_serial (openvpn_x509_cert_t *cert, struct gc_arena *gc)
->>    if (!polar_ok(mpi_write_string(&serial_mpi, 10, buf, &buflen)))
->>      {
->>        msg(M_WARN, "Failed to write serial to string.");
->> -      return NULL;
->> +      buf = NULL;
->> +      goto end;
->>      }
->>  
->> +end:
->> +  mpi_free(&serial_mpi);
->>    return buf;
->>  }
+On Tue, May 31, 2016 at 02:21:50PM +0200, Steffan Karger wrote:
+> > +end:
+> > +  mbedtls_mpi_free(&serial_mpi);
+> >    return buf;
+> >  }
+>=20
 > ACK - *but* Ivo did this work for us (Fox-IT), so some external eyes
 > before applying are welcome.
->
->
-ACK, looks good to me, too.
 
-Arne
+I was about to write a NAK, spent some time reading mbedtls/bignum.c,=20
+and indeed this is needed (zeroize and free X->p), so another ACK here :-)
 
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--nkMSImF/AKWoFNFm
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQCVAwUBV02LaakuBuNlUUl1AQIWPgP/VmaoBSHUiQpNlP1SatThCBaCm0bNwpci
+S3wBOUE1GhcgtDHwLRdfR6D/nZmzm+lK0OaQwmo0M9vvCGsAhl6mMZNo2GjwPdAH
+d8mcFAWncZA1OrgyhWeXin7Vog2rwiPi9J8ylzmRdKME7tj+tWAUb6y1bMOCg979
+COkbj5QGCwo=
+=yf1O
+-----END PGP SIGNATURE-----
+
+--nkMSImF/AKWoFNFm--
 
