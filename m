@@ -1,16 +1,10 @@
-Date: Tue, 31 May 2016 16:35:33 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20160531143533.GY53051@...1296...>
-References: <1464690813-10411-1-git-send-email-openvpn@...2080...>
-	<1464703645-26640-1-git-send-email-openvpn@...2080...>
-	<20160531142322.GW53051@...1296...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="YVrlT4vedgQKZ0IS"
-Content-Disposition: inline
-In-Reply-To: <20160531142322.GW53051@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH v2] Only build and run cmocka unit tests
- if its submodule is initialized
+From: David Sommerseth <openvpn@...2080...>
+Date: Tue, 31 May 2016 16:42:30 +0200
+Message-Id: <1464705750-31328-1-git-send-email-openvpn@...2080...>
+In-Reply-To: <1464703645-26640-1-git-send-email-openvpn@...2080...>
+References: <1464703645-26640-1-git-send-email-openvpn@...2080...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Only build and run cmocka unit
+	tests if its submodule is initialized
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,47 +13,30 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: David Sommerseth <openvpn@...2080...>
-Cc: openvpn-devel@lists.sourceforge.net, David Sommerseth <dazo@...2145...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net, David Sommerseth <dazo@...2145...>
 
---YVrlT4vedgQKZ0IS
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+From: David Sommerseth <dazo@...2145...>
 
-Hi,
+Your patch has been applied to the master and release/2.3 branches.
 
-On Tue, May 31, 2016 at 04:23:22PM +0200, Gert Doering wrote:
-> On Tue, May 31, 2016 at 04:07:25PM +0200, David Sommerseth wrote:
-> > +   AC_MSG_RESULT([!! WARNING !! CMake is available.  Unit testing cann=
-ot be performed.])
->=20
-> NAK, as this should be "CMake is NOT available" - otherwise, I would be
-> happy to ACK it :-)
+commit 45f6e7991cfa3bb8a44f981b6cf1e794d617d51e master
+commit 987910e8abb40e357ac1aa6bf658b4660cc7f376 release/2.3
+Author: David Sommerseth
+Date:   Tue May 31 12:28:46 2016 +0200
 
-For the sake of the archives: ACK for "v2 + that typo" :-)
+     Only build and run cmocka unit tests if its submodule is initialized
 
-gert
+     Signed-off-by: David Sommerseth <dazo@...2145...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1464703645-26640-1-git-send-email-openvpn@...2080...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/11758
 
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
 
---YVrlT4vedgQKZ0IS
-Content-Type: application/pgp-signature; name="signature.asc"
+--
+kind regards,
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
+David Sommerseth
 
-iQCVAwUBV02hJqkuBuNlUUl1AQLUgQQAiFZDrR6FWvhPuYzyNjZytUVR3WsNknCA
-9Jiw36jsN0uauNYD+0g2tkFANFRhL9o2T17mW29FeVAFG6qI9a8rq1E5fFz/V6vp
-/ZlvVatNznLsx+ELVxUmKEsrOSoDTCNU3ell2K67MU9DSQcPjC1LugRhSikB1Zu2
-GqXNN+8298s=
-=UBL1
------END PGP SIGNATURE-----
-
---YVrlT4vedgQKZ0IS--
 
