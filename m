@@ -1,14 +1,8 @@
-Date: Tue, 31 May 2016 10:48:25 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20160531084825.GT53051@...1296...>
-References: <1464668569-6480-1-git-send-email-selva.nair@...277...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="nRnhZLCOQLaIZm+a"
-Content-Disposition: inline
-In-Reply-To: <1464668569-6480-1-git-send-email-selva.nair@...277...>
-Subject: Re: [Openvpn-devel] [PATCH] Add an option to filter options
- received from server
+From: David Sommerseth <openvpn@...2080...>
+Date: Tue, 31 May 2016 12:33:33 +0200
+Message-Id: <1464690813-10411-1-git-send-email-openvpn@...2080...>
+Subject: [Openvpn-devel] [PATCH] Only build and run cmocka unit tests if its
+	submodule is initialized
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,64 +11,69 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: David Sommerseth <dazo@...2145...>
 
---nRnhZLCOQLaIZm+a
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+From: David Sommerseth <dazo@...2145...>
 
-Hi,
+Commit 40cb4cfc5d01110 added infrastructure to write unit tests using
+cmocka.  This was implemented using a git submodule to fetch an
+up-to-date cmocka test framework.
 
-On Tue, May 31, 2016 at 12:22:49AM -0400, Selva Nair wrote:
-> filtering stops as soon as a match is found. Full regex support is
-> not available but partial matching is used to allow some flexibility.
-> Thus
->=20
->   pull-filter accept "ifconfig 10.9.0."
->   pull-filter reject "ifconfig "
->   pull-filter accept "route 10."
->   pull-filter reject "route "
+The issue which appeared was that 'make check' stopped working if
+the cmocka submodule was not initialized and updated.  As we do not
+want this to be a hard depenency, this patch makes running these
+unit tests conditional.  If cmocka has not been initialized, skip
+them or if it has been initialized all unit tests will be run.
 
-Thinking about this a bit more, without having studied the code - what
-do you think about having a third category
+Signed-off-by: David Sommerseth <dazo@...2145...>
+---
+ configure.ac                 | 3 +++
+ tests/unit_tests/Makefile.am | 2 ++
+ vendor/Makefile.am           | 2 ++
+ 3 files changed, 7 insertions(+)
 
-   pull-filter accept "route 10."
-   pull-filter reject "route 195.30."
-   pull-filter ignore "route "
+diff --git a/configure.ac b/configure.ac
+index 5e69f91..fa0f868 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -1211,6 +1211,9 @@ TEST_CFLAGS="-I\$(top_srcdir)/include -I\$(abs_top_builddir)/vendor/dist/include
+ AC_SUBST([TEST_LDFLAGS])
+ AC_SUBST([TEST_CFLAGS])
+ 
++# Check if cmocka git submodule is initialized
++AM_CONDITIONAL([CMOCKA_INITIALIZED], [test -f vendor/cmocka/CMakeLists.txt])
++
+ AC_CONFIG_FILES([
+ 	version.sh
+ 	Makefile
+diff --git a/tests/unit_tests/Makefile.am b/tests/unit_tests/Makefile.am
+index e076db8..8868c1c 100644
+--- a/tests/unit_tests/Makefile.am
++++ b/tests/unit_tests/Makefile.am
+@@ -1,3 +1,5 @@
+ AUTOMAKE_OPTIONS = foreign
+ 
++if CMOCKA_INITIALIZED
+ SUBDIRS = example_test plugins
++endif
+diff --git a/vendor/Makefile.am b/vendor/Makefile.am
+index f68240e..84656a1 100644
+--- a/vendor/Makefile.am
++++ b/vendor/Makefile.am
+@@ -15,7 +15,9 @@ distdir:
+ 
+ libcmocka: distdir
+ 	mkdir -p $(cmockabuild)
++if CMOCKA_INITIALIZED
+ 	(cd $(cmockabuild) && cmake -DCMAKE_INSTALL_PREFIX=$(cmockainstall) $(cmockasrc) && make && make install)
++endif
+ 
+ check: libcmocka
+ 
+-- 
+1.8.3.1
 
-"ignore" would be "if that option shows up, log the fact that we ignored
-it, and go on", while "reject" would be "if this shows up, something bad
-is happening, so complain loudly, abort the connection and try the next
-alternative".
-
-> A maximum of 64 filters are supported.
-
-We briefly discussed this yesterday - 64 should be plenty for about
-everything, but a dynamic list might be the way to cope for the *one*
-user who then comes up with the 65th rule...
-
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---nRnhZLCOQLaIZm+a
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQCVAwUBV01P2KkuBuNlUUl1AQIwUgP+M2KF9V3/X0xGAFpXeNNStm6DL/UnybT5
-ZS5NqlE9jK6n6HbVQu9oPc50FJyeRDWHp07pE8yToDtp8pzvI4mdtZcdLlBhEdxt
-KrGbvKnYYbgUqz4iCb+QJUvjvUoGTXpQ0nDkT/wWmVACJE6ZncT2niRYFkA4gt82
-JtHQeaeqlec=
-=7GNW
------END PGP SIGNATURE-----
-
---nRnhZLCOQLaIZm+a--
 
