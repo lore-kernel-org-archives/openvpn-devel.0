@@ -1,16 +1,11 @@
-References: <1464668569-6480-1-git-send-email-selva.nair@...277...>
-	<61d8d41f-4c77-5235-a202-642983d494a3@...1227...>
-	<CAKuzo_gyWfFnOe72CKkyPfAHAfN5uF8jWqp2jCosdZkJBYwoBw@...278...>
-	<574DAECE.8000202@...2080...>
-	<20160531155607.GA53051@...1296...>
 From: David Sommerseth <openvpn@...2080...>
-Message-ID: <574DB6E7.8030400@...2080...>
-Date: Tue, 31 May 2016 18:08:07 +0200
+Date: Tue, 31 May 2016 19:49:41 +0200
+Message-Id: <1464716981-15773-1-git-send-email-openvpn@...2080...>
+In-Reply-To: <1464677635-24251-1-git-send-email-samuli@...515...>
+References: <1464677635-24251-1-git-send-email-samuli@...515...>
 MIME-Version: 1.0
-In-Reply-To: <20160531155607.GA53051@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH] Add an option to filter options
- received from server
-Reply-To: openvpn-devel@lists.sourceforge.net
+Subject: [Openvpn-devel] [PATCH applied] Re: Clarify the fact that build
+	instructions in README are for release tarballs
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,35 +14,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+To: openvpn-devel@lists.sourceforge.net, =?UTF-8?q?Samuli=20Sepp=C3=A4nen?= <samuli@...515...>
+Cc: David Sommerseth <dazo@...2145...>
 
-On 31/05/16 17:56, Gert Doering wrote:
-> Hi,
-> 
-> On Tue, May 31, 2016 at 05:33:34PM +0200, David Sommerseth wrote:
->> I think a fixed list of 64 slots is more than good enough in this case.
->> I even considered suggesting 32 slots, but 64 is reasonable as a maximum
->> currently.  An average openvpn config is probably roughly 10-15 lines
->> all in all (not considering inline files). If someone pushes more than
->> 50-60 options, then something more funky is probably going on as well.
-> 
-> This is not to be *pushed* but local sanity control for pushed stuff :-)
-> 
-> ValdikSS is pushing well over 1000 routes, so "60" is really not much
-> in that regard...
+From: David Sommerseth <dazo@...2145...>
 
-Clumsy wording on my side.  Yeah, I understand it is a local filter.
-And that one filter may filter out far more than just a single pushed
-option.
+Your patch has been applied to the master branch.
 
-My point was more that if more than 50-60 filters are needed, then you
-have a bigger challenge than just these filters.
+commit fdc24f1e986c5d8ecdf37c3d0f913f3549087852
+Author: Samuli Sepp=C3=A4nen
+Date:   Tue May 31 09:53:55 2016 +0300
+
+     Clarify the fact that build instructions in README are for release tar=
+balls
+
+     URL: https://github.com/OpenVPN/openvpn/pull/51
+     Signed-off-by: Samuli Sepp=C3=A4nen <samuli@...515...>
+     Acked-by: David Sommerseth <dazo@...2145...>
+     Message-Id: <1464677635-24251-1-git-send-email-samuli@...515...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/11746
+     Signed-off-by: David Sommerseth <dazo@...2145...>
 
 
--- 
+--
 kind regards,
 
 David Sommerseth
+
 
