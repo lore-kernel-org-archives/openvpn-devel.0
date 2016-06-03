@@ -1,12 +1,14 @@
+Date: Fri, 3 Jun 2016 08:46:14 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20160603064614.GF53051@...1296...>
+References: <1464883738-904-1-git-send-email-openvpn@...2080...>
 MIME-Version: 1.0
-In-Reply-To: <CAG3w0Z5Xq=DD93OK=HrGcRgMeVeNowDkR3JHMxXmA6TzjakuQQ@...278...>
-References: <CAG3w0Z7Pz6=qmT9s1cJOZiK_KURHGDfZo3ig7K4Rn1g4W4QTYA@...278...>
-	<CAG3w0Z5Xq=DD93OK=HrGcRgMeVeNowDkR3JHMxXmA6TzjakuQQ@...278...>
-From: Selva Nair <selva.nair@...277...>
-Date: Thu, 2 Jun 2016 16:00:22 -0400
-Message-ID: <CAKuzo_gZ3JabGYOQ-cmxSrMzr7YhxbszZE-X6_JuaRd9CzKv5A@...278...>
-Content-Type: multipart/alternative; boundary=001a113f9b6a93620e0534510f46
-Subject: Re: [Openvpn-devel] Change in dutch translation file
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="JGY7j44T2CBDTV/X"
+Content-Disposition: inline
+In-Reply-To: <1464883738-904-1-git-send-email-openvpn@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH] Another fix related to unit test
+ framework
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,71 +17,44 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Jeffrey van Norden <jeffreyvannorden@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: David Sommerseth <openvpn@...2080...>
+Cc: openvpn-devel@lists.sourceforge.net, David Sommerseth <dazo@...2145...>
 
---001a113f9b6a93620e0534510f46
-Content-Type: text/plain; charset=UTF-8
+--JGY7j44T2CBDTV/X
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
 Hi,
 
-On Thu, Jun 2, 2016 at 2:16 PM, Jeffrey van Norden <
-jeffreyvannorden@...277...> wrote:
+On Thu, Jun 02, 2016 at 06:08:58PM +0200, David Sommerseth wrote:
+>  if CMOCKA_INITIALIZED
+> +	mkdir -p $(cmockabuild) $(cmockainstall)
 
-> Hi,
->
-> I'm not sure if this is the proper way to communicate, but I've made a
-> change to the dutch translation of the OpenVPN GUI. It's been bothering me
-> for a while, the disconnect button shows 'Verbroken' (meaning disconnected)
-> where it should say "Verbreek Verbinding" just as it says in the normal
-> menu.
->
+This will still blow up if the source or build directory contain whitespace
+- if absolute paths outside Makefile's control are used, they must be=20
+quoted.
 
-There have been some changes to the dutch translations that touched the
-text you mention, so could you please check the latest version at
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-https://github.com/OpenVPN/openvpn-gui/blob/master/res/openvpn-gui-res-nl.rc
+--JGY7j44T2CBDTV/X
+Content-Type: application/pgp-signature; name="signature.asc"
 
-If changes are still needed, the preferred form would be a pull request to
-https://github.com/OpenVPN/openvpn-gui . Alternatively a patch against the
-latest version would also work. If neither of those options are convenient,
-the issue may be raised at https://github.com/OpenVPN/openvpn-gui/issues so
-that someone else may provide a patch.
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
 
-Thanks for looking into this.
+iQCVAwUBV1EntqkuBuNlUUl1AQLIfQP/aNudWbxTbR5yhmm1qV8iK5pTDYAO8aa1
+tUSD3OAlb9rf8FfhWWJ/IKEPHGBO0tA9JN1d+LT0n2b/oUYpu6efemSKSCDotokA
++QTPBJs/BZtS5kpQuGvNTSa97HWgujJqAD+JZXleJPgGtDp8Yrz/CHoDuswEmXjB
+m2b6C5joJW8=
+=IUod
+-----END PGP SIGNATURE-----
 
-Selva
-
---001a113f9b6a93620e0534510f46
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><div class=3D"gmail_extra">Hi,</div><div class=3D"gmail_ex=
-tra"><br><div class=3D"gmail_quote">On Thu, Jun 2, 2016 at 2:16 PM, Jeffrey=
- van Norden <span dir=3D"ltr">&lt;<a href=3D"mailto:jeffreyvannorden@...1482...=
-..." target=3D"_blank">jeffreyvannorden@...277...</a>&gt;</span> wrote:<br>=
-<blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-=
-left-width:1px;border-left-color:rgb(204,204,204);border-left-style:solid;p=
-adding-left:1ex"><div dir=3D"ltr"><div class=3D"gmail_quote"><div dir=3D"lt=
-r">Hi,<div><br></div><div>I&#39;m not sure if this is the proper way to com=
-municate, but I&#39;ve made a change to the dutch translation of the OpenVP=
-N GUI. It&#39;s been bothering me for a while, the disconnect button shows =
-&#39;Verbroken&#39; (meaning disconnected) where it should say &quot;Verbre=
-ek Verbinding&quot; just as it says in the normal menu.</div></div></div></=
-div></blockquote><div><br></div><div>There have been some changes to the du=
-tch translations that touched the text you mention, so could you please che=
-ck the latest version at</div><div><br></div><div><a href=3D"https://github=
-.com/OpenVPN/openvpn-gui/blob/master/res/openvpn-gui-res-nl.rc" target=3D"_=
-blank">https://github.com/OpenVPN/openvpn-gui/blob/master/res/openvpn-gui-r=
-es-nl.rc</a><br></div><div><br></div><div>If changes are still needed, the =
-preferred form would be a pull request to <a href=3D"https://github.com/Ope=
-nVPN/openvpn-gui" target=3D"_blank">https://github.com/OpenVPN/openvpn-gui<=
-/a> . Alternatively a patch against the latest version would also work. If =
-neither of those options are convenient, the issue may be raised at <a href=
-=3D"https://github.com/OpenVPN/openvpn-gui/issues">https://github.com/OpenV=
-PN/openvpn-gui/issues</a> so that someone else may provide a patch.</div><d=
-iv><br></div><div>Thanks for looking into this.</div><div><br></div><div>Se=
-lva</div></div><br><br></div></div>
-
---001a113f9b6a93620e0534510f46--
+--JGY7j44T2CBDTV/X--
 
