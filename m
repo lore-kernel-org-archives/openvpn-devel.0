@@ -1,10 +1,9 @@
 From: David Sommerseth <openvpn@...2080...>
-Date: Fri,  3 Jun 2016 19:09:13 +0200
-Message-Id: <1464973753-12778-1-git-send-email-openvpn@...2080...>
+Date: Fri,  3 Jun 2016 19:49:23 +0200
+Message-Id: <1464976163-6162-1-git-send-email-openvpn@...2080...>
 In-Reply-To: <1464883738-904-1-git-send-email-openvpn@...2080...>
 References: <1464883738-904-1-git-send-email-openvpn@...2080...>
-Subject: [Openvpn-devel] [PATCH v2] Another fix related to unit test
-	framework
+Subject: [Openvpn-devel] [PATCH] Another fix related to unit test framework
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -34,43 +33,50 @@ The comment had to be moved to a single line, otherwise the
 white spaces between the end of the variable assignment and the
 hash character got added to the variable.
 
+ [v3 - Further improve white space issues, now 'make clean'
+       should work too]
  [v2 - Fix white space issues in path variables]
 
 Signed-off-by: David Sommerseth <dazo@...2145...>
 ---
- vendor/Makefile.am | 14 +++++---------
- 1 file changed, 5 insertions(+), 9 deletions(-)
+ vendor/Makefile.am | 22 +++++++++-------------
+ 1 file changed, 9 insertions(+), 13 deletions(-)
 
 diff --git a/vendor/Makefile.am b/vendor/Makefile.am
-index 84656a1..5028f45 100644
+index 84656a1..674784a 100644
 --- a/vendor/Makefile.am
 +++ b/vendor/Makefile.am
-@@ -1,6 +1,5 @@
+@@ -1,21 +1,17 @@
 -AUTOMAKE_OPTIONS = foreign
 -
 -cmockasrc     = @VENDOR_SRC_ROOT@/cmocka  # needs an absolute path bc. of the cmake invocation
+-cmockabuild   = @VENDOR_BUILD_ROOT@/cmocka
+-cmockainstall = @VENDOR_DIST_ROOT@
 +# needs an absolute path bc. of the cmake invocation
-+cmockasrc     = @VENDOR_SRC_ROOT@/cmocka
- cmockabuild   = @VENDOR_BUILD_ROOT@/cmocka
- cmockainstall = @VENDOR_DIST_ROOT@
++cmockasrc     = "@VENDOR_SRC_ROOT@/cmocka"
++cmockabuild   = "@VENDOR_BUILD_ROOT@/cmocka"
++cmockainstall = "@VENDOR_DIST_ROOT@"
  
-@@ -10,13 +9,10 @@ MAINTAINERCLEANFILES = \
- 	$(cmockainstall) \
- 	@VENDOR_BUILD_ROOT@
- 
+ MAINTAINERCLEANFILES = \
+ 	$(srcdir)/Makefile.in \
+-	$(cmockabuild) \
+-	$(cmockainstall) \
+-	@VENDOR_BUILD_ROOT@
+-
 -distdir:
 -	mkdir -p $(cmockainstall)
--
++	"$(cmockabuild)" \
++	"$(cmockainstall)" \
++	"@VENDOR_BUILD_ROOT@"
+ 
 -libcmocka: distdir
 -	mkdir -p $(cmockabuild)
 +libcmocka:
  if CMOCKA_INITIALIZED
--	(cd $(cmockabuild) && cmake -DCMAKE_INSTALL_PREFIX=$(cmockainstall) $(cmockasrc) && make && make install)
-+	mkdir -p "$(cmockabuild)" "$(cmockainstall)"
-+	(cd "$(cmockabuild)" && cmake -DCMAKE_INSTALL_PREFIX="$(cmockainstall)" "$(cmockasrc)" && make && make install)
++	mkdir -p $(cmockabuild) $(cmockainstall)
+ 	(cd $(cmockabuild) && cmake -DCMAKE_INSTALL_PREFIX=$(cmockainstall) $(cmockasrc) && make && make install)
  endif
  
- check: libcmocka
 -- 
 1.8.3.1
 
