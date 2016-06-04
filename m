@@ -1,17 +1,8 @@
-Content-Type: multipart/alternative;
-	boundary="Apple-Mail=_BEFBEB69-6D9A-4041-A5AB-805712492B48"
-Mime-Version: 1.0 (Mac OS X Mail 9.3 \(3124\))
-From: Jens Neuhalfen <openvpn-devel@...2127...>
-In-Reply-To: <CAKuzo_geGTkH_d42-xnx7NJUXBRFyahajJAdW8+eZ0eYn2HRpg@...278...>
-Date: Sat, 4 Jun 2016 09:28:42 +0200
-Message-Id: <0EB7FB8D-1A08-4320-A587-435B0B280071@...2127...>
-References: <1464883738-904-1-git-send-email-openvpn@...2080...>
-	<1464976163-6162-1-git-send-email-openvpn@...2080...>
-	<20160603181404.GM53051@...1296...>
-	<CAKuzo_hyz1g_VqiU_AR-Q69FiXA_9K+MmPYsE=J3M41iKjyDeA@...278...>
-	<CAKuzo_geGTkH_d42-xnx7NJUXBRFyahajJAdW8+eZ0eYn2HRpg@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] Another fix related to unit test
-	framework
+From: Selva Nair <selva.nair@...277...>
+Date: Sat,  4 Jun 2016 11:54:08 -0400
+Message-Id: <1465055649-13628-1-git-send-email-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH release/2.3] Make block-outside-dns work
+	with persist-tun
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,74 +11,57 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-
---Apple-Mail=_BEFBEB69-6D9A-4041-A5AB-805712492B48
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-=E2=80=A6
+- Remove and recreate WFP filters during restart even when
+  tun/tap is not re-opened. This is needed for resolving the remote.
 
-> IMO, the unit testing patches shouldn't have been merged into the release=
- branch
+See also: http://article.gmane.org/gmane.network.openvpn.user/36990
 
-I agree. This patch was in retrospective clearly not ready for a release br=
-anch. A lot of people spend time to hot fix a broken build.
+Signed-off-by: Selva Nair <selva.nair@...277...>
+---
+ src/openvpn/init.c |   18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
 
-My root cause analysis boils down to:
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 2148777..593fbf4 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -1522,6 +1522,15 @@ do_open_tun (struct context *c)
+ 		     NULL,
+ 		     "up",
+ 		     c->c2.es);
++#if defined(WIN32)
++      if (c->options.block_outside_dns)
++        {
++          dmsg (D_LOW, "Blocking outside DNS");
++          if (!win_wfp_block_dns(c->c1.tuntap->adapter_index))
++            msg (M_FATAL, "Blocking DNS failed!");
++        }
++#endif
++
+     }
+   gc_free (&gc);
+   return ret;
+@@ -1651,6 +1660,15 @@ do_close_tun (struct context *c, bool force)
+ 					     c->sig->signal_text),
+ 			 "down",
+ 			 c->c2.es);
++
++#if defined(WIN32)
++          if (c->options.block_outside_dns)
++            {
++              if (!win_wfp_uninit())
++                  msg (M_FATAL, "Uninitialising WFP failed!");
++            }
++#endif
++
+ 	}
+     }
+   gc_free (&gc);
+-- 
+1.7.10.4
 
-   Developers cannot detect multi-platform (build/run) issues with an appro=
-priate effort (or at all).
-
-We already have discussed solutions to this:
-
-1) Enable developers to run the =E2=80=9Cauthoritative=E2=80=9D buildslave =
-tests before submitting patches
-2) Provide developers tooling to quickly (preferred: locally) run iteration=
-s while developing
-
-#1 will need some processes & tooling by the current  maintainers.
-#2 will be taken care of with the Vagrant based integration tests.
-
-Opinions?
-
-Jens
-
-
---Apple-Mail=_BEFBEB69-6D9A-4041-A5AB-805712492B48
-Content-Type: text/html; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-
-<html><head><meta http-equiv=3D"Content-Type" content=3D"text/html charset=
-=3Dutf-8"></head><body style=3D"word-wrap: break-word; -webkit-nbsp-mode: s=
-pace; -webkit-line-break: after-white-space;" class=3D""><div class=3D"">=
-=E2=80=A6</div><div class=3D""><br class=3D""></div><div><blockquote type=
-=3D"cite" class=3D""><div class=3D""><div dir=3D"ltr" style=3D"font-family:=
- Helvetica; font-size: 12px; font-style: normal; font-variant-caps: normal;=
- font-weight: normal; letter-spacing: normal; orphans: auto; text-align: st=
-art; text-indent: 0px; text-transform: none; white-space: normal; widows: a=
-uto; word-spacing: 0px; -webkit-text-stroke-width: 0px;" class=3D""><div cl=
-ass=3D"gmail_extra"><div class=3D"gmail_quote"><div class=3D"">IMO, the uni=
-t testing patches shouldn't have been merged into the release branch<br cla=
-ss=3D""></div></div></div></div></div></blockquote><div><br class=3D""></di=
-v></div><div class=3D"">I agree. This patch was in retrospective clearly no=
-t ready for a release branch. A lot of people spend time to hot fix a broke=
-n build.</div><div class=3D""><br class=3D""></div><div class=3D"">My root =
-cause analysis boils down to:</div><div class=3D""><br class=3D""></div><di=
-v class=3D"">&nbsp; &nbsp;Developers cannot detect multi-platform (build/ru=
-n) issues with an appropriate effort (or at all).</div><div class=3D""><br =
-class=3D""></div><div class=3D"">We already have discussed solutions to thi=
-s:</div><div class=3D""><br class=3D""></div><div class=3D"">1) Enable deve=
-lopers to run the =E2=80=9Cauthoritative=E2=80=9D buildslave tests before s=
-ubmitting patches</div><div class=3D"">2) Provide developers tooling to qui=
-ckly (preferred: locally) run iterations while developing</div><div class=
-=3D""><br class=3D""></div><div class=3D"">#1 will need some processes &amp=
-; tooling by the current &nbsp;maintainers.</div><div class=3D"">#2 will be=
- taken care of with the Vagrant based integration tests.</div><div class=3D=
-""><br class=3D""></div><div class=3D"">Opinions?</div><div class=3D""><br =
-class=3D""></div><div class=3D"">Jens</div><div class=3D""><br class=3D""><=
-/div></body></html>=
-
---Apple-Mail=_BEFBEB69-6D9A-4041-A5AB-805712492B48--
 
