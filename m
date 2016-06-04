@@ -1,8 +1,9 @@
-From: Selva Nair <selva.nair@...277...>
-Date: Sat,  4 Jun 2016 16:09:05 -0400
-Message-Id: <1465070945-5426-1-git-send-email-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH master-only] Set WFP engine handle to NULL
-	in win_wfp_uninit()
+MIME-Version: 1.0
+From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
+Date: Sun, 5 Jun 2016 03:21:03 +0500
+Message-ID: <CAFHpkQHNu9qOVeQjco9ywL1iFUZqCjU5-LFt8PsYra1usyjkVA@...278...>
+Content-Type: multipart/alternative; boundary=001a11432c40454f7a05347b41e3
+Subject: [Openvpn-devel] travis-ci (smoke testing)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,30 +12,42 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-This was missed by commit 6a33a34dee8f3
+--001a11432c40454f7a05347b41e3
+Content-Type: text/plain; charset=UTF-8
 
-Signed-off-by: Selva Nair <selva.nair@...277...>
----
- src/openvpn/win32.c |    1 +
- 1 file changed, 1 insertion(+)
+Hello,
 
-diff --git a/src/openvpn/win32.c b/src/openvpn/win32.c
-index f4d3237..8a2f957 100644
---- a/src/openvpn/win32.c
-+++ b/src/openvpn/win32.c
-@@ -1192,6 +1192,7 @@ win_wfp_uninit(const HANDLE msg_channel)
-     else
-       {
-         delete_block_dns_filters (m_hEngineHandle);
-+        m_hEngineHandle = NULL;
-       }
- 
-     return true;
--- 
-1.7.10.4
+I was impressed by unit testing efforts, so I suggest to implement
+something like that
 
+https://travis-ci.org/chipitsine/openvpn/builds/135318558
+
+( https://github.com/OpenVPN/openvpn/pull/52 )
+
+we can use Linux, Mac OSX, gcc, clang, various configure options.
+
+
+(unfortunately, ssl cert at mbed tls website was expired and Xcode7.3 does
+not compile openvpn with openssl)
+
+Cheers,
+Ilya Shipitsin
+
+--001a11432c40454f7a05347b41e3
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div><div><div>Hello,<br><br></div>I was impressed by unit=
+ testing efforts, so I suggest to implement something like that<br><br><a h=
+ref=3D"https://travis-ci.org/chipitsine/openvpn/builds/135318558">https://t=
+ravis-ci.org/chipitsine/openvpn/builds/135318558</a><br><br>( <a href=3D"ht=
+tps://github.com/OpenVPN/openvpn/pull/52">https://github.com/OpenVPN/openvp=
+n/pull/52</a> )<br><br></div>we can use Linux, Mac OSX, gcc, clang, various=
+ configure options.<br><br><br></div><div>(unfortunately, ssl cert at mbed =
+tls website was expired and Xcode7.3 does not compile openvpn with openssl)=
+<br><br></div><div>Cheers,<br></div><div>Ilya Shipitsin<br></div></div>
+
+--001a11432c40454f7a05347b41e3--
 
