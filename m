@@ -1,11 +1,11 @@
 MIME-Version: 1.0
+Sender: kubec.daniel@...277...
 In-Reply-To: <CAA1Abx+iih31Sby-9bvM5h9n9LA3HaOcOwF+C_Px9zxN_kZtPg@...278...>
 References: <CAFHpkQHNu9qOVeQjco9ywL1iFUZqCjU5-LFt8PsYra1usyjkVA@...278...>
 	<CAA1Abx+iih31Sby-9bvM5h9n9LA3HaOcOwF+C_Px9zxN_kZtPg@...278...>
-Date: Sun, 5 Jun 2016 13:35:16 +0500
-Message-ID: <CAFHpkQH1omVo=h5AH3GXEG--EAo8EFSQSvvBjPzy9hHZ9ckYmw@...278...>
-From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Content-Type: multipart/alternative; boundary=047d7b5d31c8d53e41053483d519
+From: daniel kubec <niel@...1898...>
+Date: Sun, 5 Jun 2016 11:45:57 +0200
+Message-ID: <CAEW7GUskk12Jp=kxtWdW-88OYvUPURb29f+VW0wjAOE=ggTyrA@...278...>
 Subject: Re: [Openvpn-devel] travis-ci (smoke testing)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -15,103 +15,92 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 To: Steffan Karger <steffan@...1856...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---047d7b5d31c8d53e41053483d519
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+I am very fascinated - Travis is super cool :-) I building and even
+running  / testing (qemu userland emulation) quite complex build
+matrix. clang/gcc several OSX/Version + multiple sdk version,
+Win32/64, Linux + sdk on many architectures.
 
-=D0=B2=D0=BE=D1=81=D0=BA=D1=80=D0=B5=D1=81=D0=B5=D0=BD=D1=8C=D0=B5, 5 =D0=
-=B8=D1=8E=D0=BD=D1=8F 2016 =D0=B3. =D0=BF=D0=BE=D0=BB=D1=8C=D0=B7=D0=BE=D0=
-=B2=D0=B0=D1=82=D0=B5=D0=BB=D1=8C Steffan Karger =D0=BD=D0=B0=D0=BF=D0=B8=
-=D1=81=D0=B0=D0=BB:
+Actually building my kbuild build system fork on x86_32, x86_64,
+arm32, arm64, os390 (experimental), os390x (experimental)
 
+https://travis-ci.org/n13l/kbuild
+
+$ file ./obj/sysconfig
+./obj/sysconfig: PE32+ executable (console) x86-64, for MS Windows
+$OS_EXEC ./obj/sysconfig
+
+cpu.vendor=3Dintel
+cpu.arch=3Dx86
+cpu.sse4.2=3Dyes
+cpu.crypto.crc32=3D1
+cpu.pagesize=3D4096
+cpu.struct.align=3D8
+cpu.cacheline=3D64
+sys.platform=3Dwin32
+sys.sizeof int=3D4
+sys.sizeof ptr=3D8
+
+
+$ file ./obj/sysconfig
+./obj/sysconfig: ELF 64-bit MSB  executable, IBM S/390, version 1
+(SYSV), dynamically linked (uses shared libs), for GNU/Linux 3.2.0,
+BuildID[sha1]=3D3e0888a1fa3fe65baebeb06bcdf1a2da669bda11, not stripped
+$OS_EXEC ./obj/sysconfig
+
+sysconfig utility
+cpu.vendor=3Dibm
+cpu.arch=3Ds390
+cpu.crypto.crc32=3D0
+cpu.pagesize=3D4096
+cpu.struct.align=3D4
+cpu.cacheline=3D32
+sys.platform=3Dlinux
+sys.sizeof int=3D4
+sys.sizeof ptr=3D8
+
+On 5 June 2016 at 10:01, Steffan Karger <steffan@...1856...> wrote:
 > Hi,
 >
 > On Sun, Jun 5, 2016 at 12:21 AM, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=
-=BF=D0=B8=D1=86=D0=B8=D0=BD <chipitsine@...277...
-> <javascript:;>> wrote:
-> > I was impressed by unit testing efforts, so I suggest to implement
-> something
-> > like that
-> >
-> > https://travis-ci.org/chipitsine/openvpn/builds/135318558
-> >
-> > ( https://github.com/OpenVPN/openvpn/pull/52 )
-> >
-> > we can use Linux, Mac OSX, gcc, clang, various configure options.
-> >
-> > (unfortunately, ssl cert at mbed tls website was expired and Xcode7.3
-> does
-> > not compile openvpn with openssl)
+=BF=D0=B8=D1=86=D0=B8=D0=BD <chipitsine@...277...> wrote:
+>> I was impressed by unit testing efforts, so I suggest to implement somet=
+hing
+>> like that
+>>
+>> https://travis-ci.org/chipitsine/openvpn/builds/135318558
+>>
+>> ( https://github.com/OpenVPN/openvpn/pull/52 )
+>>
+>> we can use Linux, Mac OSX, gcc, clang, various configure options.
+>>
+>> (unfortunately, ssl cert at mbed tls website was expired and Xcode7.3 do=
+es
+>> not compile openvpn with openssl)
 >
 > Cool.  This looks like a very decent start.
 >
 > Afaik, OSX no longer ships with up-to-date versions of openssl.  We'd
 > need to build openssl before building openvpn, just like you currently
 > do with mbedtls.
-
-
-
-openssl is shipped with Tunnelblick. so, we probably need to compile the
-same version.
-(first I was about to deprecate openssl on mac os in configure, but I have
-changed my mind)
-
-@jkbullard b
-
-
-
 >
 > -Steffan
 >
-
---047d7b5d31c8d53e41053483d519
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<br><br>=D0=B2=D0=BE=D1=81=D0=BA=D1=80=D0=B5=D1=81=D0=B5=D0=BD=D1=8C=D0=B5,=
- 5 =D0=B8=D1=8E=D0=BD=D1=8F 2016 =D0=B3. =D0=BF=D0=BE=D0=BB=D1=8C=D0=B7=D0=
-=BE=D0=B2=D0=B0=D1=82=D0=B5=D0=BB=D1=8C Steffan Karger  =D0=BD=D0=B0=D0=BF=
-=D0=B8=D1=81=D0=B0=D0=BB:<br><blockquote class=3D"gmail_quote" style=3D"mar=
-gin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">Hi,<br>
-<br>
-On Sun, Jun 5, 2016 at 12:21 AM, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=
-=BF=D0=B8=D1=86=D0=B8=D0=BD &lt;<a href=3D"javascript:;" onclick=3D"_e(even=
-t, &#39;cvml&#39;, &#39;chipitsine@...277...&#39;)">chipitsine@...277...</a=
->&gt; wrote:<br>
-&gt; I was impressed by unit testing efforts, so I suggest to implement som=
-ething<br>
-&gt; like that<br>
-&gt;<br>
-&gt; <a href=3D"https://travis-ci.org/chipitsine/openvpn/builds/135318558" =
-target=3D"_blank">https://travis-ci.org/chipitsine/openvpn/builds/135318558=
-</a><br>
-&gt;<br>
-&gt; ( <a href=3D"https://github.com/OpenVPN/openvpn/pull/52" target=3D"_bl=
-ank">https://github.com/OpenVPN/openvpn/pull/52</a> )<br>
-&gt;<br>
-&gt; we can use Linux, Mac OSX, gcc, clang, various configure options.<br>
-&gt;<br>
-&gt; (unfortunately, ssl cert at mbed tls website was expired and Xcode7.3 =
-does<br>
-&gt; not compile openvpn with openssl)<br>
-<br>
-Cool.=C2=A0 This looks like a very decent start.<br>
-<br>
-Afaik, OSX no longer ships with up-to-date versions of openssl.=C2=A0 We&#3=
-9;d<br>
-need to build openssl before building openvpn, just like you currently<br>
-do with mbedtls.</blockquote><div><br></div><div><br></div><div>openssl is =
-shipped with Tunnelblick. so, we probably need to compile the same version.=
-</div><div>(first I was about to deprecate openssl on mac os in configure, =
-but I have changed my mind)</div><div><br></div><div>@jkbullard b</div><div=
-><br></div><div>=C2=A0</div><blockquote class=3D"gmail_quote" style=3D"marg=
-in:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">
-<br>
--Steffan<br>
-</blockquote>
-
---047d7b5d31c8d53e41053483d519--
+> -------------------------------------------------------------------------=
+-----
+> What NetFlow Analyzer can do for you? Monitors network bandwidth and traf=
+fic
+> patterns at an interface-level. Reveals which users, apps, and protocols =
+are
+> consuming the most bandwidth. Provides multi-vendor support for NetFlow,
+> J-Flow, sFlow and other flows. Make informed decisions using capacity
+> planning reports. https://ad.doubleclick.net/ddm/clk/305295220;132659582;e
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
