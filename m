@@ -1,16 +1,20 @@
-Mime-Version: 1.0 (Mac OS X Mail 9.3 \(3124\))
-From: Jens Neuhalfen <openvpn-devel@...2127...>
-In-Reply-To: <20160605172402.GT53051@...1296...>
-Date: Mon, 6 Jun 2016 00:45:34 +0200
-Message-Id: <18582A10-D0B7-449F-96CA-7F778B99E0DC@...2127...>
+Date: Mon, 6 Jun 2016 09:43:39 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20160606074339.GZ53051@...1296...>
 References: <1464883738-904-1-git-send-email-openvpn@...2080...>
 	<1464976163-6162-1-git-send-email-openvpn@...2080...>
 	<20160603181404.GM53051@...1296...>
 	<CAKuzo_hyz1g_VqiU_AR-Q69FiXA_9K+MmPYsE=J3M41iKjyDeA@...278...>
 	<CAKuzo_geGTkH_d42-xnx7NJUXBRFyahajJAdW8+eZ0eYn2HRpg@...278...>
 	<20160605172402.GT53051@...1296...>
+	<4E34C528-AE50-4620-9587-EF5E04B19FAD@...2127...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="4JFrVUvC4Ma1CYT3"
+Content-Disposition: inline
+In-Reply-To: <4E34C528-AE50-4620-9587-EF5E04B19FAD@...2127...>
 Subject: Re: [Openvpn-devel] [PATCH] Another fix related to unit test
-	framework
+ framework
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,27 +23,54 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+To: Jens Neuhalfen <jens@...2127...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+
+--4JFrVUvC4Ma1CYT3
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Disposition: inline
 
+Hi,
 
+On Mon, Jun 06, 2016 at 12:44:38AM +0200, Jens Neuhalfen wrote:
+> I agree to remove them from the next stable, but honestly think we really
+> should go the last step and make them work in master.
 >=20
->> IMO, the unit testing patches shouldn't have been merged into the release
->> branch
->=20
-> I have discussed this with David (after the fact, meh) and we couldn't=20
-> really come to an conclusion on this - but since you and Jens now both
-> argue that way (and especially Jens as the original author should have
-> some authority here :-) )  I think we'll revert the four relevant patches
-> again.  Looks silly, but keeping stuff in a tree where we did not want
-> it to go in the first place, and then spending time maintaining it there
-> looks even more silly to me=E2=80=A6
+> Is anything besides mingw still an issue with the unit testing patchset?
 
+As far as I can see, with David's latest tweaks, all the buildbots are
+happy - all green, no more test fails (well, there was one, but that was
+due to two different tests running on the same machine in the same
+network namespace, so two openvpn clients trampled on each other's=20
+routing table), and building windows installers (=3Dmingw) succeeded as
+well.
 
-I agree to remove them from the next stable, but honestly think we really
-should go the last step and make them work in master.
+So, I think we've at least fixed the fallout - and since Steffann reviewed
+the patches fairly thoroughly, I assume that they actually work :-)  (have
+not had time to look into that and play with cmocka myself)
 
-Is anything besides mingw still an issue with the unit testing patchset?
+gert
 
-Jens
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--4JFrVUvC4Ma1CYT3
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQCVAwUBV1UpqqkuBuNlUUl1AQIEMwP8CVoqjSGhdfhScy96S0fPhgqo4Gc5Q4NS
+0Dohk1Iornnvj3wJ9rZ3c8fIpdrq/b6DnjfJnogwgKqmPThpRySRJUmx/XTxVntO
+sKC9W09ZPkS+1WySozWX2uXbNDoC7/TltfYxAQw7s3kluIqFB/mSyPBRaoOkl2Qc
+8yKEJhxVMrc=
+=p6H7
+-----END PGP SIGNATURE-----
+
+--4JFrVUvC4Ma1CYT3--
+
