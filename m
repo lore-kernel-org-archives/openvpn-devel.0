@@ -1,16 +1,17 @@
+MIME-Version: 1.0
+In-Reply-To: <5755C95E.9080401@...2080...>
 References: <1464883738-904-1-git-send-email-openvpn@...2080...>
 	<1464976163-6162-1-git-send-email-openvpn@...2080...>
 	<20160603181404.GM53051@...1296...>
 	<CAKuzo_hyz1g_VqiU_AR-Q69FiXA_9K+MmPYsE=J3M41iKjyDeA@...278...>
 	<CAKuzo_geGTkH_d42-xnx7NJUXBRFyahajJAdW8+eZ0eYn2HRpg@...278...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <5755C95E.9080401@...2080...>
-Date: Mon, 6 Jun 2016 21:05:02 +0200
-MIME-Version: 1.0
-In-Reply-To: <CAKuzo_geGTkH_d42-xnx7NJUXBRFyahajJAdW8+eZ0eYn2HRpg@...278...>
+	<5755C95E.9080401@...2080...>
+From: Selva Nair <selva.nair@...277...>
+Date: Mon, 6 Jun 2016 16:08:29 -0400
+Message-ID: <CAKuzo_jivce2XsfJeJaY2n+NqRqUWSPkWejyHZMNuqHxGZUCcg@...278...>
+Content-Type: multipart/alternative; boundary=001a114115c20535860534a1a427
 Subject: Re: [Openvpn-devel] [PATCH] Another fix related to unit test
- framework
-Reply-To: openvpn-devel@lists.sourceforge.net
+	framework
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,70 +20,84 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
 To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-On 04/06/16 07:17, Selva Nair wrote:
-> 
-> 
-> On Fri, Jun 3, 2016 at 2:37 PM, Selva Nair <selva.nair@...277...
-> <mailto:selva.nair@...277...>> wrote:
-> 
-> 
->     On Fri, Jun 3, 2016 at 2:14 PM, Gert Doering <gert@...1296...
->     <mailto:gert@...1296...>> wrote:
-> 
->         On Fri, Jun 03, 2016 at 07:49:23PM +0200, David Sommerseth wrote:
->         > From: David Sommerseth <dazo@...2145...
->         <mailto:dazo@...2145...>>
->         >
->         > Continuing to fix breakage caused by commit 40cb4cfc5d011102.
->         [..]
-> 
->         Not having actually tested this, looking at it seems to properly
->         quote
->         the bits that caused buildbot explosion and "make dist" fails
->         (also as
->         discussed between David and Samuli on IRC).
-> 
->         So - ACK!  Please apply and let's make the buildbots all green
->         again :-)
-> 
-> 
->     Don't know about bots, at least one human cross-compiling for
->     windows is happy now..
-> 
-> 
-> The joy was short-lived. mingw cross-compile from release/2.3 tarball is
-> also broken:
-> 
->     error: cannot find input file: `vendor/Makefile.in'
-> 
-> Thankfully, cherry-pick 41ab12f06253c fixes it.
+--001a114115c20535860534a1a427
+Content-Type: text/plain; charset=UTF-8
 
-Whoops!  I completely forgot to include this fix into the release/2.3
-branch.
+Hi,
 
-> IMO, the unit testing patches shouldn't have been merged into the
-> release branch
+On Mon, Jun 6, 2016 at 3:05 PM, David Sommerseth <
+openvpn@...2080...> wrote:
 
-I did think consider this, but ended up applying them to release/2.3 as
-well.  My thought is that once we start having more unit tests included,
-we should be able to at least add some of those tests to the release/2.3
-branch too.  There are code which is refactored so much it won't be easy
-to do, but there are also plenty of code which haven't changed that
-dramatically.
-
-I see these first patches from Jens as framework (or infrastructure)
-patches, it doesn't mean we commit ourselves to adding unit-testing to
-release/2.3, but it gives the possibility to do so.  Our 2.3 releases
-will continue to live in parallel with the future 2.4 release for quite
-some time.
+>
+> > IMO, the unit testing patches shouldn't have been merged into the
+> > release branch
+>
+> I did think consider this, but ended up applying them to release/2.3 as
+> well.  My thought is that once we start having more unit tests included,
+> we should be able to at least add some of those tests to the release/2.3
+> branch too.  There are code which is refactored so much it won't be easy
+> to do, but there are also plenty of code which haven't changed that
+> dramatically.
+>
+> I see these first patches from Jens as framework (or infrastructure)
+> patches, it doesn't mean we commit ourselves to adding unit-testing to
+> release/2.3, but it gives the possibility to do so.  Our 2.3 releases
+> will continue to live in parallel with the future 2.4 release for quite
+> some time.
 
 
--- 
-kind regards,
+I'm of the view that "unit tests" aid development but not much useful for
+maintenance. So why add unit tests to a stable code-base that should only
+get bug fixes (i.e., fixes for bugs that show up in real use).
 
-David Sommerseth
+On top of that, adding unit tests into an existing code like openvpn will
+involve a lot of refactoring. The ROI on backporting any such tests to 2.3
+does not look worth the effort.
+
+Selva
+
+--001a114115c20535860534a1a427
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div class=3D"gmail_extra">Hi,</div><div class=3D"gmail_ex=
+tra"><br><div class=3D"gmail_quote">On Mon, Jun 6, 2016 at 3:05 PM, David S=
+ommerseth <span dir=3D"ltr">&lt;<a href=3D"mailto:openvpn@...2080..." targe=
+t=3D"_blank">openvpn@...2080...</a>&gt;</span> wrote:<br><blockquote class=
+=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left-width:1px;bo=
+rder-left-color:rgb(204,204,204);border-left-style:solid;padding-left:1ex">=
+<span><br>
+&gt; IMO, the unit testing patches shouldn&#39;t have been merged into the<=
+br>
+&gt; release branch<br>
+<br>
+</span>I did think consider this, but ended up applying them to release/2.3=
+ as<br>
+well.=C2=A0 My thought is that once we start having more unit tests include=
+d,<br>
+we should be able to at least add some of those tests to the release/2.3<br>
+branch too.=C2=A0 There are code which is refactored so much it won&#39;t b=
+e easy<br>
+to do, but there are also plenty of code which haven&#39;t changed that<br>
+dramatically.<br>
+<br>
+I see these first patches from Jens as framework (or infrastructure)<br>
+patches, it doesn&#39;t mean we commit ourselves to adding unit-testing to<=
+br>
+release/2.3, but it gives the possibility to do so.=C2=A0 Our 2.3 releases<=
+br>
+will continue to live in parallel with the future 2.4 release for quite<br>
+some time.</blockquote></div></div><div class=3D"gmail_extra"><br></div><di=
+v class=3D"gmail_extra">I&#39;m of the view that &quot;unit tests&quot; aid=
+ development but not much useful for maintenance. So why add unit tests to =
+a stable code-base that should only get bug fixes (i.e., fixes for bugs tha=
+t show up in real use).</div><div class=3D"gmail_extra"><br></div><div clas=
+s=3D"gmail_extra">On top of that, adding unit tests into an existing code l=
+ike openvpn will involve a lot of refactoring. The ROI on backporting any s=
+uch tests to 2.3 does not look worth the effort.=C2=A0<br></div><div class=
+=3D"gmail_extra"><br></div><div class=3D"gmail_extra">Selva</div></div>
+
+--001a114115c20535860534a1a427--
 
