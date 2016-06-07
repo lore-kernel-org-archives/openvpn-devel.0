@@ -1,16 +1,10 @@
-Date: Tue, 7 Jun 2016 22:53:47 +0200
+Date: Tue, 7 Jun 2016 23:01:57 +0200 (CEST)
+Message-Id: <201606072101.u57L1vqK037126@...2054...>
 From: Gert Doering <gert@...1296...>
-Message-ID: <20160607205347.GC53051@...1296...>
-References: <1464668569-6480-1-git-send-email-selva.nair@...277...>
-	<1465162884-32520-1-git-send-email-selva.nair@...277...>
-	<1465162884-32520-2-git-send-email-selva.nair@...277...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="Nc58znKvUQeeXvTG"
-Content-Disposition: inline
-In-Reply-To: <1465162884-32520-2-git-send-email-selva.nair@...277...>
-Subject: Re: [Openvpn-devel] [PATCH 2/2] Save exit-notify timer during a
- restart
+In-Reply-To: <1465274660-11009-2-git-send-email-selva.nair@...277...>
+References: <1465274660-11009-2-git-send-email-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Ignore SIGUSR1/SIGHUP during
+	exit notification
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,51 +13,48 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: Selva Nair <selva.nair@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---Nc58znKvUQeeXvTG
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+ACK.
 
-Hi,
+Stared at the code, and managed to reproduce the race by pressing ctrl-c
+at exactly the right spot (shortly before the "pull-filter reject" would
+trigger a SIGUSR1) and saw my ctrl-c being ignored - with the patch, things
+work as expected:
 
-On Sun, Jun 05, 2016 at 05:41:24PM -0400, Selva Nair wrote:
-> When exit-notify is specified, SIGTERM could be lost if a SIGUSR1/SIGHUP
-> restart happens during the exit notification interval. This is
-> particularly apparent when pull-filter reject causes a repeated SIGUSR1
-> restart cycle.
->=20
-> - Save the explicit_exit_notification_interval and time_wait
->   across restarts.
-> - Check pending SIGTERM (with exit notification) in the SIGUSR1/SIGHUP
->   loop and cause an exit instead of restart.
+Tue Jun  7 23:00:08 2016 us=714409 Ignoring SIGUSR1 received during exit notification
 
-NAK on this one, as I think the later patch you sent for this is "better"
-and easier to understand.  Just for the sake of the archives.
 
-gert=20
+As we have discussed, this is not "the perfect solution" yet, but I think
+it solves the "large" race condition (during the explicit-exit-notify 
+time window) without making code elsewhere even more complicated.  We
+should continue working on this, though, and eventually get rid of this
+workaround again :-)
 
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+As this is bugfix it goes into release/2.3.
 
---Nc58znKvUQeeXvTG
-Content-Type: application/pgp-signature; name="signature.asc"
+Your patch has been applied to the master and release/2.3 branch.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
+commit 63b3e000c9141f4ca03a374354da26334257bc18 (master)
+commit 859c9f412455665635964519f3e44a0b4151a787 (release/2.3)
+Author: Selva Nair
+Date:   Tue Jun 7 00:44:20 2016 -0400
 
-iQCVAwUBV1c0WqkuBuNlUUl1AQJvwgP+KHxOarPQ/bzKoiATsTwe6hcWen/0iqk2
-KKGo7joqsdFaYSMF/xaY7nQNbPu9J3l9SgRZs1LjCLe0xG7QP07nc1NlMMhFMxmP
-1pzqKBzLMsMuZA2WdOnA1uSv4p8soFpIuu7urjmwvyR3mTRbxit8Urm8wLdOpBio
-bX+hdEVpgx4=
-=DrcO
------END PGP SIGNATURE-----
+     Ignore SIGUSR1/SIGHUP during exit notification
 
---Nc58znKvUQeeXvTG--
+     Signed-off-by: Selva Nair <selva.nair@...277...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1465274660-11009-2-git-send-email-selva.nair@...277...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/11814
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
+
 
