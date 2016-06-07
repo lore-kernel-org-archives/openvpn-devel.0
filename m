@@ -1,10 +1,16 @@
-Date: Tue, 7 Jun 2016 22:53:36 +0200 (CEST)
-Message-Id: <201606072053.u57KraKt036987@...2054...>
+Date: Tue, 7 Jun 2016 22:53:47 +0200
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1465162884-32520-1-git-send-email-selva.nair@...277...>
-References: <1465162884-32520-1-git-send-email-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Add an option to filter options
-	received from server
+Message-ID: <20160607205347.GC53051@...1296...>
+References: <1464668569-6480-1-git-send-email-selva.nair@...277...>
+	<1465162884-32520-1-git-send-email-selva.nair@...277...>
+	<1465162884-32520-2-git-send-email-selva.nair@...277...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="Nc58znKvUQeeXvTG"
+Content-Disposition: inline
+In-Reply-To: <1465162884-32520-2-git-send-email-selva.nair@...277...>
+Subject: Re: [Openvpn-devel] [PATCH 2/2] Save exit-notify timer during a
+ restart
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,42 +19,51 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
 To: Selva Nair <selva.nair@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-ACK.  Stared at the code, tested, works.
+--Nc58znKvUQeeXvTG
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-I like the way using a linked list actually made this code more simple 
-(which hints that the previous version might not have been ideal, but 
-anyway).
+Hi,
 
-I'm not sure I agree with the style used in apply_pull_filter() - I might
-have coded it as "first do the strncmp(), and if that matches, use a 
-switch/case block for the rest" (avoid repeating the strnmcp(), and it's
-actually minimally more effective as the current code always tests the 
-filter type *and* strncmp()'s, while it could skip the filter type on 
-no match) - but that is going very much into personal coding style land.
+On Sun, Jun 05, 2016 at 05:41:24PM -0400, Selva Nair wrote:
+> When exit-notify is specified, SIGTERM could be lost if a SIGUSR1/SIGHUP
+> restart happens during the exit notification interval. This is
+> particularly apparent when pull-filter reject causes a repeated SIGUSR1
+> restart cycle.
+>=20
+> - Save the explicit_exit_notification_interval and time_wait
+>   across restarts.
+> - Check pending SIGTERM (with exit notification) in the SIGUSR1/SIGHUP
+>   loop and cause an exit instead of restart.
 
-Your patch has been applied to the master branch.
+NAK on this one, as I think the later patch you sent for this is "better"
+and easier to understand.  Just for the sake of the archives.
 
-commit 7f74c27e105a365d278181d00708c55a299398a0
-Author: Selva Nair
-Date:   Sun Jun 5 17:41:23 2016 -0400
+gert=20
 
-     Add an option to filter options received from server
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-     Signed-off-by: Selva Nair <selva.nair@...277...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1465162884-32520-1-git-send-email-selva.nair@...277...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/11808
-     Signed-off-by: Gert Doering <gert@...1296...>
+--Nc58znKvUQeeXvTG
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
 
---
-kind regards,
+iQCVAwUBV1c0WqkuBuNlUUl1AQJvwgP+KHxOarPQ/bzKoiATsTwe6hcWen/0iqk2
+KKGo7joqsdFaYSMF/xaY7nQNbPu9J3l9SgRZs1LjCLe0xG7QP07nc1NlMMhFMxmP
+1pzqKBzLMsMuZA2WdOnA1uSv4p8soFpIuu7urjmwvyR3mTRbxit8Urm8wLdOpBio
+bX+hdEVpgx4=
+=DrcO
+-----END PGP SIGNATURE-----
 
-Gert Doering
-
+--Nc58znKvUQeeXvTG--
 
