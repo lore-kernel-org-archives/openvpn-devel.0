@@ -1,22 +1,23 @@
-MIME-Version: 1.0
-In-Reply-To: <83f1cd0b-7155-1f14-65ee-935a40b4e0a6@...1227...>
-References: <1464883738-904-1-git-send-email-openvpn@...2080...>
-	<1464976163-6162-1-git-send-email-openvpn@...2080...>
+Date: Tue, 7 Jun 2016 12:02:40 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20160607100240.GS53051@...1296...>
+References: <1464976163-6162-1-git-send-email-openvpn@...2080...>
 	<20160603181404.GM53051@...1296...>
 	<CAKuzo_hyz1g_VqiU_AR-Q69FiXA_9K+MmPYsE=J3M41iKjyDeA@...278...>
 	<CAKuzo_geGTkH_d42-xnx7NJUXBRFyahajJAdW8+eZ0eYn2HRpg@...278...>
 	<0EB7FB8D-1A08-4320-A587-435B0B280071@...2127...>
 	<c9f39c1c-918b-843d-9a9b-220908198a90@...515...>
-	<CAFHpkQEncM1BS_tCa_uVvbvkJZ+C850KHUui3-6pC3ECZQQJLA@...278...>
-	<d1009561-03cb-3ea9-ab38-fce585f56f5f@...515...>
-	<CAFHpkQF-Xr5zH=LuC5rkZz8qkde1nvm1G85fM4kXkWB2KVPrTw@...278...>
-	<83f1cd0b-7155-1f14-65ee-935a40b4e0a6@...1227...>
-From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Date: Tue, 7 Jun 2016 13:30:09 +0500
-Message-ID: <CAFHpkQGARFX1rrXdoobY4QTfhF2UQmtsUR_TbU2gawrcM3tupg@...278...>
-Content-Type: multipart/alternative; boundary=001a114450d8416f5c0534abffc4
+	<20160607075659.GM53051@...1296...>
+	<448a7afe-aece-b97b-a6ea-afb8f1b8526e@...515...>
+	<20160607082014.GQ53051@...1296...>
+	<CAFHpkQH4_D7Gi-ivDADk=uyqBFm7wh0t-YShiJbBadanWOkKxQ@...278...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="un9Em1h3RhnB9zF/"
+Content-Disposition: inline
+In-Reply-To: <CAFHpkQH4_D7Gi-ivDADk=uyqBFm7wh0t-YShiJbBadanWOkKxQ@...278...>
 Subject: Re: [Openvpn-devel] [PATCH] Another fix related to unit test
-	framework
+ framework
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -25,53 +26,53 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
+To: ???????? ?????????????? <chipitsine@...277...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---001a114450d8416f5c0534abffc4
-Content-Type: text/plain; charset="UTF-8"
+--un9Em1h3RhnB9zF/
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-oops, I was wrong.
+Hi,
 
-2016-06-07 13:28 GMT+05:00 Arne Schwabe <arne@...1227...>:
+On Tue, Jun 07, 2016 at 01:27:52PM +0500, ???????? ?????????????? wrote:
+> as for Travis-CI builds, there's such possibility already
+>=20
+> 1) register at github.com
+> 2) add your own repo to travis-ci.org
+> 3) voila, you can attack Pentagon from travis-ci cloud
+>=20
+> the way of "add some attacking code to openvpn codebase" seems to be much
+> more complicated
 
-> Am 07.06.16 um 10:23 schrieb =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=
-=D0=B8=D1=86=D0=B8=D0=BD:
-> > mingw is an official way of building windows packages. I guess something
-> > like that appliable for ARM as well (I haven't heard about compilers
-> > running on those machines)
-> >
->
-> Raspberry pi!
->
-> Arne
->
->
+This is not about "attacking other people" - it's about compromising the
+integrity of my buildslaves (which could then be used to do anything,
+like "host malware downloads" etc).
 
---001a114450d8416f5c0534abffc4
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Is this a very likely scenario, and likely to go undetected?  No :-) - but
+still, I'm not opening these systems to Joe Random and his friends.
 
-<div dir=3D"ltr">oops, I was wrong.<br></div><div class=3D"gmail_extra"><br=
-><div class=3D"gmail_quote">2016-06-07 13:28 GMT+05:00 Arne Schwabe <span d=
-ir=3D"ltr">&lt;<a href=3D"mailto:arne@...1227..." target=3D"_blank">arne@...1186...=
-.1227...</a>&gt;</span>:<br><blockquote class=3D"gmail_quote" style=3D"marg=
-in:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">Am 07.06.16 um 1=
-0:23 schrieb =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=B8=D1=86=D0=B8=
-=D0=BD:<br>
-<span class=3D"">&gt; mingw is an official way of building windows packages=
-. I guess something<br>
-&gt; like that appliable for ARM as well (I haven&#39;t heard about compile=
-rs<br>
-&gt; running on those machines)<br>
-&gt;<br>
-<br>
-</span>Raspberry pi!<br>
-<span class=3D"HOEnZb"><font color=3D"#888888"><br>
-Arne<br>
-<br>
-</font></span></blockquote></div><br></div>
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
---001a114450d8416f5c0534abffc4--
+--un9Em1h3RhnB9zF/
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQCVAwUBV1abv6kuBuNlUUl1AQJ2vQP9Gcp2XIP/fteIUNFaWAVjO6UmyKp+f7RR
+iungciIlkBOEAuCmWw1qOqlFOI+KbyGJ+cGzA2nRcxLJhspcnsYlIi8B0KfNLfGs
+AZrjNhgoUFv6Nj8tw0vgM3lYw+MyJhkzMLo3QymD6q9scYahuIGFCK/YlkEKPCKs
+EMG0sxrgmWQ=
+=kC8q
+-----END PGP SIGNATURE-----
+
+--un9Em1h3RhnB9zF/--
 
