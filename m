@@ -1,21 +1,21 @@
-Date: Tue, 7 Jun 2016 12:02:40 +0200
+Date: Tue, 7 Jun 2016 12:05:07 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20160607100240.GS53051@...1296...>
-References: <1464976163-6162-1-git-send-email-openvpn@...2080...>
+Message-ID: <20160607100507.GT53051@...1296...>
+References: <1464883738-904-1-git-send-email-openvpn@...2080...>
+	<1464976163-6162-1-git-send-email-openvpn@...2080...>
 	<20160603181404.GM53051@...1296...>
 	<CAKuzo_hyz1g_VqiU_AR-Q69FiXA_9K+MmPYsE=J3M41iKjyDeA@...278...>
 	<CAKuzo_geGTkH_d42-xnx7NJUXBRFyahajJAdW8+eZ0eYn2HRpg@...278...>
 	<0EB7FB8D-1A08-4320-A587-435B0B280071@...2127...>
 	<c9f39c1c-918b-843d-9a9b-220908198a90@...515...>
-	<20160607075659.GM53051@...1296...>
-	<448a7afe-aece-b97b-a6ea-afb8f1b8526e@...515...>
-	<20160607082014.GQ53051@...1296...>
-	<CAFHpkQH4_D7Gi-ivDADk=uyqBFm7wh0t-YShiJbBadanWOkKxQ@...278...>
+	<CAFHpkQEncM1BS_tCa_uVvbvkJZ+C850KHUui3-6pC3ECZQQJLA@...278...>
+	<d1009561-03cb-3ea9-ab38-fce585f56f5f@...515...>
+	<CAFHpkQF-Xr5zH=LuC5rkZz8qkde1nvm1G85fM4kXkWB2KVPrTw@...278...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="un9Em1h3RhnB9zF/"
+	protocol="application/pgp-signature"; boundary="cxhIMh0CCs5SSfRr"
 Content-Disposition: inline
-In-Reply-To: <CAFHpkQH4_D7Gi-ivDADk=uyqBFm7wh0t-YShiJbBadanWOkKxQ@...278...>
+In-Reply-To: <CAFHpkQF-Xr5zH=LuC5rkZz8qkde1nvm1G85fM4kXkWB2KVPrTw@...278...>
 Subject: Re: [Openvpn-devel] [PATCH] Another fix related to unit test
  framework
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -29,29 +29,28 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: ???????? ?????????????? <chipitsine@...277...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---un9Em1h3RhnB9zF/
+--cxhIMh0CCs5SSfRr
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
-Hi,
+hi,
 
-On Tue, Jun 07, 2016 at 01:27:52PM +0500, ???????? ?????????????? wrote:
-> as for Travis-CI builds, there's such possibility already
->=20
-> 1) register at github.com
-> 2) add your own repo to travis-ci.org
-> 3) voila, you can attack Pentagon from travis-ci cloud
->=20
-> the way of "add some attacking code to openvpn codebase" seems to be much
-> more complicated
+On Tue, Jun 07, 2016 at 01:23:55PM +0500, ???????? ?????????????? wrote:
+> mingw is an official way of building windows packages. I guess something
+> like that appliable for ARM as well (I haven't heard about compilers
+> running on those machines)
 
-This is not about "attacking other people" - it's about compromising the
-integrity of my buildslaves (which could then be used to do anything,
-like "host malware downloads" etc).
+$ uname -mo
+armv5tel GNU/Linux
+$ gcc -v
+Using built-in specs.
+Target: arm-linux-gnueabi
 
-Is this a very likely scenario, and likely to go undetected?  No :-) - but
-still, I'm not opening these systems to Joe Random and his friends.
+of course you'd typically not compile on a slow ARM system, but if
+it's just a few lines of code, getting a cross-build environment up and
+running is way more effort than "just install the compiler and compile
+locally"...  if disk space permits.
 
 gert
 --=20
@@ -61,18 +60,18 @@ rt/
 Gert Doering - Munich, Germany                             gert@...1296...
 fax: +49-89-35655025                        gert@...1297...
 
---un9Em1h3RhnB9zF/
+--cxhIMh0CCs5SSfRr
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1
 
-iQCVAwUBV1abv6kuBuNlUUl1AQJ2vQP9Gcp2XIP/fteIUNFaWAVjO6UmyKp+f7RR
-iungciIlkBOEAuCmWw1qOqlFOI+KbyGJ+cGzA2nRcxLJhspcnsYlIi8B0KfNLfGs
-AZrjNhgoUFv6Nj8tw0vgM3lYw+MyJhkzMLo3QymD6q9scYahuIGFCK/YlkEKPCKs
-EMG0sxrgmWQ=
-=kC8q
+iQCVAwUBV1acU6kuBuNlUUl1AQIDMgP/Ye65b/YeOXpJlyQrzViVrMWMQFxo2qhc
+pYtcymLCCi1OW1d0VI7OTAberrZDtVoSDwLysn/I/GSwWZwm/tXhPDsbNySFYF5a
+olirhOMrFq7XkwXLeRa2QToZWeR63WLxsQjKi2ju1FaT5M1yTYW7Ktz9jBeSO0En
+e/treq04mnY=
+=ymSD
 -----END PGP SIGNATURE-----
 
---un9Em1h3RhnB9zF/--
+--cxhIMh0CCs5SSfRr--
 
