@@ -1,15 +1,12 @@
 MIME-Version: 1.0
-In-Reply-To: <20160607144127.GY53051@...1296...>
-References: <CAFHpkQFkm-6FUUs8DN63UKKHCPHZBmLDK1fk60xaycUk3K5GSQ@...278...>
-	<CAFHpkQEjE6vmRm3-Mq_9i3A2w5TrcJ4rasxoZwf00W+sPh3DDQ@...278...>
-	<CAFHpkQEt1tH5yPY-9=G6YRuardSBM7CtsDLOHd71JHHUQBtOwQ@...278...>
-	<45ec7635-8bb5-f811-9b8b-4713091d79ee@...515...>
-	<20160607144127.GY53051@...1296...>
-From: Selva Nair <selva.nair@...277...>
-Date: Tue, 7 Jun 2016 11:39:49 -0400
-Message-ID: <CAKuzo_ip973aaydzrOR=4xUvwyO05HqYbQTNjRxDgkFV=fD_mg@...278...>
-Content-Type: multipart/alternative; boundary=001a114dd8deffd4940534b200ff
-Subject: Re: [Openvpn-devel] Valgring findings
+In-Reply-To: <20160607141112.GX53051@...1296...>
+References: <CAFHpkQF9s4JnDKHsomjo0ud72nwOXF7g_hLEiNreZ1ozTn4QLA@...278...>
+	<20160607141112.GX53051@...1296...>
+From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
+Date: Tue, 7 Jun 2016 21:01:01 +0500
+Message-ID: <CAFHpkQF-0pScrXkfx_iOTRueQcC2_bDO6K6khx84sMtV0baJ_w@...278...>
+Content-Type: multipart/alternative; boundary=001a114e35b0b428b90534b24b66
+Subject: Re: [Openvpn-devel] potential segfault on strlen(NULL)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,108 +15,138 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Gert Doering <gert@...1296...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---001a114dd8deffd4940534b200ff
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+--001a114e35b0b428b90534b24b66
+Content-Type: text/plain; charset=UTF-8
 
-On Tue, Jun 7, 2016 at 10:41 AM, Gert Doering <gert@...1296...> wrote:
+2016-06-07 19:11 GMT+05:00 Gert Doering <gert@...1296...>:
 
-> On Tue, Jun 07, 2016 at 05:33:07PM +0300, Samuli Sepp=C3=A4nen wrote:
-> > > I played with valgrind a bit
-> > >
-> > > https://travis-ci.org/chipitsine/openvpn/jobs/135869065
-> > >
-> > > Looks like there are leaks in openssl code, should we suppress it?
-> >
-> > I can't comment on the leaks themselves, but I wonder if it would make
-> > sense to run OpenVPN under Valgrind in "make check". For example, when
-> > using the Vagrant test VMs the loss of performance would not be a big
-> > deal - the tests would just run quite a bit longer.
+> Hi,
 >
-> Unless you can whitelist certain findings, valgrind output will be LONG
-> (as can be seen in the URL above), and we can't do anything about memory
-> lost by OpenSSL etc. - so it's just long output of random numbers, which
-> nobody will bother to look at.
+> On Tue, Jun 07, 2016 at 06:04:54PM +0500, ???????? ?????????????? wrote:
+> > as I see, there's call to format_hex_ex with separator=NULL here:
+>
+> Interesting find.
+>
+> This code is funny - format_hex_ex() is called from various places with
+> separator=NULL, and has been that way since at least 2005... it's part of
+> the oldest commit we have in git.
+>
+> Now, that expression
+>
+>   struct buffer out = alloc_buf_gc (maxoutput ? maxoutput :
+>                                     ((size * 2) + (size /
+> (space_break_flags & F
+> HE_SPACE_BREAK_MASK)) * (int) strlen (separator) + 2),
+>                                     gc);
+>
+> will of course *only* call strlen(separator) if "maxoutput" is 0
+> (C short-circuit evaluation of conditionals).  So if all callers respect
+> that and *either* set "maxoutput > 0" *or* pass "separator != NULL", we're
+> fine.
+>
+> The line 152 in ssl_openssl.c is passing in "len", which is not 0...
+>
+>          const char *key = format_hex_ex (ekm, size, len, 0, NULL, &gc);
+>
+> ... so there will not be a strlen() call.
+>
+>
+> I wouldn't mind an ASSERT( maxoutput > 0 || separator != NULL ) call
+> in format_hex_ex(), though.
+>
 
 
-Not everything that valgrind reports is really a leak. Not to say valgrind
-is not useful -- quite the contrary, and we find it very useful to catch
-leaks in our number-crunching codes all the time.
+ASSERT is more readable that ternary operator here. ok, I'll propose new
+patch
 
-Running valgrind with --leak-check=3Dfull --show-reachable=3Dyes as in the =
-link
-above would generate too much of not so useful output. In fact the output
-was longer than the 10K limit of travis. Use --leak-check=3Dsummary, leave
-out --show-reachable=3Dyes, and keep show-leak-kinds at its default (i.e
-definite and possible leaks only). Then, if there are errors that look real
-one could locally check with --leak-check=3Dfull. In any case, suppress
-still-reachable warnings.
 
-All those  "errors" seen in openssl are "still reachable" blocks which is
-not a leak.
+>
+> gert
+>
+> --
+> USENET is *not* the non-clickable part of WWW!
+>                                                            //
+> www.muc.de/~gert/
+> Gert Doering - Munich, Germany
+> gert@...1296...
+> fax: +49-89-35655025
+> gert@...1297...
+>
 
-Selva
-
---001a114dd8deffd4940534b200ff
+--001a114e35b0b428b90534b24b66
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr"><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">=
-On Tue, Jun 7, 2016 at 10:41 AM, Gert <span class=3D"" id=3D":7wu.1" tabind=
-ex=3D"-1">Doering</span> <span dir=3D"ltr">&lt;<a href=3D"mailto:gert@...1711...=
-96..." target=3D"_blank"><span class=3D"" id=3D":7wu.2" tabindex=3D"-1">ger=
-t</span>@<span class=3D"" id=3D":7wu.3" tabindex=3D"-1">greenie</span>.<spa=
-n class=3D"" id=3D":7wu.4" tabindex=3D"-1">muc</span>.<span class=3D"" id=
-=3D":7wu.5" tabindex=3D"-1">de</span></a>&gt;</span> wrote:<br><blockquote =
-class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left-width:1=
-px;border-left-color:rgb(204,204,204);border-left-style:solid;padding-left:=
-1ex"><span class=3D"">On Tue, Jun 07, 2016 at 05:33:07PM +0300, Samuli Sepp=
-=C3=A4nen wrote:<br>
-&gt; &gt; I played with valgrind a bit<br>
-&gt; &gt;<br>
-&gt; &gt; <a href=3D"https://travis-ci.org/chipitsine/openvpn/jobs/13586906=
-5" rel=3D"noreferrer" target=3D"_blank">https://travis-ci.org/chipitsine/op=
-envpn/jobs/135869065</a><br>
-&gt; &gt;<br>
-&gt; &gt; Looks like there are leaks in openssl code, should we suppress it=
-?<br>
-&gt;<br>
-&gt; I can&#39;t comment on the leaks themselves, but I wonder if it would =
-make<br>
-&gt; sense to run OpenVPN under Valgrind in &quot;make check&quot;. For exa=
-mple, when<br>
-&gt; using the Vagrant test VMs the loss of performance would not be a big<=
-br>
-&gt; deal - the tests would just run quite a bit longer.<br>
+<div dir=3D"ltr"><br><div class=3D"gmail_extra"><br><div class=3D"gmail_quo=
+te">2016-06-07 19:11 GMT+05:00 Gert Doering <span dir=3D"ltr">&lt;<a href=
+=3D"mailto:gert@...1296..." target=3D"_blank">gert@...1296...</a>&gt;</span=
+>:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-l=
+eft:1px #ccc solid;padding-left:1ex">Hi,<br>
+<span class=3D""><br>
+On Tue, Jun 07, 2016 at 06:04:54PM +0500, ???????? ?????????????? wrote:<br>
+&gt; as I see, there&#39;s call to format_hex_ex with separator=3DNULL here=
+:<br>
 <br>
-</span>Unless you can whitelist certain findings, valgrind output will be L=
-ONG<br>
-(as can be seen in the URL above), and we can&#39;t do anything about memor=
-y<br>
-lost by OpenSSL etc. - so it&#39;s just long output of random numbers, whic=
-h<br>
-nobody will bother to look at.</blockquote></div><br>Not everything that <s=
-pan class=3D"" id=3D":7wu.6" tabindex=3D"-1">valgrind</span> reports is rea=
-lly a leak. Not to say <span class=3D"" id=3D":7wu.7" tabindex=3D"-1">valgr=
-ind</span> is not useful -- quite the contrary, and we find it very useful =
-to catch leaks in our number-crunching codes all the time.</div><div class=
-=3D"gmail_extra"><br></div><div class=3D"gmail_extra">Running <span class=
-=3D"" id=3D":7wu.8" tabindex=3D"-1">valgrind</span> with --leak-check=3Dful=
-l --show-reachable=3Dyes as in the link above would generate too much of no=
-t so useful output. In fact the output was longer than the 10K limit of <sp=
-an style=3D"background-color:rgb(255,255,0)">travis</span>. Use --leak-chec=
-k=3Dsummary, leave out --show-reachable=3Dyes, and keep show-leak-kinds at =
-its default (i.e definite and possible leaks only). Then, if there are erro=
-rs that look real one could locally check with --leak-check=3Dfull. In any =
-case, suppress still-reachable warnings.=C2=A0</div><div class=3D"gmail_ext=
-ra"><br></div><div class=3D"gmail_extra">All those =C2=A0&quot;errors&quot;=
- seen in <span class=3D"" id=3D":7wu.12" tabindex=3D"-1">openssl</span> are=
- &quot;still reachable&quot; blocks which is not a leak.=C2=A0</div><div cl=
-ass=3D"gmail_extra"><br></div><div class=3D"gmail_extra"><span class=3D"" i=
-d=3D":7wu.13" tabindex=3D"-1">Selva</span></div><div class=3D"gmail_extra">=
-<br></div></div>
+</span>Interesting find.<br>
+<br>
+This code is funny - format_hex_ex() is called from various places with<br>
+separator=3DNULL, and has been that way since at least 2005... it&#39;s par=
+t of<br>
+the oldest commit we have in git.<br>
+<br>
+Now, that expression<br>
+<br>
+=C2=A0 struct buffer out =3D alloc_buf_gc (maxoutput ? maxoutput :<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 ((size * 2) + (size / =
+(space_break_flags &amp; F<br>
+HE_SPACE_BREAK_MASK)) * (int) strlen (separator) + 2),<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 gc);<br>
+<br>
+will of course *only* call strlen(separator) if &quot;maxoutput&quot; is 0<=
+br>
+(C short-circuit evaluation of conditionals).=C2=A0 So if all callers respe=
+ct<br>
+that and *either* set &quot;maxoutput &gt; 0&quot; *or* pass &quot;separato=
+r !=3D NULL&quot;, we&#39;re<br>
+fine.<br>
+<br>
+The line 152 in ssl_openssl.c is passing in &quot;len&quot;, which is not 0=
+...<br>
+<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0const char *key =3D format_hex_ex (ekm, s=
+ize, len, 0, NULL, &amp;gc);<br>
+<br>
+... so there will not be a strlen() call.<br>
+<br>
+<br>
+I wouldn&#39;t mind an ASSERT( maxoutput &gt; 0 || separator !=3D NULL ) ca=
+ll<br>
+in format_hex_ex(), though.<br></blockquote><div><br><br></div><div>ASSERT =
+is more readable that ternary operator here. ok, I&#39;ll propose new patch=
+<br></div><div>=C2=A0</div><blockquote class=3D"gmail_quote" style=3D"margi=
+n:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">
+<span class=3D"HOEnZb"><font color=3D"#888888"><br>
+gert<br>
+<br>
+--<br>
+USENET is *not* the non-clickable part of WWW!<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0//<a href=3D"=
+http://www.muc.de/~gert/" rel=3D"noreferrer" target=3D"_blank">www.muc.de/~=
+gert/</a><br>
+Gert Doering - Munich, Germany=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0<a href=3D"mailt=
+o:gert@...1296...">gert@...1296...</a><br>
+fax: +49-89-35655025=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
+ =C2=A0 =C2=A0 =C2=A0 =C2=A0 <a href=3D"mailto:gert@...1297...">gert@...1826...=
+7...</a><br>
+</font></span></blockquote></div><br></div></div>
 
---001a114dd8deffd4940534b200ff--
+--001a114e35b0b428b90534b24b66--
 
