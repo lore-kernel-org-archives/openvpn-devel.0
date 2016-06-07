@@ -1,21 +1,14 @@
 MIME-Version: 1.0
-In-Reply-To: <a56ebdac-1f0d-d6e3-7249-231711c160dc@...515...>
-References: <1464883738-904-1-git-send-email-openvpn@...2080...>
-	<1464976163-6162-1-git-send-email-openvpn@...2080...>
-	<20160603181404.GM53051@...1296...>
-	<CAKuzo_hyz1g_VqiU_AR-Q69FiXA_9K+MmPYsE=J3M41iKjyDeA@...278...>
-	<CAKuzo_geGTkH_d42-xnx7NJUXBRFyahajJAdW8+eZ0eYn2HRpg@...278...>
-	<5755C95E.9080401@...2080...>
-	<CAKuzo_jivce2XsfJeJaY2n+NqRqUWSPkWejyHZMNuqHxGZUCcg@...278...>
-	<5755DF70.8050406@...2080...>
-	<20160607081413.GP53051@...1296...>
-	<a56ebdac-1f0d-d6e3-7249-231711c160dc@...515...>
-From: Selva Nair <selva.nair@...277...>
-Date: Tue, 7 Jun 2016 11:04:10 -0400
-Message-ID: <CAKuzo_hDFiOxb1r2X=KPUxQ+1MNPVSni=tUJzj88rzLASTWMcA@...278...>
-Content-Type: multipart/alternative; boundary=001a1134f63a82ff6e0534b1811a
-Subject: Re: [Openvpn-devel] [PATCH] Another fix related to unit test
-	framework
+In-Reply-To: <45ec7635-8bb5-f811-9b8b-4713091d79ee@...515...>
+References: <CAFHpkQFkm-6FUUs8DN63UKKHCPHZBmLDK1fk60xaycUk3K5GSQ@...278...>
+	<CAFHpkQEjE6vmRm3-Mq_9i3A2w5TrcJ4rasxoZwf00W+sPh3DDQ@...278...>
+	<CAFHpkQEt1tH5yPY-9=G6YRuardSBM7CtsDLOHd71JHHUQBtOwQ@...278...>
+	<45ec7635-8bb5-f811-9b8b-4713091d79ee@...515...>
+From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
+Date: Tue, 7 Jun 2016 20:37:21 +0500
+Message-ID: <CAFHpkQE8Kx99Htg2LpW6s0Y_vW7ZugbcpwSo9mM1DmQ_hL7hEA@...278...>
+Content-Type: multipart/alternative; boundary=001a114e35b01298ae0534b1f7c9
+Subject: Re: [Openvpn-devel] Valgring findings
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -24,63 +17,78 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---001a1134f63a82ff6e0534b1811a
+--001a114e35b01298ae0534b1f7c9
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Jun 7, 2016 at 6:31 AM, Samuli Sepp=C3=A4nen <samuli@...515...> wro=
-te:
+I thought to run valgrind separately, but it might be interesting to run it
+under "make check" as well
 
-> > Given that we do not have plenty of developer time around, we should
-> focus
-> > *development* time on git master / 2.4 - and that includes adding testi=
-ng
-> > frameworks.
+2016-06-07 19:33 GMT+05:00 Samuli Sepp=C3=A4nen <samuli@...515...>:
+
 >
-> +1. We should focus on doing what it takes to (finally) get 2.4 out of
-> the door. Fairly soon afterwards we can stop worrying about 2.3 and the
-> rather large incompatibilities between release/2.3 and master branch.
+> Hello,
+>>
+>> I played with valgrind a bit
+>>
+>> https://travis-ci.org/chipitsine/openvpn/jobs/135869065
+>>
+>> Looks like there are leaks in openssl code, should we suppress it?
+>>
+>
+> I can't comment on the leaks themselves, but I wonder if it would make
+> sense to run OpenVPN under Valgrind in "make check". For example, when
+> using the Vagrant test VMs the loss of performance would not be a big deal
+> - the tests would just run quite a bit longer.
+>
+> --
+> Samuli Sepp=C3=A4nen
+> Community Manager
+> OpenVPN Technologies, Inc
+>
+> irc freenode net: mattock
+>
 
-
-To that I'll add that, with limited developer time, we are better off
-concentrating on quality activities like code-review, functional and system
-testing as opposed to unit testing..
-
-Gert has already said most of the things I was holding back on saying about
-unit testing. In any case, unit testing in 2.3 is not something we should
-be worrying about.
-
-Selva
-
---001a1134f63a82ff6e0534b1811a
+--001a114e35b01298ae0534b1f7c9
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr"><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">=
-On Tue, Jun 7, 2016 at 6:31 AM, Samuli Sepp=C3=A4nen <span dir=3D"ltr">&lt;=
-<a href=3D"mailto:samuli@...515..." target=3D"_blank">samuli@...515...</a>&=
-gt;</span> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 =
-0 .8ex;border-left:1px #ccc solid;padding-left:1ex"><span class=3D"">&gt; G=
-iven that we do not have plenty of developer time around, we should focus<b=
-r>
-&gt; *development* time on git master / 2.4 - and that includes adding test=
-ing<br>
-&gt; frameworks.<br>
+<div dir=3D"ltr">I thought to run valgrind separately, but it might be inte=
+resting to run it under &quot;make check&quot; as well<br></div><div class=
+=3D"gmail_extra"><br><div class=3D"gmail_quote">2016-06-07 19:33 GMT+05:00 =
+Samuli Sepp=C3=A4nen <span dir=3D"ltr">&lt;<a href=3D"mailto:samuli@...2092...=
+.." target=3D"_blank">samuli@...515...</a>&gt;</span>:<br><blockquote class=
+=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padd=
+ing-left:1ex"><span class=3D""><br>
+<blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1p=
+x #ccc solid;padding-left:1ex">
+Hello,<br>
 <br>
-</span>+1. We should focus on doing what it takes to (finally) get 2.4 out =
-of<br>
-the door. Fairly soon afterwards we can stop worrying about 2.3 and the<br>
-rather large incompatibilities between release/2.3 and master branch.</bloc=
-kquote></div><br>To that I&#39;ll add that, with limited developer time, we=
- are better off concentrating on quality activities like code-review, funct=
-ional and system testing as opposed to unit testing..</div><div class=3D"gm=
-ail_extra"><br></div><div class=3D"gmail_extra">Gert has already said most =
-of the things I was holding back on saying about unit testing. In any case,=
- unit testing in 2.3 is not something we should be worrying about.</div><di=
-v class=3D"gmail_extra"><br></div><div class=3D"gmail_extra">Selva</div></d=
-iv>
+I played with valgrind a bit<br>
+<br>
+<a href=3D"https://travis-ci.org/chipitsine/openvpn/jobs/135869065" rel=3D"=
+noreferrer" target=3D"_blank">https://travis-ci.org/chipitsine/openvpn/jobs=
+/135869065</a><br>
+<br>
+Looks like there are leaks in openssl code, should we suppress it?<br>
+</blockquote>
+<br></span>
+I can&#39;t comment on the leaks themselves, but I wonder if it would make =
+sense to run OpenVPN under Valgrind in &quot;make check&quot;. For example,=
+ when using the Vagrant test VMs the loss of performance would not be a big=
+ deal - the tests would just run quite a bit longer.<span class=3D"HOEnZb">=
+<font color=3D"#888888"><br>
+<br>
+-- <br>
+Samuli Sepp=C3=A4nen<br>
+Community Manager<br>
+OpenVPN Technologies, Inc<br>
+<br>
+irc freenode net: mattock<br>
+</font></span></blockquote></div><br></div>
 
---001a1134f63a82ff6e0534b1811a--
+--001a114e35b01298ae0534b1f7c9--
 
