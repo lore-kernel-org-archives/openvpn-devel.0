@@ -1,16 +1,19 @@
+Date: Tue, 7 Jun 2016 10:14:13 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20160607081413.GP53051@...1296...>
 References: <1464883738-904-1-git-send-email-openvpn@...2080...>
 	<1464976163-6162-1-git-send-email-openvpn@...2080...>
 	<20160603181404.GM53051@...1296...>
 	<CAKuzo_hyz1g_VqiU_AR-Q69FiXA_9K+MmPYsE=J3M41iKjyDeA@...278...>
 	<CAKuzo_geGTkH_d42-xnx7NJUXBRFyahajJAdW8+eZ0eYn2HRpg@...278...>
-	<0EB7FB8D-1A08-4320-A587-435B0B280071@...2127...>
-	<c9f39c1c-918b-843d-9a9b-220908198a90@...515...>
-	<20160607075659.GM53051@...1296...>
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <448a7afe-aece-b97b-a6ea-afb8f1b8526e@...515...>
-Date: Tue, 7 Jun 2016 11:08:47 +0300
+	<5755C95E.9080401@...2080...>
+	<CAKuzo_jivce2XsfJeJaY2n+NqRqUWSPkWejyHZMNuqHxGZUCcg@...278...>
+	<5755DF70.8050406@...2080...>
 MIME-Version: 1.0
-In-Reply-To: <20160607075659.GM53051@...1296...>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="sVkLdCFbEixzdwcn"
+Content-Disposition: inline
+In-Reply-To: <5755DF70.8050406@...2080...>
 Subject: Re: [Openvpn-devel] [PATCH] Another fix related to unit test
  framework
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -21,122 +24,90 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
+To: openvpn-devel@lists.sourceforge.net
+
+--sVkLdCFbEixzdwcn
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-To: Gert Doering <gert@...1296...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Disposition: inline
+
+Hi,
+
+On Mon, Jun 06, 2016 at 10:39:12PM +0200, David Sommerseth wrote:
+> > On top of that, adding unit tests into an existing code like openvpn
+> > will involve a lot of refactoring. The ROI on backporting any such tests
+> > to 2.3 does not look worth the effort.=20
+>=20
+> Yes, lots of the code may need to be refactored.  But I am not currently
+> convinced everything will need refactoring.
+>=20
+> I am especially having the SSL abstraction layer in my mind.  That did
+> already go through a massive amount of refactoring to make it possible
+> to swap between OpenSSL and mbedTLS/PolarSSL.  Those code paths I see
+> great value of having tested with unit tests, also in 2.3.=20=20
+
+This all sounds nice on paper, but please look more closely at what
+we are supposed to *do* in the release/2.3 branch
+
+ - add bug fixes
+ - add security relevant changes, if they are small and localized
+ - aim for maximum stability
+
+there is no "refactoring" here (the SSL refactoring happened in git
+master before 2.3 was forked).
+
+Unit tests in git master are good and welcome, and if we discover bugs
+there, we will backport the bug fixes to 2.3 (or at least look carefully
+if 2.3 is affected by the same bugs at all).
+
+Given that we do not have plenty of developer time around, we should focus
+*development* time on git master / 2.4 - and that includes adding testing
+frameworks.
+
+Ceterum censo: please reconsider whether having that stuff in 2.3 is
+beneficial, or just eats up highly valuable developer time without=20
+bringing enough benefits to compensate.
 
 
-> Hi,
->
-> On Tue, Jun 07, 2016 at 10:30:57AM +0300, Samuli Sepp=E4nen wrote:
->> This is probably correct: the codebase is complex enough to cause
->> breakage on many types of changes, no matter how carefully the code is
->> reviewed. This is often because of the sheer number of options and their
->> invisible interplay. A recent example is the recent persist-tun / WFP
->> filtering issue, which slipped through all testing and review.
->>
->> Regression testing using unit tests could possibly help us prevent this
->> type of breakages.
->
-> In particular for *that* example: no way unit testing would have found
-> that - "full connection testing with multiple remotes and tunnel connecti=
-on
-> issues on the first tunnel" would have been needed.
->
-> Unit testing might have found the issue that on closing of the WFP in
-> master, the handle wasn't NULLed, so a second close call would have
-> caused a crash - if someone had thought of adding a test case for
-> "call close twice!" *and* ran this on windows.
->
-> Unit testing is good, but has no chance to find "full program test"
-> failures in certain combinations of options and remotes - which is
-> what t_client is there for, but even that one wouldn't have caught the
-> WFP thing as it's fairly hard to test for that.
->
->>> We already have discussed solutions to this:
->>>
->>> 1) Enable developers to run the ?authoritative? buildslave tests before
->>> submitting patches
->>
->> The buildmaster can trigger manual builds from a different branch (e.g.
->> "staging/somebody"). Access to the buildmaster can be granted
->> selectively to trusted core developers. Non-trivial patches from other
->> people should probably be tested by one of these core developers before
->> pushing them to "master". Or we can just accept the fact that "master"
->> might be broken occasionally and fix the problems promptly.
->
-> Haven't we been here before?
->
->  - add testing branches to the github repo for (semi-)trusted developers
->  - teach buildbot to use the github repo
->  - enable (semi-)trusted developers to push their "I want this tested!"
->    code to github/openvpn/testing-<user>/ and have buildbot test it
+[..]
+> Without
+> having dug too much into the buffer.[ch] code lately - so my memory may
+> be corrupted, but I think that is also code which can be adopted without
+> too much refactoring - and these code paths are also quite crucial.  But
+> yes, the unit test coverage will not be as massive as it hopefully will
+> develop to in master and 2.4.
 
-Yes, exactly, this is what I was describing above in other words :).
+"without too much refactoring" is already "way too much refactoring" - the
+last times we thought we'd "clean up some stuff" we introduced memory
+leaks and crashes that took us months to find and fix - look at=20
+ad49fb5a74b2ac16298ee8383d514a950ece1097, for example.
 
-> we can't open this to the world, as the t_client tests need sudo
-> privileges, so anyone who can push a patch to a testing tree can run
-> arbitrary commands on the buildslaves ("just build whatever you want
-> into something called 'openvpn' and run that with sudo from t_client") -
-> so, (semi-)trusted developers only.
+Since I'm usually the one who gets to debug such fallout, I'm absolutely
+opposed to doing any sort of "this should not change anything" or "just
+a bit of cleanup" changes in release/2.3.  Bug-fixes, and long-term=20
+compatibility changes (if localized).
 
-This is not entirely true, because the build steps are hardcoded.=20
-However, I would definitely not open this to the world, because there is=20
-plenty of room for misuse, and Buildbot might have security issues which=20
-could be exploited.
-
-> (This *should* have been discussed last monday, but it slipped off the
-> agenda)
->
->
->>> 2) Provide developers tooling to quickly (preferred: locally) run
->>> iterations while developing
->>
->> The Vagrant approach is nice because it will eventually allow developers
->> to run a fairly extensive smoketests on several various operating
->> systems with minimal effort:
->>
->> <https://github.com/OpenVPN/openvpn/pull/45>
->>
->> Right now the OS coverage is fairly minimal, but more variants can be
->> added easily, and we're not limited to Linux/Ubuntu like with Travis.
->
-> I'm not seeing who is going to maintain all these VMs so every developer
-> can run the full suite across all OSes...
->
-> gert
-
-It seems that a summary of how Vagrant operates is in order here.
-
-Vagrant uses pre-built images as a starting point. These images do not=20
-(and should not) be built by OpenVPN developers. The only things _we_=20
-have to maintain are the Vagrant files, which are basically recipies for=20
-configuring the base boxes into an OpenVPN test VMs.
-
-So, when a developer wants to run the integration tests this is what=20
-happens:
-
-- Vagrant fetches the pre-built VM images from a remote source
-- The image is launched into Virtualbox (or other virtualization system)
-- Vagrant runs the initialization scripts in the Vagrantfile
-- The system is ready to use and stored for future use
-
-The initialization scripts can automatically run integration tests when=20
-the VM launches, or that can be left to the developer.
-
-When the developer wants to rerun the tests, he/she can just launch the=20
-VM with "vagrant up" and SSH in with "vagrant ssh". When the Vagrant=20
-file has changed significantly, the old box can be nuked and a new one=20
-rebuilt in <5 minutes.
-
-Summary: very little maintenance is required for Vagrant. It is not like=20
-buildbot, where we actually have to build the VMs from scratch.
+gert
 
 --=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-irc freenode net: mattock
+--sVkLdCFbEixzdwcn
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQCVAwUBV1aCVakuBuNlUUl1AQJu1gQAkcqFUdg1hSp6H75mcHeTgavzF0cKAlGo
+7ibjNf7QRpgvAqQiYLGZRcjWQZpiQbrmkZbHbZEiGBOOM2yQV2OykdmnNBnV4GTC
+32uOS0F9DT9Arx5oT+oMvgI0HekNJozD7EJtRaEk8fQta3LGRjUmQWlJDtsZ6+Na
+XQjxchYxlfA=
+=K1ck
+-----END PGP SIGNATURE-----
+
+--sVkLdCFbEixzdwcn--
 
