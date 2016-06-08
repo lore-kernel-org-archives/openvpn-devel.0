@@ -1,9 +1,9 @@
 From: Steffan Karger <steffan@...1856...>
-Date: Wed,  8 Jun 2016 14:20:42 +0200
-Message-Id: <1465388443-15484-5-git-send-email-steffan@...1856...>
+Date: Wed,  8 Jun 2016 14:20:41 +0200
+Message-Id: <1465388443-15484-4-git-send-email-steffan@...1856...>
 In-Reply-To: <1465388443-15484-1-git-send-email-steffan@...1856...>
 References: <1465388443-15484-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH 4/5] Add options to restrict cipher
+Subject: [Openvpn-devel] [PATCH 3/5] Add client-side support for cipher
 	negotiation
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -17,391 +17,513 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Add --ncp-disable to completely disable cipher negotiation, and
---ncp-ciphers to specify which ciphers to accept from the server.
+Based on the 'IV_NCP=2' mechanism described in
+http://permalink.gmane.org/gmane.network.openvpn.devel/9385.
+
+This is the first patch of a set that adds support for cipher negatiation.
+Follow-up patches will add ways to restrict or disable the mechanism, and
+add server-side support.
 
 Signed-off-by: Steffan Karger <steffan@...1856...>
 ---
- src/openvpn/init.c       | 34 ++++++++++++++++++++++++++++------
- src/openvpn/init.h       |  4 ++--
- src/openvpn/openvpn.h    |  3 +++
- src/openvpn/options.c    | 38 +++++++++++++++++++++++++++-----------
- src/openvpn/options.h    |  4 +++-
- src/openvpn/push.c       | 12 +++++++++++-
- src/openvpn/ssl.c        | 30 +++++++++++++++++++++++++++++-
- src/openvpn/ssl_common.h |  4 ++++
- 8 files changed, 107 insertions(+), 22 deletions(-)
+ src/openvpn/crypto.c         | 18 +++++++++---
+ src/openvpn/crypto.h         |  4 +++
+ src/openvpn/crypto_backend.h |  6 ++++
+ src/openvpn/init.c           | 51 +++++++++++++++++++++++----------
+ src/openvpn/init.h           |  3 +-
+ src/openvpn/misc.h           |  7 +++++
+ src/openvpn/mtu.c            |  2 --
+ src/openvpn/multi.c          |  2 +-
+ src/openvpn/route.c          |  4 +--
+ src/openvpn/ssl.c            | 67 +++++++++++++++++++++++++++++++++++++++-----
+ src/openvpn/ssl.h            | 14 +++++++++
+ src/openvpn/ssl_common.h     | 16 +++++++++--
+ 12 files changed, 159 insertions(+), 35 deletions(-)
 
+diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
+index 5c392aa..e43c30b 100644
+--- a/src/openvpn/crypto.c
++++ b/src/openvpn/crypto.c
+@@ -709,10 +709,6 @@ openvpn_decrypt (struct buffer *buf, struct buffer work,
+   return ret;
+ }
+ 
+-/*
+- * How many bytes will we add to frame buffer for a given
+- * set of crypto options?
+- */
+ void
+ crypto_adjust_frame_parameters(struct frame *frame,
+ 			       const struct key_type* kt,
+@@ -746,6 +742,14 @@ crypto_adjust_frame_parameters(struct frame *frame,
+       __func__, crypto_overhead);
+ }
+ 
++size_t
++crypto_max_overhead(void)
++{
++  return packet_id_size(true) + OPENVPN_MAX_IV_LENGTH +
++      OPENVPN_MAX_CIPHER_BLOCK_SIZE +
++      MAX(OPENVPN_MAX_HMAC_SIZE, OPENVPN_AEAD_TAG_LENGTH);
++}
++
+ /*
+  * Build a struct key_type.
+  */
+@@ -774,6 +778,9 @@ init_key_type (struct key_type *kt, const char *ciphername,
+ #endif
+ 	    ))
+ 	msg (M_FATAL, "Cipher '%s' mode not supported", ciphername);
++
++      if (OPENVPN_MAX_CIPHER_BLOCK_SIZE < cipher_kt_block_size(kt->cipher))
++	msg (M_FATAL, "Cipher '%s' not allowed: block size too big.", ciphername);
+     }
+   else
+     {
+@@ -785,6 +792,9 @@ init_key_type (struct key_type *kt, const char *ciphername,
+       if (!aead_cipher) { /* Ignore auth for AEAD ciphers */
+ 	kt->digest = md_kt_get (authname);
+ 	kt->hmac_length = md_kt_size (kt->digest);
++
++	if (OPENVPN_MAX_HMAC_SIZE < kt->hmac_length)
++	  msg (M_FATAL, "HMAC '%s' not allowed: digest size too big.", authname);
+       }
+     }
+   else if (!aead_cipher)
+diff --git a/src/openvpn/crypto.h b/src/openvpn/crypto.h
+index 63d7040..de433ae 100644
+--- a/src/openvpn/crypto.h
++++ b/src/openvpn/crypto.h
+@@ -226,6 +226,7 @@ struct key_ctx_bi
+ 				 *   direction. */
+   struct key_ctx decrypt;       /**< cipher and/or HMAC contexts for
+                                  *   receiving direction. */
++  bool initialized;
+ };
+ 
+ /**
+@@ -385,6 +386,7 @@ bool openvpn_decrypt (struct buffer *buf, struct buffer work,
+ 
+ /** @} name Functions for performing security operations on data channel packets */
+ 
++/** Calculate crypto overhead and adjust frame to account for that */
+ void crypto_adjust_frame_parameters(struct frame *frame,
+ 				    const struct key_type* kt,
+ 				    bool cipher_defined,
+@@ -392,6 +394,8 @@ void crypto_adjust_frame_parameters(struct frame *frame,
+ 				    bool packet_id,
+ 				    bool packet_id_long_form);
+ 
++/** Return the worst-case OpenVPN crypto overhead (in bytes) */
++size_t crypto_max_overhead(void);
+ 
+ /* Minimum length of the nonce used by the PRNG */
+ #define NONCE_SECRET_LEN_MIN 16
+diff --git a/src/openvpn/crypto_backend.h b/src/openvpn/crypto_backend.h
+index 3893f14..a699673 100644
+--- a/src/openvpn/crypto_backend.h
++++ b/src/openvpn/crypto_backend.h
+@@ -41,6 +41,12 @@
+ /* TLS uses a tag of 128 bytes, let's do the same for OpenVPN */
+ #define OPENVPN_AEAD_TAG_LENGTH 16
+ 
++/* Maximum cipher block size (bytes) */
++#define OPENVPN_MAX_CIPHER_BLOCK_SIZE 32
++
++/* Maximum HMAC digest size (bytes) */
++#define OPENVPN_MAX_HMAC_SIZE 	64
++
+ /** Struct used in cipher name translation table */
+ typedef struct {
+   const char *openvpn_name;	/**< Cipher name used by OpenVPN */
 diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 5eded09..af61045 100644
+index 50cbf90..5eded09 100644
 --- a/src/openvpn/init.c
 +++ b/src/openvpn/init.c
-@@ -1739,7 +1739,7 @@ options_hash_changed_or_zero(const struct md5_digest *a,
- }
- #endif /* P2MP */
- 
--void
-+bool
- do_up (struct context *c, bool pulled_options, unsigned int option_types_found)
- {
-   if (!c->c2.do_up_ran)
-@@ -1747,7 +1747,13 @@ do_up (struct context *c, bool pulled_options, unsigned int option_types_found)
-       reset_coarse_timers (c);
- 
-       if (pulled_options && option_types_found)
--	do_deferred_options (c, option_types_found);
-+	{
-+	  if (!do_deferred_options (c, option_types_found))
-+	    {
-+	      msg (D_PUSH_ERRORS, "ERROR: Failed to apply push options");
-+	      return false;
-+	    }
-+	}
- 
-       /* if --up-delay specified, open tun, do ifconfig, and run up script now */
-       if (c->options.up_delay || PULL_DEFINED (&c->options))
-@@ -1802,6 +1808,7 @@ do_up (struct context *c, bool pulled_options, unsigned int option_types_found)
- 	
-       c->c2.do_up_ran = true;
-     }
-+  return true;
- }
- 
- /*
-@@ -1819,7 +1826,6 @@ pull_permission_mask (const struct context *c)
+@@ -1819,6 +1819,7 @@ pull_permission_mask (const struct context *c)
      | OPT_P_SHAPER
      | OPT_P_TIMER
      | OPT_P_COMP
--    | OPT_P_CRYPTO
++    | OPT_P_CRYPTO
      | OPT_P_PERSIST
      | OPT_P_MESSAGES
      | OPT_P_EXPLICIT_NOTIFY
-@@ -1830,13 +1836,16 @@ pull_permission_mask (const struct context *c)
-   if (!c->options.route_nopull)
-     flags |= (OPT_P_ROUTE | OPT_P_IPWIN32);
- 
-+  if (c->options.ncp_enabled)
-+    flags |= OPT_P_NCP;
-+
-   return flags;
- }
- 
- /*
-  * Handle non-tun-related pulled options.
-  */
--void
-+bool
- do_deferred_options (struct context *c, const unsigned int found)
- {
-   if (found & OPT_P_MESSAGES)
-@@ -1927,10 +1936,17 @@ do_deferred_options (struct context *c, const unsigned int found)
-   /* process (potenitally pushed) crypto options */
-   if (c->options.pull)
-     {
--      tls_session_update_crypto_params(&c->c2.tls_multi->session[TM_ACTIVE],
--          &c->options, &c->c2.frame);
-+      if (found & OPT_P_NCP)
-+	msg (D_PUSH, "OPTIONS IMPORT: data channel crypto options modified");
-+      if (!tls_session_update_crypto_params(
-+	  &c->c2.tls_multi->session[TM_ACTIVE], &c->options, &c->c2.frame))
-+	{
-+	  msg (D_TLS_ERRORS, "OPTIONS ERROR: failed to import crypto options");
-+	  return false;
-+	}
-     }
- #endif
-+  return true;
- }
- 
- /*
-@@ -2250,6 +2266,9 @@ do_init_crypto_tls_c1 (struct context *c)
- 	      &c->c1.ks.tls_auth_key, file, options->key_direction, flags);
+@@ -1922,6 +1923,13 @@ do_deferred_options (struct context *c, const unsigned int found)
+                        " MTU problems", TUN_MTU_SIZE(&c->c2.frame) );
  	}
- 
-+      c->c1.ciphername = options->ciphername;
-+      c->c1.authname = options->authname;
+     }
 +
- #if 0 /* was: #if ENABLE_INLINE_FILES --  Note that enabling this code will break restarts */
-       if (options->priv_key_file_inline)
- 	{
-@@ -2321,6 +2340,9 @@ do_init_crypto_tls (struct context *c, const unsigned int flags)
-   to.replay_window = options->replay_window;
-   to.replay_time = options->replay_time;
-   to.tcp_mode = link_socket_proto_connection_oriented (options->ce.proto);
-+  to.config_ciphername = c->c1.ciphername;
-+  to.config_authname = c->c1.authname;
-+  to.ncp_enabled = options->ncp_enabled;
-   to.transition_window = options->transition_window;
-   to.handshake_window = options->handshake_window;
-   to.packet_timeout = options->tls_timeout;
++  /* process (potenitally pushed) crypto options */
++  if (c->options.pull)
++    {
++      tls_session_update_crypto_params(&c->c2.tls_multi->session[TM_ACTIVE],
++          &c->options, &c->c2.frame);
++    }
+ #endif
+ }
+ 
+@@ -2027,6 +2035,7 @@ frame_finalize_options (struct context *c, const struct options *o)
+ 			    |FRAME_HEADROOM_MARKER_READ_STREAM);
+     }
+   
++  frame_add_to_extra_buffer (&c->c2.frame, PAYLOAD_ALIGN);
+   frame_finalize (&c->c2.frame,
+ 		  o->ce.link_mtu_defined,
+ 		  o->ce.link_mtu,
+@@ -2282,12 +2291,13 @@ do_init_crypto_tls (struct context *c, const unsigned int flags)
+   /* In short form, unique datagram identifier is 32 bits, in long form 64 bits */
+   packet_id_long_form = cipher_kt_mode_ofb_cfb (c->c1.ks.key_type.cipher);
+ 
+-  /* Compute MTU parameters */
+-  crypto_adjust_frame_parameters (&c->c2.frame,
+-				  &c->c1.ks.key_type,
+-				  options->ciphername_defined,
+-				  options->use_iv,
+-				  options->replay, packet_id_long_form);
++  /* Compute MTU parameters (postpone if we pull options) */
++  if (!c->options.pull)
++    {
++      crypto_adjust_frame_parameters(&c->c2.frame, &c->c1.ks.key_type,
++	  options->ciphername_defined, options->use_iv, options->replay,
++	  packet_id_long_form);
++    }
+   tls_adjust_frame_parameters (&c->c2.frame);
+ 
+   /* Set all command-line TLS-related options */
+@@ -2318,6 +2328,7 @@ do_init_crypto_tls (struct context *c, const unsigned int flags)
+   to.renegotiate_packets = options->renegotiate_packets;
+   to.renegotiate_seconds = options->renegotiate_seconds;
+   to.single_session = options->single_session;
++  to.pull = options->pull;
+ #ifdef ENABLE_PUSH_PEER_INFO
+   if (options->push_peer_info)		/* all there is */
+     to.push_peer_info_detail = 2;
+@@ -2686,25 +2697,26 @@ do_init_frame_tls (struct context *c)
+ }
+ 
+ struct context_buffers *
+-init_context_buffers (const struct frame *frame)
++init_context_buffers (const struct frame *frame, size_t extra_bytes)
+ {
+   struct context_buffers *b;
++  const size_t buf_size = BUF_SIZE (frame) + extra_bytes;
+ 
+   ALLOC_OBJ_CLEAR (b, struct context_buffers);
+ 
+-  b->read_link_buf = alloc_buf (BUF_SIZE (frame));
+-  b->read_tun_buf = alloc_buf (BUF_SIZE (frame));
++  b->read_link_buf = alloc_buf (buf_size);
++  b->read_tun_buf = alloc_buf (buf_size);
+ 
+-  b->aux_buf = alloc_buf (BUF_SIZE (frame));
++  b->aux_buf = alloc_buf (buf_size);
+ 
+ #ifdef ENABLE_CRYPTO
+-  b->encrypt_buf = alloc_buf (BUF_SIZE (frame));
+-  b->decrypt_buf = alloc_buf (BUF_SIZE (frame));
++  b->encrypt_buf = alloc_buf (buf_size);
++  b->decrypt_buf = alloc_buf (buf_size);
+ #endif
+ 
+ #ifdef USE_COMP
+-  b->compress_buf = alloc_buf (BUF_SIZE (frame));
+-  b->decompress_buf = alloc_buf (BUF_SIZE (frame));
++  b->compress_buf = alloc_buf (buf_size);
++  b->decompress_buf = alloc_buf (buf_size);
+ #endif
+ 
+   return b;
+@@ -2740,7 +2752,16 @@ free_context_buffers (struct context_buffers *b)
+ static void
+ do_init_buffers (struct context *c)
+ {
+-  c->c2.buffers = init_context_buffers (&c->c2.frame);
++  size_t extra_bytes = 0;
++#ifdef ENABLE_CRYPTO
++  if (c->options.pull)
++    {
++      /* If we use --pull, we don't know the crypto overhead yet. */
++      msg (M_WARN, "*** Account for max crypto overhead ***");
++      extra_bytes = crypto_max_overhead();
++    }
++#endif
++  c->c2.buffers = init_context_buffers (&c->c2.frame, extra_bytes);
+   c->c2.buffers_owned = true;
+ }
+ 
 diff --git a/src/openvpn/init.h b/src/openvpn/init.h
-index 73bcb74..1ad4a8e 100644
+index a819bd2..73bcb74 100644
 --- a/src/openvpn/init.h
 +++ b/src/openvpn/init.h
-@@ -81,7 +81,7 @@ bool do_test_crypto (const struct options *o);
+@@ -106,7 +106,8 @@ void inherit_context_top (struct context *dest,
  
- void context_gc_free (struct context *c);
+ void close_context (struct context *c, int sig, unsigned int flags);
  
--void do_up (struct context *c,
-+bool do_up (struct context *c,
- 	    bool pulled_options,
- 	    unsigned int option_types_found);
+-struct context_buffers *init_context_buffers (const struct frame *frame);
++struct context_buffers *init_context_buffers (const struct frame *frame,
++					      size_t extra_bytes);
  
-@@ -91,7 +91,7 @@ const char *format_common_name (struct context *c, struct gc_arena *gc);
+ void free_context_buffers (struct context_buffers *b);
  
- void reset_coarse_timers (struct context *c);
- 
--void do_deferred_options (struct context *c, const unsigned int found);
-+bool do_deferred_options (struct context *c, const unsigned int found);
- 
- void inherit_context_child (struct context *dest,
- 			    const struct context *src);
-diff --git a/src/openvpn/openvpn.h b/src/openvpn/openvpn.h
-index 3281fd7..395195f 100644
---- a/src/openvpn/openvpn.h
-+++ b/src/openvpn/openvpn.h
-@@ -210,6 +210,9 @@ struct context_1
-   struct user_pass *auth_user_pass;
-                                 /**< Username and password for
-                                  *   authentication. */
-+
-+  const char *ciphername;	/**< Data channel cipher from config file */
-+  const char *authname;		/**< Data channel auth from config file */
- #endif
- };
- 
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 23f407c..87255d0 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -830,6 +830,12 @@ init_options (struct options *o, const bool init_gc)
- #ifdef ENABLE_CRYPTO
-   o->ciphername = "BF-CBC";
-   o->ciphername_defined = true;
-+#ifdef HAVE_AEAD_CIPHER_MODES /* IV_NCP=2 requires GCM support */
-+  o->ncp_enabled = true;
-+#else
-+  o->ncp_enabled = false;
-+#endif
-+  o->ncp_ciphers = "AES-256-GCM:AES-128-GCM";
-   o->authname = "SHA1";
-   o->authname_defined = true;
-   o->prng_hash = "SHA1";
-@@ -6601,7 +6607,7 @@ add_option (struct options *options,
-     }
-   else if (streq (p[0], "auth") && p[1] && !p[2])
-     {
--      VERIFY_PERMISSION (OPT_P_CRYPTO);
-+      VERIFY_PERMISSION (OPT_P_GENERAL);
-       options->authname_defined = true;
-       options->authname = p[1];
-       if (streq (options->authname, "none"))
-@@ -6612,12 +6618,12 @@ add_option (struct options *options,
-     }
-   else if (streq (p[0], "auth") && !p[1])
-     {
--      VERIFY_PERMISSION (OPT_P_CRYPTO);
-+      VERIFY_PERMISSION (OPT_P_GENERAL);
-       options->authname_defined = true;
-     }
-   else if (streq (p[0], "cipher") && p[1] && !p[2])
-     {
--      VERIFY_PERMISSION (OPT_P_CRYPTO);
-+      VERIFY_PERMISSION (OPT_P_NCP);
-       options->ciphername_defined = true;
-       options->ciphername = p[1];
-       if (streq (options->ciphername, "none"))
-@@ -6628,12 +6634,22 @@ add_option (struct options *options,
-     }
-   else if (streq (p[0], "cipher") && !p[1])
-     {
--      VERIFY_PERMISSION (OPT_P_CRYPTO);
-+      VERIFY_PERMISSION (OPT_P_GENERAL);
-       options->ciphername_defined = true;
-     }
-+  else if (streq (p[0], "ncp-ciphers") && p[1] && !p[2])
-+    {
-+      VERIFY_PERMISSION (OPT_P_GENERAL);
-+      options->ncp_ciphers = p[1];
-+    }
-+  else if (streq (p[0], "ncp-disable") && !p[1])
-+    {
-+      VERIFY_PERMISSION (OPT_P_GENERAL);
-+      options->ncp_enabled = false;
-+    }
-   else if (streq (p[0], "prng") && p[1] && !p[3])
-     {
--      VERIFY_PERMISSION (OPT_P_CRYPTO);
-+      VERIFY_PERMISSION (OPT_P_GENERAL);
-       if (streq (p[1], "none"))
- 	options->prng_hash = NULL;
-       else
-@@ -6655,12 +6671,12 @@ add_option (struct options *options,
-     }
-   else if (streq (p[0], "no-replay") && !p[1])
-     {
--      VERIFY_PERMISSION (OPT_P_CRYPTO);
-+      VERIFY_PERMISSION (OPT_P_GENERAL);
-       options->replay = false;
-     }
-   else if (streq (p[0], "replay-window") && !p[3])
-     {
--      VERIFY_PERMISSION (OPT_P_CRYPTO);
-+      VERIFY_PERMISSION (OPT_P_GENERAL);
-       if (p[1])
- 	{
- 	  int replay_window;
-@@ -6700,12 +6716,12 @@ add_option (struct options *options,
-     }
-   else if (streq (p[0], "mute-replay-warnings") && !p[1])
-     {
--      VERIFY_PERMISSION (OPT_P_CRYPTO);
-+      VERIFY_PERMISSION (OPT_P_GENERAL);
-       options->mute_replay_warnings = true;
-     }
-   else if (streq (p[0], "no-iv") && !p[1])
-     {
--      VERIFY_PERMISSION (OPT_P_CRYPTO);
-+      VERIFY_PERMISSION (OPT_P_GENERAL);
-       options->use_iv = false;
-     }
-   else if (streq (p[0], "replay-persist") && p[1] && !p[2])
-@@ -6735,7 +6751,7 @@ add_option (struct options *options,
-     {
-       int keysize;
- 
--      VERIFY_PERMISSION (OPT_P_CRYPTO);
-+      VERIFY_PERMISSION (OPT_P_NCP);
-       keysize = atoi (p[1]) / 8;
-       if (keysize < 0 || keysize > MAX_CIPHER_KEY_LENGTH)
- 	{
-@@ -6764,7 +6780,7 @@ add_option (struct options *options,
-     }
-   else if (streq (p[0], "ecdh-curve") && p[1] && !p[2])
-     {
--      VERIFY_PERMISSION (OPT_P_CRYPTO);
-+      VERIFY_PERMISSION (OPT_P_GENERAL);
-       options->ecdh_curve= p[1];
-     }
-   else if (streq (p[0], "tls-server") && !p[1])
-diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-index 514511b..ea63c4c 100644
---- a/src/openvpn/options.h
-+++ b/src/openvpn/options.h
-@@ -474,6 +474,8 @@ struct options
-   int key_direction;
-   bool ciphername_defined;
-   const char *ciphername;
-+  bool ncp_enabled;
-+  const char *ncp_ciphers;
-   bool authname_defined;
-   const char *authname;
-   int keysize;
-@@ -618,7 +620,7 @@ struct options
- #define OPT_P_PERSIST_IP      (1<<9)
- #define OPT_P_COMP            (1<<10) /* TODO */
- #define OPT_P_MESSAGES        (1<<11)
--#define OPT_P_CRYPTO          (1<<12) /* TODO */
-+#define OPT_P_NCP             (1<<12) /**< Negotiable crypto parameters */
- #define OPT_P_TLS_PARMS       (1<<13) /* TODO */
- #define OPT_P_MTU             (1<<14) /* TODO */
- #define OPT_P_NICE            (1<<15)
-diff --git a/src/openvpn/push.c b/src/openvpn/push.c
-index 38ac59e..5324676 100644
---- a/src/openvpn/push.c
-+++ b/src/openvpn/push.c
-@@ -239,11 +239,21 @@ incoming_push_message (struct context *c, const struct buffer *buffer)
-     {
-       c->options.push_option_types_found |= option_types_found;
- 
-+      /* delay bringing tun/tap up until --push parms received from remote */
-       if (status == PUSH_MSG_REPLY)
--	do_up (c, true, c->options.push_option_types_found ); /* delay bringing tun/tap up until --push parms received from remote */
-+	{
-+	  if (!do_up (c, true, c->options.push_option_types_found))
-+	    {
-+	      msg (D_PUSH_ERRORS, "Failed to open tun/tap interface");
-+	      c->sig->signal_received = SIGUSR1; /* connection reset */
-+	      c->sig->signal_text = "open-tuntap-failed";
-+	      goto cleanup;
-+	    }
-+	}
-       event_timeout_clear (&c->c2.push_request_interval);
-     }
- 
-+cleanup:
-   gc_free (&gc);
+diff --git a/src/openvpn/misc.h b/src/openvpn/misc.h
+index 65a6e55..82d1d48 100644
+--- a/src/openvpn/misc.h
++++ b/src/openvpn/misc.h
+@@ -102,6 +102,13 @@ openvpn_run_script (const struct argv *a, const struct env_set *es, const unsign
+   return openvpn_execve_check(a, es, flags | S_SCRIPT, msg);
  }
  
++#ifndef MIN
++#define MIN(a,b) ((a) < (b) ? (a) : (b))
++#endif
++
++#ifndef MAX
++#define MAX(a,b) ((a) > (b) ? (a) : (b))
++#endif
+ 
+ #ifdef HAVE_STRERROR
+ /* a thread-safe version of strerror */
+diff --git a/src/openvpn/mtu.c b/src/openvpn/mtu.c
+index 24531c9..64d1cf3 100644
+--- a/src/openvpn/mtu.c
++++ b/src/openvpn/mtu.c
+@@ -78,8 +78,6 @@ frame_finalize (struct frame *frame,
+     }
+ 
+   frame->link_mtu_dynamic = frame->link_mtu;
+-
+-  frame->extra_buffer += PAYLOAD_ALIGN;
+ }
+ 
+ /*
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index ba7f2c0..117f768 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -2862,7 +2862,7 @@ void
+ multi_top_init (struct multi_context *m, const struct context *top)
+ {
+   inherit_context_top (&m->top, top);
+-  m->top.c2.buffers = init_context_buffers (&top->c2.frame);
++  m->top.c2.buffers = init_context_buffers (&top->c2.frame, 0);
+ }
+ 
+ void
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index a90195f..578a708 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -3265,8 +3265,6 @@ struct rtmsg {
+ #define ADVANCE(x, n) (x += ROUNDUP((n)->sa_len))
+ #endif
+ 
+-#define max(a,b) ((a) > (b) ? (a) : (b))
+-
+ void
+ get_default_gateway (struct route_gateway_info *rgi)
+ {
+@@ -3433,7 +3431,7 @@ get_default_gateway (struct route_gateway_info *rgi)
+ #if defined(TARGET_SOLARIS)
+ 	  const size_t len = sizeof(ifr->ifr_name) + sizeof(ifr->ifr_addr);
+ #else
+-	  const size_t len = sizeof(ifr->ifr_name) + max(sizeof(ifr->ifr_addr), ifr->ifr_addr.sa_len);
++	  const size_t len = sizeof(ifr->ifr_name) + MAX(sizeof(ifr->ifr_addr), ifr->ifr_addr.sa_len);
+ #endif
+ 
+ 	  if (!ifr->ifr_addr.sa_family)
 diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 8a87db2..3da254d 100644
+index 4291314..8a87db2 100644
 --- a/src/openvpn/ssl.c
 +++ b/src/openvpn/ssl.c
-@@ -1636,6 +1636,24 @@ key_ctx_update_implicit_iv(struct key_ctx *ctx, uint8_t *key, size_t key_len) {
+@@ -767,10 +767,6 @@ key_state_init (struct tls_session *session, struct key_state *ks)
+   ks->state = S_INITIAL;
+   ks->key_id = session->key_id;
+ 
+-  /*
+-   * key_id increments to KEY_ID_MASK then recycles back to 1.
+-   * This way you know that if key_id is 0, it is the first key.
+-   */
+   ++session->key_id;
+   session->key_id &= P_KEY_ID_MASK;
+   if (!session->key_id)
+@@ -1613,6 +1609,7 @@ generate_key_expansion (struct key_ctx_bi *key,
+   key_ctx_update_implicit_iv (&key->decrypt, key2.keys[1-(int)server].hmac,
+       MAX_HMAC_KEY_LENGTH);
+ 
++  key->initialized = true;
+   ret = true;
+ 
+  exit:
+@@ -1639,6 +1636,48 @@ key_ctx_update_implicit_iv(struct key_ctx *ctx, uint8_t *key, size_t key_len) {
      }
  }
  
-+static bool
-+item_in_list(const char *item, const char *list)
++bool
++tls_session_update_crypto_params(struct tls_session *session,
++    const struct options *options, struct frame *frame)
 +{
-+  char *tmp_ciphers = string_alloc (list, NULL);
-+  char *tmp_ciphers_orig = tmp_ciphers;
++  bool ret = false;
++  struct key_state *ks = &session->key[KS_PRIMARY];	/* primary key */
 +
-+  const char *token = strtok (tmp_ciphers, ":");
-+  while(token)
++  ASSERT (!session->opt->server);
++  ASSERT (ks->authenticated);
++
++  init_key_type (&session->opt->key_type, options->ciphername,
++    options->ciphername_defined, options->authname, options->authname_defined,
++    options->keysize, true, true);
++
++  bool packet_id_long_form = cipher_kt_mode_ofb_cfb (session->opt->key_type.cipher);
++  session->opt->crypto_flags_and &= ~(CO_PACKET_ID_LONG_FORM);
++  if (packet_id_long_form)
++    session->opt->crypto_flags_and = CO_PACKET_ID_LONG_FORM;
++
++  crypto_adjust_frame_parameters (frame, &session->opt->key_type,
++      options->ciphername_defined, options->use_iv, options->replay,
++      packet_id_long_form);
++  frame_finalize(frame, options->ce.link_mtu_defined, options->ce.link_mtu,
++      options->ce.tun_mtu_defined, options->ce.tun_mtu);
++  frame_print (frame, D_MTU_INFO, "Data Channel MTU parms");
++
++  if (!generate_key_expansion (&ks->crypto_options.key_ctx_bi,
++			       &session->opt->key_type,
++			       ks->key_src,
++			       &session->session_id,
++			       &ks->session_id_remote,
++			       false))
 +    {
-+      if (0 == strcmp (token, item))
-+	break;
-+      token = strtok (NULL, ":");
++      msg (D_TLS_ERRORS, "TLS Error: server generate_key_expansion failed");
++      goto cleanup;
 +    }
-+  free(tmp_ciphers_orig);
-+
-+  return token != NULL;
++  ret = true;
++cleanup:
++  CLEAR (*ks->key_src);
++  return ret;
 +}
 +
- bool
- tls_session_update_crypto_params(struct tls_session *session,
-     const struct options *options, struct frame *frame)
-@@ -1646,6 +1664,15 @@ tls_session_update_crypto_params(struct tls_session *session,
-   ASSERT (!session->opt->server);
-   ASSERT (ks->authenticated);
- 
-+  if (0 != strcmp(options->ciphername, session->opt->config_ciphername) &&
-+      !item_in_list(options->ciphername, options->ncp_ciphers))
-+    {
-+      msg (D_TLS_ERRORS, "Error: pushed cipher not allowed - %s not in %s or %s",
-+	  options->ciphername, session->opt->config_ciphername,
-+	  options->ncp_ciphers);
-+      return false;
-+    }
-+
-   init_key_type (&session->opt->key_type, options->ciphername,
-     options->ciphername_defined, options->authname, options->authname_defined,
-     options->keysize, true, true);
-@@ -1925,7 +1952,8 @@ push_peer_info(struct buffer *buf, struct tls_session *session)
+ static bool
+ random_bytes_to_buf (struct buffer *buf,
+ 		     uint8_t *out,
+@@ -1885,6 +1924,9 @@ push_peer_info(struct buffer *buf, struct tls_session *session)
+       /* support for P_DATA_V2 */
        buf_printf(&out, "IV_PROTO=2\n");
  
-       /* support for Negotiable Crypto Paramters */
--      buf_printf(&out, "IV_NCP=2\n");
-+      if (session->opt->ncp_enabled)
-+	buf_printf(&out, "IV_NCP=2\n");
- 
++      /* support for Negotiable Crypto Paramters */
++      buf_printf(&out, "IV_NCP=2\n");
++
        /* push compression status */
  #ifdef USE_COMP
+       comp_generate_peer_info_string(&session->opt->comp_options, &out);
+@@ -2209,9 +2251,11 @@ key_method_2_read (struct buffer *buf, struct tls_multi *multi, struct tls_sessi
+     }
+ 
+   /*
+-   * Generate tunnel keys if client
++   * Generate tunnel keys if we're a client.
++   * If --pull is enabled, the first key generation is postponed until after the
++   * pull/push, so we can process pushed cipher directives.
+    */
+-  if (!session->opt->server)
++  if (!session->opt->server && (!session->opt->pull || ks->key_id > 0))
+     {
+       if (!generate_key_expansion (&ks->crypto_options.key_ctx_bi,
+ 				   &session->opt->key_type,
+@@ -2223,7 +2267,7 @@ key_method_2_read (struct buffer *buf, struct tls_multi *multi, struct tls_sessi
+ 	  msg (D_TLS_ERRORS, "TLS Error: client generate_key_expansion failed");
+ 	  goto error;
+ 	}
+-		      
++
+       CLEAR (*ks->key_src);
+     }
+ 
+@@ -2889,6 +2933,14 @@ tls_pre_decrypt (struct tls_multi *multi,
+ #endif
+ 		  && (floated || link_socket_actual_match (from, &ks->remote_addr)))
+ 		{
++		  if (!ks->crypto_options.key_ctx_bi.initialized)
++		    {
++		      msg (D_TLS_DEBUG_LOW,
++			  "Key %s [%d] not initialized (yet), dropping packet.",
++			  print_link_socket_actual (from, &gc), key_id);
++		      goto error;
++		    }
++
+ 		  /* return appropriate data channel decrypt key in opt */
+ 		  *opt = &ks->crypto_options;
+ 		  if (op == P_DATA_V2)
+@@ -3426,6 +3478,7 @@ tls_pre_encrypt (struct tls_multi *multi,
+ 	  struct key_state *ks = multi->key_scan[i];
+ 	  if (ks->state >= S_ACTIVE
+ 	      && ks->authenticated
++	      && ks->crypto_options.key_ctx_bi.initialized
+ #ifdef ENABLE_DEF_AUTH
+ 	      && !ks->auth_deferred
+ #endif
+diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
+index d9ff8d0..416f426 100644
+--- a/src/openvpn/ssl.h
++++ b/src/openvpn/ssl.h
+@@ -475,6 +475,20 @@ bool tls_rec_payload (struct tls_multi *multi,
+ void tls_update_remote_addr (struct tls_multi *multi,
+ 			     const struct link_socket_actual *addr);
+ 
++/**
++ * Update TLS session crypto parameters (cipher and auth) and derive data
++ * channel keys based on the supplied options.
++ *
++ * @param session	The TLS session to update.
++ * @param options	The options to use when updating session.
++ * @param frame		The frame options for this session (frame overhead is
++ * 			adjusted based on the selected cipher/auth).
++ *
++ * @return true if updating succeeded, false otherwise.
++ */
++bool tls_session_update_crypto_params(struct tls_session *session,
++    const struct options *options, struct frame *frame);
++
+ #ifdef MANAGEMENT_DEF_AUTH
+ static inline char *
+ tls_get_peer_info(const struct tls_multi *multi)
 diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
-index 9183dab..6bfde6b 100644
+index a0df0ff..9183dab 100644
 --- a/src/openvpn/ssl_common.h
 +++ b/src/openvpn/ssl_common.h
-@@ -273,6 +273,10 @@ struct tls_options
-   int replay_time;                     /* --replay-window parm */
-   bool tcp_mode;
- 
-+  const char *config_ciphername;
-+  const char *config_authname;
-+  bool ncp_enabled;
+@@ -149,7 +149,12 @@ struct key_source2 {
+ struct key_state
+ {
+   int state;
+-  int key_id;			/* inherited from struct tls_session below */
 +
-   /* packet authentication for TLS handshake */
-   struct crypto_options tls_auth;
++  /**
++   * Key id for this key_state,  inherited from struct tls_session.
++   * @see tls_session::key_id.
++   */
++  int key_id;
+ 
+   struct key_state_ssl ks_ssl;	/* contains SSL object and BIOs for the control channel */
+ 
+@@ -231,6 +236,7 @@ struct tls_options
+ #ifdef ENABLE_OCC
+   bool disable_occ;
+ #endif
++  bool pull;
+ #ifdef ENABLE_PUSH_PEER_INFO
+   int push_peer_info_detail;
+ #endif
+@@ -367,7 +373,13 @@ struct tls_session
+ 
+   int initial_opcode;		/* our initial P_ opcode */
+   struct session_id session_id;	/* our random session ID */
+-  int key_id;			/* increments with each soft reset (for key renegotiation) */
++
++  /**
++   * The current active key id, used to keep track of renegotiations.
++   * key_id increments with each soft reset to KEY_ID_MASK then recycles back
++   * to 1.  This way you know that if key_id is 0, it is the first key.
++   */
++  int key_id;
+ 
+   int limit_next;               /* used for traffic shaping on the control channel */
  
 -- 
 2.7.4
