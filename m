@@ -1,13 +1,13 @@
-MIME-Version: 1.0
-In-Reply-To: <CAKuzo_jskO41boC19osX6tQaVYHio4XFPUyROEWeQuFmuLCf7Q@...278...>
 References: <1465388443-15484-1-git-send-email-steffan@...1856...>
-	<1465388443-15484-5-git-send-email-steffan@...1856...>
-	<CAKuzo_jskO41boC19osX6tQaVYHio4XFPUyROEWeQuFmuLCf7Q@...278...>
-From: Steffan Karger <steffan@...1856...>
-Date: Wed, 8 Jun 2016 18:11:57 +0200
-Message-ID: <CAA1AbxKN5AJAmXjjZxLEkiEsFbCAQTXnjPGB6s7MLrMc1t8KNQ@...278...>
-Subject: Re: [Openvpn-devel] [PATCH 4/5] Add options to restrict cipher
-	negotiation
+	<CAA1AbxJ0MQH6UL-b1Y+n_nE74Jw1C7fZeNqpsFkYyjt_UFBVXw@...278...>
+	<5758352E.9030407@...277...>
+	<fb02387f-1ca4-5fe6-2bc4-604aa3d45899@...1227...>
+From: debbie10t <debbie10t@...277...>
+Message-ID: <57584444.2090302@...277...>
+Date: Wed, 8 Jun 2016 17:13:56 +0100
+MIME-Version: 1.0
+In-Reply-To: <fb02387f-1ca4-5fe6-2bc4-604aa3d45899@...1227...>
+Subject: Re: [Openvpn-devel] [PATCH] Add support for cipher negotiation
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,61 +16,46 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-To: Selva Nair <selva.nair@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
-On Wed, Jun 8, 2016 at 5:53 PM, Selva Nair <selva.nair@...277...> wrote:
-> On Wed, Jun 8, 2016 at 8:20 AM, Steffan Karger <steffan@...1856...> wrote:
+
+
+On 08/06/16 16:45, Arne Schwabe wrote:
+> On 08.06.2016 17:09, debbie10t wrote:
+>> Hi
 >>
->> --- a/src/openvpn/push.c
->> +++ b/src/openvpn/push.c
->> @@ -239,11 +239,21 @@ incoming_push_message (struct context *c, const
->> struct buffer *buffer)
->>      {
->>        c->options.push_option_types_found |= option_types_found;
+>> On 08/06/16 13:32, Steffan Karger wrote:
+>>> On Wed, Jun 8, 2016 at 2:20 PM, Steffan Karger <steffan@...1856...> wrote:
+>>>> Please test and provide comments.  I ran the 'make check' test suite, including
+>>>> t_client tests, and performed manual testing.  But, as Gert eloquently puts it,
+>>>> this is likely to 'break stuff in interesting ways', so more testing (and
+>>>> review) is very welcome!
+>>> For those of you that rather check out a github branch instead of
+>>> applying patches, I pushed my branch - plus some extra debug commits -
+>>> to https://github.com/syzzer/openvpn/tree/nego-squashed
+>> I decided to give this a go from git .. but here snappy is still used.
+>> I am happy to get snappy myself but I thought snappy had been dropped ?
+>> thanks
 >>
->> +      /* delay bringing tun/tap up until --push parms received from
->> remote */
->>        if (status == PUSH_MSG_REPLY)
->> -       do_up (c, true, c->options.push_option_types_found ); /* delay
->> bringing tun/tap up until --push parms received from remote */
->> +       {
->> +         if (!do_up (c, true, c->options.push_option_types_found))
->> +           {
->> +             msg (D_PUSH_ERRORS, "Failed to open tun/tap interface");
->> +             c->sig->signal_received = SIGUSR1; /* connection reset */
->> +             c->sig->signal_text = "open-tuntap-failed";
+> Since it is on git master there is no snappy in there, can you double
+> check that you used the right branch and not some other outdated branch
+> of syzzer repo?
 >
->
-> Please try to avoid that potential overwrite of a pending signal --- as this
-> runs on the client, c->sig here is a pointer to the global siginfo_static.
->
-> Use register_signal (c, SIGUSR1, "open-tuntap-failed") instead  -- it will
-> at least protect SIGTERM. I'm looking into how to prioritize signals, and it
-> would help to have all signals set through a few functions such as
-> register_signal, throw_signal_soft etc ..
+First downloaded the wrong repo .. Not sure what I did wrong .. nvm
 
-Sure, please tell me what to use.  I never had to deal with our
-signals before, so I simply copied this from a few lines below, where
-(as far as I could see) the did what I wanted it to do.
+Second: This is where my git foo falls down .. tried:
+$ git clone https://github.com/syzzer/openvpn/tree/nego-squashed
+Cloning into 'nego-squashed'...
+fatal: repository 
+'https://github.com/syzzer/openvpn/tree/nego-squashed/' not found
 
-I had already replaced this with
+Finally i downloaded 
+https://github.com/syzzer/openvpn/archive/nego-squashed.zip
+built ok .. (no snappy)
 
-   throw_signal_soft( SIGUSR1, "process-push-msg-failed" );
+Sorry to waste your time and thanks for you help
 
-based on feedback from Gert (v2, yet to come).  In my tests that also
-works as I want it to (abort the connection attempt, try again).  Can
-you explain when I need to use register_signal(), throw_signal() or
-throw_signal_soft()?
 
-> By the way "open-tun-tap failed" may be a confusing as a real open tun/tap
-> error would have resulted in a  FATAL exit -- the error handled here could
-> happen even if tun/tap has been successfully opened, isn't it?
-
-Yes, noticed that too, and is actually fixed by 5/5.  I didn't notice
-4/5 still got the confusing text.
-
--Steffan
 
