@@ -1,10 +1,10 @@
 From: Steffan Karger <steffan@...1856...>
-Date: Wed,  8 Jun 2016 14:20:39 +0200
-Message-Id: <1465388443-15484-2-git-send-email-steffan@...1856...>
+Date: Wed,  8 Jun 2016 14:20:40 +0200
+Message-Id: <1465388443-15484-3-git-send-email-steffan@...1856...>
 In-Reply-To: <1465388443-15484-1-git-send-email-steffan@...1856...>
 References: <1465388443-15484-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH 1/5] Don't limit max incoming message size
-	based on c2->frame
+Subject: [Openvpn-devel] [PATCH 2/5] cleanup: remove alloc_buffers argument
+	from multi_top_init()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,113 +17,75 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-"Be conservative in what you send, be liberal in what you accept"
-
-When receiving packets, the real limitation of how much data we can accept
-is the size of our internal buffers, not the maximum size we expect
-incoming packets to have.
-
-I ran into this while working on cipher negotiation, which will need
-separate bookkeeping for the required internal buffer size, and the
-link/tun MTU.  Basing this code on the buffer size instead of c2->frame
-makes that easier.  A nice side-effect of this change is that it
-simplifies the code.
-
-This should also reduce the impact of using asymmetric tun/link MTU's,
-such as in trac ticket #647.
+multi_top_init() is always called with alloc_buffers=true, so just remove
+the argument and alloc unconditionally.
 
 Signed-off-by: Steffan Karger <steffan@...1856...>
 ---
- src/openvpn/forward.c | 1 -
- src/openvpn/socket.c  | 9 +++------
- src/openvpn/socket.h  | 4 +---
- 3 files changed, 4 insertions(+), 10 deletions(-)
+ src/openvpn/mtcp.c  | 2 +-
+ src/openvpn/mudp.c  | 2 +-
+ src/openvpn/multi.c | 6 ++----
+ src/openvpn/multi.h | 2 +-
+ 4 files changed, 5 insertions(+), 7 deletions(-)
 
-diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index 4a91f92..2c9a082 100644
---- a/src/openvpn/forward.c
-+++ b/src/openvpn/forward.c
-@@ -669,7 +669,6 @@ read_incoming_link (struct context *c)
+diff --git a/src/openvpn/mtcp.c b/src/openvpn/mtcp.c
+index 9926d47..78e5ccd 100644
+--- a/src/openvpn/mtcp.c
++++ b/src/openvpn/mtcp.c
+@@ -696,7 +696,7 @@ tunnel_server_tcp (struct context *top)
+   multi_init (&multi, top, true, MC_SINGLE_THREADED);
  
-   status = link_socket_read (c->c2.link_socket,
- 			     &c->c2.buf,
--			     MAX_RW_SIZE_LINK (&c->c2.frame),
- 			     &c->c2.from);
+   /* initialize our cloned top object */
+-  multi_top_init (&multi, top, true);
++  multi_top_init (&multi, top);
  
-   if (socket_connection_reset (c->c2.link_socket, status))
-diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
-index f7264ef..d2872be 100644
---- a/src/openvpn/socket.c
-+++ b/src/openvpn/socket.c
-@@ -2886,7 +2886,6 @@ union openvpn_pktinfo {
- static socklen_t
- link_socket_read_udp_posix_recvmsg (struct link_socket *sock,
- 				    struct buffer *buf,
--				    int maxsize,
- 				    struct link_socket_actual *from)
+   /* initialize management interface */
+   init_management_callback_multi (&multi);
+diff --git a/src/openvpn/mudp.c b/src/openvpn/mudp.c
+index ce67206..6e0568e 100644
+--- a/src/openvpn/mudp.c
++++ b/src/openvpn/mudp.c
+@@ -283,7 +283,7 @@ tunnel_server_udp_single_threaded (struct context *top)
+   multi_init (&multi, top, false, MC_SINGLE_THREADED);
+ 
+   /* initialize our cloned top object */
+-  multi_top_init (&multi, top, true);
++  multi_top_init (&multi, top);
+ 
+   /* initialize management interface */
+   init_management_callback_multi (&multi);
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index 4c43fcc..ba7f2c0 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -2859,12 +2859,10 @@ multi_process_per_second_timers_dowork (struct multi_context *m)
+ }
+ 
+ void
+-multi_top_init (struct multi_context *m, const struct context *top, const bool alloc_buffers)
++multi_top_init (struct multi_context *m, const struct context *top)
  {
-   struct iovec iov;
-@@ -2895,7 +2894,7 @@ link_socket_read_udp_posix_recvmsg (struct link_socket *sock,
-   socklen_t fromlen = sizeof (from->dest.addr);
+   inherit_context_top (&m->top, top);
+-  m->top.c2.buffers = NULL;
+-  if (alloc_buffers)
+-    m->top.c2.buffers = init_context_buffers (&top->c2.frame);
++  m->top.c2.buffers = init_context_buffers (&top->c2.frame);
+ }
  
-   iov.iov_base = BPTR (buf);
--  iov.iov_len = maxsize;
-+  iov.iov_len = buf_forward_capacity_total (buf);
-   mesg.msg_iov = &iov;
-   mesg.msg_iovlen = 1;
-   mesg.msg_name = &from->dest.addr;
-@@ -2954,20 +2953,18 @@ link_socket_read_udp_posix_recvmsg (struct link_socket *sock,
- int
- link_socket_read_udp_posix (struct link_socket *sock,
- 			    struct buffer *buf,
--			    int maxsize,
- 			    struct link_socket_actual *from)
- {
-   socklen_t fromlen = sizeof (from->dest.addr);
-   socklen_t expectedlen = af_addr_size(sock->info.af);
-   addr_zero_host(&from->dest);
--  ASSERT (buf_safe (buf, maxsize));
- #if ENABLE_IP_PKTINFO
-   /* Both PROTO_UDPv4 and PROTO_UDPv6 */
-   if (sock->info.proto == PROTO_UDP && sock->sockflags & SF_USE_IP_PKTINFO)
--    fromlen = link_socket_read_udp_posix_recvmsg (sock, buf, maxsize, from);
-+    fromlen = link_socket_read_udp_posix_recvmsg (sock, buf, from);
-   else
- #endif
--    buf->len = recvfrom (sock->sd, BPTR (buf), maxsize, 0,
-+    buf->len = recvfrom (sock->sd, BPTR (buf), buf_forward_capacity(buf), 0,
- 			 &from->dest.addr.sa, &fromlen);
-   /* FIXME: won't do anything when sock->info.af == AF_UNSPEC */
-   if (buf->len >= 0 && expectedlen && fromlen != expectedlen)
-diff --git a/src/openvpn/socket.h b/src/openvpn/socket.h
-index b154bc0..6f4d34f 100644
---- a/src/openvpn/socket.h
-+++ b/src/openvpn/socket.h
-@@ -961,7 +961,6 @@ link_socket_read_udp_win32 (struct link_socket *sock,
+ void
+diff --git a/src/openvpn/multi.h b/src/openvpn/multi.h
+index ec1e7ab..9d8185d 100644
+--- a/src/openvpn/multi.h
++++ b/src/openvpn/multi.h
+@@ -233,7 +233,7 @@ const char *multi_instance_string (const struct multi_instance *mi, bool null, s
+ void multi_init (struct multi_context *m, struct context *t, bool tcp_mode, int thread_mode);
+ void multi_uninit (struct multi_context *m);
  
- int link_socket_read_udp_posix (struct link_socket *sock,
- 				struct buffer *buf,
--				int maxsize,
- 				struct link_socket_actual *from);
+-void multi_top_init (struct multi_context *m, const struct context *top, const bool alloc_buffers);
++void multi_top_init (struct multi_context *m, const struct context *top);
+ void multi_top_free (struct multi_context *m);
  
- #endif
-@@ -970,7 +969,6 @@ int link_socket_read_udp_posix (struct link_socket *sock,
- static inline int
- link_socket_read (struct link_socket *sock,
- 		  struct buffer *buf,
--		  int maxsize,
- 		  struct link_socket_actual *from)
- {
-   if (proto_is_udp(sock->info.proto)) /* unified UDPv4 and UDPv6 */
-@@ -980,7 +978,7 @@ link_socket_read (struct link_socket *sock,
- #ifdef WIN32
-       res = link_socket_read_udp_win32 (sock, buf, from);
- #else
--      res = link_socket_read_udp_posix (sock, buf, maxsize, from);
-+      res = link_socket_read_udp_posix (sock, buf, from);
- #endif
-       return res;
-     }
+ struct multi_instance *multi_create_instance (struct multi_context *m, const struct mroute_addr *real);
 -- 
 2.7.4
 
