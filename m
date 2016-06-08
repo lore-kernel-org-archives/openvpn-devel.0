@@ -1,9 +1,9 @@
 From: Steffan Karger <steffan@...1856...>
-Date: Wed,  8 Jun 2016 20:38:04 +0200
-Message-Id: <1465411084-16279-1-git-send-email-steffan@...1856...>
-In-Reply-To: <CAA1AbxKYYyWOowA6+QH_QqPbps738X4CWxCcGvoyzBqwNv8Fdg@...278...>
-References: <CAA1AbxKYYyWOowA6+QH_QqPbps738X4CWxCcGvoyzBqwNv8Fdg@...278...>
-Subject: [Openvpn-devel] [PATCHv2 4/5] Add options to restrict cipher
+Date: Wed,  8 Jun 2016 20:39:01 +0200
+Message-Id: <1465411141-16560-1-git-send-email-steffan@...1856...>
+In-Reply-To: <1465388443-15484-6-git-send-email-steffan@...1856...>
+References: <1465388443-15484-6-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCHv2 5/5] Add server-side support for cipher
 	negotiation
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -17,434 +17,208 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Add --ncp-disable to completely disable cipher negotiation, and
---ncp-ciphers to specify which ciphers to accept from the server.
+Pushes AES-256-GCM when a connection client advertises IV_NCP=2, and
+supports serving connections to clients with different data channel
+cipher configuration simultaneously.
 
 v2:
- * fix --disable-crypto builds
- * use register_signal() instead of operating directly on c->sig
- * add man-page entry for new options
+ * Update manpage
+ * Add Changes.rst entry
 
 Signed-off-by: Steffan Karger <steffan@...1856...>
-
-restrict man fix
 ---
- doc/openvpn.8            | 13 +++++++++++++
- src/openvpn/init.c       | 36 ++++++++++++++++++++++++++++++------
- src/openvpn/init.h       |  4 ++--
- src/openvpn/openvpn.h    |  3 +++
- src/openvpn/options.c    | 40 +++++++++++++++++++++++++++++-----------
- src/openvpn/options.h    |  4 +++-
- src/openvpn/push.c       | 11 ++++++++++-
- src/openvpn/ssl.c        | 30 +++++++++++++++++++++++++++++-
- src/openvpn/ssl_common.h |  4 ++++
- 9 files changed, 123 insertions(+), 22 deletions(-)
+ Changes.rst              | 11 +++++++++++
+ doc/openvpn.8            |  4 ++++
+ src/openvpn/init.c       |  5 +++--
+ src/openvpn/push.c       | 25 ++++++++++++++++++++++---
+ src/openvpn/ssl.c        | 23 +++++++++++++----------
+ src/openvpn/ssl_common.h |  1 +
+ 6 files changed, 54 insertions(+), 15 deletions(-)
 
+diff --git a/Changes.rst b/Changes.rst
+index 1ac3c2b..eb6018f 100644
+--- a/Changes.rst
++++ b/Changes.rst
+@@ -51,6 +51,13 @@ AEAD (GCM) data channel cipher support
+     bytes per packet for AES-128-GCM instead of 36 bytes per packet for
+     AES-128-CBC + HMAC-SHA1).
+ 
++Cipher negotiation
++    Data channel ciphers are now by default negotiated.  If a client advertises
++    support for Negotiable Crypto Parameters (NCP), the server will choose a
++    cipher (by default AES-256-GCM) for the data channel, and tell the client
++    to use that cipher.  Data channel cipher negotiation can be controlled
++    using --ncp-ciphers and --ncp-disable.
++
+ 
+ User-visible Changes
+ --------------------
+@@ -106,6 +113,10 @@ User-visible Changes
+ - mbed TLS builds: minimum RSA key size is now 2048 bits.  Shorter keys will
+   not be accepted, both local and from the peer.
+ 
++- Data channel cipher negotiation (see New features section) can override
++  ciphers configured in the config file.  Use --ncp-disable if you don't want
++  that.
++
+ 
+ Maintainer-visible changes
+ --------------------------
 diff --git a/doc/openvpn.8 b/doc/openvpn.8
-index 03f31bb..e349b77 100644
+index e349b77..5cb2885 100644
 --- a/doc/openvpn.8
 +++ b/doc/openvpn.8
-@@ -4128,6 +4128,19 @@ Set
- to disable encryption.
+@@ -4134,6 +4134,10 @@ Restrict the allowed ciphers to be negotiated to the ciphers in
+ .B cipher_list
+ is a colon-separated list of ciphers, and defaults to
+ "AES-256-GCM:AES-128-GCM".
++
++For servers, the first cipher from
++.B cipher_list
++will be pushed to clients that support cipher negotiation.
  .\"*********************************************************
  .TP
-+.B \-\-ncp\-ciphers cipher_list
-+Restrict the allowed ciphers to be negotiated to the ciphers in
-+.B cipher_list\fR.
-+.B cipher_list
-+is a colon-separated list of ciphers, and defaults to
-+"AES-256-GCM:AES-128-GCM".
-+.\"*********************************************************
-+.TP
-+.B \-\-ncp\-disable
-+Disable "negotiable crypto parameters".  This completely disables cipher
-+negotiation.
-+.\"*********************************************************
-+.TP
- .B \-\-keysize n
- Size of cipher key in bits (optional).
- If unspecified, defaults to cipher-specific default.  The
+ .B \-\-ncp\-disable
 diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 8f81b09..c2e3b2e 100644
+index c2e3b2e..5ed3f3c 100644
 --- a/src/openvpn/init.c
 +++ b/src/openvpn/init.c
-@@ -1739,7 +1739,7 @@ options_hash_changed_or_zero(const struct md5_digest *a,
- }
- #endif /* P2MP */
+@@ -2312,8 +2312,8 @@ do_init_crypto_tls (struct context *c, const unsigned int flags)
+   /* In short form, unique datagram identifier is 32 bits, in long form 64 bits */
+   packet_id_long_form = cipher_kt_mode_ofb_cfb (c->c1.ks.key_type.cipher);
  
--void
-+bool
- do_up (struct context *c, bool pulled_options, unsigned int option_types_found)
- {
-   if (!c->c2.do_up_ran)
-@@ -1747,7 +1747,13 @@ do_up (struct context *c, bool pulled_options, unsigned int option_types_found)
-       reset_coarse_timers (c);
- 
-       if (pulled_options && option_types_found)
--	do_deferred_options (c, option_types_found);
-+	{
-+	  if (!do_deferred_options (c, option_types_found))
-+	    {
-+	      msg (D_PUSH_ERRORS, "ERROR: Failed to apply push options");
-+	      return false;
-+	    }
-+	}
- 
-       /* if --up-delay specified, open tun, do ifconfig, and run up script now */
-       if (c->options.up_delay || PULL_DEFINED (&c->options))
-@@ -1802,6 +1808,7 @@ do_up (struct context *c, bool pulled_options, unsigned int option_types_found)
- 	
-       c->c2.do_up_ran = true;
-     }
-+  return true;
- }
- 
- /*
-@@ -1819,7 +1826,6 @@ pull_permission_mask (const struct context *c)
-     | OPT_P_SHAPER
-     | OPT_P_TIMER
-     | OPT_P_COMP
--    | OPT_P_CRYPTO
-     | OPT_P_PERSIST
-     | OPT_P_MESSAGES
-     | OPT_P_EXPLICIT_NOTIFY
-@@ -1830,13 +1836,18 @@ pull_permission_mask (const struct context *c)
-   if (!c->options.route_nopull)
-     flags |= (OPT_P_ROUTE | OPT_P_IPWIN32);
- 
-+#ifdef ENABLE_CRYPTO
-+  if (c->options.ncp_enabled)
-+    flags |= OPT_P_NCP;
-+#endif
-+
-   return flags;
- }
- 
- /*
-  * Handle non-tun-related pulled options.
-  */
--void
-+bool
- do_deferred_options (struct context *c, const unsigned int found)
- {
-   if (found & OPT_P_MESSAGES)
-@@ -1927,10 +1938,17 @@ do_deferred_options (struct context *c, const unsigned int found)
-   /* process (potenitally pushed) crypto options */
-   if (c->options.pull)
+-  /* Compute MTU parameters (postpone if we pull options) */
+-  if (c->options.pull)
++  /* Compute MTU parameters (postpone if we push/pull options) */
++  if (c->options.pull || c->options.mode == MODE_SERVER)
      {
--      tls_session_update_crypto_params(&c->c2.tls_multi->session[TM_ACTIVE],
--          &c->options, &c->c2.frame);
-+      if (found & OPT_P_NCP)
-+	msg (D_PUSH, "OPTIONS IMPORT: data channel crypto options modified");
-+      if (!tls_session_update_crypto_params(
-+	  &c->c2.tls_multi->session[TM_ACTIVE], &c->options, &c->c2.frame))
-+	{
-+	  msg (D_TLS_ERRORS, "OPTIONS ERROR: failed to import crypto options");
-+	  return false;
-+	}
-     }
- #endif
-+  return true;
- }
- 
- /*
-@@ -2250,6 +2268,9 @@ do_init_crypto_tls_c1 (struct context *c)
- 	      &c->c1.ks.tls_auth_key, file, options->key_direction, flags);
- 	}
- 
-+      c->c1.ciphername = options->ciphername;
-+      c->c1.authname = options->authname;
-+
- #if 0 /* was: #if ENABLE_INLINE_FILES --  Note that enabling this code will break restarts */
-       if (options->priv_key_file_inline)
- 	{
-@@ -2326,6 +2347,9 @@ do_init_crypto_tls (struct context *c, const unsigned int flags)
-   to.replay_window = options->replay_window;
-   to.replay_time = options->replay_time;
-   to.tcp_mode = link_socket_proto_connection_oriented (options->ce.proto);
-+  to.config_ciphername = c->c1.ciphername;
-+  to.config_authname = c->c1.authname;
-+  to.ncp_enabled = options->ncp_enabled;
-   to.transition_window = options->transition_window;
-   to.handshake_window = options->handshake_window;
-   to.packet_timeout = options->tls_timeout;
-diff --git a/src/openvpn/init.h b/src/openvpn/init.h
-index a819bd2..524bc64 100644
---- a/src/openvpn/init.h
-+++ b/src/openvpn/init.h
-@@ -81,7 +81,7 @@ bool do_test_crypto (const struct options *o);
- 
- void context_gc_free (struct context *c);
- 
--void do_up (struct context *c,
-+bool do_up (struct context *c,
- 	    bool pulled_options,
- 	    unsigned int option_types_found);
- 
-@@ -91,7 +91,7 @@ const char *format_common_name (struct context *c, struct gc_arena *gc);
- 
- void reset_coarse_timers (struct context *c);
- 
--void do_deferred_options (struct context *c, const unsigned int found);
-+bool do_deferred_options (struct context *c, const unsigned int found);
- 
- void inherit_context_child (struct context *dest,
- 			    const struct context *src);
-diff --git a/src/openvpn/openvpn.h b/src/openvpn/openvpn.h
-index 3281fd7..395195f 100644
---- a/src/openvpn/openvpn.h
-+++ b/src/openvpn/openvpn.h
-@@ -210,6 +210,9 @@ struct context_1
-   struct user_pass *auth_user_pass;
-                                 /**< Username and password for
-                                  *   authentication. */
-+
-+  const char *ciphername;	/**< Data channel cipher from config file */
-+  const char *authname;		/**< Data channel auth from config file */
- #endif
- };
- 
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index a595dff..d17a2ce 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -523,6 +523,8 @@ static const char usage_message[] =
-   "--cipher alg    : Encrypt packets with cipher algorithm alg\n"
-   "                  (default=%s).\n"
-   "                  Set alg=none to disable encryption.\n"
-+  "--ncp-ciphers list : List of ciphers that are allowed to be negotiated.\n"
-+  "--ncp-disable   : Disable cipher negotiation.\n"
-   "--prng alg [nsl] : For PRNG, use digest algorithm alg, and\n"
-   "                   nonce_secret_len=nsl.  Set alg=none to disable PRNG.\n"
- #ifdef HAVE_EVP_CIPHER_CTX_SET_KEY_LENGTH
-@@ -830,6 +832,12 @@ init_options (struct options *o, const bool init_gc)
- #ifdef ENABLE_CRYPTO
-   o->ciphername = "BF-CBC";
-   o->ciphername_defined = true;
-+#ifdef HAVE_AEAD_CIPHER_MODES /* IV_NCP=2 requires GCM support */
-+  o->ncp_enabled = true;
-+#else
-+  o->ncp_enabled = false;
-+#endif
-+  o->ncp_ciphers = "AES-256-GCM:AES-128-GCM";
-   o->authname = "SHA1";
-   o->authname_defined = true;
-   o->prng_hash = "SHA1";
-@@ -6632,7 +6640,7 @@ add_option (struct options *options,
-     }
-   else if (streq (p[0], "auth") && p[1] && !p[2])
-     {
--      VERIFY_PERMISSION (OPT_P_CRYPTO);
-+      VERIFY_PERMISSION (OPT_P_GENERAL);
-       options->authname_defined = true;
-       options->authname = p[1];
-       if (streq (options->authname, "none"))
-@@ -6643,12 +6651,12 @@ add_option (struct options *options,
-     }
-   else if (streq (p[0], "auth") && !p[1])
-     {
--      VERIFY_PERMISSION (OPT_P_CRYPTO);
-+      VERIFY_PERMISSION (OPT_P_GENERAL);
-       options->authname_defined = true;
-     }
-   else if (streq (p[0], "cipher") && p[1] && !p[2])
-     {
--      VERIFY_PERMISSION (OPT_P_CRYPTO);
-+      VERIFY_PERMISSION (OPT_P_NCP);
-       options->ciphername_defined = true;
-       options->ciphername = p[1];
-       if (streq (options->ciphername, "none"))
-@@ -6659,12 +6667,22 @@ add_option (struct options *options,
-     }
-   else if (streq (p[0], "cipher") && !p[1])
-     {
--      VERIFY_PERMISSION (OPT_P_CRYPTO);
-+      VERIFY_PERMISSION (OPT_P_GENERAL);
-       options->ciphername_defined = true;
-     }
-+  else if (streq (p[0], "ncp-ciphers") && p[1] && !p[2])
-+    {
-+      VERIFY_PERMISSION (OPT_P_GENERAL);
-+      options->ncp_ciphers = p[1];
-+    }
-+  else if (streq (p[0], "ncp-disable") && !p[1])
-+    {
-+      VERIFY_PERMISSION (OPT_P_GENERAL);
-+      options->ncp_enabled = false;
-+    }
-   else if (streq (p[0], "prng") && p[1] && !p[3])
-     {
--      VERIFY_PERMISSION (OPT_P_CRYPTO);
-+      VERIFY_PERMISSION (OPT_P_GENERAL);
-       if (streq (p[1], "none"))
- 	options->prng_hash = NULL;
-       else
-@@ -6686,12 +6704,12 @@ add_option (struct options *options,
-     }
-   else if (streq (p[0], "no-replay") && !p[1])
-     {
--      VERIFY_PERMISSION (OPT_P_CRYPTO);
-+      VERIFY_PERMISSION (OPT_P_GENERAL);
-       options->replay = false;
-     }
-   else if (streq (p[0], "replay-window") && !p[3])
-     {
--      VERIFY_PERMISSION (OPT_P_CRYPTO);
-+      VERIFY_PERMISSION (OPT_P_GENERAL);
-       if (p[1])
- 	{
- 	  int replay_window;
-@@ -6731,12 +6749,12 @@ add_option (struct options *options,
-     }
-   else if (streq (p[0], "mute-replay-warnings") && !p[1])
-     {
--      VERIFY_PERMISSION (OPT_P_CRYPTO);
-+      VERIFY_PERMISSION (OPT_P_GENERAL);
-       options->mute_replay_warnings = true;
-     }
-   else if (streq (p[0], "no-iv") && !p[1])
-     {
--      VERIFY_PERMISSION (OPT_P_CRYPTO);
-+      VERIFY_PERMISSION (OPT_P_GENERAL);
-       options->use_iv = false;
-     }
-   else if (streq (p[0], "replay-persist") && p[1] && !p[2])
-@@ -6766,7 +6784,7 @@ add_option (struct options *options,
-     {
-       int keysize;
- 
--      VERIFY_PERMISSION (OPT_P_CRYPTO);
-+      VERIFY_PERMISSION (OPT_P_NCP);
-       keysize = atoi (p[1]) / 8;
-       if (keysize < 0 || keysize > MAX_CIPHER_KEY_LENGTH)
- 	{
-@@ -6795,7 +6813,7 @@ add_option (struct options *options,
-     }
-   else if (streq (p[0], "ecdh-curve") && p[1] && !p[2])
-     {
--      VERIFY_PERMISSION (OPT_P_CRYPTO);
-+      VERIFY_PERMISSION (OPT_P_GENERAL);
-       options->ecdh_curve= p[1];
-     }
-   else if (streq (p[0], "tls-server") && !p[1])
-diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-index 514511b..ea63c4c 100644
---- a/src/openvpn/options.h
-+++ b/src/openvpn/options.h
-@@ -474,6 +474,8 @@ struct options
-   int key_direction;
-   bool ciphername_defined;
-   const char *ciphername;
-+  bool ncp_enabled;
-+  const char *ncp_ciphers;
-   bool authname_defined;
-   const char *authname;
-   int keysize;
-@@ -618,7 +620,7 @@ struct options
- #define OPT_P_PERSIST_IP      (1<<9)
- #define OPT_P_COMP            (1<<10) /* TODO */
- #define OPT_P_MESSAGES        (1<<11)
--#define OPT_P_CRYPTO          (1<<12) /* TODO */
-+#define OPT_P_NCP             (1<<12) /**< Negotiable crypto parameters */
- #define OPT_P_TLS_PARMS       (1<<13) /* TODO */
- #define OPT_P_MTU             (1<<14) /* TODO */
- #define OPT_P_NICE            (1<<15)
+       /* Account for worst-case crypto overhead before allocating buffers */
+       frame_add_to_extra_frame (&c->c2.frame, crypto_max_overhead());
+@@ -2357,6 +2357,7 @@ do_init_crypto_tls (struct context *c, const unsigned int flags)
+   to.renegotiate_packets = options->renegotiate_packets;
+   to.renegotiate_seconds = options->renegotiate_seconds;
+   to.single_session = options->single_session;
++  to.mode = options->mode;
+   to.pull = options->pull;
+ #ifdef ENABLE_PUSH_PEER_INFO
+   if (options->push_peer_info)		/* all there is */
 diff --git a/src/openvpn/push.c b/src/openvpn/push.c
-index 38ac59e..4239e3e 100644
+index 4239e3e..f763e65 100644
 --- a/src/openvpn/push.c
 +++ b/src/openvpn/push.c
-@@ -239,11 +239,20 @@ incoming_push_message (struct context *c, const struct buffer *buffer)
-     {
-       c->options.push_option_types_found |= option_types_found;
- 
-+      /* delay bringing tun/tap up until --push parms received from remote */
-       if (status == PUSH_MSG_REPLY)
--	do_up (c, true, c->options.push_option_types_found ); /* delay bringing tun/tap up until --push parms received from remote */
-+	{
-+	  if (!do_up (c, true, c->options.push_option_types_found))
-+	    {
-+	      msg (D_PUSH_ERRORS, "Failed to open tun/tap interface");
-+	      register_signal (c, SIGUSR1, "do_up-failed");
-+	      goto cleanup;
-+	    }
-+	}
+@@ -245,13 +245,28 @@ incoming_push_message (struct context *c, const struct buffer *buffer)
+ 	  if (!do_up (c, true, c->options.push_option_types_found))
+ 	    {
+ 	      msg (D_PUSH_ERRORS, "Failed to open tun/tap interface");
+-	      register_signal (c, SIGUSR1, "do_up-failed");
+-	      goto cleanup;
++	      goto error;
+ 	    }
+ 	}
        event_timeout_clear (&c->c2.push_request_interval);
      }
++  else if (status == PUSH_MSG_REQUEST)
++    {
++      if (c->options.mode == MODE_SERVER)
++	{
++	  struct tls_session *session = &c->c2.tls_multi->session[TM_ACTIVE];
++	  if (!tls_session_update_crypto_params (session, &c->options,
++	      &c->c2.frame))
++	    {
++	      msg (D_TLS_ERRORS, "TLS Error: server generate_key_expansion failed");
++	      goto error;
++	    }
++	}
++    }
  
-+cleanup:
++  goto cleanup;
++error:
++  register_signal (c, SIGUSR1, "process-push-msg-failed");
+ cleanup:
    gc_free (&gc);
  }
+@@ -303,12 +318,16 @@ prepare_push_reply (struct options *o, struct tls_multi *tls_multi)
  
+   /* Push cipher if client supports Negotiable Crypto Parameters */
+   optstr = peer_info ? strstr(peer_info, "IV_NCP=") : NULL;
+-  if (optstr)
++  if (optstr && o->ncp_enabled)
+     {
+       int ncp = 0;
+       int r = sscanf(optstr, "IV_NCP=%d", &ncp);
+       if ((r == 1) && (ncp == 2))
+ 	{
++	  /* Push the first cipher from --ncp-ciphers to the client.
++	   * TODO: actual negotiation, instead of server dictatorship. */
++	  char *push_cipher = string_alloc(o->ncp_ciphers, &o->gc);
++	  o->ciphername = strtok (push_cipher, ":");
+ 	  push_option_fmt(o, M_USAGE, "cipher %s", o->ciphername);
+ 	}
+     }
 diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 0c0061c..7ced41d 100644
+index 7ced41d..d5b52d7 100644
 --- a/src/openvpn/ssl.c
 +++ b/src/openvpn/ssl.c
-@@ -1636,6 +1636,24 @@ key_ctx_update_implicit_iv(struct key_ctx *ctx, uint8_t *key, size_t key_len) {
-     }
- }
+@@ -1661,10 +1661,10 @@ tls_session_update_crypto_params(struct tls_session *session,
+   bool ret = false;
+   struct key_state *ks = &session->key[KS_PRIMARY];	/* primary key */
  
-+static bool
-+item_in_list(const char *item, const char *list)
-+{
-+  char *tmp_ciphers = string_alloc (list, NULL);
-+  char *tmp_ciphers_orig = tmp_ciphers;
-+
-+  const char *token = strtok (tmp_ciphers, ":");
-+  while(token)
-+    {
-+      if (0 == strcmp (token, item))
-+	break;
-+      token = strtok (NULL, ":");
-+    }
-+  free(tmp_ciphers_orig);
-+
-+  return token != NULL;
-+}
-+
- bool
- tls_session_update_crypto_params(struct tls_session *session,
-     const struct options *options, struct frame *frame)
-@@ -1646,6 +1664,15 @@ tls_session_update_crypto_params(struct tls_session *session,
-   ASSERT (!session->opt->server);
+-  ASSERT (!session->opt->server);
    ASSERT (ks->authenticated);
  
-+  if (0 != strcmp(options->ciphername, session->opt->config_ciphername) &&
-+      !item_in_list(options->ciphername, options->ncp_ciphers))
-+    {
-+      msg (D_TLS_ERRORS, "Error: pushed cipher not allowed - %s not in %s or %s",
-+	  options->ciphername, session->opt->config_ciphername,
-+	  options->ncp_ciphers);
-+      return false;
-+    }
-+
-   init_key_type (&session->opt->key_type, options->ciphername,
-     options->ciphername_defined, options->authname, options->authname_defined,
-     options->keysize, true, true);
-@@ -1927,7 +1954,8 @@ push_peer_info(struct buffer *buf, struct tls_session *session)
-       buf_printf(&out, "IV_PROTO=2\n");
+-  if (0 != strcmp(options->ciphername, session->opt->config_ciphername) &&
++  if (!session->opt->server &&
++      0 != strcmp(options->ciphername, session->opt->config_ciphername) &&
+       !item_in_list(options->ciphername, options->ncp_ciphers))
+     {
+       msg (D_TLS_ERRORS, "Error: pushed cipher not allowed - %s not in %s or %s",
+@@ -1691,12 +1691,13 @@ tls_session_update_crypto_params(struct tls_session *session,
+       options->ce.tun_mtu_defined, options->ce.tun_mtu);
+   frame_print (frame, D_MTU_INFO, "Data Channel MTU parms");
  
-       /* support for Negotiable Crypto Paramters */
--      buf_printf(&out, "IV_NCP=2\n");
-+      if (session->opt->ncp_enabled)
-+	buf_printf(&out, "IV_NCP=2\n");
++  const struct session_id *client_sid = session->opt->server ?
++      &ks->session_id_remote : &session->session_id;
++  const struct session_id *server_sid = !session->opt->server ?
++      &ks->session_id_remote : &session->session_id;
+   if (!generate_key_expansion (&ks->crypto_options.key_ctx_bi,
+-			       &session->opt->key_type,
+-			       ks->key_src,
+-			       &session->session_id,
+-			       &ks->session_id_remote,
+-			       false))
++      &session->opt->key_type, ks->key_src, client_sid, server_sid,
++      session->opt->server))
+     {
+       msg (D_TLS_ERRORS, "TLS Error: server generate_key_expansion failed");
+       goto cleanup;
+@@ -2057,10 +2058,12 @@ key_method_2_write (struct buffer *buf, struct tls_session *session)
+   if (!push_peer_info (buf, session))
+     goto error;
  
-       /* push compression status */
- #ifdef USE_COMP
+-  /*
+-   * generate tunnel keys if server
++  /* Generate tunnel keys if we're a TLS server.
++   * If we're a p2mp server, the first key generation is postponed until after
++   * the pull/push, so we can process pushed cipher directives.
+    */
+-  if (session->opt->server)
++  if (session->opt->server &&
++      (session->opt->mode != MODE_SERVER || ks->key_id > 0))
+     {
+       if (ks->authenticated)
+ 	{
 diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
-index 9183dab..6bfde6b 100644
+index 6bfde6b..eb2ad6f 100644
 --- a/src/openvpn/ssl_common.h
 +++ b/src/openvpn/ssl_common.h
-@@ -273,6 +273,10 @@ struct tls_options
-   int replay_time;                     /* --replay-window parm */
-   bool tcp_mode;
- 
-+  const char *config_ciphername;
-+  const char *config_authname;
-+  bool ncp_enabled;
-+
-   /* packet authentication for TLS handshake */
-   struct crypto_options tls_auth;
- 
+@@ -236,6 +236,7 @@ struct tls_options
+ #ifdef ENABLE_OCC
+   bool disable_occ;
+ #endif
++  int mode;
+   bool pull;
+ #ifdef ENABLE_PUSH_PEER_INFO
+   int push_peer_info_detail;
 -- 
 2.7.4
 
