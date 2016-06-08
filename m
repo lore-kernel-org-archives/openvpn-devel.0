@@ -1,13 +1,11 @@
-MIME-Version: 1.0
-In-Reply-To: <b3f65c74-2b47-2a1b-1cab-c084e636a1ae@...1227...>
 References: <1465388443-15484-1-git-send-email-steffan@...1856...>
-	<1465388443-15484-4-git-send-email-steffan@...1856...>
-	<b3f65c74-2b47-2a1b-1cab-c084e636a1ae@...1227...>
-From: Steffan Karger <steffan@...1856...>
-Date: Wed, 8 Jun 2016 17:01:26 +0200
-Message-ID: <CAA1AbxJnXgR_Ku6OA3wua2nDr8msH1g0sr0c3xSAUPbs0yaaXQ@...278...>
-Subject: Re: [Openvpn-devel] [PATCH 3/5] Add client-side support for cipher
-	negotiation
+	<CAA1AbxJ0MQH6UL-b1Y+n_nE74Jw1C7fZeNqpsFkYyjt_UFBVXw@...278...>
+From: debbie10t <debbie10t@...277...>
+Message-ID: <5758352E.9030407@...277...>
+Date: Wed, 8 Jun 2016 16:09:34 +0100
+MIME-Version: 1.0
+In-Reply-To: <CAA1AbxJ0MQH6UL-b1Y+n_nE74Jw1C7fZeNqpsFkYyjt_UFBVXw@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] Add support for cipher negotiation
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,25 +14,23 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
-On Wed, Jun 8, 2016 at 4:23 PM, Arne Schwabe <arne@...1227...> wrote:
->
->> +#ifdef ENABLE_CRYPTO
->> +  if (c->options.pull)
->> +    {
->> +      /* If we use --pull, we don't know the crypto overhead yet. */
->> +      msg (M_WARN, "*** Account for max crypto overhead ***");
->
-> That message will surely confuse users.
+Hi
 
-Oops, that should not have been there anymore.
+On 08/06/16 13:32, Steffan Karger wrote:
+> On Wed, Jun 8, 2016 at 2:20 PM, Steffan Karger <steffan@...1856...> wrote:
+>> Please test and provide comments.  I ran the 'make check' test suite, including
+>> t_client tests, and performed manual testing.  But, as Gert eloquently puts it,
+>> this is likely to 'break stuff in interesting ways', so more testing (and
+>> review) is very welcome!
+> For those of you that rather check out a github branch instead of
+> applying patches, I pushed my branch - plus some extra debug commits -
+> to https://github.com/syzzer/openvpn/tree/nego-squashed
+I decided to give this a go from git .. but here snappy is still used.
+I am happy to get snappy myself but I thought snappy had been dropped ?
+thanks
 
-FYI - (as reported by Arne on IRC) this patch still has some issues
-when used with TCP mode.  I'm working on a v2, coming soon :)
-
--Steffan
 
