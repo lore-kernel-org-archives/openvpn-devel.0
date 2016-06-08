@@ -1,12 +1,13 @@
+MIME-Version: 1.0
+In-Reply-To: <57584444.2090302@...277...>
 References: <1465388443-15484-1-git-send-email-steffan@...1856...>
 	<CAA1AbxJ0MQH6UL-b1Y+n_nE74Jw1C7fZeNqpsFkYyjt_UFBVXw@...278...>
 	<5758352E.9030407@...277...>
 	<fb02387f-1ca4-5fe6-2bc4-604aa3d45899@...1227...>
-From: debbie10t <debbie10t@...277...>
-Message-ID: <57584444.2090302@...277...>
-Date: Wed, 8 Jun 2016 17:13:56 +0100
-MIME-Version: 1.0
-In-Reply-To: <fb02387f-1ca4-5fe6-2bc4-604aa3d45899@...1227...>
+	<57584444.2090302@...277...>
+From: Steffan Karger <steffan@...1856...>
+Date: Wed, 8 Jun 2016 18:19:47 +0200
+Message-ID: <CAA1Abx+AEO4GJQ357B-qfF-EhfBCbYjtNE=CxNUxrPx+5qDkoQ@...278...>
 Subject: Re: [Openvpn-devel] [PATCH] Add support for cipher negotiation
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -16,46 +17,29 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+To: debbie10t <debbie10t@...277...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-
-
-On 08/06/16 16:45, Arne Schwabe wrote:
-> On 08.06.2016 17:09, debbie10t wrote:
->> Hi
->>
->> On 08/06/16 13:32, Steffan Karger wrote:
->>> On Wed, Jun 8, 2016 at 2:20 PM, Steffan Karger <steffan@...1856...> wrote:
->>>> Please test and provide comments.  I ran the 'make check' test suite, including
->>>> t_client tests, and performed manual testing.  But, as Gert eloquently puts it,
->>>> this is likely to 'break stuff in interesting ways', so more testing (and
->>>> review) is very welcome!
->>> For those of you that rather check out a github branch instead of
->>> applying patches, I pushed my branch - plus some extra debug commits -
->>> to https://github.com/syzzer/openvpn/tree/nego-squashed
->> I decided to give this a go from git .. but here snappy is still used.
->> I am happy to get snappy myself but I thought snappy had been dropped ?
->> thanks
->>
-> Since it is on git master there is no snappy in there, can you double
-> check that you used the right branch and not some other outdated branch
-> of syzzer repo?
+On Wed, Jun 8, 2016 at 6:13 PM, debbie10t <debbie10t@...277...> wrote:
+> First downloaded the wrong repo .. Not sure what I did wrong .. nvm
 >
-First downloaded the wrong repo .. Not sure what I did wrong .. nvm
+> Second: This is where my git foo falls down .. tried:
+> $ git clone https://github.com/syzzer/openvpn/tree/nego-squashed
+> Cloning into 'nego-squashed'...
+> fatal: repository
+> 'https://github.com/syzzer/openvpn/tree/nego-squashed/' not found
+>
+> Finally i downloaded
+> https://github.com/syzzer/openvpn/archive/nego-squashed.zip
+> built ok .. (no snappy)
+>
+> Sorry to waste your time and thanks for you help
 
-Second: This is where my git foo falls down .. tried:
-$ git clone https://github.com/syzzer/openvpn/tree/nego-squashed
-Cloning into 'nego-squashed'...
-fatal: repository 
-'https://github.com/syzzer/openvpn/tree/nego-squashed/' not found
+For future reference, you should have done:
 
-Finally i downloaded 
-https://github.com/syzzer/openvpn/archive/nego-squashed.zip
-built ok .. (no snappy)
+   git clone https://github.com/syzzer/openvpn --branch nego-squashed
 
-Sorry to waste your time and thanks for you help
-
-
+-Steffan
 
