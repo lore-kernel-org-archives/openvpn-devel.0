@@ -1,10 +1,8 @@
-Date: Thu, 9 Jun 2016 14:55:58 +0200 (CEST)
-Message-Id: <201606091255.u59CtwQk054793@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1465473089-20754-1-git-send-email-gert@...1296...>
-References: <1465473089-20754-1-git-send-email-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Upgrade bundled compat-lz4 to
-	upstream release r131.
+Date: Thu,  9 Jun 2016 15:00:32 +0200
+Message-Id: <1465477232-25826-1-git-send-email-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH] Change --enable-pedantic to use -std=c99
+	and not -ansi (C90).
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,27 +13,31 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master branch.
+There's quite a bit of our code that fails compilation with
+"gcc -pedantic -ansi" and should not be changed - like, LZ4 using
+"long long" variables which C90 does not have.  Be pragmatic.
 
-commit 46e4b6639a950c56a08261b6610e7fe17404213d
-Author: Gert Doering
-Date:   Thu Jun 9 13:51:29 2016 +0200
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+ configure.ac | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-     Upgrade bundled compat-lz4 to upstream release r131.
-
-     Signed-off-by: Gert Doering <gert@...1296...>
-     Acked-by: Steffan Karger <steffan.karger@...1435...>
-     Message-Id: <1465473089-20754-1-git-send-email-gert@...1296...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/11879
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/configure.ac b/configure.ac
+index d733023..4f14ebd 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -1128,7 +1128,7 @@ fi
+ if test "${enable_pedantic}" = "yes"; then
+ 	enable_strict="yes"
+ 	CFLAGS="${CFLAGS} -pedantic"
+-	test "${WIN32}" != "yes" && CFLAGS="${CFLAGS} -ansi"
++	test "${WIN32}" != "yes" && CFLAGS="${CFLAGS} -std=c99"
+ fi
+ if test "${enable_strict}" = "yes"; then
+ 	CFLAGS="${CFLAGS} -Wall -Wno-unused-parameter -Wno-unused-function"
+-- 
+2.7.3
 
 
