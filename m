@@ -1,14 +1,9 @@
-Date: Fri, 10 Jun 2016 18:55:15 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20160610165515.GG62247@...1296...>
-References: <575AA2BD.60908@...277...> <20160610125457.GC62247@...1296...>
-	<CAKuzo_jrwK47wDtoLNCZXP8-OG0izGmjZRrDb5vdT5shhY7FMQ@...278...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="pQhZXvAqiZgbeUkD"
-Content-Disposition: inline
-In-Reply-To: <CAKuzo_jrwK47wDtoLNCZXP8-OG0izGmjZRrDb5vdT5shhY7FMQ@...278...>
-Subject: Re: [Openvpn-devel] pull-filter reject = server hammering !
+From: Selva Nair <selva.nair@...277...>
+Date: Fri, 10 Jun 2016 16:18:03 -0400
+Message-ID: <CAKuzo_iFCFMnECD2cnu_ZYrD7VuMp2j0j4fiWuCz_Up7RhgMpQ@...278...>
+Content-Type: multipart/alternative; boundary=001a1147f47e8832910534f23dc5
+Subject: [Openvpn-devel] On the --management-external-cert option
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,51 +12,50 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---pQhZXvAqiZgbeUkD
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+--001a1147f47e8832910534f23dc5
+Content-Type: text/plain; charset=UTF-8
 
 Hi,
 
-On Fri, Jun 10, 2016 at 12:43:20PM -0400, Selva Nair wrote:
-> > @Selva, Arne: can we make the reconnect logic somewhat smarter overall,
-> > like
-> > "if reconnecting to the same host, wait 30 seconds instead of 5"?
->=20
-> This is possible, but the case for progressively increasing the restart
-> pause is not very strong. Can we get some feedback from people who serve
-> 1000's of users?
+Commit 39e3d336d4eeab847a3395ddeb430e0a9ca387b9 introduced this feature but
+I am not able to get past this parsing error:
 
-I would generally consider it polite behaviour... (also, it might save
-the client from filled-up disks...) - didn't think of exponential back-off
-yet, but that would certainly be another approach to consider.
+With --management-external-cert xxx --management-external-key
+and no --cert or --key in the config I get
 
-I have no idea how complicated it would be to implement, though.
+Options error: If you use one of --cert or --key, you must use them both
+Use --help for more information.
 
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+Looks like a bug in the parsing logic. Has anyone successfully used this
+option?
 
---pQhZXvAqiZgbeUkD
-Content-Type: application/pgp-signature; name="signature.asc"
+Combinations like
+'--management-external-key --cert filename' parses fine,
+'--management-external-cert xxx --key somefile' gives the same error as
+above
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
+Thanks,
 
-iQCVAwUBV1rw8qkuBuNlUUl1AQK6SgP/Xj0C248XM4Z3rQX5avxgjOBFwWnWXkFK
-5Xz9ZTD/gyzMcTH7b+mMwQpwdHf7hScMxlzwUEB59xmY4jPkZfUvrlxMxa+NMvkT
-ucqxWhN2wFjNzDT4WW74mKhzNP8HUvF/CAzHdkKhOiEfSycvPDjGDFC0cs/6sIrm
-jeGRm7ETK5s=
-=USdC
------END PGP SIGNATURE-----
+Selva
 
---pQhZXvAqiZgbeUkD--
+--001a1147f47e8832910534f23dc5
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr">Hi,<div><br></div><div>Commit 39e3d336d4eeab847a3395ddeb43=
+0e0a9ca387b9 introduced this feature but I am not able to get past this par=
+sing error:<br></div><div><br></div><div>With --management-external-cert xx=
+x --management-external-key</div><div>and no --cert or --key in the <span>c=
+onfig</span> I get=C2=A0</div><div><br></div><div><div>Options error: If yo=
+u use one of --cert or --key, you must use them both</div><div>Use --help f=
+or more information.</div></div><div><br></div><div>Looks like a bug in the=
+ parsing logic. Has anyone successfully used this option?<br></div><div><br=
+></div><div>Combinations like=C2=A0</div><div>&#39;--management-external-ke=
+y --cert filename&#39; parses fine,=C2=A0</div><div>&#39;--management-exter=
+nal-cert xxx --key somefile&#39; gives the same error as above</div><div><b=
+r></div><div>Thanks,</div><div><br></div><div><span>Selva</span></div></div>
+
+--001a1147f47e8832910534f23dc5--
 
