@@ -1,10 +1,14 @@
-Date: Sat, 11 Jun 2016 20:15:06 +0200 (CEST)
-Message-Id: <201606111815.u5BIF6Dq077959@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <1465656195-12722-1-git-send-email-arne@...1227...>
-References: <1465656195-12722-1-git-send-email-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: ] Remove http-proxy-timeout,
-	socks timeout and set default of server-poll-timeout to 120s
+MIME-Version: 1.0
+In-Reply-To: <20160611181434.GT62247@...1296...>
+References: <0d1ed9a2-71f4-f791-3633-9937b3764de1@...1227...>
+	<1465656195-12722-1-git-send-email-arne@...1227...>
+	<20160611181434.GT62247@...1296...>
+From: Selva Nair <selva.nair@...277...>
+Date: Sat, 11 Jun 2016 14:47:47 -0400
+Message-ID: <CAKuzo_gJLLjMWM7RRP=QzHBAEA6==f1BhEEa8gjL2W_FcGN-5A@...278...>
+Content-Type: multipart/alternative; boundary=001a11412794939e7605350518e2
+Subject: Re: [Openvpn-devel] [[PATCH v3]] Remove http-proxy-timeout,
+ socks timeout and set default of server-poll-timeout to 120s
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,34 +17,82 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-ACK.  Stared at the code for a while, and went out testing it
-(also, we got a feature-ACK for that waaay back in Munich already).
+--001a11412794939e7605350518e2
+Content-Type: text/plain; charset=UTF-8
 
-I have added a note to Changes.rst explaining the change, and how to
-get back the old default behaviour of a 10s timeout on TCP connects.
+On Sat, Jun 11, 2016 at 2:14 PM, Gert Doering <gert@...1296...> wrote:
 
-Your patch has been applied to the master branch.
+> One thing I noticed when testing which is not *caused* by this patch but
+> which you/we might want to fix while at it.
+>
+> When talking to a "deaf" HTTP proxy - namely, one that accepts the TCP
+> connect, but then never sends back anything (try 195.30.4.1:23, it's
+> a "Teergrube" to annoy wannabe hackers) the timeout will fire at the
+> correct interval - 25s in my test, but then it won't restart but exit:
+>
+> Sat Jun 11 20:05:59 2016 Attempting to establish TCP connection with
+> [AF_INET]195.30.4.1:23 [nonblock]
+> Sat Jun 11 20:06:00 2016 TCP connection established with [AF_INET]
+> 195.30.4.1:23
+> Sat Jun 11 20:06:00 2016 Send to HTTP proxy: 'CONNECT 10.0.0.1:51196
+> HTTP/1.0'
+> Sat Jun 11 20:06:00 2016 Send to HTTP proxy: 'Host: 10.0.0.1'
+> Sat Jun 11 20:06:24 2016 recv_line: TCP port read timeout expired:
+> Operation now in progress (errno=115)
+> Sat Jun 11 20:06:24 2016 SIGTERM[soft,init_instance] received, process
+> exiting
+>
 
-commit f2134b7bea37df15756c599b94f16d4bffafbbd6
-Author: Arne Schwabe
-Date:   Sat Jun 11 16:43:15 2016 +0200
 
-     Remove http-proxy-timeout, socks timeout and set default of server-poll-timeout to 120s
+Isn't this controlled by the http-proxy-retry option which is off by
+default? Set that in the config and SIGUSR1 restart should happen, I
+think...
 
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1465656195-12722-1-git-send-email-arne@...1227...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/11899
-     Signed-off-by: Gert Doering <gert@...1296...>
+Selva
 
+--001a11412794939e7605350518e2
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
---
-kind regards,
+<div dir=3D"ltr"><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">=
+On Sat, Jun 11, 2016 at 2:14 PM, Gert Doering <span dir=3D"ltr">&lt;<a href=
+=3D"mailto:gert@...1296..." target=3D"_blank">gert@...1296...</a>&gt;</span=
+> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;bo=
+rder-left:1px #ccc solid;padding-left:1ex"><div>One thing I noticed when te=
+sting which is not *caused* by this patch but<br>
+which you/we might want to fix while at it.<br>
+<br>
+When talking to a &quot;deaf&quot; HTTP proxy - namely, one that accepts th=
+e TCP<br>
+connect, but then never sends back anything (try <a href=3D"http://195.30.4=
+.1:23" rel=3D"noreferrer" target=3D"_blank">195.30.4.1:23</a>, it&#39;s<br>
+a &quot;Teergrube&quot; to annoy wannabe hackers) the timeout will fire at =
+the<br>
+correct interval - 25s in my test, but then it won&#39;t restart but exit:<=
+br>
+<br>
+<span><span>Sat Jun 11 20:05:59 2016</span></span> Attempting to establish =
+TCP connection with [AF_INET]<a href=3D"http://195.30.4.1:23" rel=3D"norefe=
+rrer" target=3D"_blank">195.30.4.1:23</a> [nonblock]<br>
+<span><span>Sat Jun 11 20:06:00 2016</span></span> TCP connection establish=
+ed with [AF_INET]<a href=3D"http://195.30.4.1:23" rel=3D"noreferrer" target=
+=3D"_blank">195.30.4.1:23</a><br>
+<span><span>Sat Jun 11 20:06:00 2016</span></span> Send to HTTP proxy: &#39=
+;CONNECT <a href=3D"http://10.0.0.1:51196" rel=3D"noreferrer" target=3D"_bl=
+ank">10.0.0.1:51196</a> HTTP/1.0&#39;<br>
+<span><span>Sat Jun 11 20:06:00 2016</span></span> Send to HTTP proxy: &#39=
+;Host: 10.0.0.1&#39;<br>
+<span><span>Sat Jun 11 20:06:24 2016</span></span> recv_line: TCP port read=
+ timeout expired: Operation now in progress (errno=3D115)<br>
+<span><span>Sat Jun 11 20:06:24 2016</span></span> SIGTERM[soft,init_instan=
+ce] received, process exiting</div></blockquote></div><br><br></div><div cl=
+ass=3D"gmail_extra">Isn&#39;t this controlled by the http-proxy-retry optio=
+n which is off by=C2=A0 default? Set that in the config and SIGUSR1 restart=
+ should happen, I think...<br><br></div><div class=3D"gmail_extra">Selva <b=
+r></div></div>
 
-Gert Doering
-
+--001a11412794939e7605350518e2--
 
