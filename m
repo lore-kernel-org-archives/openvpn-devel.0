@@ -1,9 +1,17 @@
+Date: Sat, 11 Jun 2016 13:05:11 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20160611110510.GO62247@...1296...>
+References: <1451908945-12244-1-git-send-email-lstipakov@...277...>
+	<1451911424-12970-1-git-send-email-lstipakov@...277...>
+	<5704F4E9.4050801@...2070...>
+	<20160406145137.GY53051@...1296...>
+	<57057532.1090606@...2070...>
 MIME-Version: 1.0
-From: Selva Nair <selva.nair@...277...>
-Date: Fri, 10 Jun 2016 16:18:03 -0400
-Message-ID: <CAKuzo_iFCFMnECD2cnu_ZYrD7VuMp2j0j4fiWuCz_Up7RhgMpQ@...278...>
-Content-Type: multipart/alternative; boundary=001a1147f47e8832910534f23dc5
-Subject: [Openvpn-devel] On the --management-external-cert option
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="cz6wLo+OExbGG7q/"
+Content-Disposition: inline
+In-Reply-To: <57057532.1090606@...2070...>
+Subject: Re: [Openvpn-devel] [PATCH v2] Drop recursively routed packets
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,50 +20,53 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: ValdikSS <iam@...2070...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---001a1147f47e8832910534f23dc5
-Content-Type: text/plain; charset=UTF-8
+--cz6wLo+OExbGG7q/
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
 Hi,
 
-Commit 39e3d336d4eeab847a3395ddeb430e0a9ca387b9 introduced this feature but
-I am not able to get past this parsing error:
+On Wed, Apr 06, 2016 at 11:44:34PM +0300, ValdikSS wrote:
+> More like a notification not to forget about it. I'll test it tomorrow an=
+d write the results.
+>=20
+> On 06.04.2016 17:51, Gert Doering wrote:
+> > Hi,
+> >
+> > On Wed, Apr 06, 2016 at 02:37:13PM +0300, ValdikSS wrote:
+> > Is this a "I have tested it and it works" confirmation, or a "folks, go
+> > out and do work!"?
 
-With --management-external-cert xxx --management-external-key
-and no --cert or --key in the config I get
+Coming back to this patch set - could you share your test results?
 
-Options error: If you use one of --cert or --key, you must use them both
-Use --help for more information.
+I'll then go and see that I can code review & merge during the next week.
 
-Looks like a bug in the parsing logic. Has anyone successfully used this
-option?
+gert
 
-Combinations like
-'--management-external-key --cert filename' parses fine,
-'--management-external-cert xxx --key somefile' gives the same error as
-above
 
-Thanks,
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-Selva
+--cz6wLo+OExbGG7q/
+Content-Type: application/pgp-signature; name="signature.asc"
 
---001a1147f47e8832910534f23dc5
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
 
-<div dir=3D"ltr">Hi,<div><br></div><div>Commit 39e3d336d4eeab847a3395ddeb43=
-0e0a9ca387b9 introduced this feature but I am not able to get past this par=
-sing error:<br></div><div><br></div><div>With --management-external-cert xx=
-x --management-external-key</div><div>and no --cert or --key in the <span>c=
-onfig</span> I get=C2=A0</div><div><br></div><div><div>Options error: If yo=
-u use one of --cert or --key, you must use them both</div><div>Use --help f=
-or more information.</div></div><div><br></div><div>Looks like a bug in the=
- parsing logic. Has anyone successfully used this option?<br></div><div><br=
-></div><div>Combinations like=C2=A0</div><div>&#39;--management-external-ke=
-y --cert filename&#39; parses fine,=C2=A0</div><div>&#39;--management-exter=
-nal-cert xxx --key somefile&#39; gives the same error as above</div><div><b=
-r></div><div>Thanks,</div><div><br></div><div><span>Selva</span></div></div>
+iQCVAwUBV1vwZqkuBuNlUUl1AQKj+gP+JGBvkEMr8XYIH7VIt1L1J8LYt3w7QBXS
+fG1lOsvTsZA7bKHdrqHloE5kWbW75hQrSdLvXvyXovflnA0RdTuhl2ylLt3D2QHG
+CjV+OlhaP1Nz8PXpmpJ8hHKJDAaM/oyljUdHdLkTW+aks7ZSRaBdDlNvR5iDMzG0
+mvJbImOBJts=
+=e0o1
+-----END PGP SIGNATURE-----
 
---001a1147f47e8832910534f23dc5--
+--cz6wLo+OExbGG7q/--
 
