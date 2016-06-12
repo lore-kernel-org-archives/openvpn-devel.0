@@ -1,11 +1,15 @@
-MIME-Version: 1.0
-In-Reply-To: <20160612173454.GV62247@...1296...>
+Date: Sun, 12 Jun 2016 20:09:39 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20160612180939.GX62247@...1296...>
 References: <ec25d8af-ecfe-19eb-9d86-4525300cde2f@...277...>
 	<CAA1Abx+q7EVw1tD3mbdn2g016pL2KXjoNQ9FodVzvDAr+zyw0w@...278...>
 	<20160612173454.GV62247@...1296...>
-From: Steffan Karger <steffan@...1856...>
-Date: Sun, 12 Jun 2016 19:56:50 +0200
-Message-ID: <CAA1AbxLrE-xdehgXPhk0XbQnWLffBeAduLhEsp7Bh2TBUR61zQ@...278...>
+	<CAA1AbxLrE-xdehgXPhk0XbQnWLffBeAduLhEsp7Bh2TBUR61zQ@...278...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="OQhbRXNHSL5w/5po"
+Content-Disposition: inline
+In-Reply-To: <CAA1AbxLrE-xdehgXPhk0XbQnWLffBeAduLhEsp7Bh2TBUR61zQ@...278...>
 Subject: Re: [Openvpn-devel] OpenVPN-mbedTLS depends on mbedTLS debug module
  - safe to remove?
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -16,33 +20,61 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
+To: Steffan Karger <steffan@...1856...>
 Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-On Sun, Jun 12, 2016 at 7:34 PM, Gert Doering <gert@...1296...> wrote:
-> On Sun, Jun 12, 2016 at 06:10:30PM +0200, Steffan Karger wrote:
->> On Sun, Jun 12, 2016 at 5:14 PM, Magnus Kroken <mkroken@...277...> wrote:
->> > Is it safe to remove the call to debug_set_threshold? Is it only used
->> > for more verbose logging, or can this cause a TLS error to not be
->> > noticed (or lead to other security implications)?
->>
->> Yes, the debug_set_threshold() call is only used for more verbose
->> error logging.  Very useful for debugging problems, but not critical
->> for OpenVPN's operation or security.
->
-> Can we detect and #ifdef this at build time?
->
-> Yes, adding another #ifdef is what we try to avoid - but this is a fairly
-> localized thing, and the dependency is clear, not a "user selectable
-> combination of build options".
+--OQhbRXNHSL5w/5po
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Sure.  We can put this in e.g. #ifndef ENABLE_SMALL.
+Hi,
 
-This information is not just useful for debugging during development,
-but also for debugging user problems.  So I'd rather keep it in there
-by default, most users don't care at all about 40 kB :)
+On Sun, Jun 12, 2016 at 07:56:50PM +0200, Steffan Karger wrote:
+> > Can we detect and #ifdef this at build time?
+> >
+> > Yes, adding another #ifdef is what we try to avoid - but this is a fair=
+ly
+> > localized thing, and the dependency is clear, not a "user selectable
+> > combination of build options".
+>=20
+> Sure.  We can put this in e.g. #ifndef ENABLE_SMALL.
 
--Steffan
+Was more thinking along the line of
+
+#if !defined(ENABLE_SMALL) && !defined(MBEDTLS_COMPILED_WITH_SILLY_OPTION)
+
+because --enable-small would remove lots of other useful information...
+
+> This information is not just useful for debugging during development,
+> but also for debugging user problems.  So I'd rather keep it in there
+> by default, most users don't care at all about 40 kB :)
+
+As far as I understood, if you build mbedtls without this debug.o, linking
+OpenVPN would just *fail* today.
+
+Or did I misunderstand?
+
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--OQhbRXNHSL5w/5po
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQCVAwUBV12lY6kuBuNlUUl1AQJwUgP/bJAO7UBqgQ0NbdE0BQ27FN22Lv65ug2l
+ReD+0nunh5ALcCxwfOJZ06Cteo7Db7HejTFA0jbsfZEI971S1EWGoFCTTRqllMCP
+W4Cnncqgtoh8Kvo1hIWjeoIN4FuEZWEIuBNmtPa0ruHy81uz2Xma4+a492371lOI
+mLgDJU3uT4o=
+=IS+E
+-----END PGP SIGNATURE-----
+
+--OQhbRXNHSL5w/5po--
 
