@@ -1,9 +1,11 @@
-From: Magnus Kroken <mkroken@...277...>
-Message-ID: <ec25d8af-ecfe-19eb-9d86-4525300cde2f@...277...>
-Date: Sun, 12 Jun 2016 17:14:06 +0200
 MIME-Version: 1.0
-Subject: [Openvpn-devel] OpenVPN-mbedTLS depends on mbedTLS debug module -
-	safe to remove?
+In-Reply-To: <ec25d8af-ecfe-19eb-9d86-4525300cde2f@...277...>
+References: <ec25d8af-ecfe-19eb-9d86-4525300cde2f@...277...>
+From: Steffan Karger <steffan@...1856...>
+Date: Sun, 12 Jun 2016 18:10:30 +0200
+Message-ID: <CAA1Abx+q7EVw1tD3mbdn2g016pL2KXjoNQ9FodVzvDAr+zyw0w@...278...>
+Subject: Re: [Openvpn-devel] OpenVPN-mbedTLS depends on mbedTLS debug module
+ - safe to remove?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,29 +14,21 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+To: Magnus Kroken <mkroken@...277...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Hi
+Hi,
 
-The mbedTLS/PolarSSL build of OpenVPN depends on the debug.c part of 
-mbedTLS. Specifically ssl_polarssl.c (ssl_mbedtls.c in master branch), 
-key_state_ssl_init() calls debug_set_threshold() [1]. Removing this line 
-removes the dependency.
+On Sun, Jun 12, 2016 at 5:14 PM, Magnus Kroken <mkroken@...277...> wrote:
+> Is it safe to remove the call to debug_set_threshold? Is it only used
+> for more verbose logging, or can this cause a TLS error to not be
+> noticed (or lead to other security implications)?
 
-Is it safe to remove the call to debug_set_threshold? Is it only used 
-for more verbose logging, or can this cause a TLS error to not be 
-noticed (or lead to other security implications)?
+Yes, the debug_set_threshold() call is only used for more verbose
+error logging.  Very useful for debugging problems, but not critical
+for OpenVPN's operation or security.
 
-Building mbedTLS with the debug module increases its size by about 40k, 
-and e.g. OpenWrt builds it without the debug module by default for this 
-reason. I'm not asking OpenVPN to remove this, but I would like to know 
-the known consequences of such a change.
-
-1: 
-https://github.com/OpenVPN/openvpn/commit/a9226fbdd90ac37891937b396c9c3212cd324262#diff-a06a4475e26fd6ec7e0cd3bbdcb30966R745
-
-Regards,
-Magnus Kroken
+-Steffan
 
