@@ -1,15 +1,9 @@
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <d642abed-a224-f94a-5546-08c234e7c957@...515...>
+Date: Mon, 13 Jun 2016 11:05:33 +0300
 MIME-Version: 1.0
-In-Reply-To: <20160612180939.GX62247@...1296...>
-References: <ec25d8af-ecfe-19eb-9d86-4525300cde2f@...277...>
-	<CAA1Abx+q7EVw1tD3mbdn2g016pL2KXjoNQ9FodVzvDAr+zyw0w@...278...>
-	<20160612173454.GV62247@...1296...>
-	<CAA1AbxLrE-xdehgXPhk0XbQnWLffBeAduLhEsp7Bh2TBUR61zQ@...278...>
-	<20160612180939.GX62247@...1296...>
-From: Steffan Karger <steffan@...1856...>
-Date: Sun, 12 Jun 2016 20:57:49 +0200
-Message-ID: <CAA1AbxKKny9inQLpW3OcPLUJ5ozb_Wzb87kw9h-EFVdk9UPXMA@...278...>
-Subject: Re: [Openvpn-devel] OpenVPN-mbedTLS depends on mbedTLS debug module
- - safe to remove?
+Subject: [Openvpn-devel] Topics for today's (Monday,
+	13th June 2016) community meeting
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,36 +12,32 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Transfer-Encoding: quoted-printable
+To: openvpn-devel@lists.sourceforge.net
 
-On Sun, Jun 12, 2016 at 8:09 PM, Gert Doering <gert@...1296...> wrote:
-> On Sun, Jun 12, 2016 at 07:56:50PM +0200, Steffan Karger wrote:
->> > Can we detect and #ifdef this at build time?
->> >
->> > Yes, adding another #ifdef is what we try to avoid - but this is a fairly
->> > localized thing, and the dependency is clear, not a "user selectable
->> > combination of build options".
->>
->> Sure.  We can put this in e.g. #ifndef ENABLE_SMALL.
->
-> Was more thinking along the line of
->
-> #if !defined(ENABLE_SMALL) && !defined(MBEDTLS_COMPILED_WITH_SILLY_OPTION)
->
-> because --enable-small would remove lots of other useful information...
->
->> This information is not just useful for debugging during development,
->> but also for debugging user problems.  So I'd rather keep it in there
->> by default, most users don't care at all about 40 kB :)
->
-> As far as I understood, if you build mbedtls without this debug.o, linking
-> OpenVPN would just *fail* today.
+Hi,
 
-Right, of course.  Sorry - too tired today.  That would be #ifdef
-MBEDTLS_DEBUG_C, and totally makes sense.  I'll send a patch.
+We're going to have an IRC meeting today starting at 20:00 CEST (18:00=20
+UTC) on #openvpn-meeting <at> irc.freenode.net. You do not have to be=20
+logged in to Freenode to join the channel.
 
--Steffan
+Current topic list along with basic information is here:
+
+<https://community.openvpn.net/openvpn/wiki/Topics-2016-06-13>
+
+If you have any other things you'd like to bring up, respond to this=20
+mail, send me mail privately or add them to the list yourself.
+
+In case you can't attend the meeting, please feel free to make comments=20
+on the topics by responding to this email or to the summary email sent=20
+after the meeting. Whenever possible, we'll also respond to existing,=20
+related email threads.
+
+--
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
 
