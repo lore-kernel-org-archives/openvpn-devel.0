@@ -1,9 +1,9 @@
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <d642abed-a224-f94a-5546-08c234e7c957@...515...>
-Date: Mon, 13 Jun 2016 11:05:33 +0300
 MIME-Version: 1.0
-Subject: [Openvpn-devel] Topics for today's (Monday,
-	13th June 2016) community meeting
+From: Selva Nair <selva.nair@...277...>
+Date: Mon, 13 Jun 2016 16:22:39 -0400
+Message-ID: <CAKuzo_hJ3SV0rDSXcYVRCZDS9wqxbxeedoKi=AaqKfEyjmLM0g@...278...>
+Content-Type: multipart/alternative; boundary=001a113ac0968bb7c205352ea746
+Subject: [Openvpn-devel] Semaphore locking error on windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,32 +12,59 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+
+--001a113ac0968bb7c205352ea746
+Content-Type: text/plain; charset=UTF-8
 
 Hi,
 
-We're going to have an IRC meeting today starting at 20:00 CEST (18:00=20
-UTC) on #openvpn-meeting <at> irc.freenode.net. You do not have to be=20
-logged in to Freenode to join the channel.
+Sometimes the semaphore used to avoid parallel net commands fails to lock
+on windows. This happens only when a previous run was terminated (say by
+ctrl-C) at a time when the register-dns commands are running -- ie. after
+"initialization completed" but before the "net commands" are done.
 
-Current topic list along with basic information is here:
+Could be reproduced only if at least one other openvpn process is up and
+running in the background as well. So I suspect this is what happens:
 
-<https://community.openvpn.net/openvpn/wiki/Topics-2016-06-13>
+As openvpn forks before running register-dns commands, the semaphore is
+locked in the child (not using interactive service). When the parent is
+terminated with the child still active, it seems the child terminates
+abnormally, leaving the semaphore locked. Subsequent processes cannot
+anymore get a lock on it.
 
-If you have any other things you'd like to bring up, respond to this=20
-mail, send me mail privately or add them to the list yourself.
+As Windows clears semaphores when all open handles to it are gone, this is
+a problem only when there is one or more other openvpn processes running.
 
-In case you can't attend the meeting, please feel free to make comments=20
-on the topics by responding to this email or to the summary email sent=20
-after the meeting. Whenever possible, we'll also respond to existing,=20
-related email threads.
+Any suggestions on how to fix this?
 
---
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
+Selva
 
-irc freenode net: mattock
+Bonus question: write a unit test that anticipates this and catches it :-)
+
+--001a113ac0968bb7c205352ea746
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr">Hi,<div><br></div><div>Sometimes the semaphore used to avo=
+id parallel net commands fails to lock on windows. This happens only when a=
+ previous run was terminated (say by <span>ctrl</span>-C) at a time when th=
+e register-<span>dns</span> commands are running -- <span>ie</span>. after =
+&quot;initialization completed&quot; but before the &quot;net commands&quot=
+; are done.=C2=A0</div><div><br></div><div>Could be reproduced only if at l=
+east one other <span>openvpn</span> process is up and running in the backgr=
+ound as well. So I suspect this is what happens:</div><div><br></div><div>A=
+s <span>openvpn</span> forks before running register-<span>dns</span> comma=
+nds, the semaphore is locked in the child (not using interactive service). =
+When the parent is terminated with the child still active,=C2=A0it seems th=
+e child terminates abnormally, leaving the semaphore locked. Subsequent pro=
+cesses cannot anymore get a lock on it.</div><div><br></div><div>As Windows=
+ clears semaphores when all open handles to it are gone, this is a problem =
+only when there is one or more other <span>openvpn</span> processes running=
+.</div><div><br></div><div>Any suggestions on how to fix this?</div><div><b=
+r><span>Selva</span></div><div><span><br></span></div><div><span>Bonus ques=
+tion: write a unit test that anticipates this and catches it :-)</span></di=
+v></div>
+
+--001a113ac0968bb7c205352ea746--
 
