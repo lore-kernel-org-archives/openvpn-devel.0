@@ -1,18 +1,10 @@
-References: <0d1ed9a2-71f4-f791-3633-9937b3764de1@...1227...>
-	<1465656195-12722-1-git-send-email-arne@...1227...>
-	<20160611181434.GT62247@...1296...>
-	<CAKuzo_gJLLjMWM7RRP=QzHBAEA6==f1BhEEa8gjL2W_FcGN-5A@...278...>
-	<20160611202621.GU62247@...1296...>
-	<CAKuzo_iFqH_uoAPKCL3GtHv9SE9P0Hn6BYyjmc_g9t3VL-C2ZQ@...278...>
 From: Arne Schwabe <arne@...1227...>
-Message-ID: <8dce42be-d9df-69cb-52a6-1a3217697282@...1227...>
-Date: Thu, 16 Jun 2016 11:33:39 +0200
-MIME-Version: 1.0
-In-Reply-To: <CAKuzo_iFqH_uoAPKCL3GtHv9SE9P0Hn6BYyjmc_g9t3VL-C2ZQ@...278...>
-Content-Type: multipart/alternative;
-	boundary="------------8DD715B1EEF0A98000658CE2"
-Subject: Re: [Openvpn-devel] [[PATCH v3]] Remove http-proxy-timeout,
- socks timeout and set default of server-poll-timeout to 120s
+Date: Thu, 16 Jun 2016 12:47:57 +0200
+Message-Id: <1466074077-20626-1-git-send-email-arne@...1227...>
+In-Reply-To: <56D959C9.8050802@...1227...>
+References: <56D959C9.8050802@...1227...>
+Subject: [Openvpn-devel] [PATCH] Add documentation for http-proxy-user-pass
+	option
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,72 +13,56 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>, Gert Doering <gert@...1296...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-This is a multi-part message in MIME format.
---------------8DD715B1EEF0A98000658CE2
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
+---
+ Changes.rst   | 4 ++++
+ doc/openvpn.8 | 7 +++++--
+ 2 files changed, 9 insertions(+), 2 deletions(-)
 
+diff --git a/Changes.rst b/Changes.rst
+index ab322e2..f945ad7 100644
+--- a/Changes.rst
++++ b/Changes.rst
+@@ -51,6 +51,10 @@ AEAD (GCM) data channel cipher support
+     bytes per packet for AES-128-GCM instead of 36 bytes per packet for
+     AES-128-CBC + HMAC-SHA1).
+ 
++Http proxy password inside config file
++	Http proxy passwords can be specified with the inline file option
++    http-proxy-user-pass
++
+ 
+ User-visible Changes
+ --------------------
+diff --git a/doc/openvpn.8 b/doc/openvpn.8
+index f1a4361..da4ad8b 100644
+--- a/doc/openvpn.8
++++ b/doc/openvpn.8
+@@ -497,7 +497,10 @@ and port
+ If HTTP Proxy-Authenticate is required,
+ .B authfile
+ is a file containing a username and password on 2 lines, or
+-"stdin" to prompt from console.
++"stdin" to prompt from console. Its content can also be specified
++in the config file with the
++\.B http-proxy-user-pass 
++option. (See section on inline files)
+ 
+ .B auth\-method
+ should be one of "none", "basic", or "ntlm".
+@@ -6581,7 +6584,7 @@ X509_1_C=KG
+ .SH INLINE FILE SUPPORT
+ OpenVPN allows including files in the main configuration for the
+ .B \-\-ca, \-\-cert, \-\-dh, \-\-extra\-certs, \-\-key, \-\-pkcs12, \-\-secret,
+-.B \-\-crl-verify
++.B \-\-crl-verify, http-proxy-user-pass
+ and
+ .B \-\-tls\-auth
+ options.
+-- 
+2.7.4 (Apple Git-66)
 
->  
->
->
->     I do wonder how useful these settings are, and why they are not
->     default...
->     they predate my OpenVPN involvement by many years.
->
->
-> No clue..
-I would just propose to remove the option (but accept configs with it in
-it). Connecting logic with dualstack and new timeouts has changed enough
-that this corner case behaviour isn't probably worth keeping. The option
-probably predates even the connection list.
-
-Arne
-
---------------8DD715B1EEF0A98000658CE2
-Content-Type: text/html; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
-
-<html>
-  <head>
-    <meta content=3D"text/html; charset=3Dwindows-1252"
-      http-equiv=3D"Content-Type">
-  </head>
-  <body text=3D"#000000" bgcolor=3D"#FFFFFF">
-    <br>
-    <blockquote
-cite=3D"mid:CAKuzo_iFqH_uoAPKCL3GtHv9SE9P0Hn6BYyjmc_g9t3VL-C2ZQ@...278..."
-      type=3D"cite">
-      <div dir=3D"ltr">
-        <div class=3D"gmail_extra">
-          <div class=3D"gmail_quote">
-            <div>=A0<br>
-            </div>
-            <blockquote class=3D"gmail_quote" style=3D"margin:0 0 0
-              .8ex;border-left:1px #ccc solid;padding-left:1ex">
-              <br>
-              I do wonder how useful these settings are, and why they
-              are not default...<br>
-              they predate my OpenVPN involvement by many years.</blockquot=
-e>
-          </div>
-          <br>
-        </div>
-        <div class=3D"gmail_extra">No clue..<br>
-        </div>
-      </div>
-    </blockquote>
-    I would just propose to remove the option (but accept configs with
-    it in it). Connecting logic with dualstack and new timeouts has
-    changed enough that this corner case behaviour isn't probably worth
-    keeping. The option probably predates even the connection list.<br>
-    <br>
-    Arne<br>
-  </body>
-</html>
-
---------------8DD715B1EEF0A98000658CE2--
 
