@@ -1,10 +1,13 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Fri, 17 Jun 2016 14:49:46 +0200
-Message-Id: <1466167786-13748-1-git-send-email-arne@...1227...>
-In-Reply-To: <56D959C9.8050802@...1227...>
-References: <56D959C9.8050802@...1227...>
-Subject: [Openvpn-devel] [PATCH v2] Add documentation for
-	http-proxy-user-pass option
+MIME-Version: 1.0
+In-Reply-To: <20160617080052.GC79504@...1296...>
+References: <1466132093-1178-1-git-send-email-selva.nair@...277...>
+	<20160617080052.GC79504@...1296...>
+From: Selva Nair <selva.nair@...277...>
+Date: Fri, 17 Jun 2016 09:30:50 -0400
+Message-ID: <CAKuzo_gHHyCJ_nG_t6OzvZFEW9McxnLVn4s4FP3fZPbxz=BtQA@...278...>
+Content-Type: multipart/alternative; boundary=001a11c12a1a1994d90535795e1f
+Subject: Re: [Openvpn-devel] [PATCH] Fix management-external-cert option
+ parsing error
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,57 +16,56 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Patch V2: fix formatting problems
----
- Changes.rst   | 4 ++++
- doc/openvpn.8 | 7 +++++--
- 2 files changed, 9 insertions(+), 2 deletions(-)
+--001a11c12a1a1994d90535795e1f
+Content-Type: text/plain; charset=UTF-8
 
-diff --git a/Changes.rst b/Changes.rst
-index ab322e2..f945ad7 100644
---- a/Changes.rst
-+++ b/Changes.rst
-@@ -51,6 +51,10 @@ AEAD (GCM) data channel cipher support
-     bytes per packet for AES-128-GCM instead of 36 bytes per packet for
-     AES-128-CBC + HMAC-SHA1).
- 
-+Http proxy password inside config file
-+	Http proxy passwords can be specified with the inline file option
-+    http-proxy-user-pass
-+
- 
- User-visible Changes
- --------------------
-diff --git a/doc/openvpn.8 b/doc/openvpn.8
-index f1a4361..6e8a6c1 100644
---- a/doc/openvpn.8
-+++ b/doc/openvpn.8
-@@ -497,7 +497,10 @@ and port
- If HTTP Proxy-Authenticate is required,
- .B authfile
- is a file containing a username and password on 2 lines, or
--"stdin" to prompt from console.
-+"stdin" to prompt from console. Its content can also be specified
-+in the config file with the
-+.B \-\-http\-proxy\-user\-pass 
-+option. (See section on inline files)
- 
- .B auth\-method
- should be one of "none", "basic", or "ntlm".
-@@ -6581,7 +6584,7 @@ X509_1_C=KG
- .SH INLINE FILE SUPPORT
- OpenVPN allows including files in the main configuration for the
- .B \-\-ca, \-\-cert, \-\-dh, \-\-extra\-certs, \-\-key, \-\-pkcs12, \-\-secret,
--.B \-\-crl-verify
-+.B \-\-crl-verify,\-\-http\-proxy\-user\-pass
- and
- .B \-\-tls\-auth
- options.
--- 
-2.7.4 (Apple Git-66)
+Hi
 
+On Fri, Jun 17, 2016 at 4:00 AM, Gert Doering <gert@...1296...> wrote:
+
+> Hi,
+>
+> On Thu, Jun 16, 2016 at 10:54:53PM -0400, Selva Nair wrote:
+> >  - Allow --management-external-cert as an alternative to --cert
+> >  - Also make sure --cert and --management-external-cert are not
+> >    both specified, and clarify in the man page that the latter
+> >    must be used with --management-external-key.
+>
+> Not being familiar with this particular code section - is this master-only
+> or master + 2.3?
+>
+
+This is master only.
+
+Selva
+
+--001a11c12a1a1994d90535795e1f
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr">Hi<br><div><div class=3D"gmail_extra"><br><div class=3D"gm=
+ail_quote">On Fri, Jun 17, 2016 at 4:00 AM, Gert Doering <span dir=3D"ltr">=
+&lt;<a href=3D"mailto:gert@...1296..." target=3D"_blank">gert@...1296...</a=
+>&gt;</span> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 =
+0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">Hi,<br>
+<span class=3D""><br>
+On Thu, Jun 16, 2016 at 10:54:53PM -0400, Selva Nair wrote:<br>
+&gt;=C2=A0 - Allow --management-external-cert as an alternative to --cert<b=
+r>
+&gt;=C2=A0 - Also make sure --cert and --management-external-cert are not<b=
+r>
+&gt;=C2=A0 =C2=A0 both specified, and clarify in the man page that the latt=
+er<br>
+&gt;=C2=A0 =C2=A0 must be used with --management-external-key.<br>
+<br>
+</span>Not being familiar with this particular code section - is this maste=
+r-only<br>
+or master + 2.3?<br></blockquote><div><br></div><div>This is master only.<b=
+r><br></div><div>Selva<br></div><div><br></div><div><br></div><div><br></di=
+v></div></div></div></div>
+
+--001a11c12a1a1994d90535795e1f--
 
