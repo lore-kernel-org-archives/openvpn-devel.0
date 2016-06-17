@@ -1,13 +1,14 @@
+Date: Fri, 17 Jun 2016 20:22:37 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20160617182237.GL79504@...1296...>
+References: <1466167642-13603-1-git-send-email-arne@...1227...>
 MIME-Version: 1.0
-In-Reply-To: <20160617080052.GC79504@...1296...>
-References: <1466132093-1178-1-git-send-email-selva.nair@...277...>
-	<20160617080052.GC79504@...1296...>
-From: Selva Nair <selva.nair@...277...>
-Date: Fri, 17 Jun 2016 09:30:50 -0400
-Message-ID: <CAKuzo_gHHyCJ_nG_t6OzvZFEW9McxnLVn4s4FP3fZPbxz=BtQA@...278...>
-Content-Type: multipart/alternative; boundary=001a11c12a1a1994d90535795e1f
-Subject: Re: [Openvpn-devel] [PATCH] Fix management-external-cert option
- parsing error
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="Izn7cH1Com+I3R9J"
+Content-Disposition: inline
+In-Reply-To: <1466167642-13603-1-git-send-email-arne@...1227...>
+Subject: Re: [Openvpn-devel] [PATCH] Remove http-proxy-retry and
+ socks-proxy-retry
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,56 +17,56 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Arne Schwabe <arne@...1227...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---001a11c12a1a1994d90535795e1f
-Content-Type: text/plain; charset=UTF-8
-
-Hi
-
-On Fri, Jun 17, 2016 at 4:00 AM, Gert Doering <gert@...1296...> wrote:
-
-> Hi,
->
-> On Thu, Jun 16, 2016 at 10:54:53PM -0400, Selva Nair wrote:
-> >  - Allow --management-external-cert as an alternative to --cert
-> >  - Also make sure --cert and --management-external-cert are not
-> >    both specified, and clarify in the man page that the latter
-> >    must be used with --management-external-key.
->
-> Not being familiar with this particular code section - is this master-only
-> or master + 2.3?
->
-
-This is master only.
-
-Selva
-
---001a11c12a1a1994d90535795e1f
-Content-Type: text/html; charset="UTF-8"
+--Izn7cH1Com+I3R9J
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-<div dir=3D"ltr">Hi<br><div><div class=3D"gmail_extra"><br><div class=3D"gm=
-ail_quote">On Fri, Jun 17, 2016 at 4:00 AM, Gert Doering <span dir=3D"ltr">=
-&lt;<a href=3D"mailto:gert@...1296..." target=3D"_blank">gert@...1296...</a=
->&gt;</span> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 =
-0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">Hi,<br>
-<span class=3D""><br>
-On Thu, Jun 16, 2016 at 10:54:53PM -0400, Selva Nair wrote:<br>
-&gt;=C2=A0 - Allow --management-external-cert as an alternative to --cert<b=
-r>
-&gt;=C2=A0 - Also make sure --cert and --management-external-cert are not<b=
-r>
-&gt;=C2=A0 =C2=A0 both specified, and clarify in the man page that the latt=
-er<br>
-&gt;=C2=A0 =C2=A0 must be used with --management-external-key.<br>
-<br>
-</span>Not being familiar with this particular code section - is this maste=
-r-only<br>
-or master + 2.3?<br></blockquote><div><br></div><div>This is master only.<b=
-r><br></div><div>Selva<br></div><div><br></div><div><br></div><div><br></di=
-v></div></div></div></div>
+Hi,
 
---001a11c12a1a1994d90535795e1f--
+On Fri, Jun 17, 2016 at 02:47:22PM +0200, Arne Schwabe wrote:
+> @@ -5292,8 +5287,8 @@ add_option (struct options *options,
+>    else if (streq (p[0], "socks-proxy-retry") && !p[1])
+>      {
+>        VERIFY_PERMISSION (OPT_P_GENERAL|OPT_P_CONNECTION);
+> -      options->ce.socks_proxy_retry =3D true;
+> -    }
+> +      msg (M_WARN, "DEPRECATED OPTION: http-proxy-retry: In OpenVPN 2.4 =
+proxy connection retries are handled"
+> +        "like regular tcp connects");    }
+>    else if (streq (p[0], "keepalive") && p[1] && p[2] && !p[3])
+
+There's a copy-paste error in the message, and the closing "}" jumped...
+
+If you're ok with that, I'll fix that on the go while applying.
+
+Shall I remove the man page references as well, or do you want to send
+a v2?
+
+gert
+
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--Izn7cH1Com+I3R9J
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQCVAwUBV2Q/7KkuBuNlUUl1AQJ9cAP/Z7gSHSMEbwLR191sv2sTFuT4FEtt8Rsq
+3W7jlGjQQlFt1Rfw8KSxd8iR5KjycVJmZ0S1PEdUci6ZInEUiJITHHLjEEUg3Y+N
+1Cckc4KhbsjcfhHqfCZ/H6ltimhn1OeDjaMfx1dYhEcyTqvwP4lqU4RdRpI2tJRU
+Z96cfeJeU0A=
+=vD4Q
+-----END PGP SIGNATURE-----
+
+--Izn7cH1Com+I3R9J--
 
