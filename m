@@ -1,13 +1,13 @@
 MIME-Version: 1.0
-In-Reply-To: <1466167786-13748-1-git-send-email-arne@...1227...>
-References: <56D959C9.8050802@...1227...>
-	<1466167786-13748-1-git-send-email-arne@...1227...>
+In-Reply-To: <20160610165515.GG62247@...1296...>
+References: <575AA2BD.60908@...277...> <20160610125457.GC62247@...1296...>
+	<CAKuzo_jrwK47wDtoLNCZXP8-OG0izGmjZRrDb5vdT5shhY7FMQ@...278...>
+	<20160610165515.GG62247@...1296...>
 From: Selva Nair <selva.nair@...277...>
-Date: Fri, 17 Jun 2016 14:39:35 -0400
-Message-ID: <CAKuzo_jy0nWVR9Nf8iZ-Eu1aCyUgKe+M5E7XeN9yczNqGft8UA@...278...>
-Content-Type: multipart/alternative; boundary=001a11409f26518cc905357daea6
-Subject: Re: [Openvpn-devel] [PATCH v2] Add documentation for
- http-proxy-user-pass option
+Date: Sat, 18 Jun 2016 15:41:22 -0400
+Message-ID: <CAKuzo_gkAX-5USrRi8sMvwtbxiJxCwgoi4KTOC1qtU0fpHHTvQ@...278...>
+Content-Type: multipart/alternative; boundary=001a113e30b61a7e94053592a9a4
+Subject: Re: [Openvpn-devel] pull-filter reject = server hammering !
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,128 +16,95 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
+To: Gert Doering <gert@...1296...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---001a11409f26518cc905357daea6
+--001a113e30b61a7e94053592a9a4
 Content-Type: text/plain; charset=UTF-8
 
-On Fri, Jun 17, 2016 at 8:49 AM, Arne Schwabe <arne@...1227...> wrote:
+Hi,
 
-> Patch V2: fix formatting problems
-> ---
->  Changes.rst   | 4 ++++
->  doc/openvpn.8 | 7 +++++--
->  2 files changed, 9 insertions(+), 2 deletions(-)
->
-> diff --git a/Changes.rst b/Changes.rst
-> index ab322e2..f945ad7 100644
-> --- a/Changes.rst
-> +++ b/Changes.rst
-> @@ -51,6 +51,10 @@ AEAD (GCM) data channel cipher support
->      bytes per packet for AES-128-GCM instead of 36 bytes per packet for
->      AES-128-CBC + HMAC-SHA1).
->
-> +Http proxy password inside config file
-> +       Http proxy passwords can be specified with the inline file option
-> +    http-proxy-user-pass
-> +
->
->  User-visible Changes
->  --------------------
-> diff --git a/doc/openvpn.8 b/doc/openvpn.8
-> index f1a4361..6e8a6c1 100644
-> --- a/doc/openvpn.8
-> +++ b/doc/openvpn.8
-> @@ -497,7 +497,10 @@ and port
->  If HTTP Proxy-Authenticate is required,
->  .B authfile
->  is a file containing a username and password on 2 lines, or
-> -"stdin" to prompt from console.
-> +"stdin" to prompt from console. Its content can also be specified
-> +in the config file with the
-> +.B \-\-http\-proxy\-user\-pass
-> +option. (See section on inline files)
->
->  .B auth\-method
->  should be one of "none", "basic", or "ntlm".
-> @@ -6581,7 +6584,7 @@ X509_1_C=KG
->  .SH INLINE FILE SUPPORT
->  OpenVPN allows including files in the main configuration for the
->  .B \-\-ca, \-\-cert, \-\-dh, \-\-extra\-certs, \-\-key, \-\-pkcs12,
-> \-\-secret,
-> -.B \-\-crl-verify
-> +.B \-\-crl-verify,\-\-http\-proxy\-user\-pass
->
+On Fri, Jun 10, 2016 at 12:55 PM, Gert Doering <gert@...1296...> wrote:
 
-At merge time crl-verify  on that line may be changed to crl\-verify too.
-Not a fault of this patch.
+> On Fri, Jun 10, 2016 at 12:43:20PM -0400, Selva Nair wrote:
+> > > @Selva, Arne: can we make the reconnect logic somewhat smarter overall,
+> > > like
+> > > "if reconnecting to the same host, wait 30 seconds instead of 5"?
+> >
+> > This is possible, but the case for progressively increasing the restart
+> > pause is not very strong. Can we get some feedback from people who serve
+> > 1000's of users?
+>
+> I would generally consider it polite behaviour... (also, it might save
+> the client from filled-up disks...) - didn't think of exponential back-off
+> yet, but that would certainly be another approach to consider.
+>
+> I have no idea how complicated it would be to implement, though.
 
-ACK.
+
+Filling up the client log with repeated retries is a concern, indeed.
+
+Although a proper implementation needs the failed reconnect count per
+ip/port combination which we do not currently keep track of, I think a
+heuristic count may be good enough. One could use something like this:
+
+n = c->options.unsuccessful_attempts
+m = c->options.connection_list->len
+rc = n/m   (a rough measure of retries per remote)
+timeout = the_default_timeout << MIN(rc, 10)  (exponential up to ~ 5000
+seconds).
+throw a SIGHUP if rc exceeds some value (resets n and starts over)
+
+The retry count will be over-stated for situations like one remote name
+that resolves to many IPs, but avoiding that requires more work.. Any
+thoughts?
 
 Selva
 
---001a11409f26518cc905357daea6
+--001a113e30b61a7e94053592a9a4
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr"><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">=
-On Fri, Jun 17, 2016 at 8:49 AM, Arne Schwabe <span dir=3D"ltr">&lt;<a href=
-=3D"mailto:arne@...1227..." target=3D"_blank">arne@...1227...</a>&gt;</span=
-> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;bo=
-rder-left:1px #ccc solid;padding-left:1ex"><div>Patch V2: fix formatting pr=
-oblems<br>
----<br>
-<span>=C2=A0Changes.rst=C2=A0 =C2=A0| 4 ++++<br>
-=C2=A0doc/openvpn.8 | 7 +++++--<br>
-=C2=A02 files changed, 9 insertions(+), 2 deletions(-)<br>
+<div dir=3D"ltr"><div class=3D"gmail_extra">Hi,<br><br></div><div class=3D"=
+gmail_extra"><div class=3D"gmail_quote">On Fri, Jun 10, 2016 at 12:55 PM, G=
+ert Doering <span dir=3D"ltr">&lt;<a href=3D"mailto:gert@...1296..." target=
+=3D"_blank">gert@...1296...</a>&gt;</span> wrote:<br><blockquote class=3D"g=
+mail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204=
+,204,204);padding-left:1ex"><span>On Fri, Jun 10, 2016 at 12:43:20PM -0400,=
+ Selva Nair wrote:<br>
+&gt; &gt; @Selva, Arne: can we make the reconnect logic somewhat smarter ov=
+erall,<br>
+&gt; &gt; like<br>
+&gt; &gt; &quot;if reconnecting to the same host, wait 30 seconds instead o=
+f 5&quot;?<br>
+&gt;<br>
+&gt; This is possible, but the case for progressively increasing the restar=
+t<br>
+&gt; pause is not very strong. Can we get some feedback from people who ser=
+ve<br>
+&gt; 1000&#39;s of users?<br>
 <br>
-diff --git a/Changes.rst b/Changes.rst<br>
-index ab322e2..f945ad7 100644<br>
---- a/Changes.rst<br>
-+++ b/Changes.rst<br>
-@@ -51,6 +51,10 @@ AEAD (GCM) data channel cipher support<br>
-=C2=A0 =C2=A0 =C2=A0bytes per packet for AES-128-GCM instead of 36 bytes pe=
-r packet for<br>
-=C2=A0 =C2=A0 =C2=A0AES-128-CBC + HMAC-SHA1).<br>
+</span>I would generally consider it polite behaviour... (also, it might sa=
+ve<br>
+the client from filled-up disks...) - didn&#39;t think of exponential back-=
+off<br>
+yet, but that would certainly be another approach to consider.<br>
 <br>
-+Http proxy password inside config file<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0Http proxy passwords can be specified with the =
-inline file option<br>
-+=C2=A0 =C2=A0 http-proxy-user-pass<br>
-+<br>
-<br>
-=C2=A0User-visible Changes<br>
-=C2=A0--------------------<br>
-diff --git a/doc/openvpn.8 b/doc/openvpn.8<br>
-</span>index f1a4361..6e8a6c1 100644<br>
-<span>--- a/doc/openvpn.8<br>
-+++ b/doc/openvpn.8<br>
-@@ -497,7 +497,10 @@ and port<br>
-=C2=A0If HTTP Proxy-Authenticate is required,<br>
-=C2=A0.B authfile<br>
-=C2=A0is a file containing a username and password on 2 lines, or<br>
--&quot;stdin&quot; to prompt from console.<br>
-+&quot;stdin&quot; to prompt from console. Its content can also be specifie=
-d<br>
-+in the config file with the<br>
-</span>+.B \-\-http\-proxy\-user\-pass<br>
-<span>+option. (See section on inline files)<br>
-<br>
-=C2=A0.B auth\-method<br>
-=C2=A0should be one of &quot;none&quot;, &quot;basic&quot;, or &quot;ntlm&q=
-uot;.<br>
-@@ -6581,7 +6584,7 @@ X509_1_C=3DKG<br>
-=C2=A0.SH INLINE FILE SUPPORT<br>
-=C2=A0OpenVPN allows including files in the main configuration for the<br>
-=C2=A0.B \-\-ca, \-\-cert, \-\-dh, \-\-extra\-certs, \-\-key, \-\-pkcs12, \=
--\-secret,<br>
--.B \-\-crl-verify<br>
-</span>+.B \-\-crl-verify,\-\-http\-proxy\-user\-pass<br></div></blockquote=
-><div><br></div><div class=3D"gmail_extra">At merge time crl-verify=C2=A0 o=
-n that line may be changed to crl\-verify too.=C2=A0 Not a fault of this pa=
-tch. <br><br>ACK.<br><br></div><div class=3D"gmail_extra">Selva</div></div>=
-</div></div>
+I have no idea how complicated it would be to implement, though.</blockquot=
+e></div><div class=3D"gmail_extra"><br></div><div class=3D"gmail_extra">Fil=
+ling up the client log with repeated retries is a concern, indeed. <br><br>=
+Although a proper implementation needs the failed reconnect count per ip/po=
+rt combination which we do not currently keep track of, I think a heuristic=
+ count may be good enough. One could use something like this:<br><br>n =3D =
+c-&gt;options.unsuccessful_attempts<br>m =3D c-&gt;options.connection_list-=
+&gt;len<br>rc =3D n/m=C2=A0=C2=A0 (a rough measure of retries per remote)<b=
+r>timeout =3D the_default_timeout &lt;&lt; MIN(rc, 10)=C2=A0 (exponential u=
+p to ~ 5000 seconds). <br></div><div class=3D"gmail_extra">throw a SIGHUP i=
+f rc exceeds some value (resets n and starts over)<br></div></div><div clas=
+s=3D"gmail_extra"><br></div><div class=3D"gmail_extra">The retry count will=
+ be over-stated for situations like one remote name that resolves to many I=
+Ps, but avoiding that requires more work.. Any thoughts?<br><br></div><div =
+class=3D"gmail_extra">Selva<br></div></div>
 
---001a11409f26518cc905357daea6--
+--001a113e30b61a7e94053592a9a4--
 
