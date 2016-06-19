@@ -1,11 +1,10 @@
+Date: Sun, 19 Jun 2016 21:45:38 +0200
+From: Samuel Thibault <samuel.thibault@...1817...>
+Message-ID: <20160619194538.GR2563@...2120...>
 MIME-Version: 1.0
-In-Reply-To: <CAFHpkQHX-m9-Ub0WxgpyDx5uWcjyFf=aRN-cUTYt=fJ7dEXc0w@...278...>
-References: <CAFHpkQHX-m9-Ub0WxgpyDx5uWcjyFf=aRN-cUTYt=fJ7dEXc0w@...278...>
-From: Steffan Karger <steffan@...1856...>
-Date: Sun, 19 Jun 2016 12:37:24 +0200
-Message-ID: <CAA1AbxK5OUWtYhszHVpD7nXFu1Yh-PQgraZNDE0XtLcs_2_5dA@...278...>
-Subject: Re: [Openvpn-devel] what is the best way of skipping tests when
- openvpn configured --disable-crypto ?
+Content-Type: multipart/mixed; boundary="v9Ux+11Zm5mwPlX6"
+Content-Disposition: inline
+Subject: [Openvpn-devel] Adding "protocol static" to Linux routes?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,33 +13,46 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+--v9Ux+11Zm5mwPlX6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-On Sun, Jun 19, 2016 at 10:41 AM, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=
-=BF=D0=B8=D1=86=D0=B8=D0=BD <chipitsine@...277...> wrote:
-> when playing with travis-ci, I encountered that t_lpback.sh and t_cltsrv.=
-sh
-> fails on "make check" if openvpn is configured with --disable-crypto
-> (because --genkey is not available)
->
-> what would be the best ?
->
-> 1) run 'openvpn --help' and grep for --genkey ?
-> 2) check exit code of 'openvpn --genkey' ?
-> 3) run 'openvpn --show-ciphers' and see it is empty ?
-> 4) somehow determine exact configure options ? (I haven't found a way yet)
+Hello,
 
-I think 4.  You can use AC_SUBST to pass the value of $enable_crypto
-to a Makefile.am, and just not run the t_client.sh, t_lpback.sh and
-t_cltsrv.sh if it is 'no'.
+Here we used two openvpn servers for resiliency, and we use the bird
+bgp daemon to make the two boxes exchange routes. Bird however does not
+pick up openvpn's routes because they are considered as "protocol boot"
+in Linux' "ip route" terms, i.e. they are assumed to be an automatic
+configuration, and not an administratively-configured route (see the
+protocol RTPROTO part of man ip-route for the details).
 
-Later on, we might want to add a test that verifies correct behaviour
-of openvpn-without-crypto.
+So we need the attached change, which just adds "protocol static", to
+express that the routes created by openvpn are to override other
+dynamic routing.
 
--Steffan
+What do you think?
+
+Samuel
+
+--v9Ux+11Zm5mwPlX6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: attachment; filename=proto_static
+
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index a90195f..62ea633 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -1418,7 +1418,7 @@ add_route (struct route_ipv4 *r,
+ 
+ #if defined(TARGET_LINUX)
+ #ifdef ENABLE_IPROUTE
+-  argv_printf (&argv, "%s route add %s/%d",
++  argv_printf (&argv, "%s route add %s/%d protocol static",
+   	      iproute_path,
+ 	      network,
+               netmask_to_netbits2(r->netmask));
+
+--v9Ux+11Zm5mwPlX6--
 
