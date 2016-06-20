@@ -1,12 +1,10 @@
-References: <1466167642-13603-1-git-send-email-arne@...1227...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <5767BB75.8060008@...2080...>
-Date: Mon, 20 Jun 2016 11:46:29 +0200
+References: <CAFHpkQEVSSivEEYUaodCHSS-oYz11=7uzTq4JmQhZ4YsA9EE4Q@...278...>
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <3119257f-3040-efae-fcf0-b04de0e1d9a9@...515...>
+Date: Mon, 20 Jun 2016 14:01:31 +0300
 MIME-Version: 1.0
-In-Reply-To: <1466167642-13603-1-git-send-email-arne@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH] Remove http-proxy-retry and
- socks-proxy-retry
-Reply-To: openvpn-devel@lists.sourceforge.net
+In-Reply-To: <CAFHpkQEVSSivEEYUaodCHSS-oYz11=7uzTq4JmQhZ4YsA9EE4Q@...278...>
+Subject: Re: [Openvpn-devel] openvpn/openvpn-build
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,42 +13,46 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Transfer-Encoding: quoted-printable
+To: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-On 17/06/16 14:47, Arne Schwabe wrote:
-> ---
->  Changes.rst           |  2 ++
->  src/openvpn/init.c    |  4 +---
->  src/openvpn/options.c | 13 ++++---------
->  src/openvpn/options.h |  1 -
->  src/openvpn/proxy.c   |  3 +--
->  src/openvpn/proxy.h   |  1 -
->  src/openvpn/socks.c   | 10 +++-------
->  src/openvpn/socks.h   |  4 +---
->  8 files changed, 12 insertions(+), 26 deletions(-)
-> 
-> diff --git a/Changes.rst b/Changes.rst
-> index ab322e2..f43f057 100644
-> --- a/Changes.rst
-> +++ b/Changes.rst
-> @@ -113,6 +113,9 @@ User-visible Changes
->    proxies graciously.  The old "fail TCP fast" behaviour can be achieved by
->    adding "--connect-timeout 10" to the client config.
->  
-> +- --http-proxy-retry and --sock-proxy-retry have been removed. Proxy 
-> +  connections will now behave like regular connection entries and
-> +  generate a USR1 on failure.
+Hi,
 
-I don't mind us cleaning up code and removing options which we consider
-not needed.  But I would like to see it better explained *why* we do it.
- It doesn't necessarily need to go into the Changes.rst, but having the
-commit message could generally carry a bit more details.
+> Hello,
+>
+> I see issues are closed at https://github.com/openvpn/openvpn-build
+> what is preffered way of reporting bugs ?
 
+I'm open to opening the issues again. If nobody objects, that's what=20
+I'll do.
 
--- 
-kind regards,
+> somehow, I managed to run it on cygwin without wget installed (I
+> installed curl),
+> so I see 'curl' branch is broken, curl does not follow redirects
+>
+> do we really need both wget and curl there ?
+>
+> I'd remove curl at all, it will make scripts more readable and
+> predictible. Or, ok, remove wget.
+>
+> actually, we can fix it. and even I'll expand travis-ci matrix for
+> curl/wget, but I do not really understand why do we need both wget and
+> curl there.
+>
+> Cheers,
+> Ilya Shipitsin
+>
 
-David Sommerseth
+I don't think we need both. Curl is just more likely to be present out=20
+of the box. For example, on RHEL/CentOS 7 wget is not installed by=20
+default. However, the users have to install tons of build dependencies=20
+anyways, so I don't see a big problem with requiring wget.
+
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
 
