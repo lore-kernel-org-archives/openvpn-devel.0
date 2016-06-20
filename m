@@ -1,11 +1,9 @@
-Date: Mon, 20 Jun 2016 09:29:36 +0200
-From: Samuel Thibault <samuel.thibault@...1817...>
-Message-ID: <20160620072936.GR22598@...2120...>
-References: <20160619194538.GR2563@...2120...>
-	<20160620064012.GQ79504@...1296...>
 MIME-Version: 1.0
-In-Reply-To: <20160620064012.GQ79504@...1296...>
-Subject: Re: [Openvpn-devel] Adding "protocol static" to Linux routes?
+From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
+Date: Mon, 20 Jun 2016 14:08:55 +0500
+Message-ID: <CAFHpkQEVSSivEEYUaodCHSS-oYz11=7uzTq4JmQhZ4YsA9EE4Q@...278...>
+Content-Type: multipart/alternative; boundary=047d7b5d4fc2cde53a0535b20d60
+Subject: [Openvpn-devel] openvpn/openvpn-build
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,43 +12,48 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+
+--047d7b5d4fc2cde53a0535b20d60
+Content-Type: text/plain; charset=UTF-8
 
 Hello,
 
-Gert Doering, on Mon 20 Jun 2016 08:40:12 +0200, wrote:
-> I'm wondering how you do the resiliency.  Traditionally, one would set up
-> the routes on client-connect/client-disconnect (or via --learn-address),
-> so it's under your control anyway
+I see issues are closed at https://github.com/openvpn/openvpn-build
+what is preffered way of reporting bugs ?
 
-Ah, right, yes, we do that, and we announce those routes via bgp.
+somehow, I managed to run it on cygwin without wget installed (I installed
+curl),
+so I see 'curl' branch is broken, curl does not follow redirects
 
-So what remains is the "converse": the routes set by openvpn with the
-"route" configuration element. When a client manages to connect to the
-server and thus get access to the network, it is useful to add the
-routes with "protocol static" so that the access to the network is
-announced through bgp to the network behind the client. Of course we
-could drop the "route" configuration element, and add the route ourself
-in a route-up script, but that's less clean.
+do we really need both wget and curl there ?
 
-> Besides, I'm a bit reluctant to change something like this, which might
-> break someone *else*'s setup, which relies on the route being what they
-> are today ("boot") - can't you teach bird to do "redistribute boot"?
+I'd remove curl at all, it will make scripts more readable and predictible.
+Or, ok, remove wget.
 
-You mean patching bird?  AIUI that would be counter-productive: the
-boot/static separation was explicitly made to separate between routes
-which shouldn't be announced and routes which should be announced...
+actually, we can fix it. and even I'll expand travis-ci matrix for
+curl/wget, but I do not really understand why do we need both wget and curl
+there.
 
-Setting static could also be made an option, e.g.
+Cheers,
+Ilya Shipitsin
 
---route network/IP [netmask] [gateway] [metric] [announce]
+--047d7b5d4fc2cde53a0535b20d60
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-and putting "announce" would make openvpn set "protocol static" in the
-route command.
+<div dir=3D"ltr"><div><div><div><div><div><div><div><div>Hello,<br><br></di=
+v>I see issues are closed at <a href=3D"https://github.com/openvpn/openvpn-=
+build">https://github.com/openvpn/openvpn-build</a><br></div>what is preffe=
+red way of reporting bugs ?<br><br></div>somehow, I managed to run it on cy=
+gwin without wget installed (I installed curl),<br></div>so I see &#39;curl=
+&#39; branch is broken, curl does not follow redirects<br><br></div>do we r=
+eally need both wget and curl there ?<br><br></div>I&#39;d remove curl at a=
+ll, it will make scripts more readable and predictible. Or, ok, remove wget=
+.<br><br></div><div>actually, we can fix it. and even I&#39;ll expand travi=
+s-ci matrix for curl/wget, but I do not really understand why do we need bo=
+th wget and curl there.<br></div><div><br></div>Cheers,<br></div>Ilya Shipi=
+tsin<br></div>
 
-Samuel
+--047d7b5d4fc2cde53a0535b20d60--
 
