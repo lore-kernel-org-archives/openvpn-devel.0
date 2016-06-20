@@ -1,9 +1,12 @@
+References: <1466167642-13603-1-git-send-email-arne@...1227...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <5767BB75.8060008@...2080...>
+Date: Mon, 20 Jun 2016 11:46:29 +0200
 MIME-Version: 1.0
-From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Date: Mon, 20 Jun 2016 14:08:55 +0500
-Message-ID: <CAFHpkQEVSSivEEYUaodCHSS-oYz11=7uzTq4JmQhZ4YsA9EE4Q@...278...>
-Content-Type: multipart/alternative; boundary=047d7b5d4fc2cde53a0535b20d60
-Subject: [Openvpn-devel] openvpn/openvpn-build
+In-Reply-To: <1466167642-13603-1-git-send-email-arne@...1227...>
+Subject: Re: [Openvpn-devel] [PATCH] Remove http-proxy-retry and
+ socks-proxy-retry
+Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,48 +15,42 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
 
---047d7b5d4fc2cde53a0535b20d60
-Content-Type: text/plain; charset=UTF-8
+On 17/06/16 14:47, Arne Schwabe wrote:
+> ---
+>  Changes.rst           |  2 ++
+>  src/openvpn/init.c    |  4 +---
+>  src/openvpn/options.c | 13 ++++---------
+>  src/openvpn/options.h |  1 -
+>  src/openvpn/proxy.c   |  3 +--
+>  src/openvpn/proxy.h   |  1 -
+>  src/openvpn/socks.c   | 10 +++-------
+>  src/openvpn/socks.h   |  4 +---
+>  8 files changed, 12 insertions(+), 26 deletions(-)
+> 
+> diff --git a/Changes.rst b/Changes.rst
+> index ab322e2..f43f057 100644
+> --- a/Changes.rst
+> +++ b/Changes.rst
+> @@ -113,6 +113,9 @@ User-visible Changes
+>    proxies graciously.  The old "fail TCP fast" behaviour can be achieved by
+>    adding "--connect-timeout 10" to the client config.
+>  
+> +- --http-proxy-retry and --sock-proxy-retry have been removed. Proxy 
+> +  connections will now behave like regular connection entries and
+> +  generate a USR1 on failure.
 
-Hello,
+I don't mind us cleaning up code and removing options which we consider
+not needed.  But I would like to see it better explained *why* we do it.
+ It doesn't necessarily need to go into the Changes.rst, but having the
+commit message could generally carry a bit more details.
 
-I see issues are closed at https://github.com/openvpn/openvpn-build
-what is preffered way of reporting bugs ?
 
-somehow, I managed to run it on cygwin without wget installed (I installed
-curl),
-so I see 'curl' branch is broken, curl does not follow redirects
+-- 
+kind regards,
 
-do we really need both wget and curl there ?
-
-I'd remove curl at all, it will make scripts more readable and predictible.
-Or, ok, remove wget.
-
-actually, we can fix it. and even I'll expand travis-ci matrix for
-curl/wget, but I do not really understand why do we need both wget and curl
-there.
-
-Cheers,
-Ilya Shipitsin
-
---047d7b5d4fc2cde53a0535b20d60
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><div><div><div><div><div><div><div><div>Hello,<br><br></di=
-v>I see issues are closed at <a href=3D"https://github.com/openvpn/openvpn-=
-build">https://github.com/openvpn/openvpn-build</a><br></div>what is preffe=
-red way of reporting bugs ?<br><br></div>somehow, I managed to run it on cy=
-gwin without wget installed (I installed curl),<br></div>so I see &#39;curl=
-&#39; branch is broken, curl does not follow redirects<br><br></div>do we r=
-eally need both wget and curl there ?<br><br></div>I&#39;d remove curl at a=
-ll, it will make scripts more readable and predictible. Or, ok, remove wget=
-.<br><br></div><div>actually, we can fix it. and even I&#39;ll expand travi=
-s-ci matrix for curl/wget, but I do not really understand why do we need bo=
-th wget and curl there.<br></div><div><br></div>Cheers,<br></div>Ilya Shipi=
-tsin<br></div>
-
---047d7b5d4fc2cde53a0535b20d60--
+David Sommerseth
 
