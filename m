@@ -1,10 +1,11 @@
-References: <CAFHpkQEVSSivEEYUaodCHSS-oYz11=7uzTq4JmQhZ4YsA9EE4Q@...278...>
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <3119257f-3040-efae-fcf0-b04de0e1d9a9@...515...>
-Date: Mon, 20 Jun 2016 14:01:31 +0300
 MIME-Version: 1.0
-In-Reply-To: <CAFHpkQEVSSivEEYUaodCHSS-oYz11=7uzTq4JmQhZ4YsA9EE4Q@...278...>
-Subject: Re: [Openvpn-devel] openvpn/openvpn-build
+From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
+Date: Mon, 20 Jun 2016 21:43:34 +0500
+Message-ID: <CAFHpkQHkgF2eOu-N_3YbtD9azWc6-bpy2JkujL2x2D=K-chhXw@...278...>
+Content-Type: multipart/alternative; boundary=94eb2c0d4b98c85cb00535b86730
+Subject: [Openvpn-devel] what is
+ https://github.com/OpenVPN/openvpn-build/blob/master/generic/mingw64/build
+ ?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,46 +14,24 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-Content-Transfer-Encoding: quoted-printable
-To: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hi,
+--94eb2c0d4b98c85cb00535b86730
+Content-Type: text/plain; charset=UTF-8
 
-> Hello,
->
-> I see issues are closed at https://github.com/openvpn/openvpn-build
-> what is preffered way of reporting bugs ?
+Hello,
 
-I'm open to opening the issues again. If nobody objects, that's what=20
-I'll do.
 
-> somehow, I managed to run it on cygwin without wget installed (I
-> installed curl),
-> so I see 'curl' branch is broken, curl does not follow redirects
->
-> do we really need both wget and curl there ?
->
-> I'd remove curl at all, it will make scripts more readable and
-> predictible. Or, ok, remove wget.
->
-> actually, we can fix it. and even I'll expand travis-ci matrix for
-> curl/wget, but I do not really understand why do we need both wget and
-> curl there.
->
-> Cheers,
-> Ilya Shipitsin
->
+there is separate build in mingw64 folder.
+what is it for ?
 
-I don't think we need both. Curl is just more likely to be present out=20
-of the box. For example, on RHEL/CentOS 7 wget is not installed by=20
-default. However, the users have to install tons of build dependencies=20
-anyways, so I don't see a big problem with requiring wget.
+Cheers,
+Ilya Shipitsin
 
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
+--94eb2c0d4b98c85cb00535b86730
+Content-Type: text/html; charset=UTF-8
 
-irc freenode net: mattock
+<div dir="ltr">Hello,<br><div><br><br>there is separate build in mingw64 folder.<br></div><div>what is it for ?<br><br></div><div>Cheers,<br></div><div>Ilya Shipitsin<br></div></div>
+
+--94eb2c0d4b98c85cb00535b86730--
 
