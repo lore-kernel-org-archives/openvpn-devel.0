@@ -1,11 +1,11 @@
 From: samuli@...515...
-Date: Wed, 22 Jun 2016 20:06:03 +0300
-Message-Id: <1466615164-15527-2-git-send-email-samuli@...515...>
+Date: Wed, 22 Jun 2016 20:06:04 +0300
+Message-Id: <1466615164-15527-3-git-send-email-samuli@...515...>
 In-Reply-To: <1466615164-15527-1-git-send-email-samuli@...515...>
 References: <1466615164-15527-1-git-send-email-samuli@...515...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 2/3] Use an up-to-date easy-rsa URL on the
-	man-page
+Subject: [Openvpn-devel] [PATCH 3/3] Clarify which Windows versions require
+	which TUN/TAP driver
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,31 +22,34 @@ From: Samuli Sepp=C3=A4nen <samuli@...515...>
 
 Signed-off-by: Samuli Sepp=C3=A4nen <samuli@...515...>
 ---
- doc/openvpn.8 | 11 +++--------
- 1 file changed, 3 insertions(+), 8 deletions(-)
+ INSTALL | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/doc/openvpn.8 b/doc/openvpn.8
-index 7e9f9a0..c2169cf 100644
---- a/doc/openvpn.8
-+++ b/doc/openvpn.8
-@@ -4435,14 +4435,9 @@ will succeed, both OpenVPN
- peers will exchange temporary session keys, and the tunnel will begin
- passing data.
+diff --git a/INSTALL b/INSTALL
+index 42f78d8..334d0e6 100644
+--- a/INSTALL
++++ b/INSTALL
+@@ -298,13 +298,13 @@ TUN/TAP Driver Configuration:
 =20
--The OpenVPN distribution contains a set of scripts for
--managing RSA certificates & keys,
--located in the
--.I easy-rsa
--subdirectory.
+     http://www.whiteboard.ne.jp/~admin2/tuntap/
+=20
+-* Windows XP/2003/Vista/7:
++* Windows
+=20
+   OpenVPN on Windows needs a TUN/TAP kernel driver to work. OpenVPN instal=
+lers
+   include this driver, so installing it separately is not usually required.
+-  The driver source code is available here:
 -
--The easy-rsa package is also rendered in web form here:
--.I http://openvpn.net/easyrsa.html
-+The OpenVPN project provides a set of scripts for
-+managing RSA certificates & keys:
-+.I https://github.com/OpenVPN/easy-rsa
- .\"*********************************************************
- .TP
- .B \-\-tls\-server
+-    https://github.com/OpenVPN/tap-windows
++  Windows XP/2003 must use the NDIS 5 (tap-windows) driver, whereas more r=
+ecent
++  Windows versions should (Vista to 8.1) or must (Windows 10) use the NDIS=
+ 6
++  driver (tap-windows6) instead.
+=20
+ *************************************************************************
+=20
 --=20
 2.1.4
 
