@@ -1,17 +1,13 @@
-Date: Wed, 22 Jun 2016 19:48:41 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20160622174841.GX79504@...1296...>
-References: <1466615164-15527-1-git-send-email-samuli@...515...>
-	<1466615164-15527-3-git-send-email-samuli@...515...>
-	<CAFHpkQEvabwhSHjmA1c_bQk=sh8OiHWqMpc-MujZuvR8GGKowA@...278...>
-	<60375091-e617-d87c-bda3-c9bcab78eb02@...515...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="kUBUi7JBpjcBtem/"
-Content-Disposition: inline
-In-Reply-To: <60375091-e617-d87c-bda3-c9bcab78eb02@...515...>
-Subject: Re: [Openvpn-devel] [PATCH 3/3] Clarify which Windows versions
- require which TUN/TAP driver
+In-Reply-To: <CAA1AbxK5OUWtYhszHVpD7nXFu1Yh-PQgraZNDE0XtLcs_2_5dA@...278...>
+References: <CAFHpkQHX-m9-Ub0WxgpyDx5uWcjyFf=aRN-cUTYt=fJ7dEXc0w@...278...>
+	<CAA1AbxK5OUWtYhszHVpD7nXFu1Yh-PQgraZNDE0XtLcs_2_5dA@...278...>
+From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
+Date: Thu, 23 Jun 2016 00:23:20 +0500
+Message-ID: <CAFHpkQGFnPgNGXnasM5Tcwbx1yMdYuRes3+cvpNnb=Gq+=obpQ@...278...>
+Content-Type: multipart/alternative; boundary=001a11c3af2ed98d770535e2de27
+Subject: Re: [Openvpn-devel] what is the best way of skipping tests when
+ openvpn configured --disable-crypto ?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,48 +16,133 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Samuli =?iso-8859-1?Q?Sepp=E4nen?= <samuli@...515...>
+To: Steffan Karger <steffan@...1856...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---kUBUi7JBpjcBtem/
-Content-Type: text/plain; charset="iso-8859-1"
+--001a11c3af2ed98d770535e2de27
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
+like that ?
 
-On Wed, Jun 22, 2016 at 08:14:31PM +0300, Samuli Sepp=E4nen wrote:
-> I have not actually tested tap-windows (NDIS 5) on Windows 10, but I=20
-> believe NDIS 5 support was removed from Windows 10 a while back. If NDIS=
-=20
-> 5 drivers still work for Windows 10 then I can definitely reword this par=
-t.
+diff --git a/configure.ac b/configure.ac
+index d733023..dc95123 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -1192,6 +1192,7 @@ AM_CONDITIONAL([WIN32], [test "${WIN32}" =3D "yes"])
+ AM_CONDITIONAL([GIT_CHECKOUT], [test "${GIT_CHECKOUT}" =3D "yes"])
+ AM_CONDITIONAL([ENABLE_PLUGIN_AUTH_PAM], [test "${enable_plugin_auth_pam}"
+=3D "yes"])
+ AM_CONDITIONAL([ENABLE_PLUGIN_DOWN_ROOT], [test
+"${enable_plugin_down_root}" =3D "yes"])
++AM_CONDITIONAL([ENABLE_CRYPTO], [test "${enable_crypto}" =3D "yes"])
 
-A colleague of mine accidently used an I001 installer last week on W10, and=
-=20
-it still worked.  No idea whether it has funny consequences, so maybe word
-this as "tap6 is recommended for anything later than win7" or so.
+ plugindir=3D"${with_plugindir}"
+ sampledir=3D"\$(docdir)/sample"
+diff --git a/tests/Makefile.am b/tests/Makefile.am
+index 2cba9e6..235cd13 100644
+--- a/tests/Makefile.am
++++ b/tests/Makefile.am
+@@ -14,7 +14,10 @@ MAINTAINERCLEANFILES =3D \
 
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+ SUBDIRS =3D unit_tests
 
---kUBUi7JBpjcBtem/
-Content-Type: application/pgp-signature; name="signature.asc"
+-test_scripts =3D t_client.sh t_lpback.sh t_cltsrv.sh
++test_scripts =3D t_client.sh
++if ENABLE_CRYPTO
++test_scripts +=3D t_lpback.sh t_cltsrv.sh
++endif
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
+ TESTS_ENVIRONMENT =3D top_srcdir=3D"$(top_srcdir)"
+ TESTS =3D $(test_scripts)
 
-iQCVAwUBV2rPeKkuBuNlUUl1AQK6zAP8Dzs8IDIaLXcTt8NngsgVrA6Oisj0ySMM
-UMvnbOHl2Bllmfxp2tX8ezJ7Puv+yXTm3Gnwz8uy5d2l1bmahtADP/EWSPmgp8wY
-0yY0kg1fIh0zQ4PfBNYb6KH2ErmE/iICwiNxn/aZPOJ1UO8ywbsxhb7Bve0jLcDs
-Ob+q4zIkwNc=
-=yPhq
------END PGP SIGNATURE-----
 
---kUBUi7JBpjcBtem/--
+2016-06-19 15:37 GMT+05:00 Steffan Karger <steffan@...1856...>:
+
+> Hi,
+>
+> On Sun, Jun 19, 2016 at 10:41 AM, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=
+=D0=BF=D0=B8=D1=86=D0=B8=D0=BD <chipitsine@...277...>
+> wrote:
+> > when playing with travis-ci, I encountered that t_lpback.sh and
+> t_cltsrv.sh
+> > fails on "make check" if openvpn is configured with --disable-crypto
+> > (because --genkey is not available)
+> >
+> > what would be the best ?
+> >
+> > 1) run 'openvpn --help' and grep for --genkey ?
+> > 2) check exit code of 'openvpn --genkey' ?
+> > 3) run 'openvpn --show-ciphers' and see it is empty ?
+> > 4) somehow determine exact configure options ? (I haven't found a way
+> yet)
+>
+> I think 4.  You can use AC_SUBST to pass the value of $enable_crypto
+> to a Makefile.am, and just not run the t_client.sh, t_lpback.sh and
+> t_cltsrv.sh if it is 'no'.
+>
+> Later on, we might want to add a test that verifies correct behaviour
+> of openvpn-without-crypto.
+>
+> -Steffan
+>
+
+--001a11c3af2ed98d770535e2de27
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr">like that ?<br><br>diff --git a/<a href=3D"http://configur=
+e.ac">configure.ac</a> b/<a href=3D"http://configure.ac">configure.ac</a><b=
+r>index d733023..dc95123 100644<br>--- a/<a href=3D"http://configure.ac">co=
+nfigure.ac</a><br>+++ b/<a href=3D"http://configure.ac">configure.ac</a><br=
+>@@ -1192,6 +1192,7 @@ AM_CONDITIONAL([WIN32], [test &quot;${WIN32}&quot; =
+=3D &quot;yes&quot;])<br>=C2=A0AM_CONDITIONAL([GIT_CHECKOUT], [test &quot;$=
+{GIT_CHECKOUT}&quot; =3D &quot;yes&quot;])<br>=C2=A0AM_CONDITIONAL([ENABLE_=
+PLUGIN_AUTH_PAM], [test &quot;${enable_plugin_auth_pam}&quot; =3D &quot;yes=
+&quot;])<br>=C2=A0AM_CONDITIONAL([ENABLE_PLUGIN_DOWN_ROOT], [test &quot;${e=
+nable_plugin_down_root}&quot; =3D &quot;yes&quot;])<br>+AM_CONDITIONAL([ENA=
+BLE_CRYPTO], [test &quot;${enable_crypto}&quot; =3D &quot;yes&quot;])<br>=
+=C2=A0<br>=C2=A0plugindir=3D&quot;${with_plugindir}&quot;<br>=C2=A0sampledi=
+r=3D&quot;\$(docdir)/sample&quot;<br>diff --git a/tests/Makefile.am b/tests=
+/Makefile.am<br>index 2cba9e6..235cd13 100644<br>--- a/tests/Makefile.am<br=
+>+++ b/tests/Makefile.am<br>@@ -14,7 +14,10 @@ MAINTAINERCLEANFILES =3D \<b=
+r>=C2=A0<br>=C2=A0SUBDIRS =3D unit_tests<br>=C2=A0<br>-test_scripts =3D t_c=
+lient.sh t_lpback.sh t_cltsrv.sh<br>+test_scripts =3D t_client.sh<br>+if EN=
+ABLE_CRYPTO<br>+test_scripts +=3D t_lpback.sh t_cltsrv.sh<br>+endif<br>=C2=
+=A0<br>=C2=A0TESTS_ENVIRONMENT =3D top_srcdir=3D&quot;$(top_srcdir)&quot;<b=
+r>=C2=A0TESTS =3D $(test_scripts)<br><br></div><div class=3D"gmail_extra"><=
+br><div class=3D"gmail_quote">2016-06-19 15:37 GMT+05:00 Steffan Karger <sp=
+an dir=3D"ltr">&lt;<a href=3D"mailto:steffan@...1856..." target=3D"_blank">=
+steffan@...1856...</a>&gt;</span>:<br><blockquote class=3D"gmail_quote" sty=
+le=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">Hi,<br>
+<span class=3D""><br>
+On Sun, Jun 19, 2016 at 10:41 AM, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=
+=BF=D0=B8=D1=86=D0=B8=D0=BD &lt;<a href=3D"mailto:chipitsine@...277...">chi=
+pitsine@...277...</a>&gt; wrote:<br>
+&gt; when playing with travis-ci, I encountered that t_lpback.sh and t_clts=
+rv.sh<br>
+&gt; fails on &quot;make check&quot; if openvpn is configured with --disabl=
+e-crypto<br>
+&gt; (because --genkey is not available)<br>
+&gt;<br>
+&gt; what would be the best ?<br>
+&gt;<br>
+&gt; 1) run &#39;openvpn --help&#39; and grep for --genkey ?<br>
+&gt; 2) check exit code of &#39;openvpn --genkey&#39; ?<br>
+&gt; 3) run &#39;openvpn --show-ciphers&#39; and see it is empty ?<br>
+&gt; 4) somehow determine exact configure options ? (I haven&#39;t found a =
+way yet)<br>
+<br>
+</span>I think 4.=C2=A0 You can use AC_SUBST to pass the value of $enable_c=
+rypto<br>
+to a Makefile.am, and just not run the t_client.sh, t_lpback.sh and<br>
+t_cltsrv.sh if it is &#39;no&#39;.<br>
+<br>
+Later on, we might want to add a test that verifies correct behaviour<br>
+of openvpn-without-crypto.<br>
+<span class=3D"HOEnZb"><font color=3D"#888888"><br>
+-Steffan<br>
+</font></span></blockquote></div><br></div>
+
+--001a11c3af2ed98d770535e2de27--
 
