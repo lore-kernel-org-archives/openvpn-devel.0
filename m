@@ -1,15 +1,15 @@
-Date: Thu, 23 Jun 2016 20:15:17 +0200
+Date: Thu, 23 Jun 2016 20:19:16 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20160623181517.GL79504@...1296...>
-References: <1465411141-16560-1-git-send-email-steffan@...1856...>
-	<1465852669-7440-1-git-send-email-steffan@...1856...>
+Message-ID: <20160623181916.GM79504@...1296...>
+References: <1465411084-16279-1-git-send-email-steffan@...1856...>
+	<1465852632-7278-1-git-send-email-steffan@...1856...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="LmcuB6YxSMQAV95c"
+	protocol="application/pgp-signature"; boundary="XiX5sJQOWZsNRXst"
 Content-Disposition: inline
-In-Reply-To: <1465852669-7440-1-git-send-email-steffan@...1856...>
-Subject: Re: [Openvpn-devel] [PATCHv3 5/5] Add server-side support for
- cipher negotiation
+In-Reply-To: <1465852632-7278-1-git-send-email-steffan@...1856...>
+Subject: Re: [Openvpn-devel] [PATCHv3 4/5] Add options to restrict cipher
+ negotiation
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,34 +21,32 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: Steffan Karger <steffan@...1856...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---LmcuB6YxSMQAV95c
+--XiX5sJQOWZsNRXst
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Mon, Jun 13, 2016 at 11:17:49PM +0200, Steffan Karger wrote:
-> Pushes AES-256-GCM when a connecting client advertises IV_NCP=3D2, and
-> supports serving connections to clients with different data channel
-> cipher configuration simultaneously.
+On Mon, Jun 13, 2016 at 11:17:12PM +0200, Steffan Karger wrote:
+> Add --ncp-disable to completely disable cipher negotiation, and
+> --ncp-ciphers to specify which ciphers to accept from the server.
 >=20
 > v2:
->  * Update manpage
->  * Add Changes.rst entry
+>  * fix --disable-crypto builds
+>  * use register_signal() instead of operating directly on c->sig
+>  * add man-page entry for new options
 >=20
 > v3:
->  * Do not regenerate keys if the client sends a second pull request
->  * Don't postpone key generation if client has no IV_NCP support (to also
->    support clients that do not send a push request)
+>  * rebased on client-side NCP v3
 
-To me this looks generally OK.=20=20
+Looks generally OK, too.=20=20
 
-I'll do 3/5 and 4/5 next, but would then ask for a v4 without the
-merge/rebase/fix/rewort artefacts we already know about :-)
+The OPT_P_NCP bit introduced here is used in 3/5, so the distribution
+of new bits and pieces on the 3 parts is not ideal (because applying 3/5
+alone would make it not compile) - but you already know that :-)
 
 gert
-
 --=20
 USENET is *not* the non-clickable part of WWW!
                                                            //www.muc.de/~ge=
@@ -56,18 +54,18 @@ rt/
 Gert Doering - Munich, Germany                             gert@...1296...
 fax: +49-89-35655025                        gert@...1297...
 
---LmcuB6YxSMQAV95c
+--XiX5sJQOWZsNRXst
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1
 
-iQCVAwUBV2wnNakuBuNlUUl1AQIGgwP/Zjxlb7S531Gv2/HzRtn7/SoBx8f/5U4I
-T1D1yX/cUKZXK1rxAHLhc/fSBZLKMFD512qI3bA8hknGj1hyl2xR1lfhMAdfTUEi
-IBodMrGraz8AzoxzsbvwLui7WeAs316DegFrrs7emqsCn/kN/VoeU8naZ4T1Pcdq
-Y/uG5N8BYmo=
-=B1ew
+iQCVAwUBV2woJKkuBuNlUUl1AQLLAAP+M5HUTc+pqQ12ZJvP9asf0ZvbGAAhBH7g
+ZpEIywBZ6YePcMz/JQ6X1MvAxvL1PPv1GrTPJUyoVIQd9FPl84IeTV0wP/CtVl/O
+uZ7OevJZ0tT0Kjk5sCT/9R1HQkFXKO9t69LYXWENkuTb+/SGD+JA6TXiBYINN7Cl
+1fR1BXgF56g=
+=Cr2v
 -----END PGP SIGNATURE-----
 
---LmcuB6YxSMQAV95c--
+--XiX5sJQOWZsNRXst--
 
