@@ -1,15 +1,15 @@
-Date: Thu, 23 Jun 2016 20:32:46 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20160623183246.GN79504@...1296...>
-References: <1465410882-15540-1-git-send-email-steffan@...1856...>
-	<1465852568-6972-1-git-send-email-steffan@...1856...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="5FDiZl1vRbLRjwwc"
-Content-Disposition: inline
-In-Reply-To: <1465852568-6972-1-git-send-email-steffan@...1856...>
-Subject: Re: [Openvpn-devel] [PATCHv3 3/5] Add client-side support for
- cipher negotiation
+In-Reply-To: <20160623175201.GJ79504@...1296...>
+References: <575AA2BD.60908@...277...> <20160610125457.GC62247@...1296...>
+	<CAKuzo_jrwK47wDtoLNCZXP8-OG0izGmjZRrDb5vdT5shhY7FMQ@...278...>
+	<20160610165515.GG62247@...1296...>
+	<CAKuzo_gkAX-5USrRi8sMvwtbxiJxCwgoi4KTOC1qtU0fpHHTvQ@...278...>
+	<20160623175201.GJ79504@...1296...>
+From: Selva Nair <selva.nair@...277...>
+Date: Thu, 23 Jun 2016 14:42:18 -0400
+Message-ID: <CAKuzo_hrvARGvhShR5NK2SB6pG0qtvnXQr_S+G17LXrGzfqD7g@...278...>
+Content-Type: multipart/alternative; boundary=94eb2c09593e150caf0535f66b0a
+Subject: Re: [Openvpn-devel] pull-filter reject = server hammering !
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,108 +18,193 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan@...1856...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---5FDiZl1vRbLRjwwc
-Content-Type: text/plain; charset="us-ascii"
+--94eb2c09593e150caf0535f66b0a
+Content-Type: text/plain; charset=UTF-8
+
+On Thu, Jun 23, 2016 at 1:52 PM, Gert Doering <gert@...1296...> wrote:
+
+> On Sat, Jun 18, 2016 at 03:41:22PM -0400, Selva Nair wrote:
+> > > > This is possible, but the case for progressively increasing the
+> restart
+> > > > pause is not very strong. Can we get some feedback from people who
+> serve
+> > > > 1000's of users?
+> > >
+> > > I would generally consider it polite behaviour... (also, it might save
+> > > the client from filled-up disks...) - didn't think of exponential
+> back-off
+> > > yet, but that would certainly be another approach to consider.
+> > >
+> > > I have no idea how complicated it would be to implement, though.
+> >
+> > Filling up the client log with repeated retries is a concern, indeed.
+> >
+> > Although a proper implementation needs the failed reconnect count per
+> > ip/port combination which we do not currently keep track of, I think a
+> > heuristic count may be good enough. One could use something like this:
+> >
+> > n = c->options.unsuccessful_attempts
+> > m = c->options.connection_list->len
+> > rc = n/m   (a rough measure of retries per remote)
+> > timeout = the_default_timeout << MIN(rc, 10)  (exponential up to ~ 5000
+> > seconds).
+> > throw a SIGHUP if rc exceeds some value (resets n and starts over)
+> >
+> > The retry count will be over-stated for situations like one remote name
+> > that resolves to many IPs, but avoiding that requires more work.. Any
+> > thoughts?
+>
+> I'm not sure I understand the math.  Let me try to reword.
+>
+> So it would increase "n" for each failed attempt, setting it to "0" if
+> one succeeds (so the reconnect after a session aborts would start "fresh").
+>
+
+Yes it gets reset to zero in intialization_sequence_completed(). Or after a
+SIGHUP.
+
+
+>
+> Leaving out "m" for the time being, "retry time" would then get scaled by
+> 2^rc (capped by 2^10), so the initial 5s would become 10s, 20s, ... 5000s
+> (this is not "timeout" as in "the unified TCP connection timeout" but the
+> retry timer firing after one connection attempt is aborted).
+>
+
+timeout was a poorly chose name, its the startup pause time -- controlled
+by variables like
+connect_retry_seconds or restart_sleep_seconds. It gets passed to
+openvpn_sleep.
+
+
+>
+>
+> So, now we have 4 different remotes.  You're scaling the exponent by 1/4
+> here, so the retry timer would be
+>
+>   5s 5s 5s 5s 10s 10s 10s 10s 20s 20s 20s 20s ...
+>
+> then (or, phrased differently, "one round uses the unscaled timer, the
+> next round across all remotes uses 2^1, the third round uses 2^2").
+>
+>
+> If I understood the math right, I think this would be useful behaviour ;-)
+> - fast failover if multiple remotes are there, exponentially slowing down
+> if all remotes have been tried.  Plus, fairly easy to implement as nearly
+> all needed values are already around.
+
+
+Yes, the book-keeping variables are already there.
+
+To avoid aggressive slowing down, may be we could start the scaling after
+rc has reached a threshold. Say don't do anything until rc = 5 and then
+start scaling the timer until rc reaches 15.
+
+Selva
+
+--94eb2c09593e150caf0535f66b0a
+Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
+<div dir=3D"ltr"><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">=
+On Thu, Jun 23, 2016 at 1:52 PM, Gert Doering <span dir=3D"ltr">&lt;<a href=
+=3D"mailto:gert@...1296..." target=3D"_blank">gert@...1296...</a>&gt;</span=
+> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;bo=
+rder-left:1px #ccc solid;padding-left:1ex"><span>On Sat, Jun 18, 2016 at 03=
+:41:22PM -0400, Selva Nair wrote:<br>
+&gt; &gt; &gt; This is possible, but the case for progressively increasing =
+the restart<br>
+&gt; &gt; &gt; pause is not very strong. Can we get some feedback from peop=
+le who serve<br>
+&gt; &gt; &gt; 1000&#39;s of users?<br>
+&gt; &gt;<br>
+&gt; &gt; I would generally consider it polite behaviour... (also, it might=
+ save<br>
+&gt; &gt; the client from filled-up disks...) - didn&#39;t think of exponen=
+tial back-off<br>
+&gt; &gt; yet, but that would certainly be another approach to consider.<br>
+&gt; &gt;<br>
+&gt; &gt; I have no idea how complicated it would be to implement, though.<=
+br>
+&gt;<br>
+&gt; Filling up the client log with repeated retries is a concern, indeed.<=
+br>
+&gt;<br>
+&gt; Although a proper implementation needs the failed reconnect count per<=
+br>
+&gt; ip/port combination which we do not currently keep track of, I think a=
+<br>
+&gt; heuristic count may be good enough. One could use something like this:=
+<br>
+&gt;<br>
+&gt; n =3D c-&gt;options.unsuccessful_attempts<br>
+&gt; m =3D c-&gt;options.connection_list-&gt;len<br>
+&gt; rc =3D n/m=C2=A0 =C2=A0(a rough measure of retries per remote)<br>
+&gt; timeout =3D the_default_timeout &lt;&lt; MIN(rc, 10)=C2=A0 (exponentia=
+l up to ~ 5000<br>
+&gt; seconds).<br>
+&gt; throw a SIGHUP if rc exceeds some value (resets n and starts over)<br>
+&gt;<br>
+&gt; The retry count will be over-stated for situations like one remote nam=
+e<br>
+&gt; that resolves to many IPs, but avoiding that requires more work.. Any<=
+br>
+&gt; thoughts?<br>
+<br>
+</span>I&#39;m not sure I understand the math.=C2=A0 Let me try to reword.<=
+br>
+<br>
+So it would increase &quot;n&quot; for each failed attempt, setting it to &=
+quot;0&quot; if<br>
+one succeeds (so the reconnect after a session aborts would start &quot;fre=
+sh&quot;).<br></blockquote><div><br></div><div>Yes it gets reset to zero in=
+ intialization_sequence_completed(). Or after a SIGHUP.</div><div>=C2=A0</d=
+iv><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left=
+:1px #ccc solid;padding-left:1ex">
+<br>
+Leaving out &quot;m&quot; for the time being, &quot;retry time&quot; would =
+then get scaled by<br>
+2^rc (capped by 2^10), so the initial 5s would become 10s, 20s, ... 5000s<b=
+r>
+(this is not &quot;timeout&quot; as in &quot;the unified TCP connection tim=
+eout&quot; but the<br>
+retry timer firing after one connection attempt is aborted).<br></blockquot=
+e><div><br></div><div>timeout was a poorly chose name, its the startup paus=
+e time -- controlled by variables like=C2=A0</div><div>connect_retry_second=
+s or restart_sleep_seconds. It gets passed to openvpn_sleep.</div><div>=C2=
+=A0</div><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;borde=
+r-left:1px #ccc solid;padding-left:1ex">
+<br>
+<br>
+So, now we have 4 different remotes.=C2=A0 You&#39;re scaling the exponent =
+by 1/4<br>
+here, so the retry timer would be<br>
+<br>
+=C2=A0 5s 5s 5s 5s 10s 10s 10s 10s 20s 20s 20s 20s ...<br>
+<br>
+then (or, phrased differently, &quot;one round uses the unscaled timer, the=
+<br>
+next round across all remotes uses 2^1, the third round uses 2^2&quot;).<br>
+<br>
+<br>
+If I understood the math right, I think this would be useful behaviour ;-)<=
+br>
+- fast failover if multiple remotes are there, exponentially slowing down<b=
+r>
+if all remotes have been tried.=C2=A0 Plus, fairly easy to implement as nea=
+rly<br>
+all needed values are already around.</blockquote></div><div class=3D"gmail=
+_extra"><br></div><div class=3D"gmail_extra">Yes, the book-keeping variable=
+s are already there.=C2=A0</div><div class=3D"gmail_extra"><br></div><div c=
+lass=3D"gmail_extra">To avoid aggressive slowing down, may be we could star=
+t the scaling after rc has reached a threshold. Say don&#39;t do anything u=
+ntil rc =3D 5 and then start scaling the timer until rc reaches 15.</div><d=
+iv class=3D"gmail_extra"><br></div><div class=3D"gmail_extra">Selva</div><b=
+r></div><div class=3D"gmail_extra"><br></div><div class=3D"gmail_extra"><br=
+></div></div>
 
-On Mon, Jun 13, 2016 at 11:16:08PM +0200, Steffan Karger wrote:
-> Based on the 'IV_NCP=3D2' mechanism described in
-> http://permalink.gmane.org/gmane.network.openvpn.devel/9385.
->=20
-> This is the first patch of a set that adds support for cipher negotiation.
-> Follow-up patches will add ways to restrict or disable the mechanism, and
-> add server-side support.
->=20
-> v2:
->  * Account for crypto overhead through struct frame.  This is less
->    transparant, but the code has been built to work this way.  The
->    previous approach didn't work with TCP mode (or --port-share).
->  * Calculate the link-mtu sent in the options string based on the crypto
->    parameters specified in the config file (prevents link-mtu warnings in
->    older peers when connecting).
->=20
-> v3:
->  * Use existing max_int() function, instead of new MAX() macro.
->  * Fix typo in comment.
->  * Do not regenerate keys if the server sends a second push msg.
->  * Only advertise IV_NCP=3D2 if we're a pull-client (and thus can do NCP).
-
-There might be surprises lurking here regarding explicitly configured
---link-mtu, so this will need detailed testing in as many possible option
-variants as possible.
-
-"Logic wise" this looks reasonable to me, so I'm willing to give an ACK
-to v4
-
-"Memory wise", to address James' concerns, I do not see anything obvious
-where this would lead to memory leaks, given that it's mostly just moving
-code around that is run once before and afterwards.  I think we're going
-to waste a handful of bytes on the frame overhead (like, "100"-ish) and
-resulting maximum buffer size, but that seems impossible to avoid without
-much more intrusive changes.
-
-One small thing I did not like, but that's "style":
-
-> -  /*
-> -   * key_id increments to KEY_ID_MASK then recycles back to 1.
-> -   * This way you know that if key_id is 0, it is the first key.
-> -   */
->    ++session->key_id;
->    session->key_id &=3D P_KEY_ID_MASK;
->    if (!session->key_id)
-
-I think we should leave this comment in - I saw you've added a more
-detailed comment to the associated .h file, but poor folks like me,=20
-without a decent "explain in a second window what the docs say about
-the line of code I'm staring at" IDE might benefit from this comment...
-
-
-> +int
-> +tls_peer_info_ncp_ver(const char *peer_info)
-> +{
-> +  const char *ncpstr =3D peer_info ? strstr (peer_info, "IV_NCP=3D") : N=
-ULL;
-> +  if (ncpstr)
-> +    {
-> +      int ncp =3D 0;
-> +      int r =3D sscanf(ncpstr, "IV_NCP=3D%d", &ncp);
-> +      if (r =3D=3D 1)
-> +	return ncp;
-> +    }
-> +  return 0;
-> +}
-> +
-
-This one should better go to 5/5 :-) - but you know that already.
-
-thanks,
-
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---5FDiZl1vRbLRjwwc
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQCVAwUBV2wrTqkuBuNlUUl1AQJGiQP/dq+rfQnR+KvsGxlsxFcgJ8cqJg24+m4j
-5zEpVXzabl9xE1DW+fISbkHP9WB48xrqDnZL7bkioHBGgQrhHc5Y1OlIeyv7Xc/q
-a03zd7beK42f/l1EKwSwUzXVQgJV98oAdv4eKXlbKQ87dysPwlFnPwJs2h8tMvPg
-V+lIY+WFYqo=
-=EUOT
------END PGP SIGNATURE-----
-
---5FDiZl1vRbLRjwwc--
+--94eb2c09593e150caf0535f66b0a--
 
