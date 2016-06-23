@@ -1,16 +1,15 @@
-Date: Thu, 23 Jun 2016 19:52:01 +0200
+Date: Thu, 23 Jun 2016 20:15:17 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20160623175201.GJ79504@...1296...>
-References: <575AA2BD.60908@...277...> <20160610125457.GC62247@...1296...>
-	<CAKuzo_jrwK47wDtoLNCZXP8-OG0izGmjZRrDb5vdT5shhY7FMQ@...278...>
-	<20160610165515.GG62247@...1296...>
-	<CAKuzo_gkAX-5USrRi8sMvwtbxiJxCwgoi4KTOC1qtU0fpHHTvQ@...278...>
+Message-ID: <20160623181517.GL79504@...1296...>
+References: <1465411141-16560-1-git-send-email-steffan@...1856...>
+	<1465852669-7440-1-git-send-email-steffan@...1856...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="RMorpr61ug7CvG36"
+	protocol="application/pgp-signature"; boundary="LmcuB6YxSMQAV95c"
 Content-Disposition: inline
-In-Reply-To: <CAKuzo_gkAX-5USrRi8sMvwtbxiJxCwgoi4KTOC1qtU0fpHHTvQ@...278...>
-Subject: Re: [Openvpn-devel] pull-filter reject = server hammering !
+In-Reply-To: <1465852669-7440-1-git-send-email-steffan@...1856...>
+Subject: Re: [Openvpn-devel] [PATCHv3 5/5] Add server-side support for
+ cipher negotiation
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,71 +18,34 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Steffan Karger <steffan@...1856...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---RMorpr61ug7CvG36
+--LmcuB6YxSMQAV95c
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
-HI,
+Hi,
 
-On Sat, Jun 18, 2016 at 03:41:22PM -0400, Selva Nair wrote:
-> > > This is possible, but the case for progressively increasing the resta=
-rt
-> > > pause is not very strong. Can we get some feedback from people who se=
-rve
-> > > 1000's of users?
-> >
-> > I would generally consider it polite behaviour... (also, it might save
-> > the client from filled-up disks...) - didn't think of exponential back-=
-off
-> > yet, but that would certainly be another approach to consider.
-> >
-> > I have no idea how complicated it would be to implement, though.
+On Mon, Jun 13, 2016 at 11:17:49PM +0200, Steffan Karger wrote:
+> Pushes AES-256-GCM when a connecting client advertises IV_NCP=3D2, and
+> supports serving connections to clients with different data channel
+> cipher configuration simultaneously.
 >=20
-> Filling up the client log with repeated retries is a concern, indeed.
+> v2:
+>  * Update manpage
+>  * Add Changes.rst entry
 >=20
-> Although a proper implementation needs the failed reconnect count per
-> ip/port combination which we do not currently keep track of, I think a
-> heuristic count may be good enough. One could use something like this:
->=20
-> n =3D c->options.unsuccessful_attempts
-> m =3D c->options.connection_list->len
-> rc =3D n/m   (a rough measure of retries per remote)
-> timeout =3D the_default_timeout << MIN(rc, 10)  (exponential up to ~ 5000
-> seconds).
-> throw a SIGHUP if rc exceeds some value (resets n and starts over)
->=20
-> The retry count will be over-stated for situations like one remote name
-> that resolves to many IPs, but avoiding that requires more work.. Any
-> thoughts?
+> v3:
+>  * Do not regenerate keys if the client sends a second pull request
+>  * Don't postpone key generation if client has no IV_NCP support (to also
+>    support clients that do not send a push request)
 
-I'm not sure I understand the math.  Let me try to reword.
+To me this looks generally OK.=20=20
 
-So it would increase "n" for each failed attempt, setting it to "0" if
-one succeeds (so the reconnect after a session aborts would start "fresh").
-
-Leaving out "m" for the time being, "retry time" would then get scaled by=20
-2^rc (capped by 2^10), so the initial 5s would become 10s, 20s, ... 5000s
-(this is not "timeout" as in "the unified TCP connection timeout" but the
-retry timer firing after one connection attempt is aborted).
-
-
-So, now we have 4 different remotes.  You're scaling the exponent by 1/4
-here, so the retry timer would be
-
-  5s 5s 5s 5s 10s 10s 10s 10s 20s 20s 20s 20s ...
-
-then (or, phrased differently, "one round uses the unscaled timer, the
-next round across all remotes uses 2^1, the third round uses 2^2").
-
-
-If I understood the math right, I think this would be useful behaviour ;-)
-- fast failover if multiple remotes are there, exponentially slowing down
-if all remotes have been tried.  Plus, fairly easy to implement as nearly
-all needed values are already around.
+I'll do 3/5 and 4/5 next, but would then ask for a v4 without the
+merge/rebase/fix/rewort artefacts we already know about :-)
 
 gert
 
@@ -94,18 +56,18 @@ rt/
 Gert Doering - Munich, Germany                             gert@...1296...
 fax: +49-89-35655025                        gert@...1297...
 
---RMorpr61ug7CvG36
+--LmcuB6YxSMQAV95c
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1
 
-iQCVAwUBV2whwKkuBuNlUUl1AQIUOwP/TzzD3fYKpO81idLU+CPQNyQb3SgsBuM/
-6tOQz4woppr1s1AnZhcrxsL0ZA9F+W1840Af7sImdGQj4VTDTFcJt/HVjA4HQSKz
-/t1uJp1ZsqLchMosr6MvOMuAYxrwpr+qQWBQ5w4tkRIWBx4IlOrKZSxnNB8RjtMJ
-iPNi1b6Rtaw=
-=VnWQ
+iQCVAwUBV2wnNakuBuNlUUl1AQIGgwP/Zjxlb7S531Gv2/HzRtn7/SoBx8f/5U4I
+T1D1yX/cUKZXK1rxAHLhc/fSBZLKMFD512qI3bA8hknGj1hyl2xR1lfhMAdfTUEi
+IBodMrGraz8AzoxzsbvwLui7WeAs316DegFrrs7emqsCn/kN/VoeU8naZ4T1Pcdq
+Y/uG5N8BYmo=
+=B1ew
 -----END PGP SIGNATURE-----
 
---RMorpr61ug7CvG36--
+--LmcuB6YxSMQAV95c--
 
