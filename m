@@ -1,8 +1,17 @@
-From: Heiko Hund <heiko.hund@...1489...>
-Date: Fri, 24 Jun 2016 18:01:41 +0200
-Message-ID: <1466784101-20655-1-git-send-email-heiko.hund@...1489...>
+Date: Fri, 24 Jun 2016 19:33:27 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20160624173327.GX79504@...1296...>
+References: <20160624140526.GV79504@...1296...>
+	<CAFHpkQEtXO1aWSF5v=ivNCx2TzK870tm_StjComxrNWLp1_9LQ@...278...>
+	<20160624152932.GW79504@...1296...>
+	<576D59FE.90507@...2080...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Windows: do_ifconfig() after open_tun()
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="PLVMksexArUZ/iL3"
+Content-Disposition: inline
+In-Reply-To: <576D59FE.90507@...2080...>
+Subject: Re: [Openvpn-devel] brainstorming: t_client system test equivalent
+ for windows?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,143 +20,61 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-When you had multiple TAP adapters and IPv6 configured you got an error
-message about "you must also specify --dev-node" and openvpn exited.
-Very inconvenient especially since this is only due to the fact that
-Windows tries to set the adapter address before it is opened; for no
-good reason.
+--PLVMksexArUZ/iL3
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-This patch changes the order to IFCONFIG_AFTER_TUN_OPEN, moves some
-initialization code to init_tun, where it belongs, and removes duplicate
-code that is now no longer needed.
+Hi,
 
-Signed-off-by: Heiko Hund <heiko.hund@...1489...>
----
- src/openvpn/tun.c | 56 ++++++++++++++++++-------------------------------------
- src/openvpn/tun.h |  2 +-
- 2 files changed, 19 insertions(+), 39 deletions(-)
+On Fri, Jun 24, 2016 at 06:04:14PM +0200, David Sommerseth wrote:
+> > Perl has the advantage of being available on all platforms (or at least
+> > "you can install it", I know it's not there out of the box everywhere)
+> > so maybe we can do a common test driver implementation that runs on
+> > windows and unix, so less maintenance...
+>=20
+> That argument can be said about Python as well.  And there's a lot of
+> different testing resources for Python, a lot of them are unittest
+> oriented (so not so directly interesting for us) but there are others
+> which also "drives" external test cases.  Beaker [1] is the one I've
+> worked most with, but that is overkill in this scenario.  But there are
+> most likely lots of stuff we can extract and reuse too.  And there are
+> several others which I don't recall right now.
 
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index b7a29f7..4a11d10 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -611,6 +611,21 @@ init_tun (const char *dev,       /* --dev option */
- 	  tt->broadcast = generate_ifconfig_broadcast_addr (tt->local, tt->remote_netmask);
- 	}
- 
-+#ifdef WIN32
-+      /*
-+       * Make sure that both ifconfig addresses are part of the
-+       * same .252 subnet.
-+       */
-+      if (tun)
-+        {
-+          verify_255_255_255_252 (tt->local, tt->remote_netmask);
-+          tt->adapter_netmask = ~3;
-+        }
-+      else
-+        {
-+          tt->adapter_netmask = tt->remote_netmask;
-+        }
-+#endif
- 
-       tt->did_ifconfig_setup = true;
-     }
-@@ -1327,19 +1342,7 @@ do_ifconfig (struct tuntap *tt,
-       }
- #elif defined (WIN32)
-       {
--	/*
--	 * Make sure that both ifconfig addresses are part of the
--	 * same .252 subnet.
--	 */
--	if (tun)
--	  {
--	    verify_255_255_255_252 (tt->local, tt->remote_netmask);
--	    tt->adapter_netmask = ~3;
--	  }
--	else
--	  {
--	    tt->adapter_netmask = tt->remote_netmask;
--	  }
-+        ASSERT (actual != NULL);
- 
- 	switch (tt->options.ip_win32_type)
- 	  {
-@@ -1350,9 +1353,6 @@ do_ifconfig (struct tuntap *tt,
- 		 print_in_addr_t (tt->adapter_netmask, 0, &gc));
- 	    break;
- 	  case IPW32_SET_NETSH:
--	    if (!strcmp (actual, "NULL"))
--	      msg (M_FATAL, "Error: When using --ip-win32 netsh, if you have more than one TAP-Windows adapter, you must also specify --dev-node");
--
- 	    netsh_ifconfig (&tt->options,
- 			    actual,
- 			    tt->local,
-@@ -1366,25 +1366,6 @@ do_ifconfig (struct tuntap *tt,
- 
-     if ( do_ipv6 )
-       {
--	char * saved_actual;
--	char iface[64];
--	DWORD idx;
--
--	if (!strcmp (actual, "NULL"))
--	  msg (M_FATAL, "Error: When using --tun-ipv6, if you have more than one TAP-Windows adapter, you must also specify --dev-node");
--
--	idx = get_adapter_index_flexible(actual);
--	openvpn_snprintf(iface, sizeof(iface), "interface=%lu", idx);
--
--	/* on windows, OpenVPN does ifconfig first, open_tun later, so
--	 * tt->actual_name might not yet be initialized, but routing code
--	 * needs to know interface name - point to "actual", restore later
--	 */
--	saved_actual = tt->actual_name;
--	tt->actual_name = (char*) actual;
--	/* we use adapter_index in add_route_ipv6 */
--	tt->adapter_index = idx;
--
- 	if (tt->options.msg_channel)
- 	  {
- 	    do_address_service (true, AF_INET6, tt);
-@@ -1393,17 +1374,16 @@ do_ifconfig (struct tuntap *tt,
- 	  {
- 	    /* example: netsh interface ipv6 set address interface=42 2001:608:8003::d store=active */
- 	    argv_printf (&argv,
--			 "%s%sc interface ipv6 set address %s %s store=active",
-+			 "%s%sc interface ipv6 set address interface=%lu %s store=active",
- 			 get_win_sys_path(),
- 			 NETSH_PATH_SUFFIX,
--			 iface,
-+			 tt->adapter_index,
- 			 ifconfig_ipv6_local );
- 	    netsh_command (&argv, 4, M_FATAL);
- 	  }
- 
- 	/* explicit route needed */
- 	add_route_connected_v6_net(tt, es);
--	tt->actual_name = saved_actual;
-       }
- #else
-       msg (M_FATAL, "Sorry, but I don't know how to do 'ifconfig' commands on this operating system.  You should ifconfig your TUN/TAP device manually or use an --up script.");
-diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h
-index 4e93a3f..1ccf378 100644
---- a/src/openvpn/tun.h
-+++ b/src/openvpn/tun.h
-@@ -301,7 +301,7 @@ ifconfig_order(void)
- #elif defined(TARGET_NETBSD)
-   return IFCONFIG_AFTER_TUN_OPEN;
- #elif defined(WIN32)
--  return IFCONFIG_BEFORE_TUN_OPEN;
-+  return IFCONFIG_AFTER_TUN_OPEN;
- #elif defined(TARGET_ANDROID)
-   return IFCONFIG_BEFORE_TUN_OPEN;
- #else
--- 
-2.7.4
+The point is not so much "running arbitrary tests" but "controlling=20
+OpenVPN in a scripted way" - what t_client does as a shell script today.
 
+> We might also consider if there are possibilities for us to integrate
+> such tests with Travis or similar stuff for platforms where that is
+> possible.  Often these solutions have Python or Ruby modules available to=
+o.
+
+While totally interesting, how is this going to help with *Windows*=20
+testing (which is what this thread is about)?
+
+gert
+
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--PLVMksexArUZ/iL3
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQCVAwUBV21u56kuBuNlUUl1AQIPoQQAlxL2ZcqnqGNnbSVdP42ebnHzaK37ZiTn
+MePtPSN0SRR1JBmjegPXuQZvSwTonns+n9pTaqePxaHlLCqXsKdjFaZHrG7yNJ1+
+/Kh6/eFrkXYbhkpUGQcKkqZav7rlZHC7/iALEuc6fkwMCx7i5cLyvr680oMuHB7d
+vswH8BzKWjc=
+=x/+y
+-----END PGP SIGNATURE-----
+
+--PLVMksexArUZ/iL3--
 
