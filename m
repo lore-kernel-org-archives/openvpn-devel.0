@@ -1,9 +1,9 @@
 From: Arne Schwabe <arne@...1227...>
-Date: Fri, 24 Jun 2016 12:45:23 +0200
-Message-Id: <1466765123-3587-1-git-send-email-arne@...1227...>
+Date: Fri, 24 Jun 2016 14:27:10 +0200
+Message-Id: <1466771230-5266-1-git-send-email-arne@...1227...>
 In-Reply-To: <1466167642-13603-1-git-send-email-arne@...1227...>
 References: <1466167642-13603-1-git-send-email-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH v2] Remove http-proxy-retry and
+Subject: [Openvpn-devel] [PATCH v3] Remove http-proxy-retry and
 	socks-proxy-retry.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -20,7 +20,7 @@ To: openvpn-devel@lists.sourceforge.net
 These options were probably introduced long before we had multiple
 remote/connection entries. For all other connection entries, OpenVPN will
 go on with the next connection if it fails. For proxies, if it fails in
-some ways it works the same, for other failures it compeltely stops.
+some ways it works the same, for other failures it completely stops.
 
 Removing the *-proxy-retry and defaulting to retry makes the behavior more
 predictiable. Stopping after one try (regardless of reason) can be achieved
@@ -28,17 +28,18 @@ with --max-connect-retry 1
 
 V2: Add reason for removing, remove from manpage, give a hint at
    --max-connet-retry
+V3: Collapse the two ifs in options.c to one block
 ---
  Changes.rst           |  2 ++
  doc/openvpn.8         | 14 --------------
  src/openvpn/init.c    |  4 +---
- src/openvpn/options.c | 14 ++++++--------
+ src/openvpn/options.c | 17 ++++-------------
  src/openvpn/options.h |  1 -
  src/openvpn/proxy.c   |  3 +--
  src/openvpn/proxy.h   |  1 -
  src/openvpn/socks.c   | 10 +++-------
  src/openvpn/socks.h   |  4 +---
- 9 files changed, 14 insertions(+), 39 deletions(-)
+ 9 files changed, 12 insertions(+), 44 deletions(-)
 
 diff --git a/Changes.rst b/Changes.rst
 index f945ad7..d12cdad 100644
@@ -134,7 +135,7 @@ index 58b95aa..498d36f 100644
  	{
  	  c->c1.socks_proxy_owned = true;
 diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 3adeb15..b20024a 100644
+index 3adeb15..cf971a6 100644
 --- a/src/openvpn/options.c
 +++ b/src/openvpn/options.c
 @@ -135,7 +135,6 @@ static const char usage_message[] =
@@ -169,9 +170,12 @@ index 3adeb15..b20024a 100644
        if (flags && !strcmp(flags, "nct"))
  	ho->auth_retry = PAR_NCT;
        else
-@@ -5236,10 +5232,10 @@ add_option (struct options *options,
+@@ -5234,12 +5230,12 @@ add_option (struct options *options,
+       else
+ 	ho->auth_file = p[1];
      }
-   else if (streq (p[0], "http-proxy-retry") && !p[1])
+-  else if (streq (p[0], "http-proxy-retry") && !p[1])
++  else if (streq (p[0], "http-proxy-retry") || streq (p[0], "socks-proxy-retry"))
      {
 -      struct http_proxy_options *ho;
        VERIFY_PERMISSION (OPT_P_GENERAL|OPT_P_CONNECTION);
@@ -183,17 +187,18 @@ index 3adeb15..b20024a 100644
      }
    else if (streq (p[0], "http-proxy-timeout") && p[1] && !p[2])
      {
-@@ -5312,7 +5308,9 @@ add_option (struct options *options,
-   else if (streq (p[0], "socks-proxy-retry") && !p[1])
-     {
-       VERIFY_PERMISSION (OPT_P_GENERAL|OPT_P_CONNECTION);
--      options->ce.socks_proxy_retry = true;
-+      msg (M_WARN, "DEPRECATED OPTION: http-proxy-retry and socks-proxy-retry: "
-+           "In OpenVPN 2.4 proxy connection retries are handled like regular connections. "
-+           "Use connect-retry-max 1 to get a similar behavior as before.");
+@@ -5309,11 +5305,6 @@ add_option (struct options *options,
+       options->ce.socks_proxy_server = p[1];
+       options->ce.socks_proxy_authfile = p[3]; /* might be NULL */
      }
+-  else if (streq (p[0], "socks-proxy-retry") && !p[1])
+-    {
+-      VERIFY_PERMISSION (OPT_P_GENERAL|OPT_P_CONNECTION);
+-      options->ce.socks_proxy_retry = true;
+-    }
    else if (streq (p[0], "keepalive") && p[1] && p[2] && !p[3])
      {
+       VERIFY_PERMISSION (OPT_P_GENERAL);
 diff --git a/src/openvpn/options.h b/src/openvpn/options.h
 index 78e4fe0..7bb36c9 100644
 --- a/src/openvpn/options.h
