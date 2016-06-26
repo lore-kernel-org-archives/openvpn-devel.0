@@ -1,15 +1,12 @@
-Date: Sun, 26 Jun 2016 11:33:52 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20160626093352.GA74152@...1296...>
-References: <1385728360-32127-1-git-send-email-arne@...1227...>
-	<201311292000.rATK06t1017910@...1729...>
+From: samuli@...515...
+In-Reply-To: <20160623172955.GH79504@...1296...>
+References: <CAFHpkQEi0Nw1=urbawcLhn_3TVTbcNDuvKdwdwtf-M4fBdoUXQ@...278...>
+	<20160623172955.GH79504@...1296...>
+Date: Sun, 26 Jun 2016 18:52:21 +0000
+Message-ID: <8m6og.o9e73d.2tj49u-qmf@...2147...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="pWyiEgJYm5f9v55/"
-Content-Disposition: inline
-In-Reply-To: <201311292000.rATK06t1017910@...1729...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: Move ASSERT so external-key
- with OpenSSL works again
+Subject: Re: [Openvpn-devel] windows installer: choosing x86/x64 and
+ NDIS5/NDIS6
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,71 +15,27 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+To: gert@...1296...
 Cc: openvpn-devel@lists.sourceforge.net
 
---pWyiEgJYm5f9v55/
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-
-Hi,
-
-On Fri, Nov 29, 2013 at 09:00:06PM +0100, Gert Doering wrote:
-> Your patch has been applied to the master branch.
->=20
-> commit 68793f40e1d04409264d21dd24453d959828a306
-> Author: Arne Schwabe
-> Date:   Fri Nov 29 13:32:40 2013 +0100
->=20
->      Move ASSERT so external-key with OpenSSL works again
->=20
->      Acked-by: Steffan Karger <steffan.karger@...1435...>
->      Message-Id: <1385728360-32127-1-git-send-email-arne@...1227...>
->      URL: http://article.gmane.org/gmane.network.openvpn.devel/8069
->      Signed-off-by: Gert Doering <gert@...1296...>
-
-And as discussed today, and in trac#693, also applied to release/2.3
-(bugfix)
-
-commit 5f3d28b374d4058a08753d06c675cbc589675e24
-Author: Arne Schwabe <arne@...1227...>
-Date:   Fri Nov 29 13:32:40 2013 +0100
-
-    Move ASSERT so external-key with OpenSSL works again
-=20=20=20=20
-    Acked-by: Steffan Karger <steffan.karger@...1435...>
-    Message-Id: <1385728360-32127-1-git-send-email-arne@...1227...>
-    URL: http://article.gmane.org/gmane.network.openvpn.devel/8069
-=20=20=20=20
-    trac #693
-=20=20=20=20
-    Signed-off-by: Gert Doering <gert@...1296...>
-    (cherry picked from commit 68793f40e1d04409264d21dd24453d959828a306)
-
-
-(got an Ack from Steffan in the ticket)
-
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---pWyiEgJYm5f9v55/
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQCVAwUBV2gr6akuBuNlUUl1AQKvHwP/dIMLJ0VVLanrYbPXr+jBQ8HqYnOxys8a
-VjBdwXpWRc4PoBXHJJfUk80xg6sdux6jfbpwieRwWmxjaUadrfq2nugSNzVelc0a
-EUzI/TspZ+3PMe3pVixFFpxDzttGm2bZOdyUM5JD6+DxfZsWIaWyduE2R0CU/Icv
-hL0ksARLREE=
-=bxI+
------END PGP SIGNATURE-----
-
---pWyiEgJYm5f9v55/--
-
+SSB0aGluayBhIGR1YWwgTkRJUzUvNiBpbnN0YWxsZXIgaXMgYSBnb29kIGlkZWEuIEZlZWwgZnJl
+ZSB0byBQUiA6KS4NCg0KU2FtdWxpDQoNCklsIGdpbyBnaXUgMjMgMjA6Mjk6NTUgMjAxNiBHTVQr
+MDMwMCwgR2VydCBEb2VyaW5nIHNjcml2ZToNCj4gSGksDQo+IA0KPiBPbiBUaHUsIEp1biAyMywg
+MjAxNiBhdCAwNjowNzo1MVBNICswNTAwLCA/Pz8/Pz8/PyA/Pz8/Pz8/Pz8/Pz8/PyB3cm90ZToN
+Cj4gPiB3ZSB1c2VkIHRvIGVucm9sbCBvdXIgb3duIGluc3RhbGxlciwgYW5kIHdlIGJ1bmRsZWQg
+Ym90aCB4ODYgYW5kIHg2NCBpbnRvDQo+ID4gc2luZ2xlIGluc3RhbGxlcg0KPiA+IA0KPiA+IGl0
+IHdhcyBlYXN5LCBzZXZlcmFsIGJsb2Nrcw0KPiA+IA0KPiA+ICR7SWZ9ICR7UnVubmluZ1g2NH0N
+Cj4gPiAuLi4uDQo+ID4gJHtFbHNlfQ0KPiA+IC4uLg0KPiA+ICR7RW5kSWZ9DQo+ID4gDQo+ID4g
+DQo+ID4gd2UgYXJlIGdvaW5nIHRvIHBhY2sgTkRJUzUvTkRJUzYgdGhlIHNhbWUgd2F5LiBpbiBv
+cmRlciB0byBjaG9vc2UgcHJvcGVyDQo+ID4gaW5zdGFsbGVyIGF1dG9tYXRpY2FsbHksIG5vdCB0
+byBwdXQgdGhhdCBkZWNpc2lvbiB0byB1c2VyLg0KPiA+IA0KPiA+IGlmIHRoZXJlJ3MgYW4gaW50
+ZXJlc3QsIEkgY2FuIG1ha2Ugc29tZSBQUiBvbiB0aGF0Lg0KPiANCj4gSW50ZXJlc3QhICAoVGhv
+dWdoIFNhbXVsaSBpcyB0aGUgb25lIG1haW50YWluaW5nIHRoZSBpbnN0YWxsZXJzLi4uKQ0KPiAN
+Cj4gZ2VydA0KPiANCj4gLS0gDQo+IFVTRU5FVCBpcyAqbm90KiB0aGUgbm9uLWNsaWNrYWJsZSBw
+YXJ0IG9mIFdXVyENCj4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAvL3d3dy5tdWMuZGUvfmdlcnQvDQo+IEdlcnQgRG9lcmluZyAtIE11
+bmljaCwgR2VybWFueSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgZ2VydEAuLi4xMjk2Li4u
+DQo+IGZheDogKzQ5LTg5LTM1NjU1MDI1ICAgICAgICAgICAgICAgICAgICAgICAgZ2VydEAuLi4x
+Mjk3Li4uDQo+
