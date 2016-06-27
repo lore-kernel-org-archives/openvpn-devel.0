@@ -1,12 +1,14 @@
-From: samuli@...515...
-In-Reply-To: <CAFHpkQEtXO1aWSF5v=ivNCx2TzK870tm_StjComxrNWLp1_9LQ@...278...>
-References: <20160624140526.GV79504@...1296...>
-	<CAFHpkQEtXO1aWSF5v=ivNCx2TzK870tm_StjComxrNWLp1_9LQ@...278...>
-Date: Sun, 26 Jun 2016 19:35:31 +0000
-Message-ID: <kvl6cv.o9e93b.2tj49u-qmf@...2148...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] brainstorming: t_client system test equivalent
- for windows?
+In-Reply-To: <8m6og.o9e73d.2tj49u-qmf@...2147...>
+References: <CAFHpkQEi0Nw1=urbawcLhn_3TVTbcNDuvKdwdwtf-M4fBdoUXQ@...278...>
+	<20160623172955.GH79504@...1296...>
+	<8m6og.o9e73d.2tj49u-qmf@...2147...>
+From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
+Date: Tue, 28 Jun 2016 00:19:22 +0500
+Message-ID: <CAFHpkQFQu3J9tj7b5=y0FLba1LTk7wYLpfPDRRjZ13o3qnG=Fg@...278...>
+Content-Type: multipart/alternative; boundary=001a11468c36d7171a0536476518
+Subject: Re: [Openvpn-devel] windows installer: choosing x86/x64 and
+	NDIS5/NDIS6
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,56 +17,143 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-To: chipitsine@...277...
-Cc: openvpn-devel@lists.sourceforge.net
+To: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-SSd2ZSB3cml0dGVuIGEgZmFpciBhbW91bnQgb2YgUG93ZXJzaGVsbCBsYXRlbHksIGFuZCBpdCdz
-IGRlZmluaXRlbHkgdGhlIGJlc3Qgb3V0LW9mLXRoZS1ib3ggb3B0aW9uIHRoZXJlIGlzIGZvciBX
-aW5kb3dzLg0KDQpJbCB2ZW4gZ2l1IDI0IDE3OjQ0OjE4IDIwMTYgR01UKzAzMDAsINCY0LvRjNGP
-INCo0LjQv9C40YbQuNC9IHNjcml2ZToNCj4gSSB3b3VsZCBzdWdnZXN0IHBvd2Vyc2hlbGwgaW5z
-dGVhZCBvZiBwZXJsLiBJIGNhbiB3cml0ZSBwb3dlcnNoZWxsIHN0dWZmDQo+IDI0INC40Y7QvdGP
-IDIwMTYg0LMuIDE5OjA3INC/0L7Qu9GM0LfQvtCy0LDRgtC10LvRjCAiR2VydCBEb2VyaW5nIiA8
-Z2VydEAuLi4xMjk2Li4uPg0KPiDQvdCw0L/QuNGB0LDQuzoNCj4gDQo+ID4gSGksDQo+ID4NCj4g
-PiBhIG5ldyBwYXRjaCBzZXQgZnJvbSBIZWlrbyBpcyBjb21pbmcgdXAsIHdoaWNoIGlzIGdvaW5n
-IHRvIGNoYW5nZSB0aGUNCj4gPiAiSUZDT05GSUdfQkVGT1JFX1RVTl9PUEVOIiB0byAid2hhdCBl
-dmVyeW9uZSBlbHNlIGRvZXMiIChiZWNhdXNlIHdoYXQNCj4gPiB3ZSBjdXJyZW50bHkgaGF2ZSBp
-cyBvbGRlciB0aGFuIGFueW9uZSByZW1lbWJlcnMsIGFuZCBtYWtlcyBsaWZlIG11Y2gNCj4gPiBt
-b3JlIGNvbXBsaWNhdGVkIHRoYW4gbmVlZGVkKS4NCj4gPg0KPiA+IE5vdywgd2UgYXJlIG5vdCBj
-dXJyZW50bHkgcHJvcGVybHkgdGVzdGluZyBXaW5kb3dzIC0gb24gdGhlIHVuaXggc3lzdGVtcywN
-Cj4gPiBJJ2QgYnVpbGQgYSB0X2NsaWVudC5yYyB0ZXN0IHNldCB3aXRoIGxpa2UgNSBleHRyYSB0
-ZXN0cyBmb3INCj4gPiAiLS1yb3V0ZS1tZXRob2QNCj4gPiBhZGFwdGl2ZS9pcGFwaS9leGUiLCAi
-SVB2NCBvbmx5IiwgIklQdjYgYW5kIElQdjYiLCBpbnRlcmFjdGl2ZSBzZXJ2aWNlDQo+ID4gb3Ig
-bm90LCBldGMuIC0gYnV0IEknbSBub3Qgc3VyZSB3aGF0IHRoZSBiZXN0IHdheSBpcyB0byBkbyB0
-aGlzIG9uDQo+ID4gd2luZG93cy4NCj4gPg0KPiA+IFdvdWxkICJ1c2UgbWluZ3cvbXN5cyBiYXNo
-IiB3b3JrIGZvciBzdHVmZiBsaWtlICJwdXQgcmVndWxhciBvcGVudnBuLmV4ZQ0KPiA+IGludG8g
-YmFja2dyb3VuZCB3aXRoICdvcGVudnBuLmV4ZSAmIHBpZD0kISAnIGFuZCBraWxsIHdpdGggImtp
-bGwgJG9waWQiPw0KPiA+DQo+ID4gSSBoYXZlIGJlZW4gdG95aW5nIHdpdGggdGhlIGlkZWEgb2Yg
-cmVwbGFjaW5nIHRfY2xpZW50LnNoIHdpdGggYSBwZXJsDQo+ID4gc2NyaXB0IHRoYXQgdXNlcyB0
-aGUgbWFuYWdlbWVudCBpbnRlcmZhY2UgdG8gY29udHJvbCBvcGVudnBuIChhdCBsZWFzdA0KPiA+
-IHRoZSAiaGFzIG91ciBzdGFydHVwIGZpbmlzaGVkPyAgaGF2ZSB3ZSBleHBsb2RlZD8gIHNodXRk
-b3duIG9yZGVybHkgbm93ISINCj4gPiBiaXRzLi4uKSAtIGJ1dCB0aGF0J3MgYWxzbyBub3QgdHJp
-dmlhbGx5IGltcGxlbWVudGVkIGFzIG9uZSB3b3VsZCBoYXZlDQo+ID4gdG8gcmVkbyB0aGUgd2hv
-bGUgImxvb2sgYXQgaWZjb25maWcvcm91dGUgb3V0cHV0IGFuZCBwYXJzZSBpbiBhIHN5c3RlbQ0K
-PiA+IGRlcGVuZGVudCB3YXkiIC0gYW5kIHRlc3Qgb24gYSBnYXppbGxpb24gb2YgcGxhdGZvcm1z
-IDotKQ0KPiA+DQo+ID4NCj4gPiBTby4uLiBvdGhlciBpZGVhcz8gIFNlbHZhLCBWYWxkaWtzcywg
-aG93IGRvIHlvdSB0ZXN0IHdpbmRvd3MgYnVpbGRzPw0KPiA+DQo+ID4gSmVucywgc2luY2UgeW91
-IGhhdmUgZGl2ZWQgaW50byB0X2NsaWVudCBpbXByb3ZlbWVudHMgLSBhbnkgbmljZSBpZGVhcw0K
-PiA+IGhvdyB0byBtYWtlIHRoaXMgaGFwcGVuIHdpdGggInJlYXNvbmFibGUgZWZmb3J0Ij8NCj4g
-Pg0KPiA+IGdlcnQNCj4gPiAtLQ0KPiA+IFVTRU5FVCBpcyAqbm90KiB0aGUgbm9uLWNsaWNrYWJs
-ZSBwYXJ0IG9mIFdXVyENCj4gPiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgIC8vDQo+ID4gd3d3Lm11Yy5kZS9+Z2VydC8NCj4gPiBHZXJ0
-IERvZXJpbmcgLSBNdW5pY2gsIEdlcm1hbnkNCj4gPiBnZXJ0QC4uLjEyOTYuLi4NCj4gPiBmYXg6
-ICs0OS04OS0zNTY1NTAyNQ0KPiA+IGdlcnRALi4uMTI5Ny4uLg0KPiA+DQo+ID4NCj4gPiAtLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0NCj4gPiBBdHRlbmQgU2hhcGU6IEFuIEFUJlQgVGVjaCBFeHBvIEp1
-bHkgMTUtMTYuIE1lZXQgdXMgYXQgQVQmVCBQYXJrIGluIFNhbg0KPiA+IEZyYW5jaXNjbywgQ0Eg
-dG8gZXhwbG9yZSBjdXR0aW5nLWVkZ2UgdGVjaCBhbmQgbGlzdGVuIHRvIHRlY2ggbHVtaW5hcmll
-cw0KPiA+IHByZXNlbnQgdGhlaXIgdmlzaW9uIG9mIHRoZSBmdXR1cmUuIFRoaXMgZmFtaWx5IGV2
-ZW50IGhhcyBzb21ldGhpbmcgZm9yDQo+ID4gZXZlcnlvbmUsIGluY2x1ZGluZyBraWRzLiBHZXQg
-bW9yZSBpbmZvcm1hdGlvbiBhbmQgcmVnaXN0ZXIgdG9kYXkuDQo+ID4gaHR0cDovL3NkbS5saW5r
-L2F0dHNoYXBlDQo+ID4gX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX18NCj4gPiBPcGVudnBuLWRldmVsIG1haWxpbmcgbGlzdA0KPiA+IE9wZW52cG4tZGV2ZWxA
-bGlzdHMuc291cmNlZm9yZ2UubmV0DQo+ID4gaHR0cHM6Ly9saXN0cy5zb3VyY2Vmb3JnZS5uZXQv
-bGlzdHMvbGlzdGluZm8vb3BlbnZwbi1kZXZlbA0KPiA+DQo+ID4NCj4=
+--001a11468c36d7171a0536476518
+Content-Type: text/plain; charset=UTF-8
+
+we have just packed our own installer using
+
+...
+!include WinVer.nsh
+...
+!define TAP_WINDOWS_INSTALLER_5 "C:\tap\tap-windows-9.9.2_3.exe"
+!define TAP_WINDOWS_INSTALLER_6 "C:\tap\tap-windows-9.21.2.exe"
+
+...
+
+${If} ${AtLeastWin7}
+    File /oname=tap-windows.exe "${TAP_WINDOWS_INSTALLER_6}"
+${Else}
+    File /oname=tap-windows.exe "${TAP_WINDOWS_INSTALLER_5}"
+${EndIf}
+
+.......
+
+however, I need some time to reproduce the same with openvpn-build.
+I'll make PR soon
+
+2016-06-26 23:52 GMT+05:00 <samuli@...515...>:
+
+> I think a dual NDIS5/6 installer is a good idea. Feel free to PR :).
+>
+> Samuli
+>
+> Il gio giu 23 20:29:55 2016 GMT+0300, Gert Doering scrive:
+> > Hi,
+> >
+> > On Thu, Jun 23, 2016 at 06:07:51PM +0500, ???????? ?????????????? wrote:
+> > > we used to enroll our own installer, and we bundled both x86 and x64
+> into
+> > > single installer
+> > >
+> > > it was easy, several blocks
+> > >
+> > > ${If} ${RunningX64}
+> > > ....
+> > > ${Else}
+> > > ...
+> > > ${EndIf}
+> > >
+> > >
+> > > we are going to pack NDIS5/NDIS6 the same way. in order to choose
+> proper
+> > > installer automatically, not to put that decision to user.
+> > >
+> > > if there's an interest, I can make some PR on that.
+> >
+> > Interest!  (Though Samuli is the one maintaining the installers...)
+> >
+> > gert
+> >
+> > --
+> > USENET is *not* the non-clickable part of WWW!
+> >                                                            //
+> www.muc.de/~gert/
+> > Gert Doering - Munich, Germany
+> gert@...1296...
+> > fax: +49-89-35655025
+> gert@...1297...
+> >
+>
+
+--001a11468c36d7171a0536476518
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr">we have just packed our own installer using<div><br></div>=
+<div>...</div><div>!include WinVer.nsh<br></div><div>...</div><div><div>!de=
+fine TAP_WINDOWS_INSTALLER_5 &quot;C:\tap\tap-windows-9.9.2_3.exe&quot;</di=
+v><div>!define TAP_WINDOWS_INSTALLER_6 &quot;C:\tap\tap-windows-9.21.2.exe&=
+quot;</div></div><div><br></div><div>...</div><div><br></div><div><div>${If=
+} ${AtLeastWin7}</div><div>=C2=A0 =C2=A0 File /oname=3Dtap-windows.exe &quo=
+t;${TAP_WINDOWS_INSTALLER_6}&quot;</div><div>${Else}</div><div>=C2=A0 =C2=
+=A0 File /oname=3Dtap-windows.exe &quot;${TAP_WINDOWS_INSTALLER_5}&quot;</d=
+iv><div>${EndIf}</div></div><div><br></div><div>.......</div><div><br></div=
+><div>however, I need some time to reproduce the same with openvpn-build.</=
+div><div>I&#39;ll make PR soon</div></div><div class=3D"gmail_extra"><br><d=
+iv class=3D"gmail_quote">2016-06-26 23:52 GMT+05:00  <span dir=3D"ltr">&lt;=
+<a href=3D"mailto:samuli@...515..." target=3D"_blank">samuli@...515...</a>&=
+gt;</span>:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex=
+;border-left:1px #ccc solid;padding-left:1ex">I think a dual NDIS5/6 instal=
+ler is a good idea. Feel free to PR :).<br>
+<br>
+Samuli<br>
+<br>
+Il gio giu 23 20:29:55 2016 GMT+0300, Gert Doering scrive:<br>
+<div class=3D"HOEnZb"><div class=3D"h5">&gt; Hi,<br>
+&gt;<br>
+&gt; On Thu, Jun 23, 2016 at 06:07:51PM +0500, ???????? ?????????????? wrot=
+e:<br>
+&gt; &gt; we used to enroll our own installer, and we bundled both x86 and =
+x64 into<br>
+&gt; &gt; single installer<br>
+&gt; &gt;<br>
+&gt; &gt; it was easy, several blocks<br>
+&gt; &gt;<br>
+&gt; &gt; ${If} ${RunningX64}<br>
+&gt; &gt; ....<br>
+&gt; &gt; ${Else}<br>
+&gt; &gt; ...<br>
+&gt; &gt; ${EndIf}<br>
+&gt; &gt;<br>
+&gt; &gt;<br>
+&gt; &gt; we are going to pack NDIS5/NDIS6 the same way. in order to choose=
+ proper<br>
+&gt; &gt; installer automatically, not to put that decision to user.<br>
+&gt; &gt;<br>
+&gt; &gt; if there&#39;s an interest, I can make some PR on that.<br>
+&gt;<br>
+&gt; Interest!=C2=A0 (Though Samuli is the one maintaining the installers..=
+.)<br>
+&gt;<br>
+&gt; gert<br>
+&gt;<br>
+&gt; --<br>
+&gt; USENET is *not* the non-clickable part of WWW!<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 //<a hre=
+f=3D"http://www.muc.de/~gert/" rel=3D"noreferrer" target=3D"_blank">www.muc=
+.de/~gert/</a><br>
+&gt; Gert Doering - Munich, Germany=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0<a href=
+=3D"mailto:gert@...1296...">gert@...1296...</a><br>
+&gt; fax: +49-89-35655025=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 <a href=3D"mailto:gert@...1297...">gert@=
+...1297...</a><br>
+&gt;</div></div></blockquote></div><br></div>
+
+--001a11468c36d7171a0536476518--
+
