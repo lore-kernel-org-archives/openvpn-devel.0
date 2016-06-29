@@ -1,14 +1,10 @@
-Date: Wed, 29 Jun 2016 11:00:25 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20160629090025.GV78279@...1296...>
-References: <CAFHpkQGrube6hF3+hab3NdNhcifjV15ZSefdUWCcXJPg_CApKw@...278...>
-	<20160629081109.GU78279@...1296...>
-	<CAFHpkQGD10-N=fX6osaMKE4SN+S55A8EN+8byw6aTM9Aosd1Mw@...278...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="wtjvnLv0o8UUzur2"
-Content-Disposition: inline
-In-Reply-To: <CAFHpkQGD10-N=fX6osaMKE4SN+S55A8EN+8byw6aTM9Aosd1Mw@...278...>
+In-Reply-To: <CAFHpkQGrube6hF3+hab3NdNhcifjV15ZSefdUWCcXJPg_CApKw@...278...>
+References: <CAFHpkQGrube6hF3+hab3NdNhcifjV15ZSefdUWCcXJPg_CApKw@...278...>
+From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
+Date: Wed, 29 Jun 2016 14:08:23 +0500
+Message-ID: <CAFHpkQGCv6eR3j4o+31RkdtnpdMeBmg5jnx4yux+YZ8TWojRkQ@...278...>
+Content-Type: multipart/alternative; boundary=001a11c3af2e78f6f105366718a7
 Subject: Re: [Openvpn-devel] git master: no more WinXP ?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -18,44 +14,60 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: ???????? ?????????????? <chipitsine@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---wtjvnLv0o8UUzur2
-Content-Type: text/plain; charset="us-ascii"
+--001a11c3af2e78f6f105366718a7
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
+ok, I've figured out what fwpuclnt.dll is used for: block_dns feature.
 
-On Wed, Jun 29, 2016 at 01:57:14PM +0500, ???????? ?????????????? wrote:
-> ok, if so, we need to modify installer to detect that.
 
-Right, "master" installers should refuse cooperation on XP.
+2016-06-29 13:05 GMT+05:00 =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=
+=B8=D1=86=D0=B8=D0=BD <chipitsine@...277...>:
 
-Samuli, you're listening? ;-)
+> Hello,
+>
+> I'm trying to install openvpn git master on WinXP, no luck, it complains
+> on missing fwpuclnt.dll
+>
+> there's no such dll in WinXP (and it is not possible to supply dll within
+> installer)
+>
+>
+>
+> https://github.com/OpenVPN/openvpn/blob/master/src/openvpn/Makefile.am#L1=
+30
+>
+>
+> however, I do not see, where it is called in code.
+> what is it for ?
+>
+>
+> Cheers,
+> Ilya Shipitsin
+>
 
-gert
+--001a11c3af2e78f6f105366718a7
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+<div dir=3D"ltr">ok, I&#39;ve figured out what fwpuclnt.dll is used for: bl=
+ock_dns feature.<br><br></div><div class=3D"gmail_extra"><br><div class=3D"=
+gmail_quote">2016-06-29 13:05 GMT+05:00 =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=
+=B8=D0=BF=D0=B8=D1=86=D0=B8=D0=BD <span dir=3D"ltr">&lt;<a href=3D"mailto:c=
+hipitsine@...277..." target=3D"_blank">chipitsine@...277...</a>&gt;</span>:=
+<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-lef=
+t:1px #ccc solid;padding-left:1ex"><div dir=3D"ltr"><div><div>Hello,<br><br=
+></div>I&#39;m trying to install openvpn git master on WinXP, no luck, it c=
+omplains on missing fwpuclnt.dll<br><br></div>there&#39;s no such dll in Wi=
+nXP (and it is not possible to supply dll within installer)<br><br><div><br=
+><br><a href=3D"https://github.com/OpenVPN/openvpn/blob/master/src/openvpn/=
+Makefile.am#L130" target=3D"_blank">https://github.com/OpenVPN/openvpn/blob=
+/master/src/openvpn/Makefile.am#L130</a><br><br><br></div><div>however, I d=
+o not see, where it is called in code.<br></div><div>what is it for ?<br><b=
+r><br></div><div>Cheers,<br></div><div>Ilya Shipitsin<br></div></div>
+</blockquote></div><br></div>
 
---wtjvnLv0o8UUzur2
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQCVAwUBV3OOKakuBuNlUUl1AQLm7QQAhG8bU6a3MO/Il+eo1EdfwGcFngvrx2Du
-MDSrkD3ACepT/vivqmKHaw3hEHwzgAyfi8+dWZI4r8bDdih7sM09Ecuq6YwiSr37
-CjibybJZCkK7WjK2kpG7Z8Y3uSnGK4HUdJa52DOOQ3OqQjOHeJWPLChlQnrMbnPM
-WfzJfEMUDak=
-=g1ux
------END PGP SIGNATURE-----
-
---wtjvnLv0o8UUzur2--
+--001a11c3af2e78f6f105366718a7--
 
