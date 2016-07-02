@@ -1,9 +1,10 @@
 References: <1467430368-25437-1-git-send-email-selva.nair@...277...>
+	<ab01dda4-e7fe-2c9b-c41f-26c7f8f92cd5@...1227...>
 From: Arne Schwabe <arne@...1227...>
-Message-ID: <ab01dda4-e7fe-2c9b-c41f-26c7f8f92cd5@...1227...>
-Date: Sat, 2 Jul 2016 12:32:57 +0200
+Message-ID: <94cf2582-6f60-4b3f-0675-c362f2d91238@...1227...>
+Date: Sat, 2 Jul 2016 17:32:59 +0200
 MIME-Version: 1.0
-In-Reply-To: <1467430368-25437-1-git-send-email-selva.nair@...277...>
+In-Reply-To: <ab01dda4-e7fe-2c9b-c41f-26c7f8f92cd5@...1227...>
 Subject: Re: [Openvpn-devel] [PATCH] Exponentially backoff on repeated
  connect retries
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -15,59 +16,25 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 To: Selva Nair <selva.nair@...277...>, openvpn-devel@lists.sourceforge.net
 
-Am 02.07.16 um 05:32 schrieb Selva Nair:
-> - When the number of retries per remote exceeds a limit
->   (hard coded to 5), double the restart pause interval
->   for each additional retry per remote.
-> - Trigger a SIGHUP to reset the retry count when the pause
->   interval exceeds 1024 times the base value of restart pause.
-> 
-> The base value of restart pause is set using --connect-retry
-> (5 seconds by default). If it is set to zero no slow-down
-> will happen.
-> 
-> Signed-off-by: Selva Nair <selva.nair@...277...>
-> ---
->  src/openvpn/init.c |   12 ++++++++++++
->  1 file changed, 12 insertions(+)
-> 
-> diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-> index 498d36f..45e8878 100644
-> --- a/src/openvpn/init.c
-> +++ b/src/openvpn/init.c
-> @@ -1955,6 +1955,7 @@ static void
->  socket_restart_pause (struct context *c)
->  {
->    int sec = 2;
-> +  int backoff = 0;
->  
->    switch (c->options.ce.proto)
->      {
-> @@ -1977,6 +1978,17 @@ socket_restart_pause (struct context *c)
->      sec = 10;
->  #endif
->  
-> +  /* Slow down reconnection after 5 retries per remote */
-> +  backoff = (c->options.unsuccessful_attempts / c->options.connection_list->len) - 5;
-> +  if (backoff > 0)
-> +    sec <<= min_int (backoff, 10);
-> +
-> +  if (backoff > 10 && sec > 0)
-> +    {
-> +      register_signal (c, SIGHUP, "Too many restarts");
-> +      return;
-> +    }
 
-And why sighup? Shouldn't just limiting sec be enought. SIGHUP has many
-side effects. I don't think we should trigger these for connection time.
+> And why sighup? Shouldn't just limiting sec be enought. SIGHUP has many
+> side effects. I don't think we should trigger these for connection time.
+> 
+> 
+> With default setting this results in a SIGHUP after some hours and also
+> the last intervals with 5120s are too big for default settings. I would
+> aim for something lower like five or ten minutes.
 
+I think a bit about that and I think a good way to specify exponential
+back is something like
 
-With default setting this results in a SIGHUP after some hours and also
-the last intervals with 5120s are too big for default settings. I would
-aim for something lower like five or ten minutes.
+connect-retry 5 1800, which would mean "scale back up to 1800s" and
+maybe default that option to connect-retry 5 300. That also allows
+specifying larger connect-retry values without backoff. E.g.
+connect-retry 60 60
 
 Arne
 
