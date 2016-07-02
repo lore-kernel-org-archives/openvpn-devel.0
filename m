@@ -1,9 +1,15 @@
-From: Selva Nair <selva.nair@...277...>
-Date: Sat,  2 Jul 2016 19:34:48 -0400
-Message-Id: <1467502488-31549-1-git-send-email-selva.nair@...277...>
-In-Reply-To: <1467430368-25437-1-git-send-email-selva.nair@...277...>
+MIME-Version: 1.0
+In-Reply-To: <cb9a91ab-452e-cf22-9152-a659979f032e@...1227...>
 References: <1467430368-25437-1-git-send-email-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH v2] Exponentially back off on repeated
+	<ab01dda4-e7fe-2c9b-c41f-26c7f8f92cd5@...1227...>
+	<94cf2582-6f60-4b3f-0675-c362f2d91238@...1227...>
+	<CAKuzo_iVWZVxUm9x_FHVaP9bWUVdzNjb+P-sK9OTx1H7UutvWA@...278...>
+	<cb9a91ab-452e-cf22-9152-a659979f032e@...1227...>
+From: Selva Nair <selva.nair@...277...>
+Date: Sat, 2 Jul 2016 19:50:38 -0400
+Message-ID: <CAKuzo_hWbhhTMMTeEuQp8G189m=CVMcVSq9MLtzF43QCZPTmmA@...278...>
+Content-Type: multipart/alternative; boundary=001a1148a342518a960536afc62a
+Subject: Re: [Openvpn-devel] [PATCH] Exponentially backoff on repeated
 	connect retries
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -13,194 +19,117 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Arne Schwabe <arne@...1227...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-- When the number of retries per remote exceeds a limit
-  (hard coded to 5), double the restart pause interval
-  for each additional retry per remote.
-- Trigger a SIGHUP to reset the retry count when the pause
-  interval exceeds 1024 times the base value of restart pause.
-  (removed in v2 of the patch)
+--001a1148a342518a960536afc62a
+Content-Type: text/plain; charset=UTF-8
 
-The base value of restart pause is set using --connect-retry
-(5 seconds by default).
+On Sat, Jul 2, 2016 at 6:38 PM, Arne Schwabe <arne@...1227...> wrote:
 
-v2 changes (based on suggestions from Arne Schwabe <arne@...1227...>)
+> >     connect-retry 5 1800, which would mean "scale back up to 1800s" and
+> >     maybe default that option to connect-retry 5 300. That also allows
+> >     specifying larger connect-retry values without backoff. E.g.
+> >     connect-retry 60 60
+> >
+> >
+> > Good idea.
+> >
+> > Agreed, triggering SIGHUP is not ideal. The only reason for it was to
+> > reset the counters so that the backoff time doesn't get stuck at the
+> > highest value for ever. If we reduce the max backoff interval that's
+> > less of a concern.
+> >
+> > One motivation for this patch is to avoid logs filling up. For a client
+> > stuck in a restart loop with verb=3 and 5 minutes max pause, the logs
+> > grow by about 1 M per  day --  may be not too bad.
+> >
+> > Selva
+>
+> Do you want to propose a new patch or should I do it. I would propose
+> still a exponential backoff but starting a 2s. so we get 2s 4s 8s ... or
+> as default conect-retry 2 256. It would then just stay at the 256s
+> interval until a sucessful connection is established. That simplifies
+> the logic and gives predictable (from a user perspective) results.
+>
+> Iirc the logic of connect-retry was changed by me in master so changing
+> the logic again should not be a problem
 
-- Do not throw SIGHUP.
-- Add an optional argument to "--connect-retry n [m]" where 'm'
-  specifies the max value of restart pause interval (default
-  300 sec).
-  E.g., "--connect-retry 5 1800" will cause the restart pause to
-  scale up starting at 5 until it exceeds 1800 seconds at which
-  point it gets capped at 1800.
-- If n == m no slow down will occur.
-- While at it, fix typos and clarify the description of connect-retry-max
-  in the man page and Changes.rst
 
-Signed-off-by: Selva Nair <selva.nair@...277...>
----
- Changes.rst           |    8 ++++++--
- doc/openvpn.8         |   19 ++++++++++++-------
- src/openvpn/init.c    |    8 ++++++++
- src/openvpn/options.c |   13 ++++++++++---
- src/openvpn/options.h |    1 +
- 5 files changed, 37 insertions(+), 12 deletions(-)
 
-diff --git a/Changes.rst b/Changes.rst
-index d12cdad..59722e2 100644
---- a/Changes.rst
-+++ b/Changes.rst
-@@ -75,8 +75,8 @@ User-visible Changes
-   In --static mode connect-timeout specifies the timeout for TCP and
-   proxy connection establishment
- 
--- connect-retry now specifies the maximum number of unsucessfully
--  trying all remote/connection entries before exiting.
-+- connect-retry-max now specifies the maximum number of unsuccessful
-+  attempts of each remote/connection entry before exiting.
- 
- - sndbuf and recvbuf default now to OS default instead of 64k
- 
-@@ -120,6 +120,10 @@ User-visible Changes
- - --http-proxy-retry and --sock-proxy-retry have been removed. Proxy connections
-     will now behave like regular connection entries and generate a USR1 on failure.
- 
-+- --connect-retry gets a optional third argument that specifies the maximum
-+  time in seconds to wait between reconnection attempts when an exponential
-+  backoff is triggered due to repeated retries. Default = 300 seconds.
-+
- Maintainer-visible changes
- --------------------------
- - OpenVPN no longer supports building with crypto support, but without TLS
-diff --git a/doc/openvpn.8 b/doc/openvpn.8
-index 64cc934..3ca6f50 100644
---- a/doc/openvpn.8
-+++ b/doc/openvpn.8
-@@ -462,22 +462,27 @@ application-level UDP protocols, or tunneling protocols which don't
- possess a built-in reliability layer.
- .\"*********************************************************
- .TP
--.B \-\-connect\-retry n
-+.B \-\-connect\-retry n [max]
- Wait
- .B n
--seconds  between connection attempts (default=5).
-+seconds  between connection attempts (default=5). Repeated reconnection
-+attempts are slowed down after 5 retries per remote by doubling the wait
-+time after each unsuccessful attempt. The optional argument
-+.B max
-+specifies the maximum value of wait time in seconds at which it gets
-+capped (default=300).
- .\"*********************************************************
- .TP
- .B \-\-connect\-retry\-max n
- .B n
--specifies the number of times all
-+specifies the number of times each
- .B \-\-remote
--respectively
-+or
- .B <connection>
--statements are tried. Specifiying
-+entry is tried. Specifying
- .B n
--as one would try each entry exactly once. A sucessful connection
--resets the counter. (default=umlimited).
-+as one would try each entry exactly once. A successful connection
-+resets the counter. (default=unlimited).
- .\"*********************************************************
- .TP
- .B \-\-show\-proxy\-settings
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 498d36f..247a526 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -1955,6 +1955,7 @@ static void
- socket_restart_pause (struct context *c)
- {
-   int sec = 2;
-+  int backoff = 0;
- 
-   switch (c->options.ce.proto)
-     {
-@@ -1977,6 +1978,13 @@ socket_restart_pause (struct context *c)
-     sec = 10;
- #endif
- 
-+  /* Slow down reconnection after 5 retries per remote */
-+  backoff = (c->options.unsuccessful_attempts / c->options.connection_list->len) - 4;
-+  if (backoff > 0 && sec < 1<<16)
-+    sec = max_int (sec, 1) << min_int (backoff, 15);
-+  if (sec > c->options.ce.connect_retry_seconds_max)
-+    sec = c->options.ce.connect_retry_seconds_max;
-+
-   if (c->persist.restart_sleep_seconds > 0 && c->persist.restart_sleep_seconds > sec)
-     sec = c->persist.restart_sleep_seconds;
-   else if (c->persist.restart_sleep_seconds == -1)
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index cf971a6..09fe9ed 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -123,8 +123,10 @@ static const char usage_message[] =
-   "                  p = udp (default), tcp-server, or tcp-client\n"
-   "--proto-force p : only consider protocol p in list of connection profiles.\n"
-   "                  p = udp6, tcp6-server, or tcp6-client (ipv6)\n"
--  "--connect-retry n : For --proto tcp-client, number of seconds to wait\n"
--  "                    between connection retries (default=%d).\n"
-+  "--connect-retry n [m] : For client, number of seconds to wait between\n"
-+  "                  connection retries (default=%d). On repeated retries\n"
-+  "                  the wait time is exponentially increased to a maximum of m\n"
-+  "                  (default=%d).\n"
-   "--connect-retry-max n : Maximum connection attempt retries, default infinite.\n"
-   "--http-proxy s p [up] [auth] : Connect to remote host\n"
-   "                  through an HTTP proxy at address s and port p.\n"
-@@ -770,6 +772,7 @@ init_options (struct options *o, const bool init_gc)
-   o->ce.af = AF_UNSPEC;
-   o->ce.bind_ipv6_only = false;
-   o->ce.connect_retry_seconds = 5;
-+  o->ce.connect_retry_seconds_max = 300;
-   o->ce.connect_timeout = 120;
-   o->connect_retry_max = 0;
-   o->ce.local_port = o->ce.remote_port = OPENVPN_PORT;
-@@ -3479,6 +3482,7 @@ usage (void)
-   fprintf (fp, usage_message,
- 	   title_string,
- 	   o.ce.connect_retry_seconds,
-+	   o.ce.connect_retry_seconds_max,
- 	   o.ce.local_port, o.ce.remote_port,
- 	   TUN_MTU_DEFAULT, TAP_MTU_EXTRA_DEFAULT,
- 	   o.verbosity,
-@@ -4724,10 +4728,13 @@ add_option (struct options *options,
-       if (p[1])
- 	options->ip_remote_hint=p[1];
-     }
--  else if (streq (p[0], "connect-retry") && p[1] && !p[2])
-+  else if (streq (p[0], "connect-retry") && p[1] && !p[3])
-     {
-       VERIFY_PERMISSION (OPT_P_GENERAL|OPT_P_CONNECTION);
-       options->ce.connect_retry_seconds = positive_atoi (p[1]);
-+      if (p[2])
-+         options->ce.connect_retry_seconds_max =
-+            max_int (positive_atoi (p[2]), options->ce.connect_retry_seconds);
-     }
-   else if ((streq (p[0], "connect-timeout") || streq (p[0], "server-poll-timeout"))
- 	    && p[1] && !p[2])
-diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-index 7bb36c9..486bf5d 100644
---- a/src/openvpn/options.h
-+++ b/src/openvpn/options.h
-@@ -96,6 +96,7 @@ struct connection_entry
-   bool bind_ipv6_only;
-   bool bind_local;
-   int connect_retry_seconds;
-+  int connect_retry_seconds_max;
-   int connect_timeout;
-   struct http_proxy_options *http_proxy_options;
-   const char *socks_proxy_server;
--- 
-1.7.10.4
+Just sent off v2 before checking for new mails... If you want to change the
+default wait time to 2s, it can be easily done in an independent patch. Was
+there a reason fro changing it from 2s in 2.3 to the current 5s in the
+first place?
 
+In any case my v2 would use 5, 5, 5, 5, 5, 10, 20,... ,160 and then jump to
+300 instead of 320 and stay there which is pretty ok in my opinion. As the
+user can now specify any combination of the base wait interval and the max
+value, the last interval before capping will have an odd value in general
+-- we can avoid it for the default values but it will only stay so until
+someone changes the default again one day.. In case it matters, the
+intervals are still predictable although it doesn't have to be in a true
+backoff logic.
+
+Selva
+
+--001a1148a342518a960536afc62a
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">=
+On Sat, Jul 2, 2016 at 6:38 PM, Arne Schwabe <span dir=3D"ltr">&lt;<a href=
+=3D"mailto:arne@...1227..." target=3D"_blank">arne@...1227...</a>&gt;</span=
+> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;bo=
+rder-left:1px #ccc solid;padding-left:1ex"><span class=3D"">&gt;=C2=A0 =C2=
+=A0 =C2=A0connect-retry 5 1800, which would mean &quot;scale back up to 180=
+0s&quot; and<br>
+&gt;=C2=A0 =C2=A0 =C2=A0maybe default that option to connect-retry 5 300. T=
+hat also allows<br>
+&gt;=C2=A0 =C2=A0 =C2=A0specifying larger connect-retry values without back=
+off. E.g.<br>
+&gt;=C2=A0 =C2=A0 =C2=A0connect-retry 60 60<br>
+&gt;<br>
+&gt;<br>
+&gt; Good idea.<br>
+&gt;<br>
+&gt; Agreed, triggering SIGHUP is not ideal. The only reason for it was to<=
+br>
+&gt; reset the counters so that the backoff time doesn&#39;t get stuck at t=
+he<br>
+&gt; highest value for ever. If we reduce the max backoff interval that&#39=
+;s<br>
+&gt; less of a concern.<br>
+&gt;<br>
+&gt; One motivation for this patch is to avoid logs filling up. For a clien=
+t<br>
+&gt; stuck in a restart loop with verb=3D3 and 5 minutes max pause, the log=
+s<br>
+&gt; grow by about 1 M per=C2=A0 day --=C2=A0 may be not too bad.<br>
+&gt;<br>
+&gt; Selva<br>
+<br>
+</span>Do you want to propose a new patch or should I do it. I would propos=
+e<br>
+still a exponential backoff but starting a 2s. so we get 2s 4s 8s ... or<br>
+as default conect-retry 2 256. It would then just stay at the 256s<br>
+interval until a sucessful connection is established. That simplifies<br>
+the logic and gives predictable (from a user perspective) results.<br>
+<br>
+Iirc the logic of connect-retry was changed by me in master so changing<br>
+the logic again should not be a problem</blockquote></div><br><br></div><di=
+v class=3D"gmail_extra">Just sent off v2 before checking for new mails... I=
+f you want to change the default wait time to 2s, it can be easily done in =
+an independent patch. Was there a reason fro changing it from 2s in 2.3 to =
+the current 5s in the first place?<br><br></div><div class=3D"gmail_extra">=
+In any case my v2 would use 5, 5, 5, 5, 5, 10, 20,... ,160 and then jump to=
+ 300 instead of 320 and stay there which is pretty ok in my opinion. As the=
+ user can now specify any combination of the base wait interval and the max=
+ value, the last interval before capping will have an odd value in general =
+-- we can avoid it for the default values but it will only stay so until so=
+meone changes the default again one day.. In case it matters, the intervals=
+ are still predictable although it doesn&#39;t have to be in a true backoff=
+ logic.<br><br></div><div class=3D"gmail_extra">Selva<br></div></div>
+
+--001a1148a342518a960536afc62a--
 
