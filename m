@@ -1,16 +1,11 @@
 MIME-Version: 1.0
-In-Reply-To: <cb9a91ab-452e-cf22-9152-a659979f032e@...1227...>
-References: <1467430368-25437-1-git-send-email-selva.nair@...277...>
-	<ab01dda4-e7fe-2c9b-c41f-26c7f8f92cd5@...1227...>
-	<94cf2582-6f60-4b3f-0675-c362f2d91238@...1227...>
-	<CAKuzo_iVWZVxUm9x_FHVaP9bWUVdzNjb+P-sK9OTx1H7UutvWA@...278...>
-	<cb9a91ab-452e-cf22-9152-a659979f032e@...1227...>
+In-Reply-To: <f66c1367-1b63-fe29-1522-3ecd59eb53b8@...515...>
+References: <f66c1367-1b63-fe29-1522-3ecd59eb53b8@...515...>
 From: Selva Nair <selva.nair@...277...>
-Date: Sat, 2 Jul 2016 19:50:38 -0400
-Message-ID: <CAKuzo_hWbhhTMMTeEuQp8G189m=CVMcVSq9MLtzF43QCZPTmmA@...278...>
-Content-Type: multipart/alternative; boundary=001a1148a342518a960536afc62a
-Subject: Re: [Openvpn-devel] [PATCH] Exponentially backoff on repeated
-	connect retries
+Date: Sat, 2 Jul 2016 23:45:42 -0400
+Message-ID: <CAKuzo_jOYoE6NA=zC7cvt5Zm0KekO-1wu=z8R5Qjp+5-=kXvpQ@...278...>
+Content-Type: multipart/alternative; boundary=94eb2c05c4fef42c000536b30e6d
+Subject: Re: [Openvpn-devel] Windows service changes
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,117 +14,109 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
+To: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---001a1148a342518a960536afc62a
-Content-Type: text/plain; charset=UTF-8
+--94eb2c05c4fef42c000536b30e6d
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Sat, Jul 2, 2016 at 6:38 PM, Arne Schwabe <arne@...1227...> wrote:
+On Thu, Jun 30, 2016 at 11:04 AM, Samuli Sepp=C3=A4nen <samuli@...515...>
+wrote:
 
-> >     connect-retry 5 1800, which would mean "scale back up to 1800s" and
-> >     maybe default that option to connect-retry 5 300. That also allows
-> >     specifying larger connect-retry values without backoff. E.g.
-> >     connect-retry 60 60
-> >
-> >
-> > Good idea.
-> >
-> > Agreed, triggering SIGHUP is not ideal. The only reason for it was to
-> > reset the counters so that the backoff time doesn't get stuck at the
-> > highest value for ever. If we reduce the max backoff interval that's
-> > less of a concern.
-> >
-> > One motivation for this patch is to avoid logs filling up. For a client
-> > stuck in a restart loop with verb=3 and 5 minutes max pause, the logs
-> > grow by about 1 M per  day --  may be not too bad.
-> >
-> > Selva
+> The installer linked to above implement all of the above. However, these
+> three changes are required for things to work properly:
 >
-> Do you want to propose a new patch or should I do it. I would propose
-> still a exponential backoff but starting a 2s. so we get 2s 4s 8s ... or
-> as default conect-retry 2 256. It would then just stay at the 256s
-> interval until a sucessful connection is established. That simplifies
-> the logic and gives predictable (from a user perspective) results.
+> <https://github.com/OpenVPN/openvpn-build/pull/23>
+> <https://github.com/xkjyeah/openvpnserv2/pull/7>
 >
-> Iirc the logic of connect-retry was changed by me in master so changing
-> the logic again should not be a problem
+
+Alternatively the startup mode may be changed from the installer using
+
+sc config OpenVPNServiceInteractive start=3Dauto
+
+Something like this to change the mode at install time will be required to
+support the checkbox mentioned below.
 
 
+> <https://github.com/OpenVPN/openvpn/pull/57>
+>
+> The only thing missing is launching the "Interactive Service" at install
+> time, and adding a checkbox "Enable Interactive Service" to the
+> installer, as agreed upon in this email thread:
+>
+>
+Oh I missed this paragraph on the first read -- hence my stupid question in
+the previous email.. Anyway, once the startup mode is set as automatic it
+will anyway start after next reboot, so is there a need to have that
+checkbox? Unless unchecking it also means the mode will be changed to
+manual.
 
-Just sent off v2 before checking for new mails... If you want to change the
-default wait time to 2s, it can be easily done in an independent patch. Was
-there a reason fro changing it from 2s in 2.3 to the current 5s in the
-first place?
 
-In any case my v2 would use 5, 5, 5, 5, 5, 10, 20,... ,160 and then jump to
-300 instead of 320 and stay there which is pretty ok in my opinion. As the
-user can now specify any combination of the base wait interval and the max
-value, the last interval before capping will have an odd value in general
--- we can avoid it for the default values but it will only stay so until
-someone changes the default again one day.. In case it matters, the
-intervals are still predictable although it doesn't have to be in a true
-backoff logic.
+> <http://thread.gmane.org/gmane.network.openvpn.devel/12010/>
+>
+> Let me know if you have any comments regarding these changes
+>
 
 Selva
 
---001a1148a342518a960536afc62a
+--94eb2c05c4fef42c000536b30e6d
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <div dir=3D"ltr"><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">=
-On Sat, Jul 2, 2016 at 6:38 PM, Arne Schwabe <span dir=3D"ltr">&lt;<a href=
-=3D"mailto:arne@...1227..." target=3D"_blank">arne@...1227...</a>&gt;</span=
-> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;bo=
-rder-left:1px #ccc solid;padding-left:1ex"><span class=3D"">&gt;=C2=A0 =C2=
-=A0 =C2=A0connect-retry 5 1800, which would mean &quot;scale back up to 180=
-0s&quot; and<br>
-&gt;=C2=A0 =C2=A0 =C2=A0maybe default that option to connect-retry 5 300. T=
-hat also allows<br>
-&gt;=C2=A0 =C2=A0 =C2=A0specifying larger connect-retry values without back=
-off. E.g.<br>
-&gt;=C2=A0 =C2=A0 =C2=A0connect-retry 60 60<br>
-&gt;<br>
-&gt;<br>
-&gt; Good idea.<br>
-&gt;<br>
-&gt; Agreed, triggering SIGHUP is not ideal. The only reason for it was to<=
-br>
-&gt; reset the counters so that the backoff time doesn&#39;t get stuck at t=
-he<br>
-&gt; highest value for ever. If we reduce the max backoff interval that&#39=
-;s<br>
-&gt; less of a concern.<br>
-&gt;<br>
-&gt; One motivation for this patch is to avoid logs filling up. For a clien=
-t<br>
-&gt; stuck in a restart loop with verb=3D3 and 5 minutes max pause, the log=
-s<br>
-&gt; grow by about 1 M per=C2=A0 day --=C2=A0 may be not too bad.<br>
-&gt;<br>
-&gt; Selva<br>
+On Thu, Jun 30, 2016 at 11:04 AM, <span tabindex=3D"-1" id=3D":6xu.1" style=
+=3D"" class=3D"">Samuli</span> <span tabindex=3D"-1" id=3D":6xu.2" style=3D=
+"" class=3D"">Sepp=C3=A4nen</span> <span dir=3D"ltr">&lt;<a href=3D"mailto:=
+samuli@...515..." target=3D"_blank"><span tabindex=3D"-1" id=3D":6xu.3" sty=
+le=3D"" class=3D"">samuli</span>@<span tabindex=3D"-1" id=3D":6xu.4" style=
+=3D"" class=3D"">openvpn</span>.net</a>&gt;</span> wrote:<br><blockquote cl=
+ass=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;p=
+adding-left:1ex"><div id=3D":4j0" class=3D"a3s aXjCH m155a1d918e1c6359">The=
+ installer linked to above implement all of the above. However, these<br>
+three changes are required for things to work properly:<br>
 <br>
-</span>Do you want to propose a new patch or should I do it. I would propos=
-e<br>
-still a exponential backoff but starting a 2s. so we get 2s 4s 8s ... or<br>
-as default conect-retry 2 256. It would then just stay at the 256s<br>
-interval until a sucessful connection is established. That simplifies<br>
-the logic and gives predictable (from a user perspective) results.<br>
+&lt;<a href=3D"https://github.com/OpenVPN/openvpn-build/pull/23" rel=3D"nor=
+eferrer" target=3D"_blank">https://github.com/OpenVPN/openvpn-build/pull/23=
+</a>&gt;<br>
+&lt;<a href=3D"https://github.com/xkjyeah/openvpnserv2/pull/7" rel=3D"noref=
+errer" target=3D"_blank">https://github.com/xkjyeah/openvpnserv2/pull/7</a>=
+&gt;<br></div></blockquote><div><br></div><div>Alternatively the <span tabi=
+ndex=3D"-1" id=3D":6xu.5" style=3D"" class=3D"">startup</span> mode may be =
+changed from the installer using<br></div><div><br><span tabindex=3D"-1" id=
+=3D":6xu.6" style=3D"" class=3D"">sc</span> <span tabindex=3D"-1" id=3D":6x=
+u.7" style=3D"" class=3D"">config</span> <span tabindex=3D"-1" id=3D":6xu.8=
+" style=3D"" class=3D"">OpenVPNServiceInteractive</span> start=3Dauto<br><b=
+r></div><div>Something like this to change the mode at install time will be=
+ required to support the <span tabindex=3D"-1" id=3D":6xu.9" style=3D"" cla=
+ss=3D"">checkbox</span> mentioned below.<br>=C2=A0<br></div><blockquote cla=
+ss=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;pa=
+dding-left:1ex"><div id=3D":4j0" class=3D"a3s aXjCH m155a1d918e1c6359">
+&lt;<a href=3D"https://github.com/OpenVPN/openvpn/pull/57" rel=3D"noreferre=
+r" target=3D"_blank">https://github.com/OpenVPN/openvpn/pull/57</a>&gt;<br>
 <br>
-Iirc the logic of connect-retry was changed by me in master so changing<br>
-the logic again should not be a problem</blockquote></div><br><br></div><di=
-v class=3D"gmail_extra">Just sent off v2 before checking for new mails... I=
-f you want to change the default wait time to 2s, it can be easily done in =
-an independent patch. Was there a reason fro changing it from 2s in 2.3 to =
-the current 5s in the first place?<br><br></div><div class=3D"gmail_extra">=
-In any case my v2 would use 5, 5, 5, 5, 5, 10, 20,... ,160 and then jump to=
- 300 instead of 320 and stay there which is pretty ok in my opinion. As the=
- user can now specify any combination of the base wait interval and the max=
- value, the last interval before capping will have an odd value in general =
--- we can avoid it for the default values but it will only stay so until so=
-meone changes the default again one day.. In case it matters, the intervals=
- are still predictable although it doesn&#39;t have to be in a true backoff=
- logic.<br><br></div><div class=3D"gmail_extra">Selva<br></div></div>
+The only thing missing is launching the &quot;Interactive Service&quot; at =
+install<br>
+time, and adding a checkbox &quot;Enable Interactive Service&quot; to the<b=
+r>
+installer, as agreed upon in this email thread:<br>
+<br></div></blockquote><div>=C2=A0</div><div>Oh I missed this paragraph on =
+the first read -- hence my stupid question in the previous email.. Anyway, =
+once the <span tabindex=3D"-1" id=3D":6xu.10" style=3D"" class=3D"">startup=
+</span> mode is set as automatic it will anyway start after next reboot, so=
+ is there a need to have that <span tabindex=3D"-1" id=3D":6xu.11" style=3D=
+"" class=3D"">checkbox</span>? Unless <span tabindex=3D"-1" id=3D":6xu.12" =
+style=3D"" class=3D"">unchecking</span> it also means the mode will be chan=
+ged to manual.<br></div><div>=C2=A0 <br></div><blockquote class=3D"gmail_qu=
+ote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex=
+"><div id=3D":4j0" class=3D"a3s aXjCH m155a1d918e1c6359">
+&lt;<a href=3D"http://thread.gmane.org/gmane.network.openvpn.devel/12010/" =
+rel=3D"noreferrer" target=3D"_blank">http://thread.gmane.org/gmane.network.=
+openvpn.devel/12010/</a>&gt;<br>
+<br>
+Let me know if you have any comments regarding these changes</div></blockqu=
+ote></div><br></div><div class=3D"gmail_extra"><span tabindex=3D"-1" id=3D"=
+:6xu.13" style=3D"" class=3D"">Selva</span><br></div></div>
 
---001a1148a342518a960536afc62a--
+--94eb2c05c4fef42c000536b30e6d--
 
