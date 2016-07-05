@@ -1,9 +1,10 @@
-MIME-Version: 1.0
-From: Rafael Gava <gava100@...277...>
-Date: Tue, 5 Jul 2016 10:13:28 -0300
-Message-ID: <CAAWBBYOc5H=0X7b=i_gizvTZUDv2RwxQUEOY85P6c3z-y_U8og@...278...>
-Content-Type: multipart/alternative; boundary=001a113d81ca1292f00536e3382d
-Subject: Re: [Openvpn-devel] [PATCH] Added client-ip option to NAT
+From: Selva Nair <selva.nair@...277...>
+Date: Tue,  5 Jul 2016 11:32:50 -0400
+Message-Id: <1467732770-19110-1-git-send-email-selva.nair@...277...>
+In-Reply-To: <1467502488-31549-1-git-send-email-selva.nair@...277...>
+References: <1467502488-31549-1-git-send-email-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH] Exponentially back off on repeated connect
+	retries
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,359 +13,220 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne-openvpn@...1227...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---001a113d81ca1292f00536e3382d
-Content-Type: text/plain; charset=UTF-8
+- When the number of retries per remote exceeds a limit
+  (hard coded to 5), double the restart pause interval
+  for each additional retry per remote.
+- Trigger a SIGHUP to reset the retry count when the pause
+  interval exceeds 1024 times the base value of restart pause.
+  (removed in v2 of the patch)
 
-Hi Arne, sorry for replying so late.
+The base value of restart pause is set using --connect-retry
+(5 seconds by default).
 
-Below is the NAT client-ip patch fixing the messed up whitespaces.
-The only difference from the previous patch, besides the whitespaces, is
-that I'm considering both strings 'client-ip' and 'localhost' as valid
-options.
+v2 changes (based on suggestions from Arne Schwabe <arne@...1227...>)
 
-Please, whatever problem let me know.
+- Do not throw SIGHUP.
+- Add an optional argument to "--connect-retry n [m]" where 'm'
+  specifies the max value of restart pause interval (default
+  300 sec).
+  E.g., "--connect-retry 5 1800" will cause the restart pause to
+  scale up starting at 5 until it exceeds 1800 seconds at which
+  point it gets capped at 1800.
+- If n == m no slow down will occur.
+- While at it, fix typos and clarify the description of connect-retry-max
+  in the man page and Changes.rst
 
-BR
+v3 changes (on further feedback from arne@...1227...):
+- Limiting the base value of retry wait interval to 16 bits moved
+  to options.c
+- Apply backoff only in the udp and tcp-client modes. Backing off on
+  tcp-server could be exploited by a client in p2p-mode to maliciously
+  slow it down (thanks to Arne Schwabe for pointing this out.
+- Fix typo in Changes.rst: "third argument" -> "second argument"
 
-Rafael
-
---------
-
-From cf9cf767df84ec5beb8c127d66bde4cd2d278b34 Mon Sep 17 00:00:00 2001
-From: vntraol <Rafael.Oliveira@...2056...>
-Date: Mon, 4 Jul 2016 17:20:38 -0300
-Subject: [PATCH] Allow the user to use the string 'client-ip' on the
- client-nat network configuration as a convenient way to use
- the leased IP address received from the OpenVPN server.
-
-Usage example:
-
-client-nat snat client-ip 255.255.255.255 172.20.1.15 # replaces the
-'client-ip' string with the leased IP address received from the OpenVPN
-server
-
-Signed-off-by: vntraol <Rafael.Oliveira@...2056...>
+Signed-off-by: Selva Nair <selva.nair@...277...>
 ---
- src/openvpn/clinat.c  |   49
-+++++++++++++++++++++++++++++++++++++++++++++----
- src/openvpn/clinat.h  |   10 ++++++++++
- src/openvpn/init.c    |    2 ++
- src/openvpn/options.c |    2 ++
- 4 files changed, 59 insertions(+), 4 deletions(-)
- mode change 100644 => 100755 src/openvpn/clinat.c
- mode change 100644 => 100755 src/openvpn/clinat.h
- mode change 100644 => 100755 src/openvpn/init.c
- mode change 100644 => 100755 src/openvpn/options.c
+ Changes.rst           |    8 ++++++--
+ doc/openvpn.8         |   19 ++++++++++++-------
+ src/openvpn/init.c    |   15 +++++++++++++++
+ src/openvpn/options.c |   24 +++++++++++++++++++++---
+ src/openvpn/options.h |    1 +
+ 5 files changed, 55 insertions(+), 12 deletions(-)
 
-diff --git a/src/openvpn/clinat.c b/src/openvpn/clinat.c
-old mode 100644
-new mode 100755
-index ddefe12..713c821
---- a/src/openvpn/clinat.c
-+++ b/src/openvpn/clinat.c
-@@ -124,12 +124,21 @@ add_client_nat_to_option_list (struct
-client_nat_option_list *dest,
-       return;
-     }
-
--  e.network = getaddr(0, network, 0, &ok, NULL);
--  if (!ok)
-+  if (network && (!strcmp(network, "client-ip") || !strcmp(network,
-"localhost")) )
-     {
--      msg(msglevel, "client-nat: bad network: %s", network);
--      return;
-+      // To be replaced later on with the leased IP Address received from
-Openvpn Server.
-+      e.network = CLIENT_IP_MARKER;
-+ }
-+  else
-+    {
-+      e.network = getaddr(0, network, 0, &ok, NULL);
-+      if (!ok)
-+        {
-+          msg(msglevel, "client-nat: bad network: %s", network);
-+          return;
-+        }
-     }
+diff --git a/Changes.rst b/Changes.rst
+index d12cdad..55fca95 100644
+--- a/Changes.rst
++++ b/Changes.rst
+@@ -75,8 +75,8 @@ User-visible Changes
+   In --static mode connect-timeout specifies the timeout for TCP and
+   proxy connection establishment
+ 
+-- connect-retry now specifies the maximum number of unsucessfully
+-  trying all remote/connection entries before exiting.
++- connect-retry-max now specifies the maximum number of unsuccessful
++  attempts of each remote/connection entry before exiting.
+ 
+ - sndbuf and recvbuf default now to OS default instead of 64k
+ 
+@@ -120,6 +120,10 @@ User-visible Changes
+ - --http-proxy-retry and --sock-proxy-retry have been removed. Proxy connections
+     will now behave like regular connection entries and generate a USR1 on failure.
+ 
++- --connect-retry gets an optional second argument that specifies the maximum
++  time in seconds to wait between reconnection attempts when an exponential
++  backoff is triggered due to repeated retries. Default = 300 seconds.
 +
-   e.netmask = getaddr(0, netmask, 0, &ok, NULL);
-   if (!ok)
-     {
-@@ -263,3 +272,35 @@ client_nat_transform (const struct
-client_nat_option_list *list,
-  }
-     }
- }
-+
-+/*
-+* Replaces the CLIENT_IP_MARKER with the leased IP address received from
-OpenVPN Server.
-+*/
-+bool
-+update_client_ip_nat(struct client_nat_option_list *dest, in_addr_t
-local_ip)
-+{
-+  int i;
-+  bool ret = false;
-+
-+  if (!dest)
-+    return ret;
-+
-+  for (i=0; i <= dest->n; i++)
-+    {
-+      struct client_nat_entry *nat_entry = &dest->entries[i];
-+      if (nat_entry && nat_entry->network == CLIENT_IP_MARKER)
-+        {
-+          struct in_addr addr;
-+
-+          nat_entry->network = ntohl(local_ip);
-+          addr.s_addr = nat_entry->network;
-+          char *dot_ip = inet_ntoa(addr);
-+
-+          msg (D_CLIENT_NAT, "CNAT - Updating NAT table from
-client-ip/localhost to: %s", dot_ip);
-+          ret = true;
-+        }
-+    }
-+
-+  return ret;
-+}
-+
-diff --git a/src/openvpn/clinat.h b/src/openvpn/clinat.h
-old mode 100644
-new mode 100755
-index a5779e1..bcd3fee
---- a/src/openvpn/clinat.h
-+++ b/src/openvpn/clinat.h
-@@ -32,6 +32,11 @@
- #define CN_OUTGOING 0
- #define CN_INCOMING 1
-
-+/*
-+* Used as a marker to be replaced with the leased IP address received from
-OpenVPN server.
-+*/
-+#define CLIENT_IP_MARKER 0xFFFFFFFF
-+
- struct client_nat_entry {
- # define CN_SNAT 0
- # define CN_DNAT 1
-@@ -62,4 +67,9 @@ void client_nat_transform (const struct
-client_nat_option_list *list,
-    struct buffer *ipbuf,
-    const int direction);
-
-+/*
-+* Replaces the CLIENT_IP_MARKER with the leased IP address received from
-OpenVPN Server.
-+*/
-+bool update_client_ip_nat(struct client_nat_option_list *dest, in_addr_t
-local_ip);
-+
- #endif
+ Maintainer-visible changes
+ --------------------------
+ - OpenVPN no longer supports building with crypto support, but without TLS
+diff --git a/doc/openvpn.8 b/doc/openvpn.8
+index 64cc934..3ca6f50 100644
+--- a/doc/openvpn.8
++++ b/doc/openvpn.8
+@@ -462,22 +462,27 @@ application-level UDP protocols, or tunneling protocols which don't
+ possess a built-in reliability layer.
+ .\"*********************************************************
+ .TP
+-.B \-\-connect\-retry n
++.B \-\-connect\-retry n [max]
+ Wait
+ .B n
+-seconds  between connection attempts (default=5).
++seconds  between connection attempts (default=5). Repeated reconnection
++attempts are slowed down after 5 retries per remote by doubling the wait
++time after each unsuccessful attempt. The optional argument
++.B max
++specifies the maximum value of wait time in seconds at which it gets
++capped (default=300).
+ .\"*********************************************************
+ .TP
+ .B \-\-connect\-retry\-max n
+ .B n
+-specifies the number of times all
++specifies the number of times each
+ .B \-\-remote
+-respectively
++or
+ .B <connection>
+-statements are tried. Specifiying
++entry is tried. Specifying
+ .B n
+-as one would try each entry exactly once. A sucessful connection
+-resets the counter. (default=umlimited).
++as one would try each entry exactly once. A successful connection
++resets the counter. (default=unlimited).
+ .\"*********************************************************
+ .TP
+ .B \-\-show\-proxy\-settings
 diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-old mode 100644
-new mode 100755
-index 498d36f..e03d839
+index 498d36f..091c299 100644
 --- a/src/openvpn/init.c
 +++ b/src/openvpn/init.c
-@@ -1532,6 +1532,8 @@ do_open_tun (struct context *c)
-        c->c1.tuntap->post_open_mtu,
-        SET_MTU_TUN | SET_MTU_UPPER_BOUND);
-
-+      update_client_ip_nat(c->options.client_nat, c->c1.tuntap->local);
+@@ -1955,6 +1955,7 @@ static void
+ socket_restart_pause (struct context *c)
+ {
+   int sec = 2;
++  int backoff = 0;
+ 
+   switch (c->options.ce.proto)
+     {
+@@ -1977,6 +1978,20 @@ socket_restart_pause (struct context *c)
+     sec = 10;
+ #endif
+ 
++  /* Slow down reconnection after 5 retries per remote -- for tcp only in client mode */
++  if (c->options.ce.proto != PROTO_TCP_SERVER)
++    {
++      backoff = (c->options.unsuccessful_attempts / c->options.connection_list->len) - 4;
++      if (backoff > 0)
++        {
++          /* sec is less than 2^16; we can left shift it by up to 15 bits without overflow */
++          sec = max_int (sec, 1) << min_int (backoff, 15);
++        }
 +
-       ret = true;
-       static_context = c;
- #ifndef TARGET_ANDROID
++      if (sec > c->options.ce.connect_retry_seconds_max)
++        sec = c->options.ce.connect_retry_seconds_max;
++    }
++
+   if (c->persist.restart_sleep_seconds > 0 && c->persist.restart_sleep_seconds > sec)
+     sec = c->persist.restart_sleep_seconds;
+   else if (c->persist.restart_sleep_seconds == -1)
 diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-old mode 100644
-new mode 100755
-index cf971a6..1c53c5f
+index cf971a6..bcbaba3 100644
 --- a/src/openvpn/options.c
 +++ b/src/openvpn/options.c
-@@ -1,3 +1,4 @@
+@@ -123,8 +123,10 @@ static const char usage_message[] =
+   "                  p = udp (default), tcp-server, or tcp-client\n"
+   "--proto-force p : only consider protocol p in list of connection profiles.\n"
+   "                  p = udp6, tcp6-server, or tcp6-client (ipv6)\n"
+-  "--connect-retry n : For --proto tcp-client, number of seconds to wait\n"
+-  "                    between connection retries (default=%d).\n"
++  "--connect-retry n [m] : For client, number of seconds to wait between\n"
++  "                  connection retries (default=%d). On repeated retries\n"
++  "                  the wait time is exponentially increased to a maximum of m\n"
++  "                  (default=%d).\n"
+   "--connect-retry-max n : Maximum connection attempt retries, default infinite.\n"
+   "--http-proxy s p [up] [auth] : Connect to remote host\n"
+   "                  through an HTTP proxy at address s and port p.\n"
+@@ -770,6 +772,7 @@ init_options (struct options *o, const bool init_gc)
+   o->ce.af = AF_UNSPEC;
+   o->ce.bind_ipv6_only = false;
+   o->ce.connect_retry_seconds = 5;
++  o->ce.connect_retry_seconds_max = 300;
+   o->ce.connect_timeout = 120;
+   o->connect_retry_max = 0;
+   o->ce.local_port = o->ce.remote_port = OPENVPN_PORT;
+@@ -3479,6 +3482,7 @@ usage (void)
+   fprintf (fp, usage_message,
+ 	   title_string,
+ 	   o.ce.connect_retry_seconds,
++	   o.ce.connect_retry_seconds_max,
+ 	   o.ce.local_port, o.ce.remote_port,
+ 	   TUN_MTU_DEFAULT, TAP_MTU_EXTRA_DEFAULT,
+ 	   o.verbosity,
+@@ -4724,10 +4728,24 @@ add_option (struct options *options,
+       if (p[1])
+ 	options->ip_remote_hint=p[1];
+     }
+-  else if (streq (p[0], "connect-retry") && p[1] && !p[2])
++  else if (streq (p[0], "connect-retry") && p[1] && !p[3])
+     {
+       VERIFY_PERMISSION (OPT_P_GENERAL|OPT_P_CONNECTION);
+       options->ce.connect_retry_seconds = positive_atoi (p[1]);
++      /*
++       * Limit the base value of retry wait interval to 16 bits to avoid
++       * overflow when scaled up for exponential backoff
++       */
++      if (options->ce.connect_retry_seconds > 0xFFFF)
++        {
++          options->ce.connect_retry_seconds = 0xFFFF;
++          msg (M_WARN, "connect retry wait interval truncated to %d",
++            options->ce.connect_retry_seconds);
++        }
 +
- /*
-  *  OpenVPN -- An application to securely tunnel IP networks
-  *             over a single UDP port, with support for SSL/TLS-based
-@@ -220,6 +221,7 @@ static const char usage_message[] =
-   "--redirect-private [flags]: Like --redirect-gateway, but omit actually
-changing\n"
-   "                  the default gateway.  Useful when pushing private
-subnets.\n"
-   "--client-nat snat|dnat network netmask alias : on client add 1-to-1 NAT
-rule.\n"
-+  "                  Set the network parameter to 'client-ip' or to
-'localhost' to use the received ip from OpenVPN Server.\n"
- #ifdef ENABLE_PUSH_PEER_INFO
-   "--push-peer-info : (client only) push client info to server.\n"
- #endif
++      if (p[2])
++         options->ce.connect_retry_seconds_max =
++            max_int (positive_atoi (p[2]), options->ce.connect_retry_seconds);
+     }
+   else if ((streq (p[0], "connect-timeout") || streq (p[0], "server-poll-timeout"))
+ 	    && p[1] && !p[2])
+diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+index 7bb36c9..486bf5d 100644
+--- a/src/openvpn/options.h
++++ b/src/openvpn/options.h
+@@ -96,6 +96,7 @@ struct connection_entry
+   bool bind_ipv6_only;
+   bool bind_local;
+   int connect_retry_seconds;
++  int connect_retry_seconds_max;
+   int connect_timeout;
+   struct http_proxy_options *http_proxy_options;
+   const char *socks_proxy_server;
 -- 
-1.7.9.5
+1.7.10.4
 
-
-
-On Thu, May 19, 2016 at 6:07 AM, Arne Schwabe <arne-openvpn@...1227...>
-wrote:
-
->
->
-> Am 04.05.16 um 19:40 schrieb Rafael Gava:
-> > Reapplying client-ip NAT patch fixing the following issues raised by
-> > Arne Schwabe:
-> >
-> >     - Fixing TABs and whitespaces;
-> It is now more messed up :( There are a lot of changes to whitespace in
-> the new patch.
->
-> Arne
->
-
---001a113d81ca1292f00536e3382d
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr">Hi Arne, sorry for replying so late.=C2=A0<div><br></div><=
-div>Below is the NAT client-ip patch fixing the messed up whitespaces.</div=
-><div>The only difference from the previous patch, besides the whitespaces,=
- is that I&#39;m considering both strings &#39;client-ip&#39; and &#39;loca=
-lhost&#39; as valid options.</div><div><br></div><div>Please, whatever prob=
-lem let me know.</div><div><br></div><div>BR</div><div><br></div><div>Rafae=
-l</div><div><div><br></div><div>--------</div><div><br></div><div><div>From=
- cf9cf767df84ec5beb8c127d66bde4cd2d278b34 Mon Sep 17 00:00:00 2001</div><di=
-v>From: vntraol &lt;<a href=3D"mailto:Rafael.Oliveira@...2056...">Rafael.Ol=
-iveira@...2056...</a>&gt;</div><div>Date: Mon, 4 Jul 2016 17:20:38 -0300</d=
-iv><div>Subject: [PATCH] Allow the user to use the string &#39;client-ip&#3=
-9; on the</div><div>=C2=A0client-nat network configuration as a convenient =
-way to use</div><div>=C2=A0the leased IP address received from the OpenVPN =
-server.</div><div><br></div><div>Usage example:</div><div><br></div><div>cl=
-ient-nat snat client-ip 255.255.255.255 172.20.1.15 # replaces the &#39;cli=
-ent-ip&#39; string with the leased IP address received from the OpenVPN ser=
-ver</div><div><br></div><div>Signed-off-by: vntraol &lt;<a href=3D"mailto:R=
-afael.Oliveira@...2056...">Rafael.Oliveira@...2056...</a>&gt;</div><div>---=
-</div><div>=C2=A0src/openvpn/clinat.c =C2=A0| =C2=A0 49 +++++++++++++++++++=
-++++++++++++++++++++++++++----</div><div>=C2=A0src/openvpn/clinat.h =C2=A0|=
- =C2=A0 10 ++++++++++</div><div>=C2=A0src/openvpn/init.c =C2=A0 =C2=A0| =C2=
-=A0 =C2=A02 ++</div><div>=C2=A0src/openvpn/options.c | =C2=A0 =C2=A02 ++</d=
-iv><div>=C2=A04 files changed, 59 insertions(+), 4 deletions(-)</div><div>=
-=C2=A0mode change 100644 =3D&gt; 100755 src/openvpn/clinat.c</div><div>=C2=
-=A0mode change 100644 =3D&gt; 100755 src/openvpn/clinat.h</div><div>=C2=A0m=
-ode change 100644 =3D&gt; 100755 src/openvpn/init.c</div><div>=C2=A0mode ch=
-ange 100644 =3D&gt; 100755 src/openvpn/options.c</div><div><br></div><div>d=
-iff --git a/src/openvpn/clinat.c b/src/openvpn/clinat.c</div><div>old mode =
-100644</div><div>new mode 100755</div><div>index ddefe12..713c821</div><div=
->--- a/src/openvpn/clinat.c</div><div>+++ b/src/openvpn/clinat.c</div><div>=
-@@ -124,12 +124,21 @@ add_client_nat_to_option_list (struct client_nat_opti=
-on_list *dest,</div><div>=C2=A0 =C2=A0 =C2=A0 =C2=A0return;</div><div>=C2=
-=A0 =C2=A0 =C2=A0}</div><div>=C2=A0</div><div>- =C2=A0e.network =3D getaddr=
-(0, network, 0, &amp;ok, NULL);</div><div>- =C2=A0if (!ok)</div><div>+ =C2=
-=A0if (network &amp;&amp; (!strcmp(network, &quot;client-ip&quot;) || !strc=
-mp(network, &quot;localhost&quot;)) )</div><div>=C2=A0 =C2=A0 =C2=A0{</div>=
-<div>- =C2=A0 =C2=A0 =C2=A0msg(msglevel, &quot;client-nat: bad network: %s&=
-quot;, network);</div><div>- =C2=A0 =C2=A0 =C2=A0return;</div><div>+ =C2=A0=
- =C2=A0 =C2=A0// To be replaced later on with the leased IP Address receive=
-d from Openvpn Server.</div><div>+ =C2=A0 =C2=A0 =C2=A0e.network =3D CLIENT=
-_IP_MARKER;</div><div>+<span class=3D"" style=3D"white-space:pre">	</span>}=
-</div><div>+ =C2=A0else</div><div>+ =C2=A0 =C2=A0{</div><div>+ =C2=A0 =C2=
-=A0 =C2=A0e.network =3D getaddr(0, network, 0, &amp;ok, NULL);</div><div>+ =
-=C2=A0 =C2=A0 =C2=A0if (!ok)</div><div>+ =C2=A0 =C2=A0 =C2=A0 =C2=A0{</div>=
-<div>+ =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0msg(msglevel, &quot;client-nat: ba=
-d network: %s&quot;, network);</div><div>+ =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0return;</div><div>+ =C2=A0 =C2=A0 =C2=A0 =C2=A0}</div><div>=C2=A0 =C2=A0=
- =C2=A0}</div><div>+</div><div>=C2=A0 =C2=A0e.netmask =3D getaddr(0, netmas=
-k, 0, &amp;ok, NULL);</div><div>=C2=A0 =C2=A0if (!ok)</div><div>=C2=A0 =C2=
-=A0 =C2=A0{</div><div>@@ -263,3 +272,35 @@ client_nat_transform (const stru=
-ct client_nat_option_list *list,</div><div>=C2=A0<span class=3D"" style=3D"=
-white-space:pre">	</span>}</div><div>=C2=A0 =C2=A0 =C2=A0}</div><div>=C2=A0=
-}</div><div>+</div><div>+/*</div><div>+* Replaces the CLIENT_IP_MARKER with=
- the leased IP address received from OpenVPN Server.</div><div>+*/</div><di=
-v>+bool</div><div>+update_client_ip_nat(struct client_nat_option_list *dest=
-, in_addr_t local_ip)</div><div>+{</div><div>+ =C2=A0int i;</div><div>+ =C2=
-=A0bool ret =3D false;</div><div>+</div><div>+ =C2=A0if (!dest)</div><div>+=
- =C2=A0 =C2=A0return ret;</div><div>+</div><div>+ =C2=A0for (i=3D0; i &lt;=
-=3D dest-&gt;n; i++)</div><div>+ =C2=A0 =C2=A0{</div><div>+ =C2=A0 =C2=A0 =
-=C2=A0struct client_nat_entry *nat_entry =3D &amp;dest-&gt;entries[i];</div=
-><div>+ =C2=A0 =C2=A0 =C2=A0if (nat_entry &amp;&amp; nat_entry-&gt;network =
-=3D=3D CLIENT_IP_MARKER)</div><div>+ =C2=A0 =C2=A0 =C2=A0 =C2=A0{</div><div=
->+ =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0struct in_addr addr;</div><div>+</div>=
-<div>+ =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0nat_entry-&gt;network =3D ntohl(lo=
-cal_ip);</div><div>+ =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0addr.s_addr =3D nat_=
-entry-&gt;network;</div><div>+ =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0char *dot_=
-ip =3D inet_ntoa(addr);</div><div>+</div><div>+ =C2=A0 =C2=A0 =C2=A0 =C2=A0=
- =C2=A0msg (D_CLIENT_NAT, &quot;CNAT - Updating NAT table from client-ip/lo=
-calhost to: %s&quot;, dot_ip);</div><div>+ =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0ret =3D true;</div><div>+ =C2=A0 =C2=A0 =C2=A0 =C2=A0}</div><div>+ =C2=
-=A0 =C2=A0}</div><div>+</div><div>+ =C2=A0return ret;</div><div>+}</div><di=
-v>+</div><div>diff --git a/src/openvpn/clinat.h b/src/openvpn/clinat.h</div=
-><div>old mode 100644</div><div>new mode 100755</div><div>index a5779e1..bc=
-d3fee</div><div>--- a/src/openvpn/clinat.h</div><div>+++ b/src/openvpn/clin=
-at.h</div><div>@@ -32,6 +32,11 @@</div><div>=C2=A0#define CN_OUTGOING 0</di=
-v><div>=C2=A0#define CN_INCOMING 1</div><div>=C2=A0</div><div>+/*</div><div=
->+* Used as a marker to be replaced with the leased IP address received fro=
-m OpenVPN server.</div><div>+*/</div><div>+#define CLIENT_IP_MARKER 0xFFFFF=
-FFF</div><div>+</div><div>=C2=A0struct client_nat_entry {</div><div>=C2=A0#=
- define CN_SNAT 0</div><div>=C2=A0# define CN_DNAT 1</div><div>@@ -62,4 +67=
-,9 @@ void client_nat_transform (const struct client_nat_option_list *list,=
-</div><div>=C2=A0<span class=3D"" style=3D"white-space:pre">			</span> =C2=
-=A0 struct buffer *ipbuf,</div><div>=C2=A0<span class=3D"" style=3D"white-s=
-pace:pre">			</span> =C2=A0 const int direction);</div><div>=C2=A0</div><di=
-v>+/*</div><div>+* Replaces the CLIENT_IP_MARKER with the leased IP address=
- received from OpenVPN Server.</div><div>+*/</div><div>+bool update_client_=
-ip_nat(struct client_nat_option_list *dest, in_addr_t local_ip);</div><div>=
-+</div><div>=C2=A0#endif</div><div>diff --git a/src/openvpn/init.c b/src/op=
-envpn/init.c</div><div>old mode 100644</div><div>new mode 100755</div><div>=
-index 498d36f..e03d839</div><div>--- a/src/openvpn/init.c</div><div>+++ b/s=
-rc/openvpn/init.c</div><div>@@ -1532,6 +1532,8 @@ do_open_tun (struct conte=
-xt *c)</div><div>=C2=A0<span class=3D"" style=3D"white-space:pre">			</span=
-> =C2=A0 =C2=A0 =C2=A0 c-&gt;c1.tuntap-&gt;post_open_mtu,</div><div>=C2=A0<=
-span class=3D"" style=3D"white-space:pre">			</span> =C2=A0 =C2=A0 =C2=A0 S=
-ET_MTU_TUN | SET_MTU_UPPER_BOUND);</div><div>=C2=A0</div><div>+ =C2=A0 =C2=
-=A0 =C2=A0update_client_ip_nat(c-&gt;options.client_nat, c-&gt;c1.tuntap-&g=
-t;local);</div><div>+</div><div>=C2=A0 =C2=A0 =C2=A0 =C2=A0ret =3D true;</d=
-iv><div>=C2=A0 =C2=A0 =C2=A0 =C2=A0static_context =3D c;</div><div>=C2=A0#i=
-fndef TARGET_ANDROID</div><div>diff --git a/src/openvpn/options.c b/src/ope=
-nvpn/options.c</div><div>old mode 100644</div><div>new mode 100755</div><di=
-v>index cf971a6..1c53c5f</div><div>--- a/src/openvpn/options.c</div><div>++=
-+ b/src/openvpn/options.c</div><div>@@ -1,3 +1,4 @@</div><div>+</div><div>=
-=C2=A0/*</div><div>=C2=A0 * =C2=A0OpenVPN -- An application to securely tun=
-nel IP networks</div><div>=C2=A0 * =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 over a single UDP port, with support for SSL/TLS-based</div><div>@@ -22=
-0,6 +221,7 @@ static const char usage_message[] =3D</div><div>=C2=A0 =C2=A0=
-&quot;--redirect-private [flags]: Like --redirect-gateway, but omit actuall=
-y changing\n&quot;</div><div>=C2=A0 =C2=A0&quot; =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0the default gateway.=C2=A0 Useful whe=
-n pushing private subnets.\n&quot;</div><div>=C2=A0 =C2=A0&quot;--client-na=
-t snat|dnat network netmask alias : on client add 1-to-1 NAT rule.\n&quot;<=
-/div><div>+ =C2=A0&quot; =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 =C2=A0Set the network parameter to &#39;client-ip&#39; or to &#39;lo=
-calhost&#39; to use the received ip from OpenVPN Server.\n&quot;</div><div>=
-=C2=A0#ifdef ENABLE_PUSH_PEER_INFO</div><div>=C2=A0 =C2=A0&quot;--push-peer=
--info : (client only) push client info to server.\n&quot;</div><div>=C2=A0#=
-endif</div><div>--=C2=A0</div><div>1.7.9.5</div><div><br></div></div><div><=
-br></div><div><br></div><div><div class=3D"gmail_extra"><div class=3D"gmail=
-_quote">On Thu, May 19, 2016 at 6:07 AM, Arne Schwabe <span dir=3D"ltr">&lt=
-;<a href=3D"mailto:arne-openvpn@...1227..." target=3D"_blank">arne-openvpn@=
-...1227...</a>&gt;</span> wrote:<br><blockquote class=3D"gmail_quote" style=
-=3D"margin:0px 0px 0px 0.8ex;border-left-width:1px;border-left-style:solid;=
-border-left-color:rgb(204,204,204);padding-left:1ex"><br>
-<br>
-Am 04.05.16 um 19:40 schrieb Rafael Gava:<br>
-<span class=3D"">&gt; Reapplying client-ip NAT patch fixing the following i=
-ssues raised by<br>
-&gt; Arne Schwabe:<br>
-&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0- Fixing TABs and whitespaces;<br>
-</span>It is now more messed up :( There are a lot of changes to whitespace=
- in<br>
-the new patch.<br>
-<span class=3D""><font color=3D"#888888"><br>
-Arne<br>
-</font></span></blockquote></div><br></div></div></div></div>
-
---001a113d81ca1292f00536e3382d--
 
