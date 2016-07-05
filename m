@@ -1,10 +1,24 @@
+MIME-Version: 1.0
+In-Reply-To: <7ce3c612-9cf9-92b4-49ac-5ac873ebe19b@...515...>
+References: <CAFHpkQGrube6hF3+hab3NdNhcifjV15ZSefdUWCcXJPg_CApKw@...278...>
+	<20160629081109.GU78279@...1296...>
+	<CAFHpkQGD10-N=fX6osaMKE4SN+S55A8EN+8byw6aTM9Aosd1Mw@...278...>
+	<20160629090025.GV78279@...1296...>
+	<51c19384-4814-c63e-f515-ea0f3ce8791e@...515...>
+	<CAFHpkQFMs3OsBoV8LP1BZnZpomMFwp6pvw_bx58UrLK20dyF0Q@...278...>
+	<224018c8-c3a7-6a7e-0d46-2f44d87b2990@...515...>
+	<CAFHpkQEsEj70wZxdXs9fd8W8j3QfuyWBjJAHXvzUGVTPt50_CQ@...278...>
+	<1920c5bf-c449-3a79-5331-c8df691705d8@...515...>
+	<20160629102122.GW78279@...1296...>
+	<f102cd48-d5d4-ef1c-2ad4-a9313f5488d9@...515...>
+	<CAKuzo_hX8EKmX9mF63NhhoH0Wyb7d1cKKu+exvTmKX6wf2OyLA@...278...>
+	<b76e82ae-d092-f05a-a6b0-43b66dc18c80@...515...>
+	<7ce3c612-9cf9-92b4-49ac-5ac873ebe19b@...515...>
 From: Selva Nair <selva.nair@...277...>
-Date: Tue,  5 Jul 2016 11:32:50 -0400
-Message-Id: <1467732770-19110-1-git-send-email-selva.nair@...277...>
-In-Reply-To: <1467502488-31549-1-git-send-email-selva.nair@...277...>
-References: <1467502488-31549-1-git-send-email-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH] Exponentially back off on repeated connect
-	retries
+Date: Tue, 5 Jul 2016 13:05:36 -0400
+Message-ID: <CAKuzo_jC8aaaudQ7qGJ1bQW9B3h5trPYV=LrmLyonsXKa30uhw@...278...>
+Content-Type: multipart/alternative; boundary=001a114e710a53a8270536e677e8
+Subject: Re: [Openvpn-devel] git master: no more WinXP ?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,220 +27,171 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-- When the number of retries per remote exceeds a limit
-  (hard coded to 5), double the restart pause interval
-  for each additional retry per remote.
-- Trigger a SIGHUP to reset the retry count when the pause
-  interval exceeds 1024 times the base value of restart pause.
-  (removed in v2 of the patch)
+--001a114e710a53a8270536e677e8
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-The base value of restart pause is set using --connect-retry
-(5 seconds by default).
+On Tue, Jul 5, 2016 at 4:45 AM, Samuli Sepp=C3=A4nen <samuli@...515...> wro=
+te:
 
-v2 changes (based on suggestions from Arne Schwabe <arne@...1227...>)
+> Il 05/07/2016 10:02, Samuli Sepp=C3=A4nen ha scritto:
+>
+>> Hi,
+>>
+>> Hi,
+>>>
+>>> On Mon, Jul 4, 2016 at 7:33 AM, Samuli Sepp=C3=A4nen <samuli@...515...
+>>> <mailto:samuli@...515...>> wrote:
+>>>
+>>>     Here is an installer that includes all the necessary bits to make
+>>>     openvpnserv2/interactive service things work nicely:
+>>>
+>>>     <
+>>> http://build.openvpn.net/downloads/snapshots/openvpn-install-2.3_git-I9=
+05-x86_64.exe
+>>> >
+>>>
+>>>
+>>> Tested this installer on windows 7. Works as expected with two minor
+>>> issues:
+>>>
+>>> (i) If service installation checkbox is unselected, interactive service
+>>> remain selected and obviously fails in the end as no service binaries
+>>> get installed
+>>>
+>>
+>> Ah yes, I see what you mean. I'll create a dependency between these two
+>> selections.
+>>
+>> (ii) If GUI is running, the installer offers to stop it but in that case
+>>> it also offers to restart it at the end of installation. That's not good
+>>> as it gets started as admin (as installer runs as admin) which is not
+>>> ideal -- at least not what I wanted. I would say just do not offer to
+>>> start the GUI at all even if it was stopped by the installer -- let the
+>>> user restart it after installation.
+>>>
+>>
+>> Agreed.
+>>
+>>
+> Hi,
+>
+> Fixed the issues you identified:
+>
+> <https://github.com/OpenVPN/openvpn-build/pull/23>
+> <
+> http://build.openvpn.net/downloads/snapshots/openvpn-install-2.3_git-I907=
+-x86_64.exe
+> >
+>
+> Based on brief testing everything now seems to work correctly. If the user
+> deselects SecService, then SecInteractiveService is deselected
+> automatically.
+>
+> Right now, when SecService is not selected, clicking on the
+> SecInteractiveService checkbox does not do anything. This would be nice to
+> fix, but it is also in line with what we have now. Plus fixing it might n=
+ot
+> be as trivial as adding yet another ${If} to the .onSelChange function.
 
-- Do not throw SIGHUP.
-- Add an optional argument to "--connect-retry n [m]" where 'm'
-  specifies the max value of restart pause interval (default
-  300 sec).
-  E.g., "--connect-retry 5 1800" will cause the restart pause to
-  scale up starting at 5 until it exceeds 1800 seconds at which
-  point it gets capped at 1800.
-- If n == m no slow down will occur.
-- While at it, fix typos and clarify the description of connect-retry-max
-  in the man page and Changes.rst
 
-v3 changes (on further feedback from arne@...1227...):
-- Limiting the base value of retry wait interval to 16 bits moved
-  to options.c
-- Apply backoff only in the udp and tcp-client modes. Backing off on
-  tcp-server could be exploited by a client in p2p-mode to maliciously
-  slow it down (thanks to Arne Schwabe for pointing this out.
-- Fix typo in Changes.rst: "third argument" -> "second argument"
+The changes look good.
 
-Signed-off-by: Selva Nair <selva.nair@...277...>
----
- Changes.rst           |    8 ++++++--
- doc/openvpn.8         |   19 ++++++++++++-------
- src/openvpn/init.c    |   15 +++++++++++++++
- src/openvpn/options.c |   24 +++++++++++++++++++++---
- src/openvpn/options.h |    1 +
- 5 files changed, 55 insertions(+), 12 deletions(-)
+One unrelated thing is that that the README file (INSTALL-win32.txt?) shown
+at the end of the installation is somewhat outdated -- it had comments
+about the need to start as admin on vista+ etc..
 
-diff --git a/Changes.rst b/Changes.rst
-index d12cdad..55fca95 100644
---- a/Changes.rst
-+++ b/Changes.rst
-@@ -75,8 +75,8 @@ User-visible Changes
-   In --static mode connect-timeout specifies the timeout for TCP and
-   proxy connection establishment
- 
--- connect-retry now specifies the maximum number of unsucessfully
--  trying all remote/connection entries before exiting.
-+- connect-retry-max now specifies the maximum number of unsuccessful
-+  attempts of each remote/connection entry before exiting.
- 
- - sndbuf and recvbuf default now to OS default instead of 64k
- 
-@@ -120,6 +120,10 @@ User-visible Changes
- - --http-proxy-retry and --sock-proxy-retry have been removed. Proxy connections
-     will now behave like regular connection entries and generate a USR1 on failure.
- 
-+- --connect-retry gets an optional second argument that specifies the maximum
-+  time in seconds to wait between reconnection attempts when an exponential
-+  backoff is triggered due to repeated retries. Default = 300 seconds.
-+
- Maintainer-visible changes
- --------------------------
- - OpenVPN no longer supports building with crypto support, but without TLS
-diff --git a/doc/openvpn.8 b/doc/openvpn.8
-index 64cc934..3ca6f50 100644
---- a/doc/openvpn.8
-+++ b/doc/openvpn.8
-@@ -462,22 +462,27 @@ application-level UDP protocols, or tunneling protocols which don't
- possess a built-in reliability layer.
- .\"*********************************************************
- .TP
--.B \-\-connect\-retry n
-+.B \-\-connect\-retry n [max]
- Wait
- .B n
--seconds  between connection attempts (default=5).
-+seconds  between connection attempts (default=5). Repeated reconnection
-+attempts are slowed down after 5 retries per remote by doubling the wait
-+time after each unsuccessful attempt. The optional argument
-+.B max
-+specifies the maximum value of wait time in seconds at which it gets
-+capped (default=300).
- .\"*********************************************************
- .TP
- .B \-\-connect\-retry\-max n
- .B n
--specifies the number of times all
-+specifies the number of times each
- .B \-\-remote
--respectively
-+or
- .B <connection>
--statements are tried. Specifiying
-+entry is tried. Specifying
- .B n
--as one would try each entry exactly once. A sucessful connection
--resets the counter. (default=umlimited).
-+as one would try each entry exactly once. A successful connection
-+resets the counter. (default=unlimited).
- .\"*********************************************************
- .TP
- .B \-\-show\-proxy\-settings
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 498d36f..091c299 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -1955,6 +1955,7 @@ static void
- socket_restart_pause (struct context *c)
- {
-   int sec = 2;
-+  int backoff = 0;
- 
-   switch (c->options.ce.proto)
-     {
-@@ -1977,6 +1978,20 @@ socket_restart_pause (struct context *c)
-     sec = 10;
- #endif
- 
-+  /* Slow down reconnection after 5 retries per remote -- for tcp only in client mode */
-+  if (c->options.ce.proto != PROTO_TCP_SERVER)
-+    {
-+      backoff = (c->options.unsuccessful_attempts / c->options.connection_list->len) - 4;
-+      if (backoff > 0)
-+        {
-+          /* sec is less than 2^16; we can left shift it by up to 15 bits without overflow */
-+          sec = max_int (sec, 1) << min_int (backoff, 15);
-+        }
-+
-+      if (sec > c->options.ce.connect_retry_seconds_max)
-+        sec = c->options.ce.connect_retry_seconds_max;
-+    }
-+
-   if (c->persist.restart_sleep_seconds > 0 && c->persist.restart_sleep_seconds > sec)
-     sec = c->persist.restart_sleep_seconds;
-   else if (c->persist.restart_sleep_seconds == -1)
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index cf971a6..bcbaba3 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -123,8 +123,10 @@ static const char usage_message[] =
-   "                  p = udp (default), tcp-server, or tcp-client\n"
-   "--proto-force p : only consider protocol p in list of connection profiles.\n"
-   "                  p = udp6, tcp6-server, or tcp6-client (ipv6)\n"
--  "--connect-retry n : For --proto tcp-client, number of seconds to wait\n"
--  "                    between connection retries (default=%d).\n"
-+  "--connect-retry n [m] : For client, number of seconds to wait between\n"
-+  "                  connection retries (default=%d). On repeated retries\n"
-+  "                  the wait time is exponentially increased to a maximum of m\n"
-+  "                  (default=%d).\n"
-   "--connect-retry-max n : Maximum connection attempt retries, default infinite.\n"
-   "--http-proxy s p [up] [auth] : Connect to remote host\n"
-   "                  through an HTTP proxy at address s and port p.\n"
-@@ -770,6 +772,7 @@ init_options (struct options *o, const bool init_gc)
-   o->ce.af = AF_UNSPEC;
-   o->ce.bind_ipv6_only = false;
-   o->ce.connect_retry_seconds = 5;
-+  o->ce.connect_retry_seconds_max = 300;
-   o->ce.connect_timeout = 120;
-   o->connect_retry_max = 0;
-   o->ce.local_port = o->ce.remote_port = OPENVPN_PORT;
-@@ -3479,6 +3482,7 @@ usage (void)
-   fprintf (fp, usage_message,
- 	   title_string,
- 	   o.ce.connect_retry_seconds,
-+	   o.ce.connect_retry_seconds_max,
- 	   o.ce.local_port, o.ce.remote_port,
- 	   TUN_MTU_DEFAULT, TAP_MTU_EXTRA_DEFAULT,
- 	   o.verbosity,
-@@ -4724,10 +4728,24 @@ add_option (struct options *options,
-       if (p[1])
- 	options->ip_remote_hint=p[1];
-     }
--  else if (streq (p[0], "connect-retry") && p[1] && !p[2])
-+  else if (streq (p[0], "connect-retry") && p[1] && !p[3])
-     {
-       VERIFY_PERMISSION (OPT_P_GENERAL|OPT_P_CONNECTION);
-       options->ce.connect_retry_seconds = positive_atoi (p[1]);
-+      /*
-+       * Limit the base value of retry wait interval to 16 bits to avoid
-+       * overflow when scaled up for exponential backoff
-+       */
-+      if (options->ce.connect_retry_seconds > 0xFFFF)
-+        {
-+          options->ce.connect_retry_seconds = 0xFFFF;
-+          msg (M_WARN, "connect retry wait interval truncated to %d",
-+            options->ce.connect_retry_seconds);
-+        }
-+
-+      if (p[2])
-+         options->ce.connect_retry_seconds_max =
-+            max_int (positive_atoi (p[2]), options->ce.connect_retry_seconds);
-     }
-   else if ((streq (p[0], "connect-timeout") || streq (p[0], "server-poll-timeout"))
- 	    && p[1] && !p[2])
-diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-index 7bb36c9..486bf5d 100644
---- a/src/openvpn/options.h
-+++ b/src/openvpn/options.h
-@@ -96,6 +96,7 @@ struct connection_entry
-   bool bind_ipv6_only;
-   bool bind_local;
-   int connect_retry_seconds;
-+  int connect_retry_seconds_max;
-   int connect_timeout;
-   struct http_proxy_options *http_proxy_options;
-   const char *socks_proxy_server;
--- 
-1.7.10.4
+Selva
 
+--001a114e710a53a8270536e677e8
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">=
+On Tue, Jul 5, 2016 at 4:45 AM, Samuli Sepp=C3=A4nen <span dir=3D"ltr">&lt;=
+<a href=3D"mailto:samuli@...515..." target=3D"_blank">samuli@...515...</a>&=
+gt;</span> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 =
+0 .8ex;border-left:1px #ccc solid;padding-left:1ex"><span>Il 05/07/2016 10:=
+02, Samuli Sepp=C3=A4nen ha scritto:<br>
+<blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1p=
+x #ccc solid;padding-left:1ex">
+Hi,<br>
+<br>
+<blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1p=
+x #ccc solid;padding-left:1ex">
+Hi,<br>
+<br>
+On Mon, Jul 4, 2016 at 7:33 AM, Samuli Sepp=C3=A4nen &lt;<a href=3D"mailto:=
+samuli@...515..." target=3D"_blank">samuli@...515...</a><br>
+&lt;mailto:<a href=3D"mailto:samuli@...515..." target=3D"_blank">samuli@...493...=
+515...</a>&gt;&gt; wrote:<br>
+<br>
+=C2=A0 =C2=A0 Here is an installer that includes all the necessary bits to =
+make<br>
+=C2=A0 =C2=A0 openvpnserv2/interactive service things work nicely:<br>
+<br>
+=C2=A0 =C2=A0 &lt;<a href=3D"http://build.openvpn.net/downloads/snapshots/o=
+penvpn-install-2.3_git-I905-x86_64.exe" rel=3D"noreferrer" target=3D"_blank=
+">http://build.openvpn.net/downloads/snapshots/openvpn-install-2.3_git-I905=
+-x86_64.exe</a>&gt;<br>
+<br>
+<br>
+Tested this installer on windows 7. Works as expected with two minor issues=
+:<br>
+<br>
+(i) If service installation checkbox is unselected, interactive service<br>
+remain selected and obviously fails in the end as no service binaries<br>
+get installed<br>
+</blockquote>
+<br>
+Ah yes, I see what you mean. I&#39;ll create a dependency between these two=
+<br>
+selections.<br>
+<br>
+<blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1p=
+x #ccc solid;padding-left:1ex">
+(ii) If GUI is running, the installer offers to stop it but in that case<br>
+it also offers to restart it at the end of installation. That&#39;s not goo=
+d<br>
+as it gets started as admin (as installer runs as admin) which is not<br>
+ideal -- at least not what I wanted. I would say just do not offer to<br>
+start the GUI at all even if it was stopped by the installer -- let the<br>
+user restart it after installation.<br>
+</blockquote>
+<br>
+Agreed.<br>
+<br>
+</blockquote>
+<br></span>
+Hi,<br>
+<br>
+Fixed the issues you identified:<br>
+<br>
+&lt;<a href=3D"https://github.com/OpenVPN/openvpn-build/pull/23" rel=3D"nor=
+eferrer" target=3D"_blank">https://github.com/OpenVPN/openvpn-build/pull/23=
+</a>&gt;<br>
+&lt;<a href=3D"http://build.openvpn.net/downloads/snapshots/openvpn-install=
+-2.3_git-I907-x86_64.exe" rel=3D"noreferrer" target=3D"_blank">http://build=
+.openvpn.net/downloads/snapshots/openvpn-install-2.3_git-I907-x86_64.exe</a=
+>&gt;<br>
+<br>
+Based on brief testing everything now seems to work correctly. If the user =
+deselects SecService, then SecInteractiveService is deselected automaticall=
+y.<br>
+<br>
+Right now, when SecService is not selected, clicking on the SecInteractiveS=
+ervice checkbox does not do anything. This would be nice to fix, but it is =
+also in line with what we have now. Plus fixing it might not be as trivial =
+as adding yet another ${If} to the .onSelChange function.</blockquote></div=
+><br>The changes look good.=C2=A0</div><div class=3D"gmail_extra"><br></div=
+><div class=3D"gmail_extra">One unrelated thing is that that the README fil=
+e (INSTALL-win32.txt?) shown at the end of the installation is somewhat out=
+dated -- it had comments about the need to start as admin on vista+ etc..</=
+div><div class=3D"gmail_extra"><br></div><div class=3D"gmail_extra">Selva</=
+div></div>
+
+--001a114e710a53a8270536e677e8--
 
