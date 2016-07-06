@@ -1,24 +1,14 @@
 MIME-Version: 1.0
-In-Reply-To: <7ce3c612-9cf9-92b4-49ac-5ac873ebe19b@...515...>
-References: <CAFHpkQGrube6hF3+hab3NdNhcifjV15ZSefdUWCcXJPg_CApKw@...278...>
-	<20160629081109.GU78279@...1296...>
-	<CAFHpkQGD10-N=fX6osaMKE4SN+S55A8EN+8byw6aTM9Aosd1Mw@...278...>
-	<20160629090025.GV78279@...1296...>
-	<51c19384-4814-c63e-f515-ea0f3ce8791e@...515...>
-	<CAFHpkQFMs3OsBoV8LP1BZnZpomMFwp6pvw_bx58UrLK20dyF0Q@...278...>
-	<224018c8-c3a7-6a7e-0d46-2f44d87b2990@...515...>
-	<CAFHpkQEsEj70wZxdXs9fd8W8j3QfuyWBjJAHXvzUGVTPt50_CQ@...278...>
-	<1920c5bf-c449-3a79-5331-c8df691705d8@...515...>
-	<20160629102122.GW78279@...1296...>
-	<f102cd48-d5d4-ef1c-2ad4-a9313f5488d9@...515...>
-	<CAKuzo_hX8EKmX9mF63NhhoH0Wyb7d1cKKu+exvTmKX6wf2OyLA@...278...>
-	<b76e82ae-d092-f05a-a6b0-43b66dc18c80@...515...>
-	<7ce3c612-9cf9-92b4-49ac-5ac873ebe19b@...515...>
+In-Reply-To: <CAKuzo_hVKtfdkncmqg5hKX18WYGpFWu1GRxD6dnM=3PfHnQiLw@...278...>
+References: <1465871689-13533-1-git-send-email-selva.nair@...277...>
+	<20160614071342.GR62247@...1296...>
+	<CAKuzo_hVKtfdkncmqg5hKX18WYGpFWu1GRxD6dnM=3PfHnQiLw@...278...>
 From: Selva Nair <selva.nair@...277...>
-Date: Tue, 5 Jul 2016 13:05:36 -0400
-Message-ID: <CAKuzo_jC8aaaudQ7qGJ1bQW9B3h5trPYV=LrmLyonsXKa30uhw@...278...>
-Content-Type: multipart/alternative; boundary=001a114e710a53a8270536e677e8
-Subject: Re: [Openvpn-devel] git master: no more WinXP ?
+Date: Tue, 5 Jul 2016 20:06:13 -0400
+Message-ID: <CAKuzo_g9GzeE7yVD6G3vsGx7u7nt=3-_nVmXM-O9SG9Gi56jHg@...278...>
+Content-Type: multipart/alternative; boundary=001a11409f26987fcc0536ec576c
+Subject: Re: [Openvpn-devel] [PATCH] Promptly close the netcmd_semaphore
+ handle after use
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -27,171 +17,81 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
+To: Gert Doering <gert@...1296...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---001a114e710a53a8270536e677e8
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+--001a11409f26987fcc0536ec576c
+Content-Type: text/plain; charset=UTF-8
 
-On Tue, Jul 5, 2016 at 4:45 AM, Samuli Sepp=C3=A4nen <samuli@...515...> wro=
-te:
+On Tue, Jun 14, 2016 at 11:40 PM, Selva Nair <selva.nair@...277...> wrote:
 
-> Il 05/07/2016 10:02, Samuli Sepp=C3=A4nen ha scritto:
 >
->> Hi,
->>
->> Hi,
->>>
->>> On Mon, Jul 4, 2016 at 7:33 AM, Samuli Sepp=C3=A4nen <samuli@...515...
->>> <mailto:samuli@...515...>> wrote:
->>>
->>>     Here is an installer that includes all the necessary bits to make
->>>     openvpnserv2/interactive service things work nicely:
->>>
->>>     <
->>> http://build.openvpn.net/downloads/snapshots/openvpn-install-2.3_git-I9=
-05-x86_64.exe
->>> >
->>>
->>>
->>> Tested this installer on windows 7. Works as expected with two minor
->>> issues:
->>>
->>> (i) If service installation checkbox is unselected, interactive service
->>> remain selected and obviously fails in the end as no service binaries
->>> get installed
->>>
->>
->> Ah yes, I see what you mean. I'll create a dependency between these two
->> selections.
->>
->> (ii) If GUI is running, the installer offers to stop it but in that case
->>> it also offers to restart it at the end of installation. That's not good
->>> as it gets started as admin (as installer runs as admin) which is not
->>> ideal -- at least not what I wanted. I would say just do not offer to
->>> start the GUI at all even if it was stopped by the installer -- let the
->>> user restart it after installation.
->>>
->>
->> Agreed.
->>
->>
-> Hi,
 >
-> Fixed the issues you identified:
+>> But I'm open to "semaphores are cheap, we can just open/lock/release/
+>> close
+>> it on every call" arguments :-)
+>>
 >
-> <https://github.com/OpenVPN/openvpn-build/pull/23>
-> <
-> http://build.openvpn.net/downloads/snapshots/openvpn-install-2.3_git-I907=
--x86_64.exe
-> >
+> Very unlikely to be a drag on performance -- I think createprocess will be
+> where time is spent [*].
 >
-> Based on brief testing everything now seems to work correctly. If the user
-> deselects SecService, then SecInteractiveService is deselected
-> automatically.
->
-> Right now, when SecService is not selected, clicking on the
-> SecInteractiveService checkbox does not do anything. This would be nice to
-> fix, but it is also in line with what we have now. Plus fixing it might n=
-ot
-> be as trivial as adding yet another ${If} to the .onSelChange function.
+> That said, calling semaphore_close() inside netcmd_semaphore_unlock() is
+> not a style to be proud of.  So I'm kind of inclined to do a version 2
+> along the lines you suggested but some testing will be needed to get it
+> right.
 
 
-The changes look good.
+After looking into this further, I find redoing the patch along those lines
+is not ideal. A semaphore_close() has to be inserted before any possible
+long waits such as management-hold, pull-filter reject, or any other
+restart loops, which is going to be ugly and fragile.
 
-One unrelated thing is that that the README file (INSTALL-win32.txt?) shown
-at the end of the installation is somewhat outdated -- it had comments
-about the need to start as admin on vista+ etc..
+The cleanest way is to close the semaphore soon after releasing it. Version
+1 does that and I do not think there is any performance penalty involved.
+Logically, a more correct approach may be to replace all calls to
+netcmd_semaphore_release()
+by netcmd_semaphore_close() but that involves more pervasive edits.
+
+Having said that, I'm open to other suggestions.
 
 Selva
 
---001a114e710a53a8270536e677e8
+--001a11409f26987fcc0536ec576c
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <div dir=3D"ltr"><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">=
-On Tue, Jul 5, 2016 at 4:45 AM, Samuli Sepp=C3=A4nen <span dir=3D"ltr">&lt;=
-<a href=3D"mailto:samuli@...515..." target=3D"_blank">samuli@...515...</a>&=
-gt;</span> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 =
-0 .8ex;border-left:1px #ccc solid;padding-left:1ex"><span>Il 05/07/2016 10:=
-02, Samuli Sepp=C3=A4nen ha scritto:<br>
-<blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1p=
-x #ccc solid;padding-left:1ex">
-Hi,<br>
+On Tue, Jun 14, 2016 at 11:40 PM, <span tabindex=3D"-1" id=3D":8l6.1" style=
+=3D"" class=3D"">Selva</span> Nair <span dir=3D"ltr">&lt;<a href=3D"mailto:=
+selva.nair@...277..." target=3D"_blank"><span tabindex=3D"-1" id=3D":8l6.2"=
+ style=3D"" class=3D"">selva</span>.<span tabindex=3D"-1" id=3D":8l6.3" sty=
+le=3D"" class=3D"">nair</span>@gmail.com</a>&gt;</span> wrote:<br><blockquo=
+te class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc so=
+lid;padding-left:1ex"><div class=3D"gmail_quote"><div><br></div><span class=
+=3D""><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-l=
+eft:1px #ccc solid;padding-left:1ex"><div>
 <br>
-<blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1p=
-x #ccc solid;padding-left:1ex">
-Hi,<br>
-<br>
-On Mon, Jul 4, 2016 at 7:33 AM, Samuli Sepp=C3=A4nen &lt;<a href=3D"mailto:=
-samuli@...515..." target=3D"_blank">samuli@...515...</a><br>
-&lt;mailto:<a href=3D"mailto:samuli@...515..." target=3D"_blank">samuli@...493...=
-515...</a>&gt;&gt; wrote:<br>
-<br>
-=C2=A0 =C2=A0 Here is an installer that includes all the necessary bits to =
-make<br>
-=C2=A0 =C2=A0 openvpnserv2/interactive service things work nicely:<br>
-<br>
-=C2=A0 =C2=A0 &lt;<a href=3D"http://build.openvpn.net/downloads/snapshots/o=
-penvpn-install-2.3_git-I905-x86_64.exe" rel=3D"noreferrer" target=3D"_blank=
-">http://build.openvpn.net/downloads/snapshots/openvpn-install-2.3_git-I905=
--x86_64.exe</a>&gt;<br>
-<br>
-<br>
-Tested this installer on windows 7. Works as expected with two minor issues=
-:<br>
-<br>
-(i) If service installation checkbox is unselected, interactive service<br>
-remain selected and obviously fails in the end as no service binaries<br>
-get installed<br>
-</blockquote>
-<br>
-Ah yes, I see what you mean. I&#39;ll create a dependency between these two=
-<br>
-selections.<br>
-<br>
-<blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1p=
-x #ccc solid;padding-left:1ex">
-(ii) If GUI is running, the installer offers to stop it but in that case<br>
-it also offers to restart it at the end of installation. That&#39;s not goo=
-d<br>
-as it gets started as admin (as installer runs as admin) which is not<br>
-ideal -- at least not what I wanted. I would say just do not offer to<br>
-start the GUI at all even if it was stopped by the installer -- let the<br>
-user restart it after installation.<br>
-</blockquote>
-<br>
-Agreed.<br>
-<br>
-</blockquote>
-<br></span>
-Hi,<br>
-<br>
-Fixed the issues you identified:<br>
-<br>
-&lt;<a href=3D"https://github.com/OpenVPN/openvpn-build/pull/23" rel=3D"nor=
-eferrer" target=3D"_blank">https://github.com/OpenVPN/openvpn-build/pull/23=
-</a>&gt;<br>
-&lt;<a href=3D"http://build.openvpn.net/downloads/snapshots/openvpn-install=
--2.3_git-I907-x86_64.exe" rel=3D"noreferrer" target=3D"_blank">http://build=
-.openvpn.net/downloads/snapshots/openvpn-install-2.3_git-I907-x86_64.exe</a=
->&gt;<br>
-<br>
-Based on brief testing everything now seems to work correctly. If the user =
-deselects SecService, then SecInteractiveService is deselected automaticall=
-y.<br>
-<br>
-Right now, when SecService is not selected, clicking on the SecInteractiveS=
-ervice checkbox does not do anything. This would be nice to fix, but it is =
-also in line with what we have now. Plus fixing it might not be as trivial =
-as adding yet another ${If} to the .onSelChange function.</blockquote></div=
-><br>The changes look good.=C2=A0</div><div class=3D"gmail_extra"><br></div=
-><div class=3D"gmail_extra">One unrelated thing is that that the README fil=
-e (INSTALL-win32.txt?) shown at the end of the installation is somewhat out=
-dated -- it had comments about the need to start as admin on vista+ etc..</=
-div><div class=3D"gmail_extra"><br></div><div class=3D"gmail_extra">Selva</=
-div></div>
+But I&#39;m open to &quot;semaphores are cheap, we can just open/lock/relea=
+se/<span class=3D"il">close</span><br>
+it on every call&quot; arguments :-)</div></blockquote></span></div><br>Ver=
+y unlikely to be a drag on performance -- I think createprocess will be whe=
+re time is spent [*].<br><br>That said, calling semaphore_close() inside ne=
+tcmd_semaphore_unlock() is not a style to be proud of.=C2=A0 So I&#39;m kin=
+d of inclined to do a version 2 along the lines you suggested but some test=
+ing will be needed to get it right.</blockquote></div><br></div><div class=
+=3D"gmail_extra">After looking into this further, I find redoing the patch =
+along those lines is not ideal. A semaphore_close() has to be inserted befo=
+re any possible long waits such as management-hold, pull-filter reject, or =
+any other restart loops, which is going to be ugly and fragile.<br><br></di=
+v><div class=3D"gmail_extra">The cleanest way is to close the semaphore soo=
+n after releasing it. Version 1 does that and I do not think there is any p=
+erformance penalty involved. Logically, a more correct approach may be to r=
+eplace all calls to <span tabindex=3D"-1" id=3D":8l6.4" style=3D"" class=3D=
+"">netcmd</span>_semaphore_release() by <span tabindex=3D"-1" id=3D":8l6.5"=
+ style=3D"" class=3D"">netcmd</span>_semaphore_close() but that involves mo=
+re pervasive edits.<br><br>Having said that, I&#39;m open to other suggesti=
+ons.<br><br></div><div class=3D"gmail_extra"><span tabindex=3D"-1" id=3D":8=
+l6.6" style=3D"" class=3D"">Selva</span><br></div></div>
 
---001a114e710a53a8270536e677e8--
+--001a11409f26987fcc0536ec576c--
 
