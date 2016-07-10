@@ -1,12 +1,15 @@
-MIME-Version: 1.0
-In-Reply-To: <531e4123-aa78-6b00-1e10-9ff91cd445ca@...2150...>
 References: <169423fa-c98c-1e3b-42e9-f4bd9165bbb5@...2150...>
 	<CAKuzo_isWet5tKn3y6Wr4igEFL01UT-xAZTn3K_uka2M1c6JyQ@...278...>
 	<531e4123-aa78-6b00-1e10-9ff91cd445ca@...2150...>
-From: Selva Nair <selva.nair@...277...>
-Date: Sun, 10 Jul 2016 13:58:58 -0400
-Message-ID: <CAKuzo_jrNwhGHSFkXW4MiaoZyNFV8Jne1tU8eHyqUTECbzm74g@...278...>
-Content-Type: multipart/alternative; boundary=001a11471b9c65951005374bcbb1
+	<CAKuzo_jrNwhGHSFkXW4MiaoZyNFV8Jne1tU8eHyqUTECbzm74g@...278...>
+From: Noel Kuntze <noel@...2150...>
+Message-ID: <34caff62-dcb8-235f-7875-20e58197e1a0@...2150...>
+Date: Sun, 10 Jul 2016 20:01:37 +0200
+MIME-Version: 1.0
+In-Reply-To: <CAKuzo_jrNwhGHSFkXW4MiaoZyNFV8Jne1tU8eHyqUTECbzm74g@...278...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature";
+	boundary="HlEkEKqt3nwMucQ7Jqml2fjqJ8kQKaUVO"
 Subject: Re: [Openvpn-devel] [PATCH: tap-windows6] Implement option to
  disable source IP check of ARP requests
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -17,41 +20,81 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Noel Kuntze <noel@...2150...>
+To: Selva Nair <selva.nair@...277...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---001a11471b9c65951005374bcbb1
-Content-Type: text/plain; charset=UTF-8
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--HlEkEKqt3nwMucQ7Jqml2fjqJ8kQKaUVO
+Content-Type: multipart/mixed; boundary="PKn0ujtuaPi6e2HSLDia0TivtvvNR3WGN"
+From: Noel Kuntze <noel@...2150...>
+To: Selva Nair <selva.nair@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Message-ID: <34caff62-dcb8-235f-7875-20e58197e1a0@...2150...>
+Subject: Re: [Openvpn-devel] [PATCH: tap-windows6] Implement option to disable
+	source IP check of ARP requests
+References: <169423fa-c98c-1e3b-42e9-f4bd9165bbb5@...2150...>
+	<CAKuzo_isWet5tKn3y6Wr4igEFL01UT-xAZTn3K_uka2M1c6JyQ@...278...>
+	<531e4123-aa78-6b00-1e10-9ff91cd445ca@...2150...>
+	<CAKuzo_jrNwhGHSFkXW4MiaoZyNFV8Jne1tU8eHyqUTECbzm74g@...278...>
+In-Reply-To: <CAKuzo_jrNwhGHSFkXW4MiaoZyNFV8Jne1tU8eHyqUTECbzm74g@...278...>
 
-Hi,
-
-The instructions in Selva's link weren't enough to convince windows to
-> trust the driver. I had to also enable debug mode and I signed it with one
-> of my own certificates.
-
-
-You have to sign the driver even in test-signing mode -- only the
-requirement for verified signature is not imposed so that the developer can
-use a self-signed certificate. This is explained in the test-signing docs
-on MSDN.
-
-Selva
-
---001a11471b9c65951005374bcbb1
-Content-Type: text/html; charset="UTF-8"
+--PKn0ujtuaPi6e2HSLDia0TivtvvNR3WGN
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr"><div class=3D"gmail_extra">Hi,</div><div class=3D"gmail_ex=
-tra"><br><div class=3D"gmail_quote"><blockquote class=3D"gmail_quote" style=
-=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">The inst=
-ructions in Selva&#39;s link weren&#39;t enough to convince windows to trus=
-t the driver. I had to also enable debug mode and I signed it with one of m=
-y own certificates.</blockquote></div><div class=3D"gmail_extra"><br></div>=
-You have to sign the driver even in test-signing mode -- only the requireme=
-nt for verified signature is not imposed so that the developer can use a se=
-lf-signed certificate. This is explained in the test-signing docs on MSDN.<=
-/div><div class=3D"gmail_extra"><br></div><div class=3D"gmail_extra">Selva<=
-br><br></div></div>
+On 10.07.2016 19:58, Selva Nair wrote:
+> Hi,
+>=20
+>     The instructions in Selva's link weren't enough to convince windows t=
+o trust the driver. I had to also enable debug mode and I signed it with on=
+e of my own certificates.
+>=20
+>=20
+> You have to sign the driver even in test-signing mode -- only the require=
+ment for verified signature is not imposed so that the developer can use a =
+self-signed certificate. This is explained in the test-signing docs on MSDN.
+>=20
+> Selva
+Hello Selva,
 
---001a11471b9c65951005374bcbb1--
+That's what I did, but Windows did not accept the signed driver and display=
+ed an error in the device manager. My application could not open a handle o=
+n the TAP device. Therefore it did not work correctly.
+
+--=20
+
+Mit freundlichen Gr=C3=BC=C3=9Fen/Kind Regards,
+Noel Kuntze
+
+GPG Key ID: 0x63EC6658
+Fingerprint: 23CA BB60 2146 05E7 7278 6592 3839 298F 63EC 6658
+
+
+
+--PKn0ujtuaPi6e2HSLDia0TivtvvNR3WGN--
+
+--HlEkEKqt3nwMucQ7Jqml2fjqJ8kQKaUVO
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQI0BAEBCAAeBQJXgo2CFxxub2VsQGZhbWlsaWUta3VudHplLmRlAAoJEDg5KY9j
+7GZYdRoP/38EXQs6FHu7Ye837LO6uI5J3uQKP2A8KLRYpO/R4KdnkG7ImwaD9Yxb
+qGNf+H+n8mmyr30SVgRpH/OUZ/qvYy/l66qWNaJYiwBcLpf21/tlqj3LTaS2XT8e
+l51KbqZGkssDWfGNqbaTslOHluLvrJe2/ed/LVnPv8uObvfMxIpCHVJBcxafUZpW
+h+JeQPlp881sv4FjfGjIPfHgWcQmx7Fvj1fShdiwmyBvcMjazFF56W+nJx1oROEu
+8AtF9a5tHAPULn25umrkECVB+zPQbpqpKdtBOmRr6+9h0W/DxYqr1lTEqn84zkyI
+8Xm+c+ydp+LIdfqgMeUlR5rmf1CGLiIVHNjc0qy9k4JFfiOGdmFvPfPgU2zHZ+Ae
+UixwJbxRqTD+/geoeeM3tkMRFgs2WShXgPqmvRUx68H6IylYCKufutT4LSzIjEkk
+lVvmKovh35h6IWVKjYv8vanrJQABwTy2VntgC0gk5QYt/79MxoEahNlqDlVici3x
+DUsQKX6dCyEOgf14flgSVPE5327pgJFojn2Dm8A2SAkObv9tlPyobnzT1bqs1V60
+zEaQO+Y+r3KPAxHyJe23VSMnajCJKIUbrmN+xo/86RC6n3S//ynOjq3bH4CNUnnb
+zIzsyz5fylax5Ne69ry03vNOoxAoCHWgxywpBoawj6PnuAsSWYhP
+=UB/1
+-----END PGP SIGNATURE-----
+
+--HlEkEKqt3nwMucQ7Jqml2fjqJ8kQKaUVO--
 
