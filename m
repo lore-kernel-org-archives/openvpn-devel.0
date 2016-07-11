@@ -1,10 +1,10 @@
-Date: Mon, 11 Jul 2016 20:13:35 +0200 (CEST)
-Message-Id: <201607111813.u6BIDZjq092387@...2054...>
+Date: Mon, 11 Jul 2016 20:26:15 +0200 (CEST)
+Message-Id: <201607111826.u6BIQFpR092574@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1465871689-13533-1-git-send-email-selva.nair@...277...>
-References: <1465871689-13533-1-git-send-email-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Promptly close the
-	netcmd_semaphore handle after use
+In-Reply-To: <1467624585-23515-1-git-send-email-samuli@...515...>
+References: <1467624585-23515-1-git-send-email-samuli@...515...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Deprecate the automatic part of
+	openvpnserv.exe in favor of openvpnserv2.exe
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,28 +15,26 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Selva Nair <selva.nair@...277...>
+To: samuli@...515...
 Cc: openvpn-devel@lists.sourceforge.net
 
-ACK.  Reviewed the patch before - performance impact is not high
-(compared to exec()'ing netsh.exe), and I can see the argument that
-the approach I suggested would be changing too many different places
-to be more "clean".  Compile-tested, not run.
+ACK.  Gone with the wind.
 
-Your patch has been applied to the master and release/2.3 branch (bugfix).
+In the post-2.4 series, we might consider throwing out the automatic
+part totally...
 
-commit 6aa4c9091300f62fae0bf7a9198de0edd2d8b7c7 (master)
-commit 13f3526a9b05bed63c50c93c5903b0cde0dcc7f4 (release/2.3)
+Your patch has been applied to the master branch.
 
-Author: Selva Nair
-Date:   Mon Jun 13 22:34:49 2016 -0400
+commit 6dd307c8640d851c6241a27f434c53a6aee0cace
+Author: Samuli Seppänen
+Date:   Mon Jul 4 12:29:45 2016 +0300
 
-     Promptly close the netcmd_semaphore handle after use
+     Deprecate the automatic part of openvpnserv.exe in favor of openvpnserv2.exe
 
-     Signed-off-by: Selva Nair <selva.nair@...277...>
+     Signed-off-by: Samuli Seppänen <samuli@...515...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1465871689-13533-1-git-send-email-selva.nair@...277...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/11919
+     Message-Id: <1467624585-23515-1-git-send-email-samuli@...515...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/12036
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
