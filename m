@@ -1,17 +1,10 @@
-References: <169423fa-c98c-1e3b-42e9-f4bd9165bbb5@...2150...>
-	<CAKuzo_isWet5tKn3y6Wr4igEFL01UT-xAZTn3K_uka2M1c6JyQ@...278...>
-	<531e4123-aa78-6b00-1e10-9ff91cd445ca@...2150...>
-	<CAKuzo_jrNwhGHSFkXW4MiaoZyNFV8Jne1tU8eHyqUTECbzm74g@...278...>
-From: Noel Kuntze <noel@...2150...>
-Message-ID: <34caff62-dcb8-235f-7875-20e58197e1a0@...2150...>
-Date: Sun, 10 Jul 2016 20:01:37 +0200
-MIME-Version: 1.0
-In-Reply-To: <CAKuzo_jrNwhGHSFkXW4MiaoZyNFV8Jne1tU8eHyqUTECbzm74g@...278...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature";
-	boundary="HlEkEKqt3nwMucQ7Jqml2fjqJ8kQKaUVO"
-Subject: Re: [Openvpn-devel] [PATCH: tap-windows6] Implement option to
- disable source IP check of ARP requests
+Date: Mon, 11 Jul 2016 16:41:33 +0200 (CEST)
+Message-Id: <201607111441.u6BEfXIi090997@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <1467732770-19110-1-git-send-email-selva.nair@...277...>
+References: <1467732770-19110-1-git-send-email-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Exponentially back off on
+	repeated connect retries
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,81 +13,49 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---HlEkEKqt3nwMucQ7Jqml2fjqJ8kQKaUVO
-Content-Type: multipart/mixed; boundary="PKn0ujtuaPi6e2HSLDia0TivtvvNR3WGN"
-From: Noel Kuntze <noel@...2150...>
-To: Selva Nair <selva.nair@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-Message-ID: <34caff62-dcb8-235f-7875-20e58197e1a0@...2150...>
-Subject: Re: [Openvpn-devel] [PATCH: tap-windows6] Implement option to disable
-	source IP check of ARP requests
-References: <169423fa-c98c-1e3b-42e9-f4bd9165bbb5@...2150...>
-	<CAKuzo_isWet5tKn3y6Wr4igEFL01UT-xAZTn3K_uka2M1c6JyQ@...278...>
-	<531e4123-aa78-6b00-1e10-9ff91cd445ca@...2150...>
-	<CAKuzo_jrNwhGHSFkXW4MiaoZyNFV8Jne1tU8eHyqUTECbzm74g@...278...>
-In-Reply-To: <CAKuzo_jrNwhGHSFkXW4MiaoZyNFV8Jne1tU8eHyqUTECbzm74g@...278...>
-
---PKn0ujtuaPi6e2HSLDia0TivtvvNR3WGN
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+To: Selva Nair <selva.nair@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-On 10.07.2016 19:58, Selva Nair wrote:
-> Hi,
->=20
->     The instructions in Selva's link weren't enough to convince windows t=
-o trust the driver. I had to also enable debug mode and I signed it with on=
-e of my own certificates.
->=20
->=20
-> You have to sign the driver even in test-signing mode -- only the require=
-ment for verified signature is not imposed so that the developer can use a =
-self-signed certificate. This is explained in the test-signing docs on MSDN.
->=20
-> Selva
-Hello Selva,
+Another ACK from me, looks good (and works :) )...
 
-That's what I did, but Windows did not accept the signed driver and display=
-ed an error in the device manager. My application could not open a handle o=
-n the TAP device. Therefore it did not work correctly.
+Mon Jul 11 16:30:28 2016 us=977593 Restart pause, 2 second(s)
+Mon Jul 11 16:30:32 2016 us=937071 Restart pause, 2 second(s)
+Mon Jul 11 16:30:36 2016 us=957047 Restart pause, 2 second(s)
+Mon Jul 11 16:30:40 2016 us=907049 Restart pause, 2 second(s)
+Mon Jul 11 16:30:44 2016 us=867052 Restart pause, 4 second(s)
+Mon Jul 11 16:30:50 2016 us=677019 Restart pause, 8 second(s)
+Mon Jul 11 16:31:00 2016 us=497045 Restart pause, 16 second(s)
+Mon Jul 11 16:31:18 2016 us=517110 Restart pause, 32 second(s)
+Mon Jul 11 16:31:52 2016 us=367066 Restart pause, 64 second(s)
+Mon Jul 11 16:32:58 2016 us=337024 Restart pause, 128 second(s)
+Mon Jul 11 16:35:08 2016 us=227030 Restart pause, 140 second(s)
+Mon Jul 11 16:37:30 2016 us=137063 Restart pause, 140 second(s)
 
---=20
+(--connect-retry 2 140)
 
-Mit freundlichen Gr=C3=BC=C3=9Fen/Kind Regards,
-Noel Kuntze
+Thanks :)
 
-GPG Key ID: 0x63EC6658
-Fingerprint: 23CA BB60 2146 05E7 7278 6592 3839 298F 63EC 6658
+Your patch has been applied to the master branch.
+
+commit 5d429efd9720109b9c9f1265f5d351a75a401942
+Author: Selva Nair
+Date:   Tue Jul 5 11:32:50 2016 -0400
+
+     Exponentially back off on repeated connect retries
+
+     Signed-off-by: Selva Nair <selva.nair@...277...>
+     Acked-by: Arne Schwabe <arne@...1227...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1467732770-19110-1-git-send-email-selva.nair@...277...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/12050
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
+--
+kind regards,
 
---PKn0ujtuaPi6e2HSLDia0TivtvvNR3WGN--
+Gert Doering
 
---HlEkEKqt3nwMucQ7Jqml2fjqJ8kQKaUVO
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQI0BAEBCAAeBQJXgo2CFxxub2VsQGZhbWlsaWUta3VudHplLmRlAAoJEDg5KY9j
-7GZYdRoP/38EXQs6FHu7Ye837LO6uI5J3uQKP2A8KLRYpO/R4KdnkG7ImwaD9Yxb
-qGNf+H+n8mmyr30SVgRpH/OUZ/qvYy/l66qWNaJYiwBcLpf21/tlqj3LTaS2XT8e
-l51KbqZGkssDWfGNqbaTslOHluLvrJe2/ed/LVnPv8uObvfMxIpCHVJBcxafUZpW
-h+JeQPlp881sv4FjfGjIPfHgWcQmx7Fvj1fShdiwmyBvcMjazFF56W+nJx1oROEu
-8AtF9a5tHAPULn25umrkECVB+zPQbpqpKdtBOmRr6+9h0W/DxYqr1lTEqn84zkyI
-8Xm+c+ydp+LIdfqgMeUlR5rmf1CGLiIVHNjc0qy9k4JFfiOGdmFvPfPgU2zHZ+Ae
-UixwJbxRqTD+/geoeeM3tkMRFgs2WShXgPqmvRUx68H6IylYCKufutT4LSzIjEkk
-lVvmKovh35h6IWVKjYv8vanrJQABwTy2VntgC0gk5QYt/79MxoEahNlqDlVici3x
-DUsQKX6dCyEOgf14flgSVPE5327pgJFojn2Dm8A2SAkObv9tlPyobnzT1bqs1V60
-zEaQO+Y+r3KPAxHyJe23VSMnajCJKIUbrmN+xo/86RC6n3S//ynOjq3bH4CNUnnb
-zIzsyz5fylax5Ne69ry03vNOoxAoCHWgxywpBoawj6PnuAsSWYhP
-=UB/1
------END PGP SIGNATURE-----
-
---HlEkEKqt3nwMucQ7Jqml2fjqJ8kQKaUVO--
 
