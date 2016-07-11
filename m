@@ -1,10 +1,8 @@
-Date: Mon, 11 Jul 2016 16:41:33 +0200 (CEST)
-Message-Id: <201607111441.u6BEfXIi090997@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <1467732770-19110-1-git-send-email-selva.nair@...277...>
-References: <1467732770-19110-1-git-send-email-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Exponentially back off on
-	repeated connect retries
+From: Arne Schwabe <arne@...1227...>
+Date: Mon, 11 Jul 2016 16:50:54 +0200
+Message-Id: <1468248654-27073-1-git-send-email-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH] Change the hold command to communicate the
+	time that OpenVPN would wait to the UI.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,47 +13,147 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Selva Nair <selva.nair@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Another ACK from me, looks good (and works :) )...
+Before the connect-retry change to do exponential backup this was not necessary
+since the time was fixed. With the exponential backoff the UI needs either to
+implement its own exponential backoff mechansim or needs a way of knowing the
+value of OpenVPN internal mechansim.
+---
+ doc/management-notes.txt |  7 +++++--
+ src/openvpn/init.c       | 17 ++++++++++-------
+ src/openvpn/manage.c     |  8 ++++++--
+ src/openvpn/manage.h     |  2 +-
+ 4 files changed, 22 insertions(+), 12 deletions(-)
 
-Mon Jul 11 16:30:28 2016 us=977593 Restart pause, 2 second(s)
-Mon Jul 11 16:30:32 2016 us=937071 Restart pause, 2 second(s)
-Mon Jul 11 16:30:36 2016 us=957047 Restart pause, 2 second(s)
-Mon Jul 11 16:30:40 2016 us=907049 Restart pause, 2 second(s)
-Mon Jul 11 16:30:44 2016 us=867052 Restart pause, 4 second(s)
-Mon Jul 11 16:30:50 2016 us=677019 Restart pause, 8 second(s)
-Mon Jul 11 16:31:00 2016 us=497045 Restart pause, 16 second(s)
-Mon Jul 11 16:31:18 2016 us=517110 Restart pause, 32 second(s)
-Mon Jul 11 16:31:52 2016 us=367066 Restart pause, 64 second(s)
-Mon Jul 11 16:32:58 2016 us=337024 Restart pause, 128 second(s)
-Mon Jul 11 16:35:08 2016 us=227030 Restart pause, 140 second(s)
-Mon Jul 11 16:37:30 2016 us=137063 Restart pause, 140 second(s)
-
-(--connect-retry 2 140)
-
-Thanks :)
-
-Your patch has been applied to the master branch.
-
-commit 5d429efd9720109b9c9f1265f5d351a75a401942
-Author: Selva Nair
-Date:   Tue Jul 5 11:32:50 2016 -0400
-
-     Exponentially back off on repeated connect retries
-
-     Signed-off-by: Selva Nair <selva.nair@...277...>
-     Acked-by: Arne Schwabe <arne@...1227...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1467732770-19110-1-git-send-email-selva.nair@...277...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/12050
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/doc/management-notes.txt b/doc/management-notes.txt
+index f68f3db..eb857ab 100644
+--- a/doc/management-notes.txt
++++ b/doc/management-notes.txt
+@@ -168,9 +168,12 @@ be reset by restarts.
+ 
+ OpenVPN will indicate that it is in a hold state by
+ sending a real-time notification to the management
+-client:
++client, the parameter indicates how long OpenVPN would
++wait without UI (as influenced connect-retry exponential
++backoff. The UI need to wait for releasing the hold if it
++wants similar behavior:
+ 
+-  >HOLD:Waiting for hold release
++  >HOLD:Waiting for hold release:10
+ 
+ Command examples:
+ 
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 3af2bdc..ef64b39 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -1960,16 +1960,17 @@ do_deferred_options (struct context *c, const unsigned int found)
+ }
+ 
+ /*
+- * Possible hold on initialization
++ * Possible hold on initialization, holdtime is the 
++ * time OpenVPN would wait without management
+  */
+ static bool
+-do_hold (void)
++do_hold (int holdtime)
+ {
+ #ifdef ENABLE_MANAGEMENT
+   if (management)
+     {
+       /* block until management hold is released */
+-      if (management_hold (management))
++        if (management_hold (management, holdtime))
+ 	return true;
+     }
+ #endif
+@@ -2012,9 +2013,11 @@ socket_restart_pause (struct context *c)
+   c->persist.restart_sleep_seconds = 0;
+ 
+   /* do managment hold on context restart, i.e. second, third, fourth, etc. initialization */
+-  if (do_hold ())
++  if (do_hold (sec))
++  {
+     sec = 0;
+-
++  }
++  
+   if (sec)
+     {
+       msg (D_RESTART, "Restart pause, %d second(s)", sec);
+@@ -2031,7 +2034,7 @@ do_startup_pause (struct context *c)
+   if (!c->first_time)
+     socket_restart_pause (c);
+   else
+-    do_hold (); /* do management hold on first context initialization */
++    do_hold (0); /* do management hold on first context initialization */
+ }
+ 
+ /*
+@@ -3435,7 +3438,7 @@ open_management (struct context *c)
+ 	    }
+ 
+ 	  /* initial management hold, called early, before first context initialization */
+-	  do_hold ();
++	  do_hold (0);
+ 	  if (IS_SIG (c))
+ 	    {
+ 	      msg (M_WARN, "Signal received from management interface, exiting");
+diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
+index dcb1bc1..206aaf4 100644
+--- a/src/openvpn/manage.c
++++ b/src/openvpn/manage.c
+@@ -3332,12 +3332,13 @@ management_should_daemonize (struct management *man)
+  * Return true if the caller should not sleep for an additional time interval.
+  */
+ bool
+-management_hold (struct management *man)
++management_hold (struct management *man, int holdtime)
+ {
+   if (management_would_hold (man))
+     {
+       volatile int signal_received = 0;
+       const bool standalone_disabled_save = man->persist.standalone_disabled;
++      struct gc_arena gc = gc_new ();
+ 
+       man->persist.standalone_disabled = false; /* This is so M_CLIENT messages will be correctly passed through msg() */
+       man->persist.special_state_msg = NULL;
+@@ -3347,7 +3348,9 @@ management_hold (struct management *man)
+ 
+       if (!signal_received)
+ 	{
+-	  man->persist.special_state_msg = ">HOLD:Waiting for hold release";
++      struct buffer out = alloc_buf_gc (128, &gc);
++      buf_printf (&out, ">HOLD:Waiting for hold release:%d", holdtime);
++	  man->persist.special_state_msg = BSTR (&out);
+ 	  msg (M_CLIENT, "%s", man->persist.special_state_msg);
+ 
+ 	  /* run command processing event loop until we get our username/password */
+@@ -3366,6 +3369,7 @@ management_hold (struct management *man)
+       man->persist.special_state_msg = NULL;
+       man->settings.mansig &= ~MANSIG_IGNORE_USR1_HUP;
+ 
++      gc_free (&gc);
+       return true;
+     }
+   return false;
+diff --git a/src/openvpn/manage.h b/src/openvpn/manage.h
+index 988600f..50db38c 100644
+--- a/src/openvpn/manage.h
++++ b/src/openvpn/manage.h
+@@ -396,7 +396,7 @@ int managment_android_persisttun_action (struct management *man);
+ 
+ bool management_should_daemonize (struct management *man);
+ bool management_would_hold (struct management *man);
+-bool management_hold (struct management *man);
++bool management_hold (struct management *man, int holdtime);
+ 
+ void management_event_loop_n_seconds (struct management *man, int sec);
+ 
+-- 
+2.7.4 (Apple Git-66)
 
 
