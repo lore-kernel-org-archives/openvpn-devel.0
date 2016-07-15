@@ -1,12 +1,11 @@
+Date: Fri, 15 Jul 2016 17:11:31 +0800
+From: "Attractive Christina" <wisechris2008@...2151...>
 MIME-Version: 1.0
-In-Reply-To: <1468495519-25102-1-git-send-email-arne@...1227...>
-References: <1468495519-25102-1-git-send-email-arne@...1227...>
-From: Selva Nair <selva.nair@...277...>
-Date: Thu, 14 Jul 2016 11:39:28 -0400
-Message-ID: <CAKuzo_jYOzokoNhQn9cc+ma60MFbpe8_tSeXmeoGNK7jsMEQZA@...278...>
-Content-Type: multipart/alternative; boundary=001a1149e926d8878105379a4f49
-Subject: Re: [Openvpn-devel] [PATCH] Incorporate the Debian typo fixes where
- appropriate and make show_opt default message clearer
+Content-Type: multipart/alternative;
+	boundary="=-sinamail_alt_0f867ac740baec30eb58c106a4830a0b"
+Message-Id: <20160715091131.BFA3CC8011C@...2152...>
+Subject: [Openvpn-devel] please dont send me any e-mail.
+Reply-To: wisechris2008@...2151...
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,59 +14,98 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
+To: Selva Nair <selva.nair@...277...>, Arne Schwabe <arne@...1227...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---001a1149e926d8878105379a4f49
-Content-Type: text/plain; charset=UTF-8
+--=-sinamail_alt_0f867ac740baec30eb58c106a4830a0b
+Content-Type: text/plain; charset="GBK"
+Content-Transfer-Encoding: base64
+Content-Disposition: inline
 
-On Thu, Jul 14, 2016 at 7:25 AM, Arne Schwabe <arne@...1227...> wrote:
+CgoKLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KQ2hyaXN0aW5hCgotLS0tLSDUrcq8
+08q8/iAtLS0tLQq3orz+yMujulNlbHZhIE5haXIgPHNlbHZhLm5haXJALi4uMjc3Li4uPgrK1bz+
+yMujukFybmUgU2Nod2FiZSA8YXJuZUAuLi4xMjI3Li4uPgqzrcvNyMujuiJvcGVudnBuLWRldmVs
+QGxpc3RzLnNvdXJjZWZvcmdlLm5ldCIgPG9wZW52cG4tZGV2ZWxAbGlzdHMuc291cmNlZm9yZ2Uu
+bmV0PgrW98zio7pSZTogW09wZW52cG4tZGV2ZWxdIFtQQVRDSF0gSW5jb3Jwb3JhdGUgdGhlIERl
+YmlhbiB0eXBvIGZpeGVzIHdoZXJlIGFwcHJvcHJpYXRlIGFuZCBtYWtlIHNob3dfb3B0IGRlZmF1
+bHQgbWVzc2FnZSBjbGVhcmVyCsjVxtqjujIwMTbE6jA31MIxNMjVIDIzteM0MbfWCgoKT24gVGh1
+LCBKdWwgMTQsIDIwMTYgYXQgNzoyNSBBTSwgQXJuZSBTY2h3YWJlIDxhcm5lQC4uLjEyMjcuLi4+
+IHdyb3RlOgpAQCAtNTQ4Nyw3ICs1NDg3LDcgQEAgdmlydHVhbCBESENQIHNlcnZlciBhZGRyZXNz
+LiAgSW4KDQogLkIgXC1cLWRldiB0dW4KDQogbW9kZSwgT3BlblZQTiB3aWxsIGNhdXNlIHRoZSBE
+SENQIHNlcnZlciB0byBtYXNxdWVyYWRlIGFzIGlmIGl0IHdlcmUKDQogY29taW5nIGZyb20gdGhl
+IHJlbW90ZSBlbmRwb2ludC4gIFRoZSBvcHRpb25hbCBvZmZzZXQgcGFyYW1ldGVyIGlzCg0KLWFu
+IGludGVnZXIgd2hpY2ggaXMgPiAtMjU2IGFuZCA8IDI1NiBhbmQgd2hpY2ggZGVmYXVsdHMgdG8g
+MC4KDQorYW4gaW50ZWdlciB3aGljaCBpcyA+IFwtMjU2IGFuZCA8IDI1NiBhbmQgd2hpY2ggZGVm
+YXVsdHMgdG8gMC4KTm90IGEgZmF1bHQgb2YgdGhpcyBwYXRjaCwgYnV0IG1heSBiZSBpdHMgdGlt
+ZSB0byBtYWtlIHRoaXMgaW5mbyByaWdodC4gQ3VycmVudGx5IHRoZSBkZWZhdWx0IG9mZnNldCBp
+biAtLWRldiB0dW4gbW9kZSBpcyBub3QgMCwgYnV0IC0xLiBUaHVzIHRoZSBpcCAoYnJvYWRjYXN0
+IC0gMSkgaXMgcmVtb3ZlZCBmcm9tIHRoZSBwb29sLiBVbmxpa2Ugd2hhdCB0aGUgbWFuIHBhZ2Ug
+YW5kIGNvbW1lbnRzIGluIGhlbHBlci5jIGltcGxpZXMuCkkgdGhpbmsgaXRzIGJldHRlciB0byBi
+cmluZyB0aGUgc291cmNlIGluIGxpbmUgd2l0aCB0aGUgZG9jcyBhcyBzdWdnZXN0ZWQgaW4gdGhp
+cyBwYXRjaDogaHR0cDovL2FydGljbGUuZ21hbmUub3JnL2dtYW5lLm5ldHdvcmsub3BlbnZwbi5k
+ZXZlbC8xMDY4NwpTZWx2YQ0KDQotLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KV2hhdCBOZXRGbG93IEFu
+YWx5emVyIGNhbiBkbyBmb3IgeW91PyBNb25pdG9ycyBuZXR3b3JrIGJhbmR3aWR0aCBhbmQgdHJh
+ZmZpYwpwYXR0ZXJucyBhdCBhbiBpbnRlcmZhY2UtbGV2ZWwuIFJldmVhbHMgd2hpY2ggdXNlcnMs
+IGFwcHMsIGFuZCBwcm90b2NvbHMgYXJlIApjb25zdW1pbmcgdGhlIG1vc3QgYmFuZHdpZHRoLiBQ
+cm92aWRlcyBtdWx0aS12ZW5kb3Igc3VwcG9ydCBmb3IgTmV0RmxvdywgCkotRmxvdywgc0Zsb3cg
+YW5kIG90aGVyIGZsb3dzLiBNYWtlIGluZm9ybWVkIGRlY2lzaW9ucyB1c2luZyBjYXBhY2l0eSBw
+bGFubmluZwpyZXBvcnRzLmh0dHA6Ly9zZG0ubGluay96b2hvZGV2MmRldgpfX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpPcGVudnBuLWRldmVsIG1haWxpbmcg
+bGlzdApPcGVudnBuLWRldmVsQGxpc3RzLnNvdXJjZWZvcmdlLm5ldApodHRwczovL2xpc3RzLnNv
+dXJjZWZvcmdlLm5ldC9saXN0cy9saXN0aW5mby9vcGVudnBuLWRldmVsCg==
 
-> @@ -5487,7 +5487,7 @@ virtual DHCP server address.  In
->  .B \-\-dev tun
->  mode, OpenVPN will cause the DHCP server to masquerade as if it were
->  coming from the remote endpoint.  The optional offset parameter is
-> -an integer which is > -256 and < 256 and which defaults to 0.
-> +an integer which is > \-256 and < 256 and which defaults to 0.
->
+--=-sinamail_alt_0f867ac740baec30eb58c106a4830a0b
+Content-Type: text/html; charset="GBK"
+Content-Transfer-Encoding: base64
+Content-Disposition: inline
 
-Not a fault of this patch, but may be its time to make this info right.
-Currently the default offset in --dev tun mode is not 0, but -1. Thus the
-ip (broadcast - 1) is removed from the pool. Unlike what the man page and
-comments in helper.c implies.
+PGJyPjxicj48YnI+PGRpdiBpZD0iIj4tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLTxi
+cj48L2Rpdj48ZGl2IGlkPSIiPkNocmlzdGluYTxicj48L2Rpdj48YnI+PGRpdiBpZD0ib3JpZ2Jv
+ZHkiPjxkaXYgc3R5bGU9ImJhY2tncm91bmQ6ICNmMmYyZjI7Ij4tLS0tLSDUrcq808q8/iAtLS0t
+LTxicj63orz+yMujulNlbHZhIE5haXIgJmx0O3NlbHZhLm5haXJALi4uMjc3Li4uJmd0Ozxicj7K
+1bz+yMujukFybmUgU2Nod2FiZSAmbHQ7YXJuZUAuLi4xMjI3Li4uJmd0Ozxicj6zrcvNyMujuiJv
+cGVudnBuLWRldmVsQGxpc3RzLnNvdXJjZWZvcmdlLm5ldCIgJmx0O29wZW52cG4tZGV2ZWxAbGlz
+dHMuc291cmNlZm9yZ2UubmV0Jmd0Ozxicj7W98zio7pSZTogW09wZW52cG4tZGV2ZWxdIFtQQVRD
+SF0gSW5jb3Jwb3JhdGUgdGhlIERlYmlhbiB0eXBvIGZpeGVzIHdoZXJlIGFwcHJvcHJpYXRlIGFu
+ZCBtYWtlIHNob3dfb3B0IGRlZmF1bHQgbWVzc2FnZSBjbGVhcmVyPGJyPsjVxtqjujIwMTbE6jA3
+1MIxNMjVIDIzteM0MbfWPGJyPjwvZGl2Pjxicj48ZGl2IGRpcj0ibHRyIj48ZGl2IGNsYXNzPSIi
+Pjxicj48ZGl2IGNsYXNzPSIiPk9uIFRodSwgSnVsIDE0LCAyMDE2IGF0IDc6MjUgQU0sIEFybmUg
+U2Nod2FiZSA8c3BhbiBkaXI9Imx0ciI+Jmx0OzxhIHRhcmdldD0iX2JsYW5rIiBocmVmPSJtYWls
+dG86YXJuZUAuLi4xMjI3Li4uIj5hcm5lQC4uLjEyMjcuLi48L2E+Jmd0Ozwvc3Bhbj4gd3JvdGU6
+PGJyPjxibG9ja3F1b3RlIGNsYXNzPSIiIHN0eWxlPSJtYXJnaW46MHB4IDBweCAwcHggMC44ZXg7
+Ym9yZGVyLWxlZnQtd2lkdGg6MXB4O2JvcmRlci1sZWZ0LWNvbG9yOnJnYigyMDQsMjA0LDIwNCk7
+Ym9yZGVyLWxlZnQtc3R5bGU6c29saWQ7cGFkZGluZy1sZWZ0OjFleCI+PGRpdj5AQCAtNTQ4Nyw3
+ICs1NDg3LDcgQEAgdmlydHVhbCBESENQIHNlcnZlciBhZGRyZXNzLiZuYnNwOyBJbjxicj4NCiZu
+YnNwOy5CIFwtXC1kZXYgdHVuPGJyPg0KJm5ic3A7bW9kZSwgT3BlblZQTiB3aWxsIGNhdXNlIHRo
+ZSBESENQIHNlcnZlciB0byBtYXNxdWVyYWRlIGFzIGlmIGl0IHdlcmU8YnI+DQombmJzcDtjb21p
+bmcgZnJvbSB0aGUgcmVtb3RlIGVuZHBvaW50LiZuYnNwOyBUaGUgb3B0aW9uYWwgb2Zmc2V0IHBh
+cmFtZXRlciBpczxicj4NCi1hbiBpbnRlZ2VyIHdoaWNoIGlzICZndDsgLTI1NiBhbmQgJmx0OyAy
+NTYgYW5kIHdoaWNoIGRlZmF1bHRzIHRvIDAuPGJyPg0KK2FuIGludGVnZXIgd2hpY2ggaXMgJmd0
+OyBcLTI1NiBhbmQgJmx0OyAyNTYgYW5kIHdoaWNoIGRlZmF1bHRzIHRvIDAuPC9kaXY+PC9ibG9j
+a3F1b3RlPjwvZGl2Pjxicj5Ob3QgYSBmYXVsdCBvZiB0aGlzIHBhdGNoLCBidXQgbWF5IGJlIGl0
+cyB0aW1lIHRvIG1ha2UgdGhpcyBpbmZvIHJpZ2h0LiBDdXJyZW50bHkgdGhlIGRlZmF1bHQgb2Zm
+c2V0IGluIC0tZGV2IHR1biBtb2RlIGlzIG5vdCAwLCBidXQgLTEuIFRodXMgdGhlIGlwIChicm9h
+ZGNhc3QgLSAxKSBpcyByZW1vdmVkIGZyb20gdGhlIHBvb2wuIFVubGlrZSB3aGF0IHRoZSBtYW4g
+cGFnZSBhbmQgY29tbWVudHMgaW4gaGVscGVyLmMgaW1wbGllcy48L2Rpdj48ZGl2IGNsYXNzPSIi
+Pjxicj48L2Rpdj48ZGl2IGNsYXNzPSIiPkkgdGhpbmsgaXRzIGJldHRlciB0byBicmluZyB0aGUg
+c291cmNlIGluIGxpbmUgd2l0aCB0aGUgZG9jcyBhcyBzdWdnZXN0ZWQgaW4gdGhpcyBwYXRjaDom
+bmJzcDs8YSB0YXJnZXQ9Il9ibGFuayIgaHJlZj0iaHR0cDovL2FydGljbGUuZ21hbmUub3JnL2dt
+YW5lLm5ldHdvcmsub3BlbnZwbi5kZXZlbC8xMDY4NyI+aHR0cDovL2FydGljbGUuZ21hbmUub3Jn
+L2dtYW5lLm5ldHdvcmsub3BlbnZwbi5kZXZlbC8xMDY4NzwvYT48L2Rpdj48ZGl2IGNsYXNzPSIi
+Pjxicj48L2Rpdj48ZGl2IGNsYXNzPSIiPlNlbHZhPC9kaXY+PC9kaXY+DQoNCi0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLTxicj5XaGF0IE5ldEZsb3cgQW5hbHl6ZXIgY2FuIGRvIGZvciB5b3U/IE1vbml0
+b3JzIG5ldHdvcmsgYmFuZHdpZHRoIGFuZCB0cmFmZmljPGJyPnBhdHRlcm5zIGF0IGFuIGludGVy
+ZmFjZS1sZXZlbC4gUmV2ZWFscyB3aGljaCB1c2VycywgYXBwcywgYW5kIHByb3RvY29scyBhcmUg
+PGJyPmNvbnN1bWluZyB0aGUgbW9zdCBiYW5kd2lkdGguIFByb3ZpZGVzIG11bHRpLXZlbmRvciBz
+dXBwb3J0IGZvciBOZXRGbG93LCA8YnI+Si1GbG93LCBzRmxvdyBhbmQgb3RoZXIgZmxvd3MuIE1h
+a2UgaW5mb3JtZWQgZGVjaXNpb25zIHVzaW5nIGNhcGFjaXR5IHBsYW5uaW5nPGJyPnJlcG9ydHMu
+aHR0cDovL3NkbS5saW5rL3pvaG9kZXYyZGV2PGJyPl9fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fPGJyPk9wZW52cG4tZGV2ZWwgbWFpbGluZyBsaXN0PGJyPk9w
+ZW52cG4tZGV2ZWxAbGlzdHMuc291cmNlZm9yZ2UubmV0PGJyPmh0dHBzOi8vbGlzdHMuc291cmNl
+Zm9yZ2UubmV0L2xpc3RzL2xpc3RpbmZvL29wZW52cG4tZGV2ZWw8YnI+PC9kaXY+
 
-I think its better to bring the source in line with the docs as suggested
-in this patch: http://article.gmane.org/gmane.network.openvpn.devel/10687
+--=-sinamail_alt_0f867ac740baec30eb58c106a4830a0b--
 
-Selva
-
---001a1149e926d8878105379a4f49
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">=
-On Thu, Jul 14, 2016 at 7:25 AM, Arne Schwabe <span dir=3D"ltr">&lt;<a href=
-=3D"mailto:arne@...1227..." target=3D"_blank">arne@...1227...</a>&gt;</span=
-> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0=
-.8ex;border-left-width:1px;border-left-color:rgb(204,204,204);border-left-s=
-tyle:solid;padding-left:1ex"><div>@@ -5487,7 +5487,7 @@ virtual DHCP server=
- address.=C2=A0 In<br>
-=C2=A0.B \-\-dev tun<br>
-=C2=A0mode, OpenVPN will cause the DHCP server to masquerade as if it were<=
-br>
-=C2=A0coming from the remote endpoint.=C2=A0 The optional offset parameter =
-is<br>
--an integer which is &gt; -256 and &lt; 256 and which defaults to 0.<br>
-+an integer which is &gt; \-256 and &lt; 256 and which defaults to 0.</div>=
-</blockquote></div><br>Not a fault of this patch, but may be its time to ma=
-ke this info right. Currently the default offset in --dev tun mode is not 0=
-, but -1. Thus the ip (broadcast - 1) is removed from the pool. Unlike what=
- the man page and comments in helper.c implies.</div><div class=3D"gmail_ex=
-tra"><br></div><div class=3D"gmail_extra">I think its better to bring the s=
-ource in line with the docs as suggested in this patch:=C2=A0<a href=3D"htt=
-p://article.gmane.org/gmane.network.openvpn.devel/10687" target=3D"_blank">=
-http://article.gmane.org/gmane.network.openvpn.devel/10687</a></div><div cl=
-ass=3D"gmail_extra"><br></div><div class=3D"gmail_extra">Selva</div></div>
-
---001a1149e926d8878105379a4f49--
 
