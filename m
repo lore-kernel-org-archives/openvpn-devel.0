@@ -1,9 +1,13 @@
-From: "streampp" <streampp@...2153...>
-Date: Sat, 16 Jul 2016 20:45:03 +0300
-Message-Id: <1468691103.727067.3678.7414@...2154...>
+Date: Sat, 16 Jul 2016 20:17:26 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20160716181726.GQ78279@...1296...>
+References: <1468691103.727067.3678.7414@...2154...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] net6_gateway feature request
-Reply-To: streampp <streampp@...2153...>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="VuBTcNUPe5zwk2q6"
+Content-Disposition: inline
+In-Reply-To: <1468691103.727067.3678.7414@...2154...>
+Subject: Re: [Openvpn-devel] net6_gateway feature request
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,43 +16,64 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"; format=flowed
+To: streampp <streampp@...2153...>
+Cc: openvpn-devel@lists.sourceforge.net
+
+--VuBTcNUPe5zwk2q6
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
-To: openvpn-devel@lists.sourceforge.net
 
+Hi,
 
-Hello openvpn developers,
+On Sat, Jul 16, 2016 at 08:45:03PM +0300, streampp wrote:
+> I'm connecting to my remote OpenVPN server via IPv4. On openvpn-server.co=
+nf I have something like:
+>=20
+> push "route 10.0.0.0 255.0.0.0 net_gateway"
+> push "route 172.16.0.0 255.240.0.0 net_gateway"
+> push "route 192.168.0.0 255.255.0.0 net_gateway"
+>=20
+> with works perfect and my IPv4 gateway replaces "net_gateway" parameter, =
+so with IPv4 everything is fine.
 
-First of all, many thanks for such a great product.
+"why"?
 
-I am wondering, is it possible to get something like "net6_gateway" paramet=
-er for pushing routes to client?
+> But... I want same thing for IPv6:
+>=20
+> push "route-ipv6 fc00::/64 net_gateway" and that is not working, because =
+net_gateway represents IPv4 gateway...
+>=20
+> Can you do something like "net6_gateway" variable for such cases?=20
 
-The problem is the following. I have a dual stack IPv4/IPv6 ethernet connec=
-tion to my ISP. So I have native working IPv4 and IPv6.
-I have a remote OpenVPN server and I would like to route all my IPv4 and IP=
-v6 traffic (except some networks) trough that OpenVPN.
-I'm connecting to my remote OpenVPN server via IPv4. On openvpn-server.conf=
- I have something like:
+By excluding that range (push "route-ipv6 2000::/3" instead of ::/0)
+you can achieve the same effect - fc00:: will go to your existing=20
+net_gateway.
 
-push "route 10.0.0.0 255.0.0.0 net_gateway"
-push "route 172.16.0.0 255.240.0.0 net_gateway"
-push "route 192.168.0.0 255.255.0.0 net_gateway"
+But it still doesn't make very much sense to me why you want to exclude
+private ranges from the tunnel - why not just route everything?
 
-with works perfect and my IPv4 gateway replaces "net_gateway" parameter, so=
- with IPv4 everything is fine.
+gert
 
-But... I want same thing for IPv6:
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-push "route-ipv6 fc00::/64 net_gateway" and that is not working, because ne=
-t_gateway represents IPv4 gateway...
+--VuBTcNUPe5zwk2q6
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Can you do something like "net6_gateway" variable for such cases?=20
-You may say, that "hey, dude, just do 2 server configs, one for IPv4 and on=
-e for IPv6", and I answer - no, I can't. Because at home I have dual stack =
-IPv4/IPv6 network, and on Internet cafe or in a hotel I may not :(
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
 
-So, any help would be appreciated, Many thanks.
+iQCVAwUBV4p6NakuBuNlUUl1AQKRQAP+Ks/Lf9AwT+8XLZ2ZSIy6a7WQ+e7SW0bP
+wzlkC4MWYI//oNIy9nIQX3rrmTiAuV/0Ih8gT8+/te3/MA0nfst5h6P/uZKmHbSY
+iRf+80ypf9CV7W2cvO4g9BYcIg5C9DW2PwBzzcwg1Mp3QLIhuNwjEGQpWl2ttn/a
+Lg0XttrQvrY=
+=/92D
+-----END PGP SIGNATURE-----
 
-streampp.
+--VuBTcNUPe5zwk2q6--
+
