@@ -1,8 +1,10 @@
-From: Steffan Karger <steffan@...1856...>
-Date: Mon, 25 Jul 2016 20:52:46 +0200
-Message-Id: <1469472766-25131-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH] Allow ncp-disable and ncp-ciphers to be
-	specified in ccd files
+Date: Mon, 25 Jul 2016 21:20:03 +0200 (CEST)
+Message-Id: <201607251920.u6PJK3ZZ037204@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <1469472766-25131-1-git-send-email-steffan@...1856...>
+References: <1469472766-25131-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Allow ncp-disable and
+	ncp-ciphers to be specified in ccd files
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,37 +15,27 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Steffan Karger <steffan@...1856...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-This allows the ncp-disable and ncp-ciphers options to be used in 'client
-config dir' files, to disable or change the negotiable crypto parameter
-settings for specific clients.
+Your patch has been applied to the master branch.
 
-Signed-off-by: Steffan Karger <steffan@...1856...>
----
- src/openvpn/options.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+commit 834f602fd069118b5d00a9042c9fdb20930257eb
+Author: Steffan Karger
+Date:   Mon Jul 25 20:52:46 2016 +0200
 
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 18af179..79dcb79 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -6666,12 +6666,12 @@ add_option (struct options *options,
-     }
-   else if (streq (p[0], "ncp-ciphers") && p[1] && !p[2])
-     {
--      VERIFY_PERMISSION (OPT_P_GENERAL);
-+      VERIFY_PERMISSION (OPT_P_GENERAL|OPT_P_INSTANCE);
-       options->ncp_ciphers = p[1];
-     }
-   else if (streq (p[0], "ncp-disable") && !p[1])
-     {
--      VERIFY_PERMISSION (OPT_P_GENERAL);
-+      VERIFY_PERMISSION (OPT_P_GENERAL|OPT_P_INSTANCE);
-       options->ncp_enabled = false;
-     }
-   else if (streq (p[0], "prng") && p[1] && !p[3])
--- 
-2.7.4
+     Allow ncp-disable and ncp-ciphers to be specified in ccd files
+
+     Signed-off-by: Steffan Karger <steffan@...1856...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1469472766-25131-1-git-send-email-steffan@...1856...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/12096
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
