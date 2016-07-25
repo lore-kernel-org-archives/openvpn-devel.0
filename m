@@ -1,16 +1,10 @@
-Date: Sun, 17 Jul 2016 22:21:35 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20160717202135.GV78279@...1296...>
-References: <20160716181726.GQ78279@...1296...>
-	<1468696381.29435.18578.36594@...2154...>
-	<20160716202207.GT78279@...1296...>
-	<578A9CED.2090702@...277...>
+References: <CAAWBBYOc5H=0X7b=i_gizvTZUDv2RwxQUEOY85P6c3z-y_U8og@...278...>
+From: Arne Schwabe <arne@...1227...>
+Message-ID: <3e7224ae-474c-1cfd-7bcf-3b9eeb14cb7a@...1227...>
+Date: Mon, 25 Jul 2016 10:20:24 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="x9NlMAausKqHAFUv"
-Content-Disposition: inline
-In-Reply-To: <578A9CED.2090702@...277...>
-Subject: Re: [Openvpn-devel] net6_gateway feature request
+In-Reply-To: <CAAWBBYOc5H=0X7b=i_gizvTZUDv2RwxQUEOY85P6c3z-y_U8og@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] Added client-ip option to NAT
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,50 +13,24 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: debbie10t <debbie10t@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+To: Rafael Gava <gava100@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---x9NlMAausKqHAFUv
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
 
-On Sat, Jul 16, 2016 at 09:45:33PM +0100, debbie10t wrote:
-> If you *are* the client then you can customise your config & environment
-> per site with (eg) --setenv my_route_net6_gateway blah:blah:blah::x
+Am 05.07.16 um 15:13 schrieb Rafael Gava:
+> Hi Arne, sorry for replying so late. 
+>
+> Below is the NAT client-ip patch fixing the messed up whitespaces.
+> The only difference from the previous patch, besides the whitespaces,
+> is that I'm considering both strings 'client-ip' and 'localhost' as
+> valid options.
+>
+> Please, whatever problem let me know.
+Wasn't the general consensus on the mailing list that making localhost
+an alias for client-ip is confusing? I wonder why you introduced it again.
 
-That would imply "someone has to write a script to figure out the
-default gateway across all supported platforms" - which is amazingly
-complicated...
-
-But you bring up a good point - git master actually exports this information
-to scripts, via the "net_gateway_ipv6" environment variable.  So, if
-the original poster can use git master, an --up script could install the
-necessary /128 routes towards net_gateway_ipv6.
-
-gert
-
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---x9NlMAausKqHAFUv
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQCVAwUBV4vozqkuBuNlUUl1AQLiCgP/Zkd13bljuarZIUgyn++mUQGVMmIc0ABV
-XZTi1Il2S3iG8QBFSlEZcXpXYUMZ+NNLam0hTukwGqyLlhUh5XO+MyhOvsuJz7ao
-k2HurGkkRqzovVOGFd0MbIYdIArBX3mBRr1H7Q7T8mUdjOGdYXzioRurAUZ8YXwl
-uqtN1+vVquk=
-=tohC
------END PGP SIGNATURE-----
-
---x9NlMAausKqHAFUv--
+Arne
 
