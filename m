@@ -1,8 +1,8 @@
-Date: Tue, 26 Jul 2016 17:12:02 +0200 (CEST)
-Message-Id: <201607261512.u6QFC28B048730@...2054...>
+Date: Tue, 26 Jul 2016 17:18:54 +0200 (CEST)
+Message-Id: <201607261518.u6QFIslZ049808@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1469541433-1671-1-git-send-email-steffan.karger@...1435...>
-References: <1469541433-1671-1-git-send-email-steffan.karger@...1435...>
+In-Reply-To: <1469541338-1530-1-git-send-email-steffan.karger@...1435...>
+References: <1469541338-1530-1-git-send-email-steffan.karger@...1435...>
 Subject: [Openvpn-devel] [PATCH applied] Re: Fix '--cipher none --cipher'
 	crash
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,18 +20,18 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 ACK!
 
-Your patch has been applied to the release/2.3 branch.
+Your patch has been applied to the master branch.
 
-commit d1c08ab1365096fdbd02cfb4f9ad97e759f13b82
+commit dea8917a032e2303b39cce23e60f2348516d5a12
 Author: Steffan Karger
-Date:   Tue Jul 26 15:57:13 2016 +0200
+Date:   Tue Jul 26 15:55:38 2016 +0200
 
      Fix '--cipher none --cipher' crash
 
-     Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+     Signed-off-by: Steffan Karger <steffan@...1856...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1469541433-1671-1-git-send-email-steffan.karger@...1435...>
-     URL: http://article.gmane.org/gmane.network.openvpn.devel/12107
+     Message-Id: <1469541338-1530-1-git-send-email-steffan.karger@...1435...>
+     URL: http://article.gmane.org/gmane.network.openvpn.devel/12106
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
