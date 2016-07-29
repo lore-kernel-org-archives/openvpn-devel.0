@@ -1,12 +1,11 @@
+References: <1469472766-25131-1-git-send-email-steffan@...1856...>
+From: Jan Just Keijser <janjust@...1147...>
+Message-ID: <1a341630-323e-f2a8-176b-bf5176990f62@...1147...>
+Date: Fri, 29 Jul 2016 17:18:56 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAFdgGSDay1Not+vKh5nVcTXFF04Tvm7Me6wQEdm0U7-GwE5GQw@...278...>
-References: <CAFdgGSA_HDUnQCOW8pCGk_UiFZZ9=FBoH1n=4dOy-7t6kF9dOQ@...278...>
-	<CAA1Abx+MFJoNwMu6oUGC_BQUaP7WT1S03QzDRy7jKN5ZuMbHww@...278...>
-	<CAFdgGSDay1Not+vKh5nVcTXFF04Tvm7Me6wQEdm0U7-GwE5GQw@...278...>
-From: Steffan Karger <steffan@...1856...>
-Date: Fri, 29 Jul 2016 07:51:29 +0200
-Message-ID: <CAA1AbxL-nsvnsHtGuhfGfzGq7NhVqqXU2sc6g2bJQ90HW9L7vg@...278...>
-Subject: Re: [Openvpn-devel] [Openvpn-users] tls-cipher
+In-Reply-To: <1469472766-25131-1-git-send-email-steffan@...1856...>
+Subject: Re: [Openvpn-devel] [PATCH] Allow ncp-disable and ncp-ciphers to be
+ specified in ccd files
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,28 +14,53 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-To: Yevgeny Kosarzhevsky <phaoost@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
 
-On Thu, Jul 28, 2016 at 11:28 PM, Yevgeny Kosarzhevsky
-<phaoost@...277...> wrote:
-> On 25 July 2016 at 12:18, Steffan Karger <steffan@...1856...> wrote:
->> This is likely due to the ECDHE part - this is not supported for
->> OpenVPN 2.3 with OpenSSL (it is for PolarSSL).  Use DHE instead, or
->> switch to the OpenVPN master branch.  The master branch does have
->> ECDH(E) support for OpenSSL too.
+Hi,
+
+On 25/07/16 20:52, Steffan Karger wrote:
+> This allows the ncp-disable and ncp-ciphers options to be used in 'client
+> config dir' files, to disable or change the negotiable crypto parameter
+> settings for specific clients.
 >
-> I am getting this cipher in the list of supported showed by --show-tls
-> option on both sides. So I consider there is something wrong. May be it
-> makes sense not to show unsupported ciphers?
+> Signed-off-by: Steffan Karger <steffan@...1856...>
+> ---
+>   src/openvpn/options.c | 4 ++--
+>   1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+> index 18af179..79dcb79 100644
+> --- a/src/openvpn/options.c
+> +++ b/src/openvpn/options.c
+> @@ -6666,12 +6666,12 @@ add_option (struct options *options,
+>       }
+>     else if (streq (p[0], "ncp-ciphers") && p[1] && !p[2])
+>       {
+> -      VERIFY_PERMISSION (OPT_P_GENERAL);
+> +      VERIFY_PERMISSION (OPT_P_GENERAL|OPT_P_INSTANCE);
+>         options->ncp_ciphers = p[1];
+>       }
+>     else if (streq (p[0], "ncp-disable") && !p[1])
+>       {
+> -      VERIFY_PERMISSION (OPT_P_GENERAL);
+> +      VERIFY_PERMISSION (OPT_P_GENERAL|OPT_P_INSTANCE);
+>         options->ncp_enabled = false;
+>       }
+>     else if (streq (p[0], "prng") && p[1] && !p[3])
 
-Yes, that would make sense, but we can't.  Primarily because OpenSSL
-does not provide an interface to do so, but also because we don't know
-up front what kind of certificates will be used, and whether OpenVPN
-will be run as a client or server (client-side support for ECDH should
-work with ovpn-2.3 + openssl too, but I didn't test).
+another remark: making this option CCD-file specific a good idea, but 
+how you do ensure that the server only applies it to this particular 
+client?  o->ncp_enabled seems a global at first glance. Consider this 
+scenario:
 
--Steffan
+1) client A connects , for which we want to disable NCP; hence a 
+client-connect script or CCD file with 'ncp-disable' in it;
+2) client B connects, no CCD file, it's running v2.4+, so we want NCP.
+
+How does the server handle this?  Or did I miss the "per-client options" 
+struct?
+
+JJK
 
