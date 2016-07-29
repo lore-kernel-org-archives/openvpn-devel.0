@@ -1,11 +1,8 @@
-References: <1469472766-25131-1-git-send-email-steffan@...1856...>
-From: Jan Just Keijser <janjust@...1147...>
-Message-ID: <1a341630-323e-f2a8-176b-bf5176990f62@...1147...>
-Date: Fri, 29 Jul 2016 17:18:56 +0200
 MIME-Version: 1.0
-In-Reply-To: <1469472766-25131-1-git-send-email-steffan@...1856...>
-Subject: Re: [Openvpn-devel] [PATCH] Allow ncp-disable and ncp-ciphers to be
- specified in ccd files
+From: "Jonathan K. Bullard" <jkbullard@...277...>
+Date: Fri, 29 Jul 2016 14:13:30 -0400
+Message-ID: <CAEsd45T1XbZNypuu-z-enngS0Pz7eXEX5qBwN7Wj7jU-s7hz1w@...278...>
+Subject: [Openvpn-devel] The end of the Gmane archive
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,53 +11,21 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hi,
+Yesterday Lars Ingebrigtsen, who established and has run Gmane since
+2002, posted an article saying that Gmane might go away [1].
 
-On 25/07/16 20:52, Steffan Karger wrote:
-> This allows the ncp-disable and ncp-ciphers options to be used in 'client
-> config dir' files, to disable or change the negotiable crypto parameter
-> settings for specific clients.
->
-> Signed-off-by: Steffan Karger <steffan@...1856...>
-> ---
->   src/openvpn/options.c | 4 ++--
->   1 file changed, 2 insertions(+), 2 deletions(-)
->
-> diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-> index 18af179..79dcb79 100644
-> --- a/src/openvpn/options.c
-> +++ b/src/openvpn/options.c
-> @@ -6666,12 +6666,12 @@ add_option (struct options *options,
->       }
->     else if (streq (p[0], "ncp-ciphers") && p[1] && !p[2])
->       {
-> -      VERIFY_PERMISSION (OPT_P_GENERAL);
-> +      VERIFY_PERMISSION (OPT_P_GENERAL|OPT_P_INSTANCE);
->         options->ncp_ciphers = p[1];
->       }
->     else if (streq (p[0], "ncp-disable") && !p[1])
->       {
-> -      VERIFY_PERMISSION (OPT_P_GENERAL);
-> +      VERIFY_PERMISSION (OPT_P_GENERAL|OPT_P_INSTANCE);
->         options->ncp_enabled = false;
->       }
->     else if (streq (p[0], "prng") && p[1] && !p[3])
+He posted an update [2] which says the Gmane archive *has* gone away
+and unless someone steps up to take it over, it is gone for good.
 
-another remark: making this option CCD-file specific a good idea, but 
-how you do ensure that the server only applies it to this particular 
-client?  o->ncp_enabled seems a global at first glance. Consider this 
-scenario:
+The OpenVPN mailing list archives are still available on SourceForge,
+but it might be worth thinking about adding openvpn-dev and
+openvpn-users to The Mail Archive [3] or some other such service.
 
-1) client A connects , for which we want to disable NCP; hence a 
-client-connect script or CCD file with 'ncp-disable' in it;
-2) client B connects, no CCD file, it's running v2.4+, so we want NCP.
-
-How does the server handle this?  Or did I miss the "per-client options" 
-struct?
-
-JJK
+[1] https://lars.ingebrigtsen.no/2016/07/28/the-end-of-gmane
+[2] https://lars.ingebrigtsen.no/2016/07/28/the-end-of-gmane/comment-page-1/#comment-13502
+[3] https://www.mail-archive.com
 
