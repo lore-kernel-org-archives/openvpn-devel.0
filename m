@@ -1,13 +1,8 @@
-References: <CAEsd45T1XbZNypuu-z-enngS0Pz7eXEX5qBwN7Wj7jU-s7hz1w@...278...>
-	<d67f698a-e0e7-e86e-f62f-e651070c7d05@...515...>
-	<00f9684f-7e7d-c258-c468-008a9855421d@...2080...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <216002da-385b-09e2-a3df-20e08e8c7217@...2080...>
-Date: Sun, 31 Jul 2016 13:34:31 +0200
+From: debbie10t <debbie10t@...277...>
+Message-ID: <57A078C9.6030309@...277...>
+Date: Tue, 2 Aug 2016 11:41:13 +0100
 MIME-Version: 1.0
-In-Reply-To: <00f9684f-7e7d-c258-c468-008a9855421d@...2080...>
-Subject: Re: [Openvpn-devel] The end of the Gmane archive
-Reply-To: openvpn-devel@lists.sourceforge.net
+Subject: [Openvpn-devel]  Auto-create Windows Firewall Rule
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,64 +11,28 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-On 31/07/16 13:22, David Sommerseth wrote:
-> On 30/07/16 11:40, Samuli Sepp=E4nen wrote:
->> Il 29/07/2016 21:13, Jonathan K. Bullard ha scritto:
->>> Yesterday Lars Ingebrigtsen, who established and has run Gmane since
->>> 2002, posted an article saying that Gmane might go away [1].
->>>
->>> He posted an update [2] which says the Gmane archive *has* gone away
->>> and unless someone steps up to take it over, it is gone for good.
->>>
->>> The OpenVPN mailing list archives are still available on SourceForge,
->>> but it might be worth thinking about adding openvpn-dev and
->>> openvpn-users to The Mail Archive [3] or some other such service.
->>>
->>> [1] https://lars.ingebrigtsen.no/2016/07/28/the-end-of-gmane
->>> [2] https://lars.ingebrigtsen.no/2016/07/28/the-end-of-gmane/comment-pa=
-ge-1/#comment-13502
->>> [3] https://www.mail-archive.com
->>>
->>
->> I looked at the mail-archive FAQ and that seemed promising. I'll take a=
-=20
->> closer look in a couple of weeks.
->>
->> Based on comments in the second link there's a real chance that nobody=20
->> will reimplement a Web UI for Gmane for hosting the archive data, and=20
->> that links to Gmane will be gone forever.
->=20
-> On LWN there are some more comments to these sad news.  I understand
-> Lars' motivation to step down, and I hope someone will manage to pick up
-> after Lars.  The reason is that gmane is mailing list archive I've found
-> which has a sane thread view (which also responded to keytboard events).
->=20
-> Jon Corbet says in a comment:
->=20
->     I've been talking a bit with Lars; money doesn't seem to be the
->     issue. He's really just ready to hand it off. I think we might have
->     found a good prospective home for gmane, but it will take a little
->     while to know for sure.
->=20
-> And I see that cloudflare has been put in front of gmane.org now (though
-> not yet working).  So these might be some traces of that.
->=20
-> Anyhow, this scenario is why we put Message-ID in our commit logs.  The
-> URL to gmane.org was primarily for convenience, the Message-ID field is
-> the mandatory field in our commit messages.  So unless gmane.org
-> re-appears or something better comes up, we will just update our git
-> scripts to use a different convenience URL.
+Hi,
 
-And I forgot to add the URL to the LWN article ...
-<https://lwn.net/Articles/695695/>
+I have been installing various versions of openvpn to Windows 10
+and I discovered two firewall rules called "Openvpn daemon" which
+allows incoming connections to a server being run on the host.
 
+Unfortunately, I do *not* remember creating these rules myself ..
 
---=20
-kind regards,
+So, I deleted the rules and re-installed various versions again,
+including 2.3.11-i601 and a snapshot of git master (20160518)
+but the rule was *not* recreated.
 
-David Sommerseth
+Is creating this rule part of the installation or did I just
+forget what I had done ?
+
+The reason I ask is because I did *not* see any check-box etc
+to inform me that the rule will be created during installation.
+
+Thanks
+
 
