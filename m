@@ -1,12 +1,11 @@
+References: <57A078C9.6030309@...277...>
+	<20160802112242.GW78279@...1296...> <57A0954A.804@...277...>
+From: debbie10t <debbie10t@...277...>
+Message-ID: <57A0BE14.3080809@...277...>
+Date: Tue, 2 Aug 2016 16:36:52 +0100
 MIME-Version: 1.0
-In-Reply-To: <1a341630-323e-f2a8-176b-bf5176990f62@...1147...>
-References: <1469472766-25131-1-git-send-email-steffan@...1856...>
-	<1a341630-323e-f2a8-176b-bf5176990f62@...1147...>
-From: Steffan Karger <steffan@...1856...>
-Date: Tue, 2 Aug 2016 16:42:00 +0200
-Message-ID: <CAA1Abx+bPwD5YxHpUzYzaRjMKwUA+_Y4KVAaQO=XbCHZxWvebQ@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] Allow ncp-disable and ncp-ciphers to be
- specified in ccd files
+In-Reply-To: <57A0954A.804@...277...>
+Subject: Re: [Openvpn-devel] Auto-create Windows Firewall Rule
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,28 +14,41 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-To: Jan Just Keijser <janjust@...1147...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-On Fri, Jul 29, 2016 at 5:18 PM, Jan Just Keijser <janjust@...1147...> wrote:
-> another remark: making this option CCD-file specific a good idea, but how
-> you do ensure that the server only applies it to this particular client?
-> o->ncp_enabled seems a global at first glance. Consider this scenario:
+Hi,
+
+On 02/08/16 13:42, debbie10t wrote:
 >
-> 1) client A connects , for which we want to disable NCP; hence a
-> client-connect script or CCD file with 'ncp-disable' in it;
-> 2) client B connects, no CCD file, it's running v2.4+, so we want NCP.
 >
-> How does the server handle this?  Or did I miss the "per-client options"
-> struct?
+> On 02/08/16 12:22, Gert Doering wrote:
+>> Hi,
+>>
+>> On Tue, Aug 02, 2016 at 11:41:13AM +0100, debbie10t wrote:
+>>> did I just forget what I had done ?
+>> this :-) - to my knowledge, we never created incoming openvpn rules
+>> (none of us runs an openvpn *server* on a *windows* machine)
+>>
+> Thanks gert .. *face-palm*
+>
+> BTW - That is also the reason I *am* testing w10 server setup
 
-You've just answered your own question ;)
+FYI:
 
-The ccd file parsing operates on mi->context.options, which is a
-connection-specific options struct (mi = 'multi instance').  See
-multi_connection_established().
+Win10pro OVPN Server - Openvpn snapshot version
+2.3_git-I601 20160518 refs/heads/master/0d8a4ffa2293dda8
 
--Steffan
+Mixture of clients IPv4+6 wxp/w7/w10/various linux
+
+IPv4 & IPv6 All works well! Tho, I have not tested extensively.
+I am running a private IRC network on this VPN, which should
+test it more thoroughly once i share some files (*not* warez)
+
+If anybody has iOS/Android/W8 etc and would like to run some
+tests with/for me, email me.
+
+Regards
+
 
