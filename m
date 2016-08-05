@@ -1,12 +1,8 @@
-MIME-Version: 1.0
-In-Reply-To: <57A3C76A.1020809@...277...>
-References: <57A3C76A.1020809@...277...>
 From: Selva Nair <selva.nair@...277...>
-Date: Thu, 4 Aug 2016 22:04:43 -0400
-Message-ID: <CAKuzo_h0vMR4jv=iAgT2Vr2kq-nJRDs0Pq=3JC7eydQ-m1Ucpw@...278...>
-Content-Type: multipart/alternative; boundary=94eb2c06623aae3b480539497e87
-Subject: Re: [Openvpn-devel] Win10 Tun Server +Standard W10 User +OVPN
- Interactive Service +OVPN GUI
+Date: Thu,  4 Aug 2016 23:39:54 -0400
+Message-Id: <1470368394-2722-1-git-send-email-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH] Avoid format specifier %zu for Windows
+	compatibility
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,130 +11,70 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: debbie10t <debbie10t@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---94eb2c06623aae3b480539497e87
-Content-Type: text/plain; charset=UTF-8
+Signed-off-by: Selva Nair <selva.nair@...277...>
+---
+ src/openvpn/crypto.c      |    4 ++--
+ src/openvpn/options.c     |    4 ++--
+ src/openvpn/ssl_mbedtls.c |    4 ++--
+ 3 files changed, 6 insertions(+), 6 deletions(-)
 
-On Thu, Aug 4, 2016 at 6:53 PM, debbie10t <debbie10t@...277...> wrote:
+diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
+index d94896c..1236eae 100644
+--- a/src/openvpn/crypto.c
++++ b/src/openvpn/crypto.c
+@@ -738,8 +738,8 @@ crypto_adjust_frame_parameters(struct frame *frame,
+ 
+   frame_add_to_extra_frame (frame, crypto_overhead);
+ 
+-  msg(D_MTU_DEBUG, "%s: Adjusting frame parameters for crypto by %zu bytes",
+-      __func__, crypto_overhead);
++  msg(D_MTU_DEBUG, "%s: Adjusting frame parameters for crypto by %d bytes",
++      __func__, (int) crypto_overhead);
+ }
+ 
+ size_t
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 7e08fcd..e3fa643 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -2992,7 +2992,7 @@ calc_options_string_link_mtu(const struct options *o, const struct frame *frame)
+ 	  o->replay, cipher_kt_mode_ofb_cfb (fake_kt.cipher));
+       frame_finalize(&fake_frame, o->ce.link_mtu_defined, o->ce.link_mtu,
+             o->ce.tun_mtu_defined, o->ce.tun_mtu);
+-      msg (D_MTU_DEBUG, "%s: link-mtu %zu -> %d", __func__, link_mtu,
++      msg (D_MTU_DEBUG, "%s: link-mtu %d -> %d", __func__, (int) link_mtu,
+ 	  EXPANDED_SIZE (&fake_frame));
+       link_mtu = EXPANDED_SIZE (&fake_frame);
+     }
+@@ -3061,7 +3061,7 @@ options_string (const struct options *o,
+    */
+ 
+   buf_printf (&out, ",dev-type %s", dev_type_string (o->dev, o->dev_type));
+-  buf_printf (&out, ",link-mtu %zu", calc_options_string_link_mtu(o, frame));
++  buf_printf (&out, ",link-mtu %d", (int) calc_options_string_link_mtu(o, frame));
+   buf_printf (&out, ",tun-mtu %d", PAYLOAD_SIZE (frame));
+   buf_printf (&out, ",proto %s",  proto_remote (o->ce.proto, remote));
+ 
+diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
+index e20ec02..8a6e260 100644
+--- a/src/openvpn/ssl_mbedtls.c
++++ b/src/openvpn/ssl_mbedtls.c
+@@ -1111,8 +1111,8 @@ print_details (struct key_state_ssl * ks_ssl, const char *prefix)
+   cert = mbedtls_ssl_get_peer_cert (ks_ssl->ctx);
+   if (cert != NULL)
+     {
+-      openvpn_snprintf (s2, sizeof (s2), ", %zu bit key",
+-	  mbedtls_pk_get_bitlen (&cert->pk));
++      openvpn_snprintf (s2, sizeof (s2), ", %d bit key",
++	  (int) mbedtls_pk_get_bitlen (&cert->pk));
+     }
+ 
+   msg (D_HANDSHAKE, "%s%s", s1, s2);
+-- 
+1.7.10.4
 
-> Hi
->
-> So windows 10 as a Server.
->
-> ===
->
-> General details:
->    Non admin Win10 unmodified user
->    Using OVPN GUI
->    OVPN Interactive service started and used
->    Win10 Tun Server (auto + manual)
->    IPv4 + IPv6 In average constant use
->    ~20 Clients virtual, local and remote
->        win xp/7/10 +linux
->
-> (Todo: --server-bridge/tap .. maybe)
->
-> Tested using:
->    cfg 1. --server & --server-ipv6 *no* CCD files in use
->    cfg 2. --ifconfig & --ifconfig-ipv6 CCD files in use
->
-> Reminder: --keep6alive --ping6 etc
-> See:
-> https://forums.openvpn.net/viewtopic.php?f=4&t=22119#p63274
->
-> ===
->
->
-> 24 hours now with Zero hiccups.
->
-
-Glad to know..
-
-
->
-> Selva,
->
-> If you have any specific tests please send me details.
->
-
-Tasks needing admin access happens early on when the server starts so this
-looks good especially since you tested ipv6 as well.
-
-One thing to try:
-With the server running, edit the config to change the tunnel network (ip
-and pool) and issue a SIGHUP to re-read the config (reconnect from the GUI
-status window will do this). The old routes should get torn down (log will
-show route deletion via service succeeded) the ip should change to the new
-one and new routes get added etc.
-
-Although not related to the interactive service, you could also test
-running the server on a port < 1024. This being windows I suppose binding
-to "privileged" ports doesn't require admin rights.
-
-Thanks,
-
-Selva
-
---94eb2c06623aae3b480539497e87
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><br><div class=3D"gmail_extra"><br><div class=3D"gmail_quo=
-te">On Thu, Aug 4, 2016 at 6:53 PM, debbie10t <span dir=3D"ltr">&lt;<a href=
-=3D"mailto:debbie10t@...277..." target=3D"_blank">debbie10t@...277...</a>&g=
-t;</span> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0=
- .8ex;border-left:1px #ccc solid;padding-left:1ex">Hi<br>
-<br>
-So windows 10 as a Server.<br>
-<br>
-=3D=3D=3D<br>
-<br>
-General details:<br>
-=C2=A0 =C2=A0Non admin Win10 unmodified user<br>
-=C2=A0 =C2=A0Using OVPN GUI<br>
-=C2=A0 =C2=A0OVPN Interactive service started and used<br>
-=C2=A0 =C2=A0Win10 Tun Server (auto + manual)<br>
-=C2=A0 =C2=A0IPv4 + IPv6 In average constant use<br>
-=C2=A0 =C2=A0~20 Clients virtual, local and remote<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0win xp/7/10 +linux<br>
-<br>
-(Todo: --server-bridge/tap .. maybe)<br>
-<br>
-Tested using:<br>
-=C2=A0 =C2=A0cfg 1. --server &amp; --server-ipv6 *no* CCD files in use<br>
-=C2=A0 =C2=A0cfg 2. --ifconfig &amp; --ifconfig-ipv6 CCD files in use<br>
-<br>
-Reminder: --keep6alive --ping6 etc<br>
-See:<br>
-<a href=3D"https://forums.openvpn.net/viewtopic.php?f=3D4&amp;t=3D22119#p63=
-274" rel=3D"noreferrer" target=3D"_blank">https://forums.openvpn.net/viewto=
-pic.php?f=3D4&amp;t=3D22119#p63274</a><br>
-<br>
-=3D=3D=3D<br>
-<br>
-<br>
-24 hours now with Zero hiccups.<br></blockquote><div><br></div><div>Glad to=
- know.. <br></div><div><br></div><blockquote class=3D"gmail_quote" style=3D=
-"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">
-<br>
-<br>
-Selva,<br>
-<br>
-If you have any specific tests please send me details.<br></blockquote><div=
-><br></div><div>Tasks needing admin access happens early on when the server=
- starts so this looks good especially since you tested ipv6 as well.<br><br=
-></div><div>One thing to try:<br></div><div>With the server running, edit t=
-he config to change the tunnel network (ip and pool) and issue a SIGHUP to =
-re-read the config (reconnect from the GUI status window will do this). The=
- old routes should get torn down (log will show route deletion via service =
-succeeded) the ip should change to the new one and new routes get added etc=
-.<br><br></div><div>Although not related to the interactive service, you co=
-uld also test running the server on a port &lt; 1024. This being windows I =
-suppose binding to &quot;privileged&quot; ports doesn&#39;t require admin r=
-ights.<br><br></div><div>Thanks,<br><br></div><div>Selva<br></div></div><br=
-></div></div>
-
---94eb2c06623aae3b480539497e87--
 
