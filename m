@@ -1,8 +1,14 @@
-From: Selva Nair <selva.nair@...277...>
-Date: Thu,  4 Aug 2016 23:39:54 -0400
-Message-Id: <1470368394-2722-1-git-send-email-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH] Avoid format specifier %zu for Windows
-	compatibility
+Date: Fri, 5 Aug 2016 08:14:18 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20160805061418.GO78279@...1296...>
+References: <1470368394-2722-1-git-send-email-selva.nair@...277...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="sSItSBGmKTsofcL9"
+Content-Disposition: inline
+In-Reply-To: <1470368394-2722-1-git-send-email-selva.nair@...277...>
+Subject: Re: [Openvpn-devel] [PATCH] Avoid format specifier %zu for Windows
+ compatibility
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,70 +17,53 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Selva Nair <selva.nair@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Signed-off-by: Selva Nair <selva.nair@...277...>
----
- src/openvpn/crypto.c      |    4 ++--
- src/openvpn/options.c     |    4 ++--
- src/openvpn/ssl_mbedtls.c |    4 ++--
- 3 files changed, 6 insertions(+), 6 deletions(-)
+--sSItSBGmKTsofcL9
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
-index d94896c..1236eae 100644
---- a/src/openvpn/crypto.c
-+++ b/src/openvpn/crypto.c
-@@ -738,8 +738,8 @@ crypto_adjust_frame_parameters(struct frame *frame,
- 
-   frame_add_to_extra_frame (frame, crypto_overhead);
- 
--  msg(D_MTU_DEBUG, "%s: Adjusting frame parameters for crypto by %zu bytes",
--      __func__, crypto_overhead);
-+  msg(D_MTU_DEBUG, "%s: Adjusting frame parameters for crypto by %d bytes",
-+      __func__, (int) crypto_overhead);
- }
- 
- size_t
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 7e08fcd..e3fa643 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -2992,7 +2992,7 @@ calc_options_string_link_mtu(const struct options *o, const struct frame *frame)
- 	  o->replay, cipher_kt_mode_ofb_cfb (fake_kt.cipher));
-       frame_finalize(&fake_frame, o->ce.link_mtu_defined, o->ce.link_mtu,
-             o->ce.tun_mtu_defined, o->ce.tun_mtu);
--      msg (D_MTU_DEBUG, "%s: link-mtu %zu -> %d", __func__, link_mtu,
-+      msg (D_MTU_DEBUG, "%s: link-mtu %d -> %d", __func__, (int) link_mtu,
- 	  EXPANDED_SIZE (&fake_frame));
-       link_mtu = EXPANDED_SIZE (&fake_frame);
-     }
-@@ -3061,7 +3061,7 @@ options_string (const struct options *o,
-    */
- 
-   buf_printf (&out, ",dev-type %s", dev_type_string (o->dev, o->dev_type));
--  buf_printf (&out, ",link-mtu %zu", calc_options_string_link_mtu(o, frame));
-+  buf_printf (&out, ",link-mtu %d", (int) calc_options_string_link_mtu(o, frame));
-   buf_printf (&out, ",tun-mtu %d", PAYLOAD_SIZE (frame));
-   buf_printf (&out, ",proto %s",  proto_remote (o->ce.proto, remote));
- 
-diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
-index e20ec02..8a6e260 100644
---- a/src/openvpn/ssl_mbedtls.c
-+++ b/src/openvpn/ssl_mbedtls.c
-@@ -1111,8 +1111,8 @@ print_details (struct key_state_ssl * ks_ssl, const char *prefix)
-   cert = mbedtls_ssl_get_peer_cert (ks_ssl->ctx);
-   if (cert != NULL)
-     {
--      openvpn_snprintf (s2, sizeof (s2), ", %zu bit key",
--	  mbedtls_pk_get_bitlen (&cert->pk));
-+      openvpn_snprintf (s2, sizeof (s2), ", %d bit key",
-+	  (int) mbedtls_pk_get_bitlen (&cert->pk));
-     }
- 
-   msg (D_HANDSHAKE, "%s%s", s1, s2);
--- 
-1.7.10.4
+Hi,
 
+On Thu, Aug 04, 2016 at 11:39:54PM -0400, Selva Nair wrote:
+> -  msg(D_MTU_DEBUG, "%s: Adjusting frame parameters for crypto by %zu byt=
+es",
+> -      __func__, crypto_overhead);
+> +  msg(D_MTU_DEBUG, "%s: Adjusting frame parameters for crypto by %d byte=
+s",
+> +      __func__, (int) crypto_overhead);
+
+Just for clarification: how does this break windows?  mingw builds, or
+msvc builds?  Will it print "nothing" ("zu bytes") or wrong values?
+
+I had the suspicion that %zu wasn't as portable as Steffan hoped (and I
+seem to remember we've been there before :) ) but was too lazy to=20
+actually go out and research it.
+
+(Going to apply later today, so "ACK!", just curious)
+
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--sSItSBGmKTsofcL9
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQCVAwUBV6QuuKkuBuNlUUl1AQLK6AP+LXtjNWCZ+yrGqyyLMPiU330FMzwPrJck
+2e1t6mTJl2+RBnJjz1bIyGSAqzhUTpl83YkfMCxXHLHn2Z2+aDNuPHA0zoT0epCY
+IW4AJaZFrQkY4ZNf7giQHsxxsMmfc+jNf60vfTJ0Q8LL92yS3i09fgVd7jkHv0lv
+/mnTUourQLs=
+=1E+N
+-----END PGP SIGNATURE-----
+
+--sSItSBGmKTsofcL9--
 
