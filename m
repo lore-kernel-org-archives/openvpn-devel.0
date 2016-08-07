@@ -1,10 +1,12 @@
-From: ValdikSS <iam@...2070...>
-Date: Sun,  7 Aug 2016 14:44:04 +0300
-Message-Id: <1470570245-28327-2-git-send-email-iam@...2070...>
-In-Reply-To: <1470570245-28327-1-git-send-email-iam@...2070...>
-References: <1470570245-28327-1-git-send-email-iam@...2070...>
-Subject: [Openvpn-devel] [PATCH 2/3] Do not pass env for system commands on
-	Windows
+References: <57A3C76A.1020809@...277...>
+	<CAKuzo_h0vMR4jv=iAgT2Vr2kq-nJRDs0Pq=3JC7eydQ-m1Ucpw@...278...>
+From: debbie10t <debbie10t@...277...>
+Message-ID: <57A72DA2.1090003@...277...>
+Date: Sun, 7 Aug 2016 13:46:26 +0100
+MIME-Version: 1.0
+In-Reply-To: <CAKuzo_h0vMR4jv=iAgT2Vr2kq-nJRDs0Pq=3JC7eydQ-m1Ucpw@...278...>
+Subject: Re: [Openvpn-devel] Win10 Tun Server +Standard W10 User +OVPN
+ Interactive Service +OVPN GUI
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,73 +15,55 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
----
- src/openvpn/route.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index c327866..822d02b 100644
---- a/src/openvpn/route.c
-+++ b/src/openvpn/route.c
-@@ -1487,7 +1487,7 @@ add_route (struct route_ipv4 *r,
-     else if ((flags & ROUTE_METHOD_MASK) == ROUTE_METHOD_EXE)
-       {
- 	netcmd_semaphore_lock ();
--	status = openvpn_execve_check (&argv, es, 0, "ERROR: Windows route add command failed");
-+	status = openvpn_execve_check (&argv, NULL, 0, "ERROR: Windows route add command failed");
- 	netcmd_semaphore_release ();
-       }
-     else if ((flags & ROUTE_METHOD_MASK) == ROUTE_METHOD_ADAPTIVE)
-@@ -1498,7 +1498,7 @@ add_route (struct route_ipv4 *r,
- 	  {
- 	    msg (D_ROUTE, "Route addition fallback to route.exe");
- 	    netcmd_semaphore_lock ();
--	    status = openvpn_execve_check (&argv, es, 0, "ERROR: Windows route add command failed [adaptive]");
-+	    status = openvpn_execve_check (&argv, NULL, 0, "ERROR: Windows route add command failed [adaptive]");
- 	    netcmd_semaphore_release ();
- 	  }
-       }
-@@ -1827,7 +1827,7 @@ add_route_ipv6 (struct route_ipv6 *r6, const struct tuntap *tt, unsigned int fla
-       argv_msg (D_ROUTE, &argv);
- 
-       netcmd_semaphore_lock ();
--      status = openvpn_execve_check (&argv, es, 0, "ERROR: Windows route add ipv6 command failed");
-+      status = openvpn_execve_check (&argv, NULL, 0, "ERROR: Windows route add ipv6 command failed");
-       netcmd_semaphore_release ();
-     }
- 
-@@ -1993,7 +1993,7 @@ delete_route (struct route_ipv4 *r,
-   else if ((flags & ROUTE_METHOD_MASK) == ROUTE_METHOD_EXE)
-     {
-       netcmd_semaphore_lock ();
--      openvpn_execve_check (&argv, es, 0, "ERROR: Windows route delete command failed");
-+      openvpn_execve_check (&argv, NULL, 0, "ERROR: Windows route delete command failed");
-       netcmd_semaphore_release ();
-     }
-   else if ((flags & ROUTE_METHOD_MASK) == ROUTE_METHOD_ADAPTIVE)
-@@ -2004,7 +2004,7 @@ delete_route (struct route_ipv4 *r,
- 	{
- 	  msg (D_ROUTE, "Route deletion fallback to route.exe");
- 	  netcmd_semaphore_lock ();
--	  openvpn_execve_check (&argv, es, 0, "ERROR: Windows route delete command failed [adaptive]");
-+	  openvpn_execve_check (&argv, NULL, 0, "ERROR: Windows route delete command failed [adaptive]");
- 	  netcmd_semaphore_release ();
- 	}
-     }
-@@ -2241,7 +2241,7 @@ delete_route_ipv6 (const struct route_ipv6 *r6, const struct tuntap *tt, unsigne
-       argv_msg (D_ROUTE, &argv);
- 
-       netcmd_semaphore_lock ();
--      openvpn_execve_check (&argv, es, 0, "ERROR: Windows route delete ipv6 command failed");
-+      openvpn_execve_check (&argv, NULL, 0, "ERROR: Windows route delete ipv6 command failed");
-       netcmd_semaphore_release ();
-     }
- 
+
+On 05/08/16 03:04, Selva Nair wrote:
+> On Thu, Aug 4, 2016 at 6:53 PM, debbie10t <debbie10t@...277...> wrote:
+>
+>> Hi
+>>
+>> So windows 10 as a Server.
+>>
+>>
+>> If you have any specific tests please send me details.
+>>
+> Tasks needing admin access happens early on when the server starts so this
+> looks good especially since you tested ipv6 as well.
+>
+> One thing to try:
+> With the server running, edit the config to change the tunnel network (ip
+> and pool) and issue a SIGHUP to re-read the config (reconnect from the GUI
+> status window will do this). The old routes should get torn down (log will
+> show route deletion via service succeeded) the ip should change to the new
+> one and new routes get added etc.
+This worked no problem.
+
+>
+> Although not related to the interactive service, you could also test
+> running the server on a port < 1024. This being windows I suppose binding
+> to "privileged" ports doesn't require admin rights.
+>
+>
+Have not tried this yet.
+
+
+However, during my testing the following happened:
+
+I installed the first server in /program files/openvpn/config and running
+as standard-user with openvpn GUI & IService, this worked no problem.
+
+Then I tried with the config file in /users/user/openvpn/config and running
+as standard-user:user with gui & IService, Starting the server, I was 
+prompted
+to add my user to the openvpn administrators group.
+
+I am not sure if this is intended behaviour, that the group membership is
+*only* prompted when using user/openvpn/config/file.ovpn ?
+
 -- 
-2.5.5
 
 
