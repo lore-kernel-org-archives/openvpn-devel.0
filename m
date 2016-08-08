@@ -1,10 +1,10 @@
 From: David Sommerseth <davids@...515...>
-Date: Mon,  8 Aug 2016 21:28:07 +0200
-Message-Id: <1470684488-21307-4-git-send-email-davids@...515...>
+Date: Mon,  8 Aug 2016 21:28:08 +0200
+Message-Id: <1470684488-21307-5-git-send-email-davids@...515...>
 In-Reply-To: <1470684488-21307-1-git-send-email-davids@...515...>
 References: <1470684488-21307-1-git-send-email-davids@...515...>
-Subject: [Openvpn-devel] [PATCH v4 3/4] autotools: Add support for
-	extracting version information from pkg-config modules
+Subject: [Openvpn-devel] [PATCH v4 4/4] systemd: Do not mask usernames when
+	querying for it via systemd-ask-password
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,65 +17,51 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This patch adds extracting the pkg-config --modversion output into a
-variable configure.ac can consume.  The extracted content is put
-into ${pkgname}_MODVERSION.  See config.log for details after
-./configure have run.
+In systemd after version 216, systemd-ask-password will support --echo which
+will avoid masking the user input.  As OpenVPN uses this mechanism collecting
+usernames when systemd is available, this will avoid the input of usernames to
+be masked.
 
-The patch also modifies slightly how the pkg-config result is
-processed.  Pkg-config can in some situations report more than one
-line of information if more pkg-config meta-data files are available
-for the same package.  This can cause automake to choke as certain
-variables may be split over more lines.  A simple fix was chosen,
-using 'tail' to ensure only one line is being processed.
+This patch also adds the --icon argument, which is aimed at graphical inputs.
+For example when OpenVPN is started at system boot-time using a graphical boot
+interface such as Plymouth.
 
 Signed-off-by: David Sommerseth <davids@...515...>
 ---
- m4/pkg.m4 | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ configure.ac                  | 1 +
+ src/openvpn/console_systemd.c | 7 +++++++
+ 2 files changed, 8 insertions(+)
 
-diff --git a/m4/pkg.m4 b/m4/pkg.m4
-index 9a71878..94e4589 100644
---- a/m4/pkg.m4
-+++ b/m4/pkg.m4
-@@ -73,7 +73,7 @@ m4_define([_PKG_CONFIG],
-     pkg_cv_[]$1="$$1"
-  elif test -n "$PKG_CONFIG"; then
-     PKG_CHECK_EXISTS([$3],
--                     [pkg_cv_[]$1=`$PKG_CONFIG --[]$2 "$3" 2>/dev/null`
-+                     [pkg_cv_[]$1=`$PKG_CONFIG --[]$2 "$3" | tail -n1 2>/dev/null`
- 		      test "x$?" != "x0" && pkg_failed=yes ],
- 		     [pkg_failed=yes])
-  else
-@@ -107,16 +107,18 @@ AC_DEFUN([PKG_CHECK_MODULES],
- [AC_REQUIRE([PKG_PROG_PKG_CONFIG])dnl
- AC_ARG_VAR([$1][_CFLAGS], [C compiler flags for $1, overriding pkg-config])dnl
- AC_ARG_VAR([$1][_LIBS], [linker flags for $1, overriding pkg-config])dnl
-+AC_ARG_VAR([$1][_MODVERSION], [module version])dnl
+diff --git a/configure.ac b/configure.ac
+index c3088fd..a44e1df 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -1023,6 +1023,7 @@ if test "$enable_systemd" = "yes" ; then
+     AC_CHECK_FUNCS([sd_booted], [], [AC_MSG_ERROR([systemd library is missing sd_booted()])])
+     OPTIONAL_SYSTEMD_LIBS="${libsystemd_LIBS}"
+     AC_DEFINE(ENABLE_SYSTEMD, 1, [Enable systemd integration])
++    AC_DEFINE_UNQUOTED(SYSTEMD_VERSION, [`echo ${libsystemd_MODVERSION}`], [systemd version installed])
+     LIBS="${saved_LIBS}"
+ fi
  
- pkg_failed=no
- AC_MSG_CHECKING([for $1])
+diff --git a/src/openvpn/console_systemd.c b/src/openvpn/console_systemd.c
+index bf0f99d..62aba44 100644
+--- a/src/openvpn/console_systemd.c
++++ b/src/openvpn/console_systemd.c
+@@ -64,6 +64,13 @@ get_console_input_systemd (const char *prompt, const bool echo, char *input, con
  
- _PKG_CONFIG([$1][_CFLAGS], [cflags], [$2])
- _PKG_CONFIG([$1][_LIBS], [libs], [$2])
-+_PKG_CONFIG([$1][_MODVERSION], [modversion], [$2])
+     argv_init (&argv);
+     argv_printf (&argv, SYSTEMD_ASK_PASSWORD_PATH);
++#if SYSTEMD_VERSION > 216
++    if( echo )
++    {
++	argv_printf_cat(&argv, "--echo");
++    }
++#endif
++    argv_printf_cat (&argv, "--icon network-vpn");
+     argv_printf_cat (&argv, "%s", prompt);
  
- m4_define([_PKG_TEXT], [Alternatively, you may set the environment variables $1[]_CFLAGS
--and $1[]_LIBS to avoid the need to call pkg-config.
--See the pkg-config man page for more details.])
-+and $1[]_LIBS to avoid the need to call pkg-config.  The $1[]_MODVERSION provides version
-+information.  See the pkg-config man page for more details.])
- 
- if test $pkg_failed = yes; then
-    	AC_MSG_RESULT([no])
-@@ -153,6 +155,7 @@ To get pkg-config, see <http://pkg-config.freedesktop.org/>.])[]dnl
- else
- 	$1[]_CFLAGS=$pkg_cv_[]$1[]_CFLAGS
- 	$1[]_LIBS=$pkg_cv_[]$1[]_LIBS
-+	$1[]_MODVERSION=$pkg_cv_[]$1[]_MODVERSION
-         AC_MSG_RESULT([yes])
- 	$3
- fi[]dnl
+     if ((std_out = openvpn_popen (&argv, NULL)) < 0) {
 -- 
 1.8.3.1
 
