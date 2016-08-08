@@ -1,12 +1,10 @@
-Date: Mon, 8 Aug 2016 14:20:11 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20160808122011.GC78279@...1296...>
 References: <57A87572.6080306@...277...>
+	<20160808122011.GC78279@...1296...>
+From: debbie10t <debbie10t@...277...>
+Message-ID: <57A896DD.1020004@...277...>
+Date: Mon, 8 Aug 2016 15:27:41 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="60m8Ey44SH8YQcXf"
-Content-Disposition: inline
-In-Reply-To: <57A87572.6080306@...277...>
+In-Reply-To: <20160808122011.GC78279@...1296...>
 Subject: Re: [Openvpn-devel] Is --ifconfig-ipv6-noexec planned ?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -16,57 +14,52 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: debbie10t <debbie10t@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---60m8Ey44SH8YQcXf
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
 
-On Mon, Aug 08, 2016 at 01:05:06PM +0100, debbie10t wrote:
-> --ifconfig-ipv6-noexec
->=20
-> not sure if this would be a 'feature request/wish list' item
-> or if it has just been over looked.
->=20
-> I did have an annoying use case but I reconfigured so as not
-> to need it, but I feel like there would be cases for it.
+On 08/08/16 13:20, Gert Doering wrote:
+> Hi,
+>
+> On Mon, Aug 08, 2016 at 01:05:06PM +0100, debbie10t wrote:
+>> --ifconfig-ipv6-noexec
+>>
+>> not sure if this would be a 'feature request/wish list' item
+>> or if it has just been over looked.
+>>
+>> I did have an annoying use case but I reconfigured so as not
+>> to need it, but I feel like there would be cases for it.
+> I do not see the use case to have "only IPv6" --ifconfig-noexec - so the
+> generic command does that for both IPv4 and IPv6 (as will --route-noexec
+> do for both IPv4 and IPv6).
+>
+> What is your use case?
+Use case is a service listening on client tun device would crash if
+the connection was not up.  So I used --mktun to create the interface
+at boot for the service and then start the service.  when starting
+openvpn, pulling the ipv4&6 addresses would exit openvpn as the ipv6
+address already existed.  ifconfig exit with error status 1, FATAL etc.
 
-I do not see the use case to have "only IPv6" --ifconfig-noexec - so the
-generic command does that for both IPv4 and IPv6 (as will --route-noexec
-do for both IPv4 and IPv6).
+>
+> (The idea behind --ifconfig-noexec is not "do not enable IPv6", use
+> --pull-filter for that.  --ifconfig-noexec is used together with --up
+> to run more custom stuff on ifconfig, which the built-in mechanisms
+> cannot do)
+>
 
-What is your use case?
+Sorry gert, I must have done something stupid before because now
+--ifconfig-noexec *does* work for IPv4 & 6 .. For some reason as
+it was the IPv6 address causing the fault I thought it only worked
+for IPv4 .. unfortunately, I don't know what mistake I made :(
 
-(The idea behind --ifconfig-noexec is not "do not enable IPv6", use
---pull-filter for that.  --ifconfig-noexec is used together with --up
-to run more custom stuff on ifconfig, which the built-in mechanisms
-cannot do)
+So I can setup the original way, although, now that I have
+reconfigured I prefer the new setup, so I don't actually need
+ifconfig-noexec.
 
-gert
 
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
 
---60m8Ey44SH8YQcXf
-Content-Type: application/pgp-signature; name="signature.asc"
+Regards
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQCVAwUBV6h4+6kuBuNlUUl1AQKygQP8Cuk2Az/pPkgHlckh3wLOhEgrL6aehdS5
-tPmGvOv3ZMusdPOspMa36NtOycxZZWXr4aGioBG8wvKjMtj2ay4xxx94rWqi2hs8
-cogLsYTUiEtSBM3y7un9N0P3POpXjimy9esCP3CIJbOu1e6G7ydW8oVzN5lyp7yy
-l/KUb9a7vbk=
-=iXkI
------END PGP SIGNATURE-----
-
---60m8Ey44SH8YQcXf--
 
