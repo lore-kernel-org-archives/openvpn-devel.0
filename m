@@ -1,18 +1,12 @@
-References: <1451908945-12244-1-git-send-email-lstipakov@...277...>
-	<1451911424-12970-1-git-send-email-lstipakov@...277...>
-	<5704F4E9.4050801@...2070...>
-	<20160406145137.GY53051@...1296...>
-	<57057532.1090606@...2070...>
-	<20160611110510.GO62247@...1296...>
-From: ValdikSS <iam@...2070...>
-Message-ID: <4ecf4315-54c8-4ad5-c1ad-e63be411a81f@...2070...>
-Date: Sun, 7 Aug 2016 20:15:19 +0300
+References: <1470570245-28327-1-git-send-email-iam@...2070...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <17e0440a-d70c-0003-f18c-d21ae9ac3b95@...2080...>
+Date: Mon, 8 Aug 2016 10:34:08 +0200
 MIME-Version: 1.0
-In-Reply-To: <20160611110510.GO62247@...1296...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature";
-	boundary="JiMXEqk0v2TiVhA17KkSUCTNivUA8iXqo"
-Subject: Re: [Openvpn-devel] [PATCH v2] Drop recursively routed packets
+In-Reply-To: <1470570245-28327-1-git-send-email-iam@...2070...>
+Subject: Re: [Openvpn-devel] [PATCH 1/3] Do not pass env for system commands
+ on Linux
+Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,164 +15,59 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>, Lev Stipakov <lstipakov@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---JiMXEqk0v2TiVhA17KkSUCTNivUA8iXqo
-Content-Type: multipart/mixed; boundary="rg3csjKADEroMeah8u8UC6RvqFrnm1wew"
-From: ValdikSS <iam@...2070...>
-To: Gert Doering <gert@...1296...>, Lev Stipakov <lstipakov@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
-Message-ID: <4ecf4315-54c8-4ad5-c1ad-e63be411a81f@...2070...>
-Subject: Re: [PATCH v2] Drop recursively routed packets
-References: <1451908945-12244-1-git-send-email-lstipakov@...277...>
-	<1451911424-12970-1-git-send-email-lstipakov@...277...>
-	<5704F4E9.4050801@...2070...>
-	<20160406145137.GY53051@...1296...>
-	<57057532.1090606@...2070...>
-	<20160611110510.GO62247@...1296...>
-In-Reply-To: <20160611110510.GO62247@...1296...>
-
---rg3csjKADEroMeah8u8UC6RvqFrnm1wew
-Content-Type: multipart/alternative;
-	boundary="------------023E0CC6DC379F8736EF3E71"
-
-This is a multi-part message in MIME format.
---------------023E0CC6DC379F8736EF3E71
 Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
+To: ValdikSS <iam@...2070...>, openvpn-devel@lists.sourceforge.net
 
-Tested on Windows 10 and Linux. Works as intended.
-I've connected to the VPN which redirects the gateway and physically unplug=
-ged Ethernet cable. Git version started to consume 100% CPU while patched v=
-ersion
-either doesn't consume CPU and doesn't print anything or doesn't consume CP=
-U and print 5-10 messages per second to the log with verb 4.
-
-On 06/11/2016 02:05 PM, Gert Doering wrote:
-> Hi,
->
-> On Wed, Apr 06, 2016 at 11:44:34PM +0300, ValdikSS wrote:
-> Coming back to this patch set - could you share your test results?
->
-> I'll then go and see that I can code review & merge during the next week.
->
-> gert
->
->
->
->
-> -------------------------------------------------------------------------=
------
-> What NetFlow Analyzer can do for you? Monitors network bandwidth and traf=
-fic
-> patterns at an interface-level. Reveals which users, apps, and protocols =
-are=20
-> consuming the most bandwidth. Provides multi-vendor support for NetFlow,=
-=20
-> J-Flow, sFlow and other flows. Make informed decisions using capacity=20
-> planning reports. https://ad.doubleclick.net/ddm/clk/305295220;132659582;e
->
->
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
 
---------------023E0CC6DC379F8736EF3E71
-Content-Type: text/html; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
-
-<html>
-  <head>
-    <meta content=3D"text/html; charset=3Dwindows-1252"
-      http-equiv=3D"Content-Type">
-  </head>
-  <body text=3D"#000000" bgcolor=3D"#FFFFFF">
-    Tested on Windows 10 and Linux. Works as intended.<br>
-    I've connected to the VPN which redirects the gateway and physically
-    unplugged Ethernet cable. Git version started to consume 100% CPU
-    while patched version either doesn't consume CPU and doesn't print
-    anything or doesn't consume CPU and print 5-10 messages per second
-    to the log with verb 4.<br>
-    <br>
-    <div class=3D"moz-cite-prefix">On 06/11/2016 02:05 PM, Gert Doering
-      wrote:<br>
-    </div>
-    <blockquote cite=3D"mid:20160611110510.GO62247@...1296..."
-      type=3D"cite">
-      <pre wrap=3D"">Hi,
-
-On Wed, Apr 06, 2016 at 11:44:34PM +0300, ValdikSS wrote:
-</pre>
-      <pre wrap=3D"">
-Coming back to this patch set - could you share your test results?
-
-I'll then go and see that I can code review &amp; merge during the next wee=
-k.
-
-gert
+On 07/08/16 13:44, ValdikSS wrote:
+> It's possible to have so much routes that they won't fit into stack
+> and execve would fail with E2BIG (Argument list too long).
+>=20
+> This commit fixes this issue by not adding route information into
+> execve'd application env. --- src/openvpn/lladdr.c |  2 +-=20
+> src/openvpn/route.c  |  8 ++++---- src/openvpn/tun.c    | 12
+> ++++++------ 3 files changed, 11 insertions(+), 11 deletions(-)
+>=20
+> diff --git a/src/openvpn/lladdr.c b/src/openvpn/lladdr.c index
+> 57f447b..d537379 100644 --- a/src/openvpn/lladdr.c +++
+> b/src/openvpn/lladdr.c @@ -58,7 +58,7 @@ int set_lladdr(const char
+> *ifname, const char *lladdr, #endif
+>=20
+> argv_msg (M_INFO, &argv); -  r =3D openvpn_execve_check (&argv, es,
+> M_WARN, "ERROR: Unable to set link layer address."); +  r =3D
+> openvpn_execve_check (&argv, NULL, M_WARN, "ERROR: Unable to set
+> link layer address.");
 
 
-</pre>
-      <br>
-      <fieldset class=3D"mimeAttachmentHeader"></fieldset>
-      <br>
-      <pre wrap=3D"">------------------------------------------------------=
-------------------------
-What NetFlow Analyzer can do for you? Monitors network bandwidth and traffic
-patterns at an interface-level. Reveals which users, apps, and protocols ar=
-e=20
-consuming the most bandwidth. Provides multi-vendor support for NetFlow,=20
-J-Flow, sFlow and other flows. Make informed decisions using capacity=20
-planning reports. <a class=3D"moz-txt-link-freetext" href=3D"https://ad.dou=
-bleclick.net/ddm/clk/305295220;132659582;e">https://ad.doubleclick.net/ddm/=
-clk/305295220;132659582;e</a></pre>
-      <br>
-      <fieldset class=3D"mimeAttachmentHeader"></fieldset>
-      <br>
-      <pre wrap=3D"">_______________________________________________
-Openvpn-devel mailing list
-<a class=3D"moz-txt-link-abbreviated" href=3D"mailto:Openvpn-devel@...1466...=
-urceforge.net">Openvpn-devel@lists.sourceforge.net</a>
-<a class=3D"moz-txt-link-freetext" href=3D"https://lists.sourceforge.net/li=
-sts/listinfo/openvpn-devel">https://lists.sourceforge.net/lists/listinfo/op=
-envpn-devel</a>
-</pre>
-    </blockquote>
-    <br>
-  </body>
-</html>
+I have just very quickly looked through this, and in most cases this
+seems fine.  openvpn_execve_check() most of the cases are calling a
+somewhat hard coded path to a binary.
 
---------------023E0CC6DC379F8736EF3E71--
+Except ... on Linux, configured with --enable-iprout2, OpenVPN can use
+the --iproute option which redefines at runtime which iproute2 binary
+it should use.  Removing the environment table in these cases may
+actually break some setups where the system can have a iproute2
+compatible wrapper which needs some of the environment variables.
 
---rg3csjKADEroMeah8u8UC6RvqFrnm1wew--
+I have also seen the IRC discussion, where Gert argues that something
+else is not optimal when the environment variable space is exhausted.
+ I think a better fix would be to consider a way to filter out
+unneeded noise instead.
 
---JiMXEqk0v2TiVhA17KkSUCTNivUA8iXqo
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
 
+- --=20
+kind regards,
+
+David Sommerseth
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-Comment: https://keybase.io/valdikss
+Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIxBAEBCAAbBQJXp2ypFBxpYW1AdmFsZGlrc3Mub3JnLnJ1AAoJEFzXIC7viPdy
-n/QP/RneUyMDOS+wPQC0Z179pZqpZkv4N4d2jEDecicrqshfSm1RLttYVZpQ3vlY
-sodhqLUhKqmXha+30I3kGOpmoXwSoHXrv8NOiuGUZW6jSdaPYC38HnH/aBDnkb3W
-BTQE8YqW04hvEynxCpGbWs/NV2QI2r6fM9I2Vk5wdw1fMebW2aoFKCr2ajlExMrk
-7kuU2RJx000Hx0KfjT+5T1YRS1b7Lv+9y7Yv3GmRu74u5yfmrHSf+TKz7S9apxqL
-aGRnGBiv/HSGSiWpvvtowS/0HEqPgY93UKEivOxLs+xmp3o2PhzWd1jNkljVC8z+
-iYNgtSGGCb1cF80ihsTYt+XkI0JfJ+TTd5XWJTcbxSX6w0bh7aGMOOP0FuR4eaNc
-OjkgEypilVqPVnjlqnjgNfpDy2B2CeNk1k1rhFwCHcVqdQw6P6S49A2+8UZVxgJR
-MiLQMLl/fPN8k/Eu3lkOcLOK5+MaqxcMZxzRaOLv//+Ms1yAkzM2M4wVOiNLKCoQ
-ph1/0fMLDZz8rKMsCsqgRiV7mHfVLJkC3irK1x70I5tMsAJnFleQ37DCXnYmnB5U
-YDiHBbPqUYgLqYLvLYv33l4so+k9Fw5XQip2Z1nZvq8CPAUWH0HFR4RVjkdE6Lza
-tdrH9CEH/RsCKITQ+gGsM2txXf7X0EPj9s7zJqL3Mz9onu3G
-=3c/A
+iEYEARECAAYFAleoRAAACgkQDC186MBRfrryMgCfRqqJrrbM9WXzuG/l8EA8P/C9
+9rcAn26sippqM0+bMDqwd30I7DOC0346
+=3DXLdo
 -----END PGP SIGNATURE-----
-
---JiMXEqk0v2TiVhA17KkSUCTNivUA8iXqo--
 
