@@ -1,13 +1,7 @@
-Date: Thu, 11 Aug 2016 21:00:27 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20160811190027.GA78279@...1296...>
-References: <4489a66e-428f-493d-6dc9-1dde62c2c731@...2080...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="5adDe+nHDi68q/7x"
-Content-Disposition: inline
-In-Reply-To: <4489a66e-428f-493d-6dc9-1dde62c2c731@...2080...>
-Subject: Re: [Openvpn-devel] autoconf/automake warnings
+Date: Thu, 11 Aug 2016 21:23:40 +0200
+Message-Id: <1470943420-15103-1-git-send-email-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH] Change timestamps to POSIX format.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,54 +10,56 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
---5adDe+nHDi68q/7x
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+All our timestams used to be "what ctime()" produces, which is
 
-hi,
+  "Thu Aug 11 21:15:27 2016"
 
-On Thu, Aug 11, 2016 at 08:50:22PM +0200, David Sommerseth wrote:
-> I noticed a few errors today when building OpenVPN on Fedora 23.  The
-> attached patch resolves this.  But it breaks 'make' when it reaches
-> ./src/openvpnserv:
->=20
-> Makefile:505: ../../src/openvpn/.deps/openvpnserv-block_dns.Po: No
-> such file or directory
+Changed to use POSIX standard format, which is
 
-Well, if the patch introduces errors instead of warnings, it can't
-be "the right fix" yet...  but it's good to get started on this (thanks).
+  "2016-08-11 21:15:27"
 
-> * LT_INIT removes a warning on automake-1.15.
+this applies to logging (except to syslog or if --machine-readable-ouput
+is used) and to various other places where informational timestamps are
+produced.  Among these are the status files / status to management
+interface, so applications parsing these time stamp need to be adjusted.
 
-Can we avoid libtool for everything but plugins?  Since we do not build
-a shared library, libtool tends to introduce much more hassles than=20
-being helpful about anything - especially on more weird platforms like
-AIX.
+trac#719
 
-gert
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+ src/openvpn/otime.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+diff --git a/src/openvpn/otime.c b/src/openvpn/otime.c
+index 2c1e5b1..c10a6a8 100644
+--- a/src/openvpn/otime.c
++++ b/src/openvpn/otime.c
+@@ -112,6 +112,7 @@ time_string (time_t t, int usec, bool show_usec, struct gc_arena *gc)
+ {
+   struct buffer out = alloc_buf_gc (64, gc);
+   struct timeval tv;
++  struct tm *tm;
+ 
+   if (t)
+     {
+@@ -124,8 +125,10 @@ time_string (time_t t, int usec, bool show_usec, struct gc_arena *gc)
+     }
+ 
+   t = tv.tv_sec;
+-  buf_printf (&out, "%s", ctime(&t));
+-  buf_rmtail (&out, '\n');
++  tm = localtime(&t);
++  buf_printf (&out, "%04d-%02d-%02d %02d:%02d:%02d",
++		tm->tm_year+1900, tm->tm_mon+1, tm->tm_mday,
++		tm->tm_hour, tm->tm_min, tm->tm_sec );
+ 
+   if (show_usec && tv.tv_usec)
+     buf_printf (&out, " us=%d", (int)tv.tv_usec);
+-- 
+2.7.3
 
---5adDe+nHDi68q/7x
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQCVAwUBV6zLSqkuBuNlUUl1AQJYOgP8DDahuGkyYe/4Br4hqvifbeeyMVUFqt9g
-qy3aKx7b1MYh7gANhXxnAKajLOmMGLqrcejpNyavCnj+JD5Mu8YUdwKHL1KT5RZ5
-AafBnbCQ+vedSozTxlBdbZAYMH8ydkbII4zJv87hAUARbQQLJsYeiRM+Ldiz5MqD
-W2V1e6+oNP8=
-=yV4V
------END PGP SIGNATURE-----
-
---5adDe+nHDi68q/7x--
 
