@@ -1,14 +1,10 @@
-References: <1470684488-21307-1-git-send-email-davids@...515...>
-	<1470684488-21307-4-git-send-email-davids@...515...>
-	<CAKuzo_jZtCO1df5f3EWFPtEwgDsdOcB4jH9q=Co4Ye8WG5urcg@...278...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <b769e14d-3e0b-4e36-380a-d2de4e3cf014@...2080...>
-Date: Thu, 11 Aug 2016 16:20:20 +0200
-MIME-Version: 1.0
-In-Reply-To: <CAKuzo_jZtCO1df5f3EWFPtEwgDsdOcB4jH9q=Co4Ye8WG5urcg@...278...>
-Subject: Re: [Openvpn-devel] [PATCH v4 3/4] autotools: Add support for
- extracting version information from pkg-config modules
-Reply-To: openvpn-users@lists.sourceforge.net
+From: David Sommerseth <davids@...515...>
+Date: Thu, 11 Aug 2016 16:33:55 +0200
+Message-Id: <1470926035-434-1-git-send-email-davids@...515...>
+In-Reply-To: <1470684488-21307-5-git-send-email-davids@...515...>
+References: <1470684488-21307-5-git-send-email-davids@...515...>
+Subject: [Openvpn-devel] [PATCH v4.1] systemd: Do not mask usernames when
+	querying for it via systemd-ask-password
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,49 +13,65 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-To: Selva Nair <selva.nair@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-On 11/08/16 08:45, Selva Nair wrote:
-> Hi,
-> 
-> I missed this patch -- must have deleted from the inbox by mistake. So
-> that explains my silly comment about pkg.m4 in a previous mail.
-> 
+In systemd after version 216, systemd-ask-password will support --echo which
+will avoid masking the user input.  As OpenVPN uses this mechanism collecting
+usernames when systemd is available, this will avoid the input of usernames to
+be masked.
 
-:)
+This patch also adds the --icon argument, which is aimed at graphical inputs.
+For example when OpenVPN is started at system boot-time using a graphical boot
+interface such as Plymouth.
 
-[...snip...]
+  [v2 - Avoid pkg.m4 hacks and use pkgconfig/autoconf methods to flag
+        if systemd is recent enough for --echo support]
 
-> PKG_CHECK_EXISTS( [libsystemd > 216],
->                      [AC_DEFINE([SYSTEMD_ASKPASS_HAS_ECHO], [1],
->                            [systemd-ask-password supports --echo option])]
->                     )
-> 
-> Then add --echo only if SYSTEMD_ASKPASS_HAS_ECHO is defined.
+Signed-off-by: David Sommerseth <davids@...515...>
+---
+ configure.ac                  | 6 ++++++
+ src/openvpn/console_systemd.c | 8 ++++++++
+ 2 files changed, 14 insertions(+)
 
-I thought I had tested this approach too and that it failed, hence this
-patch updating pkg.m4 and all these other hacks; I knew it was hacky but
-it was something which worked across several of my test boxes at that
-time.  But when I test it now, it works very fine on both Fedora 23 and
-SL7.2 (RHEL7.2 clone).  Well, it's about a year since I fought this, and
-patch 3+4 have mostly been unchanged isince then.
-
-As this approach is far better, I'll retract patch 3 and update patch 4
-to use this approach instead.  I'll name the macro a bit different
-though (SYSTEMD_NEWER_THAN_216), as that reflects more what this
-pkg-config check does.
-
-So we can completely disregard "[PATCH v4 3/4] autotools: Add support
-for extracting version information from pkg-config modules".
-
-
+diff --git a/configure.ac b/configure.ac
+index c3088fd..b2fa41c 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -1012,6 +1012,12 @@ if test "$enable_systemd" = "yes" ; then
+                       [],
+                       [PKG_CHECK_MODULES([libsystemd], [libsystemd-daemon])]
+                       )
++
++    PKG_CHECK_EXISTS( [libsystemd > 216],
++                     [AC_DEFINE([SYSTEMD_NEWER_THAN_216], [1],
++                           [systemd is newer than v216])]
++                    )
++
+     AC_CHECK_HEADERS(systemd/sd-daemon.h,
+        ,
+        [
+diff --git a/src/openvpn/console_systemd.c b/src/openvpn/console_systemd.c
+index bf0f99d..f385c0c 100644
+--- a/src/openvpn/console_systemd.c
++++ b/src/openvpn/console_systemd.c
+@@ -64,6 +64,14 @@ get_console_input_systemd (const char *prompt, const bool echo, char *input, con
+ 
+     argv_init (&argv);
+     argv_printf (&argv, SYSTEMD_ASK_PASSWORD_PATH);
++#ifdef SYSTEMD_NEWER_THAN_216
++    /* the --echo support arrived in upstream systemd 217 */
++    if( echo )
++    {
++	argv_printf_cat(&argv, "--echo");
++    }
++#endif
++    argv_printf_cat (&argv, "--icon network-vpn");
+     argv_printf_cat (&argv, "%s", prompt);
+ 
+     if ((std_out = openvpn_popen (&argv, NULL)) < 0) {
 -- 
-kind regards,
-
-David Sommerseth
-OpenVPN Technologies, Inc
+1.8.3.1
 
 
