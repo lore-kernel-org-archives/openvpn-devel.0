@@ -1,11 +1,10 @@
-MIME-Version: 1.0
-In-Reply-To: <4489a66e-428f-493d-6dc9-1dde62c2c731@...2080...>
-References: <4489a66e-428f-493d-6dc9-1dde62c2c731@...2080...>
 From: Selva Nair <selva.nair@...277...>
-Date: Thu, 11 Aug 2016 16:44:59 -0400
-Message-ID: <CAKuzo_jhiRWMucS+Xm6jnJDY6U6Kfk2AKxDqzrsc_mH1d=YLdg@...278...>
-Content-Type: multipart/alternative; boundary=94eb2c05602e0fd8850539d1d8a3
-Subject: Re: [Openvpn-devel] autoconf/automake warnings
+Date: Thu, 11 Aug 2016 18:58:29 -0400
+Message-Id: <1470956309-31268-1-git-send-email-selva.nair@...277...>
+In-Reply-To: <1470368394-2722-1-git-send-email-selva.nair@...277...>
+References: <1470368394-2722-1-git-send-email-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH] Avoid format specifier %zu for Windows
+	compatibility
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,104 +13,79 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---94eb2c05602e0fd8850539d1d8a3
-Content-Type: text/plain; charset=UTF-8
+- Replace %zu by %u and cast the size_t variable to (unsigned int). The
+  cast should be safe as in all instances the number involved is small.
 
-Hi,
+Note: mingw64 targets msvcrt.dll runtime that doesn't support %zu and
+      print "zu" instead of the number. With -Wformat the compiler
+      does warn that z is an unknown conversion type.
 
-You are right, it was me who introduced reference to sources in subdir to
-avoid duplication when block-dns support was added to the interactive
-service.
+v2: Cast to (unsigned int) instead of (int).
 
-On Thu, Aug 11, 2016 at 2:50 PM, David Sommerseth <
-openvpn@...2080...> wrote:
+Signed-off-by: Selva Nair <selva.nair@...277...>
+---
+ src/openvpn/crypto.c      |    4 ++--
+ src/openvpn/options.c     |    4 ++--
+ src/openvpn/ssl_mbedtls.c |    4 ++--
+ 3 files changed, 6 insertions(+), 6 deletions(-)
 
-> Hi,
->
-> I noticed a few errors today when building OpenVPN on Fedora 23.  The
-> attached patch resolves this.  But it breaks 'make' when it reaches
-> ./src/openvpnserv:
->
-> Makefile:505: ../../src/openvpn/.deps/openvpnserv-block_dns.Po: No
-> such file or directory
->
+diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
+index d94896c..d6d0251 100644
+--- a/src/openvpn/crypto.c
++++ b/src/openvpn/crypto.c
+@@ -738,8 +738,8 @@ crypto_adjust_frame_parameters(struct frame *frame,
+ 
+   frame_add_to_extra_frame (frame, crypto_overhead);
+ 
+-  msg(D_MTU_DEBUG, "%s: Adjusting frame parameters for crypto by %zu bytes",
+-      __func__, crypto_overhead);
++  msg(D_MTU_DEBUG, "%s: Adjusting frame parameters for crypto by %u bytes",
++      __func__, (unsigned int) crypto_overhead);
+ }
+ 
+ size_t
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 7e08fcd..c100d4c 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -2992,7 +2992,7 @@ calc_options_string_link_mtu(const struct options *o, const struct frame *frame)
+ 	  o->replay, cipher_kt_mode_ofb_cfb (fake_kt.cipher));
+       frame_finalize(&fake_frame, o->ce.link_mtu_defined, o->ce.link_mtu,
+             o->ce.tun_mtu_defined, o->ce.tun_mtu);
+-      msg (D_MTU_DEBUG, "%s: link-mtu %zu -> %d", __func__, link_mtu,
++      msg (D_MTU_DEBUG, "%s: link-mtu %u -> %d", __func__, (unsigned int) link_mtu,
+ 	  EXPANDED_SIZE (&fake_frame));
+       link_mtu = EXPANDED_SIZE (&fake_frame);
+     }
+@@ -3061,7 +3061,7 @@ options_string (const struct options *o,
+    */
+ 
+   buf_printf (&out, ",dev-type %s", dev_type_string (o->dev, o->dev_type));
+-  buf_printf (&out, ",link-mtu %zu", calc_options_string_link_mtu(o, frame));
++  buf_printf (&out, ",link-mtu %u", (unsigned int) calc_options_string_link_mtu(o, frame));
+   buf_printf (&out, ",tun-mtu %d", PAYLOAD_SIZE (frame));
+   buf_printf (&out, ",proto %s",  proto_remote (o->ce.proto, remote));
+ 
+diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
+index e20ec02..8a761a4 100644
+--- a/src/openvpn/ssl_mbedtls.c
++++ b/src/openvpn/ssl_mbedtls.c
+@@ -1111,8 +1111,8 @@ print_details (struct key_state_ssl * ks_ssl, const char *prefix)
+   cert = mbedtls_ssl_get_peer_cert (ks_ssl->ctx);
+   if (cert != NULL)
+     {
+-      openvpn_snprintf (s2, sizeof (s2), ", %zu bit key",
+-	  mbedtls_pk_get_bitlen (&cert->pk));
++      openvpn_snprintf (s2, sizeof (s2), ", %u bit key",
++	  (unsigned int) mbedtls_pk_get_bitlen (&cert->pk));
+     }
+ 
+   msg (D_HANDSHAKE, "%s%s", s1, s2);
+-- 
+1.7.10.4
 
-Looks like a bug that was reported in automake 1.15 and fixed later. Does
-this
-happen on later version of automake as well?
-
-
->
-> Except of that, the patch removes the warnings on Fedora 23 [1] and
-> causes no other issues on Scientific Linux 7.2 [2] or CentOS 5.11 [3].
->
->
-> And some comments to the patch.
->
-> * The subdir-objects option was needed to avoid a warning with
->   automake-1.15.
->
-
-> * AM_PROG_CC_C_O is needed with automake-1.9.6 when the subdir-objects
->   option is enabled.
->
-
-I thought AM_PROG_CC_C_O was deprecated a long time ago. When did it make a
-come back?
-
-All my systems have automake older than 1.15 --- I will boot up a docker
-container and test this.
-
-Selva
-
---94eb2c05602e0fd8850539d1d8a3
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><div class=3D"gmail_extra">Hi,</div><div class=3D"gmail_ex=
-tra"><br></div><div class=3D"gmail_extra">You are right, it was me who intr=
-oduced reference to sources in subdir to avoid duplication when block-dns s=
-upport was added to the interactive service.</div><div class=3D"gmail_extra=
-"><br><div class=3D"gmail_quote">On Thu, Aug 11, 2016 at 2:50 PM, David Som=
-merseth <span dir=3D"ltr">&lt;<a href=3D"mailto:openvpn@...2080..." target=
-=3D"_blank">openvpn@...2080...</a>&gt;</span> wrote:<br><blockquote class=
-=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padd=
-ing-left:1ex"><div id=3D":ccm" class=3D"a3s aXjCH m1567af0f22e35d90">Hi,<br>
-<br>
-I noticed a few errors today when building OpenVPN on Fedora 23.=C2=A0 The<=
-br>
-attached patch resolves this.=C2=A0 But it breaks &#39;make&#39; when it re=
-aches<br>
-./src/openvpnserv:<br>
-<br>
-Makefile:505: ../../src/openvpn/.deps/<wbr>openvpnserv-block_dns.Po: No<br>
-such file or directory<br></div></blockquote><div><br></div><div>Looks like=
- a bug that was reported in automake 1.15 and fixed later. Does this=C2=A0<=
-/div><div>happen on later version of automake as well?</div><div>=C2=A0</di=
-v><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:=
-1px #ccc solid;padding-left:1ex"><div id=3D":ccm" class=3D"a3s aXjCH m1567a=
-f0f22e35d90">
-<br>
-Except of that, the patch removes the warnings on Fedora 23 [1] and<br>
-causes no other issues on Scientific Linux 7.2 [2] or CentOS 5.11 [3].<br>
-<br>
-<br>
-And some comments to the patch.<br>
-<br>
-* The subdir-objects option was needed to avoid a warning with<br>
-=C2=A0 automake-1.15.</div></blockquote><blockquote class=3D"gmail_quote" s=
-tyle=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex"><div=
- id=3D":ccm" class=3D"a3s aXjCH m1567af0f22e35d90">
-<br>
-* AM_PROG_CC_C_O is needed with automake-1.9.6 when the subdir-objects<br>
-=C2=A0 option is enabled.<br></div></blockquote><div><br></div><div>I thoug=
-ht AM_PROG_CC_C_O was deprecated a long time ago. When did it make a come b=
-ack?</div></div><div class=3D"gmail_extra"><br></div>All my systems have au=
-tomake older than 1.15 --- I will boot up a docker container and test this.=
-</div><div class=3D"gmail_extra"><br></div><div class=3D"gmail_extra">Selva=
-<br><br></div></div>
-
---94eb2c05602e0fd8850539d1d8a3--
 
