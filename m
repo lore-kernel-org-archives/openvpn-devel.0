@@ -1,14 +1,15 @@
 MIME-Version: 1.0
-In-Reply-To: <20160812184556.GG78279@...1296...>
-References: <1470943420-15103-1-git-send-email-gert@...1296...>
-	<1471023669-25102-1-git-send-email-gert@...1296...>
-	<CAKuzo_jySkzG-fHJzz79-EvScbwnaN_PwD+e4dv17=WCxpagvA@...278...>
-	<20160812184556.GG78279@...1296...>
+In-Reply-To: <da790cbb-c93d-cd00-0f78-96cf868115f9@...2080...>
+References: <4489a66e-428f-493d-6dc9-1dde62c2c731@...2080...>
+	<CAKuzo_jXCPDbsn24i4LcsqovVXGNaQuc-PtwwucnVDvwpMQgYg@...278...>
+	<09fc522c-b33f-1c9b-9def-854ae3c07c62@...2080...>
+	<CAKuzo_iC+gmgck4uY69k37tSMe-HAzn0uXJu7LwqxuMXP-Byxg@...278...>
+	<da790cbb-c93d-cd00-0f78-96cf868115f9@...2080...>
 From: Selva Nair <selva.nair@...277...>
-Date: Fri, 12 Aug 2016 15:32:57 -0400
-Message-ID: <CAKuzo_iGNaBV+J79UQw-84MJVsAB3cp0idPZimMrtPvs14kEEA@...278...>
-Content-Type: multipart/alternative; boundary=001a1135903e525a4d0539e4f415
-Subject: Re: [Openvpn-devel] [PATCH v2] Change timestamps to ISO 8601 format.
+Date: Fri, 12 Aug 2016 15:40:03 -0400
+Message-ID: <CAKuzo_jD7_qZEC+GpqVTxD1QXo5GdxjF5rm9KiupqM61z8=WQw@...278...>
+Content-Type: multipart/alternative; boundary=94eb2c06623abc01860539e50d1f
+Subject: Re: [Openvpn-devel] autoconf/automake warnings
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,78 +18,57 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---001a1135903e525a4d0539e4f415
+--94eb2c06623abc01860539e50d1f
 Content-Type: text/plain; charset=UTF-8
 
-On Fri, Aug 12, 2016 at 2:45 PM, Gert Doering <gert@...1296...> wrote:
+On Fri, Aug 12, 2016 at 2:38 PM, David Sommerseth <
+openvpn@...2080...> wrote:
 
+> > I would say ignore the subdir-objects warning for now and we can
+> > conditionally enable it when a version of automake that supports
+> > it without breaking use of variables in foo_SOURCES becomes widely
+> > available. In the mean time keep testing subdir-objects using a
+> > patched automake may be all that we can do.
 >
-> On Fri, Aug 12, 2016 at 02:25:54PM -0400, Selva Nair wrote:
-> > > +- all time stamps, including log file, status file and management
-> > > interface,
-> > > +  are now output in ISO 8601 standard format.
-> > > +
-> >
-> > Currently the >LOG message to the management is like
-> >
-> > >LOG:1471025385,,Closing TUN/TAP interface
-> >
-> > with unix time as timestamp. Similarly for INFO message in response to
-> 'log
-> > n' request or the state message.The patch would not change those, would
-> it?
->
-> Those wouldn't be affected, no.  Only those that have the "old" ctime()
-> format today - what I spotted on the management interface is "status"
-> output, both in the header and in each idividual client line.
+> I can live with that for now.  But it would be good to have a solution
+> before we get complaints from more bleeding edge distros (Fedora,
+> Arch, Ubuntu, openSUSE etc) that 'automake doesn't work any more' due
+> to our setup isn't modern enough.
 
 
-Thanks for the clarification. AFAIK, we do not parse status output in
-OpenVPN GUI. A UI for server would need to parse those and it would have
-been nicer to have status timestamps sent to management be in unix time as
-well -- not a fault of this patch.
+When that happens we add a version check to define subdir_objects =
+"subdir-objects" and add that as we do for serial-objects. Its a bit
+premature to do that until next version of automake is out.
 
 Selva
 
---001a1135903e525a4d0539e4f415
+--94eb2c06623abc01860539e50d1f
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <div dir=3D"ltr"><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">=
-On Fri, Aug 12, 2016 at 2:45 PM, Gert Doering <span dir=3D"ltr">&lt;<a href=
-=3D"mailto:gert@...1296..." target=3D"_blank">gert@...1296...</a>&gt;</span=
-> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;bo=
-rder-left:1px #ccc solid;padding-left:1ex"><span><br>
-On Fri, Aug 12, 2016 at 02:25:54PM -0400, Selva Nair wrote:<br>
-&gt; &gt; +- all time stamps, including log file, status file and managemen=
-t<br>
-&gt; &gt; interface,<br>
-&gt; &gt; +=C2=A0 are now output in ISO 8601 standard format.<br>
-&gt; &gt; +<br>
-&gt;<br>
-&gt; Currently the &gt;LOG message to the management is like<br>
-&gt;<br>
-&gt; &gt;LOG:1471025385,,Closing TUN/TAP interface<br>
-&gt;<br>
-&gt; with unix time as timestamp. Similarly for INFO message in response to=
- &#39;log<br>
-&gt; n&#39; request or the state message.The patch would not change those, =
-would it?<br>
+On Fri, Aug 12, 2016 at 2:38 PM, David Sommerseth <span dir=3D"ltr">&lt;<a =
+href=3D"mailto:openvpn@...2080..." target=3D"_blank">openvpn@...2080...</a>=
+&gt;</span> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0=
+ 0 .8ex;border-left:1px #ccc solid;padding-left:1ex"><span class=3D"">&gt; =
+I would say ignore the subdir-objects warning for now and we can<br>
+&gt; conditionally enable it when a version of automake that supports<br>
+&gt; it without breaking use of variables in foo_SOURCES becomes widely<br>
+&gt; available. In the mean time keep testing subdir-objects using a<br>
+&gt; patched automake may be all that we can do.<br>
 <br>
-</span>Those wouldn&#39;t be affected, no.=C2=A0 Only those that have the &=
-quot;old&quot; ctime()<br>
-format today - what I spotted on the management interface is &quot;status&q=
-uot;<br>
-output, both in the header and in each idividual client line.</blockquote><=
-/div><div class=3D"gmail_extra"><br></div>Thanks for the clarification.=C2=
-=A0AFAIK, we do not parse status output in OpenVPN GUI. A UI for server wou=
-ld need to parse those and it would have been nicer to have status timestam=
-ps sent to management be in unix time as well -- not a fault of this patch.=
-</div><div class=3D"gmail_extra"><br></div><div class=3D"gmail_extra">Selva=
-</div></div>
+</span>I can live with that for now.=C2=A0 But it would be good to have a s=
+olution<br>
+before we get complaints from more bleeding edge distros (Fedora,<br>
+Arch, Ubuntu, openSUSE etc) that &#39;automake doesn&#39;t work any more&#3=
+9; due<br>
+to our setup isn&#39;t modern enough.</blockquote></div><br>When that happe=
+ns we add a version check to define subdir_objects =3D &quot;subdir-objects=
+&quot; and add that as we do for serial-objects. Its a bit premature to do =
+that until next version of automake is out.</div><div class=3D"gmail_extra"=
+><br></div><div class=3D"gmail_extra">Selva</div></div>
 
---001a1135903e525a4d0539e4f415--
+--94eb2c06623abc01860539e50d1f--
 
