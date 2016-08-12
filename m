@@ -1,13 +1,10 @@
-References: <4489a66e-428f-493d-6dc9-1dde62c2c731@...2080...>
-	<CAKuzo_jXCPDbsn24i4LcsqovVXGNaQuc-PtwwucnVDvwpMQgYg@...278...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <09fc522c-b33f-1c9b-9def-854ae3c07c62@...2080...>
-Date: Fri, 12 Aug 2016 12:30:31 +0200
-MIME-Version: 1.0
-In-Reply-To: <CAKuzo_jXCPDbsn24i4LcsqovVXGNaQuc-PtwwucnVDvwpMQgYg@...278...>
-Content-Type: multipart/mixed; boundary="------------6515BC9818DC83777A3408CC"
-Subject: Re: [Openvpn-devel] autoconf/automake warnings
-Reply-To: openvpn-devel@lists.sourceforge.net
+From: David Sommerseth <davids@...515...>
+Date: Fri, 12 Aug 2016 12:57:25 +0200
+Message-Id: <1470999445-4288-1-git-send-email-davids@...515...>
+In-Reply-To: <1470684488-21307-3-git-send-email-davids@...515...>
+References: <1470684488-21307-3-git-send-email-davids@...515...>
+Subject: [Openvpn-devel] [PATCH v4.1 2/4] Re-implement the systemd support
+	using the new query user API
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,116 +13,211 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-This is a multi-part message in MIME format.
---------------6515BC9818DC83777A3408CC
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
+This provides exactly the same systemd functionality which existed
+before the query user infrastructure got implemented.
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+  [v5 - Ensure NULL termination fix in d09fbf958f1c is included ]
 
-On 12/08/16 03:14, Selva Nair wrote:
->=20
->=20
-> On Thu, Aug 11, 2016 at 2:50 PM, David Sommerseth=20
-> <openvpn@...2080...=20
-> <mailto:openvpn@...2080...>> wrote:
->=20
-> -----BEGIN PGP SIGNED MESSAGE----- Hash: SHA1
->=20
->=20
-> Hi,
->=20
-> I noticed a few errors today when building OpenVPN on Fedora 23.
-> The attached patch resolves this.  But it breaks 'make' when it
-> reaches ./src/openvpnserv:
->=20
->=20
-> The patch is obviously useless as it breaks configuring.
->=20
->=20
->=20
-> Makefile:505: ../../src/openvpn/.deps/openvpnserv-block_dns.Po: No=20
-> such file or directory
->=20
->=20
-> It is indeed caused by a bug in automake (bug#13928) because of
-> which variables in foo_SOURCES do not get expanded when
-> subdir-objects is specfied. Thus $(top_srcdir) in
-> $(top_srcdir)/src/openvpn/block_dns.c, for example,  causes a
-> folder literally named $(top_srcdir) created inside
-> src/openvpnserv/. But make wont find any files there and leads to=20
-> the missing file issues.
+  [v4 - change disapproved &= syntax ]
 
-Just thinking a bit around this and avoiding code duplication.  This
-might be a bit more hackish alternative, but bear with me :)
+  [v3 - Remove QUERY_USER_EXEC_ALTERNATIVE macro, simplify
+        alternatives definition directly in console.h.  For
+        now only depend on ENABLE_SYSTEMD]
 
-If the Makefile.am in src/openvpnsrv has a build-target for the
-block_dns.c file which would just copy the source file to the
-openvpnserv/ directory ... would that work?
+  [v2 - Removed the QUERY_USER_FOREACH macro]
 
-Rough (not really tested) example is attached.
+Signed-off-by: David Sommerseth <davids@...515...>
+---
+ configure.ac                  |   2 +-
+ src/openvpn/Makefile.am       |   2 +-
+ src/openvpn/console.h         |   6 +--
+ src/openvpn/console_systemd.c | 115 ++++++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 120 insertions(+), 5 deletions(-)
+ create mode 100644 src/openvpn/console_systemd.c
 
-
-- --=20
-kind regards,
-
-David Sommerseth
-OpenVPN Technologies, Inc
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iEYEARECAAYFAletpUcACgkQDC186MBRfrrUjACcCfCMTD3Xp8LlFRiLhaBGjVU1
-PtMAoI2VL2nBzYzk5krtIQQ38Q3dZSqC
-=3Dhk2k
------END PGP SIGNATURE-----
-
---------------6515BC9818DC83777A3408CC
-Content-Type: text/x-patch;
- name="openserv-build-hack.patch"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: attachment;
- filename="openserv-build-hack.patch"
-
-diff --git a/src/openvpnserv/Makefile.am b/src/openvpnserv/Makefile.am
-index 3c757d6..04a0dd4 100644
---- a/src/openvpnserv/Makefile.am
-+++ b/src/openvpnserv/Makefile.am
-@@ -29,11 +29,20 @@ openvpnserv_CFLAGS =3D \
- openvpnserv_LDADD =3D -ladvapi32 -luserenv -liphlpapi -lfwpuclnt -lrpcrt=
-4 -lshlwapi -lnetapi32 -lws2_32
- endif
-=20
-+CLEANFILES =3D block_dns.c block_dns.h
-+.PHONY =3D block_dns.c block_dns.h
-+BUILT_SOURCES =3D block_dns.c block_dns.h
+diff --git a/configure.ac b/configure.ac
+index 4f14ebd..c3088fd 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -1006,7 +1006,7 @@ fi
+ dnl
+ dnl Check for systemd
+ dnl
+-
++AM_CONDITIONAL([ENABLE_SYSTEMD], [test "${enable_systemd}" = "yes"])
+ if test "$enable_systemd" = "yes" ; then
+     PKG_CHECK_MODULES([libsystemd], [systemd libsystemd],
+                       [],
+diff --git a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am
+index 8d6d39f..a306726 100644
+--- a/src/openvpn/Makefile.am
++++ b/src/openvpn/Makefile.am
+@@ -68,7 +68,7 @@ openvpn_SOURCES = \
+ 	memdbg.h \
+ 	misc.c misc.h \
+ 	platform.c platform.h \
+-	console.c console.h console_builtin.c \
++	console.c console.h console_builtin.c console_systemd.c \
+ 	mroute.c mroute.h \
+ 	mss.c mss.h \
+ 	mstats.c mstats.h \
+diff --git a/src/openvpn/console.h b/src/openvpn/console.h
+index 44d49ef..41f2b8c 100644
+--- a/src/openvpn/console.h
++++ b/src/openvpn/console.h
+@@ -76,7 +76,7 @@ void query_user_add (char *prompt, size_t prompt_len,
+ bool query_user_exec_builtin ();
+ 
+ 
+-#ifdef QUERY_USER_EXEC_ALTERNATIVE
++#if defined(ENABLE_SYSTEMD)
+ /**
+  * Executes a configured setup, using the compiled method for querying the user
+  *
+@@ -86,7 +86,7 @@ bool query_user_exec_builtin ();
+  */
+ bool query_user_exec ();
+ 
+-#else  /* QUERY_USER_EXEC_ALTERNATIVE not defined*/
++#else  /* ENABLE_SYSTEMD not defined*/
+ /**
+  * Wrapper function enabling query_user_exec() if no alternative methods have
+  * been enabled
+@@ -96,7 +96,7 @@ static bool query_user_exec ()
+ {
+     return query_user_exec_builtin();
+ }
+-#endif  /* QUERY_USER_EXEC_ALTERNATIVE */
++#endif  /* defined(ENABLE_SYSTEMD) */
+ 
+ 
+ /**
+diff --git a/src/openvpn/console_systemd.c b/src/openvpn/console_systemd.c
+new file mode 100644
+index 0000000..67cb51b
+--- /dev/null
++++ b/src/openvpn/console_systemd.c
+@@ -0,0 +1,115 @@
++/*
++ *  OpenVPN -- An application to securely tunnel IP networks
++ *             over a single UDP port, with support for SSL/TLS-based
++ *             session authentication and key exchange,
++ *             packet encryption, packet authentication, and
++ *             packet compression.
++ *
++ *  Copyright (C) 2014-2015 David Sommerseth <davids@...1347...>
++ *  Copyright (C) 2016      David Sommerseth <dazo@...2145...>
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License version 2
++ *  as published by the Free Software Foundation.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License
++ *  along with this program (see the file COPYING included with this
++ *  distribution); if not, write to the Free Software Foundation, Inc.,
++ *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
++ */
 +
-+block_dns.c :
-+	cp $(top_srcdir)/src/openvpn/block_dns.c .
++/**
++ * @file Alternative method to query for user input, using systemd
++ *
++ */
 +
-+block_dns.h :
-+	cp $(top_srcdir)/src/openvpn/block_dns.h .
++#include "config.h"
 +
- openvpnserv_SOURCES =3D \
-         common.c \
- 	automatic.c \
- 	interactive.c \
- 	service.c service.h \
- 	validate.c validate.h \
--	$(top_srcdir)/src/openvpn/block_dns.c $(top_srcdir)/src/openvpn/block_d=
-ns.h \
- 	openvpnserv_resources.rc
++#ifdef ENABLE_SYSTEMD
++#include "syshead.h"
++#include "console.h"
++#include "misc.h"
++
++#include <systemd/sd-daemon.h>
++
++/*
++ * is systemd running
++ */
++
++static bool
++check_systemd_running ()
++{
++    struct stat c;
++
++    /* We simply test whether the systemd cgroup hierarchy is
++     * mounted, as well as the systemd-ask-password executable
++     * being available */
++
++    return (sd_booted() > 0)
++	&& (stat(SYSTEMD_ASK_PASSWORD_PATH, &c) == 0);
++
++}
++
++static bool
++get_console_input_systemd (const char *prompt, const bool echo, char *input, const int capacity)
++{
++    int std_out;
++    bool ret = false;
++    struct argv argv;
++
++    argv_init (&argv);
++    argv_printf (&argv, SYSTEMD_ASK_PASSWORD_PATH);
++    argv_printf_cat (&argv, "%s", prompt);
++
++    if ((std_out = openvpn_popen (&argv, NULL)) < 0) {
++	return false;
++    }
++    memset (input, 0, capacity);
++    if (read (std_out, input, capacity-1) != 0)
++    {
++	chomp (input);
++	ret = true;
++    }
++    close (std_out);
++
++    argv_reset (&argv);
++
++    return ret;
++}
++
++/**
++ *  Systemd aware implementation of query_user_exec().  If systemd is not running
++ *  it will fall back to use query_user_exec_builtin() instead.
++ *
++ */
++bool query_user_exec()
++{
++    bool ret = true;  /* Presume everything goes okay */
++    int i;
++
++    /* If systemd is not available, use the default built-in mechanism */
++    if (!check_systemd_running())
++    {
++        return query_user_exec_builtin();
++    }
++
++    /* Loop through the complete query setup and when needed, collect the information */
++    for (i = 0; i < QUERY_USER_NUMSLOTS && query_user[i].response != NULL; i++)
++    {
++	if (!get_console_input_systemd(query_user[i].prompt, query_user[i].echo,
++				       query_user[i].response, query_user[i].response_len) )
++	{
++	    /* Force the final result state to failed on failure */
++	    ret = false;
++	}
++    }
++
++    return ret;
++}
++
++#endif /* ENABLE_SYSTEMD */
+-- 
+1.8.3.1
 
---------------6515BC9818DC83777A3408CC
-Content-Type: application/pgp-signature; name="openserv-build-hack.patch.sig"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment;
- filename="openserv-build-hack.patch.sig"
-
-iEYEABECAAYFAletpUcACgkQDC186MBRfroDKACfeigAoT1wta8cPfQn19VyifhtfBUAnRQY
-NtbB8UPf85nzWPCTCJLHOaRy
---------------6515BC9818DC83777A3408CC--
 
