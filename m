@@ -1,11 +1,10 @@
-References: <4489a66e-428f-493d-6dc9-1dde62c2c731@...2080...>
-	<CAKuzo_jhiRWMucS+Xm6jnJDY6U6Kfk2AKxDqzrsc_mH1d=YLdg@...278...>
+References: <1470943420-15103-1-git-send-email-gert@...1296...>
 From: David Sommerseth <openvpn@...2080...>
-Message-ID: <1e5adffb-e485-0d1c-3e3e-4c4df9d2e55b@...2080...>
-Date: Fri, 12 Aug 2016 11:57:41 +0200
+Message-ID: <4f37aef4-3e89-ccbd-4245-b033892cf1c2@...2080...>
+Date: Fri, 12 Aug 2016 12:03:33 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAKuzo_jhiRWMucS+Xm6jnJDY6U6Kfk2AKxDqzrsc_mH1d=YLdg@...278...>
-Subject: Re: [Openvpn-devel] autoconf/automake warnings
+In-Reply-To: <1470943420-15103-1-git-send-email-gert@...1296...>
+Subject: Re: [Openvpn-devel] [PATCH] Change timestamps to POSIX format.
 Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -15,74 +14,44 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
-To: Selva Nair <selva.nair@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
 
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-On 11/08/16 22:44, Selva Nair wrote:
-> Hi,
->=20
-> You are right, it was me who introduced reference to sources in
-> subdir to avoid duplication when block-dns support was added to the
-> interactive service.
->=20
-> On Thu, Aug 11, 2016 at 2:50 PM, David Sommerseth=20
-> <openvpn@...2080...=20
-> <mailto:openvpn@...2080...>> wrote:
->=20
-> Hi,
->=20
-> I noticed a few errors today when building OpenVPN on Fedora 23.
-> The attached patch resolves this.  But it breaks 'make' when it
-> reaches ./src/openvpnserv:
->=20
-> Makefile:505: ../../src/openvpn/.deps/openvpnserv-block_dns.Po: No=20
-> such file or directory
->=20
->=20
-> Looks like a bug that was reported in automake 1.15 and fixed
-> later. Does this happen on later version of automake as well?
+On 11/08/16 21:23, Gert Doering wrote:
+> All our timestams used to be "what ctime()" produces, which is
+> 
+> "Thu Aug 11 21:15:27 2016"
+> 
+> Changed to use POSIX standard format, which is
+> 
+> "2016-08-11 21:15:27"
+> 
+> this applies to logging (except to syslog or if
+> --machine-readable-ouput is used) and to various other places where
+> informational timestamps are produced.  Among these are the status
+> files / status to management interface, so applications parsing
+> these time stamp need to be adjusted.
+> 
+> trac#719
+> 
+> Signed-off-by: Gert Doering <gert@...1296...> --- 
+> src/openvpn/otime.c | 7 +++++-- 1 file changed, 5 insertions(+), 2
+> deletions(-)
+> 
 
-My current tests was on an updated Fedora 23.  I can grab a an updated
-F24 image and try building there.
+I generally think this is a very good idea.  But I fear what we break
+along the way.
 
-> Except of that, the patch removes the warnings on Fedora 23 [1]
-> and causes no other issues on Scientific Linux 7.2 [2] or CentOS
-> 5.11 [3].
->=20
->=20
-> And some comments to the patch.
->=20
-> * The subdir-objects option was needed to avoid a warning with=20
-> automake-1.15.
->=20
->=20
-> * AM_PROG_CC_C_O is needed with automake-1.9.6 when the
-> subdir-objects option is enabled.
->=20
->=20
-> I thought AM_PROG_CC_C_O was deprecated a long time ago. When did
-> it make a come back?
-
-I dunno if it's deprecated, but I remember reading yesterday it
-shouldn't be needed since 1.13 (IIRC).  But as we need to ensure
-OpenVPN can be fully built on RHEL5 (which is the oldest supported
-distribution we officially support).   And RHEL5 ships with automake-1.9
-.
-
-A related discussion we of course can make is if we will change our
-build support policy slightly.  Currently we support building from git
-on RHEL5 (hence autoreconf is needed to be run).  But we could change
-our policy to only support building on RHEL5 using tarballs (greated
-by 'make dist' and related variants).  In this case, autotools doesn't
-even need to be installed (with the exception of libtool, iirc) ...
-but that's a discussion outside this mail-thread, though.
+It would be great if as many as possible could put this into somewhat
+limited production environment for testing if this breaks any thing
+*and* report back after a while; even if no issues where detected.
 
 
-- --=20
+- -- 
 kind regards,
 
 David Sommerseth
@@ -91,8 +60,8 @@ OpenVPN Technologies, Inc
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iEYEARECAAYFAletnZUACgkQDC186MBRfrqt3wCfT+fo+9haooMUHZ2MUxlekWeY
-ex8AnRcCNQey/fEbTakJSbrgUqzeULP2
-=3DbN9r
+iEYEARECAAYFAletnvUACgkQDC186MBRfrqAhQCgm79bWoRc0Rx8yfDPfkghhaxC
+ppUAoKsW896yhktq76znVoPagDWvlo7n
+=IR81
 -----END PGP SIGNATURE-----
 
