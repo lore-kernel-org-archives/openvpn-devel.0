@@ -1,12 +1,12 @@
-References: <1451908945-12244-1-git-send-email-lstipakov@...277...>
-	<1451911424-12970-1-git-send-email-lstipakov@...277...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <b80eb9b2-1ce0-1f9d-7b76-a877087e10fe@...2080...>
-Date: Fri, 12 Aug 2016 20:24:35 +0200
 MIME-Version: 1.0
-In-Reply-To: <1451911424-12970-1-git-send-email-lstipakov@...277...>
-Subject: Re: [Openvpn-devel] [PATCH v2] Drop recursively routed packets
-Reply-To: openvpn-devel@lists.sourceforge.net
+In-Reply-To: <1471023669-25102-1-git-send-email-gert@...1296...>
+References: <1470943420-15103-1-git-send-email-gert@...1296...>
+	<1471023669-25102-1-git-send-email-gert@...1296...>
+From: Selva Nair <selva.nair@...277...>
+Date: Fri, 12 Aug 2016 14:25:54 -0400
+Message-ID: <CAKuzo_jySkzG-fHJzz79-EvScbwnaN_PwD+e4dv17=WCxpagvA@...278...>
+Content-Type: multipart/alternative; boundary=94eb2c0764168792780539e404f2
+Subject: Re: [Openvpn-devel] [PATCH v2] Change timestamps to ISO 8601 format.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,59 +15,66 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="windows-1252"
+To: Gert Doering <gert@...1296...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+
+--94eb2c0764168792780539e404f2
+Content-Type: text/plain; charset=UTF-8
+
+On Fri, Aug 12, 2016 at 1:41 PM, Gert Doering <gert@...1296...> wrote:
+
+> diff --git a/Changes.rst b/Changes.rst
+> index 9fcba75..ad6363e 100644
+> --- a/Changes.rst
+> +++ b/Changes.rst
+> @@ -135,6 +135,9 @@ User-visible Changes
+>    ciphers configured in the config file.  Use --ncp-disable if you don't
+> want
+>    that.
+>
+> +- all time stamps, including log file, status file and management
+> interface,
+> +  are now output in ISO 8601 standard format.
+> +
+>
+
+Currently the >LOG message to the management is like
+
+>LOG:1471025385,,Closing TUN/TAP interface
+
+with unix time as timestamp. Similarly for INFO message in response to 'log
+n' request or the state message.The patch would not change those, would it?
+
+Selva
+
+--94eb2c0764168792780539e404f2
+Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-To: Lev Stipakov <lstipakov@...277...>, openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+<div dir=3D"ltr"><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">=
+On Fri, Aug 12, 2016 at 1:41 PM, Gert Doering <span dir=3D"ltr">&lt;<a href=
+=3D"mailto:gert@...1296..." target=3D"_blank">gert@...1296...</a>&gt;</span=
+> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0=
+.8ex;border-left-width:1px;border-left-color:rgb(204,204,204);border-left-s=
+tyle:solid;padding-left:1ex"><div>diff --git a/Changes.rst b/Changes.rst<br>
+index 9fcba75..ad6363e 100644<br>
+--- a/Changes.rst<br>
++++ b/Changes.rst<br>
+@@ -135,6 +135,9 @@ User-visible Changes<br>
+=C2=A0 =C2=A0ciphers configured in the config file.=C2=A0 Use --ncp-disable=
+ if you don&#39;t want<br>
+=C2=A0 =C2=A0that.<br>
+<br>
++- all time stamps, including log file, status file and management interfac=
+e,<br>
++=C2=A0 are now output in ISO 8601 standard format.<br>
++<br></div></blockquote></div><br>Currently the &gt;LOG message to the mana=
+gement is like</div><div class=3D"gmail_extra"><br></div><div class=3D"gmai=
+l_extra">&gt;LOG:1471025385,,Closing TUN/TAP interface<br></div><div class=
+=3D"gmail_extra"><br></div><div class=3D"gmail_extra">with unix time as tim=
+estamp. Similarly for INFO message in response to &#39;log n&#39; request o=
+r the state message.The patch would not change those, would it?</div><div c=
+lass=3D"gmail_extra"><br></div><div class=3D"gmail_extra">Selva</div></div>
 
-On 04/01/16 13:43, Lev Stipakov wrote:
-> v2: better method naming
->=20
-> On certain OSes (Windows, OS X) when network adapter is disabled
-> (ethernet cable pulled off, Wi-Fi hardware switch disabled),=20
-> operating system starts to use tun as an external interface.=20
-> Outgoing packets are routed to tun, UDP encapsulated, given to=20
-> routing table and sent to.. tun.
-
-Can this happen on Linux or *BSD?  Could this recursive routing
-actually happen at all?
-
-[...snip...]
-
-> + +      /* skip ipv4 packets for ipv6 tun */ +      if
-> (tun_sa.addr.sa.sa_family !=3D AF_INET) +	   return;
-
-[...snip...]
-
-> + +      /* skip ipv6 packets for ipv4 tun */ +      if
-> (tun_sa.addr.sa.sa_family !=3D AF_INET6) +	  return;
-
-How likely is it that these two checks will hit?  Do we truly need
-them?  I'm basically concerned of the potential cost an extra check
-adds.  As the link speed increases, such checks will have an impact
-later on if now.  If truly needed, is it worth looking into providing
-some branch prediction hints to the compiler?  (unlikely/likely hints)
-
-> if (c->c2.buf.len > 0) { +      drop_if_recursive_routing (c,
-> &c->c2.buf);
-
-If this is truly only an issue on Windows and OSX, can we consider to
-#ifdef the drop_if_recursive_routing() call?
-
-
-- --=20
-kind regards,
-
-David Sommerseth
-OpenVPN Technologies, Inc
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iEYEARECAAYFAleuFGMACgkQDC186MBRfrphqACcCJ7UNTcaFM79njJ1HXFpw7hX
-NbcAn2MgNCVh1joOOKhPo46dJ+5GAGdq
-=3DxaHi
------END PGP SIGNATURE-----
+--94eb2c0764168792780539e404f2--
 
