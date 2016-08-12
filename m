@@ -1,11 +1,13 @@
 MIME-Version: 1.0
-In-Reply-To: <4489a66e-428f-493d-6dc9-1dde62c2c731@...2080...>
-References: <4489a66e-428f-493d-6dc9-1dde62c2c731@...2080...>
+In-Reply-To: <1470926035-434-1-git-send-email-davids@...515...>
+References: <1470684488-21307-5-git-send-email-davids@...515...>
+	<1470926035-434-1-git-send-email-davids@...515...>
 From: Selva Nair <selva.nair@...277...>
-Date: Thu, 11 Aug 2016 21:14:43 -0400
-Message-ID: <CAKuzo_jXCPDbsn24i4LcsqovVXGNaQuc-PtwwucnVDvwpMQgYg@...278...>
-Content-Type: multipart/alternative; boundary=94eb2c0a879ab735310539d59c92
-Subject: Re: [Openvpn-devel] autoconf/automake warnings
+Date: Fri, 12 Aug 2016 00:08:37 -0400
+Message-ID: <CAKuzo_gROYTQLYrE=oep8ES6mDU_z6-KmgCEwhCVsdhyN46urg@...278...>
+Content-Type: multipart/alternative; boundary=94eb2c0764169f55f20539d80a3f
+Subject: Re: [Openvpn-devel] [PATCH v4.1] systemd: Do not mask usernames
+ when querying for it via systemd-ask-password
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,104 +16,173 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: David Sommerseth <davids@...515...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---94eb2c0a879ab735310539d59c92
+--94eb2c0764169f55f20539d80a3f
 Content-Type: text/plain; charset=UTF-8
 
-On Thu, Aug 11, 2016 at 2:50 PM, David Sommerseth <openvpn@...2142...
-topphemmelig.net> wrote:
+On Thu, Aug 11, 2016 at 10:33 AM, David Sommerseth <davids@...515...>
+wrote:
 
-> -----BEGIN PGP SIGNED MESSAGE-----
-> Hash: SHA1
+> In systemd after version 216, systemd-ask-password will support --echo
+> which
+> will avoid masking the user input.  As OpenVPN uses this mechanism
+> collecting
+> usernames when systemd is available, this will avoid the input of
+> usernames to
+> be masked.
 >
+> This patch also adds the --icon argument, which is aimed at graphical
+> inputs.
+> For example when OpenVPN is started at system boot-time using a graphical
+> boot
+> interface such as Plymouth.
 >
-> Hi,
+>   [v2 - Avoid pkg.m4 hacks and use pkgconfig/autoconf methods to flag
+>         if systemd is recent enough for --echo support]
 >
-> I noticed a few errors today when building OpenVPN on Fedora 23.  The
-> attached patch resolves this.  But it breaks 'make' when it reaches
-> ./src/openvpnserv:
+> Signed-off-by: David Sommerseth <davids@...515...>
+> ---
+>  configure.ac                  | 6 ++++++
+>  src/openvpn/console_systemd.c | 8 ++++++++
+>  2 files changed, 14 insertions(+)
 >
-
-The patch is obviously useless as it breaks configuring.
-
-
+> diff --git a/configure.ac b/configure.ac
+> index c3088fd..b2fa41c 100644
+> --- a/configure.ac
+> +++ b/configure.ac
+> @@ -1012,6 +1012,12 @@ if test "$enable_systemd" = "yes" ; then
+>                        [],
+>                        [PKG_CHECK_MODULES([libsystemd],
+> [libsystemd-daemon])]
+>                        )
+> +
+> +    PKG_CHECK_EXISTS( [libsystemd > 216],
+> +                     [AC_DEFINE([SYSTEMD_NEWER_THAN_216], [1],
+> +                           [systemd is newer than v216])]
+> +                    )
+> +
+>      AC_CHECK_HEADERS(systemd/sd-daemon.h,
+>         ,
+>         [
+> diff --git a/src/openvpn/console_systemd.c b/src/openvpn/console_systemd.c
+> index bf0f99d..f385c0c 100644
+> --- a/src/openvpn/console_systemd.c
+> +++ b/src/openvpn/console_systemd.c
+> @@ -64,6 +64,14 @@ get_console_input_systemd (const char *prompt, const
+> bool echo, char *input, con
 >
-> Makefile:505: ../../src/openvpn/.deps/openvpnserv-block_dns.Po: No
-> such file or directory
+>      argv_init (&argv);
+>      argv_printf (&argv, SYSTEMD_ASK_PASSWORD_PATH);
+> +#ifdef SYSTEMD_NEWER_THAN_216
+> +    /* the --echo support arrived in upstream systemd 217 */
+> +    if( echo )
+> +    {
+> +       argv_printf_cat(&argv, "--echo");
+> +    }
+> +#endif
+> +    argv_printf_cat (&argv, "--icon network-vpn");
+>      argv_printf_cat (&argv, "%s", prompt);
 >
-
-It is indeed caused by a bug in automake (bug#13928) because of which
-variables in foo_SOURCES do not get expanded when subdir-objects is
-specfied. Thus $(top_srcdir) in  $(top_srcdir)/src/openvpn/block_dns.c, for
-example,  causes a folder literally named $(top_srcdir) created inside
-src/openvpnserv/. But make wont find any files there and leads to the
-missing file issues.
-
-This has been fixed in automake 1.15a master tree in this commit :
-http://git.savannah.gnu.org/cgit/automake.git/commit/?id=
-6a675ef17edf7109da189f5ae70e2dc6b7665896
-
-(I tested it works)
-
-But that may not get into any distributions for a while and anyway  we'll
-have to continue supporting various 1.x versions of automake for a long
-time.
-
-We have two options:
-
-(i) just ignore the subdir-objects warning until it really cannot be
-ignored (i.e when they make it the default).
-OR
-(ii) do not use any variables that need expansion in packagename_SOURCES
-lines in Makefile.am  This is an easy fix that should just work.
+>      if ((std_out = openvpn_popen (&argv, NULL)) < 0) {
+>
+<http://sdm.link/zohodev2dev>
+This looks much better now and works fine (tested without applying patches
+1/4 and 2/4). ACK from me.
 
 Selva
 
---94eb2c0a879ab735310539d59c92
+--94eb2c0764169f55f20539d80a3f
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <div dir=3D"ltr"><br><div class=3D"gmail_extra"><br><div class=3D"gmail_quo=
-te">On Thu, Aug 11, 2016 at 2:50 PM, David Sommerseth <span dir=3D"ltr">&lt=
-;<a href=3D"mailto:openvpn@...2080..." target=3D"_blank">openvpn@...2142...=
-<wbr>topphemmelig.net</a>&gt;</span> wrote:<br><blockquote class=3D"gmail_q=
-uote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,2=
-04);padding-left:1ex">-----BEGIN PGP SIGNED MESSAGE-----<br>
-Hash: SHA1<br>
+te">On Thu, Aug 11, 2016 at 10:33 AM, David Sommerseth <span dir=3D"ltr">&l=
+t;<a href=3D"mailto:davids@...515..." target=3D"_blank">davids@...515...</a=
+>&gt;</span> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 =
+0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex"><span class=3D"">In s=
+ystemd after version 216, systemd-ask-password will support --echo which<br>
+will avoid masking the user input.=C2=A0 As OpenVPN uses this mechanism col=
+lecting<br>
+usernames when systemd is available, this will avoid the input of usernames=
+ to<br>
+be masked.<br>
 <br>
+This patch also adds the --icon argument, which is aimed at graphical input=
+s.<br>
+For example when OpenVPN is started at system boot-time using a graphical b=
+oot<br>
+interface such as Plymouth.<br>
 <br>
-Hi,<br>
+</span>=C2=A0 [v2 - Avoid pkg.m4 hacks and use pkgconfig/autoconf methods t=
+o flag<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 if systemd is recent enough for --echo support]=
 <br>
-I noticed a few errors today when building OpenVPN on Fedora 23.=C2=A0 The<=
-br>
-attached patch resolves this.=C2=A0 But it breaks &#39;make&#39; when it re=
-aches<br>
-./src/openvpnserv:<br></blockquote><div><br></div><div>The patch is obvious=
-ly useless as it breaks configuring.<br>=C2=A0<br></div><blockquote class=
-=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rg=
-b(204,204,204);padding-left:1ex">
+<span class=3D""><br>
+Signed-off-by: David Sommerseth &lt;<a href=3D"mailto:davids@...515...">dav=
+ids@...515...</a>&gt;<br>
+---<br>
+</span>=C2=A0<a href=3D"http://configure.ac" rel=3D"noreferrer" target=3D"_=
+blank">configure.ac</a>=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 | 6 ++++++<br>
+=C2=A0src/openvpn/console_systemd.c | 8 ++++++++<br>
+=C2=A02 files changed, 14 insertions(+)<br>
 <br>
-Makefile:505: ../../src/openvpn/.deps/openvp<wbr>nserv-block_dns.Po: No<br>
-such file or directory<br></blockquote><div><br></div><div>It is indeed cau=
-sed by a bug in automake (bug#13928) because of which variables in foo_SOUR=
-CES do not get expanded when subdir-objects is specfied. Thus $(top_srcdir)=
- in=C2=A0 $(top_srcdir)/src/openvpn/<wbr>block_dns.c, for example,=C2=A0 ca=
-uses a folder literally named $(top_srcdir) created inside src/openvpnserv/=
-. But make wont find any files there and leads to the missing file issues.<=
-br><br></div><div>This has been fixed in automake 1.15a master tree in this=
- commit :<br><a href=3D"http://git.savannah.gnu.org/cgit/automake.git/commi=
-t/?id=3D6a675ef17edf7109da189f5ae70e2dc6b7665896" target=3D"_blank">http://=
-git.savannah.gnu.org/<wbr>cgit/automake.git/commit/?id=3D<wbr>6a675ef17edf7=
-109da189f5ae70e2d<wbr>c6b7665896</a></div><div><br>(I tested it works)<br><=
-br></div><div>But that may not get into any distributions for a while and a=
-nyway=C2=A0 we&#39;ll have to continue supporting various 1.x versions of a=
-utomake for a long time.<br><br></div><div>We have two options: <br><br>(i)=
- just ignore the subdir-objects warning until it really cannot be ignored (=
-i.e when they make it the default).<br></div><div>OR<br></div><div>(ii) do =
-not use any variables that need expansion in packagename_SOURCES lines in M=
-akefile.am=C2=A0 This is an easy fix that should just work.<br></div><div><=
-br></div><div>Selva</div></div><br></div></div>
+diff --git a/<a href=3D"http://configure.ac" rel=3D"noreferrer" target=3D"_=
+blank">configure.ac</a> b/<a href=3D"http://configure.ac" rel=3D"noreferrer=
+" target=3D"_blank">configure.ac</a><br>
+index c3088fd..b2fa41c 100644<br>
+--- a/<a href=3D"http://configure.ac" rel=3D"noreferrer" target=3D"_blank">=
+configure.ac</a><br>
++++ b/<a href=3D"http://configure.ac" rel=3D"noreferrer" target=3D"_blank">=
+configure.ac</a><br>
+@@ -1012,6 +1012,12 @@ if test &quot;$enable_systemd&quot; =3D &quot;yes&qu=
+ot; ; then<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0[],<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0[PKG_CHECK_MODULES([<wbr>libsystemd], [libsystemd-daemon])]<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0)<br>
++<br>
++=C2=A0 =C2=A0 PKG_CHECK_EXISTS( [libsystemd &gt; 216],<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0[AC_DEFINE([SYSTEMD_NEWER_<wbr>THAN_216], [1],<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0[systemd is newer than v216])]<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 )<br>
++<br>
+=C2=A0 =C2=A0 =C2=A0AC_CHECK_HEADERS(systemd/sd-<wbr>daemon.h,<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 ,<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 [<br>
+diff --git a/src/openvpn/console_systemd.<wbr>c b/src/openvpn/console_syste=
+md.<wbr>c<br>
+index bf0f99d..f385c0c 100644<br>
+--- a/src/openvpn/console_systemd.<wbr>c<br>
++++ b/src/openvpn/console_systemd.<wbr>c<br>
+@@ -64,6 +64,14 @@ get_console_input_systemd (const char *prompt, const boo=
+l echo, char *input, con<br>
+<span class=3D""><br>
+=C2=A0 =C2=A0 =C2=A0argv_init (&amp;argv);<br>
+=C2=A0 =C2=A0 =C2=A0argv_printf (&amp;argv, SYSTEMD_ASK_PASSWORD_PATH);<br>
+</span>+#ifdef SYSTEMD_NEWER_THAN_216<br>
++=C2=A0 =C2=A0 /* the --echo support arrived in upstream systemd 217 */<br>
+<div class=3D"HOEnZb"><div class=3D"h5">+=C2=A0 =C2=A0 if( echo )<br>
++=C2=A0 =C2=A0 {<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0argv_printf_cat(&amp;argv, &quot;--echo&quot;);=
+<br>
++=C2=A0 =C2=A0 }<br>
++#endif<br>
++=C2=A0 =C2=A0 argv_printf_cat (&amp;argv, &quot;--icon network-vpn&quot;);=
+<br>
+=C2=A0 =C2=A0 =C2=A0argv_printf_cat (&amp;argv, &quot;%s&quot;, prompt);<br>
+<br>
+=C2=A0 =C2=A0 =C2=A0if ((std_out =3D openvpn_popen (&amp;argv, NULL)) &lt; =
+0) {<br></div></div></blockquote><a href=3D"http://sdm.link/zohodev2dev" re=
+l=3D"noreferrer" target=3D"_blank"></a><br>This looks much better now and w=
+orks fine (tested without applying patches 1/4 and 2/4). ACK from me.<br><b=
+r></div><div class=3D"gmail_quote">Selva<br></div></div></div>
 
---94eb2c0a879ab735310539d59c92--
+--94eb2c0764169f55f20539d80a3f--
 
