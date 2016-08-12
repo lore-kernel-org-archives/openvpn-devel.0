@@ -1,13 +1,10 @@
 MIME-Version: 1.0
-In-Reply-To: <1470926035-434-1-git-send-email-davids@...515...>
-References: <1470684488-21307-5-git-send-email-davids@...515...>
-	<1470926035-434-1-git-send-email-davids@...515...>
 From: Selva Nair <selva.nair@...277...>
-Date: Fri, 12 Aug 2016 00:08:37 -0400
-Message-ID: <CAKuzo_gROYTQLYrE=oep8ES6mDU_z6-KmgCEwhCVsdhyN46urg@...278...>
-Content-Type: multipart/alternative; boundary=94eb2c0764169f55f20539d80a3f
-Subject: Re: [Openvpn-devel] [PATCH v4.1] systemd: Do not mask usernames
- when querying for it via systemd-ask-password
+Date: Fri, 12 Aug 2016 00:11:17 -0400
+Message-ID: <CAKuzo_hByb0e-3qVkV7zKScfxC3bAUO5MiXdBp3qJzy3uFLikw@...278...>
+Content-Type: multipart/alternative; boundary=001a114798b227c6ab0539d8148b
+Subject: [Openvpn-devel] [PATCH v4 2/4] Re-implement the systemd support
+ using the new query user API
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,173 +13,147 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: David Sommerseth <davids@...515...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: David Sommerseth <davids@...515...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---94eb2c0764169f55f20539d80a3f
+--001a114798b227c6ab0539d8148b
 Content-Type: text/plain; charset=UTF-8
 
-On Thu, Aug 11, 2016 at 10:33 AM, David Sommerseth <davids@...515...>
-wrote:
+(sending again with the list in CC:)
 
-> In systemd after version 216, systemd-ask-password will support --echo
-> which
-> will avoid masking the user input.  As OpenVPN uses this mechanism
-> collecting
-> usernames when systemd is available, this will avoid the input of
-> usernames to
-> be masked.
+Mon, Aug 8, 2016 at 3:28 PM, David Sommerseth <davids@...515...> wrote:
+
+> This provides exactly the same systemd functionality which existed
+> before the query user infrastructure got implemented.
 >
-> This patch also adds the --icon argument, which is aimed at graphical
-> inputs.
-> For example when OpenVPN is started at system boot-time using a graphical
-> boot
-> interface such as Plymouth.
+>   [v4 - change disapproved &= syntax ]
 >
->   [v2 - Avoid pkg.m4 hacks and use pkgconfig/autoconf methods to flag
->         if systemd is recent enough for --echo support]
+>   [v3 - Remove QUERY_USER_EXEC_ALTERNATIVE macro, simplify
+>         alternatives definition directly in console.h.  For
+>         now only depend on ENABLE_SYSTEMD]
+>
+>   [v2 - Removed the QUERY_USER_FOREACH macro]
 >
 > Signed-off-by: David Sommerseth <davids@...515...>
 > ---
->  configure.ac                  | 6 ++++++
->  src/openvpn/console_systemd.c | 8 ++++++++
->  2 files changed, 14 insertions(+)
 >
-> diff --git a/configure.ac b/configure.ac
-> index c3088fd..b2fa41c 100644
-> --- a/configure.ac
-> +++ b/configure.ac
-> @@ -1012,6 +1012,12 @@ if test "$enable_systemd" = "yes" ; then
->                        [],
->                        [PKG_CHECK_MODULES([libsystemd],
-> [libsystemd-daemon])]
->                        )
-> +
-> +    PKG_CHECK_EXISTS( [libsystemd > 216],
-> +                     [AC_DEFINE([SYSTEMD_NEWER_THAN_216], [1],
-> +                           [systemd is newer than v216])]
-> +                    )
-> +
->      AC_CHECK_HEADERS(systemd/sd-daemon.h,
->         ,
->         [
-> diff --git a/src/openvpn/console_systemd.c b/src/openvpn/console_systemd.c
-> index bf0f99d..f385c0c 100644
-> --- a/src/openvpn/console_systemd.c
+>
+
+-#ifdef QUERY_USER_EXEC_ALTERNATIVE
+>
+
+This was introduced in patch 1, and now removed in patch 2. Any particular
+reason to split these patches into two? Much easier (and safer -- see below
+for why) to review if squashed together.
+
+
+>
 > +++ b/src/openvpn/console_systemd.c
-> @@ -64,6 +64,14 @@ get_console_input_systemd (const char *prompt, const
-> bool echo, char *input, con
 >
->      argv_init (&argv);
->      argv_printf (&argv, SYSTEMD_ASK_PASSWORD_PATH);
-> +#ifdef SYSTEMD_NEWER_THAN_216
-> +    /* the --echo support arrived in upstream systemd 217 */
-> +    if( echo )
-> +    {
-> +       argv_printf_cat(&argv, "--echo");
+> +static bool
+> +get_console_input_systemd (const char *prompt, const bool echo, char
+> *input, const int capacity)
+> +{
+> +    int std_out;
+> +    bool ret = false;
+> +    struct argv argv;
+> +
+> +    argv_init (&argv);
+> +    argv_printf (&argv, SYSTEMD_ASK_PASSWORD_PATH);
+> +    argv_printf_cat (&argv, "%s", prompt);
+> +
+> +    if ((std_out = openvpn_popen (&argv, NULL)) < 0) {
+> +       return false;
 > +    }
-> +#endif
-> +    argv_printf_cat (&argv, "--icon network-vpn");
->      argv_printf_cat (&argv, "%s", prompt);
+> +    CLEAR (*input);
 >
->      if ((std_out = openvpn_popen (&argv, NULL)) < 0) {
+
+Oh, here is a bug that was fixed sometime ago, and its trying to sneak back
+in, eh :)  Looks like a copy-paste from an old version. This function was
+removed in patch 1 and now added in patch 2 which made it hard to spot
+this. Anyway it should be:
+
+memset (input, 0, capacity);
+
+
+> +    if (read (std_out, input, capacity) != 0)
 >
-<http://sdm.link/zohodev2dev>
-This looks much better now and works fine (tested without applying patches
-1/4 and 2/4). ACK from me.
+
+That leaves no room for the terminating NUL. Should be
+
+read (std_out, input, capacity-1)
+
+Not a fault of this patch, the bug was probably there in the original.
 
 Selva
 
---94eb2c0764169f55f20539d80a3f
+--001a114798b227c6ab0539d8148b
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr"><br><div class=3D"gmail_extra"><br><div class=3D"gmail_quo=
-te">On Thu, Aug 11, 2016 at 10:33 AM, David Sommerseth <span dir=3D"ltr">&l=
-t;<a href=3D"mailto:davids@...515..." target=3D"_blank">davids@...515...</a=
->&gt;</span> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 =
-0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex"><span class=3D"">In s=
-ystemd after version 216, systemd-ask-password will support --echo which<br>
-will avoid masking the user input.=C2=A0 As OpenVPN uses this mechanism col=
-lecting<br>
-usernames when systemd is available, this will avoid the input of usernames=
- to<br>
-be masked.<br>
+<div dir=3D"ltr">(sending again with the list in CC:)<br><div><span class=
+=3D""><br>Mon, Aug 8, 2016 at 3:28 PM, David Sommerseth <span dir=3D"ltr">&=
+lt;<a href=3D"mailto:davids@...515..." target=3D"_blank">davids@...515...</=
+a>&gt;</span> wrote:</span><br><span class=3D""></span><div class=3D"gmail_=
+quote"><div dir=3D"ltr"><div><div class=3D"gmail_extra"><div class=3D"gmail=
+_quote"><span class=3D""><blockquote class=3D"gmail_quote" style=3D"margin:=
+0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">This provides exact=
+ly the same systemd functionality which existed<br>
+before the query user infrastructure got implemented.<br>
 <br>
-This patch also adds the --icon argument, which is aimed at graphical input=
-s.<br>
-For example when OpenVPN is started at system boot-time using a graphical b=
-oot<br>
-interface such as Plymouth.<br>
+=C2=A0 [v4 - change disapproved &amp;=3D syntax ]<br>
 <br>
-</span>=C2=A0 [v2 - Avoid pkg.m4 hacks and use pkgconfig/autoconf methods t=
-o flag<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 if systemd is recent enough for --echo support]=
+=C2=A0 [v3 - Remove QUERY_USER_EXEC_ALTERNATIVE macro, simplify<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 alternatives definition directly in console.h.=
+=C2=A0 For<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 now only depend on ENABLE_SYSTEMD]<br>
 <br>
-<span class=3D""><br>
-Signed-off-by: David Sommerseth &lt;<a href=3D"mailto:davids@...515...">dav=
-ids@...515...</a>&gt;<br>
+=C2=A0 [v2 - Removed the QUERY_USER_FOREACH macro]<br>
+<br>
+Signed-off-by: David Sommerseth &lt;<a href=3D"mailto:davids@...515..." tar=
+get=3D"_blank">davids@...515...</a>&gt;<br>
 ---<br>
-</span>=C2=A0<a href=3D"http://configure.ac" rel=3D"noreferrer" target=3D"_=
-blank">configure.ac</a>=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 | 6 ++++++<br>
-=C2=A0src/openvpn/console_systemd.c | 8 ++++++++<br>
-=C2=A02 files changed, 14 insertions(+)<br>
+<br></blockquote><div><br><br></div></span><blockquote class=3D"gmail_quote=
+" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">
+-#ifdef QUERY_USER_EXEC_ALTERNATIVE<br></blockquote><div><br></div><div>Thi=
+s was introduced in patch 1, and now removed in patch 2. Any particular rea=
+son to split these patches into two? Much easier (and safer -- see below fo=
+r why) to review if squashed together.<br>=C2=A0<br></div><blockquote class=
+=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padd=
+ing-left:1ex"><br>
++++ b/src/openvpn/console_systemd.<wbr>c<span class=3D""><br>
 <br>
-diff --git a/<a href=3D"http://configure.ac" rel=3D"noreferrer" target=3D"_=
-blank">configure.ac</a> b/<a href=3D"http://configure.ac" rel=3D"noreferrer=
-" target=3D"_blank">configure.ac</a><br>
-index c3088fd..b2fa41c 100644<br>
---- a/<a href=3D"http://configure.ac" rel=3D"noreferrer" target=3D"_blank">=
-configure.ac</a><br>
-+++ b/<a href=3D"http://configure.ac" rel=3D"noreferrer" target=3D"_blank">=
-configure.ac</a><br>
-@@ -1012,6 +1012,12 @@ if test &quot;$enable_systemd&quot; =3D &quot;yes&qu=
-ot; ; then<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0[],<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0[PKG_CHECK_MODULES([<wbr>libsystemd], [libsystemd-daemon])]<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0)<br>
++static bool<br>
++get_console_input_systemd (const char *prompt, const bool echo, char *inpu=
+t, const int capacity)<br>
++{<br>
++=C2=A0 =C2=A0 int std_out;<br>
++=C2=A0 =C2=A0 bool ret =3D false;<br>
++=C2=A0 =C2=A0 struct argv argv;<br>
 +<br>
-+=C2=A0 =C2=A0 PKG_CHECK_EXISTS( [libsystemd &gt; 216],<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0[AC_DEFINE([SYSTEMD_NEWER_<wbr>THAN_216], [1],<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0[systemd is newer than v216])]<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 )<br>
++=C2=A0 =C2=A0 argv_init (&amp;argv);<br>
++=C2=A0 =C2=A0 argv_printf (&amp;argv, SYSTEMD_ASK_PASSWORD_PATH);<br>
++=C2=A0 =C2=A0 argv_printf_cat (&amp;argv, &quot;%s&quot;, prompt);<br>
 +<br>
-=C2=A0 =C2=A0 =C2=A0AC_CHECK_HEADERS(systemd/sd-<wbr>daemon.h,<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 ,<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 [<br>
-diff --git a/src/openvpn/console_systemd.<wbr>c b/src/openvpn/console_syste=
-md.<wbr>c<br>
-index bf0f99d..f385c0c 100644<br>
---- a/src/openvpn/console_systemd.<wbr>c<br>
-+++ b/src/openvpn/console_systemd.<wbr>c<br>
-@@ -64,6 +64,14 @@ get_console_input_systemd (const char *prompt, const boo=
-l echo, char *input, con<br>
-<span class=3D""><br>
-=C2=A0 =C2=A0 =C2=A0argv_init (&amp;argv);<br>
-=C2=A0 =C2=A0 =C2=A0argv_printf (&amp;argv, SYSTEMD_ASK_PASSWORD_PATH);<br>
-</span>+#ifdef SYSTEMD_NEWER_THAN_216<br>
-+=C2=A0 =C2=A0 /* the --echo support arrived in upstream systemd 217 */<br>
-<div class=3D"HOEnZb"><div class=3D"h5">+=C2=A0 =C2=A0 if( echo )<br>
-+=C2=A0 =C2=A0 {<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0argv_printf_cat(&amp;argv, &quot;--echo&quot;);=
-<br>
++=C2=A0 =C2=A0 if ((std_out =3D openvpn_popen (&amp;argv, NULL)) &lt; 0) {<=
+br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0return false;<br>
 +=C2=A0 =C2=A0 }<br>
-+#endif<br>
-+=C2=A0 =C2=A0 argv_printf_cat (&amp;argv, &quot;--icon network-vpn&quot;);=
-<br>
-=C2=A0 =C2=A0 =C2=A0argv_printf_cat (&amp;argv, &quot;%s&quot;, prompt);<br>
-<br>
-=C2=A0 =C2=A0 =C2=A0if ((std_out =3D openvpn_popen (&amp;argv, NULL)) &lt; =
-0) {<br></div></div></blockquote><a href=3D"http://sdm.link/zohodev2dev" re=
-l=3D"noreferrer" target=3D"_blank"></a><br>This looks much better now and w=
-orks fine (tested without applying patches 1/4 and 2/4). ACK from me.<br><b=
-r></div><div class=3D"gmail_quote">Selva<br></div></div></div>
++=C2=A0 =C2=A0 CLEAR (*input);<br></span></blockquote><div><br></div><div>O=
+h, here is a bug that was fixed sometime ago, and its trying to sneak back =
+in, eh :)=C2=A0 Looks like a copy-paste from an old version. This function =
+was removed in patch 1 and now added in patch 2 which made it hard to spot =
+this. Anyway it should be:<br><br></div><div>memset (input, 0, capacity);<b=
+r></div><span class=3D""><div>=C2=A0<br></div><blockquote class=3D"gmail_qu=
+ote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex=
+">
++=C2=A0 =C2=A0 if (read (std_out, input, capacity) !=3D 0)<br></blockquote>=
+<div><br></div></span><div>That leaves no room for the terminating NUL. Sho=
+uld be<br><br></div><div>read (std_out, input, capacity-1) <br><br>Not a fa=
+ult of this patch, the bug was probably there in the original.<span class=
+=3D"HOEnZb"><font color=3D"#888888"><br></font></span></div><span class=3D"=
+HOEnZb"><font color=3D"#888888"><div><br></div><div>Selva<br></div></font><=
+/span></div></div></div></div>
+</div><br></div></div>
 
---94eb2c0764169f55f20539d80a3f--
+--001a114798b227c6ab0539d8148b--
 
