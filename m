@@ -1,10 +1,13 @@
-From: David Sommerseth <davids@...515...>
-Date: Fri, 12 Aug 2016 12:57:25 +0200
-Message-Id: <1470999445-4288-1-git-send-email-davids@...515...>
-In-Reply-To: <1470684488-21307-3-git-send-email-davids@...515...>
-References: <1470684488-21307-3-git-send-email-davids@...515...>
-Subject: [Openvpn-devel] [PATCH v4.1 2/4] Re-implement the systemd support
-	using the new query user API
+References: <1470368394-2722-1-git-send-email-selva.nair@...277...>
+	<1470956309-31268-1-git-send-email-selva.nair@...277...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <bc3d4efd-e116-5f02-b72d-85fafce26399@...2080...>
+Date: Fri, 12 Aug 2016 16:46:38 +0200
+MIME-Version: 1.0
+In-Reply-To: <1470956309-31268-1-git-send-email-selva.nair@...277...>
+Subject: Re: [Openvpn-devel] [PATCH] Avoid format specifier %zu for Windows
+ compatibility
+Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,211 +16,57 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
+To: Selva Nair <selva.nair@...277...>, openvpn-devel@lists.sourceforge.net
 
-This provides exactly the same systemd functionality which existed
-before the query user infrastructure got implemented.
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-  [v5 - Ensure NULL termination fix in d09fbf958f1c is included ]
+On 12/08/16 00:58, Selva Nair wrote:
+> - Replace %zu by %u and cast the size_t variable to (unsigned int).
+> The cast should be safe as in all instances the number involved is
+> small.
+>=20
+> Note: mingw64 targets msvcrt.dll runtime that doesn't support %zu
+> and print "zu" instead of the number. With -Wformat the compiler=20
+> does warn that z is an unknown conversion type.
+>=20
+> v2: Cast to (unsigned int) instead of (int).
+>=20
+> Signed-off-by: Selva Nair <selva.nair@...277...> ---=20
+> src/openvpn/crypto.c      |    4 ++-- src/openvpn/options.c     |
+> 4 ++-- src/openvpn/ssl_mbedtls.c |    4 ++-- 3 files changed, 6
+> insertions(+), 6 deletions(-)
 
-  [v4 - change disapproved &= syntax ]
+ACK.
 
-  [v3 - Remove QUERY_USER_EXEC_ALTERNATIVE macro, simplify
-        alternatives definition directly in console.h.  For
-        now only depend on ENABLE_SYSTEMD]
+I've double checked that all places converted from %zu to %u are do
+only the size_t type (which on at least Linux map to unsigned int -
+sorry, don't have Windows handy).  But given that these values are
+mostly MTU, crypto packet overhead length or crypto key length
+related, they shouldn't easily overrun (that would be quite a special
+network packet or crypto key).
 
-  [v2 - Removed the QUERY_USER_FOREACH macro]
+Just done a simple build on my Linux box (again, sorry, no cross
+compiler handy) ... but, last famous words: This change looks sane and
+safe.
 
-Signed-off-by: David Sommerseth <davids@...515...>
----
- configure.ac                  |   2 +-
- src/openvpn/Makefile.am       |   2 +-
- src/openvpn/console.h         |   6 +--
- src/openvpn/console_systemd.c | 115 ++++++++++++++++++++++++++++++++++++++++++
- 4 files changed, 120 insertions(+), 5 deletions(-)
- create mode 100644 src/openvpn/console_systemd.c
+I'll need to update my git ack-am scripts slightly now that gmane web
+is currently dead.  But I'll commit it asap.
 
-diff --git a/configure.ac b/configure.ac
-index 4f14ebd..c3088fd 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -1006,7 +1006,7 @@ fi
- dnl
- dnl Check for systemd
- dnl
--
-+AM_CONDITIONAL([ENABLE_SYSTEMD], [test "${enable_systemd}" = "yes"])
- if test "$enable_systemd" = "yes" ; then
-     PKG_CHECK_MODULES([libsystemd], [systemd libsystemd],
-                       [],
-diff --git a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am
-index 8d6d39f..a306726 100644
---- a/src/openvpn/Makefile.am
-+++ b/src/openvpn/Makefile.am
-@@ -68,7 +68,7 @@ openvpn_SOURCES = \
- 	memdbg.h \
- 	misc.c misc.h \
- 	platform.c platform.h \
--	console.c console.h console_builtin.c \
-+	console.c console.h console_builtin.c console_systemd.c \
- 	mroute.c mroute.h \
- 	mss.c mss.h \
- 	mstats.c mstats.h \
-diff --git a/src/openvpn/console.h b/src/openvpn/console.h
-index 44d49ef..41f2b8c 100644
---- a/src/openvpn/console.h
-+++ b/src/openvpn/console.h
-@@ -76,7 +76,7 @@ void query_user_add (char *prompt, size_t prompt_len,
- bool query_user_exec_builtin ();
- 
- 
--#ifdef QUERY_USER_EXEC_ALTERNATIVE
-+#if defined(ENABLE_SYSTEMD)
- /**
-  * Executes a configured setup, using the compiled method for querying the user
-  *
-@@ -86,7 +86,7 @@ bool query_user_exec_builtin ();
-  */
- bool query_user_exec ();
- 
--#else  /* QUERY_USER_EXEC_ALTERNATIVE not defined*/
-+#else  /* ENABLE_SYSTEMD not defined*/
- /**
-  * Wrapper function enabling query_user_exec() if no alternative methods have
-  * been enabled
-@@ -96,7 +96,7 @@ static bool query_user_exec ()
- {
-     return query_user_exec_builtin();
- }
--#endif  /* QUERY_USER_EXEC_ALTERNATIVE */
-+#endif  /* defined(ENABLE_SYSTEMD) */
- 
- 
- /**
-diff --git a/src/openvpn/console_systemd.c b/src/openvpn/console_systemd.c
-new file mode 100644
-index 0000000..67cb51b
---- /dev/null
-+++ b/src/openvpn/console_systemd.c
-@@ -0,0 +1,115 @@
-+/*
-+ *  OpenVPN -- An application to securely tunnel IP networks
-+ *             over a single UDP port, with support for SSL/TLS-based
-+ *             session authentication and key exchange,
-+ *             packet encryption, packet authentication, and
-+ *             packet compression.
-+ *
-+ *  Copyright (C) 2014-2015 David Sommerseth <davids@...1347...>
-+ *  Copyright (C) 2016      David Sommerseth <dazo@...2145...>
-+ *
-+ *  This program is free software; you can redistribute it and/or modify
-+ *  it under the terms of the GNU General Public License version 2
-+ *  as published by the Free Software Foundation.
-+ *
-+ *  This program is distributed in the hope that it will be useful,
-+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ *  GNU General Public License for more details.
-+ *
-+ *  You should have received a copy of the GNU General Public License
-+ *  along with this program (see the file COPYING included with this
-+ *  distribution); if not, write to the Free Software Foundation, Inc.,
-+ *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-+ */
-+
-+/**
-+ * @file Alternative method to query for user input, using systemd
-+ *
-+ */
-+
-+#include "config.h"
-+
-+#ifdef ENABLE_SYSTEMD
-+#include "syshead.h"
-+#include "console.h"
-+#include "misc.h"
-+
-+#include <systemd/sd-daemon.h>
-+
-+/*
-+ * is systemd running
-+ */
-+
-+static bool
-+check_systemd_running ()
-+{
-+    struct stat c;
-+
-+    /* We simply test whether the systemd cgroup hierarchy is
-+     * mounted, as well as the systemd-ask-password executable
-+     * being available */
-+
-+    return (sd_booted() > 0)
-+	&& (stat(SYSTEMD_ASK_PASSWORD_PATH, &c) == 0);
-+
-+}
-+
-+static bool
-+get_console_input_systemd (const char *prompt, const bool echo, char *input, const int capacity)
-+{
-+    int std_out;
-+    bool ret = false;
-+    struct argv argv;
-+
-+    argv_init (&argv);
-+    argv_printf (&argv, SYSTEMD_ASK_PASSWORD_PATH);
-+    argv_printf_cat (&argv, "%s", prompt);
-+
-+    if ((std_out = openvpn_popen (&argv, NULL)) < 0) {
-+	return false;
-+    }
-+    memset (input, 0, capacity);
-+    if (read (std_out, input, capacity-1) != 0)
-+    {
-+	chomp (input);
-+	ret = true;
-+    }
-+    close (std_out);
-+
-+    argv_reset (&argv);
-+
-+    return ret;
-+}
-+
-+/**
-+ *  Systemd aware implementation of query_user_exec().  If systemd is not running
-+ *  it will fall back to use query_user_exec_builtin() instead.
-+ *
-+ */
-+bool query_user_exec()
-+{
-+    bool ret = true;  /* Presume everything goes okay */
-+    int i;
-+
-+    /* If systemd is not available, use the default built-in mechanism */
-+    if (!check_systemd_running())
-+    {
-+        return query_user_exec_builtin();
-+    }
-+
-+    /* Loop through the complete query setup and when needed, collect the information */
-+    for (i = 0; i < QUERY_USER_NUMSLOTS && query_user[i].response != NULL; i++)
-+    {
-+	if (!get_console_input_systemd(query_user[i].prompt, query_user[i].echo,
-+				       query_user[i].response, query_user[i].response_len) )
-+	{
-+	    /* Force the final result state to failed on failure */
-+	    ret = false;
-+	}
-+    }
-+
-+    return ret;
-+}
-+
-+#endif /* ENABLE_SYSTEMD */
--- 
-1.8.3.1
 
+- --=20
+kind regards,
+
+David Sommerseth
+OpenVPN Technologies, Inc
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iEYEARECAAYFAlet4U4ACgkQDC186MBRfrpohwCfS6auj2tZvjunstoCp9unaUDc
+OKgAni/nqugO2abrUHLaZrqeHGlx8O95
+=3DDYTu
+-----END PGP SIGNATURE-----
 
