@@ -1,13 +1,14 @@
-References: <1471028087-4781-1-git-send-email-davids@...515...>
-	<20160812191348.GH78279@...1296...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <92c8a8bf-da08-6164-2807-12d8a2072f40@...2080...>
-Date: Fri, 12 Aug 2016 21:28:26 +0200
 MIME-Version: 1.0
-In-Reply-To: <20160812191348.GH78279@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH] Fix warning appearing in newer
- autoconf/libtool version
-Reply-To: openvpn-devel@lists.sourceforge.net
+In-Reply-To: <20160812184556.GG78279@...1296...>
+References: <1470943420-15103-1-git-send-email-gert@...1296...>
+	<1471023669-25102-1-git-send-email-gert@...1296...>
+	<CAKuzo_jySkzG-fHJzz79-EvScbwnaN_PwD+e4dv17=WCxpagvA@...278...>
+	<20160812184556.GG78279@...1296...>
+From: Selva Nair <selva.nair@...277...>
+Date: Fri, 12 Aug 2016 15:32:57 -0400
+Message-ID: <CAKuzo_iGNaBV+J79UQw-84MJVsAB3cp0idPZimMrtPvs14kEEA@...278...>
+Content-Type: multipart/alternative; boundary=001a1135903e525a4d0539e4f415
+Subject: Re: [Openvpn-devel] [PATCH v2] Change timestamps to ISO 8601 format.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,102 +17,78 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
 To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+--001a1135903e525a4d0539e4f415
+Content-Type: text/plain; charset=UTF-8
 
-On 12/08/16 21:13, Gert Doering wrote:
-> Hi,
->=20
-> On Fri, Aug 12, 2016 at 08:54:47PM +0200, David Sommerseth wrote:
->> The warning which appears with autoconf-2.69 with libtool-2.4.2
->> is:
->>=20
->> libtoolize: Remember to add 'LT_INIT' to configure.ac.
->>=20
->> Signed-off-by: David Sommerseth <davids@...515...> ---=20
->> configure.ac | 1 + 1 file changed, 1 insertion(+)
->>=20
->> diff --git a/configure.ac b/configure.ac index 4f14ebd..69fdd99
->> 100644 --- a/configure.ac +++ b/configure.ac @@ -58,6 +58,7 @@
->> m4_define([serial_tests], [ AM_INIT_AUTOMAKE(foreign
->> serial_tests) dnl NB: Do not [quote] this parameter.=20
->> AC_CANONICAL_HOST AC_USE_SYSTEM_EXTENSIONS +LT_INIT
->=20
-> What does that *do*?  I'm a bit wary of adding stuff to autoconf
-> that just appears because a computer says so, especially if it
-> smells like "more libtool", as we want *less* libtool for all but
-> src/plugins/...
+On Fri, Aug 12, 2016 at 2:45 PM, Gert Doering <gert@...1296...> wrote:
 
-Basically a lot of basic initialization which doesn't seem to be that
-intrusive ... from /usr/share/aclocal/libtool.m4:
-
-- --------------------------------------------
-# LT_INIT([OPTIONS])
-# ------------------
-AC_DEFUN([LT_INIT],
-[AC_PREREQ([2.58])dnl We use AC_INCLUDES_DEFAULT
-AC_REQUIRE([AC_CONFIG_AUX_DIR_DEFAULT])dnl
-AC_BEFORE([$0], [LT_LANG])dnl
-AC_BEFORE([$0], [LT_OUTPUT])dnl
-AC_BEFORE([$0], [LTDL_INIT])dnl
-m4_require([_LT_CHECK_BUILDDIR])dnl
-
-dnl Autoconf doesn't catch unexpanded LT_ macros by default:
-m4_pattern_forbid([^_?LT_[A-Z_]+$])dnl
-m4_pattern_allow([^(_LT_EOF|LT_DLGLOBAL|LT_DLLAZY_OR_NOW|LT_MULTI_MODULE
-)$])dnl
-dnl aclocal doesn't pull ltoptions.m4, ltsugar.m4, or ltversion.m4
-dnl unless we require an AC_DEFUNed macro:
-AC_REQUIRE([LTOPTIONS_VERSION])dnl
-AC_REQUIRE([LTSUGAR_VERSION])dnl
-AC_REQUIRE([LTVERSION_VERSION])dnl
-AC_REQUIRE([LTOBSOLETE_VERSION])dnl
-m4_require([_LT_PROG_LTMAIN])dnl
-
-_LT_SHELL_INIT([SHELL=3D${CONFIG_SHELL-/bin/sh}])
-
-dnl Parse OPTIONS
-_LT_SET_OPTIONS([$0], [$1])
-
-# This can be used to rebuild libtool when needed
-LIBTOOL_DEPS=3D"$ltmain"
-
-# Always use our own libtool.
-LIBTOOL=3D'$(SHELL) $(top_builddir)/libtool'
-AC_SUBST(LIBTOOL)dnl
-
-_LT_SETUP
-
-# Only expand once:
-m4_define([LT_INIT])
-])# LT_INIT
-- --------------------------------------------
-
-Requiring autoconf-2.58 is okay (RHEL5 ships 2.59), otherwise it sets
-some variables, some sanity checking and ensures other files with
-macros gets loaded.
-
-I'm not stressing this patch, so if anyone wants to test them on
-various platforms, please do!  I've tested this on CentOS 5.11,
-Scientific Linux 7.2 and Fedora 23.
+>
+> On Fri, Aug 12, 2016 at 02:25:54PM -0400, Selva Nair wrote:
+> > > +- all time stamps, including log file, status file and management
+> > > interface,
+> > > +  are now output in ISO 8601 standard format.
+> > > +
+> >
+> > Currently the >LOG message to the management is like
+> >
+> > >LOG:1471025385,,Closing TUN/TAP interface
+> >
+> > with unix time as timestamp. Similarly for INFO message in response to
+> 'log
+> > n' request or the state message.The patch would not change those, would
+> it?
+>
+> Those wouldn't be affected, no.  Only those that have the "old" ctime()
+> format today - what I spotted on the management interface is "status"
+> output, both in the header and in each idividual client line.
 
 
-- --=20
-kind regards,
+Thanks for the clarification. AFAIK, we do not parse status output in
+OpenVPN GUI. A UI for server would need to parse those and it would have
+been nicer to have status timestamps sent to management be in unix time as
+well -- not a fault of this patch.
 
-David Sommerseth
-OpenVPN Technologies, Inc
+Selva
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
+--001a1135903e525a4d0539e4f415
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-iEYEARECAAYFAleuI1oACgkQDC186MBRfro1pgCgog1tQbATeFm6WxevXILqkLvK
-U+8AoI+Xh1vNx3rVE39Ez+FJt8H7EEhG
-=3DgwjT
------END PGP SIGNATURE-----
+<div dir=3D"ltr"><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">=
+On Fri, Aug 12, 2016 at 2:45 PM, Gert Doering <span dir=3D"ltr">&lt;<a href=
+=3D"mailto:gert@...1296..." target=3D"_blank">gert@...1296...</a>&gt;</span=
+> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;bo=
+rder-left:1px #ccc solid;padding-left:1ex"><span><br>
+On Fri, Aug 12, 2016 at 02:25:54PM -0400, Selva Nair wrote:<br>
+&gt; &gt; +- all time stamps, including log file, status file and managemen=
+t<br>
+&gt; &gt; interface,<br>
+&gt; &gt; +=C2=A0 are now output in ISO 8601 standard format.<br>
+&gt; &gt; +<br>
+&gt;<br>
+&gt; Currently the &gt;LOG message to the management is like<br>
+&gt;<br>
+&gt; &gt;LOG:1471025385,,Closing TUN/TAP interface<br>
+&gt;<br>
+&gt; with unix time as timestamp. Similarly for INFO message in response to=
+ &#39;log<br>
+&gt; n&#39; request or the state message.The patch would not change those, =
+would it?<br>
+<br>
+</span>Those wouldn&#39;t be affected, no.=C2=A0 Only those that have the &=
+quot;old&quot; ctime()<br>
+format today - what I spotted on the management interface is &quot;status&q=
+uot;<br>
+output, both in the header and in each idividual client line.</blockquote><=
+/div><div class=3D"gmail_extra"><br></div>Thanks for the clarification.=C2=
+=A0AFAIK, we do not parse status output in OpenVPN GUI. A UI for server wou=
+ld need to parse those and it would have been nicer to have status timestam=
+ps sent to management be in unix time as well -- not a fault of this patch.=
+</div><div class=3D"gmail_extra"><br></div><div class=3D"gmail_extra">Selva=
+</div></div>
+
+--001a1135903e525a4d0539e4f415--
 
