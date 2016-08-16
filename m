@@ -1,11 +1,10 @@
-References: <1471358742-8773-1-git-send-email-steffan@...1856...>
+References: <1471358761-8828-1-git-send-email-steffan@...1856...>
 From: Arne Schwabe <arne@...1227...>
-Message-ID: <9b4b4109-c9d4-a3e0-c616-3ac0882d120d@...1227...>
-Date: Tue, 16 Aug 2016 16:52:06 +0200
+Message-ID: <83a469b7-12af-76d2-4c30-c766c89c92a4@...1227...>
+Date: Tue, 16 Aug 2016 16:52:31 +0200
 MIME-Version: 1.0
-In-Reply-To: <1471358742-8773-1-git-send-email-steffan@...1856...>
-Subject: Re: [Openvpn-devel] [PATCH (master)] Discourage using 64-bit block
- ciphers
+In-Reply-To: <1471358761-8828-1-git-send-email-steffan@...1856...>
+Subject: Re: [Openvpn-devel] [PATCH] Discourage using 64-bit block ciphers
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,7 +19,7 @@ To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
 
 
 
-Am 16.08.16 um 16:45 schrieb Steffan Karger:
+Am 16.08.16 um 16:46 schrieb Steffan Karger:
 > As discussed with the development team, we should start moving away from
 > ciphers with a small block size.  For OpenVPN in particular this means
 > moving away from 64-bit block ciphers, towards 128-bit block ciphers.
@@ -32,11 +31,7 @@ Am 16.08.16 um 16:45 schrieb Steffan Karger:
 > ordering the output alphabetically, and changing the output format
 > slightly.
 >
-ACK again from me. The patch is not C89 safe:
-
-+  for (int nid = 0; nid < 10000; ++nid)
+ACK again from me. (C89 issue applies here as well)
 
 Arne
-
-
 
