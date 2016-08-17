@@ -1,9 +1,11 @@
 MIME-Version: 1.0
+In-Reply-To: <CAKuzo_jc_mm2165qwc5ACLQCP6kqocRxfaMO9crJzu3HMxJ_og@...278...>
+References: <CAKuzo_jc_mm2165qwc5ACLQCP6kqocRxfaMO9crJzu3HMxJ_og@...278...>
 From: Selva Nair <selva.nair@...277...>
-Date: Tue, 16 Aug 2016 14:21:48 -0400
-Message-ID: <CAKuzo_jc_mm2165qwc5ACLQCP6kqocRxfaMO9crJzu3HMxJ_og@...278...>
-Content-Type: multipart/mixed; boundary=94eb2c06623a3be92e053a346d5c
-Subject: [Openvpn-devel] testing challenge-response
+Date: Wed, 17 Aug 2016 01:49:12 -0400
+Message-ID: <CAKuzo_ijNQi6p3M33WEeV-MQnFpfOm-qiz=9Ck40OuNp+WpXvA@...278...>
+Content-Type: multipart/alternative; boundary=94eb2c0a879a94bba1053a3e07dc
+Subject: Re: [Openvpn-devel] testing challenge-response
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,214 +16,100 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---94eb2c06623a3be92e053a346d5c
-Content-Type: multipart/alternative; boundary=94eb2c06623a3be929053a346d5a
-
---94eb2c06623a3be929053a346d5a
+--94eb2c0a879a94bba1053a3e07dc
 Content-Type: text/plain; charset=UTF-8
 
 Hi,
 
-As discussed in the IRC meeting, here is a client config that connects to a
-test server I run for static and dynamic challenge. Just run it as
+Following up on the previous mail, the server side script for client
+authentication and the server/client configs that I use for testing
+challenge-response auth are uploaded here:
 
-sudo openvpn --config cr-client.conf
+https://gist.github.com/selvanair/b31ec6d5873e2ffc141ec680fca69254
 
-Respond with some arbitrary strings at the username,  password and
-static-challenge prompts and the server will send back the strings you
-typed plus a dynamic challenge question. The connection will succeed after
-the server verifies the response to the dynamic challenge. There may be a 5
-seconds restart pause between the two exchanges.
+On the server-side the script should be running in parallel with the
+server (run from the same directory) for management-client-auth to work.
+No attempt is made to sanitize user input etc. so its useful only for
+testing purposes.
 
-Note that the password and static-challenge response are sent by the client
-to the server base64 encoded, but my server-side script sends them back
-decoded, along with the dynamic challenge. This is done so that the
-correctness of the first round exchange can be tested at the client side.
-The response to the dynamic challenge is verified at the server side and a
-successful connection indicates that the verification passed.
-
-To do this using your own server, I'll post the script doing the
-client-auth at the server side and the server config later today. In the
-mean time please test this against my server.
+The --remote option in the client config should be edited to match the
+server.
 
 Selva
 
---94eb2c06623a3be929053a346d5a
+On Tue, Aug 16, 2016 at 2:21 PM, Selva Nair <selva.nair@...277...> wrote:
+
+> Hi,
+>
+> As discussed in the IRC meeting, here is a client config that connects to
+> a test server I run for static and dynamic challenge. Just run it as
+>
+> sudo openvpn --config cr-client.conf
+>
+> Respond with some arbitrary strings at the username,  password and
+> static-challenge prompts and the server will send back the strings you
+> typed plus a dynamic challenge question. The connection will succeed after
+> the server verifies the response to the dynamic challenge. There may be a 5
+> seconds restart pause between the two exchanges.
+>
+> Note that the password and static-challenge response are sent by the
+> client to the server base64 encoded, but my server-side script sends them
+> back decoded, along with the dynamic challenge. This is done so that the
+> correctness of the first round exchange can be tested at the client side.
+> The response to the dynamic challenge is verified at the server side and a
+> successful connection indicates that the verification passed.
+>
+> To do this using your own server, I'll post the script doing the
+> client-auth at the server side and the server config later today. In the
+> mean time please test this against my server.
+>
+> Selva
+>
+>
+>
+>
+
+--94eb2c0a879a94bba1053a3e07dc
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr">Hi,<div><br></div><div>As discussed in the IRC meeting, he=
-re is a client config that connects to a test server I run for static and d=
-ynamic challenge. Just run it as</div><div><br></div><div>sudo openvpn --co=
-nfig cr-client.conf</div><div><br></div><div>Respond with some arbitrary st=
-rings at the username, =C2=A0password and static-challenge prompts and the =
-server will send back the strings you typed plus a dynamic challenge questi=
-on. The connection will succeed after the server verifies the response to t=
-he dynamic challenge. There may be a 5 seconds restart pause between the tw=
-o exchanges.=C2=A0</div><div><br></div><div>Note that the password and stat=
-ic-challenge response are sent by the client to the server base64 encoded, =
-but my server-side script sends them back decoded, along with the dynamic c=
-hallenge. This is done so that the correctness of the first round exchange =
-can be tested at the client side. The response to the dynamic challenge is =
-verified at the server side and a successful connection indicates that the =
-verification passed.</div><div><br></div><div>To do this using your own ser=
-ver, I&#39;ll post the script doing the client-auth at the server side and =
-the server config later today. In the mean time please test this against my=
- server.</div><div><br></div><div>Selva</div><div><br></div><div><br></div>=
-<div><br></div></div>
+<div dir=3D"ltr">Hi,<div><br></div><div>Following up on the previous mail, =
+the server side script for client=C2=A0</div><div>authentication and the se=
+rver/client configs that I use for testing</div><div>challenge-response aut=
+h are uploaded here:</div><div><br></div><div><a href=3D"https://gist.githu=
+b.com/selvanair/b31ec6d5873e2ffc141ec680fca69254" target=3D"_blank">https:/=
+/gist.github.com/<wbr>selvanair/<wbr>b31ec6d5873e2ffc141ec680fca692<wbr>54<=
+/a><br></div><div><br></div><div>On the server-side the script should be ru=
+nning in parallel with the=C2=A0</div><div>server (run from the same direct=
+ory) for management-client-auth to work.</div><div>No attempt is made to sa=
+nitize user input etc. so its useful only for=C2=A0<br></div><div>testing p=
+urposes.</div><div><br></div><div>The --remote option in the client config =
+should be edited to match the=C2=A0</div><div>server.</div><div><br></div><=
+div>Selva</div></div><div class=3D"gmail_extra"><br><div class=3D"gmail_quo=
+te">On Tue, Aug 16, 2016 at 2:21 PM, Selva Nair <span dir=3D"ltr">&lt;<a hr=
+ef=3D"mailto:selva.nair@...277..." target=3D"_blank">selva.nair@...277...</=
+a>&gt;</span> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0=
+ 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex"><div dir=3D"ltr">Hi,=
+<div><br></div><div>As discussed in the IRC meeting, here is a client confi=
+g that connects to a test server I run for static and dynamic challenge. Ju=
+st run it as</div><div><br></div><div>sudo openvpn --config cr-client.conf<=
+/div><div><br></div><div>Respond with some arbitrary strings at the usernam=
+e, =C2=A0password and static-challenge prompts and the server will send bac=
+k the strings you typed plus a dynamic challenge question. The connection w=
+ill succeed after the server verifies the response to the dynamic challenge=
+. There may be a 5 seconds restart pause between the two exchanges.=C2=A0</=
+div><div><br></div><div>Note that the password and static-challenge respons=
+e are sent by the client to the server base64 encoded, but my server-side s=
+cript sends them back decoded, along with the dynamic challenge. This is do=
+ne so that the correctness of the first round exchange can be tested at the=
+ client side. The response to the dynamic challenge is verified at the serv=
+er side and a successful connection indicates that the verification passed.=
+</div><div><br></div><div>To do this using your own server, I&#39;ll post t=
+he script doing the client-auth at the server side and the server config la=
+ter today. In the mean time please test this against my server.</div><span =
+class=3D"HOEnZb"><font color=3D"#888888"><div><br></div><div>Selva</div><di=
+v><br></div><div><br></div><div><br></div></font></span></div>
+</blockquote></div><br></div>
 
---94eb2c06623a3be929053a346d5a--
-
---94eb2c06623a3be92e053a346d5c
-Content-Type: application/octet-stream; name="cr-test.conf"
-Content-Disposition: attachment; filename="cr-test.conf"
-Content-Transfer-Encoding: base64
-X-Attachment-Id: f_irxsi2xi0
-
-IyBDbGllbnQgY29uZmlnIGZvciB0ZXN0aW5nIGF1dGgtdXNlci1wYXNzIGFuZCBDUi4NCiMgQXMg
-YSB0ZXN0LCB0aGUgdXNlci9wYXNzL3JlcG9uc2Ugd2lsbCBzZW50IGJhY2sgdG8gY2xpZW50IGFs
-b25nDQojIHd0aCB0aGUgYSBkeW5hbWljIGNoYWxsZW5nZSBxdWVzdGlvbiBhbmQgY29ubmVjdGlv
-biB3aWxsIHN1Y2NlZWQgaWYNCiMgdGhlIHJlc3BvbnNlIHRvIGR5bmFtaWMtY2hhbGxlbmdlIGlz
-IGNvcnJlY3QuIA0KIyBVc2Ugb25seSBmb3IgdGVzdGluZy4NCg0KIyBGb3IgcmVhZGluZyB1c3Nl
-ci9wYXNzIGZyb20gYSBmaWxlIHVuY29tbWVudCBuZXh0IGxpbmUgDQojIGFuZCBjcmVhdGUgYSBm
-aWxlIG5hbWVkIGNyLXRlc3QudHh0IHdpdGggMiBsaW5lcyBvZiBzb21lDQojIHVzZXJuYW1lIGFu
-ZCBwYXNzd29yZC4gQ291bGQgYmUgYW55dGhpbmcsIGJ1dCB1c2VybmFtZQ0KIyBzaG91bGQgbm90
-IGJlIGVtcHR5Lg0KIyBEbyBub3QgdXNlIGFueSBzZWNyZXQgc3RyaW5ncyAtLSB0aGVzZSB3aWxs
-IHJldHVybmVkIGJhY2sNCiMgdG8gdGhlIGNsaWVudCBpbiBjbGVhciB0ZXh0LiBNYXkgYWxvcyBn
-ZXQgbG9nZ2VkIG9uIHRoZQ0KIyBzZXJ2ZXIuDQoNCjthdXRoLXVzZXItcGFzcyAiL2hvbWUvc2Vs
-dmEvY3ItdGVzdC11cC50eHQiDQphdXRoLXVzZXItcGFzcyANCmF1dGgtcmV0cnkgaW50ZXJhY3QN
-CnN0YXRpYy1jaGFsbGVuZ2UgIlR5cGUgc29tZSB0aGluZyAoZS5nLiwgaGVsbG8pOiAiICAwDQpy
-ZW5lZy1zZWMgNjAwDQoNCjttYW5hZ2VtZW50IGxvY2FsaG9zdCAzNzUwMA0KO21hbmFnZW1lbnQt
-aG9sZA0KDQojIG1hbmFnZW1lbnQgcXVlcnkgd2lsbCB0YWtlIGVmZmVjdCBpZiBhdXRoZmlsZSBp
-cyBub3Qgc3BlY2lmaWVkDQojIGFuZCBtYW5hZ2VtZW50LXF1ZXJ5LXBhc3dzd29yZHMgaXMgZW5h
-YmxlZA0KO21hbmFnZW1lbnQtcXVlcnktcGFzc3dvcmRzDQoNCm5pY2UgMw0KdmVyYiA0DQptdXRl
-IDEwDQo7bG9nIC90bXAvY3ItdGVzdC5sb2cNCg0KIyB0aGUgcmVzdCBpcyBzdGFuZGFyZA0KY2xp
-ZW50DQpyZW1vdGUgb3Zwbi10ZXN0LnNhbnNlbC5jYSAxMDUxDQpkZXYgdHVuDQpwcm90byB1ZHAN
-CnJlc29sdi1yZXRyeSBpbmZpbml0ZQ0Kbm9iaW5kDQoNCmtleS1kaXJlY3Rpb24gMQ0KZXhwbGlj
-aXQtZXhpdC1ub3RpZnkgMg0KbnMtY2VydC10eXBlIHNlcnZlcg0KIyBUaGVzZSBjZXJ0aWZpY2F0
-ZXMgYXJlIHByb2JhYmx5IGZyb20gdGhlIHNhbXBsZXMgaW4gT3BlblZQTg0KIyBkaXN0cmlidXRp
-b24uIFVzZSBvbmx5IGZvciB0ZXN0aW5nLg0KPGNhPg0KLS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0t
-LS0tDQpNSUlHS0RDQ0JCQ2dBd0lCQWdJSkFLRk8zdnFROHE2Qk1BMEdDU3FHU0liM0RRRUJDd1VB
-TUdZeEN6QUpCZ05WDQpCQVlUQWt0SE1Rc3dDUVlEVlFRSUV3Sk9RVEVRTUE0R0ExVUVCeE1IUWts
-VFNFdEZTekVWTUJNR0ExVUVDaE1NDQpUM0JsYmxaUVRpMVVSVk5VTVNFd0h3WUpLb1pJaHZjTkFR
-a0JGaEp0WlVCdGVXaHZjM1F1Ylhsa2IyMWhhVzR3DQpIaGNOTVRReE1ESXlNakUxT1RVeVdoY05N
-alF4TURFNU1qRTFPVFV5V2pCbU1Rc3dDUVlEVlFRR0V3SkxSekVMDQpNQWtHQTFVRUNCTUNUa0V4
-RURBT0JnTlZCQWNUQjBKSlUwaExSVXN4RlRBVEJnTlZCQW9UREU5d1pXNVdVRTR0DQpWRVZUVkRF
-aE1COEdDU3FHU0liM0RRRUpBUllTYldWQWJYbG9iM04wTG0xNVpHOXRZV2x1TUlJQ0lqQU5CZ2tx
-DQpoa2lHOXcwQkFRRUZBQU9DQWc4QU1JSUNDZ0tDQWdFQXNKVlBDcXQzdnRvRFcyVTBESUkxUUlo
-MlFzMGRxaDg4DQo4bml2eEFJbTJMVHE5M2U5Zkpoc3EzUC9VVllBWVNlQ0lyZWtYeXBSMEVRZ1Nn
-Y05UdkdCTWUyMEJvSE81eXZiDQpHaktQbWpmTGo2WFJvdENPR3k4RURsL2hMZ1JZOWVmaUE4d3NW
-ZnV2RjJxL0ZibHlKUVBSL2dQaUR0VG1VaXFGDQpxWGE3QUptTXJxRnNuV3BwT3VHZDdRYzZhVHNh
-ZTRURjFlL2dVVENUcmFhN05lSG93RGFLaGR5Rm1FRW5DWVI1DQpDZVVzeDJKbEZXQUg4UENyeEJw
-SFlibUd5dlMwa0gzK3JRa2FTTS9QemMyYlM0YXlIYU9ZUks1WHNHcThYaU5HDQpLVFRMblNhQ2RQ
-ZUhzSSszeE1IbUVoK3U1T2cyREZHZ3Z5RDIyZ2RlNlcyZXp2RUtDVURyelI3YnNuWXFxeVV5DQpu
-N0x4bmtQWEd5dlI1MlQwNkc4S3pMS1FSbURsUElYaHpLTU8wN3FrSG1Jb25YVGRGN1lJMWF6d0hw
-QXRONGRTDQpyVWUxYnZqaVRTb0VzUVBmT0F5dkQwUk1LL0NCZmdFWlV6QUI1MGUvSWxiWjg0YzBE
-SmZVTU9tNHhDeWZ0MUhGDQpZcFlleUNmNWR4b0lqd2VDUE9vUDQyNithVFhNN2txcTBpZUlyNll4
-bktWNk9HR0xLRVkrVk5aaDFEUzdlbnFWDQpIUDVpOGVpbXl1VVlQb1FoYks5eHRER01nZ2huYzZI
-bjhCbGRQTWN2ejk4SGRURUg0ckJmQTN5TnVDeExTTm93DQo0akp1TGpOWGgyUWVpVXRXdGtYamE3
-ZWMrUDdWcUtUZHVKb1JhWDdjcys4RTNJbWlnaVJudm1LK25wazdOdDF5DQpZRTloQlJoU29Mc0NB
-d0VBQWFPQjJEQ0IxVEFkQmdOVkhRNEVGZ1FVSzBEbHlYMzE5Slk0NlMvakw5bEFaTW1PDQpCWnN3
-Z1pnR0ExVWRJd1NCa0RDQmpZQVVLMERseVgzMTlKWTQ2Uy9qTDlsQVpNbU9CWnVoYXFSb01HWXhD
-ekFKDQpCZ05WQkFZVEFrdEhNUXN3Q1FZRFZRUUlFd0pPUVRFUU1BNEdBMVVFQnhNSFFrbFRTRXRG
-U3pFVk1CTUdBMVVFDQpDaE1NVDNCbGJsWlFUaTFVUlZOVU1TRXdId1lKS29aSWh2Y05BUWtCRmhK
-dFpVQnRlV2h2YzNRdWJYbGtiMjFoDQphVzZDQ1FDaFR0NzZrUEt1Z1RBTUJnTlZIUk1FQlRBREFR
-SC9NQXNHQTFVZER3UUVBd0lCQmpBTkJna3Foa2lHDQo5dzBCQVFzRkFBT0NBZ0VBQmM3N2Y0QzRQ
-OGZJUytWOHFDSm1WTlNEVTQ0VVpCYytEK0o2WlRnVzhKZU9IVUlqDQpCaCsrWERnM2d3YXQ3cElX
-UThBVTVSN2grZnBCSTluM2RhZHlJc01IR3dTb2dIWTlHdzdkaTJSVnRTRmFqRXRoDQpydnJxMEpi
-enB3b1llZE1oODRzSjJxSS9ER0tXOS9JczkrTzUyZlIrM3ozZFkzZ05SRFBRNTY3NUJRNUNRVzlJ
-DQpBSmdMT3F6RDhRMHFyWFlpN0hhRXF6Tng2cDdSRFR1aEZndlRkK3ZTNWQ1KzI4WjVmbTJ1bW5x
-K0dLSEY4VzVQDQp5bHAySnMxMTlGVFZPN2JydXNBTUtQZTVlbWM3dEMyb3Y4T0ZGZW1RdmZIUjQx
-UExyeWFwMlZEODFJT2dtdC9KDQprWC9qL3k1S0d1eDVIWjNseFhxZEpiS2NBcTROS1lRVDBtQ2tS
-RDRsNnN6YUNFSitrMFNpTTlEZFRjQkRlZmhSDQo5cStwQ095TWg3ZDhRalExMDc1bUY3VCtQR2ta
-UVVXMURVakVmclpoSUNuS2dxK2lFb1VtTTBFZTVXdFJxY251DQo1QlRHUTJtU2ZjNnJWK1ZyK2VZ
-WHFjZzdOeGIzdkZYWVNUb2QxVWhlZm9uVnF3ZG15SjJzQzc5enAzNlRibzIrDQo2NU5XMldKSzdL
-elBVeU9KVTBVOWJjdTB1dHZET3ZHV21HK2FIYnltSmdjb0Z6dlptbFhxTVhuOTdwU0ZuNGpWDQp5
-M1NMUmdKWE93MVFMWEwyWTVhYmN1b0JWcjRnQ094eGsydkJlVnhPTVJYTnFTV1pPRklGMWJ1L1B4
-dURBK1NhDQpoRWk0NGFIYlBYdDlvcGRzc3ovaGRHZmQ4V283dkVKcmJnN2M2elI2Qy9Ba2F2MVJ6
-eTlvb2hJZGdPdz0NCi0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0NCjwvY2E+DQo8Y2VydD4NCi0t
-LS0tQkVHSU4gQ0VSVElGSUNBVEUtLS0tLQ0KTUlJRkZEQ0NBdnlnQXdJQkFnSUJBakFOQmdrcWhr
-aUc5dzBCQVFzRkFEQm1NUXN3Q1FZRFZRUUdFd0pMUnpFTA0KTUFrR0ExVUVDQk1DVGtFeEVEQU9C
-Z05WQkFjVEIwSkpVMGhMUlVzeEZUQVRCZ05WQkFvVERFOXdaVzVXVUU0dA0KVkVWVFZERWhNQjhH
-Q1NxR1NJYjNEUUVKQVJZU2JXVkFiWGxvYjNOMExtMTVaRzl0WVdsdU1CNFhEVEUwTVRBeQ0KTWpJ
-eE5UazFNMW9YRFRJME1UQXhPVEl4TlRrMU0xb3dhakVMTUFrR0ExVUVCaE1DUzBjeEN6QUpCZ05W
-QkFnVA0KQWs1Qk1SVXdFd1lEVlFRS0V3eFBjR1Z1VmxCT0xWUkZVMVF4RkRBU0JnTlZCQU1UQzFS
-bGMzUXRRMnhwWlc1MA0KTVNFd0h3WUpLb1pJaHZjTkFRa0JGaEp0WlVCdGVXaHZjM1F1Ylhsa2Iy
-MWhhVzR3Z2dFaU1BMEdDU3FHU0liMw0KRFFFQkFRVUFBNElCRHdBd2dnRUtBb0lCQVFEc1pZL3BF
-c0lhVytaV0tnaXBnam90UkhpakFEdXduK2NuRUVDVA0KNy9ITVBxQ3FCS0tBR3hPcDV2NkIxbkNR
-cU5qVTNqRFlOUURTdm1Md1NOcjhGWTNFeG0wTG1mRXJnd0FLMHlvag0KQytYTitUWGZRMkVWY3Ey
-Vm1QWnpJVUZlb04xSEo2RFZtdFJCcUJ3ZFZ5QnhGNC8zS0o0K0I4N3MxUTVDVHg1MA0KUjQ1SG5k
-SVVLQ2NzRkJEMTBaYTFrM1NFNy9rRTNvMUtiOTkzcStyUldOTkUvbG9FQWY4R2VwZjMvZU5YU09I
-dw0KMzBBVG4yWWpXdU5WVkQxVU9lNEErUkx4MHQ5MExyclg4STNHM1JoWUhKTWlDM1g2cU5iZ3RT
-OHR1ZFQrdVUrRw0KNG5WSUZtRDdQOG0wTUVJcCt6dXpLN2xaZ1dwRzgwV0R2LzNWR3Y4M0RHOWIv
-V0h4QWdNQkFBR2pnY2d3Z2NVdw0KQ1FZRFZSMFRCQUl3QURBZEJnTlZIUTRFRmdRVTByUTJEN0g4
-M2FYcUt2ZkhJNG42NC9wNlJCMHdnWmdHQTFVZA0KSXdTQmtEQ0JqWUFVSzBEbHlYMzE5Slk0NlMv
-akw5bEFaTW1PQlp1aGFxUm9NR1l4Q3pBSkJnTlZCQVlUQWt0SA0KTVFzd0NRWURWUVFJRXdKT1FU
-RVFNQTRHQTFVRUJ4TUhRa2xUU0V0RlN6RVZNQk1HQTFVRUNoTU1UM0JsYmxaUQ0KVGkxVVJWTlVN
-U0V3SHdZSktvWklodmNOQVFrQkZoSnRaVUJ0ZVdodmMzUXViWGxrYjIxaGFXNkNDUUNoVHQ3Ng0K
-a1BLdWdUQU5CZ2txaGtpRzl3MEJBUXNGQUFPQ0FnRUFmK0QraEtmczMyS2x6VHpCNWtLeE1STHd1
-ZHFubmorOQ0KbGxLMi9GVjBaRDdrLzM2cTl6NEdHRjl6aGZqSTRHY2JUWmZLQmRBM0J6TmttK1o0
-ZHhTYVZic3FyTU4veVJVSQ0KZzF6SXdtSFRjVXdGQ3l2TG80ZHRvREx0c0xNbmwwcFZqUUVxTUZa
-b3EvTGFYQkJ6eWFvS25FdE1vRnRSYmdwKw0KYkZPQXNBRGhIcHBNQ2plZUlJbTh4ZVY1V0xkRi85
-UEVvZjNaZUQxRkZuVGZna1FkSFlGUVdya3lUT0pQUHc0Ng0KWlZwa2d6c3BNY1NaaUx6RmhEbnlH
-UkxoWnREcSszV3gwaWUra1Ztakt3blZYTDlHanRabjFndnMycXZ3Z0JtSA0KWkFlcGQ3RmVET0xG
-SFdxc1hTUHpNSFUyVHNyRFRyQk5qQ3pPVW1GajN0WDE3KzhLYXlNbEpqdzY4c1BDRmhrLw0KcVRL
-NmFQbkpFancreGgvL20wNzBrTEJqOWRFekFEQmE2Q1Q2TlVTYmFvRHpwc3g3UEhOZlVNUXdjZGgw
-a0NjSw0KQVU2bFhySDQyc0poZ1JHdUthT1ArbjVNVG1LeEFONlM0NDlxTHRyWk9GMXJmQTNrQWFy
-SXhtMkx6Y0RJYnVSWA0KSVlyMlJqRFpyVkdoaDVhbVU4a2V4cnZENjFYK2pOWmMxY2J6eXJCZzB0
-UXFINGlVMDB3YTJneVUvc0ZkRFNyYg0KbVNsZDl0MFd4TWhOZEo2QTJkQ3E3WHZqTU9SSDJQVVZ3
-WEc0eHYzdS9KNnlYN1cza3UzL3lqZjJ4NEswVkJPYg0KZzgySGkzNWs5aTVVT2lLeHhjSDBwU1ZU
-bWsyb0QrYzFTNG5mR1lObVpObmIwV0VySkJzZFJFVDdTVENIdDBrag0KQ0FLSzRDWHo5RU09DQot
-LS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tDQo8L2NlcnQ+DQo8a2V5Pg0KLS0tLS1CRUdJTiBQUklW
-QVRFIEtFWS0tLS0tDQpNSUlFdmdJQkFEQU5CZ2txaGtpRzl3MEJBUUVGQUFTQ0JLZ3dnZ1NrQWdF
-QUFvSUJBUURzWlkvcEVzSWFXK1pXDQpLZ2lwZ2pvdFJIaWpBRHV3bitjbkVFQ1Q3L0hNUHFDcUJL
-S0FHeE9wNXY2QjFuQ1FxTmpVM2pEWU5RRFN2bUx3DQpTTnI4RlkzRXhtMExtZkVyZ3dBSzB5b2pD
-K1hOK1RYZlEyRVZjcTJWbVBaeklVRmVvTjFISjZEVm10UkJxQndkDQpWeUJ4RjQvM0tKNCtCODdz
-MVE1Q1R4NTBSNDVIbmRJVUtDY3NGQkQxMFphMWszU0U3L2tFM28xS2I5OTNxK3JSDQpXTk5FL2xv
-RUFmOEdlcGYzL2VOWFNPSHczMEFUbjJZald1TlZWRDFVT2U0QStSTHgwdDkwTHJyWDhJM0czUmhZ
-DQpISk1pQzNYNnFOYmd0Uzh0dWRUK3VVK0c0blZJRm1EN1A4bTBNRUlwK3p1eks3bFpnV3BHODBX
-RHYvM1ZHdjgzDQpERzliL1dIeEFnTUJBQUVDZ2dFQkFJT2RhQ3BVRDAydHJPaDhMcVp4b3dKaEJP
-bDd6Ny9leDB1d2VNUGs2N0xUDQppNUFkVkh3T2x6d1pKOG9TSWtub09CRU1SQldjTFFFb2p0MUpN
-dUwyL1I5NWVtempJS3NoSEh6cVpLTnVsRnZCDQpUSVVwZG53Q2hUS3RIMG1xVWtMbFBVM0llbnR5
-NElwTmxwbWZVS2ltZmJrV0hFUmRCSkJIYnREc1RBQmhkbzNYDQo5cENGL3lSS3FKUzJGeS9Na2wz
-Z3YxeS9OQjFPTDRKaGw3dlFiZitrbWdmUU4ycWRPVmUyQk9LUThObFBVRG1FDQovMVhOSURhRTNz
-NnV2VWFvRmZ3b3d6c0NDd04yLzhRclJNTUtranZWK2xFVnRObVFkWXhqNVhqNUl3UzB2a0swDQo2
-aWNzbmdXODdjcFp4eGMxenNSV2NTVGxveTVvaHViNEZnS2hsb2xtaWdFQ2dZRUErY0JseHpMdmFN
-ek1sQlFZDQprQ2FjOUtRTXZWTCtESUZIbFpBNWk1TC85cFJWcDRKSndqM0dVb2VoRkpvRmhzeG5L
-cjhIWnlMd0JLbENtVVZtDQpWeG5zaFJXaUFVMThlbVVtZUF0U0dhd2xBUzNRWGhpa1ZaRGRkL0wy
-MFl1c0xUK0RYVjgxd2xLUjk3L3I5KzE3DQprbFFPTGtTZFBtOXdjTURPV01OSFg4YlVnOGtDZ1lF
-QThrK2hRdjYrVFIvK0JlYW8ySUljdEZ0dy9FYXVhSmlKDQp3VzVxbDFjcENMUE1BT1FVdmpzMEtt
-M3pxY3RmQkY4bVVqZGtjeUo0dWhMOUZadGZ5d1kyMkV0UklYT0ovOFZSDQp3ZTY1bVZvNlJMUjhZ
-Vk01NHNpaGFudUZPbmx5RjlMSUJXQis5cFVmaDEvWTdEU2ViaDdXNzN1eGhBeFFoaTNZDQpRd2ZJ
-UUlGZDhPa0NnWUJhbEg0VlhoTFlocGFZQ2lYU2VqNm90NnJySzJONmM1VGIyTUFXTUExbmgrcjg0
-dE1QDQpnTW9oK3BEZ1lQQXFNSTRtUWJ4VW1xWkVlb0x1QmU2VkhwRGF2N3JQRUNSYVc3ODFBSjRa
-TTRjRVEzSnovaW56DQo0cU9BTW4xMENGMDgxL0V6OXlrUFBsVTBic1lOV0hOZDRlQjJ4V25tVUJL
-T3drN1VnSmF0VlBhVWlRS0JnUUNJDQpmMThDVkdwekc5Q0hGbmFLOEZDbk1OT202VklhVGNOY0dZ
-MG1EODFudjVEdDk0M1AwNTRCUU1zQUhUWTdTalpXDQpIaW9SeVp0a2hvblhBQjJvU3FuZWtoN3p6
-eGd2NHNHNWszY3Q4ZXZkQkNjRTFGTkpjMmVxaWtaMHVERVRSb095DQpzN2NSeE5OcitReERreWlr
-TSs4MEhPUFUxUE1QZ3dmT1NyWDkwR0pROFFLQmdFQktvaEdNVi9zTmE0dDE0SWF1DQpxTzhhYWdv
-cWgvNjhLOUdGWGxqc2wzL2lDU2E5NjRISUVSRXRXMDlRejF3M2RvdEVncDJ3OGJzRGErT3dXckx5
-DQowU1k3VDVqUlZpTTNjRFdSbFVCTHJHR2lMMEZpd3NmcWlSaWppNjB5MTllckpncmd5R1ZJYjFr
-SWdJQlJrZ0ZNDQoyTU13ZUFTelRtWmNyaTRQQS81QzBIWWINCi0tLS0tRU5EIFBSSVZBVEUgS0VZ
-LS0tLS0NCjwva2V5Pg0KPHRscy1hdXRoPg0KLS0tLS1CRUdJTiBPcGVuVlBOIFN0YXRpYyBrZXkg
-VjEtLS0tLQ0KYTg2M2IxY2JkYjkxMWZmNGVmMzM2MGNlMTM1MTU3ZTcNCjI0MWE0NjVmNTA0NWY1
-MWNmOWE5MmViYzI0ZGEzNGZkDQo1ZmM0ODQ1Njc3OGM5NzdlMzc0ZDU1YThhNzI5OGFlZg0KNDBk
-MGFiMGM2MGI1ZTA5ODM4NTEwNTI2YjczNDczYTANCjhkYTQ2YThjMzUyNTcyZGQ4NmQ0YTg3MTcw
-MGE5MTViDQo2YWFhNThhOWRhYzU2MGRiMmRmZGQ3ZWYxNWEyMDJlMQ0KZmNhNjkxM2Q3ZWU3OWM2
-NzhjNTc5OGZiZjdiZDkyMGMNCmNhYTdhNjQ3MjA5MDhkYTcyNTQ1OThiMDUyZDA3ZjU1DQo1ZTMx
-ZGM1NzIxOTMyY2ZmYmRkODk2NWQwNDEwNzQxNQ0KNDZjODY4MjNkYTE4YjY2YWFiMzQ3ZTQ1MjJj
-YzA1ZmYNCjYzNDk2ODg4OTIwOWM5NmIxMDI0OTA5Y2Q0Y2U1NzRjDQpmODI5YWE5YzE3ZDVkZjRh
-NjYwNDMxODJlZTIzNjM1ZA0KOGNhYmY1YTdiYTAyMzQ1YWQ5NGEzYWEyNWE2M2Q1NWMNCmUxM2Y0
-YWQyMzVhMDgyNWUzZmUxN2Y5NDE5YmFmZjFjDQplNzNhZDFkZDY1MmYxZTQ4YzcxMDJmZThlZTE4
-MWU1NA0KMTBhMTYwYWUyNTVmNjNmZDAxZGIxZjI5ZTZlZmNiOGUNCi0tLS0tRU5EIE9wZW5WUE4g
-U3RhdGljIGtleSBWMS0tLS0tDQo8L3Rscy1hdXRoPg0KPGRoPg0KLS0tLS1CRUdJTiBESCBQQVJB
-TUVURVJTLS0tLS0NCk1JSUJDQUtDQVFFQXJkbkEzMnh1akhQbFBJK2pQZmZIU29NVVorYjVnUnox
-SDFMdzkvL0d1Z201VEFzUmlZckINCnQyQkRTc01LdkFqeXFOK2k1U0p2NFRPazk4a1JSS0IyN2lQ
-dnlYbWlMOTQ1VmFEUWwvVWVoQ3lTallsR0ZValcNCjludW8rSndReGVTYncwVExpU1lvWUpaUThY
-MUN4UGw5bWdKbDI3N080Y1cxR2M4SS9iV2EraXBVLzRLNXd2M2gNCkdJOG50KzZBMGpOM00vS2Vi
-b3RNUDEwMUc0azBsMHFzWTRvUk1UbVArejNvQVAwcVU5Tloxaml1TUZWelJsTnANCjVGZFlGN2N0
-ckgrdEJGK1FteVQ0U1JLU0VENHdFNG9YNmdwNDIwTmFCaElFUWlmSWo3NXdsTUR0eFFscGtOK3gN
-ClFranNFYlBsYVBLSEdRNHV1cHNzQ2hWVWk4SU0yeXE1RXdJQkFnPT0NCi0tLS0tRU5EIERIIFBB
-UkFNRVRFUlMtLS0tLQ0KPC9kaD4NCg==
---94eb2c06623a3be92e053a346d5c--
+--94eb2c0a879a94bba1053a3e07dc--
 
