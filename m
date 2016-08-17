@@ -1,11 +1,10 @@
-From: debbie10t <debbie10t@...277...>
-References: <57A87572.6080306@...277...>
-	<20160808122011.GC78279@...1296...> <57A896DD.1020004@...277...>
-Message-ID: <a04e17d1-27b9-0415-3625-12c255f2f010@...277...>
-Date: Wed, 17 Aug 2016 12:54:20 +0100
+Message-ID: <57B453A0.6000904@...1147...>
+Date: Wed, 17 Aug 2016 14:08:00 +0200
+From: Jan Just Keijser <janjust@...1147...>
 MIME-Version: 1.0
-In-Reply-To: <57A896DD.1020004@...277...>
-Subject: Re: [Openvpn-devel] Is --ifconfig-ipv6-noexec planned ?
+References: <CAKuzo_jc_mm2165qwc5ACLQCP6kqocRxfaMO9crJzu3HMxJ_og@...278...>
+In-Reply-To: <CAKuzo_jc_mm2165qwc5ACLQCP6kqocRxfaMO9crJzu3HMxJ_og@...278...>
+Subject: Re: [Openvpn-devel] testing challenge-response
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,68 +13,50 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Selva Nair <selva.nair@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
+Hi Selva,
 
-
-On 08/08/16 15:27, debbie10t wrote:
+Selva Nair wrote:
+> Hi,
 >
+> As discussed in the IRC meeting, here is a client config that connects 
+> to a test server I run for static and dynamic challenge. Just run it as
 >
-> On 08/08/16 13:20, Gert Doering wrote:
->> Hi,
->>
->> On Mon, Aug 08, 2016 at 01:05:06PM +0100, debbie10t wrote:
->>> --ifconfig-ipv6-noexec
->>>
->>> not sure if this would be a 'feature request/wish list' item
->>> or if it has just been over looked.
->>>
->>>
->>
->> (The idea behind --ifconfig-noexec is not "do not enable IPv6", use
->> --pull-filter for that.  --ifconfig-noexec is used together with --up
->> to run more custom stuff on ifconfig, which the built-in mechanisms
->> cannot do)
->>
->>
+> sudo openvpn --config cr-client.conf
 >
+> Respond with some arbitrary strings at the username,  password and 
+> static-challenge prompts and the server will send back the strings you 
+> typed plus a dynamic challenge question. The connection will succeed 
+> after the server verifies the response to the dynamic challenge. There 
+> may be a 5 seconds restart pause between the two exchanges. 
+>
+> Note that the password and static-challenge response are sent by the 
+> client to the server base64 encoded, but my server-side script sends 
+> them back decoded, along with the dynamic challenge. This is done so 
+> that the correctness of the first round exchange can be tested at the 
+> client side. The response to the dynamic challenge is verified at the 
+> server side and a successful connection indicates that the 
+> verification passed.
+>
+> To do this using your own server, I'll post the script doing the 
+> client-auth at the server side and the server config later today. In 
+> the mean time please test this against my server.
 
-Sorry, I feel I need a better explanation for this problem ..
+thanks for your config files! I've just tested this against your server, 
+and got a successful login on the second attempt. The challenge
+  please answer this : 1+1 =
+failed with a message:
+  Wrong answer to dynamic response or invalid format (2.000 23.000)
 
---ifconfig-noexec should *not* exec anything IPv4 *and* IPv6
+but the second challenge worked fine. Next, I'll play with your server 
+config.
 
-I have spent some considerable hours on this now, I have working
-server & client configs & logs at verb 4 which essentially prove
-that --ifconfig-noexec does *not* effect IPv6.
-The log clearly shows that openvpn is calling netsh.exe to
-configure IPv6 on the TAP adapter.
+cheers,
 
-Side note, can be explored later:
-With --ifconfig-noexec in the config, the log *does* show:
-ifconfig_noexec = DISABLED .. which seems wrong ?
-
-I have also used --pull-filter ignore "ifconfig-ipv6 "
-and used batch files (windows client) to configure networking.
-
-I can post full details here or as a bug or whatever you prefer.
-
-While I accept the "work around" (--pull-filter, only available in git)
-Gert's answer is vague and the manual is misleading.
-
-So I re-state my original question in a more appropriate way:
-
-   _Why_ does --ifconfig-noexec *not* effect IPv6 ?
-
-The point here is that using --ifconfig-noexec & --up
-for IPv4 you manually configure everything
-for IPv6 you *must* --pull-filter ignore "ifconfig-ipv6 "
-because --ifconfig-noexec has *no* effect on IPv6
-
-Thankyou.
-
-
-
+JJK
 
 
