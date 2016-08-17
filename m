@@ -1,11 +1,11 @@
+From: debbie10t <debbie10t@...277...>
+References: <57A87572.6080306@...277...>
+	<20160808122011.GC78279@...1296...> <57A896DD.1020004@...277...>
+Message-ID: <a04e17d1-27b9-0415-3625-12c255f2f010@...277...>
+Date: Wed, 17 Aug 2016 12:54:20 +0100
 MIME-Version: 1.0
-In-Reply-To: <CAKuzo_jc_mm2165qwc5ACLQCP6kqocRxfaMO9crJzu3HMxJ_og@...278...>
-References: <CAKuzo_jc_mm2165qwc5ACLQCP6kqocRxfaMO9crJzu3HMxJ_og@...278...>
-From: Selva Nair <selva.nair@...277...>
-Date: Wed, 17 Aug 2016 01:49:12 -0400
-Message-ID: <CAKuzo_ijNQi6p3M33WEeV-MQnFpfOm-qiz=9Ck40OuNp+WpXvA@...278...>
-Content-Type: multipart/alternative; boundary=94eb2c0a879a94bba1053a3e07dc
-Subject: Re: [Openvpn-devel] testing challenge-response
+In-Reply-To: <57A896DD.1020004@...277...>
+Subject: Re: [Openvpn-devel] Is --ifconfig-ipv6-noexec planned ?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,102 +14,68 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
 To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---94eb2c0a879a94bba1053a3e07dc
-Content-Type: text/plain; charset=UTF-8
 
-Hi,
 
-Following up on the previous mail, the server side script for client
-authentication and the server/client configs that I use for testing
-challenge-response auth are uploaded here:
-
-https://gist.github.com/selvanair/b31ec6d5873e2ffc141ec680fca69254
-
-On the server-side the script should be running in parallel with the
-server (run from the same directory) for management-client-auth to work.
-No attempt is made to sanitize user input etc. so its useful only for
-testing purposes.
-
-The --remote option in the client config should be edited to match the
-server.
-
-Selva
-
-On Tue, Aug 16, 2016 at 2:21 PM, Selva Nair <selva.nair@...277...> wrote:
-
-> Hi,
->
-> As discussed in the IRC meeting, here is a client config that connects to
-> a test server I run for static and dynamic challenge. Just run it as
->
-> sudo openvpn --config cr-client.conf
->
-> Respond with some arbitrary strings at the username,  password and
-> static-challenge prompts and the server will send back the strings you
-> typed plus a dynamic challenge question. The connection will succeed after
-> the server verifies the response to the dynamic challenge. There may be a 5
-> seconds restart pause between the two exchanges.
->
-> Note that the password and static-challenge response are sent by the
-> client to the server base64 encoded, but my server-side script sends them
-> back decoded, along with the dynamic challenge. This is done so that the
-> correctness of the first round exchange can be tested at the client side.
-> The response to the dynamic challenge is verified at the server side and a
-> successful connection indicates that the verification passed.
->
-> To do this using your own server, I'll post the script doing the
-> client-auth at the server side and the server config later today. In the
-> mean time please test this against my server.
->
-> Selva
+On 08/08/16 15:27, debbie10t wrote:
 >
 >
+> On 08/08/16 13:20, Gert Doering wrote:
+>> Hi,
+>>
+>> On Mon, Aug 08, 2016 at 01:05:06PM +0100, debbie10t wrote:
+>>> --ifconfig-ipv6-noexec
+>>>
+>>> not sure if this would be a 'feature request/wish list' item
+>>> or if it has just been over looked.
+>>>
+>>>
+>>
+>> (The idea behind --ifconfig-noexec is not "do not enable IPv6", use
+>> --pull-filter for that.  --ifconfig-noexec is used together with --up
+>> to run more custom stuff on ifconfig, which the built-in mechanisms
+>> cannot do)
+>>
+>>
 >
->
 
---94eb2c0a879a94bba1053a3e07dc
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Sorry, I feel I need a better explanation for this problem ..
 
-<div dir=3D"ltr">Hi,<div><br></div><div>Following up on the previous mail, =
-the server side script for client=C2=A0</div><div>authentication and the se=
-rver/client configs that I use for testing</div><div>challenge-response aut=
-h are uploaded here:</div><div><br></div><div><a href=3D"https://gist.githu=
-b.com/selvanair/b31ec6d5873e2ffc141ec680fca69254" target=3D"_blank">https:/=
-/gist.github.com/<wbr>selvanair/<wbr>b31ec6d5873e2ffc141ec680fca692<wbr>54<=
-/a><br></div><div><br></div><div>On the server-side the script should be ru=
-nning in parallel with the=C2=A0</div><div>server (run from the same direct=
-ory) for management-client-auth to work.</div><div>No attempt is made to sa=
-nitize user input etc. so its useful only for=C2=A0<br></div><div>testing p=
-urposes.</div><div><br></div><div>The --remote option in the client config =
-should be edited to match the=C2=A0</div><div>server.</div><div><br></div><=
-div>Selva</div></div><div class=3D"gmail_extra"><br><div class=3D"gmail_quo=
-te">On Tue, Aug 16, 2016 at 2:21 PM, Selva Nair <span dir=3D"ltr">&lt;<a hr=
-ef=3D"mailto:selva.nair@...277..." target=3D"_blank">selva.nair@...277...</=
-a>&gt;</span> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0=
- 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex"><div dir=3D"ltr">Hi,=
-<div><br></div><div>As discussed in the IRC meeting, here is a client confi=
-g that connects to a test server I run for static and dynamic challenge. Ju=
-st run it as</div><div><br></div><div>sudo openvpn --config cr-client.conf<=
-/div><div><br></div><div>Respond with some arbitrary strings at the usernam=
-e, =C2=A0password and static-challenge prompts and the server will send bac=
-k the strings you typed plus a dynamic challenge question. The connection w=
-ill succeed after the server verifies the response to the dynamic challenge=
-. There may be a 5 seconds restart pause between the two exchanges.=C2=A0</=
-div><div><br></div><div>Note that the password and static-challenge respons=
-e are sent by the client to the server base64 encoded, but my server-side s=
-cript sends them back decoded, along with the dynamic challenge. This is do=
-ne so that the correctness of the first round exchange can be tested at the=
- client side. The response to the dynamic challenge is verified at the serv=
-er side and a successful connection indicates that the verification passed.=
-</div><div><br></div><div>To do this using your own server, I&#39;ll post t=
-he script doing the client-auth at the server side and the server config la=
-ter today. In the mean time please test this against my server.</div><span =
-class=3D"HOEnZb"><font color=3D"#888888"><div><br></div><div>Selva</div><di=
-v><br></div><div><br></div><div><br></div></font></span></div>
-</blockquote></div><br></div>
+--ifconfig-noexec should *not* exec anything IPv4 *and* IPv6
 
---94eb2c0a879a94bba1053a3e07dc--
+I have spent some considerable hours on this now, I have working
+server & client configs & logs at verb 4 which essentially prove
+that --ifconfig-noexec does *not* effect IPv6.
+The log clearly shows that openvpn is calling netsh.exe to
+configure IPv6 on the TAP adapter.
+
+Side note, can be explored later:
+With --ifconfig-noexec in the config, the log *does* show:
+ifconfig_noexec = DISABLED .. which seems wrong ?
+
+I have also used --pull-filter ignore "ifconfig-ipv6 "
+and used batch files (windows client) to configure networking.
+
+I can post full details here or as a bug or whatever you prefer.
+
+While I accept the "work around" (--pull-filter, only available in git)
+Gert's answer is vague and the manual is misleading.
+
+So I re-state my original question in a more appropriate way:
+
+   _Why_ does --ifconfig-noexec *not* effect IPv6 ?
+
+The point here is that using --ifconfig-noexec & --up
+for IPv4 you manually configure everything
+for IPv6 you *must* --pull-filter ignore "ifconfig-ipv6 "
+because --ifconfig-noexec has *no* effect on IPv6
+
+Thankyou.
+
+
+
+
 
