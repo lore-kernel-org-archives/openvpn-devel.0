@@ -1,14 +1,9 @@
-References: <57A3C76A.1020809@...277...>
-	<CAKuzo_h0vMR4jv=iAgT2Vr2kq-nJRDs0Pq=3JC7eydQ-m1Ucpw@...278...>
-	<f9d8f147-e3d1-b80b-5646-faba6b853bc2@...277...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <76eb908d-b7b3-7425-5340-e4cd5726fbd1@...2080...>
-Date: Sat, 20 Aug 2016 20:41:04 +0200
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <6c0ea9bb-351e-1c5a-eb2e-ed8a301ececf@...515...>
+Date: Mon, 22 Aug 2016 14:12:43 +0300
 MIME-Version: 1.0
-In-Reply-To: <f9d8f147-e3d1-b80b-5646-faba6b853bc2@...277...>
-Subject: Re: [Openvpn-devel] Win10 Tun Server +Standard W10 User +OVPN
- Interactive Service +OVPN GUI
-Reply-To: openvpn-devel@lists.sourceforge.net
+Subject: [Openvpn-devel] Topics for today's (Monday,
+	22nd Aug 2016) community meeting
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,63 +12,32 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-To: debbie10t <debbie10t@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Transfer-Encoding: quoted-printable
+To: openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+Hi,
 
-On 19/08/16 18:13, debbie10t wrote:
-> Hi,
-> 
-> On 05/08/16 03:04, Selva Nair wrote:
->> On Thu, Aug 4, 2016 at 6:53 PM, debbie10t <debbie10t@...277...>
->> wrote:
->> 
->>> Hi
->>> 
->>> So windows 10 as a Server.
->>> 
->>> ===
->>> 
->>> General details: Non admin Win10 unmodified user Using OVPN
->>> GUI OVPN Interactive service started and used Win10 Tun Server
->>> (auto + manual) IPv4 + IPv6 In average constant use ~20 Clients
->>> virtual, local and remote win xp/7/10 +linux
->>> 
->>> 
->>> Selva,
->>> 
->>> If you have any specific tests please send me details.
-> 
-> You are probably aware but for completeness:
-> 
-> --up/--down scripts are *not* run with elevated privs and so they
-> fail .. even when logged in as administrator and when using GUI +
-> Interactive service.
+We're going to have an IRC meeting today starting at 20:00 CEST (18:00=20
+UTC) on #openvpn-meeting <at> irc.freenode.net. You do not have to be=20
+logged in to Freenode to join the channel.
 
-This was an explicit design detail which was strived for with the new
-interactive service - as a security enhancements.  Otherwise it would
-be trivial for non-admins to get elevated privileges when they should
-not have that (think larger companies/enterprises with centrally
-managed policies).
+Current topic list along with basic information is here:
 
-> The /good old/ openvpnservice works fine.
+<https://community.openvpn.net/openvpn/wiki/Topics-2016-08-22>
 
-Which is considered not secure for many reasons.
+If you have any other things you'd like to bring up, respond to this=20
+mail, send me mail privately or add them to the list yourself.
 
+In case you can't attend the meeting, please feel free to make comments=20
+on the topics by responding to this email or to the summary email sent=20
+after the meeting. Whenever possible, we'll also respond to existing,=20
+related email threads.
 
-- -- 
-kind regards,
+--
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
 
-David Sommerseth
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iEYEARECAAYFAle4pEAACgkQDC186MBRfrrrsgCfXtthxn8npLvjLubqjVdCqAch
-KOMAoKB8G/aqwShhRZnFA66MR+D7Q2rr
-=8Kl4
------END PGP SIGNATURE-----
+irc freenode net: mattock
 
