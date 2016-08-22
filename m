@@ -1,12 +1,11 @@
-References: <6c0ea9bb-351e-1c5a-eb2e-ed8a301ececf@...515...>
-	<3c8fc20a-6c5a-699d-deef-a0fa1cdaaec8@...277...>
+References: <7a23f8c5-a8c8-219b-0b19-5100fcd0db3a@...515...>
+	<aa7a724d-d7c1-b8e6-5ff7-3b624141ee39@...515...>
 From: David Sommerseth <openvpn@...2080...>
-Message-ID: <7617b036-d3fe-c822-7cfb-3869fd80f1ef@...2080...>
-Date: Mon, 22 Aug 2016 16:08:24 +0200
+Message-ID: <cc588a8c-28e8-52d0-f27c-59bb077156a2@...2080...>
+Date: Mon, 22 Aug 2016 18:40:33 +0200
 MIME-Version: 1.0
-In-Reply-To: <3c8fc20a-6c5a-699d-deef-a0fa1cdaaec8@...277...>
-Subject: Re: [Openvpn-devel] Topics for today's (Monday,
- 22nd Aug 2016) community meeting
+In-Reply-To: <aa7a724d-d7c1-b8e6-5ff7-3b624141ee39@...515...>
+Subject: Re: [Openvpn-devel] Summary of the IRC meeting on 15th August 2016
 Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -18,44 +17,24 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
-To: debbie10t <debbie10t@...277...>, openvpn-devel@lists.sourceforge.net
+To: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>, openvpn-devel@lists.sourceforge.net
 
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-On 22/08/16 15:01, debbie10t wrote:
-> Hi,
+On 16/08/16 15:58, Samuli Sepp=E4nen wrote:
 >=20
->=20
-> On 22/08/16 12:12, Samuli Sepp=E4nen wrote:
->> Hi,
->>=20
->> We're going to have an IRC meeting today starting at 20:00 CEST
->> (18:00 UTC) on #openvpn-meeting <at> irc.freenode.net. You do not
->> have to be logged in to Freenode to join the channel.
->>=20
->> Current topic list along with basic information is here:
->>=20
->> <https://community.openvpn.net/openvpn/wiki/Topics-2016-08-22>
->>=20
->> If you have any other things you'd like to bring up, respond to
->> this mail,
->=20
-> I would like to get a straight answer to this problem:=20
-> https://community.openvpn.net/openvpn/ticket/723
->=20
-> --ifconfig-noexec combined with IPv6 behaviour
+> Discussed the OpenVPN 2.3.12 release. It is lacking the not yet=20
+> published "small block cipher warning" patch. There might also be a
+> bug related to auth-user-pass, which dazo will investigate (and
+> fix) before the release. Remaining 2.3.x tickets will be
+> postponed.
 
-Gert may correct me if I've understood his responses wrong ... but:
-
-> Q: What is the expected behaviour ?
-
-That --ifconfig-noexec is respected for both IPv4 and IPv6.
-
-> Is this problem a bug ?
-
-Yes.
-
+I have dug into this, and the latest git release/2.3 commit works as
+expected.  The issue I had locally from a very experimental local git
+branch where I had overwritten /usr/sbin/openvpn a very long time ago
+and had forgotten about it.  If any fixes are needed, it will be for
+the git master and _not_ release/2.3.
 
 - --=20
 kind regards,
@@ -64,8 +43,8 @@ David Sommerseth
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iEYEARECAAYFAle7B1gACgkQDC186MBRfrqIdQCfVWMLqjEgBcBiTF9IknjCXUgY
-75gAoIpt3eG6I7tF+S7R+C7y2uhSHxha
-=3DcOCb
+iEYEARECAAYFAle7KwEACgkQDC186MBRfrpLpgCgqyRdjVL89V3C/usJx3FrikgM
+UwcAoIwL07zYFxNvzx2/8DwHonrmv0rq
+=3DeG6G
 -----END PGP SIGNATURE-----
 
