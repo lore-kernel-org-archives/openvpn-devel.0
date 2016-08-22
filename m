@@ -1,14 +1,7 @@
-Date: Mon, 22 Aug 2016 21:18:28 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20160822191828.GT78279@...1296...>
-References: <1451908945-12244-1-git-send-email-lstipakov@...277...>
-	<1451911424-12970-1-git-send-email-lstipakov@...277...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="zd5GkkQQtETumrwc"
-Content-Disposition: inline
-In-Reply-To: <1451911424-12970-1-git-send-email-lstipakov@...277...>
-Subject: Re: [Openvpn-devel] [PATCH v2] Drop recursively routed packets
+Date: Mon, 22 Aug 2016 21:22:59 +0200
+Message-Id: <1471893779-8041-1-git-send-email-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH] Fix problems with NCP and --inetd.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,79 +10,78 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Lev Stipakov <lstipakov@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---zd5GkkQQtETumrwc
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+NCP only works with --pull or --mode server, leading to breakage
+in --inetd mode (because that has --tls-server, but not --mode server,
+but clients can still ask for PUSH_REQUEST).
 
-Hi,
+Fix by turning off o->ncp_enable unless (pull or mode server), and
+double-fix by logging an appropriate message and refusing to change
+ciphers if the server has already set up its keys.
 
-On Mon, Jan 04, 2016 at 02:43:44PM +0200, Lev Stipakov wrote:
-> v2: better method naming
->=20
-> On certain OSes (Windows, OS X) when network adapter is
-> disabled (ethernet cable pulled off, Wi-Fi hardware switch disabled),
-> operating system starts to use tun as an external interface.
-> Outgoing packets are routed to tun, UDP encapsulated, given to
-> routing table and sent to.. tun.
->=20
-> As a consequence, system starts talking to itself on full power,
-> traffic counters skyrocket and user is not happy.
->=20
-> To prevent that, drop packets which have gateway IP as
-> destination address.
->=20
-> Tested on Win7/10, OS X.
->=20
-> Trac #642
->=20
-> Signed-off-by: Lev Stipakov <lstipakov@...277...>
+Trac #715
 
-ACK.
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+ src/openvpn/options.c |  8 ++++++++
+ src/openvpn/push.c    | 21 ++++++++++++++++-----
+ 2 files changed, 24 insertions(+), 5 deletions(-)
 
-Thanks for coding this, thanks to Valdikss for testing (David, can
-you include the tested-by: in the commit?).
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index c100d4c..a2b22f4 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -2614,6 +2614,14 @@ options_postprocess_mutate (struct options *o)
+       if (streq (o->dh_file, "none"))
+ 	o->dh_file = NULL;
+     }
++
++  /* cipher negotiation (NCP) currently assumes --pull or --mode server */
++  if ( o->ncp_enabled &&
++        ! (o->pull || o->mode == MODE_SERVER) )
++    {
++      msg( M_WARN, "disabling NCP mode (--ncp-disable) because not in P2MP client or server mode" );
++      o->ncp_enabled = false;
++    }
+ #endif
+ 
+ #if ENABLE_MANAGEMENT
+diff --git a/src/openvpn/push.c b/src/openvpn/push.c
+index 000c82f..4bdede9 100644
+--- a/src/openvpn/push.c
++++ b/src/openvpn/push.c
+@@ -321,11 +321,22 @@ prepare_push_reply (struct options *o, struct tls_multi *tls_multi)
+   /* Push cipher if client supports Negotiable Crypto Parameters */
+   if (tls_peer_info_ncp_ver (peer_info) >= 2 && o->ncp_enabled)
+     {
+-      /* Push the first cipher from --ncp-ciphers to the client.
+-       * TODO: actual negotiation, instead of server dictatorship. */
+-      char *push_cipher = string_alloc(o->ncp_ciphers, &o->gc);
+-      o->ciphername = strtok (push_cipher, ":");
+-      push_option_fmt(o, M_USAGE, "cipher %s", o->ciphername);
++      /* if we have already created our key, we cannot change our own
++       * cipher, so disable NCP and warn = explain why
++       */
++      struct tls_session *session = &tls_multi->session[TM_ACTIVE];
++      if ( session->key[KS_PRIMARY].crypto_options.key_ctx_bi.initialized )
++	{
++	   msg( M_INFO, "PUSH: client wants to negotiate cipher (NCP), but server has already generated data channel keys, ignoring client request" );
++	}
++      else
++	{
++	  /* Push the first cipher from --ncp-ciphers to the client.
++	   * TODO: actual negotiation, instead of server dictatorship. */
++	  char *push_cipher = string_alloc(o->ncp_ciphers, &o->gc);
++	  o->ciphername = strtok (push_cipher, ":");
++	  push_option_fmt(o, M_USAGE, "cipher %s", o->ciphername);
++	}
+     }
+   return true;
+ }
+-- 
+2.7.3
 
-Code still looks good, as in "does what is advertised, and safely does so".
-
-
-Per discussion with David, we're not totally happy with the performance
-implications - but that's not your fault, our is_ipv4() and is_ipv6()
-functions are really doing their job in a very non-optimized way (read:
-all the work is done twice, once to find out whether it's v4, then=20
-again to find out whether it's v6).
-
-I volunteer to refactor the two places where is_ipv*() are called today
-(thinking along the lines of "ip_version =3D get_ip_version(...)" and then
-compare ip_version to "4" or "6" - plus, making this an inline function)
-
-For now, we stick to "fixes the issue in a easy to read and non-intrusive
-way", so it can go into 2.3.12.
-
-thanks again :)
-
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---zd5GkkQQtETumrwc
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQCVAwUBV7tP8qkuBuNlUUl1AQIP2AQAupkCHyUlKN+JjoNcQF5CV7Or/VnkWNaJ
-OOukiXWdSvsemH++TzCUtXIcTMBgQhCO9PTqamipPwCMjhaAWenz52O8Z4jOWw9s
-KQU745Ib9CK+cyvjXCVjqkkkPdi6A3Byn/GZvAe5rHXRtbqEihduPpw50rRe84fj
-1EUc/7OD6Ag=
-=McV+
------END PGP SIGNATURE-----
-
---zd5GkkQQtETumrwc--
 
