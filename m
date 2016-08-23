@@ -1,14 +1,15 @@
-Date: Tue, 23 Aug 2016 15:43:36 +0200
+Date: Tue, 23 Aug 2016 15:49:55 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20160823134336.GE78279@...1296...>
+Message-ID: <20160823134955.GF78279@...1296...>
 References: <1451908945-12244-1-git-send-email-lstipakov@...277...>
 	<1451911424-12970-1-git-send-email-lstipakov@...277...>
 	<20160822191828.GT78279@...1296...>
+	<20160823134336.GE78279@...1296...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="hV9LobOkkIdnlvrX"
+	protocol="application/pgp-signature"; boundary="U3jK8g368jZ6I4TC"
 Content-Disposition: inline
-In-Reply-To: <20160822191828.GT78279@...1296...>
+In-Reply-To: <20160823134336.GE78279@...1296...>
 Subject: Re: [Openvpn-devel] [PATCH v2] Drop recursively routed packets
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -21,54 +22,37 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: Lev Stipakov <lstipakov@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---hV9LobOkkIdnlvrX
+--U3jK8g368jZ6I4TC
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Mon, Aug 22, 2016 at 09:18:28PM +0200, Gert Doering wrote:
-> On Mon, Jan 04, 2016 at 02:43:44PM +0200, Lev Stipakov wrote:
-> > v2: better method naming
-[..]
-> > Trac #642
-> >=20
-> > Signed-off-by: Lev Stipakov <lstipakov@...277...>
+On Tue, Aug 23, 2016 at 03:43:36PM +0200, Gert Doering wrote:
+> ... which looks like "the IP header ends up where the ethernet header
+> should be" (every ping packet shows up as "new source address" on the
+> openvpn server).
 >=20
-> ACK.
+> I have no idea what this could be, but since we want 2.3.12 out *today*,
+> we'll need to back it out of 2.3 for the time being.
+>=20
+> Lev, do you have time to investigate?
 
-As stupid as this feels - we need to back this out again, because it
-breaks TAP mode.  Buildbot complained that all tap tests failed, and
-manually bisecting master nailed it to *this* patch, and release/2.3
-is similarily broken.
+is_ipv_X() in proto.c is to blame here, as it breaks the buffer=20
+for tap mode...
 
-On the server side, for a t_client test with --dev tap, with this patch,
-you see "the source mac is rotating"
+...
+  /* IP version is stored in the same bits for IPv4 or IPv6 header */
+  if (OPENVPN_IPH_GET_VER (ih->version_len) =3D=3D ip_ver)
+    return buf_advance (buf, offset);
+...
 
-Aug 23 09:37:24 phillip tap-udp-p2mp[60213]: cron2-gentoo-i386/193.xx.xx.xx=
- MULTI: Learn: 20:00:40:01:d8:7a -> cron2-gentoo-i386/193.xx.xx.xx
-Aug 23 09:37:24 phillip tap-udp-p2mp[60213]: cron2-gentoo-i386/193.xx.xx.xx=
- MULTI: Learn: 20:b9:40:01:d7:c1 -> cron2-gentoo-i386/193.xx.xx.xx
-Aug 23 09:37:24 phillip tap-udp-p2mp[60213]: cron2-gentoo-i386/193.xx.xx.xx=
- MULTI: bad source address from client [01:72:40:01:fc:a0], packet dropped
-Aug 23 09:37:24 phillip tap-udp-p2mp[60213]: cron2-gentoo-i386/193.xx.xx.xx=
- MULTI: Learn: 20:00:40:01:3e:b1 -> cron2-gentoo-i386/193.xx.xx.xx
-Aug 23 09:37:24 phillip tap-udp-p2mp[60213]: cron2-gentoo-i386/193.xx.xx.xx=
- MULTI: Learn: 20:b9:40:01:3d:f8 -> cron2-gentoo-i386/193.xx.xx.xx
-Aug 23 09:37:24 phillip tap-udp-p2mp[60213]: cron2-gentoo-i386/193.xx.xx.xx=
- MULTI: bad source address from client [01:72:40:01:62:d7], packet dropped
-Aug 23 09:37:24 phillip tap-udp-p2mp[60213]: cron2-gentoo-i386/193.xx.xx.xx=
- MULTI: Learn: 20:00:40:01:d7:d8 -> cron2-gentoo-i386/193.xx.xx.xx
+... and "offset" is only set !=3D 0 in tap mode - so in tun mode, it works,
+and the code itself looks totally reasonable.
 
-... which looks like "the IP header ends up where the ethernet header
-should be" (every ping packet shows up as "new source address" on the
-openvpn server).
-
-I have no idea what this could be, but since we want 2.3.12 out *today*,
-we'll need to back it out of 2.3 for the time being.
-
-Lev, do you have time to investigate?
+David, please revert both release/2.3 and master, and we'll need to=20
+rethink this, not using "is_ipv4()"...
 
 gert
 
@@ -79,17 +63,17 @@ rt/
 Gert Doering - Munich, Germany                             gert@...1296...
 fax: +49-89-35655025                        gert@...1297...
 
---hV9LobOkkIdnlvrX
+--U3jK8g368jZ6I4TC
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQCVAwUBV7xTCKkuBuNlUUl1AQI/xgP/YXtWDgKtMHGkLp+r8LI/8/rkWQBNSzhJ
-/i8gpgHHMPFQ8B+s5kt5aq9MNnhsCCsLh7+coy36fwPuLwZ5VNcTBPrZnsBTsjOQ
-+SZsOXOGz5d4CiATb+R1xele5+DUERk0jHQEP0InmWrFv+jt7W4N9Ii7rde6dSQi
-fmWlBWHeYZ8=
-=Y4gj
+iQCVAwUBV7xUgqkuBuNlUUl1AQJXqgP7BWYd6LRGvdOKp5yKme9QiMUEcIrQBwQ0
+atqmaNLb9DGACqjs3RrmRe38g2IhpOF6stDGKe8ArPPDlWphD3+WA8TmkchiiHyG
+TjdMtwaasip92fDABx+LdrjLA4nKhVodnIbnVUH/J+cSiyGlrVbZWUdX+FweO2pk
+h8Esjtrd1Uw=
+=534b
 -----END PGP SIGNATURE-----
 
---hV9LobOkkIdnlvrX--
+--U3jK8g368jZ6I4TC--
 
