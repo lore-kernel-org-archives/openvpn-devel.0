@@ -1,15 +1,12 @@
-Date: Tue, 23 Aug 2016 22:44:35 +0200
+Date: Tue, 23 Aug 2016 22:46:53 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20160823204435.GH78279@...1296...>
+Message-ID: <20160823204653.GI78279@...1296...>
 References: <CAKuzo_jO0FLo=xMakh1yB6_h=huE4Pqp6Xtk2QEgXikeui-F6w@...278...>
-	<073f348b-77a8-3967-2874-77f2c973dbf4@...2070...>
-	<CAKuzo_goKiVr4k7+eQbLK93fzQ99ZH+pkk1uVw0k2_OGb0mH4A@...278...>
-	<CAKuzo_jRJcTGWRqv51O3TPc7rU=8aomQqFeib0FF_G-dtUmeQg@...278...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="SorlIzCW0DSU55cr"
+	protocol="application/pgp-signature"; boundary="MhDS85o8hQkNlKhq"
 Content-Disposition: inline
-In-Reply-To: <CAKuzo_jRJcTGWRqv51O3TPc7rU=8aomQqFeib0FF_G-dtUmeQg@...278...>
+In-Reply-To: <CAKuzo_jO0FLo=xMakh1yB6_h=huE4Pqp6Xtk2QEgXikeui-F6w@...278...>
 Subject: Re: [Openvpn-devel] block-outside-dns and multiple tunnels
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -20,37 +17,37 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: Selva Nair <selva.nair@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---SorlIzCW0DSU55cr
+--MhDS85o8hQkNlKhq
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Tue, Aug 23, 2016 at 11:23:29AM -0400, Selva Nair wrote:
-> It was agreed to move this forward by looking into the approaches
-> suggested by Selva, and by giving him feedback.
+specifically...
+
+On Sat, Aug 06, 2016 at 12:04:39AM -0400, Selva Nair wrote:
+[..]
+> 2. Add all filters to a common custom sublayer. This requires a pre-defin=
+ed
+> UUID that could be used to define the sublayer and shared between all
+> instances of openvpn.
 >=20
-> So what is the consensus? Should we support DNS through all tunnels for
-> which block-outside-dns is specified or just make sure DNS works through =
-at
-> least one of the tunnels if the option is used on multiple ones?
+> For UUID,
+[..]
+> (b) hard code a UUID in the executable and use it as the sublayer key
+>=20
+> I prefer (b) as its simpler.
 
-"principle of least astonishment" (POLA) would be "DNS inside the tunnels
-works, outside the tunnels doesn't, no matter which tunnel was opened=20
-first.  "DNS does not work at all" is the worst variant, because a normal
-user (including most "client admins") will not be able to see why this
-would be happening - I can already see this with normal users, Win10 and
-OpenVPN that they never attribute to DNS failures if "outlook does not
-work"...
+2b sounds like the way to get there with the least amount of work, and
+without interfering with other folks...
 
-You had some suggestions upthread how to change the WFP stuff to make
-it cooperate (and perform) better - so "feature-ACK" on that approach :-)
+Are there some sort of guidelines how "hard coded UUIDs" are to be used?  Or
+do you just randomly pick a large number out of your hat?
 
 gert
-
 
 --=20
 USENET is *not* the non-clickable part of WWW!
@@ -59,17 +56,17 @@ rt/
 Gert Doering - Munich, Germany                             gert@...1296...
 fax: +49-89-35655025                        gert@...1297...
 
---SorlIzCW0DSU55cr
+--MhDS85o8hQkNlKhq
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQCVAwUBV7y1s6kuBuNlUUl1AQJanAP+JFzgibUJ1bWC6sN55oOSxETzCKvm02LM
-LUb0M5fanVYBMmfjAddjj3//+ETN9Ts39PieRHVdwnCHW6QBCKiUPBMIp2bukkS9
-0GvTWClkSDBhx/bK9sM1Z93/+iyCP/cIgEBuzeExBgo3tJ8XVltfbW3Dq6DWOfVc
-cqGHzFpLkDE=
-=VXJM
+iQCVAwUBV7y2PKkuBuNlUUl1AQIvTgP/dtZwonUerdCqEXbZJlOQ5VdcrsVXGU9k
+taCzR2BxbNyhP7rNlsHZUXAgidCvdK1HlD/7aYaqfvNE35aIaclFgKHHEYDxk0eP
+SJplpawJZZ4SIozPTwArTdTFzamQO2dP6dl4WpjUAj9f9UC0+mDlwrVRaALJ2Pgq
+O6cxpJEgnDk=
+=8ywE
 -----END PGP SIGNATURE-----
 
---SorlIzCW0DSU55cr--
+--MhDS85o8hQkNlKhq--
 
