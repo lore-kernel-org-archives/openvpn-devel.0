@@ -1,22 +1,17 @@
-Date: Wed, 24 Aug 2016 14:53:46 +0200
+Date: Wed, 24 Aug 2016 15:13:15 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20160824125346.GK78279@...1296...>
-References: <57A3C76A.1020809@...277...>
-	<CAKuzo_h0vMR4jv=iAgT2Vr2kq-nJRDs0Pq=3JC7eydQ-m1Ucpw@...278...>
-	<f9d8f147-e3d1-b80b-5646-faba6b853bc2@...277...>
-	<76eb908d-b7b3-7425-5340-e4cd5726fbd1@...2080...>
-	<3642cff2-6233-0a28-2a39-36513f008ab4@...277...>
-	<20160823123439.GA78279@...1296...>
-	<57BD5780.2030204@...1147...>
-	<f65edd44-e931-46e8-d21d-deda38005718@...515...>
-	<57BD64D9.8010607@...1147...>
+Message-ID: <20160824131315.GL78279@...1296...>
+References: <1451908945-12244-1-git-send-email-lstipakov@...277...>
+	<1451911424-12970-1-git-send-email-lstipakov@...277...>
+	<20160822191828.GT78279@...1296...>
+	<20160823134336.GE78279@...1296...>
+	<57BD5706.2080305@...1147...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="zJNEIfy6us2B785O"
+	protocol="application/pgp-signature"; boundary="Pi1ad4bzbEMsC2x1"
 Content-Disposition: inline
-In-Reply-To: <57BD64D9.8010607@...1147...>
-Subject: Re: [Openvpn-devel] Win10 Tun Server +Standard W10 User +OVPN
- Interactive Service +OVPN GUI
+In-Reply-To: <57BD5706.2080305@...1147...>
+Subject: Re: [Openvpn-devel] [PATCH v2] Drop recursively routed packets
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -28,53 +23,53 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: Jan Just Keijser <janjust@...1147...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---zJNEIfy6us2B785O
+--Pi1ad4bzbEMsC2x1
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Wed, Aug 24, 2016 at 11:11:53AM +0200, Jan Just Keijser wrote:
-> >> just for my understanding: how would a user run an up/down script with
-> >> *USER* credentials (necessary to map a share or printer, for example) =
-in
-> >> this scenario?
-[..]
-> Actually, how would a (clueless) user do this at all, using the=20
-> interactive service?  which part should be run with admin privs, which=20
-> part shouldn't ?    which credentials are available to the interactive=20
-> service (and any up/down scripts it may run) ?   should a user use a GUI=
-=20
-> up/down script (I know the old GUI supported this) instead?
+On Wed, Aug 24, 2016 at 10:12:54AM +0200, Jan Just Keijser wrote:
+> may I suggest to make this configurable,=20
 
-If the iservice is around, it's all totally straightforward :-) - you
-run your --up script from the config.ovpn and it is run with your user
-credentials.
+Well...
 
-Iservice works like this (we have a documentation page coming, but that's
-not there yet)
+> i.e. the user can specify=20
+> whether rec routed packets should be dropped?  I'm afraid that we might=20
+> end up with code that drops packets that really should not be dropped -=20
+> people do weird things with routing: in 99% of the cases in error, but=20
+> in 1% of the cases because they want to do something funky.
 
- - the GUI runs as "me" (gert)
- - the iservice runs as "local service", maximum privileges
- - the GUI connects to the iservice, and asks it "run openvpn.exe with
-   the following arguments, using the credentials of the user the GUI runs
-   with" (windows can do this - pass credentials across a pipe, which you
-   can't fake)
- - the iservice forks openvpn.exe, and runs this as user (gert), and
-   keeps a "service pipe" between iservice and openvpn.exe
- - if openvpn.exe wants to do ifconfig/route/dns stuff, it sends these
-   as requests over the service pipe to the iservice, who will then
-   execute them (and clean up should openvpn crash)
- - --up scripts are run by openvpn.exe itself, which is already running
-   as "gert", so, all privileges are nicely in place
+There is no way that this might ever work(*).
 
-so this cannot be used anymore for privilege escalation to admin (by
-running an --up script from openvpn which is run-as-admin).
+If your tunnel gateway is 1.2.3.4, and you send packets to 1.2.3.4 into
+the tunnel, how are these going to arrive?=20=20
+
+Packet goes to TUN, is ecapsulated, and sent to 1.2.3.4.
+
+1.2.3.4 route points to TUN, so packet goes to TUN, gets another layer
+of openvpn, and is sent to 1.2.3.4.
+
+1.2.3.4 route points to TUN, so packet goes to TUN, gets a *third* layer
+of openvpn, and is sent to 1.2.3.4.
+
+repeat, until the packet hits 1500 byte MTU, and gets fragmented into
+*two* packets that loop forever...
 
 gert
 
 
+(*) it will work if and only if there are multiple routing tables involved,
+that is, packets sent by openvpn itself are not subject to the routing=20
+tables that would move packets *into* the tunnel - so the Android client
+wouldn't need it (VPN API takes care of this), and with the work on
+Github #13 to suport network name spaces on linux and multiple routing=20
+tables on *BSD, there are indeed scenarios where this makes sense...
+
+... so you're right, v3 needs to have an option...
+
+(This started out really small and simple :-) )
 --=20
 USENET is *not* the non-clickable part of WWW!
                                                            //www.muc.de/~ge=
@@ -82,17 +77,17 @@ rt/
 Gert Doering - Munich, Germany                             gert@...1296...
 fax: +49-89-35655025                        gert@...1297...
 
---zJNEIfy6us2B785O
+--Pi1ad4bzbEMsC2x1
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQCVAwUBV72Y2qkuBuNlUUl1AQKR7AQAgyGv7JQgQYyvuF2oc+RLfaJk7GOVNs1y
-VX2/lFmFWe3P2c15RCO8pCbBF4Q/Qa/thu6Cgdpb6MEkT2RYbRJdWBHwM2c4DXTk
-Kx6WsNX3VynBgZwqwMOK+T0wmRt6CpvveFvI74V6mShhzIgaTxxs6bGT0KPfG2J8
-2nVFurIN6SU=
-=F7hi
+iQCVAwUBV72da6kuBuNlUUl1AQJj3wP9FOu1yEOLGjQkArYmZOTSzbLlA0B2hDn5
+sRW7jzC54EHZuNBkRT/2y6Kx0e0F/IkrQxKySBfMMrk1WXEg7NzWl5mF6EKaypyo
+yTymV0yRiPoJOMyNC10MYA+GnnP4AVUHgyFWEOpUMPeoFM8dNglLKinQ/g5cfkhe
+kbj3ymsiRn4=
+=R/Hr
 -----END PGP SIGNATURE-----
 
---zJNEIfy6us2B785O--
+--Pi1ad4bzbEMsC2x1--
 
