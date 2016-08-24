@@ -1,15 +1,10 @@
-References: <1451908945-12244-1-git-send-email-lstipakov@...277...>
-	<1451911424-12970-1-git-send-email-lstipakov@...277...>
-	<20160822191828.GT78279@...1296...>
-	<20160823134336.GE78279@...1296...>
-	<20160823134955.GF78279@...1296...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <bbd57d46-1990-c6b7-d804-54ff0b39d0c8@...2080...>
-Date: Wed, 24 Aug 2016 00:34:08 +0200
+References: <CAFHpkQEa1yNXoXWqsTsz5SygEqZ5+C2A_gzrKxLexTPfcCFn8Q@...278...>
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <cfd250ae-d476-1737-61b8-fc41f268e55f@...515...>
+Date: Wed, 24 Aug 2016 10:12:57 +0300
 MIME-Version: 1.0
-In-Reply-To: <20160823134955.GF78279@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH v2] Drop recursively routed packets
-Reply-To: openvpn-devel@lists.sourceforge.net
+In-Reply-To: <CAFHpkQEa1yNXoXWqsTsz5SygEqZ5+C2A_gzrKxLexTPfcCFn8Q@...278...>
+Subject: Re: [Openvpn-devel] what is "enable_distonly" for ?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,39 +13,30 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-To: Gert Doering <gert@...1296...>, Lev Stipakov <lstipakov@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Transfer-Encoding: quoted-printable
+To: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
 
-On 23/08/16 15:49, Gert Doering wrote:
-> David, please revert both release/2.3 and master, and we'll need
-> to rethink this, not using "is_ipv4()"...
+> Hello,
+>
+> I'm going to clean up currently unused nsis code in openvpn-gui.
 
-Done.
+The openvpn-gui.nsi file can be scrapped altogether, as it serves no=20
+purpose. It was created in the time before the Interactive Service and=20
+Selva's latest changes to OpenVPN-GUI.
 
-- -- 
-kind regards,
+> Also, I noticed "enable_distonly" configure option.
+>
+> what's that for ?
 
-David Sommerseth
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
+It allows creating the source tarballs on *NIX platforms. In other=20
+words, very useful :).
 
-iQIcBAEBAgAGBQJXvM9gAAoJEIbPlEyWcf3ycNEQALsZ2nJQfHIqYalF4a+xxoA9
-63R76nSZG6qQo1uyZnHwipBf0crYEPCLd4EbRdSIV3leilXrg3Va0QkW9X3Wn0ld
-E5uQ4WR4Y4pNkrSB1+l2Iw+N0b1675H5tH/3pKhLe73RvVjI4/APiYtNMEA2FoUv
-hnmTBgXzNgPfhJxZgkPiJ4LHIL2XG6SfuFt4H56InIs2BraOul6WKZ4XbvTKpE/R
-fyRHMg4BCzRI20g5yd4SpXYlcMkggIPckFss8A78MlpeZfwZgRvsVGtviNyuL62o
-Rodv5QSq0nxEMTqIiOK4hhIxmVBiOZu2Xh4HdnG9AAa3ghkux23fD8Iy+aGKmVvf
-I2PEZCSorealH19DS8AoIDHaD+dlv8XNz46vwcfxLB06M5JUgTS3mt7iQWXI2dFP
-8ORCrllvNb0HZjGPNrobkRGZ4JSos8TCjAYbereRpci642Qy323BqFHljwKbquV0
-EThKqdHiQo/x8xJWaqxEz58AATBKF775b4lwy1DCbGO2ca2RSfZJueGzytGtn4Ke
-d/5B2oLyOVT6vW5guNTvla8eywNKyVHiwAsaQs31tVEyGOjVa7mTQjUbpowVfntg
-PRy4kC+imeElwHXun9dgVg0q9AwdTOQuUUt4OJUyHJqh8Bdp3wYTvxGO4yAFVyMu
-yvWuf4Gfwi6FOBpNyjCt
-=/Fjb
------END PGP SIGNATURE-----
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
 
