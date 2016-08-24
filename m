@@ -1,11 +1,11 @@
+References: <c5ed5448-cff1-7407-7aa1-794e34455b72@...515...>
+From: Matthias Andree <matthias.andree@...68...>
+Message-ID: <32453cb2-3c27-aae6-5ee6-6f0edd669d91@...68...>
+Date: Thu, 25 Aug 2016 00:18:04 +0200
 MIME-Version: 1.0
-In-Reply-To: <d7fde34c-2244-aed1-6ecc-9f5c5d9d9b3b@...515...>
-References: <d7fde34c-2244-aed1-6ecc-9f5c5d9d9b3b@...515...>
-From: Selva Nair <selva.nair@...277...>
-Date: Wed, 24 Aug 2016 11:03:57 -0400
-Message-ID: <CAKuzo_g2_gkXSuQF1hd4s1wGWdwM9eQk5_c_ZRXmSnFWUY+k4g@...278...>
-Content-Type: multipart/alternative; boundary=94eb2c09593e6a6375053ad298c5
-Subject: Re: [Openvpn-devel] Combined Windows installers
+In-Reply-To: <c5ed5448-cff1-7407-7aa1-794e34455b72@...515...>
+Content-Type: multipart/mixed; boundary="------------35046A1214C8E5FD57226933"
+Subject: Re: [Openvpn-devel] OpenVPN 2.3.12 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,95 +14,162 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
---94eb2c09593e6a6375053ad298c5
-Content-Type: text/plain; charset="UTF-8"
+This is a multi-part message in MIME format.
+--------------35046A1214C8E5FD57226933
+Content-Type: multipart/alternative;
+	boundary="------------CEF65222FEF57DA274F499ED"
+
+--------------CEF65222FEF57DA274F499ED
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Aug 24, 2016 at 5:26 AM, Samuli Sepp=C3=A4nen <samuli@...515...> wr=
-ote:
+Am 23.08.2016 um 17:52 schrieb Samuli Sepp=E4nen:
+> The OpenVPN community project team is proud to release OpenVPN 2.3.12.=20
+> It can be downloaded from here:
+>
+> <http://openvpn.net/index.php/open-source/downloads.html>
+>
+> This release includes many small improvements and fixes. This is the=20
+> first release that actively discourages the use of 64-bit block ciphers=20
+> for security reasons. A full list of changes is available here:
+>
+> <https://community.openvpn.net/openvpn/wiki/ChangesInOpenvpn23>
 
-> 2) Bundle 32-bit and 64-bit OpenVPN in one installer
->
-> Here one would select the installer based on OS (XP or Vista+), but
-> bitness would not matter:
->
-> - NDIS5 + openvpn i686 + openvpn x86_64
-> - NDIS6 + openvpn i686 + openvpn x86_64)
->
->
-> 3) Bundle everything together
->
-> - NDIS5 + NDIS6 + openvpn i686 + openvpn x86_64)
->
-> ---
->
-> We discussed this a bit on #openvpn-devel, and option 2 had the most
-> votes. The problem with options 1 and 3 is that they'd require changes
-> to openvpn-build, which would have to be scrapped when Windows XP and
-> tap-windows (NDIS 5) support is dropped. And that is going to happen
-> fairly soon.
->
-> The 32/64-bit divide, on the other hand, is not disappearing in the near
-> future, so having a 32/64-bit combined installer makes sense.
->
-> Thoughts?
->
+Hi everyone,
 
-+1 for option (2).
+thanks for handling the release.
 
-(3) Would have been ideal but as you say it may not be worth the effort as
-support for XP will be removed soon... Option (2) looks like a good
-compromise. Bundling 64/32 together and choosing the appropriate one would
-also mean all 64 bit hosts will get 64 bit installations -- that is, no
-more WoW64 concerns.
+The 2.3.12 tarball does not seem to pack the stuff needed for cmocka,
+and even if it did, there seem to be issues with:
 
-Selva
+ 1. out-of-source builds (aka: autoreconf -sivf && mkdir _build && cd
+    _build && ../configure -C && make -j4 check) - for these, ${srcdir}/
+    needs to be prefixed to the cmocka check, see patch (note: this is
+    against the _/master/_ branch but can be cherry-picked onto
+    release/2.3 without a hitch -
+    also note that the patch does not support dangerous characters in
+    srcdir.)
+ 2. cmocka.h needs to either be installed (not currently checked), or we
+    need to add proper -I and -L options so that cmocka can be used locally,
+ 3. the build needs to figure whether to use a local or system-wide cmocka.
 
---94eb2c09593e6a6375053ad298c5
-Content-Type: text/html; charset="UTF-8"
+I am currently upgrading the FreeBSD port, chasing framework updates
+etc. so don't have time to look too much into that, beyond the attached
+patch that solves (1.) above partially. The FreeBSD port of OpenVPN will
+forego the unit tests, and I will patch the warning out so I don't get
+"but just add cmake as a requisite" spam - which, when rectified, would
+lead to (2.) above...
+
+Cheers,
+
+Matthias
+
+
+--------------CEF65222FEF57DA274F499ED
+Content-Type: text/html; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr"><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">=
-On Wed, Aug 24, 2016 at 5:26 AM, Samuli Sepp=C3=A4nen <span dir=3D"ltr">&lt=
-;<a href=3D"mailto:samuli@...515..." target=3D"_blank">samuli@...515...</a>=
-&gt;</span> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0px=
- 0px 0px 0.8ex;border-left-width:1px;border-left-color:rgb(204,204,204);bor=
-der-left-style:solid;padding-left:1ex"><div>2) Bundle 32-bit and 64-bit Ope=
-nVPN in one installer<br>
-<br>
-Here one would select the installer based on OS (XP or Vista+), but<br>
-bitness would not matter:<br>
-<br>
-- NDIS5 + openvpn i686 + openvpn x86_64<br>
-- NDIS6 + openvpn i686 + openvpn x86_64)<br>
-<br>
-<br>
-3) Bundle everything together<br>
-<br>
-- NDIS5 + NDIS6 + openvpn i686 + openvpn x86_64)<br>
-<br>
----<br>
-<br>
-We discussed this a bit on #openvpn-devel, and option 2 had the most<br>
-votes. The problem with options 1 and 3 is that they&#39;d require changes<=
-br>
-to openvpn-build, which would have to be scrapped when Windows XP and<br>
-tap-windows (NDIS 5) support is dropped. And that is going to happen<br>
-fairly soon.<br>
-<br>
-The 32/64-bit divide, on the other hand, is not disappearing in the near<br>
-future, so having a 32/64-bit combined installer makes sense.</div><div><br=
-></div><div>Thoughts?</div></blockquote></div><div class=3D"gmail_extra"><b=
-r></div>+1 for option (2).</div><div class=3D"gmail_extra"><br>(3) Would ha=
-ve been ideal but as you say it may not be worth the effort as support for =
-XP will be removed soon... Option (2) looks like a good compromise. Bundlin=
-g 64/32 together and choosing the appropriate one would also mean all 64 bi=
-t hosts will get 64 bit installations -- that is, no more WoW64 concerns.</=
-div><div class=3D"gmail_extra"><br></div><div class=3D"gmail_extra">Selva</=
-div></div>
+<html>
+  <head>
+    <meta content=3D"text/html; charset=3Dwindows-1252"
+      http-equiv=3D"Content-Type">
+  </head>
+  <body bgcolor=3D"#FFFFFF" text=3D"#000000">
+    <div class=3D"moz-cite-prefix">Am 23.08.2016 um 17:52 schrieb Samuli
+      Sepp=E4nen:<br>
+    </div>
+    <blockquote
+      cite=3D"mid:c5ed5448-cff1-7407-7aa1-794e34455b72@...515..."
+      type=3D"cite">
+      <pre wrap=3D"">The OpenVPN community project team is proud to release=
+ OpenVPN 2.3.12.=20
+It can be downloaded from here:
 
---94eb2c09593e6a6375053ad298c5--
+<a class=3D"moz-txt-link-rfc2396E" href=3D"http://openvpn.net/index.php/ope=
+n-source/downloads.html">&lt;http://openvpn.net/index.php/open-source/downl=
+oads.html&gt;</a>
+
+This release includes many small improvements and fixes. This is the=20
+first release that actively discourages the use of 64-bit block ciphers=20
+for security reasons. A full list of changes is available here:
+
+<a class=3D"moz-txt-link-rfc2396E" href=3D"https://community.openvpn.net/op=
+envpn/wiki/ChangesInOpenvpn23">&lt;https://community.openvpn.net/openvpn/wi=
+ki/ChangesInOpenvpn23&gt;</a>
+</pre>
+    </blockquote>
+    <p>Hi everyone,</p>
+    <p>thanks for handling the release.<br>
+    </p>
+    <p>The 2.3.12 tarball does not seem to pack the stuff needed for
+      cmocka, and even if it did, there seem to be issues with:</p>
+    <ol>
+      <li>out-of-source builds (aka: <tt>autoreconf -sivf &amp;&amp;
+          mkdir _build &amp;&amp; cd _build &amp;&amp; ../configure -C
+          &amp;&amp; make -j4 check</tt>) - for these, <tt>${srcdir}/</tt>
+        needs to be prefixed to the cmocka check, see patch (note: this
+        is against the <u><i>master</i></u> branch but can be
+        cherry-picked onto release/2.3 without a hitch - <br>
+        also note that the patch does not support dangerous characters
+        in srcdir.)<br>
+      </li>
+      <li>cmocka.h needs to either be installed (not currently checked),
+        or we need to add proper -I and -L options so that cmocka can be
+        used locally,</li>
+      <li>the build needs to figure whether to use a local or
+        system-wide cmocka.</li>
+    </ol>
+    <p>I am currently upgrading the FreeBSD port, chasing framework
+      updates etc. so don't have time to look too much into that, beyond
+      the attached patch that solves (1.) above partially. The FreeBSD
+      port of OpenVPN will forego the unit tests, and I will patch the
+      warning out so I don't get "but just add cmake as a requisite"
+      spam - which, when rectified, would lead to (2.) above...</p>
+    <p>Cheers,</p>
+    <p>Matthias<br>
+    </p>
+  </body>
+</html>
+
+--------------CEF65222FEF57DA274F499ED--
+
+--------------35046A1214C8E5FD57226933
+Content-Type: text/x-patch;
+	name="0001-Make-CMOCKA_INITIALIZED-check-work-on-VPATH-out-of-s.patch"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: attachment;
+	filename*0="0001-Make-CMOCKA_INITIALIZED-check-work-on-VPATH-out-of-s.pa";
+	filename*1="tch"
+
+=46rom 9595ff1b4d89b8f25b742f1c105533dc12a3e276 Mon Sep 17 00:00:00 2001
+From: Matthias Andree <matthias.andree@...68...>
+Date: Thu, 25 Aug 2016 00:13:58 +0200
+Subject: [PATCH] Make CMOCKA_INITIALIZED check work on VPATH (out-of-sour=
+ce)
+ builds.
+
+---
+ configure.ac | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/configure.ac b/configure.ac
+index 4f14ebd..341105c 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -1215,7 +1215,7 @@ AC_SUBST([TEST_CFLAGS])
+ # needed for unit testing
+ AC_CHECK_PROGS([CMAKE], [cmake])
+ if test -n "${CMAKE}"; then
+-   if test -f vendor/cmocka/CMakeLists.txt; then
++   if test -f ${srcdir}/vendor/cmocka/CMakeLists.txt; then
+       AM_CONDITIONAL([CMOCKA_INITIALIZED], [true])
+    else
+       AM_CONDITIONAL([CMOCKA_INITIALIZED], [false])
+--=20
+2.7.4
+
+
+--------------35046A1214C8E5FD57226933--
 
