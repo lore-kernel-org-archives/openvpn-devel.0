@@ -1,11 +1,8 @@
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <d7fde34c-2244-aed1-6ecc-9f5c5d9d9b3b@...515...>
+Date: Wed, 24 Aug 2016 12:26:20 +0300
 MIME-Version: 1.0
-In-Reply-To: <c5ed5448-cff1-7407-7aa1-794e34455b72@...515...>
-References: <c5ed5448-cff1-7407-7aa1-794e34455b72@...515...>
-From: Jason Haar <jason_haar@...1490...>
-Date: Wed, 24 Aug 2016 21:25:12 +1200
-Message-ID: <CAFChrgKHV+9856iYNyrOs3HgG5vao5KaA7sdm20axxhCrbJmQQ@...278...>
-Content-Type: multipart/alternative; boundary=001a113de87ae9952f053acddc97
-Subject: Re: [Openvpn-devel] OpenVPN 2.3.12 released
+Subject: [Openvpn-devel] Combined Windows installers
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,57 +11,63 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
-Cc: openvpn-announce@lists.sourceforge.net, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, "openvpn users list (openvpn-users@lists.sourceforge.net)" <openvpn-users@lists.sourceforge.net>
-
---001a113de87ae9952f053acddc97
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="iso-8859-15"; format=flowed
 Content-Transfer-Encoding: quoted-printable
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-On Wed, Aug 24, 2016 at 3:52 AM, Samuli Sepp=C3=A4nen <samuli@...515...> wr=
-ote:
+Hi all,
 
-> The OpenVPN community project team is proud to release OpenVPN 2.3.12.
->
+Right now we have four different Windows installers:
 
-Great work guys. Can you tell me if the peer-info and peer-id server side
-code is in this version too? I'm still running on a GIT version of the
-server because of my desire for the peer-id data, but I'd rather be vanilla
-to be honest :-)
+1) tap-windows (NDIS5) + 32-bit OpenVPN
+2) tap-windows (NDIS5) + 64-bit OpenVPN
+3) tap-windows6 (NDIS6) + 32-bit OpenVPN
+4) tap-windows6 (NDIS6) + 32-bit OpenVPN
 
-Thanks again!
+Installers 1-2 are aimed at Windows XP, and installers 3-4 to Windows=20
+Vista and later. We could probably clean up this situation a bit by=20
+making combined installers. Here are a few options that come to mind:
 
+1) Bundle tap-windows and tap-windows6 in one installer
+
+This means we'd have two installers:
+
+- NDIS5 + NDIS6 + openvpn i686
+- NDIS5 + NDIS6 + openvpn x86_64
+
+So the bitness of the computer alone would determine which installer to use.
+
+
+2) Bundle 32-bit and 64-bit OpenVPN in one installer
+
+Here one would select the installer based on OS (XP or Vista+), but=20
+bitness would not matter:
+
+- NDIS5 + openvpn i686 + openvpn x86_64
+- NDIS6 + openvpn i686 + openvpn x86_64)
+
+
+3) Bundle everything together
+
+- NDIS5 + NDIS6 + openvpn i686 + openvpn x86_64)
+
+---
+
+We discussed this a bit on #openvpn-devel, and option 2 had the most=20
+votes. The problem with options 1 and 3 is that they'd require changes=20
+to openvpn-build, which would have to be scrapped when Windows XP and=20
+tap-windows (NDIS 5) support is dropped. And that is going to happen=20
+fairly soon.
+
+The 32/64-bit divide, on the other hand, is not disappearing in the near=20
+future, so having a 32/64-bit combined installer makes sense.
+
+Thoughts?
 
 --=20
-Cheers
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
 
-Jason Haar
-Information Security Manager, Trimble Navigation Ltd.
-Phone: +1 408 481 8171
-PGP Fingerprint: 7A2E 0407 C9A6 CAF6 2B9F 8422 C063 5EBB FE1D 66D1
-
---001a113de87ae9952f053acddc97
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">=
-On Wed, Aug 24, 2016 at 3:52 AM, Samuli Sepp=C3=A4nen <span dir=3D"ltr">&lt=
-;<a href=3D"mailto:samuli@...515..." target=3D"_blank">samuli@...515...</a>=
-&gt;</span> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0=
- 0 .8ex;border-left:1px #ccc solid;padding-left:1ex"><div id=3D":490" class=
-=3D"a3s aXjCH m156b81adcaefbb9c">The OpenVPN community project team is prou=
-d to release OpenVPN 2.3.12.<br></div></blockquote></div><br>Great work guy=
-s. Can you tell me if the peer-info and peer-id server side code is in this=
- version too? I&#39;m still running on a GIT version of the server because =
-of my desire for the peer-id data, but I&#39;d rather be vanilla to be hone=
-st :-)</div><div class=3D"gmail_extra"><br></div><div class=3D"gmail_extra"=
->Thanks again!<br><br clear=3D"all"><div><br></div>-- <br><div class=3D"gma=
-il_signature" data-smartmail=3D"gmail_signature"><div dir=3D"ltr"><div>Chee=
-rs</div><div><br></div><div>Jason Haar</div><div>Information Security Manag=
-er, Trimble Navigation Ltd.</div><div>Phone: +1 408 481 8171</div><div>PGP =
-Fingerprint: 7A2E 0407 C9A6 CAF6 2B9F 8422 C063 5EBB FE1D 66D1</div></div><=
-/div>
-</div></div>
-
---001a113de87ae9952f053acddc97--
+irc freenode net: mattock
 
