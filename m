@@ -1,18 +1,11 @@
-Message-ID: <57BD64D9.8010607@...1147...>
-Date: Wed, 24 Aug 2016 11:11:53 +0200
-From: Jan Just Keijser <janjust@...1147...>
 MIME-Version: 1.0
-References: <57A3C76A.1020809@...277...>
-	<CAKuzo_h0vMR4jv=iAgT2Vr2kq-nJRDs0Pq=3JC7eydQ-m1Ucpw@...278...>
-	<f9d8f147-e3d1-b80b-5646-faba6b853bc2@...277...>
-	<76eb908d-b7b3-7425-5340-e4cd5726fbd1@...2080...>
-	<3642cff2-6233-0a28-2a39-36513f008ab4@...277...>
-	<20160823123439.GA78279@...1296...>
-	<57BD5780.2030204@...1147...>
-	<f65edd44-e931-46e8-d21d-deda38005718@...515...>
-In-Reply-To: <f65edd44-e931-46e8-d21d-deda38005718@...515...>
-Subject: Re: [Openvpn-devel] Win10 Tun Server +Standard W10 User +OVPN
- Interactive Service +OVPN GUI
+In-Reply-To: <c5ed5448-cff1-7407-7aa1-794e34455b72@...515...>
+References: <c5ed5448-cff1-7407-7aa1-794e34455b72@...515...>
+From: Jason Haar <jason_haar@...1490...>
+Date: Wed, 24 Aug 2016 21:25:12 +1200
+Message-ID: <CAFChrgKHV+9856iYNyrOs3HgG5vao5KaA7sdm20axxhCrbJmQQ@...278...>
+Content-Type: multipart/alternative; boundary=001a113de87ae9952f053acddc97
+Subject: Re: [Openvpn-devel] OpenVPN 2.3.12 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,51 +14,57 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
+To: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
+Cc: openvpn-announce@lists.sourceforge.net, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, "openvpn users list (openvpn-users@lists.sourceforge.net)" <openvpn-users@lists.sourceforge.net>
+
+--001a113de87ae9952f053acddc97
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-To: =?windows-1252?Q?Samuli_Sepp=E4nen?= <samuli@...515...>, Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
+On Wed, Aug 24, 2016 at 3:52 AM, Samuli Sepp=C3=A4nen <samuli@...515...> wr=
+ote:
 
-On 24/08/16 10:45, Samuli Sepp=E4nen wrote:
-> Il 24/08/2016 11:14, Jan Just Keijser ha scritto:
->> Hi,
->>
->> On 23/08/16 14:34, Gert Doering wrote:
->>> On Tue, Aug 23, 2016 at 01:55:23AM +0100, debbie10t wrote:
->>>> I need to use --up/--down/--client-connect/disconnect et al ..
->>> You can, but they will run with the user privileges of the user that
->>> runs openvpn-gui by default.  If you need more privileges, you need
->>> to run openvpn.exe or the gui with admin privs.
->>>
->>>> How does one run openvpn on *windows* without these "considered"
->>>> security flaws ? or are we all just "lambs to the slaughter"
->>>> from here on in ?
->>> You can use openvpnserv2 to run openvpn.exe with admin privs (and no
->>> gui), or you can set [x] run as admin on the openvpn-gui (as it was=20
->>> done
->>> for 2.3.x).
->>>
->>> Most people on windows only need privileges to add/delete routes and
->>> configure IP addresses - this is what the iservice will give you,=20
->>> without
->>> the potential dangers of running openvpn and all scripts with full
->>> admin privs.
->>>
->> just for my understanding: how would a user run an up/down script with
->> *USER* credentials (necessary to map a share or printer, for example) in
->> this scenario?
+> The OpenVPN community project team is proud to release OpenVPN 2.3.12.
 >
-> You mean when running OpenVPN-GUI as admin, but wanting the map a=20
-> share as a non-privileged user?
->
-Actually, how would a (clueless) user do this at all, using the=20
-interactive service?  which part should be run with admin privs, which=20
-part shouldn't ?    which credentials are available to the interactive=20
-service (and any up/down scripts it may run) ?   should a user use a GUI=20
-up/down script (I know the old GUI supported this) instead?
 
-JJK
+Great work guys. Can you tell me if the peer-info and peer-id server side
+code is in this version too? I'm still running on a GIT version of the
+server because of my desire for the peer-id data, but I'd rather be vanilla
+to be honest :-)
 
+Thanks again!
+
+
+--=20
+Cheers
+
+Jason Haar
+Information Security Manager, Trimble Navigation Ltd.
+Phone: +1 408 481 8171
+PGP Fingerprint: 7A2E 0407 C9A6 CAF6 2B9F 8422 C063 5EBB FE1D 66D1
+
+--001a113de87ae9952f053acddc97
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">=
+On Wed, Aug 24, 2016 at 3:52 AM, Samuli Sepp=C3=A4nen <span dir=3D"ltr">&lt=
+;<a href=3D"mailto:samuli@...515..." target=3D"_blank">samuli@...515...</a>=
+&gt;</span> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0=
+ 0 .8ex;border-left:1px #ccc solid;padding-left:1ex"><div id=3D":490" class=
+=3D"a3s aXjCH m156b81adcaefbb9c">The OpenVPN community project team is prou=
+d to release OpenVPN 2.3.12.<br></div></blockquote></div><br>Great work guy=
+s. Can you tell me if the peer-info and peer-id server side code is in this=
+ version too? I&#39;m still running on a GIT version of the server because =
+of my desire for the peer-id data, but I&#39;d rather be vanilla to be hone=
+st :-)</div><div class=3D"gmail_extra"><br></div><div class=3D"gmail_extra"=
+>Thanks again!<br><br clear=3D"all"><div><br></div>-- <br><div class=3D"gma=
+il_signature" data-smartmail=3D"gmail_signature"><div dir=3D"ltr"><div>Chee=
+rs</div><div><br></div><div>Jason Haar</div><div>Information Security Manag=
+er, Trimble Navigation Ltd.</div><div>Phone: +1 408 481 8171</div><div>PGP =
+Fingerprint: 7A2E 0407 C9A6 CAF6 2B9F 8422 C063 5EBB FE1D 66D1</div></div><=
+/div>
+</div></div>
+
+--001a113de87ae9952f053acddc97--
 
