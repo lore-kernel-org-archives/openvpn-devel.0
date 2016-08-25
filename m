@@ -1,15 +1,7 @@
-Date: Thu, 25 Aug 2016 22:21:25 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20160825202125.GV78279@...1296...>
-References: <1456993146-63968-10-git-send-email-james@...515...>
-	<1472152522-22431-1-git-send-email-davids@...515...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="UrcmHL2XoDAE6/CM"
-Content-Disposition: inline
-In-Reply-To: <1472152522-22431-1-git-send-email-davids@...515...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Bind to local socket before
- dropping privileges
+From: David Sommerseth <davids@...515...>
+Date: Thu, 25 Aug 2016 23:54:57 +0200
+Message-Id: <1472162097-17855-1-git-send-email-davids@...515...>
+Subject: [Openvpn-devel] [PATCH] Fix client connection instant timeout
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,69 +10,49 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: David Sommerseth <davids@...515...>
-Cc: james@...515..., openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---UrcmHL2XoDAE6/CM
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Commit b3e975824ea9ebae8dbea5b451c8d02525c83ffe moved the finalizing of
+TCP/UDP sockets before the UID/GID where dropped.  But this did not
+factor that the timeout code had been revamped [1] in the mean time.
 
-Hi,
+This ensures the timout initialization is done before the the socket
+finalizing has been completed.
 
-On Thu, Aug 25, 2016 at 09:15:22PM +0200, David Sommerseth wrote:
-> ACK.  Tested both master and release/2.3 branches with and without this
-> patch.  On master this patch was needed to allow --lport 443 together
-> with --user openvpn --group openvpn.  On release/2.3 this patch was
-> not needed.
->=20
-> Your patch has been applied to the master branch
+[1] commit f2134b7bea37df15756c599b94f16d4bffafbbd6
 
-Uh.  I'm not sure what happened here, but this patch breaks all (most?) TCP
-client connections for me.  Across the board, all buildslaves (BSD and
-Solaris) have issues connecting via TCP, and my linux client fails as well:
+Signed-off-by: David Sommerseth <davids@...515...>
+---
+ src/openvpn/init.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-Thu Aug 25 22:07:29 2016 Attempting to establish TCP connection with [AF_IN=
-ET]199.102.77.82:51194 [nonblock]
-Thu Aug 25 22:07:29 2016 TCP: connect to [AF_INET]199.102.77.82:51194 faile=
-d: Connection timed out
-Thu Aug 25 22:07:29 2016 SIGUSR1[connection failed(soft),init_instance] rec=
-eived, process restarting
-Thu Aug 25 22:07:29 2016 Restart pause, 5 second(s)
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index ad4ebc3..5b6d246 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -3696,6 +3696,9 @@ init_instance (struct context *c, const struct env_set *env, const unsigned int
+     open_plugins (c, false, OPENVPN_PLUGIN_INIT_POST_DAEMON);
+ #endif
+ 
++  /* initialise connect timeout timer */
++  do_init_server_poll_timeout(c);
++
+   /* finalize the TCP/UDP socket */
+   if (c->mode == CM_P2P || c->mode == CM_TOP || c->mode == CM_CHILD_TCP)
+     do_init_socket_2 (c);
+@@ -3706,9 +3709,6 @@ init_instance (struct context *c, const struct env_set *env, const unsigned int
+    */
+   do_uid_gid_chroot (c, c->c2.did_open_tun);
+ 
+-  /* initialise connect timeout timer */
+-  do_init_server_poll_timeout(c);
+-
+   /* initialize timers */
+   if (c->mode == CM_P2P || child)
+     do_init_timers (c, false);
+-- 
+1.8.3.1
 
-seems that the patch interferes with the new timeout logic, and a=20
-"sudden death" timeout of 0 seconds strikes because something is not
-initialized yet.
-
-David, please test the stuff you commit a bit more thoroughly, with a full=
-=20
-set of t_client tests (udp, tcp, tun+tap) at least.  *Especially* those=20
-"harmless looking" patches that have lingered around for a bit while other=
-=20
-serious code changes have happened.
-
-Please revert.
-
-gert
-
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---UrcmHL2XoDAE6/CM
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQCVAwUBV79TRakuBuNlUUl1AQI5DgP+Ln1xDBKx+sgr9dvbRGdUp5ksgmk1aT8K
-ayy5ei1oZboEbEnSpBaAs6KJGjVykI8q3L4jALLUtPAM+5llx56empg9rJWDrHAv
-nXDNETIhfq9OXAUdBP2RXHDtlUsvoO1mQzaMEgM1Bo83LLvl/qmcMWVI/eYdBE+m
-JH4bj5huOZU=
-=2i4C
------END PGP SIGNATURE-----
-
---UrcmHL2XoDAE6/CM--
 
