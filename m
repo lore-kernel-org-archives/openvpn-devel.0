@@ -1,10 +1,15 @@
-From: David Sommerseth <davids@...515...>
-Date: Thu, 25 Aug 2016 21:15:22 +0200
-Message-Id: <1472152522-22431-1-git-send-email-davids@...515...>
-In-Reply-To: <1456993146-63968-10-git-send-email-james@...515...>
+Date: Thu, 25 Aug 2016 22:21:25 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20160825202125.GV78279@...1296...>
 References: <1456993146-63968-10-git-send-email-james@...515...>
+	<1472152522-22431-1-git-send-email-davids@...515...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="UrcmHL2XoDAE6/CM"
+Content-Disposition: inline
+In-Reply-To: <1472152522-22431-1-git-send-email-davids@...515...>
 Subject: Re: [Openvpn-devel] [PATCH applied] Bind to local socket before
-	dropping privileges
+ dropping privileges
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,55 +18,69 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: james@...515...
-Cc: openvpn-devel@lists.sourceforge.net
+To: David Sommerseth <davids@...515...>
+Cc: james@...515..., openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+--UrcmHL2XoDAE6/CM
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
+Hi,
 
-ACK.  Tested both master and release/2.3 branches with and without this
-patch.  On master this patch was needed to allow --lport 443 together
-with --user openvpn --group openvpn.  On release/2.3 this patch was
-not needed.
+On Thu, Aug 25, 2016 at 09:15:22PM +0200, David Sommerseth wrote:
+> ACK.  Tested both master and release/2.3 branches with and without this
+> patch.  On master this patch was needed to allow --lport 443 together
+> with --user openvpn --group openvpn.  On release/2.3 this patch was
+> not needed.
+>=20
+> Your patch has been applied to the master branch
 
-Your patch has been applied to the master branch
+Uh.  I'm not sure what happened here, but this patch breaks all (most?) TCP
+client connections for me.  Across the board, all buildslaves (BSD and
+Solaris) have issues connecting via TCP, and my linux client fails as well:
 
-commit b3e975824ea9ebae8dbea5b451c8d02525c83ffe
-Author: James Yonan
-Date:   Thu Mar 3 01:19:06 2016 -0700
+Thu Aug 25 22:07:29 2016 Attempting to establish TCP connection with [AF_IN=
+ET]199.102.77.82:51194 [nonblock]
+Thu Aug 25 22:07:29 2016 TCP: connect to [AF_INET]199.102.77.82:51194 faile=
+d: Connection timed out
+Thu Aug 25 22:07:29 2016 SIGUSR1[connection failed(soft),init_instance] rec=
+eived, process restarting
+Thu Aug 25 22:07:29 2016 Restart pause, 5 second(s)
 
-     Bind to local socket before dropping privileges
+seems that the patch interferes with the new timeout logic, and a=20
+"sudden death" timeout of 0 seconds strikes because something is not
+initialized yet.
 
-     Signed-off-by: James Yonan <james@...515...>
-     Acked-by: David Sommerseth <davids@...515...>
-     Message-Id: 1456993146-63968-10-git-send-email-james@...515...
-     URL: http://www.mail-archive.com/search?l=mid&q=1456993146-63968-10-git-send-email-james@...515...
-     Signed-off-by: David Sommerseth <davids@...515...>
+David, please test the stuff you commit a bit more thoroughly, with a full=
+=20
+set of t_client tests (udp, tcp, tun+tap) at least.  *Especially* those=20
+"harmless looking" patches that have lingered around for a bit while other=
+=20
+serious code changes have happened.
 
+Please revert.
 
-- --
-kind regards,
+gert
 
-David Sommerseth
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--UrcmHL2XoDAE6/CM
+Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBAgAGBQJXv0O7AAoJEIbPlEyWcf3yZLAQAMYxU27vByo6r73VlbSPm+aJ
-ycUd3OHSgLEgofRtmmXVJQv9IV5iAQnv5WYY5yiWTbJ2lEYWW5j6hxs06Lq6gdZM
-MxsBq4/xrFHJxEwq8mfjjxJt3dEz+XX+UwNr3uz69vSDqK3xq7waomdMnd7lAe0M
-hdqSMwyEcCoyIr5OQo2erlJuku6H8qSjDANb1MzPIB4RPLzW99UuwSMzS/WjhVvZ
-m+l4LU3/fYkKiGue2r4DKHDFoc1cFPHBLA4rSCmnf2YGj8X2XHuV3cgZacmbt2VI
-ygYIDtcnkvmVNXKgCPx1I+R/uyiy58auDXwEIK3fdSWP9ppi5vI9UeXf6yG8En7m
-XMMUtoOBRSCH8H29fVRwgkq9H84eyMiBIsDNDda6OS9J3q8QMswOTOyXH/TpTwj1
-A5cvaX64suA8RnvDRpq0gCzo92TLkU+iL1KSctOWDClUhMW6PF8mwIY4e6CpqWUk
-Z8v4tBTo8xva4zCarhjLm0Xefd68sAaqppJImTSj32Ae0VzGbLRqeuKZ50uBPgDZ
-MW7KuNCTV3ji6FbdJnLiynvIQdYkJLDyP5H7vbeaW5RIaC6gDdhSVUBkynSJOqGZ
-MQW8uaQuPbl5GdPRmvsLcyupZhwnYhsmQ2oxn0pUKC0uFqErhhBQlst4/nBWDHDI
-51Xvwwb6b+IyzvgWB+jX
-=aaSH
+iQCVAwUBV79TRakuBuNlUUl1AQI5DgP+Ln1xDBKx+sgr9dvbRGdUp5ksgmk1aT8K
+ayy5ei1oZboEbEnSpBaAs6KJGjVykI8q3L4jALLUtPAM+5llx56empg9rJWDrHAv
+nXDNETIhfq9OXAUdBP2RXHDtlUsvoO1mQzaMEgM1Bo83LLvl/qmcMWVI/eYdBE+m
+JH4bj5huOZU=
+=2i4C
 -----END PGP SIGNATURE-----
+
+--UrcmHL2XoDAE6/CM--
 
