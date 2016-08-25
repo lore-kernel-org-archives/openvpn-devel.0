@@ -1,11 +1,13 @@
-MIME-Version: 1.0
-In-Reply-To: <efe4c17a-1d4d-d20f-cc77-cf7564ea1184@...2080...>
 References: <efe4c17a-1d4d-d20f-cc77-cf7564ea1184@...2080...>
-From: Steffan Karger <steffan@...1856...>
-Date: Fri, 26 Aug 2016 00:21:50 +0200
-Message-ID: <CAA1AbxK5kCi5_NzeggKNt7+oLCvacMCEG0X4UwWqbzRKraTV=Q@...278...>
+	<CAA1AbxK5kCi5_NzeggKNt7+oLCvacMCEG0X4UwWqbzRKraTV=Q@...278...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <17453c3f-f2b5-9cf5-08e4-f59a21c971d7@...2080...>
+Date: Fri, 26 Aug 2016 00:36:58 +0200
+MIME-Version: 1.0
+In-Reply-To: <CAA1AbxK5kCi5_NzeggKNt7+oLCvacMCEG0X4UwWqbzRKraTV=Q@...278...>
 Subject: Re: [Openvpn-devel] [RFC] - Enable 2FA to be used with
 	renegotiations
+Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,58 +16,48 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+To: Steffan Karger <steffan@...1856...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-On 25 August 2016 at 15:45, David Sommerseth
-<openvpn@...2080...> wrote:
-> I've been working a bit on a new patch-set which enables third-party
-> user/password authentication mechanisms using two factor
-> authentications [2FA] (such as OTP) and not needing to disable the
-> renegotiation features of OpenVPN.
->
-> Currently, if a server is configured with 2FA using for example
-> HOTP/TOTP tokens, each renegotiation of the tunnel would require the
-> user to provide a new OTP code.  The current workaround have been to
-> disable the renegotiation (which by default happens once per hour).
-> It is also not considered ideal to disable the renegotiation.
->
-> The patch-set I have worked on fixes this by adding a new server side
-> option, --auth-gen-token.  This makes use of a feature already found
-> in OpenVPN clients.  If a server pushes 'auth-token $TOKENVALUE' to a
-> client, it will replace the currently locally stored password with
-> $TOKENVALUE.  Next time the OpenVPN tunnel is rengotiated, the
-> $TOKENVALUE will now be passed instead to the server along with the
-> username.
->
-> What the patch-set does is:
->
-> - - Add --auth-gen-token, and when used the following steps happens
->
-> - - After a successful normal user/password authentication, it will
->   generate a random token for this tunnel and keep a local copy of it.
->   This token is currently set to 256 bits (32 bytes).
->
-> - - It will push 'auth-token $RANDOM_TOKEN_VALUE'.  The
->   $RANDOM_TOKEN_VALUE sent to the client is BASE64 encoded.
->
-> - - When a re-authentication happens, and the server sees it have
->   a token and the token have been sent to the client, it does an
->   authentication of the token alone.  Any --auth-user-pass-verify or
->   --plugins enabling OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY will not
->   be called at this point.  On successful token authentication,
->   everything continues as before.  On failure the session is considered
->   un-authenticated and a complete new authentication round is required.
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-I haven't yet had the chance to look at the code, but the concept makes sense.
+On 26/08/16 00:21, Steffan Karger wrote:
+> One thing I think might be useful is a timeout that forces a client
+> to do a full reauth.  I can imagine a company policy that, for
+> example, requires users to perform a 2FA at least every 4 hours.
+> I'd want to implement such a policy without stretching the default
+> 1 hour renegotiate to 4 hours.  But that might also be too much of
+> a corner case which is not worth the extra code...
 
-One thing I think might be useful is a timeout that forces a client to
-do a full reauth.  I can imagine a company policy that, for example,
-requires users to perform a 2FA at least every 4 hours.  I'd want to
-implement such a policy without stretching the default 1 hour
-renegotiate to 4 hours.  But that might also be too much of a corner
-case which is not worth the extra code...
+Good point!
 
--Steffan
+With the input from Selva on the man page update, I started digging
+into when such a re-auth really can happen; turns out it's not that
+obvious.  So I'll investigate this further and extend the patch-set
+accordingly.
+
+
+- -- 
+kind regards,
+
+David Sommerseth
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBAgAGBQJXv3MKAAoJEIbPlEyWcf3yvb0P/0LBkV8fUSnsPq2Duy4MT/Gl
+OHgoSpC/NcOBNghJQ3DoJBbumtIVtf/GD48O9SLCPSlqsoIVp5+SWMeuQLaiy9OR
+kHYW2b3EI8ZOTfnnN1OpTHwSan4m1v792+81SNGp8eaShGsSW7Ib3wxgXnrLWMVy
+7vWu7C/giukNI32v0kiAfhfT5L5b8meLCpiGZiqysqejbs5otNWwwLdHK3ZSi/di
+dCGIhE5nYwPsXrZNXbEdleGjEb+akAONDVXq8PYIyKkAsizVtTFwr6SLOdi/POg0
+WfQh9mIKTCHm53WVA42d/37SGSoPormLT6TLDP0rSqZOWYBlUzsKWe93QpNYiaXe
+hhS7F1Vg366JWUCwNywlTKNHYLRtYkckkEaCFnp2stU8sQytjGfeI3tdwolXyxxy
+fSwE0FsxZlV0wzCZYwSmhaGcCRconcYOccae2b0ZgSj3n4+RP6P+sFlRgqGVbzjY
+kYJh+tDUSxk2gpCAF2P+FjgDqe3E91IP1DA7xW7z6iZdIY+8tTP8t3uZPl9Fissh
+MJvG0cRihaqE8aRiK6TCpqPYcGYbdv4CYcrK6F8GCZwm6hHK1n468R5j2sPMu8sy
+LysSoTSSCBFVx5EbKRwOJrT4cK3NVUE8Kd+8P2rmKDmv5CaTRlLaFJvvcfs869XS
+oU0LuW9S5zDEjHTuYKMs
+=Bl/d
+-----END PGP SIGNATURE-----
 
