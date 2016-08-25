@@ -1,8 +1,9 @@
-From: Selva Nair <selva.nair@...277...>
-Date: Wed, 24 Aug 2016 23:45:07 -0400
-Message-Id: <1472096708-5561-1-git-send-email-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH master] Support --block-outside-dns on
-	multiple tunnels
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <efe4c17a-1d4d-d20f-cc77-cf7564ea1184@...2080...>
+Date: Thu, 25 Aug 2016 15:45:24 +0200
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [RFC] - Enable 2FA to be used with renegotiations
+Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,184 +13,89 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
 To: openvpn-devel@lists.sourceforge.net
 
-Currently each instance of openvpn adds WFP filters into an independent
-sublayer. As a block in one sublayer can over-ride a permit in another,
-this causes all DNS traffic to block when --block-outside-dns is used
-in multiple tunnels.
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-Fix using a common sublayer for adding firewall rules (filters) from all
-instances of openvpn and interactive service.
-- The sublayer is added in a persistent session so that it could be
-  accessed from multiple sessions.
-- The sublayer is identified by a fixed UUID defined in block_dns.c
-  shared between openvpn.exe and openvpnserv.exe.
-- Permit filters for tun/tap interfaces are added with higher priority
-  than filters that block all DNS traffic. This is not strictly
-  necessary as WFP assigns higher priority to specific filters over generic
-  ones, but it may be safer not to rely on that feature.
-- All filters are added in dynamic sessions as before. They get
-  automatically removed when the process exits. The sublayer will,
-  however, persist until reboot.
 
-Resolves Trac 718
-Tested on Windows 7, 10 with/without interactive service
+Hi,
 
-Signed-off-by: Selva Nair <selva.nair@...277...>
----
- src/openvpn/block_dns.c |   93 +++++++++++++++++++++++++++++++++++++----------
- 1 file changed, 74 insertions(+), 19 deletions(-)
+I've been working a bit on a new patch-set which enables third-party
+user/password authentication mechanisms using two factor
+authentications [2FA] (such as OTP) and not needing to disable the
+renegotiation features of OpenVPN.
 
-diff --git a/src/openvpn/block_dns.c b/src/openvpn/block_dns.c
-index af2db18..d89a3b2 100644
---- a/src/openvpn/block_dns.c
-+++ b/src/openvpn/block_dns.c
-@@ -87,6 +87,18 @@ DEFINE_GUID(
-    0xb7, 0xf3, 0xbd, 0xa5, 0xd3, 0x28, 0x90, 0xa4
- );
- 
-+/* UUID of WFP sublayer used by all instances of openvpn
-+   2f660d7e-6a37-11e6-a181-001e8c6e04a2 */
-+DEFINE_GUID(
-+   OPENVPN_BLOCK_OUTSIDE_DNS_SUBLAYER,
-+   0x2f660d7e,
-+   0x6a37,
-+   0x11e6,
-+   0xa1, 0x81, 0x00, 0x1e, 0x8c, 0x6e, 0x04, 0xa2
-+);
-+
-+static WCHAR *FIREWALL_NAME = L"OpenVPN";
-+
- /*
-  * Default msg handler does nothing
-  */
-@@ -100,6 +112,55 @@ default_msg_handler (DWORD err, const char *msg)
-    if (err) { msg_handler (err, msg); goto out; }
- 
- /*
-+ * Retrieve the common sublayer for adding filters into. If the sublayer
-+ * does not exist a new one with UUID = OPENVPN_BLOCK_OUTSIDE_DNS_SUBLAYER
-+ * is added to the system.
-+ * A common sublayer is used by all instances of openvpn and interactive service.
-+ */
-+static DWORD
-+get_sublayer (FWPM_SUBLAYER0 *SubLayer, block_dns_msg_handler_t msg_handler)
-+{
-+  FWPM_SESSION0 session;
-+  HANDLE engine = NULL;
-+  DWORD err = 0;
-+  FWPM_SUBLAYER0 *sublayer_ptr;
-+
-+  memset (&session, 0, sizeof(session));
-+
-+  err = FwpmEngineOpen0 (NULL, RPC_C_AUTHN_WINNT, NULL, &session, &engine);
-+  if (err != ERROR_SUCCESS)
-+    goto out;
-+
-+  /* Try to retrieve the sublayer if already present */
-+  err = FwpmSubLayerGetByKey0 (engine,
-+          &OPENVPN_BLOCK_OUTSIDE_DNS_SUBLAYER, &sublayer_ptr);
-+  if (err == ERROR_SUCCESS)
-+    {
-+      msg_handler (0, "Block_DNS: Retrieved existing sublayer");
-+      memcpy (SubLayer, sublayer_ptr, sizeof(*SubLayer));
-+      FwpmFreeMemory0 ((void **)&sublayer_ptr);
-+      goto out;
-+    }
-+
-+  /* Sublayer does not exist -- add it */
-+  SubLayer->subLayerKey = OPENVPN_BLOCK_OUTSIDE_DNS_SUBLAYER;
-+  SubLayer->displayData.name = FIREWALL_NAME;
-+  SubLayer->displayData.description = FIREWALL_NAME;
-+  SubLayer->flags = 0;
-+  SubLayer->weight = 0x100;
-+
-+  /* Add sublayer to the session */
-+  err = FwpmSubLayerAdd0 (engine, SubLayer, NULL);
-+  if (err == ERROR_SUCCESS)
-+    msg_handler (0, "Block_DNS: Added a persistent sublayer with pre-defined UUID");
-+
-+out:
-+  if (engine)
-+    FwpmEngineClose0 (engine);
-+  return err;
-+}
-+
-+/*
-  * Block outgoing port 53 traffic except for
-  * (i) adapter with the specified index
-  * OR
-@@ -130,7 +191,6 @@ add_block_dns_filters (HANDLE *engine_handle,
-   FWP_BYTE_BLOB *openvpnblob = NULL;
-   FWPM_FILTER0 Filter = {0};
-   FWPM_FILTER_CONDITION0 Condition[2] = {0};
--  WCHAR *FIREWALL_NAME = L"OpenVPN";
-   DWORD err = 0;
- 
-   if (!msg_handler)
-@@ -143,22 +203,11 @@ add_block_dns_filters (HANDLE *engine_handle,
- 
-   err = FwpmEngineOpen0 (NULL, RPC_C_AUTHN_WINNT, NULL, &session, engine_handle);
-   CHECK_ERROR (err, "FwpEngineOpen: open fwp session failed");
--
--  err = UuidCreate (&SubLayer.subLayerKey);
--  CHECK_ERROR (err, "UuidCreate: create sublayer key failed");
--
--  /* Populate packet filter layer information. */
--  SubLayer.displayData.name = FIREWALL_NAME;
--  SubLayer.displayData.description = FIREWALL_NAME;
--  SubLayer.flags = 0;
--  SubLayer.weight = 0x100;
--
--  /* Add sublayer to the session */
--  err = FwpmSubLayerAdd0 (*engine_handle, &SubLayer, NULL);
--  CHECK_ERROR (err, "FwpmSubLayerAdd: add sublayer to session failed");
--
-   msg_handler (0, "Block_DNS: WFP engine opened");
- 
-+  err = get_sublayer (&SubLayer, msg_handler);
-+  CHECK_ERROR (err, "get_sublayer: failed to retrive or add persistent sublayer");
-+
-   err = ConvertInterfaceIndexToLuid (index, &tapluid);
-   CHECK_ERROR (err, "Convert interface index to luid failed");
- 
-@@ -207,15 +256,20 @@ add_block_dns_filters (HANDLE *engine_handle,
-   err = FwpmFilterAdd0(*engine_handle, &Filter, NULL, &filterid);
-   CHECK_ERROR (err, "Add filter to block IPv4 DNS traffic failed");
- 
--  msg_handler (0, "Block_DNS: Added block filters for all");
--
-   /* Forth filter. Block all IPv6 DNS queries. */
-   Filter.layerKey = FWPM_LAYER_ALE_AUTH_CONNECT_V6;
- 
-   err = FwpmFilterAdd0(*engine_handle, &Filter, NULL, &filterid);
-   CHECK_ERROR (err, "Add filter to block IPv6 DNS traffic failed");
- 
--  /* Fifth filter. Permit IPv4 DNS queries from TAP. */
-+  msg_handler (0, "Block_DNS: Added block filters for all interfaces");
-+
-+  /* Fifth filter. Permit IPv4 DNS queries from TAP.
-+   * Use a non-zero weight so that the permit filters get higher priority
-+   * over the block filter added with automatic weighting */
-+
-+  Filter.weight.type = FWP_UINT8;
-+  Filter.weight.uint8 = 0xE;
-   Filter.layerKey = FWPM_LAYER_ALE_AUTH_CONNECT_V4;
-   Filter.action.type = FWP_ACTION_PERMIT;
-   Filter.numFilterConditions = 2;
-@@ -228,7 +282,8 @@ add_block_dns_filters (HANDLE *engine_handle,
-   err = FwpmFilterAdd0(*engine_handle, &Filter, NULL, &filterid);
-   CHECK_ERROR (err, "Add filter to permit IPv4 DNS traffic through TAP failed");
- 
--  /* Sixth filter. Permit IPv6 DNS queries from TAP. */
-+  /* Sixth filter. Permit IPv6 DNS queries from TAP.
-+   * Use same weight as IPv4 filter */
-   Filter.layerKey = FWPM_LAYER_ALE_AUTH_CONNECT_V6;
- 
-   err = FwpmFilterAdd0(*engine_handle, &Filter, NULL, &filterid);
--- 
-1.7.10.4
+Currently, if a server is configured with 2FA using for example
+HOTP/TOTP tokens, each renegotiation of the tunnel would require the
+user to provide a new OTP code.  The current workaround have been to
+disable the renegotiation (which by default happens once per hour).
+It is also not considered ideal to disable the renegotiation.
 
+The patch-set I have worked on fixes this by adding a new server side
+option, --auth-gen-token.  This makes use of a feature already found
+in OpenVPN clients.  If a server pushes 'auth-token $TOKENVALUE' to a
+client, it will replace the currently locally stored password with
+$TOKENVALUE.  Next time the OpenVPN tunnel is rengotiated, the
+$TOKENVALUE will now be passed instead to the server along with the
+username.
+
+What the patch-set does is:
+
+- - Add --auth-gen-token, and when used the following steps happens
+
+- - After a successful normal user/password authentication, it will
+  generate a random token for this tunnel and keep a local copy of it.
+  This token is currently set to 256 bits (32 bytes).
+
+- - It will push 'auth-token $RANDOM_TOKEN_VALUE'.  The
+  $RANDOM_TOKEN_VALUE sent to the client is BASE64 encoded.
+
+- - When a re-authentication happens, and the server sees it have
+  a token and the token have been sent to the client, it does an
+  authentication of the token alone.  Any --auth-user-pass-verify or
+  --plugins enabling OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY will not
+  be called at this point.  On successful token authentication,
+  everything continues as before.  On failure the session is considered
+  un-authenticated and a complete new authentication round is required.
+
+If --auth-gen-token is NOT used, OpenVPN will behave as before.
+
+The patch-set can be found here:
+<https://gitlab.com/dazo/openvpn/compare/master...dev%2Fauth-gen-token>
+
+And the git tree can be found here:
+<https://gitlab.com/dazo/openvpn.git>
+(Check out the dev/auth-gen-token branch)
+
+I do not yet consider this patch-set ready for inclusion yet, it needs
+a lot of testing and reviewing .  But it should work.  The patch-set
+is broken into smaller pieces to try to make the overall
+implementation more transparent, easy to review and easier to git
+bisect when needing to debug.  Each commit level should compile
+cleanly.   Please feel free to comment inline.
+
+
+- --=20
+kind regards,
+
+David Sommerseth
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBAgAGBQJXvvZzAAoJEIbPlEyWcf3yLmEQAIDMdZBeiz5lXtRENXGm/fW6
+ZUKIYSlw0TITQgeGWc6hFcAXCWLVtj4SiLLmtcZ25UrbXc+do2c8IFuHkoDIVrif
+mEL8mw/+Cgy6ch2DZrT779KneeuArRsimPyquVq8NLZ3UGIqcwWYpeI9GES51SAe
+dQVwOmpojStOFLmmxoEC0i4oSpjtm0L2U6o6ytl+140yMVj92ADmH9Vow4G1velF
+7lAkfJxabUn6sch/Y87Ny4SG5u0jkgzerikOGSuGAafnWQKejKbdADnxuMhx/3Qb
+gnDHyrfUeiwgIOtYZ2pNflG8FT4AdJDuXYTcjJQu+yS0N0cXT0w0sBYahQrXcPjY
+N2Lumk6qq39N+INnS8x310CfUBQ1rO4fxZX8kZEwIZzXPu3VDCSWcqwAcIIWylQZ
+gx481kO8O04cFyJdlkgr1vb+fgIM2PlXIn/hnxpfjSuJPf+1MHPee0NVS4dcYWPg
+oMoo7bVOv+UVV85qy3I3TPCt+7fGF3dG+JQEEW/xOT90G+z+o2u4ZuS2uxL9n5fJ
+0H0mHd6LkHR3vlxbtJjDOkqOZIdhNwFamkVK3jj5IF7C+v1WaMlK2Vy4ifiCz8p5
+C+bHYo9zjA8+Tv3PRNRwpPbVLyFFhV0poe/hFC2ch3/Zq8X/ZHGZNWoXgnNAx7kh
+ByHclsBZa5kbGqEy2zVr
+=3DYnjq
+-----END PGP SIGNATURE-----
 
