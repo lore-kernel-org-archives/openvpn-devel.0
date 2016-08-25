@@ -1,7 +1,17 @@
-From: David Sommerseth <davids@...515...>
-Date: Thu, 25 Aug 2016 19:32:17 +0200
-Message-Id: <1472146337-9430-1-git-send-email-davids@...515...>
-Subject: [Openvpn-devel] [PATCH] Document the --auth-token option
+References: <efe4c17a-1d4d-d20f-cc77-cf7564ea1184@...2080...>
+	<1472133483.61594.587.camel@...1866...>
+	<8e9eb1dd-2505-7414-4828-6d6b6d1e25f0@...2080...>
+	<CAKuzo_j0XwQ7OR8E-wGcTQDwEjdRbTZZy84wK68qgZLS30sT7g@...278...>
+	<edab23db-978e-ec86-c9c2-5768b468cbdd@...2080...>
+	<CAKuzo_iF5TsPDgVrjTfKfRWJp=1T=ZuejazTwK0OQpBWTbuwnw@...278...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <ab877ea0-9ad8-3afc-f62f-ab8c26cc4868@...2080...>
+Date: Thu, 25 Aug 2016 19:38:28 +0200
+MIME-Version: 1.0
+In-Reply-To: <CAKuzo_iF5TsPDgVrjTfKfRWJp=1T=ZuejazTwK0OQpBWTbuwnw@...278...>
+Subject: Re: [Openvpn-devel] [RFC] - Enable 2FA to be used with
+	renegotiations
+Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -10,103 +20,41 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+To: Selva Nair <selva.nair@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-This isn't an option to be used directly in any configuration files,
-but to be used via --client-connect scripts or --plugin making use of
-OPENVPN_PLUGIN_CLIENT_CONNECT or OPENVPN_PLUGIN_CLIENT_CONNECT_V2.
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-Signed-off-by: David Sommerseth <davids@...515...>
----
- doc/openvpn.8 | 51 +++++++++++++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 49 insertions(+), 2 deletions(-)
+On 25/08/16 18:53, Selva Nair wrote:
+> As for caching, either the token will have to be cached unless 
+> management is in use in which case the UI/GUI can remember the
+> token and supply it during reneg.
 
-diff --git a/doc/openvpn.8 b/doc/openvpn.8
-index 2f42636..d13b826 100644
---- a/doc/openvpn.8
-+++ b/doc/openvpn.8
-@@ -4,7 +4,7 @@
- .\"             packet encryption, packet authentication, and
- .\"             packet compression.
- .\"
--.\"  Copyright (C) 2002-2010 OpenVPN Technologies, Inc. <sales@...515...>
-+.\"  Copyright (C) 2002-2016 OpenVPN Technologies, Inc. <sales@...515...>
- .\"
- .\"  This program is free software; you can redistribute it and/or modify
- .\"  it under the terms of the GNU General Public License version 2
-@@ -34,7 +34,7 @@
- .\" .ft -- normal face
- .\" .in +|-{n} -- indent
- .\"
--.TH openvpn 8 "17 November 2008"
-+.TH openvpn 8 "25 August 2016"
- .\"*********************************************************
- .SH NAME
- openvpn \- secure IP tunnel daemon.
-@@ -2931,6 +2931,7 @@ This is a partial list of options which can currently be pushed:
- .B \-\-ip\-win32, \-\-dhcp\-option,
- .B \-\-inactive, \-\-ping, \-\-ping\-exit, \-\-ping\-restart,
- .B \-\-setenv,
-+.B \-\-auth\-token,
- .B \-\-persist\-key, \-\-persist\-tun, \-\-echo,
- .B \-\-comp\-lzo,
- .B \-\-socket\-flags,
-@@ -5023,6 +5024,52 @@ This directive does not affect the
- username/password.  It is always cached.
- .\"*********************************************************
- .TP
-+.B \-\-auth\-token token
-+This is not an option to be used directly in any configuration files,
-+but rather push this option from a
-+.B \-\-client\-connect
-+script or a
-+.B \-\-plugin
-+which hooks into the OPENVPN_PLUGIN_CLIENT_CONNECT or
-+OPENVPN_PLUGIN_CLIENT_CONNECT_V2 calls.  This option provides
-+a possibility to replace the clients password with a temporary
-+authentication token.
-+
-+Whenever the connection is renegotiated and the
-+\-\-auth\-user\-pass\-verify
-+script or
-+\-\-plugin
-+making use of the OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY hook is
-+triggered, it will then pass over this token as the password
-+instead of the password the user provided.
-+
-+The purpose of this is to enable two factor authentication
-+methods, such as HOTP or TOTP, to be used without needing to
-+retrieve a new OTP code each time the connection is renegotiated.
-+Another use case is to cache authentication data on the client
-+without needing to have the users password cached in memory
-+during the life time of the session.
-+
-+To make use of this feature, the
-+\-\-client\-connect
-+script or
-+\-\-plugin
-+needs to put
-+
-+.nf
-+.ft 3
-+.in +4
-+push "auth-token UNIQUE_TOKEN_VALUE"
-+.in -4
-+.ft
-+.fi
-+
-+into the file/buffer for dynamic configuration data.  This
-+will then make the OpenVPN server to push this value to the
-+client, which replaces the local password with the
-+UNIQUE_TOKEN_VALUE.
-+.\"*********************************************************
-+.TP
- .B \-\-tls\-verify cmd
- Run command
- .B cmd
--- 
-1.8.3.1
+Right, but I think we both agree that caching a temporary token which
+is valid for only a single session is far better than actually caching
+the users password ;-)
 
+- -- 
+kind regards,
+
+David Sommerseth
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBAgAGBQJXvy0UAAoJEIbPlEyWcf3y6fYQAKoKGrGv2v+VgBGNM5BRLGEw
+8jIJ1waE0qyFlLXKb6WX6mXzw/oZQVmVx5ldBp7dnTrfoGTP9FTAUDAkMoMdFU6M
+g/9DjW9iL1f8azgUNY1frHOSaoXtfFCTKJQ0HFzcYFXlzv4QY8fYVnacuzkbbBZu
+8y9XcDR6jvCFz5hAozeGjbv+Yqf2uY5C8VCRASqyfhVjZGrKz309dldAjNuoMRJz
+VM32ImicvZOSuRr3ln9jGbqHKHovq8FuU6DrhnYCg52VYAiOYyWvJgjeiC5aI0WG
+cgIrIeZUW89KkOndDJquRLcSE1ZoNVhw7QcHLm/XakGn1+n2BVrRsOt+1REo62Bh
+hFtXVX6iWCYNKZldf8Lf5/KnYeECpFehH65B1gGfjAIVDXrrme399u4Ue+CIKpkh
+CfO+vhTjFdTIuvMQruyk6vpgHh+6E4MAJATSrerzI2dxiztLlteczj+VHWjLn9tF
+ViNRQ8PYBKhR8qoVoERQtLm6K3OxcwQz4VO8b9n+o5BWIIfGVq+OR7n2F6OJjyrz
+BW1dppOkpTcyIyHo6K4B8gMsQ6xl9jj8dsz/+44jOehztl+OthljQIPYsPdA5kOQ
+7ep2unfjh38o5o6V078++3w2s4P+8a3ju6aEjaMJSx1l0wpyXpdPt0DLjN6mNyy3
+hb9XeQ07cfnyNHGi2ksi
+=kOcn
+-----END PGP SIGNATURE-----
 
