@@ -1,10 +1,8 @@
 From: Selva Nair <selva.nair@...277...>
-Date: Wed, 24 Aug 2016 23:45:08 -0400
-Message-Id: <1472096708-5561-2-git-send-email-selva.nair@...277...>
-In-Reply-To: <1472096708-5561-1-git-send-email-selva.nair@...277...>
-References: <1472096708-5561-1-git-send-email-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH 2.3] Support --block-outside-dns on multiple
-	tunnels
+Date: Wed, 24 Aug 2016 23:45:07 -0400
+Message-Id: <1472096708-5561-1-git-send-email-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH master] Support --block-outside-dns on
+	multiple tunnels
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -28,8 +26,8 @@ instances of openvpn and interactive service.
   accessed from multiple sessions.
 - The sublayer is identified by a fixed UUID defined in block_dns.c
   shared between openvpn.exe and openvpnserv.exe.
-- Permit filters for tun/tap interfaces are added with explicitly higher
-  priority than filters that block all DNS traffic. This is not strictly
+- Permit filters for tun/tap interfaces are added with higher priority
+  than filters that block all DNS traffic. This is not strictly
   necessary as WFP assigns higher priority to specific filters over generic
   ones, but it may be safer not to rely on that feature.
 - All filters are added in dynamic sessions as before. They get
@@ -37,51 +35,20 @@ instances of openvpn and interactive service.
   however, persist until reboot.
 
 Resolves Trac 718
-
-- While at it also make sure the WFP session is closed on error in
-  win_wfp_block_dns().
-- Also fix the function prototype typedefs in win32_wfp.h for
-  run-time-resolved fwpm functions
-
-Tested on Windows 7, 10
+Tested on Windows 7, 10 with/without interactive service
 
 Signed-off-by: Selva Nair <selva.nair@...277...>
 ---
- src/openvpn/win32.c     |  103 ++++++++++++++++++++++++++++++++++++++---------
- src/openvpn/win32_wfp.h |   20 +++++----
- 2 files changed, 97 insertions(+), 26 deletions(-)
+ src/openvpn/block_dns.c |   93 +++++++++++++++++++++++++++++++++++++----------
+ 1 file changed, 74 insertions(+), 19 deletions(-)
 
-diff --git a/src/openvpn/win32.c b/src/openvpn/win32.c
-index 4f2df14..1edc482 100644
---- a/src/openvpn/win32.c
-+++ b/src/openvpn/win32.c
-@@ -63,6 +63,7 @@ func_FwpmSubLayerAdd0 FwpmSubLayerAdd0 = NULL;
- func_FwpmSubLayerDeleteByKey0 FwpmSubLayerDeleteByKey0 = NULL;
- func_FwpmFreeMemory0 FwpmFreeMemory0 = NULL;
- func_FwpmGetAppIdFromFileName0 FwpmGetAppIdFromFileName0 = NULL;
-+func_FwpmSubLayerGetByKey0 FwpmSubLayerGetByKey0 = NULL;
- 
- /*
-  * WFP firewall name.
-@@ -1140,6 +1141,7 @@ win_wfp_init_funcs ()
-   FwpmSubLayerDeleteByKey0 = (func_FwpmSubLayerDeleteByKey0)GetProcAddress(fwpuclntHandle, "FwpmSubLayerDeleteByKey0");
-   FwpmFreeMemory0 = (func_FwpmFreeMemory0)GetProcAddress(fwpuclntHandle, "FwpmFreeMemory0");
-   FwpmGetAppIdFromFileName0 = (func_FwpmGetAppIdFromFileName0)GetProcAddress(fwpuclntHandle, "FwpmGetAppIdFromFileName0");
-+  FwpmSubLayerGetByKey0 = (func_FwpmSubLayerGetByKey0) GetProcAddress(fwpuclntHandle, "FwpmSubLayerGetByKey0");
- 
-   if (!ConvertInterfaceIndexToLuid ||
-       !FwpmFilterAdd0 ||
-@@ -1148,6 +1150,7 @@ win_wfp_init_funcs ()
-       !FwpmSubLayerAdd0 ||
-       !FwpmSubLayerDeleteByKey0 ||
-       !FwpmFreeMemory0 ||
-+      !FwpmSubLayerGetByKey0 ||
-       !FwpmGetAppIdFromFileName0)
-   {
-     msg (M_NONFATAL, "Can't get address for all WFP-related procedures.");
-@@ -1157,6 +1160,66 @@ win_wfp_init_funcs ()
-   return true;
- }
+diff --git a/src/openvpn/block_dns.c b/src/openvpn/block_dns.c
+index af2db18..d89a3b2 100644
+--- a/src/openvpn/block_dns.c
++++ b/src/openvpn/block_dns.c
+@@ -87,6 +87,18 @@ DEFINE_GUID(
+    0xb7, 0xf3, 0xbd, 0xa5, 0xd3, 0x28, 0x90, 0xa4
+ );
  
 +/* UUID of WFP sublayer used by all instances of openvpn
 +   2f660d7e-6a37-11e6-a181-001e8c6e04a2 */
@@ -93,15 +60,22 @@ index 4f2df14..1edc482 100644
 +   0xa1, 0x81, 0x00, 0x1e, 0x8c, 0x6e, 0x04, 0xa2
 +);
 +
-+/*
++static WCHAR *FIREWALL_NAME = L"OpenVPN";
++
+ /*
+  * Default msg handler does nothing
+  */
+@@ -100,6 +112,55 @@ default_msg_handler (DWORD err, const char *msg)
+    if (err) { msg_handler (err, msg); goto out; }
+ 
+ /*
 + * Retrieve the common sublayer for adding filters into. If the sublayer
 + * does not exist a new one with UUID = OPENVPN_BLOCK_OUTSIDE_DNS_SUBLAYER
 + * is added to the system.
-+ * A common sublayer is used by all instances of openvpn.
++ * A common sublayer is used by all instances of openvpn and interactive service.
 + */
-+
 +static DWORD
-+get_sublayer (FWPM_SUBLAYER0 *SubLayer)
++get_sublayer (FWPM_SUBLAYER0 *SubLayer, block_dns_msg_handler_t msg_handler)
 +{
 +  FWPM_SESSION0 session;
 +  HANDLE engine = NULL;
@@ -119,7 +93,7 @@ index 4f2df14..1edc482 100644
 +          &OPENVPN_BLOCK_OUTSIDE_DNS_SUBLAYER, &sublayer_ptr);
 +  if (err == ERROR_SUCCESS)
 +    {
-+      msg (D_LOW, "Retrieved existing sublayer");
++      msg_handler (0, "Block_DNS: Retrieved existing sublayer");
 +      memcpy (SubLayer, sublayer_ptr, sizeof(*SubLayer));
 +      FwpmFreeMemory0 ((void **)&sublayer_ptr);
 +      goto out;
@@ -135,7 +109,7 @@ index 4f2df14..1edc482 100644
 +  /* Add sublayer to the session */
 +  err = FwpmSubLayerAdd0 (engine, SubLayer, NULL);
 +  if (err == ERROR_SUCCESS)
-+    msg (D_LOW, "Added a persistent sublayer with pre-defined UUID");
++    msg_handler (0, "Block_DNS: Added a persistent sublayer with pre-defined UUID");
 +
 +out:
 +  if (engine)
@@ -143,152 +117,78 @@ index 4f2df14..1edc482 100644
 +  return err;
 +}
 +
- bool
- win_wfp_add_filter (HANDLE engineHandle,
-                     const FWPM_FILTER0 *filter,
-@@ -1194,28 +1257,17 @@ win_wfp_block_dns (const NET_IFINDEX index)
-         return false;
-     }
++/*
+  * Block outgoing port 53 traffic except for
+  * (i) adapter with the specified index
+  * OR
+@@ -130,7 +191,6 @@ add_block_dns_filters (HANDLE *engine_handle,
+   FWP_BYTE_BLOB *openvpnblob = NULL;
+   FWPM_FILTER0 Filter = {0};
+   FWPM_FILTER_CONDITION0 Condition[2] = {0};
+-  WCHAR *FIREWALL_NAME = L"OpenVPN";
+   DWORD err = 0;
  
--    if (UuidCreate(&SubLayer.subLayerKey) != NO_ERROR)
--        return false;
+   if (!msg_handler)
+@@ -143,22 +203,11 @@ add_block_dns_filters (HANDLE *engine_handle,
+ 
+   err = FwpmEngineOpen0 (NULL, RPC_C_AUTHN_WINNT, NULL, &session, engine_handle);
+   CHECK_ERROR (err, "FwpEngineOpen: open fwp session failed");
 -
--    /* Populate packet filter layer information. */
--    SubLayer.displayData.name = FIREWALL_NAME;
--    SubLayer.displayData.description = FIREWALL_NAME;
--    SubLayer.flags = 0;
--    SubLayer.weight = 0x100;
+-  err = UuidCreate (&SubLayer.subLayerKey);
+-  CHECK_ERROR (err, "UuidCreate: create sublayer key failed");
 -
--    /* Add packet filter to our interface. */
--    dmsg (D_LOW, "Adding WFP sublayer");
--    if (FwpmSubLayerAdd0(m_hEngineHandle, &SubLayer, NULL) != ERROR_SUCCESS)
-+    if (get_sublayer (&SubLayer) != ERROR_SUCCESS)
-     {
--        msg (M_NONFATAL, "Can't add WFP sublayer");
--        return false;
-+        msg (M_NONFATAL, "Failed to retrieve or add persistent sublayer");
-+        goto err;
-     }
+-  /* Populate packet filter layer information. */
+-  SubLayer.displayData.name = FIREWALL_NAME;
+-  SubLayer.displayData.description = FIREWALL_NAME;
+-  SubLayer.flags = 0;
+-  SubLayer.weight = 0x100;
+-
+-  /* Add sublayer to the session */
+-  err = FwpmSubLayerAdd0 (*engine_handle, &SubLayer, NULL);
+-  CHECK_ERROR (err, "FwpmSubLayerAdd: add sublayer to session failed");
+-
+   msg_handler (0, "Block_DNS: WFP engine opened");
  
-     dmsg (D_LOW, "Blocking DNS using WFP");
-     if (ConvertInterfaceIndexToLuid(index, &tapluid) != NO_ERROR)
-     {
-         msg (M_NONFATAL, "Can't convert interface index to LUID");
--        return false;
-+        goto err;
-     }
-     dmsg (D_LOW, "Tap Luid: %I64d", tapluid.Value);
- 
-@@ -1223,7 +1275,7 @@ win_wfp_block_dns (const NET_IFINDEX index)
-     GetModuleFileNameW(NULL, openvpnpath, MAX_PATH);
- 
-     if (FwpmGetAppIdFromFileName0(openvpnpath, &openvpnblob) != ERROR_SUCCESS)
--        return false;
-+        goto err;
- 
-     /* Prepare filter. */
-     Filter.subLayerKey = SubLayer.subLayerKey;
-@@ -1277,7 +1329,12 @@ win_wfp_block_dns (const NET_IFINDEX index)
-         goto err;
-     dmsg (D_LOW, "Filter (Block IPv6 DNS) added with ID=%I64d", filterid);
- 
--    /* Fifth filter. Permit IPv4 DNS queries from TAP. */
-+    /* Fifth filter. Permit IPv4 DNS queries from TAP.
-+     * Use a non-zero weight so that the permit filters get higher priority
-+     * over the block filter added with automatic weighting */
++  err = get_sublayer (&SubLayer, msg_handler);
++  CHECK_ERROR (err, "get_sublayer: failed to retrive or add persistent sublayer");
 +
-+    Filter.weight.type = FWP_UINT8;
-+    Filter.weight.uint8 = 0xE;
-     Filter.layerKey = FWPM_LAYER_ALE_AUTH_CONNECT_V4;
-     Filter.action.type = FWP_ACTION_PERMIT;
-     Filter.numFilterConditions = 2;
-@@ -1292,7 +1349,8 @@ win_wfp_block_dns (const NET_IFINDEX index)
-         goto err;
-     dmsg (D_LOW, "Filter (Permit IPv4 DNS queries from TAP) added with ID=%I64d", filterid);
+   err = ConvertInterfaceIndexToLuid (index, &tapluid);
+   CHECK_ERROR (err, "Convert interface index to luid failed");
  
--    /* Sixth filter. Permit IPv6 DNS queries from TAP. */
-+    /* Sixth filter. Permit IPv6 DNS queries from TAP.
-+     * Use same weight as IPv4 filter */
-     Filter.layerKey = FWPM_LAYER_ALE_AUTH_CONNECT_V6;
+@@ -207,15 +256,20 @@ add_block_dns_filters (HANDLE *engine_handle,
+   err = FwpmFilterAdd0(*engine_handle, &Filter, NULL, &filterid);
+   CHECK_ERROR (err, "Add filter to block IPv4 DNS traffic failed");
  
-     /* Add filter condition to our interface. */
-@@ -1304,7 +1362,14 @@ win_wfp_block_dns (const NET_IFINDEX index)
-     return true;
+-  msg_handler (0, "Block_DNS: Added block filters for all");
+-
+   /* Forth filter. Block all IPv6 DNS queries. */
+   Filter.layerKey = FWPM_LAYER_ALE_AUTH_CONNECT_V6;
  
-     err:
--        FwpmFreeMemory0((void **)&openvpnblob);
-+        if (openvpnblob)
-+           FwpmFreeMemory0((void **)&openvpnblob);
-+        if (m_hEngineHandle)
-+        {
-+            FwpmEngineClose0 (m_hEngineHandle);
-+            m_hEngineHandle = NULL;
-+        }
+   err = FwpmFilterAdd0(*engine_handle, &Filter, NULL, &filterid);
+   CHECK_ERROR (err, "Add filter to block IPv6 DNS traffic failed");
+ 
+-  /* Fifth filter. Permit IPv4 DNS queries from TAP. */
++  msg_handler (0, "Block_DNS: Added block filters for all interfaces");
 +
-         return false;
- }
- 
-diff --git a/src/openvpn/win32_wfp.h b/src/openvpn/win32_wfp.h
-index 7559e5b..f5c1955 100644
---- a/src/openvpn/win32_wfp.h
-+++ b/src/openvpn/win32_wfp.h
-@@ -317,7 +317,7 @@ typedef NETIO_STATUS *(WINAPI *func_ConvertInterfaceIndexToLuid)(
-   PNET_LUID InterfaceLuid
- );
- 
--typedef DWORD *(WINAPI *func_FwpmEngineOpen0)(
-+typedef DWORD (WINAPI *func_FwpmEngineOpen0)(
-   const wchar_t *serverName,
-   UINT32 authnService,
-   SEC_WINNT_AUTH_IDENTITY_W *authIdentity,
-@@ -325,35 +325,41 @@ typedef DWORD *(WINAPI *func_FwpmEngineOpen0)(
-   HANDLE *engineHandle
- );
- 
--typedef DWORD *(WINAPI *func_FwpmEngineClose0)(
-+typedef DWORD (WINAPI *func_FwpmEngineClose0)(
-   HANDLE engineHandle
- );
- 
--typedef DWORD *(WINAPI *func_FwpmFilterAdd0)(
-+typedef DWORD (WINAPI *func_FwpmFilterAdd0)(
-   HANDLE engineHandle,
-   const FWPM_FILTER0 *filter,
-   PSECURITY_DESCRIPTOR sd,
-   UINT64 *id
- );
- 
--typedef DWORD *(WINAPI *func_FwpmSubLayerAdd0)(
-+typedef DWORD (WINAPI *func_FwpmSubLayerAdd0)(
-   HANDLE engineHandle,
-   const FWPM_SUBLAYER0 *subLayer,
-   PSECURITY_DESCRIPTOR sd
- );
- 
--typedef DWORD *(WINAPI *func_FwpmSubLayerDeleteByKey0)(
-+typedef DWORD (WINAPI *func_FwpmSubLayerDeleteByKey0)(
-   HANDLE engineHandle,
-   const GUID *key
- );
- 
--typedef void *(WINAPI *func_FwpmFreeMemory0)(
-+typedef void (WINAPI *func_FwpmFreeMemory0)(
-   void **p
- );
- 
--typedef DWORD *(WINAPI *func_FwpmGetAppIdFromFileName0)(
-+typedef DWORD (WINAPI *func_FwpmGetAppIdFromFileName0)(
-   const wchar_t *fileName,
-   FWP_BYTE_BLOB **appId
- );
- 
-+typedef DWORD (WINAPI *func_FwpmSubLayerGetByKey0)(
-+  HANDLE engineHandle,
-+  const GUID *key,
-+  FWPM_SUBLAYER0 **subLayer
-+);
++  /* Fifth filter. Permit IPv4 DNS queries from TAP.
++   * Use a non-zero weight so that the permit filters get higher priority
++   * over the block filter added with automatic weighting */
 +
- #endif
++  Filter.weight.type = FWP_UINT8;
++  Filter.weight.uint8 = 0xE;
+   Filter.layerKey = FWPM_LAYER_ALE_AUTH_CONNECT_V4;
+   Filter.action.type = FWP_ACTION_PERMIT;
+   Filter.numFilterConditions = 2;
+@@ -228,7 +282,8 @@ add_block_dns_filters (HANDLE *engine_handle,
+   err = FwpmFilterAdd0(*engine_handle, &Filter, NULL, &filterid);
+   CHECK_ERROR (err, "Add filter to permit IPv4 DNS traffic through TAP failed");
+ 
+-  /* Sixth filter. Permit IPv6 DNS queries from TAP. */
++  /* Sixth filter. Permit IPv6 DNS queries from TAP.
++   * Use same weight as IPv4 filter */
+   Filter.layerKey = FWPM_LAYER_ALE_AUTH_CONNECT_V6;
+ 
+   err = FwpmFilterAdd0(*engine_handle, &Filter, NULL, &filterid);
 -- 
 1.7.10.4
 
