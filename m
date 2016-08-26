@@ -1,15 +1,13 @@
-Date: Fri, 26 Aug 2016 14:06:59 +0200
+Date: Fri, 26 Aug 2016 14:10:23 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20160826120659.GW78279@...1296...>
-References: <efe4c17a-1d4d-d20f-cc77-cf7564ea1184@...2080...>
-	<CAA1AbxK5kCi5_NzeggKNt7+oLCvacMCEG0X4UwWqbzRKraTV=Q@...278...>
+Message-ID: <20160826121023.GX78279@...1296...>
+References: <326b8ff7-39a6-1974-c0b0-82fd2abdc7b7@...277...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="iq4NytuvSVzaNT9H"
+	protocol="application/pgp-signature"; boundary="2cZ01xMxx5MYbKUa"
 Content-Disposition: inline
-In-Reply-To: <CAA1AbxK5kCi5_NzeggKNt7+oLCvacMCEG0X4UwWqbzRKraTV=Q@...278...>
-Subject: Re: [Openvpn-devel] [RFC] - Enable 2FA to be used with
-	renegotiations
+In-Reply-To: <326b8ff7-39a6-1974-c0b0-82fd2abdc7b7@...277...>
+Subject: Re: [Openvpn-devel] 2.3.12 vs git-master with cipher negotiation
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,32 +16,31 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan@...1856...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: debbie10t <debbie10t@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---iq4NytuvSVzaNT9H
+--2cZ01xMxx5MYbKUa
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Fri, Aug 26, 2016 at 12:21:50AM +0200, Steffan Karger wrote:
-> One thing I think might be useful is a timeout that forces a client to
-> do a full reauth.  I can imagine a company policy that, for example,
-> requires users to perform a 2FA at least every 4 hours.  I'd want to
-> implement such a policy without stretching the default 1 hour
-> renegotiate to 4 hours.  But that might also be too much of a corner
-> case which is not worth the extra code...
+On Thu, Aug 25, 2016 at 04:17:25PM +0100, debbie10t wrote:
+> Now server cannot negotiate --cipher and is set at AES-256-CBC
+> Connecting linux client cannot renegotiate --cipher and is set at=20
+> AES-256-GCM
+> On --ping-restart --cipher is not reset and so the client can no longer=20
+> connect.
 
-You just beat me to typing this :-) - right now, our corporate VPN uses
---reneg-sec 28800, because corporate policy says "2FA sessions must be
-reauthenticated every 8 hours".
+This is a problem indeed, thanks for noticing and clearly describing it.
 
-So, with the auth token stuff (which I find immensely amazing :-) ), we
-could renegotiate much more often, but then we'd violate policy - so
-"generate tokens that are valid for <n> hours" would be a very helpful
-addition here.
+(In other words: upon reconnection, the --cipher setting should be=20
+"what is in the config", not "what was negotiated in a previous connect",
+so it needs to be stored in a session-dependent variable internally, and=20
+not override the config variable - which makes the code less nice...)
+
+Steffan, are you listening? ;-)
 
 gert
 --=20
@@ -53,17 +50,17 @@ rt/
 Gert Doering - Munich, Germany                             gert@...1296...
 fax: +49-89-35655025                        gert@...1297...
 
---iq4NytuvSVzaNT9H
+--2cZ01xMxx5MYbKUa
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQCVAwUBV8Aw4qkuBuNlUUl1AQJPVAQApQszOSAyoz6O803wRmaFjKRQS7CpGapj
-9lZM4bfYgZw+lxkKYMyeu6vOljvAQgIj4YRrfy0VfxbO9vKkMkdmyMtvTVLZnunW
-yUaxC2A56i1Zth8ZzpEI80P/w00f2T+9CrPllE5Hw4YCE1KzyI2agklyXO3BgZEW
-syh20+aORNw=
-=Sq+F
+iQCVAwUBV8AxrqkuBuNlUUl1AQJhfQP9EK+s7TdmdEj5X4b31XbS20UddqaBJX4J
+6m8NjxAJ8yL8c3BqBR5CXisNWztjuG9HDCj35titL6jrb6Quk729K0WJTB3UiMDW
+E9yGJv4KsVJxa7faII36Lfq+PuLJH3m8yNbh0cTpJnWhNFX/As8cdgTqn2/8lt0q
+EpsWFuTxcks=
+=8My6
 -----END PGP SIGNATURE-----
 
---iq4NytuvSVzaNT9H--
+--2cZ01xMxx5MYbKUa--
 
