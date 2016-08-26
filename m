@@ -1,13 +1,12 @@
-References: <efe4c17a-1d4d-d20f-cc77-cf7564ea1184@...2080...>
-	<CAA1AbxK5kCi5_NzeggKNt7+oLCvacMCEG0X4UwWqbzRKraTV=Q@...278...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <17453c3f-f2b5-9cf5-08e4-f59a21c971d7@...2080...>
-Date: Fri, 26 Aug 2016 00:36:58 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAA1AbxK5kCi5_NzeggKNt7+oLCvacMCEG0X4UwWqbzRKraTV=Q@...278...>
-Subject: Re: [Openvpn-devel] [RFC] - Enable 2FA to be used with
-	renegotiations
-Reply-To: openvpn-devel@lists.sourceforge.net
+In-Reply-To: <36991fa1-26a3-15a5-a4a2-aaecf9e3f128@...2080...>
+References: <1462457808-18833-1-git-send-email-steffan@...1856...>
+	<1462479247-21854-1-git-send-email-steffan@...1856...>
+	<36991fa1-26a3-15a5-a4a2-aaecf9e3f128@...2080...>
+From: Steffan Karger <steffan@...1856...>
+Date: Fri, 26 Aug 2016 09:19:48 +0200
+Message-ID: <CAA1AbxLSFbG1+JVAsfCKPRi2gAUo8Aa2AvUDULus4-Cv8A7aUg@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] Add SHA256 fingerprint support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,48 +15,71 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-To: Steffan Karger <steffan@...1856...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+Hi,
 
-On 26/08/16 00:21, Steffan Karger wrote:
-> One thing I think might be useful is a timeout that forces a client
-> to do a full reauth.  I can imagine a company policy that, for
-> example, requires users to perform a 2FA at least every 4 hours.
-> I'd want to implement such a policy without stretching the default
-> 1 hour renegotiate to 4 hours.  But that might also be too much of
-> a corner case which is not worth the extra code...
+On 26 August 2016 at 00:49, David Sommerseth
+<openvpn@...2080...> wrote:
+> Finally some time to review this :)
 
-Good point!
+Great!  You having more time to spend on the codebase is really
+helping the project move forward.
 
-With the input from Selva on the man page update, I started digging
-into when such a re-auth really can happen; turns out it's not that
-obvious.  So I'll investigate this further and extend the patch-set
-accordingly.
+>   if (error_depth >= 0 && error_depth < MAX_CERT_DEPTH)
+>     {
+>       if (!session->cert_hash_set)
+>         ALLOC_OBJ_CLEAR (session->cert_hash_set, struct cert_hash_set);
+> *     if (!session->cert_hash_set->ch[error_depth])
+>         ALLOC_OBJ (session->cert_hash_set->ch[error_depth], struct cert_hash);
+>       {
+>         struct cert_hash *ch = session->cert_hash_set->ch[error_depth];
+>         ASSERT (sizeof (ch->sha256_hash) == BLEN (cert_hash));
+>         memcpy (ch->sha256_hash, BPTR (cert_hash), sizeof (ch->sha256_hash));
+>       }
+>     }
+>
+> Look careful, the * marked if-line is only doing the ALLOC_OBJ, but it
+> looks like the {} below is part of the if statement at first glance.  It
+> actually took me a few reads to see that they were not related.  I'm
+> concerned this style can hide bugs in future.  Ideally we should avoid
+> such local scopes when we need to declare new variables, especially so
+> close to for/while/if blocks.
 
+I agree that the code is confusing this way, but I'd blame the missing
+scope of the if statements, rather than the local scope.  Do you want
+me to send a follow-up patch for cleanup, or resend in ta 1/2 cleanup
++ 2/2 SHA256?
 
-- -- 
-kind regards,
+>>  void
+>>  cert_hash_free (struct cert_hash_set *chs)
+>>  {
+>> @@ -251,7 +233,8 @@ cert_hash_compare (const struct cert_hash_set *chs1, const struct cert_hash_set
+>>
+>>         if (!ch1 && !ch2)
+>>           continue;
+>> -       else if (ch1 && ch2 && !memcmp (ch1->sha1_hash, ch2->sha1_hash, SHA_DIGEST_LENGTH))
+>> +       else if (ch1 && ch2 && !memcmp (ch1->sha256_hash, ch2->sha256_hash,
+>> +           sizeof(ch1->sha256_hash)))
+>>           continue;
+>>         else
+>>           return false;
+>
+> This looks sane.  I just got uncertain if we will always have SHA256
+> hashes from certificates, or do they need be signed with a SHA256
+> signature by the CA?   My gut feeling says me we will always have have
+> this, as it should just be a hash of the certificate itself as is.
+>
+> I have only glared at the code so far, and it looks reasonable.  Will
+> test it a bit more thorough in the coming days.
 
-David Sommerseth
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
+This hash is internal to openvpn, and has nothing to do with the CA
+signatures.  We can use whatever we want.  I'm not aware of any reason
+to assume SHA256 will be broken anytime soon, and if there is some
+day, we will just switch to SHA-newest ;)  (We can't do SHA3 now,
+because our backends do not support is yet.)
 
-iQIcBAEBAgAGBQJXv3MKAAoJEIbPlEyWcf3yvb0P/0LBkV8fUSnsPq2Duy4MT/Gl
-OHgoSpC/NcOBNghJQ3DoJBbumtIVtf/GD48O9SLCPSlqsoIVp5+SWMeuQLaiy9OR
-kHYW2b3EI8ZOTfnnN1OpTHwSan4m1v792+81SNGp8eaShGsSW7Ib3wxgXnrLWMVy
-7vWu7C/giukNI32v0kiAfhfT5L5b8meLCpiGZiqysqejbs5otNWwwLdHK3ZSi/di
-dCGIhE5nYwPsXrZNXbEdleGjEb+akAONDVXq8PYIyKkAsizVtTFwr6SLOdi/POg0
-WfQh9mIKTCHm53WVA42d/37SGSoPormLT6TLDP0rSqZOWYBlUzsKWe93QpNYiaXe
-hhS7F1Vg366JWUCwNywlTKNHYLRtYkckkEaCFnp2stU8sQytjGfeI3tdwolXyxxy
-fSwE0FsxZlV0wzCZYwSmhaGcCRconcYOccae2b0ZgSj3n4+RP6P+sFlRgqGVbzjY
-kYJh+tDUSxk2gpCAF2P+FjgDqe3E91IP1DA7xW7z6iZdIY+8tTP8t3uZPl9Fissh
-MJvG0cRihaqE8aRiK6TCpqPYcGYbdv4CYcrK6F8GCZwm6hHK1n468R5j2sPMu8sy
-LysSoTSSCBFVx5EbKRwOJrT4cK3NVUE8Kd+8P2rmKDmv5CaTRlLaFJvvcfs869XS
-oU0LuW9S5zDEjHTuYKMs
-=Bl/d
------END PGP SIGNATURE-----
+-Steffan
 
