@@ -1,12 +1,13 @@
-Date: Fri, 26 Aug 2016 21:08:45 +0200
-From: Simon Ruderich <simon@...2161...>
-Message-ID: <20160826190845.fzhfzortt2ty3ys5@...2161...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature";
-	boundary="=_zucker.schokokeks.org-6882-1472238525-0001-2"
-Content-Disposition: inline
-Subject: [Openvpn-devel] --link-mtu and other MTU confusions
+MIME-Version: 1.0
+In-Reply-To: <1472233732-27074-1-git-send-email-davids@...515...>
+References: <1470684488-21307-2-git-send-email-davids@...515...>
+	<1472233732-27074-1-git-send-email-davids@...515...>
+From: Selva Nair <selva.nair@...277...>
+Date: Fri, 26 Aug 2016 20:59:48 -0400
+Message-ID: <CAKuzo_gb9dVOH94JvsTLyDY+mW7HLUWF-k+7ugfuh3_ZU20rWQ@...278...>
+Content-Type: multipart/alternative; boundary=94eb2c124e34fa9bb0053b03261f
+Subject: Re: [Openvpn-devel] [PATCH v4.1 1/4] Rework the user input
+ interface to make it more modular
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,82 +16,116 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-This is a MIME-formatted message.  If you see this text it means that your
-E-mail software does not support MIME-formatted messages.
+--94eb2c124e34fa9bb0053b03261f
+Content-Type: text/plain; charset=UTF-8
 
---=_zucker.schokokeks.org-6882-1472238525-0001-2
-Content-Type: text/plain; charset="us-ascii"
+On Fri, Aug 26, 2016 at 1:48 PM, David Sommerseth <davids@...515...>
+wrote:
+
+> This is will provide an interface for other mechanisms to be used to
+> query the user for information, such as usernames, passwords, etc.
+>
+> It has also been a goal to make it possible to query for all the
+> information in one call and not do it sequencially as before.
+>
+>  [v5 - Ensure password prompt is only displayed if we should read
+>        from stdin ]
+>
+>  [v4 - add a simple wrapper combining query_user_{init,add,exec}()
+>      - change disapproved &= syntax ]
+>
+>  [v3 - Avoid the dynamic list, use a static list of QUERY_USER_NUMSLOTS
+>      - The list of query_user data is now a global variable
+>      - Replaced query_user_init() with query_user_clear()
+>      - Make query_user_add() a void function
+>      - Rebased against master/600dd9a16fc61 ]
+>
+>  [v2 - Removed the QUERY_USER_FOREACH macro
+>      - Avoided using underscore prefix in function names
+>      - Make query_user_init() do M_FATAL and become a void function
+>        instead of returning false in these unlikely situations ]
+>
+> Signed-off-by: David Sommerseth <davids@...515...>
+> ---
+>  src/openvpn/Makefile.am       |   2 +-
+>  src/openvpn/console.c         | 228 +++++-------------------------------
+>  src/openvpn/console.h         |  89 +++++++++++++-
+>  src/openvpn/console_builtin.c | 261 ++++++++++++++++++++++++++++++
+> ++++++++++++
+>  src/openvpn/misc.c            |  61 +++++++---
+>  src/openvpn/pkcs11.c          |   7 +-
+>  6 files changed, 423 insertions(+), 225 deletions(-)
+
+
+
+v5 looks good.
+ACK (only for git-master).
+
+I still think username, password and static challenge should be combined
+into one query_user_exec() call but no need to hold this back for that.
+
+Selva
+
+--94eb2c124e34fa9bb0053b03261f
+Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hello,
+<div dir=3D"ltr"><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">=
+On Fri, Aug 26, 2016 at 1:48 PM, David Sommerseth <span dir=3D"ltr">&lt;<a =
+href=3D"mailto:davids@...515..." target=3D"_blank">davids@...515...</a>&gt;=
+</span> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .=
+8ex;border-left:1px #ccc solid;padding-left:1ex"><span>This is will provide=
+ an interface for other mechanisms to be used to<br>
+query the user for information, such as usernames, passwords, etc.<br>
+<br>
+It has also been a goal to make it possible to query for all the<br>
+information in one call and not do it sequencially as before.<br>
+<br>
+</span>=C2=A0[v5 - Ensure password prompt is only displayed if we should re=
+ad<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0from stdin ]<br>
+<span><br>
+=C2=A0[v4 - add a simple wrapper combining query_user_{init,add,exec}()<br>
+=C2=A0 =C2=A0 =C2=A0- change disapproved &amp;=3D syntax ]<br>
+<br>
+=C2=A0[v3 - Avoid the dynamic list, use a static list of QUERY_USER_NUMSLOT=
+S<br>
+=C2=A0 =C2=A0 =C2=A0- The list of query_user data is now a global variable<=
+br>
+=C2=A0 =C2=A0 =C2=A0- Replaced query_user_init() with query_user_clear()<br>
+=C2=A0 =C2=A0 =C2=A0- Make query_user_add() a void function<br>
+=C2=A0 =C2=A0 =C2=A0- Rebased against master/600dd9a16fc61 ]<br>
+<br>
+=C2=A0[v2 - Removed the QUERY_USER_FOREACH macro<br>
+=C2=A0 =C2=A0 =C2=A0- Avoided using underscore prefix in function names<br>
+=C2=A0 =C2=A0 =C2=A0- Make query_user_init() do M_FATAL and become a void f=
+unction<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0instead of returning false in these unlikely sit=
+uations ]<br>
+<br>
+Signed-off-by: David Sommerseth &lt;<a href=3D"mailto:davids@...515..." tar=
+get=3D"_blank">davids@...515...</a>&gt;<br>
+---<br>
+=C2=A0src/openvpn/Makefile.am=C2=A0 =C2=A0 =C2=A0 =C2=A0|=C2=A0 =C2=A02 +-<=
+br>
+=C2=A0src/openvpn/console.c=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0| 228 +++++---=
+----------------------<wbr>------<br>
+=C2=A0src/openvpn/console.h=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0|=C2=A0 89 +++=
+++++++++++-<br>
+=C2=A0src/openvpn/console_builtin.c | 261 ++++++++++++++++++++++++++++++<wb=
+r>++++++++++++<br>
+</span>=C2=A0src/openvpn/misc.c=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 |=
+=C2=A0 61 +++++++---<br>
+=C2=A0src/openvpn/pkcs11.c=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 |=C2=A0 =C2=A0=
+7 +-<br>
+=C2=A06 files changed, 423 insertions(+), 225 deletions(-)</blockquote></di=
+v><br><br></div><div class=3D"gmail_extra">v5 looks good.<br>ACK (only for =
+git-master).<br><br></div><div class=3D"gmail_extra">I still think username=
+, password and static challenge should be combined into one query_user_exec=
+() call but no need to hold this back for that.<br><br></div><div class=3D"=
+gmail_extra">Selva<br></div></div>
 
-I asked about --link-mtu in #openvpn on Freenode and was sent
-here.
-
-The documentation states "Sets an upper bound on the size of UDP
-packets which are sent between OpenVPN peers." and it isn't
-entirely clear if this is the UDP payload or the entire packet.
-So assuming a link (path) MTU of 1500 do I need to use --link-mtu
-1500 or --link-mtu 1472 to prevent fragmentation? It would be
-nice if the documentation could be enhanced to make that clear (I
-could write a patch when I know which interpretation is correct).
-
-
-The default MTU on the tun interface also has me confused. Why is
-it 1500 which will definitely cause fragmentation on a link with
-default MTU 1500. Shouldn't it default to the result of
---link-dest 1500 (or 1472, see above) which seems to subtract
-~100 for OpenVPN overhead?
-
-OpenVPN seems to adapt MSS for TCP traffic to circumvent MTU
-problems (not sure how the correct MSS is calculated, but it
-seems to work fine), but this doesn't help when tunneling UDP
-traffic which caused fragmentation in my case.
-
-
-And lastly, how does path MTU discovery work with OpenVPN? The
---mtu-disc seems not to work as expected. =3Dyes sets the DF-flag
-which then just drops all packets > PMTU, breaking PMTUD for all
-traffic over the tunnel. The other two options seem to have no
-effect. I only found [1]. How is --mtu-disc supposed to work and
-when and how should it be used?
-
-Shouldn't PMTUD be used to detect the link MTU and then set the
-corresponding MTU (minus overhead) of the tun interface to
-prevent fragmentation automatically? Or is this not possible?
-
-Regards
-Simon
-
-[1]: https://community.openvpn.net/openvpn/ticket/375
---=20
-+ privacy is necessary
-+ using gnupg http://gnupg.org
-+ public key id: 0x92FEFDB7E44C32F9
-
---=_zucker.schokokeks.org-6882-1472238525-0001-2
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Transfer-Encoding: 7bit
-
------BEGIN PGP SIGNATURE-----
-
-iQIcBAEBCgAGBQJXwJOzAAoJEJL+/bfkTDL5DQAQAJlhWLgc5uz3HO+7054azbDN
-Sbamc7hcRDlwM9tGhn0pF87U9Zi27a/itbAB5SdN6bA+FheU3B+ppEBitihlspaC
-j0ccJF9c26KOOnqKMSspZ1wKRRSczHO5C0/k9kuRz5SHIIQozkby74VAtpPXZyTJ
-p+upihOTHnsMm3RR+1cnsVytyZWOSI8Jie0EOkg8CMLaXXScgt1jnnxYmfCrxuOW
-EP5Rdp+zNMBCuVbYQv3u8sLSvd4b+EDI2VKTKNz7Xr1XXSGbfkyTxXoCsp6qHWYD
-2tR8GLOdT7WFB6XAlDSpZkakvRvn9exp2NjiL9jG2LKOSEoeaSWni2xBkZPnXwZL
-o1l/fdHlRdsOSHzNkkiFl1fxkE6M6Z9FeasB0lo4bc/nrjguMTFoPejpHQ2Ptl3n
-IfnlupX+HMcjMBj5vBtgdz3zn7TNDPspCWR15TQ2uvaZztvpsAbXog2VliBCpsCd
-FeWBMYTK1S3MOZ5svT5/4J3G53vtDEwy3qHX/rQY9Zuf33uqjh0HTVVX/XtvDwOD
-qwB7SKRd50F204pJMKopxB6l9pHFYzm+Txu7dFr3y1Fc1GxMrIoc3ATQL+4ffP7f
-9gRbhbsMcGCqndeDm5mU1etk8UZ/IU8pZ/qnokEy6wdaFJjkk+80DBzapIl/DatG
-zYlR4afOk+aTVX60vxgy
-=8C4c
------END PGP SIGNATURE-----
-
---=_zucker.schokokeks.org-6882-1472238525-0001-2--
+--94eb2c124e34fa9bb0053b03261f--
 
