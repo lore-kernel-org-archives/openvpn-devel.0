@@ -1,11 +1,10 @@
 MIME-Version: 1.0
-In-Reply-To: <1472413323-21723-1-git-send-email-steffan@...1856...>
-References: <1472413323-21723-1-git-send-email-steffan@...1856...>
-From: Steffan Karger <steffan@...1856...>
-Date: Sun, 28 Aug 2016 21:46:02 +0200
-Message-ID: <CAA1AbxLe+Gj3JDz=yhO-L63sqhojOtXd6ZMEiP+61E7=7rnVwA@...278...>
-Subject: Re: [Openvpn-devel] [PATCH (master)] Drop gnu89/c89 support,
-	switch to c99
+From: Bojan Komazec <bojan.komazec@...277...>
+Date: Sun, 28 Aug 2016 21:18:41 +0100
+Message-ID: <CAHX+n4s+yo18TiCS_G2xLcbRwSh9Ox2vdmS+2c5MJJmaHEsTnQ@...278...>
+Content-Type: multipart/alternative; boundary=001a1141e9542994ba053b2774f8
+Subject: [Openvpn-devel] [PATCH (master)] Updated build parameters to match
+	openvpn-install-2.3.12-I601
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,28 +13,69 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: openvpn-devel@lists.sourceforge.net
+
+--001a1141e9542994ba053b2774f8
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-On 28 August 2016 at 21:42, Steffan Karger <steffan@...1856...> wrote:
-> Previously, we would use the compiler's default C version, which defaults
-> to gnu89 for GCC < 5, gnu11 for GCC > 5, and c11 for clang, but might even
-> differ per distro.
->
-> One of the reasons to accept the gnu89 default of GCC < 4.9, was that MSVC
-> didn't support c99.  But in MSVC 2015, MS finanally fixed that.
->
-> Having to support c89 in the codebase occasionally forces us to write less
-> readable code, for example by forcing all declaration to be at the starting
-> of a block (which includes 'for loop initial declarations').
->
-> Let's be clear about what standard we obey, and stop punishing ourselves
-> with c89/gnu89.  Let's switch the master branch to c99.
+OpenVPN/openvpn-build has to be updated so it fetches and builds OpenVpn
+v2.3.12.
 
-To be clear:  I'm aware we never really decided to switch to c99, so
-this patch is partly meant to start discussion.  Anyone who cares for
-gnu89 support, please speak up :)
+From 87a0ca6307ea9c772fc5fa584efc2f2f0f3805a8 Mon Sep 17 00:00:00 2001
+From: Bojan Komazec <bojan.komazec@...277...>
+Date: Sun, 28 Aug 2016 20:49:02 +0100
+Subject: [PATCH] Updated build parameters to match
+openvpn-install-2.3.12-I601
 
--Steffan
+Signed-off-by: Bojan Komazec <bojan.komazec@...277...>
+---
+ generic/build.vars | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/generic/build.vars b/generic/build.vars
+index ed93a0b..9d44d06 100644
+--- a/generic/build.vars
++++ b/generic/build.vars
+@@ -5,7 +5,7 @@ OPENSSL_VERSION="${OPENSSL_VERSION:-1.0.1t}"
+ PKCS11_HELPER_VERSION="${PKCS11_HELPER_VERSION:-1.11}"
+ LZO_VERSION="${LZO_VERSION:-2.09}"
+ TAP_WINDOWS_VERSION="${TAP_WINDOWS_VERSION:-9.21.2}"
+-OPENVPN_VERSION="${OPENVPN_VERSION:-2.3.11}"
++OPENVPN_VERSION="${OPENVPN_VERSION:-2.3.12}"
+ OPENVPN_GUI_VERSION="${OPENVPN_GUI_VERSION:-10}"
+
+ OPENSSL_URL="${OPENSSL_URL:-
+http://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz}"
+-- 
+2.9.2.windows.1
+
+--001a1141e9542994ba053b2774f8
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr">OpenVPN/openvpn-build has to be updated so it fetches and =
+builds OpenVpn v2.3.12.<div><br></div><div><div>From 87a0ca6307ea9c772fc5fa=
+584efc2f2f0f3805a8 Mon Sep 17 00:00:00 2001</div><div>From: Bojan Komazec &=
+lt;<a href=3D"mailto:bojan.komazec@...277...">bojan.komazec@...277...</a>&g=
+t;</div><div>Date: Sun, 28 Aug 2016 20:49:02 +0100</div><div>Subject: [PATC=
+H] Updated build parameters to match openvpn-install-2.3.12-I601</div><div>=
+<br></div><div>Signed-off-by: Bojan Komazec &lt;<a href=3D"mailto:bojan.kom=
+azec@...277...">bojan.komazec@...277...</a>&gt;</div><div>---</div><div>=C2=
+=A0generic/build.vars | 2 +-</div><div>=C2=A01 file changed, 1 insertion(+)=
+, 1 deletion(-)</div><div><br></div><div>diff --git a/generic/build.vars b/=
+generic/build.vars</div><div>index ed93a0b..9d44d06 100644</div><div>--- a/=
+generic/build.vars</div><div>+++ b/generic/build.vars</div><div>@@ -5,7 +5,=
+7 @@ OPENSSL_VERSION=3D&quot;${OPENSSL_VERSION:-1.0.1t}&quot;</div><div>=C2=
+=A0PKCS11_HELPER_VERSION=3D&quot;${PKCS11_HELPER_VERSION:-1.11}&quot;</div>=
+<div>=C2=A0LZO_VERSION=3D&quot;${LZO_VERSION:-2.09}&quot;</div><div>=C2=A0T=
+AP_WINDOWS_VERSION=3D&quot;${TAP_WINDOWS_VERSION:-9.21.2}&quot;</div><div>-=
+OPENVPN_VERSION=3D&quot;${OPENVPN_VERSION:-2.3.11}&quot;</div><div>+OPENVPN=
+_VERSION=3D&quot;${OPENVPN_VERSION:-2.3.12}&quot;</div><div>=C2=A0OPENVPN_G=
+UI_VERSION=3D&quot;${OPENVPN_GUI_VERSION:-10}&quot;</div><div>=C2=A0</div><=
+div>=C2=A0OPENSSL_URL=3D&quot;${OPENSSL_URL:-<a href=3D"http://www.openssl.=
+org/source/openssl-${OPENSSL_VERSION}.tar.gz">http://www.openssl.org/source=
+/openssl-${OPENSSL_VERSION}.tar.gz</a>}&quot;</div><div>--=C2=A0</div><div>=
+2.9.2.windows.1</div></div></div>
+
+--001a1141e9542994ba053b2774f8--
 
