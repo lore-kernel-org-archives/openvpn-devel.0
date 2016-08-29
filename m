@@ -1,15 +1,11 @@
-References: <45b848f8-6d95-2a2d-9cd6-667655e24857@...515...>
-	<0fa5a591-d0ad-98f1-1320-bd155cb0ca3c@...2080...>
+References: <1472413323-21723-1-git-send-email-steffan@...1856...>
 From: David Sommerseth <openvpn@...2080...>
-Message-ID: <a6e80a3b-7559-7798-a970-a19f22d88bc4@...2080...>
-Date: Mon, 29 Aug 2016 22:29:05 +0200
+Message-ID: <5109e5e1-bdc9-4920-fe3e-72461a3ed546@...2080...>
+Date: Mon, 29 Aug 2016 22:45:52 +0200
 MIME-Version: 1.0
-In-Reply-To: <0fa5a591-d0ad-98f1-1320-bd155cb0ca3c@...2080...>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="JpMqnB2gvrCQJhtjfE33pICGegenX3o5m"
-Subject: Re: [Openvpn-devel] Fixing non-standard PKCS#11 serialization
- format using a patched pkcs11-helper?
+In-Reply-To: <1472413323-21723-1-git-send-email-steffan@...1856...>
+Subject: Re: [Openvpn-devel] [PATCH (master)] Drop gnu89/c89 support,
+ switch to c99
 Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -19,112 +15,79 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---JpMqnB2gvrCQJhtjfE33pICGegenX3o5m
-Content-Type: multipart/mixed; boundary="pjqvLFHLlCOIQ0lvfwv9urtm72CSPW1hF"
-From: David Sommerseth <openvpn@...2080...>
-Reply-To: openvpn-devel@lists.sourceforge.net
-To: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>,
-	"openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-Message-ID: <a6e80a3b-7559-7798-a970-a19f22d88bc4@...2080...>
-Subject: Re: [Openvpn-devel] Fixing non-standard PKCS#11 serialization format
-	using a patched pkcs11-helper?
-References: <45b848f8-6d95-2a2d-9cd6-667655e24857@...515...>
-	<0fa5a591-d0ad-98f1-1320-bd155cb0ca3c@...2080...>
-In-Reply-To: <0fa5a591-d0ad-98f1-1320-bd155cb0ca3c@...2080...>
-
---pjqvLFHLlCOIQ0lvfwv9urtm72CSPW1hF
 Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
+To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
 
-On 29/08/16 21:55, David Sommerseth wrote:
-> On 29/08/16 15:02, Samuli Sepp=E4nen wrote:
->> Hi,
->>=20
->> Right now our Windows installers use the official pkcs11-helper=20
->> release from the OpenSC project. Unfortunately this means that=20
->> output of "--show-pkcs11-ids" and input of "--pkcs11-id" are=20
->> non-standard, as reported here:
->>=20
->> <https://community.openvpn.net/openvpn/ticket/491>
->>=20
->> In Fedora this problem has been fixed with a custom patch
->>=20
->> <https://github.com/OpenSC/pkcs11-helper/pull/4>=20
->> <http://pkgs.fedoraproject.org/cgit/rpms/pkcs11-helper.git/>
->>=20
->> Debian and Ubuntu have _not_ are not patching this issue:
->>=20
->> <http://http.debian.net/debian/pool/main/p/pkcs11-helper/pkcs11-helper_1=
-.11-5.debian.tar.xz>
->>
->>
->
->>=20
-<http://archive.ubuntu.com/ubuntu/pool/main/p/pkcs11-helper/pkcs11-helper_1=
-.11-5.debian.tar.xz>
->>=20
->> Do _we_ want to move to start using a patch pkcs11-helper
->> version?
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+On 28/08/16 21:42, Steffan Karger wrote:
+> Previously, we would use the compiler's default C version, which
+> defaults to gnu89 for GCC < 5, gnu11 for GCC > 5, and c11 for
+> clang, but might even differ per distro.
 >=20
-> There have been some proposals to ditch pkcs11-helper and rather
-> use a newer and more compliant library instead (p11-kit).  I think
-> this makes more sense, to be honest.  There are more issues with=20
-> pkcs11-helper which upstream seems less interested in resolving,
-> among others challenges with systemd and the PIN code [1].  So as
-> things start to pile up, I think it's better to move on to
-> something else.
+> One of the reasons to accept the gnu89 default of GCC < 4.9, was
+> that MSVC didn't support c99.  But in MSVC 2015, MS finanally fixed
+> that.
 >=20
-> Of course, someone needs to do this job.  JJK sponsored me with a=20
-> PKCS#11 token at last hackathon + since that time I've gotten
-> myself both a Yubikey Neo and a NitroKey so I believe I have what's
-> needed to begin to dive into this rabbit hole ... I just need to
-> get this prioritized on my TODO list.  Unless someone else wants to
-> give it a try, if so let me know and we'll see if I can help out
-> somehow.
+> Having to support c89 in the codebase occasionally forces us to
+> write less readable code, for example by forcing all declaration to
+> be at the starting of a block (which includes 'for loop initial
+> declarations').
 >=20
-> With that in mind, if shipping a patched pkcs11-helper in Windows=20
-> makes your life easier I'd consider doing this.  But step
-> carefully, avoid getting in a situation where you suddenly have to
-> maintain these patches yourself.  Rather try to see what Fedora
-> does and see if that can be re-used as much as possible.
+> Let's be clear about what standard we obey, and stop punishing
+> ourselves with c89/gnu89.  Let's switch the master branch to c99.
+>=20
+> Signed-off-by: Steffan Karger <steffan@...1856...> --- configure.ac
+> | 1 + 1 file changed, 1 insertion(+)
+>=20
+> diff --git a/configure.ac b/configure.ac index 9189c94..16cab19
+> 100644 --- a/configure.ac +++ b/configure.ac @@ -1125,6 +1125,7 @@
+> if test "${enable_pkcs11}" =3D "yes"; then ) fi
+>=20
+> +CFLAGS=3D"${CFLAGS} -std=3Dc99" if test "${enable_pedantic}" =3D "yes";
+> then enable_strict=3D"yes" CFLAGS=3D"${CFLAGS} -pedantic"
+>=20
 
-And the missing [1] URL ...
-<https://bugzilla.redhat.com/show_bug.cgi?id=3D1135932>
+I so much wants to give this an ACK.  But this breaks CentOS 5 builds
+very badly.  The glibc-headers isn't prepared for C99 on that distro.
+
+I took the latest git master where I could do a successful build.
+Then I applied just this patch, and here is the explosion:
+<http://paste.fedoraproject.org/417049/14725031/>
+
+To move towards C99, we need to add some tricks which makes this not
+requiring users to overwrite C99 with C89.  That should happen
+automatically.
+
+Some CentOS 5.11 details:
+glibc-2.5-123.el5_11.3
+glibc-headers-2.5-123.el5_11.3
+gcc-4.1.2-55.el5
+openssl-0.9.8e-40.el5_11
+lzo-2.02-2.el5.1
 
 
---=20
+- --=20
 kind regards,
 
 David Sommerseth
-
-
---pjqvLFHLlCOIQ0lvfwv9urtm72CSPW1hF--
-
---JpMqnB2gvrCQJhtjfE33pICGegenX3o5m
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBAgAGBQJXxJsRAAoJEIbPlEyWcf3yH70P/RQXqAVCQb+DsS8qN5plUPrj
-xXUdUEQGTXKRONzG3zkdz/MH3+g4OXfXsRCqhOhIsWI/Zb8RJVOrhHCdSRFHeHYZ
-Drfjm56+8cLfctQGkoYAl5GUDKLIyOz2ZOLOOyGQfLsUhHLRTZ5lZStAXEmsV0Wq
-YMwocVYNw4rlnQny74M/igAbqWQvt+EeVOuSLPekJPwOOYoOIjKocG0keUWMyrAs
-CsYM5TkweLM9yCoY3A8uyrb7fWx2pC+ZFT4T5SIrO043ygS3nX3uBPqL6xGwC/ni
-Kf96K3yRPp3ffTuNZjyyLp4FturaHgqOe6AIAEo8WL9v2UvOcblb7pfNtVQfqW9j
-1uE3wJjvCOhMVNe4OEbv9fLWuPcGtF6/M2KB+jVfdKGcgEeFy3fRY1LPf1MA0WCy
-1xdWTEv7yRRIM5S3XtKIoX6FuiWKqA6r0NR5NcyZxoX7M+4Qmsz5nlP05AIT3jmc
-6lKoBDIwgeGbFky1YGNNWBdAShE8619p2gU8aGvsdYnTbdrYHexaAg2iaX1kt8OP
-wCmIixPiwWsLKmi4DIR+x9F7HXVtklp5golJtITrDeMMf/YNr3dI2g5y+XiqAo/Z
-aOVRIu1AP81ckNGDbUFkLTFb3VSLS6du3wp8gt4c7zV4b+/NxonBtbZ7j2O2sePS
-qJFi4bkqDR2aX8qfm6Bz
-=cvr1
+iQIcBAEBAgAGBQJXxJ8AAAoJEIbPlEyWcf3y9/AP/2ArG2hclq5B48K7/c5pddg5
+TC9QY2fgI/NoUGTTzOz7K3Pmzqo98pRAJPlItHZuQGnMsI4mUUoGz5AJxY31faSk
+GqrXsJw87IMiPT1ZVSiUeNOLgA7drUHjQo9fe4uzZKfY+pIQcP09cOjWyyjPdiWm
+1I4AqSuqawrva7cPVdIMQ/mxQA6SPFqCOF4y9wL2u6he1G7w9D3loomq5SP4zTQ9
+wkarGmJ5x7bzLH/5C5Wl/s0yD0lWKG0FSaAelPw5+h4qxIXSMKhVNhapohJ7zUfX
+YW+yVH5+pROAvGg/VgGdvdthPPqlodJSi4hIgkgRqtBnyhp+zzGjbvmCE2aL0DtN
+XXx2FZppAbZzUgdvfCBjjElmtz0y4v2cewgTO/5f9Aumj/JDSpwbOgrCfSiwrqvh
+OWsDPhnliYWacELUvEmK3M/tQHAfIVP307fy8ZgUtkwh/H4hLI+m7AaTOyzo7a73
+PmcjtBVe1VLKBq1PDM9IORO7dAz7ApecuLoTe3BrhXF+lDe4DLaUxQhWHocl+Gwr
+YhFPny4PyV7kAUNrsReZHxYC04cHvKxG4lh5LJg+jqXnF5obuRM6jBjPKdyo4HW5
+qwyD6osMV9DK9BByQY8ClypufBa0ABVJYKUDtUgVl/Rl05mhsLJLlFi2AP4FQMcr
++5rF+M2E5JyR7mysH6cA
+=3DVCb4
 -----END PGP SIGNATURE-----
-
---JpMqnB2gvrCQJhtjfE33pICGegenX3o5m--
 
