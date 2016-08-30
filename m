@@ -1,16 +1,11 @@
 Mime-Version: 1.0 (Mac OS X Mail 9.3 \(3124\))
 From: Jens Neuhalfen <openvpn-devel@...2127...>
-In-Reply-To: <c99aa195-c433-4843-dde2-789a636572d4@...2080...>
-Date: Tue, 30 Aug 2016 09:08:56 +0200
-Message-Id: <5EA92030-4B30-48EF-975B-4D3AD073393B@...2127...>
-References: <1472413323-21723-1-git-send-email-steffan@...1856...>
-	<5109e5e1-bdc9-4920-fe3e-72461a3ed546@...2080...>
-	<22844900-214f-b69f-ef15-ace77cf56bbe@...2080...>
-	<CAA1AbxJ_e+7Jjk=FNsgGzPNOrrTXdyf7VGyicOJpSxTbVdi7dA@...278...>
-	<22cfbc88-7a12-f039-ff12-4e1c971de4b0@...2080...>
-	<c99aa195-c433-4843-dde2-789a636572d4@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH (master)] Drop gnu89/c89 support,
-	switch to c99
+In-Reply-To: <20160829192838.GP78279@...1296...>
+Date: Tue, 30 Aug 2016 09:01:29 +0200
+Message-Id: <17B2503A-3899-4E7C-B11D-4316B660CD2C@...2127...>
+References: <57C482E0.6080308@...1147...>
+	<20160829192838.GP78279@...1296...>
+Subject: Re: [Openvpn-devel] Time to change the default cipher?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,36 +16,38 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hi all,
+Hi
 
-hopefully this message is not completely garbled by Apple Mail ...
-
+> On Mon, Aug 29, 2016 at 08:45:52PM +0200, Jan Just Keijser wrote:
+>> uhoh:  https://sweet32.info/
+>>=20
+>> shall we change the default cipher in the master tree to AES-256 (if not=
+=20
+>> done so already) ?
 >=20
 >=20
-> [=E2=80=A6]
+
+[=E2=80=A6]
+
+> OTOH, what we could do is: indeed *change+ the default, and add a big fat
+> warning ("you have not specified a --cipher directive.  The default has
+> been changed from 2.3 to 2.4, so please ensure your config matches the
+> other end" or something like that)
+
+This seems like a good idea, maybe like so?
+
+- A =E2=80=9Cdefault will change=E2=80=9D warning on =E2=80=9C2.3=E2=80=9D =
+when no chipher is selected
+- When used, a =E2=80=9CYou are using 64 bit block ciphers and this is a ba=
+d idea=E2=80=9D message on 2.3 and 2.4
+- AES-256-GCM as new default for 2.4
+
+jens
 
 >=20
-> Just some more benchmarks.  I just compiled successfully with -std=3Dc99
-> on an old Scientific Linux 6.5 (RHEL 6.5 clone) I found.  Another
-> important detail, RHEL5 will reach the "End of Production" phase March
-> 2017, OpenVPN have generally stopped supporting the oldest RHEL
-> releases once it hits EOL.  RHEL 5 subscribers may purchase an
-> extended life cycle, but we have not cared too much about that so far.
->=20
-> [=E2=80=A6]
+> gert
 
-I just checked. Extended Support is basically =E2=80=9Cyou can download the=
- old files, and maybe we help you=E2=80=9D [1], so yes indeed, we can total=
-ly ignore RHEL5:=20
 
-    For versions of products in the Extended Life Phase, Red Hat will provi=
-de limited ongoing technical support. No bug fixes, security fixes, hardwar=
-e enablement or root-cause analysis will be available during this phase, an=
-d support will be provided on existing installations only.
-
-[1] https://access.redhat.com/support/policy/updates/errata/#Extended_Life_=
-Cycle_Phase
-
-Jens
