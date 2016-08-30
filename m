@@ -1,14 +1,14 @@
-MIME-Version: 1.0
-In-Reply-To: <c99aa195-c433-4843-dde2-789a636572d4@...2080...>
+Date: Tue, 30 Aug 2016 14:33:18 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20160830123318.GT78279@...1296...>
 References: <1472413323-21723-1-git-send-email-steffan@...1856...>
 	<5109e5e1-bdc9-4920-fe3e-72461a3ed546@...2080...>
 	<22844900-214f-b69f-ef15-ace77cf56bbe@...2080...>
-	<CAA1AbxJ_e+7Jjk=FNsgGzPNOrrTXdyf7VGyicOJpSxTbVdi7dA@...278...>
-	<22cfbc88-7a12-f039-ff12-4e1c971de4b0@...2080...>
-	<c99aa195-c433-4843-dde2-789a636572d4@...2080...>
-From: Steffan Karger <steffan@...1856...>
-Date: Tue, 30 Aug 2016 11:26:22 +0200
-Message-ID: <CAA1AbxKd+16OCLsYbdO4aH_pNkVx+vfi0-DUcz8w_TSNmD-j4A@...278...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="DLaL2EIg5P33KCvN"
+Content-Disposition: inline
+In-Reply-To: <22844900-214f-b69f-ef15-ace77cf56bbe@...2080...>
 Subject: Re: [Openvpn-devel] [PATCH (master)] Drop gnu89/c89 support,
  switch to c99
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,37 +19,52 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
-On 30 August 2016 at 00:41, David Sommerseth
-<openvpn@...2080...> wrote:
-> Just some more benchmarks.  I just compiled successfully with -std=c99
-> on an old Scientific Linux 6.5 (RHEL 6.5 clone) I found.  Another
-> important detail, RHEL5 will reach the "End of Production" phase March
-> 2017, OpenVPN have generally stopped supporting the oldest RHEL
-> releases once it hits EOL.  RHEL 5 subscribers may purchase an
-> extended life cycle, but we have not cared too much about that so far.
->
->
-> There is one detail though regarding the patch itself.  Your patch
-> adds -std=c99 to the CFLAGS quite early.  The compile line gets quite
-> interesting if you try to swap this setting by using the recommended
-> approach:
->
->    ./configure CFLAGS="$CFLAGS -std=gnu89"
->
-> Doing this results in the command line being run during compilation to
-> be be:  gcc -std=gnu89 .... -std=c99 ...
->
-> So the -std argument appears twice.  This should probably be avoided.
+--DLaL2EIg5P33KCvN
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Hm, good point.  But I don't think settings CFLAGS="something" should
-overwrite *all* our default CFLAGS (I know there are currently none,
-but I'd love to add extra warning flags to the defaults in the
-future).  We could do something like we did for the deps, i.e. add a
-CFLAGS_STD that defaults to (.e.g.) -std=c99.
+Hi,
 
--Steffan
+On Mon, Aug 29, 2016 at 11:03:00PM +0200, David Sommerseth wrote:
+>  -std=3Dc89
+>    Makes the LZ4 library we're shipping explode.
+
+We could fix that, but right now the LZ4 sources are "very close to
+upstream" (just a few file and #include renames) so that would make
+comparison "are these sane sources or have they been tampered with"
+less easy.
+
+But I think -std=3Dc89 would also break stuff that we really want, like
+
+ for( int i=3D0; i<10; i++)
+      ^^^
+
+... which really makes "this is the loop variable and nothing else"
+much easier to read than having an "int i" 50+ lines earlier in the code...
+
+gert
+
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--DLaL2EIg5P33KCvN
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQCVAwUBV8V9DakuBuNlUUl1AQKv0QP+L61Q/gi8lgCl+j4GQE5gtPpxxZ8aNyHs
+VnMw6hTZawzf9GpQs0dAO/6dDsonEMnPwOPdv7eJ+HoVQXKVdDVi+O1KpRjqLiDt
+agzXlmzQUwmnNzSAim5Izt8zfu6hPhPcjETW/j1sVHCBRPhq3LiEfaUfQKhiyKaz
+2JE+DhWZ1NY=
+=jiob
+-----END PGP SIGNATURE-----
+
+--DLaL2EIg5P33KCvN--
 
