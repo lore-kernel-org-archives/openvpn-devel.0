@@ -1,18 +1,19 @@
-Date: Tue, 30 Aug 2016 21:49:55 +0200
+Date: Tue, 30 Aug 2016 22:03:39 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20160830194955.GX78279@...1296...>
-References: <45b848f8-6d95-2a2d-9cd6-667655e24857@...515...>
-	<0fa5a591-d0ad-98f1-1320-bd155cb0ca3c@...2080...>
-	<1472510288.61594.720.camel@...1866...>
-	<792a45a7-118c-34f8-cbec-ae0bff99a748@...515...>
-	<1472569937.61594.738.camel@...1866...>
+Message-ID: <20160830200339.GA78279@...1296...>
+References: <1451908945-12244-1-git-send-email-lstipakov@...277...>
+	<1451911424-12970-1-git-send-email-lstipakov@...277...>
+	<20160822191828.GT78279@...1296...>
+	<20160823134336.GE78279@...1296...>
+	<57BD5706.2080305@...1147...>
+	<20160824131315.GL78279@...1296...>
+	<CAGyAFMU+5HM9OhfPB2+3fAhhDOfm-Mr8GLeGnKcbMbZw43aK1Q@...278...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="v4TiGS8Mqfyo/WGr"
+	protocol="application/pgp-signature"; boundary="uIXfmRCUCQeQUmxa"
 Content-Disposition: inline
-In-Reply-To: <1472569937.61594.738.camel@...1866...>
-Subject: Re: [Openvpn-devel] Fixing non-standard PKCS#11 serialization
- format using a patched pkcs11-helper?
+In-Reply-To: <CAGyAFMU+5HM9OhfPB2+3fAhhDOfm-Mr8GLeGnKcbMbZw43aK1Q@...278...>
+Subject: Re: [Openvpn-devel] [PATCH v2] Drop recursively routed packets
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,27 +22,53 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: David Woodhouse <dwmw2@...1866...>
+To: Lev Stipakov <lstipakov@...277...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---v4TiGS8Mqfyo/WGr
+--uIXfmRCUCQeQUmxa
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Tue, Aug 30, 2016 at 04:12:17PM +0100, David Woodhouse wrote:
-> I'm accumulating a torture test suite (which I expect OpenVPN to fail) at
-> http://git.infradead.org/users/dwmw2/openconnect.git/blob/HEAD:/tests/Mak=
-efile.am
+On Tue, Aug 30, 2016 at 09:59:52PM +0300, Lev Stipakov wrote:
+> So, following changes are required for V3:
+>=20
+> 1) No drop_if_recursive() call for P2P
 
-Torture test suites are good :-) - Steffan regularily tries to beat our
-crypto stuff to pulp, while I'll find new and exciting ways to blow up
-our packet/socket handling.  Like, actually testing --inetd :-)
+Well, sort of.  It's useful in p2p mode as well, but it needs to check
+if we already know the remote address before trying to read via the
+pointer :-) - basically, this code:
+
++  struct openvpn_sockaddr tun_sa =3D c->c2.to_link_addr->dest;
+
+needs to be prefixed by
+
+   if ( c->c2.to_link_addr =3D=3D NULL ) return;	/* no remote addr known */
+
+(maybe the same effect can be achieved by moving the drop_if_recursive()
+call slightly further down in the packet processing, because something
+should drop it anyway if there is no remote address)
+
+
+> 2) Same for TAP
+
+Nah, not "disable it on tap", but "look up the protocol type without
+messing up the buffer" (so, not using is_ipv4() and is_ipv6()).  The
+function itself is useful on tap as well.
+
+> 3) Add an option to disable it
+
+Yes... people using multiple routing tables will not need this check,
+and it might get in the way.  (I'm not a big fan of "yet another option",
+but it seems necessary)
+
+> Sounds reasonable?
+
+Yes.  Thanks :-) - I'm also willing to work on it, just had no time yet.
 
 gert
-
 --=20
 USENET is *not* the non-clickable part of WWW!
                                                            //www.muc.de/~ge=
@@ -49,17 +76,17 @@ rt/
 Gert Doering - Munich, Germany                             gert@...1296...
 fax: +49-89-35655025                        gert@...1297...
 
---v4TiGS8Mqfyo/WGr
+--uIXfmRCUCQeQUmxa
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQCVAwUBV8XjYqkuBuNlUUl1AQL3PAP/bh8c0gOnnJe+2fLy+e/yS29e4z7sj9h6
-p3zpMWJCzfvrRiVkW9YPoZrjWTf5gq3qz1atDHjwPKBGBBgOLJo82jiQRpFyYiH+
-R9CYW7tsRJBO2bKCbaSkeN+FqqK5xbGtPd7z0Z4ZPn3CbO/aQnNOWGs82Rk+B0KQ
-8DLamvrE2uo=
-=vnvI
+iQCVAwUBV8Xmm6kuBuNlUUl1AQIF6gP/Y0kmncKCeBj06YOgJYioZDFifZvpLfYi
+oPr2hlakacplCB0MuCzsWrhHxFIJ4Mv35yR6F47rWU7ABVa5T5uiEx0nJm5dQd9o
+Idb+qQR+KxFCTUOy0uP70sMMEfHUSQ2cVodlY8elm62rHOFVJqrevngT5AUjP55T
+sEAZ2Mb0JDU=
+=rllH
 -----END PGP SIGNATURE-----
 
---v4TiGS8Mqfyo/WGr--
+--uIXfmRCUCQeQUmxa--
 
