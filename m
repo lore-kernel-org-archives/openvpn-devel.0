@@ -1,13 +1,16 @@
-References: <57C482E0.6080308@...1147...>
-	<20160829192838.GP78279@...1296...>
-	<17B2503A-3899-4E7C-B11D-4316B660CD2C@...2127...>
-	<CAA1AbxKC4yjzSP79G=PQ+sgbHW+axySxnyyLfuJc+NFq1D4CXw@...278...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <1f6366db-c5d1-61f3-4309-99e97a828960@...1227...>
-Date: Tue, 30 Aug 2016 10:32:26 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAA1AbxKC4yjzSP79G=PQ+sgbHW+axySxnyyLfuJc+NFq1D4CXw@...278...>
-Subject: Re: [Openvpn-devel] Time to change the default cipher?
+In-Reply-To: <c99aa195-c433-4843-dde2-789a636572d4@...2080...>
+References: <1472413323-21723-1-git-send-email-steffan@...1856...>
+	<5109e5e1-bdc9-4920-fe3e-72461a3ed546@...2080...>
+	<22844900-214f-b69f-ef15-ace77cf56bbe@...2080...>
+	<CAA1AbxJ_e+7Jjk=FNsgGzPNOrrTXdyf7VGyicOJpSxTbVdi7dA@...278...>
+	<22cfbc88-7a12-f039-ff12-4e1c971de4b0@...2080...>
+	<c99aa195-c433-4843-dde2-789a636572d4@...2080...>
+From: Steffan Karger <steffan@...1856...>
+Date: Tue, 30 Aug 2016 11:26:22 +0200
+Message-ID: <CAA1AbxKd+16OCLsYbdO4aH_pNkVx+vfi0-DUcz8w_TSNmD-j4A@...278...>
+Subject: Re: [Openvpn-devel] [PATCH (master)] Drop gnu89/c89 support,
+ switch to c99
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,38 +19,37 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-To: Steffan Karger <steffan@...1856...>, Jens Neuhalfen <openvpn-devel@...2127...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-
-
-Am 30.08.16 um 09:42 schrieb Steffan Karger:
-> Hi,
+On 30 August 2016 at 00:41, David Sommerseth
+<openvpn@...2080...> wrote:
+> Just some more benchmarks.  I just compiled successfully with -std=c99
+> on an old Scientific Linux 6.5 (RHEL 6.5 clone) I found.  Another
+> important detail, RHEL5 will reach the "End of Production" phase March
+> 2017, OpenVPN have generally stopped supporting the oldest RHEL
+> releases once it hits EOL.  RHEL 5 subscribers may purchase an
+> extended life cycle, but we have not cared too much about that so far.
 >
-> On 30 August 2016 at 09:01, Jens Neuhalfen <openvpn-devel@...2127...> wrote:
->>> OTOH, what we could do is: indeed *change+ the default, and add a big fat
->>> warning ("you have not specified a --cipher directive.  The default has
->>> been changed from 2.3 to 2.4, so please ensure your config matches the
->>> other end" or something like that)
->> This seems like a good idea, maybe like so?
->>
->> - A “default will change” warning on “2.3” when no chipher is selected
->> - AES-256-GCM as new default for 2.4
-> Even though I'm in favour of changing the default cipher, I'm afraid
-> this will break too many setups, causing users to give up on OpenVPN.
-> Cipher negotiation basically updates the default to AES-256-GCM, but
-> will not break connections with older clients.  Whether we should also
-> change the default cipher is something I'll let the OpenVPN 'veterans'
-> decide.
 >
-Especially a silent (only logging) change will break a lot of setup.
-Someone updating their OS and suddenly OpenVPN stops working. That will
-be a support nightmare.
+> There is one detail though regarding the patch itself.  Your patch
+> adds -std=c99 to the CFLAGS quite early.  The compile line gets quite
+> interesting if you try to swap this setting by using the recommended
+> approach:
+>
+>    ./configure CFLAGS="$CFLAGS -std=gnu89"
+>
+> Doing this results in the command line being run during compilation to
+> be be:  gcc -std=gnu89 .... -std=c99 ...
+>
+> So the -std argument appears twice.  This should probably be avoided.
 
-It might be better to implement a server side/client mechansim later
-that refuses clients/servers that do not renogiate to a strong cipher.
+Hm, good point.  But I don't think settings CFLAGS="something" should
+overwrite *all* our default CFLAGS (I know there are currently none,
+but I'd love to add extra warning flags to the defaults in the
+future).  We could do something like we did for the deps, i.e. add a
+CFLAGS_STD that defaults to (.e.g.) -std=c99.
 
-Arne
+-Steffan
 
