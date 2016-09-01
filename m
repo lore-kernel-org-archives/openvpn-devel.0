@@ -1,11 +1,13 @@
 References: <834c4ed9-af60-1f0b-091d-da0fafa6bd96@...2080...>
 	<e4f4eee2-56f8-ac81-2c5a-354dfd1b27be@...2080...>
-From: debbie10t <debbie10t@...277...>
-Message-ID: <19b5f6f9-5504-d2c1-07a2-c6d498a118f7@...277...>
-Date: Thu, 1 Sep 2016 21:14:52 +0100
+	<19b5f6f9-5504-d2c1-07a2-c6d498a118f7@...277...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <5c87fb3f-bd03-167c-bc58-fa586fb48346@...2080...>
+Date: Thu, 1 Sep 2016 22:56:48 +0200
 MIME-Version: 1.0
-In-Reply-To: <e4f4eee2-56f8-ac81-2c5a-354dfd1b27be@...2080...>
+In-Reply-To: <19b5f6f9-5504-d2c1-07a2-c6d498a118f7@...277...>
 Subject: Re: [Openvpn-devel] Modernising the management interface
+Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,259 +16,114 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
+To: debbie10t <debbie10t@...277...>, openvpn-devel@lists.sourceforge.net
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+On 01/09/16 22:14, debbie10t wrote:
+> * If it sounds too good to be true .. then it probably is.
+
+There's a good intro to D-Bus programming here, with focus on C:
+<https://leonardoce.wordpress.com/2015/04/01/dbus-tutorial-a-simple-serv
+er/>
+
+Here's one I haven't looked too careful at, but related to Python:
+<https://georgemuraruc.wordpress.com/2015/07/16/d-bus-tutorial-for-pytho
+n/>
+
+And for some good shell fun:
+(this should work on most modern Linux distros)
+
+$ gdbus call --system -d org.freedesktop.NetworkManager \
+           -o /org/freedesktop/NetworkManager \
+           -m org.freedesktop.NetworkManager.GetDevices
+Returns on my laptop:
+
+([objectpath '/org/freedesktop/NetworkManager/Devices/0',
+ '/org/freedesktop/NetworkManager/Devices/1',
+ '/org/freedesktop/NetworkManager/Devices/2'],)
+
+To query everything about one of the devices, to see all methods,
+signals and properties available you do this:
+
+$ gdbus introspect --system -d org.freedesktop.NetworkManager \
+            -o /org/freedesktop/NetworkManager/Devices/1
+
+Through gdbus, you can do a lot of fun stuff.  If you are on a systemd
+based system, you can even start and stop services through D-Bus calls
+- - if you have the right privileges.
+
+D-Bus has been around for over a decade and is very stable and widely
+used, at least on the Linux side - but I believe it's a requirement if
+you use GNOME or KDE too, regardless if it is Linux or not.
+
+> If it is possible; a run time option eg. --dbus enabled|disabled or
+> at least a compile time option --enable-dbus might be preferable.
+
+Okay, there will be two ways to enable/disable.  D-Bus will be
+disabled by default.
+
+To enable D-Bus you must first compile it with D-Bus support, that
+will be done via   ./configure --enable-dbus
+
+Then to enable the D-Bus API, where OpenVPN will connect and register
+to the D-Bus, you will need --management-dbus in your config.  This
+option will only be available if built with --enable-dbus when running
+./configure.
+
+> For me personally, it sounds like a lot of openvpn 'control' is
+> being handed over to another entity and I am not convinced that is
+> ideal.
+
+It is completely optional.  Without activating D-Bus, OpenVPN will
+work just as before.  But there are use cases where the interfacing
+possibilities to managing OpenVPN are very limited - and if not
+limited, it is hard to accomplish.  I want to lower this barrier, to
+allow simpler integration with tools and which is more agnostic to
+programming languages and scripts.
+
+D-Bus is first of all an API for interprocess communication (IPC), but
+it has standardised how services are offered through that API so you
+don't need to re-invent the wheel each time you want to do anything new.
+
+In regards to handing over 'control', this is not much more different
+than using the script hooks or enabling third-party plugins.  The
+difference is that you can integrate using an API which is available
+through the most common programming and scripting languages (C/C++,
+Java, C#, golang, Python, Ruby, Perl, Haskel, Erlang, LUA, etc, etc).
+
+And I emphasize again: D-Bus provides a much better control over whom
+can do what on services provided over the D-Bus.  Every user or
+process accessing a service is authenticated and access control is
+managed through polkit policies.  Thus you can actually improve the
+overall security by using D-Bus compared to using script hooks or even
+plug-ins - where they at least run with the same privileges as the
+openvpn process, if they haven't fork()ed out a root process (like the
+down-root plugin does).
 
 
+- --=20
+kind regards,
 
-On 01/09/16 20:04, David Sommerseth wrote:
-> -----BEGIN PGP SIGNED MESSAGE-----
-> Hash: SHA1
->
-> On 31/08/16 20:55, David Sommerseth wrote:
->> Hi,
->>
->> I have for a long time pondered on how we can make the management
->> API more suitable for more modern tools and tasks.  So I am just
->> giving an extremely early heads-up on on what I'm poking at ... and
->> hopefully receive some feedbacks on what you think.
-> [...snip...]  (I'll try to respond to all feedback in this single mail)
->
-> Thank you to all of you who raised your voice, this is very helpful!
->
-> First of all, I understand the scepticism.  And I also do not want to
-> bloat OpenVPN needlessly.
->
-> JJK have also made a very good point, that there is a contradiction
-> between the need on the server and client.  In regards to splitting
-> client and server code, the OpenVPN 3 code base is actually far better
-> separated in this regards - so we are moving towards that direction.
->
-> I also understand the argument "If it ain't broken, don't fix it".
-> The problem is what and who defines what is broken or not.  I see a
-> great potential to make OpenVPN integrate better, both towards the OS
-> level but also towards the user interfaces.  From my point of view,
-> OpenVPN is still stuck in how things were done in 90s, and to enable
-> possibilities which is found in modern OS we need to adopt OpenVPN
-> likewise.  I still wouldn't call it broken, but seeing it more mature
-> for a real update.
->
-> Samuli's comment regarding easing the client management on the server
-> side, is quite spot-on.  But it won't be that much extra work at all
-> to add client side support in addition.  Hence, I am daring to also
-> consider client-side needs.
->
-> I understand that the client-side is quite happy with the situation as
-> it is now.  So I will therefore then focus these next steps on the
-> server side primarily.  If the client-side see some advantages later
-> on, it shouldn't be too hard adding those features later on.  And
-> having both the old TCP based management interface and a newer D-Bus
-> interface will therefore be the primary goal - with D-Bus enabling
-> will happen both at compile time (to allow building without extra
-> dependencies) and runtime (to not enforce D-Bus to be used).  And I
-> will not spend time adding new features to the TCP based management
-> interface for the time being.
->
-> So just to provide a few more examples why I'm so persistent on
-> providing D-Bus support ... I'll bring up both a few already mentioned
-> use cases, for completeness, as well as some new ones.
->
-> * Better and easier integration with modern management tools (like
->    Cockpit)
->
-> * Enables a simpler way to manage OpenVPN also from shell scripts,
->    by using standard D-Bus clients such as gdbus or qdbus.
->
-> * Allow multiple management tools to interact with OpenVPN at the same
->    time, even allowing differentiated access controls per management
->    client (more on that in a bit)
->
-> * Enable management of OpenVPN plug-ins without needing to extend
->    OpenVPN core code additionally per plug-in and allow plug-ins
->    full control of the API it will provide (not restricted to the
->    OpenVPN capabilities the core OpenVPN code is designed for - each
->    plug-in can provide its own D-Bus interface independently of others)
->
-> * Allow for PUSH notifications (in D-Bus jargon: signals) instead of
->    management tools need to constantly pull for information
->
-> * Enable possibility to add (set) triggers (which uses D-Bus signals)
->
-> * Provide possibility to do user/password authentication via D-Bus
->    as an alternative to plug-ins or script hooks.  Can also extend this
->    to provide the TLS verification methods too.  This allows for more
->    powerful authentication modules where using script hooks easily
->    gets complex and writing a C plug-in is a too big challenge.
->
-> * New tools can more easily manipulate firewalls on the fly using
->    more fine grained information for connected sessions at once.  Also
->    considering that FirewallD is also D-Bus based can ease this
->    integration too.
->
-> * Enable policy management of methods ("function calls") provided over
->    D-Bus.  This can allow non-admin users to have limited power while
->    admin users can be allowed to do more.  These policies can also
->    be completely controlled by using user groups defined by the system.
->    All user authentication is done by the OS via D-Bus (using polkit).
->    This means, a non-root user can actually control much of an OpenVPN
->    process if the policy allows it - including restarting OpenVPN.
->    The OpenVPN process itself can run as a different user or even root.
->
-> * Enable possibility to have better understanding of the current network
->    situation, as OpenVPN can through D-Bus query NetworkManager (or
->    similar D-Bus interfaces for networks) for the general network
->    situation.  This is probably more useful on the client side than
->    server side, though.  (No need to try to reconnect every 5th second
->    if the network state is "offline")
->
-> * Prepare the ground for seamless restart of the OpenVPN process without
->    needing to do complete reconnect with all TLS key exchanges for all
->    connected clients.  This can be done such that the new OpenVPN
->    process connects to the D-Bus, signals the already running process to
->    pass over all client states.  These client states can also include
->    byte/packet counters as well, if that is used for accounting.
->
->    By adding an extra "link program", it can, in theory at least, also
->    be made possible to sync client states across hosts.
->
->    This can probably be done today too, but would we enable such things
->    over an unencrypted TCP link?  As it is unencrypted, I'd say that the
->    management password you can set is quite moot and useless.  So to get
->    the security right, the management today needs to be even further
->    extended - as D-Bus provides the authentication and access control
->    in the basic API.
->
-> These are just some of the possibilities I see D-Bus can more easily
-> enable.  As I said, OpenVPN ain't broke as it is, but it can be
-> improved to be better integrated with more advanced use cases which is
-> harder to achieve today.
->
-> As an example in the end, I'll consider up a question I've heard every
-> now and then on the #openvpn IRC channel.  "How can I add quotas to
-> VPN clients?"  Today, I would say, that can only be achieved by either
-> writing a plug-in and/or some tools using the management interface to
-> retrieve information and do the quota controls.
->
-> With D-Bus this can be done with a few simple scripts ... here as a
-> very simple pseudo code.  These scripts can be written in your
-> favourite language as long as it has D-Bus libraries available.
->
->
->     * ConnectionSetup ... a script which prepares the triggers
->     =====================================================================
->     system_bus = dbus.connect(DBUS_SYSTEM)
->     while (1) {
->        # wait for a client to connect
->        res = system_bus.wait_for_signal(dest="net.openvpn.managment",
-> 	       path="/net/openvpn/management/Triggers",
-> 	       signal="sys_vpn_connect");
->
->        # Fetch client info and log
->        client = system_bus.call(dest="net.openvpn.management",
-> 	       path="/net/openvpn/management/ClientInfo/" + res,
->                 method="QueryClients");
->
->        # Retrieve quota and do some logging
->        quota = corp_function_get_quota(client.cn);
->        printf("Client %s connected, used %i bytes of quota, " \
->               "setting quota to %i bytes\n",
->    	     client.cn, quota.used, quota.max);
->
->        # Set the quota for this session, account for already used quota
->        system_bus.call(dest="net.openvpn.management",
-> 	       path="/net/openvpn/management/Triggers/" + res,
->                 method="SetQuota"
-> 	       quota=(quota.max - quota.used));
->     }
->     =====================================================================
->
->
->     * ConnectionDisconnected ... a script which logs used quota
->     =====================================================================
->     system_bus = dbus.connect(DBUS_SYSTEM)
->     while (1) {
->        # wait for a client to connect
->        res = system_bus.wait_for_signal(dest="net.openvpn.managment",
-> 	       path="/net/openvpn/management/Triggers",
-> 	       signal="sys_vpn_disconnect");
->
->        # Fetch session info
->        session = system_bus.call(dest="net.openvpn.management",
-> 	             path="/net/openvpn/management/Sessions/" + res,
->                       method="QuerySession");
->
->        # Log some statistics
->        printf("Client %s disconnects, used %i bytes in this session\n",
-> 		session.cn,
-> 		(session.bytes_received + session.bytes_sent));
->
->        # Update corp database with used quota
->        corp_function_add_used_quota(session.cn,
->                (session.bytes_received + session.bytes_sent));
->     }
->     =====================================================================
->
->
->     * QuotaControl .... a script which kicks out clients exceeding quota
->     =====================================================================
->     system_bus = dbus.connect(DBUS_SYSTEM)
->     while (1) {
->        # wait for a client who exceeds the quota
->        res = system_bus.wait_for_signal(dest="net.openvpn.managment",
-> 	       path="/net/openvpn/management/Triggers",
-> 	       signal="quota_exceed");
->
->        # Fetch client info and log
->        client = system_bus.call(dest="net.openvpn.management",
-> 	       path="/net/openvpn/management/ClientInfo/" + res,
->                 method="QueryClients");
->
->        printf("Client %s exceeded quota, killing session\n",
-> 		client.cn);
->
->        # Kill the session
->        system_bus.call(dest="net.openvpn.management",
-> 	       path="/net/openvpn/management/Sessions/" + res,
->                 method="KillClientSession");
->     }
->     =====================================================================
->
->     (I admit this over-simplifies the D-Bus calls, but this is in
->      essence of how these calls would work)
->
->
-> So three individual scripts, which can be added/modified/restarted at
-> will outside of OpenVPN without influencing any established OpenVPN
-> connections.
->
-> Doing a similar thing using the TCP based management interface is
-> going to be considerably harder, as you need to manage everything
-> through a single TCP connection and it is needed to do regular polls
-> to the OpenVPN server as there are no push features.  Plus you need to
-> manage the TCP connection setup and all communication over the socket.
->
-> I'll let you all know when I have something more concrete to show; but
-> I am still very much open for more feedback!
->
->
-> - -- 
-> kind regards,
->
-> David Sommerseth
-> OpenVPN Technologies, Inc
->
-David, that all sounds fantastic but .. One note of caution:
+David Sommerseth
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
 
-* If it sounds too good to be true .. then it probably is.
-
-If it is possible; a run time option eg. --dbus enabled|disabled
-or at least a compile time option --enable-dbus might be preferable.
-
-For me personally, it sounds like a lot of openvpn 'control' is being
-handed over to another entity and I am not convinced that is ideal.
-
-Regards
-
-
+iQIcBAEBAgAGBQJXyJYQAAoJEIbPlEyWcf3yfcEP/jjF4tjk2dTjhcJMVyZMCotH
+vM5uApgA6uGmV7DcR4MXTxzn29rqS1nppoqlRNtC+znqvraeXJjddhrCUFq5QRmr
+fowjbtRDMyXGTC5QZeDqfKO0CmqUzh6B+zqNrMeDU/vbaLVcL6NGHXP4yWTNyvmz
+9lPGAuiwv195/vDf0mlKq5OM9m+peyTY3eGp+lEzDVaKdlb1CatXYEnVbSK7wCUl
+daZPEaxKTKEVdGDs7DQdSMLDU+ix76KZ/CZSTmKaXAPtjGB9aQ2WiRSFp5PWkRLB
+jkCmd9eyyEsGvsqgBlkVJ6rOXhpv+nQpHGYyTm3uQ+hSqcA8QKHK9S13j+5NYZbs
+OOG2H9PM9AoGNWYRBi9BaW3LYyAS7r6o+P3VSeBRhHvZXmKkuEZVYhVpn/OAjokX
+bUzVyYhc5PXCkRKAmviPm7aQBipP7KofM4T9+y4MBThw00PMm1UWrnkHm53qck6+
+apcBx74mbF3ySW1xZIiRupTREBuca57UJ5Agh+cf2L6q5BWaXCbsnQkgKzgfx0Cf
+mQXJSmnYNoVQBmb9TSps1J1ShL9rBkS27TbIcVHYsihibDHjaG/5PpyEa9cTxkya
+o0alVbButYE6nqy5KCWEjxPFDImQM9MEOyC7LMzsZTuDzUNu+ADy+3xBFETqdqfV
+RVXpwSkxIPYWAWbUeU17
+=3DRmzu
+-----END PGP SIGNATURE-----
 
