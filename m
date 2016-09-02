@@ -1,13 +1,14 @@
-References: <834c4ed9-af60-1f0b-091d-da0fafa6bd96@...2080...>
-	<e4f4eee2-56f8-ac81-2c5a-354dfd1b27be@...2080...>
-	<19b5f6f9-5504-d2c1-07a2-c6d498a118f7@...277...>
-	<5c87fb3f-bd03-167c-bc58-fa586fb48346@...2080...>
-From: debbie10t <debbie10t@...277...>
-Message-ID: <10c7ab88-c1fd-fead-67dd-c42ebb792cdd@...277...>
-Date: Thu, 1 Sep 2016 23:39:15 +0100
-MIME-Version: 1.0
-In-Reply-To: <5c87fb3f-bd03-167c-bc58-fa586fb48346@...2080...>
-Subject: Re: [Openvpn-devel] Modernising the management interface
+Content-Type: multipart/alternative;
+	boundary="Apple-Mail=_C05CC7E5-A73C-47EC-AE59-F99BC166D031"
+Mime-Version: 1.0 (Mac OS X Mail 9.3 \(3124\))
+From: Jens Neuhalfen <openvpn-devel@...2127...>
+In-Reply-To: <CAKuzo_jGAdGqeMTm6JWRpZgpk+Q0DTq6NFS=3MS73k+jntrL3Q@...278...>
+Date: Fri, 2 Sep 2016 23:33:19 +0200
+Message-Id: <570F1A82-D0EB-436C-8082-DB86A35801E8@...2127...>
+References: <efe4c17a-1d4d-d20f-cc77-cf7564ea1184@...2080...>
+	<CAKuzo_jGAdGqeMTm6JWRpZgpk+Q0DTq6NFS=3MS73k+jntrL3Q@...278...>
+Subject: Re: [Openvpn-devel] [RFC] - Enable 2FA to be used with
+	renegotiations
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,104 +17,43 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252; format=flowed
+To: Selva Nair <selva.nair@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, David Sommerseth <davids@...515...>
+
+--Apple-Mail=_C05CC7E5-A73C-47EC-AE59-F99BC166D031
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+
+>=20
+> The patch-set can be found here:
+> <https://gitlab.com/dazo/openvpn/compare/master...dev%2Fauth-gen-token <h=
+ttps://gitlab.com/dazo/openvpn/compare/master...dev%2Fauth-gen-token>>
+>=20
+> And the git tree can be found here:
+> <https://gitlab.com/dazo/openvpn.git <https://gitlab.com/dazo/openvpn.git=
+>>
+> (Check out the dev/auth-gen-token branch)
+>=20
+> I posted some quick comments against the commits in your gitlab repo. Its=
+ only the other day I saw the auth-token code for the first time, so I may =
+have more to say after another look when you submit it to the list.
+
+Same here, some comments in gitlab. This might be a good feature to get the=
+ unit testing integration.
+
+jens
+
+
+--Apple-Mail=_C05CC7E5-A73C-47EC-AE59-F99BC166D031
+Content-Type: text/html;
+	charset=us-ascii
 Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
 
-
-
-On 01/09/16 21:56, David Sommerseth wrote:
-> -----BEGIN PGP SIGNED MESSAGE-----
-> Hash: SHA1
->
-> On 01/09/16 22:14, debbie10t wrote:
->> * If it sounds too good to be true .. then it probably is.
-> There's a good intro to D-Bus programming here, with focus on C:
-> <https://leonardoce.wordpress.com/2015/04/01/dbus-tutorial-a-simple-serv
-> er/>
->
-> Here's one I haven't looked too careful at, but related to Python:
-> <https://georgemuraruc.wordpress.com/2015/07/16/d-bus-tutorial-for-pytho
-> n/>
->
-> And for some good shell fun:
-> (this should work on most modern Linux distros)
->
-> $ gdbus call --system -d org.freedesktop.NetworkManager \
->             -o /org/freedesktop/NetworkManager \
->             -m org.freedesktop.NetworkManager.GetDevices
-> Returns on my laptop:
->
-> ([objectpath '/org/freedesktop/NetworkManager/Devices/0',
->   '/org/freedesktop/NetworkManager/Devices/1',
->   '/org/freedesktop/NetworkManager/Devices/2'],)
->
-> To query everything about one of the devices, to see all methods,
-> signals and properties available you do this:
->
-> $ gdbus introspect --system -d org.freedesktop.NetworkManager \
->              -o /org/freedesktop/NetworkManager/Devices/1
->
-> Through gdbus, you can do a lot of fun stuff.  If you are on a systemd
-> based system, you can even start and stop services through D-Bus calls
-> - - if you have the right privileges.
->
-> D-Bus has been around for over a decade and is very stable and widely
-> used, at least on the Linux side - but I believe it's a requirement if
-> you use GNOME or KDE too, regardless if it is Linux or not.
->
->> If it is possible; a run time option eg. --dbus enabled|disabled or
->> at least a compile time option --enable-dbus might be preferable.
-> Okay, there will be two ways to enable/disable.  D-Bus will be
-> disabled by default.
->
-> To enable D-Bus you must first compile it with D-Bus support, that
-> will be done via   ./configure --enable-dbus
->
-> Then to enable the D-Bus API, where OpenVPN will connect and register
-> to the D-Bus, you will need --management-dbus in your config.  This
-> option will only be available if built with --enable-dbus when running
-> ./configure.
->
->> For me personally, it sounds like a lot of openvpn 'control' is
->> being handed over to another entity and I am not convinced that is
->> ideal.
-> It is completely optional.  Without activating D-Bus, OpenVPN will
-> work just as before.  But there are use cases where the interfacing
-> possibilities to managing OpenVPN are very limited - and if not
-> limited, it is hard to accomplish.  I want to lower this barrier, to
-> allow simpler integration with tools and which is more agnostic to
-> programming languages and scripts.
->
-> D-Bus is first of all an API for interprocess communication (IPC), but
-> it has standardised how services are offered through that API so you
-> don't need to re-invent the wheel each time you want to do anything new.
->
-> In regards to handing over 'control', this is not much more different
-> than using the script hooks or enabling third-party plugins.  The
-> difference is that you can integrate using an API which is available
-> through the most common programming and scripting languages (C/C++,
-> Java, C#, golang, Python, Ruby, Perl, Haskel, Erlang, LUA, etc, etc).
->
-> And I emphasize again: D-Bus provides a much better control over whom
-> can do what on services provided over the D-Bus.  Every user or
-> process accessing a service is authenticated and access control is
-> managed through polkit policies.  Thus you can actually improve the
-> overall security by using D-Bus compared to using script hooks or even
-> plug-ins - where they at least run with the same privileges as the
-> openvpn process, if they haven't fork()ed out a root process (like the
-> down-root plugin does).
->
->
-David,
-
-consider me convinced; I cannot possibly argue against your incredibly
-well informed opinion and, in fact, I look forward to testing it for myself.
-No doubt there will be teething problems but, judging by your enthusiasm,
-I expect they will be easily weaned.
-
-/me is reading a lot more about dbus now !
-
-Regards
-
+<html><head><meta http-equiv="Content-Type" content="text/html charset=us-ascii"></head><body style="word-wrap: break-word; -webkit-nbsp-mode: space; -webkit-line-break: after-white-space;" class=""><div><blockquote type="cite" class=""><div class=""><div dir="ltr" class=""><div class="gmail_extra"><div class="gmail_quote"><blockquote class="gmail_quote" style="margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex"><div id=":1o5" class="a3s aXjCH m156c1f54da9f1d89"><br class=""></div><div id=":1o5" class="a3s aXjCH m156c1f54da9f1d89">The patch-set can be found here:<br class="">
+&lt;<a href="https://gitlab.com/dazo/openvpn/compare/master...dev%2Fauth-gen-token" rel="noreferrer" target="_blank" class="">https://gitlab.com/dazo/<wbr class="">openvpn/compare/master...dev%<wbr class="">2Fauth-gen-token</a>&gt;<br class="">
+<br class="">
+And the git tree can be found here:<br class="">
+&lt;<a href="https://gitlab.com/dazo/openvpn.git" rel="noreferrer" target="_blank" class="">https://gitlab.com/dazo/<wbr class="">openvpn.git</a>&gt;<br class="">
+(Check out the dev/auth-gen-token branch)</div></blockquote></div><br class=""></div><div class="gmail_extra">I posted some quick comments against the commits in your gitlab repo. Its only the other day I saw the auth-token code for the first time, so I may have more to say after another look when you submit it to the list.</div></div></div></blockquote><br class=""></div><div>Same here, some comments in gitlab. This might be a good feature to get the unit testing integration.</div><div><br class=""></div><div>jens</div><br class=""></body></html>
+--Apple-Mail=_C05CC7E5-A73C-47EC-AE59-F99BC166D031--
 
