@@ -1,11 +1,10 @@
-References: <3dbe8ad1-b62e-3802-06a9-920c46616451@...515...>
-	<20160907094304.GG78279@...1296...>
-	<f362e0a3-56ff-887d-c85e-dbad0d110109@...2080...>
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <20b3d262-ed34-cbde-8b03-3bccd8ebd3d8@...515...>
-Date: Wed, 7 Sep 2016 15:15:50 +0300
+Message-ID: <57D00E6E.1010700@...1147...>
+Date: Wed, 07 Sep 2016 14:56:14 +0200
+From: Jan Just Keijser <janjust@...1147...>
 MIME-Version: 1.0
-In-Reply-To: <f362e0a3-56ff-887d-c85e-dbad0d110109@...2080...>
+References: <3dbe8ad1-b62e-3802-06a9-920c46616451@...515...>	<20160907094304.GG78279@...1296...>	<f362e0a3-56ff-887d-c85e-dbad0d110109@...2080...>
+	<20b3d262-ed34-cbde-8b03-3bccd8ebd3d8@...515...>
+In-Reply-To: <20b3d262-ed34-cbde-8b03-3bccd8ebd3d8@...515...>
 Subject: Re: [Openvpn-devel] Dropping Windows Vista / XP support?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -17,90 +16,57 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="windows-1252"; format=flowed
 Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net, Gert Doering <gert@...1296...>
+To: =?windows-1252?Q?Samuli_Sepp=E4nen?= <samuli@...515...>, openvpn-devel@lists.sourceforge.net, Gert Doering <gert@...1296...>
 
-Hi,
-
-> -----BEGIN PGP SIGNED MESSAGE-----
-> Hash: SHA1
->
-> On 07/09/16 11:43, Gert Doering wrote:
->> Hi,
+On 07/09/16 14:15, Samuli Sepp=E4nen wrote:
+>> -----BEGIN PGP SIGNED MESSAGE-----
+>> Hash: SHA1
 >>
->> On Wed, Sep 07, 2016 at 12:18:17PM +0300, Samuli Sepp=E4nen wrote:
->>> We have already dropped XP support from OpenVPN Git "master". I
->>> think now is the time to drop official XP support altogether, but
->>> to maintain Vista support util the next tap-windows6 release.
+>> On 07/09/16 11:43, Gert Doering wrote:
+>>> Hi,
+>>>
+>>> On Wed, Sep 07, 2016 at 12:18:17PM +0300, Samuli Sepp=E4nen wrote:
+>>>> We have already dropped XP support from OpenVPN Git "master". I
+>>>> think now is the time to drop official XP support altogether, but
+>>>> to maintain Vista support util the next tap-windows6 release.
+>>> Oh, regarding Vista support: I noticed that major open source
+>>> projects (like chrome) have already dropped Vista support - so I
+>>> think dropping Vista for 2.4 should be OK.
+>> I agree.  I believe the majority of most users upgraded to Win7 from
+>> Vista, as Vista was a slow giant beast compared to Win7.  Those left
+>> on Vista are probably not the kind of users interested in setting up
+>> VPNs - and if they do, it would probably be one of the more commercial
+>> offerings than configuring your own client.
 >>
->> Oh, regarding Vista support: I noticed that major open source
->> projects (like chrome) have already dropped Vista support - so I
->> think dropping Vista for 2.4 should be OK.
+>> Put Vista and XP in the same "support category", which basically means
+>> OpenVPN 2.3 and we'll see how long we are willing to officially
+>> support 2.3.
+> Maintaining Windows Vista support will be tricky without extra effort,
+> as it enforces strict driver signing requirements like Windows 7, but
+> lacks SHA2 support. This is not a showstopper for the user-space
+> components (openvpn, openssl, etc), which just give the "Unknown
+> publisher" warning. However, if we need to fix something in
+> tap-windows6, the new driver will only have a SHA2 signature, and Vista
+> will thus refuse to install and load it to the kernel.
 >
-> I agree.  I believe the majority of most users upgraded to Win7 from
-> Vista, as Vista was a slow giant beast compared to Win7.  Those left
-> on Vista are probably not the kind of users interested in setting up
-> VPNs - and if they do, it would probably be one of the more commercial
-> offerings than configuring your own client.
+> Windows XP is easier to support, as it allows loading of unsigned
+> kernel-mode code without putting the operating system to "test mode"; it
+> will just complain about "Unknown publisher".
 >
-> Put Vista and XP in the same "support category", which basically means
-> OpenVPN 2.3 and we'll see how long we are willing to officially
-> support 2.3.
-
-Maintaining Windows Vista support will be tricky without extra effort,=20
-as it enforces strict driver signing requirements like Windows 7, but=20
-lacks SHA2 support. This is not a showstopper for the user-space=20
-components (openvpn, openssl, etc), which just give the "Unknown=20
-publisher" warning. However, if we need to fix something in=20
-tap-windows6, the new driver will only have a SHA2 signature, and Vista=20
-will thus refuse to install and load it to the kernel.
-
-Windows XP is easier to support, as it allows loading of unsigned=20
-kernel-mode code without putting the operating system to "test mode"; it=20
-will just complain about "Unknown publisher".
-
-We could try to beg for a SHA1 code-signing certificate from Digicert=20
-using their support system. However, I will try to get some download=20
-figures for I00x and I60x installers before we go down that route.
-
-> I agree with Gert that we should at least keep our latest stable 2.3
-> updated with the latest OpenSSL libraries to protect our users, even
-> though we might not put much maintenance resources into the core
-> OpenVPN code.  Of course, we'll fix critical bugs and so on, but I
-> don't see that will take a lot of resources as things are right now.
-> Once we officially claim XP/Vista as unsupported, we can consider to
-> drop OpenVPN 2.3 completely.
->
->
-> - --
-> kind regards,
->
-> David Sommerseth
-> OpenVPN Technologies, Inc
->
-> -----BEGIN PGP SIGNATURE-----
-> Version: GnuPG v2.0.22 (GNU/Linux)
->
-> iQIcBAEBAgAGBQJXz/18AAoJEIbPlEyWcf3y1X0QAKf4hCniUrMjrzxb60Go+BsE
-> SSoaSUzXdBCaLWoIcvEoB6VEo2SqjdvwWYB+A0ZZ6zmwl6Koau66ai/AvwCQ25N6
-> +vHYpZyVTSTj8nQRvAo4pALu4ZpHgeQg4egkt1Aoih2Vrfu62fsE/I+b/ylUvH1n
-> Gfw5K0CSg4maKR6INyw8MDWiLvlSZqjbPvsb0R45abP8LAonKMA9E9TjA4gL1FlE
-> aczCtg4hMOVDgBDuHLwNr0uSO8v474/5ZXkTosCj7kf3nwqF1H8Oq8u3dqdSCqpL
-> ruBuqbpCYbCnlHgD+4r40dMPm03clF6tUjrd9m35clr/IclQ0tRArQ9cqMYVBM/2
-> EavHs6uQSG5Ryj8aosMdnthSbNGPzH+2aXwDxMfcAZlHnbDjHIFbZuWEFm1FfTrD
-> kEqMlFGriUhLalPYAAStBVJumUtRch7dEePE666RpEmW5Y/79OJNZzybcCkdAeMr
-> rODB3L279VXm1TBt1xGaZ+nVyoR+ex7zFvIVndohKvaXZ5SjzA3XeZy5++epNGdJ
-> HhMzyEck5Cq9pdZGyTjlhM4cYYvThGncShxZrP1IGZG3JpXw+zRRa6Yda9fDPVuy
-> I0ah0juFKgrUw2/Alyv+ogwJx49xJfFhZn0yw+LC2Ztkfw8R/+7cmfIyPUbutWN9
-> qEHlkciVHasSRO9t9BK9
-> =3DfKS6
-> -----END PGP SIGNATURE-----
+> We could try to beg for a SHA1 code-signing certificate from Digicert
+> using their support system. However, I will try to get some download
+> figures for I00x and I60x installers before we go down that route.
 >
 
+we could consider a quick&dirty method:
 
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
+XP/Vista -> NDIS5 only
+7+ -> NDIS 6 only
 
-irc freenode net: mattock
+I can't see why M$ would not allow SHA1 signed NDIS5 drivers anymore...
+It would mean that the OpenVPN 2.3 code base needs to be remain=20
+compatible with NDIS5 and 6, as it is now.
+
+JJK
+
 
