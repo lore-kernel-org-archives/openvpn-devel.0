@@ -1,14 +1,11 @@
-References: <3dbe8ad1-b62e-3802-06a9-920c46616451@...515...>
-	<20160907094304.GG78279@...1296...>
-	<f362e0a3-56ff-887d-c85e-dbad0d110109@...2080...>
-	<20b3d262-ed34-cbde-8b03-3bccd8ebd3d8@...515...>
-	<57D00E6E.1010700@...1147...>
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <e371e0d3-45ee-a462-262e-086fdec35bec@...515...>
-Date: Wed, 7 Sep 2016 16:09:11 +0300
+References: <834c4ed9-af60-1f0b-091d-da0fafa6bd96@...2080...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <dcc82a0c-97fb-03bc-b1f6-5e39bbc7ecde@...2080...>
+Date: Wed, 7 Sep 2016 19:28:44 +0200
 MIME-Version: 1.0
-In-Reply-To: <57D00E6E.1010700@...1147...>
-Subject: Re: [Openvpn-devel] Dropping Windows Vista / XP support?
+In-Reply-To: <834c4ed9-af60-1f0b-091d-da0fafa6bd96@...2080...>
+Subject: Re: [Openvpn-devel] Modernising the management interface
+Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,74 +14,97 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
-To: Jan Just Keijser <janjust@...1147...>, openvpn-devel@lists.sourceforge.net, Gert Doering <gert@...1296...>
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Il 07/09/2016 15:56, Jan Just Keijser ha scritto:
-> On 07/09/16 14:15, Samuli Sepp=E4nen wrote:
->>> -----BEGIN PGP SIGNED MESSAGE-----
->>> Hash: SHA1
->>>
->>> On 07/09/16 11:43, Gert Doering wrote:
->>>> Hi,
->>>>
->>>> On Wed, Sep 07, 2016 at 12:18:17PM +0300, Samuli Sepp=E4nen wrote:
->>>>> We have already dropped XP support from OpenVPN Git "master". I
->>>>> think now is the time to drop official XP support altogether, but
->>>>> to maintain Vista support util the next tap-windows6 release.
->>>> Oh, regarding Vista support: I noticed that major open source
->>>> projects (like chrome) have already dropped Vista support - so I
->>>> think dropping Vista for 2.4 should be OK.
->>> I agree.  I believe the majority of most users upgraded to Win7 from
->>> Vista, as Vista was a slow giant beast compared to Win7.  Those left
->>> on Vista are probably not the kind of users interested in setting up
->>> VPNs - and if they do, it would probably be one of the more commercial
->>> offerings than configuring your own client.
->>>
->>> Put Vista and XP in the same "support category", which basically means
->>> OpenVPN 2.3 and we'll see how long we are willing to officially
->>> support 2.3.
->> Maintaining Windows Vista support will be tricky without extra effort,
->> as it enforces strict driver signing requirements like Windows 7, but
->> lacks SHA2 support. This is not a showstopper for the user-space
->> components (openvpn, openssl, etc), which just give the "Unknown
->> publisher" warning. However, if we need to fix something in
->> tap-windows6, the new driver will only have a SHA2 signature, and Vista
->> will thus refuse to install and load it to the kernel.
->>
->> Windows XP is easier to support, as it allows loading of unsigned
->> kernel-mode code without putting the operating system to "test mode"; it
->> will just complain about "Unknown publisher".
->>
->> We could try to beg for a SHA1 code-signing certificate from Digicert
->> using their support system. However, I will try to get some download
->> figures for I00x and I60x installers before we go down that route.
->>
->
-> we could consider a quick&dirty method:
->
-> XP/Vista -> NDIS5 only
-> 7+ -> NDIS 6 only
->
-> I can't see why M$ would not allow SHA1 signed NDIS5 drivers anymore...
-> It would mean that the OpenVPN 2.3 code base needs to be remain
-> compatible with NDIS5 and 6, as it is now.
->
-> JJK
->
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-We can easily support Windows Vista as long as we don't have to rebuild=20
-the tap-windows6 (NDIS6) driver. If/when we do rebuild, we can just=20
-point Vista users to the I00x (tap-windows) installers as you said.
+On 31/08/16 20:55, David Sommerseth wrote:
+>=20
+> Hi,
+>=20
+> I have for a long time pondered on how we can make the management=20
+> API more suitable for more modern tools and tasks.  So I am just=20
+> giving an extremely early heads-up on on what I'm poking at ...
+> and hopefully receive some feedbacks on what you think.
+>=20
+> One of the things which have struck me is that D-Bus is adopted a=20
+> lot of places, and its internal API have been considered stable
+> for about 10 years or more.  Even though there are areas where
+> D-Bus seems a bit over-engineered, it has proved to be a very
+> useful IPC mechanism for a lot of software.
 
-This plan of course assumes that a security issue does not force us to=20
-rebuild tap-windows (NDIS5) and thus lose the SHA1 signature.
+[...snip...]
 
---=20
-Samuli Sepp=E4nen
-Community Manager
+Time for some proof-of-concept code!
+
+<https://gitlab.com/dazo/openvpn-dbus-poc/tree/master>
+
+This is just a plain and silly TCP management to D-Bus proxy.  It
+does nothing fancy, but it is just a little introduction to how
+D-Bus can simplify getting an integration to a management interface
+in OpenVPN.
+
+To do the more advanced features, such as signalling ("push" messages
+from server to listening D-Bus clients) is something which will
+require a lot more work and I have not considered doing this.
+
+All information to get started should be fairly well documented in the
+source code.  But if anyone have any questions, no question is too silly
+.
+
+A few details.
+
+- - *DO NOT RUN THIS IN PRODUCTION!*  This is *Proof of Concept* code.
+  It will be buggy, it is hacky and you cannot fully trust it.
+
+- - A proper implementation will not use Python on the D-Bus server side,
+  but will be included into the core OpenVPN C code.
+
+- - A proper implementation will also use "properties".  This is
+  currently not possible to do via the dbus-python implementation, at
+  least not without too much additional hackery.  For a PoC, I did not
+  consider this important.  But a proper implementation in C will make
+  use of object properties to provide read-only information.
+
+- - The API provided via the D-Bus by this proxy WILL change.
+
+- - Please do not start massive improvements to this code, unless
+  it helps understanding better D-Bus features which can be worth
+  investigating further.
+
+  Again: A proper D-Bus server implementation will happen inside
+  the OpenVPN C code.  This code is purely to help us getting further
+  in this discussion.
+
+- - And please do not judge the code harshly.  I have prioritised
+  getting something which works for a PoC.  I have not added much
+  styling or very describing comments.  And yes, there will be bugs.
+
+
+- --=20
+kind regards,
+
+David Sommerseth
 OpenVPN Technologies, Inc
 
-irc freenode net: mattock
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBAgAGBQJX0E5MAAoJEIbPlEyWcf3yh4wP/i5hEjqzqHy6hnocA0ANT5ov
+VGfG1ZUF4QMUsyhjEbN2D1OM5sPQaPmH20CRcwbZGaZnuavDtjwBjc82IeopGaYC
+S4VmjQYNwGMawmrYTOH3/ITg/JzySQ60wKMv5AZBPK31zcqoFFKaYw8klsvTsj/N
+sO+ew/btlNdeosMKBGX/4+VjadgsvudX/o7GYfHVRonZX9E3B7tV7gE4EX5Z99xn
+UEnnwHzH6Olw6dhObNopPaFiFLte9Indt1iOLb3Fng0qZL5BDqw/ltr4h5klmD3R
+gJGFi75yarT41wW65ONZPm/530gzuwWEyaS2yPJ8YF7QLSiy8RZcMhdxjUP4a+dA
+31dBfv/pWXHwM5lan668d9aIjAJ/q++9IMZmwIaqNI7MCudwemXjZ1opnwopz5rQ
+nDjtOCjMeUhYo7aJAPTcxfUF+ty4JnMSnkWMRt7PJg1hJG5E4VbRiWPPDIfsXW0h
+g8WRMPHPe/bG3dC/qH6zdzupi7GqHy9UyPeVBFrJ56TuWoGeuRKQ6NL4ahn67Vt1
+th5rifBMEqsq/wxeQ+7EBYlgkNrO7A9ewo/5KNQVnYeRUv+kWAwrxeUAYzMWh7B8
+Co0UX0mKV65IR/QH0hwag0mRgS7IxTX9Y5pV7WTfqmIzxaggWTrcJFVRby5Wr4Cq
+Na26b+buT6xGdEnotrqf
+=3DbbcG
+-----END PGP SIGNATURE-----
 
