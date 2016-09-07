@@ -1,12 +1,10 @@
-Date: Wed, 7 Sep 2016 11:43:04 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20160907094304.GG78279@...1296...>
 References: <3dbe8ad1-b62e-3802-06a9-920c46616451@...515...>
+	<20160907093100.GF78279@...1296...>
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <745fdc9c-9091-9263-c25a-6f2b52236d00@...515...>
+Date: Wed, 7 Sep 2016 13:40:43 +0300
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="dPBkOKX5O0RACqf+"
-Content-Disposition: inline
-In-Reply-To: <3dbe8ad1-b62e-3802-06a9-920c46616451@...515...>
+In-Reply-To: <20160907093100.GF78279@...1296...>
 Subject: Re: [Openvpn-devel] Dropping Windows Vista / XP support?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -16,44 +14,53 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Samuli =?iso-8859-1?Q?Sepp=E4nen?= <samuli@...515...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-
---dPBkOKX5O0RACqf+
-Content-Type: text/plain; charset="iso-8859-1"
+Content-Type: text/plain; charset="windows-1252"; format=flowed
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+To: Gert Doering <gert@...1296...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
 Hi,
 
-On Wed, Sep 07, 2016 at 12:18:17PM +0300, Samuli Sepp=E4nen wrote:
-> We have already dropped XP support from OpenVPN Git "master". I think=20
-> now is the time to drop official XP support altogether, but to maintain=20
-> Vista support util the next tap-windows6 release.
+> Hi,
+>
+> On Wed, Sep 07, 2016 at 12:18:17PM +0300, Samuli Sepp=E4nen wrote:
+>> We have already dropped XP support from OpenVPN Git "master". I think
+>> now is the time to drop official XP support altogether, but to maintain
+>> Vista support util the next tap-windows6 release.
+>
+> As long as XP is in widespread use, I think we should provide up-to-date
+> and secure 2.3.x builds.  Worst thing we can do is "not provide updates"
+> in case a new openssl (or openvpn) bug shows up, and leave users out
+> in the cold.  So this means about 2-3 more years, I think...  (do you
+> have numbers how many people still download the XP installers?)
 
-Oh, regarding Vista support: I noticed that major open source projects=20
-(like chrome) have already dropped Vista support - so I think dropping
-Vista for 2.4 should be OK.
+I can probably get download numbers for I00x (openvpn+tap-windows)=20
+installers.
 
-gert
+> Note that the microsoft guidelines do not say "no more SHA1" but
+> "no SHA1 *unless* targeting Vista", which we do - so there must be a
+> way to get updated SHA1 certificates...
+
+This probably depends greatly on the CA. In our case (Digicert) SHA1 is=20
+no longer an option (or so I'm told).
+
+> What we should do, though, is declare and document a strict "end of XP
+> support" policy, like "January 1st, 2018", make this very obvious in the
+> installer (maybe even "add a separate acknowledgment popup"), AND refuse
+> to actually start the GUI after that date (or so)...
+
+That makes sense. I also think that "January 1st, 2018" is as good a=20
+deadline as any.
+
+The next 2.3.x I00x installer should implement the warning box. I think=20
+we should also let XP users know on the website and in the release=20
+announcement that seeing the "Unknown publisher" box is normal and is=20
+because XP does not support SHA1.
+
 --=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
 
---dPBkOKX5O0RACqf+
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQCVAwUBV8/hKKkuBuNlUUl1AQIhlQP8DFMVrpoICkT2rXAmjBfOkSc6qI0DPA7l
-QKKSFOUB/+htbidSd0K4+VmNrbQwBYTK+8Tmj4JF0n9wGMFQZKq3gi27L3ZtMibj
-0CiCvWG9uLWOFfbZvJX1o/7LTTFWbUgXznWDR54xB9MMvRCqPME4KIVyBdHKx6Dh
-G87m3JkOnKg=
-=yTMX
------END PGP SIGNATURE-----
-
---dPBkOKX5O0RACqf+--
+irc freenode net: mattock
 
