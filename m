@@ -1,7 +1,11 @@
-From: Steffan Karger <steffan@...1856...>
-Date: Sun, 11 Sep 2016 16:51:17 +0200
-Message-Id: <1473605477-20908-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH (2.3)] Update cipher-related man page text
+Date: Sun, 11 Sep 2016 20:51:53 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20160911185153.GS78279@...1296...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="7Y0jlJGlNwEFz8Iq"
+Content-Disposition: inline
+Subject: [Openvpn-devel] help wanted: OpenSolaris building
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -10,54 +14,59 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-As reported in trac #732, the man page text for --cipher is no longer
-accurate.  Update the text to represent current knowledge, about NCP and
-SWEET32.
+--7Y0jlJGlNwEFz8Iq
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-This does not hint at changing the default cipher, because we did not make
-a decision on that yet.  If we do change the default cipher, we'll have to
-update the text to reflect that.
+Hi,
 
-Signed-off-by: Steffan Karger <steffan@...1856...>
----
- doc/openvpn.8 | 14 +++-----------
- 1 file changed, 3 insertions(+), 11 deletions(-)
+as you might know, we try to build everything we commit to git on all
+supported platforms (using buildbot).  This works quite well and has
+helped us keep things consistently working across all platforms, at least
+as far as we have tests for each feature...
 
-diff --git a/doc/openvpn.8 b/doc/openvpn.8
-index d9bb77c..fd23f8b 100644
---- a/doc/openvpn.8
-+++ b/doc/openvpn.8
-@@ -3910,22 +3910,14 @@ Encrypt data channel packets with cipher algorithm
- The default is
- .B BF-CBC,
- an abbreviation for Blowfish in Cipher Block Chaining mode.
--Blowfish has the advantages of being fast, very secure, and allowing key sizes
--of up to 448 bits.  Blowfish is designed to be used in situations where
--keys are changed infrequently.
- 
--For more information on blowfish, see
--.I http://www.counterpane.com/blowfish.html
-+Using BF-CBC is no longer recommended, because of it's 64-bit block size.  This
-+small block size allows attacks based on collisions, as demonstrated by SWEET32.
- 
--To see other ciphers that are available with
--OpenVPN, use the
-+To see other ciphers that are available with OpenVPN, use the
- .B \-\-show\-ciphers
- option.
- 
--OpenVPN supports the CBC, CFB, and OFB cipher modes,
--however CBC is recommended and CFB and OFB should
--be considered advanced modes.
--
- Set
- .B alg=none
- to disable encryption.
--- 
-2.7.4
+One of my problem childs is (Open)Solaris, though.  I have a VM that is
+fairly old and has the GNU toolchain on it, but we have no access to
+a current system, using the Sun/Oracle C compiler.
 
+So, I'm looking for pointers :-)=20
+
+ - is there an (easy to install and maintain) OpenSource variant of
+   "Solaris" still around?
+
+ - is there a developer program at Oracle, where one can get access to
+   a current Solaris version plus Oracle C compiler, free of charge
+   (a hosted build environment is only partially usable, because we
+   run VM tests from buildbot, and those need root access...)
+
+ - ... other ideas?
+
+(I admit I'm lazy, and have not done much research on this - I just hope
+someone has the answer already, while I go and finish a new OpenBSD 6.0,
+NetBSD 7.0.1 and FreeBSD 10.3 builslave :-) )
+
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--7Y0jlJGlNwEFz8Iq
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQCVAwUBV9WnyKkuBuNlUUl1AQJoHAP/XgOB6Jw9MDd8wWvww5IRsJ25cim4NyvX
+R3HqS9PepnWrZgzOI3TWq4IkPNU7ZO9oEkWfAiIBtigbcCf0ZKkLWw8jj54Wuk4K
+tdb4OS42jc7txNyjsCcu/EGzUY0JSnWcsFkyhySlS79004An3Om8z839Ap1K9dqY
+atqlnlOhJno=
+=Tyuz
+-----END PGP SIGNATURE-----
+
+--7Y0jlJGlNwEFz8Iq--
 
