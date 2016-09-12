@@ -1,9 +1,8 @@
+MIME-Version: 1.0
 From: Steffan Karger <steffan@...1856...>
-Date: Mon, 12 Sep 2016 14:14:21 +0200
-Message-Id: <1473682461-26382-1-git-send-email-steffan@...1856...>
-In-Reply-To: <1473681509-25495-1-git-send-email-steffan@...1856...>
-References: <1473681509-25495-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH v2] Restore pre-NCP cipher options on SIGUSR1
+Date: Mon, 12 Sep 2016 14:31:23 +0200
+Message-ID: <CAA1Abx+EMAz=fTF26NyAZJE3de8BLoAXsa2nHyhjjoXnYk8=ag@...278...>
+Subject: [Openvpn-devel] RFC: Pushable options and sigusr1 restarts
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,68 +11,32 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>, "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>
 
-As reported by debbie10t on the openvpn-devel list (Message-ID:
-<326b8ff7-39a6-1974-c0b0-82fd2abdc7b7@...277...>), an NCP client will
-attempt to reconnect with the previously pushed cipher, instead of the
-cipher from the config file, after a sigusr1 restart.  This can be a
-problem when the server is reconfigured (as debbie10t explainted), or when
-roaming to a differently-configured server.  Fix this by restoring the
-cipher options from the config file after a sigusr1 restart.
+Hi,
 
-This makes the cipher options behaviour different from other pushable
-options, because those are also cached until a sighup restart.  We might
-want to change this behaviour in general, but for now let's just fix the
-issue at hand.
+OpenVPN (2.x) currently caches pushed options across sigusr1 restarts.
+This 'allowes' a server admin to push some options that the code can't
+really handle, until the client times out and performs a sigusr1
+restart.  The client will then execute a number of initialisation
+routines that might (or might not, depending op the option?) now
+process the pushed option successfully.
 
-v2: also cache and restore keysize, as that parameter is relevant too.
+This results is surprising behaviour, as discussed in trac #128 and on
+the openvpn-devel mailinglist (Message-ID:
+<326b8ff7-39a6-1974-c0b0-82fd2abdc7b7@...277...>).
 
-Signed-off-by: Steffan Karger <steffan@...1856...>
----
- src/openvpn/init.c    | 6 ++++++
- src/openvpn/openvpn.h | 1 +
- 2 files changed, 7 insertions(+)
+I'd like to get rid of this behaviour, by restoring the original
+options on a sigusr1 restart.  Imho, options should either be pushable
+and implemented properly (without needing a sigusr1 restart at the
+client side) or not pushable at all.  This code is however from well
+before I got involved into OpenVPN. So what I'm wondering about though
+is:
 
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 4d106c7..876141f 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -2277,6 +2277,7 @@ do_init_crypto_tls_c1 (struct context *c)
- 
-       c->c1.ciphername = options->ciphername;
-       c->c1.authname = options->authname;
-+      c->c1.keysize = options->keysize;
- 
- #if 0 /* was: #if ENABLE_INLINE_FILES --  Note that enabling this code will break restarts */
-       if (options->priv_key_file_inline)
-@@ -2289,6 +2290,11 @@ do_init_crypto_tls_c1 (struct context *c)
-   else
-     {
-       msg (D_INIT_MEDIUM, "Re-using SSL/TLS context");
-+
-+      /* Restore pre-NCP cipher options */
-+      c->options.ciphername = c->c1.ciphername;
-+      c->options.authname = c->c1.authname;
-+      c->options.keysize = c->c1.keysize;
-     }
- }
- 
-diff --git a/src/openvpn/openvpn.h b/src/openvpn/openvpn.h
-index 1a458f1..a39ff56 100644
---- a/src/openvpn/openvpn.h
-+++ b/src/openvpn/openvpn.h
-@@ -213,6 +213,7 @@ struct context_1
- 
-   const char *ciphername;	/**< Data channel cipher from config file */
-   const char *authname;		/**< Data channel auth from config file */
-+  int keysize;			/**< Data channel keysize from config file */
- #endif
- };
- 
--- 
-2.7.4
+Does anyone think this behaviour is intended and/or does anyone rely
+on this behaviour?
 
+-Steffan
 
