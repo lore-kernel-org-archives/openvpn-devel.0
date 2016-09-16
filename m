@@ -1,7 +1,12 @@
-From: Ilya Shipitsin <chipitsine@...277...>
-Date: Thu, 15 Sep 2016 16:26:58 +0500
-Message-Id: <1473938818-3375-1-git-send-email-chipitsine@...277...>
-Subject: [Openvpn-devel] [PATCH] travis-ci refactor by Steffan Karger
+References: <20160913200458.9906-1-gert@...1296...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <e5877948-6439-1c64-dfff-27f2ab85eb63@...2080...>
+Date: Fri, 16 Sep 2016 16:10:54 +0200
+MIME-Version: 1.0
+In-Reply-To: <20160913200458.9906-1-gert@...1296...>
+Subject: Re: [Openvpn-devel] [PATCH] Do not abort t_client run if OpenVPN
+ instance does not start.
+Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -10,215 +15,61 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
 
-From: Steffan Karger <steffan@...1856...>
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-Signed-off-by: Steffan Karger <steffan@...1856...>
----
- .travis.yml           | 63 ++++++++++++++++++++------------------
- .travis/build-deps.sh | 85 +++++++++++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 119 insertions(+), 29 deletions(-)
- create mode 100755 .travis/build-deps.sh
+On 13/09/16 22:04, Gert Doering wrote:
+> Basically, an oversight - if one test instance does not start at
+> all (due to "tap driver not loaded") the whole script would exit,
+> instead of logging the failing instance and proceeding to the next
+> test run.
+> 
+> Signed-off-by: Gert Doering <gert@...1296...> --- 
+> tests/t_client.sh.in | 10 +++++++--- 1 file changed, 7
+> insertions(+), 3 deletions(-)
+> 
+> diff --git a/tests/t_client.sh.in b/tests/t_client.sh.in index
+> 9a0af93..62d6730 100755 --- a/tests/t_client.sh.in +++
+> b/tests/t_client.sh.in @@ -279,10 +279,14 @@ do if $RUN_SUDO kill
+> -0 $opid then : else -	echo -e "OpenVPN process has failed to start
+> up, check log ($LOGDIR/$SUF:openvpn.log).  FAIL.\ntail of logfile
+> follows:\n..." >&2 -	tail $LOGDIR/$SUF:openvpn.log >&2 +	fail
+> "OpenVPN process has failed to start up, check log
+> ($LOGDIR/$SUF:openvpn.log)." +	echo "tail -5 $SUF:openvpn.log" >&2 
+> +	tail -5 $LOGDIR/$SUF:openvpn.log >&2 +	echo -e "\nFAIL. skip rest
+> of sub-tests for test run $SUF.\n" >&2 trap - 0 1 2 3 15 -	exit 10 
+> +	SUMMARY_FAIL="$SUMMARY_FAIL $SUF" +	exit_code=30 +	continue fi
+> 
+> # compare whether anything changed in ifconfig/route setup?
+> 
 
-diff --git a/.travis.yml b/.travis.yml
-index 6f719a1..452c48e 100644
---- a/.travis.yml
-+++ b/.travis.yml
-@@ -11,43 +11,49 @@ compiler:
- env:
-   global:
-     - JOBS=3
--    - MBEDTLS_VERSION=2.2.1
--    - MBEDTLS_PREFIX=~/opt/mbedtls
--    - MBEDTLS_LIBS="-L$MBEDTLS_PREFIX/lib -lmbedtls -lmbedx509 -lmbedcrypto"
--    - MBEDTLS_CFLAGS="-I$MBEDTLS_PREFIX/include"
--    - OPENSSL_VERSION=1.0.1t
--    - OPENSSL_PREFIX=~/opt/openssl
--    - OPENSSL_LIB=$OPENSSL_PREFIX/lib
--    - OPENSSL_INC=$OPENSSL_PREFIX/include
--    - OPENSSL_CFLAGS="-I$OPENSSL_PREFIX/include"
--    - OPENSSL_LIBS="-L$OPENSSL_PREFIX/lib -lssl -lcrypto"
-+    - PREFIX="${HOME}/opt"
-+    - MBEDTLS_VERSION="2.2.1"
-+    - MBEDTLS_CFLAGS="-I${PREFIX}/include"
-+    - MBEDTLS_LIBS="-L${PREFIX}/lib -lmbedtls -lmbedx509 -lmbedcrypto"
-+    - OPENSSL_VERSION="1.0.1t"
-+    - OPENSSL_CFLAGS="-I${PREFIX}/include"
-+    - OPENSSL_LIBS="-L${PREFIX}/lib -lssl -lcrypto"
-+    - LD_LIBRARY_PATH="${PREFIX}/lib:${LD_LIBRARY_PATH}"
- 
- matrix:
-   include:
--    - env: CONFIG="--with-crypto-library=openssl"
-+    - env: SSLLIB="openssl"
-+      os: linux
-       compiler: gcc
--    - env: CONFIG="--with-crypto-library=openssl"
-+    - env: SSLLIB="openssl"
-+      os: linux
-       compiler: clang
--    - env: CONFIG="--with-crypto-library=mbedtls"
-+    - env: SSLLIB="mbedtls"
-+      os: linux
-       compiler: gcc
--    - env: CONFIG="--with-crypto-library=mbedtls"
-+    - env: SSLLIB="mbedtls"
-+      os: linux
-       compiler: clang
--    - env: CONFIG="--with-crypto-library=openssl --disable-crypto"
-+    - env: SSLLIB="openssl" EXTRA_CONFIG="--disable-crypto"
-+      os: linux
-       compiler: clang
--    - env: CONFIG="--with-crypto-library=openssl --disable-lzo"
-+    - env: SSLLIB="openssl" EXTRA_CONFIG="--disable-lzo"
-+      os: linux
-       compiler: clang
--    - env: CONFIG="--with-crypto-library=openssl --enable-small"
-+    - env: SSLLIB="openssl" EXTRA_CONFIG="--enable-small"
-+      os: linux
-       compiler: clang
--    - env: CONFIG="--with-crypto-library=openssl"
-+    - env: SSLLIB="openssl"
-       os: osx
-       osx_image: xcode7.3
-       compiler: clang
--    - env: CONFIG="--with-crypto-library=mbedtls"
-+    - env: SSLLIB="mbedtls"
-       os: osx
-       osx_image: xcode7.3
-       compiler: clang
-   allow_failures:
--    - env: CONFIG="--with-crypto-library=openssl --disable-crypto"
-+    - env: SSLLIB="openssl" EXTRA_CONFIG="--disable-crypto"
-+      os: linux
-       compiler: clang
-   exclude:
-     - compiler: gcc
-@@ -65,21 +71,20 @@ cache:
-   ccache: true
-   directories:
-   - download-cache
-+  - ${HOME}/opt
- 
- before_install:
--  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update     ; fi
--  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install lzo; fi
-+  - if [ "${TRAVIS_OS_NAME}" = "osx" ]; then brew update     ; fi
-+  - if [ "${TRAVIS_OS_NAME}" = "osx" ]; then brew install lzo; fi
- 
- install:
--  - mkdir ~/bin && ln -s $(which ccache) ~/bin/$CC && export PATH=$HOME/bin:$PATH
--  - if [ ! -d download-cache ]; then mkdir download-cache; fi
--  - if [[ $CONFIG == *"--with-crypto-library=openssl"* ]]; then .travis/build-openssl-${TRAVIS_OS_NAME}.sh; fi
--  - if [[ $CONFIG == *"--with-crypto-library=mbedtls"* ]]; then .travis/build-mbedtls-${TRAVIS_OS_NAME}.sh; fi
-+  - .travis/build-deps.sh > build-deps.log 2>&1 || (cat build-deps.log && exit 1)
- 
- script:
-   - autoreconf -vi
--  - ./configure $CONFIG || (cat config.log && exit 1)
-+  - ./configure --with-crypto-library="${SSLLIB}" ${EXTRA_CONFIG} || (cat config.log && exit 1)
-   - make -j$JOBS
--  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then ldd src/openvpn/openvpn; fi
--  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then otool -L src/openvpn/openvpn; fi
-+  - src/openvpn/openvpn --version || true
-+  - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then ldd src/openvpn/openvpn; fi
-+  - if [ "${TRAVIS_OS_NAME}" = "osx" ]; then otool -L src/openvpn/openvpn; fi
-   - make check
-diff --git a/.travis/build-deps.sh b/.travis/build-deps.sh
-new file mode 100755
-index 0000000..bda54ee
---- /dev/null
-+++ b/.travis/build-deps.sh
-@@ -0,0 +1,85 @@
-+#!/bin/sh
-+set -eux
-+
-+# Set defaults
-+MBEDTLS_VERSION="${MBEDTLS_VERSION:-2.2.1}"
-+OPENSSL_VERSION="${OPENSSL_VERION:-1.0.2h}"
-+PREFIX="${PREFIX:-${HOME}/opt}"
-+
-+download_mbedtls () {
-+    if [ ! -f "download-cache/mbedtls-${MBEDTLS_VERSION}-apache.tgz" ]; then
-+        wget -P download-cache/ \
-+            "https://tls.mbed.org/download/mbedtls-${MBEDTLS_VERSION}-apache.tgz"
-+    fi
-+}
-+
-+build_mbedtls () {
-+    if [ "$(cat ${PREFIX}/.mbedtls-version)" != "${MBEDTLS_VERSION}" ]; then
-+        tar zxf download-cache/mbedtls-${MBEDTLS_VERSION}-apache.tgz
-+        (
-+            cd "mbedtls-${MBEDTLS_VERSION}"
-+            make
-+            make install DESTDIR="${PREFIX}"
-+        )
-+        echo "${MBEDTLS_VERSION}" > "${PREFIX}/.mbedtls-version"
-+    fi
-+}
-+
-+download_openssl () {
-+    if [ ! -f "download-cache/openssl-${OPENSSL_VERSION}.tar.gz" ]; then
-+        wget -P download-cache/ \
-+            "https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz"
-+    fi
-+}
-+
-+build_openssl_linux () {
-+    tar zxf "download-cache/openssl-${OPENSSL_VERSION}.tar.gz"
-+    (
-+        cd "openssl-${OPENSSL_VERSION}/"
-+        ./config shared --openssldir="${PREFIX}" -DPURIFY
-+        make all install_sw
-+    )
-+}
-+
-+build_openssl_osx () {
-+    tar zxf "download-cache/openssl-${OPENSSL_VERSION}.tar.gz"
-+    (
-+        cd "openssl-${OPENSSL_VERSION}/"
-+        ./Configure darwin64-x86_64-cc shared \
-+            --openssldir="${PREFIX}" -DPURIFY
-+        make depend all install_sw
-+    )
-+}
-+
-+build_openssl () {
-+    if [ "$(cat ${PREFIX}/.openssl-version)" != "${OPENSSL_VERSION}" ]; then
-+        if [ "${TRAVIS_OS_NAME}" = "osx" ]; then
-+            build_openssl_osx
-+        elif [ "${TRAVIS_OS_NAME}" = "linux" ]; then
-+            build_openssl_linux
-+        fi
-+        echo "${OPENSSL_VERSION}" > "${PREFIX}/.openssl-version"
-+    fi
-+}
-+
-+# Enable ccache
-+if [ "${TRAVIS_OS_NAME}" != "osx" ]; then
-+    # ccache not available on osx, see:
-+    # https://github.com/travis-ci/travis-ci/issues/5567
-+    mkdir -p "${HOME}/bin"
-+    ln -s "$(which ccache)" "${HOME}/bin/${CC}"
-+    PATH="${HOME}/bin:${PATH}"
-+fi
-+
-+# Download and build crypto lib
-+mkdir -p download-cache
-+if [ "${SSLLIB}" = "openssl" ]; then
-+    download_openssl
-+    build_openssl
-+elif [ "${SSLLIB}" = "mbedtls" ]; then
-+    download_mbedtls
-+    build_mbedtls
-+else
-+    echo "Invalid crypto lib: ${SSLLIB}"
-+    exit 1
-+fi
--- 
-2.5.5
+ACK.  This looks reasonable and if I know Gert well enough, this is
+also tested.
 
+
+- -- 
+kind regards,
+
+David Sommerseth
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBAgAGBQJX2/1uAAoJEIbPlEyWcf3yBigP+wRnqdDlL8TmYZlK4pJspQKk
+nHfFrm1mWCJhZYlkeAlTtFrXF2K4/l/kPImdb/w5vLLdY2jT3+AxKulTcm5FVa1s
+NKPhOAD/SqAzjLACWhFBK2buwFPfHzobuey821rHTNlmaNXcrMTlEntsu+hPVGyJ
+jlx5Zx5Dez1JF8RbON8X1Q8bshd7cAqYMcxeUQA1xHE6EpdUDm8yLPc5tdhoMpFe
+a1To6BX2X7dkZb+NE8ZhHGylOgRUBseTH+EVwKkC/AftglrmVOWKVn5hIpn5HCeS
+2D/gWVeSE7F8YzOktEJEwTnE2yx3YSdoqqeFCK02HIetuBs9sH2n2lLFx0VJ9Fe9
+4sLdqysJ1fZaNU6Se5/LuidUycqgDeZ8zI+GBINFPjK8VGWxZ7kSK1q9zKPneEBM
+dinvB8y2etlTxsvJXiA6tH/CgfzZYwuxoWcjxcqK2LsfnKxzv8QRDQq3shALrKMe
+QG7CI0ioWWONYe8j7UGQytnw5nVLH5Z2Wla+JBU1D9YN8K6HWPGw0ko6TjBwRlvJ
+2eyQmO54Fq4EnwBvoDjqJYmNdeiP5/zhYalCryvp8Kdrbv6NXUzDXmVYaNcm+0+p
+egJ7gh+cYvCOsbVpJ3ziZoe9aAw/+hh1BR1tGkmPPTHMFfcxTRyQhWrXodip1mK9
+T7CeH9CJsFISXpjkiETU
+=efGi
+-----END PGP SIGNATURE-----
 
