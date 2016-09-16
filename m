@@ -1,9 +1,10 @@
 From: David Sommerseth <davids@...515...>
-Date: Fri, 16 Sep 2016 18:39:13 +0200
-Message-Id: <1474043953-1955-1-git-send-email-davids@...515...>
-In-Reply-To: <1474040436-9855-1-git-send-email-steffan@...1856...>
-References: <1474040436-9855-1-git-send-email-steffan@...1856...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Make gnu89 support explicit
+Date: Fri, 16 Sep 2016 18:51:22 +0200
+Message-Id: <1474044682-18544-1-git-send-email-davids@...515...>
+In-Reply-To: <1472757207-17900-1-git-send-email-steffan@...1856...>
+References: <1472757207-17900-1-git-send-email-steffan@...1856...>
+Subject: Re: [Openvpn-devel] [PATCH applied] cleanup: remove code
+	duplication in msg_test()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,33 +21,19 @@ Cc: openvpn-devel@lists.sourceforge.net
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
+Your patch has been applied to the following branches
 
-ACK.  This works well on CentOS 5, so this change makes sense as this
-makes the compiler behaviour more predictable in regards to C standards.
-
-This will most possibly break non-GNU compilers though (Solaris and AIX?).
-But as this behaviour can be overridden by setting the CFLAGS to a -std
-those compilers accepts, I consider this reasonable.  The recommended
-way to set CFLAGS is like this:
-
-     ./configure CFLAGS="-std=c99"
-
-This ensures that if configure decides it is needed to do a re-configure
-run, it will preserve the CFLAGS setting.
-
-
-Your patch has been applied to the release/2.3 branch.
-
-commit 130c27b1f24a33c77e01b2cf82c3427699153967
+commit d7ce876841d1d5b01940251f92780fdbb05b4df0  (master)
+commit 59114b956a46c89da06b36a37b4db0a7a087b879  (release/2.3)
 Author: Steffan Karger
-Date:   Fri Sep 16 17:40:36 2016 +0200
+Date:   Thu Sep 1 21:13:27 2016 +0200
 
-     Make gnu89 support explicit
+     cleanup: remove code duplication in msg_test()
 
      Signed-off-by: Steffan Karger <steffan@...1856...>
      Acked-by: David Sommerseth <davids@...515...>
-     Message-Id: 1474040436-9855-1-git-send-email-steffan@...1856...
-     URL: http://www.mail-archive.com/search?l=mid&q=1474040436-9855-1-git-send-email-steffan@...1856...
+     Message-Id: 1472757207-17900-1-git-send-email-steffan@...1856...
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg00192.html
      Signed-off-by: David Sommerseth <davids@...515...>
 
 
@@ -58,18 +45,18 @@ David Sommerseth
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBAgAGBQJX3CATAAoJEIbPlEyWcf3y3LoP/17RIq3BOQi+mpG1APbyaokE
-e9neSJYjIDIcRMFA0daaqap3q6cXoapzeafWQ/LdJbZv5hc4pC2gYemBltqwagV+
-SS7MQTCu5oqnw2E86c3T7+EjzmwnbJk0/KB+fsjH9q25OEVpOHZ9ztQ4vsn60pCr
-fPoB6OmNjJqJBbgKGm2bY6U0rhl/Wkap00NhiIiSQPJY24d7jZ6ZCIeIq+muvELc
-Zj325IbZsxDmsAPN309dJ3LAEZX2f13PfaLiMdNu7ZnKFUcnJBIGpXYoDWAaIuY6
-G42hkHz8KP0f8y0ZNxiOwLWNCCePEmYiRLwHkW4mZSoPewSMy2hZbWcYnFWVUT96
-HISpoyRGRJZQ75Vo6vee19ck4Mr+b7/JUmL6cP7UgY8TmlRRAAYeU626OYe/j+r9
-9rG9ulAuFUAv0KJeqLKLzFj+3krN8eRdelzuAMcBfQPAb4n/1YAQk71KzsRIyO2T
-PWOE8kGkSm2GRCZnlQPgD5lEx9p7bHKFEJylpnFCd5uiFAPfVvvz25UREU/sd7Si
-x2Q5Oxq8XtJF9UEqutWieutkGYPR5/OQifFb2+sJpXN1GNoa0qbZw8CZ9EVJCywe
-8O2u7GVbNFAw5vy0Ri+XQXXF3y2Vc3clVfwg0LQC1GhxylAQQboKWKksLRKVna1G
-Op6mg2SglMw4wYEkLG1K
-=lCei
+iQIcBAEBAgAGBQJX3CMHAAoJEIbPlEyWcf3yOKUP/R0ChyXdU3ivwNadtmo7zBTh
+KCNd+X2YQ9qKvhiyAtSj8Ut1F3xKHVGN2E8xeG3aWEe1vyOqt2RH6mncuRUjrzGF
+D/OaOzB3ztYq20zlRE8MRb3lIwZgfCjWCVZZy8MuE7T2UBuT0Hf3ihtje9iz2ufE
+rSuS2ob+vWvZYK7Ij6601AcrLNL5T3dUqieXBCWuDqfLwmcS4ZPuTAMtI9dlf1vH
+Wcko4MeeBbb1DCZSDPqeNMRWUGLJjUNby8Kt/VkujHvNoyxzokdoJLDOojjDKY+Z
+KhjtTC5tF0ItUcO1QbAGMbp8mjQvaJ854378XwbawR9lBppDYBGsJgteyRRwkFvz
+d0VdacJrKgzBHjoOpWYydqws7KTWvhl+W4/As4Bn8uJVDzk19sWY/cZWl8J/dCWy
+fn5L8KVmjCgEDwvCMnA6krjiwv5RN0qGtE+dhmQEGiy6l7ulvY231mrao8aOnIQi
+rx2cJyeUMSph8NswOCeN2u78dr85g7qwJ0HFSwHDBlWwyUWq6Bwj7LETR6rO5zOn
+aDPTJZW3HCmIgTgA2Z0okrZsQ6TyZ9w9+fr3O8mtVBCyq4Ja0B2ofDuvVCfu2Re5
+EG2cSOqj/fvBSdRH4Fs16V98Dw0401oNyPPFGiFk9jvScY2Twua08vsB1nD7byZ1
+IFycA0LBWXT4owmG5d4z
+=xsz5
 -----END PGP SIGNATURE-----
 
