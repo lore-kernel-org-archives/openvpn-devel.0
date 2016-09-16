@@ -1,8 +1,9 @@
-From: Gert Doering <gert@...1296...>
-Date: Fri, 16 Sep 2016 21:45:11 +0200
-Message-Id: <20160916194511.46137-1-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH] Show compile-time variant for --multihome
-	in --version output.
+From: Steffan Karger <steffan@...1856...>
+Date: Fri, 16 Sep 2016 21:53:55 +0200
+Message-Id: <1474055635-7427-1-git-send-email-steffan@...1856...>
+In-Reply-To: <75084ad5-c8fc-2a87-7828-8270ed6ba88a@...2080...>
+References: <75084ad5-c8fc-2a87-7828-8270ed6ba88a@...2080...>
+Subject: [Openvpn-devel] [PATCH] cleanup cert_hash_remember scoping
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,32 +16,46 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Instead of just [MH], show [MH/PKTINFO] or [MH/RECVDA], to see more
-easily which compile-time variant was chosen by configure and syshead.h
+Add scopes for the conditional code, remove local scope that's only needed
+for c89 support (which we dropped).
 
-Signed-off-by: Gert Doering <gert@...1296...>
+This patch should be applied after the SHA256 fingerprint support patch.
+
+Signed-off-by: Steffan Karger <steffan@...1856...>
 ---
- src/openvpn/options.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ src/openvpn/ssl_verify.c | 17 ++++++++++-------
+ 1 file changed, 10 insertions(+), 7 deletions(-)
 
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index e052042..c9688c3 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -97,7 +97,11 @@ const char title_string[] =
-   " [PKCS11]"
- #endif
- #if ENABLE_IP_PKTINFO
--  " [MH]"
-+# if defined(HAVE_IN_PKTINFO) && defined(HAVE_IPI_SPEC_DST)
-+  " [MH/PKTINFO]"
-+# elif defined(IP_RECVDSTADDR)
-+  " [MH/RECVDA]"
-+# endif
- #endif
-   " [IPv6]"
-   " built on " __DATE__
+diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
+index 15a5de8..d0c22b8 100644
+--- a/src/openvpn/ssl_verify.c
++++ b/src/openvpn/ssl_verify.c
+@@ -197,14 +197,17 @@ cert_hash_remember (struct tls_session *session, const int error_depth,
+   if (error_depth >= 0 && error_depth < MAX_CERT_DEPTH)
+     {
+       if (!session->cert_hash_set)
+-	ALLOC_OBJ_CLEAR (session->cert_hash_set, struct cert_hash_set);
++	{
++	  ALLOC_OBJ_CLEAR (session->cert_hash_set, struct cert_hash_set);
++	}
+       if (!session->cert_hash_set->ch[error_depth])
+-	ALLOC_OBJ (session->cert_hash_set->ch[error_depth], struct cert_hash);
+-      {
+-	struct cert_hash *ch = session->cert_hash_set->ch[error_depth];
+-	ASSERT (sizeof (ch->sha256_hash) == BLEN (cert_hash));
+-	memcpy (ch->sha256_hash, BPTR (cert_hash), sizeof (ch->sha256_hash));
+-      }
++	{
++	  ALLOC_OBJ (session->cert_hash_set->ch[error_depth], struct cert_hash);
++	}
++
++      struct cert_hash *ch = session->cert_hash_set->ch[error_depth];
++      ASSERT (sizeof (ch->sha256_hash) == BLEN (cert_hash));
++      memcpy (ch->sha256_hash, BPTR (cert_hash), sizeof (ch->sha256_hash));
+     }
+ }
+ 
 -- 
-2.9.2
+2.7.4
 
 
