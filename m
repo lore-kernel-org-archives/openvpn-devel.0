@@ -1,10 +1,8 @@
-Date: Sat, 17 Sep 2016 11:19:15 +0200 (CEST)
-Message-Id: <201609170919.u8H9JFog052908@...2054...>
-From: Gert Doering <gert@...1296...>
-In-reply-To: <1473938808-3312-1-git-send-email-chipitsine@...277...>
-References: <1473938808-3312-1-git-send-email-chipitsine@...277...>
-	<1473938818-3375-1-git-send-email-chipitsine@...277...>
-Subject: Re: [Openvpn-devel] [PATCH applied] initial travis-ci support
+From: David Sommerseth <davids@...515...>
+Date: Sat, 17 Sep 2016 12:20:26 +0300
+Message-Id: <1474104026-20615-1-git-send-email-davids@...515...>
+Subject: [Openvpn-devel] [PATCH] t_client.sh: Make OpenVPN write PID file to
+	avoid various sudo issues
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,34 +13,39 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Ilya Shipitsin <chipitsine@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-ACK. Your patch has been applied to the master branch
+This resolves an issue where $! returns the PID of the sudo process instead
+of the PID of OpenVPN and when sudo does not properly propagate signales
+down to OpenVPN.
 
-(Talking with Steffan, we've decided to squash both patches into just one,
-because it seems to be somewhat silly to add a file just to completely
-rewrite in the next patch again)
+Trac: #738
+Signed-off-by: David Sommerseth <davids@...515...>
+---
+ tests/t_client.sh.in | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-commit 368991264d82f038bde30a67910ac6c7681a4ba9
-Author: Ilya Shipitsin
-Date:   Thu Sep 15 16:26:48 2016 +0500
-
-     initial travis-ci support
-
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1473938808-3312-1-git-send-email-chipitsine@...277...>
-     URL: http://www.mail-archive.com/search?l=mid&q=1473938808-3312-1-git-send-email-chipitsine@...277...
-     Signed-off-by: Steffan Karger <steffan@...1856...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1473938818-3375-1-git-send-email-chipitsine@...277...>
-     URL: http://www.mail-archive.com/search?l=mid&q=1473938818-3375-1-git-send-email-chipitsine@...277...
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/tests/t_client.sh.in b/tests/t_client.sh.in
+index 62d6730..fc82cdb 100755
+--- a/tests/t_client.sh.in
++++ b/tests/t_client.sh.in
+@@ -263,10 +263,14 @@ do
+ 	continue
+     fi
+ 
++    pidfile="${top_builddir}/tests/$LOGDIR/openvpn-$SUF.pid"
++    openvpn_conf="$openvpn_conf --writepid $pidfile"
+     echo " run openvpn $openvpn_conf"
+     echo "# src/openvpn/openvpn $openvpn_conf" >$LOGDIR/$SUF:openvpn.log
+     $RUN_SUDO "${top_builddir}/src/openvpn/openvpn" $openvpn_conf >>$LOGDIR/$SUF:openvpn.log &
+-    opid=$!
++    sleep 3  # Wait for OpenVPN to initialize and have had time to write the pid file
++    opid=`cat $pidfile`
++    echo "  OpenVPN running with PID $opid"
+ 
+     # make sure openvpn client is terminated in case shell exits
+     trap "$RUN_SUDO kill $opid" 0
+-- 
+1.8.3.1
 
 
