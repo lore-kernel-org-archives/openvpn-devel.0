@@ -1,15 +1,13 @@
-Date: Sat, 17 Sep 2016 15:58:06 +0200
+Date: Sat, 17 Sep 2016 15:59:48 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20160917135806.GU78279@...1296...>
-References: <20160917132024.12570-1-gert@...1296...>
-	<CAFHpkQFN16Ah4woE5uGh=Hp4vjBCu2cROAN-wAZVivZHtEDoGg@...278...>
-	<CAFHpkQHNCis9UVV_P=sTCV2+u2op_yuS8_UApzW2NKRoJHzMiw@...278...>
+Message-ID: <20160917135948.GV78279@...1296...>
+References: <1474119208-18687-1-git-send-email-arne@...1227...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="mYyNXm70YXUr9Kzz"
+	protocol="application/pgp-signature"; boundary="XVaA3GwKhF+BPVDd"
 Content-Disposition: inline
-In-Reply-To: <CAFHpkQHNCis9UVV_P=sTCV2+u2op_yuS8_UApzW2NKRoJHzMiw@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] Fix win32 building with C99 mode
+In-Reply-To: <1474119208-18687-1-git-send-email-arne@...1227...>
+Subject: Re: [Openvpn-devel] [PATCH] Enable TCP non-linear packet ID
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,21 +16,31 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: ???????? ?????????????? <chipitsine@...277...>
+To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---mYyNXm70YXUr9Kzz
+--XVaA3GwKhF+BPVDd
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
-On Sat, Sep 17, 2016 at 06:40:00PM +0500, ???????? ?????????????? wrote:
-> Should we add mingw compiler to travis-ci matrix?
 
-If travis can do mingw builds, that would be good.
+On Sat, Sep 17, 2016 at 03:33:28PM +0200, Arne Schwabe wrote:
+> --- a/src/openvpn/forward.c
+> +++ b/src/openvpn/forward.c
+> @@ -391,7 +391,7 @@ check_fragment_dowork (struct context *c)
+>    struct link_socket_info *lsi =3D get_link_socket_info (c);
+>=20=20
+>    /* OS MTU Hint? */
+> -  if (lsi->mtu_changed && c->c2.ipv4_tun)
+> +  if (lsi->mtu_changed)
+>      {
+>        frame_adjust_path_mtu (&c->c2.frame_fragment, c->c2.link_socket->m=
+tu,
+>  			     c->options.ce.proto);
 
-But it is complicated.
+I *think* this is part of the other patch...
 
 gert
 --=20
@@ -42,17 +50,17 @@ rt/
 Gert Doering - Munich, Germany                             gert@...1296...
 fax: +49-89-35655025                        gert@...1297...
 
---mYyNXm70YXUr9Kzz
+--XVaA3GwKhF+BPVDd
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQCVAwUBV91L7akuBuNlUUl1AQIM0AQAp5B8IYNkkoxptxwzJujIcdhpwNTgDwlh
-EIG1eVjhQB6tNT0jTboPkoWqhpeVJqtFfCR+zMEFKQzZ6fDvUNGvD44KbCLHuxVK
-9Fx2GF7pq5O87oFz+M10Lcj5nAluHqFmCwQz4nJ2KEpA3VoPwBq1tK6Uaje6UQBG
-5e7ZO2cSX4c=
-=aIbX
+iQCVAwUBV91MU6kuBuNlUUl1AQJXTgQAhY6Fv3sCIlTjzYIjN5hdp7he7EMAFO0Z
+9m1/T4mNOC7KbyudrBhnQmfV2OelxFPacNJZtQKzXD2t90E3d5/BVp9I5Kr1wnk1
+fVPfugi7A8vcwDB5zdB9VOU6OWqE/Eu7emXHLuRX0IqMDF6h/RCesORFtLmuwE0t
+ay/oD3xcnKY=
+=gUq1
 -----END PGP SIGNATURE-----
 
---mYyNXm70YXUr9Kzz--
+--XVaA3GwKhF+BPVDd--
 
