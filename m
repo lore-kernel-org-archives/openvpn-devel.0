@@ -1,10 +1,10 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Sat, 17 Sep 2016 12:36:16 +0200
-Message-Id: <1474108576-15534-1-git-send-email-arne@...1227...>
-In-Reply-To: <20160916161354.GM78279@...1296...>
-References: <20160916161354.GM78279@...1296...>
-Subject: [Openvpn-devel] [PATCH v4] Remove tun-ipv6 Option. Instead assume
-	that IPv6 is always supported.
+From: Lev Stipakov <lstipakov@...277...>
+Date: Sat, 17 Sep 2016 13:36:21 +0300
+Message-Id: <1474108581-6169-1-git-send-email-lstipakov@...277...>
+In-Reply-To: <20160830200339.GA78279@...1296...>
+References: <20160830200339.GA78279@...1296...>
+Subject: [Openvpn-devel] [PATCH v3 (release/2.3)] Drop recursively routed
+	packets
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,521 +16,244 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
+Cc: Lev Stipakov <lev.stipakov@...2164...>
 
-This option was useful when Ipv6 tun support was non standard and was an internal/user specified flag that tracked the Ipv6 capability of the tun device.
+From: Lev Stipakov <lev.stipakov@...2164...>
 
-All supported OS support IPv6. Also tun-ipv6 is pushable by the remote so not putting tun-ipv6 does not forbid ipv6 addresses.
+v3: Use better way of figuring out IP proto version which
+does not break TAP mode. Add an option to allow recursive
+routing, could be useful when packets sent by openvpn itself
+are not subject to the routing tables that would move packets
+into the tunnel.
 
-This commit also clean up a bit of the ipv6 related tun.c. Changes for most platforms are minimal.
+v2: better method naming
 
-For linux a bit more cleanup is done:
-- Remove compatibility defines that were added 2008
-- Always use IFF_NO_PI for the linux tun and not only for IPv4 only tun setups (Android also always IFF_NO_PI works fine with Ipv6).
+On certain OSes (Windows, OS X) when network adapter is
+disabled (ethernet cable pulled off, Wi-Fi hardware switch disabled),
+operating system starts to use tun as an external interface.
+Outgoing packets are routed to tun, UDP encapsulated, given to
+routing table and sent to.. tun.
 
-This commit also remove a non ipv6 fallback for tap driver from OpenVPN 2.2-beta or earlier and only warns.
+As a consequence, system starts talking to itself on full power,
+traffic counters skyrocket and user is not happy.
 
-Patch V2: Integrate Gert's comments
-Patch V3: Remove tun_ipv4 option. It only used for MTU discovery and there it was wrong since it should on the transport protocol if at all
-Patch V4: do not send V3 as V2
+To prevent that, drop packets which have gateway IP as
+destination address.
+
+Tested on Win7/10, OS X.
 ---
- Changes.rst           |   3 ++
- src/openvpn/forward.c |   2 +-
- src/openvpn/helper.c  |   2 -
- src/openvpn/init.c    |   6 ---
- src/openvpn/multi.c   |   8 ++--
- src/openvpn/openvpn.h |   5 ---
- src/openvpn/options.c |  11 +----
- src/openvpn/options.h |   1 -
- src/openvpn/route.c   |  13 ++----
- src/openvpn/tun.c     | 110 ++++++++++----------------------------------------
- src/openvpn/tun.h     |   2 -
- 11 files changed, 32 insertions(+), 131 deletions(-)
+ doc/openvpn.8         |  4 +++
+ src/openvpn/forward.c | 71 +++++++++++++++++++++++++++++++++++++++++++++++++++
+ src/openvpn/options.c | 10 ++++++++
+ src/openvpn/options.h |  4 +++
+ src/openvpn/proto.h   | 32 +++++++++++++++++++++++
+ 5 files changed, 121 insertions(+)
 
-diff --git a/Changes.rst b/Changes.rst
-index 9fcba75..2956003 100644
---- a/Changes.rst
-+++ b/Changes.rst
-@@ -135,6 +135,9 @@ User-visible Changes
-   ciphers configured in the config file.  Use --ncp-disable if you don't want
-   that.
- 
-+- ALl tun devices on all platforms are considered always IPv6 capable. The --tun-ipv6
-+  option is ignored (behaves like it is always on).
-+
- 
- Maintainer-visible changes
- --------------------------
+diff --git a/doc/openvpn.8 b/doc/openvpn.8
+index d9bb77c..0decc54 100644
+--- a/doc/openvpn.8
++++ b/doc/openvpn.8
+@@ -3796,6 +3796,10 @@ rather than waiting for a timeout.  The
+ parameter (default=1) controls the maximum number of attempts that the client
+ will try to resend the exit notification message.  OpenVPN will not send any exit
+ notifications unless this option is enabled.
++.TP
++.B \-\-allow\-recursive\-routing
++When this option is set, OpenVPN will not drop incoming tun packets
++with same destination as host.
+ .\"*********************************************************
+ .SS Data Channel Encryption Options:
+ These options are meaningful for both Static & TLS-negotiated key modes
 diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index 6c11439..b3077ed 100644
+index 5ba6fcb..d725f8d 100644
 --- a/src/openvpn/forward.c
 +++ b/src/openvpn/forward.c
-@@ -391,7 +391,7 @@ check_fragment_dowork (struct context *c)
-   struct link_socket_info *lsi = get_link_socket_info (c);
+@@ -968,6 +968,75 @@ read_incoming_tun (struct context *c)
+   perf_pop ();
+ }
  
-   /* OS MTU Hint? */
--  if (lsi->mtu_changed && c->c2.ipv4_tun)
-+  if (lsi->mtu_changed)
++/**
++ * Drops UDP packets which OS decided to route via tun.
++ *
++ * On Windows and OS X when netwotk adapter is disabled or
++ * disconnected, platform starts to use tun as external interface.
++ * When packet is sent to tun, it comes to openvpn, encapsulated
++ * and sent to routing table, which sends it again to tun.
++ */
++static void
++drop_if_recursive_routing (struct context *c, struct buffer *buf)
++{
++  bool drop = false;
++  struct openvpn_sockaddr tun_sa;
++
++  if (c->c2.to_link_addr == NULL) /* no remote addr known */
++    return;
++
++  tun_sa = c->c2.to_link_addr->dest;
++
++  int proto_ver = get_tun_ip_ver (TUNNEL_TYPE (c->c1.tuntap), &c->c2.buf);
++
++  if (proto_ver == 4)
++    {
++      const struct openvpn_iphdr *pip;
++
++      /* make sure we got whole IP header */
++      if (BLEN (buf) < (int) sizeof (struct openvpn_iphdr))
++	return;
++
++      /* skip ipv4 packets for ipv6 tun */
++      if (tun_sa.addr.sa.sa_family != AF_INET)
++	return;
++
++      pip = (struct openvpn_iphdr *) BPTR (buf);
++
++      /* drop packets with same dest addr as gateway */
++      if (tun_sa.addr.in4.sin_addr.s_addr == pip->daddr)
++	drop = true;
++    }
++  else if (proto_ver == 6)
++    {
++      const struct openvpn_ipv6hdr *pip6;
++
++      /* make sure we got whole IPv6 header */
++      if (BLEN (buf) < (int) sizeof (struct openvpn_ipv6hdr))
++	return;
++
++      /* skip ipv6 packets for ipv4 tun */
++      if (tun_sa.addr.sa.sa_family != AF_INET6)
++	return;
++
++      /* drop packets with same dest addr as gateway */
++      pip6 = (struct openvpn_ipv6hdr *) BPTR(buf);
++      if (IN6_ARE_ADDR_EQUAL(&tun_sa.addr.in6.sin6_addr, &pip6->daddr))
++	drop = true;
++    }
++
++  if (drop)
++    {
++      struct gc_arena gc = gc_new ();
++
++      c->c2.buf.len = 0;
++
++      msg(D_LOW, "Recursive routing detected, drop tun packet to %s",
++		print_link_socket_actual(c->c2.to_link_addr, &gc));
++      gc_free (&gc);
++    }
++}
++
+ /*
+  * Input:  c->c2.buf
+  * Output: c->c2.to_link
+@@ -993,6 +1062,8 @@ process_incoming_tun (struct context *c)
+ 
+   if (c->c2.buf.len > 0)
      {
-       frame_adjust_path_mtu (&c->c2.frame_fragment, c->c2.link_socket->mtu,
- 			     c->options.ce.proto);
-diff --git a/src/openvpn/helper.c b/src/openvpn/helper.c
-index 62f88ec..229523d 100644
---- a/src/openvpn/helper.c
-+++ b/src/openvpn/helper.c
-@@ -200,8 +200,6 @@ helper_client_server (struct options *o)
- 		add_in6_addr( o->server_network_ipv6, 0x1000 );
- 	o->ifconfig_ipv6_pool_netbits = o->server_netbits_ipv6;
- 
--	o->tun_ipv6 = true;
--
- 	push_option( o, "tun-ipv6", M_USAGE );
-      }
- 
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 9236a9f..7b73509 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -1400,9 +1400,6 @@ do_init_tun (struct context *c)
- 			   !c->options.ifconfig_nowarn,
- 			   c->c2.es);
- 
--  /* flag tunnel for IPv6 config if --tun-ipv6 is set */
--  c->c1.tuntap->ipv6 = c->options.tun_ipv6;
--
-   init_tun_post (c->c1.tuntap,
- 		 &c->c2.frame,
- 		 &c->options.tuntap_options);
-@@ -1420,9 +1417,6 @@ do_open_tun (struct context *c)
-   struct gc_arena gc = gc_new ();
-   bool ret = false;
- 
--  c->c2.ipv4_tun = (!c->options.tun_ipv6
--		    && is_dev_type (c->options.dev, c->options.dev_type, "tun"));
--
- #ifndef TARGET_ANDROID
-   if (!c->c1.tuntap)
-     {
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index ba7f2c0..228b393 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -1377,8 +1377,7 @@ multi_select_virtual_addr (struct multi_context *m, struct multi_instance *mi)
-        * (see below) so issue a warning if that happens - don't break the
-        * session, though, as we don't even know if this client WANTS IPv6
-        */
--      if ( mi->context.c1.tuntap->ipv6 &&
--	   mi->context.options.ifconfig_ipv6_pool_defined &&
-+      if ( mi->context.options.ifconfig_ipv6_pool_defined &&
- 	   ! mi->context.options.push_ifconfig_ipv6_defined )
- 	{
- 	  msg( M_INFO, "MULTI_sva: WARNING: if --ifconfig-push is used for IPv4, automatic IPv6 assignment from --ifconfig-ipv6-pool does not work.  Use --ifconfig-ipv6-push for IPv6 then." );
-@@ -1451,8 +1450,7 @@ multi_select_virtual_addr (struct multi_context *m, struct multi_instance *mi)
-    * way round ("dynamic IPv4, static IPv6") or "both static" makes sense
-    * -> and so it's implemented right now
-    */
--  if ( mi->context.c1.tuntap->ipv6 &&
--       mi->context.options.push_ifconfig_ipv6_defined )
-+  if ( mi->context.options.push_ifconfig_ipv6_defined )
-     {
-       mi->context.c2.push_ifconfig_ipv6_local = 
- 	    mi->context.options.push_ifconfig_ipv6_local;
-@@ -1510,7 +1508,7 @@ multi_set_virtual_addr_env (struct multi_context *m, struct multi_instance *mi)
-   setenv_del (mi->context.c2.es, "ifconfig_pool_remote_ip6");
-   setenv_del (mi->context.c2.es, "ifconfig_pool_ip6_netbits");
- 
--  if (mi->context.c1.tuntap->ipv6 && mi->context.c2.push_ifconfig_ipv6_defined)
-+  if (mi->context.c2.push_ifconfig_ipv6_defined)
-     {
-       setenv_in6_addr (mi->context.c2.es,
-                        "ifconfig_pool_remote",
-diff --git a/src/openvpn/openvpn.h b/src/openvpn/openvpn.h
-index 1a458f1..66d06b5 100644
---- a/src/openvpn/openvpn.h
-+++ b/src/openvpn/openvpn.h
-@@ -390,11 +390,6 @@ struct context_2
-   struct buffer to_tun;
-   struct buffer to_link;
- 
--  /*
--   * IPv4 TUN device?
--   */
--  bool ipv4_tun;
--
-   /* should we print R|W|r|w to console on packet transfers? */
-   bool log_rw;
- 
++      if ((c->options.mode == MODE_POINT_TO_POINT) && (!c->options.allow_recursive_routing))
++	drop_if_recursive_routing (c, &c->c2.buf);
+       /*
+        * The --passtos and --mssfix options require
+        * us to examine the IP header (IPv4 or IPv6).
 diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index e052042..0bab660 100644
+index 1ef0299..0ecaad9 100644
 --- a/src/openvpn/options.c
 +++ b/src/openvpn/options.c
-@@ -1496,7 +1496,6 @@ show_settings (const struct options *o)
-   SHOW_STR (dev_node);
-   SHOW_STR (lladdr);
-   SHOW_INT (topology);
--  SHOW_BOOL (tun_ipv6);
-   SHOW_STR (ifconfig_local);
-   SHOW_STR (ifconfig_remote_netmask);
-   SHOW_BOOL (ifconfig_noexec);
-@@ -2099,10 +2098,6 @@ options_postprocess_verify_ce (const struct options *options, const struct conne
-                   options->connection_list->array[0]->remote)
-           msg (M_USAGE, "<connection> cannot be used with --mode server");
+@@ -500,6 +500,8 @@ static const char usage_message[] =
+   "--server-poll-timeout n : when polling possible remote servers to connect to\n"
+   "                  in a round-robin fashion, spend no more than n seconds\n"
+   "                  waiting for a response before trying the next server.\n"
++  "--allow-recursive-routing : When this option is set, OpenVPN will not drop\n"
++  "                  incoming tun packets with same destination as host.\n"
+ #endif
+ #ifdef ENABLE_OCC
+   "--explicit-exit-notify [n] : On exit/restart, send exit signal to\n"
+@@ -875,6 +877,7 @@ init_options (struct options *o, const bool init_gc)
+   }
+ #endif /* WIN32 */
+ #endif /* P2MP_SERVER */
++  o->allow_recursive_routing = false;
+ }
  
--#if 0
--      if (options->tun_ipv6)
--	msg (M_USAGE, "--tun-ipv6 cannot be used with --mode server");
--#endif
-       if (options->shaper)
- 	msg (M_USAGE, "--shaper cannot be used with --mode server");
-       if (options->inetd)
-@@ -2126,9 +2121,6 @@ options_postprocess_verify_ce (const struct options *options, const struct conne
- 	msg (M_USAGE, "--ifconfig-pool-persist must be used with --ifconfig-pool");
-       if (options->ifconfig_ipv6_pool_defined && !options->ifconfig_ipv6_local )
+ void
+@@ -2089,6 +2092,8 @@ options_postprocess_verify_ce (const struct options *options, const struct conne
  	msg (M_USAGE, "--ifconfig-ipv6-pool needs --ifconfig-ipv6");
--      if (options->ifconfig_ipv6_local && !options->tun_ipv6 )
--	msg (M_INFO, "Warning: --ifconfig-ipv6 without --tun-ipv6 will not do IPv6");
--
+       if (options->ifconfig_ipv6_local && !options->tun_ipv6 )
+ 	msg (M_INFO, "Warning: --ifconfig-ipv6 without --tun-ipv6 will not do IPv6");
++      if (options->allow_recursive_routing)
++	msg (M_USAGE, "--allow-recursive-routing cannot be used with --mode server");
+ 
        if (options->auth_user_pass_file)
  	msg (M_USAGE, "--auth-user-pass cannot be used with --mode server (it should be used on the client side only)");
-       if (options->ccd_exclusive && !options->client_config_dir)
-@@ -3077,7 +3069,7 @@ options_string (const struct options *o,
-   /* send tun_ipv6 only in peer2peer mode - in client/server mode, it
-    * is usually pushed by the server, triggering a non-helpful warning
-    */
--  if (o->tun_ipv6 && o->mode == MODE_POINT_TO_POINT && !PULL_DEFINED(o))
-+  if (o->ifconfig_ipv6_local && o->mode == MODE_POINT_TO_POINT && !PULL_DEFINED(o))
-     buf_printf (&out, ",tun-ipv6");
- 
-   /*
-@@ -4578,7 +4570,6 @@ add_option (struct options *options,
-   else if (streq (p[0], "tun-ipv6") && !p[1])
-     {
-       VERIFY_PERMISSION (OPT_P_UP);
--      options->tun_ipv6 = true;
+@@ -7121,6 +7126,11 @@ add_option (struct options *options,
+       options->use_peer_id = true;
+       options->peer_id = atoi(p[1]);
      }
- #ifdef ENABLE_IPROUTE
-   else if (streq (p[0], "iproute") && p[1] && !p[2])
++  else if (streq (p[0], "allow-recursive-routing") && !p[1])
++    {
++      VERIFY_PERMISSION (OPT_P_GENERAL);
++      options->allow_recursive_routing = true;
++    }
+   else
+     {
+       int i;
 diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-index 9b7b57c..b7453a0 100644
+index 26b09ea..86fa8c2 100644
 --- a/src/openvpn/options.h
 +++ b/src/openvpn/options.h
-@@ -251,7 +251,6 @@ struct options
-   int ping_send_timeout;        /* Send a TCP/UDP ping to remote every n seconds */
-   int ping_rec_timeout;         /* Expect a TCP/UDP ping from remote at least once every n seconds */
-   bool ping_timer_remote;       /* Run ping timer only if we have a remote address */
--  bool tun_ipv6;                /* Build tun dev that supports IPv6 */
+@@ -598,6 +598,10 @@ struct options
  
- # define PING_UNDEF   0
- # define PING_EXIT    1
-diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index 85aec71..82855d6 100644
---- a/src/openvpn/route.c
-+++ b/src/openvpn/route.c
-@@ -1729,10 +1729,10 @@ add_route_ipv6 (struct route_ipv6 *r6, const struct tuntap *tt, unsigned int fla
-     }
- #endif
+   bool use_peer_id;
+   uint32_t peer_id;
++
++  /* Useful when packets sent by openvpn itself are not subject
++     to the routing tables that would move packets into the tunnel. */
++  bool allow_recursive_routing;
+ };
  
--  if ( !tt->ipv6 )
-+  if (!tt->did_ifconfig_ipv6_setup)
-     {
--      msg( M_INFO, "add_route_ipv6(): not adding %s/%d, no IPv6 on if %s",
--		    network, r6->netbits, device );
-+      msg( M_INFO, "add_route_ipv6(): not adding %s/%d, no IPv6 ifconfig on if %s",
-+		    network, r6->netbits, device);
-       return;
-     }
+ #define streq(x, y) (!strcmp((x), (y)))
+diff --git a/src/openvpn/proto.h b/src/openvpn/proto.h
+index f91e787..93444dd 100644
+--- a/src/openvpn/proto.h
++++ b/src/openvpn/proto.h
+@@ -219,6 +219,38 @@ struct ip_tcp_udp_hdr {
+                              - sizeof(struct openvpn_tcphdr))
  
-@@ -2159,13 +2159,6 @@ delete_route_ipv6 (const struct route_ipv6 *r6, const struct tuntap *tt, unsigne
-     }
- #endif
- 
--  if ( !tt->ipv6 )
--    {
--      msg( M_INFO, "delete_route_ipv6(): not deleting %s/%d, no IPv6 on if %s",
--		    network, r6->netbits, device );
--      return;
--    }
--
-   msg( M_INFO, "delete_route_ipv6(%s/%d)", network, r6->netbits );
- 
-   /* if we used a gateway on "add route", we also need to specify it on
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index b7a29f7..2fbb33c 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -741,8 +741,8 @@ do_ifconfig (struct tuntap *tt,
- 
-       argv_init (&argv);
- 
--      msg( M_INFO, "do_ifconfig, tt->ipv6=%d, tt->did_ifconfig_ipv6_setup=%d",
--	           tt->ipv6, tt->did_ifconfig_ipv6_setup );
-+      msg( M_INFO, "do_ifconfig, tt->did_ifconfig_ipv6_setup=%d",
-+	            tt->did_ifconfig_ipv6_setup );
- 
-       /*
-        * We only handle TUN/TAP devices here, not --dev null devices.
-@@ -755,7 +755,7 @@ do_ifconfig (struct tuntap *tt,
-       ifconfig_local = print_in_addr_t (tt->local, 0, &gc);
-       ifconfig_remote_netmask = print_in_addr_t (tt->remote_netmask, 0, &gc);
- 
--      if ( tt->ipv6 && tt->did_ifconfig_ipv6_setup )
-+      if (tt->did_ifconfig_ipv6_setup )
-         {
- 	  ifconfig_ipv6_local = print_in6_addr (tt->local_ipv6, 0, &gc);
- 	  ifconfig_ipv6_remote = print_in6_addr (tt->remote_ipv6, 0, &gc);
-@@ -1127,6 +1127,8 @@ do_ifconfig (struct tuntap *tt,
-       if ( do_ipv6 )
- 	{
- #ifdef NETBSD_MULTI_AF
-+#error no IPv6 support for tun interfaces on NetBSD before 4.0, upgrade your system.
-+#endif
- 	  argv_printf (&argv,
- 			  "%s %s inet6 %s/%d",
- 			  IFCONFIG_PATH,
-@@ -1139,10 +1141,6 @@ do_ifconfig (struct tuntap *tt,
- 
- 	  /* and, hooray, we explicitely need to add a route... */
- 	  add_route_connected_v6_net(tt, es);
--#else
--	  msg( M_INFO, "no IPv6 support for tun interfaces on NetBSD before 4.0 (if your system is newer, recompile openvpn)" );
--	  tt->ipv6 = false;
--#endif
- 	}
-       tt->did_ifconfig = true;
- 
-@@ -1425,7 +1423,6 @@ clear_tuntap (struct tuntap *tuntap)
- #ifdef TARGET_SOLARIS
-   tuntap->ip_fd = -1;
- #endif
--  tuntap->ipv6 = false;
- }
- 
- static void
-@@ -1478,7 +1475,7 @@ write_tun_header (struct tuntap* tt, uint8_t *buf, int len)
- 
-         iph = (struct ip *) buf;
- 
--        if (tt->ipv6 && iph->ip_v == 6)
-+        if (iph->ip_v == 6)
-             type = htonl (AF_INET6);
-         else
-             type = htonl (AF_INET);
-@@ -1526,7 +1523,7 @@ open_tun_generic (const char *dev, const char *dev_type, const char *dev_node,
-   bool dynamic_opened = false;
- 
- 
--  if ( tt->ipv6 && ! ipv6_explicitly_supported )
-+  if (  ! ipv6_explicitly_supported )
-     msg (M_WARN, "NOTE: explicit support for IPv6 tun devices is not provided for this OS");
- 
-   if (tt->type == DEV_TYPE_NULL)
-@@ -1710,7 +1707,6 @@ read_tun (struct tuntap* tt, uint8_t *buf, int len)
- }
- 
- #elif defined(TARGET_LINUX)
--#ifdef HAVE_LINUX_IF_TUN_H	/* New driver support */
- 
- #ifndef HAVE_LINUX_SOCKIOS_H
- #error header file linux/sockios.h required
-@@ -1751,8 +1747,7 @@ open_tun (const char *dev, const char *dev_type, const char *dev_node, struct tu
-        * Process --tun-ipv6
-        */
-       CLEAR (ifr);
--      if (!tt->ipv6)
--	ifr.ifr_flags = IFF_NO_PI;
-+      ifr.ifr_flags = IFF_NO_PI;
- 
- #if defined(IFF_ONE_QUEUE) && defined(SIOCSIFTXQLEN)
-       ifr.ifr_flags |= IFF_ONE_QUEUE;
-@@ -1833,32 +1828,10 @@ open_tun (const char *dev, const char *dev_type, const char *dev_node, struct tu
-   ASSERT (0);
- }
- 
--#endif
--
--#else
--
--void
--open_tun (const char *dev, const char *dev_type, const char *dev_node, struct tuntap *tt)
--{
--  open_tun_generic (dev, dev_type, dev_node, false, true, tt);
--}
--
--#endif /* HAVE_LINUX_IF_TUN_H */
-+#endif /* !PENDANTIC */
- 
- #ifdef ENABLE_FEATURE_TUN_PERSIST
- 
--/*
-- * This can be removed in future
-- * when all systems will use newer
-- * linux-headers
-- */
--#ifndef TUNSETOWNER
--#define TUNSETOWNER	_IOW('T', 204, int)
--#endif
--#ifndef TUNSETGROUP
--#define TUNSETGROUP	_IOW('T', 206, int)
--#endif
--
- void
- tuncfg (const char *dev, const char *dev_type, const char *dev_node, int persist_mode, const char *username, const char *groupname, const struct tuntap_options *options)
- {
-@@ -1940,7 +1913,7 @@ close_tun (struct tuntap *tt)
- 	    argv_msg (M_INFO, &argv);
- 	    openvpn_execve_check (&argv, NULL, 0, "Linux ip addr del failed");
- 
--            if (tt->ipv6 && tt->did_ifconfig_ipv6_setup)
-+            if (tt->did_ifconfig_ipv6_setup)
-               {
-                 const char * ifconfig_ipv6_local = print_in6_addr (tt->local_ipv6, 0, &gc);
- 
-@@ -1977,53 +1950,13 @@ close_tun (struct tuntap *tt)
- int
- write_tun (struct tuntap* tt, uint8_t *buf, int len)
- {
--  if (tt->ipv6)
--    {
--      struct tun_pi pi;
--      struct iphdr *iph;
--      struct iovec vect[2];
--      int ret;
--
--      iph = (struct iphdr *)buf;
--
--      pi.flags = 0;
--
--      if(iph->version == 6)
--	pi.proto = htons(OPENVPN_ETH_P_IPV6);
--      else
--	pi.proto = htons(OPENVPN_ETH_P_IPV4);
--
--      vect[0].iov_len = sizeof(pi);
--      vect[0].iov_base = &pi;
--      vect[1].iov_len = len;
--      vect[1].iov_base = buf;
--
--      ret = writev(tt->fd, vect, 2);
--      return(ret - sizeof(pi));
--    }
--  else
--    return write (tt->fd, buf, len);
-+  return write (tt->fd, buf, len);
- }
- 
- int
- read_tun (struct tuntap* tt, uint8_t *buf, int len)
- {
--  if (tt->ipv6)
--    {
--      struct iovec vect[2];
--      struct tun_pi pi;
--      int ret;
--
--      vect[0].iov_len = sizeof(pi);
--      vect[0].iov_base = &pi;
--      vect[1].iov_len = len;
--      vect[1].iov_base = buf;
--
--      ret = readv(tt->fd, vect, 2);
--      return(ret - sizeof(pi));
--    }
--  else
--    return read (tt->fd, buf, len);
-+  return read (tt->fd, buf, len);
- }
- 
- #elif defined(TARGET_SOLARIS)
-@@ -2227,7 +2160,7 @@ solaris_close_tun (struct tuntap *tt)
-   if (tt)
-     {
-       /* IPv6 interfaces need to be 'manually' de-configured */
--      if ( tt->ipv6 && tt->did_ifconfig_ipv6_setup )
-+      if ( tt->did_ifconfig_ipv6_setup )
- 	{
- 	  struct argv argv;
- 	  argv_init (&argv);
-@@ -2518,7 +2451,7 @@ write_tun (struct tuntap* tt, uint8_t *buf, int len)
- 
-       iph = (struct openvpn_iphdr *) buf;
- 
--      if (tt->ipv6 && OPENVPN_IPH_GET_VER(iph->version_len) == 6)
-+      if (OPENVPN_IPH_GET_VER(iph->version_len) == 6)
-         type = htonl (AF_INET6);
-       else 
-         type = htonl (AF_INET);
-@@ -2644,7 +2577,7 @@ write_tun (struct tuntap* tt, uint8_t *buf, int len)
- 
-       iph = (struct ip *) buf;
- 
--      if (tt->ipv6 && iph->ip_v == 6)
-+      if (iph->ip_v == 6)
-         type = htonl (AF_INET6);
-       else 
-         type = htonl (AF_INET);
-@@ -2727,7 +2660,7 @@ write_tun (struct tuntap* tt, uint8_t *buf, int len)
- 
-       iph = (struct ip *) buf;
- 
--      if (tt->ipv6 && iph->ip_v == 6)
-+      if (iph->ip_v == 6)
-         type = htonl (AF_INET6);
-       else 
-         type = htonl (AF_INET);
-@@ -2954,7 +2887,7 @@ close_tun (struct tuntap* tt)
-       struct argv argv;
-       argv_init (&argv);
- 
--      if ( tt->ipv6 && tt->did_ifconfig_ipv6_setup )
-+      if (tt->did_ifconfig_ipv6_setup )
- 	{
- 	  const char * ifconfig_ipv6_local =
- 				print_in6_addr (tt->local_ipv6, 0, &gc);
-@@ -5182,7 +5115,7 @@ open_tun (const char *dev, const char *dev_type, const char *dev_node, struct tu
- 
-   /*netcmd_semaphore_lock ();*/
- 
--  msg( M_INFO, "open_tun, tt->ipv6=%d", tt->ipv6 );
-+  msg( M_INFO, "open_tun");
- 
-   if (tt->type == DEV_TYPE_NULL)
-     {
-@@ -5308,11 +5241,10 @@ open_tun (const char *dev, const char *dev_type, const char *dev_node, struct tu
-     /* usage of numeric constants is ugly, but this is really tied to
-      * *this* version of the driver
-      */
--    if ( tt->ipv6 && tt->type == DEV_TYPE_TUN &&
-+    if (tt->type == DEV_TYPE_TUN &&
-          info[0] == 9 && info[1] < 8)
-       {
--	msg( M_INFO, "WARNING:  Tap-Win32 driver version %d.%d does not support IPv6 in TUN mode.  IPv6 will be disabled.  Upgrade to Tap-Win32 9.8 (2.2-beta3 release or later) or use TAP mode to get IPv6", (int) info[0], (int) info[1] );
--	tt->ipv6 = false;
-+	msg( M_INFO, "WARNING:  Tap-Win32 driver version %d.%d does not support IPv6 in TUN mode.  IPv6 will not work.  Upgrade to Tap-Win32 9.8 (2.2-beta3 release or later) or use TAP mode to get IPv6", (int) info[0], (int) info[1] );
-       }
- 
-     /* tap driver 9.8 (2.2.0 and 2.2.1 release) is buggy
-@@ -5653,7 +5585,7 @@ close_tun (struct tuntap *tt)
- 
-   if (tt)
-     {
--      if ( tt->ipv6 && tt->did_ifconfig_ipv6_setup )
-+      if ( tt->did_ifconfig_ipv6_setup )
-         {
-           if (tt->options.msg_channel)
-             {
-diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h
-index 4e93a3f..88431fb 100644
---- a/src/openvpn/tun.h
-+++ b/src/openvpn/tun.h
-@@ -139,8 +139,6 @@ struct tuntap
-   bool did_ifconfig_ipv6_setup;
-   bool did_ifconfig;
- 
--  bool ipv6;
--
-   bool persistent_if;		/* if existed before, keep on program end */
- 
-   struct tuntap_options options; /* options set on command line */
+ /*
++ * This returns an ip protocol version of packet inside tun.
++ */
++inline static int get_tun_ip_ver(int tunnel_type, struct buffer *buf)
++{
++  int offset;
++  int ip_ver;
++  const struct openvpn_iphdr *ih;
++
++  ip_ver = -1;
++
++  /* for tun get ip version from ip header */
++  if (tunnel_type == DEV_TYPE_TUN)
++    {
++      if (likely(BLEN (buf) >= (int) sizeof (struct openvpn_iphdr)))
++	{
++	  ip_ver = OPENVPN_IPH_GET_VER (*BPTR(buf));
++	}
++    }
++  else if (tunnel_type == DEV_TYPE_TAP)
++    {
++      /* for tap get ip version from eth header */
++      if (likely(BLEN (buf) >= (int)(sizeof (struct openvpn_ethhdr))))
++	{
++	  const struct openvpn_ethhdr *eh = (const struct openvpn_ethhdr *) BPTR (buf);
++	  return (ntohs (eh->proto) == OPENVPN_ETH_P_IPV6) ? 6 : 4;
++	}
++    }
++
++    return ip_ver;
++}
++
++/*
+  * If raw tunnel packet is IPv4 or IPv6, return true and increment
+  * buffer offset to start of IP header.
+  */
 -- 
-2.8.4 (Apple Git-73)
+1.9.1
 
 
