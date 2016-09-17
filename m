@@ -1,7 +1,9 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Sat, 17 Sep 2016 15:33:28 +0200
-Message-Id: <1474119208-18687-1-git-send-email-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH] Enable TCP non-linear packet ID
+From: Lev Stipakov <lstipakov@...277...>
+Date: Sat, 17 Sep 2016 16:34:12 +0300
+Message-Id: <1474119252-18612-1-git-send-email-lstipakov@...277...>
+In-Reply-To: <CAA1Abx+mo5c3EgOW6iOJuH7p-7LUK36syygt+-NjSeGTLoDH-A@...278...>
+References: <CAA1Abx+mo5c3EgOW6iOJuH7p-7LUK36syygt+-NjSeGTLoDH-A@...278...>
+Subject: [Openvpn-devel] [PATCH v4] Support for disabled peer-id
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,132 +15,117 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
+Cc: Lev Stipakov <lev.stipakov@...2164...>
 
-Implementation with multiple threads needs that to be able run encryption in parallel. Tested with James' OpenVPN 3 server.
+From: Lev Stipakov <lev.stipakov@...2164...>
+
+v4:
+- replace magic number with define
+- show user a decimal value instead of hex
+
+v3:
+* move assert outside of loop
+* add max-clients value check to options
+
+v2:
+* Add round brackets for clarity
+* Rephrase comment
+
+Support for disabled peer-id
+
+When peer-id value is 0xFFFFFF, server should ignore it and treat packet
+in a same way as P_DATA_V1.
 ---
- src/openvpn/comp.c      | 1 +
- src/openvpn/forward.c   | 2 +-
- src/openvpn/init.c      | 1 -
- src/openvpn/options.c   | 5 -----
- src/openvpn/packet_id.c | 7 +++----
- src/openvpn/packet_id.h | 2 +-
- src/openvpn/ssl.c       | 3 +--
- 7 files changed, 7 insertions(+), 14 deletions(-)
+ src/openvpn/mudp.c    | 13 ++++++++++---
+ src/openvpn/multi.c   |  3 ++-
+ src/openvpn/openvpn.h |  2 ++
+ src/openvpn/options.c |  5 +++++
+ 4 files changed, 19 insertions(+), 4 deletions(-)
 
-diff --git a/src/openvpn/comp.c b/src/openvpn/comp.c
-index 3a32c62..61f6f08 100644
---- a/src/openvpn/comp.c
-+++ b/src/openvpn/comp.c
-@@ -160,6 +160,7 @@ comp_generate_peer_info_string(const struct compress_options *opt, struct buffer
- 	buf_printf (out, "IV_LZO_STUB=1\n");
-       buf_printf (out, "IV_COMP_STUB=1\n");
-       buf_printf (out, "IV_COMP_STUBv2=1\n");
-+    buf_printf (out, "IV_TCPNL=1\n");
-     }
- }
+diff --git a/src/openvpn/mudp.c b/src/openvpn/mudp.c
+index 21a7e97..fec5e8d 100644
+--- a/src/openvpn/mudp.c
++++ b/src/openvpn/mudp.c
+@@ -64,12 +64,16 @@ multi_get_create_instance_udp (struct multi_context *m, bool *floated)
+       struct hash_bucket *bucket = hash_bucket (hash, hv);
+       uint8_t* ptr = BPTR(&m->top.c2.buf);
+       uint8_t op = ptr[0] >> P_OPCODE_SHIFT;
++      bool v2 = (op == P_DATA_V2) && (m->top.c2.buf.len >= (1 + 3));
++      bool peer_id_disabled = false;
  
-diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index 6c11439..b3077ed 100644
---- a/src/openvpn/forward.c
-+++ b/src/openvpn/forward.c
-@@ -391,7 +391,7 @@ check_fragment_dowork (struct context *c)
-   struct link_socket_info *lsi = get_link_socket_info (c);
+       /* make sure buffer has enough length to read opcode (1 byte) and peer-id (3 bytes) */
+-      if (op == P_DATA_V2 && m->top.c2.buf.len >= (1 + 3))
++      if (v2)
+ 	{
+ 	  uint32_t peer_id = ntohl(*(uint32_t*)ptr) & 0xFFFFFF;
+-	  if ((peer_id < m->max_clients) && (m->instances[peer_id]))
++	  peer_id_disabled = (peer_id == MAX_PEER_ID);
++
++	  if (!peer_id_disabled && (peer_id < m->max_clients) && (m->instances[peer_id]))
+ 	    {
+ 	      mi = m->instances[peer_id];
  
-   /* OS MTU Hint? */
--  if (lsi->mtu_changed && c->c2.ipv4_tun)
-+  if (lsi->mtu_changed)
-     {
-       frame_adjust_path_mtu (&c->c2.frame_fragment, c->c2.link_socket->mtu,
- 			     c->options.ce.proto);
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 9cd3d9f..fdeaf95 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -2143,7 +2143,6 @@ do_init_crypto_static (struct context *c, const unsigned int flags)
-   if (options->replay)
-     {
-       packet_id_init (&c->c2.crypto_options.packet_id,
--		      link_socket_proto_connection_oriented (options->ce.proto),
- 		      options->replay_window,
- 		      options->replay_time,
- 		      "STATIC", 0);
+@@ -84,7 +88,7 @@ multi_get_create_instance_udp (struct multi_context *m, bool *floated)
+ 	      }
+ 	    }
+ 	}
+-      else
++      if (!v2 || peer_id_disabled)
+ 	{
+ 	  he = hash_lookup_fast (hash, bucket, &real, hv);
+ 	  if (he)
+@@ -107,6 +111,9 @@ multi_get_create_instance_udp (struct multi_context *m, bool *floated)
+ 		      hash_add_fast (hash, bucket, &mi->real, hv, mi);
+ 		      mi->did_real_hash = true;
+ 
++		      /* max_clients must be less then max peer-id value */
++		      ASSERT(m->max_clients < MAX_PEER_ID);
++
+ 		      for (i = 0; i < m->max_clients; ++i)
+ 			{
+ 			  if (!m->instances[i])
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index ba7f2c0..3bc6ee9 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -605,7 +605,8 @@ multi_close_instance (struct multi_context *m,
+ 	}
+ #endif
+ 
+-      m->instances[mi->context.c2.tls_multi->peer_id] = NULL;
++      if (mi->context.c2.tls_multi->peer_id != MAX_PEER_ID)
++	m->instances[mi->context.c2.tls_multi->peer_id] = NULL;
+ 
+       schedule_remove_entry (m->schedule, (struct schedule_entry *) mi);
+ 
+diff --git a/src/openvpn/openvpn.h b/src/openvpn/openvpn.h
+index 1a458f1..ec8075d 100644
+--- a/src/openvpn/openvpn.h
++++ b/src/openvpn/openvpn.h
+@@ -595,4 +595,6 @@ struct context
+ #define CIPHER_ENABLED(c) (false)
+ #endif
+ 
++#define MAX_PEER_ID 0xFFFFFF
++
+ #endif
 diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index dd7d461..1be32ff 100644
+index c9688c3..29c76a6 100644
 --- a/src/openvpn/options.c
 +++ b/src/openvpn/options.c
-@@ -2215,11 +2215,6 @@ options_postprocess_verify_ce (const struct options *options, const struct conne
-   /*
-    * Check consistency of replay options
-    */
--  if ((!proto_is_udp(ce->proto))
--      && (options->replay_window != defaults.replay_window
--	  || options->replay_time != defaults.replay_time))
--    msg (M_USAGE, "--replay-window only makes sense with --proto udp");
--
-   if (!options->replay
-       && (options->replay_window != defaults.replay_window
- 	  || options->replay_time != defaults.replay_time))
-diff --git a/src/openvpn/packet_id.c b/src/openvpn/packet_id.c
-index baa4966..9874519 100644
---- a/src/openvpn/packet_id.c
-+++ b/src/openvpn/packet_id.c
-@@ -76,10 +76,9 @@ packet_id_debug (int msglevel,
- }
- 
- void
--packet_id_init (struct packet_id *p, bool tcp_mode, int seq_backtrack, int time_backtrack, const char *name, int unit)
-+packet_id_init (struct packet_id *p, int seq_backtrack, int time_backtrack, const char *name, int unit)
- {
--  dmsg (D_PID_DEBUG, "PID packet_id_init tcp_mode=%d seq_backtrack=%d time_backtrack=%d",
--	tcp_mode,
-+  dmsg (D_PID_DEBUG, "PID packet_id_init seq_backtrack=%d time_backtrack=%d",
- 	seq_backtrack,
- 	time_backtrack);
- 
-@@ -88,7 +87,7 @@ packet_id_init (struct packet_id *p, bool tcp_mode, int seq_backtrack, int time_
- 
-   p->rec.name = name;
-   p->rec.unit = unit;
--  if (seq_backtrack && !tcp_mode)
-+  if (seq_backtrack)
-     {
-       ASSERT (MIN_SEQ_BACKTRACK <= seq_backtrack && seq_backtrack <= MAX_SEQ_BACKTRACK);
-       ASSERT (MIN_TIME_BACKTRACK <= time_backtrack && time_backtrack <= MAX_TIME_BACKTRACK);
-diff --git a/src/openvpn/packet_id.h b/src/openvpn/packet_id.h
-index 5eb501d..fb059b7 100644
---- a/src/openvpn/packet_id.h
-+++ b/src/openvpn/packet_id.h
-@@ -210,7 +210,7 @@ struct packet_id
-   struct packet_id_rec rec;
- };
- 
--void packet_id_init (struct packet_id *p, bool tcp_mode, int seq_backtrack, int time_backtrack, const char *name, int unit);
-+void packet_id_init (struct packet_id *p, int seq_backtrack, int time_backtrack, const char *name, int unit);
- void packet_id_free (struct packet_id *p);
- 
- /* should we accept an incoming packet id ? */
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 8717324..c7823b2 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -799,7 +799,7 @@ key_state_init (struct tls_session *session, struct key_state *ks)
-   /* init packet ID tracker */
-   if (session->opt->replay)
-     {
--      packet_id_init (&ks->crypto_options.packet_id, session->opt->tcp_mode,
-+      packet_id_init (&ks->crypto_options.packet_id,
- 	  session->opt->replay_window, session->opt->replay_time, "SSL",
- 	  ks->key_id);
+@@ -5893,6 +5893,11 @@ add_option (struct options *options,
+ 	  msg (msglevel, "--max-clients must be at least 1");
+ 	  goto err;
+ 	}
++      if (max_clients >= MAX_PEER_ID) /* max peer-id value */
++	{
++	  msg (msglevel, "--max-clients must be less than 16777215");
++	  goto err;
++	}
+       options->max_clients = max_clients;
      }
-@@ -948,7 +948,6 @@ tls_session_init (struct tls_multi *multi, struct tls_session *session)
- 
-   /* initialize packet ID replay window for --tls-auth */
-   packet_id_init (&session->tls_auth.packet_id,
--		  session->opt->tcp_mode,
- 		  session->opt->replay_window,
- 		  session->opt->replay_time,
- 		  "TLS_AUTH", session->key_id);
+   else if (streq (p[0], "max-routes-per-client") && p[1] && !p[2])
 -- 
-2.8.4 (Apple Git-73)
+1.9.1
 
 
