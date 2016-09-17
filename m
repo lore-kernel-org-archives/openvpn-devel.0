@@ -1,13 +1,10 @@
-References: <20160916161354.GM78279@...1296...>
-	<1474104227-13974-1-git-send-email-arne@...1227...>
-	<CAFHpkQGHJxm8kb=3JDwaUk7HK4v-s2qyUCi=TQBU9xPWGpTeBg@...278...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <ce4d054b-29ee-944d-6e82-1cd02677aacb@...1227...>
-Date: Sat, 17 Sep 2016 13:10:32 +0300
-MIME-Version: 1.0
-In-Reply-To: <CAFHpkQGHJxm8kb=3JDwaUk7HK4v-s2qyUCi=TQBU9xPWGpTeBg@...278...>
-Subject: Re: [Openvpn-devel] [[PATCH v2]] Remove tun-ipv6 Option. Instead
- assume that IPv6 is always supported.
+From: Gert Doering <gert@...1296...>
+Date: Sat, 17 Sep 2016 12:17:38 +0200
+Message-Id: <20160917101738.53951-1-gert@...1296...>
+In-Reply-To: <1474104789-31735-1-git-send-email-chipitsine@...277...>
+References: <1474104789-31735-1-git-send-email-chipitsine@...277...>
+Subject: Re: [Openvpn-devel] [PATCH applied] skip t_lpback.sh and
+	t_cltsrv.sh if openvpn configured --disable-crypto
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,16 +15,27 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: chipitsine@...277...
+Cc: openvpn-devel@lists.sourceforge.net
 
-Am 17.09.16 um 12:40 schrieb Илья Шипицин:
-> funny enough, neither Azure, nor GCP are running ipv6.
-> well, GCP images are compiled with ipv6 support actually.
+Your patch has been applied to the following branches
 
-Yeah. But the patch is not about ipv6 actually working. Just about
-telling that the OS support of IPv6 tun.
+commit a85ba0e06badf9932e80deb53b68f50611943c6e  (master)
+commit 8e13e38aef5028e2227eb2d5e0a7e35ba6ff028e  (release/2.3)
+Author: Ilya Shipitsin
+Date:   Sat Sep 17 14:33:09 2016 +0500
 
-Arne
+     skip t_lpback.sh and t_cltsrv.sh if openvpn configured --disable-crypto
+
+     Acked-by: Steffan Karger <steffan.karger@...1435...>
+     Message-Id: <1474104789-31735-1-git-send-email-chipitsine@...277...>
+     URL: http://www.mail-archive.com/search?l=mid&q=1474104789-31735-1-git-send-email-chipitsine@...277...
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
