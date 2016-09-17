@@ -1,9 +1,12 @@
-From: Lev Stipakov <lstipakov@...277...>
-Date: Sat, 17 Sep 2016 16:34:12 +0300
-Message-Id: <1474119252-18612-1-git-send-email-lstipakov@...277...>
-In-Reply-To: <CAA1Abx+mo5c3EgOW6iOJuH7p-7LUK36syygt+-NjSeGTLoDH-A@...278...>
-References: <CAA1Abx+mo5c3EgOW6iOJuH7p-7LUK36syygt+-NjSeGTLoDH-A@...278...>
-Subject: [Openvpn-devel] [PATCH v4] Support for disabled peer-id
+MIME-Version: 1.0
+In-Reply-To: <CAFHpkQFN16Ah4woE5uGh=Hp4vjBCu2cROAN-wAZVivZHtEDoGg@...278...>
+References: <20160917132024.12570-1-gert@...1296...>
+	<CAFHpkQFN16Ah4woE5uGh=Hp4vjBCu2cROAN-wAZVivZHtEDoGg@...278...>
+From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
+Date: Sat, 17 Sep 2016 18:40:00 +0500
+Message-ID: <CAFHpkQHNCis9UVV_P=sTCV2+u2op_yuS8_UApzW2NKRoJHzMiw@...278...>
+Content-Type: multipart/alternative; boundary=001a1141a1fe3727e0053cb437be
+Subject: Re: [Openvpn-devel] [PATCH] Fix win32 building with C99 mode
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,120 +15,106 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Lev Stipakov <lev.stipakov@...2164...>
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-From: Lev Stipakov <lev.stipakov@...2164...>
+--001a1141a1fe3727e0053cb437be
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-v4:
-- replace magic number with define
-- show user a decimal value instead of hex
+Should we add mingw compiler to travis-ci matrix?
 
-v3:
-* move assert outside of loop
-* add max-clients value check to options
+17 =D1=81=D0=B5=D0=BD=D1=82. 2016 =D0=B3. 6:34 PM =D0=BF=D0=BE=D0=BB=D1=8C=
+=D0=B7=D0=BE=D0=B2=D0=B0=D1=82=D0=B5=D0=BB=D1=8C "Gert Doering" <gert@...1711...=
+96...>
+=D0=BD=D0=B0=D0=BF=D0=B8=D1=81=D0=B0=D0=BB:
 
-v2:
-* Add round brackets for clarity
-* Rephrase comment
+In -std=3Dc99 mode, WIN32 is not defined to be "1" anymore, but just
+"#define WIN32" - so the "#if WIN32" breaks, needs to be "#ifdef WIN32"
 
-Support for disabled peer-id
-
-When peer-id value is 0xFFFFFF, server should ignore it and treat packet
-in a same way as P_DATA_V1.
+Signed-off-by: Gert Doering <gert@...1296...>
 ---
- src/openvpn/mudp.c    | 13 ++++++++++---
- src/openvpn/multi.c   |  3 ++-
- src/openvpn/openvpn.h |  2 ++
- src/openvpn/options.c |  5 +++++
- 4 files changed, 19 insertions(+), 4 deletions(-)
+ src/openvpn/misc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/src/openvpn/mudp.c b/src/openvpn/mudp.c
-index 21a7e97..fec5e8d 100644
---- a/src/openvpn/mudp.c
-+++ b/src/openvpn/mudp.c
-@@ -64,12 +64,16 @@ multi_get_create_instance_udp (struct multi_context *m, bool *floated)
-       struct hash_bucket *bucket = hash_bucket (hash, hv);
-       uint8_t* ptr = BPTR(&m->top.c2.buf);
-       uint8_t op = ptr[0] >> P_OPCODE_SHIFT;
-+      bool v2 = (op == P_DATA_V2) && (m->top.c2.buf.len >= (1 + 3));
-+      bool peer_id_disabled = false;
- 
-       /* make sure buffer has enough length to read opcode (1 byte) and peer-id (3 bytes) */
--      if (op == P_DATA_V2 && m->top.c2.buf.len >= (1 + 3))
-+      if (v2)
- 	{
- 	  uint32_t peer_id = ntohl(*(uint32_t*)ptr) & 0xFFFFFF;
--	  if ((peer_id < m->max_clients) && (m->instances[peer_id]))
-+	  peer_id_disabled = (peer_id == MAX_PEER_ID);
-+
-+	  if (!peer_id_disabled && (peer_id < m->max_clients) && (m->instances[peer_id]))
- 	    {
- 	      mi = m->instances[peer_id];
- 
-@@ -84,7 +88,7 @@ multi_get_create_instance_udp (struct multi_context *m, bool *floated)
- 	      }
- 	    }
- 	}
--      else
-+      if (!v2 || peer_id_disabled)
- 	{
- 	  he = hash_lookup_fast (hash, bucket, &real, hv);
- 	  if (he)
-@@ -107,6 +111,9 @@ multi_get_create_instance_udp (struct multi_context *m, bool *floated)
- 		      hash_add_fast (hash, bucket, &mi->real, hv, mi);
- 		      mi->did_real_hash = true;
- 
-+		      /* max_clients must be less then max peer-id value */
-+		      ASSERT(m->max_clients < MAX_PEER_ID);
-+
- 		      for (i = 0; i < m->max_clients; ++i)
- 			{
- 			  if (!m->instances[i])
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index ba7f2c0..3bc6ee9 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -605,7 +605,8 @@ multi_close_instance (struct multi_context *m,
- 	}
- #endif
- 
--      m->instances[mi->context.c2.tls_multi->peer_id] = NULL;
-+      if (mi->context.c2.tls_multi->peer_id != MAX_PEER_ID)
-+	m->instances[mi->context.c2.tls_multi->peer_id] = NULL;
- 
-       schedule_remove_entry (m->schedule, (struct schedule_entry *) mi);
- 
-diff --git a/src/openvpn/openvpn.h b/src/openvpn/openvpn.h
-index 1a458f1..ec8075d 100644
---- a/src/openvpn/openvpn.h
-+++ b/src/openvpn/openvpn.h
-@@ -595,4 +595,6 @@ struct context
- #define CIPHER_ENABLED(c) (false)
- #endif
- 
-+#define MAX_PEER_ID 0xFFFFFF
-+
- #endif
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index c9688c3..29c76a6 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -5893,6 +5893,11 @@ add_option (struct options *options,
- 	  msg (msglevel, "--max-clients must be at least 1");
- 	  goto err;
- 	}
-+      if (max_clients >= MAX_PEER_ID) /* max peer-id value */
-+	{
-+	  msg (msglevel, "--max-clients must be less than 16777215");
-+	  goto err;
-+	}
-       options->max_clients = max_clients;
-     }
-   else if (streq (p[0], "max-routes-per-client") && p[1] && !p[2])
--- 
+diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
+index 0991d79..2982cd0 100644
+--- a/src/openvpn/misc.c
++++ b/src/openvpn/misc.c
+@@ -977,7 +977,7 @@ hostname_randomize(const char *hostname, struct
+gc_arena *gc)
+ const char *
+ gen_path (const char *directory, const char *filename, struct gc_arena *gc)
+ {
+-#if WIN32
++#ifdef WIN32
+   const int CC_PATH_RESERVED =3D CC_LESS_THAN|CC_GREATER_THAN|CC_COLON|
+     CC_DOUBLE_QUOTE|CC_SLASH|CC_BACKSLASH|CC_PIPE|CC_QUESTION_
+MARK|CC_ASTERISK;
+ #else
+--
 1.9.1
 
+
+------------------------------------------------------------
+------------------
+_______________________________________________
+Openvpn-devel mailing list
+Openvpn-devel@lists.sourceforge.net
+https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+
+--001a1141a1fe3727e0053cb437be
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p dir=3D"ltr">Should we add mingw compiler to travis-ci matrix?</p>
+<div class=3D"gmail_extra"><br><div class=3D"gmail_quote">17 =D1=81=D0=B5=
+=D0=BD=D1=82. 2016 =D0=B3. 6:34 PM =D0=BF=D0=BE=D0=BB=D1=8C=D0=B7=D0=BE=D0=
+=B2=D0=B0=D1=82=D0=B5=D0=BB=D1=8C &quot;Gert Doering&quot; &lt;<a href=3D"m=
+ailto:gert@...1296...">gert@...1296...</a>&gt; =D0=BD=D0=B0=D0=BF=D0=B8=D1=
+=81=D0=B0=D0=BB:<br type=3D"attribution"><blockquote class=3D"quote" style=
+=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">In -std=
+=3Dc99 mode, WIN32 is not defined to be &quot;1&quot; anymore, but just<br>
+&quot;#define WIN32&quot; - so the &quot;#if WIN32&quot; breaks, needs to b=
+e &quot;#ifdef WIN32&quot;<br>
+<br>
+Signed-off-by: Gert Doering &lt;<a href=3D"mailto:gert@...1296...">gert@...493...=
+1296...</a>&gt;<br>
+---<br>
+=C2=A0src/openvpn/misc.c | 2 +-<br>
+=C2=A01 file changed, 1 insertion(+), 1 deletion(-)<br>
+<br>
+diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c<br>
+index 0991d79..2982cd0 100644<br>
+--- a/src/openvpn/misc.c<br>
++++ b/src/openvpn/misc.c<br>
+@@ -977,7 +977,7 @@ hostname_randomize(const char *hostname, struct gc_aren=
+a *gc)<br>
+=C2=A0const char *<br>
+=C2=A0gen_path (const char *directory, const char *filename, struct gc_aren=
+a *gc)<br>
+=C2=A0{<br>
+-#if WIN32<br>
++#ifdef WIN32<br>
+=C2=A0 =C2=A0const int CC_PATH_RESERVED =3D CC_LESS_THAN|CC_GREATER_THAN|<w=
+br>CC_COLON|<br>
+=C2=A0 =C2=A0 =C2=A0CC_DOUBLE_QUOTE|CC_SLASH|CC_<wbr>BACKSLASH|CC_PIPE|CC_Q=
+UESTION_<wbr>MARK|CC_ASTERISK;<br>
+=C2=A0#else<br>
+<font color=3D"#888888">--<br>
+1.9.1<br>
+<br>
+<br>
+------------------------------<wbr>------------------------------<wbr>-----=
+-------------<br>
+______________________________<wbr>_________________<br>
+Openvpn-devel mailing list<br>
+<a href=3D"mailto:Openvpn-devel@lists.sourceforge.net">Openvpn-devel@...2155...=
+9...<wbr>sourceforge.net</a><br>
+<a href=3D"https://lists.sourceforge.net/lists/listinfo/openvpn-devel" rel=
+=3D"noreferrer" target=3D"_blank">https://lists.sourceforge.net/<wbr>lists/=
+listinfo/openvpn-devel</a><br>
+</font></blockquote></div><br></div>
+
+--001a1141a1fe3727e0053cb437be--
 
