@@ -1,9 +1,11 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Sat, 17 Sep 2016 16:15:38 +0200
-Message-Id: <1474121738-19420-1-git-send-email-arne@...1227...>
-In-Reply-To: <0160917135948.GV78279@...1296...>
-References: <0160917135948.GV78279@...1296...>
-Subject: [Openvpn-devel] [PATCHv2] Enable TCP non-linear packet ID
+MIME-Version: 1.0
+In-Reply-To: <20160917132024.12570-1-gert@...1296...>
+References: <20160917132024.12570-1-gert@...1296...>
+From: Selva Nair <selva.nair@...277...>
+Date: Sat, 17 Sep 2016 19:11:56 -0400
+Message-ID: <CAKuzo_jqgMNCqcbCHBLO7hHoa9aLDTj3Ed7UmJ446b2J++8BCw@...278...>
+Content-Type: multipart/alternative; boundary=94eb2c12299cc211d9053cbc35cd
+Subject: Re: [Openvpn-devel] [PATCH] Fix win32 building with C99 mode
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,121 +14,77 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Implementation with multiple threads needs that to be able run encryption in parallel. Tested with James' OpenVPN 3 server.
----
- src/openvpn/comp.c      | 1 +
- src/openvpn/init.c      | 1 -
- src/openvpn/options.c   | 5 -----
- src/openvpn/packet_id.c | 7 +++----
- src/openvpn/packet_id.h | 2 +-
- src/openvpn/ssl.c       | 3 +--
- 6 files changed, 6 insertions(+), 13 deletions(-)
+--94eb2c12299cc211d9053cbc35cd
+Content-Type: text/plain; charset=UTF-8
 
-diff --git a/src/openvpn/comp.c b/src/openvpn/comp.c
-index 3a32c62..61f6f08 100644
---- a/src/openvpn/comp.c
-+++ b/src/openvpn/comp.c
-@@ -160,6 +160,7 @@ comp_generate_peer_info_string(const struct compress_options *opt, struct buffer
- 	buf_printf (out, "IV_LZO_STUB=1\n");
-       buf_printf (out, "IV_COMP_STUB=1\n");
-       buf_printf (out, "IV_COMP_STUBv2=1\n");
-+    buf_printf (out, "IV_TCPNL=1\n");
-     }
- }
- 
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 9cd3d9f..fdeaf95 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -2143,7 +2143,6 @@ do_init_crypto_static (struct context *c, const unsigned int flags)
-   if (options->replay)
-     {
-       packet_id_init (&c->c2.crypto_options.packet_id,
--		      link_socket_proto_connection_oriented (options->ce.proto),
- 		      options->replay_window,
- 		      options->replay_time,
- 		      "STATIC", 0);
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index dd7d461..1be32ff 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -2215,11 +2215,6 @@ options_postprocess_verify_ce (const struct options *options, const struct conne
-   /*
-    * Check consistency of replay options
-    */
--  if ((!proto_is_udp(ce->proto))
--      && (options->replay_window != defaults.replay_window
--	  || options->replay_time != defaults.replay_time))
--    msg (M_USAGE, "--replay-window only makes sense with --proto udp");
--
-   if (!options->replay
-       && (options->replay_window != defaults.replay_window
- 	  || options->replay_time != defaults.replay_time))
-diff --git a/src/openvpn/packet_id.c b/src/openvpn/packet_id.c
-index baa4966..9874519 100644
---- a/src/openvpn/packet_id.c
-+++ b/src/openvpn/packet_id.c
-@@ -76,10 +76,9 @@ packet_id_debug (int msglevel,
- }
- 
- void
--packet_id_init (struct packet_id *p, bool tcp_mode, int seq_backtrack, int time_backtrack, const char *name, int unit)
-+packet_id_init (struct packet_id *p, int seq_backtrack, int time_backtrack, const char *name, int unit)
- {
--  dmsg (D_PID_DEBUG, "PID packet_id_init tcp_mode=%d seq_backtrack=%d time_backtrack=%d",
--	tcp_mode,
-+  dmsg (D_PID_DEBUG, "PID packet_id_init seq_backtrack=%d time_backtrack=%d",
- 	seq_backtrack,
- 	time_backtrack);
- 
-@@ -88,7 +87,7 @@ packet_id_init (struct packet_id *p, bool tcp_mode, int seq_backtrack, int time_
- 
-   p->rec.name = name;
-   p->rec.unit = unit;
--  if (seq_backtrack && !tcp_mode)
-+  if (seq_backtrack)
-     {
-       ASSERT (MIN_SEQ_BACKTRACK <= seq_backtrack && seq_backtrack <= MAX_SEQ_BACKTRACK);
-       ASSERT (MIN_TIME_BACKTRACK <= time_backtrack && time_backtrack <= MAX_TIME_BACKTRACK);
-diff --git a/src/openvpn/packet_id.h b/src/openvpn/packet_id.h
-index 5eb501d..fb059b7 100644
---- a/src/openvpn/packet_id.h
-+++ b/src/openvpn/packet_id.h
-@@ -210,7 +210,7 @@ struct packet_id
-   struct packet_id_rec rec;
- };
- 
--void packet_id_init (struct packet_id *p, bool tcp_mode, int seq_backtrack, int time_backtrack, const char *name, int unit);
-+void packet_id_init (struct packet_id *p, int seq_backtrack, int time_backtrack, const char *name, int unit);
- void packet_id_free (struct packet_id *p);
- 
- /* should we accept an incoming packet id ? */
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 8717324..c7823b2 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -799,7 +799,7 @@ key_state_init (struct tls_session *session, struct key_state *ks)
-   /* init packet ID tracker */
-   if (session->opt->replay)
-     {
--      packet_id_init (&ks->crypto_options.packet_id, session->opt->tcp_mode,
-+      packet_id_init (&ks->crypto_options.packet_id,
- 	  session->opt->replay_window, session->opt->replay_time, "SSL",
- 	  ks->key_id);
-     }
-@@ -948,7 +948,6 @@ tls_session_init (struct tls_multi *multi, struct tls_session *session)
- 
-   /* initialize packet ID replay window for --tls-auth */
-   packet_id_init (&session->tls_auth.packet_id,
--		  session->opt->tcp_mode,
- 		  session->opt->replay_window,
- 		  session->opt->replay_time,
- 		  "TLS_AUTH", session->key_id);
--- 
-2.8.4 (Apple Git-73)
+Hi,
 
+On Sat, Sep 17, 2016 at 9:20 AM, Gert Doering <gert@...1296...> wrote:
+
+> In -std=c99 mode, WIN32 is not defined to be "1" anymore, but just
+> "#define WIN32" - so the "#if WIN32" breaks, needs to be "#ifdef WIN32"
+>
+
+Indeed...
+
+To depend on the compiler or system headers to define WIN32 was not a great
+idea anyway. Using  _WIN32 or __WIN32 is probably more reliable. Or we
+should define WIN32 in config.h. With std=c99, it seems WIN32 gets defined
+by chance through some header pulled-in by syshead.h -- not something one
+can rely on.
+
+Compiler-defined macros with std=c99:
+$ x86_64-w64-mingw32-gcc -std=c99 -E -dM - </dev/null | grep WIN32
+#define _WIN32 1
+#define __WIN32 1
+#define __WIN32__ 1
+
+As for a quick fix, the patch takes care of misc.c, but  there is an issue
+with block_dns.c as well. It does not include the required config.h and
+syshead.h at the top before #ifdef WIN32, so now the whole file gets
+skipped -- mea culpa, mea culpa...
+
+I think we can just remove #ifdef WIN32 from block_dns.c (its compiled only
+on Windows), and add config.h and syshead.h headers at the top. Then we
+also need -I$(top_srcdir)/src/compat in src/openvpnsev/Makefile.am as
+compat.h is included by syshead.h.
+
+Thanks,
+
+Selva
+
+--94eb2c12299cc211d9053cbc35cd
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr">Hi,<br><div class=3D"gmail_extra"><br></div><div class=3D"=
+gmail_extra"><div class=3D"gmail_quote">On Sat, Sep 17, 2016 at 9:20 AM, Ge=
+rt Doering <span dir=3D"ltr">&lt;<a target=3D"_blank" href=3D"mailto:gert@...220...=
+..1296...">gert@...1296...</a>&gt;</span> wrote:<br><blockquote style=3D"ma=
+rgin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:=
+1ex" class=3D"gmail_quote">In -std=3Dc99 mode, WIN32 is not defined to be &=
+quot;1&quot; anymore, but just<br>
+&quot;#define WIN32&quot; - so the &quot;#if WIN32&quot; breaks, needs to b=
+e &quot;#ifdef WIN32&quot;<span><font color=3D"#888888"><br></font></span><=
+/blockquote><div><br></div><div>Indeed...<br><br>To depend on the compiler =
+or system headers to define WIN32 was not a great idea anyway. Using=C2=A0 =
+_WIN32 or __WIN32 is probably more reliable. Or we should define WIN32 in c=
+onfig.h. With std=3Dc99, it seems WIN32 gets defined by chance through some=
+ header pulled-in by syshead.h -- not something one can rely on.<br><br>Com=
+piler-defined macros with std=3Dc99:<br>$ x86_64-w64-mingw32-gcc -std=3Dc99=
+ -E -dM - &lt;/dev/null | grep WIN32<br>#define _WIN32 1<br>#define __WIN32=
+ 1<br>#define __WIN32__ 1<br><br>As for a quick fix, the patch takes care o=
+f misc.c, but=C2=A0 there is an issue with block_dns.c as well. It does not=
+ include the required config.h and syshead.h at the top before #ifdef WIN32=
+, so now the whole file gets skipped -- mea culpa, mea culpa... <br><br>I t=
+hink we can just remove #ifdef WIN32 from block_dns.c (its compiled only on=
+ Windows), and add config.h and syshead.h headers at the top. Then we=C2=A0=
+ also need -I$(top_srcdir)/src/compat in src/openvpnsev/Makefile.am as comp=
+at.h is included by syshead.h.<br><br></div><div>Thanks,<br><br></div><div>=
+Selva<br></div></div></div></div>
+
+--94eb2c12299cc211d9053cbc35cd--
 
