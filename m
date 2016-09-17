@@ -1,7 +1,7 @@
-From: Gert Doering <gert@...1296...>
-Date: Sat, 17 Sep 2016 15:20:24 +0200
-Message-Id: <20160917132024.12570-1-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH] Fix win32 building with C99 mode
+From: Arne Schwabe <arne@...1227...>
+Date: Sat, 17 Sep 2016 15:33:28 +0200
+Message-Id: <1474119208-18687-1-git-send-email-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH] Enable TCP non-linear packet ID
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,28 +14,131 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-In -std=c99 mode, WIN32 is not defined to be "1" anymore, but just
-"#define WIN32" - so the "#if WIN32" breaks, needs to be "#ifdef WIN32"
-
-Signed-off-by: Gert Doering <gert@...1296...>
+Implementation with multiple threads needs that to be able run encryption in parallel. Tested with James' OpenVPN 3 server.
 ---
- src/openvpn/misc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ src/openvpn/comp.c      | 1 +
+ src/openvpn/forward.c   | 2 +-
+ src/openvpn/init.c      | 1 -
+ src/openvpn/options.c   | 5 -----
+ src/openvpn/packet_id.c | 7 +++----
+ src/openvpn/packet_id.h | 2 +-
+ src/openvpn/ssl.c       | 3 +--
+ 7 files changed, 7 insertions(+), 14 deletions(-)
 
-diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
-index 0991d79..2982cd0 100644
---- a/src/openvpn/misc.c
-+++ b/src/openvpn/misc.c
-@@ -977,7 +977,7 @@ hostname_randomize(const char *hostname, struct gc_arena *gc)
- const char *
- gen_path (const char *directory, const char *filename, struct gc_arena *gc)
+diff --git a/src/openvpn/comp.c b/src/openvpn/comp.c
+index 3a32c62..61f6f08 100644
+--- a/src/openvpn/comp.c
++++ b/src/openvpn/comp.c
+@@ -160,6 +160,7 @@ comp_generate_peer_info_string(const struct compress_options *opt, struct buffer
+ 	buf_printf (out, "IV_LZO_STUB=1\n");
+       buf_printf (out, "IV_COMP_STUB=1\n");
+       buf_printf (out, "IV_COMP_STUBv2=1\n");
++    buf_printf (out, "IV_TCPNL=1\n");
+     }
+ }
+ 
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index 6c11439..b3077ed 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -391,7 +391,7 @@ check_fragment_dowork (struct context *c)
+   struct link_socket_info *lsi = get_link_socket_info (c);
+ 
+   /* OS MTU Hint? */
+-  if (lsi->mtu_changed && c->c2.ipv4_tun)
++  if (lsi->mtu_changed)
+     {
+       frame_adjust_path_mtu (&c->c2.frame_fragment, c->c2.link_socket->mtu,
+ 			     c->options.ce.proto);
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 9cd3d9f..fdeaf95 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -2143,7 +2143,6 @@ do_init_crypto_static (struct context *c, const unsigned int flags)
+   if (options->replay)
+     {
+       packet_id_init (&c->c2.crypto_options.packet_id,
+-		      link_socket_proto_connection_oriented (options->ce.proto),
+ 		      options->replay_window,
+ 		      options->replay_time,
+ 		      "STATIC", 0);
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index dd7d461..1be32ff 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -2215,11 +2215,6 @@ options_postprocess_verify_ce (const struct options *options, const struct conne
+   /*
+    * Check consistency of replay options
+    */
+-  if ((!proto_is_udp(ce->proto))
+-      && (options->replay_window != defaults.replay_window
+-	  || options->replay_time != defaults.replay_time))
+-    msg (M_USAGE, "--replay-window only makes sense with --proto udp");
+-
+   if (!options->replay
+       && (options->replay_window != defaults.replay_window
+ 	  || options->replay_time != defaults.replay_time))
+diff --git a/src/openvpn/packet_id.c b/src/openvpn/packet_id.c
+index baa4966..9874519 100644
+--- a/src/openvpn/packet_id.c
++++ b/src/openvpn/packet_id.c
+@@ -76,10 +76,9 @@ packet_id_debug (int msglevel,
+ }
+ 
+ void
+-packet_id_init (struct packet_id *p, bool tcp_mode, int seq_backtrack, int time_backtrack, const char *name, int unit)
++packet_id_init (struct packet_id *p, int seq_backtrack, int time_backtrack, const char *name, int unit)
  {
--#if WIN32
-+#ifdef WIN32
-   const int CC_PATH_RESERVED = CC_LESS_THAN|CC_GREATER_THAN|CC_COLON|
-     CC_DOUBLE_QUOTE|CC_SLASH|CC_BACKSLASH|CC_PIPE|CC_QUESTION_MARK|CC_ASTERISK;
- #else
+-  dmsg (D_PID_DEBUG, "PID packet_id_init tcp_mode=%d seq_backtrack=%d time_backtrack=%d",
+-	tcp_mode,
++  dmsg (D_PID_DEBUG, "PID packet_id_init seq_backtrack=%d time_backtrack=%d",
+ 	seq_backtrack,
+ 	time_backtrack);
+ 
+@@ -88,7 +87,7 @@ packet_id_init (struct packet_id *p, bool tcp_mode, int seq_backtrack, int time_
+ 
+   p->rec.name = name;
+   p->rec.unit = unit;
+-  if (seq_backtrack && !tcp_mode)
++  if (seq_backtrack)
+     {
+       ASSERT (MIN_SEQ_BACKTRACK <= seq_backtrack && seq_backtrack <= MAX_SEQ_BACKTRACK);
+       ASSERT (MIN_TIME_BACKTRACK <= time_backtrack && time_backtrack <= MAX_TIME_BACKTRACK);
+diff --git a/src/openvpn/packet_id.h b/src/openvpn/packet_id.h
+index 5eb501d..fb059b7 100644
+--- a/src/openvpn/packet_id.h
++++ b/src/openvpn/packet_id.h
+@@ -210,7 +210,7 @@ struct packet_id
+   struct packet_id_rec rec;
+ };
+ 
+-void packet_id_init (struct packet_id *p, bool tcp_mode, int seq_backtrack, int time_backtrack, const char *name, int unit);
++void packet_id_init (struct packet_id *p, int seq_backtrack, int time_backtrack, const char *name, int unit);
+ void packet_id_free (struct packet_id *p);
+ 
+ /* should we accept an incoming packet id ? */
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 8717324..c7823b2 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -799,7 +799,7 @@ key_state_init (struct tls_session *session, struct key_state *ks)
+   /* init packet ID tracker */
+   if (session->opt->replay)
+     {
+-      packet_id_init (&ks->crypto_options.packet_id, session->opt->tcp_mode,
++      packet_id_init (&ks->crypto_options.packet_id,
+ 	  session->opt->replay_window, session->opt->replay_time, "SSL",
+ 	  ks->key_id);
+     }
+@@ -948,7 +948,6 @@ tls_session_init (struct tls_multi *multi, struct tls_session *session)
+ 
+   /* initialize packet ID replay window for --tls-auth */
+   packet_id_init (&session->tls_auth.packet_id,
+-		  session->opt->tcp_mode,
+ 		  session->opt->replay_window,
+ 		  session->opt->replay_time,
+ 		  "TLS_AUTH", session->key_id);
 -- 
-1.9.1
+2.8.4 (Apple Git-73)
 
 
