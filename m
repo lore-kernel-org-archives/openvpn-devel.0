@@ -1,8 +1,10 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Sat, 17 Sep 2016 11:00:35 +0200
-Message-Id: <1474102835-13402-1-git-send-email-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH] Prefer RECVDSTADDR to PKTINFO for IPv4 in
-	OS X since it actually works (unlike PKTINFO)
+Date: Sat, 17 Sep 2016 11:19:15 +0200 (CEST)
+Message-Id: <201609170919.u8H9JFog052908@...2054...>
+From: Gert Doering <gert@...1296...>
+In-reply-To: <1473938808-3312-1-git-send-email-chipitsine@...277...>
+References: <1473938808-3312-1-git-send-email-chipitsine@...277...>
+	<1473938818-3375-1-git-send-email-chipitsine@...277...>
+Subject: Re: [Openvpn-devel] [PATCH applied] initial travis-ci support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,25 +15,34 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Ilya Shipitsin <chipitsine@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
----
- configure.ac | 1 +
- 1 file changed, 1 insertion(+)
+ACK. Your patch has been applied to the master branch
 
-diff --git a/configure.ac b/configure.ac
-index 418ad57..6dfe256 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -337,6 +337,7 @@ case "$host" in
- 		have_tap_header="yes"
- 		dnl some Mac OS X tendering (we use vararg macros...)
- 		CPPFLAGS="$CPPFLAGS -no-cpp-precomp"
-+		ac_cv_type_struct_in_pktinfo=no
- 		;;
- 	*-mingw*)
- 		AC_DEFINE([TARGET_WIN32], [1], [Are we running WIN32?])
--- 
-2.8.4 (Apple Git-73)
+(Talking with Steffan, we've decided to squash both patches into just one,
+because it seems to be somewhat silly to add a file just to completely
+rewrite in the next patch again)
+
+commit 368991264d82f038bde30a67910ac6c7681a4ba9
+Author: Ilya Shipitsin
+Date:   Thu Sep 15 16:26:48 2016 +0500
+
+     initial travis-ci support
+
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1473938808-3312-1-git-send-email-chipitsine@...277...>
+     URL: http://www.mail-archive.com/search?l=mid&q=1473938808-3312-1-git-send-email-chipitsine@...277...
+     Signed-off-by: Steffan Karger <steffan@...1856...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1473938818-3375-1-git-send-email-chipitsine@...277...>
+     URL: http://www.mail-archive.com/search?l=mid&q=1473938818-3375-1-git-send-email-chipitsine@...277...
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
