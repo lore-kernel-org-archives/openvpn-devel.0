@@ -1,16 +1,12 @@
-Content-Type: multipart/alternative;
-	boundary="Apple-Mail=_93FC5A63-73E6-42C8-ABA9-DE1C9057403E"
-Mime-Version: 1.0 (Mac OS X Mail 9.3 \(3124\))
-From: Jens Neuhalfen <openvpn-devel@...2127...>
-In-Reply-To: <CAFHpkQFFkL_3Zv=F1y=CmPoe_PY14VnnnNS1BrxSpT-5A-KNuA@...278...>
-Date: Sun, 18 Sep 2016 18:34:32 +0200
-Message-Id: <8D624060-471D-42CA-BC8F-9EBA929A6B75@...2127...>
-References: <1474208364-11251-1-git-send-email-chipitsine@...277...>
-	<2ea62e71-fe65-714b-2a2e-27bfa8f480eb@...2080...>
-	<CAFHpkQFFkL_3Zv=F1y=CmPoe_PY14VnnnNS1BrxSpT-5A-KNuA@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] cppcheck finding: add "ASSERT(
-	maxoutput > 0 || separator != NULL )" to prevent possible
-	null pointer derefence
+MIME-Version: 1.0
+In-Reply-To: <20160918121423.52139-1-gert@...1296...>
+References: <20160917132024.12570-1-gert@...1296...>
+	<20160918121423.52139-1-gert@...1296...>
+From: Selva Nair <selva.nair@...277...>
+Date: Sun, 18 Sep 2016 12:38:46 -0400
+Message-ID: <CAKuzo_hOy8A23_Zeho86qsk=c5bYO1Nz5n1ZQPgdGcTCVmp-Qg@...278...>
+Content-Type: multipart/alternative; boundary=94eb2c06afa08c67be053ccad584
+Subject: Re: [Openvpn-devel] [PATCHv2] Fix win32 building with C99 mode
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,122 +15,64 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: =?utf-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
+To: Gert Doering <gert@...1296...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---Apple-Mail=_93FC5A63-73E6-42C8-ABA9-DE1C9057403E
-Content-Type: text/plain; charset="utf-8"
+--94eb2c06afa08c67be053ccad584
+Content-Type: text/plain; charset=UTF-8
+
+Hi,
+
+On Sun, Sep 18, 2016 at 8:14 AM, Gert Doering <gert@...1296...> wrote:
+
+> In -std=c99 mode, WIN32 is not defined to be "1" anymore, but just
+> "#define WIN32" - so the "#if WIN32" breaks, needs to be "#ifdef WIN32"
+>
+> v2: also fix block_dns.c (include config.h + compat.h)  (Selva Nair)
+>
+> Signed-off-by: Gert Doering <gert@...1296...>
+> ---
+>  src/openvpn/block_dns.c     | 11 +++++++++++
+>  src/openvpn/misc.c          |  2 +-
+>  src/openvpnserv/Makefile.am |  2 +-
+>  3 files changed, 13 insertions(+), 2 deletions(-)
+>
+
+The patch looks good, fixes windows cross-compile and appears to work fine
+(as per a quick run on Win 7). Thanks.
+
+ACK from me.
+
+Selva
+
+--94eb2c06afa08c67be053ccad584
+Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
->=20
-> Hello,
->=20
-> this defect was found by cppcheck, however cppcheck still complains.
-> so, we did not make it happy yet.
->=20
-> I think, the best would be split this function into 2 separate functions
-> (with either null argument) or leave it like that.
+<div dir=3D"ltr"><div class=3D"gmail_extra">Hi,<br><br></div><div class=3D"=
+gmail_extra"><div class=3D"gmail_quote">On Sun, Sep 18, 2016 at 8:14 AM, Ge=
+rt Doering <span dir=3D"ltr">&lt;<a href=3D"mailto:gert@...1296..." target=
+=3D"_blank">gert@...1296...</a>&gt;</span> wrote:<br><blockquote class=3D"g=
+mail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-l=
+eft:1ex"><span>In -std=3Dc99 mode, WIN32 is not defined to be &quot;1&quot;=
+ anymore, but just<br>
+&quot;#define WIN32&quot; - so the &quot;#if WIN32&quot; breaks, needs to b=
+e &quot;#ifdef WIN32&quot;<br>
+<br>
+</span>v2: also fix block_dns.c (include config.h + compat.h)=C2=A0 (Selva =
+Nair)<br>
+<span><br>
+Signed-off-by: Gert Doering &lt;<a href=3D"mailto:gert@...1296..." target=
+=3D"_blank">gert@...1296...</a>&gt;<br>
+---<br>
+</span>=C2=A0src/openvpn/block_dns.c=C2=A0 =C2=A0 =C2=A0| 11 +++++++++++<br>
+=C2=A0src/openvpn/misc.c=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 |=C2=A0 2 +-<br>
+=C2=A0src/openvpnserv/Makefile.am |=C2=A0 2 +-<br>
+=C2=A03 files changed, 13 insertions(+), 2 deletions(-)<br></blockquote></d=
+iv><br></div><div class=3D"gmail_extra">The patch looks good, fixes windows=
+ cross-compile and appears to work fine (as per a quick run on Win 7). Than=
+ks.<br><br></div><div class=3D"gmail_extra">ACK from me.<br><br></div><div =
+class=3D"gmail_extra">Selva<br></div></div>
 
-Unrelated to an actual fix, IMHO we should at least break up
-
-out =3D alloc_buf_gc (maxoutput ? maxoutput :
-				    ((size * 2) + (size / (space_break_flags & FHE_SPACE_BREAK_MASK)) *=
- (int) strlen (separator) + 2),
-				    gc);
-
-and create a variable with a semantic variable for the result of   "((size =
-* 2) + (size / (space_break_flags & FHE_SPACE_BREAK_MASK)) * (int) strlen (=
-separator) + 2)=E2=80=9D
-
-Honestly the calculation looks very arcane and I would better understand it=
-, if i knew what it means :-)
-
-Jens=
-
---Apple-Mail=_93FC5A63-73E6-42C8-ABA9-DE1C9057403E
-Content-Type: text/html; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-
-<html><head><meta http-equiv=3D"Content-Type" content=3D"text/html charset=
-=3Dutf-8"></head><body style=3D"word-wrap: break-word; -webkit-nbsp-mode: s=
-pace; -webkit-line-break: after-white-space;" class=3D""><div><blockquote t=
-ype=3D"cite" class=3D""><br class=3D"Apple-interchange-newline"><div class=
-=3D""><span style=3D"font-family: Helvetica; font-size: 12px; font-style: n=
-ormal; font-variant-caps: normal; font-weight: normal; letter-spacing: norm=
-al; orphans: auto; text-align: start; text-indent: 0px; text-transform: non=
-e; white-space: normal; widows: auto; word-spacing: 0px; -webkit-text-strok=
-e-width: 0px; float: none; display: inline !important;" class=3D"">Hello,</=
-span><br style=3D"font-family: Helvetica; font-size: 12px; font-style: norm=
-al; font-variant-caps: normal; font-weight: normal; letter-spacing: normal;=
- orphans: auto; text-align: start; text-indent: 0px; text-transform: none; =
-white-space: normal; widows: auto; word-spacing: 0px; -webkit-text-stroke-w=
-idth: 0px;" class=3D""><br style=3D"font-family: Helvetica; font-size: 12px=
-; font-style: normal; font-variant-caps: normal; font-weight: normal; lette=
-r-spacing: normal; orphans: auto; text-align: start; text-indent: 0px; text=
--transform: none; white-space: normal; widows: auto; word-spacing: 0px; -we=
-bkit-text-stroke-width: 0px;" class=3D""><span style=3D"font-family: Helvet=
-ica; font-size: 12px; font-style: normal; font-variant-caps: normal; font-w=
-eight: normal; letter-spacing: normal; orphans: auto; text-align: start; te=
-xt-indent: 0px; text-transform: none; white-space: normal; widows: auto; wo=
-rd-spacing: 0px; -webkit-text-stroke-width: 0px; float: none; display: inli=
-ne !important;" class=3D"">this defect was found by cppcheck, however cppch=
-eck still complains.</span><br style=3D"font-family: Helvetica; font-size: =
-12px; font-style: normal; font-variant-caps: normal; font-weight: normal; l=
-etter-spacing: normal; orphans: auto; text-align: start; text-indent: 0px; =
-text-transform: none; white-space: normal; widows: auto; word-spacing: 0px;=
- -webkit-text-stroke-width: 0px;" class=3D""><span style=3D"font-family: He=
-lvetica; font-size: 12px; font-style: normal; font-variant-caps: normal; fo=
-nt-weight: normal; letter-spacing: normal; orphans: auto; text-align: start=
-; text-indent: 0px; text-transform: none; white-space: normal; widows: auto=
-; word-spacing: 0px; -webkit-text-stroke-width: 0px; float: none; display: =
-inline !important;" class=3D"">so, we did not make it happy yet.</span><br =
-style=3D"font-family: Helvetica; font-size: 12px; font-style: normal; font-=
-variant-caps: normal; font-weight: normal; letter-spacing: normal; orphans:=
- auto; text-align: start; text-indent: 0px; text-transform: none; white-spa=
-ce: normal; widows: auto; word-spacing: 0px; -webkit-text-stroke-width: 0px=
-;" class=3D""><br style=3D"font-family: Helvetica; font-size: 12px; font-st=
-yle: normal; font-variant-caps: normal; font-weight: normal; letter-spacing=
-: normal; orphans: auto; text-align: start; text-indent: 0px; text-transfor=
-m: none; white-space: normal; widows: auto; word-spacing: 0px; -webkit-text=
--stroke-width: 0px;" class=3D""><span style=3D"font-family: Helvetica; font=
--size: 12px; font-style: normal; font-variant-caps: normal; font-weight: no=
-rmal; letter-spacing: normal; orphans: auto; text-align: start; text-indent=
-: 0px; text-transform: none; white-space: normal; widows: auto; word-spacin=
-g: 0px; -webkit-text-stroke-width: 0px; float: none; display: inline !impor=
-tant;" class=3D"">I think, the best would be split this function into 2 sep=
-arate functions</span><br style=3D"font-family: Helvetica; font-size: 12px;=
- font-style: normal; font-variant-caps: normal; font-weight: normal; letter=
--spacing: normal; orphans: auto; text-align: start; text-indent: 0px; text-=
-transform: none; white-space: normal; widows: auto; word-spacing: 0px; -web=
-kit-text-stroke-width: 0px;" class=3D""><span style=3D"font-family: Helveti=
-ca; font-size: 12px; font-style: normal; font-variant-caps: normal; font-we=
-ight: normal; letter-spacing: normal; orphans: auto; text-align: start; tex=
-t-indent: 0px; text-transform: none; white-space: normal; widows: auto; wor=
-d-spacing: 0px; -webkit-text-stroke-width: 0px; float: none; display: inlin=
-e !important;" class=3D"">(with either null argument) or leave it like that=
-.</span><br style=3D"font-family: Helvetica; font-size: 12px; font-style: n=
-ormal; font-variant-caps: normal; font-weight: normal; letter-spacing: norm=
-al; orphans: auto; text-align: start; text-indent: 0px; text-transform: non=
-e; white-space: normal; widows: auto; word-spacing: 0px; -webkit-text-strok=
-e-width: 0px;" class=3D""></div></blockquote><div><br class=3D""></div><div=
->Unrelated to an actual fix, IMHO we should at least break up</div><div><br=
- class=3D""></div><div>out =3D alloc_buf_gc (maxoutput ? maxoutput :<br cla=
-ss=3D""><span class=3D"Apple-tab-span" style=3D"white-space: pre;">	</span>=
-<span class=3D"Apple-tab-span" style=3D"white-space: pre;">	</span><span cl=
-ass=3D"Apple-tab-span" style=3D"white-space: pre;">	</span><span class=3D"A=
-pple-tab-span" style=3D"white-space: pre;">	</span>&nbsp;&nbsp;&nbsp;&nbsp;=
-((size * 2) + (size / (space_break_flags &amp; FHE_SPACE_BREAK_MASK)) * (in=
-t) strlen (separator) + 2),<br class=3D""><span class=3D"Apple-tab-span" st=
-yle=3D"white-space: pre;">	</span><span class=3D"Apple-tab-span" style=3D"w=
-hite-space: pre;">	</span><span class=3D"Apple-tab-span" style=3D"white-spa=
-ce: pre;">	</span><span class=3D"Apple-tab-span" style=3D"white-space: pre;=
-">	</span>&nbsp;&nbsp;&nbsp;&nbsp;gc);</div><div><br class=3D""></div><div>=
-and create a variable with a semantic variable for the result of &nbsp; "((=
-size * 2) + (size / (space_break_flags &amp; FHE_SPACE_BREAK_MASK)) * (int)=
- strlen (separator) + 2)=E2=80=9D</div><div><br class=3D""></div><div>Hones=
-tly the calculation looks very arcane and I would better understand it, if =
-i knew what it means :-)</div><div><br class=3D""></div><div>Jens</div></di=
-v></body></html>=
-
---Apple-Mail=_93FC5A63-73E6-42C8-ABA9-DE1C9057403E--
+--94eb2c06afa08c67be053ccad584--
 
