@@ -1,14 +1,11 @@
-Date: Sun, 18 Sep 2016 08:59:56 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20160918065956.GY78279@...1296...>
-References: <20160917132024.12570-1-gert@...1296...>
-	<CAKuzo_jqgMNCqcbCHBLO7hHoa9aLDTj3Ed7UmJ446b2J++8BCw@...278...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="e50TZzTjhnqO2fkm"
-Content-Disposition: inline
-In-Reply-To: <CAKuzo_jqgMNCqcbCHBLO7hHoa9aLDTj3Ed7UmJ446b2J++8BCw@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] Fix win32 building with C99 mode
+In-Reply-To: <1474181496-24846-1-git-send-email-lstipakov@...277...>
+References: <474119252-18612-1-git-send-email-lstipakov@...277...>
+	<1474181496-24846-1-git-send-email-lstipakov@...277...>
+From: Steffan Karger <steffan@...1856...>
+Date: Sun, 18 Sep 2016 09:01:41 +0200
+Message-ID: <CAA1AbxKK75bnNV0Evzhj5pgXWh1Q8hTSdXJDKD3NGx_FfYgdAw@...278...>
+Subject: Re: [Openvpn-devel] [PATCH v5] Support for disabled peer-id
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,114 +14,130 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-
---e50TZzTjhnqO2fkm
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+To: Lev Stipakov <lstipakov@...277...>
+Cc: Lev Stipakov <lev.stipakov@...2164...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
 Hi,
 
-On Sat, Sep 17, 2016 at 07:11:56PM -0400, Selva Nair wrote:
-> On Sat, Sep 17, 2016 at 9:20 AM, Gert Doering <gert@...1296...> wrote:
->=20
-> > In -std=3Dc99 mode, WIN32 is not defined to be "1" anymore, but just
-> > "#define WIN32" - so the "#if WIN32" breaks, needs to be "#ifdef WIN32"
->=20
-> Indeed...
->=20
-> To depend on the compiler or system headers to define WIN32 was not a gre=
-at
-> idea anyway. Using  _WIN32 or __WIN32 is probably more reliable. Or we
-> should define WIN32 in config.h. With std=3Dc99, it seems WIN32 gets defi=
-ned
-> by chance through some header pulled-in by syshead.h -- not something one
-> can rely on.
+On 18 September 2016 at 08:51, Lev Stipakov <lstipakov@...277...> wrote:
+> From: Lev Stipakov <lev.stipakov@...2164...>
+>
+> v5:
+> * Few more nickpicks
+>
+> v4:
+> * replace magic number with define
+> * show user a decimal value instead of hex
+>
+> v3:
+> * move assert outside of loop
+> * add max-clients value check to options
+>
+> v2:
+> * Add round brackets for clarity
+> * Rephrase comment
+>
+> Support for disabled peer-id
+>
+> When peer-id value is 0xFFFFFF, server should ignore it and treat packet
+> in a same way as P_DATA_V1.
+> ---
+>  src/openvpn/mudp.c    | 13 ++++++++++---
+>  src/openvpn/multi.c   |  3 ++-
+>  src/openvpn/openvpn.h |  3 +++
+>  src/openvpn/options.c |  5 +++++
+>  4 files changed, 20 insertions(+), 4 deletions(-)
+>
+> diff --git a/src/openvpn/mudp.c b/src/openvpn/mudp.c
+> index 21a7e97..fec5e8d 100644
+> --- a/src/openvpn/mudp.c
+> +++ b/src/openvpn/mudp.c
+> @@ -64,12 +64,16 @@ multi_get_create_instance_udp (struct multi_context *m, bool *floated)
+>        struct hash_bucket *bucket = hash_bucket (hash, hv);
+>        uint8_t* ptr = BPTR(&m->top.c2.buf);
+>        uint8_t op = ptr[0] >> P_OPCODE_SHIFT;
+> +      bool v2 = (op == P_DATA_V2) && (m->top.c2.buf.len >= (1 + 3));
+> +      bool peer_id_disabled = false;
+>
+>        /* make sure buffer has enough length to read opcode (1 byte) and peer-id (3 bytes) */
+> -      if (op == P_DATA_V2 && m->top.c2.buf.len >= (1 + 3))
+> +      if (v2)
+>         {
+>           uint32_t peer_id = ntohl(*(uint32_t*)ptr) & 0xFFFFFF;
+> -         if ((peer_id < m->max_clients) && (m->instances[peer_id]))
+> +         peer_id_disabled = (peer_id == MAX_PEER_ID);
+> +
+> +         if (!peer_id_disabled && (peer_id < m->max_clients) && (m->instances[peer_id]))
+>             {
+>               mi = m->instances[peer_id];
+>
+> @@ -84,7 +88,7 @@ multi_get_create_instance_udp (struct multi_context *m, bool *floated)
+>               }
+>             }
+>         }
+> -      else
+> +      if (!v2 || peer_id_disabled)
+>         {
+>           he = hash_lookup_fast (hash, bucket, &real, hv);
+>           if (he)
+> @@ -107,6 +111,9 @@ multi_get_create_instance_udp (struct multi_context *m, bool *floated)
+>                       hash_add_fast (hash, bucket, &mi->real, hv, mi);
+>                       mi->did_real_hash = true;
+>
+> +                     /* max_clients must be less then max peer-id value */
+> +                     ASSERT(m->max_clients < MAX_PEER_ID);
+> +
+>                       for (i = 0; i < m->max_clients; ++i)
+>                         {
+>                           if (!m->instances[i])
+> diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+> index ba7f2c0..3bc6ee9 100644
+> --- a/src/openvpn/multi.c
+> +++ b/src/openvpn/multi.c
+> @@ -605,7 +605,8 @@ multi_close_instance (struct multi_context *m,
+>         }
+>  #endif
+>
+> -      m->instances[mi->context.c2.tls_multi->peer_id] = NULL;
+> +      if (mi->context.c2.tls_multi->peer_id != MAX_PEER_ID)
+> +       m->instances[mi->context.c2.tls_multi->peer_id] = NULL;
+>
+>        schedule_remove_entry (m->schedule, (struct schedule_entry *) mi);
+>
+> diff --git a/src/openvpn/openvpn.h b/src/openvpn/openvpn.h
+> index 1a458f1..65a183a 100644
+> --- a/src/openvpn/openvpn.h
+> +++ b/src/openvpn/openvpn.h
+> @@ -595,4 +595,7 @@ struct context
+>  #define CIPHER_ENABLED(c) (false)
+>  #endif
+>
+> +/* this represents "disabled peer-id" */
+> +#define MAX_PEER_ID 0xFFFFFF
+> +
+>  #endif
+> diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+> index c9688c3..4b7203d 100644
+> --- a/src/openvpn/options.c
+> +++ b/src/openvpn/options.c
+> @@ -5893,6 +5893,11 @@ add_option (struct options *options,
+>           msg (msglevel, "--max-clients must be at least 1");
+>           goto err;
+>         }
+> +      if (max_clients >= MAX_PEER_ID) /* max peer-id value */
+> +       {
+> +         msg (msglevel, "--max-clients must be less than %d", MAX_PEER_ID);
+> +         goto err;
+> +       }
+>        options->max_clients = max_clients;
+>      }
+>    else if (streq (p[0], "max-routes-per-client") && p[1] && !p[2])
+> --
+> 1.9.1
 
-Heiko says that "WIN32 is what everybody is testing for on Windows", so
-that seems to be an official API define...
+Thanks.  No more nitpicking from me ;)  ACK.
 
-With c99, on mingw, the #define WIN32 comes from "minwindef.h", which
-is included from "windef.h", which is included from "windows.h" -- but
-I wonder how we ever include that in the first place, given this
-code in syshead.h
-
-#ifdef WIN32
-#include <windows.h>
-#include <winsock2.h>
-#define sleep(x) Sleep((x)*1000)
-#define random rand
-#define srandom srand
-#endif
-
-
-... so maybe it is actually *never* set, even with my patch, and we just
-do not know it's breaking because it's not linking...?
-
-
-Ah.  Here we go... trying to redefine WIN32 at the end of syshead.h
-shows what is happening:
-
-In file included from /usr/share/mingw-w64/include/windef.h:8:0,
-                 from /usr/share/mingw-w64/include/windows.h:69,
-                 from /usr/share/mingw-w64/include/winsock2.h:23,
-                 from ../../src/compat/compat.h:29,
-                 from syshead.h:28,
-
-so compat.h is pulling it via
-
-#ifdef HAVE_WINSOCK2_H
-#include <winsock2.h>
-#endif
-
-whee...
-
-
-> Compiler-defined macros with std=3Dc99:
-> $ x86_64-w64-mingw32-gcc -std=3Dc99 -E -dM - </dev/null | grep WIN32
-> #define _WIN32 1
-> #define __WIN32 1
-> #define __WIN32__ 1
->=20
-> As for a quick fix, the patch takes care of misc.c, but  there is an issue
-> with block_dns.c as well. It does not include the required config.h and
-> syshead.h at the top before #ifdef WIN32, so now the whole file gets
-> skipped -- mea culpa, mea culpa...
->=20
-> I think we can just remove #ifdef WIN32 from block_dns.c (its compiled on=
-ly
-> on Windows), and add config.h and syshead.h headers at the top. Then we
-> also need -I$(top_srcdir)/src/compat in src/openvpnsev/Makefile.am as
-> compat.h is included by syshead.h.
-
-Do you have time to cook up & test such a patch?  Then I'll go and focus
-a bit more on my windows testing environment in the meantime, and merge
-the patch later today...
-
-thanks,
-
-gert
-
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---e50TZzTjhnqO2fkm
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQCVAwUBV947bKkuBuNlUUl1AQKeuQP/Szu6WKbxlgXHv1c5/k81wKbHvQNLGFiS
-pLQmSpD5rUIG3DPjv4sodoY1LDyGPSwb2YldtDRlgpJW6dLzoc+sUOy8JMX8dkWv
-Iyk6PkxXk5dLOflomoLI9YpE/ArMYrLzJkXwLs1jHD9a8rr5jz+XTtAnaBrgikmC
-9vCVhJjrVGI=
-=KssT
------END PGP SIGNATURE-----
-
---e50TZzTjhnqO2fkm--
+-Steffan
 
