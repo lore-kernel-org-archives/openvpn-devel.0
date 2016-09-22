@@ -1,14 +1,10 @@
-MIME-Version: 1.0
-In-Reply-To: <ddd59c15-8908-f787-c5f1-2f2ca1494a4c@...2080...>
-References: <1474538677-23301-1-git-send-email-davids@...515...>
-	<CAKuzo_j+FjOCOHMBw5ca1KTPX7AoFwOPkdTRKhLh9yktmFRCwQ@...278...>
-	<ddd59c15-8908-f787-c5f1-2f2ca1494a4c@...2080...>
-From: Selva Nair <selva.nair@...277...>
-Date: Thu, 22 Sep 2016 14:38:42 -0400
-Message-ID: <CAKuzo_iXRDxzvUq7Tx6z1QyL-5jtvP=jA-tbs+hK+kLExC3Kaw@...278...>
-Content-Type: multipart/alternative; boundary=001a114f42dccf5557053d1cf983
-Subject: Re: [Openvpn-devel] [PATCH] Have the same username/password length
- regardless of PKCS#11 enablement
+From: David Sommerseth <davids@...515...>
+Date: Thu, 22 Sep 2016 21:40:58 +0200
+Message-Id: <1474573258-25420-2-git-send-email-davids@...515...>
+In-Reply-To: <1474573258-25420-1-git-send-email-davids@...515...>
+References: <1474573258-25420-1-git-send-email-davids@...515...>
+Subject: [Openvpn-devel] [PATCH] Remove static global allocation of HTTP
+	proxy user/passwords
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,111 +13,175 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---001a114f42dccf5557053d1cf983
-Content-Type: text/plain; charset=UTF-8
+This avoids allocating static memory which is not used unless the
+a HTTP proxy with authentication is configured.
 
-Hi,
+Signed-off-by: David Sommerseth <davids@...515...>
+---
+ src/openvpn/ntlm.c  | 16 ++++++++--------
+ src/openvpn/proxy.c | 41 +++++++++++++++++++++++++++++------------
+ src/openvpn/proxy.h |  2 +-
+ 3 files changed, 38 insertions(+), 21 deletions(-)
 
-On Thu, Sep 22, 2016 at 1:44 PM, David Sommerseth <
-openvpn@...2080...> wrote:
+diff --git a/src/openvpn/ntlm.c b/src/openvpn/ntlm.c
+index 3390bdd..ee8be6e 100644
+--- a/src/openvpn/ntlm.c
++++ b/src/openvpn/ntlm.c
+@@ -192,7 +192,7 @@ ntlm_phase_3 (const struct http_proxy_info *p, const char *phase_2, struct gc_ar
+ 	 *
+ 	 */
+ 	
+-  char pwbuf[sizeof (p->up.password) * 2]; /* for unicode password */
++  char pwbuf[USER_PASS_LEN * 2]; /* for unicode password */
+   char buf2[128]; /* decoded reply from proxy */
+   unsigned char phase3[464];
+ 
+@@ -218,27 +218,27 @@ ntlm_phase_3 (const struct http_proxy_info *p, const char *phase_2, struct gc_ar
+ 
+   CLEAR (buf2);
+ 
+-  ASSERT (strlen (p->up.username) > 0);
+-  ASSERT (strlen (p->up.password) > 0);
++  ASSERT (strlen (p->up->username) > 0);
++  ASSERT (strlen (p->up->password) > 0);
+ 	
+ 	/* username parsing */
+-	separator = strchr(p->up.username, '\\');
++	separator = strchr(p->up->username, '\\');
+ 	if (separator == NULL) {
+-		strncpy(username, p->up.username, sizeof(username)-1);
++		strncpy(username, p->up->username, sizeof(username)-1);
+ 		username[sizeof(username)-1]=0;
+ 		domain[0]=0;
+ 	} else {
+ 		strncpy(username, separator+1, sizeof(username)-1);
+ 		username[sizeof(username)-1]=0;
+-		len = separator - p->up.username;
++		len = separator - p->up->username;
+ 		if (len > sizeof(domain) - 1) len = sizeof(domain) - 1;
+-		strncpy(domain, p->up.username,  len);
++		strncpy(domain, p->up->username,  len);
+ 		domain[len]=0;
+ 	}
+ 
+ 
+   /* fill 1st 16 bytes with md4 hash, disregard terminating null */
+-  gen_md4_hash (pwbuf, unicodize (pwbuf, p->up.password) - 2, md4_hash);
++  gen_md4_hash (pwbuf, unicodize (pwbuf, p->up->password) - 2, md4_hash);
+ 
+   /* pad to 21 bytes */
+   memset(md4_hash + MD4_DIGEST_LENGTH, 0, 5);
+diff --git a/src/openvpn/proxy.c b/src/openvpn/proxy.c
+index 0f78020..79fe73f 100644
+--- a/src/openvpn/proxy.c
++++ b/src/openvpn/proxy.c
+@@ -60,7 +60,7 @@ init_http_proxy_options_once (struct http_proxy_options **hpo,
+ 
+ 
+ /* cached proxy username/password */
+-static struct user_pass static_proxy_user_pass;
++static struct user_pass *proxy_user_pass_cache = NULL;
+ 
+ static bool
+ recv_line (socket_descriptor_t sd,
+@@ -227,34 +227,51 @@ static const char *
+ username_password_as_base64 (const struct http_proxy_info *p,
+ 			     struct gc_arena *gc)
+ {
+-  struct buffer out = alloc_buf_gc (strlen (p->up.username) + strlen (p->up.password) + 2, gc);
+-  ASSERT (strlen (p->up.username) > 0);
+-  buf_printf (&out, "%s:%s", p->up.username, p->up.password);
++  struct buffer out = alloc_buf_gc (strlen (p->up->username) + strlen (p->up->password) + 2, gc);
++  ASSERT (strlen (p->up->username) > 0);
++  buf_printf (&out, "%s:%s", p->up->username, p->up->password);
+   return (const char *)make_base64_string ((const uint8_t*)BSTR (&out), gc);
+ }
+ 
+ static void
+ get_user_pass_http (struct http_proxy_info *p, const bool force)
+ {
+-  if (!static_proxy_user_pass.defined || force)
++  if (!proxy_user_pass_cache || !proxy_user_pass_cache->defined|| force)
+     {
+       unsigned int flags = GET_USER_PASS_MANAGEMENT;
++
++      if (!proxy_user_pass_cache)
++        {
++          ALLOC_OBJ_CLEAR (proxy_user_pass_cache, struct user_pass);
++        }
++      else
++        {
++          CLEAR (*proxy_user_pass_cache);
++        }
++
+       if (p->queried_creds)
+ 	flags |= GET_USER_PASS_PREVIOUS_CREDS_FAILED;
+       if (p->options.inline_creds)
+ 	flags |= GET_USER_PASS_INLINE_CREDS;
+-      get_user_pass (&static_proxy_user_pass,
++      get_user_pass (proxy_user_pass_cache,
+ 		     p->options.auth_file,
+ 		     UP_TYPE_PROXY,
+ 		     flags);
+       p->queried_creds = true;
+-      p->up = static_proxy_user_pass;
+     }
++  p->up = proxy_user_pass_cache;
+ }
++
+ static void
+-clear_user_pass_http (void)
++clear_user_pass_http (struct http_proxy_info *p)
+ {
+-  purge_user_pass (&static_proxy_user_pass, true);
++  if (proxy_user_pass_cache)
++    {
++      purge_user_pass (proxy_user_pass_cache, true);
++      free (proxy_user_pass_cache);
++      proxy_user_pass_cache = NULL;
++    }
++  p->up = NULL;
+ }
+ 
+ #if 0
+@@ -761,8 +778,8 @@ establish_http_proxy_passthru (struct http_proxy_info *p,
+ 	      const char *http_method = "CONNECT";
+ 	      const char *nonce_count = "00000001";
+ 	      const char *qop = "auth";
+-	      const char *username = p->up.username;
+-	      const char *password = p->up.password;
++	      const char *username = p->up->username;
++	      const char *password = p->up->password;
+ 	      char *opaque_kv = "";
+ 	      char uri[128];
+ 	      uint8_t cnonce_raw[8];
+@@ -902,7 +919,7 @@ establish_http_proxy_passthru (struct http_proxy_info *p,
+ 
+       /* clear state */
+       if (p->options.auth_retry)
+-	clear_user_pass_http();
++	clear_user_pass_http(p);
+       store_proxy_authenticate(p, NULL);
+     }
+ 
+diff --git a/src/openvpn/proxy.h b/src/openvpn/proxy.h
+index 7d2581c..600e2fe 100644
+--- a/src/openvpn/proxy.h
++++ b/src/openvpn/proxy.h
+@@ -69,7 +69,7 @@ struct http_proxy_info {
+   bool defined;
+   int auth_method;
+   struct http_proxy_options options;
+-  struct user_pass up;
++  struct user_pass *up;
+   char *proxy_authenticate;
+   bool queried_creds;
+ };
+-- 
+1.8.3.1
 
-> On 22/09/16 18:43, Selva Nair wrote:
-> >
-> > Also usernames > 64 bytes will break --username-as-common-name as
-> > CN is limited to 64 bytes (could 64 code points, but it seems
-> > openvpn interprets that as 64 bytes).
-> >
-> > So for most practical purposes, pkcs11-id appears to be limited to
-> > ~240 bytes characters in the current code. Changing USER_PASS_LEN
-> > to, say, 256 may be more sensible. That shouldn't break any
-> > existing configs but may break some use cases where a long id is
-> > supplied from the command line.
->
-> Thank you for a thorough check-up!
->
-> I have spotted a few places where 'struct userpass' have been declared
-> as global variables, like in socks.c, proxy.c and ssl.c.  For
->
-
-One could replace those static structs with static pointers to the struct
-and allocate at first use.
-
-I have no issues to set USER_PASS_LEN to 256 or 1024 or in between as
-> long as we are confident we don't break anything.  But I think we
-> could clean up several of these global variables too.
-
-
-Code-wise, I do not think this will break anything. But any number less
-than 4096 could potentially break some rare (?) use cases -- e.g.,
-passwords/usernames/ids of length > 256 supplied from a file or command
-line on clients (and matching server) with USER_PASS_LEN = 4096. At the
-same time, anything more than 256 should also increase length of option
-lines and option parameters.
-
-I vote for 256.
-
-That said I have no idea how long are typical pkcs11-ids. And, if pkcs11
-URI is adopted, the string could get arbitrarily large depending on how
-many attributes are included in the URI. In my view increasing the size to
-4096 to support pkcs11-ids was the wrong approach in the first place.
-Anything longer than OPTION_LINE_SIZE is better input as multiple lines and
-parsed without using get_user_pass.
-
-Selva
-
---001a114f42dccf5557053d1cf983
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><div class=3D"gmail_extra">Hi,</div><div class=3D"gmail_ex=
-tra"><br><div class=3D"gmail_quote">On Thu, Sep 22, 2016 at 1:44 PM, David =
-Sommerseth <span dir=3D"ltr">&lt;<a href=3D"mailto:openvpn@...2080..." targ=
-et=3D"_blank">openvpn@...2080...</a>&gt;</span> wrote:<br><blockquote class=
-=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left-width:1px;bo=
-rder-left-color:rgb(204,204,204);border-left-style:solid;padding-left:1ex">=
-<span class=3D"">On 22/09/16 18:43, Selva Nair wrote:<br></span><div><div c=
-lass=3D"">&gt;<br>
-&gt; Also usernames &gt; 64 bytes will break --username-as-common-name as<b=
-r>
-&gt; CN is limited to 64 bytes (could 64 code points, but it seems<br>
-&gt; openvpn interprets that as 64 bytes).<br>
-&gt;<br>
-&gt; So for most practical purposes, pkcs11-id appears to be limited to<br>
-&gt; ~240 bytes characters in the current code. Changing USER_PASS_LEN<br>
-&gt; to, say, 256 may be more sensible. That shouldn&#39;t break any<br>
-&gt; existing configs but may break some use cases where a long id is<br>
-&gt; supplied from the command line.<br>
-<br>
-</div></div>Thank you for a thorough check-up!<br>
-<br>
-I have spotted a few places where &#39;struct userpass&#39; have been decla=
-red<br>
-as global variables, like in socks.c, proxy.c and ssl.c.=C2=A0 For<br></blo=
-ckquote><div><br></div><div>One could replace those static structs with sta=
-tic pointers to the struct and allocate at first use.</div><div><br></div><=
-blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-l=
-eft-width:1px;border-left-color:rgb(204,204,204);border-left-style:solid;pa=
-dding-left:1ex">
-I have no issues to set USER_PASS_LEN to 256 or 1024 or in between as<br>
-long as we are confident we don&#39;t break anything.=C2=A0 But I think we<=
-br>
-could clean up several of these global variables too.</blockquote></div><di=
-v class=3D"gmail_extra"><br></div>Code-wise, I do not think this will break=
- anything. But any number less than 4096 could potentially break some rare =
-(?) use cases -- e.g., passwords/usernames/ids of length &gt; 256 supplied =
-from a file or command line on clients (and matching server) with USER_PASS=
-_LEN =3D 4096. At the same time, anything more than 256 should also increas=
-e length of option lines and option parameters.</div><div class=3D"gmail_ex=
-tra"><br></div><div class=3D"gmail_extra">I vote for 256.<br><br></div><div=
- class=3D"gmail_extra">That said I have no idea how long are typical pkcs11=
--ids. And, if pkcs11 URI is adopted, the string could get arbitrarily large=
- depending on how many attributes are included in the URI. In my view incre=
-asing the size to 4096 to support pkcs11-ids was the wrong approach in the =
-first place. Anything longer than OPTION_LINE_SIZE is better input as multi=
-ple lines and parsed without using get_user_pass.</div><div class=3D"gmail_=
-extra"><br></div><div class=3D"gmail_extra">Selva</div></div>
-
---001a114f42dccf5557053d1cf983--
 
