@@ -1,8 +1,8 @@
-References: <4e9afe58-f398-7163-18fe-9113bf0cdfbc@...277...>
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <283c21d2-c51c-b2e6-0c5e-5055b6bec3cd@...515...>
-Date: Thu, 22 Sep 2016 16:32:18 +0300
+Message-ID: <57E3DF38.7090802@...1147...>
+Date: Thu, 22 Sep 2016 15:40:08 +0200
+From: Jan Just Keijser <janjust@...1147...>
 MIME-Version: 1.0
+References: <4e9afe58-f398-7163-18fe-9113bf0cdfbc@...277...>
 In-Reply-To: <4e9afe58-f398-7163-18fe-9113bf0cdfbc@...277...>
 Subject: Re: [Openvpn-devel] Linux: Use /tmp for log problem ?
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -13,17 +13,19 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
 To: debbie10t <debbie10t@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Il 22/09/2016 16:07, debbie10t ha scritto:
+Hi,
+
+On 22/09/16 15:07, debbie10t wrote:
 > Hi
 >
 > posting in devel because I am asking for clarification of
 > what the source code really does.
 >
-> Re: https://forums.openvpn.net/viewtopic.php?f=3D30&t=3D22485
+> Re: https://forums.openvpn.net/viewtopic.php?f=30&t=22485
 >
 > Config:
 > |---
@@ -34,8 +36,8 @@ Il 22/09/2016 16:07, debbie10t ha scritto:
 > I have just tried with Ubuntu1604 myself and observe that:
 > (My basic config I added: --log /tmp/client1.log)
 >
-> 1. $ sudo systemctl start openvpn@...2166... =3D log file *not* created
-> 2. $ sudo openvpn client1.conf =3D log file created normally in /tmp
+> 1. $ sudo systemctl start openvpn@...2166... = log file *not* created
+> 2. $ sudo openvpn client1.conf = log file created normally in /tmp
 >
 > Obviously, systemctl start openvpn@...2166... appends more options when
 > starting openvpn (in my hand written service the only addition is
@@ -50,28 +52,27 @@ Il 22/09/2016 16:07, debbie10t ha scritto:
 > Anyhoo, can anybody provide a brief and simple explanation ?
 >
 > Many thanks
->
+most likely this , from 'man systemd.exec'
 
-Hi,
+        PrivateTmp=
+            Takes a boolean argument. If true, sets up a new file system 
+namespace for the executed processes and
+            mounts private /tmp and /var/tmp directories inside it, that 
+are not shared by processes outside of the
+            namespace. This is useful to secure access to temporary 
+files of the process, but makes sharing between
+            processes via /tmp or /var/tmp impossible. All temporary 
+data created by service will be removed after
+            service is stopped. Defaults to false.
 
-I did some testing on my Ubuntu 16.04 VM, and this seems like a=20
-permission issue, probably related to the capabilities set in the=20
-openvpn unit file:
 
-/lib/systemd/system/openvpn@...1685...
+thus, the output *is* logged to /tmp/openvpn.log but the problem is that 
+it's not in the /tmp you'd expect.
+There's nothing OpenVPN can do about this, it's one of those weird 
+idiosyncracies of systemd.
 
-Basically --log and --log-append will work, if the logfile is stored=20
-under /etc/openvpn. If you try to put the it under /tmp, it will never=20
-appear.
+HTH,
 
-That said, you probably would not need a logfile, as you can view them with
+JJK
 
-$ journalctl /usr/sbin/openvpn
-
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
 
