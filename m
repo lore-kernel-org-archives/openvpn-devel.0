@@ -1,7 +1,9 @@
 From: Lev Stipakov <lstipakov@...277...>
-Date: Sat, 24 Sep 2016 18:51:50 +0300
-Message-Id: <1474732310-13672-1-git-send-email-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH 2.3] Exclude peer-id from pulled options
+Date: Sat, 24 Sep 2016 18:54:09 +0300
+Message-Id: <1474732449-13759-1-git-send-email-lstipakov@...277...>
+In-Reply-To: <1474732310-13672-1-git-send-email-lstipakov@...277...>
+References: <1474732310-13672-1-git-send-email-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH master] Exclude peer-id from pulled options
 	digest
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -20,14 +22,14 @@ tun.
 
 Trac #649
 ---
- src/openvpn/push.c | 38 ++++++++++++++++++++++++--------------
- 1 file changed, 24 insertions(+), 14 deletions(-)
+ src/openvpn/push.c | 39 ++++++++++++++++++++++++---------------
+ 1 file changed, 24 insertions(+), 15 deletions(-)
 
 diff --git a/src/openvpn/push.c b/src/openvpn/push.c
-index 71f39c1..6feaa2a 100644
+index a1b999e..d7d54bf 100644
 --- a/src/openvpn/push.c
 +++ b/src/openvpn/push.c
-@@ -473,20 +473,30 @@ process_incoming_push_msg (struct context *c,
+@@ -636,21 +636,30 @@ process_incoming_push_msg (struct context *c,
  				  permission_mask,
  				  option_types_found,
  				  c->c2.es))
@@ -35,13 +37,14 @@ index 71f39c1..6feaa2a 100644
 -	      {
 -	      case 0:
 -	      case 1:
--		md5_state_update (&c->c2.pulled_options_state, BPTR(&buf_orig), BLEN(&buf_orig));
--		md5_state_final (&c->c2.pulled_options_state, &c->c2.pulled_options_digest);
+-		md_ctx_update (&c->c2.pulled_options_state, BPTR(&buf_orig), BLEN(&buf_orig));
+-		md_ctx_final (&c->c2.pulled_options_state, c->c2.pulled_options_digest.digest);
+-		md_ctx_cleanup (&c->c2.pulled_options_state);
 -	        c->c2.pulled_options_md5_init_done = false;
 -		ret = PUSH_MSG_REPLY;
 -		break;
 -	      case 2:
--		md5_state_update (&c->c2.pulled_options_state, BPTR(&buf_orig), BLEN(&buf_orig));
+-		md_ctx_update (&c->c2.pulled_options_state, BPTR(&buf_orig), BLEN(&buf_orig));
 -		ret = PUSH_MSG_CONTINUATION;
 -		break;
 -	      }
