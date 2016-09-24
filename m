@@ -1,13 +1,7 @@
-MIME-Version: 1.0
-In-Reply-To: <CAA1AbxKesOCWi2gD6D9nOYVFB2ZyNzYnQsP-NNjWbzPGdG6SPg@...278...>
-References: <1474109679-4982-1-git-send-email-chipitsine@...277...>
-	<CAA1AbxKesOCWi2gD6D9nOYVFB2ZyNzYnQsP-NNjWbzPGdG6SPg@...278...>
-From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Date: Sat, 24 Sep 2016 11:32:55 +0500
-Message-ID: <CAFHpkQHNbXW293tp3ua9fr5SwvuLgZh+nJKMR_yioUUVm0QUkg@...278...>
-Content-Type: multipart/alternative; boundary=bcaec50b5194b58ae9053d3b105b
-Subject: Re: [Openvpn-devel] [PATCH] enable "--disable-crypto" build
-	configuration
+From: Lev Stipakov <lstipakov@...277...>
+Date: Sat, 24 Sep 2016 13:23:59 +0300
+Message-Id: <1474712639-11698-1-git-send-email-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH] Fix duplicated PUSH_REPLY options
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,106 +10,163 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan@...1856...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---bcaec50b5194b58ae9053d3b105b
-Content-Type: text/plain; charset=UTF-8
+Starting from https://github.com/OpenVPN/openvpn/commit/3a5a46cf2b7f6a8b8520c2513a8054deb48bfcbe,
+we add peer-id and cipher values to context->options->push_list instead of adding those directly
+to buf (as done for client-specific values, like ifconfig). Since push_list is per child context,
+when options are added and context is reused - we got duplicates.
 
-can we merge it ?
+Fixed by adding options to buffer, as it was done previously.
 
-2016-09-17 16:17 GMT+05:00 Steffan Karger <steffan@...1856...>:
+Signed-off-by: Lev Stipakov <lstipakov@...277...>
+---
+ src/openvpn/push.c | 83 +++++++++++++++---------------------------------------
+ 1 file changed, 22 insertions(+), 61 deletions(-)
 
-> Hi,
->
-> On 17 September 2016 at 12:54, Ilya Shipitsin <chipitsine@...277...>
-> wrote:
-> > ---
-> >  .travis.yml | 4 ----
-> >  1 file changed, 4 deletions(-)
-> >
-> > diff --git a/.travis.yml b/.travis.yml
-> > index 452c48e..369db97 100644
-> > --- a/.travis.yml
-> > +++ b/.travis.yml
-> > @@ -51,10 +51,6 @@ matrix:
-> >        os: osx
-> >        osx_image: xcode7.3
-> >        compiler: clang
-> > -  allow_failures:
-> > -    - env: SSLLIB="openssl" EXTRA_CONFIG="--disable-crypto"
-> > -      os: linux
-> > -      compiler: clang
-> >    exclude:
-> >      - compiler: gcc
-> >
-> > --
-> > 2.5.5
->
-> Thanks.  The patch is good, so ACK.
->
-> But the commit messages should describe why this change is needed.  In
-> this case:
->
-> Previously, 'make test' failed for --disable-crypto builds.  Since
-> that is not fixed, we should no longer accept --disable-crypto builds
-> to fail 'make test' on travis.
->
-> Could you please include such descriptions in future patches?
->
-> -Steffan
->
+diff --git a/src/openvpn/push.c b/src/openvpn/push.c
+index a1b999e..5220bf0 100644
+--- a/src/openvpn/push.c
++++ b/src/openvpn/push.c
+@@ -40,30 +40,6 @@
+ 
+ #if P2MP
+ 
+-/**
+- * Add an option to the push list by providing a format string.
+- *
+- * The string added to the push options is allocated in o->gc, so the caller
+- * does not have to preserve anything.
+- *
+- * @param o		The current connection's options
+- * @param msglevel	The message level to use when printing errors
+- * @param fmt		Format string for the option
+- * @param ...		Format string arguments
+- *
+- * @return true on success, false on failure.
+- */
+-static bool push_option_fmt(struct options *o, int msglevel,
+-    const char *fmt, ...)
+-#ifdef __GNUC__
+-#if __USE_MINGW_ANSI_STDIO
+-    __attribute__ ((format (gnu_printf, 3, 4)))
+-#else
+-    __attribute__ ((format (__printf__, 3, 4)))
+-#endif
+-#endif
+-    ;
+-
+ /*
+  * Auth username/password
+  *
+@@ -293,31 +269,31 @@ send_push_request (struct context *c)
+ #if P2MP_SERVER
+ 
+ /**
+- * Prepare push options, based on local options and available peer info.
++ * Add peer specific options, based on local options and peer info.
+  *
+- * @param options	Connection options
+  * @param tls_multi	TLS state structure for the current tunnel
++ * @param options	Connection options
++ * @param buf		buffer to where options are added
+  *
+- * @return true on success, false on failure.
+  */
+-static bool
+-prepare_push_reply (struct options *o, struct tls_multi *tls_multi)
++static void
++add_peer_specific_opts (struct tls_multi *tls_multi, struct options *o, struct buffer *buf)
+ {
+-  const char *optstr = NULL;
+   const char * const peer_info = tls_multi->peer_info;
+-
++  const char *optstr = NULL;
++  
+   /* Send peer-id if client supports it */
+-  optstr = peer_info ? strstr(peer_info, "IV_PROTO=") : NULL;
++  optstr = peer_info ? strstr (peer_info, "IV_PROTO=") : NULL;
+   if (optstr)
+-    {
+-      int proto = 0;
+-      int r = sscanf(optstr, "IV_PROTO=%d", &proto);
+-      if ((r == 1) && (proto >= 2))
+-	{
+-	  push_option_fmt(o, M_USAGE, "peer-id %d", tls_multi->peer_id);
+-	}
+-    }
+-
++  {
++    int proto = 0;
++    int r = sscanf (optstr, "IV_PROTO=%d", &proto);
++    if ((r == 1) && (proto >= 2))
++      {
++	buf_printf (buf, ",peer-id %d", tls_multi->peer_id);
++      }
++  }
++	
+   /* Push cipher if client supports Negotiable Crypto Parameters */
+   if (tls_peer_info_ncp_ver (peer_info) >= 2 && o->ncp_enabled)
+     {
+@@ -335,12 +311,11 @@ prepare_push_reply (struct options *o, struct tls_multi *tls_multi)
+ 	{
+ 	  /* Push the first cipher from --ncp-ciphers to the client.
+ 	   * TODO: actual negotiation, instead of server dictatorship. */
+-	  char *push_cipher = string_alloc(o->ncp_ciphers, &o->gc);
++	  char *push_cipher = string_alloc (o->ncp_ciphers, &o->gc);
+ 	  o->ciphername = strtok (push_cipher, ":");
+-	  push_option_fmt(o, M_USAGE, "cipher %s", o->ciphername);
++	  buf_printf (buf, ",cipher %s", o->ciphername);
+ 	}
+     }
+-  return true;
+ }
+ 
+ static bool
+@@ -414,6 +389,8 @@ send_push_reply (struct context *c)
+   if (multi_push)
+     buf_printf (&buf, ",push-continuation 1");
+ 
++  add_peer_specific_opts (c->c2.tls_multi, &c->options, &buf);
++
+   if (BLEN (&buf) > sizeof(cmd)-1)
+     {
+       const bool status = send_control_channel_string (c, BSTR (&buf), D_PUSH);
+@@ -501,21 +478,6 @@ push_options (struct options *o, char **p, int msglevel, struct gc_arena *gc)
+   push_option (o, opt, msglevel);
+ }
+ 
+-static bool push_option_fmt(struct options *o, int msglevel,
+-    const char *format, ...)
+-{
+-  va_list arglist;
+-  char tmp[256] = {0};
+-  int len = -1;
+-  va_start (arglist, format);
+-  len = vsnprintf (tmp, sizeof(tmp), format, arglist);
+-  va_end (arglist);
+-  if (len > sizeof(tmp)-1)
+-    return false;
+-  push_option (o, string_alloc (tmp, &o->gc), msglevel);
+-  return true;
+-}
+-
+ void
+ push_reset (struct options *o)
+ {
+@@ -580,8 +542,7 @@ process_incoming_push_request (struct context *c)
+ 	}
+       else
+ 	{
+-	  if (prepare_push_reply(&c->options, c->c2.tls_multi) &&
+-	      send_push_reply (c))
++	  if (send_push_reply (c))
+ 	    {
+ 	      ret = PUSH_MSG_REQUEST;
+ 	      c->c2.sent_push_reply_expiry = now + 30;
+-- 
+1.9.1
 
---bcaec50b5194b58ae9053d3b105b
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr">can we merge it ?<br></div><div class=3D"gmail_extra"><br>=
-<div class=3D"gmail_quote">2016-09-17 16:17 GMT+05:00 Steffan Karger <span =
-dir=3D"ltr">&lt;<a href=3D"mailto:steffan@...1856..." target=3D"_blank">ste=
-ffan@...1856...</a>&gt;</span>:<br><blockquote class=3D"gmail_quote" style=
-=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">Hi,<br>
-<br>
-On 17 September 2016 at 12:54, Ilya Shipitsin &lt;<a href=3D"mailto:chipits=
-ine@...277...">chipitsine@...277...</a>&gt; wrote:<br>
-&gt; ---<br>
-&gt;=C2=A0 .travis.yml | 4 ----<br>
-&gt;=C2=A0 1 file changed, 4 deletions(-)<br>
-&gt;<br>
-&gt; diff --git a/.travis.yml b/.travis.yml<br>
-&gt; index 452c48e..369db97 100644<br>
-&gt; --- a/.travis.yml<br>
-&gt; +++ b/.travis.yml<br>
-&gt; @@ -51,10 +51,6 @@ matrix:<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 os: osx<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 osx_image: xcode7.3<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 compiler: clang<br>
-&gt; -=C2=A0 allow_failures:<br>
-&gt; -=C2=A0 =C2=A0 - env: SSLLIB=3D&quot;openssl&quot; EXTRA_CONFIG=3D&quo=
-t;--disable-<wbr>crypto&quot;<br>
-&gt; -=C2=A0 =C2=A0 =C2=A0 os: linux<br>
-&gt; -=C2=A0 =C2=A0 =C2=A0 compiler: clang<br>
-&gt;=C2=A0 =C2=A0 exclude:<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 - compiler: gcc<br>
-&gt;<br>
-&gt; --<br>
-&gt; 2.5.5<br>
-<br>
-Thanks.=C2=A0 The patch is good, so ACK.<br>
-<br>
-But the commit messages should describe why this change is needed.=C2=A0 In=
-<br>
-this case:<br>
-<br>
-Previously, &#39;make test&#39; failed for --disable-crypto builds.=C2=A0 S=
-ince<br>
-that is not fixed, we should no longer accept --disable-crypto builds<br>
-to fail &#39;make test&#39; on travis.<br>
-<br>
-Could you please include such descriptions in future patches?<br>
-<span class=3D"HOEnZb"><font color=3D"#888888"><br>
--Steffan<br>
-</font></span></blockquote></div><br></div>
-
---bcaec50b5194b58ae9053d3b105b--
 
