@@ -1,10 +1,12 @@
-From: Lev Stipakov <lstipakov@...277...>
-Date: Sat, 24 Sep 2016 18:54:09 +0300
-Message-Id: <1474732449-13759-1-git-send-email-lstipakov@...277...>
-In-Reply-To: <1474732310-13672-1-git-send-email-lstipakov@...277...>
-References: <1474732310-13672-1-git-send-email-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH master] Exclude peer-id from pulled options
-	digest
+Message-ID: <57E7E1FB.9070202@...1147...>
+Date: Sun, 25 Sep 2016 16:40:59 +0200
+From: Jan Just Keijser <janjust@...1147...>
+MIME-Version: 1.0
+References: <1474666458.11690.23.camel@...1866...>	
+	<57E5A654.60503@...1147...>
+	<1474672864.11690.27.camel@...1866...>
+In-Reply-To: <1474672864.11690.27.camel@...1866...>
+Subject: Re: [Openvpn-devel] p2p topology on Windows
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,69 +15,29 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: David Woodhouse <dwmw2@...1866...>, openvpn-devel@lists.sourceforge.net
 
-Peer-id might change on restart and this should not trigger reopening
-tun.
+Hi David,
 
-Trac #649
----
- src/openvpn/push.c | 39 ++++++++++++++++++++++++---------------
- 1 file changed, 24 insertions(+), 15 deletions(-)
+On 24/09/16 01:21, David Woodhouse wrote:
+> On Sat, 2016-09-24 at 00:01 +0200, Jan Just Keijser wrote:
+>> sorry for asking, but what's the use case for this?
+> The use case for point-to-point? It allows you to use a single IP
+> address per client instead of having to set aside a whole /30 subnet
+> per client as with the 'net30' mode.
+>
+> (And in my case, because some Cisco servers end up being configured
+> thus, their own client copes with it under Windows and users were
+> complaining.)
+thanks for clarifying - but with OpenVPN 2.4 the default topology mode 
+will be 'subnet topology', in which we also assign a single IP address 
+to each client. Is there a (fundamental) difference between these two?
 
-diff --git a/src/openvpn/push.c b/src/openvpn/push.c
-index a1b999e..d7d54bf 100644
---- a/src/openvpn/push.c
-+++ b/src/openvpn/push.c
-@@ -636,21 +636,30 @@ process_incoming_push_msg (struct context *c,
- 				  permission_mask,
- 				  option_types_found,
- 				  c->c2.es))
--	    switch (c->options.push_continuation)
--	      {
--	      case 0:
--	      case 1:
--		md_ctx_update (&c->c2.pulled_options_state, BPTR(&buf_orig), BLEN(&buf_orig));
--		md_ctx_final (&c->c2.pulled_options_state, c->c2.pulled_options_digest.digest);
--		md_ctx_cleanup (&c->c2.pulled_options_state);
--	        c->c2.pulled_options_md5_init_done = false;
--		ret = PUSH_MSG_REPLY;
--		break;
--	      case 2:
--		md_ctx_update (&c->c2.pulled_options_state, BPTR(&buf_orig), BLEN(&buf_orig));
--		ret = PUSH_MSG_CONTINUATION;
--		break;
--	      }
-+	    {
-+	      char line[OPTION_PARM_SIZE];
-+	      while (buf_parse (&buf_orig, ',', line, sizeof (line)))
-+		{
-+		  /* peer-id might change on restart and this should not trigger reopening tun */
-+		  if (strstr (line, "peer-id ") != line)
-+		    {
-+		      md_ctx_update (&c->c2.pulled_options_state, (const uint8_t *) line, strlen(line));
-+		    }
-+		}
-+	      switch (c->options.push_continuation)
-+		{
-+		  case 0:
-+		  case 1:
-+		    md_ctx_final (&c->c2.pulled_options_state, c->c2.pulled_options_digest.digest);
-+		    md_ctx_cleanup (&c->c2.pulled_options_state);
-+		    c->c2.pulled_options_md5_init_done = false;
-+		    ret = PUSH_MSG_REPLY;
-+		    break;
-+		  case 2:
-+		    ret = PUSH_MSG_CONTINUATION;
-+		    break;
-+		}
-+	    }
- 	}
-       else if (ch == '\0')
- 	{
--- 
-1.9.1
+
+cheers,
+
+JJK
 
 
