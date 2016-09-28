@@ -1,17 +1,8 @@
-References: <1474109679-4982-1-git-send-email-chipitsine@...277...>
-	<CAA1AbxKesOCWi2gD6D9nOYVFB2ZyNzYnQsP-NNjWbzPGdG6SPg@...278...>
-	<CAFHpkQHNbXW293tp3ua9fr5SwvuLgZh+nJKMR_yioUUVm0QUkg@...278...>
-	<8a59c1b0-7bf5-47b8-68ed-ce36e4438c55@...515...>
-	<CAFHpkQHMJ7onodTWaEaeE+Ve4kOpbB3V99YqKpwfmbNJsq0r5Q@...278...>
-	<20160926144513.GZ78279@...1296...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <27d6e096-c638-5937-cf01-a8bc55dd0761@...2080...>
-Date: Mon, 26 Sep 2016 21:39:20 +0200
-MIME-Version: 1.0
-In-Reply-To: <20160926144513.GZ78279@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH] enable "--disable-crypto" build
- configuration
-Reply-To: openvpn-devel@lists.sourceforge.net
+From: Steffan Karger <steffan@...1856...>
+Date: Wed, 28 Sep 2016 11:33:51 +0200
+Message-Id: <1475055231-1778-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH] Make sure options->ciphername and
+	options->authname are always defined
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,60 +11,88 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-To: ???????? ?????????????? <chipitsine@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+The NCP code does a strcmp(options->ciphername, ...) without first checking
+whether options->ciphername is NULL.  This could cause a crash when using
+"--cipher none".  This patch fixes that problem by ensuring that
+options->ciphername (and options->authname) are never NULL.  Ensuring that
+options->ciphername is never null prevents us from having to write null
+checks everywhere.
 
-On 26/09/16 16:45, Gert Doering wrote:
-> Hi,
-> 
-> On Mon, Sep 26, 2016 at 01:26:24PM +0500, ???????? ??????????????
-> wrote:
->> it would be easiest, but it is not required. as Steffan Karger
->> wrote "Could you please include such descriptions in future
->> patches?"
-> 
-> Well, a proper commit message *is* required.
-> 
-> So, instead of us having do your work (of providing a proper commit
-> message), and then complaining that this is taking a bit longer
-> (because it's extra work) - what about "re-sending the patch with a
-> proper commit message" instead?
-> 
-> I have a bunch of work to do, and "make me do more work and then
-> complain that I'm slow doing it" is a very trusted way to get moved
-> all the way DOWN on my priority list.  Like, "I might think about
-> this next May".
+Signed-off-by: Steffan Karger <steffan@...1856...>
+---
+ src/openvpn/crypto.c  | 7 +++++--
+ src/openvpn/init.c    | 2 +-
+ src/openvpn/options.c | 8 --------
+ 3 files changed, 6 insertions(+), 11 deletions(-)
 
-+1 ... Due to _exactly_ this reasoning, it was on my "If I have time
-this week"-list.
+diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
+index 1b17f9d..3dd4a9e 100644
+--- a/src/openvpn/crypto.c
++++ b/src/openvpn/crypto.c
+@@ -759,8 +759,11 @@ init_key_type (struct key_type *kt, const char *ciphername,
+ {
+   bool aead_cipher = false;
+ 
++  ASSERT(ciphername);
++  ASSERT(authname);
++
+   CLEAR (*kt);
+-  if (ciphername)
++  if (strcmp (ciphername, "none") != 0)
+     {
+       kt->cipher = cipher_kt_get (translate_cipher_name_from_openvpn(ciphername));
+       if (!kt->cipher)
+@@ -790,7 +793,7 @@ init_key_type (struct key_type *kt, const char *ciphername,
+       if (warn)
+ 	msg (M_WARN, "******* WARNING *******: null cipher specified, no encryption will be used");
+     }
+-  if (authname)
++  if (strcmp (authname, "none") != 0)
+     {
+       if (!aead_cipher) { /* Ignore auth for AEAD ciphers */
+ 	kt->digest = md_kt_get (authname);
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 9cbbe9d..49f4220 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -2259,7 +2259,7 @@ do_init_crypto_tls_c1 (struct context *c)
+ 
+ 	  /* Initialize key_type for tls-auth with auth only */
+ 	  CLEAR (c->c1.ks.tls_auth_key_type);
+-	  if (options->authname)
++	  if (!streq (options->authname, "none"))
+ 	    {
+ 	      c->c1.ks.tls_auth_key_type.digest = md_kt_get (options->authname);
+ 	      c->c1.ks.tls_auth_key_type.hmac_length =
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 1358237..53b4617 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -6653,19 +6653,11 @@ add_option (struct options *options,
+     {
+       VERIFY_PERMISSION (OPT_P_GENERAL);
+       options->authname = p[1];
+-      if (streq (options->authname, "none"))
+-	{
+-	  options->authname = NULL;
+-	}
+     }
+   else if (streq (p[0], "cipher") && p[1] && !p[2])
+     {
+       VERIFY_PERMISSION (OPT_P_NCP);
+       options->ciphername = p[1];
+-      if (streq (options->ciphername, "none"))
+-	{
+-	  options->ciphername = NULL;
+-	}
+     }
+   else if (streq (p[0], "ncp-ciphers") && p[1] && !p[2])
+     {
+-- 
+2.7.4
 
-Thanks Gert for taking care of it!
-
-
-- -- 
-kind regards,
-
-David Sommerseth
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBAgAGBQJX6XloAAoJEIbPlEyWcf3yPrwP/i8Yu4TVUZr0waGJ6Gx9g3Z9
-qMUqKSfif73+3nnPbPsEd8N0+eRHjG7dgQ52+/Sahph73dIWiiLrepRAC3VJCc1r
-7ZGsFYYkoYKMf2VlWHKgi8WkuaXt7xhofHLLh0GtmmOvaGU9zcqaIZpLEPpXpfYf
-RULw8ozDE+rirQA2UCxht1Fqn+tf/36t0X1zCkFXplkglT7oxLr6aPHbuUUUl19v
-9URwwxDGFyy4De0ZalH/cosAXRwzsyjEvG2QCFoGGsLEbiNMElpT9MImPkJFjjyc
-ltPtZGMW3tjdAIRIyTtMhlXZvrUu0eig+2SjCmwWZMAwL0XfSguUsEk9c13opSuT
-xTsAoE8c2rEXN/5UvwFIiRI9qgUwp83zQDVu6QEjlaH4/PG5iRz7kSisc2FGQtwS
-nYN+183nW8MQVJFSaZ++VbnOnGhpH86NmgTc2BxRInDIBEjd4uQTQVXMH1UBWzmJ
-7PFrEowT3vnRF6SDFaE2YzyCP2hp1DwD0la2NCeieXcaAq0+1lSmR4UpSlPeNkO+
-QujuqtyoeC372P0CnLxbOZCdrvXhBcRWGs8O1PjBzHy5xeyApgbWNoqI7kkENvk9
-+WRrVPq9cQngrfr1dCo4H3c6y1wRSjzhMU7VxJ5/82+u3qPXxBIvnu/tSl24dbpM
-anEkoVh1m3iCyJt+aJp1
-=bNDi
------END PGP SIGNATURE-----
 
