@@ -1,10 +1,10 @@
+Date: Tue, 4 Oct 2016 13:28:07 +0200 (CEST)
+Message-Id: <201610041128.u94BS7MR088011@...2054...>
 From: Gert Doering <gert@...1296...>
-Date: Tue,  4 Oct 2016 11:32:37 +0200
-Message-Id: <20161004093237.87076-1-gert@...1296...>
-In-Reply-To: <20161002131923.36681-1-gert@...1296...>
-References: <20161002131923.36681-1-gert@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH applied] make t_client robust against
-	sudoers misconfiguration
+In-Reply-To: <1473605431-20842-1-git-send-email-steffan@...1856...>
+References: <1473605431-20842-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Update cipher-related man page
+	text
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,22 +15,23 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: gert@...1296...
+To: Steffan Karger <steffan@...1856...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Patch has been applied to the following branches
+ACK.
 
-commit 8ca29af7c6d4759ce019ec9d0cd3eae4511a6804  (master)
-commit 0bd4ef0a18c65bfbd4e5b08735d7bb67dd010b97  (release/2.3)
-Author: Gert Doering
-Date:   Sun Oct 2 15:19:23 2016 +0200
+Your patch has been applied to the master branch.
 
-     make t_client robust against sudoers misconfiguration
+commit 5a1daf533ae283e258732260c96461e820e61fe6
+Author: Steffan Karger
+Date:   Sun Sep 11 16:50:31 2016 +0200
 
-     Signed-off-by: Gert Doering <gert@...1296...>
-     Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <20161002131923.36681-1-gert@...1296...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg12585.html
+     Update cipher-related man page text
+
+     Signed-off-by: Steffan Karger <steffan@...1856...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1473605431-20842-1-git-send-email-steffan@...1856...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg12439.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
