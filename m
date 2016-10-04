@@ -1,8 +1,8 @@
-Date: Tue, 4 Oct 2016 13:28:07 +0200 (CEST)
-Message-Id: <201610041128.u94BS7MR088011@...2054...>
+Date: Tue, 4 Oct 2016 13:29:46 +0200 (CEST)
+Message-Id: <201610041129.u94BTkjm088075@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1473605431-20842-1-git-send-email-steffan@...1856...>
-References: <1473605431-20842-1-git-send-email-steffan@...1856...>
+In-Reply-To: <1473605477-20908-1-git-send-email-steffan@...1856...>
+References: <1473605477-20908-1-git-send-email-steffan@...1856...>
 Subject: [Openvpn-devel] [PATCH applied] Re: Update cipher-related man page
 	text
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,18 +20,18 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 ACK.
 
-Your patch has been applied to the master branch.
+Your patch has been applied to the release/2.3 branch.
 
-commit 5a1daf533ae283e258732260c96461e820e61fe6
+commit db6cdf90b1c0696b93a551aab7c9c9925c6774df
 Author: Steffan Karger
-Date:   Sun Sep 11 16:50:31 2016 +0200
+Date:   Sun Sep 11 16:51:17 2016 +0200
 
      Update cipher-related man page text
 
      Signed-off-by: Steffan Karger <steffan@...1856...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1473605431-20842-1-git-send-email-steffan@...1856...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg12439.html
+     Message-Id: <1473605477-20908-1-git-send-email-steffan@...1856...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg12440.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
