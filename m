@@ -1,10 +1,12 @@
-References: <1475613736-1529-1-git-send-email-lstipakov@...277...>
+References: <2ad2231f-9e17-7709-b488-5ee201200f68@...1856...>
+	<1475610786-25781-1-git-send-email-lstipakov@...277...>
 From: Steffan Karger <steffan.karger@...1435...>
-Message-ID: <842a27b1-8ce3-db91-2c76-71cfc705e1eb@...1435...>
-Date: Wed, 5 Oct 2016 14:04:02 +0200
+Message-ID: <9b16d76d-1a90-403a-146a-cea93dcb38ce@...1435...>
+Date: Wed, 5 Oct 2016 14:27:18 +0200
 MIME-Version: 1.0
-In-Reply-To: <1475613736-1529-1-git-send-email-lstipakov@...277...>
-Subject: Re: [Openvpn-devel] [PATCH 2.3] Fix compilation in pedantic mode
+In-Reply-To: <1475610786-25781-1-git-send-email-lstipakov@...277...>
+Subject: Re: [Openvpn-devel] [PATCH v2 2.3] Exclude peer-id from pulled
+ options digest
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,168 +19,83 @@ Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-Hi,
-
-On 04-10-16 22:42, Lev Stipakov wrote:
-> Replace C++ style comments, which are not allowed in ISO C90 standard,
-> with C style comments
+On 04-10-16 21:53, Lev Stipakov wrote:
+> v2:
+>  - Use md5_* methods
+>  - Move digest update to separate method
 > 
-> Signed-off-by: Lev Stipakov <lstipakov@...277...>
+> Peer-id might change on restart and this should not trigger reopening
+> tun.
+> 
+> Trac #649
 > ---
->  src/openvpn/crypto_openssl.c |  4 ++--
->  src/openvpn/ssl.c            |  2 +-
->  src/openvpn/ssl_openssl.c    | 36 ++++++++++++++++++------------------
->  src/plugins/auth-pam/utils.c |  2 +-
->  4 files changed, 22 insertions(+), 22 deletions(-)
+>  src/openvpn/push.c | 43 +++++++++++++++++++++++++++++--------------
+>  1 file changed, 29 insertions(+), 14 deletions(-)
 > 
-> diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
-> index 2180b1a..7b1ac6c 100644
-> --- a/src/openvpn/crypto_openssl.c
-> +++ b/src/openvpn/crypto_openssl.c
-> @@ -278,13 +278,13 @@ crypto_init_dmalloc (void)
->  
->  const char *
->  translate_cipher_name_from_openvpn (const char *cipher_name) {
-> -  // OpenSSL doesn't require any translation
-> +  /* OpenSSL doesn't require any translation */
->    return cipher_name;
+> diff --git a/src/openvpn/push.c b/src/openvpn/push.c
+> index 71f39c1..402c158 100644
+> --- a/src/openvpn/push.c
+> +++ b/src/openvpn/push.c
+> @@ -407,6 +407,20 @@ push_reset (struct options *o)
 >  }
+>  #endif
 >  
->  const char *
->  translate_cipher_name_to_openvpn (const char *cipher_name) {
-> -  // OpenSSL doesn't require any translation
-> +  /* OpenSSL doesn't require any translation */
->    return cipher_name;
->  }
->  
-> diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-> index 4de3354..33fd9dd 100644
-> --- a/src/openvpn/ssl.c
-> +++ b/src/openvpn/ssl.c
-> @@ -267,7 +267,7 @@ tls_get_cipher_name_pair (const char * cipher_name, size_t len) {
->        pair++;
->    }
->  
-> -  // No entry found, return NULL
-> +  /* No entry found, return NULL */
->    return NULL;
->  }
->  
-> diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-> index a226aac..2d06da9 100644
-> --- a/src/openvpn/ssl_openssl.c
-> +++ b/src/openvpn/ssl_openssl.c
-> @@ -294,7 +294,7 @@ tls_ctx_restrict_ciphers(struct tls_root_ctx *ctx, const char *ciphers)
->  
->    ASSERT(NULL != ctx);
->  
-> -  // Translate IANA cipher suite names to OpenSSL names
-> +  /* Translate IANA cipher suite names to OpenSSL names */
->    begin_of_cipher = end_of_cipher = 0;
->    for (; begin_of_cipher < strlen(ciphers); begin_of_cipher = end_of_cipher) {
->        end_of_cipher += strcspn(&ciphers[begin_of_cipher], ":");
-> @@ -302,31 +302,31 @@ tls_ctx_restrict_ciphers(struct tls_root_ctx *ctx, const char *ciphers)
->  
->        if (NULL == cipher_pair)
->          {
-> -          // No translation found, use original
-> -          current_cipher = &ciphers[begin_of_cipher];
-> -          current_cipher_len = end_of_cipher - begin_of_cipher;
-> -
-> -          // Issue warning on missing translation
-> -          // %.*s format specifier expects length of type int, so guarantee
-> -          // that length is small enough and cast to int.
-> -          msg (M_WARN, "No valid translation found for TLS cipher '%.*s'",
-> -              (int) MIN(current_cipher_len, 256), current_cipher);
-> +	  /* No translation found, use original */
-> +	  current_cipher = &ciphers[begin_of_cipher];
-> +	  current_cipher_len = end_of_cipher - begin_of_cipher;
+> +static void
+> +push_update_digest(struct md5_state *ctx, struct buffer *buf)
+> +{
+> +  char line[OPTION_PARM_SIZE];
+> +  while (buf_parse (buf, ',', line, sizeof (line)))
+> +    {
+> +      /* peer-id might change on restart and this should not trigger reopening tun */
+> +      if (strstr (line, "peer-id ") != line)
+> +	{
+> +	  md5_state_update (ctx, line, strlen(line));
+> +	}
+> +    }
+> +}
 > +
-> +	  /* Issue warning on missing translation
-> +	     %.*s format specifier expects length of type int, so guarantee
-> +	     that length is small enough and cast to int. */
-> +	  msg (M_WARN, "No valid translation found for TLS cipher '%.*s'",
-> +	      (int) MIN(current_cipher_len, 256), current_cipher);
->          }
->        else
->  	{
-> -	  // Use OpenSSL name
-> -          current_cipher = cipher_pair->openssl_name;
-> -          current_cipher_len = strlen(current_cipher);
-> +	  /* Use OpenSSL name */
-> +	  current_cipher = cipher_pair->openssl_name;
-> +	  current_cipher_len = strlen(current_cipher);
->  
->  	  if (end_of_cipher - begin_of_cipher == current_cipher_len &&
->  	      0 == memcmp (&ciphers[begin_of_cipher], cipher_pair->openssl_name, end_of_cipher - begin_of_cipher))
->  	    {
-> -	      // Non-IANA name used, show warning
-> +	      /* Non-IANA name used, show warning */
->  	      msg (M_WARN, "Deprecated TLS cipher name '%s', please use IANA name '%s'", cipher_pair->openssl_name, cipher_pair->iana_name);
->  	    }
+>  int
+>  process_incoming_push_msg (struct context *c,
+>  			   const struct buffer *buffer,
+> @@ -473,20 +487,21 @@ process_incoming_push_msg (struct context *c,
+>  				  permission_mask,
+>  				  option_types_found,
+>  				  c->c2.es))
+> -	    switch (c->options.push_continuation)
+> -	      {
+> -	      case 0:
+> -	      case 1:
+> -		md5_state_update (&c->c2.pulled_options_state, BPTR(&buf_orig), BLEN(&buf_orig));
+> -		md5_state_final (&c->c2.pulled_options_state, &c->c2.pulled_options_digest);
+> -	        c->c2.pulled_options_md5_init_done = false;
+> -		ret = PUSH_MSG_REPLY;
+> -		break;
+> -	      case 2:
+> -		md5_state_update (&c->c2.pulled_options_state, BPTR(&buf_orig), BLEN(&buf_orig));
+> -		ret = PUSH_MSG_CONTINUATION;
+> -		break;
+> -	      }
+> +	    {
+> +	      push_update_digest (&c->c2.pulled_options_state, &buf_orig);
+> +	      switch (c->options.push_continuation)
+> +		{
+> +		  case 0:
+> +		  case 1:
+> +		    md5_state_final (&c->c2.pulled_options_state, &c->c2.pulled_options_digest);
+> +		    c->c2.pulled_options_md5_init_done = false;
+> +		    ret = PUSH_MSG_REPLY;
+> +		    break;
+> +		  case 2:
+> +		    ret = PUSH_MSG_CONTINUATION;
+> +		    break;
+> +		}
+> +	    }
 >  	}
->  
-> -      // Make sure new cipher name fits in cipher string
-> +      /* Make sure new cipher name fits in cipher string */
->        if (((sizeof(openssl_ciphers)-1) - openssl_ciphers_len) < current_cipher_len)
+>        else if (ch == '\0')
 >  	{
->  	  msg (M_FATAL,
-> @@ -334,7 +334,7 @@ tls_ctx_restrict_ciphers(struct tls_root_ctx *ctx, const char *ciphers)
->  	      (int)sizeof(openssl_ciphers)-1);
->  	}
->  
-> -      // Concatenate cipher name to OpenSSL cipher string
-> +      /* Concatenate cipher name to OpenSSL cipher string */
->        memcpy(&openssl_ciphers[openssl_ciphers_len], current_cipher, current_cipher_len);
->        openssl_ciphers_len += current_cipher_len;
->        openssl_ciphers[openssl_ciphers_len] = ':';
-> @@ -346,7 +346,7 @@ tls_ctx_restrict_ciphers(struct tls_root_ctx *ctx, const char *ciphers)
->    if (openssl_ciphers_len > 0)
->      openssl_ciphers[openssl_ciphers_len-1] = '\0';
->  
-> -  // Set OpenSSL cipher list
-> +  /* Set OpenSSL cipher list */
->    if(!SSL_CTX_set_cipher_list(ctx->ctx, openssl_ciphers))
->      crypto_msg (M_FATAL, "Failed to set restricted TLS cipher list: %s", openssl_ciphers);
->  }
-> @@ -1407,7 +1407,7 @@ show_available_tls_ciphers (const char *cipher_list)
->        pair = tls_get_cipher_name_pair(cipher_name, strlen(cipher_name));
->  
->        if (NULL == pair) {
-> -          // No translation found, print warning
-> +          /* No translation found, print warning */
->  	  printf ("%s (No IANA name known to OpenVPN, use OpenSSL name.)\n", cipher_name);
->        } else {
->  	  printf ("%s\n", pair->iana_name);
-> diff --git a/src/plugins/auth-pam/utils.c b/src/plugins/auth-pam/utils.c
-> index 4f2bec1..e4643cd 100644
-> --- a/src/plugins/auth-pam/utils.c
-> +++ b/src/plugins/auth-pam/utils.c
-> @@ -59,7 +59,7 @@ searchandreplace(const char *tosearch, const char *searchfor, const char *replac
->         return NULL;
->    }
->  
-> -  // state: all parameters are valid
-> +  /* state: all parameters are valid */
->  
->    const char *searching=tosearch;
->    char *scratch;
+> 
 
-I do prefer
-
-/* Some text
- * more text
- */
-
-over
-
-/* Some text
-   more text */
-
-but am not too religious about that.
-
-So, ACK.
+Looks good now.  ACK.
 
 -Steffan
-
 
