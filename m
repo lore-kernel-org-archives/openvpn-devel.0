@@ -2,9 +2,9 @@ References: <784d3a54-24a9-dc57-b1f3-a8010d7e99db@...277...>
 	<20161006121736.GB78279@...1296...>
 	<50515770-ae2b-ee70-9ada-452f69cce800@...1227...>
 	<a24673c2-2aca-7bcb-6826-23335bf5a557@...277...>
-From: debbie10t <debbie10t@...277...>
-Message-ID: <6ccb18ab-8434-6433-8f21-aabc4459955e@...277...>
-Date: Thu, 6 Oct 2016 16:47:21 +0100
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <b202ba08-7707-41af-58bf-f71a73c5fa52@...515...>
+Date: Thu, 6 Oct 2016 18:59:01 +0300
 MIME-Version: 1.0
 In-Reply-To: <a24673c2-2aca-7bcb-6826-23335bf5a557@...277...>
 Subject: Re: [Openvpn-devel] Slight change to buildbot t_client.sh.in &
@@ -17,13 +17,12 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Transfer-Encoding: quoted-printable
+To: debbie10t <debbie10t@...277...>, Arne Schwabe <arne@...1227...>, Gert Doering <gert@...1296...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-
-
-On 06/10/16 14:10, debbie10t wrote:
+Il 06/10/2016 16:10, debbie10t ha scritto:
 >
 >
 > On 06/10/16 13:25, Arne Schwabe wrote:
@@ -61,9 +60,10 @@ On 06/10/16 14:10, debbie10t wrote:
 > So I guess it is not worth over complicating t_client for that.
 >
 >
-> ===
+> =3D=3D=3D
 >
-> However, -i appears to be commonly supported and this is the effect for me:
+> However, -i appears to be commonly supported and this is the effect for m=
+e:
 >
 > ---
 >
@@ -71,8 +71,8 @@ On 06/10/16 14:10, debbie10t wrote:
 > -b 3000 -c 10 -p 250 10.194.6.1 10.194.0.1
 > 10.194.6.1 : [0], 3028 bytes, 551 ms (551 avg, 66% loss)
 >
-> 10.194.6.1 : xmt/rcv/%loss = 10/1/90%, min/avg/max = 551/551/551
-> 10.194.0.1 : xmt/rcv/%loss = 10/0/100%
+> 10.194.6.1 : xmt/rcv/%loss =3D 10/1/90%, min/avg/max =3D 551/551/551
+> 10.194.0.1 : xmt/rcv/%loss =3D 10/0/100%
 >
 > ---
 >
@@ -99,8 +99,8 @@ On 06/10/16 14:10, debbie10t wrote:
 > 10.194.6.1 : [9], 3028 bytes, 563 ms (553 avg, 0% loss)
 > 10.194.0.1 : [9], 3028 bytes, 570 ms (556 avg, 0% loss)
 >
-> 10.194.6.1 : xmt/rcv/%loss = 10/10/0%, min/avg/max = 549/553/563
-> 10.194.0.1 : xmt/rcv/%loss = 10/10/0%, min/avg/max = 548/556/573
+> 10.194.6.1 : xmt/rcv/%loss =3D 10/10/0%, min/avg/max =3D 549/553/563
+> 10.194.0.1 : xmt/rcv/%loss =3D 10/10/0%, min/avg/max =3D 548/556/573
 >
 > ---
 >
@@ -109,12 +109,16 @@ On 06/10/16 14:10, debbie10t wrote:
 >
 > Thanks
 
-A little more thought on this:
+Hi,
 
-As I am on possibly the cheapest internet in the UK and "-i 1000"
-solves the problem, i expect simply including say "-i 2000" in
-t_client.sh.in will be sufficient for just about anywhere, unless
-you try to run a buildslave in the jungles of Borneo !
+We could also have a more generic FPING_EXTRA_ARGS parameter in=20
+t_client.rc. Another option would be to create local shell aliases with=20
+"-i <interval>" already set for fping/fping6, but that gets messy quickly.
 
-proost
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
 
