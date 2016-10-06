@@ -1,17 +1,9 @@
-From: Daniel Hunsaker <dan@...515...>
-Date: Wed, 5 Oct 2016 19:03:13 +0000
-Message-ID: <1475694192252.9683@...515...>
-References: <1475613736-1529-1-git-send-email-lstipakov@...277...>
-	<842a27b1-8ce3-db91-2c76-71cfc705e1eb@...1435...>
-	<20161005123444.GS78279@...1296...>
-	<CAGyAFMUvHvgFTH4=M2OrcpnZFKuXq3r6Rb4DcL4KHXS353wcGg@...278...>
-	<b27f550d-4bd1-1362-897e-1f10a4a6b576@...2080...>
-	<CAA1AbxLU2_qqatxncB=ksJsUq8xFOpZraQsbzxNapk9uyjoWdw@...278...>,
-	<7af55196-b32a-4bca-7a07-982de94fe49a@...2080...>
-In-Reply-To: <7af55196-b32a-4bca-7a07-982de94fe49a@...2080...>
-Content-Language: en-US
+From: debbie10t <debbie10t@...277...>
+Message-ID: <784d3a54-24a9-dc57-b1f3-a8010d7e99db@...277...>
+Date: Thu, 6 Oct 2016 13:02:57 +0100
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH 2.3] Fix compilation in pedantic mode
+Subject: [Openvpn-devel] Slight change to buildbot t_client.sh.in &
+	t_client.rc
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,34 +12,36 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-On Wednesday, October 5, 2016 12:43, David Sommerseth wrote:
-    On 05/10/16 20:34, Steffan Karger wrote:
-    > On 5 October 2016 at 20:25, David Sommerseth
-    > <openvpn@...2080...> wrote:
-    >> The Hackathon in Munich 2014 [1] decided on the the Allmann style
-    >> [2]. The only thing I'm not sure we agreed upon is the indent
-    >> size (4 or 8 spaces), in addition to the line length which is not
-    >> that explicitly agreed upon.
-    >
-    > I seem to remember we agreed on 4 spaces.  (8 would really not
-    > work with the current code and a 80-chars-per-line limit.)
-=20=20=20=20
-    Fair point!  I remember we discussed both, but as we never truly
-    documented any result here I have forgotten it.  And it is aligned
-    what Gert claims too.
+Hi
 
-Also, 8 spaces is a terrible idea anyway.  Even the most ancient printing p=
-resses (after indentation was initially used) only went as far as (the equi=
-valent of) 5 - and their fonts were proportional.
+My buildbots always to fail "fping 4 & 6 -b 3000" tests probably due to 
+my ISP.
 
-That said, I will always prefer \t over \x20*.
+I have found that simply adding "-R -i 5000" to fping 4 & 6 solves my 
+problem completely.
 
-Daniel Hunsaker
-QA / Automation
-OpenVPN Technologies, Inc
+-R
+Instead of using all-zeros as the packet data, generate random bytes. 
+Use to defeat, e.g., link data compression
 
-irc://irc.freenode.net: danhunsaker
+-i n
+The minimum amount of time (in milliseconds) between sending a ping 
+packet to any target (default is 25)
+
+As gert does not want to increase the time taken for bots which do not 
+have this problem, I would like to propose that "-R -i $interval" is 
+added to t_client.sh.in and $interval be sourced from t_client.rc, where 
+it can be configured for each slave uniquely. (default=25)
+
+I am still wrestling with git but I could try to make this change 
+myself, if it gets a thumbs up.  As it is such a low priority (effects 
+only me) it would seem like a suitable candidate for me to try.
+Otherwise, if anybody prefers to apply this for me, I would be most 
+grateful :-) (if it is acceptable)
+
+Thanks
+
