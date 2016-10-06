@@ -1,12 +1,16 @@
+Date: Thu, 6 Oct 2016 19:01:43 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20161006170142.GD78279@...1296...>
 References: <784d3a54-24a9-dc57-b1f3-a8010d7e99db@...277...>
 	<20161006121736.GB78279@...1296...>
 	<50515770-ae2b-ee70-9ada-452f69cce800@...1227...>
 	<a24673c2-2aca-7bcb-6826-23335bf5a557@...277...>
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <b202ba08-7707-41af-58bf-f71a73c5fa52@...515...>
-Date: Thu, 6 Oct 2016 18:59:01 +0300
+	<6ccb18ab-8434-6433-8f21-aabc4459955e@...277...>
 MIME-Version: 1.0
-In-Reply-To: <a24673c2-2aca-7bcb-6826-23335bf5a557@...277...>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="vYN7BrMefepn8YqN"
+Content-Disposition: inline
+In-Reply-To: <6ccb18ab-8434-6433-8f21-aabc4459955e@...277...>
 Subject: Re: [Openvpn-devel] Slight change to buildbot t_client.sh.in &
  t_client.rc
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -17,108 +21,45 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-Content-Transfer-Encoding: quoted-printable
-To: debbie10t <debbie10t@...277...>, Arne Schwabe <arne@...1227...>, Gert Doering <gert@...1296...>
+To: debbie10t <debbie10t@...277...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Il 06/10/2016 16:10, debbie10t ha scritto:
->
->
-> On 06/10/16 13:25, Arne Schwabe wrote:
->>
->>
->> Am 06.10.16 um 14:17 schrieb Gert Doering:
->>> Hi,
->>>
->>> On Thu, Oct 06, 2016 at 01:02:57PM +0100, debbie10t wrote:
->>>> -R
->>>> Instead of using all-zeros as the packet data, generate random bytes.
->>>> Use to defeat, e.g., link data compression
->>> -R is unlikely to have an effect here, as test 6 is run without
->>> compression anyway (to the contrary, it would *fail* your tests that
->>> succeed today due to compression :-) )
->>>
->>>
->> You just giving a good point to add -R anyway!
->>
->> Arne
->>
->
-> Turns out -R is not currently supported by CentOS7:
-> $ fping -v
-> fping: Version 3.10
-> fping: comments to david@...2173...
->
-> $ fping -R -b 3000 -c 10 -p 250 10.194.6.1 10.194.0.1
-> fping: invalid option -- 'R'
->
-> Arch-linux:
-> $ fping -v
-> fping: Version 3.13
->
-> So I guess it is not worth over complicating t_client for that.
->
->
-> =3D=3D=3D
->
-> However, -i appears to be commonly supported and this is the effect for m=
-e:
->
-> ---
->
-> [root@...2174... t_client-arch-hyv-live-64-20161004-210205]# fping
-> -b 3000 -c 10 -p 250 10.194.6.1 10.194.0.1
-> 10.194.6.1 : [0], 3028 bytes, 551 ms (551 avg, 66% loss)
->
-> 10.194.6.1 : xmt/rcv/%loss =3D 10/1/90%, min/avg/max =3D 551/551/551
-> 10.194.0.1 : xmt/rcv/%loss =3D 10/0/100%
->
-> ---
->
-> [root@...2174... t_client-arch-hyv-live-64-20161004-210205]# fping
-> -i 1000 -b 3000 -c 10 -p 250 10.194.6.1 10.194.0.1
-> 10.194.6.1 : [0], 3028 bytes, 550 ms (550 avg, 0% loss)
-> 10.194.0.1 : [0], 3028 bytes, 552 ms (552 avg, 0% loss)
-> 10.194.6.1 : [1], 3028 bytes, 550 ms (550 avg, 0% loss)
-> 10.194.0.1 : [1], 3028 bytes, 552 ms (552 avg, 0% loss)
-> 10.194.6.1 : [2], 3028 bytes, 549 ms (550 avg, 0% loss)
-> 10.194.0.1 : [2], 3028 bytes, 552 ms (552 avg, 0% loss)
-> 10.194.6.1 : [3], 3028 bytes, 549 ms (550 avg, 0% loss)
-> 10.194.0.1 : [3], 3028 bytes, 551 ms (552 avg, 0% loss)
-> 10.194.6.1 : [4], 3028 bytes, 553 ms (550 avg, 0% loss)
-> 10.194.0.1 : [4], 3028 bytes, 573 ms (556 avg, 0% loss)
-> 10.194.6.1 : [5], 3028 bytes, 552 ms (551 avg, 0% loss)
-> 10.194.0.1 : [5], 3028 bytes, 550 ms (555 avg, 0% loss)
-> 10.194.6.1 : [6], 3028 bytes, 552 ms (551 avg, 0% loss)
-> 10.194.0.1 : [6], 3028 bytes, 558 ms (555 avg, 0% loss)
-> 10.194.6.1 : [7], 3028 bytes, 551 ms (551 avg, 0% loss)
-> 10.194.0.1 : [7], 3028 bytes, 548 ms (554 avg, 0% loss)
-> 10.194.6.1 : [8], 3028 bytes, 555 ms (551 avg, 0% loss)
-> 10.194.0.1 : [8], 3028 bytes, 557 ms (555 avg, 0% loss)
-> 10.194.6.1 : [9], 3028 bytes, 563 ms (553 avg, 0% loss)
-> 10.194.0.1 : [9], 3028 bytes, 570 ms (556 avg, 0% loss)
->
-> 10.194.6.1 : xmt/rcv/%loss =3D 10/10/0%, min/avg/max =3D 549/553/563
-> 10.194.0.1 : xmt/rcv/%loss =3D 10/10/0%, min/avg/max =3D 548/556/573
->
-> ---
->
-> So, if you want the fping's to work adding configurable "-i $interval"
-> to t_client.sh.in/t_client.rc looks like a simple enough solution.
->
-> Thanks
+--vYN7BrMefepn8YqN
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
 Hi,
 
-We could also have a more generic FPING_EXTRA_ARGS parameter in=20
-t_client.rc. Another option would be to create local shell aliases with=20
-"-i <interval>" already set for fping/fping6, but that gets messy quickly.
+On Thu, Oct 06, 2016 at 04:47:21PM +0100, debbie10t wrote:
+> As I am on possibly the cheapest internet in the UK and "-i 1000"
+> solves the problem, i expect simply including say "-i 2000" in
+> t_client.sh.in will be sufficient for just about anywhere, unless
+> you try to run a buildslave in the jungles of Borneo !
 
+To repeat this: *no*.  We're not including -i 2000 by default in the
+script, because that will slow down things for all testers (and t_client
+takes enough time as it is, I run it interactively often enough).
+
+gert
 --=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-irc freenode net: mattock
+--vYN7BrMefepn8YqN
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQCVAwUBV/aDdqkuBuNlUUl1AQI3WQP+ML4qNESo8HChh86ua3BP3TvZftXWbGER
+RTLLFHDChbrJJeZzGG5Bp32sm2+BFer4kdBAhT2no+RApj0bFUbnCcnNkhGGmWS7
+ojR/aXPLtIGLOLYzRyeL4Qm3iOcHrDQJA+QdyikePRbGSwKBH9FKJ54aDimx6Dkb
+QLfsI79dqvM=
+=rOQF
+-----END PGP SIGNATURE-----
+
+--vYN7BrMefepn8YqN--
 
