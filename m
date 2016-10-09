@@ -1,9 +1,13 @@
+Date: Sun, 9 Oct 2016 17:06:59 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20161009150659.GP78279@...1296...>
+References: <1466784101-20655-1-git-send-email-heiko.hund@...1489...>
 MIME-Version: 1.0
-From: Selva Nair <selva.nair@...277...>
-Date: Sun, 9 Oct 2016 11:02:35 -0400
-Message-ID: <CAKuzo_i77hGdm3at0EnnmpRZiyT9Vt_8=bUqQfGwiPAHOpqQ+w@...278...>
-Content-Type: multipart/alternative; boundary=001a1141b3202ff2e6053e6ff05a
-Subject: [Openvpn-devel] strtok on Windows
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="gXLf3Z1A6KOgPzv4"
+Content-Disposition: inline
+In-Reply-To: <1466784101-20655-1-git-send-email-heiko.hund@...1489...>
+Subject: Re: [Openvpn-devel] [PATCH] Windows: do_ifconfig() after open_tun()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,51 +16,77 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Heiko Hund <heiko.hund@...1489...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---001a1141b3202ff2e6053e6ff05a
-Content-Type: text/plain; charset=UTF-8
+--gXLf3Z1A6KOgPzv4
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
 Hi,
 
-As per MSDN, strtok on Windows is thread-safe --- uses thread-local static
-for the internal state (though not reentrant). Anyone knows whether this is
-true even when mingw is used --- does it use strtok from Microsoft's run
-time or some internal implementation?
+On Fri, Jun 24, 2016 at 06:01:41PM +0200, Heiko Hund wrote:
+> This patch changes the order to IFCONFIG_AFTER_TUN_OPEN, moves some
+> initialization code to init_tun, where it belongs, and removes duplicate
+> code that is now no longer needed.
 
-I have patch for the GUI that uses strtok_r which is not natively available
-on Windows. Just realized some older versions of mingw doesn't have an
-implementation of strtok_r. For my use-case a thread-safe strtok will work
-as reentrancy is not required.
+Plus "it tries to make code look nicer and breaks it"...
 
-Thanks,
+> @@ -1366,25 +1366,6 @@ do_ifconfig (struct tuntap *tt,
+>=20=20
+>      if ( do_ipv6 )
+>        {
+> -	char * saved_actual;
+> -	char iface[64];
+> -	DWORD idx;
+> -
+> -	if (!strcmp (actual, "NULL"))
+> -	  msg (M_FATAL, "Error: When using --tun-ipv6, if you have more than on=
+e TAP-Windows adapter, you must also specify --dev-node");
+> -
+> -	idx =3D get_adapter_index_flexible(actual);
+> -	openvpn_snprintf(iface, sizeof(iface), "interface=3D%lu", idx);
+> -
 
-Selva
+The reason why "interface=3D%lu" is snprintf()'ed into "iface" is that...
 
---001a1141b3202ff2e6053e6ff05a
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+> @@ -1393,17 +1374,16 @@ do_ifconfig (struct tuntap *tt,
+>  	  {
+>  	    /* example: netsh interface ipv6 set address interface=3D42 2001:60=
+8:8003::d store=3Dactive */
+>  	    argv_printf (&argv,
+> -			 "%s%sc interface ipv6 set address %s %s store=3Dactive",
+> +			 "%s%sc interface ipv6 set address interface=3D%lu %s store=3Dactive",
 
-<div dir=3D"ltr"><div>Hi,<br><br>As per <span class=3D"" style=3D"" id=3D":=
-1r7.1" tabindex=3D"-1">MSDN</span>, <span class=3D"" style=3D"" id=3D":1r7.=
-2" tabindex=3D"-1">strtok</span> on Windows is thread-safe --- uses thread-=
-local static for the internal state (though not <span class=3D"" style=3D""=
- id=3D":1r7.3" tabindex=3D"-1">reentrant</span>). Anyone knows whether this=
- is true even when <span class=3D"" style=3D"" id=3D":1r7.4" tabindex=3D"-1=
-">mingw</span> is used --- does it use <span class=3D"" style=3D"" id=3D":1=
-r7.5" tabindex=3D"-1">strtok</span> from Microsoft&#39;s run time or some i=
-nternal implementation?<br><br></div><div>I have patch for the GUI that use=
-s <span class=3D"" style=3D"" id=3D":1r7.6" tabindex=3D"-1">strtok</span>_r=
- which is not <span class=3D"" style=3D"" id=3D":1r7.7" tabindex=3D"-1">nat=
-ively</span> available on Windows. Just realized some older versions of <sp=
-an class=3D"" style=3D"" id=3D":1r7.8" tabindex=3D"-1">mingw</span> doesn&#=
-39;t have an implementation of <span class=3D"" style=3D"" id=3D":1r7.9" ta=
-bindex=3D"-1">strtok</span>_r. For my use-case a thread-safe <span class=3D=
-"" style=3D"" id=3D":1r7.10" tabindex=3D"-1">strtok</span> will work as <sp=
-an class=3D"" style=3D"" id=3D":1r7.11" tabindex=3D"-1">reentrancy</span> i=
-s not required.<br></div><div><br></div><div>Thanks,<br><br></div><div><spa=
-n class=3D"" style=3D"" id=3D":1r7.12" tabindex=3D"-1">Selva</span><br></di=
-v></div>
+... argv_printf() does not understand "%lu", thus ignores it, finds "%s"
+as the next argument, and blows up trying to string-copy "tt->adapter_index=
+".
 
---001a1141b3202ff2e6053e6ff05a--
+When doing massive changes, please do not "optimize" at the same time...
+
+
+Running more tests with that hunk reverted next...
+
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--gXLf3Z1A6KOgPzv4
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQCVAwUBV/pdEqkuBuNlUUl1AQL45wP6A07pWAu6WDZGMH7o4G1X/rHhbvB4TbX+
+D+RoV/e3xSUubjNaINKYYjhF7g6kJMEhlDzXFgY83/4CjS6LXmeKylENWQeC8xoN
+LV8QiC1GqfdMU02kDf7oHdQDD6pJXhSr5pqoZ7HhDWv3rKEC4Sb4UiWTgCFskdTj
+MofSBc8cQSg=
+=eSI1
+-----END PGP SIGNATURE-----
+
+--gXLf3Z1A6KOgPzv4--
 
