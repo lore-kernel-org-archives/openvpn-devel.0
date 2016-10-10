@@ -1,9 +1,9 @@
-Date: Mon, 10 Oct 2016 10:55:07 +0200 (CEST)
-Message-Id: <201610100855.u9A8t7ik006390@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <1475613736-1529-1-git-send-email-lstipakov@...277...>
-References: <1475613736-1529-1-git-send-email-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix compilation in pedantic mode
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <17b078b3-b68c-8bc0-b258-de59c17f6ae0@...515...>
+Date: Mon, 10 Oct 2016 12:17:42 +0300
+MIME-Version: 1.0
+Subject: [Openvpn-devel] New SHA1-signed Windows XP installers ready for
+	testing
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,35 +12,27 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Lev Stipakov <lstipakov@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="iso-8859-15"; format=flowed
+Content-Transfer-Encoding: quoted-printable
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-ACK.  I've decided to leave the whitespace changes as they were in your
-patch ("git show -w" will confirm only whitespace and comments have been
-changed), and changed the multiline comment to "leading *" style, as
-discussed previously.
+Hi,
 
-Your patch has been applied to the release/2.3 branch.
+New Windows XP installers signed with a new SHA1 code-signing=20
+certificate are now available:
 
-commit d72c3835e20593091d4d2c69466329f994b69ae6
-Author: Lev Stipakov
-Date:   Tue Oct 4 23:42:16 2016 +0300
+<https://swupdate.openvpn.org/community/releases/openvpn-install-2.3.12-I00=
+2-i686.exe>
+<https://swupdate.openvpn.org/community/releases/openvpn-install-2.3.12-I00=
+2-x86_64.exe>
 
-     Fix compilation in pedantic mode
+Could someone verify that Windows XP can recognize the SHA1 signature=20
+correctly?
 
-     Signed-off-by: Lev Stipakov <lstipakov@...277...>
-     Acked-by: Steffan Karger <steffan.karger@...1435...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1475613736-1529-1-git-send-email-lstipakov@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg12600.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
 
-
---
-kind regards,
-
-Gert Doering
-
+irc freenode net: mattock
 
