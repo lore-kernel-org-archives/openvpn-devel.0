@@ -1,10 +1,9 @@
-Date: Mon, 10 Oct 2016 10:38:21 +0200 (CEST)
-Message-Id: <201610100838.u9A8cLJD006065@...2054...>
+Date: Mon, 10 Oct 2016 10:55:07 +0200 (CEST)
+Message-Id: <201610100855.u9A8t7ik006390@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1475612403-1266-1-git-send-email-lstipakov@...277...>
-References: <1475612403-1266-1-git-send-email-lstipakov@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Exclude peer-id from pulled
-	options digest
+In-Reply-To: <1475613736-1529-1-git-send-email-lstipakov@...277...>
+References: <1475613736-1529-1-git-send-email-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix compilation in pedantic mode
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,17 +17,24 @@ Content-Transfer-Encoding: 8bit
 To: Lev Stipakov <lstipakov@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master branch.
+ACK.  I've decided to leave the whitespace changes as they were in your
+patch ("git show -w" will confirm only whitespace and comments have been
+changed), and changed the multiline comment to "leading *" style, as
+discussed previously.
 
-commit 3cf51f613c4d0ac0982826cd2e27e1f34bcd1a83
+Your patch has been applied to the release/2.3 branch.
+
+commit d72c3835e20593091d4d2c69466329f994b69ae6
 Author: Lev Stipakov
-Date:   Tue Oct 4 23:20:03 2016 +0300
+Date:   Tue Oct 4 23:42:16 2016 +0300
 
-     Exclude peer-id from pulled options digest
+     Fix compilation in pedantic mode
 
+     Signed-off-by: Lev Stipakov <lstipakov@...277...>
      Acked-by: Steffan Karger <steffan.karger@...1435...>
-     Message-Id: <1475612403-1266-1-git-send-email-lstipakov@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg12599.html
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1475613736-1529-1-git-send-email-lstipakov@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg12600.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
