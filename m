@@ -1,10 +1,10 @@
-Date: Mon, 10 Oct 2016 10:21:17 +0200 (CEST)
-Message-Id: <201610100821.u9A8LHDo004915@...2054...>
+Date: Mon, 10 Oct 2016 10:38:21 +0200 (CEST)
+Message-Id: <201610100838.u9A8cLJD006065@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20161010073931.54469-1-gert@...1296...>
-References: <20161010073931.54469-1-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Enable -D_SVR4_2 for
-	compilation on Solaris
+In-Reply-To: <1475612403-1266-1-git-send-email-lstipakov@...277...>
+References: <1475612403-1266-1-git-send-email-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Exclude peer-id from pulled
+	options digest
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,21 +15,20 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
+To: Lev Stipakov <lstipakov@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
 Your patch has been applied to the master branch.
 
-commit 6eaa70e80aea7dfd1b3114fcb369a8f72c19ceee
-Author: Gert Doering
-Date:   Mon Oct 10 09:39:31 2016 +0200
+commit 3cf51f613c4d0ac0982826cd2e27e1f34bcd1a83
+Author: Lev Stipakov
+Date:   Tue Oct 4 23:20:03 2016 +0300
 
-     Enable -D_SVR4_2 for compilation on Solaris
+     Exclude peer-id from pulled options digest
 
-     Signed-off-by: Gert Doering <gert@...1296...>
-     Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <20161010073931.54469-1-gert@...1296...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg12634.html
+     Acked-by: Steffan Karger <steffan.karger@...1435...>
+     Message-Id: <1475612403-1266-1-git-send-email-lstipakov@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg12599.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
