@@ -1,12 +1,11 @@
-References: <1466784101-20655-1-git-send-email-heiko.hund@...1489...>
-	<20161009150659.GP78279@...1296...>
-	<20161009152550.GQ78279@...1296...>
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <4d267ceb-f72e-b0e5-477b-2d408f4d71de@...515...>
-Date: Mon, 10 Oct 2016 16:42:05 +0300
 MIME-Version: 1.0
-In-Reply-To: <20161009152550.GQ78279@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH] Windows: do_ifconfig() after open_tun()
+In-Reply-To: <f315ec02-c70b-0793-f29f-4fd03794c4eb@...515...>
+References: <f315ec02-c70b-0793-f29f-4fd03794c4eb@...515...>
+From: "Jonathan K. Bullard" <jkbullard@...277...>
+Date: Mon, 10 Oct 2016 10:15:39 -0400
+Message-ID: <CAEsd45Q7V63LW3p=ORja+-S6CWM3_2cZFbXDg56vHB=YnJA1uw@...278...>
+Subject: Re: [Openvpn-devel] Topics for today's (Monday,
+ 10th Oct 2016) community meeting
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,68 +14,34 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-To: Gert Doering <gert@...1296...>, Heiko Hund <heiko.hund@...1489...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Il 09/10/2016 18:25, Gert Doering ha scritto:
-> Hi,
+On Mon, Oct 10, 2016 at 8:56 AM, Samuli Sepp=C3=A4nen <samuli@...515...> wr=
+ote:
 >
-> On Sun, Oct 09, 2016 at 05:06:59PM +0200, Gert Doering wrote:
->> Running more tests with that hunk reverted next...
->
-> With the following patch applied on top of Heiko's patch
->
-> diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-> index 4a11d10..1250547 100644
-> --- a/src/openvpn/tun.c
-> +++ b/src/openvpn/tun.c
-> @@ -1373,11 +1373,13 @@ do_ifconfig (struct tuntap *tt,
->  	else
->  	  {
->  	    /* example: netsh interface ipv6 set address interface=3D42 2001:60=
-8:8003::d store=3Dactive */
-> +	    char iface[64];
-> +	    openvpn_snprintf(iface, sizeof(iface), "interface=3D%lu", tt->adapt=
-er_index );
->  	    argv_printf (&argv,
-> -			 "%s%sc interface ipv6 set address interface=3D%lu %s store=3Dactive",
-> +			 "%s%sc interface ipv6 set address %s %s store=3Dactive",
->  			 get_win_sys_path(),
->  			 NETSH_PATH_SUFFIX,
-> -			 tt->adapter_index,
-> +			 iface,
->  			 ifconfig_ipv6_local );
->  	    netsh_command (&argv, 4, M_FATAL);
->  	  }
->
->
-> ... the resulting binary now actually works :-) - tested on win7, without=
-(!)
-> iservice (because Heiko already tested that), testing all the variants
-> of "--ip-win32".  Only a single tap adapter in the system, but will test
-> with 2-3 taps next (and trying to run multiple instances).
->
-> I've done a "v2" of Heiko's patch with that change included, which I'll
-> append below.  Samuli, could you build us a windows installer with master
-> plus that patch, for "windows early alpha testing"?  If that change
-> works for people, we are very close to 2.4_alpha1...
->
-> gert
->
+> We're going to have an IRC meeting today starting at 20:00 CEST (18:00
+> UTC) on #openvpn-meeting <at> irc.freenode.net. You do not have to be
+> logged in to Freenode to join the channel.
 
-Installers with the attached patch:
+I can't attend the meeting, so here is a simple (maybe stupid, too!) questi=
+on:
 
-<http://build.openvpn.net/downloads/temp/openvpn-install-2.3_git-do-ifconfi=
-g-after-tun-v2-I601-i686.exe>
-<http://build.openvpn.net/downloads/temp/openvpn-install-2.3_git-do-ifconfi=
-g-after-tun-v2-I601-x86_64.exe>
+Will 2.4alpha1 come directly from the master branch?
 
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
+Tunnelblick betas include a  copy of OpenVPN built from the GitHub
+master branch (along with a 2.3 copy with 2.3.x), so it would be nice
+to know that it includes something close to 2.4alpha1. Tunnelblick
+3.6.9beta1, for example, includes a copy of OpenVPN built from the
+GitHub master branch as of bae1ad7 [1]. The latest beta includes
+LibreSSL and OpenSSL versions of each OpenVPN, too.
 
-irc freenode net: mattock
+Best regards,
+
+Jon Bullard
+
+[1] https://github.com/OpenVPN/openvpn/commit/bae1ad7005fd9a1fadeed56370a9a=
+c5422a33fee
 
