@@ -1,11 +1,9 @@
-References: <17b078b3-b68c-8bc0-b258-de59c17f6ae0@...515...>
-From: debbie10t <debbie10t@...277...>
-Message-ID: <76e69a19-2328-d2ac-cda4-7bf8928264e6@...277...>
-Date: Mon, 10 Oct 2016 12:37:32 +0100
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <f315ec02-c70b-0793-f29f-4fd03794c4eb@...515...>
+Date: Mon, 10 Oct 2016 15:56:23 +0300
 MIME-Version: 1.0
-In-Reply-To: <17b078b3-b68c-8bc0-b258-de59c17f6ae0@...515...>
-Subject: Re: [Openvpn-devel] New SHA1-signed Windows XP installers ready for
- testing
+Subject: [Openvpn-devel] Topics for today's (Monday,
+	10th Oct 2016) community meeting
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,27 +12,32 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-15"; format="flowed"
+Content-Type: text/plain; charset="windows-1252"; format=flowed
 Content-Transfer-Encoding: quoted-printable
 To: openvpn-devel@lists.sourceforge.net
 
+Hi,
 
+We're going to have an IRC meeting today starting at 20:00 CEST (18:00=20
+UTC) on #openvpn-meeting <at> irc.freenode.net. You do not have to be=20
+logged in to Freenode to join the channel.
 
-On 10/10/16 10:17, Samuli Sepp=E4nen wrote:
-> Hi,
->
-> New Windows XP installers signed with a new SHA1 code-signing
-> certificate are now available:
->
-> <https://swupdate.openvpn.org/community/releases/openvpn-install-2.3.12-I=
-002-i686.exe>
-> <https://swupdate.openvpn.org/community/releases/openvpn-install-2.3.12-I=
-002-x86_64.exe>
->
-> Could someone verify that Windows XP can recognize the SHA1 signature
-> correctly?
->
+Current topic list along with basic information is here:
 
-This worked completely normally on WXP-Pro-SP3 32bit VM.
-(I do not have access to 64bit WXP)
+<https://community.openvpn.net/openvpn/wiki/Topics-2016-10-10>
+
+If you have any other things you'd like to bring up, respond to this=20
+mail, send me mail privately or add them to the list yourself.
+
+In case you can't attend the meeting, please feel free to make comments=20
+on the topics by responding to this email or to the summary email sent=20
+after the meeting. Whenever possible, we'll also respond to existing,=20
+related email threads.
+
+--
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
 
