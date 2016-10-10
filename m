@@ -1,11 +1,10 @@
-References: <20161010073931.54469-1-gert@...1296...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <4d6e2fff-9d0a-8d78-81ab-3e2438d5627f@...1227...>
-Date: Mon, 10 Oct 2016 10:02:58 +0200
-MIME-Version: 1.0
-In-Reply-To: <20161010073931.54469-1-gert@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH] Enable -D_SVR4_2 for compilation on
- Solaris
+Date: Mon, 10 Oct 2016 10:19:17 +0200 (CEST)
+Message-Id: <201610100819.u9A8JHPI004813@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <1475610786-25781-1-git-send-email-lstipakov@...277...>
+References: <1475610786-25781-1-git-send-email-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Exclude peer-id from pulled
+	options digest
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,37 +13,28 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Lev Stipakov <lstipakov@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-I cannot test Solaris but the code looks good enough, so ACK
+Your patch has been applied to the release/2.3 branch.
 
-Arne
-Am 10.10.16 um 09:39 schrieb Gert Doering:
-> Solaris' header files to not make necessary macros (like CMSG_SPACE)
-> available unless told "this is the API level we want" - thus, do so.
->
-> This fixes --multihome on OpenSolaris 11 (at least).
->
-> trac #750
->
-> Signed-off-by: Gert Doering <gert@...1296...>
-> ---
->  configure.ac |    1 +
->  1 files changed, 1 insertions(+), 0 deletions(-)
->
-> diff --git a/configure.ac b/configure.ac
-> index a03abba..24b2e46 100644
-> --- a/configure.ac
-> +++ b/configure.ac
-> @@ -318,6 +318,7 @@ case "$host" in
->  	*-*-solaris*)
->  		AC_DEFINE([TARGET_SOLARIS], [1], [Are we running on Solaris?])
->  		AC_DEFINE_UNQUOTED([TARGET_PREFIX], ["S"], [Target prefix])
-> +		CPPFLAGS="$CPPFLAGS -D_XPG4_2"
->  		;;
->  	*-*-openbsd*)
->  		AC_DEFINE([TARGET_OPENBSD], [1], [Are we running on OpenBSD?])
+commit 84022030dc2af8606e6a11c3dca1780419e7a534
+Author: Lev Stipakov
+Date:   Tue Oct 4 22:53:06 2016 +0300
+
+     Exclude peer-id from pulled options digest
+
+     Acked-by: Steffan Karger <steffan.karger@...1435...>
+     Message-Id: <1475610786-25781-1-git-send-email-lstipakov@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg12598.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
