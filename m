@@ -1,10 +1,10 @@
 From: David Sommerseth <davids@...515...>
-Date: Tue, 11 Oct 2016 12:27:53 +0200
-Message-Id: <1476181673-23792-1-git-send-email-davids@...515...>
-In-Reply-To: <1472233732-27074-1-git-send-email-davids@...515...>
-References: <1472233732-27074-1-git-send-email-davids@...515...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Rework the user input interface
-	to make it more modular
+Date: Tue, 11 Oct 2016 12:28:15 +0200
+Message-Id: <1476181695-23988-1-git-send-email-davids@...515...>
+In-Reply-To: <1470999445-4288-1-git-send-email-davids@...515...>
+References: <1470999445-4288-1-git-send-email-davids@...515...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Re-implement the systemd
+	support using the new query user API
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -24,16 +24,16 @@ Hash: SHA1
 
 Your patch has been applied to the master branch.
 
-commit 430ce8bd03b23717ec42a8a34aa66e804ca97287
+commit 3280d8c8f3583d03fed923837447ef45c8f83d52
 Author: David Sommerseth
-Date:   Fri Aug 26 19:48:52 2016 +0200
+Date:   Fri Aug 12 12:57:25 2016 +0200
 
-     Rework the user input interface to make it more modular
+     Re-implement the systemd support using the new query user API
 
      Signed-off-by: David Sommerseth <davids@...515...>
      Acked-by: Selva Nair <selva.nair@...277...>
-     Message-Id: 1472233732-27074-1-git-send-email-davids@...515...
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg00137.html
+     Message-Id: 1470999445-4288-1-git-send-email-davids@...515...
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg12424.html
 
 
 - --
@@ -44,18 +44,18 @@ David Sommerseth
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBAgAGBQJX/L6mAAoJEIbPlEyWcf3y7C8P/ApkbdUBClSilzQ3csFpF0lL
-2na8uN7HCYIYb9Baghb5raYSqkLu1+11ScSWI/7kcYmCGECpLVgd7PZbnjm+zHxU
-h7E00CT3GsSdYx1CBLhFBARBv8XY33o4Sxb09VqhkaXjMw8/Fv0CvAcA9JxtfxGw
-oB/FW+Mdg9KC2pT+gBpO9C3XyBfetKaW8ri5Ncwjj++H7LL3Gf/omVj9tgZ7E3ek
-icP0VN/p6X3dxiAAVSNMv4n4wzJ0ChaPV+iANFpVNiyNEAQAjh+TNXeS/ZK+rgo8
-hT8RVgbAdCJV5f0Fc0tH839wPnmmvsSxgb+XDBJg+BoZkQsYJwWTmxRXEOTYFXn/
-UyO9KDkXPN5/Puhwa246v2dWed1k5/8Uv5RTCBH51AsYJp/2VJOSo21EjDVtrAwd
-f1Xam01SJGgA/bt+GRH98vmWM3aAeQ7SUJfKQgb9/M0M5W4jfrp/9ov5ePRNTL/j
-FSMGxVFxrd6WvepCTfmjLTOLGFcP3wusG/uASpHZ6X0JZpzyEm1GOqPXEDTQjWnN
-0nWQwmdriMJx98WVtk6iG4CPXzGHYGGNxm76UdT85Cat1VFlEQ8+5hu39pQ3p/tg
-snPyiOvFxZlBueDySghKiND5wBntA/IB9n6ZHH24YityMyu0kTfm0l4Q/nfT/Npj
-GwQYUd13LQSlHVzzSO7D
-=muzV
+iQIbBAEBAgAGBQJX/L68AAoJEIbPlEyWcf3y0AUP9A5pJizU5OX08SIejHGavVEa
+sujLx8k09iNsxmjybqb8PeeUQPXhQ0G4QgiVPrAaU0clfgmoHGgpocFCPSFxcQc2
+02XoC6/pFX5pE7QZS4WqUqEVtnCBh10z7hIg1+jUsvwWtXYHZ+sjvn3xg0Oc12hs
+bItJZpIiNU73Tbfgy71GQlybbmUzi9uoYHfeWHAEpnMDLjDUvZXSp0TKm83WIn3h
+b5PvVMg0SQWuGVyV3xevYOwP6RsMIphY/jkGcNlA8gxkmewRdWVsbgxdwrJg0zCn
+WpB4HRySUiQiWeyIqcS8ZmuHmzkHog7Vyi3tJRyHJBGaSR9IsCoTwa+o8TFfYUKs
+tJ2eilMR4Vy97JgIY1FI7GLE8kF4/YdZc+qJu1Hg7VoHxbndkER4B9v1vA0zAFjl
+iHQq4WJ4A6WwBW1JLrqSWw8jSeRouqExWp7QXAf88pRmbmDBVP07x1G2VdE+SkE/
+ch38QN6mk/NwIzvUmCyyrqeKcjT4cpt6wA5uCAEk1ywHJTX/NFqovr78rXx/n8Er
+N/PM7ZC8pvZtYqQBopajRgvUHJzQxnJ3IExhXwoO2AKR0GH1V5ISmtjvaV5faoEG
+5JBPx4x3eyV17Id8w9cjWBAD1XB+n2wLmIJbPClo0CKLkgF3lUUb7X+dCeLL0C6R
+O/R5HpmJZBo6suhHbVw=
+=GdAC
 -----END PGP SIGNATURE-----
 
