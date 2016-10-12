@@ -1,10 +1,12 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Wed, 12 Oct 2016 11:13:11 +0200
-Message-Id: <1476263591-12401-1-git-send-email-arne@...1227...>
-In-Reply-To: <20160916161354.GM78279@...1296...>
-References: <20160916161354.GM78279@...1296...>
-Subject: [Openvpn-devel] [PATCH v4] Remove tun-ipv6 Option. Instead assume
-	that IPv6 is always supported.
+References: <3572b3e5-8830-3418-87d7-725d611bb04a@...515...>
+From: Ton van Vliet <epposan@...277...>
+Message-ID: <948fd0bc-5327-a593-7590-991bf9b3d8e9@...277...>
+Date: Wed, 12 Oct 2016 12:30:22 +0200
+MIME-Version: 1.0
+In-Reply-To: <3572b3e5-8830-3418-87d7-725d611bb04a@...515...>
+Content-Type: multipart/mixed; boundary="------------861D014E833419FA28500E80"
+Subject: Re: [Openvpn-devel] Help testing OpenVPN 2.4-alpha1 preview
+ installers?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,596 +15,196 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This option was useful when Ipv6 tun support was non standard and was an internal/user specified flag that tracked the Ipv6 capability of the tun device.
+This is a multi-part message in MIME format.
+--------------861D014E833419FA28500E80
+Content-Type: multipart/alternative;
+	boundary="------------90C89CF3A5AAEA4AD0C4B24A"
 
-All supported OS support IPv6. Also tun-ipv6 is pushable by the remote so not putting tun-ipv6 does not forbid ipv6 addresses.
+--------------90C89CF3A5AAEA4AD0C4B24A
+Content-Type: text/plain; charset="iso-8859-15"; format="flowed"
+Content-Transfer-Encoding: quoted-printable
 
-This commit also clean up a bit of the ipv6 related tun.c. Changes for most platforms are minimal.
+On 11-10-16 12:36, Samuli Sepp=E4nen wrote:
+> However, we'd need to help with testing these preview installers:
 
-For linux a bit more cleanup is done:
-- Remove compatibility defines that were added 2008
-- Always use IFF_NO_PI for the linux tun and not only for IPv4 only tun setups (Android also always IFF_NO_PI works fine with Ipv6).
+64 bit version on Win7 Home Premium installation process without issues.
 
-This commit also remove a non ipv6 fallback for tap driver from OpenVPN 2.2-beta or earlier and only warns.
+Observed a small issue when looking at the 'Settings...' of the new GUI:
 
-Patch V2: Integrate Gert's comments
-Patch V3: Remove tun_ipv4 option. It only used for MTU discovery and there it was wrong since it should on the transport protocol if at all
-Patch V4: Completely remove support for NetBSD <= 4.0 and remove NETBSD_MULTI_AF defines
----
- Changes.rst           |   3 ++
- src/openvpn/forward.c |   2 +-
- src/openvpn/helper.c  |   2 -
- src/openvpn/init.c    |   6 ---
- src/openvpn/multi.c   |   8 ++-
- src/openvpn/openvpn.h |   5 --
- src/openvpn/options.c |  11 +---
- src/openvpn/options.h |   1 -
- src/openvpn/route.c   |  13 ++---
- src/openvpn/tun.c     | 139 +++++++-------------------------------------------
- src/openvpn/tun.h     |   2 -
- 11 files changed, 30 insertions(+), 162 deletions(-)
+1st tab: labeled 'Proxy' content in English(as expected)
+2nd tab: labeled 'Geral' content in Portuguese?
+3rd tab: labeled 'About' content in English
 
-diff --git a/Changes.rst b/Changes.rst
-index 9fcba75..2956003 100644
---- a/Changes.rst
-+++ b/Changes.rst
-@@ -135,6 +135,9 @@ User-visible Changes
-   ciphers configured in the config file.  Use --ncp-disable if you don't want
-   that.
- 
-+- ALl tun devices on all platforms are considered always IPv6 capable. The --tun-ipv6
-+  option is ignored (behaves like it is always on).
-+
- 
- Maintainer-visible changes
- --------------------------
-diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index 6c11439..b3077ed 100644
---- a/src/openvpn/forward.c
-+++ b/src/openvpn/forward.c
-@@ -391,7 +391,7 @@ check_fragment_dowork (struct context *c)
-   struct link_socket_info *lsi = get_link_socket_info (c);
- 
-   /* OS MTU Hint? */
--  if (lsi->mtu_changed && c->c2.ipv4_tun)
-+  if (lsi->mtu_changed)
-     {
-       frame_adjust_path_mtu (&c->c2.frame_fragment, c->c2.link_socket->mtu,
- 			     c->options.ce.proto);
-diff --git a/src/openvpn/helper.c b/src/openvpn/helper.c
-index 62f88ec..229523d 100644
---- a/src/openvpn/helper.c
-+++ b/src/openvpn/helper.c
-@@ -200,8 +200,6 @@ helper_client_server (struct options *o)
- 		add_in6_addr( o->server_network_ipv6, 0x1000 );
- 	o->ifconfig_ipv6_pool_netbits = o->server_netbits_ipv6;
- 
--	o->tun_ipv6 = true;
--
- 	push_option( o, "tun-ipv6", M_USAGE );
-      }
- 
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index cc8e945..73f8c6d 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -1400,9 +1400,6 @@ do_init_tun (struct context *c)
- 			   !c->options.ifconfig_nowarn,
- 			   c->c2.es);
- 
--  /* flag tunnel for IPv6 config if --tun-ipv6 is set */
--  c->c1.tuntap->ipv6 = c->options.tun_ipv6;
--
-   init_tun_post (c->c1.tuntap,
- 		 &c->c2.frame,
- 		 &c->options.tuntap_options);
-@@ -1420,9 +1417,6 @@ do_open_tun (struct context *c)
-   struct gc_arena gc = gc_new ();
-   bool ret = false;
- 
--  c->c2.ipv4_tun = (!c->options.tun_ipv6
--		    && is_dev_type (c->options.dev, c->options.dev_type, "tun"));
--
- #ifndef TARGET_ANDROID
-   if (!c->c1.tuntap)
-     {
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index 3bc6ee9..93a554d 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -1378,8 +1378,7 @@ multi_select_virtual_addr (struct multi_context *m, struct multi_instance *mi)
-        * (see below) so issue a warning if that happens - don't break the
-        * session, though, as we don't even know if this client WANTS IPv6
-        */
--      if ( mi->context.c1.tuntap->ipv6 &&
--	   mi->context.options.ifconfig_ipv6_pool_defined &&
-+      if ( mi->context.options.ifconfig_ipv6_pool_defined &&
- 	   ! mi->context.options.push_ifconfig_ipv6_defined )
- 	{
- 	  msg( M_INFO, "MULTI_sva: WARNING: if --ifconfig-push is used for IPv4, automatic IPv6 assignment from --ifconfig-ipv6-pool does not work.  Use --ifconfig-ipv6-push for IPv6 then." );
-@@ -1452,8 +1451,7 @@ multi_select_virtual_addr (struct multi_context *m, struct multi_instance *mi)
-    * way round ("dynamic IPv4, static IPv6") or "both static" makes sense
-    * -> and so it's implemented right now
-    */
--  if ( mi->context.c1.tuntap->ipv6 &&
--       mi->context.options.push_ifconfig_ipv6_defined )
-+  if ( mi->context.options.push_ifconfig_ipv6_defined )
-     {
-       mi->context.c2.push_ifconfig_ipv6_local = 
- 	    mi->context.options.push_ifconfig_ipv6_local;
-@@ -1511,7 +1509,7 @@ multi_set_virtual_addr_env (struct multi_context *m, struct multi_instance *mi)
-   setenv_del (mi->context.c2.es, "ifconfig_pool_remote_ip6");
-   setenv_del (mi->context.c2.es, "ifconfig_pool_ip6_netbits");
- 
--  if (mi->context.c1.tuntap->ipv6 && mi->context.c2.push_ifconfig_ipv6_defined)
-+  if (mi->context.c2.push_ifconfig_ipv6_defined)
-     {
-       setenv_in6_addr (mi->context.c2.es,
-                        "ifconfig_pool_remote",
-diff --git a/src/openvpn/openvpn.h b/src/openvpn/openvpn.h
-index 65a183a..5cda7b4 100644
---- a/src/openvpn/openvpn.h
-+++ b/src/openvpn/openvpn.h
-@@ -390,11 +390,6 @@ struct context_2
-   struct buffer to_tun;
-   struct buffer to_link;
- 
--  /*
--   * IPv4 TUN device?
--   */
--  bool ipv4_tun;
--
-   /* should we print R|W|r|w to console on packet transfers? */
-   bool log_rw;
- 
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index d97dc8f..ee8d351 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -1500,7 +1500,6 @@ show_settings (const struct options *o)
-   SHOW_STR (dev_node);
-   SHOW_STR (lladdr);
-   SHOW_INT (topology);
--  SHOW_BOOL (tun_ipv6);
-   SHOW_STR (ifconfig_local);
-   SHOW_STR (ifconfig_remote_netmask);
-   SHOW_BOOL (ifconfig_noexec);
-@@ -2103,10 +2102,6 @@ options_postprocess_verify_ce (const struct options *options, const struct conne
-                   options->connection_list->array[0]->remote)
-           msg (M_USAGE, "<connection> cannot be used with --mode server");
- 
--#if 0
--      if (options->tun_ipv6)
--	msg (M_USAGE, "--tun-ipv6 cannot be used with --mode server");
--#endif
-       if (options->shaper)
- 	msg (M_USAGE, "--shaper cannot be used with --mode server");
-       if (options->inetd)
-@@ -2130,9 +2125,6 @@ options_postprocess_verify_ce (const struct options *options, const struct conne
- 	msg (M_USAGE, "--ifconfig-pool-persist must be used with --ifconfig-pool");
-       if (options->ifconfig_ipv6_pool_defined && !options->ifconfig_ipv6_local )
- 	msg (M_USAGE, "--ifconfig-ipv6-pool needs --ifconfig-ipv6");
--      if (options->ifconfig_ipv6_local && !options->tun_ipv6 )
--	msg (M_INFO, "Warning: --ifconfig-ipv6 without --tun-ipv6 will not do IPv6");
--
-       if (options->auth_user_pass_file)
- 	msg (M_USAGE, "--auth-user-pass cannot be used with --mode server (it should be used on the client side only)");
-       if (options->ccd_exclusive && !options->client_config_dir)
-@@ -3076,7 +3068,7 @@ options_string (const struct options *o,
-   /* send tun_ipv6 only in peer2peer mode - in client/server mode, it
-    * is usually pushed by the server, triggering a non-helpful warning
-    */
--  if (o->tun_ipv6 && o->mode == MODE_POINT_TO_POINT && !PULL_DEFINED(o))
-+  if (o->ifconfig_ipv6_local && o->mode == MODE_POINT_TO_POINT && !PULL_DEFINED(o))
-     buf_printf (&out, ",tun-ipv6");
- 
-   /*
-@@ -4577,7 +4569,6 @@ add_option (struct options *options,
-   else if (streq (p[0], "tun-ipv6") && !p[1])
-     {
-       VERIFY_PERMISSION (OPT_P_UP);
--      options->tun_ipv6 = true;
-     }
- #ifdef ENABLE_IPROUTE
-   else if (streq (p[0], "iproute") && p[1] && !p[2])
-diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-index 9b7b57c..b7453a0 100644
---- a/src/openvpn/options.h
-+++ b/src/openvpn/options.h
-@@ -251,7 +251,6 @@ struct options
-   int ping_send_timeout;        /* Send a TCP/UDP ping to remote every n seconds */
-   int ping_rec_timeout;         /* Expect a TCP/UDP ping from remote at least once every n seconds */
-   bool ping_timer_remote;       /* Run ping timer only if we have a remote address */
--  bool tun_ipv6;                /* Build tun dev that supports IPv6 */
- 
- # define PING_UNDEF   0
- # define PING_EXIT    1
-diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index aace2af..8a3bbba 100644
---- a/src/openvpn/route.c
-+++ b/src/openvpn/route.c
-@@ -1729,10 +1729,10 @@ add_route_ipv6 (struct route_ipv6 *r6, const struct tuntap *tt, unsigned int fla
-     }
- #endif
- 
--  if ( !tt->ipv6 )
-+  if (!tt->did_ifconfig_ipv6_setup)
-     {
--      msg( M_INFO, "add_route_ipv6(): not adding %s/%d, no IPv6 on if %s",
--		    network, r6->netbits, device );
-+      msg( M_INFO, "add_route_ipv6(): not adding %s/%d, no IPv6 ifconfig on if %s",
-+		    network, r6->netbits, device);
-       return;
-     }
- 
-@@ -2159,13 +2159,6 @@ delete_route_ipv6 (const struct route_ipv6 *r6, const struct tuntap *tt, unsigne
-     }
- #endif
- 
--  if ( !tt->ipv6 )
--    {
--      msg( M_INFO, "delete_route_ipv6(): not deleting %s/%d, no IPv6 on if %s",
--		    network, r6->netbits, device );
--      return;
--    }
--
-   msg( M_INFO, "delete_route_ipv6(%s/%d)", network, r6->netbits );
- 
-   /* if we used a gateway on "add route", we also need to specify it on
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index b7a29f7..226ff7d 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -741,8 +741,8 @@ do_ifconfig (struct tuntap *tt,
- 
-       argv_init (&argv);
- 
--      msg( M_INFO, "do_ifconfig, tt->ipv6=%d, tt->did_ifconfig_ipv6_setup=%d",
--	           tt->ipv6, tt->did_ifconfig_ipv6_setup );
-+      msg( M_INFO, "do_ifconfig, tt->did_ifconfig_ipv6_setup=%d",
-+	            tt->did_ifconfig_ipv6_setup );
- 
-       /*
-        * We only handle TUN/TAP devices here, not --dev null devices.
-@@ -755,7 +755,7 @@ do_ifconfig (struct tuntap *tt,
-       ifconfig_local = print_in_addr_t (tt->local, 0, &gc);
-       ifconfig_remote_netmask = print_in_addr_t (tt->remote_netmask, 0, &gc);
- 
--      if ( tt->ipv6 && tt->did_ifconfig_ipv6_setup )
-+      if (tt->did_ifconfig_ipv6_setup )
-         {
- 	  ifconfig_ipv6_local = print_in6_addr (tt->local_ipv6, 0, &gc);
- 	  ifconfig_ipv6_remote = print_in6_addr (tt->remote_ipv6, 0, &gc);
-@@ -1077,13 +1077,6 @@ do_ifconfig (struct tuntap *tt,
- 
- #elif defined(TARGET_NETBSD)
- 
--/* whether or not NetBSD can do IPv6 can be seen by the availability of
-- * the TUNSIFHEAD ioctl() - see next TARGET_NETBSD block for more details
-- */
--#ifdef TUNSIFHEAD
--# define NETBSD_MULTI_AF
--#endif
--
-       if (tun)
- 	argv_printf (&argv,
- 			  "%s %s %s %s mtu %d netmask 255.255.255.255 up",
-@@ -1126,7 +1119,6 @@ do_ifconfig (struct tuntap *tt,
- 
-       if ( do_ipv6 )
- 	{
--#ifdef NETBSD_MULTI_AF
- 	  argv_printf (&argv,
- 			  "%s %s inet6 %s/%d",
- 			  IFCONFIG_PATH,
-@@ -1139,10 +1131,6 @@ do_ifconfig (struct tuntap *tt,
- 
- 	  /* and, hooray, we explicitely need to add a route... */
- 	  add_route_connected_v6_net(tt, es);
--#else
--	  msg( M_INFO, "no IPv6 support for tun interfaces on NetBSD before 4.0 (if your system is newer, recompile openvpn)" );
--	  tt->ipv6 = false;
--#endif
- 	}
-       tt->did_ifconfig = true;
- 
-@@ -1425,7 +1413,6 @@ clear_tuntap (struct tuntap *tuntap)
- #ifdef TARGET_SOLARIS
-   tuntap->ip_fd = -1;
- #endif
--  tuntap->ipv6 = false;
- }
- 
- static void
-@@ -1478,7 +1465,7 @@ write_tun_header (struct tuntap* tt, uint8_t *buf, int len)
- 
-         iph = (struct ip *) buf;
- 
--        if (tt->ipv6 && iph->ip_v == 6)
-+        if (iph->ip_v == 6)
-             type = htonl (AF_INET6);
-         else
-             type = htonl (AF_INET);
-@@ -1526,7 +1513,7 @@ open_tun_generic (const char *dev, const char *dev_type, const char *dev_node,
-   bool dynamic_opened = false;
- 
- 
--  if ( tt->ipv6 && ! ipv6_explicitly_supported )
-+  if (  ! ipv6_explicitly_supported )
-     msg (M_WARN, "NOTE: explicit support for IPv6 tun devices is not provided for this OS");
- 
-   if (tt->type == DEV_TYPE_NULL)
-@@ -1710,7 +1697,6 @@ read_tun (struct tuntap* tt, uint8_t *buf, int len)
- }
- 
- #elif defined(TARGET_LINUX)
--#ifdef HAVE_LINUX_IF_TUN_H	/* New driver support */
- 
- #ifndef HAVE_LINUX_SOCKIOS_H
- #error header file linux/sockios.h required
-@@ -1751,8 +1737,7 @@ open_tun (const char *dev, const char *dev_type, const char *dev_node, struct tu
-        * Process --tun-ipv6
-        */
-       CLEAR (ifr);
--      if (!tt->ipv6)
--	ifr.ifr_flags = IFF_NO_PI;
-+      ifr.ifr_flags = IFF_NO_PI;
- 
- #if defined(IFF_ONE_QUEUE) && defined(SIOCSIFTXQLEN)
-       ifr.ifr_flags |= IFF_ONE_QUEUE;
-@@ -1833,32 +1818,10 @@ open_tun (const char *dev, const char *dev_type, const char *dev_node, struct tu
-   ASSERT (0);
- }
- 
--#endif
--
--#else
--
--void
--open_tun (const char *dev, const char *dev_type, const char *dev_node, struct tuntap *tt)
--{
--  open_tun_generic (dev, dev_type, dev_node, false, true, tt);
--}
--
--#endif /* HAVE_LINUX_IF_TUN_H */
-+#endif /* !PENDANTIC */
- 
- #ifdef ENABLE_FEATURE_TUN_PERSIST
- 
--/*
-- * This can be removed in future
-- * when all systems will use newer
-- * linux-headers
-- */
--#ifndef TUNSETOWNER
--#define TUNSETOWNER	_IOW('T', 204, int)
--#endif
--#ifndef TUNSETGROUP
--#define TUNSETGROUP	_IOW('T', 206, int)
--#endif
--
- void
- tuncfg (const char *dev, const char *dev_type, const char *dev_node, int persist_mode, const char *username, const char *groupname, const struct tuntap_options *options)
- {
-@@ -1940,7 +1903,7 @@ close_tun (struct tuntap *tt)
- 	    argv_msg (M_INFO, &argv);
- 	    openvpn_execve_check (&argv, NULL, 0, "Linux ip addr del failed");
- 
--            if (tt->ipv6 && tt->did_ifconfig_ipv6_setup)
-+            if (tt->did_ifconfig_ipv6_setup)
-               {
-                 const char * ifconfig_ipv6_local = print_in6_addr (tt->local_ipv6, 0, &gc);
- 
-@@ -1977,53 +1940,13 @@ close_tun (struct tuntap *tt)
- int
- write_tun (struct tuntap* tt, uint8_t *buf, int len)
- {
--  if (tt->ipv6)
--    {
--      struct tun_pi pi;
--      struct iphdr *iph;
--      struct iovec vect[2];
--      int ret;
--
--      iph = (struct iphdr *)buf;
--
--      pi.flags = 0;
--
--      if(iph->version == 6)
--	pi.proto = htons(OPENVPN_ETH_P_IPV6);
--      else
--	pi.proto = htons(OPENVPN_ETH_P_IPV4);
--
--      vect[0].iov_len = sizeof(pi);
--      vect[0].iov_base = &pi;
--      vect[1].iov_len = len;
--      vect[1].iov_base = buf;
--
--      ret = writev(tt->fd, vect, 2);
--      return(ret - sizeof(pi));
--    }
--  else
--    return write (tt->fd, buf, len);
-+  return write (tt->fd, buf, len);
- }
- 
- int
- read_tun (struct tuntap* tt, uint8_t *buf, int len)
- {
--  if (tt->ipv6)
--    {
--      struct iovec vect[2];
--      struct tun_pi pi;
--      int ret;
--
--      vect[0].iov_len = sizeof(pi);
--      vect[0].iov_base = &pi;
--      vect[1].iov_len = len;
--      vect[1].iov_base = buf;
--
--      ret = readv(tt->fd, vect, 2);
--      return(ret - sizeof(pi));
--    }
--  else
--    return read (tt->fd, buf, len);
-+  return read (tt->fd, buf, len);
- }
- 
- #elif defined(TARGET_SOLARIS)
-@@ -2227,7 +2150,7 @@ solaris_close_tun (struct tuntap *tt)
-   if (tt)
-     {
-       /* IPv6 interfaces need to be 'manually' de-configured */
--      if ( tt->ipv6 && tt->did_ifconfig_ipv6_setup )
-+      if ( tt->did_ifconfig_ipv6_setup )
- 	{
- 	  struct argv argv;
- 	  argv_init (&argv);
-@@ -2435,11 +2358,7 @@ read_tun (struct tuntap *tt, uint8_t *buf, int len)
- void
- open_tun (const char *dev, const char *dev_type, const char *dev_node, struct tuntap *tt)
- {
--#ifdef NETBSD_MULTI_AF
-     open_tun_generic (dev, dev_type, dev_node, true, true, tt);
--#else
--    open_tun_generic (dev, dev_type, dev_node, false, true, tt);
--#endif
- 
-     if (tt->fd >= 0)
-       {
-@@ -2448,7 +2367,6 @@ open_tun (const char *dev, const char *dev_type, const char *dev_node, struct tu
-         i = 0;
-         ioctl (tt->fd, TUNSLMODE, &i);   /* link layer mode off */
- 
--#ifdef NETBSD_MULTI_AF
- 	if ( tt->type == DEV_TYPE_TUN )
- 	  {
- 	    i = 1;
-@@ -2457,7 +2375,6 @@ open_tun (const char *dev, const char *dev_type, const char *dev_node, struct tu
- 		msg (M_WARN | M_ERRNO, "ioctl(TUNSIFHEAD): %s", strerror(errno));
- 	      }
- 	  }
--#endif
-       }
- }
- 
-@@ -2496,8 +2413,6 @@ close_tun (struct tuntap *tt)
-     }
- }
- 
--#ifdef NETBSD_MULTI_AF
--
- static inline int
- netbsd_modify_read_write_return (int len)
- {
-@@ -2518,7 +2433,7 @@ write_tun (struct tuntap* tt, uint8_t *buf, int len)
- 
-       iph = (struct openvpn_iphdr *) buf;
- 
--      if (tt->ipv6 && OPENVPN_IPH_GET_VER(iph->version_len) == 6)
-+      if (OPENVPN_IPH_GET_VER(iph->version_len) == 6)
-         type = htonl (AF_INET6);
-       else 
-         type = htonl (AF_INET);
-@@ -2553,21 +2468,6 @@ read_tun (struct tuntap* tt, uint8_t *buf, int len)
-     return read (tt->fd, buf, len);
- }
- 
--#else	/* not NETBSD_MULTI_AF -> older code, IPv4 only */
--
--int
--write_tun (struct tuntap* tt, uint8_t *buf, int len)
--{
--    return write (tt->fd, buf, len);
--}
--
--int
--read_tun (struct tuntap* tt, uint8_t *buf, int len)
--{
--    return read (tt->fd, buf, len);
--}
--#endif	/* NETBSD_MULTI_AF */
--
- #elif defined(TARGET_FREEBSD)
- 
- static inline int
-@@ -2644,7 +2544,7 @@ write_tun (struct tuntap* tt, uint8_t *buf, int len)
- 
-       iph = (struct ip *) buf;
- 
--      if (tt->ipv6 && iph->ip_v == 6)
-+      if (iph->ip_v == 6)
-         type = htonl (AF_INET6);
-       else 
-         type = htonl (AF_INET);
-@@ -2727,7 +2627,7 @@ write_tun (struct tuntap* tt, uint8_t *buf, int len)
- 
-       iph = (struct ip *) buf;
- 
--      if (tt->ipv6 && iph->ip_v == 6)
-+      if (iph->ip_v == 6)
-         type = htonl (AF_INET6);
-       else 
-         type = htonl (AF_INET);
-@@ -2954,7 +2854,7 @@ close_tun (struct tuntap* tt)
-       struct argv argv;
-       argv_init (&argv);
- 
--      if ( tt->ipv6 && tt->did_ifconfig_ipv6_setup )
-+      if (tt->did_ifconfig_ipv6_setup )
- 	{
- 	  const char * ifconfig_ipv6_local =
- 				print_in6_addr (tt->local_ipv6, 0, &gc);
-@@ -5182,7 +5082,7 @@ open_tun (const char *dev, const char *dev_type, const char *dev_node, struct tu
- 
-   /*netcmd_semaphore_lock ();*/
- 
--  msg( M_INFO, "open_tun, tt->ipv6=%d", tt->ipv6 );
-+  msg( M_INFO, "open_tun");
- 
-   if (tt->type == DEV_TYPE_NULL)
-     {
-@@ -5308,11 +5208,10 @@ open_tun (const char *dev, const char *dev_type, const char *dev_node, struct tu
-     /* usage of numeric constants is ugly, but this is really tied to
-      * *this* version of the driver
-      */
--    if ( tt->ipv6 && tt->type == DEV_TYPE_TUN &&
-+    if (tt->type == DEV_TYPE_TUN &&
-          info[0] == 9 && info[1] < 8)
-       {
--	msg( M_INFO, "WARNING:  Tap-Win32 driver version %d.%d does not support IPv6 in TUN mode.  IPv6 will be disabled.  Upgrade to Tap-Win32 9.8 (2.2-beta3 release or later) or use TAP mode to get IPv6", (int) info[0], (int) info[1] );
--	tt->ipv6 = false;
-+	msg( M_INFO, "WARNING:  Tap-Win32 driver version %d.%d does not support IPv6 in TUN mode.  IPv6 will not work.  Upgrade to Tap-Win32 9.8 (2.2-beta3 release or later) or use TAP mode to get IPv6", (int) info[0], (int) info[1] );
-       }
- 
-     /* tap driver 9.8 (2.2.0 and 2.2.1 release) is buggy
-@@ -5653,7 +5552,7 @@ close_tun (struct tuntap *tt)
- 
-   if (tt)
-     {
--      if ( tt->ipv6 && tt->did_ifconfig_ipv6_setup )
-+      if ( tt->did_ifconfig_ipv6_setup )
-         {
-           if (tt->options.msg_channel)
-             {
-diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h
-index 4e93a3f..88431fb 100644
---- a/src/openvpn/tun.h
-+++ b/src/openvpn/tun.h
-@@ -139,8 +139,6 @@ struct tuntap
-   bool did_ifconfig_ipv6_setup;
-   bool did_ifconfig;
- 
--  bool ipv6;
--
-   bool persistent_if;		/* if existed before, keep on program end */
- 
-   struct tuntap_options options; /* options set on command line */
--- 
-2.8.4 (Apple Git-73)
+Ton.
 
+
+--------------90C89CF3A5AAEA4AD0C4B24A
+Content-Type: text/html; charset="iso-8859-15"
+Content-Transfer-Encoding: quoted-printable
+
+<html>
+  <head>
+    <meta content=3D"text/html; charset=3Diso-8859-15"
+      http-equiv=3D"Content-Type">
+  </head>
+  <body bgcolor=3D"#FFFFFF" text=3D"#000000">
+    <tt>On 11-10-16 12:36, Samuli Sepp=E4nen wrote:
+    </tt><tt><br>
+    </tt>
+    <blockquote type=3D"cite" style=3D"font-style: italic; color: #CCCCCC;"=
+><tt>However,
+        we'd need to help with testing these preview installers:
+      </tt><tt><br>
+      </tt></blockquote>
+    <tt>
+    </tt><tt><br>
+    </tt><tt>64 bit version on Win7 Home Premium installation process
+      without issues.
+    </tt><tt><br>
+    </tt><tt>
+    </tt><tt><br>
+    </tt><tt>Observed a small issue when looking at the 'Settings...' of
+      the new GUI:
+    </tt><tt><br>
+    </tt><tt>
+    </tt><tt><br>
+    </tt><tt>1st tab: labeled 'Proxy' content in English(as expected)
+    </tt><tt><br>
+    </tt><tt>2nd tab: labeled 'Geral' content in Portuguese?
+    </tt><tt><br>
+    </tt><tt>3rd tab: labeled 'About' content in English
+    </tt><tt><br>
+    </tt><tt>
+    </tt><tt><br>
+    </tt><tt>Ton.
+    </tt><tt><br>
+    </tt><br>
+  </body>
+</html>
+
+--------------90C89CF3A5AAEA4AD0C4B24A--
+
+--------------861D014E833419FA28500E80
+Content-Type: image/png;
+ name="161012-openvpn-new-gui-settings.png"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="161012-openvpn-new-gui-settings.png"
+
+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
+QP2Q97y88+X9b5+EjAisKdPa2ip/zshnY6B+yHte3vn2GciOwAIQDAILQDAILADBILAABIPA
+AhAMAgtAMAgsAMEgsAAEo+oC6+bNm2QWgDRJBskH27mVCgWWMJlFURTlV+lpJSoXWADwExFY
+AIJBYAEIBoEFIBgEFoBgEFgAgkFgAQgGgQUgGAQWgGAQWACCQWABCAaBBSAYBBaAYBBYAIJB
+YAEIBoEFIBgEFoBgEFgAgkFgAQgGgQUgGAQWgGAQWACCQWABCAaBBSAYBBaAYBBYAIJBYAEI
+BoEFIBgEFoBgEFgAgkFgAQgGgQUgGAQWgGAQWACCQWABCAaBBSAYBBaAYBBYAIJBYAEIBoEF
+IBgEFoBgEFgAgkFgAQgGgQUgGAQWgGAQWACCQWABCAaBBSAYBBaAYBBYAIJBYAEIBoEFIBgE
+FoBgEFgAgkFgAQgGgQUgGAQWgGAQWACCQWABCAaBBSAYBBaAYBBYAIJBYAEIBoEFIBgEFoBg
+EFgAgkFgAQgGgQUgGAQWgGAQWACCQWABCAaBBSAYBBaAYBBYAIJBYAEIBoEFIBgEFoBgEFgA
+gkFgAQgGgQUgGAQWgGAQWACCQWABCAaBBSAYBBaAYBBYAIJBYAEIBoEFIBgEFoBgEFgAgkFg
+AQgGgQUgGAQWgGAQWACCQWABCAaBBSAYBBaAYBBYAIJBYAEIBoEFIBgEFoBgEFgAgkFgAQgG
+gQUgGAQWgGAQWACCQWABCAaBBSAYBBaAYBBYAIJBYAEIBoEFIBgEFoBgEFgAgkFgAQgGgQUg
+GAQWgGAQWACCQWABCEYZAouiKKpi9ZMCy5wMAJVkA8hTUmABQDUgsAAEg8ACEAwCC0AwCCwA
+wSCwAASDwAIQDAILNaW9vX3x4sWP1ArZi+zI7q2IutoygYXasbK1dd26dSMjIzdrhexFdiT7
+sjtMqbctE1ioHc3NzZcvXx4fH/+xVsheZEeyL7vDlHrbMoGF2iG/UMgf0faNXytkR7Ivu8OU
+etsygYXaIe/yGzdu/FBbZEcTB1ZdbZnAQu0wT6/t1IpSAst2agWBhbpgnt7vboe35uWsxpZe
+O/Zdb0tjvied2MFyKSWw7NTs9E1b896yg2UQe2UyI7BQF+RdPj4+/m3ZvflALvfAm6bds6Ix
+17iiJ2pHTX9KecmOJg6sSW/Z30qZd+C9MpMwwZYJLNQO8/SOlln38sbG5d22o2ydm5u7VTWi
+I/I9F59SRqUElp2aTWpfZfTT1iawUBfM03ulvLokjeZutR3NjUijcXmX5FdiQlmVElh2aibm
+5m0nT+0monalpy2PBqN95mfZEfWaGHrRIouXiMBCXZB3+fXr10+X1+4n7rzzid22Y2ycnZu9
+Ub7LIfuUmv5tITuaOLAmueUC+4ozE/Qe7e7sKWoo2q+8FGZStJY7KxqYhAm2TGChdpind6i8
+di1pyM3qsB3NjahGw5JdQ0Mds8z326GUwLJTM5GbL3jPalMRmeBPM+30if4pSsOSjiKLl4bA
+Ql0wT+9gme1UD99O21E6ZuZmdqhG/oi05DH1J5VNKYFlp2aT2pcie4sGzXF/VnrEkBH7ikTS
+c7IgsFAX5F1+7dq1gbLbMDOXm7nBtDsfl2h6vDNqR83YeFnJjiYOrElvOX7LZpPyNdqpNOVo
+Yo+qrc5LTYpGTNM/K7sJtkxgoXaYp7f/dnj5PvvrTq7hsR12rH/HYw3xXi5338u2VzalBJad
+mp2+Z8vcuj+i9urvMd/OvxzRht2InuGflR2Bhbog7/KxsbFjtUV2NHFg1dWWCSzUDvP0Hqkt
+pQSWnVorCCzUBXmXX7169XBtkR1NHFh1tWUCC7Wjubn5/Pnzo6OjfbVC9iI7mvjvw6qrLRNY
+qB2tra1r164dHh6WP6Jrg+xFdiT7sjtMqbctE1ioKS0tLfKHs/xCURtkL7Iju7ci6mrLBBaA
+YBBYAIJBYAEIBoEFIBgEFoBgEFgAgkFgAQgGgQUgGAUCi6IoqmorFlgURVFVXjawACAA99zz
+/zmcRC5DXzuPAAAAAElFTkSuQmCC
+--------------861D014E833419FA28500E80--
 
