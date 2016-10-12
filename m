@@ -1,13 +1,10 @@
-MIME-Version: 1.0
-In-Reply-To: <948fd0bc-5327-a593-7590-991bf9b3d8e9@...277...>
-References: <3572b3e5-8830-3418-87d7-725d611bb04a@...515...>
-	<948fd0bc-5327-a593-7590-991bf9b3d8e9@...277...>
-From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Date: Wed, 12 Oct 2016 15:43:23 +0500
-Message-ID: <CAFHpkQHdXouH3J3_V4_u=8Dyap6AkUrC-g0n_bMGWkLTDomBWQ@...278...>
-Content-Type: multipart/alternative; boundary=089e013d11b095826c053ea8a9ac
-Subject: Re: [Openvpn-devel] Help testing OpenVPN 2.4-alpha1 preview
-	installers?
+From: Arne Schwabe <arne@...1227...>
+Date: Wed, 12 Oct 2016 12:47:07 +0200
+Message-Id: <1476269227-13290-1-git-send-email-arne@...1227...>
+In-Reply-To: <CAKuzo_h+1YqaAYSXtUXiNvcewg74aBS+rTwHBU_QXhVFvZW0Vg@...278...>
+References: <CAKuzo_h+1YqaAYSXtUXiNvcewg74aBS+rTwHBU_QXhVFvZW0Vg@...278...>
+Subject: [Openvpn-devel] [PATCH v2] Change the hold command to communicate
+	the time that OpenVPN would wait to the UI.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,112 +13,149 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Ton van Vliet <epposan@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---089e013d11b095826c053ea8a9ac
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Before the connect-retry change to do exponential backup this was not necessary
+since the time was fixed. With the exponential backoff the UI needs either to
+implement its own exponential backoff mechansim or needs a way of knowing the
+value of OpenVPN internal mechansim.
 
-it should have been fixed with
-https://github.com/OpenVPN/openvpn-gui/commit/727eaee0c54b0aee01ad28f622c1d=
-a7011e7b7c1
+Patch V2: Fixed typos noticed by Selva(
+---
+ doc/management-notes.txt |  7 +++++--
+ src/openvpn/init.c       | 15 +++++++++------
+ src/openvpn/manage.c     |  8 ++++++--
+ src/openvpn/manage.h     |  2 +-
+ 4 files changed, 21 insertions(+), 11 deletions(-)
 
-@mattock ?
+diff --git a/doc/management-notes.txt b/doc/management-notes.txt
+index f68f3db..dd870eb 100644
+--- a/doc/management-notes.txt
++++ b/doc/management-notes.txt
+@@ -168,9 +168,12 @@ be reset by restarts.
+ 
+ OpenVPN will indicate that it is in a hold state by
+ sending a real-time notification to the management
+-client:
++client, the parameter indicates how long OpenVPN would
++wait without UI (as influenced by connect-retry exponential
++backoff). The UI needs to wait for releasing the hold if it
++wants similar behavior:
+ 
+-  >HOLD:Waiting for hold release
++  >HOLD:Waiting for hold release:10
+ 
+ Command examples:
+ 
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 7684a96..73f8c6d 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -1954,16 +1954,17 @@ do_deferred_options (struct context *c, const unsigned int found)
+ }
+ 
+ /*
+- * Possible hold on initialization
++ * Possible hold on initialization, holdtime is the
++ * time OpenVPN would wait without management
+  */
+ static bool
+-do_hold (void)
++do_hold (int holdtime)
+ {
+ #ifdef ENABLE_MANAGEMENT
+   if (management)
+     {
+       /* block until management hold is released */
+-      if (management_hold (management))
++        if (management_hold (management, holdtime))
+ 	return true;
+     }
+ #endif
+@@ -2021,8 +2022,10 @@ socket_restart_pause (struct context *c)
+   c->persist.restart_sleep_seconds = 0;
+ 
+   /* do managment hold on context restart, i.e. second, third, fourth, etc. initialization */
+-  if (do_hold ())
++  if (do_hold (sec))
++  {
+     sec = 0;
++  }
+ 
+   if (sec)
+     {
+@@ -2040,7 +2043,7 @@ do_startup_pause (struct context *c)
+   if (!c->first_time)
+     socket_restart_pause (c);
+   else
+-    do_hold (); /* do management hold on first context initialization */
++    do_hold (0); /* do management hold on first context initialization */
+ }
+ 
+ /*
+@@ -3425,7 +3428,7 @@ open_management (struct context *c)
+ 	    }
+ 
+ 	  /* initial management hold, called early, before first context initialization */
+-	  do_hold ();
++	  do_hold (0);
+ 	  if (IS_SIG (c))
+ 	    {
+ 	      msg (M_WARN, "Signal received from management interface, exiting");
+diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
+index dcb1bc1..206aaf4 100644
+--- a/src/openvpn/manage.c
++++ b/src/openvpn/manage.c
+@@ -3332,12 +3332,13 @@ management_should_daemonize (struct management *man)
+  * Return true if the caller should not sleep for an additional time interval.
+  */
+ bool
+-management_hold (struct management *man)
++management_hold (struct management *man, int holdtime)
+ {
+   if (management_would_hold (man))
+     {
+       volatile int signal_received = 0;
+       const bool standalone_disabled_save = man->persist.standalone_disabled;
++      struct gc_arena gc = gc_new ();
+ 
+       man->persist.standalone_disabled = false; /* This is so M_CLIENT messages will be correctly passed through msg() */
+       man->persist.special_state_msg = NULL;
+@@ -3347,7 +3348,9 @@ management_hold (struct management *man)
+ 
+       if (!signal_received)
+ 	{
+-	  man->persist.special_state_msg = ">HOLD:Waiting for hold release";
++      struct buffer out = alloc_buf_gc (128, &gc);
++      buf_printf (&out, ">HOLD:Waiting for hold release:%d", holdtime);
++	  man->persist.special_state_msg = BSTR (&out);
+ 	  msg (M_CLIENT, "%s", man->persist.special_state_msg);
+ 
+ 	  /* run command processing event loop until we get our username/password */
+@@ -3366,6 +3369,7 @@ management_hold (struct management *man)
+       man->persist.special_state_msg = NULL;
+       man->settings.mansig &= ~MANSIG_IGNORE_USR1_HUP;
+ 
++      gc_free (&gc);
+       return true;
+     }
+   return false;
+diff --git a/src/openvpn/manage.h b/src/openvpn/manage.h
+index 988600f..50db38c 100644
+--- a/src/openvpn/manage.h
++++ b/src/openvpn/manage.h
+@@ -396,7 +396,7 @@ int managment_android_persisttun_action (struct management *man);
+ 
+ bool management_should_daemonize (struct management *man);
+ bool management_would_hold (struct management *man);
+-bool management_hold (struct management *man);
++bool management_hold (struct management *man, int holdtime);
+ 
+ void management_event_loop_n_seconds (struct management *man, int sec);
+ 
+-- 
+2.8.4 (Apple Git-73)
 
-2016-10-12 15:30 GMT+05:00 Ton van Vliet <epposan@...277...>:
-
-> On 11-10-16 12:36, Samuli Sepp=C3=A4nen wrote:
->
-> However, we'd need to help with testing these preview installers:
->
->
-> 64 bit version on Win7 Home Premium installation process without issues.
->
-> Observed a small issue when looking at the 'Settings...' of the new GUI:
->
-> 1st tab: labeled 'Proxy' content in English(as expected)
-> 2nd tab: labeled 'Geral' content in Portuguese?
-> 3rd tab: labeled 'About' content in English
->
-> Ton.
->
->
-> ------------------------------------------------------------
-> ------------------
-> Check out the vibrant tech community on one of the world's most
-> engaging tech sites, SlashDot.org! http://sdm.link/slashdot
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->
->
-
---089e013d11b095826c053ea8a9ac
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><div>it should have been fixed with=C2=A0 <a href=3D"https=
-://github.com/OpenVPN/openvpn-gui/commit/727eaee0c54b0aee01ad28f622c1da7011=
-e7b7c1">https://github.com/OpenVPN/openvpn-gui/commit/727eaee0c54b0aee01ad2=
-8f622c1da7011e7b7c1</a><br><br></div>@mattock ?<br></div><div class=3D"gmai=
-l_extra"><br><div class=3D"gmail_quote">2016-10-12 15:30 GMT+05:00 Ton van =
-Vliet <span dir=3D"ltr">&lt;<a href=3D"mailto:epposan@...277..." target=3D"=
-_blank">epposan@...277...</a>&gt;</span>:<br><blockquote class=3D"gmail_quo=
-te" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">
-=20=20
-=20=20=20=20
-=20=20
-  <div bgcolor=3D"#FFFFFF" text=3D"#000000"><span class=3D"">
-    <tt>On 11-10-16 12:36, Samuli Sepp=C3=A4nen wrote:
-    </tt><tt><br>
-    </tt>
-    <blockquote type=3D"cite" style=3D"font-style:italic;color:#cccccc"><tt=
->However,
-        we&#39;d need to help with testing these preview installers:
-      </tt><tt><br>
-      </tt></blockquote>
-    <tt>
-    </tt><tt><br>
-    </tt></span><tt>64 bit version on Win7 Home Premium installation process
-      without issues.
-    </tt><tt><br>
-    </tt><tt>
-    </tt><tt><br>
-    </tt><tt>Observed a small issue when looking at the &#39;Settings...&#3=
-9; of
-      the new GUI:
-    </tt><tt><br>
-    </tt><tt>
-    </tt><tt><br>
-    </tt><tt>1st tab: labeled &#39;Proxy&#39; content in English(as expecte=
-d)
-    </tt><tt><br>
-    </tt><tt>2nd tab: labeled &#39;Geral&#39; content in Portuguese?
-    </tt><tt><br>
-    </tt><tt>3rd tab: labeled &#39;About&#39; content in English
-    </tt><tt><br><span class=3D"HOEnZb"><font color=3D"#888888">
-    </font></span></tt><span class=3D"HOEnZb"><font color=3D"#888888"><tt>
-    </tt><tt><br>
-    </tt><tt>Ton.
-    </tt><tt><br>
-    </tt><br>
-  </font></span></div>
-
-<br>------------------------------<wbr>------------------------------<wbr>-=
------------------<br>
-Check out the vibrant tech community on one of the world&#39;s most<br>
-engaging tech sites, SlashDot.org! <a href=3D"http://sdm.link/slashdot" rel=
-=3D"noreferrer" target=3D"_blank">http://sdm.link/slashdot</a><br>_________=
-_____________________<wbr>_________________<br>
-Openvpn-devel mailing list<br>
-<a href=3D"mailto:Openvpn-devel@lists.sourceforge.net">Openvpn-devel@...2155...=
-9...<wbr>sourceforge.net</a><br>
-<a href=3D"https://lists.sourceforge.net/lists/listinfo/openvpn-devel" rel=
-=3D"noreferrer" target=3D"_blank">https://lists.sourceforge.net/<wbr>lists/=
-listinfo/openvpn-devel</a><br>
-<br></blockquote></div><br></div>
-
---089e013d11b095826c053ea8a9ac--
 
