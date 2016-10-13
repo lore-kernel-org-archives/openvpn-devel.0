@@ -1,10 +1,10 @@
 From: David Sommerseth <davids@...515...>
-Date: Thu, 13 Oct 2016 21:59:30 +0200
-Message-Id: <1476388771-16492-5-git-send-email-davids@...515...>
+Date: Thu, 13 Oct 2016 21:59:31 +0200
+Message-Id: <1476388771-16492-6-git-send-email-davids@...515...>
 In-Reply-To: <1476388771-16492-1-git-send-email-davids@...515...>
 References: <1476388771-16492-1-git-send-email-davids@...515...>
-Subject: [Openvpn-devel] [PATCH 4/5] auth-gen-token: Push generated
-	auth-tokens to the client
+Subject: [Openvpn-devel] [PATCH 5/5] auth-gen-token: Authenticate generated
+	auth-tokens when client re-authenticates
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,72 +17,99 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-If --auth-gen-token has been enabled and a token has been generated,
-ensure this token is pushed to the client using the 'auth-token' option.
+On a server with --auth-gen-token enabled, the server will have created
+a random token and pushed it to the client.  When the client needs to
+renegotiate the connection or otherwise reconnect, it will at this point
+use the auth-token as password.
+
+Here we check if we have a token generated and that it has been pushed
+to the client, if so, then we check if the token matches the locally
+stored token.  If everything matches, we're done and the connection
+is still authenticated.
+
+If the auth-token authentication fails, we delete our local copy of
+the token and changes the connection to not being authenticated.  From
+this moment of, the client needs to do a full reconnect providing
+the users password again.
+
+This token authentication also considers the token lifetime, if that
+have been set via --auth-gen-token.  If the token have expired, the
+client is rejected and needs to do a full reconnect with a new
+authentication using the users password.
 
 Signed-off-by: David Sommerseth <davids@...515...>
 ---
- src/openvpn/misc.c       | 5 +++++
- src/openvpn/push.c       | 9 ++++++++-
- src/openvpn/ssl_common.h | 2 ++
- 3 files changed, 15 insertions(+), 1 deletion(-)
+ src/openvpn/ssl_verify.c | 50 ++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 50 insertions(+)
 
-diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
-index 225f0bf..b74ac9d 100644
---- a/src/openvpn/misc.c
-+++ b/src/openvpn/misc.c
-@@ -2073,6 +2073,11 @@ sanitize_control_message(const char *src, struct gc_arena *gc)
- 	  skip = 4;
- 	  redact = true;
- 	}
-+      else if (!check_debug_level(D_SHOW_KEYS) && (c == 'a' && !strncmp(src, "auth-token ", 11)))
-+	{
-+	  skip = 10;
-+	  redact = true;
-+	}
+diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
+index 24ec56e..aa982e4 100644
+--- a/src/openvpn/ssl_verify.c
++++ b/src/openvpn/ssl_verify.c
+@@ -1139,6 +1139,55 @@ verify_user_pass(struct user_pass *up, struct tls_multi *multi,
+   string_mod_remap_name (up->username, COMMON_NAME_CHAR_CLASS);
+   string_mod (up->password, CC_PRINT, CC_CRLF, '_');
  
-       if (c == ',') /* end of redacted item? */
- 	{
-diff --git a/src/openvpn/push.c b/src/openvpn/push.c
-index ee2eda4..0fb87ba 100644
---- a/src/openvpn/push.c
-+++ b/src/openvpn/push.c
-@@ -309,7 +309,7 @@ prepare_push_reply (struct context *c, struct gc_arena *gc,
- 		    struct push_list *push_list)
- {
-   const char *optstr = NULL;
--  const struct tls_multi *tls_multi = c->c2.tls_multi;
-+  struct tls_multi *tls_multi = c->c2.tls_multi;
-   const char * const peer_info = tls_multi->peer_info;
-   struct options *o = &c->options;
- 
-@@ -371,6 +371,13 @@ prepare_push_reply (struct context *c, struct gc_arena *gc,
- 	  push_option_fmt(gc, push_list, M_USAGE, "cipher %s", o->ciphername);
- 	}
-     }
-+
-+  /* If server uses --auth-gen-token and we have an auth token to send to client */
-+  if (false == tls_multi->auth_token_sent && NULL != tls_multi->auth_token)
++  /* If server is configured with --auth-gen-token and we have an
++   * authentication token for this client, base this authentication round
++   * based on this token instead.
++   */
++  if (session->opt->auth_generate_token && multi->auth_token_sent && NULL != multi->auth_token)
 +    {
-+      push_option_fmt(gc, push_list, M_USAGE, "auth-token %s", tls_multi->auth_token);
-+      tls_multi->auth_token_sent = true;
++      /* Ensure that the username have not changed */
++      if (!tls_lock_username(multi, up->username))
++        {
++          ks->authenticated = false;
++          goto done;
++        }
++
++      /* If auth-token lifetime have been enabled, ensure the token is still valid */
++      if (session->opt->auth_token_lifetime > 0
++          && (multi->auth_token_tstamp + session->opt->auth_token_lifetime) < now )
++        {
++          msg (D_HANDSHAKE, "Auth-token for client expired\n");
++          ks->authenticated = false;
++          goto done;
++        }
++
++      if (memcmp_constant_time(multi->auth_token, up->password,
++                 strlen(multi->auth_token)) != 0)
++        {
++          memset (multi->auth_token, 0, AUTH_TOKEN_SIZE);
++          free (multi->auth_token);
++          multi->auth_token = NULL;
++          multi->auth_token_sent = false;
++          ks->authenticated = false;
++          tls_deauthenticate (multi);
++
++          msg (D_TLS_ERRORS, "TLS Auth Error: Auth token verification failed for username '%s' %s",
++               up->username,
++               (session->opt->ssl_flags & SSLF_USERNAME_AS_COMMON_NAME) ? "[CN SET]" : "");
++        }
++      else
++        {
++          ks->authenticated = true;
++
++          if ((session->opt->ssl_flags & SSLF_USERNAME_AS_COMMON_NAME))
++            set_common_name (session, up->username);
++          msg (D_HANDSHAKE, "TLS: Username/auth-token authentication succeeded for username '%s' %s",
++               up->username,
++               (session->opt->ssl_flags & SSLF_USERNAME_AS_COMMON_NAME) ? "[CN SET]" : "");
++        }
++      goto done;
 +    }
-   return true;
++
+   /* call plugin(s) and/or script */
+ #ifdef MANAGEMENT_DEF_AUTH
+   if (man_def_auth == KMDA_DEF)
+@@ -1226,6 +1275,7 @@ verify_user_pass(struct user_pass *up, struct tls_multi *multi,
+       msg (D_TLS_ERRORS, "TLS Auth Error: Auth Username/Password verification failed for peer");
+     }
+ 
++ done:
+   gc_free (&gc);
  }
  
-diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
-index 1b90c5e..3d802c9 100644
---- a/src/openvpn/ssl_common.h
-+++ b/src/openvpn/ssl_common.h
-@@ -526,6 +526,8 @@ struct tls_multi
-   uint32_t peer_id;
-   bool use_peer_id;
- 
-+  bool auth_token_sent;  /**< If server uses --auth-gen-token and
-+                          *   token has been sent to client */
-   char *auth_token;      /** If server sends a generated auth-token,
-                           * this is the token to use for future
-                           * user/pass authentications in this session.
 -- 
 1.8.3.1
 
