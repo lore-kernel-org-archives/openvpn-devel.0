@@ -1,7 +1,9 @@
 From: David Sommerseth <davids@...515...>
-Date: Thu, 13 Oct 2016 21:59:26 +0200
-Message-Id: <1476388771-16492-1-git-send-email-davids@...515...>
-Subject: [Openvpn-devel] [PATCH 0/5] New feature: --auth-gen-token
+Date: Thu, 13 Oct 2016 21:59:27 +0200
+Message-Id: <1476388771-16492-2-git-send-email-davids@...515...>
+In-Reply-To: <1476388771-16492-1-git-send-email-davids@...515...>
+References: <1476388771-16492-1-git-send-email-davids@...515...>
+Subject: [Openvpn-devel] [PATCH 1/5] Move memcmp_constant_time() to crypto.h
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,65 +16,73 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This new feature enables re-authentication of on-going sessions without
-asking the user for a new password.  This is in particular useful when
-the authentication scheme is based on One Time Passwords (OTP).
+This function is quite useful other places, so make it generally
+accessible.
 
-When OTP is used and without auth-token support in the authentication module
-OpenVPN is configured to use, the clients will be asked for a new OTP each
-time OpenVPN starts a re-negotiation.  What often happens is that this
-re-negotiation is disabled to avoid this.
+Signed-off-by: David Sommerseth <davids@...515...>
+---
+ src/openvpn/crypto.c | 18 ------------------
+ src/openvpn/crypto.h | 18 ++++++++++++++++++
+ 2 files changed, 18 insertions(+), 18 deletions(-)
 
-OpenVPN does provide a remedy to this, by pushing a unique auth-token value
-to each client.  Then the authentication module needs to keep track of which
-client is using which auth-token value.  When a client receives the pushed
-auth-token option and the attached value, it replaces the locally saved
-password with this token value.  So for all coming re-authentications, the
-client will send this value as the password instead of the users password.
-
-But not all authentication modules adds support for this feature.  By adding
---auth-gen-token to the server configuration, the OpenVPN server will take
-care of the auth-token processing and authentication.  This also means that
-the server will not call the configured authentication module on
-re-negotiations; it will do the re-negotiation internally by itself.
-
-This feature may just as well be useful for non-OTP configurations as well.
-Unless the OpenVPN client is configured with --auth-nocache, it will save
-the users password in-memory for the lifetime of the OpenVPN session.  Using
-this feature that password will be replaced by the auth-token instead.
-
-The patch-set this thread covers focuses only on this new --auth-gen-token
-feature.  The --auth-token option added to OpenVPN 2.3, but never properly
-documented.  The --auth-token documentation is tracked in this mail thread:
-http://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg12506.html
-(Message-Id: <http://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg12506.html>)
-
-One remark regarding PATCH 1/5.  This patch is needed by PATCH 5/5.  I just
-chose to split it out as a separate patch to make the core auth-gen-token
-patches easier to review.  This patch can be moved anywhere before PATCH 5/5
-or squashed into PATCH 5/5 if that is requested.
-
-David Sommerseth (5):
-  Move memcmp_constant_time() to crypto.h
-  auth-gen-token: Add --auth-gen-token option
-  auth-gen-token: Generate an auth-token per client
-  auth-gen-token: Push generated auth-tokens to the client
-  auth-gen-token: Authenticate generated auth-tokens when client
-    re-authenticates
-
- doc/openvpn.8            | 16 ++++++++++
- src/openvpn/crypto.c     | 18 -----------
- src/openvpn/crypto.h     | 18 +++++++++++
- src/openvpn/init.c       |  2 ++
- src/openvpn/misc.c       |  5 +++
- src/openvpn/options.c    | 16 ++++++++++
- src/openvpn/options.h    |  2 ++
- src/openvpn/push.c       |  9 +++++-
- src/openvpn/ssl.c        |  6 ++++
- src/openvpn/ssl_common.h | 11 +++++++
- src/openvpn/ssl_verify.c | 83 ++++++++++++++++++++++++++++++++++++++++++++++++
- 11 files changed, 167 insertions(+), 19 deletions(-)
-
+diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
+index 3dd4a9e..026d9ae 100644
+--- a/src/openvpn/crypto.c
++++ b/src/openvpn/crypto.c
+@@ -66,24 +66,6 @@
+ #define CRYPT_ERROR(format) \
+   do { msg (D_CRYPT_ERRORS, "%s: " format, error_prefix); goto error_exit; } while (false)
+ 
+-/**
+- * As memcmp(), but constant-time.
+- * Returns 0 when data is equal, non-zero otherwise.
+- */
+-static int
+-memcmp_constant_time (const void *a, const void *b, size_t size) {
+-  const uint8_t * a1 = a;
+-  const uint8_t * b1 = b;
+-  int ret = 0;
+-  size_t i;
+-
+-  for (i = 0; i < size; i++) {
+-      ret |= *a1++ ^ *b1++;
+-  }
+-
+-  return ret;
+-}
+-
+ static void
+ openvpn_encrypt_aead (struct buffer *buf, struct buffer work,
+ 	 struct crypto_options *opt) {
+diff --git a/src/openvpn/crypto.h b/src/openvpn/crypto.h
+index 3b6bb98..9ae0610 100644
+--- a/src/openvpn/crypto.h
++++ b/src/openvpn/crypto.h
+@@ -476,6 +476,24 @@ void get_tls_handshake_key (const struct key_type *key_type,
+  * Inline functions
+  */
+ 
++/**
++ * As memcmp(), but constant-time.
++ * Returns 0 when data is equal, non-zero otherwise.
++ */
++static int
++memcmp_constant_time (const void *a, const void *b, size_t size) {
++  const uint8_t * a1 = a;
++  const uint8_t * b1 = b;
++  int ret = 0;
++  size_t i;
++
++  for (i = 0; i < size; i++) {
++      ret |= *a1++ ^ *b1++;
++  }
++
++  return ret;
++}
++
+ static inline bool
+ key_ctx_bi_defined(const struct key_ctx_bi* key)
+ {
 -- 
 1.8.3.1
 
