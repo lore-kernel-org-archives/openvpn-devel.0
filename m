@@ -1,13 +1,12 @@
 MIME-Version: 1.0
-In-Reply-To: <1476269227-13290-1-git-send-email-arne@...1227...>
-References: <CAKuzo_h+1YqaAYSXtUXiNvcewg74aBS+rTwHBU_QXhVFvZW0Vg@...278...>
-	<1476269227-13290-1-git-send-email-arne@...1227...>
+In-Reply-To: <1476257569-16301-1-git-send-email-steffan@...1856...>
+References: <CAA1AbxK+21uBLt2S4Og_mbCUM7zjf+uj3NxAuOA=0GwT44ZE-g@...278...>
+	<1476257569-16301-1-git-send-email-steffan@...1856...>
 From: Selva Nair <selva.nair@...277...>
-Date: Wed, 12 Oct 2016 22:46:02 -0400
-Message-ID: <CAKuzo_ifQNjmv+c0snx=kgca84bAoZswOwmPQzH8VXji9ckemg@...278...>
-Content-Type: multipart/alternative; boundary=001a113c03727813ef053eb61dcc
-Subject: Re: [Openvpn-devel] [PATCH v2] Change the hold command to
- communicate the time that OpenVPN would wait to the UI.
+Date: Thu, 13 Oct 2016 00:31:51 -0400
+Message-ID: <CAKuzo_jzFwnt1rZ86g-mPRSm00VtUWWNxXfG+zmZWis-N9KSdQ@...278...>
+Content-Type: multipart/alternative; boundary=94eb2c07067ee9d7f6053eb797f0
+Subject: Re: [Openvpn-devel] [PATCH v2] Check --ncp-ciphers list on startup
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,87 +15,86 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
+To: Steffan Karger <steffan@...1856...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---001a113c03727813ef053eb61dcc
+--94eb2c07067ee9d7f6053eb797f0
 Content-Type: text/plain; charset=UTF-8
 
-Hi,
+On Wed, Oct 12, 2016 at 3:32 AM, Steffan Karger <steffan@...1856...> wrote:
 
-On Wed, Oct 12, 2016 at 6:47 AM, Arne Schwabe <arne@...1227...> wrote:
-
-> Before the connect-retry change to do exponential backup this was not
-> necessary
-> since the time was fixed. With the exponential backoff the UI needs either
-> to
-> implement its own exponential backoff mechansim or needs a way of knowing
-> the
-> value of OpenVPN internal mechansim.
+> Currently, if --ncp-ciphers contains an invalid cipher, OpenVPN will only
+> error out when that cipher is selected by negotiation.  That's not very
+> friendly to the user, so check the list on startup, and give a clear error
+> message immediately.
 >
-> Patch V2: Fixed typos noticed by Selva(
+> This patches changes the cipher_kt_get() to let the caller decide what
+> action to take if no valid cipher was found.  This enables us to print all
+> invalid ciphers in the list, instead of just the first invalid cipher.
+>
+> This should fix trac #737.
+>
+> v2: improve tls_check_ncp_cipher_list() with Selva's review suggestions.
+>
+> Signed-off-by: Steffan Karger <steffan@...1856...>
 > ---
->  doc/management-notes.txt |  7 +++++--
->  src/openvpn/init.c       | 15 +++++++++------
->  src/openvpn/manage.c     |  8 ++++++--
->  src/openvpn/manage.h     |  2 +-
->  4 files changed, 21 insertions(+), 11 deletions(-)
+>  src/openvpn/crypto.c         |  5 +++++
+>  src/openvpn/crypto_backend.h |  3 ++-
+>  src/openvpn/crypto_mbedtls.c | 15 ++++++++++-----
+>  src/openvpn/crypto_openssl.c | 17 ++++++++++++-----
+>  src/openvpn/options.c        |  5 +++++
+>  src/openvpn/ssl.c            | 22 ++++++++++++++++++++++
+>  src/openvpn/ssl.h            |  9 +++++++++
+>  7 files changed, 65 insertions(+), 11 deletions(-)
 
 
-Looks good and works as expected. Tested on Linux.
 
--  >HOLD:Waiting for hold release
-> +  >HOLD:Waiting for hold release:10
-
-
-OpenVPN GUI does not parse the "Waiting for hold release" string, so this
-doesn't affect it.
-
-ACK from me.
-
-Suggest to correct mechansim->mechanism (x2) in commit message during
-merge.
+Looks good now. ACK.
 
 Selva
 
---001a113c03727813ef053eb61dcc
+--94eb2c07067ee9d7f6053eb797f0
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr"><div class=3D"gmail_extra">Hi,</div><div class=3D"gmail_ex=
-tra"><br><div class=3D"gmail_quote">On Wed, Oct 12, 2016 at 6:47 AM, Arne S=
-chwabe <span dir=3D"ltr">&lt;<a href=3D"mailto:arne@...1227..." target=3D"_=
-blank">arne@...1227...</a>&gt;</span> wrote:<br><blockquote class=3D"gmail_=
-quote" style=3D"margin:0px 0px 0px 0.8ex;border-left-width:1px;border-left-=
-color:rgb(204,204,204);border-left-style:solid;padding-left:1ex"><span>Befo=
-re the connect-retry change to do exponential backup this was not necessary=
+<div dir=3D"ltr"><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">=
+On Wed, Oct 12, 2016 at 3:32 AM, Steffan Karger <span dir=3D"ltr">&lt;<a hr=
+ef=3D"mailto:steffan@...1856..." target=3D"_blank">steffan@...1856...</a>&g=
+t;</span> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0=
+ .8ex;border-left:1px #ccc solid;padding-left:1ex"><span class=3D"">Current=
+ly, if --ncp-ciphers contains an invalid cipher, OpenVPN will only<br>
+error out when that cipher is selected by negotiation.=C2=A0 That&#39;s not=
+ very<br>
+friendly to the user, so check the list on startup, and give a clear error<=
+br>
+message immediately.<br>
 <br>
-since the time was fixed. With the exponential backoff the UI needs either =
-to<br>
-implement its own exponential backoff mechansim or needs a way of knowing t=
-he<br>
-value of OpenVPN internal mechansim.<br>
+This patches changes the cipher_kt_get() to let the caller decide what<br>
+action to take if no valid cipher was found.=C2=A0 This enables us to print=
+ all<br>
+invalid ciphers in the list, instead of just the first invalid cipher.<br>
 <br>
-</span>Patch V2: Fixed typos noticed by Selva(<br>
+This should fix trac #737.<br>
+<br>
+</span>v2: improve tls_check_ncp_cipher_list() with Selva&#39;s review sugg=
+estions.<br>
+<span class=3D""><br>
+Signed-off-by: Steffan Karger &lt;<a href=3D"mailto:steffan@...1856...">ste=
+ffan@...1856...</a>&gt;<br>
 ---<br>
-=C2=A0doc/management-notes.txt |=C2=A0 7 +++++--<br>
-=C2=A0src/openvpn/init.c=C2=A0 =C2=A0 =C2=A0 =C2=A0| 15 +++++++++------<br>
-<span>=C2=A0src/openvpn/manage.c=C2=A0 =C2=A0 =C2=A0|=C2=A0 8 ++++++--<br>
-=C2=A0src/openvpn/manage.h=C2=A0 =C2=A0 =C2=A0|=C2=A0 2 +-<br>
-</span>=C2=A04 files changed, 21 insertions(+), 11 deletions(-)</blockquote=
-></div><br>Looks good and works as expected. Tested on Linux.</div><div cla=
-ss=3D"gmail_extra"><br></div><div class=3D"gmail_extra"><blockquote class=
-=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left-width:1px;bo=
-rder-left-color:rgb(204,204,204);border-left-style:solid;padding-left:1ex">=
-- =C2=A0&gt;HOLD:Waiting for hold release<br>+ =C2=A0&gt;HOLD:Waiting for h=
-old release:10</blockquote></div><div class=3D"gmail_extra"><br></div><div =
-class=3D"gmail_extra">OpenVPN GUI does not parse the &quot;Waiting for hold=
- release&quot; string, so this doesn&#39;t affect it.<br></div><div class=
-=3D"gmail_extra"><br></div><div class=3D"gmail_extra">ACK from me.</div><di=
-v class=3D"gmail_extra"><br></div><div class=3D"gmail_extra">Suggest to cor=
-rect mechansim-&gt;mechanism (x2) in commit message during merge.=C2=A0</di=
-v><div class=3D"gmail_extra"><br></div><div class=3D"gmail_extra">Selva</di=
-v></div>
+=C2=A0src/openvpn/crypto.c=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0|=C2=A0 5 +++++=
+<br>
+=C2=A0src/openvpn/crypto_backend.h |=C2=A0 3 ++-<br>
+=C2=A0src/openvpn/crypto_mbedtls.c | 15 ++++++++++-----<br>
+=C2=A0src/openvpn/crypto_openssl.c | 17 ++++++++++++-----<br>
+=C2=A0src/openvpn/options.c=C2=A0 =C2=A0 =C2=A0 =C2=A0 |=C2=A0 5 +++++<br>
+</span>=C2=A0src/openvpn/ssl.c=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 | 2=
+2 ++++++++++++++++++++++<br>
+=C2=A0src/openvpn/ssl.h=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 |=C2=A0 9 =
++++++++++<br>
+=C2=A07 files changed, 65 insertions(+), 11 deletions(-)</blockquote></div>=
+<br><br></div><div class=3D"gmail_extra">Looks good now. ACK.<br><br></div>=
+<div class=3D"gmail_extra">Selva<br></div></div>
 
---001a113c03727813ef053eb61dcc--
+--94eb2c07067ee9d7f6053eb797f0--
 
