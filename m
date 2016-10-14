@@ -1,10 +1,12 @@
-From: David Sommerseth <davids@...515...>
-Date: Fri, 14 Oct 2016 14:48:15 +0200
-Message-Id: <1476449295-18218-1-git-send-email-davids@...515...>
-In-Reply-To: <1476377656-3150-1-git-send-email-arne@...1227...>
-References: <1476377656-3150-1-git-send-email-arne@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Remove tun-ipv6 Option. Instead
-	assume that IPv6 is always supported.
+References: <1476388771-16492-1-git-send-email-davids@...515...>
+	<1476388771-16492-5-git-send-email-davids@...515...>
+From: Steffan Karger <steffan@...1856...>
+Message-ID: <cd6e0805-20fe-b61d-4858-595e84f234a0@...1856...>
+Date: Fri, 14 Oct 2016 15:30:30 +0200
+MIME-Version: 1.0
+In-Reply-To: <1476388771-16492-5-git-send-email-davids@...515...>
+Subject: Re: [Openvpn-devel] [PATCH 4/5] auth-gen-token: Push generated
+ auth-tokens to the client
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,55 +15,79 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 8bit
-To: arne@...1227...
-Cc: openvpn-devel@lists.sourceforge.net
-
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
-
-ACK.  This looks good now, testing looks fine on Linux (SL7.2 x86_64) too.
-
-I've done some editorial changes to the commit message though, nothing changed
-except adding and removing whitespaces and fixing a few typos (Ipv6 -> IPv6, etc).
-
-Your patch has been applied to the master branch
-
-commit 86e2fa5597fd1ad8e0102f134c63d6bc8cb7c291
-Author: Arne Schwabe
-Date:   Thu Oct 13 18:54:16 2016 +0200
-
-     Remove tun-ipv6 Option. Instead assume that IPv6 is always supported.
-
-     Signed-off-by: Arne Schwabe <arne@...1227...>
-     Acked-by: David Sommerseth <davids@...515...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1476377656-3150-1-git-send-email-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg12695.html
-     Signed-off-by: David Sommerseth <davids@...515...>
+To: openvpn-devel@lists.sourceforge.net
 
 
-- --
-kind regards,
 
-David Sommerseth
+On 13-10-16 21:59, David Sommerseth wrote:
+> If --auth-gen-token has been enabled and a token has been generated,
+> ensure this token is pushed to the client using the 'auth-token' option.
+> 
+> Signed-off-by: David Sommerseth <davids@...515...>
+> ---
+>  src/openvpn/misc.c       | 5 +++++
+>  src/openvpn/push.c       | 9 ++++++++-
+>  src/openvpn/ssl_common.h | 2 ++
+>  3 files changed, 15 insertions(+), 1 deletion(-)
+> 
+> diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
+> index 225f0bf..b74ac9d 100644
+> --- a/src/openvpn/misc.c
+> +++ b/src/openvpn/misc.c
+> @@ -2073,6 +2073,11 @@ sanitize_control_message(const char *src, struct gc_arena *gc)
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
+Wait, what?  We have over 2000 lines of 'misc.c'...?
 
-iQIcBAEBAgAGBQJYANQOAAoJEIbPlEyWcf3ye88P/RFci2mayFPpS9pnrXt7A8yT
-YXdp99eWH2gvKZNFaC4yg3FQyjeZ0pZBYHU+DHkyZjbWFtX7ctXGioiy7gw+tkgu
-UzU6ZUNWPb8c1lmMdftGS2Xgo8IrRaGLbfnVG1NJBK30xPRwc9qplss4qo+LVeU6
-92f8477tbM+b1qpD1UP+2yTqubvhmPcPecS1w9qCW48T96friWWDZNx2FEjaee/k
-37Xnc3Vqr9ae/uw2tLSt4yfMcC9gT2Gm9D3DehiW3d/VP/qlRGQwBtEmUmXYJbXe
-62sD7kVDXAAmidrsFTI6+uo/ubZW8vVTwEYYRcf1GuUsMAlqxYWevuX2ONGSL4Hv
-1LnU9ePv1IBno5IRLn5iWube+Ij7SLIZk+NpUx1c37yuawiqz/rYz/rozscGm7P0
-W6fv+f2HzdCGxxI4ZMhKUsdnvWkKv6eAa7ce+uCYMUwwI5s8NtS9bOLy2RSdlbmS
-rxk88xpeKajgSOy3WVJArBStbp1pj1h4AVqZ8gKFnUBYIbMEz+uAsExB5D/x6Snk
-aE9a6Au2d1DDVNoAVAKMrLts9DI7P0LXq7Us7hwZJeDXJKTQlqLgzPoEyvcd3Hj5
-GsHVuEBKk+Rlgy3sc9ocgHQNtq8wU09talsyVDwaaEF+TDGyV5XJyba91qKTMr+G
-fM/+WSOWHghUA9txU8AG
-=zsQ8
------END PGP SIGNATURE-----
+> +      else if (!check_debug_level(D_SHOW_KEYS) && (c == 'a' && !strncmp(src, "auth-token ", 11)))
+
+Overly long line.  (And not so clear code, but this is in line with the
+surrounding code, and you already sent an explanation.)
+
+> diff --git a/src/openvpn/push.c b/src/openvpn/push.c
+> index ee2eda4..0fb87ba 100644
+> --- a/src/openvpn/push.c
+> +++ b/src/openvpn/push.c
+> @@ -309,7 +309,7 @@ prepare_push_reply (struct context *c, struct gc_arena *gc,
+>  		    struct push_list *push_list)
+>  {
+>    const char *optstr = NULL;
+> -  const struct tls_multi *tls_multi = c->c2.tls_multi;
+> +  struct tls_multi *tls_multi = c->c2.tls_multi;
+>    const char * const peer_info = tls_multi->peer_info;
+>    struct options *o = &c->options;
+>  
+> @@ -371,6 +371,13 @@ prepare_push_reply (struct context *c, struct gc_arena *gc,
+>  	  push_option_fmt(gc, push_list, M_USAGE, "cipher %s", o->ciphername);
+>  	}
+>      }
+> +
+> +  /* If server uses --auth-gen-token and we have an auth token to send to client */
+> +  if (false == tls_multi->auth_token_sent && NULL != tls_multi->auth_token)
+> +    {
+> +      push_option_fmt(gc, push_list, M_USAGE, "auth-token %s", tls_multi->auth_token);
+> +      tls_multi->auth_token_sent = true;
+> +    }
+>    return true;
+>  }
+>  
+> diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
+> index 1b90c5e..3d802c9 100644
+> --- a/src/openvpn/ssl_common.h
+> +++ b/src/openvpn/ssl_common.h
+> @@ -526,6 +526,8 @@ struct tls_multi
+>    uint32_t peer_id;
+>    bool use_peer_id;
+>  
+> +  bool auth_token_sent;  /**< If server uses --auth-gen-token and
+> +                          *   token has been sent to client */
+>    char *auth_token;      /** If server sends a generated auth-token,
+>                            * this is the token to use for future
+>                            * user/pass authentications in this session.
+> 
+
+ACK, if you wrap the long lines and update the commit message.
+
+-Steffan
 
