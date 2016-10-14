@@ -1,12 +1,9 @@
-References: <1476388771-16492-1-git-send-email-davids@...515...>
-	<1476388771-16492-5-git-send-email-davids@...515...>
-From: Steffan Karger <steffan@...1856...>
-Message-ID: <cd6e0805-20fe-b61d-4858-595e84f234a0@...1856...>
-Date: Fri, 14 Oct 2016 15:30:30 +0200
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <294517a1-1e4d-023d-1b86-75d06387ac15@...515...>
+Date: Fri, 14 Oct 2016 18:28:54 +0300
 MIME-Version: 1.0
-In-Reply-To: <1476388771-16492-5-git-send-email-davids@...515...>
-Subject: Re: [Openvpn-devel] [PATCH 4/5] auth-gen-token: Push generated
- auth-tokens to the client
+Subject: [Openvpn-devel] Separate apt repositories for 2.4-alpha/beta/rc
+	releases?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,79 +12,26 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="iso-8859-15"; format=flowed
+Content-Transfer-Encoding: quoted-printable
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>
 
+Hi,
 
+Should we have a separate apt repository for "unstable" apt packages?=20
+Right now our apt repositories hold 2.3.x packages, meaning that=20
+upgrades have historically been fairly minor.
 
-On 13-10-16 21:59, David Sommerseth wrote:
-> If --auth-gen-token has been enabled and a token has been generated,
-> ensure this token is pushed to the client using the 'auth-token' option.
-> 
-> Signed-off-by: David Sommerseth <davids@...515...>
-> ---
->  src/openvpn/misc.c       | 5 +++++
->  src/openvpn/push.c       | 9 ++++++++-
->  src/openvpn/ssl_common.h | 2 ++
->  3 files changed, 15 insertions(+), 1 deletion(-)
-> 
-> diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
-> index 225f0bf..b74ac9d 100644
-> --- a/src/openvpn/misc.c
-> +++ b/src/openvpn/misc.c
-> @@ -2073,6 +2073,11 @@ sanitize_control_message(const char *src, struct gc_arena *gc)
+That said, users who use _our_ apt repositories have expressed interest=20
+in using something newer than what is available in their distribution's=20
+repositories.
 
-Wait, what?  We have over 2000 lines of 'misc.c'...?
+Would 2.3.12 -> 2.4-alpha1 be too big an upgrade?
 
-> +      else if (!check_debug_level(D_SHOW_KEYS) && (c == 'a' && !strncmp(src, "auth-token ", 11)))
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
 
-Overly long line.  (And not so clear code, but this is in line with the
-surrounding code, and you already sent an explanation.)
-
-> diff --git a/src/openvpn/push.c b/src/openvpn/push.c
-> index ee2eda4..0fb87ba 100644
-> --- a/src/openvpn/push.c
-> +++ b/src/openvpn/push.c
-> @@ -309,7 +309,7 @@ prepare_push_reply (struct context *c, struct gc_arena *gc,
->  		    struct push_list *push_list)
->  {
->    const char *optstr = NULL;
-> -  const struct tls_multi *tls_multi = c->c2.tls_multi;
-> +  struct tls_multi *tls_multi = c->c2.tls_multi;
->    const char * const peer_info = tls_multi->peer_info;
->    struct options *o = &c->options;
->  
-> @@ -371,6 +371,13 @@ prepare_push_reply (struct context *c, struct gc_arena *gc,
->  	  push_option_fmt(gc, push_list, M_USAGE, "cipher %s", o->ciphername);
->  	}
->      }
-> +
-> +  /* If server uses --auth-gen-token and we have an auth token to send to client */
-> +  if (false == tls_multi->auth_token_sent && NULL != tls_multi->auth_token)
-> +    {
-> +      push_option_fmt(gc, push_list, M_USAGE, "auth-token %s", tls_multi->auth_token);
-> +      tls_multi->auth_token_sent = true;
-> +    }
->    return true;
->  }
->  
-> diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
-> index 1b90c5e..3d802c9 100644
-> --- a/src/openvpn/ssl_common.h
-> +++ b/src/openvpn/ssl_common.h
-> @@ -526,6 +526,8 @@ struct tls_multi
->    uint32_t peer_id;
->    bool use_peer_id;
->  
-> +  bool auth_token_sent;  /**< If server uses --auth-gen-token and
-> +                          *   token has been sent to client */
->    char *auth_token;      /** If server sends a generated auth-token,
->                            * this is the token to use for future
->                            * user/pass authentications in this session.
-> 
-
-ACK, if you wrap the long lines and update the commit message.
-
--Steffan
+irc freenode net: mattock
 
