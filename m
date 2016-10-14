@@ -1,10 +1,15 @@
-From: David Sommerseth <davids@...515...>
-Date: Fri, 14 Oct 2016 12:18:31 +0200
-Message-Id: <1476440311-29382-1-git-send-email-davids@...515...>
-In-Reply-To: <1476388771-16492-4-git-send-email-davids@...515...>
-References: <1476388771-16492-4-git-send-email-davids@...515...>
-Subject: [Openvpn-devel] [PATCH v2 3/5] auth-gen-token: Generate an
-	auth-token per client
+References: <1476388771-16492-1-git-send-email-davids@...515...>
+	<1476388771-16492-5-git-send-email-davids@...515...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <7904fb91-3d07-46cf-e4d2-c03512209662@...2080...>
+Date: Fri, 14 Oct 2016 13:32:09 +0200
+MIME-Version: 1.0
+In-Reply-To: <1476388771-16492-5-git-send-email-davids@...515...>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="TT1W0vTlqQWk0ofOAMc7BSfbvdrv3Pk0L"
+Subject: Re: [Openvpn-devel] [PATCH 4/5] auth-gen-token: Push generated
+ auth-tokens to the client
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,128 +18,87 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-When --auth-gen-token is used a random token key is generated for
-each client after a successful user/password authentication.  This
-token is expected to be returned in the password field on the
-following authentications.
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--TT1W0vTlqQWk0ofOAMc7BSfbvdrv3Pk0L
+Content-Type: multipart/mixed; boundary="4rW3IcfQ7kAojKvicm2oHrXRqGEQJ9oCK";
+	protected-headers="v1"
+From: David Sommerseth <openvpn@...2080...>
+To: openvpn-devel@lists.sourceforge.net
+Message-ID: <7904fb91-3d07-46cf-e4d2-c03512209662@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH 4/5] auth-gen-token: Push generated
+	auth-tokens to the client
+References: <1476388771-16492-1-git-send-email-davids@...515...>
+	<1476388771-16492-5-git-send-email-davids@...515...>
+In-Reply-To: <1476388771-16492-5-git-send-email-davids@...515...>
 
-The token is 256 bits long and BASE64 encoded before it is stored.
+--4rW3IcfQ7kAojKvicm2oHrXRqGEQJ9oCK
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
 
-  v2 - Fix Doxygen comment typo
-     - Don't exceed 80 chars line length
+On 13/10/16 21:59, David Sommerseth wrote:
+> If --auth-gen-token has been enabled and a token has been generated,
+> ensure this token is pushed to the client using the 'auth-token' option.
+>=20
+> Signed-off-by: David Sommerseth <davids@...515...>
+> ---
+>  src/openvpn/misc.c       | 5 +++++
+>  src/openvpn/push.c       | 9 ++++++++-
+>  src/openvpn/ssl_common.h | 2 ++
+>  3 files changed, 15 insertions(+), 1 deletion(-)
+>=20
+> diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
+> index 225f0bf..b74ac9d 100644
+> --- a/src/openvpn/misc.c
+> +++ b/src/openvpn/misc.c
+> @@ -2073,6 +2073,11 @@ sanitize_control_message(const char *src, struct g=
+c_arena *gc)
+>  	  skip =3D 4;
+>  	  redact =3D true;
+>  	}
+> +      else if (!check_debug_level(D_SHOW_KEYS) && (c =3D=3D 'a' && !strn=
+cmp(src, "auth-token ", 11)))
+> +	{
+> +	  skip =3D 10;
+> +	  redact =3D true;
+> +	}
 
-Signed-off-by: David Sommerseth <davids@...515...>
----
- src/openvpn/ssl.c        |  6 ++++++
- src/openvpn/ssl_common.h |  8 ++++++++
- src/openvpn/ssl_verify.c | 39 +++++++++++++++++++++++++++++++++++++++
- 3 files changed, 53 insertions(+)
+This magic here should probably be explained in the commit message.  It
+basically removes the auth-token value from the log file, unless --verb
+is set to 7 or higher and debug logging have not been disabled
+(configure --disable-debug).
 
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index c7cf78d..54b6686 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -1173,6 +1173,12 @@ tls_multi_free (struct tls_multi *multi, bool clear)
- 
-   cert_hash_free (multi->locked_cert_hash_set);
- 
-+  if (multi->auth_token)
-+    {
-+      memset (multi->auth_token, 0, AUTH_TOKEN_SIZE);
-+      free (multi->auth_token);
-+    }
-+
-   for (i = 0; i < TM_SIZE; ++i)
-     tls_session_free (&multi->session[i], false);
- 
-diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
-index 50c4a9c..a340a69 100644
---- a/src/openvpn/ssl_common.h
-+++ b/src/openvpn/ssl_common.h
-@@ -351,6 +351,7 @@ struct tls_options
- /** @} name Index of key_state objects within a tls_session structure */
- /** @} addtogroup control_processor */
- 
-+#define AUTH_TOKEN_SIZE 32      /**< Size of server side generated auth tokens.  32 bytes == 256 bits */
- 
- /**
-  * Security parameter state of a single session within a VPN tunnel.
-@@ -525,6 +526,13 @@ struct tls_multi
-   uint32_t peer_id;
-   bool use_peer_id;
- 
-+  bool auth_token_sent;  /**< If server uses --auth-gen-token and
-+                          *   token has been sent to client */
-+  char *auth_token;      /**< If server sends a generated auth-token,
-+                          *   this is the token to use for future
-+                          *   user/pass authentications in this session.
-+                          */
-+  time_t auth_token_tstamp; /**< timestamp of the generated token */
-   /*
-    * Our session objects.
-    */
-diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
-index d0c22b8..497d1b7 100644
---- a/src/openvpn/ssl_verify.c
-+++ b/src/openvpn/ssl_verify.c
-@@ -39,6 +39,8 @@
- 
- #include "misc.h"
- #include "manage.h"
-+#include "otime.h"
-+#include "base64.h"
- #include "ssl_verify.h"
- #include "ssl_verify_backend.h"
- 
-@@ -1174,6 +1176,43 @@ verify_user_pass(struct user_pass *up, struct tls_multi *multi,
-       if (man_def_auth != KMDA_UNDEF)
- 	ks->auth_deferred = true;
- #endif
-+
-+      if ((session->opt->auth_generate_token) && (NULL == multi->auth_token))
-+	{
-+	  /* Server is configured with --auth-gen-token but no token has yet
-+	   * been generated for this client.  Generate one and save it.
-+	   */
-+	  uint8_t tok[AUTH_TOKEN_SIZE];
-+
-+	  if (!rand_bytes(tok, AUTH_TOKEN_SIZE))
-+	    {
-+	      msg( M_FATAL, "Failed to get enough randomness for "
-+                   "authentication token");
-+	    }
-+
-+	  /* The token should be longer than the input when
-+           * being base64 encoded
-+           */
-+	  if( openvpn_base64_encode(tok, AUTH_TOKEN_SIZE,
-+                                    &multi->auth_token) < AUTH_TOKEN_SIZE)
-+	    {
-+	      msg(D_TLS_ERRORS, "BASE64 encoding of token failed. "
-+                  "No auth-token will be activated now");
-+	      if (multi->auth_token)
-+		{
-+		  memset (multi->auth_token, 0, AUTH_TOKEN_SIZE);
-+		  free (multi->auth_token);
-+		  multi->auth_token = NULL;
-+		}
-+	    }
-+	  else
-+	    {
-+	      multi->auth_token_tstamp = now;
-+	      dmsg (D_SHOW_KEYS, "Generated token for client: %s",
-+                    multi->auth_token);
-+	    }
-+	}
-+
-       if ((session->opt->ssl_flags & SSLF_USERNAME_AS_COMMON_NAME))
- 	set_common_name (session, up->username);
- #ifdef ENABLE_DEF_AUTH
--- 
-1.8.3.1
+--=20
+kind regards,
 
+David Sommerseth
+
+
+--4rW3IcfQ7kAojKvicm2oHrXRqGEQJ9oCK--
+
+--TT1W0vTlqQWk0ofOAMc7BSfbvdrv3Pk0L
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBAgAGBQJYAMI6AAoJEIbPlEyWcf3yXo0P/06OOsG8DI+a9UM3qd0RWc56
+qJhTkd/URnqQ4OcVWLCqDjuKa55I2lM5czg69/J2Ou+JMEcTrC+3lXHmrukLOccl
+Y3a5QhjGdhJmVcAW67VqP2RZeYeKlDVzb7/KGwhseA/erlSbAyrIcfcju80O6uzy
+d+6Hs1dUto6Xqt+0kjZ+pKI7Ek1yDo92h55yMUU82Sm3VlNDJWE1yoRprmOBHXTE
+h5/aC8cA2jzzcovGlwJJgKPlgVNHoNyMAOA9ot1/zJY+jvroXCXrqX6xTPQZZFR+
+Qw4qynrDPGW7mvN4KDfyAq4+mdn5gdb9uaVOnuYPHA0A5Od0ipVX53pKhbGRgoLV
+jxjH7kOPB8pJ1xeYpgRBpta01mIJPua9LATT+miqVCoeYpoBmv1cbRCwGYc0wG8S
+EKhcmmY3DsPNcHYEPr3qvPR9KvDWUwXAmLqQJA2bJs9lK5cIbnKtwDLqHCo0Urdc
++GlSpskU+Yab+Wa72xl4JiwSQUw3DyBdDkKRJG16lYiHl5AfiJNFZ2yFAjnH78ph
+Lv0mkYzh5Yd3G/wPFWHBdUktwehS1RgGjHRvlemeQYHvagrHM+LIKrdzBN5M8NYR
+97hbexI23i9eDrynByP1S2crq/7hnNphG8o9+LFTWQa0A/D8KhqMtZV1OzULQqZb
+a6fpUPW3QzbUgYLjMtcE
+=88DH
+-----END PGP SIGNATURE-----
+
+--TT1W0vTlqQWk0ofOAMc7BSfbvdrv3Pk0L--
 
