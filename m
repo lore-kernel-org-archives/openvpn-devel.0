@@ -1,9 +1,15 @@
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <294517a1-1e4d-023d-1b86-75d06387ac15@...515...>
-Date: Fri, 14 Oct 2016 18:28:54 +0300
+References: <1476388771-16492-4-git-send-email-davids@...515...>
+	<1476440311-29382-1-git-send-email-davids@...515...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <b6e00d9e-bc91-67a5-52d1-f67e38612f95@...2080...>
+Date: Fri, 14 Oct 2016 20:42:21 +0200
 MIME-Version: 1.0
-Subject: [Openvpn-devel] Separate apt repositories for 2.4-alpha/beta/rc
-	releases?
+In-Reply-To: <1476440311-29382-1-git-send-email-davids@...515...>
+Content-Type: multipart/encrypted; protocol="application/pgp-encrypted";
+	boundary="5u95Q73LPT2uKvuBGSecPwfGAtBacioVp"
+Subject: Re: [Openvpn-devel] [PATCH v2 3/5] auth-gen-token: Generate an
+ auth-token per client
+Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,26 +18,85 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-15"; format=flowed
-Content-Transfer-Encoding: quoted-printable
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+This is an OpenPGP/MIME encrypted message (RFC 4880 and 3156)
+--5u95Q73LPT2uKvuBGSecPwfGAtBacioVp
+Content-Type: application/pgp-encrypted
+Content-Description: PGP/MIME version identification
 
-Should we have a separate apt repository for "unstable" apt packages?=20
-Right now our apt repositories hold 2.3.x packages, meaning that=20
-upgrades have historically been fairly minor.
+Version: 1
 
-That said, users who use _our_ apt repositories have expressed interest=20
-in using something newer than what is available in their distribution's=20
-repositories.
+--5u95Q73LPT2uKvuBGSecPwfGAtBacioVp
+Content-Type: application/octet-stream; name="encrypted.asc"
+Content-Description: OpenPGP encrypted message
+Content-Disposition: inline; filename="encrypted.asc"
 
-Would 2.3.12 -> 2.4-alpha1 be too big an upgrade?
+-----BEGIN PGP MESSAGE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
 
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
+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
+XuHF3u750TX3yS6gW2A=
+=rpYc
+-----END PGP MESSAGE-----
 
-irc freenode net: mattock
+--5u95Q73LPT2uKvuBGSecPwfGAtBacioVp--
 
