@@ -1,12 +1,13 @@
 References: <1476388771-16492-2-git-send-email-davids@...515...>
 	<1476434891-14646-1-git-send-email-davids@...515...>
 From: David Sommerseth <openvpn@...2080...>
-Message-ID: <60974cfe-6042-8e40-c3ef-1acd7c1b2deb@...2080...>
-Date: Fri, 14 Oct 2016 11:03:34 +0200
+Message-ID: <69789502-e429-96d3-c9e7-7d0279d2de4b@...2080...>
+Date: Fri, 14 Oct 2016 11:06:50 +0200
 MIME-Version: 1.0
 In-Reply-To: <1476434891-14646-1-git-send-email-davids@...515...>
-Content-Type: multipart/encrypted; protocol="application/pgp-encrypted";
-	boundary="jRnIlGjMbe9CNlotv3RJjJgmgr3gaRVA5"
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="CIXlq8M9vWH19PauaQpkSPe5JxXLiRkLU"
 Subject: Re: [Openvpn-devel] [PATCH applied] Move memcmp_constant_time() to
  crypto.h
 Reply-To: openvpn-devel@lists.sourceforge.net
@@ -18,73 +19,97 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+To: David Sommerseth <davids@...515...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME encrypted message (RFC 4880 and 3156)
---jRnIlGjMbe9CNlotv3RJjJgmgr3gaRVA5
-Content-Type: application/pgp-encrypted
-Content-Description: PGP/MIME version identification
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--CIXlq8M9vWH19PauaQpkSPe5JxXLiRkLU
+Content-Type: multipart/mixed; boundary="6uxj4R5micmp8w1vA9im3aD4SFV3KvXoK";
+	protected-headers="v1"
+From: David Sommerseth <openvpn@...2080...>
+Reply-To: openvpn-devel@lists.sourceforge.net
+To: David Sommerseth <davids@...515...>
+Cc: openvpn-devel@lists.sourceforge.net
+Message-ID: <69789502-e429-96d3-c9e7-7d0279d2de4b@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Move memcmp_constant_time() to
+	crypto.h
+References: <1476388771-16492-2-git-send-email-davids@...515...>
+	<1476434891-14646-1-git-send-email-davids@...515...>
+In-Reply-To: <1476434891-14646-1-git-send-email-davids@...515...>
 
-Version: 1
+--6uxj4R5micmp8w1vA9im3aD4SFV3KvXoK
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
 
---jRnIlGjMbe9CNlotv3RJjJgmgr3gaRVA5
-Content-Type: application/octet-stream; name="encrypted.asc"
-Content-Description: OpenPGP encrypted message
-Content-Disposition: inline; filename="encrypted.asc"
+On 14/10/16 10:48, David Sommerseth wrote:
+> Your patch has been applied to the master branch
+>=20
+> commit b891e57e1fe794483c08296e32c15751f2676a2d
+> Author: David Sommerseth
+> Date:   Thu Oct 13 21:59:27 2016 +0200
+>=20
+>      Move memcmp_constant_time() to crypto.h
+>=20
+>      Signed-off-by: David Sommerseth <davids@...515...>
+>      Acked-by: Steffan Karger <steffan@...1856...>
+>      Message-Id: <1476388771-16492-2-git-send-email-davids@...515...>
+>      URL: https://www.mail-archive.com/openvpn-devel@...475...=
+t/msg12698.html
+>=20
 
------BEGIN PGP MESSAGE-----
+[Lets try again, and see if Enigmail can be convinced not to encrypt it
+this time]
+
+Just for reference, as I forgot to state that in the previous mail.
+
+This patch was slightly modified at commit time.  The function
+declaration changed from 'static int' to 'static inline int', as
+requested by Steffan Karger.
+
+The difference is:
+------------------------------------------------------------------------
+@@ -31,7 +31,7 @@
+ + * As memcmp(), but constant-time.
+ + * Returns 0 when data is equal, non-zero otherwise.
+ + */
+-+static int
+++static inline int
+ +memcmp_constant_time (const void *a, const void *b, size_t size) {
+ +  const uint8_t * a1 =3D a;
+ +  const uint8_t * b1 =3D b;
+------------------------------------------------------------------------
+
+
+--=20
+kind regards,
+
+David Sommerseth
+
+
+--6uxj4R5micmp8w1vA9im3aD4SFV3KvXoK--
+
+--CIXlq8M9vWH19PauaQpkSPe5JxXLiRkLU
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-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
-=JALy
------END PGP MESSAGE-----
+iQIcBAEBAgAGBQJYAKAqAAoJEIbPlEyWcf3yIMQP/2jMRkI6Ax3nTwGAUR8uCHgd
+u+aWhdXGF3O3K7VT0dUy+hR25xckppONISzVMFGu3ZLy33ANWVngEzA7YiS2Lfe1
+574CnkiYR1FyAXW8FTrZ3mgVTt1buuCfGH+F7yiM63prZWJGoSfwSM02OxMBPu8Z
+g7lBLH5bfiSmdhea+/LehmfQTnPdVN58+ukuR7O13tJESM3LqnTbrT4S8JRhjFi/
+2DMSNRzyJJSYPkph03sew5NEhckGWbnXj8fDwn7ZBaNK+5JxGDvDmQg5e5fxGgRV
+rQK4+RS/03HtAj6mkdT5qVAZGgmuzC3lVCVjAZYWqi8n7Re573/fF6AxUM4kcdGn
+ARdf8MsY9ua02753zBykY7yBGZI162U2ln+oeQm1tv5NeUAIJH905OadKjgCRLBn
+lK6s5cEnUV1VvGAIvp/AZ+EBjbcHrvPdeGknA7loDs7RA6xho7VOtT8Op51SSPjS
+Zk2VkwxpHrTjW3bSIG+huhkI+3AEDYV6IEmjap/nZLbdWSdoBXl3dFXr+6J5+9cy
+ren4ivtmJjA6rUNElf4FPT5tYdGvAx8PITCsDAKoMA33IEdT3NDN4tTqBZMe7BEy
+eNpGR6ai8VTjR4cwMfGuX93CeyJpRcERWQOw8aQabJ+MvXUhEoqjyVW6+Kb4Nh07
+n0qYH62ql/6opJgCoKig
+=Gfl8
+-----END PGP SIGNATURE-----
 
---jRnIlGjMbe9CNlotv3RJjJgmgr3gaRVA5--
+--CIXlq8M9vWH19PauaQpkSPe5JxXLiRkLU--
 
