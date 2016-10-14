@@ -1,12 +1,13 @@
 References: <1476388771-16492-4-git-send-email-davids@...515...>
 	<1476440311-29382-1-git-send-email-davids@...515...>
 From: David Sommerseth <openvpn@...2080...>
-Message-ID: <b6e00d9e-bc91-67a5-52d1-f67e38612f95@...2080...>
-Date: Fri, 14 Oct 2016 20:42:21 +0200
+Message-ID: <a59474b2-88ef-07ef-54dd-5e6b2a123a4a@...2080...>
+Date: Fri, 14 Oct 2016 20:47:02 +0200
 MIME-Version: 1.0
 In-Reply-To: <1476440311-29382-1-git-send-email-davids@...515...>
-Content-Type: multipart/encrypted; protocol="application/pgp-encrypted";
-	boundary="5u95Q73LPT2uKvuBGSecPwfGAtBacioVp"
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="33CNFRoRARJGkAvcXeToqFOOju7KBduvh"
 Subject: Re: [Openvpn-devel] [PATCH v2 3/5] auth-gen-token: Generate an
  auth-token per client
 Reply-To: openvpn-devel@lists.sourceforge.net
@@ -20,83 +21,193 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME encrypted message (RFC 4880 and 3156)
---5u95Q73LPT2uKvuBGSecPwfGAtBacioVp
-Content-Type: application/pgp-encrypted
-Content-Description: PGP/MIME version identification
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--33CNFRoRARJGkAvcXeToqFOOju7KBduvh
+Content-Type: multipart/mixed; boundary="BhCb3l6pF7JPIbff7j0EWgvdjV51GRpjl";
+	protected-headers="v1"
+From: David Sommerseth <openvpn@...2080...>
+Reply-To: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
+Message-ID: <a59474b2-88ef-07ef-54dd-5e6b2a123a4a@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH v2 3/5] auth-gen-token: Generate an
+	auth-token per client
+References: <1476388771-16492-4-git-send-email-davids@...515...>
+	<1476440311-29382-1-git-send-email-davids@...515...>
+In-Reply-To: <1476440311-29382-1-git-send-email-davids@...515...>
 
-Version: 1
+--BhCb3l6pF7JPIbff7j0EWgvdjV51GRpjl
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
 
---5u95Q73LPT2uKvuBGSecPwfGAtBacioVp
-Content-Type: application/octet-stream; name="encrypted.asc"
-Content-Description: OpenPGP encrypted message
-Content-Disposition: inline; filename="encrypted.asc"
 
------BEGIN PGP MESSAGE-----
+Meh ... disregard this patch.  Just noticed that the auth_token_sent
+member in the struct tls_options sneaked into this patch during my git
+rebasing.
+
+I'll send the correct v2 patch (as v2.1 in the subject only)
+
+--
+kind regards,
+
+David Sommerseth
+
+
+On 14/10/16 12:18, David Sommerseth wrote:
+> When --auth-gen-token is used a random token key is generated for
+> each client after a successful user/password authentication.  This
+> token is expected to be returned in the password field on the
+> following authentications.
+>=20
+> The token is 256 bits long and BASE64 encoded before it is stored.
+>=20
+>   v2 - Fix Doxygen comment typo
+>      - Don't exceed 80 chars line length
+>=20
+> Signed-off-by: David Sommerseth <davids@...515...>
+> ---
+>  src/openvpn/ssl.c        |  6 ++++++
+>  src/openvpn/ssl_common.h |  8 ++++++++
+>  src/openvpn/ssl_verify.c | 39 +++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 53 insertions(+)
+>=20
+> diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+> index c7cf78d..54b6686 100644
+> --- a/src/openvpn/ssl.c
+> +++ b/src/openvpn/ssl.c
+> @@ -1173,6 +1173,12 @@ tls_multi_free (struct tls_multi *multi, bool clea=
+r)
+>=20=20
+>    cert_hash_free (multi->locked_cert_hash_set);
+>=20=20
+> +  if (multi->auth_token)
+> +    {
+> +      memset (multi->auth_token, 0, AUTH_TOKEN_SIZE);
+> +      free (multi->auth_token);
+> +    }
+> +
+>    for (i =3D 0; i < TM_SIZE; ++i)
+>      tls_session_free (&multi->session[i], false);
+>=20=20
+> diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
+> index 50c4a9c..a340a69 100644
+> --- a/src/openvpn/ssl_common.h
+> +++ b/src/openvpn/ssl_common.h
+> @@ -351,6 +351,7 @@ struct tls_options
+>  /** @} name Index of key_state objects within a tls_session structure */
+>  /** @} addtogroup control_processor */
+>=20=20
+> +#define AUTH_TOKEN_SIZE 32      /**< Size of server side generated auth =
+tokens.  32 bytes =3D=3D 256 bits */
+>=20=20
+>  /**
+>   * Security parameter state of a single session within a VPN tunnel.
+> @@ -525,6 +526,13 @@ struct tls_multi
+>    uint32_t peer_id;
+>    bool use_peer_id;
+>=20=20
+> +  bool auth_token_sent;  /**< If server uses --auth-gen-token and
+> +                          *   token has been sent to client */
+> +  char *auth_token;      /**< If server sends a generated auth-token,
+> +                          *   this is the token to use for future
+> +                          *   user/pass authentications in this session.
+> +                          */
+> +  time_t auth_token_tstamp; /**< timestamp of the generated token */
+>    /*
+>     * Our session objects.
+>     */
+> diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
+> index d0c22b8..497d1b7 100644
+> --- a/src/openvpn/ssl_verify.c
+> +++ b/src/openvpn/ssl_verify.c
+> @@ -39,6 +39,8 @@
+>=20=20
+>  #include "misc.h"
+>  #include "manage.h"
+> +#include "otime.h"
+> +#include "base64.h"
+>  #include "ssl_verify.h"
+>  #include "ssl_verify_backend.h"
+>=20=20
+> @@ -1174,6 +1176,43 @@ verify_user_pass(struct user_pass *up, struct tls_=
+multi *multi,
+>        if (man_def_auth !=3D KMDA_UNDEF)
+>  	ks->auth_deferred =3D true;
+>  #endif
+> +
+> +      if ((session->opt->auth_generate_token) && (NULL =3D=3D multi->aut=
+h_token))
+> +	{
+> +	  /* Server is configured with --auth-gen-token but no token has yet
+> +	   * been generated for this client.  Generate one and save it.
+> +	   */
+> +	  uint8_t tok[AUTH_TOKEN_SIZE];
+> +
+> +	  if (!rand_bytes(tok, AUTH_TOKEN_SIZE))
+> +	    {
+> +	      msg( M_FATAL, "Failed to get enough randomness for "
+> +                   "authentication token");
+> +	    }
+> +
+> +	  /* The token should be longer than the input when
+> +           * being base64 encoded
+> +           */
+> +	  if( openvpn_base64_encode(tok, AUTH_TOKEN_SIZE,
+> +                                    &multi->auth_token) < AUTH_TOKEN_SIZ=
+E)
+> +	    {
+> +	      msg(D_TLS_ERRORS, "BASE64 encoding of token failed. "
+> +                  "No auth-token will be activated now");
+> +	      if (multi->auth_token)
+> +		{
+> +		  memset (multi->auth_token, 0, AUTH_TOKEN_SIZE);
+> +		  free (multi->auth_token);
+> +		  multi->auth_token =3D NULL;
+> +		}
+> +	    }
+> +	  else
+> +	    {
+> +	      multi->auth_token_tstamp =3D now;
+> +	      dmsg (D_SHOW_KEYS, "Generated token for client: %s",
+> +                    multi->auth_token);
+> +	    }
+> +	}
+> +
+>        if ((session->opt->ssl_flags & SSLF_USERNAME_AS_COMMON_NAME))
+>  	set_common_name (session, up->username);
+>  #ifdef ENABLE_DEF_AUTH
+>=20
+
+
+--=20
+kind regards,
+
+David Sommerseth
+
+
+--BhCb3l6pF7JPIbff7j0EWgvdjV51GRpjl--
+
+--33CNFRoRARJGkAvcXeToqFOOju7KBduvh
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-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
-XuHF3u750TX3yS6gW2A=
-=rpYc
------END PGP MESSAGE-----
+iQIcBAEBAgAGBQJYASgmAAoJEIbPlEyWcf3yz34P/igBs3ox5P0LsZdGoFP10wSE
+gpKTO0yrkIWpn4IHhxTHq7QtvXjiDw6TCXj7dIXOFqWVfMbWT7qAtPr+V7kB22M1
+U3JYbYJeWx2EFiY3LLtO7M08ytA5CYdarYMW6IMRw0yIJgdLho9vgBVQTXtAR9o/
+5g31E2setRMb00iq6s1eFhn+CnlDCMIidpKk0WeMlIDoCqnax2l4y/dmeYUtr6Hc
+nrvdMxONsVbsELetUjCrXWA/l1Rafu4qcAKFozVHRG61nOxtl9+dlIG5oO+uw7Ov
+pAqBEROo2B9G+odO4ouEV3Qgi7huK5XUHmXDglisqyICwRE+O+IY5ffFesVJ0e70
+nV9W8zQrVEH8vmy7uUPU3EoHp2qeTlTuQoyVZPh+kNflc48/OkdWPG1Eh/vwjobc
+Lp/IP7oW7lWhK/To55iieplzui2pjFk7z0b3/RDB9vGGEtVFhAA9cQG/HELVNFlb
+2KND+YeZex6mS4bMxh2LvWWNGrfqgL+hRTl+QfhYRB+YozQne5B6oF+4sdu+f/Bo
+MAHenhgYzcNPDN+7pGfogrQ0NcaqaGwo3fLbQ7aEG7ulzq08SderY1xa+sA+aeEd
+hLJNflyq9bgMQXGXNMQXl4WxPgBpND++4bR0fms4FHPzdYsVsZyTnEfV2AYv5YgY
+mZtMsP2fCM1gQTHtDpPa
+=wkct
+-----END PGP SIGNATURE-----
 
---5u95Q73LPT2uKvuBGSecPwfGAtBacioVp--
+--33CNFRoRARJGkAvcXeToqFOOju7KBduvh--
 
