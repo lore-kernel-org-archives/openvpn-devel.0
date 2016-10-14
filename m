@@ -1,16 +1,12 @@
-References: <1476388771-16492-2-git-send-email-davids@...515...>
-	<1476434891-14646-1-git-send-email-davids@...515...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <69789502-e429-96d3-c9e7-7d0279d2de4b@...2080...>
-Date: Fri, 14 Oct 2016 11:06:50 +0200
+References: <1476388771-16492-1-git-send-email-davids@...515...>
+	<1476388771-16492-4-git-send-email-davids@...515...>
+From: Steffan Karger <steffan@...1856...>
+Message-ID: <04ecbfa3-5096-25c5-10eb-d3e632d807db@...1856...>
+Date: Fri, 14 Oct 2016 11:38:08 +0200
 MIME-Version: 1.0
-In-Reply-To: <1476434891-14646-1-git-send-email-davids@...515...>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="CIXlq8M9vWH19PauaQpkSPe5JxXLiRkLU"
-Subject: Re: [Openvpn-devel] [PATCH applied] Move memcmp_constant_time() to
- crypto.h
-Reply-To: openvpn-devel@lists.sourceforge.net
+In-Reply-To: <1476388771-16492-4-git-send-email-davids@...515...>
+Subject: Re: [Openvpn-devel] [PATCH 3/5] auth-gen-token: Generate an
+ auth-token per client
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,97 +15,115 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: David Sommerseth <davids@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---CIXlq8M9vWH19PauaQpkSPe5JxXLiRkLU
-Content-Type: multipart/mixed; boundary="6uxj4R5micmp8w1vA9im3aD4SFV3KvXoK";
-	protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-Reply-To: openvpn-devel@lists.sourceforge.net
-To: David Sommerseth <davids@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
-Message-ID: <69789502-e429-96d3-c9e7-7d0279d2de4b@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Move memcmp_constant_time() to
-	crypto.h
-References: <1476388771-16492-2-git-send-email-davids@...515...>
-	<1476434891-14646-1-git-send-email-davids@...515...>
-In-Reply-To: <1476434891-14646-1-git-send-email-davids@...515...>
+Hi,
 
---6uxj4R5micmp8w1vA9im3aD4SFV3KvXoK
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
+Patch looks good, but haven't tested yet.  Will test he set as a whole.
 
-On 14/10/16 10:48, David Sommerseth wrote:
-> Your patch has been applied to the master branch
->=20
-> commit b891e57e1fe794483c08296e32c15751f2676a2d
-> Author: David Sommerseth
-> Date:   Thu Oct 13 21:59:27 2016 +0200
->=20
->      Move memcmp_constant_time() to crypto.h
->=20
->      Signed-off-by: David Sommerseth <davids@...515...>
->      Acked-by: Steffan Karger <steffan@...1856...>
->      Message-Id: <1476388771-16492-2-git-send-email-davids@...515...>
->      URL: https://www.mail-archive.com/openvpn-devel@...475...=
-t/msg12698.html
->=20
+Some minor remarks:
 
-[Lets try again, and see if Enigmail can be convinced not to encrypt it
-this time]
+On 13-10-16 21:59, David Sommerseth wrote:
+> When --auth-gen-token is used a random token key is generated for
+> each client after a successful user/password authentication.  This
+> token is expected to be returned in the password field on the
+> following authentications.
+> 
+> The token is 256 bits long and BASE64 encoded before it is stored.
+> 
+> Signed-off-by: David Sommerseth <davids@...515...>
+> ---
+>  src/openvpn/ssl.c        |  6 ++++++
+>  src/openvpn/ssl_common.h |  6 ++++++
+>  src/openvpn/ssl_verify.c | 33 +++++++++++++++++++++++++++++++++
+>  3 files changed, 45 insertions(+)
+> 
+> diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+> index c7cf78d..54b6686 100644
+> --- a/src/openvpn/ssl.c
+> +++ b/src/openvpn/ssl.c
+> @@ -1173,6 +1173,12 @@ tls_multi_free (struct tls_multi *multi, bool clear)
+>  
+>    cert_hash_free (multi->locked_cert_hash_set);
+>  
+> +  if (multi->auth_token)
+> +    {
+> +      memset (multi->auth_token, 0, AUTH_TOKEN_SIZE);
+> +      free (multi->auth_token);
+> +    }
 
-Just for reference, as I forgot to state that in the previous mail.
+This memset() is likely to be optimized away by the compiler, but we
+have many more like this, so let's leave it like this for now, and fix
+all these in one go (I created trac #751 to keep track).
 
-This patch was slightly modified at commit time.  The function
-declaration changed from 'static int' to 'static inline int', as
-requested by Steffan Karger.
+>    for (i = 0; i < TM_SIZE; ++i)
+>      tls_session_free (&multi->session[i], false);
+>  
+> diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
+> index 60121db..1b90c5e 100644
+> --- a/src/openvpn/ssl_common.h
+> +++ b/src/openvpn/ssl_common.h
+> @@ -351,6 +351,7 @@ struct tls_options
+>  /** @} name Index of key_state objects within a tls_session structure */
+>  /** @} addtogroup control_processor */
+>  
+> +#define AUTH_TOKEN_SIZE 32      /**< Size of server side generated auth tokens.  32 bytes == 256 bits */
+>  
+>  /**
+>   * Security parameter state of a single session within a VPN tunnel.
+> @@ -525,6 +526,11 @@ struct tls_multi
+>    uint32_t peer_id;
+>    bool use_peer_id;
+>  
+> +  char *auth_token;      /** If server sends a generated auth-token,
+> +                          * this is the token to use for future
+> +                          * user/pass authentications in this session.
+> +                          */
 
-The difference is:
-------------------------------------------------------------------------
-@@ -31,7 +31,7 @@
- + * As memcmp(), but constant-time.
- + * Returns 0 when data is equal, non-zero otherwise.
- + */
--+static int
-++static inline int
- +memcmp_constant_time (const void *a, const void *b, size_t size) {
- +  const uint8_t * a1 =3D a;
- +  const uint8_t * b1 =3D b;
-------------------------------------------------------------------------
+Use /**< to make this a doxygen comment (like you did below).
 
+> +  time_t auth_token_tstamp; /**< timestamp of the generated token */
+>    /*
+>     * Our session objects.
+>     */
+> diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
+> index d0c22b8..24ec56e 100644
+> --- a/src/openvpn/ssl_verify.c
+> +++ b/src/openvpn/ssl_verify.c
+> @@ -39,6 +39,8 @@
+>  
+>  #include "misc.h"
+>  #include "manage.h"
+> +#include "otime.h"
+> +#include "base64.h"
+>  #include "ssl_verify.h"
+>  #include "ssl_verify_backend.h"
+>  
+> @@ -1174,6 +1176,37 @@ verify_user_pass(struct user_pass *up, struct tls_multi *multi,
+>        if (man_def_auth != KMDA_UNDEF)
+>  	ks->auth_deferred = true;
+>  #endif
+> +
+> +      if ((session->opt->auth_generate_token) && (NULL == multi->auth_token))
+> +	{
+> +	  /* Server is configured with --auth-gen-token but no token has yet been
+> +	   * generated for this client.	 Generate one and save it.
+> +	   */
+> +	  uint8_t tok[AUTH_TOKEN_SIZE];
+> +
+> +	  if (!rand_bytes(tok, AUTH_TOKEN_SIZE))
+> +	    {
+> +	      msg( M_FATAL, "Failed to get enough randomness for authentication token");
+> +	    }
+> +
+> +	  /* The token should be longer than the input when being base64 encoded*/
+> +	  if( openvpn_base64_encode(tok, AUTH_TOKEN_SIZE, &multi->auth_token) < AUTH_TOKEN_SIZE)
+> +	    {
+> +	      msg(D_TLS_ERRORS, "BASE64 encoding of token failed.  No auth-token will be activated now");
 
---=20
-kind regards,
+These are quite a bit longer than 80 chars.
 
-David Sommerseth
-
-
---6uxj4R5micmp8w1vA9im3aD4SFV3KvXoK--
-
---CIXlq8M9vWH19PauaQpkSPe5JxXLiRkLU
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBAgAGBQJYAKAqAAoJEIbPlEyWcf3yIMQP/2jMRkI6Ax3nTwGAUR8uCHgd
-u+aWhdXGF3O3K7VT0dUy+hR25xckppONISzVMFGu3ZLy33ANWVngEzA7YiS2Lfe1
-574CnkiYR1FyAXW8FTrZ3mgVTt1buuCfGH+F7yiM63prZWJGoSfwSM02OxMBPu8Z
-g7lBLH5bfiSmdhea+/LehmfQTnPdVN58+ukuR7O13tJESM3LqnTbrT4S8JRhjFi/
-2DMSNRzyJJSYPkph03sew5NEhckGWbnXj8fDwn7ZBaNK+5JxGDvDmQg5e5fxGgRV
-rQK4+RS/03HtAj6mkdT5qVAZGgmuzC3lVCVjAZYWqi8n7Re573/fF6AxUM4kcdGn
-ARdf8MsY9ua02753zBykY7yBGZI162U2ln+oeQm1tv5NeUAIJH905OadKjgCRLBn
-lK6s5cEnUV1VvGAIvp/AZ+EBjbcHrvPdeGknA7loDs7RA6xho7VOtT8Op51SSPjS
-Zk2VkwxpHrTjW3bSIG+huhkI+3AEDYV6IEmjap/nZLbdWSdoBXl3dFXr+6J5+9cy
-ren4ivtmJjA6rUNElf4FPT5tYdGvAx8PITCsDAKoMA33IEdT3NDN4tTqBZMe7BEy
-eNpGR6ai8VTjR4cwMfGuX93CeyJpRcERWQOw8aQabJ+MvXUhEoqjyVW6+Kb4Nh07
-n0qYH62ql/6opJgCoKig
-=Gfl8
------END PGP SIGNATURE-----
-
---CIXlq8M9vWH19PauaQpkSPe5JxXLiRkLU--
+-Steffan
 
