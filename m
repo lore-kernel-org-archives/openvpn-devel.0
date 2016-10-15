@@ -1,16 +1,18 @@
 References: <294517a1-1e4d-023d-1b86-75d06387ac15@...515...>
 	<95391fd4-7b2f-389c-3752-4123d016286d@...68...>
 	<CAA1AbxLYBTUPyQBZy-pvyV8gmgBjvLcB4DFAV8_aJuNFspMB5w@...278...>
-From: Matthias Andree <matthias.andree@...68...>
-Message-ID: <d0ce06ad-1bfd-a271-f611-183087eb0c08@...68...>
-Date: Sat, 15 Oct 2016 11:01:06 +0200
+	<d0ce06ad-1bfd-a271-f611-183087eb0c08@...68...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <105bf86c-4cd3-ba94-3141-e5979faaf507@...2080...>
+Date: Sat, 15 Oct 2016 12:11:43 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAA1AbxLYBTUPyQBZy-pvyV8gmgBjvLcB4DFAV8_aJuNFspMB5w@...278...>
-Content-Type: multipart/signed; micalg=pgp-sha512;
+In-Reply-To: <d0ce06ad-1bfd-a271-f611-183087eb0c08@...68...>
+Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="6vg428VdCWaXa6QsLqo84FieNDjBW8osq"
+	boundary="AUt9VHxWCB65bJfR9IMfT21WNHqk3lPxb"
 Subject: Re: [Openvpn-devel] Separate apt repositories for 2.4-alpha/beta/rc
  releases?
+Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,125 +21,101 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Matthias Andree <matthias.andree@...68...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---6vg428VdCWaXa6QsLqo84FieNDjBW8osq
-Content-Type: multipart/mixed; boundary="OBgbd6mrDC4KosUenNHR711UM2l9RrEo9";
+--AUt9VHxWCB65bJfR9IMfT21WNHqk3lPxb
+Content-Type: multipart/mixed; boundary="wOIrgc5oW7oAJwB6s4wO4tUX5kCMtbpFj";
 	protected-headers="v1"
-From: Matthias Andree <matthias.andree@...68...>
-To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Message-ID: <d0ce06ad-1bfd-a271-f611-183087eb0c08@...68...>
+From: David Sommerseth <openvpn@...2080...>
+Reply-To: openvpn-devel@lists.sourceforge.net
+To: Matthias Andree <matthias.andree@...68...>,
+	openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Message-ID: <105bf86c-4cd3-ba94-3141-e5979faaf507@...2080...>
 Subject: Re: [Openvpn-devel] Separate apt repositories for 2.4-alpha/beta/rc
 	releases?
 References: <294517a1-1e4d-023d-1b86-75d06387ac15@...515...>
 	<95391fd4-7b2f-389c-3752-4123d016286d@...68...>
 	<CAA1AbxLYBTUPyQBZy-pvyV8gmgBjvLcB4DFAV8_aJuNFspMB5w@...278...>
-In-Reply-To: <CAA1AbxLYBTUPyQBZy-pvyV8gmgBjvLcB4DFAV8_aJuNFspMB5w@...278...>
+	<d0ce06ad-1bfd-a271-f611-183087eb0c08@...68...>
+In-Reply-To: <d0ce06ad-1bfd-a271-f611-183087eb0c08@...68...>
 
---OBgbd6mrDC4KosUenNHR711UM2l9RrEo9
-Content-Type: multipart/alternative;
-	boundary="------------84E51ACEB31AD6CD0DC135F6"
-
-This is a multi-part message in MIME format.
---------------84E51ACEB31AD6CD0DC135F6
-Content-Type: text/plain; charset="utf-8"
+--wOIrgc5oW7oAJwB6s4wO4tUX5kCMtbpFj
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
 
-Am 14.10.2016 um 21:51 schrieb Steffan Karger:
->
-> On 14 Oct 2016 9:14 p.m., "Matthias Andree" <matthias.andree@...68...
-> <mailto:matthias.andree@...68...>> wrote:
-> >
-> > Am 14.10.2016 um 17:28 schrieb Samuli Sepp=C3=A4nen:
->
-> > > Would 2.3.12 -> 2.4-alpha1 be too big an upgrade?
-> > >
-> > Yes, definitely. Please create a separate distribution for .deb packages
-> > derived from pre-releases.
->
-> Indeed. We shouldn't upgrade people who are expecting stable releases
-> to alpha versions.
->
-One more somewhat more constructive note:
-Oracle have been naming their VirtualBox packages such that they
-included the minor version in the NAME.
-So the package name would be openvpn-2.3 or openvpn-2.4 for us, which
-creates redundancy as the actual version is added (openvpn-2.3-2.3.12),
-but it prevents moving users between release branches.
+On 15/10/16 11:01, Matthias Andree wrote:
+> Am 14.10.2016 um 21:51 schrieb Steffan Karger:
+>>
+>> On 14 Oct 2016 9:14 p.m., "Matthias Andree" <matthias.andree@...68...
+>> <mailto:matthias.andree@...68...>> wrote:
+>> >
+>> > Am 14.10.2016 um 17:28 schrieb Samuli Sepp=E4nen:
+>>
+>> > > Would 2.3.12 -> 2.4-alpha1 be too big an upgrade?
+>> > >
+>> > Yes, definitely. Please create a separate distribution for .deb packag=
+es
+>> > derived from pre-releases.
+>>
+>> Indeed. We shouldn't upgrade people who are expecting stable releases
+>> to alpha versions.
+>>
+> One more somewhat more constructive note:
+> Oracle have been naming their VirtualBox packages such that they
+> included the minor version in the NAME.
+> So the package name would be openvpn-2.3 or openvpn-2.4 for us, which
+> creates redundancy as the actual version is added (openvpn-2.3-2.3.12),
+> but it prevents moving users between release branches.
+>=20
+> Alpha/beta releases and perhaps the early release candidates should
+> still also be marked in a separate "unstable" 'distribution'.
 
-Alpha/beta releases and perhaps the early release candidates should
-still also be marked in a separate "unstable" 'distribution'.
+That's a clever thing, and is also done in the Fedora/RHEL world too.
+However there are some pitfalls which is needed to beware of.
 
---------------84E51ACEB31AD6CD0DC135F6
-Content-Type: text/html; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+You either need to
 
-<html>
-  <head>
-    <meta content=3D"text/html; charset=3Dutf-8" http-equiv=3D"Content-Type=
-">
-  </head>
-  <body bgcolor=3D"#FFFFFF" text=3D"#000000">
-    <div class=3D"moz-cite-prefix">Am 14.10.2016 um 21:51 schrieb Steffan
-      Karger:<br>
-    </div>
-    <blockquote
-cite=3D"mid:CAA1AbxLYBTUPyQBZy-pvyV8gmgBjvLcB4DFAV8_aJuNFspMB5w@...278..."
-      type=3D"cite">
-      <p dir=3D"ltr">On 14 Oct 2016 9:14 p.m., "Matthias Andree" &lt;<a
-          moz-do-not-send=3D"true" href=3D"mailto:matthias.andree@...68..."=
->matthias.andree@...68...</a>&gt;
-        wrote:<br>
-        &gt;<br>
-        &gt; Am 14.10.2016 um 17:28 schrieb Samuli Sepp=C3=A4nen:<br>
-        <br>
-        &gt; &gt; Would 2.3.12 -&gt; 2.4-alpha1 be too big an upgrade?<br>
-        &gt; &gt;<br>
-        &gt; Yes, definitely. Please create a separate distribution for
-        .deb packages<br>
-        &gt; derived from pre-releases.</p>
-      <p dir=3D"ltr">Indeed. We shouldn't upgrade people who are expecting
-        stable releases to alpha versions. </p>
-    </blockquote>
-    One more somewhat more constructive note:<br>
-    Oracle have been naming their VirtualBox packages such that they
-    included the minor version in the NAME.<br>
-    So the package name would be openvpn-2.3 or openvpn-2.4 for us,
-    which creates redundancy as the actual version is added
-    (openvpn-2.3-2.3.12), but it prevents moving users between release
-    branches.<br>
-    <br>
-    Alpha/beta releases and perhaps the early release candidates should
-    still also be marked in a separate "unstable" 'distribution'.<br>
-  </body>
-</html>
+a) have the files installed in a way so they don't collide.  Then
+   use some tools (like 'alternatives' in the Fedora/RHEL world) to
+   switch between which version being system default
 
---------------84E51ACEB31AD6CD0DC135F6--
+or
 
---OBgbd6mrDC4KosUenNHR711UM2l9RrEo9--
+b) Have the package exclude each other to block both being installed
+   at the same time.
 
---6vg428VdCWaXa6QsLqo84FieNDjBW8osq
+
+--=20
+kind regards,
+
+David Sommerseth
+
+
+--wOIrgc5oW7oAJwB6s4wO4tUX5kCMtbpFj--
+
+--AUt9VHxWCB65bJfR9IMfT21WNHqk3lPxb
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBCgAGBQJYAfBSAAoJEOQSsVbv84Vas2oQAMCKIIkEXiYjTn8YHgYiI3M/
-wR3YRXvjSAjOI7+ghtv2/L/UOppAoWAD3VytwqPx25kX/Ht0bI1grSg7Fzn2an3i
-TVQPjYbM6Moe11MfI5r2nFmZK268NOntnKRqCw16yWPjMvS/3f0GclWIWl0YuLUM
-EIpMqpXMC2BZRg3/Gfh8/Sr0QQ0OSnlBalPjnDoi7dXcdCu61Mx/Ip2vVcF/tL1I
-avwHOXWLyBHKuA2eevm++/+zPXW9F8l3ABYwWV1ljtWxdHwizltT3+uLM31drnum
-MxDXuw37zQ58Az74zOEx4HSkQXVdH3lJwRNKT6ZgShMQrwlwh2UZVgfvEbZdsswv
-gjI9YWkVj90Ngkh+A9mxbPjG9XFVHPTBppZJslJRtg0OtPYvvWdyyBmuzne4C0hS
-HE+2w9A74yazb6px2DIqz4hhUhonC686h2ixhPw27Utpg8pJUwj4D2NMLGNn9Jhc
-6ty7NrzpOBE6f5esJKU9sjem2HnIC9mexA2nlq9iiqKNcmBRtZXn9G3zGALCLRBT
-coou9J50DI95OUUvxTuoUR5h5dWs+ji7OfEzn2G/+HaZScEB4sqx25WyMH9FMMtr
-yKD/gJ6iUDUxE6bhheDbZw8W/+3M0G5M53DP66298Mt0yvcfBJFMIaHk8IjmgaeB
-kxTCSlnHacjCNUUhMjlT
-=0Nni
+iQIcBAEBAgAGBQJYAgDjAAoJEIbPlEyWcf3y90gQAIypDz2jrtlddw3oOwROSEHX
+eWPOTkvNXyz24da67Cjf6l6BoQTffaUd1gE1aH4roY9exikTC8umMeOCyq/kwV1v
+lFGwJk7jdBaNV0ohu42aXG43oLdryxRpCr/ipy8Y90iamHfEkrQ3gqEOVCyOmfYL
+vG2q8TPcYaChioStNXwop3fRJmP5uGbGgRWw4/9iTkvAkdlovZWwzrQPiSJu0wv/
+JFDymlSM4SpNk3XX8e75ZF9+/Rblp+9ocOKEYkWH366lNgpshJGe+WzkyBCfxU82
++hIe9sNz7VP1Z/r1vV7Ln3+FiG8BdWl1pfP0gxYOZK7iFAPScneE8q/BivkOrzXQ
+mL0zcxRvWlDsgqozEyJL2LZX4EFFvJIi/hQvkC0kN6axK27c1BPggBG2lfviQmpX
+Midr1Hc64BxzQnuOD+odU+n4tGRVqjsBgxayoN8UbwhF0DHFmw8CKff9IiVB2AJx
+DHMId3ZW8GujPgNV1oekjKbaRRLiQsr1rA8MeM26dFaD8w5+lKwQbGuo/UPz9zRM
+HDalNTvi93Ckcs4sU2UIS+S2CrUdJwPrb95fHkChibqcXZAHvxG/kgdAeytjpPI9
+ioIBrlJMN6Ux/8YhTh/RplA/Ja4DB2WJJLKdUc9JZlQ40olGq45M+pEFusPM7H+r
+dhqQc5eca9y9gAwJDpyR
+=FEgw
 -----END PGP SIGNATURE-----
 
---6vg428VdCWaXa6QsLqo84FieNDjBW8osq--
+--AUt9VHxWCB65bJfR9IMfT21WNHqk3lPxb--
 
