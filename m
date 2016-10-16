@@ -1,15 +1,12 @@
-References: <294517a1-1e4d-023d-1b86-75d06387ac15@...515...>
-	<95391fd4-7b2f-389c-3752-4123d016286d@...68...>
-	<CAA1AbxLYBTUPyQBZy-pvyV8gmgBjvLcB4DFAV8_aJuNFspMB5w@...278...>
-	<d0ce06ad-1bfd-a271-f611-183087eb0c08@...68...>
-	<105bf86c-4cd3-ba94-3141-e5979faaf507@...2080...>
-From: Matthias Andree <matthias.andree@...68...>
-Message-ID: <11b686a3-1c85-69fb-9463-781c15d34d52@...68...>
-Date: Sat, 15 Oct 2016 14:03:09 +0200
+Message-ID: <3f1c321f7fbcb5e6a102d6aa3a87858a@...2180...>
+Date: Sun, 16 Oct 2016 05:02:03 -0700
+From: Private Tunnel Support <support@...2179...>
 MIME-Version: 1.0
-In-Reply-To: <105bf86c-4cd3-ba94-3141-e5979faaf507@...2080...>
-Subject: Re: [Openvpn-devel] Separate apt repositories for 2.4-alpha/beta/rc
- releases?
+Content-Type: multipart/alternative;
+	boundary="_=_swiftmailer_v4_1476619323edcf11927360733a883c3a9702174a2e_=_"
+References: <mailman.66.1476619303.6343.openvpn-devel@lists.sourceforge.net>
+Subject: [Openvpn-devel] [#15125]: Openvpn-devel Digest, Vol 125, Issue 35
+Reply-To: support@...2179...
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,19 +15,53 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="windows-1252"
+To: openvpn-devel@lists.sourceforge.net
+
+--_=_swiftmailer_v4_1476619323edcf11927360733a883c3a9702174a2e_=_
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Am 15.10.2016 um 12:11 schrieb David Sommerseth:
-> b) Have the package exclude each other to block both being installed
->    at the same time.
+openvpn-devel-request@lists.sourceforge.net,
 
-That's the path normally chosen and that I'd recommend for DEB/APT-based
-packages because solvers can usually figure that part out. I think the
-RPM world needs some support from the dependency solvers, too. Not sure
-what dnf is up to these days, but it - as its predecessor yum - seemed
-to do the right thing for the limited exposure I gave them in my Fedora
-installations, and I stopped caring about other RPM-based distros years ago.
+Thank you for contacting us. This is an automated response confirming the r=
+eceipt of your ticket. Our team will get back to you as soon as possible, a=
+lthough please expect 24 - 48 business hours for a reply. When replying, pl=
+ease make sure that the ticket ID is kept in the subject so that we can tra=
+ck your replies. If you are submitting replies for an existing issue, pleas=
+e reply under the proper email ticket ID so we can review your past ticket =
+history. Please refrain from submitting multiple tickets for the same issue=
+, because this will only serve to delay our response to you as our valued c=
+ustomer. If you have any additional information you want to add to the tick=
+et, you may reply to this email or any new replies we send to you in the fu=
+ture.
+
+Kind regards,
+PrivateTunnel Help Desk
+
+--_=_swiftmailer_v4_1476619323edcf11927360733a883c3a9702174a2e_=_
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+
+<font face=3D"Verdana, Arial, Helvetica" size=3D"2">openvpn-devel-request@...465...=
+ists.sourceforge.net,<br />
+<br />
+Thank you for contacting us. This is an automated response confirming the r=
+eceipt of your ticket. Our team will get back to you as soon as possible, a=
+lthough please expect 24 - 48 business hours for a reply. When replying, pl=
+ease make sure that the ticket ID is kept in the subject so that we can tra=
+ck your replies. If you are submitting replies for an existing issue, pleas=
+e reply under the proper email ticket ID so we can review your past ticket =
+history. Please refrain from submitting multiple tickets for the same issue=
+, because this will only serve to delay our response to you as our valued c=
+ustomer. If you have any additional information you want to add to the tick=
+et, you may reply to this email or any new replies we send to you in the fu=
+ture.<br />
+<br />
+Kind regards,<br />
+<br />
+PrivateTunnel Help Desk<br />
+</font>
+
+--_=_swiftmailer_v4_1476619323edcf11927360733a883c3a9702174a2e_=_--
 
 
