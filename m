@@ -1,13 +1,9 @@
-Date: Wed, 19 Oct 2016 20:17:24 +0800
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <20161019121724.GA16221@...2182...>
-References: <20161019062231.2845-1-a@...2181...>
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <53533abe-e85d-7a42-49ce-465267997724@...515...>
+Date: Wed, 19 Oct 2016 16:04:30 +0300
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="azLHFNyN32YCQGCU"
-Content-Disposition: inline
-In-Reply-To: <20161019062231.2845-1-a@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH 0/3] implement crl-persist logic
+Subject: [Openvpn-devel] Proper location for user-specific OpenVPN
+ configuration files used by OpenVPN-GUI?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,48 +12,60 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
-
---azLHFNyN32YCQGCU
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="iso-8859-15"; format=flowed
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-On Wed, Oct 19, 2016 at 02:22:28PM +0800, Antonio Quartulli wrote:
-> Hello OpenVPN community,
->=20
+Hi,
 
-not sure if this is any helpful, but I have also prepared a branch with the=
-se
-changes on github at https://github.com/ordex/openvpn/tree/crl-persist
+While preparing OpenVPN 2.4-alpha1 release the discussion about=20
+user-specific OpenVPN configuration files came up again. To give some=20
+background, OpenVPN-GUI can now delegate privileged operations (e.g.=20
+route adding) to the OpenVPN Interactive Service. This means that normal=20
+users are now able to launch OpenVPN connections without having admin=20
+privileges. On top of that, users can now store OpenVPN configuration=20
+files in their home directory, under %USERPROFILE%\OpenVPN\config[*].=20
+The rationale for this directory choice was discussed here:
 
-Maybe somebody prefers a comfy webbrowser when reviewing patches :)
+<https://github.com/OpenVPN/openvpn-gui/pull/18#issuecomment-190138431>
 
-Cheers,
+Three directory alternatives have been proposed:
+
+%USERPROFILE%\OpenVPN\config (current approach)
+%APPDATA%\OpenVPN\config
+%USERPROFILE%\.openvpn\config
+
+People seem to agree that %APPDATA%\OpenVPN\config would be the most=20
+"proper" place for the configuration files. The fear was that people=20
+don't know about it, and will not thus find it. Of course the location=20
+would be documented, but people probably would not read the=20
+documentation and would get confused.
+
+There also seems to be agreement that using %USERPROFILE%\OpenVPN\config=20
+(=3Dcurrent approach) is rather invasive. However, it has the benefit that=
+=20
+users might actually find it without reading the documentation.
+
+*NIX guys would love %USERPROFILE%\.openvpn\config, and it kind of makes=20
+sense for a cross-platform app, but Windows guys would probably be at loss.
+
+So what should be do with this? Any directory we choose we have to live=20
+with for a long time - replacing it with something else would break=20
+setups for lots of users.
+
+I'd like to finish the OpenVPN-2.4_alpha1 release tomorrow, so I hope we=20
+can go through the bikeshedding today :).
+
+Best regards,
 
 --=20
-Antonio Quartulli
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
 
---azLHFNyN32YCQGCU
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
+irc freenode net: mattock
 
------BEGIN PGP SIGNATURE-----
-
-iQIcBAEBCAAGBQJYB2ROAAoJEJ6F1zG2JyOsMgcP/3EquVXN45tMap43bQoe2anT
-qfn5e6pmuPLpcGOPJWCoSKNqlsvSZr0VmFtAXfthl5uzuo8nPoZSuZokbL5ik5n0
-CM/tDxCSWvv+BJs8nRHkZs1eBFSl3Vco3QGeICv1PjbXpwgHMSv/kR07jotdtUmG
-Pe/ps9BKD6YF4wbEgOiUYCan4WtWMjuCHwaLbYu9+LFFZnoK4o7bjFkPn77zVsF4
-2KZBa0OB58/fxgmM8Wr65qhSP3B0jnVpbZQVdR3IPHWSJfXnZevFpnbnFQXooPfo
-bO3+b1ZwE0rnu+g4EYBPpClVJizZ9slaZikksc7O3CcU2hXU7caezbWlW6/XbnjN
-93kfwybx68QEkex/txdXm9cv0sxGnOOznQIGTcIoyVXRDEX5+EU8p/EHsBd2RO5Q
-ZKxp6frr7CRR0jQIjy8XypOuDdv109MGyP3sBOTdpaFD1OxNJR68ACZE52CVSK7h
-2q9/p9GwdtMELF31dc4V0WFnyd4yfMNwST+BhjbkqUxOeRSDargZeEBGtQ/LClz6
-9GXEgOlHUAlcck0m2ktJORSvLADsOcgtuITpB+O+5HBd0aAxlMsabFjRoHW/sD6h
-R+vhuL2s3j3L6sq6IUAKgPCLDXcrE8THsB32InZg30kBX4V+HK3uRvIkoPP74Ry7
-f4g9OsJXSMy8BlexJAcl
-=U0G2
------END PGP SIGNATURE-----
-
---azLHFNyN32YCQGCU--
+[*] With the caveat that they need to be either in the built-in=20
+administrator group, or in "OpenVPN administrators" group, to actually=20
+use OpenVPN configurations stored in their home directory.
 
