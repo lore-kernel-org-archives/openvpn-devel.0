@@ -1,10 +1,9 @@
 From: Antonio Quartulli <a@...2181...>
-Date: Wed, 19 Oct 2016 14:22:31 +0800
-Message-Id: <20161019062231.2845-4-a@...2181...>
+Date: Wed, 19 Oct 2016 14:22:29 +0800
+Message-Id: <20161019062231.2845-2-a@...2181...>
 In-Reply-To: <20161019062231.2845-1-a@...2181...>
 References: <20161019062231.2845-1-a@...2181...>
-Subject: [Openvpn-devel] [PATCH 3/3] openssl: implement crl-persist related
-	functions
+Subject: [Openvpn-devel] [PATCH 1/3] openvpn: implement crl-persist logic
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,227 +17,233 @@ Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 Cc: Antonio Quartulli <a@...2181...>
 
-Implement the functions needed by the crl-persist logic when openssl
-is enabled. Such functions are used in the ssl_verify module.
+Right now the CRL file is parsed and loaded in memory upon every client
+connection. In case of large CRL files this operation introduces a
+non-negligible delay (order of seconds).
 
-Note that the CRL file is stored in an adhoc data structure and no
-openssl specific object is used. The data structure being used is a
-sorted array or serials that can later be looked up in log(N) with
-a binary search, thus guaranteeing a fast lookup operation.
+Some users may prefer to avoid such delay by storing the CRL file in
+memory and have it ready for lookup upon client connection.
 
-Such data structure may be changed in the future with an optimized
-openssl specific object.
+Implement the logic to handle this new option (namely crl-persist) in
+the config parser and in the ssl_verify module.
 
-Tests have been performed by using a CRL file having size 143MB.
-Original delay upon client connection was around 5-8 seconds.
-With this patch the delay gets close to 0.
+With the current implementation, the file is reloaded only upon SIGHUP.
+A better logic performing an update at runtime based on the return value
+of stat() might be implemented later.
+
+Note: inline or dir CRL is not supported when crl-persist is specified.
 
 Signed-off-by: Antonio Quartulli <a@...2181...>
 ---
- src/openvpn/ssl_verify_openssl.c | 183 +++++++++++++++++++++++++++++++++++++++
- 1 file changed, 183 insertions(+)
+ src/openvpn/init.c               |  7 +++++++
+ src/openvpn/openvpn.h            |  6 ++++++
+ src/openvpn/options.c            | 21 +++++++++++++++++++++
+ src/openvpn/ssl_common.h         | 23 +++++++++++++++++++----
+ src/openvpn/ssl_verify.c         |  5 +++++
+ src/openvpn/ssl_verify_backend.h | 31 +++++++++++++++++++++++++++++++
+ 6 files changed, 89 insertions(+), 4 deletions(-)
 
-diff --git a/src/openvpn/ssl_verify_openssl.c b/src/openvpn/ssl_verify_openssl.c
-index a4b9432..c5649ca 100644
---- a/src/openvpn/ssl_verify_openssl.c
-+++ b/src/openvpn/ssl_verify_openssl.c
-@@ -47,6 +47,9 @@
- #include <openssl/x509v3.h>
- #include <openssl/err.h>
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 73f8c6d..70f27d0 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -2213,6 +2213,8 @@ do_init_crypto_tls_c1 (struct context *c)
  
-+#define __STDC_FORMAT_MACROS
-+#include <inttypes.h>
-+
- int
- verify_callback (int preverify_ok, X509_STORE_CTX * ctx)
- {
-@@ -625,6 +628,186 @@ x509_write_pem(FILE *peercert_file, X509 *peercert)
-   return SUCCESS;
- }
+   if (!tls_ctx_initialised(&c->c1.ks.ssl_ctx))
+     {
++      if (options->ssl_flags & SSLF_CRL_PERSIST)
++        x509_load_crl_mem(&c->c1.crl, options->crl_file);
+       /*
+        * Initialize the OpenSSL library's global
+        * SSL context.
+@@ -2392,6 +2394,7 @@ do_init_crypto_tls (struct context *c, const unsigned int flags)
+   to.verify_x509_name = options->verify_x509_name;
+   to.crl_file = options->crl_file;
+   to.crl_file_inline = options->crl_file_inline;
++  to.crl = &c->c1.crl;
+   to.ssl_flags = options->ssl_flags;
+   to.ns_cert_type = options->ns_cert_type;
+   memmove (to.remote_cert_ku, options->remote_cert_ku, sizeof (to.remote_cert_ku));
+@@ -3735,6 +3738,9 @@ close_instance (struct context *c)
+   /* close event objects */
+   do_close_event_set (c);
  
-+static int
-+x509_serial_cmp(const void *a, const void *b)
-+{
-+  const ASN1_INTEGER **serial1 = (const ASN1_INTEGER **)a;
-+  const ASN1_INTEGER **serial2 = (const ASN1_INTEGER **)b;
++  if (c->mode == CM_TOP)
++    x509_crl_free(&c->c1.crl);
 +
-+  ASSERT(serial1 && *serial1 && serial2 && *serial2);
+     if (c->mode == CM_P2P
+ 	|| c->mode == CM_CHILD_TCP
+ 	|| c->mode == CM_CHILD_UDP
+@@ -3827,6 +3833,7 @@ inherit_context_child (struct context *dest,
+   dest->c1.ks.ssl_ctx = src->c1.ks.ssl_ctx;
+   dest->c1.ks.tls_auth_key = src->c1.ks.tls_auth_key;
+   dest->c1.ks.tls_auth_key_type = src->c1.ks.tls_auth_key_type;
++  dest->c1.crl = src->c1.crl;
+ #endif
+ 
+   /* options */
+diff --git a/src/openvpn/openvpn.h b/src/openvpn/openvpn.h
+index 5cda7b4..ae820a5 100644
+--- a/src/openvpn/openvpn.h
++++ b/src/openvpn/openvpn.h
+@@ -199,6 +199,12 @@ struct context_1
+   /* persist --ifconfig-pool db to file */
+   struct ifconfig_pool_persist *ifconfig_pool_persist;
+   bool ifconfig_pool_persist_owned;
 +
-+  return ASN1_INTEGER_cmp(*serial1, *serial2);
-+}
++#ifdef ENABLE_CRYPTO
++  /* persistent CRL data */
++  openvpn_x509_crl_t crl;
++#endif
 +
-+result_t
-+x509_verify_crl_mem(const openvpn_x509_crl_t *crl, X509 *cert,
-+		    const char *subject)
-+{
-+  result_t ret = FAILURE;
-+  struct gc_arena gc = gc_new();
-+  ASN1_INTEGER *serial;
-+
-+  ASSERT(crl && cert);
-+
-+  /* authorize the client if the CRL list is empty */
-+  if (crl->num == 0)
+ #endif
+ 
+   /* if client mode, hash of option strings we pulled from server */
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 281ef0b..a010db1 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -608,6 +608,7 @@ static const char usage_message[] =
+   "--askpass [file]: Get PEM password from controlling tty before we daemonize.\n"
+   "--auth-nocache  : Don't cache --askpass or --auth-user-pass passwords.\n"
+   "--crl-verify crl ['dir']: Check peer certificate against a CRL.\n"
++  "--crl-persist   : Store CRL in memory instead of reading the file every time.\n"
+   "--tls-verify cmd: Run command cmd to verify the X509 name of a\n"
+   "                  pending TLS connection that has otherwise passed all other\n"
+   "                  tests of certification.  cmd should return 0 to allow\n"
+@@ -6974,6 +6975,26 @@ add_option (struct options *options,
+ 	  options->crl_file_inline = p[2];
+ 	}
+     }
++  else if (streq (p[0], "crl-persist"))
 +    {
-+      ret = SUCCESS;
-+      goto end;
-+    }
-+
-+  /*
-+   * make sure the issuer of the CRL and the certificate are the same,
-+   * otherwise the check cannot be performed
-+   */
-+  if (X509_NAME_cmp(crl->issuer, X509_get_issuer_name(cert)) != 0)
-+  {
-+    msg(M_WARN, "CRL: CRL [in-memory] is from a different issuer than the issuer of certificate %s",
-+	subject);
-+    ret = SUCCESS;
-+    goto end;
-+  }
-+
-+  serial = X509_get_serialNumber(cert);
-+  if (!serial)
-+    {
-+      msg(M_WARN, "CRL: can't extract serial from cert");
-+      goto end;
-+    }
-+
-+  /*
-+   * perform binary search on sorted CRL array. The cmp function assumes that
-+   * the arguments are all pointers to pointers, therefore the address of the
-+   * "key" object has to be passed instead of the object itself.
-+   */
-+  if (bsearch(&serial, crl->buff, crl->num, sizeof(ASN1_INTEGER *),
-+	      x509_serial_cmp))
-+    {
-+	    fprintf(stderr, "!\n");
-+      msg(D_HANDSHAKE, "CRL CHECK FAILED: %s (serial %s) is REVOKED", subject,
-+	  format_hex_ex(serial->data, serial->length, 0, 1, ":", &gc));
-+      goto end;
-+    }
-+
-+  /* serial not found in CRL: certificate is valid */
-+  ret = SUCCESS;
-+  msg(D_HANDSHAKE, "CRL CHECK OK: %s", subject);
-+
-+end:
-+  gc_free(&gc);
-+
-+  return ret;
-+}
-+
-+void
-+x509_crl_free(openvpn_x509_crl_t *crl)
-+{
-+  int i;
-+
-+  ASSERT(crl);
-+
-+  for (i = 0; i < crl->num; i++)
-+    ASN1_INTEGER_free(crl->buff[i]);
-+
-+  free(crl->buff);
-+  X509_NAME_free(crl->issuer);
-+  crl->buff = NULL;
-+  crl->issuer = NULL;
-+  crl->num = 0;
-+}
-+
-+result_t
-+x509_load_crl_mem(openvpn_x509_crl_t *crl, const char *crl_file)
-+{
-+  result_t ret = FAILURE;
-+  X509_CRL *x509_crl = NULL;
-+  X509_REVOKED *revoked;
-+  X509_NAME *issuer;
-+  BIO *in = NULL;
-+  uint64_t num, i;
-+
-+  ASSERT(crl && crl_file);
-+
-+  msg(D_TLS_DEBUG_LOW, "CRL-persist: loading file: %s", crl_file);
-+
-+  /* free previously allocated data - useful in case or context update */
-+  if (crl->buff)
-+    x509_crl_free(crl);
-+
-+  in = BIO_new_file(crl_file, "r");
-+  if (!in)
-+    {
-+      msg(M_WARN, "CRL: cannot read: %s", crl_file);
-+      goto end;
-+    }
-+
-+  x509_crl = PEM_read_bio_X509_CRL(in, NULL, NULL, NULL);
-+  if (!x509_crl)
-+    {
-+      msg(M_WARN, "CRL: cannot read CRL from file %s", crl_file);
-+      goto end;
-+    }
-+
-+  crl->num = 0;
-+  crl->buff = NULL;
-+  crl->issuer = NULL;
-+
-+  issuer = X509_CRL_get_issuer(x509_crl);
-+  if (issuer)
-+    crl->issuer = X509_NAME_dup(issuer);
-+
-+  num = sk_X509_REVOKED_num(X509_CRL_get_REVOKED(x509_crl));
-+  /* CRL is empty */
-+  if (num == (uint64_t)-1)
-+    {
-+      ret = SUCCESS;
-+      goto end;
-+    }
-+
-+  crl->num = num;
-+  crl->buff = malloc(sizeof(ASN1_INTEGER **) * num);
-+  if (!crl->buff)
-+    {
-+      msg(M_WARN, "CRL: cannot allocate CRL buffer for file %s", crl_file);
-+      goto end;
-+    }
-+
-+  /* store each serial number in the buffer array as ASN1_INTEGER objects */
-+  for (i = 0; i < num; i++)
-+    {
-+      revoked = sk_X509_REVOKED_value(X509_CRL_get_REVOKED(x509_crl), i);
-+      crl->buff[i] = ASN1_INTEGER_dup(revoked->serialNumber);
-+      if (!crl->buff[i])
++      VERIFY_PERMISSION (OPT_P_GENERAL);
++      if (!options->crl_file)
 +        {
-+          msg(M_WARN, "CRL: cannot store CRL serial for file %s", crl_file);
-+          goto err;
++	  msg (msglevel, "--crl-persist must be specified after --crl-file");
++	  goto err;
++	}
++      if (options->crl_file_inline)
++        {
++          msg (msglevel, "sorry but --crl-persist does not support inline crl file at the moment");
++	  goto err;
++	}
++      if (options->ssl_flags & SSLF_CRL_VERIFY_DIR)
++        {
++	  msg (msglevel, "you cannot use --crl-persist with --crl-verify <path> dir");
++	  goto err;
 +        }
++      options->ssl_flags |= SSLF_CRL_PERSIST;
 +    }
-+
-+  /* sort the array for fast lookup later */
-+  qsort(crl->buff, crl->num, sizeof(ASN1_INTEGER *), x509_serial_cmp);
-+  msg(D_TLS_DEBUG_LOW, "CRL-persist: loaded and sorted %" PRIu64 " serials",
-+      crl->num);
-+
-+  ret = SUCCESS;
-+  goto end;
-+err:
-+  /* rollback the for-loop and release all the allocated memory */
-+  for (;i > 0; i--)
-+    ASN1_INTEGER_free(crl->buff[i - 1]);
-+
-+  free(crl->buff);
-+  X509_NAME_free(crl->issuer);
-+
-+end:
-+  if (in)
-+    BIO_free(in);
-+  if (x509_crl)
-+    X509_CRL_free(x509_crl);
-+
-+  return ret;
-+}
+   else if (streq (p[0], "tls-verify") && p[1])
+     {
+       VERIFY_PERMISSION (OPT_P_SCRIPT);
+diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
+index eb2ad6f..aea9819 100644
+--- a/src/openvpn/ssl_common.h
++++ b/src/openvpn/ssl_common.h
+@@ -204,6 +204,19 @@ struct key_state
+ #endif
+ };
+ 
++#ifdef ENABLE_CRYPTO
++typedef struct
++{
++#ifdef ENABLE_CRYPTO_OPENSSL
++  X509_NAME *issuer;
++  void **buff;
++  uint64_t num;
++#elif ENABLE_CRYPTO_MBEDTLS
++  mbedtls_x509_crl crl;
++#endif
++} openvpn_x509_crl_t;
++#endif
 +
  /*
-  * check peer cert against CRL
-  */
+  * Our const options, obtained directly or derived from
+  * command line options.
+@@ -255,6 +268,7 @@ struct tls_options
+   const char *verify_x509_name;
+   const char *crl_file;
+   const char *crl_file_inline;
++  openvpn_x509_crl_t *crl;
+   int ns_cert_type;
+   unsigned remote_cert_ku[MAX_PARMS];
+   const char *remote_cert_eku;
+@@ -309,10 +323,11 @@ struct tls_options
+ # define SSLF_AUTH_USER_PASS_OPTIONAL  (1<<3)
+ # define SSLF_OPT_VERIFY               (1<<4)
+ # define SSLF_CRL_VERIFY_DIR           (1<<5)
+-# define SSLF_TLS_VERSION_MIN_SHIFT    6
+-# define SSLF_TLS_VERSION_MIN_MASK     0xF /* (uses bit positions 6 to 9) */
+-# define SSLF_TLS_VERSION_MAX_SHIFT    10
+-# define SSLF_TLS_VERSION_MAX_MASK     0xF /* (uses bit positions 10 to 13) */
++# define SSLF_CRL_PERSIST              (1<<6)
++# define SSLF_TLS_VERSION_MIN_SHIFT    7
++# define SSLF_TLS_VERSION_MIN_MASK     0xF /* (uses bit positions 7 to 10) */
++# define SSLF_TLS_VERSION_MAX_SHIFT    11
++# define SSLF_TLS_VERSION_MAX_MASK     0xF /* (uses bit positions 11 to 14) */
+   unsigned int ssl_flags;
+ 
+ #ifdef MANAGEMENT_DEF_AUTH
+diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
+index d0c22b8..e060856 100644
+--- a/src/openvpn/ssl_verify.c
++++ b/src/openvpn/ssl_verify.c
+@@ -673,6 +673,11 @@ verify_cert(struct tls_session *session, openvpn_x509_cert_t *cert, int cert_dep
+ 	if (SUCCESS != verify_check_crl_dir(opt->crl_file, cert))
+ 	  goto cleanup;
+       }
++      else if (opt->ssl_flags & SSLF_CRL_PERSIST)
++      {
++	if (SUCCESS != x509_verify_crl_mem(opt->crl, cert, subject))
++	  goto cleanup;
++      }
+       else
+       {
+ 	if (SUCCESS != x509_verify_crl(opt->crl_file, opt->crl_file_inline, cert, subject))
+diff --git a/src/openvpn/ssl_verify_backend.h b/src/openvpn/ssl_verify_backend.h
+index 91e6ec9..09c9951 100644
+--- a/src/openvpn/ssl_verify_backend.h
++++ b/src/openvpn/ssl_verify_backend.h
+@@ -253,6 +253,37 @@ result_t x509_verify_cert_eku (openvpn_x509_cert_t *x509, const char * const exp
+ result_t x509_write_pem(FILE *peercert_file, openvpn_x509_cert_t *peercert);
+ 
+ /*
++ * Checks against an in-memory CRL object if a certificate was revoked
++ *
++ * @param crl		The CRL object containing the actual CRL
++ * @param cert		The certificate to check
++ *
++ * @return		\c SUCCESS if the certificate was not found in the CRL,
++ *			\c FAILURE if the certificate was in the list and it is
++ *			thus revoked
++ */
++result_t x509_verify_crl_mem(const openvpn_x509_crl_t *crl,
++			     openvpn_x509_cert_t *cert, const char *subject);
++
++/*
++ * Allocates the needed resource and stores a CRL file in memory
++ *
++ * @param crl		The CRL object to populate
++ * @param crl_file	The path to the CRL file to read
++ *
++ * @return		\c SUCCESS if the file is successfully loaded,
++ *			\c FAILURE in case of any error
++ */
++result_t x509_load_crl_mem(openvpn_x509_crl_t *crl, const char *crl_file);
++
++/*
++ * Release a CRL object, used to store a CRL file in memory
++ *
++ * @param crl		The CRL object to free
++ */
++void x509_crl_free(openvpn_x509_crl_t *crl);
++
++/*
+  * Check the certificate against a CRL file.
+  *
+  * @param crl_file	File name of the CRL file
 -- 
 2.10.1
 
