@@ -1,9 +1,11 @@
-References: <53533abe-e85d-7a42-49ce-465267997724@...515...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <44f51d16-5251-e257-263d-375d8e01abcb@...1227...>
-Date: Wed, 19 Oct 2016 15:34:24 +0200
 MIME-Version: 1.0
-In-Reply-To: <53533abe-e85d-7a42-49ce-465267997724@...515...>
+In-Reply-To: <44f51d16-5251-e257-263d-375d8e01abcb@...1227...>
+References: <53533abe-e85d-7a42-49ce-465267997724@...515...>
+	<44f51d16-5251-e257-263d-375d8e01abcb@...1227...>
+From: Selva Nair <selva.nair@...277...>
+Date: Wed, 19 Oct 2016 11:08:40 -0400
+Message-ID: <CAKuzo_ix8a-LDv0tQXk3GoAQ_VAkRAO4CRmz5di0_QM-CuiXbA@...278...>
+Content-Type: multipart/alternative; boundary=001a11408170639865053f39304b
 Subject: Re: [Openvpn-devel] Proper location for user-specific OpenVPN
  configuration files used by OpenVPN-GUI?
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -14,81 +16,96 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-15"
+To: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+
+--001a11408170639865053f39304b
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-To: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+
+Hi,
+
+Am 19.10.16 um 15:04 schrieb Samuli Sepp=C3=A4nen:
+
+> > Hi,
+> >
+> > While preparing OpenVPN 2.4-alpha1 release the discussion about
+> > user-specific OpenVPN configuration files came up again. To give some
+> > background, OpenVPN-GUI can now delegate privileged operations (e.g.
+> > route adding) to the OpenVPN Interactive Service. This means that normal
+> > users are now able to launch OpenVPN connections without having admin
+> > privileges. On top of that, users can now store OpenVPN configuration
+> > files in their home directory, under %USERPROFILE%\OpenVPN\config[*].
+> > The rationale for this directory choice was discussed here:
 
 
+The reason for that rather improper choice of %USERPROFILE%\OpenVPN\config
+was that the current import functionality is rather limited and does not
+handle any dependent files like ca/cert/key/scripts --- it works well when
+everything is inline. So we wanted the config folder to be easily
+accessible/visible for users who need to manually copy additional files.
 
-Am 19.10.16 um 15:04 schrieb Samuli Sepp=E4nen:
-> Hi,
+But the chosen location is indeed very intrusive and I too think we should
+change it.
+
+Arne Schwabe <arne@...1227...> wrote:
+
 >
-> While preparing OpenVPN 2.4-alpha1 release the discussion about=20
-> user-specific OpenVPN configuration files came up again. To give some=20
-> background, OpenVPN-GUI can now delegate privileged operations (e.g.=20
-> route adding) to the OpenVPN Interactive Service. This means that normal=
-=20
-> users are now able to launch OpenVPN connections without having admin=20
-> privileges. On top of that, users can now store OpenVPN configuration=20
-> files in their home directory, under %USERPROFILE%\OpenVPN\config[*].=20
-> The rationale for this directory choice was discussed here:
+> I vote for %APPDATA%
 >
-> <https://github.com/OpenVPN/openvpn-gui/pull/18#issuecomment-190138431>
->
-> Three directory alternatives have been proposed:
->
-> %USERPROFILE%\OpenVPN\config (current approach)
-> %APPDATA%\OpenVPN\config
-> %USERPROFILE%\.openvpn\config
 
-Nobody wants that. That will confuse everyone. Even UNIX have learned
-that windows uses %APPDATA% instead of that unix hack of dot files.
->
-> People seem to agree that %APPDATA%\OpenVPN\config would be the most=20
-> "proper" place for the configuration files. The fear was that people=20
-> don't know about it, and will not thus find it.=20
+David Sommerseth <openvpn@...2080...> wrote:
 
-I think if a user should create OpenVPN\config in its home or just tell
-them to do Windows Key+R, enter %appdata%\openvpn\config shouldn't
-matter. And the really clueless can still put it into C:\program
-files\OpenVPN\config.
+"When in Rome do as the Romans"
 
-And even this is not really needed since we have a Import config
-function in the UI that will copy it to the right place.
 
-And most applications are using that folder. Why should we be special?
+Looks like there is a general consensus on this. If so, I will post a patch
+later today to use %APPDATA%
 
-> Of course the location=20
-> would be documented, but people probably would not read the=20
-> documentation and would get confused.
-Tunnelblick on OSX also keeps its config files in ~/Library/Application
-Support/Tunnelblick/Configurations
+Selva
 
-It also ask you when you double click on a ovpn file if you want to
-import it. Windows UI also has an import functionality that will place
-into the right folder.
-> There also seems to be agreement that using %USERPROFILE%\OpenVPN\config=
-=20
-> (=3Dcurrent approach) is rather invasive. However, it has the benefit tha=
-t=20
-> users might actually find it without reading the documentation.
->
-> *NIX guys would love %USERPROFILE%\.openvpn\config, and it kind of makes=
-=20
-> sense for a cross-platform app, but Windows guys would probably be at los=
-s.
+--001a11408170639865053f39304b
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Mac OS X also does not use dotfiles.
-> So what should be do with this? Any directory we choose we have to live=20
-> with for a long time - replacing it with something else would break=20
-> setups for lots of users.
->
-> I'd like to finish the OpenVPN-2.4_alpha1 release tomorrow, so I hope we=
-=20
-> can go through the bikeshedding today :).
+<div dir=3D"ltr"><div class=3D"gmail_extra">Hi,</div><div class=3D"gmail_ex=
+tra"><br></div><div class=3D"gmail_extra"><div class=3D"gmail_extra">Am 19.=
+10.16 um 15:04 schrieb Samuli Sepp=C3=A4nen:</div><blockquote class=3D"gmai=
+l_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left-width:1px;border-lef=
+t-color:rgb(204,204,204);border-left-style:solid;padding-left:1ex">&gt; Hi,=
+<br>&gt;<br>&gt; While preparing OpenVPN 2.4-alpha1 release the discussion =
+about<br>&gt; user-specific OpenVPN configuration files came up again. To g=
+ive some<br>&gt; background, OpenVPN-GUI can now delegate privileged operat=
+ions (e.g.<br>&gt; route adding) to the OpenVPN Interactive Service. This m=
+eans that normal<br>&gt; users are now able to launch OpenVPN connections w=
+ithout having admin<br>&gt; privileges. On top of that, users can now store=
+ OpenVPN configuration<br>&gt; files in their home directory, under %USERPR=
+OFILE%\OpenVPN\config[*<wbr>].<br>&gt; The rationale for this directory cho=
+ice was discussed here:</blockquote><div>=C2=A0</div></div><div class=3D"gm=
+ail_extra"><div class=3D"gmail_quote">The reason for that rather improper c=
+hoice of=C2=A0%USERPROFILE%\OpenVPN\confi<wbr>g was that the current import=
+ functionality is rather limited and does not handle any dependent files li=
+ke ca/cert/key/scripts --- it works well when everything is inline. So we w=
+anted the config folder to be easily accessible/visible for users who need =
+to manually copy additional files.=C2=A0</div><div class=3D"gmail_quote"><b=
+r></div><div class=3D"gmail_quote">But the chosen location is indeed very i=
+ntrusive and I too think we should change it.</div><div class=3D"gmail_quot=
+e"><br></div><div class=3D"gmail_quote">Arne Schwabe &lt;<a href=3D"mailto:=
+arne@...1227..." target=3D"_blank">arne@...1227...</a>&gt; wrote:</div><div=
+ class=3D"gmail_quote"><blockquote class=3D"gmail_quote" style=3D"margin:0p=
+x 0px 0px 0.8ex;border-left-width:1px;border-left-color:rgb(204,204,204);bo=
+rder-left-style:solid;padding-left:1ex"><span class=3D"m_866382763799189539=
+5gmail-m_-3793118210550290160gmail-">
+<br>
+</span>I vote for %APPDATA%<br></blockquote><div><br></div><div>David Somme=
+rseth &lt;<a href=3D"mailto:openvpn@...2080..." target=3D"_blank">openvpn@...220...=
+..2142...<wbr>topphemmelig.net</a>&gt; wrote:<br></div><div><br></div><bloc=
+kquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left-=
+width:1px;border-left-color:rgb(204,204,204);border-left-style:solid;paddin=
+g-left:1ex">&quot;When in Rome do as the Romans&quot;</blockquote><div><br>=
+</div><div>Looks like there is a general consensus on this. If so, I will p=
+ost a patch later today to use %APPDATA%<br></div><div><br></div><div>Selva=
+</div></div></div></div>
 
-I vote for %APPDATA%
-
-Arne
-
+--001a11408170639865053f39304b--
 
