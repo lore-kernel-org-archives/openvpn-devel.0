@@ -1,7 +1,10 @@
 From: Antonio Quartulli <a@...2181...>
-Date: Wed, 19 Oct 2016 14:22:28 +0800
-Message-Id: <20161019062231.2845-1-a@...2181...>
-Subject: [Openvpn-devel] [PATCH 0/3] implement crl-persist logic
+Date: Wed, 19 Oct 2016 14:22:30 +0800
+Message-Id: <20161019062231.2845-3-a@...2181...>
+In-Reply-To: <20161019062231.2845-1-a@...2181...>
+References: <20161019062231.2845-1-a@...2181...>
+Subject: [Openvpn-devel] [PATCH 2/3] mbedtls: implement crl-persist related
+	functions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,63 +18,148 @@ Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 Cc: Antonio Quartulli <a@...2181...>
 
-Hello OpenVPN community,
+Implement the functions needed by the crl-persist logic and
+used by the ssl_verify module.
 
-this is my first contribution (attempt) to the OpenVPN project.
-Please be gentle ;)
+No special data structure has been used to store the CRL as
+mbedtls already provides its own object and helper functions.
 
-With this small patchset I am introducing a simple logic that
-reduces the overall client connection time when the CRL file is quite big.
+Tests have been performed by using a CRL file having size 143MB.
+Original delay upon client connection was around 4-6 seconds.
+With this patch the delay gets close to 0.
 
-Basically it consists in pre-loading the CRL file and storing it in the
-OpenVPN context, so that it can be later re-used for faster lookups.
+Signed-off-by: Antonio Quartulli <a@...2181...>
+---
+ src/openvpn/ssl_verify_mbedtls.c | 102 +++++++++++++++++++++++++++++++--------
+ 1 file changed, 83 insertions(+), 19 deletions(-)
 
-The connection delay in my tests has dropped significantly (I am using a 143MB
-large CRL file having around 5 million entries).
-Basically the delay (about 5 seconds on average) is moved from "every" client
-connection event to the instance bootup (or file reload).
-
-This new behaviour can be enabled by specifying "--crl-persist" after the
-"--crl-file" option.
-
-As of now, the CRL is updated only upon SIGHUP. Later this could be improved
-by hooking the update to another signal (i.e. SIGUSR2), or when stat() would
-detect a file update or even hook into inotify.
-
-Patch 1 introduces the general logic in the openvpn code, like the new config
-option and the hooks to the crypto modules.
-
-Patch 2 implements the related functions in the mbedTLS module.
-
-Patch 3 implements the related functions in the OpenSSL module.
-
-(Please check the specific patch commit messages for more details).
-
-Please, have a look at my style and the way I used the various data structures.
-Being this my first time into the OpenVPN code base, I may have misused
-some objects like "c1" and similar..
-
-Comments are welcome!
-
-
-Cheers,
-
-
-Antonio Quartulli (3):
-  openvpn: implement crl-persist logic
-  mbedtls: implement crl-persist related functions
-  openssl: implement crl-persist related functions
-
- src/openvpn/init.c               |   7 ++
- src/openvpn/openvpn.h            |   6 ++
- src/openvpn/options.c            |  21 +++++
- src/openvpn/ssl_common.h         |  23 ++++-
- src/openvpn/ssl_verify.c         |   5 ++
- src/openvpn/ssl_verify_backend.h |  31 +++++++
- src/openvpn/ssl_verify_mbedtls.c | 102 ++++++++++++++++++----
- src/openvpn/ssl_verify_openssl.c | 183 +++++++++++++++++++++++++++++++++++++++
- 8 files changed, 355 insertions(+), 23 deletions(-)
-
+diff --git a/src/openvpn/ssl_verify_mbedtls.c b/src/openvpn/ssl_verify_mbedtls.c
+index 92b0804..169f2f3 100644
+--- a/src/openvpn/ssl_verify_mbedtls.c
++++ b/src/openvpn/ssl_verify_mbedtls.c
+@@ -497,6 +497,88 @@ x509_write_pem(FILE *peercert_file, mbedtls_x509_crt *peercert)
+     return FAILURE;
+ }
+ 
++result_t
++x509_verify_crl_cert(const mbedtls_x509_crl *crl, mbedtls_x509_crt *cert,
++		     struct gc_arena *gc, const char *crl_file,
++		     const char *subject)
++{
++  result_t ret = FAILURE;
++  char *serial;
++
++  ASSERT(crl && cert);
++
++  if((cert->issuer_raw.len != crl->issuer_raw.len) ||
++     (memcmp(crl->issuer_raw.p, cert->issuer_raw.p, crl->issuer_raw.len) != 0))
++    {
++      msg(M_WARN, "CRL: CRL %s is from a different issuer than the issuer of "
++	  "certificate %s", crl_file ? crl_file : "[in-memory]", subject);
++      ret = SUCCESS;
++      goto end;
++    }
++
++  if (!mbed_ok(mbedtls_x509_crt_is_revoked(cert, crl)))
++    {
++      serial = backend_x509_get_serial_hex(cert, gc);
++      msg (D_HANDSHAKE, "CRL CHECK FAILED: %s (serial %s) is REVOKED", subject,
++	   (serial ? serial : "NOT AVAILABLE"));
++      goto end;
++    }
++
++  ret = SUCCESS;
++  msg(D_HANDSHAKE, "CRL CHECK OK: %s", subject);
++end:
++
++  return ret;
++}
++
++result_t
++x509_verify_crl_mem(const openvpn_x509_crl_t *crl, mbedtls_x509_crt *cert,
++		    const char *subject)
++{
++  struct gc_arena gc = gc_new();
++  int ret;
++
++  ASSERT(crl && cert);
++
++  ret = x509_verify_crl_cert(&crl->crl, cert, &gc, NULL, subject);
++
++  gc_free(&gc);
++
++  return ret;
++}
++
++void
++x509_crl_free(openvpn_x509_crl_t *crl)
++{
++  ASSERT(crl);
++
++  mbedtls_x509_crl_free(&crl->crl);
++  memset(&crl->crl, 0, sizeof(crl->crl));
++}
++
++result_t
++x509_load_crl_mem(openvpn_x509_crl_t *crl, const char *crl_file)
++{
++  result_t ret = FAILURE;
++
++  ASSERT(crl && crl_file);
++
++  x509_crl_free(crl);
++
++  msg(D_TLS_DEBUG_LOW, "CRL-persist: loading file: %s", crl_file);
++
++  if (!mbed_ok(mbedtls_x509_crl_parse_file(&crl->crl, crl_file)))
++    {
++      msg(M_WARN, "CRL: cannot read: %s", crl_file);
++      goto end;
++    }
++
++  ret = SUCCESS;
++end:
++
++  return ret;
++}
++
+ /*
+  * check peer cert against CRL
+  */
+@@ -507,7 +589,6 @@ x509_verify_crl(const char *crl_file, const char *crl_inline,
+   result_t retval = FAILURE;
+   mbedtls_x509_crl crl = {0};
+   struct gc_arena gc = gc_new();
+-  char *serial;
+ 
+   if (!strcmp (crl_file, INLINE_FILE_TAG) && crl_inline)
+     {
+@@ -527,24 +608,7 @@ x509_verify_crl(const char *crl_file, const char *crl_inline,
+       }
+   }
+ 
+-  if(cert->issuer_raw.len != crl.issuer_raw.len ||
+-      memcmp(crl.issuer_raw.p, cert->issuer_raw.p, crl.issuer_raw.len) != 0)
+-    {
+-      msg (M_WARN, "CRL: CRL %s is from a different issuer than the issuer of "
+-	  "certificate %s", crl_file, subject);
+-      retval = SUCCESS;
+-      goto end;
+-    }
+-
+-  if (!mbed_ok(mbedtls_x509_crt_is_revoked(cert, &crl)))
+-    {
+-      serial = backend_x509_get_serial_hex(cert, &gc);
+-      msg (D_HANDSHAKE, "CRL CHECK FAILED: %s (serial %s) is REVOKED", subject, (serial ? serial : "NOT AVAILABLE"));
+-      goto end;
+-    }
+-
+-  retval = SUCCESS;
+-  msg (D_HANDSHAKE, "CRL CHECK OK: %s",subject);
++  retval = x509_verify_crl_cert(&crl, cert, &gc, crl_file, subject);
+ 
+ end:
+   gc_free(&gc);
 -- 
 2.10.1
 
