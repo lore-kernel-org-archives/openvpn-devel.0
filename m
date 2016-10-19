@@ -1,5 +1,5 @@
-Date: Wed, 19 Oct 2016 23:00:03 +0200 (CEST)
-Message-Id: <201610192100.u9JL03aK059628@...2054...>
+Date: Wed, 19 Oct 2016 23:00:39 +0200 (CEST)
+Message-Id: <201610192100.u9JL0dd0059664@...2054...>
 From: Gert Doering <gert@...1296...>
 In-Reply-To: <1476905060-29896-1-git-send-email-steffan@...1856...>
 References: <1476905060-29896-1-git-send-email-steffan@...1856...>
@@ -17,6 +17,10 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: Steffan Karger <steffan@...1856...>
 Cc: openvpn-devel@lists.sourceforge.net
+
+Uh... re-sending.  Too late.
+
+*ACK* - patch totally matches explanation, and both make sense.
 
 Your patch has been applied to the master branch.
 
