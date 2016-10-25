@@ -1,9 +1,13 @@
-From: samuli@...515...
-Date: Tue, 25 Oct 2016 14:55:39 +0300
-Message-Id: <1477396539-1293-1-git-send-email-samuli@...515...>
+References: <294517a1-1e4d-023d-1b86-75d06387ac15@...515...>
+	<20161017085010.qipujrn3lddggsjb@...1152...>
+	<3e00be3e-94be-f461-60f5-ab35e640dba6@...515...>
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <2fe9dfd9-9151-e4d7-d5ff-9e678f96811a@...515...>
+Date: Tue, 25 Oct 2016 15:02:47 +0300
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Remove INSTALL-win32.txt that is now hosted
-	in openvpn-build
+In-Reply-To: <3e00be3e-94be-f461-60f5-ab35e640dba6@...515...>
+Subject: Re: [Openvpn-devel] [Openvpn-users] Separate apt repositories for
+ 2.4-alpha/beta/rc releases?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,115 +16,65 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
+To: Ralf Hildebrandt <Ralf.Hildebrandt@...1152...>, openvpn-users@lists.sourceforge.net, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-From: Samuli Sepp=C3=A4nen <samuli@...515...>
+Il 17/10/2016 13:58, Samuli Sepp=C3=A4nen ha scritto:
+> Il 17/10/2016 11:50, Ralf Hildebrandt ha scritto:
+>> * Samuli Sepp=C3=A4nen <samuli@...515...>:
+>>> Hi,
+>>>
+>>> Should we have a separate apt repository for "unstable" apt packages?
+>>
+>> Yes please. Do have a look at how dovecot does it:
+>> http://wiki2.dovecot.org/PrebuiltBinaries#Debian
+>>
+>> there is "stable" and "testing"
+>>
+>
+> Thanks to all for the feedback. Based on it the most flexible approach
+> would probably be to have four different repositories:
+>
+> "testing": tracks latest release, including all alphas/beta/rcs
+> "stable": tracks latest stable release (2.3.x/2.4.x)
+> "release/2.3": tracks latest 2.3.x release
+> "release/2.4": tracks latest 2.4 release (including alphas/beta/rcs)
+>
+> The current apt repository would become "release/2.3" to minimize
+> surprises. In all cases the package name would be "openvpn". A user
+> could have several of these repositories enabled at the same time - apt
+> would then just default to the latest version.
+>
+> Right now Debian package building is not fully automated, but when it
+> is, having a "snapshots" repository would make sense.
+>
+> I'd rather not allow several different OpenVPN packages to co-exist on a
+> single computer (e.g. "openvpn-2.3" and "openvpn-2.4"): that tends to
+> complicate packaging without any significant benefits. I believe this
+> approach is mostly used in cases where different application versions
+> are (protocol)incompatible, and users need to be able to use both
+> simultaneously.
+>
 
-The contents of INSTALL-win32.txt mostly just describe how to use OpenVPN-G=
-UI,
-OpenVPN Windows services and openvpn-build. These are only loosely coupled =
-with
-OpenVPN, and may change independently of it. Thus hosting the file in
-openvpn-build (which brings all of these components together) makes most se=
-nse.
+Hi all,
 
-URL: https://github.com/OpenVPN/openvpn-build/pull/35
-URL: https://github.com/OpenVPN/openvpn-build/pull/38
-Signed-off-by: Samuli Sepp=C3=A4nen <samuli@...515...>
----
- INSTALL-win32.txt | 77 ---------------------------------------------------=
-----
- 1 file changed, 77 deletions(-)
- delete mode 100644 INSTALL-win32.txt
+The four new apt repositories described above are now available.=20
+Instructions for setting them up are here:
 
-diff --git a/INSTALL-win32.txt b/INSTALL-win32.txt
-deleted file mode 100644
-index 7c05685..0000000
---- a/INSTALL-win32.txt
-+++ /dev/null
-@@ -1,77 +0,0 @@
--UPGRADING FROM 2.3-ALPHA1 AND EARLIER
--
--OpenVPN Windows installer went through major changes in
--2.3-alpha2. To avoid any unexpected behavior, it is strongly
--suggested to upgrade as follows.
--
--First backup configuration files and certificates from your
--current installation; by default they're in
--
--    C:\Program Files\OpenVPN\config (32-bit Windows)
--    C:\Program Files (x86)\OpenVPN\config (64-bit Windows)
--
--After this, stop the openvpn-gui or the openvpn service
--wrapper, if either of them is running and uninstall OpenVPN.
--Finally, remove the OpenVPN install directory entirely (e.g.
--using Windows Explorer as administrator).
--
--Finally, install the new version of OpenVPN and copy over
--your configuration files and certificates, which now go to
--
--    C:\Program Files\OpenVPN\config
--
--provided you did not install the 32-bit version on 64-bit
--Windows.
--
--IMPORTANT NOTE FOR WINDOWS VISTA/7 USERS
--
--Note that on Windows Vista, you will need to run the OpenVPN
--GUI with administrator privileges, so that it can add routes
--to the routing table that are pulled from the OpenVPN server.
--You can do this by right-clicking on the OpenVPN GUI
--desktop icon, and selecting "Run as administrator".
--
--GENERAL QUICKSTART FOR WINDOWS
--
--The OpenVPN Client requires a configuration file
--and key/certificate files. You should obtain
--these and save them to OpenVPN's configuration
--directory, usually C:\Program Files\OpenVPN\config.
--
--You can run OpenVPN as a Windows system service or by using
--the client GUI. To use the OpenVPN GUI, double click on the
--desktop icon or start menu icon. The OpenVPN GUI is a
--system-tray applet, so an icon for the GUI will appear in
--the lower-right corner of the screen. Right click on the
--system tray icon, and a menu should appear showing the names
--of your OpenVPN configuration files, and giving you the
--option to connect.
--
--BUILDING OPENVPN FOR WINDOWS
--
--Official OpenVPN Windows releases are cross-compiled on Linux using the
--openvpn-build buildsystem:
--
--    https://community.openvpn.net/openvpn/wiki/BuildingUsingGenericBuildsy=
-stem
--
--First setup the build environment as shown in the above article. Then fetc=
-h the
--openvpn-build repository:
--
--    git clone https://github.com/OpenVPN/openvpn-build.git
--
--Review the build configuration:
--
--    openvpn-build/generic/build.vars
--    openvpn-build/windows-nsis/build-complete.vars
--
--Build (unsigned):
--
--    cd openvpn-build/windows-nsis
--    ./build-complete
--
--Build (signed):
--
--    cd openvpn-build/windows-nsis
--    ./build-complete --sign --sign-pkcs12=3D<pkcs12-file>\
--    --sign-pkcs12-pass=3D<pkcs12-file-password> \
--    --sign-timestamp=3D"<timestamp-url>"
+<https://community.openvpn.net/openvpn/wiki/OpenvpnSoftwareRepos>
+
+OpenVPN 2.4_alpha2 is available in "release/2.4" and "testing"
+OpenVPN 2.3.12     is available in "release/2.3" and "stable
+
+Once the new repos have been online for a while and are proven to work,=20
+I will look into redirecting requests to the old swupdate repository to=20
+the new "release/2.3" repository.
+
 --=20
-2.1.4
+Samuli Sepp=C3=A4nen
+Community Manager
+OpenVPN Technologies, Inc
 
+irc freenode net: mattock
 
