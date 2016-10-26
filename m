@@ -1,8 +1,10 @@
 From: Steffan Karger <steffan.karger@...1435...>
-Date: Wed, 26 Oct 2016 17:47:58 +0200
-Message-ID: <1477496878-17296-1-git-send-email-steffan.karger@...1435...>
+Date: Wed, 26 Oct 2016 17:49:32 +0200
+Message-ID: <1477496972-17424-1-git-send-email-steffan.karger@...1435...>
+In-Reply-To: <1477496878-17296-1-git-send-email-steffan.karger@...1435...>
+References: <1477496878-17296-1-git-send-email-steffan.karger@...1435...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH (master)] Limit --reneg-bytes to 64MB when
+Subject: [Openvpn-devel] [PATCH (2.3)] Limit --reneg-bytes to 64MB when
 	using small block ciphers
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -27,14 +29,14 @@ to allow a user to override this behaviour if really needed.
 Signed-off-by: Steffan Karger <steffan.karger@...1435...>
 ---
  src/openvpn/crypto.c |  5 +++--
- src/openvpn/ssl.c    | 24 ++++++++++++++++++++++++
- 2 files changed, 27 insertions(+), 2 deletions(-)
+ src/openvpn/ssl.c    | 22 ++++++++++++++++++++++
+ 2 files changed, 25 insertions(+), 2 deletions(-)
 
 diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
-index 45689f2..b40fc7a 100644
+index 552e333..56838af 100644
 --- a/src/openvpn/crypto.c
 +++ b/src/openvpn/crypto.c
-@@ -836,8 +836,9 @@ init_key_ctx (struct key_ctx *ctx, struct key *key,
+@@ -496,8 +496,9 @@ init_key_ctx (struct key_ctx *ctx, struct key *key,
  	  cipher_kt_iv_size(kt->cipher));
        if (cipher_kt_block_size(kt->cipher) < 128/8)
  	{
@@ -47,10 +49,10 @@ index 45689f2..b40fc7a 100644
  	}
      }
 diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index dfdc200..2c341a2 100644
+index 33fd9dd..08cc10c 100644
 --- a/src/openvpn/ssl.c
 +++ b/src/openvpn/ssl.c
-@@ -283,6 +283,24 @@ tls_get_cipher_name_pair (const char * cipher_name, size_t len) {
+@@ -271,6 +271,24 @@ tls_get_cipher_name_pair (const char * cipher_name, size_t len) {
    return NULL;
  }
  
@@ -75,16 +77,7 @@ index dfdc200..2c341a2 100644
  /*
   * Max number of bytes we will add
   * for data structures common to both
-@@ -1742,6 +1760,8 @@ tls_session_update_crypto_params(struct tls_session *session,
-       msg (D_TLS_ERRORS, "TLS Error: server generate_key_expansion failed");
-       goto cleanup;
-     }
-+  tls_limit_reneg_bytes (session->opt->key_type.cipher,
-+			 &session->opt->renegotiate_bytes);
-   ret = true;
- cleanup:
-   CLEAR (*ks->key_src);
-@@ -2126,6 +2146,8 @@ key_method_2_write (struct buffer *buf, struct tls_session *session)
+@@ -1956,6 +1974,8 @@ key_method_2_write (struct buffer *buf, struct tls_session *session)
  	}
  		      
        CLEAR (*ks->key_src);
@@ -93,9 +86,9 @@ index dfdc200..2c341a2 100644
      }
  
    return true;
-@@ -2354,6 +2376,8 @@ key_method_2_read (struct buffer *buf, struct tls_multi *multi, struct tls_sessi
+@@ -2166,6 +2186,8 @@ key_method_2_read (struct buffer *buf, struct tls_multi *multi, struct tls_sessi
  	}
- 
+ 		      
        CLEAR (*ks->key_src);
 +      tls_limit_reneg_bytes (session->opt->key_type.cipher,
 +			     &session->opt->renegotiate_bytes);
