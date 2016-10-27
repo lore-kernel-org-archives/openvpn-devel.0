@@ -1,11 +1,8 @@
 From: David Sommerseth <davids@...515...>
-Date: Thu, 27 Oct 2016 17:49:36 +0200
-Message-Id: <1477583376-20728-2-git-send-email-davids@...515...>
-In-Reply-To: <1477583376-20728-1-git-send-email-davids@...515...>
-References: <1477583376-20728-1-git-send-email-davids@...515...>
-MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH applied] Remove INSTALL-win32.txt that
-	is now hosted in openvpn-build
+Date: Thu, 27 Oct 2016 18:49:41 +0200
+Message-Id: <1477586981-5047-1-git-send-email-davids@...515...>
+Subject: [Openvpn-devel] [PATCH] Remove last rest of INSTALL-win32.txt
+	references
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,51 +11,70 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net, =?UTF-8?q?Samuli=20Sepp=C3=A4nen?= <samuli@...515...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+Commit 04341beb1d8e0fad3425bfec5f281fe431895cd6 removed the
+INSTALL-win32.txt file.  But there were crucial parts left in
+Makefile.am which broke building OpenVPN.  In addition, removed
+other references in INSTALL and README to the same file to be
+complete.
 
-ACK!   Your patch has been applied to the master branch.
+Signed-off-by: David Sommerseth <davids@...515...>
+---
+ INSTALL     | 4 ----
+ Makefile.am | 6 ------
+ README      | 3 ---
+ 3 files changed, 13 deletions(-)
 
-commit 04341beb1d8e0fad3425bfec5f281fe431895cd6
-Author: Samuli Sepp=C3=A4nen
-Date:   Tue Oct 25 14:55:39 2016 +0300
+diff --git a/INSTALL b/INSTALL
+index f0965c7..4c6d21f 100644
+--- a/INSTALL
++++ b/INSTALL
+@@ -12,10 +12,6 @@ QUICK START:
+   Unix:
+     ./configure && make && make-install
+ 
+-  Cross-compile for Windows on Unix
+-
+-    See INSTALL-win32.txt
+-
+ *************************************************************************
+ 
+ To download OpenVPN, go to:
+diff --git a/Makefile.am b/Makefile.am
+index 364785c..8e9581b 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -74,12 +74,6 @@ dist_noinst_DATA = \
+ 	msvc-dev.bat \
+ 	msvc-build.bat
+ 
+-if WIN32
+-dist_doc_DATA += INSTALL-win32.txt
+-else
+-dist_noinst_DATA += INSTALL-win32.txt
+-endif
+-
+ dist_noinst_HEADERS = \
+ 	config-msvc.h \
+ 	config-msvc-version.h.in
+diff --git a/README b/README
+index ee76951..103a75a 100644
+--- a/README
++++ b/README
+@@ -39,9 +39,6 @@ For a description of OpenVPN's underlying protocol,
+ 
+ Other Files & Directories:
+ 
+-* INSTALL-win32.txt -- installation instructions
+-  for Windows
+-
+ * configure.ac -- script to rebuild our configure
+   script and makefile.
+ 
+-- 
+1.8.3.1
 
-     Remove INSTALL-win32.txt that is now hosted in openvpn-build
-
-     URL: https://github.com/OpenVPN/openvpn-build/pull/35
-     URL: https://github.com/OpenVPN/openvpn-build/pull/38
-     Signed-off-by: Samuli Sepp=C3=A4nen <samuli@...515...>
-     Acked-by: David Sommerseth <davids@...515...>
-     Message-Id: <1477396539-1293-1-git-send-email-samuli@...515...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/=
-msg12771.html
-     Signed-off-by: David Sommerseth <davids@...515...>
-
-
-- --
-kind regards,
-
-David Sommerseth
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBAgAGBQJYEh/VAAoJEIbPlEyWcf3ywYEQAI9s2BonVFvy9F3U9vPY5ch9
-M2LiUECeGkN0AISjXbK8QrSg//77G1Ri3gMKY4us0Fbot2cILMDUO/b7+XiU8VUR
-drowD/UVQ2lK1dOu37OZ6yDjoJixUKU3svSflUiQ+Nx9mKixccF9EgvfWyVuZfhh
-pg3xCTPgYsZ0FmiwOp3kNNAb198T2xGXjgn4HUvIGpWnLpd61ius0qNxIze40oHR
-C1gaKnDftUzb4nzyNFM55xwyZI9zgFEQLWlz23fufQb2P3le6xrPpjuoO/xKRbrF
-6PNLb6It44n7ZtrlwCVrcg40ucsvcf8i3PJ7GHoksF/A9ad3JPnM9MV8gIjA7PR2
-FADz7VFvqqMaky0wTBUpSVb2P0azCBwvGPBnG3Sw4SB8TDy6BYJX7JBoNOpZsdA+
-8c5SNgwj55E3c12xoG64MvGEWEvhuo0HSsiUT42r1cNkPC8ufAMhrbgOJCcEFhmH
-NZFLLIeSi/BeLKNQ07slblUSC1100BX3toFRgAUZ7E8pepL3UIcgGSejMFdEudY9
-+c40dcCDqz/cvNNM7QV+NqF+X9KxzdTLzoM5HgCRSmQPDa/6cfMydaAotJvsvH4t
-/8kBZKhHeiZrU14y3Z+3DCYEWZAqSD1NjEhkZlzA2O9B8/obT6hQUvWw/5S77CEj
-G4EZwrKBNDwKSRQXrJrY
-=3DGSyz
------END PGP SIGNATURE-----
 
