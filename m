@@ -1,15 +1,15 @@
-References: <1477510159-5067-1-git-send-email-steffan@...1856...>
-	<1477660545-7828-1-git-send-email-davids@...515...>
+References: <1477656607-7440-1-git-send-email-steffan.karger@...1435...>
+	<1477660582-8056-1-git-send-email-davids@...515...>
 From: David Sommerseth <openvpn@...2080...>
-Message-ID: <4cb8932b-3334-bd1b-75c7-40a56cf2162b@...2080...>
-Date: Fri, 28 Oct 2016 15:29:57 +0200
+Message-ID: <258a50fa-8d5b-d938-37ee-8f4e1d1dff26@...2080...>
+Date: Fri, 28 Oct 2016 15:31:10 +0200
 MIME-Version: 1.0
-In-Reply-To: <1477660545-7828-1-git-send-email-davids@...515...>
+In-Reply-To: <1477660582-8056-1-git-send-email-davids@...515...>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="RmieS5FTDmXdEiFpN72WSvOtT805h14cT"
-Subject: Re: [Openvpn-devel] [PATCH applied] Add a revoked cert to the
- sample keys
+	boundary="RT1qeJ8lB4UBibeXe5uJ6pAXh04LkUfUp"
+Subject: Re: [Openvpn-devel] [PATCH applied] Limit --reneg-bytes to 64MB
+ when using small block ciphers
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,57 +18,59 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: steffan@...1856...
+To: steffan.karger@...1435...
 Cc: openvpn-devel@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---RmieS5FTDmXdEiFpN72WSvOtT805h14cT
-Content-Type: multipart/mixed; boundary="fMEsG0xiJjaNiWPLlM2nB37G7vuitIrRQ";
+--RT1qeJ8lB4UBibeXe5uJ6pAXh04LkUfUp
+Content-Type: multipart/mixed; boundary="NEGWjRHwFOeXaueJrEPk8OPgSqCKXgO3J";
 	protected-headers="v1"
 From: David Sommerseth <openvpn@...2080...>
-To: steffan@...1856...
+To: steffan.karger@...1435...
 Cc: openvpn-devel@lists.sourceforge.net
-Message-ID: <4cb8932b-3334-bd1b-75c7-40a56cf2162b@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Add a revoked cert to the sample
-	keys
-References: <1477510159-5067-1-git-send-email-steffan@...1856...>
-	<1477660545-7828-1-git-send-email-davids@...515...>
-In-Reply-To: <1477660545-7828-1-git-send-email-davids@...515...>
+Message-ID: <258a50fa-8d5b-d938-37ee-8f4e1d1dff26@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Limit --reneg-bytes to 64MB when
+	using small block ciphers
+References: <1477656607-7440-1-git-send-email-steffan.karger@...1435...>
+	<1477660582-8056-1-git-send-email-davids@...515...>
+In-Reply-To: <1477660582-8056-1-git-send-email-davids@...515...>
 
---fMEsG0xiJjaNiWPLlM2nB37G7vuitIrRQ
+--NEGWjRHwFOeXaueJrEPk8OPgSqCKXgO3J
 Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
 
 
-That should be the master branch.  My scripts obviously needs some more
-enhancements.
-
-
-On 28/10/16 15:15, David Sommerseth wrote:
-> Your patch has been applied to the dev/pre-push-hook branch
+On 28/10/16 15:16, David Sommerseth wrote:
+> ACK.
 >=20
-> commit a64d76e246042fde40189033b87b126627db5b6b
+> Your patch has been applied to the  branch
+
+This was pushed to the release/2.3 branch.
+
+> commit a91ddc99a524014ec79560d873721e8fa81a5631
 > Author: Steffan Karger
-> Date:   Wed Oct 26 21:29:19 2016 +0200
+> Date:   Fri Oct 28 14:10:07 2016 +0200
 >=20
->      Add a revoked cert to the sample keys
+>      Limit --reneg-bytes to 64MB when using small block ciphers
 >=20
->      Signed-off-by: Steffan Karger <steffan@...1856...>
->      Acked-by: Arne Schwabe <arne@...1227...>
->      Message-Id: <1477510159-5067-1-git-send-email-steffan@...1856...>
+>      Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+>      Acked-by: David Sommerseth <davids@...515...>
+>      Message-Id: <1477656607-7440-1-git-send-email-steffan.karger@...1784...=
+...>
 >      URL: https://www.mail-archive.com/openvpn-devel@...475...=
-t/msg12784.html
+t/msg12799.html
 >      Signed-off-by: David Sommerseth <davids@...515...>
 >=20
+
 --=20
 kind regards,
 
 David Sommerseth
 
 
---fMEsG0xiJjaNiWPLlM2nB37G7vuitIrRQ--
+--NEGWjRHwFOeXaueJrEPk8OPgSqCKXgO3J--
 
---RmieS5FTDmXdEiFpN72WSvOtT805h14cT
+--RT1qeJ8lB4UBibeXe5uJ6pAXh04LkUfUp
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -76,20 +78,20 @@ Content-Disposition: attachment; filename="signature.asc"
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBAgAGBQJYE1LVAAoJEIbPlEyWcf3ykuoP/2Md6Sp5GhWWRMu4PPKA95ix
-l/ByN1Ed11JJ8WvKfOB+mp4NhnPhIdVCT6xK5doiRW2LPGku7YBdwiSsKb74ZBOf
-xbb6uagv1qw7d2t9P4GHIkNlH5ioofJLIDmT9qkW68BwDgVK6pWUzTAwDG1HYdCF
-rOdkFjFY54fhBSbTjcYJfZq0qEMNoG1JOFrN66M2G1xkxJyyP1uPe+FVXohxfHF3
-0DROr/sbnTeWFyHhOhdnLZUzAr61QxT49DYbEiVDSxoNxbQYYrGRUqiFpeDhdr3C
-xxUPc3aT3q3X9NbBqMEjKK/j/c5ZyxlRDmg0NwFV6CWn5R7NcxX+93jI2WkuBibr
-TnIHEFOVEXaRXSBdnDTMY50aSvb2KmbHJl9bY5jKaeKkVssmBgXesI2Gsv51pdRj
-wR/6bEqFhCacFzj5y+VkpngAyNsyO0N+zdnBSixnfgLquwYErxREdXMnbz0yUI3t
-DZiCKhvL2AgTJ7Ih4nrQXFU/g0Px5A2zJ/U3YbEuzcpXBJPtRQSS0bfQib51f8cm
-O4C3iJkG4rccGH0YbJIJNWe7stwJB/sXNApLckpGczfDPqUHvdVOTqaeAuxe5644
-E+/aERBbtuZXJYcMGfh6S/u4g5roF5Nyx5l8mjuep44PAOp/y4wPotHS8Yo9kyHC
-aFk35v2e3t+9yVUa+xLK
-=z3IQ
+iQIcBAEBAgAGBQJYE1MfAAoJEIbPlEyWcf3ytecP/0fO7lq+X/rqv0vBm6xTlaTM
+g/Z8DvWWrN0e33WcZuCpsZROP0TWCKMcZ6XmF89FQ51JDN/YWCb+LChspI4Jrf0P
+xI65TO+8SLVBbzmf7sLo/j6lv2nLymR9xH4Fk2cjNugbDMhhE4JbkkHInV4ph6sm
+ziC6vtVYydObiNtUFID0j30dwBKrg+EbAvv635mhIIMUbRDrwoi+hFkpNCEM/W8x
+aIFUy6xS/RTVZG9BjsW35RmULray1FlQGb9OhAZhk/pLlGuzPRlOWvnkj4BaD2pY
+liZMnRNgkgp1CgjAsm9h4KHeOUqe0qpTP5O0OoLSLEbh4RzqxHO2119G7KqNw90T
+E8ncwdfofSsc86xdeWV3qK9Jm/tlO+hn/+HNK8spoiKn4HWuxK0sJs4sT8Fqm/r7
+1D74aB7UENTlQ+12HdkiehbBcsI3r+dzjo3CuI1TlxRoVMo+r6C3nWgeDy77Erkk
+03/FYts9PlsnPZ6ItjxMrBIcjIhSS4TdA4bIYKTKwBIkMjPSKhMrwTpGC0IxpKgj
+e02h2LvTCfLx1M+aw0AmfVhGEgxW4L2tsi0iDoMYG2ikG+GkE1epMqUYY3GvBWou
+fi8c8NfBxSCe+1zipgcMOsKV3YpMZeLktscJplV847DFrJj3efubjC+u3nKYZs+M
+iYeViTr+sTFmipaYKSyC
+=Xl9R
 -----END PGP SIGNATURE-----
 
---RmieS5FTDmXdEiFpN72WSvOtT805h14cT--
+--RT1qeJ8lB4UBibeXe5uJ6pAXh04LkUfUp--
 
