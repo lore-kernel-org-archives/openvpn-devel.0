@@ -1,10 +1,10 @@
 From: David Sommerseth <davids@...515...>
-Date: Fri, 28 Oct 2016 15:15:45 +0200
-Message-Id: <1477660545-7828-1-git-send-email-davids@...515...>
-In-Reply-To: <1477510159-5067-1-git-send-email-steffan@...1856...>
-References: <1477510159-5067-1-git-send-email-steffan@...1856...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Add a revoked cert to the
-	sample keys
+Date: Fri, 28 Oct 2016 15:16:05 +0200
+Message-Id: <1477660565-7933-1-git-send-email-davids@...515...>
+In-Reply-To: <1477655821-6711-1-git-send-email-steffan.karger@...1435...>
+References: <1477655821-6711-1-git-send-email-steffan.karger@...1435...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Limit --reneg-bytes to 64MB
+	when using small block ciphers
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,24 +15,26 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: steffan@...1856...
+To: steffan.karger@...1435...
 Cc: openvpn-devel@lists.sourceforge.net
 
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
+ACK.
+
 Your patch has been applied to the dev/pre-push-hook branch
 
-commit a64d76e246042fde40189033b87b126627db5b6b
+commit 752caece99a61e516386f94823e82ddf13fcbcab
 Author: Steffan Karger
-Date:   Wed Oct 26 21:29:19 2016 +0200
+Date:   Fri Oct 28 13:57:01 2016 +0200
 
-     Add a revoked cert to the sample keys
+     Limit --reneg-bytes to 64MB when using small block ciphers
 
-     Signed-off-by: Steffan Karger <steffan@...1856...>
-     Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <1477510159-5067-1-git-send-email-steffan@...1856...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg12784.html
+     Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+     Acked-by: David Sommerseth <davids@...515...>
+     Message-Id: <1477655821-6711-1-git-send-email-steffan.karger@...1435...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg12798.html
      Signed-off-by: David Sommerseth <davids@...515...>
 
 
@@ -44,18 +46,18 @@ David Sommerseth
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBAgAGBQJYE09/AAoJEIbPlEyWcf3y1NgP/2Gapmp1r18wkkKQCY0D35uJ
-YEDQskAsW47hH5cq+bFvNNu64HZcMXi72idAOFwFLAzZQxQoPa/wwk2Snyo7HBEB
-YdN7PQkSnM7tTDUj8jJaZAMrjYOiZcLpsGf51t+wl0o0wjK7uZzhqLWUJU92szTR
-MuBdXmFXJ23D6gqfzNqefmU6G2W4FHFl4e62QTIi0SWswGfKJfs+Wt5Acpo9xlZi
-sGBAeI/p7I5M9+7gwbHFXiSZh5IPA7sQcptfPtv0K7E/64NNlS1GlWGw4+DLFBfM
-59AGsmd9XR3X9+n8z1nrbb/cveA/Iq+PnXr1oeYyZta+809nMqtcnbr9PU9riyJu
-sn1q5XGOeHuM99Va4CnKtOsbP6/7bByY9cE520IWuM9p3CZrEWPY9aRIuKZUzf2m
-JrHKI0+bzD9NG1pvAY101Yw6OqWUzz14kt5NGRkXI76NNvHsBBJ3fpFz2evZRl3q
-bnYCM/6cVrRpWHY7NxJQX6Kg6GmqnMUQBqxHQlfEZHVr3sx2qB/EvKtfRbzmvfJD
-luGT6y6B86tXwGDub+aji5cdaMV3rtP+rqdKpbqVERu9svQ7LaMG6eFvuOab+cOr
-Qh4FN5Fsggfk0udBUPG6eZKCbVh5QvINsXboySIlpx6OutUNVY5xG67iKnBocOdu
-fLTAlfltknooNAu0Vjfu
-=PnH/
+iQIcBAEBAgAGBQJYE0+TAAoJEIbPlEyWcf3yPZ4P/08Gs7c8NXaER8G6dMY6y95g
+ZHCwOSjBJaQpdHVZE4gnSq/pip+49fQjf4gz5g/xb+NgxSQqtzfYYRsmc2y9cOJJ
+xj5jRzrJnrTgWEFumVJ3/4byzz+2WkkWVfeR+JUXyenwor4biyUbFyVbTVJcGFfO
+GZRY+ZPoNjBMlbWyIAIit0O83XsdDnVd6aur1d1WK9HQsUTaYkkv4q5WS42vIWCn
+CCrq0EN3V/vi6OnRQs2zQhYiV1/UvlojOuobLr9w5koeduKVtPsq0+7JM6a1+sUL
+GuofhGWDlNtisoYO22g2RSluc//pwB1Ur3KyaXTvq/3o2ViwJI14ohK1sQWuFOgv
+PZzH/eZ0lc4UN80kNskJ26e9QLD+/LQtSZMwlkNS1iL3oL1WfQRrn+yAzzr551GQ
+HyK9q1zw7T5FPT0j3qnXfkn5HiwBv0SWjWipD4ot1OW+9fK/0StaI+cIHitWrPNl
+FzJauLfAt9wOSFAaPePRlxz5fIRVWZ3I/1hK93qF7JhQMfCIkncyvn7UKAPgYAUc
+SBGndYtLNkbBgfv/9F+1k8cHH8wcRNAPdexVdqrbM72I0K155Sl5eNoY9Gn1+A3s
+JzxGGoEq+nF223fXVfQzNZ5jzKUx4NgWfe8Qbm3qJ6Ul9ZCYacan2to6kwR4YT1p
+gngtP5O9S54N8L/FiWKJ
+=z8RU
 -----END PGP SIGNATURE-----
 
