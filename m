@@ -1,14 +1,11 @@
+From: Steffan Karger <steffan.karger@...1435...>
+Date: Fri, 28 Oct 2016 13:57:01 +0200
+Message-ID: <1477655821-6711-1-git-send-email-steffan.karger@...1435...>
+In-Reply-To: <8018809a-aa16-32df-4c1a-724926994732@...1435...>
+References: <8018809a-aa16-32df-4c1a-724926994732@...1435...>
 MIME-Version: 1.0
-In-Reply-To: <1d788821-2cec-9201-f8b0-3f8a7c76333a@...2080...>
-References: <1476388771-16492-1-git-send-email-davids@...515...>
-	<1476388771-16492-6-git-send-email-davids@...515...>
-	<83c2c0fc-23e6-f03e-7151-198955416315@...1856...>
-	<1d788821-2cec-9201-f8b0-3f8a7c76333a@...2080...>
-From: Steffan Karger <steffan@...1856...>
-Date: Fri, 28 Oct 2016 13:46:51 +0200
-Message-ID: <CAA1Abx+rxD6STU5DuSMKL7gnG8_UpmpuuaDLftOu1cTB-oUN6A@...278...>
-Subject: Re: [Openvpn-devel] [PATCH 5/5] auth-gen-token: Authenticate
- generated auth-tokens when client re-authenticates
+Subject: [Openvpn-devel] [PATCH v2 (master)] Limit --reneg-bytes to 64MB
+	when using small block ciphers
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,79 +14,139 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+Following the earlier warning about small block ciphers, now limit the
+--reneg-bytes value when using a cipher that susceptible to SWEET32-like
+attacks.  The 64 MB value has been selected with the researchers who
+published the SWEET32 paper.
 
-On 19 October 2016 at 23:12, David Sommerseth
-<openvpn@...2080...> wrote:
-> On 19/10/16 22:12, Steffan Karger wrote:
->> On 13-10-16 21:59, David Sommerseth wrote:
->>> On a server with --auth-gen-token enabled, the server will have created
->>> a random token and pushed it to the client.  When the client needs to
->>> renegotiate the connection or otherwise reconnect, it will at this point
->>> use the auth-token as password.
->>
->> How does/should auth-token behave across the various restarts?  Should
->> auth-token for example be cleared on a sigusr1?
->
-> This isn't really well defined, from the initial design.  This patch is
-> all based upon the --auth-token feature already present in OpenVPN 2.3,
-> and what is possible to do via the plug-in/script mechanisms available
-> today - which works even on v2.3 servers today.
->
-> So this feature I introduce here will currently only provide a similar
-> behaviour as if this the external authentication module had implemented
-> --auth-token support.  Plug-ins and --auth-user-pass-verify can only
-> return "success" and "fail", which is what this patch in essence does.
->
-> With that said, I am not too happy about this ambiguity.  But fixing
-> that should be done separately.  And we need to ensure we don't break
-> existing v2.3 clients, and I believe we need to update the client code a
-> bit too to achieve these goals.
->
->>> Here we check if we have a token generated and that it has been pushed
->>> to the client, if so, then we check if the token matches the locally
->>> stored token.  If everything matches, we're done and the connection
->>> is still authenticated.
->>>
->>> If the auth-token authentication fails, we delete our local copy of
->>> the token and changes the connection to not being authenticated.  From
->>> this moment of, the client needs to do a full reconnect providing
->>> the users password again.
->>
->> How does the client know this?  This patch does not send an AUTH_FAILED
->> (or something similar) to the client.  Testing seems to indicate that
->> the server keeps refusing the token, and the client keeps resending it.
->
-> Sending AUTH_FAILED explicit would definitely be a good idea.  But it is
-> needed to verify that the OpenVPN is in a state where it can push and
-> that the client can accept the push.
->
-> But regardless of this, it this will not change the behaviour much at
-> all.  AFAICT, the client code today cannot separate authentication
-> failures based on passwords or tokens or get a reason why the
-> authentication failed.  (Unless there are something hidden inside IV_*
-> stuff or Peer-ID).
->
-> So what happens?  The server goes back to normal username/password
-> authentication, which fails as the token isn't valid as a password to
-> the authentication module.  The authentication module rejects and the
-> server sends an AUTH_FAILED, and the client disconnects.  At least
-> that's what happens in my testing environment.
->
-> If it is possible to send an AUTH_FAILED directly without going via the
-> authentication module, we can do that.  But going further than that will
-> most likely require some updates to the client code as well - which I
-> try to avoid in this round.
+Note that this will not change a user-set --reneg-bytes value, to allow a
+user to align a gun with his feet^w^w^w^w^w^w override this behaviour if
+really needed.
 
-Ok, so it seems we want the exact same thing, and these are the first
-step towards it.  Let's postpone this for later patches than.  I do
-think we need to look into this before releasing 2.4.0.
+v2: obey user-set --reneg-bytes 0 to revert to old behaviour, use more firm
+    language in warning message, and add URL to man page.
 
-If youl fix my nagging point before applying, ACK.
+Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+---
+ doc/openvpn.8         |  1 +
+ src/openvpn/crypto.c  |  5 +++--
+ src/openvpn/options.c |  1 +
+ src/openvpn/ssl.c     | 29 ++++++++++++++++++++++++++++-
+ 4 files changed, 33 insertions(+), 3 deletions(-)
 
--Steffan
+diff --git a/doc/openvpn.8 b/doc/openvpn.8
+index 2e58f33..0ac8184 100644
+--- a/doc/openvpn.8
++++ b/doc/openvpn.8
+@@ -4101,6 +4101,7 @@ an abbreviation for Blowfish in Cipher Block Chaining mode.
+ 
+ Using BF-CBC is no longer recommended, because of it's 64-bit block size.  This
+ small block size allows attacks based on collisions, as demonstrated by SWEET32.
++See https://community.openvpn.net/openvpn/wiki/SWEET32 for details.
+ 
+ To see other ciphers that are available with OpenVPN, use the
+ .B \-\-show\-ciphers
+diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
+index 45689f2..f600070 100644
+--- a/src/openvpn/crypto.c
++++ b/src/openvpn/crypto.c
+@@ -836,8 +836,9 @@ init_key_ctx (struct key_ctx *ctx, struct key *key,
+ 	  cipher_kt_iv_size(kt->cipher));
+       if (cipher_kt_block_size(kt->cipher) < 128/8)
+ 	{
+-	  msg (M_WARN, "WARNING: this cipher's block size is less than 128 bit "
+-	      "(%d bit).  Consider using a --cipher with a larger block size.",
++	  msg (M_WARN, "WARNING: INSECURE cipher with block size less than 128"
++	      " bit (%d bit).  This allows attacks like SWEET32.  Mitigate by "
++	      "using a --cipher with a larger block size (e.g. AES-256-CBC).",
+ 	      cipher_kt_block_size(kt->cipher)*8);
+ 	}
+     }
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 281ef0b..996c26e 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -852,6 +852,7 @@ init_options (struct options *o, const bool init_gc)
+ #endif
+   o->key_method = 2;
+   o->tls_timeout = 2;
++  o->renegotiate_bytes = -1;
+   o->renegotiate_seconds = 3600;
+   o->handshake_window = 60;
+   o->transition_window = 3600;
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index dfdc200..33122a3 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -283,6 +283,27 @@ tls_get_cipher_name_pair (const char * cipher_name, size_t len) {
+   return NULL;
+ }
+ 
++/**
++ * Limit the reneg_bytes value when using a small-block (<128 bytes) cipher.
++ *
++ * @param cipher	The current cipher (may be NULL).
++ * @param reneg_bytes	Pointer to the current reneg_bytes, updated if needed.
++ * 			May *not* be NULL.
++ */
++static void
++tls_limit_reneg_bytes (const cipher_kt_t *cipher, int *reneg_bytes)
++{
++  if (cipher && (cipher_kt_block_size(cipher) < 128/8))
++    {
++      if (*reneg_bytes == -1) /* Not user-specified */
++	{
++	  msg (M_WARN, "WARNING: cipher with small block size in use, "
++	       "reducing reneg-bytes to 64MB to mitigate SWEET32 attacks.");
++	  *reneg_bytes = 64 * 1024 * 1024;
++	}
++    }
++}
++
+ /*
+  * Max number of bytes we will add
+  * for data structures common to both
+@@ -1742,6 +1763,8 @@ tls_session_update_crypto_params(struct tls_session *session,
+       msg (D_TLS_ERRORS, "TLS Error: server generate_key_expansion failed");
+       goto cleanup;
+     }
++  tls_limit_reneg_bytes (session->opt->key_type.cipher,
++			 &session->opt->renegotiate_bytes);
+   ret = true;
+ cleanup:
+   CLEAR (*ks->key_src);
+@@ -2126,6 +2149,8 @@ key_method_2_write (struct buffer *buf, struct tls_session *session)
+ 	}
+ 		      
+       CLEAR (*ks->key_src);
++      tls_limit_reneg_bytes (session->opt->key_type.cipher,
++			     &session->opt->renegotiate_bytes);
+     }
+ 
+   return true;
+@@ -2354,6 +2379,8 @@ key_method_2_read (struct buffer *buf, struct tls_multi *multi, struct tls_sessi
+ 	}
+ 
+       CLEAR (*ks->key_src);
++      tls_limit_reneg_bytes (session->opt->key_type.cipher,
++			     &session->opt->renegotiate_bytes);
+     }
+ 
+   gc_free (&gc);
+@@ -2410,7 +2437,7 @@ tls_process (struct tls_multi *multi,
+   if (ks->state >= S_ACTIVE &&
+       ((session->opt->renegotiate_seconds
+ 	&& now >= ks->established + session->opt->renegotiate_seconds)
+-       || (session->opt->renegotiate_bytes
++       || (session->opt->renegotiate_bytes > 0
+ 	   && ks->n_bytes >= session->opt->renegotiate_bytes)
+        || (session->opt->renegotiate_packets
+ 	   && ks->n_packets >= session->opt->renegotiate_packets)
+-- 
+2.7.4
+
 
