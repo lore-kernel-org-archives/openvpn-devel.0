@@ -1,15 +1,15 @@
-References: <1477655821-6711-1-git-send-email-steffan.karger@...1435...>
-	<1477660565-7933-1-git-send-email-davids@...515...>
+References: <1477060957-6423-1-git-send-email-arne@...1227...>
+	<1477660526-7714-1-git-send-email-davids@...515...>
 From: David Sommerseth <openvpn@...2080...>
-Message-ID: <e608ca36-c985-9a68-e380-1a70d4349716@...2080...>
-Date: Fri, 28 Oct 2016 15:31:37 +0200
+Message-ID: <ad485a8a-3b29-10d6-3d52-6ff636fc6941@...2080...>
+Date: Fri, 28 Oct 2016 15:33:44 +0200
 MIME-Version: 1.0
-In-Reply-To: <1477660565-7933-1-git-send-email-davids@...515...>
+In-Reply-To: <1477660526-7714-1-git-send-email-davids@...515...>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="t56at8SloA4Ui9G61pQn8xK3HqEKeoeCJ"
-Subject: Re: [Openvpn-devel] [PATCH applied] Limit --reneg-bytes to 64MB
- when using small block ciphers
+	boundary="uv8uG5j635nXnQ8k4noHqRBTMSj3LKSFo"
+Subject: Re: [Openvpn-devel] [PATCH applied] Make Changes.rst nicer for 2.4
+ release
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,48 +18,45 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: steffan.karger@...1435...
+To: arne@...1227...
 Cc: openvpn-devel@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---t56at8SloA4Ui9G61pQn8xK3HqEKeoeCJ
-Content-Type: multipart/mixed; boundary="xfcaV1ii7gL2unS8icC3w0pPHhQa95Oqq";
+--uv8uG5j635nXnQ8k4noHqRBTMSj3LKSFo
+Content-Type: multipart/mixed; boundary="F9EBisKJ7HB2QDj5UVBHaoFNsbkxnwJqF";
 	protected-headers="v1"
 From: David Sommerseth <openvpn@...2080...>
-To: steffan.karger@...1435...
+To: arne@...1227...
 Cc: openvpn-devel@lists.sourceforge.net
-Message-ID: <e608ca36-c985-9a68-e380-1a70d4349716@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Limit --reneg-bytes to 64MB when
-	using small block ciphers
-References: <1477655821-6711-1-git-send-email-steffan.karger@...1435...>
-	<1477660565-7933-1-git-send-email-davids@...515...>
-In-Reply-To: <1477660565-7933-1-git-send-email-davids@...515...>
+Message-ID: <ad485a8a-3b29-10d6-3d52-6ff636fc6941@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Make Changes.rst nicer for 2.4
+	release
+References: <1477060957-6423-1-git-send-email-arne@...1227...>
+	<1477660526-7714-1-git-send-email-davids@...515...>
+In-Reply-To: <1477660526-7714-1-git-send-email-davids@...515...>
 
---xfcaV1ii7gL2unS8icC3w0pPHhQa95Oqq
+--F9EBisKJ7HB2QDj5UVBHaoFNsbkxnwJqF
 Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
 
-On 28/10/16 15:16, David Sommerseth wrote:
+On 28/10/16 15:15, David Sommerseth wrote:
 > ACK.
 >=20
-> Your patch has been applied to the dev/pre-push-hook branch
+> Your patch has been applied to the  branch
 
-This was pushed to the master branch.
+This was applied to the master branch.
 
-> commit 752caece99a61e516386f94823e82ddf13fcbcab
-> Author: Steffan Karger
-> Date:   Fri Oct 28 13:57:01 2016 +0200
+> commit fe621610ff300a299b232956056ffdf0833a9b45
+> Author: Arne Schwabe
+> Date:   Fri Oct 21 16:42:37 2016 +0200
 >=20
->      Limit --reneg-bytes to 64MB when using small block ciphers
+>      Make Changes.rst nicer for 2.4 release
 >=20
->      Signed-off-by: Steffan Karger <steffan.karger@...1435...>
 >      Acked-by: David Sommerseth <davids@...515...>
->      Message-Id: <1477655821-6711-1-git-send-email-steffan.karger@...1784...=
-...>
+>      Message-Id: <1477060957-6423-1-git-send-email-arne@...1227...>
 >      URL: https://www.mail-archive.com/openvpn-devel@...475...=
-t/msg12798.html
+t/msg12766.html
 >      Signed-off-by: David Sommerseth <davids@...515...>
->=20
 
 --=20
 kind regards,
@@ -67,9 +64,9 @@ kind regards,
 David Sommerseth
 
 
---xfcaV1ii7gL2unS8icC3w0pPHhQa95Oqq--
+--F9EBisKJ7HB2QDj5UVBHaoFNsbkxnwJqF--
 
---t56at8SloA4Ui9G61pQn8xK3HqEKeoeCJ
+--uv8uG5j635nXnQ8k4noHqRBTMSj3LKSFo
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -77,20 +74,20 @@ Content-Disposition: attachment; filename="signature.asc"
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBAgAGBQJYE1M6AAoJEIbPlEyWcf3ywqoP/1k8bfrEpaEb2Xvl5sTShxz9
-MgXpY4VXsqDf81Pp82VcX3fQkV3bUyOnxJrNc2jl0Ha1CmpfqZERb6bvI5zFa9rS
-PuXWjoO9P/FV43JJj6tFbYXJOIUCx3BQZQpzskUxh1uoq/z8aF73tH6Y+dlio91Q
-BBK8mCfrknOhmcNkd9+QAOr/tIwFiJIkU6v13OiXL7n04OxFM+UnWxW05BPWWC+W
-GtKeEQmSbg+3VUnUbyfopuCzOomMSvec4qSuO5QJSo+O29CofrgcBe5/mN2Y+LjR
-GY3P1s8jAOwSDx2UnRKoFXVK0QeCwJdJv6Lv2G3PHTH0wCsg5slMVtwMMroYfmfI
-ZhZP5GYHi0fCDWORBnbFhRFlIz7DlrPu1elqXK4+1por9QhtLJ4g9pd5WbywhRgd
-U8VCXOWKzrbAHlsFvTzkBoCfJlgJOBzCmei2kmKRQj+8QV4C3mnPjfbC2wNDJgXM
-dsYawKV2czsXLExbMUTnqGC/PlcsApTubIKUMq8giRmUyObK6SmWvOd7rggQwgo0
-HMXsppt6yCZD28qIKLL2ap66cnUPPxTlDDczwt45SM1P/aHhoyiU6/FSofgQuI+3
-1SjFMREutDTwb+M4pA2Qc40bnK2Lx1K/9tbE3SD8ZWEOuhZl7k91Ksci+1nZb/yJ
-bKoi8tl7RVPN9irwoH5L
-=reQR
+iQIcBAEBAgAGBQJYE1O4AAoJEIbPlEyWcf3yz6sQAKIrwBG5WPO63MKsctqj69qh
+CI4dVQ6KhSg3hiAtx/EKifY7qD8SniOrZre/buOymuPuLLdXAX9+oHYqHvYCgaZs
+3TuNslLPosGxL7avFAPrkmrbGeSTfpF0hJCjrb+Bk3zEkambeEjIVJRsN4UN71IC
+qgBIr+S+lMaKgV0J1bLp1AcBA17WM5mcWs3G66sO00m74pySsBvQkLdZpMHCPmUl
+0/cFgWdNmm6JOdMaDDWo21w1G8eMix1pRN5Hzb68LA3+aAQcCStpC0hWeArYGl5C
+ykpQc6phJA4Ci24zQCk6mpGNSjHoNn9zNXsVKh8uBLEIwoFlpANj2TJKmxYiC4eY
+ma3JmHh+AJvaHvQUxX9ulVArC9H9YunIQ5RBoNHSZ6H8DrbYe3Wvvmw/DHokpqHt
+3waj7FE0bjE1LoEpMGt24JT1f578i1AHVKg1nT1TNR0U9/awMhfq131HrKQ1Dmhb
+GCB/vAQh4t925OQ94+lJQAH21Cf5PxmYu1I/X+fM6K9OVODeFQLuQed7MsT6utc0
+o8SCHvhazg2TDDeU0IIrGZ+20EIcoVik+5io3MO5i9QpiWlg16La9VBhSAi5RrRi
+SW3fAuOycZwsnsUIIBkgbfCa5KoNuQbwf6pCLZmvBia7jgo6FUOMLHEM1CGUNJmM
+t6KQaB4gKPn9Hqentdub
+=kw8Y
 -----END PGP SIGNATURE-----
 
---t56at8SloA4Ui9G61pQn8xK3HqEKeoeCJ--
+--uv8uG5j635nXnQ8k4noHqRBTMSj3LKSFo--
 
