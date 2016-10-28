@@ -1,8 +1,8 @@
 From: David Sommerseth <davids@...515...>
-Date: Fri, 28 Oct 2016 15:16:05 +0200
-Message-Id: <1477660565-7933-1-git-send-email-davids@...515...>
-In-Reply-To: <1477655821-6711-1-git-send-email-steffan.karger@...1435...>
-References: <1477655821-6711-1-git-send-email-steffan.karger@...1435...>
+Date: Fri, 28 Oct 2016 15:16:22 +0200
+Message-Id: <1477660582-8056-1-git-send-email-davids@...515...>
+In-Reply-To: <1477656607-7440-1-git-send-email-steffan.karger@...1435...>
+References: <1477656607-7440-1-git-send-email-steffan.karger@...1435...>
 Subject: Re: [Openvpn-devel] [PATCH applied] Limit --reneg-bytes to 64MB
 	when using small block ciphers
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -23,18 +23,18 @@ Hash: SHA1
 
 ACK.
 
-Your patch has been applied to the dev/pre-push-hook branch
+Your patch has been applied to the  branch
 
-commit 752caece99a61e516386f94823e82ddf13fcbcab
+commit a91ddc99a524014ec79560d873721e8fa81a5631
 Author: Steffan Karger
-Date:   Fri Oct 28 13:57:01 2016 +0200
+Date:   Fri Oct 28 14:10:07 2016 +0200
 
      Limit --reneg-bytes to 64MB when using small block ciphers
 
      Signed-off-by: Steffan Karger <steffan.karger@...1435...>
      Acked-by: David Sommerseth <davids@...515...>
-     Message-Id: <1477655821-6711-1-git-send-email-steffan.karger@...1435...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg12798.html
+     Message-Id: <1477656607-7440-1-git-send-email-steffan.karger@...1435...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg12799.html
      Signed-off-by: David Sommerseth <davids@...515...>
 
 
@@ -46,18 +46,18 @@ David Sommerseth
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBAgAGBQJYE0+TAAoJEIbPlEyWcf3yPZ4P/08Gs7c8NXaER8G6dMY6y95g
-ZHCwOSjBJaQpdHVZE4gnSq/pip+49fQjf4gz5g/xb+NgxSQqtzfYYRsmc2y9cOJJ
-xj5jRzrJnrTgWEFumVJ3/4byzz+2WkkWVfeR+JUXyenwor4biyUbFyVbTVJcGFfO
-GZRY+ZPoNjBMlbWyIAIit0O83XsdDnVd6aur1d1WK9HQsUTaYkkv4q5WS42vIWCn
-CCrq0EN3V/vi6OnRQs2zQhYiV1/UvlojOuobLr9w5koeduKVtPsq0+7JM6a1+sUL
-GuofhGWDlNtisoYO22g2RSluc//pwB1Ur3KyaXTvq/3o2ViwJI14ohK1sQWuFOgv
-PZzH/eZ0lc4UN80kNskJ26e9QLD+/LQtSZMwlkNS1iL3oL1WfQRrn+yAzzr551GQ
-HyK9q1zw7T5FPT0j3qnXfkn5HiwBv0SWjWipD4ot1OW+9fK/0StaI+cIHitWrPNl
-FzJauLfAt9wOSFAaPePRlxz5fIRVWZ3I/1hK93qF7JhQMfCIkncyvn7UKAPgYAUc
-SBGndYtLNkbBgfv/9F+1k8cHH8wcRNAPdexVdqrbM72I0K155Sl5eNoY9Gn1+A3s
-JzxGGoEq+nF223fXVfQzNZ5jzKUx4NgWfe8Qbm3qJ6Ul9ZCYacan2to6kwR4YT1p
-gngtP5O9S54N8L/FiWKJ
-=z8RU
+iQIcBAEBAgAGBQJYE0+kAAoJEIbPlEyWcf3yMJYP/0owxGi9kgHWnU6eg/9yFxgj
+GORwUBZFTOCbj6funmVinJ43EWLXY78QcmUcSgiCCOOmapA7IByWNo/4KBMd9ypD
+h5hVcnosKEQmcp7hBS8bDV5xb0X+R7JnDUvw1ErGsU2a15C2+80lEg86HX70bkg5
+MtkxYY+FK3h9RO53T4a2+RTctukikbfo7Hd3HkDo+MaNY1ZsEwM/GytBko4tHTql
+fwGhbCBmL5o8MK9l3M8AUVBgMa5lPvvwnINP0dLyx4obyAscLnQtxyEN63j7CPx6
+JjUwWpycVN7jERm78l/kce4/CYSwAtvbYqnQAvn2dioiwSyk155vDYmp9Jslv30b
+ojmMpMGaewVTuAUS5/MpE7qNfw2Pl1EBDs8nTfYDvYROIQ+6d1iZ7gLdqJ8Xd75m
+c5e9yVkOcyXxLHgeKduCnQYfLmnH+kSQSFnToLupENqeJSjqLD4uiAGwBGwlBp2J
+yzbuf0GFvmRcQ0Rjtg26VEocfuASLMnNDK7s4u3iCGPqhvq3umBwIqynBSiPGMbu
+qgX/ottDL3QcIZoHIRU2SphQ+dosXwEvnm9zg9RLkFvf7ZJX+02mVTHT/tPkLE37
+1q7WQ27Owwm9OkjLrV+wlLbZgOvXWNcpJMMXO4wTyxkGJ0NESjkBt67oY+5ov83F
+AEWrOrgWpnoRGUxs/x0h
+=WdOO
 -----END PGP SIGNATURE-----
 
