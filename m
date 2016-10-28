@@ -1,11 +1,11 @@
 From: Steffan Karger <steffan.karger@...1435...>
-Date: Fri, 28 Oct 2016 13:57:01 +0200
-Message-ID: <1477655821-6711-1-git-send-email-steffan.karger@...1435...>
-In-Reply-To: <8018809a-aa16-32df-4c1a-724926994732@...1435...>
-References: <8018809a-aa16-32df-4c1a-724926994732@...1435...>
+Date: Fri, 28 Oct 2016 14:10:07 +0200
+Message-ID: <1477656607-7440-1-git-send-email-steffan.karger@...1435...>
+In-Reply-To: <1477496972-17424-1-git-send-email-steffan.karger@...1435...>
+References: <1477496972-17424-1-git-send-email-steffan.karger@...1435...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2 (master)] Limit --reneg-bytes to 64MB
-	when using small block ciphers
+Subject: [Openvpn-devel] [PATCH v2 (2.3)] Limit --reneg-bytes to 64MB when
+	using small block ciphers
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -27,22 +27,30 @@ Note that this will not change a user-set --reneg-bytes value, to allow a
 user to align a gun with his feet^w^w^w^w^w^w override this behaviour if
 really needed.
 
+Furthermore, in contrast with the patch for master, this will not limit
+--reneg-bytes on the client side.  This allows server administrators to
+revert to the old behaviour, or increase --reneg-bytes to something they
+believe is workable, without having to change client configs.  (The master
+branch provides cipher negotiation as a real solution, so we can be
+stricter there.)
+
 v2: obey user-set --reneg-bytes 0 to revert to old behaviour, use more firm
-    language in warning message, and add URL to man page.
+    language in warning message, add URL to man page, and only limit at the
+    server side.
 
 Signed-off-by: Steffan Karger <steffan.karger@...1435...>
 ---
  doc/openvpn.8         |  1 +
  src/openvpn/crypto.c  |  5 +++--
  src/openvpn/options.c |  1 +
- src/openvpn/ssl.c     | 29 ++++++++++++++++++++++++++++-
- 4 files changed, 33 insertions(+), 3 deletions(-)
+ src/openvpn/ssl.c     | 25 ++++++++++++++++++++++++-
+ 4 files changed, 29 insertions(+), 3 deletions(-)
 
 diff --git a/doc/openvpn.8 b/doc/openvpn.8
-index 2e58f33..0ac8184 100644
+index 70573da..7be30ec 100644
 --- a/doc/openvpn.8
 +++ b/doc/openvpn.8
-@@ -4101,6 +4101,7 @@ an abbreviation for Blowfish in Cipher Block Chaining mode.
+@@ -3913,6 +3913,7 @@ an abbreviation for Blowfish in Cipher Block Chaining mode.
  
  Using BF-CBC is no longer recommended, because of it's 64-bit block size.  This
  small block size allows attacks based on collisions, as demonstrated by SWEET32.
@@ -51,10 +59,10 @@ index 2e58f33..0ac8184 100644
  To see other ciphers that are available with OpenVPN, use the
  .B \-\-show\-ciphers
 diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
-index 45689f2..f600070 100644
+index 552e333..ca4af27 100644
 --- a/src/openvpn/crypto.c
 +++ b/src/openvpn/crypto.c
-@@ -836,8 +836,9 @@ init_key_ctx (struct key_ctx *ctx, struct key *key,
+@@ -496,8 +496,9 @@ init_key_ctx (struct key_ctx *ctx, struct key *key,
  	  cipher_kt_iv_size(kt->cipher));
        if (cipher_kt_block_size(kt->cipher) < 128/8)
  	{
@@ -67,11 +75,11 @@ index 45689f2..f600070 100644
  	}
      }
 diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 281ef0b..996c26e 100644
+index 1ef0299..19cd815 100644
 --- a/src/openvpn/options.c
 +++ b/src/openvpn/options.c
-@@ -852,6 +852,7 @@ init_options (struct options *o, const bool init_gc)
- #endif
+@@ -849,6 +849,7 @@ init_options (struct options *o, const bool init_gc)
+ #ifdef ENABLE_SSL
    o->key_method = 2;
    o->tls_timeout = 2;
 +  o->renegotiate_bytes = -1;
@@ -79,10 +87,10 @@ index 281ef0b..996c26e 100644
    o->handshake_window = 60;
    o->transition_window = 3600;
 diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index dfdc200..33122a3 100644
+index 33fd9dd..bfad291 100644
 --- a/src/openvpn/ssl.c
 +++ b/src/openvpn/ssl.c
-@@ -283,6 +283,27 @@ tls_get_cipher_name_pair (const char * cipher_name, size_t len) {
+@@ -271,6 +271,27 @@ tls_get_cipher_name_pair (const char * cipher_name, size_t len) {
    return NULL;
  }
  
@@ -110,16 +118,7 @@ index dfdc200..33122a3 100644
  /*
   * Max number of bytes we will add
   * for data structures common to both
-@@ -1742,6 +1763,8 @@ tls_session_update_crypto_params(struct tls_session *session,
-       msg (D_TLS_ERRORS, "TLS Error: server generate_key_expansion failed");
-       goto cleanup;
-     }
-+  tls_limit_reneg_bytes (session->opt->key_type.cipher,
-+			 &session->opt->renegotiate_bytes);
-   ret = true;
- cleanup:
-   CLEAR (*ks->key_src);
-@@ -2126,6 +2149,8 @@ key_method_2_write (struct buffer *buf, struct tls_session *session)
+@@ -1956,6 +1977,8 @@ key_method_2_write (struct buffer *buf, struct tls_session *session)
  	}
  		      
        CLEAR (*ks->key_src);
@@ -128,16 +127,7 @@ index dfdc200..33122a3 100644
      }
  
    return true;
-@@ -2354,6 +2379,8 @@ key_method_2_read (struct buffer *buf, struct tls_multi *multi, struct tls_sessi
- 	}
- 
-       CLEAR (*ks->key_src);
-+      tls_limit_reneg_bytes (session->opt->key_type.cipher,
-+			     &session->opt->renegotiate_bytes);
-     }
- 
-   gc_free (&gc);
-@@ -2410,7 +2437,7 @@ tls_process (struct tls_multi *multi,
+@@ -2222,7 +2245,7 @@ tls_process (struct tls_multi *multi,
    if (ks->state >= S_ACTIVE &&
        ((session->opt->renegotiate_seconds
  	&& now >= ks->established + session->opt->renegotiate_seconds)
