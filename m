@@ -1,10 +1,10 @@
 From: David Sommerseth <davids@...515...>
-Date: Fri, 28 Oct 2016 21:48:42 +0200
-Message-Id: <1477684124-26083-4-git-send-email-davids@...515...>
+Date: Fri, 28 Oct 2016 21:48:43 +0200
+Message-Id: <1477684124-26083-5-git-send-email-davids@...515...>
 In-Reply-To: <1477684124-26083-1-git-send-email-davids@...515...>
 References: <1477684124-26083-1-git-send-email-davids@...515...>
-Subject: [Openvpn-devel] [PATCH v2 2/4] auth-gen-token: Generate an
-	auth-token per client
+Subject: [Openvpn-devel] [PATCH v2 3/4] auth-gen-token: Push generated
+	auth-tokens to the client
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,123 +17,86 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-When --auth-gen-token is used a random token key is generated for
-each client after a successful user/password authentication.  This
-token is expected to be returned in the password field on the
-following authentications.
+If --auth-gen-token has been enabled and a token has been generated,
+ensure this token is pushed to the client using the 'auth-token' option.
 
-The token is 256 bits long and BASE64 encoded before it is stored.
+This patch will also remove the logging of auth-token values being
+pushed, unless --verb level is 7 or higher.
 
-  v2 - Fix Doxygen comment typo
-     - Don't exceed 80 chars line length
+  v2 - Don't exceed 80 chars line length
+     - Clarify the magic in sanitize_control_message()
+     - Relocate auth_token_sent struct member slightly
 
 Signed-off-by: David Sommerseth <davids@...515...>
 ---
- src/openvpn/ssl.c        |  6 ++++++
- src/openvpn/ssl_common.h |  8 ++++++++
- src/openvpn/ssl_verify.c | 39 +++++++++++++++++++++++++++++++++++++++
- 3 files changed, 53 insertions(+)
+ src/openvpn/misc.c       |  9 +++++++++
+ src/openvpn/push.c       | 12 +++++++++++-
+ src/openvpn/ssl_common.h |  2 ++
+ 3 files changed, 22 insertions(+), 1 deletion(-)
 
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index cbe925f..4a0cd6f 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -1194,6 +1194,12 @@ tls_multi_free (struct tls_multi *multi, bool clear)
+diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
+index 225f0bf..b06d446 100644
+--- a/src/openvpn/misc.c
++++ b/src/openvpn/misc.c
+@@ -2073,6 +2073,15 @@ sanitize_control_message(const char *src, struct gc_arena *gc)
+ 	  skip = 4;
+ 	  redact = true;
+ 	}
++      else if (!check_debug_level(D_SHOW_KEYS)
++               && (c == 'a' && !strncmp(src, "auth-token ", 11)))
++	{
++          /* Unless --verb is 7 or higher (D_SHOW_KEYS), hide
++           * the auth-token value coming in the src string
++           */
++	  skip = 10;
++	  redact = true;
++	}
  
-   cert_hash_free (multi->locked_cert_hash_set);
+       if (c == ',') /* end of redacted item? */
+ 	{
+diff --git a/src/openvpn/push.c b/src/openvpn/push.c
+index 4f24b58..f86bdd3 100644
+--- a/src/openvpn/push.c
++++ b/src/openvpn/push.c
+@@ -309,7 +309,7 @@ prepare_push_reply (struct context *c, struct gc_arena *gc,
+ 		    struct push_list *push_list)
+ {
+   const char *optstr = NULL;
+-  const struct tls_multi *tls_multi = c->c2.tls_multi;
++  struct tls_multi *tls_multi = c->c2.tls_multi;
+   const char * const peer_info = tls_multi->peer_info;
+   struct options *o = &c->options;
  
-+  if (multi->auth_token)
-+    {
-+      memset (multi->auth_token, 0, AUTH_TOKEN_SIZE);
-+      free (multi->auth_token);
-+    }
+@@ -371,6 +371,16 @@ prepare_push_reply (struct context *c, struct gc_arena *gc,
+ 	  push_option_fmt(gc, push_list, M_USAGE, "cipher %s", o->ciphername);
+ 	}
+     }
 +
-   for (i = 0; i < TM_SIZE; ++i)
-     tls_session_free (&multi->session[i], false);
++  /* If server uses --auth-gen-token and we have an auth token
++   * to send to the client
++   */
++  if (false == tls_multi->auth_token_sent && NULL != tls_multi->auth_token)
++    {
++      push_option_fmt(gc, push_list, M_USAGE,
++                      "auth-token %s", tls_multi->auth_token);
++      tls_multi->auth_token_sent = true;
++    }
+   return true;
+ }
  
 diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
-index 50c4a9c..9b63a12 100644
+index 9b63a12..b04a24c 100644
 --- a/src/openvpn/ssl_common.h
 +++ b/src/openvpn/ssl_common.h
-@@ -351,6 +351,9 @@ struct tls_options
- /** @} name Index of key_state objects within a tls_session structure */
- /** @} addtogroup control_processor */
- 
-+#define AUTH_TOKEN_SIZE 32      /**< Size of server side generated auth tokens.
-+                                 *   32 bytes == 256 bits
-+                                 */
- 
- /**
-  * Security parameter state of a single session within a VPN tunnel.
-@@ -525,6 +528,11 @@ struct tls_multi
-   uint32_t peer_id;
-   bool use_peer_id;
- 
-+  char *auth_token;      /**< If server sends a generated auth-token,
-+                          *   this is the token to use for future
-+                          *   user/pass authentications in this session.
-+                          */
-+  time_t auth_token_tstamp; /**< timestamp of the generated token */
+@@ -533,6 +533,8 @@ struct tls_multi
+                           *   user/pass authentications in this session.
+                           */
+   time_t auth_token_tstamp; /**< timestamp of the generated token */
++  bool auth_token_sent;  /**< If server uses --auth-gen-token and
++                          *   token has been sent to client */
    /*
     * Our session objects.
     */
-diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
-index d0c22b8..0ac5689 100644
---- a/src/openvpn/ssl_verify.c
-+++ b/src/openvpn/ssl_verify.c
-@@ -39,6 +39,8 @@
- 
- #include "misc.h"
- #include "manage.h"
-+#include "otime.h"
-+#include "base64.h"
- #include "ssl_verify.h"
- #include "ssl_verify_backend.h"
- 
-@@ -1174,6 +1176,43 @@ verify_user_pass(struct user_pass *up, struct tls_multi *multi,
-       if (man_def_auth != KMDA_UNDEF)
- 	ks->auth_deferred = true;
- #endif
-+
-+      if ((session->opt->auth_token_generate) && (NULL == multi->auth_token))
-+	{
-+	  /* Server is configured with --auth-gen-token but no token has yet
-+	   * been generated for this client.  Generate one and save it.
-+	   */
-+	  uint8_t tok[AUTH_TOKEN_SIZE];
-+
-+	  if (!rand_bytes(tok, AUTH_TOKEN_SIZE))
-+	    {
-+	      msg( M_FATAL, "Failed to get enough randomness for "
-+                   "authentication token");
-+	    }
-+
-+	  /* The token should be longer than the input when
-+           * being base64 encoded
-+           */
-+	  if( openvpn_base64_encode(tok, AUTH_TOKEN_SIZE,
-+                                    &multi->auth_token) < AUTH_TOKEN_SIZE)
-+	    {
-+	      msg(D_TLS_ERRORS, "BASE64 encoding of token failed. "
-+                  "No auth-token will be activated now");
-+	      if (multi->auth_token)
-+		{
-+		  memset (multi->auth_token, 0, AUTH_TOKEN_SIZE);
-+		  free (multi->auth_token);
-+		  multi->auth_token = NULL;
-+		}
-+	    }
-+	  else
-+	    {
-+	      multi->auth_token_tstamp = now;
-+	      dmsg (D_SHOW_KEYS, "Generated token for client: %s",
-+                    multi->auth_token);
-+	    }
-+	}
-+
-       if ((session->opt->ssl_flags & SSLF_USERNAME_AS_COMMON_NAME))
- 	set_common_name (session, up->username);
- #ifdef ENABLE_DEF_AUTH
 -- 
 1.8.3.1
 
