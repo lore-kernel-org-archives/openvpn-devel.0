@@ -1,6 +1,6 @@
 From: David Sommerseth <davids@...515...>
-Date: Fri, 28 Oct 2016 21:48:40 +0200
-Message-Id: <1477684124-26083-2-git-send-email-davids@...515...>
+Date: Fri, 28 Oct 2016 21:48:41 +0200
+Message-Id: <1477684124-26083-3-git-send-email-davids@...515...>
 In-Reply-To: <1477684124-26083-1-git-send-email-davids@...515...>
 References: <1477684124-26083-1-git-send-email-davids@...515...>
 Subject: [Openvpn-devel] [PATCH v2 1/4] auth-gen-token: Add --auth-gen-token
