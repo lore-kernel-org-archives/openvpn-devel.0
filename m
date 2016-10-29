@@ -1,10 +1,14 @@
-From: David Sommerseth <davids@...515...>
-Date: Fri, 28 Oct 2016 21:48:43 +0200
-Message-Id: <1477684124-26083-5-git-send-email-davids@...515...>
-In-Reply-To: <1477684124-26083-1-git-send-email-davids@...515...>
-References: <1477684124-26083-1-git-send-email-davids@...515...>
-Subject: [Openvpn-devel] [PATCH v2 3/4] auth-gen-token: Push generated
-	auth-tokens to the client
+References: <1477650469-32431-1-git-send-email-janjust@...1147...>
+	<CAKuzo_ibmkh=zoEzaVCYFFkYXE0hpnOCN5VvQnP+JGdq7_+kUQ@...278...>
+From: Jan Just Keijser <janjust@...1147...>
+Message-ID: <ff9f92a3-e7ab-24bd-b715-5e6ae725cea0@...1147...>
+Date: Sat, 29 Oct 2016 15:27:57 +0200
+MIME-Version: 1.0
+In-Reply-To: <CAKuzo_ibmkh=zoEzaVCYFFkYXE0hpnOCN5VvQnP+JGdq7_+kUQ@...278...>
+Content-Type: multipart/alternative;
+	boundary="------------167332F46A5467F057BA660B"
+Subject: Re: [Openvpn-devel] [PATCH] Allow "setenv opt" to be pushed from
+ server to client
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,91 +17,133 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Selva Nair <selva.nair@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-If --auth-gen-token has been enabled and a token has been generated,
-ensure this token is pushed to the client using the 'auth-token' option.
+This is a multi-part message in MIME format.
+--------------167332F46A5467F057BA660B
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-This patch will also remove the logging of auth-token values being
-pushed, unless --verb level is 7 or higher.
+Hi,
 
-  v2 - Don't exceed 80 chars line length
-     - Clarify the magic in sanitize_control_message()
-     - Relocate auth_token_sent struct member slightly
+On 28/10/16 19:50, Selva Nair wrote:
+> Hi,
+>
+> On Fri, Oct 28, 2016 at 6:27 AM, Jan Just Keijser <janjust@...1147... 
+> <mailto:janjust@...1147...>> wrote:
+>
+>     ---
+>      src/openvpn/options.c | 9 ++++++++-
+>      1 file changed, 8 insertions(+), 1 deletion(-)
+>
+>
+> As Arne pointed out the utility of allowing setenv opt in push is 
+> questionable. "setenv opt bad-option" in config file logs a warning 
+> and continues. "push bad-option" logs an error and continues. The end 
+> result is that both avoids fatal errors with unrecognized/unknown 
+> options.
+>
 
-Signed-off-by: David Sommerseth <davids@...515...>
----
- src/openvpn/misc.c       |  9 +++++++++
- src/openvpn/push.c       | 12 +++++++++++-
- src/openvpn/ssl_common.h |  2 ++
- 3 files changed, 22 insertions(+), 1 deletion(-)
+the desired effect of the patch is to not print an ERROR but a warning 
+instead. For a sysadmin of a large scale deployment *any* method to 
+reduce the number of false errors/warnings is an advantage.
+Also, I see no reason to NOT add this patch, as it does not introduce 
+any vulnerabilities, but it only makes the config file behaviour versus 
+"pushed" behaviour more consistent. Abusing "setenv" to add an optional 
+option to a config file is a kludge at any rate - might as well make the 
+kludge pushable ;)
 
-diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
-index 225f0bf..b06d446 100644
---- a/src/openvpn/misc.c
-+++ b/src/openvpn/misc.c
-@@ -2073,6 +2073,15 @@ sanitize_control_message(const char *src, struct gc_arena *gc)
- 	  skip = 4;
- 	  redact = true;
- 	}
-+      else if (!check_debug_level(D_SHOW_KEYS)
-+               && (c == 'a' && !strncmp(src, "auth-token ", 11)))
-+	{
-+          /* Unless --verb is 7 or higher (D_SHOW_KEYS), hide
-+           * the auth-token value coming in the src string
-+           */
-+	  skip = 10;
-+	  redact = true;
-+	}
- 
-       if (c == ',') /* end of redacted item? */
- 	{
-diff --git a/src/openvpn/push.c b/src/openvpn/push.c
-index 4f24b58..f86bdd3 100644
---- a/src/openvpn/push.c
-+++ b/src/openvpn/push.c
-@@ -309,7 +309,7 @@ prepare_push_reply (struct context *c, struct gc_arena *gc,
- 		    struct push_list *push_list)
- {
-   const char *optstr = NULL;
--  const struct tls_multi *tls_multi = c->c2.tls_multi;
-+  struct tls_multi *tls_multi = c->c2.tls_multi;
-   const char * const peer_info = tls_multi->peer_info;
-   struct options *o = &c->options;
- 
-@@ -371,6 +371,16 @@ prepare_push_reply (struct context *c, struct gc_arena *gc,
- 	  push_option_fmt(gc, push_list, M_USAGE, "cipher %s", o->ciphername);
- 	}
-     }
-+
-+  /* If server uses --auth-gen-token and we have an auth token
-+   * to send to the client
-+   */
-+  if (false == tls_multi->auth_token_sent && NULL != tls_multi->auth_token)
-+    {
-+      push_option_fmt(gc, push_list, M_USAGE,
-+                      "auth-token %s", tls_multi->auth_token);
-+      tls_multi->auth_token_sent = true;
-+    }
-   return true;
- }
- 
-diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
-index 9b63a12..b04a24c 100644
---- a/src/openvpn/ssl_common.h
-+++ b/src/openvpn/ssl_common.h
-@@ -533,6 +533,8 @@ struct tls_multi
-                           *   user/pass authentications in this session.
-                           */
-   time_t auth_token_tstamp; /**< timestamp of the generated token */
-+  bool auth_token_sent;  /**< If server uses --auth-gen-token and
-+                          *   token has been sent to client */
-   /*
-    * Our session objects.
-    */
--- 
-1.8.3.1
 
+> That apart, NAK to this patch as its not correct
+>
+I'll see if I can refactor the patch - but your suggestion to put it at 
+the top of add_option did not work for me initially.
+
+JJK
+
+--------------167332F46A5467F057BA660B
+X-MIME-Autoconverted: from 8bit to quoted-printable by
+	outgoing1-ams.mf.surf.net id u9TDS3c7006322
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+
+<html>
+  <head>
+    <meta content=3D"text/html; charset=3Dutf-8" http-equiv=3D"Content-Type=
+">
+  </head>
+  <body bgcolor=3D"#FFFFFF" text=3D"#000000">
+    <div class=3D"moz-cite-prefix">Hi,<br>
+      <br>
+      On 28/10/16 19:50, Selva Nair wrote:<br>
+    </div>
+    <blockquote
+cite=3D"mid:CAKuzo_ibmkh=3DzoEzaVCYFFkYXE0hpnOCN5VvQnP+JGdq7_+kUQ@...278..."
+      type=3D"cite">
+      <div dir=3D"ltr">
+        <div class=3D"gmail_extra">Hi,</div>
+        <div class=3D"gmail_extra"><br>
+          <div class=3D"gmail_quote">On Fri, Oct 28, 2016 at 6:27 AM, Jan
+            Just Keijser <span dir=3D"ltr">&lt;<a moz-do-not-send=3D"true"
+                href=3D"mailto:janjust@...1147..." target=3D"_blank">janjus=
+t@...1147...</a>&gt;</span>
+            wrote:<br>
+            <blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px
+0.8ex;border-left-width:1px;border-left-color:rgb(204,204,204);border-left-=
+style:solid;padding-left:1ex">
+              <div id=3D"m_9136747121534352gmail-:1ty"
+                class=3D"m_9136747121534352gmail-a3s
+                m_9136747121534352gmail-aXjCH
+                m_9136747121534352gmail-m1580ad8799e1f731">---<br>
+                =C2=A0src/openvpn/options.c | 9 ++++++++-<br>
+                =C2=A01 file changed, 8 insertions(+), 1 deletion(-)<br>
+                <br>
+              </div>
+            </blockquote>
+            <div><br>
+            </div>
+            <div>As Arne pointed out the utility of allowing setenv opt
+              in push is questionable. "setenv opt bad-option" in config
+              file logs a warning and continues. "push bad-option" logs
+              an error and continues. The end result is that both avoids
+              fatal errors with unrecognized/unknown options.=C2=A0</div>
+            <div><br>
+            </div>
+          </div>
+        </div>
+      </div>
+    </blockquote>
+    <br>
+    the desired effect of the patch is to not print an ERROR but a
+    warning instead. For a sysadmin of a large scale deployment *any*
+    method to reduce the number of false errors/warnings is an
+    advantage.<br>
+    Also, I see no reason to NOT add this patch, as it does not
+    introduce any vulnerabilities, but it only makes the config file
+    behaviour versus "pushed" behaviour more consistent. Abusing
+    "setenv" to add an optional option to a config file is a kludge at
+    any rate - might as well make the kludge pushable ;)<br>
+    <br>
+    <br>
+    <blockquote
+cite=3D"mid:CAKuzo_ibmkh=3DzoEzaVCYFFkYXE0hpnOCN5VvQnP+JGdq7_+kUQ@...278..."
+      type=3D"cite">
+      <div dir=3D"ltr">
+        <div class=3D"gmail_extra">
+          <div class=3D"gmail_quote">
+            <div>That apart, NAK to this patch as its not correct</div>
+            <br>
+          </div>
+        </div>
+      </div>
+    </blockquote>
+    I'll see if I can refactor the patch - but your suggestion to put it
+    at the top of add_option did not work for me initially.<br>
+    <br>
+    JJK<br>
+  </body>
+</html>
+
+--------------167332F46A5467F057BA660B--
 
