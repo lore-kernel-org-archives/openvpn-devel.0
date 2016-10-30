@@ -1,15 +1,12 @@
-Date: Sun, 30 Oct 2016 11:16:16 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20161030101616.GV28918@...1296...>
-References: <a76fef6e-6cc6-0878-4cf6-293d84b4edd3@...277...>
-	<deb274b8-709f-9bec-40f3-279d75d114a0@...2070...>
+Date: Sun, 30 Oct 2016 14:48:25 +0100
+From: Maximilian Wilhelm <max@...1047...>
+Message-ID: <20161030134825.GB1791@...2038...>
+References: <20161021154630.GT25148@...2038...>
+	<20161021165926.GV25148@...2038...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="tpXFRyzAyQ/GSAaD"
-Content-Disposition: inline
-In-Reply-To: <deb274b8-709f-9bec-40f3-279d75d114a0@...2070...>
-Subject: Re: [Openvpn-devel] dhcp-option DNS IPv6 server address for windows
- client
+In-Reply-To: <20161021165926.GV25148@...2038...>
+Subject: [Openvpn-devel] [PATCH] Allow to specify bind interface for
+ outbound/inbound connections
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,57 +15,202 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: ValdikSS <iam@...2070...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-
---tpXFRyzAyQ/GSAaD
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+Anno domini 2016 Maximilian Wilhelm scripsit:
 
-On Sun, Oct 30, 2016 at 12:18:39PM +0300, ValdikSS wrote:
-> ?probably not only DHCPv6, but also Router Advertisement too. I doubt tha=
-t DHCPv6 could be used without RA on Windows.
+> Anno domini 2016 Maximilian Wilhelm scripsit:
+> 
+> Hi again,
+> 
+> > I'm rolling out Linux VRFs[0] in my network and pushed all my external
+> > connections in a VRF, so nothing bad[tm] can happen.
+> > 
+> > Doing so broke my OpenVPN connections between network nodes, as I kind
+> > of expected.
+> > 
+> > I tried using the --bind option to let OpenVPN bind to the external IP
+> > for make a connection, but that doesn't work as the IP isn't
+> > resolvable via the main kernel routing table, as it's only visible
+> > within the VRFs routing table.
+> > 
+> > So I tried pushing the OpenVPN socket into the VRF and that worked
+> > fine.
+> > 
+> > I massaged that into a --outer-vrf option where a user could specify
+> > the VRF device. This can be found in
+> > 
+> >   https://github.com/OpenVPN/openvpn/pull/64
+> 
+> I just learned that it would be easy to make this more generic and
+> that the socket option isn't only used/useful for VRFs and created a
+> new PR for this.
+> 
+>   See https://github.com/OpenVPN/openvpn/pull/65
+> 
+> This basicly does the same thing - specify the bind-device and allows
+> implementing this for more platforms. I added code for FreeBSD but I
+> couldn't test this as I don't have a BSD machine available.
+> 
+> > The rational why the option is called outer-vrf is that, one might
+> > want to add one for the inner-vrf, when the tun/tap interface should
+> > be part of a VRF. As this could be easily done in an ifup-script I
+> > didn't bother adding this for now.
+> > 
+> > I'd be glad if this would be accepted.
 
-It's a somewhat multi-stage thing
+This has been in production use for some time now and there don't seem
+to be any problems :)
 
- - first, define a new dhcp-option (like, "DNS6") that will take a
-   v6 address, and put it into the environment variables on the client
-   (so scripts and networkmanger etc. can pick it up and do the right=20
-   thing wrt resolv.conf)
+Can I motivate anyone on commenting on or applying this? :)
 
- - then, figure out how to inject this into windows - as far as I know,=20
-   windows will always try to do DHCPv6, even if no RA seen, but this is
-   something easily tested.   Maybe it can be done without DHCPv6 by
-   just calling an API call ("hey, here's DNS info!") on recent systems,
-   maybe we need to implement a fake DHCPv6 server - someone needs to=20
-   look into this, and come up with an implementation.
-
-#1 could easily make 2.4, #2 is very likely to not make it.
-
-gert
+Best
+Max
 
 
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+commit 1baa7e6782b39ed664eedb9b006728d31e22c07e
+Author: Maximilian Wilhelm <max@...1047...>
+Date:   Fri Oct 21 17:05:25 2016 +0200
 
---tpXFRyzAyQ/GSAaD
-Content-Type: application/pgp-signature; name="signature.asc"
+    Add --bind-dev option.
 
------BEGIN PGP SIGNATURE-----
+      This options allows the user to specify a network device the OpenVPN process
+      should use when making a connection or binding to an address. This translates
+      in setting the SO_BINDTODEVICE option to the corresponding socket (on Linux).
 
-iQCVAwUBWBXIb6kuBuNlUUl1AQJHtgQAsY1v+/zh/Mn2SL2ZYWyo/OzkW8EmymQQ
-vUHROJ1xRY+oOfEwyEdNNsdHbYjoeeGMML/dXrghgaEKY0RAQKGcQNJtqIBceCdq
-U4SO+t5zDWjy7fxIoOSd5ro0dGfN/nwZ2q4JV1NQTEuSBZCsWxWzUvRNlHiG3fTm
-/Pm1nNfQTLY=
-=Ii+i
------END PGP SIGNATURE-----
+      When for example using VRFs on Linux [0] this allows making connections using
+      the non-default VRF and having the tun/tap interface in the default VRF.
 
---tpXFRyzAyQ/GSAaD--
+      It seems FreeBSD does not support the SO_BINDTODEVICE socket option, but has
+      a similar one called IP_SENDIF. As I don't have any BSD running, this part is
+      untested.
+
+      Thanks to David Ahern (Cumulus Networks) for insights on this.
+
+      [0] https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/Documentation/networking/vrf.txt
+
+    Signed-off-by: Maximilian Wilhelm <max@...1047...>
+
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 73f8c6d..57b1423 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -2856,7 +2856,8 @@ do_init_socket_1 (struct context *c, const int mode)
+ 			   c->options.sndbuf,
+ 			   c->options.mark,
+ 			   &c->c2.server_poll_interval,
+-			   sockflags);
++			   sockflags,
++			   c->options.bind_dev);
+ }
+ 
+ /*
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 281ef0b..58dd298 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -167,6 +167,8 @@ static const char usage_message[] =
+                    " or --socks-proxy"
+                    " is used).\n"
+   "--nobind        : Do not bind to local address and port.\n"
++  "--bind-dev dev  : Bind to the given device when making connection to a peer or\n"
++  "                  listening for connections\n"
+   "--dev tunX|tapX : tun/tap device (X can be omitted for dynamic device.\n"
+   "--dev-type dt   : Which device type are we using? (dt = tun or tap) Use\n"
+   "                  this option only if the tun/tap device used with --dev\n"
+@@ -5128,6 +5130,13 @@ add_option (struct options *options,
+ 	    msg (msglevel, "unknown socket flag: %s", p[j]);	    
+ 	}
+     }
++#ifdef TARGET_LINUX
++  else if (streq (p[0], "bind-dev") && p[1])
++    {
++      VERIFY_PERMISSION (OPT_P_SOCKFLAGS);
++      options->bind_dev = p[1];
++    }
++#endif
+   else if (streq (p[0], "txqueuelen") && p[1] && !p[2])
+     {
+       VERIFY_PERMISSION (OPT_P_GENERAL);
+diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+index b7453a0..3ce4550 100644
+--- a/src/openvpn/options.h
++++ b/src/openvpn/options.h
+@@ -325,6 +325,7 @@ struct options
+ 
+   /* socket flags */
+   unsigned int sockflags;
++  char *bind_dev;
+ 
+   /* route management */
+   const char *route_script;
+diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
+index 184c7ad..b345de2 100644
+--- a/src/openvpn/socket.c
++++ b/src/openvpn/socket.c
+@@ -868,6 +868,15 @@ create_socket (struct link_socket* sock, struct addrinfo* addr)
+     /* set socket to --mark packets with given value */
+     socket_set_mark (sock->sd, sock->mark);
+ 
++  if (sock->bind_dev)
++    {
++#if defined(TARGET_LINUX)
++      setsockopt (sock->sd, SOL_SOCKET, SO_BINDTODEVICE, sock->bind_dev, strlen (sock->bind_dev) + 1);
++#elif defined(TARGET_FREEBSD)
++      setsockopt(fd, SOL_SOCKET, IP_SENDIF, sock->bind_dev, strlen (sock->bind_dev) + 1);
++#endif
++    }
++
+     bind_local (sock, addr->ai_family);
+ }
+ 
+@@ -1525,7 +1534,8 @@ link_socket_init_phase1 (struct link_socket *sock,
+ 			 int sndbuf,
+ 			 int mark,
+ 			 struct event_timeout* server_poll_timeout,
+-			 unsigned int sockflags)
++			 unsigned int sockflags,
++			 const char *bind_dev)
+ {
+   ASSERT (sock);
+ 
+@@ -1550,6 +1560,7 @@ link_socket_init_phase1 (struct link_socket *sock,
+ 
+   sock->sockflags = sockflags;
+   sock->mark = mark;
++  sock->bind_dev = bind_dev;
+ 
+   sock->info.proto = proto;
+   sock->info.af = af;
+diff --git a/src/openvpn/socket.h b/src/openvpn/socket.h
+index e1607f4..8a0a5c7 100644
+--- a/src/openvpn/socket.h
++++ b/src/openvpn/socket.h
+@@ -213,6 +213,7 @@ struct link_socket
+ # define SF_GETADDRINFO_DGRAM (1<<4)
+   unsigned int sockflags;
+   int mark;
++  char *bind_dev;
+ 
+   /* for stream sockets */
+   struct stream_buf stream_buf;
+@@ -327,7 +328,8 @@ link_socket_init_phase1 (struct link_socket *sock,
+ 			 int sndbuf,
+ 			 int mark,
+ 			 struct event_timeout* server_poll_timeout,
+-			 unsigned int sockflags);
++			 unsigned int sockflags,
++			 const char *bind_dev);
+ 
+ void link_socket_init_phase2 (struct link_socket *sock,
+ 			      const struct frame *frame,
+
+-- 
+ "First they ignore you,
+  then they laugh at you,
+  then they fight you,
+  then you win."         -- Mahatma Gandhi
 
