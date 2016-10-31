@@ -1,10 +1,10 @@
 From: David Sommerseth <davids@...515...>
-Date: Mon, 31 Oct 2016 12:21:09 +0100
-Message-Id: <1477912869-31611-1-git-send-email-davids@...515...>
-In-Reply-To: <1477684124-26083-6-git-send-email-davids@...515...>
-References: <1477684124-26083-6-git-send-email-davids@...515...>
-Subject: Re: [Openvpn-devel] [PATCH applied] auth-gen-token: Authenticate
-	generated auth-tokens when client re-authenticates
+Date: Mon, 31 Oct 2016 12:21:07 +0100
+Message-Id: <1477912867-31533-1-git-send-email-davids@...515...>
+In-Reply-To: <1477684124-26083-4-git-send-email-davids@...515...>
+References: <1477684124-26083-4-git-send-email-davids@...515...>
+Subject: Re: [Openvpn-devel] [PATCH applied] auth-gen-token: Generate an
+	auth-token per client
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -24,16 +24,16 @@ Hash: SHA1
 
 Your patch has been applied to the master branch.
 
-commit 703c9784f4dcd4f77166201074c21c6ea4aeb033
+commit 270dc91164013eb7ace34d7b098fa11a97aef847
 Author: David Sommerseth
-Date:   Fri Oct 28 21:48:44 2016 +0200
+Date:   Fri Oct 28 21:48:42 2016 +0200
 
-     auth-gen-token: Authenticate generated auth-tokens when client re-authenticates
+     auth-gen-token: Generate an auth-token per client
 
      Signed-off-by: David Sommerseth <davids@...515...>
      Acked-by: Steffan Karger <steffan@...1856...>
-     Message-Id: <1477684124-26083-6-git-send-email-davids@...515...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg12822.html
+     Message-Id: <1477684124-26083-4-git-send-email-davids@...515...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg12820.html
 
 
 - --
@@ -44,18 +44,18 @@ David Sommerseth
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBAgAGBQJYFyXHAAoJEIbPlEyWcf3yRkYQAJgD9V8Gi+3PxtN/d5v7Gr8C
-hYAu+k2sk5Zty+ywq6s1OjlL67w14URecz8EQ2p1mAiMecd4DEWWHz9N9As2r9u3
-94C9/b1eDSKCnyOtngNjM9H4VyZ1RF8mIg9thCTHwSrZ4yl3f2IpYSXpn/Fh6giR
-Xr1ZCrPQuCCkyRoN7KVvTYoeXZBayTci5hcbYk+m20QDPYsxLeedKwDHwrsvc0Aq
-bFK9cdmbro5epmlBv77Ov6ZMiRhw0Y6k2iJdoZ2orKYy8m6XOdUvPp4XaTKmwUkz
-g1tDellYQzfUwICF2d3ZDAiNsAWAvdN+Y8IhfY1HhXPNOQfiPOlS9mkVFem+Fm2l
-nYj83p7SSBR+EbYYZt48JU+HHJUeXJxlPT3VdmgzQZfRnsDHbsU1mMwniBmt9Wj6
-uoFoLYwZvijneE1n1TqX1Mp5ksf+3sF133zP56s/AkT8kPYDODWv41QPlSjwUcuN
-zsv9h5fRFW0UxwV7ufl0OpaOYwAfSg8xBltZRi8imPreQjg4MjyBYfg4Vgs7+T9T
-sqzQ378IKFwI0uilqo8OPn2uMoX2vf8DwasV9mTC6POc+1r2hUF4wM0AeEdFr3cR
-231LBjjADAVGG/TO+Q5xlMyXa3KNpo7tRknyN1AyfueHkaHviEaOmy8aNnr3GoC5
-2GySIEzHogP+dJI7thpl
-=xScg
+iQIcBAEBAgAGBQJYFyWpAAoJEIbPlEyWcf3yRVAQAIyfTA0RHdD/4Fo0ylIpuByL
+dE3Flhyfo8ebXSjmrVaI68hFxo+UztdVSfrd/3VsobjSyzbYo200fINOdoZF9pUe
+EQ8da0Fn26URFdD26h47vgpyO1McK1kY3S7bhbn/uCi1b89eZNbb1dnKTSf927AP
+4zJFl8A1I25taDMh2qsq7rl2ydi1NcT2sT1m7tnvHlaGKRvJpnFcaMdzgiwSsYoq
+o6Ltcy+neAqLgt7fpa1p/nLJaYXi19W7RekHIWkQGexoe990pWzdLDYTZVGgjRIa
+zwQ5UvZb8ZpmNvpy2LSadejuTMhhul5Q5+rE/wHiZTTUGEiOsoupIIuE6MNceeXu
++j485smCYUBCATocgHa0XpOQ75fuNKl15PghitjOpCpIcfStsXhetwSlxjR+aNsS
+U9Dgg2m4n20CDNLc8ez2OUQoN+W33OEbn0hOmz02Iy+Z1ezNNsPCmyPaapVBPJ45
+1aToU8DQeyfwUz73ynhLn/u1WqetG/H8H/5HYvPDVC8zxKfKe7iMiylEN6s/2A5n
+DoV3j4S0I9TpYYC10ncTXBMhgbKRR1jM2v63OTHw19eFA09P/jKqi8z6+mnBO0FX
+acmLflI4R9drFO/rwS8X5FfTdSBT9JjjnsBPH1/Xb4nbbbAdggVqxKBBujsogMdk
+LcDiHhxSCH6b6RWfj7Ry
+=fPuy
 -----END PGP SIGNATURE-----
 
