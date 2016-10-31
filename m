@@ -1,8 +1,7 @@
 From: David Sommerseth <davids@...515...>
-Date: Mon, 31 Oct 2016 13:51:56 +0100
-Message-Id: <1477918318-18561-1-git-send-email-davids@...515...>
-Subject: [Openvpn-devel] [PATCH 0/2] auth-gen-token: Inform client why
-	auth-token was rejected
+Date: Mon, 31 Oct 2016 15:01:28 +0100
+Message-Id: <1477922488-26941-1-git-send-email-davids@...515...>
+Subject: [Openvpn-devel] [PATCH] man: Improve the --keepalive section
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,42 +14,66 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Previously when a client connection got closed due to the auth-token 
-being rejected, the client did not receive any indication why.  This
-patch-set ensures the client will receive such an indication.
+Just minor clarifications and corrections of the --keepalive option.
 
-The AUTH_FAILED statement which is used to reject and close client
-connections can contain a text string with a message aimed at the
-user.  Some clients (like OpenVPN Connect) have also some kind of
-categorization.  For this use-case, the SESSION category was chosen.
+Signed-off-by: David Sommerseth <davids@...515...>
+---
+ doc/openvpn.8 | 29 +++++++++++++++++++----------
+ 1 file changed, 19 insertions(+), 10 deletions(-)
 
-The rejection message to the client is sent using the send_auth_failed()
-function.  This ensures the formatting is proper.  The only detail we
-need to ensure is that the category and the message is separated by
-a colon (:).
-
-This patch-set is split into two parts.  The first parts refactors
-the code to provide the struct context object the whole way into
-key_method_2_read().  This is the place where verify_user_pass() is
-called.  The reason we need the struct context object is that 
-send_auth_failed() needs that to prepare a message to be pushed to
-the client.
-
-The second patch just implements the rejection message and 
-calling send_auth_failed() with the appropriate messages.
-
-David Sommerseth (2):
-  Refactor to provide struct context object inside key_method_2_read()
-  auth-gen-token: Provide a rejection message back to the client on
-    failure
-
- src/openvpn/forward.c    |  2 +-
- src/openvpn/ssl.c        | 30 +++++++++++++++++-------------
- src/openvpn/ssl.h        |  6 +-----
- src/openvpn/ssl_verify.c | 13 +++++++++----
- src/openvpn/ssl_verify.h |  2 +-
- 5 files changed, 29 insertions(+), 24 deletions(-)
-
+diff --git a/doc/openvpn.8 b/doc/openvpn.8
+index e73517a..0dd149d 100644
+--- a/doc/openvpn.8
++++ b/doc/openvpn.8
+@@ -1614,15 +1614,24 @@ and
+ are mutually exclusive and cannot be used together.
+ .\"*********************************************************
+ .TP
+-.B \-\-keepalive n m
++.B \-\-keepalive ps pto
+ A helper directive designed to simplify the expression of
+ .B \-\-ping
+ and
++.B \-\-ping\-restart.
++
++This option can be used on both client and server side, but it is
++in most cases enough to add this on the server side as it will
++push appropriate
++.B \-\-ping
++and
+ .B \-\-ping\-restart
+-in server mode configurations.
++options to the client.  If used on both server and client,
++the values pushed from server will override the client local values.
+ 
+-The server timeout is set twice the value of the second argument.
+-This ensures that a timeout is detected on client side
++The server-side timeout is the
++.B pto
++argument doubled. This ensures that a timeout is detected on client side
+ before the server side drops the connection.
+ 
+ For example,
+@@ -1633,13 +1642,13 @@ expands as follows:
+ .ft 3
+ .in +4
+  if mode server:
+-   ping 10
+-   ping\-restart 120
+-   push "ping 10"
+-   push "ping\-restart 60"
++   ping 10                    # Argument: ps
++   ping\-restart 120           # Argument: pto*2
++   push "ping 10"             # Argument: ps
++   push "ping\-restart 60"     # Argument: pto
+  else
+-   ping 10
+-   ping\-restart 60
++   ping 10                    # Argument: ps
++   ping\-restart 60            # Argument: pto
+ .in -4
+ .ft
+ .fi
 -- 
 1.8.3.1
 
