@@ -1,12 +1,18 @@
+References: <25534afb-4dfc-fe21-6498-dc4aac20246f@...277...>
+	<CAKuzo_gkTEh+-=z=dHm+sfHGqcHYwhCsOUvT=knNgj+X-B3HnA@...278...>
+	<82c751dd-095d-cd1c-1422-24a443f1f1d0@...277...>
+	<5c4e3f93-c584-4a19-4081-9bf4adaf417a@...277...>
+	<502e093a-cb39-c76d-27b5-ab86fd4bcfd6@...515...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <73352d7f-521e-b968-2990-8783955da5c9@...2080...>
+Date: Mon, 31 Oct 2016 11:53:29 +0100
 MIME-Version: 1.0
-In-Reply-To: <1477684124-26083-5-git-send-email-davids@...515...>
-References: <1477684124-26083-1-git-send-email-davids@...515...>
-	<1477684124-26083-5-git-send-email-davids@...515...>
-From: Steffan Karger <steffan@...1856...>
-Date: Mon, 31 Oct 2016 11:52:14 +0100
-Message-ID: <CAA1AbxLoaOkA2Kz=pHgMQxHCi6+1vS4Hq3su3Uhu2CZYeAYR=g@...278...>
-Subject: Re: [Openvpn-devel] [PATCH v2 3/4] auth-gen-token: Push generated
- auth-tokens to the client
+In-Reply-To: <502e093a-cb39-c76d-27b5-ab86fd4bcfd6@...515...>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="7FiQNes3s6HT9g9Niru5uxubsJ47di9xD"
+Subject: Re: [Openvpn-devel] trac 757 --auth-user-pass up + GUI 2.3 vs 2.4
+Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,95 +21,119 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-To: David Sommerseth <davids@...515...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>, debbie10t <debbie10t@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-On 28 October 2016 at 21:48, David Sommerseth <davids@...515...> wrote:
-> If --auth-gen-token has been enabled and a token has been generated,
-> ensure this token is pushed to the client using the 'auth-token' option.
->
-> This patch will also remove the logging of auth-token values being
-> pushed, unless --verb level is 7 or higher.
->
->   v2 - Don't exceed 80 chars line length
->      - Clarify the magic in sanitize_control_message()
->      - Relocate auth_token_sent struct member slightly
->
-> Signed-off-by: David Sommerseth <davids@...515...>
-> ---
->  src/openvpn/misc.c       |  9 +++++++++
->  src/openvpn/push.c       | 12 +++++++++++-
->  src/openvpn/ssl_common.h |  2 ++
->  3 files changed, 22 insertions(+), 1 deletion(-)
->
-> diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
-> index 225f0bf..b06d446 100644
-> --- a/src/openvpn/misc.c
-> +++ b/src/openvpn/misc.c
-> @@ -2073,6 +2073,15 @@ sanitize_control_message(const char *src, struct gc_arena *gc)
->           skip = 4;
->           redact = true;
->         }
-> +      else if (!check_debug_level(D_SHOW_KEYS)
-> +               && (c == 'a' && !strncmp(src, "auth-token ", 11)))
-> +       {
-> +          /* Unless --verb is 7 or higher (D_SHOW_KEYS), hide
-> +           * the auth-token value coming in the src string
-> +           */
-> +         skip = 10;
-> +         redact = true;
-> +       }
->
->        if (c == ',') /* end of redacted item? */
->         {
-> diff --git a/src/openvpn/push.c b/src/openvpn/push.c
-> index 4f24b58..f86bdd3 100644
-> --- a/src/openvpn/push.c
-> +++ b/src/openvpn/push.c
-> @@ -309,7 +309,7 @@ prepare_push_reply (struct context *c, struct gc_arena *gc,
->                     struct push_list *push_list)
->  {
->    const char *optstr = NULL;
-> -  const struct tls_multi *tls_multi = c->c2.tls_multi;
-> +  struct tls_multi *tls_multi = c->c2.tls_multi;
->    const char * const peer_info = tls_multi->peer_info;
->    struct options *o = &c->options;
->
-> @@ -371,6 +371,16 @@ prepare_push_reply (struct context *c, struct gc_arena *gc,
->           push_option_fmt(gc, push_list, M_USAGE, "cipher %s", o->ciphername);
->         }
->      }
-> +
-> +  /* If server uses --auth-gen-token and we have an auth token
-> +   * to send to the client
-> +   */
-> +  if (false == tls_multi->auth_token_sent && NULL != tls_multi->auth_token)
-> +    {
-> +      push_option_fmt(gc, push_list, M_USAGE,
-> +                      "auth-token %s", tls_multi->auth_token);
-> +      tls_multi->auth_token_sent = true;
-> +    }
->    return true;
->  }
->
-> diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
-> index 9b63a12..b04a24c 100644
-> --- a/src/openvpn/ssl_common.h
-> +++ b/src/openvpn/ssl_common.h
-> @@ -533,6 +533,8 @@ struct tls_multi
->                            *   user/pass authentications in this session.
->                            */
->    time_t auth_token_tstamp; /**< timestamp of the generated token */
-> +  bool auth_token_sent;  /**< If server uses --auth-gen-token and
-> +                          *   token has been sent to client */
->    /*
->     * Our session objects.
->     */
-> --
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--7FiQNes3s6HT9g9Niru5uxubsJ47di9xD
+Content-Type: multipart/mixed; boundary="TbecBQRx699EHUOiCcKHkObEmxCxwMgqn";
+	protected-headers="v1"
+From: David Sommerseth <openvpn@...2080...>
+Reply-To: openvpn-devel@lists.sourceforge.net
+To: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>,
+	debbie10t <debbie10t@...277...>, "openvpn-devel@lists.sourceforge.net"
+	<openvpn-devel@lists.sourceforge.net>
+Message-ID: <73352d7f-521e-b968-2990-8783955da5c9@...2080...>
+Subject: Re: [Openvpn-devel] trac 757 --auth-user-pass up + GUI 2.3 vs 2.4
+References: <25534afb-4dfc-fe21-6498-dc4aac20246f@...277...>
+	<CAKuzo_gkTEh+-=z=dHm+sfHGqcHYwhCsOUvT=knNgj+X-B3HnA@...278...>
+	<82c751dd-095d-cd1c-1422-24a443f1f1d0@...277...>
+	<5c4e3f93-c584-4a19-4081-9bf4adaf417a@...277...>
+	<502e093a-cb39-c76d-27b5-ab86fd4bcfd6@...515...>
+In-Reply-To: <502e093a-cb39-c76d-27b5-ab86fd4bcfd6@...515...>
 
-ACK - all my previous nagging points are resolved now.
+--TbecBQRx699EHUOiCcKHkObEmxCxwMgqn
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
 
--Steffan
+On 31/10/16 11:19, Samuli Sepp=E4nen wrote:
+> Il 30/10/2016 22:20, debbie10t ha scritto:
+>> FYI:
+>>
+>> On 30/10/16 20:13, debbie10t wrote:
+>>>
+>>>
+>>> On 30/10/16 20:05, Selva Nair wrote:
+>>>> Hi,
+>>>>
+>>>> On Sun, Oct 30, 2016 at 3:57 PM, debbie10t <debbie10t@...277...> wrote:
+>>>>
+>>>>>
+>>>>>
+>>>>> I presume this:
+>>>>> https://community.openvpn.net/openvpn/ticket/757
+>>>>> OpenvpnGUI: Username only in user/pass file does not work
+>>>>> v2.3.12/13 etc
+>>>>>
+>>>>> is viewed as one of those things which is simply not worth back
+>>>>> porting a
+>>>>> solution to Windows XP / Openvpn 2.3.x because we (openvpn) do not
+>>>>> want to
+>>>>> provide any more support for unsupported operating systems than is
+>>>>> absolutely necessary.
+>>>>
+>>>>
+>>>>
+>>>> Yeah, back-porting the "remember username" feature in the GUI to 2.3 is
+>>>> something I would avoid unless absolutely necessary.
+>>>>
+>>>> The point of my reply was that "username from file, password from GUI"
+>>>> cannot be supported even in 2.4 without some major changes and is not
+>>>> really necessary as the GUI can now remember the username.
+>>>>
+>>>> Regards,
+>>>>
+>>>> Selva
+>>>>
+>>>
+>>> Totally agree :) thanks for your reply.
+>>> I am going to advise that trac 757 probably be closed as won't fix.
+>>>
+>>> All the best
+>>
+>> I guess that is solved ?
+>>
+>=20
+> Not solved exactly, but a known limitation. I closed the ticket as=20
+> "notabug".
+
+I disagree to closing it.  This limitation should be fixed, IMO.  This
+is a very useful feature.  If it is a bug or a feature request, that's
+irrelevant.  But we do have users requesting this.
+
+
+
+--=20
+kind regards,
+
+David Sommerseth
+OpenVPN Technologies, Inc
+
+
+
+--TbecBQRx699EHUOiCcKHkObEmxCxwMgqn--
+
+--7FiQNes3s6HT9g9Niru5uxubsJ47di9xD
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBAgAGBQJYFyKpAAoJEIbPlEyWcf3ymLoP/RpnSPIQ5dGA4XFYb0gFjw8j
+HhYxmqE5Iim6coWN0wK/ONsto+rIvZQIdcXbKqPAGbqyNJJ+CZb9KhtCrDpkVHJy
+1FOTFSKzbf6prqlluDQUPNNV1ut/E0p499EbJ1F3yE9+t2nnieH8x2lzZsyWnmLM
+6bHNfkjIqCE9fbYNft+6NUK1AP89FkaM9XWLGjKhNUDHZEFJhkhcVgBedEUvNz7G
+PrfEBM5I1Mb5BgIVApGM6210hfL/hfwNc20EppZ3Qj/Jsf1WETC3cI28WWrBfTWr
+Z50EsYx7kW7DRXyMnYyJAuAHjR70lD+wNd0+lYOOe4qOjuzB0ZWZf8wcdJYQC/pj
+KcE9QcNoSx4a+OSVVKSIA9dEo6C1tDJ2yNV3g44hPFZzwWY3QABBUxdCjkx4jrka
+k+4RGylYex4GxRC8ASPM5BOLUYgUB0vSOiLHwHNL+z/tZCPjd/E3USNbcCNlT6gH
+PmQOp5ytjjEeO0jfZJNVUR1NHxZNyQvLYBeyxwVhzkLqJrkQuhDLnaXlzD8ldf/D
+LwzKm0F5A2Uzcwu77WcyG9tCM//PeCS1JWR7RH/Q4vlHto36KTg2zLWbkiPlnDlv
+mO2f5VqQzhK7DHHIMYHTV+cSitO4oqlzR0+b2FM+2vJTc38lR68ch8sz2oUIeceR
+OYMKFwaxiVtwcZSmm2xg
+=XmEc
+-----END PGP SIGNATURE-----
+
+--7FiQNes3s6HT9g9Niru5uxubsJ47di9xD--
 
