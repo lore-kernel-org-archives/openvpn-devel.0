@@ -1,20 +1,15 @@
-References: <5c4e3f93-c584-4a19-4081-9bf4adaf417a@...277...>
-	<502e093a-cb39-c76d-27b5-ab86fd4bcfd6@...515...>
-	<73352d7f-521e-b968-2990-8783955da5c9@...2080...>
-	<04516948-204e-57c2-fb57-f355157ed5af@...515...>
-	<CAKuzo_gRDm566EwD_qtrYNM5AOYHF8xgCzsi1FQ3emjYGDeGmw@...278...>
-	<43094758-efda-c613-c51d-e7980dfa6b24@...2080...>
-	<CAKuzo_iaEhhrVhRr_zPATsFHinFi=ECtDFofEB2_8zP7Z2+zSg@...278...>
-	<90baad6a-25c5-2ecc-1ea8-b5a1febf1521@...2080...>
-	<cadcd4fa-701e-2d35-4fe0-66707dae8b5b@...277...>
-	<9ba106aa-7dc7-753b-d662-6a75c6d16314@...2080...>
-	<20161101111010.GH28918@...1296...>
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <17b0a8f9-ebc5-d46a-b024-eb0bf57bafe2@...515...>
-Date: Tue, 1 Nov 2016 14:20:24 +0200
+References: <1477922488-26941-1-git-send-email-davids@...515...>
+	<20161101112812.GJ28918@...1296...>
+	<ab1e4dae-c231-d48f-4347-a9e7b8c60339@...2080...>
+From: Steffan Karger <steffan.karger@...1435...>
+Message-ID: <cf6bc711-6691-b411-59d5-c5e9348a2ce2@...1435...>
+Date: Tue, 1 Nov 2016 13:28:16 +0100
 MIME-Version: 1.0
-In-Reply-To: <20161101111010.GH28918@...1296...>
-Subject: Re: [Openvpn-devel] trac 757 --auth-user-pass up + GUI 2.3 vs 2.4
+In-Reply-To: <ab1e4dae-c231-d48f-4347-a9e7b8c60339@...2080...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature";
+	boundary="vivliv1lhuv7GBxLc7lOpfmVSldWGTfk2"
+Subject: Re: [Openvpn-devel] [PATCH] man: Improve the --keepalive section
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -23,89 +18,88 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
+To: openvpn-devel@lists.sourceforge.net
+
+--vivliv1lhuv7GBxLc7lOpfmVSldWGTfk2
+Content-Type: multipart/mixed; boundary="2f0sd21Ef2tutNpv2KWgepRJLagiaaFev";
+	protected-headers="v1"
+From: Steffan Karger <steffan.karger@...1435...>
+To: openvpn-devel@lists.sourceforge.net
+Message-ID: <cf6bc711-6691-b411-59d5-c5e9348a2ce2@...1435...>
+Subject: Re: [Openvpn-devel] [PATCH] man: Improve the --keepalive section
+References: <1477922488-26941-1-git-send-email-davids@...515...>
+	<20161101112812.GJ28918@...1296...>
+	<ab1e4dae-c231-d48f-4347-a9e7b8c60339@...2080...>
+In-Reply-To: <ab1e4dae-c231-d48f-4347-a9e7b8c60339@...2080...>
+
+--2f0sd21Ef2tutNpv2KWgepRJLagiaaFev
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
-To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
 
-Hi,
+On 01-11-16 13:19, David Sommerseth wrote:
+> On 01/11/16 12:28, Gert Doering wrote:
+>> On Mon, Oct 31, 2016 at 03:01:28PM +0100, David Sommerseth wrote:
+>>> -.B \-\-keepalive n m
+>>> +.B \-\-keepalive ps pto
+>>
+>> What does "ps" stand for?  I find this not much clearer than "n"...
+>=20
+>> "pto" sounds like "ping time out", which I find halfway understandable.
+>>
+>> Maybe make the first argument "t" for "time"?=20=20
+>>
+>> Or "i" and "to" for "interval" and "timeout"?
+>>
+>> Lots of options for bikeshedding here...
+>=20
+> I have no strong opinions here.  I thought pi (ping interval), but
+> considered to close to 3.1415.... ps wasn't goo either, but that's meant
+> to be "ping seconds" (poor interval alternative, I agree).  I thought of
+> pt and pti as well, but thought that could be somewhat confusing with pto.
+>=20
+> pto is as you decoded, Ping Time-Out.  I chose 'pto' as just 'to' could
+> be confusing in the text below ("... timeout is the to argument...").
+>=20
+> I also though of 'pin', but that could also be confusing.  Even
+> considered a proper word, but then the man page needs to be rendered in
+> a way that these keywords are emphasized (like bold/white). Maybe change
+> ps to int - as in interval]?  Or pis (ping interval seconds).
+>=20
+> The reasoning for changing n and m to something else was in a hope to it
+> easier to grasp what each of these arguments really meant - and easier
+> see them in a bigger context.
+>=20
+> But I'm very open for other suggestions; I don't care about the bikeshed
+> colour as long as it is at least a slight improvement of what we have tod=
+ay.
 
-Il 01/11/2016 13:10, Gert Doering ha scritto:
-> Hi,
->
-> On Mon, Oct 31, 2016 at 11:55:08PM +0100, David Sommerseth wrote:
->> How long will users be willing to wait?  I'd be really surprised if 2.4
->> is out the door before Christmas 2016.  When also considering we've said
->> that 2.4_alpha was soon ready for about 1 year or so before it really
->> got released, I'd even say I am overly optimistic.
->
-> If we could spend our time on a somewhat focused work on 2.4, instead
-> of exhausting ourselves discussing feature backports to 2.3, this could
-> happen faster.
->
-> And more *focused* work: less rounds of review, buildbot explosions, etc.,
-> which eats up everyone else's precious time.
+"Thou shell never waste an opportunity to bikeshed."
 
-It would be good to:
+So, we don't have a shortage of characters here, right?  Why not simply
+'interval' and 'timeout'?
 
-1) Catch the issues before buildbot
+-Steffan
 
-In my recent INSTALL-win32.txt removal patch the breakage could have=20
-been avoided if I had been less sloppy and had actually tried to build=20
-the thing before sending in the patch.
 
-A basic "make check" goes a long way, but I intend to de-bashify the=20
-Vagrant integration soonish, so that we can merge it. This should make=20
-it easier for developers to catch runtime errors before sending in patches:
 
-<https://github.com/OpenVPN/openvpn/pull/45>
+--2f0sd21Ef2tutNpv2KWgepRJLagiaaFev--
 
-2) Have buildbot catch issues before code is in Git "master"
+--vivliv1lhuv7GBxLc7lOpfmVSldWGTfk2
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-This could be solved by tracking an "experimental" or "buildslave"=20
-branch in Git, which would be basically Git "master" preview with forced=20
-update (history rewrite) option. Normal people should never use this=20
-branch, as the history would get rewritten whenever a patch would have=20
-to be rolled back. This would help ensure that Git "master" is always in=20
-a good shape.
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
 
-That said, doing 1) properly should help mitigate the risk of Git=20
-"master" breaking often. The less trivial issues will not be found on a=20
-single developer machine anyways.
+iQEcBAEBCAAGBQJYGIpgAAoJEEEwndWOY1w5DPMH/RjCmKpm5EbIktt00wgafCqK
+TWdPzvxHcckU1XwA5E3k4bXlhnX8fJaDxaN4beWcVG+ZZsl8uN7iFsUSgZYEadxl
+GPOileBTMZlCswpo8xDgctI+pEIdejHjN+h1ki1KJ/M5HGFpF5B/+wy96sN7m63a
+Th19EWRFdvNxey/DK4aiVsBXKLl/kMWzqMUFNsy9nIf3HVAMJHszONDWftN1WL1Q
+BLJwf0EjvdYKaDECFrMxnqlk1qdadkvBVCRLX2IDO8buh1oNE3ff0nswAVtH4ZN9
+cLKBWrTG6c2sT1dxubbu4vnQAiq2wIk2JelbyYMRklnbTWsM7yBkBjRZD4YMlgI=
+=xbbG
+-----END PGP SIGNATURE-----
 
->
->
-> Grumbling aside, our feature page for 2.4 sees us in reasonably good
-> shape - all the major work has been done, Samuli has done some amazing
-> work on automated windows testing, and all the test reports we've received
-> so far have been "yeah, it works".
->
-> So, what is missing for 2.4 (please update the page as you go)?
->
-
-This is one that I have to fix, unless xkjyeah responds soonish:
-
-<https://github.com/xkjyeah/openvpnserv2/issues/10>
-
-I can also provide a documentation patch for Trac 757. I added both of=20
-these tasks here:
-
-<https://community.openvpn.net/openvpn/wiki/StatusOfOpenvpn24>
-
-> I see TLS record splitting, which I have no idea how invasive this is
-> going to be, and how much time is needed to make that happen (and to
-> test it).  A number of trac tickets for specific corner cases (like,
-> FreeBSD 11 with topology subnet).
->
->
-> I still think the timeline "end of 2016" should be doable - there's
-> some reasoning to meet that: it will make the next Debian release.
-
-If Debian 9 is frozen by the end of the year, then that is a good goal.
-
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
+--vivliv1lhuv7GBxLc7lOpfmVSldWGTfk2--
 
