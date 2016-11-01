@@ -1,7 +1,9 @@
-From: David Sommerseth <davids@...515...>
-Date: Tue,  1 Nov 2016 00:07:09 +0100
-Message-Id: <1477955229-20164-1-git-send-email-davids@...515...>
-Subject: [Openvpn-devel] [PATCH] Fix builds with --disable-crypto
+Date: Tue, 1 Nov 2016 09:47:48 +0100 (CET)
+Message-Id: <201611010847.uA18lmhU099672@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <1477955229-20164-1-git-send-email-davids@...515...>
+References: <1477955229-20164-1-git-send-email-davids@...515...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix builds with --disable-crypto
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,59 +14,33 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: David Sommerseth <davids@...515...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-When building with --disable-crypto the P2MP_SERVER is not defined,
-thus breaking one place where the struct options auth_token_generate
-was provided with a default value.
+ACK, thanks.
 
-Also remove a lot of compiler warnings from ssl_backend.h due to
-various undefined structs when doing the same build type.
+Build tested with default options, --disable-crypto, --disable-management,
+and --disable-server.  All compile fine and pass whatever test can still
+be run (not much for --disable-crypto today).
 
-Signed-off-by: David Sommerseth <davids@...515...>
----
- src/openvpn/options.c     | 5 +++--
- src/openvpn/ssl_backend.h | 3 +++
- 2 files changed, 6 insertions(+), 2 deletions(-)
+Your patch has been applied to the master branch.
 
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index f88e94d..be31ed3 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -869,10 +869,11 @@ init_options (struct options *o, const bool init_gc)
- #ifdef ENABLE_PKCS11
-   o->pkcs11_pin_cache_period = -1;
- #endif			/* ENABLE_PKCS11 */
--  o->auth_token_generate = false;
- 
--/* tmp is only used in P2MP server context */
-+/* P2MP server context features */
- #if P2MP_SERVER
-+  o->auth_token_generate = false;
-+
-   /* Set default --tmp-dir */
- #ifdef WIN32
-   /* On Windows, find temp dir via enviroment variables */
-diff --git a/src/openvpn/ssl_backend.h b/src/openvpn/ssl_backend.h
-index 542c373..a61f03a 100644
---- a/src/openvpn/ssl_backend.h
-+++ b/src/openvpn/ssl_backend.h
-@@ -124,6 +124,8 @@ int tls_version_parse(const char *vstr, const char *extra);
-  */
- int tls_version_max(void);
- 
-+#ifdef ENABLE_CRYPTO
-+
- /**
-  * Initialise a library-specific TLS context for a server.
-  *
-@@ -510,4 +512,5 @@ void get_highest_preference_tls_cipher (char *buf, int size);
-  */
- const char * get_ssl_library_version(void);
- 
-+#endif /* ENABLE_CRYPTO */
- #endif /* SSL_BACKEND_H_ */
--- 
-1.8.3.1
+commit 51d4d1543a64158cc24f176a8d45e51cbda8cd91
+Author: David Sommerseth
+Date:   Tue Nov 1 00:07:09 2016 +0100
+
+     Fix builds with --disable-crypto
+
+     Signed-off-by: David Sommerseth <davids@...515...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1477955229-20164-1-git-send-email-davids@...515...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg12857.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
