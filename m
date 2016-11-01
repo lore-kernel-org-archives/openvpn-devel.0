@@ -1,16 +1,9 @@
-Date: Tue, 1 Nov 2016 13:35:41 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20161101123540.GK28918@...1296...>
+From: David Sommerseth <davids@...515...>
+Date: Tue,  1 Nov 2016 14:38:09 +0100
+Message-Id: <1478007489-17163-1-git-send-email-davids@...515...>
+In-Reply-To: <1477922488-26941-1-git-send-email-davids@...515...>
 References: <1477922488-26941-1-git-send-email-davids@...515...>
-	<20161101112812.GJ28918@...1296...>
-	<ab1e4dae-c231-d48f-4347-a9e7b8c60339@...2080...>
-	<cf6bc711-6691-b411-59d5-c5e9348a2ce2@...1435...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="KGKeSgiE1VZnuONP"
-Content-Disposition: inline
-In-Reply-To: <cf6bc711-6691-b411-59d5-c5e9348a2ce2@...1435...>
-Subject: Re: [Openvpn-devel] [PATCH] man: Improve the --keepalive section
+Subject: [Openvpn-devel] [PATCH v2] man: Improve the --keepalive section
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,50 +12,76 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan.karger@...1435...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---KGKeSgiE1VZnuONP
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Just minor clarifications and corrections of the --keepalive option.
 
-Hi,
+  v2 - Changed from ps/pto to interval/timeout
+     - Rephrased the server-side timeout doubling parapgraph
 
-On Tue, Nov 01, 2016 at 01:28:16PM +0100, Steffan Karger wrote:
-> > But I'm very open for other suggestions; I don't care about the bikeshed
-> > colour as long as it is at least a slight improvement of what we have t=
-oday.
->=20
-> "Thou shell never waste an opportunity to bikeshed."
+Signed-off-by: David Sommerseth <davids@...515...>
+---
+ doc/openvpn.8 | 31 ++++++++++++++++++++-----------
+ 1 file changed, 20 insertions(+), 11 deletions(-)
 
-Be our guest ;-)
+diff --git a/doc/openvpn.8 b/doc/openvpn.8
+index e73517a..3a4ab21 100644
+--- a/doc/openvpn.8
++++ b/doc/openvpn.8
+@@ -1614,16 +1614,25 @@ and
+ are mutually exclusive and cannot be used together.
+ .\"*********************************************************
+ .TP
+-.B \-\-keepalive n m
++.B \-\-keepalive interval timeout
+ A helper directive designed to simplify the expression of
+ .B \-\-ping
+ and
++.B \-\-ping\-restart.
++
++This option can be used on both client and server side, but it is
++in enough to add this on the server side as it will push appropriate
++.B \-\-ping
++and
+ .B \-\-ping\-restart
+-in server mode configurations.
++options to the client.  If used on both server and client,
++the values pushed from server will override the client local values.
+ 
+-The server timeout is set twice the value of the second argument.
+-This ensures that a timeout is detected on client side
+-before the server side drops the connection.
++The
++.B timeout
++argument will be twice as long on the server side.  This ensures that
++a timeout is detected on client side before the server side drops
++the connection.
+ 
+ For example,
+ .B \-\-keepalive 10 60
+@@ -1633,13 +1642,13 @@ expands as follows:
+ .ft 3
+ .in +4
+  if mode server:
+-   ping 10
+-   ping\-restart 120
+-   push "ping 10"
+-   push "ping\-restart 60"
++   ping 10                    # Argument: interval
++   ping\-restart 120           # Argument: timeout*2
++   push "ping 10"             # Argument: interval
++   push "ping\-restart 60"     # Argument: timeout
+  else
+-   ping 10
+-   ping\-restart 60
++   ping 10                    # Argument: interval
++   ping\-restart 60            # Argument: timeout
+ .in -4
+ .ft
+ .fi
+-- 
+1.8.3.1
 
-> So, we don't have a shortage of characters here, right?  Why not simply
-> 'interval' and 'timeout'?
-
-Works for me.
-
-gert
-
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---KGKeSgiE1VZnuONP
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQCVAwUBWBiMHKkuBuNlUUl1AQKkbAP8CflI6obetChcd8L0UepQBHnM52rzaIdQ
-A+ythp9+rz54qUjhherGzj8bitfjBCQUO35BLSKImMkF8MVCvmqIOqFMuF2klxiB
-iwD86G2ne5Rps8/kGpDoa4X7WBk9MHszE3f+RCLvekxPvY2KeVWmr3c8TaXwEq0Z
-4lVzkocAQMk=
-=DVQb
------END PGP SIGNATURE-----
-
---KGKeSgiE1VZnuONP--
 
