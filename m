@@ -1,14 +1,8 @@
+Date: Wed, 2 Nov 2016 13:00:54 +0100
+From: Alberto Gonzalez Iniesta <agi@...64...>
+Message-ID: <20161102120054.ih572dflb2sisb6d@...30...>
 MIME-Version: 1.0
-In-Reply-To: <20161102105230.GP28918@...1296...>
-References: <f315ec02-c70b-0793-f29f-4fd03794c4eb@...515...>
-	<f48dd34a-40c8-f30d-99ae-7261f3d5ee3b@...515...>
-	<CAEsd45T+roc4zKmzjhq7uHpEQn-BxVBoYzj2TyzFinPxF3sXrA@...278...>
-	<20161102105230.GP28918@...1296...>
-From: "Jonathan K. Bullard" <jkbullard@...277...>
-Date: Wed, 2 Nov 2016 06:56:24 -0400
-Message-ID: <CAEsd45ShfBPiCGpXtPFZzNdfJYcYgtKydHYUuHKN0-KQDJwLdQ@...278...>
-Subject: Re: [Openvpn-devel] Summary of today's (Monday,
- 10th Oct 2016) community meeting
+Subject: [Openvpn-devel] Help with bug report
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,18 +11,30 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net
 
-On Wed, Nov 2, 2016 at 6:52 AM, Gert Doering <gert@...1296...> wrote:
-> On Wed, Nov 02, 2016 at 06:19:26AM -0400, Jonathan K. Bullard wrote:
->> Sorry to be a pest, but is there an update on when 2.3.13 might be released?
->
-> Tomorrow ("noon-time-ish for Europe")
->
-> (We decided this on IRC just now, so now we have a fixed deadline to meet :))
+Hi,
 
-Great! Thanks for the quick response!
+I got this bug report [1] on the Debian BTS a long time ago but I
+haven't been able to debug it. Due to its severity it would be nice to
+have it fixed for Stretch. Could anyone take a look at it?
+
+Any suggestions on the best procedure to deal with bugs reported on the
+Debian BTS?
+
+Thanks,
+
+Alberto
+
+
+[1] https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=3D817797
+--=20
+Alberto Gonzalez Iniesta    | Formaci=F3n, consultor=EDa y soporte t=E9cnico
+mailto/sip: agi@...64... | en GNU/Linux y software libre
+Encrypted mail preferred    | http://inittab.com
+
+Key fingerprint =3D 5347 CBD8 3E30 A9EB 4D7D  4BF2 009B 3375 6B9A AA55
 
