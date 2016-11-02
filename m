@@ -1,12 +1,14 @@
 References: <2987ae32-9a53-1888-11af-bf7d9741eecd@...2080...>
-From: Steffan Karger <steffan.karger@...1435...>
-Message-ID: <79f0d75e-7518-e0c5-fd79-960351c94cbd@...1435...>
-Date: Wed, 2 Nov 2016 13:30:58 +0100
+	<981f9961-a72f-727a-37de-a2741c8d73c9@...1227...>
+	<4c5d5326-1ebe-95d0-9e0e-d3d6f1ef06d6@...515...>
+	<20161102084852.vpeprssx3btfvini@...30...>
+	<CAA1Abx+vU=GOCXaJ2mk33e+B=YtDCGEjaxfEmD6uHHppJ7qDNA@...278...>
+	<bf81a9a2-a1a3-dbaf-5fbc-e32259f2c80d@...2080...>
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <44d14f78-621e-d707-6c66-9f448a61fafa@...515...>
+Date: Wed, 2 Nov 2016 16:02:39 +0200
 MIME-Version: 1.0
-In-Reply-To: <2987ae32-9a53-1888-11af-bf7d9741eecd@...2080...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature";
-	boundary="XmmbPdlBDqlmvxdHn3P6XUuXH0VRQCQd4"
+In-Reply-To: <bf81a9a2-a1a3-dbaf-5fbc-e32259f2c80d@...2080...>
 Subject: Re: [Openvpn-devel] OpenVPN v2.4 release progress
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -16,84 +18,77 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net, Steffan Karger <steffan@...1856...>
 
---XmmbPdlBDqlmvxdHn3P6XUuXH0VRQCQd4
-Content-Type: multipart/mixed; boundary="Qml616cipsmBtcUGdKTbkSJDoLvs2M1qs";
-	protected-headers="v1"
-From: Steffan Karger <steffan.karger@...1435...>
-To: openvpn-devel@lists.sourceforge.net
-Message-ID: <79f0d75e-7518-e0c5-fd79-960351c94cbd@...1435...>
-Subject: Re: [Openvpn-devel] OpenVPN v2.4 release progress
-References: <2987ae32-9a53-1888-11af-bf7d9741eecd@...2080...>
-In-Reply-To: <2987ae32-9a53-1888-11af-bf7d9741eecd@...2080...>
-
---Qml616cipsmBtcUGdKTbkSJDoLvs2M1qs
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-
-Hi,
-
-On 01-11-16 23:47, David Sommerseth wrote:
->=20
-> [...]
+Il 02/11/2016 12:55, David Sommerseth ha scritto:
+> -----BEGIN PGP SIGNED MESSAGE-----
+> Hash: SHA1
 >
-> * November 8th
->   If we agree to have 3 stages, alpha3 must be released.  After this
->   date we start to be stricter about the patches for a while.
->=20
->   Patches which should go into this or the next release:
->   - [PATCH] struct argv overhaul
->     <http://bit.ly/2ebnhKz>
->=20
->   - [PATCH] Refactor CRL handling
->     <http://bit.ly/2eYUMkK>
->     Also look at the CRL patches from Antonio as well.
->=20
->   - [PATCH 0/2] auth-gen-token: Inform client why auth-token was
->                rejected
->     <http://bit.ly/2f7GEJ3>
->=20
->   - [PATCH] systemd: Improve the systemd unit files
->     <http://bit.ly/2eboMIq>
->=20
-> [...]
->=20
-> The list of patches are the most recent ones I spotted on the mailing
-> list which seems relevant.  We might consider other patches too, my
-> patch list is just a proposal.
+> On 02/11/16 10:32, Steffan Karger wrote:
+>> Hi,
+>>
+>> On 2 November 2016 at 09:48, Alberto Gonzalez Iniesta
+>> <agi@...64...> wrote:
+>>> I don't know if 2.4 addresses building with openssl 1.1 [1], but
+>>> that would be a plus.
+>>
+>> Not yet. The 1.1 API in considerably different from 1.0.x.
+>> Switching is not very hard, but supporting both 1.0.x and 1.1 needs
+>> some work. I would like to get this done before 2.4.0, but cannot
+>> make any promises...  I'll put it on the release status page.
+>
+> Agreed it would be good to have this in 2.4.  If we can't make it for
+> the final release, I think we need to have this in a later 2.4 release
+> regardless.  I suspect more bleeding edge distros at some point next
+> year will drop OpenSSL 1.0 completely.
+>
+> Unless we manage to improve our release cycle for 2.5 ... which
+> wouldn't be a bad thing.
+>
 
-If possible at all, I'd like to get --tls-crypt in.  It's not on the
-list as a patch set yet, but only as a preview branch on github.  After
-some internal review, I think I can get them out as real patches next
-week though.
+If we include only a few major features in each major release the 
+problem is solved. One major release each year is certainly doable. I 
+think we decided on that release cycle in way back when.
 
-Links:
-https://github.com/syzzer/openvpn/tree/tls-crypt-preview
-https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg12357.h=
-tml
-
--Steffan
+Samuli
 
 
---Qml616cipsmBtcUGdKTbkSJDoLvs2M1qs--
-
---XmmbPdlBDqlmvxdHn3P6XUuXH0VRQCQd4
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQEcBAEBCAAGBQJYGdyGAAoJEEEwndWOY1w5mSwIAIGFhrYlJ554SrPQfYKm+k63
-kZh58/YjbPa4ZY/b8X3pYWYVH4JtZL1d6gIgNaPdVyT/1JcVGelRW3SSmUl9GO7f
-kw9A7YltjCt5uNpwleiVzAJh67p/Tzjes7T0qhcJZ6P9bk4PG55qwkXmW/GI2Aaq
-5lkVW7FoaZl+7KkU2rRqDJknJe2jtyXzOSB9AssT2Sqj3mksIv0vWvzBcgdPjX+f
-gADXJHSRXPaeAS9jbeSYyCmuBM9d42Tt0i2RhXu3vvJ4pun7n69KGdaZSPIDlrXA
-A2fCAw+2IF9azwyi96XP+0CCs5Eu2AQQ861YgTUYqxEcbb2zxw22rcAQQu7e7HU=
-=0r79
------END PGP SIGNATURE-----
-
---XmmbPdlBDqlmvxdHn3P6XUuXH0VRQCQd4--
+>
+> - --
+> kind regards,
+>
+> David Sommerseth
+> OpenVPN Technologies, Inc
+>
+> -----BEGIN PGP SIGNATURE-----
+> Version: GnuPG v2.0.22 (GNU/Linux)
+>
+> iQIcBAEBAgAGBQJYGcYrAAoJEIbPlEyWcf3yfucQALCHugfdugZPlHTXsyyNZS5V
+> 2ypftfSSG8Wup00ZVzfg8SDSnJJuh/gDS7ufrNCKLGm3HKdW3iMQDS5bc53klJ2T
+> eI06k8MAjTpSylqPvaT0FCCNmk7A/3Uk4LoLT69H45rlmETRNQEpn6IkFmjtgTNZ
+> kiPz4SKbkOJf8Wv3wLW5rbUmJLf1irwcihqBV6ZXB2nqDUQh+iYKfrpB4lqytrM5
+> EkszbA4NVmJC9melXRHEr9kZswnklywxvY+8lUiLI3Xu+4iWbWV3vhx/NlsOcGX0
+> 85KlGk61OUO+rqS9E66rB3qioaONGtNu0JYnPcW4t8FPgMInHa3wNAnCxzpT4LIf
+> Em3rKIkSQrsaH6QkAPliaAQU3R99q6WhTpHNX//woGAKNcVjFsIsQ4FbG5WnElQs
+> Eu1nvTFjd2eQC0W4nhOLJhPdFrXl4KAZNP0hwg4zTDvZCRmcUAmEassLh5rT5cRu
+> fW/1yoHK8Z+K4Kwt7/9Z7a1LyeCA3b0TRbKkhIIspjpRTDcyr85bjzX4FWNdcKhA
+> CDYeaxmSGi8mWZV1xhU3HD24NqY7qjlDrjYqp51sb8vFcU2AKO0SXeWByB80sIgQ
+> PhVNSmH97/OqV9mLNdQWT3nJBrxcYM6AUhMQ2ceZh6+deZSN4WKCOf0ufNoyReWv
+> AdEMEadUeTMMJROM03Ey
+> =luns
+> -----END PGP SIGNATURE-----
+>
+> ------------------------------------------------------------------------------
+> Developer Access Program for Intel Xeon Phi Processors
+> Access to Intel Xeon Phi processor-based developer platforms.
+> With one year of Intel Parallel Studio XE.
+> Training and support from Colfax.
+> Order your platform today. http://sdm.link/xeonphi
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+>
 
