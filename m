@@ -1,10 +1,14 @@
-MIME-Version: 1.0
-In-Reply-To: <f48dd34a-40c8-f30d-99ae-7261f3d5ee3b@...515...>
+Date: Wed, 2 Nov 2016 11:52:30 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20161102105230.GP28918@...1296...>
 References: <f315ec02-c70b-0793-f29f-4fd03794c4eb@...515...>
 	<f48dd34a-40c8-f30d-99ae-7261f3d5ee3b@...515...>
-From: "Jonathan K. Bullard" <jkbullard@...277...>
-Date: Wed, 2 Nov 2016 06:19:26 -0400
-Message-ID: <CAEsd45T+roc4zKmzjhq7uHpEQn-BxVBoYzj2TyzFinPxF3sXrA@...278...>
+	<CAEsd45T+roc4zKmzjhq7uHpEQn-BxVBoYzj2TyzFinPxF3sXrA@...278...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="zX3fAKQGR/qU2rkc"
+Content-Disposition: inline
+In-Reply-To: <CAEsd45T+roc4zKmzjhq7uHpEQn-BxVBoYzj2TyzFinPxF3sXrA@...278...>
 Subject: Re: [Openvpn-devel] Summary of today's (Monday,
  10th Oct 2016) community meeting
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -15,30 +19,46 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+To: "Jonathan K. Bullard" <jkbullard@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+
+--zX3fAKQGR/qU2rkc
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Disposition: inline
 
-On Mon, Oct 10, 2016 at 4:26 PM, Samuli Sepp=C3=A4nen <samuli@...515...> wr=
-ote:
-> Discussed OpenVPN 2.3.13 release. Three things are missing:
->
-> 1. recursive routing
-> 2. block-outside-dns v2
-> 3. 64MB renegotiation for 64-bit block ciphers
->
-> Cron2 will take care of 1-2, and syzzer will tackle 3.
->
-> --
->
-> Preliminary release date for OpenVPN 2.4-alpha1 was set to late this week.
-> If we don't get Windows test reports then we may have to postpone the
-> release a bit. OpenVPN 2.3.13 release date was set to "early next week".
+Hi,
 
-Sorry to be a pest, but is there an update on when 2.3.13 might be released?
+On Wed, Nov 02, 2016 at 06:19:26AM -0400, Jonathan K. Bullard wrote:
+> Sorry to be a pest, but is there an update on when 2.3.13 might be releas=
+ed?
 
-I know the focus is on 2.4 because of the looming Debian deadline, but
-I've been holding off on releasing a version of Tunnelblick until it
-could include 2.3.13 along with a 2.4_alpha. I can release without
-2.3.13 if necessary.
+Tomorrow ("noon-time-ish for Europe")
+
+(We decided this on IRC just now, so now we have a fixed deadline to meet :=
+))
+
+gert
+
+
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--zX3fAKQGR/qU2rkc
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQCVAwUBWBnFbqkuBuNlUUl1AQLxfQP/Y4+X5/KxwdivLSOjfqZDuElrFey7busD
+0mIbXOQfp1ORehxhQ9aquGGR+dGb84EkTjxaF+GiAyj8K9Ew1BJj7Ukt1AWX5FKc
+UhqtL4RrbFTQiSrxVD350nBHhZbkNdezojdlSAL4n2757EVr8mUISVVkokjlVpXc
+b17hRDwCCKM=
+=v6if
+-----END PGP SIGNATURE-----
+
+--zX3fAKQGR/qU2rkc--
 
