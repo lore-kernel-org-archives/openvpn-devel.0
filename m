@@ -1,15 +1,14 @@
-References: <2987ae32-9a53-1888-11af-bf7d9741eecd@...2080...>
-	<981f9961-a72f-727a-37de-a2741c8d73c9@...1227...>
-	<4c5d5326-1ebe-95d0-9e0e-d3d6f1ef06d6@...515...>
-	<20161102084852.vpeprssx3btfvini@...30...>
-	<CAA1Abx+vU=GOCXaJ2mk33e+B=YtDCGEjaxfEmD6uHHppJ7qDNA@...278...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <bf81a9a2-a1a3-dbaf-5fbc-e32259f2c80d@...2080...>
-Date: Wed, 2 Nov 2016 11:55:39 +0100
 MIME-Version: 1.0
-In-Reply-To: <CAA1Abx+vU=GOCXaJ2mk33e+B=YtDCGEjaxfEmD6uHHppJ7qDNA@...278...>
-Subject: Re: [Openvpn-devel] OpenVPN v2.4 release progress
-Reply-To: openvpn-devel@lists.sourceforge.net
+In-Reply-To: <20161102105230.GP28918@...1296...>
+References: <f315ec02-c70b-0793-f29f-4fd03794c4eb@...515...>
+	<f48dd34a-40c8-f30d-99ae-7261f3d5ee3b@...515...>
+	<CAEsd45T+roc4zKmzjhq7uHpEQn-BxVBoYzj2TyzFinPxF3sXrA@...278...>
+	<20161102105230.GP28918@...1296...>
+From: "Jonathan K. Bullard" <jkbullard@...277...>
+Date: Wed, 2 Nov 2016 06:56:24 -0400
+Message-ID: <CAEsd45ShfBPiCGpXtPFZzNdfJYcYgtKydHYUuHKN0-KQDJwLdQ@...278...>
+Subject: Re: [Openvpn-devel] Summary of today's (Monday,
+ 10th Oct 2016) community meeting
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,56 +17,18 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-To: Steffan Karger <steffan@...1856...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+To: Gert Doering <gert@...1296...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+On Wed, Nov 2, 2016 at 6:52 AM, Gert Doering <gert@...1296...> wrote:
+> On Wed, Nov 02, 2016 at 06:19:26AM -0400, Jonathan K. Bullard wrote:
+>> Sorry to be a pest, but is there an update on when 2.3.13 might be released?
+>
+> Tomorrow ("noon-time-ish for Europe")
+>
+> (We decided this on IRC just now, so now we have a fixed deadline to meet :))
 
-On 02/11/16 10:32, Steffan Karger wrote:
-> Hi,
-> 
-> On 2 November 2016 at 09:48, Alberto Gonzalez Iniesta
-> <agi@...64...> wrote:
->> I don't know if 2.4 addresses building with openssl 1.1 [1], but
->> that would be a plus.
-> 
-> Not yet. The 1.1 API in considerably different from 1.0.x.
-> Switching is not very hard, but supporting both 1.0.x and 1.1 needs
-> some work. I would like to get this done before 2.4.0, but cannot
-> make any promises...  I'll put it on the release status page.
-
-Agreed it would be good to have this in 2.4.  If we can't make it for
-the final release, I think we need to have this in a later 2.4 release
-regardless.  I suspect more bleeding edge distros at some point next
-year will drop OpenSSL 1.0 completely.
-
-Unless we manage to improve our release cycle for 2.5 ... which
-wouldn't be a bad thing.
-
-
-- -- 
-kind regards,
-
-David Sommerseth
-OpenVPN Technologies, Inc
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBAgAGBQJYGcYrAAoJEIbPlEyWcf3yfucQALCHugfdugZPlHTXsyyNZS5V
-2ypftfSSG8Wup00ZVzfg8SDSnJJuh/gDS7ufrNCKLGm3HKdW3iMQDS5bc53klJ2T
-eI06k8MAjTpSylqPvaT0FCCNmk7A/3Uk4LoLT69H45rlmETRNQEpn6IkFmjtgTNZ
-kiPz4SKbkOJf8Wv3wLW5rbUmJLf1irwcihqBV6ZXB2nqDUQh+iYKfrpB4lqytrM5
-EkszbA4NVmJC9melXRHEr9kZswnklywxvY+8lUiLI3Xu+4iWbWV3vhx/NlsOcGX0
-85KlGk61OUO+rqS9E66rB3qioaONGtNu0JYnPcW4t8FPgMInHa3wNAnCxzpT4LIf
-Em3rKIkSQrsaH6QkAPliaAQU3R99q6WhTpHNX//woGAKNcVjFsIsQ4FbG5WnElQs
-Eu1nvTFjd2eQC0W4nhOLJhPdFrXl4KAZNP0hwg4zTDvZCRmcUAmEassLh5rT5cRu
-fW/1yoHK8Z+K4Kwt7/9Z7a1LyeCA3b0TRbKkhIIspjpRTDcyr85bjzX4FWNdcKhA
-CDYeaxmSGi8mWZV1xhU3HD24NqY7qjlDrjYqp51sb8vFcU2AKO0SXeWByB80sIgQ
-PhVNSmH97/OqV9mLNdQWT3nJBrxcYM6AUhMQ2ceZh6+deZSN4WKCOf0ufNoyReWv
-AdEMEadUeTMMJROM03Ey
-=luns
------END PGP SIGNATURE-----
+Great! Thanks for the quick response!
 
