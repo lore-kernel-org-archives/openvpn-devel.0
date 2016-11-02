@@ -1,8 +1,10 @@
-Date: Wed, 2 Nov 2016 13:00:54 +0100
-From: Alberto Gonzalez Iniesta <agi@...64...>
-Message-ID: <20161102120054.ih572dflb2sisb6d@...30...>
+References: <20161102120054.ih572dflb2sisb6d@...30...>
+From: Arne Schwabe <arne@...1227...>
+Message-ID: <6ec0e316-008a-1d77-3140-b411e840ff01@...1227...>
+Date: Wed, 2 Nov 2016 13:13:37 +0100
 MIME-Version: 1.0
-Subject: [Openvpn-devel] Help with bug report
+In-Reply-To: <20161102120054.ih572dflb2sisb6d@...30...>
+Subject: Re: [Openvpn-devel] Help with bug report
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,30 +13,32 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-Hi,
-
-I got this bug report [1] on the Debian BTS a long time ago but I
-haven't been able to debug it. Due to its severity it would be nice to
-have it fixed for Stretch. Could anyone take a look at it?
-
-Any suggestions on the best procedure to deal with bugs reported on the
-Debian BTS?
-
-Thanks,
-
-Alberto
 
 
-[1] https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=3D817797
---=20
-Alberto Gonzalez Iniesta    | Formaci=F3n, consultor=EDa y soporte t=E9cnico
-mailto/sip: agi@...64... | en GNU/Linux y software libre
-Encrypted mail preferred    | http://inittab.com
+Am 02.11.16 um 13:00 schrieb Alberto Gonzalez Iniesta:
+> Hi,
+>
+> I got this bug report [1] on the Debian BTS a long time ago but I
+> haven't been able to debug it. Due to its severity it would be nice to
+> have it fixed for Stretch. Could anyone take a look at it?
+>
+> Any suggestions on the best procedure to deal with bugs reported on the
+> Debian BTS?
+>
+I looked at the bug and it seems to boil down to auth-pam in openvpn +
+ldap pam in the pam leads to many /dev/urandom being since something in
+that call stack opens /dev/urandom but never closes it.
 
-Key fingerprint =3D 5347 CBD8 3E30 A9EB 4D7D  4BF2 009B 3375 6B9A AA55
+From a first glance it looks like problem is not really in OpenVPN
+itself but rather in the pam libraries/pam ldap libraries.
+
+Of course someone could write a workaround to use the new async
+authentication that is implemented in 2.4 and fork so that the leaking
+of fds does not burden the main openvpn process.
+
+Arne
 
