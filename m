@@ -1,12 +1,13 @@
-References: <20161102120054.ih572dflb2sisb6d@...30...>
-	<6ec0e316-008a-1d77-3140-b411e840ff01@...1227...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <0a35d0c3-676d-1fc8-f48c-4ede2ff2d5e4@...2080...>
-Date: Wed, 2 Nov 2016 13:22:51 +0100
+References: <2987ae32-9a53-1888-11af-bf7d9741eecd@...2080...>
+From: Steffan Karger <steffan.karger@...1435...>
+Message-ID: <79f0d75e-7518-e0c5-fd79-960351c94cbd@...1435...>
+Date: Wed, 2 Nov 2016 13:30:58 +0100
 MIME-Version: 1.0
-In-Reply-To: <6ec0e316-008a-1d77-3140-b411e840ff01@...1227...>
-Subject: Re: [Openvpn-devel] Help with bug report
-Reply-To: openvpn-devel@lists.sourceforge.net
+In-Reply-To: <2987ae32-9a53-1888-11af-bf7d9741eecd@...2080...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature";
+	boundary="XmmbPdlBDqlmvxdHn3P6XUuXH0VRQCQd4"
+Subject: Re: [Openvpn-devel] OpenVPN v2.4 release progress
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,69 +16,84 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+--XmmbPdlBDqlmvxdHn3P6XUuXH0VRQCQd4
+Content-Type: multipart/mixed; boundary="Qml616cipsmBtcUGdKTbkSJDoLvs2M1qs";
+	protected-headers="v1"
+From: Steffan Karger <steffan.karger@...1435...>
+To: openvpn-devel@lists.sourceforge.net
+Message-ID: <79f0d75e-7518-e0c5-fd79-960351c94cbd@...1435...>
+Subject: Re: [Openvpn-devel] OpenVPN v2.4 release progress
+References: <2987ae32-9a53-1888-11af-bf7d9741eecd@...2080...>
+In-Reply-To: <2987ae32-9a53-1888-11af-bf7d9741eecd@...2080...>
 
-On 02/11/16 13:13, Arne Schwabe wrote:
-> 
-> 
-> Am 02.11.16 um 13:00 schrieb Alberto Gonzalez Iniesta:
->> Hi,
->> 
->> I got this bug report [1] on the Debian BTS a long time ago but
->> I haven't been able to debug it. Due to its severity it would be
->> nice to have it fixed for Stretch. Could anyone take a look at
->> it?
->> 
->> Any suggestions on the best procedure to deal with bugs reported
->> on the Debian BTS?
->> 
-> I looked at the bug and it seems to boil down to auth-pam in
-> openvpn + ldap pam in the pam leads to many /dev/urandom being
-> since something in that call stack opens /dev/urandom but never
-> closes it.
-> 
-> From a first glance it looks like problem is not really in OpenVPN 
-> itself but rather in the pam libraries/pam ldap libraries.
-> 
-> Of course someone could write a workaround to use the new async 
-> authentication that is implemented in 2.4 and fork so that the
-> leaking of fds does not burden the main openvpn process.
+--Qml616cipsmBtcUGdKTbkSJDoLvs2M1qs
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 
-That async authentication (if it is "deferred authentication" you
-think of) has been present in OpenVPN at least since 2.2 or 2.1.
+Hi,
 
-Using a deferred approach makes a lot of sense, and it will also have
-other benefits of not slowing down other connected clients during the
-authentication - if that takes a few seconds or more to complete.
+On 01-11-16 23:47, David Sommerseth wrote:
+>=20
+> [...]
+>
+> * November 8th
+>   If we agree to have 3 stages, alpha3 must be released.  After this
+>   date we start to be stricter about the patches for a while.
+>=20
+>   Patches which should go into this or the next release:
+>   - [PATCH] struct argv overhaul
+>     <http://bit.ly/2ebnhKz>
+>=20
+>   - [PATCH] Refactor CRL handling
+>     <http://bit.ly/2eYUMkK>
+>     Also look at the CRL patches from Antonio as well.
+>=20
+>   - [PATCH 0/2] auth-gen-token: Inform client why auth-token was
+>                rejected
+>     <http://bit.ly/2f7GEJ3>
+>=20
+>   - [PATCH] systemd: Improve the systemd unit files
+>     <http://bit.ly/2eboMIq>
+>=20
+> [...]
+>=20
+> The list of patches are the most recent ones I spotted on the mailing
+> list which seems relevant.  We might consider other patches too, my
+> patch list is just a proposal.
 
-Once I get a few reviews completed, I can surely have a look at the
-auth-pam module.  Can't commit to a timeline yet, though.
+If possible at all, I'd like to get --tls-crypt in.  It's not on the
+list as a patch set yet, but only as a preview branch on github.  After
+some internal review, I think I can get them out as real patches next
+week though.
+
+Links:
+https://github.com/syzzer/openvpn/tree/tls-crypt-preview
+https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg12357.h=
+tml
+
+-Steffan
 
 
-- -- 
-kind regards,
+--Qml616cipsmBtcUGdKTbkSJDoLvs2M1qs--
 
-David Sommerseth
+--XmmbPdlBDqlmvxdHn3P6XUuXH0VRQCQd4
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
+Version: GnuPG v2
 
-iQIcBAEBAgAGBQJYGdqbAAoJEIbPlEyWcf3ymEUQAMRspDAIBoqlGdi6czPBmcLS
-7XrxJ49Uen5eEwTiyZEjugWW6v8GVbNfcGff6jh4EaScIffRS1NqNKUYi3Lryp+i
-WzOkRNZIQGe5mDnFGZCbBFSbDJOA48Gvx4Ez5WXAew12Q90E5ktaZG5kho4hOst9
-pvX4mYiIZIvj+/v9tf+IZ2blETRTp9FD2eGBey1KJAKIfRr50XSOtJs12ny0rj6C
-aQBe/JTtc99OzlXTJ5Ygi8r8ig23eVt+mZtR4xdCuZ5TI+bCgi8PtOmrES7hfF8t
-d/cXI8AKUmlzomuzUYKpo1WWm6fvtAqeCXkaA5Cmw0DrteuOx8GYWSYFMBWXCBIp
-W31rJjdpi8HS6R61JiF3Dm5vzokgucnFf7kwrTSoIqbdc/1S5RqWPUMhYu+oic6E
-YDg7rmB5ImE+n88O6s4cT4cu5oz/GEccU12zc+p9d/Bvfa2CEhYoKiQEXUjg2U5h
-w/80r3jsxN4WqIcJo4XFJcNL7PKTxmoibFuf5MbEe/YkQWuqKOrtiyls0PQ98ydO
-huJhYXDM87mgZFKj+9JPGmKGan2UltaeGjT+XyS43T2QJkuV4+OAaub5LIL+ln1t
-irZ+7qUFYrrnVl384Euxu7BlL6cnhckWaJZB3Ob2MD4jDFKYGBWJ1zenuVTT7ptE
-tW+C41XZJJino0yEoLQD
-=HpJK
+iQEcBAEBCAAGBQJYGdyGAAoJEEEwndWOY1w5mSwIAIGFhrYlJ554SrPQfYKm+k63
+kZh58/YjbPa4ZY/b8X3pYWYVH4JtZL1d6gIgNaPdVyT/1JcVGelRW3SSmUl9GO7f
+kw9A7YltjCt5uNpwleiVzAJh67p/Tzjes7T0qhcJZ6P9bk4PG55qwkXmW/GI2Aaq
+5lkVW7FoaZl+7KkU2rRqDJknJe2jtyXzOSB9AssT2Sqj3mksIv0vWvzBcgdPjX+f
+gADXJHSRXPaeAS9jbeSYyCmuBM9d42Tt0i2RhXu3vvJ4pun7n69KGdaZSPIDlrXA
+A2fCAw+2IF9azwyi96XP+0CCs5Eu2AQQ861YgTUYqxEcbb2zxw22rcAQQu7e7HU=
+=0r79
 -----END PGP SIGNATURE-----
+
+--XmmbPdlBDqlmvxdHn3P6XUuXH0VRQCQd4--
 
