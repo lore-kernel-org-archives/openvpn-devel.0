@@ -1,9 +1,14 @@
-From: Lev Stipakov <lstipakov@...277...>
-Date: Thu,  3 Nov 2016 23:28:23 +0200
-Message-Id: <1478208503-25929-1-git-send-email-lstipakov@...277...>
-In-Reply-To: <20161102195835.GQ28918@...1296...>
-References: <20161102195835.GQ28918@...1296...>
-Subject: [Openvpn-devel] [PATCH v4] Drop recursively routed packets
+References: <1477670087-30063-1-git-send-email-steffan.karger@...1435...>
+	<e9b94527-d361-cc7b-1ce1-dfbd1bc7a9e5@...2080...>
+From: Steffan Karger <steffan@...1856...>
+Message-ID: <5c580505-2837-77fa-2c42-1a70fe9f5fac@...1856...>
+Date: Thu, 3 Nov 2016 22:48:06 +0100
+MIME-Version: 1.0
+In-Reply-To: <e9b94527-d361-cc7b-1ce1-dfbd1bc7a9e5@...2080...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature";
+	boundary="9LhXNs4UEhUh1x2IdeUinrSv0FOFb304p"
+Subject: Re: [Openvpn-devel] [PATCH] Refactor CRL handling
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,273 +17,116 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: Lev Stipakov <lev.stipakov@...2164...>
 
-From: Lev Stipakov <lev.stipakov@...2164...>
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--9LhXNs4UEhUh1x2IdeUinrSv0FOFb304p
+Content-Type: multipart/mixed; boundary="WgU0k5L5FHfxFLvSGWHPxj1e3N94SbpRv"
+From: Steffan Karger <steffan@...1856...>
+To: openvpn-devel@lists.sourceforge.net
+Message-ID: <5c580505-2837-77fa-2c42-1a70fe9f5fac@...1856...>
+Subject: Re: [Openvpn-devel] [PATCH] Refactor CRL handling
+References: <1477670087-30063-1-git-send-email-steffan.karger@...1435...>
+	<e9b94527-d361-cc7b-1ce1-dfbd1bc7a9e5@...2080...>
+In-Reply-To: <e9b94527-d361-cc7b-1ce1-dfbd1bc7a9e5@...2080...>
 
-v4:
- - Account for IP header offset in TAP mode
- - Correct handle of non-IP protocols in TAP mode
+--WgU0k5L5FHfxFLvSGWHPxj1e3N94SbpRv
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
 
-v3: Use better way of figuring out IP proto version which
-does not break TAP mode. Add an option to allow recursive
-routing, could be useful when packets sent by openvpn itself
-are not subject to the routing tables that would move packets
-into the tunnel.
+Hi,
 
-v2: better method naming
+On 03-11-16 19:21, David Sommerseth wrote:
+> On 28/10/16 17:54, Steffan Karger wrote:
+>> This patch refactors the CRL handling to rely more on the
+>> implementation of the crypto library.  It will insert the CRL at
+>> the correct time to keep it up to date, but all additional
+>> verification logic is removed from ssl_verify_<backend>.c.  "Less
+>> code of our own, less bugs of our own."
+>=20
+>> In practice, this means extra checks will be performed on the CRL,
+>> such as checking it validBefore and validAfter fields.
+>=20
+>> This patch was originally written by Ivo Manca, and then molded by
+>> Steffan before sending to the list.  All bugs are Steffan's fault.
+>=20
+>> Thanks also go to Antonio Quartulli for useful feedback.  He'll
+>> send follow-up patches to improve CRL handling performance.
+>=20
+>> Signed-off-by: Ivo Manca <ivo.manca@...1435...> Signed-off-by:
+>> Steffan Karger <steffan.karger@...1435...> --- Changes.rst
+>> |  6 +++ src/openvpn/ssl.c                | 15 +++++++=20
+>> src/openvpn/ssl_backend.h        | 11 +++++=20
+>> src/openvpn/ssl_mbedtls.c        | 43 +++++++++++++++++-=20
+>> src/openvpn/ssl_mbedtls.h        |  1 + src/openvpn/ssl_openssl.c
+>> | 58 ++++++++++++++++++++++++ src/openvpn/ssl_verify.c         | 19
+>> ++++---- src/openvpn/ssl_verify_backend.h | 19 +++-----=20
+>> src/openvpn/ssl_verify_mbedtls.c | 56 +++--------------------=20
+>> src/openvpn/ssl_verify_openssl.c | 96
+>> ++++++++++++++++------------------------ 10 files changed, 193
+>> insertions(+), 131 deletions(-)
+>=20
+> This is a bit scary.  I have nothing to complain about in the patch,
+> so I feel like I'm not seeing the large neon-pink elephant in the room.
 
-On certain OSes (Windows, OS X) when network adapter is
-disabled (ethernet cable pulled off, Wi-Fi hardware switch disabled),
-operating system starts to use tun as an external interface.
-Outgoing packets are routed to tun, UDP encapsulated, given to
-routing table and sent to.. tun.
+What probably makes a difference here is that this patch was not
+originally written by me ;)  Seriously though, the patch was written by
+my colleague, reviewed and slightly adjusted by me, then got some
+comments from Antonio and then finally molded to it's current form.  So
+it already got quite some off-list review.  Also, I ran our OpenVPN-NL
+test suite against (the mbed TLS version of) this patch, which verifies
+correct behaviour for a number of more advanced CA setups (including
+intermediate CAs, revoked intermediates, invalid CRLS, etc...).
 
-As a consequence, system starts talking to itself on full power,
-traffic counters skyrocket and user is not happy.
+Still, this does change behaviour (e.g. rejecting expired CRLS), so will
+probably reject some connections that earlier versions would accept.
+But I'd consider that a fix, not a bug.
 
-To prevent that, drop packets which have gateway IP as
-destination address.
+> I've run lots of tests, both with OpenSSL and mbedTLS.  Testing with
+> and without valgrind --leak-check=3Dfull.  Tested configurations without
+> --crl, with --crl ca.crl and --crl crldir dir.
+>=20
+> Every thing works as expected, no memory leaks detected.  It passes
+> 'make check' including t_client.sh runs.  Traffic is passed over the
+> tunnel where certificate is not listed on a CRL.
+>=20
+>=20
+> There is one detail, which is not a fault of this patch ... but I'll
+> just mention it here.  The client does not exit gracefully on
+> rejections due to CRL.  It's not too odd, but should probably look
+> into if it would be possible to send an "AUTH_FAILED,REVOKED:
+> Certificate revoked" message back to the client.  But that's for a
+> different patch.
 
-Tested on Win7/10, OS X.
----
- Changes.rst           |  2 ++
- doc/openvpn.8         |  4 +++
- src/openvpn/forward.c | 72 +++++++++++++++++++++++++++++++++++++++++++++++++++
- src/openvpn/options.c | 10 +++++++
- src/openvpn/options.h |  4 +++
- src/openvpn/proto.h   | 39 ++++++++++++++++++++++++++++
- 6 files changed, 131 insertions(+)
+We can't send AUTH_FAILED, because we have no control channel to send it
+over yet (see other mail thread).
 
-diff --git a/Changes.rst b/Changes.rst
-index 8fd5859..d7aae00 100644
---- a/Changes.rst
-+++ b/Changes.rst
-@@ -188,6 +188,8 @@ User-visible Changes
-   capable. The ``--tun-ipv6`` option is ignored (behaves like it is always
-   on).
- 
-+- On the client side recursively routed packets, which have same destination as host,
-+  are dropped. This could be disabled with --allow-recursive-routing option.
- 
- Maintainer-visible changes
- --------------------------
-diff --git a/doc/openvpn.8 b/doc/openvpn.8
-index 3a4ab21..863dcf9 100644
---- a/doc/openvpn.8
-+++ b/doc/openvpn.8
-@@ -4004,6 +4004,10 @@ to the same server, with
- 
- OpenVPN will not send any exit
- notifications unless this option is enabled.
-+.TP
-+.B \-\-allow\-recursive\-routing
-+When this option is set, OpenVPN will not drop incoming tun packets
-+with same destination as host.
- .\"*********************************************************
- .SS Data Channel Encryption Options:
- These options are meaningful for both Static & TLS-negotiated key modes
-diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index b3077ed..3a4c26a 100644
---- a/src/openvpn/forward.c
-+++ b/src/openvpn/forward.c
-@@ -993,6 +993,76 @@ read_incoming_tun (struct context *c)
-   perf_pop ();
- }
- 
-+/**
-+ * Drops UDP packets which OS decided to route via tun.
-+ *
-+ * On Windows and OS X when netwotk adapter is disabled or
-+ * disconnected, platform starts to use tun as external interface.
-+ * When packet is sent to tun, it comes to openvpn, encapsulated
-+ * and sent to routing table, which sends it again to tun.
-+ */
-+static void
-+drop_if_recursive_routing (struct context *c, struct buffer *buf)
-+{
-+  bool drop = false;
-+  struct openvpn_sockaddr tun_sa;
-+  int ip_hdr_offset = 0;
-+
-+  if (c->c2.to_link_addr == NULL) /* no remote addr known */
-+    return;
-+
-+  tun_sa = c->c2.to_link_addr->dest;
-+
-+  int proto_ver = get_tun_ip_ver (TUNNEL_TYPE (c->c1.tuntap), &c->c2.buf, &ip_hdr_offset);
-+
-+  if (proto_ver == 4)
-+    {
-+      const struct openvpn_iphdr *pip;
-+
-+      /* make sure we got whole IP header */
-+      if (BLEN (buf) < ((int) sizeof (struct openvpn_iphdr) + ip_hdr_offset))
-+	return;
-+
-+      /* skip ipv4 packets for ipv6 tun */
-+      if (tun_sa.addr.sa.sa_family != AF_INET)
-+	return;
-+
-+      pip = (struct openvpn_iphdr *) (BPTR (buf) + ip_hdr_offset);
-+
-+      /* drop packets with same dest addr as gateway */
-+      if (tun_sa.addr.in4.sin_addr.s_addr == pip->daddr)
-+	drop = true;
-+    }
-+  else if (proto_ver == 6)
-+    {
-+      const struct openvpn_ipv6hdr *pip6;
-+
-+      /* make sure we got whole IPv6 header */
-+      if (BLEN (buf) < ((int) sizeof (struct openvpn_ipv6hdr) + ip_hdr_offset))
-+	return;
-+
-+      /* skip ipv6 packets for ipv4 tun */
-+      if (tun_sa.addr.sa.sa_family != AF_INET6)
-+	return;
-+
-+      /* drop packets with same dest addr as gateway */
-+      pip6 = (struct openvpn_ipv6hdr *) (BPTR (buf) + ip_hdr_offset);
-+      if (IN6_ARE_ADDR_EQUAL(&tun_sa.addr.in6.sin6_addr, &pip6->daddr))
-+	drop = true;
-+    }
-+
-+  if (drop)
-+    {
-+      struct gc_arena gc = gc_new ();
-+
-+      c->c2.buf.len = 0;
-+
-+      msg(D_LOW, "Recursive routing detected, drop tun packet to %s",
-+		print_link_socket_actual(c->c2.to_link_addr, &gc));
-+      gc_free (&gc);
-+    }
-+}
-+
- /*
-  * Input:  c->c2.buf
-  * Output: c->c2.to_link
-@@ -1018,6 +1088,8 @@ process_incoming_tun (struct context *c)
- 
-   if (c->c2.buf.len > 0)
-     {
-+      if ((c->options.mode == MODE_POINT_TO_POINT) && (!c->options.allow_recursive_routing))
-+	drop_if_recursive_routing (c, &c->c2.buf);
-       /*
-        * The --passtos and --mssfix options require
-        * us to examine the IP header (IPv4 or IPv6).
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index be31ed3..552bf5a 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -508,6 +508,8 @@ static const char usage_message[] =
-   "--connect-timeout n : when polling possible remote servers to connect to\n"
-   "                  in a round-robin fashion, spend no more than n seconds\n"
-   "                  waiting for a response before trying the next server.\n"
-+  "--allow-recursive-routing : When this option is set, OpenVPN will not drop\n"
-+  "                  incoming tun packets with same destination as host.\n"
- #endif
- #ifdef ENABLE_OCC
-   "--explicit-exit-notify [n] : On exit/restart, send exit signal to\n"
-@@ -886,6 +888,7 @@ init_options (struct options *o, const bool init_gc)
-   }
- #endif /* WIN32 */
- #endif /* P2MP_SERVER */
-+  o->allow_recursive_routing = false;
- }
- 
- void
-@@ -2134,6 +2137,8 @@ options_postprocess_verify_ce (const struct options *options, const struct conne
- 	msg (M_USAGE, "--ifconfig-pool-persist must be used with --ifconfig-pool");
-       if (options->ifconfig_ipv6_pool_defined && !options->ifconfig_ipv6_local )
- 	msg (M_USAGE, "--ifconfig-ipv6-pool needs --ifconfig-ipv6");
-+      if (options->allow_recursive_routing)
-+	msg (M_USAGE, "--allow-recursive-routing cannot be used with --mode server");
-       if (options->auth_user_pass_file)
- 	msg (M_USAGE, "--auth-user-pass cannot be used with --mode server (it should be used on the client side only)");
-       if (options->ccd_exclusive && !options->client_config_dir)
-@@ -7385,6 +7390,11 @@ add_option (struct options *options,
-       options->keying_material_exporter_length = ekm_length;
-     }
- #endif
-+  else if (streq (p[0], "allow-recursive-routing") && !p[1])
-+    {
-+      VERIFY_PERMISSION (OPT_P_GENERAL);
-+      options->allow_recursive_routing = true;
-+    }
-   else
-     {
-       int i;
-diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-index 2f91a52..0ebea30 100644
---- a/src/openvpn/options.h
-+++ b/src/openvpn/options.h
-@@ -597,6 +597,10 @@ struct options
- #endif
- 
-   struct pull_filter_list *pull_filter_list;
-+
-+  /* Useful when packets sent by openvpn itself are not subject
-+     to the routing tables that would move packets into the tunnel. */
-+  bool allow_recursive_routing;
- };
- 
- #define streq(x, y) (!strcmp((x), (y)))
-diff --git a/src/openvpn/proto.h b/src/openvpn/proto.h
-index f91e787..922f936 100644
---- a/src/openvpn/proto.h
-+++ b/src/openvpn/proto.h
-@@ -219,6 +219,45 @@ struct ip_tcp_udp_hdr {
-                              - sizeof(struct openvpn_tcphdr))
- 
- /*
-+ * This returns an ip protocol version of packet inside tun
-+ * and offset of IP header (via parameter).
-+ */
-+inline static int get_tun_ip_ver(int tunnel_type, struct buffer *buf, int *ip_hdr_offset)
-+{
-+  int ip_ver = -1;
-+
-+  /* for tun get ip version from ip header */
-+  if (tunnel_type == DEV_TYPE_TUN)
-+    {
-+      *ip_hdr_offset = 0;
-+      if (likely(BLEN (buf) >= (int) sizeof (struct openvpn_iphdr)))
-+	{
-+	  ip_ver = OPENVPN_IPH_GET_VER (*BPTR(buf));
-+	}
-+    }
-+  else if (tunnel_type == DEV_TYPE_TAP)
-+    {
-+      *ip_hdr_offset = (int)(sizeof (struct openvpn_ethhdr));
-+      /* for tap get ip version from eth header */
-+      if (likely(BLEN (buf) >= *ip_hdr_offset))
-+	{
-+	  const struct openvpn_ethhdr *eh = (const struct openvpn_ethhdr *) BPTR (buf);
-+	  uint16_t proto = ntohs (eh->proto);
-+	  if (proto == OPENVPN_ETH_P_IPV6)
-+	    {
-+	      ip_ver = 6;
-+	    }
-+	  else if (proto == OPENVPN_ETH_P_IPV4)
-+	    {
-+	      ip_ver = 4;
-+	    }
-+	}
-+    }
-+
-+    return ip_ver;
-+}
-+
-+/*
-  * If raw tunnel packet is IPv4 or IPv6, return true and increment
-  * buffer offset to start of IP header.
-  */
--- 
-1.9.1
+> I can definitely give this one a Feature-ACK.  I can also support a
+> full ACK too if one more developer does a thorough code review.
 
+Thanks!
+
+-Steffan
+
+
+--WgU0k5L5FHfxFLvSGWHPxj1e3N94SbpRv--
+
+--9LhXNs4UEhUh1x2IdeUinrSv0FOFb304p
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQEcBAEBCAAGBQJYG7CsAAoJEJgCyj0AftKIa+4H/30aQKM9ARGZkp3B/QvfGxjT
+9eYdIZtDqptKxv2adM6y/0y3GTrmJeVCK01mbM47pgvARfYxo0LGHAB+stmcI8/Q
+7PRq9lmpVBDQ3Sd0R2GKuQlWg7kYemDC/GOoIFlpokh4HeI7MPfZBUIALKSMJ9wq
+AaXD6bssCiOUBecxVmpInJWs2mBZlz28xmGbIgW7Ab0FYcoe0gKr3CZoGQMLXaG4
+8s2hU2b+6p/PH9zLTl5Mi8cwbCyuuYTqcCjZcaYVvdNvb/tSUQidpneJwPvxWalJ
++vALFEQOA2hZWgIlWBpdVLJCzJdfyS8ussH5fS0hFCve2Di1UAQNNU2S8EPcFlQ=
+=6kZK
+-----END PGP SIGNATURE-----
+
+--9LhXNs4UEhUh1x2IdeUinrSv0FOFb304p--
 
