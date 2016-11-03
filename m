@@ -1,10 +1,8 @@
-References: <1477670087-30063-1-git-send-email-steffan.karger@...1435...>
 From: David Sommerseth <openvpn@...2080...>
-Message-ID: <e9b94527-d361-cc7b-1ce1-dfbd1bc7a9e5@...2080...>
-Date: Thu, 3 Nov 2016 19:21:54 +0100
+Message-ID: <35b26cf2-5b2e-be38-6cd5-99356bece635@...2080...>
+Date: Thu, 3 Nov 2016 22:03:53 +0100
 MIME-Version: 1.0
-In-Reply-To: <1477670087-30063-1-git-send-email-steffan.karger@...1435...>
-Subject: Re: [Openvpn-devel] [PATCH] Refactor CRL handling
+Subject: [Openvpn-devel] Considering to send AUTH_FAILED on TLS errors
 Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -14,65 +12,116 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="windows-1252"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
-To: Steffan Karger <steffan.karger@...1435...>, openvpn-devel@lists.sourceforge.net
-Cc: Ivo Manca <ivo.manca@...1435...>
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-On 28/10/16 17:54, Steffan Karger wrote:
-> This patch refactors the CRL handling to rely more on the
-> implementation of the crypto library.  It will insert the CRL at
-> the correct time to keep it up to date, but all additional
-> verification logic is removed from ssl_verify_<backend>.c.  "Less
-> code of our own, less bugs of our own."
->=20
-> In practice, this means extra checks will be performed on the CRL,
-> such as checking it validBefore and validAfter fields.
->=20
-> This patch was originally written by Ivo Manca, and then molded by
-> Steffan before sending to the list.  All bugs are Steffan's fault.
->=20
-> Thanks also go to Antonio Quartulli for useful feedback.  He'll
-> send follow-up patches to improve CRL handling performance.
->=20
-> Signed-off-by: Ivo Manca <ivo.manca@...1435...> Signed-off-by:
-> Steffan Karger <steffan.karger@...1435...> --- Changes.rst
-> |  6 +++ src/openvpn/ssl.c                | 15 +++++++=20
-> src/openvpn/ssl_backend.h        | 11 +++++=20
-> src/openvpn/ssl_mbedtls.c        | 43 +++++++++++++++++-=20
-> src/openvpn/ssl_mbedtls.h        |  1 + src/openvpn/ssl_openssl.c
-> | 58 ++++++++++++++++++++++++ src/openvpn/ssl_verify.c         | 19
-> ++++---- src/openvpn/ssl_verify_backend.h | 19 +++-----=20
-> src/openvpn/ssl_verify_mbedtls.c | 56 +++--------------------=20
-> src/openvpn/ssl_verify_openssl.c | 96
-> ++++++++++++++++------------------------ 10 files changed, 193
-> insertions(+), 131 deletions(-)
 
-This is a bit scary.  I have nothing to complain about in the patch,
-so I feel like I'm not seeing the large neon-pink elephant in the room.
+Hi,
 
-I've run lots of tests, both with OpenSSL and mbedTLS.  Testing with
-and without valgrind --leak-check=3Dfull.  Tested configurations without
-- --crl, with --crl ca.crl and --crl crldir dir.
+During the review of the CRL improvement patch, I briefly mentioned
+that clients do not disconnect gracefully if the TLS layer does not
+accept the client certificate (like when it is on a CRL).
 
-Every thing works as expected, no memory leaks detected.  It passes
-'make check' including t_client.sh runs.  Traffic is passed over the
-tunnel where certificate is not listed on a CRL.
+I have spent some time looking through the code to see what is needed.
+ And what is a fairly simple thing seems to get fairly complicated.
+So I'm just starting this discussion to see if we can find some good
+approaches.
+
+The main challenge is that we should use the send_auth_failed()
+function, which takes a struct context object as well as a reason.  So
+calling this function like this:
+
+      send_auth_failed(c, "REVOKED: Certificate is revoked");
+
+will result in a control channel message saying:
+
+      AUTH_FAILED,REVOKED: Certificate is revoked
+
+Now this is fairly simple and easy.  send_auth_failed() does all the
+needed magic to ensure the rejection is scheduled to be sent to the
+client ASAP and formatted properly on the wire.
+
+The challenge is that this function needs a struct context object.
+And that object isn't easily available.  So the call chain I've
+detected is something like this (in reverse order)
+
+   - send_auth_failed()  [new call, not present today]
+   - verify_callback()   [in ssl_verify_{openssl,mbedtls].c]
+
+This isn't bad at all.  The verify_callback() is configured in the SSL
+library doing the client verification.
+
+For OpenSSL it is SSL_CTX_set_verify() together with SSL_set_ex_data()
+which provides a "data payload" passed to the callback (retrieved via
+SSL_get_ex_data()).
+
+For mbedTLS it is a bit simpler, mbedtls_ssl_conf_verify() takes an
+argument to both the callback function and a pointer to the data
+payload to be passed directly to the verify_callback() function.
+
+All this happens inside the key_state_ssl_init() functions, which have
+the same unified API in both OpenSSL and mbedTLS.
+
+We need the struct tls_session object in the verify callback, so I
+thought we would wrap this up in a static struct which carries a
+pointer to both struct context and the relevant struct tls_session
+objects.  But that means we need to get the struct context object to
+the key_state_ssl_init() function.  Now it gets more complicated.
+
+   - key_state_ssl_init()   [ssl_{openssl,mbedtls}.c]
+   - key_state_init()       [ssl.c]
+   - tls_session_init()     [ssl.c]
+   - move_session(), reset_session(), tls_multi_init_finalize()
+
+So three paths ...
+
+   * (1) move_session()     [ssl.c]
+   - tls_multi_process()    [ssl.c]
+   - check_tls_dowork()     [forward.c]
+        ** MATCH ** Here we have struct context
+
+   * (2) reset_session()    [ssl.c]
+   - tls_muli_process()     [ssl.c]
+   - check_tls_dowork()     [forward.c]
+        ** MATCH ** Here we have struct context
+
+   * (3) tls_multi_init_finalize() [ssl.c]
+   - do_init_finalize_tls_frame()  [init.c]
+        ** MATCH ** Here we have struct context
 
 
-There is one detail, which is not a fault of this patch ... but I'll
-just mention it here.  The client does not exit gracefully on
-rejections due to CRL.  It's not too odd, but should probably look
-into if it would be possible to send an "AUTH_FAILED,REVOKED:
-Certificate revoked" message back to the client.  But that's for a
-different patch.
+One approach, which will require some efforts is to pass a pointer to
+the struct context object through the call chains identified above.
+Some of them might be simplified by replacing at least struct
+tls_multi objects with struct context, as the struct tls_multi object
+is part of struct context_2 which is part of struct context.  Inside
+struct tls_multi, you will also find struct tls_session - but there
+are more of them, so that is a bit more complicated as we need to pass
+the proper tls_session object to the verify_callback() function.
 
+I find this approach to be quite intrusive.  I've done a similar task
+for the --auth-gen-token patches to resolve a similar issue [1], and
+that also required some refactoring - though not as much as here -
+which makes me wonder if I have overlooked two of the code paths
+detected in this review.
 
-I can definitely give this one a Feature-ACK.  I can also support a
-full ACK too if one more developer does a thorough code review.
+[1] <http://bit.ly/2ejcwG2> [mail post at mail-archive.com]
+
+There is a more "simple" approach, but I consider that to be bad in a
+larger perspective.  The struct tls_session object could carry a
+pointer to the main struct context object.  But we already have a few
+of those "back-and-forth" object pointers in the struct context,
+struct context_2, struct tls_multi and struct tls_session - but for
+other elements.  And it can be quite hard to catch who "owns" the main
+pointer and who is just "borrowing access".  So I am very reluctant to
+take this "easy path".
+
+The question is ... does anyone else see a different or better
+approach?  Thoughts, comments?
 
 
 - --=20
@@ -84,18 +133,18 @@ OpenVPN Technologies, Inc
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBAgAGBQJYG4BCAAoJEIbPlEyWcf3yahUP/jP1fh4L+y4Ct2u61OVVJLIg
-7g5nxw/S3j87tbqf5cyvP/Pw8GvB9klDqMt3MHPZLfG1fRpiJuOwPB/ad53WNdOf
-BDN2NqlDpDFNT1Zv+VxM4B1SJlefMQGRvKS67PM3VESDdCVZ60p//AwvTyczi6lB
-lgk+Wp/vOypdky3L1nxvH7iMsOJWdkE/DcvYFrryI+vFCBQjxp88V4X6MHxQKqRp
-g2l5rSHXv0gh7A5BmnzZLIbUjJBpuCDZ4/TpkNAgScXeqGOGLyzT+S8kvNEdgVUG
-jOkDQunJ6hcN1Hf3g1xltj+zoDoYh4iRSGqAHpURh4hgKVue1ElLXWGqS2vNzxRQ
-vV0Nmt/4R6LTiCgKow7WX8kJxWfB83SKhpB9XCg1xri2tqwqwy7pNwVFhqcBjb9F
-qHLb/z9vddMsgvTjuMwOH0DyQbXi9vyNTB+KadhkN9BSYBJaR4CHAddAdzOnEh+0
-bjGNIbd9UVVbf+Bo8sqbjV3VVLJgV2gZgPK4HpxAY6DGno1Bfh0IYGNngR4w2+T7
-QetPKsbOaa9w6k+Sc7sGuytZBhgJ4jtjPRBgZ13Q+cUpyVgl8UjxPS9YyxwHg0Mt
-S02uLZvhqA8NMd3s4X7VGjPle4or1voMxiWGUonvrHR8PsoAVfEBfNK5xrvfkf8m
-xjpM785uFGjPvbQkisTN
-=3Dmk0U
+iQIcBAEBAgAGBQJYG6Y5AAoJEIbPlEyWcf3yRLgP/3eIB4DxVYxNTWXhIqVs8fU7
+ZSF/LcEln+hvb3+1+TrV5es5To3x3DgXRgYNBxf82DuO8AICNV1feopo5TThoJl5
+5cu+092U2kKb+qv6za/MfO6tM+WY0UDFMd+dp0CyrKmcX9SRnfNRiZ7+4RmNL0tu
+tpFZOppRTBaJCg05ZqSFTbknXdXqTDNJX4789yUa+jcbqxAK6xGlrXLmaoXTZE5N
+dp10gXosKcDs6VlhXM+R43HQsnggNeBzdG0Cclc2pBiLFVCLY6joiWvizZkXL+N1
+NBpz7HcOeT/x7bxjEw72G19gYUHkesoFOR/TT0rCDJ3wmLG9OAlGewbje7Ac9NrA
+lT+3q6qMmnlQEoXnTjF7+I/ajqBtRnvwjaeuMQhcMuXm6+cb0pW4GMC3HZzG3HFx
+8ZNFFKAHkDu4bk+kqufWwBYdDzNRgqgXy5gFNMy2veP+oiWMdh17N9ayIZdpyd96
+eSMYGjQBQjrfh8ANszqsrysaMlDxJc7diJXf0Ro7OK2CUvap4k31LFwUhZPmhlXK
+GFkOfSbYCnspOEfuCMvMNPo2qGVFJftDdJrhHPwba9of31foix3gJBQgfNJstvx+
+Co0Q6nU83/2Hr9yLo+hvQ31vk5YXe2Mlxj3y+YCpPOAWW7qQr2OXKTWexudkKmId
+kNA0YeHmkgtNfcHUKb8E
+=3DM07m
 -----END PGP SIGNATURE-----
 
