@@ -1,14 +1,8 @@
-Date: Wed, 2 Nov 2016 20:58:35 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20161102195835.GQ28918@...1296...>
-References: <1474105652-5672-1-git-send-email-lstipakov@...277...>
-	<201611021941.uA2JfCls015655@...2054...>
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <4363dfb6-ab36-6fd6-0872-739201fae889@...515...>
+Date: Thu, 3 Nov 2016 14:15:38 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="wRf5ADanJIrukZc5"
-Content-Disposition: inline
-In-Reply-To: <201611021941.uA2JfCls015655@...2054...>
-Subject: Re: [Openvpn-devel] NAK on Re: Drop recursively routed packets
+Subject: [Openvpn-devel] OpenVPN 2.3.13 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,72 +11,41 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Lev Stipakov <lstipakov@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
-
---wRf5ADanJIrukZc5
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="windows-1252"; format=flowed
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+To: "openvpn users list (openvpn-users@lists.sourceforge.net)" <openvpn-users@lists.sourceforge.net>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, openvpn-announce@lists.sourceforge.net
 
-Hi,
+The OpenVPN community project team is proud to release OpenVPN 2.3.13.=20
+It can be downloaded from here:
 
-On Wed, Nov 02, 2016 at 08:41:12PM +0100, Gert Doering wrote:
-> ACK, thanks.  Took us long enough.
+<http://openvpn.net/index.php/open-source/downloads.html>
 
-Bah.  I wanted to do everything right, but missed one crucial test: that
-it "does what it says" in tap mode as well - well, it doesn't.=20=20
+This release includes many small improvements and fixes. The largest=20
+change in this is release is limiting of --reneg-bytes to 64MB when=20
+using small block ciphers. A full list of changes is available here:
 
-Unlike v2, this will not break tap (or p2p server or --inetd) mode, but
-the functionality is not right.
+<https://community.openvpn.net/openvpn/wiki/ChangesInOpenvpn23>
 
-This code:
+For generic help use these support channels:
 
-      /* make sure we got whole IP header */
-      if (BLEN (buf) < (int) sizeof (struct openvpn_iphdr))
-        return;
+Official documentation:=20
+<http://openvpn.net/index.php/open-source/documentation/howto.html>
+Wiki: <https://community.openvpn.net>
+Forums: <https://forums.openvpn.net>
+User mailing list: <http://sourceforge.net/mail/?group_id=3D48978>
+User IRC channel: #openvpn at irc.freenode.net
 
-      /* skip ipv4 packets for ipv6 tun */
-      if (tun_sa.addr.sa.sa_family !=3D AF_INET)
-        return;
+Please report bugs and ask development questions here:
 
-      pip =3D (struct openvpn_iphdr *) BPTR (buf);
-
-      /* drop packets with same dest addr as gateway */
-      if (tun_sa.addr.in4.sin_addr.s_addr =3D=3D pip->daddr)
-        drop =3D true;
-
-
-... does not take "if it's TAP, skip the ethernet header" into account,
-so is comparing tun_sa...s_addr with "something", but not with the=20
-IP address in the IP packet inside the ethernet frame.
-
-
-So, unfortunately, another NAK.
-
-But I noticed before pushing, so just totally ignore my previous mail -
-this is not in the official tree (and won't make 2.3.13, meh).
-
-gert
+Bug tracker and wiki: <https://community.openvpn.net>
+Developer mailing list: <http://sourceforge.net/mail/?group_id=3D48978>
+Developer IRC channel: #openvpn-devel at irc.freenode.net (requires=20
+Freenode registration)
 
 --=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
 
---wRf5ADanJIrukZc5
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQCVAwUBWBpFaqkuBuNlUUl1AQJHRgQAxopVC8JuZP/SntrXJAIC2MLlc7WQUOR/
-PoxA5aSL9enQ3jSsVGeFkayyUH6MkboHK6FWRBMJtmG6W1v8nnFKeJbkWWF+Fnej
-0ctoFZRgnpCZ818M9Q1AA37eQJcTWSMVy0fu9MgCNZl3mzSxZk+GxgVDBuuDL3mp
-pwZI4V7vTVg=
-=abIP
------END PGP SIGNATURE-----
-
---wRf5ADanJIrukZc5--
+irc freenode net: mattock
 
