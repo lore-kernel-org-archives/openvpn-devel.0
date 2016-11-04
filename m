@@ -1,14 +1,12 @@
-References: <1477670087-30063-1-git-send-email-steffan.karger@...1435...>
-	<e9b94527-d361-cc7b-1ce1-dfbd1bc7a9e5@...2080...>
-From: Steffan Karger <steffan@...1856...>
-Message-ID: <5c580505-2837-77fa-2c42-1a70fe9f5fac@...1856...>
-Date: Thu, 3 Nov 2016 22:48:06 +0100
 MIME-Version: 1.0
-In-Reply-To: <e9b94527-d361-cc7b-1ce1-dfbd1bc7a9e5@...2080...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature";
-	boundary="9LhXNs4UEhUh1x2IdeUinrSv0FOFb304p"
-Subject: Re: [Openvpn-devel] [PATCH] Refactor CRL handling
+In-Reply-To: <OpenVPN/openvpn-gui/issues/92@...1714...>
+References: <OpenVPN/openvpn-gui/issues/92@...1714...>
+From: Selva Nair <selva.nair@...277...>
+Date: Thu, 3 Nov 2016 20:36:56 -0400
+Message-ID: <CAKuzo_gpuqnpz1T2ZYDPfPHM=6ebj+yMawtZykUus08rB42seA@...278...>
+Content-Type: multipart/alternative; boundary=94eb2c06cdea45dd2e05406ee0a6
+Subject: Re: [Openvpn-devel] [OpenVPN/openvpn-gui] OpenVPN & pam_radius_auth
+	- Dynamic CR (#92)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,116 +15,138 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+To: OpenVPN/openvpn-gui <reply+003cc04ff0501128fbc74d0c08d2fd1c39bbe1be78c9b86292cf000000011433890392a169ce0b28b258@...1858...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---9LhXNs4UEhUh1x2IdeUinrSv0FOFb304p
-Content-Type: multipart/mixed; boundary="WgU0k5L5FHfxFLvSGWHPxj1e3N94SbpRv"
-From: Steffan Karger <steffan@...1856...>
-To: openvpn-devel@lists.sourceforge.net
-Message-ID: <5c580505-2837-77fa-2c42-1a70fe9f5fac@...1856...>
-Subject: Re: [Openvpn-devel] [PATCH] Refactor CRL handling
-References: <1477670087-30063-1-git-send-email-steffan.karger@...1435...>
-	<e9b94527-d361-cc7b-1ce1-dfbd1bc7a9e5@...2080...>
-In-Reply-To: <e9b94527-d361-cc7b-1ce1-dfbd1bc7a9e5@...2080...>
-
---WgU0k5L5FHfxFLvSGWHPxj1e3N94SbpRv
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
+--94eb2c06cdea45dd2e05406ee0a6
+Content-Type: text/plain; charset=UTF-8
 
 Hi,
 
-On 03-11-16 19:21, David Sommerseth wrote:
-> On 28/10/16 17:54, Steffan Karger wrote:
->> This patch refactors the CRL handling to rely more on the
->> implementation of the crypto library.  It will insert the CRL at
->> the correct time to keep it up to date, but all additional
->> verification logic is removed from ssl_verify_<backend>.c.  "Less
->> code of our own, less bugs of our own."
->=20
->> In practice, this means extra checks will be performed on the CRL,
->> such as checking it validBefore and validAfter fields.
->=20
->> This patch was originally written by Ivo Manca, and then molded by
->> Steffan before sending to the list.  All bugs are Steffan's fault.
->=20
->> Thanks also go to Antonio Quartulli for useful feedback.  He'll
->> send follow-up patches to improve CRL handling performance.
->=20
->> Signed-off-by: Ivo Manca <ivo.manca@...1435...> Signed-off-by:
->> Steffan Karger <steffan.karger@...1435...> --- Changes.rst
->> |  6 +++ src/openvpn/ssl.c                | 15 +++++++=20
->> src/openvpn/ssl_backend.h        | 11 +++++=20
->> src/openvpn/ssl_mbedtls.c        | 43 +++++++++++++++++-=20
->> src/openvpn/ssl_mbedtls.h        |  1 + src/openvpn/ssl_openssl.c
->> | 58 ++++++++++++++++++++++++ src/openvpn/ssl_verify.c         | 19
->> ++++---- src/openvpn/ssl_verify_backend.h | 19 +++-----=20
->> src/openvpn/ssl_verify_mbedtls.c | 56 +++--------------------=20
->> src/openvpn/ssl_verify_openssl.c | 96
->> ++++++++++++++++------------------------ 10 files changed, 193
->> insertions(+), 131 deletions(-)
->=20
-> This is a bit scary.  I have nothing to complain about in the patch,
-> so I feel like I'm not seeing the large neon-pink elephant in the room.
+Copying openvpn-devel as this is more about openvpn server than the GUI.
 
-What probably makes a difference here is that this patch was not
-originally written by me ;)  Seriously though, the patch was written by
-my colleague, reviewed and slightly adjusted by me, then got some
-comments from Antonio and then finally molded to it's current form.  So
-it already got quite some off-list review.  Also, I ran our OpenVPN-NL
-test suite against (the mbed TLS version of) this patch, which verifies
-correct behaviour for a number of more advanced CA setups (including
-intermediate CAs, revoked intermediates, invalid CRLS, etc...).
+On Thu, Nov 3, 2016 at 7:23 PM, roberthunt-dm <notifications@...1714...>
+wrote:
 
-Still, this does change behaviour (e.g. rejecting expired CRLS), so will
-probably reject some connections that earlier versions would accept.
-But I'd consider that a fix, not a bug.
+> I am trying to get OpenVPN working with a Radius server configured to send
+> an access_challenge for an otp code it dynamically generates.
+>
+> (server) openvpn server 2.3.2-7ubuntu3.1
+> (client) Openvpn-gui-cr.exe
+>
+The big question mark for me is how pam_radius_auth interacts with Openvpn.
+>
+> Logs show that the plugin is receiving the code 11 access_challenge from
+> the radius server:
+>
+> Nov 3 15:30:21 openvpn openvpn[10910]: pam_radius_auth: Got user name
+> xxxxxx
+> Nov 3 15:30:21 openvpn openvpn[10910]: pam_radius_auth: Sending RADIUS
+> request code 1
+> Nov 3 15:30:21 openvpn openvpn[10910]: pam_radius_auth: Got RADIUS
+> response code 11
+> Nov 3 15:30:21 openvpn openvpn[10910]: pam_radius_auth: Got response to
+> challenge code 11
+> Nov 3 15:30:21 openvpn openvpn[10910]: pam_radius_auth: Got response to
+> challenge code 3
+> Nov 3 15:30:21 openvpn openvpn[10910]: pam_radius_auth: authentication
+> failed
+>
+> However I don't see any pop-up box on the OpenVPN client prompting for the
+> OTP code.
+>
 
-> I've run lots of tests, both with OpenSSL and mbedTLS.  Testing with
-> and without valgrind --leak-check=3Dfull.  Tested configurations without
-> --crl, with --crl ca.crl and --crl crldir dir.
->=20
-> Every thing works as expected, no memory leaks detected.  It passes
-> 'make check' including t_client.sh runs.  Traffic is passed over the
-> tunnel where certificate is not listed on a CRL.
->=20
->=20
-> There is one detail, which is not a fault of this patch ... but I'll
-> just mention it here.  The client does not exit gracefully on
-> rejections due to CRL.  It's not too odd, but should probably look
-> into if it would be possible to send an "AUTH_FAILED,REVOKED:
-> Certificate revoked" message back to the client.  But that's for a
-> different patch.
+You have to send the authentication failed message with a specially
+formatted reason back to the client. For example. reason =
+CRV1:R,E:some_id:base64_username:Input OTP code will cause the server to
+send AUTH_FAILED followed by that reason back to the client. The client
+will then prompt for a second round of authentication and the GUI will
+parse the failure reason and prompt for OTP.
 
-We can't send AUTH_FAILED, because we have no control channel to send it
-over yet (see other mail thread).
+Client log will show what kind of AUTH_FAILED message is received from the
+server.
 
-> I can definitely give this one a Feature-ACK.  I can also support a
-> full ACK too if one more developer does a thorough code review.
+For details of the message format see "Challenge/Response protocol"
+description here: https://openvpn.net/index.php/
+open-source/documentation/miscellaneous/79-management-interface.html
 
-Thanks!
+> On the radius server, for the 2nd access request message (in response to
+> the access_challenge) - openvpn is just sending the same original
+> access_request message. The radius server then rejects access.
+>
+> Do I need to modify pam_radius_auth to send messages in a special format
+> to openvpn? I'm using this from here: https://github.com/FreeRADIUS/
+> pam_radius/blob/master/src/pam_radius_auth.c
+>
+As far as I know the only way to send back a specially crafted reason for
+auth failure is using the management interface for authentication
+(--management-client-auth in the server config). But I don't know enough
+about the plugin api to know if and how this could be achieved using a
+plugin.
 
--Steffan
+Selva
 
+--94eb2c06cdea45dd2e05406ee0a6
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
---WgU0k5L5FHfxFLvSGWHPxj1e3N94SbpRv--
+<div dir=3D"ltr"><div class=3D"gmail_extra">Hi,<br><br></div><div class=3D"=
+gmail_extra">Copying openvpn-devel as this is more about openvpn server tha=
+n the GUI.<br><br></div><div class=3D"gmail_extra"><div class=3D"gmail_quot=
+e">On Thu, Nov 3, 2016 at 7:23 PM, roberthunt-dm <span dir=3D"ltr">&lt;<a h=
+ref=3D"mailto:notifications@...1714..." target=3D"_blank">notifications@...493...=
+1714...</a>&gt;</span> wrote:<br><blockquote class=3D"gmail_quote" style=3D=
+"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-le=
+ft:1ex"><p>I am trying to get OpenVPN working with a Radius server configur=
+ed to send an access_challenge for an otp code it dynamically generates.</p>
+<p>(server) openvpn server 2.3.2-7ubuntu3.1<br>
+(client)  Openvpn-gui-cr.exe <br></p></blockquote><blockquote class=3D"gmai=
+l_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,20=
+4,204);padding-left:1ex">
+<p>The big question mark for me is how pam_radius_auth interacts with Openv=
+pn.</p>
+<p>Logs show that the plugin is receiving the code 11 access_challenge from=
+ the radius server:</p>
+<p>Nov  3 15:30:21 openvpn openvpn[10910]: pam_radius_auth: Got user name x=
+xxxxx<br>
+Nov  3 15:30:21 openvpn openvpn[10910]: pam_radius_auth: Sending RADIUS req=
+uest code 1<br>
+Nov  3 15:30:21 openvpn openvpn[10910]: pam_radius_auth: Got RADIUS respons=
+e code 11<br>
+Nov  3 15:30:21 openvpn openvpn[10910]: pam_radius_auth: Got response to ch=
+allenge code 11<br>
+Nov  3 15:30:21 openvpn openvpn[10910]: pam_radius_auth: Got response to ch=
+allenge code 3<br>
+Nov  3 15:30:21 openvpn openvpn[10910]: pam_radius_auth: authentication fai=
+led</p>
+<p>However I don&#39;t see any pop-up box on the OpenVPN client prompting f=
+or the OTP code.</p></blockquote><div><br></div><div>You have to send the a=
+uthentication failed message with a specially formatted reason back to the =
+client. For example. reason =3D CRV1:R,E:some_id:base64_userna<wbr>me:Input=
+ OTP code will cause the server to send AUTH_FAILED followed by that reason=
+ back to the client. The client will then prompt for a second round of auth=
+entication and the GUI will parse the failure reason and prompt for OTP. <b=
+r><br>Client log will show what kind of AUTH_FAILED message is received fro=
+m the server.<br><br>For details of the message format see &quot;Challenge/=
+Response protocol&quot; description here: <a href=3D"https://openvpn.net/in=
+dex.php/open-source/documentation/miscellaneous/79-management-interface.htm=
+l" target=3D"_blank">https://openvpn.net/index.php/<wbr>open-source/documen=
+tation/misc<wbr>ellaneous/79-management-interf<wbr>ace.html</a><br></div><b=
+lockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-le=
+ft:1px solid rgb(204,204,204);padding-left:1ex">
+<p>On the radius server, for the 2nd access request message (in response to=
+ the access_challenge) - openvpn is just sending the same original access_r=
+equest message.  The radius server then rejects access.</p>
+<p>Do I need to modify pam_radius_auth to send messages in a special format=
+ to openvpn?    I&#39;m using this from here:  <a href=3D"https://github.co=
+m/FreeRADIUS/pam_radius/blob/master/src/pam_radius_auth.c" target=3D"_blank=
+">https://github.com/FreeRADIUS/<wbr>pam_radius/blob/master/src/pam<wbr>_ra=
+dius_auth.c</a></p></blockquote></div>As far as I know the only way to send=
+ back a specially crafted reason for auth failure is using the management i=
+nterface for authentication (--management-client-auth in the server config)=
+. But I don&#39;t know enough about the plugin api to know if and how this =
+could be achieved using a plugin.<br></div><div class=3D"gmail_extra"><br><=
+/div><div class=3D"gmail_extra">Selva<br></div></div>
 
---9LhXNs4UEhUh1x2IdeUinrSv0FOFb304p
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQEcBAEBCAAGBQJYG7CsAAoJEJgCyj0AftKIa+4H/30aQKM9ARGZkp3B/QvfGxjT
-9eYdIZtDqptKxv2adM6y/0y3GTrmJeVCK01mbM47pgvARfYxo0LGHAB+stmcI8/Q
-7PRq9lmpVBDQ3Sd0R2GKuQlWg7kYemDC/GOoIFlpokh4HeI7MPfZBUIALKSMJ9wq
-AaXD6bssCiOUBecxVmpInJWs2mBZlz28xmGbIgW7Ab0FYcoe0gKr3CZoGQMLXaG4
-8s2hU2b+6p/PH9zLTl5Mi8cwbCyuuYTqcCjZcaYVvdNvb/tSUQidpneJwPvxWalJ
-+vALFEQOA2hZWgIlWBpdVLJCzJdfyS8ussH5fS0hFCve2Di1UAQNNU2S8EPcFlQ=
-=6kZK
------END PGP SIGNATURE-----
-
---9LhXNs4UEhUh1x2IdeUinrSv0FOFb304p--
+--94eb2c06cdea45dd2e05406ee0a6--
 
