@@ -1,9 +1,9 @@
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <915ececd-c052-01b7-6051-74b3bc87b5fb@...515...>
-Date: Fri, 4 Nov 2016 11:32:06 +0200
-MIME-Version: 1.0
-Subject: [Openvpn-devel] Topics for the upcoming (Monday,
-	7th Nov 2016) community meeting
+Date: Fri, 4 Nov 2016 10:39:44 +0100 (CET)
+Message-Id: <201611040939.uA49diRR035965@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <1478208503-25929-1-git-send-email-lstipakov@...277...>
+References: <1478208503-25929-1-git-send-email-lstipakov@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Drop recursively routed packets
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,33 +12,41 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Lev Stipakov <lev.stipakov@...2164...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
+ACK (finally).
 
-We're going to have an IRC meeting on Monday 7th November 2016. The=20
-meeting begins at 20:00 CET (19:00 UTC) on #openvpn-meeting <at>=20
-irc.freenode.net. You do not have to be logged in to Freenode to join=20
-the channel.
+Tested with tun+tap for proper recursion drops on v4+v6 (works, though
+on tap it's sometimes non-trivial to reproduce as you need an valid ARP
+entry first...), and with all I have for client or server side breakage 
+(tun, tap, p2mp, p2p, --inetd, ...) - no breakage.
 
-Current topic list along with basic information is here:
+Your patch has been applied to the master and release/2.3 branch.
 
-<https://community.openvpn.net/openvpn/wiki/Topics-2016-11-07>
+I've taken the liberty to add trac#642 to the commit message, fix
+an indentation oversight in proto.h, shorten the Changes.rst lines 
+somewhat, and adjust 2.3 Changes.rst to "2.3 style" :-)
 
-If you have any other things you'd like to bring up, respond to this=20
-mail, send me mail privately or add them to the list yourself.
+commit e8c42658ff8df10ad56659788a73900648b9d92d (master)
+commit 748974b960a099ef4fdf083f25226659775603b9 (release/2.3)
 
-In case you can't attend the meeting, please feel free to make comments=20
-on the topics by responding to this email or to the summary email sent=20
-after the meeting. Whenever possible, we'll also respond to existing,=20
-related email threads.
+Author: Lev Stipakov
+Date:   Thu Nov 3 23:28:23 2016 +0200
+
+     Drop recursively routed packets
+
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1478208503-25929-1-git-send-email-lstipakov@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg12894.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
 
 --
-Samuli Sepp=C3=A4nen
-Community Manager
-OpenVPN Technologies, Inc
+kind regards,
 
-irc freenode net: mattock
+Gert Doering
+
 
