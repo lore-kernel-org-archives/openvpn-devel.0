@@ -1,18 +1,7 @@
-Date: Fri, 4 Nov 2016 16:34:17 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20161104153417.GJ28918@...1296...>
-References: <a76fef6e-6cc6-0878-4cf6-293d84b4edd3@...277...>
-	<deb274b8-709f-9bec-40f3-279d75d114a0@...2070...>
-	<20161030101616.GV28918@...1296...>
-	<1a5fa7e8-d359-9128-c9b5-bb7049339aef@...1227...>
-	<CAKuzo_ihMpz6bYjcV1T8v6e8yhU+iWNsHOb7ngM_bxPL583LDg@...278...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="DbCiEIZK/ffHkrHm"
-Content-Disposition: inline
-In-Reply-To: <CAKuzo_ihMpz6bYjcV1T8v6e8yhU+iWNsHOb7ngM_bxPL583LDg@...278...>
-Subject: Re: [Openvpn-devel] dhcp-option DNS IPv6 server address for windows
- client
+From: Steffan Karger <steffan@...1856...>
+Date: Fri,  4 Nov 2016 21:03:44 +0100
+Message-Id: <1478289824-9244-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH] Fix --tls-version-max in mbed TLS builds
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,50 +10,35 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---DbCiEIZK/ffHkrHm
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+These define renames were missed in the migration to 2.x, causing the
+maximum TLS version to be detected incorrectly.
 
-Hi,
+Signed-off-by: Steffan Karger <steffan@...1856...>
+---
+ src/openvpn/ssl_mbedtls.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-On Sun, Oct 30, 2016 at 03:23:06PM -0400, Selva Nair wrote:
-> > >> ?probably not only DHCPv6, but also Router Advertisement too. I doubt
-> > that DHCPv6 could be used without RA on Windows.
-> > >
-> > > It's a somewhat multi-stage thing
-> > >
-> > >  - first, define a new dhcp-option (like, "DNS6") that will take a
-> > >    v6 address, and put it into the environment variables on the client
-> > >    (so scripts and networkmanger etc. can pick it up and do the right
-> > >    thing wrt resolv.conf)
-[..]
+diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
+index bc62015..d801c5d 100644
+--- a/src/openvpn/ssl_mbedtls.c
++++ b/src/openvpn/ssl_mbedtls.c
+@@ -729,9 +729,9 @@ void tls_ctx_personalise_random(struct tls_root_ctx *ctx)
+ int
+ tls_version_max(void)
+ {
+-#if defined(SSL_MAJOR_VERSION_3) && defined(SSL_MINOR_VERSION_3)
++#if defined(MBEDTLS_SSL_MAJOR_VERSION_3) && defined(MBEDTLS_SSL_MINOR_VERSION_3)
+   return TLS_VER_1_2;
+-#elif defined(SSL_MAJOR_VERSION_3) && defined(SSL_MINOR_VERSION_2)
++#elif defined(MBEDTLS_SSL_MAJOR_VERSION_3) && defined(MBEDTLS_SSL_MINOR_VERSION_2)
+   return TLS_VER_1_1;
+ #else
+   return TLS_VER_1_0;
+-- 
+2.7.4
 
-Just as side note - there's trac#243 already for this, which is tagged
-as "release 2.4" :-)
-
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---DbCiEIZK/ffHkrHm
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQCVAwUBWByqeakuBuNlUUl1AQLfGgP+IDFPjyV+GCKg6i8tBAfJOqUXRTVoHxvy
-HpGEmprsn4lJNgLvUeciO/J5VPeLbth2s8fvwSJCzrfmVctDuFfdaUDFUWEzopQB
-gTM3PgrqcDoISNIXxAZnU4eBTJwS8pLTfw4E0Q/j2bSN14OildDgHMJfSBPvKZ+K
-UyrfqNkSojk=
-=akCf
------END PGP SIGNATURE-----
-
---DbCiEIZK/ffHkrHm--
 
