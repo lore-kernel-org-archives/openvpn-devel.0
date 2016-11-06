@@ -1,15 +1,14 @@
+References: <b7d9be2a-b8e1-e565-198f-a5177e11d0c2@...1435...>
+	<CAA1AbxK+mE0mz01UwrJ=o_6HBkBBe+FUXNnmqsfMe7vQLzCTsQ@...278...>
+From: ValdikSS <iam@...2070...>
+Message-ID: <f14b332f-3512-95ac-f521-ebd6a2a7d439@...2070...>
+Date: Sun, 6 Nov 2016 11:42:01 +0300
 MIME-Version: 1.0
-In-Reply-To: <f077c965-a063-5f11-f298-2fd551ae4f95@...1856...>
-References: <CAFHpkQFzZRLQhOTqoOakUuwUURo4=-Jf-FPiYfi-de86=6Q1Pw@...278...>
-	<4bf6ce6c-ab68-d5b1-cd79-fb6e0dad2ffd@...1856...>
-	<CAFHpkQGC8kRpVLE=2vBAYpEMkh+=VTqy_VTqfbWdhsOOr-GGUA@...278...>
-	<f077c965-a063-5f11-f298-2fd551ae4f95@...1856...>
-From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Date: Sun, 6 Nov 2016 13:19:45 +0500
-Message-ID: <CAFHpkQFaUZTSEZLU02najYjtKNye6L=kEN0051q9TTCMzVeOnQ@...278...>
-Content-Type: multipart/alternative; boundary=001a114ccbbaee982805409d9180
-Subject: Re: [Openvpn-devel] any reason to not adding tap-windows.h to
- https://github.com/OpenVPN/openvpn/tree/master/include ?
+In-Reply-To: <CAA1AbxK+mE0mz01UwrJ=o_6HBkBBe+FUXNnmqsfMe7vQLzCTsQ@...278...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature";
+	boundary="hWC1eMPBSLDNoH33MfpJ6qk2O6jtqR9nR"
+Subject: Re: [Openvpn-devel] Feature proposal: tls-crypt
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,138 +17,79 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan@...1856...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Steffan Karger <steffan@...1856...>, Steffan Karger <steffan.karger@...1435...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---001a114ccbbaee982805409d9180
-Content-Type: text/plain; charset="UTF-8"
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--hWC1eMPBSLDNoH33MfpJ6qk2O6jtqR9nR
+Content-Type: multipart/mixed; boundary="5tc1cSrGlOSrOl9o21UWPxsj3pQ8A2crR";
+	protected-headers="v1"
+From: ValdikSS <iam@...2070...>
+To: Steffan Karger <steffan@...1856...>,
+	Steffan Karger <steffan.karger@...1435...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Message-ID: <f14b332f-3512-95ac-f521-ebd6a2a7d439@...2070...>
+Subject: Re: Feature proposal: tls-crypt
+References: <b7d9be2a-b8e1-e565-198f-a5177e11d0c2@...1435...>
+	<CAA1AbxK+mE0mz01UwrJ=o_6HBkBBe+FUXNnmqsfMe7vQLzCTsQ@...278...>
+In-Reply-To: <CAA1AbxK+mE0mz01UwrJ=o_6HBkBBe+FUXNnmqsfMe7vQLzCTsQ@...278...>
+
+--5tc1cSrGlOSrOl9o21UWPxsj3pQ8A2crR
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
 
-2016-11-05 15:53 GMT+05:00 Steffan Karger <steffan@...1856...>:
+Experimental branch doesn't work in TCP mode. Client gets the following err=
+or right after sending P_CONTROL_HARD_RESET_CLIENT_V2:
 
+Assertion failed at socket.c:2992 (buf_write_prepend (buf, &len, sizeof (le=
+n)))
+
+
+On 09/18/2016 03:25 PM, Steffan Karger wrote:
 > Hi,
 >
-> On 05-11-16 11:34, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=B8=D1=
-=86=D0=B8=D0=BD wrote:
-> >
-> > 2016-11-05 13:08 GMT+05:00 Steffan Karger <steffan@...1856...
-> > <mailto:steffan@...1856...>>:
-> >
-> >     On 05-11-16 06:52, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=
-=B8=D1=86=D0=B8=D0=BD wrote:
-> >     > I'm geting "build only" travis-ci mingw cross compile config
-> >     > and I came to idea that I do not understand why "tap-windows.h"
-> must be
-> >     > downloaded separately
-> >     >
-> >     > 1) if we use some functions, we should include prototypes. it is
-> not
-> >     > very common to download prototypes from different location
-> >
-> >     When using external dependencies it is *not* a best practice to
-> include
-> >     the headers of that dependency (or even worse, binaries) into your
-> own
-> >     project repository.  I haven't seen any decent C project do that.  =
-We
-> >     wouldn't include the OpenSSL, mbed TLS or even libc headers either,
-> >     would we?
-> >
-> > we include cmocka as git submodule.
-> > if such an approach is acceptable, we can use another submodule (to
-> > tap-windows repo)
+> On 27 July 2016 at 16:42, Steffan Karger <steffan.karger@...1435...> wrot=
+e:
+> I just pushed an experimental branch with --tls-crypt support:
+> https://github.com/syzzer/openvpn/tree/tls-crypt-preview
 >
-> Yes, which I'm still wondering about whether that was the right choice.
-> Using configure might have made more sense.
+> Any comments and test results or very much welcome.
 >
-
-I would really like to hear the reason of "ACK"ing cmocka and "NOT ACK"ing
-tap-windows
-
-
->
-> Either way, although I don't agree with your suggested approach, I do
-> see that building (and particularly, cross compiling) isn't easy, and
-> that it would be nice to improve on that.
->
-> A different approach (which I use internally for OpenVPN-NL) is to
-> create a build repository with build scripts and all the required
-> dependencies as submodules.  It might make sense to do something like
-> that for openvpn-build?  (This works nicely for us internally, but I'm
-> not so sure that would work as well for openvpn-build.)
+> This code has not yet been reviewed, or tested by anyone else but me,
+> so do not use in production yet.
 >
 > -Steffan
 >
+> -------------------------------------------------------------------------=
+-----
 
---001a114ccbbaee982805409d9180
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr"><br><div class=3D"gmail_extra"><br><div class=3D"gmail_quo=
-te">2016-11-05 15:53 GMT+05:00 Steffan Karger <span dir=3D"ltr">&lt;<a href=
-=3D"mailto:steffan@...1856..." target=3D"_blank">steffan@...1856...</a>&gt;=
-</span>:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;bo=
-rder-left:1px #ccc solid;padding-left:1ex">Hi,<br>
-<span class=3D""><br>
-On 05-11-16 11:34, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=B8=D1=86=
-=D0=B8=D0=BD wrote:<br>
-&gt;<br>
-&gt; 2016-11-05 13:08 GMT+05:00 Steffan Karger &lt;<a href=3D"mailto:steffa=
-n@...1856...">steffan@...1856...</a><br>
-</span>&gt; &lt;mailto:<a href=3D"mailto:steffan@...1856...">steffan@...1852...=
-6...</a>&gt;&gt;:<br>
-<span class=3D"">&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0On 05-11-16 06:52, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=
-=D0=B8=D0=BF=D0=B8=D1=86=D0=B8=D0=BD wrote:<br>
-&gt;=C2=A0 =C2=A0 =C2=A0&gt; I&#39;m geting &quot;build only&quot; travis-c=
-i mingw cross compile config<br>
-&gt;=C2=A0 =C2=A0 =C2=A0&gt; and I came to idea that I do not understand wh=
-y &quot;tap-windows.h&quot; must be<br>
-&gt;=C2=A0 =C2=A0 =C2=A0&gt; downloaded separately<br>
-&gt;=C2=A0 =C2=A0 =C2=A0&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0&gt; 1) if we use some functions, we should include=
- prototypes. it is not<br>
-&gt;=C2=A0 =C2=A0 =C2=A0&gt; very common to download prototypes from differ=
-ent location<br>
-&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0When using external dependencies it is *not* a best=
- practice to include<br>
-&gt;=C2=A0 =C2=A0 =C2=A0the headers of that dependency (or even worse, bina=
-ries) into your own<br>
-&gt;=C2=A0 =C2=A0 =C2=A0project repository.=C2=A0 I haven&#39;t seen any de=
-cent C project do that.=C2=A0 We<br>
-&gt;=C2=A0 =C2=A0 =C2=A0wouldn&#39;t include the OpenSSL, mbed TLS or even =
-libc headers either,<br>
-&gt;=C2=A0 =C2=A0 =C2=A0would we?<br>
-&gt;<br>
-&gt; we include cmocka as git submodule.<br>
-&gt; if such an approach is acceptable, we can use another submodule (to<br>
-&gt; tap-windows repo)<br>
-<br>
-</span>Yes, which I&#39;m still wondering about whether that was the right =
-choice.<br>
-Using configure might have made more sense.<br></blockquote><div><br></div>=
-<div>I would really like to hear the reason of &quot;ACK&quot;ing cmocka an=
-d &quot;NOT ACK&quot;ing tap-windows<br></div><div>=C2=A0</div><blockquote =
-class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid=
-;padding-left:1ex">
-<br>
-Either way, although I don&#39;t agree with your suggested approach, I do<b=
-r>
-see that building (and particularly, cross compiling) isn&#39;t easy, and<b=
-r>
-that it would be nice to improve on that.<br>
-<br>
-A different approach (which I use internally for OpenVPN-NL) is to<br>
-create a build repository with build scripts and all the required<br>
-dependencies as submodules.=C2=A0 It might make sense to do something like<=
-br>
-that for openvpn-build?=C2=A0 (This works nicely for us internally, but I&#=
-39;m<br>
-not so sure that would work as well for openvpn-build.)<br>
-<span class=3D"HOEnZb"><font color=3D"#888888"><br>
--Steffan<br>
-</font></span></blockquote></div><br></div></div>
 
---001a114ccbbaee982805409d9180--
+--5tc1cSrGlOSrOl9o21UWPxsj3pQ8A2crR--
+
+--hWC1eMPBSLDNoH33MfpJ6qk2O6jtqR9nR
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+Comment: https://keybase.io/valdikss, https://keybase.io/verify
+
+iQIxBAEBCAAbBQJYHuzZFBxpYW1AdmFsZGlrc3Mub3JnLnJ1AAoJEFzXIC7viPdy
+FtwQAKyzvvSB9bcBAtdfDG6f7kL/UXMh/YpKMcjU2Y+IPyfrZ2H5v8T13nnsJyoU
+tmFYl4IE9r9F4ywmt+J2aDypcMNNlB24VaVWWJ6xuvc2NbmuuwxJ7bci3XNH/GxB
+jjtWpmdxOf0IDePqAoHD+viNtzUqaZ19u9wvMZQLRJN525JJYS/ARZH1dpqiYbMY
+NMlxCn7aSNjvWv414H7ixJzHxav/9GKKZs9pngZZ+Qr96KOwHXZGWMnKZ7tb6+3w
+oXlu/3l55aIWLyyfFjAJ1aOrDhWyoBJnn14wipmQEXjZsMTmAiDt2iWewxPQJHVx
+KznxPiWcv/iKtTs+wyo9nZyL/xsnpu7wT+EQtFwq2T+NbJntPQoGnIEDa5MqiM8Y
+kD+fTcD/jAYDdUs1IlVE2jiN+LEONk50fin/EAelaQMHSSnB4OSp+KtvVwuO435o
+sPk2BljmBhESXXo5TJHtVpXdFopBndVHFdUeW35TKdoSxmGMpy3KcJRW1VQZaAnn
+mCLDyGDghRRQWe8PlHHbZLLS4a4LOSCl/qzLuA3GIFpyX2GgqGcg1QaMPMFyO7u4
+yTPOIa97JVTf8Z+HnC5e7R5OzRXOtWcuG1BwLtzpC/1sqH0czxELgzR4roU4wt6Z
+GAE7iQvNfDG6B1LE0Yo7JAqVe1SltAbCLqIKCQ/oHDQUoFXO
+=pXwr
+-----END PGP SIGNATURE-----
+
+--hWC1eMPBSLDNoH33MfpJ6qk2O6jtqR9nR--
 
