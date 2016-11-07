@@ -1,20 +1,12 @@
-Date: Mon, 7 Nov 2016 19:26:48 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20161107182648.GW28918@...1296...>
-References: <915ececd-c052-01b7-6051-74b3bc87b5fb@...515...>
-	<CAFHpkQHU-AO88yQBuxpV9yWGYAsaMjkPX6_cramD4fHP5PtSBg@...278...>
-	<992ac0c7-1938-1f18-3b85-67d39c114c75@...515...>
-	<CAFHpkQFD4W=Mk1VMQXvGtJa2RwjOasDxZ7=ibmE9+d2gEHz-_w@...278...>
-	<d76496aa-07f1-0819-35fc-96c9416858a5@...515...>
-	<CAFHpkQELZELZC+OJF6BtciQEWkbTJcuCQE66PJr=o-ELm8uCKg@...278...>
-	<bd61206b-bdf7-3585-53ed-bc6ea1667add@...515...>
+References: <1476996158-5390-1-git-send-email-davids@...515...>
+	<aa47d230-4e40-4ca3-9851-faf2470b7258@...277...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <3d760f92-29ed-727e-edfe-65493b9b097d@...2080...>
+Date: Mon, 7 Nov 2016 21:30:24 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="iGS4/Q/M16VRPju2"
-Content-Disposition: inline
-In-Reply-To: <bd61206b-bdf7-3585-53ed-bc6ea1667add@...515...>
-Subject: Re: [Openvpn-devel] Topics for the upcoming (Monday,
- 7th Nov 2016) community meeting
+In-Reply-To: <aa47d230-4e40-4ca3-9851-faf2470b7258@...277...>
+Subject: Re: [Openvpn-devel] [PATCH] systemd: Improve the systemd unit files
+Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -23,60 +15,66 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Samuli =?iso-8859-1?Q?Sepp=E4nen?= <samuli@...515...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-
---iGS4/Q/M16VRPju2
-Content-Type: text/plain; charset="iso-8859-1"
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+To: debbie10t <debbie10t@...277...>, openvpn-devel@lists.sourceforge.net
 
-Hi,
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-On Mon, Nov 07, 2016 at 07:32:05PM +0200, Samuli Sepp=E4nen wrote:
-> Il 07/11/2016 19:16, ???????? ?????????????? ha scritto:
-> > the automatic update functionality is definetily missing for windows pa=
-rt.
-> > I'll try chocolatey for that.
+On 05/11/16 16:07, debbie10t wrote:
+> Hi,
 >=20
-> Yeah. The last time I checked (~year ago) setting up Chocolatey repos=20
-> was a bit painful. The "normal" way to setup a repository was to use=20
-> some horrible Visual Studio kludge integrated with IIS. There were, at=20
-> that time, other options for settin up repositories on *NIX, but I did=20
-> not have time to look into them in any detail.
+> I have tested these two unit files on Archlinux, CentOS7, Debian8,=20
+> Fedora 24, OpenSuse 42 and Ubuntu 16.04 and they all work. I tested
+> for a week, starting ,stopping, restarting and rebooting on 1=20
+> server and 1 client per OS. (And two instance of 2x client and 2x=20
+> server)
+>=20
+> Notes: The problems I encountered were rectified by modifying my
+> openvpn config files.
+>=20
+> One issue remains when rebooting: Services fail to start
+> complaining about the RuntimeDirectory file exists.  This only
+> happens on reboot not starting or restarting. I could not determine
+> which file exists but changing this fixed it:
+>=20
+> (Diff style): -RuntimeDirectory=3Dopenvpn=20
+> +RuntimeDirectory=3Dopenvpn-%i
+>=20
+> (As suggested by thermi)
 
-You could use "wpkg" instead - also a bit annoying for the initial=20
-setup (and you can't use arbitrary internet sources, I think, but need
-to use a smb:// path for config + sources) - but afterwards it's quite
-nice.  The master host has rules which client gets what package, and
-clients check at bootup "is there anything I need?" and go fetch recipes
-to then "do stuff".
+This does not work on Scientific Linux 7.2 at all (RHEL7.2 clone).  I
+did a similar thing, and it created /run/openvpn-%i and did not swap
+out %i with the config name.  Thus making at least the server part
+fail, as it does not find the proper directory for the --status file.
 
-http://wpkg.org/
+So currently, I'm NAKing such a change and stand by the current version.
 
-No special tools needed, just a bunch of XML files residing on the
-network share (which could be a unix system) and an agent installed on=20
-the windows clients.
+Systemd version used for testing this: systemd-219-19.el7_2.13.x86_64
 
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
 
---iGS4/Q/M16VRPju2
-Content-Type: application/pgp-signature; name="signature.asc"
+- --=20
+kind regards,
+
+David Sommerseth
+OpenVPN Technologies, Inc
 
 -----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQCVAwUBWCDHaKkuBuNlUUl1AQJkNwQAuCIcB2KL+qggfUqiWt/h4p//aDD5yVdB
-oAuW/9c3kp0IBmm9uPBfxnP4gYCXs/fHCSQsLpCnFagSNrVnPbWuHdwLe13lf/W3
-XOE5Z7IkM6/ogxRroOcVidjQvGAuC2iU9UQoxSQ73+W5vNAYMAQFI8N9LBKQ/fMi
-+8fWI+3pIPY=
-=97Vw
+iQIcBAEBAgAGBQJYIORgAAoJEIbPlEyWcf3y5ukQAIavRA1nZPi65Zmg+KmvXUuc
+L+DaRP2sAxuH+aJhHbAgfISig2u7v2Qf7f+lncR/DQptlwWc4NKcO/UmkJF7UAv8
+iKCbszbcwtst/7beevXYHu3HqiswydxhSzETrnOzxGggrdnQoKJN+kqUB/5A93dA
+nwMzLeHp7h+1vx5CkbIbkQR3J/NHoem0UnzVz+RitwJ1ru50aUvgpt6CWR96c4au
+5YEti/kn6m7ze25kXtV8Vve4SgKc29a1M+QdtmVDxA6NdO1679chGYa+tbc65qCM
+M0cjqx3FRB51OXdT6W+CrNzrQDvqarUXtZumjiI74CqwTf1iktBEUP+P5cfSGYZa
+shhPCtOfoGA/whWlY3prnq5oogi2ttkrzagmOMwTJZLa5njwQ1B8MTudj7Ei8suv
+sKjpBNORnk0aipATbdPe6ZwEhS3t8AkcxTcMIP8W6m4zxpXXb/NI9/dFgfjcA1S1
+/ijhCjGD7P5fIlGWj20muq+A5autDxtbsYGF3/rpsuCiWp0DnHcjF5DVi+i4Ie2z
+wD9Od+Y/tx9L/ZAPiqXpvadIBVbFCz+Xw4lyASIvFjnqq6rEHOFX9luKWF3wJdks
+A6YNrBnkXrbwdUPiiTvhzAUqmsGF62SOWRhj9i4HgD7ceZiqPV6u4iH/WjtSV9zK
+HTFRwQWNehPdgO4P0Lrj
+=3Dfb8M
 -----END PGP SIGNATURE-----
-
---iGS4/Q/M16VRPju2--
 
