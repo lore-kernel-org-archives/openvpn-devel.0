@@ -1,14 +1,18 @@
+Date: Mon, 7 Nov 2016 19:26:48 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20161107182648.GW28918@...1296...>
 References: <915ececd-c052-01b7-6051-74b3bc87b5fb@...515...>
 	<CAFHpkQHU-AO88yQBuxpV9yWGYAsaMjkPX6_cramD4fHP5PtSBg@...278...>
 	<992ac0c7-1938-1f18-3b85-67d39c114c75@...515...>
 	<CAFHpkQFD4W=Mk1VMQXvGtJa2RwjOasDxZ7=ibmE9+d2gEHz-_w@...278...>
 	<d76496aa-07f1-0819-35fc-96c9416858a5@...515...>
 	<CAFHpkQELZELZC+OJF6BtciQEWkbTJcuCQE66PJr=o-ELm8uCKg@...278...>
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <bd61206b-bdf7-3585-53ed-bc6ea1667add@...515...>
-Date: Mon, 7 Nov 2016 19:32:05 +0200
+	<bd61206b-bdf7-3585-53ed-bc6ea1667add@...515...>
 MIME-Version: 1.0
-In-Reply-To: <CAFHpkQELZELZC+OJF6BtciQEWkbTJcuCQE66PJr=o-ELm8uCKg@...278...>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="iGS4/Q/M16VRPju2"
+Content-Disposition: inline
+In-Reply-To: <bd61206b-bdf7-3585-53ed-bc6ea1667add@...515...>
 Subject: Re: [Openvpn-devel] Topics for the upcoming (Monday,
  7th Nov 2016) community meeting
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,118 +23,60 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: quoted-printable
-To: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
+To: Samuli =?iso-8859-1?Q?Sepp=E4nen?= <samuli@...515...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Il 07/11/2016 19:16, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=B8=D1=
-=86=D0=B8=D0=BD ha scritto:
-> the automatic update functionality is definetily missing for windows part.
-> I'll try chocolatey for that.
+--iGS4/Q/M16VRPju2
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Yeah. The last time I checked (~year ago) setting up Chocolatey repos=20
-was a bit painful. The "normal" way to setup a repository was to use=20
-some horrible Visual Studio kludge integrated with IIS. There were, at=20
-that time, other options for settin up repositories on *NIX, but I did=20
-not have time to look into them in any detail.
+Hi,
 
-Let me know how it goes! I will also try to dive into this a.s.a.p.
+On Mon, Nov 07, 2016 at 07:32:05PM +0200, Samuli Sepp=E4nen wrote:
+> Il 07/11/2016 19:16, ???????? ?????????????? ha scritto:
+> > the automatic update functionality is definetily missing for windows pa=
+rt.
+> > I'll try chocolatey for that.
+>=20
+> Yeah. The last time I checked (~year ago) setting up Chocolatey repos=20
+> was a bit painful. The "normal" way to setup a repository was to use=20
+> some horrible Visual Studio kludge integrated with IIS. There were, at=20
+> that time, other options for settin up repositories on *NIX, but I did=20
+> not have time to look into them in any detail.
 
-Samuli
+You could use "wpkg" instead - also a bit annoying for the initial=20
+setup (and you can't use arbitrary internet sources, I think, but need
+to use a smb:// path for config + sources) - but afterwards it's quite
+nice.  The master host has rules which client gets what package, and
+clients check at bootup "is there anything I need?" and go fetch recipes
+to then "do stuff".
 
+http://wpkg.org/
 
->
-> 2016-11-07 22:11 GMT+05:00 Samuli Sepp=C3=A4nen <samuli@...515...
-> <mailto:samuli@...515...>>:
->
->     Il 07/11/2016 18:56, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=
-=B8=D1=86=D0=B8=D0=BD ha scritto:
->
->
->
->         2016-11-07 20:50 GMT+05:00 Samuli Sepp=C3=A4nen <samuli@...515...
->         <mailto:samuli@...515...>
->         <mailto:samuli@...515... <mailto:samuli@...515...>>>:
->
->             Il 07/11/2016 15:15, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=
-=BF=D0=B8=D1=86=D0=B8=D0=BD ha scritto:
->
->                 Hello,
->
->                 I used @mattock's powershell scripts
->
->                 voila :)
->
->
->         https://jk.testkontur.ru/job/openvpn%20connect%20to%20jk-test/3/c=
-onsole
->         <https://jk.testkontur.ru/job/openvpn%20connect%20to%20jk-test/3/=
-console>
->
->         <https://jk.testkontur.ru/job/openvpn%20connect%20to%20jk-test/3/=
-console
->         <https://jk.testkontur.ru/job/openvpn%20connect%20to%20jk-test/3/=
-console>>
->
->                 it is strange for few reasons, but it looks very
->         promising. we can
->                 automate a lot of testing in such way.
->
->
->             Nice! At some point I wanted to implement a Powershell-based
->             "buildslave" that could run in the background on Windows.
->         Several
->             people could run that "buildslave" to test latest OpenVPN
->         Windows
->             build against their respective OpenVPN servers.
->
->
->         it is not that hard to run jenkins buildslave, we use it in
->         production.
->
->         https://jk.testkontur.ru/job/openvpn%20connect%20to%20jk-test/4/c=
-onsole
->         <https://jk.testkontur.ru/job/openvpn%20connect%20to%20jk-test/4/=
-console>
->
->
->         it's getting better :)
->
->
->     Yeah, and I'm definitely _not_ adding Jenkins to _our_ mix right now =
-:).
->
->     Windows is special in the sense that we don't build OpenVPN on that
->     platform. The cross-compile part is being tested on several levels
->     already, so testing the openvpn.exe executable is the more
->     interesting part.
->
->     One way to get the latest cross-compiled Windows installers easily
->     into the hands of testers would be to setup our own Chocolatey[1]
->     repository and automatically push latest installers there. The said
->     repository could be used by the Windows "buildslave" to
->     automatically fetch the latest snapshot, install it, and to run
->     connectivity tests using openvpn-windows-test powershell scripts,
->     and to report back any failures.
->
->     This would also speed up Windows release process, as the installers
->     would not really need much extra testing. And we would not have to
->     have as many unused release tags (e.g. 2.4_alpha1) because something
->     got fixed after tagging but before release.
->
->     --
->     Samuli Sepp=C3=A4nen
->     Community Manager
->     OpenVPN Technologies, Inc
->
->     irc freenode net: mattock
->
->
->     [1] Essentially "apt-get/yum/dnf for Windows":
->
->         <https://chocolatey.org/>
->
->
+No special tools needed, just a bunch of XML files residing on the
+network share (which could be a unix system) and an agent installed on=20
+the windows clients.
 
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--iGS4/Q/M16VRPju2
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQCVAwUBWCDHaKkuBuNlUUl1AQJkNwQAuCIcB2KL+qggfUqiWt/h4p//aDD5yVdB
+oAuW/9c3kp0IBmm9uPBfxnP4gYCXs/fHCSQsLpCnFagSNrVnPbWuHdwLe13lf/W3
+XOE5Z7IkM6/ogxRroOcVidjQvGAuC2iU9UQoxSQ73+W5vNAYMAQFI8N9LBKQ/fMi
++8fWI+3pIPY=
+=97Vw
+-----END PGP SIGNATURE-----
+
+--iGS4/Q/M16VRPju2--
 
