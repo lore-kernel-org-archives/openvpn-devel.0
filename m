@@ -1,15 +1,11 @@
-Date: Tue, 8 Nov 2016 14:49:34 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20161108134934.GC28918@...1296...>
-References: <1478609729-25222-1-git-send-email-samuli@...515...>
-	<1478609729-25222-3-git-send-email-samuli@...515...>
+From: samuli@...515...
+Date: Tue,  8 Nov 2016 15:50:43 +0200
+Message-Id: <1478613043-27033-1-git-send-email-samuli@...515...>
+In-Reply-To: <1478609729-25222-5-git-send-email-samuli@...515...>
+References: <1478609729-25222-5-git-send-email-samuli@...515...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="uxwbQ5uNL5ssFhxJ"
-Content-Disposition: inline
-In-Reply-To: <1478609729-25222-3-git-send-email-samuli@...515...>
-Subject: Re: [Openvpn-devel] [PATCH 2/4] Prevent generation of duplicate
- EXPECT_IFCONFIG entries
+Subject: [Openvpn-devel] [PATCHv2 4/4] Allow passing extra arguments to
+	fping/fping6 in t_client.rc
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,54 +14,55 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: samuli@...515...
-Cc: openvpn-devel@lists.sourceforge.net
-
---uxwbQ5uNL5ssFhxJ
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+From: Samuli Sepp=C3=A4nen <samuli@...515...>
 
-On Tue, Nov 08, 2016 at 02:55:27PM +0200, samuli@...515... wrote:
-> +grep EXPECT_IFCONFIG4_$TESTNUM $RC > /dev/null 2>&1
+This can be useful, for example, in preventing fping failures caused by ext=
+ernal
+network issues.
 
-NAK.  This will grep for stuff like "EXPECT_IFCONFIG4_1", and if the
-RC file has
+v2:=20
+ - Allow override of the default parameters
 
-EXPECT_IFCONFIG4_1a=3D10.194.1.54
+Signed-off-by: Samuli Sepp=C3=A4nen <samuli@...515...>
+---
+ tests/t_client.rc-sample | 1 +
+ tests/t_client.sh.in     | 4 ++--
+ 2 files changed, 3 insertions(+), 2 deletions(-)
 
-the grep will be successful, and "EXPECT_IFCONFIG4_1" will never be added.
-
-So this needs to be something like
-
-=20=20
-grep EXPECT_IFCONFIG4_$TESTNUM=3D $RC > /dev/null 2>&1
-                             ^^
-and
-
-grep EXPECT_IFCONFIG6_$TESTNUM=3D $RC > /dev/null 2>&1
-
-gert
+diff --git a/tests/t_client.rc-sample b/tests/t_client.rc-sample
+index 31dfafa..4fdea48 100644
+--- a/tests/t_client.rc-sample
++++ b/tests/t_client.rc-sample
+@@ -11,6 +11,7 @@ top_srcdir=3D"${top_srcdir:-..}"
+ CA_CERT=3D"${top_srcdir}/sample/sample-keys/ca.crt"
+ CLIENT_KEY=3D"${top_srcdir}/sample/sample-keys/client.key"
+ CLIENT_CERT=3D"${top_srcdir}/sample/sample-keys/client.crt"
++#FPING_EXTRA_ARGS=3D"-t 1000"
+=20
+ # Load EXPECT_IFCONFIG* parameters from cache
+ if [ -r "${top_builddir}/t_client_ips.rc" ]; then
+diff --git a/tests/t_client.sh.in b/tests/t_client.sh.in
+index 408703e..076f6bd 100755
+--- a/tests/t_client.sh.in
++++ b/tests/t_client.sh.in
+@@ -231,8 +231,8 @@ run_ping_tests()
+     do
+ 	echo "run IPv$proto ping tests ($want), $bytes byte packets..."
+=20
+-	echo "$cmd -b $bytes -C 20 -p 250 -q $targetlist" >>$LOGDIR/$SUF:fping.out
+-	$cmd -b $bytes -C 20 -p 250 -q $targetlist >>$LOGDIR/$SUF:fping.out 2>&1
++	echo "$cmd -b $bytes -C 20 -p 250 -q $FPING_EXTRA_ARGS $targetlist" >>$LO=
+GDIR/$SUF:fping.out
++	$cmd -b $bytes -C 20 -p 250 -q $FPING_EXTRA_ARGS $targetlist >>$LOGDIR/$S=
+UF:fping.out 2>&1
+=20
+ 	# while OpenVPN is running, pings must succeed (want=3D'want_ok')
+ 	# before OpenVPN is up, pings must NOT succeed (want=3D'want_fail')
 --=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+2.1.4
 
---uxwbQ5uNL5ssFhxJ
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQCVAwUBWCHX7akuBuNlUUl1AQKn7gQAxspPNsostHzcck30zB11zd2St8RxPpr4
-GwZ0EOE0aIyPePWLmopmv9hD1K4YLomuk3es+WvUbIWJzXW/xzwlbaD4i7H667j3
-g258FMpoeTfFMHrXeIYVtmaDBMAXNR0R0dUIF/WN74Acv9e5BowlBJu/nsWhElyZ
-L8aK65Q1qYo=
-=1FRh
------END PGP SIGNATURE-----
-
---uxwbQ5uNL5ssFhxJ--
 
