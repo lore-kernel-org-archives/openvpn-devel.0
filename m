@@ -1,16 +1,15 @@
-References: <1477672963-5724-1-git-send-email-heiko.hund@...1489...>
-	<1477672963-5724-5-git-send-email-heiko.hund@...1489...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <6b75fc5b-a002-7804-63a5-085a7286e826@...2080...>
-Date: Tue, 8 Nov 2016 14:18:39 +0100
+Date: Tue, 8 Nov 2016 14:19:10 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20161108131910.GB28918@...1296...>
+References: <1478609729-25222-1-git-send-email-samuli@...515...>
+	<1478609729-25222-5-git-send-email-samuli@...515...>
 MIME-Version: 1.0
-In-Reply-To: <1477672963-5724-5-git-send-email-heiko.hund@...1489...>
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="3XWm6MNVRgj6069T9UWKEAV6th81VdJnc"
-Subject: Re: [Openvpn-devel] [PATCH 4/7] Factor out %sc handling from
- argv_printf()
-Reply-To: openvpn-devel@lists.sourceforge.net
+	protocol="application/pgp-signature"; boundary="i+pmTOJ7usc0SF/I"
+Content-Disposition: inline
+In-Reply-To: <1478609729-25222-5-git-send-email-samuli@...515...>
+Subject: Re: [Openvpn-devel] [PATCH 4/4] Allow passing extra arguments to
+ fping/fping6 in t_client.rc
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,90 +18,51 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Heiko Hund <heiko.hund@...1489...>, openvpn-devel@lists.sourceforge.net
+To: samuli@...515...
+Cc: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---3XWm6MNVRgj6069T9UWKEAV6th81VdJnc
-Content-Type: multipart/mixed; boundary="hIHVmshNX8xW0Ie8s3Jl2m4nMpRsUROkW";
-	protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-Reply-To: openvpn-devel@lists.sourceforge.net
-To: Heiko Hund <heiko.hund@...1489...>, openvpn-devel@lists.sourceforge.net
-Message-ID: <6b75fc5b-a002-7804-63a5-085a7286e826@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH 4/7] Factor out %sc handling from
-	argv_printf()
-References: <1477672963-5724-1-git-send-email-heiko.hund@...1489...>
-	<1477672963-5724-5-git-send-email-heiko.hund@...1489...>
-In-Reply-To: <1477672963-5724-5-git-send-email-heiko.hund@...1489...>
-
---hIHVmshNX8xW0Ie8s3Jl2m4nMpRsUROkW
-Content-Type: text/plain; charset="windows-1252"
+--i+pmTOJ7usc0SF/I
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-On 28/10/16 18:42, Heiko Hund wrote:
-> Move functionality to parse command strings into argv_parse_cmd().
-> That is a preparation for the upcoming refactoring of argv_printf().
->=20
-> Signed-off-by: Heiko Hund <heiko.hund@...1489...>
-> ---
->  src/openvpn/argv.c                   | 47 +++++++++++++++++-------------=
-------
->  src/openvpn/argv.h                   |  1 +
->  src/openvpn/errlevel.h               |  2 +-
->  src/openvpn/init.c                   |  2 +-
->  src/openvpn/misc.c                   | 10 +++-----
->  src/openvpn/multi.c                  | 13 ++++------
->  src/openvpn/options.c                |  2 +-
->  src/openvpn/socket.c                 |  7 +++---
->  src/openvpn/ssl_verify.c             |  6 +++--
->  tests/unit_tests/openvpn/test_argv.c | 18 +++++++++++---
->  10 files changed, 56 insertions(+), 52 deletions(-)
+Hi,
 
-ACK.  This is a bit more invasive, but all testing looks good.  Code
-changes are reasonable.  Tested with 'make check', separate tests using
---auth-user-pass-verify on server side and a couple of valgrind checks.
-In addition, 'ip route' was executed.
+On Tue, Nov 08, 2016 at 02:55:29PM +0200, samuli@...515... wrote:
+> -	echo "$cmd -b $bytes -C 20 -p 250 -q $targetlist" >>$LOGDIR/$SUF:fping.=
+out
+> -	$cmd -b $bytes -C 20 -p 250 -q $targetlist >>$LOGDIR/$SUF:fping.out 2>&1
+> +	echo "$cmd $FPING_EXTRA_ARGS -b $bytes -C 20 -p 250 -q $targetlist" >>$=
+LOGDIR/$SUF:fping.out
+> +	$cmd $FPING_EXTRA_ARGS -b $bytes -C 20 -p 250 -q $targetlist >>$LOGDIR/=
+$SUF:fping.out 2>&1
 
-The argv_parse_cmd() is also generic and used all places where %sc was
-used before, I consider this smoke-testing good enough for now.
+I would put the args at the end, so if needed, "-p 250" or "-C 20"=20
+could be overriden.
 
-As for the prior patches in this series, I will wait with applying this
-patch to the git tree until all the other patches in this series have
-been reviewed and ACKed.
+Thus, feature-NAK.
 
+Code-Change is OK :-)
 
+gert
 --=20
-kind regards,
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-David Sommerseth
-OpenVPN Technologies, Inc
-
-
-
---hIHVmshNX8xW0Ie8s3Jl2m4nMpRsUROkW--
-
---3XWm6MNVRgj6069T9UWKEAV6th81VdJnc
+--i+pmTOJ7usc0SF/I
 Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBAgAGBQJYIdCvAAoJEIbPlEyWcf3yOIcP/0K0kOTccCGd6WjAfjZmyGIZ
-3ljV+ljL/R6mEDG5m6zWI2b207TG58J+TXCSeD+mCZ8NmXdTMTIZFDjpIoLcQ8/I
-7Bb/xLy4IQNbdi08h4fA/QCoLstMgCt13RZVQZMOgHXe+UBQXte4Jaw9PEsVD0O9
-tPVgS/VjohCiqUNTFQSAU9cMLaso6HunXAV9Elz+fufuK3MIkdifV+Nt4J6maNgH
-69S/kZMf8rB1EmTs16OdnvfZqxVC33FkPUnZWk8JuUGMNpMpVa0/jKlLSWHC7mmV
-HwhAUVlLuKrYTrDuLA/7g1CFuRS4siuWbxK05JIEMwlg8bSq/XKEMNyGrAGWlE2G
-92ovNPBdSMLtQQVFWWGV+EViyPGSpkp8FzamCaKNJnohsfbx494Orj/AJ4MWNWY5
-FQy2goXhw3UUZX7j0Uz90bXdLexgujE1+CiO7gAOvAdRyC4sZcOiaxlXFoYQJiDw
-tQ9Ut9hPFPuF4VE+9BI/UDOX+hO/zbl63fuUm8ANxXxmeq4ncz5+MegWmWF584S+
-DatArNBI11fmHfDAG8YH3cVrPs4WPBRr4vFfIKh/DS1BXFx/9lZFFLDx/BNeeFp0
-IqeKJOK0zb3Rk22l8j26CAYeblKBveMUW6xkQ3a4tH2UNSKY5owr1ejWYhY1Ev56
-5CNaxDyLORUeF9VBAN4P
-=asxf
+iQCVAwUBWCHQzakuBuNlUUl1AQLNKgP+Mw3LA77Fs5Pf085lBf4meib5H0r9M4Cz
+6O9DFr02VWq7/prC8hwjeFcdUmnsHwgmmxfI7VQgYC6pKdwmrUFLhV+s36lVbP20
+FJr2U4JRLBc119bAgUMYGU4+s08fX02eR/ekMe07FP8bisvpQOcbDkipZa/G2HXD
+ACCOaArz938=
+=pta5
 -----END PGP SIGNATURE-----
 
---3XWm6MNVRgj6069T9UWKEAV6th81VdJnc--
+--i+pmTOJ7usc0SF/I--
 
