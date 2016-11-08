@@ -1,10 +1,10 @@
-Date: Tue, 8 Nov 2016 14:52:25 +0100 (CET)
-Message-Id: <201611081352.uA8DqPRN034567@...2054...>
+Date: Tue, 8 Nov 2016 14:58:24 +0100 (CET)
+Message-Id: <201611081358.uA8DwOA8034692@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1478609729-25222-4-git-send-email-samuli@...515...>
-References: <1478609729-25222-4-git-send-email-samuli@...515...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Make sure that all relevant
-	files under test go to release tarballs
+In-Reply-To: <1478613043-27033-1-git-send-email-samuli@...515...>
+References: <1478613043-27033-1-git-send-email-samuli@...515...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Allow passing extra arguments
+	to fping/fping6 in t_client.rc
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,20 +18,20 @@ Content-Transfer-Encoding: 8bit
 To: samuli@...515...
 Cc: openvpn-devel@lists.sourceforge.net
 
-ACK, thanks for catching this :-)
+ACK.  Tested with FPING_EXTRA_ARGS="-C 5" as "proof of concept".
 
 Your patch has been applied to the master branch.
 
-commit e81023f00bbc503c41cea0a988a0ac00edae754a
+commit 6f17e18be0d6ab801704400abcc6b17d4fed9650
 Author: Samuli Seppänen
-Date:   Tue Nov 8 14:55:28 2016 +0200
+Date:   Tue Nov 8 15:50:43 2016 +0200
 
-     Make sure that all relevant files under test go to release tarballs
+     Allow passing extra arguments to fping/fping6 in t_client.rc
 
      Signed-off-by: Samuli Seppänen <samuli@...515...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1478609729-25222-4-git-send-email-samuli@...515...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg12955.html
+     Message-Id: <1478613043-27033-1-git-send-email-samuli@...515...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg12962.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
