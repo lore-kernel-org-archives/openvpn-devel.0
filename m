@@ -1,10 +1,10 @@
-Date: Tue, 8 Nov 2016 11:20:21 +0100 (CET)
-Message-Id: <201611081020.uA8AKLXt032846@...2054...>
+Date: Tue, 8 Nov 2016 11:20:25 +0100 (CET)
+Message-Id: <201611081020.uA8AKPui032855@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1478596632-22842-1-git-send-email-gert@...1296...>
-References: <1478596632-22842-1-git-send-email-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Check previously-unchecked
-	buf_alloc_write() call in crypto self-test.
+In-Reply-To: <1478598242-23514-1-git-send-email-gert@...1296...>
+References: <1478598242-23514-1-git-send-email-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix potential division by zero
+	in shaper_reset()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,18 +18,18 @@ Content-Transfer-Encoding: 8bit
 To: Gert Doering <gert@...1296...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Patch has been applied to the master branch (with the offending space removed).
+Patch has been applied to the master branch.
 
-commit 63bdc6ce66a970f0584bbb1d4a8cae98b36ee831
+commit 9c3a9335ee77d8447bf47e464f4ab15964fb6f1b
 Author: Gert Doering
-Date:   Tue Nov 8 10:17:12 2016 +0100
+Date:   Tue Nov 8 10:44:02 2016 +0100
 
-     Check previously-unchecked buf_alloc_write() call in crypto self-test.
+     Fix potential division by zero in shaper_reset()
 
      Signed-off-by: Gert Doering <gert@...1296...>
      Acked-by: Steffan Karger <steffan.karger@...1435...>
-     Message-Id: <1478596632-22842-1-git-send-email-gert@...1296...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg12940.html
+     Message-Id: <1478598242-23514-1-git-send-email-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg12942.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
