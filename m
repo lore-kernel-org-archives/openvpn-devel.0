@@ -1,8 +1,10 @@
+Date: Tue, 8 Nov 2016 10:17:21 +0100 (CET)
+Message-Id: <201611080917.uA89HLn8032153@...2054...>
 From: Gert Doering <gert@...1296...>
-Date: Tue,  8 Nov 2016 10:17:12 +0100
-Message-Id: <1478596632-22842-1-git-send-email-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH] Check previously-unchecked
-	buf_alloc_write() call in crypto self-test.
+In-Reply-To: <1478594363-12752-1-git-send-email-gert@...1296...>
+References: <1478594363-12752-1-git-send-email-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: check c->c2.link_socket before
+	calling do_init_route_ipv6_list()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,42 +15,27 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-"It cannot be NULL", but since this is self-test infrastructure, assume
-the worst - add ASSERT() check to ensure assumptions are true.
+Patch has been applied to the master branch.
 
-Found by Coverity.
+commit 71e7c5f25174a3046a32720d3d6eb77f87458217
+Author: Gert Doering
+Date:   Tue Nov 8 09:39:23 2016 +0100
 
-Signed-off-by: Gert Doering <gert@...1296...>
----
- src/openvpn/crypto.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+     check c->c2.link_socket before calling do_init_route_ipv6_list()
 
-diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
-index 6e1e46b..41dae92 100644
---- a/src/openvpn/crypto.c
-+++ b/src/openvpn/crypto.c
-@@ -1028,6 +1028,7 @@ test_crypto (struct crypto_options *co, struct frame* frame)
-   struct buffer encrypt_workspace = alloc_buf_gc (BUF_SIZE (frame), &gc);
-   struct buffer decrypt_workspace = alloc_buf_gc (BUF_SIZE (frame), &gc);
-   struct buffer buf = clear_buf();
-+  void * buf_p;
- 
-   /* init work */
-   ASSERT (buf_init (&work, FRAME_HEADROOM (frame)));
-@@ -1073,7 +1074,9 @@ test_crypto (struct crypto_options *co, struct frame* frame)
- 
-       /* copy source to input buf */
-       buf = work;
--      memcpy (buf_write_alloc (&buf, BLEN (&src)), BPTR (&src), BLEN (&src));
-+      buf_p = buf_write_alloc (&buf, BLEN (&src));
-+      ASSERT(buf_p);
-+      memcpy (buf_p, BPTR (&src), BLEN (&src));
- 
-       /* initialize work buffer with FRAME_HEADROOM bytes of prepend capacity */
-       ASSERT (buf_init (&encrypt_workspace, FRAME_HEADROOM (frame)));
--- 
-2.7.3
+     Signed-off-by: Gert Doering <gert@...1296...>
+     Acked-by: Steffan Karger <steffan.karger@...1435...>
+     Message-Id: <1478594363-12752-1-git-send-email-gert@...1296...>
+     URL: http://www.mail-archive.com/search?l=mid&q=1478594363-12752-1-git-send-email-gert@...1296...
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
