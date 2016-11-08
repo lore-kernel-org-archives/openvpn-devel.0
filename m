@@ -1,11 +1,11 @@
 From: samuli@...515...
-Date: Tue,  8 Nov 2016 14:55:27 +0200
-Message-Id: <1478609729-25222-3-git-send-email-samuli@...515...>
+Date: Tue,  8 Nov 2016 14:55:28 +0200
+Message-Id: <1478609729-25222-4-git-send-email-samuli@...515...>
 In-Reply-To: <1478609729-25222-1-git-send-email-samuli@...515...>
 References: <1478609729-25222-1-git-send-email-samuli@...515...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 2/4] Prevent generation of duplicate
-	EXPECT_IFCONFIG entries
+Subject: [Openvpn-devel] [PATCH 3/4] Make sure that all relevant files under
+	test go to release tarballs
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,41 +20,25 @@ To: openvpn-devel@lists.sourceforge.net
 
 From: Samuli Sepp=C3=A4nen <samuli@...515...>
 
-Previously, if t_client.rc did not source t_client_ips.rc,
-update_t_client_ips.sh would add (the same) EXPECT_IFCONFIG entries to
-t_client_ips.rc on every run. This patch makes update_t_client_ips.sh check=
- if
-the entry exists before trying to add it.
-
 Signed-off-by: Samuli Sepp=C3=A4nen <samuli@...515...>
 ---
- tests/update_t_client_ips.sh | 13 +++++++++++--
- 1 file changed, 11 insertions(+), 2 deletions(-)
+ tests/Makefile.am | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/tests/update_t_client_ips.sh b/tests/update_t_client_ips.sh
-index e7b58ba..438220d 100755
---- a/tests/update_t_client_ips.sh
-+++ b/tests/update_t_client_ips.sh
-@@ -3,5 +3,14 @@
- # This --up script caches the IPs handed out by the test VPN server to a f=
-ile
- # for later use.
+diff --git a/tests/Makefile.am b/tests/Makefile.am
+index 235cd13..e55928b 100644
+--- a/tests/Makefile.am
++++ b/tests/Makefile.am
+@@ -24,4 +24,8 @@ TESTS =3D $(test_scripts)
 =20
--echo "EXPECT_IFCONFIG4_$TESTNUM=3D$ifconfig_local" >> $TOP_BUILDDIR/t_clie=
-nt_ips.rc
--echo "EXPECT_IFCONFIG6_$TESTNUM=3D$ifconfig_ipv6_local" >> $TOP_BUILDDIR/t=
-_client_ips.rc
-+RC=3D"$TOP_BUILDDIR/t_client_ips.rc"
+ dist_noinst_SCRIPTS =3D \
+ 	$(test_scripts) \
+-	t_cltsrv-down.sh
++	t_cltsrv-down.sh \
++	update_t_client_ips.sh
 +
-+grep EXPECT_IFCONFIG4_$TESTNUM $RC > /dev/null 2>&1
-+if [ $? -ne 0 ]; then
-+    echo "EXPECT_IFCONFIG4_$TESTNUM=3D$ifconfig_local" >> $RC
-+fi
-+
-+grep EXPECT_IFCONFIG6_$TESTNUM $RC > /dev/null 2>&1
-+if [ $? -ne 0 ]; then
-+    echo "EXPECT_IFCONFIG6_$TESTNUM=3D$ifconfig_ipv6_local" >> $RC
-+fi
++dist_noinst_DATA =3D \
++	t_client.rc-sample
 --=20
 2.1.4
 
