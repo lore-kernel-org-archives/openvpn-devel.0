@@ -1,16 +1,8 @@
-References: <1477672963-5724-1-git-send-email-heiko.hund@...1489...>
-	<1477672963-5724-2-git-send-email-heiko.hund@...1489...>
-	<da3ee3dd-9aef-1554-53ca-8760d87fa08b@...2080...>
-From: Steffan Karger <steffan.karger@...1435...>
-Message-ID: <5741cbe1-46c0-aba1-6dd4-03a16537ac99@...1435...>
-Date: Tue, 8 Nov 2016 09:12:42 +0100
-MIME-Version: 1.0
-In-Reply-To: <da3ee3dd-9aef-1554-53ca-8760d87fa08b@...2080...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature";
-	boundary="usuFLJJ1qRnSkULOfLa1FxaqVbOrVTVAb"
-Subject: Re: [Openvpn-devel] [PATCH 1/7] put argv_* functions into own file,
- add unit tests
+From: Gert Doering <gert@...1296...>
+Date: Tue,  8 Nov 2016 09:39:23 +0100
+Message-Id: <1478594363-12752-1-git-send-email-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH] check c->c2.link_socket before calling
+	do_init_route_ipv6_list()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,59 +11,111 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
---usuFLJJ1qRnSkULOfLa1FxaqVbOrVTVAb
-Content-Type: multipart/mixed; boundary="no8WXR0rcKhQXLoqojgOH1JGqMFe3jVdB";
-	protected-headers="v1"
-From: Steffan Karger <steffan.karger@...1435...>
-To: openvpn-devel@lists.sourceforge.net
-Message-ID: <5741cbe1-46c0-aba1-6dd4-03a16537ac99@...1435...>
-Subject: Re: [Openvpn-devel] [PATCH 1/7] put argv_* functions into own file,
-	add unit tests
-References: <1477672963-5724-1-git-send-email-heiko.hund@...1489...>
-	<1477672963-5724-2-git-send-email-heiko.hund@...1489...>
-	<da3ee3dd-9aef-1554-53ca-8760d87fa08b@...2080...>
-In-Reply-To: <da3ee3dd-9aef-1554-53ca-8760d87fa08b@...2080...>
+There was an asymmetry in checks before calling do_init_route*_list(),
+checking c2.link_socket for IPv4 but not for IPv6 - mainly an oversight
+from the time when do_init_route_ipv6_list() did not yet look at the
+remote address to determine v6-over-v6 overlaps (2.3 code).
 
---no8WXR0rcKhQXLoqojgOH1JGqMFe3jVdB
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
+c2.link_socket should never be NULL here, so remove the "silently not
+call stuff" condition and replace with ASSERT(c2.link_socket) so we
+will notice if the assumption is ever wrong.
 
-Hi,
+Tested in client UDP/TCP mode and server UDP/TCP/P2P and --inetd mode.
 
-On 08-11-16 00:28, David Sommerseth wrote:
-> I will wait with applying this patch to the git tree until all the other
-> patches in this series have been reviewed and ACKed.
+Found by Coverity.
 
-Actually, this patch does not need the follow-up patches, right?  In
-that case, I would strongly prefer if we didn't wait with applying it. I
-say this because my --tls-crypt patch set also includes src/openvpn/*
-unit tests, and it would be a lot better if I could rebase that patch
-set on this patch before sending it to the list.  (Less work for the
-maintainers, and makes my patch set slightly easier to review.)
+While at it, remove "fatal" argument to do_init_route*_list(), which
+was "false" in all cases (single invocation each), and remove the
+error exit code related to it.
 
--Steffan
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+ src/openvpn/init.c | 27 +++++++++------------------
+ 1 file changed, 9 insertions(+), 18 deletions(-)
 
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 3ec3b18..91c53f5 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -1157,7 +1157,6 @@ static void
+ do_init_route_list (const struct options *options,
+ 		    struct route_list *route_list,
+ 		    const struct link_socket_info *link_socket_info,
+-		    bool fatal,
+ 		    struct env_set *es)
+ {
+   const char *gw = NULL;
+@@ -1171,18 +1170,13 @@ do_init_route_list (const struct options *options,
+   if (options->route_default_metric)
+     metric = options->route_default_metric;
+ 
+-  if (!init_route_list (route_list,
++  if (init_route_list (route_list,
+ 			options->routes,
+ 			gw,
+ 			metric,
+ 			link_socket_current_remote (link_socket_info),
+ 			es))
+     {
+-      if (fatal)
+-	openvpn_exit (OPENVPN_EXIT_STATUS_ERROR);	/* exit point */
+-    }
+-  else
+-    {
+       /* copy routes to environment */
+       setenv_routes (es, route_list);
+     }
+@@ -1192,7 +1186,6 @@ static void
+ do_init_route_ipv6_list (const struct options *options,
+ 		    struct route_ipv6_list *route_ipv6_list,
+ 		    const struct link_socket_info *link_socket_info,
+-		    bool fatal,
+ 		    struct env_set *es)
+ {
+   const char *gw = NULL;
+@@ -1222,18 +1215,13 @@ do_init_route_ipv6_list (const struct options *options,
+ 	}
+     }
+ 
+-  if (!init_route_ipv6_list (route_ipv6_list,
++  if (init_route_ipv6_list (route_ipv6_list,
+ 			options->routes_ipv6,
+ 			gw,
+ 			metric,
+ 			link_socket_current_remote_ipv6 (link_socket_info),
+ 			es))
+     {
+-      if (fatal)
+-	openvpn_exit (OPENVPN_EXIT_STATUS_ERROR);	/* exit point */
+-    }
+-  else
+-    {
+       /* copy routes to environment */
+       setenv_routes_ipv6 (es, route_ipv6_list);
+     }
+@@ -1443,10 +1431,13 @@ do_open_tun (struct context *c)
+       do_alloc_route_list (c);
+ 
+       /* parse and resolve the route option list */
+-      if (c->options.routes && c->c1.route_list && c->c2.link_socket)
+-	do_init_route_list (&c->options, c->c1.route_list, &c->c2.link_socket->info, false, c->c2.es);
+-      if (c->options.routes_ipv6 && c->c1.route_ipv6_list )
+-	do_init_route_ipv6_list (&c->options, c->c1.route_ipv6_list, &c->c2.link_socket->info, false, c->c2.es);
++      ASSERT(c->c2.link_socket);
++      if (c->options.routes && c->c1.route_list)
++	do_init_route_list (&c->options, c->c1.route_list,
++			    &c->c2.link_socket->info, c->c2.es);
++      if (c->options.routes_ipv6 && c->c1.route_ipv6_list)
++	do_init_route_ipv6_list (&c->options, c->c1.route_ipv6_list,
++				 &c->c2.link_socket->info, c->c2.es);
+ 
+       /* do ifconfig */
+       if (!c->options.ifconfig_noexec
+-- 
+2.7.3
 
---no8WXR0rcKhQXLoqojgOH1JGqMFe3jVdB--
-
---usuFLJJ1qRnSkULOfLa1FxaqVbOrVTVAb
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQEcBAEBCAAGBQJYIYj/AAoJEEEwndWOY1w5A10H/A/9XH/lqoZkOwHLWmUNNMLs
-aUhlnvzmYISGNMvo5/MYTz1y5gHrtlL47Jt7ZsIXjcOiMbueMYqEQ/9EocW38KSX
-d0JF3iRyfvM4s+zeeJDutcUFoP/Dp/qkcNfzzAhhF+4o2Jysf1Dbd0gk6YmbCpS3
-VCezfcGRcX/Jrhi15dYLjPjqi+9nL3l0II0UIrKFNvm/jtE1OW3PRlCSo2iiG3hR
-8c+xyto52W/vfVS6MWXditoslcXSnG2r+u6HpwY4sMqyuBGLsGqvk341dDTZRkKc
-Ixp3lFO9r/AjUFB7ZKcEAUKiURZTzvTU9W4vYYZ2wukeTWArlhhkDOABgnGea6o=
-=x9/p
------END PGP SIGNATURE-----
-
---usuFLJJ1qRnSkULOfLa1FxaqVbOrVTVAb--
 
