@@ -1,8 +1,16 @@
+Date: Tue, 8 Nov 2016 10:46:10 +0100
 From: Gert Doering <gert@...1296...>
-Date: Tue,  8 Nov 2016 10:44:02 +0100
-Message-Id: <1478598242-23514-1-git-send-email-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH] Fix potential division by zero in
-	shaper_reset()
+Message-ID: <20161108094610.GZ28918@...1296...>
+References: <915ececd-c052-01b7-6051-74b3bc87b5fb@...515...>
+	<f25623ee-09e1-6b5c-e573-bff0f8fe4ae9@...515...>
+	<CAFHpkQFWfW7du2SKrCALHF=aPxY_VnWuk99U-pm+5BZ1Htw8HA@...278...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="QZtOqGcbKbKSnfK1"
+Content-Disposition: inline
+In-Reply-To: <CAFHpkQFWfW7du2SKrCALHF=aPxY_VnWuk99U-pm+5BZ1Htw8HA@...278...>
+Subject: Re: [Openvpn-devel] Summary of today's (Monday,
+ 7th Nov 2016) community meeting
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,37 +19,44 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: ???????? ?????????????? <chipitsine@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-shaper_reset() is only ever called with "bytes_per_second" set to
-a non-zero value - so the whole check "is it zero? if not, use
-constrain_int() to make sure it is within bounds" is not needed ->
-reduce check to just constrain_int() so even if somebody would
-call shaper_reset(..., 0) it would not lead to a div-by-zero.
+--QZtOqGcbKbKSnfK1
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Found by Coverity.
+Hi,
 
-Signed-off-by: Gert Doering <gert@...1296...>
----
- src/openvpn/shaper.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On Tue, Nov 08, 2016 at 02:22:20PM +0500, ???????? ?????????????? wrote:
+> > Discussed OpenVPN 2.3.14 release. The biggest thing missing is
+> > "block-outside-dns v2". The
+>=20
+> block-outside-dns is not supported on WinXP, right ?
 
-diff --git a/src/openvpn/shaper.h b/src/openvpn/shaper.h
-index afeb9c3..fa132c4 100644
---- a/src/openvpn/shaper.h
-+++ b/src/openvpn/shaper.h
-@@ -75,7 +75,7 @@ bool shaper_soonest_event (struct timeval *tv, int delay);
- static inline void
- shaper_reset (struct shaper *s, int bytes_per_second)
- {
--  s->bytes_per_second = bytes_per_second ? constrain_int (bytes_per_second, SHAPER_MIN, SHAPER_MAX) : 0;
-+  s->bytes_per_second = constrain_int (bytes_per_second, SHAPER_MIN, SHAPER_MAX);
- 
- #ifdef SHAPER_USE_FP
-   s->factor = 1000000.0 / (double)s->bytes_per_second;
--- 
-2.7.3
+Right.  But it's not needed either.
 
+gert
+
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--QZtOqGcbKbKSnfK1
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQCVAwUBWCGe4akuBuNlUUl1AQKYwgP5AfE4Pg6nJaVuWgB1Kl/K98aYDuYWynsA
+qR/7W53zevBbClYmN8wZFGEauhTdzq1q0c4PogYfge/+1rIPe6XtqDRGCeRpDRC/
+x/FqUWBXiFDDbbk9sO/FOuwkt2WRZkGXc8iY09b0EFyUgNKyntBGT045DsWCcw59
+lMN9AGD4xFY=
+=BXsU
+-----END PGP SIGNATURE-----
+
+--QZtOqGcbKbKSnfK1--
 
