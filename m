@@ -1,11 +1,12 @@
-Date: Thu, 10 Nov 2016 13:13:32 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20161110121332.GM28918@...1296...>
+References: <1476996158-5390-1-git-send-email-davids@...515...>
+	<b76abfb0-7ed3-b0ee-61db-2dba94390e4e@...277...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <2a0d57a8-d80d-a877-8e3c-48e234f9849a@...2080...>
+Date: Thu, 10 Nov 2016 13:16:39 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="QmaI2uGQ+01Rg0vj"
-Content-Disposition: inline
-Subject: [Openvpn-devel] new PGP key
+In-Reply-To: <b76abfb0-7ed3-b0ee-61db-2dba94390e4e@...277...>
+Subject: Re: [Openvpn-devel] [PATCH] systemd: Improve the systemd unit files
+Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,141 +15,69 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
-
---QmaI2uGQ+01Rg0vj
-Content-Type: application/pgp-keys
-Content-Description: PGP Key 0xB62E6A2B4E56570B7BDC6BE01D829EFECA562812.
-Content-Disposition: attachment
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
+To: debbie10t <debbie10t@...277...>, openvpn-devel@lists.sourceforge.net
 
-Hi,
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-just for public record - since people pointed out that my old key is
-no longer working with gnupg 2.1 users, I've rolled a new one, which=20
-you can find below.
+On 10/11/16 02:11, debbie10t wrote:
+>=20
+>=20
+> On 20/10/16 21:42, David Sommerseth wrote:
+>=20
+>> [Service] PrivateTmp=3Dtrue +RuntimeDirectory=3Dopenvpn=20
+>> +RuntimeDirectoryMode=3D0710 +WorkingDirectory=3D/etc/openvpn/server=20
+>> +ExecStart=3D/usr/sbin/openvpn --status
+>> %t/openvpn/server_%i-status.log --status-version 2
+>> --suppress-timestamps --config %i.conf
+>=20
+> --status appears to cause many problems, why is it specified here
+> ?
 
-This mail is the last one to be signed with the OLD key, everything
-afterwards will be using the new one.
+It is fairly common to have on server configurations, and several
+distributions already have this in their sysv based init scripts.  So
+this just follows that tradition.
 
-gert
+If a user wants to use a different status file, adding 'status
+/var/log/my-own-status.txt' will override the system default.
 
+This status-file is fairly consistent in the file size, so unless you
+have a many thousand users connected to the same OpenVPN daemon the
+file size will be insignificant.  As an example, 2 connected clients
+with 8 routes each is roughly 2.5KiB.  So with 100 clients having 16
+routes would most likely be around 0.5MiB of data.
 
------BEGIN PGP PUBLIC KEY BLOCK-----
+I don't know quite what you mean with 'cause many problems'.  If you
+are referring to the debian 8 testing and changing RuntimeDirectory to
+point at openvpn-server, then --status needs to be similarly changed,
+to be: %t/openvpn-server/server_%i-status.log
 
-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
-=3DaGvI
------END PGP PUBLIC KEY BLOCK-----
+If you could please add more details to what goes wrong (log data), it
+is far easier to understand what is going on.
 
---QmaI2uGQ+01Rg0vj
-Content-Type: application/pgp-signature; name="signature.asc"
+- --=20
+kind regards,
+
+David Sommerseth
+OpenVPN Technologies, Inc
 
 -----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQCVAwUBWCRka6kuBuNlUUl1AQJCmQP/RZKoovBUO8TaC0kScOee7l6W+DmbZnwX
-ag5hpHko3oGjy1reCBdpPoXlbJFNgMjaS77oy6yCPAH0A/g9OJfxF8j9y5K/HkrQ
-eQ7rPmIUD3yKUWz6QS+leMmeM/4pWiJq03IdrLIIg6U45Qwg5aT0pQ13h305tImn
-7/COT175KIE=
-=kebO
+iQIcBAEBAgAGBQJYJGUmAAoJEIbPlEyWcf3yyPQQALAtdjX1EN6hwZpFTdazD/Zc
+GkuehDfYiywdGZBXaSU7Qm74CRcNltub7rEvTfTMa/zqys1FDyExTFJtJBT+CCZS
+NEN6Wkd5lCiIhQdvk84Og/OpOBp+ob6sBo9VCgGS6I8uannmrvb3cCcFZax8CE47
+SqOHspOE/oBT+eXGw6GmIA4m08kqtKL5f92rxK+Jc3bWiQ7nhJ831jZGBlS+XTec
+S9w225q8goyFea4I4XQUCECHviD116IB461HcNp0CvCos6BPLHR7xdBc3es4kwUc
+Hs5lQvLPZxmCwRitTdUu2NiAxHM33PJRNvGwlXjS7mnbSOgQ8cjMrFyE2RlrEtPB
+FtEbM82OO5UsZV+PxAPy6r48k9mAOgKz9RrvoKAwvHcQQ+mndU9akewntU2+aMSq
+ixsgrT78P3HTteAphJfLOQKORwmzC4oARbjtW6I15JNrEg4+C3Z0n3Tc6DydFKJ2
+axcUCuFdAwb+qSeIE+VmMhCf1lfHoMCGp63TyNrfDImkfgoV+kpl5fGURfmX2Dyx
+DT7liTm5nGp99SxKRD3hpujmdJL05lE+pyHmeq0LTIGbcoUisMpfodVdWgomg3y1
+BuVamoiKE0dqU3JZErqtZt6oiAxyihMatll1W3RC17TVssEZXG73D/mhDr/wFxod
+pTsQFdP5jsmZ2SqEeBlD
+=3Dorrg
 -----END PGP SIGNATURE-----
-
---QmaI2uGQ+01Rg0vj--
 
