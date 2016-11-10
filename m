@@ -1,11 +1,15 @@
-References: <1476996158-5390-1-git-send-email-davids@...515...>
-	<b76abfb0-7ed3-b0ee-61db-2dba94390e4e@...277...>
+References: <1477672963-5724-1-git-send-email-heiko.hund@...1489...>
+	<1477672963-5724-8-git-send-email-heiko.hund@...1489...>
 From: David Sommerseth <openvpn@...2080...>
-Message-ID: <2a0d57a8-d80d-a877-8e3c-48e234f9849a@...2080...>
-Date: Thu, 10 Nov 2016 13:16:39 +0100
+Message-ID: <b03806c9-d95f-9e2f-01a4-57f312f21e0f@...2080...>
+Date: Thu, 10 Nov 2016 16:01:20 +0100
 MIME-Version: 1.0
-In-Reply-To: <b76abfb0-7ed3-b0ee-61db-2dba94390e4e@...277...>
-Subject: Re: [Openvpn-devel] [PATCH] systemd: Improve the systemd unit files
+In-Reply-To: <1477672963-5724-8-git-send-email-heiko.hund@...1489...>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="N6KUhnXaLILhQe9cWk5lekcTteEI0RlNF"
+Subject: Re: [Openvpn-devel] [PATCH 7/7] Add gc_arena to struct argv to save
+ allocations
 Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -15,69 +19,141 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: Heiko Hund <heiko.hund@...1489...>, openvpn-devel@lists.sourceforge.net
+
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--N6KUhnXaLILhQe9cWk5lekcTteEI0RlNF
+Content-Type: multipart/mixed; boundary="rsiMxBn3v2sQmsrcXV9OEdOJKQp2jdSFV";
+	protected-headers="v1"
+From: David Sommerseth <openvpn@...2080...>
+Reply-To: openvpn-devel@lists.sourceforge.net
+To: Heiko Hund <heiko.hund@...1489...>, openvpn-devel@lists.sourceforge.net
+Message-ID: <b03806c9-d95f-9e2f-01a4-57f312f21e0f@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH 7/7] Add gc_arena to struct argv to save
+	allocations
+References: <1477672963-5724-1-git-send-email-heiko.hund@...1489...>
+	<1477672963-5724-8-git-send-email-heiko.hund@...1489...>
+In-Reply-To: <1477672963-5724-8-git-send-email-heiko.hund@...1489...>
+
+--rsiMxBn3v2sQmsrcXV9OEdOJKQp2jdSFV
 Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
-To: debbie10t <debbie10t@...277...>, openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
-
-On 10/11/16 02:11, debbie10t wrote:
+On 28/10/16 18:42, Heiko Hund wrote:
+> With the private gc_arena we do not have to allocate the strings
+> found during parsing again, since we know the arena they are
+> allocated in is valid as long as the argv vector is.
 >=20
+> Signed-off-by: Heiko Hund <heiko.hund@...1489...>
+> ---
+>  src/openvpn/argv.c                   | 37 ++++++++++++++++++------------=
+------
+>  src/openvpn/argv.h                   |  1 +
+>  tests/unit_tests/openvpn/test_argv.c | 21 ++++++++++++++++++++
+>  3 files changed, 40 insertions(+), 19 deletions(-)
 >=20
-> On 20/10/16 21:42, David Sommerseth wrote:
->=20
->> [Service] PrivateTmp=3Dtrue +RuntimeDirectory=3Dopenvpn=20
->> +RuntimeDirectoryMode=3D0710 +WorkingDirectory=3D/etc/openvpn/server=20
->> +ExecStart=3D/usr/sbin/openvpn --status
->> %t/openvpn/server_%i-status.log --status-version 2
->> --suppress-timestamps --config %i.conf
->=20
-> --status appears to cause many problems, why is it specified here
-> ?
+> diff --git a/src/openvpn/argv.c b/src/openvpn/argv.c
+> index 664785b..9f139bb 100644
+> --- a/src/openvpn/argv.c
+> +++ b/src/openvpn/argv.c
+> @@ -62,6 +62,7 @@ argv_init (struct argv *a)
+>    a->capacity =3D 0;
+>    a->argc =3D 0;
+>    a->argv =3D NULL;
+> +  a->gc =3D gc_new ();
+>    argv_extend (a, 8);
+>  }
 
-It is fairly common to have on server configurations, and several
-distributions already have this in their sysv based init scripts.  So
-this just follows that tradition.
+Any specific reason we want to keep our own gc_arena on argv?  Why not
+pass an existing gc_arena pointer to the argv_new()/argv_init()
+functions?  I believe the majority of places argv functions are called
+already have a gc_arena prepared.  But I do see it may complicate the
+argv_reset() function.
 
-If a user wants to use a different status file, adding 'status
-/var/log/my-own-status.txt' will override the system default.
 
-This status-file is fairly consistent in the file size, so unless you
-have a many thousand users connected to the same OpenVPN daemon the
-file size will be insignificant.  As an example, 2 connected clients
-with 8 routes each is roughly 2.5KiB.  So with 100 clients having 16
-routes would most likely be around 0.5MiB of data.
+> +  const char *args[] =3D {
+> +    "good_tools_have_good_names_even_though_it_might_impair_typing",
+> +    "--long-opt=3Dlooooooooooooooooooooooooooooooooooooooooooooooooong",
+> +    "--long-cat=3Dloooooooooooooooooooooooooooooooooooooooooooooooooooon=
+ger",
 
-I don't know quite what you mean with 'cause many problems'.  If you
-are referring to the debian 8 testing and changing RuntimeDirectory to
-point at openvpn-server, then --status needs to be similarly changed,
-to be: %t/openvpn-server/server_%i-status.log
+Great examples! :)
 
-If you could please add more details to what goes wrong (log data), it
-is far easier to understand what is going on.
+> +    "file_with_very_descriptive_filename_that_leaves_no_questions_open.j=
+pg.exe"
 
-- --=20
+And this made me laugh!  Leaves absolutely no open questions ;)
+
+
+
+When looking over the final argv.c file, I also wonder about this:
+
+const char *
+argv_str (const struct argv *a, struct gc_arena *gc, const unsigned int
+flags)
+{
+  return print_argv ((const char **)a->argv, gc, flags);
+}
+
+Why not use our own internal gc_arena?  Especially when considering the
+current callers:
+
+void
+argv_msg (const int msglev, const struct argv *a)
+{
+  struct gc_arena gc =3D gc_new ();
+  msg (msglev, "%s", argv_str (a, &gc, 0));
+  gc_free (&gc);
+}
+
+The situation is identical for argv_msg_prefix().
+
+AFAICS, struct argv objects doesn't live very long, so it would be
+minimal impact on the overall memory usage.  At least when we have our
+own internal gc_arena.  Using a more global gc_arena (provided via
+argv_new()/argv_init()) makes the object live somewhat longer.  But even
+most of those places the gc_arenas doesn't live very much longer.
+
+
+The overall impression I have is that this patch-set is truly valuable
+and does important clean-ups and fixes a lot of ambiguity and odd
+behaviours.  And getting proper unit tests on top of it all is truly
+great!  But there's still some improvements needed in the last 3 patches
+(patch 5, 6 and 7).
+
+
+--=20
 kind regards,
 
 David Sommerseth
 OpenVPN Technologies, Inc
 
+
+
+--rsiMxBn3v2sQmsrcXV9OEdOJKQp2jdSFV--
+
+--N6KUhnXaLILhQe9cWk5lekcTteEI0RlNF
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBAgAGBQJYJGUmAAoJEIbPlEyWcf3yyPQQALAtdjX1EN6hwZpFTdazD/Zc
-GkuehDfYiywdGZBXaSU7Qm74CRcNltub7rEvTfTMa/zqys1FDyExTFJtJBT+CCZS
-NEN6Wkd5lCiIhQdvk84Og/OpOBp+ob6sBo9VCgGS6I8uannmrvb3cCcFZax8CE47
-SqOHspOE/oBT+eXGw6GmIA4m08kqtKL5f92rxK+Jc3bWiQ7nhJ831jZGBlS+XTec
-S9w225q8goyFea4I4XQUCECHviD116IB461HcNp0CvCos6BPLHR7xdBc3es4kwUc
-Hs5lQvLPZxmCwRitTdUu2NiAxHM33PJRNvGwlXjS7mnbSOgQ8cjMrFyE2RlrEtPB
-FtEbM82OO5UsZV+PxAPy6r48k9mAOgKz9RrvoKAwvHcQQ+mndU9akewntU2+aMSq
-ixsgrT78P3HTteAphJfLOQKORwmzC4oARbjtW6I15JNrEg4+C3Z0n3Tc6DydFKJ2
-axcUCuFdAwb+qSeIE+VmMhCf1lfHoMCGp63TyNrfDImkfgoV+kpl5fGURfmX2Dyx
-DT7liTm5nGp99SxKRD3hpujmdJL05lE+pyHmeq0LTIGbcoUisMpfodVdWgomg3y1
-BuVamoiKE0dqU3JZErqtZt6oiAxyihMatll1W3RC17TVssEZXG73D/mhDr/wFxod
-pTsQFdP5jsmZ2SqEeBlD
-=3Dorrg
+iQIcBAEBAgAGBQJYJIvAAAoJEIbPlEyWcf3yo9cP/RP8I/miyAGGRpG3M+6LlVKO
+mVSEKS8txpUxNyfESPTeImhz74voCbK/5BNjGuZtO41Pksmt4VHOIr7dKsUjF4PG
+XQzGXM+2nJNj7VNM/1+/1GwkqWfxEcQC/UujPbLdO9FoUTvNacziJVHVZosGlOzA
+aRWDWhBD/OGOlr9G3cOLnXygKsGU79PmgtFPmmVdbArfIhGcDR5bar8oUZQ4BE/i
+xMuT4tTOhih68Rl/7QFKzK+P2mj8eZtvE9sWPf5F+wN0/bTCq989ypKbS4TKjqyP
+yS3PDsdv85g7iUeaKfOvij2MkHDuk0o4XDndIn4jDwZ2ubJxZ4r5e29qx739iPc7
+sBytofQftrUGMjsKrXoBAKqyKhB69m3s2l09QolyYmLPw/+5uH1DTn9gY8BE5L7Y
+pYxxOKXjnzEPCHGgebdoWu5MjmoUm8JKLveHHP/5e8fQArIaQGMg0Ls7g6h3jV6G
+vExMoRpJTdDjqsfqXh/qXZyYQNWqFX2TbWT20LnkYnVm0TT7EkMiLirV1+TAHoHx
+O4rg4YskY5KaaGLf3vON8g60nuhUQ0+po9OYfWPMm9rYfzMdMFXibZ3ASY+sjU2z
+iNqRyfD6Ydb+Uw7qNDw9CFBSWMLqiTKREx6hspa0kHeGfG/Babrb8EwM6ekBBuIR
+Aj0RPQvvL7YM1ex0APF3
+=EeU+
 -----END PGP SIGNATURE-----
+
+--N6KUhnXaLILhQe9cWk5lekcTteEI0RlNF--
 
