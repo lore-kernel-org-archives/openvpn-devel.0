@@ -1,10 +1,14 @@
-References: <1476996158-5390-1-git-send-email-davids@...515...>
-From: debbie10t <debbie10t@...277...>
-Message-ID: <5f201645-8325-b93c-42db-355fef4da9ea@...277...>
-Date: Fri, 11 Nov 2016 12:09:57 +0000
+References: <1475060898-21462-1-git-send-email-steffan@...1856...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <29580155-6d16-3a15-d409-b2a52cf1e7be@...2080...>
+Date: Fri, 11 Nov 2016 13:14:09 +0100
 MIME-Version: 1.0
-In-Reply-To: <1476996158-5390-1-git-send-email-davids@...515...>
-Subject: Re: [Openvpn-devel] [PATCH] systemd: Improve the systemd unit files
+In-Reply-To: <1475060898-21462-1-git-send-email-steffan@...1856...>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="dFdSHNGUwg5f48xFBCuP8OacEtqW1K2vT"
+Subject: Re: [Openvpn-devel] [PATCH] Don't deference type-punned pointers
+Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,198 +17,173 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
 
-Hi,
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--dFdSHNGUwg5f48xFBCuP8OacEtqW1K2vT
+Content-Type: multipart/mixed; boundary="i8PPV6b24ov12Ov8Cu2RQf4PSNF2RnLLe";
+	protected-headers="v1"
+From: David Sommerseth <openvpn@...2080...>
+Reply-To: openvpn-devel@lists.sourceforge.net
+To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
+Message-ID: <29580155-6d16-3a15-d409-b2a52cf1e7be@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH] Don't deference type-punned pointers
+References: <1475060898-21462-1-git-send-email-steffan@...1856...>
+In-Reply-To: <1475060898-21462-1-git-send-email-steffan@...1856...>
 
-following are the server and client systemd unit files
-which work best for me.
+--i8PPV6b24ov12Ov8Cu2RQf4PSNF2RnLLe
+Content-Type: multipart/mixed; boundary="------------6E1F980F679CDA2398476242"
 
+This is a multi-part message in MIME format.
+--------------6E1F980F679CDA2398476242
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
 
-Tested on:
-Archlinux     - OpenVPN 2.3.13 x86_64-unknown-linux-gnu - systemd 231
-CentOS 7      - OpenVPN 2.3.12 x86_64-redhat-linux-gnu  - systemd 219
-Debian 8      - OpenVPN 2.3.13 x86_64-pc-linux-gnu      - systemd 215
-OpenSUSE 42.2 - OpenVPN 2.3.8 x86_64-suse-linux-gnu     - systemd 228
-Fedora 24     - OpenVPN 2.3.12 x86_64-redhat-linux-gnu  - systemd 229
-Ubuntu 16.04  - OpenVPN 2.3.13 x86_64-pc-linux-gnu      - systemd 229
-
-Tested with:
-Multiple server and multiple client configs all enabled.
-
-Tests:
-systemctl enable/disable/start/stop/restart/reboot
-
-Result:
-ALL Tests passed.
-
-Note:
-I have inserted blank lines to help with email line wrap.
-
-
-=====
-
-
-openvpn-client@...1685...
-
-[Unit]
-Description=OpenVPN tunnel for %I
-After=syslog.target network-online.target
-Wants=network-online.target
-Documentation=man:openvpn(8)
-Documentation=https://community.openvpn.net/openvpn/wiki/Openvpn24ManPage
-Documentation=https://community.openvpn.net/openvpn/wiki/HOWTO
-
-[Service]
-PrivateTmp=true
-RuntimeDirectory=openvpn-client
-RuntimeDirectoryMode=0710
-WorkingDirectory=/etc/openvpn/client
-
-ExecStart=/usr/sbin/openvpn --config %i.conf --nobind --suppress-timestamps
-
-CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_RAW CAP_SETGID 
-CAP_SETUID CAP_SYS_CHROOT CAP_DAC_OVERRIDE
-
-LimitNPROC=10
-DeviceAllow=/dev/null rw
-DeviceAllow=/dev/net/tun rw
-
-[Install]
-WantedBy=multi-user.target
-
-
-=====
-
-
-openvpn-server@...1685...
-
-[Unit]
-Description=OpenVPN service for %I
-After=syslog.target network-online.target
-Wants=network-online.target
-Documentation=man:openvpn(8)
-Documentation=https://community.openvpn.net/openvpn/wiki/Openvpn24ManPage
-Documentation=https://community.openvpn.net/openvpn/wiki/HOWTO
-
-[Service]
-PrivateTmp=true
-RuntimeDirectory=openvpn-server
-RuntimeDirectoryMode=0710
-WorkingDirectory=/etc/openvpn/server
-
-ExecStart=/usr/sbin/openvpn --config %i.conf --status 
-%t/openvpn-server/%i-status.log --status-version 2 --suppress-timestamps
-
-CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_BIND_SERVICE 
-CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_CHROOT CAP_DAC_OVERRIDE
-
-LimitNPROC=10
-DeviceAllow=/dev/null rw
-DeviceAllow=/dev/net/tun rw
-
-[Install]
-WantedBy=multi-user.target
-
-
-=====
-
-
-Regards
-
-
-
-On 20/10/16 21:42, David Sommerseth wrote:
-> There are several changes which allows systemd to take care of several
-> aspects of hardening the execution of OpenVPN.
->
-> - Let systemd take care of the process tracking directly, instead
->   of doing that via PID files
->
-> - Make systemd prepare proper runtime directories for the OpenVPN
->   process.
->
-> - Let systemd do the chdir() before starting OpenVPN.  This allows
->   us to avoid using the --cd option when executing openvpn.
->
-> - CAP_DAC_OVERRIDE was needed when using --chroot.  Otherwise
->   the root user would not be allowed to access files/directories
->   not owned by root.  This will change in the future, when we
->   find better ways to avoid calling chroot() in OpenVPN and
->   rather let systemd prepare a more isolated namespace.
->
-> - Client configurations are now started with --nobind and
->   the OpenVPN client process have lost the CAP_NET_BIND_SERVICE
->   capability which allows binding to port < 1024.
->
-> - Documentation URL now points at the OpenVPN 2.4 man page URL
->
-> The majority of these changes have been proposed by Elias Probst
-> (eliasp) in the GitHub PR #22.
->
-> Contribution-by: Elias Probst <mail@...2185...>
-> Signed-off-by: David Sommerseth <davids@...515...>
+On 28/09/16 13:08, Steffan Karger wrote:
+> Fixes compiler warnings (undefined behavior) by making the copy explicit
+> to comply to strict aliasing rules.  With newer GCC the old code could
+> actually lead to undefined behaviour.
+>=20
+> See e.g. http://blog.regehr.org/archives/959.
+>=20
+> Signed-off-by: Steffan Karger <steffan@...1856...>
 > ---
->  distro/systemd/openvpn-client@...1685... | 11 ++++++-----
->  distro/systemd/openvpn-server@...1685... | 14 ++++++++------
->  2 files changed, 14 insertions(+), 11 deletions(-)
->
-> diff --git a/distro/systemd/openvpn-client@...1685... b/distro/systemd/openvpn-client@...1685...
-> index 56d93a9..051eb47 100644
-> --- a/distro/systemd/openvpn-client@...1685...
-> +++ b/distro/systemd/openvpn-client@...1685...
-> @@ -3,15 +3,16 @@ Description=OpenVPN tunnel for %I
->  After=syslog.target network-online.target
->  Wants=network-online.target
->  Documentation=man:openvpn(8)
-> -Documentation=https://community.openvpn.net/openvpn/wiki/Openvpn23ManPage
-> +Documentation=https://community.openvpn.net/openvpn/wiki/Openvpn24ManPage
->  Documentation=https://community.openvpn.net/openvpn/wiki/HOWTO
->
->  [Service]
->  PrivateTmp=true
-> -Type=forking
-> -PIDFile=/var/run/openvpn/client_%i.pid
-> -ExecStart=/usr/sbin/openvpn --cd /etc/openvpn/client --config %i.conf --daemon --writepid /var/run/openvpn/client_%i.pid
-> -CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_CHROOT CAP_DAC_READ_SEARCH
-> +RuntimeDirectory=openvpn
-> +RuntimeDirectoryMode=0710
-> +WorkingDirectory=/etc/openvpn/client
-> +ExecStart=/usr/sbin/openvpn --suppress-timestamps --nobind --config %i.conf
-> +CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_CHROOT CAP_DAC_OVERRIDE
->  LimitNPROC=10
->  DeviceAllow=/dev/null rw
->  DeviceAllow=/dev/net/tun rw
-> diff --git a/distro/systemd/openvpn-server@...1685... b/distro/systemd/openvpn-server@...1685...
-> index c4c9a12..c8da5fa 100644
-> --- a/distro/systemd/openvpn-server@...1685...
-> +++ b/distro/systemd/openvpn-server@...1685...
-> @@ -1,16 +1,18 @@
->  [Unit]
->  Description=OpenVPN service for %I
-> -After=syslog.target network.target
-> +After=syslog.target network-online.target
-> +Wants=network-online.target
->  Documentation=man:openvpn(8)
-> -Documentation=https://community.openvpn.net/openvpn/wiki/Openvpn23ManPage
-> +Documentation=https://community.openvpn.net/openvpn/wiki/Openvpn24ManPage
->  Documentation=https://community.openvpn.net/openvpn/wiki/HOWTO
->
->  [Service]
->  PrivateTmp=true
-> -Type=forking
-> -PIDFile=/var/run/openvpn/server_%i.pid
-> -ExecStart=/usr/sbin/openvpn --cd /etc/openvpn/server --status /var/run/openvpn/server_%i-status.log --status-version 2 --config %i.conf --daemon --writepid /var/run/openvpn/server_%i.pid
-> -CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_CHROOT CAP_DAC_READ_SEARCH
-> +RuntimeDirectory=openvpn
-> +RuntimeDirectoryMode=0710
-> +WorkingDirectory=/etc/openvpn/server
-> +ExecStart=/usr/sbin/openvpn --status %t/openvpn/server_%i-status.log --status-version 2 --suppress-timestamps --config %i.conf
-> +CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_CHROOT CAP_DAC_OVERRIDE
->  LimitNPROC=10
->  DeviceAllow=/dev/null rw
->  DeviceAllow=/dev/net/tun rw
->
+>  src/openvpn/mroute.h | 12 ++++++++----
+>  1 file changed, 8 insertions(+), 4 deletions(-)
+>=20
+
+I've taken another stab on this one, read up [1,2,3] more carefully on
+strict aliasing , type punning and undefined behaviours in compilers.  I
+do consider fixing this important, despite it might not be strictly
+needed with today's compilers [4], we don't know if and how this
+undefined behaviour will change in a future compiler update - despite
+the risk of doing so is very low in our case.
+
+The last time I looked at this, I identified that the assembly being
+generated by the compiler is pretty much the same and it uses some
+simple and mov instructions.  In addition I also have a better
+understanding why the code ends up as the same result, as we're just
+storing an "fresh" integer value to the address extracted via the
+dereferencing - and not manipulating data extracted from that address
+and putting something else back, so the compiler's optimizer won't be
+able to mess this up too badly.
+
+When considering that the optimized code will be most optimal regardless
+if we use type punning and breaking strict alias or we will use memcpy()
+in the C code, it makes little sense to me to not fix this warning.
+Today's compilers are truly clever in this aspect when being asked to
+optimise variable assignments with static lengths.
+
+So all in all, I am willing to give this a full ACK now.  However,
+compiling this with gcc and the common CFLAGS on RHEL and Fedora, more
+issues related to strict aliasing appeared.  With clang, there were no
+more warnings with this patch.  I think it would be good to resolve the
+gcc issues as well.  The issues located are found in the attachment.
+
+
+[1] <http://blog.llvm.org/2011/05/what-every-c-programmer-should-know.html>
+[2] <http://blog.regehr.org/archives/213>
+[3]
+<http://cellperformance.beyond3d.com/articles/2006/06/understanding-strict-=
+aliasing.html>
+[4] I've tested with gcc-4.8.5 (Red Hat 4.8.5-4) and clang-3.4.2 on
+    EL7.2
+
+--=20
+kind regards,
+
+David Sommerseth
+OpenVPN Technologies, Inc
+
+
+--------------6E1F980F679CDA2398476242
+Content-Type: text/plain; charset=UTF-8;
+ name="strictalias-compile-log.txt"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: attachment;
+ filename="strictalias-compile-log.txt"
+
+mroute.c: In function =E2=80=98mroute_get_in_addr_t=E2=80=99:
+mroute.c:93:7: warning: dereferencing type-punned pointer will break stri=
+ct-aliasing rules [-Wstrict-aliasing]
+       *(in_addr_t*)ma->addr =3D src;
+       ^
+mroute.c: In function =E2=80=98mroute_get_in6_addr=E2=80=99:
+mroute.c:105:16: warning: dereferencing type-punned pointer will break st=
+rict-aliasing rules [-Wstrict-aliasing]
+       *(struct in6_addr *)ma->addr =3D src;
+                ^
+mroute.c: In function =E2=80=98mroute_addr_mask_host_bits=E2=80=99:
+mroute.c:329:3: warning: dereferencing type-punned pointer will break str=
+ict-aliasing rules [-Wstrict-aliasing]
+   in_addr_t addr =3D ntohl(*(in_addr_t*)ma->addr);
+   ^
+mroute.c:333:7: warning: dereferencing type-punned pointer will break str=
+ict-aliasing rules [-Wstrict-aliasing]
+       *(in_addr_t*)ma->addr =3D htonl (addr);
+       ^
+mroute.c: In function =E2=80=98mroute_addr_print_ex=E2=80=99:
+mroute.c:432:8: warning: dereferencing type-punned pointer will break str=
+ict-aliasing rules [-Wstrict-aliasing]
+        print_in_addr_t( *(in_addr_t*)(&maddr.addr[12]), IA_NET_ORDER, gc=
+));
+        ^
+mroute.c:437:34: warning: dereferencing type-punned pointer will break st=
+rict-aliasing rules [-Wstrict-aliasing]
+         print_in6_addr( *(struct in6_addr*)&maddr.addr, 0, gc));
+
+ps.c: In function =E2=80=98port_share_sendmsg=E2=80=99:
+ps.c:226:4: warning: dereferencing type-punned pointer will break strict-=
+aliasing rules [-Wstrict-aliasing]
+    *((socket_descriptor_t*)CMSG_DATA(h)) =3D sd_send;
+    ^
+ps.c:231:4: warning: dereferencing type-punned pointer will break strict-=
+aliasing rules [-Wstrict-aliasing]
+    *((socket_descriptor_t*)CMSG_DATA(h)) =3D sd_null[0];
+    ^
+ps.c: In function =E2=80=98control_message_from_parent=E2=80=99:
+ps.c:505:3: warning: dereferencing type-punned pointer will break strict-=
+aliasing rules [-Wstrict-aliasing]
+   *((socket_descriptor_t*)CMSG_DATA(h)) =3D SOCKET_UNDEFINED;
+   ^
+ps.c:519:4: warning: dereferencing type-punned pointer will break strict-=
+aliasing rules [-Wstrict-aliasing]
+    const socket_descriptor_t received_fd =3D *((socket_descriptor_t*)CMS=
+G_DATA(h));
+    ^
+socket.c: In function =E2=80=98setenv_sockaddr=E2=80=99:
+socket.c:2601:4: warning: dereferencing type-punned pointer will break st=
+rict-aliasing rules [-Wstrict-aliasing]
+    ia.s_addr =3D *(in_addr_t *)&addr->addr.in6.sin6_addr.s6_addr[12] ;
+    ^
+
+
+--------------6E1F980F679CDA2398476242--
+
+--i8PPV6b24ov12Ov8Cu2RQf4PSNF2RnLLe--
+
+--dFdSHNGUwg5f48xFBCuP8OacEtqW1K2vT
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBAgAGBQJYJbYSAAoJEIbPlEyWcf3yGdAP/RPV0S+qE2+OmTrQvzkIiWMd
+dsC7SGRYYEdyjO4qfIMQrZ6wLS6qcVEV6W3D1Lw6qQ+kPApf/1W5Z2IeHQ3GxzdN
+9wReEc1pVhlWWqyQ6RucJcBvf8UETnGoJGdC43RjQnFelO/mR4Ijnh9EkPRB8soV
+a3T3MfbENO67zQl8CGcjCgn2jRbE47kzdpHfZmOGPRAtY0NKNfKDMW0usnY2ELDM
+OyuRHrKVIQ2gGjqJHrWAv1KndSFjE8DuXCgU7X+rBtulGIWLlJ2PSNjhG3ROnHXe
+FCHFA/XdrwoOBwragCgTvjqF8l1yIDKIIP/nSklyL9zoCeTS7jNYz01TCMWhbt1+
+9qbCr865Yz/0O3Jl3u8GDPvczJO9hPhOG3R8GX2r59FlKH7s6OAL/UufWr3ySTBA
+dU2hqBBUOTm4ySS7uVH7lQsPZpmK5uiC1uTymJ/V+O7PsV5a63oQEJqz6S0XWUCb
+QMl/NHD9JACFMqa6Lj8297kduc135dJ476WGZ/tEeXC/hmI6WMhFb6JqcuAuYKFO
+sie+l0LI+6nlHaLqb9K9MUaBYHJp4rWRi9ty+OKcAzXssajXOmTY2pV+4myQydTq
+HuVtiJD+mD6whjynPeAzDv/LmVsm8J+v0/lEtVu3QIXbgTla1Nh/JbwSe08yE29P
+WCoYorQ5Jf38Y5hUkP0P
+=aa/Z
+-----END PGP SIGNATURE-----
+
+--dFdSHNGUwg5f48xFBCuP8OacEtqW1K2vT--
 
