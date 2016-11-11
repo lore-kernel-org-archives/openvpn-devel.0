@@ -1,12 +1,7 @@
-References: <1476996158-5390-1-git-send-email-davids@...515...>
-	<6c3649c3-75e0-df8a-d910-73441af695d9@...515...>
-	<a2f226df-89b0-f8de-0af1-225351a90edd@...2080...>
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <2a52806c-edf0-325f-19fa-b4f243ac4b66@...515...>
-Date: Fri, 11 Nov 2016 15:01:08 +0200
-MIME-Version: 1.0
-In-Reply-To: <a2f226df-89b0-f8de-0af1-225351a90edd@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH] systemd: Improve the systemd unit files
+From: David Sommerseth <davids@...515...>
+Date: Fri, 11 Nov 2016 14:16:41 +0100
+Message-Id: <1478870201-17943-1-git-send-email-davids@...515...>
+Subject: [Openvpn-devel] [PATCH] tun: Fix compiler warnings
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,87 +10,87 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net, David Sommerseth <davids@...515...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-Il 11/11/2016 14:35, David Sommerseth ha scritto:
-> -----BEGIN PGP SIGNED MESSAGE-----
-> Hash: SHA1
->
-> On 11/11/16 13:28, Samuli Sepp=E4nen wrote:
->> This comes a bit late, sorry.
->>
->> Il 20/10/2016 23:42, David Sommerseth ha scritto:
->>> There are several changes which allows systemd to take care of
->>> several aspects of hardening the execution of OpenVPN.
->>>
->>> - Let systemd take care of the process tracking directly,
->>> instead of doing that via PID files
->>>
->>
->> This makes sense, but it has one caveat. If there is no pidfile,
->> external, local monitoring applications might not be able to
->> monitor the status of the OpenVPN process anymore. I, for example,
->> heavily utilize monit for it's email notification capabilities, and
->> because it can actually do things if it detects anomalies.
->>
->> The last time I checked, there is no easy way to get systemd to
->> notify the admin if, say, a daemon goes down and systemd restarts
->> it. Is this still the case?
->
-> Systemd will in this case mark the service as "Failed" and the status
-> message will try to give an indication of what happened - was the
-> process killed, segfault, stopped with an exit code, etc.
+Fixes two compiler warnings idetified by using CFLAGS=-O2
 
-Yeah, and systemd integration will probably eventually find its way into=20
-external monitoring tools.
+1) ifconfig_ipv6_remote is only used on Solaris, move the
+   declaration and assignment of this variable into the
+   TARGET_SOLARIS block.
 
-> For external tools, you can now actually add the PID file yourself via
-> the configuration file, and place the PID file exactly where it fits
-> your need.  So this actually gives a far better flexibility.
+2) Linux have it's own open_tun() function and does not
+   depend on open_tun_generic() at all.  So do not exclude
+   open_tun_generic() if TARGET_LINUX is defined.
 
-Yes, that is what I ended up doing, so this is definitely not a dealbreaker.
+Signed-off-by: David Sommerseth <davids@...515...>
+---
+ src/openvpn/tun.c | 14 ++++++++++----
+ 1 file changed, 10 insertions(+), 4 deletions(-)
 
->
-> We can of course investigate if we should enable systemd to restart
-> OpenVPN, at least the server profile, if it dies unexpectedly.
-> Currently, I am not fully convinced we want that.
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index a312d91..1a3a88a 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -751,7 +751,6 @@ do_ifconfig (struct tuntap *tt,
+       const char *ifconfig_remote_netmask = NULL;
+       const char *ifconfig_broadcast = NULL;
+       const char *ifconfig_ipv6_local = NULL;
+-      const char *ifconfig_ipv6_remote = NULL;
+       bool do_ipv6 = false;
+       struct argv argv;
+ 
+@@ -774,7 +773,6 @@ do_ifconfig (struct tuntap *tt,
+       if (tt->did_ifconfig_ipv6_setup )
+         {
+ 	  ifconfig_ipv6_local = print_in6_addr (tt->local_ipv6, 0, &gc);
+-	  ifconfig_ipv6_remote = print_in6_addr (tt->remote_ipv6, 0, &gc);
+ 	  do_ipv6 = true;
+ 	}
+ 
+@@ -917,6 +915,12 @@ do_ifconfig (struct tuntap *tt,
+       management_android_control (management, "IFCONFIG", buf_bptr(&out));
+ 
+ #elif defined(TARGET_SOLARIS)
++      const char *ifconfig_ipv6_remote = NULL;
++
++      if (tt->did_ifconfig_ipv6_setup )
++        {
++	  ifconfig_ipv6_remote = print_in6_addr (tt->remote_ipv6, 0, &gc);
++        }
+ 
+       /* Solaris 2.6 (and 7?) cannot set all parameters in one go...
+        * example:
+@@ -1504,7 +1508,7 @@ read_tun_header (struct tuntap* tt, uint8_t *buf, int len)
+ #endif
+ 
+ 
+-#ifndef WIN32
++#if !(defined(WIN32) || defined(TARGET_LINUX))
+ static void
+ open_tun_generic (const char *dev, const char *dev_type, const char *dev_node,
+ 		  bool dynamic, struct tuntap *tt)
+@@ -1606,7 +1610,9 @@ open_tun_generic (const char *dev, const char *dev_type, const char *dev_node,
+       tt->actual_name = string_alloc (dynamic_opened ? dynamic_name : dev, NULL);
+     }
+ }
++#endif // !WIN32 && !TARGET_LINUX
+ 
++#if !defined(WIN32)
+ static void
+ close_tun_generic (struct tuntap *tt)
+ {
+@@ -1617,7 +1623,7 @@ close_tun_generic (struct tuntap *tt)
+   clear_tuntap (tt);
+ }
+ 
+-#endif
++#endif // !WIN32
+ 
+ #if defined (TARGET_ANDROID)
+ void
+-- 
+1.8.3.1
 
-That should probably be a admin decision.
-
->
->
-> - --
-> kind regards,
->
-> David Sommerseth
-> OpenVPN Technologies, Inc
->
-> -----BEGIN PGP SIGNATURE-----
-> Version: GnuPG v2.0.22 (GNU/Linux)
->
-> iQIcBAEBAgAGBQJYJbstAAoJEIbPlEyWcf3yTEUQAMFkuQ+9wBYvLVqIilcPBEtL
-> gM6rFzmtmQO9HkJnE5DdxxCLTPQu2FDpH66QxUOOkQgilji2iuub0L5ebo/yhfKH
-> +mKCnn56553kcFSYozDDiW3S0nulCjDGZ3/dWh/jjnVbthpdnigpFswEaTfJsTn8
-> ZQ7Uw6rIN4ocqsySLDhTdVaxzcEE3tLXpxsvh7cqGrY7gdodxQfZ6guIN2jNpgOW
-> vzKTr/oDbLl7mfE/yCIahH2b++rIWezPwcdXccQdCs1EiadQLwpTm7YCkc+RGXH6
-> cYANjeXzBCMUqb+PceRcNBgxQy+6Bo3zBNh5UC3eVcitc9I/3fAxZ+7z3H+Yacyq
-> bOX5RGU2vjDO6M1SBtvS3fPSKAIj/yL9DxWmeOyYWJwqSXcixdXBmBtprulMhR1p
-> LdO/Fj95onek2qeXQOuoppQO5bUu71r5OwoYmDi/BGKDvIbU7r4watNfHM8v6fiR
-> WU4JFMGIvK0oXknv2LJUDpPjyOlMwty9y+aTIPNr+TrxEKzE9PjbfVRpCsNSDJxq
-> W4iYZV0qS4OPJl2fHdZeX7bPxeyYsoZ6Qn2qf7QKLB6SQeEheWxeEl4JsBHgvlbO
-> 4RgVBFJSGVKhgz7pjpYEDVXyBOCKidUBjiIDXyC5C8phIniFQb5umNDFC/6i8Deh
-> AkfV28b/RdHq+/TUfLq+
-> =3DtTI/
-> -----END PGP SIGNATURE-----
->
-
-
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
 
