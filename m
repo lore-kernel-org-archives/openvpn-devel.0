@@ -1,13 +1,10 @@
 References: <1476996158-5390-1-git-send-email-davids@...515...>
-	<5f201645-8325-b93c-42db-355fef4da9ea@...277...>
+	<6c3649c3-75e0-df8a-d910-73441af695d9@...515...>
 From: David Sommerseth <openvpn@...2080...>
-Message-ID: <b348180e-8e88-7e16-3279-a5bdfeb8c397@...2080...>
-Date: Fri, 11 Nov 2016 13:32:00 +0100
+Message-ID: <a2f226df-89b0-f8de-0af1-225351a90edd@...2080...>
+Date: Fri, 11 Nov 2016 13:35:57 +0100
 MIME-Version: 1.0
-In-Reply-To: <5f201645-8325-b93c-42db-355fef4da9ea@...277...>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="PWsQKm5uJHbNJ7fSLw2XiGHJg2dtwahjk"
+In-Reply-To: <6c3649c3-75e0-df8a-d910-73441af695d9@...515...>
 Subject: Re: [Openvpn-devel] [PATCH] systemd: Improve the systemd unit files
 Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -18,172 +15,68 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: debbie10t <debbie10t@...277...>, openvpn-devel@lists.sourceforge.net
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---PWsQKm5uJHbNJ7fSLw2XiGHJg2dtwahjk
-Content-Type: multipart/mixed; boundary="xtng9WhKd94S5II0D1at7puK5NHx2vPLa";
-	protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-Reply-To: openvpn-devel@lists.sourceforge.net
-To: debbie10t <debbie10t@...277...>, openvpn-devel@lists.sourceforge.net
-Message-ID: <b348180e-8e88-7e16-3279-a5bdfeb8c397@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH] systemd: Improve the systemd unit files
-References: <1476996158-5390-1-git-send-email-davids@...515...>
-	<5f201645-8325-b93c-42db-355fef4da9ea@...277...>
-In-Reply-To: <5f201645-8325-b93c-42db-355fef4da9ea@...277...>
-
---xtng9WhKd94S5II0D1at7puK5NHx2vPLa
 Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
+To: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>, David Sommerseth <davids@...515...>, openvpn-devel@lists.sourceforge.net
 
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-On 11/11/16 13:09, debbie10t wrote:
-> Hi,
+On 11/11/16 13:28, Samuli Sepp=E4nen wrote:
+> This comes a bit late, sorry.
 >=20
-> following are the server and client systemd unit files
-> which work best for me.
+> Il 20/10/2016 23:42, David Sommerseth ha scritto:
+>> There are several changes which allows systemd to take care of
+>> several aspects of hardening the execution of OpenVPN.
+>>=20
+>> - Let systemd take care of the process tracking directly,
+>> instead of doing that via PID files
+>>=20
 >=20
+> This makes sense, but it has one caveat. If there is no pidfile,=20
+> external, local monitoring applications might not be able to
+> monitor the status of the OpenVPN process anymore. I, for example,
+> heavily utilize monit for it's email notification capabilities, and
+> because it can actually do things if it detects anomalies.
 >=20
-> Tested on:
-> Archlinux     - OpenVPN 2.3.13 x86_64-unknown-linux-gnu - systemd 231
-> CentOS 7      - OpenVPN 2.3.12 x86_64-redhat-linux-gnu  - systemd 219
-> Debian 8      - OpenVPN 2.3.13 x86_64-pc-linux-gnu      - systemd 215
-> OpenSUSE 42.2 - OpenVPN 2.3.8 x86_64-suse-linux-gnu     - systemd 228
-> Fedora 24     - OpenVPN 2.3.12 x86_64-redhat-linux-gnu  - systemd 229
-> Ubuntu 16.04  - OpenVPN 2.3.13 x86_64-pc-linux-gnu      - systemd 229
->=20
-> Tested with:
-> Multiple server and multiple client configs all enabled.
->=20
-> Tests:
-> systemctl enable/disable/start/stop/restart/reboot
->=20
-> Result:
-> ALL Tests passed.
+> The last time I checked, there is no easy way to get systemd to
+> notify the admin if, say, a daemon goes down and systemd restarts
+> it. Is this still the case?
+
+Systemd will in this case mark the service as "Failed" and the status
+message will try to give an indication of what happened - was the
+process killed, segfault, stopped with an exit code, etc.
+
+For external tools, you can now actually add the PID file yourself via
+the configuration file, and place the PID file exactly where it fits
+your need.  So this actually gives a far better flexibility.
+
+We can of course investigate if we should enable systemd to restart
+OpenVPN, at least the server profile, if it dies unexpectedly.
+Currently, I am not fully convinced we want that.
 
 
-Thanks a lot for a very thorough testing!
-
-I will update the patch with setting separate RuntimeDirectory=3D for
-these two profiles, then we won't step on the toes of distro provided
-openvpn{,@}.service files at all.
-
-As there are quite few who are active on this ML and in our community
-with systemd experience, I'm going to apply the updated patch before the
-2.4_beta1 release - unless there comes an informative NAK message before
-that time.  And if someone gives an ACK, it will be applied sooner.
-
-
---=20
+- --=20
 kind regards,
 
 David Sommerseth
 OpenVPN Technologies, Inc
 
-
-
-
-> Note:
-> I have inserted blank lines to help with email line wrap.
->=20
->=20
-> =3D=3D=3D=3D=3D
->=20
->=20
-> openvpn-client@...1685...
->=20
-> [Unit]
-> Description=3DOpenVPN tunnel for %I
-> After=3Dsyslog.target network-online.target
-> Wants=3Dnetwork-online.target
-> Documentation=3Dman:openvpn(8)
-> Documentation=3Dhttps://community.openvpn.net/openvpn/wiki/Openvpn24ManPa=
-ge
-> Documentation=3Dhttps://community.openvpn.net/openvpn/wiki/HOWTO
->=20
-> [Service]
-> PrivateTmp=3Dtrue
-> RuntimeDirectory=3Dopenvpn-client
-> RuntimeDirectoryMode=3D0710
-> WorkingDirectory=3D/etc/openvpn/client
->=20
-> ExecStart=3D/usr/sbin/openvpn --config %i.conf --nobind --suppress-timest=
-amps
->=20
-> CapabilityBoundingSet=3DCAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_RAW CAP_SETGID=
-=20
-> CAP_SETUID CAP_SYS_CHROOT CAP_DAC_OVERRIDE
->=20
-> LimitNPROC=3D10
-> DeviceAllow=3D/dev/null rw
-> DeviceAllow=3D/dev/net/tun rw
->=20
-> [Install]
-> WantedBy=3Dmulti-user.target
->=20
->=20
-> =3D=3D=3D=3D=3D
->=20
->=20
-> openvpn-server@...1685...
->=20
-> [Unit]
-> Description=3DOpenVPN service for %I
-> After=3Dsyslog.target network-online.target
-> Wants=3Dnetwork-online.target
-> Documentation=3Dman:openvpn(8)
-> Documentation=3Dhttps://community.openvpn.net/openvpn/wiki/Openvpn24ManPa=
-ge
-> Documentation=3Dhttps://community.openvpn.net/openvpn/wiki/HOWTO
->=20
-> [Service]
-> PrivateTmp=3Dtrue
-> RuntimeDirectory=3Dopenvpn-server
-> RuntimeDirectoryMode=3D0710
-> WorkingDirectory=3D/etc/openvpn/server
->=20
-> ExecStart=3D/usr/sbin/openvpn --config %i.conf --status=20
-> %t/openvpn-server/%i-status.log --status-version 2 --suppress-timestamps
->=20
-> CapabilityBoundingSet=3DCAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_BIND_SERVICE=20
-> CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_CHROOT CAP_DAC_OVERRIDE
->=20
-> LimitNPROC=3D10
-> DeviceAllow=3D/dev/null rw
-> DeviceAllow=3D/dev/net/tun rw
->=20
-> [Install]
-> WantedBy=3Dmulti-user.target
->=20
->=20
-> =3D=3D=3D=3D=3D
-
-
---xtng9WhKd94S5II0D1at7puK5NHx2vPLa--
-
---PWsQKm5uJHbNJ7fSLw2XiGHJg2dtwahjk
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBAgAGBQJYJbpAAAoJEIbPlEyWcf3yHV4QAKX1r9rhKztCFH4dct6iiFyu
-yh9JtnkHguaEWx04MYHgwHLeJuaDpWmo6DeCMA6iPHjJsXyGPDCOuYpF9DoCZlKu
-V8MOFpQuWjd10VA58Acgjqacf01b00ailmGdbH5HFdUseSlepsAAiusIQegea8VK
-wQsiSI2w+m0HkKO6rmSzb973I8hknN2uebZUyvW5iSCPzPrrkI5qJAzA+ppRwmdI
-jr9obRvEX+UAQzAK910GdYCCyBermIOtFdfJRLcFFBhloTRfVc2GXigcFVaigYds
-uoGw6IALxKDwNJamEpdKgHzyTkeMwigLSQQwZ3xp//WNpXbTpSTl9+XiZi05aRfR
-6jjdPdGqq6cH5Eg9KmlyxKecBXEQ7bCtYCoh7G/Og2J4ffbRkYR5vzwEZxQyfvk2
-5PMJ/yXmLWGED8hfhyVvN3j/FfkE/XaLHnSQGCQdsLf4untwAJ9OvE9WecXtTomf
-WwizTTmgNtqupVeTYwMEHuFezgQt3wo91pdGny0QRMbId2n6SHev9d/x6n+Sn+oN
-SRu2R5UGgbY2wmW9V5PMgwewIkemCLiund2hx7rDQf3CnC3C6s4RdCou3jsHCoM5
-enbGXyBc5J6B06Nksdgtp9lRNg2T8gHw66Q/HOccMQqkI5a2caXMelh4wcYNG3Mt
-HNoMNJVbswAlSvaw0eUw
-=4ClV
+iQIcBAEBAgAGBQJYJbstAAoJEIbPlEyWcf3yTEUQAMFkuQ+9wBYvLVqIilcPBEtL
+gM6rFzmtmQO9HkJnE5DdxxCLTPQu2FDpH66QxUOOkQgilji2iuub0L5ebo/yhfKH
++mKCnn56553kcFSYozDDiW3S0nulCjDGZ3/dWh/jjnVbthpdnigpFswEaTfJsTn8
+ZQ7Uw6rIN4ocqsySLDhTdVaxzcEE3tLXpxsvh7cqGrY7gdodxQfZ6guIN2jNpgOW
+vzKTr/oDbLl7mfE/yCIahH2b++rIWezPwcdXccQdCs1EiadQLwpTm7YCkc+RGXH6
+cYANjeXzBCMUqb+PceRcNBgxQy+6Bo3zBNh5UC3eVcitc9I/3fAxZ+7z3H+Yacyq
+bOX5RGU2vjDO6M1SBtvS3fPSKAIj/yL9DxWmeOyYWJwqSXcixdXBmBtprulMhR1p
+LdO/Fj95onek2qeXQOuoppQO5bUu71r5OwoYmDi/BGKDvIbU7r4watNfHM8v6fiR
+WU4JFMGIvK0oXknv2LJUDpPjyOlMwty9y+aTIPNr+TrxEKzE9PjbfVRpCsNSDJxq
+W4iYZV0qS4OPJl2fHdZeX7bPxeyYsoZ6Qn2qf7QKLB6SQeEheWxeEl4JsBHgvlbO
+4RgVBFJSGVKhgz7pjpYEDVXyBOCKidUBjiIDXyC5C8phIniFQb5umNDFC/6i8Deh
+AkfV28b/RdHq+/TUfLq+
+=3DtTI/
 -----END PGP SIGNATURE-----
-
---PWsQKm5uJHbNJ7fSLw2XiGHJg2dtwahjk--
 
