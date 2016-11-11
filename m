@@ -1,15 +1,10 @@
-References: <1478609729-25222-5-git-send-email-samuli@...515...>
-	<1478613043-27033-1-git-send-email-samuli@...515...>
-	<68076cb3-b018-28c7-0776-85f8a7212e38@...277...>
-	<20161111075846.GY28918@...1296...>
-	<7be9cd74-894a-455a-0471-a102fe4077e8@...515...>
-From: debbie10t <debbie10t@...277...>
-Message-ID: <138786e6-6e44-bea0-4d79-9840fcb0189e@...277...>
-Date: Fri, 11 Nov 2016 10:50:16 +0000
-MIME-Version: 1.0
-In-Reply-To: <7be9cd74-894a-455a-0471-a102fe4077e8@...515...>
-Subject: Re: [Openvpn-devel] [PATCHv2 4/4] Allow passing extra arguments to
- fping/fping6 in t_client.rc
+From: David Sommerseth <davids@...515...>
+Date: Fri, 11 Nov 2016 12:42:21 +0100
+Message-Id: <1478864541-773-1-git-send-email-davids@...515...>
+In-Reply-To: <20161109201932.80991-1-gert@...1296...>
+References: <20161109201932.80991-1-gert@...1296...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Repair topology subnet on
+	OpenBSD
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,44 +13,63 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="windows-1252"; format="flowed"
-Content-Transfer-Encoding: quoted-printable
-To: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>, Gert Doering <gert@...1296...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: gert@...1296...
 Cc: openvpn-devel@lists.sourceforge.net
 
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+ACK.
+
+Checked these changes against the FreeBSD 11 fixes.  The changes puts
+the OpenBSD section well aligned with FreeBSD in do_ifconfig(), and it
+all makes sense from a code-review perspective.
+
+When also knowing the FreeBSD fix have been tested and verified successful
+by externals, I do not see any reasons this should be any worse for OpenBSD.
+I do not have an OpenBSD box to run tests on, so I place confidence in the
+testing Gert have done (which usually very well executed).
 
 
-On 11/11/16 09:53, Samuli Sepp=E4nen wrote:
-> Il 11/11/2016 09:58, Gert Doering ha scritto:
->> Hi,
->>
->> On Fri, Nov 11, 2016 at 12:25:49AM +0000, debbie10t wrote:
->>> On 08/11/16 13:50, samuli@...515... wrote:
->>>> From: Samuli Sepp=E4nen <samuli@...515...>
->>>
->>>> +    $cmd -b $bytes -C 20 -p 250 -q $FPING_EXTRA_ARGS $targetlist
->>>> >>$LOGDIR/$SUF:fping.out 2>&1
->>>
->>> This allows $FPING_EXTRA_ARGS to take precedence over previous arguments
->>>
->>> eg: $FPING_EXTRA_ARGS =3D "-C 1000 -p 1000 -i 1000"
->>
->> Right, which was the point of "v2" :-) - it's a good way to shoot your
->> own foot, but this is an "expert mode knob".
+Your patch has been applied to the following branches
 
-OK, I misunderstood the requirement but now that is clear.
+commit 7f444dee52321c0f0294e99695150a7f69522715  (master)
+commit ceac73b04fe9b70ed798afc07ddb9737c97b7a5d  (release/2.3)
+Author: Gert Doering
+Date:   Wed Nov 9 21:19:32 2016 +0100
 
->>
->>> This does not:
->>> $cmd $FPING_EXTRA_ARGS -b $bytes -C 20 -p 250 -q $targetlist
->>> $LOGDIR/$SUF:fping.out 2>&1
->>
->> Right, which was v1.
->>
->> gert
->
-> In any case, thanks for the review to both of you!
+     Repair topology subnet on OpenBSD
 
-Doing my best :-)
+     Trac: #710
+     Signed-off-by: Gert Doering <gert@...1296...>
+     Acked-by: David Sommerseth <davids@...515...>
+     Message-Id: <20161109201932.80991-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg12983.html
+     Signed-off-by: David Sommerseth <davids@...515...>
 
+
+- --
+kind regards,
+
+David Sommerseth
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBAgAGBQJYJa6TAAoJEIbPlEyWcf3ypU4P/0jRDeEnPBBPdCucYreiYdX2
+aXGfDsz+bzX3Gmp5rD00MZjETLJKl3E6ZPnFN8D0nUeE2p9L/cyPK+eESZ+gE41c
+oelConatOMAKALZYzBgjoP8zQGvlurDZg7BycXNy6vfJ2G2gWJLkyq6piCcOnif6
+wFo7FxicrceHB0emLM8lEQdTdTc1grRpSB8BQSYEZvY4SwzmooD6RLnwrBiiBs2K
+j/ccEANehxDFZ7cPACmRF+gXr7TXoFbAzxiep/jFIAXo7caHgD3JbdAzdRxgOLeO
+cc8c7NjgtKN5wgBbB6Cgr/jSJwBqweBE0MDS0cRRMPARSpOqlRx2OhZtcmFsv7hE
+K9/esBtpW0JsNo8QKAuPAbfU2TJPjyk9x0u6bNqHlqQtcXbRz91fqa+DgEHeCCoo
+BRIgNW3+OUdfte9NgvsTetaK7LViio44M3PFEmwYBtBz/6oazYO0lpDKJRyineNP
++lACVieA2YgXKoghsRNRcWJxd2jqyZUTdQvrh86euaGz38RupDPqpFDf5W0fR2as
+BT3F4Q2T+0WLT4fK1ZZZAK0dD+IHcQwmUanWOFMVStl3Z4vuZc7kUiANU2/m1Ria
+qgnxzP8LG7m52ebtsTd1OzE7HEAejpp3CXEN0dlddLbfVJbyYsdK2pW9vogdSIpZ
+xawe0ScDiu0hSBintf6I
+=gnP6
+-----END PGP SIGNATURE-----
 
