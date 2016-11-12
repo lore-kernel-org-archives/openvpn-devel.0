@@ -1,12 +1,15 @@
+Date: Sat, 12 Nov 2016 16:00:47 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20161112150047.GE28918@...1296...>
 References: <1476996158-5390-1-git-send-email-davids@...515...>
-	<1478950738-12861-1-git-send-email-davids@...515...>
-From: debbie10t <debbie10t@...277...>
-Message-ID: <e7f7340f-947e-ec15-37bf-9db1fb33ff11@...277...>
-Date: Sat, 12 Nov 2016 13:48:28 +0000
+	<6c3649c3-75e0-df8a-d910-73441af695d9@...515...>
+	<a2f226df-89b0-f8de-0af1-225351a90edd@...2080...>
 MIME-Version: 1.0
-In-Reply-To: <1478950738-12861-1-git-send-email-davids@...515...>
-Subject: Re: [Openvpn-devel] [PATCH v2] systemd: Improve the systemd unit
- files
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="bdxr40zIsfYDFWP1"
+Content-Disposition: inline
+In-Reply-To: <a2f226df-89b0-f8de-0af1-225351a90edd@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH] systemd: Improve the systemd unit files
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,108 +18,48 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
+Cc: David Sommerseth <davids@...515...>
 
+--bdxr40zIsfYDFWP1
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
+Hi,
 
-On 12/11/16 11:38, David Sommerseth wrote:
-> There are several changes which allows systemd to take care of several
-> aspects of hardening the execution of OpenVPN.
->
-> - Let systemd take care of the process tracking directly, instead
->   of doing that via PID files
->
-> - Make systemd prepare proper runtime directories for the OpenVPN
->   process.
->
-> - Let systemd do the chdir() before starting OpenVPN.  This allows
->   us to avoid using the --cd option when executing openvpn.
->
-> - CAP_DAC_OVERRIDE was needed when using --chroot.  Otherwise
->   the root user would not be allowed to access files/directories
->   not owned by root.  This will change in the future, when we
->   find better ways to avoid calling chroot() in OpenVPN and
->   rather let systemd prepare a more isolated namespace.
->
-> - Client configurations are now started with --nobind and
->   the OpenVPN client process have lost the CAP_NET_BIND_SERVICE
->   capability which allows binding to port < 1024.
->
-> - Documentation URL now points at the OpenVPN 2.4 man page URL
->
-> The majority of these changes have been proposed by Elias Probst
-> (eliasp) in the GitHub PR #22.
->
-> v2 - Change RuntimeDirectory= to a profile specific (client, server)
->      directory to avoid clashing with older distro unit files
->
-> Contribution-by: Elias Probst <mail@...2185...>
-> Signed-off-by: David Sommerseth <davids@...515...>
-> ---
->  distro/systemd/openvpn-client@...1685... | 11 ++++++-----
->  distro/systemd/openvpn-server@...1685... | 14 ++++++++------
->  2 files changed, 14 insertions(+), 11 deletions(-)
->
-> diff --git a/distro/systemd/openvpn-client@...1685... b/distro/systemd/openvpn-client@...1685...
-> index 56d93a9..661f4a9 100644
-> --- a/distro/systemd/openvpn-client@...1685...
-> +++ b/distro/systemd/openvpn-client@...1685...
-> @@ -3,15 +3,16 @@ Description=OpenVPN tunnel for %I
->  After=syslog.target network-online.target
->  Wants=network-online.target
->  Documentation=man:openvpn(8)
-> -Documentation=https://community.openvpn.net/openvpn/wiki/Openvpn23ManPage
-> +Documentation=https://community.openvpn.net/openvpn/wiki/Openvpn24ManPage
->  Documentation=https://community.openvpn.net/openvpn/wiki/HOWTO
->
->  [Service]
->  PrivateTmp=true
-> -Type=forking
-> -PIDFile=/var/run/openvpn/client_%i.pid
-> -ExecStart=/usr/sbin/openvpn --cd /etc/openvpn/client --config %i.conf --daemon --writepid /var/run/openvpn/client_%i.pid
-> -CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_CHROOT CAP_DAC_READ_SEARCH
-> +RuntimeDirectory=openvpn-client
-> +RuntimeDirectoryMode=0710
-> +WorkingDirectory=/etc/openvpn/client
-> +ExecStart=/usr/sbin/openvpn --suppress-timestamps --nobind --config %i.conf
-> +CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_CHROOT CAP_DAC_OVERRIDE
->  LimitNPROC=10
->  DeviceAllow=/dev/null rw
->  DeviceAllow=/dev/net/tun rw
-> diff --git a/distro/systemd/openvpn-server@...1685... b/distro/systemd/openvpn-server@...1685...
-> index c4c9a12..48d9271 100644
-> --- a/distro/systemd/openvpn-server@...1685...
-> +++ b/distro/systemd/openvpn-server@...1685...
-> @@ -1,16 +1,18 @@
->  [Unit]
->  Description=OpenVPN service for %I
-> -After=syslog.target network.target
-> +After=syslog.target network-online.target
-> +Wants=network-online.target
->  Documentation=man:openvpn(8)
-> -Documentation=https://community.openvpn.net/openvpn/wiki/Openvpn23ManPage
-> +Documentation=https://community.openvpn.net/openvpn/wiki/Openvpn24ManPage
->  Documentation=https://community.openvpn.net/openvpn/wiki/HOWTO
->
->  [Service]
->  PrivateTmp=true
-> -Type=forking
-> -PIDFile=/var/run/openvpn/server_%i.pid
-> -ExecStart=/usr/sbin/openvpn --cd /etc/openvpn/server --status /var/run/openvpn/server_%i-status.log --status-version 2 --config %i.conf --daemon --writepid /var/run/openvpn/server_%i.pid
-> -CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_CHROOT CAP_DAC_READ_SEARCH
-> +RuntimeDirectory=openvpn-server
-> +RuntimeDirectoryMode=0710
-> +WorkingDirectory=/etc/openvpn/server
-> +ExecStart=/usr/sbin/openvpn --status %t/openvpn-server/status-%i.log --status-version 2 --suppress-timestamps --config %i.conf
-> +CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_CHROOT CAP_DAC_OVERRIDE
->  LimitNPROC=10
->  DeviceAllow=/dev/null rw
->  DeviceAllow=/dev/net/tun rw
->
+On Fri, Nov 11, 2016 at 01:35:57PM +0100, David Sommerseth wrote:
+> We can of course investigate if we should enable systemd to restart
+> OpenVPN, at least the server profile, if it dies unexpectedly.
+> Currently, I am not fully convinced we want that.
 
-Out of curiosity, is there a reason to put --config last ?
+I think this would be useful to have.  Server processes are expected to
+be there - if they are not, it needs to be investigated why not, but
+with some reasonable delay, they should be restarted.
 
-Thanks
+(I thought this was what systemd was all about?  "Because sysvinit cannot
+restart stuff!" - which was never true, but standard rc.d scripts do not
+support it)
+
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--bdxr40zIsfYDFWP1
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQCVAwUBWCcun6kuBuNlUUl1AQIeIQQAgsMZTaRB3S7AREY9ciIMeoPpirsCQAbb
+1bAqk++WjEaRe+iIWC8gEK/uVkR/KV/nJ+KgC6hZFZJ9h809rEn9ktuhhJO6p0ay
+btLXj29/vxpYYt6Rt4h6SV/Tug5YbVKmefWfsZCgjAB2C48126qUxMZiyYjM8AL0
+PYHIVvJCaYs=
+=x5B3
+-----END PGP SIGNATURE-----
+
+--bdxr40zIsfYDFWP1--
 
