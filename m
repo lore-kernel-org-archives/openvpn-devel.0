@@ -1,14 +1,12 @@
-Date: Fri, 11 Nov 2016 23:10:04 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20161111221004.GC28918@...1296...>
 References: <20161108124506.32559-1-gert@...1296...>
 	<201611092014.uA9KErZf048132@...2054...>
 	<8feec195-c9ed-a0bb-31c5-459bf9757ce6@...68...>
+	<20161111221004.GC28918@...1296...>
+From: Matthias Andree <matthias.andree@...68...>
+Message-ID: <b998265c-5220-d5ce-596c-fe400a422de2@...68...>
+Date: Sat, 12 Nov 2016 05:43:56 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="3vPM4r6bCybeb41V"
-Content-Disposition: inline
-In-Reply-To: <8feec195-c9ed-a0bb-31c5-459bf9757ce6@...68...>
+In-Reply-To: <20161111221004.GC28918@...1296...>
 Subject: Re: [Openvpn-devel] [PATCH applied] Re: Repair topology subnet on
  FreeBSD 11
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,59 +17,34 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Matthias Andree <matthias.andree@...68...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-
---3vPM4r6bCybeb41V
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hi,
+Am 11.11.2016 um 23:10 schrieb Gert Doering:
+> I might be tempted to do a quick 2.3.14 release in between - there's two
+> important platform fixes in that branch now (FreeBSD and OpenBSD topology
+> subnet :-) ) and Lev's recursive routing patch.  Add to that the windows
+> block-outside-dns patch that I hope to be testing this weekend, and it's
+> worth a minor bugfix release...  at least "before January".
 
-On Fri, Nov 11, 2016 at 07:25:57PM +0100, Matthias Andree wrote:
-> >      Repair topology subnet on FreeBSD 11
-[..]
->=20
-> This is now part of FreeBSD's openvpn 2.3.13_1 (on the port's head) and
-> masked by an option that I enable by default and that I've dubbed
-> FIXSUBNET. <https://svnweb.freebsd.org/ports?view=3Drevision&revision=3D4=
-25811>.
+Well, for me to update the FreeBSD port, mid December 2016 would be cool
+for anything (2.3.14, or 2.4.0, or both) due to the before-xmas-madness
+and to have like two weeks for smoke testing.
 
-Thanks, this is useful.
+On the other hand, we're not Debian or Ubuntu, and the FreeBSD
+ports-secteam (who own the stable "quarterly" ports branch) take a
+rather pragmatic or management approach than drive their principles and
+policies home...
 
-> If nothing new crops up, I can request to merge this back to the
-> quarterly (stable) branch and drop the option if someone deems this
-> urgent, else it will propagate to stable ports in early January 2017. I
-> should probably kick the option before then and make this patch regular
-> (unless 2.3.14 is out sooner, but I understand if people want to focus
-> on getting 2.4.0 into Debian).
+Also, since the FreeBSD stable ports branches follow a
+three-months-lifetime scheme, anything we miss in December will go in in
+April 2017 rather than January, and it's also easy enough to update
+OpenVPN to the ports HEAD branch if needed ahead of time by some user.
+While not formally supported, it works for OpenVPN.
 
-I might be tempted to do a quick 2.3.14 release in between - there's two
-important platform fixes in that branch now (FreeBSD and OpenBSD topology
-subnet :-) ) and Lev's recursive routing patch.  Add to that the windows
-block-outside-dns patch that I hope to be testing this weekend, and it's
-worth a minor bugfix release...  at least "before January".
+Bottom line, give Debian the priority, and while it would be nice to
+have for FreeBSD, no need to rush.
 
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
 
---3vPM4r6bCybeb41V
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQCVAwUBWCZBu6kuBuNlUUl1AQK6uwQAsTQyhwxpDENKYknOWCE2HBMMf4xRHaNG
-qQYWt6RD8JFbhdFq0jes238TtbT816C8hC5dThIy6B+WxESssea244Yd+wlQ+Znt
-TTRrX4upbyixJK4KNPts/NSCMbIvZmHwINzJNRQsezR9g5pNSwCCigeSiYFLpuLy
-lG0ymdWujl0=
-=OfHy
------END PGP SIGNATURE-----
-
---3vPM4r6bCybeb41V--
 
