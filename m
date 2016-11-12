@@ -1,15 +1,12 @@
-References: <1478636302-9678-1-git-send-email-steffan.karger@...1435...>
-	<1478636302-9678-4-git-send-email-steffan.karger@...1435...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <22f635b0-8fe4-524e-17a8-3876aa026c20@...2080...>
-Date: Sat, 12 Nov 2016 12:51:53 +0100
+References: <1476996158-5390-1-git-send-email-davids@...515...>
+	<1478950738-12861-1-git-send-email-davids@...515...>
+From: debbie10t <debbie10t@...277...>
+Message-ID: <e7f7340f-947e-ec15-37bf-9db1fb33ff11@...277...>
+Date: Sat, 12 Nov 2016 13:48:28 +0000
 MIME-Version: 1.0
-In-Reply-To: <1478636302-9678-4-git-send-email-steffan.karger@...1435...>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="34K9Fu6X1DnKmGOGuO65rSRhRqGQUsoIb"
-Subject: Re: [Openvpn-devel] [PATCH 3/5] Add missing includes in error.h
-Reply-To: openvpn-devel@lists.sourceforge.net
+In-Reply-To: <1478950738-12861-1-git-send-email-davids@...515...>
+Subject: Re: [Openvpn-devel] [PATCH v2] systemd: Improve the systemd unit
+ files
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,88 +15,108 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan.karger@...1435...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---34K9Fu6X1DnKmGOGuO65rSRhRqGQUsoIb
-Content-Type: multipart/mixed; boundary="I6N3qFgWB8apQ32uGEn1sbHuExkWbP6Uu";
-	protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-Reply-To: openvpn-devel@lists.sourceforge.net
-To: Steffan Karger <steffan.karger@...1435...>,
-	openvpn-devel@lists.sourceforge.net
-Message-ID: <22f635b0-8fe4-524e-17a8-3876aa026c20@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH 3/5] Add missing includes in error.h
-References: <1478636302-9678-1-git-send-email-steffan.karger@...1435...>
-	<1478636302-9678-4-git-send-email-steffan.karger@...1435...>
-In-Reply-To: <1478636302-9678-4-git-send-email-steffan.karger@...1435...>
 
---I6N3qFgWB8apQ32uGEn1sbHuExkWbP6Uu
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
 
-On 08/11/16 21:18, Steffan Karger wrote:
-> error.h depends on these, but is apparently never used by files that do
-> not include them.  When implementing the --tls-crypt unit tests, I ran
-> into this.
->=20
-> Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+On 12/11/16 11:38, David Sommerseth wrote:
+> There are several changes which allows systemd to take care of several
+> aspects of hardening the execution of OpenVPN.
+>
+> - Let systemd take care of the process tracking directly, instead
+>   of doing that via PID files
+>
+> - Make systemd prepare proper runtime directories for the OpenVPN
+>   process.
+>
+> - Let systemd do the chdir() before starting OpenVPN.  This allows
+>   us to avoid using the --cd option when executing openvpn.
+>
+> - CAP_DAC_OVERRIDE was needed when using --chroot.  Otherwise
+>   the root user would not be allowed to access files/directories
+>   not owned by root.  This will change in the future, when we
+>   find better ways to avoid calling chroot() in OpenVPN and
+>   rather let systemd prepare a more isolated namespace.
+>
+> - Client configurations are now started with --nobind and
+>   the OpenVPN client process have lost the CAP_NET_BIND_SERVICE
+>   capability which allows binding to port < 1024.
+>
+> - Documentation URL now points at the OpenVPN 2.4 man page URL
+>
+> The majority of these changes have been proposed by Elias Probst
+> (eliasp) in the GitHub PR #22.
+>
+> v2 - Change RuntimeDirectory= to a profile specific (client, server)
+>      directory to avoid clashing with older distro unit files
+>
+> Contribution-by: Elias Probst <mail@...2185...>
+> Signed-off-by: David Sommerseth <davids@...515...>
 > ---
->  src/openvpn/error.h | 3 +++
->  1 file changed, 3 insertions(+)
->=20
-> diff --git a/src/openvpn/error.h b/src/openvpn/error.h
-> index ced2fdf..1d791bb 100644
-> --- a/src/openvpn/error.h
-> +++ b/src/openvpn/error.h
-> @@ -27,6 +27,9 @@
->=20=20
->  #include "basic.h"
->=20=20
-> +#include <errno.h>
-> +#include <stdbool.h>
-> +
->  /* #define ABORT_ON_ERROR */
->=20=20
->  #ifdef ENABLE_PKCS11
->=20
+>  distro/systemd/openvpn-client@...1685... | 11 ++++++-----
+>  distro/systemd/openvpn-server@...1685... | 14 ++++++++------
+>  2 files changed, 14 insertions(+), 11 deletions(-)
+>
+> diff --git a/distro/systemd/openvpn-client@...1685... b/distro/systemd/openvpn-client@...1685...
+> index 56d93a9..661f4a9 100644
+> --- a/distro/systemd/openvpn-client@...1685...
+> +++ b/distro/systemd/openvpn-client@...1685...
+> @@ -3,15 +3,16 @@ Description=OpenVPN tunnel for %I
+>  After=syslog.target network-online.target
+>  Wants=network-online.target
+>  Documentation=man:openvpn(8)
+> -Documentation=https://community.openvpn.net/openvpn/wiki/Openvpn23ManPage
+> +Documentation=https://community.openvpn.net/openvpn/wiki/Openvpn24ManPage
+>  Documentation=https://community.openvpn.net/openvpn/wiki/HOWTO
+>
+>  [Service]
+>  PrivateTmp=true
+> -Type=forking
+> -PIDFile=/var/run/openvpn/client_%i.pid
+> -ExecStart=/usr/sbin/openvpn --cd /etc/openvpn/client --config %i.conf --daemon --writepid /var/run/openvpn/client_%i.pid
+> -CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_CHROOT CAP_DAC_READ_SEARCH
+> +RuntimeDirectory=openvpn-client
+> +RuntimeDirectoryMode=0710
+> +WorkingDirectory=/etc/openvpn/client
+> +ExecStart=/usr/sbin/openvpn --suppress-timestamps --nobind --config %i.conf
+> +CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_CHROOT CAP_DAC_OVERRIDE
+>  LimitNPROC=10
+>  DeviceAllow=/dev/null rw
+>  DeviceAllow=/dev/net/tun rw
+> diff --git a/distro/systemd/openvpn-server@...1685... b/distro/systemd/openvpn-server@...1685...
+> index c4c9a12..48d9271 100644
+> --- a/distro/systemd/openvpn-server@...1685...
+> +++ b/distro/systemd/openvpn-server@...1685...
+> @@ -1,16 +1,18 @@
+>  [Unit]
+>  Description=OpenVPN service for %I
+> -After=syslog.target network.target
+> +After=syslog.target network-online.target
+> +Wants=network-online.target
+>  Documentation=man:openvpn(8)
+> -Documentation=https://community.openvpn.net/openvpn/wiki/Openvpn23ManPage
+> +Documentation=https://community.openvpn.net/openvpn/wiki/Openvpn24ManPage
+>  Documentation=https://community.openvpn.net/openvpn/wiki/HOWTO
+>
+>  [Service]
+>  PrivateTmp=true
+> -Type=forking
+> -PIDFile=/var/run/openvpn/server_%i.pid
+> -ExecStart=/usr/sbin/openvpn --cd /etc/openvpn/server --status /var/run/openvpn/server_%i-status.log --status-version 2 --config %i.conf --daemon --writepid /var/run/openvpn/server_%i.pid
+> -CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_CHROOT CAP_DAC_READ_SEARCH
+> +RuntimeDirectory=openvpn-server
+> +RuntimeDirectoryMode=0710
+> +WorkingDirectory=/etc/openvpn/server
+> +ExecStart=/usr/sbin/openvpn --status %t/openvpn-server/status-%i.log --status-version 2 --suppress-timestamps --config %i.conf
+> +CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_CHROOT CAP_DAC_OVERRIDE
+>  LimitNPROC=10
+>  DeviceAllow=/dev/null rw
+>  DeviceAllow=/dev/net/tun rw
+>
 
-This one is easy! :)  Without this patch, the following patch will not
-build, so ACK.
+Out of curiosity, is there a reason to put --config last ?
 
-
---=20
-kind regards,
-
-David Sommerseth
-OpenVPN Technologies, Inc
-
-
-
---I6N3qFgWB8apQ32uGEn1sbHuExkWbP6Uu--
-
---34K9Fu6X1DnKmGOGuO65rSRhRqGQUsoIb
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBAgAGBQJYJwJZAAoJEIbPlEyWcf3yAycP/2qo91JFt3QcE/l5GAK3gGfb
-uS16I9kzO/ZvZ7oKFJcTVEUV1h6fc1cB9amM/mr4by5Vr9Akxp+aC1JW3why76jS
-mmxgHS+SAcVbRsJcLf8Sx3/Kv7iz6KZQNNAUWyqxNZeWdh8OS0oUY4E8lJ9FrTg9
-MCjAkf9m4RxzJtuCTUhzyPA9nPVpfI9Kq4S3SNqqzbn4Fe3DMOvCyYZJ4q3B0IHh
-X4gfF8QKSYAhH8oWqRiWwODOaO7zN77oC6zQ4JB3SU/XLcePHE9hX2y+NIZ6Nduz
-qIBc2YJwu7SuMP6f2IH/jNnGTfKOsaSMQL3z4oFClaRNCb7ctcoZ5ugXnyoEYNLp
-bnslN20MGBogmM+uLbUee5e2jh+KQGC6wu04qV+SwURqiKIgPMeMACDB+IBmKSig
-zqf51eICP++AGylnuowtKsg/Jz88/luMsb4nRojKnErOv13XYaox9gMnaRo5RL44
-m7BCCd0I0DKZwCa/MNfyKrgmyM3cVprhluPrQBSqL54iAPQyxZc9dkv1cO0K8uff
-gMTTZde56986W3/1qs74TgiCDuyV6cGQmK7Zmg6Md8aM+fKCWBuD7ppB9tw14y4t
-vqrZGk2BMV3aX8D2ZalmsBZMzc3SKBhonsWBaMlfxh3Gto4j1JFNXSmQRF828w/I
-qQ8HQ9B7G/97vjlCzO/e
-=fo8/
------END PGP SIGNATURE-----
-
---34K9Fu6X1DnKmGOGuO65rSRhRqGQUsoIb--
+Thanks
 
