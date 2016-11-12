@@ -1,14 +1,9 @@
-References: <20161108124506.32559-1-gert@...1296...>
-	<201611092014.uA9KErZf048132@...2054...>
-	<8feec195-c9ed-a0bb-31c5-459bf9757ce6@...68...>
-	<20161111221004.GC28918@...1296...>
-From: Matthias Andree <matthias.andree@...68...>
-Message-ID: <b998265c-5220-d5ce-596c-fe400a422de2@...68...>
-Date: Sat, 12 Nov 2016 05:43:56 +0100
-MIME-Version: 1.0
-In-Reply-To: <20161111221004.GC28918@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: Repair topology subnet on
- FreeBSD 11
+From: David Sommerseth <davids@...515...>
+Date: Sat, 12 Nov 2016 12:38:58 +0100
+Message-Id: <1478950738-12861-1-git-send-email-davids@...515...>
+In-Reply-To: <1476996158-5390-1-git-send-email-davids@...515...>
+References: <1476996158-5390-1-git-send-email-davids@...515...>
+Subject: [Openvpn-devel] [PATCH v2] systemd: Improve the systemd unit files
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,34 +12,103 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-Am 11.11.2016 um 23:10 schrieb Gert Doering:
-> I might be tempted to do a quick 2.3.14 release in between - there's two
-> important platform fixes in that branch now (FreeBSD and OpenBSD topology
-> subnet :-) ) and Lev's recursive routing patch.  Add to that the windows
-> block-outside-dns patch that I hope to be testing this weekend, and it's
-> worth a minor bugfix release...  at least "before January".
+There are several changes which allows systemd to take care of several
+aspects of hardening the execution of OpenVPN.
 
-Well, for me to update the FreeBSD port, mid December 2016 would be cool
-for anything (2.3.14, or 2.4.0, or both) due to the before-xmas-madness
-and to have like two weeks for smoke testing.
+- Let systemd take care of the process tracking directly, instead
+  of doing that via PID files
 
-On the other hand, we're not Debian or Ubuntu, and the FreeBSD
-ports-secteam (who own the stable "quarterly" ports branch) take a
-rather pragmatic or management approach than drive their principles and
-policies home...
+- Make systemd prepare proper runtime directories for the OpenVPN
+  process.
 
-Also, since the FreeBSD stable ports branches follow a
-three-months-lifetime scheme, anything we miss in December will go in in
-April 2017 rather than January, and it's also easy enough to update
-OpenVPN to the ports HEAD branch if needed ahead of time by some user.
-While not formally supported, it works for OpenVPN.
+- Let systemd do the chdir() before starting OpenVPN.  This allows
+  us to avoid using the --cd option when executing openvpn.
 
-Bottom line, give Debian the priority, and while it would be nice to
-have for FreeBSD, no need to rush.
+- CAP_DAC_OVERRIDE was needed when using --chroot.  Otherwise
+  the root user would not be allowed to access files/directories
+  not owned by root.  This will change in the future, when we
+  find better ways to avoid calling chroot() in OpenVPN and
+  rather let systemd prepare a more isolated namespace.
 
+- Client configurations are now started with --nobind and
+  the OpenVPN client process have lost the CAP_NET_BIND_SERVICE
+  capability which allows binding to port < 1024.
+
+- Documentation URL now points at the OpenVPN 2.4 man page URL
+
+The majority of these changes have been proposed by Elias Probst
+(eliasp) in the GitHub PR #22.
+
+v2 - Change RuntimeDirectory= to a profile specific (client, server)
+     directory to avoid clashing with older distro unit files
+
+Contribution-by: Elias Probst <mail@...2185...>
+Signed-off-by: David Sommerseth <davids@...515...>
+---
+ distro/systemd/openvpn-client@...1685... | 11 ++++++-----
+ distro/systemd/openvpn-server@...1685... | 14 ++++++++------
+ 2 files changed, 14 insertions(+), 11 deletions(-)
+
+diff --git a/distro/systemd/openvpn-client@...1685... b/distro/systemd/openvpn-client@...1685...
+index 56d93a9..661f4a9 100644
+--- a/distro/systemd/openvpn-client@...1685...
++++ b/distro/systemd/openvpn-client@...1685...
+@@ -3,15 +3,16 @@ Description=OpenVPN tunnel for %I
+ After=syslog.target network-online.target
+ Wants=network-online.target
+ Documentation=man:openvpn(8)
+-Documentation=https://community.openvpn.net/openvpn/wiki/Openvpn23ManPage
++Documentation=https://community.openvpn.net/openvpn/wiki/Openvpn24ManPage
+ Documentation=https://community.openvpn.net/openvpn/wiki/HOWTO
+ 
+ [Service]
+ PrivateTmp=true
+-Type=forking
+-PIDFile=/var/run/openvpn/client_%i.pid
+-ExecStart=/usr/sbin/openvpn --cd /etc/openvpn/client --config %i.conf --daemon --writepid /var/run/openvpn/client_%i.pid
+-CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_CHROOT CAP_DAC_READ_SEARCH
++RuntimeDirectory=openvpn-client
++RuntimeDirectoryMode=0710
++WorkingDirectory=/etc/openvpn/client
++ExecStart=/usr/sbin/openvpn --suppress-timestamps --nobind --config %i.conf
++CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_CHROOT CAP_DAC_OVERRIDE
+ LimitNPROC=10
+ DeviceAllow=/dev/null rw
+ DeviceAllow=/dev/net/tun rw
+diff --git a/distro/systemd/openvpn-server@...1685... b/distro/systemd/openvpn-server@...1685...
+index c4c9a12..48d9271 100644
+--- a/distro/systemd/openvpn-server@...1685...
++++ b/distro/systemd/openvpn-server@...1685...
+@@ -1,16 +1,18 @@
+ [Unit]
+ Description=OpenVPN service for %I
+-After=syslog.target network.target
++After=syslog.target network-online.target
++Wants=network-online.target
+ Documentation=man:openvpn(8)
+-Documentation=https://community.openvpn.net/openvpn/wiki/Openvpn23ManPage
++Documentation=https://community.openvpn.net/openvpn/wiki/Openvpn24ManPage
+ Documentation=https://community.openvpn.net/openvpn/wiki/HOWTO
+ 
+ [Service]
+ PrivateTmp=true
+-Type=forking
+-PIDFile=/var/run/openvpn/server_%i.pid
+-ExecStart=/usr/sbin/openvpn --cd /etc/openvpn/server --status /var/run/openvpn/server_%i-status.log --status-version 2 --config %i.conf --daemon --writepid /var/run/openvpn/server_%i.pid
+-CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_CHROOT CAP_DAC_READ_SEARCH
++RuntimeDirectory=openvpn-server
++RuntimeDirectoryMode=0710
++WorkingDirectory=/etc/openvpn/server
++ExecStart=/usr/sbin/openvpn --status %t/openvpn-server/status-%i.log --status-version 2 --suppress-timestamps --config %i.conf
++CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_CHROOT CAP_DAC_OVERRIDE
+ LimitNPROC=10
+ DeviceAllow=/dev/null rw
+ DeviceAllow=/dev/net/tun rw
+-- 
+1.8.3.1
 
 
