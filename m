@@ -1,10 +1,10 @@
-Date: Sun, 13 Nov 2016 19:22:55 +0100 (CET)
-Message-Id: <201611131822.uADIMt73008075@...2054...>
+Date: Sun, 13 Nov 2016 19:35:57 +0100 (CET)
+Message-Id: <201611131835.uADIZvGK015850@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1474085439-28766-2-git-send-email-selva.nair@...277...>
-References: <1474085439-28766-2-git-send-email-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Support --block-outside-dns on
-	multiple tunnels
+In-Reply-To: <1479060203-4472-1-git-send-email-steffan@...1856...>
+References: <1479060203-4472-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix builds on compilers without
+	anonymous union support
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,30 +15,26 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Selva Nair <selva.nair@...277...>
+To: Steffan Karger <steffan@...1856...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-ACK.
+ACK, tested on FreeBSD 7.4 ("builds, works, happiness"), FreeBSD 10, and 
+recent Linux ("were happy already", HAVE_ANONYMOUS... properly detected).
 
-The patch is basically the same as the previously-acked master patch
-(plus code cleanups).
+Let's see if buildbot thinks otherwise for the remaining platforms...
 
-I have only reviewed this one, and not built a test installer and tested
-it - I'll go test the snapshot as soon as buildbot makes one for me, but
-given that the code changes are quite similar, I expect no surprises.
+Your patch has been applied to the master branch.
 
-Your patch has been applied to the release/2.3 branch.
+commit 9223336a88bc065348d0ce37621bbf2b1087ba0e
+Author: Steffan Karger
+Date:   Sun Nov 13 19:03:23 2016 +0100
 
-commit f65f85275aeee79ebfdee5e1e00008b6f6508106
-Author: Selva Nair
-Date:   Sat Sep 17 00:10:39 2016 -0400
+     Fix builds on compilers without anonymous union support
 
-     Support --block-outside-dns on multiple tunnels
-
-     Signed-off-by: Selva Nair <selva.nair@...277...>
+     Signed-off-by: Steffan Karger <steffan@...1856...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1474085439-28766-2-git-send-email-selva.nair@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg12466.html
+     Message-Id: <1479060203-4472-1-git-send-email-steffan@...1856...>
+     URL: http://www.mail-archive.com/search?l=mid&q=1479060203-4472-1-git-send-email-steffan@...1856...
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
