@@ -1,9 +1,9 @@
 From: Steffan Karger <steffan@...1856...>
-Date: Sun, 13 Nov 2016 13:37:09 +0100
-Message-Id: <1479040629-22488-1-git-send-email-steffan@...1856...>
-In-Reply-To: <007153b7-099b-0b86-0aa1-a70e9d8d1495@...2080...>
-References: <007153b7-099b-0b86-0aa1-a70e9d8d1495@...2080...>
-Subject: [Openvpn-devel] [PATCH] Don't deference type-punned pointers
+Date: Sun, 13 Nov 2016 14:17:27 +0100
+Message-Id: <1479043047-25883-1-git-send-email-steffan@...1856...>
+In-Reply-To: <1479040629-22488-1-git-send-email-steffan@...1856...>
+References: <1479040629-22488-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH v3] Don't deference type-punned pointers
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -31,7 +31,8 @@ behave as it was probably intended to:  only mask the address part, not
 also the port part of IPv6 adresses if MR_WITH_PORT is used (ie ma->len
 is sizeof(struct in6_addr)+2).
 
-v2: fix all strict aliasing occurrences, not just those in mroute.h.
+v2: fix all strict aliasing occurrences, not just those in mroute.h
+v3: add missing ntohs() in mroute_addr_print_ex()
 
 Signed-off-by: Steffan Karger <steffan@...1856...>
 ---
@@ -72,7 +73,7 @@ index ced2fdf..c90b36b 100644
  void crash (void); /* force a segfault (debugging only) */
  #endif
 diff --git a/src/openvpn/mroute.c b/src/openvpn/mroute.c
-index 972f1dd..ad42f76 100644
+index 972f1dd..c905af7 100644
 --- a/src/openvpn/mroute.c
 +++ b/src/openvpn/mroute.c
 @@ -58,7 +58,8 @@ is_mac_mcast_addr (const uint8_t *mac)
@@ -249,7 +250,7 @@ index 972f1dd..ad42f76 100644
 -		port = buf_read_u16 (&buf);
 -		if (port >= 0)
 -		  buf_printf (&out, ":%d", port);
-+		buf_printf (&out, ":%d", maddr.v4.port);
++		buf_printf (&out, ":%d", ntohs (maddr.v4.port));
  	      }
  	  }
  	  break;
