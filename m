@@ -1,12 +1,9 @@
-MIME-Version: 1.0
-In-Reply-To: <e95b939e-9486-eaf4-b351-4423c7dbfd33@...2080...>
-References: <1479153490-6259-1-git-send-email-steffan@...1856...>
-	<1479153967-6788-1-git-send-email-steffan@...1856...>
-	<e95b939e-9486-eaf4-b351-4423c7dbfd33@...2080...>
-From: Steffan Karger <steffan@...1856...>
-Date: Mon, 14 Nov 2016 22:42:04 +0100
-Message-ID: <CAA1AbxJsvrMnGyg61hOvwR7AU=-30nott90=Q91oP8VBmZDb+Q@...278...>
-Subject: Re: [Openvpn-devel] [PATCH v2] Deprecate key-method 1
+From: David Sommerseth <davids@...515...>
+Date: Mon, 14 Nov 2016 23:10:03 +0100
+Message-Id: <1479161403-12040-1-git-send-email-davids@...515...>
+In-Reply-To: <1479153967-6788-1-git-send-email-steffan@...1856...>
+References: <1479153967-6788-1-git-send-email-steffan@...1856...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Deprecate key-method 1
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,54 +12,53 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: steffan@...1856...
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-On 14 November 2016 at 22:35, David Sommerseth
-<openvpn@...2080...> wrote:
- On 14/11/16 21:06, Steffan Karger wrote:
->> Key method 2 has been the default since OpenVPN 2.0, and is both
->> more functional and secure.  Also, key method 1 was only ever
->> supported for peer-to-peer connections (i.e. not for
->> client-server).
->>
->> Let's get rid of some legacy and phase out key method 1.
->>
->> v2: add Changes.rst entry, and update man page
->>
->> Signed-off-by: Steffan Karger <steffan@...1856...> --- Changes.rst
->> | 7 +++++++ doc/openvpn.8         | 5 ++++- src/openvpn/options.c |
->> 6 ++++++ 3 files changed, 17 insertions(+), 1 deletion(-)
->
-> I wanted to give this an ACK ... but I think we should just remove it
-> all together as we seem to be in a broken state already.
->
-> /usr/sbin/openvpn --dev tun --local 192.168.122.1 --lport 1194 \
->          --remote 192.168.122.100 --rport 194 \
->          --secret ../../sample/sample-keys/ta.key 0 \
->          --ifconfig 10.8.0.10 10.8.0.20 --verb 3 \
->          --key-method 1
-> Options error: Parameter key_method can only be specified in TLS-mode,
-> i.e. where --tls-server or --tls-client is also specified.
-> Use --help for more information.
->
-> That is with /usr/sbin/openvpn --version:
-> OpenVPN 2.3.11 x86_64-redhat-linux-gnu [SSL (OpenSSL)] [LZO] [EPOLL]
-> [PKCS11] [MH] [IPv6] built on May 10 2016
->
-> So unless I messed up my simple and stupid static key p2p mode tunnel,
-> this doesn't work at all with v2.3.  And git master haven't "fixed"
-> this issue.
->
-> If nobody noticed this by now, then nobody really uses --key-method.
+ACK, but with a minor adjustment to the warning + Changes.rst
+file.  The text now tries to encourage not setting --key-method
+at all, as that will default to --key-method 2.
 
-Well, the options parser is right:  --key-method should be used
-together with --tls-server and --tls-client.  Use e.g. the
-loopback-server and loopback-client configs from sample/sample-configs
-to test this.
+Your patch has been applied to the master branch
 
--Steffan
+commit 1ce0638627eb35631af9bfaa569468573568ec65
+Author: Steffan Karger
+Date:   Mon Nov 14 21:06:07 2016 +0100
+
+     Deprecate key-method 1
+
+     Signed-off-by: Steffan Karger <steffan@...1856...>
+     Acked-by: David Sommerseth <davids@...515...>
+     Message-Id: <1479153967-6788-1-git-send-email-steffan@...1856...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13054.html
+     Signed-off-by: David Sommerseth <davids@...515...>
+
+
+- --
+kind regards,
+
+David Sommerseth
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBAgAGBQJYKjYzAAoJEIbPlEyWcf3yiSMP/27hFtYCIUlLIaMyvaHWeLqu
+Rfizl0PPpXX3Q3Nwi9SJBGwQdMEFf9UJJKMKpBdrVq4ftRHD/qef25pe+a3DxsCY
+/l5skP3SXHGf+7EsRvRmvmqXoHArJlJuQy3LYJZF6M7SBw39tDiaEI/p2zFCwgTS
+tVmQr0IMs/ZKYKmnDF6LHdUfzpEDkYfe1yhqsO0+nFUdbV6ePZ80xHyGy/BWbypK
+QVS6o3uxiCl7CakyxA2Twg7DFg0/64g+lE+OGCEy3rS6IUGB6q/0njAKYqlPp8VP
+81ULuFrHXydVHSgy3jb6peakHu1MP2zEKBiaBtPm2nuQ+IgkvoCQIwgmdc39FZDs
+DPRheUQXvoUv2Dx2U2ns01SANzpXpQzVsFiyJZqzC59RLLigL9V5CRrPDiw9YozQ
+KKQahLf5BtCVNhYwVrlQhrKdYQnoIlTGc6XXU0LR32HGahEHaZDgNmZsLi6I5VUV
+XQaKd9SZWozIqwaA1vWisUlJXKyCSkEqK/9fukaa7AyVwrcyRUNttig6Hwh+rbXL
+czUxZZaou2TQeDOwtuOOuguNNl2TNo3Xg84JxYxhgBV/LO0+QooTt2s4g8M2BB4y
+lbQoZeU9xxG+wsvr7Tq/mt3FfMVMqApaFR//G1VU0n/SeoS+ktF82XyJz8CEN/kn
+TPXJUvjlvmnJHQaFZ1CC
+=WZJS
+-----END PGP SIGNATURE-----
 
