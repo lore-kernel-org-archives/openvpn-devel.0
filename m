@@ -1,10 +1,9 @@
-Date: Mon, 14 Nov 2016 19:51:49 +0100 (CET)
-Message-Id: <201611141851.uAEIpnZv078445@...2054...>
+Date: Mon, 14 Nov 2016 19:56:38 +0100 (CET)
+Message-Id: <201611141856.uAEIucMH078657@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1478636302-9678-2-git-send-email-steffan.karger@...1435...>
-References: <1478636302-9678-2-git-send-email-steffan.karger@...1435...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Refactor static/tls-auth key
-	loading
+In-Reply-To: <1478636302-9678-4-git-send-email-steffan.karger@...1435...>
+References: <1478636302-9678-4-git-send-email-steffan.karger@...1435...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Add missing includes in error.h
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,16 +19,21 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Your patch has been applied to the master branch.
 
-commit 28c115e401636432b1da2365b8f144523d9d7c53
-Author: Steffan Karger
-Date:   Tue Nov 8 21:18:18 2016 +0100
+(I had to massage it a bit because "someone" added an <assert.h> include
+to the context below this patch, and git am failed - not very hard to
+do, just pointing this out)
 
-     Refactor static/tls-auth key loading
+commit b7e51b137929e325e2ac3c14f751c3f642063cd5
+Author: Steffan Karger
+Date:   Tue Nov 8 21:18:20 2016 +0100
+
+     Add missing includes in error.h
 
      Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+     Acked-by: David Sommerseth <davids@...1347...>
      Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <1478636302-9678-2-git-send-email-steffan.karger@...1435...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg12969.html
+     Message-Id: <1478636302-9678-4-git-send-email-steffan.karger@...1435...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg12972.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
