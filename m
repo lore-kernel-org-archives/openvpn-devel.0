@@ -1,9 +1,10 @@
-Date: Mon, 14 Nov 2016 19:56:38 +0100 (CET)
-Message-Id: <201611141856.uAEIucMH078657@...2054...>
+Date: Mon, 14 Nov 2016 20:31:50 +0100 (CET)
+Message-Id: <201611141931.uAEJVoLJ085097@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1478636302-9678-4-git-send-email-steffan.karger@...1435...>
-References: <1478636302-9678-4-git-send-email-steffan.karger@...1435...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Add missing includes in error.h
+In-Reply-To: <1477672963-5724-2-git-send-email-heiko.hund@...1489...>
+References: <1477672963-5724-2-git-send-email-heiko.hund@...1489...>
+Subject: [Openvpn-devel] [PATCH applied] Re: put argv_* functions into own
+	file, add unit tests
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,26 +15,21 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Steffan Karger <steffan.karger@...1435...>
+To: Heiko Hund <heiko.hund@...1489...>
 Cc: openvpn-devel@lists.sourceforge.net
 
 Your patch has been applied to the master branch.
 
-(I had to massage it a bit because "someone" added an <assert.h> include
-to the context below this patch, and git am failed - not very hard to
-do, just pointing this out)
+commit 698e268afb53014614f8e90ac8ff0667ce5e555d
+Author: Heiko Hund
+Date:   Fri Oct 28 18:42:37 2016 +0200
 
-commit b7e51b137929e325e2ac3c14f751c3f642063cd5
-Author: Steffan Karger
-Date:   Tue Nov 8 21:18:20 2016 +0100
+     put argv_* functions into own file, add unit tests
 
-     Add missing includes in error.h
-
-     Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+     Signed-off-by: Heiko Hund <heiko.hund@...1489...>
      Acked-by: David Sommerseth <davids@...1347...>
-     Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <1478636302-9678-4-git-send-email-steffan.karger@...1435...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg12972.html
+     Message-Id: <1477672963-5724-2-git-send-email-heiko.hund@...1489...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg12811.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
