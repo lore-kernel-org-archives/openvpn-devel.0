@@ -1,10 +1,9 @@
-Date: Mon, 14 Nov 2016 20:50:11 +0100 (CET)
-Message-Id: <201611141950.uAEJoB8i086812@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <1477672963-5724-5-git-send-email-heiko.hund@...1489...>
-References: <1477672963-5724-5-git-send-email-heiko.hund@...1489...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Factor out %sc handling from
-	argv_printf()
+From: Steffan Karger <steffan@...1856...>
+Date: Mon, 14 Nov 2016 20:58:10 +0100
+Message-Id: <1479153490-6259-1-git-send-email-steffan@...1856...>
+In-Reply-To: <54FC26BB.2000202@...1856...>
+References: <54FC26BB.2000202@...1856...>
+Subject: [Openvpn-devel] [PATCH] Deprecate key-method 1
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,27 +14,37 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Heiko Hund <heiko.hund@...1489...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master branch.
+Key method 2 has been the default since OpenVPN 2.0, and is both more
+functional and secure.  Also, key method 1 was only ever supported for
+peer-to-peer connections (i.e. not for client-server).
 
-commit 253609124459f8df96e059bba9c164299a32318e
-Author: Heiko Hund
-Date:   Fri Oct 28 18:42:40 2016 +0200
+Let's get rid of some legacy and phase out key method 1.
 
-     Factor out %sc handling from argv_printf()
+Signed-off-by: Steffan Karger <steffan@...1856...>
+---
+ src/openvpn/options.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-     Signed-off-by: Heiko Hund <heiko.hund@...1489...>
-     Acked-by: David Sommerseth <davids@...1347...>
-     Message-Id: <1477672963-5724-5-git-send-email-heiko.hund@...1489...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg12816.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 1eb3a41..f39c4fa 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -2245,6 +2245,12 @@ options_postprocess_verify_ce (const struct options *options, const struct conne
+ 	  "may accept clients which do not present a certificate");
+     }
+ 
++  if (options->key_method == 1)
++    {
++      msg (M_WARN, "WARNING: --key-method 1 is deprecated and will be removed"
++	  "in OpenVPN 2.5.  Migrate to --key-method 2 as soon as possible.");
++    }
++
+   if (options->tls_server || options->tls_client)
+     {
+ #ifdef ENABLE_PKCS11
+-- 
+2.7.4
 
 
