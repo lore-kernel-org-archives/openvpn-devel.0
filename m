@@ -1,8 +1,9 @@
 From: David Sommerseth <davids@...515...>
-Date: Mon, 14 Nov 2016 23:45:08 +0100
-Message-Id: <1479163508-19435-1-git-send-email-davids@...515...>
-Subject: [Openvpn-devel] [PATCH] file checks: Merge
-	warn_if_group_others_accessible() into check_file_access()
+Date: Tue, 15 Nov 2016 00:13:05 +0100
+Message-Id: <1479165185-11730-1-git-send-email-davids@...515...>
+In-Reply-To: <1478870201-17943-1-git-send-email-davids@...515...>
+References: <1478870201-17943-1-git-send-email-davids@...515...>
+Subject: [Openvpn-devel] [PATCH v2] tun: Fix compiler warnings
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,85 +16,91 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Commit 825e2ec1f358f2e8 cleaned up the usage of warn_if_group_others_accessible()
-and moved it into options.c.  At this point there is only one caller of this
-function, check_file_access().
+Fixes two compiler warnings idetified by using CFLAGS=-O2
 
-This takes that clean-up one step further and merges everything into
-check_file_access().  In addition it removes some no longer needed #ifdefs
-and uses platform_stat() to allow a similar check to happen on the Windows
-platform as well.
+1) ifconfig_ipv6_remote is only used on Solaris, move the
+   declaration and assignment of this variable into the
+   TARGET_SOLARIS block.
+
+2) Linux have it's own open_tun() function and does not
+   depend on open_tun_generic() at all.  So do not exclude
+   open_tun_generic() if TARGET_LINUX is defined.
+
+v2 - Move changes from 1) into the proper if() block
+     directly
+   - Fix up incorrect comment tags related to changes in 2)
 
 Signed-off-by: David Sommerseth <davids@...515...>
 ---
- src/openvpn/options.c | 38 ++++++++++++--------------------------
- 1 file changed, 12 insertions(+), 26 deletions(-)
+ src/openvpn/tun.c | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
 
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 4d31e4c..369f3f4 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -57,6 +57,7 @@
- #include "manage.h"
- #include "forward.h"
- #include "ssl_verify.h"
-+#include "platform.h"
- #include <ctype.h>
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index 2a87e09..8c74c8f 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -751,7 +751,6 @@ do_ifconfig (struct tuntap *tt,
+       const char *ifconfig_remote_netmask = NULL;
+       const char *ifconfig_broadcast = NULL;
+       const char *ifconfig_ipv6_local = NULL;
+-      const char *ifconfig_ipv6_remote = NULL;
+       bool do_ipv6 = false;
+       struct argv argv = argv_new ();
  
- #include "memdbg.h"
-@@ -2683,31 +2684,6 @@ options_postprocess_mutate (struct options *o)
-  */
- #ifndef ENABLE_SMALL  /** Expect people using the stripped down version to know what they do */
+@@ -772,7 +771,6 @@ do_ifconfig (struct tuntap *tt,
+       if (tt->did_ifconfig_ipv6_setup )
+         {
+ 	  ifconfig_ipv6_local = print_in6_addr (tt->local_ipv6, 0, &gc);
+-	  ifconfig_ipv6_remote = print_in6_addr (tt->remote_ipv6, 0, &gc);
+ 	  do_ipv6 = true;
+ 	}
  
--/*
-- * Warn if a given file is group/others accessible.
-- */
--static void
--warn_if_group_others_accessible (const char* filename)
--{
--#ifndef WIN32
--#ifdef HAVE_STAT
--  if (strcmp (filename, INLINE_FILE_TAG))
--    {
--      struct stat st;
--      if (stat (filename, &st))
--	{
--	  msg (M_WARN | M_ERRNO, "WARNING: cannot stat file '%s'", filename);
--	}
--      else
--	{
--	  if (st.st_mode & (S_IRWXG|S_IRWXO))
--	    msg (M_WARN, "WARNING: file '%s' is group or others accessible", filename);
--	}
--    }
--#endif
--#endif
--}
+@@ -915,7 +913,6 @@ do_ifconfig (struct tuntap *tt,
+       management_android_control (management, "IFCONFIG", buf_bptr(&out));
+ 
+ #elif defined(TARGET_SOLARIS)
 -
- #define CHKACC_FILE (1<<0)       /** Check for a file/directory precense */
- #define CHKACC_DIRPATH (1<<1)    /** Check for directory precense where a file should reside */
- #define CHKACC_FILEXSTWR (1<<2)  /** If file exists, is it writable? */
-@@ -2754,9 +2730,19 @@ check_file_access(const int type, const char *file, const int mode, const char *
-     if (platform_access (file, W_OK) != 0)
-       errcode = errno;
+       /* Solaris 2.6 (and 7?) cannot set all parameters in one go...
+        * example:
+        *    ifconfig tun2 10.2.0.2 10.2.0.1 mtu 1450 up
+@@ -977,6 +974,9 @@ do_ifconfig (struct tuntap *tt,
  
-+  /* Warn if a given file is group/others accessible. */
-   if (type & CHKACC_PRIVATE)
-     {
--      warn_if_group_others_accessible (file);
-+      platform_stat_t st;
-+      if (platform_stat (file, &st))
-+	{
-+	  msg (M_WARN | M_ERRNO, "WARNING: cannot stat file '%s'", file);
-+	}
-+      else
-+	{
-+	  if (st.st_mode & (S_IRWXG|S_IRWXO))
-+	    msg (M_WARN, "WARNING: file '%s' is group or others accessible", file);
-+	}
+ 	  if ( tt->type == DEV_TYPE_TUN )
+ 	   {
++	      const char *ifconfig_ipv6_remote = NULL;
++
++	      ifconfig_ipv6_remote = print_in6_addr (tt->remote_ipv6, 0, &gc);
+ 	      argv_printf (&argv,
+ 			    "%s %s inet6 plumb %s/%d %s up",
+ 			    IFCONFIG_PATH,
+@@ -1502,7 +1502,7 @@ read_tun_header (struct tuntap* tt, uint8_t *buf, int len)
+ #endif
+ 
+ 
+-#ifndef WIN32
++#if !(defined(WIN32) || defined(TARGET_LINUX))
+ static void
+ open_tun_generic (const char *dev, const char *dev_type, const char *dev_node,
+ 		  bool dynamic, struct tuntap *tt)
+@@ -1604,7 +1604,9 @@ open_tun_generic (const char *dev, const char *dev_type, const char *dev_node,
+       tt->actual_name = string_alloc (dynamic_opened ? dynamic_name : dev, NULL);
      }
+ }
++#endif /* !WIN32 && !TARGET_LINUX */
  
-   /* Scream if an error is found */
++#if !defined(WIN32)
+ static void
+ close_tun_generic (struct tuntap *tt)
+ {
+@@ -1615,7 +1617,7 @@ close_tun_generic (struct tuntap *tt)
+   clear_tuntap (tt);
+ }
+ 
+-#endif
++#endif /* !WIN32 */
+ 
+ #if defined (TARGET_ANDROID)
+ void
 -- 
 1.8.3.1
 
