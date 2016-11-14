@@ -1,9 +1,11 @@
+References: <20161110082152.98252-1-gert@...1296...>
+	<20161113195228.74090-1-gert@...1296...>
 From: Steffan Karger <steffan@...1856...>
-Date: Mon, 14 Nov 2016 21:06:07 +0100
-Message-Id: <1479153967-6788-1-git-send-email-steffan@...1856...>
-In-Reply-To: <1479153490-6259-1-git-send-email-steffan@...1856...>
-References: <1479153490-6259-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH v2] Deprecate key-method 1
+Message-ID: <4d3890eb-f8c2-206c-6f66-bfca02ae2d68@...1856...>
+Date: Mon, 14 Nov 2016 21:27:52 +0100
+MIME-Version: 1.0
+In-Reply-To: <20161113195228.74090-1-gert@...1296...>
+Subject: Re: [Openvpn-devel] [PATCH v2] Replace WIN32 by _WIN32
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,77 +14,73 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-Key method 2 has been the default since OpenVPN 2.0, and is both more
-functional and secure.  Also, key method 1 was only ever supported for
-peer-to-peer connections (i.e. not for client-server).
+Hi,
 
-Let's get rid of some legacy and phase out key method 1.
+On 13-11-16 20:52, Gert Doering wrote:
+> With c99, "WIN32" is no longer automatically defined when (cross-)building
+> for Windows, and proper compilation relies on including <windefs.h>,
+> before checking the macro.  "_WIN32" is the official define that is
+> guaranteed to be defined by the compiler itself, no includes are needed.
+> 
+> So, mechanically change all occurrances of "WIN32" to "_WIN32".
+> 
+> While at it, get rid of unused WIN32_0_1 #define in syshead.h
+> 
+> See also: http://nadeausoftware.com/articles/2012/01/c_c_tip_how_use_compiler_predefined_macros_detect_operating_system#WindowsCygwinnonPOSIXandMinGW
+> 
+> Trac #746
+> 
+> v2: rebased to master, merge the console[_builtin].c changes
+> 
+> [...snip...]
+>
+> diff --git a/src/openvpn/ssl_backend.h b/src/openvpn/ssl_backend.h
+> index a61f03a..726a621 100644
+> --- a/src/openvpn/ssl_backend.h
+> +++ b/src/openvpn/ssl_backend.h
+> @@ -232,7 +232,7 @@ int tls_ctx_load_pkcs12(struct tls_root_ctx *ctx, const char *pkcs12_file,
+>   */
+>  #ifdef ENABLE_CRYPTOAPI
+>  void tls_ctx_load_cryptoapi(struct tls_root_ctx *ctx, const char *cryptoapi_cert);
+> -#endif /* WIN32 */
+> +#endif /* _WIN32 */
+>  
+>  /**
+>   * Load certificate file into the given TLS context. If the given certificate
+> diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
+> index a6c90b1..d0dee9a 100644
+> --- a/src/openvpn/ssl_mbedtls.c
+> +++ b/src/openvpn/ssl_mbedtls.c
+> @@ -283,7 +283,7 @@ tls_ctx_load_cryptoapi(struct tls_root_ctx *ctx, const char *cryptoapi_cert)
+>  {
+>    msg(M_FATAL, "Windows CryptoAPI not yet supported for mbed TLS.");
+>  }
+> -#endif /* WIN32 */
+> +#endif /* _WIN32 */
+>  
+>  void
+>  tls_ctx_load_cert_file (struct tls_root_ctx *ctx, const char *cert_file,
+> diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+> index 8909ca3..6540422 100644
+> --- a/src/openvpn/ssl_openssl.c
+> +++ b/src/openvpn/ssl_openssl.c
+> @@ -633,7 +633,7 @@ tls_ctx_load_cryptoapi(struct tls_root_ctx *ctx, const char *cryptoapi_cert)
+>    if (!SSL_CTX_use_CryptoAPI_certificate (ctx->ctx, cryptoapi_cert))
+>      crypto_msg (M_FATAL, "Cannot load certificate \"%s\" from Microsoft Certificate Store", cryptoapi_cert);
+>  }
+> -#endif /* WIN32 */
+> +#endif /* _WIN32 */
+>  
+>  static void
+>  tls_ctx_add_extra_certs (struct tls_root_ctx *ctx, BIO *bio)
 
-v2: add Changes.rst entry, and update man page
+These should actually be "#endif /* ENABLE_CRYPTOAPI */".
 
-Signed-off-by: Steffan Karger <steffan@...1856...>
----
- Changes.rst           | 7 +++++++
- doc/openvpn.8         | 5 ++++-
- src/openvpn/options.c | 6 ++++++
- 3 files changed, 17 insertions(+), 1 deletion(-)
+Other than that, ACK.
 
-diff --git a/Changes.rst b/Changes.rst
-index c1b49c7..17d8edb 100644
---- a/Changes.rst
-+++ b/Changes.rst
-@@ -112,6 +112,13 @@ AIX platform support
-     devices since AIX does not provide tun interface.
- 
- 
-+Deprecated features
-+-------------------
-+- ``--key-method 1`` is deprecated in 2.4 and will be removed in 2.5.  Migrate
-+  to ``--key-method 2`` as soon as possible.  Note that this requires changing
-+  the option in both the client and server side configs.
-+
-+
- User-visible Changes
- --------------------
- - For certificate DNs with duplicate fields, e.g. "OU=one,OU=two", both fields
-diff --git a/doc/openvpn.8 b/doc/openvpn.8
-index 863dcf9..7227d22 100644
---- a/doc/openvpn.8
-+++ b/doc/openvpn.8
-@@ -4782,7 +4782,10 @@ exchanged over the TLS session.
- 
- In method 1 (the default for OpenVPN 1.x), both sides generate
- random encrypt and HMAC-send keys which are forwarded to
--the other host over the TLS channel.
-+the other host over the TLS channel. Method 1 is
-+.B deprecated in OpenVPN 2.4
-+, and
-+.B will be removed in OpenVPN 2.5\fR.
- 
- In method 2, (the default for OpenVPN 2.0)
- the client generates a random key.  Both client
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 1eb3a41..f39c4fa 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -2245,6 +2245,12 @@ options_postprocess_verify_ce (const struct options *options, const struct conne
- 	  "may accept clients which do not present a certificate");
-     }
- 
-+  if (options->key_method == 1)
-+    {
-+      msg (M_WARN, "WARNING: --key-method 1 is deprecated and will be removed"
-+	  "in OpenVPN 2.5.  Migrate to --key-method 2 as soon as possible.");
-+    }
-+
-   if (options->tls_server || options->tls_client)
-     {
- #ifdef ENABLE_PKCS11
--- 
-2.7.4
-
+-Steffan
 
