@@ -1,13 +1,10 @@
-References: <1479153490-6259-1-git-send-email-steffan@...1856...>
-	<1479153967-6788-1-git-send-email-steffan@...1856...>
-	<e95b939e-9486-eaf4-b351-4423c7dbfd33@...2080...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <c4770934-7352-81ec-e4e8-2fd68e830380@...2080...>
-Date: Mon, 14 Nov 2016 23:04:49 +0100
-MIME-Version: 1.0
-In-Reply-To: <e95b939e-9486-eaf4-b351-4423c7dbfd33@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH v2] Deprecate key-method 1
-Reply-To: openvpn-devel@lists.sourceforge.net
+From: David Sommerseth <davids@...515...>
+Date: Mon, 14 Nov 2016 23:08:31 +0100
+Message-Id: <1479161311-11670-1-git-send-email-davids@...515...>
+In-Reply-To: <1479045751-22297-1-git-send-email-steffan.karger@...1435...>
+References: <1479045751-22297-1-git-send-email-steffan.karger@...1435...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Move private file access checks
+	to options_postprocess_filechecks()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,86 +13,54 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
-To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: steffan@...1856...
+Cc: openvpn-devel@lists.sourceforge.net
 
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-On 14/11/16 22:35, David Sommerseth wrote:
-> On 14/11/16 21:06, Steffan Karger wrote:
->> Key method 2 has been the default since OpenVPN 2.0, and is both=20
->> more functional and secure.  Also, key method 1 was only ever=20
->> supported for peer-to-peer connections (i.e. not for=20
->> client-server).
->=20
->> Let's get rid of some legacy and phase out key method 1.
->=20
->> v2: add Changes.rst entry, and update man page
->=20
->> Signed-off-by: Steffan Karger <steffan@...1856...> ---
->> Changes.rst | 7 +++++++ doc/openvpn.8         | 5 ++++-
->> src/openvpn/options.c | 6 ++++++ 3 files changed, 17
->> insertions(+), 1 deletion(-)
->=20
-> I wanted to give this an ACK ... but I think we should just remove
-> it all together as we seem to be in a broken state already.
->=20
-> /usr/sbin/openvpn --dev tun --local 192.168.122.1 --lport 1194 \=20
-> --remote 192.168.122.100 --rport 194 \ --secret
-> ../../sample/sample-keys/ta.key 0 \ --ifconfig 10.8.0.10 10.8.0.20
-> --verb 3 \ --key-method 1 Options error: Parameter key_method can
-> only be specified in TLS-mode, i.e. where --tls-server or
-> --tls-client is also specified. Use --help for more information.
->=20
-> That is with /usr/sbin/openvpn --version: OpenVPN 2.3.11
-> x86_64-redhat-linux-gnu [SSL (OpenSSL)] [LZO] [EPOLL] [PKCS11] [MH]
-> [IPv6] built on May 10 2016
->=20
-> So unless I messed up my simple and stupid static key p2p mode
-> tunnel, this doesn't work at all with v2.3.  And git master haven't
-> "fixed" this issue.
->=20
-> If nobody noticed this by now, then nobody really uses
-> --key-method.
+ACK, but I added a slight modification at commit time.  I removed
+any reference to --tls-crypt, to get this nice clean-up into the
+current tree.  When --tls-crypt is added, it needs to be slightly
+adjusted to add the proper check in options_postprocess_filechecks().
 
-Okay, so I was mistaken.  It is possible to use p2p mode with
-- --tls-server/--tls-client without setting --mode server.  My prior
-tests used --server and --client, which does not allow --key-method to
-be set to anything but 2.
+Your patch has been applied to the master branch
 
-Running a test-case using the
-sample/sample-config-files/loopback-{client,server} test configs
-triggered the correct code path, and both --key-method 1 and 2 could
-be tested properly.
+commit 825e2ec1f358f2e81b623f2770fbbf76748b0739
+Author: Steffan Karger
+Date:   Sun Nov 13 15:02:31 2016 +0100
 
-So it's an ACK after all.  But I will slightly modify the warning +
-Changes.rst to recommend not setting --key-method, as that will
-currently default to --key-method 2.
+     Move private file access checks to options_postprocess_filechecks()
+
+     Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+     Acked-by: David Sommerseth <davids@...515...>
+     Message-Id: <1479045751-22297-1-git-send-email-steffan.karger@...1435...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13019.html
+     Signed-off-by: David Sommerseth <davids@...515...>
 
 
-- --=20
+- --
 kind regards,
 
 David Sommerseth
-OpenVPN Technologies, Inc
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBAgAGBQJYKjUBAAoJEIbPlEyWcf3yRxAP/0HZCEWTN5pdOCb/gPJ/C9CM
-71Br6fzMZqF/cm/rd6EhZwFd8PB+YTq7ppiRbKBHxLZFNT2ZpE94FvkzNGtWePW5
-xJB0vcLjejDUcXAY04iuf9Ye1HPMq7y+GN6cGwMD9pO6Y6iqPKCuBKstkypT0XU7
-80QuNoXXCzP9+DWcGnLlKWLC+CLlE6LKVycGCCl/mMppLHZwlCFNw7JKfr7GKYCT
-FgMcPlqh9EGAcZOnxQIGWhxOUatWHcZm2vEdLhziCWA4MDO2ubeoEh6ol0+p1XcN
-BirZHgvNmw/wq31GG38KGOiE7qMGjUHf9UR6WMwS/g+BzJCV8/0LcNCjXaTWDMKI
-qlzb9nXXJ7a2CiigW1a3DmCXICBjwKimrzoRWM2GZQfwmrQP1joDnDJvG12ieHab
-3yXh406Ky33/wnx/DG+om6OiJsGNV2Ygh8EtqyrKKIgHh7NzHVbESsTRSVfNOApn
-aM0jwotj2s4rWgJ9Uf4PLp1p+7ujNegJ/9ZcFZLqLH7eAD+VsBGA8qg+KLNk0ldu
-lnbCdyMO2mxZV+oVLVWAHODbJI/8OIxihNuV8lqzDyY4dS6HeOFnfePGKJJK9JI3
-g/KWbLhPmWG4oQ4ocG04I9mbiJYHgfa6B1Xda1JwCiOexreoWW3rbFX5EqzjYx9L
-fKgS3he37m8WQCHqD4SB
-=3D8vbI
+iQIcBAEBAgAGBQJYKjXbAAoJEIbPlEyWcf3yVeEP/Rs8Yz2iR9j3gp9ad79AIVKs
+Hgs+OkAQQaPoUAfVlKaC6fkvgf3p+pFd1yh7eQ45ymnUxlX3ViHs916DUaGn77jA
+rgXXCDu5kYZu3+BsknTCk+tO0oWE3GUP1DoSffAdVB5AQ7iyAqELODT5FEhDP4rf
+q8NmGoz3XOpjFduAK5O8oK73ftMEYK+Uw31DtJEWnUIK1FxoVLcFP8eOxMVLPKzq
+usKM0XO4GeoiFSR7xEKSZ5xvBtxO2edKiQzQpSgu8B12JaPLQ0OZ4SOgTNMSHn9d
+eUbbk0qbVyPt8mX8ARKb11/pEV7juG8SBRcii7D+OPbcDjl2YBrc8oHZUjndYRlv
+3Zk92R3FudmbpOJEA1CFGzeL94CTpNhWjFVIMncuyt7QO1UdzYu1ikSmO9rXYFYH
+3RWp6cMpfYZEo9gu2txYdhJgRpMXOg+TAMHLFkiwN1e2KGHpLEnosnDnP1DBgkkr
+atTNiH5c02kjMwIXeo5boLeBer/v+i+T/07dCoxIUghIhY37Y/3MAxw7uzAzzRPw
+t7dm/0bTYm0UeGQfMNmHelCKB/b7j1Wn7am1tUZOAkQuzfO/10kMqdOt7G2bW7FJ
+22sHlSZ1DtdoUPQUCm2yLqsOnqMyIztCCEapMMW2XAhk6PTG+szyoAat3ri51aDT
+BwX3yZLM7VNPtOaRmAfU
+=emq9
 -----END PGP SIGNATURE-----
 
