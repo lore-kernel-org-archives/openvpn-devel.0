@@ -1,10 +1,10 @@
-Date: Mon, 14 Nov 2016 20:31:52 +0100 (CET)
-Message-Id: <201611141931.uAEJVqHH085126@...2054...>
+Date: Mon, 14 Nov 2016 20:31:55 +0100 (CET)
+Message-Id: <201611141931.uAEJVtfX085152@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1477672963-5724-3-git-send-email-heiko.hund@...1489...>
-References: <1477672963-5724-3-git-send-email-heiko.hund@...1489...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Remove unused and unecessary
-	argv interfaces
+In-Reply-To: <1477672963-5724-4-git-send-email-heiko.hund@...1489...>
+References: <1477672963-5724-4-git-send-email-heiko.hund@...1489...>
+Subject: [Openvpn-devel] [PATCH applied] Re: remove unused system_str from
+	struct argv
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,16 +20,16 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Your patch has been applied to the master branch.
 
-commit aed5ef40c47c58b3b7bc624113396a26e5e2cba5
+commit d6ab1dc49e5c8018f58e7c3c9fe64f4289ccc77b
 Author: Heiko Hund
-Date:   Fri Oct 28 18:42:38 2016 +0200
+Date:   Fri Oct 28 18:42:39 2016 +0200
 
-     Remove unused and unecessary argv interfaces
+     remove unused system_str from struct argv
 
      Signed-off-by: Heiko Hund <heiko.hund@...1489...>
      Acked-by: David Sommerseth <davids@...1347...>
-     Message-Id: <1477672963-5724-3-git-send-email-heiko.hund@...1489...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg12812.html
+     Message-Id: <1477672963-5724-4-git-send-email-heiko.hund@...1489...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg12813.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
