@@ -1,9 +1,8 @@
 From: David Sommerseth <davids@...515...>
-Date: Mon, 14 Nov 2016 23:10:03 +0100
-Message-Id: <1479161403-12040-1-git-send-email-davids@...515...>
-In-Reply-To: <1479153967-6788-1-git-send-email-steffan@...1856...>
-References: <1479153967-6788-1-git-send-email-steffan@...1856...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Deprecate key-method 1
+Date: Mon, 14 Nov 2016 23:45:08 +0100
+Message-Id: <1479163508-19435-1-git-send-email-davids@...515...>
+Subject: [Openvpn-devel] [PATCH] file checks: Merge
+	warn_if_group_others_accessible() into check_file_access()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,51 +13,88 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: steffan@...1856...
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+Commit 825e2ec1f358f2e8 cleaned up the usage of warn_if_group_others_accessible()
+and moved it into options.c.  At this point there is only one caller of this
+function, check_file_access().
 
-ACK, but with a minor adjustment to the warning + Changes.rst
-file.  The text now tries to encourage not setting --key-method
-at all, as that will default to --key-method 2.
+This takes that clean-up one step further and merges everything into
+check_file_access().  In addition it removes some no longer needed #ifdefs
+and uses platform_stat() to allow a similar check to happen on the Windows
+platform as well.
 
-Your patch has been applied to the master branch
+Signed-off-by: David Sommerseth <davids@...515...>
+---
+ src/openvpn/options.c | 38 ++++++++++++--------------------------
+ 1 file changed, 12 insertions(+), 26 deletions(-)
 
-commit 1ce0638627eb35631af9bfaa569468573568ec65
-Author: Steffan Karger
-Date:   Mon Nov 14 21:06:07 2016 +0100
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 4d31e4c..369f3f4 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -57,6 +57,7 @@
+ #include "manage.h"
+ #include "forward.h"
+ #include "ssl_verify.h"
++#include "platform.h"
+ #include <ctype.h>
+ 
+ #include "memdbg.h"
+@@ -2683,31 +2684,6 @@ options_postprocess_mutate (struct options *o)
+  */
+ #ifndef ENABLE_SMALL  /** Expect people using the stripped down version to know what they do */
+ 
+-/*
+- * Warn if a given file is group/others accessible.
+- */
+-static void
+-warn_if_group_others_accessible (const char* filename)
+-{
+-#ifndef WIN32
+-#ifdef HAVE_STAT
+-  if (strcmp (filename, INLINE_FILE_TAG))
+-    {
+-      struct stat st;
+-      if (stat (filename, &st))
+-	{
+-	  msg (M_WARN | M_ERRNO, "WARNING: cannot stat file '%s'", filename);
+-	}
+-      else
+-	{
+-	  if (st.st_mode & (S_IRWXG|S_IRWXO))
+-	    msg (M_WARN, "WARNING: file '%s' is group or others accessible", filename);
+-	}
+-    }
+-#endif
+-#endif
+-}
+-
+ #define CHKACC_FILE (1<<0)       /** Check for a file/directory precense */
+ #define CHKACC_DIRPATH (1<<1)    /** Check for directory precense where a file should reside */
+ #define CHKACC_FILEXSTWR (1<<2)  /** If file exists, is it writable? */
+@@ -2754,9 +2730,19 @@ check_file_access(const int type, const char *file, const int mode, const char *
+     if (platform_access (file, W_OK) != 0)
+       errcode = errno;
+ 
++  /* Warn if a given file is group/others accessible. */
+   if (type & CHKACC_PRIVATE)
+     {
+-      warn_if_group_others_accessible (file);
++      platform_stat_t st;
++      if (platform_stat (file, &st))
++	{
++	  msg (M_WARN | M_ERRNO, "WARNING: cannot stat file '%s'", file);
++	}
++      else
++	{
++	  if (st.st_mode & (S_IRWXG|S_IRWXO))
++	    msg (M_WARN, "WARNING: file '%s' is group or others accessible", file);
++	}
+     }
+ 
+   /* Scream if an error is found */
+-- 
+1.8.3.1
 
-     Deprecate key-method 1
-
-     Signed-off-by: Steffan Karger <steffan@...1856...>
-     Acked-by: David Sommerseth <davids@...515...>
-     Message-Id: <1479153967-6788-1-git-send-email-steffan@...1856...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13054.html
-     Signed-off-by: David Sommerseth <davids@...515...>
-
-
-- --
-kind regards,
-
-David Sommerseth
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBAgAGBQJYKjYzAAoJEIbPlEyWcf3yiSMP/27hFtYCIUlLIaMyvaHWeLqu
-Rfizl0PPpXX3Q3Nwi9SJBGwQdMEFf9UJJKMKpBdrVq4ftRHD/qef25pe+a3DxsCY
-/l5skP3SXHGf+7EsRvRmvmqXoHArJlJuQy3LYJZF6M7SBw39tDiaEI/p2zFCwgTS
-tVmQr0IMs/ZKYKmnDF6LHdUfzpEDkYfe1yhqsO0+nFUdbV6ePZ80xHyGy/BWbypK
-QVS6o3uxiCl7CakyxA2Twg7DFg0/64g+lE+OGCEy3rS6IUGB6q/0njAKYqlPp8VP
-81ULuFrHXydVHSgy3jb6peakHu1MP2zEKBiaBtPm2nuQ+IgkvoCQIwgmdc39FZDs
-DPRheUQXvoUv2Dx2U2ns01SANzpXpQzVsFiyJZqzC59RLLigL9V5CRrPDiw9YozQ
-KKQahLf5BtCVNhYwVrlQhrKdYQnoIlTGc6XXU0LR32HGahEHaZDgNmZsLi6I5VUV
-XQaKd9SZWozIqwaA1vWisUlJXKyCSkEqK/9fukaa7AyVwrcyRUNttig6Hwh+rbXL
-czUxZZaou2TQeDOwtuOOuguNNl2TNo3Xg84JxYxhgBV/LO0+QooTt2s4g8M2BB4y
-lbQoZeU9xxG+wsvr7Tq/mt3FfMVMqApaFR//G1VU0n/SeoS+ktF82XyJz8CEN/kn
-TPXJUvjlvmnJHQaFZ1CC
-=WZJS
------END PGP SIGNATURE-----
 
