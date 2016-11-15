@@ -1,10 +1,10 @@
 From: Steffan Karger <steffan.karger@...1435...>
-Date: Tue, 15 Nov 2016 10:46:39 +0100
-Message-ID: <1479203199-15297-1-git-send-email-steffan.karger@...1435...>
-In-Reply-To: <4c09184d-76b7-bcfc-727f-2b957be490a6@...1435...>
-References: <4c09184d-76b7-bcfc-727f-2b957be490a6@...1435...>
+Date: Tue, 15 Nov 2016 14:29:46 +0100
+Message-ID: <1479216586-20078-1-git-send-email-steffan.karger@...1435...>
+In-Reply-To: <1479203199-15297-1-git-send-email-steffan.karger@...1435...>
+References: <1479203199-15297-1-git-send-email-steffan.karger@...1435...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 2/5 v2] Add control channel encryption
+Subject: [Openvpn-devel] [PATCH 2/5 v3] Add control channel encryption
 	(--tls-crypt)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -155,6 +155,8 @@ v2 - processed Arne's review comments:
    HMAC-SHA-256 are not supported by the crypto library.
  * Clarify that cipher_ctx_reset() sets the IV.
 
+v3 - actually add error messages promised in v2...
+
 Signed-off-by: Steffan Karger <steffan.karger@...1435...>
 ---
  Changes.rst              |   5 +
@@ -166,12 +168,12 @@ Signed-off-by: Steffan Karger <steffan.karger@...1435...>
  src/openvpn/openvpn.h    |   4 +-
  src/openvpn/options.c    |  31 +++++-
  src/openvpn/options.h    |   8 +-
- src/openvpn/ssl.c        | 119 +++++++++++++++--------
+ src/openvpn/ssl.c        | 119 ++++++++++++++--------
  src/openvpn/ssl.h        |   2 +-
  src/openvpn/ssl_common.h |  18 +++-
- src/openvpn/tls_crypt.c  | 246 +++++++++++++++++++++++++++++++++++++++++++++++
+ src/openvpn/tls_crypt.c  | 254 +++++++++++++++++++++++++++++++++++++++++++++++
  src/openvpn/tls_crypt.h  | 144 +++++++++++++++++++++++++++
- 14 files changed, 604 insertions(+), 78 deletions(-)
+ 14 files changed, 612 insertions(+), 78 deletions(-)
  create mode 100644 src/openvpn/tls_crypt.c
  create mode 100644 src/openvpn/tls_crypt.h
 
@@ -852,10 +854,10 @@ index b04a24c..28702af 100644
    struct session_id session_id;	/* our random session ID */
 diff --git a/src/openvpn/tls_crypt.c b/src/openvpn/tls_crypt.c
 new file mode 100644
-index 0000000..ea9b467
+index 0000000..d40532e
 --- /dev/null
 +++ b/src/openvpn/tls_crypt.c
-@@ -0,0 +1,246 @@
+@@ -0,0 +1,254 @@
 +/*
 + *  OpenVPN -- An application to securely tunnel IP networks
 + *             over a single TCP/UDP port, with support for SSL/TLS-based
@@ -902,15 +904,23 @@ index 0000000..ea9b467
 +void
 +tls_crypt_init_key (struct key_ctx_bi *key, const char *key_file,
 +    const char *key_inline, bool tls_server) {
-+  struct key_type kt;
++  const int key_direction = tls_server ?
++      KEY_DIRECTION_NORMAL : KEY_DIRECTION_INVERSE;
 +
++  struct key_type kt;
 +  kt.cipher = cipher_kt_get ("AES-256-CTR");
 +  kt.cipher_length = cipher_kt_key_size (kt.cipher);
 +  kt.digest = md_kt_get ("SHA256");
 +  kt.hmac_length = md_kt_size (kt.digest);
 +
-+  const int key_direction = tls_server ?
-+      KEY_DIRECTION_NORMAL : KEY_DIRECTION_INVERSE;
++  if (!kt.cipher)
++    {
++      msg (M_FATAL, "ERROR: --tls-crypt requires AES-256-CTR support.");
++    }
++  if (!kt.digest)
++    {
++      msg (M_FATAL, "ERROR: --tls-crypt requires HMAC-SHA-256 support.");
++    }
 +
 +  crypto_read_openvpn_key (&kt, key, key_file, key_inline, key_direction,
 +			   "Control Channel Encryption", "tls-crypt");
