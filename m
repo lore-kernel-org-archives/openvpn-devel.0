@@ -1,8 +1,9 @@
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <a063286a-f8b9-974b-ed78-f358f1dd67f3@...515...>
-Date: Tue, 15 Nov 2016 17:38:22 +0200
 MIME-Version: 1.0
-Subject: [Openvpn-devel] Reviewing C# code in openvpnserv2?
+From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
+Date: Wed, 16 Nov 2016 00:44:52 +0500
+Message-ID: <CAFHpkQGt=0+UOgKV2Tcezqn9Zs=3tA5r_BB=OW4rbcZ2g-vWsg@...278...>
+Content-Type: multipart/alternative; boundary=001a114b16b8ac2c3205415c302a
+Subject: [Openvpn-devel] moving to openssl-1.0.2 ?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,25 +12,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=iso-8859-15; format=flowed
-Content-Transfer-Encoding: 7bit
 To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hi,
+--001a114b16b8ac2c3205415c302a
+Content-Type: text/plain; charset=UTF-8
 
-Selva recently fixed a bug[1] in openvpnserv2, the new OpenVPN 
-background service bundled with OpenVPN 2.4_alpha1 Windows installers.
+Hello,
 
-Do we have any C# developers here who could review the code? The PR is here:
+as accidently was figured out, travis-ci currently runs openvpn/openvpn
+with openssl-1.0.2
 
-<https://github.com/OpenVPN/openvpnserv2/pull/1>
+however, openvpn (windows) installer is built using openssl-1.0.1 (which is
+EOL soon).
+I guess we should move to 1.0.2, right?
 
-I already built the patched openvpnserv2 and it worked as advertised, 
-gracefully shutting down openvpn.exe instances it has launched, instead 
-of killing them brutally as it used to do.
 
-Samuli
+Cheers,
+Ilya Shipitsin
 
-[1] <https://github.com/xkjyeah/openvpnserv2/issues/10>
+--001a114b16b8ac2c3205415c302a
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
+<div dir=3D"ltr"><div><div><div><div><div>Hello,<br><br></div>as accidently=
+ was figured out, travis-ci currently runs openvpn/openvpn with openssl-1.0=
+.2<br><br></div>however, openvpn (windows) installer is built using openssl=
+-1.0.1 (which is EOL soon).<br></div>I guess we should move to 1.0.2, right=
+?<br><br><br></div>Cheers,<br></div>Ilya Shipitsin<br></div>
+
+--001a114b16b8ac2c3205415c302a--
 
