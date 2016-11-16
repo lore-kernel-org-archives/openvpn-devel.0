@@ -1,10 +1,10 @@
 From: David Sommerseth <davids@...515...>
-Date: Wed, 16 Nov 2016 16:24:19 +0100
-Message-Id: <1479309859-6794-1-git-send-email-davids@...515...>
-In-Reply-To: <1478640507-14415-1-git-send-email-steffan@...1856...>
-References: <1478640507-14415-1-git-send-email-steffan@...1856...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Remove unneeded check for
-	extra_certs_file_inline
+Date: Wed, 16 Nov 2016 16:24:39 +0100
+Message-Id: <1479309879-6921-1-git-send-email-davids@...515...>
+In-Reply-To: <1478635663-5837-1-git-send-email-steffan@...1856...>
+References: <1478635663-5837-1-git-send-email-steffan@...1856...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Fix missing return value checks
+	in multi_process_float()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -25,16 +25,16 @@ ACK.
 
 Your patch has been applied to the master branch
 
-commit 8d5b06e6fc46e214e1498352603a95028aa5c113
+commit b59fc7f42137a0474c069ab226c4d67c148e504f
 Author: Steffan Karger
-Date:   Tue Nov 8 22:28:27 2016 +0100
+Date:   Tue Nov 8 21:07:43 2016 +0100
 
-     Remove unneeded check for extra_certs_file_inline
+     Fix missing return value checks in multi_process_float()
 
      Signed-off-by: Steffan Karger <steffan@...1856...>
      Acked-by: David Sommerseth <davids@...515...>
-     Message-Id: <1478640507-14415-1-git-send-email-steffan@...1856...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg12978.html
+     Message-Id: <1478635663-5837-1-git-send-email-steffan@...1856...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg12968.html
      Signed-off-by: David Sommerseth <davids@...515...>
 
 
@@ -46,18 +46,18 @@ David Sommerseth
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBAgAGBQJYLHohAAoJEIbPlEyWcf3ya+sP/R5QvIYTpeHuypemvm8WIFGl
-l8jPT7ago+TX9l6jvr0RHTFGp7TK2TVwg0wlrSjGowYM7og0lqXeGggHfd5FMfFI
-UXxS4ukG5sy4vi0VHiXYFE0PYlFpBPSabADjIss+LCmN3Z/BQZyADJEwBcibneym
-apf82RIGLy+QsUWlmBGeD9FcmH6rpnQ2nM1E+1xXucF2MsYd+I1Ir7qXI7s0C3eb
-+QybxC2X3If/NLwCkyh8fbwCvp05qr2YLuRRi6rSUQw8BUFqutxWhwly6vqDiqqF
-e1j16qYBN2bImpKsEbRn06kQ9jMki6HDo5Ei7SoodoaCs7evSKahomLJogk1elgO
-VlHLS+MbMJDze+SAJvuCsx+LyUiP7AfXH68mqvbGm+VTssv5y1WQhhS1RhKYrvJG
-Tgwt9sMAY5JQQWXjQNiCtzhdB5ChSfGE7r2+2vu9V+CKcuuOGnScSEOHKCWu2MOB
-LCJK07gXVhm9rfRVq+FK1P0TtNi9FigJBwjMq+naHHsQMbrd4oTaKvIHpemJnnEa
-rg2bE25ED+x5ns5UGuOLNHE+ZXrZEkyeaiyRKpQ06VJuXHtxOjQ13ZubqVmiI9Xq
-NbVKlhJhlGCVl6v4GR1bdONrFWKleNdsUfzNe13Wj/Y95x5AefnZOh6szSjEnFNN
-glRfdpJKYAVay6CujUAd
-=l6AJ
+iQIcBAEBAgAGBQJYLHo2AAoJEIbPlEyWcf3y25kQAKyExAHmuufyBBy20AJqN2Cb
+zjbDXKKTJsttAFYoEYfakoFNYECCWjOdIu7VupF+YoUWFPTntUvgnc5vsnbNyOit
+1SUVBi+4/LRlgrpJaGGy4IdtTEzrPAoIsUL6uutad5jGAgPmEClxuBz2xVmDh7op
+6nv6YN83JdrHDFZg4gavSwS0qAwCAxbzQVeJktQ582Gtrx0Brv5hO5Ah64unuRGj
+kxrYpvX4oSB8sE+QmnMgbIGJaSWKABZqisK1SH3DfHo/cUDNwGFmL8yFgVrPwQeo
+FcgT6xJrPaf9BYVQBTd62o3V7g/HQlTb8mFXpr8BC6PjwttcCdaBkzgcRq0AAYTh
+9Lj72fvmfoDX6MHmDSaGB8k/95/O2uiYZSXzJHGyg3d6tMAWBYNcTNRxhpmpauZm
+3A8F6f/QcYLBS+wzW0zR04ekVDgOrj1BJJo7k1iIHib3Z9dqzL2K+Xjva6igFkp9
+RxIjD7bvtvY9Wj+Q9P5+Wf7lI+yJ3dCTZiCPzQYQ8DI3flG99FgAWzH5l5GUN0FQ
+ZfmTZeMUWH3Qu98O9TMzCQSGKLUJJAMWxONhN888IlwPZmidz5UMlOtw/gqiTuXu
+qaVxbRNUB4mC3kiCSxqH9w1AzXGViUvXBVJ5s3DrF6AvL4j1P9ugc7rdjNNHgivq
+D9r2qBZi4F663LOy0sr/
+=OUzk
 -----END PGP SIGNATURE-----
 
