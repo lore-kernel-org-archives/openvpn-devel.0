@@ -1,16 +1,9 @@
-Date: Wed, 16 Nov 2016 17:50:02 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20161116165002.GI28918@...1296...>
-References: <1478870201-17943-1-git-send-email-davids@...515...>
-	<1479165185-11730-1-git-send-email-davids@...515...>
-	<20161116162621.GH28918@...1296...>
-	<09f25564-0781-b702-a1dc-9e4aa0eb8dfd@...2080...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="igABDXH78n6Jl+Hn"
-Content-Disposition: inline
-In-Reply-To: <09f25564-0781-b702-a1dc-9e4aa0eb8dfd@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH v2] tun: Fix compiler warnings
+From: David Sommerseth <davids@...515...>
+Date: Wed, 16 Nov 2016 18:02:21 +0100
+Message-Id: <1479315741-22560-1-git-send-email-davids@...515...>
+In-Reply-To: <1479165185-11730-1-git-send-email-davids@...515...>
+References: <1479165185-11730-1-git-send-email-davids@...515...>
+Subject: Re: [Openvpn-devel] [PATCH applied] tun: Fix compiler warnings
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,49 +12,48 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
-Cc: David Sommerseth <davids@...515...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: davids@...515...
+Cc: openvpn-devel@lists.sourceforge.net
 
---igABDXH78n6Jl+Hn
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-Hi,
+Your patch has been applied to the master branch
 
-On Wed, Nov 16, 2016 at 05:32:48PM +0100, David Sommerseth wrote:
-> > On Tue, Nov 15, 2016 at 12:13:05AM +0100, David Sommerseth wrote:
-> >> Fixes two compiler warnings idetified by using CFLAGS=3D-O2
-> > Spelling...
-> Meh. Will fix that one.
-[..]
+commit 7756043c01dd0b23252682f085f3d9a1f4b057de
+Author: David Sommerseth
+Date:   Fri Nov 11 14:11:13 2016 +0100
 
-As discussed on IRC - there's a few issues with the patch (some stylistic
-disagreement, and WIN32 vs. _WIN32), but it compiles and passes IPv6-releva=
-nt
-tests on OpenSolaris, and that is the most important goal.
+     tun: Fix compiler warnings
 
-So, ACK, with amendments to the style and WIN32 bits on the fly.
+     Signed-off-by: David Sommerseth <davids@...515...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1479165185-11730-1-git-send-email-davids@...515...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13063.html
 
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
 
---igABDXH78n6Jl+Hn
-Content-Type: application/pgp-signature; name="signature.asc"
+- --
+kind regards,
+
+David Sommerseth
 
 -----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQCVAwUBWCyOOakuBuNlUUl1AQIXHwQAsjNX8Sb2j4Kec+MVP1ivSwcImYwTmOVt
-dgu428XxHZx09e5kbZqpmnwt6Un+vYwfAQI1/aiA5DUspByhpE4yEn/DZHdjvFQ+
-PVnta1kHOdPYNu+9II/0JVZMWwgd8OWZDj1mZAOWBKTdtJ0piRE0a8xxQFx/lKvh
-sI/HOhcSbuo=
-=Y8KO
+iQIcBAEBAgAGBQJYLJEcAAoJEIbPlEyWcf3yk68QAImmNF0vdp1TsW0MA6d42GLD
+r+qXZirKTBiyuDvUdLzWPSSV6M9w/Y73aGWzKuCAZJLsQr2K3X/R1eA+blvo5X/E
+VR97oKEgCFoJRBqvsP8BzhuskIFLJaemniZKB3oR6T76q31HFB93nn8U0XeuXWhm
+5YGjbwUorL0mQTpX4nmhon55wNumFCH0Mdf+HArdmC8jBjw9yLoJO/NUU0O8Wym/
+MpN9H4nGsPCDL1TLBTZHBokEey093ecKD2A4GofnfeQEpBEWfRDzV7gK+jRPMy7X
+CH4/YZUFybfrVuxjOdEqMcGBlFmJChkMNMPa15bbrULYiLydOMTKprG6p9qDwnp3
+TxMwRYMc0q0ZHeDsFb5g3oIB2FbKaxB0izzAQzuvpaHkeAwB5/ZjMIJCCB6XQH87
+PazsTLP1FLqvpXIr6c3W49NKwd3BempE/ZoZlnGfQFuiRG0xbj74pGux1r3+RgV0
+29/1PINKfqwJOavPa1FsStOJZeLBSr/RqD5Jbb6SXaX0aIC8xKSk55Qx1IXxUKFi
+O9EdJMvcDDjZsUDXh6s8BxOI7gtUnzq8cuCawcDJt/hd2Lqn+qXjgXJaay6CneFo
+pQtyd35bzFpLroK/s7/CZpT0qNga240a2bDngH2HAEbTkwClB2AxtXWE2rsiDwKQ
+2uYOjH/4ArAc3Gunwoo+
+=sYTf
 -----END PGP SIGNATURE-----
-
---igABDXH78n6Jl+Hn--
 
