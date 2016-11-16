@@ -1,14 +1,13 @@
-Date: Wed, 16 Nov 2016 17:26:21 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20161116162621.GH28918@...1296...>
 References: <1478870201-17943-1-git-send-email-davids@...515...>
 	<1479165185-11730-1-git-send-email-davids@...515...>
+	<20161116162621.GH28918@...1296...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <09f25564-0781-b702-a1dc-9e4aa0eb8dfd@...2080...>
+Date: Wed, 16 Nov 2016 17:32:48 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="nR4f+zr2kNneuKs8"
-Content-Disposition: inline
-In-Reply-To: <1479165185-11730-1-git-send-email-davids@...515...>
+In-Reply-To: <20161116162621.GH28918@...1296...>
 Subject: Re: [Openvpn-devel] [PATCH v2] tun: Fix compiler warnings
+Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,70 +16,80 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: David Sommerseth <davids@...515...>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+To: Gert Doering <gert@...1296...>, David Sommerseth <davids@...515...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---nR4f+zr2kNneuKs8
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-Hi,
+On 16/11/16 17:26, Gert Doering wrote:
+> Hi,
+> 
+> On Tue, Nov 15, 2016 at 12:13:05AM +0100, David Sommerseth wrote:
+>> Fixes two compiler warnings idetified by using CFLAGS=-O2
+> 
+> Spelling...
 
-On Tue, Nov 15, 2016 at 12:13:05AM +0100, David Sommerseth wrote:
-> Fixes two compiler warnings idetified by using CFLAGS=3D-O2
+Meh. Will fix that one.
 
-Spelling...
+>> 1) ifconfig_ipv6_remote is only used on Solaris, move the 
+>> declaration and assignment of this variable into the 
+>> TARGET_SOLARIS block.
+>> 
+>> 2) Linux have it's own open_tun() function and does not depend on
+>> open_tun_generic() at all.  So do not exclude open_tun_generic()
+>> if TARGET_LINUX is defined.
+> 
+> Should that be an "So do not include... " or "So exclude..."?
 
-> 1) ifconfig_ipv6_remote is only used on Solaris, move the
->    declaration and assignment of this variable into the
->    TARGET_SOLARIS block.
->=20
-> 2) Linux have it's own open_tun() function and does not
->    depend on open_tun_generic() at all.  So do not exclude
->    open_tun_generic() if TARGET_LINUX is defined.
+yes :)
 
-Should that be an "So do not include... " or "So exclude..."?
+>> @@ -915,7 +913,6 @@ do_ifconfig (struct tuntap *tt, 
+>> management_android_control (management, "IFCONFIG",
+>> buf_bptr(&out));
+>> 
+>> #elif defined(TARGET_SOLARIS) -
+> 
+> Whitespace change - intentional?
 
-> @@ -915,7 +913,6 @@ do_ifconfig (struct tuntap *tt,
->        management_android_control (management, "IFCONFIG", buf_bptr(&out)=
-);
->=20=20
->  #elif defined(TARGET_SOLARIS)
-> -
+Yes, but we can skip it if it is a deal-breaker.
 
-Whitespace change - intentional?
+>> @@ -977,6 +974,9 @@ do_ifconfig (struct tuntap *tt,
+>> 
+>> if ( tt->type == DEV_TYPE_TUN ) { +	      const char
+>> *ifconfig_ipv6_remote = NULL; + +	      ifconfig_ipv6_remote =
+>> print_in6_addr (tt->remote_ipv6, 0, &gc);
+> 
+> Why have an extra initialization with NULL here, if all you want
+> is "assing print_in6_addr"?  Single line should be good (unless too
+> long).
 
-> @@ -977,6 +974,9 @@ do_ifconfig (struct tuntap *tt,
->=20=20
->  	  if ( tt->type =3D=3D DEV_TYPE_TUN )
->  	   {
-> +	      const char *ifconfig_ipv6_remote =3D NULL;
-> +
-> +	      ifconfig_ipv6_remote =3D print_in6_addr (tt->remote_ipv6, 0, &gc);
+Yes, the line would exceed 80 characters, so this looked more readable.
 
-Why have an extra initialization with NULL here, if all you want is
-"assing print_in6_addr"?  Single line should be good (unless too long).
 
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+- -- 
+kind regards,
 
---nR4f+zr2kNneuKs8
-Content-Type: application/pgp-signature; name="signature.asc"
+David Sommerseth
+OpenVPN Technologies, Inc
 
 -----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQCVAwUBWCyIrakuBuNlUUl1AQKmQAQAndPPsGcW2UsDPNLjpo/1MbI9LYj1lO/w
-Ece287pCGPJEZZ49QNv5ybcpK1Tbd0wpsdeoYvAV7bzh/rkxGSaDaSTOrvn1VBA3
-+qixWF9AxDVcZ27tgsUBs9CTpvKhPLZnxMZLwFZEHFoZbRjV+ZNy6RM45ljU3DAC
-HiFpJdujIVo=
-=wGkv
+iQIcBAEBAgAGBQJYLIowAAoJEIbPlEyWcf3yqh4P/0XfeJtFkhyv0Zy9hpMvWqXd
+UUvzy1eWi+YDpD0yj1gnsNXvGuuDSKdYJ8N7xihxJ+YbGQaHYq6h4CSzy9v8LXc1
+tcdStM+73cGFOWeJujLsazJYmYJVxicbSkIU0wqTdjqI55Ac55Qzp5F5mns9gVoO
+2bMVMmfrNUWTG/vRK77VU0/0lfuNAeXp0WdY0Xzz3ee+hWxFaVorVidVwmEqfiWk
+87mVLC79jdPjYqlk8jMmaw2Cd32/sn5rje+9Lg49P8VghFOduxqx8oD7PQKzp9sA
+HIcR0KPAPlHWgQpd+TX+ljHiEW/7jVrRuJNaubXSjFuDB/Ru9xxjJSL/DWPA4ahr
+jaw8d/K1AdivYGhNGs3LqvFOsEJiZEK1Keo2JOPVSo7AoZDWUuYw1B8h3EcACPHr
+RDG4Cay+tW6vQGyhcx+Q723f/ZNDG4pFfi4sYkiQ/xhQ4LZz3qR/J3hy13GjIVe0
+lvg7vEZCJipPw7dgqDnyD4xrdlNwovkzSPv5GL/hQnyc+k9iYZyG825hYrftmDL6
+BlJDyn2uXUXISHYSoibfRuBLOGEXjY14opWB1P5ZNHJL4NfdfPZOE2eZJvh7oF5J
+NqA14XvRGl0qlYsJN/bBJAHsf+RSKD3pKEwcNjIkJlCJj1AvBD4Nd/TQ51ok1r1r
++R5LyZIRg0UtQrmWpZXi
+=Xo64
 -----END PGP SIGNATURE-----
-
---nR4f+zr2kNneuKs8--
 
