@@ -1,14 +1,11 @@
-Date: Wed, 16 Nov 2016 10:38:57 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20161116093857.GF28918@...1296...>
-References: <1477670087-30063-1-git-send-email-steffan.karger@...1435...>
-	<e9b94527-d361-cc7b-1ce1-dfbd1bc7a9e5@...2080...>
+References: <1479163508-19435-1-git-send-email-davids@...515...>
+From: Steffan Karger <steffan.karger@...1435...>
+Message-ID: <c4d87247-460c-0860-5748-a62f0304653a@...1435...>
+Date: Wed, 16 Nov 2016 11:44:12 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="8PToEjcJt0wtdCco"
-Content-Disposition: inline
-In-Reply-To: <e9b94527-d361-cc7b-1ce1-dfbd1bc7a9e5@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH] Refactor CRL handling
+In-Reply-To: <1479163508-19435-1-git-send-email-davids@...515...>
+Subject: Re: [Openvpn-devel] [PATCH] file checks: Merge
+ warn_if_group_others_accessible() into check_file_access()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,50 +14,111 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
-Cc: Ivo Manca <ivo.manca@...1435...>
-
---8PToEjcJt0wtdCco
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-On Thu, Nov 03, 2016 at 07:21:54PM +0100, David Sommerseth wrote:
-> This is a bit scary.  I have nothing to complain about in the patch,
-> so I feel like I'm not seeing the large neon-pink elephant in the room.
+On 14-11-16 23:45, David Sommerseth wrote:
+> Commit 825e2ec1f358f2e8 cleaned up the usage of warn_if_group_others_acce=
+ssible()
+> and moved it into options.c.  At this point there is only one caller of t=
+his
+> function, check_file_access().
+>=20
+> This takes that clean-up one step further and merges everything into
+> check_file_access().  In addition it removes some no longer needed #ifdefs
+> and uses platform_stat() to allow a similar check to happen on the Windows
+> platform as well.
+>=20
+> Signed-off-by: David Sommerseth <davids@...515...>
+> ---
+>  src/openvpn/options.c | 38 ++++++++++++--------------------------
+>  1 file changed, 12 insertions(+), 26 deletions(-)
+>=20
+> diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+> index 4d31e4c..369f3f4 100644
+> --- a/src/openvpn/options.c
+> +++ b/src/openvpn/options.c
+> @@ -57,6 +57,7 @@
+>  #include "manage.h"
+>  #include "forward.h"
+>  #include "ssl_verify.h"
+> +#include "platform.h"
+>  #include <ctype.h>
+>=20=20
+>  #include "memdbg.h"
+> @@ -2683,31 +2684,6 @@ options_postprocess_mutate (struct options *o)
+>   */
+>  #ifndef ENABLE_SMALL  /** Expect people using the stripped down version =
+to know what they do */
+>=20=20
+> -/*
+> - * Warn if a given file is group/others accessible.
+> - */
+> -static void
+> -warn_if_group_others_accessible (const char* filename)
+> -{
+> -#ifndef WIN32
+> -#ifdef HAVE_STAT
+> -  if (strcmp (filename, INLINE_FILE_TAG))
+> -    {
+> -      struct stat st;
+> -      if (stat (filename, &st))
+> -	{
+> -	  msg (M_WARN | M_ERRNO, "WARNING: cannot stat file '%s'", filename);
+> -	}
+> -      else
+> -	{
+> -	  if (st.st_mode & (S_IRWXG|S_IRWXO))
+> -	    msg (M_WARN, "WARNING: file '%s' is group or others accessible", fi=
+lename);
+> -	}
+> -    }
+> -#endif
+> -#endif
+> -}
+> -
+>  #define CHKACC_FILE (1<<0)       /** Check for a file/directory precense=
+ */
+>  #define CHKACC_DIRPATH (1<<1)    /** Check for directory precense where =
+a file should reside */
+>  #define CHKACC_FILEXSTWR (1<<2)  /** If file exists, is it writable? */
+> @@ -2754,9 +2730,19 @@ check_file_access(const int type, const char *file=
+, const int mode, const char *
+>      if (platform_access (file, W_OK) !=3D 0)
+>        errcode =3D errno;
+>=20=20
+> +  /* Warn if a given file is group/others accessible. */
+>    if (type & CHKACC_PRIVATE)
+>      {
+> -      warn_if_group_others_accessible (file);
+> +      platform_stat_t st;
+> +      if (platform_stat (file, &st))
+> +	{
+> +	  msg (M_WARN | M_ERRNO, "WARNING: cannot stat file '%s'", file);
+> +	}
+> +      else
+> +	{
+> +	  if (st.st_mode & (S_IRWXG|S_IRWXO))
+> +	    msg (M_WARN, "WARNING: file '%s' is group or others accessible", fi=
+le);
+> +	}
+>      }
+>=20=20
+>    /* Scream if an error is found */
+>=20
 
-I've reviewed the code and found a few nag bits, so you're just not
-critical enough :-)
+Hm, I like the removal of the #ifdefs, but I don't think we should merge
+warn_if_group_others_accessible() into check_file_access().  Why?
+Because when it was a separate function, the code was self-documenting
+and nicely separated.  Now, we need an extra comment that basically
+exists of the previous function name to explain what we're doing.
 
-None of the nag bits are relevant enough to NAK the code - so, combined
-with your detailed review of the SSL library side...
+I was also wondering, have you tested that this work as expected on
+Windows?  Since Windows has a quite different permission system.  Or
+will is simply never warn, like before?  That would be fine for this patch.
 
-> I can definitely give this one a Feature-ACK.  I can also support a
-> full ACK too if one more developer does a thorough code review.
-
-... I think this is good enough.  So, ACK.
-
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---8PToEjcJt0wtdCco
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQCVAwUBWCwpMakuBuNlUUl1AQLUogP+NPdES/VxLq7X5mhfd2yE8qTh5T56+1b5
-eCovH+ESEVEGMacJ3TFQ62WecaYzmVSYBzGDzuqGkH6UdLWpAMW+nxqCOd+6+TnC
-bOpE9Gmnb+8/dH6rcyeDFrNyF2CbFQ81xnKJglqce0xym/KqnnwiAjEoHjaXxo8N
-x4L6TE/y72g=
-=gGN4
------END PGP SIGNATURE-----
-
---8PToEjcJt0wtdCco--
+-Steffan
 
