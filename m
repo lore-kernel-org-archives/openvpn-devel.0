@@ -1,10 +1,15 @@
-Date: Wed, 16 Nov 2016 19:46:07 +0100 (CET)
-Message-Id: <201611161846.uAGIk7s9009048@...2054...>
+Date: Wed, 16 Nov 2016 19:47:17 +0100
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1479321495-1339-1-git-send-email-davids@...515...>
-References: <1479321495-1339-1-git-send-email-davids@...515...>
-Subject: [Openvpn-devel] [PATCH applied] Re: tun: Fix weird commit error
-	causing a double assignment
+Message-ID: <20161116184717.GL28918@...1296...>
+References: <CAFHpkQFdwy++P48HOOAeEO8fKr8uc6y-en0z73JtoOMO1c4q7Q@...278...>
+	<20161116183502.GK28918@...1296...>
+	<CAFHpkQEkvbq1AGSYN-kYqfDjMbUXJhe1gysp4g6s1EOQku6JOQ@...278...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="WhQFHpmtg6zaPNlU"
+Content-Disposition: inline
+In-Reply-To: <CAFHpkQEkvbq1AGSYN-kYqfDjMbUXJhe1gysp4g6s1EOQku6JOQ@...278...>
+Subject: Re: [Openvpn-devel] launch openvpn-gui at windows startup
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,31 +18,49 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: David Sommerseth <davids@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: ???????? ?????????????? <chipitsine@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-ACK.
+--WhQFHpmtg6zaPNlU
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Your patch has been applied to the master branch.
+Hi,
 
-commit 1de37f3b194e56ff3245b9e6cf22eaff54ca3efe
-Author: David Sommerseth
-Date:   Wed Nov 16 19:38:15 2016 +0100
+On Wed, Nov 16, 2016 at 11:39:04PM +0500, ???????? ?????????????? wrote:
+> > Samuli, Ilya, any idea how hard this is to do?
+>=20
+> it is trivial.
 
-     tun: Fix weird commit error causing a double assignment
+Cool :-)
 
-     Signed-off-by: David Sommerseth <davids@...515...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1479321495-1339-1-git-send-email-davids@...515...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13103.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+> I'm going to finish "x86 + x64" installer. The next thing is "check for
+> .net 4 if openvpnserv2 is checked" and third maybe "start openvpn-gui on
+> windows logon"
 
+Very much looking forward to this - thanks!
 
---
-kind regards,
+gert
 
-Gert Doering
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
+--WhQFHpmtg6zaPNlU
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQCVAwUBWCyptakuBuNlUUl1AQJFnQP/ZX/O0hXTjUHwfPC62ej9V5ZLzZQtkKuR
+L972R+DWOEQB3zy3+0NCLbuM0x/2SGEr3jKQC4ncMUz668rSHxreWY6bLE91Bcdy
+GrXy5VRovc9K9yHeVZT1ivMDurT2D06pP7pgnK44M/grA7Ap9b3BslVvyJIxgvaM
+KZpqgb9JGdk=
+=mD8m
+-----END PGP SIGNATURE-----
+
+--WhQFHpmtg6zaPNlU--
 
