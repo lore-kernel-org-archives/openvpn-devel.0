@@ -1,13 +1,8 @@
-Date: Wed, 16 Nov 2016 19:35:02 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20161116183502.GK28918@...1296...>
-References: <CAFHpkQFdwy++P48HOOAeEO8fKr8uc6y-en0z73JtoOMO1c4q7Q@...278...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="jUyrq1hnz4WvHzxT"
-Content-Disposition: inline
-In-Reply-To: <CAFHpkQFdwy++P48HOOAeEO8fKr8uc6y-en0z73JtoOMO1c4q7Q@...278...>
-Subject: Re: [Openvpn-devel] launch openvpn-gui at windows startup
+From: David Sommerseth <davids@...515...>
+Date: Wed, 16 Nov 2016 19:38:15 +0100
+Message-Id: <1479321495-1339-1-git-send-email-davids@...515...>
+Subject: [Openvpn-devel] [PATCH] tun: Fix weird commit error causing a
+	double assignment
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,47 +11,32 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: ???????? ?????????????? <chipitsine@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---jUyrq1hnz4WvHzxT
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+When committing 7756043c01dd0b, something odd happened causing
+the patch to have a duplicate 'ifconfig_ipv6_remote =' assignment.
 
-Hi,
+Signed-off-by: David Sommerseth <davids@...515...>
+---
+ src/openvpn/tun.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-On Wed, Nov 16, 2016 at 11:04:29PM +0500, ???????? ?????????????? wrote:
-> very common answer was "it would be great if openvpn-gui could start
-> automatically"
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index 3815f0f..77ae72f 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -975,7 +975,7 @@ do_ifconfig (struct tuntap *tt,
+ 	  if ( tt->type == DEV_TYPE_TUN )
+ 	   {
+ 	      const char *ifconfig_ipv6_remote =
+-                ifconfig_ipv6_remote = print_in6_addr (tt->remote_ipv6, 0, &gc);
++                print_in6_addr (tt->remote_ipv6, 0, &gc);
+ 
+ 	      argv_printf (&argv,
+ 			    "%s %s inet6 plumb %s/%d %s up",
+-- 
+1.8.3.1
 
-Weird thing is that I seem to remember that it *used* to have such a
-button...  but that might be "some other piece of windows".
-
-Samuli, Ilya, any idea how hard this is to do?
-
-(I think it's a nice thing to have, and if someone does not want that,
-they can always uncheck the box)
-
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---jUyrq1hnz4WvHzxT
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQCVAwUBWCym1akuBuNlUUl1AQI42AP+Ki/7g8svyGZK5cphQdYMt4W3Au0DEUnN
-BGJ/4tO2nptRBeAvpUb5PZNop7VtpdL/gL6BDiLh/Syed9x0kVarrHxhd0lt7tdu
-fCoUqpYTOjUM39U3Bs/L4T+REcT1k7TFWvS/2Dt73g4VKIzzJNVzR5uVkoDX3mS4
-eBmmRgOO4Kg=
-=dnww
------END PGP SIGNATURE-----
-
---jUyrq1hnz4WvHzxT--
 
