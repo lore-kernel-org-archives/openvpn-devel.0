@@ -1,10 +1,15 @@
-From: David Sommerseth <davids@...515...>
-Date: Wed, 16 Nov 2016 18:10:16 +0100
-Message-Id: <1479316216-24225-1-git-send-email-davids@...515...>
-In-Reply-To: <1479163508-19435-1-git-send-email-davids@...515...>
+MIME-Version: 1.0
+In-Reply-To: <ea910160-9005-8ca6-1af5-8594113944e2@...1435...>
 References: <1479163508-19435-1-git-send-email-davids@...515...>
-Subject: Re: [Openvpn-devel] [PATCH applied] file checks: Merge
-	warn_if_group_others_accessible() into check_file_access()
+	<c4d87247-460c-0860-5748-a62f0304653a@...1435...>
+	<3ec6b9c8-7dcd-038c-6bbf-4b136a2e4507@...2080...>
+	<ea910160-9005-8ca6-1af5-8594113944e2@...1435...>
+From: Selva Nair <selva.nair@...277...>
+Date: Wed, 16 Nov 2016 12:27:05 -0500
+Message-ID: <CAKuzo_iw72bdL3hdfDkPeo6bMjA3-3z+oR0Bh40PjJQgWyTr_A@...278...>
+Content-Type: multipart/alternative; boundary=94eb2c0438e0f839b305416e6244
+Subject: Re: [Openvpn-devel] [PATCH] file checks: Merge
+ warn_if_group_others_accessible() into check_file_access()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,48 +18,56 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: davids@...515...
-Cc: openvpn-devel@lists.sourceforge.net
+To: Steffan Karger <steffan.karger@...1435...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+--94eb2c0438e0f839b305416e6244
+Content-Type: text/plain; charset=UTF-8
 
-Your patch has been applied to the master branch
+On Wed, Nov 16, 2016 at 11:07 AM, Steffan Karger <steffan.karger@...1435...>
+wrote:
 
-commit 05de0a6e8fb675e309d599a185e70a1c54b8e7e9
-Author: David Sommerseth
-Date:   Mon Nov 14 23:45:08 2016 +0100
-
-     file checks: Merge warn_if_group_others_accessible() into check_file_access()
-
-     Signed-off-by: David Sommerseth <davids@...515...>
-     Acked-by: Steffan Karger <steffan.karger@...1435...>
-     Message-Id: <1479163508-19435-1-git-send-email-davids@...515...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13062.html
+> > I do not have any Windows test environments, so I'll admit that's a
+> > bold (and risky) move of me.  However, as you've identified,
+> > S_IRWXG|S_IRWXO is not set so shouldn't cause any issues.
+>
+> Combined with a compile-test I just this and the fact that the worst
+> thing that could happen is an incorrect warning (Windows builds never
+> warned before), I feel confident enough to ACK this:
+>
+> ACK.
 
 
-- --
-kind regards,
+But the question is will this compile for windows? I doubt it will unless
+we add some dummy defines for S_IRWXG etc..
 
-David Sommerseth
+Selva
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
+--94eb2c0438e0f839b305416e6244
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-iQIcBAEBAgAGBQJYLJL3AAoJEIbPlEyWcf3y1wMP/3ZO01T+nMGxzkcuM2SsKdsD
-LrWUYO7i56PlYkMxmNoAWYfMLJe2RlNILTuiFAklAkWLqE6GgMfQBIIV1TLkr560
-zd+s6UMVowEEm7x2dJyXVBRemFSJv3/XwexMNL+TZKJAMQ/3wfbtg6GiIV5+20TM
-GAFhpEGVVgqRnGDj1r1sRsXJdZx1o4aNKCnG+PIcXkLNN5V2K6WSSc8Xj9xDZcg7
-xN5lUJ7/yOU/hiPcJRToELkoTFXuHmbMP784IxD7hON21hmvtY8S9yJ2tN34PEMZ
-Pim36WbaXftlXgQbMRaiUo9lDLi8pi+Cj5kIEU7rzMjFvPWbGsQTrWzlB/wPyzAf
-gn0aHHmnoaqXFjQnuZwL1SZN8k6LM3rNmpes30p5BFvRpPuVNDRsu0cdeXJENr4n
-qeDm5reSqlN8owfAUlhI3/XGa7Hb18KrIcNMNyJoZ3r4ws5DlFtBj2fIJGvY0Vm9
-DWtsEVMUd0C6wTVHLb6/i3pz22CZ13hO4o4vlsS+Z9c3DLROjfWwZEnk1nHlyUMm
-93fltyQ4stOe2yisY3plMp85E6jKKnNTfhkVgf0n1VBhdzQFpyIt5gkIHi377O2V
-rfwP4j+AfhSZuXDeXBWzFG1xN8dhKY4oXW/Ex4g1dwzOkQncmQLLxVhaxKOBJOdk
-tRJKoLIt8Y4r4b26NqHe
-=RFgS
------END PGP SIGNATURE-----
+<div dir=3D"ltr"><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">=
+On Wed, Nov 16, 2016 at 11:07 AM, Steffan Karger <span dir=3D"ltr">&lt;<a h=
+ref=3D"mailto:steffan.karger@...1435..." target=3D"_blank">steffan.karger@...220...=
+..1435...</a>&gt;</span> wrote:<br><blockquote class=3D"gmail_quote" style=
+=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex"><span>&g=
+t; I do not have any Windows test environments, so I&#39;ll admit that&#39;=
+s a<br>
+&gt; bold (and risky) move of me.=C2=A0 However, as you&#39;ve identified,<=
+br>
+&gt; S_IRWXG|S_IRWXO is not set so shouldn&#39;t cause any issues.<br>
+<br>
+</span>Combined with a compile-test I just this and the fact that the worst=
+<br>
+thing that could happen is an incorrect warning (Windows builds never<br>
+warned before), I feel confident enough to ACK this:<br>
+<br>
+ACK.</blockquote></div><br>But the question is will this compile for window=
+s? I doubt it will unless we add some dummy defines for S_IRWXG etc..</div>=
+<div class=3D"gmail_extra"><br></div><div class=3D"gmail_extra">Selva</div>=
+<div class=3D"gmail_extra"><br></div><div class=3D"gmail_extra"><br></div><=
+/div>
+
+--94eb2c0438e0f839b305416e6244--
 
