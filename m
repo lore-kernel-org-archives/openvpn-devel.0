@@ -1,9 +1,10 @@
 From: David Sommerseth <davids@...515...>
-Date: Wed, 16 Nov 2016 16:23:53 +0100
-Message-Id: <1479309833-6660-1-git-send-email-davids@...515...>
-In-Reply-To: <1477670087-30063-1-git-send-email-steffan.karger@...1435...>
-References: <1477670087-30063-1-git-send-email-steffan.karger@...1435...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Refactor CRL handling
+Date: Wed, 16 Nov 2016 16:24:19 +0100
+Message-Id: <1479309859-6794-1-git-send-email-davids@...515...>
+In-Reply-To: <1478640507-14415-1-git-send-email-steffan@...1856...>
+References: <1478640507-14415-1-git-send-email-steffan@...1856...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Remove unneeded check for
+	extra_certs_file_inline
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,26 +15,26 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: steffan.karger@...1435...
+To: steffan@...1856...
 Cc: openvpn-devel@lists.sourceforge.net
 
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
+ACK.
+
 Your patch has been applied to the master branch
 
-commit 160504a2955c4478cd2c0323452929e07016a336
+commit 8d5b06e6fc46e214e1498352603a95028aa5c113
 Author: Steffan Karger
-Date:   Fri Oct 28 17:54:47 2016 +0200
+Date:   Tue Nov 8 22:28:27 2016 +0100
 
-     Refactor CRL handling
+     Remove unneeded check for extra_certs_file_inline
 
-     Signed-off-by: Ivo Manca <ivo.manca@...1435...>
-     Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+     Signed-off-by: Steffan Karger <steffan@...1856...>
      Acked-by: David Sommerseth <davids@...515...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1477670087-30063-1-git-send-email-steffan.karger@...1435...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg12809.html
+     Message-Id: <1478640507-14415-1-git-send-email-steffan@...1856...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg12978.html
      Signed-off-by: David Sommerseth <davids@...515...>
 
 
@@ -45,18 +46,18 @@ David Sommerseth
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBAgAGBQJYLHoHAAoJEIbPlEyWcf3yf7oP/RXZQqn6tr/DGqZbsB8Ub4LQ
-rHvcUBx9xLhbxVzCJglP42xkarzlRPEuDDvRh04qavNFF8ymLaL5l9tcgFmDAfev
-7e97Rz88MnGiTW1MvFjILcVRl7ezdRtzRkJ1nnTq4uxGRY2hrqOGubkKVKoOU68c
-ifeKqjBEGCmKFrsDB5Uplkd5Q8gfw+GTPVlvRyoEDHe5NPUE+FF/mp1z/mopgV2r
-Mzv1K8KbqcLLJIHXeOPi5/hnU6noIpohjdCHNyBrloVVxO3KBkj7LOpSXu4AM47/
-ZthQ4TAzjBNNiqGzpoQIH7X/gHvSRORWIV85HH3lmXM4101o8zjJGToCeXjJP4Cm
-lCX7gOjFZdyusL6FUY38n6noDjTjMfrQBF7LpzG1bTdQ2LuDPZDlPMNXud8Jyx30
-8BXIXG0NQ65auci+Hafm5Nvo9RJcqwXBpTxUnaioqsd13qzaFWuMlKRQB3liFmH1
-0wwh/LVgstAEk1wzO0kdQr4fJ9Yx/qis3iyU1/m/KHds/YEE/OFPyxEDoNVjU/D8
-+p9WQabaChRAKCJatXZerZZsYqHNAi3KRiIZ1he95+jXrj89y6qxfF7EJVjT8dpo
-vuibHM+20jE9481QsSOSzr7O1dL1kFN9sNDjCEKXy6W3vD2T53g6Z65eRo9fhSsJ
-6aIAM4Qz47w9sJ+c6/XQ
-=3xBv
+iQIcBAEBAgAGBQJYLHohAAoJEIbPlEyWcf3ya+sP/R5QvIYTpeHuypemvm8WIFGl
+l8jPT7ago+TX9l6jvr0RHTFGp7TK2TVwg0wlrSjGowYM7og0lqXeGggHfd5FMfFI
+UXxS4ukG5sy4vi0VHiXYFE0PYlFpBPSabADjIss+LCmN3Z/BQZyADJEwBcibneym
+apf82RIGLy+QsUWlmBGeD9FcmH6rpnQ2nM1E+1xXucF2MsYd+I1Ir7qXI7s0C3eb
++QybxC2X3If/NLwCkyh8fbwCvp05qr2YLuRRi6rSUQw8BUFqutxWhwly6vqDiqqF
+e1j16qYBN2bImpKsEbRn06kQ9jMki6HDo5Ei7SoodoaCs7evSKahomLJogk1elgO
+VlHLS+MbMJDze+SAJvuCsx+LyUiP7AfXH68mqvbGm+VTssv5y1WQhhS1RhKYrvJG
+Tgwt9sMAY5JQQWXjQNiCtzhdB5ChSfGE7r2+2vu9V+CKcuuOGnScSEOHKCWu2MOB
+LCJK07gXVhm9rfRVq+FK1P0TtNi9FigJBwjMq+naHHsQMbrd4oTaKvIHpemJnnEa
+rg2bE25ED+x5ns5UGuOLNHE+ZXrZEkyeaiyRKpQ06VJuXHtxOjQ13ZubqVmiI9Xq
+NbVKlhJhlGCVl6v4GR1bdONrFWKleNdsUfzNe13Wj/Y95x5AefnZOh6szSjEnFNN
+glRfdpJKYAVay6CujUAd
+=l6AJ
 -----END PGP SIGNATURE-----
 
