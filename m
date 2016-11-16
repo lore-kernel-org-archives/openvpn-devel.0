@@ -1,9 +1,11 @@
 From: Steffan Karger <steffan.karger@...1435...>
-Date: Wed, 16 Nov 2016 14:14:52 +0100
-Message-ID: <1479302092-28406-1-git-send-email-steffan.karger@...1435...>
+Date: Wed, 16 Nov 2016 14:23:04 +0100
+Message-ID: <1479302584-28598-1-git-send-email-steffan.karger@...1435...>
+In-Reply-To: <1478636302-9678-2-git-send-email-steffan.karger@...1435...>
+References: <1478636302-9678-2-git-send-email-steffan.karger@...1435...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] configure: check for AEAD function
-	declarations, instead of linkage
+Subject: [Openvpn-devel] [PATCH] Remove unused variables from
+	do_init_crypto_static()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,55 +18,28 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-One might want to run ./configure before building the crypto library.
-To correctly check from AEAD support in that case, check for the
-function declaration, rather than trying to link to it.
+Commit 28c115e4 refactored the key loading, but forgot to remove these
+variables from do_init_crypto_static().  Fix that.
 
 Signed-off-by: Steffan Karger <steffan.karger@...1435...>
 ---
- configure.ac | 20 ++++++++++----------
- 1 file changed, 10 insertions(+), 10 deletions(-)
+ src/openvpn/init.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
-diff --git a/configure.ac b/configure.ac
-index 4a45f05..aaa688e 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -867,10 +867,11 @@ if test "${enable_crypto}" = "yes" -a "${with_crypto_library}" = "openssl"; then
- 	fi
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index d6733f0..c42aed2 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -2132,9 +2132,6 @@ do_init_crypto_static (struct context *c, const unsigned int flags)
  
- 	have_crypto_aead_modes="yes"
--	AC_CHECK_FUNCS(
-+	AC_CHECK_DECLS(
- 		[EVP_aes_256_gcm],
- 		,
--		[have_crypto_aead_modes="no"; break]
-+		[have_crypto_aead_modes="no"; break],
-+		[[ #include <openssl/evp.h> ]]
- 	)
- 
- 	CFLAGS="${saved_CFLAGS}"
-@@ -947,14 +948,13 @@ elif test "${enable_crypto}" = "yes" -a "${with_crypto_library}" = "mbedtls"; th
- 		fi
- 	fi
- 
--	have_crypto_aead_modes="yes"
--	AC_CHECK_FUNCS(
--		[ \
--			mbedtls_cipher_write_tag \
--			mbedtls_cipher_check_tag \
--		],
--		,
--		[have_crypto_aead_modes="no"; break]
-+	# Check mbed TLS AEAD support
-+	have_crypto_aead_modes="no"
-+	AC_CHECK_DECLS(
-+		[ mbedtls_cipher_write_tag, mbedtls_cipher_check_tag ],
-+		[ have_crypto_aead_modes="yes"],
-+		[],
-+		[[ #include <mbedtls/cipher.h> ]]
- 	)
- 
- 	CFLAGS="${saved_CFLAGS}"
+   if (!key_ctx_bi_defined (&c->c1.ks.static_key))
+     {
+-      struct key2 key2;
+-      struct key_direction_state kds;
+-
+       /* Get cipher & hash algorithms */
+       init_key_type (&c->c1.ks.key_type, options->ciphername, options->authname,
+ 		     options->keysize, options->test_crypto, true);
 -- 
 2.7.4
 
