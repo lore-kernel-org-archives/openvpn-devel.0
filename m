@@ -1,10 +1,8 @@
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <8fdc37d8-e20e-023f-b5fa-9b2eef95ba0b@...515...>
+Date: Thu, 17 Nov 2016 17:34:04 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAFHpkQEKrJqNB2ZmhAwKGebVb6SB75HpnWcrw_niSaALL_S4mA@...278...>
-References: <CAFHpkQEKrJqNB2ZmhAwKGebVb6SB75HpnWcrw_niSaALL_S4mA@...278...>
-From: Steffan Karger <steffan@...1856...>
-Date: Wed, 16 Nov 2016 23:04:42 +0100
-Message-ID: <CAA1AbxJZL70qY=ivMvskeUapj0V_+z_LVnM2Zp2LxAJT4t62vA@...278...>
-Subject: Re: [Openvpn-devel] https://travis-ci.org/OpenVPN/openvpn/builds
+Subject: [Openvpn-devel] OpenVPN 2.4_beta1 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,18 +11,45 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="windows-1252"; format=flowed
 Content-Transfer-Encoding: quoted-printable
-To: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: "openvpn users list (openvpn-users@lists.sourceforge.net)" <openvpn-users@lists.sourceforge.net>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, openvpn-announce@lists.sourceforge.net
 
-On 16 November 2016 at 18:06, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=
-=D0=B8=D1=86=D0=B8=D0=BD <chipitsine@...277...> wrote:
-> is it ok ?
+The OpenVPN community project team is proud to release OpenVPN=20
+2.4_beta1. It can be downloaded from here:
 
-No, it's not.  But someone needs to figure out how to use cmocka on
-OSX, or disable the offending test on OSX.  If I find some time I
-will, but I haven't yet gotten around to it.
+<http://openvpn.net/index.php/open-source/downloads.html>
 
--Steffan
+The biggest new feature in this release (compared to 2.4_alpha2) is the=20
+optional control channel encryption. In addition several smaller fixes=20
+and improvements are included. A summary of these changes is available here:
+
+<https://github.com/OpenVPN/openvpn/blob/master/Changes.rst>
+
+A full list of changes is available here.
+
+<https://community.openvpn.net/openvpn/wiki/ChangesInOpenvpn24>
+
+For generic help use these support channels:
+
+Official documentation:=20
+<http://openvpn.net/index.php/open-source/documentation/howto.html>
+Wiki: <https://community.openvpn.net>
+Forums: <https://forums.openvpn.net>
+User mailing list: <http://sourceforge.net/mail/?group_id=3D48978>
+User IRC channel: #openvpn at irc.freenode.net
+
+Please report bugs and ask development questions here:
+
+Bug tracker and wiki: <https://community.openvpn.net>
+Developer mailing list: <http://sourceforge.net/mail/?group_id=3D48978>
+Developer IRC channel: #openvpn-devel at irc.freenode.net (requires=20
+Freenode registration)
+
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
 
