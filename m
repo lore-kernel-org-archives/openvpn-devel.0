@@ -1,9 +1,13 @@
-Date: Sat, 19 Nov 2016 20:06:14 +0100 (CET)
-Message-Id: <201611191906.uAJJ6ElS048891@...2054...>
+Date: Sat, 19 Nov 2016 21:12:38 +0100
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1479570164-23522-1-git-send-email-arne@...1227...>
-References: <1479570164-23522-1-git-send-email-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix various compiler warnings
+Message-ID: <20161119201238.GA49297@...1296...>
+References: <1479569756-23302-1-git-send-email-arne@...1227...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="nFreZHaLTZJo0R7j"
+Content-Disposition: inline
+In-Reply-To: <1479569756-23302-1-git-send-email-arne@...1227...>
+Subject: Re: [Openvpn-devel] [PATCH] Remove compat-stdbool.h.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,30 +16,55 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
 To: Arne Schwabe <arne@...1227...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-ACK.
+--nFreZHaLTZJo0R7j
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Your patch has been applied to the master branch.
+Hi,
 
-commit 3212d0c0a5caac6607b30effb584887eb3325942
-Author: Arne Schwabe
-Date:   Sat Nov 19 16:42:44 2016 +0100
+On Sat, Nov 19, 2016 at 04:35:56PM +0100, Arne Schwabe wrote:
+> Since we use C99, we are guaranteed to have stdbool.h available
+> ---
+>  src/compat/compat-stdbool.h | 12 ------------
+>  src/openvpn/syshead.h       |  2 +-
+>  2 files changed, 1 insertion(+), 13 deletions(-)
+>  delete mode 100644 src/compat/compat-stdbool.h
 
-     Fix various compiler warnings
+Meh!  When deleting a whole file, please take into account that this
+might be referenced in "make dist"...
 
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1479570164-23522-1-git-send-email-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13124.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+make[3]: *** No rule to make target `compat-stdbool.h', needed by `distdir'.
 
+(Windows buildbot is currently broken because it builds tarballs first)
 
---
-kind regards,
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-Gert Doering
+--nFreZHaLTZJo0R7j
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJYMLI2AAoJEB2Cnv7KVigSuZMMAIp/TqZlCFhEVFX5CUCJefHx
+OJmwmHGOKhQknHAhIMWkZrrNjfrb9j8F/xClA2/rBtdQyAowBcvvk9uOdbCEhUcx
+CtPza543KPYoe68BLXjyOwDfye+XXtXTdxZQNBPnP9cw7GHmzLSsgVGuWof1Hury
+wI16FnYudfz3lJcZERfKB/8QSlYXLHqhMCO5ZNaO/WY/vbOZWtr8zO45zzS68r49
+XYgtypClOeHFSrh/rWxo2pJ8Ffc2Z6st/GTphf+/LOm4VAq5Rd6mI1EogmpsbIyh
+t7SViQddfodCMC+Ht3suUaru6nYoYoFaA6fqIRW/UTvVXnLVmNjsrwVAKk/WNuKO
+gwLzQKhe2iIr1pKMcLAm/in2uzrrjJGDNRy3LnuoTrveH/+I/pPOBuxm+AsBAle9
+arZqchHIAYwxcOT5b9EmJ4IWySS7bGOLKfgRMZbtxRy1nc0aPNLPZPU1L8Jc1OT6
+MunUwE8lGaoNOzL1ye2Nx8+0XnABB4JjnsRZKhyP8A==
+=8Igi
+-----END PGP SIGNATURE-----
+
+--nFreZHaLTZJo0R7j--
 
