@@ -1,8 +1,14 @@
-From: Selva Nair <selva.nair@...277...>
-Date: Sun, 20 Nov 2016 16:38:52 -0500
-Message-Id: <1479677932-22078-1-git-send-email-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH] Handle --dhcp-option DNS6 on Windows using
-	netsh
+Date: Sun, 20 Nov 2016 22:39:43 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20161120213943.GB28918@...1296...>
+References: <1479676734-21630-1-git-send-email-selva.nair@...277...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="msgqYNMsb2nHSR7s"
+Content-Disposition: inline
+In-Reply-To: <1479676734-21630-1-git-send-email-selva.nair@...277...>
+Subject: Re: [Openvpn-devel] [PATCH] Do not set ipv6 address if '--ip-win32
+ manual' is used
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,150 +17,77 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Selva Nair <selva.nair@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-TODO: set dns servers using the interactive service
+--msgqYNMsb2nHSR7s
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Signed-off-by: Selva Nair <selva.nair@...277...>
----
- doc/openvpn.8         |  5 ++---
- src/openvpn/options.c | 22 ++++++++++++++--------
- src/openvpn/tun.c     | 30 ++++++++++++++++++++++++++++++
- src/openvpn/tun.h     |  3 +++
- 4 files changed, 49 insertions(+), 11 deletions(-)
+Hi,
 
-diff --git a/doc/openvpn.8 b/doc/openvpn.8
-index d454a36..171bd72 100644
---- a/doc/openvpn.8
-+++ b/doc/openvpn.8
-@@ -5634,13 +5634,12 @@ this option to set secondary DNS server addresses.
- Set primary domain name server IPv6 address.  Repeat
- this option to set secondary DNS server IPv6 addresses.
- 
--Note: currently this is somewhat of a placeholder option - it is
--understood, but OpenVPN has no code to tell Windows about it (the
-+Note: currently this is handled using netsh and requires admin rights (the
- existing DHCP code can only do IPv4 DHCP, and that protocol only
- permits IPv4 addresses anywhere).  The option will be put into the
- environment, so an
- .B \-\-up
--script could act upon it.
-+script could act upon it if needed.
- 
- .B WINS addr \-\-
- Set primary WINS server address (NetBIOS over TCP/IP Name Server).
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 9e828d8..97be7fa 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -6407,14 +6407,20 @@ add_option (struct options *options,
- 	{
- 	  dhcp_option_address_parse ("DNS", p[2], o->dns, &o->dns_len, msglevel);
- 	}
--      else if (streq (p[1], "DNS6") && p[2])
--	{
--	  /* this is somewhat of a placeholder - we understand the option,
--	   * but cannot act upon it - so we'll just accept it and put it
--	   * into the environment, as we would do on all non-win32 platforms
--	   */
--	  foreign_option (options, p, 3, es);
--	}
-+      else if (streq (p[1], "DNS6") && p[2] && ipv6_addr_safe(p[2]))
-+        {
-+          struct in6_addr addr;
-+          foreign_option (options, p, 3, es);
-+          if (o->dns6_len >= N_DHCP_ADDR)
-+            {
-+              msg (msglevel, "--dhcp-option DNS6: maximum of %d dns servers can be specified",
-+	           N_DHCP_ADDR);
-+            }
-+          else if (get_ipv6_addr (p[2], &addr, NULL, msglevel))
-+            {
-+              o->dns6[o->dns6_len++] = addr;
-+            }
-+        }
-       else if (streq (p[1], "WINS") && p[2])
- 	{
- 	  dhcp_option_address_parse ("WINS", p[2], o->wins, &o->wins_len, msglevel);
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index 77ae72f..5950906 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -68,6 +68,9 @@ static void netsh_ifconfig (const struct tuntap_options *to,
- 			    const in_addr_t ip,
- 			    const in_addr_t netmask,
- 			    const unsigned int flags);
-+static void netsh_dns6_servers (const struct in6_addr *addr_list,
-+                                const int addr_len,
-+                                const char *flex_name);
- static void netsh_command (const struct argv *a, int n, int msglevel);
- 
- static const char *netsh_get_id (const char *dev_node, struct gc_arena *gc);
-@@ -1375,6 +1378,7 @@ do_ifconfig (struct tuntap *tt,
- 	if (tt->options.msg_channel)
- 	  {
- 	    do_address_service (true, AF_INET6, tt);
-+            /* TODO: do_dns6_service() */
- 	  }
- 	else
- 	  {
-@@ -1388,6 +1392,8 @@ do_ifconfig (struct tuntap *tt,
- 			 iface,
- 			 ifconfig_ipv6_local );
- 	    netsh_command (&argv, 4, M_FATAL);
-+            /* set ipv6 dns servers if any are specified */
-+	    netsh_dns6_servers(tt->options.dns6, tt->options.dns6_len, actual);
- 	  }
- 
- 	/* explicit route needed */
-@@ -4618,6 +4624,30 @@ ip_addr_member_of (const in_addr_t addr, const IP_ADDR_STRING *ias)
- }
- 
- static void
-+netsh_dns6_servers (const struct in6_addr *addr_list,
-+                    const int addr_len,
-+                    const char *flex_name)
-+{
-+    struct gc_arena gc = gc_new ();
-+    struct argv argv = argv_new ();
-+
-+    for (int i = 0; i < addr_len; ++i)
-+    {
-+        const char *fmt = (i == 0) ?
-+            "%s%sc interface ipv6 set dnsservers %s static %s validate=no"
-+	    : "%s%sc interface ipv6 add dnsservers %s %s validate=no";
-+        argv_printf (&argv, fmt, get_win_sys_path(),
-+                     NETSH_PATH_SUFFIX, flex_name,
-+                     print_in6_addr (addr_list[i], 0, &gc));
-+        /* Treat errors while adding as non-fatal as we do not check for duplicates */
-+        netsh_command (&argv, 2, (i==0)? M_FATAL : M_NONFATAL);
-+    }
-+
-+    argv_reset (&argv);
-+    gc_free (&gc);
-+}
-+
-+static void
- netsh_ifconfig_options (const char *type,
- 			const in_addr_t *addr_list,
- 			const int addr_len,
-diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h
-index dedd915..9b5a1b7 100644
---- a/src/openvpn/tun.h
-+++ b/src/openvpn/tun.h
-@@ -107,6 +107,9 @@ struct tuntap_options {
-   bool dhcp_release;
- 
-   bool register_dns;
-+
-+  struct in6_addr dns6[N_DHCP_ADDR];
-+  int dns6_len;
- };
- 
- #elif TARGET_LINUX
--- 
-2.1.4
+On Sun, Nov 20, 2016 at 04:18:54PM -0500, Selva Nair wrote:
+> This also applies to --ifconfig-noexec.
+>=20
+> Resolves Trac #723
+>=20
+> Signed-off-by: Selva Nair <selva.nair@...277...>
 
+The patch is fine code-wise, but I'm not sure if it is the best approach.
+
+We have this funny bit of special-case code:
+
+options.c, around line 2550
+
+#ifdef _WIN32
+...
+  if (options->ifconfig_noexec)
+    {
+      options->tuntap_options.ip_win32_type =3D IPW32_SET_MANUAL;
+      options->ifconfig_noexec =3D false;
+    }
+#endif
+
+I skimmed through init.c and tun.c / do_ifconfig(), and even though
+Heiko normalized the IFCONFIG_BEFORE_TUN_OPEN part, Windows is still
+not "normal" - part of the ifconfig is done in open_tun(), which is
+always called, but *only* if ip_win32 is not "IPW32_SET_MANUAL"...
+
+
+So, I wonder if just removing the "options->ifconfig_noexec =3D false;"
+line from the code above would achieve the desired effect, with a=20
+smaller windows special case code base?  It would still call open_tun(),
+which would not touch anything (because IPW32_SET_MANUAL) and then
+skip do_ifconfig() later on, so IPv6 would not happen.
+
+Of course there is a slight asymmetry if someone insists on explicitely
+configuring "ip-win32 manual" - in that case, v4 would not happen and
+v6 would.  This was partly intentional when doing the IPv6 stuff, as I
+consider the whole "ip-win32" nightmare to be not applicable to IPv6...
+
+
+Please do not consider this a NAK, just a "what if..." thinking loud.
+
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--msgqYNMsb2nHSR7s
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQCVAwUBWDIYH6kuBuNlUUl1AQIvkgP/eXoKDoH2NsHsexoQv/rf8bodMP4HTlnN
+UKwwhZ6iNoJQy09tIF0eZyDlO0O8Bd8du4RoMJScffAzWK0tQ3NmDSqUISLdYdrU
+jIO3gwlMtZ6EC49Px0bApmXM6BBKsRTUQ7iKCJQIC3aek+QWUlb8hutBF2jPbtgi
+JEllmiPgp+M=
+=JOzj
+-----END PGP SIGNATURE-----
+
+--msgqYNMsb2nHSR7s--
 
