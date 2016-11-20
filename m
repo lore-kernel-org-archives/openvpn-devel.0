@@ -1,9 +1,9 @@
 From: Steffan Karger <steffan@...1856...>
-Date: Sun, 20 Nov 2016 15:39:23 +0100
-Message-Id: <1479652763-12345-1-git-send-email-steffan@...1856...>
-In-Reply-To: <1478255441-21670-1-git-send-email-gert@...1296...>
-References: <1478255441-21670-1-git-send-email-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH] Poor man's NCP for non-NCP clients
+Date: Sun, 20 Nov 2016 15:44:17 +0100
+Message-Id: <1479653057-14712-1-git-send-email-steffan@...1856...>
+In-Reply-To: <1479652763-12345-1-git-send-email-steffan@...1856...>
+References: <1479652763-12345-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH v2] Poor man's NCP for non-NCP clients
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -26,6 +26,10 @@ or client-side 'setenv UV_*' tricks.
 
 Signed-off-by: Steffan Karger <steffan@...1856...>
 ---
+
+v2: remove unused parameter from options_string_extract_option()
+    prototype.
+
  src/openvpn/options.c | 32 ++++++++++++++++++++++++++++++++
  src/openvpn/options.h | 14 ++++++++++++++
  src/openvpn/ssl.c     | 24 +++++++++++++++++++++---
