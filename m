@@ -1,7 +1,11 @@
+References: <1479677932-22078-1-git-send-email-selva.nair@...277...>
 From: Arne Schwabe <arne@...1227...>
-Date: Sun, 20 Nov 2016 23:13:08 +0100
-Message-Id: <1479679988-3918-1-git-send-email-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH] Handle DNS6 option on Android
+Message-ID: <345177b8-6ef3-b357-7fea-025b34fa0e3f@...1227...>
+Date: Sun, 20 Nov 2016 23:29:32 +0100
+MIME-Version: 1.0
+In-Reply-To: <1479677932-22078-1-git-send-email-selva.nair@...277...>
+Subject: Re: [Openvpn-devel] [PATCH] Handle --dhcp-option DNS6 on Windows
+ using netsh
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -10,59 +14,24 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+To: Selva Nair <selva.nair@...277...>, openvpn-devel@lists.sourceforge.net
 
----
- doc/android.txt   | 3 ++-
- src/openvpn/tun.c | 8 ++++++--
- 2 files changed, 8 insertions(+), 3 deletions(-)
+Am 20.11.16 um 22:38 schrieb Selva Nair:
+> TODO: set dns servers using the interactive service
+>
 
-diff --git a/doc/android.txt b/doc/android.txt
-index 5f4ee95..e287be0 100644
---- a/doc/android.txt
-+++ b/doc/android.txt
-@@ -47,7 +47,8 @@ ROUTE network netmask
- 
- To tell the UI which routes should be set on the tun interface.
- 
--DNSSERVER serverip
-+DNSSERVER IP server address
-+DNS6SERVER IPv6 server address
- DNSDOMAIN searchdomain
- 
- To set the DNS server and search domain.
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index 5950906..851e3ec 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -1629,18 +1629,22 @@ void
- open_tun (const char *dev, const char *dev_type, const char *dev_node, struct tuntap *tt)
- {
- #define ANDROID_TUNNAME "vpnservice-tun"
--  int i;
-   struct user_pass up;
-   struct gc_arena gc = gc_new ();
-   bool opentun;
- 
-   int oldtunfd = tt->fd;
- 
--  for (i = 0; i < tt->options.dns_len; ++i) {
-+  for (int i = 0; i < tt->options.dns_len; i++) {
-     management_android_control (management, "DNSSERVER",
- 				print_in_addr_t(tt->options.dns[i], 0, &gc));
-   }
- 
-+  for (int i = 0; i < tt->options.dns6_len; i++) {
-+    management_android_control (management, "DNS6SERVER",
-+				print_in6_addr (tt->options.dns6[i], 0, &gc));
-+  }
-+
-   if(tt->options.domain)
-     management_android_control (management, "DNSDOMAIN", tt->options.domain);
- 
--- 
-2.9.3 (Apple Git-75)
+I was playing with ANdroid/IPv6 and this. For Android, the resolver
+takes the DNS server always in the order that I give it. Since there are
+now seperate lists for DNS and DNS6 I have to prefer always DNS or DNS6
+and cannot use the order I am given from the server.
+
+I think we refactor the dns_list into a common dns list. I can also do
+this later since this is probably an Android specific problem.
+
+(So basically ACK to the patch, but I will send a followup later)
+
+Arne
 
 
