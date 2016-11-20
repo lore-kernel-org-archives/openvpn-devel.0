@@ -1,13 +1,12 @@
-Date: Sun, 20 Nov 2016 22:48:51 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20161120214851.GC28918@...1296...>
+MIME-Version: 1.0
+In-Reply-To: <20161120214851.GC28918@...1296...>
 References: <1479677932-22078-1-git-send-email-selva.nair@...277...>
 	<CAKuzo_iPLctB-wgVfLZ_q_ZWutUCYLMM3HBCfqZVndv6z0v2FA@...278...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="pKvQgaf82iZAytyH"
-Content-Disposition: inline
-In-Reply-To: <CAKuzo_iPLctB-wgVfLZ_q_ZWutUCYLMM3HBCfqZVndv6z0v2FA@...278...>
+	<20161120214851.GC28918@...1296...>
+From: Selva Nair <selva.nair@...277...>
+Date: Sun, 20 Nov 2016 16:51:38 -0500
+Message-ID: <CAKuzo_j0xH5XideCJ1aDwB-=P8wVgC0fF5_VA0gctfMYCgLPmg@...278...>
+Content-Type: multipart/alternative; boundary=94eb2c125422704f060541c28cd8
 Subject: Re: [Openvpn-devel] [PATCH] Handle --dhcp-option DNS6 on Windows
  using netsh
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -18,45 +17,53 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>
+To: Gert Doering <gert@...1296...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---pKvQgaf82iZAytyH
-Content-Type: text/plain; charset="us-ascii"
+--94eb2c125422704f060541c28cd8
+Content-Type: text/plain; charset=UTF-8
+
+On Sun, Nov 20, 2016 at 4:48 PM, Gert Doering <gert@...1296...> wrote:
+
+> HI,
+>
+> On Sun, Nov 20, 2016 at 04:41:52PM -0500, Selva Nair wrote:
+> > Note: This is supposed to be applied on top  of the  'Stub implementation
+> > of "--dhcp-option DNS6 <v6addr>"' patch (
+> > https://www.mail-archive.com/openvpn-devel@...1199...
+> sourceforge.net/msg13140.html
+> > )
+>
+> Now that was quick :-) - someone needs to ACK that one first...
+>
+
+I had a draft in my repo.. :) The ACK is coming.
+
+Selva
+
+--94eb2c125422704f060541c28cd8
+Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-HI,
+<div dir=3D"ltr"><br><div class=3D"gmail_extra"><br><div class=3D"gmail_quo=
+te">On Sun, Nov 20, 2016 at 4:48 PM, Gert Doering <span dir=3D"ltr">&lt;<a =
+href=3D"mailto:gert@...1296..." target=3D"_blank">gert@...1296...</a>&gt;</=
+span> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8e=
+x;border-left:1px #ccc solid;padding-left:1ex">HI,<br>
+<div><div class=3D"h5"><br>
+On Sun, Nov 20, 2016 at 04:41:52PM -0500, Selva Nair wrote:<br>
+&gt; Note: This is supposed to be applied on top=C2=A0 of the=C2=A0 &#39;St=
+ub implementation<br>
+&gt; of &quot;--dhcp-option DNS6 &lt;v6addr&gt;&quot;&#39; patch (<br>
+&gt; <a href=3D"https://www.mail-archive.com/openvpn-devel@...1483...=
+e.net/msg13140.html" rel=3D"noreferrer" target=3D"_blank">https://www.mail-=
+archive.com/<wbr>openvpn-devel@...1199...<wbr>sourceforge.net/msg13140.html=
+</a><br>
+&gt; )<br>
+<br>
+</div></div>Now that was quick :-) - someone needs to ACK that one first...=
+<br></blockquote><div><br></div><div>I had a draft in my repo.. :) The ACK =
+is coming.<br><br></div><div>Selva<br></div></div></div></div>
 
-On Sun, Nov 20, 2016 at 04:41:52PM -0500, Selva Nair wrote:
-> Note: This is supposed to be applied on top  of the  'Stub implementation
-> of "--dhcp-option DNS6 <v6addr>"' patch (
-> https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13140=
-.html
-> )
-
-Now that was quick :-) - someone needs to ACK that one first...
-
-gert
-
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---pKvQgaf82iZAytyH
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQCVAwUBWDIaQqkuBuNlUUl1AQLo8wP/VH7cY1pqTjOGgCwz+6yrWkuyHA6ygxOW
-ZviNK433g9MotmGIeITxVkC6J2J10kZRlt9sSqx6pCJo26F8V9YHosjbD+SPKHCj
-Rwrq0pWLHOkiO19GjvLGZ+vhD3JHRA8JZwWZYZd72T8KgN110jGyBMVBJRbfMBCl
-HciWxgBnfgI=
-=8O0O
------END PGP SIGNATURE-----
-
---pKvQgaf82iZAytyH--
+--94eb2c125422704f060541c28cd8--
 
