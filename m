@@ -1,12 +1,8 @@
-References: <35b9d93f-0682-9457-49f6-cf96507fc59f@...515...>
-	<8dff9a3b-003b-4a48-3ff6-21f0663ba712@...277...>
-From: debbie10t <debbie10t@...277...>
-Message-ID: <13724284-0709-d43e-a1ab-f6abea65362f@...277...>
-Date: Sun, 20 Nov 2016 21:16:00 +0000
-MIME-Version: 1.0
-In-Reply-To: <8dff9a3b-003b-4a48-3ff6-21f0663ba712@...277...>
-Subject: Re: [Openvpn-devel] Combined 32/64-bit OpenVPN 2.4_beta1 installer
- available for testing
+From: Selva Nair <selva.nair@...277...>
+Date: Sun, 20 Nov 2016 16:18:54 -0500
+Message-Id: <1479676734-21630-1-git-send-email-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH] Do not set ipv6 address if '--ip-win32
+	manual' is used
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,58 +11,51 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-15"; format="flowed"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
+This also applies to --ifconfig-noexec.
 
+Resolves Trac #723
 
-On 18/11/16 20:14, debbie10t wrote:
-> Hi,
->
-> On 18/11/16 13:29, Samuli Sepp=E4nen wrote:
->> Hi,
->>
->> OpenVPN 2.4_rc1[1] will be bundled as a combined installer[2] that works
->> on both 32-bit and 64-bit Windows versions (Vista and above). A preview
->> installer based on 2.4_beta1 is available here:
->>
->> <https://build.openvpn.net/downloads/snapshots/openvpn-install-2.4_beta1=
--I901.exe>
->>
->>
->> The installer also contains an updated openvpnserv2 (OpenVPNService),
->> which attempts to shut down OpenVPN instances cleanly instead of just
->> killing them on service stop or restart[3].
->>
->> I already ran the Powershells tests[4] on it, and chipitsine has done
->> independent testing. However, more testing would be welcome. In
->> particular:
->>
->> - Ensure that by default the files are places to correct directory, that
->> is, C:\Program Files\OpenVPN on both 32-bit and 64-bit Windows
->
->
-> I have tested the basic install plus adding a 2nd TAP adapter
-> Running my Server (with multiple clients) works (Will leave over night)
-> plus running a client all work as per the label :-)
->
->
->
->
->> - Test silent install with default settings
->> - Test silent install to a non-standard directory
->> - Ensure that registry keys go to the correct (32-bit or 64-bit) registry
->> - Test that uninstall works as expected
->
+Signed-off-by: Selva Nair <selva.nair@...277...>
+---
+ src/openvpn/tun.c | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
 
-After some initial problems *uninstalling* snapshot versions, I finally
-managed to install this successfully into a non-standard dir
-C:\#Tools\Openvpn
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index 77ae72f..36e0b15 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -1372,7 +1372,13 @@ do_ifconfig (struct tuntap *tt,
+ 
+     if ( do_ipv6 )
+       {
+-	if (tt->options.msg_channel)
++	if (tt->options.ip_win32_type == IPW32_SET_MANUAL)
++	  {
++	    msg (M_INFO, "******** NOTE:  Please manually set the v6 IP of '%s' to %s (if it is not already set)",
++	         actual,
++	         ifconfig_ipv6_local);
++          }
++	else if (tt->options.msg_channel)
+ 	  {
+ 	    do_address_service (true, AF_INET6, tt);
+ 	  }
+@@ -1391,7 +1397,10 @@ do_ifconfig (struct tuntap *tt,
+ 	  }
+ 
+ 	/* explicit route needed */
+-	add_route_connected_v6_net(tt, es);
++	if (tt->options.ip_win32_type != IPW32_SET_MANUAL)
++	  {
++	    add_route_connected_v6_net(tt, es);
++	  }
+       }
+ #else
+       msg (M_FATAL, "Sorry, but I don't know how to do 'ifconfig' commands on this operating system.  You should ifconfig your TUN/TAP device manually or use an --up script.");
+-- 
+2.1.4
 
-
-Provided that the previous install is fully removed (including registry)
-then the install is successful. Otherwise it fails in a non-standard dir
-
-Regards
 
