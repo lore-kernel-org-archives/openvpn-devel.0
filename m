@@ -1,16 +1,13 @@
-References: <CAFHpkQHK_VtPoEbWzno+z5C67tYfo3fZNi5ibLgaPpXE5-o5Ug@...278...>
-	<412be705-14ff-4f00-93cb-9478487400c7@...515...>
-	<CAFHpkQF=gXiT309bV8AWkw86fDd3fN0-RpHkH8cqsMWaG744eQ@...278...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <d03a8315-715f-1987-5224-f6d1174e296a@...2080...>
-Date: Mon, 21 Nov 2016 13:59:15 +0100
+References: <35b9d93f-0682-9457-49f6-cf96507fc59f@...515...>
+	<8dff9a3b-003b-4a48-3ff6-21f0663ba712@...277...>
+	<13724284-0709-d43e-a1ab-f6abea65362f@...277...>
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <0b890451-25c5-5a34-37f5-84b2fe2a3319@...515...>
+Date: Mon, 21 Nov 2016 15:28:23 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAFHpkQF=gXiT309bV8AWkw86fDd3fN0-RpHkH8cqsMWaG744eQ@...278...>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="bSwe0rWq4v4hD54wXXJovjiKBOAhFXq4n"
-Subject: Re: [Openvpn-devel] multi language / unicode installer
-Reply-To: openvpn-devel@lists.sourceforge.net
+In-Reply-To: <13724284-0709-d43e-a1ab-f6abea65362f@...277...>
+Subject: Re: [Openvpn-devel] Combined 32/64-bit OpenVPN 2.4_beta1 installer
+ available for testing
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,119 +16,71 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>, =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---bSwe0rWq4v4hD54wXXJovjiKBOAhFXq4n
-Content-Type: multipart/mixed; boundary="PEh4V6I97T565G8i5BRuHBiE8uu7gInAA";
-	protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-Reply-To: openvpn-devel@lists.sourceforge.net
-To: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>,
-	=?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-Message-ID: <d03a8315-715f-1987-5224-f6d1174e296a@...2080...>
-Subject: Re: [Openvpn-devel] multi language / unicode installer
-References: <CAFHpkQHK_VtPoEbWzno+z5C67tYfo3fZNi5ibLgaPpXE5-o5Ug@...278...>
-	<412be705-14ff-4f00-93cb-9478487400c7@...515...>
-	<CAFHpkQF=gXiT309bV8AWkw86fDd3fN0-RpHkH8cqsMWaG744eQ@...278...>
-In-Reply-To: <CAFHpkQF=gXiT309bV8AWkw86fDd3fN0-RpHkH8cqsMWaG744eQ@...278...>
-
---PEh4V6I97T565G8i5BRuHBiE8uu7gInAA
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="iso-8859-15"; format=flowed
 Content-Transfer-Encoding: quoted-printable
+To: debbie10t <debbie10t@...277...>, openvpn-devel@lists.sourceforge.net
 
-On 21/11/16 12:58, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=B8=D1=86=
-=D0=B8=D0=BD wrote:
->=20
->=20
-> 2016-11-21 16:51 GMT+05:00 Samuli Sepp=C3=A4nen <samuli@...515...=20
-> <mailto:samuli@...515...>>:
->=20
-> Il 21/11/2016 13:32, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=B8=D1=
-=86=D0=B8=D0=BD ha scritto:
->=20
-> Hello,
->=20
-> I see different languages in openvpn.nsi, for example
->=20
-> https://github.com/OpenVPN/openvpn-build/blob/master/windows-nsis/openvpn=
-.nsi#L97
+Il 20/11/2016 23:16, debbie10t ha scritto:
 >
->=20
-<https://github.com/OpenVPN/openvpn-build/blob/master/windows-nsis/openvpn.=
-nsi#L97>
->=20
->=20
-> we roll our own installer using nsis-2.50-unicode, and I'm not sure
-> it is available for Linux. but I guess there might be some interest
-> from community to have multilanguage installer (for, example, even
-> for openvpn-nl).
->=20
-> can we switch to "unicode" nsis and start translating openvpn.nsi
-> ?
->=20
->=20
-> I think having proper internationalization (i18n) support would be=20
-> good to have. We will just have to ensure that openvpn-build is=20
-> capable of handling it. As for NSIS version availability: I have
-> not checked what is the latest NSIS version available for *NIX, but
-> I suspect it is the same as for Windows - we're speaking of a
-> single project, not two separate ones, right?
->=20
->=20
-> actually, there're 3 nsis
->=20
-> 1) nsis-2.46 from nsis.sf.net <http://nsis.sf.net> (I guess it
-> cames on Linux, no unicode support) 2) http://www.scratchpaper.com/
-> (nsis unicode) 3) nsis 3.0 from http://nsis.sf.net (which I haven't
-> seen on Linux)
->=20
-> currently, openvpn-build just uses makensis, but it does not check
-> its version. if we decide to switch to unicode, it should also
-> perform such check
+>
+> On 18/11/16 20:14, debbie10t wrote:
+>> Hi,
+>>
+>> On 18/11/16 13:29, Samuli Sepp=E4nen wrote:
+>>> Hi,
+>>>
+>>> OpenVPN 2.4_rc1[1] will be bundled as a combined installer[2] that works
+>>> on both 32-bit and 64-bit Windows versions (Vista and above). A preview
+>>> installer based on 2.4_beta1 is available here:
+>>>
+>>> <https://build.openvpn.net/downloads/snapshots/openvpn-install-2.4_beta=
+1-I901.exe>
+>>>
+>>>
+>>> The installer also contains an updated openvpnserv2 (OpenVPNService),
+>>> which attempts to shut down OpenVPN instances cleanly instead of just
+>>> killing them on service stop or restart[3].
+>>>
+>>> I already ran the Powershells tests[4] on it, and chipitsine has done
+>>> independent testing. However, more testing would be welcome. In
+>>> particular:
+>>>
+>>> - Ensure that by default the files are places to correct directory, that
+>>> is, C:\Program Files\OpenVPN on both 32-bit and 64-bit Windows
+>>
+>>
+>> I have tested the basic install plus adding a 2nd TAP adapter
+>> Running my Server (with multiple clients) works (Will leave over night)
+>> plus running a client all work as per the label :-)
+>>
+>>
+>>
+>>
+>>> - Test silent install with default settings
+>>> - Test silent install to a non-standard directory
+>>> - Ensure that registry keys go to the correct (32-bit or 64-bit) regist=
+ry
+>>> - Test that uninstall works as expected
+>>
+>
+> After some initial problems *uninstalling* snapshot versions, I finally
+> managed to install this successfully into a non-standard dir
+> C:\#Tools\Openvpn
+>
+>
+> Provided that the previous install is fully removed (including registry)
+> then the install is successful. Otherwise it fails in a non-standard dir
 
-Yes, and it could just run the .nsi file through iconv to convert it
-to the proper/expected charset and then kickoff makensis using the
-converted file - if we end up using a no-unicode supported nsis when
-cross-building Windows builds.
 
-I agree it makes a lot of sense to move towards UTF-8.
+Hi,
 
+How and at which point does it fail if previous OpenVPN version is not=20
+uninstalled first?
 
 --=20
-kind regards,
-
-David Sommerseth
+Samuli Sepp=E4nen
+Community Manager
 OpenVPN Technologies, Inc
 
-
-
---PEh4V6I97T565G8i5BRuHBiE8uu7gInAA--
-
---bSwe0rWq4v4hD54wXXJovjiKBOAhFXq4n
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBAgAGBQJYMu+jAAoJEIbPlEyWcf3yk9YP/jN+3nddO0iE9zoCcU/W2Z49
-n8BeXoOBoNQMIS5CNiQeK4u2ca1vMJIQsoMo9cLWy+8Q5Tk6v2dvwZtGw+TKbwVd
-oQYTgD95c2h0DZFH0be3Hzj0+YMdZrNGQhXjE80wCc8oTDKqzqCc58T0QQmbaMRO
-2Cf8riYe04cw1dr3irn+F8sO5SutpnUvrrvNdMS3CVt2AqUsoADvLqB+CNCpD3W1
-b+nyRBjQ48/k6ZJmzM87ZJl3YnV57teba0iFlS9x1wG/JM89anZ7cId31z3bWncX
-8SZP9ZfYyPqBdoQM3biHdnBgdgC56LsRQFZbakaYHJqQRLtANU4C/8WUxEFE4SQE
-7f1W7BZ1F+jEl7vJH5D8/B9SDfhgrJEWggN3b7tjKceVcs1FE6Txm+70Feb8DN75
-nl7n4mRZXu+L1TyxyEBNEoWmn5pET+Fp8f1sYIQW2QRyZEOxEnYc5+ycd5uEZklx
-SGHt9AIpy1X7Bz60mW5LwW7M6wcnLd2R7ausgpJTeB7GyrOUfr3lxb+GQ9Dk6sj8
-D3/peNVY+ZubvmooGafjDuw0da7mpYiFx1n8/AubOm8cZzW5R/jvqrEP/ryHN6lx
-0dIgoRIVHBV1wXJpXwgBlh+dWGAfmJDJHC5OC0zqaLaQuaUou25dnYeBh74p9GK9
-5beqDPPbk8KRby7VTyv/
-=FGh0
------END PGP SIGNATURE-----
-
---bSwe0rWq4v4hD54wXXJovjiKBOAhFXq4n--
+irc freenode net: mattock
 
