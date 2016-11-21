@@ -1,9 +1,10 @@
+References: <CAFHpkQHK_VtPoEbWzno+z5C67tYfo3fZNi5ibLgaPpXE5-o5Ug@...278...>
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <412be705-14ff-4f00-93cb-9478487400c7@...515...>
+Date: Mon, 21 Nov 2016 13:51:06 +0200
 MIME-Version: 1.0
-From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Date: Mon, 21 Nov 2016 16:32:35 +0500
-Message-ID: <CAFHpkQHK_VtPoEbWzno+z5C67tYfo3fZNi5ibLgaPpXE5-o5Ug@...278...>
-Content-Type: multipart/alternative; boundary=001a11466fd62bc1fb0541ce030a
-Subject: [Openvpn-devel] multi language / unicode installer
+In-Reply-To: <CAFHpkQHK_VtPoEbWzno+z5C67tYfo3fZNi5ibLgaPpXE5-o5Ug@...278...>
+Subject: Re: [Openvpn-devel] multi language / unicode installer
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,42 +13,31 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+To: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---001a11466fd62bc1fb0541ce030a
-Content-Type: text/plain; charset=UTF-8
+Il 21/11/2016 13:32, Илья Шипицин ha scritto:
+> Hello,
+>
+> I see different languages in openvpn.nsi, for example
+>
+> https://github.com/OpenVPN/openvpn-build/blob/master/windows-nsis/openvpn.nsi#L97
+>
+>
+> we roll our own installer using nsis-2.50-unicode, and I'm not sure it
+> is available for Linux.
+> but I guess there might be some interest from community to have
+> multilanguage installer (for, example, even for openvpn-nl).
+>
+> can we switch to "unicode" nsis and start translating openvpn.nsi  ?
 
-Hello,
+I think having proper internationalization (i18n) support would be good 
+to have. We will just have to ensure that openvpn-build is capable of 
+handling it. As for NSIS version availability: I have not checked what 
+is the latest NSIS version available for *NIX, but I suspect it is the 
+same as for Windows - we're speaking of a single project, not two 
+separate ones, right?
 
-I see different languages in openvpn.nsi, for example
-
-https://github.com/OpenVPN/openvpn-build/blob/master/windows-nsis/openvpn.nsi#L97
-
-
-we roll our own installer using nsis-2.50-unicode, and I'm not sure it is
-available for Linux.
-but I guess there might be some interest from community to have
-multilanguage installer (for, example, even for openvpn-nl).
-
-can we switch to "unicode" nsis and start translating openvpn.nsi  ?
-
-Cheers,
-Ilya Shipitsin
-
---001a11466fd62bc1fb0541ce030a
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><div><div>Hello,<br><br></div>I see different languages in=
- openvpn.nsi, for example<br><br><a href=3D"https://github.com/OpenVPN/open=
-vpn-build/blob/master/windows-nsis/openvpn.nsi#L97">https://github.com/Open=
-VPN/openvpn-build/blob/master/windows-nsis/openvpn.nsi#L97</a><br><br><br><=
-/div><div>we roll our own installer using nsis-2.50-unicode, and I&#39;m no=
-t sure it is available for Linux.<br></div><div>but I guess there might be =
-some interest from community to have multilanguage installer (for, example,=
- even for openvpn-nl).<br><br></div><div>can we switch to &quot;unicode&quo=
-t; nsis and start translating openvpn.nsi=C2=A0 ?<br><br></div><div>Cheers,=
-<br></div><div>Ilya Shipitsin<br></div></div>
-
---001a11466fd62bc1fb0541ce030a--
+Samuli
 
