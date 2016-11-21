@@ -1,10 +1,10 @@
-Date: Mon, 21 Nov 2016 17:18:32 +0100 (CET)
-Message-Id: <201611211618.uALGIWgC023644@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1479676734-21630-1-git-send-email-selva.nair@...277...>
-References: <1479676734-21630-1-git-send-email-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Do not set ipv6 address if
-	'--ip-win32 manual' is used
+Date: Mon, 21 Nov 2016 17:42:42 +0100
+Message-Id: <1479746562-751-1-git-send-email-gert@...1296...>
+In-Reply-To: <1479660357-12843-1-git-send-email-gert@...1296...>
+References: <1479660357-12843-1-git-send-email-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH v2] Stub implementation of "--dhcp-option
+	DNS6 <v6addr>"
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,40 +15,102 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Selva Nair <selva.nair@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-ACK.  
+This defines a new DHCP suboption "DNS6", but does not actually
+implement anything but "document the option and understand it".
 
-This solves the issue at hand for the time being, without breaking
-people's configs by removing "ip-win32 manual", and without changing
-expectations "how things work on Windows".  
+If received, it will be put into an "foreign_option_<n>" environment
+variable where an --up script or plugin could receive and act upon it.
 
-For 2.5, we should look at removing the "ip-win32 manual" code path (and 
-maybe map it in the other direction, setting "--ifconfig_nexec" instead)
+On non-Windows platforms, all "dhcp-option" sub-options end up there,
+so v4 and v6 DNS options will be reflected like this:
 
-Your patch has been applied to the master branch.
+   foreign_option_1=dhcp-option DNS6 2001:608::2
+   foreign_option_2=dhcp-option DNS 195.30.0.2
 
-(It does not apply cleanly to release/2.3 as the surrounding code is too 
-different - the actual change is trivially adjusted, but I think it should 
-see review - thus, not doing on-the-fly here)
+v2: do not set o->dhcp_options if DNS6 is the single dhcp-option seen
+    (spotted by Selva Nair)
 
-commit d6ad8cac443f7f7540da595a3dbe7082d0f0a0cf (master)
-Author: Selva Nair
-Date:   Sun Nov 20 16:18:54 2016 -0500
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+ doc/openvpn.8         | 14 +++++++++++++-
+ src/openvpn/options.c | 20 ++++++++++++++++++--
+ 2 files changed, 31 insertions(+), 3 deletions(-)
 
-     Do not set ipv6 address if '--ip-win32 manual' is used
-
-     Signed-off-by: Selva Nair <selva.nair@...277...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1479676734-21630-1-git-send-email-selva.nair@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13143.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/doc/openvpn.8 b/doc/openvpn.8
+index 11564af..d454a36 100644
+--- a/doc/openvpn.8
++++ b/doc/openvpn.8
+@@ -5627,9 +5627,21 @@ across the VPN.
+ Set Connection-specific DNS Suffix.
+ 
+ .B DNS addr \-\-
+-Set primary domain name server address.  Repeat
++Set primary domain name server IPv4 address.  Repeat
+ this option to set secondary DNS server addresses.
+ 
++.B DNS6 addr \-\-
++Set primary domain name server IPv6 address.  Repeat
++this option to set secondary DNS server IPv6 addresses.
++
++Note: currently this is somewhat of a placeholder option - it is
++understood, but OpenVPN has no code to tell Windows about it (the
++existing DHCP code can only do IPv4 DHCP, and that protocol only
++permits IPv4 addresses anywhere).  The option will be put into the
++environment, so an
++.B \-\-up
++script could act upon it.
++
+ .B WINS addr \-\-
+ Set primary WINS server address (NetBIOS over TCP/IP Name Server).
+ Repeat this option to set secondary WINS server addresses.
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 7f128c3..f30e62d 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -704,7 +704,8 @@ static const char usage_message[] =
+   "                    which allow multiple addresses,\n"
+   "                    --dhcp-option must be repeated.\n"
+   "                    DOMAIN name : Set DNS suffix\n"
+-  "                    DNS addr    : Set domain name server address(es)\n"
++  "                    DNS addr    : Set domain name server address(es) (IPv4)\n"
++  "                    DNS6 addr   : Set domain name server address(es) (IPv6)\n"
+   "                    NTP         : Set NTP server address(es)\n"
+   "                    NBDD        : Set NBDD server address(es)\n"
+   "                    WINS addr   : Set WINS server address(es)\n"
+@@ -6406,6 +6407,14 @@ add_option (struct options *options,
+ 	{
+ 	  dhcp_option_address_parse ("DNS", p[2], o->dns, &o->dns_len, msglevel);
+ 	}
++      else if (streq (p[1], "DNS6") && p[2])
++	{
++	  /* this is somewhat of a placeholder - we understand the option,
++	   * but cannot act upon it - so we'll just accept it and put it
++	   * into the environment, as we would do on all non-win32 platforms
++	   */
++	  foreign_option (options, p, 3, es);
++	}
+       else if (streq (p[1], "WINS") && p[2])
+ 	{
+ 	  dhcp_option_address_parse ("WINS", p[2], o->wins, &o->wins_len, msglevel);
+@@ -6427,7 +6436,14 @@ add_option (struct options *options,
+ 	  msg (msglevel, "--dhcp-option: unknown option type '%s' or missing or unknown parameter", p[1]);
+ 	  goto err;
+ 	}
+-      o->dhcp_options = true;
++
++      /* flag that we have options to give to the TAP driver's DHCPv4 server
++       *  - skipped for "DNS6", as that's not a DHCPv4 option
++       */
++      if (!streq (p[1], "DNS6"))
++	{
++	  o->dhcp_options = true;
++	}
+     }
+ #endif
+ #ifdef _WIN32
+-- 
+2.7.3
 
 
