@@ -1,10 +1,12 @@
-From: Gert Doering <gert@...1296...>
-Date: Mon, 21 Nov 2016 17:42:42 +0100
-Message-Id: <1479746562-751-1-git-send-email-gert@...1296...>
-In-Reply-To: <1479660357-12843-1-git-send-email-gert@...1296...>
-References: <1479660357-12843-1-git-send-email-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH v2] Stub implementation of "--dhcp-option
-	DNS6 <v6addr>"
+MIME-Version: 1.0
+In-Reply-To: <1479677932-22078-1-git-send-email-selva.nair@...277...>
+References: <1479677932-22078-1-git-send-email-selva.nair@...277...>
+From: Selva Nair <selva.nair@...277...>
+Date: Mon, 21 Nov 2016 12:14:49 -0500
+Message-ID: <CAKuzo_g_MFYvpHVvqxwV5=xSOcRYhKRSgcCBppBUMvjbdCey+g@...278...>
+Content-Type: multipart/alternative; boundary=001a1147bc424493d50541d2cc34
+Subject: Re: [Openvpn-devel] [PATCH] Handle --dhcp-option DNS6 on Windows
+	using netsh
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,104 +15,57 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-This defines a new DHCP suboption "DNS6", but does not actually
-implement anything but "document the option and understand it".
+--001a1147bc424493d50541d2cc34
+Content-Type: text/plain; charset=UTF-8
 
-If received, it will be put into an "foreign_option_<n>" environment
-variable where an --up script or plugin could receive and act upon it.
+On Sun, Nov 20, 2016 at 4:38 PM, Selva Nair <selva.nair@...277...> wrote:
 
-On non-Windows platforms, all "dhcp-option" sub-options end up there,
-so v4 and v6 DNS options will be reflected like this:
+> TODO: set dns servers using the interactive service
+>
+> Signed-off-by: Selva Nair <selva.nair@...277...>
+> ---
+>  doc/openvpn.8         |  5 ++---
+>  src/openvpn/options.c | 22 ++++++++++++++--------
+>  src/openvpn/tun.c     | 30 ++++++++++++++++++++++++++++++
+>  src/openvpn/tun.h     |  3 +++
+>  4 files changed, 49 insertions(+), 11 deletions(-)
+>
 
-   foreign_option_1=dhcp-option DNS6 2001:608::2
-   foreign_option_2=dhcp-option DNS 195.30.0.2
+Just realized the dns addresses should be removed when tun is closed (these
+statically set server addresses will stick around otherwise). Will send a
+v2 after the "stub implementation v2" is merged.
 
-v2: do not set o->dhcp_options if DNS6 is the single dhcp-option seen
-    (spotted by Selva Nair)
+Selva
 
-Signed-off-by: Gert Doering <gert@...1296...>
----
- doc/openvpn.8         | 14 +++++++++++++-
- src/openvpn/options.c | 20 ++++++++++++++++++--
- 2 files changed, 31 insertions(+), 3 deletions(-)
+--001a1147bc424493d50541d2cc34
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/doc/openvpn.8 b/doc/openvpn.8
-index 11564af..d454a36 100644
---- a/doc/openvpn.8
-+++ b/doc/openvpn.8
-@@ -5627,9 +5627,21 @@ across the VPN.
- Set Connection-specific DNS Suffix.
- 
- .B DNS addr \-\-
--Set primary domain name server address.  Repeat
-+Set primary domain name server IPv4 address.  Repeat
- this option to set secondary DNS server addresses.
- 
-+.B DNS6 addr \-\-
-+Set primary domain name server IPv6 address.  Repeat
-+this option to set secondary DNS server IPv6 addresses.
-+
-+Note: currently this is somewhat of a placeholder option - it is
-+understood, but OpenVPN has no code to tell Windows about it (the
-+existing DHCP code can only do IPv4 DHCP, and that protocol only
-+permits IPv4 addresses anywhere).  The option will be put into the
-+environment, so an
-+.B \-\-up
-+script could act upon it.
-+
- .B WINS addr \-\-
- Set primary WINS server address (NetBIOS over TCP/IP Name Server).
- Repeat this option to set secondary WINS server addresses.
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 7f128c3..f30e62d 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -704,7 +704,8 @@ static const char usage_message[] =
-   "                    which allow multiple addresses,\n"
-   "                    --dhcp-option must be repeated.\n"
-   "                    DOMAIN name : Set DNS suffix\n"
--  "                    DNS addr    : Set domain name server address(es)\n"
-+  "                    DNS addr    : Set domain name server address(es) (IPv4)\n"
-+  "                    DNS6 addr   : Set domain name server address(es) (IPv6)\n"
-   "                    NTP         : Set NTP server address(es)\n"
-   "                    NBDD        : Set NBDD server address(es)\n"
-   "                    WINS addr   : Set WINS server address(es)\n"
-@@ -6406,6 +6407,14 @@ add_option (struct options *options,
- 	{
- 	  dhcp_option_address_parse ("DNS", p[2], o->dns, &o->dns_len, msglevel);
- 	}
-+      else if (streq (p[1], "DNS6") && p[2])
-+	{
-+	  /* this is somewhat of a placeholder - we understand the option,
-+	   * but cannot act upon it - so we'll just accept it and put it
-+	   * into the environment, as we would do on all non-win32 platforms
-+	   */
-+	  foreign_option (options, p, 3, es);
-+	}
-       else if (streq (p[1], "WINS") && p[2])
- 	{
- 	  dhcp_option_address_parse ("WINS", p[2], o->wins, &o->wins_len, msglevel);
-@@ -6427,7 +6436,14 @@ add_option (struct options *options,
- 	  msg (msglevel, "--dhcp-option: unknown option type '%s' or missing or unknown parameter", p[1]);
- 	  goto err;
- 	}
--      o->dhcp_options = true;
-+
-+      /* flag that we have options to give to the TAP driver's DHCPv4 server
-+       *  - skipped for "DNS6", as that's not a DHCPv4 option
-+       */
-+      if (!streq (p[1], "DNS6"))
-+	{
-+	  o->dhcp_options = true;
-+	}
-     }
- #endif
- #ifdef _WIN32
--- 
-2.7.3
+<div dir=3D"ltr"><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">=
+On Sun, Nov 20, 2016 at 4:38 PM, Selva Nair <span dir=3D"ltr">&lt;<a href=
+=3D"mailto:selva.nair@...277..." target=3D"_blank">selva.nair@...277...</a>=
+&gt;</span> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0=
+ 0 .8ex;border-left:1px #ccc solid;padding-left:1ex"><div id=3D"m_-39662445=
+47379690892:259" class=3D"m_-3966244547379690892a3s m_-3966244547379690892a=
+XjCH m_-3966244547379690892m15883ad82fc7ab68">TODO: set dns servers using t=
+he interactive service<br>
+<br>
+Signed-off-by: Selva Nair &lt;<a href=3D"mailto:selva.nair@...277..." targe=
+t=3D"_blank">selva.nair@...277...</a>&gt;<br>
+---<br>
+=C2=A0doc/openvpn.8=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0|=C2=A0 5 ++---<br>
+=C2=A0src/openvpn/options.c | 22 ++++++++++++++--------<br>
+=C2=A0src/openvpn/tun.c=C2=A0 =C2=A0 =C2=A0| 30 +++++++++++++++++++++++++++=
++++<br>
+=C2=A0src/openvpn/tun.h=C2=A0 =C2=A0 =C2=A0|=C2=A0 3 +++<br>
+=C2=A04 files changed, 49 insertions(+), 11 deletions(-)</div></blockquote>=
+</div><br>Just realized the dns addresses should be removed when tun is clo=
+sed (these statically set server addresses will stick around otherwise). Wi=
+ll send a v2 after the &quot;stub implementation v2&quot; is merged.</div><=
+div class=3D"gmail_extra"><br></div><div class=3D"gmail_extra">Selva</div><=
+/div>
 
+--001a1147bc424493d50541d2cc34--
 
