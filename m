@@ -1,17 +1,14 @@
 MIME-Version: 1.0
-In-Reply-To: <7fe7abd3-272c-689b-1698-1c53b86100f4@...277...>
-References: <35b9d93f-0682-9457-49f6-cf96507fc59f@...515...>
-	<8dff9a3b-003b-4a48-3ff6-21f0663ba712@...277...>
-	<13724284-0709-d43e-a1ab-f6abea65362f@...277...>
-	<0b890451-25c5-5a34-37f5-84b2fe2a3319@...515...>
-	<102609f5-719f-0ce5-05fa-ceaafefa680e@...277...>
-	<7fe7abd3-272c-689b-1698-1c53b86100f4@...277...>
-From: Selva Nair <selva.nair@...277...>
-Date: Mon, 21 Nov 2016 13:16:45 -0500
-Message-ID: <CAKuzo_hKv7XHmV5Ej22uAE5asEMUdCtiO0-rnuEeSdiUTGnuOw@...278...>
-Content-Type: multipart/alternative; boundary=001a11408cb6ca87ca0541d3a9f5
-Subject: Re: [Openvpn-devel] Combined 32/64-bit OpenVPN 2.4_beta1 installer
- available for testing
+In-Reply-To: <20161116184717.GL28918@...1296...>
+References: <CAFHpkQFdwy++P48HOOAeEO8fKr8uc6y-en0z73JtoOMO1c4q7Q@...278...>
+	<20161116183502.GK28918@...1296...>
+	<CAFHpkQEkvbq1AGSYN-kYqfDjMbUXJhe1gysp4g6s1EOQku6JOQ@...278...>
+	<20161116184717.GL28918@...1296...>
+From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
+Date: Tue, 22 Nov 2016 00:13:08 +0500
+Message-ID: <CAFHpkQHaDiP9Wk49ja3p_Oix=1fAtANzpqmPbT6hLZw6FVqLiw@...278...>
+Content-Type: multipart/alternative; boundary=001a114b3de842c6eb0541d47200
+Subject: Re: [Openvpn-devel] launch openvpn-gui at windows startup
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,121 +17,105 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: debbie10t <debbie10t@...277...>
+To: Gert Doering <gert@...1296...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---001a11408cb6ca87ca0541d3a9f5
+--001a114b3de842c6eb0541d47200
 Content-Type: text/plain; charset=UTF-8
 
-Hi,
+2016-11-16 23:47 GMT+05:00 Gert Doering <gert@...1296...>:
 
-
-On Mon, Nov 21, 2016 at 12:34 PM, debbie10t <debbie10t@...277...> wrote:
-
-> UNINSTALLING From C:\#Tools\Openvpn
-
-...
-
-Registry remains:
+> Hi,
 >
-> Windows Registry Editor Version 5.00
+> On Wed, Nov 16, 2016 at 11:39:04PM +0500, ???????? ?????????????? wrote:
+> > > Samuli, Ilya, any idea how hard this is to do?
+> >
+> > it is trivial.
 >
-> [HKEY_LOCAL_MACHINE\SOFTWARE\OpenVPN]
-> "config_dir"="C:\\#Tools\\OpenVPN\\config"
-> "config_ext"="ovpn"
-> "exe_path"="C:\\#Tools\\OpenVPN\\bin\\openvpn.exe"
-> "log_dir"="C:\\#Tools\\OpenVPN\\log"
-> "priority"="NORMAL_PRIORITY_CLASS"
-> "log_append"="0"
-> @="C:\\#Tools\\OpenVPN"
-
-
-Uninstall should remove the Registry key HKLM\SoftWare\OpenVPN but in this
-case its not removed which is strange..
-
-[HKEY_LOCAL_MACHINE\SOFTWARE\OpenVPN]
->
-> "config_dir"="C:\\#Tools\\OpenVPN\\config"
->
-> "config_ext"="ovpn"
->
-> "exe_path"="C:\\#Tools\\OpenVPN\\bin\\openvpn.exe"
->
-> "log_dir"="C:\\#Tools\\OpenVPN\\log"
->
-> "priority"="NORMAL_PRIORITY_CLASS"
->
-> "log_append"="0"
->
-> @="C:\\Program Files\\OpenVPN"
+> Cool :-)
 >
 
-If the registry key is not removed and then recreated, the above is
-expected to happen as the installer always overwrites the default value
-("C:\\Program Files\\OpenVPN" here) but uses WriteRegStringIfUndef for all
-others. I think we should use WriteRegStr instead.
+https://github.com/OpenVPN/openvpn-build/pull/50
 
-In fact it would be better if the installer always removes the
-HKLM\Software\OpenVPN key and all values under it and then recreates it. We
-anyway stop and remove the service in the beginning (even if service
-installation is not selected) so no need to keep the original values in
-this key.
 
-Selva
+as for many options, I would simplify installer. i.e. we can install
+openvpn-gui always, the same for easy-rsa. it does not make much sense to
+make user choose between those things. But I would make multi language
+installer first :)
 
---001a11408cb6ca87ca0541d3a9f5
+I noticed a bug there https://github.com/OpenVPN/openvpn-build/issues/51
+it is not related to my PR, but I'll try to resolve it tomorrow
+
+
+> > I'm going to finish "x86 + x64" installer. The next thing is "check for
+> > .net 4 if openvpnserv2 is checked" and third maybe "start openvpn-gui on
+> > windows logon"
+>
+> Very much looking forward to this - thanks!
+>
+> gert
+>
+> --
+> USENET is *not* the non-clickable part of WWW!
+>                                                            //
+> www.muc.de/~gert/ <http://www.muc.de/%7Egert/>
+> Gert Doering - Munich, Germany
+> gert@...1296...
+> fax: +49-89-35655025                        gert@...1816...
+> muenchen.de
+>
+
+--001a114b3de842c6eb0541d47200
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr"><div class=3D"gmail_extra">Hi,</div><div class=3D"gmail_ex=
-tra"><br></div><div class=3D"gmail_extra"><div class=3D"gmail_quote"><br></=
-div><div class=3D"gmail_quote">On Mon, Nov 21, 2016 at 12:34 PM, debbie10t =
-<span dir=3D"ltr">&lt;<a href=3D"mailto:debbie10t@...277..." target=3D"_bla=
-nk">debbie10t@...277...</a>&gt;</span> wrote:</div><blockquote class=3D"gma=
-il_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left-width:1px;border-le=
-ft-color:rgb(204,204,204);border-left-style:solid;padding-left:1ex">UNINSTA=
-LLING From C:\#Tools\Openvpn</blockquote><div><div>...</div><div><br></div>=
+<div dir=3D"ltr"><br><div class=3D"gmail_extra"><br><div class=3D"gmail_quo=
+te">2016-11-16 23:47 GMT+05:00 Gert Doering <span dir=3D"ltr">&lt;<a href=
+=3D"mailto:gert@...1296..." target=3D"_blank">gert@...1296...</a>&gt;</span=
+>:<br><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;b=
+order-left:1px solid rgb(204,204,204);padding-left:1ex">Hi,<br>
+<span class=3D"gmail-"><br>
+On Wed, Nov 16, 2016 at 11:39:04PM +0500, ???????? ?????????????? wrote:<br>
+&gt; &gt; Samuli, Ilya, any idea how hard this is to do?<br>
+&gt;<br>
+&gt; it is trivial.<br>
+<br>
+</span>Cool :-)<br></blockquote><div><br><a href=3D"https://github.com/Open=
+VPN/openvpn-build/pull/50">https://github.com/OpenVPN/openvpn-build/pull/50=
+</a><br><br><br></div><div>as for many options, I would simplify installer.=
+ i.e. we can install openvpn-gui always, the same for easy-rsa. it does not=
+ make much sense to make user choose between those things. But I would make=
+ multi language installer first :)<br></div><div><br></div><div>I noticed a=
+ bug there <a href=3D"https://github.com/OpenVPN/openvpn-build/issues/51">h=
+ttps://github.com/OpenVPN/openvpn-build/issues/51</a><br></div><div>it is n=
+ot related to my PR, but I&#39;ll try to resolve it tomorrow<br><br> </div>=
 <blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-=
-left-width:1px;border-left-color:rgb(204,204,204);border-left-style:solid;p=
-adding-left:1ex">Registry remains:<br><br>Windows Registry Editor Version 5=
-.00<br><br>[HKEY_LOCAL_MACHINE\SOFTWARE\OpenVPN]<br>&quot;config_dir&quot;=
-=3D&quot;C:\\#Tools\\OpenVPN\\config&quot;<br>&quot;config_ext&quot;=3D&quo=
-t;ovpn&quot;<br>&quot;exe_path&quot;=3D&quot;C:\\#Tools\\OpenVPN\\bin\\open=
-vpn.exe&quot;<br>&quot;log_dir&quot;=3D&quot;C:\\#Tools\\OpenVPN\\log&quot;=
-<br>&quot;priority&quot;=3D&quot;NORMAL_PRIORITY_CLASS&quot;<br>&quot;log_a=
-ppend&quot;=3D&quot;0&quot;<br>@=3D&quot;C:\\#Tools\\OpenVPN&quot;</blockqu=
-ote><div>=C2=A0</div></div><div>Uninstall should remove the Registry key HK=
-LM\SoftWare\OpenVPN but in this case its not removed which is strange..</di=
-v><div class=3D"gmail_quote"><br><blockquote class=3D"gmail_quote" style=3D=
-"margin:0px 0px 0px 0.8ex;border-left-width:1px;border-left-color:rgb(204,2=
-04,204);border-left-style:solid;padding-left:1ex"><div id=3D"gmail-:1jx" cl=
-ass=3D"gmail-a3s gmail-aXjCH gmail-m15887f7244c6089e">[HKEY_LOCAL_MACHINE\S=
-OFTWARE\<wbr>OpenVPN]<br>
+left:1px solid rgb(204,204,204);padding-left:1ex">
+<span class=3D"gmail-"><br>
+&gt; I&#39;m going to finish &quot;x86 + x64&quot; installer. The next thin=
+g is &quot;check for<br>
+&gt; .net 4 if openvpnserv2 is checked&quot; and third maybe &quot;start op=
+envpn-gui on<br>
+&gt; windows logon&quot;<br>
 <br>
-&quot;config_dir&quot;=3D&quot;C:\\#Tools\\<wbr>OpenVPN\\config&quot;<br>
+</span>Very much looking forward to this - thanks!<br>
+<div class=3D"gmail-HOEnZb"><div class=3D"gmail-h5"><br>
+gert<br>
 <br>
-&quot;config_ext&quot;=3D&quot;ovpn&quot;<br>
-<br>
-&quot;exe_path&quot;=3D&quot;C:\\#Tools\\<wbr>OpenVPN\\bin\\openvpn.exe&quo=
-t;<br>
-<br>
-&quot;log_dir&quot;=3D&quot;C:\\#Tools\\<wbr>OpenVPN\\log&quot;<br>
-<br>
-&quot;priority&quot;=3D&quot;NORMAL_PRIORITY_<wbr>CLASS&quot;<br>
-<br>
-&quot;log_append&quot;=3D&quot;0&quot;<br>
-<br>
-@=3D&quot;C:\\Program Files\\OpenVPN&quot;</div></blockquote></div><br>If t=
-he registry key is not removed and then recreated, the above is expected to=
- happen as the installer always overwrites the default value (&quot;C:\\Pro=
-gram Files\\OpenVPN&quot; here) but uses=C2=A0WriteRegStringIfUndef for all=
- others. I think we should use WriteRegStr instead.</div><div class=3D"gmai=
-l_extra"><br></div><div class=3D"gmail_extra">In fact it would be better if=
- the installer always removes the HKLM\Software\OpenVPN key and all values =
-under it and then recreates it. We anyway stop and remove the service in th=
-e beginning (even if service installation is not selected) so no need to ke=
-ep the original values in this key.</div><div class=3D"gmail_extra"><br></d=
-iv><div class=3D"gmail_extra">Selva</div></div>
+--<br>
+USENET is *not* the non-clickable part of WWW!<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0//<a href=3D"=
+http://www.muc.de/%7Egert/" rel=3D"noreferrer" target=3D"_blank">www.muc.de=
+/~gert/</a><br>
+Gert Doering - Munich, Germany=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0<a href=3D"mailt=
+o:gert@...1296...">gert@...1296...</a><br>
+fax: +49-89-35655025=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
+ =C2=A0 =C2=A0 =C2=A0 =C2=A0 <a href=3D"mailto:gert@...1297...">gert@...2165...=
+6...<wbr>muenchen.de</a><br>
+</div></div></blockquote></div><br></div></div>
 
---001a11408cb6ca87ca0541d3a9f5--
+--001a114b3de842c6eb0541d47200--
 
