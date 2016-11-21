@@ -1,19 +1,15 @@
-Date: Mon, 21 Nov 2016 20:54:29 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20161121195429.GS28918@...1296...>
+MIME-Version: 1.0
+In-Reply-To: <CAFHpkQHdgDAELAHwkYysyyGf5_sGFO-bkCuSVY=zwPKz1pLOwQ@...278...>
 References: <CAFHpkQFdwy++P48HOOAeEO8fKr8uc6y-en0z73JtoOMO1c4q7Q@...278...>
 	<20161116183502.GK28918@...1296...>
 	<CAFHpkQEkvbq1AGSYN-kYqfDjMbUXJhe1gysp4g6s1EOQku6JOQ@...278...>
 	<20161116184717.GL28918@...1296...>
 	<CAFHpkQHaDiP9Wk49ja3p_Oix=1fAtANzpqmPbT6hLZw6FVqLiw@...278...>
 	<CAFHpkQHdgDAELAHwkYysyyGf5_sGFO-bkCuSVY=zwPKz1pLOwQ@...278...>
-	<20161121194602.GR28918@...1296...>
-	<CAFHpkQEFma=G_K3Y4FN+=vVSEQgyUySrR9HxBa6JejhimQxiNg@...278...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="iMU/nSpl9Pdc6PQZ"
-Content-Disposition: inline
-In-Reply-To: <CAFHpkQEFma=G_K3Y4FN+=vVSEQgyUySrR9HxBa6JejhimQxiNg@...278...>
+From: Selva Nair <selva.nair@...277...>
+Date: Mon, 21 Nov 2016 14:54:13 -0500
+Message-ID: <CAKuzo_iFLevW3YYsOK0sca+m8LfJh+Px6o0jW8o5kJijcTBBMw@...278...>
+Content-Type: multipart/alternative; boundary=94eb2c1254225ff7f70541d506c2
 Subject: Re: [Openvpn-devel] launch openvpn-gui at windows startup
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -23,56 +19,38 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: ???????? ?????????????? <chipitsine@...277...>
+To: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---iMU/nSpl9Pdc6PQZ
-Content-Type: text/plain; charset="us-ascii"
+--94eb2c1254225ff7f70541d506c2
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
+On Mon, Nov 21, 2016 at 2:41 PM, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=
+=BF=D0=B8=D1=86=D0=B8=D0=BD <chipitsine@...277...> wrote:
 
-On Tue, Nov 22, 2016 at 12:51:21AM +0500, ???????? ?????????????? wrote:
-> > I tend to de-couple this - what about a second checkbox "launch gui now=
-"?
->=20
-> I like the approach of starting services:
->=20
-> https://github.com/OpenVPN/openvpn-build/blob/master/windows-nsis/openvpn=
-.nsi#L540
->=20
-> if there's a service, ok, start it, why to ask user ?
+> should we also start openvpn-gui if "launch gui on windows startup" is
+> selected ?
 
-We do *not* want to start openvpnserv2 or legacy openvpnserv unless
-explicitely told - but we need the interactive service.  Quite a bit
-of difference.
 
-> the same with gui. if user selected to launch it automatically, why wait
-> for reboot ?
+That would start the GUI with  admin rights, so we should not start the GUI.
 
-"Choice"?  Admin might be installing a laptop but a user will use openvpn
-later on...
+Selva
 
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+--94eb2c1254225ff7f70541d506c2
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
---iMU/nSpl9Pdc6PQZ
-Content-Type: application/pgp-signature; name="signature.asc"
+<div dir=3D"ltr"><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">=
+On Mon, Nov 21, 2016 at 2:41 PM, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=
+=BF=D0=B8=D1=86=D0=B8=D0=BD <span dir=3D"ltr">&lt;<a href=3D"mailto:chipits=
+ine@...277..." target=3D"_blank">chipitsine@...277...</a>&gt;</span> wrote:=
+<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-lef=
+t:1px #ccc solid;padding-left:1ex">should we also start openvpn-gui if &quo=
+t;launch gui on windows startup&quot; is selected ?</blockquote></div><br>T=
+hat would start the GUI with =C2=A0admin rights, so we should not start the=
+ GUI.</div><div class=3D"gmail_extra"><br></div><div class=3D"gmail_extra">=
+Selva</div><div class=3D"gmail_extra"><br></div></div>
 
------BEGIN PGP SIGNATURE-----
-
-iQCVAwUBWDNQ9KkuBuNlUUl1AQKkowP+NXPqRgoFaaeFSrQYIgDrgSqDCVRbHDx0
-DXAD9tpJTOTOv2uuvGXHvPQkeiIJq0E0UW6Wipzicq3fVBBn2M7rkTPFScEN09rD
-+XdXV+GHgdIW6TwkpQMle+fnPJe01QNfmXaPcMD12zUJlyDldJczW5zVNg7njZPM
-6XIqvEYF6HI=
-=RGu4
------END PGP SIGNATURE-----
-
---iMU/nSpl9Pdc6PQZ--
+--94eb2c1254225ff7f70541d506c2--
 
