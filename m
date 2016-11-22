@@ -1,10 +1,15 @@
-From: Selva Nair <selva.nair@...277...>
-Date: Mon, 21 Nov 2016 22:12:12 -0500
-Message-Id: <1479784332-21680-1-git-send-email-selva.nair@...277...>
-In-Reply-To: <1479677932-22078-1-git-send-email-selva.nair@...277...>
-References: <1479677932-22078-1-git-send-email-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH v2] Handle --dhcp-option DNS6 on Windows
-	using netsh
+References: <35b9d93f-0682-9457-49f6-cf96507fc59f@...515...>
+	<8dff9a3b-003b-4a48-3ff6-21f0663ba712@...277...>
+	<13724284-0709-d43e-a1ab-f6abea65362f@...277...>
+	<0b890451-25c5-5a34-37f5-84b2fe2a3319@...515...>
+	<102609f5-719f-0ce5-05fa-ceaafefa680e@...277...>
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <0a6d70b7-cac2-6f87-e426-168ccc3a021e@...515...>
+Date: Tue, 22 Nov 2016 08:52:55 +0200
+MIME-Version: 1.0
+In-Reply-To: <102609f5-719f-0ce5-05fa-ceaafefa680e@...277...>
+Subject: Re: [Openvpn-devel] Combined 32/64-bit OpenVPN 2.4_beta1 installer
+ available for testing
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,186 +18,46 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="iso-8859-15"; format=flowed
+Content-Transfer-Encoding: quoted-printable
+To: debbie10t <debbie10t@...277...>, openvpn-devel@lists.sourceforge.net
 
-v2: On closing tun delete the ipv6 dns addresses (if any were set).
-Also use "validate=no" only in Windows 7 and higher where it is
-supported. Its used to skip the time consuming automatic address
-validation which is on by default on those platforms.
+Il 21/11/2016 19:00, debbie10t ha scritto:
+>
+>
+> On 21/11/16 13:28, Samuli Sepp=E4nen wrote:
+>> Il 20/11/2016 23:16, debbie10t ha scritto:
+>
+>>>
+>>> Provided that the previous install is fully removed (including registry)
+>>> then the install is successful. Otherwise it fails in a non-standard dir
+>
+>>
+>> Hi,
+>>
+>> How and at which point does it fail if previous OpenVPN version is not
+>> uninstalled first?
+>
+> In fact, if any previous version is *not Fully Uninstalled* first (Which
+> means cleaning the registry by manually removing entire registry key
+> HKLocalMach_SW_Openvpn) .. And then this version is installed to any
+> *other* directory than the one it was previously installed to .. The
+> resulting installation will not work.
+>
+> Please see attached
 
-Tested on Windows Server 2008 (i686), Win 7 (x64) and Win 10 (x64)
+Hi,
 
-TODO: set dns servers using the interactive service
+Yes, I actually noticed that myself when testing the combined installer=20
+patch[1] myself:
 
-Signed-off-by: Selva Nair <selva.nair@...277...>
----
- doc/openvpn.8         |  5 ++---
- src/openvpn/options.c | 22 ++++++++++++++--------
- src/openvpn/tun.c     | 52 +++++++++++++++++++++++++++++++++++++++++++++++++++
- src/openvpn/tun.h     |  3 +++
- 4 files changed, 71 insertions(+), 11 deletions(-)
+<https://github.com/OpenVPN/openvpn-build/issues/49>
 
-diff --git a/doc/openvpn.8 b/doc/openvpn.8
-index d454a36..171bd72 100644
---- a/doc/openvpn.8
-+++ b/doc/openvpn.8
-@@ -5634,13 +5634,12 @@ this option to set secondary DNS server addresses.
- Set primary domain name server IPv6 address.  Repeat
- this option to set secondary DNS server IPv6 addresses.
- 
--Note: currently this is somewhat of a placeholder option - it is
--understood, but OpenVPN has no code to tell Windows about it (the
-+Note: currently this is handled using netsh and requires admin rights (the
- existing DHCP code can only do IPv4 DHCP, and that protocol only
- permits IPv4 addresses anywhere).  The option will be put into the
- environment, so an
- .B \-\-up
--script could act upon it.
-+script could act upon it if needed.
- 
- .B WINS addr \-\-
- Set primary WINS server address (NetBIOS over TCP/IP Name Server).
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index f30e62d..9ee6f27 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -6407,14 +6407,20 @@ add_option (struct options *options,
- 	{
- 	  dhcp_option_address_parse ("DNS", p[2], o->dns, &o->dns_len, msglevel);
- 	}
--      else if (streq (p[1], "DNS6") && p[2])
--	{
--	  /* this is somewhat of a placeholder - we understand the option,
--	   * but cannot act upon it - so we'll just accept it and put it
--	   * into the environment, as we would do on all non-win32 platforms
--	   */
--	  foreign_option (options, p, 3, es);
--	}
-+      else if (streq (p[1], "DNS6") && p[2] && ipv6_addr_safe(p[2]))
-+        {
-+          struct in6_addr addr;
-+          foreign_option (options, p, 3, es);
-+          if (o->dns6_len >= N_DHCP_ADDR)
-+            {
-+              msg (msglevel, "--dhcp-option DNS6: maximum of %d dns servers can be specified",
-+	           N_DHCP_ADDR);
-+            }
-+          else if (get_ipv6_addr (p[2], &addr, NULL, msglevel))
-+            {
-+              o->dns6[o->dns6_len++] = addr;
-+            }
-+        }
-       else if (streq (p[1], "WINS") && p[2])
- 	{
- 	  dhcp_option_address_parse ("WINS", p[2], o->wins, &o->wins_len, msglevel);
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index 36e0b15..8c0d6a4 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -68,6 +68,9 @@ static void netsh_ifconfig (const struct tuntap_options *to,
- 			    const in_addr_t ip,
- 			    const in_addr_t netmask,
- 			    const unsigned int flags);
-+static void netsh_set_dns6_servers (const struct in6_addr *addr_list,
-+                                    const int addr_len,
-+                                    const char *flex_name);
- static void netsh_command (const struct argv *a, int n, int msglevel);
- 
- static const char *netsh_get_id (const char *dev_node, struct gc_arena *gc);
-@@ -1381,6 +1384,7 @@ do_ifconfig (struct tuntap *tt,
- 	else if (tt->options.msg_channel)
- 	  {
- 	    do_address_service (true, AF_INET6, tt);
-+            /* TODO: do_dns6_service() */
- 	  }
- 	else
- 	  {
-@@ -1394,6 +1398,8 @@ do_ifconfig (struct tuntap *tt,
- 			 iface,
- 			 ifconfig_ipv6_local );
- 	    netsh_command (&argv, 4, M_FATAL);
-+            /* set ipv6 dns servers if any are specified */
-+	    netsh_set_dns6_servers(tt->options.dns6, tt->options.dns6_len, actual);
- 	  }
- 
- 	/* explicit route needed */
-@@ -4626,6 +4632,41 @@ ip_addr_member_of (const in_addr_t addr, const IP_ADDR_STRING *ias)
-   return false;
- }
- 
-+/**
-+ * Set the ipv6 dns servers on the specified interface.
-+ * The list of dns servers currently set on the interface
-+ * are cleared first.
-+ * No action is taken if number of addresses (addr_len) < 1.
-+ */
-+static void
-+netsh_set_dns6_servers (const struct in6_addr *addr_list,
-+                        const int addr_len,
-+                        const char *flex_name)
-+{
-+    struct gc_arena gc = gc_new ();
-+    struct argv argv = argv_new ();
-+
-+    for (int i = 0; i < addr_len; ++i)
-+    {
-+        const char *fmt = (i == 0) ?
-+            "%s%sc interface ipv6 set dns %s static %s"
-+	    : "%s%sc interface ipv6 add dns %s %s";
-+        argv_printf (&argv, fmt, get_win_sys_path(),
-+                     NETSH_PATH_SUFFIX, flex_name,
-+                     print_in6_addr (addr_list[i], 0, &gc));
-+
-+        /* disable slow address validation on Windows 7 and higher */
-+        if (win32_version_info() >= WIN_7)
-+            argv_printf_cat (&argv, "%s", "validate=no");
-+
-+        /* Treat errors while adding as non-fatal as we do not check for duplicates */
-+        netsh_command (&argv, 1, (i==0)? M_FATAL : M_NONFATAL);
-+    }
-+
-+    argv_reset (&argv);
-+    gc_free (&gc);
-+}
-+
- static void
- netsh_ifconfig_options (const char *type,
- 			const in_addr_t *addr_list,
-@@ -5572,6 +5613,17 @@ close_tun (struct tuntap *tt)
-                            ifconfig_ipv6_local);
- 
-               netsh_command (&argv, 1, M_WARN);
-+
-+              /* delete ipv6 dns servers if any were set */
-+              if (tt->options.dns6_len > 0)
-+                {
-+                  argv_printf (&argv,
-+                               "%s%sc interface ipv6 delete dns %s all",
-+                               get_win_sys_path(),
-+                               NETSH_PATH_SUFFIX,
-+                               tt->actual_name);
-+                  netsh_command (&argv, 1, M_WARN);
-+                }
-               argv_reset (&argv);
-             }
- 	}
-diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h
-index dedd915..9b5a1b7 100644
---- a/src/openvpn/tun.h
-+++ b/src/openvpn/tun.h
-@@ -107,6 +107,9 @@ struct tuntap_options {
-   bool dhcp_release;
- 
-   bool register_dns;
-+
-+  struct in6_addr dns6[N_DHCP_ADDR];
-+  int dns6_len;
- };
- 
- #elif TARGET_LINUX
--- 
-2.1.4
+That problem is also present in official 2.4_beta1 installers also and=20
+does not seem related to silent or interactive installations.
+
+Samuli
+
+[1] <https://github.com/OpenVPN/openvpn-build/pull/44>
 
 
