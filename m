@@ -1,15 +1,9 @@
-Date: Tue, 22 Nov 2016 17:36:04 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20161122163604.GH28918@...1296...>
-References: <1479679988-3918-1-git-send-email-arne@...1227...>
-	<1479814716-20116-1-git-send-email-arne@...1227...>
-	<CAKuzo_hS0OYK1DDtTdr-sxYooG1H6mYoSHzyBjRdEp9C8uRbdA@...278...>
+From: debbie10t <debbie10t@...277...>
+Message-ID: <880e3bb4-bc65-0122-c53b-d6886eab0579@...277...>
+Date: Tue, 22 Nov 2016 17:01:49 +0000
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="/WrQBKLxJDmptEQF"
-Content-Disposition: inline
-In-Reply-To: <CAKuzo_hS0OYK1DDtTdr-sxYooG1H6mYoSHzyBjRdEp9C8uRbdA@...278...>
-Subject: Re: [Openvpn-devel] [PATCHv2] Handle DNS6 option on Android
+Subject: [Openvpn-devel] IPv6 --dev-node error not correctly identified
+ (Moved to -devel))
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,47 +12,74 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-
---/WrQBKLxJDmptEQF
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
 Hi,
 
-On Tue, Nov 22, 2016 at 11:33:36AM -0500, Selva Nair wrote:
-> The code looks good to me, so ACK
+On 22/11/16 16:10, Gert Doering wrote:
+ > Hi,
+ >
+ > (why -users?  this is a -devel topic)
 
-Beat you to it :)
 
-> (Note: the preferred comment closing style may be '*/' on a line by
-> itself?).
+Moved to Openvpn-devel
 
-Indeed it is.  I overlooked that, otherwise I would have fixed it on
-the fly.  Meh.
 
-gert
+ >
+ > On Tue, Nov 22, 2016 at 03:44:08PM +0000, debbie10t wrote:
+ >> this may be related to another trac but i could not find a suitable
+ >> ticket, so posting here first for advice.
+ >>
+ >> It is a bit of a "corner case" but is is an error none the less.
+ >>
+ >> Client WinXP-SP2(etc) Openvpn v2.3.13
+ >>
+ >> NOTE#1: The TAP device named "defaultc" does *not* exist on the client.
+ >>
+ >> Throws this error:
+ >> Error: When using --tun-ipv6, if you have more than one TAP-Windows
+ >> adapter, you must also specify --dev-node
+ >>
+ >> Exiting due to fatal error
+ >>
+ >> However, --dev-node *is* specified *and* I only have one TAP adapter
+ >> installed.
+ >>
+ >> So the error message is not correctly identifying the problem that the
+ >> specified device does not exist.
+ >
+ > There is no trac for that that I'm aware of.
+ >
+ > I agree that the error message should be more meaningful.
+ >
+ > OTOH, I'm not sure we *can* fix this in 2.3 with reasonable effort - 
+Heiko
+ > rewrote significant bits of "how we do stuff on Windows" for 2.4 to make
+ > this particular error message go away completely - and that change is
+ > not going to be backported to 2.3, because it's way too complex for a
+ > bugfix.
+ >
 
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+Perhaps there should be a trac with this information ?
 
---/WrQBKLxJDmptEQF
-Content-Type: application/pgp-signature; name="signature.asc"
 
------BEGIN PGP SIGNATURE-----
+ > Could you please try to reproduce this with 2.4_beta1?  I wonder what
+ > the error message for "--dev-node references a non-existing device"
+ > will then be - if it's still a non-useful error, it is much easier to
+ > fix there.  But I do hope that the error might actually be something
+ > useful.
+ >
 
-iQCVAwUBWDRz86kuBuNlUUl1AQI13AP/RnVfSQwBbg8gMfcXc05nG9H2VNUxATxX
-uIN0EJgDIG7DDs6C3iYYtyW528XQV1dJr4JxnX0oxOwBUWgY+tEcm0RCwKmC+t2E
-Ysr3TDGCckztxeANdpPCdQ/Ml+p9WLZfzc/Nyzq+uqzKwiBzPBrBiSQpBrbL0yj7
-nD881Yrk8zg=
-=NJHq
------END PGP SIGNATURE-----
+Win10 - Openvpn 2.4_beta1
 
---/WrQBKLxJDmptEQF--
+Exact same test, result is:
+
+TAP-Windows adapter 'defaultc' not found
+Exiting due to fatal error
+
+
+So that looks ok.
+Thanks
 
