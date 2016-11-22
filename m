@@ -1,9 +1,10 @@
-Date: Tue, 22 Nov 2016 22:36:40 +0100 (CET)
-Message-Id: <201611222136.uAMLaeej036860@...2054...>
+Date: Tue, 22 Nov 2016 22:36:45 +0100 (CET)
+Message-Id: <201611222136.uAMLajbr036864@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1479847286-17518-1-git-send-email-steffan@...1856...>
-References: <1479847286-17518-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH applied] Re: --tls-crypt fixes
+In-Reply-To: <1479845528-16068-1-git-send-email-steffan@...1856...>
+References: <1479845528-16068-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Change cmocka remote to use
+	https in stead of git protocol
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,23 +15,23 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Steffan Karger <steffan@...1856...>
+To: Steffan Karger <steffan.karger@...1435...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-ACK, makes sense.  And compiles and tests :)
+ACK.  Tested :-)
 
 Your patch has been applied to the master branch.
 
-commit 418d2d98489dfe7afafcaf21828541d034afb7f4
+commit da941141f34935f2c362b262a83de3cd722b65d6
 Author: Steffan Karger
-Date:   Tue Nov 22 21:41:26 2016 +0100
+Date:   Tue Nov 22 21:12:08 2016 +0100
 
-     --tls-crypt fixes
+     Change cmocka remote to use https in stead of git protocol
 
-     Signed-off-by: Steffan Karger <steffan@...1856...>
+     Signed-off-by: Steffan Karger <steffan.karger@...1435...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1479847286-17518-1-git-send-email-steffan@...1856...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13204.html
+     Message-Id: <1479845528-16068-1-git-send-email-steffan@...1856...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13203.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
