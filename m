@@ -1,13 +1,10 @@
-MIME-Version: 1.0
-In-Reply-To: <201611211618.uALGIWgC023644@...2054...>
-References: <1479676734-21630-1-git-send-email-selva.nair@...277...>
-	<201611211618.uALGIWgC023644@...2054...>
 From: Selva Nair <selva.nair@...277...>
-Date: Mon, 21 Nov 2016 17:17:10 -0500
-Message-ID: <CAKuzo_g8yiAsBsoVViFwSxOu8xokgT3GY=taa9-NuF=v+r2u+Q@...278...>
-Content-Type: multipart/alternative; boundary=001a1149b9a88fe37d0541d705ab
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: Do not set ipv6 address if
- '--ip-win32 manual' is used
+Date: Mon, 21 Nov 2016 22:12:12 -0500
+Message-Id: <1479784332-21680-1-git-send-email-selva.nair@...277...>
+In-Reply-To: <1479677932-22078-1-git-send-email-selva.nair@...277...>
+References: <1479677932-22078-1-git-send-email-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH v2] Handle --dhcp-option DNS6 on Windows
+	using netsh
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,55 +13,186 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---001a1149b9a88fe37d0541d705ab
-Content-Type: text/plain; charset=UTF-8
+v2: On closing tun delete the ipv6 dns addresses (if any were set).
+Also use "validate=no" only in Windows 7 and higher where it is
+supported. Its used to skip the time consuming automatic address
+validation which is on by default on those platforms.
 
-On Mon, Nov 21, 2016 at 11:18 AM, Gert Doering <gert@...1296...> wrote:
+Tested on Windows Server 2008 (i686), Win 7 (x64) and Win 10 (x64)
 
-> This solves the issue at hand for the time being, without breaking
-> people's configs by removing "ip-win32 manual", and without changing
-> expectations "how things work on Windows".
->
-> For 2.5, we should look at removing the "ip-win32 manual" code path (and
-> maybe map it in the other direction, setting "--ifconfig_nexec" instead)
->
-> Your patch has been applied to the master branch.
->
+TODO: set dns servers using the interactive service
 
-While this skips setting the ipv6 address when --ifconfig-noexec is in use,
-the code still tries to delete the ipv6 address and fails during SIGHUP
-restarts. Its a non-fatal failure, so ignore for now?
+Signed-off-by: Selva Nair <selva.nair@...277...>
+---
+ doc/openvpn.8         |  5 ++---
+ src/openvpn/options.c | 22 ++++++++++++++--------
+ src/openvpn/tun.c     | 52 +++++++++++++++++++++++++++++++++++++++++++++++++++
+ src/openvpn/tun.h     |  3 +++
+ 4 files changed, 71 insertions(+), 11 deletions(-)
 
-Selva
+diff --git a/doc/openvpn.8 b/doc/openvpn.8
+index d454a36..171bd72 100644
+--- a/doc/openvpn.8
++++ b/doc/openvpn.8
+@@ -5634,13 +5634,12 @@ this option to set secondary DNS server addresses.
+ Set primary domain name server IPv6 address.  Repeat
+ this option to set secondary DNS server IPv6 addresses.
+ 
+-Note: currently this is somewhat of a placeholder option - it is
+-understood, but OpenVPN has no code to tell Windows about it (the
++Note: currently this is handled using netsh and requires admin rights (the
+ existing DHCP code can only do IPv4 DHCP, and that protocol only
+ permits IPv4 addresses anywhere).  The option will be put into the
+ environment, so an
+ .B \-\-up
+-script could act upon it.
++script could act upon it if needed.
+ 
+ .B WINS addr \-\-
+ Set primary WINS server address (NetBIOS over TCP/IP Name Server).
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index f30e62d..9ee6f27 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -6407,14 +6407,20 @@ add_option (struct options *options,
+ 	{
+ 	  dhcp_option_address_parse ("DNS", p[2], o->dns, &o->dns_len, msglevel);
+ 	}
+-      else if (streq (p[1], "DNS6") && p[2])
+-	{
+-	  /* this is somewhat of a placeholder - we understand the option,
+-	   * but cannot act upon it - so we'll just accept it and put it
+-	   * into the environment, as we would do on all non-win32 platforms
+-	   */
+-	  foreign_option (options, p, 3, es);
+-	}
++      else if (streq (p[1], "DNS6") && p[2] && ipv6_addr_safe(p[2]))
++        {
++          struct in6_addr addr;
++          foreign_option (options, p, 3, es);
++          if (o->dns6_len >= N_DHCP_ADDR)
++            {
++              msg (msglevel, "--dhcp-option DNS6: maximum of %d dns servers can be specified",
++	           N_DHCP_ADDR);
++            }
++          else if (get_ipv6_addr (p[2], &addr, NULL, msglevel))
++            {
++              o->dns6[o->dns6_len++] = addr;
++            }
++        }
+       else if (streq (p[1], "WINS") && p[2])
+ 	{
+ 	  dhcp_option_address_parse ("WINS", p[2], o->wins, &o->wins_len, msglevel);
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index 36e0b15..8c0d6a4 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -68,6 +68,9 @@ static void netsh_ifconfig (const struct tuntap_options *to,
+ 			    const in_addr_t ip,
+ 			    const in_addr_t netmask,
+ 			    const unsigned int flags);
++static void netsh_set_dns6_servers (const struct in6_addr *addr_list,
++                                    const int addr_len,
++                                    const char *flex_name);
+ static void netsh_command (const struct argv *a, int n, int msglevel);
+ 
+ static const char *netsh_get_id (const char *dev_node, struct gc_arena *gc);
+@@ -1381,6 +1384,7 @@ do_ifconfig (struct tuntap *tt,
+ 	else if (tt->options.msg_channel)
+ 	  {
+ 	    do_address_service (true, AF_INET6, tt);
++            /* TODO: do_dns6_service() */
+ 	  }
+ 	else
+ 	  {
+@@ -1394,6 +1398,8 @@ do_ifconfig (struct tuntap *tt,
+ 			 iface,
+ 			 ifconfig_ipv6_local );
+ 	    netsh_command (&argv, 4, M_FATAL);
++            /* set ipv6 dns servers if any are specified */
++	    netsh_set_dns6_servers(tt->options.dns6, tt->options.dns6_len, actual);
+ 	  }
+ 
+ 	/* explicit route needed */
+@@ -4626,6 +4632,41 @@ ip_addr_member_of (const in_addr_t addr, const IP_ADDR_STRING *ias)
+   return false;
+ }
+ 
++/**
++ * Set the ipv6 dns servers on the specified interface.
++ * The list of dns servers currently set on the interface
++ * are cleared first.
++ * No action is taken if number of addresses (addr_len) < 1.
++ */
++static void
++netsh_set_dns6_servers (const struct in6_addr *addr_list,
++                        const int addr_len,
++                        const char *flex_name)
++{
++    struct gc_arena gc = gc_new ();
++    struct argv argv = argv_new ();
++
++    for (int i = 0; i < addr_len; ++i)
++    {
++        const char *fmt = (i == 0) ?
++            "%s%sc interface ipv6 set dns %s static %s"
++	    : "%s%sc interface ipv6 add dns %s %s";
++        argv_printf (&argv, fmt, get_win_sys_path(),
++                     NETSH_PATH_SUFFIX, flex_name,
++                     print_in6_addr (addr_list[i], 0, &gc));
++
++        /* disable slow address validation on Windows 7 and higher */
++        if (win32_version_info() >= WIN_7)
++            argv_printf_cat (&argv, "%s", "validate=no");
++
++        /* Treat errors while adding as non-fatal as we do not check for duplicates */
++        netsh_command (&argv, 1, (i==0)? M_FATAL : M_NONFATAL);
++    }
++
++    argv_reset (&argv);
++    gc_free (&gc);
++}
++
+ static void
+ netsh_ifconfig_options (const char *type,
+ 			const in_addr_t *addr_list,
+@@ -5572,6 +5613,17 @@ close_tun (struct tuntap *tt)
+                            ifconfig_ipv6_local);
+ 
+               netsh_command (&argv, 1, M_WARN);
++
++              /* delete ipv6 dns servers if any were set */
++              if (tt->options.dns6_len > 0)
++                {
++                  argv_printf (&argv,
++                               "%s%sc interface ipv6 delete dns %s all",
++                               get_win_sys_path(),
++                               NETSH_PATH_SUFFIX,
++                               tt->actual_name);
++                  netsh_command (&argv, 1, M_WARN);
++                }
+               argv_reset (&argv);
+             }
+ 	}
+diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h
+index dedd915..9b5a1b7 100644
+--- a/src/openvpn/tun.h
++++ b/src/openvpn/tun.h
+@@ -107,6 +107,9 @@ struct tuntap_options {
+   bool dhcp_release;
+ 
+   bool register_dns;
++
++  struct in6_addr dns6[N_DHCP_ADDR];
++  int dns6_len;
+ };
+ 
+ #elif TARGET_LINUX
+-- 
+2.1.4
 
---001a1149b9a88fe37d0541d705ab
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">=
-On Mon, Nov 21, 2016 at 11:18 AM, Gert Doering <span dir=3D"ltr">&lt;<a hre=
-f=3D"mailto:gert@...1296..." target=3D"_blank">gert@...1296...</a>&gt;</spa=
-n> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;b=
-order-left:1px #ccc solid;padding-left:1ex"><div id=3D":3xb" class=3D"a3s a=
-XjCH m15887ae97f753a72">This solves the issue at hand for the time being, w=
-ithout breaking<br>
-people&#39;s configs by removing &quot;<span class=3D"il">ip</span>-<span c=
-lass=3D"il">win32</span> manual&quot;, and without changing<br>
-expectations &quot;how things work on Windows&quot;.<br>
-<br>
-For 2.5, we should look at removing the &quot;<span class=3D"il">ip</span>-=
-<span class=3D"il">win32</span> manual&quot; code path (and<br>
-maybe map it in the other direction, setting &quot;--ifconfig_nexec&quot; i=
-nstead)<br>
-<br>
-Your patch has been applied to the master branch.</div></blockquote></div><=
-br>While this skips setting the ipv6 address when --ifconfig-noexec is in u=
-se, the code still tries to delete the ipv6 address and fails during SIGHUP=
- restarts. Its a non-fatal failure, so ignore for now?</div><div class=3D"g=
-mail_extra"><br></div><div class=3D"gmail_extra">Selva</div></div>
-
---001a1149b9a88fe37d0541d705ab--
 
