@@ -1,9 +1,15 @@
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <9809a603-8c9e-78d4-b069-4e4f47bac514@...515...>
-Date: Wed, 23 Nov 2016 16:04:08 +0200
+Date: Wed, 23 Nov 2016 19:43:21 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20161123184321.GA28918@...1296...>
+References: <20161121091013.imxgfilt3byyqu7u@...30...>
+	<1479896418-16190-1-git-send-email-gert@...1296...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] OSTIF.org has started an OpenVPN security audit
-	fundraiser
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="j2h4gSmLcbDT9SXs"
+Content-Disposition: inline
+In-Reply-To: <1479896418-16190-1-git-send-email-gert@...1296...>
+Subject: Re: [Openvpn-devel] [PATCH] Refactor setting close-on-exec for
+ socket FDs
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,42 +18,49 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-15"; format=flowed
+To: openvpn-devel@lists.sourceforge.net
+
+--j2h4gSmLcbDT9SXs
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>
+Content-Disposition: inline
 
 Hi,
 
-OSTIF[1] has started a new fundraiser with the goal of getting a=20
-security audit for OpenVPN 2.4.x:
+On Wed, Nov 23, 2016 at 11:20:18AM +0100, Gert Doering wrote:
+> The existing code can leak socket FDs to the "--up" script, which is
+> not desired.  Brought up by Alberto Gonzalez Iniesta, based on debian
+> bug 367716.
 
-<https://ostif.org/ostif-is-beginning-a-fundraiser-for-openvpn-lets-get-it-=
-audited/>
+I'm not sure if that patch is good enough yet.
 
-On that page there are suggestions on how to promote the fundraiser.
+Arne brought up "port-share" - where we fork processes, so it needs to
+be ensured that whatever that process needs is still working.
 
-This new fundraiser has way more credibility than the previous one on=20
-Kickstarter, as since then OSTIF has been able to raise enough money to=20
-get Veracrypt[2] audited:
+In addition to that, we have "TCP server" processes, which create new
+sockets not by calling socket() but by calling accept() on the listening
+socket, which is not in one of thew set_cloexec() paths - but watch out,
+*these* might be the ones needed for port-share.
 
-<https://ostif.org/the-veracrypt-audit-results/>
-<https://ostif.org/wp-content/uploads/2016/10/VeraCrypt-Audit-Final-for-Pub=
-lic-Release.pdf>
-<https://sourceforge.net/p/veracrypt/discussion/general/thread/9490dbcc/>
-
-In addition, VeraCrypt Git logs show that most of the identified=20
-vulnerabilities were fixed.
-
-Best regards,
-
+gert
 --=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-irc freenode net: mattock
+--j2h4gSmLcbDT9SXs
+Content-Type: application/pgp-signature; name="signature.asc"
 
-[1] <https://ostif.org/>
-[2] <https://sourceforge.net/projects/veracrypt/>
-     <https://github.com/veracrypt/VeraCrypt>
+-----BEGIN PGP SIGNATURE-----
+
+iQCVAwUBWDXjSKkuBuNlUUl1AQJRlAQAqoc2/wbpmPOL7AxLPpfAWAc+f7W6sOOU
+CmUkxYEkSysF9uZugW6Nm4pQZj+LOqAPVk/P2vpgh+HvRSr8ePBWFH+yqawtT6gm
+KsPl47Wz0UVx0PK0oxwdzogMVOmpynITJEgyrT6m/syO2m8FyoLTKJ1GKuDaXA65
+K7Lhm5EGv+4=
+=bz+s
+-----END PGP SIGNATURE-----
+
+--j2h4gSmLcbDT9SXs--
 
