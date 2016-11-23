@@ -1,9 +1,15 @@
-Date: Wed, 23 Nov 2016 23:16:58 +0100 (CET)
-Message-Id: <201611232216.uANMGwWk061543@...2054...>
+Date: Wed, 23 Nov 2016 23:32:57 +0100
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1479936104-4045-1-git-send-email-steffan@...1856...>
+Message-ID: <20161123223257.GC28918@...1296...>
 References: <1479936104-4045-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Poor man's NCP for non-NCP peers
+	<201611232216.uANMGwWk061543@...2054...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="hWspM8V/q+4sNHne"
+Content-Disposition: inline
+In-Reply-To: <201611232216.uANMGwWk061543@...2054...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Re: Poor man's NCP for non-NCP
+ peers
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,51 +18,60 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
 To: Steffan Karger <steffan@...1856...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-ACK.  We made it :-)
+--hWspM8V/q+4sNHne
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-I've made three changes (as discussed on IRC) to avoid another round
-for "minor nuisances"
+Hi,
 
- - moved prototype in options.h outside #ifdef ENABLE_OCC
-   (warning if --disable-small)
+On Wed, Nov 23, 2016 at 11:16:58PM +0100, Gert Doering wrote:
+> ACK.  We made it :-)
 
- - undo the moving of #if P2MP_SERVER in key_method_2_read()
-   (would break --disable-server)
+I *did* find a way to break it, I think - haven't tested, need to sleep -
+just copying what I wrote to IRC just now since everyone is asleep=20
+already...
 
- - add an extra "if (multi->remote_ciphername == NULL || ...) clause
-   to the reasons for setting opt->ncp_enabled = false
-   (remote_ciphername will be NULL if talking to a peer that has been
-    built without ENABLE_OCC aka --enable-small)
+23:30 <@cron2> syzzer: I *do* have a potential way to use this to break thi=
+ngs
+23:30 <@cron2> server with NCP enabled, --cipher foo
+23:30 <@cron2> client with NCP disabled, --cipher bar
+23:30 <@cron2> server will now use "cipher bar", while client will do "ciph=
+er=20
+               foo"...
+23:31 <@cron2> so I think we should do a "v6a amendment" which disables thi=
+s on=20
+               the client if --ncp-disable is set (so 2.4 to 2.4 will eithe=
+r do=20
+               *real* NCP, or *no* NCP, but no half-assed two-way poorman)
+23:31 <@cron2> this makes testing more annoying because you can't talk to a=
+ 2.4=20
+               server to test the client side :-) - but it's *meant* to be =
+a=20
+               2.3<->2.4 migration feature
 
-I've tested this on the "t_server" testbed (2.2, 2.3, master clients,
-plus one extra with --enable-small), client-with-patch against an older
-server (falling back to BF-CBC, complaining :-) ) and of course full 
-t_client tests (though nothing in the change suspects a possible client 
-failure in that test set).
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-Your patch has been applied to the master branch.  Thanks!
+--hWspM8V/q+4sNHne
+Content-Type: application/pgp-signature; name="signature.asc"
 
-commit 6e5ad2fa0b1e7ca2e05e0a38f47ed5561cda63b0
-Author: Steffan Karger
-Date:   Wed Nov 23 22:21:44 2016 +0100
+-----BEGIN PGP SIGNATURE-----
 
-     Poor man's NCP for non-NCP peers
+iQCVAwUBWDYZF6kuBuNlUUl1AQL4ZgP/fQwl8XcmxfRslQoXiqGcwAwg6Bi6GO6e
+3EuYJEtQoQo6bmJRCJ+Db8ltj6IGfQ4intcsudYlqMHbLFFlo2AYvsh8B2JXio2E
+PE6BtZtMT3YETuBklfSmIGLI0xPPTitT4nrQF2rrLjmlypxGIgBgAAL9yQfYdyQI
+GFclMaKyYMw=
+=JhO0
+-----END PGP SIGNATURE-----
 
-     Signed-off-by: Steffan Karger <steffan@...1856...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1479936104-4045-1-git-send-email-steffan@...1856...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13218.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
-
+--hWspM8V/q+4sNHne--
 
