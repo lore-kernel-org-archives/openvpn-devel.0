@@ -1,17 +1,9 @@
-Date: Thu, 24 Nov 2016 11:07:36 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20161124100736.GD28918@...1296...>
-References: <1479936104-4045-1-git-send-email-steffan@...1856...>
-	<201611232216.uANMGwWk061543@...2054...>
-	<20161123223257.GC28918@...1296...>
-	<01253b2e-82aa-54e1-71e5-0bcd97b0c833@...1856...>
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <d94eadcd-06ca-0691-0add-147ac00ab063@...515...>
+Date: Thu, 24 Nov 2016 12:26:33 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="A5AyRtFOAYcOCJfV"
-Content-Disposition: inline
-In-Reply-To: <01253b2e-82aa-54e1-71e5-0bcd97b0c833@...1856...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: Poor man's NCP for non-NCP
- peers
+Subject: [Openvpn-devel] Test installer with installer,
+ openvpn-gui and openvpnserv2 improvements
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,64 +12,46 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan@...1856...>
-Cc: openvpn-devel@lists.sourceforge.net
-
---A5AyRtFOAYcOCJfV
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="iso-8859-15"; format=flowed
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
 Hi,
 
-On Wed, Nov 23, 2016 at 11:58:49PM +0100, Steffan Karger wrote:
-> This will end up with the server and client using cipher bar (if the
-> server has --ncp-ciphers <somehting>:bar).  The client-side poor-man's
-> NCP is already guarded by "if (c->options.ncp_enabled)" (in
-> do_deferred_options()).
+Here's a Windows new test installer for 2.4_beta1:
 
-Good point.  Seems I was not very much awake anymore :-)
+<https://build.openvpn.net/downloads/snapshots/openvpn-install-2.4_beta1-I9=
+02.exe>
 
-  /* process (potentially pushed) crypto options */
-  if (c->options.pull)
-    {
-      struct tls_session *session =3D &c->c2.tls_multi->session[TM_ACTIVE];
-      if (found & OPT_P_NCP)
-        {
-          msg (D_PUSH, "OPTIONS IMPORT: data channel crypto options modifie=
-d");
-        }
-      else if (c->options.ncp_enabled)
-        {
-          tls_poor_mans_ncp(&c->options, c->c2.tls_multi->remote_ciphername=
-);
-        }
+The changes compared to standard 2.4_beta1 installers are:
 
-... all fine, then.
+1) Installer works on both 32-bit and 64-bit Windows
+- https://github.com/OpenVPN/openvpn-build/pull/44
 
-thanks,
+2) Installer should fail on Windows XP and earlier
+- https://github.com/OpenVPN/openvpn-build/pull/52
 
-gert
+3) OpenVPN-GUI is DPI-aware
+- https://github.com/OpenVPN/openvpn-gui/pull/99
 
+4) OpenVPN-GUI has dynamic challenge-response support
+- https://github.com/OpenVPN/openvpn-gui/pull/87
+
+5) OpenVPN-GUI Ukrainian localization fixes
+- https://github.com/OpenVPN/openvpn-gui/pull/94
+
+6) Openvpnserv2 shuts down openvpn instances cleanly
+- https://github.com/OpenVPN/openvpnserv2/pull/6
+
+We will try to get all of this included in OpenVPN 2.4_rc1, so test=20
+reports are most welcome!
+
+Best regards,
 
 --=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
 
---A5AyRtFOAYcOCJfV
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQCVAwUBWDa76KkuBuNlUUl1AQJxAAP+NE7rILdaMhvYT1We2F0Lix6pAP4iG8bn
-82SVaAyBLnPDUKl8b+x87DB6FuOnfV0Gu0umLSBJljt+JS6zJarZ1mm3gFnE6Wgt
-9yi5lykmiF8/eQvb7Ar81+BANk4MtiW815HLfbdqKIhVclwFX+J6NoFZ4PnGvlGa
-9t5LAl73Yc8=
-=bhlC
------END PGP SIGNATURE-----
-
---A5AyRtFOAYcOCJfV--
+irc freenode net: mattock
 
