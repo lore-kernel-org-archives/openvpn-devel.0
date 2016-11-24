@@ -1,10 +1,10 @@
-MIME-Version: 1.0
-From: Selva Nair <selva.nair@...277...>
-Date: Wed, 23 Nov 2016 22:43:20 -0500
-Message-ID: <CAKuzo_gyYfD=YsV-GCU+-g93sctikfR+zC_4_E3vHfVo1oREMA@...278...>
-Content-Type: multipart/alternative; boundary=001a113bc880b930fe054203cf4f
-Subject: [Openvpn-devel] IPv6 route addition error on SIGHUP restarts
-	(Windows)
+Date: Thu, 24 Nov 2016 11:04:53 +0100 (CET)
+Message-Id: <201611241004.uAOA4rK9069236@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <1479931325-25919-2-git-send-email-steffan@...1856...>
+References: <1479931325-25919-2-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Refactor data channel key
+	generation API
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,41 +13,36 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Steffan Karger <steffan@...1856...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---001a113bc880b930fe054203cf4f
-Content-Type: text/plain; charset=UTF-8
+ACK.  This is slightly different from the refactoring in "v4"
+(as tls_session_generate_data_channel_keys() is now "static" and
+no longer needs to be called externally, so the actual change is
+much smaller).  The change to ssl.c is mostly identical, though,
+so this was now reviewed and tested twice :-) - "just code being
+moved around".  Passes all tests on server and client side.
 
-Hi,
+Your patch has been applied to the master branch.
 
-I see the following route addition error during SIGHUP restarts on Windows.
+commit e2ffdb7c83faaee6541c248e8d83eb3dfb5a32f1
+Author: Steffan Karger
+Date:   Wed Nov 23 21:02:05 2016 +0100
 
-Wed Nov 23 21:44:39 2016 add_route_ipv6(xxxx:xxxx:e001:3b08::/64 ->
-xxxx:xxxx:e001:3b08::1001 metric 0) dev SanSel-VPN
-Wed Nov 23 21:44:39 2016 ROUTE: route addition failed using service: The
-object already exists.   [status=5010 if_index=24]
-Wed Nov 23 21:44:39 2016 IPv6 route addition via service failed
+     Refactor data channel key generation API
 
-I'm not familiar with the relevant code, but looks like the route added by
-add_route_connected_v6_net() is not deleted on disconnect. Probably this
-route doesn't make it into the route_list.
+     Signed-off-by: Steffan Karger <steffan@...1856...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1479931325-25919-2-git-send-email-steffan@...1856...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13216.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-Selva
 
---001a113bc880b930fe054203cf4f
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+--
+kind regards,
 
-<div dir=3D"ltr"><div>Hi,<br><br>I see the following route addition error d=
-uring SIGHUP restarts on Windows.<br>=C2=A0<br>Wed Nov 23 21:44:39 2016 add=
-_route_ipv6(xxxx:xxxx:e001:<wbr>3b08::/64 -&gt; xxxx:xxxx:e001:3b08::1001 m=
-etric 0) dev SanSel-VPN<br>Wed Nov 23 21:44:39 2016 ROUTE: route addition f=
-ailed using service: The object already exists.=C2=A0=C2=A0 [status=3D5010 =
-if_index=3D24]<br>Wed Nov 23 21:44:39 2016 IPv6 route addition via service =
-failed<br><br>I&#39;m not familiar with the relevant code, but looks like t=
-he route added by=C2=A0 add_route_connected_v6_net() is not deleted on disc=
-onnect. Probably this route doesn&#39;t make it into the route_list.<br><br=
-></div>Selva<br></div>
+Gert Doering
 
---001a113bc880b930fe054203cf4f--
 
