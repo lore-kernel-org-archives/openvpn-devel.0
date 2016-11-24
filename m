@@ -1,14 +1,10 @@
-Date: Thu, 24 Nov 2016 11:28:29 +0100
+Date: Thu, 24 Nov 2016 12:00:50 +0100 (CET)
+Message-Id: <201611241100.uAOB0o0r069804@...2054...>
 From: Gert Doering <gert@...1296...>
-Message-ID: <20161124102829.GI28918@...1296...>
-References: <CAKuzo_gyYfD=YsV-GCU+-g93sctikfR+zC_4_E3vHfVo1oREMA@...278...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="yOhGV3/LIyeSJVGY"
-Content-Disposition: inline
-In-Reply-To: <CAKuzo_gyYfD=YsV-GCU+-g93sctikfR+zC_4_E3vHfVo1oREMA@...278...>
-Subject: Re: [Openvpn-devel] IPv6 route addition error on SIGHUP restarts
- (Windows)
+In-Reply-To: <1479958527-29491-1-git-send-email-selva.nair@...277...>
+References: <1479958527-29491-1-git-send-email-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Set IPv6 DNS servers using
+	interactive service
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,60 +13,55 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: Selva Nair <selva.nair@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Cc: openvpn-devel@lists.sourceforge.net
 
---yOhGV3/LIyeSJVGY
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+ACK.  Code looks reasonable, and it passes compilation.
 
-Hi,
+I have not been able to actually TEST it due to scheduling conflicts
+today, but I'm taking that risk, based on "it looks good, it affects
+windows only, and unless the code is activated by *pushing* a DNS6
+option, it will not affect existing setups at all".
 
-On Wed, Nov 23, 2016 at 10:43:20PM -0500, Selva Nair wrote:
-> I see the following route addition error during SIGHUP restarts on Window=
-s.
->=20
-> Wed Nov 23 21:44:39 2016 add_route_ipv6(xxxx:xxxx:e001:3b08::/64 ->
-> xxxx:xxxx:e001:3b08::1001 metric 0) dev SanSel-VPN
-> Wed Nov 23 21:44:39 2016 ROUTE: route addition failed using service: The
-> object already exists.   [status=3D5010 if_index=3D24]
-> Wed Nov 23 21:44:39 2016 IPv6 route addition via service failed
->=20
-> I'm not familiar with the relevant code, but looks like the route added by
-> add_route_connected_v6_net() is not deleted on disconnect. Probably this
-> route doesn't make it into the route_list.
+In case someone wonders whether changing struct dns_cfg_message_t is
+safe - it is, because we never had a "v4 DNS message" yet, that struct
+was completely unused (and the new one is theoretically multi-protocol
+capable, though not "mixed mode").
 
-Right, the "locally connected" routes are set directly, bypassing the
-route_list infrastructure (for no particular reason than "it was easier
-to do that way, than to try to understand all the machinery involved"
-and I was not familiar with the code yet).
+I did a small code fix, though - the netsh_dns_cmd() always reset
+"err = 0" at the end:
 
-Is this a fatal error (=3D openvpn ends), or just a nuisance?
++  err = ExecCommand (argv0, cmdline, timeout);
++   
++out: 
++  err = 0;
++  free (cmdline);
++  return err;
++}
 
-We should fix it in any case, but if this is just a nuisance in the
-logs, I'd treat it as a cosmetic bug and postpone for a few weeks.
+.. which did not make sense, so I removed the "err = 0" line.
 
-gert
 
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+Your patch has been applied to the master branch.
 
---yOhGV3/LIyeSJVGY
-Content-Type: application/pgp-signature; name="signature.asc"
+commit c098016a22e90575e9c3e7c27d7b457ed9d1b5d3
+Author: Selva Nair
+Date:   Wed Nov 23 22:35:27 2016 -0500
 
------BEGIN PGP SIGNATURE-----
+     Set IPv6 DNS servers using interactive service
 
-iQCVAwUBWDbAzKkuBuNlUUl1AQITGQP9ERL/chgXAn90E1AG53eIlS0SitqeTptA
-fUyHpzcAf6hlm5eZCgV0q5H3448xkQAE3CV0JpQIRgvIqP8s1v8LL4LGArOI27Tx
-x/rFyKz93lkf/wrDPRD8+L+DGzj43xe90QnYIOnoIrnBFdf/Ahz9PnNHcdLaaIUS
-WE+TLYq97To=
-=hmh5
------END PGP SIGNATURE-----
+     Signed-off-by: Selva Nair <selva.nair@...277...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1479958527-29491-1-git-send-email-selva.nair@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13222.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
---yOhGV3/LIyeSJVGY--
+
+--
+kind regards,
+
+Gert Doering
+
 
