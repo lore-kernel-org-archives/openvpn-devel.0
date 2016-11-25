@@ -1,10 +1,12 @@
-From: =?UTF-8?B?U3ZpTWlr?= <svimik@...450...>
 MIME-Version: 1.0
-Date: Fri, 25 Nov 2016 05:40:56 +0300
-Message-ID: <1480041656.496074414@...2195...>
-Subject: [Openvpn-devel] =?utf-8?q?=5BPATCH=5D_Fix_using_a_pointer_before_?=
- =?utf-8?q?checking_against_null?=
-Reply-To: =?UTF-8?B?U3ZpTWlr?= <svimik@...450...>
+In-Reply-To: <d94eadcd-06ca-0691-0add-147ac00ab063@...515...>
+References: <d94eadcd-06ca-0691-0add-147ac00ab063@...515...>
+From: Selva Nair <selva.nair@...277...>
+Date: Thu, 24 Nov 2016 23:40:09 -0500
+Message-ID: <CAKuzo_iu-Q2CNtd=cjMxSGvVQZ_u_9uVMcOpbDpFrMcOrTFXhA@...278...>
+Content-Type: multipart/alternative; boundary=001a114d8ca4c61766054218b8e0
+Subject: Re: [Openvpn-devel] Test installer with installer,
+ openvpn-gui and openvpnserv2 improvements
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,48 +15,73 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-To: openvpn-devel@lists.sourceforge.net
+To: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-VGhlcmUgd2FzIGEgZmV3IHBsYWNlcyB3aGVyZSBwb2ludGVyIHdhcyB1c2VkIGFuZCB0aGVuIGNo
-ZWNrZWQKYWdhaW5zdCBudWxsLgoKVGhpcyBwYXRjaCBpcyB0cnlpbmcgdG8gZml4IHRoYXQgYnkg
-YWRkaW5nIGFkZGl0aW9uYWwgY2hlY2tzIG9yIG1vdmluZwppdCBpbnRvIHRoZSByaWdodCBwbGFj
-ZS4KClNpZ25lZC1vZmYtYnk6IFN2aWF0b3NsYXYgTWlraGFpbG92IDxzdmltaWtALi4uNDUwLi4u
-PgotLS0KIHNyYy9vcGVudnBuL2J1ZmZlci5jIHwgICAgMiArLQogc3JjL29wZW52cG4vcHMuYyAg
-ICAgfCAgICA0ICsrLS0KIHNyYy9vcGVudnBuL3B1c2guYyAgIHwgICAgMiArLQogMyBmaWxlcyBj
-aGFuZ2VkLCA0IGluc2VydGlvbnMoKyksIDQgZGVsZXRpb25zKC0pCgpkaWZmIC0tZ2l0IGEvc3Jj
-L29wZW52cG4vYnVmZmVyLmMgYi9zcmMvb3BlbnZwbi9idWZmZXIuYwppbmRleCA1MmM2YWI5Li41
-Nzk1NmRkIDEwMDY0NAotLS0gYS9zcmMvb3BlbnZwbi9idWZmZXIuYworKysgYi9zcmMvb3BlbnZw
-bi9idWZmZXIuYwpAQCAtNDM5LDcgKzQzOSw3IEBAIGZvcm1hdF9oZXhfZXggKGNvbnN0IHVpbnQ4
-X3QgKmRhdGEsIGludCBzaXplLCBpbnQgbWF4b3V0cHV0LAogCSAgICAgICBzdHJ1Y3QgZ2NfYXJl
-bmEgKmdjKQogewogICBzdHJ1Y3QgYnVmZmVyIG91dCA9IGFsbG9jX2J1Zl9nYyAobWF4b3V0cHV0
-ID8gbWF4b3V0cHV0IDoKLQkJCQkgICAgKChzaXplICogMikgKyAoc2l6ZSAvIChzcGFjZV9icmVh
-a19mbGFncyAmIEZIRV9TUEFDRV9CUkVBS19NQVNLKSkgKiAoaW50KSBzdHJsZW4gKHNlcGFyYXRv
-cikgKyAyKSwKKwkJCQkgICAgKChzaXplICogMikgKyAoc2l6ZSAvIChzcGFjZV9icmVha19mbGFn
-cyAmIEZIRV9TUEFDRV9CUkVBS19NQVNLKSkgKiAoc2VwYXJhdG9yID8gKGludCkgc3RybGVuIChz
-ZXBhcmF0b3IpIDogMCkgKyAyKSwKIAkJCQkgICAgZ2MpOwogICBpbnQgaTsKICAgZm9yIChpID0g
-MDsgaSA8IHNpemU7ICsraSkKZGlmZiAtLWdpdCBhL3NyYy9vcGVudnBuL3BzLmMgYi9zcmMvb3Bl
-bnZwbi9wcy5jCmluZGV4IDJjYjY4ZjEuLjkzNWJkMGIgMTAwNjQ0Ci0tLSBhL3NyYy9vcGVudnBu
-L3BzLmMKKysrIGIvc3JjL29wZW52cG4vcHMuYwpAQCAtNDk5LDYgKzQ5OSw3IEBAIGNvbnRyb2xf
-bWVzc2FnZV9mcm9tX3BhcmVudCAoY29uc3Qgc29ja2V0X2Rlc2NyaXB0b3JfdCBzZF9jb250cm9s
-LAogICBtZXNnLm1zZ19mbGFncyA9IDA7CiAKICAgaCA9IENNU0dfRklSU1RIRFIoJm1lc2cpOwor
-ICBBU1NFUlQgKGgpOwogICBoLT5jbXNnX2xlbiA9IENNU0dfTEVOKHNpemVvZihzb2NrZXRfZGVz
-Y3JpcHRvcl90KSk7CiAgIGgtPmNtc2dfbGV2ZWwgPSBTT0xfU09DS0VUOwogICBoLT5jbXNnX3R5
-cGUgPSBTQ01fUklHSFRTOwpAQCAtNTA4LDggKzUwOSw3IEBAIGNvbnRyb2xfbWVzc2FnZV9mcm9t
-X3BhcmVudCAoY29uc3Qgc29ja2V0X2Rlc2NyaXB0b3JfdCBzZF9jb250cm9sLAogICBzdGF0dXMg
-PSByZWN2bXNnIChzZF9jb250cm9sLCAmbWVzZywgTVNHX05PU0lHTkFMKTsKICAgaWYgKHN0YXR1
-cyAhPSAtMSkKICAgICB7Ci0gICAgICBpZiAoICAgaCA9PSBOVUxMCi0JICB8fCBoLT5jbXNnX2xl
-biAgICAhPSBDTVNHX0xFTihzaXplb2Yoc29ja2V0X2Rlc2NyaXB0b3JfdCkpCisgICAgICBpZiAo
-IGgtPmNtc2dfbGVuICAgICE9IENNU0dfTEVOKHNpemVvZihzb2NrZXRfZGVzY3JpcHRvcl90KSkK
-IAkgIHx8IGgtPmNtc2dfbGV2ZWwgICE9IFNPTF9TT0NLRVQKIAkgIHx8IGgtPmNtc2dfdHlwZSAg
-ICE9IFNDTV9SSUdIVFMgKQogCXsKZGlmZiAtLWdpdCBhL3NyYy9vcGVudnBuL3B1c2guYyBiL3Ny
-Yy9vcGVudnBuL3B1c2guYwppbmRleCA5OTUzMDc5Li5iMDE2ZDk5IDEwMDY0NAotLS0gYS9zcmMv
-b3BlbnZwbi9wdXNoLmMKKysrIGIvc3JjL29wZW52cG4vcHVzaC5jCkBAIC01NjUsNyArNTY1LDcg
-QEAgcHVzaF9yZW1vdmVfb3B0aW9uIChzdHJ1Y3Qgb3B0aW9ucyAqbywgY29uc3QgY2hhciAqcCkK
-ICAgbXNnIChEX1BVU0hfREVCVUcsICJQVVNIX1JFTU9WRSBzZWFyY2hpbmcgZm9yOiAnJXMnIiwg
-cCk7CiAKICAgLyogaWZjb25maWctaXB2NiBpcyBzcGVjaWFsLCBhcyBub3QgcGFydCBvZiB0aGUg
-cHVzaCBsaXN0ICovCi0gIGlmICggc3RyZXEoIHAsICJpZmNvbmZpZy1pcHY2IiApKQorICBpZiAo
-byAmJiBzdHJlcSggcCwgImlmY29uZmlnLWlwdjYiICkpCiAgICAgewogICAgICAgby0+cHVzaF9p
-ZmNvbmZpZ19pcHY2X2Jsb2NrZWQgPSB0cnVlOwogICAgICAgcmV0dXJuOwotLSAKMS43LjEwLm1z
-eXNnaXQuMQo=
+--001a114d8ca4c61766054218b8e0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+Hi,
+
+On Thu, Nov 24, 2016 at 5:26 AM, Samuli Sepp=C3=A4nen <samuli@...515...> wr=
+ote:
+
+> Here's a Windows new test installer for 2.4_beta1:
+>
+> <https://build.openvpn.net/downloads/snapshots/openvpn-
+> install-2.4_beta1-I902.exe>
+>
+> The changes compared to standard 2.4_beta1 installers are:
+>
+> 1) Installer works on both 32-bit and 64-bit Windows
+> - https://github.com/OpenVPN/openvpn-build/pull/44
+>
+
+Tested on 32 bit and 64 bit systems and both installs went smoothly. Great
+job. Reg values under the HKLM\Software\OpenVPN key (exe_path etc.) are not
+updated -- guess that is expected.
+
+Not tested on XP.
+
+Ukranian localization patch needs some positioning tweaks  (see comments
+added to the PR).
+
+All else look good.
+
+Selva
+
+--001a114d8ca4c61766054218b8e0
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div class=3D"gmail_extra">Hi,</div><div class=3D"gmail_ex=
+tra"><br><div class=3D"gmail_quote">On Thu, Nov 24, 2016 at 5:26 AM, Samuli=
+ Sepp=C3=A4nen <span dir=3D"ltr">&lt;<a href=3D"mailto:samuli@...515..." ta=
+rget=3D"_blank">samuli@...515...</a>&gt;</span> wrote:<br><blockquote class=
+=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padd=
+ing-left:1ex"><div id=3D":3ei" class=3D"a3s aXjCH m15895e1718e456e0">Here&#=
+39;s a Windows new test installer for 2.4_beta1:<br>
+<br>
+&lt;<a href=3D"https://build.openvpn.net/downloads/snapshots/openvpn-instal=
+l-2.4_beta1-I902.exe" rel=3D"noreferrer" target=3D"_blank">https://build.op=
+envpn.net/<wbr>downloads/snapshots/openvpn-<wbr>install-2.4_beta1-I902.exe<=
+/a>&gt;<br>
+<br>
+The changes compared to standard 2.4_beta1 installers are:<br>
+<br>
+1) Installer works on both 32-bit and 64-bit Windows<br>
+- <a href=3D"https://github.com/OpenVPN/openvpn-build/pull/44" rel=3D"noref=
+errer" target=3D"_blank">https://github.com/OpenVPN/<wbr>openvpn-build/pull=
+/44</a></div></blockquote></div><br>Tested on 32 bit and 64 bit systems and=
+ both installs went smoothly. Great job. Reg values under the HKLM\Software=
+\OpenVPN key (exe_path etc.) are not updated -- guess that is expected.</di=
+v><div class=3D"gmail_extra"><br></div><div class=3D"gmail_extra">Not teste=
+d on XP.</div><div class=3D"gmail_extra"><br></div><div class=3D"gmail_extr=
+a">Ukranian localization patch needs some positioning tweaks =C2=A0(see com=
+ments added to the PR).</div><div class=3D"gmail_extra"><br></div><div clas=
+s=3D"gmail_extra">All else look good.</div><div class=3D"gmail_extra"><br><=
+/div><div class=3D"gmail_extra">Selva</div></div>
+
+--001a114d8ca4c61766054218b8e0--
+
