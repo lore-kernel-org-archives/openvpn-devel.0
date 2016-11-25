@@ -1,18 +1,20 @@
 MIME-Version: 1.0
-In-Reply-To: <CAFHpkQFMA3ppTm=wCH-MrBox7niCC5+YWNbkvmkK3Y5p7Cu7Og@...278...>
-References: <CAFHpkQFdwy++P48HOOAeEO8fKr8uc6y-en0z73JtoOMO1c4q7Q@...278...>
-	<20161116183502.GK28918@...1296...>
-	<CAFHpkQEkvbq1AGSYN-kYqfDjMbUXJhe1gysp4g6s1EOQku6JOQ@...278...>
+In-Reply-To: <20161125152710.GA81859@...1296...>
+References: <CAFHpkQEkvbq1AGSYN-kYqfDjMbUXJhe1gysp4g6s1EOQku6JOQ@...278...>
 	<20161116184717.GL28918@...1296...>
 	<CAFHpkQHaDiP9Wk49ja3p_Oix=1fAtANzpqmPbT6hLZw6FVqLiw@...278...>
 	<CAFHpkQHdgDAELAHwkYysyyGf5_sGFO-bkCuSVY=zwPKz1pLOwQ@...278...>
 	<20161121194602.GR28918@...1296...>
-	<C936B414-2E25-45B2-89B9-61805EE6F78F@...277...>
-	<CAFHpkQFMA3ppTm=wCH-MrBox7niCC5+YWNbkvmkK3Y5p7Cu7Og@...278...>
-From: Marvin <volleynbike@...277...>
-Date: Fri, 25 Nov 2016 10:51:59 -0800
-Message-ID: <CAAF3xa81KwiMTYBSK66WoUzrr2SmsUkemx4jnq4A3H6iArFzbQ@...278...>
-Content-Type: multipart/alternative; boundary=94eb2c0b9520f0b9aa0542249d24
+	<CAFHpkQEFma=G_K3Y4FN+=vVSEQgyUySrR9HxBa6JejhimQxiNg@...278...>
+	<CAFHpkQF7GtEXhaHBm-nRmHzcQ-cpsJt=MZM+h_1N4kORHERKeA@...278...>
+	<CAKuzo_iEXGcuf1tt9zQh8dh42C5BX=jNoROXc_=CV-sOsBsW1w@...278...>
+	<CAFHpkQFdVasrVF6Km_AnVwZL7QhGy1AAJAEeyiX7yt_Cq7R2Nw@...278...>
+	<CAKuzo_h3kza0fftPTOc9vqhy=sSgTuOZXL=qzV3e29yhhpY8mA@...278...>
+	<20161125152710.GA81859@...1296...>
+From: Selva Nair <selva.nair@...277...>
+Date: Fri, 25 Nov 2016 14:55:45 -0500
+Message-ID: <CAKuzo_jz9CWZ0oOgDB3niO3sfSXAAYNzF6UZ7d9SFJy8Av+iNQ@...278...>
+Content-Type: multipart/alternative; boundary=001a11408cb639ce78054225835b
 Subject: Re: [Openvpn-devel] launch openvpn-gui at windows startup
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -22,64 +24,86 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Gert Doering <gert@...1296...>, =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---94eb2c0b9520f0b9aa0542249d24
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+--001a11408cb639ce78054225835b
+Content-Type: text/plain; charset=UTF-8
 
-Yes, as long as we can specify any switches from the new installer itself.
-For instance, this is the cli we use for programatically (script)
-installing/updating:
-"...\openvpn-install-2.xxx /S /SELECT_SHORTCUTS=3D0 /SELECT_OPENVPNGUI=3D0"
+On Fri, Nov 25, 2016 at 10:27 AM, Gert Doering <gert@...1296...> wrote:
 
-I imagine there will be more switches required with the 2.4+ installer.
-
-On Fri, Nov 25, 2016 at 5:19 AM, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=
-=BF=D0=B8=D1=86=D0=B8=D0=BD <chipitsine@...277...> wrote:
-
+> Hi,
+>
+> On Fri, Nov 25, 2016 at 09:38:31AM -0500, Selva Nair wrote:
+> > Even if the GUI cjecks HKLM and HKCU, toggling the option will not work
+> as
+> > the GUI cannot reset HKLM values. We do not want to be requiring admin
+> > rights to run the GUI and that option becomes "readonly" for the user if
+> > startup is set in HKLM.
+>
+> How do other packagages handle "this is the system default, but users
+> can change their own setting"?  (So the admin could say "I want this
+> started
+> by default, for all users" and individual users can uncheck this "leave
+> me alone!")
+>
+> Just thinking aloud, no idea how much effort this is, and whether it's
+> a useful consideration in the first place.
 >
 >
-> 2016-11-22 0:56 GMT+05:00 Marvin Adeff <volleynbike@...277...>:
->
->> Hi,
->>
->> Power User Perspective:
->> Please ensure that these [X] selections can be controlled (as in
->> "disabled") if openvpn is installed by command line (quiet mode).
->>
->
-> when installing in silent mode, you can specify any switches, is it ok ?
-> those settings can be controlled.
->
+I have posted a PR (https://github.com/OpenVPN/openvpn-build/pull/55) using
+an active-setup registry entry to do this. It will automatically add the
+required HKCU entry when the user logs-in. As this happens early in the
+login process (before startup registry key is evaluated) the GUI will
+startup even on the first login.
 
---94eb2c0b9520f0b9aa0542249d24
+Should works also for new users, and the user can change override it using
+the option in GUI settings menu. Changes to the nsis file is minor too.
+
+Selva
+
+--001a11408cb639ce78054225835b
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr">Yes, as long as we can specify any switches from the new i=
-nstaller itself.=C2=A0 For instance, this is the cli we use for programatic=
-ally (script) installing/updating:<div>&quot;...\openvpn-install-2.xxx /S /=
-SELECT_SHORTCUTS=3D0 /SELECT_OPENVPNGUI=3D0&quot;</div><div><br></div><div>=
-I imagine there will be more switches required with the 2.4+ installer.<br>=
-<div class=3D"gmail_extra"><br><div class=3D"gmail_quote">On Fri, Nov 25, 2=
-016 at 5:19 AM, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=B8=D1=86=D0=
-=B8=D0=BD <span dir=3D"ltr">&lt;<a href=3D"mailto:chipitsine@...277..." tar=
-get=3D"_blank">chipitsine@...277...</a>&gt;</span> wrote:<br><blockquote cl=
-ass=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid=
- rgb(204,204,204);padding-left:1ex"><div dir=3D"ltr"><br><div class=3D"gmai=
-l_extra"><br><div class=3D"gmail_quote"><span class=3D"gmail-">2016-11-22 0=
-:56 GMT+05:00 Marvin Adeff <span dir=3D"ltr">&lt;<a href=3D"mailto:volleynb=
-ike@...277..." target=3D"_blank">volleynbike@...277...</a>&gt;</span>:<br><=
-blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-l=
-eft:1px solid rgb(204,204,204);padding-left:1ex">Hi,<br>
+<div dir=3D"ltr"><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">=
+On Fri, Nov 25, 2016 at 10:27 AM, Gert Doering <span dir=3D"ltr">&lt;<a hre=
+f=3D"mailto:gert@...1296..." target=3D"_blank">gert@...1296...</a>&gt;</spa=
+n> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px =
+0.8ex;border-left-width:1px;border-left-color:rgb(204,204,204);border-left-=
+style:solid;padding-left:1ex">Hi,<br>
+<span><br>
+On Fri, Nov 25, 2016 at 09:38:31AM -0500, Selva Nair wrote:<br>
+&gt; Even if the GUI cjecks HKLM and HKCU, toggling the option will not wor=
+k as<br>
+&gt; the GUI cannot reset HKLM values. We do not want to be requiring admin=
 <br>
-Power User Perspective:<br>
-Please ensure that these [X] selections can be controlled (as in &quot;disa=
-bled&quot;) if openvpn is installed by command line (quiet mode).<br></bloc=
-kquote><div><br></div></span><div>when installing in silent mode, you can s=
-pecify any switches, is it ok ?<br></div><div>those settings can be control=
-led.</div></div></div></div></blockquote></div></div></div></div>
+&gt; rights to run the GUI and that option becomes &quot;readonly&quot; for=
+ the user if<br>
+&gt; startup is set in HKLM.<br>
+<br>
+</span>How do other packagages handle &quot;this is the system default, but=
+ users<br>
+can change their own setting&quot;?=C2=A0 (So the admin could say &quot;I w=
+ant this started<br>
+by default, for all users&quot; and individual users can uncheck this &quot=
+;leave<br>
+me alone!&quot;)<br>
+<br>
+Just thinking aloud, no idea how much effort this is, and whether it&#39;s<=
+br>
+a useful consideration in the first place.<br>
+<div class=3D"gmail-m_7237335575349074592HOEnZb"><div class=3D"gmail-m_7237=
+335575349074592h5"><br></div></div></blockquote><div><br></div><div>I have =
+posted a PR (<a href=3D"https://github.com/OpenVPN/openvpn-build/pull/55">h=
+ttps://github.com/OpenVPN/openvpn-build/pull/55</a>)=C2=A0using an active-s=
+etup registry entry to do this. It will automatically add the required HKCU=
+ entry when the user logs-in. As this happens early in the login process (b=
+efore startup registry key is evaluated) the GUI will startup even on the f=
+irst login.</div><div><br></div><div>Should works also for new users, and t=
+he user can change override it using the option in GUI settings menu. Chang=
+es to the nsis file is minor too.</div><div><br></div><div>Selva</div></div=
+></div></div>
 
---94eb2c0b9520f0b9aa0542249d24--
+--001a11408cb639ce78054225835b--
 
