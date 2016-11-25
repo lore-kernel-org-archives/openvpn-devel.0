@@ -1,8 +1,10 @@
-From: Selva Nair <selva.nair@...277...>
-Date: Thu, 24 Nov 2016 16:19:23 -0500
-Message-Id: <1480022363-24222-1-git-send-email-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH] Delete the IPv6 route to the "connected"
-	network on tun close
+From: =?UTF-8?B?U3ZpTWlr?= <svimik@...450...>
+MIME-Version: 1.0
+Date: Fri, 25 Nov 2016 05:40:56 +0300
+Message-ID: <1480041656.496074414@...2195...>
+Subject: [Openvpn-devel] =?utf-8?q?=5BPATCH=5D_Fix_using_a_pointer_before_?=
+ =?utf-8?q?checking_against_null?=
+Reply-To: =?UTF-8?B?U3ZpTWlr?= <svimik@...450...>
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,48 +14,47 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: base64
 To: openvpn-devel@lists.sourceforge.net
 
-This was missing on Windows when interactive service is in use.
-
-- Added route_ipv6_clear_host_bits(r6) to delete_route_ipv6: this is
-  required for Windows IP-helper API. Won't hurt other platforms (?)
-
-Signed-off-by: Selva Nair <selva.nair@...277...>
----
- src/openvpn/route.c | 2 ++
- src/openvpn/tun.c   | 3 +++
- 2 files changed, 5 insertions(+)
-
-diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index fec12c1..85f969e 100644
---- a/src/openvpn/route.c
-+++ b/src/openvpn/route.c
-@@ -2124,6 +2124,8 @@ delete_route_ipv6 (const struct route_ipv6 *r6, const struct tuntap *tt, unsigne
- 
-   gc_init (&gc);
- 
-+  route_ipv6_clear_host_bits (r6);
-+
-   network = print_in6_addr( r6->network, 0, &gc);
-   gateway = print_in6_addr( r6->gateway, 0, &gc);
- 
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index 560b1a8..40ce202 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -5663,6 +5663,9 @@ close_tun (struct tuntap *tt)
-         {
-           if (tt->options.msg_channel)
-             {
-+              /* remove route pointing to interface */
-+              delete_route_connected_v6_net(tt, NULL);
-+
-               do_address_service (false, AF_INET6, tt);
- 	      if (tt->options.dns6_len > 0)
- 		  do_dns6_service (false, tt);
--- 
-2.1.4
-
-
+VGhlcmUgd2FzIGEgZmV3IHBsYWNlcyB3aGVyZSBwb2ludGVyIHdhcyB1c2VkIGFuZCB0aGVuIGNo
+ZWNrZWQKYWdhaW5zdCBudWxsLgoKVGhpcyBwYXRjaCBpcyB0cnlpbmcgdG8gZml4IHRoYXQgYnkg
+YWRkaW5nIGFkZGl0aW9uYWwgY2hlY2tzIG9yIG1vdmluZwppdCBpbnRvIHRoZSByaWdodCBwbGFj
+ZS4KClNpZ25lZC1vZmYtYnk6IFN2aWF0b3NsYXYgTWlraGFpbG92IDxzdmltaWtALi4uNDUwLi4u
+PgotLS0KIHNyYy9vcGVudnBuL2J1ZmZlci5jIHwgICAgMiArLQogc3JjL29wZW52cG4vcHMuYyAg
+ICAgfCAgICA0ICsrLS0KIHNyYy9vcGVudnBuL3B1c2guYyAgIHwgICAgMiArLQogMyBmaWxlcyBj
+aGFuZ2VkLCA0IGluc2VydGlvbnMoKyksIDQgZGVsZXRpb25zKC0pCgpkaWZmIC0tZ2l0IGEvc3Jj
+L29wZW52cG4vYnVmZmVyLmMgYi9zcmMvb3BlbnZwbi9idWZmZXIuYwppbmRleCA1MmM2YWI5Li41
+Nzk1NmRkIDEwMDY0NAotLS0gYS9zcmMvb3BlbnZwbi9idWZmZXIuYworKysgYi9zcmMvb3BlbnZw
+bi9idWZmZXIuYwpAQCAtNDM5LDcgKzQzOSw3IEBAIGZvcm1hdF9oZXhfZXggKGNvbnN0IHVpbnQ4
+X3QgKmRhdGEsIGludCBzaXplLCBpbnQgbWF4b3V0cHV0LAogCSAgICAgICBzdHJ1Y3QgZ2NfYXJl
+bmEgKmdjKQogewogICBzdHJ1Y3QgYnVmZmVyIG91dCA9IGFsbG9jX2J1Zl9nYyAobWF4b3V0cHV0
+ID8gbWF4b3V0cHV0IDoKLQkJCQkgICAgKChzaXplICogMikgKyAoc2l6ZSAvIChzcGFjZV9icmVh
+a19mbGFncyAmIEZIRV9TUEFDRV9CUkVBS19NQVNLKSkgKiAoaW50KSBzdHJsZW4gKHNlcGFyYXRv
+cikgKyAyKSwKKwkJCQkgICAgKChzaXplICogMikgKyAoc2l6ZSAvIChzcGFjZV9icmVha19mbGFn
+cyAmIEZIRV9TUEFDRV9CUkVBS19NQVNLKSkgKiAoc2VwYXJhdG9yID8gKGludCkgc3RybGVuIChz
+ZXBhcmF0b3IpIDogMCkgKyAyKSwKIAkJCQkgICAgZ2MpOwogICBpbnQgaTsKICAgZm9yIChpID0g
+MDsgaSA8IHNpemU7ICsraSkKZGlmZiAtLWdpdCBhL3NyYy9vcGVudnBuL3BzLmMgYi9zcmMvb3Bl
+bnZwbi9wcy5jCmluZGV4IDJjYjY4ZjEuLjkzNWJkMGIgMTAwNjQ0Ci0tLSBhL3NyYy9vcGVudnBu
+L3BzLmMKKysrIGIvc3JjL29wZW52cG4vcHMuYwpAQCAtNDk5LDYgKzQ5OSw3IEBAIGNvbnRyb2xf
+bWVzc2FnZV9mcm9tX3BhcmVudCAoY29uc3Qgc29ja2V0X2Rlc2NyaXB0b3JfdCBzZF9jb250cm9s
+LAogICBtZXNnLm1zZ19mbGFncyA9IDA7CiAKICAgaCA9IENNU0dfRklSU1RIRFIoJm1lc2cpOwor
+ICBBU1NFUlQgKGgpOwogICBoLT5jbXNnX2xlbiA9IENNU0dfTEVOKHNpemVvZihzb2NrZXRfZGVz
+Y3JpcHRvcl90KSk7CiAgIGgtPmNtc2dfbGV2ZWwgPSBTT0xfU09DS0VUOwogICBoLT5jbXNnX3R5
+cGUgPSBTQ01fUklHSFRTOwpAQCAtNTA4LDggKzUwOSw3IEBAIGNvbnRyb2xfbWVzc2FnZV9mcm9t
+X3BhcmVudCAoY29uc3Qgc29ja2V0X2Rlc2NyaXB0b3JfdCBzZF9jb250cm9sLAogICBzdGF0dXMg
+PSByZWN2bXNnIChzZF9jb250cm9sLCAmbWVzZywgTVNHX05PU0lHTkFMKTsKICAgaWYgKHN0YXR1
+cyAhPSAtMSkKICAgICB7Ci0gICAgICBpZiAoICAgaCA9PSBOVUxMCi0JICB8fCBoLT5jbXNnX2xl
+biAgICAhPSBDTVNHX0xFTihzaXplb2Yoc29ja2V0X2Rlc2NyaXB0b3JfdCkpCisgICAgICBpZiAo
+IGgtPmNtc2dfbGVuICAgICE9IENNU0dfTEVOKHNpemVvZihzb2NrZXRfZGVzY3JpcHRvcl90KSkK
+IAkgIHx8IGgtPmNtc2dfbGV2ZWwgICE9IFNPTF9TT0NLRVQKIAkgIHx8IGgtPmNtc2dfdHlwZSAg
+ICE9IFNDTV9SSUdIVFMgKQogCXsKZGlmZiAtLWdpdCBhL3NyYy9vcGVudnBuL3B1c2guYyBiL3Ny
+Yy9vcGVudnBuL3B1c2guYwppbmRleCA5OTUzMDc5Li5iMDE2ZDk5IDEwMDY0NAotLS0gYS9zcmMv
+b3BlbnZwbi9wdXNoLmMKKysrIGIvc3JjL29wZW52cG4vcHVzaC5jCkBAIC01NjUsNyArNTY1LDcg
+QEAgcHVzaF9yZW1vdmVfb3B0aW9uIChzdHJ1Y3Qgb3B0aW9ucyAqbywgY29uc3QgY2hhciAqcCkK
+ICAgbXNnIChEX1BVU0hfREVCVUcsICJQVVNIX1JFTU9WRSBzZWFyY2hpbmcgZm9yOiAnJXMnIiwg
+cCk7CiAKICAgLyogaWZjb25maWctaXB2NiBpcyBzcGVjaWFsLCBhcyBub3QgcGFydCBvZiB0aGUg
+cHVzaCBsaXN0ICovCi0gIGlmICggc3RyZXEoIHAsICJpZmNvbmZpZy1pcHY2IiApKQorICBpZiAo
+byAmJiBzdHJlcSggcCwgImlmY29uZmlnLWlwdjYiICkpCiAgICAgewogICAgICAgby0+cHVzaF9p
+ZmNvbmZpZ19pcHY2X2Jsb2NrZWQgPSB0cnVlOwogICAgICAgcmV0dXJuOwotLSAKMS43LjEwLm1z
+eXNnaXQuMQo=
