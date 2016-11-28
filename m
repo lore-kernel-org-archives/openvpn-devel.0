@@ -1,13 +1,9 @@
-MIME-Version: 1.0
-In-Reply-To: <CAKuzo_hDcoTm-teJ3UeKQ+B=RTpStb3KMjQKLc0x7A2-_TUvoA@...278...>
-References: <1480335220-14810-1-git-send-email-steffan.karger@...1435...>
-	<CAKuzo_hDcoTm-teJ3UeKQ+B=RTpStb3KMjQKLc0x7A2-_TUvoA@...278...>
-From: Selva Nair <selva.nair@...277...>
-Date: Mon, 28 Nov 2016 12:22:01 -0500
-Message-ID: <CAKuzo_jNtFE7Fsrtn=iA0EiPsYuzVvrAQsxdEy_quYfeLsg7aQ@...278...>
-Content-Type: multipart/alternative; boundary=001a1149b9a8e9020105425fb6a6
-Subject: Re: [Openvpn-devel] [PATCH] Introduce and use secure_memzero() to
- erase secrets
+Date: Mon, 28 Nov 2016 19:35:40 +0100 (CET)
+Message-Id: <201611281835.uASIZe6w001244@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <1480352107-19652-1-git-send-email-steffan.karger@...1435...>
+References: <1480352107-19652-1-git-send-email-steffan.karger@...1435...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Clean up format_hex_ex()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,53 +12,34 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: Steffan Karger <steffan.karger@...1435...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Cc: openvpn-devel@lists.sourceforge.net
 
---001a1149b9a8e9020105425fb6a6
-Content-Type: text/plain; charset=UTF-8
+ACK, thanks.
 
-Hi,
+Same actual code change as in the master patch, just static_assert() 
+added as backport.
 
-My sloppy cut-n-paste missed this one:
+Your patch has been applied to the release/2.3 branch.
 
-in ssl_verify.c
+commit 384302478f967e4fbb5e4d813eb30a5c15d00a14 (release/2.3)
+Author: Steffan Karger
+Date:   Mon Nov 28 17:55:07 2016 +0100
 
-@@ -1262,7 +1262,7 @@ verify_user_pass(struct user_pass *up, struct
-tls_multi *multi,
-                   "No auth-token will be activated now");
-       if (multi->auth_token)
-  {
--  memset (multi->auth_token, 0, AUTH_TOKEN_SIZE);
-+  memset (multi->auth_token, 0, AUTH_TOKEN_SIZE); <-- SecureZero
-   free (multi->auth_token);
-   multi->auth_token = NULL;
-  }
+     Clean up format_hex_ex()
 
-Selva
+     Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1480352107-19652-1-git-send-email-steffan.karger@...1435...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13269.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
---001a1149b9a8e9020105425fb6a6
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr"><div>Hi,</div><div><br></div><div>My sloppy cut-n-paste mi=
-ssed this one:</div><div><br></div><div>in ssl_verify.c</div><div><br></div=
-><div>@@ -1262,7 +1262,7 @@ verify_user_pass(struct user_pass *up, struct t=
-ls_multi *multi,</div><div>=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
- =C2=A0 =C2=A0 =C2=A0&quot;No auth-token will be activated now&quot;);</div=
-><div>=C2=A0<span class=3D"gmail-Apple-tab-span" style=3D"white-space:pre">=
-	</span> =C2=A0 =C2=A0 =C2=A0if (multi-&gt;auth_token)</div><div>=C2=A0<spa=
-n class=3D"gmail-Apple-tab-span" style=3D"white-space:pre">		</span>{</div>=
-<div>-<span class=3D"gmail-Apple-tab-span" style=3D"white-space:pre">		</sp=
-an> =C2=A0memset (multi-&gt;auth_token, 0, AUTH_TOKEN_SIZE);</div><div>+<sp=
-an class=3D"gmail-Apple-tab-span" style=3D"white-space:pre">		</span> =C2=
-=A0memset (multi-&gt;auth_token, 0, AUTH_TOKEN_SIZE); &lt;-- SecureZero</di=
-v><div>=C2=A0<span class=3D"gmail-Apple-tab-span" style=3D"white-space:pre"=
->		</span> =C2=A0free (multi-&gt;auth_token);</div><div>=C2=A0<span class=
-=3D"gmail-Apple-tab-span" style=3D"white-space:pre">		</span> =C2=A0multi-&=
-gt;auth_token =3D NULL;</div><div>=C2=A0<span class=3D"gmail-Apple-tab-span=
-" style=3D"white-space:pre">		</span>}</div><div><br></div><div>Selva</div>=
-</div>
+--
+kind regards,
 
---001a1149b9a8e9020105425fb6a6--
+Gert Doering
+
 
