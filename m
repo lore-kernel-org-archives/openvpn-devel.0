@@ -1,14 +1,10 @@
-Date: Mon, 28 Nov 2016 17:40:48 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20161128164048.GL28918@...1296...>
-References: <d94eadcd-06ca-0691-0add-147ac00ab063@...515...>
+From: Steffan Karger <steffan.karger@...1435...>
+Date: Mon, 28 Nov 2016 17:55:07 +0100
+Message-ID: <1480352107-19652-1-git-send-email-steffan.karger@...1435...>
+In-Reply-To: <201611281631.uASGVUuK073499@...2054...>
+References: <201611281631.uASGVUuK073499@...2054...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="D80pe+u4shrTMH8N"
-Content-Disposition: inline
-In-Reply-To: <d94eadcd-06ca-0691-0add-147ac00ab063@...515...>
-Subject: Re: [Openvpn-devel] Test installer with installer,
- openvpn-gui and openvpnserv2 improvements
+Subject: [Openvpn-devel] [PATCH 2.3] Clean up format_hex_ex()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,46 +13,73 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Samuli =?iso-8859-1?Q?Sepp=E4nen?= <samuli@...515...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---D80pe+u4shrTMH8N
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Cherry-pick of commit 29404010 from master, slightly reworked to match the
+2.3 codebase (no flags inside space_break here), and pulled in the new
+static_assert() fallback we also have in master now.
 
-Hi,
+Fix a potential null-pointer dereference, and make the code a bit more
+readable while doing so.
 
-On Thu, Nov 24, 2016 at 12:26:33PM +0200, Samuli Sepp=E4nen wrote:
-> <https://build.openvpn.net/downloads/snapshots/openvpn-install-2.4_beta1-=
-I902.exe>
-[..]
-> 2) Installer should fail on Windows XP and earlier
-> - https://github.com/OpenVPN/openvpn-build/pull/52
+The NULL dereference could not be triggered, because the current code
+never called format_hex_ex() with maxouput == 0 and separator == NULL.
+But it's nicer to not depend on that.
 
-Debbie's mail reminded me that I want to test this as well - tested,=20
-nicely prints "this is not supported on your OS" and throws me over
-to the 2.3 installers.  Great!  Thanks to everyone involved.
+Our use of int vs size_t for lengths needs some attention too, but I'm
+not pulling that into this patch.  Instead I decided to just make the
+(previously existing) assumption that INT_MAX <= SIZE_MAX explicit by
+adding a static_assert().
 
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+---
+ src/openvpn/buffer.c | 10 +++++++---
+ src/openvpn/error.h  |  8 ++++++++
+ 2 files changed, 15 insertions(+), 3 deletions(-)
 
---D80pe+u4shrTMH8N
-Content-Type: application/pgp-signature; name="signature.asc"
+diff --git a/src/openvpn/buffer.c b/src/openvpn/buffer.c
+index fb3b52d..edbdd66 100644
+--- a/src/openvpn/buffer.c
++++ b/src/openvpn/buffer.c
+@@ -400,9 +400,13 @@ format_hex_ex (const uint8_t *data, int size, int maxoutput,
+ 	       int space_break, const char* separator,
+ 	       struct gc_arena *gc)
+ {
+-  struct buffer out = alloc_buf_gc (maxoutput ? maxoutput :
+-				    ((size * 2) + (size / space_break) * (int) strlen (separator) + 2),
+-				    gc);
++  const size_t separator_len = separator ? strlen (separator) : 0;
++  static_assert (INT_MAX <= SIZE_MAX, "Code assumes INT_MAX <= SIZE_MAX");
++  const size_t out_len = maxoutput > 0 ? maxoutput :
++	    ((size * 2) + ((size / space_break) * separator_len) + 2);
++
++  struct buffer out = alloc_buf_gc (out_len, gc);
++
+   int i;
+   for (i = 0; i < size; ++i)
+     {
+diff --git a/src/openvpn/error.h b/src/openvpn/error.h
+index 36819e0..4d7fef9 100644
+--- a/src/openvpn/error.h
++++ b/src/openvpn/error.h
+@@ -217,6 +217,14 @@ FILE *msg_fp(const unsigned int flags);
+ void assert_failed (const char *filename, int line, const char *condition)
+   __attribute__((__noreturn__));
+ 
++/* Poor-man's static_assert() for when not supplied by assert.h, taken from
++ * Linux's sys/cdefs.h under GPLv2 */
++#ifndef static_assert
++#define static_assert(expr, diagnostic) \
++    extern int (*__OpenVPN_static_assert_function (void)) \
++      [!!sizeof (struct { int __error_if_negative: (expr) ? 2 : -1; })]
++#endif
++
+ #ifdef ENABLE_DEBUG
+ void crash (void); /* force a segfault (debugging only) */
+ #endif
+-- 
+2.7.4
 
------BEGIN PGP SIGNATURE-----
-
-iQCVAwUBWDxeD6kuBuNlUUl1AQLldgQAwGb7s6XkZ8s3i2KByQiDXeLRsgMxGg2F
-rm3U1Lbztg5MZyJs9/S9W0nnRKsNzsijoo7JRb2+29QQObR+ApD2dJHbwQKpOmfk
-VRP9nC1Fqu2j5BywVINjcc2hSlb5MnkbwfFhSe2hR2dASm7gcHR2xVxiPfA1r58p
-9kNbmjxfdWU=
-=Y+8t
------END PGP SIGNATURE-----
-
---D80pe+u4shrTMH8N--
 
