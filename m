@@ -1,9 +1,9 @@
-Date: Mon, 28 Nov 2016 19:35:40 +0100 (CET)
-Message-Id: <201611281835.uASIZe6w001244@...2054...>
+Date: Mon, 28 Nov 2016 19:57:10 +0100 (CET)
+Message-Id: <201611281857.uASIvAfM001458@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1480352107-19652-1-git-send-email-steffan.karger@...1435...>
-References: <1480352107-19652-1-git-send-email-steffan.karger@...1435...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Clean up format_hex_ex()
+In-Reply-To: <20161128170820.20371-1-list@...1798...>
+References: <20161128170820.20371-1-list@...1798...>
+Subject: [Openvpn-devel] [PATCH applied] Re: update year in copyright message
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,26 +14,25 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Steffan Karger <steffan.karger@...1435...>
+To: Christian Hesse <mail@...1798...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-ACK, thanks.
+ACK, makes sense :-)
 
-Same actual code change as in the master patch, just static_assert() 
-added as backport.
+Your patch has been applied to the master and release/2.3 branch.
 
-Your patch has been applied to the release/2.3 branch.
+commit 7f7d6b2eb0f69f0e8952028488d7aa02619ad76f (master)
+commit 64dc639616df7787964e72759ef8aed875aadbf7 (release/2.3)
 
-commit 384302478f967e4fbb5e4d813eb30a5c15d00a14 (release/2.3)
-Author: Steffan Karger
-Date:   Mon Nov 28 17:55:07 2016 +0100
+Author: Christian Hesse
+Date:   Mon Nov 28 18:08:20 2016 +0100
 
-     Clean up format_hex_ex()
+     update year in copyright message
 
-     Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+     Signed-off-by: Christian Hesse <mail@...1798...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1480352107-19652-1-git-send-email-steffan.karger@...1435...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13269.html
+     Message-Id: <20161128170820.20371-1-list@...1798...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13270.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
