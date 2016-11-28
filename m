@@ -1,9 +1,12 @@
+References: <d94eadcd-06ca-0691-0add-147ac00ab063@...515...>
+	<CAKuzo_iu-Q2CNtd=cjMxSGvVQZ_u_9uVMcOpbDpFrMcOrTFXhA@...278...>
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <946a58c7-fb0b-62f6-b56d-f92cf2f6c023@...515...>
+Date: Mon, 28 Nov 2016 11:43:08 +0200
 MIME-Version: 1.0
-From: Selva Nair <selva.nair@...277...>
-Date: Sun, 27 Nov 2016 17:28:23 -0500
-Message-ID: <CAKuzo_ihmknuQQfJEupQ0b4CvTtoHMb6RqcH3jw0Zh_J2G+KTQ@...278...>
-Content-Type: multipart/alternative; boundary=001a113a3162b795d705424fe000
-Subject: [Openvpn-devel] pkcs11 token prompts in openvpn
+In-Reply-To: <CAKuzo_iu-Q2CNtd=cjMxSGvVQZ_u_9uVMcOpbDpFrMcOrTFXhA@...278...>
+Subject: Re: [Openvpn-devel] Test installer with installer,
+ openvpn-gui and openvpnserv2 improvements
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,111 +15,49 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: quoted-printable
+To: Selva Nair <selva.nair@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---001a113a3162b795d705424fe000
-Content-Type: text/plain; charset=UTF-8
-
-NB: Appearance to the contrary, this is not Windows specific, so please
-read on :)
+Il 25/11/2016 06:40, Selva Nair ha scritto:
+> Hi,
+>
+> On Thu, Nov 24, 2016 at 5:26 AM, Samuli Sepp=C3=A4nen <samuli@...515...
+> <mailto:samuli@...515...>> wrote:
+>
+>     Here's a Windows new test installer for 2.4_beta1:
+>
+>     <https://build.openvpn.net/downloads/snapshots/openvpn-install-2.4_be=
+ta1-I902.exe
+>     <https://build.openvpn.net/downloads/snapshots/openvpn-install-2.4_be=
+ta1-I902.exe>>
+>
+>     The changes compared to standard 2.4_beta1 installers are:
+>
+>     1) Installer works on both 32-bit and 64-bit Windows
+>     - https://github.com/OpenVPN/openvpn-build/pull/44
+>     <https://github.com/OpenVPN/openvpn-build/pull/44>
+>
+>
+> Tested on 32 bit and 64 bit systems and both installs went smoothly.
+> Great job. Reg values under the HKLM\Software\OpenVPN key (exe_path
+> etc.) are not updated -- guess that is expected.
+>
+> Not tested on XP.
 
 Hi,
 
-In response to the GUI patch that adds support for pkcs11 token prompts
-(see Trac 740: https://community.openvpn.net/openvpn/ticket/740), got a
-detailed test report copied below.
+Could somebody test the installer on Windows XP and ensure that=20
+installation fails as expected?
 
-Essentially, all god except if/when the token is physically removed during
-the dialog. That results in repeated prompts for re-inserting the token
-even if the user clicks cancel.
+<https://build.openvpn.net/downloads/snapshots/openvpn-install-2.4_beta1-I9=
+02.exe>
 
-It appears this mis-behaviour is seen in command line usageas well so its
-from openvpn core itself. Any idea how this could be fixed in openvpn or
-pkcs11-helper library if that is the culprit?
+--=20
+Samuli Sepp=C3=A4nen
+Community Manager
+OpenVPN Technologies, Inc
 
-As a short-term work around we could have the GUI stop the openvpn process
-on user pressing cancel in response to token insertion request. I would
-like to avoid that if possible -- now we set --auth-retry to none and
-expect openvpn not to retry private key password. That doesn't appear to
-work in this case.
-
-Selva
-
-Test report by @bjoernv (Trac 740 comment 16)
-
-I tested the latest PR again with a Yubikey 4 and OpenSC drivers. In the
-following situations the new code works right:
-
-   1. Yubikey 4 insert -> start account in OpenVPN GUI -> "Input
-   Password/PIN for Token 'PIV_II (PIV Card holder pin)" dialog -> enter
-   correct PIN -> OK
-   2. Yubikey 4 insert -> start account in OpenVPN GUI -> "Input
-   Password/PIN for Token 'PIV_II (PIV Card holder pin)" dialog -> Cancel ->
-   Stop -> OK
-   3. start account in OpenVPN GUI -> "Please insert PIV_II (PIV Card
-   Holder pin) token" dialog -> Cancel -> Stop -> OK
-
-In the following more exotic situation the program still runs in an endless
-loop:
-
-   1. Yubikey 4 insert -> start account in OpenVPN GUI -> "Input
-   Password/PIN for Token 'PIV_II (PIV Card holder pin)" dialog -> remove
-   Yubikey 4 -> enter correct or incorrect PIN -> "Please insert PIV_II (PIV
-   Card Holder pin) token" dialog -> last dialog loops regardless if the user
-   chooses OK or Cancel. The user still can press "Disconnect" on the log
-   windows, if he is fast enough to close the session.
-
---001a113a3162b795d705424fe000
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><div class=3D"gmail-comment gmail-searchable">
-      <p>NB: Appearance to the contrary, this is not Windows specific, so p=
-lease read on :) <br></p><p>Hi,<br></p><p>In response to the GUI patch that=
- adds support for pkcs11 token prompts (see Trac 740: <a href=3D"https://co=
-mmunity.openvpn.net/openvpn/ticket/740">https://community.openvpn.net/openv=
-pn/ticket/740</a>), got a detailed test report copied below.</p><p>Essentia=
-lly, all god except if/when the token is physically removed during the dial=
-og. That results in repeated prompts for re-inserting the token even if the=
- user clicks cancel.</p><p>It appears this mis-behaviour is seen in command=
- line usageas well so its from openvpn core itself. Any idea how this could=
- be fixed in openvpn or pkcs11-helper library if that is the culprit?</p><p=
->As a short-term work around we could have the GUI stop the openvpn process=
- on user pressing cancel in response to token insertion request. I would li=
-ke to avoid that if possible -- now we set --auth-retry to none and expect =
-openvpn not to retry private key password. That doesn&#39;t appear to work =
-in this case. <br></p><p>Selva</p><p>Test report by @bjoernv (Trac 740 comm=
-ent 16)<br></p><p>
-I tested the latest PR again with a Yubikey 4 and OpenSC drivers. In the fo=
-llowing situations the new code works right:<br>
-</p>
-<ol><li>Yubikey 4 insert -&gt; start account in OpenVPN GUI -&gt; &quot;Inp=
-ut
- Password/PIN for Token &#39;PIV_II (PIV Card holder pin)&quot; dialog -&gt=
-;=20
-enter correct PIN -&gt; OK
-</li><li>Yubikey 4 insert -&gt; start account in OpenVPN GUI -&gt;=20
-&quot;Input Password/PIN for Token &#39;PIV_II (PIV Card holder pin)&quot; =
-dialog=20
--&gt; Cancel -&gt; Stop -&gt; OK
-</li><li>start account in OpenVPN GUI -&gt; &quot;Please insert PIV_II (PIV=
- Card Holder pin) token&quot; dialog -&gt; Cancel -&gt; Stop -&gt; OK
-</li></ol><p>
-In the following more exotic situation the program still runs in an endless=
- loop:<br>
-</p>
-<ol start=3D"4"><li>Yubikey 4 insert -&gt; start account in OpenVPN GUI=20
--&gt; &quot;Input Password/PIN for Token &#39;PIV_II (PIV Card holder pin)&=
-quot;=20
-dialog -&gt; remove Yubikey 4 -&gt; enter correct or incorrect PIN -&gt;
- &quot;Please insert PIV_II (PIV Card Holder pin) token&quot; dialog -&gt; =
-last=20
-dialog loops regardless if the user chooses OK or Cancel. The user still
- can press &quot;Disconnect&quot; on the log windows, if he is fast enough =
-to=20
-close the session.
-</li></ol>
-    </div></div>
-
---001a113a3162b795d705424fe000--
+irc freenode net: mattock
 
