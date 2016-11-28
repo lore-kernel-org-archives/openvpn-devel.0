@@ -1,9 +1,12 @@
-Date: Mon, 28 Nov 2016 20:25:48 +0100 (CET)
-Message-Id: <201611281925.uASJPmOO001736@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <1480360012-9479-1-git-send-email-gert@...1296...>
-References: <1480360012-9479-1-git-send-email-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix windows path in Changes.rst
+References: <1480335220-14810-1-git-send-email-steffan.karger@...1435...>
+	<CAKuzo_hDcoTm-teJ3UeKQ+B=RTpStb3KMjQKLc0x7A2-_TUvoA@...278...>
+From: Steffan Karger <steffan@...1856...>
+Message-ID: <68d50540-ec71-5564-99a7-7bb24ae05d17@...1856...>
+Date: Mon, 28 Nov 2016 23:11:24 +0100
+MIME-Version: 1.0
+In-Reply-To: <CAKuzo_hDcoTm-teJ3UeKQ+B=RTpStb3KMjQKLc0x7A2-_TUvoA@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] Introduce and use secure_memzero() to
+ erase secrets
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,29 +15,114 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
-
-Patch has been applied to the master branch.
-
-commit 6c6456f4384ec76649febba8ada7806905d84bc4
-Author: Gert Doering
-Date:   Mon Nov 28 20:06:52 2016 +0100
-
-     Fix windows path in Changes.rst
-
-     Signed-off-by: Gert Doering <gert@...1296...>
-     Acked-by: Selva Nair <selva.nair@...277...>
-     Message-Id: <1480360012-9479-1-git-send-email-gert@...1296...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13274.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
 
---
-kind regards,
+On 28-11-16 17:39, Selva Nair wrote:
+> 
+> On Mon, Nov 28, 2016 at 7:13 AM, Steffan Karger
+> <steffan.karger@...1435... <mailto:steffan.karger@...1435...>> wrote:
+> 
+>     As described in trac #751, and shortly after reported by Zhaomo Yang, of
+>     the University of California, San Diego, we use memset() (often through
+>     the CLEAR() macro) to erase secrets after use.  In some cases
+>     however, the
+>     compiler might optimize these calls away.
+> 
+>     This patch replaces these memset() calls on secrets by calls to a new
+>     secure_memzero() function, that will not be optimized away.
+> 
+>     Since we use CLEAR() a LOT of times, I'm not changing that to use
+>     secure_memzero() to prevent performance impact.  I did annotate the
+>     macro
+>     to point people at secure_memzero().
+> 
+>     This patch also replaces some CLEAR() or memset() calls with a zero-
+>     initialization using "= { 0 }" if that has the same effect, because that
+>     better captures the intend of that code.
+> 
+>     Signed-off-by: Steffan Karger <steffan.karger@...1435...
+>     <mailto:steffan.karger@...1435...>>
+> 
+> 
+> All look good except that it might have missed some memset calls that
+> could benefit from a  SecureZeroMemory() or equivalent:
+> 
+> With no pretense of completeness, here is a list with some context:
+> calls marked with <-- SecureZero
+> 
+> 
+> --- a/src/openvpn/console_builtin.c
+> +++ b/src/openvpn/console_builtin.c
+> @@ -218,7 +218,7 @@ static bool get_console_input (const char *prompt,
+> const bool echo, char *input,
+>          if (gp)
+>          {
+>              strncpynt (input, gp, capacity);
+> -            memset (gp, 0, strlen (gp));
+> +            memset (gp, 0, strlen (gp)); <-- SecureZero
+>              ret = true;
+>          }
+>      }
+> 
+> --- a/src/openvpn/misc.c
+> +++ b/src/openvpn/misc.c
+> @@ -501,7 +501,7 @@ remove_env_item (const char *str, const bool
+> do_free, struct env_item **list)
+>             *list = current->next;
+>           if (do_free)
+>             {
+> -             memset (current->string, 0, strlen (current->string));
+> +             memset (current->string, 0, strlen (current->string)); <--
+> SecureZero
+>               free (current->string);
+>               free (current);
+>             }
+> 
 
-Gert Doering
+Thanks, these make sense to include too, indeed.
 
+> --- a/src/openvpn/ssl.c
+> +++ b/src/openvpn/ssl.c
+> @@ -1212,7 +1212,7 @@ tls_multi_free (struct tls_multi *multi, bool clear)
+>  
+>    if (multi->auth_token)
+>      {
+> -      memset (multi->auth_token, 0, AUTH_TOKEN_SIZE);
+> +      memset (multi->auth_token, 0, AUTH_TOKEN_SIZE); <-- SecureZero
+>        free (multi->auth_token);
+>      }
+>  
+>  
+> --- a/src/openvpn/ssl_verify.c
+> +++ b/src/openvpn/ssl_verify.c
+> @@ -1176,7 +1176,7 @@ verify_user_pass(struct user_pass *up, struct
+> tls_multi *multi,
+>        if (memcmp_constant_time(multi->auth_token, up->password,
+>                   strlen(multi->auth_token)) != 0)
+>          {
+> -          memset (multi->auth_token, 0, AUTH_TOKEN_SIZE);
+> +          memset (multi->auth_token, 0, AUTH_TOKEN_SIZE); <-- SecureZero
+>            free (multi->auth_token);
+> 
+> 
+> @@ -1262,7 +1262,7 @@ verify_user_pass(struct user_pass *up, struct
+> tls_multi *multi,
+>                    "No auth-token will be activated now");
+>       if (multi->auth_token)
+>  {
+> - memset (multi->auth_token, 0, AUTH_TOKEN_SIZE);
+> + memset (multi->auth_token, 0, AUTH_TOKEN_SIZE); <-- SecureZero
+>   free (multi->auth_token);
+>   multi->auth_token = NULL;
+>  }
+
+This is just silly, these lines are the reason I created trac #741 in
+the first place...
+
+v2 coming soon!
+
+-Steffan
 
