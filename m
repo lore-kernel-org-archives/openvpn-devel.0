@@ -1,9 +1,7 @@
-Date: Mon, 28 Nov 2016 19:57:10 +0100 (CET)
-Message-Id: <201611281857.uASIvAfM001458@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20161128170820.20371-1-list@...1798...>
-References: <20161128170820.20371-1-list@...1798...>
-Subject: [Openvpn-devel] [PATCH applied] Re: update year in copyright message
+Date: Mon, 28 Nov 2016 20:06:52 +0100
+Message-Id: <1480360012-9479-1-git-send-email-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH] Fix windows path in Changes.rst
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,31 +12,35 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Christian Hesse <mail@...1798...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-ACK, makes sense :-)
+Escape backslash characters in windows path names.
 
-Your patch has been applied to the master and release/2.3 branch.
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+ Changes.rst | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-commit 7f7d6b2eb0f69f0e8952028488d7aa02619ad76f (master)
-commit 64dc639616df7787964e72759ef8aed875aadbf7 (release/2.3)
-
-Author: Christian Hesse
-Date:   Mon Nov 28 18:08:20 2016 +0100
-
-     update year in copyright message
-
-     Signed-off-by: Christian Hesse <mail@...1798...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20161128170820.20371-1-list@...1798...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13270.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/Changes.rst b/Changes.rst
+index 6d7bd69..aa80c10 100644
+--- a/Changes.rst
++++ b/Changes.rst
+@@ -71,12 +71,12 @@ New interactive Windows service
+ 
+     The interactive Windows service allows unprivileged users to start
+     OpenVPN connections in the global config directory (usually
+-    C:\Program Files\OpenVPN\config) using OpenVPN GUI without any
++    C:\\Program Files\\OpenVPN\\config) using OpenVPN GUI without any
+     extra configuration.
+ 
+     Users who belong to the built-in Administrator group or to the
+     local "OpenVPN Administrator" group can also store configuration
+-    files under %USERPROFILE%\OpenVPN\config for use with the
++    files under %USERPROFILE%\\OpenVPN\\config for use with the
+     interactive service.
+ 
+ redirect-gateway ipv6
+-- 
+2.7.3
 
 
