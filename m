@@ -1,7 +1,13 @@
-From: Christian Hesse <list@...1798...>
-Date: Mon, 28 Nov 2016 18:08:20 +0100
-Message-Id: <20161128170820.20371-1-list@...1798...>
-Subject: [Openvpn-devel] [PATCH 1/1] update year in copyright message
+MIME-Version: 1.0
+In-Reply-To: <CAKuzo_hDcoTm-teJ3UeKQ+B=RTpStb3KMjQKLc0x7A2-_TUvoA@...278...>
+References: <1480335220-14810-1-git-send-email-steffan.karger@...1435...>
+	<CAKuzo_hDcoTm-teJ3UeKQ+B=RTpStb3KMjQKLc0x7A2-_TUvoA@...278...>
+From: Selva Nair <selva.nair@...277...>
+Date: Mon, 28 Nov 2016 12:22:01 -0500
+Message-ID: <CAKuzo_jNtFE7Fsrtn=iA0EiPsYuzVvrAQsxdEy_quYfeLsg7aQ@...278...>
+Content-Type: multipart/alternative; boundary=001a1149b9a8e9020105425fb6a6
+Subject: Re: [Openvpn-devel] [PATCH] Introduce and use secure_memzero() to
+ erase secrets
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -10,35 +16,53 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Christian Hesse <mail@...1798...>
+To: Steffan Karger <steffan.karger@...1435...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-From: Christian Hesse <mail@...1798...>
+--001a1149b9a8e9020105425fb6a6
+Content-Type: text/plain; charset=UTF-8
 
-This line has not been touched in a long time... Let's update the
-copyright message with recent year.
+Hi,
 
-Signed-off-by: Christian Hesse <mail@...1798...>
----
- src/openvpn/options.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+My sloppy cut-n-paste missed this one:
 
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 7c2b989..63dcc24 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -3685,7 +3685,7 @@ usage_version (void)
-   show_windows_version( M_INFO|M_NOPREFIX );
- #endif
-   msg (M_INFO|M_NOPREFIX, "Originally developed by James Yonan");
--  msg (M_INFO|M_NOPREFIX, "Copyright (C) 2002-2010 OpenVPN Technologies, Inc. <sales@...515...>");
-+  msg (M_INFO|M_NOPREFIX, "Copyright (C) 2002-2016 OpenVPN Technologies, Inc. <sales@...515...>");
- #ifndef ENABLE_SMALL
- #ifdef CONFIGURE_DEFINES
-   msg (M_INFO|M_NOPREFIX, "Compile time defines: %s", CONFIGURE_DEFINES);
--- 
-2.10.2
+in ssl_verify.c
 
+@@ -1262,7 +1262,7 @@ verify_user_pass(struct user_pass *up, struct
+tls_multi *multi,
+                   "No auth-token will be activated now");
+       if (multi->auth_token)
+  {
+-  memset (multi->auth_token, 0, AUTH_TOKEN_SIZE);
++  memset (multi->auth_token, 0, AUTH_TOKEN_SIZE); <-- SecureZero
+   free (multi->auth_token);
+   multi->auth_token = NULL;
+  }
+
+Selva
+
+--001a1149b9a8e9020105425fb6a6
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div>Hi,</div><div><br></div><div>My sloppy cut-n-paste mi=
+ssed this one:</div><div><br></div><div>in ssl_verify.c</div><div><br></div=
+><div>@@ -1262,7 +1262,7 @@ verify_user_pass(struct user_pass *up, struct t=
+ls_multi *multi,</div><div>=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
+ =C2=A0 =C2=A0 =C2=A0&quot;No auth-token will be activated now&quot;);</div=
+><div>=C2=A0<span class=3D"gmail-Apple-tab-span" style=3D"white-space:pre">=
+	</span> =C2=A0 =C2=A0 =C2=A0if (multi-&gt;auth_token)</div><div>=C2=A0<spa=
+n class=3D"gmail-Apple-tab-span" style=3D"white-space:pre">		</span>{</div>=
+<div>-<span class=3D"gmail-Apple-tab-span" style=3D"white-space:pre">		</sp=
+an> =C2=A0memset (multi-&gt;auth_token, 0, AUTH_TOKEN_SIZE);</div><div>+<sp=
+an class=3D"gmail-Apple-tab-span" style=3D"white-space:pre">		</span> =C2=
+=A0memset (multi-&gt;auth_token, 0, AUTH_TOKEN_SIZE); &lt;-- SecureZero</di=
+v><div>=C2=A0<span class=3D"gmail-Apple-tab-span" style=3D"white-space:pre"=
+>		</span> =C2=A0free (multi-&gt;auth_token);</div><div>=C2=A0<span class=
+=3D"gmail-Apple-tab-span" style=3D"white-space:pre">		</span> =C2=A0multi-&=
+gt;auth_token =3D NULL;</div><div>=C2=A0<span class=3D"gmail-Apple-tab-span=
+" style=3D"white-space:pre">		</span>}</div><div><br></div><div>Selva</div>=
+</div>
+
+--001a1149b9a8e9020105425fb6a6--
 
