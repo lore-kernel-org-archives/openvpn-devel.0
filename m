@@ -1,18 +1,16 @@
-References: <68d50540-ec71-5564-99a7-7bb24ae05d17@...1856...>
-	<1480371252-3880-1-git-send-email-steffan@...1856...>
-	<CA+0EDdBLaPxX3u07yfg=S-xnVEnFRP7oD=2BnpONtjw7EEkPeQ@...278...>
-	<331bcfe6-0373-1542-cdfc-50f360b7ceaa@...1435...>
-	<2ebb29c2-6cbf-e770-2f31-5e08fa2f0e9f@...1227...>
-	<20161129101812.GE1013@...1296...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <769188a1-74c7-a6f9-443c-6bfd8103921c@...1227...>
-Date: Tue, 29 Nov 2016 11:28:57 +0100
+Date: Tue, 29 Nov 2016 12:05:59 +0100
+From: Christian Hesse <list@...1798...>
+Message-ID: <20161129120559.5be3e4ad@...1799...>
+In-Reply-To: <f3062a2e-f7a1-c5b4-8c35-00b807b4a234@...2080...>
+References: <20161128161625.11972-1-list@...1798...>
+	<20161128161625.11972-2-list@...1798...>
+	<f3062a2e-f7a1-c5b4-8c35-00b807b4a234@...2080...>
 MIME-Version: 1.0
-In-Reply-To: <20161129101812.GE1013@...1296...>
-Content-Type: multipart/alternative;
-	boundary="------------D8F8A83E56D1B0D4B3CF5F7F"
-Subject: Re: [Openvpn-devel] [PATCH v2] Introduce and use secure_memzero()
- to erase secrets
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	boundary="Sig_/+H4x=9KG5tGScHJfQbotF75";
+	protocol="application/pgp-signature"
+Subject: Re: [Openvpn-devel] [PATCH 2/2] allow to enable plugin lookup with
+ configure argument
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,220 +19,89 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: David Sommerseth <openvpn@...2080...>
+Cc: Christian Hesse <mail@...1798...>, openvpn-devel@lists.sourceforge.net
 
-This is a multi-part message in MIME format.
---------------D8F8A83E56D1B0D4B3CF5F7F
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-
-
-
-Am 29.11.16 um 11:18 schrieb Gert Doering:
-> Hi,
->
-> On Tue, Nov 29, 2016 at 11:07:12AM +0100, Arne Schwabe wrote:
->> I think we should prefer memset_s if available since it is a C11 standard.
-> Since we're currently compiling against C99, we can't rely on it being
-> there (in my OS Zoo, only MacOS seems to have it, at least "have a manpage
-> for it" - not even FreeBSD 11 or "gentoo current") - but then, configure 
-> could check that for us...
-I wouldn't add a configure test for that. According to
-http://en.cppreference.com/w/c/string/byte/memset:
-
-As all bounds-checked functions, |memset_s| is only guaranteed to be
-available if __STDC_LIB_EXT1__ is defined by the implementation and if
-the user defines __STDC_WANT_LIB_EXT1__ to the integer constant 1 before
-including |string.h|.
-
-so preprocessor magic can check that.
->
-> Shall we merge the current patch anyway, as the memory barrier does the
-> job on all current compilers, and add a memset_s() variant "whenever 
-> one of us finds time to add and test this"?
->
-Yes. Go ahead. I might
-
---------------D8F8A83E56D1B0D4B3CF5F7F
-Content-Type: text/html; charset="windows-1252"
+--Sig_/+H4x=9KG5tGScHJfQbotF75
+Content-Type: text/plain; charset="US-ASCII"
 Content-Transfer-Encoding: quoted-printable
 
-<html>
-  <head>
-    <meta content=3D"text/html; charset=3Dwindows-1252"
-      http-equiv=3D"Content-Type">
-  </head>
-  <body bgcolor=3D"#FFFFFF" text=3D"#000000">
-    <p><br>
-    </p>
-    <br>
-    <div class=3D"moz-cite-prefix">Am 29.11.16 um 11:18 schrieb Gert
-      Doering:<br>
-    </div>
-    <blockquote cite=3D"mid:20161129101812.GE1013@...1296..."
-      type=3D"cite">
-      <pre wrap=3D"">Hi,
+David Sommerseth <openvpn@...2080...> on Tue, 2016/11/29 00:47:
+> On 28/11/16 17:16, Christian Hesse wrote:
+> > From: Christian Hesse <mail@...1798...>
+> >=20
+> > For plugin lookup (give relative path to plugin directory in
+> > configuration) we had to configure with something like this:
+> >=20
+> > CFLAGS=3D"$CFLAGS
+> > -DPLUGIN_LIBDIR=3D\\\"/usr/lib/openvpn/plugins\\\"" ./configure
+> >=20
+> > This allows to pass --enable-plugin-lookup to configure to achieve the
+> > same. As a bonus we can be sure that install path and lookup path in
+> > openvpn binary are the same.=20=20
+>=20
+>=20
+> Thank you for your patch.  Unfortunately I'm not convinced this is the
+> proper way to do it.
+>=20
+> First of all, to achieve what I believe is your goal, you need to flip
+> things around:
+>=20
+>   ./configure CFLAGS=3D"$CFLAGS
+> -DPLUGIN_LIBDIR=3D\\\"/usr/lib/openvpn/plugins\\\""
+>=20
+> This will ensure that whenever 'make' decides to re-run ./configure
+> automatically it will keep all variables provided to the command line.
 
-On Tue, Nov 29, 2016 at 11:07:12AM +0100, Arne Schwabe wrote:
-</pre>
-      <blockquote type=3D"cite">
-        <pre wrap=3D"">I think we should prefer memset_s if available since=
- it is a C11 standard.
-</pre>
-      </blockquote>
-      <pre wrap=3D"">
-Since we're currently compiling against C99, we can't rely on it being
-there (in my OS Zoo, only MacOS seems to have it, at least "have a manpage
-for it" - not even FreeBSD 11 or "gentoo current") - but then, configure=20
-could check that for us...</pre>
-    </blockquote>
-    I wouldn't add a configure test for that. According to
-    <a class=3D"moz-txt-link-freetext" href=3D"http://en.cppreference.com/w=
-/c/string/byte/memset">http://en.cppreference.com/w/c/string/byte/memset</a=
->:<br>
-    <br>
-    <meta charset=3D"utf-8">
-    <span style=3D"color: rgb(0, 0, 0); font-family: DejaVuSans,
-      &quot;DejaVu Sans&quot;, arial, sans-serif; font-size: 12.8px;
-      font-style: normal; font-variant-ligatures: normal;
-      font-variant-caps: normal; font-weight: normal; letter-spacing:
-      normal; orphans: 2; text-align: start; text-indent: 0px;
-      text-transform: none; white-space: normal; widows: 2;
-      word-spacing: 0px; -webkit-text-stroke-width: 0px;
-      background-color: rgb(255, 255, 255); text-decoration-style:
-      initial; text-decoration-color: initial; display: inline
-      !important; float: none;">As all bounds-checked functions,<span
-        class=3D"Apple-converted-space">=A0</span></span><code
-      style=3D"font-family: DejaVuSansMono, &quot;DejaVu Sans Mono&quot;,
-      courier, monospace !important; background-color: rgb(255, 255,
-      255); color: rgb(0, 0, 0); font-size: 12.8px; font-style: normal;
-      font-variant-ligatures: normal; font-variant-caps: normal;
-      font-weight: normal; letter-spacing: normal; orphans: 2;
-      text-align: start; text-indent: 0px; text-transform: none;
-      white-space: normal; widows: 2; word-spacing: 0px;
-      -webkit-text-stroke-width: 0px; text-decoration-style: initial;
-      text-decoration-color: initial;">memset_s</code><span
-      style=3D"color: rgb(0, 0, 0); font-family: DejaVuSans, &quot;DejaVu
-      Sans&quot;, arial, sans-serif; font-size: 12.8px; font-style:
-      normal; font-variant-ligatures: normal; font-variant-caps: normal;
-      font-weight: normal; letter-spacing: normal; orphans: 2;
-      text-align: start; text-indent: 0px; text-transform: none;
-      white-space: normal; widows: 2; word-spacing: 0px;
-      -webkit-text-stroke-width: 0px; background-color: rgb(255, 255,
-      255); text-decoration-style: initial; text-decoration-color:
-      initial; display: inline !important; float: none;"><span
-        class=3D"Apple-converted-space">=A0</span>is only guaranteed to be
-      available if<span class=3D"Apple-converted-space">=A0</span></span><s=
-pan
-      class=3D"t-c" style=3D"background-color: rgba(0, 0, 0, 0.027451);
-      border: 1px solid rgb(214, 214, 214); border-radius: 3px; margin:
-      0px 2px; padding: 0px 2px; display: inline-block; color: rgb(0, 0,
-      0); font-family: DejaVuSans, &quot;DejaVu Sans&quot;, arial,
-      sans-serif; font-size: 12.8px; font-style: normal;
-      font-variant-ligatures: normal; font-variant-caps: normal;
-      font-weight: normal; letter-spacing: normal; orphans: 2;
-      text-align: start; text-indent: 0px; text-transform: none;
-      white-space: normal; widows: 2; word-spacing: 0px;
-      -webkit-text-stroke-width: 0px; text-decoration-style: initial;
-      text-decoration-color: initial;"><span class=3D"mw-geshi c source-c"
-        style=3D"font-family: monospace; line-height: normal; white-space:
-        nowrap;">__STDC_LIB_EXT1__</span></span><span style=3D"color:
-      rgb(0, 0, 0); font-family: DejaVuSans, &quot;DejaVu Sans&quot;,
-      arial, sans-serif; font-size: 12.8px; font-style: normal;
-      font-variant-ligatures: normal; font-variant-caps: normal;
-      font-weight: normal; letter-spacing: normal; orphans: 2;
-      text-align: start; text-indent: 0px; text-transform: none;
-      white-space: normal; widows: 2; word-spacing: 0px;
-      -webkit-text-stroke-width: 0px; background-color: rgb(255, 255,
-      255); text-decoration-style: initial; text-decoration-color:
-      initial; display: inline !important; float: none;"><span
-        class=3D"Apple-converted-space">=A0</span>is defined by the
-      implementation and if the user defines<span
-        class=3D"Apple-converted-space">=A0</span></span><span class=3D"t-c"
-      style=3D"background-color: rgba(0, 0, 0, 0.027451); border: 1px
-      solid rgb(214, 214, 214); border-radius: 3px; margin: 0px 2px;
-      padding: 0px 2px; display: inline-block; color: rgb(0, 0, 0);
-      font-family: DejaVuSans, &quot;DejaVu Sans&quot;, arial,
-      sans-serif; font-size: 12.8px; font-style: normal;
-      font-variant-ligatures: normal; font-variant-caps: normal;
-      font-weight: normal; letter-spacing: normal; orphans: 2;
-      text-align: start; text-indent: 0px; text-transform: none;
-      white-space: normal; widows: 2; word-spacing: 0px;
-      -webkit-text-stroke-width: 0px; text-decoration-style: initial;
-      text-decoration-color: initial;"><span class=3D"mw-geshi c source-c"
-        style=3D"font-family: monospace; line-height: normal; white-space:
-        nowrap;">__STDC_WANT_LIB_EXT1__</span></span><span style=3D"color:
-      rgb(0, 0, 0); font-family: DejaVuSans, &quot;DejaVu Sans&quot;,
-      arial, sans-serif; font-size: 12.8px; font-style: normal;
-      font-variant-ligatures: normal; font-variant-caps: normal;
-      font-weight: normal; letter-spacing: normal; orphans: 2;
-      text-align: start; text-indent: 0px; text-transform: none;
-      white-space: normal; widows: 2; word-spacing: 0px;
-      -webkit-text-stroke-width: 0px; background-color: rgb(255, 255,
-      255); text-decoration-style: initial; text-decoration-color:
-      initial; display: inline !important; float: none;"><span
-        class=3D"Apple-converted-space">=A0</span>to the integer constant<s=
-pan
-        class=3D"Apple-converted-space">=A0</span></span><span class=3D"t-c"
-      style=3D"background-color: rgba(0, 0, 0, 0.027451); border: 1px
-      solid rgb(214, 214, 214); border-radius: 3px; margin: 0px 2px;
-      padding: 0px 2px; display: inline-block; color: rgb(0, 0, 0);
-      font-family: DejaVuSans, &quot;DejaVu Sans&quot;, arial,
-      sans-serif; font-size: 12.8px; font-style: normal;
-      font-variant-ligatures: normal; font-variant-caps: normal;
-      font-weight: normal; letter-spacing: normal; orphans: 2;
-      text-align: start; text-indent: 0px; text-transform: none;
-      white-space: normal; widows: 2; word-spacing: 0px;
-      -webkit-text-stroke-width: 0px; text-decoration-style: initial;
-      text-decoration-color: initial;"><span class=3D"mw-geshi c source-c"
-        style=3D"font-family: monospace; line-height: normal; white-space:
-        nowrap;"><span class=3D"nu0" style=3D"color: rgb(0, 0, 128);">1</sp=
-an></span></span><span
-      style=3D"color: rgb(0, 0, 0); font-family: DejaVuSans, &quot;DejaVu
-      Sans&quot;, arial, sans-serif; font-size: 12.8px; font-style:
-      normal; font-variant-ligatures: normal; font-variant-caps: normal;
-      font-weight: normal; letter-spacing: normal; orphans: 2;
-      text-align: start; text-indent: 0px; text-transform: none;
-      white-space: normal; widows: 2; word-spacing: 0px;
-      -webkit-text-stroke-width: 0px; background-color: rgb(255, 255,
-      255); text-decoration-style: initial; text-decoration-color:
-      initial; display: inline !important; float: none;"><span
-        class=3D"Apple-converted-space">=A0</span>before including<span
-        class=3D"Apple-converted-space">=A0</span></span><code
-      style=3D"font-family: DejaVuSansMono, &quot;DejaVu Sans Mono&quot;,
-      courier, monospace !important; background-color: rgb(255, 255,
-      255); color: rgb(0, 0, 0); font-size: 12.8px; font-style: normal;
-      font-variant-ligatures: normal; font-variant-caps: normal;
-      font-weight: normal; letter-spacing: normal; orphans: 2;
-      text-align: start; text-indent: 0px; text-transform: none;
-      white-space: normal; widows: 2; word-spacing: 0px;
-      -webkit-text-stroke-width: 0px; text-decoration-style: initial;
-      text-decoration-color: initial;">string.h</code><span
-      style=3D"color: rgb(0, 0, 0); font-family: DejaVuSans, &quot;DejaVu
-      Sans&quot;, arial, sans-serif; font-size: 12.8px; font-style:
-      normal; font-variant-ligatures: normal; font-variant-caps: normal;
-      font-weight: normal; letter-spacing: normal; orphans: 2;
-      text-align: start; text-indent: 0px; text-transform: none;
-      white-space: normal; widows: 2; word-spacing: 0px;
-      -webkit-text-stroke-width: 0px; background-color: rgb(255, 255,
-      255); text-decoration-style: initial; text-decoration-color:
-      initial; display: inline !important; float: none;">.</span><br>
-    <br>
-    so preprocessor magic can check that.<br>
-    <blockquote cite=3D"mid:20161129101812.GE1013@...1296..."
-      type=3D"cite">
-      <pre wrap=3D"">
+Ah, right...
+I used this to build a binary package, so configure is run only once and it
+works for this case. :D
 
-Shall we merge the current patch anyway, as the memory barrier does the
-job on all current compilers, and add a memset_s() variant "whenever=20
-one of us finds time to add and test this"?
+> Secondly, I believe the proper way to configure PLUGIN_LIBDIR without
+> going via CFLAGS is to use a similar approach to what is used by
+> IFCONFIG, ROUTE, IPROUTE and NETSTAT.  They are configured via AC_ARG_VAR.
+>=20
+> I'd recommend just adding these two lines to configure.ac instead:
+>=20
+> AC_ARG_VAR([PLUGINDIR], [Path of default plug-in search directory])
+> AC_DEFINE_UNQUOTED([PLUGIN_LIBDIR], ["$PLUGINDIR"])
+>=20
+> (these lines are not tested, but that should give some pointer towards a
+> better direction.
+>=20
+> With these lines in place, it is expected that you can do:
+>=20
+>   ./configure PLUGINDIR=3D/usr/lib/openvpn/plugins
+>=20
+> Which should result in defining PLUGIN_LIBDIR in config.h.
 
-</pre>
-    </blockquote>
-    Yes. Go ahead. I might <br>
-  </body>
-</html>
+I decided to go another way... Wanted to make the plugin search work out of
+the box. Or do we want to keep that optional?
 
---------------D8F8A83E56D1B0D4B3CF5F7F--
+(AC_DEFINE_UNQUOTED() fails if PLUGINDIR is not defined and you try
+${libdir}/openvpn/plugins instead. That evaluates to
+"${exec_prefix}/lib/openvpn/plugins" and breaks the path in config.h.)
+--=20
+main(a){char*c=3D/*    Schoene Gruesse                         */"B?IJj;MEH"
+"CX:;",b;for(a/*    Best regards             my address:    */=3D0;b=3Dc[a+=
++];)
+putchar(b-1/(/*    Chris            cc -ox -xc - && ./x    */b/42*2-3)*42);}
+
+--Sig_/+H4x=9KG5tGScHJfQbotF75
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEXHmveYAHrRp+prOviUUh18yA9HYFAlg9YRcACgkQiUUh18yA
+9HalkAgA6zffETTXfJUrV8cMxa+qxMGi5lfKvTmfBEe1YsVyXWPBWpjhhTPaSyY7
+ZreoTudn4n+DA50ezartvEv7PdeRQ1jllIA62U+QxQRo7u+wEi522EvT2+2SgVvg
+sTblGr/oxGwR1AGjfhrz05O0fOED1n7wu3gPaOXGqZ8bf9TtPHFtUy7WhGBvDpYC
+ztS4GNRSlGid7ydfcOWwMxZFMX2ufutF73kUia0kUjSF9UsDQ1eH1zzgEGrzJ7CB
+UESrb9yUJ+27GxEgnqYg2guR/wOM2PBychdDYSYAAZYCQLWlvRc3Nx6OsrvIPPwj
+rHihcDz0O6q+VR1aBfVVphITyM4vow==
+=6ufY
+-----END PGP SIGNATURE-----
+
+--Sig_/+H4x=9KG5tGScHJfQbotF75--
 
