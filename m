@@ -1,10 +1,13 @@
-Date: Tue, 29 Nov 2016 09:04:30 +0100 (CET)
-Message-Id: <201611290804.uAT84UDN009666@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <1480386424-30876-1-git-send-email-selva.nair@...277...>
-References: <1480386424-30876-1-git-send-email-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Map restart signals from event
-	loop to SIGTERM during exit-notification wait
+References: <68d50540-ec71-5564-99a7-7bb24ae05d17@...1856...>
+	<1480371252-3880-1-git-send-email-steffan@...1856...>
+	<CA+0EDdBLaPxX3u07yfg=S-xnVEnFRP7oD=2BnpONtjw7EEkPeQ@...278...>
+From: Steffan Karger <steffan.karger@...1435...>
+Message-ID: <331bcfe6-0373-1542-cdfc-50f360b7ceaa@...1435...>
+Date: Tue, 29 Nov 2016 09:20:25 +0100
+MIME-Version: 1.0
+In-Reply-To: <CA+0EDdBLaPxX3u07yfg=S-xnVEnFRP7oD=2BnpONtjw7EEkPeQ@...278...>
+Subject: Re: [Openvpn-devel] [PATCH v2] Introduce and use secure_memzero()
+ to erase secrets
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,63 +16,31 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Selva Nair <selva.nair@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
-ACK, thanks a lot.
+Hi,
 
-I could reproduce the effect as well -- set "--explicit-exit-notify 5",
-try to connect to a non-responsive server (unused IP address, ...), and 
-~2 seconds before the 60 second timeout, press ctrl-c.  Flooding of
-SIGUSR1 messages, no way to stop it (except "kill -9"), quite an annoyance.
+On 29-11-16 00:00, Zhaomo Yang wrote:
+> Just wanted to let you know that we have a new implementation of
+> secure_memzero.h, which is available at 
+> https://compsec.sysnet.ucsd.edu/secure_memzero.h
+> <https://compsec.sysnet.ucsd.edu/secure_memzero.h>.
+> 
+> The version I sent to you guys has a minor issue in dealing with
+> memset_s. Also, this implementation synthesizes most of the existing
+> working solutions for this problem.  It allows you to specify, via
+> macros, which implementation you prefer. This will let users override
+> our defaults, if they want.
 
-With your patch, this changes to
+Thanks, but I think I prefer the more light-weight approach you sent
+earlier (slightly molded to use static inline wrapper functions instead
+of macro's).  It does what it needs to do for us, and is sufficiently
+small to easily integrate into existing code.
 
-  Tue Nov 29 08:55:19 2016 UDPv4 link remote: [AF_INET]199.102.77.82:51189
-  ^C
-  Tue Nov 29 08:56:17 2016 event_wait : Interrupted system call (code=4)
-  Tue Nov 29 08:56:17 2016 SIGTERM received, sending exit notification to peer
-  Tue Nov 29 08:56:19 2016 TLS Error: TLS key negotiation failed to occur within 60 seconds (check your network connectivity)
-  Tue Nov 29 08:56:19 2016 TLS Error: TLS handshake failed
-  Tue Nov 29 08:56:19 2016 Converting soft SIGUSR1 received during exit notification to SIGTERM
-  Tue Nov 29 08:56:19 2016 SIGTERM[soft,exit-with-notification] received, process exiting
+And thanks again for notifying us (on security@) on your findings.
 
-.. which fixes the issue for good.
-
-"Real signals" are still ignored (kill -USR1 from another window):
-
-Tue Nov 29 08:58:19 2016 event_wait : Interrupted system call (code=4)
-Tue Nov 29 08:58:19 2016 Ignoring SIGUSR1 received during exit notification
-
-(or pressing ctrl-c a second time while it's waiting for the exit notification
-to proceed)
-
-
-(Also, the explanation and the code change make sense :-) )
-
-
-I've added a blank to the comment line ("true.If" -> "true. If").
-
-Your patch has been applied to the master branch.
-
-commit f25a0217e35f53c3110ebb226e1d1f3528152cb5
-Author: Selva Nair
-Date:   Mon Nov 28 21:27:04 2016 -0500
-
-     Map restart signals from event loop to SIGTERM during exit-notification wait
-
-     Signed-off-by: Selva Nair <selva.nair@...277...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1480386424-30876-1-git-send-email-selva.nair@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13284.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+-Steffan
 
 
