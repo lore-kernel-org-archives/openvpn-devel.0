@@ -1,13 +1,10 @@
+References: <20161129063843.14526-1-a@...2181...>
+From: Steffan Karger <steffan.karger@...1435...>
+Message-ID: <aca99453-61e3-05aa-f683-cf385a7e90f6@...1435...>
+Date: Tue, 29 Nov 2016 17:43:33 +0100
 MIME-Version: 1.0
-In-Reply-To: <1480371252-3880-1-git-send-email-steffan@...1856...>
-References: <68d50540-ec71-5564-99a7-7bb24ae05d17@...1856...>
-	<1480371252-3880-1-git-send-email-steffan@...1856...>
-From: Selva Nair <selva.nair@...277...>
-Date: Tue, 29 Nov 2016 10:29:41 -0500
-Message-ID: <CAKuzo_jgdKPey99BH30z0vBqBH1e8h9sQULdETArv3rSZQ2obw@...278...>
-Content-Type: multipart/alternative; boundary=94eb2c12542210557a05427243e0
-Subject: Re: [Openvpn-devel] [PATCH v2] Introduce and use secure_memzero()
- to erase secrets
+In-Reply-To: <20161129063843.14526-1-a@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH] reload CRL only if file was modified
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,118 +13,144 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan@...1856...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-
---94eb2c12542210557a05427243e0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
+To: Antonio Quartulli <a@...2181...>, openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-On Mon, Nov 28, 2016 at 5:14 PM, Steffan Karger <steffan@...1856...> wrote:
+Thanks for following up.  I did some stare-at-code and trivial tests.
+Will test more thoroughly tonight (hopefully on Windows too), but have a
+lot of faith that those will succeed.  I have some comments from staring
+at the code though, see below.
 
-> As described in trac #751, and shortly after reported by Zhaomo Yang, of
-> the University of California, San Diego, we use memset() (often through
-> the CLEAR() macro) to erase secrets after use.  In some cases however, the
-> compiler might optimize these calls away.
->
-> This patch replaces these memset() calls on secrets by calls to a new
-> secure_memzero() function, that will not be optimized away.
->
-> Since we use CLEAR() a LOT of times, I'm not changing that to use
-> secure_memzero() to prevent performance impact.  I did annotate the macro
-> to point people at secure_memzero().
->
-> This patch also replaces some CLEAR() or memset() calls with a zero-
-> initialization using "= { 0 }" if that has the same effect, because that
-> better captures the intend of that code.
->
-> Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+On 29-11-16 07:38, Antonio Quartulli wrote:
+> In order to prevent annoying delays upon client connection,
+> reload the CRL file only if it was modified since the last
+> reload operation.
+> If not, keep on using the already stored CRL.
+>=20
+> This change will boost client connection time in instances
+> where the CRL file is quite large (dropping from several
+> seconds to few milliseconds).
+>=20
+> Cc: Steffan Karger <steffan.karger@...1435...>
+> Signed-off-by: Antonio Quartulli <a@...2181...>
 > ---
-> v2: replace more memset()/CLEAR() calls with secure_memzero()
->
->  src/openvpn/basic.h              |  2 +-
->  src/openvpn/buffer.c             |  8 ++++----
->  src/openvpn/buffer.h             | 43 ++++++++++++++++++++++++++++++
-> ++++++++++
->  src/openvpn/console_builtin.c    |  2 +-
->  src/openvpn/crypto.c             | 17 ++++++----------
->  src/openvpn/manage.c             |  2 +-
->  src/openvpn/misc.c               |  4 ++--
->  src/openvpn/options.c            |  6 +++---
->  src/openvpn/ssl.c                | 32 +++++++++++++++---------------
->  src/openvpn/ssl_verify.c         |  4 ++--
->  src/openvpn/ssl_verify_mbedtls.c |  4 +---
->  11 files changed, 80 insertions(+), 44 deletions(-)
+>=20
+> Tested on linux by using my VM.
+> No test was performed on Windows* (compiled-only).
+>=20
+> Note: the check "!(session->opt->ssl_flags & SSLF_CRL_VERIFY_DIR))" may n=
+ot
+> always work as expected. The user may forge a wrong, but still compliant,
+> configuration that would fool this test. This issue exists even before ap=
+plying
+> this patch.
+>=20
+> Cheers,
+>=20
+>  src/openvpn/ssl.c         | 40 +++++++++++++++++++++++++++++++++++++---
+>  src/openvpn/ssl_backend.h |  2 +-
+>  src/openvpn/ssl_mbedtls.c |  2 +-
+>  src/openvpn/ssl_mbedtls.h |  1 +
+>  src/openvpn/ssl_openssl.c |  2 +-
+>  src/openvpn/ssl_openssl.h |  1 +
+>  6 files changed, 42 insertions(+), 6 deletions(-)
+>=20
+> diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+> index 7347a78..235f7df 100644
+> --- a/src/openvpn/ssl.c
+> +++ b/src/openvpn/ssl.c
+> @@ -612,7 +612,8 @@ init_ssl (const struct options *options, struct tls_r=
+oot_ctx *new_ctx)
+>    /* Read CRL */
+>    if (options->crl_file && !(options->ssl_flags & SSLF_CRL_VERIFY_DIR))
+>      {
+> -      tls_ctx_reload_crl(new_ctx, options->crl_file, options->crl_file_i=
+nline);
+> +      tls_ctx_reload_crl(new_ctx, options->crl_file, options->crl_file_i=
+nline,
+> +			 false);
+>      }
+>=20=20
+>    /* Once keys and cert are loaded, load ECDH parameters */
+> @@ -2450,6 +2451,36 @@ auth_deferred_expire_window (const struct tls_opti=
+ons *o)
+>    return ret;
+>  }
+>=20=20
+> +void
+> +tls_ctx_reload_crl(struct tls_root_ctx *ssl_ctx, const char *crl_file,
+> +		   const char *crl_file_inline, bool reload)
 
+This is only used within ssl.c, so should be static and have a function
+declaration, preferably doxygen-documented, at the beginning of ssl.c.
 
-Took a second look at v2: sizes of data structs/buffers correctly passed to
-secure_memset and no new warnings with gcc -Wall :)
+> +{
+> +  /* if something goes wrong with stat(), we'll store 0 as mtime */
+> +  platform_stat_t crl_stat =3D {0};
+> +
+> +  /*
+> +   * an inline CRL can't change at runtime, therefore there is no need to
+> +   * reload it. It will be reloaded upon config change + SIGHUP.
+> +   */
+> +  if (crl_file_inline && reload)
+> +    return;
+> +
+> +  if (!crl_file_inline)
+> +    platform_stat(crl_file, &crl_stat);
+> +
+> +  /*
+> +   * If this is not a reload, update the CRL right away.
+> +   * Otherwise, update only if the CRL file was modified after the last =
+reload.
+> +   * Note: Windows does not support tv_nsec.
+> +   */
+> +  if (reload &&
+> +      (ssl_ctx->crl_last_mtime.tv_sec >=3D crl_stat.st_mtime))
+> +    return;
+> +
+> +  ssl_ctx->crl_last_mtime.tv_sec =3D crl_stat.st_mtime;
+> +  backend_tls_ctx_reload_crl(ssl_ctx, crl_file, crl_file_inline);
+> +}
 
-ACK.
+This can be done without the 'reload' argument too, something like:
 
-Selva
+  /* if something goes wrong with stat(), we'll store 0 as mtime */
+  platform_stat_t crl_stat =3D {0};
 
---94eb2c12542210557a05427243e0
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+  if (crl_file_inline)
+    {
+      /*
+       * an inline CRL can't change at runtime, therefore there is no
+need to
+       * reload it. It will be reloaded upon config change + SIGHUP.
+       */
+      if (ssl_ctx->crl_last_mtime.tv_sec)
+	return;
+      else
+        crl_stat.st_mtime =3D now; /* Set dummy mtime */
+    }
+  else
+    {
+      platform_stat (crl_file, &crl_stat);
+    }
 
-<div dir=3D"ltr"><div class=3D"gmail_extra">Hi,</div><div class=3D"gmail_ex=
-tra"><br><div class=3D"gmail_quote">On Mon, Nov 28, 2016 at 5:14 PM, Steffa=
-n Karger <span dir=3D"ltr">&lt;<a href=3D"mailto:steffan@...1856..." target=
-=3D"_blank">steffan@...1856...</a>&gt;</span> wrote:<br><blockquote class=
-=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padd=
-ing-left:1ex"><span>As described in trac #751, and shortly after reported b=
-y Zhaomo Yang, of<br>
-the University of California, San Diego, we use memset() (often through<br>
-the CLEAR() macro) to erase secrets after use.=C2=A0 In some cases however,=
- the<br>
-compiler might optimize these calls away.<br>
-<br>
-This patch replaces these memset() calls on secrets by calls to a new<br>
-secure_memzero() function, that will not be optimized away.<br>
-<br>
-Since we use CLEAR() a LOT of times, I&#39;m not changing that to use<br>
-secure_memzero() to prevent performance impact.=C2=A0 I did annotate the ma=
-cro<br>
-to point people at secure_memzero().<br>
-<br>
-This patch also replaces some CLEAR() or memset() calls with a zero-<br>
-initialization using &quot;=3D { 0 }&quot; if that has the same effect, bec=
-ause that<br>
-better captures the intend of that code.<br>
-<br>
-Signed-off-by: Steffan Karger &lt;<a href=3D"mailto:steffan.karger@...2191...=
-.." target=3D"_blank">steffan.karger@...1435...</a>&gt;<br>
-</span>---<br>
-v2: replace more memset()/CLEAR() calls with secure_memzero()<br>
-<span><br>
-=C2=A0src/openvpn/basic.h=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 |=
-=C2=A0 2 +-<br>
-=C2=A0src/openvpn/buffer.c=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0|=
-=C2=A0 8 ++++----<br>
-=C2=A0src/openvpn/buffer.h=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0|=
- 43 ++++++++++++++++++++++++++++++<wbr>++++++++++<br>
-</span>=C2=A0src/openvpn/console_builtin.<wbr>c=C2=A0 =C2=A0 |=C2=A0 2 +-<b=
-r>
-=C2=A0src/openvpn/crypto.c=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0|=
- 17 ++++++----------<br>
-=C2=A0src/openvpn/manage.c=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0|=
-=C2=A0 2 +-<br>
-=C2=A0src/openvpn/misc.c=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0|=C2=A0 4 ++--<br>
-=C2=A0src/openvpn/options.c=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 |=C2=
-=A0 6 +++---<br>
-=C2=A0src/openvpn/ssl.c=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 | 32 +++++++++++++++---------------<br>
-=C2=A0src/openvpn/ssl_verify.c=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0|=C2=A0 4 +=
-+--<br>
-=C2=A0src/openvpn/ssl_verify_mbedtl<wbr>s.c |=C2=A0 4 +---<br>
-=C2=A011 files changed, 80 insertions(+), 44 deletions(-)</blockquote></div=
-><br>Took a second look at v2: sizes of data structs/buffers correctly pass=
-ed to secure_memset and no new warnings with gcc -Wall :)=C2=A0</div><div c=
-lass=3D"gmail_extra"><br></div><div class=3D"gmail_extra">ACK.</div><div cl=
-ass=3D"gmail_extra"><br></div><div class=3D"gmail_extra">Selva</div></div>
+  /*
+   * If this is not a reload, update the CRL right away.
+   * Otherwise, update only if the CRL file was modified after the last
+reload.
+   * Note: Windows does not support tv_nsec.
+   */
+  if (ssl_ctx->crl_last_mtime.tv_sec <=3D crl_stat.st_mtime)
+    {
+      ssl_ctx->crl_last_mtime.tv_sec =3D crl_stat.st_mtime;
+      backend_tls_ctx_reload_crl (ssl_ctx, crl_file, crl_file_inline);
+    }
 
---94eb2c12542210557a05427243e0--
+I slightly prefer this over adding the extra argument, but can live with
+your approach just fine too.  Pick what you like best :)
+
+-Steffan
 
