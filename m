@@ -1,16 +1,10 @@
-Date: Tue, 29 Nov 2016 08:32:09 +0100
+Date: Tue, 29 Nov 2016 09:04:30 +0100 (CET)
+Message-Id: <201611290804.uAT84UDN009666@...2054...>
 From: Gert Doering <gert@...1296...>
-Message-ID: <20161129073209.GB1013@...1296...>
-References: <68d50540-ec71-5564-99a7-7bb24ae05d17@...1856...>
-	<1480371252-3880-1-git-send-email-steffan@...1856...>
-	<13ea5e26-9628-ef57-13b7-50b4041745ca@...2080...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="IiVenqGWf+H9Y6IX"
-Content-Disposition: inline
-In-Reply-To: <13ea5e26-9628-ef57-13b7-50b4041745ca@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH v2] Introduce and use secure_memzero()
- to erase secrets
+In-Reply-To: <1480386424-30876-1-git-send-email-selva.nair@...277...>
+References: <1480386424-30876-1-git-send-email-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Map restart signals from event
+	loop to SIGTERM during exit-notification wait
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,63 +13,63 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Selva Nair <selva.nair@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---IiVenqGWf+H9Y6IX
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+ACK, thanks a lot.
 
-Hi,
+I could reproduce the effect as well -- set "--explicit-exit-notify 5",
+try to connect to a non-responsive server (unused IP address, ...), and 
+~2 seconds before the 60 second timeout, press ctrl-c.  Flooding of
+SIGUSR1 messages, no way to stop it (except "kill -9"), quite an annoyance.
 
-On Tue, Nov 29, 2016 at 12:36:25AM +0100, David Sommerseth wrote:
-> If we "do not care" if a memory region is wiped or not (just that it's
-> nice if it happens), then I'd say these are code paths which *do* *not*
-> require CLEAR() at all.
+With your patch, this changes to
 
-"wiping" and "clearing a structure before using, so everything is=20
-well-defined" are two very different things.
+  Tue Nov 29 08:55:19 2016 UDPv4 link remote: [AF_INET]199.102.77.82:51189
+  ^C
+  Tue Nov 29 08:56:17 2016 event_wait : Interrupted system call (code=4)
+  Tue Nov 29 08:56:17 2016 SIGTERM received, sending exit notification to peer
+  Tue Nov 29 08:56:19 2016 TLS Error: TLS key negotiation failed to occur within 60 seconds (check your network connectivity)
+  Tue Nov 29 08:56:19 2016 TLS Error: TLS handshake failed
+  Tue Nov 29 08:56:19 2016 Converting soft SIGUSR1 received during exit notification to SIGTERM
+  Tue Nov 29 08:56:19 2016 SIGTERM[soft,exit-with-notification] received, process exiting
 
-> If we *know* a certain memory region *must* be cleared, then we do the
-> proper call which does what it promises us.
+.. which fixes the issue for good.
 
-CLEAR() will also do what it promises: that the block in question is
-zeroed *for subsequent use*.
+"Real signals" are still ignored (kill -USR1 from another window):
 
-What it does not promise is "if we never use it again, it is cleared
-nevertheless" - that's what secure_memzero() is for.
+Tue Nov 29 08:58:19 2016 event_wait : Interrupted system call (code=4)
+Tue Nov 29 08:58:19 2016 Ignoring SIGUSR1 received during exit notification
 
-One thing is "initialization before use", one is "scrubbing so secret
-material doesn't leak *after* use".
+(or pressing ctrl-c a second time while it's waiting for the exit notification
+to proceed)
 
 
-Different requirements, different functions.  Reasonable approach.
+(Also, the explanation and the code change make sense :-) )
 
-gert
 
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+I've added a blank to the comment line ("true.If" -> "true. If").
 
---IiVenqGWf+H9Y6IX
-Content-Type: application/pgp-signature; name="signature.asc"
+Your patch has been applied to the master branch.
 
------BEGIN PGP SIGNATURE-----
+commit f25a0217e35f53c3110ebb226e1d1f3528152cb5
+Author: Selva Nair
+Date:   Mon Nov 28 21:27:04 2016 -0500
 
-iQGcBAEBAgAGBQJYPS75AAoJEB2Cnv7KVigSc7AL/i+rmm6B7pIqHhJWzLxklcXS
-Z3xd8D6LF5Q7g4cMDOUdS0xG/ZErLYGh/WRy8+2A0Ng08o+jpVP08SvF52j6SXoz
-269C27k2sgl1SJiiBelpXrCnRa2MbcSZxot4yigpeiBOqVxpip4iUmv5b/aEkt5G
-ej3EEqTU6a0H4K5pVer2+8F7JvNre5gQxBQngwkWzkbBHM0C3KIuCWzHRaYnqXut
-H1+ACkKnMlnJnM5D09oBtYOqRCGxC8M8vjMYyjDZsBnll4+Pbjsh+jYOBgRH91zU
-ysbXq4+wUYSTrfqqT1vP6k0ZiwmGbY6njjKJK94I+LhTqLpOYZ0OXSpftP4GDHaH
-pDGljNve/dUNococ23V7CYl6Sm5HRJWnHwlzvxZ7DQ77GZIdXNBcaOLTgrsedijr
-RSZYN+J+NAO+fbuV1/k77qFIiJ0L5BSKJoPfEXwSOsIBVx0/K+noMTU1Fy4ZqKE4
-Chcxw/AdqHABSLQI2x465NCEyPs0laN6v7DYIqedZA==
-=kpIS
------END PGP SIGNATURE-----
+     Map restart signals from event loop to SIGTERM during exit-notification wait
 
---IiVenqGWf+H9Y6IX--
+     Signed-off-by: Selva Nair <selva.nair@...277...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1480386424-30876-1-git-send-email-selva.nair@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13284.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
+
 
