@@ -1,16 +1,8 @@
-Date: Tue, 29 Nov 2016 22:08:33 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20161129210833.GK1013@...1296...>
-References: <1480386424-30876-1-git-send-email-selva.nair@...277...>
-	<201611290804.uAT84UDN009666@...2054...>
-	<CAKuzo_hwb0Ysf-fG-EbZbSdSHNCAfByp9soWcJOxgTCaOqBKxA@...278...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="gE7i1rD7pdK0Ng3j"
-Content-Disposition: inline
-In-Reply-To: <CAKuzo_hwb0Ysf-fG-EbZbSdSHNCAfByp9soWcJOxgTCaOqBKxA@...278...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: Map restart signals from
- event loop to SIGTERM during exit-notification wait
+From: Selva Nair <selva.nair@...277...>
+Date: Tue, 29 Nov 2016 19:39:32 -0500
+Message-Id: <1480466372-2396-1-git-send-email-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH] Force 'def1' method when --redirect-gateway
+	is done through service
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,48 +11,72 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---gE7i1rD7pdK0Ng3j
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+The service deletes all added routes when the client process (openvpn)
+exits, causing the re-instated default route to disappear.
+Fix by rewriting "--redirect-gateway" to "--redirect-gateway def1" when
+routes are set using interactive service.
 
-Hi,
+Only the behaviour on Windows with intereactive service is affected.
 
-On Tue, Nov 29, 2016 at 04:01:34PM -0500, Selva Nair wrote:
-> Just to be sure, I think the second ctrl-C or SIGTERM during exit-notify
-> wait should cause a prompt exit without waiting for exit-notify to
-> complete. That was the original behaviour and is supposed to be unchanged=
-...
+Resolves Trac 778
 
-It does :-)
+Signed-off-by: Selva Nair <selva.nair@...277...>
+---
+ src/openvpn/options.c | 22 ++++++++++++++++++++++
+ 1 file changed, 22 insertions(+)
 
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 63dcc24..c540e05 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -2526,6 +2526,22 @@ options_postprocess_mutate_ce (struct options *o, struct connection_entry *ce)
+ 
+ }
+ 
++#ifdef _WIN32
++/* If iservice is in use, we need def1 method for redirect-gateway */
++static void
++remap_redirect_gateway_flags (struct options *opt)
++{
++  if (opt->routes
++      && opt->route_method == ROUTE_METHOD_SERVICE
++      && opt->routes->flags & RG_REROUTE_GW
++      && !(opt->routes->flags & RG_DEF1))
++    {
++      msg (M_INFO, "Flag 'def1' added to --redirect-gateway (iservice is in use)");
++      opt->routes->flags |= RG_DEF1;
++    }
++}
++#endif
++
+ static void
+ options_postprocess_mutate_invariant (struct options *options)
+ {
+@@ -2555,6 +2571,8 @@ options_postprocess_mutate_invariant (struct options *options)
+       options->tuntap_options.ip_win32_type = IPW32_SET_MANUAL;
+       options->ifconfig_noexec = false;
+     }
++
++  remap_redirect_gateway_flags (options);
+ #endif
+ 
+ #if P2MP_SERVER
+@@ -5705,6 +5723,10 @@ add_option (struct options *options,
+ 	      goto err;
+ 	    }
+ 	}
++#ifdef _WIN32
++      /* we need this here to handle pushed --redirect-gateway */
++      remap_redirect_gateway_flags (options);
++#endif
+       options->routes->flags |= RG_ENABLE;
+     }
+   else if (streq (p[0], "remote-random-hostname") && !p[1])
+-- 
+2.1.4
 
---gE7i1rD7pdK0Ng3j
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJYPe5QAAoJEB2Cnv7KVigSK7cMAI+G/RwXbxapNRGrBD4TPF3Y
-NwvSwXjXr6UV1TK4Tz2V1KwsbBja5fMOQOZ0K2Fs+CC3c27auNWbKIeDCtaP0u8L
-u8/avHQ0E8o4GORl+QGXh8N6rS15Y5uIF7BGwUZEL7ig6vP0zCqQ1oXj3EBXvfLo
-t80djgX/OKKvLgNQMH7xJLD+SIh4/pgDxHJNZvddGzLxNG1RMHRIWIEJMexFf0RG
-a/qtVPGeYpAZs2EFMsLecdVgwHATuuOydfKvoB9KDqFiifk5m5Oryiv/R8cY25SG
-635D9pfNFyXFt0/0LOvNih+eKwJ5vfbmoAZ4yiZujajKACuVVPvt4/rqwZlHwHeE
-mZBGogIqbE8nSqqjKpcCNrKbO92/m1ZgyAHkqxA2eCOqO0Lwvyt2xlpDteuGZSht
-uZvGnXXm9KetpOmCeOF8vyoT6ueMs1QcwiuT60H6P6bL3RfbSFaCFx4nWAYv3CLC
-nYdgJr8Mc8wwRKAl7wuxBy/Mh+XZhdl3jxeOAtDghQ==
-=FoZy
------END PGP SIGNATURE-----
-
---gE7i1rD7pdK0Ng3j--
 
