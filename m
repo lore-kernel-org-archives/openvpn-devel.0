@@ -1,10 +1,12 @@
-From: Christian Hesse <list@...1798...>
-Date: Wed, 30 Nov 2016 09:59:08 +0100
-Message-Id: <20161130085908.23248-1-list@...1798...>
-In-Reply-To: <20161129152739.11582-1-list@...1798...>
 References: <20161129152739.11582-1-list@...1798...>
-Subject: [Openvpn-devel] [PATCH 1/1] Refuse to daemonize when running from
-	systemd
+	<20161130085908.23248-1-list@...1798...>
+From: Steffan Karger <steffan.karger@...1435...>
+Message-ID: <a856d529-7825-4a03-1cfc-19fb0e58735e@...1435...>
+Date: Wed, 30 Nov 2016 10:06:30 +0100
+MIME-Version: 1.0
+In-Reply-To: <20161130085908.23248-1-list@...1798...>
+Subject: Re: [Openvpn-devel] [PATCH 1/1] Refuse to daemonize when running
+ from systemd
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,65 +15,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: Christian Hesse <mail@...1798...>
 
-From: Christian Hesse <mail@...1798...>
+Hi,
 
-We start with systemd Type=notify, so refuse to daemonize.
+On 30-11-16 09:59, Christian Hesse wrote:
+> --- a/src/openvpn/init.c
+> +++ b/src/openvpn/init.c
+> @@ -926,6 +926,13 @@ bool
+>  possibly_become_daemon (const struct options *options)
+>  {
+>    bool ret = false;
+> +
+> +#ifdef ENABLE_SYSTEMD
+> +  /* return without forking if we are running from systemd */
+> +  if (sd_notify(0, "READY=0") > 0)
+> +    return ret;
+> +#endif
+> +
+>    if (options->daemon)
+>      {
+>        ASSERT (!options->inetd);
 
-Signed-off-by: Christian Hesse <mail@...1798...>
----
- distro/systemd/openvpn-client@...1685... | 1 -
- distro/systemd/openvpn-server@...1685... | 1 -
- src/openvpn/init.c                     | 7 +++++++
- 3 files changed, 7 insertions(+), 2 deletions(-)
+Does this mean I cannot run openvpn --config bla.conf --daemon from the
+command line any more on a systemd system?  This would be a deal-breaker
+for me.
 
-diff --git a/distro/systemd/openvpn-client@...1685... b/distro/systemd/openvpn-client@...1685...
-index f64a239..5618af3 100644
---- a/distro/systemd/openvpn-client@...1685...
-+++ b/distro/systemd/openvpn-client@...1685...
-@@ -12,7 +12,6 @@ PrivateTmp=true
- RuntimeDirectory=openvpn-client
- RuntimeDirectoryMode=0710
- WorkingDirectory=/etc/openvpn/client
--ExecStartPre=/bin/sh -c 'grep -q -E ^daemon %i.conf || exit 0 && /usr/bin/echo "OpenVPN configuration cannot contain --daemon when being managed by systemd" ; exit 1'
- ExecStart=/usr/sbin/openvpn --suppress-timestamps --nobind --config %i.conf
- CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_CHROOT CAP_DAC_OVERRIDE
- LimitNPROC=10
-diff --git a/distro/systemd/openvpn-server@...1685... b/distro/systemd/openvpn-server@...1685...
-index 890e6a9..b9b4dba 100644
---- a/distro/systemd/openvpn-server@...1685...
-+++ b/distro/systemd/openvpn-server@...1685...
-@@ -12,7 +12,6 @@ PrivateTmp=true
- RuntimeDirectory=openvpn-server
- RuntimeDirectoryMode=0710
- WorkingDirectory=/etc/openvpn/server
--ExecStartPre=/bin/sh -c 'grep -q -E ^daemon %i.conf || exit 0 && /usr/bin/echo "OpenVPN configuration cannot contain --daemon when being managed by systemd" ; exit 1'
- ExecStart=/usr/sbin/openvpn --status %t/openvpn-server/status-%i.log --status-version 2 --suppress-timestamps --config %i.conf
- CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_CHROOT CAP_DAC_OVERRIDE
- LimitNPROC=10
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 551e579..7ab5c52 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -926,6 +926,13 @@ bool
- possibly_become_daemon (const struct options *options)
- {
-   bool ret = false;
-+
-+#ifdef ENABLE_SYSTEMD
-+  /* return without forking if we are running from systemd */
-+  if (sd_notify(0, "READY=0") > 0)
-+    return ret;
-+#endif
-+
-   if (options->daemon)
-     {
-       ASSERT (!options->inetd);
--- 
-2.10.2
-
+-Steffan
 
