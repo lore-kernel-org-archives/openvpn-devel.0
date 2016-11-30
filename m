@@ -1,11 +1,10 @@
-Date: Wed, 30 Nov 2016 22:44:56 +0800
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <20161130144456.GB19791@...2182...>
-References: <20161129063843.14526-1-a@...2181...>
-	<1480515990.524617536@...2197...>
-MIME-Version: 1.0
-In-Reply-To: <1480515990.524617536@...2197...>
-Subject: Re: [Openvpn-devel] [PATCH] reload CRL only if file was modified
+Date: Wed, 30 Nov 2016 19:45:27 +0100 (CET)
+Message-Id: <201611301845.uAUIjRUq069167@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <1480470535-6287-1-git-send-email-selva.nair@...277...>
+References: <1480470535-6287-1-git-send-email-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Map restart signals from event
+	loop to SIGTERM during exit-notification wait
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,31 +13,31 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: SviMik <svimik@...450...>
+To: Selva Nair <selva.nair@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-On Wed, Nov 30, 2016 at 05:26:30PM +0300, SviMik wrote:
-> 1) I would also check if the file size was changed, not only mtime.
-> 
+ACK.  Same (reproduceable) problem, similar fix, good :-)
 
-this would work against 2 CRLs with the same mtime but different size: is this
-is a real case we have to worry about?
+Your patch has been applied to the release/2.3 branch.
 
-Anyway, adding this check is easy. I'd do it if it makes the whole check more
-robust.
+commit 4d397fcbc023271c7117cb83b13114389bf3265b
+Author: Selva Nair
+Date:   Tue Nov 29 20:48:55 2016 -0500
 
-> 2) I wasn't digging the code deeply, but the
-> > ssl_ctx->crl_last_mtime.tv_sec >= crl_stat.st_mtime
-> makes me think it would fail if the file goes reverted to a previous version. Perhaps the check shall be != instead of >=.
-> 
+     Map restart signals from event loop to SIGTERM during exit-notification wait
 
-good point! I think we should definitely switch to !=.
+     Signed-off-by: Selva Nair <selva.nair@...277...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1480470535-6287-1-git-send-email-selva.nair@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13310.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-Thanks!
 
--- 
-Antonio Quartulli
+--
+kind regards,
+
+Gert Doering
+
 
