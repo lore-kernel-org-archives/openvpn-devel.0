@@ -1,8 +1,11 @@
-From: Selva Nair <selva.nair@...277...>
-Date: Tue, 29 Nov 2016 19:39:32 -0500
-Message-Id: <1480466372-2396-1-git-send-email-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH] Force 'def1' method when --redirect-gateway
-	is done through service
+Date: Wed, 30 Nov 2016 09:16:09 +0800
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <20161130011609.GO19791@...2182...>
+References: <20161129063843.14526-1-a@...2181...>
+	<aca99453-61e3-05aa-f683-cf385a7e90f6@...1435...>
+MIME-Version: 1.0
+In-Reply-To: <aca99453-61e3-05aa-f683-cf385a7e90f6@...1435...>
+Subject: Re: [Openvpn-devel] [PATCH] reload CRL only if file was modified
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,72 +14,106 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Disposition: inline
+To: Steffan Karger <steffan.karger@...1435...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-The service deletes all added routes when the client process (openvpn)
-exits, causing the re-instated default route to disappear.
-Fix by rewriting "--redirect-gateway" to "--redirect-gateway def1" when
-routes are set using interactive service.
+On Tue, Nov 29, 2016 at 05:43:33PM +0100, Steffan Karger wrote:
 
-Only the behaviour on Windows with intereactive service is affected.
+[CUT..]
 
-Resolves Trac 778
+> >  
+> > +void
+> > +tls_ctx_reload_crl(struct tls_root_ctx *ssl_ctx, const char *crl_file,
+> > +		   const char *crl_file_inline, bool reload)
+> 
+> This is only used within ssl.c, so should be static and have a function
+> declaration, preferably doxygen-documented, at the beginning of ssl.c.
 
-Signed-off-by: Selva Nair <selva.nair@...277...>
----
- src/openvpn/options.c | 22 ++++++++++++++++++++++
- 1 file changed, 22 insertions(+)
+You're absolutely right about this function supposed to be static. I missed
+that.
 
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 63dcc24..c540e05 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -2526,6 +2526,22 @@ options_postprocess_mutate_ce (struct options *o, struct connection_entry *ce)
- 
- }
- 
-+#ifdef _WIN32
-+/* If iservice is in use, we need def1 method for redirect-gateway */
-+static void
-+remap_redirect_gateway_flags (struct options *opt)
-+{
-+  if (opt->routes
-+      && opt->route_method == ROUTE_METHOD_SERVICE
-+      && opt->routes->flags & RG_REROUTE_GW
-+      && !(opt->routes->flags & RG_DEF1))
-+    {
-+      msg (M_INFO, "Flag 'def1' added to --redirect-gateway (iservice is in use)");
-+      opt->routes->flags |= RG_DEF1;
-+    }
-+}
-+#endif
-+
- static void
- options_postprocess_mutate_invariant (struct options *options)
- {
-@@ -2555,6 +2571,8 @@ options_postprocess_mutate_invariant (struct options *options)
-       options->tuntap_options.ip_win32_type = IPW32_SET_MANUAL;
-       options->ifconfig_noexec = false;
-     }
-+
-+  remap_redirect_gateway_flags (options);
- #endif
- 
- #if P2MP_SERVER
-@@ -5705,6 +5723,10 @@ add_option (struct options *options,
- 	      goto err;
- 	    }
- 	}
-+#ifdef _WIN32
-+      /* we need this here to handle pushed --redirect-gateway */
-+      remap_redirect_gateway_flags (options);
-+#endif
-       options->routes->flags |= RG_ENABLE;
-     }
-   else if (streq (p[0], "remote-random-hostname") && !p[1])
+Do I really need to split declaration and definition? Or can I just
+doxy-document the definition in the same place where it is now?
+
+> 
+> > +{
+> > +  /* if something goes wrong with stat(), we'll store 0 as mtime */
+> > +  platform_stat_t crl_stat = {0};
+> > +
+> > +  /*
+> > +   * an inline CRL can't change at runtime, therefore there is no need to
+> > +   * reload it. It will be reloaded upon config change + SIGHUP.
+> > +   */
+> > +  if (crl_file_inline && reload)
+> > +    return;
+> > +
+> > +  if (!crl_file_inline)
+> > +    platform_stat(crl_file, &crl_stat);
+> > +
+> > +  /*
+> > +   * If this is not a reload, update the CRL right away.
+> > +   * Otherwise, update only if the CRL file was modified after the last reload.
+> > +   * Note: Windows does not support tv_nsec.
+> > +   */
+> > +  if (reload &&
+> > +      (ssl_ctx->crl_last_mtime.tv_sec >= crl_stat.st_mtime))
+> > +    return;
+> > +
+> > +  ssl_ctx->crl_last_mtime.tv_sec = crl_stat.st_mtime;
+> > +  backend_tls_ctx_reload_crl(ssl_ctx, crl_file, crl_file_inline);
+> > +}
+> 
+> This can be done without the 'reload' argument too, something like:
+> 
+>   /* if something goes wrong with stat(), we'll store 0 as mtime */
+>   platform_stat_t crl_stat = {0};
+> 
+>   if (crl_file_inline)
+>     {
+>       /*
+>        * an inline CRL can't change at runtime, therefore there is no
+> need to
+>        * reload it. It will be reloaded upon config change + SIGHUP.
+>        */
+>       if (ssl_ctx->crl_last_mtime.tv_sec)
+> 	return;
+>       else
+>         crl_stat.st_mtime = now; /* Set dummy mtime */
+>     }
+>   else
+>     {
+>       platform_stat (crl_file, &crl_stat);
+>     }
+> 
+>   /*
+>    * If this is not a reload, update the CRL right away.
+>    * Otherwise, update only if the CRL file was modified after the last
+> reload.
+>    * Note: Windows does not support tv_nsec.
+>    */
+>   if (ssl_ctx->crl_last_mtime.tv_sec <= crl_stat.st_mtime)
+>     {
+>       ssl_ctx->crl_last_mtime.tv_sec = crl_stat.st_mtime;
+>       backend_tls_ctx_reload_crl (ssl_ctx, crl_file, crl_file_inline);
+>     }
+> 
+> I slightly prefer this over adding the extra argument, but can live with
+> your approach just fine too.  Pick what you like best :)
+
+I guess the assumption here is that crl_last_mtime.tv_sec is initialized with 0.
+This would make your code work. And yeah, I also prefer to avoid the reload
+argument ;)
+
+
+Will make these changes and resend the patch.
+
+Thanks for the comments!
+
+Cheers,
+
 -- 
-2.1.4
-
+Antonio Quartulli
 
