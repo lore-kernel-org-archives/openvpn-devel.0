@@ -1,12 +1,16 @@
+References: <20161129152739.11582-1-list@...1798...>
+	<20161130085908.23248-1-list@...1798...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <760e0e37-c6c6-1183-548f-0c14636d45e2@...2080...>
+Date: Wed, 30 Nov 2016 12:52:30 +0100
 MIME-Version: 1.0
-In-Reply-To: <b79d336b-9d5e-6d7e-a899-06ab10d322d0@...515...>
-References: <CAFHpkQFNRHCCccrSR5ZMCvZj_VC+K=UMR9P4RDhvjCMqGXX1wg@...278...>
-	<b79d336b-9d5e-6d7e-a899-06ab10d322d0@...515...>
-From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Date: Wed, 30 Nov 2016 12:58:18 +0300
-Message-ID: <CAFHpkQGsewCStyZ5HHXC9mcwNGN5-_w+BjmmqoHNufd12YZN5w@...278...>
-Content-Type: multipart/alternative; boundary=089e0102e3da966c5b054281beac
-Subject: Re: [Openvpn-devel] combined ndis5 + ndis6 installer ?
+In-Reply-To: <20161130085908.23248-1-list@...1798...>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="b0qm6GbGH6RWOEqXktQiQj3nLDLEgQCrW"
+Subject: Re: [Openvpn-devel] [PATCH 1/1] Refuse to daemonize when running
+ from systemd
+Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,175 +19,134 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Christian Hesse <list@...1798...>, openvpn-devel@lists.sourceforge.net
+Cc: Christian Hesse <mail@...1798...>
 
---089e0102e3da966c5b054281beac
-Content-Type: text/plain; charset="UTF-8"
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--b0qm6GbGH6RWOEqXktQiQj3nLDLEgQCrW
+Content-Type: multipart/mixed; boundary="0qjR3R5QScmTdBA4mUPXAVSprQJpsbhH6";
+	protected-headers="v1"
+From: David Sommerseth <openvpn@...2080...>
+Reply-To: openvpn-devel@lists.sourceforge.net
+To: Christian Hesse <list@...1798...>, openvpn-devel@lists.sourceforge.net
+Cc: Christian Hesse <mail@...1798...>
+Message-ID: <760e0e37-c6c6-1183-548f-0c14636d45e2@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH 1/1] Refuse to daemonize when running from
+	systemd
+References: <20161129152739.11582-1-list@...1798...>
+	<20161130085908.23248-1-list@...1798...>
+In-Reply-To: <20161130085908.23248-1-list@...1798...>
+
+--0qjR3R5QScmTdBA4mUPXAVSprQJpsbhH6
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
 
-2016-11-30 12:36 GMT+03:00 Samuli Sepp=C3=A4nen <samuli@...515...>:
+On 30/11/16 09:59, Christian Hesse wrote:
+> From: Christian Hesse <mail@...1798...>
+>=20
+> We start with systemd Type=3Dnotify, so refuse to daemonize.
+>=20
+> Signed-off-by: Christian Hesse <mail@...1798...>
+> ---
+>  distro/systemd/openvpn-client@...1685... | 1 -
+>  distro/systemd/openvpn-server@...1685... | 1 -
+>  src/openvpn/init.c                     | 7 +++++++
+>  3 files changed, 7 insertions(+), 2 deletions(-)
+>=20
+> diff --git a/distro/systemd/openvpn-client@...1685... b/distro/systemd/op=
+envpn-client@...1685...
+> index f64a239..5618af3 100644
+> --- a/distro/systemd/openvpn-client@...1685...
+> +++ b/distro/systemd/openvpn-client@...1685...
+> @@ -12,7 +12,6 @@ PrivateTmp=3Dtrue
+>  RuntimeDirectory=3Dopenvpn-client
+>  RuntimeDirectoryMode=3D0710
+>  WorkingDirectory=3D/etc/openvpn/client
+> -ExecStartPre=3D/bin/sh -c 'grep -q -E ^daemon %i.conf || exit 0 && /usr/=
+bin/echo "OpenVPN configuration cannot contain --daemon when being managed =
+by systemd" ; exit 1'
+>  ExecStart=3D/usr/sbin/openvpn --suppress-timestamps --nobind --config %i=
+.conf
+>  CapabilityBoundingSet=3DCAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_RAW CAP_SETGI=
+D CAP_SETUID CAP_SYS_CHROOT CAP_DAC_OVERRIDE
+>  LimitNPROC=3D10
+> diff --git a/distro/systemd/openvpn-server@...1685... b/distro/systemd/op=
+envpn-server@...1685...
+> index 890e6a9..b9b4dba 100644
+> --- a/distro/systemd/openvpn-server@...1685...
+> +++ b/distro/systemd/openvpn-server@...1685...
+> @@ -12,7 +12,6 @@ PrivateTmp=3Dtrue
+>  RuntimeDirectory=3Dopenvpn-server
+>  RuntimeDirectoryMode=3D0710
+>  WorkingDirectory=3D/etc/openvpn/server
+> -ExecStartPre=3D/bin/sh -c 'grep -q -E ^daemon %i.conf || exit 0 && /usr/=
+bin/echo "OpenVPN configuration cannot contain --daemon when being managed =
+by systemd" ; exit 1'
+>  ExecStart=3D/usr/sbin/openvpn --status %t/openvpn-server/status-%i.log -=
+-status-version 2 --suppress-timestamps --config %i.conf
+>  CapabilityBoundingSet=3DCAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_BIND_SERVICE =
+CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_CHROOT CAP_DAC_OVERRIDE
+>  LimitNPROC=3D10
+> diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+> index 551e579..7ab5c52 100644
+> --- a/src/openvpn/init.c
+> +++ b/src/openvpn/init.c
+> @@ -926,6 +926,13 @@ bool
+>  possibly_become_daemon (const struct options *options)
+>  {
+>    bool ret =3D false;
+> +
+> +#ifdef ENABLE_SYSTEMD
+> +  /* return without forking if we are running from systemd */
+> +  if (sd_notify(0, "READY=3D0") > 0)
+> +    return ret;
+> +#endif
+> +
+>    if (options->daemon)
+>      {
+>        ASSERT (!options->inetd);
+>=20
 
-> Il 30/11/2016 09:53, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=B8=D1=
-=86=D0=B8=D0=BD ha scritto:
->
->> Hello,
->>
->> as we finished x86 + x64 installer, we can do something else now.
->> @mattock, which installer are you going to build ?
->>
->> it used to be (ndis5, ndis6) x (x86, x64) matrix, what will be future
->> matrix ?
->>
->
-> As discussed earlier bloating the (2.4) installers with NDIS5 drivers is
-> not worth it. NDIS5 driver is only aimed for Windows XP, and we have
-> dropped XP support in OpenVPN 2.4 already. Also, OpenvPN 2.3 will see few=
-er
-> and fewer fixes as 2.4.x releases stabilize. Eventually 2.3 will go into
-> "high severity security fixes only"-mode, like 2.2 did several years ago.
->
-> So let's not beat the dead horse (NDIS5) anymore :).
->
->
->> (and, yes, I'm going to build multi-language installer, probably right
->> after 2.4 release)
->>
->
-> This makes sense. Any plans on how you're going to do it?
->
+NAK on this approach.  We cannot dictate that users _must_ start OpenVPN
+as a daemon via systemd if it has been built with systemd support.
+
+I understand the sentiment for this change, but we need to ensure users
+may use their own scripts and hand-crafted configs to start OpenVPN,
+also if systemd is present.
 
 
-as we do not support windows 2000 anymore, we can easily switch to unicode.
-there are few questions
+--=20
+kind regards,
 
-1) unicode nsis under linux (we use windows+mingw+nsis unicode, so, I'm not
-sure about linux)
-
-2) split installer into several language files (as done for openvpn-gui)
-
-3) test everything
-
-
-it is not difficult, but it is time consuming, I'm afraid we will test it
-properly before 2.4
+David Sommerseth
+OpenVPN Technologies, Inc
 
 
 
->
-> Another internationalization aspect we could improve is how we store
-> translations for OpenVPN-GUI. Editing the resource files directly is clum=
-sy
-> and error-prone, as the files contain lots of "stuff" that is not meant to
-> be translated. A simple key-value file would be much easier, although in
-> OpenVPN-GUI's case the hardcoded window sizes make this more complex.
->
+--0qjR3R5QScmTdBA4mUPXAVSprQJpsbhH6--
 
-it makes sense to convert openvpn-gui resources into visual studio format.
-@selvanair some times ago told something like that.
+--b0qm6GbGH6RWOEqXktQiQj3nLDLEgQCrW
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-as for the rest, separate resources are just fine.
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
 
+iQIcBAEBAgAGBQJYPr1+AAoJEIbPlEyWcf3yI1wP/2rCbbpfXfLPeE+DPx/4eyD7
+UKfrS5K0DyBwB5K8zPnvUuw39GHcpJnODu7DyohTA99C2qd2ujeANp/tyt857eAu
+a/xDjfvSIqSFNFm8sZp0QruCaFgthuuO4QS3VVY093WM0VA4MPfIIrHD1jJNdIyV
+zyX4Su7mbj71qZ9COqhVCA0g8PffKCcC5c4CyA7V8xtzPS+CymTV3mFLrECZSPHH
+RJzjTl1uuF7ieSEjLjodoE3GznYcV+YJvxj7VdmRsnbx6aVfUXsWEibUE0laklLw
+1Jaswy29gXkRlh19o0CQ+CPHNUoX9/tJcFOdMQI60qhyiGR+UZw60/DcZ+1yovBD
+wxSbaGqyqEsDuzaIZJFErmnHUaUuiOMoB/nFMGWJxkeVdhgPvf6xxjFPfU6/LA4/
+k8KB7JGLQJRZju/bYaEsy7/4EyNyOFvQrl8zOEtqDjvxE1v0kjSMzulGW8KloBF5
+e5iwzuR+f74YtgKF8qv3gcmX/hHD2ucaZQapZZdoilaUhUm9suxHkdzuSEdQ68gH
+kWMmSrTCYFLzIGdDmG+62yHjouaX8Iy1rOIqWh3Q0M3hUvN3LxhTTukAFtWWEt3b
+qmHLJCAxZh2fF/gRQqxdSeX5ICsnu+EEVciZi5gblSc+R00Gtb4K6y/0idbq8bXx
+mUPAi18TEC/bJlKGXIrk
+=0eO3
+-----END PGP SIGNATURE-----
 
->
-> Also I'm not sure how easy it would be to separate the translatable
-> strings into a separate file. I would guess that the actual .res files
-> could be generated on the fly from a template and the key-value file by t=
-he
-> build scripts.
->
->
-it looks overcomplicated. some kind of "post build operation" which will
-identifies missing language resources would be nice however
-
-
-> --
-> Samuli Sepp=C3=A4nen
-> Community Manager
-> OpenVPN Technologies, Inc
->
-> irc freenode net: mattock
->
-
---089e0102e3da966c5b054281beac
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><br><div class=3D"gmail_extra"><br><div class=3D"gmail_quo=
-te">2016-11-30 12:36 GMT+03:00 Samuli Sepp=C3=A4nen <span dir=3D"ltr">&lt;<=
-a href=3D"mailto:samuli@...515..." target=3D"_blank">samuli@...515...</a>&g=
-t;</span>:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;=
-border-left:1px #ccc solid;padding-left:1ex"><span class=3D"">Il 30/11/2016=
- 09:53, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=B8=D1=86=D0=B8=D0=BD=
- ha scritto:<br>
-<blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1p=
-x #ccc solid;padding-left:1ex">
-Hello,<br>
-<br>
-as we finished x86 + x64 installer, we can do something else now.<br>
-@mattock, which installer are you going to build ?<br>
-<br>
-it used to be (ndis5, ndis6) x (x86, x64) matrix, what will be future<br>
-matrix ?<br>
-</blockquote>
-<br></span>
-As discussed earlier bloating the (2.4) installers with NDIS5 drivers is no=
-t worth it. NDIS5 driver is only aimed for Windows XP, and we have dropped =
-XP support in OpenVPN 2.4 already. Also, OpenvPN 2.3 will see fewer and few=
-er fixes as 2.4.x releases stabilize. Eventually 2.3 will go into &quot;hig=
-h severity security fixes only&quot;-mode, like 2.2 did several years ago.<=
-br>
-<br>
-So let&#39;s not beat the dead horse (NDIS5) anymore :).<span class=3D""><b=
-r>
-<br>
-<blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1p=
-x #ccc solid;padding-left:1ex">
-<br>
-(and, yes, I&#39;m going to build multi-language installer, probably right<=
-br>
-after 2.4 release)<br>
-</blockquote>
-<br></span>
-This makes sense. Any plans on how you&#39;re going to do it?<br></blockquo=
-te><div><br><br></div><div>as we do not support windows 2000 anymore, we ca=
-n easily switch to unicode.<br></div><div>there are few questions<br><br></=
-div><div>1) unicode nsis under linux (we use windows+mingw+nsis unicode, so=
-, I&#39;m not sure about linux)<br><br></div><div>2) split installer into s=
-everal language files (as done for openvpn-gui)<br><br></div><div>3) test e=
-verything<br><br><br></div><div>it is not difficult, but it is time consumi=
-ng, I&#39;m afraid we will test it properly before 2.4<br></div><div><br>=
-=C2=A0</div><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;bo=
-rder-left:1px #ccc solid;padding-left:1ex">
-<br>
-Another internationalization aspect we could improve is how we store transl=
-ations for OpenVPN-GUI. Editing the resource files directly is clumsy and e=
-rror-prone, as the files contain lots of &quot;stuff&quot; that is not mean=
-t to be translated. A simple key-value file would be much easier, although =
-in OpenVPN-GUI&#39;s case the hardcoded window sizes make this more complex=
-.<br></blockquote><div><br></div><div>it makes sense to convert openvpn-gui=
- resources into visual studio format.<br></div><div>@selvanair some times a=
-go told something like that.<br><br></div><div>as for the rest, separate re=
-sources are just fine.<br></div><div>=C2=A0</div><blockquote class=3D"gmail=
-_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:=
-1ex">
-<br>
-Also I&#39;m not sure how easy it would be to separate the translatable str=
-ings into a separate file. I would guess that the actual .res files could b=
-e generated on the fly from a template and the key-value file by the build =
-scripts.<span class=3D"HOEnZb"><font color=3D"#888888"><br>
-<br></font></span></blockquote><div><br></div><div>it looks overcomplicated=
-. some kind of &quot;post build operation&quot; which will identifies missi=
-ng language resources would be nice however<br></div><div>=C2=A0</div><bloc=
-kquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #cc=
-c solid;padding-left:1ex"><span class=3D"HOEnZb"><font color=3D"#888888">
--- <br>
-Samuli Sepp=C3=A4nen<br>
-Community Manager<br>
-OpenVPN Technologies, Inc<br>
-<br>
-irc freenode net: mattock<br>
-</font></span></blockquote></div><br></div></div>
-
---089e0102e3da966c5b054281beac--
+--b0qm6GbGH6RWOEqXktQiQj3nLDLEgQCrW--
 
