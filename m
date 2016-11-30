@@ -1,18 +1,16 @@
+Date: Wed, 30 Nov 2016 13:22:12 +0100
+From: Christian Hesse <list@...1798...>
+Message-ID: <20161130132212.669e24da@...1799...>
+In-Reply-To: <760e0e37-c6c6-1183-548f-0c14636d45e2@...2080...>
 References: <20161129152739.11582-1-list@...1798...>
 	<20161130085908.23248-1-list@...1798...>
-	<a856d529-7825-4a03-1cfc-19fb0e58735e@...1435...>
-	<20161130101519.0cdce781@...1799...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <626285a8-9d4d-5142-c8fa-fb7b4c87c129@...2080...>
-Date: Wed, 30 Nov 2016 12:54:50 +0100
+	<760e0e37-c6c6-1183-548f-0c14636d45e2@...2080...>
 MIME-Version: 1.0
-In-Reply-To: <20161130101519.0cdce781@...1799...>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="uLbQNrrjBm2hR2J3umaBMjCN6nsiHDlKt"
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	boundary="Sig_/G4Gcluvby.j+AeCojAMx/sk";
+	protocol="application/pgp-signature"
 Subject: Re: [Openvpn-devel] [PATCH 1/1] Refuse to daemonize when running
  from systemd
-Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,98 +19,117 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Christian Hesse <list@...1798...>, Steffan Karger <steffan.karger@...1435...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: David Sommerseth <openvpn@...2080...>
+Cc: Christian Hesse <mail@...1798...>, openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---uLbQNrrjBm2hR2J3umaBMjCN6nsiHDlKt
-Content-Type: multipart/mixed; boundary="tO8s5o15kXdONfVBpOkaCwebWQ67VxHN0";
-	protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-Reply-To: openvpn-devel@lists.sourceforge.net
-To: Christian Hesse <list@...1798...>, Steffan Karger <steffan.karger@...1435...>
-Cc: openvpn-devel@lists.sourceforge.net
-Message-ID: <626285a8-9d4d-5142-c8fa-fb7b4c87c129@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH 1/1] Refuse to daemonize when running from
-	systemd
-References: <20161129152739.11582-1-list@...1798...>
-	<20161130085908.23248-1-list@...1798...>
-	<a856d529-7825-4a03-1cfc-19fb0e58735e@...1435...>
-	<20161130101519.0cdce781@...1799...>
-In-Reply-To: <20161130101519.0cdce781@...1799...>
-
---tO8s5o15kXdONfVBpOkaCwebWQ67VxHN0
-Content-Type: text/plain; charset="windows-1252"
+--Sig_/G4Gcluvby.j+AeCojAMx/sk
+Content-Type: text/plain; charset="US-ASCII"
 Content-Transfer-Encoding: quoted-printable
 
-On 30/11/16 10:15, Christian Hesse wrote:
-> Steffan Karger <steffan.karger@...1435...> on Wed, 2016/11/30 10:06:
->> Hi,
->>
->> On 30-11-16 09:59, Christian Hesse wrote:
->>> --- a/src/openvpn/init.c
->>> +++ b/src/openvpn/init.c
->>> @@ -926,6 +926,13 @@ bool
->>>  possibly_become_daemon (const struct options *options)
->>>  {
->>>    bool ret =3D false;
->>> +
->>> +#ifdef ENABLE_SYSTEMD
->>> +  /* return without forking if we are running from systemd */
->>> +  if (sd_notify(0, "READY=3D0") > 0)
->>> +    return ret;
->>> +#endif
->>> +
->>>    if (options->daemon)
->>>      {
->>>        ASSERT (!options->inetd);=20=20
->>
->> Does this mean I cannot run openvpn --config bla.conf --daemon from the
->> command line any more on a systemd system?  This would be a deal-breaker
->> for me.
+David Sommerseth <openvpn@...2080...> on Wed, 2016/11/30 12:52:
+> On 30/11/16 09:59, Christian Hesse wrote:
+> > From: Christian Hesse <mail@...1798...>
+> >=20
+> > We start with systemd Type=3Dnotify, so refuse to daemonize.
+> >=20
+> > Signed-off-by: Christian Hesse <mail@...1798...>
+> > ---
+> >  distro/systemd/openvpn-client@...1685... | 1 -
+> >  distro/systemd/openvpn-server@...1685... | 1 -
+> >  src/openvpn/init.c                     | 7 +++++++
+> >  3 files changed, 7 insertions(+), 2 deletions(-)
+> >=20
+> > diff --git a/distro/systemd/openvpn-client@...1685...
+> > b/distro/systemd/openvpn-client@...1685... index f64a239..5618af3 100644
+> > --- a/distro/systemd/openvpn-client@...1685...
+> > +++ b/distro/systemd/openvpn-client@...1685...
+> > @@ -12,7 +12,6 @@ PrivateTmp=3Dtrue
+> >  RuntimeDirectory=3Dopenvpn-client
+> >  RuntimeDirectoryMode=3D0710
+> >  WorkingDirectory=3D/etc/openvpn/client
+> > -ExecStartPre=3D/bin/sh -c 'grep -q -E ^daemon %i.conf || exit 0
+> > && /usr/bin/echo "OpenVPN configuration cannot contain --daemon when
+> > being managed by systemd" ; exit 1' ExecStart=3D/usr/sbin/openvpn
+> > --suppress-timestamps --nobind --config %i.conf
+> > CapabilityBoundingSet=3DCAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_RAW CAP_SETG=
+ID
+> > CAP_SETUID CAP_SYS_CHROOT CAP_DAC_OVERRIDE LimitNPROC=3D10 diff --git
+> > a/distro/systemd/openvpn-server@...1685...
+> > b/distro/systemd/openvpn-server@...1685... index 890e6a9..b9b4dba 100644
+> > --- a/distro/systemd/openvpn-server@...1685... +++
+> > b/distro/systemd/openvpn-server@...1685... @@ -12,7 +12,6 @@
+> > PrivateTmp=3Dtrue RuntimeDirectory=3Dopenvpn-server RuntimeDirectoryMod=
+e=3D0710
+> >  WorkingDirectory=3D/etc/openvpn/server
+> > -ExecStartPre=3D/bin/sh -c 'grep -q -E ^daemon %i.conf || exit 0
+> > && /usr/bin/echo "OpenVPN configuration cannot contain --daemon when
+> > being managed by systemd" ; exit 1' ExecStart=3D/usr/sbin/openvpn --sta=
+tus
+> > %t/openvpn-server/status-%i.log --status-version 2 --suppress-timestamps
+> > --config %i.conf CapabilityBoundingSet=3DCAP_IPC_LOCK CAP_NET_ADMIN
+> > CAP_NET_BIND_SERVICE CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_CHROOT
+> > CAP_DAC_OVERRIDE LimitNPROC=3D10 diff --git a/src/openvpn/init.c
+> > b/src/openvpn/init.c index 551e579..7ab5c52 100644 ---
+> > a/src/openvpn/init.c +++ b/src/openvpn/init.c @@ -926,6 +926,13 @@ bool
+> >  possibly_become_daemon (const struct options *options)
+> >  {
+> >    bool ret =3D false;
+> > +
+> > +#ifdef ENABLE_SYSTEMD
+> > +  /* return without forking if we are running from systemd */
+> > +  if (sd_notify(0, "READY=3D0") > 0)
+> > +    return ret;
+> > +#endif
+> > +
+> >    if (options->daemon)
+> >      {
+> >        ASSERT (!options->inetd);
+> >=20=20=20
 >=20
-> No. That means openvpn knows when it is run from within a system service.
-> Daemonization is refused there as we we start with "Type=3Dnotify".
+> NAK on this approach.  We cannot dictate that users _must_ start OpenVPN
+> as a daemon via systemd if it has been built with systemd support.
 >=20
-> sd_notify() is a no-op when run from command line. So everything works as
-> usual.
+> I understand the sentiment for this change, but we need to ensure users
+> may use their own scripts and hand-crafted configs to start OpenVPN,
+> also if systemd is present.
 
-Ahh ... okay, I'll test the patch more thoroughly and I revoke my NAK if
-everything works as expected.
+We do not dictate anything. Starting openvpn from scripts or command line
+this is a no-op. From man sd_notify(3):
 
+> On failure, these calls return a negative errno-style error code. If
+> $NOTIFY_SOCKET was not set and hence no status data could be sent, 0 is
+> returned. If the status was sent, these functions return with a positive
+> return value. In order to support both, init systems that implement this
+> scheme and those which do not, it is generally recommended to ignore the
+> return value of this call.
 
+That is what we check for here: If (and only if) openvpn is started from
+systemd (read: from a systemd unit/service) it denies to fork. The openvpn
+service starts properly even with "daemon" in config file.
+
+This is unrelated to systemd being installed or the system being booted with
+systemd.
 --=20
-kind regards,
+main(a){char*c=3D/*    Schoene Gruesse                         */"B?IJj;MEH"
+"CX:;",b;for(a/*    Best regards             my address:    */=3D0;b=3Dc[a+=
++];)
+putchar(b-1/(/*    Chris            cc -ox -xc - && ./x    */b/42*2-3)*42);}
 
-David Sommerseth
-OpenVPN Technologies, Inc
-
-
-
---tO8s5o15kXdONfVBpOkaCwebWQ67VxHN0--
-
---uLbQNrrjBm2hR2J3umaBMjCN6nsiHDlKt
-Content-Type: application/pgp-signature; name="signature.asc"
+--Sig_/G4Gcluvby.j+AeCojAMx/sk
+Content-Type: application/pgp-signature
 Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBAgAGBQJYPr4KAAoJEIbPlEyWcf3y5nMQALDcuCzdxGyHGj9xchfM8xta
-02g5jgvGhseAWmT8W0KjakobF42dV8oC4JvCf2MjL8W8M6igf7ebT+Ys9peBGRx0
-DHbMBJVeSXaezR+GbHtXCHe9l74a7H2Csaz6OqtBZslX5T8N6kRKTX6LhLHV1FEA
-FIrX21qk2VdCwUTopnY43j0i1xHGV7KVhQxrxDVLrzN5wyaeMoppOJcN3BiTNVi5
-7ardobaRHwuqA4dqJKK3KxPQ8SfrRiv0FPd2zPCrEG2ERJC2wCKF6MuTvwE+74z4
-W606LdbMYJtBwpOItuZaUnptNHWlfpa2/SrfFymL6v6v8tI3f/toBUujPFLagjmq
-AP/pV0mNBDY41G6DDD47XzqClD6TjOCpXhKrc3bkeCsUl1J1zjLkuiZ7IiPh8Mne
-T99o75BaDZbTU6qTD/BLBmJ5Xio8azmljIuJJLRIR1QWLdnYj04Ozaxc/Kg+U2bd
-8ppiz1BbyQijw2UD+xF+6qTJsJP4/mVEp8bl9fUS2u1sVdacKCvP6GG0zbCmd+Gy
-+j4/vDHlAeuszACWVzKZCIj0so1I2SMqpRVFHIpjNhi46+0+vT4IKlJTXZtaQJv3
-7IqVH7E6hz1yzEGPNoFCtBo5oMKxesNw6+61xynZfuflLr2cWwlhUIehAn8TKrV8
-HdgesES5d8utWcp4TTi9
-=o7dt
+iQEzBAEBCAAdFiEEXHmveYAHrRp+prOviUUh18yA9HYFAlg+xHQACgkQiUUh18yA
+9Ha8ZwgAuH9TN/8plOb4crE3c6dn0tS7yUn7ibfM0kaKOWXVbQSG1R04vIs2NcWq
+3DEClszKFmjWRgJtHEoPnJpELHYJiRBzyDEFOhRgyGC6809tb7UfZ+w31xVZ2jEc
+E5ABi7PFq7i+E8ALCxVPs0o2kZTPzrHGDyn0mIiINPwV+Le3y3pLbpZ5g65GOPBW
+jzTdTweW1Cn9bhum1EzKSxuB0Sz6ihz8LW7MZOfTXAnQwogEDwoUXeYIm7rHZDi5
+bocApFy4Y4Wj/BIYSb2tYAoUZsBbzMUB6Boq/dFayWA7WD4fiD0QUXbMQijIe0t4
+TOJxAOsFbHwK2Luk5ussNR0Wsy6DXQ==
+=yfaZ
 -----END PGP SIGNATURE-----
 
---uLbQNrrjBm2hR2J3umaBMjCN6nsiHDlKt--
+--Sig_/G4Gcluvby.j+AeCojAMx/sk--
 
