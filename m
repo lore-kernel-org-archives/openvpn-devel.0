@@ -1,10 +1,10 @@
-Date: Wed, 30 Nov 2016 09:41:23 +0100 (CET)
-Message-Id: <201611300841.uAU8fNfI094175@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <1480470794-6349-1-git-send-email-selva.nair@...277...>
-References: <1480470794-6349-1-git-send-email-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: When parsing '--setenv opt xx
-	..' make sure a third parameter is present
+From: Christian Hesse <list@...1798...>
+Date: Wed, 30 Nov 2016 09:59:08 +0100
+Message-Id: <20161130085908.23248-1-list@...1798...>
+In-Reply-To: <20161129152739.11582-1-list@...1798...>
+References: <20161129152739.11582-1-list@...1798...>
+Subject: [Openvpn-devel] [PATCH 1/1] Refuse to daemonize when running from
+	systemd
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,39 +15,63 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Selva Nair <selva.nair@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
+Cc: Christian Hesse <mail@...1798...>
 
-ACK, thanks.
+From: Christian Hesse <mail@...1798...>
 
-(I thought "just checking for ...&& p[2] && ..." would be nicer, but then
-it falls through and just silently setenv-s "opt" to "empty", which is
-not the intent...)
+We start with systemd Type=notify, so refuse to daemonize.
 
-I have changed the reference to the Trac ticket to the newly-agreed-upon
-(yesterday on IRC) standard format, which is
+Signed-off-by: Christian Hesse <mail@...1798...>
+---
+ distro/systemd/openvpn-client@...1685... | 1 -
+ distro/systemd/openvpn-server@...1685... | 1 -
+ src/openvpn/init.c                     | 7 +++++++
+ 3 files changed, 7 insertions(+), 2 deletions(-)
 
-Trac: #799
-
-Your patch has been applied to the master and release/2.3 branch.
-
-commit 997795353916ffcb413a2da02dc7f210fd621954 (master)
-commit 290cc3f8d50435a6ed5f2cb1ecd9056dadcc4783 (release/2.3)
-Author: Selva Nair
-Date:   Tue Nov 29 20:53:14 2016 -0500
-
-     When parsing '--setenv opt xx ..' make sure a third parameter is present
-
-     Signed-off-by: Selva Nair <selva.nair@...277...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1480470794-6349-1-git-send-email-selva.nair@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13311.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/distro/systemd/openvpn-client@...1685... b/distro/systemd/openvpn-client@...1685...
+index f64a239..5618af3 100644
+--- a/distro/systemd/openvpn-client@...1685...
++++ b/distro/systemd/openvpn-client@...1685...
+@@ -12,7 +12,6 @@ PrivateTmp=true
+ RuntimeDirectory=openvpn-client
+ RuntimeDirectoryMode=0710
+ WorkingDirectory=/etc/openvpn/client
+-ExecStartPre=/bin/sh -c 'grep -q -E ^daemon %i.conf || exit 0 && /usr/bin/echo "OpenVPN configuration cannot contain --daemon when being managed by systemd" ; exit 1'
+ ExecStart=/usr/sbin/openvpn --suppress-timestamps --nobind --config %i.conf
+ CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_CHROOT CAP_DAC_OVERRIDE
+ LimitNPROC=10
+diff --git a/distro/systemd/openvpn-server@...1685... b/distro/systemd/openvpn-server@...1685...
+index 890e6a9..b9b4dba 100644
+--- a/distro/systemd/openvpn-server@...1685...
++++ b/distro/systemd/openvpn-server@...1685...
+@@ -12,7 +12,6 @@ PrivateTmp=true
+ RuntimeDirectory=openvpn-server
+ RuntimeDirectoryMode=0710
+ WorkingDirectory=/etc/openvpn/server
+-ExecStartPre=/bin/sh -c 'grep -q -E ^daemon %i.conf || exit 0 && /usr/bin/echo "OpenVPN configuration cannot contain --daemon when being managed by systemd" ; exit 1'
+ ExecStart=/usr/sbin/openvpn --status %t/openvpn-server/status-%i.log --status-version 2 --suppress-timestamps --config %i.conf
+ CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_CHROOT CAP_DAC_OVERRIDE
+ LimitNPROC=10
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 551e579..7ab5c52 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -926,6 +926,13 @@ bool
+ possibly_become_daemon (const struct options *options)
+ {
+   bool ret = false;
++
++#ifdef ENABLE_SYSTEMD
++  /* return without forking if we are running from systemd */
++  if (sd_notify(0, "READY=0") > 0)
++    return ret;
++#endif
++
+   if (options->daemon)
+     {
+       ASSERT (!options->inetd);
+-- 
+2.10.2
 
 
