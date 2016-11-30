@@ -1,15 +1,12 @@
-Date: Wed, 30 Nov 2016 09:12:23 +0100
-From: Christian Hesse <list@...1798...>
-Message-ID: <20161130091223.47faade9@...1799...>
-In-Reply-To: <641bcfd7-d750-2cb7-1b49-099026004b4b@...2080...>
-References: <20161129152739.11582-1-list@...1798...>
-	<641bcfd7-d750-2cb7-1b49-099026004b4b@...2080...>
+References: <20161129063843.14526-1-a@...2181...>
+	<aca99453-61e3-05aa-f683-cf385a7e90f6@...1435...>
+	<20161130011609.GO19791@...2182...>
+From: Steffan Karger <steffan.karger@...1435...>
+Message-ID: <c31d4b2f-7c98-8482-1985-ace1d3fb4d01@...1435...>
+Date: Wed, 30 Nov 2016 09:27:01 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	boundary="Sig_/2d73=E66xXe32OmM_k1X3zj";
-	protocol="application/pgp-signature"
-Subject: Re: [Openvpn-devel] [PATCH 1/1] Use systemd service manager
- notification
+In-Reply-To: <20161130011609.GO19791@...2182...>
+Subject: Re: [Openvpn-devel] [PATCH] reload CRL only if file was modified
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,103 +15,69 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: David Sommerseth <openvpn@...2080...>
-Cc: Christian Hesse <mail@...1798...>, Elias Probst <mail@...2185...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: 7bit
+To: Antonio Quartulli <a@...2181...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---Sig_/2d73=E66xXe32OmM_k1X3zj
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: quoted-printable
+Hi,
 
-CCing Elias Probst as he is listed as contributor for last commit changing
-systemd units (8b42c197626430118ed126c1b8256ba5ae1f699a, "systemd: Improve
-the systemd unit files").
-Anybody else involved with systemd units?
+On 30-11-16 02:16, Antonio Quartulli wrote:
+> Do I really need to split declaration and definition? Or can I just
+> doxy-document the definition in the same place where it is now?
 
-David Sommerseth <openvpn@...2080...> on Wed, 2016/11/30 02:45:
-> On 29/11/16 16:27, Christian Hesse wrote:
-> > From: Christian Hesse <mail@...1798...>
-> >=20
-> > Notify systemd service manager when our initialization sequence
-> > completed. This helps ordering services as dependencies can rely on vpn
-> > being available.=20=20
->=20
-> Funny detail is that I have a somewhat similar patch in a local git
-> tree, awaiting proper testing ... I postponed it as this is not
-> something we will pull into v2.4.  We're going to release 2.4_rc1 this
-> week, and that is too late for more intrusive changes (even though the
-> changeset itself is small, the code changes makes OpenVPN behave
-> somewhat different when managed by systemd).
+Well, either add a declaration at the top of the file (before the first
+usage), or move the function up to before the first usage and document
+it without splitting it.
 
-We should rethink this... I am pretty sure I will not ship the code as-is
-with Arch Linux. More below.
+>> This can be done without the 'reload' argument too, something like:
+>>
+>>   /* if something goes wrong with stat(), we'll store 0 as mtime */
+>>   platform_stat_t crl_stat = {0};
+>>
+>>   if (crl_file_inline)
+>>     {
+>>       /*
+>>        * an inline CRL can't change at runtime, therefore there is no
+>> need to
+>>        * reload it. It will be reloaded upon config change + SIGHUP.
+>>        */
+>>       if (ssl_ctx->crl_last_mtime.tv_sec)
+>> 	return;
+>>       else
+>>         crl_stat.st_mtime = now; /* Set dummy mtime */
+>>     }
+>>   else
+>>     {
+>>       platform_stat (crl_file, &crl_stat);
+>>     }
+>>
+>>   /*
+>>    * If this is not a reload, update the CRL right away.
+>>    * Otherwise, update only if the CRL file was modified after the last
+>> reload.
+>>    * Note: Windows does not support tv_nsec.
+>>    */
+>>   if (ssl_ctx->crl_last_mtime.tv_sec <= crl_stat.st_mtime)
+>>     {
+>>       ssl_ctx->crl_last_mtime.tv_sec = crl_stat.st_mtime;
+>>       backend_tls_ctx_reload_crl (ssl_ctx, crl_file, crl_file_inline);
+>>     }
+>>
+>> I slightly prefer this over adding the extra argument, but can live with
+>> your approach just fine too.  Pick what you like best :)
+> 
+> I guess the assumption here is that crl_last_mtime.tv_sec is initialized with 0.
+> This would make your code work. And yeah, I also prefer to avoid the reload
+> argument ;)
 
-Tested by me, works pretty well. ;)
+Correct.  This might not be immediately clear in the code, but we have
+the good habit of zero-initilializing structs like this :)
 
-> Just a question, as it is good to see more people looking into these
-> code paths ... I was considering to extend my approach to update STATUS=3D
-> a bit more frequently.  On the client side, I thought it would be good
-> if the status line had "Resolving %s", "Connecting to %s", "Successful
-> connection to %s" or "Failed to connect to %s".  On the server side I
-> was pondering on a "Successfully started, %i clients connected".  What
-> do you think about that?  Does the sd_notify() API support more frequent
-> updates?
+> Will make these changes and resend the patch.
 
-Interesting idea... I will have a look.
+Thanks!
 
-> Also when using Type=3Dnotify ... does systemd expect the OpenVPN process
-> to fork into the background or run in the foreground as now?
+-Steffan
 
-Ok, lets go into detail. We can use three different settings: Type=3Dsimple,
-Type=3Dforking and Type=3Dnotify.
-
-* We used Type=3Dforking for a long time. That is fine: systemd reports suc=
-cess
-  when the process forks off first time. That is when openvpn successfully
-  completed initialization sequence.
-
-* The current systemd unit use Type=3Dsimple (which is implicit). systemd
-  reports success as soon as the process is executed, it does not wait for
-  anything. So startup can look like that: systemd starts openvpn process ->
-  unit is in state 'started' -> openvpn bails out with an error
-  before the initialization sequence completed -> systemd unit is in state
-  'failed' now. The problem is that it was in state 'started' intermittentl=
-y:
-  Manual systemctl (starting service from command line) reports success, ot=
-her
-  services depending on openvpn are started while dependency failed
-  later, ... This is just broken.
-
-* My patch introduces Type=3Dnotify. The (main) process must not fork, so m=
-ost
-  things work like simple, except that systemd does not report success on
-  process execution, but waits for the sd_notify() call. We do not have
-  intermittent state 'success' and everything works as expected.
-
-I will not package the code as-is with our Arch Linux package. Either I
-revert back to Type=3Dforking or apply the patch for Type=3Dnotify.
-
-So I still vote to apply this as soon as possible.
---=20
-main(a){char*c=3D/*    Schoene Gruesse                         */"B?IJj;MEH"
-"CX:;",b;for(a/*    Best regards             my address:    */=3D0;b=3Dc[a+=
-+];)
-putchar(b-1/(/*    Chris            cc -ox -xc - && ./x    */b/42*2-3)*42);}
-
---Sig_/2d73=E66xXe32OmM_k1X3zj
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEXHmveYAHrRp+prOviUUh18yA9HYFAlg+iecACgkQiUUh18yA
-9HYNNwf8Cu+uaci5XZqa1JMTviTaIp2LVlXz3pvBT9cE8grwQWvB18XVcF3dNCT6
-LgFOncEfnYli4d4IPf5IJS7PVRt5PGA4zRRqClCcgkk5LDb3kPbcJrU8zITdZf2B
-TaMdHiAZ/WNahKrEQhox0dtEFWYyNX49t20smJ7gCmgdHVMixEAb6fXDkH2Dh+I3
-k0Ve7yUEOAyx/PDULVUR7Ytq28/9Paym674jj+0fbqa9aZXRljtbaNq7D/l26KWD
-Mh2L1Jkzvxc0TV370B2twj1djWvEL+k+r/HVdED8ZGorceCR/nh2FkNKFkpPIXy/
-NbIXAqYPyC1h3dMgOTHll1X7yxbX/w==
-=8w4h
------END PGP SIGNATURE-----
-
---Sig_/2d73=E66xXe32OmM_k1X3zj--
 
