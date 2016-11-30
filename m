@@ -1,16 +1,13 @@
-Date: Wed, 30 Nov 2016 13:22:12 +0100
-From: Christian Hesse <list@...1798...>
-Message-ID: <20161130132212.669e24da@...1799...>
-In-Reply-To: <760e0e37-c6c6-1183-548f-0c14636d45e2@...2080...>
-References: <20161129152739.11582-1-list@...1798...>
-	<20161130085908.23248-1-list@...1798...>
-	<760e0e37-c6c6-1183-548f-0c14636d45e2@...2080...>
+Date: Wed, 30 Nov 2016 14:13:13 +0200 (EET)
+From: Heikki Hannikainen <hessu@...1822...>
+In-Reply-To: <1421497831-3424-10-git-send-email-fabian.knittel@...1547...>
+Message-ID: <alpine.DEB.2.10.1611301412160.21897@...1831...>
+References: <1412978966-15392-1-git-send-email-fabian.knittel@...1547...>
+	<1421497831-3424-1-git-send-email-fabian.knittel@...1547...>
+	<1421497831-3424-10-git-send-email-fabian.knittel@...1547...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	boundary="Sig_/G4Gcluvby.j+AeCojAMx/sk";
-	protocol="application/pgp-signature"
-Subject: Re: [Openvpn-devel] [PATCH 1/1] Refuse to daemonize when running
- from systemd
+Subject: Re: [Openvpn-devel] [PATCH v2 9/9] client-connect: Add deferred
+ support to the client-connect plugin v1 handler
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,117 +16,126 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: David Sommerseth <openvpn@...2080...>
-Cc: Christian Hesse <mail@...1798...>, openvpn-devel@lists.sourceforge.net
+Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
+Content-Transfer-Encoding: 8bit
+To: Fabian Knittel <fabian.knittel@...1547...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---Sig_/G4Gcluvby.j+AeCojAMx/sk
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: quoted-printable
 
-David Sommerseth <openvpn@...2080...> on Wed, 2016/11/30 12:52:
-> On 30/11/16 09:59, Christian Hesse wrote:
-> > From: Christian Hesse <mail@...1798...>
-> >=20
-> > We start with systemd Type=3Dnotify, so refuse to daemonize.
-> >=20
-> > Signed-off-by: Christian Hesse <mail@...1798...>
-> > ---
-> >  distro/systemd/openvpn-client@...1685... | 1 -
-> >  distro/systemd/openvpn-server@...1685... | 1 -
-> >  src/openvpn/init.c                     | 7 +++++++
-> >  3 files changed, 7 insertions(+), 2 deletions(-)
-> >=20
-> > diff --git a/distro/systemd/openvpn-client@...1685...
-> > b/distro/systemd/openvpn-client@...1685... index f64a239..5618af3 100644
-> > --- a/distro/systemd/openvpn-client@...1685...
-> > +++ b/distro/systemd/openvpn-client@...1685...
-> > @@ -12,7 +12,6 @@ PrivateTmp=3Dtrue
-> >  RuntimeDirectory=3Dopenvpn-client
-> >  RuntimeDirectoryMode=3D0710
-> >  WorkingDirectory=3D/etc/openvpn/client
-> > -ExecStartPre=3D/bin/sh -c 'grep -q -E ^daemon %i.conf || exit 0
-> > && /usr/bin/echo "OpenVPN configuration cannot contain --daemon when
-> > being managed by systemd" ; exit 1' ExecStart=3D/usr/sbin/openvpn
-> > --suppress-timestamps --nobind --config %i.conf
-> > CapabilityBoundingSet=3DCAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_RAW CAP_SETG=
-ID
-> > CAP_SETUID CAP_SYS_CHROOT CAP_DAC_OVERRIDE LimitNPROC=3D10 diff --git
-> > a/distro/systemd/openvpn-server@...1685...
-> > b/distro/systemd/openvpn-server@...1685... index 890e6a9..b9b4dba 100644
-> > --- a/distro/systemd/openvpn-server@...1685... +++
-> > b/distro/systemd/openvpn-server@...1685... @@ -12,7 +12,6 @@
-> > PrivateTmp=3Dtrue RuntimeDirectory=3Dopenvpn-server RuntimeDirectoryMod=
-e=3D0710
-> >  WorkingDirectory=3D/etc/openvpn/server
-> > -ExecStartPre=3D/bin/sh -c 'grep -q -E ^daemon %i.conf || exit 0
-> > && /usr/bin/echo "OpenVPN configuration cannot contain --daemon when
-> > being managed by systemd" ; exit 1' ExecStart=3D/usr/sbin/openvpn --sta=
-tus
-> > %t/openvpn-server/status-%i.log --status-version 2 --suppress-timestamps
-> > --config %i.conf CapabilityBoundingSet=3DCAP_IPC_LOCK CAP_NET_ADMIN
-> > CAP_NET_BIND_SERVICE CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_CHROOT
-> > CAP_DAC_OVERRIDE LimitNPROC=3D10 diff --git a/src/openvpn/init.c
-> > b/src/openvpn/init.c index 551e579..7ab5c52 100644 ---
-> > a/src/openvpn/init.c +++ b/src/openvpn/init.c @@ -926,6 +926,13 @@ bool
-> >  possibly_become_daemon (const struct options *options)
-> >  {
-> >    bool ret =3D false;
-> > +
-> > +#ifdef ENABLE_SYSTEMD
-> > +  /* return without forking if we are running from systemd */
-> > +  if (sd_notify(0, "READY=3D0") > 0)
-> > +    return ret;
-> > +#endif
-> > +
-> >    if (options->daemon)
-> >      {
-> >        ASSERT (!options->inetd);
-> >=20=20=20
->=20
-> NAK on this approach.  We cannot dictate that users _must_ start OpenVPN
-> as a daemon via systemd if it has been built with systemd support.
->=20
-> I understand the sentiment for this change, but we need to ensure users
-> may use their own scripts and hand-crafted configs to start OpenVPN,
-> also if systemd is present.
+Fabian,
 
-We do not dictate anything. Starting openvpn from scripts or command line
-this is a no-op. From man sd_notify(3):
+Have you by any chance ported this patch set forward to the current
+OpenVPN master / 2.4. beta?
 
-> On failure, these calls return a negative errno-style error code. If
-> $NOTIFY_SOCKET was not set and hence no status data could be sent, 0 is
-> returned. If the status was sent, these functions return with a positive
-> return value. In order to support both, init systems that implement this
-> scheme and those which do not, it is generally recommended to ignore the
-> return value of this call.
+We have used a variation of it, and gained a noticeable performance boost,
+for a long time. Thanks to the deferred client-connect handling the
+openvpn server does not stop packet processing while a client-connect
+handler plugin is doing what it needs to do, reducing jitter and packet 
+loss for other clients.
 
-That is what we check for here: If (and only if) openvpn is started from
-systemd (read: from a systemd unit/service) it denies to fork. The openvpn
-service starts properly even with "daemon" in config file.
+It'd be great to have this merged in the master tree at some point.
 
-This is unrelated to systemd being installed or the system being booted with
-systemd.
---=20
-main(a){char*c=3D/*    Schoene Gruesse                         */"B?IJj;MEH"
-"CX:;",b;for(a/*    Best regards             my address:    */=3D0;b=3Dc[a+=
-+];)
-putchar(b-1/(/*    Chris            cc -ox -xc - && ./x    */b/42*2-3)*42);}
 
---Sig_/G4Gcluvby.j+AeCojAMx/sk
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
+On Sat, 17 Jan 2015, Fabian Knittel wrote:
 
------BEGIN PGP SIGNATURE-----
+> Uses the infrastructure provided and used in the previous patch to provide
+> deferral support to the v1 client-connect plugin handler as well.
+>
+> Signed-off-by: Fabian Knittel <fabian.knittel@...1547...>
+> ---
+> src/openvpn/multi.c | 32 ++++++++++++++++++++------------
+> 1 file changed, 20 insertions(+), 12 deletions(-)
+>
+> diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+> index 68a7248..ab73034 100644
+> --- a/src/openvpn/multi.c
+> +++ b/src/openvpn/multi.c
+> @@ -1814,6 +1814,7 @@ multi_client_connect_call_plugin_v1 (struct multi_context *m,
+> {
+>   enum client_connect_return ret = CC_RET_SKIPPED;
+> #ifdef ENABLE_PLUGIN
+> +  struct client_connect_state *ccs = mi->client_connect_state;
+>   ASSERT (m);
+>   ASSERT (mi);
+>   ASSERT (option_types_found);
+> @@ -1821,34 +1822,41 @@ multi_client_connect_call_plugin_v1 (struct multi_context *m,
+>   if (plugin_defined (mi->context.plugins, OPENVPN_PLUGIN_CLIENT_CONNECT))
+>     {
+>       int plug_ret;
+> -      struct gc_arena gc = gc_new ();
+>       struct argv argv = argv_new ();
+> -      const char *dc_file = create_temp_file (mi->context.options.tmp_dir, "cc", &gc);
+>
+> -      if (!dc_file)
+> +      if (!ccs_gen_config_file (mi) ||
+> +	  !ccs_gen_deferred_ret_file (mi))
+> 	{
+> 	  ret = CC_RET_FAILED;
+> -	  goto script_depr_failed;
+> +	  goto cleanup;
+> 	}
+>
+> -      argv_printf (&argv, "%s", dc_file);
+> +      argv_printf (&argv, "%s", ccs->config_file);
+>
+>       plug_ret = plugin_call (mi->context.plugins,
+> 			      OPENVPN_PLUGIN_CLIENT_CONNECT,
+> 			      &argv, NULL, mi->context.c2.es);
+>       argv_reset (&argv);
+> -      if (plug_ret != OPENVPN_PLUGIN_FUNC_SUCCESS)
+> +      if (plug_ret == OPENVPN_PLUGIN_FUNC_SUCCESS)
+> +	{
+> +	  multi_client_connect_post (m, mi, ccs->config_file,
+> +				     option_types_found);
+> +	  ret = CC_RET_SUCCEEDED;
+> +	}
+> +      else if (plug_ret == OPENVPN_PLUGIN_FUNC_DEFERRED)
+> +	ret = CC_RET_DEFERRED;
+> +      else
+> 	{
+> 	  msg (M_WARN, "WARNING: client-connect plugin call failed");
+> 	  ret = CC_RET_FAILED;
+> 	}
+> -      else
+> +
+> +cleanup:
+> +      if (ret != CC_RET_DEFERRED)
+> 	{
+> -	  multi_client_connect_post (m, mi, dc_file, option_types_found);
+> -	  ret = CC_RET_SUCCEEDED;
+> +	  ccs_delete_config_file (mi);
+> +	  ccs_delete_deferred_ret_file (mi);
+> 	}
+> -script_depr_failed:
+> -      gc_free (&gc);
+>     }
+> #endif
+>   return ret;
+> @@ -2141,7 +2149,7 @@ static const struct client_connect_handlers client_connect_handlers[] = {
+>   },
+>   {
+>     main: multi_client_connect_call_plugin_v1,
+> -    deferred: multi_client_connect_fail
+> +    deferred: multi_client_handle_deferred
+>   },
+>   {
+>     main: multi_client_connect_call_plugin_v2,
+> -- 
+> 2.1.4
+>
+>
+> ------------------------------------------------------------------------------
+> New Year. New Location. New Benefits. New Data Center in Ashburn, VA.
+> GigeNET is offering a free month of service with a new server in Ashburn.
+> Choose from 2 high performing configs, both with 100TB of bandwidth.
+> Higher redundancy.Lower latency.Increased capacity.Completely compliant.
+> http://p.sf.net/sfu/gigenet
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+>
 
-iQEzBAEBCAAdFiEEXHmveYAHrRp+prOviUUh18yA9HYFAlg+xHQACgkQiUUh18yA
-9Ha8ZwgAuH9TN/8plOb4crE3c6dn0tS7yUn7ibfM0kaKOWXVbQSG1R04vIs2NcWq
-3DEClszKFmjWRgJtHEoPnJpELHYJiRBzyDEFOhRgyGC6809tb7UfZ+w31xVZ2jEc
-E5ABi7PFq7i+E8ALCxVPs0o2kZTPzrHGDyn0mIiINPwV+Le3y3pLbpZ5g65GOPBW
-jzTdTweW1Cn9bhum1EzKSxuB0Sz6ihz8LW7MZOfTXAnQwogEDwoUXeYIm7rHZDi5
-bocApFy4Y4Wj/BIYSb2tYAoUZsBbzMUB6Boq/dFayWA7WD4fiD0QUXbMQijIe0t4
-TOJxAOsFbHwK2Luk5ussNR0Wsy6DXQ==
-=yfaZ
------END PGP SIGNATURE-----
+   - Hessu
 
---Sig_/G4Gcluvby.j+AeCojAMx/sk--
 
