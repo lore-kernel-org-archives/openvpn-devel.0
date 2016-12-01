@@ -1,13 +1,7 @@
-From: =?UTF-8?B?U3ZpTWlr?= <svimik@...450...>
-MIME-Version: 1.0
-Date: Thu, 01 Dec 2016 05:15:11 +0300
-Message-ID: <1480558511.253304921@...2201...>
-In-Reply-To: <1480545687-19365-1-git-send-email-davids@...515...>
-References: <1480545687-19365-1-git-send-email-davids@...515...>
-Subject: Re: [Openvpn-devel]
- =?utf-8?q?=5BPATCH=5D_push=3A_Provide_a_warning_i?=
- =?utf-8?q?f_--ifconfig-push_have_argument_mismatch_with_--topology?=
-Reply-To: =?UTF-8?B?U3ZpTWlr?= <svimik@...450...>
+From: Antonio Quartulli <a@...2181...>
+Date: Thu,  1 Dec 2016 14:55:34 +0800
+Message-Id: <20161201065534.15050-1-a@...2181...>
+Subject: [Openvpn-devel] [PATCH v2] reload CRL only if file was modified
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,42 +11,178 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-To: =?UTF-8?B?RGF2aWQgU29tbWVyc2V0aA==?= <davids@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Antonio Quartulli <a@...2181...>
 
-V2hpbGUgSSBhZG1pdCB0aGF0IGl0IGlzICpleHRyZW1lbHkqIHVubGlrZWx5IHRvIGhhdmUgYSBu
-ZXR3b3JrIGxhcmdlciB0aGFuIC84LCBzdWNoIGxvZ2ljIHN0aWxsIGxvb2tzIGEgbGl0dGxlIGNs
-dW1zeS4gSXQgZG9lcyBub3QgY292ZXIgYWxsIHRoZSB2YWxpZCBuZXRtYXNrcyBuZWl0aGVyIGl0
-IGRldGVjdHMgYWxsIHBvc3NpYmxlIGludmFsaWQgb25lcy4KCklmIHlvdSB3aXNoIHRvIHRlc3Qg
-aWYgdGhlIG5ldG1hc2sgaXMgdmFsaWQsIHRoaXMgc29sdXRpb24gY291bGQgYmUgYmV0dGVyOgpo
-dHRwOi8vc3RhY2tvdmVyZmxvdy5jb20vcXVlc3Rpb25zLzE3NDAxMDY3L2MtY29kZS1mb3ItdmFs
-aWQtbmV0bWFzawoKCj4gVGhpcyBhZGRzIGEgd2FybmluZyB0byB0aGUgbG9nIGZpbGUgaWYgLS10
-b3BvbG9neSBpcyBjb25maWd1cmVkIHRvIHVzZQo+IHN1Ym5ldCBvciBuZXQzMCBhbmQgdGhlICdz
-dWJuZXQgbWFzaycgYXJndW1lbnQgb2YgYW4gLS1pZmNvbmZpZy1wdXNoIG9wdGlvbgo+IGlzIG5v
-dCBhbiBzdWJuZXQgbWFzay4gIFRoZSBjaGVjayBkb25lIGlzIHRvIGVuc3VyZSB0aGUgZmlyc3Qg
-b2N0ZXQgaXMgMHhmZgo+ICgyNTUpCj4gCj4gVHJhYzogIzc1NQo+IFNpZ25lZC1vZmYtYnk6IERh
-dmlkIFNvbW1lcnNldGggPGRhdmlkc0AuLi41MTUuLi4+Cj4gLS0tCj4gIHNyYy9vcGVudnBuL3B1
-c2guYyB8IDEwICsrKysrKysrKysKPiAgMSBmaWxlIGNoYW5nZWQsIDEwIGluc2VydGlvbnMoKykK
-PiAKPiBkaWZmIC0tZ2l0IGEvc3JjL29wZW52cG4vcHVzaC5jIGIvc3JjL29wZW52cG4vcHVzaC5j
-Cj4gaW5kZXggOTk1MzA3OS4uMDgxOWJmOCAxMDA2NDQKPiAtLS0gYS9zcmMvb3BlbnZwbi9wdXNo
-LmMKPiArKysgYi9zcmMvb3BlbnZwbi9wdXNoLmMKPiBAQCAtMzMzLDYgKzMzMywxNiBAQCBwcmVw
-YXJlX3B1c2hfcmVwbHkgKHN0cnVjdCBjb250ZXh0ICpjLCBzdHJ1Y3QgZ2NfYXJlbmEKPiAqZ2Ms
-Cj4gIAkJICAgICAgIHByaW50X2luX2FkZHJfdCAoaWZjb25maWdfbG9jYWwsIDAsIGdjKSwKPiAg
-CQkgICAgICAgcHJpbnRfaW5fYWRkcl90IChjLT5jMi5wdXNoX2lmY29uZmlnX3JlbW90ZV9uZXRt
-YXNrLAo+ICAJCQkJCTAsIGdjKSk7Cj4gKwo+ICsgICAgICAvKiBXYXJuIGlmIGlmY29uZmlnX3Jl
-bW90ZV9uZXRtYXNrIGRvZXMgbm90IGNvbnRhaW4KPiArICAgICAgICogc3VibmV0IG1hc2sgaW4g
-c3VibmV0IHRvcG9sb2d5ICovCj4gKyAgICAgIGlmICgoYy0+b3B0aW9ucy50b3BvbG9neSA9PSBU
-T1BfU1VCTkVUIHx8IGMtPm9wdGlvbnMudG9wb2xvZ3kgPT0KPiBUT1BfTkVUMzApCj4gKyAgICAg
-ICAgICAmJiAoYy0+YzIucHVzaF9pZmNvbmZpZ19yZW1vdGVfbmV0bWFzayAmIDB4ZmYwMDAwMDAp
-ICE9IDB4ZmYwMDAwMDApCj4gKyAgICAgICAgewo+ICsgICAgICAgICAgbXNnKE1fV0FSTiwgIldB
-Uk5JTkc6IFdoZW4gLS10b3BvbG9neSBpcyBzdWJuZXQgb3IgbmV0MzAsIHRoZQo+IHNlY29uZCBh
-cmd1bWVudCAiCj4gKyAgICAgICAgICAgICAgInRvIC0taWZjb25maWctcHVzaCBNVVNUIGJlIGEg
-c3VibmV0IG1hc2suICBUaGlzIGNsaWVudCB3aWxsCj4gbm90IGJlIGFibGUgIgo+ICsgICAgICAg
-ICAgICAgICJ0byBjb25uZWN0LiIpOwo+ICsgICAgICAgIH0KPiAgICAgIH0KPiAgCj4gICAgLyog
-U2VuZCBwZWVyLWlkIGlmIGNsaWVudCBzdXBwb3J0cyBpdCAqLwo+IC0tIAo+IDEuOC4zLjEKPiAK
-PiAKPiAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KPiBfX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fXwo+IE9wZW52cG4tZGV2ZWwgbWFpbGluZyBsaXN0Cj4gT3BlbnZw
-bi1kZXZlbEBsaXN0cy5zb3VyY2Vmb3JnZS5uZXQKPiBodHRwczovL2xpc3RzLnNvdXJjZWZvcmdl
-Lm5ldC9saXN0cy9saXN0aW5mby9vcGVudnBuLWRldmVsCj4g
+In order to prevent annoying delays upon client connection,
+reload the CRL file only if it was modified since the last
+reload operation.
+If not, keep on using the already stored CRL.
+
+This change will boost client connection time in instances
+where the CRL file is quite large (dropping from several
+seconds to few milliseconds).
+
+Cc: Steffan Karger <steffan.karger@...1435...>
+Signed-off-by: Antonio Quartulli <a@...2181...>
+---
+
+Tested on linux by using my VM.
+No test was performed on Windows* (compiled-only).
+
+Note: the check "!(session->opt->ssl_flags & SSLF_CRL_VERIFY_DIR))" may not
+always work as expected. The user may forge a wrong, but still compliant,
+configuration that would fool this test. This issue exists even before applying
+this patch.
+
+Changes since v1:
+- move tls_ctx_reload_crl() before any invocation
+- add doxygen-doc for tls_ctx_reload_crl()
+- add check against CRL size file
+- simplify tls_ctx_reload_crl() by removing reload argument
+
+
+ src/openvpn/ssl.c         | 48 ++++++++++++++++++++++++++++++++++++++++++++++-
+ src/openvpn/ssl_backend.h |  2 +-
+ src/openvpn/ssl_mbedtls.c |  2 +-
+ src/openvpn/ssl_mbedtls.h |  2 ++
+ src/openvpn/ssl_openssl.c |  2 +-
+ src/openvpn/ssl_openssl.h |  2 ++
+ 6 files changed, 54 insertions(+), 4 deletions(-)
+
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 7347a78..ac47d68 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -512,6 +512,49 @@ tls_version_parse(const char *vstr, const char *extra)
+     return TLS_VER_BAD;
+ }
+ 
++/**
++ * Load (or possibly reload) the CRL file into the SSL context.
++ * No reload is performed under the following conditions:
++ * - the CRL file was passed inline
++ * - the CRL file was not modified since the last (re)load
++ *
++ * @param ssl_ctx       The TLS context to use when reloading the CRL
++ * @param crl_file      The file name to load the CRL from, or
++ *                      "[[INLINE]]" in the case of inline files.
++ * @param crl_inline    A string containing the CRL
++ */
++static void
++tls_ctx_reload_crl(struct tls_root_ctx *ssl_ctx, const char *crl_file,
++		   const char *crl_file_inline)
++{
++  /* if something goes wrong with stat(), we'll store 0 as mtime */
++  platform_stat_t crl_stat = {0};
++
++  /*
++   * an inline CRL can't change at runtime, therefore there is no need to
++   * reload it. It will be reloaded upon config change + SIGHUP.
++   * Use always '1' as dummy timestamp in this case: it will trigger the
++   * first load, but will prevent any future reload.
++   */
++  if (crl_file_inline)
++    crl_stat.st_mtime = 1;
++  else
++    platform_stat(crl_file, &crl_stat);
++
++  /*
++   * Store the CRL if this is the first time or if the file was changed since
++   * the last load.
++   * Note: Windows does not support tv_nsec.
++   */
++  if ((ssl_ctx->crl_last_size == crl_stat.st_size) &&
++      (ssl_ctx->crl_last_mtime.tv_sec == crl_stat.st_mtime))
++    return;
++
++  ssl_ctx->crl_last_mtime.tv_sec = crl_stat.st_mtime;
++  ssl_ctx->crl_last_size = crl_stat.st_size;
++  backend_tls_ctx_reload_crl(ssl_ctx, crl_file, crl_file_inline);
++}
++
+ /*
+  * Initialize SSL context.
+  * All files are in PEM format.
+@@ -2581,7 +2624,10 @@ tls_process (struct tls_multi *multi,
+ 	  ks->state = S_START;
+ 	  state_change = true;
+ 
+-	  /* Reload the CRL before TLS negotiation */
++	  /*
++	   * Attempt CRL reload before TLS negotiation. Won't be performed if
++	   * the file was not modified since the last reload
++	   */
+ 	  if (session->opt->crl_file &&
+ 	      !(session->opt->ssl_flags & SSLF_CRL_VERIFY_DIR))
+ 	    {
+diff --git a/src/openvpn/ssl_backend.h b/src/openvpn/ssl_backend.h
+index 0777c61..3fbd2b4 100644
+--- a/src/openvpn/ssl_backend.h
++++ b/src/openvpn/ssl_backend.h
+@@ -353,7 +353,7 @@ void key_state_ssl_free(struct key_state_ssl *ks_ssl);
+  *                      "[[INLINE]]" in the case of inline files.
+  * @param crl_inline    A string containing the CRL
+  */
+-void tls_ctx_reload_crl(struct tls_root_ctx *ssl_ctx,
++void backend_tls_ctx_reload_crl(struct tls_root_ctx *ssl_ctx,
+     const char *crl_file, const char *crl_inline);
+ 
+ /**
+diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
+index 7fa35a7..11ee65b 100644
+--- a/src/openvpn/ssl_mbedtls.c
++++ b/src/openvpn/ssl_mbedtls.c
+@@ -771,7 +771,7 @@ static void tls_version_to_major_minor(int tls_ver, int *major, int *minor) {
+ }
+ 
+ void
+-tls_ctx_reload_crl(struct tls_root_ctx *ctx, const char *crl_file,
++backend_tls_ctx_reload_crl(struct tls_root_ctx *ctx, const char *crl_file,
+     const char *crl_inline)
+ {
+   ASSERT (crl_file);
+diff --git a/src/openvpn/ssl_mbedtls.h b/src/openvpn/ssl_mbedtls.h
+index 3edeedc..a4a7f05 100644
+--- a/src/openvpn/ssl_mbedtls.h
++++ b/src/openvpn/ssl_mbedtls.h
+@@ -74,6 +74,8 @@ struct tls_root_ctx {
+     mbedtls_x509_crt *ca_chain;		/**< CA chain for remote verification */
+     mbedtls_pk_context *priv_key;	/**< Local private key */
+     mbedtls_x509_crl *crl;              /**< Certificate Revocation List */
++    struct timespec crl_last_mtime;     /**< CRL last modification time */
++    off_t crl_last_size;		/**< size of last loaded CRL */
+ #if defined(ENABLE_PKCS11)
+     mbedtls_pkcs11_context *priv_key_pkcs11;	/**< PKCS11 private key */
+ #endif
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index 51669fc..4f472ff 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -772,7 +772,7 @@ end:
+ }
+ 
+ void
+-tls_ctx_reload_crl(struct tls_root_ctx *ssl_ctx, const char *crl_file,
++backend_tls_ctx_reload_crl(struct tls_root_ctx *ssl_ctx, const char *crl_file,
+         const char *crl_inline)
+ {
+   X509_CRL *crl = NULL;
+diff --git a/src/openvpn/ssl_openssl.h b/src/openvpn/ssl_openssl.h
+index 97dc742..115ac43 100644
+--- a/src/openvpn/ssl_openssl.h
++++ b/src/openvpn/ssl_openssl.h
+@@ -49,6 +49,8 @@
+  */
+ struct tls_root_ctx {
+     SSL_CTX *ctx;
++    struct timespec crl_last_mtime;
++    off_t crl_last_size;
+ };
+ 
+ struct key_state_ssl {
+-- 
+2.11.0
+
+
