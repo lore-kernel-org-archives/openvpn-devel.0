@@ -1,11 +1,13 @@
-MIME-Version: 1.0
+Date: Thu, 1 Dec 2016 21:19:09 +0100
+From: Christian Hesse <list@...1798...>
+Message-ID: <20161201211909.23ff077a@...1799...>
 In-Reply-To: <20161201173953.GQ78624@...1296...>
 References: <20161201164328.30634-1-list@...1798...>
 	<20161201173953.GQ78624@...1296...>
-From: Selva Nair <selva.nair@...277...>
-Date: Thu, 1 Dec 2016 13:18:01 -0500
-Message-ID: <CAKuzo_gkUEUpVJO1i_eUNwZKLJsOtrKneN50BLS62AXkpD3s1A@...278...>
-Content-Type: multipart/alternative; boundary=94eb2c0438e0c1d65605429cd8f5
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	boundary="Sig_/5gGlpMxxqNSZEkt37KYpB0G";
+	protocol="application/pgp-signature"
 Subject: Re: [Openvpn-devel] [PATCH 1/1] update year in copyright for README
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -15,71 +17,56 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Gert Doering <gert@...1296...>
+Cc: Christian Hesse <mail@...1798...>, openvpn-devel@lists.sourceforge.net
 
---94eb2c0438e0c1d65605429cd8f5
-Content-Type: text/plain; charset=UTF-8
-
-Hi,
-
-On Thu, Dec 1, 2016 at 12:39 PM, Gert Doering <gert@...1296...> wrote:
-
-> On Thu, Dec 01, 2016 at 05:43:28PM +0100, Christian Hesse wrote:
-> > From: Christian Hesse <mail@...1798...>
-> >
-> > This line has not been touched in a long time... Let's
-> > update the copyright with recent year for README.
->
-> I'm fine with merging these, but... could you send a combined
-> copyright-date-updating patch for *all* occurances, please?
->
-> Each patch that is merged is a few minutes work which should be
-> spent thoughtfully :-)
->
-
-IANL, but looks like the year update is just for "optics". Technically the
-first year of publication should be enough, isn't it? Anyway updating
-Copyright 2002-2010 to 2002-2016 would mean some changes where made in 2016
-which is true for README, but tedious to figure out for each and every
-file.
-
-A simpler approach would be to update it only COPYING and let people who do
-substantial edits to a file update copyright at that time if they feel the
-urge...
-
-Selva
-
---94eb2c0438e0c1d65605429cd8f5
-Content-Type: text/html; charset="UTF-8"
+--Sig_/5gGlpMxxqNSZEkt37KYpB0G
+Content-Type: text/plain; charset="US-ASCII"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr"><div class=3D"gmail_extra">Hi,</div><div class=3D"gmail_ex=
-tra"><br><div class=3D"gmail_quote">On Thu, Dec 1, 2016 at 12:39 PM, Gert D=
-oering <span dir=3D"ltr">&lt;<a href=3D"mailto:gert@...1296..." target=3D"_=
-blank">gert@...1296...</a>&gt;</span> wrote:<br><blockquote class=3D"gmail_=
-quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1=
-ex"><div id=3D":3vf" class=3D"a3s aXjCH m158bb7b12aa3980d">On Thu, Dec 01, =
-2016 at 05:43:28PM +0100, Christian Hesse wrote:<br>
-&gt; From: Christian Hesse &lt;<a href=3D"mailto:mail@...1798...">mail@...1386...=
-798...</a>&gt;<br>
-&gt;<br>
-&gt; This line has not been touched in a long time... Let&#39;s<br>
-&gt; update the copyright with recent year for README.<br>
-<br>
-I&#39;m fine with merging these, but... could you send a combined<br>
-copyright-date-updating patch for *all* occurances, please?<br>
-<br>
-Each patch that is merged is a few minutes work which should be<br>
-spent thoughtfully :-)</div></blockquote></div><br>IANL, but looks like the=
- year update is just for &quot;optics&quot;. Technically the first year of =
-publication should be enough, isn&#39;t it? Anyway updating Copyright 2002-=
-2010 to 2002-2016 would mean some changes where made in 2016 which is true =
-for README, but tedious to figure out for each and every file.=C2=A0</div><=
-div class=3D"gmail_extra"><br></div><div class=3D"gmail_extra">A simpler ap=
-proach would be to update it only COPYING and let people who do substantial=
- edits to a file update copyright at that time if they feel the urge...</di=
-v><div class=3D"gmail_extra"><br></div><div class=3D"gmail_extra">Selva</di=
-v></div>
+Gert Doering <gert@...1296...> on Thu, 2016/12/01 18:39:
+> Hi,
+>=20
+> On Thu, Dec 01, 2016 at 05:43:28PM +0100, Christian Hesse wrote:
+> > From: Christian Hesse <mail@...1798...>
+> >=20
+> > This line has not been touched in a long time... Let's
+> > update the copyright with recent year for README.=20=20
+>=20
+> I'm fine with merging these, but... could you send a combined=20
+> copyright-date-updating patch for *all* occurances, please?
 
---94eb2c0438e0c1d65605429cd8f5--
+I will stop here. ;) Did not want to annoy anybody.
+
+IMHO README and program output are valid for the whole project, so it makes
+sense to update these. No need to update all and every occurrence.
+
+> Each patch that is merged is a few minutes work which should be
+> spent thoughtfully :-)
+
+Agreed. :D Sorry, I should have checked the README file when I prepared the
+first patch.
+--=20
+main(a){char*c=3D/*    Schoene Gruesse                         */"B?IJj;MEH"
+"CX:;",b;for(a/*    Best regards             my address:    */=3D0;b=3Dc[a+=
++];)
+putchar(b-1/(/*    Chris            cc -ox -xc - && ./x    */b/42*2-3)*42);}
+
+--Sig_/5gGlpMxxqNSZEkt37KYpB0G
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEXHmveYAHrRp+prOviUUh18yA9HYFAlhAhb0ACgkQiUUh18yA
+9HbcBggAwTpv/Ke8QQdhU8sszLXNxkAPjaDnD3wjpbPL/Fxjy4AfcpNqQIuwCGKX
+xc+iOzP203EHQ7cNdRoZp3uWCi03S+HuNKfCn4n5+Vtn0hVu27NKNC1f7SyHkMlc
+Teb6HVotqsYTZHeAMNSNX/w67D1TUHgUFYnbPJv4UQqiikm7EkUHgeNn6djUdckN
+xeHn6FVWFjGkLH/EKbjzRQgC2KDx4CdENYXX+SXmTM1wwhePMkSbeK5Rm+GWQcML
+cajFLSPSMNgkGfvClWQSDXv89oqcbdR5u+MePQ6adBtoyJLhq5ESEFpsTuBZO+Dz
+DhSoFXs5VlcVeL95FjoT0EIwVjkAig==
+=fF7v
+-----END PGP SIGNATURE-----
+
+--Sig_/5gGlpMxxqNSZEkt37KYpB0G--
 
