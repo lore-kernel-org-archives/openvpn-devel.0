@@ -1,8 +1,13 @@
-From: Christian Hesse <list@...1798...>
-Date: Thu,  1 Dec 2016 22:31:03 +0100
-Message-Id: <20161201213104.5667-1-list@...1798...>
-Subject: [Openvpn-devel] [PATCH v3 1/2] Use systemd service manager
-	notification
+MIME-Version: 1.0
+In-Reply-To: <201612010821.uB18LTdC072864@...2054...>
+References: <1480542696-7123-1-git-send-email-selva.nair@...277...>
+	<201612010821.uB18LTdC072864@...2054...>
+From: Selva Nair <selva.nair@...277...>
+Date: Thu, 1 Dec 2016 17:25:49 -0500
+Message-ID: <CAKuzo_ix65GDUitzwTdFhCPm5Gyd6NjtHG0+78Rnu_fPmPUvuA@...278...>
+Content-Type: multipart/alternative; boundary=001a11376232ef3a5e0542a04eb1
+Subject: Re: [Openvpn-devel] [PATCH applied] Re: Do not restart dns client
+ service as a part of --register-dns processing
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,90 +16,57 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Christian Hesse <mail@...1798...>
+To: Gert Doering <gert@...1296...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-From: Christian Hesse <mail@...1798...>
+--001a11376232ef3a5e0542a04eb1
+Content-Type: text/plain; charset=UTF-8
 
-Notify systemd service manager when our initialization sequence
-completed. This helps ordering services as dependencies can rely on vpn
-being available.
+Hi,
 
-v2: Add curly brackets (and indention) to block the else-part, msg()
-    call was non-conditional before.
+On Thu, Dec 1, 2016 at 3:21 AM, Gert Doering <gert@...1296...> wrote:
 
-v3: Move systemd header include from init.h to init.c.
+> ACK, thanks.
+>
+> Code looks good, and test compiles.  Have not test-run yet but do not
+> expect any surprises there.
+>
+> I have added a Changes.rst entry (someone *might* notice and wonder if
+> this was intentional :) ) and updated doc/openvpn.8 and the help text
+> in options.c which both used to list all the commands run...
+>
+> Your patch has been applied to the master branch.
+>
 
-Signed-off-by: Christian Hesse <mail@...1798...>
----
- distro/systemd/openvpn-client@...1685... |  1 +
- distro/systemd/openvpn-server@...1685... |  1 +
- src/openvpn/init.c                     | 14 +++++++++++++-
- 3 files changed, 15 insertions(+), 1 deletion(-)
+Do we want this in 2.3.14 as well ? If so I'll send a patch with service
+part removed (note to self: remember to include docs and Changes.rst edits)
 
-diff --git a/distro/systemd/openvpn-client@...1685... b/distro/systemd/openvpn-client@...1685...
-index 18b84dd..f64a239 100644
---- a/distro/systemd/openvpn-client@...1685...
-+++ b/distro/systemd/openvpn-client@...1685...
-@@ -7,6 +7,7 @@ Documentation=https://community.openvpn.net/openvpn/wiki/Openvpn24ManPage
- Documentation=https://community.openvpn.net/openvpn/wiki/HOWTO
- 
- [Service]
-+Type=notify
- PrivateTmp=true
- RuntimeDirectory=openvpn-client
- RuntimeDirectoryMode=0710
-diff --git a/distro/systemd/openvpn-server@...1685... b/distro/systemd/openvpn-server@...1685...
-index a2b7b52..890e6a9 100644
---- a/distro/systemd/openvpn-server@...1685...
-+++ b/distro/systemd/openvpn-server@...1685...
-@@ -7,6 +7,7 @@ Documentation=https://community.openvpn.net/openvpn/wiki/Openvpn24ManPage
- Documentation=https://community.openvpn.net/openvpn/wiki/HOWTO
- 
- [Service]
-+Type=notify
- PrivateTmp=true
- RuntimeDirectory=openvpn-server
- RuntimeDirectoryMode=0710
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 2ccbab2..f99c934 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -30,6 +30,10 @@
- 
- #include "syshead.h"
- 
-+#ifdef ENABLE_SYSTEMD
-+#include <systemd/sd-daemon.h>
-+#endif
-+
- #include "win32.h"
- #include "init.h"
- #include "sig.h"
-@@ -1251,11 +1255,19 @@ initialization_sequence_completed (struct context *c, const unsigned int flags)
-       show_adapters (M_INFO|M_NOPREFIX);
-       msg (M_INFO, "%s With Errors ( see http://openvpn.net/faq.html#dhcpclientserv )", message);
- #else
-+#ifdef ENABLE_SYSTEMD
-+      sd_notifyf(0, "STATUS=Failed to start up: %s With Errors\nERRNO=1", message);
-+#endif /* HAVE_SYSTEMD_SD_DAEMON_H */
-       msg (M_INFO, "%s With Errors", message);
- #endif
-     }
-   else
--    msg (M_INFO, "%s", message);
-+    {
-+#ifdef ENABLE_SYSTEMD
-+      sd_notifyf(0, "READY=1\nSTATUS=%s\nMAINPID=%lu", message, (unsigned long) getpid());
-+#endif
-+      msg (M_INFO, "%s", message);
-+    }
- 
-   /* Flag that we initialized */
-   if ((flags & (ISC_ERRORS|ISC_SERVER)) == 0)
--- 
-2.10.2
+Selva
 
+--001a11376232ef3a5e0542a04eb1
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div class=3D"gmail_extra">Hi,</div><div class=3D"gmail_ex=
+tra"><br><div class=3D"gmail_quote">On Thu, Dec 1, 2016 at 3:21 AM, Gert Do=
+ering <span dir=3D"ltr">&lt;<a href=3D"mailto:gert@...1296..." target=3D"_b=
+lank">gert@...1296...</a>&gt;</span> wrote:<br><blockquote class=3D"gmail_q=
+uote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1e=
+x">ACK, thanks.<br>
+<br>
+Code looks good, and test compiles.=C2=A0 Have not test-run yet but do not<=
+br>
+expect any surprises there.<br>
+<br>
+I have added a Changes.rst entry (someone *might* notice and wonder if<br>
+this was intentional :) ) and updated doc/openvpn.8 and the help text<br>
+in options.c which both used to list all the commands run...<br>
+<br>
+Your patch has been applied to the master branch.<br></blockquote><div><br>=
+</div><div>Do we want this in 2.3.14 as well ? If so I&#39;ll send a patch =
+with service</div><div>part removed (note to self: remember to include docs=
+ and Changes.rst edits)</div></div><br></div><div class=3D"gmail_extra">Sel=
+va</div></div>
+
+--001a11376232ef3a5e0542a04eb1--
 
