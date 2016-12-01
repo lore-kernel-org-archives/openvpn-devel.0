@@ -1,14 +1,9 @@
+From: samuli@...515...
+Date: Thu,  1 Dec 2016 16:03:05 +0200
+Message-Id: <1480600985-25074-1-git-send-email-samuli@...515...>
 MIME-Version: 1.0
-In-Reply-To: <20161201123306.GK78624@...1296...>
-References: <1480545687-19365-1-git-send-email-davids@...515...>
-	<20161201080132.GC78624@...1296...>
-	<9796b12f-21c2-d9ed-90e3-51de843b2eb8@...2080...>
-	<20161201123306.GK78624@...1296...>
-From: Steffan Karger <steffan@...1856...>
-Date: Thu, 1 Dec 2016 13:35:49 +0100
-Message-ID: <CAA1AbxLbWojTD_gzqHGEkpYnSG3GSKakV0QEVptq+YURLqK4Ww@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] push: Provide a warning if
- --ifconfig-push have argument mismatch with --topology
+Subject: [Openvpn-devel] [PATCH] Mention that OpenVPN 2.4 requires Windows
+	Vista or higher
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,15 +12,34 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
-Cc: David Sommerseth <davids@...515...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+To: openvpn-devel@lists.sourceforge.net
 
-On 1 December 2016 at 13:33, Gert Doering <gert@...1296...> wrote:
->    ((uchar *)&c->c2.push_ifconfig_remote_netmask)[0]
+From: Samuli Sepp=C3=A4nen <samuli@...515...>
 
-Looks like dereferencing a type-punned pointer to me ;)
+Trac: #610
 
--Steffan
+Signed-off-by: Samuli Sepp=C3=A4nen <samuli@...515...>
+---
+ INSTALL | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/INSTALL b/INSTALL
+index 4c6d21f..9707060 100644
+--- a/INSTALL
++++ b/INSTALL
+@@ -59,7 +59,8 @@ SUPPORTED PLATFORMS:
+   (4) Mac OS X Darwin 10.5+
+   (5) FreeBSD 7.4+
+   (6) NetBSD 5.0+
+-  (7) Windows (WinXP and higher)
++  (7) Windows Vista or later for OpenVPN 2.4
++  (8) Windows XP or later for OpenVPN 2.3
+=20
+ SUPPORTED PROCESSOR ARCHITECTURES:
+    In general, OpenVPN is word size and endian independent, so
+--=20
+2.1.4
+
 
