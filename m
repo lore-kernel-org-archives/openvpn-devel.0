@@ -1,13 +1,10 @@
-MIME-Version: 1.0
-In-Reply-To: <201612010821.uB18LTdC072864@...2054...>
-References: <1480542696-7123-1-git-send-email-selva.nair@...277...>
-	<201612010821.uB18LTdC072864@...2054...>
-From: Selva Nair <selva.nair@...277...>
-Date: Thu, 1 Dec 2016 17:25:49 -0500
-Message-ID: <CAKuzo_ix65GDUitzwTdFhCPm5Gyd6NjtHG0+78Rnu_fPmPUvuA@...278...>
-Content-Type: multipart/alternative; boundary=001a11376232ef3a5e0542a04eb1
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: Do not restart dns client
- service as a part of --register-dns processing
+From: David Sommerseth <davids@...515...>
+Date: Fri,  2 Dec 2016 00:27:13 +0100
+Message-Id: <1480634833-5339-1-git-send-email-davids@...515...>
+In-Reply-To: <20161201213104.5667-1-list@...1798...>
+References: <20161201213104.5667-1-list@...1798...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Use systemd service manager
+	notification
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,57 +13,58 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: mail@...1798...
+Cc: openvpn-devel@lists.sourceforge.net
 
---001a11376232ef3a5e0542a04eb1
-Content-Type: text/plain; charset=UTF-8
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-Hi,
+ACK.  Code looks good and does what it promises.  This also
+improved the situation where OpenVPN needs username/passwords
+from the console.  So this is indeed a far better solution.
 
-On Thu, Dec 1, 2016 at 3:21 AM, Gert Doering <gert@...1296...> wrote:
+The patch got also fairly good testing on a relatively short
+time, across multiple systemd based distributions, client and
+server profiles, even some configurations with explicit errors.
 
-> ACK, thanks.
->
-> Code looks good, and test compiles.  Have not test-run yet but do not
-> expect any surprises there.
->
-> I have added a Changes.rst entry (someone *might* notice and wonder if
-> this was intentional :) ) and updated doc/openvpn.8 and the help text
-> in options.c which both used to list all the commands run...
->
-> Your patch has been applied to the master branch.
->
+Your patch has been applied to the master branch
 
-Do we want this in 2.3.14 as well ? If so I'll send a patch with service
-part removed (note to self: remember to include docs and Changes.rst edits)
+commit c5931897ae8d663e7e6244764fc6379d7b4740f3
+Author: Christian Hesse
+Date:   Thu Dec 1 22:31:03 2016 +0100
 
-Selva
+     Use systemd service manager notification
 
---001a11376232ef3a5e0542a04eb1
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+     Signed-off-by: Christian Hesse <mail@...1798...>
+     Tested-By: Richard Bonhomme <fragmentux@...277...>
+     Acked-by: David Sommerseth <davids@...515...>
+     Message-Id: <20161201213104.5667-1-list@...1798...>
+     URL: http://www.mail-archive.com/search?l=mid&q=20161201213104.5667-1-list@...1798...
+     Signed-off-by: David Sommerseth <davids@...515...>
 
-<div dir=3D"ltr"><div class=3D"gmail_extra">Hi,</div><div class=3D"gmail_ex=
-tra"><br><div class=3D"gmail_quote">On Thu, Dec 1, 2016 at 3:21 AM, Gert Do=
-ering <span dir=3D"ltr">&lt;<a href=3D"mailto:gert@...1296..." target=3D"_b=
-lank">gert@...1296...</a>&gt;</span> wrote:<br><blockquote class=3D"gmail_q=
-uote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1e=
-x">ACK, thanks.<br>
-<br>
-Code looks good, and test compiles.=C2=A0 Have not test-run yet but do not<=
-br>
-expect any surprises there.<br>
-<br>
-I have added a Changes.rst entry (someone *might* notice and wonder if<br>
-this was intentional :) ) and updated doc/openvpn.8 and the help text<br>
-in options.c which both used to list all the commands run...<br>
-<br>
-Your patch has been applied to the master branch.<br></blockquote><div><br>=
-</div><div>Do we want this in 2.3.14 as well ? If so I&#39;ll send a patch =
-with service</div><div>part removed (note to self: remember to include docs=
- and Changes.rst edits)</div></div><br></div><div class=3D"gmail_extra">Sel=
-va</div></div>
 
---001a11376232ef3a5e0542a04eb1--
+- --
+kind regards,
+
+David Sommerseth
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBAgAGBQJYQLHEAAoJEIbPlEyWcf3y/gUQAJwqRYi5s0QcMyBhsdY3gRVd
+kzU+OXiDXZtO/QgMN45rWpdZxAkp2IUxe3tFDEdQjzPsdcCRWL41l9dZcIxAuNEb
+MHsv33/QUsH90svWGdhVH/nTf2ySR0rS3rLCuBCrwDfdm3mC7kQN7wsjaSRGcUIC
+AdL5eAbDzrIntDJKXtN+m78lgpZ9zng2w2FHsizJcD2zLsjjSJgJNSO4fIyXs0D8
+GZ/W1Ex1d4eMficWHKH6CYmj0dX0c6010X5lVdmT/d25TofahQBPReha0ej3jpAo
+5dHtel4nGw+m5ooBa7tOnC5bWp8K7RAr8Vau6+sMhy9LabNZ5BY5Z0cBi/p0ViXx
+hzlVFBCiVuXtEZhz9yHEp/uNbvnUNBfqzauyFmz7Obyyog3HWx7p5IM8LC7CNZF8
+sL3wdSzxp7JFQrKl5vQb1MRAmmQZc/+DClLOxtdxX7bj3nc2wiP6C1iLoe+BvEZA
+9tJIyfkh7oxM2Ec0Lt1yC7zMh+rknC5H6MffuvaapG7Xmc5iGekRJzWDZgZPtoJB
+wreksV4OYUhFRogMMCCKHzfuCuIf3alLOocExNjUFHnAFJwFw+hq0r9YABbWtZ+c
+FcePeavHusz0afAqyiAmEuQo6dxWN6Nq+lgDWV9SKrulRX0k7DB3/PgE2OfY3UEL
+WaF1Gx2wZ0ur3SRZIrRA
+=Y46U
+-----END PGP SIGNATURE-----
 
