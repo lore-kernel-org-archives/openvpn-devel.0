@@ -1,7 +1,14 @@
-From: Antonio Quartulli <a@...2181...>
-Date: Thu,  1 Dec 2016 14:55:34 +0800
-Message-Id: <20161201065534.15050-1-a@...2181...>
-Subject: [Openvpn-devel] [PATCH v2] reload CRL only if file was modified
+Date: Thu, 1 Dec 2016 09:01:32 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20161201080132.GC78624@...1296...>
+References: <1480545687-19365-1-git-send-email-davids@...515...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="BXVAT5kNtrzKuDFl"
+Content-Disposition: inline
+In-Reply-To: <1480545687-19365-1-git-send-email-davids@...515...>
+Subject: Re: [Openvpn-devel] [PATCH] push: Provide a warning if
+ --ifconfig-push have argument mismatch with --topology
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -10,179 +17,65 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Antonio Quartulli <a@...2181...>
+To: David Sommerseth <davids@...515...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-In order to prevent annoying delays upon client connection,
-reload the CRL file only if it was modified since the last
-reload operation.
-If not, keep on using the already stored CRL.
+--BXVAT5kNtrzKuDFl
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-This change will boost client connection time in instances
-where the CRL file is quite large (dropping from several
-seconds to few milliseconds).
+Hi,
 
-Cc: Steffan Karger <steffan.karger@...1435...>
-Signed-off-by: Antonio Quartulli <a@...2181...>
----
+On Wed, Nov 30, 2016 at 11:41:27PM +0100, David Sommerseth wrote:
+> +      if ((c->options.topology =3D=3D TOP_SUBNET || c->options.topology =
+=3D=3D TOP_NET30)
+> +          && (c->c2.push_ifconfig_remote_netmask & 0xff000000) !=3D 0xff=
+000000)
 
-Tested on linux by using my VM.
-No test was performed on Windows* (compiled-only).
+Are you sure of that?  I would assume that this is stored in network
+byte order (as it's an in_addr_t) so you can't directly compare it to
+a number but need to run through ntohl() first.
 
-Note: the check "!(session->opt->ssl_flags & SSLF_CRL_VERIFY_DIR))" may not
-always work as expected. The user may forge a wrong, but still compliant,
-configuration that would fool this test. This issue exists even before applying
-this patch.
+On *intel* it might end up being the same, but code dealing with IPv4
+addresses and ports always needs to be checked on both endiannesses.
 
-Changes since v1:
-- move tls_ctx_reload_crl() before any invocation
-- add doxygen-doc for tls_ctx_reload_crl()
-- add check against CRL size file
-- simplify tls_ctx_reload_crl() by removing reload argument
+Some random code I just found in a BSD header file does it that way:
 
+#define INADDR_ALLHOSTS_GROUP   (u_int32_t)0xe0000001   /* 224.0.0.1 */
+#define in_allhosts(x)  ((x).s_addr =3D=3D htonl(INADDR_ALLHOSTS_GROUP))=20=
+=20=20
 
- src/openvpn/ssl.c         | 48 ++++++++++++++++++++++++++++++++++++++++++++++-
- src/openvpn/ssl_backend.h |  2 +-
- src/openvpn/ssl_mbedtls.c |  2 +-
- src/openvpn/ssl_mbedtls.h |  2 ++
- src/openvpn/ssl_openssl.c |  2 +-
- src/openvpn/ssl_openssl.h |  2 ++
- 6 files changed, 54 insertions(+), 4 deletions(-)
+... so it certainly needs the htonl()
 
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 7347a78..ac47d68 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -512,6 +512,49 @@ tls_version_parse(const char *vstr, const char *extra)
-     return TLS_VER_BAD;
- }
- 
-+/**
-+ * Load (or possibly reload) the CRL file into the SSL context.
-+ * No reload is performed under the following conditions:
-+ * - the CRL file was passed inline
-+ * - the CRL file was not modified since the last (re)load
-+ *
-+ * @param ssl_ctx       The TLS context to use when reloading the CRL
-+ * @param crl_file      The file name to load the CRL from, or
-+ *                      "[[INLINE]]" in the case of inline files.
-+ * @param crl_inline    A string containing the CRL
-+ */
-+static void
-+tls_ctx_reload_crl(struct tls_root_ctx *ssl_ctx, const char *crl_file,
-+		   const char *crl_file_inline)
-+{
-+  /* if something goes wrong with stat(), we'll store 0 as mtime */
-+  platform_stat_t crl_stat = {0};
-+
-+  /*
-+   * an inline CRL can't change at runtime, therefore there is no need to
-+   * reload it. It will be reloaded upon config change + SIGHUP.
-+   * Use always '1' as dummy timestamp in this case: it will trigger the
-+   * first load, but will prevent any future reload.
-+   */
-+  if (crl_file_inline)
-+    crl_stat.st_mtime = 1;
-+  else
-+    platform_stat(crl_file, &crl_stat);
-+
-+  /*
-+   * Store the CRL if this is the first time or if the file was changed since
-+   * the last load.
-+   * Note: Windows does not support tv_nsec.
-+   */
-+  if ((ssl_ctx->crl_last_size == crl_stat.st_size) &&
-+      (ssl_ctx->crl_last_mtime.tv_sec == crl_stat.st_mtime))
-+    return;
-+
-+  ssl_ctx->crl_last_mtime.tv_sec = crl_stat.st_mtime;
-+  ssl_ctx->crl_last_size = crl_stat.st_size;
-+  backend_tls_ctx_reload_crl(ssl_ctx, crl_file, crl_file_inline);
-+}
-+
- /*
-  * Initialize SSL context.
-  * All files are in PEM format.
-@@ -2581,7 +2624,10 @@ tls_process (struct tls_multi *multi,
- 	  ks->state = S_START;
- 	  state_change = true;
- 
--	  /* Reload the CRL before TLS negotiation */
-+	  /*
-+	   * Attempt CRL reload before TLS negotiation. Won't be performed if
-+	   * the file was not modified since the last reload
-+	   */
- 	  if (session->opt->crl_file &&
- 	      !(session->opt->ssl_flags & SSLF_CRL_VERIFY_DIR))
- 	    {
-diff --git a/src/openvpn/ssl_backend.h b/src/openvpn/ssl_backend.h
-index 0777c61..3fbd2b4 100644
---- a/src/openvpn/ssl_backend.h
-+++ b/src/openvpn/ssl_backend.h
-@@ -353,7 +353,7 @@ void key_state_ssl_free(struct key_state_ssl *ks_ssl);
-  *                      "[[INLINE]]" in the case of inline files.
-  * @param crl_inline    A string containing the CRL
-  */
--void tls_ctx_reload_crl(struct tls_root_ctx *ssl_ctx,
-+void backend_tls_ctx_reload_crl(struct tls_root_ctx *ssl_ctx,
-     const char *crl_file, const char *crl_inline);
- 
- /**
-diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
-index 7fa35a7..11ee65b 100644
---- a/src/openvpn/ssl_mbedtls.c
-+++ b/src/openvpn/ssl_mbedtls.c
-@@ -771,7 +771,7 @@ static void tls_version_to_major_minor(int tls_ver, int *major, int *minor) {
- }
- 
- void
--tls_ctx_reload_crl(struct tls_root_ctx *ctx, const char *crl_file,
-+backend_tls_ctx_reload_crl(struct tls_root_ctx *ctx, const char *crl_file,
-     const char *crl_inline)
- {
-   ASSERT (crl_file);
-diff --git a/src/openvpn/ssl_mbedtls.h b/src/openvpn/ssl_mbedtls.h
-index 3edeedc..a4a7f05 100644
---- a/src/openvpn/ssl_mbedtls.h
-+++ b/src/openvpn/ssl_mbedtls.h
-@@ -74,6 +74,8 @@ struct tls_root_ctx {
-     mbedtls_x509_crt *ca_chain;		/**< CA chain for remote verification */
-     mbedtls_pk_context *priv_key;	/**< Local private key */
-     mbedtls_x509_crl *crl;              /**< Certificate Revocation List */
-+    struct timespec crl_last_mtime;     /**< CRL last modification time */
-+    off_t crl_last_size;		/**< size of last loaded CRL */
- #if defined(ENABLE_PKCS11)
-     mbedtls_pkcs11_context *priv_key_pkcs11;	/**< PKCS11 private key */
- #endif
-diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-index 51669fc..4f472ff 100644
---- a/src/openvpn/ssl_openssl.c
-+++ b/src/openvpn/ssl_openssl.c
-@@ -772,7 +772,7 @@ end:
- }
- 
- void
--tls_ctx_reload_crl(struct tls_root_ctx *ssl_ctx, const char *crl_file,
-+backend_tls_ctx_reload_crl(struct tls_root_ctx *ssl_ctx, const char *crl_file,
-         const char *crl_inline)
- {
-   X509_CRL *crl = NULL;
-diff --git a/src/openvpn/ssl_openssl.h b/src/openvpn/ssl_openssl.h
-index 97dc742..115ac43 100644
---- a/src/openvpn/ssl_openssl.h
-+++ b/src/openvpn/ssl_openssl.h
-@@ -49,6 +49,8 @@
-  */
- struct tls_root_ctx {
-     SSL_CTX *ctx;
-+    struct timespec crl_last_mtime;
-+    off_t crl_last_size;
- };
- 
- struct key_state_ssl {
--- 
-2.11.0
+(What you can do is "peek at byte 0", which will always be the same
+part of the netmask [network byte order!], and which might actually
+make this easier to read .-) )
 
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--BXVAT5kNtrzKuDFl
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJYP9jcAAoJEB2Cnv7KVigSi1UL/15HAGLMoCtkdxaguS8hIPv7
+oxpkRYrAtRfKArUCy+xA+MEdJ3A/QIQfVDX3x/Zc1uUyfiSjxn9vf3z68eHDg5/i
+5Yi+M8+dFPUnFgzitPHuQkS8pMFgQOTL+Q9AVnNG6aC9+o95L6ntpCIZEMK7rdze
+7MpMz1qC7UifHT8VBjNCJlPgD4DrKb/mkj18K1TBMHyVDBRdB4+T3ky2tEypWAmc
+WFkQd4w6IMEiVxdiihXtkF7b+GlY87CWwiBuJo+ybAPpu37i2G6zxkzmcT/5S9gc
+TKjww5jkOBYkQhvg5cdwWFv/VRzHEmPFGCaVPoP0vNcX5imHzNahh983jW1FSU0W
+FboILh8wftb6WBYz6JRMK79dLoe1OyRSEyuDm6wsaJDY7mlTKUT2VsHgZLwl6wIx
+l5pWx0a3MtkdHVk5c94hf4lPgmtxe354XkynhQZGtRCH0W/gXwXbqHlQITr0cOHO
+ep3SMIVkB/XTqJDC/UiUUnZthqBcmQHhaZhs4M6kxg==
+=dm6Z
+-----END PGP SIGNATURE-----
+
+--BXVAT5kNtrzKuDFl--
 
