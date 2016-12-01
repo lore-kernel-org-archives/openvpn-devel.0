@@ -1,12 +1,13 @@
+From: =?UTF-8?B?U3ZpTWlr?= <svimik@...450...>
 MIME-Version: 1.0
+Date: Thu, 01 Dec 2016 05:15:11 +0300
+Message-ID: <1480558511.253304921@...2201...>
 In-Reply-To: <1480545687-19365-1-git-send-email-davids@...515...>
 References: <1480545687-19365-1-git-send-email-davids@...515...>
-From: Selva Nair <selva.nair@...277...>
-Date: Wed, 30 Nov 2016 21:51:10 -0500
-Message-ID: <CAKuzo_jqKiXA9iObC0MOvYjGhn6o6wuqw2p=xfbfvdLKTzj61g@...278...>
-Content-Type: multipart/alternative; boundary=94eb2c1254220627fe05428fe67a
-Subject: Re: [Openvpn-devel] [PATCH] push: Provide a warning if
- --ifconfig-push have argument mismatch with --topology
+Subject: Re: [Openvpn-devel]
+ =?utf-8?q?=5BPATCH=5D_push=3A_Provide_a_warning_i?=
+ =?utf-8?q?f_--ifconfig-push_have_argument_mismatch_with_--topology?=
+Reply-To: =?UTF-8?B?U3ZpTWlr?= <svimik@...450...>
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,98 +16,43 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: David Sommerseth <davids@...515...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+To: =?UTF-8?B?RGF2aWQgU29tbWVyc2V0aA==?= <davids@...515...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---94eb2c1254220627fe05428fe67a
-Content-Type: text/plain; charset=UTF-8
-
-Hi,
-
-Some nitpicking on the eleventh hour...
-
-The comment does not agree with the code:
-
-
-> +++ b/src/openvpn/push.c
-> @@ -333,6 +333,16 @@ prepare_push_reply (struct context *c, struct
-> gc_arena *gc,
->                        print_in_addr_t (ifconfig_local, 0, gc),
->                        print_in_addr_t (c->c2.push_ifconfig_remote_
-> netmask,
->                                         0, gc));
-> +
-> +      /* Warn if ifconfig_remote_netmask does not contain
-> +       * subnet mask in subnet topology */
->
-
-If we go by the code this should be subnet and net30 topology.
-By the way, style alert -- we want the ending */ on a line by itself, don't
-we?
-
-
-> +      if ((c->options.topology == TOP_SUBNET || c->options.topology ==
-> TOP_NET30)
-> +          && (c->c2.push_ifconfig_remote_netmask & 0xff000000) !=
-> 0xff000000)
-> +        {
-> +          msg(M_WARN, "WARNING: When --topology is subnet or net30, the
-> second argument "
-> +              "to --ifconfig-push MUST be a subnet mask.  This client
-> will not be able "
-> +              "to connect.");
-
-+        }
->      }
->
-
-I don't know the code path well enough, so cant say anything technical...
-
-Selva
-
---94eb2c1254220627fe05428fe67a
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><div class=3D"gmail_extra"><div class=3D"gmail_quote"><div=
->Hi,</div><div><br></div><div>Some nitpicking on the eleventh hour...</div>=
-<div><br></div><div>The comment does not agree with the code:</div><div>=C2=
-=A0</div><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;borde=
-r-left:1px #ccc solid;padding-left:1ex">
-+++ b/src/openvpn/push.c<br>
-@@ -333,6 +333,16 @@ prepare_push_reply (struct context *c, struct gc_arena=
- *gc,<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0print_in_addr_t (ifconfig_local, 0, gc),<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0print_in_addr_t (c-&gt;c2.push_ifconfig_remote_<wbr>netmask,<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 0, gc));=
-<br>
-+<br>
-+=C2=A0 =C2=A0 =C2=A0 /* Warn if ifconfig_remote_netmask does not contain<b=
-r>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0* subnet mask in subnet topology */<br>
-</blockquote><div><br></div><div>If we go by the code this should be subnet=
- and net30 topology.</div><div>By the way, style alert -- we want the endin=
-g */ on a line by itself, don&#39;t we?</div><div>=C2=A0</div><blockquote c=
-lass=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;=
-padding-left:1ex">+=C2=A0 =C2=A0 =C2=A0 if ((c-&gt;options.topology =3D=3D =
-TOP_SUBNET || c-&gt;options.topology =3D=3D TOP_NET30)<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 &amp;&amp; (c-&gt;c2.push_ifconfig_remo=
-te_<wbr>netmask &amp; 0xff000000) !=3D 0xff000000)<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 {<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 msg(M_WARN, &quot;WARNING: When --topol=
-ogy is subnet or net30, the second argument &quot;<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;to --ifconfig-push =
-MUST be a subnet mask.=C2=A0 This client will not be able &quot;<br>
-+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;to connect.&quot;);=
-=C2=A0</blockquote><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 =
-.8ex;border-left:1px #ccc solid;padding-left:1ex">+=C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 }<br>
-=C2=A0 =C2=A0 =C2=A0}<br></blockquote><div><br></div><div>I don&#39;t know =
-the code path well enough, so cant say anything technical...</div><div><br>=
-</div><div>Selva=C2=A0</div></div></div></div>
-
---94eb2c1254220627fe05428fe67a--
-
+V2hpbGUgSSBhZG1pdCB0aGF0IGl0IGlzICpleHRyZW1lbHkqIHVubGlrZWx5IHRvIGhhdmUgYSBu
+ZXR3b3JrIGxhcmdlciB0aGFuIC84LCBzdWNoIGxvZ2ljIHN0aWxsIGxvb2tzIGEgbGl0dGxlIGNs
+dW1zeS4gSXQgZG9lcyBub3QgY292ZXIgYWxsIHRoZSB2YWxpZCBuZXRtYXNrcyBuZWl0aGVyIGl0
+IGRldGVjdHMgYWxsIHBvc3NpYmxlIGludmFsaWQgb25lcy4KCklmIHlvdSB3aXNoIHRvIHRlc3Qg
+aWYgdGhlIG5ldG1hc2sgaXMgdmFsaWQsIHRoaXMgc29sdXRpb24gY291bGQgYmUgYmV0dGVyOgpo
+dHRwOi8vc3RhY2tvdmVyZmxvdy5jb20vcXVlc3Rpb25zLzE3NDAxMDY3L2MtY29kZS1mb3ItdmFs
+aWQtbmV0bWFzawoKCj4gVGhpcyBhZGRzIGEgd2FybmluZyB0byB0aGUgbG9nIGZpbGUgaWYgLS10
+b3BvbG9neSBpcyBjb25maWd1cmVkIHRvIHVzZQo+IHN1Ym5ldCBvciBuZXQzMCBhbmQgdGhlICdz
+dWJuZXQgbWFzaycgYXJndW1lbnQgb2YgYW4gLS1pZmNvbmZpZy1wdXNoIG9wdGlvbgo+IGlzIG5v
+dCBhbiBzdWJuZXQgbWFzay4gIFRoZSBjaGVjayBkb25lIGlzIHRvIGVuc3VyZSB0aGUgZmlyc3Qg
+b2N0ZXQgaXMgMHhmZgo+ICgyNTUpCj4gCj4gVHJhYzogIzc1NQo+IFNpZ25lZC1vZmYtYnk6IERh
+dmlkIFNvbW1lcnNldGggPGRhdmlkc0AuLi41MTUuLi4+Cj4gLS0tCj4gIHNyYy9vcGVudnBuL3B1
+c2guYyB8IDEwICsrKysrKysrKysKPiAgMSBmaWxlIGNoYW5nZWQsIDEwIGluc2VydGlvbnMoKykK
+PiAKPiBkaWZmIC0tZ2l0IGEvc3JjL29wZW52cG4vcHVzaC5jIGIvc3JjL29wZW52cG4vcHVzaC5j
+Cj4gaW5kZXggOTk1MzA3OS4uMDgxOWJmOCAxMDA2NDQKPiAtLS0gYS9zcmMvb3BlbnZwbi9wdXNo
+LmMKPiArKysgYi9zcmMvb3BlbnZwbi9wdXNoLmMKPiBAQCAtMzMzLDYgKzMzMywxNiBAQCBwcmVw
+YXJlX3B1c2hfcmVwbHkgKHN0cnVjdCBjb250ZXh0ICpjLCBzdHJ1Y3QgZ2NfYXJlbmEKPiAqZ2Ms
+Cj4gIAkJICAgICAgIHByaW50X2luX2FkZHJfdCAoaWZjb25maWdfbG9jYWwsIDAsIGdjKSwKPiAg
+CQkgICAgICAgcHJpbnRfaW5fYWRkcl90IChjLT5jMi5wdXNoX2lmY29uZmlnX3JlbW90ZV9uZXRt
+YXNrLAo+ICAJCQkJCTAsIGdjKSk7Cj4gKwo+ICsgICAgICAvKiBXYXJuIGlmIGlmY29uZmlnX3Jl
+bW90ZV9uZXRtYXNrIGRvZXMgbm90IGNvbnRhaW4KPiArICAgICAgICogc3VibmV0IG1hc2sgaW4g
+c3VibmV0IHRvcG9sb2d5ICovCj4gKyAgICAgIGlmICgoYy0+b3B0aW9ucy50b3BvbG9neSA9PSBU
+T1BfU1VCTkVUIHx8IGMtPm9wdGlvbnMudG9wb2xvZ3kgPT0KPiBUT1BfTkVUMzApCj4gKyAgICAg
+ICAgICAmJiAoYy0+YzIucHVzaF9pZmNvbmZpZ19yZW1vdGVfbmV0bWFzayAmIDB4ZmYwMDAwMDAp
+ICE9IDB4ZmYwMDAwMDApCj4gKyAgICAgICAgewo+ICsgICAgICAgICAgbXNnKE1fV0FSTiwgIldB
+Uk5JTkc6IFdoZW4gLS10b3BvbG9neSBpcyBzdWJuZXQgb3IgbmV0MzAsIHRoZQo+IHNlY29uZCBh
+cmd1bWVudCAiCj4gKyAgICAgICAgICAgICAgInRvIC0taWZjb25maWctcHVzaCBNVVNUIGJlIGEg
+c3VibmV0IG1hc2suICBUaGlzIGNsaWVudCB3aWxsCj4gbm90IGJlIGFibGUgIgo+ICsgICAgICAg
+ICAgICAgICJ0byBjb25uZWN0LiIpOwo+ICsgICAgICAgIH0KPiAgICAgIH0KPiAgCj4gICAgLyog
+U2VuZCBwZWVyLWlkIGlmIGNsaWVudCBzdXBwb3J0cyBpdCAqLwo+IC0tIAo+IDEuOC4zLjEKPiAK
+PiAKPiAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KPiBfX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fXwo+IE9wZW52cG4tZGV2ZWwgbWFpbGluZyBsaXN0Cj4gT3BlbnZw
+bi1kZXZlbEBsaXN0cy5zb3VyY2Vmb3JnZS5uZXQKPiBodHRwczovL2xpc3RzLnNvdXJjZWZvcmdl
+Lm5ldC9saXN0cy9saXN0aW5mby9vcGVudnBuLWRldmVsCj4g
