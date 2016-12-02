@@ -1,12 +1,12 @@
-From: boxartst@...1411...
-In-Reply-To: <f2823a74-9494-b4a8-cf2e-a1ccab56b609@...2080...>
-References: <10719981480674741@...2206...>
-	<8e0f7ca4-a790-2143-ccfa-8e6ab6114955@...277...>
-	<f2823a74-9494-b4a8-cf2e-a1ccab56b609@...2080...>
 MIME-Version: 1.0
-Message-Id: <7689341480711525@...2208...>
-Date: Fri, 02 Dec 2016 23:45:25 +0300
-Subject: Re: [Openvpn-devel] Enable FIPS encryption
+In-Reply-To: <1480707729-19578-1-git-send-email-selva.nair@...277...>
+References: <1480707729-19578-1-git-send-email-selva.nair@...277...>
+From: Selva Nair <selva.nair@...277...>
+Date: Fri, 2 Dec 2016 17:28:39 -0500
+Message-ID: <CAKuzo_gjEiaQkmcmc94877qerC2HswZDt1XCqTSx=+7LjSz1rA@...278...>
+Content-Type: multipart/alternative; boundary=94eb2c084cace230b10542b47639
+Subject: Re: [Openvpn-devel] [PATCH] Correctly state the default dhcp server
+	address in man page
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,66 +15,45 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, debbie10t <debbie10t@...277...>
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-IEkgdGhpbmsgaW4gb3JkZXIgdG8gYWN0aXZhdGUgRklQUyBtb2RlIGluIG9wZW52cG4gd2UgbmVl
-ZCBub3Qgb25seSB0byBidWlsZCBpdCBhZ2FpbnN0IGZpcHMgY2FwYWJsZSBvcGVuc3NsLCBidXQg
-YWxzbyAgY2FsbCBGSVBTX21vZGVfc2V0KCkgZnVuY3Rpb24gaW5zaWRlIG9wZW52cG4gY29kZS4g
-SSdtIGd1ZXNzaW5nIGZpcHMgbW9kZSBhY3RpdmF0aW9uIGluIHRoZSBrZXJuZWwgaW4gY2FzZSBv
-ZiBSSEVMIG1lYW5zIHRoYXQgYWxsIHNlcnZpY2VzIGFuZCBhcHBsaWNhdGlvbnMgaW4gdGhlIHN5
-c3RlbSB3b3VsZCBvcGVyYXRlIGluIGZpcHMgbW9kZSAoYWx0aG91Z2ggSSdtIG5vdCBhYnNvbHV0
-ZWx5IHN1cmUpLiBCdXQgd2hhdCBhYm91dCBvdGhlciBkaXN0cmlidXRpb25zIGxpa2UgdWJ1bnR1
-PyBJIGRvbid0IHNlZSB0aGUgd2F5IHRvIGFjdGl2YXRlIGZpcHMgbW9kZSBzeXN0ZW0gd2lkZS4g
-SSdtIHNheWluZyBhbGwgdGhpcyBiZWNhdXNlIGl0IHNlZW1zIHRvIG1lIHRoYXQgd2UgbmVlZCB0
-byBjYWxsIGZpcHMgbW9kZSBzZXQgZnVuY3Rpb24gaW5zaWRlIG9wZW52cG4gY29kZS4gIFRoZSB1
-c2VyIGd1aWRlKGh0dHBzOi8vd3d3Lm9wZW5zc2wub3JnL2RvY3MvZmlwcy9Vc2VyR3VpZGUtMi4w
-LnBkZikgc2F5cyB0aGlzOiAiU29tZXdoZXJlIHZlcnkgZWFybHkgaW4gdGhlIGV4ZWN1dGlvbiBv
-ZiB0aGUgYXBwbGljYXRpb24gRklQUyBtb2RlIG11c3QgYmUgZW5hYmxlZC4gVGhpcyBzaG91bGQg
-YmUgZG9uZSBieSBpbnZvY2F0aW9uIG9mIHRoZSBGSVBTX21vZGVfc2V0KCkgZnVuY3Rpb24gY2Fs
-bCIgIChzZWUgc2VjdGlvbiA1IGlmIGludGVyZXN0ZWQpLiBTbyBJIGRvbid0IHRoaW5rIHNpbXBs
-eSBidWlsZGluZyBvcGVudnBuIHdpdGggZmlwcyBjYXBhYmxlIG9wZW5zc2wgd291bGQgYmUgZW5v
-dWdoIHRvIHNheSBvcGVudnBuIGlzIGZ1bmN0aW9uaW5nIGluIGZpcHMgbW9kZSBhcyB3ZSBuZWVk
-IHRvIGVuYWJsZSBmaXBzIG1vZGUgaW5zaWRlIHRoZSBjb2RlLiBEYXZpZCwgSSB1bmRlcnN0YW5k
-IHRoYXQgY2FsbGluZyBmaXBzIG1vZGUgZnVuY3Rpb24gd291bGQgYnJlYWsgb3BlbnZwbiBiZWNh
-dXNlIGl0IGRlcGVuZHMgb24gc29tZSBhbGdvcml0aG1zIG5vdCBmaXBzIGFwcHJvdmVkLiBXaGVu
-IGNvdWxkIGJlIGV4cGVjdGVkIHRvIHNlZSBhIHBhdGNoIHRoYXQgd291bGQgYWxsb3cgdG8gZW5h
-YmxlIGZpcHMgbW9kZSBpbiBvcGVudnBuIHdpdGhvdXQgYnJlYWtpbmcgaXQ/CgowMi4xMi4yMDE2
-LCAxNjoyOCwgIkRhdmlkIFNvbW1lcnNldGgiIDxvcGVudnBuQC4uLjIwODAuLi4+Ogo+IE9uIDAy
-LzEyLzE2IDEzOjU1LCBkZWJiaWUxMHQgd3JvdGU6Cj4+IMKgSGksCj4+Cj4+IMKgT24gMDIvMTIv
-MTYgMTA6MzIsIGJveGFydHN0QC4uLjE0MTEuLi4gd3JvdGU6Cj4+PiDCoEhpIQo+Pj4KPj4+IMKg
-SSB3b3VsZCBsaWtlIHRvIGtub3cgaWYgaXQncyBwb3NzaWJsZSB0byBlbmFibGUgZmlwcyBlbmFi
-bGVkIGVuY3J5cHRpb24gb24gbXkgdnBuIHNlcnZlcj8KPj4+IMKgSGVyZSBpcyBhIGxpbmsgdG8g
-ZmlwcyB1c2VyIGd1aWRlIGh0dHBzOi8vd3d3Lm9wZW5zc2wub3JnL2RvY3MvZmlwcy9Vc2VyR3Vp
-ZGUtMi4wLnBkZiAuCj4+PiDCoEl0IGxvb2tzIGxpa2UgSSdkIGhhdmUgdG8gY2hhbmdlIHNvdXJj
-ZSBjb2RlIGFuZCBjb21waWxlIGl0IG15c2VsZiB0byBtYWtlIGl0IEZJUFMgY29tcGxpYW50Lgo+
-Pj4gwqBBbnkgaGVscCBvciBhZHZpY2Ugd291bGQgYmUgdmVyeSBtdWNoIGFwcHJlY2lhdGVkLgo+
-Pgo+PiDCoFdpdGhvdXQgdmVyeSBtdWNoIGVmZm9ydCBpdCBpcyBwb3NzaWJsZSB0byBidWlsZCBv
-cGVudnBuIHdpdGggb3BlbnNzbAo+PiDCoEZJUFMgc3VwcG9ydCBvbiBDZW50T1M3Ogo+Pgo+PiDC
-oE9wZW5WUE4gMi40X2JldGEyIFtnaXQ6bWFzdGVyLzFjNTg3YTExMTIyMjA2MTgrXQo+PiDCoHg4
-Nl82NC11bmtub3duLWxpbnV4LWdudSBbU1NMIChPcGVuU1NMKV0gW0xaT10gW0xaNF0gW0VQT0xM
-XQo+PiDCoFtNSC9QS1RJTkZPXSBbQUVBRF0gYnVpbHQgb24gRGVjIDEgMjAxNgo+PiDCoGxpYnJh
-cnkgdmVyc2lvbnM6IE9wZW5TU0wgMS4wLjFlLWZpcHMgMTEgRmViIDIwMTMsIExaTyAyLjA2Cj4+
-Cj4+IMKgT3BlblNTTCAxLjAuMWUtZmlwcyBhcHBlYXJzIHRvIGJlIHRoZSBkZWZhdWx0IG9wZW5z
-c2wgZGV2ZWxvcGVyIGxpYnJhcnkKPj4gwqBpbiBDZW50T1M3Lgo+Pgo+PiDCoEkgZG8gbm90IGtu
-b3cgZW5vdWdoIGFib3V0IEZJUFMgY2VydGlmaWNhdGlvbiB0byBhZHZpc2UgaWYgKm9ubHkqIHRo
-aXMKPj4gwqBjaGFuZ2UgaXMgc3VmZmljaWVudCB0byBjb3ZlciB5b3UgZm9yIHJlYWwgd29ybGQg
-Y2VydGlmaWNhdGlvbi4KPgo+IFRoaXMgaXMgcGFydGlhbGx5IHJpZ2h0LiBCdXQgdGhlIHN5c3Rl
-bSBpcyBhdCB0aGlzIHBvaW50IG5vdCBpbiBGSVBTCj4gbW9kZSwgc28gdGhlIGhhcmRlbmluZyBG
-SVBTIHByb3ZpZGVzIGlzIHN0aWxsIG5vdCBhY3RpdmUuIFlvdSBuZWVkIHRvCj4gcmVib290IHRo
-ZSBzeXN0ZW0gaW50byBGSVBTIG1vZGUsIHdoaWNoIHRoZW4gZGlzYWJsZXMgc2V2ZXJhbCBhbGdv
-cml0aG1zCj4gaW4gT3BlblNTTCB3aGljaCBPcGVuVlBOIGRlcGVuZHMgb24gLSB3aGljaCBtYWtl
-cyBPcGVuVlBOIGZhaWwuCj4KPiBGb3IgbW9yZSBpbmZvOgo+IDxodHRwczovL2FjY2Vzcy5yZWRo
-YXQuY29tL2RvY3VtZW50YXRpb24vZW4tVVMvUmVkX0hhdF9FbnRlcnByaXNlX0xpbnV4LzcvaHRt
-bC9TZWN1cml0eV9HdWlkZS9jaGFwLUZlZGVyYWxfU3RhbmRhcmRzX2FuZF9SZWd1bGF0aW9ucy5o
-dG1sI3NlY3QtRmVkZXJhbF9JbmZvcm1hdGlvbl9Qcm9jZXNzaW5nX1N0YW5kYXJkPgo+Cj4gLS0K
-PiBraW5kIHJlZ2FyZHMsCj4KPiBEYXZpZCBTb21tZXJzZXRoCj4gT3BlblZQTiBUZWNobm9sb2dp
-ZXMsIEluYwo+Cj4gLAo+Cj4gLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCj4gQ2hlY2sgb3V0IHRoZSB2
-aWJyYW50IHRlY2ggY29tbXVuaXR5IG9uIG9uZSBvZiB0aGUgd29ybGQncyBtb3N0Cj4gZW5nYWdp
-bmcgdGVjaCBzaXRlcywgU2xhc2hEb3Qub3JnISBodHRwOi8vc2RtLmxpbmsvc2xhc2hkb3QKPiAs
-Cj4KPiBfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwo+IE9w
-ZW52cG4tZGV2ZWwgbWFpbGluZyBsaXN0Cj4gT3BlbnZwbi1kZXZlbEBsaXN0cy5zb3VyY2Vmb3Jn
-ZS5uZXQKPiBodHRwczovL2xpc3RzLnNvdXJjZWZvcmdlLm5ldC9saXN0cy9saXN0aW5mby9vcGVu
-dnBuLWRldmVs
+--94eb2c084cace230b10542b47639
+Content-Type: text/plain; charset=UTF-8
+
+Hi,
+
+On Fri, Dec 2, 2016 at 2:42 PM, Selva Nair <selva.nair@...277...> wrote:
+
+> Also correct the default ifconfig-pool end in docs and comments
+>
+> Signed-off-by: Selva Nair <selva.nair@...277...>
+>
+
+Not critical for 2.4, but posted it anyway because I was bitten by this
+again today:  a new server with the last address .254 included the pool and
+forgot to push "--ip-win32 dynamic 0" --- windows clients can't handle .254
+without that.
+
+Selva
+
+--94eb2c084cace230b10542b47639
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr">Hi,<br><div class=3D"gmail_extra"><br><div class=3D"gmail_=
+quote">On Fri, Dec 2, 2016 at 2:42 PM, Selva Nair <span dir=3D"ltr">&lt;<a =
+href=3D"mailto:selva.nair@...277..." target=3D"_blank">selva.nair@...277...=
+</a>&gt;</span> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin=
+:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">Also correct the d=
+efault ifconfig-pool end in docs and comments<br>
+<br>
+Signed-off-by: Selva Nair &lt;<a href=3D"mailto:selva.nair@...277..." targe=
+t=3D"_blank">selva.nair@...277...</a>&gt;<br></blockquote><div><br></div><d=
+iv>Not critical for 2.4, but posted it anyway because I was bitten by this =
+again today: =C2=A0a new server with the last address .254 included the poo=
+l and forgot to push &quot;--ip-win32 dynamic 0&quot; --- windows clients c=
+an&#39;t handle .254 without that.</div><div><br></div><div>Selva =C2=A0</d=
+iv></div></div></div>
+
+--94eb2c084cace230b10542b47639--
+
