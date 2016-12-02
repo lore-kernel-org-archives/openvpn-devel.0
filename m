@@ -1,14 +1,8 @@
-References: <CAFHpkQFNRHCCccrSR5ZMCvZj_VC+K=UMR9P4RDhvjCMqGXX1wg@...278...>
-	<b79d336b-9d5e-6d7e-a899-06ab10d322d0@...515...>
-	<CAFHpkQGsewCStyZ5HHXC9mcwNGN5-_w+BjmmqoHNufd12YZN5w@...278...>
-	<e6cfa59d-8424-8cc6-92df-d23e91c3c396@...515...>
-	<CAFHpkQGLS1SuebnkZCOJGnMgigqW+zJ7D=qEytUrN9A7uGYHow@...278...>
 From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <429ef600-ead9-7544-e563-57b1fbf05220@...515...>
-Date: Fri, 2 Dec 2016 08:55:21 +0200
+Message-ID: <a0f806c8-3837-247d-61e0-bfb339222fab@...515...>
+Date: Fri, 2 Dec 2016 10:22:56 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAFHpkQGLS1SuebnkZCOJGnMgigqW+zJ7D=qEytUrN9A7uGYHow@...278...>
-Subject: Re: [Openvpn-devel] combined ndis5 + ndis6 installer ?
+Subject: [Openvpn-devel] OpenVPN 2.4_rc1 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,39 +11,42 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Type: text/plain; charset="windows-1252"; format=flowed
 Content-Transfer-Encoding: quoted-printable
-To: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: "openvpn users list (openvpn-users@lists.sourceforge.net)" <openvpn-users@lists.sourceforge.net>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, openvpn-announce@lists.sourceforge.net
 
-Il 02/12/2016 05:54, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=B8=D1=
-=86=D0=B8=D0=BD ha scritto:
-> unicode nsis is different from ansi nsis. for example, nsProcess needs
-> different dll.
+The OpenVPN community project team is proud to release OpenVPN 2.4_rc1.=20
+It can be downloaded from here:
 
-Ok. More research is needed to see what is involved, then.
+<http://openvpn.net/index.php/open-source/downloads.html>
 
-> and, unicode nsis is not shipped in most common Linux repo (you need to
-> install it separately).
+This release includes several smaller fixes and improvements. A summary=20
+of these changes is available here:
 
-Indeed, that was my impression. So far I've only seen NSIS 2.46 or so in=20
-the distribution repositories, and the link I provided talked about NSIS=20
-3.0b or something.
+<https://github.com/OpenVPN/openvpn/blob/master/Changes.rst>
 
-> taking the above into account, I think, I should repack the above
-> packages as "makensis3" instead of "makensis".
+A full list of changes is available here.
 
-You mean creating deb/rpm packages for updated NSIS? I think manually=20
-installing updated NSIS would be good enough, if repackaging proves to=20
-be too much of an effort.
+<https://community.openvpn.net/openvpn/wiki/ChangesInOpenvpn24>
 
->
-> @mattock, which linux distro do you use for release building ?
+For generic help use these support channels:
 
-Right now Ubuntu 14.04, but I should upgrade to 16.04 soon.
+Official documentation:=20
+<http://openvpn.net/index.php/open-source/documentation/howto.html>
+Wiki: <https://community.openvpn.net>
+Forums: <https://forums.openvpn.net>
+User mailing list: <http://sourceforge.net/mail/?group_id=3D48978>
+User IRC channel: #openvpn at irc.freenode.net
+
+Please report bugs and ask development questions here:
+
+Bug tracker and wiki: <https://community.openvpn.net>
+Developer mailing list: <http://sourceforge.net/mail/?group_id=3D48978>
+Developer IRC channel: #openvpn-devel at irc.freenode.net (requires=20
+Freenode registration)
 
 --=20
-Samuli Sepp=C3=A4nen
+Samuli Sepp=E4nen
 Community Manager
 OpenVPN Technologies, Inc
 
