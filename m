@@ -1,9 +1,11 @@
+Date: Sun, 4 Dec 2016 12:51:43 +0800
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <20161204045143.GF32580@...2182...>
 MIME-Version: 1.0
-From: Selva Nair <selva.nair@...277...>
-Date: Sat, 3 Dec 2016 13:48:26 -0500
-Message-ID: <CAKuzo_jj4H3toE0JXp-HNKBH5=Y_iXqVPKOndkycFTYmQoL0=g@...278...>
-Content-Type: multipart/alternative; boundary=94eb2c05ab40308b6d0542c581b5
-Subject: [Openvpn-devel] The windows installer and interactive service
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="gBBFr7Ir9EOA20Yy"
+Content-Disposition: inline
+Subject: [Openvpn-devel] #636: IPv6 subnets support in PF component
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,73 +14,79 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
---94eb2c05ab40308b6d0542c581b5
-Content-Type: text/plain; charset=UTF-8
-
-Hi,
-
-In the installer, interactive service is tied to the installation of
-automatic service (openvpnserv2) --- if you opt not to install
-openvpnserv2, interactive service is also disabled. You can install
-openvpnserv2 without installing the interactive service, but not the other
-way.
-
-I think we should consider interactive service as a requirement for
-properly running the GUI (note that we do not set the GUI to request admin
-rights anymore). So I suggest:
-
-1. Always install the interactive service along with openvpn core (and set
-up the required HKLM registry entries) OR at least automatically select
-interactive service if the GUI is selected.
-
-I prefer the first option as that service doesn't do anything unless a
-client connects to its service pipe, and has some uses even without the GUI.
-
-2. Make it possible to uncheck automatic service (openvpnserv2)  without
-unchecking interactive service.
-
-A vast majority of installations would need only openvpn core, the GUI and
-interactive service. Most users will not use the automatic service
-(openvpnserv2) at all. Given that the latter requires .NET 4.0 which means
-an additional 50MB+ download for some, a very slow installation and
-possible restarts, forcing it on to get interactive service is not good.
-
-That said we could still leave openvpnserv2 selected by default as changing
-that at this stage may be unwise. Hopefully many Windows users may already
-have .NET 4.0 or higher installed.
-
-Thanks,
-
-Selva
-
---94eb2c05ab40308b6d0542c581b5
-Content-Type: text/html; charset="UTF-8"
+--gBBFr7Ir9EOA20Yy
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-<div dir=3D"ltr"><div><div><div><div><div>Hi,<br><br></div>In the installer=
-, interactive service is tied to the installation of automatic service (ope=
-nvpnserv2) --- if you opt not to install openvpnserv2, interactive service =
-is also disabled. You can install openvpnserv2 without installing the inter=
-active service, but not the other way.<br><br></div>I think we should consi=
-der interactive service as a requirement for properly running the GUI (note=
- that we do not set the GUI to request admin rights anymore). So I suggest:=
-<br><br></div>1. Always install the interactive service along with openvpn =
-core (and set up the required HKLM registry entries) OR at least automatica=
-lly select interactive service if the GUI is selected. <br><br>I prefer the=
- first option as that service doesn&#39;t do anything unless a client conne=
-cts to its service pipe, and has some uses even without the GUI.<br><br></d=
-iv>2. Make it possible to uncheck automatic service (openvpnserv2)=C2=A0 wi=
-thout unchecking interactive service.<br><br>A vast majority of installatio=
-ns would need only openvpn core, the GUI and interactive service. Most user=
-s will not use the automatic service (openvpnserv2) at all. Given that the =
-latter requires .NET 4.0 which means an additional 50MB+ download for some,=
- a very slow installation and possible restarts, forcing it on to get inter=
-active service is not good. <br></div><div><br>That said we could still lea=
-ve openvpnserv2 selected by default as changing that at this stage may be u=
-nwise. Hopefully many Windows users may already have .NET 4.0 or higher ins=
-talled.<br><br></div><div>Thanks,<br><br></div><div>Selva<br></div></div>
+Dear all,
 
---94eb2c05ab40308b6d0542c581b5--
+as a "learning exercise" I started working on #636 over the weekend in the
+attempt of digging deeper into the openvpn codebase.
+
+As of now I managed to make the v6 filtering work.
+Most of the changes are in pf.c (but also mroute.c and other files required
+their small dose of tweaking).
+
+Now that v6 PF is working as expected, I stepped over a more "conceptual"
+problem. Here it is:
+
+in IPv4 we have ARP that takes care of providing the underlying
+information to make IP work.
+
+In IPv6, ARP (and other basic functionalities) has been substituted by a se=
+t of
+multicast protocols, operating on IPv6 itself.
+
+This means that, if we keep PF unaware of these protocols, the user is supp=
+osed
+to whitelist all those IPv6 subnets that are needed to make NDP and other
+protocols work.
+
+I haven't spent time digging into NDP yet, but an easy way to make everythi=
+ng
+work is to always allow "ff00::/8". This way NDP and other protocols will w=
+ork
+just fine and then other rules can be used to accept/drop other traffic.
+
+What should the default behaviour of PF be, in your opinion?
+
+IMHO, it should allow basic functionalities like NDP by default, but should=
+ not
+permit any other multicast traffic, unless explicitly allowed by the user.
+
+If you guys also think this is the way to go, does anybody know how to
+translate this "make NDP work" into a whitelist rule? "+ff00::/8" is too br=
+oad.
+
+
+Cheers,
+
+--=20
+Antonio Quartulli
+
+--gBBFr7Ir9EOA20Yy
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIcBAEBCAAGBQJYQ6DcAAoJEJ6F1zG2JyOs0eoP/0rJAaxAjaCh7PQAsuIDSJ3j
+kZFxOEPD/XHjRh/q7sbqejPqbaKP+Xmu3hGqISnlwnzILFWsiN1CJhpShyNSsiua
+nk5lBZ0Ri0knrQyAMvVkDNoZOQM/KWQrv3D+02AYrdX3/6+qJ2t0L8KQD5MH8dTh
+PKc4/dO3npJ5Pe0wW0H8F1HicUiOe0qk8FrQ2YvQtF9FA12jOTXDrsCpjDs73DbK
+SFeRr/eIysAxC1HmxUf3y/8me1SR9M8Tx3QvPn7kXGtXUWzSoP+5WrCx7wmaT1fI
+OY93tMOWBfN8rywTi0pcQrWDwvS5daZRyCBz+j3v3Ruq0BG16rSDoeHHycMoEb3Q
+f9uA4zAitnsXQFYMOfIGKNJrzEEtKXStupdhfryf6U/InXpfkl5wQwNHFTZidCYw
+IEdRlW48T58Kh53A2OW+oGzEI2Tj6jLiGejJwk5FkgPYIskSPxhYgMddbAznh0YY
+kMJ9XVn2pmJ8vZDhLxa5yq3PexhDez4PkgxXAhBZs3q8ihaOCoZ7YH8BFP2ddjFQ
+CfRMDffA7YvpuesXOK15XKktDFd6c7uVjBpgsCKuYRavmF5uIpsqCTMFe9fAu5l7
+cF5K6SF+fqmsXreohK0DvEErsSnY3h2IAEhCtzjrwmuvF0rhp/1/kCZ2XpcwfD6r
+KSthknQz3xdWf4HfC5Ji
+=qWFh
+-----END PGP SIGNATURE-----
+
+--gBBFr7Ir9EOA20Yy--
 
