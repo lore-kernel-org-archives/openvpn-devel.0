@@ -1,13 +1,13 @@
-References: <CAKuzo_jj4H3toE0JXp-HNKBH5=Y_iXqVPKOndkycFTYmQoL0=g@...278...>
-	<CAFHpkQEj2h4wwV056vy3dk4BBE=LuOoRtSqwMFonstY8RPNLYA@...278...>
-	<ac786c37-b52a-cb6d-dc5b-31764db832d5@...2080...>
-	<CAKuzo_iOeHQUbJ8HdpEyAbGSQYPF5GaG81Dm9P2cCMNJ-PUN9A@...278...>
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <845c3c82-6f15-19bf-bcfa-c81b514c7941@...515...>
-Date: Mon, 5 Dec 2016 20:30:06 +0200
+Date: Mon, 5 Dec 2016 20:01:14 +0100
+From: Alberto Gonzalez Iniesta <agi@...64...>
+Message-ID: <20161205190114.skhklwwhrqtz6hci@...30...>
+References: <20161121091013.imxgfilt3byyqu7u@...30...>
+	<1479896418-16190-1-git-send-email-gert@...1296...>
+	<20161123184321.GA28918@...1296...>
 MIME-Version: 1.0
-In-Reply-To: <CAKuzo_iOeHQUbJ8HdpEyAbGSQYPF5GaG81Dm9P2cCMNJ-PUN9A@...278...>
-Subject: Re: [Openvpn-devel] The windows installer and interactive service
+In-Reply-To: <20161123184321.GA28918@...1296...>
+Subject: Re: [Openvpn-devel] [PATCH] Refactor setting close-on-exec for
+ socket FDs
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,51 +16,65 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
-To: Selva Nair <selva.nair@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net
 
-Il 05/12/2016 05:06, Selva Nair ha scritto:
->
-> On Sun, Dec 4, 2016 at 6:20 PM, David Sommerseth
-> <openvpn@...2080...
-> <mailto:openvpn@...2080...>> wrote:
->
->     Be brave, settle for some really reasonable defaults we would prefer.
->     Ship it and see how it is perceived.  If there are issues, we can res=
-pin
->     a new installer with modified defaults regardless of the core OpenVPN
->     release schedule.
->
->
->
-> Totally agree. For starters let's install interactive service as a part
-> of openvpn core -- its good for users and cant hurt anyone.
->
-> Selva
->
+On Wed, Nov 23, 2016 at 07:43:21PM +0100, Gert Doering wrote:
+> Hi,
+>=20
+> On Wed, Nov 23, 2016 at 11:20:18AM +0100, Gert Doering wrote:
+> > The existing code can leak socket FDs to the "--up" script, which is
+> > not desired.  Brought up by Alberto Gonzalez Iniesta, based on debian
+> > bug 367716.
+>=20
+> I'm not sure if that patch is good enough yet.
+>=20
+> Arne brought up "port-share" - where we fork processes, so it needs to
+> be ensured that whatever that process needs is still working.
+>=20
+> In addition to that, we have "TCP server" processes, which create new
+> sockets not by calling socket() but by calling accept() on the listening
+> socket, which is not in one of thew set_cloexec() paths - but watch out,
+> *these* might be the ones needed for port-share.
+>=20
+> gert
 
-An installer that implements the suggested changes is available here:
+Hi,
 
-<http://build.openvpn.net/downloads/snapshots/openvpn-install-2.4_rc1-I601-=
-openvpn-build-pr58.exe>
+The patch, after being adjusted to the new source, is not working anymore:
 
-I tested the installer myself on Windows 7 Pro and it "seemed to work=20
-fine". More testing would of course be welcome, especially with=20
-non-default options.
+Mon Dec  5 19:39:34 2016 Set FD_CLOEXEC flag on file descriptor failed: Bad=
+ file descriptor (errno=3D9)
+Mon Dec  5 19:39:34 2016 Set FD_CLOEXEC flag on file descriptor failed: Bad=
+ file descriptor (errno=3D9)
+Mon Dec  5 19:39:34 2016 Exiting due to fatal error
+Mon Dec  5 19:39:34 2016 Exiting due to fatal error
+FAIL: t_cltsrv.sh
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D
+1 of 2 tests failed
+(1 test was not run)
+Please report to openvpn-users@lists.sourceforge.net
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D
 
-As the name of the installer implies it is based on this PR:
+So I guess Debian's bug #367716 [1] will come back from the dead :-( with 2=
+.4.
 
-<https://github.com/OpenVPN/openvpn-build/pull/58>
+Regards,
 
-I reviewed the changes and they seemed reasonable. Note that that the=20
-CoreSetup function will go away in the final version; Selva added it=20
-just to ease review.
+Alberto
+
+[1] https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=3D367716
 
 --=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
+Alberto Gonzalez Iniesta    | Formaci=F3n, consultor=EDa y soporte t=E9cnico
+mailto/sip: agi@...64... | en GNU/Linux y software libre
+Encrypted mail preferred    | http://inittab.com
 
-irc freenode net: mattock
+Key fingerprint =3D 5347 CBD8 3E30 A9EB 4D7D  4BF2 009B 3375 6B9A AA55
 
