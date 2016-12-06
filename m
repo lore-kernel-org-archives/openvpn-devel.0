@@ -1,18 +1,13 @@
-Date: Tue, 6 Dec 2016 22:02:32 +0100
+Date: Tue, 6 Dec 2016 22:18:18 +0100
 From: Gert Doering <gert@...1296...>
-Message-ID: <20161206210232.GN78624@...1296...>
-References: <20161108124506.32559-1-gert@...1296...>
-	<201611092014.uA9KErZf048132@...2054...>
-	<8feec195-c9ed-a0bb-31c5-459bf9757ce6@...68...>
-	<20161111221004.GC28918@...1296...>
-	<b998265c-5220-d5ce-596c-fe400a422de2@...68...>
+Message-ID: <20161206211818.GQ78624@...1296...>
+References: <CAFHpkQFgmWBhUb6YZOGFeR7Eyz34tFbN5BQEzafj0tpqtbmwyQ@...278...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="nT6ukc3bqTvTgwkF"
+	protocol="application/pgp-signature"; boundary="XQSDX3NWE02rtiZq"
 Content-Disposition: inline
-In-Reply-To: <b998265c-5220-d5ce-596c-fe400a422de2@...68...>
-Subject: Re: [Openvpn-devel] FreeBSD port versions (was: [PATCH applied] Re:
- Repair topology subnet on FreeBSD 11)
+In-Reply-To: <CAFHpkQFgmWBhUb6YZOGFeR7Eyz34tFbN5BQEzafj0tpqtbmwyQ@...278...>
+Subject: Re: [Openvpn-devel] fuzz testing by google ?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,52 +16,32 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Matthias Andree <matthias.andree@...68...>
+To: ???????? ?????????????? <chipitsine@...277...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---nT6ukc3bqTvTgwkF
+--XQSDX3NWE02rtiZq
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Sat, Nov 12, 2016 at 05:43:56AM +0100, Matthias Andree wrote:
-> Am 11.11.2016 um 23:10 schrieb Gert Doering:
-> > I might be tempted to do a quick 2.3.14 release in between - there's two
-> > important platform fixes in that branch now (FreeBSD and OpenBSD topolo=
-gy
-> > subnet :-) ) and Lev's recursive routing patch.  Add to that the windows
-> > block-outside-dns patch that I hope to be testing this weekend, and it's
-> > worth a minor bugfix release...  at least "before January".
->=20
-> Well, for me to update the FreeBSD port, mid December 2016 would be cool
-> for anything (2.3.14, or 2.4.0, or both) due to the before-xmas-madness
-> and to have like two weeks for smoke testing.
+On Fri, Dec 02, 2016 at 08:48:29AM +0500, ???????? ?????????????? wrote:
+> https://opensource.googleblog.com/2016/12/announcing-oss-fuzz-continuous-=
+fuzzing.html
 
-Here we go :-) - Nikolaus present, 2.3.14.
+This is generally interesting, of course.
 
-2.4_beta2 is waiting for someone to bump the openvpn-devel port, but
-everyone is busy, it seems (PR#214930).
+Fuzzing openvpn "as a whole" is quite complicated, though - we do check
+our input very well, so the last time someone tried to fuzz TLS packets
+to make openvpn "do bad things", all he got was "go away, you stink,
+session destroyed" :-)
 
-I wonder what the best approach towards 2.4 in ports would be, though -
-introduce an openvpn23 port, and bump "openvpn" to 2.4.0 when that
-happens?  Or introduce it as "openvpn24"?
-
-"operating system wise", 2.4.0 should be as good on FreeBSD as 2.3.14
-(because all the platform fixes went into both branches), but there
-might be hidden bugs lurking in the "non-client, non-platform" bits
-that are new in 2.4
-
-> Bottom line, give Debian the priority, and while it would be nice to
-> have for FreeBSD, no need to rush.
-
-So far we've managed to keep to our timeline, which currently says
-"2.4_rc2 next week, and 2.4.0 end of the year" (two weeks of testing
-phase for rc2)
+Anyway - so what's necessary to make this google fuzz testing work?  Do
+we instrument our code, or just tell them "hey, here's a useful piece
+of software, go figure it out yourself"?
 
 gert
-
 --=20
 USENET is *not* the non-clickable part of WWW!
                                                            //www.muc.de/~ge=
@@ -74,22 +49,22 @@ rt/
 Gert Doering - Munich, Germany                             gert@...1296...
 fax: +49-89-35655025                        gert@...1297...
 
---nT6ukc3bqTvTgwkF
+--XQSDX3NWE02rtiZq
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJYRydoAAoJEB2Cnv7KVigSVaAL/RppakQ6ItH93yUnoPt7An5o
-BJoAnYwmtsceoltw7I1N1Wg045z1ZrutDbhUkgD0qZ2ZN9aM8FVdIy4bIVYfFJlh
-5sCiCDvDVM/pZPnsqFTVKkphhyT6Z1ikA8xo0pIXVmA1qnHay/i5V/EmpP0HEhIX
-P5ETLuH4BlEL7VhycXMgNUrh4YL5Z9JzD+rj9tT+pp24WVwmHv5JcIueVxRvHQaA
-+lpF0qEL5VDD8o0SPPkuvUemP9nuobFH0jKDflAHDlAYUkkSJLWQOfrm7jqhoA9k
-OauwEU3ZNyuMBr2/SIZoX4yJZTZ/lWO6q8DfJFCj28YAX00fZMfs0t8EtRo1NaX7
-40wW8N22OBChHvdWDkFa7mziCqBbI0+3Gorln5VcRPxYbNusp++m51XdC0TVW+z9
-FfY9hpci6surLrO8y3OzpDjyNBfpQqZ5fjGvSR3E5qttVbKIAoMFna7+8t7jC0lY
-yvYWsoH9RYV5jfiacBHNjtFwoZL+3tt1PANi4iCHUQ==
-=Sshv
+iQGcBAEBAgAGBQJYRysZAAoJEB2Cnv7KVigSKhsL/RdCN8pv0JbeDq6zcCA/u51+
+cFYsoDCdjI3VVMDbbFsfvgBdFHNnBMzHfQrSC8Hqklxwn22VHOjuw09DN+ET04pJ
+pTsqRZgBhTnFBlWKv3NLufvEVGYJndIAz6dikmQPs/Fe6lTs+eXpxWXb/rd3X76b
+HdYrZYlsxTkeYpILtIndPbudmuvic6FytvTRo2COAcY9UWsTN1lPCVUoF6b3mdZi
+CdluIolGG8TUviMJbrqeb1xk9OIVdschY4G5X7r7KlIFe/xdw2EQZtGHGzVvwpBi
+Sc5Sj+L1d8B5ThY2NjugJK2ZMND/XWf04aGMNU5Z6RlDVyOeJZVViYptKK4mqKZr
+DPsUQlJsaXzVUiVVk017e63QRNmfn6VaxctIx7eRdcwKsjfo8iqNoHrkYFkkN17O
+lE74YAkDA6T68gDTXuYNrc57DM07OTL621XCOtSrENCr2tp6KUucTZUZPie/5I8h
+cD/oIE3eNXDCznXGt2u2rG8ELxb9RbVG6TDvV0sy1Q==
+=JmbT
 -----END PGP SIGNATURE-----
 
---nT6ukc3bqTvTgwkF--
+--XQSDX3NWE02rtiZq--
 
