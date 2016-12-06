@@ -1,15 +1,9 @@
-Date: Tue, 6 Dec 2016 10:10:59 +0100
-From: Alberto Gonzalez Iniesta <agi@...64...>
-Message-ID: <20161206091059.y3dzup635wvzkw6y@...30...>
-References: <20161121091013.imxgfilt3byyqu7u@...30...>
-	<1479896418-16190-1-git-send-email-gert@...1296...>
-	<20161123184321.GA28918@...1296...>
-	<20161205190114.skhklwwhrqtz6hci@...30...>
-	<20161205200504.GV78624@...1296...>
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <f7e99969-bb2a-eff3-4853-9985c217e573@...515...>
+Date: Tue, 6 Dec 2016 11:28:30 +0200
 MIME-Version: 1.0
-In-Reply-To: <20161205200504.GV78624@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH] Refactor setting close-on-exec for
- socket FDs
+Subject: [Openvpn-devel] Topics for the upcoming (Wednesday,
+	7th Dec 2016) community meeting
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,39 +12,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-1"
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 To: openvpn-devel@lists.sourceforge.net
 
-On Mon, Dec 05, 2016 at 09:05:04PM +0100, Gert Doering wrote:
-> Hi,
->=20
-> On Mon, Dec 05, 2016 at 08:01:14PM +0100, Alberto Gonzalez Iniesta wrote:
-> > The patch, after being adjusted to the new source, is not working anymo=
-re:
-> >=20
-> > Mon Dec  5 19:39:34 2016 Set FD_CLOEXEC flag on file descriptor failed:=
- Bad file descriptor (errno=3D9)
-> > Mon Dec  5 19:39:34 2016 Set FD_CLOEXEC flag on file descriptor failed:=
- Bad file descriptor (errno=3D9)
->=20
-> This is with "the debian patch", or with my alternate suggestion?
->=20
-> (I'm not sure if my patch is actually good enough as I think it's not
-> fixing TCP "after accept" sockets yet - but some sort of initial feedback
-> would be good :) )
->=20
-> gert
+Hi,
 
-So sorry Gert, I didn't notice yours. I' try it and let you know about
-the result.
+We're going to have an IRC meeting on Wednesday 7th December 2016. The=20
+meeting begins at 20:00 CET (19:00 UTC) on #openvpn-meeting <at>=20
+irc.freenode.net. You do not have to be logged in to Freenode to join=20
+the channel.
 
+Current topic list along with basic information is here:
 
---=20
-Alberto Gonzalez Iniesta    | Formaci=F3n, consultor=EDa y soporte t=E9cnico
-mailto/sip: agi@...64... | en GNU/Linux y software libre
-Encrypted mail preferred    | http://inittab.com
+<https://community.openvpn.net/openvpn/wiki/Topics-2016-12-07>
 
-Key fingerprint =3D 5347 CBD8 3E30 A9EB 4D7D  4BF2 009B 3375 6B9A AA55
+If you have any other things you'd like to bring up, respond to this=20
+mail, send me mail privately or add them to the list yourself.
+
+In case you can't attend the meeting, please feel free to make comments=20
+on the topics by responding to this email or to the summary email sent=20
+after the meeting. Whenever possible, we'll also respond to existing,=20
+related email threads.
+
+--
+Samuli Sepp=C3=A4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
 
