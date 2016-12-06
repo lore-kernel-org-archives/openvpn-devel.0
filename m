@@ -1,9 +1,10 @@
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <f7e99969-bb2a-eff3-4853-9985c217e573@...515...>
-Date: Tue, 6 Dec 2016 11:28:30 +0200
-MIME-Version: 1.0
-Subject: [Openvpn-devel] Topics for the upcoming (Wednesday,
-	7th Dec 2016) community meeting
+From: Gert Doering <gert@...1296...>
+Date: Tue,  6 Dec 2016 13:26:02 +0100
+Message-Id: <1481027162-12165-1-git-send-email-gert@...1296...>
+In-Reply-To: <20161206091059.y3dzup635wvzkw6y@...30...>
+References: <20161206091059.y3dzup635wvzkw6y@...30...>
+Subject: [Openvpn-devel] [PATCH v3] Refactor setting close-on-exec for
+	socket FDs
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,33 +13,142 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+The existing code can leak socket FDs to the "--up" script, which is
+not desired.  Brought up by Alberto Gonzalez Iniesta, based on debian
+bug 367716.
 
-We're going to have an IRC meeting on Wednesday 7th December 2016. The=20
-meeting begins at 20:00 CET (19:00 UTC) on #openvpn-meeting <at>=20
-irc.freenode.net. You do not have to be logged in to Freenode to join=20
-the channel.
+Since different sockets get create at different times, just moving the
+set_cloexec() to link_socket_init_phase1() is not good enough - so move
+the call into create_socket_<family>(), so we will catch ALL socket
+creations, no matter when or under which conditions they will be
+created (SOCKS proxy socket, listening socket, ...).
 
-Current topic list along with basic information is here:
+--inetd gets an extra fd_cloexec() call, as socket FD is inherited.
 
-<https://community.openvpn.net/openvpn/wiki/Topics-2016-12-07>
+URL: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=367716
 
-If you have any other things you'd like to bring up, respond to this=20
-mail, send me mail privately or add them to the list yourself.
+v2: remove set_cloexec() calls from manage.c
 
-In case you can't attend the meeting, please feel free to make comments=20
-on the topics by responding to this email or to the summary email sent=20
-after the meeting. Whenever possible, we'll also respond to existing,=20
-related email threads.
+v3: add set_cloexec() calls to accept()ed TCP/unix child sockets
 
---
-Samuli Sepp=C3=A4nen
-Community Manager
-OpenVPN Technologies, Inc
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+ src/openvpn/manage.c |  2 --
+ src/openvpn/socket.c | 34 +++++++++++++++++++++++++++-------
+ 2 files changed, 27 insertions(+), 9 deletions(-)
 
-irc freenode net: mattock
+diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
+index 77a8006..e8ec442 100644
+--- a/src/openvpn/manage.c
++++ b/src/openvpn/manage.c
+@@ -1499,7 +1499,6 @@ man_new_connection_post (struct management *man, const char *description)
+   struct gc_arena gc = gc_new ();
+ 
+   set_nonblock (man->connection.sd_cli);
+-  set_cloexec (man->connection.sd_cli);
+ 
+   man_connection_settings_reset (man);
+ 
+@@ -1640,7 +1639,6 @@ man_listen (struct management *man)
+        * Set misc socket properties
+        */
+       set_nonblock (man->connection.sd_top);
+-      set_cloexec (man->connection.sd_top);
+ 
+ #if UNIX_SOCK_SUPPORT
+       if (man->settings.flags & MF_UNIX_SOCK)
+diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
+index c233f2b..ce53ee8 100644
+--- a/src/openvpn/socket.c
++++ b/src/openvpn/socket.c
+@@ -771,6 +771,10 @@ create_socket_tcp (struct addrinfo* addrinfo)
+   }
+ #endif
+ 
++  /* set socket file descriptor to not pass across execs, so that
++     scripts don't have access to it */
++  set_cloexec (sd);
++
+   return sd;
+ }
+ 
+@@ -815,6 +819,11 @@ create_socket_udp (struct addrinfo* addrinfo, const unsigned int flags)
+         }
+     }
+ #endif
++
++  /* set socket file descriptor to not pass across execs, so that
++     scripts don't have access to it */
++  set_cloexec (sd);
++
+   return sd;
+ }
+ 
+@@ -968,6 +977,12 @@ socket_do_accept (socket_descriptor_t sd,
+       openvpn_close_socket (new_sd);
+       new_sd = SOCKET_UNDEFINED;
+     }
++  else
++    {
++      /* set socket file descriptor to not pass across execs, so that
++	 scripts don't have access to it */
++      set_cloexec (sd);
++    }
+   return new_sd;
+ }
+ 
+@@ -1617,6 +1632,7 @@ link_socket_init_phase1 (struct link_socket *sock,
+       ASSERT (sock->info.proto != PROTO_TCP_CLIENT);
+       ASSERT (socket_defined (inetd_socket_descriptor));
+       sock->sd = inetd_socket_descriptor;
++      set_cloexec (sock->sd);		/* not created by create_socket*() */
+     }
+   else if (mode != LS_MODE_TCP_ACCEPT_FROM)
+     {
+@@ -1677,13 +1693,6 @@ phase2_set_socket_flags (struct link_socket* sock)
+   /* set socket to non-blocking mode */
+   set_nonblock (sock->sd);
+ 
+-  /* set socket file descriptor to not pass across execs, so that
+-     scripts don't have access to it */
+-  set_cloexec (sock->sd);
+-
+-  if (socket_defined (sock->ctrl_sd))
+-    set_cloexec (sock->ctrl_sd);
+-
+   /* set Path MTU discovery options on the socket */
+   set_mtu_discover_type (sock->sd, sock->mtu_discover_type, sock->info.af);
+ 
+@@ -3476,6 +3485,11 @@ create_socket_unix (void)
+ 
+   if ((sd = socket (PF_UNIX, SOCK_STREAM, 0)) < 0)
+     msg (M_ERR, "Cannot create unix domain socket");
++
++  /* set socket file descriptor to not pass across execs, so that
++     scripts don't have access to it */
++  set_cloexec (sd);
++
+   return sd;
+ }
+ 
+@@ -3516,6 +3530,12 @@ socket_accept_unix (socket_descriptor_t sd,
+ 
+   CLEAR (*remote);
+   ret = accept (sd, (struct sockaddr *) remote, &remote_len);
++  if ( ret >= 0 )
++    {
++      /* set socket file descriptor to not pass across execs, so that
++	 scripts don't have access to it */
++      set_cloexec (ret);
++    }
+   return ret;
+ }
+ 
+-- 
+2.7.3
+
 
