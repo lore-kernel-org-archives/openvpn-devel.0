@@ -1,13 +1,16 @@
-Date: Wed, 7 Dec 2016 09:19:07 +0100
+Date: Wed, 7 Dec 2016 09:29:08 +0100
 From: Gert Doering <gert@...1296...>
-Message-ID: <20161207081907.GS78624@...1296...>
-References: <1481067951-28917-1-git-send-email-lstipakov@...277...>
+Message-ID: <20161207082908.GT78624@...1296...>
+References: <1480707729-19578-1-git-send-email-selva.nair@...277...>
+	<20161206203324.GM78624@...1296...>
+	<CAKuzo_hvXg5HWrgc1Gd++iZwtTf2aekKDuc1KHufZ+HXZ66znw@...278...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="yKmnPmKxJBqIz68t"
+	protocol="application/pgp-signature"; boundary="dnBRaVjvtun1Q0Od"
 Content-Disposition: inline
-In-Reply-To: <1481067951-28917-1-git-send-email-lstipakov@...277...>
-Subject: Re: [Openvpn-devel] [PATCH] Arm inotify only in server mode
+In-Reply-To: <CAKuzo_hvXg5HWrgc1Gd++iZwtTf2aekKDuc1KHufZ+HXZ66znw@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] Correctly state the default dhcp server
+ address in man page
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,50 +19,40 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Lev Stipakov <lstipakov@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Selva Nair <selva.nair@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---yKmnPmKxJBqIz68t
+--dnBRaVjvtun1Q0Od
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Wed, Dec 07, 2016 at 01:45:51AM +0200, Lev Stipakov wrote:
->  #ifdef ENABLE_ASYNC_PUSH
->    /* arm inotify watcher */
-> -  event_ctl (c->c2.event_set, c->c2.inotify_fd, EVENT_READ, (void*)&file=
-_shift);
-> +  if (c->options.mode =3D=3D MODE_SERVER)
-> +    event_ctl (c->c2.event_set, c->c2.inotify_fd, EVENT_READ, (void*)&fi=
-le_shift);
->  #endif
+On Tue, Dec 06, 2016 at 05:37:15PM -0500, Selva Nair wrote:
+> Yes, it does work in tun mode (easy to test just use offset 0 on command
+> line)
 
-I find this a non-robust approach to this.
+Good :-)
 
-What is wrong with
+> I had posted a patch ( a year ago?) which sets the offset to 0. I did not
+> remove the offset variable though it makes sense to get rid of it... Anyw=
+ay
+> the patch never got any attention :)
 
-   if ( c->c2.inotify_fd > 0 )
-     {
-       event_ctl (c->c2.event_set, c->c2.inotify_fd, EVENT_READ, (void*)&fi=
-le_shift);
-     }
+Apologies.  I've seen the patch but got distracted.
 
-(as I suggested on IRC yesterday evening)?
+We should get this fixed after 2.4 release in master (along with lots of
+other "now we go clean this up and refactor everything" :-) ).
 
-This will ensure that inotify is armed *if* it got prepped, independent of
-"whatever other flags are active in the system" - next thing, someone adds
-a "--no-inotify" run-time switch, and you'll have to revisit this place
-again - or someone else finds a use for inotify in client mode, and this
-will also need touching.
+For "fixing strange parts of openvpn" patches, please feel free to remind
+me every now and then that feedback is missing.  I'm not extending this to
+"all sorts of patches" right now, though, as I can't make promises for the
+"big change patch series"...
 
-It will fix the issue at hand, but is not good code.
-
-Also, braces.  See CodingStyle in the wiki.
+Anyway: Samuli, how's patchwork proceeding?  Speaking of "tracking patches".
 
 gert
-
 --=20
 USENET is *not* the non-clickable part of WWW!
                                                            //www.muc.de/~ge=
@@ -67,22 +60,22 @@ rt/
 Gert Doering - Munich, Germany                             gert@...1296...
 fax: +49-89-35655025                        gert@...1297...
 
---yKmnPmKxJBqIz68t
+--dnBRaVjvtun1Q0Od
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJYR8X7AAoJEB2Cnv7KVigSjccL/1uK7Ltp/g3v0OMlbBOpSrt0
-IwSdxKwRHgZVW6yGoCLNuEhPJ9wk+0KgFMAWY5YeIdSS4AjWnxL4FvO8zV2++CKr
-26TndUItaHQOFzHYjeAY0caJFA2WkF/lYcLiXMP4TZwYnOuOt3zeqsfAH96lqFHf
-tPtcGedIvmARZ0YfW4d/2t/WquAde5dEMu31rpVc+qoCGl5FWWB4Zx6+88A6wbiW
-FRo2ii4R+3spI0CXuj/vGY2OP4tD9bDlasdElwDHyUv8ZdAvWfz03zS06gtE+M/G
-MvQoVA1e6pOiBiNcPV1vVvU7bUDJBKUCS2TeY+Bja7QPG7D6LZ8gZkza9Ee8bMua
-90TwqKzjcUh0HYQ7aHXN7nWMtHssB6URboAwcAwHB6ddII8kfjZXPhHM4cSmwbCj
-i6m+FFlav8lZ0d8/cBz8dfKzqTIdFBX3emnXU6pj5EEqPD2IseD4Y3OiqewkvQSV
-szJHQErCzZzF3Fig2FWqKEbnKJY+B47IbmicIpLH6g==
-=leH5
+iQGcBAEBAgAGBQJYR8dZAAoJEB2Cnv7KVigShScL+gOWp2M9u57bQ/EsMYEHRJZ9
+bvwjDR18KgfGvqn6bs9Gyov9w24LWRAz+MY+Rdo6e/bvlR0vsS3EKfacKA9mR91h
+lzvM3pHyZUR57wu9PgteRuhXISe+CF+rPcq7BcYzStgaR3SkKAj4l0xDj5pBQW9h
+/lmDTTcALwpeC1BTXbgrbQqdp9IQDuGdxNj/hyU1iUgiVkCRnXQPEd390+s0w6Kc
+6qhWRrQuyE5udceTZC1Ld98fxdzJ9hyAIesP6/lUtZBIhRNqDr9Y+MxQNsC6NCct
+rDripxISd3vshiTDNVv0YOW35+ohrWW810njWkqWF3HLB2MUSTRWuoS52VHfSFv1
+qoOB6j6Z2zyCm/wVMBDpCRlgTKu/2lDA4UGTIUkFgxFhaV+ospJynMDWKXlQHn4E
+ovantBqcHQ241d3vwekbUbkkC7kIwf9CkGhcvklriv5BrJ2mBZ9ZnTTNY38NMZwu
+Fc+Y1WnL4qEdKbj3H+xTnoOyPD1Agep6iYXGYKJjwA==
+=0zKz
 -----END PGP SIGNATURE-----
 
---yKmnPmKxJBqIz68t--
+--dnBRaVjvtun1Q0Od--
 
