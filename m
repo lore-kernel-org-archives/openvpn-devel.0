@@ -1,8 +1,9 @@
 From: David Sommerseth <davids@...515...>
-Date: Wed,  7 Dec 2016 03:51:52 +0100
-Message-Id: <1481079112-22990-1-git-send-email-davids@...515...>
-Subject: [Openvpn-devel] [PATCH] systemd: Intermediate --chroot fix with the
-	new sd_notify() implementation
+Date: Wed,  7 Dec 2016 04:14:03 +0100
+Message-Id: <1481080443-3186-1-git-send-email-davids@...515...>
+In-Reply-To: <1481067951-28917-1-git-send-email-lstipakov@...277...>
+References: <1481067951-28917-1-git-send-email-lstipakov@...277...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Arm inotify only in server mode
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,68 +14,51 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: lstipakov@...277...
+Cc: openvpn-devel@lists.sourceforge.net
 
-Commit c5931897ae8d663e7e introduced support for talking directly
-to the systemd service manager about the situation for the OpenVPN
-tunnel. This approach makes a lot of sense and is mostly the proper
-way to do it.  But it was discovered that it breaks OpenVPN
-configurations using --chroot.
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-The reason sd_notify() calls fails when using chroot() is that
-sd_notify() expects to have access to a file as declared in the
-$NOTIFY_SOCKET environment variable.  It is the main systemd
-instance which is responsible to provide both the environment variable
-as well as the socket file sd_nodify() should use.  When --chroot
-comes into play, the $NOTIFY_SOCKET file will not be available
-for OpenVPN any more.
+ACK.  Also tested using the reproducer in Trac.  This patch
+fixes the issue when OpenVPN is built using --enable-async-push.
 
-As things are getting close to the 2.4_rc2 release we will not dare
-to bring a too invasive fix.  As well we need some time to discuss
-an approrpriate solution.  So this intermediate fix will only
-provide a "successful start" message to the systemd service manager
-right before chroot() happens.  This will at least resolve the issue
-in a safe and non-intrusive way.
+Your patch has been applied to the master branch.
 
-Signed-off-by: David Sommerseth <davids@...515...>
----
- src/openvpn/init.c | 22 +++++++++++++++++++++-
- 1 file changed, 21 insertions(+), 1 deletion(-)
+commit 7084a3993fa35c6fb71abe8aac7b30f442205e2a
+Author: Lev Stipakov
+Date:   Wed Dec 7 01:45:51 2016 +0200
 
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 74f1139..e47f0d4 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -967,7 +967,27 @@ do_uid_gid_chroot (struct context *c, bool no_delay)
-       if (c->options.chroot_dir)
- 	{
- 	  if (no_delay)
--	    platform_chroot (c->options.chroot_dir);
-+            {
-+#ifdef ENABLE_SYSTEMD
-+              /* If OpenVPN is started by systemd, the OpenVPN process needs
-+               * to provide a preliminary status report to systemd.  This is
-+               * needed as $NOTIFY_SOCKET will not be available inside the
-+               * chroot, which sd_notify()/sd_notifyf() depends on.
-+               *
-+               * This approach is the simplest and the most non-intrusive
-+               * solution right before the 2.4_rc2 release.
-+               *
-+               * TODO: Consider altnernative solutions - bind mount?
-+               * systemd does not grok OpenVPN configuration files, thus cannot
-+               * have a sane way to know if OpenVPN will chroot or not and to
-+               * which subdirectory it will chroot into.
-+               */
-+              sd_notifyf(0, "READY=1\n"
-+                "STATUS=Entering chroot, most of the init completed successfully\n"
-+                "MAINPID=%lu", (unsigned long) getpid());
-+#endif
-+              platform_chroot (c->options.chroot_dir);
-+            }
- 	  else if (c->first_time)
- 	    msg (M_INFO, "NOTE: chroot %s", why_not);
- 	}
--- 
-1.8.3.1
+     Arm inotify only in server mode
 
+     Trac: #786
+     Signed-off-by: Lev Stipakov <lstipakov@...277...>
+     Acked-by: David Sommerseth <davids@...515...>
+     Message-Id: <1481067951-28917-1-git-send-email-lstipakov@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13415.html
+     Signed-off-by: David Sommerseth <davids@...515...>
+
+
+- --
+kind regards,
+
+David Sommerseth
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBAgAGBQJYR342AAoJEIbPlEyWcf3ysysP/jfNdapMwuRJ8hhqJFMOvMzg
+ss+EOhWpZHzC7RJfBUeYWVdXMMGL+I8beKGZTHoC1DEPkVOV4wg2FHB0wpvIQMja
+BrEo/AiCBUrMC5eiIn8IO6b6ATKQih/oD07GcECcSZ0/Vica3goP1hVik7JUkAZA
+2fsDjGh+5g4KfObHMaTjpID9UfQV7wsPU/C2pWc0ywq51CZXingWQnWwaYKS93OZ
+i7EKxQrWy0Nxs0YhzloVI/2k6mcwwP0mzeZdQ+imhjtuXoYmSisXxUSNDrwvgYUN
+byMb4qhcuuDRquR3mRO0jjVR7nlL68NDlX57Z60ocbxskZBzhfxMM1/CkXgVLC5L
+TBU6IHaTWn/5/d4jo4aA50sDBQohu73Yf4/SnqwcWURsui4yJCejVQTFeKyKPxiD
+CQ1T0n9swXRsgYqsKioZHv3Mywaciq5y3+3BpJ9oGg9mfYcoQxQ5kJNY6jjIYC3C
+xQiFFP92bqi7d761bKhwsJU//DZ4FRwqWihhkUL9VJ4WhZmVdrJjYEcyknnRPm1F
+/Woc9V2sBhIZ00VCfvu0WNvLb1w40q6PV695uqfOQzjhPuhXp3q0ZEOp76ArqZqN
+OW6DjKodACCZKkSP2Ef1/9jsmXmL/46348FVBSa4Qbr7PNRlHe1LjTYQSg/aS1y4
+T33QanBd0sAGstvfuf2C
+=Lcf0
+-----END PGP SIGNATURE-----
 
