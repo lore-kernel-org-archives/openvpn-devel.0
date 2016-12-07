@@ -1,15 +1,13 @@
-Date: Wed, 7 Dec 2016 13:04:30 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20161207120430.GY78624@...1296...>
-References: <CAFHpkQFgmWBhUb6YZOGFeR7Eyz34tFbN5BQEzafj0tpqtbmwyQ@...278...>
-	<20161206211818.GQ78624@...1296...>
-	<CAFHpkQGqHrFwCLMEvu9tEAQg3heWaAWcEQDyidG5z0ZLNgkL_Q@...278...>
+Date: Wed, 7 Dec 2016 14:01:54 +0100
+From: Alberto Gonzalez Iniesta <agi@...64...>
+Message-ID: <20161207130154.3ivyeknnuhn2tiv4@...30...>
+References: <20161206091059.y3dzup635wvzkw6y@...30...>
+	<1481027162-12165-1-git-send-email-gert@...1296...>
+	<da199ee2-77b1-50ce-5b07-64044af47ba3@...1227...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="g3W8FGNyQaC+nhss"
-Content-Disposition: inline
-In-Reply-To: <CAFHpkQGqHrFwCLMEvu9tEAQg3heWaAWcEQDyidG5z0ZLNgkL_Q@...278...>
-Subject: Re: [Openvpn-devel] fuzz testing by google ?
+In-Reply-To: <da199ee2-77b1-50ce-5b07-64044af47ba3@...1227...>
+Subject: Re: [Openvpn-devel] [PATCH v3] Refactor setting close-on-exec for
+ socket FDs
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,85 +16,41 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: ???????? ?????????????? <chipitsine@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-
---g3W8FGNyQaC+nhss
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net
 
-Hi,
-
-On Wed, Dec 07, 2016 at 04:51:36PM +0500, ???????? ?????????????? wrote:
-> at least, I recall this commit
-> https://github.com/OpenVPN/openvpn/commit/0d8da22ae36d5efd03fba36c1d783b9=
-07589e321
-
-*That* commit is "the 2.3.6 release", but I see what you mean.
-
-> it used to crash on simple tcp connect (after immediate disconnect), it w=
-as
-> reproducible to running login/password authentication mode
+On Tue, Dec 06, 2016 at 01:36:04PM +0100, Arne Schwabe wrote:
+> Am 06.12.16 um 13:26 schrieb Gert Doering:
+> > The existing code can leak socket FDs to the "--up" script, which is
+> > not desired.  Brought up by Alberto Gonzalez Iniesta, based on debian
+> > bug 367716.
+> >=20
+> > Since different sockets get create at different times, just moving the
+> > set_cloexec() to link_socket_init_phase1() is not good enough - so move
+> > the call into create_socket_<family>(), so we will catch ALL socket
+> > creations, no matter when or under which conditions they will be
+> > created (SOCKS proxy socket, listening socket, ...).
 >=20
-> it might have been caught by fuzz testing.
-
-I should point out that this was not a "crash" but an "openvpn detects
-invalid input and ASSERT()s out -> well-defined program exit".
-
-Not exactly *friendly* behaviour (and stupid, in this case), but not=20
-a *crash*.
-
-But that's exactly why fuzzing openvpn is hard: we detect bad stuff, and
-in doubt, we ASSERT() - which is well-defined behaviour, not "crashing
-randomly, possibly in a way that can be exploited to get access to
-security critical bits"
-
-> > Anyway - so what's necessary to make this google fuzz testing work?  Do
-> > we instrument our code, or just tell them "hey, here's a useful piece
-> > of software, go figure it out yourself"?
+> Patch looks good. ACK from me. I also looked at the port-share code path
+> but that part isn't touched by this commit.
 >=20
-> we can start with PR to
-> https://github.com/google/oss-fuzz/tree/master/projects
-> it must been done by someone from "OpenVPN" github organization.
 
-OK, that would then be Samuli, David or me, I think.  We'll investigate...
+Works for me (tm)
 
-> if google machinery will not figure out anything, it might be long way wi=
-th
-> libfuzz-helpers (if we implement such helpers, we can add them to cmoka a=
-nd
-> travis-ci)
+I'm just waiting for the pkcs11-helper maintainer [1] to upload 2.4~rc1
+to Debian. If he decides to build against OpenSSL 1.1 I'd have to remove
+PKCS #11 support from Debian's package in Stretch.
 
-Indeed, but that would be "we have to do it", which nobody seems to have
-time right now.
 
-gert
 
+[1] https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=3D828506
 
 --=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+Alberto Gonzalez Iniesta    | Formaci=F3n, consultor=EDa y soporte t=E9cnico
+mailto/sip: agi@...64... | en GNU/Linux y software libre
+Encrypted mail preferred    | http://inittab.com
 
---g3W8FGNyQaC+nhss
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJYR/rOAAoJEB2Cnv7KVigSU3UMAKXcPtJupP1kQOwed3duvDfe
-upmWXGs6fiwpCtpzEi88DoFg/9cnp0xl1CnL/W+YjYpv0CNAQbhvuaqiPHCfpnlH
-tt5iWOavymBnZw7xS6USA1lS09Ui1F5DjOtGZ0GyZwQUYQYm35xdMWK+cv01jH6E
-GjktauD5+GSHIjt8Z6c04vOmbnyRf1vXhSSaSreNd94jVAi4NkZ+lTH7WYxj6Dlg
-dWHE2xDlK7FRkXadqJ8TmzDdrKRkGE5AMDKWAKVyqsuXk4AnP4ejda1MLTB7HoJl
-HuKJEh/JVcmyHpB2pErLYPo2qj5OWfFUeoJmOFB380FVa6NSly6jtWtuumoQFHI9
-2lYwLZ/OxFftDZNvcL/eyB0YGYWL7rFErCBa14NV7fTIuNAg2CXzg8Aqu6MpMvVS
-ZxIO0qSHn4H5JD7TkfzzceItMgqdiUN26CLZiiEwDuFEuQXL2YuSqExOjHukNXmV
-hJYcbQoQYlwrxL/zo4AP3GK/CPvis1maPHxj59NWPQ==
-=AGF1
------END PGP SIGNATURE-----
-
---g3W8FGNyQaC+nhss--
+Key fingerprint =3D 5347 CBD8 3E30 A9EB 4D7D  4BF2 009B 3375 6B9A AA55
 
