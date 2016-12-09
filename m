@@ -1,9 +1,11 @@
-From: =?iso-8859-1?Q?Herv=E9_CODINA?= <Herve.CODINA@...2209...>
-Date: Fri, 9 Dec 2016 14:15:55 +0100
-Message-ID: <1481289355-4617-1-git-send-email-Herve.CODINA@...2209...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 1/1] Handle SIGHUP during initialisation
-	phase
+In-Reply-To: <1481274455-657-1-git-send-email-mkroken@...277...>
+References: <1481274455-657-1-git-send-email-mkroken@...277...>
+From: Steffan Karger <steffan@...1856...>
+Date: Fri, 9 Dec 2016 14:36:23 +0100
+Message-ID: <CAA1AbxJ6AQKMeVp1XH4VTJw+uNak-EG7-PSCnVs2mTWhM_wRJg@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] mbedtls: include correct
+ net/net_sockets header according to version
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,45 +14,65 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-Cc: =?iso-8859-1?Q?Herv=E9_CODINA?= <Herve.CODINA@...2209...>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+To: Magnus Kroken <mkroken@...277...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-Without this commit, if remote host cannot be reached, we get stuck in loop=
- trying to
-connect and we cannot reload a new configuration using SIGHUP.
-In this case, the only way to reload the configuration is to kill and relau=
-nch the daemon.
+Hi,
 
-With this commit, following use case can be done:
-- Set a good config file
-- Launch vpn client daemon -> Connect OK
-- Change config file (configure a wrong remote host)
-- SIGHUP
-- client daemon reload conf -> Connect failed and loop retrying connection
-- Change config file (configure a good remote host)
-- SIGHUP
-- client daemon reload conf -> Connect OK
+On 9 December 2016 at 10:07, Magnus Kroken <mkroken@...277...> wrote:
+> <mbedtls/net.h> is deprecated as of mbedTLS 2.4.0, it is renamed
+> <mbedtls/net_sockets.h>. OpenVPN will fail to build with
+> mbedTLS 2.4.0 with MBEDTLS_DEPRECATED_REMOVED defined.
+>
+> Check MBEDTLS_VERSION_NUMBER, and include net.h for < 2.4.0 and
+> net_sockets.h for >= 2.4.0.
+>
+> Signed-off-by: Magnus Kroken <mkroken@...277...>
+> ---
+> Tested, builing with both mbedTLS 2.3.0 and 2.4.0 with
+> MBEDTLS_DEPRECATED_REMOVED is successful.
+>
+> This patch is as much to document the issue as a suggested patch.
+> I don't know if MBEDTLS_DEPRECATED_REMOVED is considered a
+> distro/package maintainers problem or something to fix with
+> an #if, so I won't be sad if it isn't accepted.
+>
+>  src/openvpn/ssl_mbedtls.c | 10 ++++++++--
+>  1 file changed, 8 insertions(+), 2 deletions(-)
+>
+> diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
+> index 11ee65b..985a39f 100644
+> --- a/src/openvpn/ssl_mbedtls.c
+> +++ b/src/openvpn/ssl_mbedtls.c
+> @@ -51,11 +51,17 @@
+>  #include "ssl_verify_mbedtls.h"
+>  #include <mbedtls/debug.h>
+>  #include <mbedtls/error.h>
+> -#include <mbedtls/net.h>
+> +#include <mbedtls/version.h>
+> +
+> +#if MBEDTLS_VERSION_NUMBER >= 0x02040000
+> +    #include <mbedtls/net_sockets.h>
+> +#else
+> +    #include <mbedtls/net.h>
+> +#endif
+> +
+>  #include <mbedtls/oid.h>
+>  #include <mbedtls/pem.h>
+>  #include <mbedtls/sha256.h>
+> -#include <mbedtls/version.h>
+>
+>  void
+>  tls_init_lib()
+> --
+> 2.1.4
 
-Signed-off-by: Herve Codina <Herve.CODINA@...2209...>
----
- src/openvpn/sig.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Looks good, passes tests. ACK.
 
-diff --git a/src/openvpn/sig.c b/src/openvpn/sig.c
-index b3ae645..073a285 100644
---- a/src/openvpn/sig.c
-+++ b/src/openvpn/sig.c
-@@ -226,7 +226,7 @@ pre_init_signal_catch (void)
-   signal_mode =3D SM_PRE_INIT;
-   signal (SIGINT, signal_handler);
-   signal (SIGTERM, signal_handler);
--  signal (SIGHUP, SIG_IGN);
-+  signal (SIGHUP, signal_handler);
-   signal (SIGUSR1, SIG_IGN);
-   signal (SIGUSR2, SIG_IGN);
-   signal (SIGPIPE, SIG_IGN);
---=20
-1.7.9.5
+We might remove the indenting of the preprocessor statements, but if
+not, this will be fixed soon by The Great Reformatting anyway.
+
+-Steffan
 
