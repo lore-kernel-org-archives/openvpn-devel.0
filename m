@@ -1,13 +1,16 @@
-Date: Fri, 9 Dec 2016 09:15:35 +0100
+Date: Fri, 9 Dec 2016 09:25:15 +0100
 From: Gert Doering <gert@...1296...>
-Message-ID: <20161209081535.GT78624@...1296...>
-References: <1481251952-30704-1-git-send-email-davids@...515...>
+Message-ID: <20161209082515.GV78624@...1296...>
+References: <1480545687-19365-1-git-send-email-davids@...515...>
+	<1481251848-28460-1-git-send-email-davids@...515...>
+	<20161209081319.GS78624@...1296...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="IGPMjTREWkoKVnU2"
+	protocol="application/pgp-signature"; boundary="hNweOTLwwbnii4NA"
 Content-Disposition: inline
-In-Reply-To: <1481251952-30704-1-git-send-email-davids@...515...>
-Subject: Re: [Openvpn-devel] [PATCH] Improve ifconfig_sanity_check()
+In-Reply-To: <20161209081319.GS78624@...1296...>
+Subject: Re: [Openvpn-devel] [PATCH] push: Provide a warning if
+ --ifconfig-push have argument mismatch with --topology
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,25 +22,33 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: David Sommerseth <davids@...515...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---IGPMjTREWkoKVnU2
+--hNweOTLwwbnii4NA
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Fri, Dec 09, 2016 at 03:52:32AM +0100, David Sommerseth wrote:
-> - Instead of checking the complete in_addr_t (which lacked proper htonl()=
-),
->   just do a simple peek at the last byte which contains the first octet
->   of an IP address or subnet mask.
+On Fri, Dec 09, 2016 at 09:13:19AM +0100, Gert Doering wrote:
+> ... ifconfig_sanity_check() does *nothing* for TOP_SUBNET=20
 
-Have you *tested* this on a non-intel platform?
+Overlooked the second patch (since it wasn't threaded).  So with the other
+patch, that argument is no longer valid, of course.  Apologies.
 
-I know that I said on IRC that we might do it that way, but looking
-at stuff like print_in_addr_t() I'm not sure our usage of in_addr_t is
-consistant with "normal usage of it" (namely, always in network byte
-order).
+[..]
+> Also we might to re-think the warning message printed - if called from
+> an ifconfig-push context, the text "the second argument to --ifconfig must
+> be an IP address" is less than clear ("my --ifconfig settings are just=20
+> fine, what is openvpn warning about?").
+
+That one still holds...  technically it's more "for the other patch",
+but since *this* patch is calling ifconfig_sanity_check() from a new
+context, it should tackle the now-misleading warning text, I think.
+
+(So maybe apply the other one first, after verifying endian correctness=20
+on sparc or mips/be architecture, and this one then removes the static,
+adds a flag for "ifconfig or ifconfig-push context?" and adapts the
+messages accordingly)
 
 gert
 --=20
@@ -47,22 +58,22 @@ rt/
 Gert Doering - Munich, Germany                             gert@...1296...
 fax: +49-89-35655025                        gert@...1297...
 
---IGPMjTREWkoKVnU2
+--hNweOTLwwbnii4NA
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJYSmgnAAoJEB2Cnv7KVigSNwwL/0pq4r31wkBs1V39GO0G5RpC
-M0s7aTJUGdENq5MvMtnWDhQXfuQlFBiWESdjUftbLvrQ6Is4idEs6PX/HVFbTtPe
-gyLOj2whDvtwQhheRVUo5W0VMkecSHZNe7K/F6s2nw/ODYkqsHLcaoNzq+6qNTQ2
-NWErPIhEFdKk0qS/f5Urv4EbzKjX2FiFFNzU84xUZy7ogzzU3ncWcpBpFvX5hasp
-FQzK2yztMKrcb60ZHDj+W6Bc3hColLMRqx/koEemfT02z2ce0cKs64vuHa1Flunq
-YmMuHfntAzlBb/e+Bg0Z0FKOJReoHaIJCG2Z23nNm0iuMqRahI8N+vKJfLKk5y2c
-vAYDC+Bg3Z9+2qpMhGsksLj6X0ukaG/0h5A29L0+iHj87T3dTmghEWg7VzNAZBdX
-zgp13SFhyxNam5/If8PWhSZJ6UCHkvmIS0x83sPA1g6EGNA1PvrU1wd8NhOSjHih
-BFDepegiRJ1Hf6KLUV0o08LIrttePe8iSl/kNc0ngA==
-=0vM2
+iQGcBAEBAgAGBQJYSmprAAoJEB2Cnv7KVigSdIYL/il1IuRA6madMUw9g7IxGtgh
+cBsnpumlgBmOC2oJ/j741yC2jvO+MPj0eCWs9Ho9znblfd3uEbGAdCzDLznAEkar
+cyoTnEylf9HzbmFwjOk9EuBkEIMbYw5Vw7lKPkBfTdBi9e+kqpyeP4/t76kaMQaU
+BU/awl6cdfNqIOCPjTNLx+1WwGBdVjmtsUmrU7cXu7mOn9sCkS0TW9gU/Pgk0/9x
+0rt8pXEsxfdOlRc3w0/OtdyXVkDcJouiaVupvJaSnYIcgA5G90Ym7d1ZTDs4CAxe
+MxjyOnd4Fx2Espe5xWy2zDyNpIxrZUWhKqbZY4MlQLWW1HcvBWv7bECQPGFc9Thn
+XCie+vgotsTMkdXktjx1jTBFwzt5+rTfPq+14tA1zKFqbrfD7DJj461vFmrESQzj
+1wm8PKMtNyvu/UsZ2MYIAgAVmRltG/J3yRhicr+h3taP+lyFxlnlEW74G7X0I/EW
+ODHOgFi/FuIcVHhEHidibLPYmNfBXdEwwNndUun7IA==
+=IPrI
 -----END PGP SIGNATURE-----
 
---IGPMjTREWkoKVnU2--
+--hNweOTLwwbnii4NA--
 
