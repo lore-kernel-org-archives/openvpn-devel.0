@@ -1,9 +1,14 @@
-From: Herve Codina <herve.CODINA@...2209...>
-Message-ID: <e599e797-24db-f09f-caf9-1e969359abea@...2209...>
-Date: Fri, 9 Dec 2016 14:04:18 +0100
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 1/1] Handle SIGHUP during initialisation
-	phase
+In-Reply-To: <20161209074250.GQ78624@...1296...>
+References: <1ffbd3a5-8fa8-8992-2c3d-d353898d74f9@...2080...>
+	<8000a47e-979c-3afc-1a7a-5f8afab85634@...1856...>
+	<CAKuzo_ga48WDGd-g8Xp=L1NbXf0Naez1ZRN3FhcyL247bK72Rg@...278...>
+	<20161209074250.GQ78624@...1296...>
+From: Selva Nair <selva.nair@...277...>
+Date: Fri, 9 Dec 2016 08:24:24 -0500
+Message-ID: <CAKuzo_jH1YChyAjpH_rZDoU40fHS-U+hkr6kROoKV2HCigK2iA@...278...>
+Content-Type: multipart/alternative; boundary=001a114d8ca46f5e0d054339adbb
+Subject: Re: [Openvpn-devel] Coding style clean-up ... phase 1
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,43 +17,47 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Without this commit, if remote host cannot be reached, we get stuck in loop trying to
-connect and we cannot reload a new configuration using SIGHUP.
-In this case, the only way to reload the configuration is to kill and relaunch the daemon.
+--001a114d8ca46f5e0d054339adbb
+Content-Type: text/plain; charset=UTF-8
 
-With this commit, following use case can be done:
-- Set a good config file
-- Launch vpn client daemon -> Connect OK
-- Change config file (configure a wrong remote host)
-- SIGHUP
-- client daemon reload conf -> Connect failed and loop retrying connection
-- Change config file (configure a good remote host)
-- SIGHUP
-- client daemon reload conf -> Connect OK
+On Fri, Dec 9, 2016 at 2:42 AM, Gert Doering <gert@...1296...> wrote:
 
-Signed-off-by: Herve Codina <Herve.CODINA@...2209...>
----
- src/openvpn/sig.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+>   if (a>0)
+>      { do_this(); }
+>   else
+>      { do_that(); }
+>
 
-diff --git a/src/openvpn/sig.c b/src/openvpn/sig.c
-index b3ae645..073a285 100644
---- a/src/openvpn/sig.c
-+++ b/src/openvpn/sig.c
-@@ -226,7 +226,7 @@ pre_init_signal_catch (void)
-   signal_mode = SM_PRE_INIT;
-   signal (SIGINT, signal_handler);
-   signal (SIGTERM, signal_handler);
--  signal (SIGHUP, SIG_IGN);
-+  signal (SIGHUP, signal_handler);
-   signal (SIGUSR1, SIG_IGN);
-   signal (SIGUSR2, SIG_IGN);
-   signal (SIGPIPE, SIG_IGN);
--- 
-1.7.9.5
+In such cases I would normally skip all braces, in spite of all the
+arguments against it... But that's just me.
 
+That said the proposed re-formatting looks super good to me and uncrustify
+is doing an amazing job. Kudos to all who narrowed down the options.
+
+Selva
+
+--001a114d8ca46f5e0d054339adbb
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">=
+On Fri, Dec 9, 2016 at 2:42 AM, Gert Doering <span dir=3D"ltr">&lt;<a href=
+=3D"mailto:gert@...1296..." target=3D"_blank">gert@...1296...</a>&gt;</span=
+> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;bo=
+rder-left:1px #ccc solid;padding-left:1ex"><div id=3D":3zi" class=3D"a3s aX=
+jCH m158e288e4e33f404">=C2=A0 if (a&gt;0)<br>
+=C2=A0 =C2=A0 =C2=A0{ do_this(); }<br>
+=C2=A0 else<br>
+=C2=A0 =C2=A0 =C2=A0{ do_that(); }</div></blockquote></div><br></div><div c=
+lass=3D"gmail_extra">In such cases I would normally skip all braces, in spi=
+te of all the arguments against it... But that&#39;s just me.<br><br></div>=
+<div class=3D"gmail_extra">That said the proposed re-formatting looks super=
+ good to me and uncrustify is doing an amazing job. Kudos to all who narrow=
+ed down the options.<br><br></div><div class=3D"gmail_extra">Selva<br></div=
+></div>
+
+--001a114d8ca46f5e0d054339adbb--
 
