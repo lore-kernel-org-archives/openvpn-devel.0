@@ -1,10 +1,18 @@
-From: David Sommerseth <davids@...515...>
-Date: Fri,  9 Dec 2016 22:40:55 +0100
-Message-Id: <1481319655-26088-1-git-send-email-davids@...515...>
-In-Reply-To: <1481079112-22990-1-git-send-email-davids@...515...>
-References: <1481079112-22990-1-git-send-email-davids@...515...>
-Subject: Re: [Openvpn-devel] [PATCH applied] systemd: Intermediate --chroot
-	fix with the new sd_notify() implementation
+MIME-Version: 1.0
+In-Reply-To: <efc994a6-49bc-121b-3c47-503e6228d1ca@...2080...>
+References: <1ffbd3a5-8fa8-8992-2c3d-d353898d74f9@...2080...>
+	<CAKuzo_gH06N2yip+h-=Q_w1xpyP62d6v4-7=Bb2NK-=+ji6iKw@...278...>
+	<943c0ce1-501c-df5a-fb47-53ab7a689d36@...2080...>
+	<bfcaa197-893f-afba-7554-07edcde483a2@...2080...>
+	<CAA1AbxLXh_AOuHFBt0Om=eDOLH-WHM_C6OnGgHLnO+iAYP7dEw@...278...>
+	<CAKuzo_gH8UNruspCDOTeAa-wU9YsDB8nGGponvkCrVWnPR7SKw@...278...>
+	<CAA1AbxJORM6ONqNNH7cA+Wy88_f1us=jvtTSXKzc4r5YbwtQcQ@...278...>
+	<efc994a6-49bc-121b-3c47-503e6228d1ca@...2080...>
+From: Selva Nair <selva.nair@...277...>
+Date: Fri, 9 Dec 2016 16:44:40 -0500
+Message-ID: <CAKuzo_hQyg2vQidGdkhOkn8jCSQKN3+uh-SL-uc8sfft_fFFeA@...278...>
+Content-Type: multipart/alternative; boundary=001a113bc880778f6c054340aa06
+Subject: Re: [Openvpn-devel] Coding style clean-up ... phase 1
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,48 +21,50 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: davids@...515...
-Cc: openvpn-devel@lists.sourceforge.net
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+--001a113bc880778f6c054340aa06
+Content-Type: text/plain; charset=UTF-8
 
-Your patch has been applied to the master branch
+On Fri, Dec 9, 2016 at 4:39 PM, David Sommerseth <
+openvpn@...2080...> wrote:
 
-commit 65140a3acfa42e5d42cdfcf8108f00a62d5767ff
-Author: David Sommerseth
-Date:   Wed Dec 7 03:51:52 2016 +0100
-
-     systemd: Intermediate --chroot fix with the new sd_notify() implementation
-
-     Signed-off-by: David Sommerseth <davids@...515...>
-     Acked-by: Christian Hesse <mail@...1798...>
-     Message-Id: <1481079112-22990-1-git-send-email-davids@...515...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13416.html
+> On 09/12/16 22:27, Steffan Karger wrote:
+> >
+> > Sounds like we have a final config on the CodeStyle page now.  Are we
+> > ready to run it on all code now, and publish a reformat branch?
+> >
+>
+> Agreed.  I can do this later this night.
 
 
-- --
-kind regards,
 
-David Sommerseth
+Wait a minute we may need cmt_cpp_to_c=true  -- I saw some C++ comments
+(added by uncrustify) in header files against #endif etc..
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
+Selva
 
-iQIcBAEBAgAGBQJYSyTlAAoJEIbPlEyWcf3y/sMQAMaJhmd4WJjjr7am+6SqMyWg
-pk7J4FzysRu8Dm/czDEULAriDO6YDMrVN/HNO3z/tLxUKnwvP1Qq9RbzM1HwDHbH
-3vuVFu/Id4GGwiVqu35LsOq0dVwLra188L709AgTqepCXCuajUxSDtl8lcTCL2vN
-gDTL0FiYQSTl/jAlMKAeFg8W8C5pFDPOUumBgcYNdqqwW7FUPsl5JYqZup9bqgPO
-cuY5kSx8GUe7En1EPSbGIdX/cVwkHDtxs9Caqpr1Qb0d8iinchDCaz8YrYDjvpkG
-j1NE32lNbWLpeiXP2hLN9YIg+V7TSuT1jCyUwKJUEt/y0dZxdlpfeyS52WAGVTZY
-BaRmnzdGHmdYbSSv8ft1qKh6NI/3sRfmSzd2+eb9dTC2FsUUSoprU0yAISYR+dew
-Jvp8jeE/F4xUGKp6ierMkzvmqtudQRrq3hkmtbpS1CaM2Pf+uugQ7Z3s7rk+GRwb
-2E0YpzKQNheeTsbInQWJQoXLZx75anQUu8uVl9IA8uabLSNJdzCfik2Mjbzs7/Kc
-hDJ4S0eJGIp2R7PWJUj0KdLyEP5853fGof6pfc1m8e0GCI/WCbPkEg7nRE6fqrXL
-n92sFCzVq8z8Ad6Up0CEB3lxW9purT39QVtvd56N9D2M8i8OMydIOOoZA0iQeBuI
-GcuJ6EC98Ul19QPdFCrk
-=YYaa
------END PGP SIGNATURE-----
+--001a113bc880778f6c054340aa06
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">=
+On Fri, Dec 9, 2016 at 4:39 PM, David Sommerseth <span dir=3D"ltr">&lt;<a h=
+ref=3D"mailto:openvpn@...2080..." target=3D"_blank">openvpn@...2080...</a>&=
+gt;</span> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 =
+0 .8ex;border-left:1px #ccc solid;padding-left:1ex"><span class=3D"">On 09/=
+12/16 22:27, Steffan Karger wrote:<br>
+&gt;<br>
+&gt; Sounds like we have a final config on the CodeStyle page now.=C2=A0 Ar=
+e we<br>
+&gt; ready to run it on all code now, and publish a reformat branch?<br>
+&gt;<br>
+<br>
+</span>Agreed.=C2=A0 I can do this later this night.</blockquote></div><br>=
+<br></div><div class=3D"gmail_extra">Wait a minute we may need cmt_cpp_to_c=
+=3Dtrue=C2=A0 -- I saw some C++ comments (added by uncrustify) in header fi=
+les against #endif etc..<br><br></div><div class=3D"gmail_extra">Selva<br><=
+/div></div>
+
+--001a113bc880778f6c054340aa06--
 
