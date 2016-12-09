@@ -1,7 +1,15 @@
-From: David Sommerseth <davids@...515...>
-Date: Fri,  9 Dec 2016 03:52:32 +0100
-Message-Id: <1481251952-30704-1-git-send-email-davids@...515...>
-Subject: [Openvpn-devel] [PATCH] Improve ifconfig_sanity_check()
+Date: Fri, 9 Dec 2016 08:42:50 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20161209074250.GQ78624@...1296...>
+References: <1ffbd3a5-8fa8-8992-2c3d-d353898d74f9@...2080...>
+	<8000a47e-979c-3afc-1a7a-5f8afab85634@...1856...>
+	<CAKuzo_ga48WDGd-g8Xp=L1NbXf0Naez1ZRN3FhcyL247bK72Rg@...278...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="uWA6ivsFTdIbDdzo"
+Content-Disposition: inline
+In-Reply-To: <CAKuzo_ga48WDGd-g8Xp=L1NbXf0Naez1ZRN3FhcyL247bK72Rg@...278...>
+Subject: Re: [Openvpn-devel] Coding style clean-up ... phase 1
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -10,62 +18,96 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Selva Nair <selva.nair@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-- Instead of checking the complete in_addr_t (which lacked proper htonl()),
-  just do a simple peek at the last byte which contains the first octet
-  of an IP address or subnet mask.
+--uWA6ivsFTdIbDdzo
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-- Improve error messages to also report errornous IP address usage when
-  being in TOP_SUBNET
+Hi,
 
-- Improve the TAP check too, providing the IP address used instead of the
-  subnet mask
+On Thu, Dec 08, 2016 at 05:04:53PM -0500, Selva Nair wrote:
+> if (xxxx)
+> {
+>    ...
+> }
+> followed by
+> else if (xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx) {
+>  ....
+> }
+>=20
+> looks inconsitent and not pretty.=20
 
-Signed-off-by: David Sommerseth <davids@...515...>
----
- src/openvpn/tun.c | 16 +++++++++++++---
- 1 file changed, 13 insertions(+), 3 deletions(-)
+Thanks, so I'm not alone with this :-)
 
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index 8df3489..07748b1 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -304,18 +304,28 @@ void
- ifconfig_sanity_check (bool tun, in_addr_t addr, int topology)
- {
-   struct gc_arena gc = gc_new ();
--  const bool looks_like_netmask = ((addr & 0xFF000000) == 0xFF000000);
-+  const bool looks_like_netmask = (((unsigned char *)&addr)[3] == 0xff);
-+
-   if (tun)
-     {
-       if (looks_like_netmask && (topology == TOP_NET30 || topology == TOP_P2P))
--	msg (M_WARN, "WARNING: Since you are using --dev tun with a point-to-point topology, the second argument to --ifconfig must be an IP address.  You are using something (%s) that looks more like a netmask. %s",
-+        {
-+          msg (M_WARN, "WARNING: Since you are using --dev tun with a point-to-point topology, the second argument to --ifconfig must be an IP address.  You are using something (%s) that looks more like a netmask. %s",
-+               print_in_addr_t (addr, 0, &gc),
-+               ifconfig_warn_how_to_silence);
-+        }
-+      else if (!looks_like_netmask && topology == TOP_SUBNET)
-+        {
-+          msg (M_WARN, "WARNING: Since you are using --dev tun with subnet topology, the second argument to --ifconfig must be a netmask, for example something like 255.255.255.0.  You are using something (%s) that looks more like an IP address. %s",
- 	     print_in_addr_t (addr, 0, &gc),
- 	     ifconfig_warn_how_to_silence);
-+        }
-     }
-   else /* tap */
-     {
-       if (!looks_like_netmask)
--	msg (M_WARN, "WARNING: Since you are using --dev tap, the second argument to --ifconfig must be a netmask, for example something like 255.255.255.0. %s",
-+	msg (M_WARN, "WARNING: Since you are using --dev tap, the second argument to --ifconfig must be a netmask, for example something like 255.255.255.0. You are using something (%s) that looks more like an IP address. %s",
-+             print_in_addr_t (addr, 0, &gc),
- 	     ifconfig_warn_how_to_silence);
-     }
-   gc_free (&gc);
--- 
-1.8.3.1
+> Why not just stick to:
+>=20
+> if (carefree())
+> {
+>    follow_me();
+> }
+> else if (cautious())
+> {
+>    as_you_wish();
+> }
+> else
+> {
+>    abort();
+> }
+>=20
+> Looks easier to read.
 
+This!
+
+Maybe it's just my OCD speaking, but=20
+
+  if (something)
+  {
+      this();
+  } else {
+      that();
+  }
+
+really makes my skin crawl - I need the "i"s dotted, the "t"s crossed,
+and braces aligned - vertically or horizontally, but not "diagonally".
+
+So this would work for me, for "trivial conditionals" (=3D short condition,
+non-crammed single-line statements):
+
+  if (a>0)
+     { do_this(); }
+  else
+     { do_that(); }
+
+but since we agred on "braces get their own line", it's out as well.
+
+gert
+
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--uWA6ivsFTdIbDdzo
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJYSmB6AAoJEB2Cnv7KVigS8UwMAJ7FC0p9fosCWMSvgNDbb0Y8
+4xj5rdnfMUSRnhmYASzjwBGvDJgtfQtTfYmwnNAUbuEwF6BcKW9qTwUZsK6h9gMD
+aMhd7DEpYR8yQAZII6QPg4Z5U7Vyohn9Ig3fEkDo20Mbhu8JpttAqdfVfP4k+gnr
+0HtI1+/3Lwris2OMYEeF3y5QZubHSZu5F/R5m1EkDQhPld+r+4gH+ML1cpdSE4v/
+FjgO73xh2zeFcroE3Chd8xeFsKGs6e6UVUtNFrqsUMaeNdtjfc45zEmmiirq581m
+wM5sHhzpSWN6pgNDnbz5Mev0k6eGZMI9/PauSmJnysg2ol9tX5mwibyDW46lNCQu
+MeUu0Mn9+8KnvAf/iOCUsMbF8AgwVwYbcgWONsTOMSc7jMKKf7H5zR7+vaWKIpfM
+fncXO6CeFIeoZu7SbXFUO9qVX4bM199hI4/8XcvdX8mNnu1w5AudXDFdETsIDeb+
+UrZCOS6yajSYurwRuVEH0O4DK6PxBfH6ulZ01GWuow==
+=MRyt
+-----END PGP SIGNATURE-----
+
+--uWA6ivsFTdIbDdzo--
 
