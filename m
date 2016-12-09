@@ -1,17 +1,10 @@
-References: <20161129120559.5be3e4ad@...1799...>
-	<20161129110716.3946-1-list@...1798...>
-	<5448e007-8871-9933-6f12-765d4c1a9e54@...2080...>
-	<20161209225450.06ff8341@...1799...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <fb1ab332-e444-64e1-73e0-3ef290299ab6@...2080...>
-Date: Fri, 9 Dec 2016 23:40:51 +0100
-MIME-Version: 1.0
-In-Reply-To: <20161209225450.06ff8341@...1799...>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="VE3qre69IOUCHM7NODnpKfMcASIhheqj9"
-Subject: Re: [Openvpn-devel] [PATCH 1/1] Clean up plugin path handling
-Reply-To: openvpn-devel@lists.sourceforge.net
+From: Christian Hesse <list@...1798...>
+Date: Sat, 10 Dec 2016 00:19:07 +0100
+Message-Id: <20161209231907.16486-1-list@...1798...>
+In-Reply-To: <20161209183724.5c11d987@...1799...>
+References: <20161209183724.5c11d987@...1799...>
+Subject: [Openvpn-devel] [PATCH 1/1] bind mount systemd notification socket
+	into chroot
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,139 +13,108 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Christian Hesse <list@...1798...>
-Cc: Christian Hesse <mail@...1798...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: OpenVPN Development <openvpn-devel@lists.sourceforge.net>
+Cc: Christian Hesse <mail@...1798...>, David Sommerseth <davids@...515...>
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---VE3qre69IOUCHM7NODnpKfMcASIhheqj9
-Content-Type: multipart/mixed; boundary="SbOsw5giJ17bFtEXwi99hnGBSmwqW5qHE";
-	protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-Reply-To: openvpn-devel@lists.sourceforge.net
-To: Christian Hesse <list@...1798...>
-Cc: openvpn-devel@lists.sourceforge.net, Christian Hesse <mail@...1798...>
-Message-ID: <fb1ab332-e444-64e1-73e0-3ef290299ab6@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH 1/1] Clean up plugin path handling
-References: <20161129120559.5be3e4ad@...1799...>
-	<20161129110716.3946-1-list@...1798...>
-	<5448e007-8871-9933-6f12-765d4c1a9e54@...2080...>
-	<20161209225450.06ff8341@...1799...>
-In-Reply-To: <20161209225450.06ff8341@...1799...>
+From: Christian Hesse <mail@...1798...>
 
---SbOsw5giJ17bFtEXwi99hnGBSmwqW5qHE
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
+sd_notify() uses a socket to communicate with systemd. Communication
+fails if the socket is not available within the chroot. So bind mount
+the socket into the chroot when startet from systemd.
 
-On 09/12/16 22:54, Christian Hesse wrote:
-> David Sommerseth <openvpn@...2080...> on Fri, 2016/12/09 22:37:
->> On 29/11/16 12:07, Christian Hesse wrote:
->>> From: Christian Hesse <mail@...1798...>
->>>
->>> Drop --with-plugindir, instead use an environment variable PLUGINDIR
->>> to specify the plugin directory.
->>>
->>> This always defines PLUGIN_LIBDIR and enables plugin search path.
->>>
->>> Signed-off-by: Christian Hesse <mail@...1798...>
->>> ---
->>>  configure.ac            | 14 ++++++--------
->>>  src/openvpn/Makefile.am |  3 ++-
->>>  2 files changed, 8 insertions(+), 9 deletions(-)
->>>
->>> diff --git a/configure.ac b/configure.ac
->>> index f4073d0..5fe652e 100644
->>> --- a/configure.ac
->>> +++ b/configure.ac
->>> @@ -301,13 +301,12 @@ AC_ARG_WITH(
->>>  	[with_crypto_library=3D"openssl"]
->>>  )
->>>=20=20
->>> -AC_ARG_WITH(
->>> -	[plugindir],
->>> -	[AS_HELP_STRING([--with-plugindir], [plugin directory
->>> @<:@default=3DLIBDIR/openvpn@:>@])],
->>> -	,
->>> -	[with_plugindir=3D"\$(libdir)/openvpn/plugins"]
->>> -)
->>> -
->>> +AC_ARG_VAR([PLUGINDIR], [Path of plug-in directory
->>> @<:@default=3DLIBDIR/openvpn/plugins@:>@]) +if test -n "${PLUGINDIR}"; =
-then
->>> +	plugindir=3D"${PLUGINDIR}"
->>> +else
->>> +	plugindir=3D"\${libdir}/openvpn/plugins"
->>> +fi=20=20
->>
->> Finally had some time to dig into this one.  I like the idea here, I
->> think it makes sense.  But I'm not sure ${libdir} is correct by default.
->>  I think that should be /usr/local/lib64 by default on a 64bit system.
->>
->> My google-foo isn't helpful for me today ... This is somewhat related,
->> especially towards the end of this doc page:
->> <https://www.gnu.org/software/autoconf/manual/autoconf-2.69/html_node/Si=
-te-Defaults.html>
->>
->> But I believe there are better ways to do this.
->>
->> I haven't checked this in detail what happens with 'make install'.  We
->> should ensure that the plug-ins we ship (./src/plugins) which are built
->> are installed as well into this directory.
->=20
-> ${libdir} is where plugins are installed to... That's why I choose it. ;)
->=20
-> Installing anything to $prefix/lib64/ does not make sense imho. Never.
+Unsharing namespace and mounting requires extra capability CAP_SYS_ADMIN.
 
-Well, that is the default for Fedora/RHEL families.  32bit systems uses
-/usr/lib, 64bit uses /usr/lib64.
+Signed-off-by: Christian Hesse <mail@...1798...>
+---
+ distro/systemd/openvpn-client@...1685... |  2 +-
+ distro/systemd/openvpn-server@...1685... |  2 +-
+ src/openvpn/init.c                     | 37 +++++++++++++++++++---------------
+ 3 files changed, 23 insertions(+), 18 deletions(-)
 
-$ uname -m
-x86_64
-$ cat /etc/redhat-release
-Red Hat Enterprise Linux Server release 7.3 (Maipo)
-$ rpm --eval '%{_libdir}'
-/usr/lib64
+diff --git a/distro/systemd/openvpn-client@...1685... b/distro/systemd/openvpn-client@...1685...
+index 5618af3..3ebd1da 100644
+--- a/distro/systemd/openvpn-client@...1685...
++++ b/distro/systemd/openvpn-client@...1685...
+@@ -13,7 +13,7 @@ RuntimeDirectory=openvpn-client
+ RuntimeDirectoryMode=0710
+ WorkingDirectory=/etc/openvpn/client
+ ExecStart=/usr/sbin/openvpn --suppress-timestamps --nobind --config %i.conf
+-CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_CHROOT CAP_DAC_OVERRIDE
++CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_ADMIN CAP_SYS_CHROOT CAP_DAC_OVERRIDE
+ LimitNPROC=10
+ DeviceAllow=/dev/null rw
+ DeviceAllow=/dev/net/tun rw
+diff --git a/distro/systemd/openvpn-server@...1685... b/distro/systemd/openvpn-server@...1685...
+index b9b4dba..bcf1bcf 100644
+--- a/distro/systemd/openvpn-server@...1685...
++++ b/distro/systemd/openvpn-server@...1685...
+@@ -13,7 +13,7 @@ RuntimeDirectory=openvpn-server
+ RuntimeDirectoryMode=0710
+ WorkingDirectory=/etc/openvpn/server
+ ExecStart=/usr/sbin/openvpn --status %t/openvpn-server/status-%i.log --status-version 2 --suppress-timestamps --config %i.conf
+-CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_CHROOT CAP_DAC_OVERRIDE
++CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_ADMIN CAP_SYS_CHROOT CAP_DAC_OVERRIDE
+ LimitNPROC=10
+ DeviceAllow=/dev/null rw
+ DeviceAllow=/dev/net/tun rw
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 26b236d..81bf9ab 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -31,6 +31,9 @@
+ #include "syshead.h"
+ 
+ #ifdef ENABLE_SYSTEMD
++#include <string.h>
++#include <sched.h>
++#include <sys/mount.h>
+ #include <systemd/sd-daemon.h>
+ #endif
+ 
+@@ -969,22 +972,24 @@ do_uid_gid_chroot (struct context *c, bool no_delay)
+ 	  if (no_delay)
+             {
+ #ifdef ENABLE_SYSTEMD
+-              /* If OpenVPN is started by systemd, the OpenVPN process needs
+-               * to provide a preliminary status report to systemd.  This is
+-               * needed as $NOTIFY_SOCKET will not be available inside the
+-               * chroot, which sd_notify()/sd_notifyf() depends on.
+-               *
+-               * This approach is the simplest and the most non-intrusive
+-               * solution right before the 2.4_rc2 release.
+-               *
+-               * TODO: Consider altnernative solutions - bind mount?
+-               * systemd does not grok OpenVPN configuration files, thus cannot
+-               * have a sane way to know if OpenVPN will chroot or not and to
+-               * which subdirectory it will chroot into.
+-               */
+-              sd_notifyf(0, "READY=1\n"
+-                "STATUS=Entering chroot, most of the init completed successfully\n"
+-                "MAINPID=%lu", (unsigned long) getpid());
++              int fd;
++              char * chroot_notify = NULL;
++
++              if (sd_notify(0, "READY=0") > 0)
++                {
++                  asprintf(&chroot_notify, "%s/notify", c->options.chroot_dir);
++
++                  if (unshare(CLONE_NEWNS) != 0)
++                    msg (M_ERR, "unshare failed");
++                  if ((fd = open(chroot_notify, O_WRONLY | O_CREAT | O_TRUNC, 0644)) < 0)
++                    msg (M_ERR, "touch failed");
++                  close(fd);
++                  if (mount(getenv("NOTIFY_SOCKET"), chroot_notify, NULL, MS_BIND, NULL) != 0)
++                    msg (M_ERR, "bind mounting notification socket failed");
++
++                  setenv("NOTIFY_SOCKET", "/notify", 1);
++                  free(chroot_notify);
++                }
+ #endif
+               platform_chroot (c->options.chroot_dir);
+             }
+-- 
+2.10.2
 
-I've tested this on Fedora 24 and Scientific Linux 6 and 7 as well, with
-the same result.
-
-And you'll find the same in openSUSE too:
-<https://en.opensuse.org/openSUSE:Packaging_Conventions_RPM_Macros#.25_lib>
-
-Unless it has changed in Debian/Ubuntu, it is a similar policy there too.
-
-
---=20
-kind regards,
-
-David Sommerseth
-OpenVPN Technologies, Inc
-
-
-
---SbOsw5giJ17bFtEXwi99hnGBSmwqW5qHE--
-
---VE3qre69IOUCHM7NODnpKfMcASIhheqj9
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBAgAGBQJYSzLzAAoJEIbPlEyWcf3yo7wQALvmag+TS4v2bishFI6S8NMH
-Kv0MH0CegJZs2yjpcEKE14e4yuCZYNyK0D1camc1RkRoqdi229wxqlwajCsB4c2D
-J5lGmvvaZKmT83BpOte6ot9x394AfbeKUFC7oVliAKN3QdVhs66dmNgqDzKqHg/4
-Rvkm/O+mfj8yoN+xjQLzRpDSfKMzOAXjU+eASxn/T0d5LhQ9qfbmwNT1ZtOY6wrg
-PV91cpoHdZ0W4hsQ8sdNHsXNw8WM169vq6Iork1NI3A3X+TgkBJx+m+UhO5D/1ix
-qWi0wTQYzKS220DGK/GZkGlozSBMNupTW2pGwh1ICETXw8G0GyEPBcCh47zKjp/n
-ei7BE67phxABqwcI1i+3AObBrYuU39se/o60APcvldYM0CSjLq99mFqw5IJElzSp
-CZEg8uFzEZoIAG6jFgupvYCBz18gUvNazo0PeeJbX0lnrdw9Y9qdgI5eIBCjDyc0
-5QC/4jhyee4RVuRwOcwLsSSpkVtRblTvH3Dc0IbgvHUvXJTmciuRbgSRDjIPA94P
-iDpPMZvmRniccOwRVoV8XbT9tP/J9G87jUMoBT18q1bh7e6PvKtMTQ9IlbE7cAdc
-EfT9iTF+pbNTt2TVgJRC2luE55By9EDuAtuGznf5j5GKwzH+txemInV38Q88J/dP
-qh0Y03eH17iLPwWUtp0q
-=qxoV
------END PGP SIGNATURE-----
-
---VE3qre69IOUCHM7NODnpKfMcASIhheqj9--
 
