@@ -1,10 +1,17 @@
+Date: Sat, 10 Dec 2016 00:30:41 +0100
 From: Christian Hesse <list@...1798...>
-Date: Sat, 10 Dec 2016 00:19:07 +0100
-Message-Id: <20161209231907.16486-1-list@...1798...>
-In-Reply-To: <20161209183724.5c11d987@...1799...>
-References: <20161209183724.5c11d987@...1799...>
-Subject: [Openvpn-devel] [PATCH 1/1] bind mount systemd notification socket
-	into chroot
+Message-ID: <20161210003041.7d711d7b@...1799...>
+In-Reply-To: <fb1ab332-e444-64e1-73e0-3ef290299ab6@...2080...>
+References: <20161129120559.5be3e4ad@...1799...>
+	<20161129110716.3946-1-list@...1798...>
+	<5448e007-8871-9933-6f12-765d4c1a9e54@...2080...>
+	<20161209225450.06ff8341@...1799...>
+	<fb1ab332-e444-64e1-73e0-3ef290299ab6@...2080...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	boundary="Sig_/c=1SGo7Sosr/P/0TdoNyU86";
+	protocol="application/pgp-signature"
+Subject: Re: [Openvpn-devel] [PATCH 1/1] Clean up plugin path handling
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,108 +20,122 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: OpenVPN Development <openvpn-devel@lists.sourceforge.net>
-Cc: Christian Hesse <mail@...1798...>, David Sommerseth <davids@...515...>
+To: David Sommerseth <openvpn@...2080...>
+Cc: Christian Hesse <mail@...1798...>, openvpn-devel@lists.sourceforge.net
 
-From: Christian Hesse <mail@...1798...>
+--Sig_/c=1SGo7Sosr/P/0TdoNyU86
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: quoted-printable
 
-sd_notify() uses a socket to communicate with systemd. Communication
-fails if the socket is not available within the chroot. So bind mount
-the socket into the chroot when startet from systemd.
+David Sommerseth <openvpn@...2080...> on Fri, 2016/12/09 23:40:
+> On 09/12/16 22:54, Christian Hesse wrote:
+> > David Sommerseth <openvpn@...2080...> on Fri, 2016/12/09
+> > 22:37:=20=20
+> >> On 29/11/16 12:07, Christian Hesse wrote:=20=20
+> >>> From: Christian Hesse <mail@...1798...>
+> >>>
+> >>> Drop --with-plugindir, instead use an environment variable PLUGINDIR
+> >>> to specify the plugin directory.
+> >>>
+> >>> This always defines PLUGIN_LIBDIR and enables plugin search path.
+> >>>
+> >>> Signed-off-by: Christian Hesse <mail@...1798...>
+> >>> ---
+> >>>  configure.ac            | 14 ++++++--------
+> >>>  src/openvpn/Makefile.am |  3 ++-
+> >>>  2 files changed, 8 insertions(+), 9 deletions(-)
+> >>>
+> >>> diff --git a/configure.ac b/configure.ac
+> >>> index f4073d0..5fe652e 100644
+> >>> --- a/configure.ac
+> >>> +++ b/configure.ac
+> >>> @@ -301,13 +301,12 @@ AC_ARG_WITH(
+> >>>  	[with_crypto_library=3D"openssl"]
+> >>>  )
+> >>>=20=20
+> >>> -AC_ARG_WITH(
+> >>> -	[plugindir],
+> >>> -	[AS_HELP_STRING([--with-plugindir], [plugin directory
+> >>> @<:@default=3DLIBDIR/openvpn@:>@])],
+> >>> -	,
+> >>> -	[with_plugindir=3D"\$(libdir)/openvpn/plugins"]
+> >>> -)
+> >>> -
+> >>> +AC_ARG_VAR([PLUGINDIR], [Path of plug-in directory
+> >>> @<:@default=3DLIBDIR/openvpn/plugins@:>@]) +if test -n "${PLUGINDIR}";
+> >>> then
+> >>> +	plugindir=3D"${PLUGINDIR}"
+> >>> +else
+> >>> +	plugindir=3D"\${libdir}/openvpn/plugins"
+> >>> +fi=20=20=20=20
+> >>
+> >> Finally had some time to dig into this one.  I like the idea here, I
+> >> think it makes sense.  But I'm not sure ${libdir} is correct by defaul=
+t.
+> >>  I think that should be /usr/local/lib64 by default on a 64bit system.
+> >>
+> >> My google-foo isn't helpful for me today ... This is somewhat related,
+> >> especially towards the end of this doc page:
+> >> <https://www.gnu.org/software/autoconf/manual/autoconf-2.69/html_node/=
+Site-Defaults.html>
+> >>
+> >> But I believe there are better ways to do this.
+> >>
+> >> I haven't checked this in detail what happens with 'make install'.  We
+> >> should ensure that the plug-ins we ship (./src/plugins) which are built
+> >> are installed as well into this directory.=20=20
+> >=20
+> > ${libdir} is where plugins are installed to... That's why I choose it. =
+;)
+> >=20
+> > Installing anything to $prefix/lib64/ does not make sense imho. Never.=
+=20=20
+>=20
+> Well, that is the default for Fedora/RHEL families.  32bit systems uses
+> /usr/lib, 64bit uses /usr/lib64.
+>=20
+> $ uname -m
+> x86_64
+> $ cat /etc/redhat-release
+> Red Hat Enterprise Linux Server release 7.3 (Maipo)
+> $ rpm --eval '%{_libdir}'
+> /usr/lib64
+>=20
+> I've tested this on Fedora 24 and Scientific Linux 6 and 7 as well, with
+> the same result.
+>=20
+> And you'll find the same in openSUSE too:
+> <https://en.opensuse.org/openSUSE:Packaging_Conventions_RPM_Macros#.25_li=
+b>
+>=20
+> Unless it has changed in Debian/Ubuntu, it is a similar policy there too.
 
-Unsharing namespace and mounting requires extra capability CAP_SYS_ADMIN.
+Uh, interesting... Probably I did not look at these distributions for too
+long... (And/or relied on the package manager.)
 
-Signed-off-by: Christian Hesse <mail@...1798...>
----
- distro/systemd/openvpn-client@...1685... |  2 +-
- distro/systemd/openvpn-server@...1685... |  2 +-
- src/openvpn/init.c                     | 37 +++++++++++++++++++---------------
- 3 files changed, 23 insertions(+), 18 deletions(-)
+For Arch Linux we use /usr/lib/, though /usr/lib64/ is provided by a symlink
+to lib nowadays.
+--=20
+main(a){char*c=3D/*    Schoene Gruesse                         */"B?IJj;MEH"
+"CX:;",b;for(a/*    Best regards             my address:    */=3D0;b=3Dc[a+=
++];)
+putchar(b-1/(/*    Chris            cc -ox -xc - && ./x    */b/42*2-3)*42);}
 
-diff --git a/distro/systemd/openvpn-client@...1685... b/distro/systemd/openvpn-client@...1685...
-index 5618af3..3ebd1da 100644
---- a/distro/systemd/openvpn-client@...1685...
-+++ b/distro/systemd/openvpn-client@...1685...
-@@ -13,7 +13,7 @@ RuntimeDirectory=openvpn-client
- RuntimeDirectoryMode=0710
- WorkingDirectory=/etc/openvpn/client
- ExecStart=/usr/sbin/openvpn --suppress-timestamps --nobind --config %i.conf
--CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_CHROOT CAP_DAC_OVERRIDE
-+CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_ADMIN CAP_SYS_CHROOT CAP_DAC_OVERRIDE
- LimitNPROC=10
- DeviceAllow=/dev/null rw
- DeviceAllow=/dev/net/tun rw
-diff --git a/distro/systemd/openvpn-server@...1685... b/distro/systemd/openvpn-server@...1685...
-index b9b4dba..bcf1bcf 100644
---- a/distro/systemd/openvpn-server@...1685...
-+++ b/distro/systemd/openvpn-server@...1685...
-@@ -13,7 +13,7 @@ RuntimeDirectory=openvpn-server
- RuntimeDirectoryMode=0710
- WorkingDirectory=/etc/openvpn/server
- ExecStart=/usr/sbin/openvpn --status %t/openvpn-server/status-%i.log --status-version 2 --suppress-timestamps --config %i.conf
--CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_CHROOT CAP_DAC_OVERRIDE
-+CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_ADMIN CAP_SYS_CHROOT CAP_DAC_OVERRIDE
- LimitNPROC=10
- DeviceAllow=/dev/null rw
- DeviceAllow=/dev/net/tun rw
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 26b236d..81bf9ab 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -31,6 +31,9 @@
- #include "syshead.h"
- 
- #ifdef ENABLE_SYSTEMD
-+#include <string.h>
-+#include <sched.h>
-+#include <sys/mount.h>
- #include <systemd/sd-daemon.h>
- #endif
- 
-@@ -969,22 +972,24 @@ do_uid_gid_chroot (struct context *c, bool no_delay)
- 	  if (no_delay)
-             {
- #ifdef ENABLE_SYSTEMD
--              /* If OpenVPN is started by systemd, the OpenVPN process needs
--               * to provide a preliminary status report to systemd.  This is
--               * needed as $NOTIFY_SOCKET will not be available inside the
--               * chroot, which sd_notify()/sd_notifyf() depends on.
--               *
--               * This approach is the simplest and the most non-intrusive
--               * solution right before the 2.4_rc2 release.
--               *
--               * TODO: Consider altnernative solutions - bind mount?
--               * systemd does not grok OpenVPN configuration files, thus cannot
--               * have a sane way to know if OpenVPN will chroot or not and to
--               * which subdirectory it will chroot into.
--               */
--              sd_notifyf(0, "READY=1\n"
--                "STATUS=Entering chroot, most of the init completed successfully\n"
--                "MAINPID=%lu", (unsigned long) getpid());
-+              int fd;
-+              char * chroot_notify = NULL;
-+
-+              if (sd_notify(0, "READY=0") > 0)
-+                {
-+                  asprintf(&chroot_notify, "%s/notify", c->options.chroot_dir);
-+
-+                  if (unshare(CLONE_NEWNS) != 0)
-+                    msg (M_ERR, "unshare failed");
-+                  if ((fd = open(chroot_notify, O_WRONLY | O_CREAT | O_TRUNC, 0644)) < 0)
-+                    msg (M_ERR, "touch failed");
-+                  close(fd);
-+                  if (mount(getenv("NOTIFY_SOCKET"), chroot_notify, NULL, MS_BIND, NULL) != 0)
-+                    msg (M_ERR, "bind mounting notification socket failed");
-+
-+                  setenv("NOTIFY_SOCKET", "/notify", 1);
-+                  free(chroot_notify);
-+                }
- #endif
-               platform_chroot (c->options.chroot_dir);
-             }
--- 
-2.10.2
+--Sig_/c=1SGo7Sosr/P/0TdoNyU86
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
 
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEXHmveYAHrRp+prOviUUh18yA9HYFAlhLPqEACgkQiUUh18yA
+9HZZLwf/W/h5Xuk8XyalBcaVoid3YJ15Kv58HOxVjUbD7xl0cHwBsWZbkojHybFR
+8c8fHC14x0Z3PVyVbu0Vt2Ri5Un01jxgrO5vxgj4qvvGd/wElsSDxH8v/QwVgLxY
+Rjb9rE490XEhFzytESkxeL0sdvRTy8kp2O6Fkc47hIWAAmYiSp4yMlxMu+sRhA64
+3INOSf3sGC7FML6LWzceFxpk8b96Wxat+ICerE1g/3vOsFBmCsT4SkobC06UgpyF
+ajCEnZQsygvWBq9s+hgq/S6Rr306VelcXTg23QjYCEN6VB/zldCaTgoGGYxGlLKl
+NSb/rR+jcFRrwpVl8fLFOJDkJUawWA==
+=Uwb7
+-----END PGP SIGNATURE-----
+
+--Sig_/c=1SGo7Sosr/P/0TdoNyU86--
 
