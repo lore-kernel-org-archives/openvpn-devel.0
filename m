@@ -1,16 +1,15 @@
-References: <1481079112-22990-1-git-send-email-davids@...515...>
-	<20161209183724.5c11d987@...1799...> <20161209185926.6bd71feb@...1799...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <dedfa91c-740a-9e87-92ce-dc77a1365df7@...2080...>
-Date: Fri, 9 Dec 2016 20:44:00 +0100
 MIME-Version: 1.0
-In-Reply-To: <20161209185926.6bd71feb@...1799...>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="McanjgaFKfBwk4uTh5itWmuCJRPW8Pjs4"
-Subject: Re: [Openvpn-devel] [PATCH] systemd: Intermediate --chroot fix with
- the new sd_notify() implementation
-Reply-To: openvpn-devel@lists.sourceforge.net
+In-Reply-To: <CAA1AbxLXh_AOuHFBt0Om=eDOLH-WHM_C6OnGgHLnO+iAYP7dEw@...278...>
+References: <1ffbd3a5-8fa8-8992-2c3d-d353898d74f9@...2080...>
+	<CAKuzo_gH06N2yip+h-=Q_w1xpyP62d6v4-7=Bb2NK-=+ji6iKw@...278...>
+	<943c0ce1-501c-df5a-fb47-53ab7a689d36@...2080...>
+	<bfcaa197-893f-afba-7554-07edcde483a2@...2080...>
+	<CAA1AbxLXh_AOuHFBt0Om=eDOLH-WHM_C6OnGgHLnO+iAYP7dEw@...278...>
+From: Selva Nair <selva.nair@...277...>
+Date: Fri, 9 Dec 2016 15:43:37 -0500
+Message-ID: <CAKuzo_gH8UNruspCDOTeAa-wU9YsDB8nGGponvkCrVWnPR7SKw@...278...>
+Content-Type: multipart/alternative; boundary=94eb2c084cac23774505433fd060
+Subject: Re: [Openvpn-devel] Coding style clean-up ... phase 1
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,169 +18,90 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Christian Hesse <list@...1798...>, David Sommerseth <davids@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Steffan Karger <steffan@...1856...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---McanjgaFKfBwk4uTh5itWmuCJRPW8Pjs4
-Content-Type: multipart/mixed; boundary="IF7KmetbxPsdfxkKJivnpk9GxSbL1Abei";
-	protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-Reply-To: openvpn-devel@lists.sourceforge.net
-To: Christian Hesse <list@...1798...>, David Sommerseth <davids@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
-Message-ID: <dedfa91c-740a-9e87-92ce-dc77a1365df7@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH] systemd: Intermediate --chroot fix with
-	the new sd_notify() implementation
-References: <1481079112-22990-1-git-send-email-davids@...515...>
-	<20161209183724.5c11d987@...1799...> <20161209185926.6bd71feb@...1799...>
-In-Reply-To: <20161209185926.6bd71feb@...1799...>
+--94eb2c084cac23774505433fd060
+Content-Type: text/plain; charset=UTF-8
 
---IF7KmetbxPsdfxkKJivnpk9GxSbL1Abei
-Content-Type: text/plain; charset="windows-1252"
+On Fri, Dec 9, 2016 at 8:41 AM, Steffan Karger <steffan@...1856...> wrote:
+
+>
+> On 9 December 2016 at 00:14, David Sommerseth
+> <openvpn@...2080...> wrote:
+> > I just spotted in ssl.c that we need sp_assign=add.
+> >
+> > [ ssl.c, tls1_PRF() ]
+> >     len = slen/2;
+> >     S1 = sec;
+> >     S2 = &(sec[len]);
+> >     len += (slen&1); /* add for odd, make longer */
+> >
+> > I believe we've agreed on spaces around assignments.
+>
+> Hm, I'd be fine with that, but I'm afraid there are too many such
+> details to bikeshed about.  Once we've fixed the curious newlines
+> Selva mentionded (sorry, not sure when I can look at that), I think we
+> should stop the discussion and move forward.  Just 5 more days until
+> rc2 (where the reformatting should be done).
+
+
+
+Agreed.  I'll make no more noise :)
+
+To troubleshoot the extra newlines in places like line 130 of the file you
+uploaded
+https://paste.fedoraproject.org/502063/36953148
+I ran uncrustify using the options listed at our CodeStyle page and all
+look good and nice. No such extra newlines. By the way sp_between_byref is
+not a valid option.
+
+Selva
+
+--94eb2c084cac23774505433fd060
+Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On 09/12/16 18:59, Christian Hesse wrote:
-> Christian Hesse <list@...1798...> on Fri, 2016/12/09 18:37:
->> David Sommerseth <davids@...515...> on Wed, 2016/12/07 03:51:
->>> Commit c5931897ae8d663e7e introduced support for talking directly
->>> to the systemd service manager about the situation for the OpenVPN
->>> tunnel. This approach makes a lot of sense and is mostly the proper
->>> way to do it.  But it was discovered that it breaks OpenVPN
->>> configurations using --chroot.
->>>
->>> The reason sd_notify() calls fails when using chroot() is that
->>> sd_notify() expects to have access to a file as declared in the
->>> $NOTIFY_SOCKET environment variable.  It is the main systemd
->>> instance which is responsible to provide both the environment variable
->>> as well as the socket file sd_nodify() should use.  When --chroot
->>> comes into play, the $NOTIFY_SOCKET file will not be available
->>> for OpenVPN any more.
->>>
->>> As things are getting close to the 2.4_rc2 release we will not dare
->>> to bring a too invasive fix.  As well we need some time to discuss
->>> an approrpriate solution.  So this intermediate fix will only
->>> provide a "successful start" message to the systemd service manager
->>> right before chroot() happens.  This will at least resolve the issue
->>> in a safe and non-intrusive way.
->>>
->>> Signed-off-by: David Sommerseth <davids@...515...>
->>> ---
->>>  src/openvpn/init.c | 22 +++++++++++++++++++++-
->>>  1 file changed, 21 insertions(+), 1 deletion(-)
->>>
->>> diff --git a/src/openvpn/init.c b/src/openvpn/init.c
->>> index 74f1139..e47f0d4 100644
->>> --- a/src/openvpn/init.c
->>> +++ b/src/openvpn/init.c
->>> @@ -967,7 +967,27 @@ do_uid_gid_chroot (struct context *c, bool no_dela=
-y)
->>>        if (c->options.chroot_dir)
->>>  	{
->>>  	  if (no_delay)
->>> -	    platform_chroot (c->options.chroot_dir);
->>> +            {
->>> +#ifdef ENABLE_SYSTEMD
->>> +              /* If OpenVPN is started by systemd, the OpenVPN process
->>> needs
->>> +               * to provide a preliminary status report to systemd.  T=
-his
->>> is
->>> +               * needed as $NOTIFY_SOCKET will not be available inside
->>> the
->>> +               * chroot, which sd_notify()/sd_notifyf() depends on.
->>> +               *
->>> +               * This approach is the simplest and the most non-intrus=
-ive
->>> +               * solution right before the 2.4_rc2 release.
->>> +               *
->>> +               * TODO: Consider altnernative solutions - bind mount?
->>> +               * systemd does not grok OpenVPN configuration files, th=
-us
->>> cannot
->>> +               * have a sane way to know if OpenVPN will chroot or not
->>> and to
->>> +               * which subdirectory it will chroot into.
->>> +               */
->>> +              sd_notifyf(0, "READY=3D1\n"
->>> +                "STATUS=3DEntering chroot, most of the init completed
->>> successfully\n"
->>> +                "MAINPID=3D%lu", (unsigned long) getpid());
->>> +#endif
->>> +              platform_chroot (c->options.chroot_dir);
->>> +            }
->>>  	  else if (c->first_time)
->>>  	    msg (M_INFO, "NOTE: chroot %s", why_not);
->>>  	}=20=20
->>
->> Looks good to me, so: ACK
+<div dir=3D"ltr"><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">=
+On Fri, Dec 9, 2016 at 8:41 AM, Steffan Karger <span dir=3D"ltr">&lt;<a hre=
+f=3D"mailto:steffan@...1856..." target=3D"_blank">steffan@...1856...</a>&gt=
+;</span> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0px 0p=
+x 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex"><br>
+On 9 December 2016 at 00:14, David Sommerseth<br>
+<span class=3D"m_3948313627506509513gmail-">&lt;<a href=3D"mailto:openvpn@...220...=
+..2080..." target=3D"_blank">openvpn@...2156...<wbr>.net</a>&gt; wrote:<br>
+&gt; I just spotted in ssl.c that we need sp_assign=3Dadd.<br>
+&gt;<br>
+&gt; [ ssl.c, tls1_PRF() ]<br>
+&gt;=C2=A0 =C2=A0 =C2=A0len =3D slen/2;<br>
+&gt;=C2=A0 =C2=A0 =C2=A0S1 =3D sec;<br>
+&gt;=C2=A0 =C2=A0 =C2=A0S2 =3D &amp;(sec[len]);<br>
+&gt;=C2=A0 =C2=A0 =C2=A0len +=3D (slen&amp;1); /* add for odd, make longer =
+*/<br>
+&gt;<br>
+&gt; I believe we&#39;ve agreed on spaces around assignments.<br>
+<br>
+</span>Hm, I&#39;d be fine with that, but I&#39;m afraid there are too many=
+ such<br>
+details to bikeshed about.=C2=A0 Once we&#39;ve fixed the curious newlines<=
+br>
+Selva mentionded (sorry, not sure when I can look at that), I think we<br>
+should stop the discussion and move forward.=C2=A0 Just 5 more days until<b=
+r>
+rc2 (where the reformatting should be done).</blockquote></div><br><br></di=
+v><div class=3D"gmail_extra">Agreed.=C2=A0 I&#39;ll make no more noise :)<b=
+r><br></div><div class=3D"gmail_extra"><span class=3D"m_3948313627506509513=
+gmail-im"></span>To troubleshoot the extra newlines in places like line 130=
+ of the file you uploaded <br></div><div class=3D"gmail_extra"><span class=
+=3D"m_3948313627506509513gmail-im"><div class=3D"gmail_extra"><div class=3D=
+"gmail_quote">
+<a href=3D"https://paste.fedoraproject.org/502063/36953148/" rel=3D"norefer=
+rer" target=3D"_blank">https://paste.fedoraproject.or<wbr>g/502063/36953148=
+</a></div></div></span>I ran uncrustify using the options listed at our Cod=
+eStyle page and all look good and nice. No such extra newlines. By the way =
+sp_between_byref is not a valid option.<br><br><div class=3D"m_394831362750=
+6509513gmail-yj6qo m_3948313627506509513gmail-ajU"><div id=3D"m_39483136275=
+06509513gmail-:2gw" class=3D"m_3948313627506509513gmail-ajR">Selva<br></div=
+></div></div><div class=3D"gmail_extra"><br></div></div>
 
-Thanks!
-
->> In long term we should think about a proper solution. Notification socket
->> is /run/systemd/notify, so we would have to make that available from wit=
-hin
->> the chroot.
->=20
-> BTW, systemd used to use abstract sockets for notifications, which worked=
- with
-> processes that chroot themselves. This was changed [0] in favor to
-> PrivateNetwork setting. Private network (in terms of systemd) is nothing =
-we
-> can make use of, though. Obviously... :-p
-
-:)
-
-> Does it make sense to deny to chroot when running from systemd and instead
-> add some more security features to the systemd unit? Things like
-> ProtectSystem=3Dstrict, ProtectHome=3Dtrue and friends. See systemd.exec(=
-5) [1]
-> for details.
-
-Yes, I think this can make sense.  I would also like to see more where
-things are headed in regards to namespaces (or app-container, if you
-want).  If we can also isolate the openvpn process from as much as
-possible from the rest of the system (and find a solution for
-$HOME/.cert).   But still that does provide some other challenges,
-though - like: What to do with script hooks and --plugin files?  And
-especially other dependencies of shells/interpretors and shared objects
-they may depend on.
-
-Perhaps a discussion we could open up with the systemd team?
-
-
---=20
-kind regards,
-
-David Sommerseth
-OpenVPN Technologies, Inc
-
-
-
---IF7KmetbxPsdfxkKJivnpk9GxSbL1Abei--
-
---McanjgaFKfBwk4uTh5itWmuCJRPW8Pjs4
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBAgAGBQJYSwmBAAoJEIbPlEyWcf3yJFoP/39kVOyKAvOWcx/4kBOkDuYn
-W6QyaUYH7IoyhdNHG+mB4fffczqb/TJjj0f7rw9B/CPxoTnBXQJIWi8dUURjQkw5
-ipXg8qWdAwUnSQHvmXL6mD9jf4y4CswvWqoXa/NZ9yDi0DgpOM+1V7+AI0rAMQsf
-At4WpX4/dWeuFgg6SycSkWFZhtC7PmbsA0gu6YXkYw9Q2U6hQFdOvkdGQFfo98jk
-dpHZmcEzHRM8RnPEJ2lG72U1UXQMurR4ObH7VvRbKp93Ly8haKfGuepAxnXf0w/u
-Q4i3Zu6lZpSEMttFJC2BxlFjMunSDMuD8CXl51040tZ29sDyeSLug12YEY8kyWS6
-EIOj4zaQR7UOoL5/jI1oPa2ow6jwvrktBV9ROBpKyhf/AllfSnr8v28FG8aUkBtR
-AV2ly6cG59pqT6chieURXU04WQgJczwmEIO5V5LRzEym8uo9ajUlN0L/RnU1tkQ4
-E3VIJqHKXw3XrP/+21wcefbJhE6Mx7ScoU5CnmpZRqOBbKLGxmb9ovcLLFb07vFt
-N7rE6n1V6TmFoP/kQJ070ue2tYpY9F6kt1grFCqHm9j/DUoGcykhpIZ2BrFewgG8
-mAS/16wY8rxUu0l6XrrNefAfkY9xb8xIAm4NVqzNti6oYbMUllRGwa/tgdYDAgGt
-2O5MzN7s+0gWOPpwFc0r
-=OUvo
------END PGP SIGNATURE-----
-
---McanjgaFKfBwk4uTh5itWmuCJRPW8Pjs4--
+--94eb2c084cac23774505433fd060--
 
