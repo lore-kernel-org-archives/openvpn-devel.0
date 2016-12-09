@@ -1,10 +1,7 @@
 From: David Sommerseth <davids@...515...>
-Date: Fri,  9 Dec 2016 03:50:48 +0100
-Message-Id: <1481251848-28460-1-git-send-email-davids@...515...>
-In-Reply-To: <1480545687-19365-1-git-send-email-davids@...515...>
-References: <1480545687-19365-1-git-send-email-davids@...515...>
-Subject: [Openvpn-devel] [PATCH] push: Provide a warning if --ifconfig-push
-	have argument mismatch with --topology
+Date: Fri,  9 Dec 2016 03:52:32 +0100
+Message-Id: <1481251952-30704-1-git-send-email-davids@...515...>
+Subject: [Openvpn-devel] [PATCH] Improve ifconfig_sanity_check()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,87 +14,57 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This adds a warning to the log file if --topology is configured to use
-subnet or net30 and the 'subnet mask' argument of an --ifconfig-push option
-is not an subnet mask.
+- Instead of checking the complete in_addr_t (which lacked proper htonl()),
+  just do a simple peek at the last byte which contains the first octet
+  of an IP address or subnet mask.
 
-v2 - Make use of ifconfig_sanity_check() in tun.c instead of doing the exact
-     same check and warning in prepare_push_reply().  Also improve documentation
-     of ifconfig_sanity_check() while at it.
+- Improve error messages to also report errornous IP address usage when
+  being in TOP_SUBNET
 
-Trac: #755
+- Improve the TAP check too, providing the IP address used instead of the
+  subnet mask
+
 Signed-off-by: David Sommerseth <davids@...515...>
 ---
- src/openvpn/push.c |  8 ++++++++
- src/openvpn/tun.c  | 20 ++++++++++++++------
- src/openvpn/tun.h  |  2 ++
- 3 files changed, 24 insertions(+), 6 deletions(-)
+ src/openvpn/tun.c | 16 +++++++++++++---
+ 1 file changed, 13 insertions(+), 3 deletions(-)
 
-diff --git a/src/openvpn/push.c b/src/openvpn/push.c
-index 9953079..5292b06 100644
---- a/src/openvpn/push.c
-+++ b/src/openvpn/push.c
-@@ -333,6 +333,14 @@ prepare_push_reply (struct context *c, struct gc_arena *gc,
- 		       print_in_addr_t (ifconfig_local, 0, gc),
- 		       print_in_addr_t (c->c2.push_ifconfig_remote_netmask,
- 					0, gc));
-+
-+      /* Warn if ifconfig_remote_netmask contains an unexpected value
-+       * when checking configuration up against TUN/TAP device and
-+       * network topology
-+       */
-+      ifconfig_sanity_check(c->c1.tuntap->type == DEV_TYPE_TUN,
-+                            c->c2.push_ifconfig_remote_netmask,
-+                            c->options.topology);
-     }
- 
-   /* Send peer-id if client supports it */
 diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index 572e168..8df3489 100644
+index 8df3489..07748b1 100644
 --- a/src/openvpn/tun.c
 +++ b/src/openvpn/tun.c
-@@ -285,14 +285,22 @@ guess_tuntap_dev (const char *dev,
- /* --ifconfig-nowarn disables some options sanity checking */
- static const char ifconfig_warn_how_to_silence[] = "(silence this warning with --ifconfig-nowarn)";
- 
--/*
-- * If !tun, make sure ifconfig_remote_netmask looks
-- *  like a netmask.
-+/**
-+ * If not a tun device, make sure ifconfig_remote_netmask looks
-+ * like a netmask.
-+ *
-+ * If a tun device, make sure ifconfig_remote_netmask looks
-+ * like an IPv4 address if topology is also TOP_NET30 or TOP_P2P.
-+ *
-+ * The result of this check is only reported to the log file as a warning
-+ * when issues are found.
-+ *
-+ * @param tun       Boolean; if true device is a tun device, otherwise tap
-+ * @param addr      Address to do sanity check on
-+ * @param topology  Expected to be TOP_NET30, TOP_P2P, TOP_SUBNET
-  *
-- * If tun, make sure ifconfig_remote_netmask looks
-- *  like an IPv4 address.
-  */
--static void
-+void
+@@ -304,18 +304,28 @@ void
  ifconfig_sanity_check (bool tun, in_addr_t addr, int topology)
  {
    struct gc_arena gc = gc_new ();
-diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h
-index 9b5a1b7..1a1f0b2 100644
---- a/src/openvpn/tun.h
-+++ b/src/openvpn/tun.h
-@@ -229,6 +229,8 @@ const char *guess_tuntap_dev (const char *dev,
- 			      const char *dev_node,
- 			      struct gc_arena *gc);
- 
-+void ifconfig_sanity_check (bool tun, in_addr_t addr, int topology);
+-  const bool looks_like_netmask = ((addr & 0xFF000000) == 0xFF000000);
++  const bool looks_like_netmask = (((unsigned char *)&addr)[3] == 0xff);
 +
- struct tuntap *init_tun (const char *dev,       /* --dev option */
- 			 const char *dev_type,  /* --dev-type option */
- 			 int topology,          /* one of the TOP_x values */
+   if (tun)
+     {
+       if (looks_like_netmask && (topology == TOP_NET30 || topology == TOP_P2P))
+-	msg (M_WARN, "WARNING: Since you are using --dev tun with a point-to-point topology, the second argument to --ifconfig must be an IP address.  You are using something (%s) that looks more like a netmask. %s",
++        {
++          msg (M_WARN, "WARNING: Since you are using --dev tun with a point-to-point topology, the second argument to --ifconfig must be an IP address.  You are using something (%s) that looks more like a netmask. %s",
++               print_in_addr_t (addr, 0, &gc),
++               ifconfig_warn_how_to_silence);
++        }
++      else if (!looks_like_netmask && topology == TOP_SUBNET)
++        {
++          msg (M_WARN, "WARNING: Since you are using --dev tun with subnet topology, the second argument to --ifconfig must be a netmask, for example something like 255.255.255.0.  You are using something (%s) that looks more like an IP address. %s",
+ 	     print_in_addr_t (addr, 0, &gc),
+ 	     ifconfig_warn_how_to_silence);
++        }
+     }
+   else /* tap */
+     {
+       if (!looks_like_netmask)
+-	msg (M_WARN, "WARNING: Since you are using --dev tap, the second argument to --ifconfig must be a netmask, for example something like 255.255.255.0. %s",
++	msg (M_WARN, "WARNING: Since you are using --dev tap, the second argument to --ifconfig must be a netmask, for example something like 255.255.255.0. You are using something (%s) that looks more like an IP address. %s",
++             print_in_addr_t (addr, 0, &gc),
+ 	     ifconfig_warn_how_to_silence);
+     }
+   gc_free (&gc);
 -- 
 1.8.3.1
 
