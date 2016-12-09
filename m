@@ -1,13 +1,8 @@
-MIME-Version: 1.0
-In-Reply-To: <bfcaa197-893f-afba-7554-07edcde483a2@...2080...>
-References: <1ffbd3a5-8fa8-8992-2c3d-d353898d74f9@...2080...>
-	<CAKuzo_gH06N2yip+h-=Q_w1xpyP62d6v4-7=Bb2NK-=+ji6iKw@...278...>
-	<943c0ce1-501c-df5a-fb47-53ab7a689d36@...2080...>
-	<bfcaa197-893f-afba-7554-07edcde483a2@...2080...>
-From: Steffan Karger <steffan@...1856...>
-Date: Fri, 9 Dec 2016 14:41:24 +0100
-Message-ID: <CAA1AbxLXh_AOuHFBt0Om=eDOLH-WHM_C6OnGgHLnO+iAYP7dEw@...278...>
-Subject: Re: [Openvpn-devel] Coding style clean-up ... phase 1
+From: David Sommerseth <davids@...515...>
+Date: Fri,  9 Dec 2016 14:45:03 +0100
+Message-Id: <1481291105-27739-1-git-send-email-davids@...515...>
+Subject: [Openvpn-devel] [PATCH 0/2] Improve --ifconfig and --ifconfig-push
+	sanity check
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,29 +11,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+This patch set is combining two separate mail threads [1] [2] as they are related.
 
-On 9 December 2016 at 00:14, David Sommerseth
-<openvpn@...2080...> wrote:
-> I just spotted in ssl.c that we need sp_assign=add.
->
-> [ ssl.c, tls1_PRF() ]
->     len = slen/2;
->     S1 = sec;
->     S2 = &(sec[len]);
->     len += (slen&1); /* add for odd, make longer */
->
-> I believe we've agreed on spaces around assignments.
+These patches have also been rearragned, where the first patch adds the generic
+improvements and prepares for the push.c update which is in the second patch.
 
-Hm, I'd be fine with that, but I'm afraid there are too many such
-details to bikeshed about.  Once we've fixed the curious newlines
-Selva mentionded (sorry, not sure when I can look at that), I think we
-should stop the discussion and move forward.  Just 5 more days until
-rc2 (where the reformatting should be done).
+These patches combined will resolve the issue reported in Trac ticket #755
 
--Steffan
+
+[1] <https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13445.html>,
+    Message-Id: <1480545687-19365-1-git-send-email-davids@...515...>
+[2] <https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13334.html>,
+    Message-Id: <1481251952-30704-1-git-send-email-davids@...515...>
+
+David Sommerseth (2):
+  Improve ifconfig_sanity_check()
+  push: Provide a warning if --ifconfig-push have --topology mismatch
+
+ src/openvpn/push.c |  8 ++++++++
+ src/openvpn/tun.c  | 46 ++++++++++++++++++++++++++++++++++------------
+ src/openvpn/tun.h  |  2 ++
+ 3 files changed, 44 insertions(+), 12 deletions(-)
+
+-- 
+1.8.3.1
+
 
