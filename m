@@ -1,15 +1,15 @@
+References: <20161129120559.5be3e4ad@...1799...>
+	<20161129110716.3946-1-list@...1798...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <5448e007-8871-9933-6f12-765d4c1a9e54@...2080...>
+Date: Fri, 9 Dec 2016 22:37:12 +0100
 MIME-Version: 1.0
-In-Reply-To: <CAKuzo_gH8UNruspCDOTeAa-wU9YsDB8nGGponvkCrVWnPR7SKw@...278...>
-References: <1ffbd3a5-8fa8-8992-2c3d-d353898d74f9@...2080...>
-	<CAKuzo_gH06N2yip+h-=Q_w1xpyP62d6v4-7=Bb2NK-=+ji6iKw@...278...>
-	<943c0ce1-501c-df5a-fb47-53ab7a689d36@...2080...>
-	<bfcaa197-893f-afba-7554-07edcde483a2@...2080...>
-	<CAA1AbxLXh_AOuHFBt0Om=eDOLH-WHM_C6OnGgHLnO+iAYP7dEw@...278...>
-	<CAKuzo_gH8UNruspCDOTeAa-wU9YsDB8nGGponvkCrVWnPR7SKw@...278...>
-From: Steffan Karger <steffan@...1856...>
-Date: Fri, 9 Dec 2016 22:27:32 +0100
-Message-ID: <CAA1AbxJORM6ONqNNH7cA+Wy88_f1us=jvtTSXKzc4r5YbwtQcQ@...278...>
-Subject: Re: [Openvpn-devel] Coding style clean-up ... phase 1
+In-Reply-To: <20161129110716.3946-1-list@...1798...>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="7OclA8kwwGuAoKG78lLldOg9FVxLQc5sa"
+Subject: Re: [Openvpn-devel] [PATCH 1/1] Clean up plugin path handling
+Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,45 +18,113 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-To: Selva Nair <selva.nair@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Christian Hesse <list@...1798...>, openvpn-devel@lists.sourceforge.net
+Cc: Christian Hesse <mail@...1798...>
 
-On 9 December 2016 at 21:43, Selva Nair <selva.nair@...277...> wrote:
-> On Fri, Dec 9, 2016 at 8:41 AM, Steffan Karger <steffan@...1856...> wrote:
->> On 9 December 2016 at 00:14, David Sommerseth
->> <openvpn@...2080...> wrote:
->> > I just spotted in ssl.c that we need sp_assign=add.
->> >
->> > [ ssl.c, tls1_PRF() ]
->> >     len = slen/2;
->> >     S1 = sec;
->> >     S2 = &(sec[len]);
->> >     len += (slen&1); /* add for odd, make longer */
->> >
->> > I believe we've agreed on spaces around assignments.
->>
->> Hm, I'd be fine with that, but I'm afraid there are too many such
->> details to bikeshed about.  Once we've fixed the curious newlines
->> Selva mentionded (sorry, not sure when I can look at that), I think we
->> should stop the discussion and move forward.  Just 5 more days until
->> rc2 (where the reformatting should be done).
->
-> Agreed.  I'll make no more noise :)
->
-> To troubleshoot the extra newlines in places like line 130 of the file you
-> uploaded
-> https://paste.fedoraproject.org/502063/36953148
-> I ran uncrustify using the options listed at our CodeStyle page and all look
-> good and nice. No such extra newlines. By the way sp_between_byref is not a
-> valid option.
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--7OclA8kwwGuAoKG78lLldOg9FVxLQc5sa
+Content-Type: multipart/mixed; boundary="QNW3So446wGhe5UCQfEHumucG5oUd5JSS";
+	protected-headers="v1"
+From: David Sommerseth <openvpn@...2080...>
+Reply-To: openvpn-devel@lists.sourceforge.net
+To: Christian Hesse <list@...1798...>, openvpn-devel@lists.sourceforge.net
+Cc: Christian Hesse <mail@...1798...>
+Message-ID: <5448e007-8871-9933-6f12-765d4c1a9e54@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH 1/1] Clean up plugin path handling
+References: <20161129120559.5be3e4ad@...1799...>
+	<20161129110716.3946-1-list@...1798...>
+In-Reply-To: <20161129110716.3946-1-list@...1798...>
 
-Hm, indeed.  Must have been an artifact of running uncrustify multiple
-times or something like that.  I removed sp_between_byref.
+--QNW3So446wGhe5UCQfEHumucG5oUd5JSS
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
 
-Sounds like we have a final config on the CodeStyle page now.  Are we
-ready to run it on all code now, and publish a reformat branch?
+On 29/11/16 12:07, Christian Hesse wrote:
+> From: Christian Hesse <mail@...1798...>
+>=20
+> Drop --with-plugindir, instead use an environment variable PLUGINDIR
+> to specify the plugin directory.
+>=20
+> This always defines PLUGIN_LIBDIR and enables plugin search path.
+>=20
+> Signed-off-by: Christian Hesse <mail@...1798...>
+> ---
+>  configure.ac            | 14 ++++++--------
+>  src/openvpn/Makefile.am |  3 ++-
+>  2 files changed, 8 insertions(+), 9 deletions(-)
+>=20
+> diff --git a/configure.ac b/configure.ac
+> index f4073d0..5fe652e 100644
+> --- a/configure.ac
+> +++ b/configure.ac
+> @@ -301,13 +301,12 @@ AC_ARG_WITH(
+>  	[with_crypto_library=3D"openssl"]
+>  )
+>=20=20
+> -AC_ARG_WITH(
+> -	[plugindir],
+> -	[AS_HELP_STRING([--with-plugindir], [plugin directory @<:@default=3DLIB=
+DIR/openvpn@:>@])],
+> -	,
+> -	[with_plugindir=3D"\$(libdir)/openvpn/plugins"]
+> -)
+> -
+> +AC_ARG_VAR([PLUGINDIR], [Path of plug-in directory @<:@default=3DLIBDIR/=
+openvpn/plugins@:>@])
+> +if test -n "${PLUGINDIR}"; then
+> +	plugindir=3D"${PLUGINDIR}"
+> +else
+> +	plugindir=3D"\${libdir}/openvpn/plugins"
+> +fi
 
--Steffan
+Finally had some time to dig into this one.  I like the idea here, I
+think it makes sense.  But I'm not sure ${libdir} is correct by default.
+ I think that should be /usr/local/lib64 by default on a 64bit system.
+
+My google-foo isn't helpful for me today ... This is somewhat related,
+especially towards the end of this doc page:
+<https://www.gnu.org/software/autoconf/manual/autoconf-2.69/html_node/Site-=
+Defaults.html>
+
+But I believe there are better ways to do this.
+
+I haven't checked this in detail what happens with 'make install'.  We
+should ensure that the plug-ins we ship (./src/plugins) which are built
+are installed as well into this directory.
+
+
+--=20
+kind regards,
+
+David Sommerseth
+OpenVPN Technologies, Inc
+
+
+
+--QNW3So446wGhe5UCQfEHumucG5oUd5JSS--
+
+--7OclA8kwwGuAoKG78lLldOg9FVxLQc5sa
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBAgAGBQJYSyQIAAoJEIbPlEyWcf3yPXcP/R3tx9//zrzniU7DfuwFksTk
+J9lhVQx47ONt3M26SWaEezpu59b6DtN/sjf8yP0SIPWM6UkHYWO9gwwk5bw2Ewmv
+u4hf1hJ4D18Wg6QNWc6KfXI5qrbLBOTN6Vr6b/b8t9uJNfYTTw0jV2SSmOWobtCe
+tKJZhGa1WycWOziUGp+OeWrIrrlTTdnwWQ573p/2oHU83oUC/UNtykK8HVnWaV6L
+RNwLUSpHxB7CRB42joanpnvFMWua7hkFwUNrxlwLdlcQlwwAQG5FJrwX5LyHDCxS
+83itnzSxe9y7WlEmBseTHeAM/oKiIf6NsxoIbNQ3tcex75C5xtFjmJilz9WZNyer
+7eaNrrs7dn3rn2CMsoUO3vxM6wN30KfT8AEiamzqJb6/9RdloaLWlm2zLNlBhDyz
+uyw86d7YVxGjjzqEHCAAGbT+Rgoq5vkj1eAxOrAMkzJIx98cONK642vqZ9yCqOyr
+7L8dzvBAVCTfEgOm62t+xHWv8f/+Oiptr14s854Jbg3u/vnOi5Z2JuWyHYHj87CL
+hX5xLdj8GAJKVhw6zdjByjE9ym6LnlupZkyidbeDBe9Vbr0NC0yLReQ3p3ElGcAD
+wSWNRjf5p6bskn3ehHG3ynAjcTW4/yW1LM+x73X6ABx9bkPWyXervAFyX0Vzcnfv
+eO2Y2+ko6f+Zch40isKq
+=K6CJ
+-----END PGP SIGNATURE-----
+
+--7OclA8kwwGuAoKG78lLldOg9FVxLQc5sa--
 
