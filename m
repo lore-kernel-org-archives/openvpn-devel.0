@@ -1,11 +1,13 @@
 MIME-Version: 1.0
-In-Reply-To: <1481274455-657-1-git-send-email-mkroken@...277...>
-References: <1481274455-657-1-git-send-email-mkroken@...277...>
+In-Reply-To: <bfcaa197-893f-afba-7554-07edcde483a2@...2080...>
+References: <1ffbd3a5-8fa8-8992-2c3d-d353898d74f9@...2080...>
+	<CAKuzo_gH06N2yip+h-=Q_w1xpyP62d6v4-7=Bb2NK-=+ji6iKw@...278...>
+	<943c0ce1-501c-df5a-fb47-53ab7a689d36@...2080...>
+	<bfcaa197-893f-afba-7554-07edcde483a2@...2080...>
 From: Steffan Karger <steffan@...1856...>
-Date: Fri, 9 Dec 2016 14:36:23 +0100
-Message-ID: <CAA1AbxJ6AQKMeVp1XH4VTJw+uNak-EG7-PSCnVs2mTWhM_wRJg@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] mbedtls: include correct
- net/net_sockets header according to version
+Date: Fri, 9 Dec 2016 14:41:24 +0100
+Message-ID: <CAA1AbxLXh_AOuHFBt0Om=eDOLH-WHM_C6OnGgHLnO+iAYP7dEw@...278...>
+Subject: Re: [Openvpn-devel] Coding style clean-up ... phase 1
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,63 +18,27 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-To: Magnus Kroken <mkroken@...277...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
 Hi,
 
-On 9 December 2016 at 10:07, Magnus Kroken <mkroken@...277...> wrote:
-> <mbedtls/net.h> is deprecated as of mbedTLS 2.4.0, it is renamed
-> <mbedtls/net_sockets.h>. OpenVPN will fail to build with
-> mbedTLS 2.4.0 with MBEDTLS_DEPRECATED_REMOVED defined.
+On 9 December 2016 at 00:14, David Sommerseth
+<openvpn@...2080...> wrote:
+> I just spotted in ssl.c that we need sp_assign=add.
 >
-> Check MBEDTLS_VERSION_NUMBER, and include net.h for < 2.4.0 and
-> net_sockets.h for >= 2.4.0.
+> [ ssl.c, tls1_PRF() ]
+>     len = slen/2;
+>     S1 = sec;
+>     S2 = &(sec[len]);
+>     len += (slen&1); /* add for odd, make longer */
 >
-> Signed-off-by: Magnus Kroken <mkroken@...277...>
-> ---
-> Tested, builing with both mbedTLS 2.3.0 and 2.4.0 with
-> MBEDTLS_DEPRECATED_REMOVED is successful.
->
-> This patch is as much to document the issue as a suggested patch.
-> I don't know if MBEDTLS_DEPRECATED_REMOVED is considered a
-> distro/package maintainers problem or something to fix with
-> an #if, so I won't be sad if it isn't accepted.
->
->  src/openvpn/ssl_mbedtls.c | 10 ++++++++--
->  1 file changed, 8 insertions(+), 2 deletions(-)
->
-> diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
-> index 11ee65b..985a39f 100644
-> --- a/src/openvpn/ssl_mbedtls.c
-> +++ b/src/openvpn/ssl_mbedtls.c
-> @@ -51,11 +51,17 @@
->  #include "ssl_verify_mbedtls.h"
->  #include <mbedtls/debug.h>
->  #include <mbedtls/error.h>
-> -#include <mbedtls/net.h>
-> +#include <mbedtls/version.h>
-> +
-> +#if MBEDTLS_VERSION_NUMBER >= 0x02040000
-> +    #include <mbedtls/net_sockets.h>
-> +#else
-> +    #include <mbedtls/net.h>
-> +#endif
-> +
->  #include <mbedtls/oid.h>
->  #include <mbedtls/pem.h>
->  #include <mbedtls/sha256.h>
-> -#include <mbedtls/version.h>
->
->  void
->  tls_init_lib()
-> --
-> 2.1.4
+> I believe we've agreed on spaces around assignments.
 
-Looks good, passes tests. ACK.
-
-We might remove the indenting of the preprocessor statements, but if
-not, this will be fixed soon by The Great Reformatting anyway.
+Hm, I'd be fine with that, but I'm afraid there are too many such
+details to bikeshed about.  Once we've fixed the curious newlines
+Selva mentionded (sorry, not sure when I can look at that), I think we
+should stop the discussion and move forward.  Just 5 more days until
+rc2 (where the reformatting should be done).
 
 -Steffan
 
