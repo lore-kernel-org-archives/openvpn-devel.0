@@ -1,15 +1,15 @@
-Date: Fri, 9 Dec 2016 22:46:46 +0100
+Date: Fri, 9 Dec 2016 22:54:50 +0100
 From: Christian Hesse <list@...1798...>
-Message-ID: <20161209224646.1bc65baf@...1799...>
-In-Reply-To: <98427851-6cfd-70e8-df2a-c646fa6087da@...2080...>
-References: <20161209181303.20267-1-list@...1798...>
-	<98427851-6cfd-70e8-df2a-c646fa6087da@...2080...>
+Message-ID: <20161209225450.06ff8341@...1799...>
+In-Reply-To: <5448e007-8871-9933-6f12-765d4c1a9e54@...2080...>
+References: <20161129120559.5be3e4ad@...1799...>
+	<20161129110716.3946-1-list@...1798...>
+	<5448e007-8871-9933-6f12-765d4c1a9e54@...2080...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	boundary="Sig_/61e=HGtNpXVbCwDWk6GoN0B";
+	boundary="Sig_/Vy4G2N53hjdHrPa0mSkIPT7";
 	protocol="application/pgp-signature"
-Subject: Re: [Openvpn-devel] [PATCH 1/1] add more security features for
- systemd units
+Subject: Re: [Openvpn-devel] [PATCH 1/1] Clean up plugin path handling
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,83 +21,91 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: David Sommerseth <openvpn@...2080...>
 Cc: Christian Hesse <mail@...1798...>, openvpn-devel@lists.sourceforge.net
 
---Sig_/61e=HGtNpXVbCwDWk6GoN0B
+--Sig_/Vy4G2N53hjdHrPa0mSkIPT7
 Content-Type: text/plain; charset="US-ASCII"
 Content-Transfer-Encoding: quoted-printable
 
-David Sommerseth <openvpn@...2080...> on Fri, 2016/12/09 20:42:
-> On 09/12/16 19:13, Christian Hesse wrote:
+David Sommerseth <openvpn@...2080...> on Fri, 2016/12/09 22:37:
+> On 29/11/16 12:07, Christian Hesse wrote:
 > > From: Christian Hesse <mail@...1798...>
 > >=20
-> > ProtectSystem=3Dstrict mounts the entire file system hierarchy read-onl=
-y,
-> > except for the API file system subtrees /dev, /proc and /sys (which can
-> > be protected using PrivateDevices=3D, ProtectKernelTunables=3D,
-> > ProtectControlGroups=3D).
+> > Drop --with-plugindir, instead use an environment variable PLUGINDIR
+> > to specify the plugin directory.
 > >=20
-> > ProtectHome=3Dtrue makes the directories /home, /root and /run/user
-> > inaccessible and empty for the process.=20=20
+> > This always defines PLUGIN_LIBDIR and enables plugin search path.
+> >=20
+> > Signed-off-by: Christian Hesse <mail@...1798...>
+> > ---
+> >  configure.ac            | 14 ++++++--------
+> >  src/openvpn/Makefile.am |  3 ++-
+> >  2 files changed, 8 insertions(+), 9 deletions(-)
+> >=20
+> > diff --git a/configure.ac b/configure.ac
+> > index f4073d0..5fe652e 100644
+> > --- a/configure.ac
+> > +++ b/configure.ac
+> > @@ -301,13 +301,12 @@ AC_ARG_WITH(
+> >  	[with_crypto_library=3D"openssl"]
+> >  )
+> >=20=20
+> > -AC_ARG_WITH(
+> > -	[plugindir],
+> > -	[AS_HELP_STRING([--with-plugindir], [plugin directory
+> > @<:@default=3DLIBDIR/openvpn@:>@])],
+> > -	,
+> > -	[with_plugindir=3D"\$(libdir)/openvpn/plugins"]
+> > -)
+> > -
+> > +AC_ARG_VAR([PLUGINDIR], [Path of plug-in directory
+> > @<:@default=3DLIBDIR/openvpn/plugins@:>@]) +if test -n "${PLUGINDIR}"; =
+then
+> > +	plugindir=3D"${PLUGINDIR}"
+> > +else
+> > +	plugindir=3D"\${libdir}/openvpn/plugins"
+> > +fi=20=20
 >=20
-> Currently I don't think we can use ProtectedHome=3D .... as it is fully
-> possible to save certificates and keys under $HOME/.cert on Fedora/RHEL
-> (and clones).  There is even a specific SELinux label for files in that
-> path, home_cert_t.
-
-I know that NetworkManager and its openvpn plugin use $HOME/.cert/... But
-openvpn is not started from systemd then. Do we have setups where openvpn
-starts from systemd and reads certificates from $HOME?
-
-ProtectHome=3Dread-only could help here... But I would still prefer
-ProtectHome=3Dtrue.
-
-BTW, setting can be overwritten with something like:
-
-mkdir /etc/systemd/system/openvpn-client@...2210...
-cat > /etc/systemd/system/openvpn-client@...2210.../protecthome.conf
-<<EOF
-[Service]
-ProtectHome=3Dread-only
-EOF
-
-> For the others, I think they are more reasonable ... But I need to dig
-> into the more murky details to be 100% they are safe for us.  This is
-> anyhow something we need to postpone until after 2.4.0 ... I don't dare
-> adding more things which may backfire in rc2, as we're on a strict
-> schedule to manage the next Debian release.
+> Finally had some time to dig into this one.  I like the idea here, I
+> think it makes sense.  But I'm not sure ${libdir} is correct by default.
+>  I think that should be /usr/local/lib64 by default on a 64bit system.
 >=20
-> Once rc2 settles, I will start playing with this patch.
+> My google-foo isn't helpful for me today ... This is somewhat related,
+> especially towards the end of this doc page:
+> <https://www.gnu.org/software/autoconf/manual/autoconf-2.69/html_node/Sit=
+e-Defaults.html>
+>=20
+> But I believe there are better ways to do this.
+>=20
+> I haven't checked this in detail what happens with 'make install'.  We
+> should ensure that the plug-ins we ship (./src/plugins) which are built
+> are installed as well into this directory.
 
-Agreed this is post-2.4.0 stuff. ;)
+${libdir} is where plugins are installed to... That's why I choose it. ;)
 
-You can break this with something like:
+Installing anything to $prefix/lib64/ does not make sense imho. Never.
 
-status /etc/openvpn/client/status.log
-
-in your configuration. Writing a status file
-to /run/openvpn-{client,server}/status.log works, though. So the default
-setups should be fine. Do we have any more cases where openvpn wants write
-access for whatever?
+32bit systems install to $prefix/lib/, 64bit system install to $prefix/lib/.
+The only valid extra is $prefix/lib32/ for multilib on 64bit systemd.
 --=20
 main(a){char*c=3D/*    Schoene Gruesse                         */"B?IJj;MEH"
 "CX:;",b;for(a/*    Best regards             my address:    */=3D0;b=3Dc[a+=
 +];)
 putchar(b-1/(/*    Chris            cc -ox -xc - && ./x    */b/42*2-3)*42);}
 
---Sig_/61e=HGtNpXVbCwDWk6GoN0B
+--Sig_/Vy4G2N53hjdHrPa0mSkIPT7
 Content-Type: application/pgp-signature
 Content-Description: OpenPGP digital signature
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCAAdFiEEXHmveYAHrRp+prOviUUh18yA9HYFAlhLJkYACgkQiUUh18yA
-9HZtZQf/f+BfhpzPgWMWDQVypC2eBsNjQ/tbHcF6yGmUXiLc6Gw8M0TBqIZ7QBmN
-x7jETeoiVKnCPumFd/tMK2RsrWlgC6jbgUtWEE7n2T7e3ydbpQF3oHBoxxGXC0kZ
-WUwvY648RARIgsLKt6A5Dy8prfk21sw9hdcx2at0D4JM2Y3hRE0qz/yhmmqZ6WMm
-nPIC+mxuAahpLCLgCOPaWmMa7kUySvhq/0KVKTJA00QWeHt1n6Tgl658Nm4C/xSu
-SmG7HXvurpJJ48v5UjWvGvL75QLfFLE/exyQS/YRt6Qu5IzyVYm1W2rN+b6/k/Lh
-yohBJFgkzq+bfQS1hWnIKYyURrvJgA==
-=iPLk
+iQEzBAEBCAAdFiEEXHmveYAHrRp+prOviUUh18yA9HYFAlhLKCoACgkQiUUh18yA
+9HY0nQgA3itvqLD2yt+Fd1eew4yRLrcCwioKL4FJbEjqXdshOU+v38wNy71han7+
+jDPbYnDndz2rUBboamaMFmRZlHEtj+wfgrd/fJQu+KkDZbvUpY6OWmdJyA+V+5Wj
+SwtMWrqRvd9M8weLjPBTFCw/Si85x6+97EaxDDxPj8MCOGsI0StqK3mQt643fgRs
+qEaDQMMnK9DsIYQVNdv6zCusbtTqO2d94hujkrZLNcAsXPlSp3ZGjTVNCoeyec+T
+uofAy1GPlBYaNxKScfGSWK9YplNm4nrM4gjebPaL+6DtUEkZjQd0Xyu/GlfFJ3Ab
+ci6+0ux/as3xB1p9rHKR9oAHOCC5AQ==
+=sKhW
 -----END PGP SIGNATURE-----
 
---Sig_/61e=HGtNpXVbCwDWk6GoN0B--
+--Sig_/Vy4G2N53hjdHrPa0mSkIPT7--
 
