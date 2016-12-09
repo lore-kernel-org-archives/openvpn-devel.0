@@ -1,15 +1,15 @@
-Date: Fri, 9 Dec 2016 08:42:50 +0100
+Date: Fri, 9 Dec 2016 09:13:19 +0100
 From: Gert Doering <gert@...1296...>
-Message-ID: <20161209074250.GQ78624@...1296...>
-References: <1ffbd3a5-8fa8-8992-2c3d-d353898d74f9@...2080...>
-	<8000a47e-979c-3afc-1a7a-5f8afab85634@...1856...>
-	<CAKuzo_ga48WDGd-g8Xp=L1NbXf0Naez1ZRN3FhcyL247bK72Rg@...278...>
+Message-ID: <20161209081319.GS78624@...1296...>
+References: <1480545687-19365-1-git-send-email-davids@...515...>
+	<1481251848-28460-1-git-send-email-davids@...515...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="uWA6ivsFTdIbDdzo"
+	protocol="application/pgp-signature"; boundary="ht9V8wKec6a3w1Ef"
 Content-Disposition: inline
-In-Reply-To: <CAKuzo_ga48WDGd-g8Xp=L1NbXf0Naez1ZRN3FhcyL247bK72Rg@...278...>
-Subject: Re: [Openvpn-devel] Coding style clean-up ... phase 1
+In-Reply-To: <1481251848-28460-1-git-send-email-davids@...515...>
+Subject: Re: [Openvpn-devel] [PATCH] push: Provide a warning if
+ --ifconfig-push have argument mismatch with --topology
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,73 +18,86 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: David Sommerseth <davids@...515...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---uWA6ivsFTdIbDdzo
+--ht9V8wKec6a3w1Ef
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Thu, Dec 08, 2016 at 05:04:53PM -0500, Selva Nair wrote:
-> if (xxxx)
-> {
->    ...
-> }
-> followed by
-> else if (xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx) {
->  ....
-> }
+On Fri, Dec 09, 2016 at 03:50:48AM +0100, David Sommerseth wrote:
+> This adds a warning to the log file if --topology is configured to use
+> subnet or net30 and the 'subnet mask' argument of an --ifconfig-push opti=
+on
+> is not an subnet mask.
 >=20
-> looks inconsitent and not pretty.=20
+> v2 - Make use of ifconfig_sanity_check() in tun.c instead of doing the ex=
+act
+>      same check and warning in prepare_push_reply().  Also improve docume=
+ntation
+>      of ifconfig_sanity_check() while at it.
 
-Thanks, so I'm not alone with this :-)
+Not being the one to complain about your code all the time... but...
+since trac #755 is about "topology subnet"...
 
-> Why not just stick to:
->=20
-> if (carefree())
-> {
->    follow_me();
-> }
-> else if (cautious())
-> {
->    as_you_wish();
-> }
-> else
-> {
->    abort();
-> }
->=20
-> Looks easier to read.
+static void
+ifconfig_sanity_check (bool tun, in_addr_t addr, int topology)
+{
+  struct gc_arena gc =3D gc_new ();
+  const bool looks_like_netmask =3D ((addr & 0xFF000000) =3D=3D 0xFF000000);
+  if (tun)
+    {
+      if (looks_like_netmask && (topology =3D=3D TOP_NET30 || topology =3D=
+=3D TOP_P2P))
+        msg (M_WARN, "WARNING: Since you are using --dev tun with a point-t=
+o-poi
+nt topology, the second argument to --ifconfig must be an IP address.  You =
+are u
+sing something (%s) that looks more like a netmask. %s",
+             print_in_addr_t (addr, 0, &gc),
+             ifconfig_warn_how_to_silence);
+    }
+  else /* tap */
 
-This!
+... ifconfig_sanity_check() does *nothing* for TOP_SUBNET (and the code
+disagrees with your commit message for "net30").
 
-Maybe it's just my OCD speaking, but=20
+So the v3 version of that patch would need to add the (missing today,
+but actually important diagnostic aid - and the point of #755) clause
 
-  if (something)
-  {
-      this();
-  } else {
-      that();
-  }
+    if (!looks_like_netmask && topology =3D=3D TOP_SUBNET)
+    {
+	msg (M_WARN, "topology subnet needs a netmask as second argument bla bla");
+    }
 
-really makes my skin crawl - I need the "i"s dotted, the "t"s crossed,
-and braces aligned - vertically or horizontally, but not "diagonally".
 
-So this would work for me, for "trivial conditionals" (=3D short condition,
-non-crammed single-line statements):
+Also we might to re-think the warning message printed - if called from
+an ifconfig-push context, the text "the second argument to --ifconfig must
+be an IP address" is less than clear ("my --ifconfig settings are just=20
+fine, what is openvpn warning about?").
 
-  if (a>0)
-     { do_this(); }
-  else
-     { do_that(); }
 
-but since we agred on "braces get their own line", it's out as well.
+Plus, it needs to be actually tested on a non-intel architecture - the
+code has been like that forever, but I would not trust it to be endian-
+safe (though our use of "in_addr_t" is not actually consistent with
+what *should* be in one - parts of the code treat it as "network byte
+order", other parts as "host byte order", and the point of using
+"in_addr_t" as well defined *type* and not "a bag of 32bits, unsigned"
+should have been "as defined by the socket API", which wants network
+byte order).
+
+
+But since this is an enhancement and not a bug, it should not be rushed -
+it does not have to be in 2.4.0.  Let's do it properly, test it, then
+see if we want to have it in 2.4.1  (and while at it, we should teach
+check_addr_clash() that networks do have a netmask for a reason, and
+"local/remote and --ifconfig are in the same /24" could be perfectly fine=20
+if the pushed netmask is *not* a /24).
 
 gert
-
 --=20
 USENET is *not* the non-clickable part of WWW!
                                                            //www.muc.de/~ge=
@@ -92,22 +105,22 @@ rt/
 Gert Doering - Munich, Germany                             gert@...1296...
 fax: +49-89-35655025                        gert@...1297...
 
---uWA6ivsFTdIbDdzo
+--ht9V8wKec6a3w1Ef
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJYSmB6AAoJEB2Cnv7KVigS8UwMAJ7FC0p9fosCWMSvgNDbb0Y8
-4xj5rdnfMUSRnhmYASzjwBGvDJgtfQtTfYmwnNAUbuEwF6BcKW9qTwUZsK6h9gMD
-aMhd7DEpYR8yQAZII6QPg4Z5U7Vyohn9Ig3fEkDo20Mbhu8JpttAqdfVfP4k+gnr
-0HtI1+/3Lwris2OMYEeF3y5QZubHSZu5F/R5m1EkDQhPld+r+4gH+ML1cpdSE4v/
-FjgO73xh2zeFcroE3Chd8xeFsKGs6e6UVUtNFrqsUMaeNdtjfc45zEmmiirq581m
-wM5sHhzpSWN6pgNDnbz5Mev0k6eGZMI9/PauSmJnysg2ol9tX5mwibyDW46lNCQu
-MeUu0Mn9+8KnvAf/iOCUsMbF8AgwVwYbcgWONsTOMSc7jMKKf7H5zR7+vaWKIpfM
-fncXO6CeFIeoZu7SbXFUO9qVX4bM199hI4/8XcvdX8mNnu1w5AudXDFdETsIDeb+
-UrZCOS6yajSYurwRuVEH0O4DK6PxBfH6ulZ01GWuow==
-=MRyt
+iQGcBAEBAgAGBQJYSmeeAAoJEB2Cnv7KVigSzg8L/3KBH6fh6auftM7rar6zqM8N
+o2D5d7/okwc0ddi7uzHIVD3hdoOrtKl104Qw6IFsYlGH9uwojUXkaeNksdRjBK/s
+Ea44w1Ne70mMgeW/FGdCX6KPN3SdLo8fLvxzXvBeUKjeX7rthJhADx1u5VvHsra5
+ytcoufOpXNeRm5ePvOQuk/NqA/VOJD47uyhDnlwutIqod/B2Of39qdHNTj5zC+I8
+eTMk1qlKWhlivHEq3bicvPwIfcEKhk0lQ8lqADCgCUjIdHmsueL8MrK4+vHINXXP
+CgUVhCL+k+09mJHmw+B0RCtbUiGFiOgq5q+4YW96gUQSs0UryKc3rXn7jACuLGxD
+yXACh5Pbm7HB/uU1KbA1+p4XyWdv0V8xhWJAMYvhlXQJGt8qJRPM8lquF3824bKi
+D4XVj7e2xzZLg1+hQszWvSc1IsJvKQf5IDV6HIKt9d4CotJDQtu3D08g0Qfr49ts
+Fe0hsCyMrLOGZH7a0Hn2IN+OApApBtkV0OK2ySnSLg==
+=94GI
 -----END PGP SIGNATURE-----
 
---uWA6ivsFTdIbDdzo--
+--ht9V8wKec6a3w1Ef--
 
