@@ -1,17 +1,16 @@
-Date: Sat, 10 Dec 2016 00:30:41 +0100
-From: Christian Hesse <list@...1798...>
-Message-ID: <20161210003041.7d711d7b@...1799...>
-In-Reply-To: <fb1ab332-e444-64e1-73e0-3ef290299ab6@...2080...>
-References: <20161129120559.5be3e4ad@...1799...>
-	<20161129110716.3946-1-list@...1798...>
-	<5448e007-8871-9933-6f12-765d4c1a9e54@...2080...>
-	<20161209225450.06ff8341@...1799...>
-	<fb1ab332-e444-64e1-73e0-3ef290299ab6@...2080...>
+References: <20161209183724.5c11d987@...1799...>
+	<20161209231907.16486-1-list@...1798...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <ddf0e5be-0590-7da6-d0e2-5e21e3225bc1@...2080...>
+Date: Sat, 10 Dec 2016 01:03:39 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	boundary="Sig_/c=1SGo7Sosr/P/0TdoNyU86";
-	protocol="application/pgp-signature"
-Subject: Re: [Openvpn-devel] [PATCH 1/1] Clean up plugin path handling
+In-Reply-To: <20161209231907.16486-1-list@...1798...>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="TsxHdQn1HE3QwW4N4T28bXDHIbKMptJPx"
+Subject: Re: [Openvpn-devel] [PATCH 1/1] bind mount systemd notification
+ socket into chroot
+Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,122 +19,95 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: David Sommerseth <openvpn@...2080...>
-Cc: Christian Hesse <mail@...1798...>, openvpn-devel@lists.sourceforge.net
+To: Christian Hesse <list@...1798...>, OpenVPN Development <openvpn-devel@lists.sourceforge.net>
+Cc: Christian Hesse <mail@...1798...>, David Sommerseth <davids@...515...>
 
---Sig_/c=1SGo7Sosr/P/0TdoNyU86
-Content-Type: text/plain; charset="US-ASCII"
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--TsxHdQn1HE3QwW4N4T28bXDHIbKMptJPx
+Content-Type: multipart/mixed; boundary="2qKuuL8I8rJ69JhokB4XWn4oG76DqEPol";
+	protected-headers="v1"
+From: David Sommerseth <openvpn@...2080...>
+Reply-To: openvpn-devel@lists.sourceforge.net
+To: Christian Hesse <list@...1798...>,
+	OpenVPN Development <openvpn-devel@lists.sourceforge.net>
+Cc: Christian Hesse <mail@...1798...>, David Sommerseth <davids@...515...>
+Message-ID: <ddf0e5be-0590-7da6-d0e2-5e21e3225bc1@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH 1/1] bind mount systemd notification
+	socket into chroot
+References: <20161209183724.5c11d987@...1799...>
+	<20161209231907.16486-1-list@...1798...>
+In-Reply-To: <20161209231907.16486-1-list@...1798...>
+
+--2qKuuL8I8rJ69JhokB4XWn4oG76DqEPol
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
 
-David Sommerseth <openvpn@...2080...> on Fri, 2016/12/09 23:40:
-> On 09/12/16 22:54, Christian Hesse wrote:
-> > David Sommerseth <openvpn@...2080...> on Fri, 2016/12/09
-> > 22:37:=20=20
-> >> On 29/11/16 12:07, Christian Hesse wrote:=20=20
-> >>> From: Christian Hesse <mail@...1798...>
-> >>>
-> >>> Drop --with-plugindir, instead use an environment variable PLUGINDIR
-> >>> to specify the plugin directory.
-> >>>
-> >>> This always defines PLUGIN_LIBDIR and enables plugin search path.
-> >>>
-> >>> Signed-off-by: Christian Hesse <mail@...1798...>
-> >>> ---
-> >>>  configure.ac            | 14 ++++++--------
-> >>>  src/openvpn/Makefile.am |  3 ++-
-> >>>  2 files changed, 8 insertions(+), 9 deletions(-)
-> >>>
-> >>> diff --git a/configure.ac b/configure.ac
-> >>> index f4073d0..5fe652e 100644
-> >>> --- a/configure.ac
-> >>> +++ b/configure.ac
-> >>> @@ -301,13 +301,12 @@ AC_ARG_WITH(
-> >>>  	[with_crypto_library=3D"openssl"]
-> >>>  )
-> >>>=20=20
-> >>> -AC_ARG_WITH(
-> >>> -	[plugindir],
-> >>> -	[AS_HELP_STRING([--with-plugindir], [plugin directory
-> >>> @<:@default=3DLIBDIR/openvpn@:>@])],
-> >>> -	,
-> >>> -	[with_plugindir=3D"\$(libdir)/openvpn/plugins"]
-> >>> -)
-> >>> -
-> >>> +AC_ARG_VAR([PLUGINDIR], [Path of plug-in directory
-> >>> @<:@default=3DLIBDIR/openvpn/plugins@:>@]) +if test -n "${PLUGINDIR}";
-> >>> then
-> >>> +	plugindir=3D"${PLUGINDIR}"
-> >>> +else
-> >>> +	plugindir=3D"\${libdir}/openvpn/plugins"
-> >>> +fi=20=20=20=20
-> >>
-> >> Finally had some time to dig into this one.  I like the idea here, I
-> >> think it makes sense.  But I'm not sure ${libdir} is correct by defaul=
-t.
-> >>  I think that should be /usr/local/lib64 by default on a 64bit system.
-> >>
-> >> My google-foo isn't helpful for me today ... This is somewhat related,
-> >> especially towards the end of this doc page:
-> >> <https://www.gnu.org/software/autoconf/manual/autoconf-2.69/html_node/=
-Site-Defaults.html>
-> >>
-> >> But I believe there are better ways to do this.
-> >>
-> >> I haven't checked this in detail what happens with 'make install'.  We
-> >> should ensure that the plug-ins we ship (./src/plugins) which are built
-> >> are installed as well into this directory.=20=20
-> >=20
-> > ${libdir} is where plugins are installed to... That's why I choose it. =
-;)
-> >=20
-> > Installing anything to $prefix/lib64/ does not make sense imho. Never.=
-=20=20
+On 10/12/16 00:19, Christian Hesse wrote:
+> From: Christian Hesse <mail@...1798...>
 >=20
-> Well, that is the default for Fedora/RHEL families.  32bit systems uses
-> /usr/lib, 64bit uses /usr/lib64.
+> sd_notify() uses a socket to communicate with systemd. Communication
+> fails if the socket is not available within the chroot. So bind mount
+> the socket into the chroot when startet from systemd.
 >=20
-> $ uname -m
-> x86_64
-> $ cat /etc/redhat-release
-> Red Hat Enterprise Linux Server release 7.3 (Maipo)
-> $ rpm --eval '%{_libdir}'
-> /usr/lib64
->=20
-> I've tested this on Fedora 24 and Scientific Linux 6 and 7 as well, with
-> the same result.
->=20
-> And you'll find the same in openSUSE too:
-> <https://en.opensuse.org/openSUSE:Packaging_Conventions_RPM_Macros#.25_li=
-b>
->=20
-> Unless it has changed in Debian/Ubuntu, it is a similar policy there too.
+> Unsharing namespace and mounting requires extra capability CAP_SYS_ADMIN.
 
-Uh, interesting... Probably I did not look at these distributions for too
-long... (And/or relied on the package manager.)
+I will pick up this one after 2.4.0 has been released.  This is a very
+promising approach.  However, I'm not too happy about CAP_SYS_ADMIN
+though, that grants quite some privileges.  Can we look at dropping this
+capability once we know we won't need it any more?  Perhaps when we send
+READY=3D1?
 
-For Arch Linux we use /usr/lib/, though /usr/lib64/ is provided by a symlink
-to lib nowadays.
+> +              char * chroot_notify =3D NULL;
+> +
+> +              if (sd_notify(0, "READY=3D0") > 0)
+> +                {
+> +                  asprintf(&chroot_notify, "%s/notify", c->options.chroo=
+t_dir);
+
+Here we should use the buffer/string functions, based on the gc_arena
+implementation.  Unfortunately we do not have a direct equivalent to
+asprintf().  A starting point would be to for example look at the string
+handling in print_sockaddr_ex() [socket.c:2386] or x_msg_va()
+[error.c:251] ... there might be better examples too, I'm just not able
+to remember them now :)  .... buffer.[ch] keeps most of these functions.
+
+The reason for this is basically to use the same well tested
+infrastructure.  And with gc_arena, only a single gc_free() is required,
+regardless of how many buffers you allocate to that arena.
+
+
 --=20
-main(a){char*c=3D/*    Schoene Gruesse                         */"B?IJj;MEH"
-"CX:;",b;for(a/*    Best regards             my address:    */=3D0;b=3Dc[a+=
-+];)
-putchar(b-1/(/*    Chris            cc -ox -xc - && ./x    */b/42*2-3)*42);}
+kind regards,
 
---Sig_/c=1SGo7Sosr/P/0TdoNyU86
-Content-Type: application/pgp-signature
+David Sommerseth
+OpenVPN Technologies, Inc
+
+
+
+--2qKuuL8I8rJ69JhokB4XWn4oG76DqEPol--
+
+--TsxHdQn1HE3QwW4N4T28bXDHIbKMptJPx
+Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQEzBAEBCAAdFiEEXHmveYAHrRp+prOviUUh18yA9HYFAlhLPqEACgkQiUUh18yA
-9HZZLwf/W/h5Xuk8XyalBcaVoid3YJ15Kv58HOxVjUbD7xl0cHwBsWZbkojHybFR
-8c8fHC14x0Z3PVyVbu0Vt2Ri5Un01jxgrO5vxgj4qvvGd/wElsSDxH8v/QwVgLxY
-Rjb9rE490XEhFzytESkxeL0sdvRTy8kp2O6Fkc47hIWAAmYiSp4yMlxMu+sRhA64
-3INOSf3sGC7FML6LWzceFxpk8b96Wxat+ICerE1g/3vOsFBmCsT4SkobC06UgpyF
-ajCEnZQsygvWBq9s+hgq/S6Rr306VelcXTg23QjYCEN6VB/zldCaTgoGGYxGlLKl
-NSb/rR+jcFRrwpVl8fLFOJDkJUawWA==
-=Uwb7
+iQIcBAEBAgAGBQJYS0ZbAAoJEIbPlEyWcf3yntYQAKbvQfZ3+/0BXPSwiLuoBDGb
+8j62wOVulGWrP1YXyUFD2W7QlzRT7DWvy0O7Xoxpb9ldnk0oN7bKnrXUPtBAgPxJ
+ELi5/QWl44jJru42lmhkqUlETsNFCvxUvST0v2sCeDGn5uxpHHSAaKZDh5Oonhe0
+7xXHvWQTmAZcIGmAl58h3iXlhBdM7SrSv+3Aw9LsvjtXS1WmBa2Q5ZVYxwMhtW69
+l/lYlE+THDgjrAxI4X6ciw45PmZ/3wiF2Q3CZ8R4PpyplBngkDVy8ZwtR9oH2aHB
+V6DKFa4+bEUTJDDaG6JJFNYd47H9I/zCi8oFl6gBtJISVpXqv8OGbDUVMNd7tacg
+GK4b4Muky2nkEomXB9L3zAruxCnXQvUy5D61n7yoxi+W63liez5wgZ+V05elNxG9
+GIx6LkKJio5aaxuwHdezGWmpqrs1nqOkDUcaETVLdcmdGhlM9cvC/4DJkkiGd0kq
+0q+O1uL2xT7KEXenvyenoZ/AF1Y7CrjxUHLGpip9MMXdFtLKwYeJ4ZiadjPmRddG
+6ocgxl6Jremxcbnr0SQe02jJoZnJe12tuXAtvkgxd/dMlCHRL6KVqkIDYNowMbe2
+AENuouVewMZ7eyI5BCvLWqNRIGvGQnQoF/6tf9CBDJP1lQYZDvACJtHbFfQZF7F3
+dM5TjaZJrprx6SmN17V/
+=RUUl
 -----END PGP SIGNATURE-----
 
---Sig_/c=1SGo7Sosr/P/0TdoNyU86--
+--TsxHdQn1HE3QwW4N4T28bXDHIbKMptJPx--
 
