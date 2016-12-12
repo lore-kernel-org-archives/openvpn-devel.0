@@ -1,16 +1,14 @@
+Date: Mon, 12 Dec 2016 20:44:42 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20161212194442.GQ78624@...1296...>
+References: <20161209181303.20267-1-list@...1798...>
 MIME-Version: 1.0
-In-Reply-To: <f9668ae4-0e98-53af-35d1-db3006ce308d@...515...>
-References: <CAKuzo_hFT3vXnNn46ubhQiV0zwjg_0uyyMyVtNq2OZeYsq3TuQ@...278...>
-	<08d5f483-cc64-b708-a54c-29cfb2c7880e@...277...>
-	<CAKuzo_jFHw1k0M0WfU8WsiTaZDYNE9+K=2=41g_oHqLikydo1w@...278...>
-	<ad8c62af-5534-79d7-11ff-56cf51888615@...277...>
-	<CAKuzo_iBnazFOMGaCDO-ga_ONCN=wb6818syt+S66S_OKZDoCw@...278...>
-	<f9668ae4-0e98-53af-35d1-db3006ce308d@...515...>
-From: Selva Nair <selva.nair@...277...>
-Date: Mon, 12 Dec 2016 12:44:36 -0500
-Message-ID: <CAKuzo_h+gv1deOB2rAJ+44oHijgEBb1xrhw2n7gr27RBdSL0Qw@...278...>
-Content-Type: multipart/alternative; boundary=001a11408cb679dc22054379a95a
-Subject: Re: [Openvpn-devel] On saving passwords
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="jiGx5cYVmJx/T6kL"
+Content-Disposition: inline
+In-Reply-To: <20161209181303.20267-1-list@...1798...>
+Subject: Re: [Openvpn-devel] [PATCH 1/1] add more security features for
+ systemd units
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,131 +17,55 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Christian Hesse <list@...1798...>
+Cc: Christian Hesse <mail@...1798...>, OpenVPN Development <openvpn-devel@lists.sourceforge.net>
 
---001a11408cb679dc22054379a95a
-Content-Type: text/plain; charset="UTF-8"
+--jiGx5cYVmJx/T6kL
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-On Mon, Dec 12, 2016 at 3:09 AM, Samuli Sepp=C3=A4nen <samuli@...515...> wr=
-ote:
+Hi,
 
-> Il 11/12/2016 19:52, Selva Nair ha scritto:
->
->>
->> On Sun, Dec 11, 2016 at 12:00 PM, debbie10t <debbie10t@...277...
->> <mailto:debbie10t@...277...>> wrote:
->>
->>     What happens if a remote user, who has admin access to their own
->>     computer, connects to a work VPN but they decide to change said
->> config ?
->>
->>
->> A user who has admin access to their own computer can do anything to it:
->> including saving VPN passwords. Why would openvpn stop them doing that?
->> The question was about a sysadmin of an office not allowing their users
->> to save their openvpn passwords in an automated way. There is no way of
->> ensuring that if the user has admin access on their devices. Note that
->> password is saved on the client, not the server.
->>
->
-> There are many ways to circumvent password saving restrictions
+On Fri, Dec 09, 2016 at 07:13:03PM +0100, Christian Hesse wrote:
+> From: Christian Hesse <mail@...1798...>
+>=20
+> ProtectSystem=3Dstrict mounts the entire file system hierarchy read-only,
+> except for the API file system subtrees /dev, /proc and /sys (which can
+> be protected using PrivateDevices=3D, ProtectKernelTunables=3D,
+> ProtectControlGroups=3D).
 
-if the enforcement is supposed to happen on the client side.
->
+Unless the temp directories are still writeable, this will break=20
+server configs with --client-connect scripts or plugins trying to hand=20
+back config settings via temp files.
 
-The server cannot enforce what a user does with his password, can it?
-Unless one
-uses some kind of OTP so that there is no savable password so to speak.
+(I do not think an openvpn *client* config will need a to create
+files, but this needs testing)
 
->
-> Some years back I used xdotool[1] to manage keyboard input and mouse
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-movements to automate otherwise unautomateable things. While it's a
+--jiGx5cYVmJx/T6kL
+Content-Type: application/pgp-signature; name="signature.asc"
 
-crude approach, it could be easily used to automate password typing and
+-----BEGIN PGP SIGNATURE-----
 
-mouse clicks. I'm sure similar tools are available for Windows.
+iQGcBAEBAgAGBQJYTv4qAAoJEB2Cnv7KVigSd00MAKPMrXbpin9OcwgbUckMdgfs
++24BxBxYwQ2PhDmawMIyJw+mtb0sWd6dmeDOl4u7SDPK6+dW3q6g7O9xTgxnkhvN
+SW6o+7+VUDSTV9iPm8BVDoMhLbFJXgWla7cbw+gf/eQuXjFBZcIrYS41MOoYJdam
+gTnkdBvqsfsBsIJLVTY+blKtfNVOKePMtGE99oQYjOMGUZENfVwmkXeRkZAOKkQS
+0n/GJa3RnIxxo9doVomN5i4YDkdnCuBPg+6vMbsO/mJVPqmJDwRrol1sEPsY3GK4
+WNIjjCuzAJfuRMwcQXycFHSyB1kM/IcHhT6oV1sU1E5sEewPO4V4oXhv1QEUgwHM
+vIJvG9/mn65StSBm5QZVOjRFtWXJkSgQZE8AiMt9D0Inmeys+0T5iEoImmfwKUJs
+PPa2R2YRUj+U5YNA7GLrCeKXIf51XG4oiBhXVcpdlbKTxQLMOdy9UcxWTHrTnU/2
+d8+55W0wpJjpzYWBcI4eLxHiSiKkZu8TSdNBFSAsVg==
+=KncT
+-----END PGP SIGNATURE-----
 
-
-Yeah, policies like no saving of passwords can be enforced only with user
-co-operation.
-
-But our prerogative here is to just provide a way for an admin to reliably
-disable the password-save feature in the GUI. The question is how strong is
-the case for something like that. I can see that if an establishment has a
-policy that asks users not to save passwords, it wont be appropriate to
-have UIs with enticing check-boxes to save passwords. Users installing a
-hacked GUI or using automated key-strokes would be beyond us.
-
-Selva
-
---001a11408cb679dc22054379a95a
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">=
-On Mon, Dec 12, 2016 at 3:09 AM, <span class=3D"" id=3D":5sp.1" tabindex=3D=
-"-1">Samuli</span> <span class=3D"" id=3D":5sp.2" tabindex=3D"-1">Sepp=C3=
-=A4nen</span> <span dir=3D"ltr">&lt;<a href=3D"mailto:samuli@...515..." tar=
-get=3D"_blank"><span class=3D"" id=3D":5sp.3" tabindex=3D"-1">samuli</span>=
-@<span class=3D"" id=3D":5sp.4" tabindex=3D"-1">openvpn</span>.net</a>&gt;<=
-/span> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8=
-ex;border-left:1px #ccc solid;padding-left:1ex"><span>Il 11/12/2016 19:52, =
-Selva Nair ha scritto:<br>
-</span><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-=
-left:1px #ccc solid;padding-left:1ex"><span>
-<br>
-On Sun, Dec 11, 2016 at 12:00 PM, debbie10t &lt;<a href=3D"mailto:debbie10t=
-@...277..." target=3D"_blank">debbie10t@...277...</a><br></span><span>
-&lt;mailto:<a href=3D"mailto:debbie10t@...277..." target=3D"_blank">debbie1=
-0t@...277...</a>&gt;&gt; wrote:<br>
-<br>
-=C2=A0 =C2=A0 What happens if a remote user, who has admin access to their =
-own<br>
-=C2=A0 =C2=A0 computer, connects to a work VPN but they decide to change sa=
-id config ?<br>
-<br>
-<br>
-A user who has admin access to their own computer can do anything to it:<br>
-including saving VPN passwords. Why would openvpn stop them doing that?<br>
-The question was about a sysadmin of an office not allowing their users<br>
-to save their openvpn passwords in an automated way. There is no way of<br>
-ensuring that if the user has admin access on their devices. Note that<br>
-password is saved on the client, not the server.<br>
-</span></blockquote>
-<br>
-There are many ways to circumvent password saving restrictions=C2=A0</block=
-quote><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-l=
-eft:1px #ccc solid;padding-left:1ex">if the enforcement is supposed to happ=
-en on the client side.<br></blockquote><div><br></div><div>The server canno=
-t enforce what a user does with his password, can it? Unless one</div><div>=
-uses some kind of <span class=3D"" id=3D":5sp.5" tabindex=3D"-1">OTP</span>=
- so that there is no savable password so to speak.</div><blockquote class=
-=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padd=
-ing-left:1ex">
-<br>
-Some years back I used xdotool[1] to manage keyboard input and mouse=C2=A0<=
-/blockquote><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;bo=
-rder-left:1px #ccc solid;padding-left:1ex">movements to automate otherwise =
-unautomateable things. While it&#39;s a</blockquote><blockquote class=3D"gm=
-ail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-le=
-ft:1ex">crude approach, it could be easily used to automate password typing=
- and=C2=A0</blockquote><blockquote class=3D"gmail_quote" style=3D"margin:0 =
-0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">mouse clicks. I&#39;m=
- sure similar tools are available for Windows.</blockquote></div><br>Yeah, =
-policies like no saving of passwords can be enforced only with user co-oper=
-ation.</div><div class=3D"gmail_extra"><br></div><div class=3D"gmail_extra"=
->But our prerogative here is to just provide a way for an admin to reliably=
- disable the password-save feature in the GUI. The question is how strong i=
-s the case for something like that. I can see that if an establishment has =
-a policy that asks users not to save passwords, it wont be appropriate to h=
-ave <span class=3D"" id=3D":5sp.6" tabindex=3D"-1">UIs</span> with enticing=
- check-boxes to save passwords. Users installing a hacked GUI or using auto=
-mated key-strokes would be beyond us.</div><div class=3D"gmail_extra"><br><=
-/div><div class=3D"gmail_extra"><span class=3D"" id=3D":5sp.7" tabindex=3D"=
--1">Selva</span></div></div>
-
---001a11408cb679dc22054379a95a--
+--jiGx5cYVmJx/T6kL--
 
