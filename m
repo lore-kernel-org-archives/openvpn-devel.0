@@ -1,9 +1,12 @@
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <b6054994-dffb-3f57-8910-bd0a49185fc0@...515...>
-Date: Tue, 13 Dec 2016 10:17:31 +0200
+References: <1481543265-21474-1-git-send-email-lstipakov@...277...>
+	<8e68219b-d4d1-ae36-6c35-b8f44d8e1acc@...2080...>
+From: Lev Stipakov <lstipakov@...277...>
+Message-ID: <3df7b1d7-37f5-6f65-8c54-f2fe69e42f49@...277...>
+Date: Tue, 13 Dec 2016 10:24:47 +0200
 MIME-Version: 1.0
-Subject: [Openvpn-devel] Topics for the upcoming (Wednesday,
-	14th Dec 2016) community meeting
+In-Reply-To: <8e68219b-d4d1-ae36-6c35-b8f44d8e1acc@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH] Make --enable-async-push depend on
+	--enable-plugins
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,33 +15,34 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+13.12.2016, 02:15, David Sommerseth kirjoitti:
 
-We're going to have an IRC meeting on Wednesday 14th December 2016. The=20
-meeting begins at 20:00 CET (19:00 UTC) on #openvpn-meeting <at>=20
-irc.freenode.net. You do not have to be logged in to Freenode to join=20
-the channel.
+> Coupling --enable-async-push with --enable-plugins makes a lot of sense.
+>  By the way, there is a typo in the errror message though
+> (--enable_async_push should be --enable-async-push).
 
-Current topic list along with basic information is here:
+Yes :(
 
-<https://community.openvpn.net/openvpn/wiki/Topics-2016-12-14>
+I wonder if actual committer could fix it or should I send V2.
 
-If you have any other things you'd like to bring up, respond to this=20
-mail, send me mail privately or add them to the list yourself.
+> regardless.  I think it is more likely that those adding
+> --disable-plugins (it is enabled by default) believe --enable-async-push
+> does something completely different.  Rather have in the help line of
+> --enable-async-push that it depends on the plug-in feature.
 
-In case you can't attend the meeting, please feel free to make comments=20
-on the topics by responding to this email or to the summary email sent=20
-after the meeting. Whenever possible, we'll also respond to existing,=20
-related email threads.
+I do not have a strong opinion about that, but IMO having both 
+--enable-async-push (1) and --disable-plugins (2) is a configuration 
+error, since feature (1) depends on feature (2) and warn about it during 
+build phase is more clear rather than silently disable feature (1).
 
---
-Samuli Sepp=C3=A4nen
-Community Manager
-OpenVPN Technologies, Inc
+I could send V2 with fixed error message and clarified async-push help 
+line, or alternatively V2 with clarified help line and fix in syshead.h 
+you've suggested :)
 
-irc freenode net: mattock
+-Lev
+
 
