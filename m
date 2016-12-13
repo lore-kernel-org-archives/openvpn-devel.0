@@ -1,14 +1,15 @@
-References: <1481543265-21474-1-git-send-email-lstipakov@...277...>
+References: <20161209181303.20267-1-list@...1798...>
+	<20161212194442.GQ78624@...1296...>
 From: David Sommerseth <openvpn@...2080...>
-Message-ID: <8e68219b-d4d1-ae36-6c35-b8f44d8e1acc@...2080...>
-Date: Tue, 13 Dec 2016 01:15:03 +0100
+Message-ID: <c1f570a7-8a47-e992-b868-103cef718ceb@...2080...>
+Date: Tue, 13 Dec 2016 01:29:26 +0100
 MIME-Version: 1.0
-In-Reply-To: <1481543265-21474-1-git-send-email-lstipakov@...277...>
+In-Reply-To: <20161212194442.GQ78624@...1296...>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="fVGpujs1JnlhnVX3N6pq8OIbL08exUvE5"
-Subject: Re: [Openvpn-devel] [PATCH] Make --enable-async-push depend on
- --enable-plugins
+	boundary="xTPIiuFw02c6F8taSsqNbVN3rOEosS0qu"
+Subject: Re: [Openvpn-devel] [PATCH 1/1] add more security features for
+ systemd units
 Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -18,75 +19,57 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Lev Stipakov <lstipakov@...277...>, openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>, Christian Hesse <list@...1798...>
+Cc: Christian Hesse <mail@...1798...>, OpenVPN Development <openvpn-devel@lists.sourceforge.net>
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---fVGpujs1JnlhnVX3N6pq8OIbL08exUvE5
-Content-Type: multipart/mixed; boundary="oLXVpqXfTNwEXr3C4X11sRCOIRwdKujQ1";
+--xTPIiuFw02c6F8taSsqNbVN3rOEosS0qu
+Content-Type: multipart/mixed; boundary="8ktcPnptj10HbCSar9aIkoUTNEoL81mgI";
 	protected-headers="v1"
 From: David Sommerseth <openvpn@...2080...>
 Reply-To: openvpn-devel@lists.sourceforge.net
-To: Lev Stipakov <lstipakov@...277...>, openvpn-devel@lists.sourceforge.net
-Message-ID: <8e68219b-d4d1-ae36-6c35-b8f44d8e1acc@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH] Make --enable-async-push depend on
-	--enable-plugins
-References: <1481543265-21474-1-git-send-email-lstipakov@...277...>
-In-Reply-To: <1481543265-21474-1-git-send-email-lstipakov@...277...>
+To: Gert Doering <gert@...1296...>, Christian Hesse <list@...1798...>
+Cc: Christian Hesse <mail@...1798...>,
+	OpenVPN Development <openvpn-devel@lists.sourceforge.net>
+Message-ID: <c1f570a7-8a47-e992-b868-103cef718ceb@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH 1/1] add more security features for
+	systemd units
+References: <20161209181303.20267-1-list@...1798...>
+	<20161212194442.GQ78624@...1296...>
+In-Reply-To: <20161212194442.GQ78624@...1296...>
 
---oLXVpqXfTNwEXr3C4X11sRCOIRwdKujQ1
+--8ktcPnptj10HbCSar9aIkoUTNEoL81mgI
 Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
 
-On 12/12/16 12:47, Lev Stipakov wrote:
-> Async push functionality makes sense only with deferred authentication,
-> which requires plugins.
+On 12/12/16 20:44, Gert Doering wrote:
+> Hi,
 >=20
-> Trac #783
+> On Fri, Dec 09, 2016 at 07:13:03PM +0100, Christian Hesse wrote:
+>> From: Christian Hesse <mail@...1798...>
+>>
+>> ProtectSystem=3Dstrict mounts the entire file system hierarchy read-only,
+>> except for the API file system subtrees /dev, /proc and /sys (which can
+>> be protected using PrivateDevices=3D, ProtectKernelTunables=3D,
+>> ProtectControlGroups=3D).
 >=20
-> Signed-off-by: Lev Stipakov <lstipakov@...277...>
-> ---
->  configure.ac | 4 ++++
->  1 file changed, 4 insertions(+)
->=20
-> diff --git a/configure.ac b/configure.ac
-> index 27bdcc3..946f3db 100644
-> --- a/configure.ac
-> +++ b/configure.ac
-> @@ -1204,6 +1204,10 @@ if test "${enable_plugin_auth_pam}" =3D "yes"; then
->  fi
->=20=20
->  if test "${enable_async_push}" =3D "yes"; then
-> +	if test "${enable_plugins}" =3D "no"; then
-> +		AC_MSG_ERROR([--enable_async_push requires --enable-plugins])
-> +	fi
-> +
->  	AC_CHECK_HEADERS(
->  		[sys/inotify.h],
->  		AC_DEFINE([ENABLE_ASYNC_PUSH], [1], [Enable async push]),
->=20
+> Unless the temp directories are still writeable, this will break=20
+> server configs with --client-connect scripts or plugins trying to hand=20
+> back config settings via temp files.
 
-Coupling --enable-async-push with --enable-plugins makes a lot of sense.
- By the way, there is a typo in the errror message though
-(--enable_async_push should be --enable-async-push).
+Agreed, we cannot have /tmp (or --tmp-dir) read-only.
 
-But I am wondering if it would be better to just do this in syshead.h
-instead:
+However, I read up a bit on ProtectSystem=3D on RHEL7.  And on RHEL7
+(shipping systemd-219) ProtectSystem=3D can only be 'full' or 'true' (it
+is 'false'/off by default).  We cannot use any other values, as RHEL
+defines the oldest distros we support, and RHEL7 is the oldest systemd
+distro we will support in the future.
 
-  #if !defined(ENABLE_PLUGIN) && defined(ENABLE_ASYNC_PUSH)
-  #undef ENABLE_ASYNC_PUSH
-  #endif
-
-Or another more verbose patch would be to have all
-#ifdef ENABLE_ASYNC_PUSH updated to also check for
-defined(ENABLE_PLUGIN), but I think that's overdoing it a bit.
-
-My point is that there's no real point of screaming about missing
---enable-plugins if you have added --enable-auth-push.  If you build
-without plugins support, --plugin in configurations won't work
-regardless.  I think it is more likely that those adding
---disable-plugins (it is enabled by default) believe --enable-async-push
-does something completely different.  Rather have in the help line of
---enable-async-push that it depends on the plug-in feature.
+We can definitely use ProtectSystem=3Dtrue, as that ensure /usr and /boot
+are read-only.  That is safe.  If using 'full', /etc is also made
+read-only.  I personally think this makes sense too, as if you have any
+state or log files, they should be placed under /var/log, {/var,}/run or
+/var/lib.
 
 
 --=20
@@ -97,9 +80,9 @@ OpenVPN Technologies, Inc
 
 
 
---oLXVpqXfTNwEXr3C4X11sRCOIRwdKujQ1--
+--8ktcPnptj10HbCSar9aIkoUTNEoL81mgI--
 
---fVGpujs1JnlhnVX3N6pq8OIbL08exUvE5
+--xTPIiuFw02c6F8taSsqNbVN3rOEosS0qu
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -107,20 +90,20 @@ Content-Disposition: attachment; filename="signature.asc"
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBAgAGBQJYTz2HAAoJEIbPlEyWcf3yofEQAKEgpQgNS/on6zw9ffBHuBqO
-1MJKF1MvBYuYYIPXM2e7wnW4+nuS2U2QH98DYNA7NMn6cfu/MgAGnWU88ZD3MJV6
-OS2l4XuVAfJ3dxkjMG//hO82+UE0z0sLp/kt6IESyTZUtKkYA8m+jXl0WX8Lg+jM
-cqegOZkkxeewn9Fd+QuUwWhR7Ri0Cj6Bb2H1qsbQ5JgngBHzfVlqYYMyLBZkVvyn
-iesRL8Aav5voUi21hqm578HRYgyHlEgej+db/ql2zXjmCpfjw0G1d6p7msKbP+nL
-ey6FD1HskpCYxvzJ0ZwmfrumRdAURuaQsIecizNEODaa/DENb0bx9JkIqmtGuhXy
-ZfwUlVkjunsuJRpD7g3YA8wS04rMGq4EemloihGiHXpHG1HMlYaLDDKcVzDiPaOZ
-avj29lvLIfvdCkBghK/pDm8l+n6bB5ap1gQe5JZ2T/zcICcfkTz6okGyjjSsMrd/
-WzhBWGpXGZmcLnaUIT1f6IlXcr/n6OnN6/isz00I6WcfHop66ROrYC4/IQQiit6j
-FjM1G5ztij7pEUxYVJVVEUe7ERmic/aW6qEfThMPrqtorSVh9nrn8OrypFMFljHZ
-NZGsix3XXDk4z1fOf4NYklWe5vL9inqj2U6PiNCr6hagb13f306hw9D12qmcKPSZ
-IuteFKYoRMo9/QomwuOl
-=ufyv
+iQIcBAEBAgAGBQJYT0DmAAoJEIbPlEyWcf3yVM8P/A9gQjyBZItmhnEVSPsAqQ2Z
+t5fy58Z0S5+d7f+Fn7S8XfqpKpTAoFDT7lYUgkoUa3kaWZ8v1YGUL3P/w+FKu8HB
+YsNjEFwOd9ZqFF1zLFIHV58XbWPl8HITuFD6OP7Y9CFkAQAu1HwMn4p+YbmvBpk3
+kPHga/Vk+hvchXTu6kakVv9RJE63YeMSpWBcyreqjbiLhyQ+V+kWTa+37SVXIAVG
+yYW7GWDQ19m413Aj3NDMwN1dk988z2kn36Fp1iMIddI7Qiwnv47IANVcmI+mENvD
+SSuZRywcOpe/aNG1IHEHGWpNEDrYkbH5fHNUBnI1/VN0ABoxCCgWyPL5jsKhwJWo
+efPhZkbwPc40ofUnERLj8Yz4mPM7GSWvVp9oc3zZD+D4WQVy4rDqu8JxnFvHEEl/
+lgTt9J2fQdYupp7zTBBP74SdnCgArDcWm4/pN8zwqxz1gUDHOmDcGDbFaCLMmfPe
+MWGiNtFVSvmMMslbqVtrVTOK7OCLqDG6auTwC2eldwLIlQIJkbCAhYxldO1mq8gY
+5rciHufvJ4fsULQow3JfyacL8rmGKib4v71rPRgF+GOKnS74lc0ZuSQhD4E4V2ts
+Xb4ynFn9g8wCiHsx4H1ksrFB1EOYl3OQnSsdIWZt7X8dyTXVXalnhiSic6t8NN1B
+jWm23FYR9AYCpqch1htN
+=X3ka
 -----END PGP SIGNATURE-----
 
---fVGpujs1JnlhnVX3N6pq8OIbL08exUvE5--
+--xTPIiuFw02c6F8taSsqNbVN3rOEosS0qu--
 
