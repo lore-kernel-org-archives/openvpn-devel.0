@@ -1,12 +1,15 @@
+Date: Tue, 13 Dec 2016 09:33:14 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20161213083314.GS78624@...1296...>
 References: <1481543265-21474-1-git-send-email-lstipakov@...277...>
 	<8e68219b-d4d1-ae36-6c35-b8f44d8e1acc@...2080...>
-From: Lev Stipakov <lstipakov@...277...>
-Message-ID: <3df7b1d7-37f5-6f65-8c54-f2fe69e42f49@...277...>
-Date: Tue, 13 Dec 2016 10:24:47 +0200
 MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="0EgURHJLyMzpnI9B"
+Content-Disposition: inline
 In-Reply-To: <8e68219b-d4d1-ae36-6c35-b8f44d8e1acc@...2080...>
 Subject: Re: [Openvpn-devel] [PATCH] Make --enable-async-push depend on
-	--enable-plugins
+ --enable-plugins
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,34 +18,63 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-13.12.2016, 02:15, David Sommerseth kirjoitti:
+--0EgURHJLyMzpnI9B
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-> Coupling --enable-async-push with --enable-plugins makes a lot of sense.
->  By the way, there is a typo in the errror message though
-> (--enable_async_push should be --enable-async-push).
+Hi,
 
-Yes :(
+On Tue, Dec 13, 2016 at 01:15:03AM +0100, David Sommerseth wrote:
+> But I am wondering if it would be better to just do this in syshead.h
+> instead:
+>=20
+>   #if !defined(ENABLE_PLUGIN) && defined(ENABLE_ASYNC_PUSH)
+>   #undef ENABLE_ASYNC_PUSH
+>   #endif
 
-I wonder if actual committer could fix it or should I send V2.
+We discussed this on IRC yesterday, and I like Lev's approach more.
 
-> regardless.  I think it is more likely that those adding
-> --disable-plugins (it is enabled by default) believe --enable-async-push
-> does something completely different.  Rather have in the help line of
-> --enable-async-push that it depends on the plug-in feature.
+Your approach will "silently not do what the user requested" - the user
+configured "--enable-async-push", and the resulting binary will not
+have that functionality because we turned it off again.
 
-I do not have a strong opinion about that, but IMO having both 
---enable-async-push (1) and --disable-plugins (2) is a configuration 
-error, since feature (1) depends on feature (2) and warn about it during 
-build phase is more clear rather than silently disable feature (1).
+So erroring out in configure if incompatible build options are requested
+sounds like a logical way to tell the caller "this is not what you want".
 
-I could send V2 with fixed error message and clarified async-push help 
-line, or alternatively V2 with clarified help line and fix in syshead.h 
-you've suggested :)
+[..]
+> My point is that there's no real point of screaming about missing
+> --enable-plugins if you have added --enable-auth-push.=20=20
 
--Lev
+Someone added --enable-async-push to the configure command line, and they
+expect this to have a different effect than "not putting it there".
 
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--0EgURHJLyMzpnI9B
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJYT7JJAAoJEB2Cnv7KVigSp84L+wSzSNYtHrHK+ZOmipC6seMV
+xF8/2k0HRwtEDI328C4AyUxErQhHeE5+mV/xGlPzj39KGspiMRR4B/MttdZp1ydR
+ytBX6c1q458adULuo5Z5xMAzwHqA88w4cJB4MtO3GZ4D/O70AcQM5Z1+3kITdHgD
+u43f5lstrhY2asH8ELShcr3AMTiw16van9zW63SUnl4Otqno7jaFcMsckl3om8oR
+NKyriIvgzqGmphJAoU9K7s0fD0jcPrcpJXRwz+lYSIo3n6+JGjoSqfldvlonVxD1
+QU7hGtV4tttNeMbPmOMpDU8I5dusB7ljHG8Z+wSj1tykkQ5UU/cSrduf9h/FkWcD
+ed2URsavW6dHkfVldJyNWK/XIy3mwY7bk4CZSBFg5SvKSH2dHPUXeSUfrFrANNLU
+4D8K2OdnympbOx7x/oEgF2iBnTsNqicRFNullb8JJWXjpmcmyC+Ucz9Jv9Tat2pC
+WNRRphlOPxjNTkvmEXXl24MVJT5OLQcL21Ke0p0jSw==
+=pjP9
+-----END PGP SIGNATURE-----
+
+--0EgURHJLyMzpnI9B--
 
