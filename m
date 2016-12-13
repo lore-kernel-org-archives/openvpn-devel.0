@@ -1,16 +1,9 @@
-References: <20161209181303.20267-1-list@...1798...>
-	<20161212194442.GQ78624@...1296...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <c1f570a7-8a47-e992-b868-103cef718ceb@...2080...>
-Date: Tue, 13 Dec 2016 01:29:26 +0100
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <b6054994-dffb-3f57-8910-bd0a49185fc0@...515...>
+Date: Tue, 13 Dec 2016 10:17:31 +0200
 MIME-Version: 1.0
-In-Reply-To: <20161212194442.GQ78624@...1296...>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="xTPIiuFw02c6F8taSsqNbVN3rOEosS0qu"
-Subject: Re: [Openvpn-devel] [PATCH 1/1] add more security features for
- systemd units
-Reply-To: openvpn-devel@lists.sourceforge.net
+Subject: [Openvpn-devel] Topics for the upcoming (Wednesday,
+	14th Dec 2016) community meeting
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,91 +12,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>, Christian Hesse <list@...1798...>
-Cc: Christian Hesse <mail@...1798...>, OpenVPN Development <openvpn-devel@lists.sourceforge.net>
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---xTPIiuFw02c6F8taSsqNbVN3rOEosS0qu
-Content-Type: multipart/mixed; boundary="8ktcPnptj10HbCSar9aIkoUTNEoL81mgI";
-	protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-Reply-To: openvpn-devel@lists.sourceforge.net
-To: Gert Doering <gert@...1296...>, Christian Hesse <list@...1798...>
-Cc: Christian Hesse <mail@...1798...>,
-	OpenVPN Development <openvpn-devel@lists.sourceforge.net>
-Message-ID: <c1f570a7-8a47-e992-b868-103cef718ceb@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH 1/1] add more security features for
-	systemd units
-References: <20161209181303.20267-1-list@...1798...>
-	<20161212194442.GQ78624@...1296...>
-In-Reply-To: <20161212194442.GQ78624@...1296...>
-
---8ktcPnptj10HbCSar9aIkoUTNEoL81mgI
-Content-Type: text/plain; charset="windows-1252"
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: quoted-printable
+To: openvpn-devel@lists.sourceforge.net
 
-On 12/12/16 20:44, Gert Doering wrote:
-> Hi,
->=20
-> On Fri, Dec 09, 2016 at 07:13:03PM +0100, Christian Hesse wrote:
->> From: Christian Hesse <mail@...1798...>
->>
->> ProtectSystem=3Dstrict mounts the entire file system hierarchy read-only,
->> except for the API file system subtrees /dev, /proc and /sys (which can
->> be protected using PrivateDevices=3D, ProtectKernelTunables=3D,
->> ProtectControlGroups=3D).
->=20
-> Unless the temp directories are still writeable, this will break=20
-> server configs with --client-connect scripts or plugins trying to hand=20
-> back config settings via temp files.
+Hi,
 
-Agreed, we cannot have /tmp (or --tmp-dir) read-only.
+We're going to have an IRC meeting on Wednesday 14th December 2016. The=20
+meeting begins at 20:00 CET (19:00 UTC) on #openvpn-meeting <at>=20
+irc.freenode.net. You do not have to be logged in to Freenode to join=20
+the channel.
 
-However, I read up a bit on ProtectSystem=3D on RHEL7.  And on RHEL7
-(shipping systemd-219) ProtectSystem=3D can only be 'full' or 'true' (it
-is 'false'/off by default).  We cannot use any other values, as RHEL
-defines the oldest distros we support, and RHEL7 is the oldest systemd
-distro we will support in the future.
+Current topic list along with basic information is here:
 
-We can definitely use ProtectSystem=3Dtrue, as that ensure /usr and /boot
-are read-only.  That is safe.  If using 'full', /etc is also made
-read-only.  I personally think this makes sense too, as if you have any
-state or log files, they should be placed under /var/log, {/var,}/run or
-/var/lib.
+<https://community.openvpn.net/openvpn/wiki/Topics-2016-12-14>
 
+If you have any other things you'd like to bring up, respond to this=20
+mail, send me mail privately or add them to the list yourself.
 
---=20
-kind regards,
+In case you can't attend the meeting, please feel free to make comments=20
+on the topics by responding to this email or to the summary email sent=20
+after the meeting. Whenever possible, we'll also respond to existing,=20
+related email threads.
 
-David Sommerseth
+--
+Samuli Sepp=C3=A4nen
+Community Manager
 OpenVPN Technologies, Inc
 
-
-
---8ktcPnptj10HbCSar9aIkoUTNEoL81mgI--
-
---xTPIiuFw02c6F8taSsqNbVN3rOEosS0qu
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBAgAGBQJYT0DmAAoJEIbPlEyWcf3yVM8P/A9gQjyBZItmhnEVSPsAqQ2Z
-t5fy58Z0S5+d7f+Fn7S8XfqpKpTAoFDT7lYUgkoUa3kaWZ8v1YGUL3P/w+FKu8HB
-YsNjEFwOd9ZqFF1zLFIHV58XbWPl8HITuFD6OP7Y9CFkAQAu1HwMn4p+YbmvBpk3
-kPHga/Vk+hvchXTu6kakVv9RJE63YeMSpWBcyreqjbiLhyQ+V+kWTa+37SVXIAVG
-yYW7GWDQ19m413Aj3NDMwN1dk988z2kn36Fp1iMIddI7Qiwnv47IANVcmI+mENvD
-SSuZRywcOpe/aNG1IHEHGWpNEDrYkbH5fHNUBnI1/VN0ABoxCCgWyPL5jsKhwJWo
-efPhZkbwPc40ofUnERLj8Yz4mPM7GSWvVp9oc3zZD+D4WQVy4rDqu8JxnFvHEEl/
-lgTt9J2fQdYupp7zTBBP74SdnCgArDcWm4/pN8zwqxz1gUDHOmDcGDbFaCLMmfPe
-MWGiNtFVSvmMMslbqVtrVTOK7OCLqDG6auTwC2eldwLIlQIJkbCAhYxldO1mq8gY
-5rciHufvJ4fsULQow3JfyacL8rmGKib4v71rPRgF+GOKnS74lc0ZuSQhD4E4V2ts
-Xb4ynFn9g8wCiHsx4H1ksrFB1EOYl3OQnSsdIWZt7X8dyTXVXalnhiSic6t8NN1B
-jWm23FYR9AYCpqch1htN
-=X3ka
------END PGP SIGNATURE-----
-
---xTPIiuFw02c6F8taSsqNbVN3rOEosS0qu--
+irc freenode net: mattock
 
