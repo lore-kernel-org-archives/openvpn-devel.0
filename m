@@ -1,15 +1,17 @@
-MIME-Version: 1.0
-In-Reply-To: <8f5c0822-e2a2-7b34-ca8a-5a2a2b2ef1e9@...2080...>
 References: <eb2eddfe-cfaa-a1d3-0a55-7457418b2645@...2080...>
 	<1481705478-29735-1-git-send-email-lstipakov@...277...>
 	<20161214090932.GC78624@...1296...>
 	<8f5c0822-e2a2-7b34-ca8a-5a2a2b2ef1e9@...2080...>
-From: Selva Nair <selva.nair@...277...>
-Date: Wed, 14 Dec 2016 10:53:04 -0500
-Message-ID: <CAKuzo_j3BPNqVPyn1oCbHB+k_587t9o-=CvEN-J1-3xGzfQppg@...278...>
-Content-Type: multipart/alternative; boundary=94eb2c1254224ef9240543a05612
+From: Steffan Karger <steffan.karger@...1435...>
+Message-ID: <83bb8b8e-5428-f6c0-9c13-766ddc1917f0@...1435...>
+Date: Wed, 14 Dec 2016 17:23:42 +0100
+MIME-Version: 1.0
+In-Reply-To: <8f5c0822-e2a2-7b34-ca8a-5a2a2b2ef1e9@...2080...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature";
+	boundary="uE0NBejsTC4TaVeC7wd2rUIRse6vfHFl4"
 Subject: Re: [Openvpn-devel] [PATCH v2] Disable async_push if plugins are
-	disabled
+ disabled
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,36 +20,64 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
---94eb2c1254224ef9240543a05612
-Content-Type: text/plain; charset=UTF-8
+--uE0NBejsTC4TaVeC7wd2rUIRse6vfHFl4
+Content-Type: multipart/mixed; boundary="fJuEhIkCIOCNkTotIINJ6tl8dwhVWVxfK";
+	protected-headers="v1"
+From: Steffan Karger <steffan.karger@...1435...>
+To: openvpn-devel@lists.sourceforge.net
+Message-ID: <83bb8b8e-5428-f6c0-9c13-766ddc1917f0@...1435...>
+Subject: Re: [Openvpn-devel] [PATCH v2] Disable async_push if plugins are
+	disabled
+References: <eb2eddfe-cfaa-a1d3-0a55-7457418b2645@...2080...>
+	<1481705478-29735-1-git-send-email-lstipakov@...277...>
+	<20161214090932.GC78624@...1296...>
+	<8f5c0822-e2a2-7b34-ca8a-5a2a2b2ef1e9@...2080...>
+In-Reply-To: <8f5c0822-e2a2-7b34-ca8a-5a2a2b2ef1e9@...2080...>
 
-On Wed, Dec 14, 2016 at 10:39 AM, David Sommerseth <openvpn@...2142...
-topphemmelig.net> wrote:
+--fJuEhIkCIOCNkTotIINJ6tl8dwhVWVxfK
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
 
-> > That one gets a NAK from me, for the reasons given.
-> >
-> > As long as we *have* --enable/--disable options in configure, they
-> > should be validated *there* and not silently ignored.
-> >
-> > David's argument about "configure is for finding system dependent
-> > things and compiler settings" has some merits, but then we should
-> > get rid of all compile-time --enable/--disable settings.
->
+On 14-12-16 16:39, David Sommerseth wrote:
+> On 14/12/16 10:09, Gert Doering wrote:
+>> Hi,
+>=20
+>> On Wed, Dec 14, 2016 at 10:51:18AM +0200, Lev Stipakov wrote:
+>>> +/* + * Disable async-push if plugins are disabled + */ +#if
+>>> !defined(ENABLE_PLUGIN) && defined(ENABLE_ASYNC_PUSH) +#undef
+>>> ENABLE_ASYNC_PUSH +#endif +
+>=20
+>> That one gets a NAK from me, for the reasons given.
+>=20
+>> As long as we *have* --enable/--disable options in configure, they
+>> should be validated *there* and not silently ignored.
+>=20
+>> David's argument about "configure is for finding system dependent
+>> things and compiler settings" has some merits, but then we should
+>> get rid of all compile-time --enable/--disable settings.
+>=20
 > By this logic should we enforce users to add --disable-def-auth if
-> - --disable-plugin is set?  If so, then we should probably also do
+> --disable-plugin is set?  If so, then we should probably also do
 > something with --disable-plugin-auth-pam and
-> - --disable-plugin-down-root.  And with --disable-plugin-auth-pam, we
+> --disable-plugin-down-root.  And with --disable-plugin-auth-pam, we
 > need to look at --enable-pam-dlopen as well.
->
+
+No, unless the user specified --enable-def-auth.  And yes, I think it
+would be nice if we would throw an error if the user did.  "Fail-fast"
+is a really good habit.
+
 > And to put things in context of the async-push stuff.  In the C code
 > we already check if --disable-def-auth is enabled or not.
->
+>=20
 > If we truly start to look into this for the other options, we will
 > have quite a good job ahead of us.  Otherwise we end up with even more
 > mess where we are not even consistent.
->
+
+Sure, but "The other stuff is broken" is no argument to not add
+something that is not broken.
+
 > I say it again, configure.ac is *NOT* the place to do sanity checks on
 > which openvpn features depends on each-other.  We have not done that
 > before, and we should not do it now.  It just provides far more
@@ -55,86 +85,38 @@ topphemmelig.net> wrote:
 > when code we expect to to be compiled in isn't being compiled in.
 > This way leads is a rats nest and will cause much more maintenance
 > burden in the future, which I will not accept lightly.
->
+
+Yes we do.  Just check the mbed TLS pkcs11 checking.  That check has
+saved me some hours of re-running builds at the least.  I wish we had
+more such checks.
+
 > Yes, I see the short-term convenience to solve that specific Trac
 > ticket.  But it really isn't the right long-term solution.
 
+I respectfully disagree.  I believe this *is* the right long-term fix,
+and we should aim at doing it this way.
 
-I agree with the spirit of this argument, though I do not know the details
-of all those options.
+-Steffan
 
-But:
 
-When I do
-./configure --enable-xyz
-I expect the feature to be either enabled or spew out an error saying
-'inconsistent options, check configure --help' at the very least.
+--fJuEhIkCIOCNkTotIINJ6tl8dwhVWVxfK--
 
-The build process silently changing the option behind my back and producing
-a package with no xyz is not good.
+--uE0NBejsTC4TaVeC7wd2rUIRse6vfHFl4
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-Selva
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
 
---94eb2c1254224ef9240543a05612
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+iQEcBAEBCAAGBQJYUXIVAAoJEEEwndWOY1w5ROYIAIzzcWyN/pIiD8U8fIbWK0K1
+qalt3CnmUOUwzhUose/vSGjDMynqmP75i/mSzbevxh8ivXwLshlBga4O/P2MXuHn
+PkL4LhCsRjftMsaf/zvKLF4Zw1EHDIAQ5LkzP6Va+F2EP24cCxxW0zmGBJ/0nzfg
+BEzJsH4h1TWTP8iaF/jnR0gVi3mi8y0OBxXAK5WOV2qZA09+qpuc+dN66JQ0ZuAv
+O4Oy1JaZOayo9xmf4XQ/5dmeZuUnqexiqUKUFUuOeJ3YdCxY9ZVNz6WOMwqTAL6h
+c3ovDGUiyC0mKzP+xVO9dDT2b8Zhvb32pba7WVF4wcl78d5sgaFOePFUVq4zuyE=
+=yuzb
+-----END PGP SIGNATURE-----
 
-<div dir=3D"ltr"><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">=
-On Wed, Dec 14, 2016 at 10:39 AM, David Sommerseth <span dir=3D"ltr">&lt;<a=
- href=3D"mailto:openvpn@...2080..." target=3D"_blank">openvpn@...2142...<wb=
-r>topphemmelig.net</a>&gt;</span> wrote:<br><blockquote class=3D"gmail_quot=
-e" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">=
-<span>&gt; That one gets a NAK from me, for the reasons given.<br>
-&gt;<br>
-&gt; As long as we *have* --enable/--disable options in configure, they<br>
-&gt; should be validated *there* and not silently ignored.<br>
-&gt;<br>
-&gt; David&#39;s argument about &quot;configure is for finding system depen=
-dent<br>
-&gt; things and compiler settings&quot; has some merits, but then we should=
-<br>
-&gt; get rid of all compile-time --enable/--disable settings.<br>
-<br>
-</span>By this logic should we enforce users to add --disable-def-auth if<b=
-r>
-- --disable-plugin is set?=C2=A0 If so, then we should probably also do<br>
-something with --disable-plugin-auth-pam and<br>
-- --disable-plugin-down-root.=C2=A0 And with --disable-plugin-auth-pam, we<=
-br>
-need to look at --enable-pam-dlopen as well.<br>
-<br>
-And to put things in context of the async-push stuff.=C2=A0 In the C code<b=
-r>
-we already check if --disable-def-auth is enabled or not.<br>
-<br>
-If we truly start to look into this for the other options, we will<br>
-have quite a good job ahead of us.=C2=A0 Otherwise we end up with even more=
-<br>
-mess where we are not even consistent.<br>
-<br>
-I say it again, <a href=3D"http://configure.ac" rel=3D"noreferrer" target=
-=3D"_blank">configure.ac</a> is *NOT* the place to do sanity checks on<br>
-which openvpn features depends on each-other.=C2=A0 We have not done that<b=
-r>
-before, and we should not do it now.=C2=A0 It just provides far more<br>
-non-production code to maintain, and more places to look for issues<br>
-when code we expect to to be compiled in isn&#39;t being compiled in.<br>
-This way leads is a rats nest and will cause much more maintenance<br>
-burden in the future, which I will not accept lightly.<br>
-<br>
-Yes, I see the short-term convenience to solve that specific Trac<br>
-ticket.=C2=A0 But it really isn&#39;t the right long-term solution.</blockq=
-uote></div><br>I agree with the spirit of this argument, though I do not kn=
-ow the details</div><div class=3D"gmail_extra">of all those options.</div><=
-div class=3D"gmail_extra"><br></div><div class=3D"gmail_extra">But:</div><d=
-iv class=3D"gmail_extra"><br></div><div class=3D"gmail_extra">When I do=C2=
-=A0</div><div class=3D"gmail_extra">./configure --enable-xyz=C2=A0</div><di=
-v class=3D"gmail_extra">I expect the feature to be either enabled or spew o=
-ut an error saying &#39;inconsistent options, check configure --help&#39; a=
-t the very least.=C2=A0</div><div class=3D"gmail_extra"><br></div><div clas=
-s=3D"gmail_extra">The build process silently changing the option behind my =
-back and producing a package with no xyz is not good.</div><div class=3D"gm=
-ail_extra"><br></div><div class=3D"gmail_extra">Selva</div></div>
-
---94eb2c1254224ef9240543a05612--
+--uE0NBejsTC4TaVeC7wd2rUIRse6vfHFl4--
 
