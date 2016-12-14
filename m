@@ -1,8 +1,10 @@
 From: David Sommerseth <davids@...515...>
-Date: Wed, 14 Dec 2016 13:23:30 +0100
-Message-Id: <1481718210-15673-1-git-send-email-davids@...515...>
-Subject: [Openvpn-devel] [PATCH] Further enhance async-push feature
-	description
+Date: Wed, 14 Dec 2016 13:36:02 +0100
+Message-Id: <1481718962-17799-1-git-send-email-davids@...515...>
+In-Reply-To: <1481645498-22043-1-git-send-email-selva.nair@...277...>
+References: <1481645498-22043-1-git-send-email-selva.nair@...277...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Unhide a line in man page by
+	fixing a typo
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,48 +15,47 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: selva.nair@...277...
+Cc: openvpn-devel@lists.sourceforge.net
 
-Signed-off-by: David Sommerseth <davids@...515...>
----
- Changes.rst  | 9 +++++----
- configure.ac | 2 +-
- 2 files changed, 6 insertions(+), 5 deletions(-)
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-diff --git a/Changes.rst b/Changes.rst
-index a5002dd..7da1119 100644
---- a/Changes.rst
-+++ b/Changes.rst
-@@ -148,10 +148,11 @@ Control channel encryption (``--tls-crypt``)
-     post-quantum security.
- 
- Asynchronous push reply
--    If asynchronous authentication is enabled and completed after server received
--    PUSH_REQUEST message, server sends PUSH_REPLY immediately without waiting for next
--    PUSH_REQUEST. Requires use of ``--enable-async-push`` as ./configure parameter at
--    build time.
-+    Plug-ins providing support for deferred authentication can benefit from a more
-+    responsive authentication where the server sends PUSH_REPLY immediately once
-+    the authentication result is ready instead of waiting for the the client to
-+    to send PUSH_REQUEST once more.  This requires OpenVPN to be built with
-+    ``./configure --enable-async-push``.  This is a compile-time only switch.
- 
- 
- Deprecated features
-diff --git a/configure.ac b/configure.ac
-index 27bdcc3..4f086ea 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -266,7 +266,7 @@ AC_ARG_ENABLE(
- 
- AC_ARG_ENABLE(
- 	[async-push],
--	[AS_HELP_STRING([--enable-async-push], [enable async-push support @<:@default=no@:>@])],
-+	[AS_HELP_STRING([--enable-async-push], [enable async-push support for plugins providing deferred authentication @<:@default=no@:>@])],
- 	,
- 	[enable_async_push="no"]
- )
--- 
-1.8.3.1
+Your patch has been applied to the master branch
 
+commit c22428fb609a0f4ec451200a421b5d1090a962a5
+Author: Selva Nair
+Date:   Tue Dec 13 11:11:38 2016 -0500
+
+     Unhide a line in man page by fixing a typo
+
+     Signed-off-by: Selva Nair <selva.nair@...277...>
+     Acked-by: Steffan Karger <steffan@...1856...>
+     Message-Id: <1481645498-22043-1-git-send-email-selva.nair@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13520.html
+     Signed-off-by: David Sommerseth <davids@...515...>
+
+
+- --
+kind regards,
+
+David Sommerseth
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBAgAGBQJYUTyxAAoJEIbPlEyWcf3yfJEP/3fnkdjniHri6j96yHuVoeE0
+GZWFrQt7ZBh/M6z6NszVMAdz8BjHLf3ns2/Xx+iHra2UHcwFzk/peEQWjjZCNG7S
+zEiF1GQMIKTImBBM1ylYu719nLid4BoGohIj2sSI6bjE39nxXx+RxCtElGSaqkyc
+r3gxGyEgS9YyGIXSnwFt7+CaiTN0zkCcgNmIEIqmpHXxK1pSGwnBZOLuOzztKlii
+l0fp2q1jADom7sW76FxBryXuG7WuClPQ2AlSCn/dlLdKV6n8N2+Eg3JBbzUYE+Yi
+VKTqIYvdSoNCiEhG6ZN2uOdKcmZrNje+gpe6dXq5NYc/586GF2rlNKlo2Iz8yQbq
+J7GERaurlE3PGkDAXJ7Jvu3sLKH0vYG7jfKISlWLkdYdVrMK+Mt1sPBtJJ/CeBtg
+wVxNrtLCfcKBgzARyL8T0wv/hKOcAi1tPC4Wlb1JyVdLymSv5CMelpBZx1VHCDRd
+B+1jRo8CcrillA5RURiKnlnDn+Yza7i2E3QFS0zKX+CxkBCOYa+SaREQSbZuOy8A
+HhQEZe++mW/MCrMsBN+nyv2903/xLFoCETIlesNWpHGMktDmIxulbTH1GeBUyoIJ
+mtIO6HHivnFGL6+VCmLs8oosHQ5x+1k3yCB0F58l20DRgq25zX7SXXU+c5KMMDTT
+wRtjCFuUoOB/Gm6KTNrZ
+=aTh3
+-----END PGP SIGNATURE-----
 
