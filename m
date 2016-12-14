@@ -1,8 +1,14 @@
-From: David Sommerseth <davids@...515...>
-Date: Wed, 14 Dec 2016 16:12:54 +0100
-Message-Id: <1481728374-7196-1-git-send-email-davids@...515...>
-Subject: [Openvpn-devel] [PATCH] auth-gen-token: Hardening memory cleanup on
-	auth-token failuers
+References: <eb2eddfe-cfaa-a1d3-0a55-7457418b2645@...2080...>
+	<1481705478-29735-1-git-send-email-lstipakov@...277...>
+	<20161214090932.GC78624@...1296...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <8f5c0822-e2a2-7b34-ca8a-5a2a2b2ef1e9@...2080...>
+Date: Wed, 14 Dec 2016 16:39:36 +0100
+MIME-Version: 1.0
+In-Reply-To: <20161214090932.GC78624@...1296...>
+Subject: Re: [Openvpn-devel] [PATCH v2] Disable async_push if plugins are
+ disabled
+Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,73 +17,77 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
+To: Gert Doering <gert@...1296...>, Lev Stipakov <lstipakov@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Further improve the memory management when a clients --auth-token
-fails the server side token authentication enabled via --auth-gen-token.
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-Signed-off-by: David Sommerseth <davids@...515...>
----
- src/openvpn/ssl_verify.c | 22 ++++++++++++++++++----
- 1 file changed, 18 insertions(+), 4 deletions(-)
+On 14/12/16 10:09, Gert Doering wrote:
+> Hi,
+>=20
+> On Wed, Dec 14, 2016 at 10:51:18AM +0200, Lev Stipakov wrote:
+>> +/* + * Disable async-push if plugins are disabled + */ +#if
+>> !defined(ENABLE_PLUGIN) && defined(ENABLE_ASYNC_PUSH) +#undef
+>> ENABLE_ASYNC_PUSH +#endif +
+>=20
+> That one gets a NAK from me, for the reasons given.
+>=20
+> As long as we *have* --enable/--disable options in configure, they
+> should be validated *there* and not silently ignored.
+>=20
+> David's argument about "configure is for finding system dependent
+> things and compiler settings" has some merits, but then we should
+> get rid of all compile-time --enable/--disable settings.
 
-diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
-index 4328828..1effdf5 100644
---- a/src/openvpn/ssl_verify.c
-+++ b/src/openvpn/ssl_verify.c
-@@ -1108,6 +1108,21 @@ verify_user_pass_management (struct tls_session *session, const struct user_pass
- }
- #endif
- 
-+/**
-+ *  Wipes the authentication token out of the memory, frees and cleans up related buffers and flags
-+ *
-+ *  @param multi  Pointer to a multi object holding the auth_token variables
-+ */
-+static void
-+wipe_auth_token(struct tls_multi *multi)
-+{
-+  secure_memzero (multi->auth_token, AUTH_TOKEN_SIZE);
-+  free (multi->auth_token);
-+  multi->auth_token = NULL;
-+  multi->auth_token_sent = false;
-+}
-+
-+
- /*
-  * Main username/password verification entry point
-  */
-@@ -1157,6 +1172,7 @@ verify_user_pass(struct user_pass *up, struct tls_multi *multi,
-       /* Ensure that the username has not changed */
-       if (!tls_lock_username(multi, up->username))
-         {
-+          wipe_auth_token(multi);
-           ks->authenticated = false;
-           goto done;
-         }
-@@ -1168,6 +1184,7 @@ verify_user_pass(struct user_pass *up, struct tls_multi *multi,
-           && (multi->auth_token_tstamp + session->opt->auth_token_lifetime) < now)
-         {
-           msg (D_HANDSHAKE, "Auth-token for client expired\n");
-+          wipe_auth_token(multi);
-           ks->authenticated = false;
-           goto done;
-         }
-@@ -1176,10 +1193,7 @@ verify_user_pass(struct user_pass *up, struct tls_multi *multi,
-       if (memcmp_constant_time(multi->auth_token, up->password,
-                  strlen(multi->auth_token)) != 0)
-         {
--          secure_memzero (multi->auth_token, AUTH_TOKEN_SIZE);
--          free (multi->auth_token);
--          multi->auth_token = NULL;
--          multi->auth_token_sent = false;
-+          wipe_auth_token(multi);
-           ks->authenticated = false;
-           tls_deauthenticate (multi);
- 
--- 
-1.8.3.1
+By this logic should we enforce users to add --disable-def-auth if
+- --disable-plugin is set?  If so, then we should probably also do
+something with --disable-plugin-auth-pam and
+- --disable-plugin-down-root.  And with --disable-plugin-auth-pam, we
+need to look at --enable-pam-dlopen as well.
 
+And to put things in context of the async-push stuff.  In the C code
+we already check if --disable-def-auth is enabled or not.
+
+If we truly start to look into this for the other options, we will
+have quite a good job ahead of us.  Otherwise we end up with even more
+mess where we are not even consistent.
+
+I say it again, configure.ac is *NOT* the place to do sanity checks on
+which openvpn features depends on each-other.  We have not done that
+before, and we should not do it now.  It just provides far more
+non-production code to maintain, and more places to look for issues
+when code we expect to to be compiled in isn't being compiled in.
+This way leads is a rats nest and will cause much more maintenance
+burden in the future, which I will not accept lightly.
+
+Yes, I see the short-term convenience to solve that specific Trac
+ticket.  But it really isn't the right long-term solution.
+
+
+- --=20
+kind regards,
+
+David Sommerseth
+OpenVPN Technologies, Inc
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBAgAGBQJYUWe4AAoJEIbPlEyWcf3yX8QQAMDl+us2tVSCCABm0RZ77srQ
+kRNIrxitehRgzlJi6/Hsod4lDtUxiJ9Q70EjFswHeRkAw9jAD1C69h2Ht4z7etb7
+zdqPO+qH44YEA+lDeOu8dcP73q9Ff3izEJdF35ripHCbNymrKkoT+4+OkYDj3VIl
+xRMLnem3MWfpmdqxzhGdkU/NkSMUMiGF8S7xAJDakvZ7CGvNOfUByWlG7dmUXU9U
+oRxb0oyJdnSuj8SWDS5sQb6VsXyqAGnKKnE82YL6KZxTYOmri/SkO3HcfBT61dlq
+bR/CypjuDCppP6bTRegV0xP0V7qNyjm3F6VzTu7Wt5TyFw60AN9xsKV6B71vwUzp
+h2dhe3QEYQHYJ2m+vcwxRI0CfzO1zQM7UiJ23OjMgYeyMu7Y01fpm/Y1MixTVMct
+rSeXOpJQkNFCs3v/NPrA8a85IIptDa8cLiOzz3Hca3hIESRmPhZgPxSeAGz+cqNQ
+Ql8pZ2YMroFUQZIGcsJblXO/s/G8ud4urruXPGnrCj26mGUNBjmht0iLIZs7EJK1
+bhviQSkPXeoUSWuonw9TN+hx3w8YRJocHaUkVz26+F9HnLJbma8Sew7BK+pqs1g6
+2yNpxYUQtlChbItP+q7dYCYm23m5uRs28sP52u1AKMfeIbA5FPGpqBB/Kjz0ueQn
+sh5T6CFecL9NAGIxJf9h
+=3D26tU
+-----END PGP SIGNATURE-----
 
