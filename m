@@ -1,10 +1,11 @@
-From: David Sommerseth <davids@...515...>
-Date: Wed, 14 Dec 2016 13:36:48 +0100
-Message-Id: <1481719008-17980-1-git-send-email-davids@...515...>
-In-Reply-To: <1481658672-5110-1-git-send-email-steffan@...1856...>
-References: <1481658672-5110-1-git-send-email-steffan@...1856...>
-Subject: Re: [Openvpn-devel] [PATCH applied] man: mention that --ecdh-curve
-	does not work on mbed TLS builds
+References: <1481718210-15673-1-git-send-email-davids@...515...>
+From: Steffan Karger <steffan.karger@...1435...>
+Message-ID: <7a381eee-fd86-73ba-77c6-498710ad8cdb@...1435...>
+Date: Wed, 14 Dec 2016 13:45:09 +0100
+MIME-Version: 1.0
+In-Reply-To: <1481718210-15673-1-git-send-email-davids@...515...>
+Subject: Re: [Openvpn-devel] [PATCH] Further enhance async-push feature
+ description
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,52 +14,56 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: steffan@...1856...
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+On 14-12-16 13:23, David Sommerseth wrote:
+> Signed-off-by: David Sommerseth <davids@...515...>
+> ---
+>  Changes.rst  | 9 +++++----
+>  configure.ac | 2 +-
+>  2 files changed, 6 insertions(+), 5 deletions(-)
+> 
+> diff --git a/Changes.rst b/Changes.rst
+> index a5002dd..7da1119 100644
+> --- a/Changes.rst
+> +++ b/Changes.rst
+> @@ -148,10 +148,11 @@ Control channel encryption (``--tls-crypt``)
+>      post-quantum security.
+>  
+>  Asynchronous push reply
+> -    If asynchronous authentication is enabled and completed after server received
+> -    PUSH_REQUEST message, server sends PUSH_REPLY immediately without waiting for next
+> -    PUSH_REQUEST. Requires use of ``--enable-async-push`` as ./configure parameter at
+> -    build time.
+> +    Plug-ins providing support for deferred authentication can benefit from a more
+> +    responsive authentication where the server sends PUSH_REPLY immediately once
+> +    the authentication result is ready instead of waiting for the the client to
+> +    to send PUSH_REQUEST once more.  This requires OpenVPN to be built with
+> +    ``./configure --enable-async-push``.  This is a compile-time only switch.
+>  
+>  
+>  Deprecated features
+> diff --git a/configure.ac b/configure.ac
+> index 27bdcc3..4f086ea 100644
+> --- a/configure.ac
+> +++ b/configure.ac
+> @@ -266,7 +266,7 @@ AC_ARG_ENABLE(
+>  
+>  AC_ARG_ENABLE(
+>  	[async-push],
+> -	[AS_HELP_STRING([--enable-async-push], [enable async-push support @<:@default=no@:>@])],
+> +	[AS_HELP_STRING([--enable-async-push], [enable async-push support for plugins providing deferred authentication @<:@default=no@:>@])],
+>  	,
+>  	[enable_async_push="no"]
+>  )
+> 
 
 ACK.
 
-Your patch has been applied to the master branch
+Related question:  looks both useful and harmless.  Should we enable
+this by default in 2.5?
 
-commit 07d0d73a38326c0e935ea35eb12452b69abafada
-Author: Steffan Karger
-Date:   Tue Dec 13 20:51:12 2016 +0100
-
-     man: mention that --ecdh-curve does not work on mbed TLS builds
-
-     Trac: #789
-     Signed-off-by: Steffan Karger <steffan@...1856...>
-     Acked-by: David Sommerseth <davids@...515...>
-     Message-Id: <1481658672-5110-1-git-send-email-steffan@...1856...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13523.html
-     Signed-off-by: David Sommerseth <davids@...515...>
-
-
-- --
-kind regards,
-
-David Sommerseth
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBAgAGBQJYUTzaAAoJEIbPlEyWcf3yVhEQALfKBnjP35QmgFl1aQP2XhQf
-v+Cc0q0p2KEBMXU9gxUq4cxoY9cxaEU9tCnEMRLTOdJDzhvVB59NPzKHGIzLXZ89
-6hD/Oin9B6UA+ahhkLMcNzHhEjsWYSWfAoFOHElC3ARGE58+g2ZZ5iGTLRKSSqY5
-jHVFdjJXVju8AfQWklJlBOx8mPRwE6DVWcZgZoSLezN7+LooawbsxtIri5uL3pHI
-X+/icRaA3LSXsFhFdFtIX/j0zGiVfRiSgWBHsrRfm9aHnkg2QyKTv9UEOQbviK9l
-pgsEO6T7G21j1XtY2xUt4r37Dw1l4SJBVOeQFaKqVkPA5KubgWgTVECA1Z1bPszu
-+MW1di0tBcijUTt1l1hDyZ98sex+vJkmMu7yQR/EOYvJUZAoHiaPXa4Q8az8t38n
-V46f2nhNaxKgO2FBmrfA+Bl1DU8D8WalgB/oxOHfNBvR2G8A6TP8+c/WJ5Eng4E3
-7p1ob0TQB7TOoe16aQFy3qNeceT3g7xfxw1/psJYDM4OxfGedMHM9Nl/wWFFZhBs
-Fd9t8RmOc+mU18JpCLv9bf8oNzVRkRekO+ah0TQJiyZuh0/LBHlAfKnIfnOEdI9c
-P6PCwj62EOz2THxRmZs5pVbakR2E9gtO3Ocleq+Lwl5yrJDeVzAp60mtBTmuYyBj
-QqR/HJ6JY5POz39Vqutr
-=q11f
------END PGP SIGNATURE-----
+-Steffan
 
