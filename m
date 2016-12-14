@@ -1,12 +1,10 @@
-References: <1ffbd3a5-8fa8-8992-2c3d-d353898d74f9@...2080...>
-	<f55ae849-32a0-5f7e-829f-1158bc3d68fc@...2080...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <3a78050c-8c18-d54e-fc37-330272de6d44@...2080...>
-Date: Wed, 14 Dec 2016 22:18:22 +0100
-MIME-Version: 1.0
-In-Reply-To: <f55ae849-32a0-5f7e-829f-1158bc3d68fc@...2080...>
-Subject: Re: [Openvpn-devel] Coding style clean-up ... phase 1
-Reply-To: openvpn-devel@lists.sourceforge.net
+From: David Sommerseth <davids@...515...>
+Date: Wed, 14 Dec 2016 22:29:11 +0100
+Message-Id: <1481750951-12618-1-git-send-email-davids@...515...>
+In-Reply-To: <1481749500-8795-1-git-send-email-davids@...515...>
+References: <1481749500-8795-1-git-send-email-davids@...515...>
+Subject: Re: [Openvpn-devel] [PATCH applied] dev-tools: Add reformat-all.sh
+	for code style unification
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,58 +13,51 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: davids@...515...
+Cc: openvpn-devel@lists.sourceforge.net
 
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-On 13/12/16 22:42, David Sommerseth wrote:
->=20
-> Hi all,
->=20
-> So the first phase of the great reformatting is on its way.  I have
-> just pushed out a reformatting branch to the following=20
-> repositories:
->=20
-> https://github.com:OpenVPN/openvpn.git=20
-> https://gitlab.com:openvpn/openvpn.git=20
-> git://git.code.sf.net/p/openvpn/openvpn
->=20
 
-An updated reformatting branch have been pushed out.  If you have
-already fetched the it, git will most likely complain as to make
-these tests flow reasonably well without cluttering the git tree
-too much we have used forced pushes on this branch.
+Did a quick change at commit time, changing from bash to sh
 
-And again, the The Great Reformatting patch is PGP signed as well,
-which can be verified with 'git log --show-signature'.  The
-signing key is 0x86CF944C9671FDF2, which is the same as this mail
-is signed with.
+Your patch has been applied to the master branch.
+
+commit 2417d55c4945d491e528dd0e4cf24047da5ceae9
+Author: David Sommerseth
+Date:   Wed Dec 14 22:05:00 2016 +0100
+
+     dev-tools: Add reformat-all.sh for code style unification
+
+     Signed-off-by: David Sommerseth <davids@...515...>
+     Acked-by: Steffan Karger <steffan@...1856...>
+     Message-Id: <1481749500-8795-1-git-send-email-davids@...515...>
+     URL: http://www.mail-archive.com/search?l=mid&q=1481749500-8795-1-git-send-email-davids@...515...
 
 
-- --=20
+- --
 kind regards,
 
 David Sommerseth
-OpenVPN Technologies, Inc
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBAgAGBQJYUbceAAoJEIbPlEyWcf3yOnIQAKRMvwhlde6/X/oi4Tu94dRk
-Czoqf9nVTeS/ejf/dwWuztVWR8hIfd0rf+gog6eTHBQrRSjvDHPyi62XTH2lkt9z
-h+xOHZTOgL7oKyHWrfjiyGPxov2RUgz5HvMyH2nl2s6Pj3o9J/AkrfxFJbtMu/CR
-YYk9w5QOn8/XfoulOgZgWh1JXwICGKUVQXFQRBoQpi7m3aVdFpRN/3uHmK+epWe/
-ewEQd2kNYJQfPWCRuzDBTPCJfYmr9IDncB/mkvDGw7D08BdcFknOWeVmP1HHn4uM
-XWsIqOqfilOf09dPzQnSfLxlgg0zGZW/z8wYBqKAZTM1aVO5z5Jtq6nqevWzB1UX
-Nrlws0OaPlIsjGUzeL3BInGQevpYYKSHS3Acyz+cW+X42t3AIGTKUQSCgRQpFJnb
-v4cRf+7c7h77t7mMIIsS7ghMJRGgog6ib2NJp07in4o75aHMFeuWHte4FmM3Osrk
-vJ9MT1jUkxs1OxkFsxpnrhhzfY1UazCDmosMytoE+CaJzMIkB9HzlH77yR+jxnQK
-lT3hineWNGgmEtTjmczZQJHHF68IHivfd7g07mS/xdvXWmRbkgUQNqcKOZujiaQV
-OIfjvOkREtkbW1lJLinMeb3c+SW5DggKnkSwdo3yHOHvRfniPraQxVDbpDAd2dVu
-0WPlpmIuHmBypIxNBpYc
-=3Dagzz
+iQIcBAEBAgAGBQJYUbmjAAoJEIbPlEyWcf3yKokP/2ODlMt5zj+8BD4nNPup/SNN
+5h236L8Rm9VE13lYZxPECYGmTQNML94qAnxcew0T/KCAeRKtprUbR4FlfEwWaC+E
+eH38inXz6Gcho8BqUuq4dRHspR+A15NQkRS5Vpa7RTGJKQRUFLbFAWb1Jqacl+Gk
+7qGE9CypkncYMT5OsdZ13q4o5bgy2yO6b3wKVt2Ah7tkUzcqmswIglk4Fb44Zo48
+ZraTaXNtxtImLkrcqrwI/7YFlPuTMbBtg/wAQ3fUNMfnLorGMdD6I9L1vlVwWv56
+RPJIBcK0lDKJk0+m2YDWDvP7bYTZ+kOw5Arkv2sp2/0Rp5Cr8O4XtVFMz1ZTntmW
+s99/ZG9RO5Ln4DWeoz6cpHfTXcZrI3ltkG8q+gDbTFfocQsnW4LPLmUYhkB0lHlv
+UgdNhBqzvuYWUjoh7Jr423qjNaUAkcpNrFt7kW7VI4gpsYO1bzt87zUKqMrqfE/s
+cJIgHkJT6INjvOJiAxqMPbJLpUejoRCzZifNqwNg/X9d1czJF1z/K7NZ4bmNQuPN
+Z4fZbEMW88GrljcQfm4qLFwrsOKo/RWL+2AJS3JcXN3YFc8pCBs73i7iSWYQKt05
+Xl1CSWV93aUo+rEyJnP436iVPb4GGfjgLkfJU4QYFvDzT1TdvigDmPOG+u011cyd
+LVG0zfLepzQmHSoEnCsF
+=dwj/
 -----END PGP SIGNATURE-----
 
