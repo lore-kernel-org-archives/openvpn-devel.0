@@ -1,19 +1,8 @@
-References: <eb2eddfe-cfaa-a1d3-0a55-7457418b2645@...2080...>
-	<1481705478-29735-1-git-send-email-lstipakov@...277...>
-	<20161214090932.GC78624@...1296...>
-	<8f5c0822-e2a2-7b34-ca8a-5a2a2b2ef1e9@...2080...>
-	<83bb8b8e-5428-f6c0-9c13-766ddc1917f0@...1435...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <62fe3714-44f3-73a8-4868-5c72d986d480@...2080...>
-Date: Wed, 14 Dec 2016 18:55:53 +0100
-MIME-Version: 1.0
-In-Reply-To: <83bb8b8e-5428-f6c0-9c13-766ddc1917f0@...1435...>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="SpbHb3fVi4mklR7ftV8Wogcs5hGrIn4G1"
-Subject: Re: [Openvpn-devel] [PATCH v2] Disable async_push if plugins are
- disabled
-Reply-To: openvpn-devel@lists.sourceforge.net
+From: David Sommerseth <davids@...515...>
+Date: Wed, 14 Dec 2016 21:07:32 +0100
+Message-Id: <1481746052-17372-1-git-send-email-davids@...515...>
+Subject: [Openvpn-devel] [PATCH] dev-tools: Add reformat-all.sh for code
+	style unification
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,168 +11,306 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan.karger@...1435...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---SpbHb3fVi4mklR7ftV8Wogcs5hGrIn4G1
-Content-Type: multipart/mixed; boundary="jLoe8BF1Pdj6lf5xagW3Bmf3VDIkUuOQu";
-	protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-Reply-To: openvpn-devel@lists.sourceforge.net
-To: Steffan Karger <steffan.karger@...1435...>,
-	openvpn-devel@lists.sourceforge.net
-Message-ID: <62fe3714-44f3-73a8-4868-5c72d986d480@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH v2] Disable async_push if plugins are
-	disabled
-References: <eb2eddfe-cfaa-a1d3-0a55-7457418b2645@...2080...>
-	<1481705478-29735-1-git-send-email-lstipakov@...277...>
-	<20161214090932.GC78624@...1296...>
-	<8f5c0822-e2a2-7b34-ca8a-5a2a2b2ef1e9@...2080...>
-	<83bb8b8e-5428-f6c0-9c13-766ddc1917f0@...1435...>
-In-Reply-To: <83bb8b8e-5428-f6c0-9c13-766ddc1917f0@...1435...>
+This script will run all files related to the currently checked out
+git branch through uncrustify using a standardized style configuration.
 
---jLoe8BF1Pdj6lf5xagW3Bmf3VDIkUuOQu
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
+Due to a bug in uncrustify 0.63, it is needed to add a special treatment
+to one of the files at the moment.  So this both pre- and post-patched
+before/after uncrustify is run.  This is to simply to assure that all
+file processing will happen consistently each time.
 
-On 14/12/16 17:23, Steffan Karger wrote:
-> On 14-12-16 16:39, David Sommerseth wrote:
->> On 14/12/16 10:09, Gert Doering wrote:
->>> Hi,
->>
->>> On Wed, Dec 14, 2016 at 10:51:18AM +0200, Lev Stipakov wrote:
->>>> +/* + * Disable async-push if plugins are disabled + */ +#if
->>>> !defined(ENABLE_PLUGIN) && defined(ENABLE_ASYNC_PUSH) +#undef
->>>> ENABLE_ASYNC_PUSH +#endif +
->>
->>> That one gets a NAK from me, for the reasons given.
->>
->>> As long as we *have* --enable/--disable options in configure, they
->>> should be validated *there* and not silently ignored.
->>
->>> David's argument about "configure is for finding system dependent
->>> things and compiler settings" has some merits, but then we should
->>> get rid of all compile-time --enable/--disable settings.
->>
->> By this logic should we enforce users to add --disable-def-auth if
->> --disable-plugin is set?  If so, then we should probably also do
->> something with --disable-plugin-auth-pam and
->> --disable-plugin-down-root.  And with --disable-plugin-auth-pam, we
->> need to look at --enable-pam-dlopen as well.
->=20
-> No, unless the user specified --enable-def-auth.  And yes, I think it
-> would be nice if we would throw an error if the user did.  "Fail-fast"
-> is a really good habit.
+Also added doc/doxygen/doc_key_generation.h to an ignore list, as
+it carries some specific Doxygen formatting we should be careful with.
+This file is anyhow not so critical and can be managed manually.
 
-Well, there is still --enable-pam-dlopen --disable-plugin-auth-pam ...
-and what else can we stubmble accross if we try --disable-server?  Or
-you don't want to bother about that kind of consistency?
+The src/compat/compat-lz4.[ch] files are also not touched, as they
+are based on upstream formatting.  This makes it easier to update
+to a newer LZ4 version later on and even see what the differences
+are.
 
->> And to put things in context of the async-push stuff.  In the C code
->> we already check if --disable-def-auth is enabled or not.
->>
->> If we truly start to look into this for the other options, we will
->> have quite a good job ahead of us.  Otherwise we end up with even more
->> mess where we are not even consistent.
->=20
-> Sure, but "The other stuff is broken" is no argument to not add
-> something that is not broken.
+v2 - Include updated config from CodeStyle wiki page
+     Remove line lenght restriction for The Great Reformatting
+     Update the script with improvements by krzee
 
-But it is broken.  The v1 patch compiles just fine with
---enable-async-push --disable-def-auth
+Signed-off-by: David Sommerseth <davids@...515...>
+---
+ dev-tools/reformat-all.sh                          | 136 +++++++++++++++++++++
+ .../after_include_openvpn-plugin.h.in.patch        |  13 ++
+ .../before_include_openvpn-plugin.h.in.patch       |  13 ++
+ dev-tools/special-files.lst                        |   4 +
+ dev-tools/uncrustify.conf                          |  64 ++++++++++
+ 5 files changed, 230 insertions(+)
+ create mode 100755 dev-tools/reformat-all.sh
+ create mode 100644 dev-tools/reformat-patches/after_include_openvpn-plugin.h.in.patch
+ create mode 100644 dev-tools/reformat-patches/before_include_openvpn-plugin.h.in.patch
+ create mode 100644 dev-tools/special-files.lst
+ create mode 100644 dev-tools/uncrustify.conf
 
-$ grep DEF_AUTH ./config.h
-/* #undef ENABLE_DEF_AUTH */
+diff --git a/dev-tools/reformat-all.sh b/dev-tools/reformat-all.sh
+new file mode 100755
+index 0000000..11a6eca
+--- /dev/null
++++ b/dev-tools/reformat-all.sh
+@@ -0,0 +1,136 @@
++#!/bin/bash
++# reformat-all.sh - Reformat all git files in the checked out
++#                   git branch using uncrustify.
++#
++# Copyright (C) 2016 - David Sommerseth <davids@...515...>
++#
++# This program is free software; you can redistribute it and/or
++# modify it under the terms of the GNU General Public License
++# as published by the Free Software Foundation; either version 2
++# of the License.
++#
++# This program is distributed in the hope that it will be useful,
++# but WITHOUT ANY WARRANTY; without even the implied warranty of
++# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++# GNU General Public License for more details.
++#
++# You should have received a copy of the GNU General Public License
++# along with this program; if not, write to the Free Software
++# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
++#
++
++tstamp="$(date +%Y%m%d-%H%M%S)"
++files="$(pwd)/reformat-all_files-$tstamp.lst"
++log="$(pwd)/reformat-all_log-$tstamp.txt"
++
++srcroot="$(git rev-parse --show-toplevel)"
++cfg="$srcroot/dev-tools/uncrustify.conf"
++specialfiles="$srcroot/dev-tools/special-files.lst"
++
++export gitfiles=0
++export procfiles=0
++
++# Go to the root of the source tree
++pushd "$srcroot" > /dev/null
++
++{
++    echo -n "** Starting $0: "
++    date
++
++    # Find all C source/header files
++    git ls-files | grep -E ".*\.[ch](\.in$|$)" > "${files}.git"
++
++    # Manage files which needs special treatment
++    awk -F\# '{gsub("\n| ", "", $1); print $1}' "$specialfiles" > "${files}.sp"
++    while read srcfile
++    do
++        res=$(grep "$srcfile" "${files}.sp" 2>/dev/null)
++        if [ $? -ne 0 ]; then
++            # If grep didn't find the file among special files,
++            # process it normally
++            echo "$srcfile" >> "$files"
++        else
++            mode=$(echo "$res" | cut -d:  -f1)
++            case "$mode" in
++                E)
++                    echo "** INFO **  Excluding '$srcfile'"
++                    ;;
++                P)
++                    echo "** INFO **  Pre-patching '$srcfile'"
++                    patchfile="${srcroot}"/dev-tools/reformat-patches/before_$(echo "$srcfile" | tr "/" "_").patch
++                    if [ -r "$patchfile" ]; then
++                        git apply "$patchfile"
++                        if [ $? -ne 0 ]; then
++                            echo "** ERROR **  Failed to apply pre-patch file: $patchfile"
++                            exit 2
++                        fi
++                    else
++                        echo "** WARN ** Pre-patch file for $srcfile is missing: $patchfile"
++                    fi
++                    echo "$srcfile" >> "${files}.postpatch"
++                    echo "$srcfile" >> "$files"
++                    ;;
++                *)
++                    echo "** WARN ** Unknown mode '$mode' for file '$srcfile'"
++                    ;;
++            esac
++        fi
++    done < "${files}.git"
++    rm -f "${files}.git" "${files}.sp"
++
++    # Kick off uncrustify
++    echo "** INFO ** Running: uncrustify -c $cfg --no-backup -l C -p debug.uncr -F $files"
++    uncrustify -c "$cfg" --no-backup -l C -p debug.uncr -F "$files" 2>&1
++    res=$?
++    echo "** INFO ** Uncrustify completed"
++} | tee "${log}-1"  # Log needs to be closed here, to be processed in next block
++
++{
++    # Check the results
++    gitfiles=$(wc -l "$files" | cut -d\  -f1)
++    procfiles=$(grep "Parsing: " "${log}-1" | wc -l)
++    echo
++    echo "C source/header files checked into git: $gitfiles"
++    echo "Files processed by uncrustify:          $procfiles"
++    echo
++    # Post-Patch files modified after we uncrustify have adjusted them
++    if [ -r "${files}.postpatch" ]; then
++        while read srcfile;
++        do
++            patchfile="${srcroot}"/dev-tools/reformat-patches/after_$(echo "$srcfile" | tr "/" "_").patch
++            if [ -r "$patchfile" ]; then
++                echo "** INFO **  Post-patching '$srcfile'"
++                git apply "$patchfile"
++                if [ $? -ne 0 ]; then
++                    echo "** WARN ** Failed to apply $patchfile"
++                fi
++            else
++                echo "** WARN ** Post-patch file for $srcfile is missing: $patchfile"
++            fi
++        done < "${files}.postpatch"
++        rm -f "${files}.postpatch"
++    fi
++} | tee "${log}-2"
++
++cat "${log}-1" "${log}-2" > "$log"
++
++{
++    ec=1
++    if [ "$gitfiles" -eq "$procfiles" ]; then
++        echo "Reformatting completed successfully"
++        ec=0
++    else
++        last=$(tail -n1 "${log}-1")
++        echo
++        echo "** ERROR ** Reformating failed to process all files."
++        echo "            uncrustify exit code: $res"
++        echo "            Last log line: $last"
++        echo
++    fi
++    rm -f "${log}-1" "${log}-2"
++} | tee -a "$log"
++rm -f "${files}"
++
++popd > /dev/null
++
++exit $ec
+diff --git a/dev-tools/reformat-patches/after_include_openvpn-plugin.h.in.patch b/dev-tools/reformat-patches/after_include_openvpn-plugin.h.in.patch
+new file mode 100644
+index 0000000..4faa4d8
+--- /dev/null
++++ b/dev-tools/reformat-patches/after_include_openvpn-plugin.h.in.patch
+@@ -0,0 +1,13 @@
++diff --git a/include/openvpn-plugin.h.in b/include/openvpn-plugin.h.in
++index 05bffab..05b4b6a 100644
++--- a/include/openvpn-plugin.h.in
+++++ b/include/openvpn-plugin.h.in
++@@ -169,7 +169,7 @@ typedef void *openvpn_plugin_handle_t;
++ /*
++  * We are compiling OpenVPN.
++  */
++-/* #define OPENVPN_PLUGIN_DEF        typedef */
+++#define OPENVPN_PLUGIN_DEF        typedef
++ #define OPENVPN_PLUGIN_FUNC(name) (*name)
++ 
++ #else  /* ifdef OPENVPN_PLUGIN_H */
+diff --git a/dev-tools/reformat-patches/before_include_openvpn-plugin.h.in.patch b/dev-tools/reformat-patches/before_include_openvpn-plugin.h.in.patch
+new file mode 100644
+index 0000000..7c7249d
+--- /dev/null
++++ b/dev-tools/reformat-patches/before_include_openvpn-plugin.h.in.patch
+@@ -0,0 +1,13 @@
++diff --git a/include/openvpn-plugin.h.in b/include/openvpn-plugin.h.in
++index 34ad18b..f4c5472 100644
++--- a/include/openvpn-plugin.h.in
+++++ b/include/openvpn-plugin.h.in
++@@ -169,7 +169,7 @@ typedef void *openvpn_plugin_handle_t;
++ /*
++  * We are compiling OpenVPN.
++  */
++-#define OPENVPN_PLUGIN_DEF        typedef
+++// #define OPENVPN_PLUGIN_DEF        typedef
++ #define OPENVPN_PLUGIN_FUNC(name) (*name)
++ 
++ #else
+diff --git a/dev-tools/special-files.lst b/dev-tools/special-files.lst
+new file mode 100644
+index 0000000..f3f77ea
+--- /dev/null
++++ b/dev-tools/special-files.lst
+@@ -0,0 +1,4 @@
++E:doc/doxygen/doc_key_generation.h     # @verbatim section gets mistreated, exclude it
++E:src/compat/compat-lz4.c              # Preserve LZ4 upstream formatting
++E:src/compat/compat-lz4.h              # Preserve LZ4 upstream formatting
++P:include/openvpn-plugin.h.in          # uncrustify segfaults, patch it before+after
+diff --git a/dev-tools/uncrustify.conf b/dev-tools/uncrustify.conf
+new file mode 100644
+index 0000000..bbc4464
+--- /dev/null
++++ b/dev-tools/uncrustify.conf
+@@ -0,0 +1,64 @@
++# Use Allman-style
++indent_columns=4
++indent_braces=false
++indent_else_if=false
++indent_switch_case=4
++indent_label=1nl_if_brace=add
++nl_brace_else=add
++nl_elseif_brace=add
++nl_else_brace=add
++nl_else_if=remove
++sp_func_proto_paren=Remove
++sp_func_def_paren=Remove
++sp_func_call_paren=Remove
++sp_sizeof_paren=Remove
++
++# No tabs, spaces only
++indent_with_tabs=0
++align_with_tabs=false
++cmt_convert_tab_to_spaces=true
++
++# Do not put spaces between the # and preprocessor statements
++pp_space=remove
++
++# Various whitespace fiddling
++sp_assign=add
++sp_before_sparen=add
++sp_inside_sparen=remove
++sp_cond_colon=add
++sp_cond_question=add
++sp_bool=add
++sp_else_brace=add
++sp_brace_else=add
++pos_arith=Lead
++pos_bool=Lead
++nl_func_type_name=add
++nl_before_case=true
++nl_assign_leave_one_liners=true
++nl_enum_leave_one_liners=true
++nl_brace_fparen=add
++nl_max=4
++nl_after_func_proto=2
++
++# Always use scoping braces for conditionals
++mod_full_brace_if=add
++mod_full_brace_if_chain=false
++
++# Annotate #else and #endif statements
++mod_add_long_ifdef_endif_comment=20
++mod_add_long_ifdef_else_comment=5
++
++# Misc cleanup
++mod_remove_extra_semicolon=true
++
++# Use C-style comments (/* .. */)
++cmt_c_nl_end=true
++cmt_star_cont=true
++cmt_cpp_to_c=true
++
++# Use "char **a"-style pointer stars/dereferences
++sp_before_ptr_star=Add
++sp_between_ptr_star=Remove
++sp_after_ptr_star=Remove
++sp_before_byref=Add
++sp_after_byref=Remove
+-- 
+1.8.3.1
 
-And then have a look at multi.c:2214.  This is a key code path for this
-feature.  This is behaving exactly how you do not want.  If so, the
-current v1 patch need a NAK.
-
-And if you have --enable-async-push --disable-server, that should also
-fail.  I want to have some consistency.
-
-Which is why I am saying we do not do such sanity checking in
-configure.ac today.
-
->> I say it again, configure.ac is *NOT* the place to do sanity checks on
->> which openvpn features depends on each-other.  We have not done that
->> before, and we should not do it now.  It just provides far more
->> non-production code to maintain, and more places to look for issues
->> when code we expect to to be compiled in isn't being compiled in.
->> This way leads is a rats nest and will cause much more maintenance
->> burden in the future, which I will not accept lightly.
->=20
-> Yes we do.  Just check the mbed TLS pkcs11 checking.  That check has
-> saved me some hours of re-running builds at the least.  I wish we had
-> more such checks.
-
-And *that* is a correct check, not comparable to --enable-async-push at all.
-
-This check detects that your mbedtls library does not support PKCS#11,
-thus it fails to build as it needs that support by default.  The mbedtls
-library isn't something you normally build yourself, as that is most
-commonly shipped by the distro - so fixing that either requires
-disabling PKCS#11 support in OpenVPN or building mbedtls yourself.
-Failing to do so will _not_ result in a complete build.
-
-
-But fair enough, I can fully understand the argument that it shouldn't
-turn off things behind your back, and I can understand the "fail fast"
-argument too (even though I don't care too much about it in such a small
-project as OpenVPN).  But then lets fix it *properly* in a more
-consistent way.  And we have #error and #warning which may be used in
-such scenarios.
-
-If the general attitude is that we should do all sanity checking via
-configure.ac so that ./configure fails on inconsistency, then we need to
-do something far better than just fixing --enable-async-push
---disable-{plugins,def-auth,server} variants.  Otherwise we will end up
-needing to clean-up configure.ac once again [1].
-
-Perhaps it then is better to have some C code which ./configure builds
-at the very end - where we do all kind of #if defined(...) checks based
-on ENABLE_* macros defined and bails out with #error or something
-similar when something is bad.  Just so we do this sanity check *one
-single place* and in a simple manner.  Currently we have some 20
-ENABLE_* macros handled by config.h alone.
-
-
-[1] Last massive clean-up:
-    $ git log --stat 8a4eaf5aa6debaca434..0e4b6c455e0236a4eb4 \
-          --follow -- configure.ac
-
---=20
-kind regards,
-
-David Sommerseth
-OpenVPN Technologies, Inc
-
-
-
---jLoe8BF1Pdj6lf5xagW3Bmf3VDIkUuOQu--
-
---SpbHb3fVi4mklR7ftV8Wogcs5hGrIn4G1
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBAgAGBQJYUYepAAoJEIbPlEyWcf3yuloQAJcr+yHSI/r4Q2h8TuIlyu72
-Kp+rV0/DtBE7nuka33xIetCBtOuFiw4zY5S4zLAMnexvyXsuvF3/zfCD63u/fBS0
-OV0AEMNcJbSnxho1y3b5Ol8J7Jn9VbPNkcTugmAvPmS0rlSpn73fKxE93fUhtbgL
-92++57uYRZ0wYA9lEbAMUrDiDZDMbrb3Dar80EtCpvE4pAbndSR+4rlwDAIfVH4V
-Qgf0gpPNso+KYErwbMV2Gns9US5YBZ2tCvdrVxV7VIHtvwQkWgkSkEAplE9bnacI
-FfFBzVL7/Zv1gTTgn8QpIE36qqkvU7BYCAA1rqZwHNz9KJHTFAg1aLKJYquLVtlD
-+vxZkaBI5Zl8MQxw3vY39nLYPx0nXXPLqpOri0vaAiwmmcGUwgwaefGBOB65fU2q
-tUh//aovr9bNjYd8NEthV3xR7L7ijlmOa66K9u9SJ2AvxzN0nmVS2Am/d+4gay8w
-Ln7/qg/jfKjTFL4fhPRUuZ5UB+9qfqEBP1ayQuC+3OnhXTAdKE3g1rYyJAvuJxK4
-4XALg4oAW9U/hj9Mr913/9LLp/U50D1/2+nrS7E+l4LHAYWUS/KvNTbAh19qCRPP
-f5FT7vegabXOvtKdNzioRbW61qFSkQiJ7/gKV5bVup8bLZODvrwZHaR7YuIjHzzr
-bzE+eEfEQjbi9h78g3Ke
-=kg6o
------END PGP SIGNATURE-----
-
---SpbHb3fVi4mklR7ftV8Wogcs5hGrIn4G1--
 
