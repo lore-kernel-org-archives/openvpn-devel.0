@@ -1,10 +1,10 @@
 From: David Sommerseth <davids@...515...>
-Date: Wed, 14 Dec 2016 13:36:02 +0100
-Message-Id: <1481718962-17799-1-git-send-email-davids@...515...>
-In-Reply-To: <1481645498-22043-1-git-send-email-selva.nair@...277...>
-References: <1481645498-22043-1-git-send-email-selva.nair@...277...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Unhide a line in man page by
-	fixing a typo
+Date: Wed, 14 Dec 2016 13:36:48 +0100
+Message-Id: <1481719008-17980-1-git-send-email-davids@...515...>
+In-Reply-To: <1481658672-5110-1-git-send-email-steffan@...1856...>
+References: <1481658672-5110-1-git-send-email-steffan@...1856...>
+Subject: Re: [Openvpn-devel] [PATCH applied] man: mention that --ecdh-curve
+	does not work on mbed TLS builds
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,24 +15,27 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: selva.nair@...277...
+To: steffan@...1856...
 Cc: openvpn-devel@lists.sourceforge.net
 
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
+ACK.
+
 Your patch has been applied to the master branch
 
-commit c22428fb609a0f4ec451200a421b5d1090a962a5
-Author: Selva Nair
-Date:   Tue Dec 13 11:11:38 2016 -0500
+commit 07d0d73a38326c0e935ea35eb12452b69abafada
+Author: Steffan Karger
+Date:   Tue Dec 13 20:51:12 2016 +0100
 
-     Unhide a line in man page by fixing a typo
+     man: mention that --ecdh-curve does not work on mbed TLS builds
 
-     Signed-off-by: Selva Nair <selva.nair@...277...>
-     Acked-by: Steffan Karger <steffan@...1856...>
-     Message-Id: <1481645498-22043-1-git-send-email-selva.nair@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13520.html
+     Trac: #789
+     Signed-off-by: Steffan Karger <steffan@...1856...>
+     Acked-by: David Sommerseth <davids@...515...>
+     Message-Id: <1481658672-5110-1-git-send-email-steffan@...1856...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13523.html
      Signed-off-by: David Sommerseth <davids@...515...>
 
 
@@ -44,18 +47,18 @@ David Sommerseth
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBAgAGBQJYUTyxAAoJEIbPlEyWcf3yfJEP/3fnkdjniHri6j96yHuVoeE0
-GZWFrQt7ZBh/M6z6NszVMAdz8BjHLf3ns2/Xx+iHra2UHcwFzk/peEQWjjZCNG7S
-zEiF1GQMIKTImBBM1ylYu719nLid4BoGohIj2sSI6bjE39nxXx+RxCtElGSaqkyc
-r3gxGyEgS9YyGIXSnwFt7+CaiTN0zkCcgNmIEIqmpHXxK1pSGwnBZOLuOzztKlii
-l0fp2q1jADom7sW76FxBryXuG7WuClPQ2AlSCn/dlLdKV6n8N2+Eg3JBbzUYE+Yi
-VKTqIYvdSoNCiEhG6ZN2uOdKcmZrNje+gpe6dXq5NYc/586GF2rlNKlo2Iz8yQbq
-J7GERaurlE3PGkDAXJ7Jvu3sLKH0vYG7jfKISlWLkdYdVrMK+Mt1sPBtJJ/CeBtg
-wVxNrtLCfcKBgzARyL8T0wv/hKOcAi1tPC4Wlb1JyVdLymSv5CMelpBZx1VHCDRd
-B+1jRo8CcrillA5RURiKnlnDn+Yza7i2E3QFS0zKX+CxkBCOYa+SaREQSbZuOy8A
-HhQEZe++mW/MCrMsBN+nyv2903/xLFoCETIlesNWpHGMktDmIxulbTH1GeBUyoIJ
-mtIO6HHivnFGL6+VCmLs8oosHQ5x+1k3yCB0F58l20DRgq25zX7SXXU+c5KMMDTT
-wRtjCFuUoOB/Gm6KTNrZ
-=aTh3
+iQIcBAEBAgAGBQJYUTzaAAoJEIbPlEyWcf3yVhEQALfKBnjP35QmgFl1aQP2XhQf
+v+Cc0q0p2KEBMXU9gxUq4cxoY9cxaEU9tCnEMRLTOdJDzhvVB59NPzKHGIzLXZ89
+6hD/Oin9B6UA+ahhkLMcNzHhEjsWYSWfAoFOHElC3ARGE58+g2ZZ5iGTLRKSSqY5
+jHVFdjJXVju8AfQWklJlBOx8mPRwE6DVWcZgZoSLezN7+LooawbsxtIri5uL3pHI
+X+/icRaA3LSXsFhFdFtIX/j0zGiVfRiSgWBHsrRfm9aHnkg2QyKTv9UEOQbviK9l
+pgsEO6T7G21j1XtY2xUt4r37Dw1l4SJBVOeQFaKqVkPA5KubgWgTVECA1Z1bPszu
++MW1di0tBcijUTt1l1hDyZ98sex+vJkmMu7yQR/EOYvJUZAoHiaPXa4Q8az8t38n
+V46f2nhNaxKgO2FBmrfA+Bl1DU8D8WalgB/oxOHfNBvR2G8A6TP8+c/WJ5Eng4E3
+7p1ob0TQB7TOoe16aQFy3qNeceT3g7xfxw1/psJYDM4OxfGedMHM9Nl/wWFFZhBs
+Fd9t8RmOc+mU18JpCLv9bf8oNzVRkRekO+ah0TQJiyZuh0/LBHlAfKnIfnOEdI9c
+P6PCwj62EOz2THxRmZs5pVbakR2E9gtO3Ocleq+Lwl5yrJDeVzAp60mtBTmuYyBj
+QqR/HJ6JY5POz39Vqutr
+=q11f
 -----END PGP SIGNATURE-----
 
