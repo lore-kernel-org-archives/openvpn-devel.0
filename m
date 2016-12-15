@@ -1,17 +1,10 @@
+From: David Sommerseth <davids@...515...>
+Date: Thu, 15 Dec 2016 13:22:14 +0100
+Message-Id: <1481804534-26913-1-git-send-email-davids@...515...>
+In-Reply-To: <1481728374-7196-1-git-send-email-davids@...515...>
 References: <1481728374-7196-1-git-send-email-davids@...515...>
-	<6083f8ec-b180-5cc3-b776-dd7e1e14d94a@...1856...>
-	<20161215100509.GM78624@...1296...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <97b1b2d8-b8f4-a7a3-aec2-fd72793f3937@...2080...>
-Date: Thu, 15 Dec 2016 12:07:49 +0100
-MIME-Version: 1.0
-In-Reply-To: <20161215100509.GM78624@...1296...>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="gluln4Oa0RrtxqvKrEFWXavbRoVLUvxlx"
-Subject: Re: [Openvpn-devel] [PATCH] auth-gen-token: Hardening memory
- cleanup on auth-token failuers
-Reply-To: openvpn-devel@lists.sourceforge.net
+Subject: [Openvpn-devel] [PATCH v2] auth-gen-token: Hardening memory cleanup
+	on auth-token failuers
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,87 +13,105 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>, Steffan Karger <steffan@...1856...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---gluln4Oa0RrtxqvKrEFWXavbRoVLUvxlx
-Content-Type: multipart/mixed; boundary="JeIkXmRnCsXiiiFxQcf98McdpLtapENhp";
-	protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-Reply-To: openvpn-devel@lists.sourceforge.net
-To: Gert Doering <gert@...1296...>, Steffan Karger <steffan@...1856...>
-Cc: openvpn-devel@lists.sourceforge.net
-Message-ID: <97b1b2d8-b8f4-a7a3-aec2-fd72793f3937@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH] auth-gen-token: Hardening memory cleanup
-	on auth-token failuers
-References: <1481728374-7196-1-git-send-email-davids@...515...>
-	<6083f8ec-b180-5cc3-b776-dd7e1e14d94a@...1856...>
-	<20161215100509.GM78624@...1296...>
-In-Reply-To: <20161215100509.GM78624@...1296...>
+Further improve the memory management when a clients --auth-token
+fails the server side token authentication enabled via --auth-gen-token.
 
---JeIkXmRnCsXiiiFxQcf98McdpLtapENhp
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
+v2 - Add ASSERT() if base64 encoding of token fails
 
-On 15/12/16 11:05, Gert Doering wrote:
-> Hi,
->=20
-> On Wed, Dec 14, 2016 at 10:08:25PM +0100, Steffan Karger wrote:
->> Looks good, but I think there's one more occurance you should
->> incorporate in the patch:
->>
->>   if (openvpn_base64_encode(tok, AUTH_TOKEN_SIZE,
->>                             &multi->auth_token) < AUTH_TOKEN_SIZE)
->=20
-> Under which conditions can this ever fail?  In other words: if this
-> fails, should we consider it a major programming error and ASSERT()?
+Signed-off-by: David Sommerseth <davids@...515...>
+---
+ src/openvpn/ssl_verify.c | 45 +++++++++++++++++++++++----------------------
+ 1 file changed, 23 insertions(+), 22 deletions(-)
 
-It can only fail if there's a malloc() failure in
-openvpn_base64_encode().  But I agree, ASSERT() is probably more
-reasonable here.
+diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
+index 4328828..955d522 100644
+--- a/src/openvpn/ssl_verify.c
++++ b/src/openvpn/ssl_verify.c
+@@ -1108,6 +1108,21 @@ verify_user_pass_management (struct tls_session *session, const struct user_pass
+ }
+ #endif
+ 
++/**
++ *  Wipes the authentication token out of the memory, frees and cleans up related buffers and flags
++ *
++ *  @param multi  Pointer to a multi object holding the auth_token variables
++ */
++static void
++wipe_auth_token(struct tls_multi *multi)
++{
++  secure_memzero (multi->auth_token, AUTH_TOKEN_SIZE);
++  free (multi->auth_token);
++  multi->auth_token = NULL;
++  multi->auth_token_sent = false;
++}
++
++
+ /*
+  * Main username/password verification entry point
+  */
+@@ -1157,6 +1172,7 @@ verify_user_pass(struct user_pass *up, struct tls_multi *multi,
+       /* Ensure that the username has not changed */
+       if (!tls_lock_username(multi, up->username))
+         {
++          wipe_auth_token(multi);
+           ks->authenticated = false;
+           goto done;
+         }
+@@ -1168,6 +1184,7 @@ verify_user_pass(struct user_pass *up, struct tls_multi *multi,
+           && (multi->auth_token_tstamp + session->opt->auth_token_lifetime) < now)
+         {
+           msg (D_HANDSHAKE, "Auth-token for client expired\n");
++          wipe_auth_token(multi);
+           ks->authenticated = false;
+           goto done;
+         }
+@@ -1176,10 +1193,7 @@ verify_user_pass(struct user_pass *up, struct tls_multi *multi,
+       if (memcmp_constant_time(multi->auth_token, up->password,
+                  strlen(multi->auth_token)) != 0)
+         {
+-          secure_memzero (multi->auth_token, AUTH_TOKEN_SIZE);
+-          free (multi->auth_token);
+-          multi->auth_token = NULL;
+-          multi->auth_token_sent = false;
++          wipe_auth_token(multi);
+           ks->authenticated = false;
+           tls_deauthenticate (multi);
+ 
+@@ -1255,24 +1269,11 @@ verify_user_pass(struct user_pass *up, struct tls_multi *multi,
+ 	  /* The token should be longer than the input when
+            * being base64 encoded
+            */
+-	  if( openvpn_base64_encode(tok, AUTH_TOKEN_SIZE,
+-                                    &multi->auth_token) < AUTH_TOKEN_SIZE)
+-	    {
+-	      msg(D_TLS_ERRORS, "BASE64 encoding of token failed. "
+-                  "No auth-token will be activated now");
+-	      if (multi->auth_token)
+-		{
+-		  secure_memzero (multi->auth_token, AUTH_TOKEN_SIZE);
+-		  free (multi->auth_token);
+-		  multi->auth_token = NULL;
+-		}
+-	    }
+-	  else
+-	    {
+-	      multi->auth_token_tstamp = now;
+-	      dmsg (D_SHOW_KEYS, "Generated token for client: %s",
+-                    multi->auth_token);
+-	    }
++          ASSERT(openvpn_base64_encode(tok, AUTH_TOKEN_SIZE,
++                                       &multi->auth_token) < AUTH_TOKEN_SIZE);
++          multi->auth_token_tstamp = now;
++          dmsg (D_SHOW_KEYS, "Generated token for client: %s",
++                multi->auth_token);
+ 	}
+ 
+       if ((session->opt->ssl_flags & SSLF_USERNAME_AS_COMMON_NAME))
+-- 
+1.8.3.1
 
-I'll send a v2 patch with assert here instead.
-
-Side track .... the malloc() size calculation in base64.c:66 is, well,
-interesting:
-
-       p =3D s =3D (char *) malloc(size * 4 / 3 + 4);
-
-
-
---=20
-kind regards,
-
-David Sommerseth
-OpenVPN Technologies, Inc
-
-
-
---JeIkXmRnCsXiiiFxQcf98McdpLtapENhp--
-
---gluln4Oa0RrtxqvKrEFWXavbRoVLUvxlx
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBAgAGBQJYUnmLAAoJEIbPlEyWcf3yiQ0QALAK9T2Xf2wwrAJlq6BMGByM
-Ik5sMy1ha5UQvR/5BY9lxygdJF8/Ooj46OwLY1v5Zi9C8jsLRxrshJodMrjbdY2I
-5a1cVHzxOk+wbXtU7a+N1RrgUY+fRqlZZxF31P83ytDoiUrDMhP/yqEEAlmQD4oh
-7We+1Crn7+BDALW5BB7E9J4nWc0vsNdIPLotUoha+43L11ym7Xl4lPNnOvhbaFaj
-Xa0+XeKWOciCK9/SOsqeO5rl79yB4OWcRD6HF5wARX1i/wkBLAykhEVOhE+61unG
-nxzocs+USIuLij2FUivqkS6pqHUigXsmGWcySRds9P36gtPjztmkd0SVkOF9JNd7
-ulObIN0S93d7WdtCdTGs0Py6oM7Kr3Gd2vHHzT+BQAhe3s6xfugs5RftbSAq4ZfJ
-xBa8xFKigyyOwIA6LRDc4AQ4snMXhJVO+441oTCTwB852YY3a/CmPCNrfi8w5980
-HLMrfArcgijV/pW9l7ZBFUNDjuEPSnq7l00wu52qnuvQc7SLooP9Xq2La5XrAMfS
-yCU5s+0ajDBY4Jxznr1pLA/AS1ClUGkSyTXX+l3aI8ZOzwKiLc5jhos9/HkQ6IAN
-M6sfEpyNvr5ArDG3Umu/lpaYiQbNDRsGfb4OKdYkDOgCyOIsOcJNLxiwCPliOLjL
-DPymsmoUESThjoH1W81F
-=Qecd
------END PGP SIGNATURE-----
-
---gluln4Oa0RrtxqvKrEFWXavbRoVLUvxlx--
 
