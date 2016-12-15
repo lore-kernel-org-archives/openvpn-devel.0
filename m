@@ -1,10 +1,11 @@
-Message-ID: <1481834030.23823.7.camel@...1866...>
-From: David Woodhouse <dwmw2@...1866...>
-Date: Thu, 15 Dec 2016 20:33:50 +0000
-In-Reply-To: <1481833246-32507-1-git-send-email-davids@...515...>
-References: <1481833246-32507-1-git-send-email-davids@...515...>
-Mime-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH 0/2] LZ4 updates
+MIME-Version: 1.0
+In-Reply-To: <bbc21eb4-67bb-cd2c-b01f-55ad730d7db0@...2080...>
+References: <1481827955-18896-1-git-send-email-steffan@...1856...>
+	<bbc21eb4-67bb-cd2c-b01f-55ad730d7db0@...2080...>
+From: Steffan Karger <steffan@...1856...>
+Date: Thu, 15 Dec 2016 22:43:03 +0100
+Message-ID: <CAA1Abx+5B1b+ezGWt5YnyLz_MNVVyNJXitKWttScnA5yi9grZQ@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] Don't reopen tun if cipher changes
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,25 +14,25 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-To: David Sommerseth <davids@...515...>, openvpn-devel@lists.sourceforge.net
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-On Thu, 2016-12-15 at 21:20 +0100, David Sommerseth wrote:
-> 
-> There is also another potential issue with the current approach, if we link
-> against r129 or older ... the code will be using
-> LZ4_compress_limitedOutput().  If the system library is upgraded to a newer
-> upstream version which finally removes LZ4_compress_limitedOutput(), OpenVPN
-> will break.
+Hi,
 
-Unless upstream is doing insane things and the distributions are
-failing to do their job and catch it, removing a function would require
-changing the soname; it could no longer be liblz4.so.1.
+On 15 December 2016 at 20:49, David Sommerseth
+<openvpn@...2080...> wrote:
+> On 15/12/16 19:52, Steffan Karger wrote:
+>> -        if (strstr(line, "peer-id ") != line)
+>> +        if (strcmp(line, "peer-id ") == 0)
+>
+> Are you sure about this strcmp()?  I'd expect line to contain
+> "peer-id 1" or something like that ... so the result would be 49 (or
+> anything not 0) .... strncmp(line, "peer-id ", 8) would provide a match
+> though.
 
-If your binary package requires liblz4.so.1 then it needs to be
-present. That's always been the case. The existence of *another*
-library, even if it has a similar name like liblz4.so.2, is utterly
-irrelevant. There's no *new* problem here.
+Hrmpf, you're absolutely right.  That's what I get for rushing out a
+patch.  I'll send a v2 shortly.
 
+-Steffan
 
