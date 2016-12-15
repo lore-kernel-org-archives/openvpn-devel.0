@@ -1,15 +1,15 @@
-References: <1481808689.98151.88.camel@...1866...>
-	<20161215140614.24291-1-list@...1798...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <4f3e6525-bbd4-7b68-f5e1-5561c70b3a36@...2080...>
-Date: Thu, 15 Dec 2016 15:40:02 +0100
 MIME-Version: 1.0
-In-Reply-To: <20161215140614.24291-1-list@...1798...>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="kIM5Tv1RLK9rww8tH48q2nlqgQkWwUMhx"
-Subject: Re: [Openvpn-devel] [PATCH 1/1] replace deprecated LZ4 function
-Reply-To: openvpn-devel@lists.sourceforge.net
+In-Reply-To: <989fe285-59a8-ad15-4e1d-1f25486dfe1e@...2080...>
+References: <1ffbd3a5-8fa8-8992-2c3d-d353898d74f9@...2080...>
+	<f55ae849-32a0-5f7e-829f-1158bc3d68fc@...2080...>
+	<3a78050c-8c18-d54e-fc37-330272de6d44@...2080...>
+	<CAKuzo_gFnsY-6nsEsP_jPmfXLrJs0mDj-9fhwKQC-12TwfVAYg@...278...>
+	<989fe285-59a8-ad15-4e1d-1f25486dfe1e@...2080...>
+From: Selva Nair <selva.nair@...277...>
+Date: Thu, 15 Dec 2016 10:53:56 -0500
+Message-ID: <CAKuzo_iAOULdks1WQKxRCR9rDDmb0nRc84=O7qqJ87+TaUWr+w@...278...>
+Content-Type: multipart/alternative; boundary=94eb2c05b50a378dc60543b4774b
+Subject: Re: [Openvpn-devel] Coding style clean-up ... phase 1
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,106 +18,112 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Christian Hesse <list@...1798...>, OpenVPN Development <openvpn-devel@lists.sourceforge.net>
-Cc: Christian Hesse <mail@...1798...>, David Woodhouse <dwmw2@...1866...>
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---kIM5Tv1RLK9rww8tH48q2nlqgQkWwUMhx
-Content-Type: multipart/mixed; boundary="77tCwwfJ3pSOSniRkKFcmg9apAnRHnQV5";
-	protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-Reply-To: openvpn-devel@lists.sourceforge.net
-To: Christian Hesse <list@...1798...>,
-	OpenVPN Development <openvpn-devel@lists.sourceforge.net>
-Cc: Christian Hesse <mail@...1798...>, David Woodhouse <dwmw2@...1866...>
-Message-ID: <4f3e6525-bbd4-7b68-f5e1-5561c70b3a36@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH 1/1] replace deprecated LZ4 function
-References: <1481808689.98151.88.camel@...1866...>
-	<20161215140614.24291-1-list@...1798...>
-In-Reply-To: <20161215140614.24291-1-list@...1798...>
+--94eb2c05b50a378dc60543b4774b
+Content-Type: text/plain; charset=UTF-8
 
---77tCwwfJ3pSOSniRkKFcmg9apAnRHnQV5
-Content-Type: text/plain; charset="utf-8"
+On Thu, Dec 15, 2016 at 8:00 AM, David Sommerseth <
+openvpn@...2080...> wrote:
+
+> > The only issue I noticed is that some functions, for loops and switch
+> > statements have their opening braces on the same line
+> > ssl.c line 272, tun.c line 697 and many such in the several files.
+> > (try grep ") {$"  *.c).
+> >
+> > Probably needed nl_switch_brace, nl_fcall_brace etc in the config --
+> > urgh.. Too many options is a blessing and bane at the same time..
+>
+> Agreed.  I think that we can do some minor reformatting changes later on
+> if we decide to change some more options.  Those reformatting changes
+> will most likely not be as invasive as this one has been.
+>
+
+There are also some multi-line comments with closing "*/" not on a line by
+itself.
+
+If we want to fix any of this I think this is the time -- massive
+reformatting is not something to be done often.
+
+
+> > This is not a show stopper for me. Could be handled manually in future
+> > edits when code in the vicinity is touched..
+>
+> I will now write a new script which patch contributors should run
+> against modified files before committing and submitting.  This should
+> hopefully make it better in the long run.  But with that in mind, we
+> will need to re-run the reformat-all.sh script each time we decide to
+> modify uncrustify options.
+
+
+We have to be cautious here. Running uncrustify on is not something we
+should do frequently -- I thought this was a once in a lifetime
+reformatting to be followed by some self-imposed discipline for future
+patches guided by the CodeStyle page.
+
+First, uncrustify is not idempotent, although running two or three times
+appears to make the source settle into an invariant form. Sometimes
+multiple runs slightly messes up some otherwise good formatting.  Secondly,
+its an actively developed code so behaviour could change. In fact they
+already fixed the segfault bug that I had reported upstream.
+
+So I'd be wary of adopting a policy that patch submission be preceded by an
+uncrustify run.
+
+Selva
+
+--94eb2c05b50a378dc60543b4774b
+Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On 15/12/16 15:06, Christian Hesse wrote:
-> From: Christian Hesse <mail@...1798...>
->=20
-> The LZ4 function LZ4_compress_limitedOutput() is deprecated, compiler
-> gives warning:
->=20
-> warning: =E2=80=98LZ4_compress_limitedOutput=E2=80=99 is deprecated: use
-> LZ4_compress_default() instead
->=20
-> The new function LZ4_compress_default() appeared in r129 (1.7.0), so
-> replace the function there.
->=20
-> Signed-off-by: Christian Hesse <mail@...1798...>
-> ---
->  src/openvpn/comp-lz4.c | 4 ++++
->  1 file changed, 4 insertions(+)
->=20
-> diff --git a/src/openvpn/comp-lz4.c b/src/openvpn/comp-lz4.c
-> index 6b7c49b..a6ce4f7 100644
-> --- a/src/openvpn/comp-lz4.c
-> +++ b/src/openvpn/comp-lz4.c
-> @@ -87,7 +87,11 @@ do_lz4_compress(struct buffer *buf,
->              return false;
->          }
->=20=20
-> +#if defined LZ4_VERSION_NUMBER && LZ4_VERSION_NUMBER >=3D 10700
-> +        zlen =3D LZ4_compress_default((const char *)BPTR(buf), (char *)B=
-PTR(work), BLEN(buf), zlen_max );
-> +#else
->          zlen =3D LZ4_compress_limitedOutput((const char *)BPTR(buf), (ch=
-ar *)BPTR(work), BLEN(buf), zlen_max );
-> +#endif
->=20=20
->          if (zlen <=3D 0)
->          {
->=20
+<div dir=3D"ltr"><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">=
+On Thu, Dec 15, 2016 at 8:00 AM, David Sommerseth <span dir=3D"ltr">&lt;<a =
+href=3D"mailto:openvpn@...2080..." target=3D"_blank">openvpn@...2156...<wbr=
+>.net</a>&gt;</span> wrote:<br><blockquote class=3D"gmail_quote" style=3D"m=
+argin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex"><span>&gt; Th=
+e only issue I noticed is that some functions, for loops and switch<br>
+&gt; statements have their opening braces on the same line<br>
+&gt; ssl.c line 272, tun.c line 697 and many such in the several files.<br>
+&gt; (try grep &quot;) {$&quot;=C2=A0 *.c).<br>
+&gt;<br>
+&gt; Probably needed nl_switch_brace, nl_fcall_brace etc in the config --<b=
+r>
+&gt; urgh.. Too many options is a blessing and bane at the same time..<br>
+<br>
+</span>Agreed.=C2=A0 I think that we can do some minor reformatting changes=
+ later on<br>
+if we decide to change some more options.=C2=A0 Those reformatting changes<=
+br>
+will most likely not be as invasive as this one has been.<br></blockquote><=
+div><br></div><div>There are also some multi-line comments with closing &qu=
+ot;*/&quot; not on a line by itself.</div><div><br></div><div>If we want to=
+ fix any of this I think this is the time -- massive reformatting is not so=
+mething to be done often.</div><div><br></div><blockquote class=3D"gmail_qu=
+ote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex=
+">
+<span><br>
+&gt; This is not a show stopper for me. Could be handled manually in future=
+<br>
+&gt; edits when code in the vicinity is touched..<br>
+<br>
+</span>I will now write a new script which patch contributors should run<br>
+against modified files before committing and submitting.=C2=A0 This should<=
+br>
+hopefully make it better in the long run.=C2=A0 But with that in mind, we<b=
+r>
+will need to re-run the reformat-all.sh script each time we decide to<br>
+modify uncrustify options.</blockquote><div><br></div><div>We have to be ca=
+utious here. Running uncrustify on is not something we should do frequently=
+ -- I thought this was a once in a lifetime reformatting to be followed by =
+some self-imposed discipline for future patches guided by the CodeStyle pag=
+e. =C2=A0</div><div><br></div><div>First, uncrustify is not idempotent, alt=
+hough running two or three times appears to make the source settle into an =
+invariant form. Sometimes multiple runs slightly messes up some otherwise g=
+ood formatting.=C2=A0 Secondly, its an actively developed code so behaviour=
+ could change. In fact they already fixed the segfault bug that I had repor=
+ted upstream.</div><div><br></div><div>So I&#39;d be wary of adopting a pol=
+icy that patch submission be preceded by an uncrustify run.</div><div><br><=
+/div><div>Selva</div></div></div></div>
 
-This makes sense.  But I think we should do this in relation to an
-update of the compat-lz4 library we also ship in OpenVPN.  I'm running
-some tests now, and will submit a new mail thread which includes this
-patch together with the compat-lz4.[ch] update.
-
-This will be handled post v2.4.0 release, so we don't rush the testing
-of the LZ4 support and inadvertently break anything.
-
-
---=20
-kind regards,
-
-David Sommerseth
-OpenVPN Technologies, Inc
-
-
-
---77tCwwfJ3pSOSniRkKFcmg9apAnRHnQV5--
-
---kIM5Tv1RLK9rww8tH48q2nlqgQkWwUMhx
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBAgAGBQJYUqtCAAoJEIbPlEyWcf3y+WsP/1nAEhGcc9Lana+Mg5eTIz8k
-3LDsimZTMGZn9JGw7pozKqBPI0HtptPu9wEq5knKnnxXleelORot9LEDGmIHbByf
-qnVpHnHS2TtW31aqTkfWhjGaC/8fMMJYbaviXVKKTovVPgaXQWqS7KpNtVJliWdx
-tEEPLsA8HX7NzqZMCm5k5P4HEx2DFl7Wv24BtElGrPPRbdMjYM0m5F7CChHMP9Ln
-u5PHIKkLYprM4vErqL7VUgT4FtOX6HcO79mn9JsCo4OrK1Tuo92JUilAaWTP2A/t
-piVWZAqq+wdgbiG6yjbb9y9oJX/nkcU5hMpcxAQLaGbZV7z3h5O0Bokj7vnljfsn
-gTXyBkdhhIDOOjmMJ/8NZjz6FKZA8vjj/sGmbK4hWqI7bmBC5vxuWX4OQzZ86TZE
-ZH0FgqJHp29jlcqSZzUvzYwnIkalUSXUOop5xqgMS9slsXvK/L8PU+SzMfLaFuEH
-Tpr7EXaQDQS52f8cvICW2Xn+Wfdlrq9HDsa1Ik2ztJErMN+xK1wW8rZvqUxA96bM
-aLyKQz0ut/Y/gyqt1wOxTDyA0x/zXUGbdZAkL6F2A6jv7qUNC7CmuKogtViBvKzE
-GEv0I8/bO8XE5KcjFOAekjrkKVm6Gl45V4RYLxgHAeufRZJViZ/6XqNvvDp/yWik
-1FHWv5hqLFGa4myyv9Rq
-=BLdQ
------END PGP SIGNATURE-----
-
---kIM5Tv1RLK9rww8tH48q2nlqgQkWwUMhx--
+--94eb2c05b50a378dc60543b4774b--
 
