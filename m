@@ -1,14 +1,12 @@
 References: <20161216163218.25449-1-jm@...1926...>
-	<34dd18d1-a2fb-7e89-7a19-43603f0491ba@...1926...>
-	<f5ca3f0f-dd01-e82e-b339-68f5791e0928@...1435...>
-	<CAFHpkQEqybC9SEihZshuh5EzOZYbRMyceX8gGG75Yq4ipf2g-Q@...278...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <5eb3b7fa-2561-fc9d-b9d1-f8857672194c@...1227...>
-Date: Fri, 16 Dec 2016 18:26:36 +0100
+	<81545911-8680-4725-19ac-22cf94ffe4c3@...1435...>
+From: Julien Muchembled <jm@...1926...>
+Message-ID: <90278831-b7f6-2bb7-867c-0c3f719e3956@...1926...>
+Date: Fri, 16 Dec 2016 18:34:58 +0100
 MIME-Version: 1.0
-In-Reply-To: <CAFHpkQEqybC9SEihZshuh5EzOZYbRMyceX8gGG75Yq4ipf2g-Q@...278...>
-Subject: Re: [Openvpn-devel] What about adding -Werror=implicit
- -Werror=format -Werror=format-security ?
+In-Reply-To: <81545911-8680-4725-19ac-22cf94ffe4c3@...1435...>
+Subject: Re: [Openvpn-devel] [PATCH] Fix implicit declarations when
+ HAVE_OPENSSL_ENGINE is unset
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,30 +15,34 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>, Steffan Karger <steffan.karger@...1435...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
+To: openvpn-devel@lists.sourceforge.net
 
-Am 16.12.16 um 18:18 schrieb Илья Шипицин:
-> 
-> 
-> 2016-12-16 22:06 GMT+05:00 Steffan Karger <steffan.karger@...1435...
-> <mailto:steffan.karger@...1435...>>:
-> 
->     On 16-12-16 17:42, Julien Muchembled wrote:
->     > To avoid issues like https://community.openvpn.net/openvpn/ticket/792
->     <https://community.openvpn.net/openvpn/ticket/792> to happen again,
->     I wanted to also submit a patch that adds a few -Werror= flags.
->     However, I wonder what would be your preferred way to only add flags
->     that are supported by the compiler.
-> 
-> 
-> 
-> is it supported for clang ?
->  
-Yes. (At least on my Mac)
+Le 12/16/16 =E0 18:03, Steffan Karger a =E9crit :
+> On 16-12-16 17:32, Julien Muchembled wrote:
+>> This fixes a regression in commit 8e95e20913:
+>> on amd64, an implicit declaration of ERR_error_string leads to segfaults
+>> if the returned pointer does not fit in an 'int'.
+>>
+>> Trac: #792
+>>
+>> [...]
+>=20
+> ACK, fix is clearly correct.
+>=20
+> Though there must be more then just 'on amd64' to make this break - this
+> code has run an a *lot* of amd64 systems and this is the first breakage
+> report.  (Of course that doesn't mean in any way that we shouldn't fix
+> it, I'm just curious.)
 
-Arne
+As written in the subject, when HAVE_OPENSSL_ENGINE is unset, which may be =
+rare. Or for those who don't have, the pointer fits on 32 bits (probably th=
+e case if linked statically).
 
+I wrote more on #792 about what happened to us. We do build SSL with crypto=
+, but HAVE_OPENSSL_ENGINE was unset because of typos in the configure comma=
+nd.
+
+Julien
 
