@@ -1,11 +1,17 @@
-From: Matthias Andree <matthias.andree@...68...>
-Message-ID: <daf810b0-d8e8-4b89-0b45-87530d76303d@...68...>
-Date: Fri, 16 Dec 2016 00:23:58 +0100
+References: <1481728374-7196-1-git-send-email-davids@...515...>
+	<1481804534-26913-1-git-send-email-davids@...515...>
+	<CAA1Abx+LM1Z5O3wVwZ=i1cRqdbHr_KL8Hpg4GmAbdjgyfUs8bw@...278...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <9cf26722-cb54-282f-2afd-5c5776a8700e@...2080...>
+Date: Fri, 16 Dec 2016 01:09:14 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
+In-Reply-To: <CAA1Abx+LM1Z5O3wVwZ=i1cRqdbHr_KL8Hpg4GmAbdjgyfUs8bw@...278...>
+Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="6VjfuItN1p3nVsMhuwemlulgfcWxMviRe"
-Subject: [Openvpn-devel] CFT: OpenVPN 2.4 port update for FreeBSD
+	boundary="B3uExc0Jo8CLCwDXDrc8SF8H2QcBsCKvU"
+Subject: Re: [Openvpn-devel] [PATCH v2] auth-gen-token: Hardening memory
+ cleanup on auth-token failuers
+Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,60 +20,102 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Steffan Karger <steffan@...1856...>, David Sommerseth <davids@...515...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---6VjfuItN1p3nVsMhuwemlulgfcWxMviRe
-Content-Type: multipart/mixed; boundary="O12Rx4qNjSf0vUKL10VUgAV2P5N5lx6IL";
+--B3uExc0Jo8CLCwDXDrc8SF8H2QcBsCKvU
+Content-Type: multipart/mixed; boundary="86WBhjLhQVoSigFSJv1wTsWGCrXnE3avi";
 	protected-headers="v1"
-From: Matthias Andree <matthias.andree@...68...>
-To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
-Message-ID: <daf810b0-d8e8-4b89-0b45-87530d76303d@...68...>
-Subject: CFT: OpenVPN 2.4 port update for FreeBSD
+From: David Sommerseth <openvpn@...2080...>
+Reply-To: openvpn-devel@lists.sourceforge.net
+To: Steffan Karger <steffan@...1856...>, David Sommerseth <davids@...515...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Message-ID: <9cf26722-cb54-282f-2afd-5c5776a8700e@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH v2] auth-gen-token: Hardening memory
+	cleanup on auth-token failuers
+References: <1481728374-7196-1-git-send-email-davids@...515...>
+	<1481804534-26913-1-git-send-email-davids@...515...>
+	<CAA1Abx+LM1Z5O3wVwZ=i1cRqdbHr_KL8Hpg4GmAbdjgyfUs8bw@...278...>
+In-Reply-To: <CAA1Abx+LM1Z5O3wVwZ=i1cRqdbHr_KL8Hpg4GmAbdjgyfUs8bw@...278...>
 
---O12Rx4qNjSf0vUKL10VUgAV2P5N5lx6IL
-Content-Type: text/plain; charset="utf-8"
+--86WBhjLhQVoSigFSJv1wTsWGCrXnE3avi
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
 
-Greetings,
+[lets try unencrypted this time.]
 
-I've put up an OpenVPN 2.4-rc1 port for FreeBSD up for testing.
+On 15/12/16 22:52, Steffan Karger wrote:
+> Hi,
+>=20
+> On 15 December 2016 at 13:22, David Sommerseth <davids@...515...> wrote:
+>> Further improve the memory management when a clients --auth-token
+>> fails the server side token authentication enabled via --auth-gen-token.
+>>
+>> v2 - Add ASSERT() if base64 encoding of token fails
+>=20
+> This will need rebasing because of the reformatting.
+>=20
+>> @@ -1255,24 +1269,11 @@ verify_user_pass(struct user_pass *up, struct tl=
+s_multi *multi,
+>>           /* The token should be longer than the input when
+>>             * being base64 encoded
+>>             */
+>> -         if( openvpn_base64_encode(tok, AUTH_TOKEN_SIZE,
+>> -                                    &multi->auth_token) < AUTH_TOKEN_SI=
+ZE)
+>> -           {
+>> -             msg(D_TLS_ERRORS, "BASE64 encoding of token failed. "
+>> -                  "No auth-token will be activated now");
+>> [...]
+>> +          ASSERT(openvpn_base64_encode(tok, AUTH_TOKEN_SIZE,
+>> +                                       &multi->auth_token) < AUTH_TOKEN=
+_SIZE);
+>=20
+> Uhm, I think the < should be a > now?
+>=20
 
-Get it from https://people.freebsd.org/~mandree/openvpn-2.4.r1-v1.tar.xz
+*facepalm*
 
-Or review the diff at https://reviews.freebsd.org/D8813
+I was completely sure I had tested it.  I really did run tests.  I just
+ran the server and client on the opposite hosts.  So the VM which had
+not been updated which should run the client ran the server mode instead
+... thus no issues :/
 
-Cheers,
-Matthias
+I'll send a v3 patch now.
+
+--=20
+kind regards,
+
+David Sommerseth
+OpenVPN Technologies, Inc
 
 
 
+--86WBhjLhQVoSigFSJv1wTsWGCrXnE3avi--
 
-
-
---O12Rx4qNjSf0vUKL10VUgAV2P5N5lx6IL--
-
---6VjfuItN1p3nVsMhuwemlulgfcWxMviRe
+--B3uExc0Jo8CLCwDXDrc8SF8H2QcBsCKvU
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBCgAGBQJYUyYPAAoJEOQSsVbv84VayzMP/iVWEOOyJcWnp4Qw4mLOzJJR
-RKPPo+5Lz9A2nSZNMU99m3KZ9PS6LiZy+aTvnES2krJqg4PLyYY2qVUClKa5TnAj
-lZwZjjSF+fhlJUlrR1gU5Liy1YWtC0CqTsh3ss6UlrlxBwb2dZGwXJ9ywxKnDb4t
-PLV+MIGgZlV1FnT7bJ48ktLS5ujGuSUs3RQ1ZbB31pYy5bjWXWzv09p/n+hX+Urs
-EeScdem/1W0eExrDcjQ3ShBytPmX1Wyb6CvsT+vfQ7Hr9oTcO9qBQrGv30E1YsFX
-PuwbrIEfaPUF/gCKuVxQXOJBZXHKXRA3XpkxTTMJee8FsVVc8is04iCIt3mDnQoA
-Ft4IMPaz6Ok9MauUIYhtQDNEwXMOgKy+ua8kExJiWjXMdj7LPpjw6BAOT/nb/H9d
-ZPTfD5Xg2hkRTr5QtKpgBYRqZzJrBSVckXM9PZv6w8QuVUtY9tLz6MWmWGrpZYGT
-SC2ROdcrDYgVmoxP1Rh2F0wpypcVIywVO5cq+gieRop8CX3Cck9WAqksYaVRjsNd
-3cRZ2KbM4cn0XozRjpbmUBOcJgFhpDkJSeNtLiEsJei+eDdWr22iPIF3724jJRy4
-+g8583v0I+Lpb/ruCpvnzLl2+mhm2+1NSD9qFswiQ/6H0wTD1PeSPgNyy2kmQt+u
-9DaCXSU89WBPdKPx5o8i
-=kW6a
+iQIcBAEBAgAGBQJYUzCqAAoJEIbPlEyWcf3yX/wP/3155AFMYpqPqaOwQmNNZx/T
+9zF4WE07NFxAomhsIsfKGq0zBxQaM1WiymHqgf8qlUTYzMkCweCi9avCMl3SPXef
+B+iVA5kQRXu0r8iuzgA/yNpQwFShN9ZYht4qTpjRZI3BjIHEXJaQbtn4mvlFt+F2
+OCxxumwLis/+GSDAPy3FehU/l2Cf16Hw8RSEab4+P5NjK/fE8mxzRE4HAOX4E4cJ
+ayZyN8byYNoSRBBm8zd/6v7gm0GerLHZ2KmZU2FxDto6z+cc80PUdZ2t1ra7E64A
+TpNkHEXLteslCxiynG1uiBaBYXLuOr437pfwPTnw5emDhMh+Kf6psKa/u6o4eHOI
+cBv6Vc5BxwGb8N0YbDbZnGEDHxpAbXfJ58+5vKy26t1SZblsJlLTBNuwghycVemg
+eEzHStjjt248I9f8mANgKZUDNSXMD+KQbr6H5Lt8ziVg4q8v6pT08M2uHy8WH0Kf
+TRsC6oXFXiRJly+g2P20vtfv46k2ifvXNLwBeGgv/B9Ah0PrR1KdkQJbxF74XT45
+pYDjBmZLHkDAIt95OM4wZOpYcytNOYYta2JxsbefeKsTq/TNJu4VKy3C0vqqh8bz
+3ABN1MyrX8ELo6X93oD3nyCsqA2mzHX7OV1XwMyC4ZsXt9qvWVxokmK0Jp3kJl2d
+MnFHbAn4oNmJlrATdps2
+=TrF+
 -----END PGP SIGNATURE-----
 
---6VjfuItN1p3nVsMhuwemlulgfcWxMviRe--
+--B3uExc0Jo8CLCwDXDrc8SF8H2QcBsCKvU--
 
