@@ -1,10 +1,7 @@
-From: David Sommerseth <davids@...515...>
-Date: Fri, 16 Dec 2016 12:09:51 +0100
-Message-Id: <1481886591-27686-1-git-send-email-davids@...515...>
-In-Reply-To: <1481883907-26413-1-git-send-email-davids@...515...>
-References: <1481883907-26413-1-git-send-email-davids@...515...>
-Subject: Re: [Openvpn-devel] [PATCH applied] auth-gen-token: Hardening
-	memory cleanup on auth-token failuers
+From: Christian Hesse <list@...1798...>
+Date: Fri, 16 Dec 2016 16:57:55 +0100
+Message-Id: <20161216155755.29931-1-list@...1798...>
+Subject: [Openvpn-devel] [PATCH 1/1] do not race on RuntimeDirectory
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,46 +12,54 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: davids@...515...
-Cc: openvpn-devel@lists.sourceforge.net
+To: OpenVPN Development <openvpn-devel@lists.sourceforge.net>
+Cc: Christian Hesse <mail@...1798...>
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+From: Christian Hesse <mail@...1798...>
 
-Your patch has been applied to the master branch
+Different unit instances create and destroy the same RuntimeDirectory.
+This leads to running instances where the status file (and possibly
+more runtime data) is no longer accessible.
 
-commit 5d4cabff18718981a66ab9066b49297e42cb22b4
-Author: David Sommerseth
-Date:   Fri Dec 16 11:25:07 2016 +0100
+So create a RuntimeDirectory per instance.
 
-     auth-gen-token: Hardening memory cleanup on auth-token failuers
+Signed-off-by: Christian Hesse <mail@...1798...>
+---
+ distro/systemd/openvpn-client@...1685... | 2 +-
+ distro/systemd/openvpn-server@...1685... | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
-     Signed-off-by: David Sommerseth <davids@...515...>
-     Acked-by: Steffan Karger <steffan.karger@...1435...>
-     Message-Id: <1481883907-26413-1-git-send-email-davids@...515...>
-     URL: http://www.mail-archive.com/search?l=mid&q=1481883907-26413-1-git-send-email-davids@...515...
+diff --git a/distro/systemd/openvpn-client@...1685... b/distro/systemd/openvpn-client@...1685...
+index 5618af3..fcb5302 100644
+--- a/distro/systemd/openvpn-client@...1685...
++++ b/distro/systemd/openvpn-client@...1685...
+@@ -9,7 +9,7 @@ Documentation=https://community.openvpn.net/openvpn/wiki/HOWTO
+ [Service]
+ Type=notify
+ PrivateTmp=true
+-RuntimeDirectory=openvpn-client
++RuntimeDirectory=openvpn-client@%i
+ RuntimeDirectoryMode=0710
+ WorkingDirectory=/etc/openvpn/client
+ ExecStart=/usr/sbin/openvpn --suppress-timestamps --nobind --config %i.conf
+diff --git a/distro/systemd/openvpn-server@...1685... b/distro/systemd/openvpn-server@...1685...
+index b9b4dba..8b240cf 100644
+--- a/distro/systemd/openvpn-server@...1685...
++++ b/distro/systemd/openvpn-server@...1685...
+@@ -9,10 +9,10 @@ Documentation=https://community.openvpn.net/openvpn/wiki/HOWTO
+ [Service]
+ Type=notify
+ PrivateTmp=true
+-RuntimeDirectory=openvpn-server
++RuntimeDirectory=openvpn-server@%i
+ RuntimeDirectoryMode=0710
+ WorkingDirectory=/etc/openvpn/server
+-ExecStart=/usr/sbin/openvpn --status %t/openvpn-server/status-%i.log --status-version 2 --suppress-timestamps --config %i.conf
++ExecStart=/usr/sbin/openvpn --status %t/openvpn-server@%i/status.log --status-version 2 --suppress-timestamps --config %i.conf
+ CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_CHROOT CAP_DAC_OVERRIDE
+ LimitNPROC=10
+ DeviceAllow=/dev/null rw
+-- 
+2.11.0
 
-
-- --
-kind regards,
-
-David Sommerseth
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBAgAGBQJYU8t9AAoJEIbPlEyWcf3yoR0P/ilDxQ9iHIbMLnOBS/nyraJs
-hivVeWBK+OLYTP6ysMist8Rok5Nky6+m6SPuagGD5QMaFMVrPvTrDoWqYJxKhMM+
-cHZSr0xPTwujTRr/BCqEiVCpJdO1SKVPgWbwPnXE7Jh1a35MnPC7c/IoEgFqY8j4
-DfG4tCL1AoS0b9g9RozVkTr0RYLJaTIos6zHV57wQfJOezy1njBrK2dPC8bDmHic
-h7JVYPma7LgzOGsq7Iuo2Hc3Gp5gAbckMWkAF3pbPbIS2gYMiXdSK2Dgur/1U90S
-BvbwQ5BAb8ynzgVnKXFaTsjHLVsnGwKU1vlB9qi5yfdyNjpayuwAU9YrtSGeVCvP
-xw07tI9Jrsbu3ssFC/8l0VgmPRNmPADhsK+JU0rAmA/8ZLsqirYI/z+bbTvxMm8+
-0QFsV7bU1BK8TwhzVY+1HCtdNkpGrARAguK+2zVY3Q5ZLTyRjHNiVHeL2GXW7YQR
-ML7XXzw06jAfbR277U/7kzhqiYMoh2uV80+BboO7KKeaQP3QocCaQsxdU7ziKWUm
-yO7rbHHwFOneFFK4MvDHYfY0w/sdYrtepDvi/g617I/0u3xD+/1HPQ4PgOJ0dUNT
-DAULMMIwSOjU9MjEIBZaujHuLFRS6JXEtHlL5R1fdZvaP/tKXVNu5ix5jF7h2qmx
-VA7qLW0X32b+5ZTt9q7N
-=GgJj
------END PGP SIGNATURE-----
 
