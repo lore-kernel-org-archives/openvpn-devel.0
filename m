@@ -1,12 +1,8 @@
-References: <1481728374-7196-1-git-send-email-davids@...515...>
-	<1481883907-26413-1-git-send-email-davids@...515...>
-From: Steffan Karger <steffan.karger@...1435...>
-Message-ID: <24b21887-c547-eec8-01be-1f2cc95d94dc@...1435...>
-Date: Fri, 16 Dec 2016 11:35:16 +0100
-MIME-Version: 1.0
-In-Reply-To: <1481883907-26413-1-git-send-email-davids@...515...>
-Subject: Re: [Openvpn-devel] [PATCH v4] auth-gen-token: Hardening memory
- cleanup on auth-token failuers
+From: David Sommerseth <davids@...515...>
+Date: Fri, 16 Dec 2016 12:09:12 +0100
+Message-Id: <1481886552-27529-1-git-send-email-davids@...515...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Don't reopen tun if cipher
+	changes
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,117 +11,52 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net, Steffan Karger <steffan@...1856...>
 
-On 16-12-16 11:25, David Sommerseth wrote:
-> Further improve the memory management when a clients --auth-token
-> fails the server side token authentication enabled via --auth-gen-token.
-> 
-> v2 - Add ASSERT() if base64 encoding of token fails
-> v3 - Use proper boolean logic in ASSERT()
-> v4 - Rebase against The Great Reformatting
-> 
-> Signed-off-by: David Sommerseth <davids@...515...>
-> ---
->  src/openvpn/ssl_verify.c | 46 ++++++++++++++++++++++++----------------------
->  1 file changed, 24 insertions(+), 22 deletions(-)
-> 
-> diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
-> index 54a3416..e901202 100644
-> --- a/src/openvpn/ssl_verify.c
-> +++ b/src/openvpn/ssl_verify.c
-> @@ -1213,6 +1213,21 @@ verify_user_pass_management(struct tls_session *session, const struct user_pass
->  }
->  #endif /* ifdef MANAGEMENT_DEF_AUTH */
->  
-> +/**
-> + *  Wipes the authentication token out of the memory, frees and cleans up related buffers and flags
-> + *
-> + *  @param multi  Pointer to a multi object holding the auth_token variables
-> + */
-> +static void
-> +wipe_auth_token(struct tls_multi *multi)
-> +{
-> +    secure_memzero(multi->auth_token, AUTH_TOKEN_SIZE);
-> +    free(multi->auth_token);
-> +    multi->auth_token = NULL;
-> +    multi->auth_token_sent = false;
-> +}
-> +
-> +
->  /*
->   * Main username/password verification entry point
->   */
-> @@ -1264,6 +1279,7 @@ verify_user_pass(struct user_pass *up, struct tls_multi *multi,
->          /* Ensure that the username has not changed */
->          if (!tls_lock_username(multi, up->username))
->          {
-> +            wipe_auth_token(multi);
->              ks->authenticated = false;
->              goto done;
->          }
-> @@ -1275,6 +1291,7 @@ verify_user_pass(struct user_pass *up, struct tls_multi *multi,
->              && (multi->auth_token_tstamp + session->opt->auth_token_lifetime) < now)
->          {
->              msg(D_HANDSHAKE, "Auth-token for client expired\n");
-> +            wipe_auth_token(multi);
->              ks->authenticated = false;
->              goto done;
->          }
-> @@ -1283,10 +1300,7 @@ verify_user_pass(struct user_pass *up, struct tls_multi *multi,
->          if (memcmp_constant_time(multi->auth_token, up->password,
->                                   strlen(multi->auth_token)) != 0)
->          {
-> -            secure_memzero(multi->auth_token, AUTH_TOKEN_SIZE);
-> -            free(multi->auth_token);
-> -            multi->auth_token = NULL;
-> -            multi->auth_token_sent = false;
-> +            wipe_auth_token(multi);
->              ks->authenticated = false;
->              tls_deauthenticate(multi);
->  
-> @@ -1374,30 +1388,18 @@ verify_user_pass(struct user_pass *up, struct tls_multi *multi,
->              /* The token should be longer than the input when
->               * being base64 encoded
->               */
-> -            if (openvpn_base64_encode(tok, AUTH_TOKEN_SIZE,
-> -                                      &multi->auth_token) < AUTH_TOKEN_SIZE)
-> -            {
-> -                msg(D_TLS_ERRORS, "BASE64 encoding of token failed. "
-> -                    "No auth-token will be activated now");
-> -                if (multi->auth_token)
-> -                {
-> -                    secure_memzero(multi->auth_token, AUTH_TOKEN_SIZE);
-> -                    free(multi->auth_token);
-> -                    multi->auth_token = NULL;
-> -                }
-> -            }
-> -            else
-> -            {
-> -                multi->auth_token_tstamp = now;
-> -                dmsg(D_SHOW_KEYS, "Generated token for client: %s",
-> -                     multi->auth_token);
-> -            }
-> +            ASSERT(openvpn_base64_encode(tok, AUTH_TOKEN_SIZE,
-> +                                         &multi->auth_token) > AUTH_TOKEN_SIZE);
-> +            multi->auth_token_tstamp = now;
-> +            dmsg(D_SHOW_KEYS, "Generated token for client: %s",
-> +                 multi->auth_token);
->          }
->  
->          if ((session->opt->ssl_flags & SSLF_USERNAME_AS_COMMON_NAME))
->          {
->              set_common_name(session, up->username);
->          }
-> +
->  #ifdef ENABLE_DEF_AUTH
->          msg(D_HANDSHAKE, "TLS: Username/Password authentication %s for username '%s' %s",
->              ks->auth_deferred ? "deferred" : "succeeded",
-> 
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-Code looks good now, and passes my tests. ACK.
+ACK.  Tested it with some additional debug instrumentation, and
+it seems to work as intended.
 
--Steffan
+Your patch has been applied to the master branch.
+
+commit ec4dff3bbdcc9fedf7844701dc5aa2679d503667
+Author: Steffan Karger <steffan@...1856...>
+Date:   Thu Dec 15 22:46:06 2016 +0100
+
+     Don't reopen tun if cipher changes
+
+     Trac: #761
+     Signed-off-by: Steffan Karger <steffan@...1856...>
+     Acked-by: David Sommerseth <davids@...515...>
+     Message-Id: <1481838366-32335-1-git-send-email-steffan@...1856...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13579.html
+     Signed-off-by: David Sommerseth <davids@...515...>
+
+
+- --
+kind regards,
+
+David Sommerseth
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBAgAGBQJYU8rcAAoJEIbPlEyWcf3yS/YQAI9TARrs0yi6w/fYCvY3S/MW
+Wzh4shl/L4XJe1fv2zT3uqgrfSJn81ZvRw8VFukzB8iCq/EawHb0h0kYifPGUkj8
+SFGZiTKhmX2Qkp1YzWUKBOD6pRcNET3BG6q/U+ToGXoVdmflSThjYHG6Y6geAxgW
+YB1exqSq6bqXEddO6O7Ttf0tSe4l7oOol8jlFqLoQ6Sbo4mojJ+r8KKql24b3XYo
+/Tn12WiT+tmpDYpuTqDFfLin089uyhu6IApwFrouUnhqW1wllPr58ciPgFVEpCQl
+0G0HGHmhoItyOZUv6ipL7AyzuSSsuCWDxKZFs+LzC0pYHXTYU4Cj9Ea60vfuERTb
+0dEQbuTXVj6lBN0LeP4RI96urI+Vst4VHdO4eo4FLWp28vYs0XzHtqQmGd3sNnQ/
+AKcxAYa76kVfEEz7Fo8O55Ef5EyCUKyTC9k6kB6Ztqn6iMd1fKyoe5IlL4QbQXw7
+HBulcpNXBROlVDYG3pa+5b4AZE4Jczu7jTykdG0WtmcX0Iz7GOqTVkUrg8g+lrHB
+OkFkVqNMGbGMOgqbG3HfdgkKr6mRg+hMoW77SOF9+EMYn0dlbnfJUR32iDzvDOqF
+RqRBrHznzoDn8OtFFVib8lpzrD6AyJu9bp8Pxqep3wxxeMtNjHQyycNk0MksCNxF
+58jSp6nfGol9d0hzEW65
+=HQos
+-----END PGP SIGNATURE-----
 
