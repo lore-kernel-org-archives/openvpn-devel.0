@@ -1,11 +1,17 @@
-References: <20161216155755.29931-1-list@...1798...>
-	<0f4adf76-7aa8-99e1-8fa4-e11f4e574909@...2080...>
-From: debbie10t <debbie10t@...277...>
-Message-ID: <4a682272-f9a5-5c49-49ff-daf688ec804b@...277...>
-Date: Fri, 16 Dec 2016 22:33:54 +0000
+Date: Sat, 17 Dec 2016 11:05:20 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20161217100520.GR78624@...1296...>
+References: <f5ca3f0f-dd01-e82e-b339-68f5791e0928@...1435...>
+	<20161216182659.18194-1-jm@...1926...>
+	<dfbcd54a-29c2-d8e5-1200-66f217832063@...1435...>
+	<44d2e307-1954-de7f-9979-68728de900b3@...1926...>
 MIME-Version: 1.0
-In-Reply-To: <0f4adf76-7aa8-99e1-8fa4-e11f4e574909@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH 1/1] do not race on RuntimeDirectory
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="veZQh2nSsG1B2+Ku"
+Content-Disposition: inline
+In-Reply-To: <44d2e307-1954-de7f-9979-68728de900b3@...1926...>
+Subject: Re: [Openvpn-devel] [PATCH] Build with a few -Werror= flags if the
+ compiler supports them
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,56 +20,53 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+To: Julien Muchembled <jm@...1926...>
+Cc: openvpn-devel@lists.sourceforge.net
 
+--veZQh2nSsG1B2+Ku
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
+Hi,
 
-On 16/12/16 18:14, David Sommerseth wrote:
-> On 16/12/16 16:57, Christian Hesse wrote:
->> From: Christian Hesse <mail@...1798...>
->>
->> Different unit instances create and destroy the same RuntimeDirectory.
->> This leads to running instances where the status file (and possibly
->> more runtime data) is no longer accessible.
->>
->> So create a RuntimeDirectory per instance.
->>
->> Signed-off-by: Christian Hesse <mail@...1798...>
->> ---
->>  distro/systemd/openvpn-client@...1685... | 2 +-
->>  distro/systemd/openvpn-server@...1685... | 4 ++--
->>  2 files changed, 3 insertions(+), 3 deletions(-)
->>
->> diff --git a/distro/systemd/openvpn-client@...1685... b/distro/systemd/openvpn-client@...1685...
->> index 5618af3..fcb5302 100644
->> --- a/distro/systemd/openvpn-client@...1685...
->> +++ b/distro/systemd/openvpn-client@...1685...
->> @@ -9,7 +9,7 @@ Documentation=https://community.openvpn.net/openvpn/wiki/HOWTO
->>  [Service]
->>  Type=notify
->>  PrivateTmp=true
->> -RuntimeDirectory=openvpn-client
->> +RuntimeDirectory=openvpn-client@%i
->
-> I am quite sure we tested this, without any luck.  We ended up with a
-> directory named openvpn-client@%i ... well, we used openvpn-client-%i,
-> but the principle should be the same.
->
-> This *might* have been fixed in a newer systemd releases, but as we have
-> RHEL7 as the oldest release we need to ensure this works properly there too.
->
-> For the server side, we used status-%i.log to avoid clashing on the
-> status log.
->
-> debbie10t did plenty of testing with various configurations, so he can
-> probably fill out more details in the various test cases he used.  We
-> should probably document those tests in our wiki though.
+On Fri, Dec 16, 2016 at 11:16:08PM +0100, Julien Muchembled wrote:
+> BTW, instead of failing on these 3 specific warnings, we could go the opp=
+osite way, since -Wall is quite silent. I suggest:
+>=20
+>   -Wall -Wno-unused -Wno-pointer-sign -Werror -Wno-error=3Dstrict-aliasin=
+g -Werror=3Dformat-security
 
-This was spotted but I did not take sufficient ownership ..
+NAK to "-Wall -Werror", unless you've tested that this does not break=20
+compilation on any of the supported platforms.
 
-I will happily test @Christian 's final patch.
+The world is bigger than Linux.
 
-regards
+gert
+
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--veZQh2nSsG1B2+Ku
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJYVQ3gAAoJEB2Cnv7KVigS6EQMAJWRjeLFJfH2g71rUrwxsGkJ
+obnY8duPKiuUpkRjOzBkZBwuRYUu8bOX07lTjF9Xq0WXQTJySRFrEaVeIEj/zk1o
+Bm+68i7stUbBLIADuqfyqJiU0j1R03BIHC70ZdhBalT9a1iejwv2bJCjy5mJwIr/
+t8b7h3U2YPuVmGXZv1yJCw821mq7bIJJByS1N/1n7tfqtYGvsxYfOtIXYZOQIceJ
+75a5LWSPtohECRU5phlZNlmpSuIcTJ6mEhuOGPWBBjWV+3sytJdTs8G7VkQHgiNu
+v7Y9Zv5pYtSDgnnmJYATW3OnQspYbvTMAn0a1YfG2yzoHWfhc5MDNegqhXtHjVHn
+ya0Jaq8k639kBzk9h8/x1k9F+836s7QYjIdwNrIz+sZbim3gF+nPVxCz2rxlDf7j
+UfNSrPJsXZh4Ta1hjMR19mfy9LrTD8vXSg5fk2+apgrWwj7z3SYTwl14NhoVdVWr
+WKcg5fjIhak3eLN6tpOdYzH3xjnfcZuKhSGzHbYCLg==
+=06KW
+-----END PGP SIGNATURE-----
+
+--veZQh2nSsG1B2+Ku--
 
