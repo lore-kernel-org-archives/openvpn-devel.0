@@ -1,20 +1,16 @@
-References: <CAFHpkQEKrJqNB2ZmhAwKGebVb6SB75HpnWcrw_niSaALL_S4mA@...278...>
-	<CAA1AbxJZL70qY=ivMvskeUapj0V_+z_LVnM2Zp2LxAJT4t62vA@...278...>
-	<CAFHpkQEnATPgCyxsLW6bpC5Qr-Cdh=+4X4MRXxgUD+orKpq+EQ@...278...>
-	<20161121174953.GM28918@...1296...>
-	<CAFHpkQFZD+hYzq_FW075wQt5AopcyCP20BEDzLsTx5Vq6uko3Q@...278...>
-	<d48609b7-43df-80d5-a57f-e96e85ad4389@...2080...>
-	<CAFHpkQHxVWvHSFK2hS7CV8ytUnxUHi5ZfjSOiuLBfWdufzMrCQ@...278...>
-	<9048486e-03d9-7aa1-74f8-892a9cc7c1ee@...515...>
-	<CAFHpkQHtPm2gPfHYEngJoMymUxt8iOFA7L0z+p54oVSNEmEPFQ@...278...>
-	<4ea0b775-5681-b908-f06d-9251d28e8c8a@...515...>
-	<c41ad01c-d1a2-cf2c-4876-c22954ae90a9@...2080...>
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <e93e0d67-963a-d677-7d67-323b46e6c3c7@...515...>
-Date: Mon, 19 Dec 2016 15:49:50 +0200
+References: <CAFHpkQGN61ikifN6b+ukKuT-xX5o8k2V4WyOJXOx7deQr4VAaQ@...278...>
+	<45031966-d411-018a-a1c8-091d2089c484@...515...>
+	<CAFHpkQGfYLSeKVYWoyf0qu2FFgVt1Yc=jdGb85qVf1RSWK=1qw@...278...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <fb36087b-2251-f26c-d1bf-9582f717d201@...2080...>
+Date: Mon, 19 Dec 2016 14:50:35 +0100
 MIME-Version: 1.0
-In-Reply-To: <c41ad01c-d1a2-cf2c-4876-c22954ae90a9@...2080...>
-Subject: Re: [Openvpn-devel] https://travis-ci.org/OpenVPN/openvpn/builds
+In-Reply-To: <CAFHpkQGfYLSeKVYWoyf0qu2FFgVt1Yc=jdGb85qVf1RSWK=1qw@...278...>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="OdfTqBJs12xlC5I697bevgMMtl8jCKKDe"
+Subject: Re: [Openvpn-devel] Google Summer of Code
+Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -23,53 +19,74 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"; format=flowed
+To: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>, =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--OdfTqBJs12xlC5I697bevgMMtl8jCKKDe
+Content-Type: multipart/mixed; boundary="DUenCrQPp6wHS7FQsQjP44pgkDDv4jPFS";
+	protected-headers="v1"
+From: David Sommerseth <openvpn@...2080...>
+Reply-To: openvpn-devel@lists.sourceforge.net
+To: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>,
+	=?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Message-ID: <fb36087b-2251-f26c-d1bf-9582f717d201@...2080...>
+Subject: Re: [Openvpn-devel] Google Summer of Code
+References: <CAFHpkQGN61ikifN6b+ukKuT-xX5o8k2V4WyOJXOx7deQr4VAaQ@...278...>
+	<45031966-d411-018a-a1c8-091d2089c484@...515...>
+	<CAFHpkQGfYLSeKVYWoyf0qu2FFgVt1Yc=jdGb85qVf1RSWK=1qw@...278...>
+In-Reply-To: <CAFHpkQGfYLSeKVYWoyf0qu2FFgVt1Yc=jdGb85qVf1RSWK=1qw@...278...>
+
+--DUenCrQPp6wHS7FQsQjP44pgkDDv4jPFS
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net, =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0Lg=?= =?UTF-8?B?0YbQuNC9?= <chipitsine@...277...>
 
-Il 19/12/2016 15:44, David Sommerseth ha scritto:
-> On 19/12/16 11:01, Samuli Sepp=C3=A4nen wrote:
-> [...snip...]
->> Right now cmocka tests are skipped if
->>
->> a) cmocka Git submodule is not initialized
->> b) CMake is not installed
->>
->> See commit 45f6e7991cf for details.
->>
->> Travis logs say this:
->>
->> $ git clone --depth=3D50 --branch=3Dmaster
->> https://github.com/OpenVPN/openvpn.git OpenVPN/openvpn
->> $ git submodule update --init --recursive
->>
->> Which means that cmocka Git submodule gets sucked in automatically. So
->> that leaves us with the following options afaics:
->>
->> 1) Remove the cmocka directory after the fact (rather nasty)
->
-> In deed nasty.  Why not rather detect if it os OSX and skip the 'git
-> submodule' step?
+On 19/12/16 11:01, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=B8=D1=86=
+=D0=B8=D0=BD wrote:
+>=20
+>     I also wonder if this should be a GSoC project for network-manager,
+>     not OpenVPN...
+>=20
+>=20
+> it might be anybody's project.
 
-Yes, this would suck much less.
+Well, that's true in some sense.  But when it comes to the mentor side
+of things this particular project needs to be tied to the NetworkManager
+team
 
-Chipitsine: could you have a look how this could be done? Basically we'd=20
-need to different Git command than the above if MacOS X is detected.
+--=20
+kind regards,
+
+David Sommerseth
+OpenVPN Technologies, Inc
 
 
->
->
->> 2) Ensure that CMake is not installed on MacOS X (does mbedTLS require
->> this?)
->
-> If mbedTLS is built from source, then I believe CMake is needed.
->
->
->> 3) Allow the user to select if cmocka tests are run or not
->
-> Try to avoid adding more options ... rather try to have some reasonable
-> defaults which is auto-detected based on reasonable triggers (such as
-> distro/platform)
->
->
+
+--DUenCrQPp6wHS7FQsQjP44pgkDDv4jPFS--
+
+--OdfTqBJs12xlC5I697bevgMMtl8jCKKDe
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBAgAGBQJYV+WrAAoJEIbPlEyWcf3yJCgQALGTg0JW+YrY88BLLsB/SqjN
+GXw3uaCMWUiz37VcWqvEnou8yj0r3sWI/75oCA2iDpLyG5uRy59DihEvC49u2dtX
+nvmc/uk/DrFifBp1EOqsOZHXhqqAuMzi7nIL9MZVJrpFbbl48q0xKhbhA6Drru4k
+wGD8Pqqgflslpykk2DIn0kGEl6lnU996Lt6TALoKMzZZODhSH7nPVccD0u4yXRUH
+tj7kxChMp9KzISRbtAZHAXIYTlsyYjuYxplbMJCoXLhB45NuPyz1vz5vnw0gUlAm
+LoJrBNZ/f5bkImGh3hh700VJFiX0SVyrTpPzWi6X4ure8x9LKDW4EfDgsXdPFEfi
+WRF6h3mcKp2zjFnP7Zl2K8/TaVv8TKDZ4eMSGGPPTbS6+5oFRMkXX5koA1c7xXTk
+mi3kW9Uadl3JBXS038o1hJGC17/S/RaD7aEydACZ4UPX7UmbUE+I1EK21Q8WbJAA
+8I6YXCZ0JgC0RJMcMDudJqW0ub2mG5tz0KYx4Q6jTnrNtaSdfPOyEts189hv1rPi
+dTG/p2n3ZshVTM60NgTsP+at34jdIyoQurBZhdGnmp3AiNrWZQKZob9wInuwqgVc
+K9WlRKBb7iyIHdey0deOwBVFfpHU5BzpAAXKIxZ5qeicpJE3aSI56W22UoPQ7OcV
+T2nKOKPdmxw9yu44Po5l
+=O+iv
+-----END PGP SIGNATURE-----
+
+--OdfTqBJs12xlC5I697bevgMMtl8jCKKDe--
 
