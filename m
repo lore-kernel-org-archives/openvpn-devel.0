@@ -1,18 +1,20 @@
-References: <CAFHpkQEKrJqNB2ZmhAwKGebVb6SB75HpnWcrw_niSaALL_S4mA@...278...>
-	<CAA1AbxJZL70qY=ivMvskeUapj0V_+z_LVnM2Zp2LxAJT4t62vA@...278...>
-	<CAFHpkQEnATPgCyxsLW6bpC5Qr-Cdh=+4X4MRXxgUD+orKpq+EQ@...278...>
-	<20161121174953.GM28918@...1296...>
-	<CAFHpkQFZD+hYzq_FW075wQt5AopcyCP20BEDzLsTx5Vq6uko3Q@...278...>
-	<d48609b7-43df-80d5-a57f-e96e85ad4389@...2080...>
-	<CAFHpkQHxVWvHSFK2hS7CV8ytUnxUHi5ZfjSOiuLBfWdufzMrCQ@...278...>
-	<9048486e-03d9-7aa1-74f8-892a9cc7c1ee@...515...>
-	<CAFHpkQHtPm2gPfHYEngJoMymUxt8iOFA7L0z+p54oVSNEmEPFQ@...278...>
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <4ea0b775-5681-b908-f06d-9251d28e8c8a@...515...>
-Date: Mon, 19 Dec 2016 12:01:33 +0200
+References: <f5ca3f0f-dd01-e82e-b339-68f5791e0928@...1435...>
+	<20161216182659.18194-1-jm@...1926...>
+	<dfbcd54a-29c2-d8e5-1200-66f217832063@...1435...>
+	<44d2e307-1954-de7f-9979-68728de900b3@...1926...>
+	<20161217100520.GR78624@...1296...>
+	<CAA1AbxJ+noz-HNHXS0Zrq3mScHJBRH7fQgSBP9F-b9J2LjKRPg@...278...>
+	<20161217104410.GS78624@...1296...>
+From: Julien Muchembled <jm@...1926...>
+Message-ID: <84783135-c6c8-7e72-56d9-d426cdc4ef11@...1926...>
+Date: Mon, 19 Dec 2016 11:34:56 +0100
 MIME-Version: 1.0
-In-Reply-To: <CAFHpkQHtPm2gPfHYEngJoMymUxt8iOFA7L0z+p54oVSNEmEPFQ@...278...>
-Subject: Re: [Openvpn-devel] https://travis-ci.org/OpenVPN/openvpn/builds
+In-Reply-To: <20161217104410.GS78624@...1296...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature";
+	boundary="vIw55hCXNuCtDv8JW4CqaKanCKJwnfVAO"
+Subject: Re: [Openvpn-devel] [PATCH] Build with a few -Werror= flags if the
+ compiler supports them
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,151 +23,102 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"; format=flowed
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--vIw55hCXNuCtDv8JW4CqaKanCKJwnfVAO
+Content-Type: multipart/mixed; boundary="uFOAKNkTbSWNUNv7FxOxTCgmRUgMJS2dp";
+	protected-headers="v1"
+From: Julien Muchembled <jm@...1926...>
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Message-ID: <84783135-c6c8-7e72-56d9-d426cdc4ef11@...1926...>
+Subject: Re: [Openvpn-devel] [PATCH] Build with a few -Werror= flags if the
+	compiler supports them
+References: <f5ca3f0f-dd01-e82e-b339-68f5791e0928@...1435...>
+	<20161216182659.18194-1-jm@...1926...>
+	<dfbcd54a-29c2-d8e5-1200-66f217832063@...1435...>
+	<44d2e307-1954-de7f-9979-68728de900b3@...1926...>
+	<20161217100520.GR78624@...1296...>
+	<CAA1AbxJ+noz-HNHXS0Zrq3mScHJBRH7fQgSBP9F-b9J2LjKRPg@...278...>
+	<20161217104410.GS78624@...1296...>
+In-Reply-To: <20161217104410.GS78624@...1296...>
+
+--uFOAKNkTbSWNUNv7FxOxTCgmRUgMJS2dp
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
-To: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Il 19/12/2016 11:38, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=B8=D1=
-=86=D0=B8=D0=BD ha scritto:
->
->
-> 2016-12-19 14:11 GMT+05:00 Samuli Sepp=C3=A4nen <samuli@...515...
-> <mailto:samuli@...515...>>:
->
->     Il 19/12/2016 10:22, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=
-=B8=D1=86=D0=B8=D0=BD ha scritto:
->
->
->
->         2016-11-27 4:29 GMT+05:00 David Sommerseth
->         <openvpn@...2080...
->         <mailto:openvpn@...2080...>
->         <mailto:openvpn@...2080...
->         <mailto:openvpn@...2080...>>>:
->
->             On 26/11/16 12:32, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=
-=BF=D0=B8=D1=86=D0=B8=D0=BD wrote:
->             >
->             >
->             > 2016-11-21 22:49 GMT+05:00 Gert Doering
->         <gert@...1296... <mailto:gert@...1296...>
->         <mailto:gert@...1296... <mailto:gert@...1296...>>
->             > <mailto:gert@...1296... <mailto:gert@...1296...>
->         <mailto:gert@...1296... <mailto:gert@...1296...>>>>:
->             >
->             >     Hi,
->             >
->             >     On Mon, Nov 21, 2016 at 10:31:45PM +0500, ????????
->         ?????????????? wrote:
->             >     > this line
->             >     >
->             >     >
->         https://github.com/OpenVPN/openvpn/blob/master/tests/unit_tests/o=
-penvpn/Makefile.am#L17
->         <https://github.com/OpenVPN/openvpn/blob/master/tests/unit_tests/=
-openvpn/Makefile.am#L17>
->
->         <https://github.com/OpenVPN/openvpn/blob/master/tests/unit_tests/=
-openvpn/Makefile.am#L17
->         <https://github.com/OpenVPN/openvpn/blob/master/tests/unit_tests/=
-openvpn/Makefile.am#L17>>
->             >
->          <https://github.com/OpenVPN/openvpn/blob/master/tests/unit_tests=
-/openvpn/Makefile.am#L17
->         <https://github.com/OpenVPN/openvpn/blob/master/tests/unit_tests/=
-openvpn/Makefile.am#L17>
->
->         <https://github.com/OpenVPN/openvpn/blob/master/tests/unit_tests/=
-openvpn/Makefile.am#L17
->         <https://github.com/OpenVPN/openvpn/blob/master/tests/unit_tests/=
-openvpn/Makefile.am#L17>>>
->             >     >
->             >     > causes an error
->             >
->             >     GNU LD manpage says this is a trick to make it link
->         "another function"
->             >     "--wrap parse_line" would make it link
->         __wrap_parse_line() instead -
->             >     most likely because @d12fk provided a stub function
->         that mocks the
->             >     result (or whatever).
->             >
->             >     Have not looked into this in more detail.
->             >
->             >
->             >
->         http://www.mockator.com/projects/mockator/wiki/Wrap_Functions
->         <http://www.mockator.com/projects/mockator/wiki/Wrap_Functions>
->
->         <http://www.mockator.com/projects/mockator/wiki/Wrap_Functions
->         <http://www.mockator.com/projects/mockator/wiki/Wrap_Functions>>
->             >
->             > "Alas, this feature is *only available with the GNU tool
->         chain on
->             > Linux*. GCC for Mac OS X does not offer the linker flag
->         |-wrap|. "
->             >
->             > should we skip those tests on osx ? or someone will
->         rewrite them ?
->
->             I'd hold back a little bit.  I know Arne, Heiko and some
->         people from
->             #cmocka on FreeNode had a discussion about this issue
->         earlier this week.
->              I don't know what they agreed on, but there was a
->         discussion where they
->             looked at a few alternatives at least.
->
->
->
->         any news on that ?
->
->
->     We discussed this in previous IRC meeting, and there is still no
->     real fix:
->
->     <https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg=
-13558.html
->     <https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg=
-13558.html>>
->
->     The easiest "fix" would be to just disable cmocka unit tests for
->     MacOS X in .travis.yml. I believe the unit tests behave exactly the
->     same on every platform(?), so removing MacOS X would not have any
->     negative impact on code quality.
->
->
-> ok, can you send a patch on that ?
->
+Le 12/17/16 =E0 11:44, Gert Doering a =E9crit :
+> Taking 2.4_rc2 and building on AIX with -Wall -Wno-pointer-sign is
+> actually much less bad than I thought :-) - but there are things in=20
+> there which are annoying, like these
+>=20
+> ../../../git/src/openvpn/route.c: In function 'add_route_ipv6':
+> ../../../git/src/openvpn/route.c:1834:10: warning: variable 'gateway_need=
+ed' set but not used [-Wunused-but-set-variable]
+>      bool gateway_needed =3D false;
+>           ^
+>=20
+> (fixing is easy, but implies adding an #ifdef TARGET_... orgy or=20
+> refactoring this whole code part - which should be done, but won't=20
+> happen "over night")
 
-Right now cmocka tests are skipped if
+That's why I also suggested to have -Wno-unused, at least in a first time.
+My idea was to avoid regression and detect issues easily on exotic configur=
+ation (openssl without crypto), not to change the code style in OpenVPN.
 
-a) cmocka Git submodule is not initialized
-b) CMake is not installed
+> More problematic are these:
+>=20
+> ../../../git/src/openvpn/socket.c: In function 'print_link_socket_actual_=
+ex':
+> ../../../git/src/openvpn/socket.c:2802:21: warning: implicit declaration =
+of function 'if_indextoname' [-Wimplicit-function-declaration]
+>                      if_indextoname(act->pi.in6.ipi6_ifindex, ifname);
+>                      ^
+> ../../../git/src/openvpn/socket.c: In function 'unix_socket_get_peer_uid_=
+gid':
+> ../../../git/src/openvpn/socket.c:3950:5: warning: implicit declaration o=
+f function 'getpeereid' [-Wimplicit-function-declaration]
+>      if (getpeereid(sd, &u, &g) =3D=3D -1)
+>=20
+> ../../../git/src/openvpn/tun.c: In function 'open_tun_generic':
+> ../../../git/src/openvpn/tun.c:1787:13: warning: implicit declaration of =
+function 'if_nametoindex' [-Wimplicit-function-declaration]
+>              if (if_nametoindex( dev ) > 0)
+>=20
+> ... since we're really not supposed to redeclare system prototypes
+> (and if we do, it will break on other versions of AIX).
 
-See commit 45f6e7991cf for details.
+:(
+But we could detect such case during configure and add declarations if need=
+ed.
 
-Travis logs say this:
+Julien
 
-$ git clone --depth=3D50 --branch=3Dmaster=20
-https://github.com/OpenVPN/openvpn.git OpenVPN/openvpn
-$ git submodule update --init --recursive
 
-Which means that cmocka Git submodule gets sucked in automatically. So=20
-that leaves us with the following options afaics:
+--uFOAKNkTbSWNUNv7FxOxTCgmRUgMJS2dp--
 
-1) Remove the cmocka directory after the fact (rather nasty)
-2) Ensure that CMake is not installed on MacOS X (does mbedTLS require=20
-this?)
-3) Allow the user to select if cmocka tests are run or not
+--vIw55hCXNuCtDv8JW4CqaKanCKJwnfVAO
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-Thoughts anyone?
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
 
---=20
-Samuli Sepp=C3=A4nen
-Community Manager
-OpenVPN Technologies, Inc
+iQIcBAEBCAAGBQJYV7fSAAoJEEwjvlkacWMkIZwQANE3H/qyOMfsge6imnoHfKOD
+5HERy9s+ZsDwjivm264Aj8LXWoRClZN5LF+9CzyQ5/oozLdreSLlZl8bGhTovgb3
+d8aRUpJjrXFRdyw7WZLMk5qB8XP61CWC5NxPJA/X6OB9XzxzYll1sN0XyLtmaAwl
+iZrAyWEoaDaXEFhFNQhPRxf3B2Nlz6/SegoUfqsmU/yFDhmzMLkih9YF62AHw4EJ
+8qxKbQddbsDEMMWg5dN8lo6CatToPefE63pWWdMcwnTHC3igdUG8nRUrp8+pYjQc
+Hbpc2KFJoQsyPiWB2MNjHDjonUbUGoNON/7ZEIGPHpVLpfAHIrng2CTBioAR+twJ
+vJH8U4t+8ln16Z2VUkrwCbW9ykG9JhwPrV357Zg97Uibnoz2/193N8ukPbxbCY+/
+8xOYa17sNTcRLlsP+TOD3ZIMKJtvjKXWf4utfdXEYab0F79Gqchr2Wdlh1Cj19Zt
+xuo97XfNHPuyZhmAQQirFKzsnSSeaWadSOQsPK8UzG/eHNV95nLoAq++syESVpwI
+/G6CB/q9tFw8JjhkzL8k4ce6ufJBsDl2e4prgJwEmVJYJCtT1eqXsRA84UcHxrmb
+GFd5g0krSDzy+fxsfvY8g6mWfjIVsn4R++OOA8ISV5YPRR8Aaj3KeSQIxjcElGRW
+9AtQdGRIWATufRalFPrQ
+=hAn9
+-----END PGP SIGNATURE-----
 
-irc freenode net: mattock
+--vIw55hCXNuCtDv8JW4CqaKanCKJwnfVAO--
 
