@@ -1,8 +1,10 @@
-From: David Sommerseth <davids@...515...>
-Date: Mon, 19 Dec 2016 19:52:12 +0100
-Message-Id: <1482173532-25132-1-git-send-email-davids@...515...>
-Subject: [Openvpn-devel] [PATCH] dev-tools: Added script for updating
-	copyright years in files
+References: <20161216155755.29931-1-list@...1798...>
+From: debbie10t <debbie10t@...277...>
+Message-ID: <89ef1946-ae7a-f4af-8b0f-bc592c8ed2e5@...277...>
+Date: Tue, 20 Dec 2016 00:32:49 +0000
+MIME-Version: 1.0
+In-Reply-To: <20161216155755.29931-1-list@...1798...>
+Subject: Re: [Openvpn-devel] [PATCH 1/1] do not race on RuntimeDirectory
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,81 +13,68 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-Very simple tool which modifies the Copyright lines in all git checked-in
-files with an updated year.  Lines only listing a single year (2016) will
-be modified to list a range instead.
 
-Only the Copyright lines owners of specific owners will be modified.  The
-script will need to be slightly updated to cover more owners.  See the
-UPDATE_COPYRIGHT_LINES line in the script for the currently set owners.
 
-Signed-off-by: David Sommerseth <davids@...515...>
----
- dev-tools/update-copyright.sh | 50 +++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 50 insertions(+)
- create mode 100755 dev-tools/update-copyright.sh
+On 16/12/16 15:57, Christian Hesse wrote:
+> From: Christian Hesse <mail@...1798...>
+>
+> Different unit instances create and destroy the same RuntimeDirectory.
+> This leads to running instances where the status file (and possibly
+> more runtime data) is no longer accessible.
+>
+> So create a RuntimeDirectory per instance.
+>
+> Signed-off-by: Christian Hesse <mail@...1798...>
+> ---
+>  distro/systemd/openvpn-client@...1685... | 2 +-
+>  distro/systemd/openvpn-server@...1685... | 4 ++--
+>  2 files changed, 3 insertions(+), 3 deletions(-)
+>
+> diff --git a/distro/systemd/openvpn-client@...1685... b/distro/systemd/openvpn-client@...1685...
+> index 5618af3..fcb5302 100644
+> --- a/distro/systemd/openvpn-client@...1685...
+> +++ b/distro/systemd/openvpn-client@...1685...
+> @@ -9,7 +9,7 @@ Documentation=https://community.openvpn.net/openvpn/wiki/HOWTO
+>  [Service]
+>  Type=notify
+>  PrivateTmp=true
+> -RuntimeDirectory=openvpn-client
+> +RuntimeDirectory=openvpn-client@%i
+>  RuntimeDirectoryMode=0710
+>  WorkingDirectory=/etc/openvpn/client
+>  ExecStart=/usr/sbin/openvpn --suppress-timestamps --nobind --config %i.conf
+> diff --git a/distro/systemd/openvpn-server@...1685... b/distro/systemd/openvpn-server@...1685...
+> index b9b4dba..8b240cf 100644
+> --- a/distro/systemd/openvpn-server@...1685...
+> +++ b/distro/systemd/openvpn-server@...1685...
+> @@ -9,10 +9,10 @@ Documentation=https://community.openvpn.net/openvpn/wiki/HOWTO
+>  [Service]
+>  Type=notify
+>  PrivateTmp=true
+> -RuntimeDirectory=openvpn-server
+> +RuntimeDirectory=openvpn-server@%i
+>  RuntimeDirectoryMode=0710
+>  WorkingDirectory=/etc/openvpn/server
+> -ExecStart=/usr/sbin/openvpn --status %t/openvpn-server/status-%i.log --status-version 2 --suppress-timestamps --config %i.conf
+> +ExecStart=/usr/sbin/openvpn --status %t/openvpn-server@%i/status.log --status-version 2 --suppress-timestamps --config %i.conf
+>  CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_CHROOT CAP_DAC_OVERRIDE
+>  LimitNPROC=10
+>  DeviceAllow=/dev/null rw
+>
 
-diff --git a/dev-tools/update-copyright.sh b/dev-tools/update-copyright.sh
-new file mode 100755
-index 0000000..26486ec
---- /dev/null
-+++ b/dev-tools/update-copyright.sh
-@@ -0,0 +1,50 @@
-+#!/bin/sh
-+# update-copyright-sh - Simple tool to update the Copyright lines
-+#                       in all files checked into git
-+#
-+# Copyright (C) 2016 David Sommerseth <davids@...515...>
-+#
-+# This program is free software; you can redistribute it and/or
-+# modify it under the terms of the GNU General Public License
-+# as published by the Free Software Foundation; either version 2
-+# of the License.
-+#
-+# This program is distributed in the hope that it will be useful,
-+# but WITHOUT ANY WARRANTY; without even the implied warranty of
-+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+# GNU General Public License for more details.
-+#
-+# You should have received a copy of the GNU General Public License
-+# along with this program; if not, write to the Free Software
-+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-+#
-+
-+# Basic shell sanity
-+set -eu
-+
-+# Simple argument control
-+if [ $# -ne 1 ]; then
-+    echo "Usage: $0 <New Copyright Year>"
-+    exit 1
-+fi
-+
-+# Only update Copyright lines with these owners
-+# The 'or' operator is GNU sed specific, and must be \|
-+UPDATE_COPYRIGHT_LINES="@openvpn\.net\|@fox-it\.com\|@eurephia\.net\|@greenie\.muc\.de"
-+COPY_YEAR="$1"
-+
-+cd "$(git rev-parse --show-toplevel)"
-+for file in $(git ls-files | grep -v cmocka);
-+do
-+    echo -n "Updating $file ..."
-+    # The first sed operation covers 20xx-20yy copyright lines,
-+    # The second sed operation changes 20xx -> 20xx-20yy
-+    sed -e "/$UPDATE_COPYRIGHT_LINES/s/\(Copyright (C) 20..-\)\(20..\)[[:blank:]]\+/\1$COPY_YEAR /" \
-+        -e "/$UPDATE_COPYRIGHT_LINES/s/\(Copyright (C) \)\(20..\)[[:blank:]]\+/\1\2-$COPY_YEAR /" \
-+        -i $file
-+    echo " Done"
-+done
-+echo
-+echo "** All files updated with $COPY_YEAR as the ending copyright year"
-+echo
-+exit 0
--- 
-1.8.3.1
+
+CentOS 7 (after full update) still only uses systemd version 219
+
+This functionality is not introduced until systemd 227
+
+https://github.com/systemd/systemd/blob/master/NEWS
+
+line 1380 ..
+
+(pfft)
 
 
