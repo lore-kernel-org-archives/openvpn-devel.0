@@ -1,10 +1,9 @@
-References: <20161216155755.29931-1-list@...1798...>
-From: debbie10t <debbie10t@...277...>
-Message-ID: <89ef1946-ae7a-f4af-8b0f-bc592c8ed2e5@...277...>
-Date: Tue, 20 Dec 2016 00:32:49 +0000
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <78341c2a-2d60-c9e3-d25a-ff99cf725c70@...515...>
+Date: Tue, 20 Dec 2016 17:18:57 +0200
 MIME-Version: 1.0
-In-Reply-To: <20161216155755.29931-1-list@...1798...>
-Subject: Re: [Openvpn-devel] [PATCH 1/1] do not race on RuntimeDirectory
+Subject: [Openvpn-devel] Topics for the upcoming (Wednesday,
+	21st Dec 2016) community meeting
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,68 +12,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: quoted-printable
 To: openvpn-devel@lists.sourceforge.net
 
+Hi,
 
+We're going to have an IRC meeting on Wednesday 21st December 2016. The=20
+meeting begins at 20:00 CET (19:00 UTC) on #openvpn-meeting <at>=20
+irc.freenode.net. You do not have to be logged in to Freenode to join=20
+the channel.
 
-On 16/12/16 15:57, Christian Hesse wrote:
-> From: Christian Hesse <mail@...1798...>
->
-> Different unit instances create and destroy the same RuntimeDirectory.
-> This leads to running instances where the status file (and possibly
-> more runtime data) is no longer accessible.
->
-> So create a RuntimeDirectory per instance.
->
-> Signed-off-by: Christian Hesse <mail@...1798...>
-> ---
->  distro/systemd/openvpn-client@...1685... | 2 +-
->  distro/systemd/openvpn-server@...1685... | 4 ++--
->  2 files changed, 3 insertions(+), 3 deletions(-)
->
-> diff --git a/distro/systemd/openvpn-client@...1685... b/distro/systemd/openvpn-client@...1685...
-> index 5618af3..fcb5302 100644
-> --- a/distro/systemd/openvpn-client@...1685...
-> +++ b/distro/systemd/openvpn-client@...1685...
-> @@ -9,7 +9,7 @@ Documentation=https://community.openvpn.net/openvpn/wiki/HOWTO
->  [Service]
->  Type=notify
->  PrivateTmp=true
-> -RuntimeDirectory=openvpn-client
-> +RuntimeDirectory=openvpn-client@%i
->  RuntimeDirectoryMode=0710
->  WorkingDirectory=/etc/openvpn/client
->  ExecStart=/usr/sbin/openvpn --suppress-timestamps --nobind --config %i.conf
-> diff --git a/distro/systemd/openvpn-server@...1685... b/distro/systemd/openvpn-server@...1685...
-> index b9b4dba..8b240cf 100644
-> --- a/distro/systemd/openvpn-server@...1685...
-> +++ b/distro/systemd/openvpn-server@...1685...
-> @@ -9,10 +9,10 @@ Documentation=https://community.openvpn.net/openvpn/wiki/HOWTO
->  [Service]
->  Type=notify
->  PrivateTmp=true
-> -RuntimeDirectory=openvpn-server
-> +RuntimeDirectory=openvpn-server@%i
->  RuntimeDirectoryMode=0710
->  WorkingDirectory=/etc/openvpn/server
-> -ExecStart=/usr/sbin/openvpn --status %t/openvpn-server/status-%i.log --status-version 2 --suppress-timestamps --config %i.conf
-> +ExecStart=/usr/sbin/openvpn --status %t/openvpn-server@%i/status.log --status-version 2 --suppress-timestamps --config %i.conf
->  CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_CHROOT CAP_DAC_OVERRIDE
->  LimitNPROC=10
->  DeviceAllow=/dev/null rw
->
+Current topic list along with basic information is here:
 
+<https://community.openvpn.net/openvpn/wiki/Topics-2016-12-21>
 
-CentOS 7 (after full update) still only uses systemd version 219
+If you have any other things you'd like to bring up, respond to this=20
+mail, send me mail privately or add them to the list yourself.
 
-This functionality is not introduced until systemd 227
+In case you can't attend the meeting, please feel free to make comments=20
+on the topics by responding to this email or to the summary email sent=20
+after the meeting. Whenever possible, we'll also respond to existing,=20
+related email threads.
 
-https://github.com/systemd/systemd/blob/master/NEWS
+--
+Samuli Sepp=C3=A4nen
+Community Manager
+OpenVPN Technologies, Inc
 
-line 1380 ..
-
-(pfft)
-
+irc freenode net: mattock
 
