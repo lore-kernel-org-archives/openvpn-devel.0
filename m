@@ -1,11 +1,11 @@
 References: <1482350454-27280-1-git-send-email-davids@...515...>
-	<1482350454-27280-4-git-send-email-davids@...515...>
+	<1482350454-27280-3-git-send-email-davids@...515...>
 From: Steffan Karger <steffan@...1856...>
-Message-ID: <c406ca8d-5bb1-f53c-241c-253354f03ff6@...1856...>
-Date: Wed, 21 Dec 2016 21:09:25 +0100
+Message-ID: <a73adc70-4f31-2106-f7de-a49a7f4f0afd@...1856...>
+Date: Wed, 21 Dec 2016 21:15:23 +0100
 MIME-Version: 1.0
-In-Reply-To: <1482350454-27280-4-git-send-email-davids@...515...>
-Subject: Re: [Openvpn-devel] [PATCH release/2.4] Update copyrights
+In-Reply-To: <1482350454-27280-3-git-send-email-davids@...515...>
+Subject: Re: [Openvpn-devel] [PATCH release/2.3] Update copyrights
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -23,218 +23,197 @@ Hi,
 On 21-12-16 21:00, David Sommerseth wrote:
 > Signed-off-by: David Sommerseth <davids@...515...>
 > ---
->  COPYING                                                               | 2 +-
->  ChangeLog                                                             | 2 +-
->  Makefile.am                                                           | 2 +-
->  PORTS                                                                 | 2 +-
->  build/Makefile.am                                                     | 2 +-
->  build/msvc/Makefile.am                                                | 2 +-
->  build/msvc/msvc-generate/Makefile.am                                  | 2 +-
->  configure.ac                                                          | 2 +-
->  dev-tools/reformat-all.sh                                             | 2 +-
->  dev-tools/update-copyright.sh                                         | 2 +-
->  distro/Makefile.am                                                    | 2 +-
->  distro/rpm/Makefile.am                                                | 2 +-
->  doc/Makefile.am                                                       | 2 +-
->  doc/doxygen/doc_compression.h                                         | 2 +-
->  doc/doxygen/doc_control_processor.h                                   | 2 +-
->  doc/doxygen/doc_control_tls.h                                         | 2 +-
->  doc/doxygen/doc_data_control.h                                        | 2 +-
->  doc/doxygen/doc_data_crypto.h                                         | 2 +-
->  doc/doxygen/doc_eventloop.h                                           | 2 +-
->  doc/doxygen/doc_external_multiplexer.h                                | 2 +-
->  doc/doxygen/doc_fragmentation.h                                       | 2 +-
->  doc/doxygen/doc_internal_multiplexer.h                                | 2 +-
->  doc/doxygen/doc_key_generation.h                                      | 2 +-
->  doc/doxygen/doc_mainpage.h                                            | 2 +-
->  doc/doxygen/doc_memory_management.h                                   | 2 +-
->  doc/doxygen/doc_protocol_overview.h                                   | 2 +-
->  doc/doxygen/doc_reliable.h                                            | 2 +-
->  doc/doxygen/doc_tunnel_state.h                                        | 2 +-
->  doc/openvpn.8                                                         | 2 +-
->  include/Makefile.am                                                   | 2 +-
->  include/openvpn-msg.h                                                 | 2 +-
->  include/openvpn-plugin.h.in                                           | 2 +-
->  sample/Makefile.am                                                    | 2 +-
->  sample/sample-plugins/defer/simple.c                                  | 2 +-
->  .../keying-material-exporter-demo/keyingmaterialexporter.c            | 2 +-
->  sample/sample-plugins/log/log.c                                       | 2 +-
->  sample/sample-plugins/log/log_v3.c                                    | 2 +-
->  sample/sample-plugins/simple/simple.c                                 | 2 +-
->  src/Makefile.am                                                       | 2 +-
->  src/compat/Makefile.am                                                | 2 +-
->  src/compat/compat-gettimeofday.c                                      | 2 +-
->  src/openvpn/Makefile.am                                               | 2 +-
->  src/openvpn/argv.c                                                    | 2 +-
->  src/openvpn/argv.h                                                    | 2 +-
->  src/openvpn/basic.h                                                   | 2 +-
->  src/openvpn/block_dns.c                                               | 2 +-
->  src/openvpn/buffer.c                                                  | 2 +-
->  src/openvpn/buffer.h                                                  | 2 +-
->  src/openvpn/circ_list.h                                               | 2 +-
->  src/openvpn/clinat.c                                                  | 2 +-
->  src/openvpn/clinat.h                                                  | 2 +-
->  src/openvpn/common.h                                                  | 2 +-
->  src/openvpn/comp-lz4.c                                                | 4 ++--
->  src/openvpn/comp-lz4.h                                                | 4 ++--
->  src/openvpn/comp.c                                                    | 2 +-
->  src/openvpn/comp.h                                                    | 2 +-
->  src/openvpn/compstub.c                                                | 2 +-
->  src/openvpn/console.c                                                 | 4 ++--
->  src/openvpn/console.h                                                 | 4 ++--
->  src/openvpn/console_builtin.c                                         | 4 ++--
->  src/openvpn/crypto.c                                                  | 4 ++--
->  src/openvpn/crypto.h                                                  | 4 ++--
->  src/openvpn/crypto_backend.h                                          | 4 ++--
->  src/openvpn/crypto_mbedtls.c                                          | 4 ++--
->  src/openvpn/crypto_mbedtls.h                                          | 4 ++--
->  src/openvpn/crypto_openssl.c                                          | 4 ++--
->  src/openvpn/crypto_openssl.h                                          | 4 ++--
->  src/openvpn/dhcp.c                                                    | 2 +-
->  src/openvpn/dhcp.h                                                    | 2 +-
->  src/openvpn/errlevel.h                                                | 2 +-
->  src/openvpn/error.c                                                   | 2 +-
->  src/openvpn/error.h                                                   | 2 +-
->  src/openvpn/event.c                                                   | 2 +-
->  src/openvpn/event.h                                                   | 2 +-
->  src/openvpn/fdmisc.c                                                  | 2 +-
->  src/openvpn/fdmisc.h                                                  | 2 +-
->  src/openvpn/forward-inline.h                                          | 2 +-
->  src/openvpn/forward.c                                                 | 2 +-
->  src/openvpn/forward.h                                                 | 2 +-
->  src/openvpn/fragment.c                                                | 2 +-
->  src/openvpn/fragment.h                                                | 2 +-
->  src/openvpn/gremlin.c                                                 | 2 +-
->  src/openvpn/gremlin.h                                                 | 2 +-
->  src/openvpn/helper.c                                                  | 2 +-
->  src/openvpn/helper.h                                                  | 2 +-
->  src/openvpn/httpdigest.c                                              | 2 +-
->  src/openvpn/httpdigest.h                                              | 2 +-
->  src/openvpn/init.c                                                    | 2 +-
->  src/openvpn/init.h                                                    | 2 +-
->  src/openvpn/integer.h                                                 | 2 +-
->  src/openvpn/interval.c                                                | 2 +-
->  src/openvpn/interval.h                                                | 2 +-
->  src/openvpn/list.c                                                    | 2 +-
->  src/openvpn/list.h                                                    | 2 +-
->  src/openvpn/lzo.c                                                     | 2 +-
->  src/openvpn/lzo.h                                                     | 2 +-
->  src/openvpn/manage.c                                                  | 2 +-
->  src/openvpn/manage.h                                                  | 2 +-
->  src/openvpn/mbuf.c                                                    | 2 +-
->  src/openvpn/mbuf.h                                                    | 2 +-
->  src/openvpn/memdbg.h                                                  | 2 +-
->  src/openvpn/misc.c                                                    | 4 ++--
->  src/openvpn/misc.h                                                    | 2 +-
->  src/openvpn/mroute.c                                                  | 2 +-
->  src/openvpn/mroute.h                                                  | 2 +-
->  src/openvpn/mss.c                                                     | 2 +-
->  src/openvpn/mss.h                                                     | 2 +-
->  src/openvpn/mstats.c                                                  | 2 +-
->  src/openvpn/mstats.h                                                  | 2 +-
->  src/openvpn/mtcp.c                                                    | 2 +-
->  src/openvpn/mtcp.h                                                    | 2 +-
->  src/openvpn/mtu.c                                                     | 2 +-
->  src/openvpn/mtu.h                                                     | 2 +-
->  src/openvpn/mudp.c                                                    | 2 +-
->  src/openvpn/mudp.h                                                    | 2 +-
->  src/openvpn/multi.c                                                   | 2 +-
->  src/openvpn/multi.h                                                   | 2 +-
->  src/openvpn/occ-inline.h                                              | 2 +-
->  src/openvpn/occ.c                                                     | 2 +-
->  src/openvpn/occ.h                                                     | 2 +-
->  src/openvpn/openvpn.c                                                 | 2 +-
->  src/openvpn/openvpn.h                                                 | 2 +-
->  src/openvpn/options.c                                                 | 4 ++--
->  src/openvpn/options.h                                                 | 2 +-
->  src/openvpn/otime.c                                                   | 2 +-
->  src/openvpn/otime.h                                                   | 2 +-
->  src/openvpn/packet_id.c                                               | 2 +-
->  src/openvpn/packet_id.h                                               | 2 +-
->  src/openvpn/perf.c                                                    | 2 +-
->  src/openvpn/perf.h                                                    | 2 +-
->  src/openvpn/pf-inline.h                                               | 2 +-
->  src/openvpn/pf.c                                                      | 2 +-
->  src/openvpn/pf.h                                                      | 2 +-
->  src/openvpn/ping-inline.h                                             | 2 +-
->  src/openvpn/ping.c                                                    | 2 +-
->  src/openvpn/ping.h                                                    | 2 +-
->  src/openvpn/pkcs11.c                                                  | 2 +-
->  src/openvpn/pkcs11.h                                                  | 2 +-
->  src/openvpn/pkcs11_backend.h                                          | 4 ++--
->  src/openvpn/pkcs11_mbedtls.c                                          | 4 ++--
->  src/openvpn/pkcs11_openssl.c                                          | 4 ++--
->  src/openvpn/platform.c                                                | 2 +-
->  src/openvpn/platform.h                                                | 2 +-
->  src/openvpn/plugin.c                                                  | 2 +-
->  src/openvpn/plugin.h                                                  | 2 +-
->  src/openvpn/pool.c                                                    | 2 +-
->  src/openvpn/pool.h                                                    | 2 +-
->  src/openvpn/proto.c                                                   | 2 +-
->  src/openvpn/proto.h                                                   | 2 +-
->  src/openvpn/proxy.c                                                   | 2 +-
->  src/openvpn/proxy.h                                                   | 2 +-
->  src/openvpn/ps.c                                                      | 2 +-
->  src/openvpn/ps.h                                                      | 2 +-
->  src/openvpn/push.c                                                    | 2 +-
->  src/openvpn/push.h                                                    | 2 +-
->  src/openvpn/pushlist.h                                                | 2 +-
->  src/openvpn/reliable.c                                                | 2 +-
->  src/openvpn/reliable.h                                                | 2 +-
->  src/openvpn/route.c                                                   | 2 +-
->  src/openvpn/route.h                                                   | 2 +-
->  src/openvpn/schedule.c                                                | 2 +-
->  src/openvpn/schedule.h                                                | 2 +-
->  src/openvpn/session_id.c                                              | 2 +-
->  src/openvpn/session_id.h                                              | 2 +-
->  src/openvpn/shaper.c                                                  | 2 +-
->  src/openvpn/shaper.h                                                  | 2 +-
->  src/openvpn/sig.c                                                     | 2 +-
->  src/openvpn/sig.h                                                     | 2 +-
->  src/openvpn/socket.c                                                  | 2 +-
->  src/openvpn/socket.h                                                  | 2 +-
->  src/openvpn/socks.c                                                   | 2 +-
->  src/openvpn/socks.h                                                   | 2 +-
->  src/openvpn/ssl.c                                                     | 4 ++--
->  src/openvpn/ssl.h                                                     | 4 ++--
->  src/openvpn/ssl_backend.h                                             | 4 ++--
->  src/openvpn/ssl_common.h                                              | 4 ++--
->  src/openvpn/ssl_mbedtls.c                                             | 4 ++--
->  src/openvpn/ssl_mbedtls.h                                             | 4 ++--
->  src/openvpn/ssl_openssl.c                                             | 4 ++--
->  src/openvpn/ssl_openssl.h                                             | 4 ++--
->  src/openvpn/ssl_verify.c                                              | 4 ++--
->  src/openvpn/ssl_verify.h                                              | 4 ++--
->  src/openvpn/ssl_verify_backend.h                                      | 4 ++--
->  src/openvpn/ssl_verify_mbedtls.c                                      | 4 ++--
->  src/openvpn/ssl_verify_mbedtls.h                                      | 4 ++--
->  src/openvpn/ssl_verify_openssl.c                                      | 4 ++--
->  src/openvpn/ssl_verify_openssl.h                                      | 4 ++--
->  src/openvpn/status.c                                                  | 2 +-
->  src/openvpn/status.h                                                  | 2 +-
->  src/openvpn/syshead.h                                                 | 2 +-
->  src/openvpn/tls_crypt.c                                               | 2 +-
->  src/openvpn/tls_crypt.h                                               | 2 +-
->  src/openvpn/tun.c                                                     | 2 +-
->  src/openvpn/tun.h                                                     | 2 +-
->  src/openvpn/win32.c                                                   | 2 +-
->  src/openvpn/win32.h                                                   | 2 +-
->  src/openvpnserv/Makefile.am                                           | 2 +-
->  src/openvpnserv/automatic.c                                           | 2 +-
->  src/openvpnserv/common.c                                              | 2 +-
->  src/openvpnserv/interactive.c                                         | 2 +-
->  src/openvpnserv/service.h                                             | 2 +-
->  src/plugins/Makefile.am                                               | 2 +-
->  src/plugins/auth-pam/auth-pam.c                                       | 2 +-
->  src/plugins/auth-pam/utils.c                                          | 2 +-
->  src/plugins/auth-pam/utils.h                                          | 2 +-
->  src/plugins/down-root/down-root.c                                     | 2 +-
->  tests/Makefile.am                                                     | 2 +-
->  tests/unit_tests/openvpn/mock_msg.c                                   | 2 +-
->  tests/unit_tests/openvpn/mock_msg.h                                   | 2 +-
->  tests/unit_tests/openvpn/test_buffer.c                                | 2 +-
->  tests/unit_tests/openvpn/test_tls_crypt.c                             | 2 +-
->  211 files changed, 243 insertions(+), 243 deletions(-)
+>  COPYING                                | 2 +-
+>  ChangeLog                              | 2 +-
+>  Makefile.am                            | 2 +-
+>  PORTS                                  | 2 +-
+>  build/Makefile.am                      | 2 +-
+>  build/msvc/Makefile.am                 | 2 +-
+>  build/msvc/msvc-generate/Makefile.am   | 2 +-
+>  configure.ac                           | 2 +-
+>  dev-tools/update-copyright.sh          | 2 +-
+>  distro/Makefile.am                     | 2 +-
+>  distro/rpm/Makefile.am                 | 2 +-
+>  doc/Makefile.am                        | 2 +-
+>  doc/doxygen/doc_compression.h          | 2 +-
+>  doc/doxygen/doc_control_processor.h    | 2 +-
+>  doc/doxygen/doc_control_tls.h          | 2 +-
+>  doc/doxygen/doc_data_control.h         | 2 +-
+>  doc/doxygen/doc_data_crypto.h          | 2 +-
+>  doc/doxygen/doc_eventloop.h            | 2 +-
+>  doc/doxygen/doc_external_multiplexer.h | 2 +-
+>  doc/doxygen/doc_fragmentation.h        | 2 +-
+>  doc/doxygen/doc_internal_multiplexer.h | 2 +-
+>  doc/doxygen/doc_key_generation.h       | 2 +-
+>  doc/doxygen/doc_mainpage.h             | 2 +-
+>  doc/doxygen/doc_memory_management.h    | 2 +-
+>  doc/doxygen/doc_protocol_overview.h    | 2 +-
+>  doc/doxygen/doc_reliable.h             | 2 +-
+>  doc/doxygen/doc_tunnel_state.h         | 2 +-
+>  doc/openvpn.8                          | 2 +-
+>  include/Makefile.am                    | 2 +-
+>  include/openvpn-plugin.h               | 2 +-
+>  sample/Makefile.am                     | 2 +-
+>  sample/sample-plugins/defer/simple.c   | 2 +-
+>  sample/sample-plugins/log/log.c        | 2 +-
+>  sample/sample-plugins/log/log_v3.c     | 2 +-
+>  sample/sample-plugins/simple/simple.c  | 2 +-
+>  src/Makefile.am                        | 2 +-
+>  src/compat/Makefile.am                 | 2 +-
+>  src/compat/compat-gettimeofday.c       | 2 +-
+>  src/openvpn/Makefile.am                | 2 +-
+>  src/openvpn/basic.h                    | 2 +-
+>  src/openvpn/buffer.c                   | 2 +-
+>  src/openvpn/buffer.h                   | 2 +-
+>  src/openvpn/circ_list.h                | 2 +-
+>  src/openvpn/clinat.c                   | 2 +-
+>  src/openvpn/clinat.h                   | 2 +-
+>  src/openvpn/common.h                   | 2 +-
+>  src/openvpn/console.c                  | 2 +-
+>  src/openvpn/console.h                  | 2 +-
+>  src/openvpn/crypto.c                   | 4 ++--
+>  src/openvpn/crypto.h                   | 4 ++--
+>  src/openvpn/crypto_backend.h           | 4 ++--
+>  src/openvpn/crypto_openssl.c           | 4 ++--
+>  src/openvpn/crypto_openssl.h           | 4 ++--
+>  src/openvpn/crypto_polarssl.c          | 4 ++--
+>  src/openvpn/crypto_polarssl.h          | 4 ++--
+>  src/openvpn/dhcp.c                     | 2 +-
+>  src/openvpn/dhcp.h                     | 2 +-
+>  src/openvpn/errlevel.h                 | 2 +-
+>  src/openvpn/error.c                    | 2 +-
+>  src/openvpn/error.h                    | 2 +-
+>  src/openvpn/event.c                    | 2 +-
+>  src/openvpn/event.h                    | 2 +-
+>  src/openvpn/fdmisc.c                   | 2 +-
+>  src/openvpn/fdmisc.h                   | 2 +-
+>  src/openvpn/forward-inline.h           | 2 +-
+>  src/openvpn/forward.c                  | 2 +-
+>  src/openvpn/forward.h                  | 2 +-
+>  src/openvpn/fragment.c                 | 2 +-
+>  src/openvpn/fragment.h                 | 2 +-
+>  src/openvpn/gremlin.c                  | 2 +-
+>  src/openvpn/gremlin.h                  | 2 +-
+>  src/openvpn/helper.c                   | 2 +-
+>  src/openvpn/helper.h                   | 2 +-
+>  src/openvpn/httpdigest.c               | 2 +-
+>  src/openvpn/httpdigest.h               | 2 +-
+>  src/openvpn/init.c                     | 2 +-
+>  src/openvpn/init.h                     | 2 +-
+>  src/openvpn/integer.h                  | 2 +-
+>  src/openvpn/interval.c                 | 2 +-
+>  src/openvpn/interval.h                 | 2 +-
+>  src/openvpn/list.c                     | 2 +-
+>  src/openvpn/list.h                     | 2 +-
+>  src/openvpn/lzo.c                      | 2 +-
+>  src/openvpn/lzo.h                      | 2 +-
+>  src/openvpn/manage.c                   | 2 +-
+>  src/openvpn/manage.h                   | 2 +-
+>  src/openvpn/mbuf.c                     | 2 +-
+>  src/openvpn/mbuf.h                     | 2 +-
+>  src/openvpn/memdbg.h                   | 2 +-
+>  src/openvpn/misc.c                     | 2 +-
+>  src/openvpn/misc.h                     | 2 +-
+>  src/openvpn/mroute.c                   | 2 +-
+>  src/openvpn/mroute.h                   | 2 +-
+>  src/openvpn/mss.c                      | 2 +-
+>  src/openvpn/mss.h                      | 2 +-
+>  src/openvpn/mstats.c                   | 2 +-
+>  src/openvpn/mstats.h                   | 2 +-
+>  src/openvpn/mtcp.c                     | 2 +-
+>  src/openvpn/mtcp.h                     | 2 +-
+>  src/openvpn/mtu.c                      | 2 +-
+>  src/openvpn/mtu.h                      | 2 +-
+>  src/openvpn/mudp.c                     | 2 +-
+>  src/openvpn/mudp.h                     | 2 +-
+>  src/openvpn/multi.c                    | 2 +-
+>  src/openvpn/multi.h                    | 2 +-
+>  src/openvpn/occ-inline.h               | 2 +-
+>  src/openvpn/occ.c                      | 2 +-
+>  src/openvpn/occ.h                      | 2 +-
+>  src/openvpn/openvpn.c                  | 2 +-
+>  src/openvpn/openvpn.h                  | 2 +-
+>  src/openvpn/options.c                  | 4 ++--
+>  src/openvpn/options.h                  | 2 +-
+>  src/openvpn/otime.c                    | 2 +-
+>  src/openvpn/otime.h                    | 2 +-
+>  src/openvpn/packet_id.c                | 2 +-
+>  src/openvpn/packet_id.h                | 2 +-
+>  src/openvpn/perf.c                     | 2 +-
+>  src/openvpn/perf.h                     | 2 +-
+>  src/openvpn/pf-inline.h                | 2 +-
+>  src/openvpn/pf.c                       | 2 +-
+>  src/openvpn/pf.h                       | 2 +-
+>  src/openvpn/ping-inline.h              | 2 +-
+>  src/openvpn/ping.c                     | 2 +-
+>  src/openvpn/ping.h                     | 2 +-
+>  src/openvpn/pkcs11.c                   | 2 +-
+>  src/openvpn/pkcs11.h                   | 2 +-
+>  src/openvpn/pkcs11_backend.h           | 4 ++--
+>  src/openvpn/pkcs11_openssl.c           | 4 ++--
+>  src/openvpn/pkcs11_polarssl.c          | 4 ++--
+>  src/openvpn/platform.c                 | 2 +-
+>  src/openvpn/platform.h                 | 2 +-
+>  src/openvpn/plugin.c                   | 2 +-
+>  src/openvpn/plugin.h                   | 2 +-
+>  src/openvpn/pool.c                     | 2 +-
+>  src/openvpn/pool.h                     | 2 +-
+>  src/openvpn/proto.c                    | 2 +-
+>  src/openvpn/proto.h                    | 2 +-
+>  src/openvpn/proxy.c                    | 2 +-
+>  src/openvpn/proxy.h                    | 2 +-
+>  src/openvpn/ps.c                       | 2 +-
+>  src/openvpn/ps.h                       | 2 +-
+>  src/openvpn/push.c                     | 2 +-
+>  src/openvpn/push.h                     | 2 +-
+>  src/openvpn/pushlist.h                 | 2 +-
+>  src/openvpn/reliable.c                 | 2 +-
+>  src/openvpn/reliable.h                 | 2 +-
+>  src/openvpn/route.c                    | 2 +-
+>  src/openvpn/route.h                    | 2 +-
+>  src/openvpn/schedule.c                 | 2 +-
+>  src/openvpn/schedule.h                 | 2 +-
+>  src/openvpn/session_id.c               | 2 +-
+>  src/openvpn/session_id.h               | 2 +-
+>  src/openvpn/shaper.c                   | 2 +-
+>  src/openvpn/shaper.h                   | 2 +-
+>  src/openvpn/sig.c                      | 2 +-
+>  src/openvpn/sig.h                      | 2 +-
+>  src/openvpn/socket.c                   | 2 +-
+>  src/openvpn/socket.h                   | 2 +-
+>  src/openvpn/socks.c                    | 2 +-
+>  src/openvpn/socks.h                    | 2 +-
+>  src/openvpn/ssl.c                      | 4 ++--
+>  src/openvpn/ssl.h                      | 4 ++--
+>  src/openvpn/ssl_backend.h              | 4 ++--
+>  src/openvpn/ssl_common.h               | 4 ++--
+>  src/openvpn/ssl_openssl.c              | 4 ++--
+>  src/openvpn/ssl_openssl.h              | 4 ++--
+>  src/openvpn/ssl_polarssl.c             | 4 ++--
+>  src/openvpn/ssl_polarssl.h             | 4 ++--
+>  src/openvpn/ssl_verify.c               | 4 ++--
+>  src/openvpn/ssl_verify.h               | 4 ++--
+>  src/openvpn/ssl_verify_backend.h       | 4 ++--
+>  src/openvpn/ssl_verify_openssl.c       | 4 ++--
+>  src/openvpn/ssl_verify_openssl.h       | 4 ++--
+>  src/openvpn/ssl_verify_polarssl.c      | 4 ++--
+>  src/openvpn/ssl_verify_polarssl.h      | 4 ++--
+>  src/openvpn/status.c                   | 2 +-
+>  src/openvpn/status.h                   | 2 +-
+>  src/openvpn/syshead.h                  | 2 +-
+>  src/openvpn/tun.c                      | 2 +-
+>  src/openvpn/tun.h                      | 2 +-
+>  src/openvpn/win32.c                    | 2 +-
+>  src/openvpn/win32.h                    | 2 +-
+>  src/openvpnserv/Makefile.am            | 2 +-
+>  src/openvpnserv/openvpnserv.c          | 2 +-
+>  src/plugins/Makefile.am                | 2 +-
+>  src/plugins/auth-pam/auth-pam.c        | 2 +-
+>  src/plugins/auth-pam/utils.c           | 2 +-
+>  src/plugins/auth-pam/utils.h           | 2 +-
+>  src/plugins/down-root/down-root.c      | 2 +-
+>  tests/Makefile.am                      | 2 +-
+>  190 files changed, 216 insertions(+), 216 deletions(-)
 > 
 > diff --git a/COPYING b/COPYING
 > index f6e5c43..f88ad79 100644
@@ -249,18 +228,18 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >  This distribution contains multiple components, some
 >  of which fall under different licenses.  By using OpenVPN
 > diff --git a/ChangeLog b/ChangeLog
-> index 8ff692d..8ae0863 100644
+> index 1c4d0da..86d2b7a 100644
 > --- a/ChangeLog
 > +++ b/ChangeLog
 > @@ -1,5 +1,5 @@
 >  OpenVPN Change Log
-> -Copyright (C) 2002-2016 OpenVPN Technologies, Inc. <sales@...515...>
+> -Copyright (C) 2002-2015 OpenVPN Technologies, Inc. <sales@...515...>
 > +Copyright (C) 2002-2017 OpenVPN Technologies, Inc. <sales@...515...>
 >  
->  2016.12.16 -- Version 2.4_rc2
->  David Sommerseth (9):
+>  2016.12.06 -- Version 2.3.14
+>  Christian Hesse (1):
 > diff --git a/Makefile.am b/Makefile.am
-> index 8e9581b..d1a72da 100644
+> index 5887d4a..3dd3a5c 100644
 > --- a/Makefile.am
 > +++ b/Makefile.am
 > @@ -5,7 +5,7 @@
@@ -323,7 +302,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >  #
 >  
 > diff --git a/configure.ac b/configure.ac
-> index 4f086ea..43487b0 100644
+> index 13cf65e..25452a6 100644
 > --- a/configure.ac
 > +++ b/configure.ac
 > @@ -4,7 +4,7 @@ dnl             session authentication and key exchange,
@@ -335,19 +314,6 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >  dnl  Copyright (C) 2006-2012 Alon Bar-Lev <alon.barlev@...277...>
 >  dnl
 >  dnl  This program is free software; you can redistribute it and/or modify
-> diff --git a/dev-tools/reformat-all.sh b/dev-tools/reformat-all.sh
-> index cf42bd0..e253ab2 100755
-> --- a/dev-tools/reformat-all.sh
-> +++ b/dev-tools/reformat-all.sh
-> @@ -2,7 +2,7 @@
->  # reformat-all.sh - Reformat all git files in the checked out
->  #                   git branch using uncrustify.
->  #
-> -# Copyright (C) 2016 - David Sommerseth <davids@...515...>
-> +# Copyright (C) 2016-2017 - David Sommerseth <davids@...515...>
->  #
->  # This program is free software; you can redistribute it and/or
->  # modify it under the terms of the GNU General Public License
 > diff --git a/dev-tools/update-copyright.sh b/dev-tools/update-copyright.sh
 > index 10f2235..755d1e0 100755
 > --- a/dev-tools/update-copyright.sh
@@ -453,7 +419,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *
 >   *  This program is free software; you can redistribute it and/or modify
 > diff --git a/doc/doxygen/doc_data_crypto.h b/doc/doxygen/doc_data_crypto.h
-> index 1172672..571171e 100644
+> index 640203f..8daa47d 100644
 > --- a/doc/doxygen/doc_data_crypto.h
 > +++ b/doc/doxygen/doc_data_crypto.h
 > @@ -5,7 +5,7 @@
@@ -596,7 +562,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *
 >   *  This program is free software; you can redistribute it and/or modify
 > diff --git a/doc/openvpn.8 b/doc/openvpn.8
-> index f079799..b1ca9ed 100644
+> index 2140733..7d1a5f8 100644
 > --- a/doc/openvpn.8
 > +++ b/doc/openvpn.8
 > @@ -4,7 +4,7 @@
@@ -609,7 +575,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >  .\"  This program is free software; you can redistribute it and/or modify
 >  .\"  it under the terms of the GNU General Public License version 2
 > diff --git a/include/Makefile.am b/include/Makefile.am
-> index 498b3b5..a52c427 100644
+> index 13dee61..7bc9c07 100644
 > --- a/include/Makefile.am
 > +++ b/include/Makefile.am
 > @@ -5,7 +5,7 @@
@@ -621,23 +587,10 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >  #  Copyright (C) 2006-2012 Alon Bar-Lev <alon.barlev@...277...>
 >  #
 >  
-> diff --git a/include/openvpn-msg.h b/include/openvpn-msg.h
-> index 4c9e63c..5f3c96c 100644
-> --- a/include/openvpn-msg.h
-> +++ b/include/openvpn-msg.h
-> @@ -5,7 +5,7 @@
->   *             packet encryption, packet authentication, and
->   *             packet compression.
->   *
-> - *  Copyright (C) 2013 Heiko Hund <heiko.hund@...1489...>
-> + *  Copyright (C) 2013-2017 Heiko Hund <heiko.hund@...1489...>
->   *
->   *  This program is free software; you can redistribute it and/or modify
->   *  it under the terms of the GNU General Public License version 2
-> diff --git a/include/openvpn-plugin.h.in b/include/openvpn-plugin.h.in
-> index f17b753..0b30352 100644
-> --- a/include/openvpn-plugin.h.in
-> +++ b/include/openvpn-plugin.h.in
+> diff --git a/include/openvpn-plugin.h b/include/openvpn-plugin.h
+> index 5f2d407..28d10cb 100644
+> --- a/include/openvpn-plugin.h
+> +++ b/include/openvpn-plugin.h
 > @@ -5,7 +5,7 @@
 >   *             packet encryption, packet authentication, and
 >   *             packet compression.
@@ -661,7 +614,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >  #
 >  
 > diff --git a/sample/sample-plugins/defer/simple.c b/sample/sample-plugins/defer/simple.c
-> index 1d70ad1..ad1bbb0 100644
+> index 6539865..cab18a5 100644
 > --- a/sample/sample-plugins/defer/simple.c
 > +++ b/sample/sample-plugins/defer/simple.c
 > @@ -5,7 +5,7 @@
@@ -673,21 +626,8 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
-> diff --git a/sample/sample-plugins/keying-material-exporter-demo/keyingmaterialexporter.c b/sample/sample-plugins/keying-material-exporter-demo/keyingmaterialexporter.c
-> index 9827ed1..177977d 100644
-> --- a/sample/sample-plugins/keying-material-exporter-demo/keyingmaterialexporter.c
-> +++ b/sample/sample-plugins/keying-material-exporter-demo/keyingmaterialexporter.c
-> @@ -5,7 +5,7 @@
->   *             packet encryption, packet authentication, and
->   *             packet compression.
->   *
-> - *  Copyright (C) 2002-2010 OpenVPN Technologies, Inc. <sales@...515...>
-> + *  Copyright (C) 2002-2017 OpenVPN Technologies, Inc. <sales@...515...>
->   *
->   *  This program is free software; you can redistribute it and/or modify
->   *  it under the terms of the GNU General Public License version 2
 > diff --git a/sample/sample-plugins/log/log.c b/sample/sample-plugins/log/log.c
-> index 390c37f..0201628 100644
+> index 1cc4650..28fc6fa 100644
 > --- a/sample/sample-plugins/log/log.c
 > +++ b/sample/sample-plugins/log/log.c
 > @@ -5,7 +5,7 @@
@@ -700,7 +640,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/sample/sample-plugins/log/log_v3.c b/sample/sample-plugins/log/log_v3.c
-> index 317604d..9037225 100644
+> index 4d3af91..416b74f 100644
 > --- a/sample/sample-plugins/log/log_v3.c
 > +++ b/sample/sample-plugins/log/log_v3.c
 > @@ -5,7 +5,7 @@
@@ -713,7 +653,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *
 >   *  This program is free software; you can redistribute it and/or modify
 > diff --git a/sample/sample-plugins/simple/simple.c b/sample/sample-plugins/simple/simple.c
-> index 4beab48..f595333 100644
+> index f26d89f..7f1f4d8 100644
 > --- a/sample/sample-plugins/simple/simple.c
 > +++ b/sample/sample-plugins/simple/simple.c
 > @@ -5,7 +5,7 @@
@@ -739,7 +679,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >  #
 >  
 > diff --git a/src/compat/Makefile.am b/src/compat/Makefile.am
-> index 0a9d1c2..444a8f8 100644
+> index 273389e..adc0e17 100644
 > --- a/src/compat/Makefile.am
 > +++ b/src/compat/Makefile.am
 > @@ -5,7 +5,7 @@
@@ -752,7 +692,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >  #
 >  
 > diff --git a/src/compat/compat-gettimeofday.c b/src/compat/compat-gettimeofday.c
-> index 027bc4a..d53e360 100644
+> index 0f32d5d..9a9f369 100644
 > --- a/src/compat/compat-gettimeofday.c
 > +++ b/src/compat/compat-gettimeofday.c
 > @@ -5,7 +5,7 @@
@@ -765,7 +705,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am
-> index 4c18449..bea294b 100644
+> index 6d02fea..b365848 100644
 > --- a/src/openvpn/Makefile.am
 > +++ b/src/openvpn/Makefile.am
 > @@ -5,7 +5,7 @@
@@ -777,34 +717,8 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >  #  Copyright (C) 2006-2012 Alon Bar-Lev <alon.barlev@...277...>
 >  #
 >  
-> diff --git a/src/openvpn/argv.c b/src/openvpn/argv.c
-> index 27cda0c..cc813ed 100644
-> --- a/src/openvpn/argv.c
-> +++ b/src/openvpn/argv.c
-> @@ -5,7 +5,7 @@
->   *             packet encryption, packet authentication, and
->   *             packet compression.
->   *
-> - *  Copyright (C) 2002-2010 OpenVPN Technologies, Inc. <sales@...515...>
-> + *  Copyright (C) 2002-2017 OpenVPN Technologies, Inc. <sales@...515...>
->   *
->   *  This program is free software; you can redistribute it and/or modify
->   *  it under the terms of the GNU General Public License version 2
-> diff --git a/src/openvpn/argv.h b/src/openvpn/argv.h
-> index 8e263e1..1dd6dd7 100644
-> --- a/src/openvpn/argv.h
-> +++ b/src/openvpn/argv.h
-> @@ -5,7 +5,7 @@
->   *             packet encryption, packet authentication, and
->   *             packet compression.
->   *
-> - *  Copyright (C) 2002-2010 OpenVPN Technologies, Inc. <sales@...515...>
-> + *  Copyright (C) 2002-2017 OpenVPN Technologies, Inc. <sales@...515...>
->   *
->   *  This program is free software; you can redistribute it and/or modify
->   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/basic.h b/src/openvpn/basic.h
-> index 48d4d9b..dac6f01 100644
+> index 298cf10..95caf76 100644
 > --- a/src/openvpn/basic.h
 > +++ b/src/openvpn/basic.h
 > @@ -5,7 +5,7 @@
@@ -816,21 +730,8 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
-> diff --git a/src/openvpn/block_dns.c b/src/openvpn/block_dns.c
-> index 81c2929..e31765e 100644
-> --- a/src/openvpn/block_dns.c
-> +++ b/src/openvpn/block_dns.c
-> @@ -5,7 +5,7 @@
->   *             packet encryption, packet authentication, and
->   *             packet compression.
->   *
-> - *  Copyright (C) 2002-2010 OpenVPN Technologies, Inc. <sales@...515...>
-> + *  Copyright (C) 2002-2017 OpenVPN Technologies, Inc. <sales@...515...>
->   *                2015-2016  <iam@...2070...>
->   *                2016 Selva Nair <selva.nair@...277...>
->   *
 > diff --git a/src/openvpn/buffer.c b/src/openvpn/buffer.c
-> index b1d2fbf..2defd18 100644
+> index edbdd66..4d217d1 100644
 > --- a/src/openvpn/buffer.c
 > +++ b/src/openvpn/buffer.c
 > @@ -5,7 +5,7 @@
@@ -843,7 +744,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/buffer.h b/src/openvpn/buffer.h
-> index a1a130c..28b224e 100644
+> index 58f0601..c34c4a3 100644
 > --- a/src/openvpn/buffer.h
 > +++ b/src/openvpn/buffer.h
 > @@ -5,7 +5,7 @@
@@ -856,7 +757,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/circ_list.h b/src/openvpn/circ_list.h
-> index b4324d8..ecf2a7f 100644
+> index 583701a..6e0357b 100644
 > --- a/src/openvpn/circ_list.h
 > +++ b/src/openvpn/circ_list.h
 > @@ -5,7 +5,7 @@
@@ -869,7 +770,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/clinat.c b/src/openvpn/clinat.c
-> index 08d7acf..9158437 100644
+> index af75fc9..01c3ae9 100644
 > --- a/src/openvpn/clinat.c
 > +++ b/src/openvpn/clinat.c
 > @@ -5,7 +5,7 @@
@@ -882,7 +783,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/clinat.h b/src/openvpn/clinat.h
-> index e0c8ec5..cdaf2a8 100644
+> index d55a727..1611625 100644
 > --- a/src/openvpn/clinat.h
 > +++ b/src/openvpn/clinat.h
 > @@ -5,7 +5,7 @@
@@ -895,7 +796,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/common.h b/src/openvpn/common.h
-> index 6352b01..cd988d4 100644
+> index 2f85bec..b5d024c 100644
 > --- a/src/openvpn/common.h
 > +++ b/src/openvpn/common.h
 > @@ -5,7 +5,7 @@
@@ -907,125 +808,34 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
-> diff --git a/src/openvpn/comp-lz4.c b/src/openvpn/comp-lz4.c
-> index 6b7c49b..fa65f87 100644
-> --- a/src/openvpn/comp-lz4.c
-> +++ b/src/openvpn/comp-lz4.c
-> @@ -5,8 +5,8 @@
->   *             packet encryption, packet authentication, and
->   *             packet compression.
->   *
-> - *  Copyright (C) 2002-2012 OpenVPN Technologies, Inc. <sales@...515...>
-> - *  Copyright (C) 2013      Gert Doering <gert@...1296...>
-> + *  Copyright (C) 2002-2017 OpenVPN Technologies, Inc. <sales@...515...>
-> + *  Copyright (C) 2013-2017 Gert Doering <gert@...1296...>
->   *
->   *  This program is free software; you can redistribute it and/or modify
->   *  it under the terms of the GNU General Public License version 2
-> diff --git a/src/openvpn/comp-lz4.h b/src/openvpn/comp-lz4.h
-> index 65f4f8e..8621e93 100644
-> --- a/src/openvpn/comp-lz4.h
-> +++ b/src/openvpn/comp-lz4.h
-> @@ -5,8 +5,8 @@
->   *             packet encryption, packet authentication, and
->   *             packet compression.
->   *
-> - *  Copyright (C) 2002-2012 OpenVPN Technologies, Inc. <sales@...515...>
-> - *  Copyright (C) 2013      Gert Doering <gert@...1296...>
-> + *  Copyright (C) 2002-2017 OpenVPN Technologies, Inc. <sales@...515...>
-> + *  Copyright (C) 2013-2017 Gert Doering <gert@...1296...>
->   *
->   *  This program is free software; you can redistribute it and/or modify
->   *  it under the terms of the GNU General Public License version 2
-> diff --git a/src/openvpn/comp.c b/src/openvpn/comp.c
-> index 5f563ae..0182a7c 100644
-> --- a/src/openvpn/comp.c
-> +++ b/src/openvpn/comp.c
-> @@ -5,7 +5,7 @@
->   *             packet encryption, packet authentication, and
->   *             packet compression.
->   *
-> - *  Copyright (C) 2002-2012 OpenVPN Technologies, Inc. <sales@...515...>
-> + *  Copyright (C) 2002-2017 OpenVPN Technologies, Inc. <sales@...515...>
->   *
->   *  This program is free software; you can redistribute it and/or modify
->   *  it under the terms of the GNU General Public License version 2
-> diff --git a/src/openvpn/comp.h b/src/openvpn/comp.h
-> index 7410c92..3c0b18e 100644
-> --- a/src/openvpn/comp.h
-> +++ b/src/openvpn/comp.h
-> @@ -5,7 +5,7 @@
->   *             packet encryption, packet authentication, and
->   *             packet compression.
->   *
-> - *  Copyright (C) 2002-2012 OpenVPN Technologies, Inc. <sales@...515...>
-> + *  Copyright (C) 2002-2017 OpenVPN Technologies, Inc. <sales@...515...>
->   *
->   *  This program is free software; you can redistribute it and/or modify
->   *  it under the terms of the GNU General Public License version 2
-> diff --git a/src/openvpn/compstub.c b/src/openvpn/compstub.c
-> index 7082b99..5070c82 100644
-> --- a/src/openvpn/compstub.c
-> +++ b/src/openvpn/compstub.c
-> @@ -5,7 +5,7 @@
->   *             packet encryption, packet authentication, and
->   *             packet compression.
->   *
-> - *  Copyright (C) 2002-2012 OpenVPN Technologies, Inc. <sales@...515...>
-> + *  Copyright (C) 2002-2017 OpenVPN Technologies, Inc. <sales@...515...>
->   *
->   *  This program is free software; you can redistribute it and/or modify
->   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/console.c b/src/openvpn/console.c
-> index ec64d42..90c8a94 100644
+> index 86331a1..1a3c182 100644
 > --- a/src/openvpn/console.c
 > +++ b/src/openvpn/console.c
-> @@ -5,9 +5,9 @@
+> @@ -5,7 +5,7 @@
 >   *             packet encryption, packet authentication, and
 >   *             packet compression.
 >   *
 > - *  Copyright (C) 2002-2010 OpenVPN Technologies, Inc. <sales@...515...>
 > + *  Copyright (C) 2002-2017 OpenVPN Technologies, Inc. <sales@...515...>
->   *  Copyright (C) 2014-2015 David Sommerseth <davids@...1347...>
-> - *  Copyright (C) 2016      David Sommerseth <davids@...515...>
-> + *  Copyright (C) 2016-2017 David Sommerseth <davids@...515...>
 >   *
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/console.h b/src/openvpn/console.h
-> index 495414a..2c7f3e9 100644
+> index 268f3fe..54a7612 100644
 > --- a/src/openvpn/console.h
 > +++ b/src/openvpn/console.h
-> @@ -5,9 +5,9 @@
+> @@ -5,7 +5,7 @@
 >   *             packet encryption, packet authentication, and
 >   *             packet compression.
 >   *
 > - *  Copyright (C) 2002-2010 OpenVPN Technologies, Inc. <sales@...515...>
 > + *  Copyright (C) 2002-2017 OpenVPN Technologies, Inc. <sales@...515...>
->   *  Copyright (C) 2014-2015 David Sommerseth <davids@...1347...>
-> - *  Copyright (C) 2016      David Sommerseth <davids@...515...>
-> + *  Copyright (C) 2016-2017 David Sommerseth <davids@...515...>
->   *
->   *  This program is free software; you can redistribute it and/or modify
->   *  it under the terms of the GNU General Public License version 2
-> diff --git a/src/openvpn/console_builtin.c b/src/openvpn/console_builtin.c
-> index 2d0c15f..13b9d7e 100644
-> --- a/src/openvpn/console_builtin.c
-> +++ b/src/openvpn/console_builtin.c
-> @@ -5,9 +5,9 @@
->   *             packet encryption, packet authentication, and
->   *             packet compression.
->   *
-> - *  Copyright (C) 2002-2016  OpenVPN Technologies, Inc. <sales@...515...>
-> + *  Copyright (C) 2002-2017 OpenVPN Technologies, Inc. <sales@...515...>
->   *  Copyright (C) 2014-2015  David Sommerseth <davids@...1347...>
-> - *  Copyright (C) 2016       David Sommerseth <davids@...515...>
-> + *  Copyright (C) 2016-2017 David Sommerseth <davids@...515...>
 >   *
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
-> index b28eb9d..7119abc 100644
+> index ca4af27..206308a 100644
 > --- a/src/openvpn/crypto.c
 > +++ b/src/openvpn/crypto.c
 > @@ -5,8 +5,8 @@
@@ -1033,14 +843,14 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *             packet compression.
 >   *
 > - *  Copyright (C) 2002-2010 OpenVPN Technologies, Inc. <sales@...515...>
-> - *  Copyright (C) 2010-2016 Fox Crypto B.V. <openvpn@...1435...>
+> - *  Copyright (C) 2010 Fox Crypto B.V. <openvpn@...1435...>
 > + *  Copyright (C) 2002-2017 OpenVPN Technologies, Inc. <sales@...515...>
 > + *  Copyright (C) 2010-2017 Fox Crypto B.V. <openvpn@...1435...>
 >   *
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/crypto.h b/src/openvpn/crypto.h
-> index 56761ba..61e9b59 100644
+> index e489827..5721142 100644
 > --- a/src/openvpn/crypto.h
 > +++ b/src/openvpn/crypto.h
 > @@ -5,8 +5,8 @@
@@ -1055,7 +865,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/crypto_backend.h b/src/openvpn/crypto_backend.h
-> index a4b2b43..2c79baa 100644
+> index 4c1ce9f..4001195 100644
 > --- a/src/openvpn/crypto_backend.h
 > +++ b/src/openvpn/crypto_backend.h
 > @@ -5,8 +5,8 @@
@@ -1069,38 +879,8 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
-> diff --git a/src/openvpn/crypto_mbedtls.c b/src/openvpn/crypto_mbedtls.c
-> index 89915bc..942684c 100644
-> --- a/src/openvpn/crypto_mbedtls.c
-> +++ b/src/openvpn/crypto_mbedtls.c
-> @@ -5,8 +5,8 @@
->   *             packet encryption, packet authentication, and
->   *             packet compression.
->   *
-> - *  Copyright (C) 2002-2010 OpenVPN Technologies, Inc. <sales@...515...>
-> - *  Copyright (C) 2010 Fox Crypto B.V. <openvpn@...1435...>
-> + *  Copyright (C) 2002-2017 OpenVPN Technologies, Inc. <sales@...515...>
-> + *  Copyright (C) 2010-2017 Fox Crypto B.V. <openvpn@...1435...>
->   *
->   *  This program is free software; you can redistribute it and/or modify
->   *  it under the terms of the GNU General Public License version 2
-> diff --git a/src/openvpn/crypto_mbedtls.h b/src/openvpn/crypto_mbedtls.h
-> index 16f9007..d9b1446 100644
-> --- a/src/openvpn/crypto_mbedtls.h
-> +++ b/src/openvpn/crypto_mbedtls.h
-> @@ -5,8 +5,8 @@
->   *             packet encryption, packet authentication, and
->   *             packet compression.
->   *
-> - *  Copyright (C) 2002-2010 OpenVPN Technologies, Inc. <sales@...515...>
-> - *  Copyright (C) 2010 Fox Crypto B.V. <openvpn@...1435...>
-> + *  Copyright (C) 2002-2017 OpenVPN Technologies, Inc. <sales@...515...>
-> + *  Copyright (C) 2010-2017 Fox Crypto B.V. <openvpn@...1435...>
->   *
->   *  This program is free software; you can redistribute it and/or modify
->   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
-> index 4e78316..b016d98 100644
+> index 7b1ac6c..e1545f0 100644
 > --- a/src/openvpn/crypto_openssl.c
 > +++ b/src/openvpn/crypto_openssl.c
 > @@ -5,8 +5,8 @@
@@ -1115,7 +895,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/crypto_openssl.h b/src/openvpn/crypto_openssl.h
-> index 6cf009e..56ec6e1 100644
+> index 42c7e9a..2514355 100644
 > --- a/src/openvpn/crypto_openssl.h
 > +++ b/src/openvpn/crypto_openssl.h
 > @@ -5,8 +5,8 @@
@@ -1129,8 +909,38 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
+> diff --git a/src/openvpn/crypto_polarssl.c b/src/openvpn/crypto_polarssl.c
+> index bca6a6f..8b39f9f 100644
+> --- a/src/openvpn/crypto_polarssl.c
+> +++ b/src/openvpn/crypto_polarssl.c
+> @@ -5,8 +5,8 @@
+>   *             packet encryption, packet authentication, and
+>   *             packet compression.
+>   *
+> - *  Copyright (C) 2002-2010 OpenVPN Technologies, Inc. <sales@...515...>
+> - *  Copyright (C) 2010 Fox Crypto B.V. <openvpn@...1435...>
+> + *  Copyright (C) 2002-2017 OpenVPN Technologies, Inc. <sales@...515...>
+> + *  Copyright (C) 2010-2017 Fox Crypto B.V. <openvpn@...1435...>
+>   *
+>   *  This program is free software; you can redistribute it and/or modify
+>   *  it under the terms of the GNU General Public License version 2
+> diff --git a/src/openvpn/crypto_polarssl.h b/src/openvpn/crypto_polarssl.h
+> index 12b5146..e205bc5 100644
+> --- a/src/openvpn/crypto_polarssl.h
+> +++ b/src/openvpn/crypto_polarssl.h
+> @@ -5,8 +5,8 @@
+>   *             packet encryption, packet authentication, and
+>   *             packet compression.
+>   *
+> - *  Copyright (C) 2002-2010 OpenVPN Technologies, Inc. <sales@...515...>
+> - *  Copyright (C) 2010 Fox Crypto B.V. <openvpn@...1435...>
+> + *  Copyright (C) 2002-2017 OpenVPN Technologies, Inc. <sales@...515...>
+> + *  Copyright (C) 2010-2017 Fox Crypto B.V. <openvpn@...1435...>
+>   *
+>   *  This program is free software; you can redistribute it and/or modify
+>   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/dhcp.c b/src/openvpn/dhcp.c
-> index 9c706ed..c17a22e 100644
+> index 8d0b18a..0b87909 100644
 > --- a/src/openvpn/dhcp.c
 > +++ b/src/openvpn/dhcp.c
 > @@ -5,7 +5,7 @@
@@ -1143,7 +953,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/dhcp.h b/src/openvpn/dhcp.h
-> index ee0f438..d406870 100644
+> index e823a4a..f2e6f7e 100644
 > --- a/src/openvpn/dhcp.h
 > +++ b/src/openvpn/dhcp.h
 > @@ -5,7 +5,7 @@
@@ -1156,7 +966,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/errlevel.h b/src/openvpn/errlevel.h
-> index b3a9f81..c4dd518 100644
+> index 3ee4ebc..b827361 100644
 > --- a/src/openvpn/errlevel.h
 > +++ b/src/openvpn/errlevel.h
 > @@ -5,7 +5,7 @@
@@ -1169,7 +979,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/error.c b/src/openvpn/error.c
-> index 6c07cde..e78f272 100644
+> index 6ccdeae..873ebb1 100644
 > --- a/src/openvpn/error.c
 > +++ b/src/openvpn/error.c
 > @@ -5,7 +5,7 @@
@@ -1182,7 +992,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/error.h b/src/openvpn/error.h
-> index eb9f8c0..df4eee7 100644
+> index 4d7fef9..0f3a812 100644
 > --- a/src/openvpn/error.h
 > +++ b/src/openvpn/error.h
 > @@ -5,7 +5,7 @@
@@ -1195,7 +1005,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/event.c b/src/openvpn/event.c
-> index a13e0dc..f4922e0 100644
+> index c642691..e3ab09a 100644
 > --- a/src/openvpn/event.c
 > +++ b/src/openvpn/event.c
 > @@ -5,7 +5,7 @@
@@ -1208,7 +1018,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/event.h b/src/openvpn/event.h
-> index 5e66d48..6a6e029 100644
+> index bd29fdc..a982350 100644
 > --- a/src/openvpn/event.h
 > +++ b/src/openvpn/event.h
 > @@ -5,7 +5,7 @@
@@ -1221,7 +1031,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/fdmisc.c b/src/openvpn/fdmisc.c
-> index 3851c43..401069d 100644
+> index 7fe449c..47ca263 100644
 > --- a/src/openvpn/fdmisc.c
 > +++ b/src/openvpn/fdmisc.c
 > @@ -5,7 +5,7 @@
@@ -1234,7 +1044,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/fdmisc.h b/src/openvpn/fdmisc.h
-> index bd9b47c..1e84a08 100644
+> index 13d6552..7ae366c 100644
 > --- a/src/openvpn/fdmisc.h
 > +++ b/src/openvpn/fdmisc.h
 > @@ -5,7 +5,7 @@
@@ -1247,7 +1057,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/forward-inline.h b/src/openvpn/forward-inline.h
-> index 6bce755..97e1cd6 100644
+> index 5853ce2..2e9a30e 100644
 > --- a/src/openvpn/forward-inline.h
 > +++ b/src/openvpn/forward-inline.h
 > @@ -5,7 +5,7 @@
@@ -1260,7 +1070,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-> index ab56056..8102e94 100644
+> index 3294201..658d38c 100644
 > --- a/src/openvpn/forward.c
 > +++ b/src/openvpn/forward.c
 > @@ -5,7 +5,7 @@
@@ -1273,7 +1083,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/forward.h b/src/openvpn/forward.h
-> index 82f7bbf..ae86e7a 100644
+> index 1830a00..72b9aa1 100644
 > --- a/src/openvpn/forward.h
 > +++ b/src/openvpn/forward.h
 > @@ -5,7 +5,7 @@
@@ -1286,7 +1096,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/fragment.c b/src/openvpn/fragment.c
-> index 87b9380..6fbfe08 100644
+> index 7ad1d61..f8ce28d 100644
 > --- a/src/openvpn/fragment.c
 > +++ b/src/openvpn/fragment.c
 > @@ -5,7 +5,7 @@
@@ -1299,7 +1109,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/fragment.h b/src/openvpn/fragment.h
-> index 4073212..a24b524 100644
+> index 866573b..1610481 100644
 > --- a/src/openvpn/fragment.h
 > +++ b/src/openvpn/fragment.h
 > @@ -5,7 +5,7 @@
@@ -1312,7 +1122,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/gremlin.c b/src/openvpn/gremlin.c
-> index e8b10a7..5bff5e8 100644
+> index f0aa7f6..dad7e25 100644
 > --- a/src/openvpn/gremlin.c
 > +++ b/src/openvpn/gremlin.c
 > @@ -5,7 +5,7 @@
@@ -1325,7 +1135,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/gremlin.h b/src/openvpn/gremlin.h
-> index c60048c..8f41864 100644
+> index c0aeab1..57201a4 100644
 > --- a/src/openvpn/gremlin.h
 > +++ b/src/openvpn/gremlin.h
 > @@ -5,7 +5,7 @@
@@ -1338,7 +1148,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/helper.c b/src/openvpn/helper.c
-> index 1fc4c86..adcc4f8 100644
+> index 3089217..c9b6774 100644
 > --- a/src/openvpn/helper.c
 > +++ b/src/openvpn/helper.c
 > @@ -5,7 +5,7 @@
@@ -1351,7 +1161,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/helper.h b/src/openvpn/helper.h
-> index d78c02f..593d1ed 100644
+> index 444969c..5914c0a 100644
 > --- a/src/openvpn/helper.h
 > +++ b/src/openvpn/helper.h
 > @@ -5,7 +5,7 @@
@@ -1364,7 +1174,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/httpdigest.c b/src/openvpn/httpdigest.c
-> index c5f0d92..01301c0 100644
+> index 99bbda4..9696709 100644
 > --- a/src/openvpn/httpdigest.c
 > +++ b/src/openvpn/httpdigest.c
 > @@ -5,7 +5,7 @@
@@ -1377,7 +1187,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/httpdigest.h b/src/openvpn/httpdigest.h
-> index fff7d46..b074fb2 100644
+> index 8423841..5ecf995 100644
 > --- a/src/openvpn/httpdigest.h
 > +++ b/src/openvpn/httpdigest.h
 > @@ -5,7 +5,7 @@
@@ -1390,7 +1200,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-> index f6a5ac7..9a3e29d 100644
+> index 593fbf4..dc63475 100644
 > --- a/src/openvpn/init.c
 > +++ b/src/openvpn/init.c
 > @@ -5,7 +5,7 @@
@@ -1403,7 +1213,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/init.h b/src/openvpn/init.h
-> index d742bc7..3b97d84 100644
+> index a819bd2..8652c19 100644
 > --- a/src/openvpn/init.h
 > +++ b/src/openvpn/init.h
 > @@ -5,7 +5,7 @@
@@ -1416,7 +1226,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/integer.h b/src/openvpn/integer.h
-> index ee9a43e..bae8f16 100644
+> index f0fc196..b7244a8 100644
 > --- a/src/openvpn/integer.h
 > +++ b/src/openvpn/integer.h
 > @@ -5,7 +5,7 @@
@@ -1429,7 +1239,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/interval.c b/src/openvpn/interval.c
-> index 108b778..99e72a0 100644
+> index 64494f1..be2d7de 100644
 > --- a/src/openvpn/interval.c
 > +++ b/src/openvpn/interval.c
 > @@ -5,7 +5,7 @@
@@ -1442,7 +1252,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/interval.h b/src/openvpn/interval.h
-> index 0507ed2..5ed64a9 100644
+> index 4814ec9..31ef843 100644
 > --- a/src/openvpn/interval.h
 > +++ b/src/openvpn/interval.h
 > @@ -5,7 +5,7 @@
@@ -1455,7 +1265,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/list.c b/src/openvpn/list.c
-> index 4d64b4c..fb9f664 100644
+> index ea6bd74..3311327 100644
 > --- a/src/openvpn/list.c
 > +++ b/src/openvpn/list.c
 > @@ -5,7 +5,7 @@
@@ -1468,7 +1278,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/list.h b/src/openvpn/list.h
-> index 72fb2c9..6270f88 100644
+> index adde36b..4742e9d 100644
 > --- a/src/openvpn/list.h
 > +++ b/src/openvpn/list.h
 > @@ -5,7 +5,7 @@
@@ -1481,7 +1291,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/lzo.c b/src/openvpn/lzo.c
-> index e587268..3d6891e 100644
+> index 195b819..43918a8 100644
 > --- a/src/openvpn/lzo.c
 > +++ b/src/openvpn/lzo.c
 > @@ -5,7 +5,7 @@
@@ -1494,7 +1304,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/lzo.h b/src/openvpn/lzo.h
-> index f9eddcc..85937b2 100644
+> index 472204d..bdd0f39 100644
 > --- a/src/openvpn/lzo.h
 > +++ b/src/openvpn/lzo.h
 > @@ -5,7 +5,7 @@
@@ -1507,7 +1317,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
-> index b6520c0..763f6c6 100644
+> index 0a4542a..cf6fec1 100644
 > --- a/src/openvpn/manage.c
 > +++ b/src/openvpn/manage.c
 > @@ -5,7 +5,7 @@
@@ -1520,7 +1330,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/manage.h b/src/openvpn/manage.h
-> index 7e022f0..6e5cb9b 100644
+> index 28da69f..a08fe42 100644
 > --- a/src/openvpn/manage.h
 > +++ b/src/openvpn/manage.h
 > @@ -5,7 +5,7 @@
@@ -1533,7 +1343,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/mbuf.c b/src/openvpn/mbuf.c
-> index a8388c4..7a23e59 100644
+> index 82f2388..c84c4bd 100644
 > --- a/src/openvpn/mbuf.c
 > +++ b/src/openvpn/mbuf.c
 > @@ -5,7 +5,7 @@
@@ -1546,7 +1356,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/mbuf.h b/src/openvpn/mbuf.h
-> index c6375e3..cfaef58 100644
+> index 1085adc..94745b9 100644
 > --- a/src/openvpn/mbuf.h
 > +++ b/src/openvpn/mbuf.h
 > @@ -5,7 +5,7 @@
@@ -1559,7 +1369,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/memdbg.h b/src/openvpn/memdbg.h
-> index 4906f88..ee30b15 100644
+> index 1f6bb67..fa1802f 100644
 > --- a/src/openvpn/memdbg.h
 > +++ b/src/openvpn/memdbg.h
 > @@ -5,7 +5,7 @@
@@ -1572,23 +1382,20 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
-> index 7c769a8..87f03be 100644
+> index 48ca0d5..39aa936 100644
 > --- a/src/openvpn/misc.c
 > +++ b/src/openvpn/misc.c
-> @@ -5,9 +5,9 @@
+> @@ -5,7 +5,7 @@
 >   *             packet encryption, packet authentication, and
 >   *             packet compression.
 >   *
 > - *  Copyright (C) 2002-2010 OpenVPN Technologies, Inc. <sales@...515...>
 > + *  Copyright (C) 2002-2017 OpenVPN Technologies, Inc. <sales@...515...>
->   *  Copyright (C) 2014-2015 David Sommerseth <davids@...1347...>
-> - *  Copyright (C) 2016      David Sommerseth <davids@...515...>
-> + *  Copyright (C) 2016-2017 David Sommerseth <davids@...515...>
 >   *
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/misc.h b/src/openvpn/misc.h
-> index 606c465..16be621 100644
+> index c1942b6..2fc281d 100644
 > --- a/src/openvpn/misc.h
 > +++ b/src/openvpn/misc.h
 > @@ -5,7 +5,7 @@
@@ -1601,7 +1408,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/mroute.c b/src/openvpn/mroute.c
-> index cdcd061..8b466b6 100644
+> index 850e336..845550e 100644
 > --- a/src/openvpn/mroute.c
 > +++ b/src/openvpn/mroute.c
 > @@ -5,7 +5,7 @@
@@ -1614,7 +1421,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/mroute.h b/src/openvpn/mroute.h
-> index 9da41ee..0698348 100644
+> index b72b5ff..2ec038b 100644
 > --- a/src/openvpn/mroute.h
 > +++ b/src/openvpn/mroute.h
 > @@ -5,7 +5,7 @@
@@ -1627,7 +1434,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/mss.c b/src/openvpn/mss.c
-> index af3457b..5b110d2 100644
+> index 7298c7b..5978e71 100644
 > --- a/src/openvpn/mss.c
 > +++ b/src/openvpn/mss.c
 > @@ -5,7 +5,7 @@
@@ -1640,7 +1447,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/mss.h b/src/openvpn/mss.h
-> index 6d18fb9..afe7a32 100644
+> index 0d32943..2bc52c1 100644
 > --- a/src/openvpn/mss.h
 > +++ b/src/openvpn/mss.h
 > @@ -5,7 +5,7 @@
@@ -1653,7 +1460,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/mstats.c b/src/openvpn/mstats.c
-> index 3dad866..8ab1d02 100644
+> index 3be493c..d324a8b 100644
 > --- a/src/openvpn/mstats.c
 > +++ b/src/openvpn/mstats.c
 > @@ -5,7 +5,7 @@
@@ -1666,7 +1473,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/mstats.h b/src/openvpn/mstats.h
-> index 7a5cc68..f87a858 100644
+> index dab05fe..1e9f90e 100644
 > --- a/src/openvpn/mstats.h
 > +++ b/src/openvpn/mstats.h
 > @@ -5,7 +5,7 @@
@@ -1679,7 +1486,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/mtcp.c b/src/openvpn/mtcp.c
-> index 4fab23f..b5471b1 100644
+> index dc15f09..4e60298 100644
 > --- a/src/openvpn/mtcp.c
 > +++ b/src/openvpn/mtcp.c
 > @@ -5,7 +5,7 @@
@@ -1692,7 +1499,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/mtcp.h b/src/openvpn/mtcp.h
-> index a11e56e..835b8fd 100644
+> index b677b48..6b5d6dd 100644
 > --- a/src/openvpn/mtcp.h
 > +++ b/src/openvpn/mtcp.h
 > @@ -5,7 +5,7 @@
@@ -1705,7 +1512,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/mtu.c b/src/openvpn/mtu.c
-> index 416a11e..73eab21 100644
+> index 13f3f6c..48e49c1 100644
 > --- a/src/openvpn/mtu.c
 > +++ b/src/openvpn/mtu.c
 > @@ -5,7 +5,7 @@
@@ -1718,7 +1525,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/mtu.h b/src/openvpn/mtu.h
-> index 0d5402d..471e51e 100644
+> index bccd681..f8222c2 100644
 > --- a/src/openvpn/mtu.h
 > +++ b/src/openvpn/mtu.h
 > @@ -5,7 +5,7 @@
@@ -1731,7 +1538,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/mudp.c b/src/openvpn/mudp.c
-> index 35a8d3c..64ce4d7 100644
+> index 2d6d684..862cad6 100644
 > --- a/src/openvpn/mudp.c
 > +++ b/src/openvpn/mudp.c
 > @@ -5,7 +5,7 @@
@@ -1744,7 +1551,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/mudp.h b/src/openvpn/mudp.h
-> index 89ec78c..a98d64d 100644
+> index 97f961b..89c741c 100644
 > --- a/src/openvpn/mudp.h
 > +++ b/src/openvpn/mudp.h
 > @@ -5,7 +5,7 @@
@@ -1757,7 +1564,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-> index 3480579..f6f3f5d 100644
+> index 541f8f5..4f781f4 100644
 > --- a/src/openvpn/multi.c
 > +++ b/src/openvpn/multi.c
 > @@ -5,7 +5,7 @@
@@ -1770,7 +1577,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/multi.h b/src/openvpn/multi.h
-> index 7508fe2..b4ffd69 100644
+> index 7bfbb11..ed8d444 100644
 > --- a/src/openvpn/multi.h
 > +++ b/src/openvpn/multi.h
 > @@ -5,7 +5,7 @@
@@ -1783,7 +1590,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/occ-inline.h b/src/openvpn/occ-inline.h
-> index 5b656d4..84fe1ac 100644
+> index 516eb4d..16b3660 100644
 > --- a/src/openvpn/occ-inline.h
 > +++ b/src/openvpn/occ-inline.h
 > @@ -5,7 +5,7 @@
@@ -1796,7 +1603,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/occ.c b/src/openvpn/occ.c
-> index 046d03b..b4ccc4d 100644
+> index d71381d..75b59f6 100644
 > --- a/src/openvpn/occ.c
 > +++ b/src/openvpn/occ.c
 > @@ -5,7 +5,7 @@
@@ -1809,7 +1616,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/occ.h b/src/openvpn/occ.h
-> index cb5d957..843ceb2 100644
+> index 5d88cc9..6d636dc 100644
 > --- a/src/openvpn/occ.h
 > +++ b/src/openvpn/occ.h
 > @@ -5,7 +5,7 @@
@@ -1822,7 +1629,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/openvpn.c b/src/openvpn/openvpn.c
-> index 9a1ff9c..888acda 100644
+> index 823c3dd..7f8501d 100644
 > --- a/src/openvpn/openvpn.c
 > +++ b/src/openvpn/openvpn.c
 > @@ -5,7 +5,7 @@
@@ -1835,7 +1642,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/openvpn.h b/src/openvpn/openvpn.h
-> index 36c53e8..37edec4 100644
+> index 36c3100..96dbbc6 100644
 > --- a/src/openvpn/openvpn.h
 > +++ b/src/openvpn/openvpn.h
 > @@ -5,7 +5,7 @@
@@ -1848,7 +1655,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-> index b343502..bfedb6a 100644
+> index a9419d4..3a6b4f2 100644
 > --- a/src/openvpn/options.c
 > +++ b/src/openvpn/options.c
 > @@ -5,7 +5,7 @@
@@ -1860,17 +1667,17 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  Copyright (C) 2008-2013 David Sommerseth <dazo@...384...>
 >   *
 >   *  This program is free software; you can redistribute it and/or modify
-> @@ -4137,7 +4137,7 @@ usage_version(void)
->      show_windows_version( M_INFO|M_NOPREFIX );
+> @@ -3533,7 +3533,7 @@ usage_version (void)
+>    show_windows_version( M_INFO|M_NOPREFIX );
 >  #endif
->      msg(M_INFO|M_NOPREFIX, "Originally developed by James Yonan");
-> -    msg(M_INFO|M_NOPREFIX, "Copyright (C) 2002-2016 OpenVPN Technologies, Inc. <sales@...515...>");
-> +    msg(M_INFO|M_NOPREFIX, "Copyright (C) 2002-2017 OpenVPN Technologies, Inc. <sales@...515...>");
+>    msg (M_INFO|M_NOPREFIX, "Originally developed by James Yonan");
+> -  msg (M_INFO|M_NOPREFIX, "Copyright (C) 2002-2016 OpenVPN Technologies, Inc. <sales@...515...>");
+> +  msg (M_INFO|M_NOPREFIX, "Copyright (C) 2002-2017 OpenVPN Technologies, Inc. <sales@...515...>");
 >  #ifndef ENABLE_SMALL
 >  #ifdef CONFIGURE_DEFINES
->      msg(M_INFO|M_NOPREFIX, "Compile time defines: %s", CONFIGURE_DEFINES);
+>    msg (M_INFO|M_NOPREFIX, "Compile time defines: %s", CONFIGURE_DEFINES);
 > diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-> index 3fd0f23..b3ab029 100644
+> index 86fa8c2..e4235e9 100644
 > --- a/src/openvpn/options.h
 > +++ b/src/openvpn/options.h
 > @@ -5,7 +5,7 @@
@@ -1883,7 +1690,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/otime.c b/src/openvpn/otime.c
-> index cc487e5..22abda0 100644
+> index 2c1e5b1..ef92bbd 100644
 > --- a/src/openvpn/otime.c
 > +++ b/src/openvpn/otime.c
 > @@ -5,7 +5,7 @@
@@ -1896,7 +1703,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/otime.h b/src/openvpn/otime.h
-> index 2b596ff..eede63d 100644
+> index 4ca1032..cc7943c 100644
 > --- a/src/openvpn/otime.h
 > +++ b/src/openvpn/otime.h
 > @@ -5,7 +5,7 @@
@@ -1909,7 +1716,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/packet_id.c b/src/openvpn/packet_id.c
-> index 64d19c5..fe13e1d 100644
+> index baa4966..a690bbc 100644
 > --- a/src/openvpn/packet_id.c
 > +++ b/src/openvpn/packet_id.c
 > @@ -5,7 +5,7 @@
@@ -1922,7 +1729,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/packet_id.h b/src/openvpn/packet_id.h
-> index d4019ff..ecc25a6 100644
+> index 3ddaab6..b02d6fc 100644
 > --- a/src/openvpn/packet_id.h
 > +++ b/src/openvpn/packet_id.h
 > @@ -5,7 +5,7 @@
@@ -1935,7 +1742,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/perf.c b/src/openvpn/perf.c
-> index e012eb4..51e051a 100644
+> index 910d171..b05e051 100644
 > --- a/src/openvpn/perf.c
 > +++ b/src/openvpn/perf.c
 > @@ -5,7 +5,7 @@
@@ -1948,7 +1755,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/perf.h b/src/openvpn/perf.h
-> index f277b1e..f0430a1 100644
+> index c531d9c..13873bb 100644
 > --- a/src/openvpn/perf.h
 > +++ b/src/openvpn/perf.h
 > @@ -5,7 +5,7 @@
@@ -1961,7 +1768,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/pf-inline.h b/src/openvpn/pf-inline.h
-> index beaae5c..a0f5cc7 100644
+> index 6b5dcb2..6136ac8 100644
 > --- a/src/openvpn/pf-inline.h
 > +++ b/src/openvpn/pf-inline.h
 > @@ -5,7 +5,7 @@
@@ -1974,7 +1781,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/pf.c b/src/openvpn/pf.c
-> index 7db4ba9..56b6858 100644
+> index 461beed..a28ee4a 100644
 > --- a/src/openvpn/pf.c
 > +++ b/src/openvpn/pf.c
 > @@ -5,7 +5,7 @@
@@ -1987,7 +1794,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/pf.h b/src/openvpn/pf.h
-> index e5c951f..3832683 100644
+> index 04adf0e..0e3ddba 100644
 > --- a/src/openvpn/pf.h
 > +++ b/src/openvpn/pf.h
 > @@ -5,7 +5,7 @@
@@ -2000,7 +1807,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/ping-inline.h b/src/openvpn/ping-inline.h
-> index 1029100..2fa1d5c 100644
+> index c724970..94ffca9 100644
 > --- a/src/openvpn/ping-inline.h
 > +++ b/src/openvpn/ping-inline.h
 > @@ -5,7 +5,7 @@
@@ -2013,7 +1820,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/ping.c b/src/openvpn/ping.c
-> index 1af31cc..0496b72 100644
+> index 6dc0b4e..443ec2f 100644
 > --- a/src/openvpn/ping.c
 > +++ b/src/openvpn/ping.c
 > @@ -5,7 +5,7 @@
@@ -2026,7 +1833,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/ping.h b/src/openvpn/ping.h
-> index 6f060c6..e839ce7 100644
+> index 88f5f3a..121adaa 100644
 > --- a/src/openvpn/ping.h
 > +++ b/src/openvpn/ping.h
 > @@ -5,7 +5,7 @@
@@ -2039,7 +1846,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/pkcs11.c b/src/openvpn/pkcs11.c
-> index f77d4cd..6858846 100644
+> index a1f13c5..ccd22d2 100644
 > --- a/src/openvpn/pkcs11.c
 > +++ b/src/openvpn/pkcs11.c
 > @@ -5,7 +5,7 @@
@@ -2052,7 +1859,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/pkcs11.h b/src/openvpn/pkcs11.h
-> index 621796d..3747d3a 100644
+> index b49401c..00aab95 100644
 > --- a/src/openvpn/pkcs11.h
 > +++ b/src/openvpn/pkcs11.h
 > @@ -5,7 +5,7 @@
@@ -2065,7 +1872,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/pkcs11_backend.h b/src/openvpn/pkcs11_backend.h
-> index e883d0c..9606899 100644
+> index 7b7ec45..3558823 100644
 > --- a/src/openvpn/pkcs11_backend.h
 > +++ b/src/openvpn/pkcs11_backend.h
 > @@ -5,8 +5,8 @@
@@ -2079,23 +1886,8 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
-> diff --git a/src/openvpn/pkcs11_mbedtls.c b/src/openvpn/pkcs11_mbedtls.c
-> index 874618c..bdca893 100644
-> --- a/src/openvpn/pkcs11_mbedtls.c
-> +++ b/src/openvpn/pkcs11_mbedtls.c
-> @@ -5,8 +5,8 @@
->   *             packet encryption, packet authentication, and
->   *             packet compression.
->   *
-> - *  Copyright (C) 2002-2010 OpenVPN Technologies, Inc. <sales@...515...>
-> - *  Copyright (C) 2010 Fox Crypto B.V. <openvpn@...1435...>
-> + *  Copyright (C) 2002-2017 OpenVPN Technologies, Inc. <sales@...515...>
-> + *  Copyright (C) 2010-2017 Fox Crypto B.V. <openvpn@...1435...>
->   *
->   *  This program is free software; you can redistribute it and/or modify
->   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/pkcs11_openssl.c b/src/openvpn/pkcs11_openssl.c
-> index bab4c90..6244cc7 100644
+> index 87eb166..c280a7d 100644
 > --- a/src/openvpn/pkcs11_openssl.c
 > +++ b/src/openvpn/pkcs11_openssl.c
 > @@ -5,8 +5,8 @@
@@ -2109,8 +1901,23 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
+> diff --git a/src/openvpn/pkcs11_polarssl.c b/src/openvpn/pkcs11_polarssl.c
+> index a58beef..1a2ef30 100644
+> --- a/src/openvpn/pkcs11_polarssl.c
+> +++ b/src/openvpn/pkcs11_polarssl.c
+> @@ -5,8 +5,8 @@
+>   *             packet encryption, packet authentication, and
+>   *             packet compression.
+>   *
+> - *  Copyright (C) 2002-2010 OpenVPN Technologies, Inc. <sales@...515...>
+> - *  Copyright (C) 2010 Fox Crypto B.V. <openvpn@...1435...>
+> + *  Copyright (C) 2002-2017 OpenVPN Technologies, Inc. <sales@...515...>
+> + *  Copyright (C) 2010-2017 Fox Crypto B.V. <openvpn@...1435...>
+>   *
+>   *  This program is free software; you can redistribute it and/or modify
+>   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/platform.c b/src/openvpn/platform.c
-> index 3deed32..952d633 100644
+> index 16d4dac..7ffaddf 100644
 > --- a/src/openvpn/platform.c
 > +++ b/src/openvpn/platform.c
 > @@ -5,7 +5,7 @@
@@ -2123,7 +1930,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/platform.h b/src/openvpn/platform.h
-> index a43ee13..62396a9 100644
+> index 7c0a4d7..3b75a20 100644
 > --- a/src/openvpn/platform.h
 > +++ b/src/openvpn/platform.h
 > @@ -5,7 +5,7 @@
@@ -2136,7 +1943,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/plugin.c b/src/openvpn/plugin.c
-> index dab9c93..17eb2d8 100644
+> index 4e5e6ce..2847154 100644
 > --- a/src/openvpn/plugin.c
 > +++ b/src/openvpn/plugin.c
 > @@ -5,7 +5,7 @@
@@ -2149,7 +1956,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/plugin.h b/src/openvpn/plugin.h
-> index 7f0cbd4..4ded529 100644
+> index 2f8416b..5329f15 100644
 > --- a/src/openvpn/plugin.h
 > +++ b/src/openvpn/plugin.h
 > @@ -5,7 +5,7 @@
@@ -2162,7 +1969,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/pool.c b/src/openvpn/pool.c
-> index 8d5dc1b..aa0bc2b 100644
+> index 28c26b4..1764733 100644
 > --- a/src/openvpn/pool.c
 > +++ b/src/openvpn/pool.c
 > @@ -5,7 +5,7 @@
@@ -2175,7 +1982,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/pool.h b/src/openvpn/pool.h
-> index 5638b9f..c3e1190 100644
+> index fc9d6ab..e1a7198 100644
 > --- a/src/openvpn/pool.h
 > +++ b/src/openvpn/pool.h
 > @@ -5,7 +5,7 @@
@@ -2188,7 +1995,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/proto.c b/src/openvpn/proto.c
-> index acf35f5..40e0714 100644
+> index 7b58e6a..3730fa7 100644
 > --- a/src/openvpn/proto.c
 > +++ b/src/openvpn/proto.c
 > @@ -5,7 +5,7 @@
@@ -2201,7 +2008,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/proto.h b/src/openvpn/proto.h
-> index 1b560a3..bfcb36d 100644
+> index 07612c8..22d291d 100644
 > --- a/src/openvpn/proto.h
 > +++ b/src/openvpn/proto.h
 > @@ -5,7 +5,7 @@
@@ -2214,7 +2021,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/proxy.c b/src/openvpn/proxy.c
-> index 7a06038..dd327a2 100644
+> index 89989d1..0d0bd3c 100644
 > --- a/src/openvpn/proxy.c
 > +++ b/src/openvpn/proxy.c
 > @@ -5,7 +5,7 @@
@@ -2227,7 +2034,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/proxy.h b/src/openvpn/proxy.h
-> index 892277b..c20a676 100644
+> index 5e476f1..be9020d 100644
 > --- a/src/openvpn/proxy.h
 > +++ b/src/openvpn/proxy.h
 > @@ -5,7 +5,7 @@
@@ -2240,7 +2047,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/ps.c b/src/openvpn/ps.c
-> index bca670c..21b12ca 100644
+> index 6495dc7..cd96257 100644
 > --- a/src/openvpn/ps.c
 > +++ b/src/openvpn/ps.c
 > @@ -5,7 +5,7 @@
@@ -2253,7 +2060,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/ps.h b/src/openvpn/ps.h
-> index cbfe9b8..0fc1ee4 100644
+> index 4280635..62af8b5 100644
 > --- a/src/openvpn/ps.h
 > +++ b/src/openvpn/ps.h
 > @@ -5,7 +5,7 @@
@@ -2266,7 +2073,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/push.c b/src/openvpn/push.c
-> index b6e12e1..f515475 100644
+> index 402c158..05ad077 100644
 > --- a/src/openvpn/push.c
 > +++ b/src/openvpn/push.c
 > @@ -5,7 +5,7 @@
@@ -2279,7 +2086,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/push.h b/src/openvpn/push.h
-> index 38cf5c1..86900c8 100644
+> index 8c3f157..9928796 100644
 > --- a/src/openvpn/push.h
 > +++ b/src/openvpn/push.h
 > @@ -5,7 +5,7 @@
@@ -2292,7 +2099,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/pushlist.h b/src/openvpn/pushlist.h
-> index 5471b1b..58fc870 100644
+> index b252676..f84b241 100644
 > --- a/src/openvpn/pushlist.h
 > +++ b/src/openvpn/pushlist.h
 > @@ -5,7 +5,7 @@
@@ -2305,7 +2112,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/reliable.c b/src/openvpn/reliable.c
-> index 3671916..57cdd78 100644
+> index 763169e..d320f48 100644
 > --- a/src/openvpn/reliable.c
 > +++ b/src/openvpn/reliable.c
 > @@ -5,7 +5,7 @@
@@ -2318,7 +2125,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/reliable.h b/src/openvpn/reliable.h
-> index 84cd1e2..455168a 100644
+> index 594ab82..801ec50 100644
 > --- a/src/openvpn/reliable.h
 > +++ b/src/openvpn/reliable.h
 > @@ -5,7 +5,7 @@
@@ -2331,7 +2138,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-> index 01c3787..0c93dcd 100644
+> index 68857e8..74f0a01 100644
 > --- a/src/openvpn/route.c
 > +++ b/src/openvpn/route.c
 > @@ -5,7 +5,7 @@
@@ -2344,7 +2151,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/route.h b/src/openvpn/route.h
-> index dcc7ded..03ee8cd 100644
+> index fe9b461..ff58e9e 100644
 > --- a/src/openvpn/route.h
 > +++ b/src/openvpn/route.h
 > @@ -5,7 +5,7 @@
@@ -2357,7 +2164,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/schedule.c b/src/openvpn/schedule.c
-> index 4495b1e..610bfa4 100644
+> index 471330f..430a953 100644
 > --- a/src/openvpn/schedule.c
 > +++ b/src/openvpn/schedule.c
 > @@ -5,7 +5,7 @@
@@ -2370,7 +2177,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/schedule.h b/src/openvpn/schedule.h
-> index bdd443f..f2a6813 100644
+> index 71c6d8c..10ad677 100644
 > --- a/src/openvpn/schedule.h
 > +++ b/src/openvpn/schedule.h
 > @@ -5,7 +5,7 @@
@@ -2383,7 +2190,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/session_id.c b/src/openvpn/session_id.c
-> index 029608e..b23f0f4 100644
+> index 2e07b54..549853d 100644
 > --- a/src/openvpn/session_id.c
 > +++ b/src/openvpn/session_id.c
 > @@ -5,7 +5,7 @@
@@ -2396,7 +2203,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/session_id.h b/src/openvpn/session_id.h
-> index 0fb8f6e..2b0ceb8 100644
+> index 33909dd..87967ee 100644
 > --- a/src/openvpn/session_id.h
 > +++ b/src/openvpn/session_id.h
 > @@ -5,7 +5,7 @@
@@ -2409,7 +2216,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/shaper.c b/src/openvpn/shaper.c
-> index 05c179e..eb459ef 100644
+> index c8a7d38..b4dc123 100644
 > --- a/src/openvpn/shaper.c
 > +++ b/src/openvpn/shaper.c
 > @@ -5,7 +5,7 @@
@@ -2422,7 +2229,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/shaper.h b/src/openvpn/shaper.h
-> index 21b4fb6..d97221a 100644
+> index afeb9c3..5bbba7f 100644
 > --- a/src/openvpn/shaper.h
 > +++ b/src/openvpn/shaper.h
 > @@ -5,7 +5,7 @@
@@ -2435,7 +2242,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/sig.c b/src/openvpn/sig.c
-> index bd473e3..9f4841a 100644
+> index 16001fa..439c563 100644
 > --- a/src/openvpn/sig.c
 > +++ b/src/openvpn/sig.c
 > @@ -5,7 +5,7 @@
@@ -2448,7 +2255,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/sig.h b/src/openvpn/sig.h
-> index 9536a6e..5783731 100644
+> index 987efef..59ce569 100644
 > --- a/src/openvpn/sig.h
 > +++ b/src/openvpn/sig.h
 > @@ -5,7 +5,7 @@
@@ -2461,7 +2268,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
-> index 516a8f6..ae12832 100644
+> index 3474f18..5102a05 100644
 > --- a/src/openvpn/socket.c
 > +++ b/src/openvpn/socket.c
 > @@ -5,7 +5,7 @@
@@ -2474,7 +2281,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/socket.h b/src/openvpn/socket.h
-> index 2f70eca..63e601e 100644
+> index 22eac54..988e60a 100644
 > --- a/src/openvpn/socket.h
 > +++ b/src/openvpn/socket.h
 > @@ -5,7 +5,7 @@
@@ -2487,7 +2294,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/socks.c b/src/openvpn/socks.c
-> index da4c824..b50cac3 100644
+> index 57dc02a..c710b53 100644
 > --- a/src/openvpn/socks.c
 > +++ b/src/openvpn/socks.c
 > @@ -5,7 +5,7 @@
@@ -2500,7 +2307,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/socks.h b/src/openvpn/socks.h
-> index d0b18f1..17e75e1 100644
+> index b55ff6f..4b02321 100644
 > --- a/src/openvpn/socks.h
 > +++ b/src/openvpn/socks.h
 > @@ -5,7 +5,7 @@
@@ -2513,7 +2320,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-> index 1022fb6..15f62f2 100644
+> index bfad291..32d0b6b 100644
 > --- a/src/openvpn/ssl.c
 > +++ b/src/openvpn/ssl.c
 > @@ -5,8 +5,8 @@
@@ -2528,7 +2335,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *
 >   *  This program is free software; you can redistribute it and/or modify
 > diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
-> index a78d462..ed1344e 100644
+> index 6a14768..c3d32c7 100644
 > --- a/src/openvpn/ssl.h
 > +++ b/src/openvpn/ssl.h
 > @@ -5,8 +5,8 @@
@@ -2543,7 +2350,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/ssl_backend.h b/src/openvpn/ssl_backend.h
-> index b364512..206400f 100644
+> index 4b35e51..58bbcb8 100644
 > --- a/src/openvpn/ssl_backend.h
 > +++ b/src/openvpn/ssl_backend.h
 > @@ -5,8 +5,8 @@
@@ -2558,7 +2365,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
-> index 018da27..9a16d77 100644
+> index 449172d..f780ce8 100644
 > --- a/src/openvpn/ssl_common.h
 > +++ b/src/openvpn/ssl_common.h
 > @@ -5,8 +5,8 @@
@@ -2572,38 +2379,8 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
-> diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
-> index b6b600d..5c84e30 100644
-> --- a/src/openvpn/ssl_mbedtls.c
-> +++ b/src/openvpn/ssl_mbedtls.c
-> @@ -5,8 +5,8 @@
->   *             packet encryption, packet authentication, and
->   *             packet compression.
->   *
-> - *  Copyright (C) 2002-2010 OpenVPN Technologies, Inc. <sales@...515...>
-> - *  Copyright (C) 2010 Fox Crypto B.V. <openvpn@...1435...>
-> + *  Copyright (C) 2002-2017 OpenVPN Technologies, Inc. <sales@...515...>
-> + *  Copyright (C) 2010-2017 Fox Crypto B.V. <openvpn@...1435...>
->   *  Copyright (C) 2006-2010, Brainspark B.V.
->   *
->   *  This program is free software; you can redistribute it and/or modify
-> diff --git a/src/openvpn/ssl_mbedtls.h b/src/openvpn/ssl_mbedtls.h
-> index dfd2ec9..1bc53ce 100644
-> --- a/src/openvpn/ssl_mbedtls.h
-> +++ b/src/openvpn/ssl_mbedtls.h
-> @@ -5,8 +5,8 @@
->   *             packet encryption, packet authentication, and
->   *             packet compression.
->   *
-> - *  Copyright (C) 2002-2010 OpenVPN Technologies, Inc. <sales@...515...>
-> - *  Copyright (C) 2010 Fox Crypto B.V. <openvpn@...1435...>
-> + *  Copyright (C) 2002-2017 OpenVPN Technologies, Inc. <sales@...515...>
-> + *  Copyright (C) 2010-2017 Fox Crypto B.V. <openvpn@...1435...>
->   *
->   *  This program is free software; you can redistribute it and/or modify
->   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-> index 1f156d6..eae1e22 100644
+> index 055b355..cda0ebb 100644
 > --- a/src/openvpn/ssl_openssl.c
 > +++ b/src/openvpn/ssl_openssl.c
 > @@ -5,8 +5,8 @@
@@ -2618,7 +2395,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/ssl_openssl.h b/src/openvpn/ssl_openssl.h
-> index 5f77713..c64c65f 100644
+> index 73a6c49..5a7db09 100644
 > --- a/src/openvpn/ssl_openssl.h
 > +++ b/src/openvpn/ssl_openssl.h
 > @@ -5,8 +5,8 @@
@@ -2632,8 +2409,38 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
+> diff --git a/src/openvpn/ssl_polarssl.c b/src/openvpn/ssl_polarssl.c
+> index 9263698..cf9ef2e 100644
+> --- a/src/openvpn/ssl_polarssl.c
+> +++ b/src/openvpn/ssl_polarssl.c
+> @@ -5,8 +5,8 @@
+>   *             packet encryption, packet authentication, and
+>   *             packet compression.
+>   *
+> - *  Copyright (C) 2002-2010 OpenVPN Technologies, Inc. <sales@...515...>
+> - *  Copyright (C) 2010 Fox Crypto B.V. <openvpn@...1435...>
+> + *  Copyright (C) 2002-2017 OpenVPN Technologies, Inc. <sales@...515...>
+> + *  Copyright (C) 2010-2017 Fox Crypto B.V. <openvpn@...1435...>
+>   *  Copyright (C) 2006-2010, Brainspark B.V.
+>   *
+>   *  This program is free software; you can redistribute it and/or modify
+> diff --git a/src/openvpn/ssl_polarssl.h b/src/openvpn/ssl_polarssl.h
+> index b80a509..f31717c 100644
+> --- a/src/openvpn/ssl_polarssl.h
+> +++ b/src/openvpn/ssl_polarssl.h
+> @@ -5,8 +5,8 @@
+>   *             packet encryption, packet authentication, and
+>   *             packet compression.
+>   *
+> - *  Copyright (C) 2002-2010 OpenVPN Technologies, Inc. <sales@...515...>
+> - *  Copyright (C) 2010 Fox Crypto B.V. <openvpn@...1435...>
+> + *  Copyright (C) 2002-2017 OpenVPN Technologies, Inc. <sales@...515...>
+> + *  Copyright (C) 2010-2017 Fox Crypto B.V. <openvpn@...1435...>
+>   *
+>   *  This program is free software; you can redistribute it and/or modify
+>   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
-> index e901202..334eb29 100644
+> index ca69b41..d61a597 100644
 > --- a/src/openvpn/ssl_verify.c
 > +++ b/src/openvpn/ssl_verify.c
 > @@ -5,8 +5,8 @@
@@ -2648,7 +2455,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/ssl_verify.h b/src/openvpn/ssl_verify.h
-> index 45ce3b0..ffab218 100644
+> index e0bcba4..395a654 100644
 > --- a/src/openvpn/ssl_verify.h
 > +++ b/src/openvpn/ssl_verify.h
 > @@ -5,8 +5,8 @@
@@ -2663,7 +2470,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/ssl_verify_backend.h b/src/openvpn/ssl_verify_backend.h
-> index 34edffb..c4330ba 100644
+> index 01e453e..488983f 100644
 > --- a/src/openvpn/ssl_verify_backend.h
 > +++ b/src/openvpn/ssl_verify_backend.h
 > @@ -5,8 +5,8 @@
@@ -2677,38 +2484,8 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
-> diff --git a/src/openvpn/ssl_verify_mbedtls.c b/src/openvpn/ssl_verify_mbedtls.c
-> index b8fbee8..f01569f 100644
-> --- a/src/openvpn/ssl_verify_mbedtls.c
-> +++ b/src/openvpn/ssl_verify_mbedtls.c
-> @@ -5,8 +5,8 @@
->   *             packet encryption, packet authentication, and
->   *             packet compression.
->   *
-> - *  Copyright (C) 2002-2010 OpenVPN Technologies, Inc. <sales@...515...>
-> - *  Copyright (C) 2010 Fox Crypto B.V. <openvpn@...1435...>
-> + *  Copyright (C) 2002-2017 OpenVPN Technologies, Inc. <sales@...515...>
-> + *  Copyright (C) 2010-2017 Fox Crypto B.V. <openvpn@...1435...>
->   *
->   *  This program is free software; you can redistribute it and/or modify
->   *  it under the terms of the GNU General Public License version 2
-> diff --git a/src/openvpn/ssl_verify_mbedtls.h b/src/openvpn/ssl_verify_mbedtls.h
-> index a5252ff..3c71073 100644
-> --- a/src/openvpn/ssl_verify_mbedtls.h
-> +++ b/src/openvpn/ssl_verify_mbedtls.h
-> @@ -5,8 +5,8 @@
->   *             packet encryption, packet authentication, and
->   *             packet compression.
->   *
-> - *  Copyright (C) 2002-2010 OpenVPN Technologies, Inc. <sales@...515...>
-> - *  Copyright (C) 2010 Fox Crypto B.V. <openvpn@...1435...>
-> + *  Copyright (C) 2002-2017 OpenVPN Technologies, Inc. <sales@...515...>
-> + *  Copyright (C) 2010-2017 Fox Crypto B.V. <openvpn@...1435...>
->   *
->   *  This program is free software; you can redistribute it and/or modify
->   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/ssl_verify_openssl.c b/src/openvpn/ssl_verify_openssl.c
-> index 04880d7..e9692a0 100644
+> index 4750f02..8374783 100644
 > --- a/src/openvpn/ssl_verify_openssl.c
 > +++ b/src/openvpn/ssl_verify_openssl.c
 > @@ -5,8 +5,8 @@
@@ -2723,7 +2500,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/ssl_verify_openssl.h b/src/openvpn/ssl_verify_openssl.h
-> index 934c1e9..1db6fe6 100644
+> index 5a7e0a1..2ce0f93 100644
 > --- a/src/openvpn/ssl_verify_openssl.h
 > +++ b/src/openvpn/ssl_verify_openssl.h
 > @@ -5,8 +5,8 @@
@@ -2737,8 +2514,38 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
+> diff --git a/src/openvpn/ssl_verify_polarssl.c b/src/openvpn/ssl_verify_polarssl.c
+> index cc46b75..ee2a575 100644
+> --- a/src/openvpn/ssl_verify_polarssl.c
+> +++ b/src/openvpn/ssl_verify_polarssl.c
+> @@ -5,8 +5,8 @@
+>   *             packet encryption, packet authentication, and
+>   *             packet compression.
+>   *
+> - *  Copyright (C) 2002-2010 OpenVPN Technologies, Inc. <sales@...515...>
+> - *  Copyright (C) 2010 Fox Crypto B.V. <openvpn@...1435...>
+> + *  Copyright (C) 2002-2017 OpenVPN Technologies, Inc. <sales@...515...>
+> + *  Copyright (C) 2010-2017 Fox Crypto B.V. <openvpn@...1435...>
+>   *
+>   *  This program is free software; you can redistribute it and/or modify
+>   *  it under the terms of the GNU General Public License version 2
+> diff --git a/src/openvpn/ssl_verify_polarssl.h b/src/openvpn/ssl_verify_polarssl.h
+> index b5157ed..51effd7 100644
+> --- a/src/openvpn/ssl_verify_polarssl.h
+> +++ b/src/openvpn/ssl_verify_polarssl.h
+> @@ -5,8 +5,8 @@
+>   *             packet encryption, packet authentication, and
+>   *             packet compression.
+>   *
+> - *  Copyright (C) 2002-2010 OpenVPN Technologies, Inc. <sales@...515...>
+> - *  Copyright (C) 2010 Fox Crypto B.V. <openvpn@...1435...>
+> + *  Copyright (C) 2002-2017 OpenVPN Technologies, Inc. <sales@...515...>
+> + *  Copyright (C) 2010-2017 Fox Crypto B.V. <openvpn@...1435...>
+>   *
+>   *  This program is free software; you can redistribute it and/or modify
+>   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/status.c b/src/openvpn/status.c
-> index cca623f..e47f35c 100644
+> index b7ff484..ef59269 100644
 > --- a/src/openvpn/status.c
 > +++ b/src/openvpn/status.c
 > @@ -5,7 +5,7 @@
@@ -2751,7 +2558,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/status.h b/src/openvpn/status.h
-> index 01fe33e..590ae41 100644
+> index af16fd2..10e9151 100644
 > --- a/src/openvpn/status.h
 > +++ b/src/openvpn/status.h
 > @@ -5,7 +5,7 @@
@@ -2764,7 +2571,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/syshead.h b/src/openvpn/syshead.h
-> index 2f04896..a1b6047 100644
+> index 24926ae..828861a 100644
 > --- a/src/openvpn/syshead.h
 > +++ b/src/openvpn/syshead.h
 > @@ -5,7 +5,7 @@
@@ -2776,34 +2583,8 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
-> diff --git a/src/openvpn/tls_crypt.c b/src/openvpn/tls_crypt.c
-> index 8173467..c227b09 100644
-> --- a/src/openvpn/tls_crypt.c
-> +++ b/src/openvpn/tls_crypt.c
-> @@ -5,7 +5,7 @@
->   *             packet encryption, packet authentication, and
->   *             packet compression.
->   *
-> - *  Copyright (C) 2016 Fox Crypto B.V. <openvpn@...1435...>
-> + *  Copyright (C) 2016-2017 Fox Crypto B.V. <openvpn@...1435...>
->   *
->   *  This program is free software; you can redistribute it and/or modify
->   *  it under the terms of the GNU General Public License version 2
-> diff --git a/src/openvpn/tls_crypt.h b/src/openvpn/tls_crypt.h
-> index 2c7831f..47f75d0 100644
-> --- a/src/openvpn/tls_crypt.h
-> +++ b/src/openvpn/tls_crypt.h
-> @@ -5,7 +5,7 @@
->   *             packet encryption, packet authentication, and
->   *             packet compression.
->   *
-> - *  Copyright (C) 2016 Fox Crypto B.V. <openvpn@...1435...>
-> + *  Copyright (C) 2016-2017 Fox Crypto B.V. <openvpn@...1435...>
->   *
->   *  This program is free software; you can redistribute it and/or modify
->   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-> index 8dbdd4f..f812844 100644
+> index ca12180..72ec35c 100644
 > --- a/src/openvpn/tun.c
 > +++ b/src/openvpn/tun.c
 > @@ -5,7 +5,7 @@
@@ -2816,7 +2597,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/tun.h b/src/openvpn/tun.h
-> index bc499bf..f4b600c 100644
+> index 7089f7c..138856d 100644
 > --- a/src/openvpn/tun.h
 > +++ b/src/openvpn/tun.h
 > @@ -5,7 +5,7 @@
@@ -2829,7 +2610,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/win32.c b/src/openvpn/win32.c
-> index 88fa3ec..e26f54d 100644
+> index e136449..b271597 100644
 > --- a/src/openvpn/win32.c
 > +++ b/src/openvpn/win32.c
 > @@ -5,7 +5,7 @@
@@ -2842,7 +2623,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpn/win32.h b/src/openvpn/win32.h
-> index 5d2e1fb..4ee44fd 100644
+> index 0990182..e2a86d2 100644
 > --- a/src/openvpn/win32.h
 > +++ b/src/openvpn/win32.h
 > @@ -5,7 +5,7 @@
@@ -2855,7 +2636,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/openvpnserv/Makefile.am b/src/openvpnserv/Makefile.am
-> index 58ecd91..21efc7c 100644
+> index a989c25..591daed 100644
 > --- a/src/openvpnserv/Makefile.am
 > +++ b/src/openvpnserv/Makefile.am
 > @@ -5,7 +5,7 @@
@@ -2867,55 +2648,16 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >  #  Copyright (C) 2006-2012 Alon Bar-Lev <alon.barlev@...277...>
 >  #
 >  
-> diff --git a/src/openvpnserv/automatic.c b/src/openvpnserv/automatic.c
-> index dc57cad..6be6c6d 100644
-> --- a/src/openvpnserv/automatic.c
-> +++ b/src/openvpnserv/automatic.c
+> diff --git a/src/openvpnserv/openvpnserv.c b/src/openvpnserv/openvpnserv.c
+> index 56f5a02..e6f50a0 100755
+> --- a/src/openvpnserv/openvpnserv.c
+> +++ b/src/openvpnserv/openvpnserv.c
 > @@ -5,7 +5,7 @@
 >   *             packet encryption, packet authentication, and
 >   *             packet compression.
 >   *
 > - *  Copyright (C) 2002-2010 OpenVPN Technologies, Inc. <sales@...515...>
 > + *  Copyright (C) 2002-2017 OpenVPN Technologies, Inc. <sales@...515...>
->   *
->   *  This program is free software; you can redistribute it and/or modify
->   *  it under the terms of the GNU General Public License version 2
-> diff --git a/src/openvpnserv/common.c b/src/openvpnserv/common.c
-> index c7abe0d..3b9b396 100644
-> --- a/src/openvpnserv/common.c
-> +++ b/src/openvpnserv/common.c
-> @@ -5,7 +5,7 @@
->   *             packet encryption, packet authentication, and
->   *             packet compression.
->   *
-> - *  Copyright (C) 2011 Heiko Hund <heiko.hund@...1489...>
-> + *  Copyright (C) 2011-2017 Heiko Hund <heiko.hund@...1489...>
->   *
->   *  This program is free software; you can redistribute it and/or modify
->   *  it under the terms of the GNU General Public License version 2
-> diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
-> index 9cbe25c..dbe2b9b 100644
-> --- a/src/openvpnserv/interactive.c
-> +++ b/src/openvpnserv/interactive.c
-> @@ -5,7 +5,7 @@
->   *             packet encryption, packet authentication, and
->   *             packet compression.
->   *
-> - *  Copyright (C) 2012 Heiko Hund <heiko.hund@...1489...>
-> + *  Copyright (C) 2012-2017 Heiko Hund <heiko.hund@...1489...>
->   *
->   *  This program is free software; you can redistribute it and/or modify
->   *  it under the terms of the GNU General Public License version 2
-> diff --git a/src/openvpnserv/service.h b/src/openvpnserv/service.h
-> index f907e69..b1130c9 100644
-> --- a/src/openvpnserv/service.h
-> +++ b/src/openvpnserv/service.h
-> @@ -5,7 +5,7 @@
->   *             packet encryption, packet authentication, and
->   *             packet compression.
->   *
-> - *  Copyright (C) 2013 Heiko Hund <heiko.hund@...1489...>
-> + *  Copyright (C) 2013-2017 Heiko Hund <heiko.hund@...1489...>
 >   *
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
@@ -2933,7 +2675,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >  #
 >  
 > diff --git a/src/plugins/auth-pam/auth-pam.c b/src/plugins/auth-pam/auth-pam.c
-> index 4581411..d3e2c89 100644
+> index 5ad3ec8..2b48ea9 100644
 > --- a/src/plugins/auth-pam/auth-pam.c
 > +++ b/src/plugins/auth-pam/auth-pam.c
 > @@ -5,7 +5,7 @@
@@ -2946,7 +2688,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/plugins/auth-pam/utils.c b/src/plugins/auth-pam/utils.c
-> index e4f4d19..4f8fb0a 100644
+> index e4643cd..dce4b01 100644
 > --- a/src/plugins/auth-pam/utils.c
 > +++ b/src/plugins/auth-pam/utils.c
 > @@ -5,7 +5,7 @@
@@ -2959,7 +2701,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/plugins/auth-pam/utils.h b/src/plugins/auth-pam/utils.h
-> index 810f7b9..fbc9705 100644
+> index 2f72040..6bfe428 100644
 > --- a/src/plugins/auth-pam/utils.h
 > +++ b/src/plugins/auth-pam/utils.h
 > @@ -5,7 +5,7 @@
@@ -2972,7 +2714,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *  This program is free software; you can redistribute it and/or modify
 >   *  it under the terms of the GNU General Public License version 2
 > diff --git a/src/plugins/down-root/down-root.c b/src/plugins/down-root/down-root.c
-> index c940d61..ae85ecb 100644
+> index 6931bec..ee68b94 100644
 > --- a/src/plugins/down-root/down-root.c
 > +++ b/src/plugins/down-root/down-root.c
 > @@ -5,7 +5,7 @@
@@ -2985,7 +2727,7 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >   *
 >   *  This program is free software; you can redistribute it and/or modify
 > diff --git a/tests/Makefile.am b/tests/Makefile.am
-> index e55928b..0795680 100644
+> index 235cd13..b01a233 100644
 > --- a/tests/Makefile.am
 > +++ b/tests/Makefile.am
 > @@ -5,7 +5,7 @@
@@ -2997,59 +2739,6 @@ On 21-12-16 21:00, David Sommerseth wrote:
 >  #  Copyright (C) 2006-2012 Alon Bar-Lev <alon.barlev@...277...>
 >  #
 >  
-> diff --git a/tests/unit_tests/openvpn/mock_msg.c b/tests/unit_tests/openvpn/mock_msg.c
-> index b6f1a46..eb0d5e9 100644
-> --- a/tests/unit_tests/openvpn/mock_msg.c
-> +++ b/tests/unit_tests/openvpn/mock_msg.c
-> @@ -5,7 +5,7 @@
->   *             packet encryption, packet authentication, and
->   *             packet compression.
->   *
-> - *  Copyright (C) 2016 Fox Crypto B.V. <openvpn@...1435...>
-> + *  Copyright (C) 2016-2017 Fox Crypto B.V. <openvpn@...1435...>
->   *
->   *  This program is free software; you can redistribute it and/or modify
->   *  it under the terms of the GNU General Public License version 2
-> diff --git a/tests/unit_tests/openvpn/mock_msg.h b/tests/unit_tests/openvpn/mock_msg.h
-> index 5d93a1a..e0933c6 100644
-> --- a/tests/unit_tests/openvpn/mock_msg.h
-> +++ b/tests/unit_tests/openvpn/mock_msg.h
-> @@ -5,7 +5,7 @@
->   *             packet encryption, packet authentication, and
->   *             packet compression.
->   *
-> - *  Copyright (C) 2016 Fox Crypto B.V. <openvpn@...1435...>
-> + *  Copyright (C) 2016-2017 Fox Crypto B.V. <openvpn@...1435...>
->   *
->   *  This program is free software; you can redistribute it and/or modify
->   *  it under the terms of the GNU General Public License version 2
-> diff --git a/tests/unit_tests/openvpn/test_buffer.c b/tests/unit_tests/openvpn/test_buffer.c
-> index 5d25437..5158eb8 100644
-> --- a/tests/unit_tests/openvpn/test_buffer.c
-> +++ b/tests/unit_tests/openvpn/test_buffer.c
-> @@ -5,7 +5,7 @@
->   *             packet encryption, packet authentication, and
->   *             packet compression.
->   *
-> - *  Copyright (C) 2016 Fox Crypto B.V. <openvpn@...1435...>
-> + *  Copyright (C) 2016-2017 Fox Crypto B.V. <openvpn@...1435...>
->   *
->   *  This program is free software; you can redistribute it and/or modify
->   *  it under the terms of the GNU General Public License version 2
-> diff --git a/tests/unit_tests/openvpn/test_tls_crypt.c b/tests/unit_tests/openvpn/test_tls_crypt.c
-> index 3650aa8..7b014e0 100644
-> --- a/tests/unit_tests/openvpn/test_tls_crypt.c
-> +++ b/tests/unit_tests/openvpn/test_tls_crypt.c
-> @@ -5,7 +5,7 @@
->   *             packet encryption, packet authentication, and
->   *             packet compression.
->   *
-> - *  Copyright (C) 2016 Fox Crypto B.V. <openvpn@...1435...>
-> + *  Copyright (C) 2016-2017 Fox Crypto B.V. <openvpn@...1435...>
->   *
->   *  This program is free software; you can redistribute it and/or modify
->   *  it under the terms of the GNU General Public License version 2
-> 
 
 ACK
 
