@@ -1,8 +1,8 @@
 From: David Sommerseth <davids@...515...>
-Date: Wed, 21 Dec 2016 21:57:34 +0100
-Message-Id: <1482353854-30648-1-git-send-email-davids@...515...>
-In-Reply-To: <1482350454-27280-3-git-send-email-davids@...515...>
-References: <1482350454-27280-3-git-send-email-davids@...515...>
+Date: Wed, 21 Dec 2016 21:58:04 +0100
+Message-Id: <1482353884-31460-1-git-send-email-davids@...515...>
+In-Reply-To: <1482350454-27280-2-git-send-email-davids@...515...>
+References: <1482350454-27280-2-git-send-email-davids@...515...>
 Subject: Re: [Openvpn-devel] [PATCH applied] Update copyrights
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -21,18 +21,18 @@ Cc: openvpn-devel@lists.sourceforge.net
 Hash: SHA1
 
 
-Your patch has been applied to the release/2.3 branch.
+Your patch has been applied to the master branch.
 
-commit 782c95330b630c3823418a7867fcc1763d3f103f
+commit 58716979640b5d8850b39820f91da616964398cc
 Author: David Sommerseth
-Date:   Wed Dec 21 21:00:53 2016 +0100
+Date:   Wed Dec 21 21:00:52 2016 +0100
 
      Update copyrights
 
      Signed-off-by: David Sommerseth <davids@...515...>
      Acked-by: Steffan Karger <steffan@...1856...>
-     Message-Id: <1482350454-27280-3-git-send-email-davids@...515...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13656.html
+     Message-Id: <1482350454-27280-2-git-send-email-davids@...515...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13653.html
 
 
 - --
@@ -43,18 +43,18 @@ David Sommerseth
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBAgAGBQJYWuy8AAoJEIbPlEyWcf3yNqQQAJHiUT5UVjkwDUbVWyXwmKnW
-WsFKO3KH3tQGUFgM4R1fjDwXvvnd1636COTUyVHmeABFM7J7KHgjtumxJWq/SXV9
-mR0GiOMAU/ShmtWUevpgx18B44EoCZ66pQy7laV8ZkSJXvqc2I+btwQwOcd6Hy04
-tbUj7KPadzXlBDdcWXBD7gDERDXg9xP80fpbHD4VIBUGC34wd1eTMT9NecJVW8yw
-jn0MayCPnFBt+3ejO41J0n5T4NIrTxSpFhAebkccdg0LPsRpgUw/Nv4lpnuIX4E9
-xcnK/Bouofv/8Ccxa2oW3LzA6mceHE04ypu4OeCdDC3AQc5+8zXFG72EhpebPOUp
-75d3zsOsHuN9e7CbyLolQVgDbQ3huzdBZWWkDC155j8kSwvsbbCFFjdSZRUumtlk
-SQZKF4bbwUasSYW7nL+kIdQW+jxAKzJmoqp7k5jFasPnm77wHNRbxr+kvQNNaUv9
-dixf+pUg/EQTxE2WQ+GvDpwrEOJNVgNyrhrOCAHmBIIhnSiu3hdBdMB60CWvxQWF
-BVUizhhqISkDq3yI5P6pVDoPl6kGrYmAcl5gJa7NkyMDVm59y3Kzk+xb21VkY3v0
-PjpZIsQTBKqTIlREfwdNuSkmWwFW2sXtZ/TPmt3J8yMsOKDPrlZSeEmSShpay66S
-7mwipdPovMgOvcrtuX+T
-=Sv1/
+iQIcBAEBAgAGBQJYWuzbAAoJEIbPlEyWcf3yAiIP/0dW81f1ZSFOp/f1x09v531c
+uW+wjIyYWAyXorzIpKmzlJi/2seHcOLPUrg9xrO0hL0l5yx2W3dozWr3d+1jQZQT
++lEMnyxXD8asLDj/LDl3ULzolKkMC+BeUXYd0fPZkN0DnhNQkf7wMCXjxrT+78IS
+UAIlSDUBPevz7wYBsacBT2c0eVqvn388KcRmB1zKvltE75iJy4nS4d4hlMwu5gf+
+bs/wJ0MTyhJgyschgcINxPU2fp4bBP1Iy04K/DeLwwirMFtiNBowo7iWqmsWSofL
+f6zAljkyNvWvCuSLVt1cw1PJpeCHiLyAbmpZTbifFshvvG/turIttwEBlk2yM+W2
+E/8QhMPMomweN4IKL+iWmqLyvur0faYz1G43WpmOHemnm3zTOogcpYOAkZ5tseS0
+zGqFwtbGtkNxtWoz59bqRHGdQtBvNrSIkFPCmBCI/crIm3lV7SEqFORRn8Nv82Cj
+B0oUEdZqwgKHWQz/SKrfbLJ84r2aeP/r3JsRJwqZzuI2EInmoACO/8IuU7MokEc5
+sMplAyULBqFWq4F1A4l9oirvAWBkSVgg+ZQ1eF2HcJvHZhuZz1Oxo9BHulbRRcHG
+89rWOYNgSqpxVrORupDJHlkcm7U3z8LCv3mw8kL9iJL/acT2uvyhnj9sXry6DqxH
+ILw9Wa80vglPAF+wQRpp
+=3qJT
 -----END PGP SIGNATURE-----
 
