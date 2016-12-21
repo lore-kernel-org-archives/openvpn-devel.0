@@ -1,12 +1,14 @@
+Date: Wed, 21 Dec 2016 22:48:07 +0100
+From: Christian Hesse <list@...1798...>
+Message-ID: <20161221224807.3440a14a@...1799...>
+In-Reply-To: <1482350454-27280-4-git-send-email-davids@...515...>
+References: <1482350454-27280-1-git-send-email-davids@...515...>
+	<1482350454-27280-4-git-send-email-davids@...515...>
 MIME-Version: 1.0
-In-Reply-To: <1482353691-27088-2-git-send-email-davids@...515...>
-References: <1482353691-27088-1-git-send-email-davids@...515...>
-	<1482353691-27088-2-git-send-email-davids@...515...>
-From: Steffan Karger <steffan@...1856...>
-Date: Wed, 21 Dec 2016 22:38:15 +0100
-Message-ID: <CAA1AbxLepYyLCrgNXZEsY6+i1AwsPU8TjOV5PptobenUV=eAzg@...278...>
-Subject: Re: [Openvpn-devel] [PATCH release/2.3] docs: Further improve
- --reneg-bytes and SWEET32 information
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	boundary="Sig_/RLcqqA16GGAntNxXrZEQV6y";
+	protocol="application/pgp-signature"
+Subject: Re: [Openvpn-devel] [PATCH release/2.4] Update copyrights
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,21 +17,39 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
 To: David Sommerseth <davids@...515...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
+--Sig_/RLcqqA16GGAntNxXrZEQV6y
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: quoted-printable
 
-On 21 December 2016 at 21:54, David Sommerseth <davids@...515...> wrote:
-> +If using ciphers with cipher block sizes less than 128-bits, \-\-reneg\-bytes is
-> +set to 64MB by default, unless it is explicitly disabled by setting the value to
-> +0,but this is
+David Sommerseth <davids@...515...> on Wed, 2016/12/21 21:00:
+> Signed-off-by: David Sommerseth <davids@...515...>
 
-(As in the patch for master:) missing space behind the ,.
+As we will (hopefully) see a release in 2016... Does it make sense to update
+to 2017?
+--=20
+main(a){char*c=3D/*    Schoene Gruesse                         */"B?IJj;MEH"
+"CX:;",b;for(a/*    Best regards             my address:    */=3D0;b=3Dc[a+=
++];)
+putchar(b-1/(/*    Chris            cc -ox -xc - && ./x    */b/42*2-3)*42);}
 
-ACK once that's fixed.
+--Sig_/RLcqqA16GGAntNxXrZEQV6y
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
 
--Steffan
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEXHmveYAHrRp+prOviUUh18yA9HYFAlha+JcACgkQiUUh18yA
+9HY8/gf/c0XIdpoHwGbSWXa9MlSzyyV1DeSORHUFQZPsT+iOw1/RU30CvQHrT9TT
+kymK9Qi/3VFU9m9LU2JVEUjzfgc0oDEhbskTOSSt7XHGUae1+eNxrpoW7jz3SAXK
+Exta4lP98MOYnOW8EGY13YGnDRQavmdjRAsHJZ4m1Y27z8NiS0/wSeu2MRsudIp6
+TC4GvdDqzwxHhqjiAvosh5yhdp9RjcjTD3RgujBWKq5uwRI34yedQBTYXC9Bs5PM
+3WEv2JhuiPj+JLU6LsTY8FwqsHH5kv4UxFsRreiwtWMPb7z9boV8CpyNx0l0qfJl
+P/3PksV7eynznp7EMsA2xUvlJ1N1KQ==
+=af0D
+-----END PGP SIGNATURE-----
+
+--Sig_/RLcqqA16GGAntNxXrZEQV6y--
 
