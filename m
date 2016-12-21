@@ -1,10 +1,10 @@
 From: David Sommerseth <davids@...515...>
-Date: Wed, 21 Dec 2016 21:54:51 +0100
-Message-Id: <1482353691-27088-3-git-send-email-davids@...515...>
+Date: Wed, 21 Dec 2016 21:54:50 +0100
+Message-Id: <1482353691-27088-2-git-send-email-davids@...515...>
 In-Reply-To: <1482353691-27088-1-git-send-email-davids@...515...>
 References: <1482353691-27088-1-git-send-email-davids@...515...>
-Subject: [Openvpn-devel] [PATCH master+v2.4] docs: Further enhance the
-	documentation related to SWEET32
+Subject: [Openvpn-devel] [PATCH release/2.3] docs: Further improve
+	--reneg-bytes and SWEET32 information
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,38 +17,51 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-The git master/2.4 code lacked some useful information about
-the changes to --reneg-bytes, SWEET32 and weak ciphers (less
-than 128-bits cipher blocks)
+There are still some support tickets related to SWEET32 and
+our defult enforced --reneg-bytes 64 when using weaker ciphers
+(less than 128-bits cipher blocks).  Try to clarify this even
+more.
+
+Also fix a few mistakes, saying less than 128-bits and not 128-bits
+and less.
 
 Signed-off-by: David Sommerseth <davids@...515...>
 ---
- Changes.rst   |  6 ++++++
+ Changes.rst   |  6 +++---
  doc/openvpn.8 | 13 ++++++++++---
- 2 files changed, 16 insertions(+), 3 deletions(-)
+ 2 files changed, 13 insertions(+), 6 deletions(-)
 
 diff --git a/Changes.rst b/Changes.rst
-index 8508fa3..2702419 100644
+index 3e3aaad..1c0154c 100644
 --- a/Changes.rst
 +++ b/Changes.rst
-@@ -182,6 +182,12 @@ Deprecated features
+@@ -57,10 +57,10 @@ Improved UTF-8 support
+ Behavioral changes
+ ------------------
  
- User-visible Changes
- --------------------
-+- When using ciphers with cipher blocks less than 128-bits
-+  OpenVPN will complain loudly if the configuration uses ciphers considered
-+  weak, such as the SWEET32 attack vector.  In such scenarios, OpenVPN will by
-+  default do a renegotiation for each 64MB of transported data (``--reneg-bytes``).
-+  This can renegotiation can be disabled, but is HIGHLY DISCOURAGED.
-+
- - For certificate DNs with duplicate fields, e.g. "OU=one,OU=two", both fields
-   are now exported to the environment, where each second and later occurrence
-   of a field get _$N appended to it's field name, starting at N=1.  For the
+-- OpenVPN will complain loudly about ciphers with 128-bits block sizes or less
++- OpenVPN will complain loudly about ciphers with block sizes less than 128-bits
+ 
+ - OpenVPN will by default re-negotiate the tunnel after 64MB when used with
+-  ciphers using cipher blocks of 128-bits or less
++  ciphers using cipher blocks sizes less than 128-bits
+ 
+ - Remove --enable-password-save option to configure, this is now always enabled
+ 
+@@ -121,7 +121,7 @@ Version 2.3.13
+ 
+   Ciphers with cipher blocks less than 128 bits will now do a renegotiation
+   of the tunnel by default for every 64MB of data.  This behaviour can be
+-  overridden by explictly setting --reneg-bytes 0 in the configuration file,
++  overridden by explicitly setting --reneg-bytes 0 in the configuration file,
+   however this is HIGHLY discouraged.
+ 
+   This is to reduce the risk for SWEET32 attacks.  The general recommendation
 diff --git a/doc/openvpn.8 b/doc/openvpn.8
-index f079799..f2d7c6d 100644
+index 2140733..6063ccd 100644
 --- a/doc/openvpn.8
 +++ b/doc/openvpn.8
-@@ -4876,11 +4876,18 @@ such as TCP expect this role to be left to them.
+@@ -4612,11 +4612,18 @@ such as TCP expect this role to be left to them.
  .B \-\-reneg\-bytes n
  Renegotiate data channel key after
  .B n
