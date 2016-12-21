@@ -1,14 +1,13 @@
-Date: Wed, 21 Dec 2016 22:48:07 +0100
-From: Christian Hesse <list@...1798...>
-Message-ID: <20161221224807.3440a14a@...1799...>
-In-Reply-To: <1482350454-27280-4-git-send-email-davids@...515...>
-References: <1482350454-27280-1-git-send-email-davids@...515...>
-	<1482350454-27280-4-git-send-email-davids@...515...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	boundary="Sig_/RLcqqA16GGAntNxXrZEQV6y";
-	protocol="application/pgp-signature"
-Subject: Re: [Openvpn-devel] [PATCH release/2.4] Update copyrights
+In-Reply-To: <075c4a8e-e2b6-c4e6-f55e-86a0236d3a21@...2080...>
+References: <949ac6c4-093f-3c03-c597-2ac6855b3477@...1856...>
+	<1482085616-17149-1-git-send-email-steffan@...1856...>
+	<075c4a8e-e2b6-c4e6-f55e-86a0236d3a21@...2080...>
+From: Steffan Karger <steffan@...1856...>
+Date: Wed, 21 Dec 2016 23:03:06 +0100
+Message-ID: <CAA1AbxJADeM7N67CmXdBuZ7t69LN+MOAjToUg5GaiDt9MA_G-g@...278...>
+Subject: Re: [Openvpn-devel] [PATCH v2] reformatting: fix style in
+	crypto*.{c, h}
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,39 +16,70 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: David Sommerseth <davids@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---Sig_/RLcqqA16GGAntNxXrZEQV6y
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: quoted-printable
+Hi,
 
-David Sommerseth <davids@...515...> on Wed, 2016/12/21 21:00:
-> Signed-off-by: David Sommerseth <davids@...515...>
+On 21 December 2016 at 22:09, David Sommerseth
+<openvpn@...2080...> wrote:
+> On 18/12/16 19:26, Steffan Karger wrote:
+>> Now that we have touched each and every file anyway, I decided to go over
+>> the code I regularly work with and reformat it some more by hand.  This is
+>> how for I got today, and is a large enough patch I think.
+>>
+>> This commit is mostly just reordering and changing whitespace, with one
+>> exception: it removes the #if 0 around some debugging code in
+>> read_key_file(), and now always print the debugging if D_SHOW_KEYS is
+>> enabled.
+>>
+>> This patch is best reviewed with something like
+>> 'git diff --ignore-space-change'.
+>>
+>> Signed-off-by: Steffan Karger <steffan@...1856...>
+>> ---
+>> v2: fix wrong indent, add more 'for () {' -> 'for ()\n{' fixes.
+>>
+>>  src/openvpn/crypto.c         | 425 ++++++++++++++++++++++---------------------
+>>  src/openvpn/crypto.h         |  27 ++-
+>>  src/openvpn/crypto_mbedtls.c |  63 ++++---
+>>  src/openvpn/crypto_openssl.c |  38 ++--
+>>  src/openvpn/cryptoapi.c      | 101 ++++++----
+>>  5 files changed, 356 insertions(+), 298 deletions(-)
+>>
+> [...snip...]
+>
+> Hmmm ... I like that we're trying to clean up the formatting further.
+> But I'm not too happy that uncrustify seems to disagree slightly ...
+> See the attached patch what happened after applying your patch and then
+> running:
+>
+>    $ uncrustify --no-backup -l C $files
+>
+> We should either see if our uncrustify config is correct or need slight
+> adjustments (without needing to re-run it on the complete tree once again)
 
-As we will (hopefully) see a release in 2016... Does it make sense to update
-to 2017?
---=20
-main(a){char*c=3D/*    Schoene Gruesse                         */"B?IJj;MEH"
-"CX:;",b;for(a/*    Best regards             my address:    */=3D0;b=3Dc[a+=
-+];)
-putchar(b-1/(/*    Chris            cc -ox -xc - && ./x    */b/42*2-3)*42);}
+This seems to be due to 2 things:
 
---Sig_/RLcqqA16GGAntNxXrZEQV6y
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
+1) I adhered to the CodeStyle page 'When lines exceed this length,
+wrap them using a double indent (ie 8 spaces)', while the crustify
+config uses a single indent.  Since this double indent was somewhat
+arbitrary, I think we should just change the CodeStyle page to single
+indent.
 
------BEGIN PGP SIGNATURE-----
+2) Uncrustify insists on either 'align function parameters' or 'indent
+function parameters'.  There is no 'ignore' for this option.  The
+current config uses 'align', which is fine in a lot of places, but in
+some cases (such as the ones I've changed) it impairs readability.
 
-iQEzBAEBCAAdFiEEXHmveYAHrRp+prOviUUh18yA9HYFAlha+JcACgkQiUUh18yA
-9HY8/gf/c0XIdpoHwGbSWXa9MlSzyyV1DeSORHUFQZPsT+iOw1/RU30CvQHrT9TT
-kymK9Qi/3VFU9m9LU2JVEUjzfgc0oDEhbskTOSSt7XHGUae1+eNxrpoW7jz3SAXK
-Exta4lP98MOYnOW8EGY13YGnDRQavmdjRAsHJZ4m1Y27z8NiS0/wSeu2MRsudIp6
-TC4GvdDqzwxHhqjiAvosh5yhdp9RjcjTD3RgujBWKq5uwRI34yedQBTYXC9Bs5PM
-3WEv2JhuiPj+JLU6LsTY8FwqsHH5kv4UxFsRreiwtWMPb7z9boV8CpyNx0l0qfJl
-P/3PksV7eynznp7EMsA2xUvlJ1N1KQ==
-=af0D
------END PGP SIGNATURE-----
+Point 2 makes me believe that we should not enforce the code style
+with a tool, but rather just with eyes during patch review.  There's
+just too many places where some freedom can improve readability.
 
---Sig_/RLcqqA16GGAntNxXrZEQV6y--
+Alternatively, if everyone thinks that 'indent' is better than
+'align', we can change the config and postpone this discussion until
+the next time where we run into something ;)
+
+-Steffan
 
