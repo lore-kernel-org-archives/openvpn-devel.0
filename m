@@ -1,17 +1,11 @@
-References: <949ac6c4-093f-3c03-c597-2ac6855b3477@...1856...>
-	<1482085616-17149-1-git-send-email-steffan@...1856...>
-	<075c4a8e-e2b6-c4e6-f55e-86a0236d3a21@...2080...>
-	<CAA1AbxJADeM7N67CmXdBuZ7t69LN+MOAjToUg5GaiDt9MA_G-g@...278...>
-	<0311294b-9902-c813-6649-9597a867fbea@...2080...>
-	<1feee9f2-b989-713e-7c2d-79a54aab285c@...1856...>
-	<CAKuzo_gsa32Cjv3FQ6WcZEopdbg0QOw6DX-Kc4rx5nzBVqnELQ@...278...>
-From: Steffan Karger <steffan@...1856...>
-Message-ID: <f67451b7-dcf4-ec0e-96f4-d6bcd28cfe47@...1856...>
-Date: Fri, 23 Dec 2016 22:16:39 +0100
 MIME-Version: 1.0
-In-Reply-To: <CAKuzo_gsa32Cjv3FQ6WcZEopdbg0QOw6DX-Kc4rx5nzBVqnELQ@...278...>
-Subject: Re: [Openvpn-devel] [PATCH v2] reformatting: fix style in
- crypto*.{c, h}
+In-Reply-To: <1482524791-5788-1-git-send-email-steffan@...1856...>
+References: <1482524791-5788-1-git-send-email-steffan@...1856...>
+From: Selva Nair <selva.nair@...277...>
+Date: Fri, 23 Dec 2016 16:23:48 -0500
+Message-ID: <CAKuzo_jKfWW0TA2TUzFhPFOQa6JjtfDNpiAStTUp4vyT+7yOOw@...278...>
+Content-Type: multipart/alternative; boundary=001a113a3162a13c1705445a019c
+Subject: Re: [Openvpn-devel] [PATCH] Add nl_for_brace=add to uncrustify.conf
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,110 +14,70 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: Selva Nair <selva.nair@...277...>
+To: Steffan Karger <steffan@...1856...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
+--001a113a3162a13c1705445a019c
+Content-Type: text/plain; charset=UTF-8
 
-On 23-12-16 22:10, Selva Nair wrote:
-> 
-> On Fri, Dec 23, 2016 at 2:39 PM, Steffan Karger <steffan@...1856...
-> <mailto:steffan@...1856...>> wrote:
-> 
->     > On 21/12/16 23:03, Steffan Karger wrote:
->     >> On 21 December 2016 at 22:09, David Sommerseth
->     >> <openvpn@...2080...
->     <mailto:openvpn@...2080...>> wrote:
->     >>> On 18/12/16 19:26, Steffan Karger wrote:
->     >>>> Now that we have touched each and every file anyway, I decided
->     to go over
->     >>>> the code I regularly work with and reformat it some more by
->     hand.  This is
->     >>>> how for I got today, and is a large enough patch I think.
->     >>>>
->     >>>> This commit is mostly just reordering and changing whitespace,
->     with one
->     >>>> exception: it removes the #if 0 around some debugging code in
->     >>>> read_key_file(), and now always print the debugging if
->     D_SHOW_KEYS is
->     >>>> enabled.
->     >>>>
->     >>>> This patch is best reviewed with something like
->     >>>> 'git diff --ignore-space-change'.
->     >>>>
->     >>>> Signed-off-by: Steffan Karger <steffan@...1856...
->     <mailto:steffan@...1856...>>
->     >>>> ---
->     >>>> v2: fix wrong indent, add more 'for () {' -> 'for ()\n{' fixes.
->     >>>>
->     >>>>  src/openvpn/crypto.c         | 425
->     ++++++++++++++++++++++---------------------
->     >>>>  src/openvpn/crypto.h         |  27 ++-
->     >>>>  src/openvpn/crypto_mbedtls.c |  63 ++++---
->     >>>>  src/openvpn/crypto_openssl.c |  38 ++--
->     >>>>  src/openvpn/cryptoapi.c      | 101 ++++++----
->     >>>>  5 files changed, 356 insertions(+), 298 deletions(-)
->     >>>>
->     >>> [...snip...]
->     >>>
->     >>> Hmmm ... I like that we're trying to clean up the formatting
->     further.
->     >>> But I'm not too happy that uncrustify seems to disagree slightly ...
->     >>> See the attached patch what happened after applying your patch
->     and then
->     >>> running:
->     >>>
->     >>>    $ uncrustify --no-backup -l C $files
->     >>>
->     >>> We should either see if our uncrustify config is correct or need
->     slight
->     >>> adjustments (without needing to re-run it on the complete tree
->     once again)
->     >>
->     >> This seems to be due to 2 things:
->     >>
->     >> 1) I adhered to the CodeStyle page 'When lines exceed this length,
->     >> wrap them using a double indent (ie 8 spaces)', while the crustify
->     >> config uses a single indent.  Since this double indent was somewhat
->     >> arbitrary, I think we should just change the CodeStyle page to single
->     >> indent.
->     >
->     > And this goes against what was agreed upon in the Munich 2014
->     hackathon:
->     >
->     >   o line length?
->     >      - breaking a line in the middle: align to opening (round)
->     brackets
->     >        in line above
->     >
->     >   <http://community.openvpn.net/openvpn/wiki/MunichHackathon2014
->     <http://community.openvpn.net/openvpn/wiki/MunichHackathon2014>>
-> 
->     That's about 2), not 1), but I get the point.  As before, I'll just have
->     to accept the "we decided on this before argument", and deal with it.
->     (I'm not sure how to keep the code readable with this requirement, but I
->     guess we'll find out.)
-> 
-> 
-> Do we have to be so strict about the coding style which itself is so
-> ill-defined?
-> I'll happily adhere to any style if that becomes a requirement for
-> patches, but
-> overly depending on an external tool to ensure a style that's not even
-> precisely
-> defined by the CodeStyle page (except by the uncrustify config) sounds lame
-> to me.
-> 
-> Aiming towards a uniform coding style is a good goal. Requiring that
-> patches should be invariant under "uncrustify -c some-config" is not, imho.
+On Fri, Dec 23, 2016 at 3:26 PM, Steffan Karger <steffan@...1856...> wrote:
 
-Oh, I'm definitely not in favour of rejecting patches if they don't pass
-"uncrustify -c some-config".  And I don't think we ever agreed to do so.
+> diff --git a/dev-tools/uncrustify.conf b/dev-tools/uncrustify.conf
+> index 95e0b2a..3745ed0 100644
+> --- a/dev-tools/uncrustify.conf
+> +++ b/dev-tools/uncrustify.conf
+> @@ -9,6 +9,7 @@ nl_brace_else=add
+>  nl_elseif_brace=add
+>  nl_else_brace=add
+>  nl_else_if=remove
+> +nl_for_brace=add
+>
 
-But in this case, the 'violations' were all either violations of what we
-apparently agreed to in Munich ( 'align with (' ), or simply indented
-with a different value than uncrustify did.  So actually quite well defined.
+What about
 
--Steffan
+nl_switch_brace = add
+nl_while_brace = add
+nl_fdef_brace = add
+
+These are not optional as per the style, are they?
+
+nl_after_semicolon
+(I know no one here writes x=1; y=2; z= 3; on the same line,
+but assuming we do not want such usage in patches....)
+
+Selva
+
+--001a113a3162a13c1705445a019c
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">=
+On Fri, Dec 23, 2016 at 3:26 PM, Steffan Karger <span dir=3D"ltr">&lt;<a hr=
+ef=3D"mailto:steffan@...1856..." target=3D"_blank">steffan@...1856...</a>&g=
+t;</span> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0=
+ .8ex;border-left:1px #ccc solid;padding-left:1ex"><div id=3D"m_-5743082639=
+610600438m_-2907758932460943629:2g4" class=3D"m_-5743082639610600438m_-2907=
+758932460943629a3s m_-5743082639610600438m_-2907758932460943629aXjCH m_-574=
+3082639610600438m_-2907758932460943629m1592d5eec29d5138">diff --git a/dev-t=
+ools/uncrustify.conf b/dev-tools/uncrustify.conf<br>
+index 95e0b2a..3745ed0 100644<br>
+--- a/dev-tools/uncrustify.conf<br>
++++ b/dev-tools/uncrustify.conf<br>
+@@ -9,6 +9,7 @@ nl_brace_else=3Dadd<br>
+=C2=A0nl_elseif_brace=3Dadd<br>
+=C2=A0nl_else_brace=3Dadd<br>
+=C2=A0nl_else_if=3Dremove<br>
++nl_for_brace=3Dadd</div></blockquote></div><br>What about=C2=A0</div><div =
+class=3D"gmail_extra"><br></div><div class=3D"gmail_extra">nl_switch_brace =
+=3D add</div><div class=3D"gmail_extra">nl_while_brace =3D add</div><div cl=
+ass=3D"gmail_extra">nl_fdef_brace =3D add</div><div class=3D"gmail_extra"><=
+br></div><div class=3D"gmail_extra">These are not optional as per the style=
+, are they?</div><div class=3D"gmail_extra"><br></div><div class=3D"gmail_e=
+xtra">nl_after_semicolon=C2=A0</div><div class=3D"gmail_extra">(I know no o=
+ne here writes x=3D1; y=3D2; z=3D 3; on the same line,=C2=A0</div><div clas=
+s=3D"gmail_extra">but assuming we do not want such usage in patches....)</d=
+iv><div class=3D"gmail_extra"><br></div><div class=3D"gmail_extra">Selva</d=
+iv></div>
+
+--001a113a3162a13c1705445a019c--
 
