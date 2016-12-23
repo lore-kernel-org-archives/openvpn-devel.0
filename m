@@ -1,10 +1,13 @@
-MIME-Version: 1.0
-In-Reply-To: <1482524791-5788-1-git-send-email-steffan@...1856...>
+Date: Fri, 23 Dec 2016 22:36:49 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20161223213649.GM78624@...1296...>
 References: <1482524791-5788-1-git-send-email-steffan@...1856...>
-From: Selva Nair <selva.nair@...277...>
-Date: Fri, 23 Dec 2016 16:23:48 -0500
-Message-ID: <CAKuzo_jKfWW0TA2TUzFhPFOQa6JjtfDNpiAStTUp4vyT+7yOOw@...278...>
-Content-Type: multipart/alternative; boundary=001a113a3162a13c1705445a019c
+	<CAKuzo_jKfWW0TA2TUzFhPFOQa6JjtfDNpiAStTUp4vyT+7yOOw@...278...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="GaDTZZn2ADWB060d"
+Content-Disposition: inline
+In-Reply-To: <CAKuzo_jKfWW0TA2TUzFhPFOQa6JjtfDNpiAStTUp4vyT+7yOOw@...278...>
 Subject: Re: [Openvpn-devel] [PATCH] Add nl_for_brace=add to uncrustify.conf
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -14,70 +17,59 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan@...1856...>
+To: Selva Nair <selva.nair@...277...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---001a113a3162a13c1705445a019c
-Content-Type: text/plain; charset=UTF-8
-
-On Fri, Dec 23, 2016 at 3:26 PM, Steffan Karger <steffan@...1856...> wrote:
-
-> diff --git a/dev-tools/uncrustify.conf b/dev-tools/uncrustify.conf
-> index 95e0b2a..3745ed0 100644
-> --- a/dev-tools/uncrustify.conf
-> +++ b/dev-tools/uncrustify.conf
-> @@ -9,6 +9,7 @@ nl_brace_else=add
->  nl_elseif_brace=add
->  nl_else_brace=add
->  nl_else_if=remove
-> +nl_for_brace=add
->
-
-What about
-
-nl_switch_brace = add
-nl_while_brace = add
-nl_fdef_brace = add
-
-These are not optional as per the style, are they?
-
-nl_after_semicolon
-(I know no one here writes x=1; y=2; z= 3; on the same line,
-but assuming we do not want such usage in patches....)
-
-Selva
-
---001a113a3162a13c1705445a019c
-Content-Type: text/html; charset="UTF-8"
+--GaDTZZn2ADWB060d
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-<div dir=3D"ltr"><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">=
-On Fri, Dec 23, 2016 at 3:26 PM, Steffan Karger <span dir=3D"ltr">&lt;<a hr=
-ef=3D"mailto:steffan@...1856..." target=3D"_blank">steffan@...1856...</a>&g=
-t;</span> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0=
- .8ex;border-left:1px #ccc solid;padding-left:1ex"><div id=3D"m_-5743082639=
-610600438m_-2907758932460943629:2g4" class=3D"m_-5743082639610600438m_-2907=
-758932460943629a3s m_-5743082639610600438m_-2907758932460943629aXjCH m_-574=
-3082639610600438m_-2907758932460943629m1592d5eec29d5138">diff --git a/dev-t=
-ools/uncrustify.conf b/dev-tools/uncrustify.conf<br>
-index 95e0b2a..3745ed0 100644<br>
---- a/dev-tools/uncrustify.conf<br>
-+++ b/dev-tools/uncrustify.conf<br>
-@@ -9,6 +9,7 @@ nl_brace_else=3Dadd<br>
-=C2=A0nl_elseif_brace=3Dadd<br>
-=C2=A0nl_else_brace=3Dadd<br>
-=C2=A0nl_else_if=3Dremove<br>
-+nl_for_brace=3Dadd</div></blockquote></div><br>What about=C2=A0</div><div =
-class=3D"gmail_extra"><br></div><div class=3D"gmail_extra">nl_switch_brace =
-=3D add</div><div class=3D"gmail_extra">nl_while_brace =3D add</div><div cl=
-ass=3D"gmail_extra">nl_fdef_brace =3D add</div><div class=3D"gmail_extra"><=
-br></div><div class=3D"gmail_extra">These are not optional as per the style=
-, are they?</div><div class=3D"gmail_extra"><br></div><div class=3D"gmail_e=
-xtra">nl_after_semicolon=C2=A0</div><div class=3D"gmail_extra">(I know no o=
-ne here writes x=3D1; y=3D2; z=3D 3; on the same line,=C2=A0</div><div clas=
-s=3D"gmail_extra">but assuming we do not want such usage in patches....)</d=
-iv><div class=3D"gmail_extra"><br></div><div class=3D"gmail_extra">Selva</d=
-iv></div>
+Hi,
 
---001a113a3162a13c1705445a019c--
+On Fri, Dec 23, 2016 at 04:23:48PM -0500, Selva Nair wrote:
+> nl_after_semicolon
+> (I know no one here writes x=3D1; y=3D2; z=3D 3; on the same line,
+
+Well... looking at route.c, seems I've been guilty of a few such
+cases...
+
+But then, I'm not sure I consider this necessarily a "MUST CHANGE!"
+bad style:
+
+route.c:        msg(M_WARN|M_ERRNO, "GDG6: socket() failed" ); goto done;
+route.c:        msg(M_WARN|M_ERRNO, "GDG6: send() failed" ); goto done;
+route.c:        msg(M_WARN|M_ERRNO, "GDG6: recv() failed" ); goto done;
+
+(that's your typical "talk to weird APIs with lots of system calls that
+supposedly never fail but you need to check the return code for each=20
+of them anyway, as they *could*" code ugliness...)
+
+gert
+
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--GaDTZZn2ADWB060d
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJYXZjwAAoJEB2Cnv7KVigSlD4L/2DIkfDWrPg1ow865FM5M/fM
+iDK8wa5jWgrrxrsBePPpn/Esj9XBrntAdF+eyJPGUWW+Ux6z5+xA8CujLWX1hqGy
+MWYqB8CoY8eGmzul/b2BzTpFqccc2hXYOoh0kzHk3cB99P2Bdb+8aez20+TKyqX5
+5CGX+Ea1Dt8Slq/4aGlrvKG/kkMm5y/4397cROCOypz6JJD+X98W3kdkKxz3P2g9
+ujI2UGr5iYZ1UVLGvM+JCGGObsxTRDbO2sI/b72zaUxbVHWZN/EKd30IEKvXmDyv
+Ac5HOU5Osc0opj4RHVveiJnMn19IDRcivbPQfVhwhAjWR2rtT/GIIWb9hyaUehC2
+O6dlxxpL2SC1ZunsW7jPmDJVa2SQ0/KloJog1v7s1hnFopI4beAWQ2IF9Q5ASAEo
+Gtlbbfuw784Ty2pFvF0Ru9Q6ojExo08b3CRj8k5wVYoGXVkY/ueREHkzgF1yKHWB
+qv3Mx2dAkzQK+rTfsBG31l7rmvg6wDdjwrk+WWRG5Q==
+=PSHE
+-----END PGP SIGNATURE-----
+
+--GaDTZZn2ADWB060d--
 
