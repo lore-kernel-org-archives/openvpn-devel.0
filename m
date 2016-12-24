@@ -1,11 +1,10 @@
-References: <20161216225203.609cf163@...1799...>
-	<20161216220004.20867-1-list@...1798...>
-From: debbie10t <debbie10t@...277...>
-Message-ID: <9a6d51f5-831b-6fd5-109f-0688623f08d9@...277...>
-Date: Sat, 24 Dec 2016 11:10:01 +0000
-MIME-Version: 1.0
-In-Reply-To: <20161216220004.20867-1-list@...1798...>
-Subject: Re: [Openvpn-devel] [PATCH 1/1] do not race on RuntimeDirectory
+From: David Sommerseth <davids@...515...>
+Date: Sat, 24 Dec 2016 12:56:49 +0100
+Message-Id: <1482580609-14025-1-git-send-email-davids@...515...>
+In-Reply-To: <1482509264-24550-1-git-send-email-davids@...515...>
+References: <1482509264-24550-1-git-send-email-davids@...515...>
+Subject: Re: [Openvpn-devel] [PATCH applied] docs: Further enhance the
+	documentation related to SWEET32
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,71 +13,49 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: davids@...515...
+Cc: openvpn-devel@lists.sourceforge.net
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+Your patch has been applied to the following branches
+
+commit a256aee8e70ceb7059b9da69bc3e7cccbd094916  (master)
+commit 203d7c8b1fdab065aa0b2a522abe00dc39fa433a  (release/2.4)
+Author: David Sommerseth
+Date:   Fri Dec 23 17:07:44 2016 +0100
+
+     docs: Further enhance the documentation related to SWEET32
+
+     Signed-off-by: David Sommerseth <davids@...515...>
+     Acked-by: Steffan Karger <steffan@...1856...>
+     Message-Id: <1482509264-24550-1-git-send-email-davids@...515...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13682.html
 
 
+- --
+kind regards,
 
-On 16/12/16 22:00, Christian Hesse wrote:
-> From: Christian Hesse <mail@...1798...>
->
-> Different unit instances create and destroy the same RuntimeDirectory.
-> This leads to running instances where the status file (and possibly
-> more runtime data) is no longer accessible.
->
-> So do not handle this in unit files but provide a tmpfiles.d
-> configuration and let systemd-tmpfiles do the work.
-> Nobody will (unintentionally) delete the directories and its content.
-> As /run is volatile we do not have to care about cleanup.
->
-> Signed-off-by: Christian Hesse <mail@...1798...>
-> ---
->  distro/systemd/openvpn-client@...1685... | 2 --
->  distro/systemd/openvpn-server@...1685... | 2 --
->  distro/systemd/openvpn.conf            | 2 ++
->  3 files changed, 2 insertions(+), 4 deletions(-)
->  create mode 100644 distro/systemd/openvpn.conf
->
-> diff --git a/distro/systemd/openvpn-client@...1685... b/distro/systemd/openvpn-client@...1685...
-> index 5618af3..1187ee8 100644
-> --- a/distro/systemd/openvpn-client@...1685...
-> +++ b/distro/systemd/openvpn-client@...1685...
-> @@ -9,8 +9,6 @@ Documentation=https://community.openvpn.net/openvpn/wiki/HOWTO
->  [Service]
->  Type=notify
->  PrivateTmp=true
-> -RuntimeDirectory=openvpn-client
-> -RuntimeDirectoryMode=0710
->  WorkingDirectory=/etc/openvpn/client
->  ExecStart=/usr/sbin/openvpn --suppress-timestamps --nobind --config %i.conf
->  CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_CHROOT CAP_DAC_OVERRIDE
-> diff --git a/distro/systemd/openvpn-server@...1685... b/distro/systemd/openvpn-server@...1685...
-> index b9b4dba..25a6bb7 100644
-> --- a/distro/systemd/openvpn-server@...1685...
-> +++ b/distro/systemd/openvpn-server@...1685...
-> @@ -9,8 +9,6 @@ Documentation=https://community.openvpn.net/openvpn/wiki/HOWTO
->  [Service]
->  Type=notify
->  PrivateTmp=true
-> -RuntimeDirectory=openvpn-server
-> -RuntimeDirectoryMode=0710
->  WorkingDirectory=/etc/openvpn/server
->  ExecStart=/usr/sbin/openvpn --status %t/openvpn-server/status-%i.log --status-version 2 --suppress-timestamps --config %i.conf
->  CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_CHROOT CAP_DAC_OVERRIDE
-> diff --git a/distro/systemd/openvpn.conf b/distro/systemd/openvpn.conf
-> new file mode 100644
-> index 0000000..bb79671
-> --- /dev/null
-> +++ b/distro/systemd/openvpn.conf
-> @@ -0,0 +1,2 @@
-> +d /run/openvpn-client 0710 root root -
-> +d /run/openvpn-server 0710 root root -
->
+David Sommerseth
 
-ACK
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
 
-This works as expected from debian8/systemd 215 to arch/systemd 232
-
--- 
+iQIcBAEBAgAGBQJYXmKAAAoJEIbPlEyWcf3yLuEP/0dhBpaqRi07Uw26CJ3dEoF/
+B4/Xe9wAxth+/NQDh5x+XUAQEr5aOH8bDi7NMn+ZZ+oA180CudK4nJm9xZOA7jCS
+Po/BeQf6zeEgfNxOtrKELMrJpquM5sH4+RV33Do4RJjbdA9e9TEt/mMa049C+N88
+IRZ7z4Fx+F40do9Zp7Kw6SYJixfZHiPi0hutKaXb9NQ8KLvHAz5GApeuXILCy7Js
+N1DiSgzccS3eTLuzviLQRj1iUvNipgHkU0Wy7FtJ6x8oY9XuWiorQn8q+wuDwWqr
+IR8BHRDqklJNLYe1nP0WebPBRIcCKUqDW3NXsSY2eqRoXZWSUTMO/KPQ4Z2BLfJc
+2S3Ttl+9L9PMN/KL7/a0yeX/Qbj3+i0yzSQx9I3Tk7M0bQPsf4avnyfpBtrbEK5D
++KWZI+UR+YOuYUvnjCzfuogiJCcxS4UX5P6ags3xQ7rnzZY5ns5SeDAlach0sGKZ
+EpnLbOLr5FTVsMGHL2iuTvDX3cdYFzrK6q/q1vPY7De9313UgciPT6afNslPLNKR
+3Ilvx7EBrCv4IzVONHouRkoQ13kJ3+m6ULk/riH+YYmGHZqfXhfoTRrax/XGOmCl
+DamG2Dz46E5osu1ZDRQlt9vqdANH2Xs26ygNmz7W1d/90GqMSxSIGaRnMJKvgyyN
+5d6xi5m6svD91twiFL0i
+=8kEi
+-----END PGP SIGNATURE-----
 
