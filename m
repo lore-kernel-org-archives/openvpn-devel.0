@@ -1,10 +1,10 @@
 From: David Sommerseth <davids@...515...>
-Date: Mon, 26 Dec 2016 13:19:45 +0100
-Message-Id: <1482754785-22982-1-git-send-email-davids@...515...>
-In-Reply-To: <1482703334-18949-1-git-send-email-steffan@...1856...>
-References: <1482703334-18949-1-git-send-email-steffan@...1856...>
-Subject: Re: [Openvpn-devel] [PATCH applied] man: encourage user to read on
-	about --tls-crypt
+Date: Mon, 26 Dec 2016 13:24:05 +0100
+Message-Id: <1482755045-23545-1-git-send-email-davids@...515...>
+In-Reply-To: <20161225105919.25792-1-gert@...1296...>
+References: <20161225105919.25792-1-gert@...1296...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Remove IV_RGI6=1 peer-info
+	signalling.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,28 +15,40 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: steffan@...1856...
+To: gert@...1296...
 Cc: openvpn-devel@lists.sourceforge.net
 
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-ACK.  Looks good and I agree this is a good idea.
+I'm adding an ACK as well.  I can confirm that the IV_RGI6 peer-info
+signalling have only been available git master/v2.4.
+
+The first commit introducing IV_RGI6 is 3ddb56433b1fa0f2.  This commit
+is only present in the following tags:
+
+    $ git tag --contains 3ddb56433b1fa0f2
+    v2.4_alpha1
+    v2.4_alpha2
+    v2.4_beta1
+    v2.4_beta2
+    v2.4_rc1
+    v2.4_rc2
 
 Your patch has been applied to the following branches
 
-commit 403dfe1bfdbdf6e5f8abac3401a96852562aec54  (master)
-commit ebd24617f97c63fbe40a07e855ae3469f96474d7  (release/2.4)
-Author: Steffan Karger
-Date:   Sun Dec 25 23:02:14 2016 +0100
+commit 392c9e47f6418612bc2a4932faf22bb711e65a54  (master)
+commit 554504c5e2692c3e6cfd3feae10c9d5c8ec363f8  (release/2.4)
+Author: Gert Doering
+Date:   Sun Dec 25 11:59:19 2016 +0100
 
-     man: encourage user to read on about --tls-crypt
+     Remove IV_RGI6=1 peer-info signalling.
 
-     Trac: #790
-     Signed-off-by: Steffan Karger <steffan@...1856...>
+     Signed-off-by: Gert Doering <gert@...1296...>
+     Acked-by: Steffan Karger <steffan@...1856...>
      Acked-by: David Sommerseth <davids@...515...>
-     Message-Id: <1482703334-18949-1-git-send-email-steffan@...1856...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13713.html
+     Message-Id: <20161225105919.25792-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13706.html
      Signed-off-by: David Sommerseth <davids@...515...>
 
 
@@ -48,18 +60,18 @@ David Sommerseth
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBAgAGBQJYYQreAAoJEIbPlEyWcf3ys2EQAKZP3hFeP/SgEUDN64Siq1dK
-Pq0sOtpIcvAvsNOrlrJbVnt5RtddXr7uvEA0oSeM0A/suQdyrYBOvmwnaNgqaYeM
-W5hG+dm/yEQ0kEf9ANSHLT37Uk9zpY2X9QzInCsZIIOQ5lFDbeumpiZrM+cRzL23
-I4/e1Mt6qGyG5mOmAelStqM5FIbGsrtsvLncTw/TFUAgwvAbZBYrj8e76Cw5Se1v
-hicx8TmFi+ZaTYAPH2arpYKyRdC2sOmkP3Wqm1j94Q6eUF7E8o77oMGbj1Me+SzX
-eZaXD03RcVZwqb7i2YgWoHgPofrU0mWvYdTLD1y63Nbd+Tm/duEjMeQZSEoAnqXX
-aCxumz6z5tHjscThsDcbkTWOXnJfMBO5ATtJ3WOr663fWsljFOIc+lPFDjAL5JDS
-x9fypPt0lxzcvfWI0jQ3iIVYQbK9c2ThjTZCI+H32itTOqjWHqmsOwgwAPBtw7KQ
-KtIOvM+w0UDTL1UiqZBzt+5RnhMWDuPG7/iVz/JGke1Sko497tmK9t0SOhmHALq1
-IdlmCKmxUS553li3LT7oc6x0iHOYy88AgryIIBsEr2nIsTJ2ZKI8zKVq+qM4Vmr5
-/v+MZtvw62scKDqiB1u1zcrlFFDNRGYwpaoNgkf7Jmz7jqN2EaelrMLTqk2bj2Lr
-GzqXjowLpUU429NwEWWo
-=ghBE
+iQIcBAEBAgAGBQJYYQvRAAoJEIbPlEyWcf3yJXkQAJeHh5orvaKC5oPhMvhPIThy
+T3UsXTYpuBr7siGbYxMRCKvDublXR+89UT7wp3Z49/4evrr+kzykPEItYqlhUiyE
+8pxiuKaPtlr1/Ru7RP04DTiUyATAK9prAqj0aXvJGRf3aMHH9zQt344n4r8XBkPP
+FDWh8lqhrCYmPuX1aVMqvKf6kw268jVX4ODqJTkDWlTgqfKvvBfBAoZXvtqYaEzj
+7OEyKAUb4CDXY6ARnvdhLKLdZS58QwPTCvvHOMcQqLOaowIntFcD31qpM9uKJTe8
+d+KkEQJ7WCs1Lpmu5BXdA76YxnaaoNzWxa/XQlcIMN+6mOmzbZ46zoHqWM0PE4jA
+jIG3qSZtQLHWk95EnaFOcxYVOfaRcQMShJVgju1HEs4oe5/FEomaTebgqhxi7n5A
+NUklyubIehreFwy5JW4787rPX0U9cliMZlYZtGlLNDhF61z/3RQ+G/u6OpMX1d0l
+769ZG7HtgnT6TJwpCx6zPCVDuOnYHVHaMqV+UfQQugkFQhfC23fQfTyFK/X/xVg7
+0uN1GpxZvPnp1x2v9QxmJuKBj5oqdi9c/ck262HIHcXibLSEIvKXUdzQRnZUt6LQ
+4mAFVzsxRn0h/18hFpjraVff/+46sR09tP6mZCvOX94Jnwz4GxY55qxNPX4G4ByE
+3KBT19lY6pueJHz9LEyU
+=lsLW
 -----END PGP SIGNATURE-----
 
