@@ -1,11 +1,14 @@
-MIME-Version: 1.0
-In-Reply-To: <965a4c27-5e16-59a8-db9c-930f1216f22c@...1856...>
+Date: Mon, 26 Dec 2016 09:05:39 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20161226080538.GU78624@...1296...>
 References: <1482079255-15159-1-git-send-email-steffan@...1856...>
 	<20161218212659.GY78624@...1296...>
 	<965a4c27-5e16-59a8-db9c-930f1216f22c@...1856...>
-From: "Jonathan K. Bullard" <jkbullard@...277...>
-Date: Sun, 25 Dec 2016 22:18:49 -0500
-Message-ID: <CAEsd45SxHOVk1PpsU-W8MUti1TmzYa7_BR1cAbUZ+mHxqfYEpg@...278...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="0i4az6ru2FyWQ2bd"
+Content-Disposition: inline
+In-Reply-To: <965a4c27-5e16-59a8-db9c-930f1216f22c@...1856...>
 Subject: Re: [Openvpn-devel] [PATCH] Use SHA256 for the internal digest,
  instead of MD5
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -16,43 +19,55 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Steffan Karger <steffan@...1856...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-On Sun, Dec 25, 2016 at 6:20 PM, Steffan Karger <steffan@...1856...> wrote:
-> Hi,
->
-> On 18-12-16 22:26, Gert Doering wrote:
->> On Sun, Dec 18, 2016 at 05:40:55PM +0100, Steffan Karger wrote:
->>> Our internal options digest uses MD5 hashes to store the state, instead of
->>> storing the full options string.  There's nothing wrong with that, but it
->>> would still be better to use SHA256 because:
->>>  * That makes it easier to make OpenVPN "FIPS-compliant" (forbids MD5)
->>>  * We don't have to explain anymore that MD5 is fine too
->>>
->>> The slightly less bytes for the digest (16 instead of 32) and operations
->>> per connection setup are not worth sticking to MD5.
->>
->> I can't find very clear information on "which versions of OpenSSL do
->> support sha256", but since we have a trac ticket about our windows
->> builds having issues with sha256 certificates we might take this
->> opportunity to revisit minimum OpenSSL versions supported in master
->> from now on...
->
+--0i4az6ru2FyWQ2bd
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+
+Hi,
+
+On Mon, Dec 26, 2016 at 12:20:53AM +0100, Steffan Karger wrote:
 > The oldest OpenSSL we support in release/2.4 and master is 0.9.8, and
 > has SHA256 support (was introduced in 2004).  Also, the --tls-crypt
 > feature already unconditionally requires SHA256 to be available.
 
-The OpenSSL included in macOS  (was OS X) 10.11 and 10.12 (the two
-most recent versions) is 0.9.8zh (an Apple-patched version) and as far
-as I can tell, it does not seem to include SHA256 (i.e., "openssl sha1
-foo" works but "openssl sha256 foo" doesn't).
+Good enough for me.=20=20
 
-That's not a problem for Tunnelblick because Tunnelblick static-links
-in a more recent version of OpenSSL. But it could be a problem for
-anyone who uses a non-Tunnelblick OpenVPN binary from the command
-line.
+Have to look more closely at the actual patch, though :)
 
-- Jon
+As for "build on MacOS", I seem to remember from plaisthos' buildslave
+that we cannot currently build on an "unmodified" MacOS anyway, but have
+to install a more recent (or more complete?) OpenSSL beforehand - so=20
+that particular ship has sailed.
+
+gert
+
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--0i4az6ru2FyWQ2bd
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJYYM9SAAoJEB2Cnv7KVigS1m4L/AyVn+A2d4SHd2cJ1zA6Yc+y
+VYX8lzB18iR/nxzupAZiNQLS5XgRSYLMUxHrqaeZEDuQBojy3h1kGNMn7aWj+fHk
+ro+sEGnGGBM0kMw8AwZcJfIfxFMxxiyVGvjjnCZowIo7nOkSshCQGQkmn3I0HLRG
+blRL75fAFFtAMOs6n75b6y8f5/n3utidOTlN/51DFS2+1M20OJOFzQKeulcW+Nvg
+0J0HHdYK0BD1j+lMpPvw2cbuh69xn2ztF9Cu4nITznYWwHN83S/ldygSSeoEeJSI
+8HR3IkDZrCues8GTKPkoEM2tSqJlPqHbfg4+i+EblN9SJwjMjQReVYZe0DGkFrJ1
+J4FBjlYPdaOqQZZkA1c5GIMNkoinviY6gEH2+Pu9DGPuFyFUbH9XPxnBHv0DfGPw
+hmxbT8BNHBeDEc3egjliRLqo/XCRCaprZ16UCkYwDZN44fWzqRHQmCOEdGlkPlhU
+2Z0kKsTwlD3jnkRXgQ4j8dDB8Bya4+Ejfrx4P7H61w==
+=GfrV
+-----END PGP SIGNATURE-----
+
+--0i4az6ru2FyWQ2bd--
 
