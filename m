@@ -1,10 +1,11 @@
 MIME-Version: 1.0
-In-Reply-To: <1482779743-9548-1-git-send-email-steffan@...1856...>
+In-Reply-To: <CAKuzo_g2ykjoTS60ft6gsjAqb3aqX-RBA-tkDY0PYk4tnovCLA@...278...>
 References: <1482779743-9548-1-git-send-email-steffan@...1856...>
-From: Selva Nair <selva.nair@...277...>
-Date: Mon, 26 Dec 2016 15:36:29 -0500
-Message-ID: <CAKuzo_g2ykjoTS60ft6gsjAqb3aqX-RBA-tkDY0PYk4tnovCLA@...278...>
-Content-Type: multipart/alternative; boundary=001a114349c2ee8cae054495b139
+	<CAKuzo_g2ykjoTS60ft6gsjAqb3aqX-RBA-tkDY0PYk4tnovCLA@...278...>
+From: Steffan Karger <steffan@...1856...>
+Date: Mon, 26 Dec 2016 21:48:17 +0100
+Message-ID: <CAA1AbxLszGL=ckmo4yMKyp56oZAppKffFDNhEG6CNH6Xve=AUw@...278...>
+Content-Type: multipart/alternative; boundary=001a113cf144fd5b17054495da4c
 Subject: Re: [Openvpn-devel] [PATCH] Textual fixes for Changes.rst
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -14,11 +15,15 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan@...1856...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Selva Nair <selva.nair@...277...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
---001a114349c2ee8cae054495b139
+--001a113cf144fd5b17054495da4c
 Content-Type: text/plain; charset=UTF-8
+
+Hi,
+
+On 26 Dec 2016 9:36 p.m., "Selva Nair" <selva.nair@...277...> wrote:
 
 Hi,
 
@@ -94,14 +99,28 @@ Move "fail" up:
 
 Selva
 
---001a114349c2ee8cae054495b139
+
+The first one is something I cannot judge immediately, but with all other
+changes I fully agree.
+
+I won't be near a PC for the coming 12 hours. Feel free to resend the patch
+with any changes you think are good, or amend when applying.
+
+-Steffan
+
+--001a113cf144fd5b17054495da4c
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr"><div>Hi,<br><br></div>Not a thorough proof read, but some =
-comments:<br><div><div><div class=3D"gmail_extra"><br><div class=3D"gmail_q=
-uote"><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-l=
-eft:1px #ccc solid;padding-left:1ex">=C2=A0
+<div dir=3D"auto"><div>Hi,<div class=3D"gmail_extra"><br><div class=3D"gmai=
+l_quote">On 26 Dec 2016 9:36 p.m., &quot;Selva Nair&quot; &lt;<a href=3D"ma=
+ilto:selva.nair@...277...">selva.nair@...277...</a>&gt; wrote:<br type=3D"a=
+ttribution"><blockquote class=3D"quote" style=3D"margin:0 0 0 .8ex;border-l=
+eft:1px #ccc solid;padding-left:1ex"><div dir=3D"ltr"><div>Hi,<br><br></div=
+>Not a thorough proof read, but some comments:<br><div><div><div class=3D"g=
+mail_extra"><br><div class=3D"gmail_quote"><div class=3D"quoted-text"><bloc=
+kquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #cc=
+c solid;padding-left:1ex">=C2=A0
 Support for providing IPv6 DNS servers<br>
 -=C2=A0 =C2=A0 =C2=A0A new DHCP sub-options ``DNS6`` is added alongside wit=
 h the already existing<br>
@@ -116,11 +135,12 @@ lready existing<br>
 +=C2=A0 =C2=A0 ``DNS`` sub-option.=C2=A0 This is used to provide DNS resolv=
 ers available over<br>
 +=C2=A0 =C2=A0 IPv6.=C2=A0 This will be pushed to clients and `` --up`` scr=
-ipts and ``--plugin``<br></blockquote><div><br></div><div>This option could=
- be in the client config or pushed from the server, so<br></div><div>&quot;=
-This may be pushed to clients ....&quot;=C2=A0 would be better?<br></div><d=
-iv><br></div><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;b=
-order-left:1px #ccc solid;padding-left:1ex">
+ipts and ``--plugin``<br></blockquote><div><br></div></div><div>This option=
+ could be in the client config or pushed from the server, so<br></div><div>=
+&quot;This may be pushed to clients ....&quot;=C2=A0 would be better?<br></=
+div><div class=3D"quoted-text"><div><br></div><blockquote class=3D"gmail_qu=
+ote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex=
+">
 +=C2=A0 =C2=A0 can act upon it through the ``foreign_option_&lt;n&gt;`` env=
 ironment variables.<br>
 <br>
@@ -139,14 +159,15 @@ n is added,<br>
 +=C2=A0 =C2=A0 however IPv6 DNS resolvers need to be configured via ``netsh=
 `` which requires<br>
 +=C2=A0 =C2=A0 administrator privileges if the new interactive services on =
-Windows is not<br></blockquote><div><br></div><div>if ... not --&gt; unless=
- (?)<br></div><div>services -&gt; service<br>=C2=A0<br></div><blockquote cl=
-ass=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;p=
-adding-left:1ex">
+Windows is not<br></blockquote><div><br></div></div><div>if ... not --&gt; =
+unless (?)<br></div><div>services -&gt; service<br>=C2=A0<br></div><div cla=
+ss=3D"quoted-text"><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 =
+.8ex;border-left:1px #ccc solid;padding-left:1ex">
 +=C2=A0 =C2=A0 being used.=C2=A0 If the interactive services is used, this =
-service will execute<br></blockquote><div><br></div><div>services -&gt; ser=
-vice=C2=A0 <br></div><div>=C2=A0<br></div><blockquote class=3D"gmail_quote"=
- style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">
+service will execute<br></blockquote><div><br></div></div><div>services -&g=
+t; service=C2=A0 <br></div><div class=3D"quoted-text"><div>=C2=A0<br></div>=
+<blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1p=
+x #ccc solid;padding-left:1ex">
 <br>
 <br>
 -- With OpenVPN v2.4, the project have moved over to depend on and actively=
@@ -157,10 +178,24 @@ use<br>
  older compiler/libc<br>
 -=C2=A0 headers combinations fail.=C2=A0 On most of these situations it is =
 recommended to<br>
-+=C2=A0 header combinations fail.=C2=A0</blockquote><div><br></div><div>Mov=
-e &quot;fail&quot; up:<br><br></div><div>&quot;This may fail on some older =
-compiler/libc header combinations.&quot;<br><br></div><div>Selva<br></div><=
-/div></div></div></div></div>
++=C2=A0 header combinations fail.=C2=A0</blockquote><div><br></div></div><d=
+iv>Move &quot;fail&quot; up:<br><br></div><div>&quot;This may fail on some =
+older compiler/libc header combinations.&quot;<font color=3D"#888888"><br><=
+br></font></div><font color=3D"#888888"><div>Selva<br></div></font></div></=
+div></div></div></div></blockquote></div></div></div><div dir=3D"auto"><spa=
+n style=3D"font-family:sans-serif"><br></span></div><div dir=3D"auto"><span=
+ style=3D"font-family:sans-serif">The first one is something I cannot judge=
+ immediately, but with all other changes I fully agree.</span></div><div di=
+r=3D"auto"><span style=3D"font-family:sans-serif"><br></span></div><div dir=
+=3D"auto"><span style=3D"font-family:sans-serif">I won&#39;t be near a PC f=
+or the coming 12 hours. Feel free to resend the patch with any changes you =
+think are good, or amend when applying.=C2=A0</span><br></div><div dir=3D"a=
+uto"><br></div><div dir=3D"auto"><div class=3D"gmail_extra"><div class=3D"g=
+mail_quote"><blockquote class=3D"quote" style=3D"margin:0 0 0 .8ex;border-l=
+eft:1px #ccc solid;padding-left:1ex"><div dir=3D"ltr"><div><div><div class=
+=3D"gmail_extra"><div class=3D"gmail_quote"><font color=3D"#888888"><div></=
+div></font></div></div></div></div></div>
+</blockquote></div>-Steffan</div></div></div>
 
---001a114349c2ee8cae054495b139--
+--001a113cf144fd5b17054495da4c--
 
