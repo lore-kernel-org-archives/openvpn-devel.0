@@ -1,10 +1,10 @@
 From: David Sommerseth <davids@...515...>
-Date: Mon, 26 Dec 2016 13:19:07 +0100
-Message-Id: <1482754747-22836-1-git-send-email-davids@...515...>
-In-Reply-To: <1482705505-20302-1-git-send-email-steffan@...1856...>
-References: <1482705505-20302-1-git-send-email-steffan@...1856...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Document that RSA_SIGN can also
-	request TLS 1.2 signatures
+Date: Mon, 26 Dec 2016 13:19:45 +0100
+Message-Id: <1482754785-22982-1-git-send-email-davids@...515...>
+In-Reply-To: <1482703334-18949-1-git-send-email-steffan@...1856...>
+References: <1482703334-18949-1-git-send-email-steffan@...1856...>
+Subject: Re: [Openvpn-devel] [PATCH applied] man: encourage user to read on
+	about --tls-crypt
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,20 +21,22 @@ Cc: openvpn-devel@lists.sourceforge.net
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
+ACK.  Looks good and I agree this is a good idea.
+
 Your patch has been applied to the following branches
 
-commit 1e36b814073c0f56c77e4922cc105f00b8558e7e  (master)
-commit 9b42853eea285ad54aed8b466e7f5a789a943933  (release/2.4)
+commit 403dfe1bfdbdf6e5f8abac3401a96852562aec54  (master)
+commit ebd24617f97c63fbe40a07e855ae3469f96474d7  (release/2.4)
 Author: Steffan Karger
-Date:   Sun Dec 25 23:38:25 2016 +0100
+Date:   Sun Dec 25 23:02:14 2016 +0100
 
-     Document that RSA_SIGN can also request TLS 1.2 signatures
+     man: encourage user to read on about --tls-crypt
 
-     Trac: #764
+     Trac: #790
      Signed-off-by: Steffan Karger <steffan@...1856...>
-     Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <1482705505-20302-1-git-send-email-steffan@...1856...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13714.html
+     Acked-by: David Sommerseth <davids@...515...>
+     Message-Id: <1482703334-18949-1-git-send-email-steffan@...1856...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13713.html
      Signed-off-by: David Sommerseth <davids@...515...>
 
 
@@ -46,18 +48,18 @@ David Sommerseth
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBAgAGBQJYYQq6AAoJEIbPlEyWcf3ydS8P/iZDyUGQdlOu+05vZlKY8xTo
-jK4SkBXud7aleJvTUncQ3YCWBccNfYOlD2iVNKQSmwxsFB5aGunvvpujT99e9ZQk
-TpWXImERqtbmkd/dMmhBiAGZizNuXhFwX9SgFYI/OCnfQRj9vMaDBbdLo+AM9d8q
-s2iNTLlEiZYb3+RBV6z6uNgIb8JDOPKDlmbqMZma7TqlpfsbTEQWJe+SpIniglxa
-/7/ubglukfQQJjxFtQ0/uSapjN64fyXxsDQsQTUZPALTViDC+G/R3KW4VClZVcpa
-Jsy+ceIlkhUQIC0QVhx7B2mkdyTa4rIN/3a3ytU2WByl4rmDq9FwT406HFjm6D4r
-0I5p96iuWK6aYXYW5QB6QfPOh2EtmFZuW7WE/N0BJyXxo+pDyKaGGwTOWiFSEWd7
-HrXlTFSkxBk50XYavTmYC7jWLKhcus7GHMjnthSnj8E4DLcsblFiwCluT6aH94yf
-q0WocsLfBoJUpUUyaY4pLZcb9aRBIZQK/i9o439cu2UfKnAw6Og0Gwsin71z170y
-V0ahR3SmmF03+KgA1TQv9VvEuPbsORZb9QaZhalkTKgIAKNBzrkV8XdWlIYZngIi
-hZJug7KVQxo6UHW1NWlhlSVpMt6XGf8YSclDzgu3mGyrO5s6zUivCyK8V1LG6EMb
-panYszBADhJrItOgjRTS
-=w1zq
+iQIcBAEBAgAGBQJYYQreAAoJEIbPlEyWcf3ys2EQAKZP3hFeP/SgEUDN64Siq1dK
+Pq0sOtpIcvAvsNOrlrJbVnt5RtddXr7uvEA0oSeM0A/suQdyrYBOvmwnaNgqaYeM
+W5hG+dm/yEQ0kEf9ANSHLT37Uk9zpY2X9QzInCsZIIOQ5lFDbeumpiZrM+cRzL23
+I4/e1Mt6qGyG5mOmAelStqM5FIbGsrtsvLncTw/TFUAgwvAbZBYrj8e76Cw5Se1v
+hicx8TmFi+ZaTYAPH2arpYKyRdC2sOmkP3Wqm1j94Q6eUF7E8o77oMGbj1Me+SzX
+eZaXD03RcVZwqb7i2YgWoHgPofrU0mWvYdTLD1y63Nbd+Tm/duEjMeQZSEoAnqXX
+aCxumz6z5tHjscThsDcbkTWOXnJfMBO5ATtJ3WOr663fWsljFOIc+lPFDjAL5JDS
+x9fypPt0lxzcvfWI0jQ3iIVYQbK9c2ThjTZCI+H32itTOqjWHqmsOwgwAPBtw7KQ
+KtIOvM+w0UDTL1UiqZBzt+5RnhMWDuPG7/iVz/JGke1Sko497tmK9t0SOhmHALq1
+IdlmCKmxUS553li3LT7oc6x0iHOYy88AgryIIBsEr2nIsTJ2ZKI8zKVq+qM4Vmr5
+/v+MZtvw62scKDqiB1u1zcrlFFDNRGYwpaoNgkf7Jmz7jqN2EaelrMLTqk2bj2Lr
+GzqXjowLpUU429NwEWWo
+=ghBE
 -----END PGP SIGNATURE-----
 
