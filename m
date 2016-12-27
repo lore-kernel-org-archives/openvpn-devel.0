@@ -1,9 +1,8 @@
 From: Christian Hesse <list@...1798...>
-Date: Tue, 27 Dec 2016 23:15:39 +0100
-Message-Id: <20161227221539.329-2-list@...1798...>
-In-Reply-To: <20161227221539.329-1-list@...1798...>
-References: <20161227221539.329-1-list@...1798...>
-Subject: [Openvpn-devel] [PATCH 2/2] do not race on RuntimeDirectory
+Date: Tue, 27 Dec 2016 23:15:38 +0100
+Message-Id: <20161227221539.329-1-list@...1798...>
+Subject: [Openvpn-devel] [PATCH 1/2] use automake tools to install systemd
+	files
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,120 +18,151 @@ Cc: Christian Hesse <mail@...1798...>
 
 From: Christian Hesse <mail@...1798...>
 
-Different unit instances create and destroy the same RuntimeDirectory.
-This leads to running instances where the status file (and possibly
-more runtime data) is no longer accessible.
-
-So do not handle this in unit files but provide a tmpfiles.d
-configuration and let systemd-tmpfiles do the work.
-Nobody will (unintentionally) delete the directories and its content.
-As /run is volatile we do not have to care about cleanup.
+If systemd is enabled we install unit files to $libdir/systemd/system
+(or the path specified by SYSTEMD_UNIT_DIR).
+The unit files are generated on the fly with matching $sbindir.
 
 Signed-off-by: Christian Hesse <mail@...1798...>
 ---
- configure.ac                              | 8 ++++++++
- distro/systemd/Makefile.am                | 8 ++++++++
- distro/systemd/openvpn-client@...2221... | 2 --
- distro/systemd/openvpn-server@...2221... | 2 --
- distro/systemd/openvpn.conf               | 2 ++
- 5 files changed, 18 insertions(+), 4 deletions(-)
- create mode 100644 distro/systemd/openvpn.conf
+ configure.ac                                       | 10 ++++++++
+ distro/Makefile.am                                 |  4 +---
+ distro/systemd/.gitignore                          |  1 +
+ distro/systemd/Makefile.am                         | 27 ++++++++++++++++++++++
+ ...-client@...1685... => openvpn-client@...2221...} |  2 +-
+ ...-server@...1685... => openvpn-server@...2221...} |  2 +-
+ 6 files changed, 41 insertions(+), 5 deletions(-)
+ create mode 100644 distro/systemd/.gitignore
+ create mode 100644 distro/systemd/Makefile.am
+ rename distro/systemd/{openvpn-client@...1685... => openvpn-client@...2221...} (89%)
+ rename distro/systemd/{openvpn-server@...1685... => openvpn-server@...2221...} (83%)
 
 diff --git a/configure.ac b/configure.ac
-index 114fcb9..e3a682a 100644
+index 43487b0..114fcb9 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -379,6 +379,7 @@ AC_ARG_VAR([MAN2HTML], [path to man2html utility])
+@@ -378,6 +378,7 @@ AC_ARG_VAR([NETSTAT], [path to netstat utility]) # tests
+ AC_ARG_VAR([MAN2HTML], [path to man2html utility])
  AC_ARG_VAR([GIT], [path to git utility])
  AC_ARG_VAR([SYSTEMD_ASK_PASSWORD], [path to systemd-ask-password utility])
- AC_ARG_VAR([SYSTEMD_UNIT_DIR], [Path of systemd unit directory @<:@default=LIBDIR/systemd/system@:>@])
-+AC_ARG_VAR([TMPFILES_DIR], [Path of tmpfiles directory @<:@default=LIBDIR/tmpfiles.d@:>@])
++AC_ARG_VAR([SYSTEMD_UNIT_DIR], [Path of systemd unit directory @<:@default=LIBDIR/systemd/system@:>@])
  AC_PATH_PROGS([IFCONFIG], [ifconfig],, [$PATH:/usr/local/sbin:/usr/sbin:/sbin])
  AC_PATH_PROGS([ROUTE], [route],, [$PATH:/usr/local/sbin:/usr/sbin:/sbin])
  AC_PATH_PROGS([IPROUTE], [ip],, [$PATH:/usr/local/sbin:/usr/sbin:/sbin])
-@@ -1082,6 +1083,12 @@ if test "$enable_systemd" = "yes" ; then
-     else
-         systemdunitdir="\${libdir}/systemd/system"
-     fi
+@@ -1075,6 +1076,12 @@ if test "$enable_systemd" = "yes" ; then
+     OPTIONAL_SYSTEMD_LIBS="${libsystemd_LIBS}"
+     AC_DEFINE(ENABLE_SYSTEMD, 1, [Enable systemd integration])
+     LIBS="${saved_LIBS}"
 +
-+    if test -n "${TMPFILES_DIR}"; then
-+        tmpfilesdir="${TMPFILES_DIR}"
++    if test -n "${SYSTEMD_UNIT_DIR}"; then
++        systemdunitdir="${SYSTEMD_UNIT_DIR}"
 +    else
-+        tmpfilesdir="\${libdir}/tmpfiles.d"
++        systemdunitdir="\${libdir}/systemd/system"
 +    fi
  fi
  
  
-@@ -1258,6 +1265,7 @@ AC_SUBST([plugindir])
+@@ -1250,6 +1257,8 @@ sampledir="\$(docdir)/sample"
+ AC_SUBST([plugindir])
  AC_SUBST([sampledir])
  
- AC_SUBST([systemdunitdir])
-+AC_SUBST([tmpfilesdir])
- 
++AC_SUBST([systemdunitdir])
++
  VENDOR_SRC_ROOT="\$(abs_top_srcdir)/vendor/"
  VENDOR_DIST_ROOT="\$(abs_top_builddir)/vendor/dist"
-diff --git a/distro/systemd/Makefile.am b/distro/systemd/Makefile.am
-index 53a88c9..1a6c974 100644
---- a/distro/systemd/Makefile.am
-+++ b/distro/systemd/Makefile.am
-@@ -12,7 +12,12 @@
- 	$(AM_V_GEN)sed -e 's|\@sbindir\@|$(sbindir)|' \
- 		$< > $@.tmp && mv $@.tmp $@
- 
-+install-data-local:
-+	$(INSTALL) -d -m0710 $(DESTDIR)/run/openvpn-client
-+	$(INSTALL) -d -m0710 $(DESTDIR)/run/openvpn-server
-+
- EXTRA_DIST = \
-+	openvpn.conf \
- 	openvpn-client@...2221... \
- 	openvpn-server@...2221...
- 
-@@ -21,6 +26,9 @@ systemdunitdir = $(systemdunitdir)
- systemdunit_DATA = \
- 	openvpn-client@...1685... \
- 	openvpn-server@...1685...
-+tmpfilesdir = $(tmpfilesdir)
-+tmpfiles_DATA = \
-+	openvpn.conf
- endif
- 
+ VENDOR_BUILD_ROOT="\$(abs_top_builddir)/vendor/.build"
+@@ -1288,6 +1297,7 @@ AC_CONFIG_FILES([
+ 	distro/Makefile
+ 	distro/rpm/Makefile
+ 	distro/rpm/openvpn.spec
++	distro/systemd/Makefile
+ 	include/Makefile
+ 	src/Makefile
+ 	src/compat/Makefile
+diff --git a/distro/Makefile.am b/distro/Makefile.am
+index 7a9ffd0..eb0e554 100644
+--- a/distro/Makefile.am
++++ b/distro/Makefile.am
+@@ -12,6 +12,4 @@
  MAINTAINERCLEANFILES = \
-diff --git a/distro/systemd/openvpn-client@...2221... b/distro/systemd/openvpn-client@...2221...
-index d9fd6b0..354d206 100644
---- a/distro/systemd/openvpn-client@...2221...
-+++ b/distro/systemd/openvpn-client@...2221...
-@@ -9,8 +9,6 @@ Documentation=https://community.openvpn.net/openvpn/wiki/HOWTO
- [Service]
- Type=notify
- PrivateTmp=true
--RuntimeDirectory=openvpn-client
--RuntimeDirectoryMode=0710
- WorkingDirectory=/etc/openvpn/client
- ExecStart=@sbindir@ --suppress-timestamps --nobind --config %i.conf
- CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_CHROOT CAP_DAC_OVERRIDE
-diff --git a/distro/systemd/openvpn-server@...2221... b/distro/systemd/openvpn-server@...2221...
-index a270982..35f4a14 100644
---- a/distro/systemd/openvpn-server@...2221...
-+++ b/distro/systemd/openvpn-server@...2221...
-@@ -9,8 +9,6 @@ Documentation=https://community.openvpn.net/openvpn/wiki/HOWTO
- [Service]
- Type=notify
- PrivateTmp=true
--RuntimeDirectory=openvpn-server
--RuntimeDirectoryMode=0710
- WorkingDirectory=/etc/openvpn/server
- ExecStart=@sbindir@ --status %t/openvpn-server/status-%i.log --status-version 2 --suppress-timestamps --config %i.conf
- CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_CHROOT CAP_DAC_OVERRIDE
-diff --git a/distro/systemd/openvpn.conf b/distro/systemd/openvpn.conf
+ 	$(srcdir)/Makefile.in
+ 
+-SUBDIRS = rpm
+-
+-EXTRA_DIST = systemd/openvpn-client@...1685... systemd/openvpn-server@...1685...
++SUBDIRS = rpm systemd
+diff --git a/distro/systemd/.gitignore b/distro/systemd/.gitignore
 new file mode 100644
-index 0000000..57f20cd
+index 0000000..ef4c0b8
 --- /dev/null
-+++ b/distro/systemd/openvpn.conf
-@@ -0,0 +1,2 @@
-+d /run/openvpn-client 0710 root root -
-+d /run/openvpn-server 0710 root root -
++++ b/distro/systemd/.gitignore
+@@ -0,0 +1 @@
++*.service
 \ No newline at end of file
+diff --git a/distro/systemd/Makefile.am b/distro/systemd/Makefile.am
+new file mode 100644
+index 0000000..53a88c9
+--- /dev/null
++++ b/distro/systemd/Makefile.am
+@@ -0,0 +1,27 @@
++#
++#  OpenVPN -- An application to securely tunnel IP networks
++#             over a single UDP port, with support for SSL/TLS-based
++#             session authentication and key exchange,
++#             packet encryption, packet authentication, and
++#             packet compression.
++#
++#  Copyright (C) 2017 OpenVPN Technologies, Inc. <sales@...515...>
++#
++
++%.service: %.service.in Makefile
++	$(AM_V_GEN)sed -e 's|\@sbindir\@|$(sbindir)|' \
++		$< > $@.tmp && mv $@.tmp $@
++
++EXTRA_DIST = \
++	openvpn-client@...2221... \
++	openvpn-server@...2221...
++
++if ENABLE_SYSTEMD
++systemdunitdir = $(systemdunitdir)
++systemdunit_DATA = \
++	openvpn-client@...1685... \
++	openvpn-server@...1685...
++endif
++
++MAINTAINERCLEANFILES = \
++	$(srcdir)/Makefile.in
+diff --git a/distro/systemd/openvpn-client@...1685... b/distro/systemd/openvpn-client@...2221...
+similarity index 89%
+rename from distro/systemd/openvpn-client@...1685...
+rename to distro/systemd/openvpn-client@...2221...
+index 5618af3..d9fd6b0 100644
+--- a/distro/systemd/openvpn-client@...1685...
++++ b/distro/systemd/openvpn-client@...2221...
+@@ -12,7 +12,7 @@ PrivateTmp=true
+ RuntimeDirectory=openvpn-client
+ RuntimeDirectoryMode=0710
+ WorkingDirectory=/etc/openvpn/client
+-ExecStart=/usr/sbin/openvpn --suppress-timestamps --nobind --config %i.conf
++ExecStart=@sbindir@ --suppress-timestamps --nobind --config %i.conf
+ CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_CHROOT CAP_DAC_OVERRIDE
+ LimitNPROC=10
+ DeviceAllow=/dev/null rw
+diff --git a/distro/systemd/openvpn-server@...1685... b/distro/systemd/openvpn-server@...2221...
+similarity index 83%
+rename from distro/systemd/openvpn-server@...1685...
+rename to distro/systemd/openvpn-server@...2221...
+index b9b4dba..a270982 100644
+--- a/distro/systemd/openvpn-server@...1685...
++++ b/distro/systemd/openvpn-server@...2221...
+@@ -12,7 +12,7 @@ PrivateTmp=true
+ RuntimeDirectory=openvpn-server
+ RuntimeDirectoryMode=0710
+ WorkingDirectory=/etc/openvpn/server
+-ExecStart=/usr/sbin/openvpn --status %t/openvpn-server/status-%i.log --status-version 2 --suppress-timestamps --config %i.conf
++ExecStart=@sbindir@ --status %t/openvpn-server/status-%i.log --status-version 2 --suppress-timestamps --config %i.conf
+ CapabilityBoundingSet=CAP_IPC_LOCK CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_NET_RAW CAP_SETGID CAP_SETUID CAP_SYS_CHROOT CAP_DAC_OVERRIDE
+ LimitNPROC=10
+ DeviceAllow=/dev/null rw
 -- 
 2.11.0
 
