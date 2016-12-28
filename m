@@ -1,12 +1,13 @@
-Date: Wed, 28 Dec 2016 19:57:00 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20161228185700.GJ78624@...1296...>
+Date: Wed, 28 Dec 2016 20:37:48 +0100
+From: Christian Hesse <list@...1798...>
+Message-ID: <20161228203748.3ef54708@...1799...>
+In-Reply-To: <20161228185700.GJ78624@...1296...>
 References: <20161228130721.683-1-list@...1798...>
+	<20161228185700.GJ78624@...1296...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="jNp2UUAAd0DeWbgM"
-Content-Disposition: inline
-In-Reply-To: <20161228130721.683-1-list@...1798...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	boundary="Sig_/ddY0z2c4DdtMLpSpzRojDtn";
+	protocol="application/pgp-signature"
 Subject: Re: [Openvpn-devel] [PATCH 1/1] fix timeout in non-TLS mode with
  systemd
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -17,68 +18,109 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Christian Hesse <list@...1798...>
-Cc: Christian Hesse <mail@...1798...>, OpenVPN Development <openvpn-devel@lists.sourceforge.net>
+To: Gert Doering <gert@...1296...>
+Cc: Christian, OpenVPN Development <openvpn-devel@lists.sourceforge.net>, Hesse <mail@...1798...>
 
---jNp2UUAAd0DeWbgM
-Content-Type: text/plain; charset="us-ascii"
+--Sig_/ddY0z2c4DdtMLpSpzRojDtn
+Content-Type: text/plain; charset="US-ASCII"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
+Gert Doering <gert@...1296...> on Wed, 2016/12/28 19:57:
+> Hi,
+>=20
+> On Wed, Dec 28, 2016 at 02:07:21PM +0100, Christian Hesse wrote:
+> > @@ -73,6 +77,21 @@ tunnel_point_to_point(struct context *c)
+> >          return;
+> >      }
+> >=20=20
+> > +#ifdef ENABLE_SYSTEMD
+> > +    /* In non-TLS configuration we wait for the remote peer to connect
+> > +     * before issuing "Initialization Sequence Completed". So prevent =
+to
+> > +     * time out by telling systemd service manager we are ready for no=
+w.
+> > +     * Status will be "Non-TLS mode, ready for now. Waiting for peer..=
+."
+> > +     * and changes once the remote peer connects. */
+> > +    if (c->options.tls_client =3D=3D false
+> > +        && c->options.tls_server =3D=3D false)
+> > +    {
+> > +        sd_notifyf(0, "READY=3D1\n"
+> > +                   "STATUS=3DNon-TLS mode, ready for now. Waiting for
+> > peer...\n"
+> > +                   "MAINPID=3D%lu", (unsigned long) getpid());
+> > +    }
+> > +#endif=20=20
+>=20
+> We definitely need a better approach than "litter ENABLE_SYSTEMD all
+> over the code".
 
-On Wed, Dec 28, 2016 at 02:07:21PM +0100, Christian Hesse wrote:
-> @@ -73,6 +77,21 @@ tunnel_point_to_point(struct context *c)
->          return;
->      }
->=20=20
-> +#ifdef ENABLE_SYSTEMD
-> +    /* In non-TLS configuration we wait for the remote peer to connect
-> +     * before issuing "Initialization Sequence Completed". So prevent to
-> +     * time out by telling systemd service manager we are ready for now.
-> +     * Status will be "Non-TLS mode, ready for now. Waiting for peer..."
-> +     * and changes once the remote peer connects. */
-> +    if (c->options.tls_client =3D=3D false
-> +        && c->options.tls_server =3D=3D false)
-> +    {
-> +        sd_notifyf(0, "READY=3D1\n"
-> +                   "STATUS=3DNon-TLS mode, ready for now. Waiting for pe=
-er...\n"
-> +                   "MAINPID=3D%lu", (unsigned long) getpid());
-> +    }
-> +#endif
+Well, openvpn supports a number of modes of operation... Some of these have
+other requirements than others.
 
-We definitely need a better approach than "litter ENABLE_SYSTEMD all
-over the code".
+In general we have three options:
 
-(Also, this is the wrong check anyway.  p2p mode can go along with
-TLS just fine - what you need to check for is --server or --client,
-which is something else than --tls-server / --tls-client)
+1. Use Type=3Dforking in unit files. We decided not to go this way.
 
-gert
+2. Use Type=3Dnotify and tell systemd we are ready about when we would have
+   forked. This works as well as Type=3Dforking does, but has some unhandled
+   corner cases.
+
+3. Use Type=3Dnotify and "litter ENABLE_SYSTEMD all over the code". This
+   provides the best error handling.
+
+(There is Type=3Dsimple, but that is just fire-and-forget - could not be wo=
+rse.)
+
+IMHO we should go with option three. Given the number of #ifdefs all over t=
+he
+code - is this really an issue? My patch increases the number of sd_notify()
+calls from four to five.
+
+For informational purpose we could add even more calls. That would allow to
+set intermediate status message, something like: "Up and running, currently
+serving 25 client connections."
+
+> (Also, this is the wrong check anyway.  p2p mode can go along with
+> TLS just fine - what you need to check for is --server or --client,
+> which is something else than --tls-server / --tls-client)
+
+No, the check is correct.
+
+In server move openvpn reports ready when it finally is ready to handle
+incoming connections. That is fine.
+
+In TLS client mode openvpn reports ready when it connected to a server
+successfully. It fails if it can not connect. That is the desired behavior.
+So that is fine as well.
+
+The patch handles non-TLS P2P mode: Two nodes have a shared secret (or
+connect unencrypted in pure tunnel mode) and connect to each other.
+The culprit: There is no node that is ready all the time. As we do not want
+to bail out before the other is connects we have to report ready after
+initialization but before the remote connects. This really is about non-TLS,
+not client/server. No?
 --=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+main(a){char*c=3D/*    Schoene Gruesse                         */"B?IJj;MEH"
+"CX:;",b;for(a/*    Best regards             my address:    */=3D0;b=3Dc[a+=
++];)
+putchar(b-1/(/*    Chris            cc -ox -xc - && ./x    */b/42*2-3)*42);}
 
---jNp2UUAAd0DeWbgM
-Content-Type: application/pgp-signature; name="signature.asc"
+--Sig_/ddY0z2c4DdtMLpSpzRojDtn
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJYZAr7AAoJEB2Cnv7KVigSyOQL/3lkkVefHHi41tlrlP1xdOSM
-iFNMsDBfaLyq3HCGEGetSgLD0vFpx760mRNEm4RgSt6RbvKjrTHLc7+Y9D4CGsV6
-XLJloUarf17Q2f1vnoQyjByqe1mcrPL3lFcbb0G8QjE6FmD/2eERJflfr8zTTTHN
-tjUiXTSDfQ42haKAruDBxN9t/6jqo9I+YTyF2HiDexYbud84D7c9ZANtaaFSu48N
-kRREKbK9c+IZUjd13l7fkVLE/3oPtwPDle9bxWc56Seg0vHiloTh8iHlZJShdph4
-pBKjjTp3BtOtta+7LJMwYK2ZlsgxxUxlF0dPFi7LpccypmXNa0Zzg4LBJV9i5YFA
-k2PnUzBvbIFvX0GU97GIYDUUGyCEiKERcSev4tdsmoSs7uHS0w/r/kEvF2Mqdx0o
-JPM6iYlUJwbigzuIJtCnYxottfa9cyk/q6gwaUXFH0V96KpV9DubTWXEKkCy6NOU
-1xmg8s056I9cvGCVppY+3wS6mIfHCyNSFMgmU88RoA==
-=yPdN
+iQEzBAEBCAAdFiEEXHmveYAHrRp+prOviUUh18yA9HYFAlhkFIwACgkQiUUh18yA
+9HY2wwgAopiq5tJ6yRnENnVGiowool5F6ap4WzB0cHiNP9UlXISgMt/mo7uk5hHS
+XFcc8EvTuarlhkr7D68GDx2985NwXhV3Y7+lRMXFSSp80ZuWFaqet9vXrrYMce43
+tg6vqi4Q5rDhqkfalHNxbY7WYRbuZR8MfmP3Gc4PKgnBWBR4MIclO2w0slgKkY39
+R7EM1YC70yqoV3UkldWRiwwaEd7btTG7WHGiZowAMTGG9f1UDp4/V6WhFIH1B7Zd
+pD2Id3WakAF5T5goaJBAaGGnqHF8T7pN45msqp1YZu7+B/kS8yckXX/eg0/xSzOU
+o9i4W+GuaksKXULlj+4tXWGGrtTpHA==
+=oCOB
 -----END PGP SIGNATURE-----
 
---jNp2UUAAd0DeWbgM--
+--Sig_/ddY0z2c4DdtMLpSpzRojDtn--
 
