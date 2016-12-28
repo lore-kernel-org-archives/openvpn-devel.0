@@ -1,14 +1,17 @@
-MIME-Version: 1.0
-In-Reply-To: <20161228203748.3ef54708@...1799...>
 References: <20161228130721.683-1-list@...1798...>
-	<20161228185700.GJ78624@...1296...>
-	<20161228203748.3ef54708@...1799...>
-From: Selva Nair <selva.nair@...277...>
-Date: Wed, 28 Dec 2016 16:17:15 -0500
-Message-ID: <CAKuzo_iVDLQTAQWetSxpAm14jAgC7XT1EcKRdrez6Pq28EpLaA@...278...>
-Content-Type: multipart/alternative; boundary=001a114d8ca46744670544be7f7b
+	<20161228185700.GJ78624@...1296...> <20161228203748.3ef54708@...1799...>
+	<20161228210345.GM78624@...1296...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <9fd38acf-0f65-427c-e6f6-15d5aa425578@...2080...>
+Date: Wed, 28 Dec 2016 23:49:24 +0100
+MIME-Version: 1.0
+In-Reply-To: <20161228210345.GM78624@...1296...>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="nPOrqsMp8GvFbAPE8pMgqAS8HK9Pj0LN6"
 Subject: Re: [Openvpn-devel] [PATCH 1/1] fix timeout in non-TLS mode with
-	systemd
+ systemd
+Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,83 +20,77 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Christian Hesse <list@...1798...>
-Cc: OpenVPN Development <openvpn-devel@lists.sourceforge.net>
+To: Gert Doering <gert@...1296...>, Christian Hesse <list@...1798...>
+Cc: Christian Hesse <mail@...1798...>, OpenVPN Development <openvpn-devel@lists.sourceforge.net>
 
---001a114d8ca46744670544be7f7b
-Content-Type: text/plain; charset=UTF-8
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--nPOrqsMp8GvFbAPE8pMgqAS8HK9Pj0LN6
+Content-Type: multipart/mixed; boundary="HwtXuIcCnh3oohm9alBBm2EbGiIOHbQxB";
+	protected-headers="v1"
+From: David Sommerseth <openvpn@...2080...>
+Reply-To: openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>, Christian Hesse <list@...1798...>
+Cc: Christian Hesse <mail@...1798...>,
+	OpenVPN Development <openvpn-devel@lists.sourceforge.net>
+Message-ID: <9fd38acf-0f65-427c-e6f6-15d5aa425578@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH 1/1] fix timeout in non-TLS mode with
+	systemd
+References: <20161228130721.683-1-list@...1798...>
+	<20161228185700.GJ78624@...1296...> <20161228203748.3ef54708@...1799...>
+	<20161228210345.GM78624@...1296...>
+In-Reply-To: <20161228210345.GM78624@...1296...>
 
-Hi,
-
-On Wed, Dec 28, 2016 at 2:37 PM, Christian Hesse <list@...1798...> wrote:
-
->
-> For informational purpose we could add even more calls. That would allow to
-> set intermediate status message, something like: "Up and running, currently
-> serving 25 client connections."
-
-
-If the daemon has to send specially crafted messages to systemd there is no
-end to it. Arguably, we should also register as an event provider and send
-event logs to Windows and whatever the equivalent be on OS X etc...
-
-A cleaner approach would be to leverage on the existing management
-interface and use standalone modules to do a translation between the
-management and systemd/launchd//whatever. We already have  the status and
-progress info sent to the management interface. Just as windows GUI uses
-the management interface we could somehow have an external connector from
-mgmt to systemd and keep such systemd specific stuff out of openvpn.
-
-Selva
-
-P.S.
-I am not a fan of systemd so the above is partly colored by my dislike for
-it.. (it has done several extremely bad things to me in the past including
-uninstalling zfs modules on update on a system which had zfs on root and no
-rescue disk.. well partly my fault..)
-
---001a114d8ca46744670544be7f7b
-Content-Type: text/html; charset="UTF-8"
+--HwtXuIcCnh3oohm9alBBm2EbGiIOHbQxB
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr"><div class=3D"gmail_extra">Hi,<br><br></div><div class=3D"=
-gmail_extra"><div class=3D"gmail_quote">On Wed, Dec 28, 2016 at 2:37 PM, Ch=
-ristian Hesse <span dir=3D"ltr">&lt;<a href=3D"mailto:list@...1798..." targ=
-et=3D"_blank">list@<span class=3D"" style=3D"" id=3D":4ix.1" tabindex=3D"-1=
-">eworm</span>.<span class=3D"" style=3D"" id=3D":4ix.2" tabindex=3D"-1">de=
-</span></a>&gt;</span> wrote:<br><blockquote class=3D"gmail_quote" style=3D=
-"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex"><br>
-For informational purpose we could add even more calls. That would allow to=
-<br>
-set intermediate status message, something like: &quot;Up and running, curr=
-ently<br>
-serving 25 client connections.&quot;</blockquote></div><br>If the daemon ha=
-s to send specially crafted messages to <span class=3D"" style=3D"" id=3D":=
-4ix.3" tabindex=3D"-1">systemd</span> there is no end to it. Arguably, we s=
-hould also register as an event provider and send event logs to Windows and=
- whatever the equivalent be on OS X etc...<br><br>A cleaner approach would =
-be to leverage on the existing management interface and use standalone modu=
-les to do a translation between the management and <span class=3D"" style=
-=3D"" id=3D":4ix.4" tabindex=3D"-1">systemd</span>/<span class=3D"" style=
-=3D"" id=3D":4ix.5" tabindex=3D"-1">launchd</span>//whatever. We already ha=
-ve=C2=A0 the status and progress info s<span class=3D"" style=3D"" id=3D":4=
-ix.6" tabindex=3D"-1">ent</span> to the management interface. Just as windo=
-ws GUI uses the management interface we could somehow have an external conn=
-ector from <span class=3D"" style=3D"" id=3D":4ix.7" tabindex=3D"-1">mgmt</=
-span> to <span class=3D"" style=3D"" id=3D":4ix.8" tabindex=3D"-1">systemd<=
-/span> and keep such <span class=3D"" style=3D"" id=3D":4ix.9" tabindex=3D"=
--1">systemd</span> specific stuff out of <span class=3D"" style=3D"" id=3D"=
-:4ix.10" tabindex=3D"-1">openvpn</span>.<br><br></div><div class=3D"gmail_e=
-xtra"><span class=3D"" style=3D"" id=3D":4ix.11" tabindex=3D"-1">Selva</spa=
-n><br><br></div><div class=3D"gmail_extra">P.S.<br></div><div class=3D"gmai=
-l_extra">I am not a fan of <span class=3D"" style=3D"" id=3D":4ix.12" tabin=
-dex=3D"-1">systemd</span> so the above is partly colored by my dislike for =
-it.. (it has done several extremely bad things to me in the past including =
-<span class=3D"" style=3D"" id=3D":4ix.13" tabindex=3D"-1">uninstalling</sp=
-an> <span class=3D"" style=3D"" id=3D":4ix.14" tabindex=3D"-1">zfs</span> m=
-odules on update on a system which had <span class=3D"" style=3D"" id=3D":4=
-ix.15" tabindex=3D"-1">zfs</span> on root and no rescue disk.. well partly =
-my fault..)<br></div></div>
+On 28/12/16 22:03, Gert Doering wrote:
+> nothing else but a subset of Linux distributions use systemd today,
 
---001a114d8ca46744670544be7f7b--
+If including the "millions" of various Linux distributions on
+DistroWatch, you might very well be right.
+
+But a far better measuring point would be which Linux distributions the
+majority of Linux users do use.  And in my experience, the list which is
+gathered on wikipedia [1] covers what the vast majority of Linux users
+installs.  At least the majority of users I have met on various
+conferences over the last few years.
+
+[1] <https://en.wikipedia.org/wiki/Systemd#Adoption_and_reception>
+
+
+--=20
+kind regards,
+
+David Sommerseth
+OpenVPN Technologies, Inc
+
+
+
+--HwtXuIcCnh3oohm9alBBm2EbGiIOHbQxB--
+
+--nPOrqsMp8GvFbAPE8pMgqAS8HK9Pj0LN6
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBAgAGBQJYZEF0AAoJEIbPlEyWcf3yWWgP/0bUS5ulBr98W0rvk7yZBL8W
+iRTH6tJLV3juB2VHAG6SuKodQmShzNLNv3EQWJsM3u7ZNi5zHDjpcIqQUicNIKiv
+xRAyDl1Z3gjCAIJc1YoyQQQKLqAJlOffDIHzeKQNFWkbclBjGWHr4Xsf5+8rZb2E
+lqWovchYQ64LPoLe3N7JGmqGK5fjRSfhaw+FwqjemYEuCtwuJeTT5NfazL15hzl6
+T6zGoMAJIbZF33u9TP1fJ7Abse3XbxkEoF5o+k7XmUPtS0HEsl7GjKbKchlVFHmC
+qN8YAkpH+Xgy4grA7I3zZ8x8Mgxw3zArFNsePna7AzP6OVM3AqMorG9jpETNuV1D
+KDJoBQ7k8cb52ytD4BBEVZY6RMsM6bM7YHAEITEusKHT2YB0z6lgmhw/N28luZp9
+Z1vCSNsY+ZvYuUZF8/+7TG14CgxhjaBfHE9DEgPxetnLDOCj+Z5t6OONYQK+F4t+
+oDKEyc/OfFjY34BiLqL46cT2NQgZM/aIp59Y072HFFRSN7mJAtmQ+3dyNmbP4yBN
+Gs9RC6wdpoTL1S9JxcJg+/4WVNvLAW2eeW3BV0q9bVu9MGGEqW6SZpUAZdV9oNJc
+AiG5dz4ZFcFfk9Ysd8mFMX/0Fxl03+lIDx698FuO1REPpa00hx1fTZaED84Yx4ao
+SpwPnnzh8EOxd4T0wvGU
+=lKAN
+-----END PGP SIGNATURE-----
+
+--nPOrqsMp8GvFbAPE8pMgqAS8HK9Pj0LN6--
 
