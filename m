@@ -1,15 +1,16 @@
-Date: Thu, 29 Dec 2016 22:02:44 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20161229210244.GR78624@...1296...>
-References: <20161228185700.GJ78624@...1296...>
-	<20161229185727.17020-1-list@...1798...>
+From: "Morris, Russell" <rmorris@...1315...>
+Date: Thu, 29 Dec 2016 20:38:25 +0000
+Message-ID: <BN3PR0801MB217818302982BAF34DFBB93CB96B0@...2222...>
+References: <BN3PR0801MB217880CEEA7136F564901C3FB96B0@...2222...>
+	<d44d622e-8834-ec81-85a5-3b8c296ab7a7@...515...>
+	<BN3PR0801MB217827E689DB44305463AC68B96B0@...2222...>
+	<786900e2-0abc-bacb-ae49-c5aedfca8d7a@...515...>
+	<BN3PR0801MB21784AE9B26383369CD92FB1B96B0@...2222...>
+	<c783fe74-4152-a3be-206d-9a9ec3ca96a6@...277...>
+In-Reply-To: <c783fe74-4152-a3be-206d-9a9ec3ca96a6@...277...>
+Content-Language: en-US
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="U50CbOr64UnCgK/4"
-Content-Disposition: inline
-In-Reply-To: <20161229185727.17020-1-list@...1798...>
-Subject: Re: [Openvpn-devel] [PATCH 1/2] move systemd specific code to
- platform.c
+Subject: Re: [Openvpn-devel] OpenVPN Service Flagged as Trojan
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,62 +19,41 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Christian Hesse <list@...1798...>
-Cc: Christian Hesse <mail@...1798...>, OpenVPN Development <openvpn-devel@lists.sourceforge.net>
-
---U50CbOr64UnCgK/4
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+To: Magnus Kroken <mkroken@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hi,
+Yep, looks to be OK now (with definitions updated today). Thanks!
 
-On Thu, Dec 29, 2016 at 07:57:26PM +0100, Christian Hesse wrote:
-> From: Christian Hesse <mail@...1798...>
->=20
-> We have voices that do not want to "litter ENABLE_SYSTEMD all over the
-> code". So move the systemd specific bits to platform_notify() in
-> platform.c.
+... Russell
 
-While this is better, it's still far from a proper abstraction that could
-be used for cross-platform notification - like Selva said, we might want
-to add windows event logging eventually (quite likely a larger user base
-than Linux)...
 
-So, for a start, passing arguments to platform_notify() that do not make
-sense to anything that is not sd_notify() is a non-starter.
+-----Original Message-----
+From: Magnus Kroken [mailto:mkroken@...277...]=20
+Sent: Thursday, December 29, 2016 12:34 PM
+To: Morris, Russell <rmorris@...1315...>
+Cc: openvpn-devel@lists.sourceforge.net; Samuli Sepp=E4nen <samuli@...1699...=
+.>
+Subject: Re: [Openvpn-devel] OpenVPN Service Flagged as Trojan
 
-Then, please investigate using the existing status file / management
-interface code to add this, instead of adding new calls in init.c
-(I mentioned this yesterday).  If our existing status file / management
-code is not up to more fine-grained notification, I'd rather see that
-one improved, and then call out to systemd / windows events / ...=20
-than new code in parallel to the existing notification code.
+Hi
 
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+On 29.12.2016 19.07, Morris, Russell wrote:
+> That's good - thanks! Not sure how to fix Windows flagging this though - =
+I'm assuming others will have the same issue.
+>
+> ... Russell
 
---U50CbOr64UnCgK/4
-Content-Type: application/pgp-signature; name="signature.asc"
+Most likely a definition update will fix this very soon, or already has.=20
+I just ran it through Virustotal [1], all scanners report it as harmless, i=
+ncluding Microsoft with todays definitions. Also, Defender reports openvpns=
+erv2 as clean on my computer, with definitions created today at 10:44 AM (C=
+ET or UTC, I'm not sure which).
 
------BEGIN PGP SIGNATURE-----
+[1]
+https://www.virustotal.com/en/file/c3970ec979ccbdb03d38c1df606fc3437a85cea2=
+f3b56a2f03c32fde4dfe9046/analysis/1483035462/
 
-iQGcBAEBAgAGBQJYZXn0AAoJEB2Cnv7KVigSe+cMAIjkloTvAv6aWV08ZzjrDIbn
-f1l+M1yMoABzb1rXrFRpDZIfIxgaQt24dWp93BBUyFbFyttmPc/BIxMsOEUCLNTN
-iwcSKOMITXosMi86ZVGmWaXxYhX94a/m2NIQHhLJ+K1iEPKpCls6rPY563Iu2UNN
-HUH6SK3m9+M8q018rlGr3s/luXa//nOYZgRSIkbJ2Oy0MKIUA0lDV4gac1SAiKfB
-CifMKUQFCZninXWGDZR7pcnrnZOmJ1NvCgQlSGhomwZ3K3lUVP6Ts7+6kp10otPs
-IL/oVtxrN6Cng6z/y8XDYbLAgA6WAqNQBQ7f6x7wODxYS1L2Otga4w4GESxu+ZtA
-50vXNwCHIgRg5SF9Rg5JBjYINXMXjtlhxZI4XpcyT4AsrqDunHA/9uELrmQCchj7
-rkP7I3CDhPInhPhCAsSHB1hN/rFIT011muBpOCZYBHk8QQHd784jIJWZVbrSHsWw
-LRbmf3GcK5i+kQPhswLMwIVfynz4g/8OEiBghjCMXw==
-=IQKG
------END PGP SIGNATURE-----
-
---U50CbOr64UnCgK/4--
+/Magnus
 
