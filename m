@@ -1,17 +1,11 @@
-References: <20161228130721.683-1-list@...1798...>
-	<20161228185700.GJ78624@...1296...> <20161228203748.3ef54708@...1799...>
-	<20161228210345.GM78624@...1296...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <9fd38acf-0f65-427c-e6f6-15d5aa425578@...2080...>
-Date: Wed, 28 Dec 2016 23:49:24 +0100
+From: "Morris, Russell" <rmorris@...1315...>
+Date: Thu, 29 Dec 2016 03:45:23 +0000
+Message-ID: <BN3PR0801MB217880CEEA7136F564901C3FB96B0@...2222...>
+Content-Language: en-US
+Content-Type: multipart/alternative;
+	boundary="_000_BN3PR0801MB217880CEEA7136F564901C3FB96B0BN3PR0801MB2178_"
 MIME-Version: 1.0
-In-Reply-To: <20161228210345.GM78624@...1296...>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="nPOrqsMp8GvFbAPE8pMgqAS8HK9Pj0LN6"
-Subject: Re: [Openvpn-devel] [PATCH 1/1] fix timeout in non-TLS mode with
- systemd
-Reply-To: openvpn-devel@lists.sourceforge.net
+Subject: [Openvpn-devel] OpenVPN Service Flagged as Trojan
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,77 +14,90 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>, Christian Hesse <list@...1798...>
-Cc: Christian Hesse <mail@...1798...>, OpenVPN Development <openvpn-devel@lists.sourceforge.net>
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---nPOrqsMp8GvFbAPE8pMgqAS8HK9Pj0LN6
-Content-Type: multipart/mixed; boundary="HwtXuIcCnh3oohm9alBBm2EbGiIOHbQxB";
-	protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-Reply-To: openvpn-devel@lists.sourceforge.net
-To: Gert Doering <gert@...1296...>, Christian Hesse <list@...1798...>
-Cc: Christian Hesse <mail@...1798...>,
-	OpenVPN Development <openvpn-devel@lists.sourceforge.net>
-Message-ID: <9fd38acf-0f65-427c-e6f6-15d5aa425578@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH 1/1] fix timeout in non-TLS mode with
-	systemd
-References: <20161228130721.683-1-list@...1798...>
-	<20161228185700.GJ78624@...1296...> <20161228203748.3ef54708@...1799...>
-	<20161228210345.GM78624@...1296...>
-In-Reply-To: <20161228210345.GM78624@...1296...>
-
---HwtXuIcCnh3oohm9alBBm2EbGiIOHbQxB
-Content-Type: text/plain; charset="windows-1252"
+--_000_BN3PR0801MB217880CEEA7136F564901C3FB96B0BN3PR0801MB2178_
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 
-On 28/12/16 22:03, Gert Doering wrote:
-> nothing else but a subset of Linux distributions use systemd today,
+Something you may want to know about - at least on my Windows 10 machine, w=
+hen I try to run openvpnserv2.exe ... Windows Defender identifies it as a T=
+rojan - quarantines and removes it ... :(.
 
-If including the "millions" of various Linux distributions on
-DistroWatch, you might very well be right.
-
-But a far better measuring point would be which Linux distributions the
-majority of Linux users do use.  And in my experience, the list which is
-gathered on wikipedia [1] covers what the vast majority of Linux users
-installs.  At least the majority of users I have met on various
-conferences over the last few years.
-
-[1] <https://en.wikipedia.org/wiki/Systemd#Adoption_and_reception>
-
-
---=20
-kind regards,
-
-David Sommerseth
-OpenVPN Technologies, Inc
+Thanks,
+... Russell
 
 
 
---HwtXuIcCnh3oohm9alBBm2EbGiIOHbQxB--
+--_000_BN3PR0801MB217880CEEA7136F564901C3FB96B0BN3PR0801MB2178_
+Content-Type: text/html; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 
---nPOrqsMp8GvFbAPE8pMgqAS8HK9Pj0LN6
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+<html xmlns:v=3D"urn:schemas-microsoft-com:vml" xmlns:o=3D"urn:schemas-micr=
+osoft-com:office:office" xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
+xmlns:m=3D"http://schemas.microsoft.com/office/2004/12/omml" xmlns=3D"http:=
+//www.w3.org/TR/REC-html40">
+<head>
+<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3Dus-ascii">
+<meta name=3D"Generator" content=3D"Microsoft Word 15 (filtered medium)">
+<style><!--
+/* Font Definitions */
+@font-face
+	{font-family:Wingdings;
+	panose-1:5 0 0 0 0 0 0 0 0 0;}
+@font-face
+	{font-family:"Cambria Math";
+	panose-1:2 4 5 3 5 4 6 3 2 4;}
+@font-face
+	{font-family:Calibri;
+	panose-1:2 15 5 2 2 2 4 3 2 4;}
+/* Style Definitions */
+p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0in;
+	margin-bottom:.0001pt;
+	font-size:11.0pt;
+	font-family:"Calibri",sans-serif;}
+a:link, span.MsoHyperlink
+	{mso-style-priority:99;
+	color:#0563C1;
+	text-decoration:underline;}
+a:visited, span.MsoHyperlinkFollowed
+	{mso-style-priority:99;
+	color:#954F72;
+	text-decoration:underline;}
+span.EmailStyle17
+	{mso-style-type:personal-compose;
+	font-family:"Calibri",sans-serif;
+	color:windowtext;}
+.MsoChpDefault
+	{mso-style-type:export-only;}
+@page WordSection1
+	{size:8.5in 11.0in;
+	margin:1.0in 1.0in 1.0in 1.0in;}
+div.WordSection1
+	{page:WordSection1;}
+--></style><!--[if gte mso 9]><xml>
+<o:shapedefaults v:ext=3D"edit" spidmax=3D"1026" />
+</xml><![endif]--><!--[if gte mso 9]><xml>
+<o:shapelayout v:ext=3D"edit">
+<o:idmap v:ext=3D"edit" data=3D"1" />
+</o:shapelayout></xml><![endif]-->
+</head>
+<body lang=3D"EN-US" link=3D"#0563C1" vlink=3D"#954F72">
+<div class=3D"WordSection1">
+<p class=3D"MsoNormal">Something you may want to know about &#8211; at leas=
+t on my Windows 10 machine, when I try to run openvpnserv2.exe &#8230; Wind=
+ows Defender identifies it as a Trojan &#8211; quarantines and removes it &=
+#8230;
+<span style=3D"font-family:Wingdings">L</span>.<o:p></o:p></p>
+<p class=3D"MsoNormal"><o:p>&nbsp;</o:p></p>
+<p class=3D"MsoNormal">Thanks,<o:p></o:p></p>
+<p class=3D"MsoNormal">&#8230; Russell<o:p></o:p></p>
+<p class=3D"MsoNormal"><o:p>&nbsp;</o:p></p>
+<p class=3D"MsoNormal"><o:p>&nbsp;</o:p></p>
+</div>
+</body>
+</html>
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBAgAGBQJYZEF0AAoJEIbPlEyWcf3yWWgP/0bUS5ulBr98W0rvk7yZBL8W
-iRTH6tJLV3juB2VHAG6SuKodQmShzNLNv3EQWJsM3u7ZNi5zHDjpcIqQUicNIKiv
-xRAyDl1Z3gjCAIJc1YoyQQQKLqAJlOffDIHzeKQNFWkbclBjGWHr4Xsf5+8rZb2E
-lqWovchYQ64LPoLe3N7JGmqGK5fjRSfhaw+FwqjemYEuCtwuJeTT5NfazL15hzl6
-T6zGoMAJIbZF33u9TP1fJ7Abse3XbxkEoF5o+k7XmUPtS0HEsl7GjKbKchlVFHmC
-qN8YAkpH+Xgy4grA7I3zZ8x8Mgxw3zArFNsePna7AzP6OVM3AqMorG9jpETNuV1D
-KDJoBQ7k8cb52ytD4BBEVZY6RMsM6bM7YHAEITEusKHT2YB0z6lgmhw/N28luZp9
-Z1vCSNsY+ZvYuUZF8/+7TG14CgxhjaBfHE9DEgPxetnLDOCj+Z5t6OONYQK+F4t+
-oDKEyc/OfFjY34BiLqL46cT2NQgZM/aIp59Y072HFFRSN7mJAtmQ+3dyNmbP4yBN
-Gs9RC6wdpoTL1S9JxcJg+/4WVNvLAW2eeW3BV0q9bVu9MGGEqW6SZpUAZdV9oNJc
-AiG5dz4ZFcFfk9Ysd8mFMX/0Fxl03+lIDx698FuO1REPpa00hx1fTZaED84Yx4ao
-SpwPnnzh8EOxd4T0wvGU
-=lKAN
------END PGP SIGNATURE-----
-
---nPOrqsMp8GvFbAPE8pMgqAS8HK9Pj0LN6--
+--_000_BN3PR0801MB217880CEEA7136F564901C3FB96B0BN3PR0801MB2178_--
 
