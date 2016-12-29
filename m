@@ -1,13 +1,18 @@
+Date: Thu, 29 Dec 2016 21:57:33 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20161229205733.GQ78624@...1296...>
+References: <20161228130721.683-1-list@...1798...>
+	<20161228185700.GJ78624@...1296...>
+	<20161228203748.3ef54708@...1799...>
+	<20161228210345.GM78624@...1296...>
+	<9fd38acf-0f65-427c-e6f6-15d5aa425578@...2080...>
 MIME-Version: 1.0
-In-Reply-To: <940951cb-b3e9-f2e9-dea8-43a848bce446@...515...>
-References: <586339C7.2606.801611@...2224...>
-	<940951cb-b3e9-f2e9-dea8-43a848bce446@...515...>
-From: Selva Nair <selva.nair@...277...>
-Date: Thu, 29 Dec 2016 14:06:49 -0500
-Message-ID: <CAKuzo_jG4Qe9oidqkH0Cy63puNTNimQORtFCEDFZvKVajz-vdg@...278...>
-Content-Type: multipart/alternative; boundary=94eb2c07481ccc64a60544d0ca20
-Subject: Re: [Openvpn-devel] Fwd: Re: [Openvpn-announce] OpenVPN 2.4.0
-	released
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="XO56YmfyBH8vAq+5"
+Content-Disposition: inline
+In-Reply-To: <9fd38acf-0f65-427c-e6f6-15d5aa425578@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH 1/1] fix timeout in non-TLS mode with
+ systemd
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,111 +21,61 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
+Cc: Christian Hesse <mail@...1798...>
 
---94eb2c07481ccc64a60544d0ca20
-Content-Type: text/plain; charset="UTF-8"
+--XO56YmfyBH8vAq+5
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-On Thu, Dec 29, 2016 at 5:53 AM, Samuli Sepp=C3=A4nen <samuli@...515...> wr=
-ote:
+Hi,
 
-> Hi,
->
-> Any comments about the forwarded email? Is our documentation regarding
-> "or-highest" correct?
->
-> Samuli
->
->
-> -------- Messaggio Inoltrato --------
-> Oggetto:        Re: [Openvpn-announce] OpenVPN 2.4.0 released
-> Data:   Tue, 27 Dec 2016 22:04:23 -0600
-> Mittente:       Michael French <Mike@...2223...>
-> A:      Samuli Sepp=C3=A4nen <samuli@...515...>
->
->
->
-> Hi Samuli,
-> I installed 2.4 on a couple Windows 7x64 computers and all seems well.
-> I even got tls-crypt to work using the old ta.key file on both client
-> and server.
->
-> However, I noticed in the documentation for 2.4 that the parameter
-> tls-version-min is supposed to work with the 'or-highest' option, but it
-> does not.
->
-> I wish that it did work because I always want to run with the most
-> secure version of TLS and the 'or-highest' option would save me the
-> trouble of manually editing the TLS number every time it changes.
->
+On Wed, Dec 28, 2016 at 11:49:24PM +0100, David Sommerseth wrote:
+> On 28/12/16 22:03, Gert Doering wrote:
+> > nothing else but a subset of Linux distributions use systemd today,
+>=20
+> If including the "millions" of various Linux distributions on
+> DistroWatch, you might very well be right.
+>=20
+> But a far better measuring point would be which Linux distributions the
+> majority of Linux users do use.  And in my experience, the list which is
+> gathered on wikipedia [1] covers what the vast majority of Linux users
+> installs.  At least the majority of users I have met on various
+> conferences over the last few years.
+>=20
+> [1] <https://en.wikipedia.org/wiki/Systemd#Adoption_and_reception>
 
-I too find this option somewhat counter-intuitive. I think you can
-effectively get it set to the highest available version by specifying an
-insanely large number as the first parameter. For example,
+My point was not whether it's "many" or "few" Linux distributions, but
+it's "a (large) subset of Linux-only".  Even if it reaches 99% one day,=20
+it's still "Linux", which makes it a more of a platform-dependent thing=20
+for me, and not a "feature", when regarding "where do we want to have these
+#ifdef".
 
---tls-version-min 5.0 or-highest
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-As 5.0 is larger than any available versions, the minimum will get set to
-the highest available (say 1.2).
+--XO56YmfyBH8vAq+5
+Content-Type: application/pgp-signature; name="signature.asc"
 
-However, that will also make it impossible to connect to a server that
-doesn't support the said version.
+-----BEGIN PGP SIGNATURE-----
 
-Selva
+iQGcBAEBAgAGBQJYZXi8AAoJEB2Cnv7KVigSilML/j2jftV/bnossxURVP33WtY1
+fm7YWhQVNg4hHc/sf7uK5DaWeEHE3MzRCEQCRKMRIR1TNYg3y8TBtpU0lBetWPM5
+M+uF9M1ci6847vrWwao3FK9k+nHQPhIQ9vJvUZY2MQA5eD1EzHwRRRhiM6P+ultL
+ngjzIMhifkECFm89PE4nOFVWh6v7CYoERLY8SJuslSMRhMlOI3vcU6lDtGajAsuy
+3qclct89wqw6UQyQ2iKh36daPfeWOeOmoeQghRSGplsjhLt6SqEYt3HPUg26wFYI
+iKKzx/06YH7LpV29Ztmr9MJJw/sXrKmRnwq3uocrDPcfcVRzfl0Hmx1MKNVPQ/tH
+qw0t5ZuZK6GV5GRMquOvbRHm9JjwbNZcBXdSEjAlHtb7I0yAOrfyjmQsRFmWS6xK
+r0a721IznLNk1Qnk4yb7I2epAe8TzelN5jzl6FiofgcJADlh7zpEJQfVPXHZJF8I
+lRh+LgmbrbL699I1dYv2YLtRQMLWd1ZWAqmcMYpbFQ==
+=/St7
+-----END PGP SIGNATURE-----
 
---94eb2c07481ccc64a60544d0ca20
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">=
-On Thu, Dec 29, 2016 at 5:53 AM, Samuli Sepp=C3=A4nen <span dir=3D"ltr">&lt=
-;<a href=3D"mailto:samuli@...515..." target=3D"_blank">samuli@...515...</a>=
-&gt;</span> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0=
- 0 .8ex;border-left:1px #ccc solid;padding-left:1ex"><div id=3D":2nh" class=
-=3D"a3s aXjCH m1594a39dc0165a81">Hi,<br>
-<br>
-Any comments about the forwarded email? Is our documentation regarding<br>
-&quot;or-highest&quot; correct?<br>
-<br>
-Samuli<br>
-<br>
-<br>
--------- Messaggio Inoltrato --------<br>
-Oggetto:=C2=A0 =C2=A0 =C2=A0 =C2=A0 Re: [Openvpn-announce] OpenVPN 2.4.0 re=
-leased<br>
-Data:=C2=A0 =C2=A0Tue, 27 Dec 2016 22:04:23 -0600<br>
-Mittente:=C2=A0 =C2=A0 =C2=A0 =C2=A0Michael French &lt;<a href=3D"mailto:Mi=
-ke@...2223...">Mike@...2223...</a>&gt;<br>
-A:=C2=A0 =C2=A0 =C2=A0 Samuli Sepp=C3=A4nen &lt;<a href=3D"mailto:samuli@...1186...=
-.515...">samuli@...515...</a>&gt;<br>
-<br>
-<br>
-<br>
-Hi Samuli,<br>
-I installed 2.4 on a couple Windows 7x64 computers and all seems well.<br>
-I even got tls-crypt to work using the old ta.key file on both client<br>
-and server.<br>
-<br>
-However, I noticed in the documentation for 2.4 that the parameter<br>
-tls-version-min is supposed to work with the &#39;or-highest&#39; option, b=
-ut it<br>
-does not.<br>
-<br>
-I wish that it did work because I always want to run with the most<br>
-secure version of TLS and the &#39;or-highest&#39; option would save me the=
-<br>
-trouble of manually editing the TLS number every time it changes.</div></bl=
-ockquote></div><br></div><div class=3D"gmail_extra">I too find this option =
-somewhat counter-intuitive. I think you can effectively get it set to the h=
-ighest available version by specifying an insanely large number as the firs=
-t parameter. For example,<br><br></div><div class=3D"gmail_extra">--tls-ver=
-sion-min 5.0 or-highest<br><br></div><div class=3D"gmail_extra">As 5.0 is l=
-arger than any available versions, the minimum will get set to the highest =
-available (say 1.2). <br><br>However, that will also make it impossible to =
-connect to a server that doesn&#39;t support the said version.<br><br></div=
-><div class=3D"gmail_extra">Selva<br></div></div>
-
---94eb2c07481ccc64a60544d0ca20--
+--XO56YmfyBH8vAq+5--
 
