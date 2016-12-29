@@ -3,9 +3,9 @@ In-Reply-To: <CAKuzo_ijVNp8jszViyEf0sePM2i6-OHhS6gcAV=g6h5KbTruBA@...278...>
 References: <CAFHpkQEeLcCtu3RrbzQLEzS8-2B74DTT_5yh1MRnVL7CZ3xcdg@...278...>
 	<CAKuzo_ijVNp8jszViyEf0sePM2i6-OHhS6gcAV=g6h5KbTruBA@...278...>
 From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Date: Thu, 29 Dec 2016 10:30:58 +0500
-Message-ID: <CAFHpkQEOFo86emyCq5LwzTsn9Tw7u2EYBNDFkNv8GrgZ_DdJmw@...278...>
-Content-Type: multipart/alternative; boundary=047d7bf10b4ee65d550544c5638b
+Date: Thu, 29 Dec 2016 10:32:20 +0500
+Message-ID: <CAFHpkQE86cgo=MDVW=_ZOwMfwVhGBz-xqvDdP2tX5N0V=5erVA@...278...>
+Content-Type: multipart/alternative; boundary=001a1144232eca5ef60544c56875
 Subject: Re: [Openvpn-devel] couple of questions on trac#665
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -18,7 +18,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: Selva Nair <selva.nair@...277...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---047d7bf10b4ee65d550544c5638b
+--001a1144232eca5ef60544c56875
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -64,14 +64,8 @@ Content-Transfer-Encoding: quoted-printable
 > Have you found a way to reproduce it consistently?
 >
 
-not yet.
-
-so ... should we at least improve debug here ?
-
-I would split !read || !write into 2 separate calls with separate debug log
-messages... and move FlushIpNet error closer to FlushIpNet call.
-
-right ?
+I only seen that on Win10 (as described in trac ticket). So, I'll make
+win10 virtual appliance and will try to consistently reproduce it myself.
 
 
 >
@@ -79,7 +73,7 @@ right ?
 >
 >
 
---047d7bf10b4ee65d550544c5638b
+--001a1144232eca5ef60544c56875
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -118,17 +112,15 @@ om failure to set the IP using DHCP and always thought it to be some misbeh=
 avior in the tap driver. But the failure to flush may be related...<br><br>=
 </div><div class=3D"gmail_extra">Have you found a way to reproduce it consi=
 stently?<span class=3D"HOEnZb"><font color=3D"#888888"><br></font></span></=
-div></div></blockquote><div><br></div><div>not yet.<br><br></div><div>so ..=
-. should we at least improve debug here ?<br><br></div><div>I would split !=
-read || !write into 2 separate calls with separate debug log messages... an=
-d move FlushIpNet error closer to FlushIpNet call.<br><br></div><div>right =
-?<br></div><div>=C2=A0</div><blockquote class=3D"gmail_quote" style=3D"marg=
-in:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex"><div dir=3D"ltr"=
-><div class=3D"gmail_extra"><span class=3D"HOEnZb"><font color=3D"#888888">=
-<br></font></span></div><span class=3D"HOEnZb"><font color=3D"#888888"><div=
- class=3D"gmail_extra">Selva<br></div><div class=3D"gmail_extra"><br></div>=
-</font></span></div>
+div></div></blockquote><div><br></div><div>I only seen that on Win10 (as de=
+scribed in trac ticket). So, I&#39;ll make win10 virtual appliance and will=
+ try to consistently reproduce it myself.<br></div><div>=C2=A0</div><blockq=
+uote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc =
+solid;padding-left:1ex"><div dir=3D"ltr"><div class=3D"gmail_extra"><span c=
+lass=3D"HOEnZb"><font color=3D"#888888"><br></font></span></div><span class=
+=3D"HOEnZb"><font color=3D"#888888"><div class=3D"gmail_extra">Selva<br></d=
+iv><div class=3D"gmail_extra"><br></div></font></span></div>
 </blockquote></div><br></div></div>
 
---047d7bf10b4ee65d550544c5638b--
+--001a1144232eca5ef60544c56875--
 
