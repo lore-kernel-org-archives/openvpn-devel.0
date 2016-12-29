@@ -1,10 +1,10 @@
-References: <BN3PR0801MB217880CEEA7136F564901C3FB96B0@...2222...>
+References: <586339C7.2606.801611@...2224...>
 From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <d44d622e-8834-ec81-85a5-3b8c296ab7a7@...515...>
-Date: Thu, 29 Dec 2016 11:44:18 +0200
+Message-ID: <940951cb-b3e9-f2e9-dea8-43a848bce446@...515...>
+Date: Thu, 29 Dec 2016 12:53:53 +0200
 MIME-Version: 1.0
-In-Reply-To: <BN3PR0801MB217880CEEA7136F564901C3FB96B0@...2222...>
-Subject: Re: [Openvpn-devel] OpenVPN Service Flagged as Trojan
+In-Reply-To: <586339C7.2606.801611@...2224...>
+Subject: [Openvpn-devel] Fwd: Re: [Openvpn-announce] OpenVPN 2.4.0 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,46 +15,39 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="windows-1252"; format=flowed
 Content-Transfer-Encoding: quoted-printable
-To: "Morris, Russell" <rmorris@...1315...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hi Russell,
+Hi,
 
-Interesting. Can you send me the sha1sum or md5sum of your openvpnserv2.exe?
-
-We've typically had false positives related to the OpenVPN installers,=20
-but never with the bundled executables afaik.
+Any comments about the forwarded email? Is our documentation regarding=20
+"or-highest" correct?
 
 Samuli
 
-Il 29/12/2016 05:45, Morris, Russell ha scritto:
-> Something you may want to know about =96 at least on my Windows 10
-> machine, when I try to run openvpnserv2.exe =85 Windows Defender
-> identifies it as a Trojan =96 quarantines and removes it =85 L.
->
->
->
-> Thanks,
->
-> =85 Russell
->
->
->
->
->
->
->
-> -------------------------------------------------------------------------=
------
-> Check out the vibrant tech community on one of the world's most
-> engaging tech sites, SlashDot.org! http://sdm.link/slashdot
->
->
->
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->
+
+-------- Messaggio Inoltrato --------
+Oggetto: 	Re: [Openvpn-announce] OpenVPN 2.4.0 released
+Data: 	Tue, 27 Dec 2016 22:04:23 -0600
+Mittente: 	Michael French <Mike@...2223...>
+A: 	Samuli Sepp=E4nen <samuli@...515...>
 
 
+
+Hi Samuli,
+I installed 2.4 on a couple Windows 7x64 computers and all seems well.=20
+I even got tls-crypt to work using the old ta.key file on both client=20
+and server.
+
+However, I noticed in the documentation for 2.4 that the parameter=20
+tls-version-min is supposed to work with the 'or-highest' option, but it=20
+does not.
+
+I wish that it did work because I always want to run with the most=20
+secure version of TLS and the 'or-highest' option would save me the=20
+trouble of manually editing the TLS number every time it changes.
+
+Thanks and keep up the good work!
+
+Regards,
+Mike
 
