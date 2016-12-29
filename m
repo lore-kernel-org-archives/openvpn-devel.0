@@ -1,9 +1,13 @@
-From: Christian Hesse <list@...1798...>
-Date: Thu, 29 Dec 2016 19:57:26 +0100
-Message-Id: <20161229185727.17020-1-list@...1798...>
-In-Reply-To: <20161228185700.GJ78624@...1296...>
-References: <20161228185700.GJ78624@...1296...>
-Subject: [Openvpn-devel] [PATCH 1/2] move systemd specific code to platform.c
+MIME-Version: 1.0
+In-Reply-To: <940951cb-b3e9-f2e9-dea8-43a848bce446@...515...>
+References: <586339C7.2606.801611@...2224...>
+	<940951cb-b3e9-f2e9-dea8-43a848bce446@...515...>
+From: Selva Nair <selva.nair@...277...>
+Date: Thu, 29 Dec 2016 14:06:49 -0500
+Message-ID: <CAKuzo_jG4Qe9oidqkH0Cy63puNTNimQORtFCEDFZvKVajz-vdg@...278...>
+Content-Type: multipart/alternative; boundary=94eb2c07481ccc64a60544d0ca20
+Subject: Re: [Openvpn-devel] Fwd: Re: [Openvpn-announce] OpenVPN 2.4.0
+	released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,135 +16,111 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: OpenVPN Development <openvpn-devel@lists.sourceforge.net>
-Cc: Christian Hesse <mail@...1798...>
+To: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-From: Christian Hesse <mail@...1798...>
+--94eb2c07481ccc64a60544d0ca20
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-We have voices that do not want to "litter ENABLE_SYSTEMD all over the
-code". So move the systemd specific bits to platform_notify() in
-platform.c.
+On Thu, Dec 29, 2016 at 5:53 AM, Samuli Sepp=C3=A4nen <samuli@...515...> wr=
+ote:
 
-Signed-off-by: Christian Hesse <mail@...1798...>
----
- src/openvpn/init.c     | 23 +++++------------------
- src/openvpn/platform.c | 13 +++++++++++++
- src/openvpn/platform.h |  2 ++
- 3 files changed, 20 insertions(+), 18 deletions(-)
+> Hi,
+>
+> Any comments about the forwarded email? Is our documentation regarding
+> "or-highest" correct?
+>
+> Samuli
+>
+>
+> -------- Messaggio Inoltrato --------
+> Oggetto:        Re: [Openvpn-announce] OpenVPN 2.4.0 released
+> Data:   Tue, 27 Dec 2016 22:04:23 -0600
+> Mittente:       Michael French <Mike@...2223...>
+> A:      Samuli Sepp=C3=A4nen <samuli@...515...>
+>
+>
+>
+> Hi Samuli,
+> I installed 2.4 on a couple Windows 7x64 computers and all seems well.
+> I even got tls-crypt to work using the old ta.key file on both client
+> and server.
+>
+> However, I noticed in the documentation for 2.4 that the parameter
+> tls-version-min is supposed to work with the 'or-highest' option, but it
+> does not.
+>
+> I wish that it did work because I always want to run with the most
+> secure version of TLS and the 'or-highest' option would save me the
+> trouble of manually editing the TLS number every time it changes.
+>
 
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 9a3e29d..46df8ca 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -30,10 +30,6 @@
- 
- #include "syshead.h"
- 
--#ifdef ENABLE_SYSTEMD
--#include <systemd/sd-daemon.h>
--#endif
--
- #include "win32.h"
- #include "init.h"
- #include "sig.h"
-@@ -983,13 +979,11 @@ possibly_become_daemon(const struct options *options)
- {
-     bool ret = false;
- 
--#ifdef ENABLE_SYSTEMD
-     /* return without forking if we are running from systemd */
--    if (sd_notify(0, "READY=0") > 0)
-+    if (platform_notify("READY=0", "STATUS=Possibly become daemon") > 0)
-     {
-         return ret;
-     }
--#endif
- 
-     if (options->daemon)
-     {
-@@ -1026,7 +1020,6 @@ do_uid_gid_chroot(struct context *c, bool no_delay)
-         {
-             if (no_delay)
-             {
--#ifdef ENABLE_SYSTEMD
-                 /* If OpenVPN is started by systemd, the OpenVPN process needs
-                  * to provide a preliminary status report to systemd.  This is
-                  * needed as $NOTIFY_SOCKET will not be available inside the
-@@ -1040,10 +1033,8 @@ do_uid_gid_chroot(struct context *c, bool no_delay)
-                  * have a sane way to know if OpenVPN will chroot or not and to
-                  * which subdirectory it will chroot into.
-                  */
--                sd_notifyf(0, "READY=1\n"
--                           "STATUS=Entering chroot, most of the init completed successfully\n"
--                           "MAINPID=%lu", (unsigned long) getpid());
--#endif
-+                platform_notify("READY=1",
-+                                "STATUS=Entering chroot, most of the init completed successfully");
-                 platform_chroot(c->options.chroot_dir);
-             }
-             else if (c->first_time)
-@@ -1384,17 +1375,13 @@ initialization_sequence_completed(struct context *c, const unsigned int flags)
-         show_adapters(M_INFO|M_NOPREFIX);
-         msg(M_INFO, "%s With Errors ( see http://openvpn.net/faq.html#dhcpclientserv )", message);
- #else
--#ifdef ENABLE_SYSTEMD
--        sd_notifyf(0, "STATUS=Failed to start up: %s With Errors\nERRNO=1", message);
--#endif /* HAVE_SYSTEMD_SD_DAEMON_H */
-+        platform_notify("READY=0", "STATUS=Failed to start up");
-         msg(M_INFO, "%s With Errors", message);
- #endif
-     }
-     else
-     {
--#ifdef ENABLE_SYSTEMD
--        sd_notifyf(0, "READY=1\nSTATUS=%s\nMAINPID=%lu", message, (unsigned long) getpid());
--#endif
-+        platform_notify("READY=1", "STATUS=Initialization Sequence Completed");
-         msg(M_INFO, "%s", message);
-     }
- 
-diff --git a/src/openvpn/platform.c b/src/openvpn/platform.c
-index 952d633..55a25b0 100644
---- a/src/openvpn/platform.c
-+++ b/src/openvpn/platform.c
-@@ -30,6 +30,10 @@
- 
- #include "syshead.h"
- 
-+#ifdef ENABLE_SYSTEMD
-+#include <systemd/sd-daemon.h>
-+#endif
-+
- #include "buffer.h"
- #include "error.h"
- #include "win32.h"
-@@ -336,3 +340,12 @@ platform_stat(const char *path, platform_stat_t *buf)
- #endif
- }
- 
-+int
-+platform_notify(const char *status, const char *message)
-+{
-+#ifdef ENABLE_SYSTEMD
-+    return sd_notifyf(0, "%s\n%s", status, message);
-+#endif
-+
-+    return 0;
-+}
-diff --git a/src/openvpn/platform.h b/src/openvpn/platform.h
-index 62396a9..94c92e4 100644
---- a/src/openvpn/platform.h
-+++ b/src/openvpn/platform.h
-@@ -144,4 +144,6 @@ typedef struct stat platform_stat_t;
- #endif
- int platform_stat(const char *path, platform_stat_t *buf);
- 
-+int platform_notify(const char *status, const char *message);
-+
- #endif /* ifndef PLATFORM_H */
--- 
-2.11.0
+I too find this option somewhat counter-intuitive. I think you can
+effectively get it set to the highest available version by specifying an
+insanely large number as the first parameter. For example,
 
+--tls-version-min 5.0 or-highest
+
+As 5.0 is larger than any available versions, the minimum will get set to
+the highest available (say 1.2).
+
+However, that will also make it impossible to connect to a server that
+doesn't support the said version.
+
+Selva
+
+--94eb2c07481ccc64a60544d0ca20
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">=
+On Thu, Dec 29, 2016 at 5:53 AM, Samuli Sepp=C3=A4nen <span dir=3D"ltr">&lt=
+;<a href=3D"mailto:samuli@...515..." target=3D"_blank">samuli@...515...</a>=
+&gt;</span> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0=
+ 0 .8ex;border-left:1px #ccc solid;padding-left:1ex"><div id=3D":2nh" class=
+=3D"a3s aXjCH m1594a39dc0165a81">Hi,<br>
+<br>
+Any comments about the forwarded email? Is our documentation regarding<br>
+&quot;or-highest&quot; correct?<br>
+<br>
+Samuli<br>
+<br>
+<br>
+-------- Messaggio Inoltrato --------<br>
+Oggetto:=C2=A0 =C2=A0 =C2=A0 =C2=A0 Re: [Openvpn-announce] OpenVPN 2.4.0 re=
+leased<br>
+Data:=C2=A0 =C2=A0Tue, 27 Dec 2016 22:04:23 -0600<br>
+Mittente:=C2=A0 =C2=A0 =C2=A0 =C2=A0Michael French &lt;<a href=3D"mailto:Mi=
+ke@...2223...">Mike@...2223...</a>&gt;<br>
+A:=C2=A0 =C2=A0 =C2=A0 Samuli Sepp=C3=A4nen &lt;<a href=3D"mailto:samuli@...1186...=
+.515...">samuli@...515...</a>&gt;<br>
+<br>
+<br>
+<br>
+Hi Samuli,<br>
+I installed 2.4 on a couple Windows 7x64 computers and all seems well.<br>
+I even got tls-crypt to work using the old ta.key file on both client<br>
+and server.<br>
+<br>
+However, I noticed in the documentation for 2.4 that the parameter<br>
+tls-version-min is supposed to work with the &#39;or-highest&#39; option, b=
+ut it<br>
+does not.<br>
+<br>
+I wish that it did work because I always want to run with the most<br>
+secure version of TLS and the &#39;or-highest&#39; option would save me the=
+<br>
+trouble of manually editing the TLS number every time it changes.</div></bl=
+ockquote></div><br></div><div class=3D"gmail_extra">I too find this option =
+somewhat counter-intuitive. I think you can effectively get it set to the h=
+ighest available version by specifying an insanely large number as the firs=
+t parameter. For example,<br><br></div><div class=3D"gmail_extra">--tls-ver=
+sion-min 5.0 or-highest<br><br></div><div class=3D"gmail_extra">As 5.0 is l=
+arger than any available versions, the minimum will get set to the highest =
+available (say 1.2). <br><br>However, that will also make it impossible to =
+connect to a server that doesn&#39;t support the said version.<br><br></div=
+><div class=3D"gmail_extra">Selva<br></div></div>
+
+--94eb2c07481ccc64a60544d0ca20--
 
