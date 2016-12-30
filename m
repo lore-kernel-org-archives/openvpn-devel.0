@@ -1,12 +1,14 @@
-Date: Fri, 30 Dec 2016 16:50:59 +0100
+Date: Fri, 30 Dec 2016 16:54:23 +0100
 From: Gert Doering <gert@...1296...>
-Message-ID: <20161230155059.GZ78624@...1296...>
+Message-ID: <20161230155423.GA78624@...1296...>
 References: <CAFHpkQEeLcCtu3RrbzQLEzS8-2B74DTT_5yh1MRnVL7CZ3xcdg@...278...>
+	<CAKuzo_ijVNp8jszViyEf0sePM2i6-OHhS6gcAV=g6h5KbTruBA@...278...>
+	<CAFHpkQEOFo86emyCq5LwzTsn9Tw7u2EYBNDFkNv8GrgZ_DdJmw@...278...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="RFt7YL+UU4NXVfbH"
+	protocol="application/pgp-signature"; boundary="EnT6sQnqsTJq4oDy"
 Content-Disposition: inline
-In-Reply-To: <CAFHpkQEeLcCtu3RrbzQLEzS8-2B74DTT_5yh1MRnVL7CZ3xcdg@...278...>
+In-Reply-To: <CAFHpkQEOFo86emyCq5LwzTsn9Tw7u2EYBNDFkNv8GrgZ_DdJmw@...278...>
 Subject: Re: [Openvpn-devel] couple of questions on trac#665
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -19,44 +21,37 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: ???????? ?????????????? <chipitsine@...277...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---RFt7YL+UU4NXVfbH
+--EnT6sQnqsTJq4oDy
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Thu, Dec 29, 2016 at 09:56:44AM +0500, ???????? ?????????????? wrote:
-> I seem to see several times issues like described in #665
+On Thu, Dec 29, 2016 at 10:30:58AM +0500, ???????? ?????????????? wrote:
+> I would split !read || !write into 2 separate calls with separate debug l=
+og
+> messages...=20
 
-It came up on openvpn-users yesterday as well, and that's a bit weird
-as our test set covers the case in question ("connect to different remotes
-on the same tap device") and I never saw this.  Must be timing related.
+NAK on this.  This code can basically not fail unless the interactive
+service dies - and then, it does not really matter which one failed
+(because both will fail).=20=20
 
-> what seems to be strange is couple of things:
+So unless you see *this* error message ("TUN: could not talk to service:")=
+=20
+and wonder whether read or write is causing is, there is no benefit in=20
+making this part of the code more lines.
+
+> and move FlushIpNet error closer to FlushIpNet call.
 >=20
-> 1) "OR" clause. why not "AND" ?
-> https://github.com/OpenVPN/openvpn/blob/master/src/openvpn/tun.c#L6012-L6=
-013
+> right ?
 
-Because both are "not".  So "if not write() or not read() -> error".
+No.  The error check is *right* under the line where it is set.
 
-The code is correct, otherwise you'd end up with this error
-message ("TUN: could not talk to service") which is not there in=20
-the logs.
-
-
-> 2) error message seems to be irrelevant
-> https://github.com/OpenVPN/openvpn/blob/master/src/openvpn/tun.c#L6034
->=20
-> it might be an error from earlier function calls, not only FlushIpNetTable
-> itself.
-
-How?  status is either set in line 6019 or in 6023.  There is no way
-6034 can be reached without calling either the iservice-based flushing
-or directly calling FlushIpNetTable() - so status is always relevant.
+No need to have duplicate code in both if/else clauses before that.
 
 gert
+
 --=20
 USENET is *not* the non-clickable part of WWW!
                                                            //www.muc.de/~ge=
@@ -64,22 +59,22 @@ rt/
 Gert Doering - Munich, Germany                             gert@...1296...
 fax: +49-89-35655025                        gert@...1297...
 
---RFt7YL+UU4NXVfbH
+--EnT6sQnqsTJq4oDy
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJYZoJjAAoJEB2Cnv7KVigSdHcL/0NzY5wf3UPQdx2r6qw0e+uY
-LboJVto3G1Iqu+u3SXzLbSjhysFdteDD+WZNdXugyGS3UtStwaT0O24dZiUCW5Da
-SVt3k0WzqHuGRJ2Ceo9uhNYPm7SZZBD9xWYxlHq7puDJ4Vf0soXkhQiPn2di3G7w
-IER1RrKXGvtGZXIrpnneZFUCnxAobD38CBnBmUgtNVdHYO3i/UxM4fJnwRvoP6NO
-UyjJTEQOcnWj3SWjof5Jqax7dGVPii4IAIqHX189TFZzZ/89/vA2Rd4pbNnZhQ+q
-egHcbcjXFvJwHln4q2DbAEhGmhn3TKDqsUiO5tsBxPPMNk9vWnTmigsxza6yFfp+
-tJa/e6RVhj88sWqhCqAKG4YNGccZtx6A4M1YY71wBwyimXk6SzsipCUnmZb5x+V6
-BANZeHkqEmv5K49hc+zwskVdgrxIQS1uaneVMB5DphysSU+0/idKsKHCWIp9O4M0
-t2FDy54Ytsc1WHjhmLblAQDuhg1xMmsJ78xBf6Ftrg==
-=I9TB
+iQGcBAEBAgAGBQJYZoMpAAoJEB2Cnv7KVigSCv0L+gJXJs/2T3XwKHDeGdHOUa6A
+n2end37/W69UazbsO/iCJkV7yXyrwekc2y/SMWsNW9H3dM1dX+NkKu/bdKBqsdgI
+OndJBBxQIfQbETR/bsCKKRP3q1z6fwKUVFYXO/oX9ePuTLoZXsj9fB1ys9VGapoJ
+ArK1CGVJKi0NfCvMyrw1JTZT3/Tb3eY3MgJO59D4TNOizjjqyC5aK4jVHBgG5oRQ
+/YpJAOb7gAABof+/7lmIwajnV3assCg8utyFs06mV6BrbmM4OxRi7Z9utJhdBBVD
+pPJUe7/AxRwE86GjbZ9QQ9lUHGwu6R7/bENWMhM+1XWXNbpPNR/WaDVgW4Id9M26
+nef/5AVc8SooK8JjnXyXKWIkQ2xco5kvzDKn0xoj69thVow9BNp5N7P9Pc/Ry7GT
+DIxoiQauImZEKRudsIYcpesyUaICEHdwdE+gBpUI2Kk70rTsFpNqs75CQU8wkjP9
+cj1/eWLj3EDUVUvM+ntGxcY/FWwe6PoEFWUxvUBS6A==
+=hHkk
 -----END PGP SIGNATURE-----
 
---RFt7YL+UU4NXVfbH--
+--EnT6sQnqsTJq4oDy--
 
