@@ -1,13 +1,13 @@
-References: <586339C7.2606.801611@...2224...>
-	<940951cb-b3e9-f2e9-dea8-43a848bce446@...515...>
-	<CAKuzo_jG4Qe9oidqkH0Cy63puNTNimQORtFCEDFZvKVajz-vdg@...278...>
-From: Steffan Karger <steffan@...1856...>
-Message-ID: <e4923fba-bce1-7e5c-3737-6b32c4d99d8a@...1856...>
-Date: Fri, 30 Dec 2016 12:21:30 +0100
+Date: Fri, 30 Dec 2016 16:50:59 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20161230155059.GZ78624@...1296...>
+References: <CAFHpkQEeLcCtu3RrbzQLEzS8-2B74DTT_5yh1MRnVL7CZ3xcdg@...278...>
 MIME-Version: 1.0
-In-Reply-To: <CAKuzo_jG4Qe9oidqkH0Cy63puNTNimQORtFCEDFZvKVajz-vdg@...278...>
-Subject: Re: [Openvpn-devel] Fwd: Re: [Openvpn-announce] OpenVPN 2.4.0
- released
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="RFt7YL+UU4NXVfbH"
+Content-Disposition: inline
+In-Reply-To: <CAFHpkQEeLcCtu3RrbzQLEzS8-2B74DTT_5yh1MRnVL7CZ3xcdg@...278...>
+Subject: Re: [Openvpn-devel] couple of questions on trac#665
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,77 +16,70 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="windows-1252"
+To: ???????? ?????????????? <chipitsine@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+
+--RFt7YL+UU4NXVfbH
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
+Content-Disposition: inline
 
 Hi,
 
-On 29-12-16 20:06, Selva Nair wrote:
+On Thu, Dec 29, 2016 at 09:56:44AM +0500, ???????? ?????????????? wrote:
+> I seem to see several times issues like described in #665
+
+It came up on openvpn-users yesterday as well, and that's a bit weird
+as our test set covers the case in question ("connect to different remotes
+on the same tap device") and I never saw this.  Must be timing related.
+
+> what seems to be strange is couple of things:
 >=20
-> On Thu, Dec 29, 2016 at 5:53 AM, Samuli Sepp=E4nen <samuli@...515...
-> <mailto:samuli@...515...>> wrote:
->     -------- Messaggio Inoltrato --------
->     Oggetto:        Re: [Openvpn-announce] OpenVPN 2.4.0 released
->     Data:   Tue, 27 Dec 2016 22:04:23 -0600
->     Mittente:       Michael French <Mike@...2223...
->     <mailto:Mike@...2223...>>
->     A:      Samuli Sepp=E4nen <samuli@...515... <mailto:samuli@...515...>>
+> 1) "OR" clause. why not "AND" ?
+> https://github.com/OpenVPN/openvpn/blob/master/src/openvpn/tun.c#L6012-L6=
+013
+
+Because both are "not".  So "if not write() or not read() -> error".
+
+The code is correct, otherwise you'd end up with this error
+message ("TUN: could not talk to service") which is not there in=20
+the logs.
+
+
+> 2) error message seems to be irrelevant
+> https://github.com/OpenVPN/openvpn/blob/master/src/openvpn/tun.c#L6034
 >=20
->     I installed 2.4 on a couple Windows 7x64 computers and all seems well.
->     I even got tls-crypt to work using the old ta.key file on both client
->     and server.
+> it might be an error from earlier function calls, not only FlushIpNetTable
+> itself.
 
-As a general rule of thumb:  if you change your cryptographic primitives
-(here, exchange --tls-auth for --tls-crypt), also change your keys.  So
-it would be best to generate a fresh tc.key, to replace your ta.key.
+How?  status is either set in line 6019 or in 6023.  There is no way
+6034 can be reached without calling either the iservice-based flushing
+or directly calling FlushIpNetTable() - so status is always relevant.
 
-(In this case, reusing ta.key will *probably* not break the crypto, but
-better be safe than sorry.)
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
->     However, I noticed in the documentation for 2.4 that the parameter
->     tls-version-min is supposed to work with the 'or-highest' option, but=
- it
->     does not.
+--RFt7YL+UU4NXVfbH
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Please specify what you mean when you say 'it does not'.  Do you get
-connection errors?  Is a different-then-expected version negotiated?
-Please elaborate.
+-----BEGIN PGP SIGNATURE-----
 
->     I wish that it did work because I always want to run with the most
->     secure version of TLS and the 'or-highest' option would save me the
->     trouble of manually editing the TLS number every time it changes.
->=20
-> I too find this option somewhat counter-intuitive. I think you can
-> effectively get it set to the highest available version by specifying an
-> insanely large number as the first parameter. For example,
->=20
-> --tls-version-min 5.0 or-highest
->=20
-> As 5.0 is larger than any available versions, the minimum will get set
-> to the highest available (say Since 1.2).
->=20
-> However, that will also make it impossible to connect to a server that
-> doesn't support the said version.
+iQGcBAEBAgAGBQJYZoJjAAoJEB2Cnv7KVigSdHcL/0NzY5wf3UPQdx2r6qw0e+uY
+LboJVto3G1Iqu+u3SXzLbSjhysFdteDD+WZNdXugyGS3UtStwaT0O24dZiUCW5Da
+SVt3k0WzqHuGRJ2Ceo9uhNYPm7SZZBD9xWYxlHq7puDJ4Vf0soXkhQiPn2di3G7w
+IER1RrKXGvtGZXIrpnneZFUCnxAobD38CBnBmUgtNVdHYO3i/UxM4fJnwRvoP6NO
+UyjJTEQOcnWj3SWjof5Jqax7dGVPii4IAIqHX189TFZzZ/89/vA2Rd4pbNnZhQ+q
+egHcbcjXFvJwHln4q2DbAEhGmhn3TKDqsUiO5tsBxPPMNk9vWnTmigsxza6yFfp+
+tJa/e6RVhj88sWqhCqAKG4YNGccZtx6A4M1YY71wBwyimXk6SzsipCUnmZb5x+V6
+BANZeHkqEmv5K49hc+zwskVdgrxIQS1uaneVMB5DphysSU+0/idKsKHCWIp9O4M0
+t2FDy54Ytsc1WHjhmLblAQDuhg1xMmsJ78xBf6Ftrg==
+=I9TB
+-----END PGP SIGNATURE-----
 
-Exactly this.  To clarify a bit more, there are two mechanisms to
-enforce that the most secure version is used:
-
-1) TLS version negotiation will automatically used the newest TLS
-version *that both peers support*.  So if e.g. the server supports upto
-1.2, and the client upto 1.1, TLS will negotiate 1.1.  OpenVPN does not
-do any browser-like 'version fallback'.
-
-2) To prevent any attacks on problems in the above mechanisms, or
-enforce a specific version to be used, you can use OpenVPN's
---tls-version-min.  Using or-highest as Selva suggests will ensure that
-the highest version support *by the local OpenVPN version* is required.
-So if you peer does not support that version, the connection will fail.
-
-Summarizing, only use --tls-version-min if you are sure that *all* peers
-in you network support that version.  And if you do not use
---tls-version-min, TLS will automatically negotiate the highest version
-that *is* possible to negotiate.
-
--Steffan
+--RFt7YL+UU4NXVfbH--
 
