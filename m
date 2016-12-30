@@ -1,15 +1,13 @@
-Date: Fri, 30 Dec 2016 16:54:23 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20161230155423.GA78624@...1296...>
-References: <CAFHpkQEeLcCtu3RrbzQLEzS8-2B74DTT_5yh1MRnVL7CZ3xcdg@...278...>
-	<CAKuzo_ijVNp8jszViyEf0sePM2i6-OHhS6gcAV=g6h5KbTruBA@...278...>
-	<CAFHpkQEOFo86emyCq5LwzTsn9Tw7u2EYBNDFkNv8GrgZ_DdJmw@...278...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="EnT6sQnqsTJq4oDy"
-Content-Disposition: inline
-In-Reply-To: <CAFHpkQEOFo86emyCq5LwzTsn9Tw7u2EYBNDFkNv8GrgZ_DdJmw@...278...>
-Subject: Re: [Openvpn-devel] couple of questions on trac#665
+In-Reply-To: <1480051264-30193-1-git-send-email-selva.nair@...277...>
+References: <1480022363-24222-1-git-send-email-selva.nair@...277...>
+	<1480051264-30193-1-git-send-email-selva.nair@...277...>
+From: Selva Nair <selva.nair@...277...>
+Date: Fri, 30 Dec 2016 10:58:44 -0500
+Message-ID: <CAKuzo_g5CWUYt_uwZ_vpj35whYJoGggHPm10ya6bu-+PNn=_Qw@...278...>
+Content-Type: multipart/alternative; boundary=001a1149b0a4ffc3ac0544e2470f
+Subject: Re: [Openvpn-devel] [PATCH v2] Delete the IPv6 route to the
+ "connected" network on tun close
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,63 +16,198 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: ???????? ?????????????? <chipitsine@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---EnT6sQnqsTJq4oDy
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+--001a1149b0a4ffc3ac0544e2470f
+Content-Type: text/plain; charset=UTF-8
 
 Hi,
 
-On Thu, Dec 29, 2016 at 10:30:58AM +0500, ???????? ?????????????? wrote:
-> I would split !read || !write into 2 separate calls with separate debug l=
-og
-> messages...=20
+Based on Trac #807, it seems removing ipv6 address on tun close is more
+than just good behaviour.
 
-NAK on this.  This code can basically not fail unless the interactive
-service dies - and then, it does not really matter which one failed
-(because both will fail).=20=20
+A review of this patch would help.
 
-So unless you see *this* error message ("TUN: could not talk to service:")=
-=20
-and wonder whether read or write is causing is, there is no benefit in=20
-making this part of the code more lines.
+Thanks,
 
-> and move FlushIpNet error closer to FlushIpNet call.
->=20
-> right ?
+Selva
 
-No.  The error check is *right* under the line where it is set.
+On Fri, Nov 25, 2016 at 12:21 AM, Selva Nair <selva.nair@...277...> wrote:
 
-No need to have duplicate code in both if/else clauses before that.
+> This was missing on Windows when interactive service is in use.
+>
+> - Added route_ipv6_clear_host_bits(r6) to delete_route_ipv6: this is
+>   required for Windows IP-helper API. Won't hurt other platforms (?)
+>
+> v2: Be const correct: route in delete_route_ipv6() made non-const.
+> None of the exisitng calls are affected.
+>
+> Signed-off-by: Selva Nair <selva.nair@...277...>
+> ---
+>  src/openvpn/route.c | 4 +++-
+>  src/openvpn/route.h | 2 +-
+>  src/openvpn/tun.c   | 3 +++
+>  3 files changed, 7 insertions(+), 2 deletions(-)
+>
+> diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+> index fec12c1..34b1196 100644
+> --- a/src/openvpn/route.c
+> +++ b/src/openvpn/route.c
+> @@ -2102,7 +2102,7 @@ delete_route (struct route_ipv4 *r,
+>  }
+>
+>  void
+> -delete_route_ipv6 (const struct route_ipv6 *r6, const struct tuntap *tt,
+> unsigned int flags, const struct env_set *es)
+> +delete_route_ipv6 (struct route_ipv6 *r6, const struct tuntap *tt,
+> unsigned int flags, const struct env_set *es)
+>  {
+>    struct gc_arena gc;
+>    struct argv argv = argv_new ();
+> @@ -2124,6 +2124,8 @@ delete_route_ipv6 (const struct route_ipv6 *r6,
+> const struct tuntap *tt, unsigne
+>
+>    gc_init (&gc);
+>
+> +  route_ipv6_clear_host_bits (r6);
+> +
+>    network = print_in6_addr( r6->network, 0, &gc);
+>    gateway = print_in6_addr( r6->gateway, 0, &gc);
+>
+> diff --git a/src/openvpn/route.h b/src/openvpn/route.h
+> index c358681..70aeb65 100644
+> --- a/src/openvpn/route.h
+> +++ b/src/openvpn/route.h
+> @@ -252,7 +252,7 @@ void copy_route_ipv6_option_list (struct
+> route_ipv6_option_list *dest,
+>                                    struct gc_arena *a);
+>
+>  void add_route_ipv6 (struct route_ipv6 *r, const struct tuntap *tt,
+> unsigned int flags, const struct env_set *es);
+> -void delete_route_ipv6 (const struct route_ipv6 *r, const struct tuntap
+> *tt, unsigned int flags, const struct env_set *es);
+> +void delete_route_ipv6 (struct route_ipv6 *r, const struct tuntap *tt,
+> unsigned int flags, const struct env_set *es);
+>
+>  void add_route (struct route_ipv4 *r,
+>                 const struct tuntap *tt,
+> diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+> index 560b1a8..40ce202 100644
+> --- a/src/openvpn/tun.c
+> +++ b/src/openvpn/tun.c
+> @@ -5663,6 +5663,9 @@ close_tun (struct tuntap *tt)
+>          {
+>            if (tt->options.msg_channel)
+>              {
+> +              /* remove route pointing to interface */
+> +              delete_route_connected_v6_net(tt, NULL);
+> +
+>                do_address_service (false, AF_INET6, tt);
+>               if (tt->options.dns6_len > 0)
+>                   do_dns6_service (false, tt);
+> --
+> 2.1.4
+>
+>
 
-gert
+--001a1149b0a4ffc3ac0544e2470f
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+<div dir=3D"ltr"><div><div><div><div>Hi,<br><br></div>Based on Trac #807, i=
+t seems removing ipv6 address on tun close is more than just good behaviour=
+.<br><br></div>A review of this patch would help.<br><br></div>Thanks,<br><=
+br></div>Selva<br></div><div class=3D"gmail_extra"><br><div class=3D"gmail_=
+quote">On Fri, Nov 25, 2016 at 12:21 AM, Selva Nair <span dir=3D"ltr">&lt;<=
+a href=3D"mailto:selva.nair@...277..." target=3D"_blank">selva.nair@...1354...=
+..</a>&gt;</span> wrote:<br><blockquote class=3D"gmail_quote" style=3D"marg=
+in:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex"><span class=3D""=
+>This was missing on Windows when interactive service is in use.<br>
+<br>
+- Added route_ipv6_clear_host_bits(r6) to delete_route_ipv6: this is<br>
+=C2=A0 required for Windows IP-helper API. Won&#39;t hurt other platforms (=
+?)<br>
+<br>
+</span>v2: Be const correct: route in delete_route_ipv6() made non-const.<b=
+r>
+None of the exisitng calls are affected.<br>
+<span class=3D""><br>
+Signed-off-by: Selva Nair &lt;<a href=3D"mailto:selva.nair@...277...">selva=
+.nair@...277...</a>&gt;<br>
+---<br>
+</span>=C2=A0src/openvpn/route.c | 4 +++-<br>
+=C2=A0src/openvpn/route.h | 2 +-<br>
+=C2=A0src/openvpn/tun.c=C2=A0 =C2=A0| 3 +++<br>
+=C2=A03 files changed, 7 insertions(+), 2 deletions(-)<br>
+<br>
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c<br>
+index fec12c1..34b1196 100644<br>
+--- a/src/openvpn/route.c<br>
++++ b/src/openvpn/route.c<br>
+@@ -2102,7 +2102,7 @@ delete_route (struct route_ipv4 *r,<br>
+=C2=A0}<br>
+<br>
+=C2=A0void<br>
+-delete_route_ipv6 (const struct route_ipv6 *r6, const struct tuntap *tt, u=
+nsigned int flags, const struct env_set *es)<br>
++delete_route_ipv6 (struct route_ipv6 *r6, const struct tuntap *tt, unsigne=
+d int flags, const struct env_set *es)<br>
+=C2=A0{<br>
+=C2=A0 =C2=A0struct gc_arena gc;<br>
+=C2=A0 =C2=A0struct argv argv =3D argv_new ();<br>
+<span class=3D"">@@ -2124,6 +2124,8 @@ delete_route_ipv6 (const struct rout=
+e_ipv6 *r6, const struct tuntap *tt, unsigne<br>
+<br>
+=C2=A0 =C2=A0gc_init (&amp;gc);<br>
+<br>
++=C2=A0 route_ipv6_clear_host_bits (r6);<br>
++<br>
+=C2=A0 =C2=A0network =3D print_in6_addr( r6-&gt;network, 0, &amp;gc);<br>
+=C2=A0 =C2=A0gateway =3D print_in6_addr( r6-&gt;gateway, 0, &amp;gc);<br>
+<br>
+</span>diff --git a/src/openvpn/route.h b/src/openvpn/route.h<br>
+index c358681..70aeb65 100644<br>
+--- a/src/openvpn/route.h<br>
++++ b/src/openvpn/route.h<br>
+@@ -252,7 +252,7 @@ void copy_route_ipv6_option_list (struct route_ipv6_opt=
+ion_list *dest,<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0struct gc_arena *a);<br>
+<br>
+=C2=A0void add_route_ipv6 (struct route_ipv6 *r, const struct tuntap *tt, u=
+nsigned int flags, const struct env_set *es);<br>
+-void delete_route_ipv6 (const struct route_ipv6 *r, const struct tuntap *t=
+t, unsigned int flags, const struct env_set *es);<br>
++void delete_route_ipv6 (struct route_ipv6 *r, const struct tuntap *tt, uns=
+igned int flags, const struct env_set *es);<br>
+<br>
+=C2=A0void add_route (struct route_ipv4 *r,<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 const struct tuntap=
+ *tt,<br>
+<div class=3D"HOEnZb"><div class=3D"h5">diff --git a/src/openvpn/tun.c b/sr=
+c/openvpn/tun.c<br>
+index 560b1a8..40ce202 100644<br>
+--- a/src/openvpn/tun.c<br>
++++ b/src/openvpn/tun.c<br>
+@@ -5663,6 +5663,9 @@ close_tun (struct tuntap *tt)<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0{<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0if (tt-&gt;options.msg_channel)<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0{<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 /* remove route pointing =
+to interface */<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 delete_route_connected_v6=
+_net(<wbr>tt, NULL);<br>
++<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0do_address_service (=
+false, AF_INET6, tt);<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 if (tt-&gt;options.dns6_le=
+n &gt; 0)<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 do_dns6_serv=
+ice (false, tt);<br>
+--<br>
+2.1.4<br>
+<br>
+</div></div></blockquote></div><br></div>
 
---EnT6sQnqsTJq4oDy
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJYZoMpAAoJEB2Cnv7KVigSCv0L+gJXJs/2T3XwKHDeGdHOUa6A
-n2end37/W69UazbsO/iCJkV7yXyrwekc2y/SMWsNW9H3dM1dX+NkKu/bdKBqsdgI
-OndJBBxQIfQbETR/bsCKKRP3q1z6fwKUVFYXO/oX9ePuTLoZXsj9fB1ys9VGapoJ
-ArK1CGVJKi0NfCvMyrw1JTZT3/Tb3eY3MgJO59D4TNOizjjqyC5aK4jVHBgG5oRQ
-/YpJAOb7gAABof+/7lmIwajnV3assCg8utyFs06mV6BrbmM4OxRi7Z9utJhdBBVD
-pPJUe7/AxRwE86GjbZ9QQ9lUHGwu6R7/bENWMhM+1XWXNbpPNR/WaDVgW4Id9M26
-nef/5AVc8SooK8JjnXyXKWIkQ2xco5kvzDKn0xoj69thVow9BNp5N7P9Pc/Ry7GT
-DIxoiQauImZEKRudsIYcpesyUaICEHdwdE+gBpUI2Kk70rTsFpNqs75CQU8wkjP9
-cj1/eWLj3EDUVUvM+ntGxcY/FWwe6PoEFWUxvUBS6A==
-=hHkk
------END PGP SIGNATURE-----
-
---EnT6sQnqsTJq4oDy--
+--001a1149b0a4ffc3ac0544e2470f--
 
