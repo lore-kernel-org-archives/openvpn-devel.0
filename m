@@ -1,15 +1,10 @@
-Date: Sun, 1 Jan 2017 14:35:10 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20170101133509.GC78624@...1296...>
-References: <1483152307-15687-1-git-send-email-selva.nair@...277...>
-	<6910ed3b-4620-ec1a-0079-4bcfdf565627@...277...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="CYbV4jyGkzCEppMb"
-Content-Disposition: inline
-In-Reply-To: <6910ed3b-4620-ec1a-0079-4bcfdf565627@...277...>
-Subject: Re: [Openvpn-devel] [PATCH] Always release dhcp address in
- close_tun()
+From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
+Date: Sun, 1 Jan 2017 18:23:08 +0300
+Message-ID: <CAFHpkQGebq4V=F-nnaOdHd0OSb7teBTzaLD2=2Tx4SaJuj4sHw@...278...>
+Content-Type: multipart/alternative; boundary=047d7bf10b4e2ebf3805450a0328
+Subject: [Openvpn-devel] what is the use case of "#ifndef
+	SIMULATE_DHCP_FAILED" ?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,19 +13,29 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: debbie10t <debbie10t@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---CYbV4jyGkzCEppMb
-Content-Type: text/plain; charset="us-ascii"
+--047d7bf10b4e2ebf3805450a0328
+Content-Type: text/plain; charset=UTF-8
+
+Hello,
+
+https://github.com/OpenVPN/openvpn/blob/master/src/openvpn/tun.c#L5930
+
+how this is supposed to be used ?
+
+Cheers,
+Ilya Shipitsin
+
+--047d7bf10b4e2ebf3805450a0328
+Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
+<div dir=3D"ltr">Hello,<br><div><br><a href=3D"https://github.com/OpenVPN/o=
+penvpn/blob/master/src/openvpn/tun.c#L5930">https://github.com/OpenVPN/open=
+vpn/blob/master/src/openvpn/tun.c#L5930</a><br><br></div><div>how this is s=
+upposed to be used ?<br><br></div><div>Cheers,<br></div><div>Ilya Shipitsin=
+<br></div><div><br><br></div></div>
 
-On Sun, Jan 01, 2017 at 01:22:37PM +0000, debbie10t wrote:
-> Should this be applied to 2.4.0 or 2.5_gitmaster ?
+--047d7bf10b4e2ebf3805450a0328--
 
-Generally speaking, everything goes to git master (unless specifically
-tagged as "this is for 2.3 / 2.4").
---CYbV4jyGkzCEppMb--
