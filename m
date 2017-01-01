@@ -1,11 +1,14 @@
-References: <1483152307-15687-1-git-send-email-selva.nair@...277...>
-From: debbie10t <debbie10t@...277...>
-Message-ID: <403b6c99-f62f-6d7e-f3b7-ec207505ca3d@...277...>
-Date: Sun, 1 Jan 2017 15:49:06 +0000
+Date: Sun, 1 Jan 2017 18:31:05 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20170101173105.GD78624@...1296...>
+References: <CAFHpkQGebq4V=F-nnaOdHd0OSb7teBTzaLD2=2Tx4SaJuj4sHw@...278...>
 MIME-Version: 1.0
-In-Reply-To: <1483152307-15687-1-git-send-email-selva.nair@...277...>
-Subject: Re: [Openvpn-devel] [PATCH] Always release dhcp address in
- close_tun()
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="8RzCspYsRAU9V6Ra"
+Content-Disposition: inline
+In-Reply-To: <CAFHpkQGebq4V=F-nnaOdHd0OSb7teBTzaLD2=2Tx4SaJuj4sHw@...278...>
+Subject: Re: [Openvpn-devel] what is the use case of "#ifndef
+ SIMULATE_DHCP_FAILED" ?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,82 +17,57 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+To: ???????? ?????????????? <chipitsine@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+
+--8RzCspYsRAU9V6Ra
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
 Hi,
 
-I applied this to 2.5 and used the build system to build windows 
-installer using windows-nsis/build-snapshot
+On Sun, Jan 01, 2017 at 06:23:08PM +0300, ???????? ?????????????? wrote:
+> https://github.com/OpenVPN/openvpn/blob/master/src/openvpn/tun.c#L5930
+>=20
+> how this is supposed to be used ?
 
-I tested the windows client against Linux 2.4
+This is test code: simulate what happens if the tap driver refuses
+our DeviceIoControl() calls.  To enable that code, go to the define
+further up
 
-The test was:
+/* #define SIMULATE_DHCP_FAILED */       /* simulate bad DHCP negotiation */
 
-Connect to first server, receive DHCP 10.*8*.0.6 (net30)
-Idle 10 mins / Transfer some data / disconnect
-
-Edit the config file to connect to a new server
-(This was an exact copy of first server on a new --port
-and with a new --server subnet / PKI identical)
-
-Connect to second server, receive DHCP 10.*9*.0.6 (net30)
-Idle 10 mins / Transfer some data / disconnect
-
-No problems encountered.
-
-Note: I *was* able to replicate the original bug using
-windows 10 / openvpn 2.4.0 and the same procedure as above.
-
-I am confident that this resolves the problem for Win10.
-ACK for W10
-
-Regards
+... and remove the comment characters.
 
 
+Not sure how useful this is, though :)
 
-On 31/12/16 02:45, selva.nair@...277... wrote:
-> From: Selva Nair <selva.nair@...277...>
->
-> Also make sure --dhcp-pre-release results in not just dhcp_release()
-> in open_tun() but a subsequent dhcp_renew() as well. Else dhcp transaction
-> gets aborted as this call to release() happens after the adapter status
-> is changed to connected.
->
-> Alternatively, the undocumented --dhcp-pre-release may be removed.
->
-> Fixes Trac #807 (but can't say the same for Trac #665 without knowing
-> how to reproduce it)
->
-> Signed-off-by: Selva Nair <selva.nair@...277...>
-> ---
->  src/openvpn/tun.c | 6 ++----
->  1 file changed, 2 insertions(+), 4 deletions(-)
->
-> diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-> index f812844..31fcd67 100644
-> --- a/src/openvpn/tun.c
-> +++ b/src/openvpn/tun.c
-> @@ -6056,6 +6056,7 @@ open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tun
->              if (tt->options.dhcp_pre_release)
->              {
->                  dhcp_release(tt);
-> +                dhcp_renew(tt);
->              }
->              if (tt->options.dhcp_renew)
->              {
-> @@ -6224,10 +6225,7 @@ close_tun(struct tuntap *tt)
->          }
->  #endif
->
-> -        if (tt->options.dhcp_release)
-> -        {
-> -            dhcp_release(tt);
-> -        }
-> +        dhcp_release(tt);
->
->          if (tt->hand != NULL)
->          {
->
+gert
+
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--8RzCspYsRAU9V6Ra
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJYaTzYAAoJEB2Cnv7KVigSQAkMAK7nC7DLkP0+sSnhS6qP+Qrf
+AZEt+c7mKgoKKO+CcNJnNAhK6Ry4lhRbqJPnAyYISvH2Cp1Z8XgcSIwa4Fvbiv0f
+JPJMx9ZYEVkQqxDXwtMNowxh8K7WM1wdnXXdbJ6+oa9BFJVWrzGESJb3u6kb6+37
+ddvc4OtbhLhN1f9Qcx/59stl/S+yueKlZnstH1PIDX9gSluekp7J32nsDS1SOyht
+tidkvJj6rfU13831XmfROFu0YJ/o+Bf63PT3CaBqihQZ3c0L7NTjJm6pWryLpDoN
+oQLRhEp5YKPN6G3Gpe5ZhFvxO9BV+qccJDNUIHwboUCSajNI8eqQ5qOJbaom/Rpc
+FR+D5y3BP+K6amUFeDXD1QU9v06ceSaaCzZb9Rr2uN04T8xYFn34qILfX3M2X1Mm
+ovZy5p6OaoMwVRZQFRtG6XcS61W/eYqVe32+9yx68BemJt8D13UXRxqJoyj05WvN
+YkDVlAaatpQCJOlssd4VfpG+4XfXUF2TFmQGhI/b6A==
+=owxN
+-----END PGP SIGNATURE-----
+
+--8RzCspYsRAU9V6Ra--
 
