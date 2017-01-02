@@ -1,11 +1,11 @@
-References: <f49ae3c3-70c8-3169-4776-a7b89b7e8799@...2101...>
-	<20170102145543.GM78624@...1296...>
-From: Gisle Vanem <gvanem@...2101...>
-Message-ID: <9d41f9dd-a587-5c1e-2e0d-ebb6c921f4ae@...2101...>
-Date: Mon, 2 Jan 2017 17:17:51 +0100
+References: <024d01d26459$2589a3d0$709ceb70$@gmail.com>
+	<c1fff25e-28c8-7d3a-42fb-611b489c643a@...2101...>
+From: Arne Schwabe <arne@...1227...>
+Message-ID: <5fc27efe-5843-bcb2-4087-3b66f95f229b@...1227...>
+Date: Mon, 2 Jan 2017 17:39:51 +0100
 MIME-Version: 1.0
-In-Reply-To: <20170102145543.GM78624@...1296...>
-Subject: Re: [Openvpn-devel] Crash in options.c
+In-Reply-To: <c1fff25e-28c8-7d3a-42fb-611b489c643a@...2101...>
+Subject: Re: [Openvpn-devel] Visual Studio support?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,37 +14,37 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+To: Gisle Vanem <gvanem@...2101...>, openvpn-devel@lists.sourceforge.net
 
-Gert Doering wrote:
-
->> uses a 'title_string[]' as format with no parameters specified and
->> thus crashes as expected. So is all code outside '!defined(ENABLE_CRYPTO)'
->> really dead code or what?
+Am 02.01.17 um 11:23 schrieb Gisle Vanem:
+> Fish Wang wrote:
 > 
-> Actually, "usage_message" is the format string here...  
+>> I'm finishing up a patch to make sure OpenVPN compiles under Visual Studio.
+>> I have several questions;
+> 
+> I'm also compiling using TDM-MinGW and MSVC-2015. But since approx 2 years,
+> the CL compiler breaks at compiling options.c:
+>   src/openvpn/options.c(7937): fatal error C1026: parser stack overflow, program too complex
+> 
+> Did you manage to work around that?
+> 
+> I'm using  the latest CL v.19.00.24215.1. I also reported this 2 years ago in:
+>   https://sourceforge.net/p/openvpn/mailman/message/34683175/
+> 
 
-Ah, my bad. Then it's a simple fix:
+I managed to work around that. By adding a done=true;variable and then
+splitting the if cascade by
 
---- a/options.c 2017-01-02 09:58:38
-+++ b/options.c 2017-01-02 17:15:10
-@@ -4080,6 +4080,7 @@
-     fprintf(fp, usage_message,
-             title_string,
-             o.ce.connect_retry_seconds,
-+            o.ce.connect_retry_seconds_max,
-             o.ce.local_port, o.ce.remote_port,
-             TUN_MTU_DEFAULT, TAP_MTU_EXTRA_DEFAULT,
-             o.verbosity);
+else {
+  done=false;
+}
 
-> There might still be bugs here, though - as in: someone adapted the 
-> "#ifdef ENABLE_CRYPTO" part of the usage_message and forgot to change
-> arguments in the the #else case.   While we do test builds with
-> --disable-crypto, I'm not sure anyone has run "openvpn --help" with
-> such a build in the last 5 years...
+if (!done)
 
--- 
---gv
+in approximately the middle. But without that hack I am not sure if you
+can get it to compile.
+
+Arne
 
