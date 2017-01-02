@@ -1,15 +1,8 @@
+From: Steffan Karger <steffan.karger@...1435...>
+Date: Mon, 2 Jan 2017 13:54:58 +0100
+Message-ID: <1483361698-9693-1-git-send-email-steffan.karger@...1435...>
 MIME-Version: 1.0
-In-Reply-To: <044c01d264f3$225e1f70$671a5e50$@gmail.com>
-References: <024d01d26459$2589a3d0$709ceb70$@gmail.com>
-	<20170101182035.GE78624@...1296...>
-	<028801d2645d$6c491270$44db3750$@gmail.com>
-	<82a76c5a-f03d-2b6c-a729-8417ca31dabc@...515...>
-	<044c01d264f3$225e1f70$671a5e50$@gmail.com>
-From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Date: Mon, 2 Jan 2017 15:47:31 +0300
-Message-ID: <CAFHpkQF-o5p63-XviFQrZ+B1mqyvweUTsASOZgt6GCDtJvSgBQ@...278...>
-Content-Type: multipart/alternative; boundary=047d7bf10b4e84cbe505451bf456
-Subject: Re: [Openvpn-devel] Visual Studio support?
+Subject: [Openvpn-devel] [PATCH] Remove deprecated --no-iv option
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,308 +11,441 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Fish Wang <fish.thss@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---047d7bf10b4e84cbe505451bf456
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+The --no-iv option was deprecated in OpenVPN 2.4 (commit 4969f0d6),
+and promised to be remove in 2.5.  This patch fulfills that promise.
 
-2017-01-02 15:24 GMT+03:00 Fish Wang <fish.thss@...277...>:
+Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+---
+ src/openvpn/crypto.c  | 68 +++++++++++++++++----------------------------------
+ src/openvpn/crypto.h  | 14 +++--------
+ src/openvpn/init.c    | 36 +++++++--------------------
+ src/openvpn/options.c | 24 +++---------------
+ src/openvpn/options.h |  1 -
+ src/openvpn/ssl.c     |  2 +-
+ 6 files changed, 40 insertions(+), 105 deletions(-)
 
-> Hi Samuli,
->
-> I have my own building scripts. I think they are based on an old version =
-of
-> openvpn-build/msvc. I definitely made quite a few changes to make them
-> work.
->
+diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
+index 7119abc..5d4426f 100644
+--- a/src/openvpn/crypto.c
++++ b/src/openvpn/crypto.c
+@@ -77,7 +77,6 @@ openvpn_encrypt_aead(struct buffer *buf, struct buffer work,
+     /* IV, packet-ID and implicit IV required for this mode. */
+     ASSERT(ctx->cipher);
+     ASSERT(cipher_kt_mode_aead(cipher_kt));
+-    ASSERT(opt->flags & CO_USE_IV);
+     ASSERT(packet_id_initialized(&opt->packet_id));
+ 
+     gc_init(&gc);
+@@ -190,10 +189,7 @@ openvpn_encrypt_v1(struct buffer *buf, struct buffer work,
+             if (cipher_kt_mode_cbc(cipher_kt))
+             {
+                 /* generate pseudo-random IV */
+-                if (opt->flags & CO_USE_IV)
+-                {
+-                    prng_bytes(iv_buf, iv_size);
+-                }
++                prng_bytes(iv_buf, iv_size);
+ 
+                 /* Put packet ID in plaintext buffer */
+                 if (packet_id_initialized(&opt->packet_id))
+@@ -208,8 +204,7 @@ openvpn_encrypt_v1(struct buffer *buf, struct buffer work,
+                 struct packet_id_net pin;
+                 struct buffer b;
+ 
+-                /* IV and packet-ID required for this mode. */
+-                ASSERT(opt->flags & CO_USE_IV);
++                /* packet-ID required for this mode. */
+                 ASSERT(packet_id_initialized(&opt->packet_id));
+ 
+                 packet_id_alloc_outgoing(&opt->packet_id.send, &pin, true);
+@@ -222,11 +217,8 @@ openvpn_encrypt_v1(struct buffer *buf, struct buffer work,
+             }
+ 
+             /* set the IV pseudo-randomly */
+-            if (opt->flags & CO_USE_IV)
+-            {
+-                ASSERT(buf_write(&work, iv_buf, iv_size));
+-                dmsg(D_PACKET_CONTENT, "ENCRYPT IV: %s", format_hex(iv_buf, iv_size, 0, &gc));
+-            }
++            ASSERT(buf_write(&work, iv_buf, iv_size));
++            dmsg(D_PACKET_CONTENT, "ENCRYPT IV: %s", format_hex(iv_buf, iv_size, 0, &gc));
+ 
+             dmsg(D_PACKET_CONTENT, "ENCRYPT FROM: %s",
+                  format_hex(BPTR(buf), BLEN(buf), 80, &gc));
+@@ -354,13 +346,13 @@ crypto_check_replay(struct crypto_options *opt,
+     return ret;
+ }
+ 
+-/*
+- * If (opt->flags & CO_USE_IV) is not NULL, we will read an IV from the packet.
++/**
++ * Unwrap (authenticate, decrypt and check replay protection) AEAD-mode data
++ * channel packets.
+  *
+  * Set buf->len to 0 and return false on decrypt error.
+  *
+- * On success, buf is set to point to plaintext, true
+- * is returned.
++ * On success, buf is set to point to plaintext, true is returned.
+  */
+ static bool
+ openvpn_decrypt_aead(struct buffer *buf, struct buffer work,
+@@ -394,7 +386,6 @@ openvpn_decrypt_aead(struct buffer *buf, struct buffer work,
+ 
+     /* IV and Packet ID required for this mode */
+     ASSERT(packet_id_initialized(&opt->packet_id));
+-    ASSERT(opt->flags & CO_USE_IV);
+ 
+     /* Combine IV from explicit part from packet and implicit part from context */
+     {
+@@ -503,12 +494,12 @@ error_exit:
+ }
+ 
+ /*
+- * If (opt->flags & CO_USE_IV) is not NULL, we will read an IV from the packet.
++ * Unwrap (authenticate, decrypt and check replay protection) CBC, OFB or CFB
++ * mode data channel packets.
+  *
+  * Set buf->len to 0 and return false on decrypt error.
+  *
+- * On success, buf is set to point to plaintext, true
+- * is returned.
++ * On success, buf is set to point to plaintext, true is returned.
+  */
+ static bool
+ openvpn_decrypt_v1(struct buffer *buf, struct buffer work,
+@@ -568,22 +559,14 @@ openvpn_decrypt_v1(struct buffer *buf, struct buffer work,
+             /* initialize work buffer with FRAME_HEADROOM bytes of prepend capacity */
+             ASSERT(buf_init(&work, FRAME_HEADROOM_ADJ(frame, FRAME_HEADROOM_MARKER_DECRYPT)));
+ 
+-            /* use IV if user requested it */
+-            if (opt->flags & CO_USE_IV)
+-            {
+-                if (buf->len < iv_size)
+-                {
+-                    CRYPT_ERROR("missing IV info");
+-                }
+-                memcpy(iv_buf, BPTR(buf), iv_size);
+-                ASSERT(buf_advance(buf, iv_size));
+-            }
+-
+-            /* show the IV's initial state */
+-            if (opt->flags & CO_USE_IV)
++            /* read the IV from the packet */
++            if (buf->len < iv_size)
+             {
+-                dmsg(D_PACKET_CONTENT, "DECRYPT IV: %s", format_hex(iv_buf, iv_size, 0, &gc));
++                CRYPT_ERROR("missing IV info");
+             }
++            memcpy(iv_buf, BPTR(buf), iv_size);
++            ASSERT(buf_advance(buf, iv_size));
++            dmsg(D_PACKET_CONTENT, "DECRYPT IV: %s", format_hex(iv_buf, iv_size, 0, &gc));
+ 
+             if (buf->len < 1)
+             {
+@@ -636,8 +619,7 @@ openvpn_decrypt_v1(struct buffer *buf, struct buffer work,
+                 {
+                     struct buffer b;
+ 
+-                    /* IV and packet-ID required for this mode. */
+-                    ASSERT(opt->flags & CO_USE_IV);
++                    /* packet-ID required for this mode. */
+                     ASSERT(packet_id_initialized(&opt->packet_id));
+ 
+                     buf_set_read(&b, iv_buf, iv_size);
+@@ -713,7 +695,6 @@ openvpn_decrypt(struct buffer *buf, struct buffer work,
+ void
+ crypto_adjust_frame_parameters(struct frame *frame,
+                                const struct key_type *kt,
+-                               bool use_iv,
+                                bool packet_id,
+                                bool packet_id_long_form)
+ {
+@@ -726,10 +707,7 @@ crypto_adjust_frame_parameters(struct frame *frame,
+ 
+     if (kt->cipher)
+     {
+-        if (use_iv)
+-        {
+-            crypto_overhead += cipher_kt_iv_size(kt->cipher);
+-        }
++        crypto_overhead += cipher_kt_iv_size(kt->cipher);
+ 
+         if (cipher_kt_mode_aead(kt->cipher))
+         {
+@@ -995,15 +973,13 @@ fixup_key(struct key *key, const struct key_type *kt)
+ }
+ 
+ void
+-check_replay_iv_consistency(const struct key_type *kt, bool packet_id, bool use_iv)
++check_replay_consistency(const struct key_type *kt, bool packet_id)
+ {
+     ASSERT(kt);
+ 
+-    if (!(packet_id && use_iv) && (cipher_kt_mode_ofb_cfb(kt->cipher)
+-                                   || cipher_kt_mode_aead(kt->cipher)))
++    if (cipher_kt_mode_ofb_cfb(kt->cipher) || cipher_kt_mode_aead(kt->cipher))
+     {
+-        msg(M_FATAL, "--no-replay or --no-iv cannot be used with a CFB, OFB or "
+-            "AEAD mode cipher");
++        msg(M_FATAL, "--no-replay cannot be used with a CFB, OFB or AEAD mode cipher");
+     }
+ }
+ 
+diff --git a/src/openvpn/crypto.h b/src/openvpn/crypto.h
+index 61e9b59..3d96d08 100644
+--- a/src/openvpn/crypto.h
++++ b/src/openvpn/crypto.h
+@@ -39,8 +39,7 @@
+  *  - \b HMAC, covering the ciphertext IV + ciphertext. The HMAC size depends
+  *    on the \c \-\-auth option. If \c \-\-auth \c none is specified, there is no
+  *    HMAC at all.
+- *  - \b Ciphertext \b IV, if not disabled by \c \-\-no-iv. The IV size depends on
+- *    the \c \-\-cipher option.
++ *  - \b Ciphertext \b IV. The IV size depends on the \c \-\-cipher option.
+  *  - \b Packet \b ID, a 32-bit incrementing packet counter that provides replay
+  *    protection (if not disabled by \c \-\-no-replay).
+  *  - \b Timestamp, a 32-bit timestamp of the current time.
+@@ -249,17 +248,13 @@ struct crypto_options
+ #define CO_PACKET_ID_LONG_FORM  (1<<0)
+     /**< Bit-flag indicating whether to use
+     *   OpenVPN's long packet ID format. */
+-#define CO_USE_IV               (1<<1)
+-    /**< Bit-flag indicating whether to
+-     *   generate a pseudo-random IV for each
+-     *   packet being encrypted. */
+-#define CO_IGNORE_PACKET_ID     (1<<2)
++#define CO_IGNORE_PACKET_ID     (1<<1)
+     /**< Bit-flag indicating whether to ignore
+      *   the packet ID of a received packet.
+      *   This flag is used during processing
+      *   of the first packet received from a
+      *   client. */
+-#define CO_MUTE_REPLAY_WARNINGS (1<<3)
++#define CO_MUTE_REPLAY_WARNINGS (1<<2)
+     /**< Bit-flag indicating not to display
+      *   replay warnings. */
+     unsigned int flags;         /**< Bit-flags determining behavior of
+@@ -288,7 +283,7 @@ int read_passphrase_hash(const char *passphrase_file,
+ 
+ void generate_key_random(struct key *key, const struct key_type *kt);
+ 
+-void check_replay_iv_consistency(const struct key_type *kt, bool packet_id, bool use_iv);
++void check_replay_consistency(const struct key_type *kt, bool packet_id);
+ 
+ bool check_key(struct key *key, const struct key_type *kt);
+ 
+@@ -418,7 +413,6 @@ bool crypto_check_replay(struct crypto_options *opt,
+ /** Calculate crypto overhead and adjust frame to account for that */
+ void crypto_adjust_frame_parameters(struct frame *frame,
+                                     const struct key_type *kt,
+-                                    bool use_iv,
+                                     bool packet_id,
+                                     bool packet_id_long_form);
+ 
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 9a3e29d..b2547f4 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -2351,11 +2351,6 @@ do_init_crypto_static(struct context *c, const unsigned int flags)
+     init_crypto_pre(c, flags);
+ 
+     /* Initialize flags */
+-    if (c->options.use_iv)
+-    {
+-        c->c2.crypto_options.flags |= CO_USE_IV;
+-    }
+-
+     if (c->options.mute_replay_warnings)
+     {
+         c->c2.crypto_options.flags |= CO_MUTE_REPLAY_WARNINGS;
+@@ -2396,13 +2391,11 @@ do_init_crypto_static(struct context *c, const unsigned int flags)
+     c->c2.crypto_options.key_ctx_bi = c->c1.ks.static_key;
+ 
+     /* Compute MTU parameters */
+-    crypto_adjust_frame_parameters(&c->c2.frame,
+-                                   &c->c1.ks.key_type,
+-                                   options->use_iv, options->replay, true);
++    crypto_adjust_frame_parameters(&c->c2.frame, &c->c1.ks.key_type,
++                                   options->replay, true);
+ 
+-    /* Sanity check on IV, sequence number, and cipher mode options */
+-    check_replay_iv_consistency(&c->c1.ks.key_type, options->replay,
+-                                options->use_iv);
++    /* Sanity check on sequence number, and cipher mode options */
++    check_replay_consistency(&c->c1.ks.key_type, options->replay);
+ }
+ 
+ /*
+@@ -2529,9 +2522,8 @@ do_init_crypto_tls(struct context *c, const unsigned int flags)
+         return;
+     }
+ 
+-    /* Sanity check on IV, sequence number, and cipher mode options */
+-    check_replay_iv_consistency(&c->c1.ks.key_type, options->replay,
+-                                options->use_iv);
++    /* Sanity check on sequence number, and cipher mode options */
++    check_replay_consistency(&c->c1.ks.key_type, options->replay);
+ 
+     /* In short form, unique datagram identifier is 32 bits, in long form 64 bits */
+     packet_id_long_form = cipher_kt_mode_ofb_cfb(c->c1.ks.key_type.cipher);
+@@ -2545,18 +2537,13 @@ do_init_crypto_tls(struct context *c, const unsigned int flags)
+     else
+     {
+         crypto_adjust_frame_parameters(&c->c2.frame, &c->c1.ks.key_type,
+-                                       options->use_iv, options->replay, packet_id_long_form);
++                                       options->replay, packet_id_long_form);
+     }
+     tls_adjust_frame_parameters(&c->c2.frame);
+ 
+     /* Set all command-line TLS-related options */
+     CLEAR(to);
+ 
+-    if (options->use_iv)
+-    {
+-        to.crypto_flags |= CO_USE_IV;
+-    }
+-
+     if (options->mute_replay_warnings)
+     {
+         to.crypto_flags |= CO_MUTE_REPLAY_WARNINGS;
+@@ -2692,9 +2679,8 @@ do_init_crypto_tls(struct context *c, const unsigned int flags)
+         to.tls_wrap.opt.key_ctx_bi = c->c1.ks.tls_wrap_key;
+         to.tls_wrap.opt.pid_persist = &c->c1.pid_persist;
+         to.tls_wrap.opt.flags |= CO_PACKET_ID_LONG_FORM;
+-        crypto_adjust_frame_parameters(&to.frame,
+-                                       &c->c1.ks.tls_auth_key_type,
+-                                       false, true, true);
++        crypto_adjust_frame_parameters(&to.frame, &c->c1.ks.tls_auth_key_type,
++                                       true, true);
+     }
+ 
+     /* TLS handshake encryption (--tls-crypt) */
+@@ -2980,10 +2966,6 @@ do_option_warnings(struct context *c)
+     {
+         msg(M_WARN, "WARNING: You have disabled Replay Protection (--no-replay) which may make " PACKAGE_NAME " less secure");
+     }
+-    if (!o->use_iv)
+-    {
+-        msg(M_WARN, "WARNING: You have disabled Crypto IVs (--no-iv) which may make " PACKAGE_NAME " less secure");
+-    }
+ 
+     if (o->tls_server)
+     {
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index bfedb6a..1ebf866 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -551,7 +551,6 @@ static const char usage_message[] =
+     "--replay-window n [t]  : Use a replay protection sliding window of size n\n"
+     "                         and a time window of t seconds.\n"
+     "                         Default n=%d t=%d\n"
+-    "--no-iv         : Disable cipher IV -- only allowed with CBC mode ciphers.\n"
+     "--replay-persist file : Persist replay-protection state across sessions\n"
+     "                  using file.\n"
+     "--test-crypto   : Run a self-test of crypto features enabled.\n"
+@@ -863,7 +862,6 @@ init_options(struct options *o, const bool init_gc)
+     o->replay = true;
+     o->replay_window = DEFAULT_SEQ_BACKTRACK;
+     o->replay_time = DEFAULT_TIME_BACKTRACK;
+-    o->use_iv = true;
+     o->key_direction = KEY_DIRECTION_BIDIRECTIONAL;
+ #ifdef ENABLE_PREDICTION_RESISTANCE
+     o->use_prediction_resistance = false;
+@@ -1715,7 +1713,6 @@ show_settings(const struct options *o)
+     SHOW_INT(replay_window);
+     SHOW_INT(replay_time);
+     SHOW_STR(packet_id_file);
+-    SHOW_BOOL(use_iv);
+     SHOW_BOOL(test_crypto);
+ #ifdef ENABLE_PREDICTION_RESISTANCE
+     SHOW_BOOL(use_prediction_resistance);
+@@ -2476,14 +2473,6 @@ options_postprocess_verify_ce(const struct options *options, const struct connec
+     {
+         msg(M_USAGE, "NCP cipher list contains unsupported ciphers.");
+     }
+-    if (options->ncp_enabled && !options->use_iv)
+-    {
+-        msg(M_USAGE, "--no-iv not allowed when NCP is enabled.");
+-    }
+-    if (!options->use_iv)
+-    {
+-        msg(M_WARN, "WARNING: --no-iv is deprecated and will be removed in 2.5");
+-    }
+ 
+     /*
+      * Check consistency of replay options
+@@ -3447,8 +3436,8 @@ calc_options_string_link_mtu(const struct options *o, const struct frame *frame)
+         init_key_type(&fake_kt, o->ciphername, o->authname, o->keysize, true,
+                       false);
+         frame_add_to_extra_frame(&fake_frame, -(crypto_max_overhead()));
+-        crypto_adjust_frame_parameters(&fake_frame, &fake_kt, o->use_iv,
+-                                       o->replay, cipher_kt_mode_ofb_cfb(fake_kt.cipher));
++        crypto_adjust_frame_parameters(&fake_frame, &fake_kt, o->replay,
++                                       cipher_kt_mode_ofb_cfb(fake_kt.cipher));
+         frame_finalize(&fake_frame, o->ce.link_mtu_defined, o->ce.link_mtu,
+                        o->ce.tun_mtu_defined, o->ce.tun_mtu);
+         msg(D_MTU_DEBUG, "%s: link-mtu %u -> %d", __func__, (unsigned int) link_mtu,
+@@ -3493,7 +3482,6 @@ calc_options_string_link_mtu(const struct options *o, const struct frame *frame)
+  * --keysize
+  * --secret
+  * --no-replay
+- * --no-iv
+  *
+  * SSL Options:
+  *
+@@ -3627,10 +3615,6 @@ options_string(const struct options *o,
+         {
+             buf_printf(&out, ",no-replay");
+         }
+-        if (!o->use_iv)
+-        {
+-            buf_printf(&out, ",no-iv");
+-        }
+ 
+ #ifdef ENABLE_PREDICTION_RESISTANCE
+         if (o->use_prediction_resistance)
+@@ -7559,8 +7543,8 @@ add_option(struct options *options,
+     }
+     else if (streq(p[0], "no-iv") && !p[1])
+     {
+-        VERIFY_PERMISSION(OPT_P_GENERAL);
+-        options->use_iv = false;
++        msg(msglevel,
++            "--no-iv is no longer supported. Remove it from client and server configs.");
+     }
+     else if (streq(p[0], "replay-persist") && p[1] && !p[2])
+     {
+diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+index b3ab029..dc63aed 100644
+--- a/src/openvpn/options.h
++++ b/src/openvpn/options.h
+@@ -483,7 +483,6 @@ struct options
+     int replay_window;
+     int replay_time;
+     const char *packet_id_file;
+-    bool use_iv;
+     bool test_crypto;
+ #ifdef ENABLE_PREDICTION_RESISTANCE
+     bool use_prediction_resistance;
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index cff4052..de66325 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -1967,7 +1967,7 @@ tls_session_update_crypto_params(struct tls_session *session,
+     /* Update frame parameters: undo worst-case overhead, add actual overhead */
+     frame_add_to_extra_frame(frame, -(crypto_max_overhead()));
+     crypto_adjust_frame_parameters(frame, &session->opt->key_type,
+-                                   options->use_iv, options->replay, packet_id_long_form);
++                                   options->replay, packet_id_long_form);
+     frame_finalize(frame, options->ce.link_mtu_defined, options->ce.link_mtu,
+                    options->ce.tun_mtu_defined, options->ce.tun_mtu);
+     frame_init_mssfix(frame, options);
+-- 
+2.7.4
 
-can you try them at https://ci.appveyor.com ?
-if we will not run those scripts on every build, it will become broken soon
-
-
->
-> Best,
-> Fish
->
-> -----Original Message-----
-> From: Samuli Sepp=C3=A4nen [mailto:samuli@...515...]
-> Sent: Monday, January 2, 2017 2:54 AM
-> To: Fish Wang <fish.thss@...277...>; 'Gert Doering' <gert@...1296...>
-> Cc: openvpn-devel@lists.sourceforge.net
-> Subject: Re: [Openvpn-devel] Visual Studio support?
->
-> Hi,
->
-> Il 01/01/2017 20:32, Fish Wang ha scritto:
-> > Thanks for your (and Steffan's) reply.
-> >
-> > I also noticed that 2.4 and 2.5 only supports Vista+, so it might make
-> > sense to remove dynamic function loading for WPF in openvpnserv (see
-> > all those LoadLibrary and GetProcAddress code in [1]). But somehow I
-> > have an impression that openvpnserv is no longer supported and
-> > openvpnserv2 should be used instead, so such a patch is not useful. What
-> do you think?
-> >
-> > Best,
-> > Fish
->
-> How do you build OpenVPN using Visual Studio? I'm asking because we have
-> the
-> "left-to-rot" MSVC build scripts here:
->
-> <https://github.com/OpenVPN/openvpn-build/tree/master/msvc>
->
-> Do you use the above scripts, or just import the code to Visual Studio and
-> set some settings there to make it all work?
->
-> --
-> Samuli Sepp=C3=A4nen
-> Community Manager
-> OpenVPN Technologies, Inc
->
-> irc freenode net: mattock
->
->
-> >
-> > [1]
-> > https://github.com/OpenVPN/openvpn/blob/master/src/openvpnserv/interac
-> > tive.c
-> >
-> > -----Original Message-----
-> > From: Gert Doering [mailto:gert@...1296...]
-> > Sent: Sunday, January 1, 2017 10:21 AM
-> > To: Fish Wang <fish.thss@...277...>
-> > Cc: openvpn-devel@lists.sourceforge.net
-> > Subject: Re: [Openvpn-devel] Visual Studio support?
-> >
-> > Hi,
-> >
-> > On Sun, Jan 01, 2017 at 10:01:57AM -0800, Fish Wang wrote:
-> >> I'm finishing up a patch to make sure OpenVPN compiles under Visual
-> > Studio.
-> >> I have several questions;
-> >>
-> >> - Do you want to apply such a patch to master and/or release/2.4, or
-> >> should I maintain it separately?
-> >
-> > Unless it's highly intrusive, it makes sense to merge it.
-> >
-> > Since we're not compiling with VS, we sometimes break stuff, but this
-> > is not intentional :-)
-> >
-> >> - What is the minimum version of Visual Studio do we want to support?
-> >
-> > I have no idea.  Something recent, which can do C99, as that's the
-> > coding standard we've change to for 2.4 and master-after-2.4
-> >
-> >> - Should such a patch be developed against maste, release/2.4 branch,
-> >> or both?
-> >
-> > Master (as always).
-> >
-> > gert
-> >
-> > --
-> > USENET is *not* the non-clickable part of WWW!
-> >
-> > //www.muc.de/~gert/ <http://www.muc.de/%7Egert/>
-> > Gert Doering - Munich, Germany
-> > gert@...1296...
-> > fax: +49-89-35655025
-> > gert@...1297...
-> >
-> >
-> > ----------------------------------------------------------------------
-> > -------- Check out the vibrant tech community on one of the world's
-> > most engaging tech sites, SlashDot.org! http://sdm.link/slashdot
-> > _______________________________________________
-> > Openvpn-devel mailing list
-> > Openvpn-devel@lists.sourceforge.net
-> > https://lists.sourceforge.net/lists/listinfo/openvpn-devel
-> >
->
->
->
->
-> ------------------------------------------------------------
-> ------------------
-> Check out the vibrant tech community on one of the world's most
-> engaging tech sites, SlashDot.org! http://sdm.link/slashdot
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->
-
---047d7bf10b4e84cbe505451bf456
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><br><div class=3D"gmail_extra"><br><div class=3D"gmail_quo=
-te">2017-01-02 15:24 GMT+03:00 Fish Wang <span dir=3D"ltr">&lt;<a target=3D=
-"_blank" href=3D"mailto:fish.thss@...277...">fish.thss@...277...</a>&gt;</s=
-pan>:<br><blockquote style=3D"margin:0px 0px 0px 0.8ex;border-left:1px soli=
-d rgb(204,204,204);padding-left:1ex" class=3D"gmail_quote">Hi Samuli,<br>
-<br>
-I have my own building scripts. I think they are based on an old version of=
-<br>
-openvpn-build/msvc. I definitely made quite a few changes to make them work=
-.<br></blockquote><div><br></div><div>can you try them at <a href=3D"https:=
-//ci.appveyor.com">https://ci.appveyor.com</a> ?<br></div><div>if we will n=
-ot run those scripts on every build, it will become broken soon<br></div><d=
-iv>=C2=A0</div><blockquote style=3D"margin:0px 0px 0px 0.8ex;border-left:1p=
-x solid rgb(204,204,204);padding-left:1ex" class=3D"gmail_quote">
-<br>
-Best,<br>
-Fish<br>
-<span class=3D"gmail-"><br>
------Original Message-----<br>
-From: Samuli Sepp=C3=A4nen [mailto:<a href=3D"mailto:samuli@...515...">samu=
-li@...515...</a>]<br>
-Sent: Monday, January 2, 2017 2:54 AM<br>
-To: Fish Wang &lt;<a href=3D"mailto:fish.thss@...277...">fish.thss@...1663...=
-.</a>&gt;; &#39;Gert Doering&#39; &lt;<a href=3D"mailto:gert@...1296...">ge=
-rt@...1296...</a>&gt;<br>
-Cc: <a href=3D"mailto:openvpn-devel@lists.sourceforge.net">openvpn-devel@...1186...=
-.1199...<wbr>sourceforge.net</a><br>
-Subject: Re: [Openvpn-devel] Visual Studio support?<br>
-<br>
-Hi,<br>
-<br>
-</span><div><div class=3D"gmail-h5">Il 01/01/2017 20:32, Fish Wang ha scrit=
-to:<br>
-&gt; Thanks for your (and Steffan&#39;s) reply.<br>
-&gt;<br>
-&gt; I also noticed that 2.4 and 2.5 only supports Vista+, so it might make=
-<br>
-&gt; sense to remove dynamic function loading for WPF in openvpnserv (see<b=
-r>
-&gt; all those LoadLibrary and GetProcAddress code in [1]). But somehow I<b=
-r>
-&gt; have an impression that openvpnserv is no longer supported and<br>
-&gt; openvpnserv2 should be used instead, so such a patch is not useful. Wh=
-at<br>
-do you think?<br>
-&gt;<br>
-&gt; Best,<br>
-&gt; Fish<br>
-<br>
-How do you build OpenVPN using Visual Studio? I&#39;m asking because we hav=
-e the<br>
-&quot;left-to-rot&quot; MSVC build scripts here:<br>
-<br>
-&lt;<a target=3D"_blank" rel=3D"noreferrer" href=3D"https://github.com/Open=
-VPN/openvpn-build/tree/master/msvc">https://github.com/OpenVPN/<wbr>openvpn=
--build/tree/master/msvc</a><wbr>&gt;<br>
-<br>
-Do you use the above scripts, or just import the code to Visual Studio and<=
-br>
-set some settings there to make it all work?<br>
-<br>
---<br>
-Samuli Sepp=C3=A4nen<br>
-Community Manager<br>
-OpenVPN Technologies, Inc<br>
-<br>
-irc freenode net: mattock<br>
-<br>
-<br>
-&gt;<br>
-&gt; [1]<br>
-&gt; <a target=3D"_blank" rel=3D"noreferrer" href=3D"https://github.com/Ope=
-nVPN/openvpn/blob/master/src/openvpnserv/interac">https://github.com/OpenVP=
-N/<wbr>openvpn/blob/master/src/<wbr>openvpnserv/interac</a><br>
-&gt; tive.c<br>
-&gt;<br>
-&gt; -----Original Message-----<br>
-&gt; From: Gert Doering [mailto:<a href=3D"mailto:gert@...1296...">gert@...493...=
-1296...</a>]<br>
-&gt; Sent: Sunday, January 1, 2017 10:21 AM<br>
-&gt; To: Fish Wang &lt;<a href=3D"mailto:fish.thss@...277...">fish.thss@...493...=
-277...</a>&gt;<br>
-&gt; Cc: <a href=3D"mailto:openvpn-devel@lists.sourceforge.net">openvpn-dev=
-el@...1199...<wbr>sourceforge.net</a><br>
-&gt; Subject: Re: [Openvpn-devel] Visual Studio support?<br>
-&gt;<br>
-&gt; Hi,<br>
-&gt;<br>
-&gt; On Sun, Jan 01, 2017 at 10:01:57AM -0800, Fish Wang wrote:<br>
-&gt;&gt; I&#39;m finishing up a patch to make sure OpenVPN compiles under V=
-isual<br>
-&gt; Studio.<br>
-&gt;&gt; I have several questions;<br>
-&gt;&gt;<br>
-&gt;&gt; - Do you want to apply such a patch to master and/or release/2.4, =
-or<br>
-&gt;&gt; should I maintain it separately?<br>
-&gt;<br>
-&gt; Unless it&#39;s highly intrusive, it makes sense to merge it.<br>
-&gt;<br>
-&gt; Since we&#39;re not compiling with VS, we sometimes break stuff, but t=
-his<br>
-&gt; is not intentional :-)<br>
-&gt;<br>
-&gt;&gt; - What is the minimum version of Visual Studio do we want to suppo=
-rt?<br>
-&gt;<br>
-&gt; I have no idea.=C2=A0 Something recent, which can do C99, as that&#39;=
-s the<br>
-&gt; coding standard we&#39;ve change to for 2.4 and master-after-2.4<br>
-&gt;<br>
-&gt;&gt; - Should such a patch be developed against maste, release/2.4 bran=
-ch,<br>
-&gt;&gt; or both?<br>
-&gt;<br>
-&gt; Master (as always).<br>
-&gt;<br>
-&gt; gert<br>
-&gt;<br>
-&gt; --<br>
-&gt; USENET is *not* the non-clickable part of WWW!<br>
-&gt;<br>
-&gt; //<a target=3D"_blank" rel=3D"noreferrer" href=3D"http://www.muc.de/%7=
-Egert/">www.muc.de/~gert/</a><br>
-&gt; Gert Doering - Munich, Germany<br>
-&gt; <a href=3D"mailto:gert@...1296...">gert@...1296...</a><br>
-&gt; fax: +49-89-35655025<br>
-&gt; <a href=3D"mailto:gert@...1297...">gert@...1816...<wbr>muenchen.de</a>=
-<br>
-&gt;<br>
-&gt;<br>
-&gt; ------------------------------<wbr>------------------------------<wbr>=
-----------<br>
-</div></div>&gt; -------- Check out the vibrant tech community on one of th=
-e world&#39;s<br>
-<div class=3D"gmail-HOEnZb"><div class=3D"gmail-h5">&gt; most engaging tech=
- sites, SlashDot.org! <a target=3D"_blank" rel=3D"noreferrer" href=3D"http:=
-//sdm.link/slashdot">http://sdm.link/slashdot</a><br>
-&gt; ______________________________<wbr>_________________<br>
-&gt; Openvpn-devel mailing list<br>
-&gt; <a href=3D"mailto:Openvpn-devel@lists.sourceforge.net">Openvpn-devel@...220...=
-..1199...<wbr>sourceforge.net</a><br>
-&gt; <a target=3D"_blank" rel=3D"noreferrer" href=3D"https://lists.sourcefo=
-rge.net/lists/listinfo/openvpn-devel">https://lists.sourceforge.net/<wbr>li=
-sts/listinfo/openvpn-devel</a><br>
-&gt;<br>
-<br>
-<br>
-<br>
-<br>
-------------------------------<wbr>------------------------------<wbr>-----=
--------------<br>
-Check out the vibrant tech community on one of the world&#39;s most<br>
-engaging tech sites, SlashDot.org! <a target=3D"_blank" rel=3D"noreferrer" =
-href=3D"http://sdm.link/slashdot">http://sdm.link/slashdot</a><br>
-______________________________<wbr>_________________<br>
-Openvpn-devel mailing list<br>
-<a href=3D"mailto:Openvpn-devel@lists.sourceforge.net">Openvpn-devel@...2155...=
-9...<wbr>sourceforge.net</a><br>
-<a target=3D"_blank" rel=3D"noreferrer" href=3D"https://lists.sourceforge.n=
-et/lists/listinfo/openvpn-devel">https://lists.sourceforge.net/<wbr>lists/l=
-istinfo/openvpn-devel</a><br>
-</div></div></blockquote></div><br></div></div>
-
---047d7bf10b4e84cbe505451bf456--
 
