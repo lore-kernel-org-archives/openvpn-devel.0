@@ -1,8 +1,10 @@
 From: Steffan Karger <steffan.karger@...1435...>
-Date: Mon, 2 Jan 2017 13:54:58 +0100
-Message-ID: <1483361698-9693-1-git-send-email-steffan.karger@...1435...>
+Date: Mon, 2 Jan 2017 14:09:44 +0100
+Message-ID: <1483362584-28452-1-git-send-email-steffan.karger@...1435...>
+In-Reply-To: <1483361698-9693-1-git-send-email-steffan.karger@...1435...>
+References: <1483361698-9693-1-git-send-email-steffan.karger@...1435...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Remove deprecated --no-iv option
+Subject: [Openvpn-devel] [PATCH v2] Remove deprecated --no-iv option
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,16 +22,18 @@ and promised to be remove in 2.5.  This patch fulfills that promise.
 
 Signed-off-by: Steffan Karger <steffan.karger@...1435...>
 ---
- src/openvpn/crypto.c  | 68 +++++++++++++++++----------------------------------
+v2: fix error in --no-replay check (broke AEAD modes)
+
+ src/openvpn/crypto.c  | 69 +++++++++++++++++----------------------------------
  src/openvpn/crypto.h  | 14 +++--------
  src/openvpn/init.c    | 36 +++++++--------------------
  src/openvpn/options.c | 24 +++---------------
  src/openvpn/options.h |  1 -
  src/openvpn/ssl.c     |  2 +-
- 6 files changed, 40 insertions(+), 105 deletions(-)
+ 6 files changed, 41 insertions(+), 105 deletions(-)
 
 diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
-index 7119abc..5d4426f 100644
+index 7119abc..87002f5 100644
 --- a/src/openvpn/crypto.c
 +++ b/src/openvpn/crypto.c
 @@ -77,7 +77,6 @@ openvpn_encrypt_aead(struct buffer *buf, struct buffer work,
@@ -177,7 +181,7 @@ index 7119abc..5d4426f 100644
  
          if (cipher_kt_mode_aead(kt->cipher))
          {
-@@ -995,15 +973,13 @@ fixup_key(struct key *key, const struct key_type *kt)
+@@ -995,15 +973,14 @@ fixup_key(struct key *key, const struct key_type *kt)
  }
  
  void
@@ -188,7 +192,8 @@ index 7119abc..5d4426f 100644
  
 -    if (!(packet_id && use_iv) && (cipher_kt_mode_ofb_cfb(kt->cipher)
 -                                   || cipher_kt_mode_aead(kt->cipher)))
-+    if (cipher_kt_mode_ofb_cfb(kt->cipher) || cipher_kt_mode_aead(kt->cipher))
++    if (!packet_id && (cipher_kt_mode_ofb_cfb(kt->cipher)
++                       || cipher_kt_mode_aead(kt->cipher)))
      {
 -        msg(M_FATAL, "--no-replay or --no-iv cannot be used with a CFB, OFB or "
 -            "AEAD mode cipher");
