@@ -1,11 +1,12 @@
+Date: Tue, 3 Jan 2017 18:17:47 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20170103171747.GR78624@...1296...>
 References: <1483152307-15687-1-git-send-email-selva.nair@...277...>
-	<403b6c99-f62f-6d7e-f3b7-ec207505ca3d@...277...>
-	<CAKuzo_iQPcDbZVbfMgnouj5XGLfVp=RniKeg==_N1UV0aWQU9A@...278...>
-From: debbie10t <debbie10t@...277...>
-Message-ID: <f9f6b819-4437-9fa4-ebb9-0457840c6202@...277...>
-Date: Tue, 3 Jan 2017 15:23:44 +0000
 MIME-Version: 1.0
-In-Reply-To: <CAKuzo_iQPcDbZVbfMgnouj5XGLfVp=RniKeg==_N1UV0aWQU9A@...278...>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="EbMW37mHYzw0qvy8"
+Content-Disposition: inline
+In-Reply-To: <1483152307-15687-1-git-send-email-selva.nair@...277...>
 Subject: Re: [Openvpn-devel] [PATCH] Always release dhcp address in
  close_tun()
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -16,87 +17,67 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Selva Nair <selva.nair@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: selva.nair@...277...
+Cc: openvpn-devel@lists.sourceforge.net
 
+--EbMW37mHYzw0qvy8
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
+Hi,
 
-On 01/01/17 18:15, Selva Nair wrote:
-> Hi,
->
-> On Sun, Jan 1, 2017 at 10:49 AM, debbie10t <debbie10t@...277...> wrote:
->
->> Hi,
->>
->> I applied this to 2.5 and used the build system to build windows
->> installer using windows-nsis/build-snapshot
->>
->> I tested the windows client against Linux 2.4
->>
->> The test was:
->>
->> Connect to first server, receive DHCP 10.*8*.0.6 (net30)
->> Idle 10 mins / Transfer some data / disconnect
->>
->> Edit the config file to connect to a new server
->> (This was an exact copy of first server on a new --port
->> and with a new --server subnet / PKI identical)
->>
->> Connect to second server, receive DHCP 10.*9*.0.6 (net30)
->> Idle 10 mins / Transfer some data / disconnect
->>
->> No problems encountered.
->>
->
->> Note: I *was* able to replicate the original bug using
->> windows 10 / openvpn 2.4.0 and the same procedure as above.
->>
->>
->
-> I am curious about this as I could not reproduce "the bug" with only one
-> adapter except in a special case (see below)  -- the issue I described in
-> Trac #807 was related to assigning a VPN ip to one adapter, disconnect and
-> then try to assign the same to another adapter.
+On Fri, Dec 30, 2016 at 09:45:07PM -0500, selva.nair@...277... wrote:
+> From: Selva Nair <selva.nair@...277...>
+>=20
+> Also make sure --dhcp-pre-release results in not just dhcp_release()
+> in open_tun() but a subsequent dhcp_renew() as well. Else dhcp transaction
+> gets aborted as this call to release() happens after the adapter status
+> is changed to connected.
+>=20
+> Alternatively, the undocumented --dhcp-pre-release may be removed.
+>=20
+> Fixes Trac #807 (but can't say the same for Trac #665 without knowing
+> how to reproduce it)
 
-You are correct.
+After thinking about this for a while, I agree we should do this, so
+ACK (even if Debbie10t already has ACKed it).
 
-What I have in my tests is as follows:
+I'd ask for a few changes, though :-) - if I'm reading this correctly,
+tt->options.dhcp_release is now unused, so I think we should do it
+all the way - get rid of that flag variable, print a message=20
+("obsolete option detected, already on" or so) if --dhcp-release
+is configured, and update the man page ("this option is a no-op now,
+as the functionality is enabled by default starting in 2.4.1").
 
-Server Linux - Openvpn 2.4.0
-Client Win10 - Openvpn 2.4.0
+I'll take care of Changes.rst as these will differ 2.4 <-> master and=20
+make cherrypicking a patch more annoying than necessary.
 
-Server & client configs are essentially the default config files.
+gert
 
-(Both clients are on the same W10 machine)
-client-1.conf
-tap #1
-client ip 10.8.0.6/30
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-client-2.conf
-tap #2
-client ip 10.9.0.6/30
+--EbMW37mHYzw0qvy8
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Connect both clients and get IP assigned to tap, ping tests OK.
-Disconnect both clients, do *not* use --dhcp-release/renew
+-----BEGIN PGP SIGNATURE-----
 
-Change client-1.conf to connect to the port of server-2
-Connect to server-2, receive+assign DHCP 10.9.0.6 to TAP #1
-This is where something goes wrong ..
+iQGcBAEBAgAGBQJYa9y7AAoJEB2Cnv7KVigSOdAL/2VT5vjpSZqi6+XrlRcJqkIJ
+AC1hfXKpWjv1mm6ufZBeCQxEkGjjS4Hiwq4L77X/LpBzAzPne6B7Cj0l9Laizu4B
+DZYga9dQWUPImSwpkCcIR1O6pX28Ln2oo/+mhccvBlkWAH5X0VtvoURNFCZGNTXt
+LrlbLJYKAnFFumHSWnpW53pHOCuuOSyZnrdaeQoI0MDOYz9awD68vSngu6ihTmpP
+Ntn5qaldEnQScg0C1UgcymNZTzJZWN8lk80nvgZPlXf39Pjowfz9WOlr2eWMqf/h
+hawBfZYiQmdEgfTnV6qNfEouhQFm8eEF3ajUMBErM/CMZS08Ee/OrPj3TaGvF+Xf
+q0lp6WPVmfbDhjl0q4UxzVTanHDz3GOs1LClMgrJgE9jmD9p4CgvNBf057DquL9a
+IkdNO4pDtNu/zz2wHTHR+qVYBIOsueC+1LOj4SoIV3Xx0v7cgiUqZikd3eGzpLO0
++h5o9M052PnzpxXrYXQQhiCTYKSDnjHTV/Dm97SJUA==
+=WGFd
+-----END PGP SIGNATURE-----
 
-
-> However, some reports in the user list and Trac #665 appears to have
-> problems when changing the remote with one adapter. I can see dhcp failure
-> in such a case only if the media status on the adapter is set to always
-> connected. Is that the case in your tests?
->
-
-#665 is related to 2.3.10/12/13 and while it maybe the same issue I
-have not run any tests regarding #665
-
-Regards
-
-
-
+--EbMW37mHYzw0qvy8--
 
