@@ -1,10 +1,9 @@
-References: <1483479738-17672-1-git-send-email-selva.nair@...277...>
-From: Steffan Karger <steffan@...1856...>
-Message-ID: <fc5496a6-5665-efbc-0003-a707fda7fb4b@...1856...>
-Date: Wed, 4 Jan 2017 01:07:48 +0100
-MIME-Version: 1.0
+Date: Wed, 4 Jan 2017 08:21:28 +0100 (CET)
+Message-Id: <201701040721.v047LSbS057413@...2054...>
+From: Gert Doering <gert@...1296...>
 In-Reply-To: <1483479738-17672-1-git-send-email-selva.nair@...277...>
-Subject: Re: [Openvpn-devel] [PATCH] Fix push options digest update
+References: <1483479738-17672-1-git-send-email-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix push options digest update
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,37 +12,35 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Selva Nair <selva.nair@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
+
+Your patch has been applied to the master and release/2.4 branch.    
+
+Release/2.3 does not contain the offending commit.
+
+Thanks!
+
+commit a5dbf8c8dab23c47407c3f833c4f4aae52408af1 (master)
+commit bf72ae68c05922c289056f2f851ed36014449cdf (release/2.4)
+
+Author: Selva Nair
+Date:   Tue Jan 3 16:42:18 2017 -0500
+
+     Fix push options digest update
+
+     Signed-off-by: Selva Nair <selva.nair@...277...>
+     Acked-by: Steffan Karger <steffan.karger@...1435...>
+     Message-Id: <1483479738-17672-1-git-send-email-selva.nair@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13816.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
-On 03-01-17 22:42, selva.nair@...277... wrote:
-> From: Selva Nair <selva.nair@...277...>
-> 
-> Signed-off-by: Selva Nair <selva.nair@...277...>
-> ---
->  src/openvpn/push.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/src/openvpn/push.c b/src/openvpn/push.c
-> index f515475..c9c04a6 100644
-> --- a/src/openvpn/push.c
-> +++ b/src/openvpn/push.c
-> @@ -692,8 +692,8 @@ push_update_digest(md_ctx_t *ctx, struct buffer *buf, const struct options *opt)
->          {
->              continue;
->          }
-> +        md_ctx_update(ctx, (const uint8_t *) line, strlen(line)+1);
->      }
-> -    md_ctx_update(ctx, (const uint8_t *) line, strlen(line)+1);
->  }
->  
->  int
-> 
+--
+kind regards,
 
-ACK.  And sorry for this 'one brace too far'...  (It did ignore the
-cipher update nicely though ;) )
+Gert Doering
 
--Steffan
 
