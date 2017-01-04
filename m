@@ -1,9 +1,9 @@
-Date: Wed, 4 Jan 2017 08:21:28 +0100 (CET)
-Message-Id: <201701040721.v047LSbS057413@...2054...>
+Date: Wed, 4 Jan 2017 08:35:38 +0100 (CET)
+Message-Id: <201701040735.v047ZcSB057648@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1483479738-17672-1-git-send-email-selva.nair@...277...>
-References: <1483479738-17672-1-git-send-email-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix push options digest update
+In-Reply-To: <9d41f9dd-a587-5c1e-2e0d-ebb6c921f4ae@...2101...>
+References: <9d41f9dd-a587-5c1e-2e0d-ebb6c921f4ae@...2101...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Crash in options.c
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,27 +14,26 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Selva Nair <selva.nair@...277...>
+To: Gisle Vanem <gvanem@...2101...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master and release/2.4 branch.    
+ACK, thanks.  Tested, fixes the issue, tracked to the offending commit
+(5d429efd97).
 
-Release/2.3 does not contain the offending commit.
+Your patch has been applied to the master and release/2.4 branch.
 
-Thanks!
+Release/2.3 does not contain the offending code.
 
-commit a5dbf8c8dab23c47407c3f833c4f4aae52408af1 (master)
-commit bf72ae68c05922c289056f2f851ed36014449cdf (release/2.4)
+commit 49629380a7bdba25c24c9d410b79946fe29249f0 (master)
+commit 6650911256b2e636b4a2d754cfe60e949f213f91 (release/2.4)
+Author: Gisle Vanem
+Date:   Mon Jan 2 17:17:51 2017 +0100
 
-Author: Selva Nair
-Date:   Tue Jan 3 16:42:18 2017 -0500
+     Crash in options.c
 
-     Fix push options digest update
-
-     Signed-off-by: Selva Nair <selva.nair@...277...>
-     Acked-by: Steffan Karger <steffan.karger@...1435...>
-     Message-Id: <1483479738-17672-1-git-send-email-selva.nair@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13816.html
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <9d41f9dd-a587-5c1e-2e0d-ebb6c921f4ae@...2101...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13808.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
