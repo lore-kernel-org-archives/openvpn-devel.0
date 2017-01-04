@@ -1,10 +1,10 @@
-Date: Wed, 4 Jan 2017 20:29:30 +0100 (CET)
-Message-Id: <201701041929.v04JTU3A063128@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20161216163218.25449-1-jm@...1926...>
-References: <20161216163218.25449-1-jm@...1926...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix implicit declarations when
-	HAVE_OPENSSL_ENGINE is unset
+From: David Sommerseth <davids@...515...>
+Date: Wed,  4 Jan 2017 21:04:12 +0100
+Message-Id: <1483560252-1255-1-git-send-email-davids@...515...>
+In-Reply-To: <1482835944-563-1-git-send-email-davids@...515...>
+References: <1482835944-563-1-git-send-email-davids@...515...>
+Subject: Re: [Openvpn-devel] [PATCH applied] build: Ensure Changes.rst is
+	shipped and installed as a doc file
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,31 +15,47 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Julien Muchembled <jm@...1926...>
+To: davids@...515...
 Cc: openvpn-devel@lists.sourceforge.net
 
-Sorry for the delay, this got lost in the pre-2.4 craziness.
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-Your patch has been applied to the release/2.3 branch.
+Your patch has been applied to the following branches
 
-Thanks!
+commit 7fb22ea0bc483b5a128bcc23ce9a156c8fadac3a  (master)
+commit b83ff52a594ce1e8ff2d63533819206f67aa5dea  (release/2.4)
+Author: David Sommerseth
+Date:   Tue Dec 27 11:52:24 2016 +0100
 
-commit ab1302d47b0f2b2ac9272b9fbb90ef0bd7b7cc35
-Author: Julien Muchembled
-Date:   Fri Dec 16 17:32:18 2016 +0100
+     build: Ensure Changes.rst is shipped and installed as a doc file
 
-     Fix implicit declarations when HAVE_OPENSSL_ENGINE is unset
-
-     Signed-off-by: Julien Muchembled <jm@...1926...>
-     Acked-by: Steffan Karger <steffan.karger@...1435...>
-     Message-Id: <20161216163218.25449-1-jm@...1926...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13591.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+     Signed-off-by: David Sommerseth <davids@...515...>
+     Acked-by: Arne Schwabe <arne@...1227...>
+     Message-Id: <1482835944-563-1-git-send-email-davids@...515...>
+     URL: http://www.mail-archive.com/search?l=mid&q=1482835944-563-1-git-send-email-davids@...515...
 
 
---
+- --
 kind regards,
 
-Gert Doering
+David Sommerseth
 
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBAgAGBQJYbVU6AAoJEIbPlEyWcf3yso0P/3aBPhw8VHem0tBJLno/A2HY
+gsQrHPeo8/61M1mZQXK2PeY7+yeULBCTJMi0XI9Y2RDF/bGWlOKxKgMNTZVB74N2
+0z8ioTS4+jfqIRj4bze3kF26d3AP4P3s4eRNyA9eaXtNJuDnWTEG5hcY//RvXdn6
+PqrHXXO5ftbCl/U4tYFDyCu/LYJVr5kSUqlQGBoo6YvRyo3S5lZSM+0ityhW/0TO
+S8XGksApajBK2NWqsEN4wvoeOYE25pR4F5GufkZf3YQlVWw2wZ46nGkUpzt6nEim
+gXHFz2GzgcO/ha+b630UCVczY4Vc/iNJbzCBSZImNoPN5G7lV4PMX7f/L5U78f7K
+p1e2DGmtMAPkJ6p1AHvwOMRj89sbgipK3RXa6SFkvw4bKJzj+FmdzBpbrcGPj+sN
+FemlFYk6Fsr0uH1Iw0LkA9oQdW8Xtri+IlOreyVKGek6gCVsjh/7B2xEdwYECRzl
+0u8w9ByAFeP3cZSSRbeadQO2Nks4cup1vVXP2fUVaw1B+p7A1bQF/zLNRiGUKC+V
+wVojPR+dDQRacVaSQTv3VrDylA9dIUzwIEa730IwzTp8WzNRc6/gYrnRsJ8Ar2nq
+RqB12MJxC8BFEjwj0syIqrUlkwiiDQs+rVW9N3+A09TMndZsSS3aaVbid09eXaaP
+6ha2woOMkOKqWdfzNq9P
+=yyKq
+-----END PGP SIGNATURE-----
 
