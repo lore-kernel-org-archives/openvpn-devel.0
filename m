@@ -1,13 +1,9 @@
 MIME-Version: 1.0
-In-Reply-To: <1483475883-17450-1-git-send-email-selva.nair@...277...>
-References: <1483152307-15687-1-git-send-email-selva.nair@...277...>
-	<1483475883-17450-1-git-send-email-selva.nair@...277...>
-From: Selva Nair <selva.nair@...277...>
-Date: Wed, 4 Jan 2017 17:31:45 -0500
-Message-ID: <CAKuzo_gq1=qAJKpAOSF5qYr+nZibn6wGqpw9rm2yndin4nJQMA@...278...>
-Content-Type: multipart/alternative; boundary=001a113a3162c54a1e05454c5ae5
-Subject: Re: [Openvpn-devel] [PATCH v2] Always release dhcp address in
-	close_tun()
+From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
+Date: Fri, 6 Jan 2017 11:18:56 +0300
+Message-ID: <CAFHpkQEqEqu4Pcy4-KfhGqLYW26HR-ydCZO0xeU9YP5ZZUiL-Q@...278...>
+Content-Type: multipart/alternative; boundary=001a1144232e511205054568ab40
+Subject: [Openvpn-devel] helping developers to collaborate properly
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,44 +14,36 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---001a113a3162c54a1e05454c5ae5
+--001a1144232e511205054568ab40
 Content-Type: text/plain; charset=UTF-8
 
-Hi,
+Hello,
 
-On Tue, Jan 3, 2017 at 3:38 PM, <selva.nair@...277...> wrote:
+https://github.com/OpenVPN/openvpn/pull/77
 
-> v2: Mark --dhcp-release as obsolete in mapage and option parser, and
-> remove the unused dhcp_release varaible.
->
+I'm not sure about exact text (I need help from you),
+the idea behind those changes is to point developers who use regular github
+workflow to a proper procedures (maybe there're pages on wiki ? @mattock  ?)
 
-Request typo fix at commit time:
- mapage -> man page and varaible -> variable
+it will help to not lose PRs and will probably save time of current
+developers
 
-Sorry for the extra work..
 
-Thanks,
+Cheers,
+Ilya Shipitsin
 
-Selva
-
---001a113a3162c54a1e05454c5ae5
+--001a1144232e511205054568ab40
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr"><div class=3D"gmail_extra">Hi,</div><div class=3D"gmail_ex=
-tra"><br><div class=3D"gmail_quote">On Tue, Jan 3, 2017 at 3:38 PM,  <span =
-dir=3D"ltr">&lt;<a href=3D"mailto:selva.nair@...277..." target=3D"_blank">s=
-elva.nair@...277...</a>&gt;</span> wrote:<br><blockquote class=3D"gmail_quo=
-te" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex"=
-><div id=3D":4m5" class=3D"a3s aXjCH m159660dcaba0986a">v2: Mark --dhcp-rel=
-ease as obsolete in mapage and option parser, and<br>
-remove the unused dhcp_release varaible.</div></blockquote></div><br>Reques=
-t typo fix at commit time:</div><div class=3D"gmail_extra">=C2=A0mapage -&g=
-t; man page and varaible -&gt; variable</div><div class=3D"gmail_extra"><br=
-></div><div class=3D"gmail_extra">Sorry for the extra work..</div><div clas=
-s=3D"gmail_extra"><br></div><div class=3D"gmail_extra">Thanks,</div><div cl=
-ass=3D"gmail_extra"><br></div><div class=3D"gmail_extra">Selva=C2=A0</div><=
-/div>
+<div dir=3D"ltr"><div><div><div><div><div>Hello,<br><br><a href=3D"https://=
+github.com/OpenVPN/openvpn/pull/77">https://github.com/OpenVPN/openvpn/pull=
+/77</a><br><br></div>I&#39;m not sure about exact text (I need help from yo=
+u),<br></div>the idea behind those changes is to point developers who use r=
+egular github workflow to a proper procedures (maybe there&#39;re pages on =
+wiki ? @mattock=C2=A0 ?)<br><br></div>it will help to not lose PRs and will=
+ probably save time of current developers<br><br><br></div>Cheers,<br></div=
+>Ilya Shipitsin<br></div>
 
---001a113a3162c54a1e05454c5ae5--
+--001a1144232e511205054568ab40--
 
