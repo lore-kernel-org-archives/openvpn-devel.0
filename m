@@ -1,9 +1,13 @@
 MIME-Version: 1.0
-From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Date: Sun, 8 Jan 2017 17:56:32 +0500
-Message-ID: <CAFHpkQHV6b--hrbWPSo+sj-8T+v4GP-hQ-SABp9BUOn6+rYKiQ@...278...>
-Content-Type: multipart/alternative; boundary=001a113bef56c645ef054594c7fd
-Subject: [Openvpn-devel] testers wanted! (trac#806)
+In-Reply-To: <CAFHpkQEtJU5hoExJhQuMV1ha5ELVsa1ThEqHsakOAj-ALNbSPQ@...278...>
+References: <CAFHpkQEqEqu4Pcy4-KfhGqLYW26HR-ydCZO0xeU9YP5ZZUiL-Q@...278...>
+	<dec62c2a-7c92-bfcb-1949-48ae1eeadc44@...2080...>
+	<CAFHpkQFd2iuv56YkdyMHsVya86MpDemm45uVO+8eEt+uLie33A@...278...>
+	<CAFHpkQEtJU5hoExJhQuMV1ha5ELVsa1ThEqHsakOAj-ALNbSPQ@...278...>
+From: Steffan Karger <steffan@...1856...>
+Date: Sun, 8 Jan 2017 14:31:09 +0100
+Message-ID: <CAA1Abx+QQe0FrAT8opwRNO8C=zmfsRdb6VO8qoCeN-SYC+ACkQ@...278...>
+Subject: Re: [Openvpn-devel] helping developers to collaborate properly
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,52 +16,25 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-
---001a113bef56c645ef054594c7fd
-Content-Type: text/plain; charset=UTF-8
-
-Hello,
-
-I want https://github.com/OpenVPN/openvpn-build/pull/70 to be merged before
-2.4.1
-
-while change itself does not look intrusive, we never did it, so "/OEM"
-switch may have any side effect on RTL (arabic or hebrew) or multibyte
-(like chinese) windows build.
-
-I created test installer:
-
-https://chipitsine.github.io/oem/openvpn-install-2.4.0-I601.exe
-
-
-can you please test on as many windows as possible ?
-
-note for @mattock, current community installer is built using nsis-2.46, I
-created test installer with nsis-2.50, can you please have a look at
-changes, should we upgrade nsis to 2.50 ?
-
-
-Cheers,
-Ilya Shipitsin
-
---001a113bef56c645ef054594c7fd
-Content-Type: text/html; charset="UTF-8"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
+To: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-<div dir=3D"ltr"><div><div><div>Hello,<br><br></div>I want <a href=3D"https=
-://github.com/OpenVPN/openvpn-build/pull/70">https://github.com/OpenVPN/ope=
-nvpn-build/pull/70</a> to be merged before 2.4.1 <br><br></div>while change=
- itself does not look intrusive, we never did it, so &quot;/OEM&quot; switc=
-h may have any side effect on RTL (arabic or hebrew) or multibyte (like chi=
-nese) windows build.<br><br></div>I created test installer:<br><div><div><b=
-r><a href=3D"https://chipitsine.github.io/oem/openvpn-install-2.4.0-I601.ex=
-e">https://chipitsine.github.io/oem/openvpn-install-2.4.0-I601.exe</a><br><=
-br><br></div><div>can you please test on as many windows as possible ?<br><=
-br></div><div>note for @mattock, current community installer is built using=
- nsis-2.46, I created test installer with nsis-2.50, can you please have a =
-look at changes, should we upgrade nsis to 2.50 ?<br><br><br></div><div>Che=
-ers,<br></div><div>Ilya Shipitsin<br></div></div></div>
+Hi,
 
---001a113bef56c645ef054594c7fd--
+On 6 January 2017 at 17:49, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=
+=B8=D1=86=D0=B8=D0=BD <chipitsine@...277...> wrote:
+> it seems that Contributing.md should go to .github as well, @mattock?
+
+No, I don't think so.  Contributing.md is for non-github users too,
+and I for one would not got looking in .github/ to find contributing
+guidelines.
+
+As for the PR itself, having a pull_request_template.md that warns
+people that they should use the mailinglist instead makes sense to me.
+GH issues are disabled though, so I don't see what an
+issue_template.md would gain us.
+
+-Steffan
 
