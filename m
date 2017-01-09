@@ -1,13 +1,9 @@
-MIME-Version: 1.0
-In-Reply-To: <CAKuzo_gq1=qAJKpAOSF5qYr+nZibn6wGqpw9rm2yndin4nJQMA@...278...>
-References: <1483152307-15687-1-git-send-email-selva.nair@...277...>
-	<1483475883-17450-1-git-send-email-selva.nair@...277...>
-	<CAKuzo_gq1=qAJKpAOSF5qYr+nZibn6wGqpw9rm2yndin4nJQMA@...278...>
-From: Selva Nair <selva.nair@...277...>
-Date: Mon, 9 Jan 2017 14:41:13 -0500
-Message-ID: <CAKuzo_jtJ2o=+6v=dBQoF142PFW0JesibG_9o1y77dHZ=LRreQ@...278...>
-Content-Type: multipart/alternative; boundary=001a114230961b949b0545ae8e93
-Subject: Re: [Openvpn-devel] [PATCH v2] Always release dhcp address in
+Date: Mon, 9 Jan 2017 20:50:10 +0100 (CET)
+Message-Id: <201701091950.v09JoAtW076141@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <1483475883-17450-1-git-send-email-selva.nair@...277...>
+References: <1483475883-17450-1-git-send-email-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Always release dhcp address in
 	close_tun()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -17,49 +13,39 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Selva Nair <selva.nair@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---001a114230961b949b0545ae8e93
-Content-Type: text/plain; charset=UTF-8
+ACK.  This change enforces good manners, as we do on all other platforms
+- ensure the IP address is released/removed when we release the interface
+(some platforms do not have code for that because it's automatic, others
+have).  Having an extra not-very-well-known option for this is a bit
+peculiar.
 
-On Wed, Jan 4, 2017 at 5:31 PM, Selva Nair <selva.nair@...277...> wrote:
+I have changed the commit message as requested, and also changed the
+tile line to add "... on Windows", to make clear this is platform specific.
 
-> On Tue, Jan 3, 2017 at 3:38 PM, <selva.nair@...277...> wrote:
->
->> v2: Mark --dhcp-release as obsolete in mapage and option parser, and
->> remove the unused dhcp_release varaible.
->>
->
-> Request typo fix at commit time:
->  mapage -> man page and varaible -> variable
->
-> Sorry for the extra work..
->
+Your patch has been applied to the master and release/2.4 branch.
 
-nudge++;
+commit db5b9b45508ea8f66ea80565279af3edd9300499 (master)
+commit 139cd1b14c57501bee36c1ec1dc5a037617ec29e (release/2.4)
+Author: Selva Nair
+Date:   Tue Jan 3 15:38:03 2017 -0500
 
---001a114230961b949b0545ae8e93
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+     Always release dhcp address in close_tun() on Windows.
 
-<div dir=3D"ltr"><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">=
-On Wed, Jan 4, 2017 at 5:31 PM, Selva Nair <span dir=3D"ltr">&lt;<a href=3D=
-"mailto:selva.nair@...277..." target=3D"_blank">selva.nair@...277...</a>&gt=
-;</span> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 =
-.8ex;border-left:1px #ccc solid;padding-left:1ex"><div class=3D"gmail_extra=
-"><span class=3D""><div class=3D"gmail_quote">On Tue, Jan 3, 2017 at 3:38 P=
-M,  <span dir=3D"ltr">&lt;<a href=3D"mailto:selva.nair@...277..." target=3D=
-"_blank"><span class=3D"il">selva</span>.nair@...277...</a>&gt;</span> wrot=
-e:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-l=
-eft:1px #ccc solid;padding-left:1ex"><div id=3D"m_744673134599274189:4m5" c=
-lass=3D"m_744673134599274189a3s m_744673134599274189aXjCH m_744673134599274=
-189m159660dcaba0986a">v2: Mark --<span class=3D"il">dhcp</span>-release as =
-obsolete in mapage and option parser, and<br>
-remove the unused dhcp_release varaible.</div></blockquote></div><br></span=
->Request typo fix at commit time:</div><div class=3D"gmail_extra">=C2=A0map=
-age -&gt; man page and varaible -&gt; variable</div><div class=3D"gmail_ext=
-ra"><br></div><div class=3D"gmail_extra">Sorry for the extra work..</div></=
-blockquote></div><br>nudge++;</div></div>
+     Signed-off-by: Selva Nair <selva.nair@...277...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1483475883-17450-1-git-send-email-selva.nair@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13814.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
---001a114230961b949b0545ae8e93--
+
+--
+kind regards,
+
+Gert Doering
+
 
