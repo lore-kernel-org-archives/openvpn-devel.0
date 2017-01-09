@@ -1,9 +1,12 @@
+References: <024d01d26459$2589a3d0$709ceb70$@gmail.com>
+	<c1fff25e-28c8-7d3a-42fb-611b489c643a@...2101...>
+	<5fc27efe-5843-bcb2-4087-3b66f95f229b@...1227...>
+From: Gisle Vanem <gvanem@...2101...>
+Message-ID: <b87659f0-0b6f-7bd0-dc83-a07e6a95280d@...2101...>
+Date: Mon, 9 Jan 2017 12:50:34 +0100
 MIME-Version: 1.0
-From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Date: Mon, 9 Jan 2017 13:57:02 +0500
-Message-ID: <CAFHpkQF08EPwYRCvSXo6Q+x3gcGtAVJTpZUcyZCnr=zbZGCXsw@...278...>
-Content-Type: multipart/alternative; boundary=047d7bf10b4e1faf740545a58dc3
-Subject: [Openvpn-devel] wrong link to openvpn-gui
+In-Reply-To: <5fc27efe-5843-bcb2-4087-3b66f95f229b@...1227...>
+Subject: Re: [Openvpn-devel] Visual Studio support?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,32 +15,25 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
---047d7bf10b4e1faf740545a58dc3
-Content-Type: text/plain; charset=UTF-8
+Arne Schwabe wrote:
 
-https://community.openvpn.net/openvpn/wiki/Contributing:
+>> Did you manage to work around that?
+>>
+>> I'm using  the latest CL v.19.00.24215.1. I also reported this 2 years ago in:
+>>   https://sourceforge.net/p/openvpn/mailman/message/34683175/
+>>
+> 
+> I managed to work around that. By adding a done=true;variable and then
+> splitting the if cascade by
 
-current link is:  http://sourceforge.net/projects/openvpn-gui/
+Thanks. Sorry for the late reply.
+But I've managed to use Clang-CL to build things for MSVC. It is really a solid
+piece of software!
 
-
-can we change it to github ?
-
-
-Cheers,
-Ilya Shipitsin
-
---047d7bf10b4e1faf740545a58dc3
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><div><div><div><a href=3D"https://community.openvpn.net/op=
-envpn/wiki/Contributing">https://community.openvpn.net/openvpn/wiki/Contrib=
-uting</a>:<br><br>current link is:=C2=A0 <a href=3D"http://sourceforge.net/=
-projects/openvpn-gui/">http://sourceforge.net/projects/openvpn-gui/</a><br>=
-<br><br></div>can we change it to github ?<br><br><br></div>Cheers,<br></di=
-v>Ilya Shipitsin<br></div>
-
---047d7bf10b4e1faf740545a58dc3--
+-- 
+--gv
 
