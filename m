@@ -1,12 +1,15 @@
 MIME-Version: 1.0
-In-Reply-To: <1483905658-25267-1-git-send-email-selva.nair@...277...>
-References: <1483905658-25267-1-git-send-email-selva.nair@...277...>
-From: Selva Nair <selva.nair@...277...>
-Date: Sun, 8 Jan 2017 15:23:38 -0500
-Message-ID: <CAKuzo_hzpA2sH=hAe-jqVv8DUUnV_BfGu3KgFHrMLoTqJoEtTg@...278...>
-Content-Type: multipart/alternative; boundary=001a1149b9a8f0c78d05459b0742
-Subject: Re: [Openvpn-devel] [PATCH] Fix user's group membership check in
- interactive service to work with domains
+In-Reply-To: <CAA1Abx+QQe0FrAT8opwRNO8C=zmfsRdb6VO8qoCeN-SYC+ACkQ@...278...>
+References: <CAFHpkQEqEqu4Pcy4-KfhGqLYW26HR-ydCZO0xeU9YP5ZZUiL-Q@...278...>
+	<dec62c2a-7c92-bfcb-1949-48ae1eeadc44@...2080...>
+	<CAFHpkQFd2iuv56YkdyMHsVya86MpDemm45uVO+8eEt+uLie33A@...278...>
+	<CAFHpkQEtJU5hoExJhQuMV1ha5ELVsa1ThEqHsakOAj-ALNbSPQ@...278...>
+	<CAA1Abx+QQe0FrAT8opwRNO8C=zmfsRdb6VO8qoCeN-SYC+ACkQ@...278...>
+From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
+Date: Mon, 9 Jan 2017 13:53:22 +0500
+Message-ID: <CAFHpkQHgqfiSop0iZ48LUyWv=x44rzuRJamG93GF4nq8xWMMPg@...278...>
+Content-Type: multipart/alternative; boundary=001a113bef5602b2410545a5809b
+Subject: Re: [Openvpn-devel] helping developers to collaborate properly
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,62 +18,74 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Steffan Karger <steffan@...1856...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---001a1149b9a8f0c78d05459b0742
-Content-Type: text/plain; charset=UTF-8
+--001a113bef5602b2410545a5809b
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Sun, Jan 8, 2017 at 3:00 PM, <selva.nair@...277...> wrote:
+2017-01-08 18:31 GMT+05:00 Steffan Karger <steffan@...1856...>:
 
-> From: Selva Nair <selva.nair@...277...>
+> Hi,
 >
-> Currently the username unqualified by the domain is used to validate
-> a user which fails for domain users. Instead compare the user's SID
-> with SIDs in the Administrators group and ovpn_admin_group.
+> On 6 January 2017 at 17:49, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=
+=D0=B8=D1=86=D0=B8=D0=BD <chipitsine@...277...> wrote:
+> > it seems that Contributing.md should go to .github as well, @mattock?
 >
-> This has the advantage that connection to a domain controller is not
-> required and will work even when user is logged in with cached credentials.
+> No, I don't think so.  Contributing.md is for non-github users too,
+> and I for one would not got looking in .github/ to find contributing
+> guidelines.
 >
-> Limitations:
-> (i) Group membership is not checked recursively
-> (ii) Domain administrators will not be recognized as members of local
-> Administrators group.
->
-> Resolves Trac: #810
+> As for the PR itself, having a pull_request_template.md that warns
+> people that they should use the mailinglist instead makes sense to me.
+> GH issues are disabled though, so I don't see what an
+> issue_template.md would gain us.
 >
 
-Tested on Windows 7 as local user and domain user.
-Also tested by jiquera as described in Trac: #810
+I updated templates.
+my written english is far from being perfect, so I ask for your help.
 
---001a1149b9a8f0c78d05459b0742
+
+>
+> -Steffan
+>
+
+--001a113bef5602b2410545a5809b
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr"><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">=
-On Sun, Jan 8, 2017 at 3:00 PM,  <span dir=3D"ltr">&lt;<a href=3D"mailto:se=
-lva.nair@...277..." target=3D"_blank">selva.nair@...277...</a>&gt;</span> w=
-rote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;borde=
-r-left:1px #ccc solid;padding-left:1ex"><div id=3D":1ba" class=3D"a3s aXjCH=
- m1597fab7f0fe2eae">From: Selva Nair &lt;<a href=3D"mailto:selva.nair@...1664...=
-7...">selva.nair@...277...</a>&gt;<br>
+<div dir=3D"ltr"><br><div class=3D"gmail_extra"><br><div class=3D"gmail_quo=
+te">2017-01-08 18:31 GMT+05:00 Steffan Karger <span dir=3D"ltr">&lt;<a href=
+=3D"mailto:steffan@...1856..." target=3D"_blank">steffan@...1856...</a>&gt;=
+</span>:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;bo=
+rder-left:1px #ccc solid;padding-left:1ex">Hi,<br>
+<span class=3D""><br>
+On 6 January 2017 at 17:49, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=
+=B8=D1=86=D0=B8=D0=BD &lt;<a href=3D"mailto:chipitsine@...277...">chipitsin=
+e@...277...</a>&gt; wrote:<br>
+&gt; it seems that Contributing.md should go to .github as well, @mattock?<=
+br>
 <br>
-Currently the username unqualified by the domain is used to validate<br>
-a user which fails for domain users. Instead compare the user&#39;s SID<br>
-with SIDs in the Administrators group and ovpn_admin_group.<br>
+</span>No, I don&#39;t think so.=C2=A0 Contributing.md is for non-github us=
+ers too,<br>
+and I for one would not got looking in .github/ to find contributing<br>
+guidelines.<br>
 <br>
-This has the advantage that connection to a domain controller is not<br>
-required and will work even when user is logged in with cached credentials.=
-<br>
-<br>
-Limitations:<br>
-(i) Group membership is not checked recursively<br>
-(ii) Domain administrators will not be recognized as members of local<br>
-Administrators group.<br>
-<br>
-Resolves Trac: #810</div></blockquote></div><br></div><div class=3D"gmail_e=
-xtra">Tested on Windows 7 as local user and domain user.<br></div><div clas=
-s=3D"gmail_extra">Also tested by jiquera as described in Trac: #810<br></di=
-v></div>
+As for the PR itself, having a <a href=3D"http://pull_request_template.md" =
+rel=3D"noreferrer" target=3D"_blank">pull_request_template.md</a> that warn=
+s<br>
+people that they should use the mailinglist instead makes sense to me.<br>
+GH issues are disabled though, so I don&#39;t see what an<br>
+<a href=3D"http://issue_template.md" rel=3D"noreferrer" target=3D"_blank">i=
+ssue_template.md</a> would gain us.<br></blockquote><div><br></div><div>I u=
+pdated templates.<br></div><div>my written english is far from being perfec=
+t, so I ask for your help.<br></div><div>=C2=A0</div><blockquote class=3D"g=
+mail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-l=
+eft:1ex">
+<span class=3D"HOEnZb"><font color=3D"#888888"><br>
+-Steffan<br>
+</font></span></blockquote></div><br></div></div>
 
---001a1149b9a8f0c78d05459b0742--
+--001a113bef5602b2410545a5809b--
 
