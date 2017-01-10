@@ -1,10 +1,10 @@
+References: <20161227112436.5045-1-a@...2181...>
 From: Steffan Karger <steffan@...1856...>
-Date: Tue, 10 Jan 2017 22:01:38 +0100
-Message-Id: <1484082098-29664-1-git-send-email-steffan@...1856...>
-In-Reply-To: <1482524693-5611-1-git-send-email-steffan@...1856...>
-References: <1482524693-5611-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH (master)] reformatting: fix style in
-	crypto*.{c, h}
+Message-ID: <97c51277-d8b7-b768-5205-706492e92f84@...1856...>
+Date: Tue, 10 Jan 2017 22:35:10 +0100
+MIME-Version: 1.0
+In-Reply-To: <20161227112436.5045-1-a@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH v2] convert *_inline attributes to bool
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,1660 +13,1553 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Antonio Quartulli <a@...2181...>, openvpn-devel@lists.sourceforge.net
 
-Now that we have touched each and every file anyway, I decided to go over
-the code I regularly work with and reformat it some more by hand.  This is
-how for I got today, and is a large enough patch I think.
+Hi,
 
-This commit is mostly just reordering and changing whitespace, with one
-exception: it removes the #if 0 around some debugging code in
-read_key_file(), and now always print the debugging if D_SHOW_KEYS is
-enabled.
+In general this looks good.  Some remarks inline.  Please bear with me,
+we're almost there ;)
 
-This patch is best reviewed with something like
-'git diff --ignore-space-change'.
+On 27-12-16 12:24, Antonio Quartulli wrote:
+> Carrying around the INLINE_TAG is not really efficient,
+> because it requires a strcmp() to be performed every
+> time we want to understand if the data is stored inline
+> or not.
+> 
+> Convert all the *_inline attributes to bool to make the
+> logic easier and checks more efficient.
+> 
+> Cc: Steffan Karger <steffan@...1856...>
+> Signed-off-by: Antonio Quartulli <a@...2181...>
+> ---
+> 
+> Based on master + [PATCH v3] reformatting: fix style in crypto*.{c, h}
+> 
+> Changes from v1:
+> - remove the INLINE_TAG from the options parsing logic at all. Now a
+>   boolean variable is passed around.
+> - add print_if_inline() helper function (to misc.c/h) to make sure we
+>   never print the inline data, but only the INLINE tag. Such function
+>   checks also for NULL pointers;
+> - make sure print_if_inline() is always used when printing possibly
+>   inline data;
+> - remove the INLINE_TAG from the options parsing logic at all. Now a
+>   boolean variable is passed around.
+> - fix alignment error in comment;
+> - remove CHKACC_INLINE from check_file_access() logic: this function
+>   is now not invoked at all in case of inline data.
+> 
+> 
+> 
+>  src/openvpn/crypto.c      |  25 +++---
+>  src/openvpn/crypto.h      |   5 +-
+>  src/openvpn/misc.c        |  17 +++-
+>  src/openvpn/misc.h        |  15 +++-
+>  src/openvpn/options.c     | 221 ++++++++++++++++++++++++----------------------
+>  src/openvpn/options.h     |  20 ++---
+>  src/openvpn/plugin.c      |   6 +-
+>  src/openvpn/plugin.h      |   3 +-
+>  src/openvpn/push.c        |   5 +-
+>  src/openvpn/push.h        |   3 +-
+>  src/openvpn/ssl.c         |   6 +-
+>  src/openvpn/ssl_backend.h |  64 ++++++++------
+>  src/openvpn/ssl_common.h  |   2 +-
+>  src/openvpn/ssl_mbedtls.c |  63 +++++++------
+>  src/openvpn/ssl_openssl.c |  92 ++++++++++---------
+>  src/openvpn/tls_crypt.c   |   2 +-
+>  src/openvpn/tls_crypt.h   |   9 +-
+>  17 files changed, 297 insertions(+), 261 deletions(-)
+> 
+> diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
+> index 63f8806..3e710aa 100644
+> --- a/src/openvpn/crypto.c
+> +++ b/src/openvpn/crypto.c
+> @@ -36,6 +36,7 @@
+>  #include "crypto.h"
+>  #include "error.h"
+>  #include "integer.h"
+> +#include "misc.h"
+>  #include "platform.h"
+>  
+>  #include "memdbg.h"
+> @@ -1184,27 +1185,26 @@ test_crypto(struct crypto_options *co, struct frame *frame)
+>  
+>  void
+>  crypto_read_openvpn_key(const struct key_type *key_type, struct key_ctx_bi *ctx,
+> -                        const char *key_file, const char *key_inline,
+> +                        const char *key_file, bool key_inline,
+>                          const int key_direction, const char *key_name,
+>                          const char *opt_name)
+>  {
+>      struct key2 key2;
+>      struct key_direction_state kds;
+>      char log_prefix[128] = { 0 };
+> +    unsigned int flags = RKF_MUST_SUCCEED;
+>  
+>      if (key_inline)
+>      {
+> -        read_key_file(&key2, key_inline, RKF_MUST_SUCCEED | RKF_INLINE);
+> -    }
+> -    else
+> -    {
+> -        read_key_file(&key2, key_file, RKF_MUST_SUCCEED);
+> +        flags |= RKF_INLINE;
+>      }
+> +    read_key_file(&key2, key_file, flags);
+>  
+>      if (key2.n != 2)
+>      {
+>          msg(M_ERR, "File '%s' does not have OpenVPN Static Key format.  Using "
+> -            "free-form passphrase file is not supported anymore.", key_file);
+> +            "free-form passphrase file is not supported anymore.",
+> +            print_if_inline(key_file, key_inline));
+>      }
+>  
+>      /* check for and fix highly unlikely key problems */
+> @@ -1244,7 +1244,6 @@ read_key_file(struct key2 *key2, const char *file, const unsigned int flags)
+>      struct buffer in;
+>      int fd, size;
+>      uint8_t hex_byte[3] = {0, 0, 0};
+> -    const char *error_filename = file;
+>  
+>      /* parse info */
+>      const unsigned char *cp;
+> @@ -1283,7 +1282,6 @@ read_key_file(struct key2 *key2, const char *file, const unsigned int flags)
+>          /* 'file' is a string containing ascii representation of key */
+>          size = strlen(file) + 1;
+>          buf_set_read(&in, (const uint8_t *)file, size);
+> -        error_filename = INLINE_FILE_TAG;
+>      }
+>      else
+>      {
+> @@ -1391,7 +1389,8 @@ read_key_file(struct key2 *key2, const char *file, const unsigned int flags)
+>                  {
+>                      msg(M_FATAL,
+>                          isprint(c) ? printable_char_fmt : unprintable_char_fmt,
+> -                        c, line_num, error_filename, count, onekeylen, keylen);
+> +                        c, line_num, print_if_inline(file, flags & RKF_INLINE),
+> +                        count, onekeylen, keylen);
+>                  }
+>              }
+>              ++line_index;
+> @@ -1413,14 +1412,16 @@ read_key_file(struct key2 *key2, const char *file, const unsigned int flags)
+>          {
+>              msg(M_FATAL,
+>                  "Insufficient key material or header text not found in file '%s' (%d/%d/%d bytes found/min/max)",
+> -                error_filename, count, onekeylen, keylen);
+> +                print_if_inline(file, flags & RKF_INLINE), count, onekeylen,
+> +                keylen);
+>          }
+>  
+>          if (state != PARSE_FINISHED)
+>          {
+>              msg(M_FATAL,
+>                  "Footer text not found in file '%s' (%d/%d/%d bytes found/min/max)",
+> -                error_filename, count, onekeylen, keylen);
+> +                print_if_inline(file, flags & RKF_INLINE), count, onekeylen,
+> +                keylen);
+>          }
+>      }
+>  
+> diff --git a/src/openvpn/crypto.h b/src/openvpn/crypto.h
+> index afd0aa6..c1bf614 100644
+> --- a/src/openvpn/crypto.h
+> +++ b/src/openvpn/crypto.h
+> @@ -497,9 +497,8 @@ void key2_print(const struct key2 *k,
+>  
+>  void crypto_read_openvpn_key(const struct key_type *key_type,
+>                               struct key_ctx_bi *ctx, const char *key_file,
+> -                             const char *key_inline,
+> -                             const int key_direction, const char *key_name,
+> -                             const char *opt_name);
+> +                             bool key_inline, const int key_direction,
+> +                             const char *key_name, const char *opt_name);
+>  
+>  /*
+>   * Inline functions
+> diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
+> index 87f03be..7658900 100644
+> --- a/src/openvpn/misc.c
+> +++ b/src/openvpn/misc.c
+> @@ -1645,12 +1645,12 @@ make_arg_copy(char **p, struct gc_arena *gc)
+>  }
+>  
+>  const char **
+> -make_extended_arg_array(char **p, struct gc_arena *gc)
+> +make_extended_arg_array(char **p, bool is_inline, struct gc_arena *gc)
+>  {
+>      const int argc = string_array_len((const char **)p);
+> -    if (!strcmp(p[0], INLINE_FILE_TAG) && argc == 2)
+> +    if (is_inline)
+>      {
+> -        return make_inline_array(p[1], gc);
+> +        return make_inline_array(p[0], gc);
+>      }
+>      else if (argc == 0)
+>      {
+> @@ -1788,6 +1788,17 @@ compat_flag(unsigned int flag)
+>  
+>  }
+>  
+> +const char *
+> +print_if_inline(const char *str, bool is_inline)
+> +{
+> +    if (is_inline)
+> +    {
+> +        return INLINE_FILE_TAG;
+> +    }
+> +
+> +    return np(str);
+> +}
+> +
+>  #if P2MP_SERVER
+>  
+>  /* helper to parse peer_info received from multi client, validate
+> diff --git a/src/openvpn/misc.h b/src/openvpn/misc.h
+> index 16be621..9cb42e4 100644
+> --- a/src/openvpn/misc.h
+> +++ b/src/openvpn/misc.h
+> @@ -173,7 +173,8 @@ const char **make_env_array(const struct env_set *es,
+>  
+>  const char **make_arg_array(const char *first, const char *parms, struct gc_arena *gc);
+>  
+> -const char **make_extended_arg_array(char **p, struct gc_arena *gc);
+> +const char **make_extended_arg_array(char **p, bool is_inline,
+> +                                     struct gc_arena *gc);
+>  
+>  /* an analogue to the random() function, but use OpenSSL functions if available */
+>  #ifdef ENABLE_CRYPTO
+> @@ -348,4 +349,16 @@ void output_peer_info_env(struct env_set *es, const char *peer_info);
+>  
+>  #endif /* P2MP_SERVER */
+>  
+> +/**
+> + * To be used when printing a string that may contain inline data.
+> + *
+> + * If "is_inline" is true, return the inline tag.
+> + * If "is_inline" is false and "str" is not NULL, return "str".
+> + * Return the constant string "[NULL]" otherwise.
+> + *
+> + * @param str       the original string to return when is_inline is false
+> + * @param is_inline true when str contains an inline data of some sort
+> + */
+> +const char *print_if_inline(const char *str, bool is_inline);
+> +
+>  #endif /* ifndef MISC_H */
+> diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+> index bfedb6a..249619b 100644
+> --- a/src/openvpn/options.c
+> +++ b/src/openvpn/options.c
+> @@ -3055,9 +3055,8 @@ options_postprocess_mutate(struct options *o)
+>  #define CHKACC_FILE (1<<0)       /** Check for a file/directory precense */
+>  #define CHKACC_DIRPATH (1<<1)    /** Check for directory precense where a file should reside */
+>  #define CHKACC_FILEXSTWR (1<<2)  /** If file exists, is it writable? */
+> -#define CHKACC_INLINE (1<<3)     /** File is present if it's an inline file */
+> -#define CHKACC_ACPTSTDIN (1<<4)  /** If filename is stdin, it's allowed and "exists" */
+> -#define CHKACC_PRIVATE (1<<5)    /** Warn if this (private) file is group/others accessible */
+> +#define CHKACC_ACPTSTDIN (1<<3)  /** If filename is stdin, it's allowed and "exists" */
+> +#define CHKACC_PRIVATE (1<<4)    /** Warn if this (private) file is group/others accessible */
+>  
+>  static bool
+>  check_file_access(const int type, const char *file, const int mode, const char *opt)
+> @@ -3070,12 +3069,6 @@ check_file_access(const int type, const char *file, const int mode, const char *
+>          return false;
+>      }
+>  
+> -    /* If this may be an inline file, and the proper inline "filename" is set - no issues */
+> -    if ((type & CHKACC_INLINE) && streq(file, INLINE_FILE_TAG) )
+> -    {
+> -        return false;
+> -    }
+> -
+>      /* If stdin is allowed and the file name is 'stdin', then do no
+>       * further checks as stdin is always available
+>       */
+> @@ -3246,39 +3239,71 @@ options_postprocess_filechecks(struct options *options)
+>  
+>  #ifdef ENABLE_CRYPTO
+>      /* ** SSL/TLS/crypto related files ** */
+> -    errs |= check_file_access(CHKACC_FILE|CHKACC_INLINE, options->dh_file, R_OK, "--dh");
+> -    errs |= check_file_access(CHKACC_FILE|CHKACC_INLINE, options->ca_file, R_OK, "--ca");
+> -    errs |= check_file_access_chroot(options->chroot_dir, CHKACC_FILE, options->ca_path, R_OK, "--capath");
+> -    errs |= check_file_access(CHKACC_FILE|CHKACC_INLINE, options->cert_file, R_OK, "--cert");
+> -    errs |= check_file_access(CHKACC_FILE|CHKACC_INLINE, options->extra_certs_file, R_OK,
+> -                              "--extra-certs");
+> +    if (!options->dh_file_inline)
+> +    {
+> +        errs |= check_file_access(CHKACC_FILE, options->dh_file, R_OK, "--dh");
+> +    }
+> +    if (!options->ca_file_inline)
+> +    {
+> +        errs |= check_file_access(CHKACC_FILE, options->ca_file, R_OK, "--ca");
+> +    }
+> +    errs |= check_file_access_chroot(options->chroot_dir, CHKACC_FILE,
+> +                                     options->ca_path, R_OK, "--capath");
+> +    if (!options->cert_file_inline)
+> +    {
+> +        errs |= check_file_access(CHKACC_FILE, options->cert_file, R_OK, "--cert");
+> +    }
+> +    if (!options->extra_certs_file)
+> +    {
+> +        errs |= check_file_access(CHKACC_FILE, options->extra_certs_file, R_OK,
+> +                                  "--extra-certs");
+> +    }
 
-Signed-off-by: Steffan Karger <steffan@...1856...>
----
-v2: fix wrong indent, add more 'for () {' -> 'for ()\n{' fixes.
-v3: be more uncrustify-config compatible:
-    * align function paramters with (
-    * indent with 4 spaces after wrap (instead of 8)
-v4: rebase on master (the --no-iv removal patch caused conflicts)
+... more add ifs follow.
 
- src/openvpn/crypto.c         | 442 +++++++++++++++++++++++--------------------
- src/openvpn/crypto.h         |  47 +++--
- src/openvpn/crypto_mbedtls.c |  54 +++---
- src/openvpn/crypto_mbedtls.h |   4 +-
- src/openvpn/crypto_openssl.c |  38 ++--
- src/openvpn/cryptoapi.c      | 128 +++++++++----
- 6 files changed, 407 insertions(+), 306 deletions(-)
+I don't particularly like all these ifs.  What about adding a wrapper
+function like check_file_access_inline(bool inline, int flags, ...),
+containing basically "if(!inline) check_file_access(flags, ...)", so
+that we will here still have a nice 'check_file_access*()'-sled?
 
-diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
-index 87002f5..944f4c5 100644
---- a/src/openvpn/crypto.c
-+++ b/src/openvpn/crypto.c
-@@ -82,37 +82,37 @@ openvpn_encrypt_aead(struct buffer *buf, struct buffer work,
-     gc_init(&gc);
- 
-     /* Prepare IV */
--    {
--        struct buffer iv_buffer;
--        struct packet_id_net pin;
--        uint8_t iv[OPENVPN_MAX_IV_LENGTH] = {0};
--        const int iv_len = cipher_ctx_iv_length(ctx->cipher);
-+    struct buffer iv_buffer;
-+    struct packet_id_net pin;
-+    uint8_t iv[OPENVPN_MAX_IV_LENGTH] = {0};
-+    const int iv_len = cipher_ctx_iv_length(ctx->cipher);
- 
--        ASSERT(iv_len >= OPENVPN_AEAD_MIN_IV_LEN && iv_len <= OPENVPN_MAX_IV_LENGTH);
-+    ASSERT(iv_len >= OPENVPN_AEAD_MIN_IV_LEN
-+           && iv_len <= OPENVPN_MAX_IV_LENGTH);
- 
--        buf_set_write(&iv_buffer, iv, iv_len);
-+    buf_set_write(&iv_buffer, iv, iv_len);
- 
--        /* IV starts with packet id to make the IV unique for packet */
--        packet_id_alloc_outgoing(&opt->packet_id.send, &pin, false);
--        ASSERT(packet_id_write(&pin, &iv_buffer, false, false));
-+    /* IV starts with packet id to make the IV unique for packet */
-+    packet_id_alloc_outgoing(&opt->packet_id.send, &pin, false);
-+    ASSERT(packet_id_write(&pin, &iv_buffer, false, false));
- 
--        /* Remainder of IV consists of implicit part (unique per session) */
--        ASSERT(buf_write(&iv_buffer, ctx->implicit_iv, ctx->implicit_iv_len));
--        ASSERT(iv_buffer.len == iv_len);
-+    /* Remainder of IV consists of implicit part (unique per session) */
-+    ASSERT(buf_write(&iv_buffer, ctx->implicit_iv, ctx->implicit_iv_len));
-+    ASSERT(iv_buffer.len == iv_len);
- 
--        /* Write explicit part of IV to work buffer */
--        ASSERT(buf_write(&work, iv, iv_len - ctx->implicit_iv_len));
--        dmsg(D_PACKET_CONTENT, "ENCRYPT IV: %s", format_hex(iv, iv_len, 0, &gc));
-+    /* Write explicit part of IV to work buffer */
-+    ASSERT(buf_write(&work, iv, iv_len - ctx->implicit_iv_len));
-+    dmsg(D_PACKET_CONTENT, "ENCRYPT IV: %s", format_hex(iv, iv_len, 0, &gc));
- 
--        /* Init cipher_ctx with IV.  key & keylen are already initialized */
--        ASSERT(cipher_ctx_reset(ctx->cipher, iv));
--    }
-+    /* Init cipher_ctx with IV.  key & keylen are already initialized */
-+    ASSERT(cipher_ctx_reset(ctx->cipher, iv));
- 
-     /* Reserve space for authentication tag */
-     mac_out = buf_write_alloc(&work, mac_len);
-     ASSERT(mac_out);
- 
--    dmsg(D_PACKET_CONTENT, "ENCRYPT FROM: %s", format_hex(BPTR(buf), BLEN(buf), 80, &gc));
-+    dmsg(D_PACKET_CONTENT, "ENCRYPT FROM: %s",
-+         format_hex(BPTR(buf), BLEN(buf), 80, &gc));
- 
-     /* Buffer overflow check */
-     if (!buf_safe(&work, buf->len + cipher_ctx_block_size(ctx->cipher)))
-@@ -125,12 +125,14 @@ openvpn_encrypt_aead(struct buffer *buf, struct buffer work,
-     }
- 
-     /* For AEAD ciphers, authenticate Additional Data, including opcode */
--    ASSERT(cipher_ctx_update_ad(ctx->cipher, BPTR(&work), BLEN(&work) - mac_len));
-+    ASSERT(cipher_ctx_update_ad(ctx->cipher, BPTR(&work),
-+                                BLEN(&work) - mac_len));
-     dmsg(D_PACKET_CONTENT, "ENCRYPT AD: %s",
-          format_hex(BPTR(&work), BLEN(&work) - mac_len, 0, &gc));
- 
-     /* Encrypt packet ID, payload */
--    ASSERT(cipher_ctx_update(ctx->cipher, BEND(&work), &outlen, BPTR(buf), BLEN(buf)));
-+    ASSERT(cipher_ctx_update(ctx->cipher, BEND(&work), &outlen, BPTR(buf),
-+                             BLEN(buf)));
-     ASSERT(buf_inc_len(&work, outlen));
- 
-     /* Flush the encryption buffer */
-@@ -142,7 +144,8 @@ openvpn_encrypt_aead(struct buffer *buf, struct buffer work,
- 
-     *buf = work;
- 
--    dmsg(D_PACKET_CONTENT, "ENCRYPT TO: %s", format_hex(BPTR(buf), BLEN(buf), 80, &gc));
-+    dmsg(D_PACKET_CONTENT, "ENCRYPT TO: %s",
-+         format_hex(BPTR(buf), BLEN(buf), 80, &gc));
- 
-     gc_free(&gc);
-     return;
-@@ -175,7 +178,8 @@ openvpn_encrypt_v1(struct buffer *buf, struct buffer work,
-         {
-             uint8_t iv_buf[OPENVPN_MAX_IV_LENGTH] = {0};
-             const int iv_size = cipher_ctx_iv_length(ctx->cipher);
--            const cipher_kt_t *cipher_kt = cipher_ctx_get_cipher_kt(ctx->cipher);
-+            const cipher_kt_t *cipher_kt =
-+                cipher_ctx_get_cipher_kt(ctx->cipher);
-             int outlen;
- 
-             /* Reserve space for HMAC */
-@@ -195,8 +199,14 @@ openvpn_encrypt_v1(struct buffer *buf, struct buffer work,
-                 if (packet_id_initialized(&opt->packet_id))
-                 {
-                     struct packet_id_net pin;
--                    packet_id_alloc_outgoing(&opt->packet_id.send, &pin, BOOL_CAST(opt->flags & CO_PACKET_ID_LONG_FORM));
--                    ASSERT(packet_id_write(&pin, buf, BOOL_CAST(opt->flags & CO_PACKET_ID_LONG_FORM), true));
-+                    packet_id_alloc_outgoing(&opt->packet_id.send, &pin,
-+                                             BOOL_CAST(opt->flags
-+                                                       & CO_PACKET_ID_LONG_FORM)
-+                                             );
-+                    ASSERT(packet_id_write(&pin, buf,
-+                                           BOOL_CAST(opt->flags
-+                                                     & CO_PACKET_ID_LONG_FORM),
-+                                           true));
-                 }
-             }
-             else if (cipher_kt_mode_ofb_cfb(cipher_kt))
-@@ -218,7 +228,8 @@ openvpn_encrypt_v1(struct buffer *buf, struct buffer work,
- 
-             /* set the IV pseudo-randomly */
-             ASSERT(buf_write(&work, iv_buf, iv_size));
--            dmsg(D_PACKET_CONTENT, "ENCRYPT IV: %s", format_hex(iv_buf, iv_size, 0, &gc));
-+            dmsg(D_PACKET_CONTENT, "ENCRYPT IV: %s",
-+                 format_hex(iv_buf, iv_size, 0, &gc));
- 
-             dmsg(D_PACKET_CONTENT, "ENCRYPT FROM: %s",
-                  format_hex(BPTR(buf), BLEN(buf), 80, &gc));
-@@ -229,19 +240,17 @@ openvpn_encrypt_v1(struct buffer *buf, struct buffer work,
-             /* Buffer overflow check */
-             if (!buf_safe(&work, buf->len + cipher_ctx_block_size(ctx->cipher)))
-             {
--                msg(D_CRYPT_ERRORS, "ENCRYPT: buffer size error, bc=%d bo=%d bl=%d wc=%d wo=%d wl=%d cbs=%d",
--                    buf->capacity,
--                    buf->offset,
--                    buf->len,
--                    work.capacity,
--                    work.offset,
--                    work.len,
-+                msg(D_CRYPT_ERRORS,
-+                    "ENCRYPT: buffer size error, bc=%d bo=%d bl=%d wc=%d wo=%d wl=%d cbs=%d",
-+                    buf->capacity, buf->offset, buf->len,
-+                    work.capacity, work.offset, work.len,
-                     cipher_ctx_block_size(ctx->cipher));
-                 goto err;
-             }
- 
-             /* Encrypt packet ID, payload */
--            ASSERT(cipher_ctx_update(ctx->cipher, BEND(&work), &outlen, BPTR(buf), BLEN(buf)));
-+            ASSERT(cipher_ctx_update(ctx->cipher, BEND(&work), &outlen,
-+                                     BPTR(buf), BLEN(buf)));
-             ASSERT(buf_inc_len(&work, outlen));
- 
-             /* Flush the encryption buffer */
-@@ -257,8 +266,13 @@ openvpn_encrypt_v1(struct buffer *buf, struct buffer work,
-             if (packet_id_initialized(&opt->packet_id))
-             {
-                 struct packet_id_net pin;
--                packet_id_alloc_outgoing(&opt->packet_id.send, &pin, BOOL_CAST(opt->flags & CO_PACKET_ID_LONG_FORM));
--                ASSERT(packet_id_write(&pin, buf, BOOL_CAST(opt->flags & CO_PACKET_ID_LONG_FORM), true));
-+                packet_id_alloc_outgoing(&opt->packet_id.send, &pin,
-+                                         BOOL_CAST(opt->flags
-+                                                   & CO_PACKET_ID_LONG_FORM));
-+                ASSERT(packet_id_write(&pin, buf,
-+                                       BOOL_CAST(opt->flags
-+                                                 & CO_PACKET_ID_LONG_FORM),
-+                                       true));
-             }
-             if (ctx->hmac)
-             {
-@@ -333,15 +347,12 @@ crypto_check_replay(struct crypto_options *opt,
-         }
-         ret = true;
-     }
--    else
-+    else if (!(opt->flags & CO_MUTE_REPLAY_WARNINGS))
-     {
--        if (!(opt->flags & CO_MUTE_REPLAY_WARNINGS))
--        {
--            msg(D_REPLAY_ERRORS, "%s: bad packet ID (may be a replay): %s -- "
--                "see the man page entry for --no-replay and --replay-window for "
--                "more info or silence this warning with --mute-replay-warnings",
--                error_prefix, packet_id_net_print(pin, true, gc));
--        }
-+        msg(D_REPLAY_ERRORS, "%s: bad packet ID (may be a replay): %s -- "
-+            "see the man page entry for --no-replay and --replay-window for "
-+            "more info or silence this warning with --mute-replay-warnings",
-+            error_prefix, packet_id_net_print(pin, true, gc));
-     }
-     return ret;
- }
-@@ -361,12 +372,8 @@ openvpn_decrypt_aead(struct buffer *buf, struct buffer work,
- {
- #ifdef HAVE_AEAD_CIPHER_MODES
-     static const char error_prefix[] = "AEAD Decrypt error";
--    struct packet_id_net pin = { 0 };
-     const struct key_ctx *ctx = &opt->key_ctx_bi.decrypt;
-     const cipher_kt_t *cipher_kt = cipher_ctx_get_cipher_kt(ctx->cipher);
--    uint8_t *tag_ptr = NULL;
--    int tag_size = 0;
--    int outlen;
-     struct gc_arena gc;
- 
-     gc_init(&gc);
-@@ -382,53 +389,55 @@ openvpn_decrypt_aead(struct buffer *buf, struct buffer work,
- 
-     ASSERT(ad_start >= buf->data && ad_start <= BPTR(buf));
- 
--    ASSERT(buf_init(&work, FRAME_HEADROOM_ADJ(frame, FRAME_HEADROOM_MARKER_DECRYPT)));
-+    ASSERT(buf_init(&work,
-+                    FRAME_HEADROOM_ADJ(frame, FRAME_HEADROOM_MARKER_DECRYPT)));
- 
-     /* IV and Packet ID required for this mode */
-     ASSERT(packet_id_initialized(&opt->packet_id));
- 
--    /* Combine IV from explicit part from packet and implicit part from context */
--    {
--        uint8_t iv[OPENVPN_MAX_IV_LENGTH] = { 0 };
--        const int iv_len = cipher_ctx_iv_length(ctx->cipher);
--        const size_t packet_iv_len = iv_len - ctx->implicit_iv_len;
-+    /* Combine IV from explicit part from packet and implicit part from ctx */
-+    uint8_t iv[OPENVPN_MAX_IV_LENGTH] = { 0 };
-+    const int iv_len = cipher_ctx_iv_length(ctx->cipher);
-+    const size_t packet_iv_len = iv_len - ctx->implicit_iv_len;
- 
--        ASSERT(ctx->implicit_iv_len <= iv_len);
--        if (buf->len + ctx->implicit_iv_len < iv_len)
--        {
--            CRYPT_ERROR("missing IV info");
--        }
-+    ASSERT(ctx->implicit_iv_len <= iv_len);
-+    if (buf->len + ctx->implicit_iv_len < iv_len)
-+    {
-+        CRYPT_ERROR("missing IV info");
-+    }
- 
--        memcpy(iv, BPTR(buf), packet_iv_len);
--        memcpy(iv + packet_iv_len, ctx->implicit_iv, ctx->implicit_iv_len);
-+    memcpy(iv, BPTR(buf), packet_iv_len);
-+    memcpy(iv + packet_iv_len, ctx->implicit_iv, ctx->implicit_iv_len);
- 
--        dmsg(D_PACKET_CONTENT, "DECRYPT IV: %s", format_hex(iv, iv_len, 0, &gc));
-+    dmsg(D_PACKET_CONTENT, "DECRYPT IV: %s", format_hex(iv, iv_len, 0, &gc));
- 
--        /* Load IV, ctx->cipher was already initialized with key & keylen */
--        if (!cipher_ctx_reset(ctx->cipher, iv))
--        {
--            CRYPT_ERROR("cipher init failed");
--        }
-+    /* Load IV, ctx->cipher was already initialized with key & keylen */
-+    if (!cipher_ctx_reset(ctx->cipher, iv))
-+    {
-+        CRYPT_ERROR("cipher init failed");
-     }
- 
-     /* Read packet ID from packet */
-+    struct packet_id_net pin = { 0 };
-     if (!packet_id_read(&pin, buf, false))
-     {
-         CRYPT_ERROR("error reading packet-id");
-     }
- 
-     /* keep the tag value to feed in later */
--    tag_size = cipher_kt_tag_size(cipher_kt);
-+    const int tag_size = cipher_kt_tag_size(cipher_kt);
-     if (buf->len < tag_size)
-     {
-         CRYPT_ERROR("missing tag");
-     }
--    tag_ptr = BPTR(buf);
-+    uint8_t *tag_ptr = BPTR(buf);
-     ASSERT(buf_advance(buf, tag_size));
--    dmsg(D_PACKET_CONTENT, "DECRYPT MAC: %s", format_hex(tag_ptr, tag_size, 0, &gc));
-+    dmsg(D_PACKET_CONTENT, "DECRYPT MAC: %s",
-+         format_hex(tag_ptr, tag_size, 0, &gc));
- #if defined(ENABLE_CRYPTO_OPENSSL) && OPENSSL_VERSION_NUMBER < 0x10001040L
-     /* OpenSSL <= 1.0.1c bug requires set tag before processing ciphertext */
--    if (!EVP_CIPHER_CTX_ctrl(ctx->cipher, EVP_CTRL_GCM_SET_TAG, tag_size, tag_ptr))
-+    if (!EVP_CIPHER_CTX_ctrl(ctx->cipher, EVP_CTRL_GCM_SET_TAG, tag_size,
-+                             tag_ptr))
-     {
-         CRYPT_ERROR("setting tag failed");
-     }
-@@ -439,7 +448,8 @@ openvpn_decrypt_aead(struct buffer *buf, struct buffer work,
-         CRYPT_ERROR("missing payload");
-     }
- 
--    dmsg(D_PACKET_CONTENT, "DECRYPT FROM: %s", format_hex(BPTR(buf), BLEN(buf), 0, &gc));
-+    dmsg(D_PACKET_CONTENT, "DECRYPT FROM: %s",
-+         format_hex(BPTR(buf), BLEN(buf), 0, &gc));
- 
-     /* Buffer overflow check (should never fail) */
-     if (!buf_safe(&work, buf->len + cipher_ctx_block_size(ctx->cipher)))
-@@ -456,6 +466,7 @@ openvpn_decrypt_aead(struct buffer *buf, struct buffer work,
-     }
- 
-     /* Decrypt and authenticate packet */
-+    int outlen;
-     if (!cipher_ctx_update(ctx->cipher, BPTR(&work), &outlen, BPTR(buf),
-                            BLEN(buf)))
-     {
-@@ -521,8 +532,9 @@ openvpn_decrypt_v1(struct buffer *buf, struct buffer work,
-         /* Verify the HMAC */
-         if (ctx->hmac)
-         {
-+            /* HMAC of ciphertext computed locally */
-+            uint8_t local_hmac[MAX_HMAC_KEY_LENGTH];
-             int hmac_len;
--            uint8_t local_hmac[MAX_HMAC_KEY_LENGTH]; /* HMAC of ciphertext computed locally */
- 
-             hmac_ctx_reset(ctx->hmac);
- 
-@@ -535,7 +547,8 @@ openvpn_decrypt_v1(struct buffer *buf, struct buffer work,
-                 CRYPT_ERROR("missing authentication info");
-             }
- 
--            hmac_ctx_update(ctx->hmac, BPTR(buf) + hmac_len, BLEN(buf) - hmac_len);
-+            hmac_ctx_update(ctx->hmac, BPTR(buf) + hmac_len,
-+                            BLEN(buf) - hmac_len);
-             hmac_ctx_final(ctx->hmac, local_hmac);
- 
-             /* Compare locally computed HMAC with packet HMAC */
-@@ -552,12 +565,15 @@ openvpn_decrypt_v1(struct buffer *buf, struct buffer work,
-         if (ctx->cipher)
-         {
-             const int iv_size = cipher_ctx_iv_length(ctx->cipher);
--            const cipher_kt_t *cipher_kt = cipher_ctx_get_cipher_kt(ctx->cipher);
-+            const cipher_kt_t *cipher_kt =
-+                cipher_ctx_get_cipher_kt(ctx->cipher);
-             uint8_t iv_buf[OPENVPN_MAX_IV_LENGTH] = { 0 };
-             int outlen;
- 
--            /* initialize work buffer with FRAME_HEADROOM bytes of prepend capacity */
--            ASSERT(buf_init(&work, FRAME_HEADROOM_ADJ(frame, FRAME_HEADROOM_MARKER_DECRYPT)));
-+            /* initialize work buffer with sufficient prepend capacity */
-+            const int work_headroom =
-+                FRAME_HEADROOM_ADJ(frame, FRAME_HEADROOM_MARKER_DECRYPT);
-+            ASSERT(buf_init(&work, work_headroom));
- 
-             /* read the IV from the packet */
-             if (buf->len < iv_size)
-@@ -566,7 +582,8 @@ openvpn_decrypt_v1(struct buffer *buf, struct buffer work,
-             }
-             memcpy(iv_buf, BPTR(buf), iv_size);
-             ASSERT(buf_advance(buf, iv_size));
--            dmsg(D_PACKET_CONTENT, "DECRYPT IV: %s", format_hex(iv_buf, iv_size, 0, &gc));
-+            dmsg(D_PACKET_CONTENT, "DECRYPT IV: %s",
-+                 format_hex(iv_buf, iv_size, 0, &gc));
- 
-             if (buf->len < 1)
-             {
-@@ -586,7 +603,8 @@ openvpn_decrypt_v1(struct buffer *buf, struct buffer work,
-             }
- 
-             /* Decrypt packet ID, payload */
--            if (!cipher_ctx_update(ctx->cipher, BPTR(&work), &outlen, BPTR(buf), BLEN(buf)))
-+            if (!cipher_ctx_update(ctx->cipher, BPTR(&work), &outlen, BPTR(buf),
-+                                   BLEN(buf)))
-             {
-                 CRYPT_ERROR("cipher update failed");
-             }
-@@ -602,37 +620,37 @@ openvpn_decrypt_v1(struct buffer *buf, struct buffer work,
-             dmsg(D_PACKET_CONTENT, "DECRYPT TO: %s",
-                  format_hex(BPTR(&work), BLEN(&work), 80, &gc));
- 
--            /* Get packet ID from plaintext buffer or IV, depending on cipher mode */
-+            /* Get packet ID from plaintext buffer or IV */
-+            if (cipher_kt_mode_cbc(cipher_kt))
-             {
--                if (cipher_kt_mode_cbc(cipher_kt))
-+                if (packet_id_initialized(&opt->packet_id))
-                 {
--                    if (packet_id_initialized(&opt->packet_id))
-+                    if (!packet_id_read(&pin, &work,
-+                                        BOOL_CAST(opt->flags
-+                                                  & CO_PACKET_ID_LONG_FORM)))
-                     {
--                        if (!packet_id_read(&pin, &work, BOOL_CAST(opt->flags & CO_PACKET_ID_LONG_FORM)))
--                        {
--                            CRYPT_ERROR("error reading CBC packet-id");
--                        }
--                        have_pin = true;
-+                        CRYPT_ERROR("error reading CBC packet-id");
-                     }
-+                    have_pin = true;
-                 }
--                else if (cipher_kt_mode_ofb_cfb(cipher_kt))
--                {
--                    struct buffer b;
-+            }
-+            else if (cipher_kt_mode_ofb_cfb(cipher_kt))
-+            {
-+                struct buffer b;
- 
--                    /* packet-ID required for this mode. */
--                    ASSERT(packet_id_initialized(&opt->packet_id));
-+                /* packet-ID required for this mode. */
-+                ASSERT(packet_id_initialized(&opt->packet_id));
- 
--                    buf_set_read(&b, iv_buf, iv_size);
--                    if (!packet_id_read(&pin, &b, true))
--                    {
--                        CRYPT_ERROR("error reading CFB/OFB packet-id");
--                    }
--                    have_pin = true;
--                }
--                else /* We only support CBC, CFB, or OFB modes right now */
-+                buf_set_read(&b, iv_buf, iv_size);
-+                if (!packet_id_read(&pin, &b, true))
-                 {
--                    ASSERT(0);
-+                    CRYPT_ERROR("error reading CFB/OFB packet-id");
-                 }
-+                have_pin = true;
-+            }
-+            else /* We only support CBC, CFB, or OFB modes right now */
-+            {
-+                ASSERT(0);
-             }
-         }
-         else
-@@ -640,7 +658,9 @@ openvpn_decrypt_v1(struct buffer *buf, struct buffer work,
-             work = *buf;
-             if (packet_id_initialized(&opt->packet_id))
-             {
--                if (!packet_id_read(&pin, &work, BOOL_CAST(opt->flags & CO_PACKET_ID_LONG_FORM)))
-+                if (!packet_id_read(&pin, &work,
-+                                    BOOL_CAST(opt->flags
-+                                              & CO_PACKET_ID_LONG_FORM)))
-                 {
-                     CRYPT_ERROR("error reading packet-id");
-                 }
-@@ -730,8 +750,8 @@ size_t
- crypto_max_overhead(void)
- {
-     return packet_id_size(true) + OPENVPN_MAX_IV_LENGTH
--           +OPENVPN_MAX_CIPHER_BLOCK_SIZE
--           +max_int(OPENVPN_MAX_HMAC_SIZE, OPENVPN_AEAD_TAG_LENGTH);
-+           + OPENVPN_MAX_CIPHER_BLOCK_SIZE
-+           + max_int(OPENVPN_MAX_HMAC_SIZE, OPENVPN_AEAD_TAG_LENGTH);
- }
- 
- /*
-@@ -749,7 +769,8 @@ init_key_type(struct key_type *kt, const char *ciphername,
-     CLEAR(*kt);
-     if (strcmp(ciphername, "none") != 0)
-     {
--        kt->cipher = cipher_kt_get(translate_cipher_name_from_openvpn(ciphername));
-+        kt->cipher = cipher_kt_get(translate_cipher_name_from_openvpn(
-+                                       ciphername));
-         if (!kt->cipher)
-         {
-             msg(M_FATAL, "Cipher %s not supported", ciphername);
-@@ -775,14 +796,16 @@ init_key_type(struct key_type *kt, const char *ciphername,
- 
-         if (OPENVPN_MAX_CIPHER_BLOCK_SIZE < cipher_kt_block_size(kt->cipher))
-         {
--            msg(M_FATAL, "Cipher '%s' not allowed: block size too big.", ciphername);
-+            msg(M_FATAL, "Cipher '%s' not allowed: block size too big.",
-+                ciphername);
-         }
-     }
-     else
-     {
-         if (warn)
-         {
--            msg(M_WARN, "******* WARNING *******: null cipher specified, no encryption will be used");
-+            msg(M_WARN,
-+                "******* WARNING *******: null cipher specified, no encryption will be used");
-         }
-     }
-     if (strcmp(authname, "none") != 0)
-@@ -794,7 +817,8 @@ init_key_type(struct key_type *kt, const char *ciphername,
- 
-             if (OPENVPN_MAX_HMAC_SIZE < kt->hmac_length)
-             {
--                msg(M_FATAL, "HMAC '%s' not allowed: digest size too big.", authname);
-+                msg(M_FATAL, "HMAC '%s' not allowed: digest size too big.",
-+                    authname);
-             }
-         }
-     }
-@@ -802,16 +826,16 @@ init_key_type(struct key_type *kt, const char *ciphername,
-     {
-         if (warn)
-         {
--            msg(M_WARN, "******* WARNING *******: null MAC specified, no authentication will be used");
-+            msg(M_WARN,
-+                "******* WARNING *******: null MAC specified, no authentication will be used");
-         }
-     }
- }
- 
- /* given a key and key_type, build a key_ctx */
- void
--init_key_ctx(struct key_ctx *ctx, struct key *key,
--             const struct key_type *kt, int enc,
--             const char *prefix)
-+init_key_ctx(struct key_ctx *ctx, struct key *key, const struct key_type *kt,
-+             int enc, const char *prefix)
- {
-     struct gc_arena gc = gc_new();
-     CLEAR(*ctx);
-@@ -825,7 +849,7 @@ init_key_ctx(struct key_ctx *ctx, struct key *key,
-         msg(D_HANDSHAKE, "%s: Cipher '%s' initialized with %d bit key",
-             prefix,
-             translate_cipher_name_to_openvpn(cipher_kt_name(kt->cipher)),
--            kt->cipher_length *8);
-+            kt->cipher_length * 8);
- 
-         dmsg(D_SHOW_KEYS, "%s: CIPHER KEY: %s", prefix,
-              format_hex(key->cipher, kt->cipher_length, 0, &gc));
-@@ -853,9 +877,7 @@ init_key_ctx(struct key_ctx *ctx, struct key *key,
-              format_hex(key->hmac, kt->hmac_length, 0, &gc));
- 
-         dmsg(D_CRYPTO_DEBUG, "%s: HMAC size=%d block_size=%d",
--             prefix,
--             md_kt_size(kt->digest),
--             hmac_ctx_size(ctx->hmac));
-+             prefix, md_kt_size(kt->digest), hmac_ctx_size(ctx->hmac));
- 
-     }
-     gc_free(&gc);
-@@ -891,10 +913,12 @@ key_is_zero(struct key *key, const struct key_type *kt)
- {
-     int i;
-     for (i = 0; i < kt->cipher_length; ++i)
-+    {
-         if (key->cipher[i])
-         {
-             return false;
-         }
-+    }
-     msg(D_CRYPT_ERRORS, "CRYPTO INFO: WARNING: zero key detected");
-     return true;
- }
-@@ -907,17 +931,13 @@ check_key(struct key *key, const struct key_type *kt)
- {
-     if (kt->cipher)
-     {
--        /*
--         * Check for zero key
--         */
-+        /* Check for zero key */
-         if (key_is_zero(key, kt))
-         {
-             return false;
-         }
- 
--        /*
--         * Check for weak or semi-weak DES keys.
--         */
-+        /* Check for weak or semi-weak DES keys. */
-         {
-             const int ndc = key_des_num_cblocks(kt->cipher);
-             if (ndc)
-@@ -962,7 +982,8 @@ fixup_key(struct key *key, const struct key_type *kt)
-         {
-             if (memcmp(orig.cipher, key->cipher, kt->cipher_length))
-             {
--                dmsg(D_CRYPTO_DEBUG, "CRYPTO INFO: fixup_key: before=%s after=%s",
-+                dmsg(D_CRYPTO_DEBUG,
-+                     "CRYPTO INFO: fixup_key: before=%s after=%s",
-                      format_hex(orig.cipher, kt->cipher_length, 0, &gc),
-                      format_hex(key->cipher, kt->cipher_length, 0, &gc));
-             }
-@@ -1000,12 +1021,14 @@ generate_key_random(struct key *key, const struct key_type *kt)
-         CLEAR(*key);
-         if (kt)
-         {
--            if (kt->cipher && kt->cipher_length > 0 && kt->cipher_length <= cipher_len)
-+            if (kt->cipher && kt->cipher_length > 0
-+                && kt->cipher_length <= cipher_len)
-             {
-                 cipher_len = kt->cipher_length;
-             }
- 
--            if (kt->digest && kt->hmac_length > 0 && kt->hmac_length <= hmac_len)
-+            if (kt->digest && kt->hmac_length > 0
-+                && kt->hmac_length <= hmac_len)
-             {
-                 hmac_len = kt->hmac_length;
-             }
-@@ -1013,11 +1036,14 @@ generate_key_random(struct key *key, const struct key_type *kt)
-         if (!rand_bytes(key->cipher, cipher_len)
-             || !rand_bytes(key->hmac, hmac_len))
-         {
--            msg(M_FATAL, "ERROR: Random number generator cannot obtain entropy for key generation");
-+            msg(M_FATAL,
-+                "ERROR: Random number generator cannot obtain entropy for key generation");
-         }
- 
--        dmsg(D_SHOW_KEY_SOURCE, "Cipher source entropy: %s", format_hex(key->cipher, cipher_len, 0, &gc));
--        dmsg(D_SHOW_KEY_SOURCE, "HMAC source entropy: %s", format_hex(key->hmac, hmac_len, 0, &gc));
-+        dmsg(D_SHOW_KEY_SOURCE, "Cipher source entropy: %s",
-+             format_hex(key->cipher, cipher_len, 0, &gc));
-+        dmsg(D_SHOW_KEY_SOURCE, "HMAC source entropy: %s",
-+             format_hex(key->hmac, hmac_len, 0, &gc));
- 
-         if (kt)
-         {
-@@ -1039,17 +1065,13 @@ key2_print(const struct key2 *k,
- {
-     struct gc_arena gc = gc_new();
-     ASSERT(k->n == 2);
--    dmsg(D_SHOW_KEY_SOURCE, "%s (cipher): %s",
--         prefix0,
-+    dmsg(D_SHOW_KEY_SOURCE, "%s (cipher): %s", prefix0,
-          format_hex(k->keys[0].cipher, kt->cipher_length, 0, &gc));
--    dmsg(D_SHOW_KEY_SOURCE, "%s (hmac): %s",
--         prefix0,
-+    dmsg(D_SHOW_KEY_SOURCE, "%s (hmac): %s", prefix0,
-          format_hex(k->keys[0].hmac, kt->hmac_length, 0, &gc));
--    dmsg(D_SHOW_KEY_SOURCE, "%s (cipher): %s",
--         prefix1,
-+    dmsg(D_SHOW_KEY_SOURCE, "%s (cipher): %s", prefix1,
-          format_hex(k->keys[1].cipher, kt->cipher_length, 0, &gc));
--    dmsg(D_SHOW_KEY_SOURCE, "%s (hmac): %s",
--         prefix1,
-+    dmsg(D_SHOW_KEY_SOURCE, "%s (hmac): %s", prefix1,
-          format_hex(k->keys[1].hmac, kt->hmac_length, 0, &gc));
-     gc_free(&gc);
- }
-@@ -1071,25 +1093,22 @@ test_crypto(struct crypto_options *co, struct frame *frame)
- 
- #ifdef HAVE_AEAD_CIPHER_MODES
-     /* init implicit IV */
-+    const cipher_kt_t *cipher =
-+        cipher_ctx_get_cipher_kt(co->key_ctx_bi.encrypt.cipher);
-+    if (cipher_kt_mode_aead(cipher))
-     {
--        const cipher_kt_t *cipher =
--            cipher_ctx_get_cipher_kt(co->key_ctx_bi.encrypt.cipher);
-+        size_t impl_iv_len = cipher_kt_iv_size(cipher) - sizeof(packet_id_type);
-+        ASSERT(cipher_kt_iv_size(cipher) <= OPENVPN_MAX_IV_LENGTH);
-+        ASSERT(cipher_kt_iv_size(cipher) >= OPENVPN_AEAD_MIN_IV_LEN);
- 
--        if (cipher_kt_mode_aead(cipher))
--        {
--            size_t impl_iv_len = cipher_kt_iv_size(cipher) - sizeof(packet_id_type);
--            ASSERT(cipher_kt_iv_size(cipher) <= OPENVPN_MAX_IV_LENGTH);
--            ASSERT(cipher_kt_iv_size(cipher) >= OPENVPN_AEAD_MIN_IV_LEN);
--
--            /* Generate dummy implicit IV */
--            ASSERT(rand_bytes(co->key_ctx_bi.encrypt.implicit_iv,
--                              OPENVPN_MAX_IV_LENGTH));
--            co->key_ctx_bi.encrypt.implicit_iv_len = impl_iv_len;
--
--            memcpy(co->key_ctx_bi.decrypt.implicit_iv,
--                   co->key_ctx_bi.encrypt.implicit_iv, OPENVPN_MAX_IV_LENGTH);
--            co->key_ctx_bi.decrypt.implicit_iv_len = impl_iv_len;
--        }
-+        /* Generate dummy implicit IV */
-+        ASSERT(rand_bytes(co->key_ctx_bi.encrypt.implicit_iv,
-+                          OPENVPN_MAX_IV_LENGTH));
-+        co->key_ctx_bi.encrypt.implicit_iv_len = impl_iv_len;
-+
-+        memcpy(co->key_ctx_bi.decrypt.implicit_iv,
-+               co->key_ctx_bi.encrypt.implicit_iv, OPENVPN_MAX_IV_LENGTH);
-+        co->key_ctx_bi.decrypt.implicit_iv_len = impl_iv_len;
-     }
- #endif /* ifdef HAVE_AEAD_CIPHER_MODES */
- 
-@@ -1114,7 +1133,7 @@ test_crypto(struct crypto_options *co, struct frame *frame)
-         ASSERT(buf_p);
-         memcpy(buf_p, BPTR(&src), BLEN(&src));
- 
--        /* initialize work buffer with FRAME_HEADROOM bytes of prepend capacity */
-+        /* initialize work buffer with sufficient prepend capacity */
-         ASSERT(buf_init(&encrypt_workspace, FRAME_HEADROOM(frame)));
- 
-         /* encrypt */
-@@ -1126,7 +1145,8 @@ test_crypto(struct crypto_options *co, struct frame *frame)
-         /* compare */
-         if (buf.len != src.len)
-         {
--            msg(M_FATAL, "SELF TEST FAILED, src.len=%d buf.len=%d", src.len, buf.len);
-+            msg(M_FATAL, "SELF TEST FAILED, src.len=%d buf.len=%d", src.len,
-+                buf.len);
-         }
-         for (j = 0; j < i; ++j)
-         {
-@@ -1134,7 +1154,8 @@ test_crypto(struct crypto_options *co, struct frame *frame)
-             const uint8_t out = *(BPTR(&buf) + j);
-             if (in != out)
-             {
--                msg(M_FATAL, "SELF TEST FAILED, pos=%d in=%d out=%d", j, in, out);
-+                msg(M_FATAL, "SELF TEST FAILED, pos=%d in=%d out=%d", j, in,
-+                    out);
-             }
-         }
-     }
-@@ -1143,9 +1164,10 @@ test_crypto(struct crypto_options *co, struct frame *frame)
- }
- 
- void
--crypto_read_openvpn_key(const struct key_type *key_type,
--                        struct key_ctx_bi *ctx, const char *key_file, const char *key_inline,
--                        const int key_direction, const char *key_name, const char *opt_name)
-+crypto_read_openvpn_key(const struct key_type *key_type, struct key_ctx_bi *ctx,
-+                        const char *key_file, const char *key_inline,
-+                        const int key_direction, const char *key_name,
-+                        const char *opt_name)
- {
-     struct key2 key2;
-     struct key_direction_state kds;
-@@ -1153,7 +1175,7 @@ crypto_read_openvpn_key(const struct key_type *key_type,
- 
-     if (key_inline)
-     {
--        read_key_file(&key2, key_inline, RKF_MUST_SUCCEED|RKF_INLINE);
-+        read_key_file(&key2, key_inline, RKF_MUST_SUCCEED | RKF_INLINE);
-     }
-     else
-     {
-@@ -1237,14 +1259,16 @@ read_key_file(struct key2 *key2, const char *file, const unsigned int flags)
-      * Key can be provided as a filename in 'file' or if RKF_INLINE
-      * is set, the actual key data itself in ascii form.
-      */
--    if (flags & RKF_INLINE) /* 'file' is a string containing ascii representation of key */
-+    if (flags & RKF_INLINE)
-     {
-+        /* 'file' is a string containing ascii representation of key */
-         size = strlen(file) + 1;
-         buf_set_read(&in, (const uint8_t *)file, size);
-         error_filename = INLINE_FILE_TAG;
-     }
--    else /* 'file' is a filename which refers to a file containing the ascii key */
-+    else
-     {
-+        /* 'file' is the filename of a file containing the ascii key */
-         in = alloc_buf_gc(2048, &gc);
-         fd = platform_open(file, O_RDONLY, 0);
-         if (fd == -1)
-@@ -1258,7 +1282,8 @@ read_key_file(struct key2 *key2, const char *file, const unsigned int flags)
-         }
-         if (size == in.capacity)
-         {
--            msg(M_FATAL, "Key file ('%s') can be a maximum of %d bytes", file, (int)in.capacity);
-+            msg(M_FATAL, "Key file ('%s') can be a maximum of %d bytes",
-+                file, (int)in.capacity);
-         }
-         close(fd);
-     }
-@@ -1290,7 +1315,8 @@ read_key_file(struct key2 *key2, const char *file, const unsigned int flags)
-                 }
- 
-                 /* first char of footer */
--                if ((state == PARSE_DATA || state == PARSE_DATA_COMPLETE) && c == '-')
-+                if ((state == PARSE_DATA || state == PARSE_DATA_COMPLETE)
-+                    && c == '-')
-                 {
-                     state = PARSE_FOOT;
-                 }
-@@ -1345,7 +1371,7 @@ read_key_file(struct key2 *key2, const char *file, const unsigned int flags)
-                 else
-                 {
-                     msg(M_FATAL,
--                        (isprint(c) ? printable_char_fmt : unprintable_char_fmt),
-+                        isprint(c) ? printable_char_fmt : unprintable_char_fmt,
-                         c, line_num, error_filename, count, onekeylen, keylen);
-                 }
-             }
-@@ -1366,13 +1392,15 @@ read_key_file(struct key2 *key2, const char *file, const unsigned int flags)
-     {
-         if (!key2->n)
-         {
--            msg(M_FATAL, "Insufficient key material or header text not found in file '%s' (%d/%d/%d bytes found/min/max)",
-+            msg(M_FATAL,
-+                "Insufficient key material or header text not found in file '%s' (%d/%d/%d bytes found/min/max)",
-                 error_filename, count, onekeylen, keylen);
-         }
- 
-         if (state != PARSE_FINISHED)
-         {
--            msg(M_FATAL, "Footer text not found in file '%s' (%d/%d/%d bytes found/min/max)",
-+            msg(M_FATAL,
-+                "Footer text not found in file '%s' (%d/%d/%d bytes found/min/max)",
-                 error_filename, count, onekeylen, keylen);
-         }
-     }
-@@ -1383,24 +1411,13 @@ read_key_file(struct key2 *key2, const char *file, const unsigned int flags)
-         buf_clear(&in);
-     }
- 
--#if 0
--    /* DEBUGGING */
-+    dmsg(D_SHOW_KEYS, "%s: KEY READ, n=%d\n", __func__, key2->n);
-+    for (int i = 0; i < (int) SIZE(key2->keys); ++i)
-     {
--        int i;
--        printf("KEY READ, n=%d\n", key2->n);
--        for (i = 0; i < (int) SIZE(key2->keys); ++i)
--        {
--            /* format key as ascii */
--            const char *fmt = format_hex_ex((const uint8_t *)&key2->keys[i],
--                                            sizeof(key2->keys[i]),
--                                            0,
--                                            16,
--                                            "\n",
--                                            &gc);
--            printf("[%d]\n%s\n\n", i, fmt);
--        }
-+        const char *fmt = format_hex_ex((const uint8_t *)&key2->keys[i],
-+                                        sizeof(key2->keys[i]), 0, 16, "\n", &gc);
-+        dmsg(D_SHOW_KEYS, "[%d]\n%s\n\n", i, fmt);
-     }
--#endif
- 
-     /* pop our garbage collection level */
-     gc_free(&gc);
-@@ -1426,7 +1443,8 @@ write_key_file(const int nkeys, const char *filename)
-     const int bytes_per_line = 16;
- 
-     /* open key file */
--    fd = platform_open(filename, O_CREAT | O_TRUNC | O_WRONLY, S_IRUSR | S_IWUSR);
-+    fd = platform_open(filename, O_CREAT | O_TRUNC | O_WRONLY,
-+                       S_IRUSR | S_IWUSR);
- 
-     if (fd == -1)
-     {
-@@ -1444,12 +1462,8 @@ write_key_file(const int nkeys, const char *filename)
-         generate_key_random(&key, NULL);
- 
-         /* format key as ascii */
--        fmt = format_hex_ex((const uint8_t *)&key,
--                            sizeof(key),
--                            0,
--                            bytes_per_line,
--                            "\n",
--                            &gc);
-+        fmt = format_hex_ex((const uint8_t *)&key, sizeof(key), 0,
-+                            bytes_per_line, "\n", &gc);
- 
-         /* increment random bits counter */
-         nbits += sizeof(key) * 8;
-@@ -1486,14 +1500,19 @@ write_key_file(const int nkeys, const char *filename)
- }
- 
- void
--must_have_n_keys(const char *filename, const char *option, const struct key2 *key2, int n)
-+must_have_n_keys(const char *filename, const char *option,
-+                 const struct key2 *key2, int n)
- {
-     if (key2->n < n)
-     {
- #ifdef ENABLE_SMALL
--        msg(M_FATAL, "Key file '%s' used in --%s contains insufficient key material [keys found=%d required=%d]", filename, option, key2->n, n);
-+        msg(M_FATAL,
-+            "Key file '%s' used in --%s contains insufficient key material [keys found=%d required=%d]",
-+            filename, option, key2->n, n);
- #else
--        msg(M_FATAL, "Key file '%s' used in --%s contains insufficient key material [keys found=%d required=%d] -- try generating a new key file with '" PACKAGE " --genkey --secret [file]', or use the existing key file in bidirectional mode by specifying --%s without a key direction parameter", filename, option, key2->n, n, option);
-+        msg(M_FATAL,
-+            "Key file '%s' used in --%s contains insufficient key material [keys found=%d required=%d] -- try generating a new key file with '" PACKAGE " --genkey --secret [file]', or use the existing key file in bidirectional mode by specifying --%s without a key direction parameter",
-+            filename, option, key2->n, n, option);
- #endif
-     }
- }
-@@ -1573,7 +1592,8 @@ key_direction_state_init(struct key_direction_state *kds, int key_direction)
- }
- 
- void
--verify_fix_key2(struct key2 *key2, const struct key_type *kt, const char *shared_secret_file)
-+verify_fix_key2(struct key2 *key2, const struct key_type *kt,
-+                const char *shared_secret_file)
- {
-     int i;
- 
-@@ -1585,8 +1605,9 @@ verify_fix_key2(struct key2 *key2, const struct key_type *kt, const char *shared
-         /* This should be a very improbable failure */
-         if (!check_key(&key2->keys[i], kt))
-         {
--            msg(M_FATAL, "Key #%d in '%s' is bad.  Try making a new key with --genkey.",
--                i+1, shared_secret_file);
-+            msg(M_FATAL,
-+                "Key #%d in '%s' is bad.  Try making a new key with --genkey.",
-+                i + 1, shared_secret_file);
-         }
-     }
- }
-@@ -1687,14 +1708,17 @@ prng_reset_nonce()
- #if 1 /* Must be 1 for real usage */
-     if (!rand_bytes(nonce_data, size))
-     {
--        msg(M_FATAL, "ERROR: Random number generator cannot obtain entropy for PRNG");
-+        msg(M_FATAL,
-+            "ERROR: Random number generator cannot obtain entropy for PRNG");
-     }
--#else
-+#else  /* if 1 */
-     /* Only for testing -- will cause a predictable PRNG sequence */
-     {
-         int i;
-         for (i = 0; i < size; ++i)
-+        {
-             nonce_data[i] = (uint8_t) i;
-+        }
-     }
- #endif
- }
-@@ -1706,15 +1730,16 @@ prng_init(const char *md_name, const int nonce_secret_len_parm)
-     nonce_md = md_name ? md_kt_get(md_name) : NULL;
-     if (nonce_md)
-     {
--        ASSERT(nonce_secret_len_parm >= NONCE_SECRET_LEN_MIN && nonce_secret_len_parm <= NONCE_SECRET_LEN_MAX);
-+        ASSERT(nonce_secret_len_parm >= NONCE_SECRET_LEN_MIN
-+               && nonce_secret_len_parm <= NONCE_SECRET_LEN_MAX);
-         nonce_secret_len = nonce_secret_len_parm;
--        {
--            const int size = md_kt_size(nonce_md) + nonce_secret_len;
--            dmsg(D_CRYPTO_DEBUG, "PRNG init md=%s size=%d", md_kt_name(nonce_md), size);
--            nonce_data = (uint8_t *) malloc(size);
--            check_malloc_return(nonce_data);
--            prng_reset_nonce();
--        }
-+
-+        const int size = md_kt_size(nonce_md) + nonce_secret_len;
-+        dmsg(D_CRYPTO_DEBUG, "PRNG init md=%s size=%d",
-+             md_kt_name(nonce_md), size);
-+        nonce_data = (uint8_t *) malloc(size);
-+        check_malloc_return(nonce_data);
-+        prng_reset_nonce();
-     }
- }
- 
-@@ -1738,7 +1763,8 @@ prng_bytes(uint8_t *output, int len)
-         while (len > 0)
-         {
-             const int blen = min_int(len, md_size);
--            md_full(nonce_md, nonce_data, md_size + nonce_secret_len, nonce_data);
-+            md_full(nonce_md, nonce_data, md_size + nonce_secret_len,
-+                    nonce_data);
-             memcpy(output, nonce_data, blen);
-             output += blen;
-             len -= blen;
-diff --git a/src/openvpn/crypto.h b/src/openvpn/crypto.h
-index a7a0941..647358d 100644
---- a/src/openvpn/crypto.h
-+++ b/src/openvpn/crypto.h
-@@ -37,8 +37,8 @@
-  *  - \b Peer-id, if using the v2 data channel packet format (see @ref
-  *    network_protocol "Network protocol").
-  *  - \b HMAC, covering the ciphertext IV + ciphertext. The HMAC size depends
-- *    on the \c \-\-auth option. If \c \-\-auth \c none is specified, there is no
-- *    HMAC at all.
-+ *    on the \c \-\-auth option. If \c \-\-auth \c none is specified, there is
-+ *    no HMAC at all.
-  *  - \b Ciphertext \b IV. The IV size depends on the \c \-\-cipher option.
-  *  - \b Packet \b ID, a 32-bit incrementing packet counter that provides replay
-  *    protection (if not disabled by \c \-\-no-replay).
-@@ -173,9 +173,12 @@ struct key_ctx
-     size_t implicit_iv_len;     /**< The length of implicit_iv */
- };
- 
--#define KEY_DIRECTION_BIDIRECTIONAL 0 /* same keys for both directions */
--#define KEY_DIRECTION_NORMAL        1 /* encrypt with keys[0], decrypt with keys[1] */
--#define KEY_DIRECTION_INVERSE       2 /* encrypt with keys[1], decrypt with keys[0] */
-+/* same keys for both directions */
-+#define KEY_DIRECTION_BIDIRECTIONAL 0
-+/* encrypt with keys[0], decrypt with keys[1] */
-+#define KEY_DIRECTION_NORMAL        1
-+/* encrypt with keys[1], decrypt with keys[0] */
-+#define KEY_DIRECTION_INVERSE       2
- 
- /**
-  * Container for bidirectional cipher and HMAC %key material.
-@@ -262,7 +265,8 @@ struct crypto_options
- };
- 
- #define CRYPT_ERROR(format) \
--    do { msg(D_CRYPT_ERRORS, "%s: " format, error_prefix); goto error_exit; } while (false)
-+    do { msg(D_CRYPT_ERRORS, "%s: " format, error_prefix); goto error_exit; } \
-+    while (false)
- 
- /**
-  * Minimal IV length for AEAD mode ciphers (in bytes):
-@@ -272,7 +276,8 @@ struct crypto_options
- 
- #define RKF_MUST_SUCCEED (1<<0)
- #define RKF_INLINE       (1<<1)
--void read_key_file(struct key2 *key2, const char *file, const unsigned int flags);
-+void read_key_file(struct key2 *key2, const char *file,
-+                   const unsigned int flags);
- 
- int write_key_file(const int nkeys, const char *filename);
- 
-@@ -393,7 +398,9 @@ bool openvpn_decrypt(struct buffer *buf, struct buffer work,
-                      struct crypto_options *opt, const struct frame *frame,
-                      const uint8_t *ad_start);
- 
--/** @} name Functions for performing security operations on data channel packets */
-+/**
-+ * @} name Functions for performing security operations on data channel packets
-+ */
- 
- /**
-  * Check packet ID for replay, and perform replay administration.
-@@ -406,7 +413,8 @@ bool openvpn_decrypt(struct buffer *buf, struct buffer work,
-  * @return true if packet ID is validated to be not a replay, false otherwise.
-  */
- bool crypto_check_replay(struct crypto_options *opt,
--                         const struct packet_id_net *pin, const char *error_prefix,
-+                         const struct packet_id_net *pin,
-+                         const char *error_prefix,
-                          struct gc_arena *gc);
- 
- 
-@@ -461,11 +469,14 @@ void test_crypto(struct crypto_options *co, struct frame *f);
- 
- /* key direction functions */
- 
--void key_direction_state_init(struct key_direction_state *kds, int key_direction);
-+void key_direction_state_init(struct key_direction_state *kds,
-+                              int key_direction);
- 
--void verify_fix_key2(struct key2 *key2, const struct key_type *kt, const char *shared_secret_file);
-+void verify_fix_key2(struct key2 *key2, const struct key_type *kt,
-+                     const char *shared_secret_file);
- 
--void must_have_n_keys(const char *filename, const char *option, const struct key2 *key2, int n);
-+void must_have_n_keys(const char *filename, const char *option,
-+                      const struct key2 *key2, int n);
- 
- int ascii2keydirection(int msglevel, const char *str);
- 
-@@ -478,8 +489,10 @@ void key2_print(const struct key2 *k,
-                 const char *prefix1);
- 
- void crypto_read_openvpn_key(const struct key_type *key_type,
--                             struct key_ctx_bi *ctx, const char *key_file, const char *key_inline,
--                             const int key_direction, const char *key_name, const char *opt_name);
-+                             struct key_ctx_bi *ctx, const char *key_file,
-+                             const char *key_inline,
-+                             const int key_direction, const char *key_name,
-+                             const char *opt_name);
- 
- /*
-  * Inline functions
-@@ -496,7 +509,8 @@ memcmp_constant_time(const void *a, const void *b, size_t size) {
-     int ret = 0;
-     size_t i;
- 
--    for (i = 0; i < size; i++) {
-+    for (i = 0; i < size; i++)
-+    {
-         ret |= *a1++ ^ *b1++;
-     }
- 
-@@ -506,7 +520,8 @@ memcmp_constant_time(const void *a, const void *b, size_t size) {
- static inline bool
- key_ctx_bi_defined(const struct key_ctx_bi *key)
- {
--    return key->encrypt.cipher || key->encrypt.hmac || key->decrypt.cipher || key->decrypt.hmac;
-+    return key->encrypt.cipher || key->encrypt.hmac || key->decrypt.cipher
-+           || key->decrypt.hmac;
- }
- 
- 
-diff --git a/src/openvpn/crypto_mbedtls.c b/src/openvpn/crypto_mbedtls.c
-index 942684c..405d03a 100644
---- a/src/openvpn/crypto_mbedtls.c
-+++ b/src/openvpn/crypto_mbedtls.c
-@@ -63,8 +63,8 @@
- void
- crypto_init_lib_engine(const char *engine_name)
- {
--    msg(M_WARN, "Note: mbed TLS hardware crypto engine functionality is not "
--        "available");
-+    msg(M_WARN,
-+        "Note: mbed TLS hardware crypto engine functionality is not available");
- }
- 
- /*
-@@ -137,7 +137,8 @@ const cipher_name_pair cipher_name_translation_table[] = {
-     { "CAMELLIA-256-CFB", "CAMELLIA-256-CFB128" }
- };
- const size_t cipher_name_translation_table_count =
--    sizeof(cipher_name_translation_table) / sizeof(*cipher_name_translation_table);
-+    sizeof(cipher_name_translation_table)
-+    / sizeof(*cipher_name_translation_table);
- 
- static void
- print_cipher(const cipher_kt_t *info)
-@@ -148,10 +149,10 @@ print_cipher(const cipher_kt_t *info)
- #endif
-                  ))
-     {
--        const char *ssl_only = cipher_kt_mode_cbc(info) ?
--                               "" : ", TLS client/server mode only";
--        const char *var_key_size = info->flags & MBEDTLS_CIPHER_VARIABLE_KEY_LEN ?
--                                   " by default" : "";
-+        const char *ssl_only =
-+            cipher_kt_mode_cbc(info) ? "" : ", TLS client/server mode only";
-+        const char *var_key_size =
-+            info->flags & MBEDTLS_CIPHER_VARIABLE_KEY_LEN ? " by default" : "";
- 
-         printf("%s  (%d bit key%s, %d bit block%s)\n",
-                cipher_kt_name(info), cipher_kt_key_size(info) * 8, var_key_size,
-@@ -226,8 +227,7 @@ show_available_digests()
- void
- show_available_engines()
- {
--    printf("Sorry, mbed TLS hardware crypto engine functionality is not "
--           "available\n");
-+    printf("mbed TLS hardware crypto engine functionality is not available\n");
- }
- 
- /*
-@@ -260,14 +260,16 @@ rand_ctx_get()
-          * 800-90 section 8.7.1). We have very little information at this stage.
-          * Include Program Name, memory address of the context and PID.
-          */
--        buf_printf(&pers_string, "OpenVPN %0u %p %s", platform_getpid(), &cd_ctx, time_string(0, 0, 0, &gc));
-+        buf_printf(&pers_string, "OpenVPN %0u %p %s",
-+                   platform_getpid(), &cd_ctx, time_string(0, 0, 0, &gc));
- 
-         /* Initialise mbed TLS RNG, and built-in entropy sources */
-         mbedtls_entropy_init(&ec);
- 
-         mbedtls_ctr_drbg_init(&cd_ctx);
-         if (!mbed_ok(mbedtls_ctr_drbg_seed(&cd_ctx, mbedtls_entropy_func, &ec,
--                                           BPTR(&pers_string), BLEN(&pers_string))))
-+                                           BPTR(&pers_string),
-+                                           BLEN(&pers_string))))
-         {
-             msg(M_FATAL, "Failed to initialize random generator");
-         }
-@@ -350,17 +352,20 @@ key_des_check(uint8_t *key, int key_len, int ndc)
-         unsigned char *key = buf_read_alloc(&b, MBEDTLS_DES_KEY_SIZE);
-         if (!key)
-         {
--            msg(D_CRYPT_ERRORS, "CRYPTO INFO: check_key_DES: insufficient key material");
-+            msg(D_CRYPT_ERRORS,
-+                "CRYPTO INFO: check_key_DES: insufficient key material");
-             goto err;
-         }
-         if (0 != mbedtls_des_key_check_weak(key))
-         {
--            msg(D_CRYPT_ERRORS, "CRYPTO INFO: check_key_DES: weak key detected");
-+            msg(D_CRYPT_ERRORS,
-+                "CRYPTO INFO: check_key_DES: weak key detected");
-             goto err;
-         }
-         if (0 != mbedtls_des_key_check_key_parity(key))
-         {
--            msg(D_CRYPT_ERRORS, "CRYPTO INFO: check_key_DES: bad parity detected");
-+            msg(D_CRYPT_ERRORS,
-+                "CRYPTO INFO: check_key_DES: bad parity detected");
-             goto err;
-         }
-     }
-@@ -382,7 +387,8 @@ key_des_fixup(uint8_t *key, int key_len, int ndc)
-         unsigned char *key = buf_read_alloc(&b, MBEDTLS_DES_KEY_SIZE);
-         if (!key)
-         {
--            msg(D_CRYPT_ERRORS, "CRYPTO INFO: fixup_key_DES: insufficient key material");
-+            msg(D_CRYPT_ERRORS,
-+                "CRYPTO INFO: fixup_key_DES: insufficient key material");
-             return;
-         }
-         mbedtls_des_key_set_parity(key);
-@@ -413,9 +419,10 @@ cipher_kt_get(const char *ciphername)
- 
-     if (cipher->key_bitlen/8 > MAX_CIPHER_KEY_LENGTH)
-     {
--        msg(D_LOW, "Cipher algorithm '%s' uses a default key size (%d bytes) "
--            "which is larger than " PACKAGE_NAME "'s current maximum key size "
--            "(%d bytes)", ciphername, cipher->key_bitlen/8, MAX_CIPHER_KEY_LENGTH);
-+        msg(D_LOW,
-+            "Cipher algorithm '%s' uses a default key size (%d bytes) which is "
-+            "larger than "PACKAGE_NAME "'s current maximum key size (%d bytes)",
-+            ciphername, cipher->key_bitlen/8, MAX_CIPHER_KEY_LENGTH);
-         return NULL;
-     }
- 
-@@ -509,10 +516,10 @@ cipher_kt_mode_aead(const cipher_kt_t *cipher)
-  *
-  */
- 
--
- void
- cipher_ctx_init(mbedtls_cipher_context_t *ctx, uint8_t *key, int key_len,
--                const mbedtls_cipher_info_t *kt, const mbedtls_operation_t operation)
-+                const mbedtls_cipher_info_t *kt,
-+                const mbedtls_operation_t operation)
- {
-     ASSERT(NULL != kt && NULL != ctx);
- 
-@@ -726,10 +733,9 @@ md_kt_get(const char *digest)
-     }
-     if (mbedtls_md_get_size(md) > MAX_HMAC_KEY_LENGTH)
-     {
--        msg(M_FATAL, "Message hash algorithm '%s' uses a default hash size (%d bytes) which is larger than " PACKAGE_NAME "'s current maximum hash size (%d bytes)",
--            digest,
--            mbedtls_md_get_size(md),
--            MAX_HMAC_KEY_LENGTH);
-+        msg(M_FATAL,
-+            "Message hash algorithm '%s' uses a default hash size (%d bytes) which is larger than " PACKAGE_NAME "'s current maximum hash size (%d bytes)",
-+            digest, mbedtls_md_get_size(md), MAX_HMAC_KEY_LENGTH);
-     }
-     return md;
- }
-diff --git a/src/openvpn/crypto_mbedtls.h b/src/openvpn/crypto_mbedtls.h
-index 14188de..e23e275 100644
---- a/src/openvpn/crypto_mbedtls.h
-+++ b/src/openvpn/crypto_mbedtls.h
-@@ -79,8 +79,8 @@ typedef mbedtls_md_context_t hmac_ctx_t;
- /**
-  * Returns a singleton instance of the mbed TLS random number generator.
-  *
-- * For PolarSSL/mbed TLS 1.1+, this is the CTR_DRBG random number generator. If it
-- * hasn't been initialised yet, the RNG will be initialised using the default
-+ * For PolarSSL/mbed TLS 1.1+, this is the CTR_DRBG random number generator. If
-+ * it hasn't been initialised yet, the RNG will be initialised using the default
-  * entropy sources. Aside from the default platform entropy sources, an
-  * additional entropy source, the HAVEGE random number generator will also be
-  * added. During initialisation, a personalisation string will be added based
-diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
-index b016d98..bd0065c 100644
---- a/src/openvpn/crypto_openssl.c
-+++ b/src/openvpn/crypto_openssl.c
-@@ -55,11 +55,15 @@
-  */
- 
- #if MAX_CIPHER_KEY_LENGTH < EVP_MAX_KEY_LENGTH
--#warning Some OpenSSL EVP ciphers now support key lengths greater than MAX_CIPHER_KEY_LENGTH -- consider increasing MAX_CIPHER_KEY_LENGTH
-+#warning \
-+    Some OpenSSL EVP ciphers now support key lengths greater than MAX_CIPHER_KEY_LENGTH \
-+    -- consider increasing MAX_CIPHER_KEY_LENGTH
- #endif
- 
- #if MAX_HMAC_KEY_LENGTH < EVP_MAX_MD_SIZE
--#warning Some OpenSSL HMAC message digests now support key lengths greater than MAX_HMAC_KEY_LENGTH -- consider increasing MAX_HMAC_KEY_LENGTH
-+#warning \
-+    Some OpenSSL HMAC message digests now support key lengths greater than MAX_HMAC_KEY_LENGTH \
-+    -- consider increasing MAX_HMAC_KEY_LENGTH
- #endif
- 
- #if HAVE_OPENSSL_ENGINE
-@@ -135,7 +139,8 @@ crypto_init_lib_engine(const char *engine_name)
-         engine_initialized = true;
-     }
- #else  /* if HAVE_OPENSSL_ENGINE */
--    msg(M_WARN, "Note: OpenSSL hardware crypto engine functionality is not available");
-+    msg(M_WARN,
-+        "Note: OpenSSL hardware crypto engine functionality is not available");
- #endif
- }
- 
-@@ -247,7 +252,8 @@ const cipher_name_pair cipher_name_translation_table[] = {
-     { "AES-256-GCM", "id-aes256-GCM" },
- };
- const size_t cipher_name_translation_table_count =
--    sizeof(cipher_name_translation_table) / sizeof(*cipher_name_translation_table);
-+    sizeof(cipher_name_translation_table)
-+    / sizeof(*cipher_name_translation_table);
- 
- 
- static int
-@@ -321,7 +327,8 @@ show_available_ciphers()
- 
-     qsort(cipher_list, num_ciphers, sizeof(*cipher_list), cipher_name_cmp);
- 
--    for (i = 0; i < num_ciphers; i++) {
-+    for (i = 0; i < num_ciphers; i++)
-+    {
-         if (cipher_kt_block_size(cipher_list[i]) >= 128/8)
-         {
-             print_cipher(cipher_list[i]);
-@@ -330,7 +337,8 @@ show_available_ciphers()
- 
-     printf("\nThe following ciphers have a block size of less than 128 bits, \n"
-            "and are therefore deprecated.  Do not use unless you have to.\n\n");
--    for (i = 0; i < num_ciphers; i++) {
-+    for (i = 0; i < num_ciphers; i++)
-+    {
-         if (cipher_kt_block_size(cipher_list[i]) < 128/8)
-         {
-             print_cipher(cipher_list[i]);
-@@ -377,14 +385,13 @@ show_available_engines()
-     e = ENGINE_get_first();
-     while (e)
-     {
--        printf("%s [%s]\n",
--               ENGINE_get_name(e),
--               ENGINE_get_id(e));
-+        printf("%s [%s]\n", ENGINE_get_name(e), ENGINE_get_id(e));
-         e = ENGINE_get_next(e);
-     }
-     ENGINE_cleanup();
- #else  /* if HAVE_OPENSSL_ENGINE */
--    printf("Sorry, OpenSSL hardware crypto engine functionality is not available.\n");
-+    printf(
-+        "Sorry, OpenSSL hardware crypto engine functionality is not available.\n");
- #endif
- }
- 
-@@ -484,7 +491,8 @@ key_des_fixup(uint8_t *key, int key_len, int ndc)
-         DES_cblock *dc = (DES_cblock *) buf_read_alloc(&b, sizeof(DES_cblock));
-         if (!dc)
-         {
--            msg(D_CRYPT_ERRORS, "CRYPTO INFO: fixup_key_DES: insufficient key material");
-+            msg(D_CRYPT_ERRORS,
-+                "CRYPTO INFO: fixup_key_DES: insufficient key material");
-             ERR_clear_error();
-             return;
-         }
-@@ -515,7 +523,6 @@ cipher_kt_get(const char *ciphername)
-         return NULL;
-     }
- 
--
-     if (EVP_CIPHER_key_length(cipher) > MAX_CIPHER_KEY_LENGTH)
-     {
-         msg(D_LOW, "Cipher algorithm '%s' uses a default key size (%d bytes) "
-@@ -552,7 +559,8 @@ cipher_kt_iv_size(const EVP_CIPHER *cipher_kt)
- 
- int
- cipher_kt_block_size(const EVP_CIPHER *cipher) {
--    /* OpenSSL reports OFB/CFB/GCM cipher block sizes as '1 byte'.  To work
-+    /*
-+     * OpenSSL reports OFB/CFB/GCM cipher block sizes as '1 byte'.  To work
-      * around that, try to replace the mode with 'CBC' and return the block size
-      * reported for that cipher, if possible.  If that doesn't work, just return
-      * the value reported by OpenSSL.
-@@ -805,8 +813,8 @@ md_kt_get(const char *digest)
-     if (EVP_MD_size(md) > MAX_HMAC_KEY_LENGTH)
-     {
-         crypto_msg(M_FATAL, "Message hash algorithm '%s' uses a default hash "
--                   "size (%d bytes) which is larger than " PACKAGE_NAME "'s current "
--                   "maximum hash size (%d bytes)",
-+                   "size (%d bytes) which is larger than " PACKAGE_NAME "'s "
-+                   "current maximum hash size (%d bytes)",
-                    digest, EVP_MD_size(md), MAX_HMAC_KEY_LENGTH);
-     }
-     return md;
-diff --git a/src/openvpn/cryptoapi.c b/src/openvpn/cryptoapi.c
-index 69a5a32..6eecd77 100644
---- a/src/openvpn/cryptoapi.c
-+++ b/src/openvpn/cryptoapi.c
-@@ -58,7 +58,8 @@
- #define CERT_SYSTEM_STORE_CURRENT_USER_ID 1
- #endif
- #ifndef CERT_SYSTEM_STORE_CURRENT_USER
--#define CERT_SYSTEM_STORE_CURRENT_USER (CERT_SYSTEM_STORE_CURRENT_USER_ID << CERT_SYSTEM_STORE_LOCATION_SHIFT)
-+#define CERT_SYSTEM_STORE_CURRENT_USER \
-+    (CERT_SYSTEM_STORE_CURRENT_USER_ID << CERT_SYSTEM_STORE_LOCATION_SHIFT)
- #endif
- #ifndef CERT_STORE_READONLY_FLAG
- #define CERT_STORE_READONLY_FLAG 0x00008000
-@@ -72,7 +73,8 @@
- 
- /* try to funnel any Windows/CryptoAPI error messages to OpenSSL ERR_... */
- #define ERR_LIB_CRYPTOAPI (ERR_LIB_USER + 69)   /* 69 is just a number... */
--#define CRYPTOAPIerr(f)   err_put_ms_error(GetLastError(), (f), __FILE__, __LINE__)
-+#define CRYPTOAPIerr(f) \
-+    err_put_ms_error(GetLastError(), (f), __FILE__, __LINE__)
- #define CRYPTOAPI_F_CERT_OPEN_SYSTEM_STORE                  100
- #define CRYPTOAPI_F_CERT_FIND_CERTIFICATE_IN_STORE          101
- #define CRYPTOAPI_F_CRYPT_ACQUIRE_CERTIFICATE_PRIVATE_KEY   102
-@@ -84,16 +86,26 @@
- #define CRYPTOAPI_F_GET_PROC_ADDRESS                        108
- 
- static ERR_STRING_DATA CRYPTOAPI_str_functs[] = {
--    { ERR_PACK(ERR_LIB_CRYPTOAPI, 0, 0),                                    "microsoft cryptoapi"},
--    { ERR_PACK(0, CRYPTOAPI_F_CERT_OPEN_SYSTEM_STORE, 0),                   "CertOpenSystemStore" },
--    { ERR_PACK(0, CRYPTOAPI_F_CERT_FIND_CERTIFICATE_IN_STORE, 0),           "CertFindCertificateInStore" },
--    { ERR_PACK(0, CRYPTOAPI_F_CRYPT_ACQUIRE_CERTIFICATE_PRIVATE_KEY, 0),    "CryptAcquireCertificatePrivateKey" },
--    { ERR_PACK(0, CRYPTOAPI_F_CRYPT_CREATE_HASH, 0),                        "CryptCreateHash" },
--    { ERR_PACK(0, CRYPTOAPI_F_CRYPT_GET_HASH_PARAM, 0),                     "CryptGetHashParam" },
--    { ERR_PACK(0, CRYPTOAPI_F_CRYPT_SET_HASH_PARAM, 0),                     "CryptSetHashParam" },
--    { ERR_PACK(0, CRYPTOAPI_F_CRYPT_SIGN_HASH, 0),                          "CryptSignHash" },
--    { ERR_PACK(0, CRYPTOAPI_F_LOAD_LIBRARY, 0),                             "LoadLibrary" },
--    { ERR_PACK(0, CRYPTOAPI_F_GET_PROC_ADDRESS, 0),                         "GetProcAddress" },
-+    { ERR_PACK(ERR_LIB_CRYPTOAPI, 0, 0),
-+      "microsoft cryptoapi"},
-+    { ERR_PACK(0, CRYPTOAPI_F_CERT_OPEN_SYSTEM_STORE, 0),
-+      "CertOpenSystemStore" },
-+    { ERR_PACK(0, CRYPTOAPI_F_CERT_FIND_CERTIFICATE_IN_STORE, 0),
-+      "CertFindCertificateInStore" },
-+    { ERR_PACK(0, CRYPTOAPI_F_CRYPT_ACQUIRE_CERTIFICATE_PRIVATE_KEY, 0),
-+      "CryptAcquireCertificatePrivateKey" },
-+    { ERR_PACK(0, CRYPTOAPI_F_CRYPT_CREATE_HASH, 0),
-+      "CryptCreateHash" },
-+    { ERR_PACK(0, CRYPTOAPI_F_CRYPT_GET_HASH_PARAM, 0),
-+      "CryptGetHashParam" },
-+    { ERR_PACK(0, CRYPTOAPI_F_CRYPT_SET_HASH_PARAM, 0),
-+      "CryptSetHashParam" },
-+    { ERR_PACK(0, CRYPTOAPI_F_CRYPT_SIGN_HASH, 0),
-+      "CryptSignHash" },
-+    { ERR_PACK(0, CRYPTOAPI_F_LOAD_LIBRARY, 0),
-+      "LoadLibrary" },
-+    { ERR_PACK(0, CRYPTOAPI_F_GET_PROC_ADDRESS, 0),
-+      "GetProcAddress" },
-     { 0, NULL }
- };
- 
-@@ -112,8 +124,8 @@ ms_error_text(DWORD ms_err)
- 
-     FormatMessage(
-         FORMAT_MESSAGE_ALLOCATE_BUFFER
--        |FORMAT_MESSAGE_FROM_SYSTEM
--        |FORMAT_MESSAGE_IGNORE_INSERTS,
-+        | FORMAT_MESSAGE_FROM_SYSTEM
-+        | FORMAT_MESSAGE_IGNORE_INSERTS,
-         NULL, ms_err,
-         MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), /* Default language */
-         (LPTSTR) &lpMsgBuf, 0, NULL);
-@@ -125,7 +137,8 @@ ms_error_text(DWORD ms_err)
-         /* trim to the left */
-         if (rv)
-         {
--            for (p = rv + strlen(rv) - 1; p >= rv; p--) {
-+            for (p = rv + strlen(rv) - 1; p >= rv; p--)
-+            {
-                 if (isspace(*p))
-                 {
-                     *p = '\0';
-@@ -144,11 +157,15 @@ static void
- err_put_ms_error(DWORD ms_err, int func, const char *file, int line)
- {
-     static int init = 0;
-+    /*
-+     * I don't think we get more than 16 *different* errors in here, before we
-+     * give up the whole thing...
-+     */
- #define ERR_MAP_SZ 16
-     static struct {
-         int err;
--        DWORD ms_err;       /* I don't think we get more than 16 *different* errors */
--    } err_map[ERR_MAP_SZ];  /* in here, before we give up the whole thing...        */
-+        DWORD ms_err;
-+    } err_map[ERR_MAP_SZ];
-     int i;
- 
-     if (ms_err == 0)
-@@ -164,7 +181,8 @@ err_put_ms_error(DWORD ms_err, int func, const char *file, int line)
-     }
-     /* since MS error codes are 32 bit, and the ones in the ERR_... system is
-      * only 12, we must have a mapping table between them.  */
--    for (i = 0; i < ERR_MAP_SZ; i++) {
-+    for (i = 0; i < ERR_MAP_SZ; i++)
-+    {
-         if (err_map[i].ms_err == ms_err)
-         {
-             ERR_PUT_error(ERR_LIB_CRYPTOAPI, func, err_map[i].err, file, line);
-@@ -191,9 +209,13 @@ err_put_ms_error(DWORD ms_err, int func, const char *file, int line)
- 
- /* encrypt */
- static int
--rsa_pub_enc(int flen, const unsigned char *from, unsigned char *to, RSA *rsa, int padding)
-+rsa_pub_enc(int flen, const unsigned char *from, unsigned char *to, RSA *rsa,
-+            int padding)
- {
--    /* I haven't been able to trigger this one, but I want to know if it happens... */
-+    /*
-+     * I haven't been able to trigger this one, but I want to know if it
-+     * happens...
-+     */
-     assert(0);
- 
-     return 0;
-@@ -201,9 +223,13 @@ rsa_pub_enc(int flen, const unsigned char *from, unsigned char *to, RSA *rsa, in
- 
- /* verify arbitrary data */
- static int
--rsa_pub_dec(int flen, const unsigned char *from, unsigned char *to, RSA *rsa, int padding)
-+rsa_pub_dec(int flen, const unsigned char *from, unsigned char *to, RSA *rsa,
-+            int padding)
- {
--    /* I haven't been able to trigger this one, but I want to know if it happens... */
-+    /*
-+     * I haven't been able to trigger this one, but I want to know if it
-+     * happens...
-+     */
-     assert(0);
- 
-     return 0;
-@@ -211,7 +237,8 @@ rsa_pub_dec(int flen, const unsigned char *from, unsigned char *to, RSA *rsa, in
- 
- /* sign arbitrary data */
- static int
--rsa_priv_enc(int flen, const unsigned char *from, unsigned char *to, RSA *rsa, int padding)
-+rsa_priv_enc(int flen, const unsigned char *from, unsigned char *to, RSA *rsa,
-+             int padding)
- {
-     CAPI_DATA *cd = (CAPI_DATA *) rsa->meth->app_data;
-     HCRYPTHASH hash;
-@@ -279,7 +306,7 @@ rsa_priv_enc(int flen, const unsigned char *from, unsigned char *to, RSA *rsa, i
-         free(buf);
-         return 0;
-     }
--    /* and now, we have to reverse the byte-order in the result from CryptSignHash()... */
-+    /* now we have to reverse the byte-order of the CryptSignHash() result... */
-     for (i = 0; i < len; i++)
-         to[i] = buf[len - i - 1];
-     free(buf);
-@@ -290,9 +317,13 @@ rsa_priv_enc(int flen, const unsigned char *from, unsigned char *to, RSA *rsa, i
- 
- /* decrypt */
- static int
--rsa_priv_dec(int flen, const unsigned char *from, unsigned char *to, RSA *rsa, int padding)
-+rsa_priv_dec(int flen, const unsigned char *from, unsigned char *to, RSA *rsa,
-+             int padding)
- {
--    /* I haven't been able to trigger this one, but I want to know if it happens... */
-+    /*
-+     * I haven't been able to trigger this one, but I want to know if it
-+     * happens...
-+     */
-     assert(0);
- 
-     return 0;
-@@ -345,8 +376,10 @@ find_certificate_in_store(const char *cert_prop, HCERTSTORE cert_store)
-     {
-         /* skip the tag */
-         cert_prop += 5;
--        rv = CertFindCertificateInStore(cert_store, X509_ASN_ENCODING | PKCS_7_ASN_ENCODING,
--                                        0, CERT_FIND_SUBJECT_STR_A, cert_prop, NULL);
-+        rv = CertFindCertificateInStore(cert_store,
-+                                        X509_ASN_ENCODING | PKCS_7_ASN_ENCODING,
-+                                        0, CERT_FIND_SUBJECT_STR_A, cert_prop,
-+                                        NULL);
- 
-     }
-     else if (!strncmp(cert_prop, "THUMB:", 6))
-@@ -358,7 +391,8 @@ find_certificate_in_store(const char *cert_prop, HCERTSTORE cert_store)
- 
-         /* skip the tag */
-         cert_prop += 6;
--        for (p = (char *) cert_prop, i = 0; *p && i < sizeof(hash); i++) {
-+        for (p = (char *) cert_prop, i = 0; *p && i < sizeof(hash); i++)
-+        {
-             if (*p >= '0' && *p <= '9')
-             {
-                 x = (*p - '0') << 4;
-@@ -393,7 +427,8 @@ find_certificate_in_store(const char *cert_prop, HCERTSTORE cert_store)
-         }
-         blob.cbData = i;
-         blob.pbData = (unsigned char *) &hash;
--        rv = CertFindCertificateInStore(cert_store, X509_ASN_ENCODING | PKCS_7_ASN_ENCODING,
-+        rv = CertFindCertificateInStore(cert_store,
-+                                        X509_ASN_ENCODING | PKCS_7_ASN_ENCODING,
-                                         0, CERT_FIND_HASH, &blob, NULL);
- 
-     }
-@@ -416,8 +451,10 @@ SSL_CTX_use_CryptoAPI_certificate(SSL_CTX *ssl_ctx, const char *cert_prop)
-         goto err;
-     }
-     /* search CURRENT_USER first, then LOCAL_MACHINE */
--    cs = CertOpenStore((LPCSTR) CERT_STORE_PROV_SYSTEM, 0, 0, CERT_SYSTEM_STORE_CURRENT_USER
--                       |CERT_STORE_OPEN_EXISTING_FLAG | CERT_STORE_READONLY_FLAG, L"MY");
-+    cs = CertOpenStore((LPCSTR) CERT_STORE_PROV_SYSTEM, 0, 0,
-+                       CERT_SYSTEM_STORE_CURRENT_USER
-+                       | CERT_STORE_OPEN_EXISTING_FLAG
-+                       | CERT_STORE_READONLY_FLAG, L"MY");
-     if (cs == NULL)
-     {
-         CRYPTOAPIerr(CRYPTOAPI_F_CERT_OPEN_SYSTEM_STORE);
-@@ -427,8 +464,10 @@ SSL_CTX_use_CryptoAPI_certificate(SSL_CTX *ssl_ctx, const char *cert_prop)
-     CertCloseStore(cs, 0);
-     if (!cd->cert_context)
-     {
--        cs = CertOpenStore((LPCSTR) CERT_STORE_PROV_SYSTEM, 0, 0, CERT_SYSTEM_STORE_LOCAL_MACHINE
--                           |CERT_STORE_OPEN_EXISTING_FLAG | CERT_STORE_READONLY_FLAG, L"MY");
-+        cs = CertOpenStore((LPCSTR) CERT_STORE_PROV_SYSTEM, 0, 0,
-+                           CERT_SYSTEM_STORE_LOCAL_MACHINE
-+                           | CERT_STORE_OPEN_EXISTING_FLAG
-+                           | CERT_STORE_READONLY_FLAG, L"MY");
-         if (cs == NULL)
-         {
-             CRYPTOAPIerr(CRYPTOAPI_F_CERT_OPEN_SYSTEM_STORE);
-@@ -444,7 +483,8 @@ SSL_CTX_use_CryptoAPI_certificate(SSL_CTX *ssl_ctx, const char *cert_prop)
-     }
- 
-     /* cert_context->pbCertEncoded is the cert X509 DER encoded. */
--    cert = d2i_X509(NULL, (const unsigned char **) &cd->cert_context->pbCertEncoded,
-+    cert = d2i_X509(NULL,
-+                    (const unsigned char **) &cd->cert_context->pbCertEncoded,
-                     cd->cert_context->cbCertEncoded);
-     if (cert == NULL)
-     {
-@@ -453,8 +493,10 @@ SSL_CTX_use_CryptoAPI_certificate(SSL_CTX *ssl_ctx, const char *cert_prop)
-     }
- 
-     /* set up stuff to use the private key */
--    if (!CryptAcquireCertificatePrivateKey(cd->cert_context, CRYPT_ACQUIRE_COMPARE_KEY_FLAG,
--                                           NULL, &cd->crypt_prov, &cd->key_spec, &cd->free_crypt_prov))
-+    if (!CryptAcquireCertificatePrivateKey(cd->cert_context,
-+                                           CRYPT_ACQUIRE_COMPARE_KEY_FLAG,
-+                                           NULL, &cd->crypt_prov, &cd->key_spec,
-+                                           &cd->free_crypt_prov))
-     {
-         /* if we don't have a smart card reader here, and we try to access a
-          * smart card certificate, we get:
-@@ -495,8 +537,11 @@ SSL_CTX_use_CryptoAPI_certificate(SSL_CTX *ssl_ctx, const char *cert_prop)
-     X509_free(cert);
-     cert = NULL;
- 
--    /* I'm not sure about what we have to fill in in the RSA, trying out stuff... */
--    /* rsa->n indicates the key size */
-+    /*
-+     * I'm not sure about what we have to fill in in the RSA, trying out stuff..
-+     *
-+     * rsa->n indicates the key size
-+     */
-     rsa->n = BN_dup(pub_rsa->n);
-     rsa->flags |= RSA_FLAG_EXT_PKEY;
-     if (!RSA_set_method(rsa, my_rsa_method))
-@@ -545,9 +590,10 @@ err:
- }
- 
- #else  /* ifdef ENABLE_CRYPTOAPI */
--#ifdef _MSC_VER  /* Dummy function needed to avoid empty file compiler warning in Microsoft VC */
-+#ifdef _MSC_VER
-+/* Dummy function needed to avoid empty file compiler warning in Microsoft VC */
- static void
- dummy(void) {
- }
- #endif
--#endif                          /* _WIN32 */
-+#endif /* ifdef ENABLE_CRYPTOAPI */
--- 
-2.7.4
+(Thanks to Adriaan for the suggestion.)
 
+>  #ifdef MANAGMENT_EXTERNAL_KEY
+>      if (!(options->management_flags & MF_EXTERNAL_KEY))
+>  #endif
+>      {
+> -        errs |= check_file_access(CHKACC_FILE|CHKACC_INLINE|CHKACC_PRIVATE,
+> -                                  options->priv_key_file, R_OK, "--key");
+> +        if (!options->priv_key_file_inline)
+> +        {
+> +            errs |= check_file_access(CHKACC_FILE|CHKACC_PRIVATE,
+> +                                      options->priv_key_file, R_OK, "--key");
+> +        }
+> +    }
+> +    if (!options->pkcs12_file_inline)
+> +    {
+> +        errs |= check_file_access(CHKACC_FILE|CHKACC_PRIVATE,
+> +                                  options->pkcs12_file, R_OK, "--pkcs12");
+>      }
+> -    errs |= check_file_access(CHKACC_FILE|CHKACC_INLINE|CHKACC_PRIVATE,
+> -                              options->pkcs12_file, R_OK, "--pkcs12");
+>  
+>      if (options->ssl_flags & SSLF_CRL_VERIFY_DIR)
+>      {
+> -        errs |= check_file_access_chroot(options->chroot_dir, CHKACC_FILE, options->crl_file, R_OK|X_OK,
+> +        errs |= check_file_access_chroot(options->chroot_dir, CHKACC_FILE,
+> +                                         options->crl_file, R_OK|X_OK,
+>                                           "--crl-verify directory");
+>      }
+> -    else
+> +    else if (!options->crl_file_inline)
+> +    {
+> +        errs |= check_file_access_chroot(options->chroot_dir, CHKACC_FILE,
+> +                                         options->crl_file, R_OK,
+> +                                         "--crl-verify");
+> +    }
+> +
+> +    if (!options->tls_auth_file_inline)
+> +    {
+> +        errs |= check_file_access(CHKACC_FILE|CHKACC_PRIVATE,
+> +                                  options->tls_auth_file, R_OK, "--tls-auth");
+> +    }
+> +    if (!options->tls_crypt_inline)
+> +    {
+> +        errs |= check_file_access(CHKACC_FILE|CHKACC_PRIVATE,
+> +                                  options->tls_crypt_file, R_OK, "--tls-crypt");
+> +    }
+> +    if (!options->shared_secret_file_inline)
+>      {
+> -        errs |= check_file_access_chroot(options->chroot_dir, CHKACC_FILE|CHKACC_INLINE,
+> -                                         options->crl_file, R_OK, "--crl-verify");
+> +        errs |= check_file_access(CHKACC_FILE|CHKACC_PRIVATE,
+> +                                  options->shared_secret_file, R_OK,
+> +                                  "--secret");
+>      }
+>  
+> -    errs |= check_file_access(CHKACC_FILE|CHKACC_INLINE|CHKACC_PRIVATE,
+> -                              options->tls_auth_file, R_OK, "--tls-auth");
+> -    errs |= check_file_access(CHKACC_FILE|CHKACC_INLINE|CHKACC_PRIVATE,
+> -                              options->tls_crypt_file, R_OK, "--tls-crypt");
+> -    errs |= check_file_access(CHKACC_FILE|CHKACC_INLINE|CHKACC_PRIVATE,
+> -                              options->shared_secret_file, R_OK, "--secret");
+>      errs |= check_file_access(CHKACC_DIRPATH|CHKACC_FILEXSTWR,
+>                                options->packet_id_file, R_OK|W_OK, "--replay-persist");
+>  
+> @@ -4459,22 +4484,25 @@ read_inline_file(struct in_src *is, const char *close_tag, struct gc_arena *gc)
+>  }
+>  
+>  static bool
+> -check_inline_file(struct in_src *is, char *p[], struct gc_arena *gc)
+> +check_inline_file(struct in_src *is, char *p[], bool *is_inline,
+> +                  struct gc_arena *gc)
+>  {
+>      bool ret = false;
+> +
+> +    *is_inline = false;
+>      if (p[0] && !p[1])
+>      {
+>          char *arg = p[0];
+>          if (arg[0] == '<' && arg[strlen(arg)-1] == '>')
+>          {
+>              struct buffer close_tag;
+> +            *is_inline = true;
+>              arg[strlen(arg)-1] = '\0';
+>              p[0] = string_alloc(arg+1, gc);
+> -            p[1] = string_alloc(INLINE_FILE_TAG, gc);
+>              close_tag = alloc_buf(strlen(p[0]) + 4);
+>              buf_printf(&close_tag, "</%s>", p[0]);
+> -            p[2] = read_inline_file(is, BSTR(&close_tag), gc);
+> -            p[3] = NULL;
+> +            p[1] = read_inline_file(is, BSTR(&close_tag), gc);
+> +            p[2] = NULL;
+>              free_buf(&close_tag);
+>              ret = true;
+>          }
+> @@ -4483,26 +4511,29 @@ check_inline_file(struct in_src *is, char *p[], struct gc_arena *gc)
+>  }
+>  
+>  static bool
+> -check_inline_file_via_fp(FILE *fp, char *p[], struct gc_arena *gc)
+> +check_inline_file_via_fp(FILE *fp, char *p[], bool *is_inline,
+> +                         struct gc_arena *gc)
+>  {
+>      struct in_src is;
+>      is.type = IS_TYPE_FP;
+>      is.u.fp = fp;
+> -    return check_inline_file(&is, p, gc);
+> +    return check_inline_file(&is, p, is_inline, gc);
+>  }
+>  
+>  static bool
+> -check_inline_file_via_buf(struct buffer *multiline, char *p[], struct gc_arena *gc)
+> +check_inline_file_via_buf(struct buffer *multiline, char *p[], bool *is_inline,
+> +                          struct gc_arena *gc)
+>  {
+>      struct in_src is;
+>      is.type = IS_TYPE_BUF;
+>      is.u.multiline = multiline;
+> -    return check_inline_file(&is, p, gc);
+> +    return check_inline_file(&is, p, is_inline, gc);
+>  }
+>  
+>  static void
+>  add_option(struct options *options,
+>             char *p[],
+> +           bool is_inline,
+>             const char *file,
+>             int line,
+>             const int level,
+> @@ -4523,6 +4554,7 @@ read_config_file(struct options *options,
+>                   struct env_set *es)
+>  {
+>      const int max_recursive_levels = 10;
+> +    bool is_inline;
+>      FILE *fp;
+>      int line_num;
+>      char line[OPTION_LINE_SIZE+1];
+> @@ -4561,8 +4593,10 @@ read_config_file(struct options *options,
+>                  if (parse_line(line + offset, p, SIZE(p), file, line_num, msglevel, &options->gc))
+>                  {
+>                      bypass_doubledash(&p[0]);
+> -                    check_inline_file_via_fp(fp, p, &options->gc);
+> -                    add_option(options, p, file, line_num, level, msglevel, permission_mask, option_types_found, es);
+> +                    check_inline_file_via_fp(fp, p, &is_inline, &options->gc);
+> +                    add_option(options, p, is_inline, file, line_num, level,
+> +                               msglevel, permission_mask, option_types_found,
+> +                               es);
+>                  }
+>              }
+>              if (fp != stdin)
+> @@ -4595,6 +4629,7 @@ read_config_string(const char *prefix,
+>      char line[OPTION_LINE_SIZE];
+>      struct buffer multiline;
+>      int line_num = 0;
+> +    bool is_inline;
+>  
+>      buf_set_read(&multiline, (uint8_t *)config, strlen(config));
+>  
+> @@ -4606,8 +4641,9 @@ read_config_string(const char *prefix,
+>          if (parse_line(line, p, SIZE(p), prefix, line_num, msglevel, &options->gc))
+>          {
+>              bypass_doubledash(&p[0]);
+> -            check_inline_file_via_buf(&multiline, p, &options->gc);
+> -            add_option(options, p, prefix, line_num, 0, msglevel, permission_mask, option_types_found, es);
+> +            check_inline_file_via_buf(&multiline, p, &is_inline, &options->gc);
+> +            add_option(options, p, is_inline, prefix, line_num, 0, msglevel,
+> +                       permission_mask, option_types_found, es);
+>          }
+>          CLEAR(p);
+>      }
+> @@ -4638,7 +4674,8 @@ parse_argv(struct options *options,
+>          CLEAR(p);
+>          p[0] = "config";
+>          p[1] = argv[1];
+> -        add_option(options, p, NULL, 0, 0, msglevel, permission_mask, option_types_found, es);
+> +        add_option(options, p, false, NULL, 0, 0, msglevel, permission_mask,
+> +                   option_types_found, es);
+>      }
+>      else
+>      {
+> @@ -4672,7 +4709,8 @@ parse_argv(struct options *options,
+>                      }
+>                  }
+>              }
+> -            add_option(options, p, NULL, 0, 0, msglevel, permission_mask, option_types_found, es);
+> +            add_option(options, p, false, NULL, 0, 0, msglevel, permission_mask,
+> +                       option_types_found, es);
+>              i += j - 1;
+>          }
+>      }
+> @@ -4743,7 +4781,8 @@ apply_push_options(struct options *options,
+>          }
+>          if (parse_line(line, p, SIZE(p), file, line_num, msglevel, &options->gc))
+>          {
+> -            add_option(options, p, file, line_num, 0, msglevel, permission_mask, option_types_found, es);
+> +            add_option(options, p, false, file, line_num, 0, msglevel,
+> +                       permission_mask, option_types_found, es);
+>          }
+>      }
+>      return true;
+> @@ -4908,6 +4947,7 @@ set_user_script(struct options *options,
+>  static void
+>  add_option(struct options *options,
+>             char *p[],
+> +           bool is_inline,
+>             const char *file,
+>             int line,
+>             const int level,
+> @@ -5154,7 +5194,8 @@ add_option(struct options *options,
+>          {
+>              options->plugin_list = plugin_option_list_new(&options->gc);
+>          }
+> -        if (!plugin_option_list_add(options->plugin_list, &p[1], &options->gc))
+> +        if (!plugin_option_list_add(options->plugin_list, &p[1], is_inline,
+> +                                    &options->gc))
+
+Can we inline a plugin?  I wouldn't think so, but I've been surprised by
+our option parser before ;-)  (Arne or David might know this.)  If not,
+you don't need to add the is_inline argument to
+plugin_option_list_add(), but just add a 'false' when someone down the
+chain calls make_extended_arg_array().
+
+>          {
+>              msg(msglevel, "plugin add failed: %s", p[1]);
+>              goto err;
+> @@ -5286,14 +5327,15 @@ add_option(struct options *options,
+>      else if (streq(p[0], "connection") && p[1] && !p[3])
+>      {
+>          VERIFY_PERMISSION(OPT_P_GENERAL);
+> -        if (streq(p[1], INLINE_FILE_TAG) && p[2])
+> +        if (is_inline)
+>          {
+>              struct options sub;
+>              struct connection_entry *e;
+>  
+>              init_options(&sub, true);
+>              sub.ce = options->ce;
+> -            read_config_string("[CONNECTION-OPTIONS]", &sub, p[2], msglevel, OPT_P_CONNECTION, option_types_found, es);
+> +            read_config_string("[CONNECTION-OPTIONS]", &sub, p[1], msglevel,
+> +                               OPT_P_CONNECTION, option_types_found, es);
+>              if (!sub.ce.remote)
+>              {
+>                  msg(msglevel, "Each 'connection' block must contain exactly one 'remote' directive");
+> @@ -5968,15 +6010,8 @@ add_option(struct options *options,
+>          struct http_proxy_options *ho;
+>          VERIFY_PERMISSION(OPT_P_GENERAL);
+>          ho = init_http_proxy_options_once(&options->ce.http_proxy_options, &options->gc);
+> -        if (streq(p[1], INLINE_FILE_TAG) && p[2])
+> -        {
+> -            ho->auth_file = p[2];
+> -            ho->inline_creds = true;
+> -        }
+> -        else
+> -        {
+> -            ho->auth_file = p[1];
+> -        }
+> +        ho->auth_file = p[1];
+> +        ho->inline_creds = is_inline;
+>      }
+>      else if (streq(p[0], "http-proxy-retry") || streq(p[0], "socks-proxy-retry"))
+>      {
+> @@ -6496,7 +6531,7 @@ add_option(struct options *options,
+>      else if (streq(p[0], "push") && p[1] && !p[2])
+>      {
+>          VERIFY_PERMISSION(OPT_P_PUSH);
+> -        push_options(options, &p[1], msglevel, &options->gc);
+> +        push_options(options, &p[1], is_inline, msglevel, &options->gc);
+
+Same as with 'plugin', I don't think we can inline a 'push' option?
+
+>      }
+>      else if (streq(p[0], "push-reset") && !p[1])
+>      {
+> @@ -7436,11 +7471,9 @@ add_option(struct options *options,
+>      else if (streq(p[0], "secret") && p[1] && !p[3])
+>      {
+>          VERIFY_PERMISSION(OPT_P_GENERAL);
+> -        if (streq(p[1], INLINE_FILE_TAG) && p[2])
+> -        {
+> -            options->shared_secret_file_inline = p[2];
+> -        }
+> -        else if (p[2])
+> +        options->shared_secret_file = p[1];
+> +        options->shared_secret_file_inline = is_inline;
+> +        if (!is_inline && p[2])
+>          {
+>              int key_direction;
+>  
+> @@ -7454,7 +7487,6 @@ add_option(struct options *options,
+>                  goto err;
+>              }
+>          }
+> -        options->shared_secret_file = p[1];
+>      }
+>      else if (streq(p[0], "genkey") && !p[1])
+>      {
+> @@ -7633,14 +7665,11 @@ add_option(struct options *options,
+>          VERIFY_PERMISSION(OPT_P_GENERAL);
+>          options->tls_client = true;
+>      }
+> -    else if (streq(p[0], "ca") && p[1] && ((streq(p[1], INLINE_FILE_TAG) && p[2]) || !p[2]) && !p[3])
+> +    else if (streq(p[0], "ca") && p[1] && !p[2])
+>      {
+>          VERIFY_PERMISSION(OPT_P_GENERAL);
+>          options->ca_file = p[1];
+> -        if (streq(p[1], INLINE_FILE_TAG) && p[2])
+> -        {
+> -            options->ca_file_inline = p[2];
+> -        }
+> +        options->ca_file_inline = is_inline;
+>      }
+>  #ifndef ENABLE_CRYPTO_MBEDTLS
+>      else if (streq(p[0], "capath") && p[1] && !p[2])
+> @@ -7649,32 +7678,23 @@ add_option(struct options *options,
+>          options->ca_path = p[1];
+>      }
+>  #endif /* ENABLE_CRYPTO_MBEDTLS */
+> -    else if (streq(p[0], "dh") && p[1] && ((streq(p[1], INLINE_FILE_TAG) && p[2]) || !p[2]) && !p[3])
+> +    else if (streq(p[0], "dh") && p[1] && !p[2])
+>      {
+>          VERIFY_PERMISSION(OPT_P_GENERAL);
+>          options->dh_file = p[1];
+> -        if (streq(p[1], INLINE_FILE_TAG) && p[2])
+> -        {
+> -            options->dh_file_inline = p[2];
+> -        }
+> +        options->dh_file_inline = is_inline;
+>      }
+> -    else if (streq(p[0], "cert") && p[1] && ((streq(p[1], INLINE_FILE_TAG) && p[2]) || !p[2]) && !p[3])
+> +    else if (streq(p[0], "cert") && p[1] && !p[2])
+>      {
+>          VERIFY_PERMISSION(OPT_P_GENERAL);
+>          options->cert_file = p[1];
+> -        if (streq(p[1], INLINE_FILE_TAG) && p[2])
+> -        {
+> -            options->cert_file_inline = p[2];
+> -        }
+> +        options->cert_file_inline = is_inline;
+>      }
+> -    else if (streq(p[0], "extra-certs") && p[1] && ((streq(p[1], INLINE_FILE_TAG) && p[2]) || !p[2]) && !p[3])
+> +    else if (streq(p[0], "extra-certs") && p[1] && !p[2])
+>      {
+>          VERIFY_PERMISSION(OPT_P_GENERAL);
+>          options->extra_certs_file = p[1];
+> -        if (streq(p[1], INLINE_FILE_TAG) && p[2])
+> -        {
+> -            options->extra_certs_file_inline = p[2];
+> -        }
+> +        options->extra_certs_file_inline = is_inline;
+>      }
+>      else if (streq(p[0], "verify-hash") && p[1] && !p[2])
+>      {
+> @@ -7688,14 +7708,11 @@ add_option(struct options *options,
+>          options->cryptoapi_cert = p[1];
+>      }
+>  #endif
+> -    else if (streq(p[0], "key") && p[1] && ((streq(p[1], INLINE_FILE_TAG) && p[2]) || !p[2]) && !p[3])
+> +    else if (streq(p[0], "key") && p[1] && !p[2])
+>      {
+>          VERIFY_PERMISSION(OPT_P_GENERAL);
+>          options->priv_key_file = p[1];
+> -        if (streq(p[1], INLINE_FILE_TAG) && p[2])
+> -        {
+> -            options->priv_key_file_inline = p[2];
+> -        }
+> +        options->priv_key_file_inline = is_inline;
+>      }
+>      else if (streq(p[0], "tls-version-min") && p[1] && !p[3])
+>      {
+> @@ -7726,14 +7743,11 @@ add_option(struct options *options,
+>          options->ssl_flags |= (ver << SSLF_TLS_VERSION_MAX_SHIFT);
+>      }
+>  #ifndef ENABLE_CRYPTO_MBEDTLS
+> -    else if (streq(p[0], "pkcs12") && p[1] && ((streq(p[1], INLINE_FILE_TAG) && p[2]) || !p[2]) && !p[3])
+> +    else if (streq(p[0], "pkcs12") && p[1] && !p[2])
+>      {
+>          VERIFY_PERMISSION(OPT_P_GENERAL);
+>          options->pkcs12_file = p[1];
+> -        if (streq(p[1], INLINE_FILE_TAG) && p[2])
+> -        {
+> -            options->pkcs12_file_inline = p[2];
+> -        }
+> +        options->pkcs12_file_inline = is_inline;
+>      }
+>  #endif /* ENABLE_CRYPTO_MBEDTLS */
+>      else if (streq(p[0], "askpass") && !p[2])
+> @@ -7787,7 +7801,7 @@ add_option(struct options *options,
+>          options->cipher_list = p[1];
+>      }
+>      else if (streq(p[0], "crl-verify") && p[1] && ((p[2] && streq(p[2], "dir"))
+> -                                                   || (p[2] && streq(p[1], INLINE_FILE_TAG) ) || !p[2]) && !p[3])
+> +                                                   || !p[2]))
+>      {
+>          VERIFY_PERMISSION(OPT_P_GENERAL);
+>          if (p[2] && streq(p[2], "dir"))
+> @@ -7795,10 +7809,7 @@ add_option(struct options *options,
+>              options->ssl_flags |= SSLF_CRL_VERIFY_DIR;
+>          }
+>          options->crl_file = p[1];
+> -        if (streq(p[1], INLINE_FILE_TAG) && p[2])
+> -        {
+> -            options->crl_file_inline = p[2];
+> -        }
+> +        options->crl_file_inline = is_inline;
+>      }
+>      else if (streq(p[0], "tls-verify") && p[1])
+>      {
+> @@ -7971,11 +7982,9 @@ add_option(struct options *options,
+>      else if (streq(p[0], "tls-auth") && p[1] && !p[3])
+>      {
+>          VERIFY_PERMISSION(OPT_P_GENERAL);
+> -        if (streq(p[1], INLINE_FILE_TAG) && p[2])
+> -        {
+> -            options->tls_auth_file_inline = p[2];
+> -        }
+> -        else if (p[2])
+> +        options->tls_auth_file = p[1];
+> +        options->tls_auth_file_inline = is_inline;
+> +        if (!is_inline && p[2])
+>          {
+>              int key_direction;
+>  
+> @@ -7989,16 +7998,12 @@ add_option(struct options *options,
+>                  goto err;
+>              }
+>          }
+> -        options->tls_auth_file = p[1];
+>      }
+>      else if (streq(p[0], "tls-crypt") && p[1] && !p[3])
+>      {
+>          VERIFY_PERMISSION(OPT_P_GENERAL);
+> -        if (streq(p[1], INLINE_FILE_TAG) && p[2])
+> -        {
+> -            options->tls_crypt_inline = p[2];
+> -        }
+>          options->tls_crypt_file = p[1];
+> +        options->tls_crypt_inline = is_inline;
+>      }
+>      else if (streq(p[0], "key-method") && p[1] && !p[2])
+>      {
+> diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+> index b3ab029..00b0cb7 100644
+> --- a/src/openvpn/options.h
+> +++ b/src/openvpn/options.h
+> @@ -468,7 +468,7 @@ struct options
+>  #ifdef ENABLE_CRYPTO
+>      /* Cipher parms */
+>      const char *shared_secret_file;
+> -    const char *shared_secret_file_inline;
+> +    bool shared_secret_file_inline;
+>      int key_direction;
+>      const char *ciphername;
+>      bool ncp_enabled;
+> @@ -507,13 +507,13 @@ struct options
+>      const char *tls_export_cert;
+>      const char *crl_file;
+>  
+> -    const char *ca_file_inline;
+> -    const char *cert_file_inline;
+> -    const char *extra_certs_file_inline;
+> -    const char *crl_file_inline;
+> -    char *priv_key_file_inline;
+> -    const char *dh_file_inline;
+> -    const char *pkcs12_file_inline; /* contains the base64 encoding of pkcs12 file */
+> +    bool ca_file_inline;
+> +    bool cert_file_inline;
+> +    bool extra_certs_file_inline;
+> +    bool crl_file_inline;
+> +    bool priv_key_file_inline;
+> +    bool dh_file_inline;
+> +    bool pkcs12_file_inline;
+>  
+>      int ns_cert_type; /* set to 0, NS_CERT_CHECK_SERVER, or NS_CERT_CHECK_CLIENT */
+>      unsigned remote_cert_ku[MAX_PARMS];
+> @@ -560,11 +560,11 @@ struct options
+>  
+>      /* Shared secret used for TLS control channel authentication */
+>      const char *tls_auth_file;
+> -    const char *tls_auth_file_inline;
+> +    bool tls_auth_file_inline;
+>  
+>      /* Shared secret used for TLS control channel authenticated encryption */
+>      const char *tls_crypt_file;
+> -    const char *tls_crypt_inline;
+> +    bool tls_crypt_inline;
+>  
+>      /* Allow only one session */
+>      bool single_session;
+> diff --git a/src/openvpn/plugin.c b/src/openvpn/plugin.c
+> index 17eb2d8..d3e4188 100644
+> --- a/src/openvpn/plugin.c
+> +++ b/src/openvpn/plugin.c
+> @@ -160,13 +160,13 @@ plugin_option_list_new(struct gc_arena *gc)
+>      return ret;
+>  }
+>  
+> -bool
+> -plugin_option_list_add(struct plugin_option_list *list, char **p, struct gc_arena *gc)
+> +bool plugin_option_list_add(struct plugin_option_list *list, char **p,
+> +                            bool is_inline, struct gc_arena *gc)
+>  {
+>      if (list->n < MAX_PLUGINS)
+>      {
+>          struct plugin_option *o = &list->plugins[list->n++];
+> -        o->argv = make_extended_arg_array(p, gc);
+> +        o->argv = make_extended_arg_array(p, is_inline, gc);
+>          if (o->argv[0])
+>          {
+>              o->so_pathname = o->argv[0];
+> diff --git a/src/openvpn/plugin.h b/src/openvpn/plugin.h
+> index 4ded529..86a64ed 100644
+> --- a/src/openvpn/plugin.h
+> +++ b/src/openvpn/plugin.h
+> @@ -107,7 +107,8 @@ struct plugin_return
+>  
+>  struct plugin_option_list *plugin_option_list_new(struct gc_arena *gc);
+>  
+> -bool plugin_option_list_add(struct plugin_option_list *list, char **p, struct gc_arena *gc);
+> +bool plugin_option_list_add(struct plugin_option_list *list, char **p,
+> +                            bool is_inline, struct gc_arena *gc);
+>  
+>  #ifndef ENABLE_SMALL
+>  void plugin_option_list_print(const struct plugin_option_list *list, int msglevel);
+> diff --git a/src/openvpn/push.c b/src/openvpn/push.c
+> index f515475..a1f1090 100644
+> --- a/src/openvpn/push.c
+> +++ b/src/openvpn/push.c
+> @@ -564,9 +564,10 @@ clone_push_list(struct options *o)
+>  }
+>  
+>  void
+> -push_options(struct options *o, char **p, int msglevel, struct gc_arena *gc)
+> +push_options(struct options *o, char **p, bool is_inline, int msglevel,
+> +             struct gc_arena *gc)
+>  {
+> -    const char **argv = make_extended_arg_array(p, gc);
+> +    const char **argv = make_extended_arg_array(p, is_inline, gc);
+>      char *opt = print_argv(argv, gc, 0);
+>      push_option(o, opt, msglevel);
+>  }
+> diff --git a/src/openvpn/push.h b/src/openvpn/push.h
+> index 86900c8..89807de 100644
+> --- a/src/openvpn/push.h
+> +++ b/src/openvpn/push.h
+> @@ -58,7 +58,8 @@ void clone_push_list(struct options *o);
+>  
+>  void push_option(struct options *o, const char *opt, int msglevel);
+>  
+> -void push_options(struct options *o, char **p, int msglevel, struct gc_arena *gc);
+> +void push_options(struct options *o, char **p, bool is_inline, int msglevel,
+> +                  struct gc_arena *gc);
+>  
+>  void push_reset(struct options *o);
+>  
+> diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+> index cff4052..4fab645 100644
+> --- a/src/openvpn/ssl.c
+> +++ b/src/openvpn/ssl.c
+> @@ -542,7 +542,7 @@ tls_version_parse(const char *vstr, const char *extra)
+>   */
+>  static void
+>  tls_ctx_reload_crl(struct tls_root_ctx *ssl_ctx, const char *crl_file,
+> -                   const char *crl_file_inline)
+> +                   bool crl_file_inline)
+>  {
+>      /* if something goes wrong with stat(), we'll store 0 as mtime */
+>      platform_stat_t crl_stat = {0};
+> @@ -645,8 +645,8 @@ init_ssl(const struct options *options, struct tls_root_ctx *new_ctx)
+>          {
+>              char *external_certificate = management_query_cert(management,
+>                                                                 options->management_certificate);
+> -            tls_ctx_use_external_private_key(new_ctx, INLINE_FILE_TAG,
+> -                                             external_certificate);
+> +            tls_ctx_use_external_private_key(new_ctx, external_certificate,
+> +                                             true);
+>              free(external_certificate);
+>          }
+>      }
+> diff --git a/src/openvpn/ssl_backend.h b/src/openvpn/ssl_backend.h
+> index 206400f..ef9887b 100644
+> --- a/src/openvpn/ssl_backend.h
+> +++ b/src/openvpn/ssl_backend.h
+> @@ -192,11 +192,12 @@ void tls_ctx_check_cert_time(const struct tls_root_ctx *ctx);
+>   *
+>   * @param ctx                   TLS context to use
+>   * @param dh_file               The file name to load the parameters from, or
+> - *                              "[[INLINE]]" in the case of inline files.
+> - * @param dh_file_inline        A string containing the parameters
+> + *                              a string containing the parameters in the case
+> + *                              of inline files.
+> + * @param dh_file_inline        True if dh_file is an inline file.
+>   */
+>  void tls_ctx_load_dh_params(struct tls_root_ctx *ctx, const char *dh_file,
+> -                            const char *dh_file_inline);
+> +                            bool dh_file_inline);
+>  
+>  /**
+>   * Load Elliptic Curve Parameters, and load them into the library-specific
+> @@ -214,15 +215,15 @@ void tls_ctx_load_ecdh_params(struct tls_root_ctx *ctx, const char *curve_name
+>   *
+>   * @param ctx                   TLS context to use
+>   * @param pkcs12_file           The file name to load the information from, or
+> - *                              "[[INLINE]]" in the case of inline files.
+> - * @param pkcs12_file_inline    A string containing the information
+> + *                              a string containing the information in the case
+> + *                              of inline files.
+> + * @param pkcs12_file_inline    True if pkcs12_file is an inline file.
+>   *
+>   * @return                      1 if an error occurred, 0 if parsing was
+>   *                              successful.
+>   */
+>  int tls_ctx_load_pkcs12(struct tls_root_ctx *ctx, const char *pkcs12_file,
+> -                        const char *pkcs12_file_inline, bool load_ca_file
+> -                        );
+> +                        bool pkcs12_file_inline, bool load_ca_file);
+>  
+>  /**
+>   * Use Windows cryptoapi for key and cert, and add to library-specific TLS
+> @@ -242,26 +243,27 @@ void tls_ctx_load_cryptoapi(struct tls_root_ctx *ctx, const char *cryptoapi_cert
+>   *
+>   * @param ctx                   TLS context to use
+>   * @param cert_file             The file name to load the certificate from, or
+> - *                              "[[INLINE]]" in the case of inline files.
+> - * @param cert_file_inline      A string containing the certificate
+> + *                              a string containing the certificate in the case
+> + *                              of inline files.
+> + * @param cert_file_inline      True if cert_file is an inline file.
+>   */
+>  void tls_ctx_load_cert_file(struct tls_root_ctx *ctx, const char *cert_file,
+> -                            const char *cert_file_inline);
+> +                            bool cert_file_inline);
+>  
+>  /**
+>   * Load private key file into the given TLS context.
+>   *
+>   * @param ctx                   TLS context to use
+>   * @param priv_key_file         The file name to load the private key from, or
+> - *                              "[[INLINE]]" in the case of inline files.
+> - * @param priv_key_file_inline  A string containing the private key
+> + *                              a string containing the private key in the case
+> + *                              of inline files.
+> + * @param priv_key_file_inline  True if priv_key_file is an inline file
+>   *
+>   * @return                      1 if an error occurred, 0 if parsing was
+>   *                              successful.
+>   */
+>  int tls_ctx_load_priv_file(struct tls_root_ctx *ctx, const char *priv_key_file,
+> -                           const char *priv_key_file_inline
+> -                           );
+> +                           bool priv_key_file_inline);
+>  
+>  #ifdef MANAGMENT_EXTERNAL_KEY
+>  
+> @@ -271,14 +273,16 @@ int tls_ctx_load_priv_file(struct tls_root_ctx *ctx, const char *priv_key_file,
+>   *
+>   * @param ctx                   TLS context to use
+>   * @param cert_file             The file name to load the certificate from, or
+> - *                              "[[INLINE]]" in the case of inline files.
+> - * @param cert_file_inline      A string containing the certificate
+> + *                              a string containing the certificate in the case
+> + *                              of inline files.
+> + * @param cert_file_inline      True if cert_file is an inline file.
+>   *
+>   * @return                      1 if an error occurred, 0 if parsing was
+>   *                              successful.
+>   */
+>  int tls_ctx_use_external_private_key(struct tls_root_ctx *ctx,
+> -                                     const char *cert_file, const char *cert_file_inline);
+> +                                     const char *cert_file,
+> +                                     bool cert_file_inline);
+>  
+>  #endif
+>  
+> @@ -290,13 +294,13 @@ int tls_ctx_use_external_private_key(struct tls_root_ctx *ctx,
+>   *
+>   * @param ctx                   TLS context to use
+>   * @param ca_file               The file name to load the CAs from, or
+> - *                              "[[INLINE]]" in the case of inline files.
+> - * @param ca_file_inline        A string containing the CAs
+> + *                              a string containing the CAs in the case of
+> + *                              inline files.
+> + * @param ca_file_inline        True if ca_file is an inline file
+>   * @param ca_path               The path to load the CAs from
+>   */
+>  void tls_ctx_load_ca(struct tls_root_ctx *ctx, const char *ca_file,
+> -                     const char *ca_file_inline, const char *ca_path, bool tls_server
+> -                     );
+> +                     bool ca_file_inline, const char *ca_path, bool tls_server);
+>  
+>  /**
+>   * Load extra certificate authority certificates from the given file or path.
+> @@ -306,12 +310,14 @@ void tls_ctx_load_ca(struct tls_root_ctx *ctx, const char *ca_file,
+>   *
+>   * @param ctx                           TLS context to use
+>   * @param extra_certs_file              The file name to load the certs from, or
+> - *                                      "[[INLINE]]" in the case of inline files.
+> - * @param extra_certs_file_inline       A string containing the certs
+> + *                                      a string containing the certs in the
+> + *                                      case of inline files.
+> + * @param extra_certs_file_inline       True if extra_certs_file is an inline
+> + *                                      file.
+>   */
+> -void tls_ctx_load_extra_certs(struct tls_root_ctx *ctx, const char *extra_certs_file,
+> -                              const char *extra_certs_file_inline
+> -                              );
+> +void tls_ctx_load_extra_certs(struct tls_root_ctx *ctx,
+> +                              const char *extra_certs_file,
+> +                              bool extra_certs_file_inline);
+>  
+>  #ifdef ENABLE_CRYPTO_MBEDTLS
+>  /**
+> @@ -354,11 +360,11 @@ void key_state_ssl_free(struct key_state_ssl *ks_ssl);
+>   *
+>   * @param ssl_ctx       The TLS context to use when reloading the CRL
+>   * @param crl_file      The file name to load the CRL from, or
+> - *                      "[[INLINE]]" in the case of inline files.
+> - * @param crl_inline    A string containing the CRL
+> + *                      an array containing the inline CRL.
+> + * @param crl_inline    True if crl_file is an inline CRL.
+>   */
+>  void backend_tls_ctx_reload_crl(struct tls_root_ctx *ssl_ctx,
+> -                                const char *crl_file, const char *crl_inline);
+> +                                const char *crl_file, bool crl_inline);
+>  
+>  /**
+>   * Keying Material Exporters [RFC 5705] allows additional keying material to be
+> diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
+> index 9a16d77..75b129f 100644
+> --- a/src/openvpn/ssl_common.h
+> +++ b/src/openvpn/ssl_common.h
+> @@ -266,7 +266,7 @@ struct tls_options
+>      int verify_x509_type;
+>      const char *verify_x509_name;
+>      const char *crl_file;
+> -    const char *crl_file_inline;
+> +    bool crl_file_inline;
+>      int ns_cert_type;
+>      unsigned remote_cert_ku[MAX_PARMS];
+>      const char *remote_cert_eku;
+> diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
+> index 5c84e30..f5ff18b 100644
+> --- a/src/openvpn/ssl_mbedtls.c
+> +++ b/src/openvpn/ssl_mbedtls.c
+> @@ -270,13 +270,13 @@ tls_ctx_check_cert_time(const struct tls_root_ctx *ctx)
+>  
+>  void
+>  tls_ctx_load_dh_params(struct tls_root_ctx *ctx, const char *dh_file,
+> -                       const char *dh_inline
+> -                       )
+> +                       bool dh_inline)
+>  {
+> -    if (!strcmp(dh_file, INLINE_FILE_TAG) && dh_inline)
+> +    if (dh_inline)
+>      {
+>          if (!mbed_ok(mbedtls_dhm_parse_dhm(ctx->dhm_ctx,
+> -                                           (const unsigned char *) dh_inline, strlen(dh_inline)+1)))
+> +                                           (const unsigned char *) dh_file,
+> +                                           strlen(dh_file) + 1)))
+>          {
+>              msg(M_FATAL, "Cannot read inline DH parameters");
+>          }
+> @@ -306,9 +306,7 @@ tls_ctx_load_ecdh_params(struct tls_root_ctx *ctx, const char *curve_name
+>  
+>  int
+>  tls_ctx_load_pkcs12(struct tls_root_ctx *ctx, const char *pkcs12_file,
+> -                    const char *pkcs12_file_inline,
+> -                    bool load_ca_file
+> -                    )
+> +                    bool pkcs12_file_inline, bool load_ca_file)
+>  {
+>      msg(M_FATAL, "PKCS #12 files not yet supported for mbed TLS.");
+>      return 0;
+> @@ -324,8 +322,7 @@ tls_ctx_load_cryptoapi(struct tls_root_ctx *ctx, const char *cryptoapi_cert)
+>  
+>  void
+>  tls_ctx_load_cert_file(struct tls_root_ctx *ctx, const char *cert_file,
+> -                       const char *cert_inline
+> -                       )
+> +                       bool cert_inline)
+>  {
+>      ASSERT(NULL != ctx);
+>  
+> @@ -334,10 +331,11 @@ tls_ctx_load_cert_file(struct tls_root_ctx *ctx, const char *cert_file,
+>          ALLOC_OBJ_CLEAR(ctx->crt_chain, mbedtls_x509_crt);
+>      }
+>  
+> -    if (!strcmp(cert_file, INLINE_FILE_TAG) && cert_inline)
+> +    if (cert_inline)
+>      {
+>          if (!mbed_ok(mbedtls_x509_crt_parse(ctx->crt_chain,
+> -                                            (const unsigned char *) cert_inline, strlen(cert_inline)+1)))
+> +                                            (const unsigned char *)cert_file,
+> +                                            strlen(cert_file) + 1)))
+>          {
+>              msg(M_FATAL, "Cannot load inline certificate file");
+>          }
+> @@ -353,8 +351,7 @@ tls_ctx_load_cert_file(struct tls_root_ctx *ctx, const char *cert_file,
+>  
+>  int
+>  tls_ctx_load_priv_file(struct tls_root_ctx *ctx, const char *priv_key_file,
+> -                       const char *priv_key_inline
+> -                       )
+> +                       bool priv_key_inline)
+>  {
+>      int status;
+>      ASSERT(NULL != ctx);
+> @@ -364,19 +361,20 @@ tls_ctx_load_priv_file(struct tls_root_ctx *ctx, const char *priv_key_file,
+>          ALLOC_OBJ_CLEAR(ctx->priv_key, mbedtls_pk_context);
+>      }
+>  
+> -    if (!strcmp(priv_key_file, INLINE_FILE_TAG) && priv_key_inline)
+> +    if (priv_key_inline)
+>      {
+>          status = mbedtls_pk_parse_key(ctx->priv_key,
+> -                                      (const unsigned char *) priv_key_inline, strlen(priv_key_inline)+1,
+> -                                      NULL, 0);
+> +                                      (const unsigned char *) priv_key_file,
+> +                                      strlen(priv_key_file) + 1, NULL, 0);
+>  
+>          if (MBEDTLS_ERR_PK_PASSWORD_REQUIRED == status)
+>          {
+>              char passbuf[512] = {0};
+>              pem_password_callback(passbuf, 512, 0, NULL);
+>              status = mbedtls_pk_parse_key(ctx->priv_key,
+> -                                          (const unsigned char *) priv_key_inline,
+> -                                          strlen(priv_key_inline)+1, (unsigned char *) passbuf,
+> +                                          (const unsigned char *) priv_key_file,
+> +                                          strlen(priv_key_file) + 1,
+> +                                          (unsigned char *) passbuf,
+>                                            strlen(passbuf));
+>          }
+>      }
+> @@ -398,7 +396,8 @@ tls_ctx_load_priv_file(struct tls_root_ctx *ctx, const char *priv_key_file,
+>              management_auth_failure(management, UP_TYPE_PRIVATE_KEY, NULL);
+>          }
+>  #endif
+> -        msg(M_WARN, "Cannot load private key file %s", priv_key_file);
+> +        msg(M_WARN, "Cannot load private key file %s",
+> +            print_if_inline(priv_key_file, priv_key_inline));
+>          return 1;
+>      }
+>  
+> @@ -571,7 +570,7 @@ external_key_len(void *vctx)
+>  
+>  int
+>  tls_ctx_use_external_private_key(struct tls_root_ctx *ctx,
+> -                                 const char *cert_file, const char *cert_file_inline)
+> +                                 const char *cert_file, bool cert_file_inline)
+>  {
+>      ASSERT(NULL != ctx);
+>  
+> @@ -598,18 +597,18 @@ tls_ctx_use_external_private_key(struct tls_root_ctx *ctx,
+>  
+>  void
+>  tls_ctx_load_ca(struct tls_root_ctx *ctx, const char *ca_file,
+> -                const char *ca_inline, const char *ca_path, bool tls_server
+> -                )
+> +                bool ca_inline, const char *ca_path, bool tls_server)
+>  {
+>      if (ca_path)
+>      {
+>          msg(M_FATAL, "ERROR: mbed TLS cannot handle the capath directive");
+>      }
+>  
+> -    if (ca_file && !strcmp(ca_file, INLINE_FILE_TAG) && ca_inline)
+> +    if (ca_file && ca_inline)
+>      {
+>          if (!mbed_ok(mbedtls_x509_crt_parse(ctx->ca_chain,
+> -                                            (const unsigned char *) ca_inline, strlen(ca_inline)+1)))
+> +                                            (const unsigned char *) ca_file,
+> +                                            strlen(ca_file) + 1)))
+>          {
+>              msg(M_FATAL, "Cannot load inline CA certificates");
+>          }
+> @@ -626,8 +625,7 @@ tls_ctx_load_ca(struct tls_root_ctx *ctx, const char *ca_file,
+>  
+>  void
+>  tls_ctx_load_extra_certs(struct tls_root_ctx *ctx, const char *extra_certs_file,
+> -                         const char *extra_certs_inline
+> -                         )
+> +                         bool extra_certs_inline)
+>  {
+>      ASSERT(NULL != ctx);
+>  
+> @@ -636,11 +634,11 @@ tls_ctx_load_extra_certs(struct tls_root_ctx *ctx, const char *extra_certs_file,
+>          ALLOC_OBJ_CLEAR(ctx->crt_chain, mbedtls_x509_crt);
+>      }
+>  
+> -    if (!strcmp(extra_certs_file, INLINE_FILE_TAG) && extra_certs_inline)
+> +    if (extra_certs_inline)
+>      {
+>          if (!mbed_ok(mbedtls_x509_crt_parse(ctx->crt_chain,
+> -                                            (const unsigned char *) extra_certs_inline,
+> -                                            strlen(extra_certs_inline)+1)))
+> +                                            (const unsigned char *) extra_certs_file,
+> +                                            strlen(extra_certs_file) + 1)))
+>          {
+>              msg(M_FATAL, "Cannot load inline extra-certs file");
+>          }
+> @@ -862,7 +860,7 @@ tls_version_to_major_minor(int tls_ver, int *major, int *minor) {
+>  
+>  void
+>  backend_tls_ctx_reload_crl(struct tls_root_ctx *ctx, const char *crl_file,
+> -                           const char *crl_inline)
+> +                           bool crl_inline)
+>  {
+>      ASSERT(crl_file);
+>  
+> @@ -872,10 +870,11 @@ backend_tls_ctx_reload_crl(struct tls_root_ctx *ctx, const char *crl_file,
+>      }
+>      mbedtls_x509_crl_free(ctx->crl);
+>  
+> -    if (!strcmp(crl_file, INLINE_FILE_TAG) && crl_inline)
+> +    if (crl_inline)
+>      {
+>          if (!mbed_ok(mbedtls_x509_crl_parse(ctx->crl,
+> -                                            (const unsigned char *)crl_inline, strlen(crl_inline)+1)))
+> +                                            (const unsigned char *)crl_file,
+> +                                            strlen(crl_file) + 1)))
+>          {
+>              msg(M_WARN, "CRL: cannot parse inline CRL");
+>              goto err;
+> diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+> index eae1e22..365b9fd 100644
+> --- a/src/openvpn/ssl_openssl.c
+> +++ b/src/openvpn/ssl_openssl.c
+> @@ -432,17 +432,16 @@ cleanup:
+>  
+>  void
+>  tls_ctx_load_dh_params(struct tls_root_ctx *ctx, const char *dh_file,
+> -                       const char *dh_file_inline
+> -                       )
+> +                       bool dh_file_inline)
+>  {
+>      DH *dh;
+>      BIO *bio;
+>  
+>      ASSERT(NULL != ctx);
+>  
+> -    if (!strcmp(dh_file, INLINE_FILE_TAG) && dh_file_inline)
+> +    if (dh_file_inline)
+>      {
+> -        if (!(bio = BIO_new_mem_buf((char *)dh_file_inline, -1)))
+> +        if (!(bio = BIO_new_mem_buf((char *)dh_file, -1)))
+>          {
+>              crypto_msg(M_FATAL, "Cannot open memory BIO for inline DH parameters");
+>          }
+> @@ -461,7 +460,8 @@ tls_ctx_load_dh_params(struct tls_root_ctx *ctx, const char *dh_file,
+>  
+>      if (!dh)
+>      {
+> -        crypto_msg(M_FATAL, "Cannot load DH parameters from %s", dh_file);
+> +        crypto_msg(M_FATAL, "Cannot load DH parameters from %s",
+> +                   print_if_inline(dh_file, dh_file_inline));
+>      }
+>      if (!SSL_CTX_set_tmp_dh(ctx->ctx, dh))
+>      {
+> @@ -556,9 +556,7 @@ tls_ctx_load_ecdh_params(struct tls_root_ctx *ctx, const char *curve_name
+>  
+>  int
+>  tls_ctx_load_pkcs12(struct tls_root_ctx *ctx, const char *pkcs12_file,
+> -                    const char *pkcs12_file_inline,
+> -                    bool load_ca_file
+> -                    )
+> +                    bool pkcs12_file_inline, bool load_ca_file)
+>  {
+>      FILE *fp;
+>      EVP_PKEY *pkey;
+> @@ -570,11 +568,11 @@ tls_ctx_load_pkcs12(struct tls_root_ctx *ctx, const char *pkcs12_file,
+>  
+>      ASSERT(NULL != ctx);
+>  
+> -    if (!strcmp(pkcs12_file, INLINE_FILE_TAG) && pkcs12_file_inline)
+> +    if (pkcs12_file_inline)
+>      {
+>          BIO *b64 = BIO_new(BIO_f_base64());
+> -        BIO *bio = BIO_new_mem_buf((void *) pkcs12_file_inline,
+> -                                   (int) strlen(pkcs12_file_inline));
+> +        BIO *bio = BIO_new_mem_buf((void *) pkcs12_file,
+> +                                   (int) strlen(pkcs12_file));
+>          ASSERT(b64 && bio);
+>          BIO_push(b64, bio);
+>          p12 = d2i_PKCS12_bio(b64, NULL);
+> @@ -719,14 +717,12 @@ tls_ctx_add_extra_certs(struct tls_root_ctx *ctx, BIO *bio)
+>  
+>  /* Like tls_ctx_load_cert, but returns a copy of the certificate in **X509 */
+>  static void
+> -tls_ctx_load_cert_file_and_copy(struct tls_root_ctx *ctx,
+> -                                const char *cert_file, const char *cert_file_inline, X509 **x509
+> -                                )
+> +tls_ctx_load_cert_file_and_copy(struct tls_root_ctx *ctx, const char *cert_file,
+> +                                bool cert_file_inline, X509 **x509)
+>  {
+>      BIO *in = NULL;
+>      X509 *x = NULL;
+>      int ret = 0;
+> -    bool inline_file = false;
+>  
+>      ASSERT(NULL != ctx);
+>      if (NULL != x509)
+> @@ -734,11 +730,9 @@ tls_ctx_load_cert_file_and_copy(struct tls_root_ctx *ctx,
+>          ASSERT(NULL == *x509);
+>      }
+>  
+> -    inline_file = (strcmp(cert_file, INLINE_FILE_TAG) == 0);
+> -
+> -    if (inline_file && cert_file_inline)
+> +    if (cert_file_inline)
+>      {
+> -        in = BIO_new_mem_buf((char *)cert_file_inline, -1);
+> +        in = BIO_new_mem_buf((char *) cert_file, -1);
+>      }
+>      else
+>      {
+> @@ -768,7 +762,7 @@ tls_ctx_load_cert_file_and_copy(struct tls_root_ctx *ctx,
+>  end:
+>      if (!ret)
+>      {
+> -        if (inline_file)
+> +        if (cert_file_inline)
+>          {
+>              crypto_msg(M_FATAL, "Cannot load inline certificate file");
+>          }
+> @@ -794,7 +788,7 @@ end:
+>  
+>  void
+>  tls_ctx_load_cert_file(struct tls_root_ctx *ctx, const char *cert_file,
+> -                       const char *cert_file_inline)
+> +                       bool cert_file_inline)
+>  {
+>      tls_ctx_load_cert_file_and_copy(ctx, cert_file, cert_file_inline, NULL);
+>  }
+> @@ -807,8 +801,7 @@ tls_ctx_free_cert_file(X509 *x509)
+>  
+>  int
+>  tls_ctx_load_priv_file(struct tls_root_ctx *ctx, const char *priv_key_file,
+> -                       const char *priv_key_file_inline
+> -                       )
+> +                       bool priv_key_file_inline)
+>  {
+>      SSL_CTX *ssl_ctx = NULL;
+>      BIO *in = NULL;
+> @@ -819,9 +812,9 @@ tls_ctx_load_priv_file(struct tls_root_ctx *ctx, const char *priv_key_file,
+>  
+>      ssl_ctx = ctx->ctx;
+>  
+> -    if (!strcmp(priv_key_file, INLINE_FILE_TAG) && priv_key_file_inline)
+> +    if (priv_key_file_inline)
+>      {
+> -        in = BIO_new_mem_buf((char *)priv_key_file_inline, -1);
+> +        in = BIO_new_mem_buf((char *) priv_key_file, -1);
+>      }
+>      else
+>      {
+> @@ -849,7 +842,8 @@ tls_ctx_load_priv_file(struct tls_root_ctx *ctx, const char *priv_key_file,
+>              management_auth_failure(management, UP_TYPE_PRIVATE_KEY, NULL);
+>          }
+>  #endif
+> -        crypto_msg(M_WARN, "Cannot load private key file %s", priv_key_file);
+> +        crypto_msg(M_WARN, "Cannot load private key file %s",
+> +                   print_if_inline(priv_key_file, priv_key_file_inline));
+>          goto end;
+>      }
+>  
+> @@ -874,7 +868,7 @@ end:
+>  
+>  void
+>  backend_tls_ctx_reload_crl(struct tls_root_ctx *ssl_ctx, const char *crl_file,
+> -                           const char *crl_inline)
+> +                           bool crl_inline)
+>  {
+>      X509_CRL *crl = NULL;
+>      BIO *in = NULL;
+> @@ -902,9 +896,9 @@ backend_tls_ctx_reload_crl(struct tls_root_ctx *ssl_ctx, const char *crl_file,
+>  
+>      X509_STORE_set_flags(store, X509_V_FLAG_CRL_CHECK | X509_V_FLAG_CRL_CHECK_ALL);
+>  
+> -    if (!strcmp(crl_file, INLINE_FILE_TAG) && crl_inline)
+> +    if (crl_inline)
+>      {
+> -        in = BIO_new_mem_buf((char *)crl_inline, -1);
+> +        in = BIO_new_mem_buf((char *) crl_file, -1);
+>      }
+>      else
+>      {
+> @@ -913,20 +907,23 @@ backend_tls_ctx_reload_crl(struct tls_root_ctx *ssl_ctx, const char *crl_file,
+>  
+>      if (in == NULL)
+>      {
+> -        msg(M_WARN, "CRL: cannot read: %s", crl_file);
+> +        msg(M_WARN, "CRL: cannot read: %s",
+> +            print_if_inline(crl_file, crl_inline));
+>          goto end;
+>      }
+>  
+>      crl = PEM_read_bio_X509_CRL(in, NULL, NULL, NULL);
+>      if (crl == NULL)
+>      {
+> -        msg(M_WARN, "CRL: cannot read CRL from file %s", crl_file);
+> +        msg(M_WARN, "CRL: cannot read CRL from file %s",
+> +            print_if_inline(crl_file, crl_inline));
+>          goto end;
+>      }
+>  
+>      if (!X509_STORE_add_crl(store, crl))
+>      {
+> -        msg(M_WARN, "CRL: cannot add %s to store", crl_file);
+> +        msg(M_WARN, "CRL: cannot add %s to store",
+> +            print_if_inline(crl_file, crl_inline));
+>          goto end;
+>      }
+>  
+> @@ -1027,7 +1024,7 @@ done:
+>  
+>  int
+>  tls_ctx_use_external_private_key(struct tls_root_ctx *ctx,
+> -                                 const char *cert_file, const char *cert_file_inline)
+> +                                 const char *cert_file, bool cert_file_inline)
+>  {
+>      RSA *rsa = NULL;
+>      RSA *pub_rsa;
+> @@ -1112,9 +1109,7 @@ sk_x509_name_cmp(const X509_NAME *const *a, const X509_NAME *const *b)
+>  
+>  void
+>  tls_ctx_load_ca(struct tls_root_ctx *ctx, const char *ca_file,
+> -                const char *ca_file_inline,
+> -                const char *ca_path, bool tls_server
+> -                )
+> +                bool ca_file_inline, const char *ca_path, bool tls_server)
+>  {
+>      STACK_OF(X509_INFO) *info_stack = NULL;
+>      STACK_OF(X509_NAME) *cert_names = NULL;
+> @@ -1135,9 +1130,9 @@ tls_ctx_load_ca(struct tls_root_ctx *ctx, const char *ca_file,
+>      /* Try to add certificates and CRLs from ca_file */
+>      if (ca_file)
+>      {
+> -        if (!strcmp(ca_file, INLINE_FILE_TAG) && ca_file_inline)
+> +        if (ca_file_inline)
+>          {
+> -            in = BIO_new_mem_buf((char *)ca_file_inline, -1);
+> +            in = BIO_new_mem_buf((char *)ca_file, -1);
+>          }
+>          else
+>          {
+> @@ -1209,11 +1204,12 @@ tls_ctx_load_ca(struct tls_root_ctx *ctx, const char *ca_file,
+>                      {
+>                          crypto_msg(M_WARN,
+>                                     "Cannot load CA certificate file %s (entry %d did not validate)",
+> -                                   np(ca_file), added);
+> +
+> +			                       print_if_inline(ca_file, ca_file_inline),
+> +                                   added);
+
+Indenting looks off.
+
+>                      }
+>                      prev = cnum;
+>                  }
+> -
+>              }
+>              sk_X509_INFO_pop_free(info_stack, X509_INFO_free);
+>          }
+> @@ -1227,7 +1223,7 @@ tls_ctx_load_ca(struct tls_root_ctx *ctx, const char *ca_file,
+>          {
+>              crypto_msg(M_FATAL,
+>                         "Cannot load CA certificate file %s (no entries were read)",
+> -                       np(ca_file));
+> +                       print_if_inline(ca_file, ca_file_inline));
+>          }
+>  
+>          if (tls_server)
+> @@ -1237,7 +1233,8 @@ tls_ctx_load_ca(struct tls_root_ctx *ctx, const char *ca_file,
+>              {
+>                  crypto_msg(M_FATAL, "Cannot load CA certificate file %s (only %d "
+>                             "of %d entries were valid X509 names)",
+> -                           np(ca_file), cnum, added);
+> +                           print_if_inline(ca_file, ca_file_inline), cnum,
+> +                           added);
+>              }
+>          }
+>  
+> @@ -1265,13 +1262,12 @@ tls_ctx_load_ca(struct tls_root_ctx *ctx, const char *ca_file,
+>  
+>  void
+>  tls_ctx_load_extra_certs(struct tls_root_ctx *ctx, const char *extra_certs_file,
+> -                         const char *extra_certs_file_inline
+> -                         )
+> +                         bool extra_certs_file_inline)
+>  {
+>      BIO *in;
+> -    if (!strcmp(extra_certs_file, INLINE_FILE_TAG) && extra_certs_file_inline)
+> +    if (extra_certs_file_inline)
+>      {
+> -        in = BIO_new_mem_buf((char *)extra_certs_file_inline, -1);
+> +        in = BIO_new_mem_buf((char *)extra_certs_file, -1);
+>      }
+>      else
+>      {
+> @@ -1280,7 +1276,9 @@ tls_ctx_load_extra_certs(struct tls_root_ctx *ctx, const char *extra_certs_file,
+>  
+>      if (in == NULL)
+>      {
+> -        crypto_msg(M_FATAL, "Cannot load extra-certs file: %s", extra_certs_file);
+> +        crypto_msg(M_FATAL, "Cannot load extra-certs file: %s",
+> +                   print_if_inline(extra_certs_file, extra_certs_file_inline));
+> +
+>      }
+>      else
+>      {
+> diff --git a/src/openvpn/tls_crypt.c b/src/openvpn/tls_crypt.c
+> index c227b09..383c8ca 100644
+> --- a/src/openvpn/tls_crypt.c
+> +++ b/src/openvpn/tls_crypt.c
+> @@ -44,7 +44,7 @@ tls_crypt_buf_overhead(void)
+>  
+>  void
+>  tls_crypt_init_key(struct key_ctx_bi *key, const char *key_file,
+> -                   const char *key_inline, bool tls_server) {
+> +                   bool key_inline, bool tls_server) {
+>      const int key_direction = tls_server ?
+>                                KEY_DIRECTION_NORMAL : KEY_DIRECTION_INVERSE;
+>  
+> diff --git a/src/openvpn/tls_crypt.h b/src/openvpn/tls_crypt.h
+> index 47f75d0..801127b 100644
+> --- a/src/openvpn/tls_crypt.h
+> +++ b/src/openvpn/tls_crypt.h
+> @@ -92,13 +92,14 @@
+>   *
+>   * @param key           The key context to initialize
+>   * @param key_file      The file to read the key from (or the inline tag to
+> - *                      indicate and inline key).
+> - * @param key_inline    Array containing (zero-terminated) inline key, or NULL
+> - *                      if not used.
+> + *                      indicate and inline key) or an array containing
+> + *                      (zero-terminated) inline key.
+> + * @param key_inline    True if key_file contains an inline key, False
+> + *                      otherwise.
+>   * @param tls_server    Must be set to true is this is a TLS server instance.
+>   */
+>  void tls_crypt_init_key(struct key_ctx_bi *key, const char *key_file,
+> -                        const char *key_inline, bool tls_server);
+> +                        bool key_inline, bool tls_server);
+>  
+>  /**
+>   * Returns the maximum overhead (in bytes) added to the destination buffer by
+>
+
+-Steffan
 
