@@ -1,7 +1,9 @@
 From: Ilya Shipitsin <chipitsine@...277...>
-Date: Tue, 10 Jan 2017 13:04:07 +0500
-Message-Id: <1484035447-11838-1-git-send-email-chipitsine@...277...>
-Subject: [Openvpn-devel] [PATCH] Resolving several travis-ci issues:
+Date: Tue, 10 Jan 2017 13:18:07 +0500
+Message-Id: <1484036287-12801-1-git-send-email-chipitsine@...277...>
+Subject: [Openvpn-devel] [PATCH] resolving trivial issue found by clang
+	static analyzer variable "ret" is assigned a value that is
+	redefined later
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,59 +16,23 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-* moving LD_LIBRARY_PATH as far as possible (otherwise "wget" picks it, which is not desirable)
-* split LD_LIBRARY_PATH into LD_LIBRARY_PATH/DYLD_LIBRARY_PATH depending on operating system
-* removed MBEDTLS_VERSION, OPENSSL_VERSION (the last depended on nonexistent OPENSSL_VERION variable)
-* removed "apt: true" from caching, it never worked actually
-
-this patch should be applied after https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13843.html
+details can be found here: https://delft.syzzer.nl/openvpn-scan-build/2017-01-10-000020-23912-1/report-856cea.html#EndPath
 ---
- .travis.yml           | 4 ++--
- .travis/build-deps.sh | 2 --
- 2 files changed, 2 insertions(+), 4 deletions(-)
+ src/openvpn/init.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/.travis.yml b/.travis.yml
-index 369db97..b8ec1ac 100644
---- a/.travis.yml
-+++ b/.travis.yml
-@@ -18,7 +18,6 @@ env:
-     - OPENSSL_VERSION="1.0.1t"
-     - OPENSSL_CFLAGS="-I${PREFIX}/include"
-     - OPENSSL_LIBS="-L${PREFIX}/lib -lssl -lcrypto"
--    - LD_LIBRARY_PATH="${PREFIX}/lib:${LD_LIBRARY_PATH}"
- 
- matrix:
-   include:
-@@ -63,7 +62,6 @@ addons:
-       - linux-libc-dev
- 
- cache:
--  apt: true
-   ccache: true
-   directories:
-   - download-cache
-@@ -77,6 +75,8 @@ install:
-   - .travis/build-deps.sh > build-deps.log 2>&1 || (cat build-deps.log && exit 1)
- 
- script:
-+  - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then export LD_LIBRARY_PATH="${PREFIX}/lib:${LD_LIBRARY_PATH}"; fi
-+  - if [ "${TRAVIS_OS_NAME}" = "osx"   ]; then export DYLD_LIBRARY_PATH="${PREFIX}/lib:${LD_LIBRARY_PATH}"; fi
-   - autoreconf -vi
-   - ./configure --with-crypto-library="${SSLLIB}" ${EXTRA_CONFIG} || (cat config.log && exit 1)
-   - make -j$JOBS
-diff --git a/.travis/build-deps.sh b/.travis/build-deps.sh
-index bda54ee..3ffba0b 100755
---- a/.travis/build-deps.sh
-+++ b/.travis/build-deps.sh
-@@ -2,8 +2,6 @@
- set -eux
- 
- # Set defaults
--MBEDTLS_VERSION="${MBEDTLS_VERSION:-2.2.1}"
--OPENSSL_VERSION="${OPENSSL_VERION:-1.0.2h}"
- PREFIX="${PREFIX:-${HOME}/opt}"
- 
- download_mbedtls () {
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index b2547f4..5b39929 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -266,7 +266,6 @@ ce_management_query_remote(struct context *c)
+             management_event_loop_n_seconds(management, 1);
+             if (IS_SIG(c))
+             {
+-                ret = false;
+                 break;
+             }
+         }
 -- 
 2.5.5
 
