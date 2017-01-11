@@ -1,14 +1,14 @@
-Date: Wed, 11 Jan 2017 14:32:37 +0800
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <20170111063237.GQ18524@...2182...>
-References: <20161227112436.5045-1-a@...2181...>
-	<97c51277-d8b7-b768-5205-706492e92f84@...1856...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="Jbyekxk18hnEXT0m"
-Content-Disposition: inline
-In-Reply-To: <97c51277-d8b7-b768-5205-706492e92f84@...1856...>
-Subject: Re: [Openvpn-devel] [PATCH v2] convert *_inline attributes to bool
+In-Reply-To: <1484080473-10415-2-git-send-email-davids@...515...>
+References: <04b17e24-74d9-193b-ff8d-575efbf4d63a@...2080...>
+	<1484080473-10415-1-git-send-email-davids@...515...>
+	<1484080473-10415-2-git-send-email-davids@...515...>
+From: Selva Nair <selva.nair@...277...>
+Date: Wed, 11 Jan 2017 14:52:50 -0500
+Message-ID: <CAKuzo_joW385+8RFtRO2_gET-uTJET+CdxnpJ=0JE1MjOBFjYw@...278...>
+Content-Type: multipart/alternative; boundary=001a113e7bf6508ea80545d6f34d
+Subject: Re: [Openvpn-devel] [PATCH 2/2] management: Remove a redundant
+	#ifdef block
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,132 +17,94 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan@...1856...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---Jbyekxk18hnEXT0m
-Content-Type: text/plain; charset="us-ascii"
+--001a113e7bf6508ea80545d6f34d
+Content-Type: text/plain; charset=UTF-8
+
+On Tue, Jan 10, 2017 at 3:34 PM, David Sommerseth <davids@...515...>
+wrote:
+
+> Bascially removes two independent #ifdef ENABLE_MANAGEMENT blocks into
+> a single block, which makes the logic flow more easy to read.
+>
+> Signed-off-by: David Sommerseth <davids@...515...>
+> Cc: Selva Nair <selva.nair@...277...>
+> ---
+>  src/openvpn/init.c | 6 +-----
+>  1 file changed, 1 insertion(+), 5 deletions(-)
+>
+> diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+> index 4786232..5296345 100644
+> --- a/src/openvpn/init.c
+> +++ b/src/openvpn/init.c
+> @@ -414,11 +414,7 @@ next_connection_entry(struct context *c)
+>                  break;
+>              }
+>          }
+> -        else
+> -#endif
+> -
+> -#ifdef ENABLE_MANAGEMENT
+> -        if (ce_defined && management && management_query_proxy_enabled
+> (management))
+> +        else if (ce_defined && management &&
+> management_query_proxy_enabled(management))
+>          {
+>              ce_defined = ce_management_query_proxy(c);
+>              if (IS_SIG(c))
+>
+
+One more ifdef gone, and good riddance!
+
+ACK.
+
+--001a113e7bf6508ea80545d6f34d
+Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-On Tue, Jan 10, 2017 at 10:35:10PM +0100, Steffan Karger wrote:
-> Hi,
->=20
-> In general this looks good.  Some remarks inline.  Please bear with me,
-> we're almost there ;)
+<div dir=3D"ltr"><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">=
+On Tue, Jan 10, 2017 at 3:34 PM, David Sommerseth <span dir=3D"ltr">&lt;<a =
+href=3D"mailto:davids@...515..." target=3D"_blank">davids@...515...</a>&gt;=
+</span> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .=
+8ex;border-left:1px #ccc solid;padding-left:1ex"><div id=3D"m_-481493157181=
+0615402:1c5" class=3D"m_-4814931571810615402a3s m_-4814931571810615402aXjCH=
+ m_-4814931571810615402m1598a1708233865d">Bascially removes two independent=
+ #ifdef ENABLE_MANAGEMENT blocks into<br>
+a single block, which makes the logic flow more easy to read.<br>
+<br>
+Signed-off-by: David Sommerseth &lt;<a href=3D"mailto:davids@...515..." tar=
+get=3D"_blank">davids@...515...</a>&gt;<br>
+Cc: Selva Nair &lt;<a href=3D"mailto:selva.nair@...277..." target=3D"_blank=
+">selva.nair@...277...</a>&gt;<br>
+---<br>
+=C2=A0src/openvpn/init.c | 6 +-----<br>
+=C2=A01 file changed, 1 insertion(+), 5 deletions(-)<br>
+<br>
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c<br>
+index 4786232..5296345 100644<br>
+--- a/src/openvpn/init.c<br>
++++ b/src/openvpn/init.c<br>
+@@ -414,11 +414,7 @@ next_connection_entry(struct context *c)<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0break;<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0}<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0}<br>
+-=C2=A0 =C2=A0 =C2=A0 =C2=A0 else<br>
+-#endif<br>
+-<br>
+-#ifdef ENABLE_MANAGEMENT<br>
+-=C2=A0 =C2=A0 =C2=A0 =C2=A0 if (ce_defined &amp;&amp; management &amp;&amp=
+; management_query_proxy_enabled<wbr>(management))<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 else if (ce_defined &amp;&amp; management &amp=
+;&amp; management_query_proxy_enabled<wbr>(management))<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0{<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0ce_defined =3D ce_managemen=
+t_query_proxy(c);<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0if (IS_SIG(c))<div class=3D=
+"m_-4814931571810615402yj6qo m_-4814931571810615402ajU"><div id=3D"m_-48149=
+31571810615402:4p9" class=3D"m_-4814931571810615402ajR"></div></div></div><=
+/blockquote></div><br>One more ifdef gone, and good riddance!</div><div cla=
+ss=3D"gmail_extra"><br></div><div class=3D"gmail_extra">ACK.</div></div>
 
-No worries :) and thanks for taking some time to review my patch!
-
-[CUT]
-
-> > +    if (!options->extra_certs_file)
-> > +    {
-> > +        errs |=3D check_file_access(CHKACC_FILE, options->extra_certs_=
-file, R_OK,
-> > +                                  "--extra-certs");
-> > +    }
->=20
-> ... more add ifs follow.
->=20
-> I don't particularly like all these ifs.  What about adding a wrapper
-> function like check_file_access_inline(bool inline, int flags, ...),
-> containing basically "if(!inline) check_file_access(flags, ...)", so
-> that we will here still have a nice 'check_file_access*()'-sled?
->=20
-> (Thanks to Adriaan for the suggestion.)
-
-
-Yeah, I liked the idea.
-
-[CUT]
-
-> > @@ -5154,7 +5194,8 @@ add_option(struct options *options,
-> >          {
-> >              options->plugin_list =3D plugin_option_list_new(&options->=
-gc);
-> >          }
-> > -        if (!plugin_option_list_add(options->plugin_list, &p[1], &opti=
-ons->gc))
-> > +        if (!plugin_option_list_add(options->plugin_list, &p[1], is_in=
-line,
-> > +                                    &options->gc))
->=20
-> Can we inline a plugin?  I wouldn't think so, but I've been surprised by
-> our option parser before ;-)  (Arne or David might know this.)
-
-Personally I don't know :) the parser logic seems so generic that I had the
-feeling everything could be inline'd :D
-
-
-> If not,
-> you don't need to add the is_inline argument to
-> plugin_option_list_add(), but just add a 'false' when someone down the
-> chain calls make_extended_arg_array().
-
-I agree with this - it is the right thing to do.
-
-[CUT]
-
-> > @@ -6496,7 +6531,7 @@ add_option(struct options *options,
-> >      else if (streq(p[0], "push") && p[1] && !p[2])
-> >      {
-> >          VERIFY_PERMISSION(OPT_P_PUSH);
-> > -        push_options(options, &p[1], msglevel, &options->gc);
-> > +        push_options(options, &p[1], is_inline, msglevel, &options->gc=
-);
->=20
-> Same as with 'plugin', I don't think we can inline a 'push' option?
-
-
-My understanding is that the code allows for push-options to be inline'd, b=
-ut
-right now there is no push-option that can be used that way. Am I wrong?
-
-
-[CUT]
-
-
-> > @@ -1209,11 +1204,12 @@ tls_ctx_load_ca(struct tls_root_ctx *ctx, const=
- char *ca_file,
-> >                      {
-> >                          crypto_msg(M_WARN,
-> >                                     "Cannot load CA certificate file %s=
- (entry %d did not validate)",
-> > -                                   np(ca_file), added);
-> > +
-> > +			                       print_if_inline(ca_file, ca_file_inline),
-> > +                                   added);
->=20
-> Indenting looks off.
-
-Thanks for spotting. Will fix.
-
-
-Cheers,
-
---=20
-Antonio Quartulli
-
---Jbyekxk18hnEXT0m
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQIcBAEBCAAGBQJYddGDAAoJEJ6F1zG2JyOsoh4QAKrfArmwnWz4OWUZTX0i3Z8W
-ZyEg/+yMeh6wKROgJaW0uA3AcwOAb2lULWq8raQPDOvE9ZfqB+rMkNZ13hZqU5/z
-FaxEyPp9fzjtiQ6xNe738In+kE5NnUTUsXw8KtineWHP1VUtALWu2Do5XaIFiTFu
-66SkUBgv5J6HbfnygofgbYueiCAB+cxPtgtJkVz8Qr7V79bImoen5yUVQMWl6omc
-ttWAm8lwqa8+EU1/JDbD/25HaM4o/nsxDRpvY1fsiF7w4D1tMvSCKnfVkk0EEvPk
-RVGn73J/MVR62OziiK2tUIIloHPX2fXr1lr4SfD4ERaa/ZrIaCEAsNlDfoSR8BuX
-BiBC0rp0EpdVpoVOuTyg4Wcsk62mba1LBTqRyeTFQQIggFsvjOjIp0Ym0RUvjFPb
-jcotH92Y7ofHfaPq9WUWI2wekt2Sic78iUNckcfFpCCFoSo5kuT8rkHe7ZSvT3l7
-3FlxmJxUOwLoaSTPN9Ilh384P6J8yRk397LdJ8Y3eoVzcZhnaU0hoL3StPoqT/4Y
-YJ72l1E0aEY3LzjZBx+1/2VAbQjnBI7Jmw+Tm+Aor2rFTI3Nn/jlUoxhp3A4vBZ7
-Ax18JexeLZY19AtOCmQ292CP1UA6SCUD7iljM48tvneGweZii43Cv96EfR5rWdA3
-fS3HFILaNbaK9RECApCB
-=gAek
------END PGP SIGNATURE-----
-
---Jbyekxk18hnEXT0m--
+--001a113e7bf6508ea80545d6f34d--
 
