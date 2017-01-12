@@ -1,10 +1,10 @@
 From: David Sommerseth <davids@...515...>
-Date: Thu, 12 Jan 2017 03:03:17 +0100
-Message-Id: <20170112020317.2440-1-davids@...515...>
-In-Reply-To: <1484080473-10415-1-git-send-email-davids@...515...>
-References: <1484080473-10415-1-git-send-email-davids@...515...>
-Subject: Re: [Openvpn-devel] [PATCH applied] management: >REMOTE operation
-	would overwrite ce change indicator
+Date: Thu, 12 Jan 2017 03:03:37 +0100
+Message-Id: <20170112020337.2583-1-davids@...515...>
+In-Reply-To: <1484080473-10415-2-git-send-email-davids@...515...>
+References: <1484080473-10415-2-git-send-email-davids@...515...>
+Subject: Re: [Openvpn-devel] [PATCH applied] management: Remove a redundant
+	#ifdef block
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -23,17 +23,17 @@ Hash: SHA1
 
 Your patch has been applied to the following branches
 
-commit e81f313a71e548638d9e9679226ee84b3b614f13  (master)
-commit a853cd060eb61df77055cbb92e97ad7f245f2316  (release/2.4)
+commit 7b02cc2aa8318dc8f2677064dadcbec295b2f937  (master)
+commit 977f0b9ff4b600212b603279153ff1b1b10cf527  (release/2.4)
 Author: David Sommerseth
-Date:   Tue Jan 10 21:34:32 2017 +0100
+Date:   Tue Jan 10 21:34:33 2017 +0100
 
-     management: >REMOTE operation would overwrite ce change indicator
+     management: Remove a redundant #ifdef block
 
      Signed-off-by: David Sommerseth <davids@...515...>
      Acked-by: Selva Nair <selva.nair@...277...>
-     Message-Id: <1484080473-10415-1-git-send-email-davids@...515...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13851.html
+     Message-Id: <1484080473-10415-2-git-send-email-davids@...515...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13852.html
      Signed-off-by: David Sommerseth <davids@...515...>
 
 
@@ -45,18 +45,18 @@ David Sommerseth
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBAgAGBQJYduPjAAoJEIbPlEyWcf3yns0P/RNsveEAvleUcBQNlJ9rzKL4
-XYojnRhbdGzuuNQhgWj+49+HG9gYgCy4XrRRcMEaw/trwBZVOSF9viI10HNuUSnT
-fHO3sIFNHMgEUPNiP2GGzEiD1EEgE2hAKLjaCjTzvfLKvOiC9ZaH+WTj71Q0ppax
-XLsM/B5g6OiD4X5ZPsgJ+ZY2yyb7Mxe/DOFI05pkZ59CA2t0vMP1kKSjf2le+51+
-iCcvfDV0Fx9px5JGOtsrkI/K0Wp59ip3N18xqYp15Wd2wj3ANv9zA0mfp1ZK/jDz
-cIRoA/qG2pS7txgyVvbtDyfmYJnWTnmnBP+hhR859ykhUSBUyQN6zliwhCislqv9
-36glnIkbbmyXCYIAPIxx7Fh6ZKnh+whu+RQ+GR1cPR5rl08qofZPR7JygdJDx/as
-i4JR51fFpFBd94zsQpf1NYBPoORccgsbzyl8y6dNOkkdyCl5pxkOmScUuIUzCMwP
-UFalNUH2kopEGwwZCXf+aTvpkQ7Q8UMhctCsX/EqcGcOzBzJ9eZV7mzvhwknkYMV
-QPgmR+YpWki4CGDnHSv43mTs87yRbY7xcn+u4002/Yv0F1HxRzL8Lz2RfvDD5eJA
-ppvOaVCDvEIObsdCIP29Fa0g7YA0F1h8e1BV98qF12WEC1v+S8d4qiAAHyN4aeQt
-r4MDwMpTCh1tFH2I9vj5
-=X0eo
+iQIcBAEBAgAGBQJYduP4AAoJEIbPlEyWcf3yhSEP/16NtW0V/gWe6jwW7RJcCcHA
+9wmMBaE9JVPahcUcx4i4jQbgjdSAoa1/Zm9TY47YX/ZW8Axs0xcYvkxiAkYMxyo9
++oZKdScNBS2B6hSv+Cl9Um/VcwWx6Nli0U1NaKAed+i63iXxV6WEAmL0EKx19Afg
+xIPS3Etep/4wFAgJkzqIb3H6EAHvGHKuCGt5Sp1KnF9faeGyAlm/9wGJ4rl4q0+7
+bcI5U4c+33XIlM2OZ2QYO1qz9bK+sh7cfVuT1qbZ129UocMyOlgt0QTA42xqr0kh
+C1b36x83DttIsqd1Tz7UbJUrth4ABYP9dka6nV7bzs/3XvMjkhzFP5aWBlKHCV3r
++6jV2zMAt5oYMUlDpk6b0BnyHd2FcU9sz688/1OhfmvoRXKof+XT1rlSxbvfHS+n
+6izZowaa3kLV4jbv8DV6KJRxHPAJQ5NK4fuU/p/YFby3I/4qYR93MvT/LA2eEl+E
+/d7plBke3TrnAqjzQgU0Cwqnfsb0/SsS6HVFy/xpsuOwAZCOHTsvqCRhLfViefQs
+OIrsrOkNfgx5onOIT5hTGfhGUp6FsZOiKOHOPd2MHz6d8xOh6px1R/l2LYTPG+YG
+egOh8w+7q08kit9Pa9wrjg6i+tHDZCjpm/9iXu9jh0mQV0Fa9jfX/SPQmRk1LrRE
+kjWvn/TlxGahZRqp85gc
+=CvFt
 -----END PGP SIGNATURE-----
 
