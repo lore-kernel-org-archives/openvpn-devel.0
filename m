@@ -1,8 +1,10 @@
 From: David Sommerseth <davids@...515...>
-Date: Thu, 12 Jan 2017 03:01:15 +0100
-Message-Id: <20170112020115.1106-1-davids@...515...>
-Subject: Re: [Openvpn-devel] [PATCH applied] man: fix formatting for
-	alternative option
+Date: Thu, 12 Jan 2017 03:03:17 +0100
+Message-Id: <20170112020317.2440-1-davids@...515...>
+In-Reply-To: <1484080473-10415-1-git-send-email-davids@...515...>
+References: <1484080473-10415-1-git-send-email-davids@...515...>
+Subject: Re: [Openvpn-devel] [PATCH applied] management: >REMOTE operation
+	would overwrite ce change indicator
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,26 +15,25 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net, Christian Hesse <mail@...1798...>
+To: davids@...515...
+Cc: openvpn-devel@lists.sourceforge.net
 
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-ACK.
-
 Your patch has been applied to the following branches
 
-commit d0d8a4b5f875bc802117647b20a3caa6d4fdb375  (master)
-commit 6204fccb2441b5bae8b3f6e0b31a4a0b232fc8e6  (release/2.4)
-Author: Christian Hesse
-Date:   Wed Dec 28 08:54:20 2016 +0100
+commit e81f313a71e548638d9e9679226ee84b3b614f13  (master)
+commit a853cd060eb61df77055cbb92e97ad7f245f2316  (release/2.4)
+Author: David Sommerseth
+Date:   Tue Jan 10 21:34:32 2017 +0100
 
-     man: fix formatting for alternative option
+     management: >REMOTE operation would overwrite ce change indicator
 
-     Signed-off-by: Christian Hesse <mail@...1798...>
-     Acked-by: David Sommerseth <davids@...515...>
-     Message-Id: <20161228075420.348-1-list@...1798...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13747.html
+     Signed-off-by: David Sommerseth <davids@...515...>
+     Acked-by: Selva Nair <selva.nair@...277...>
+     Message-Id: <1484080473-10415-1-git-send-email-davids@...515...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13851.html
      Signed-off-by: David Sommerseth <davids@...515...>
 
 
@@ -44,18 +45,18 @@ David Sommerseth
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBAgAGBQJYduNYAAoJEIbPlEyWcf3ylKUP/RZKG/qSinrHo2O2Fu6sJyWL
-eT9i6KurQLGR8MTKm6csPyLAX0NA+JYhuRgOUIMV3QLb44De0DMIufalVpfUIlyg
-wOuqI9rnX8vU7+FVeHw8aivBtPWM4oFSJOQ8+sDy/pWFvJYa5QyLFIPtG1oHo/Fx
-lHeOfCK1PqRcTggmze6PH1eTJjLwC7EprjFJZmfa8XLhfsKehwFdEFO5/bhGFwLN
-Out2bjtAQXSIaFRlGQB77Y7pQYSYVjvcmdWBuzE4lxnmenVjvW4gQA5mTXbj1AfI
-l57dG+B2Ahx0k5mGbItW7+g5pfo8xsXTAV7o44b/S1L4Uuy7FuE4ABiM+KVEuH3a
-kpnVgdS375Nx00Sc4TyB5jkkb034TvgcGf0xTtsg5mLY+vijh5UvOw/k+tIbcot2
-oKE7Dp5WWcMND+g3lIFdxiCO0zU9gVLVn4YNurtOrWmQedTxEUinVhbNxnDTjBlq
-fMmRjz79nDgnSwjidUGDT038/P2R/j1ONrLWUcCFRtj0bZU0aLo+mM8DHVn/2gVH
-g6HSIOfNfoIeN2lehMzS/LmfZZdpN7qqWPxu4/kXNlHhldn+szVtyBupqFLV+G5M
-aoMS/CIvM7rAJ9U9UVpQsUJBExRxzcKjw+fkyy0nHQda93BSv4vIZ67TVEjJz0NR
-MXe9EingHPRVe/w3zz5F
-=jAlj
+iQIcBAEBAgAGBQJYduPjAAoJEIbPlEyWcf3yns0P/RNsveEAvleUcBQNlJ9rzKL4
+XYojnRhbdGzuuNQhgWj+49+HG9gYgCy4XrRRcMEaw/trwBZVOSF9viI10HNuUSnT
+fHO3sIFNHMgEUPNiP2GGzEiD1EEgE2hAKLjaCjTzvfLKvOiC9ZaH+WTj71Q0ppax
+XLsM/B5g6OiD4X5ZPsgJ+ZY2yyb7Mxe/DOFI05pkZ59CA2t0vMP1kKSjf2le+51+
+iCcvfDV0Fx9px5JGOtsrkI/K0Wp59ip3N18xqYp15Wd2wj3ANv9zA0mfp1ZK/jDz
+cIRoA/qG2pS7txgyVvbtDyfmYJnWTnmnBP+hhR859ykhUSBUyQN6zliwhCislqv9
+36glnIkbbmyXCYIAPIxx7Fh6ZKnh+whu+RQ+GR1cPR5rl08qofZPR7JygdJDx/as
+i4JR51fFpFBd94zsQpf1NYBPoORccgsbzyl8y6dNOkkdyCl5pxkOmScUuIUzCMwP
+UFalNUH2kopEGwwZCXf+aTvpkQ7Q8UMhctCsX/EqcGcOzBzJ9eZV7mzvhwknkYMV
+QPgmR+YpWki4CGDnHSv43mTs87yRbY7xcn+u4002/Yv0F1HxRzL8Lz2RfvDD5eJA
+ppvOaVCDvEIObsdCIP29Fa0g7YA0F1h8e1BV98qF12WEC1v+S8d4qiAAHyN4aeQt
+r4MDwMpTCh1tFH2I9vj5
+=X0eo
 -----END PGP SIGNATURE-----
 
