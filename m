@@ -1,12 +1,12 @@
-References: <1484297432-14435-1-git-send-email-chipitsine@...277...>
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <7dc75a19-451e-effa-503a-ac5b75a23bab@...515...>
-Date: Fri, 13 Jan 2017 11:05:16 +0200
 MIME-Version: 1.0
-In-Reply-To: <1484297432-14435-1-git-send-email-chipitsine@...277...>
-Subject: Re: [Openvpn-devel] [PATCH] add PR template in order to simplify
- new developers cooperate properly if they open PR. discussed here:
- https://sourceforge.net/p/openvpn/mailman/message/35601310/
+In-Reply-To: <1483905658-25267-1-git-send-email-selva.nair@...277...>
+References: <1483905658-25267-1-git-send-email-selva.nair@...277...>
+From: Selva Nair <selva.nair@...277...>
+Date: Fri, 13 Jan 2017 10:19:09 -0500
+Message-ID: <CAKuzo_j-TJhKM4YaTpjotDU+i06pVqdU__eM9DB-DOks_gmCgw@...278...>
+Content-Type: multipart/alternative; boundary=001a1149b0a43bcede0545fb5c91
+Subject: Re: [Openvpn-devel] [PATCH] Fix user's group membership check in
+ interactive service to work with domains
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,42 +15,69 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+
+--001a1149b0a43bcede0545fb5c91
+Content-Type: text/plain; charset=UTF-8
+
+Hi,
+
+This is like talking to myself, but here goes:
+
+On Sun, Jan 8, 2017 at 3:00 PM, <selva.nair@...277...> wrote:
+
+> Currently the username unqualified by the domain is used to validate
+> a user which fails for domain users. Instead compare the user's SID
+> with SIDs in the Administrators group and ovpn_admin_group.
+>
+> This has the advantage that connection to a domain controller is not
+> required and will work even when user is logged in with cached credentials.
+>
+> Limitations:
+> (i) Group membership is not checked recursively
+> (ii) Domain administrators will not be recognized as members of local
+> Administrators group.
+>
+> Resolves Trac: #810
+>
+
+Based on further discussions on Trac: #810, domain admins are
+understandably not pleased with those limitations. I'll submit a v2.
+
+Selva
+
+--001a1149b0a43bcede0545fb5c91
+Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-To: Ilya Shipitsin <chipitsine@...277...>, openvpn-devel@lists.sourceforge.net
 
-Il 13/01/2017 10:50, Ilya Shipitsin ha scritto:
-> ---
->  .github/PULL_REQUEST_TEMPLATE.md | 8 ++++++++
->  1 file changed, 8 insertions(+)
->  create mode 100644 .github/PULL_REQUEST_TEMPLATE.md
->
-> diff --git a/.github/PULL_REQUEST_TEMPLATE.md b/.github/PULL_REQUEST_TEMP=
-LATE.md
-> new file mode 100644
-> index 0000000..d0cfd7f
-> --- /dev/null
-> +++ b/.github/PULL_REQUEST_TEMPLATE.md
-> @@ -0,0 +1,8 @@
-> +# Thank you for your contribution
-> +
-> +You are welcome to open PR, but they are used for discussion only. All
-> +patches must eventually go to the openvpn-devel mailing list for review.
-> +For details, see these Wiki articles:
-> +
-> +* https://community.openvpn.net/openvpn/wiki/Contributing
-> +* https://community.openvpn.net/openvpn/wiki/DeveloperDocumentation
->
+<div dir=3D"ltr"><div class=3D"gmail_extra">Hi,<br><br></div><div class=3D"=
+gmail_extra">This is like talking to myself, but here goes:<br><br></div><d=
+iv class=3D"gmail_extra"><div class=3D"gmail_quote">On Sun, Jan 8, 2017 at =
+3:00 PM,  <span dir=3D"ltr">&lt;<a href=3D"mailto:selva.nair@...277..." tar=
+get=3D"_blank">selva.nair@...277...</a>&gt;</span> wrote:<br><blockquote cl=
+ass=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;p=
+adding-left:1ex"><div id=3D":2eu" class=3D"a3s aXjCH m1597fab7f0fe2eae">Cur=
+rently the username unqualified by the <span class=3D"il">domain</span> is =
+used to validate<br>
+a user which fails for <span class=3D"il">domain</span> users. Instead comp=
+are the user&#39;s SID<br>
+with SIDs in the Administrators group and ovpn_admin_group.<br>
+<br>
+This has the advantage that connection to a <span class=3D"il">domain</span=
+> controller is not<br>
+required and will work even when user is logged in with cached credentials.=
+<br>
+<br>
+Limitations:<br>
+(i) Group membership is not checked recursively<br>
+(ii) <span class=3D"il">Domain</span> administrators will not be recognized=
+ as members of local<br>
+Administrators group.<br>
+<br>
+Resolves Trac: #810</div></blockquote></div><br></div><div class=3D"gmail_e=
+xtra">Based on further discussions on Trac: #810, domain admins are underst=
+andably not pleased with those limitations. I&#39;ll submit a v2.<br><br></=
+div><div class=3D"gmail_extra">Selva<br></div></div>
 
-Based on testing in the travis-openssl-test repository the template=20
-works as intended, so ACK on that part.
-
-Any comments on the text itself?
-
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
+--001a1149b0a43bcede0545fb5c91--
 
