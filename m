@@ -1,7 +1,7 @@
 From: Antonio Quartulli <a@...2181...>
-Date: Sun, 15 Jan 2017 22:37:05 +0800
-Message-Id: <20170115143705.21944-1-a@...2181...>
-Subject: [Openvpn-devel] [PATCH v4] convert *_inline attributes to bool
+Date: Sun, 15 Jan 2017 22:43:30 +0800
+Message-Id: <20170115144330.1835-1-a@...2181...>
+Subject: [Openvpn-devel] [PATCH v5] convert *_inline attributes to bool
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -27,6 +27,10 @@ Signed-off-by: Antonio Quartulli <a@...2181...>
 ---
 
 Based on master + [PATCH (master)] reformatting: fix style in crypto*.{c, h}
+
+Changes from v4:
+- remove newline accidentally added in v4
+
 
 Changes from v3:
 - some code style adjustment in options.c:check_inline_file()
@@ -69,7 +73,7 @@ Changes from v1:
  src/openvpn/crypto.h      |  16 ++-
  src/openvpn/misc.c        |   6 +-
  src/openvpn/misc.h        |   3 +-
- src/openvpn/options.c     | 284 ++++++++++++++++++++++++++--------------------
+ src/openvpn/options.c     | 283 ++++++++++++++++++++++++++--------------------
  src/openvpn/options.h     |  21 ++--
  src/openvpn/plugin.c      |   5 +-
  src/openvpn/plugin.h      |   3 +-
@@ -78,11 +82,11 @@ Changes from v1:
  src/openvpn/ssl.c         |   6 +-
  src/openvpn/ssl_backend.h |  64 ++++++-----
  src/openvpn/ssl_common.h  |   2 +-
- src/openvpn/ssl_mbedtls.c |  63 +++++-----
+ src/openvpn/ssl_mbedtls.c |  63 +++++------
  src/openvpn/ssl_openssl.c |  92 ++++++++-------
  src/openvpn/tls_crypt.c   |   2 +-
  src/openvpn/tls_crypt.h   |   9 +-
- 17 files changed, 345 insertions(+), 272 deletions(-)
+ 17 files changed, 344 insertions(+), 272 deletions(-)
 
 diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
 index 944f4c5..f75302c 100644
@@ -253,7 +257,7 @@ index 16be621..c44a2b1 100644
  /* an analogue to the random() function, but use OpenSSL functions if available */
  #ifdef ENABLE_CRYPTO
 diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index d9c384e..a3a5325 100644
+index d9c384e..a4ca74c 100644
 --- a/src/openvpn/options.c
 +++ b/src/openvpn/options.c
 @@ -3042,9 +3042,8 @@ options_postprocess_mutate(struct options *o)
@@ -403,11 +407,7 @@ index d9c384e..a3a5325 100644
      errs |= check_file_access(CHKACC_DIRPATH|CHKACC_FILEXSTWR,
                                options->packet_id_file, R_OK|W_OK, "--replay-persist");
  
-@@ -4441,28 +4490,30 @@ read_inline_file(struct in_src *is, const char *close_tag, struct gc_arena *gc)
-     return ret;
- }
- 
-+
+@@ -4444,25 +4493,26 @@ read_inline_file(struct in_src *is, const char *close_tag, struct gc_arena *gc)
  static bool
  check_inline_file(struct in_src *is, char *p[], struct gc_arena *gc)
  {
@@ -442,7 +442,7 @@ index d9c384e..a3a5325 100644
  }
  
  static bool
-@@ -4475,7 +4526,8 @@ check_inline_file_via_fp(FILE *fp, char *p[], struct gc_arena *gc)
+@@ -4475,7 +4525,8 @@ check_inline_file_via_fp(FILE *fp, char *p[], struct gc_arena *gc)
  }
  
  static bool
@@ -452,7 +452,7 @@ index d9c384e..a3a5325 100644
  {
      struct in_src is;
      is.type = IS_TYPE_BUF;
-@@ -4486,6 +4538,7 @@ check_inline_file_via_buf(struct buffer *multiline, char *p[], struct gc_arena *
+@@ -4486,6 +4537,7 @@ check_inline_file_via_buf(struct buffer *multiline, char *p[], struct gc_arena *
  static void
  add_option(struct options *options,
             char *p[],
@@ -460,7 +460,7 @@ index d9c384e..a3a5325 100644
             const char *file,
             int line,
             const int level,
-@@ -4543,9 +4596,13 @@ read_config_file(struct options *options,
+@@ -4543,9 +4595,13 @@ read_config_file(struct options *options,
                  }
                  if (parse_line(line + offset, p, SIZE(p), file, line_num, msglevel, &options->gc))
                  {
@@ -476,7 +476,7 @@ index d9c384e..a3a5325 100644
                  }
              }
              if (fp != stdin)
-@@ -4584,13 +4641,17 @@ read_config_string(const char *prefix,
+@@ -4584,13 +4640,17 @@ read_config_string(const char *prefix,
      while (buf_parse(&multiline, '\n', line, sizeof(line)))
      {
          char *p[MAX_PARMS];
@@ -496,7 +496,7 @@ index d9c384e..a3a5325 100644
          }
          CLEAR(p);
      }
-@@ -4621,7 +4682,8 @@ parse_argv(struct options *options,
+@@ -4621,7 +4681,8 @@ parse_argv(struct options *options,
          CLEAR(p);
          p[0] = "config";
          p[1] = argv[1];
@@ -506,7 +506,7 @@ index d9c384e..a3a5325 100644
      }
      else
      {
-@@ -4655,7 +4717,8 @@ parse_argv(struct options *options,
+@@ -4655,7 +4716,8 @@ parse_argv(struct options *options,
                      }
                  }
              }
@@ -516,7 +516,7 @@ index d9c384e..a3a5325 100644
              i += j - 1;
          }
      }
-@@ -4726,7 +4789,8 @@ apply_push_options(struct options *options,
+@@ -4726,7 +4788,8 @@ apply_push_options(struct options *options,
          }
          if (parse_line(line, p, SIZE(p), file, line_num, msglevel, &options->gc))
          {
@@ -526,7 +526,7 @@ index d9c384e..a3a5325 100644
          }
      }
      return true;
-@@ -4765,7 +4829,13 @@ options_string_import(struct options *options,
+@@ -4765,7 +4828,13 @@ options_string_import(struct options *options,
  
  #if P2MP
  
@@ -541,7 +541,7 @@ index d9c384e..a3a5325 100644
  
  static bool
  verify_permission(const char *name,
-@@ -4775,7 +4845,8 @@ verify_permission(const char *name,
+@@ -4775,7 +4844,8 @@ verify_permission(const char *name,
                    const unsigned int allowed,
                    unsigned int *found,
                    const int msglevel,
@@ -551,7 +551,7 @@ index d9c384e..a3a5325 100644
  {
      if (!(type & allowed))
      {
-@@ -4783,6 +4854,13 @@ verify_permission(const char *name,
+@@ -4783,6 +4853,13 @@ verify_permission(const char *name,
          return false;
      }
  
@@ -565,7 +565,7 @@ index d9c384e..a3a5325 100644
      if (found)
      {
          *found |= type;
-@@ -4887,10 +4965,10 @@ set_user_script(struct options *options,
+@@ -4887,10 +4964,10 @@ set_user_script(struct options *options,
  #endif
  }
  
@@ -577,7 +577,7 @@ index d9c384e..a3a5325 100644
             const char *file,
             int line,
             const int level,
-@@ -5268,15 +5346,16 @@ add_option(struct options *options,
+@@ -5268,15 +5345,16 @@ add_option(struct options *options,
      }
      else if (streq(p[0], "connection") && p[1] && !p[3])
      {
@@ -597,7 +597,7 @@ index d9c384e..a3a5325 100644
              if (!sub.ce.remote)
              {
                  msg(msglevel, "Each 'connection' block must contain exactly one 'remote' directive");
-@@ -5949,17 +6028,10 @@ add_option(struct options *options,
+@@ -5949,17 +6027,10 @@ add_option(struct options *options,
      else if (streq(p[0], "http-proxy-user-pass") && p[1])
      {
          struct http_proxy_options *ho;
@@ -618,7 +618,7 @@ index d9c384e..a3a5325 100644
      }
      else if (streq(p[0], "http-proxy-retry") || streq(p[0], "socks-proxy-retry"))
      {
-@@ -7418,12 +7490,10 @@ add_option(struct options *options,
+@@ -7418,12 +7489,10 @@ add_option(struct options *options,
      }
      else if (streq(p[0], "secret") && p[1] && !p[3])
      {
@@ -635,7 +635,7 @@ index d9c384e..a3a5325 100644
          {
              int key_direction;
  
-@@ -7437,7 +7507,6 @@ add_option(struct options *options,
+@@ -7437,7 +7506,6 @@ add_option(struct options *options,
                  goto err;
              }
          }
@@ -643,7 +643,7 @@ index d9c384e..a3a5325 100644
      }
      else if (streq(p[0], "genkey") && !p[1])
      {
-@@ -7616,14 +7685,11 @@ add_option(struct options *options,
+@@ -7616,14 +7684,11 @@ add_option(struct options *options,
          VERIFY_PERMISSION(OPT_P_GENERAL);
          options->tls_client = true;
      }
@@ -661,7 +661,7 @@ index d9c384e..a3a5325 100644
      }
  #ifndef ENABLE_CRYPTO_MBEDTLS
      else if (streq(p[0], "capath") && p[1] && !p[2])
-@@ -7632,32 +7698,23 @@ add_option(struct options *options,
+@@ -7632,32 +7697,23 @@ add_option(struct options *options,
          options->ca_path = p[1];
      }
  #endif /* ENABLE_CRYPTO_MBEDTLS */
@@ -703,7 +703,7 @@ index d9c384e..a3a5325 100644
      }
      else if (streq(p[0], "verify-hash") && p[1] && !p[2])
      {
-@@ -7671,14 +7728,11 @@ add_option(struct options *options,
+@@ -7671,14 +7727,11 @@ add_option(struct options *options,
          options->cryptoapi_cert = p[1];
      }
  #endif
@@ -721,7 +721,7 @@ index d9c384e..a3a5325 100644
      }
      else if (streq(p[0], "tls-version-min") && p[1] && !p[3])
      {
-@@ -7709,14 +7763,11 @@ add_option(struct options *options,
+@@ -7709,14 +7762,11 @@ add_option(struct options *options,
          options->ssl_flags |= (ver << SSLF_TLS_VERSION_MAX_SHIFT);
      }
  #ifndef ENABLE_CRYPTO_MBEDTLS
@@ -739,7 +739,7 @@ index d9c384e..a3a5325 100644
      }
  #endif /* ENABLE_CRYPTO_MBEDTLS */
      else if (streq(p[0], "askpass") && !p[2])
-@@ -7770,18 +7821,15 @@ add_option(struct options *options,
+@@ -7770,18 +7820,15 @@ add_option(struct options *options,
          options->cipher_list = p[1];
      }
      else if (streq(p[0], "crl-verify") && p[1] && ((p[2] && streq(p[2], "dir"))
@@ -761,7 +761,7 @@ index d9c384e..a3a5325 100644
      }
      else if (streq(p[0], "tls-verify") && p[1])
      {
-@@ -7953,12 +8001,10 @@ add_option(struct options *options,
+@@ -7953,12 +8000,10 @@ add_option(struct options *options,
      }
      else if (streq(p[0], "tls-auth") && p[1] && !p[3])
      {
@@ -778,7 +778,7 @@ index d9c384e..a3a5325 100644
          {
              int key_direction;
  
-@@ -7972,16 +8018,12 @@ add_option(struct options *options,
+@@ -7972,16 +8017,12 @@ add_option(struct options *options,
                  goto err;
              }
          }
