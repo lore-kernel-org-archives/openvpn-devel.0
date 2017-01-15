@@ -1,9 +1,13 @@
+Date: Sun, 15 Jan 2017 10:12:01 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20170115091201.GQ78624@...1296...>
 References: <20170115061718.3218-1-praiskup@...1347...>
-From: Steffan Karger <steffan@...1856...>
-Message-ID: <3821af27-817b-9ee5-29db-bf3516bcdad3@...1856...>
-Date: Sun, 15 Jan 2017 09:52:46 +0100
+	<3821af27-817b-9ee5-29db-bf3516bcdad3@...1856...>
 MIME-Version: 1.0
-In-Reply-To: <20170115061718.3218-1-praiskup@...1347...>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="HditFSw+SJxJh6AP"
+Content-Disposition: inline
+In-Reply-To: <3821af27-817b-9ee5-29db-bf3516bcdad3@...1856...>
 Subject: Re: [Openvpn-devel] [PATCH] options: allow setting default --ca
  argument value
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -14,75 +18,63 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Steffan Karger <steffan@...1856...>
+Cc: openvpn-devel@lists.sourceforge.net
+
+--HditFSw+SJxJh6AP
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
 Hi,
 
-On 15-01-17 07:17, Pavel Raiskup wrote:
-> Adding a new --with-ca-bundle configure option.  It's argument is
-> used as default CA file when no --ca option is specified at
-> runtime.
-> 
-> This option is primarily designed for systems where users are
-> allowed to manage trusted authorities for whole system (in one
-> consolidated file; usually implemented in 'ca-certificates'
-> package).
-> 
-> Signed-off-by: Pavel Raiskup <praiskup@...1347...>
-> ---
->  configure.ac          | 5 +++++
->  src/openvpn/options.c | 9 +++++++++
->  2 files changed, 14 insertions(+)
-> 
-> diff --git a/configure.ac b/configure.ac
-> index 43487b0..f5e1e63 100644
-> --- a/configure.ac
-> +++ b/configure.ac
-> @@ -308,6 +308,11 @@ AC_ARG_WITH(
->  	[with_plugindir="\$(libdir)/openvpn/plugins"]
->  )
->  
-> +AC_ARG_WITH(
-> +	[ca-bundle],
-> +	[AS_HELP_STRING([--with-ca-bundle], [use consolidated CA bundle])],
-> +	[AC_DEFINE_UNQUOTED([DEFAULT_CA_FILE], ["$withval"], [Default --ca argument])]
-> +)
->  
->  AC_DEFINE_UNQUOTED([TARGET_ALIAS], ["${host}"], [A string representing our host])
->  case "$host" in
-> diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-> index d9c384e..92d81ae 100644
-> --- a/src/openvpn/options.c
-> +++ b/src/openvpn/options.c
-> @@ -3000,6 +3000,15 @@ options_postprocess_mutate(struct options *o)
->      }
->  #endif
->  
-> +#ifdef DEFAULT_CA_FILE
-> +    if (!o->ca_file && !platform_access(DEFAULT_CA_FILE, R_OK))
-> +    {
-> +        msg(M_WARN, "option '--ca' unspecified; using system bundle '%s'",
-> +            DEFAULT_CA_FILE);
-> +        o->ca_file = DEFAULT_CA_FILE;
-> +    }
-> +#endif
-> +
->  #if ENABLE_MANAGEMENT
->      if (o->http_proxy_override)
->      {
-> 
+On Sun, Jan 15, 2017 at 09:52:46AM +0100, Steffan Karger wrote:
+> On 15-01-17 07:17, Pavel Raiskup wrote:
+[..]
+> > This option is primarily designed for systems where users are
+> > allowed to manage trusted authorities for whole system (in one
+> > consolidated file; usually implemented in 'ca-certificates'
+> > package).
+[..]
+>=20
+> Feature-NAK.  OpenVPN should use it's own CA, not the system CA list.
 
-Feature-NAK.  OpenVPN should use it's own CA, not the system CA list.
+I could see the use-case (enterprise wide list of trusted CAs, and
+use of it compiled into an enterprise-distribute openvpn bundle),
+but I agree with Steffan that it's not something we need to have in
+OpenVPN - "--ca" can reference to a CA bundle today, and enterprise-
+distributed config files reference the enterprise-maintained CA bundle,
+it will just work without code changes.
 
-There is no reason to allow hundreds of parties in the world to
-man-in-the-middle your OpenVPN connections.  Please please please do not
-use your system CA list for OpenVPN, just specify the CA you do want to
-trust.
+My main reason for not liking this is "another compile-time option" -
+someone has to maintain and test this, with and without this option,
+which adds to our maintenance nightmare.  So the gain has to be=20
+significant.
 
-(OpenVPN is /not/ WWW, don't think about OpenVPN's usage of CAs as if it
-were the WWW.)
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
--Steffan
+--HditFSw+SJxJh6AP
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJYezzgAAoJEB2Cnv7KVigSHFYMAIJCPhViF3Ww0CPTWaDQ8lQG
+tJ1YISBRBrKL8aXm1G5eZ2UB5GGZWj7rZ4Yp2eIhZakPSfyIeI7EfMA9kKYxGJ8F
+DTh5RBB0J1C2m+Mc1cbmcOA2HvtUT6+R7ZFJ2WcyYcP9/FaSCGX820P2+RnKx19W
+5ofUe6efuv6Z7Ca95CySJV0OiObWUaEKy9+1DXnRF0eohlmUkuPKDTBNdTvbFugd
+31fmNg8IQNMCO/mkg5Ql9DueSs3FACVSCCkLdGmSgcWbOmSdOOM9FiMCEPEl4jJu
+MyEK75QHg2gkDzM+jvIXSHh0v/ySsyA3kaiq8DqDdkUmHs845kit3/yLeCD9WATi
+TmrKvKv0FKQ4DYD9dqlsNTCcRbb70RLtuUa8Bb2ZLt1eoY0QP2UbOOyyBhU4YBZM
+7J+sJn86D4IbIjgImov9Hzx4Dzjv+xOX+/jQwpRJJGgFEPl1Va0KzCZti6+eHMip
+LxRdxsO96R5+ITRSF3CQ18pjnemSRNl3luSPMP7PkA==
+=nFx4
+-----END PGP SIGNATURE-----
+
+--HditFSw+SJxJh6AP--
 
