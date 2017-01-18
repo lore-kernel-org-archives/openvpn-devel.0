@@ -1,10 +1,8 @@
-From: David Sommerseth <davids@...515...>
-Date: Wed, 18 Jan 2017 21:06:03 +0100
-Message-Id: <20170118200603.14461-1-davids@...515...>
-In-Reply-To: <1484403020-6857-1-git-send-email-steffan@...1856...>
-References: <1484403020-6857-1-git-send-email-steffan@...1856...>
-Subject: Re: [Openvpn-devel] [PATCH applied] More broadly enforce Allman
-	style and braces-around-conditionals
+From: selva.nair@...277...
+Date: Wed, 18 Jan 2017 15:42:52 -0500
+Message-Id: <1484772172-19758-1-git-send-email-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH] Add a check for -Wl,
+	--wrap support in linker
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,48 +13,80 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: steffan@...1856...
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+From: Selva Nair <selva.nair@...277...>
 
-Your patch has been applied to the following branches
+- Also make tests that require --wrap option to be
+  conditional on this support
 
-commit 4cd4899e8e80efae03c584a760fd107251735723  (master)
-commit 9c2506d4395de67dbc520b6458f25e99b99376eb  (release/2.4)
-Author: Steffan Karger
-Date:   Sat Jan 14 15:10:20 2017 +0100
+Signed-off-by: Selva Nair <selva.nair@...277...>
+---
+ configure.ac                         | 26 ++++++++++++++++++++++++++
+ tests/unit_tests/openvpn/Makefile.am |  6 +++++-
+ 2 files changed, 31 insertions(+), 1 deletion(-)
 
-     More broadly enforce Allman style and braces-around-conditionals
+diff --git a/configure.ac b/configure.ac
+index 43487b0..0b7fea9 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -582,6 +582,31 @@ AC_COMPILE_IFELSE(
+ 	[AC_MSG_RESULT([no])]
+ )
+ 
++saved_LDFLAGS="$LDFLAGS"
++LDFLAGS="$LDFLAGS -Wl,--wrap=exit"
++AC_MSG_CHECKING([linker supports --wrap])
++AC_LINK_IFELSE(
++	[AC_LANG_PROGRAM(
++		[[
++			void exit(int);
++			void __real_exit(int);
++			void __wrap_exit(int i) {
++				__real_exit(i);
++			}
++		]],
++		[[
++			exit(0);
++		]]
++	)],
++	[
++		AC_MSG_RESULT([yes])
++		have_ld_wrap_support=yes
++		AC_DEFINE([HAVE_LD_WRAP_SUPPORT], [1], [Define to 1 if linker supports -Wl,--wrap option])
++	],
++	[AC_MSG_RESULT([no])],
++)
++LDFLAGS="$saved_LDFLAGS"
++
+ dnl We emulate signals in Windows
+ AC_CHECK_DECLS(
+ 	[SIGHUP],
+@@ -1244,6 +1269,7 @@ AM_CONDITIONAL([GIT_CHECKOUT], [test "${GIT_CHECKOUT}" = "yes"])
+ AM_CONDITIONAL([ENABLE_PLUGIN_AUTH_PAM], [test "${enable_plugin_auth_pam}" = "yes"])
+ AM_CONDITIONAL([ENABLE_PLUGIN_DOWN_ROOT], [test "${enable_plugin_down_root}" = "yes"])
+ AM_CONDITIONAL([ENABLE_CRYPTO], [test "${enable_crypto}" = "yes"])
++AM_CONDITIONAL([HAVE_LD_WRAP_SUPPORT], [test "${have_ld_wrap_support}" = "yes"])
+ 
+ plugindir="${with_plugindir}"
+ sampledir="\$(docdir)/sample"
+diff --git a/tests/unit_tests/openvpn/Makefile.am b/tests/unit_tests/openvpn/Makefile.am
+index fafe6b2..b902b20 100644
+--- a/tests/unit_tests/openvpn/Makefile.am
++++ b/tests/unit_tests/openvpn/Makefile.am
+@@ -1,6 +1,10 @@
+ AUTOMAKE_OPTIONS = foreign
+ 
+-check_PROGRAMS = argv_testdriver buffer_testdriver
++check_PROGRAMS=
++
++if HAVE_LD_WRAP_SUPPORT
++check_PROGRAMS += argv_testdriver buffer_testdriver
++endif
+ 
+ if ENABLE_CRYPTO
+ check_PROGRAMS += tls_crypt_testdriver
+-- 
+2.1.4
 
-     Signed-off-by: Steffan Karger <steffan@...1856...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1484403020-6857-1-git-send-email-steffan@...1856...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13875.html
-     Signed-off-by: David Sommerseth <davids@...515...>
-
-
-- --
-kind regards,
-
-David Sommerseth
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBAgAGBQJYf8qpAAoJEIbPlEyWcf3yitwQAMZbK+6pQ062y2lnIEusYAR/
-PPi44E2fjG83abu+ImFZwNNOIjlSg/XgkxkrQzs0IRrxihuhLl3qOPgsqoyxQD+a
-ZiFYcWm4R384KxfImGcAgjfDRSb9AlAG/MwVCU9N84yKPJrNks0401Jhn3LFaSrb
-mjSrBL8IcRVzHGeJXz+ZQU+b8mhtsCaFqH1n2pM7qOyNUBl2vjhVSNJicNqqRJvR
-/XI2aIR03hm4CQS9MhZ7eUSOqT8LpyeWnmS7n7M/55NCUasMSee0w0pjt9TKV/Nc
-ymd0i5d21fXNEiGGBUE5Til5hftsO+bzvIOLGVzMamgIMTFqg26LVE7X+tSLBYTT
-S+tieo3LblV+WF2gwhqQ3/N4udJOfwtuQ10OVIA3ZnxKmZN5rNDq2EreTeWX6ErZ
-HJnstpdSP2Px0AsOSjxnu+U4iwvVfnKB1qgwVhVdWXfg95dI/YD5aPt9uGOrpS3F
-W9UYq266zwAeskXxTFpwx47Zkuvf8Ybt12sdXwDULyukPf7yjGpisdjuCHZ3nlQW
-HdsuLyvvMrYXt3vRS8zIcu5drPp3oMhD1TCbpYW7kAHNvZagTQpjoaq/n+xETKds
-JqosWl9+n4sV1cdWruA01MpuouhBVO0YAU2aQcw6mDpIxmPgGKTsbvG4613nsjDo
-GpRfGRzPFbC7nkPs8NAY
-=evC1
------END PGP SIGNATURE-----
 
