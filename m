@@ -1,10 +1,10 @@
 From: David Sommerseth <davids@...515...>
-Date: Wed, 18 Jan 2017 20:45:33 +0100
-Message-Id: <20170118194533.2661-1-davids@...515...>
-In-Reply-To: <20161228075420.348-1-list@...1798...>
-References: <20161228075420.348-1-list@...1798...>
-Subject: Re: [Openvpn-devel] [PATCH applied] man: fix formatting for
-	alternative option
+Date: Wed, 18 Jan 2017 21:06:03 +0100
+Message-Id: <20170118200603.14461-1-davids@...515...>
+In-Reply-To: <1484403020-6857-1-git-send-email-steffan@...1856...>
+References: <1484403020-6857-1-git-send-email-steffan@...1856...>
+Subject: Re: [Openvpn-devel] [PATCH applied] More broadly enforce Allman
+	style and braces-around-conditionals
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,30 +15,25 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: mail@...1798...
+To: steffan@...1856...
 Cc: openvpn-devel@lists.sourceforge.net
 
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-Sorry for the late response.  This was applied almost a week ago
-but seems to have missed the "Applied" sending.
-
-Anyhow, ACK!
-
 Your patch has been applied to the following branches
 
-commit d0d8a4b5f875bc802117647b20a3caa6d4fdb375  (master)
-commit 6204fccb2441b5bae8b3f6e0b31a4a0b232fc8e6  (release/2.4)
-Author: Christian Hesse
-Date:   Wed Dec 28 08:54:20 2016 +0100
+commit 4cd4899e8e80efae03c584a760fd107251735723  (master)
+commit 9c2506d4395de67dbc520b6458f25e99b99376eb  (release/2.4)
+Author: Steffan Karger
+Date:   Sat Jan 14 15:10:20 2017 +0100
 
-     man: fix formatting for alternative option
+     More broadly enforce Allman style and braces-around-conditionals
 
-     Signed-off-by: Christian Hesse <mail@...1798...>
-     Acked-by: David Sommerseth <davids@...515...>
-     Message-Id: <20161228075420.348-1-list@...1798...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13747.html
+     Signed-off-by: Steffan Karger <steffan@...1856...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1484403020-6857-1-git-send-email-steffan@...1856...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13875.html
      Signed-off-by: David Sommerseth <davids@...515...>
 
 
@@ -50,18 +45,18 @@ David Sommerseth
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBAgAGBQJYf8XVAAoJEIbPlEyWcf3y73QQAJahatvtdZ6Iugzq8TghSkeG
-YmYG4ds6lq11oO4zmcj8rU/RBODFyCrB2FMDSWqoymYFI7WVzCB0yYDGEgGpHZhZ
-eRG4kx2f8sW0edOLMoySTp2Uz8uSytZZODb8WtPDPNYbpRTmmNLQkSQYq3oIuQ5Y
-8SmtAnWDuEXHteO24H6aIEY+bH7tFEvUCiD5SjUhQfmu54kDa+NLzCxw6tW4NB5v
-tavrGGmOXzFLBmCtXgRMDY7DfWrmJ5pCHAQsbATfFhmmz53WwqiV0vboneQLIYm0
-UP6hajnJyI7SULgHeqaE3bmxIIctqbfYpiInUCpWw4cs/imP12w0HCqKkmoi6Ni2
-0YNnidebIT0+C2i9O4ZkPXqR3TntfgzpYLJs2WoVTV+WzEnUdbKKIsLsUE76UOHW
-A/uB5zK64KSzCKok9zV/QMsqXrdnCilyA6mMeS/UCTopfO1kc2IXRG79EnjBIjDi
-kxHgy8ERdVuleimAsbhtFY4c3bK3N1yuatwCasBK2S9CHl3EDpv8NaepyenLG32N
-FO8Rw4LC6BuSeYWraW5ePKBnlUpe/j0UgU8Yr2x5QBxY3R7W5lhC6D+ELRByxeIZ
-MEURyMFFzcFQLifrkzbdvb3eNlLTaLXGZ7wZvuDIfj3tZzS/W+7R0Xzfa7gsQxJ4
-b4oSmzbBzQY6dvWbN0oY
-=S1dj
+iQIcBAEBAgAGBQJYf8qpAAoJEIbPlEyWcf3yitwQAMZbK+6pQ062y2lnIEusYAR/
+PPi44E2fjG83abu+ImFZwNNOIjlSg/XgkxkrQzs0IRrxihuhLl3qOPgsqoyxQD+a
+ZiFYcWm4R384KxfImGcAgjfDRSb9AlAG/MwVCU9N84yKPJrNks0401Jhn3LFaSrb
+mjSrBL8IcRVzHGeJXz+ZQU+b8mhtsCaFqH1n2pM7qOyNUBl2vjhVSNJicNqqRJvR
+/XI2aIR03hm4CQS9MhZ7eUSOqT8LpyeWnmS7n7M/55NCUasMSee0w0pjt9TKV/Nc
+ymd0i5d21fXNEiGGBUE5Til5hftsO+bzvIOLGVzMamgIMTFqg26LVE7X+tSLBYTT
+S+tieo3LblV+WF2gwhqQ3/N4udJOfwtuQ10OVIA3ZnxKmZN5rNDq2EreTeWX6ErZ
+HJnstpdSP2Px0AsOSjxnu+U4iwvVfnKB1qgwVhVdWXfg95dI/YD5aPt9uGOrpS3F
+W9UYq266zwAeskXxTFpwx47Zkuvf8Ybt12sdXwDULyukPf7yjGpisdjuCHZ3nlQW
+HdsuLyvvMrYXt3vRS8zIcu5drPp3oMhD1TCbpYW7kAHNvZagTQpjoaq/n+xETKds
+JqosWl9+n4sV1cdWruA01MpuouhBVO0YAU2aQcw6mDpIxmPgGKTsbvG4613nsjDo
+GpRfGRzPFbC7nkPs8NAY
+=evC1
 -----END PGP SIGNATURE-----
 
