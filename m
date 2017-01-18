@@ -1,14 +1,15 @@
-Date: Wed, 18 Jan 2017 20:35:27 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20170118193527.GT78624@...1296...>
-References: <b3afdbf7-ee12-3c1f-b8cd-c30cf3b0a025@...75...>
+Resent-To: "openvpn-devel@lists.sourceforge.net"
+	<openvpn-devel@lists.sourceforge.net>
+Resent-Message-ID: <dc62944a-cf90-8792-4f42-4a11f7ca5e6c@...2080...>
+References: <3fdeb614-4be9-8843-7992-2f1937402644@...277...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <f33609b6-de8b-985d-aee4-9d18a2d58517@...2080...>
+Date: Wed, 18 Jan 2017 20:17:27 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="Epdev7n9Nu0o9kVy"
-Content-Disposition: inline
-In-Reply-To: <b3afdbf7-ee12-3c1f-b8cd-c30cf3b0a025@...75...>
-Subject: Re: [Openvpn-devel] NOTE: unable to redirect default gateway --
- Cannot read current default gateway from system
+In-Reply-To: <3fdeb614-4be9-8843-7992-2f1937402644@...277...>
+Subject: Re: [Openvpn-devel] [openvpn-devel] --auth RSA-SHA512 vs --auth
+ SHA512
+Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,97 +18,82 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Thomas =?iso-8859-1?Q?Sch=E4fer?= <tschaefer@...75...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-
---Epdev7n9Nu0o9kVy
-Content-Type: text/plain; charset="iso-8859-1"
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+To: debbie10t <debbie10t@...277...>
 
-Servus,
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-On Wed, Jan 18, 2017 at 04:43:22PM +0100, Thomas Sch=E4fer wrote:
-> Client:
-> client
-> dev tun
-> proto udp6
-> remote raspberrypi.XXXXXXXX.myfritz.net 1194 udp6
-[..]
-> redirect-gateway
-> verb 3
+On 18/01/17 18:19, debbie10t wrote:
+> Hi,
 >=20
-> This works perfectly as long the client has still an IPv4-connection.
+> I have following config:
 >=20
-> But in case of an IPv6-only-client (not system-wide disabled, just not=20
-> getting IPv4-addresses by the ISP, e.g. eduroam-IPv6) the client doesn't=
-=20
-> set the IPv4-default route, since it can not find the old one.
+>=20
+> ** Server Win10 (as per default generally) v2.4.0 with --auth
+> *RSA-SHA512* --ncp-disable
+>=20
+> Log file shows:
+>=20
+> Wed Jan 18 17:04:34 2017 us=3D914797 Outgoing Control Channel=20
+> Authentication: Using 512 bit message hash '*SHA512*' for HMAC=20
+> authentication Wed Jan 18 17:04:34 2017 us=3D914797 Incoming Control
+> Channel Authentication: Using 512 bit message hash '*SHA512*' for
+> HMAC authentication
+>=20
+>=20
+> ** Client Linux (as per default generally) v2.4.0 with --auth
+> *RSA-SHA512*
+>=20
+> Log file shows:
+>=20
+> Wed Jan 18 17:05:00 2017 us=3D778089 Outgoing Control Channel=20
+> Authentication: Using 512 bit message hash '*SHA512*' for HMAC=20
+> authentication Wed Jan 18 17:05:00 2017 us=3D778182 Incoming Control
+> Channel Authentication: Using 512 bit message hash '*SHA512*' for
+> HMAC authentication
+>=20
+> The connection works but ..
+>=20
+> Because there is another digest called SHA512 why does the log=20
+> *not* reflect the config correctly ? eg: hash '*RSA-SHA512*'
+>=20
+> (This had me very confused for sometime today)
 
-I can see the problem.
+I am on thin ice here, as I've not dug much into the naming schemes of
+the various algorithms.
 
-The most elegant solution might be to use "redirect-gateway def1".   The
-"def1" flag instructs the code to not add a 0.0.0.0/0 route (replacing
-and later restoring the existing default route) but to add 0.0.0.0/1 and
-128.0.0.0/1 routes - which cover "the default" as well, but do not=20
-need to interfere with the existing /0 route.
+But ... I am fairly confident the hashing reference in the log refers
+purely to the hashing algorithm, which most commonly is MD* or  SHA*
+variants (there are a few exceptions).
 
-It might *still* fail, as the code might still want to check and install
-a v4 /32 host route for the VPN gateway, pointing to the existing=20
-default gateway.  Which is arguably something that should not be done
-if we're not talking v4 in the first place, but I'm not sure that part
-of the code was ever adapted (I'd love to see a log with "def1" :-) ) -
-the v6 part is smart enough to only try looking at v6 routing tables
-if we're connecting over v6.
+And as I understand the code, the RSA-* stuff is just ignored, as that
+is not used by by HMAC functions in our code.  So using --auth SHA512
+would provide the same result.
 
 
-In case "def1" is not enough, please try "redirect-gateway def1 local",
-which is a hack (but a documented one).  "local" signals "do not install
-a host route pointing to the default gateway, because the VPN server is=20
-in the same locally connected network" (think "university wifi").  So that
-should make things succeed.
+- --=20
+kind regards,
 
-
-If that is still not working, use brute force, and replace "redirect-gatewa=
-y"
-with
-
-  route 0.0.0.0/1
-  route 128.0.0.0/1
-
-in the client config - that is the same thing as "def1 local" should give
-you, but explicitely only the "two half-default routes".
-
-
-(Whatever the outcome of your tests, I think our code should be smarter=20
-- the v4 code is 10+ years old, and has grown over time, and parts of
-it have been contributed by non-networking folks...)
-
-gert
-
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---Epdev7n9Nu0o9kVy
-Content-Type: application/pgp-signature; name="signature.asc"
+David Sommerseth
+OpenVPN Technologies, Inc
 
 -----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQGcBAEBAgAGBQJYf8N+AAoJEB2Cnv7KVigS03kMALNkwwt6OaiIVv5jbDD9frpu
-aLOuYFv+CoRfVUSi28CCyb+bMYX/BCvFFBZKeQhL8nW1k5cZhdnlAk5iYwdEllr/
-flcsKexNMBsn4z+T6meyMLjoNOqRdwHg1XpqpSxGFN0slX2cJN6m+NuZGjMWJ8oY
-X3g8X+zW2s3+651SYZaW64YRnPF5xVIunKMtZiKrfOlllQtPErjguW6/1HVmwUeR
-HcYlo6a90x3PV1+ZlQAYzEPgoYu6vM8bEPFdIK3thTZDlIPLNauuvfGpFEUJIWmf
-j40cNJLmD1c2gE0coallt3yqf0Aaq4ajeHGt9EUtEdKSq77xfMut/xava0uUMbz0
-vt/dYHdghLsredtA4W5hHOtJDsXSJ1cix7JLocz6jTCk3VX9tod5VjNwdNMH7xuA
-v1I+moFZjZs+tfUaRGD0ch2y9OOSH/Jnsy9VHdtrrkiJcKA7v7g7iNaGReM9WeB1
-AqJ15KJ7PazPLyB/KUhaDTjVE3iW/p3M8a5NUrsvPA==
-=szLr
+iQIcBAEBAgAGBQJYf79HAAoJEIbPlEyWcf3yGm4P/RxyydWvK/kWuMFxOS7aGjx8
+HhTB1eDep41eQTNyN6PJFExq3Be4B4Meo30tPqEbDuUGhZuvPYQb/04UET8vYgku
+1XxqXA8OoTlk6cKU+hrj/ISClAAR3yd1ma2cfAMj5+ltS4mGzz8pPyKXxvIM7d++
+gYiQyNb7Nu/oYN+TWDM0JZdIHWC9pUByugUoHmqhnBI79pQGjMfbtvdGFDFV70n4
+jtXXJ6WIGunrW65zLRKGxuVd4K7cc9Aic259CcsVvIiarryEEtQt1ZbJBOm2O05v
+J5C+vynO1Ixcvq6wbVdmsnBrsjtK9BylVHB7oll3GX4axOn1S9AjC6DWDztsGbhL
+zzzKioIhv2dmB2OgufUXr6jMxWgWkvtcw4FspyzrUh1LbqaSd2iUiSnieB5fd7C4
+z78zKznNGBQaqvRtH38aMRBH6vNrYZVM2bE05C7G5Vn0/xsPzrNt52FMMuKfgDMf
+eftK1JwbMjicLmbONmVDb2mEZewW/l0d8YkaFc74k1OXU5Kr+YP+jRSyHmHfLh6m
+eT+qgX/aUuUhWD98v1AiG1C6SqK9f1AaZuFh6BzpMVHmXUXaGAnrO5fgj1aJmnnI
+WLbqwSYY4ejAkubr0f2+dmcic2JTIhAwKF8wObGSrfE9kLgO5GM4TRMiUHwJplDD
+cdepFIgOVDQQhxA17EqD
+=3DbXK1
 -----END PGP SIGNATURE-----
-
---Epdev7n9Nu0o9kVy--
 
