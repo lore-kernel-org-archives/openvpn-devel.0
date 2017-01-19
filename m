@@ -1,10 +1,17 @@
-From: Antonio Quartulli <a@...2181...>
-Date: Fri, 20 Jan 2017 00:25:18 +0800
-Message-Id: <20170119162518.31752-1-a@...2181...>
-In-Reply-To: <20170119152156.5988-1-a@...2181...>
-References: <20170119152156.5988-1-a@...2181...>
-Subject: [Openvpn-devel] [PATCH v2] fix redirect-gateway behaviour when an
-	IPv4 default route does not exist
+References: <1484772172-19758-1-git-send-email-selva.nair@...277...>
+	<3e2e63ed-99fb-e880-11dc-b0748f501567@...2080...>
+	<CAKuzo_g+PPAfxUZMAmE0L4JKk7Wwp6Y58VfdAJGQA5Ys6j52OQ@...278...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <4fba3b6f-cffe-6e7a-71f8-c654721c0235@...2080...>
+Date: Thu, 19 Jan 2017 20:36:57 +0100
+MIME-Version: 1.0
+In-Reply-To: <CAKuzo_g+PPAfxUZMAmE0L4JKk7Wwp6Y58VfdAJGQA5Ys6j52OQ@...278...>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="C0htLX5wrJjFpNI3kpxEpFWQ48D4DoS3w"
+Subject: Re: [Openvpn-devel] [PATCH] Add a check for -Wl,
+ --wrap support in linker
+Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,135 +20,103 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Antonio Quartulli <a@...2181...>
+To: Selva Nair <selva.nair@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-When no IPv4 default route exists, the "redirect-gateway" routine
-aborts even if the sub-option "local" was specified or if we are
-connecting to the remote host using IPv6.
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--C0htLX5wrJjFpNI3kpxEpFWQ48D4DoS3w
+Content-Type: multipart/mixed; boundary="vXmIc40iaMQgBDM26v1jtFNOMEAGCr5nx";
+	protected-headers="v1"
+From: David Sommerseth <openvpn@...2080...>
+Reply-To: openvpn-devel@lists.sourceforge.net
+To: Selva Nair <selva.nair@...277...>, "openvpn-devel@lists.sourceforge.net"
+	<openvpn-devel@lists.sourceforge.net>
+Message-ID: <4fba3b6f-cffe-6e7a-71f8-c654721c0235@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH] Add a check for -Wl, --wrap support in
+	linker
+References: <1484772172-19758-1-git-send-email-selva.nair@...277...>
+	<3e2e63ed-99fb-e880-11dc-b0748f501567@...2080...>
+	<CAKuzo_g+PPAfxUZMAmE0L4JKk7Wwp6Y58VfdAJGQA5Ys6j52OQ@...278...>
+In-Reply-To: <CAKuzo_g+PPAfxUZMAmE0L4JKk7Wwp6Y58VfdAJGQA5Ys6j52OQ@...278...>
 
-This is not expected because in either case OpenVPN should not
-bother checking the existence of the default route as it is not
-required at all.
+--vXmIc40iaMQgBDM26v1jtFNOMEAGCr5nx
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
 
-Therefore, skip the IPv4 default route check when "local" is
-specified or we are connecting to an IPv6 remote host.
+On 19/01/17 16:32, Selva Nair wrote:
+> Hi,
+>=20
+> Thanks for the comments.
+>=20
+> On Thu, Jan 19, 2017 at 9:41 AM, David Sommerseth
+> <openvpn@...2080...
+> <mailto:openvpn@...2080...>> wrote:
+>=20
+>     Any reason to have this AC_DEFINE?  That puts HAVE_LD_WRAP_SUPPORT in=
+to
+>     config.h, which I don't think makes much sense.  If we don't have --w=
+rap
+>     support, would we have #ifdef HAVE_LD_WRAP_SUPPORT in the C code at a=
+ll?
+>=20
+>=20
+> Repeating from related discussion on the PR page: AC_DEFINE is indeed
+> meant to add a  preprocessor define (available to sources through
+> config.h). We do not have a use for it right now but we could --- say
+> one could provide an alternative to __wrap_xxx() in source, not sure how
+> though.
 
-Signed-off-by: Antonio Quartulli <a@...2181...>
----
+Exactly.  There might be some possibilities, but I don't have a good
+idea currently.  And I see even fewer possibilities where #ifdef around
+this would be a solution.  I think a solution would require to compile
+and link a different set of source code providing a similar feature,
+which would anyway need to be primarily handled via configure.ac and
+Makefile.am.
 
-Actually, the fix required to consider the IPv6 case was not as big as
-expected, therefore I included it in this v2.
+And considering this is limited to the LLVM linker and works fine with
+at least the GNU linker, I don't think we will spend too much time
+tackling this now.
 
-Changes since v1:
-- don't perform the default route check if remote host is IPv6
-- on shutdown, don't try to re-add default route if it never existed
-- move local var to narrower scope
+> So currently its just a preprocessor define that provides a solution
+> waiting for a problem. If the consensus is not to define it, fine with me.
 
-
-This patch (v2) has been tested under following conditions:
-
-Scenario 1: remove the default route and connect to an IPv4 VPN server
-within the same network/LAN.
-
-Observed behaviour when "redirect-gateway local" is specified:
-- without the patch: no new default route over the VPN is added;
-- with the patch: the new default route over the VPN is properly added.
-
-Scenario 2: remove the default route and connect to an IPv6 VPN server.
-
-Observed behaviour when "redirect-gateway" is specified:
-- without the patch: no IPv4 default route over the VPN is added;
-- with the patch: the IPv4 default route over the VPN is properly added.
+I have no issues adding such an AC_DEFINE when we have a good use-case
+for it.  But if we don't need it now, I think it's best to keep things
+as simple as possible, in particular in the autotools stuff which can
+already be quite confusing.
 
 
+--
+kind regards,
 
-Cheers,
+David Sommerseth
+OpenVPN Technologies, Inc
 
 
- src/openvpn/route.c | 41 ++++++++++++++++++++++-------------------
- 1 file changed, 22 insertions(+), 19 deletions(-)
 
-diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index 0c93dcd..e23f79a 100644
---- a/src/openvpn/route.c
-+++ b/src/openvpn/route.c
-@@ -986,11 +986,19 @@ redirect_default_route_to_vpn(struct route_list *rl, const struct tuntap *tt, un
- 
-     if (rl && rl->flags & RG_ENABLE)
-     {
-+        bool local = rl->flags & RG_LOCAL;
-+
-         if (!(rl->spec.flags & RTSA_REMOTE_ENDPOINT) && (rl->flags & RG_REROUTE_GW))
-         {
-             msg(M_WARN, "%s VPN gateway parameter (--route-gateway or --ifconfig) is missing", err);
-         }
--        else if (!(rl->rgi.flags & RGI_ADDR_DEFINED))
-+        /*
-+         * check if a default route is defined, unless:
-+         * - we are connecting to a remote host in our network
-+         * - we are connecting to a non-IPv4 remote host (i.e. we use IPv6)
-+         */
-+        else if (!(rl->rgi.flags & RGI_ADDR_DEFINED) && !local
-+                 && (rl->spec.remote_host != IPV4_INVALID_ADDR))
-         {
-             msg(M_WARN, "%s Cannot read current default gateway from system", err);
-         }
-@@ -1001,7 +1009,6 @@ redirect_default_route_to_vpn(struct route_list *rl, const struct tuntap *tt, un
-         else
-         {
- #ifndef TARGET_ANDROID
--            bool local = BOOL_CAST(rl->flags & RG_LOCAL);
-             if (rl->flags & RG_AUTO_LOCAL)
-             {
-                 const int tla = rl->spec.remote_host_local;
-@@ -1066,14 +1073,13 @@ redirect_default_route_to_vpn(struct route_list *rl, const struct tuntap *tt, un
-                 }
-                 else
-                 {
--                    /* delete default route */
--                    del_route3(0,
--                               0,
--                               rl->rgi.gateway.addr,
--                               tt,
--                               flags | ROUTE_REF_GW,
--                               &rl->rgi,
--                               es);
-+                    /* don't try to remove the def route if it does not exist */
-+                    if (rl->rgi.flags & RGI_ADDR_DEFINED)
-+                    {
-+                        /* delete default route */
-+                        del_route3(0, 0, rl->rgi.gateway.addr, tt,
-+                                   flags | ROUTE_REF_GW, &rl->rgi, es);
-+                    }
- 
-                     /* add new default route */
-                     add_route3(0,
-@@ -1145,15 +1151,12 @@ undo_redirect_default_route_to_vpn(struct route_list *rl, const struct tuntap *t
-                            flags,
-                            &rl->rgi,
-                            es);
--
--                /* restore original default route */
--                add_route3(0,
--                           0,
--                           rl->rgi.gateway.addr,
--                           tt,
--                           flags | ROUTE_REF_GW,
--                           &rl->rgi,
--                           es);
-+                /* restore original default route if there was any */
-+                if (rl->rgi.flags & RGI_ADDR_DEFINED)
-+                {
-+                    add_route3(0, 0, rl->rgi.gateway.addr, tt,
-+                               flags | ROUTE_REF_GW, &rl->rgi, es);
-+                }
-             }
-         }
- 
--- 
-2.11.0
+--vXmIc40iaMQgBDM26v1jtFNOMEAGCr5nx--
 
+--C0htLX5wrJjFpNI3kpxEpFWQ48D4DoS3w
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBAgAGBQJYgRVaAAoJEIbPlEyWcf3yREkQAIRNnT7XIhcF+RE6tEcj6cbS
+x5xo34OADy0k1fg+5Mj0T+56eY4JprJZBAxqj+hQt+w9kN3+CTXYnquZ2kkdcbaI
+Ro5ACNMxd3FtIS2XBqBiU/GViX8wFXRoGO6UlghFMcRqxrSYdBLZQHxxNtbF5bxX
+WImiuvu0aQcJ7xURHUuE+GJM/nS+uRG0hfGsajp3BLR4HMNp/UnIiCzzMqBg2Ge3
+PHBQcGEfXqic38LIy7gQhYwIk37NI2NPSIEqAuPgYhgKBVmZA1M4GEPK8owAitXR
+byCfvV5n10LcEq4pXb5Ky6Ks6DK4pbkbv+yks0eo+qMnRAGMZrrUTTtXSzaOQHxJ
+jrkwyOiFg57KzHGUmBusW6rU535ZbtzVy9bTkJXJAnx8PmaTRQ97at4z4cw/xLlN
+ZUqUpxFoPRbM7ZM7uw2E6PIJ/bxaslh+ok3MewNvuuS90oeaEfGMLeXN7xN/LovO
+tIeTW5+NtbSgdEW8QtWG0m4q9pPJVIqVe7NTPqKtB5B8uImANr5FHsrer2LXn0f3
+4g7F3cuAl5knM+V+w9n1zUrxNsqB2j3g8Cye407+gsIaiJKdD1wo63K2RB9mmQ5i
+VhjweJUHcOwiaUqQZ2pnAb0hei9cX12NVMVaarwXK8hL+K1FIx4Dg9vZ7/nCUfaN
+9mCG3vqUpwxYVyBhjLds
+=i7we
+-----END PGP SIGNATURE-----
+
+--C0htLX5wrJjFpNI3kpxEpFWQ48D4DoS3w--
 
