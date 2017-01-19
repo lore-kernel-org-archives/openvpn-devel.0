@@ -1,17 +1,15 @@
+MIME-Version: 1.0
+In-Reply-To: <4fba3b6f-cffe-6e7a-71f8-c654721c0235@...2080...>
 References: <1484772172-19758-1-git-send-email-selva.nair@...277...>
 	<3e2e63ed-99fb-e880-11dc-b0748f501567@...2080...>
 	<CAKuzo_g+PPAfxUZMAmE0L4JKk7Wwp6Y58VfdAJGQA5Ys6j52OQ@...278...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <4fba3b6f-cffe-6e7a-71f8-c654721c0235@...2080...>
-Date: Thu, 19 Jan 2017 20:36:57 +0100
-MIME-Version: 1.0
-In-Reply-To: <CAKuzo_g+PPAfxUZMAmE0L4JKk7Wwp6Y58VfdAJGQA5Ys6j52OQ@...278...>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="C0htLX5wrJjFpNI3kpxEpFWQ48D4DoS3w"
+	<4fba3b6f-cffe-6e7a-71f8-c654721c0235@...2080...>
+From: Selva Nair <selva.nair@...277...>
+Date: Thu, 19 Jan 2017 14:46:51 -0500
+Message-ID: <CAKuzo_h97pt=DO_v-sy1CicduBvcBJvogqBva+byHHtE3BtPcA@...278...>
+Content-Type: multipart/alternative; boundary=94eb2c0626689efe05054677cc7a
 Subject: Re: [Openvpn-devel] [PATCH] Add a check for -Wl,
- --wrap support in linker
-Reply-To: openvpn-devel@lists.sourceforge.net
+	--wrap support in linker
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,103 +18,54 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---C0htLX5wrJjFpNI3kpxEpFWQ48D4DoS3w
-Content-Type: multipart/mixed; boundary="vXmIc40iaMQgBDM26v1jtFNOMEAGCr5nx";
-	protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-Reply-To: openvpn-devel@lists.sourceforge.net
-To: Selva Nair <selva.nair@...277...>, "openvpn-devel@lists.sourceforge.net"
-	<openvpn-devel@lists.sourceforge.net>
-Message-ID: <4fba3b6f-cffe-6e7a-71f8-c654721c0235@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH] Add a check for -Wl, --wrap support in
-	linker
-References: <1484772172-19758-1-git-send-email-selva.nair@...277...>
-	<3e2e63ed-99fb-e880-11dc-b0748f501567@...2080...>
-	<CAKuzo_g+PPAfxUZMAmE0L4JKk7Wwp6Y58VfdAJGQA5Ys6j52OQ@...278...>
-In-Reply-To: <CAKuzo_g+PPAfxUZMAmE0L4JKk7Wwp6Y58VfdAJGQA5Ys6j52OQ@...278...>
+--94eb2c0626689efe05054677cc7a
+Content-Type: text/plain; charset=UTF-8
 
---vXmIc40iaMQgBDM26v1jtFNOMEAGCr5nx
-Content-Type: text/plain; charset="windows-1252"
+Hi,
+
+On Thu, Jan 19, 2017 at 2:36 PM, David Sommerseth <
+openvpn@...2080...> wrote:
+
+> > So currently its just a preprocessor define that provides a solution
+> > waiting for a problem. If the consensus is not to define it, fine with
+> me.
+>
+> I have no issues adding such an AC_DEFINE when we have a good use-case
+> for it.  But if we don't need it now, I think it's best to keep things
+> as simple as possible, in particular in the autotools stuff which can
+> already be quite confusing.
+
+
+Then please take it out at merge time -- its only one line. And if we need
+it in future could be easily added.
+
+Selva
+
+--94eb2c0626689efe05054677cc7a
+Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On 19/01/17 16:32, Selva Nair wrote:
-> Hi,
->=20
-> Thanks for the comments.
->=20
-> On Thu, Jan 19, 2017 at 9:41 AM, David Sommerseth
-> <openvpn@...2080...
-> <mailto:openvpn@...2080...>> wrote:
->=20
->     Any reason to have this AC_DEFINE?  That puts HAVE_LD_WRAP_SUPPORT in=
-to
->     config.h, which I don't think makes much sense.  If we don't have --w=
-rap
->     support, would we have #ifdef HAVE_LD_WRAP_SUPPORT in the C code at a=
-ll?
->=20
->=20
-> Repeating from related discussion on the PR page: AC_DEFINE is indeed
-> meant to add a  preprocessor define (available to sources through
-> config.h). We do not have a use for it right now but we could --- say
-> one could provide an alternative to __wrap_xxx() in source, not sure how
-> though.
+<div dir=3D"ltr"><div class=3D"gmail_extra">Hi,</div><div class=3D"gmail_ex=
+tra"><br><div class=3D"gmail_quote">On Thu, Jan 19, 2017 at 2:36 PM, David =
+Sommerseth <span dir=3D"ltr">&lt;<a href=3D"mailto:openvpn@...2080..." targ=
+et=3D"_blank">openvpn@...2080...</a>&gt;</span> wrote:<br><blockquote class=
+=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padd=
+ing-left:1ex"><span class=3D"">&gt; So currently its just a preprocessor de=
+fine that provides a solution<br>
+&gt; waiting for a problem. If the consensus is not to define it, fine with=
+ me.<br>
+<br>
+</span>I have no issues adding such an AC_DEFINE when we have a good use-ca=
+se<br>
+for it.=C2=A0 But if we don&#39;t need it now, I think it&#39;s best to kee=
+p things<br>
+as simple as possible, in particular in the autotools stuff which can<br>
+already be quite confusing.</blockquote></div><br>Then please take it out a=
+t merge time -- its only one line. And if we need it in future could be eas=
+ily added.</div><div class=3D"gmail_extra"><br></div><div class=3D"gmail_ex=
+tra">Selva</div></div>
 
-Exactly.  There might be some possibilities, but I don't have a good
-idea currently.  And I see even fewer possibilities where #ifdef around
-this would be a solution.  I think a solution would require to compile
-and link a different set of source code providing a similar feature,
-which would anyway need to be primarily handled via configure.ac and
-Makefile.am.
-
-And considering this is limited to the LLVM linker and works fine with
-at least the GNU linker, I don't think we will spend too much time
-tackling this now.
-
-> So currently its just a preprocessor define that provides a solution
-> waiting for a problem. If the consensus is not to define it, fine with me.
-
-I have no issues adding such an AC_DEFINE when we have a good use-case
-for it.  But if we don't need it now, I think it's best to keep things
-as simple as possible, in particular in the autotools stuff which can
-already be quite confusing.
-
-
---
-kind regards,
-
-David Sommerseth
-OpenVPN Technologies, Inc
-
-
-
---vXmIc40iaMQgBDM26v1jtFNOMEAGCr5nx--
-
---C0htLX5wrJjFpNI3kpxEpFWQ48D4DoS3w
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBAgAGBQJYgRVaAAoJEIbPlEyWcf3yREkQAIRNnT7XIhcF+RE6tEcj6cbS
-x5xo34OADy0k1fg+5Mj0T+56eY4JprJZBAxqj+hQt+w9kN3+CTXYnquZ2kkdcbaI
-Ro5ACNMxd3FtIS2XBqBiU/GViX8wFXRoGO6UlghFMcRqxrSYdBLZQHxxNtbF5bxX
-WImiuvu0aQcJ7xURHUuE+GJM/nS+uRG0hfGsajp3BLR4HMNp/UnIiCzzMqBg2Ge3
-PHBQcGEfXqic38LIy7gQhYwIk37NI2NPSIEqAuPgYhgKBVmZA1M4GEPK8owAitXR
-byCfvV5n10LcEq4pXb5Ky6Ks6DK4pbkbv+yks0eo+qMnRAGMZrrUTTtXSzaOQHxJ
-jrkwyOiFg57KzHGUmBusW6rU535ZbtzVy9bTkJXJAnx8PmaTRQ97at4z4cw/xLlN
-ZUqUpxFoPRbM7ZM7uw2E6PIJ/bxaslh+ok3MewNvuuS90oeaEfGMLeXN7xN/LovO
-tIeTW5+NtbSgdEW8QtWG0m4q9pPJVIqVe7NTPqKtB5B8uImANr5FHsrer2LXn0f3
-4g7F3cuAl5knM+V+w9n1zUrxNsqB2j3g8Cye407+gsIaiJKdD1wo63K2RB9mmQ5i
-VhjweJUHcOwiaUqQZ2pnAb0hei9cX12NVMVaarwXK8hL+K1FIx4Dg9vZ7/nCUfaN
-9mCG3vqUpwxYVyBhjLds
-=i7we
------END PGP SIGNATURE-----
-
---C0htLX5wrJjFpNI3kpxEpFWQ48D4DoS3w--
+--94eb2c0626689efe05054677cc7a--
 
