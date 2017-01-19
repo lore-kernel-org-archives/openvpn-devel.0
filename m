@@ -1,16 +1,15 @@
-Date: Thu, 19 Jan 2017 14:45:42 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20170119134542.GI78624@...1296...>
-References: <b3afdbf7-ee12-3c1f-b8cd-c30cf3b0a025@...75...>
-	<20170118193527.GT78624@...1296...>
-	<fe421f51-e376-15e5-274c-fa6a62cc6dfe@...75...>
+References: <1484772172-19758-1-git-send-email-selva.nair@...277...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <3e2e63ed-99fb-e880-11dc-b0748f501567@...2080...>
+Date: Thu, 19 Jan 2017 15:41:10 +0100
 MIME-Version: 1.0
+In-Reply-To: <1484772172-19758-1-git-send-email-selva.nair@...277...>
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="T3QN4r+OPYJYSwpd"
-Content-Disposition: inline
-In-Reply-To: <fe421f51-e376-15e5-274c-fa6a62cc6dfe@...75...>
-Subject: Re: [Openvpn-devel] NOTE: unable to redirect default gateway --
- Cannot read current default gateway from system
+	protocol="application/pgp-signature";
+	boundary="omDSiGMKADvqwMICj72pP7PVNJ4kwFM7s"
+Subject: Re: [Openvpn-devel] [PATCH] Add a check for -Wl,
+ --wrap support in linker
+Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,77 +18,107 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Thomas =?iso-8859-1?Q?Sch=E4fer?= <tschaefer@...75...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: selva.nair@...277..., openvpn-devel@lists.sourceforge.net
 
---T3QN4r+OPYJYSwpd
-Content-Type: text/plain; charset="iso-8859-1"
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--omDSiGMKADvqwMICj72pP7PVNJ4kwFM7s
+Content-Type: multipart/mixed; boundary="99Etob4KoW1DgMWPt9eOVXEBSfQnARcip";
+	protected-headers="v1"
+From: David Sommerseth <openvpn@...2080...>
+Reply-To: openvpn-devel@lists.sourceforge.net
+To: selva.nair@...277..., openvpn-devel@lists.sourceforge.net
+Message-ID: <3e2e63ed-99fb-e880-11dc-b0748f501567@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH] Add a check for -Wl, --wrap support in
+	linker
+References: <1484772172-19758-1-git-send-email-selva.nair@...277...>
+In-Reply-To: <1484772172-19758-1-git-send-email-selva.nair@...277...>
+
+--99Etob4KoW1DgMWPt9eOVXEBSfQnARcip
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
-
-On Thu, Jan 19, 2017 at 02:42:18PM +0100, Thomas Sch=E4fer wrote:
-> > In case "def1" is not enough, please try "redirect-gateway def1 local",
-> > which is a hack (but a documented one).  "local" signals "do not install
-> > a host route pointing to the default gateway, because the VPN server is
-> > in the same locally connected network" (think "university wifi").  So t=
-hat
-> > should make things succeed.
-> This did not work. Same error as before.
-
-This is a bit annoying.  It does not need the default gateway when it's
-not going to use it.  *Flag as bug*.
-
-> > If that is still not working, use brute force, and replace "redirect-ga=
-teway"
-> > with
-> >
-> >   route 0.0.0.0/1
-> >   route 128.0.0.0/1
+On 18/01/17 21:42, selva.nair@...277... wrote:
+> From: Selva Nair <selva.nair@...277...>
 >=20
-> This leads to:
+> - Also make tests that require --wrap option to be
+>   conditional on this support
 >=20
-> Thu Jan 19 14:10:43 2017 RESOLVE: Cannot resolve host address:=20
-> 128.0.0.0/1: (Name or service not known)
+> Signed-off-by: Selva Nair <selva.nair@...277...>
+> ---
+>  configure.ac                         | 26 ++++++++++++++++++++++++++
+>  tests/unit_tests/openvpn/Makefile.am |  6 +++++-
+>  2 files changed, 31 insertions(+), 1 deletion(-)
 
-Uh.  Sorry.  Forgot that this is still netmask-land.
+This looks like a very good approach to me, and I believe it is done
+correctly.  One comment though, below ...
 
-> But
->=20
-> route   0.0.0.0 128.0.0.0
-> route 128.0.0.0 128.0.0.0
->=20
-> works.
+> diff --git a/configure.ac b/configure.ac
+> index 43487b0..0b7fea9 100644
+> --- a/configure.ac
+> +++ b/configure.ac
+> @@ -582,6 +582,31 @@ AC_COMPILE_IFELSE(
+[...snip...]
+> +		AC_DEFINE([HAVE_LD_WRAP_SUPPORT], [1], [Define to 1 if linker supports=
+ -Wl,--wrap option])
 
-This is how the syntax should be.  Thanks for testing, happy to finally
-reach a working solution :-) - and I'll put "rework that v4 stuff" on my
-limitless TODO list...
+Any reason to have this AC_DEFINE?  That puts HAVE_LD_WRAP_SUPPORT into
+config.h, which I don't think makes much sense.  If we don't have --wrap
+support, would we have #ifdef HAVE_LD_WRAP_SUPPORT in the C code at all?
 
-gert
+[...snip...]
+> +AM_CONDITIONAL([HAVE_LD_WRAP_SUPPORT], [test "${have_ld_wrap_support}" =
+=3D "yes"])
+
+This however is the clue of it all, to ensure we can do the proper check
+in Makefile.am files, as you've done below
+
+> +if HAVE_LD_WRAP_SUPPORT
+> +check_PROGRAMS +=3D argv_testdriver buffer_testdriver
+> +endif
+
+It would be great if macOS/OSX users with LLVM compilers installed could
+run some tests with this patch by EOB tomorrow (Friday Jan 20).
+
+If I don't hear any objects by then, I am going to give this an ACK
+without the AC_DEFINE line (unless good arguments having this in
+config.h surfaces).
+
+Selva, if you don't mind ... I can use this patch and just take out the
+AC_DEFINE line at commit time.
+
+
 --=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+kind regards,
 
---T3QN4r+OPYJYSwpd
+David Sommerseth
+OpenVPN Technologies, Inc
+
+
+
+--99Etob4KoW1DgMWPt9eOVXEBSfQnARcip--
+
+--omDSiGMKADvqwMICj72pP7PVNJ4kwFM7s
 Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQGcBAEBAgAGBQJYgMMGAAoJEB2Cnv7KVigS+eYL/0V4Acp8AylTBpykR+Y1UBJ+
-5sg2guvx2vxz8S/HlqCaiwd50fliJT2TSEAtVhliFJLmBAxB+MRpvBnaalN/McyO
-TTLUC1evzmeAO7a7tM0IBnmQXNiUDnSF1ljZ/7lyMFiNbAs8ZXCF9xBLKzzzGYRg
-/ul+GTFhuxo7mtHUJ+MH7sUBoxce4ZK2J2ZMdDvqJtSQfoirUO6vgBtSf4dIL2TK
-+52gldcyKMc3YV4o9iw0O9QelbbT5rb/aZ3t5Uge0xNmCYF+5HPznns9gEjeBt9E
-TXeu3JoEkWJKAN5Dholbp2RcUapXyTbqwKvIqKx1paSlYVxvJ5IlyZbMpzjs6DWt
-QbK00BmjreByfFcX2aoZw00KW5QKtkQH1AQvGFaqMvp6nthiKxmCfIqKmF/Fy9Pp
-HPh4la5+y8U6W3bt41Mb4UyjDLdAqzEhEbHUkJpNsCIXPU9hewA9VkE6rEeZ7PAL
-y0N5k3d3WYmSJuD57K3GKcOtExUGO1pIOFP9Hb0FyA==
-=UkAo
+iQIcBAEBAgAGBQJYgNAGAAoJEIbPlEyWcf3yuzkP/irnVV0dLnYfAYWabOTsyAR9
+BkqcPMlsmAk81z3Tdw6H+wWRXEwfhiiFAc6TXXTRkoC5NUw/RlSHqvP7X1rlz3lB
+z0poQShx/rT5DSAbqekS/8D40LbkPQgVGqr7N7MrTB4yyuHgtoCkoLFaljTANA0/
+9xQB4Ctg7tESi6ckhAhn6VZ3wssDBN7gQpc54tbTImcgCdJOhElgttQb5TXlYXLq
+XMhbjCfNHW18JU/fu8Juy+PkSloHXfNlCfacRN0O+Ajpf9Q4ldXpwVZluE+fIJIq
+aEEF0tLKEVpp5lRjh0ddaoPVIdCw6J+PQ2jyBLjtoIrZyBI1ds+QTfsUNNeN9VQm
+AJ1DZRqSm1XW3eO1jaitCDxnAyNZvhABDhILGx4AvcThKM1QUCXJc8RDET6qszon
+Wsm1HBeI/coIvLnvebfHCqyuau/4dHINoOZcHQg8tiHjqqnt31m/3YIFOVuGSgji
+BFsdmItSDz+QZPo2mtKVLTXizA4rb807m8+MON5N+nO8rXrYV0bF6a/rKesPzSCe
+5srdgkZZ33MvVWO36aixGLj73rbQAy/k56ibbP454trWqR+BnYuBuzh3mPH1lB6B
+Tr5ngpD9ur2iAc4sFayXmR522wwo27P15pX9cqealZfOW8Y2uMXVPJrpDE8zLjH2
+89gg3xQhhP3P2hZU8Ewr
+=cUiA
 -----END PGP SIGNATURE-----
 
---T3QN4r+OPYJYSwpd--
+--omDSiGMKADvqwMICj72pP7PVNJ4kwFM7s--
 
