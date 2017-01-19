@@ -1,13 +1,10 @@
-MIME-Version: 1.0
-In-Reply-To: <3e2e63ed-99fb-e880-11dc-b0748f501567@...2080...>
-References: <1484772172-19758-1-git-send-email-selva.nair@...277...>
-	<3e2e63ed-99fb-e880-11dc-b0748f501567@...2080...>
-From: Selva Nair <selva.nair@...277...>
-Date: Thu, 19 Jan 2017 10:32:53 -0500
-Message-ID: <CAKuzo_g+PPAfxUZMAmE0L4JKk7Wwp6Y58VfdAJGQA5Ys6j52OQ@...278...>
-Content-Type: multipart/alternative; boundary=001a113e7bf664fccb05467440b0
-Subject: Re: [Openvpn-devel] [PATCH] Add a check for -Wl,
-	--wrap support in linker
+From: Antonio Quartulli <a@...2181...>
+Date: Fri, 20 Jan 2017 00:25:18 +0800
+Message-Id: <20170119162518.31752-1-a@...2181...>
+In-Reply-To: <20170119152156.5988-1-a@...2181...>
+References: <20170119152156.5988-1-a@...2181...>
+Subject: [Openvpn-devel] [PATCH v2] fix redirect-gateway behaviour when an
+	IPv4 default route does not exist
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,58 +13,135 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Antonio Quartulli <a@...2181...>
 
---001a113e7bf664fccb05467440b0
-Content-Type: text/plain; charset=UTF-8
+When no IPv4 default route exists, the "redirect-gateway" routine
+aborts even if the sub-option "local" was specified or if we are
+connecting to the remote host using IPv6.
 
-Hi,
+This is not expected because in either case OpenVPN should not
+bother checking the existence of the default route as it is not
+required at all.
 
-Thanks for the comments.
+Therefore, skip the IPv4 default route check when "local" is
+specified or we are connecting to an IPv6 remote host.
 
-On Thu, Jan 19, 2017 at 9:41 AM, David Sommerseth <
-openvpn@...2080...> wrote:
+Signed-off-by: Antonio Quartulli <a@...2181...>
+---
 
-> Any reason to have this AC_DEFINE?  That puts HAVE_LD_WRAP_SUPPORT into
-> config.h, which I don't think makes much sense.  If we don't have --wrap
-> support, would we have #ifdef HAVE_LD_WRAP_SUPPORT in the C code at all?
->
+Actually, the fix required to consider the IPv6 case was not as big as
+expected, therefore I included it in this v2.
 
-Repeating from related discussion on the PR page: AC_DEFINE is indeed meant
-to add a  preprocessor define (available to sources through config.h). We
-do not have a use for it right now but we could --- say one could provide
-an alternative to __wrap_xxx() in source, not sure how though.
+Changes since v1:
+- don't perform the default route check if remote host is IPv6
+- on shutdown, don't try to re-add default route if it never existed
+- move local var to narrower scope
 
-So currently its just a preprocessor define that provides a solution
-waiting for a problem. If the consensus is not to define it, fine with me.
 
-Selva
+This patch (v2) has been tested under following conditions:
 
---001a113e7bf664fccb05467440b0
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Scenario 1: remove the default route and connect to an IPv4 VPN server
+within the same network/LAN.
 
-<div dir=3D"ltr"><div class=3D"gmail_extra">Hi,</div><div class=3D"gmail_ex=
-tra"><br></div><div class=3D"gmail_extra">Thanks for the comments.</div><di=
-v class=3D"gmail_extra"><br><div class=3D"gmail_quote">On Thu, Jan 19, 2017=
- at 9:41 AM, David Sommerseth <span dir=3D"ltr">&lt;<a href=3D"mailto:openv=
-pn@...2080..." target=3D"_blank">openvpn@...2080...</a>&gt;</span> wrote:<b=
-r><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:=
-1px #ccc solid;padding-left:1ex"><div id=3D":1au" class=3D"a3s aXjCH m159b7=
-2ca336e02e1">Any reason to have this AC_DEFINE?=C2=A0 That puts HAVE_LD_WRA=
-P_SUPPORT into<br>
-config.h, which I don&#39;t think makes much sense.=C2=A0 If we don&#39;t h=
-ave --wrap<br>
-support, would we have #ifdef HAVE_LD_WRAP_SUPPORT in the C code at all?</d=
-iv></blockquote></div><br>Repeating from related discussion on the PR page:=
- AC_DEFINE is indeed meant to add a =C2=A0preprocessor define (available to=
- sources through config.h). We do not have a use for it right now but we co=
-uld --- say one could provide an alternative to __wrap_xxx() in source, not=
- sure how though.</div><div class=3D"gmail_extra"><br></div><div class=3D"g=
-mail_extra">So currently its just a preprocessor define that provides a sol=
-ution waiting for a problem. If the consensus is not to define it, fine wit=
-h me.</div><div class=3D"gmail_extra">=C2=A0</div><div class=3D"gmail_extra=
-">Selva</div></div>
+Observed behaviour when "redirect-gateway local" is specified:
+- without the patch: no new default route over the VPN is added;
+- with the patch: the new default route over the VPN is properly added.
 
---001a113e7bf664fccb05467440b0--
+Scenario 2: remove the default route and connect to an IPv6 VPN server.
+
+Observed behaviour when "redirect-gateway" is specified:
+- without the patch: no IPv4 default route over the VPN is added;
+- with the patch: the IPv4 default route over the VPN is properly added.
+
+
+
+Cheers,
+
+
+ src/openvpn/route.c | 41 ++++++++++++++++++++++-------------------
+ 1 file changed, 22 insertions(+), 19 deletions(-)
+
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index 0c93dcd..e23f79a 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -986,11 +986,19 @@ redirect_default_route_to_vpn(struct route_list *rl, const struct tuntap *tt, un
+ 
+     if (rl && rl->flags & RG_ENABLE)
+     {
++        bool local = rl->flags & RG_LOCAL;
++
+         if (!(rl->spec.flags & RTSA_REMOTE_ENDPOINT) && (rl->flags & RG_REROUTE_GW))
+         {
+             msg(M_WARN, "%s VPN gateway parameter (--route-gateway or --ifconfig) is missing", err);
+         }
+-        else if (!(rl->rgi.flags & RGI_ADDR_DEFINED))
++        /*
++         * check if a default route is defined, unless:
++         * - we are connecting to a remote host in our network
++         * - we are connecting to a non-IPv4 remote host (i.e. we use IPv6)
++         */
++        else if (!(rl->rgi.flags & RGI_ADDR_DEFINED) && !local
++                 && (rl->spec.remote_host != IPV4_INVALID_ADDR))
+         {
+             msg(M_WARN, "%s Cannot read current default gateway from system", err);
+         }
+@@ -1001,7 +1009,6 @@ redirect_default_route_to_vpn(struct route_list *rl, const struct tuntap *tt, un
+         else
+         {
+ #ifndef TARGET_ANDROID
+-            bool local = BOOL_CAST(rl->flags & RG_LOCAL);
+             if (rl->flags & RG_AUTO_LOCAL)
+             {
+                 const int tla = rl->spec.remote_host_local;
+@@ -1066,14 +1073,13 @@ redirect_default_route_to_vpn(struct route_list *rl, const struct tuntap *tt, un
+                 }
+                 else
+                 {
+-                    /* delete default route */
+-                    del_route3(0,
+-                               0,
+-                               rl->rgi.gateway.addr,
+-                               tt,
+-                               flags | ROUTE_REF_GW,
+-                               &rl->rgi,
+-                               es);
++                    /* don't try to remove the def route if it does not exist */
++                    if (rl->rgi.flags & RGI_ADDR_DEFINED)
++                    {
++                        /* delete default route */
++                        del_route3(0, 0, rl->rgi.gateway.addr, tt,
++                                   flags | ROUTE_REF_GW, &rl->rgi, es);
++                    }
+ 
+                     /* add new default route */
+                     add_route3(0,
+@@ -1145,15 +1151,12 @@ undo_redirect_default_route_to_vpn(struct route_list *rl, const struct tuntap *t
+                            flags,
+                            &rl->rgi,
+                            es);
+-
+-                /* restore original default route */
+-                add_route3(0,
+-                           0,
+-                           rl->rgi.gateway.addr,
+-                           tt,
+-                           flags | ROUTE_REF_GW,
+-                           &rl->rgi,
+-                           es);
++                /* restore original default route if there was any */
++                if (rl->rgi.flags & RGI_ADDR_DEFINED)
++                {
++                    add_route3(0, 0, rl->rgi.gateway.addr, tt,
++                               flags | ROUTE_REF_GW, &rl->rgi, es);
++                }
+             }
+         }
+ 
+-- 
+2.11.0
+
 
