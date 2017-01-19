@@ -1,10 +1,13 @@
-From: Antonio Quartulli <a@...2181...>
-Date: Thu, 19 Jan 2017 23:21:56 +0800
-Message-Id: <20170119152156.5988-1-a@...2181...>
-In-Reply-To: <20170119134542.GI78624@...1296...>
-References: <20170119134542.GI78624@...1296...>
-Subject: [Openvpn-devel] [PATCH] fix redirect-gateway behaviour when "local"
-	is specified
+MIME-Version: 1.0
+In-Reply-To: <3e2e63ed-99fb-e880-11dc-b0748f501567@...2080...>
+References: <1484772172-19758-1-git-send-email-selva.nair@...277...>
+	<3e2e63ed-99fb-e880-11dc-b0748f501567@...2080...>
+From: Selva Nair <selva.nair@...277...>
+Date: Thu, 19 Jan 2017 10:32:53 -0500
+Message-ID: <CAKuzo_g+PPAfxUZMAmE0L4JKk7Wwp6Y58VfdAJGQA5Ys6j52OQ@...278...>
+Content-Type: multipart/alternative; boundary=001a113e7bf664fccb05467440b0
+Subject: Re: [Openvpn-devel] [PATCH] Add a check for -Wl,
+	--wrap support in linker
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,98 +16,58 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Antonio Quartulli <a@...2181...>
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-When no IPv4 default route exists, the "redirect-gateway" routine aborts
-even if the sub-option "local" was specified.
+--001a113e7bf664fccb05467440b0
+Content-Type: text/plain; charset=UTF-8
 
-This is not expected because in this case OpenVPN should not bother
-checking the existence of the default route at all (as specified
-in the documentation).
+Hi,
 
-Therefore, avoid the unsolicited abort by skipping the default
-GW check when "local" is specified.
+Thanks for the comments.
 
-Signed-off-by: Antonio Quartulli <a@...2181...>
----
+On Thu, Jan 19, 2017 at 9:41 AM, David Sommerseth <
+openvpn@...2080...> wrote:
 
-This patch addresses the "*Flag as bug*" concern raised by Gert.
+> Any reason to have this AC_DEFINE?  That puts HAVE_LD_WRAP_SUPPORT into
+> config.h, which I don't think makes much sense.  If we don't have --wrap
+> support, would we have #ifdef HAVE_LD_WRAP_SUPPORT in the C code at all?
+>
 
+Repeating from related discussion on the PR page: AC_DEFINE is indeed meant
+to add a  preprocessor define (available to sources through config.h). We
+do not have a use for it right now but we could --- say one could provide
+an alternative to __wrap_xxx() in source, not sure how though.
 
-Tested by connecting to a VPN server in the same network/LAN and by
-removing the default route.
+So currently its just a preprocessor define that provides a solution
+waiting for a problem. If the consensus is not to define it, fine with me.
 
-Observed behaviour when "redirect-gateway local" is specified:
-- without the patch: no new default route over the VPN is added;
-- with the patch: the new default route over the VPN is properly added.
+Selva
 
+--001a113e7bf664fccb05467440b0
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-As Gert pointed out, the IPv6-endpoint case needs to be considered as
-well while applying any routing-table-mangling logic.
-However, such change will probably affect a larger portion of the code
-and therefore it is worth its own patch.
+<div dir=3D"ltr"><div class=3D"gmail_extra">Hi,</div><div class=3D"gmail_ex=
+tra"><br></div><div class=3D"gmail_extra">Thanks for the comments.</div><di=
+v class=3D"gmail_extra"><br><div class=3D"gmail_quote">On Thu, Jan 19, 2017=
+ at 9:41 AM, David Sommerseth <span dir=3D"ltr">&lt;<a href=3D"mailto:openv=
+pn@...2080..." target=3D"_blank">openvpn@...2080...</a>&gt;</span> wrote:<b=
+r><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:=
+1px #ccc solid;padding-left:1ex"><div id=3D":1au" class=3D"a3s aXjCH m159b7=
+2ca336e02e1">Any reason to have this AC_DEFINE?=C2=A0 That puts HAVE_LD_WRA=
+P_SUPPORT into<br>
+config.h, which I don&#39;t think makes much sense.=C2=A0 If we don&#39;t h=
+ave --wrap<br>
+support, would we have #ifdef HAVE_LD_WRAP_SUPPORT in the C code at all?</d=
+iv></blockquote></div><br>Repeating from related discussion on the PR page:=
+ AC_DEFINE is indeed meant to add a =C2=A0preprocessor define (available to=
+ sources through config.h). We do not have a use for it right now but we co=
+uld --- say one could provide an alternative to __wrap_xxx() in source, not=
+ sure how though.</div><div class=3D"gmail_extra"><br></div><div class=3D"g=
+mail_extra">So currently its just a preprocessor define that provides a sol=
+ution waiting for a problem. If the consensus is not to define it, fine wit=
+h me.</div><div class=3D"gmail_extra">=C2=A0</div><div class=3D"gmail_extra=
+">Selva</div></div>
 
-Cheers,
-
-
- src/openvpn/route.c | 19 +++++++++----------
- 1 file changed, 9 insertions(+), 10 deletions(-)
-
-diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index 0c93dcd..e439fea 100644
---- a/src/openvpn/route.c
-+++ b/src/openvpn/route.c
-@@ -983,6 +983,7 @@ static void
- redirect_default_route_to_vpn(struct route_list *rl, const struct tuntap *tt, unsigned int flags, const struct env_set *es)
- {
-     const char err[] = "NOTE: unable to redirect default gateway --";
-+    bool local = BOOL_CAST(rl->flags & RG_LOCAL);
- 
-     if (rl && rl->flags & RG_ENABLE)
-     {
-@@ -990,7 +991,7 @@ redirect_default_route_to_vpn(struct route_list *rl, const struct tuntap *tt, un
-         {
-             msg(M_WARN, "%s VPN gateway parameter (--route-gateway or --ifconfig) is missing", err);
-         }
--        else if (!(rl->rgi.flags & RGI_ADDR_DEFINED))
-+        else if (!(rl->rgi.flags & RGI_ADDR_DEFINED) && !local)
-         {
-             msg(M_WARN, "%s Cannot read current default gateway from system", err);
-         }
-@@ -1001,7 +1002,6 @@ redirect_default_route_to_vpn(struct route_list *rl, const struct tuntap *tt, un
-         else
-         {
- #ifndef TARGET_ANDROID
--            bool local = BOOL_CAST(rl->flags & RG_LOCAL);
-             if (rl->flags & RG_AUTO_LOCAL)
-             {
-                 const int tla = rl->spec.remote_host_local;
-@@ -1066,14 +1066,13 @@ redirect_default_route_to_vpn(struct route_list *rl, const struct tuntap *tt, un
-                 }
-                 else
-                 {
--                    /* delete default route */
--                    del_route3(0,
--                               0,
--                               rl->rgi.gateway.addr,
--                               tt,
--                               flags | ROUTE_REF_GW,
--                               &rl->rgi,
--                               es);
-+                    /* don't try to remove the def route if it does not exist */
-+                    if (rl->rgi.flags & RGI_ADDR_DEFINED)
-+                    {
-+                        /* delete default route */
-+                        del_route3(0, 0, rl->rgi.gateway.addr, tt,
-+                                   flags | ROUTE_REF_GW, &rl->rgi, es);
-+                    }
- 
-                     /* add new default route */
-                     add_route3(0,
--- 
-2.11.0
-
+--001a113e7bf664fccb05467440b0--
 
