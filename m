@@ -1,14 +1,14 @@
 References: <20161227221539.329-1-list@...1798...>
+	<20161227221539.329-2-list@...1798...>
 From: David Sommerseth <openvpn@...2080...>
-Message-ID: <e6deb9e1-bc10-9085-4ebe-31e8e34b8b6b@...2080...>
-Date: Fri, 20 Jan 2017 21:39:06 +0100
+Message-ID: <bfee252f-300d-299c-89e9-197d1cd7b3fc@...2080...>
+Date: Fri, 20 Jan 2017 21:55:48 +0100
 MIME-Version: 1.0
-In-Reply-To: <20161227221539.329-1-list@...1798...>
+In-Reply-To: <20161227221539.329-2-list@...1798...>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="dhUu4lqwNhT4SlltCK7nlscXMTukTPS9P"
-Subject: Re: [Openvpn-devel] [PATCH 1/2] use automake tools to install
- systemd files
+	boundary="x0h77wkJ03GhciBCb0wiB9J5jruwDXmi5"
+Subject: Re: [Openvpn-devel] [PATCH 2/2] do not race on RuntimeDirectory
 Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -18,141 +18,130 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Christian Hesse <list@...1798...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Christian Hesse <list@...1798...>, OpenVPN Development <openvpn-devel@lists.sourceforge.net>
+Cc: Christian Hesse <mail@...1798...>
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---dhUu4lqwNhT4SlltCK7nlscXMTukTPS9P
-Content-Type: multipart/mixed; boundary="qgeAfWhcS1KHAdmpIBNCTTeI728W5NrW9";
+--x0h77wkJ03GhciBCb0wiB9J5jruwDXmi5
+Content-Type: multipart/mixed; boundary="kWI2nbVfoNoKbqGphOOQfHe9tTMTADNXb";
 	protected-headers="v1"
 From: David Sommerseth <openvpn@...2080...>
 Reply-To: openvpn-devel@lists.sourceforge.net
-To: Christian Hesse <list@...1798...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-Message-ID: <e6deb9e1-bc10-9085-4ebe-31e8e34b8b6b@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH 1/2] use automake tools to install systemd
-	files
+To: Christian Hesse <list@...1798...>,
+	OpenVPN Development <openvpn-devel@lists.sourceforge.net>
+Cc: Christian Hesse <mail@...1798...>
+Message-ID: <bfee252f-300d-299c-89e9-197d1cd7b3fc@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH 2/2] do not race on RuntimeDirectory
 References: <20161227221539.329-1-list@...1798...>
-In-Reply-To: <20161227221539.329-1-list@...1798...>
+	<20161227221539.329-2-list@...1798...>
+In-Reply-To: <20161227221539.329-2-list@...1798...>
 
---qgeAfWhcS1KHAdmpIBNCTTeI728W5NrW9
+--kWI2nbVfoNoKbqGphOOQfHe9tTMTADNXb
 Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
 
 On 27/12/16 23:15, Christian Hesse wrote:
 > From: Christian Hesse <mail@...1798...>
 >=20
-> If systemd is enabled we install unit files to $libdir/systemd/system
-> (or the path specified by SYSTEMD_UNIT_DIR).
-> The unit files are generated on the fly with matching $sbindir.
+> Different unit instances create and destroy the same RuntimeDirectory.
+> This leads to running instances where the status file (and possibly
+> more runtime data) is no longer accessible.
+>=20
+> So do not handle this in unit files but provide a tmpfiles.d
+> configuration and let systemd-tmpfiles do the work.
+> Nobody will (unintentionally) delete the directories and its content.
+> As /run is volatile we do not have to care about cleanup.
 >=20
 > Signed-off-by: Christian Hesse <mail@...1798...>
 > ---
->  configure.ac                                       | 10 ++++++++
->  distro/Makefile.am                                 |  4 +---
->  distro/systemd/.gitignore                          |  1 +
->  distro/systemd/Makefile.am                         | 27 ++++++++++++++++=
-++++++
->  ...-client@...1685... =3D> openvpn-client@...2221...} |  2 +-
->  ...-server@...1685... =3D> openvpn-server@...2221...} |  2 +-
->  6 files changed, 41 insertions(+), 5 deletions(-)
->  create mode 100644 distro/systemd/.gitignore
->  create mode 100644 distro/systemd/Makefile.am
->  rename distro/systemd/{openvpn-client@...1685... =3D> openvpn-client@...493...=
-2221...} (89%)
->  rename distro/systemd/{openvpn-server@...1685... =3D> openvpn-server@...493...=
-2221...} (83%)
-
-
-Finally had some time to look at this!  Some comments below.
+>  configure.ac                              | 8 ++++++++
+>  distro/systemd/Makefile.am                | 8 ++++++++
+>  distro/systemd/openvpn-client@...2221... | 2 --
+>  distro/systemd/openvpn-server@...2221... | 2 --
+>  distro/systemd/openvpn.conf               | 2 ++
+>  5 files changed, 18 insertions(+), 4 deletions(-)
+>  create mode 100644 distro/systemd/openvpn.conf
+>=20
 
 [...snip...]
 
+> diff --git a/distro/systemd/Makefile.am b/distro/systemd/Makefile.am
+> index 53a88c9..1a6c974 100644
+> --- a/distro/systemd/Makefile.am
+> +++ b/distro/systemd/Makefile.am
+> @@ -12,7 +12,12 @@
+>  	$(AM_V_GEN)sed -e 's|\@sbindir\@|$(sbindir)|' \
+>  		$< > $@.tmp && mv $@.tmp $@
+>=20=20
+> +install-data-local:
+> +	$(INSTALL) -d -m0710 $(DESTDIR)/run/openvpn-client
+> +	$(INSTALL) -d -m0710 $(DESTDIR)/run/openvpn-server
+
+Hmm ... that doesn't make much sense, does it?
+
+$ mount | grep '/run '
+tmpfs on /run type tmpfs (rw,nosuid,nodev,seclabel,mode=3D755)
+
+IIRC, upstream systemd recommends /run to be a ramdisk, as it should
+always be clean on freshly rebooted systems.  And it probably saves a
+lot of SSD/flash storage write cycles, for those using that.
+
+[...snip...]
+
+> @@ -21,6 +26,9 @@ systemdunitdir =3D $(systemdunitdir)
+>  systemdunit_DATA =3D \
+>  	openvpn-client@...1685... \
+>  	openvpn-server@...1685...
+> +tmpfilesdir =3D $(tmpfilesdir)
+
+This conflicts with AC_SUBST([tmpfilesdir])
+
+$ autoreconf -vi
+autoreconf: Entering directory `.'
+autoreconf: configure.ac: not using Gettext
+autoreconf: running: aclocal -I m4
+autoreconf: configure.ac: tracing
+autoreconf: running: libtoolize --copy
+autoreconf: running: /usr/bin/autoconf
+autoreconf: running: /usr/bin/autoheader
+autoreconf: running: automake --add-missing --copy --no-force
+distro/systemd/Makefile.am:28: warning: tmpfilesdir was already defined
+in condition TRUE, which includes condition ENABLE_SYSTEMD ...
+configure.ac:1293: ... 'tmpfilesdir' previously defined here
+autoreconf: Leaving directory `.'
+$ rpm -q autoconf
+autoconf-2.69-11.el7.noarch
+
+Removing that tmpfilesdir declaration line in Makefile.am resolves this
+issue, and it still works as expected.
+
+[...snip...]
+
+> diff --git a/distro/systemd/openvpn.conf b/distro/systemd/openvpn.conf
+> new file mode 100644
+> index 0000000..57f20cd
 > --- /dev/null
-> +++ b/distro/systemd/.gitignore
-> @@ -0,0 +1 @@
-> +*.service
+> +++ b/distro/systemd/openvpn.conf
+> @@ -0,0 +1,2 @@
+> +d /run/openvpn-client 0710 root root -
+> +d /run/openvpn-server 0710 root root -
 > \ No newline at end of file
 
-I think it is better to put all of these things into the .gitignore file
-in the project root directory.  I see that this have slipped through a
-few times (./vendor, ./test/unit_tests and sample/sample-keys/) ... but
-as do ignore directories in the "master" .gitignore, I think we should
-have everything there.  It will be easier to know where to look.  And
-rather split things up when that master file gets too long and complicated.
+This makes more sense though, as this will tell systemd to create these
+directories with the proper attributes.
+
+But I'm not too happy about the filename in our git repository.  The
+destination file may very well be called openvpn.conf, as then it should
+reside in $libdir/tmpfiles.d/ ... but openvpn.conf causes quite a bit of
+ambiguity inside the openvpn source tree, and unaware users might more
+see this as a sample configuration for OpenVPN and be even more confused.
+
+I propose ... either rename this file to tmpfiles.d--openvpn.conf or
+move this openvpn.conf inside a tmpfiles.d/ subdirectory inside the
+./distro/systemd/ directory.
 
 
-> diff --git a/distro/systemd/Makefile.am b/distro/systemd/Makefile.am
-> new file mode 100644
-> index 0000000..53a88c9
-> --- /dev/null
-> +++ b/distro/systemd/Makefile.am
-> @@ -0,0 +1,27 @@
-> +#
-> +#  OpenVPN -- An application to securely tunnel IP networks
-> +#             over a single UDP port, with support for SSL/TLS-based
-> +#             session authentication and key exchange,
-> +#             packet encryption, packet authentication, and
-> +#             packet compression.
-> +#
-> +#  Copyright (C) 2017 OpenVPN Technologies, Inc. <sales@...515...>
-> +#
-> +
-> +%.service: %.service.in Makefile
-> +	$(AM_V_GEN)sed -e 's|\@sbindir\@|$(sbindir)|' \
-> +		$< > $@.tmp && mv $@.tmp $@
-> +
-> +EXTRA_DIST =3D \
-> +	openvpn-client@...2221... \
-> +	openvpn-server@...2221...
-> +
-> +if ENABLE_SYSTEMD
-> +systemdunitdir =3D $(systemdunitdir)
-
-This conflicts with AC_SUBST([systemdunitdir]) in configure.ac.  So this
-line should not be here.
-
-[...snip....]
-
-> diff --git a/distro/systemd/openvpn-client@...1685... b/distro/systemd/op=
-envpn-client@...2221...
-> similarity index 89%
-> rename from distro/systemd/openvpn-client@...1685...
-> rename to distro/systemd/openvpn-client@...2221...
-> index 5618af3..d9fd6b0 100644
-> --- a/distro/systemd/openvpn-client@...1685...
-> +++ b/distro/systemd/openvpn-client@...2221...
-> @@ -12,7 +12,7 @@ PrivateTmp=3Dtrue
->  RuntimeDirectory=3Dopenvpn-client
->  RuntimeDirectoryMode=3D0710
->  WorkingDirectory=3D/etc/openvpn/client
-> -ExecStart=3D/usr/sbin/openvpn --suppress-timestamps --nobind --config %i=
-.conf
-> +ExecStart=3D@...2235...@ --suppress-timestamps --nobind --config %i.conf
-
-It should be: ExecStart=3D@...2235...@/openvpn .... otherwise the generated
-files are pointing at a only a directory.
-
-[...snip....]
-
-> diff --git a/distro/systemd/openvpn-server@...1685... b/distro/systemd/op=
-envpn-server@...2221...
-> similarity index 83%
-> rename from distro/systemd/openvpn-server@...1685...
-> rename to distro/systemd/openvpn-server@...2221...
-> index b9b4dba..a270982 100644
-> --- a/distro/systemd/openvpn-server@...1685...
-> +++ b/distro/systemd/openvpn-server@...2221...
-> @@ -12,7 +12,7 @@ PrivateTmp=3Dtrue
->  RuntimeDirectory=3Dopenvpn-server
->  RuntimeDirectoryMode=3D0710
->  WorkingDirectory=3D/etc/openvpn/server
-> -ExecStart=3D/usr/sbin/openvpn --status %t/openvpn-server/status-%i.log -=
--status-version 2 --suppress-timestamps --config %i.conf
-> +ExecStart=3D@...2235...@ --status %t/openvpn-server/status-%i.log --status-=
-version 2 --suppress-timestamps --config %i.conf
-
-Same as above.
+Otherwise, this looks very reasonable.
 
 
 --=20
@@ -163,9 +152,9 @@ OpenVPN Technologies, Inc
 
 
 
---qgeAfWhcS1KHAdmpIBNCTTeI728W5NrW9--
+--kWI2nbVfoNoKbqGphOOQfHe9tTMTADNXb--
 
---dhUu4lqwNhT4SlltCK7nlscXMTukTPS9P
+--x0h77wkJ03GhciBCb0wiB9J5jruwDXmi5
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -173,20 +162,20 @@ Content-Disposition: attachment; filename="signature.asc"
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBAgAGBQJYgnVqAAoJEIbPlEyWcf3yGmsP/3Yx6z5u7CW2eRDul68KVhB3
-fQR4Q9IHOKOr2H3HXP1XDxCC/dquLl/CMJEjD9YMMQNPtmreyUYL7+suC1KrLlEs
-pm58QnjelcsdREPSuhfklXgKKUTcNKu6G8K9WEesmvDUjlsGFbAcL/D5miGa0dMz
-DwQmg3F/7s/dHepwUdHZctbQwoqMJ5zrSs0y4TlUjQpk9puamlcmsaqcOnlRkcCs
-Y87synwEJYAusyKvdZmiip3lq5733+NhymU8ZvXt3WF1X1BDhuOcPKgyn/VVhNLe
-6Asu9EtqTGmM17RB6yV/2Wejw77G3jEUOyUG18q3T6WH/tcDJ2nNcMeGXxWaD2P5
-pJ82w790S/7EN5JXYkA98NFFJkS0PZG8/B7GJqJsaUrXbTSzGHSxwGgIeXNIdqXY
-U8/fZGNXmE2ZYWpVRaJMXA7lDPSrogIjTQvG1YbLOSZRbutTVEDQ8mM3I1X77o7B
-6E+DR7JD3DAPwr56nuF1GZsQMgPjpC0TbJgt1JD8R+cxN9Q3ckVLSsnosjt8X/XZ
-tqDVu8f5OIJ1DnO0AzU7Yq//cLxSVHEFud5TiOtoHXyilzHoIjpGpAUQ+qFzj2k7
-bnzrblMPrIlzr5vzRGG7J/xBFl4W7cgIjeurQkrMthEjmX2nBsuPbiN7vy0IRDYl
-L4Bf589OXuonzB0G0l3Z
-=yQ0A
+iQIcBAEBAgAGBQJYgnlUAAoJEIbPlEyWcf3yRXcP+gMri7vh4buWuOw3EMumiC17
+WyU1OWds5q1mwOYIMaAwnGNhz5FOrrLwNMFLQ5CxmLFiCbEExIqwv1ylKB0fVa17
+2+cz75Ks8pzjCD/wRZudc8ecGwemKeN8VydlhWmpcTD8v1piob7MVKdYLnh0PhOb
+W9j2qwUMQNFIgDBUqU/Wk0xPXhs8N4SfMantLcmxlTyhbTe9hGLTZfnZ5ZRxLHMl
+rAQ+ckvwIRn5Fj20B9DLyS7a422m2WQQVwjlPp0jm8/3ORKQFb9pTSc+2Pg4kR1r
+OeMOLmKTMyk96R+q7HoVI6IwlPF8CQeoAsXPL1pah2dU5gfL+mRVj/RQXVS6RvUz
+hh7RJIsDbxk2/oy5PSD5qAeuAWn2C4Jc81SQkM/IoYmJelwAq5cWe2ph/X1dWTjv
+UejCPN6gpJIGnWib2XFb7dDpEvs8YuasBrDqgQMiz/II52I1hyxbbe9s2Czh4fU2
+jeocU8IPngZUuYFPO5pMaecI2ab87ddzobbl2opDM7pkDasurZN0wWXA6NVRPhxC
+ztXqm8q1sCQ+Gx66ov7MJtPEPmP4pjrpnc1orHwHVTK8Y8iGKbo/wTSFbGnh57MR
+KgB45izVDRrF2ZkqjeWek4k4Y1LOXGfvO8l21+eWmQoCCrXPflWFe4SSiKE8dGAL
+gu1wW3XmZZGqXXkLfObn
+=RoRS
 -----END PGP SIGNATURE-----
 
---dhUu4lqwNhT4SlltCK7nlscXMTukTPS9P--
+--x0h77wkJ03GhciBCb0wiB9J5jruwDXmi5--
 
