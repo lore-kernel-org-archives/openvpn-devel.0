@@ -1,15 +1,15 @@
-References: <1482079255-15159-1-git-send-email-steffan@...1856...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <aaf4595a-1a8c-67f0-690c-9f6743066b0d@...2080...>
-Date: Fri, 20 Jan 2017 23:01:42 +0100
 MIME-Version: 1.0
-In-Reply-To: <1482079255-15159-1-git-send-email-steffan@...1856...>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="HTncJc9gO5hMvaRoXgHrPWXUd1Kk1Nc8B"
-Subject: Re: [Openvpn-devel] [PATCH] Use SHA256 for the internal digest,
- instead of MD5
-Reply-To: openvpn-devel@lists.sourceforge.net
+In-Reply-To: <20170120214018.GT78624@...1296...>
+References: <1484772172-19758-1-git-send-email-selva.nair@...277...>
+	<20170120181647.10199-1-davids@...515...>
+	<CAKuzo_iuwKbWwTsRP4PV+-5NRFOkjyY6LtCKEbzT7ETEjysZ+g@...278...>
+	<20170120214018.GT78624@...1296...>
+From: Selva Nair <selva.nair@...277...>
+Date: Fri, 20 Jan 2017 17:04:27 -0500
+Message-ID: <CAKuzo_j+zHO43BE=ez++Mx0Bmz+kH=7a1Pz3RiV22ZNwCUFXuw@...278...>
+Content-Type: multipart/alternative; boundary=001a113a2bec98a6ab05468dd6d4
+Subject: Re: [Openvpn-devel] [PATCH applied] Add a check for -Wl,
+ --wrap support in linker
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,131 +18,78 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan@...1856...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---HTncJc9gO5hMvaRoXgHrPWXUd1Kk1Nc8B
-Content-Type: multipart/mixed; boundary="QJAbfdjrGseX66oo85ptgKPxISR3GrkQI";
-	protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-Reply-To: openvpn-devel@lists.sourceforge.net
-To: Steffan Karger <steffan@...1856...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-Message-ID: <aaf4595a-1a8c-67f0-690c-9f6743066b0d@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH] Use SHA256 for the internal digest,
-	instead of MD5
-References: <1482079255-15159-1-git-send-email-steffan@...1856...>
-In-Reply-To: <1482079255-15159-1-git-send-email-steffan@...1856...>
+--001a113a2bec98a6ab05468dd6d4
+Content-Type: text/plain; charset=UTF-8
 
---QJAbfdjrGseX66oo85ptgKPxISR3GrkQI
-Content-Type: text/plain; charset="windows-1252"
+Hi,
+
+On Fri, Jan 20, 2017 at 4:40 PM, Gert Doering <gert@...1296...> wrote:
+
+> On Fri, Jan 20, 2017 at 03:38:46PM -0500, Selva Nair wrote:
+> > I am curious to know whether the opensolaris buildbot (there is one isn't
+> > it?) run and pass all tests?
+>
+> There is one, but it uses gcc and GNU ld, so --wrap never was a problem
+> there...
+>
+> gert@...2236...:/home/gert$ ld --version
+> GNU ld version 2.15
+> Copyright 2002 Free Software Foundation, Inc.
+
+
+I see... Recently I've used opensolaris only as in Illumo's omnios
+and gcc -v shows
+
+Target: i386-pc-solaris2.11
+Configured with: ./configure --host i386-pc-solaris2.11 [...snip...]
+--without-gnu-ld --with-ld=/bin/ld --with-as=/usr/bin/gas --with-gnu-as
+ etc..
+
+And /bin/ld gives
+usage: ld [-3:6:abc:d:e:f:h:il:mo:p:rstu:z:B:CD:F:GI:L:M:N:P:Q:R:S:VW:Y:?]
+file(s)
+
+It does support --wrap though.
+
+Selva
+
+--001a113a2bec98a6ab05468dd6d4
+Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On 18/12/16 17:40, Steffan Karger wrote:
-> Our internal options digest uses MD5 hashes to store the state, instead of
-> storing the full options string.  There's nothing wrong with that, but it
-> would still be better to use SHA256 because:
->  * That makes it easier to make OpenVPN "FIPS-compliant" (forbids MD5)
->  * We don't have to explain anymore that MD5 is fine too
->=20
-> The slightly less bytes for the digest (16 instead of 32) and operations
-> per connection setup are not worth sticking to MD5.
->=20
-> Signed-off-by: Steffan Karger <steffan@...1856...>
-> ---
->=20
-> This patch is meant for the master branch only.
+<div dir=3D"ltr"><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">=
+Hi,</div><div class=3D"gmail_quote"><br></div><div class=3D"gmail_quote">On=
+ Fri, Jan 20, 2017 at 4:40 PM, Gert Doering <span dir=3D"ltr">&lt;<a href=
+=3D"mailto:gert@...1296..." target=3D"_blank">gert@...1296...</a>&gt;</span=
+> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0=
+.8ex;border-left-width:1px;border-left-color:rgb(204,204,204);border-left-s=
+tyle:solid;padding-left:1ex"><span>On Fri, Jan 20, 2017 at 03:38:46PM -0500=
+, Selva Nair wrote:<br>
+&gt; I am curious to know whether the opensolaris buildbot (there is one is=
+n&#39;t<br>
+&gt; it?) run and pass all tests?<br>
+<br>
+</span>There is one, but it uses gcc and GNU ld, so --wrap never was a prob=
+lem<br>
+there...<br>
+<br>
+gert@...2236...:/home/gert$ ld --version<br>
+GNU ld version 2.15<br>
+Copyright 2002 Free Software Foundation, Inc.</blockquote></div><div class=
+=3D"gmail_extra"><br></div><div class=3D"gmail_extra">I see... Recently I&#=
+39;ve used opensolaris only as in Illumo&#39;s omnios</div></div><div class=
+=3D"gmail_extra">and gcc -v shows</div><div class=3D"gmail_extra"><br></div=
+><div class=3D"gmail_extra">Target: i386-pc-solaris2.11</div><div class=3D"=
+gmail_extra">Configured with: ./configure --host i386-pc-solaris2.11 [...sn=
+ip...] --without-gnu-ld --with-ld=3D/bin/ld --with-as=3D/usr/bin/gas --with=
+-gnu-as =C2=A0etc..</div><div class=3D"gmail_extra"><br></div><div class=3D=
+"gmail_extra">And /bin/ld gives</div><div class=3D"gmail_extra">usage: ld [=
+-3:6:abc:d:e:f:h:il:mo:p:rstu:z:B:CD:F:GI:L:M:N:P:Q:R:S:VW:Y:?] file(s)<br>=
+</div><div class=3D"gmail_extra"><br></div><div class=3D"gmail_extra">It do=
+es support --wrap though.</div><div class=3D"gmail_extra"><br></div><div cl=
+ass=3D"gmail_extra">Selva</div><div class=3D"gmail_extra"><br></div></div>
 
-I started looking at this patch .... and I think it needs some rework,
-as it does a couple of unexpected things ...
-
-[...snip...]
-> diff --git a/src/openvpn/push.c b/src/openvpn/push.c
-> index b6e12e1..a1733b0 100644
-> --- a/src/openvpn/push.c
-> +++ b/src/openvpn/push.c
-> @@ -677,23 +677,17 @@ process_incoming_push_request(struct context *c)
->  #endif /* if P2MP_SERVER */
->=20=20
->  static void
-> -push_update_digest(md_ctx_t *ctx, struct buffer *buf, const struct optio=
-ns *opt)
-> +push_update_digest(md_ctx_t *ctx, struct buffer *buf)
->  {
->      char line[OPTION_PARM_SIZE];
->      while (buf_parse(buf, ',', line, sizeof(line)))
->      {
->          /* peer-id might change on restart and this should not trigger r=
-eopening tun */
-> -        if (strprefix(line, "peer-id "))
-> +        if (strstr(line, "peer-id ") !=3D line)
->          {
-> -            continue;
-> -        }
-> -        /* tun reopen only needed if cipher change can change tun MTU */
-> -        if (strprefix(line, "cipher ") && !opt->ce.tun_mtu_defined)
-> -        {
-> -            continue;
-> +            md_ctx_update(ctx, (const uint8_t *) line, strlen(line));
->          }
->      }
-> -    md_ctx_update(ctx, (const uint8_t *) line, strlen(line)+1);
->  }
-
-This actually tries to revert commit ec4dff3bbdcc9fedf7844 ... which is
-quite surprising.
-
-[...snip...]
-> @@ -736,15 +730,14 @@ process_incoming_push_msg(struct context *c,
->                                     option_types_found,
->                                     c->c2.es))
->              {
-> -                push_update_digest(&c->c2.pulled_options_state, &buf_ori=
-g,
-> -                                   &c->options);
-> +                push_update_digest(&c->c2.pulled_options_state, &buf_ori=
-g);
-
-And this too is also a revert of the same commit as above.
-
-Had it been just a simple rebase, I'd be willing to tackle that
-on-the-fly.  But as it tries to do some really unexpected reverts, there
-might be a few other issues I'm not able to spot instantly.
-
-
---=20
-kind regards,
-
-David Sommerseth
-OpenVPN Technologies, Inc
-
-
-
---QJAbfdjrGseX66oo85ptgKPxISR3GrkQI--
-
---HTncJc9gO5hMvaRoXgHrPWXUd1Kk1Nc8B
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBAgAGBQJYgojGAAoJEIbPlEyWcf3yJ6IQAKU8GGNGzlOuDrS86Q7Hiwhj
-1Qm24iGxCKO0//yctx8BcNDrBchoKqbK+xFaq6Epk0h0xdk7SwbXZ6f+8d8lEKgD
-tAGpCI2iC/jomh0eEEs5iHO+BjRzlelCNFE9lI0b9e1s4J8N5XsNfBt21az2tuB8
-P7blDKLG6ulEf2lLyQaRwRODyZR2pqu6aaQ4rmMRl6X7SSxM0tslazwwNNtz+aho
-HLlpo/nxcvP7XqgEA8RBLB5xQ4iLv8cckL097UsR2ahB3NsPextBNXiaObO8KNjL
-VyHa40pnw8cHjtXllWeQkjvpRfuKXuyArLw6QfV0RpNU/lNVE3HULfTrrX9SmIvT
-M3Gv2bAtlxIzMXii1+SbYkyMMvrFegMeExFnjYY2o8maMZdVcHG8eq2vy+PoVdci
-PhsRvuSt4GtUYVQE41NV9f0FdJ4EfWu4Tv1KdU6ekeKQmODGVpkSuKtcdXKdT2zD
-VJ0L0jlLlknE4NqSF2RJhXoWBeiVTUu5UBVcdkyKSofPVEogvZEbiKqx9KP4n60e
-yI/8lSOOhsC+psxHCBEnpw4AVCeTyuF62h293VhXe35f9PSsWFNyyTmPVg0yVcFW
-Hc8eiFJkb6RuECGoF0UiJHqNmWik/vU27lH324NWDspV3JOU9JJOjmmWRI1SMH4C
-0j2MY390YG9L1oMO5SEN
-=BsR8
------END PGP SIGNATURE-----
-
---HTncJc9gO5hMvaRoXgHrPWXUd1Kk1Nc8B--
+--001a113a2bec98a6ab05468dd6d4--
 
