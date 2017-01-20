@@ -1,10 +1,17 @@
-From: David Sommerseth <davids@...515...>
-Date: Fri, 20 Jan 2017 19:16:47 +0100
-Message-Id: <20170120181647.10199-1-davids@...515...>
-In-Reply-To: <1484772172-19758-1-git-send-email-selva.nair@...277...>
-References: <1484772172-19758-1-git-send-email-selva.nair@...277...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Add a check for -Wl,
-	--wrap support in linker
+References: <1484297432-14435-1-git-send-email-chipitsine@...277...>
+	<7dc75a19-451e-effa-503a-ac5b75a23bab@...515...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <ac93d2de-d56a-0ff9-b97a-a590923f5cf8@...2080...>
+Date: Fri, 20 Jan 2017 20:24:59 +0100
+MIME-Version: 1.0
+In-Reply-To: <7dc75a19-451e-effa-503a-ac5b75a23bab@...515...>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="Jv4DXfBDv0KiGbjhJ2RaSTm0bvlLTNRK5"
+Subject: Re: [Openvpn-devel] [PATCH] add PR template in order to simplify
+ new developers cooperate properly if they open PR. discussed here:
+ https://sourceforge.net/p/openvpn/mailman/message/35601310/
+Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,54 +20,94 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: selva.nair@...277...
-Cc: openvpn-devel@lists.sourceforge.net
+To: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>, Ilya Shipitsin <chipitsine@...277...>, openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--Jv4DXfBDv0KiGbjhJ2RaSTm0bvlLTNRK5
+Content-Type: multipart/mixed; boundary="D6LUIwQJfFfbdPrQuKWqMMD9fqAUsW8lG";
+	protected-headers="v1"
+From: David Sommerseth <openvpn@...2080...>
+Reply-To: openvpn-devel@lists.sourceforge.net
+To: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>,
+	Ilya Shipitsin <chipitsine@...277...>, openvpn-devel@lists.sourceforge.net
+Message-ID: <ac93d2de-d56a-0ff9-b97a-a590923f5cf8@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH] add PR template in order to simplify new
+	developers cooperate properly if they open PR. discussed here:
+	https://sourceforge.net/p/openvpn/mailman/message/35601310/
+References: <1484297432-14435-1-git-send-email-chipitsine@...277...>
+	<7dc75a19-451e-effa-503a-ac5b75a23bab@...515...>
+In-Reply-To: <7dc75a19-451e-effa-503a-ac5b75a23bab@...515...>
 
-ACK to this approach, with one commit-time modification (removed the AC_DEFINE
-line, as already discussed in the patch mail thread)
+--D6LUIwQJfFfbdPrQuKWqMMD9fqAUsW8lG
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
 
-Your patch has been applied to the following branches
+On 13/01/17 10:05, Samuli Sepp=E4nen wrote:
+> Il 13/01/2017 10:50, Ilya Shipitsin ha scritto:
+>> ---
+>>  .github/PULL_REQUEST_TEMPLATE.md | 8 ++++++++
+>>  1 file changed, 8 insertions(+)
+>>  create mode 100644 .github/PULL_REQUEST_TEMPLATE.md
+>>
+>> diff --git a/.github/PULL_REQUEST_TEMPLATE.md b/.github/PULL_REQUEST_TEM=
+PLATE.md
+>> new file mode 100644
+>> index 0000000..d0cfd7f
+>> --- /dev/null
+>> +++ b/.github/PULL_REQUEST_TEMPLATE.md
+>> @@ -0,0 +1,8 @@
+>> +# Thank you for your contribution
+>> +
+>> +You are welcome to open PR, but they are used for discussion only. All
+>> +patches must eventually go to the openvpn-devel mailing list for review.
+>> +For details, see these Wiki articles:
+>> +
+>> +* https://community.openvpn.net/openvpn/wiki/Contributing
+>> +* https://community.openvpn.net/openvpn/wiki/DeveloperDocumentation
+>>
+>=20
+> Based on testing in the travis-openssl-test repository the template=20
+> works as intended, so ACK on that part.
+>=20
+> Any comments on the text itself?
 
-commit f91ab283a407e25c4b32aecb390911b212ce2694  (master)
-commit 2f5f1d8fffcba26d21d47cbcb1e99e0e1c313568  (release/2.4)
-Author: Selva Nair
-Date:   Wed Jan 18 15:42:52 2017 -0500
-
-     Add a check for -Wl, --wrap support in linker
-
-     Signed-off-by: Selva Nair <selva.nair@...277...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Acked-by: David Sommerseth <davids@...515...>
-     Message-Id: <1484772172-19758-1-git-send-email-selva.nair@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13897.html
-     Signed-off-by: David Sommerseth <davids@...515...>
+How does this work with branches?  Do we need to say that new patches
+should go into the master branch primarily, unless it is fixing a bug or
+another issue which is only relevant for specific release branches?
 
 
-- --
+--=20
 kind regards,
 
 David Sommerseth
+OpenVPN Technologies, Inc
+
+
+
+--D6LUIwQJfFfbdPrQuKWqMMD9fqAUsW8lG--
+
+--Jv4DXfBDv0KiGbjhJ2RaSTm0bvlLTNRK5
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBAgAGBQJYglP5AAoJEIbPlEyWcf3yDzMP/1LRWOqsbo2T0Wn7R4tgrEgB
-GsYNSgBMdIEzjcKCIgZPhVmqhNMTa9gNJYWpJ649KZM/sf5FrP/N4M0hNNoklpLc
-6ScxPGnB0/iRGPlKFp+jPvK+WHpDKAidV0TQszHORB2O2BzY6W+hZ7UJIQ7Igb6P
-VN6vkzFq49jZiiiBbT9RQErp9o7Pv2h/+7gYoZlw0uhqgfGVzAbtJSQAk817C3y0
-px/HUcTH14ANrIKfQNTryUQConMcmw6nJpGJFAP/yL2S8xfGgcmf7uNORprOBTle
-Anj5OvJuKRgenCQ03mYyiOLkq38aLBZnLmUBRnHayivwNoXnexBNOh7Xl8Pj1R9l
-RB/Vcx6cPa1FNLk4PpqFC5v9ZkBIDj9FWjsrbs7wlsbw7ud/KoSUgklqGNf18tZ7
-bJZ4v0eLXmy1IxOVrmWNaFRn/NJJf4sCVoePmMovi0Exoydy3TRL5ZMTOgB3DeoM
-BmPow+StIUJYeG8ARfq9BHVhhDr4DP08aOLuECdNGKZexSK1jWZp6wqX7YmKQhdF
-OZRhHmxtzy6OzIu9n5XW9I9F1HZZIWWSDsLmhdWSIYCxaDis7AiUrKL04hTgrpoR
-6aS06HRUxPGyP35NjwLcvyvpqOsuwlgCHFQ8FEfac0aGYCyCq3hK73III8dTfufw
-BW10WDHQUkUzubdzWqSz
-=0Y0J
+iQIcBAEBAgAGBQJYgmQMAAoJEIbPlEyWcf3ygkwP/jY2YBDBCrZPFUWleIc4SAMo
+FJwifYS2hpLZCKmrk439W2zrkoTJ594i/WtzGYcXEgxKTzmYMXhITeNK/yi6Jpui
+5tFfhcZXPXpRicZlEuAw0JnJ27FD99clsTwZ4WOVYXRkNga/ytT6O2/5JJeTM77h
+HwJuMfEhtoBxiTjcShB7wrb93E0hz5774FcZzOyp3lMG+r+FWbkmgLA7MuZ2gTb3
+t6RcLSzHHJmokONg58pKeVWK/IuxawYzaHEi4j7sVAUaPoSWphGfPraT/Ol3oZXg
+2eA3tp7/xdaRJ7Vx/dWZQI/q5zFQyNxK0xOdDJSXUPo4eFDySrLr+YceOe4i/6yn
+j4JSbkMk+eBsukuD0IUlCvcP+v+XPM1RAd2SIcUY+4MBPWsphEVGhdDrxwh7OwqO
+KD/x7Ead2uA7p9Ri2kMFzE7SrBe7PFW24Itk+3IiHZsrtD6RASLdxJyubcX2rOxD
+qoyapF8KbPai34fjcF7X88BufVDgTKNwmLO0uGVfPgG2TYfVh9uqAG1Cj1xc2+JR
+bB4R7uJNgpSA38eAbSWbmaU6xEoCM2H41voDJ/femXcukAKtRbdwx8NPX3FFZKzK
+wKb9dN1RRSWWs/1JAKIWI3EbCdEOBy5nc4xk0hwxUScMIK20ZEbH6q1L7PqdHkSd
+TAacUiAryg1kQjBQckx+
+=qLD7
 -----END PGP SIGNATURE-----
+
+--Jv4DXfBDv0KiGbjhJ2RaSTm0bvlLTNRK5--
 
