@@ -1,15 +1,15 @@
 MIME-Version: 1.0
-In-Reply-To: <20170120214018.GT78624@...1296...>
-References: <1484772172-19758-1-git-send-email-selva.nair@...277...>
-	<20170120181647.10199-1-davids@...515...>
-	<CAKuzo_iuwKbWwTsRP4PV+-5NRFOkjyY6LtCKEbzT7ETEjysZ+g@...278...>
-	<20170120214018.GT78624@...1296...>
+In-Reply-To: <CAKuzo_jh4cxwwv+ENDU1C1ED83hjnCHTEJuv9BHO0w5TYLTTeg@...278...>
+References: <3decc2ec-f8a3-cb6c-a33f-e7f6368dd1b3@...515...>
+	<f1b1c4ec-989b-67ef-2c97-006bee3bea0b@...277...>
+	<efc2a91b-9b69-484a-c1d9-576d0ab30931@...515...>
+	<CAKuzo_jh4cxwwv+ENDU1C1ED83hjnCHTEJuv9BHO0w5TYLTTeg@...278...>
 From: Selva Nair <selva.nair@...277...>
-Date: Fri, 20 Jan 2017 17:04:27 -0500
-Message-ID: <CAKuzo_j+zHO43BE=ez++Mx0Bmz+kH=7a1Pz3RiV22ZNwCUFXuw@...278...>
-Content-Type: multipart/alternative; boundary=001a113a2bec98a6ab05468dd6d4
-Subject: Re: [Openvpn-devel] [PATCH applied] Add a check for -Wl,
- --wrap support in linker
+Date: Fri, 20 Jan 2017 22:11:13 -0500
+Message-ID: <CAKuzo_hVK4zoTokCM4=vWW_4D4xSmfDJ7em=XL_qVoynjR=q2A@...278...>
+Content-Type: multipart/alternative; boundary=94eb2c05a07ab0188d0546921fb6
+Subject: Re: [Openvpn-devel] ASLR/DEP -enabled 2.4.0 Windows installer
+	available
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,78 +18,84 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---001a113a2bec98a6ab05468dd6d4
-Content-Type: text/plain; charset=UTF-8
+--94eb2c05a07ab0188d0546921fb6
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
 Hi,
+On Fri, Jan 20, 2017 at 11:42 AM, Selva Nair <selva.nair@...277...> wrote:
 
-On Fri, Jan 20, 2017 at 4:40 PM, Gert Doering <gert@...1296...> wrote:
-
-> On Fri, Jan 20, 2017 at 03:38:46PM -0500, Selva Nair wrote:
-> > I am curious to know whether the opensolaris buildbot (there is one isn't
-> > it?) run and pass all tests?
+> On Fri, Jan 20, 2017 at 9:43 AM, Samuli Sepp=C3=A4nen <samuli@...515...>
+>> wrote:
+>> Thanks for testing! I think we just have to merge the ASLR/DEP change in
+>> openvpn-build and see what happens.
+>>
 >
-> There is one, but it uses gcc and GNU ld, so --wrap never was a problem
-> there...
+> For ASLR we may have to add some option to get reloc information into the
+> exe? As per discussion under GUI PR 123 (https://github.com/OpenVPN/
+> openvpn-gui/pull/123) mingw does not do this by default. There
+> --export-all-symbols is used, which I think is a terrible hack.
 >
-> gert@...2236...:/home/gert$ ld --version
-> GNU ld version 2.15
-> Copyright 2002 Free Software Foundation, Inc.
+> Checking aslr is enabled or not using process explorer may help -- openssl
+> dll has to be checked too.
+>
 
+Checked this on win7. Process explorer shows ASLR flag is set on the
+executable. But ASLR is not really active. The GUI is loaded at the same
+address each time (as per vmmap from sysinternals). I see no address
+randomization.
 
-I see... Recently I've used opensolaris only as in Illumo's omnios
-and gcc -v shows
+Recompiling by exporting at least one function fixes this so the linker is
+indeed not adding reloc section to the exe otherwise.
 
-Target: i386-pc-solaris2.11
-Configured with: ./configure --host i386-pc-solaris2.11 [...snip...]
---without-gnu-ld --with-ld=/bin/ld --with-as=/usr/bin/gas --with-gnu-as
- etc..
+The build option does make ASLR work for openssl dll so the only thing
+missing there was the flag in the header. Not so for the executables.
 
-And /bin/ld gives
-usage: ld [-3:6:abc:d:e:f:h:il:mo:p:rstu:z:B:CD:F:GI:L:M:N:P:Q:R:S:VW:Y:?]
-file(s)
-
-It does support --wrap though.
+We need to find some fix for this, else I fear this will be ASLR in name
+only.
 
 Selva
 
---001a113a2bec98a6ab05468dd6d4
+--94eb2c05a07ab0188d0546921fb6
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr"><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">=
-Hi,</div><div class=3D"gmail_quote"><br></div><div class=3D"gmail_quote">On=
- Fri, Jan 20, 2017 at 4:40 PM, Gert Doering <span dir=3D"ltr">&lt;<a href=
-=3D"mailto:gert@...1296..." target=3D"_blank">gert@...1296...</a>&gt;</span=
+<div dir=3D"ltr"><div><div><div><div class=3D"gmail_quote">Hi,<br>On Fri, J=
+an 20, 2017 at 11:42 AM, Selva Nair <span dir=3D"ltr">&lt;<a href=3D"mailto=
+:selva.nair@...277..." target=3D"_blank">selva.nair@...277...</a>&gt;</span=
 > wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0=
-.8ex;border-left-width:1px;border-left-color:rgb(204,204,204);border-left-s=
-tyle:solid;padding-left:1ex"><span>On Fri, Jan 20, 2017 at 03:38:46PM -0500=
-, Selva Nair wrote:<br>
-&gt; I am curious to know whether the opensolaris buildbot (there is one is=
-n&#39;t<br>
-&gt; it?) run and pass all tests?<br>
-<br>
-</span>There is one, but it uses gcc and GNU ld, so --wrap never was a prob=
-lem<br>
-there...<br>
-<br>
-gert@...2236...:/home/gert$ ld --version<br>
-GNU ld version 2.15<br>
-Copyright 2002 Free Software Foundation, Inc.</blockquote></div><div class=
-=3D"gmail_extra"><br></div><div class=3D"gmail_extra">I see... Recently I&#=
-39;ve used opensolaris only as in Illumo&#39;s omnios</div></div><div class=
-=3D"gmail_extra">and gcc -v shows</div><div class=3D"gmail_extra"><br></div=
-><div class=3D"gmail_extra">Target: i386-pc-solaris2.11</div><div class=3D"=
-gmail_extra">Configured with: ./configure --host i386-pc-solaris2.11 [...sn=
-ip...] --without-gnu-ld --with-ld=3D/bin/ld --with-as=3D/usr/bin/gas --with=
--gnu-as =C2=A0etc..</div><div class=3D"gmail_extra"><br></div><div class=3D=
-"gmail_extra">And /bin/ld gives</div><div class=3D"gmail_extra">usage: ld [=
--3:6:abc:d:e:f:h:il:mo:p:rstu:z:B:CD:F:GI:L:M:N:P:Q:R:S:VW:Y:?] file(s)<br>=
-</div><div class=3D"gmail_extra"><br></div><div class=3D"gmail_extra">It do=
-es support --wrap though.</div><div class=3D"gmail_extra"><br></div><div cl=
-ass=3D"gmail_extra">Selva</div><div class=3D"gmail_extra"><br></div></div>
+.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex"><div class=3D=
+"gmail_extra"><span class=3D"gmail-"><div class=3D"gmail_quote"><blockquote=
+ class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px so=
+lid rgb(204,204,204);padding-left:1ex"><div id=3D"gmail-m_31338153612211540=
+9gmail-:26u" class=3D"gmail-m_313381536122115409gmail-a3s gmail-m_313381536=
+122115409gmail-aXjCH gmail-m_313381536122115409gmail-m159bc569f05e9b12"><sp=
+an class=3D"gmail-im">On Fri, Jan 20, 2017 at 9:43 AM, Samuli Sepp=C3=A4nen=
+ <span dir=3D"ltr">&lt;<a href=3D"mailto:samuli@...515..." target=3D"_blank=
+">samuli@...515...</a>&gt;</span> wrote:</span><br>
+Thanks for testing! I think we just have to merge the ASLR/DEP change in<br>
+openvpn-build and see what happens.</div></blockquote></div><div class=3D"g=
+mail_extra"><br></div></span>For ASLR we may have to add some option to get=
+ reloc information into the exe? As per discussion under GUI PR 123 (<a hre=
+f=3D"https://github.com/OpenVPN/openvpn-gui/pull/123" target=3D"_blank">htt=
+ps://github.com/OpenVPN/<wbr>openvpn-gui/pull/123</a>) mingw does not do th=
+is by default. There --export-all-symbols is used, which I think is a terri=
+ble hack.=C2=A0</div><div class=3D"gmail_extra"><br></div><div class=3D"gma=
+il_extra">Checking aslr is enabled or not using process explorer may help -=
+- openssl dll has to be checked too.</div></blockquote></div><div class=3D"=
+gmail_extra"><br></div>Checked this on win7. Process explorer shows ASLR fl=
+ag is set on the executable. But ASLR is not really active. The GUI is load=
+ed at the same address each time (as per vmmap from sysinternals). I see no=
+ address randomization. <br><br>Recompiling by exporting at least one funct=
+ion fixes this so the linker is indeed not adding reloc section to the exe =
+otherwise. <br><br></div><div>The build option does make ASLR work for open=
+ssl dll so the only thing missing there was the flag in the header. Not so =
+for the executables.<br>=C2=A0<br></div>We need to find some fix for this, =
+else I fear this will be ASLR in name only.<br><br></div>Selva<br></div></d=
+iv>
 
---001a113a2bec98a6ab05468dd6d4--
+--94eb2c05a07ab0188d0546921fb6--
 
