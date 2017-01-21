@@ -1,15 +1,15 @@
 MIME-Version: 1.0
-In-Reply-To: <CAKuzo_jh4cxwwv+ENDU1C1ED83hjnCHTEJuv9BHO0w5TYLTTeg@...278...>
-References: <3decc2ec-f8a3-cb6c-a33f-e7f6368dd1b3@...515...>
-	<f1b1c4ec-989b-67ef-2c97-006bee3bea0b@...277...>
-	<efc2a91b-9b69-484a-c1d9-576d0ab30931@...515...>
-	<CAKuzo_jh4cxwwv+ENDU1C1ED83hjnCHTEJuv9BHO0w5TYLTTeg@...278...>
-From: Selva Nair <selva.nair@...277...>
-Date: Fri, 20 Jan 2017 22:11:13 -0500
-Message-ID: <CAKuzo_hVK4zoTokCM4=vWW_4D4xSmfDJ7em=XL_qVoynjR=q2A@...278...>
-Content-Type: multipart/alternative; boundary=94eb2c05a07ab0188d0546921fb6
-Subject: Re: [Openvpn-devel] ASLR/DEP -enabled 2.4.0 Windows installer
-	available
+In-Reply-To: <ac93d2de-d56a-0ff9-b97a-a590923f5cf8@...2080...>
+References: <1484297432-14435-1-git-send-email-chipitsine@...277...>
+	<7dc75a19-451e-effa-503a-ac5b75a23bab@...515...>
+	<ac93d2de-d56a-0ff9-b97a-a590923f5cf8@...2080...>
+From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
+Date: Sat, 21 Jan 2017 13:47:38 +0500
+Message-ID: <CAFHpkQEHRCveRiiBWscwLQ7U3UoJ+yY5_0Lx82UMc=f4ucwMbQ@...278...>
+Content-Type: multipart/alternative; boundary=001a1148e7c299303e054696d18d
+Subject: Re: [Openvpn-devel] [PATCH] add PR template in order to simplify
+ new developers cooperate properly if they open PR. discussed here:
+ https://sourceforge.net/p/openvpn/mailman/message/35601310/
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,84 +18,139 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---94eb2c05a07ab0188d0546921fb6
+--001a1148e7c299303e054696d18d
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Hi,
-On Fri, Jan 20, 2017 at 11:42 AM, Selva Nair <selva.nair@...277...> wrote:
+2017-01-21 0:24 GMT+05:00 David Sommerseth <
+openvpn@...2080...>:
 
-> On Fri, Jan 20, 2017 at 9:43 AM, Samuli Sepp=C3=A4nen <samuli@...515...>
->> wrote:
->> Thanks for testing! I think we just have to merge the ASLR/DEP change in
->> openvpn-build and see what happens.
->>
+> On 13/01/17 10:05, Samuli Sepp=C3=A4nen wrote:
+> > Il 13/01/2017 10:50, Ilya Shipitsin ha scritto:
+> >> ---
+> >>  .github/PULL_REQUEST_TEMPLATE.md | 8 ++++++++
+> >>  1 file changed, 8 insertions(+)
+> >>  create mode 100644 .github/PULL_REQUEST_TEMPLATE.md
+> >>
+> >> diff --git a/.github/PULL_REQUEST_TEMPLATE.md b/.github/PULL_REQUEST_
+> TEMPLATE.md
+> >> new file mode 100644
+> >> index 0000000..d0cfd7f
+> >> --- /dev/null
+> >> +++ b/.github/PULL_REQUEST_TEMPLATE.md
+> >> @@ -0,0 +1,8 @@
+> >> +# Thank you for your contribution
+> >> +
+> >> +You are welcome to open PR, but they are used for discussion only. All
+> >> +patches must eventually go to the openvpn-devel mailing list for
+> review.
+> >> +For details, see these Wiki articles:
+> >> +
+> >> +* https://community.openvpn.net/openvpn/wiki/Contributing
+> >> +* https://community.openvpn.net/openvpn/wiki/DeveloperDocumentation
+> >>
+> >
+> > Based on testing in the travis-openssl-test repository the template
+> > works as intended, so ACK on that part.
+> >
+> > Any comments on the text itself?
 >
-> For ASLR we may have to add some option to get reloc information into the
-> exe? As per discussion under GUI PR 123 (https://github.com/OpenVPN/
-> openvpn-gui/pull/123) mingw does not do this by default. There
-> --export-all-symbols is used, which I think is a terrible hack.
->
-> Checking aslr is enabled or not using process explorer may help -- openssl
-> dll has to be checked too.
+> How does this work with branches?  Do we need to say that new patches
+> should go into the master branch primarily, unless it is fixing a bug or
+> another issue which is only relevant for specific release branches?
 >
 
-Checked this on win7. Process explorer shows ASLR flag is set on the
-executable. But ASLR is not really active. The GUI is loaded at the same
-address each time (as per vmmap from sysinternals). I see no address
-randomization.
 
-Recompiling by exporting at least one function fixes this so the linker is
-indeed not adding reloc section to the exe otherwise.
+we can put such information to
 
-The build option does make ASLR work for openssl dll so the only thing
-missing there was the flag in the header. Not so for the executables.
+https://community.openvpn.net/openvpn/wiki/Contributing
+https://community.openvpn.net/openvpn/wiki/DeveloperDocumentation
 
-We need to find some fix for this, else I fear this will be ASLR in name
-only.
 
-Selva
+I would leave PR template skinny
 
---94eb2c05a07ab0188d0546921fb6
+
+>
+>
+> --
+> kind regards,
+>
+> David Sommerseth
+> OpenVPN Technologies, Inc
+>
+>
+>
+
+--001a1148e7c299303e054696d18d
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr"><div><div><div><div class=3D"gmail_quote">Hi,<br>On Fri, J=
-an 20, 2017 at 11:42 AM, Selva Nair <span dir=3D"ltr">&lt;<a href=3D"mailto=
-:selva.nair@...277..." target=3D"_blank">selva.nair@...277...</a>&gt;</span=
-> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0=
-.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex"><div class=3D=
-"gmail_extra"><span class=3D"gmail-"><div class=3D"gmail_quote"><blockquote=
- class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px so=
-lid rgb(204,204,204);padding-left:1ex"><div id=3D"gmail-m_31338153612211540=
-9gmail-:26u" class=3D"gmail-m_313381536122115409gmail-a3s gmail-m_313381536=
-122115409gmail-aXjCH gmail-m_313381536122115409gmail-m159bc569f05e9b12"><sp=
-an class=3D"gmail-im">On Fri, Jan 20, 2017 at 9:43 AM, Samuli Sepp=C3=A4nen=
- <span dir=3D"ltr">&lt;<a href=3D"mailto:samuli@...515..." target=3D"_blank=
-">samuli@...515...</a>&gt;</span> wrote:</span><br>
-Thanks for testing! I think we just have to merge the ASLR/DEP change in<br>
-openvpn-build and see what happens.</div></blockquote></div><div class=3D"g=
-mail_extra"><br></div></span>For ASLR we may have to add some option to get=
- reloc information into the exe? As per discussion under GUI PR 123 (<a hre=
-f=3D"https://github.com/OpenVPN/openvpn-gui/pull/123" target=3D"_blank">htt=
-ps://github.com/OpenVPN/<wbr>openvpn-gui/pull/123</a>) mingw does not do th=
-is by default. There --export-all-symbols is used, which I think is a terri=
-ble hack.=C2=A0</div><div class=3D"gmail_extra"><br></div><div class=3D"gma=
-il_extra">Checking aslr is enabled or not using process explorer may help -=
-- openssl dll has to be checked too.</div></blockquote></div><div class=3D"=
-gmail_extra"><br></div>Checked this on win7. Process explorer shows ASLR fl=
-ag is set on the executable. But ASLR is not really active. The GUI is load=
-ed at the same address each time (as per vmmap from sysinternals). I see no=
- address randomization. <br><br>Recompiling by exporting at least one funct=
-ion fixes this so the linker is indeed not adding reloc section to the exe =
-otherwise. <br><br></div><div>The build option does make ASLR work for open=
-ssl dll so the only thing missing there was the flag in the header. Not so =
-for the executables.<br>=C2=A0<br></div>We need to find some fix for this, =
-else I fear this will be ASLR in name only.<br><br></div>Selva<br></div></d=
-iv>
+<div dir=3D"ltr"><br><div class=3D"gmail_extra"><br><div class=3D"gmail_quo=
+te">2017-01-21 0:24 GMT+05:00 David Sommerseth <span dir=3D"ltr">&lt;<a tar=
+get=3D"_blank" href=3D"mailto:openvpn@...2080...">openvpn@...2080...</a>&gt=
+;</span>:<br><blockquote style=3D"margin:0px 0px 0px 0.8ex;border-left:1px =
+solid rgb(204,204,204);padding-left:1ex" class=3D"gmail_quote"><span class=
+=3D"gmail-">On 13/01/17 10:05, Samuli Sepp=C3=A4nen wrote:<br>
+&gt; Il 13/01/2017 10:50, Ilya Shipitsin ha scritto:<br>
+&gt;&gt; ---<br>
+&gt;&gt;=C2=A0 .github/PULL_REQUEST_TEMPLATE.<wbr>md | 8 ++++++++<br>
+&gt;&gt;=C2=A0 1 file changed, 8 insertions(+)<br>
+&gt;&gt;=C2=A0 create mode 100644 .github/PULL_REQUEST_TEMPLATE.<wbr>md<br>
+&gt;&gt;<br>
+&gt;&gt; diff --git a/.github/PULL_REQUEST_<wbr>TEMPLATE.md b/.github/PULL_=
+REQUEST_<wbr>TEMPLATE.md<br>
+&gt;&gt; new file mode 100644<br>
+&gt;&gt; index 0000000..d0cfd7f<br>
+&gt;&gt; --- /dev/null<br>
+&gt;&gt; +++ b/.github/PULL_REQUEST_<wbr>TEMPLATE.md<br>
+&gt;&gt; @@ -0,0 +1,8 @@<br>
+&gt;&gt; +# Thank you for your contribution<br>
+&gt;&gt; +<br>
+&gt;&gt; +You are welcome to open PR, but they are used for discussion only=
+. All<br>
+&gt;&gt; +patches must eventually go to the openvpn-devel mailing list for =
+review.<br>
+&gt;&gt; +For details, see these Wiki articles:<br>
+&gt;&gt; +<br>
+&gt;&gt; +* <a target=3D"_blank" rel=3D"noreferrer" href=3D"https://communi=
+ty.openvpn.net/openvpn/wiki/Contributing">https://community.openvpn.net/<wb=
+r>openvpn/wiki/Contributing</a><br>
+&gt;&gt; +* <a target=3D"_blank" rel=3D"noreferrer" href=3D"https://communi=
+ty.openvpn.net/openvpn/wiki/DeveloperDocumentation">https://community.openv=
+pn.net/<wbr>openvpn/wiki/<wbr>DeveloperDocumentation</a><br>
+&gt;&gt;<br>
+&gt;<br>
+&gt; Based on testing in the travis-openssl-test repository the template<br>
+&gt; works as intended, so ACK on that part.<br>
+&gt;<br>
+&gt; Any comments on the text itself?<br>
+<br>
+</span>How does this work with branches?=C2=A0 Do we need to say that new p=
+atches<br>
+should go into the master branch primarily, unless it is fixing a bug or<br>
+another issue which is only relevant for specific release branches?<br></bl=
+ockquote><div><br><br></div><div>we can put such information to<br><br><spa=
+n class=3D"gmail-im"><a target=3D"_blank" rel=3D"noreferrer" href=3D"https:=
+//community.openvpn.net/openvpn/wiki/Contributing">https://community.openvp=
+n.net/<wbr>openvpn/wiki/Contributing</a><br><a target=3D"_blank" rel=3D"nor=
+eferrer" href=3D"https://community.openvpn.net/openvpn/wiki/DeveloperDocume=
+ntation">https://community.openvpn.net/<wbr>openvpn/wiki/<wbr>DeveloperDocu=
+mentation</a><br><br><br></span></div><div><span class=3D"gmail-im">I would=
+ leave PR template skinny<br></span></div><div>=C2=A0</div><blockquote styl=
+e=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);paddin=
+g-left:1ex" class=3D"gmail_quote">
+<span class=3D"gmail-HOEnZb"><font color=3D"#888888"><br>
+<br>
+--<br>
+kind regards,<br>
+<br>
+David Sommerseth<br>
+OpenVPN Technologies, Inc<br>
+<br>
+<br>
+</font></span></blockquote></div><br></div></div>
 
---94eb2c05a07ab0188d0546921fb6--
+--001a1148e7c299303e054696d18d--
 
