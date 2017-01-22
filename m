@@ -1,14 +1,15 @@
-Date: Sat, 21 Jan 2017 21:10:46 +0800
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <20170121131046.GP16061@...2182...>
-References: <20170121130150.11687-1-a@...2181...>
+References: <1482079255-15159-1-git-send-email-steffan@...1856...>
+	<aaf4595a-1a8c-67f0-690c-9f6743066b0d@...2080...>
+From: Steffan Karger <steffan@...1856...>
+Message-ID: <6469df40-4b8c-3665-c944-fb873bb2d525@...1856...>
+Date: Sun, 22 Jan 2017 11:51:41 +0100
 MIME-Version: 1.0
+In-Reply-To: <aaf4595a-1a8c-67f0-690c-9f6743066b0d@...2080...>
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="4BlIp4fARb6QCoOq"
-Content-Disposition: inline
-In-Reply-To: <20170121130150.11687-1-a@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH] fix "redirect-gateway autolocal"
- behaviour when no def route exists
+	protocol="application/pgp-signature";
+	boundary="Mh3EaDhVOQiVR8xXf7FkJhUgbIVvCFqg1"
+Subject: Re: [Openvpn-devel] [PATCH] Use SHA256 for the internal digest,
+ instead of MD5
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,40 +20,61 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: openvpn-devel@lists.sourceforge.net
 
---4BlIp4fARb6QCoOq
-Content-Type: text/plain; charset="us-ascii"
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--Mh3EaDhVOQiVR8xXf7FkJhUgbIVvCFqg1
+Content-Type: multipart/mixed; boundary="JeSp0danhLjO1sPiNtmEDoAP1UPfpwod8";
+	protected-headers="v1"
+From: Steffan Karger <steffan@...1856...>
+To: openvpn-devel@lists.sourceforge.net
+Message-ID: <6469df40-4b8c-3665-c944-fb873bb2d525@...1856...>
+Subject: Re: [Openvpn-devel] [PATCH] Use SHA256 for the internal digest,
+	instead of MD5
+References: <1482079255-15159-1-git-send-email-steffan@...1856...>
+	<aaf4595a-1a8c-67f0-690c-9f6743066b0d@...2080...>
+In-Reply-To: <aaf4595a-1a8c-67f0-690c-9f6743066b0d@...2080...>
+
+--JeSp0danhLjO1sPiNtmEDoAP1UPfpwod8
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
 Hi,
 
-note that this patch is based on top of:
+On 20-01-17 23:01, David Sommerseth wrote:
+> This actually tries to revert commit ec4dff3bbdcc9fedf7844 ... which is
+> quite surprising.
+>=20
+> [...snip...]
+>=20
+> And this too is also a revert of the same commit as above.
+>=20
+> Had it been just a simple rebase, I'd be willing to tackle that
+> on-the-fly.  But as it tries to do some really unexpected reverts, there
+> might be a few other issues I'm not able to spot instantly.
 
-"fix redirect-gateway behaviour when an IPv4 default route does not exist"
+Ouch, that's one ugly rebase error.  I'll double-check the patch, and
+resend a properly rebased one.
 
---=20
-Antonio Quartulli
+-Steffan
 
---4BlIp4fARb6QCoOq
+
+--JeSp0danhLjO1sPiNtmEDoAP1UPfpwod8--
+
+--Mh3EaDhVOQiVR8xXf7FkJhUgbIVvCFqg1
 Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
 
-iQIcBAEBCAAGBQJYg13UAAoJEJ6F1zG2JyOsIFUP/ArWKa2zqPd2LB4a/yS2xioF
-ukOsQOyUBzPUsz3pq4K1A17qveTUeMoELyjhpw+hNYmEoW8UjnTS2pffHpHpH+R/
-CNTxjURsprxMcQJgD6Ul1JaJ03TZyDTUq+duT1LdflAqby0OTW+M1IZspZPU8D5S
-rggxCz+0bZbtrwNW3uymusvpwPUKxO4MZx1ftA1PwAEEk/UgBXBqvjJFXrHuN7OD
-WvrPeb5F7zouP0F01WtzwCYYx/ZDRtVYxuw9TQ6Ui/QiCVD2fi78nqUDmB5wiwKQ
-zt+5tmZwEns3m9Q6Zbl5B6dXhljhzO7zZjDv95RiqohqMqrP477JlkGz8f2GSoCy
-w5ofGZEP6dPArkmyvPMFZ+wuAyN8g+pkRS1EndZlf2LFr40YA+HHFPT1G1zV7qki
-EcF7wwU3AXfPZCxzij9/X5GNp13iDB79UpKkZ77U2C1Ye2R5NSCdXi3LVvNtOM9b
-KBs2ImxxudG0PR9kIdJ+ixBGI33bb/ECuxm5AhrkrofRIoBYD5l7yozzIXZR370s
-Z0wBdf+QskjKqClRuK1Z/zGen4mE/PNFQast0jM2l6IU5a7N653I8gHkM9Q6zUNW
-67Rcn+RVE1Oo0Jcsz/eZGtPct04m3Qj9vqXZI8l6666opdqOjoWsp4dGgefi+k+M
-Ccv/lysFrpKzOaOeJAs6
-=zBVJ
+iQEcBAEBCAAGBQJYhI7DAAoJEJgCyj0AftKIm0kIALSE8gD1MpZMWadByMvP5Do8
+LS0x11wd4Ydzdc51nU+YhC9TNtes07WP4UW2K0uTD/V4n8YycxH3cx52zwwvzLt2
+50xN1sPT3c6R9RvBCzLPoE4CoT8KSc7PVKb2XRCMUTef08VqdJpdh6fW+8lPdIj/
+d1fN0/ZhTcBa9h/roj0cA+WwEImAdWxj+If8+Iips9vFN9Lh5N/ZXeowuA1C6SP/
+DKxzsf8+u2f8V26iO14A3WVpsW4aRZJ6UvrGHRhe1zqqJ+leXa9/bwbm1VDX4T6/
+RESaFgXtzdhHtcbbr8HZCHKoFqq2QmO5obZQP+s9OkAzYhOHJVnyQW9sHVh7HtM=
+=C4pF
 -----END PGP SIGNATURE-----
 
---4BlIp4fARb6QCoOq--
+--Mh3EaDhVOQiVR8xXf7FkJhUgbIVvCFqg1--
 
