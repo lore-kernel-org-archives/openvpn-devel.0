@@ -1,10 +1,11 @@
-From: Steffan Karger <steffan@...1856...>
-References: <20170115144330.1835-1-a@...2181...>
-Message-ID: <82ec55bd-f475-b0a8-3e7e-bf6c54176d56@...1856...>
-Date: Sun, 22 Jan 2017 17:31:56 +0100
 MIME-Version: 1.0
-In-Reply-To: <20170115144330.1835-1-a@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH v5] convert *_inline attributes to bool
+In-Reply-To: <20170120210457.3383-1-davids@...515...>
+References: <20170120210457.3383-1-davids@...515...>
+From: Steffan Karger <steffan@...1856...>
+Date: Sun, 22 Jan 2017 19:23:22 +0100
+Message-ID: <CAA1AbxJVht4P6UyWdRRs40T43g59X2Mw3sniJFbpuWF3fL7UNw@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] git: Merge .gitignore files into a
+	single file
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,43 +14,85 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-To: Antonio Quartulli <a@...2181...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+To: David Sommerseth <davids@...515...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
 Hi,
 
-One more real comment and two nitpicks:
-
-On 15-01-17 15:43, Antonio Quartulli wrote:
-> @@ -3233,39 +3258,63 @@ options_postprocess_filechecks(struct options *options)
+On 20 January 2017 at 22:04, David Sommerseth <davids@...515...> wrote:
+> We already track a lot of files over the whole directory structure
+> in the main .gitignore file.  But a few additional ones had been
+> added into some of the subdirectories.
 >
-> [...]
+> This unifies all these files into a master file for the whole project,
+> making it easier to know where to look at and edit if changes needs
+> to be done.
 >
-> +    errs |= check_file_access_inline(options->cert_file_inline, CHKACC_FILE,
-> +                                         options->cert_file, R_OK, "--cert");
+> Signed-off-by: David Sommerseth <davids@...515...>
+> ---
+>  .gitignore                    | 5 +++++
+>  sample/sample-keys/.gitignore | 1 -
+>  tests/unit_tests/.gitignore   | 1 -
+>  vendor/.gitignore             | 2 --
+>  4 files changed, 5 insertions(+), 4 deletions(-)
+>  delete mode 100644 sample/sample-keys/.gitignore
+>  delete mode 100644 tests/unit_tests/.gitignore
+>  delete mode 100644 vendor/.gitignore
+>
+> diff --git a/.gitignore b/.gitignore
+> index fc1e223..72593cf 100644
+> --- a/.gitignore
+> +++ b/.gitignore
+> @@ -51,11 +51,16 @@ config-msvc-local.h
+>  config-msvc-version.h
+>  doc/openvpn.8.html
+>  distro/rpm/openvpn.spec
+> +sample/sample-keys/sample-ca/
+> +vendor/.build
+> +vendor/dist
+>
+>  tests/t_client.sh
+>  tests/t_client-*-20??????-??????/
+>  t_client.rc
+>  t_client_ips.rc
+> +tests/unit_tests/*/*_testdriver
+> +tests/unit_tests/*/*/*_testdriver
+>
 
-This line has 1 indent too many.
+What about tests/unit_tests/**/*_testdriver ?  As of git 1.8.2 that
+should match all subfolders, which is old enough to be present on
+almost all development machines, I think.
 
-> +    errs |= check_file_access_inline(options->extra_certs_file, CHKACC_FILE,
-> +                                     options->extra_certs_file, R_OK,
-> +                                     "--extra-certs");
+>  src/openvpn/openvpn
+>  include/openvpn-plugin.h
+> diff --git a/sample/sample-keys/.gitignore b/sample/sample-keys/.gitignore
+> deleted file mode 100644
+> index f148752..0000000
+> --- a/sample/sample-keys/.gitignore
+> +++ /dev/null
+> @@ -1 +0,0 @@
+> -sample-ca/
+> diff --git a/tests/unit_tests/.gitignore b/tests/unit_tests/.gitignore
+> deleted file mode 100644
+> index 8655de8..0000000
+> --- a/tests/unit_tests/.gitignore
+> +++ /dev/null
+> @@ -1 +0,0 @@
+> -*_testdriver
+> diff --git a/vendor/.gitignore b/vendor/.gitignore
+> deleted file mode 100644
+> index e11dfec..0000000
+> --- a/vendor/.gitignore
+> +++ /dev/null
+> @@ -1,2 +0,0 @@
+> -.build/
+> -dist/
+> --
+> 2.11.0
 
-I think the second one should be options->extra_certs_file_inline?
-
-> --- a/src/openvpn/ssl.c
-> +++ b/src/openvpn/ssl.c
-> @@ -542,7 +542,7 @@ tls_version_parse(const char *vstr, const char *extra)
->   */
->  static void
->  tls_ctx_reload_crl(struct tls_root_ctx *ssl_ctx, const char *crl_file,
-> -                   const char *crl_file_inline)
-> +                   bool crl_file_inline)
-
-The doxygen string of the crl_file_inline parameter needs to be updated
-too (like you did in the header file for the non-static functions).
-
-Apart from these I am ready to give this an ACK.
+ACK, whether you decide to follow my suggestion or not.
 
 -Steffan
 
