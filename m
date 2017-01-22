@@ -1,15 +1,10 @@
-References: <1482079255-15159-1-git-send-email-steffan@...1856...>
-	<aaf4595a-1a8c-67f0-690c-9f6743066b0d@...2080...>
 From: Steffan Karger <steffan@...1856...>
-Message-ID: <6469df40-4b8c-3665-c944-fb873bb2d525@...1856...>
-Date: Sun, 22 Jan 2017 11:51:41 +0100
-MIME-Version: 1.0
-In-Reply-To: <aaf4595a-1a8c-67f0-690c-9f6743066b0d@...2080...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature";
-	boundary="Mh3EaDhVOQiVR8xXf7FkJhUgbIVvCFqg1"
-Subject: Re: [Openvpn-devel] [PATCH] Use SHA256 for the internal digest,
- instead of MD5
+Date: Sun, 22 Jan 2017 17:04:41 +0100
+Message-Id: <1485101081-9784-1-git-send-email-steffan@...1856...>
+In-Reply-To: <6469df40-4b8c-3665-c944-fb873bb2d525@...1856...>
+References: <6469df40-4b8c-3665-c944-fb873bb2d525@...1856...>
+Subject: [Openvpn-devel] [PATCH v2] Use SHA256 for the internal digest,
+	instead of MD5
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,63 +13,150 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---Mh3EaDhVOQiVR8xXf7FkJhUgbIVvCFqg1
-Content-Type: multipart/mixed; boundary="JeSp0danhLjO1sPiNtmEDoAP1UPfpwod8";
-	protected-headers="v1"
-From: Steffan Karger <steffan@...1856...>
-To: openvpn-devel@lists.sourceforge.net
-Message-ID: <6469df40-4b8c-3665-c944-fb873bb2d525@...1856...>
-Subject: Re: [Openvpn-devel] [PATCH] Use SHA256 for the internal digest,
-	instead of MD5
-References: <1482079255-15159-1-git-send-email-steffan@...1856...>
-	<aaf4595a-1a8c-67f0-690c-9f6743066b0d@...2080...>
-In-Reply-To: <aaf4595a-1a8c-67f0-690c-9f6743066b0d@...2080...>
+Our internal options digest uses MD5 hashes to store the state, instead of
+storing the full options string.  There's nothing wrong with that, but it
+would still be better to use SHA256 because:
+ * That makes it easier to make OpenVPN "FIPS-compliant" (forbids MD5)
+ * We don't have to explain anymore that MD5 is fine too
 
---JeSp0danhLjO1sPiNtmEDoAP1UPfpwod8
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
+The slightly less bytes for the digest (16 instead of 32) and operations
+per connection setup are not worth sticking to MD5.
 
-Hi,
+Note that might SHA256 not be available in de crypto lib, OpenVPN will
+refuse to start and shout "Message hash algorithm 'SHA256' not found".
 
-On 20-01-17 23:01, David Sommerseth wrote:
-> This actually tries to revert commit ec4dff3bbdcc9fedf7844 ... which is
-> quite surprising.
->=20
-> [...snip...]
->=20
-> And this too is also a revert of the same commit as above.
->=20
-> Had it been just a simple rebase, I'd be willing to tackle that
-> on-the-fly.  But as it tries to do some really unexpected reverts, there
-> might be a few other issues I'm not able to spot instantly.
+Signed-off-by: Steffan Karger <steffan@...1856...>
+---
+v2: fix rebase error that erroneously reverted commit ec4dff3b
 
-Ouch, that's one ugly rebase error.  I'll double-check the patch, and
-resend a properly rebased one.
+ src/openvpn/crypto.h         |  6 +++---
+ src/openvpn/crypto_mbedtls.h |  1 +
+ src/openvpn/crypto_openssl.h |  1 +
+ src/openvpn/init.c           | 10 +++++-----
+ src/openvpn/openvpn.h        |  6 +++---
+ src/openvpn/push.c           |  8 ++++----
+ 6 files changed, 17 insertions(+), 15 deletions(-)
 
--Steffan
+diff --git a/src/openvpn/crypto.h b/src/openvpn/crypto.h
+index 42a46d9..afd6fe5 100644
+--- a/src/openvpn/crypto.h
++++ b/src/openvpn/crypto.h
+@@ -131,9 +131,9 @@
+ #include "packet_id.h"
+ #include "mtu.h"
+ 
+-/** Wrapper struct to pass around MD5 digests */
+-struct md5_digest {
+-    uint8_t digest[MD5_DIGEST_LENGTH];
++/** Wrapper struct to pass around SHA256 digests */
++struct sha256_digest {
++    uint8_t digest[SHA256_DIGEST_LENGTH];
+ };
+ 
+ /*
+diff --git a/src/openvpn/crypto_mbedtls.h b/src/openvpn/crypto_mbedtls.h
+index 525b256..da2db16 100644
+--- a/src/openvpn/crypto_mbedtls.h
++++ b/src/openvpn/crypto_mbedtls.h
+@@ -73,6 +73,7 @@ typedef mbedtls_md_context_t hmac_ctx_t;
+ #define MD4_DIGEST_LENGTH       16
+ #define MD5_DIGEST_LENGTH       16
+ #define SHA_DIGEST_LENGTH       20
++#define SHA256_DIGEST_LENGTH    32
+ #define DES_KEY_LENGTH 8
+ 
+ /**
+diff --git a/src/openvpn/crypto_openssl.h b/src/openvpn/crypto_openssl.h
+index 56ec6e1..f8ddbc8 100644
+--- a/src/openvpn/crypto_openssl.h
++++ b/src/openvpn/crypto_openssl.h
+@@ -33,6 +33,7 @@
+ #include <openssl/evp.h>
+ #include <openssl/hmac.h>
+ #include <openssl/md5.h>
++#include <openssl/sha.h>
+ 
+ /** Generic cipher key type %context. */
+ typedef EVP_CIPHER cipher_kt_t;
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index f2e75c8..756bf36 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -1919,12 +1919,12 @@ tun_abort()
+  * equal, or either one is all-zeroes.
+  */
+ static bool
+-options_hash_changed_or_zero(const struct md5_digest *a,
+-                             const struct md5_digest *b)
++options_hash_changed_or_zero(const struct sha256_digest *a,
++                             const struct sha256_digest *b)
+ {
+-    const struct md5_digest zero = {{0}};
+-    return memcmp(a, b, sizeof(struct md5_digest))
+-           || !memcmp(a, &zero, sizeof(struct md5_digest));
++    const struct sha256_digest zero = {{0}};
++    return memcmp(a, b, sizeof(struct sha256_digest))
++           || !memcmp(a, &zero, sizeof(struct sha256_digest));
+ }
+ #endif /* P2MP */
+ 
+diff --git a/src/openvpn/openvpn.h b/src/openvpn/openvpn.h
+index 37edec4..893296e 100644
+--- a/src/openvpn/openvpn.h
++++ b/src/openvpn/openvpn.h
+@@ -202,7 +202,7 @@ struct context_1
+ #endif
+ 
+     /* if client mode, hash of option strings we pulled from server */
+-    struct md5_digest pulled_options_digest_save;
++    struct sha256_digest pulled_options_digest_save;
+     /**< Hash of option strings received from the
+      *   remote OpenVPN server.  Only used in
+      *   client-mode. */
+@@ -471,9 +471,9 @@ struct context_2
+     bool did_pre_pull_restore;
+ 
+     /* hash of pulled options, so we can compare when options change */
+-    bool pulled_options_md5_init_done;
++    bool pulled_options_digest_init_done;
+     md_ctx_t pulled_options_state;
+-    struct md5_digest pulled_options_digest;
++    struct sha256_digest pulled_options_digest;
+ 
+     struct event_timeout scheduled_exit;
+     int scheduled_exit_signal;
+diff --git a/src/openvpn/push.c b/src/openvpn/push.c
+index c9c04a6..8c3104e 100644
+--- a/src/openvpn/push.c
++++ b/src/openvpn/push.c
+@@ -720,10 +720,10 @@ process_incoming_push_msg(struct context *c,
+         if (ch == ',')
+         {
+             struct buffer buf_orig = buf;
+-            if (!c->c2.pulled_options_md5_init_done)
++            if (!c->c2.pulled_options_digest_init_done)
+             {
+-                md_ctx_init(&c->c2.pulled_options_state, md_kt_get("MD5"));
+-                c->c2.pulled_options_md5_init_done = true;
++                md_ctx_init(&c->c2.pulled_options_state, md_kt_get("SHA256"));
++                c->c2.pulled_options_digest_init_done = true;
+             }
+             if (!c->c2.did_pre_pull_restore)
+             {
+@@ -744,7 +744,7 @@ process_incoming_push_msg(struct context *c,
+                     case 1:
+                         md_ctx_final(&c->c2.pulled_options_state, c->c2.pulled_options_digest.digest);
+                         md_ctx_cleanup(&c->c2.pulled_options_state);
+-                        c->c2.pulled_options_md5_init_done = false;
++                        c->c2.pulled_options_digest_init_done = false;
+                         ret = PUSH_MSG_REPLY;
+                         break;
+ 
+-- 
+2.7.4
 
-
---JeSp0danhLjO1sPiNtmEDoAP1UPfpwod8--
-
---Mh3EaDhVOQiVR8xXf7FkJhUgbIVvCFqg1
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQEcBAEBCAAGBQJYhI7DAAoJEJgCyj0AftKIm0kIALSE8gD1MpZMWadByMvP5Do8
-LS0x11wd4Ydzdc51nU+YhC9TNtes07WP4UW2K0uTD/V4n8YycxH3cx52zwwvzLt2
-50xN1sPT3c6R9RvBCzLPoE4CoT8KSc7PVKb2XRCMUTef08VqdJpdh6fW+8lPdIj/
-d1fN0/ZhTcBa9h/roj0cA+WwEImAdWxj+If8+Iips9vFN9Lh5N/ZXeowuA1C6SP/
-DKxzsf8+u2f8V26iO14A3WVpsW4aRZJ6UvrGHRhe1zqqJ+leXa9/bwbm1VDX4T6/
-RESaFgXtzdhHtcbbr8HZCHKoFqq2QmO5obZQP+s9OkAzYhOHJVnyQW9sHVh7HtM=
-=C4pF
------END PGP SIGNATURE-----
-
---Mh3EaDhVOQiVR8xXf7FkJhUgbIVvCFqg1--
 
