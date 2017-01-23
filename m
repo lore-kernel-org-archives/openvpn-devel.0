@@ -1,10 +1,10 @@
 From: David Sommerseth <davids@...515...>
-Date: Mon, 23 Jan 2017 01:23:43 +0100
-Message-Id: <20170123002343.21928-1-davids@...515...>
-In-Reply-To: <20170120210457.3383-1-davids@...515...>
-References: <20170120210457.3383-1-davids@...515...>
-Subject: Re: [Openvpn-devel] [PATCH applied] git: Merge .gitignore files
-	into a single file
+Date: Mon, 23 Jan 2017 01:24:22 +0100
+Message-Id: <20170123002422.22090-1-davids@...515...>
+In-Reply-To: <1485101081-9784-1-git-send-email-steffan@...1856...>
+References: <1485101081-9784-1-git-send-email-steffan@...1856...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Use SHA256 for the internal
+	digest, instead of MD5
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,26 +15,27 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: davids@...515...
+To: steffan@...1856...
 Cc: openvpn-devel@lists.sourceforge.net
 
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
+ACK.
+
 Your patch has been applied to the following branches
 
-commit d14b3c60c7796736e07bc3cddb0ab3a58475793e  (master)
-commit 61da0031b2a0036680d9e0f822619ecc116f1178  (release/2.3)
-commit 2a7c994ca5b1583bc0f78c46be5b3a827f970b9a  (release/2.4)
-Author: David Sommerseth
-Date:   Fri Jan 20 22:04:57 2017 +0100
+commit 5b48e8c9f85442936f744c3c550d9d41fe8c7b60  (master)
+commit 5cf585ce605d2328d7a2bb5cf44e82b8b196b551  (release/2.4)
+Author: Steffan Karger
+Date:   Sun Jan 22 17:04:41 2017 +0100
 
-     git: Merge .gitignore files into a single file
+     Use SHA256 for the internal digest, instead of MD5
 
-     Signed-off-by: David Sommerseth <davids@...515...>
-     Acked-by: Steffan Karger <steffan@...1856...>
-     Message-Id: <20170120210457.3383-1-davids@...515...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13916.html
+     Signed-off-by: Steffan Karger <steffan@...1856...>
+     Acked-by: David Sommerseth <davids@...515...>
+     Message-Id: <1485101081-9784-1-git-send-email-steffan@...1856...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13926.html
      Signed-off-by: David Sommerseth <davids@...515...>
 
 
@@ -46,18 +47,18 @@ David Sommerseth
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBAgAGBQJYhU0KAAoJEIbPlEyWcf3yQHUP+wWvc4RKptkUIKf1mMUMqkPI
-zW0aFe9JuplvY8i4fuYK0Qw6iul66K36oQiBwAq/lLDy6sCFCmeq9VSSX8gnxP0/
-DJzt3vmOMmXNYkw18DCSCdKM/ZLTGYFgoQ4nVtvw+0e2euwG2CKPKSCvOX8L8KM2
-tkQPqKMYCb+e0Lng7vxnh0vcoaKJCyYYFFKXdJBwLL0fYl8jvEC+9uXd1rpNmoJ3
-0/074gsiuNA0n3cFmVVXspnKbkRHEN3jUFKrFngRsJlTa6CPX0+VYEwb9CWNoW6/
-Kp9U9bQGvoOVexm80epEPP2/2DiTLjCVNjL7eVPUwnOr9qdwpnshsqlw5V3IRCAj
-v0gbbyNPN7pBguPedvre+3hkFWvW/6GAkRJAB201ySxD3MO6cXqtV4inCI3fiDaF
-7Hns5oYqRjnr4svPG+zPwTlJw1WWnobuHHYY/LRf+GqwO4+8Ie5osDlxsiHJYGRk
-vBVzDF2AEVQ8yR/E03l3/uqHeL/b2JBxCPJmZplBl9voKSkAky3CZZHi3w0FIF5m
-0POi7kUgyfmvyLA8gGBky9U+S8lLIN8O+xhQcvmYd+KMhZ1oG7kQStK/nUFDXbvi
-lutR8XWRkJWSV+OkelDmbnahHnwmbDI95RgXEUjUeJlqqJ51RptrDjAvIl4WSqqZ
-Bd8ikrsLT8mN8NWQXcmB
-=GYg7
+iQIcBAEBAgAGBQJYhU0wAAoJEIbPlEyWcf3yOuwQAKb6DRBLxLf4ad4QJ2L4LBNt
+u0gCREHT9HwliHvK485JQWCIZ29LpgNFVteQvWHEKzWl8NqjcHV7Af4xCT/MCGwz
+8aMQrCTyhNu5lacZeH5n67PQqTfENXsZ/YrqVk7ve2Ku0Scn9irOQkeocGLEOvGS
+/X2gICZhpHBPJdjzc2WSkd2XtjpvhYXpNDl0zeUdqOyhjA2Vfki6Zh7tXFeu0zav
+GAjiR2uQjZGxQHudg9hC/9lReaZ1rkw90VVPldih+Fo5ip5Mja9r0epi/B9p0xoL
+OU6jCJ1SNtTjM78+b/+Zf3hhHRSW78GUAR315nv9XKEbecGQoBAi+kN7wFNB8EH9
+oHxXgyrfg9eBBFkZRqaOYaM/VuAjBPGbEoh3dNOSAicMJzyIFB8HSBgEdUYTbQEH
+Uu95p9oMcQz+2+04K+Ac3O8sNWOiYaqI5GEwIZRoCDpg0WIpW61yuOg9yH3dTpGD
+l7CeRKvBQMrRhw6wpcdTl36HgL/F2qnWhKba0TKZE48jtZ5aRge7S4STYqq6KQxT
+lDHz2GqMWfPIq3JBLIT80jyBXd8JYPT9he508iRfdHX1alGen0lrIQkLWB7soyqE
+aAc/zIUvQ6l+b3TwJ+BbaKXn0JSU4yq80/o91ChRB45RFsG7J4/sEZkvgX8Ci/+F
+cMFQv2UkL9M/aW+4+M4F
+=sLL8
 -----END PGP SIGNATURE-----
 
