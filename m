@@ -1,10 +1,16 @@
-From: David Sommerseth <davids@...515...>
-Date: Mon, 23 Jan 2017 01:24:22 +0100
-Message-Id: <20170123002422.22090-1-davids@...515...>
-In-Reply-To: <1485101081-9784-1-git-send-email-steffan@...1856...>
-References: <1485101081-9784-1-git-send-email-steffan@...1856...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Use SHA256 for the internal
-	digest, instead of MD5
+References: <20170120210457.3383-1-davids@...515...>
+	<20170123002343.21928-1-davids@...515...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <1b121fbe-4e35-4f6b-56a2-a4c21d69c5ec@...2080...>
+Date: Mon, 23 Jan 2017 01:35:56 +0100
+MIME-Version: 1.0
+In-Reply-To: <20170123002343.21928-1-davids@...515...>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="VOoeVB40FdKugUV1rFXPqMvj9oEo2ljkx"
+Subject: Re: [Openvpn-devel] [PATCH applied] git: Merge .gitignore files
+ into a single file
+Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,52 +19,87 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: steffan@...1856...
+To: David Sommerseth <davids@...515...>
 Cc: openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--VOoeVB40FdKugUV1rFXPqMvj9oEo2ljkx
+Content-Type: multipart/mixed; boundary="eKxPlaUmJ9VV6Mh0mpsJmii5k2Onjegrq";
+	protected-headers="v1"
+From: David Sommerseth <openvpn@...2080...>
+Reply-To: openvpn-devel@lists.sourceforge.net
+To: David Sommerseth <davids@...515...>
+Cc: openvpn-devel@lists.sourceforge.net
+Message-ID: <1b121fbe-4e35-4f6b-56a2-a4c21d69c5ec@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH applied] git: Merge .gitignore files into
+	a single file
+References: <20170120210457.3383-1-davids@...515...>
+	<20170123002343.21928-1-davids@...515...>
+In-Reply-To: <20170123002343.21928-1-davids@...515...>
 
-ACK.
+--eKxPlaUmJ9VV6Mh0mpsJmii5k2Onjegrq
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
 
-Your patch has been applied to the following branches
+On 23/01/17 01:23, David Sommerseth wrote:
+> Your patch has been applied to the following branches
+>=20
+> commit d14b3c60c7796736e07bc3cddb0ab3a58475793e  (master)
+> commit 61da0031b2a0036680d9e0f822619ecc116f1178  (release/2.3)
+> commit 2a7c994ca5b1583bc0f78c46be5b3a827f970b9a  (release/2.4)
+> Author: David Sommerseth
+> Date:   Fri Jan 20 22:04:57 2017 +0100
+>=20
+>      git: Merge .gitignore files into a single file
+>=20
+>      Signed-off-by: David Sommerseth <davids@...515...>
+>      Acked-by: Steffan Karger <steffan@...1856...>
+>      Message-Id: <20170120210457.3383-1-davids@...515...>
+>      URL: https://www.mail-archive.com/openvpn-devel@...475...=
+t/msg13916.html
+>      Signed-off-by: David Sommerseth <davids@...515...>
+>=20
 
-commit 5b48e8c9f85442936f744c3c550d9d41fe8c7b60  (master)
-commit 5cf585ce605d2328d7a2bb5cf44e82b8b196b551  (release/2.4)
-Author: Steffan Karger
-Date:   Sun Jan 22 17:04:41 2017 +0100
+I forgot to mention I used the trick Steffan pointed out, using
+tests/unit_tests/**/*_testdriver.  I was not aware of that approach, so
+thanks for pointing that one out, Steffan!
 
-     Use SHA256 for the internal digest, instead of MD5
-
-     Signed-off-by: Steffan Karger <steffan@...1856...>
-     Acked-by: David Sommerseth <davids@...515...>
-     Message-Id: <1485101081-9784-1-git-send-email-steffan@...1856...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13926.html
-     Signed-off-by: David Sommerseth <davids@...515...>
+I also chose to apply this to release/2.3, as the difference was minimal
+and having the same set of files ignored makes it far more predictable.
 
 
-- --
+--=20
 kind regards,
 
 David Sommerseth
+OpenVPN Technologies, Inc
+
+
+
+--eKxPlaUmJ9VV6Mh0mpsJmii5k2Onjegrq--
+
+--VOoeVB40FdKugUV1rFXPqMvj9oEo2ljkx
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBAgAGBQJYhU0wAAoJEIbPlEyWcf3yOuwQAKb6DRBLxLf4ad4QJ2L4LBNt
-u0gCREHT9HwliHvK485JQWCIZ29LpgNFVteQvWHEKzWl8NqjcHV7Af4xCT/MCGwz
-8aMQrCTyhNu5lacZeH5n67PQqTfENXsZ/YrqVk7ve2Ku0Scn9irOQkeocGLEOvGS
-/X2gICZhpHBPJdjzc2WSkd2XtjpvhYXpNDl0zeUdqOyhjA2Vfki6Zh7tXFeu0zav
-GAjiR2uQjZGxQHudg9hC/9lReaZ1rkw90VVPldih+Fo5ip5Mja9r0epi/B9p0xoL
-OU6jCJ1SNtTjM78+b/+Zf3hhHRSW78GUAR315nv9XKEbecGQoBAi+kN7wFNB8EH9
-oHxXgyrfg9eBBFkZRqaOYaM/VuAjBPGbEoh3dNOSAicMJzyIFB8HSBgEdUYTbQEH
-Uu95p9oMcQz+2+04K+Ac3O8sNWOiYaqI5GEwIZRoCDpg0WIpW61yuOg9yH3dTpGD
-l7CeRKvBQMrRhw6wpcdTl36HgL/F2qnWhKba0TKZE48jtZ5aRge7S4STYqq6KQxT
-lDHz2GqMWfPIq3JBLIT80jyBXd8JYPT9he508iRfdHX1alGen0lrIQkLWB7soyqE
-aAc/zIUvQ6l+b3TwJ+BbaKXn0JSU4yq80/o91ChRB45RFsG7J4/sEZkvgX8Ci/+F
-cMFQv2UkL9M/aW+4+M4F
-=sLL8
+iQIcBAEBAgAGBQJYhU/sAAoJEIbPlEyWcf3y6rsQAJkvgyh+LUz2+geXC4OgNfYX
+L9Abx2aUqvXhvvkaDTQLOI/IlklQqK20YGdLR5IrP3pN22BXlJAvUjXiKavg81pF
+EfK8Z7umSZJllgiUt2SMEJDLsigq0QsHQ9dsoZA8D6ctMGjj8cqTvpvUjwiGtouS
+mhWaK+7ZEXQjoFaKTVOfnecEciXjZwJdCSKUPfdlzrZVpyvyF4RtLyOL/IWuCd8Y
+xZOLF94Jxe/TqDkGtqrFJTCq6OUYdx0J6uEoExKl1LDISXJ4KiQGLmw3/ezBZPYQ
+3A5gd2SWMSAJLCDV88vZ4zhpfRHVGkm/cfBM16U7XESoETIn43+opK3QIt/kYMV9
+HGNzEdc8G7CpwhQ9yJ57j1109g2sWiQF3bISTJ+ovrQFAdlLY9WU6vdSKugddouO
+CqKc/iT5lK5BhdY22sedktXeTO3bOK+LL0SvYtpM9IZT69c6s65wKKi2pvHtaJIJ
+8zmwADFZcF1kMqKDdJuucizPG7whUvlR4zuUbnE6fg6nUvDYefy3l2WGAGJ521ke
+NvL7EZom5g9SjpvDMGtcvS2Z1PpB9xi3hoC/8Ae4az2MJgIC6OURYyCvvIi2jrSy
+xbgaGk2tcQTVekB8e7TRZqBr9B4sXlXvxHR/+JW9SxQV/OejwWbcHOYnQlAxA7yM
+Fl7VXvFoT0y5SqBMKDZ1
+=VZOz
 -----END PGP SIGNATURE-----
+
+--VOoeVB40FdKugUV1rFXPqMvj9oEo2ljkx--
 
