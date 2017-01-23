@@ -1,16 +1,14 @@
-References: <20170120210457.3383-1-davids@...515...>
-	<20170123002343.21928-1-davids@...515...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <1b121fbe-4e35-4f6b-56a2-a4c21d69c5ec@...2080...>
-Date: Mon, 23 Jan 2017 01:35:56 +0100
+Date: Mon, 23 Jan 2017 10:32:25 +0800
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <20170123023225.GU16061@...2182...>
+References: <20170115144330.1835-1-a@...2181...>
+	<82ec55bd-f475-b0a8-3e7e-bf6c54176d56@...1856...>
 MIME-Version: 1.0
-In-Reply-To: <20170123002343.21928-1-davids@...515...>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="VOoeVB40FdKugUV1rFXPqMvj9oEo2ljkx"
-Subject: Re: [Openvpn-devel] [PATCH applied] git: Merge .gitignore files
- into a single file
-Reply-To: openvpn-devel@lists.sourceforge.net
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="zYo4Elh1vtcYNvbq"
+Content-Disposition: inline
+In-Reply-To: <82ec55bd-f475-b0a8-3e7e-bf6c54176d56@...1856...>
+Subject: Re: [Openvpn-devel] [PATCH v5] convert *_inline attributes to bool
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,87 +17,93 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: David Sommerseth <davids@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Steffan Karger <steffan@...1856...>
+Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---VOoeVB40FdKugUV1rFXPqMvj9oEo2ljkx
-Content-Type: multipart/mixed; boundary="eKxPlaUmJ9VV6Mh0mpsJmii5k2Onjegrq";
-	protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-Reply-To: openvpn-devel@lists.sourceforge.net
-To: David Sommerseth <davids@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
-Message-ID: <1b121fbe-4e35-4f6b-56a2-a4c21d69c5ec@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH applied] git: Merge .gitignore files into
-	a single file
-References: <20170120210457.3383-1-davids@...515...>
-	<20170123002343.21928-1-davids@...515...>
-In-Reply-To: <20170123002343.21928-1-davids@...515...>
-
---eKxPlaUmJ9VV6Mh0mpsJmii5k2Onjegrq
-Content-Type: text/plain; charset="windows-1252"
+--zYo4Elh1vtcYNvbq
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-On 23/01/17 01:23, David Sommerseth wrote:
-> Your patch has been applied to the following branches
+On Sun, Jan 22, 2017 at 05:31:56PM +0100, Steffan Karger wrote:
+> Hi,
 >=20
-> commit d14b3c60c7796736e07bc3cddb0ab3a58475793e  (master)
-> commit 61da0031b2a0036680d9e0f822619ecc116f1178  (release/2.3)
-> commit 2a7c994ca5b1583bc0f78c46be5b3a827f970b9a  (release/2.4)
-> Author: David Sommerseth
-> Date:   Fri Jan 20 22:04:57 2017 +0100
+> One more real comment and two nitpicks:
 >=20
->      git: Merge .gitignore files into a single file
+> On 15-01-17 15:43, Antonio Quartulli wrote:
+> > @@ -3233,39 +3258,63 @@ options_postprocess_filechecks(struct options *=
+options)
+> >
+> > [...]
+> >
+> > +    errs |=3D check_file_access_inline(options->cert_file_inline, CHKA=
+CC_FILE,
+> > +                                         options->cert_file, R_OK, "--=
+cert");
 >=20
->      Signed-off-by: David Sommerseth <davids@...515...>
->      Acked-by: Steffan Karger <steffan@...1856...>
->      Message-Id: <20170120210457.3383-1-davids@...515...>
->      URL: https://www.mail-archive.com/openvpn-devel@...475...=
-t/msg13916.html
->      Signed-off-by: David Sommerseth <davids@...515...>
->=20
+> This line has 1 indent too many.
 
-I forgot to mention I used the trick Steffan pointed out, using
-tests/unit_tests/**/*_testdriver.  I was not aware of that approach, so
-thanks for pointing that one out, Steffan!
+ops, thanks.
 
-I also chose to apply this to release/2.3, as the difference was minimal
-and having the same set of files ignored makes it far more predictable.
+>=20
+> > +    errs |=3D check_file_access_inline(options->extra_certs_file, CHKA=
+CC_FILE,
+> > +                                     options->extra_certs_file, R_OK,
+> > +                                     "--extra-certs");
+>=20
+> I think the second one should be options->extra_certs_file_inline?
+
+good catch, thanks! Unfortunately in my setup I don't use extra-certs, so I
+couldn't run this piece of code :(
+Having automated unit tests for these features would be really nice :/
+
+>=20
+> > --- a/src/openvpn/ssl.c
+> > +++ b/src/openvpn/ssl.c
+> > @@ -542,7 +542,7 @@ tls_version_parse(const char *vstr, const char *ext=
+ra)
+> >   */
+> >  static void
+> >  tls_ctx_reload_crl(struct tls_root_ctx *ssl_ctx, const char *crl_file,
+> > -                   const char *crl_file_inline)
+> > +                   bool crl_file_inline)
+>=20
+> The doxygen string of the crl_file_inline parameter needs to be updated
+> too (like you did in the header file for the non-static functions).
+
+my bad. will fix.
+
+>=20
+> Apart from these I am ready to give this an ACK.
+
+Thanks! I'll send a new version soon!
+
+Cheers,
 
 
 --=20
-kind regards,
+Antonio Quartulli
 
-David Sommerseth
-OpenVPN Technologies, Inc
-
-
-
---eKxPlaUmJ9VV6Mh0mpsJmii5k2Onjegrq--
-
---VOoeVB40FdKugUV1rFXPqMvj9oEo2ljkx
+--zYo4Elh1vtcYNvbq
 Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+Content-Description: Digital signature
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBAgAGBQJYhU/sAAoJEIbPlEyWcf3y6rsQAJkvgyh+LUz2+geXC4OgNfYX
-L9Abx2aUqvXhvvkaDTQLOI/IlklQqK20YGdLR5IrP3pN22BXlJAvUjXiKavg81pF
-EfK8Z7umSZJllgiUt2SMEJDLsigq0QsHQ9dsoZA8D6ctMGjj8cqTvpvUjwiGtouS
-mhWaK+7ZEXQjoFaKTVOfnecEciXjZwJdCSKUPfdlzrZVpyvyF4RtLyOL/IWuCd8Y
-xZOLF94Jxe/TqDkGtqrFJTCq6OUYdx0J6uEoExKl1LDISXJ4KiQGLmw3/ezBZPYQ
-3A5gd2SWMSAJLCDV88vZ4zhpfRHVGkm/cfBM16U7XESoETIn43+opK3QIt/kYMV9
-HGNzEdc8G7CpwhQ9yJ57j1109g2sWiQF3bISTJ+ovrQFAdlLY9WU6vdSKugddouO
-CqKc/iT5lK5BhdY22sedktXeTO3bOK+LL0SvYtpM9IZT69c6s65wKKi2pvHtaJIJ
-8zmwADFZcF1kMqKDdJuucizPG7whUvlR4zuUbnE6fg6nUvDYefy3l2WGAGJ521ke
-NvL7EZom5g9SjpvDMGtcvS2Z1PpB9xi3hoC/8Ae4az2MJgIC6OURYyCvvIi2jrSy
-xbgaGk2tcQTVekB8e7TRZqBr9B4sXlXvxHR/+JW9SxQV/OejwWbcHOYnQlAxA7yM
-Fl7VXvFoT0y5SqBMKDZ1
-=VZOz
+iQIcBAEBCAAGBQJYhWs2AAoJEJ6F1zG2JyOsO1UP+gNQ2ktYCQ3RIOy879B2BTxm
+XECX1NnDWUTfLHLCCFDpY6ouYuMtEWtltzRPZXR+LMvxL+QVlGSjuuKDBIRX6QCA
+cdYCN9FbtypC2zVMXHoRhShcGVI1qgqaApc9DMLzCwVyWTEXyTm5FwcVnActO35e
+GUzaI2JzfG4xDUe/afmFmnLba9a9M3SUDSfnm1MWYunNM7saYWoI4LhYrka1X5An
+zT05VRdl95kFPa7HamGwHX1nbPLQWn9WZRoAph7zSzb/VrVYH5/6nHxC9xcfA5Eo
+73td7PIbuOdgpaK8BBQdD1f5aJl+kdD3QEda+x6H4TkQl6/mjj4bXI4xwZFZNGIY
+VhOOgges2ZVY2Rpn0gLsmdePOyyVCjr8QBqWwUx5aGejEytTy+UffQBXHwQBruj9
+UTWFQDaBUmFxAiB1y+AmhpQh3Zdz3RenD7sLL/tcQfi3RNm3CwCwUIfxuEhQEF3g
+72YgfujXdA46tmgvjLBdRemVmz2Rt89R4b+UWcCWxIu5w0V9CwvxrTl0P6dC6J1+
+u6hzvYkc6p/SaK8n4b7dW3/I50dBMS55JB9pBWVc2ZgvoANnfIC3Nd9HhVXAH/Rj
+Qn7zFCwi/nwenhRvdAt89L8CPcz49q+RwJvo5Z/nRT/m+YdTVIJLsHUJA8vBMy8k
+sr+CvuGWLN244tpIYMHd
+=uD92
 -----END PGP SIGNATURE-----
 
---VOoeVB40FdKugUV1rFXPqMvj9oEo2ljkx--
+--zYo4Elh1vtcYNvbq--
 
