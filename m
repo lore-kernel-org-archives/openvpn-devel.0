@@ -1,15 +1,14 @@
-Date: Wed, 25 Jan 2017 19:57:58 +0100
-From: Christian Hesse <list@...1798...>
-Message-ID: <20170125195758.47ba7586@...1799...>
-In-Reply-To: <5285c33f-98e5-4e06-0ed8-95728a74f755@...2080...>
-References: <20161227222406.931-1-list@...1798...>
-	<20170125160428.19928-1-list@...1798...>
-	<5285c33f-98e5-4e06-0ed8-95728a74f755@...2080...>
+References: <1484035447-11838-1-git-send-email-chipitsine@...277...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <c95121f3-3f11-1369-a74f-dd09cb49e255@...2080...>
+Date: Wed, 25 Jan 2017 20:21:46 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	boundary="Sig_/._bT1hN139Px3O3E0ajoGVQ";
-	protocol="application/pgp-signature"
-Subject: Re: [Openvpn-devel] [PATCH v3 1/1] Clean up plugin path handling
+In-Reply-To: <1484035447-11838-1-git-send-email-chipitsine@...277...>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="c3v1saIPRtQnABXobph5bO6avPBrqjEdJ"
+Subject: Re: [Openvpn-devel] [PATCH] Resolving several travis-ci issues:
+Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,75 +17,96 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: David Sommerseth <openvpn@...2080...>
-Cc: Christian Hesse <mail@...1798...>, openvpn-devel@lists.sourceforge.net
+To: Ilya Shipitsin <chipitsine@...277...>, openvpn-devel@lists.sourceforge.net
 
---Sig_/._bT1hN139Px3O3E0ajoGVQ
-Content-Type: text/plain; charset="US-ASCII"
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--c3v1saIPRtQnABXobph5bO6avPBrqjEdJ
+Content-Type: multipart/mixed; boundary="a80LoqPdAxWNpUXSms0q8VtHK6PKDivgg";
+	protected-headers="v1"
+From: David Sommerseth <openvpn@...2080...>
+Reply-To: openvpn-devel@lists.sourceforge.net
+To: Ilya Shipitsin <chipitsine@...277...>, openvpn-devel@lists.sourceforge.net
+Message-ID: <c95121f3-3f11-1369-a74f-dd09cb49e255@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH] Resolving several travis-ci issues:
+References: <1484035447-11838-1-git-send-email-chipitsine@...277...>
+In-Reply-To: <1484035447-11838-1-git-send-email-chipitsine@...277...>
+
+--a80LoqPdAxWNpUXSms0q8VtHK6PKDivgg
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
 
-David Sommerseth <openvpn@...2080...> on Wed, 2017/01/25 18:06:
-> On 25/01/17 17:04, Christian Hesse wrote:
-> > From: Christian Hesse <mail@...1798...>
-> >=20
-> > Drop --with-plugindir, instead use an environment variable PLUGINDIR
-> > to specify the plugin directory.
-> >=20
-> > This generates a header file src/openvpn/plugindir.h which contains a
-> > define file the plugindir.
-> >=20
-> > v2: The configure script can not evaluate the final $libdir path. So
-> >     use make to create a header file on the containing the final path.
-> >=20
-> > v3: Fix whitespace errors and gitignore location.
-> >=20
-> > Signed-off-by: Christian Hesse <mail@...1798...>
-> > ---
-> >  .gitignore                 |  1 +
-> >  configure.ac               | 14 ++++++--------
-> >  src/openvpn/Makefile.am    | 11 +++++++++--
-> >  src/openvpn/plugin.c       |  1 +
-> >  src/openvpn/plugindir.h.in | 34 ++++++++++++++++++++++++++++++++++
-> >  5 files changed, 51 insertions(+), 10 deletions(-)
-> >  create mode 100644 src/openvpn/plugindir.h.in=20=20
->=20
->=20
-> Okay, some more feedback to this thread :)
->=20
-> As I've said, I think this makes sense.  It provides a predictable
-> plug-in directory which is easily accessible within the C code ... and
-> it will always be set.  So, Feature-ACK.
->=20
-> But I am wondering about the rationale of adding another header file
-> (plugindir.h).  Why not just add this information to
-> openvpn-plugin.h.in, which results into openvpn-plugin.h ... and which
-> plugin.c already includes via plugin.h ...  I actually think this path
-> can be quite useful for third-party plug-ins, being built outside of the
-> openvpn source tree.
+On 10/01/17 09:04, Ilya Shipitsin wrote:
+> * moving LD_LIBRARY_PATH as far as possible (otherwise "wget" picks it, w=
+hich is not desirable)
+> * split LD_LIBRARY_PATH into LD_LIBRARY_PATH/DYLD_LIBRARY_PATH depending =
+on operating system
+> * removed MBEDTLS_VERSION, OPENSSL_VERSION (the last depended on nonexist=
+ent OPENSSL_VERION variable)
+> * removed "apt: true" from caching, it never worked actually
 
-I did not want to be too intrusive. ;) Happy to hear that... About to
-prepare a new patch, stay tuned!
+Sorry about this lingering ... To the changes itself, I don't have any
+real possibility to evaluate these changes.  From the subject and commit
+message, I do not understand *why* this is needed.  You just describe
+what I can see in the patch itself.
+
+Having an improved commit message actually describing *why* these
+changes are needed - that helps motivating us to apply it.  We don't
+like to apply things "just because it fixes things".  What is this "it"
+and why is /this/ the right way to do it?
+
+Basically a patch with commit message consists of three parts: Problem
+description, Why and How.  The patch diff is the How.  These two others
+belong to the commit message and often also worthy a comment line or two
+in modified files as well - especially if it isn't clear why.
+
+I would strongly recommend you to read this blog post [1] on writing
+commit messages.  It is a really good written post on this topic.
+
+[1] <http://chris.beams.io/posts/git-commit/>
+
+> this patch should be applied after https://www.mail-archive.com/openvpn-d=
+evel@lists.sourceforge.net/msg13843.html
+
+That approach got rejected and we went for this [2] approach instead,
+will that change anything in regards to the changes in this patch?
+
+[2]
+<https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13911.=
+html>
+
+
 --=20
-main(a){char*c=3D/*    Schoene Gruesse                         */"B?IJj;MEH"
-"CX:;",b;for(a/*    Best regards             my address:    */=3D0;b=3Dc[a+=
-+];)
-putchar(b-1/(/*    Chris            cc -ox -xc - && ./x    */b/42*2-3)*42);}
+kind regards,
 
---Sig_/._bT1hN139Px3O3E0ajoGVQ
-Content-Type: application/pgp-signature
+David Sommerseth
+OpenVPN Technologies, Inc
+
+
+
+--a80LoqPdAxWNpUXSms0q8VtHK6PKDivgg--
+
+--c3v1saIPRtQnABXobph5bO6avPBrqjEdJ
+Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQEzBAEBCAAdFiEEXHmveYAHrRp+prOviUUh18yA9HYFAliI9TYACgkQiUUh18yA
-9HYfVwf/ZF6NQosgryr8cSW/LM07JgUM3+PZwL6dXYCqE51/ZWWqT4ePsJuYNJ1i
-FkRcDuuH+JPPVLON/6lM3tPH7waShG/CUKIAP+j1rT5lVkavzaOfGxXUHMf5cABa
-44DJpT5Hr1HVBoI9SBTkoxGsylzfqE7YNuxVmwNd4R6OmwSzCHDnOXFrKFL0zHTw
-q0AVo/2Sd8qug9B7szs2mbNpS29li5ALBaFZ0YID2BAb6Ulm1123urZSPl7qglIK
-HPiVyA+I69ExATWE35mbIMUU4F1MPO9R4DKgGjmb2A7NybLvM0BigoFhsp6Go6Ie
-IGcdQy/sRTFeJx4c9W9TR1C596Nrvw==
-=8jrT
+iQIcBAEBAgAGBQJYiPrKAAoJEIbPlEyWcf3y094QAK54ONx6E6lxS7Uwy/oasFCF
+oD4Fp663vLjq/hWnPHIUTyZFt+30vyLABNWdcO7jzaiwTjy8mg+lrEjNUBwfzK7s
+YgQ7HgGlt6tuo8scmNlOkNSjeEN/6Y63ChBbff+4TQZy26dizYnpycy3q78c4hjK
+iVQXJpaz17pQoQyexxtufbzudV1q6zCls43WaC9edO28zLlOHlZ6r5KcQ+Mggf+u
+yAr9BRo4faXiFXHJYJdx5YB1xkRbp7+Itrh1+lN07CReubusVSrm0K4FdagAY9mj
+sm/dSipZKIet/ICBihZd5vYkUe80P9jUG1FojaIU0ZuD3rWnlO6UP+6Rm8VXVmFJ
+PFmPDAlbZAbgkviP1oBTc+DowQSKnNDkprYUo43u5FCsZ6IdRMqgNjX9l4wQD2QY
+IjsxxLziZJlwLshO2vG+Zaos0nUZ7qVaJcpCLEFgyL90XVGr5IJBeF93wu0G6nY2
+wqJWhurw1vIrYcfBlWkSItRTwk1ozqX/EaqgpdxkYre/RZxkFGhCnYhOAGL0HQ/C
+HKPvXFItdVjsOD7UY1thqniSay3neGb4NxJGdBcotIhdBJ7AE2f5Sy5Hrezl5j6e
+3aAH4HC+cFqiUl3IwmjD5LcvgNt774g2HAhe5/vp2cNgIxuIKsLZeDA8CdZuQ0B6
+ymAlRdOvpzmjre0ZsfYt
+=sEda
 -----END PGP SIGNATURE-----
 
---Sig_/._bT1hN139Px3O3E0ajoGVQ--
+--c3v1saIPRtQnABXobph5bO6avPBrqjEdJ--
 
