@@ -1,14 +1,9 @@
-References: <1484035447-11838-1-git-send-email-chipitsine@...277...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <c95121f3-3f11-1369-a74f-dd09cb49e255@...2080...>
-Date: Wed, 25 Jan 2017 20:21:46 +0100
-MIME-Version: 1.0
-In-Reply-To: <1484035447-11838-1-git-send-email-chipitsine@...277...>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="c3v1saIPRtQnABXobph5bO6avPBrqjEdJ"
-Subject: Re: [Openvpn-devel] [PATCH] Resolving several travis-ci issues:
-Reply-To: openvpn-devel@lists.sourceforge.net
+From: Christian Hesse <list@...1798...>
+Date: Wed, 25 Jan 2017 20:37:27 +0100
+Message-Id: <20170125193727.32061-1-list@...1798...>
+In-Reply-To: <20170125195758.47ba7586@...1799...>
+References: <20170125195758.47ba7586@...1799...>
+Subject: [Openvpn-devel] [PATCH v4 1/1] Clean up plugin path handling
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,96 +12,153 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Ilya Shipitsin <chipitsine@...277...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Christian Hesse <mail@...1798...>
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---c3v1saIPRtQnABXobph5bO6avPBrqjEdJ
-Content-Type: multipart/mixed; boundary="a80LoqPdAxWNpUXSms0q8VtHK6PKDivgg";
-	protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-Reply-To: openvpn-devel@lists.sourceforge.net
-To: Ilya Shipitsin <chipitsine@...277...>, openvpn-devel@lists.sourceforge.net
-Message-ID: <c95121f3-3f11-1369-a74f-dd09cb49e255@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH] Resolving several travis-ci issues:
-References: <1484035447-11838-1-git-send-email-chipitsine@...277...>
-In-Reply-To: <1484035447-11838-1-git-send-email-chipitsine@...277...>
+From: Christian Hesse <mail@...1798...>
 
---a80LoqPdAxWNpUXSms0q8VtHK6PKDivgg
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
+Drop --with-plugindir, instead use an environment variable PLUGINDIR
+to specify the plugin directory.
 
-On 10/01/17 09:04, Ilya Shipitsin wrote:
-> * moving LD_LIBRARY_PATH as far as possible (otherwise "wget" picks it, w=
-hich is not desirable)
-> * split LD_LIBRARY_PATH into LD_LIBRARY_PATH/DYLD_LIBRARY_PATH depending =
-on operating system
-> * removed MBEDTLS_VERSION, OPENSSL_VERSION (the last depended on nonexist=
-ent OPENSSL_VERION variable)
-> * removed "apt: true" from caching, it never worked actually
+This makes src/openvpn/plugin.h a template (moved the file to
+src/openvpn/plugin.h.in). The real header file is generated on the fly,
+including a define for the plugin path.
+As the path is always available remove the compile time condition (and
+dead code) from src/openvpn/plugin.c.
 
-Sorry about this lingering ... To the changes itself, I don't have any
-real possibility to evaluate these changes.  From the subject and commit
-message, I do not understand *why* this is needed.  You just describe
-what I can see in the patch itself.
+v2: The configure script can not evaluate the final $libdir path. So
+    use make to create a header file on the containing the final path.
 
-Having an improved commit message actually describing *why* these
-changes are needed - that helps motivating us to apply it.  We don't
-like to apply things "just because it fixes things".  What is this "it"
-and why is /this/ the right way to do it?
+v3: Fix whitespace errors and gitignore location.
 
-Basically a patch with commit message consists of three parts: Problem
-description, Why and How.  The patch diff is the How.  These two others
-belong to the commit message and often also worthy a comment line or two
-in modified files as well - especially if it isn't clear why.
+v4: No extra header file, generate src/openvpn/plugin.h on the fly.
+    Remove condition and dead code.
 
-I would strongly recommend you to read this blog post [1] on writing
-commit messages.  It is a really good written post on this topic.
+Signed-off-by: Christian Hesse <mail@...1798...>
+---
+ .gitignore                            |  1 +
+ configure.ac                          | 14 ++++++--------
+ src/openvpn/Makefile.am               |  7 ++++++-
+ src/openvpn/plugin.c                  | 10 +---------
+ src/openvpn/{plugin.h => plugin.h.in} |  2 ++
+ 5 files changed, 16 insertions(+), 18 deletions(-)
+ rename src/openvpn/{plugin.h => plugin.h.in} (99%)
 
-[1] <http://chris.beams.io/posts/git-commit/>
+diff --git a/.gitignore b/.gitignore
+index 30e289b..780be68 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -63,6 +63,7 @@ t_client_ips.rc
+ tests/unit_tests/**/*_testdriver
+ 
+ src/openvpn/openvpn
++src/openvpn/plugin.h
+ include/openvpn-plugin.h
+ config-version.h
+ nbproject
+diff --git a/configure.ac b/configure.ac
+index 79fb1ba..b29f8b4 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -301,13 +301,12 @@ AC_ARG_WITH(
+ 	[with_crypto_library="openssl"]
+ )
+ 
+-AC_ARG_WITH(
+-	[plugindir],
+-	[AS_HELP_STRING([--with-plugindir], [plugin directory @<:@default=LIBDIR/openvpn@:>@])],
+-	,
+-	[with_plugindir="\$(libdir)/openvpn/plugins"]
+-)
+-
++AC_ARG_VAR([PLUGINDIR], [Path of plug-in directory @<:@default=LIBDIR/openvpn/plugins@:>@])
++if test -n "${PLUGINDIR}"; then
++	plugindir="${PLUGINDIR}"
++else
++	plugindir="\${libdir}/openvpn/plugins"
++fi
+ 
+ AC_DEFINE_UNQUOTED([TARGET_ALIAS], ["${host}"], [A string representing our host])
+ case "$host" in
+@@ -1284,7 +1283,6 @@ AM_CONDITIONAL([ENABLE_PLUGIN_DOWN_ROOT], [test "${enable_plugin_down_root}" = "
+ AM_CONDITIONAL([ENABLE_CRYPTO], [test "${enable_crypto}" = "yes"])
+ AM_CONDITIONAL([HAVE_LD_WRAP_SUPPORT], [test "${have_ld_wrap_support}" = "yes"])
+ 
+-plugindir="${with_plugindir}"
+ sampledir="\$(docdir)/sample"
+ AC_SUBST([plugindir])
+ AC_SUBST([sampledir])
+diff --git a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am
+index bea294b..4f8a315 100644
+--- a/src/openvpn/Makefile.am
++++ b/src/openvpn/Makefile.am
+@@ -11,12 +11,17 @@
+ 
+ include $(top_srcdir)/build/ltrc.inc
+ 
++plugin.h: plugin.h.in Makefile
++	$(AM_V_GEN)sed -e 's|\@PLUGINDIR\@|$(plugindir)|' \
++		$< > $@.tmp && mv $@.tmp $@
++
+ MAINTAINERCLEANFILES = \
+ 	$(srcdir)/Makefile.in
+ 
+ EXTRA_DIST = \
+ 	openvpn.vcxproj \
+-	openvpn.vcxproj.filters
++	openvpn.vcxproj.filters \
++	plugin.h.in
+ 
+ AM_CPPFLAGS = \
+ 	-I$(top_srcdir)/include \
+diff --git a/src/openvpn/plugin.c b/src/openvpn/plugin.c
+index e530c0c..f777027 100644
+--- a/src/openvpn/plugin.c
++++ b/src/openvpn/plugin.c
+@@ -234,23 +234,15 @@ plugin_init_item(struct plugin *p, const struct plugin_option *o)
+ #ifndef _WIN32
+ 
+     p->handle = NULL;
+-#if defined(PLUGIN_LIBDIR)
++
+     if (!absolute_pathname(p->so_pathname))
+     {
+         char full[PATH_MAX];
+ 
+         openvpn_snprintf(full, sizeof(full), "%s/%s", PLUGIN_LIBDIR, p->so_pathname);
+         p->handle = dlopen(full, RTLD_NOW);
+-#if defined(ENABLE_PLUGIN_SEARCH)
+-        if (!p->handle)
+-        {
+-            rel = true;
+-            p->handle = dlopen(p->so_pathname, RTLD_NOW);
+-        }
+-#endif
+     }
+     else
+-#endif
+     {
+         rel = !absolute_pathname(p->so_pathname);
+         p->handle = dlopen(p->so_pathname, RTLD_NOW);
+diff --git a/src/openvpn/plugin.h b/src/openvpn/plugin.h.in
+similarity index 99%
+rename from src/openvpn/plugin.h
+rename to src/openvpn/plugin.h.in
+index 4ded529..3d6e312 100644
+--- a/src/openvpn/plugin.h
++++ b/src/openvpn/plugin.h.in
+@@ -43,6 +43,8 @@
+ 
+ #define MAX_PLUGINS 16
+ 
++#define PLUGIN_LIBDIR "@PLUGINDIR@"
++
+ struct plugin_option {
+     const char *so_pathname;
+     const char **argv;
+-- 
+2.11.0
 
-> this patch should be applied after https://www.mail-archive.com/openvpn-d=
-evel@lists.sourceforge.net/msg13843.html
-
-That approach got rejected and we went for this [2] approach instead,
-will that change anything in regards to the changes in this patch?
-
-[2]
-<https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13911.=
-html>
-
-
---=20
-kind regards,
-
-David Sommerseth
-OpenVPN Technologies, Inc
-
-
-
---a80LoqPdAxWNpUXSms0q8VtHK6PKDivgg--
-
---c3v1saIPRtQnABXobph5bO6avPBrqjEdJ
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBAgAGBQJYiPrKAAoJEIbPlEyWcf3y094QAK54ONx6E6lxS7Uwy/oasFCF
-oD4Fp663vLjq/hWnPHIUTyZFt+30vyLABNWdcO7jzaiwTjy8mg+lrEjNUBwfzK7s
-YgQ7HgGlt6tuo8scmNlOkNSjeEN/6Y63ChBbff+4TQZy26dizYnpycy3q78c4hjK
-iVQXJpaz17pQoQyexxtufbzudV1q6zCls43WaC9edO28zLlOHlZ6r5KcQ+Mggf+u
-yAr9BRo4faXiFXHJYJdx5YB1xkRbp7+Itrh1+lN07CReubusVSrm0K4FdagAY9mj
-sm/dSipZKIet/ICBihZd5vYkUe80P9jUG1FojaIU0ZuD3rWnlO6UP+6Rm8VXVmFJ
-PFmPDAlbZAbgkviP1oBTc+DowQSKnNDkprYUo43u5FCsZ6IdRMqgNjX9l4wQD2QY
-IjsxxLziZJlwLshO2vG+Zaos0nUZ7qVaJcpCLEFgyL90XVGr5IJBeF93wu0G6nY2
-wqJWhurw1vIrYcfBlWkSItRTwk1ozqX/EaqgpdxkYre/RZxkFGhCnYhOAGL0HQ/C
-HKPvXFItdVjsOD7UY1thqniSay3neGb4NxJGdBcotIhdBJ7AE2f5Sy5Hrezl5j6e
-3aAH4HC+cFqiUl3IwmjD5LcvgNt774g2HAhe5/vp2cNgIxuIKsLZeDA8CdZuQ0B6
-ymAlRdOvpzmjre0ZsfYt
-=sEda
------END PGP SIGNATURE-----
-
---c3v1saIPRtQnABXobph5bO6avPBrqjEdJ--
 
