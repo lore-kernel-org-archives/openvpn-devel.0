@@ -1,8 +1,14 @@
-From: David Sommerseth <davids@...515...>
-Date: Wed, 25 Jan 2017 00:23:44 +0100
-Message-Id: <20170124232344.7825-1-davids@...515...>
-Subject: [Openvpn-devel] [PATCH] systemd: Move the READY=1 signalling to an
-	earlier point
+Date: Wed, 25 Jan 2017 08:46:19 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20170125074619.GY940@...1296...>
+References: <20170124232344.7825-1-davids@...515...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="1XWsVB21DFCvn2e8"
+Content-Disposition: inline
+In-Reply-To: <20170124232344.7825-1-davids@...515...>
+Subject: Re: [Openvpn-devel] [PATCH] systemd: Move the READY=1 signalling to
+ an earlier point
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,96 +17,54 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: David Sommerseth <davids@...515...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Currently, OpenVPN will first tell systemd it is ready once the
-log will be appended with "Initialization Sequence Completed".
-This turns out to cause some issues several places.
+--1XWsVB21DFCvn2e8
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-First, it adds challenges if --chroot is used in the configuration;
-this we already fixed.  Secondly, it will cause havoc on static key
-p2p mode configurations where the log line above will not happen
-before either sides have completed establishing a connection.  And
-thirdly, if a client configuration fails to establish a connection
-within 90 seconds it will also fail.  For the third case this may
-not need to be a critical issue, as the host just needs to get
-an Internet access established first - which in some scenarios may
-take much longer than those 90 seconds after the OpenVPN client
-configuration tries to start.
+Hi,
 
-The approach this patch takes is to consider OpenVPN ready once
-all the initial preparations and configurations have happened - but
-before a connection to a remote side have been attempted.  This
-also removes the need for specially handling the --chroot scenario.
+On Wed, Jan 25, 2017 at 12:23:44AM +0100, David Sommerseth wrote:
+> The approach this patch takes is to consider OpenVPN ready once
+> all the initial preparations and configurations have happened - but
+> before a connection to a remote side have been attempted.  This
+> also removes the need for specially handling the --chroot scenario.
+[..]
+> Trac: #827, #801
+> Signed-off-by: David Sommerseth <davids@...515...>
 
-The final "Initialization Sequence Completed" message update is
-kept (though slightly simplified) to indicate we're in a good
-state - even though that update will still not be visible
-if --chroot is used (as before this patch).
+I think this is a reasonable approach for the time being, until we have
+worked out a more fine-grained notification mechanism.
 
-Trac: #827, #801
-Signed-off-by: David Sommerseth <davids@...515...>
----
- src/openvpn/init.c | 29 ++++++++++-------------------
- 1 file changed, 10 insertions(+), 19 deletions(-)
+So, ACK.
 
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 756bf36..ff1551e 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -562,6 +562,15 @@ context_init_1(struct context *c)
-     }
- #endif
- 
-+#ifdef ENABLE_SYSTEMD
-+    /* We can report the PID via getpid() to systemd here as OpenVPN will not
-+     * do any fork due to daemon() a future call.
-+     * See possibly_become_daemon() [init.c] for more details.
-+     */
-+    sd_notifyf(0, "READY=1\nSTATUS=Pre-connection initialization succesfull\nMAINPID=%lu",
-+               (unsigned long) getpid());
-+#endif
-+
- }
- 
- void
-@@ -1042,24 +1051,6 @@ do_uid_gid_chroot(struct context *c, bool no_delay)
-         {
-             if (no_delay)
-             {
--#ifdef ENABLE_SYSTEMD
--                /* If OpenVPN is started by systemd, the OpenVPN process needs
--                 * to provide a preliminary status report to systemd.  This is
--                 * needed as $NOTIFY_SOCKET will not be available inside the
--                 * chroot, which sd_notify()/sd_notifyf() depends on.
--                 *
--                 * This approach is the simplest and the most non-intrusive
--                 * solution right before the 2.4_rc2 release.
--                 *
--                 * TODO: Consider altnernative solutions - bind mount?
--                 * systemd does not grok OpenVPN configuration files, thus cannot
--                 * have a sane way to know if OpenVPN will chroot or not and to
--                 * which subdirectory it will chroot into.
--                 */
--                sd_notifyf(0, "READY=1\n"
--                           "STATUS=Entering chroot, most of the init completed successfully\n"
--                           "MAINPID=%lu", (unsigned long) getpid());
--#endif
-                 platform_chroot(c->options.chroot_dir);
-             }
-             else if (c->first_time)
-@@ -1409,7 +1400,7 @@ initialization_sequence_completed(struct context *c, const unsigned int flags)
-     else
-     {
- #ifdef ENABLE_SYSTEMD
--        sd_notifyf(0, "READY=1\nSTATUS=%s\nMAINPID=%lu", message, (unsigned long) getpid());
-+        sd_notifyf(0, "STATUS=%s", message);
- #endif
-         msg(M_INFO, "%s", message);
-     }
--- 
-2.11.0
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
+--1XWsVB21DFCvn2e8
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJYiFfKAAoJEB2Cnv7KVigS368L/2nyt3tgJAwRg7fH/oZgC7kG
+pXG+dOI+jfq2L9yhY7ClTtlGq5MF90cngmnVYS/hBspouu8KurbR0UVYk8bXheRd
+UYt4cYqygUTNEwp23Abhidawecb8rAFCguBui+FXs+pfWkXPgvB85faMmFtuCK6t
+xfFPBTjmDnM1rvVlv2EOZ5aH8PSXaQvKDwXPuJ9jXMUcUCbqPB0HKWXbmM/uyxdO
+/P72fN0NOpYKqPJVvFDhOtzqm2expXZXWeZaJi6JQ7Ryo+odiQrTwUgVGatPy2EJ
+CI6H7rYcPfS10QxkOtzU92Wt8Zq3nzfvFmEl8Rr5vT39hqvsXRdhIHFEi2aFAna8
+0kqL04BLfpak77Qe4A8Q4/eycqYbCx3arPppK3g5duMUlQogQvKjkB/DqFxqHZzR
+VTRUmp8eOc/CMG3uoXqAIxn1/Jlu+omtELqmCm27PSnrvlmUfEPkwvvwoYFYtZA3
+qTHU9JtrMwGyPdB6MljF/IEBTHL/40Eifaj1RpqOrQ==
+=m1PK
+-----END PGP SIGNATURE-----
+
+--1XWsVB21DFCvn2e8--
 
