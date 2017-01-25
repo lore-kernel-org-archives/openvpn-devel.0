@@ -1,9 +1,9 @@
 From: Christian Hesse <list@...1798...>
-Date: Wed, 25 Jan 2017 20:37:27 +0100
-Message-Id: <20170125193727.32061-1-list@...1798...>
-In-Reply-To: <20170125195758.47ba7586@...1799...>
-References: <20170125195758.47ba7586@...1799...>
-Subject: [Openvpn-devel] [PATCH v4 1/1] Clean up plugin path handling
+Date: Wed, 25 Jan 2017 21:19:47 +0100
+Message-Id: <20170125201947.17197-1-list@...1798...>
+In-Reply-To: <20170125193727.32061-1-list@...1798...>
+References: <20170125193727.32061-1-list@...1798...>
+Subject: [Openvpn-devel] [PATCH v5 1/1] Clean up plugin path handling
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,9 +22,11 @@ From: Christian Hesse <mail@...1798...>
 Drop --with-plugindir, instead use an environment variable PLUGINDIR
 to specify the plugin directory.
 
-This makes src/openvpn/plugin.h a template (moved the file to
-src/openvpn/plugin.h.in). The real header file is generated on the fly,
-including a define for the plugin path.
+This puts a define into include/openvpn-plugin.h.in which has the plugin
+directory.
+The configure script does not know about the final plugin path. Thus we
+have to make make generate the final header file for us.
+
 As the path is always available remove the compile time condition (and
 dead code) from src/openvpn/plugin.c.
 
@@ -36,32 +38,30 @@ v3: Fix whitespace errors and gitignore location.
 v4: No extra header file, generate src/openvpn/plugin.h on the fly.
     Remove condition and dead code.
 
+v5: Move the define to include/openvpn-plugin.h.in and let make generate
+    the final header file.
+
 Signed-off-by: Christian Hesse <mail@...1798...>
 ---
- .gitignore                            |  1 +
- configure.ac                          | 14 ++++++--------
- src/openvpn/Makefile.am               |  7 ++++++-
- src/openvpn/plugin.c                  | 10 +---------
- src/openvpn/{plugin.h => plugin.h.in} |  2 ++
- 5 files changed, 16 insertions(+), 18 deletions(-)
- rename src/openvpn/{plugin.h => plugin.h.in} (99%)
+ configure.ac                | 16 +++++++---------
+ include/Makefile.am         |  7 +++++++
+ include/openvpn-plugin.h.in |  2 ++
+ src/openvpn/plugin.c        | 10 +---------
+ 4 files changed, 17 insertions(+), 18 deletions(-)
 
-diff --git a/.gitignore b/.gitignore
-index 30e289b..780be68 100644
---- a/.gitignore
-+++ b/.gitignore
-@@ -63,6 +63,7 @@ t_client_ips.rc
- tests/unit_tests/**/*_testdriver
- 
- src/openvpn/openvpn
-+src/openvpn/plugin.h
- include/openvpn-plugin.h
- config-version.h
- nbproject
 diff --git a/configure.ac b/configure.ac
-index 79fb1ba..b29f8b4 100644
+index 79fb1ba..f305c54 100644
 --- a/configure.ac
 +++ b/configure.ac
+@@ -38,7 +38,7 @@ AC_DEFINE([OPENVPN_VERSION_MINOR], [PRODUCT_VERSION_MINOR], [OpenVPN minor versi
+ AC_DEFINE([OPENVPN_VERSION_PATCH], ["PRODUCT_VERSION_PATCH"], [OpenVPN patch level - may be a string or integer])
+ 
+ AC_CONFIG_AUX_DIR([.])
+-AC_CONFIG_HEADERS([config.h include/openvpn-plugin.h])
++AC_CONFIG_HEADERS([config.h])
+ AC_CONFIG_SRCDIR([src/openvpn/syshead.h])
+ AC_CONFIG_MACRO_DIR([m4])
+ 
 @@ -301,13 +301,12 @@ AC_ARG_WITH(
  	[with_crypto_library="openssl"]
  )
@@ -90,29 +90,34 @@ index 79fb1ba..b29f8b4 100644
  sampledir="\$(docdir)/sample"
  AC_SUBST([plugindir])
  AC_SUBST([sampledir])
-diff --git a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am
-index bea294b..4f8a315 100644
---- a/src/openvpn/Makefile.am
-+++ b/src/openvpn/Makefile.am
-@@ -11,12 +11,17 @@
- 
- include $(top_srcdir)/build/ltrc.inc
- 
-+plugin.h: plugin.h.in Makefile
-+	$(AM_V_GEN)sed -e 's|\@PLUGINDIR\@|$(plugindir)|' \
-+		$< > $@.tmp && mv $@.tmp $@
+diff --git a/include/Makefile.am b/include/Makefile.am
+index a52c427..37962a6 100644
+--- a/include/Makefile.am
++++ b/include/Makefile.am
+@@ -16,3 +16,10 @@ MAINTAINERCLEANFILES = \
+ include_HEADERS = \
+ 	openvpn-plugin.h \
+ 	openvpn-msg.h
 +
- MAINTAINERCLEANFILES = \
- 	$(srcdir)/Makefile.in
++openvpn-plugin.h: openvpn-plugin.h.in Makefile
++	$(AM_V_GEN)sed -e 's|\@PLUGINDIR\@|$(plugindir)|' \
++		-e 's|\@OPENVPN_VERSION_MAJOR\@|$(OPENVPN_VERSION_MAJOR)|' \
++		-e 's|\@OPENVPN_VERSION_MINOR\@|$(OPENVPN_VERSION_MINOR)|' \
++		-e 's|\@OPENVPN_VERSION_PATCH\@|$(OPENVPN_VERSION_PATCH)|' \
++               $< > $@.tmp && mv $@.tmp $@
+diff --git a/include/openvpn-plugin.h.in b/include/openvpn-plugin.h.in
+index 0b30352..a084fc1 100644
+--- a/include/openvpn-plugin.h.in
++++ b/include/openvpn-plugin.h.in
+@@ -27,6 +27,8 @@
  
- EXTRA_DIST = \
- 	openvpn.vcxproj \
--	openvpn.vcxproj.filters
-+	openvpn.vcxproj.filters \
-+	plugin.h.in
+ #define OPENVPN_PLUGIN_VERSION 3
  
- AM_CPPFLAGS = \
- 	-I$(top_srcdir)/include \
++#define PLUGIN_LIBDIR "@PLUGINDIR@"
++
+ #ifdef ENABLE_CRYPTO
+ #ifdef ENABLE_CRYPTO_MBEDTLS
+ #include <mbedtls/x509_crt.h>
 diff --git a/src/openvpn/plugin.c b/src/openvpn/plugin.c
 index e530c0c..f777027 100644
 --- a/src/openvpn/plugin.c
@@ -142,22 +147,6 @@ index e530c0c..f777027 100644
      {
          rel = !absolute_pathname(p->so_pathname);
          p->handle = dlopen(p->so_pathname, RTLD_NOW);
-diff --git a/src/openvpn/plugin.h b/src/openvpn/plugin.h.in
-similarity index 99%
-rename from src/openvpn/plugin.h
-rename to src/openvpn/plugin.h.in
-index 4ded529..3d6e312 100644
---- a/src/openvpn/plugin.h
-+++ b/src/openvpn/plugin.h.in
-@@ -43,6 +43,8 @@
- 
- #define MAX_PLUGINS 16
- 
-+#define PLUGIN_LIBDIR "@PLUGINDIR@"
-+
- struct plugin_option {
-     const char *so_pathname;
-     const char **argv;
 -- 
 2.11.0
 
