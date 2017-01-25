@@ -1,10 +1,15 @@
-From: David Sommerseth <davids@...515...>
-Date: Wed, 25 Jan 2017 19:52:03 +0100
-Message-Id: <20170125185203.10467-1-davids@...515...>
-In-Reply-To: <20161227221832.610-1-list@...1798...>
-References: <20161227221832.610-1-list@...1798...>
-Subject: Re: [Openvpn-devel] [PATCH applied] systemd: Add more security
-	feature for systemd units
+Date: Wed, 25 Jan 2017 19:57:58 +0100
+From: Christian Hesse <list@...1798...>
+Message-ID: <20170125195758.47ba7586@...1799...>
+In-Reply-To: <5285c33f-98e5-4e06-0ed8-95728a74f755@...2080...>
+References: <20161227222406.931-1-list@...1798...>
+	<20170125160428.19928-1-list@...1798...>
+	<5285c33f-98e5-4e06-0ed8-95728a74f755@...2080...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	boundary="Sig_/._bT1hN139Px3O3E0ajoGVQ";
+	protocol="application/pgp-signature"
+Subject: Re: [Openvpn-devel] [PATCH v3 1/1] Clean up plugin path handling
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,55 +18,75 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: mail@...1798...
-Cc: openvpn-devel@lists.sourceforge.net
+To: David Sommerseth <openvpn@...2080...>
+Cc: Christian Hesse <mail@...1798...>, openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
+--Sig_/._bT1hN139Px3O3E0ajoGVQ
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: quoted-printable
 
-ACK.  Tested this lightly with both server and client profiles,
-and this seems to work very well.  Users having keys under
-/home will probably complain.  But I do not think system wide
-configurations should depend on keys in users' home directories.
+David Sommerseth <openvpn@...2080...> on Wed, 2017/01/25 18:06:
+> On 25/01/17 17:04, Christian Hesse wrote:
+> > From: Christian Hesse <mail@...1798...>
+> >=20
+> > Drop --with-plugindir, instead use an environment variable PLUGINDIR
+> > to specify the plugin directory.
+> >=20
+> > This generates a header file src/openvpn/plugindir.h which contains a
+> > define file the plugindir.
+> >=20
+> > v2: The configure script can not evaluate the final $libdir path. So
+> >     use make to create a header file on the containing the final path.
+> >=20
+> > v3: Fix whitespace errors and gitignore location.
+> >=20
+> > Signed-off-by: Christian Hesse <mail@...1798...>
+> > ---
+> >  .gitignore                 |  1 +
+> >  configure.ac               | 14 ++++++--------
+> >  src/openvpn/Makefile.am    | 11 +++++++++--
+> >  src/openvpn/plugin.c       |  1 +
+> >  src/openvpn/plugindir.h.in | 34 ++++++++++++++++++++++++++++++++++
+> >  5 files changed, 51 insertions(+), 10 deletions(-)
+> >  create mode 100644 src/openvpn/plugindir.h.in=20=20
+>=20
+>=20
+> Okay, some more feedback to this thread :)
+>=20
+> As I've said, I think this makes sense.  It provides a predictable
+> plug-in directory which is easily accessible within the C code ... and
+> it will always be set.  So, Feature-ACK.
+>=20
+> But I am wondering about the rationale of adding another header file
+> (plugindir.h).  Why not just add this information to
+> openvpn-plugin.h.in, which results into openvpn-plugin.h ... and which
+> plugin.c already includes via plugin.h ...  I actually think this path
+> can be quite useful for third-party plug-ins, being built outside of the
+> openvpn source tree.
 
-Your patch has been applied to the following branches
+I did not want to be too intrusive. ;) Happy to hear that... About to
+prepare a new patch, stay tuned!
+--=20
+main(a){char*c=3D/*    Schoene Gruesse                         */"B?IJj;MEH"
+"CX:;",b;for(a/*    Best regards             my address:    */=3D0;b=3Dc[a+=
++];)
+putchar(b-1/(/*    Chris            cc -ox -xc - && ./x    */b/42*2-3)*42);}
 
-commit 76096c605fcac4815674b6ae76ac1f31f03a8186  (master)
-commit ba3ccaf92d379f8a2efad80cee7dc2806088f421  (release/2.4)
-Author: Christian Hesse
-Date:   Tue Dec 27 23:18:32 2016 +0100
-
-     systemd: Add more security feature for systemd units
-
-     Signed-off-by: Christian Hesse <mail@...1798...>
-     Acked-by: David Sommerseth <davids@...515...>
-     Message-Id: <20161227221832.610-1-list@...1798...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13743.html
-     Signed-off-by: David Sommerseth <davids@...515...>
-
-
-- --
-kind regards,
-
-David Sommerseth
+--Sig_/._bT1hN139Px3O3E0ajoGVQ
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBAgAGBQJYiPPRAAoJEIbPlEyWcf3ymHAQAIuy8UXELqs4blJCs0IfHtOg
-nALf1ALs+fvhQp7he+Z+wxmDT+QFL3mli53RXKZZGG8y+boWgRFkJ11PX4YzsCO9
-KSJAWqbDRW+n9pp8uZ7q6D+uLeiO6ziKhEm6Jl2zln4FtTxi3pW8jUcONEdNwBtP
-XSzJ7vdKAuiKGp8GvDm+uWpyjRJvpsClKynPvh2sN0bY6ERlkLDYKUMy37+1vDfc
-HV6k1Rdwq7L4fVxbx9P6YWF/iKX3yuqTK1Qs99ZaZ7N4UE+QAYtuOtzDbAb+ISrN
-fs7kOim2H5OZ8qfgYTosE6bRLP4mTEqgKX7zjYUMPWWZZgvrW3H9E4v/nGWupZxD
-NaLIE+WELGDVZRnHMZRkVYCbK6zcPYyvfrehc2O/cKKNAtsIQLDe8NdiirpWsbRB
-7+e/UCgIyvtPTxaf1FoVD0ENdyfGXT3EYRIuCsPA6Uk9C5vu3JpAhBnxhleaynE6
-Vkh29k3lxBi/CHKsIa2DYYLqumrkwlI9TJ6FHSt7xR4zYkA92BZb2UKZGDkuCss7
-g5wNrnxuswIaAgllsa7YSKkVSS41DhlUZG+flFnFLbodME5HatUJWokAqJzOzC7L
-vH1SMR+AQGKRwV1YkEJYRsxYfKJFByViipoqHkStq70Bl7Qql2hGXS+qh8cC/bLK
-WX35Il88WHshyCmcqI+d
-=2/Wt
+iQEzBAEBCAAdFiEEXHmveYAHrRp+prOviUUh18yA9HYFAliI9TYACgkQiUUh18yA
+9HYfVwf/ZF6NQosgryr8cSW/LM07JgUM3+PZwL6dXYCqE51/ZWWqT4ePsJuYNJ1i
+FkRcDuuH+JPPVLON/6lM3tPH7waShG/CUKIAP+j1rT5lVkavzaOfGxXUHMf5cABa
+44DJpT5Hr1HVBoI9SBTkoxGsylzfqE7YNuxVmwNd4R6OmwSzCHDnOXFrKFL0zHTw
+q0AVo/2Sd8qug9B7szs2mbNpS29li5ALBaFZ0YID2BAb6Ulm1123urZSPl7qglIK
+HPiVyA+I69ExATWE35mbIMUU4F1MPO9R4DKgGjmb2A7NybLvM0BigoFhsp6Go6Ie
+IGcdQy/sRTFeJx4c9W9TR1C596Nrvw==
+=8jrT
 -----END PGP SIGNATURE-----
+
+--Sig_/._bT1hN139Px3O3E0ajoGVQ--
 
