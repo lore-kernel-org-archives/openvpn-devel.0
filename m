@@ -1,15 +1,10 @@
-Date: Wed, 25 Jan 2017 18:37:17 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20170125173717.GA940@...1296...>
-References: <20161227222406.931-1-list@...1798...>
-	<20170125160428.19928-1-list@...1798...>
-	<5285c33f-98e5-4e06-0ed8-95728a74f755@...2080...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="3VRmKSg17yJg2MZg"
-Content-Disposition: inline
-In-Reply-To: <5285c33f-98e5-4e06-0ed8-95728a74f755@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH v3 1/1] Clean up plugin path handling
+From: David Sommerseth <davids@...515...>
+Date: Wed, 25 Jan 2017 19:46:11 +0100
+Message-Id: <20170125184611.9560-1-davids@...515...>
+In-Reply-To: <20170124232344.7825-1-davids@...515...>
+References: <20170124232344.7825-1-davids@...515...>
+Subject: Re: [Openvpn-devel] [PATCH applied] systemd: Move the READY=1
+	signalling to an earlier point
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,51 +13,55 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
-Cc: Christian Hesse <mail@...1798...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: davids@...515...
+Cc: openvpn-devel@lists.sourceforge.net
 
---3VRmKSg17yJg2MZg
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
 
-Hi,
+I took the liberty to improve the commit message a little bit,
+to make a few things clearer.
 
-On Wed, Jan 25, 2017 at 06:06:19PM +0100, David Sommerseth wrote:
-> But I am wondering about the rationale of adding another header file
-> (plugindir.h).  Why not just add this information to
-> openvpn-plugin.h.in, which results into openvpn-plugin.h ... and which
-> plugin.c already includes via plugin.h ...  I actually think this path
-> can be quite useful for third-party plug-ins, being built outside of the
-> openvpn source tree.
+Your patch has been applied to the following branches
 
-+1
+commit e83a8684f0a0d944e9d53cdad2b543cfd1b6fbae  (master)
+commit 041fd6488434b5df01f86dd873b536a2b690ee13  (release/2.4)
+Author: David Sommerseth
+Date:   Wed Jan 25 00:23:44 2017 +0100
 
-gert
+     systemd: Move the READY=1 signalling to an earlier point
 
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+     Trac: #827, #801
+     Signed-off-by: David Sommerseth <davids@...515...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Acked-by: Christian Hesse <mail@...1798...>
+     Message-Id: <20170124232344.7825-1-davids@...515...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13945.html
+     Signed-off-by: David Sommerseth <davids@...515...>
 
---3VRmKSg17yJg2MZg
-Content-Type: application/pgp-signature; name="signature.asc"
+
+- --
+kind regards,
+
+David Sommerseth
 
 -----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQGcBAEBAgAGBQJYiOJLAAoJEB2Cnv7KVigSv7sMAKRaRGOFBPfuDJyR7TR4SZL/
-xGCq8lxobaoBLFYeufMag1CwJTAeR7o0QLi6Q3XQMay49SbUQfZFNK0yKe1hjPB7
-c2vvH2405R5JUIcizkshYPDhCEw7Zts8SSiAY1T6UcmDtAJ5cC69GXdtfeK+SjHz
-LX8I7VPe9Y7XwBP8FWJjwutsIB/+B/6NrR1Lenf7W59Q+xC9tJbBo/3YpPea25Fi
-mzNptNbYhI3pIqivhPr4W7EgjCG8Y5EcwmAarDYBny0Zx/BZEpbdfo2Z5wC6KVQl
-yGdIwjgU73mdfB2xN+tn/81nncILJlZxNifdWwMIcN+zDFgTIYUdjZmC8RFSOdJo
-uFFVFWUZ7kPbJIWC5WO37dpil+i/ayuwFB8GBgcHL89XYqkmJ4YtZzgJXwVqEIaK
-/js1sZyHz3jvOBB20L5jtxCMcSW4L0FIxxhBt1hP8N8isfaKThtZFs+8mv/6fiO6
-7BBJSh1RUyp1GPs4+0BsMxNKKq7XcvjDIAF93YfJiA==
-=tHhI
+iQIcBAEBAgAGBQJYiPJxAAoJEIbPlEyWcf3yxH4QALLTpJeE7AYS5N+54cRbswIM
+Qjw/rKIU5WUe7hf6R//H8HmsWWbhCddYMYojl1XRcLglUdGFm+fTWkTUIUAtEZIy
+F9IeTQNVRBYKXoJ5pVWs+9MfCKrdP7tuaUOouqmpuaU3EUwOTwXb9jfDhdNmiQFP
+bbE3LC5uv4/BMUK/nPWX/9bqfiUhRRhoOIgDeLBaz2opvBNhLzx4wZV5EPXIsHG0
+i1/BKmaU4nlBtVdC0CnL3fuKo1rjoAM+gPqZK1RbZISOBuXXuSJPx9hbNwaY1tU9
+Vnvzd4iGmDdjBmxRkjgCwtYcwGGSPR5CCTa0xttqBFAj9Ljp2ZkQECPMWHWbY2D5
+3/nj1RhY//YV6iWQD4dgq/Xtnfhp5c9bW00vl8t3h7psiO1BbkrRyQBMvGX7McwS
+BvrgXhL0b8E5YLYM45ZQfYeCeNHXlZRlAIVEV0eC6ZHvFKqkVlhsjDHMzwztgbyF
+tydEp8vDQtpixIMccUDPtYdWx5OXEje/sR0394tymYwCoMlak4lF4ED2PXdzzkHB
+Lf41uTgoGUFhw3qbEaIhhTvbRCYq/AfSi7ojn46zhVqy6YPUG6F5WC4oHRlrvB63
+OgGDtN2+F4loKXCOnbMPGM0eT3TKx11ft/fwnCJuVH6RVW3hybanGEXr3wkvWy6C
+B/PEIq+CSxztTxxY49OI
+=dvhT
 -----END PGP SIGNATURE-----
-
---3VRmKSg17yJg2MZg--
 
