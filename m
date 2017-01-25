@@ -1,12 +1,12 @@
-Date: Wed, 25 Jan 2017 08:46:19 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20170125074619.GY940@...1296...>
+Date: Wed, 25 Jan 2017 15:04:25 +0100
+From: Christian Hesse <list@...1798...>
+Message-ID: <20170125150425.2a7b880e@...1799...>
+In-Reply-To: <20170124232344.7825-1-davids@...515...>
 References: <20170124232344.7825-1-davids@...515...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="1XWsVB21DFCvn2e8"
-Content-Disposition: inline
-In-Reply-To: <20170124232344.7825-1-davids@...515...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	boundary="Sig_/1AsCco5vXUpWJihJguhQFC4";
+	protocol="application/pgp-signature"
 Subject: Re: [Openvpn-devel] [PATCH] systemd: Move the READY=1 signalling to
  an earlier point
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,51 +20,48 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: David Sommerseth <davids@...515...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---1XWsVB21DFCvn2e8
-Content-Type: text/plain; charset="us-ascii"
+--Sig_/1AsCco5vXUpWJihJguhQFC4
+Content-Type: text/plain; charset="US-ASCII"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
-
-On Wed, Jan 25, 2017 at 12:23:44AM +0100, David Sommerseth wrote:
-> The approach this patch takes is to consider OpenVPN ready once
-> all the initial preparations and configurations have happened - but
-> before a connection to a remote side have been attempted.  This
-> also removes the need for specially handling the --chroot scenario.
-[..]
+David Sommerseth <davids@...515...> on Wed, 2017/01/25 00:23:
+> Currently, OpenVPN will first tell systemd it is ready once the
+> log will be appended with "Initialization Sequence Completed".
+> This turns out to cause some issues several places.
+>=20
+> [...]
+>=20
 > Trac: #827, #801
 > Signed-off-by: David Sommerseth <davids@...515...>
 
-I think this is a reasonable approach for the time being, until we have
-worked out a more fine-grained notification mechanism.
+I am pretty sure people will complain that units depending on
+openvpn-client@...1685... unit can no longer rely on an established connect=
+ion.
+That said the line of argumentation is still valid and changes to solve this
+have been discussed in IRC channel. So for the time being...
 
-So, ACK.
-
-gert
+ACK.
 --=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+main(a){char*c=3D/*    Schoene Gruesse                         */"B?IJj;MEH"
+"CX:;",b;for(a/*    Best regards             my address:    */=3D0;b=3Dc[a+=
++];)
+putchar(b-1/(/*    Chris            cc -ox -xc - && ./x    */b/42*2-3)*42);}
 
---1XWsVB21DFCvn2e8
-Content-Type: application/pgp-signature; name="signature.asc"
+--Sig_/1AsCco5vXUpWJihJguhQFC4
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJYiFfKAAoJEB2Cnv7KVigS368L/2nyt3tgJAwRg7fH/oZgC7kG
-pXG+dOI+jfq2L9yhY7ClTtlGq5MF90cngmnVYS/hBspouu8KurbR0UVYk8bXheRd
-UYt4cYqygUTNEwp23Abhidawecb8rAFCguBui+FXs+pfWkXPgvB85faMmFtuCK6t
-xfFPBTjmDnM1rvVlv2EOZ5aH8PSXaQvKDwXPuJ9jXMUcUCbqPB0HKWXbmM/uyxdO
-/P72fN0NOpYKqPJVvFDhOtzqm2expXZXWeZaJi6JQ7Ryo+odiQrTwUgVGatPy2EJ
-CI6H7rYcPfS10QxkOtzU92Wt8Zq3nzfvFmEl8Rr5vT39hqvsXRdhIHFEi2aFAna8
-0kqL04BLfpak77Qe4A8Q4/eycqYbCx3arPppK3g5duMUlQogQvKjkB/DqFxqHZzR
-VTRUmp8eOc/CMG3uoXqAIxn1/Jlu+omtELqmCm27PSnrvlmUfEPkwvvwoYFYtZA3
-qTHU9JtrMwGyPdB6MljF/IEBTHL/40Eifaj1RpqOrQ==
-=m1PK
+iQEzBAEBCAAdFiEEXHmveYAHrRp+prOviUUh18yA9HYFAliIsGkACgkQiUUh18yA
+9HYhHAf/SC2IledQzHEofEHe7ZGavNV7i3K1rojYbk7caCOC2KVMlHv1rZBl9Y9h
+InCiaYbh7pAkpMZXfIG7ht/kdBjKqnfjBjWZJFHmR9b2EIF3LL8K+2SPwXHwKtOj
+9stGF3Q9T0KOShBrvCGK30vIOdzDqbZVhQkwhSt70fqC0zYOp6Gcy/iEnYCfaZdZ
+6XWIeks1MAj1zA7b22s1pZhbh6aA7OzNqTVg3nOC2ayBHagQtF9jKml7EZ0d0mIR
+s1rwNC6nft4AzFEUci3cssHhzWgZacJkb9X7nqX/gY5TU7JdArcMBN+0gFtKExRo
+zO2+Z+5LAPNAOZGmVB5v2rxm+W6bHA==
+=sxWa
 -----END PGP SIGNATURE-----
 
---1XWsVB21DFCvn2e8--
+--Sig_/1AsCco5vXUpWJihJguhQFC4--
 
