@@ -1,10 +1,10 @@
 From: David Sommerseth <davids@...515...>
-Date: Wed, 25 Jan 2017 19:49:41 +0100
-Message-Id: <20170125184941.10124-1-davids@...515...>
-In-Reply-To: <20170124143947.27385-2-list@...1798...>
-References: <20170124143947.27385-2-list@...1798...>
-Subject: Re: [Openvpn-devel] [PATCH applied] systemd: Do not race on
-	RuntimeDirectory
+Date: Wed, 25 Jan 2017 19:52:03 +0100
+Message-Id: <20170125185203.10467-1-davids@...515...>
+In-Reply-To: <20161227221832.610-1-list@...1798...>
+References: <20161227221832.610-1-list@...1798...>
+Subject: Re: [Openvpn-devel] [PATCH applied] systemd: Add more security
+	feature for systemd units
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,21 +21,24 @@ Cc: openvpn-devel@lists.sourceforge.net
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-ACK.  I've tested this a bit, and it is very reasonable.
+ACK.  Tested this lightly with both server and client profiles,
+and this seems to work very well.  Users having keys under
+/home will probably complain.  But I do not think system wide
+configurations should depend on keys in users' home directories.
 
 Your patch has been applied to the following branches
 
-commit 3de7be7b17de879a78eea4afe4c918c6104c635d  (master)
-commit e5492222a9ae5d31d69cc9e5cb57dc094cda556e  (release/2.4)
+commit 76096c605fcac4815674b6ae76ac1f31f03a8186  (master)
+commit ba3ccaf92d379f8a2efad80cee7dc2806088f421  (release/2.4)
 Author: Christian Hesse
-Date:   Tue Jan 24 15:39:47 2017 +0100
+Date:   Tue Dec 27 23:18:32 2016 +0100
 
-     systemd: Do not race on RuntimeDirectory
+     systemd: Add more security feature for systemd units
 
      Signed-off-by: Christian Hesse <mail@...1798...>
      Acked-by: David Sommerseth <davids@...515...>
-     Message-Id: <20170124143947.27385-2-list@...1798...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13939.html
+     Message-Id: <20161227221832.610-1-list@...1798...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13743.html
      Signed-off-by: David Sommerseth <davids@...515...>
 
 
@@ -47,18 +50,18 @@ David Sommerseth
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBAgAGBQJYiPNEAAoJEIbPlEyWcf3yG3YQAKxRuzhC5wn8iEfNYlyTyc8+
-UTs3L/sU2pp/jNwfcyjVTJxl0B5ZQb/o4Z3Br519dzXYU+UYMHYKwQpAjWDL0pyU
-Ma4XF1em4cnadY7AGtKnCer8JBZzIUDyjWZxmKNBOlzXoy5uKETJSxS0snuMJydC
-r6IgzsZqASeCUw5Z8s1WdM9bH3H+a6sjaVTgKOkd2VVfpgbTi4cEvhAusON6SFg2
-j8PSrdqUwmG5TEUSGr6o8fTwmp0B6EAocMUQGuOzNON3yNifR7KlPDPu2s8IQVZL
-ee3mR0KFSaPrMm/EA2eJ7wWlqECCDAndlV4VdFLkJj5eXQ56dlkkPrXbxHSIKJpY
-155fqL6aKunj6dDghIK3eoJbMVHSh9L9h6blSPhbZB635w75LILj0a0ocTPsRSvp
-OdnVP0sUj3XoWntG5iBYZzV09T9v6xEPMw6GuKskwfeWA5PdGf9qICX1ElpJ0oxm
-3Rpo5+UqMQyyDD27jMmkI1bvx5Txs9M2r+JW3MP5+bAqsuIvn1rqjY0N/5EGxJiG
-7CdL5TbT5FuO7n+gChWrSRGlKZIERVdOi1XVsstzqDQSBgYgKlKy5+9VEIxX2LKS
-fv6IEFwtX6pncOZ+kO/44GI1t8iajKhmDMf3kay8nKVu5UuzLMANR6jK0a6YsZAG
-0SiQO+2n1Ly710IcCuqy
-=5MIX
+iQIcBAEBAgAGBQJYiPPRAAoJEIbPlEyWcf3ymHAQAIuy8UXELqs4blJCs0IfHtOg
+nALf1ALs+fvhQp7he+Z+wxmDT+QFL3mli53RXKZZGG8y+boWgRFkJ11PX4YzsCO9
+KSJAWqbDRW+n9pp8uZ7q6D+uLeiO6ziKhEm6Jl2zln4FtTxi3pW8jUcONEdNwBtP
+XSzJ7vdKAuiKGp8GvDm+uWpyjRJvpsClKynPvh2sN0bY6ERlkLDYKUMy37+1vDfc
+HV6k1Rdwq7L4fVxbx9P6YWF/iKX3yuqTK1Qs99ZaZ7N4UE+QAYtuOtzDbAb+ISrN
+fs7kOim2H5OZ8qfgYTosE6bRLP4mTEqgKX7zjYUMPWWZZgvrW3H9E4v/nGWupZxD
+NaLIE+WELGDVZRnHMZRkVYCbK6zcPYyvfrehc2O/cKKNAtsIQLDe8NdiirpWsbRB
+7+e/UCgIyvtPTxaf1FoVD0ENdyfGXT3EYRIuCsPA6Uk9C5vu3JpAhBnxhleaynE6
+Vkh29k3lxBi/CHKsIa2DYYLqumrkwlI9TJ6FHSt7xR4zYkA92BZb2UKZGDkuCss7
+g5wNrnxuswIaAgllsa7YSKkVSS41DhlUZG+flFnFLbodME5HatUJWokAqJzOzC7L
+vH1SMR+AQGKRwV1YkEJYRsxYfKJFByViipoqHkStq70Bl7Qql2hGXS+qh8cC/bLK
+WX35Il88WHshyCmcqI+d
+=2/Wt
 -----END PGP SIGNATURE-----
 
