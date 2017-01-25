@@ -1,9 +1,8 @@
-From: Christian Hesse <list@...1798...>
-Date: Wed, 25 Jan 2017 21:19:47 +0100
-Message-Id: <20170125201947.17197-1-list@...1798...>
-In-Reply-To: <20170125193727.32061-1-list@...1798...>
-References: <20170125193727.32061-1-list@...1798...>
-Subject: [Openvpn-devel] [PATCH v5 1/1] Clean up plugin path handling
+From: David Sommerseth <davids@...515...>
+Date: Wed, 25 Jan 2017 21:53:02 +0100
+Message-Id: <20170125205302.23069-1-davids@...515...>
+Subject: [Openvpn-devel] [PATCH] dev-tools: Simple tool wihch automates
+	rebasing LZ4 compat library
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,138 +14,95 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: Christian Hesse <mail@...1798...>
 
-From: Christian Hesse <mail@...1798...>
+This tool depends on a cloned upstream LZ4 git repository and a
+checked out release tag.  Then run the script like this:
 
-Drop --with-plugindir, instead use an environment variable PLUGINDIR
-to specify the plugin directory.
+   $ ./dev-tools/lz4-rebaser.sh /path/to/lz4.git
 
-This puts a define into include/openvpn-plugin.h.in which has the plugin
-directory.
-The configure script does not know about the final plugin path. Thus we
-have to make make generate the final header file for us.
+To see the result before committing, use: git diff --cached
 
-As the path is always available remove the compile time condition (and
-dead code) from src/openvpn/plugin.c.
-
-v2: The configure script can not evaluate the final $libdir path. So
-    use make to create a header file on the containing the final path.
-
-v3: Fix whitespace errors and gitignore location.
-
-v4: No extra header file, generate src/openvpn/plugin.h on the fly.
-    Remove condition and dead code.
-
-v5: Move the define to include/openvpn-plugin.h.in and let make generate
-    the final header file.
-
-Signed-off-by: Christian Hesse <mail@...1798...>
+Signed-off-by: David Sommerseth <davids@...515...>
 ---
- configure.ac                | 16 +++++++---------
- include/Makefile.am         |  7 +++++++
- include/openvpn-plugin.h.in |  2 ++
- src/openvpn/plugin.c        | 10 +---------
- 4 files changed, 17 insertions(+), 18 deletions(-)
+ dev-tools/lz4-rebaser.sh | 69 ++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 69 insertions(+)
+ create mode 100755 dev-tools/lz4-rebaser.sh
 
-diff --git a/configure.ac b/configure.ac
-index 79fb1ba..f305c54 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -38,7 +38,7 @@ AC_DEFINE([OPENVPN_VERSION_MINOR], [PRODUCT_VERSION_MINOR], [OpenVPN minor versi
- AC_DEFINE([OPENVPN_VERSION_PATCH], ["PRODUCT_VERSION_PATCH"], [OpenVPN patch level - may be a string or integer])
- 
- AC_CONFIG_AUX_DIR([.])
--AC_CONFIG_HEADERS([config.h include/openvpn-plugin.h])
-+AC_CONFIG_HEADERS([config.h])
- AC_CONFIG_SRCDIR([src/openvpn/syshead.h])
- AC_CONFIG_MACRO_DIR([m4])
- 
-@@ -301,13 +301,12 @@ AC_ARG_WITH(
- 	[with_crypto_library="openssl"]
- )
- 
--AC_ARG_WITH(
--	[plugindir],
--	[AS_HELP_STRING([--with-plugindir], [plugin directory @<:@default=LIBDIR/openvpn@:>@])],
--	,
--	[with_plugindir="\$(libdir)/openvpn/plugins"]
--)
--
-+AC_ARG_VAR([PLUGINDIR], [Path of plug-in directory @<:@default=LIBDIR/openvpn/plugins@:>@])
-+if test -n "${PLUGINDIR}"; then
-+	plugindir="${PLUGINDIR}"
-+else
-+	plugindir="\${libdir}/openvpn/plugins"
+diff --git a/dev-tools/lz4-rebaser.sh b/dev-tools/lz4-rebaser.sh
+new file mode 100755
+index 0000000..b565735
+--- /dev/null
++++ b/dev-tools/lz4-rebaser.sh
+@@ -0,0 +1,69 @@
++#!/bin/sh
++# lz4-rebaser.sh   - Does the LZ4 rebase process in an automated fashion
++#
++# Copyright (C) 2017      David Sommerseth <davids@...515...>
++#
++# This program is free software; you can redistribute it and/or
++# modify it under the terms of the GNU General Public License
++# as published by the Free Software Foundation; either version 2
++# of the License.
++#
++# This program is distributed in the hope that it will be useful,
++# but WITHOUT ANY WARRANTY; without even the implied warranty of
++# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++# GNU General Public License for more details.
++#
++# You should have received a copy of the GNU General Public License
++# along with this program; if not, write to the Free Software
++# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
++#
++
++# Basic shell sanity
++set -eu
++
++# Simple argument control
++if [ $# -ne 1 ]; then
++    echo "Usage: $0 <Path to upstream LZ4 source tree>"
++    exit 1
 +fi
- 
- AC_DEFINE_UNQUOTED([TARGET_ALIAS], ["${host}"], [A string representing our host])
- case "$host" in
-@@ -1284,7 +1283,6 @@ AM_CONDITIONAL([ENABLE_PLUGIN_DOWN_ROOT], [test "${enable_plugin_down_root}" = "
- AM_CONDITIONAL([ENABLE_CRYPTO], [test "${enable_crypto}" = "yes"])
- AM_CONDITIONAL([HAVE_LD_WRAP_SUPPORT], [test "${have_ld_wrap_support}" = "yes"])
- 
--plugindir="${with_plugindir}"
- sampledir="\$(docdir)/sample"
- AC_SUBST([plugindir])
- AC_SUBST([sampledir])
-diff --git a/include/Makefile.am b/include/Makefile.am
-index a52c427..37962a6 100644
---- a/include/Makefile.am
-+++ b/include/Makefile.am
-@@ -16,3 +16,10 @@ MAINTAINERCLEANFILES = \
- include_HEADERS = \
- 	openvpn-plugin.h \
- 	openvpn-msg.h
 +
-+openvpn-plugin.h: openvpn-plugin.h.in Makefile
-+	$(AM_V_GEN)sed -e 's|\@PLUGINDIR\@|$(plugindir)|' \
-+		-e 's|\@OPENVPN_VERSION_MAJOR\@|$(OPENVPN_VERSION_MAJOR)|' \
-+		-e 's|\@OPENVPN_VERSION_MINOR\@|$(OPENVPN_VERSION_MINOR)|' \
-+		-e 's|\@OPENVPN_VERSION_PATCH\@|$(OPENVPN_VERSION_PATCH)|' \
-+               $< > $@.tmp && mv $@.tmp $@
-diff --git a/include/openvpn-plugin.h.in b/include/openvpn-plugin.h.in
-index 0b30352..a084fc1 100644
---- a/include/openvpn-plugin.h.in
-+++ b/include/openvpn-plugin.h.in
-@@ -27,6 +27,8 @@
- 
- #define OPENVPN_PLUGIN_VERSION 3
- 
-+#define PLUGIN_LIBDIR "@PLUGINDIR@"
++# Check that we have the files we need before starting the rebase
++LZ4_C="$1/lib/lz4.c"
++LZ4_H="$1/lib/lz4.h"
++if [ ! -r "$LZ4_C" -o ! -r "$LZ4_H" ]; then
++    echo "Could not locate $LZ4_H and/or $LZ4_C"
++    exit 1
++fi
 +
- #ifdef ENABLE_CRYPTO
- #ifdef ENABLE_CRYPTO_MBEDTLS
- #include <mbedtls/x509_crt.h>
-diff --git a/src/openvpn/plugin.c b/src/openvpn/plugin.c
-index e530c0c..f777027 100644
---- a/src/openvpn/plugin.c
-+++ b/src/openvpn/plugin.c
-@@ -234,23 +234,15 @@ plugin_init_item(struct plugin *p, const struct plugin_option *o)
- #ifndef _WIN32
- 
-     p->handle = NULL;
--#if defined(PLUGIN_LIBDIR)
++# Extract the upstream LZ4 commit base
++lz4_tag="$(git --git-dir $1/.git tag --contains HEAD)"
++lz4_commit="$(git --git-dir $1/.git rev-parse --short=20 HEAD)"
 +
-     if (!absolute_pathname(p->so_pathname))
-     {
-         char full[PATH_MAX];
- 
-         openvpn_snprintf(full, sizeof(full), "%s/%s", PLUGIN_LIBDIR, p->so_pathname);
-         p->handle = dlopen(full, RTLD_NOW);
--#if defined(ENABLE_PLUGIN_SEARCH)
--        if (!p->handle)
--        {
--            rel = true;
--            p->handle = dlopen(p->so_pathname, RTLD_NOW);
--        }
--#endif
-     }
-     else
--#endif
-     {
-         rel = !absolute_pathname(p->so_pathname);
-         p->handle = dlopen(p->so_pathname, RTLD_NOW);
++# Do the rebase
++srcroot="$(git rev-parse --show-toplevel)"
++echo "* Copying upstream lz4.h to compat-lz4.h"
++cp "$LZ4_H" "${srcroot}/src/compat/compat-lz4.h"
++
++echo "* Porting upstream lz4.c to compat-lz4.c"
++{
++    cat <<EOF
++/* This file have been backported by $0
++ * from upstream lz4 commit $lz4_commit ($lz4_tag)
++ */
++ifdef HAVE_CONFIG_H
++#include "config.h"
++#elif defined(_MSC_VER)
++#include "config-msvc.h"
++#endif
++
++#ifdef NEED_COMPAT_LZ4
++EOF
++    sed '/"lz4\.h"/s/\(#include "\)lz4\.h\("\+\)/\1compat-lz4.h\2/' "$LZ4_C"
++cat <<EOF
++#endif /* NEED_COMPAT_LZ4 */
++EOF
++} > "${srcroot}/src/compat/compat-lz4.c"
++
++echo "* Running 'git add'"
++git add src/compat/compat-lz4.[ch]
++
 -- 
 2.11.0
 
