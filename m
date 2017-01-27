@@ -1,9 +1,15 @@
-From: Christian Hesse <list@...1798...>
-Date: Fri, 27 Jan 2017 09:49:27 +0100
-Message-Id: <20170127084927.21040-1-list@...1798...>
-In-Reply-To: <20170126080519.GN940@...1296...>
+Date: Fri, 27 Jan 2017 10:55:02 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20170127095502.GZ940@...1296...>
 References: <20170126080519.GN940@...1296...>
-Subject: [Openvpn-devel] [PATCH 1/1] remove GNUism and fix out-of-tree build
+	<20170127084927.21040-1-list@...1798...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="HywJcj55HbA57jnN"
+Content-Disposition: inline
+In-Reply-To: <20170127084927.21040-1-list@...1798...>
+Subject: Re: [Openvpn-devel] [PATCH 1/1] remove GNUism and fix out-of-tree
+	build
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,84 +18,60 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Christian Hesse <mail@...1798...>
+To: Christian Hesse <list@...1798...>
+Cc: openvpn-devel@lists.sourceforge.net, Christian Hesse <mail@...1798...>
 
-From: Christian Hesse <mail@...1798...>
+--HywJcj55HbA57jnN
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-The plugin path handling cleanup (4590c383) introduced GNUism and broke
-out-of-tree builds.
+Hi,
 
-Revert back to let configure generate the header file. Instead let make
-add an extra CFLAG that defines PLUGIN_LIBDIR.
+On Fri, Jan 27, 2017 at 09:49:27AM +0100, Christian Hesse wrote:
+> From: Christian Hesse <mail@...1798...>
+>=20
+> The plugin path handling cleanup (4590c383) introduced GNUism and broke
+> out-of-tree builds.
+>=20
+> Revert back to let configure generate the header file. Instead let make
+> add an extra CFLAG that defines PLUGIN_LIBDIR.
+>=20
+> Signed-off-by: Christian Hesse <mail@...1798...>
 
-Signed-off-by: Christian Hesse <mail@...1798...>
----
- configure.ac                | 2 +-
- include/Makefile.am         | 7 -------
- include/openvpn-plugin.h.in | 2 --
- src/openvpn/Makefile.am     | 4 +++-
- 4 files changed, 4 insertions(+), 11 deletions(-)
+ACK.  Gets the job done and fixes the fallout :-)
 
-diff --git a/configure.ac b/configure.ac
-index f305c54..b29f8b4 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -38,7 +38,7 @@ AC_DEFINE([OPENVPN_VERSION_MINOR], [PRODUCT_VERSION_MINOR], [OpenVPN minor versi
- AC_DEFINE([OPENVPN_VERSION_PATCH], ["PRODUCT_VERSION_PATCH"], [OpenVPN patch level - may be a string or integer])
- 
- AC_CONFIG_AUX_DIR([.])
--AC_CONFIG_HEADERS([config.h])
-+AC_CONFIG_HEADERS([config.h include/openvpn-plugin.h])
- AC_CONFIG_SRCDIR([src/openvpn/syshead.h])
- AC_CONFIG_MACRO_DIR([m4])
- 
-diff --git a/include/Makefile.am b/include/Makefile.am
-index 37962a6..a52c427 100644
---- a/include/Makefile.am
-+++ b/include/Makefile.am
-@@ -16,10 +16,3 @@ MAINTAINERCLEANFILES = \
- include_HEADERS = \
- 	openvpn-plugin.h \
- 	openvpn-msg.h
--
--openvpn-plugin.h: openvpn-plugin.h.in Makefile
--	$(AM_V_GEN)sed -e 's|\@PLUGINDIR\@|$(plugindir)|' \
--		-e 's|\@OPENVPN_VERSION_MAJOR\@|$(OPENVPN_VERSION_MAJOR)|' \
--		-e 's|\@OPENVPN_VERSION_MINOR\@|$(OPENVPN_VERSION_MINOR)|' \
--		-e 's|\@OPENVPN_VERSION_PATCH\@|$(OPENVPN_VERSION_PATCH)|' \
--               $< > $@.tmp && mv $@.tmp $@
-diff --git a/include/openvpn-plugin.h.in b/include/openvpn-plugin.h.in
-index a084fc1..0b30352 100644
---- a/include/openvpn-plugin.h.in
-+++ b/include/openvpn-plugin.h.in
-@@ -27,8 +27,6 @@
- 
- #define OPENVPN_PLUGIN_VERSION 3
- 
--#define PLUGIN_LIBDIR "@PLUGINDIR@"
--
- #ifdef ENABLE_CRYPTO
- #ifdef ENABLE_CRYPTO_MBEDTLS
- #include <mbedtls/x509_crt.h>
-diff --git a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am
-index bea294b..3f97855 100644
---- a/src/openvpn/Makefile.am
-+++ b/src/openvpn/Makefile.am
-@@ -27,7 +27,9 @@ AM_CFLAGS = \
- 	$(OPTIONAL_CRYPTO_CFLAGS) \
- 	$(OPTIONAL_LZO_CFLAGS) \
- 	$(OPTIONAL_LZ4_CFLAGS) \
--	$(OPTIONAL_PKCS11_HELPER_CFLAGS)
-+	$(OPTIONAL_PKCS11_HELPER_CFLAGS) \
-+	-DPLUGIN_LIBDIR=\"${plugindir}\"
-+
- if WIN32
- # we want unicode entry point but not the macro
- AM_CFLAGS += -municode -UUNICODE
--- 
-2.11.0
+Tested on FreeBSD 10.3, OpenBSD 6.0 and OpenSolaris 11 - so I blatantly
+assume it will also work on all the rest of the zoo.
 
+For a v7 of this... we might consider whether to print out the plugin
+search path at "--help" or "--version" time (we already print the whole
+autoconf sermon)...
+
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--HywJcj55HbA57jnN
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJYixj1AAoJEB2Cnv7KVigSiEsL/0hBdvh/0CgWVQPbCeakJ4ZH
+b+oLEciZT5adRI8qD/g5Gk8ILdGs8nkQK0PYGy54WOuqlLT8rNS1tvzzHvLqYkIG
+sxDp3OJGuCE6nr+Rc4ASvvJAtQ04W9m3S5achGe967xn28xgF/fm9bhF6n3vfOLW
+/FVRRtDLAAki2h5/MY/nW7zJJ7K3hFXXFMboA4K20IZHHt9gdYy8egwFlprSo4Mk
+qYTHpVZEY5uhO4WkQfeDU18+MYFqcMKguelqBk//gacfmhGHkERd9uLSieOIgUIy
+/XcM04ueO/1mqTShF6ok4R8tFiE5Et0ZazhpADuupACN23rB4xMmNFgqmqEN8E1g
+cycBcPWWELTHJpu76MlvJ1B3cDjM/Owet8tMJ5q3CMROtFH6o2Ix5G8xu7DSZZYL
+XsXfagox4NBOqFI2nwnSri0RlldezWOI3hBla4WPH5D42ZWCRSSO/sMxort08YWz
+l3ufcciZrJQdFedC8zM8hv5Mx0KQuJiS/Busq8nbzw==
+=Z2+5
+-----END PGP SIGNATURE-----
+
+--HywJcj55HbA57jnN--
 
