@@ -1,15 +1,7 @@
-Date: Fri, 27 Jan 2017 10:55:02 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20170127095502.GZ940@...1296...>
-References: <20170126080519.GN940@...1296...>
-	<20170127084927.21040-1-list@...1798...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="HywJcj55HbA57jnN"
-Content-Disposition: inline
-In-Reply-To: <20170127084927.21040-1-list@...1798...>
-Subject: Re: [Openvpn-devel] [PATCH 1/1] remove GNUism and fix out-of-tree
-	build
+From: Ilya Shipitsin <chipitsine@...277...>
+Date: Fri, 27 Jan 2017 18:53:13 +0500
+Message-Id: <1485525193-5808-1-git-send-email-chipitsine@...277...>
+Subject: [Openvpn-devel] [PATCH] Resolve several travis-ci issues
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,60 +10,74 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Christian Hesse <list@...1798...>
-Cc: openvpn-devel@lists.sourceforge.net, Christian Hesse <mail@...1798...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---HywJcj55HbA57jnN
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+MBEDTLS_VERSION, OPENSSL_VERSION were defined twice - in both
+ .travis.yml  and .travis/build-deps.sh files, the last one
+defined OPENSSL_VERSION via nonexistent OPENSSL_VERION
+variable, which lead us to use openssl-1.0.1 instead of
+openssl-1.0.2, I removed variable definition from build-deps.sh
 
-Hi,
+"cache: [ apt: true ]" is not a travis supported option, it was
+introduced by mistake, I removed it
 
-On Fri, Jan 27, 2017 at 09:49:27AM +0100, Christian Hesse wrote:
-> From: Christian Hesse <mail@...1798...>
->=20
-> The plugin path handling cleanup (4590c383) introduced GNUism and broke
-> out-of-tree builds.
->=20
-> Revert back to let configure generate the header file. Instead let make
-> add an extra CFLAG that defines PLUGIN_LIBDIR.
->=20
-> Signed-off-by: Christian Hesse <mail@...1798...>
+LD_LIBRARY_PATH was defined for the entire test run, it includes
+custom openssl build, which was picked by "wget", so "wget"
+could not verify SSL cert at https://www.openssl.org sometimes.
+We do not want wget to pick our custom LD_LIBRARY_PATH, so I moved
+that variable to "script" section
 
-ACK.  Gets the job done and fixes the fallout :-)
+LD_LIBRARY_PATH was defined for both linux and osx environments,
+for the second DYLD_LIBRARY_PATH must be defined instead
+---
+ .travis.yml           | 3 +--
+ .travis/build-deps.sh | 2 --
+ 2 files changed, 1 insertion(+), 4 deletions(-)
 
-Tested on FreeBSD 10.3, OpenBSD 6.0 and OpenSolaris 11 - so I blatantly
-assume it will also work on all the rest of the zoo.
+diff --git a/.travis.yml b/.travis.yml
+index 369db97..f3727fa 100644
+--- a/.travis.yml
++++ b/.travis.yml
+@@ -18,7 +18,6 @@ env:
+     - OPENSSL_VERSION="1.0.1t"
+     - OPENSSL_CFLAGS="-I${PREFIX}/include"
+     - OPENSSL_LIBS="-L${PREFIX}/lib -lssl -lcrypto"
+-    - LD_LIBRARY_PATH="${PREFIX}/lib:${LD_LIBRARY_PATH}"
+ 
+ matrix:
+   include:
+@@ -63,7 +62,6 @@ addons:
+       - linux-libc-dev
+ 
+ cache:
+-  apt: true
+   ccache: true
+   directories:
+   - download-cache
+@@ -77,6 +75,7 @@ install:
+   - .travis/build-deps.sh > build-deps.log 2>&1 || (cat build-deps.log && exit 1)
+ 
+ script:
++  - export LD_LIBRARY_PATH="${PREFIX}/lib:${LD_LIBRARY_PATH}"
+   - autoreconf -vi
+   - ./configure --with-crypto-library="${SSLLIB}" ${EXTRA_CONFIG} || (cat config.log && exit 1)
+   - make -j$JOBS
+diff --git a/.travis/build-deps.sh b/.travis/build-deps.sh
+index bda54ee..3ffba0b 100755
+--- a/.travis/build-deps.sh
++++ b/.travis/build-deps.sh
+@@ -2,8 +2,6 @@
+ set -eux
+ 
+ # Set defaults
+-MBEDTLS_VERSION="${MBEDTLS_VERSION:-2.2.1}"
+-OPENSSL_VERSION="${OPENSSL_VERION:-1.0.2h}"
+ PREFIX="${PREFIX:-${HOME}/opt}"
+ 
+ download_mbedtls () {
+-- 
+2.5.5
 
-For a v7 of this... we might consider whether to print out the plugin
-search path at "--help" or "--version" time (we already print the whole
-autoconf sermon)...
-
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---HywJcj55HbA57jnN
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJYixj1AAoJEB2Cnv7KVigSiEsL/0hBdvh/0CgWVQPbCeakJ4ZH
-b+oLEciZT5adRI8qD/g5Gk8ILdGs8nkQK0PYGy54WOuqlLT8rNS1tvzzHvLqYkIG
-sxDp3OJGuCE6nr+Rc4ASvvJAtQ04W9m3S5achGe967xn28xgF/fm9bhF6n3vfOLW
-/FVRRtDLAAki2h5/MY/nW7zJJ7K3hFXXFMboA4K20IZHHt9gdYy8egwFlprSo4Mk
-qYTHpVZEY5uhO4WkQfeDU18+MYFqcMKguelqBk//gacfmhGHkERd9uLSieOIgUIy
-/XcM04ueO/1mqTShF6ok4R8tFiE5Et0ZazhpADuupACN23rB4xMmNFgqmqEN8E1g
-cycBcPWWELTHJpu76MlvJ1B3cDjM/Owet8tMJ5q3CMROtFH6o2Ix5G8xu7DSZZYL
-XsXfagox4NBOqFI2nwnSri0RlldezWOI3hBla4WPH5D42ZWCRSSO/sMxort08YWz
-l3ufcciZrJQdFedC8zM8hv5Mx0KQuJiS/Busq8nbzw==
-=Z2+5
------END PGP SIGNATURE-----
-
---HywJcj55HbA57jnN--
 
