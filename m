@@ -1,11 +1,10 @@
 MIME-Version: 1.0
-In-Reply-To: <CAFHpkQG7Qk7y6Lt7CTU15b_3bBOkZX8NcjuQyoMH+dDWm_kU8g@...278...>
+In-Reply-To: <1485590815-19226-1-git-send-email-chipitsine@...277...>
 References: <1485590815-19226-1-git-send-email-chipitsine@...277...>
-	<CAFHpkQG7Qk7y6Lt7CTU15b_3bBOkZX8NcjuQyoMH+dDWm_kU8g@...278...>
-From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Date: Sat, 28 Jan 2017 15:18:55 +0500
-Message-ID: <CAFHpkQHNnLPJpuXOD7bcCeYC6cjNZ9GThiNd5R2i2ki3hb3eiA@...278...>
-Content-Type: multipart/alternative; boundary=001a1148e7c2e82a21054724e888
+From: Selva Nair <selva.nair@...277...>
+Date: Sat, 28 Jan 2017 15:29:09 -0500
+Message-ID: <CAKuzo_itKRGDSHB_80iNsbkTBHZndm8kjEcq-koK0YJs-99_Ew@...278...>
+Content-Type: multipart/alternative; boundary=94eb2c065db47b719705472d7025
 Subject: Re: [Openvpn-devel] [PATCH] Resolve several travis-ci issues
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -15,124 +14,84 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Ilya Shipitsin <chipitsine@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---001a1148e7c2e82a21054724e888
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+--94eb2c065db47b719705472d7025
+Content-Type: text/plain; charset=UTF-8
 
-forgot to mention,
-this patch might be applied to both master and release/2.4 branches
+Hi,
 
-2017-01-28 13:07 GMT+05:00 =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=
-=B8=D1=86=D0=B8=D0=BD <chipitsine@...277...>:
+On Sat, Jan 28, 2017 at 3:06 AM, Ilya Shipitsin <chipitsine@...277...>
+wrote:
 
-> this one is final v2 patch
+> MBEDTLS_VERSION, OPENSSL_VERSION were defined twice - in both
+>  .travis.yml  and .travis/build-deps.sh files, the last one
+> defined OPENSSL_VERSION via nonexistent OPENSSL_VERION
+> variable, which lead us to use openssl-1.0.1 instead of
+> openssl-1.0.2, I removed variable definition from build-deps.sh
 >
-> 2017-01-28 13:06 GMT+05:00 Ilya Shipitsin <chipitsine@...277...>:
+> "cache: [ apt: true ]" is not a travis supported option, it was
+> introduced by mistake, I removed it
 >
->> MBEDTLS_VERSION, OPENSSL_VERSION were defined twice - in both
->>  .travis.yml  and .travis/build-deps.sh files, the last one
->> defined OPENSSL_VERSION via nonexistent OPENSSL_VERION
->> variable, which lead us to use openssl-1.0.1 instead of
->> openssl-1.0.2, I removed variable definition from build-deps.sh
->>
->> "cache: [ apt: true ]" is not a travis supported option, it was
->> introduced by mistake, I removed it
->>
->> LD_LIBRARY_PATH was defined for the entire test run, it includes
->> custom openssl build, which was picked by "wget", so "wget"
->> could not verify SSL cert at https://www.openssl.org sometimes.
->> We do not want wget to pick our custom LD_LIBRARY_PATH, so I moved
->> that variable to "script" section
->>
->> LD_LIBRARY_PATH was defined for both linux and osx environments,
->> for the second DYLD_LIBRARY_PATH must be defined instead
->>
->> v2: Upgrade openssl, mbedtls to the most recent versions
->> ---
->>  .travis.yml           | 8 ++++----
->>  .travis/build-deps.sh | 2 --
->>  2 files changed, 4 insertions(+), 6 deletions(-)
->>
->> diff --git a/.travis.yml b/.travis.yml
->> index 369db97..9741d6d 100644
->> --- a/.travis.yml
->> +++ b/.travis.yml
->> @@ -12,13 +12,12 @@ env:
->>    global:
->>      - JOBS=3D3
->>      - PREFIX=3D"${HOME}/opt"
->> -    - MBEDTLS_VERSION=3D"2.2.1"
->> +    - MBEDTLS_VERSION=3D"2.4.0"
->>      - MBEDTLS_CFLAGS=3D"-I${PREFIX}/include"
->>      - MBEDTLS_LIBS=3D"-L${PREFIX}/lib -lmbedtls -lmbedx509 -lmbedcrypto"
->> -    - OPENSSL_VERSION=3D"1.0.1t"
->> +    - OPENSSL_VERSION=3D"1.0.2k"
->>      - OPENSSL_CFLAGS=3D"-I${PREFIX}/include"
->>      - OPENSSL_LIBS=3D"-L${PREFIX}/lib -lssl -lcrypto"
->> -    - LD_LIBRARY_PATH=3D"${PREFIX}/lib:${LD_LIBRARY_PATH}"
->>
->>  matrix:
->>    include:
->> @@ -63,7 +62,6 @@ addons:
->>        - linux-libc-dev
->>
->>  cache:
->> -  apt: true
->>    ccache: true
->>    directories:
->>    - download-cache
->> @@ -77,6 +75,8 @@ install:
->>    - .travis/build-deps.sh > build-deps.log 2>&1 || (cat build-deps.log
->> && exit 1)
->>
->>  script:
->> +  - if [ "${TRAVIS_OS_NAME}" =3D "linux" ]; then export
->> LD_LIBRARY_PATH=3D"${PREFIX}/lib:${LD_LIBRARY_PATH}"; fi
->> +  - if [ "${TRAVIS_OS_NAME}" =3D "osx"   ]; then export
->> DYLD_LIBRARY_PATH=3D"${PREFIX}/lib:${LD_LIBRARY_PATH}"; fi
->>    - autoreconf -vi
->>    - ./configure --with-crypto-library=3D"${SSLLIB}" ${EXTRA_CONFIG} ||
->> (cat config.log && exit 1)
->>    - make -j$JOBS
->> diff --git a/.travis/build-deps.sh b/.travis/build-deps.sh
->> index bda54ee..3ffba0b 100755
->> --- a/.travis/build-deps.sh
->> +++ b/.travis/build-deps.sh
->> @@ -2,8 +2,6 @@
->>  set -eux
->>
->>  # Set defaults
->> -MBEDTLS_VERSION=3D"${MBEDTLS_VERSION:-2.2.1}"
->> -OPENSSL_VERSION=3D"${OPENSSL_VERION:-1.0.2h}"
->>  PREFIX=3D"${PREFIX:-${HOME}/opt}"
->>
->>  download_mbedtls () {
->> --
->> 2.5.5
->>
->>
+> LD_LIBRARY_PATH was defined for the entire test run, it includes
+> custom openssl build, which was picked by "wget", so "wget"
+> could not verify SSL cert at https://www.openssl.org sometimes.
+> We do not want wget to pick our custom LD_LIBRARY_PATH, so I moved
+> that variable to "script" section
+>
+> LD_LIBRARY_PATH was defined for both linux and osx environments,
+> for the second DYLD_LIBRARY_PATH must be defined instead
+>
+> v2: Upgrade openssl, mbedtls to the most recent versions
+> ---
+>  .travis.yml           | 8 ++++----
+>  .travis/build-deps.sh | 2 --
+>  2 files changed, 4 insertions(+), 6 deletions(-)
 >
 
---001a1148e7c2e82a21054724e888
+Moving down the LD_LIBRARY_PATH definition makes sense -- we need it (more
+on that below) in the env  to run the test executables, but do not want it
+to modify the library search path for installed programs used for package
+updates etc.
+
+ script:
+> +  - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then export
+> LD_LIBRARY_PATH="${PREFIX}/lib:${LD_LIBRARY_PATH}"; fi
+> +  - if [ "${TRAVIS_OS_NAME}" = "osx"   ]; then export
+> DYLD_LIBRARY_PATH="${PREFIX}/lib:${LD_LIBRARY_PATH}"; fi
+
+
+On this platform DYLD_LIBRARY_PATH is what matters, so I think we should be
+appending to it instead of redefining it in terms of LD_LIBRARY_PATH. That
+is,
+
+DYLD_LIBRARY_PATH="${PREFIX}/lib:${DYLD_LIBRARY_PATH}"
+
+While this patch is good enough for travis builds,  there is a more general
+issue here. I think its the job of libtool to set -rpath properly (and/or
+use a wrapper) so that uninstalled test programs pick up the library it was
+linked with. Else a developer building using custom libs gets wrong
+libraries loaded while running tests. A proper fix will eliminate the need
+for tweaking LD_LIBRARY_PATH in the first place. But my libtool foo is
+virtually nil to suggest a proper solution.
+
+Selva
+
+--94eb2c065db47b719705472d7025
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr"><div>forgot to mention,<br></div>this patch might be appli=
-ed to both master and release/2.4 branches<br></div><div class=3D"gmail_ext=
-ra"><br><div class=3D"gmail_quote">2017-01-28 13:07 GMT+05:00 =D0=98=D0=BB=
-=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=B8=D1=86=D0=B8=D0=BD <span dir=3D"ltr">&=
-lt;<a href=3D"mailto:chipitsine@...277..." target=3D"_blank">chipitsine@...493...=
-277...</a>&gt;</span>:<br><blockquote class=3D"gmail_quote" style=3D"margin=
-:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex"><div dir=3D"ltr">t=
-his one is final v2 patch<br></div><div class=3D"HOEnZb"><div class=3D"h5">=
-<div class=3D"gmail_extra"><br><div class=3D"gmail_quote">2017-01-28 13:06 =
-GMT+05:00 Ilya Shipitsin <span dir=3D"ltr">&lt;<a href=3D"mailto:chipitsine=
-@...277..." target=3D"_blank">chipitsine@...277...</a>&gt;</span>:<br><bloc=
-kquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #cc=
-c solid;padding-left:1ex"><span>MBEDTLS_VERSION, OPENSSL_VERSION were defin=
-ed twice - in both<br>
+<div dir=3D"ltr"><div class=3D"gmail_extra">Hi,<br><br></div><div class=3D"=
+gmail_extra"><div class=3D"gmail_quote">On Sat, Jan 28, 2017 at 3:06 AM, <s=
+pan id=3D"m_-7565827237911351733:430.1">Ilya</span> <span id=3D"m_-75658272=
+37911351733:430.2">Shipitsin</span> <span dir=3D"ltr">&lt;<a href=3D"mailto=
+:chipitsine@...277..." target=3D"_blank"><span id=3D"m_-7565827237911351733=
+:430.3">chipitsine</span>@gmail.com</a>&gt;</span> wrote:<br><blockquote cl=
+ass=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid=
+ rgb(204,204,204);padding-left:1ex"><span class=3D"m_-7565827237911351733m_=
+2116998593314623666m_6767501573257298459m_-992930816600332107gmail-">MBEDTL=
+S_VERSION, OPENSSL_VERSION were defined twice - in both<br>
 =C2=A0.travis.yml=C2=A0 and .travis/build-deps.sh files, the last one<br>
 defined OPENSSL_VERSION via nonexistent OPENSSL_VERION<br>
 variable, which lead us to use openssl-1.0.1 instead of<br>
@@ -158,75 +117,46 @@ v2: Upgrade openssl, mbedtls to the most recent versions<br>
 </span>=C2=A0.travis.yml=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0| 8 ++++--=
 --<br>
 =C2=A0.travis/build-deps.sh | 2 --<br>
-=C2=A02 files changed, 4 insertions(+), 6 deletions(-)<br>
-<br>
-diff --git a/.travis.yml b/.travis.yml<br>
-index 369db97..9741d6d 100644<br>
-<span>--- a/.travis.yml<br>
-+++ b/.travis.yml<br>
-@@ -12,13 +12,12 @@ env:<br>
-=C2=A0 =C2=A0global:<br>
-=C2=A0 =C2=A0 =C2=A0- JOBS=3D3<br>
-=C2=A0 =C2=A0 =C2=A0- PREFIX=3D&quot;${HOME}/opt&quot;<br>
--=C2=A0 =C2=A0 - MBEDTLS_VERSION=3D&quot;2.2.1&quot;<br>
-+=C2=A0 =C2=A0 - MBEDTLS_VERSION=3D&quot;2.4.0&quot;<br>
-=C2=A0 =C2=A0 =C2=A0- MBEDTLS_CFLAGS=3D&quot;-I${PREFIX}/in<wbr>clude&quot;=
-<br>
-=C2=A0 =C2=A0 =C2=A0- MBEDTLS_LIBS=3D&quot;-L${PREFIX}/lib -lmbedtls -lmbed=
-x509 -lmbedcrypto&quot;<br>
--=C2=A0 =C2=A0 - OPENSSL_VERSION=3D&quot;1.0.1t&quot;<br>
-+=C2=A0 =C2=A0 - OPENSSL_VERSION=3D&quot;1.0.2k&quot;<br>
-=C2=A0 =C2=A0 =C2=A0- OPENSSL_CFLAGS=3D&quot;-I${PREFIX}/in<wbr>clude&quot;=
-<br>
-=C2=A0 =C2=A0 =C2=A0- OPENSSL_LIBS=3D&quot;-L${PREFIX}/lib -lssl -lcrypto&q=
-uot;<br>
--=C2=A0 =C2=A0 - LD_LIBRARY_PATH=3D&quot;${PREFIX}/lib<wbr>:${LD_LIBRARY_PA=
-TH}&quot;<br>
-<br>
-=C2=A0matrix:<br>
-=C2=A0 =C2=A0include:<br>
-@@ -63,7 +62,6 @@ addons:<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0- linux-libc-dev<br>
-<br>
-=C2=A0cache:<br>
--=C2=A0 apt: true<br>
-=C2=A0 =C2=A0ccache: true<br>
-=C2=A0 =C2=A0directories:<br>
-=C2=A0 =C2=A0- download-cache<br>
-</span>@@ -77,6 +75,8 @@ install:<br>
-<span>=C2=A0 =C2=A0- .travis/build-deps.sh &gt; build-deps.log 2&gt;&amp;1 =
-|| (cat build-deps.log &amp;&amp; exit 1)<br>
-<br>
+=C2=A02 files changed, 4 insertions(+), 6 deletions(-)<br></blockquote><div=
+><br></div><div>Moving down the <span id=3D"m_-7565827237911351733:430.4">L=
+D</span>_LIBRARY_PATH definition makes sense -- we need it (more on that be=
+low) in the <span id=3D"m_-7565827237911351733:430.5">env</span>=C2=A0 to r=
+un the test <span id=3D"m_-7565827237911351733:430.6">executables</span>, b=
+ut do not want it to modify the library search path for installed programs =
+used for package updates etc.<br></div><span class=3D"m_-756582723791135173=
+3m_2116998593314623666m_6767501573257298459m_-992930816600332107gmail-"></s=
+pan><br><span class=3D"m_-7565827237911351733m_2116998593314623666m_6767501=
+573257298459m_-992930816600332107gmail-"></span><blockquote class=3D"gmail_=
+quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,=
+204);padding-left:1ex"><span class=3D"m_-7565827237911351733m_2116998593314=
+623666m_6767501573257298459m_-992930816600332107gmail-">
 =C2=A0script:<br>
 </span>+=C2=A0 - if [ &quot;${TRAVIS_OS_NAME}&quot; =3D &quot;linux&quot; ]=
 ; then export LD_LIBRARY_PATH=3D&quot;${PREFIX}/lib<wbr>:${LD_LIBRARY_PATH}=
 &quot;; fi<br>
 +=C2=A0 - if [ &quot;${TRAVIS_OS_NAME}&quot; =3D &quot;osx&quot;=C2=A0 =C2=
 =A0]; then export DYLD_LIBRARY_PATH=3D&quot;${PREFIX}/l<wbr>ib:${LD_LIBRARY=
-_PATH}&quot;; fi<br>
-<div class=3D"m_-1268496710347706285HOEnZb"><div class=3D"m_-12684967103477=
-06285h5">=C2=A0 =C2=A0- autoreconf -vi<br>
-=C2=A0 =C2=A0- ./configure --with-crypto-library=3D&quot;${SSLLI<wbr>B}&quo=
-t; ${EXTRA_CONFIG} || (cat config.log &amp;&amp; exit 1)<br>
-=C2=A0 =C2=A0- make -j$JOBS<br>
-diff --git a/.travis/build-deps.sh b/.travis/build-deps.sh<br>
-index bda54ee..3ffba0b 100755<br>
---- a/.travis/build-deps.sh<br>
-+++ b/.travis/build-deps.sh<br>
-@@ -2,8 +2,6 @@<br>
-=C2=A0set -eux<br>
-<br>
-=C2=A0# Set defaults<br>
--MBEDTLS_VERSION=3D&quot;${MBEDTLS_VE<wbr>RSION:-2.2.1}&quot;<br>
--OPENSSL_VERSION=3D&quot;${OPENSSL_VE<wbr>RION:-1.0.2h}&quot;<br>
-=C2=A0PREFIX=3D&quot;${PREFIX:-${HOME}/<wbr>opt}&quot;<br>
-<br>
-=C2=A0download_mbedtls () {<br>
---<br>
-2.5.5<br>
-<br>
-</div></div></blockquote></div><br></div>
-</div></div></blockquote></div><br></div>
+_PATH}&quot;; fi</blockquote><div>=C2=A0</div><div>On this platform <span i=
+d=3D"m_-7565827237911351733:430.7">DYLD</span>_LIBRARY_PATH is what matters=
+, so I think we should be appending to it instead of redefining it in terms=
+ of <span id=3D"m_-7565827237911351733:430.8">LD</span>_LIBRARY_PATH. That =
+is,<br><br><span id=3D"m_-7565827237911351733:430.9">DYLD</span>_LIBRARY_PA=
+TH=3D&quot;${PREFIX}/l<span id=3D"m_-7565827237911351733:430.10"><wbr>ib</s=
+pan>:${<span id=3D"m_-7565827237911351733:430.11">DYLD</span>_LIBRARY_PATH}=
+&quot;<br></div></div><br></div><div class=3D"gmail_extra">While this patch=
+ is good enough for <span id=3D"m_-7565827237911351733:430.12">travis</span=
+> builds,=C2=A0 there is a more general issue here. I think its the job of =
+<span id=3D"m_-7565827237911351733:430.13">libtool</span> to set -<span id=
+=3D"m_-7565827237911351733:430.14">rpath</span> properly (and/or use a wrap=
+per) so that <span id=3D"m_-7565827237911351733:430.15">uninstalled</span> =
+test programs pick up the library it was linked with. Else a developer buil=
+ding using custom <span id=3D"m_-7565827237911351733:430.16"></span>libs ge=
+ts wrong libraries loaded while running tests. A proper fix will eliminate =
+the need for tweaking <span id=3D"m_-7565827237911351733:430.17">LD</span>_=
+LIBRARY_PATH in the first place. But my <span id=3D"m_-7565827237911351733:=
+430.18">libtool</span> foo is virtually nil to suggest a proper solution.<b=
+r><br><span id=3D"m_-7565827237911351733:430.19">Selva</span><br></div></di=
+v>
 
---001a1148e7c2e82a21054724e888--
+--94eb2c065db47b719705472d7025--
 
