@@ -1,7 +1,13 @@
-From: Ilya Shipitsin <chipitsine@...277...>
-Date: Sun, 29 Jan 2017 11:58:11 +0500
-Message-Id: <1485673091-7600-1-git-send-email-chipitsine@...277...>
-Subject: [Openvpn-devel] [PATCH] Resolve several travis-ci issues
+Date: Sun, 29 Jan 2017 23:43:04 +0800
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <20170129154304.GG12187@...2182...>
+References: <1485673091-7600-1-git-send-email-chipitsine@...277...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="tNQTSEo8WG/FKZ8E"
+Content-Disposition: inline
+In-Reply-To: <1485673091-7600-1-git-send-email-chipitsine@...277...>
+Subject: Re: [Openvpn-devel] [PATCH] Resolve several travis-ci issues
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -10,87 +16,56 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Ilya Shipitsin <chipitsine@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-MBEDTLS_VERSION, OPENSSL_VERSION were defined twice - in both
-.travis.yml  and .travis/build-deps.sh files, the last one
-defined OPENSSL_VERSION via nonexistent OPENSSL_VERION
-variable, which lead us to use openssl-1.0.1 instead of
-openssl-1.0.2, I removed variable definition from build-deps.sh
+--tNQTSEo8WG/FKZ8E
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-"cache: [ apt: true ]" is not a travis supported option, it was
-introduced by mistake, I removed it
+Hi Ilya,
 
-LD_LIBRARY_PATH was defined for the entire test run, it includes
-custom openssl build, which was picked by "wget", so "wget"
-could not verify SSL cert at https://www.openssl.org sometimes.
-We do not want wget to pick our custom LD_LIBRARY_PATH, so I moved
-that variable to "script" section
+my 2-meta-cents here: when sending multiple versions of the same patch to t=
+he
+mailing list, I'd recommend to change the subject to "[PATCHvX]" where X is
+the patch version.
 
-LD_LIBRARY_PATH was defined for both linux and osx environments,
-for the second DYLD_LIBRARY_PATH must be defined instead
+This way it is easier to identify which patch comes before and which after.
 
-v2: Upgrade openssl, mbedtls to the most recent versions
+Not sure what the maintainers think about this, but I stumbled on the wrong
+version a couple of times today before realizing that the newer was another=
+ one.
 
-v3: DYLD_LIBRARY_PATH was defined via LD_LIBRARY_PATH by mistake
----
- .travis.yml           | 8 ++++----
- .travis/build-deps.sh | 2 --
- 2 files changed, 4 insertions(+), 6 deletions(-)
+Git can do this for you by specifying "-v X" (i.e. -v 2" to the git format-=
+patch
+command.
 
-diff --git a/.travis.yml b/.travis.yml
-index 369db97..a68374a 100644
---- a/.travis.yml
-+++ b/.travis.yml
-@@ -12,13 +12,12 @@ env:
-   global:
-     - JOBS=3
-     - PREFIX="${HOME}/opt"
--    - MBEDTLS_VERSION="2.2.1"
-+    - MBEDTLS_VERSION="2.4.0"
-     - MBEDTLS_CFLAGS="-I${PREFIX}/include"
-     - MBEDTLS_LIBS="-L${PREFIX}/lib -lmbedtls -lmbedx509 -lmbedcrypto"
--    - OPENSSL_VERSION="1.0.1t"
-+    - OPENSSL_VERSION="1.0.2k"
-     - OPENSSL_CFLAGS="-I${PREFIX}/include"
-     - OPENSSL_LIBS="-L${PREFIX}/lib -lssl -lcrypto"
--    - LD_LIBRARY_PATH="${PREFIX}/lib:${LD_LIBRARY_PATH}"
- 
- matrix:
-   include:
-@@ -63,7 +62,6 @@ addons:
-       - linux-libc-dev
- 
- cache:
--  apt: true
-   ccache: true
-   directories:
-   - download-cache
-@@ -77,6 +75,8 @@ install:
-   - .travis/build-deps.sh > build-deps.log 2>&1 || (cat build-deps.log && exit 1)
- 
- script:
-+  - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then export LD_LIBRARY_PATH="${PREFIX}/lib:${LD_LIBRARY_PATH}"; fi
-+  - if [ "${TRAVIS_OS_NAME}" = "osx"   ]; then export DYLD_LIBRARY_PATH="${PREFIX}/lib:${DYLD_LIBRARY_PATH}"; fi
-   - autoreconf -vi
-   - ./configure --with-crypto-library="${SSLLIB}" ${EXTRA_CONFIG} || (cat config.log && exit 1)
-   - make -j$JOBS
-diff --git a/.travis/build-deps.sh b/.travis/build-deps.sh
-index bda54ee..3ffba0b 100755
---- a/.travis/build-deps.sh
-+++ b/.travis/build-deps.sh
-@@ -2,8 +2,6 @@
- set -eux
- 
- # Set defaults
--MBEDTLS_VERSION="${MBEDTLS_VERSION:-2.2.1}"
--OPENSSL_VERSION="${OPENSSL_VERION:-1.0.2h}"
- PREFIX="${PREFIX:-${HOME}/opt}"
- 
- download_mbedtls () {
--- 
-2.5.5
+Cheers!
 
+--=20
+Antonio Quartulli
+
+--tNQTSEo8WG/FKZ8E
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIcBAEBCAAGBQJYjg2FAAoJEJ6F1zG2JyOsQn4QAKQJX3RFef7k7UPav+f7teVh
+hXNyQJBWargprrbXIw+EH6h4flL/ASjz9s6+QDW/Pcse/vGQppotPTMqRAlOgm/8
+4IBpmBlZg6HK15Z0O2DdICtNwDOf7249d9cCrvmey+QShf6djqU5gFptfrQOyLb5
+xutG2wevnOuZIufPPtzAEYKy8aHyZChyQoa1EFpsxwP2uK2F/sxRuNTPpn9u5wbG
+YyDP1VhCtqGI0A5i9XVmslNtMgzHhC7MqHrUIaURbQ5p1sH/dadJT7Na7mU6ur8/
+BYI8SDYe+7zwQeTbnKBZRzdlKOM61LwLqH6geVpAaazJ13RaEQWCwlFai/6MaQpr
+vAqp2pXIyHjXAQiYWgad/zNH6k8N9WaXT8WXFounfbRhXjcr4eAryd1Cgv6ZL2mg
+MFvg/xoY/Ea2Vgxtg+NiGC5zrimRRRnoZkwmJcnkjemDS+KVSBo64x4Kqex/kSpt
+f2PM0twZxjuqhv+smDy1lBUZXGGzRvE/CzvcxayxTruUCsZ4aSRineqe04a6v+ms
+wEHU2CQa6efWvKHhOreo9+cFzzgasoQUNYxjL4Zl+vkPSiibAYJaVSq0xSZYZhk4
+gojD7ZE8Zf0j+WcxQEfNXYgAFaQwRIiaQZNoX9mhWfeiv0EFixGPu344fPciDSzS
+mwIeT60XJGARXptTD0Kn
+=bYZZ
+-----END PGP SIGNATURE-----
+
+--tNQTSEo8WG/FKZ8E--
 
