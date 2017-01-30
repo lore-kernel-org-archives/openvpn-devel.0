@@ -1,17 +1,16 @@
-Date: Mon, 30 Jan 2017 20:31:17 +0800
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <20170130123117.GI12187@...2182...>
-References: <1485673091-7600-1-git-send-email-chipitsine@...277...>
-	<20170129154304.GG12187@...2182...>
-	<20170129181310.GG940@...1296...>
-	<d89cb49b-0d58-72b0-5d0c-19ce1b40b9c6@...2080...>
-	<c9f230fe-5c54-c001-58df-5c57f3f1b863@...515...>
+References: <1484297432-14435-1-git-send-email-chipitsine@...277...>
+	<7dc75a19-451e-effa-503a-ac5b75a23bab@...515...>
+	<ac93d2de-d56a-0ff9-b97a-a590923f5cf8@...2080...>
+	<CAFHpkQEHRCveRiiBWscwLQ7U3UoJ+yY5_0Lx82UMc=f4ucwMbQ@...278...>
+	<CAFHpkQFs5x_7MEH5gjieUsp=1f2SPdG9Fr6PeakgBGrSEPQC_Q@...278...>
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <6256c846-ca60-be4f-7122-60465374a322@...515...>
+Date: Mon, 30 Jan 2017 14:34:32 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="cYtjc4pxslFTELvY"
-Content-Disposition: inline
-In-Reply-To: <c9f230fe-5c54-c001-58df-5c57f3f1b863@...515...>
-Subject: Re: [Openvpn-devel] [PATCH] Resolve several travis-ci issues
+In-Reply-To: <CAFHpkQFs5x_7MEH5gjieUsp=1f2SPdG9Fr6PeakgBGrSEPQC_Q@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] add PR template in order to simplify
+ new developers cooperate properly if they open PR. discussed here:
+ https://sourceforge.net/p/openvpn/mailman/message/35601310/
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,61 +19,101 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Samuli =?iso-8859-1?Q?Sepp=E4nen?= <samuli@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
-
---cYtjc4pxslFTELvY
-Content-Type: text/plain; charset="iso-8859-1"
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+To: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-On Mon, Jan 30, 2017 at 02:28:22PM +0200, Samuli Sepp=E4nen wrote:
-> On 29/01/2017 21:43, David Sommerseth wrote:
-> > On 29/01/17 19:13, Gert Doering wrote:
-> >>
-> >>> Git can do this for you by specifying "-v X" (i.e. -v 2" to the git f=
-ormat-patch
-> >>> command.
-> >>
-> >> I've learned something new today :-) (but I shouldn't be surprised: git
-> >> is known to do everything to ease lazy committers' work :-) )
-> >
-> > Weee!  I realize I will need to read the man pages again ... I was
-> > neither aware of -v :)  Thanks for the hint, Antonio!
->=20
-> Same here, so another thanks to Antonio! I used to do it the hard way by=
-=20
-> manually editing the message subject.
+I agree with you on keeping the pull request template minimal and having=20
+the more fine-grained information in Trac.
 
-I had a good master .. :D
+ACK.
 
-/me is too lazy to read the man too
+On 30/01/2017 08:48, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=B8=D1=
+=86=D0=B8=D0=BD wrote:
+> can we merge it ?
+> @mattock ?
+>
+> 2017-01-21 13:47 GMT+05:00 =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=
+=B8=D1=86=D0=B8=D0=BD <chipitsine@...277...
+> <mailto:chipitsine@...277...>>:
+>
+>
+>
+>     2017-01-21 0:24 GMT+05:00 David Sommerseth
+>     <openvpn@...2080...
+>     <mailto:openvpn@...2080...>>:
+>
+>         On 13/01/17 10:05, Samuli Sepp=C3=A4nen wrote:
+>         > Il 13/01/2017 10:50, Ilya Shipitsin ha scritto:
+>         >> ---
+>         >>  .github/PULL_REQUEST_TEMPLATE.md | 8 ++++++++
+>         >>  1 file changed, 8 insertions(+)
+>         >>  create mode 100644 .github/PULL_REQUEST_TEMPLATE.md
+>         >>
+>         >> diff --git a/.github/PULL_REQUEST_TEMPLATE.md b/.github/PULL_R=
+EQUEST_TEMPLATE.md
+>         >> new file mode 100644
+>         >> index 0000000..d0cfd7f
+>         >> --- /dev/null
+>         >> +++ b/.github/PULL_REQUEST_TEMPLATE.md
+>         >> @@ -0,0 +1,8 @@
+>         >> +# Thank you for your contribution
+>         >> +
+>         >> +You are welcome to open PR, but they are used for discussion =
+only. All
+>         >> +patches must eventually go to the openvpn-devel mailing list =
+for review.
+>         >> +For details, see these Wiki articles:
+>         >> +
+>         >> +* https://community.openvpn.net/openvpn/wiki/Contributing
+>         <https://community.openvpn.net/openvpn/wiki/Contributing>
+>         >> +* https://community.openvpn.net/openvpn/wiki/DeveloperDocumen=
+tation <https://community.openvpn.net/openvpn/wiki/DeveloperDocumentation>
+>         >>
+>         >
+>         > Based on testing in the travis-openssl-test repository the temp=
+late
+>         > works as intended, so ACK on that part.
+>         >
+>         > Any comments on the text itself?
+>
+>         How does this work with branches?  Do we need to say that new
+>         patches
+>         should go into the master branch primarily, unless it is fixing
+>         a bug or
+>         another issue which is only relevant for specific release branche=
+s?
+>
+>
+>
+>     we can put such information to
+>
+>     https://community.openvpn.net/openvpn/wiki/Contributing
+>     <https://community.openvpn.net/openvpn/wiki/Contributing>
+>     https://community.openvpn.net/openvpn/wiki/DeveloperDocumentation
+>     <https://community.openvpn.net/openvpn/wiki/DeveloperDocumentation>
+>
+>
+>     I would leave PR template skinny
+>
+>
+>
+>
+>         --
+>         kind regards,
+>
+>         David Sommerseth
+>         OpenVPN Technologies, Inc
+>
+>
+>
+>
 
-Cheers!
 
 --=20
-Antonio Quartulli
+Samuli Sepp=C3=A4nen
+Community Manager
+OpenVPN Technologies, Inc
 
---cYtjc4pxslFTELvY
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQIcBAEBCAAGBQJYjzISAAoJEJ6F1zG2JyOsCzYP/ixBzUwtOlxK0DntVxphv4NW
-tL7pi8nMPltGslqVgPYYuNV9tggqLaNM2hy3nu9grVRA6yvczBSaBjX85ws8TYvL
-PNEwZeAfPwKuTpCCt96zH1SImpKfdgV8sMOx1pXe1+awyPny2WQASjRhFAOQZ28d
-rThefyEBNjOKEOGLtNBJrz4u+LHMHip1vvekii18bwKrplZFhnDMGIYWhpfqax10
-f8vMBb+7AuPpZJu29FWkQUhyKxaC7+XkoxalEDFFi/EIdNhadk0ofV5/rMS0l47A
-J0byZj0RKCYfQrd/svH5wB9DG77m9mwSlypYPKp7/2YFl/TCCcIWmZgv+6hJiq5S
-kwoMc7ZGHbn35sBBGJ/XG+U8wysPmzWoiOAZGvWP/1wDSRyAyT9JsGoEWXL+Sdys
-F1cS6CKrTCzRJSALcnL1EY/4dpihrs/PgPXEPXSFXeMHKCg44oUhh0Q1DtIp6eKO
-S6Sw/2GXDKBl8r9by301mMwlrwX1Xwx23/E/WIA+/2D2HVLL4Fi/lZonkadyE0rP
-VJniXb83uLoV7kg/6GvyuqVk55oabH6bD7UH2jzVS5aAS3SbEjoa/Ay2dj5yJKfX
-46eSZoWRCRuIg4I8oXUQullxngxewdHTj3mitRu47jfcRQCYJn1uGaXSIVAdqJ3g
-f/v/5wbiE+tR8Qemo013
-=p2ap
------END PGP SIGNATURE-----
-
---cYtjc4pxslFTELvY--
+irc freenode net: mattock
 
