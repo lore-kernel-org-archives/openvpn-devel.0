@@ -1,8 +1,21 @@
-From: Antonio Quartulli <a@...2181...>
-Date: Tue, 31 Jan 2017 19:21:31 +0800
-Message-Id: <20170131112131.13570-1-a@...2181...>
-Subject: [Openvpn-devel] [PATCH] attempt to add IPv6 route even when no IPv6
-	address was configured
+References: <1484297432-14435-1-git-send-email-chipitsine@...277...>
+	<7dc75a19-451e-effa-503a-ac5b75a23bab@...515...>
+	<ac93d2de-d56a-0ff9-b97a-a590923f5cf8@...2080...>
+	<CAFHpkQEHRCveRiiBWscwLQ7U3UoJ+yY5_0Lx82UMc=f4ucwMbQ@...278...>
+	<CAFHpkQFs5x_7MEH5gjieUsp=1f2SPdG9Fr6PeakgBGrSEPQC_Q@...278...>
+	<6256c846-ca60-be4f-7122-60465374a322@...515...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <7e7799f0-e2f1-8773-18aa-6a89b87d3500@...2080...>
+Date: Tue, 31 Jan 2017 14:49:15 +0100
+MIME-Version: 1.0
+In-Reply-To: <6256c846-ca60-be4f-7122-60465374a322@...515...>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="OOnCxbdtDMCnboCqxGkrhenl2BP0RTgL3"
+Subject: Re: [Openvpn-devel] [PATCH] add PR template in order to simplify
+ new developers cooperate properly if they open PR. discussed here:
+ https://sourceforge.net/p/openvpn/mailman/message/35601310/
+Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,64 +24,53 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>, =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--OOnCxbdtDMCnboCqxGkrhenl2BP0RTgL3
+Content-Type: multipart/mixed; boundary="rH0xdLcwChXR7rWss0Iv4MXHFO56Tv1sf";
+	protected-headers="v1"
+From: David Sommerseth <openvpn@...2080...>
+Reply-To: openvpn-devel@lists.sourceforge.net
+To: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>,
+	=?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>,
+	"openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Message-ID: <7e7799f0-e2f1-8773-18aa-6a89b87d3500@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH] add PR template in order to simplify new
+	developers cooperate properly if they open PR. discussed here:
+	https://sourceforge.net/p/openvpn/mailman/message/35601310/
+References: <1484297432-14435-1-git-send-email-chipitsine@...277...>
+	<7dc75a19-451e-effa-503a-ac5b75a23bab@...515...>
+	<ac93d2de-d56a-0ff9-b97a-a590923f5cf8@...2080...>
+	<CAFHpkQEHRCveRiiBWscwLQ7U3UoJ+yY5_0Lx82UMc=f4ucwMbQ@...278...>
+	<CAFHpkQFs5x_7MEH5gjieUsp=1f2SPdG9Fr6PeakgBGrSEPQC_Q@...278...>
+	<6256c846-ca60-be4f-7122-60465374a322@...515...>
+In-Reply-To: <6256c846-ca60-be4f-7122-60465374a322@...515...>
+
+--rH0xdLcwChXR7rWss0Iv4MXHFO56Tv1sf
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Antonio Quartulli <a@...2181...>
+Content-Transfer-Encoding: quoted-printable
 
-Even if no IPv6 address is configured, OpenVPN still supports
-transporting IPv6 segments, therefore adding an IPv6 route
-should always be allowed.
+On 30/01/17 13:34, Samuli Sepp=C3=A4nen wrote:
+> I agree with you on keeping the pull request template minimal and having=
+=20
+> the more fine-grained information in Trac.
+>=20
+> ACK.
 
-However, the route might fail to be installed or may just not work
-as expected, therefore, a proper warning should be printed to inform
-the user of the possible pitfall.
+Don't get me wrong!  I agree we should keep the template minimal.  But I
+yet have to see a developer full of enthusiasm with a fix ready, who
+just clicked "Send pull request!" who will actually instantly go reading
+further.  And especially when the information need is fairly
+comprehensive and not even directly in the first URL being listed.
 
-Always allow adding an IPv6 route and print a WARNING when
-no IPv6 address is configured for the interface.
+In fact the first place where the patch process is described is here:
+<https://community.openvpn.net/openvpn/wiki/DeveloperDocumentation#Communit=
+ypatchesandtheacceptanceprocessofthesepatches>.
+ That is "hidden" in the middle of the wiki on the second URL.  And the
+first URL provides just a link to the same DeveloperDocumentation wiki page.
 
-Trac: #832
-Signed-off-by: Antonio Quartulli <a@...2181...>
----
- src/openvpn/route.c | 17 +++++++++--------
- 1 file changed, 9 insertions(+), 8 deletions(-)
+So I kindly ask you to reconsider the text more carefully once more.
+--rH0xdLcwChXR7rWss0Iv4MXHFO56Tv1sf--
 
-diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index 223cb5f4..0145db3c 100644
---- a/src/openvpn/route.c
-+++ b/src/openvpn/route.c
-@@ -1196,6 +1196,15 @@ add_routes(struct route_list *rl, struct route_ipv6_list *rl6, const struct tunt
-     if (rl6 && !(rl6->iflags & RL_ROUTES_ADDED) )
-     {
-         struct route_ipv6 *r;
-+
-+        if (!tt->did_ifconfig_ipv6_setup)
-+        {
-+            msg(M_INFO, "WARNING: OpenVPN was configured to add an IPv6 "
-+                "route over %s. However, no IPv6 has been configured for "
-+                "this interface, therefore the route installation may "
-+                "fail or may not work as expected.", tt->actual_name);
-+        }
-+
-         for (r = rl6->routes_ipv6; r; r = r->next)
-         {
-             if (flags & ROUTE_DELETE_FIRST)
-@@ -1882,14 +1891,6 @@ add_route_ipv6(struct route_ipv6 *r6, const struct tuntap *tt, unsigned int flag
-     }
- #endif
- 
--    if (!tt->did_ifconfig_ipv6_setup)
--    {
--        msg( M_INFO, "add_route_ipv6(): not adding %s/%d: "
--             "no IPv6 address been configured on interface %s",
--             network, r6->netbits, device);
--        return;
--    }
--
-     msg( M_INFO, "add_route_ipv6(%s/%d -> %s metric %d) dev %s",
-          network, r6->netbits, gateway, r6->metric, device );
- 
--- 
-2.11.0
-
-
+--OOnCxbdtDMCnboCqxGkrhenl2BP0RTgL3--
