@@ -1,13 +1,14 @@
-Date: Wed, 1 Feb 2017 11:04:55 +0800
+Date: Wed, 1 Feb 2017 16:33:55 +0800
 From: Antonio Quartulli <a@...2181...>
-Message-ID: <20170201030455.GN12187@...2182...>
+Message-ID: <20170201083355.GT12187@...2182...>
 References: <20170131182241.10590-1-a@...2181...>
 	<CAKuzo_h69pmh=+jG=xPdprDSPLxR0Z9QhBnD_eM5bh1PUYsKYw@...278...>
+	<20170201030455.GN12187@...2182...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="f5QefDQHtn8hx44O"
+	protocol="application/pgp-signature"; boundary="W/+CTqSGWdiRg+8j"
 Content-Disposition: inline
-In-Reply-To: <CAKuzo_h69pmh=+jG=xPdprDSPLxR0Z9QhBnD_eM5bh1PUYsKYw@...278...>
+In-Reply-To: <20170201030455.GN12187@...2182...>
 Subject: Re: [Openvpn-devel] [PATCH] reload HTTP proxy credentials when
  moving to the next connection profile
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -21,117 +22,53 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: Selva Nair <selva.nair@...277...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---f5QefDQHtn8hx44O
+--W/+CTqSGWdiRg+8j
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
-Hi Selva,
+Hi,
 
-thank you very much for your feedback!
-
-On Tue, Jan 31, 2017 at 03:02:33PM -0500, Selva Nair wrote:
-> Hi,
+On Wed, Feb 01, 2017 at 11:04:55AM +0800, Antonio Quartulli wrote:
+> > That said, there is one issue with this approach. Looks like SIGUSR1
+> > restarts will now always prompt for proxy password, which is not proper.
 >=20
-> On Tue, Jan 31, 2017 at 1:22 PM, Antonio Quartulli <a@...2181...> wrote:
->=20
-> > iff --git a/src/openvpn/proxy.c b/src/openvpn/proxy.c
-> > index b0ed3279..27f34bed 100644
-> > --- a/src/openvpn/proxy.c
-> > +++ b/src/openvpn/proxy.c
-> > @@ -256,7 +256,16 @@ username_password_as_base64(const struct
-> > http_proxy_info *p,
-> >  static void
-> >  get_user_pass_http(struct http_proxy_info *p, const bool force)
-> >  {
-> > -    if (!static_proxy_user_pass.defined || force)
-> > +    /*
-> > +     * in case of forced (re)load, make sure the static storage is set=
- as
-> > +     * undefined, otherwise get_user_pass() won't try to load any
-> > credential
-> > +     */
-> > +    if (force)
-> > +    {
-> > +        static_proxy_user_pass.defined =3D false;
-> > +    }
-> >
->=20
-> While unsetting the define attribute appears to have no unintended side
-> effects,  purge_user_pass(&static_proxy_user_pass, true) would be cleaner.
->=20
+> Right! Thanks for pointing this out!
 
-yeah, I Was thinking about that too, but I was not sure. I will re-check, it
-might really be cleaner.
+Actually I'd like to understand the expected behaviour: if SIGUSR1 is issue=
+d,
+openvpn should re-read the file containing the HTTP proxy credentials, but,=
+ if
+stdin was specified, it should not ask the user for user/pass again ?
 
->=20
-> > +
-> > +    if (!static_proxy_user_pass.defined)
-> >      {
-> >          unsigned int flags =3D GET_USER_PASS_MANAGEMENT;
-> >          if (p->queried_creds)
-> >
->=20
-> That said, there is one issue with this approach. Looks like SIGUSR1
-> restarts will now always prompt for proxy password, which is not proper.
+So in case of stdin the only way to re-enter the user/pass is to restart
+openvpn?
 
-Right! Thanks for pointing this out!
-
-> If
-> so, a more nuanced fix that preserves the current behaviour for a single
-> proxy credentials is required. May be, do the "purge proxy pass" in init.c
-> only if the connection entry has http-proxy specified?
->=20
-> I think the intent of the original code/man page is to have proxy password
-> work the same way as auth-user-pass with an implicit auth-nocache assumed.
-> Then multiple credentials is not expected, but could still work if the
-> proxy password is purged when an authentication error happens instead of
-> when the remote changes.
->=20
-
-I am thinking that maybe I could just restructure the way the user/pass are
-stored. Right now there is one static variable and I am trying to hack arou=
-nd it
-to make it work with multiple http proxies....but why not just storing one
-user/pass object per proxy? (like we currently do with the other proxy data)
-
-That would probably be much cleaner, but will require a more intrusive chan=
-ge.
-
-
-> Finally, socks credentials may also be affected.
-
-I am not sure, because they use a different object/code-path. But I will
-re-check that too
-
-
-Thanks a lot!
-
-Cheers,
+What's your opinion on this?
 
 --=20
 Antonio Quartulli
 
---f5QefDQHtn8hx44O
+--W/+CTqSGWdiRg+8j
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: Digital signature
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIcBAEBCAAGBQJYkVBUAAoJEJ6F1zG2JyOsvAUQAL/KK4ijzfO1rHZDFELHz2YF
-sDFuT7wIdEZ7BpLV66wrZBKskUtgCw4MeKvZQMAU5aRu5O+msFVxj8BbOYr7afEL
-nAavjmicbI5QxfqxVSqCNbtjiS11kJ5doWx/23xfgN+1ZHL0tKSFWHqUXByFkfny
-fdtovtrRJJj6biu7vG8xx576rHLfOtjovU/1hmoz0lLGf5CZoRNN+QX7bIEn1YAZ
-lGPk+8qxdYfGBw046iGZkgyEFsmYU0j1Hpkg3NEXgDperutanOCc6baIchhUyRBI
-cUAKcd0XBUupOk8cGzxUmh8sCaZ9Ut5WvKeCZkW2Mje8isHGwQiIYk5UzcbXxzY6
-84MKgz3kMFw1BML3zixSIX1JoomJE8nARWTDvpP/yLE58fluDh5IPNHsmU2RccC1
-KR1sVBqoTFDWJDAoxI/AUSI8QOSUpTreIOhyLvqvuRYW0sPaGWocx4qatWKmNiIK
-dED0E3eG0vsKl4l/jBOQZKMSf4BmkF1lxkJlD/oQZMGhdgT0GbVFInqP268uqcGe
-/DxtVTXXGQL3o2AwopoUQb6DlYetfxHF/Xx9fr+/Lxro0j11i5OcSK1r1kJeKp8E
-n49EyOJa5BURxIEDkSegKeDMNn7XP182vkPDRCd3GdKyeTyg/Bc6uBafpxmMWpdz
-3K+c8jMEY30TgpzSx3j8
-=1UnJ
+iQIcBAEBCAAGBQJYkZ1wAAoJEJ6F1zG2JyOs05kQAINYXlloq0SpOVG6koKzUrE0
+0WpRYZzedoMGjSSoNjLbgPk4vIPKSFfdrxT5TGh60zBAwNJelsWUHJ6MvIS+qA7H
+yza2czJ5M50xCg264kr9yCAtrPihzRh2Hkk9uIK+xjMFX56388CIC9TDyVdcQcB4
+58Dn7IELl0w0bircduVyvPfrT92201Av9PyJ9L5V1ycoh3t4dnTBCiPSzOrljrtZ
+kqr3PEcN4oPBSumTYB9B0/V+6Lk2Eo8O9jiD55SF+QiLmqQe5S3fGXzPPlJOuIYw
+xU4LZbjoKQWquNNzGTQkfu/s8EPrCwZKgUtBAvYSeQKXIo9uvRNL4txfQSlUGUhU
+TBwdK4LLE5orc0y9Hng1HH99kjr4bDIN/trIhhFruCiaFRVWSurSMVX64J1at30P
+kxVl4rLwQ67h8zGqH47ch32mpDrm8YGFO3ChTjSOUN//uKlwxOqnhlIGQ7npclMk
+Ph8JOTzq2ubq3UDPYmHayhvaS47UrmfiDfYhUE3PR5m7xNYVnVOCUbbTz0h5a3Oe
+GkPK6aE+NiiBzfIg0ZooU/LTE4e3Eu0PAFd1NUEVWFdb1wq2wjgWHwZ1HyIF/hbr
+gToij1oBXAVhmlMyo1+G4u0wljt0eo0sOMi99vsQM4wArb0Jy/6L4zHkN5PNMGEJ
+pBcwrqfCGnN0lZZ2CNeD
+=95vE
 -----END PGP SIGNATURE-----
 
---f5QefDQHtn8hx44O--
+--W/+CTqSGWdiRg+8j--
 
