@@ -1,16 +1,10 @@
-Date: Wed, 1 Feb 2017 16:33:55 +0800
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <20170201083355.GT12187@...2182...>
-References: <20170131182241.10590-1-a@...2181...>
-	<CAKuzo_h69pmh=+jG=xPdprDSPLxR0Z9QhBnD_eM5bh1PUYsKYw@...278...>
-	<20170201030455.GN12187@...2182...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="W/+CTqSGWdiRg+8j"
-Content-Disposition: inline
-In-Reply-To: <20170201030455.GN12187@...2182...>
-Subject: Re: [Openvpn-devel] [PATCH] reload HTTP proxy credentials when
- moving to the next connection profile
+From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
+Date: Wed, 1 Feb 2017 17:19:53 +0500
+Message-ID: <CAFHpkQHcC4o5RWhmz58Q2sKE1a89QDg=r9QuJa3uM4zOvShNVw@...278...>
+Content-Type: multipart/alternative; boundary=001a1148e7c2e3385c05477710cd
+Subject: [Openvpn-devel] pushing some IV_xxx on "There are no TAP-Windows
+ adapters on this system." ?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,56 +13,61 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---W/+CTqSGWdiRg+8j
-Content-Type: text/plain; charset="us-ascii"
+--001a1148e7c2e3385c05477710cd
+Content-Type: text/plain; charset=UTF-8
+
+Hello,
+
+Tue Jan 31 19:38:32 2017 MANAGEMENT: Client disconnected
+Tue Jan 31 19:38:32 2017 There are no TAP-Windows adapters on this system.
+You should be able to create a TAP-Windows adapter by going to Start -> All
+Programs -> KonturVPN -> Add a new TAP-Windows virtual ethernet adapter.
+Tue Jan 31 19:38:32 2017 Exiting due to fatal error
+
+
+it happens from time to time (people use regcleaner, disable tap-adapter,
+etc....)
+from the server point of view, everything looks ok, user is authorized....
+
+what if we will push some IV_xxx message ?
+it will help us to detect such problem on the server side...
+
+actually, it should be handled better on client side as well.
+I like the SoftEtherVPN approach, it creates separate adapter per
+connection, and specifies adapter name explicetly. so, you can know for
+sure, whether adapter is available or not.
+
+well, the described issue "no tap adapter available" seems to be the most
+recent in our case, I'm going to do something with it
+
+
+Cheers,
+Ilya Shipitsin
+
+--001a1148e7c2e3385c05477710cd
+Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
+<div dir=3D"ltr"><div>Hello,</div><div><br></div><div>Tue Jan 31 19:38:32 2=
+017 MANAGEMENT: Client disconnected</div><div>Tue Jan 31 19:38:32 2017 Ther=
+e are no TAP-Windows adapters on this system.=C2=A0 You should be able to c=
+reate a TAP-Windows adapter by going to Start -&gt; All Programs -&gt; Kont=
+urVPN -&gt; Add a new TAP-Windows virtual ethernet adapter.</div><div>Tue J=
+an 31 19:38:32 2017 Exiting due to fatal error</div><div><br></div><div><br=
+></div><div>it happens from time to time (people use regcleaner, disable ta=
+p-adapter, etc....)</div><div>from the server point of view, everything loo=
+ks ok, user is authorized....</div><div><br></div><div>what if we will push=
+ some IV_xxx message ?</div><div>it will help us to detect such problem on =
+the server side...</div><div><br></div><div>actually, it should be handled =
+better on client side as well.</div><div>I like the SoftEtherVPN approach, =
+it creates separate adapter per connection, and specifies adapter name expl=
+icetly. so, you can know for sure, whether adapter is available or not.</di=
+v><div><br></div><div>well, the described issue &quot;no tap adapter availa=
+ble&quot; seems to be the most recent in our case, I&#39;m going to do some=
+thing with it</div><div><br></div><div><br></div><div>Cheers,</div><div>Ily=
+a Shipitsin</div></div>
 
-On Wed, Feb 01, 2017 at 11:04:55AM +0800, Antonio Quartulli wrote:
-> > That said, there is one issue with this approach. Looks like SIGUSR1
-> > restarts will now always prompt for proxy password, which is not proper.
->=20
-> Right! Thanks for pointing this out!
-
-Actually I'd like to understand the expected behaviour: if SIGUSR1 is issue=
-d,
-openvpn should re-read the file containing the HTTP proxy credentials, but,=
- if
-stdin was specified, it should not ask the user for user/pass again ?
-
-So in case of stdin the only way to re-enter the user/pass is to restart
-openvpn?
-
-What's your opinion on this?
-
---=20
-Antonio Quartulli
-
---W/+CTqSGWdiRg+8j
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQIcBAEBCAAGBQJYkZ1wAAoJEJ6F1zG2JyOs05kQAINYXlloq0SpOVG6koKzUrE0
-0WpRYZzedoMGjSSoNjLbgPk4vIPKSFfdrxT5TGh60zBAwNJelsWUHJ6MvIS+qA7H
-yza2czJ5M50xCg264kr9yCAtrPihzRh2Hkk9uIK+xjMFX56388CIC9TDyVdcQcB4
-58Dn7IELl0w0bircduVyvPfrT92201Av9PyJ9L5V1ycoh3t4dnTBCiPSzOrljrtZ
-kqr3PEcN4oPBSumTYB9B0/V+6Lk2Eo8O9jiD55SF+QiLmqQe5S3fGXzPPlJOuIYw
-xU4LZbjoKQWquNNzGTQkfu/s8EPrCwZKgUtBAvYSeQKXIo9uvRNL4txfQSlUGUhU
-TBwdK4LLE5orc0y9Hng1HH99kjr4bDIN/trIhhFruCiaFRVWSurSMVX64J1at30P
-kxVl4rLwQ67h8zGqH47ch32mpDrm8YGFO3ChTjSOUN//uKlwxOqnhlIGQ7npclMk
-Ph8JOTzq2ubq3UDPYmHayhvaS47UrmfiDfYhUE3PR5m7xNYVnVOCUbbTz0h5a3Oe
-GkPK6aE+NiiBzfIg0ZooU/LTE4e3Eu0PAFd1NUEVWFdb1wq2wjgWHwZ1HyIF/hbr
-gToij1oBXAVhmlMyo1+G4u0wljt0eo0sOMi99vsQM4wArb0Jy/6L4zHkN5PNMGEJ
-pBcwrqfCGnN0lZZ2CNeD
-=95vE
------END PGP SIGNATURE-----
-
---W/+CTqSGWdiRg+8j--
+--001a1148e7c2e3385c05477710cd--
 
