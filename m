@@ -1,12 +1,13 @@
-Date: Tue, 7 Feb 2017 12:14:51 +0800
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <20170207041451.GA11922@...2182...>
+Date: Tue, 7 Feb 2017 09:07:29 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20170207080729.GK93896@...1296...>
 References: <CAOAUwZH8aRg-5XLJaYjpzw6y9yptx-ma7QJVPJT-yKFE7cmUrw@...278...>
+	<20170207041451.GA11922@...2182...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="PEIAKu/WMn1b1Hv9"
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="E/DnYTRukya0zdZ1"
 Content-Disposition: inline
-In-Reply-To: <CAOAUwZH8aRg-5XLJaYjpzw6y9yptx-ma7QJVPJT-yKFE7cmUrw@...278...>
+In-Reply-To: <20170207041451.GA11922@...2182...>
 Subject: Re: [Openvpn-devel] [PATCH] Fix building with LibreSSL 2.5.1 by
  cleaning a hack.
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -17,79 +18,54 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Olivier W <olivierw.ml@...277...>
+To: Antonio Quartulli <a@...2181...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---PEIAKu/WMn1b1Hv9
+--E/DnYTRukya0zdZ1
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
-On Mon, Feb 06, 2017 at 08:18:01PM +0100, Olivier W wrote:
-> Should be compatible with all versions of OpenSSL and LibreSSL.
-> Similar to what is done in curl:
-> https://github.com/curl/curl/blob/028391df5d84d9fae3433afdee9261d56590035=
-5/lib/vtls/openssl.c#L603-L619
+Hi,
+
+On Tue, Feb 07, 2017 at 12:14:51PM +0800, Antonio Quartulli wrote:
+> > +        if (!ssl)
+> > +        {
+> > +            crypto_msg(M_FATAL, "SSL_new failed");
+> > +        }
+> > +        pkey =3D SSL_get_privatekey(ssl);
+> > +        SSL_free(ssl);
 >=20
-> Error while compiling was:
-> "ssl_openssl.c:512:30: error: no member named 'cert' in 'struct ssl_ctx_s=
-t'
-> ssl.cert =3D ctx->ctx->cert;
-> ~ ^
-> 1 error generated.
-> *** Error code 1"
-> ---
-> diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-> index 8266595..a889332 100644
-> --- a/src/openvpn/ssl_openssl.c
-> +++ b/src/openvpn/ssl_openssl.c
-> @@ -508,10 +508,13 @@ tls_ctx_load_ecdh_params(struct tls_root_ctx
-> *ctx, const char *curve_name
->          const EC_GROUP *ecgrp =3D NULL;
->          EVP_PKEY *pkey =3D NULL;
->=20
-> -        /* Little hack to get private key ref from SSL_CTX, yay OpenSSL.=
-.. */
-> -        SSL ssl;
-> -        ssl.cert =3D ctx->ctx->cert;
-> -        pkey =3D SSL_get_privatekey(&ssl);
-> +        SSL *ssl =3D SSL_new(ctx->ctx);
-> +        if (!ssl)
-> +        {
-> +            crypto_msg(M_FATAL, "SSL_new failed");
-> +        }
-> +        pkey =3D SSL_get_privatekey(ssl);
-> +        SSL_free(ssl);
+> I have a question (sorry if I couldn't check myself): did you check that
+> SSL_get_privatekey() and SSL_free() won't crash when ssl is NULL ?
 
-I have a question (sorry if I couldn't check myself): did you check that
-SSL_get_privatekey() and SSL_free() won't crash when ssl is NULL ?
+crypto_msg(M_FATAL, ...) will not return.
 
-Cheers,
-
+gert
 
 --=20
-Antonio Quartulli
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
---PEIAKu/WMn1b1Hv9
+--E/DnYTRukya0zdZ1
 Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIcBAEBCAAGBQJYmUm4AAoJEJ6F1zG2JyOsG10P/24hzOBcy1Bd9cIO/8XpzIUS
-z5dDvXJ0Q9I+0cI9bzCkP+soRDyK+6trINsaBWzM+XeXP9vLtssVoPNg3AIap5zf
-jqkfEmpEoK1a4t59EoakoBBtZ0oHCeUqbSzo5IkdysZST6lz6uzTsPIcqlkwDLOl
-PFozfTnozlzPWLP4P9ea3wltoM8D0iYOaGb8qzi0m81LkPa/l/jxgK/xXNaqxlxq
-PwtGm5DhWfdw8aanx742I7hKm6/csWkUJUzkzPPShYrRxa+ILehQuBy0Ufw0a27p
-g3PJ5gi5kuwVvMPaAF6XfzVEYL3A9pMoQRT/wGCWi6Ap1QqHJq/v9ZJLxO9jCGsz
-QSRRe6kpFSQXAaaNEf9O4hSbI9XfFacUIZ2INliXPmfqxgf/I8Q7GHc562SJ+XJq
-AJXlk7ALEe2FAzP7c7zUpWcplNPlOy3LyWedLZdvIjd00meCgx6C0J1b0ye78pq1
-3Epcxmak/kefaqMxsS1b+RCBvMQ0YhCqICMnSyZcF1twdtp22a2tf+H29CDq8sgF
-Hl669IzjlP21htdwrto6g+H6ZEYqspFb0Bep84cMjEeoqJxS0n/ctLbK4I+V8nqJ
-HWjBv0vzyHe9M7Zd9tW3BH8kcEOpDK6U37I5HI4RcsPridOAjx7+KV2R6tx1n/+Z
-zlGZ72U7GEUoRNDjRKiv
-=v+a+
+iQGcBAEBAgAGBQJYmYBAAAoJEB2Cnv7KVigSdD8L/1qgOsr7TiTo2nZGiDZWrDGh
+pak57riE6dS8QLoMnooUufBNCsS3NlxlPd2ACaa3x1A6T3mmtiG9YGBWOyH1T/UI
+rd93Lsp4SiwBdJTQ14wfhWaq9j2JJJAi8NWot6NzWNZ8bsCWh59q82EZfxxxLaCl
+DWS3jIqk9K3j8VlLzMEwNO2gkrU9j4H0H0ti+aktH7yeEwm0EdfEOlUIw9uutlcI
+O33ZvhOB50mXppwlCrUmPXk53TyY2Lj2jqsUy64IEff6dF9SbjCZP8VkvRk32/Dz
+XWutOGDnWgleOxuU9/mTfvP5BwuHw2xiKACXNyVrbODLX7gRLGrc1CjEYD3zRHrz
+CnRMbfmVh47YphujrwHBTYM+NJZRfRnXKxQvqLj7W/W6tFvHB67FFBpPOfLOAlcD
+uFdeVgoe0azcwez/TU8gTIvWXnJiKvQ5wwolqjxDjI2129/zOktCpWZvwodNWAFb
+9gvVz2vfrZyWjyWapxd2eMK3F6bkANnFTxx29l8Bkg==
+=Jg/h
 -----END PGP SIGNATURE-----
 
---PEIAKu/WMn1b1Hv9--
+--E/DnYTRukya0zdZ1--
 
