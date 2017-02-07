@@ -1,13 +1,12 @@
+References: <1486364115-9801-1-git-send-email-chipitsine@...277...>
+	<20170206104444.12662-1-davids@...515...>
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <13044f0c-953c-af95-79dc-d7b641ae6573@...515...>
+Date: Tue, 7 Feb 2017 11:06:11 +0200
 MIME-Version: 1.0
-In-Reply-To: <20170207041451.GA11922@...2182...>
-References: <CAOAUwZH8aRg-5XLJaYjpzw6y9yptx-ma7QJVPJT-yKFE7cmUrw@...278...>
-	<20170207041451.GA11922@...2182...>
-From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Date: Tue, 7 Feb 2017 13:45:57 +0500
-Message-ID: <CAFHpkQESrLYrnVPUOeNf7kbHe27=1w5x8uc=ATynTNnPvezpkw@...278...>
-Content-Type: multipart/alternative; boundary=001a11469c54d873c50547ecc6d5
-Subject: Re: [Openvpn-devel] [PATCH] Fix building with LibreSSL 2.5.1 by
- cleaning a hack.
+In-Reply-To: <20170206104444.12662-1-davids@...515...>
+Subject: Re: [Openvpn-devel] [PATCH applied] github: Add PR template with
+ contributor related information
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,171 +15,76 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Antonio Quartulli <a@...2181...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-
---001a11469c54d873c50547ecc6d5
-Content-Type: text/plain; charset=UTF-8
-
-2017-02-07 9:14 GMT+05:00 Antonio Quartulli <a@...2181...>:
-
-> On Mon, Feb 06, 2017 at 08:18:01PM +0100, Olivier W wrote:
-> > Should be compatible with all versions of OpenSSL and LibreSSL.
-> > Similar to what is done in curl:
-> > https://github.com/curl/curl/blob/028391df5d84d9fae3433afdee9261
-> d565900355/lib/vtls/openssl.c#L603-L619
-> >
-> > Error while compiling was:
-> > "ssl_openssl.c:512:30: error: no member named 'cert' in 'struct
-> ssl_ctx_st'
-> > ssl.cert = ctx->ctx->cert;
-> > ~ ^
-> > 1 error generated.
-> > *** Error code 1"
-> > ---
-> > diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-> > index 8266595..a889332 100644
-> > --- a/src/openvpn/ssl_openssl.c
-> > +++ b/src/openvpn/ssl_openssl.c
-> > @@ -508,10 +508,13 @@ tls_ctx_load_ecdh_params(struct tls_root_ctx
-> > *ctx, const char *curve_name
-> >          const EC_GROUP *ecgrp = NULL;
-> >          EVP_PKEY *pkey = NULL;
-> >
-> > -        /* Little hack to get private key ref from SSL_CTX, yay
-> OpenSSL... */
-> > -        SSL ssl;
-> > -        ssl.cert = ctx->ctx->cert;
-> > -        pkey = SSL_get_privatekey(&ssl);
-> > +        SSL *ssl = SSL_new(ctx->ctx);
-> > +        if (!ssl)
-> > +        {
-> > +            crypto_msg(M_FATAL, "SSL_new failed");
-> > +        }
-> > +        pkey = SSL_get_privatekey(ssl);
-> > +        SSL_free(ssl);
->
-> I have a question (sorry if I couldn't check myself): did you check that
-> SSL_get_privatekey() and SSL_free() won't crash when ssl is NULL ?
->
-
-
-what if we involve clang static analyzer for such things ? can we count on
-it ?
-
-it is capable of detecting "Argument with 'nonnull' attribute passed null"
-
-and, as I can see, after applying patch it didn't find new issues
-
-http://chipitsine.github.io/without-patch/
-http://chipitsine.github.io/with-patch/
-
-
-also, it might be even automated, run clang static analyzer before and
-after applying patch and compare the result
-
-
->
-> Cheers,
->
->
-> --
-> Antonio Quartulli
->
-> ------------------------------------------------------------
-> ------------------
-> Check out the vibrant tech community on one of the world's most
-> engaging tech sites, SlashDot.org! http://sdm.link/slashdot
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->
->
-
---001a11469c54d873c50547ecc6d5
-Content-Type: text/html; charset="UTF-8"
+Content-Type: text/plain; charset="windows-1252"; format=flowed
 Content-Transfer-Encoding: quoted-printable
+To: David Sommerseth <davids@...515...>, chipitsine@...277...
+Cc: openvpn-devel@lists.sourceforge.net
 
-<div dir=3D"ltr"><br><div class=3D"gmail_extra"><br><div class=3D"gmail_quo=
-te">2017-02-07 9:14 GMT+05:00 Antonio Quartulli <span dir=3D"ltr">&lt;<a hr=
-ef=3D"mailto:a@...2181..." target=3D"_blank">a@...2181...</a>&gt;</span>:<b=
-r><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;borde=
-r-left:1px solid rgb(204,204,204);padding-left:1ex"><div class=3D"gmail-HOE=
-nZb"><div class=3D"gmail-h5">On Mon, Feb 06, 2017 at 08:18:01PM +0100, Oliv=
-ier W wrote:<br>
-&gt; Should be compatible with all versions of OpenSSL and LibreSSL.<br>
-&gt; Similar to what is done in curl:<br>
-&gt; <a href=3D"https://github.com/curl/curl/blob/028391df5d84d9fae3433afde=
-e9261d565900355/lib/vtls/openssl.c#L603-L619" rel=3D"noreferrer" target=3D"=
-_blank">https://github.com/curl/curl/<wbr>blob/<wbr>028391df5d84d9fae3433af=
-dee9261<wbr>d565900355/lib/vtls/openssl.c#<wbr>L603-L619</a><br>
-&gt;<br>
-&gt; Error while compiling was:<br>
-&gt; &quot;ssl_openssl.c:512:30: error: no member named &#39;cert&#39; in &=
-#39;struct ssl_ctx_st&#39;<br>
-&gt; ssl.cert =3D ctx-&gt;ctx-&gt;cert;<br>
-&gt; ~ ^<br>
-&gt; 1 error generated.<br>
-&gt; *** Error code 1&quot;<br>
-&gt; ---<br>
-&gt; diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c<br>
-&gt; index 8266595..a889332 100644<br>
-&gt; --- a/src/openvpn/ssl_openssl.c<br>
-&gt; +++ b/src/openvpn/ssl_openssl.c<br>
-&gt; @@ -508,10 +508,13 @@ tls_ctx_load_ecdh_params(<wbr>struct tls_root_ct=
-x<br>
-&gt; *ctx, const char *curve_name<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 const EC_GROUP *ecgrp =3D NULL;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 EVP_PKEY *pkey =3D NULL;<br>
-&gt;<br>
-&gt; -=C2=A0 =C2=A0 =C2=A0 =C2=A0 /* Little hack to get private key ref fro=
-m SSL_CTX, yay OpenSSL... */<br>
-&gt; -=C2=A0 =C2=A0 =C2=A0 =C2=A0 SSL ssl;<br>
-&gt; -=C2=A0 =C2=A0 =C2=A0 =C2=A0 ssl.cert =3D ctx-&gt;ctx-&gt;cert;<br>
-&gt; -=C2=A0 =C2=A0 =C2=A0 =C2=A0 pkey =3D SSL_get_privatekey(&amp;ssl);<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 SSL *ssl =3D SSL_new(ctx-&gt;ctx);<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 if (!ssl)<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 {<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 crypto_msg(M_FATAL, &quot;S=
-SL_new failed&quot;);<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 }<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 pkey =3D SSL_get_privatekey(ssl);<br>
-&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 SSL_free(ssl);<br>
-<br>
-</div></div>I have a question (sorry if I couldn&#39;t check myself): did y=
-ou check that<br>
-SSL_get_privatekey() and SSL_free() won&#39;t crash when ssl is NULL ?<br><=
-/blockquote><div><br><br></div><div>what if we involve clang static analyze=
-r for such things ? can we count on it ?<br><br></div><div>it is capable of=
- detecting &quot;Argument with &#39;nonnull&#39; attribute passed null&quot=
-;<br><br></div><div>and, as I can see, after applying patch it didn&#39;t f=
-ind new issues<br><br><a href=3D"http://chipitsine.github.io/without-patch/=
-">http://chipitsine.github.io/without-patch/</a><br><a href=3D"http://chipi=
-tsine.github.io/with-patch/">http://chipitsine.github.io/with-patch/</a><br=
-><br><br></div><div>also, it might be even automated, run clang static anal=
-yzer before and after applying patch and compare the result<br></div><div>=
-=C2=A0</div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0=
-.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">
-<br>
-Cheers,<br>
-<span class=3D"gmail-HOEnZb"><font color=3D"#888888"><br>
-<br>
---<br>
-Antonio Quartulli<br>
-</font></span><br>------------------------------<wbr>----------------------=
---------<wbr>------------------<br>
-Check out the vibrant tech community on one of the world&#39;s most<br>
-engaging tech sites, SlashDot.org! <a href=3D"http://sdm.link/slashdot" rel=
-=3D"noreferrer" target=3D"_blank">http://sdm.link/slashdot</a><br>_________=
-_____________________<wbr>_________________<br>
-Openvpn-devel mailing list<br>
-<a href=3D"mailto:Openvpn-devel@lists.sourceforge.net">Openvpn-devel@...2155...=
-9...<wbr>sourceforge.net</a><br>
-<a href=3D"https://lists.sourceforge.net/lists/listinfo/openvpn-devel" rel=
-=3D"noreferrer" target=3D"_blank">https://lists.sourceforge.net/<wbr>lists/=
-listinfo/openvpn-devel</a><br>
-<br></blockquote></div><br></div></div>
+On 06/02/2017 12:44, David Sommerseth wrote:
+> -----BEGIN PGP SIGNED MESSAGE-----
+> Hash: SHA1
+>
+> I have ACKed and applied this, just to get this one resolved.  But I am v=
+ery
+> disappointed that you have yet again completely ignored the guidelines
+> described in the URL[1] already provided to you - which describes how a p=
+atch
+> and commit message should look like.
+>
+> In fact - your SUBJECT line was 167 characters long, _including_ a URL.  =
+It
+> did not even have a proper body message.  *sigh*
 
---001a11469c54d873c50547ecc6d5--
+The 80 character limit is only documented here:
+
+<https://community.openvpn.net/openvpn/wiki/CodeStyle>
+
+This is a fairly new page and not linked to from anywhere. On top of=20
+that the page says that "This coding style is not final and not yet in=20
+effect."
+
+Moreover, our developer documentation is quite a mess right now:
+
+<https://community.openvpn.net/openvpn/wiki/DeveloperDocumentation>
+<https://community.openvpn.net/openvpn/wiki/Contributing>
+
+For example, the DeveloperDocumentation page links to here:
+
+<https://community.openvpn.net/openvpn/wiki/CodingConventions>
+
+That page is a stub with very little and possibly outdated/false=20
+information. Then we have
+
+<https://community.openvpn.net/openvpn/wiki/DeveloperDocumentation#Formatti=
+ng>
+
+which says we use "GNU coding style". And then we have the actual 2.4=20
+code style instructions here:
+
+<https://community.openvpn.net/openvpn/wiki/CodeStyle>
+
+There is a fairly well-hidden link on the DeveloperDocumentation page to=20
+these Git commit message instructions:
+
+<http://who-t.blogspot.com/2009/12/on-commit-messages.html>
+
+I think that blog posting is too verbose. The essential information,=20
+such as the "seven rules" you linked to should be directly on the=20
+DeveloperDocumentation page, with links to the original documents.
+
+I don't want to argue whether Ilya should know the 80 character limit or=20
+not. But how can we expect _new_ developers to get our rules if they are=20
+not documented properly or if documentation is contradictory? Or if the=20
+documentation is hidden as well as the CodeStyle page?
+
+I will create a copy of the DeveloperDocumentation page and clean that=20
+one up. Then I will send a link so that others can have a look.
+
+--=20
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
+
 
