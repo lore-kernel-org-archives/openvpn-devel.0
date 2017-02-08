@@ -1,7 +1,11 @@
-From: selva.nair@...277...
-Date: Wed,  8 Feb 2017 14:25:44 -0500
-Message-Id: <1486581944-29627-1-git-send-email-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH] Make auth-nocache cooperate with auth-token
+References: <CAOAUwZH8aRg-5XLJaYjpzw6y9yptx-ma7QJVPJT-yKFE7cmUrw@...278...>
+From: Steffan Karger <steffan@...1856...>
+Message-ID: <c3f91fee-f629-fd60-c66c-19d45df6f24f@...1856...>
+Date: Wed, 8 Feb 2017 23:39:06 +0100
+MIME-Version: 1.0
+In-Reply-To: <CAOAUwZH8aRg-5XLJaYjpzw6y9yptx-ma7QJVPJT-yKFE7cmUrw@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] Fix building with LibreSSL 2.5.1 by
+ cleaning a hack.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -10,63 +14,55 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-From: Selva Nair <selva.nair@...277...>
+Hi,
 
-- Keep the username even if auth-nocache is specified so that
-  any auth_token pushed by the server could be utilized
-- When auth-token is received, set nocache = false in user_pass
+On 06-02-17 20:18, Olivier W wrote:
+> Should be compatible with all versions of OpenSSL and LibreSSL.
+> Similar to what is done in curl:
+> https://github.com/curl/curl/blob/028391df5d84d9fae3433afdee9261d565900355/lib/vtls/openssl.c#L603-L619
+> 
+> Error while compiling was:
+> "ssl_openssl.c:512:30: error: no member named 'cert' in 'struct ssl_ctx_st'
+> ssl.cert = ctx->ctx->cert;
+> ~ ^
+> 1 error generated.
+> *** Error code 1"
+> ---
+> diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+> index 8266595..a889332 100644
+> --- a/src/openvpn/ssl_openssl.c
+> +++ b/src/openvpn/ssl_openssl.c
+> @@ -508,10 +508,13 @@ tls_ctx_load_ecdh_params(struct tls_root_ctx
+> *ctx, const char *curve_name
+>          const EC_GROUP *ecgrp = NULL;
+>          EVP_PKEY *pkey = NULL;
+> 
+> -        /* Little hack to get private key ref from SSL_CTX, yay OpenSSL... */
+> -        SSL ssl;
+> -        ssl.cert = ctx->ctx->cert;
+> -        pkey = SSL_get_privatekey(&ssl);
+> +        SSL *ssl = SSL_new(ctx->ctx);
+> +        if (!ssl)
+> +        {
+> +            crypto_msg(M_FATAL, "SSL_new failed");
+> +        }
+> +        pkey = SSL_get_privatekey(ssl);
+> +        SSL_free(ssl);
 
-Note: When handling of auth failure due to token expiry is fixed, remember
-to re-instate nocache after clearing the token
+The code change looks good, and passes my (manual) tests.  I'd like to
+keep the comment though, because this still is a hack/workaround to get
+the private key from the SSL_CTX object, it just does so a little nicer
+at the cost of a number of malloc/free calls.
 
-Trac: #840
+It might be even worth noting that the workaround is only needed for
+OpenSSL <= 1.0.1, because later versions do have a function to get the
+private key from a struct SSL_CTX directly.  By noting that explicitly,
+we help ourselves remember to get rid of the hack as soon as we drop
+support for these OpenSSL versions.
 
-Signed-off-by: Selva Nair <selva.nair@...277...>
----
- src/openvpn/misc.c | 6 ++++--
- src/openvpn/ssl.c  | 4 ++++
- 2 files changed, 8 insertions(+), 2 deletions(-)
-
-diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
-index a2f45b6..5954eea 100644
---- a/src/openvpn/misc.c
-+++ b/src/openvpn/misc.c
-@@ -1490,10 +1490,12 @@ purge_user_pass(struct user_pass *up, const bool force)
- void
- set_auth_token(struct user_pass *up, const char *token)
- {
--    if (token && strlen(token) && up && up->defined && !up->nocache)
-+    if (token && strlen(token) && up && strlen(up->username))
-     {
--        CLEAR(up->password);
-+        secure_memzero(up->password, sizeof(up->password));
-         strncpynt(up->password, token, USER_PASS_LEN);
-+        up->nocache = false;
-+        up->defined = true;
-     }
- }
- 
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 86450fe..e25e99d 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -2383,7 +2383,11 @@ key_method_2_write(struct buffer *buf, struct tls_session *session)
-         {
-             goto error;
-         }
-+        /* keep username for use with any auth-token pushed by the server */
-+        char username[USER_PASS_LEN];
-+        strncpynt(username, auth_user_pass.username, sizeof(username));
-         purge_user_pass(&auth_user_pass, false);
-+        strncpynt(auth_user_pass.username, username, sizeof(auth_user_pass.username));
-     }
-     else
-     {
--- 
-2.1.4
-
+-Steffan
 
