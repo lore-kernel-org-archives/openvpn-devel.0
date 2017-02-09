@@ -1,14 +1,13 @@
-Date: Thu, 9 Feb 2017 11:01:38 +0800
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <20170209030138.GD11922@...2182...>
-References: <1486581944-29627-1-git-send-email-selva.nair@...277...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="cHMo6Wbp1wrKhbfi"
-Content-Disposition: inline
-In-Reply-To: <1486581944-29627-1-git-send-email-selva.nair@...277...>
+In-Reply-To: <20170209030138.GD11922@...2182...>
+References: <1486581944-29627-1-git-send-email-selva.nair@...277...>
+	<20170209030138.GD11922@...2182...>
+From: Selva Nair <selva.nair@...277...>
+Date: Wed, 8 Feb 2017 23:58:32 -0500
+Message-ID: <CAKuzo_goXcLY9u_ymRamQfXcAr3Cn7SV3Xv6xie5Xk=QVXFxvQ@...278...>
+Content-Type: multipart/alternative; boundary=94eb2c08849078848f054811d67e
 Subject: Re: [Openvpn-devel] [PATCH] Make auth-nocache cooperate with
- auth-token
+	auth-token
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,50 +16,69 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: selva.nair@...277...
-Cc: openvpn-devel@lists.sourceforge.net
+To: Antonio Quartulli <a@...2181...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---cHMo6Wbp1wrKhbfi
-Content-Type: text/plain; charset="us-ascii"
+--94eb2c08849078848f054811d67e
+Content-Type: text/plain; charset=UTF-8
+
+Hi,
+
+On Wed, Feb 8, 2017 at 10:01 PM, Antonio Quartulli <a@...2181...> wrote:
+
+> On Wed, Feb 08, 2017 at 02:25:44PM -0500, selva.nair@...277... wrote:
+> > From: Selva Nair <selva.nair@...277...>
+> >
+> > - Keep the username even if auth-nocache is specified so that
+> >   any auth_token pushed by the server could be utilized
+>
+> This means that even when using no auth-token the username will be cached.
+> Can this be a security concern?
+>
+
+I would consider username as not sensitive  material although not sure
+everyone would agree. Unfortunately there is no way to know in advance that
+auth-token may get pushed so I can't think of a good way of avoiding this.
+A not so secure approach (I considered this first) would be to delay
+clearing the username/password to post pushed-options processing, but then
+one has to handle cases like what if the push reply never arrives and so
+on.. In general its always better to clear sensitive data at the earliest.
+
+The way out would be to do one more purge_user_pass(.., false) after push
+processing.. sigh..  will go there only if absolutely necessary.
+
+Selva
+
+--94eb2c08849078848f054811d67e
+Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-On Wed, Feb 08, 2017 at 02:25:44PM -0500, selva.nair@...277... wrote:
-> From: Selva Nair <selva.nair@...277...>
->=20
-> - Keep the username even if auth-nocache is specified so that
->   any auth_token pushed by the server could be utilized
+<div dir=3D"ltr"><div class=3D"gmail_extra">Hi,<br><br></div><div class=3D"=
+gmail_extra"><div class=3D"gmail_quote">On Wed, Feb 8, 2017 at 10:01 PM, An=
+tonio Quartulli <span dir=3D"ltr">&lt;<a href=3D"mailto:a@...2181..." targe=
+t=3D"_blank">a@...2181...</a>&gt;</span> wrote:<br><blockquote class=3D"gma=
+il_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-lef=
+t:1ex"><span class=3D"">On Wed, Feb 08, 2017 at 02:25:44PM -0500, <a href=
+=3D"mailto:selva.nair@...277...">selva.nair@...277...</a> wrote:<br>
+&gt; From: Selva Nair &lt;<a href=3D"mailto:selva.nair@...277...">selva.nai=
+r@...277...</a>&gt;<br>
+&gt;<br>
+&gt; - Keep the username even if auth-nocache is specified so that<br>
+&gt;=C2=A0 =C2=A0any auth_token pushed by the server could be utilized<br>
+<br>
+</span>This means that even when using no auth-token the username will be c=
+ached.<br>
+Can this be a security concern?<br></blockquote><div><br></div><div>I would=
+ consider username as not sensitive=C2=A0 material although not sure everyo=
+ne would agree. Unfortunately there is no way to know in advance that auth-=
+token may get pushed so I can&#39;t think of a good way of avoiding this. A=
+ not so secure approach (I considered this first) would be to delay clearin=
+g the username/password to post pushed-options processing, but then one has=
+ to handle cases like what if the push reply never arrives and so on.. In g=
+eneral its always better to clear sensitive data at the earliest.<br><br>Th=
+e way out would be to do one more purge_user_pass(.., false) after push pro=
+cessing.. sigh..=C2=A0 will go there only if absolutely necessary.<br></div=
+><div><br></div><div>Selva <br></div></div></div></div>
 
-This means that even when using no auth-token the username will be cached.
-Can this be a security concern? Maybe not because the username is already c=
-ached
-in the terminal? (Somebody had to type it)
-
-Cheers,
-
---=20
-Antonio Quartulli
-
---cHMo6Wbp1wrKhbfi
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQIcBAEBCAAGBQJYm9uOAAoJEJ6F1zG2JyOsDeQP/0FlrJRfbZQa50U8SUPlGhXf
-CDYR0ed8UmULDc7KnZe2qdh6fud4FfnpsPqfSPKeDDZAVc2VTBfZ0yW51IG78hSh
-GjmBkxNtwHPc8h1xeWMMGYHHJfDqTxHfr2YPHkDu7YbdOJKXQPMS9Je7kf5GRBph
-Necy2ZdmkUJOGaGrTFz/0Fzn9C5UTF12AcYIApaWfowLPDtYwcwvglh35l4KkuD5
-z2r5fDuaDmAlPMcb1SnTNh5DciyibrfHUWDl/A4iFq8aACCn0ZHWrhoUasK+bP9C
-Uez95iaLDYedsw2Sb44Vl/77ZtRPZfiC+ZyaOOABMmY911w6YtbfOK2uSWxU4Fc/
-pGBDGGBVjiTCJpIIHYtSyKEHNI/aasMzYHj4D6DoRjeRbuDCWLg8sPROpAaVqQL1
-XbXG202DhQ89VqSVwfDR7yGXcvA8iBK4s6Ok29lNC8ligVlmgfQqXzPhTc/3DJm5
-P6/NAmmexJla/1LMfr41wnREB2Uz049USeCHF/cb21cs8vAz9qmhF4jMbn0HNbJJ
-EIrmPpUd93J3eTwsqQvcncEJYtbzV7NX7kHkz8KOFeXDws8GoxUXE66YGvUCH2QH
-9YIB9Vrb9rmhb9dw6pGkKwGiY3MBIp3N71zJQ7TEHmMhdDTX+Efxo2lsjbUb0Cg3
-aS8LgwhsDPSZCfWklL7R
-=K2mS
------END PGP SIGNATURE-----
-
---cHMo6Wbp1wrKhbfi--
+--94eb2c08849078848f054811d67e--
 
