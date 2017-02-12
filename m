@@ -1,14 +1,14 @@
-Date: Sat, 11 Feb 2017 12:07:13 +0800
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <20170211040713.GJ11922@...2182...>
-References: <20170210143607.19454-1-a@...2181...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="W/D3X8sky0X3AmG5"
-Content-Disposition: inline
-In-Reply-To: <20170210143607.19454-1-a@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH] ifconfig-ipv6(-push): allow using
-	hostnames
+In-Reply-To: <0cdcbed7-801c-9cec-cd03-1252c06b4466@...1856...>
+References: <CAOAUwZH8aRg-5XLJaYjpzw6y9yptx-ma7QJVPJT-yKFE7cmUrw@...278...>
+	<c3f91fee-f629-fd60-c66c-19d45df6f24f@...1856...>
+	<CAOAUwZF0LYNAYESg1fKeNUhJr70pLcf89HTyxTQmf2S3RnoUBA@...278...>
+	<0cdcbed7-801c-9cec-cd03-1252c06b4466@...1856...>
+From: Olivier W <olivierw.ml@...277...>
+Date: Mon, 13 Feb 2017 00:02:45 +0100
+Message-ID: <CAOAUwZEiSjAEmTka=w-4TePAoGEZBZG1r_5gS-wpXL+TLX7qCQ@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] Fix building with LibreSSL 2.5.1 by
+ cleaning a hack.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,151 +17,38 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+To: Steffan Karger <steffan@...1856...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---W/D3X8sky0X3AmG5
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Hello Steffan,
 
-On Fri, Feb 10, 2017 at 10:36:07PM +0800, Antonio Quartulli wrote:
-> diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
-> index 82d0967d..55ff7737 100644
-> --- a/src/openvpn/socket.c
-> +++ b/src/openvpn/socket.c
-> @@ -75,12 +75,102 @@ sf2gaf(const unsigned int getaddr_flags,
->  /*
->   * Functions related to the translation of DNS names to IP addresses.
->   */
-> +static int
-> +get_addr_generic(sa_family_t af, unsigned int flags, const char *hostnam=
-e,
-> +                 void *network, unsigned int *netbits,
-> +                 int resolve_retry_seconds, volatile int *signal_receive=
-d,
-> +                 int msglevel)
-> +{
-> +    char *endp, *sep, *var_host;
-> +    uint8_t bits, max_bits;
-> +    struct addrinfo *ai;
-> +    int ret =3D -1;
-> +
-> +    ASSERT(hostname);
-> +
-> +    /* assign family specific default values */
-> +    switch (af)
-> +    {
-> +        case AF_INET:
-> +            bits =3D 0;
-> +            max_bits =3D sizeof(in_addr_t) * 8;
-> +            break;
-> +        case AF_INET6:
-> +            bits =3D 64;
-> +            max_bits =3D sizeof(struct in6_addr) * 8;
-> +            break;
-> +        default:
-> +            ASSERT(0);
-> +    }
-> +
-> +    /* we need to modify the hostname received as input, but we don't wa=
-nt to
-> +     * touch it directly as it might be a constant string.
-> +     *
-> +     * Therefore, we clone the string here and free it at the end of the
-> +     * function */
-> +    var_host =3D strdup(hostname);
-> +    ASSERT(var_host);
-> +
-> +    /* check if this hostname has a /bits suffix */
-> +    sep =3D strchr(var_host , '/');
-> +    if (sep)
-> +    {
-> +        bits =3D strtoul(sep + 1, &endp, 10);
-> +        if ((*endp !=3D '\0') || (bits > max_bits))
-> +        {
-> +            msg(msglevel, "IP prefix '%s': invalid '/bits' spec", hostna=
-me);
-> +            goto out;
-> +        }
-> +        /* temporary truncate string at '/'. This allows the IP
-> +         * parsing routines to properly work. Will be restored later.
-> +         */
-> +        *sep =3D '\0';
-> +    }
-> +
-> +    ret =3D openvpn_getaddrinfo(flags & ~GETADDR_HOST_ORDER, var_host, N=
-ULL,
-> +                              resolve_retry_seconds, signal_received, af=
-, &ai);
-> +    if ((ret =3D=3D 0) && network)
-> +    {
-> +        struct in6_addr *ip6;
-> +        in_addr_t *ip4;
-> +
-> +        switch (af)
-> +        {
-> +            case AF_INET:
-> +                ip4 =3D network;
-> +                *ip4 =3D ((struct sockaddr_in *)ai->ai_addr)->sin_addr.s=
-_addr;
-> +
-> +                if (flags & GETADDR_HOST_ORDER)
-> +                {
-> +                    *ip4 =3D ntohl(*ip4);
-> +                }
-> +                break;
-> +            case AF_INET6:
-> +                ip6 =3D network;
-> +                *ip6 =3D ((struct sockaddr_in6 *)ai->ai_addr)->sin6_addr;
-> +                break;
-> +            default:
-> +                ASSERT(0);
-> +        }
-> +        freeaddrinfo(ai);
-> +    }
-> +
-> +    if (netbits)
-> +    {
-> +        *netbits =3D bits;
-> +    }
-> +
-> +    /* restore '/' separator, if any */
-> +    if (sep)
-> +    {
-> +        *sep =3D '/';
-> +    }
+2017-02-10 22:20 GMT+01:00 Steffan Karger <steffan@...1856...>:
+>
+> The code change looks good to me, so ACK to that.
 
-Actually this part is useless. sep points somewhere inside var_host, but
-var_host is going to be free'd at the next line, therefore the block above =
-can
-be removed.
+Thanks!
 
+> The commit does need a better commit message though, and somewhere in
+> the process the newlines got mangled.  I think the commit message of
+> your initial patch is okay, it just missed the Signed-off-by line.  To
+> smoothen the patch application process, could you create a commit with
+> the above change, and send it to the list using git send-email?  The
+> command line would be something like:
+>
+> git send-email --to=openvpn-devel@lists.sourceforge.net HEAD~1
+>
+> Otherwise, Gert or David will have to wrestle a commit together from you
+> various messages, and that will likely take more time before it gets
+> applied.
 
-Cheers,
+Sure, I'm sorry the patch got messed up and seems GMail also added the
+message I was responding to at the bottom :-/
+I'll be sending the patch with "git format-patch" + "git send-email"
+as I have three commits and I'm not sure how to send a single patch
+with only "git send-email"
 
---=20
-Antonio Quartulli
-
---W/D3X8sky0X3AmG5
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQIcBAEBCAAGBQJYno3uAAoJEJ6F1zG2JyOsPQMP+wSo9lyaNSFEGjmJMaObOjTu
-D1T/qK1QheVtvm6mn8Rgm+JQiTd3iKojJh2/3nXZ0H6NRcfGHKE3PHB9N4K5uQRi
-FaUnvt+HpHwPHcAWbOo7MFnDhFTrlObhQaLUL8njvfzoT4rY1M+K3nakdw1DTiLu
-/KEZ5d4Xbv1HgEFNHcAyrn3R72wnTTaFDSIHfsq7ah9z93R1mWbFm7jmQqgvrhT6
-IkDFmfqxqUU+3PA1ZD5MIBNyOf9Rr0HBDveU/k1ckdBVWQ47ZevmcJ2wznzScAQ0
-3XRHNEnPahoqiJXBblo3ZDF66v49LXUkr4BxeJZ27No40OyLP8c7YH6NQRXU2s+W
-Mfcdl/vXvkGlUwZpw9i6oqn52g0o/O3jvLvlQUvzxPiNd1yvQ+tBKHyWfJl9hELo
-/DU5bYYq4oe7touVfrQ+Mxl1A7cSMlbIA6swcSE2X7htjrd76x/yVnHmf0Is1TTC
-3tdQ6tu4XSWXa6k5wauaT57pofri17wv5O34IVHg3dxOdLDyoQo5CHAZy529Rotc
-c940QptPGWy/poQemoonRFVAZSKvQK5Nx/01xAhHa2ToZ/fYXhEnjGxeLcZWFOvW
-0TsJOn6+T9wa8F1hbVT7GS1wsJFgJN3bo77I2gcRrAR0kf0Y4pcOwhmIGK90OhPY
-O6akMiBiP1wr4Ul1icqa
-=wfl2
------END PGP SIGNATURE-----
-
---W/D3X8sky0X3AmG5--
+Best Regards,
+Olivier
 
