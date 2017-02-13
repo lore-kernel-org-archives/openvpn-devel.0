@@ -1,15 +1,19 @@
-References: <20170213201758.0a04ecfa@...1799...>
-	<20170213193338.GV93896@...1296...> <20170213204947.10458306@...2245...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <5b9e3a6f-f317-6b71-3cc9-7537c56b0137@...2080...>
-Date: Mon, 13 Feb 2017 21:16:39 +0100
 MIME-Version: 1.0
-In-Reply-To: <20170213204947.10458306@...2245...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature";
-	boundary="OXHClecDXrK2JEbBfTrO4Rp6GuIf8VXo3"
-Subject: Re: [Openvpn-devel] build against openssl 1.1.0
-Reply-To: openvpn-devel@lists.sourceforge.net
+In-Reply-To: <b38fcbe0-fc2b-1bd5-ac98-f930334b6925@...2080...>
+References: <CAOAUwZH8aRg-5XLJaYjpzw6y9yptx-ma7QJVPJT-yKFE7cmUrw@...278...>
+	<c3f91fee-f629-fd60-c66c-19d45df6f24f@...1856...>
+	<CAOAUwZF0LYNAYESg1fKeNUhJr70pLcf89HTyxTQmf2S3RnoUBA@...278...>
+	<0cdcbed7-801c-9cec-cd03-1252c06b4466@...1856...>
+	<CAOAUwZEiSjAEmTka=w-4TePAoGEZBZG1r_5gS-wpXL+TLX7qCQ@...278...>
+	<20170213083137.GK93896@...1296...>
+	<CAOAUwZF2-KXfMTwOuLj-B3wzWtD-i-8NytNkbS3gyvexaCpWGw@...278...>
+	<20170213175000.GU93896@...1296...>
+	<b38fcbe0-fc2b-1bd5-ac98-f930334b6925@...2080...>
+From: Olivier W <olivierw.ml@...277...>
+Date: Mon, 13 Feb 2017 21:55:00 +0100
+Message-ID: <CAOAUwZGs4934tC9P3zvmrN6qp-L9vkSMOi3_UwXT4Q7NCvdp5w@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] Fix building with LibreSSL 2.5.1 by
+ cleaning a hack.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,75 +22,74 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Christian Hesse <list@...1798...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---OXHClecDXrK2JEbBfTrO4Rp6GuIf8VXo3
-Content-Type: multipart/mixed; boundary="XbQNhup2EIc0fWjiIKH1ABsbxUcqNvPu1";
-	protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-Reply-To: openvpn-devel@lists.sourceforge.net
-To: Christian Hesse <list@...1798...>
-Cc: openvpn-devel@lists.sourceforge.net
-Message-ID: <5b9e3a6f-f317-6b71-3cc9-7537c56b0137@...2080...>
-Subject: Re: [Openvpn-devel] build against openssl 1.1.0
-References: <20170213201758.0a04ecfa@...1799...>
-	<20170213193338.GV93896@...1296...> <20170213204947.10458306@...2245...>
-In-Reply-To: <20170213204947.10458306@...2245...>
+Hello David,
 
---XbQNhup2EIc0fWjiIKH1ABsbxUcqNvPu1
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
+2017-02-13 20:37 GMT+01:00 David Sommerseth <openvpn@...2080...>:
+>
+> smtpsslcertpath needs to point at a CA certificate which issued the SMTP
+> server certificate.  You can easily verify that things are correct by
+> grabbing the server certificate using openssl:
+>
+>     $ openssl s_client -connect $SMTP_SERVER:$PORT -starttls smtp
+>
+> Copy the certificate blob printed to stdout to a file.  Then take your
+> CA certificate (including full chain in a single file, where the root CA
+> certificate is the last one in file) and run this command:
+>
+>     $ openssl verify -CAfile $CA_CERT_CHAIN $SERVER_CERT
+>
+> The output should display the file of the server certificate and ": OK".
 
-On 13/02/17 20:50, Christian Hesse wrote:
-> And a lot more has to be done... There's a long list of packages to be
-> fixed. Sadly openssl developers do not care about ABI and API stability
-> or compatibility. :(
+Thanks for your help, but I still can't use GMail on port 587 (but
+everything is OK on port 465).
+In my .gitconfig, I have "smtpsslcertpath = /etc/ssl/cert.pem" and the
+.pem file exists, installed by the package "ca_root_nss" on FreeBSD.
 
-I do understand the frustration ... but lets be fair too.  OpenSSL v1.1
-is considered a major upgrade from v1.0 and they don't guarantee API/ABI
-stability across major upgrades.
+So, I tried "openssl s_client -connect smtp.gmail.com:587 -starttls
+smtp", copying the content from: "-----BEGIN CERTIFICATE-----" to
+"-----END CERTIFICATE-----" in a file, but running "openssl verify
+-CAfile /etc/ssl/cert.pem gmail.cert" gives:
+"gmail.cert: C = US, ST = California, L = Mountain View, O = Google
+Inc, CN = smtp.gmail.com
+error 20 at 0 depth lookup:unable to get local issuer certificate"
 
-And the v1.1 API does indeed try to clean up a lot of the API mess and
-confusions.  So it is a move in the right direction.  I attended an
-OpenSSL v1.1 talk at devconf.cz in the end of January this year, I'll
-try to dig up the slides from Tomas Mraz who had the talk.  It was quite
-informative why it was needed to break several APIs in v1.1.
+I also tried on Debian and I'm getting the same error. Same thing with
+Hotmail on "smtp.live.com:587".
 
+Well, as long as I can use the other port with SSL, it's ok :-)
 
---=20
-kind regards,
+>> That's a not exactly helpful error message... :( - I tend to just turn
+>> off SSL on stuff that goes to public mailing lists anyway if it causes
+>> issues...
+>
+> OpenSSL errors requires quite some efforts to get used to.  And in
+> addition the git-send-email errors on top doesn't always make life easier.
 
-David Sommerseth
-OpenVPN Technologies, Inc
+I've just tried git-send-email with "--smtp-debug=1" and the error
+isn't much useful, I'm getting:
+"...
+Net::SMTP=GLOB(0x8048189a8)<<< 250 SMTPUTF8
+Net::SMTP=GLOB(0x8048189a8)>>> STARTTLS
+Net::SMTP=GLOB(0x8048189a8)<<< 220 2.0.0 Ready to start TLS
+Net::SMTP=GLOB(0x8048189a8)>>> STARTTLS
+Net::SMTP: Net::Cmd::getline(): unexpected EOF on command channel:
+Connection reset by peer at /usr/local/libexec/git-core/git-send-email
+line 1371.
+STARTTLS failed!  at /usr/local/libexec/git-core/git-send-email line 1371."
 
+>>> BTW: sorry about the previous email: "[SPAM] [PATCH] Fix building with
+>>> LibreSSL 2.5.1 by cleaning a hack." :-/ I'm trying to not post anymore
+>>> buggy email here.
+>
+> No worries!  As long as you don't spam us completely with non-sense, we
+> can handle a few misfires ;-)
 
+;-)
 
---XbQNhup2EIc0fWjiIKH1ABsbxUcqNvPu1--
-
---OXHClecDXrK2JEbBfTrO4Rp6GuIf8VXo3
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBCAAGBQJYohQnAAoJEIbPlEyWcf3yooEP/RSPcTkuq/JYc48ytgUcLkFo
-TgpWOIDSjgxgDGSg0c0IieKxHsLKXOK1YWlEbNBQX1MeUmjKC6D8++zG1QNjMUGH
-axoe2cIRz1Bamy9O80TZPlBOJa6ktmE6xdiUhBmxd+L02IOreHTqYQzYAwNeENj6
-9aSUJQg0A57eUH7++WLMNglYGqXFhkodCnrr7pP23SaYiR1Oqh1cr8RLaeFfQQq1
-FJzfrRixO0sgMhVvWEnPLejatT9XEF5oBZoJ/jiZryhl3tFGCqaevnRUvyY5ie1+
-M2IAMKi5KaFCBEA7BxUzpoEbdzefwn0PKW05dkAU93nWBHIiXAHXNSinuhsWoFM6
-D+kyim8+tvOppe2ATkcuQdQn7uLT9syw/bSY7HumBb5SrwCUK887KCEZZhXfb+a7
-sgLNw6Sj3DuIdrtWba6O4XVFCpzuAOAKtJ8f+ywXOX7PdteK82Qmqyo9Gp2COOWK
-hneIrsRBtYTrr50bwqFwY9Ot8s6DDX9F/1GTiqEzLG+ACE9kaUsSt+yilOZYi6FA
-DGiasA8uQBb2cdcnmz/QsUzqkrvymT3i2ZsBFZHCz3fmpJYRfihUTtRGHguNoe2p
-zoE95dU6kcFrt8SBUy3c+fNNHHwHNTzmY04CANPimBoR8vmn6LiECjBZPYckbihv
-RMO5csky+aRuRjQjECr8
-=I8fI
------END PGP SIGNATURE-----
-
---OXHClecDXrK2JEbBfTrO4Rp6GuIf8VXo3--
+Best Regards,
+Olivier
 
