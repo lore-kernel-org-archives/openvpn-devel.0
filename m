@@ -1,9 +1,13 @@
 MIME-Version: 1.0
-From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Date: Wed, 15 Feb 2017 15:09:47 +0500
-Message-ID: <CAFHpkQEuDx5E=61U+k=BK+gTvZKxfg8amj-zS_y9m8jrXEgb6w@...278...>
-Content-Type: multipart/alternative; boundary=001a1141d2106d766905488ee161
-Subject: [Openvpn-devel] travis-ci + mingw again
+In-Reply-To: <2b6b9f32-ef12-ea5f-ec3b-298f49bba1ec@...1856...>
+References: <20170213183826.73008-1-O2Graphics@...2243...>
+	<2b6b9f32-ef12-ea5f-ec3b-298f49bba1ec@...1856...>
+From: Olivier W <olivierw.ml@...277...>
+Date: Wed, 15 Feb 2017 22:34:16 +0100
+Message-ID: <CAOAUwZHRLp5+29=ns3_jkEkXVhn9DMbg+hMpvvQF_9X9ekYdYQ@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] Fix building with LibreSSL 2.5.1 by
+ cleaning a hack. Similar to what is done in curl:
+ https://github.com/curl/curl/blob/028391df5d84d9fae3433afdee9261d565900355/lib/vtls/openssl.c#L603-L619
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,34 +16,25 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-
---001a1141d2106d766905488ee161
 Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+To: Steffan Karger <steffan@...1856...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hello,
+Hello Steffan,
 
-I created "build only' testing configurations
-https://github.com/OpenVPN/openvpn/pull/83
+2017-02-14 23:00 GMT+01:00 Steffan Karger <steffan@...1856...>:
 
-I'm going to add "pkcs11" and "lzo" support later (not trivial to build
-those on travis, but it is desirable, because it is the way we currently
-build openvpn for windows)
+> Code still looks good, patch looks a lot better (applies cleanly now),
+> but could use an extra newline in the subject.  But that doesn't warrant
+> an extra patch iteration, so ACK.
 
-Cheers,
-Ilya Shipitsin
+Great, thanks!
+Yes, I don't know why my commit has a long line i the subject, when I
+used "git commit --amend" to change the message, "Similar to what..."
+was on a new line. Next time I'll contribute to OpenVPN, I'll try to
+make less mistakes with git.
 
---001a1141d2106d766905488ee161
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><div><div><div><div>Hello,<br><br></div>I created &quot;bu=
-ild only&#39; testing configurations<br><a href=3D"https://github.com/OpenV=
-PN/openvpn/pull/83">https://github.com/OpenVPN/openvpn/pull/83</a><br><br><=
-/div>I&#39;m going to add &quot;pkcs11&quot; and &quot;lzo&quot; support la=
-ter (not trivial to build those on travis, but it is desirable, because it =
-is the way we currently build openvpn for windows)<br><br></div>Cheers,<br>=
-</div>Ilya Shipitsin<br></div>
-
---001a1141d2106d766905488ee161--
+Best Regards,
+Olivier
 
