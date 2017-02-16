@@ -1,14 +1,11 @@
-Date: Thu, 16 Feb 2017 10:34:46 +0800
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <20170216023446.GJ12961@...2182...>
+Date: Thu, 16 Feb 2017 08:47:06 +0100 (CET)
+Message-Id: <201702160747.v1G7l61Y058076@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20170213183826.73008-1-O2Graphics@...2243...>
 References: <20170213183826.73008-1-O2Graphics@...2243...>
-	<2b6b9f32-ef12-ea5f-ec3b-298f49bba1ec@...1856...>
-	<CAOAUwZHRLp5+29=ns3_jkEkXVhn9DMbg+hMpvvQF_9X9ekYdYQ@...278...>
-MIME-Version: 1.0
-In-Reply-To: <CAOAUwZHRLp5+29=ns3_jkEkXVhn9DMbg+hMpvvQF_9X9ekYdYQ@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] Fix building with LibreSSL 2.5.1 by
- cleaning a hack. Similar to what is done in curl:
- https://github.com/curl/curl/blob/028391df5d84d9fae3433afdee9261d565900355/lib/vtls/openssl.c#L603-L619
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix building with LibreSSL
+	2.5.1 by cleaning a hack. Similar to what is done in curl:
+	https://github.com/curl/curl/blob/028391df5d84d9fae3433afdee9261d565900355/lib/vtls/openssl.c#L603-L619
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,41 +14,34 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: Olivier W <olivierw.ml@...277...>
+To: O2 Graphics <olivierw.ml@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-On Wed, Feb 15, 2017 at 10:34:16PM +0100, Olivier W wrote:
-> Hello Steffan,
-> 
-> 2017-02-14 23:00 GMT+01:00 Steffan Karger <steffan@...1856...>:
-> 
-> > Code still looks good, patch looks a lot better (applies cleanly now),
-> > but could use an extra newline in the subject.  But that doesn't warrant
-> > an extra patch iteration, so ACK.
-> 
-> Great, thanks!
-> Yes, I don't know why my commit has a long line i the subject, when I
-> used "git commit --amend" to change the message, "Similar to what..."
-> was on a new line. 
+Your patch has been applied to the master and release/2.4 branch.
 
-You need to put an empty line between the subject and the body.
-For example:
+Not sure if it is something we want in release/2.3, but it wouldn't apply
+with "git cherry-pick" - too much formatting changes, so one would need
+to do it manually ("but we knew this").
 
+commit dcfd3b6173d8cdb4658de23db1dd0bd932b390d2 (master)
+commit fb802b9b0d9366093b5567c0f3e9845b2f30e9cc (release/2.4)
+Author: Olivier Wahrenberger
+Date:   Mon Feb 13 19:38:26 2017 +0100
 
-my commit message
+     Fix building with LibreSSL 2.5.1 by cleaning a hack.
 
-this is the body and can be multiline
-random text here...
-and here...
+     Signed-off-by: Olivier Wahrenberger <olivierw.ml@...277...>
+     Acked-by: Steffan Karger <steffan.karger@...1435...>
+     Message-Id: <20170213183826.73008-1-O2Graphics@...2243...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg14045.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
+--
+kind regards,
 
-Cheers,
+Gert Doering
 
-
--- 
-Antonio Quartulli
 
