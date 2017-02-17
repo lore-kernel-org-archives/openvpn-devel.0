@@ -1,13 +1,13 @@
 Sender: Emmanuel Deloget <emmanueldeloget53@...277...>
 From: logout@...260...
-Date: Fri, 17 Feb 2017 23:00:50 +0100
-Message-Id: <486b787a457fa098e5e9e9eeb2b728ffd8f7f622.1487368114.git.logout@...260...>
+Date: Fri, 17 Feb 2017 23:00:51 +0100
+Message-Id: <ef553d7d197f02606f2761dea8f5193717fc1849.1487368114.git.logout@...260...>
 In-Reply-To: <cover.1487368114.git.logout@...260...>
 References: <cover.1487368114.git.logout@...260...>
 In-Reply-To: <cover.1487368114.git.logout@...260...>
 References: <cover.1487368114.git.logout@...260...>
-Subject: [Openvpn-devel] [RFC PATCH v1 11/15] OpenSSL: don't use direct
-	access to the internal of EVP_CIPHER_CTX
+Subject: [Openvpn-devel] [RFC PATCH v1 12/15] OpenSSL: don't use direct
+	access to the internal of HMAC_CTX
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -23,7 +23,7 @@ To: openvpn-devel@lists.sourceforge.net
 From: Emmanuel Deloget <logout@...260...>
 
 OpenSSL 1.1 does not allow us to directly access the internal of
-any data type, including EVP_CIPHER_CTX. We have to use the defined
+any data type, including HMAC_CTX. We have to use the defined
 functions to do so.
 
 Compatibility with OpenSSL 1.0 is kept by defining the corresponding
@@ -31,163 +31,239 @@ functions when they are not found in the library.
 
 Signed-off-by: Emmanuel Deloget <logout@...260...>
 ---
- configure.ac                 |  2 ++
- src/openvpn/crypto.c         |  4 ++--
- src/openvpn/crypto_backend.h | 14 ++++++++++++++
- src/openvpn/crypto_mbedtls.c | 13 +++++++++++++
- src/openvpn/crypto_openssl.c | 15 +++++++++++++--
- src/openvpn/openssl_compat.h | 28 ++++++++++++++++++++++++++++
- 6 files changed, 72 insertions(+), 4 deletions(-)
+ configure.ac                 |  4 +++
+ src/openvpn/crypto.c         |  4 +--
+ src/openvpn/crypto_backend.h | 14 ++++++++++
+ src/openvpn/crypto_mbedtls.c | 15 ++++++++++
+ src/openvpn/crypto_openssl.c | 17 ++++++++++--
+ src/openvpn/ntlm.c           | 12 ++++----
+ src/openvpn/openssl_compat.h | 65 ++++++++++++++++++++++++++++++++++++++++++++
+ src/openvpn/ssl.c            | 38 ++++++++++++++------------
+ 8 files changed, 140 insertions(+), 29 deletions(-)
 
 diff --git a/configure.ac b/configure.ac
-index c7e9df5e3ef3f3740f2db79fef6d5c1587c47800..ff9b00447fce07d9f1c408a00ea2fafe8c786cb7 100644
+index ff9b00447fce07d9f1c408a00ea2fafe8c786cb7..b8afda2df90081b7e1a7272d019eddfc21cf7bc8 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -900,6 +900,8 @@ if test "${enable_crypto}" = "yes" -a "${with_crypto_library}" = "openssl"; then
- 
- 	AC_CHECK_FUNCS(
+@@ -902,6 +902,10 @@ if test "${enable_crypto}" = "yes" -a "${with_crypto_library}" = "openssl"; then
  		[ \
-+			EVP_CIPHER_CTX_new \
-+			EVP_CIPHER_CTX_free \
+ 			EVP_CIPHER_CTX_new \
+ 			EVP_CIPHER_CTX_free \
++			HMAC_CTX_new \
++			HMAC_CTX_free \
++			HMAC_CTX_reset \
++			HMAC_CTX_init \
  			EVP_MD_CTX_new \
  			EVP_MD_CTX_free \
  			EVP_MD_CTX_reset \
 diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
-index 909f725300fce7fb8986f4afb706a97e968ff195..4ba344d1f6185afcc2205a7ce501607a2b5fff87 100644
+index 4ba344d1f6185afcc2205a7ce501607a2b5fff87..dd7c8d8a8113d5e8136544df325de9d39b2be2b9 100644
 --- a/src/openvpn/crypto.c
 +++ b/src/openvpn/crypto.c
-@@ -820,7 +820,7 @@ init_key_ctx(struct key_ctx *ctx, struct key *key,
-     if (kt->cipher && kt->cipher_length > 0)
-     {
- 
--        ALLOC_OBJ(ctx->cipher, cipher_ctx_t);
-+        ctx->cipher = cipher_ctx_new();
-         cipher_ctx_init(ctx->cipher, key->cipher, kt->cipher_length,
-                         kt->cipher, enc);
- 
-@@ -869,7 +869,7 @@ free_key_ctx(struct key_ctx *ctx)
-     if (ctx->cipher)
-     {
-         cipher_ctx_cleanup(ctx->cipher);
--        free(ctx->cipher);
-+        cipher_ctx_free(ctx->cipher);
-         ctx->cipher = NULL;
+@@ -844,7 +844,7 @@ init_key_ctx(struct key_ctx *ctx, struct key *key,
      }
+     if (kt->digest && kt->hmac_length > 0)
+     {
+-        ALLOC_OBJ(ctx->hmac, hmac_ctx_t);
++        ctx->hmac = hmac_ctx_new();
+         hmac_ctx_init(ctx->hmac, key->hmac, kt->hmac_length, kt->digest);
+ 
+         msg(D_HANDSHAKE,
+@@ -875,7 +875,7 @@ free_key_ctx(struct key_ctx *ctx)
      if (ctx->hmac)
+     {
+         hmac_ctx_cleanup(ctx->hmac);
+-        free(ctx->hmac);
++        hmac_ctx_free(ctx->hmac);
+         ctx->hmac = NULL;
+     }
+     ctx->implicit_iv_len = 0;
 diff --git a/src/openvpn/crypto_backend.h b/src/openvpn/crypto_backend.h
-index 9b35cdaaf5a5f6c9f2b6af766fbb1b439db4c58f..04876bffe9c9de0afd40ff58bcba5dce3eab18ca 100644
+index 04876bffe9c9de0afd40ff58bcba5dce3eab18ca..e5442c5f7875dad6156c21870c5c168a4c8a2929 100644
 --- a/src/openvpn/crypto_backend.h
 +++ b/src/openvpn/crypto_backend.h
-@@ -295,6 +295,20 @@ bool cipher_kt_mode_aead(const cipher_kt_t *cipher);
+@@ -578,6 +578,20 @@ void md_ctx_final(md_ctx_t *ctx, uint8_t *dst);
   */
  
- /**
-+ * Allocate a new cipher context
+ /*
++ * Create a new HMAC context
 + *
-+ * @return              a new cipher context
++ * @return              A new HMAC context
 + */
-+cipher_ctx_t *cipher_ctx_new(void);
++hmac_ctx_t *hmac_ctx_new(void);
 +
-+/**
-+ * Free a cipher context
++/*
++ * Free an existing HMAC context
 + *
-+ * @param ctx           Cipher context.
++ * @param  ctx           HMAC context to free
 + */
-+void cipher_ctx_free(cipher_ctx_t *ctx);
++void hmac_ctx_free(hmac_ctx_t *ctx);
 +
-+/**
-  * Initialise a cipher context, based on the given key and key type.
++/*
+  * Initialises the given HMAC context, using the given digest
+  * and key.
   *
-  * @param ctx           Cipher context. May not be NULL
 diff --git a/src/openvpn/crypto_mbedtls.c b/src/openvpn/crypto_mbedtls.c
-index d67415233cd4f7d7b75a43ac30ad864458b75b47..4d38aadcdbd3a3158cd8a1da5f335e80e0c3a27d 100644
+index 4d38aadcdbd3a3158cd8a1da5f335e80e0c3a27d..f0698f61dd925f591cc39a9e931cbd7fb7a0dee0 100644
 --- a/src/openvpn/crypto_mbedtls.c
 +++ b/src/openvpn/crypto_mbedtls.c
-@@ -509,6 +509,19 @@ cipher_kt_mode_aead(const cipher_kt_t *cipher)
-  *
+@@ -841,6 +841,21 @@ md_ctx_final(mbedtls_md_context_t *ctx, uint8_t *dst)
+ /*
+  * TODO: re-enable dmsg for crypto debug
   */
- 
-+mbedtls_cipher_context_t *
-+cipher_ctx_new(void)
++
++mbedtls_md_context_t *
++hmac_ctx_new(void)
 +{
-+    mbedtls_cipher_context_t *ctx;
-+    ALLOC_OBJ(ctx, mbedtls_cipher_context_t);
++    mbedtls_md_context_t *ctx;
++    ALLOC_OBJ(ctx, mbedtls_md_context_t);
 +    return ctx;
 +}
 +
 +void
-+cipher_ctx_free(mbedtls_cipher_context_t *ctx)
++hmac_ctx_free(mbedtls_md_context_t *ctx)
 +{
 +    free(ctx);
 +}
- 
++
  void
- cipher_ctx_init(mbedtls_cipher_context_t *ctx, uint8_t *key, int key_len,
+ hmac_ctx_init(mbedtls_md_context_t *ctx, const uint8_t *key, int key_len,
+               const mbedtls_md_info_t *kt)
 diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
-index da3abfb7ef30fe23d7b47cd398c5cbdf61a9718b..82da531f353a2430dbc2c4396aff459844af0cc2 100644
+index 82da531f353a2430dbc2c4396aff459844af0cc2..2f77a9853ac484770dcd808efdf13671ade7e758 100644
 --- a/src/openvpn/crypto_openssl.c
 +++ b/src/openvpn/crypto_openssl.c
-@@ -653,6 +653,19 @@ cipher_kt_mode_aead(const cipher_kt_t *cipher)
+@@ -913,6 +913,19 @@ md_ctx_final(EVP_MD_CTX *ctx, uint8_t *dst)
   *
   */
  
-+cipher_ctx_t *
-+cipher_ctx_new(void)
++HMAC_CTX *
++hmac_ctx_new(void)
 +{
-+    EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
++    HMAC_CTX *ctx = HMAC_CTX_new();
 +    check_malloc_return(ctx);
 +    return ctx;
 +}
 +
 +void
-+cipher_ctx_free(EVP_CIPHER_CTX *ctx)
++hmac_ctx_free(HMAC_CTX *ctx)
 +{
-+    EVP_CIPHER_CTX_free(ctx);
++    HMAC_CTX_free(ctx);
 +}
  
  void
- cipher_ctx_init(EVP_CIPHER_CTX *ctx, uint8_t *key, int key_len,
-@@ -660,8 +673,6 @@ cipher_ctx_init(EVP_CIPHER_CTX *ctx, uint8_t *key, int key_len,
+ hmac_ctx_init(HMAC_CTX *ctx, const uint8_t *key, int key_len,
+@@ -920,8 +933,6 @@ hmac_ctx_init(HMAC_CTX *ctx, const uint8_t *key, int key_len,
  {
      ASSERT(NULL != kt && NULL != ctx);
  
 -    CLEAR(*ctx);
 -
-     EVP_CIPHER_CTX_init(ctx);
-     if (!EVP_CipherInit(ctx, kt, NULL, NULL, enc))
-     {
+     HMAC_CTX_init(ctx);
+     HMAC_Init_ex(ctx, key, key_len, kt, NULL);
+ 
+@@ -932,7 +943,7 @@ hmac_ctx_init(HMAC_CTX *ctx, const uint8_t *key, int key_len,
+ void
+ hmac_ctx_cleanup(HMAC_CTX *ctx)
+ {
+-    HMAC_CTX_cleanup(ctx);
++    HMAC_CTX_reset(ctx);
+ }
+ 
+ int
+diff --git a/src/openvpn/ntlm.c b/src/openvpn/ntlm.c
+index 0c436812ece383331fc0106e9e399fb1e660786c..4a4e8b9b034efa6a8fd752aa43f892df585f94d5 100644
+--- a/src/openvpn/ntlm.c
++++ b/src/openvpn/ntlm.c
+@@ -86,13 +86,13 @@ static void
+ gen_hmac_md5(const char *data, int data_len, const char *key, int key_len,char *result)
+ {
+     const md_kt_t *md5_kt = md_kt_get("MD5");
+-    hmac_ctx_t hmac_ctx;
+-    CLEAR(hmac_ctx);
++    hmac_ctx_t *hmac_ctx = hmac_ctx_new();
+ 
+-    hmac_ctx_init(&hmac_ctx, key, key_len, md5_kt);
+-    hmac_ctx_update(&hmac_ctx, (const unsigned char *)data, data_len);
+-    hmac_ctx_final(&hmac_ctx, (unsigned char *)result);
+-    hmac_ctx_cleanup(&hmac_ctx);
++    hmac_ctx_init(hmac_ctx, key, key_len, md5_kt);
++    hmac_ctx_update(hmac_ctx, (const unsigned char *)data, data_len);
++    hmac_ctx_final(hmac_ctx, (unsigned char *)result);
++    hmac_ctx_cleanup(hmac_ctx);
++    hmac_ctx_free(hmac_ctx);
+ }
+ 
+ static void
 diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h
-index 3be0f4a5abe913e5b67115b86f840a4d107f9c56..9e3969c65bfdcf2a2453ba2196bb70a0102112bd 100644
+index 9e3969c65bfdcf2a2453ba2196bb70a0102112bd..f81ec59c134fb6da2b802e66339ecd0d67040928 100644
 --- a/src/openvpn/openssl_compat.h
 +++ b/src/openvpn/openssl_compat.h
-@@ -96,6 +96,34 @@ EVP_MD_CTX_new(void)
+@@ -124,6 +124,71 @@ EVP_CIPHER_CTX_new(void)
  }
  #endif
  
-+#if !defined(HAVE_EVP_CIPHER_CTX_FREE)
++#if !defined(HAVE_HMAC_CTX_RESET)
 +/**
-+ * Free an existing cipher context
++ * Reset a HMAC context
 + *
-+ * @param ctx                 The cipher context
++ * @param ctx                 The HMAC context
++ * @return                    1 on success, 0 on error
++ */
++static inline int
++HMAC_CTX_reset(HMAC_CTX *ctx)
++{
++    HMAC_CTX_cleanup(ctx);
++    return 1;
++}
++#endif
++
++#if !defined(HAVE_HMAC_CTX_INIT)
++/**
++ * Init a HMAC context
++ *
++ * @param ctx                 The HMAC context
++ *
++ * Contrary to many functions in this file, HMAC_CTX_init() is not
++ * an OpenSSL 1.1 function: it comes from previous versions and was
++ * removed in v1.1. As a consequence, there is no distincting in
++ * v1.1 between a cleanup, and init and a reset. Yet, previous OpenSSL
++ * version need this distinction.
++ *
++ * In order to respect previous OpenSSL versions, we implement init
++ * as reset for OpenSSL 1.1+.
 + */
 +static inline void
-+EVP_CIPHER_CTX_free(EVP_CIPHER_CTX *c)
++HMAC_CTX_init(HMAC_CTX *ctx)
++{
++    HMAC_CTX_reset(ctx);
++}
++#endif
++
++#if !defined(HAVE_HMAC_CTX_FREE)
++/**
++ * Free an existing HMAC context
++ *
++ * @param ctx                 The HMAC context
++ */
++static inline void
++HMAC_CTX_free(HMAC_CTX *c)
 +{
 +	free(c);
 +}
 +#endif
 +
-+#if !defined(HAVE_EVP_CIPHER_CTX_NEW)
++#if !defined(HAVE_HMAC_CTX_NEW)
 +/**
-+ * Allocate a new cipher context object
++ * Allocate a new HMAC context object
 + *
-+ * @return                    A zero'ed cipher context object
++ * @return                    A zero'ed HMAC context object
 + */
-+static inline EVP_CIPHER_CTX *
-+EVP_CIPHER_CTX_new(void)
++static inline HMAC_CTX *
++HMAC_CTX_new(void)
 +{
-+    EVP_CIPHER_CTX *ctx = NULL;
-+    ALLOC_OBJ_CLEAR(ctx, EVP_CIPHER_CTX);
++    HMAC_CTX *ctx = NULL;
++    ALLOC_OBJ_CLEAR(ctx, HMAC_CTX);
 +    return ctx;
 +}
 +#endif
@@ -195,6 +271,85 @@ index 3be0f4a5abe913e5b67115b86f840a4d107f9c56..9e3969c65bfdcf2a2453ba2196bb70a0
  #if !defined(HAVE_SSL_CTX_GET_DEFAULT_PASSWD_CB_USERDATA)
  /**
   * Fetch the default password callback user data from the SSL context
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 86450fe057f33fa10803775da69d2506687a4313..03dc80ff9e4b69184bd90dc2f3b1fe1d2718be49 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -1614,8 +1614,8 @@ tls1_P_hash(const md_kt_t *md_kt,
+ {
+     struct gc_arena gc = gc_new();
+     int chunk;
+-    hmac_ctx_t ctx;
+-    hmac_ctx_t ctx_tmp;
++    hmac_ctx_t *ctx;
++    hmac_ctx_t *ctx_tmp;
+     uint8_t A1[MAX_HMAC_KEY_LENGTH];
+     unsigned int A1_len;
+ 
+@@ -1624,8 +1624,8 @@ tls1_P_hash(const md_kt_t *md_kt,
+     const uint8_t *out_orig = out;
+ #endif
+ 
+-    CLEAR(ctx);
+-    CLEAR(ctx_tmp);
++    ctx = hmac_ctx_new();
++    ctx_tmp = hmac_ctx_new();
+ 
+     dmsg(D_SHOW_KEY_SOURCE, "tls1_P_hash sec: %s", format_hex(sec, sec_len, 0, &gc));
+     dmsg(D_SHOW_KEY_SOURCE, "tls1_P_hash seed: %s", format_hex(seed, seed_len, 0, &gc));
+@@ -1633,36 +1633,38 @@ tls1_P_hash(const md_kt_t *md_kt,
+     chunk = md_kt_size(md_kt);
+     A1_len = md_kt_size(md_kt);
+ 
+-    hmac_ctx_init(&ctx, sec, sec_len, md_kt);
+-    hmac_ctx_init(&ctx_tmp, sec, sec_len, md_kt);
++    hmac_ctx_init(ctx, sec, sec_len, md_kt);
++    hmac_ctx_init(ctx_tmp, sec, sec_len, md_kt);
+ 
+-    hmac_ctx_update(&ctx,seed,seed_len);
+-    hmac_ctx_final(&ctx, A1);
++    hmac_ctx_update(ctx,seed,seed_len);
++    hmac_ctx_final(ctx, A1);
+ 
+     for (;; )
+     {
+-        hmac_ctx_reset(&ctx);
+-        hmac_ctx_reset(&ctx_tmp);
+-        hmac_ctx_update(&ctx,A1,A1_len);
+-        hmac_ctx_update(&ctx_tmp,A1,A1_len);
+-        hmac_ctx_update(&ctx,seed,seed_len);
++        hmac_ctx_reset(ctx);
++        hmac_ctx_reset(ctx_tmp);
++        hmac_ctx_update(ctx,A1,A1_len);
++        hmac_ctx_update(ctx_tmp,A1,A1_len);
++        hmac_ctx_update(ctx,seed,seed_len);
+ 
+         if (olen > chunk)
+         {
+-            hmac_ctx_final(&ctx, out);
++            hmac_ctx_final(ctx, out);
+             out += chunk;
+             olen -= chunk;
+-            hmac_ctx_final(&ctx_tmp, A1); /* calc the next A1 value */
++            hmac_ctx_final(ctx_tmp, A1); /* calc the next A1 value */
+         }
+         else    /* last one */
+         {
+-            hmac_ctx_final(&ctx, A1);
++            hmac_ctx_final(ctx, A1);
+             memcpy(out,A1,olen);
+             break;
+         }
+     }
+-    hmac_ctx_cleanup(&ctx);
+-    hmac_ctx_cleanup(&ctx_tmp);
++    hmac_ctx_cleanup(ctx);
++    hmac_ctx_free(ctx);
++    hmac_ctx_cleanup(ctx_tmp);
++    hmac_ctx_free(ctx_tmp);
+     secure_memzero(A1, sizeof(A1));
+ 
+     dmsg(D_SHOW_KEY_SOURCE, "tls1_P_hash out: %s", format_hex(out_orig, olen_orig, 0, &gc));
 -- 
 2.7.4
 
