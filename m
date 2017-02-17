@@ -1,9 +1,9 @@
-From: Steffan Karger <steffan@...1856...>
-Date: Fri, 17 Feb 2017 16:20:23 +0100
-Message-Id: <1487344823-8125-1-git-send-email-steffan@...1856...>
-In-Reply-To: <1485290304-12292-1-git-send-email-steffan@...1856...>
-References: <1485290304-12292-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH v2] Allow changing cipher from a ccd file
+MIME-Version: 1.0
+Sender: emmanueldeloget53@...277...
+From: Emmanuel Deloget <logout@...260...>
+Date: Fri, 17 Feb 2017 17:35:04 +0100
+Message-ID: <CAKh=nwGz-NSEcSY9KhQ12gC1GNXP6XOBTEO3FdP8gyJN5VTggg@...278...>
+Subject: Re: [Openvpn-devel] build against openssl 1.1.0
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,110 +12,64 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-As described in msg  <374a7eb7-f539-5231-623b-41f208ed856e@...1823...> on
-openvpn-devel@lists.sourceforge.net, clients that are compiled with
---disable-occ (included in --enable-small) won't send an options string.
-Without the options string, the 2.4 server doesn't know which cipher to
-use for poor man's NCP.
+Hello,
 
-This patch allows working around that issue by allowing the 'cipher'
-directive to be used in --client-config-dir files.  That way, a server
-admin can add ccd files to specify per-client which cipher to use.
+First, sorry for the inconvenience: this message is not attached to
+the remaining of the discussion (I just joined the ML so I cannot
+answer to a one week old message). That being said:
 
-Because the ccd files are read after where we would normally generate keys,
-this patch delays key generation for non-NCP p2mp servers until after
-reading the ccd file.
+On Mon, Feb 13, 2017 at 08:17:58PM +0100, Christian Hesse wrote:
+> Arch Linux is about to upgrade openssl to version 1.1.0. OpenVPN does not
+> compile against this version. Did anybody start the work to support latest
+> openssl versions?
 
-Trac: #845
+I did (yesterday). So far, I made good progress on many front,
+although I'm not sure the path I took is what you would expect.
 
-Signed-off-by: Steffan Karger <steffan@...1856...>
----
-v2: postpone p2mp non-NCP key generation, such that setting cipher in
-    a ccd file for a non-NCP client actually works.
+One of the main change in OpenSSL 1.1 is that types are now opaque,
+meaning that you need to access the internal fields using various
+(mostly short) functions. For most of them, these functions has been
+added to the API.
 
- src/openvpn/multi.c   | 14 ++++++++++++++
- src/openvpn/options.c |  2 +-
- src/openvpn/options.h |  2 +-
- src/openvpn/ssl.c     |  9 ++++-----
- 4 files changed, 20 insertions(+), 7 deletions(-)
+To make OpenVPN support OpenSSL, I decided to
 
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index 56009b7..4c81e9a 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -2086,6 +2086,20 @@ script_failed:
-             mi->context.c2.context_auth = cc_succeeded_count ? CAS_PARTIAL : CAS_FAILED;
-         }
- 
-+        /* Generate tunnel keys, unless IV_NCP >= 2 is negotiated. The first key
-+         * generation is then postponed until after the pull/push, so we can
-+         * process pushed cipher directives.
-+         */
-+        struct tls_session *session = &mi->context.c2.tls_multi->session[TM_ACTIVE];
-+        struct key_state *ks = &session->key[KS_PRIMARY];
-+        if (!session->opt->ncp_enabled && ks->authenticated
-+            && !tls_session_update_crypto_params(session, &mi->context.options,
-+                                                 &mi->context.c2.frame))
-+        {
-+            msg(D_TLS_ERRORS, "TLS Error: server generate_key_expansion failed");
-+            cc_succeeded = false;
-+        }
-+
-         /* set flag so we don't get called again */
-         mi->connection_established_flag = true;
- 
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index dde1f48..0e6b393 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -7536,7 +7536,7 @@ add_option(struct options *options,
-     }
-     else if (streq(p[0], "cipher") && p[1] && !p[2])
-     {
--        VERIFY_PERMISSION(OPT_P_NCP);
-+        VERIFY_PERMISSION(OPT_P_NCP|OPT_P_INSTANCE);
-         options->ciphername = p[1];
-     }
-     else if (streq(p[0], "ncp-ciphers") && p[1] && !p[2])
-diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-index a14f2ab..f4f0226 100644
---- a/src/openvpn/options.h
-+++ b/src/openvpn/options.h
-@@ -628,7 +628,7 @@ struct options
- #define OPT_P_MTU             (1<<14) /* TODO */
- #define OPT_P_NICE            (1<<15)
- #define OPT_P_PUSH            (1<<16)
--#define OPT_P_INSTANCE        (1<<17)
-+#define OPT_P_INSTANCE        (1<<17) /**< Allow usage in ccd file */
- #define OPT_P_CONFIG          (1<<18)
- #define OPT_P_EXPLICIT_NOTIFY (1<<19)
- #define OPT_P_ECHO            (1<<20)
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 8c724cb..1479c77 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -2401,12 +2401,11 @@ key_method_2_write(struct buffer *buf, struct tls_session *session)
-     }
- 
-     /* Generate tunnel keys if we're a TLS server.
--     * If we're a p2mp server and IV_NCP >= 2 is negotiated, the first key
--     * generation is postponed until after the pull/push, so we can process pushed
--     * cipher directives.
-+     * If we're a p2mp server, the first key generation is postponed so we can
-+     * switch cipher during the connection setup phase.
-      */
--    if (session->opt->server && !(session->opt->ncp_enabled
--                                  && session->opt->mode == MODE_SERVER && ks->key_id <= 0))
-+    if (session->opt->server
-+        && !(session->opt->mode == MODE_SERVER && ks->key_id <= 0))
-     {
-         if (ks->authenticated)
-         {
--- 
-2.7.4
+  1. check whether the functions I need are in OpenSSL at configure
+time. The function list is quite large.
+  2. reimplement the missing functions as static inlines in an
+openssl_compat.h header, using the OpenSSL prototypes.
+  3. use the new interface in the OpenVPN code.
+  4. when possible (i.e. when the interface already exists in OpenSSL
+1.0), use this interface
 
+The motivation behind this is to ease the porting of OpenVPN to a new
+OpenSSL API -- if the code is already using the latest API, the next
+changes are going to be less radical.
+
+Having done 2/3 of the job, the patch set is about +900 insertion,
+-200 deletion (or something like that). I still have a lot of things
+to do and I should finish my first pass at the beginning of newt week.
+I don't expect the patch set to be much longer than it already is.
+
+Now, I have a question which is related to this. The way I'm doing
+things, I will make sure that the new code is compatible with both
+OpenSSL 1.0.x and OpenSSL 1.1. There is a good chance that it will be
+compatible with version 0.9.8 as well, yet I can't stop wondering if
+this is a good thing. OpenSSL 0.9.8 has been EoL'ed 12 month ago and I
+believe it's OK to let it die. OpenVPN cannot rely on a dead SSL
+library -- unless it wants to make sure that future vulnerabilities in
+this old, deprecated version will affect it (and I'm not sure it's a
+good thing). Same goes for OpenSSL 1.0.1 which has been declared out
+of support in January 2017.
+
+I understand that I'm the new guy in town, but can you allow me to
+make the formal request to ditch OpenSSL 0.9.8, 1.0.0 and 1.0.1 and
+require at least version 1.0.2?
+
+Best regards,
+
+-- Emmanuel Deloget
 
