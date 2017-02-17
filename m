@@ -1,13 +1,13 @@
 Sender: Emmanuel Deloget <emmanueldeloget53@...277...>
 From: logout@...260...
-Date: Fri, 17 Feb 2017 23:00:43 +0100
-Message-Id: <3bc12a31bc806b3e4e7467d6c218a71755c4d11a.1487368114.git.logout@...260...>
+Date: Fri, 17 Feb 2017 23:00:44 +0100
+Message-Id: <e5e93420586b24b7df5b2f5ac2df02ccec5ffdb1.1487368114.git.logout@...260...>
 In-Reply-To: <cover.1487368114.git.logout@...260...>
 References: <cover.1487368114.git.logout@...260...>
 In-Reply-To: <cover.1487368114.git.logout@...260...>
 References: <cover.1487368114.git.logout@...260...>
-Subject: [Openvpn-devel] [RFC PATCH v1 04/15] OpenSSL: don't use direct
-	access to the internal of RSA_METHOD
+Subject: [Openvpn-devel] [RFC PATCH v1 05/15] OpenSSL: don't use direct
+	access to the internal of X509
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -23,281 +23,136 @@ To: openvpn-devel@lists.sourceforge.net
 From: Emmanuel Deloget <logout@...260...>
 
 OpenSSL 1.1 does not allow us to directly access the internal of
-any data type, including RSA_METHOD. We have to use the defined
+any data type, including X509. We have to use the defined
 functions to do so.
+
+In x509_verify_ns_cert_type() in particular, this means that we
+cannot directly check for the extended flags to find whether the
+certificate should be used as a client or as a server certificate.
+We need to leverage the X509_check_purpose() API yet this API is
+far stricter than the currently implemented check. So far, I have
+not been able to find a situation where this stricter test fails
+(although I must admit that I haven't tested that very well).
 
 Compatibility with OpenSSL 1.0 is kept by defining the corresponding
 functions when they are not found in the library.
 
 Signed-off-by: Emmanuel Deloget <logout@...260...>
 ---
- configure.ac                 |   9 +++
- src/openvpn/openssl_compat.h | 186 +++++++++++++++++++++++++++++++++++++++++++
- src/openvpn/ssl_openssl.c    |  22 ++---
- 3 files changed, 206 insertions(+), 11 deletions(-)
+ configure.ac                     |  1 +
+ src/openvpn/openssl_compat.h     | 15 +++++++++++++++
+ src/openvpn/ssl_openssl.c        |  3 ++-
+ src/openvpn/ssl_verify_openssl.c | 28 +++++++++++++++++++---------
+ 4 files changed, 37 insertions(+), 10 deletions(-)
 
 diff --git a/configure.ac b/configure.ac
-index 789ad08fbaa3b3fc4c95d2b7a22332c0a93aeab4..6f31609d0aeedd2c7841d271ecadd1aa6f3b11da 100644
+index 6f31609d0aeedd2c7841d271ecadd1aa6f3b11da..c41db3effbb26318be4f44009a5055e808b89b56 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -905,6 +905,15 @@ if test "${enable_crypto}" = "yes" -a "${with_crypto_library}" = "openssl"; then
+@@ -902,6 +902,7 @@ if test "${enable_crypto}" = "yes" -a "${with_crypto_library}" = "openssl"; then
+ 		[ \
+ 			SSL_CTX_get_default_passwd_cb \
+ 			SSL_CTX_get_default_passwd_cb_userdata \
++			X509_get0_pubkey \
  			X509_STORE_get0_objects \
  			X509_OBJECT_free \
  			X509_OBJECT_get_type \
-+			RSA_meth_new \
-+			RSA_meth_free \
-+			RSA_meth_set_pub_enc \
-+			RSA_meth_set_pub_dec \
-+			RSA_meth_set_priv_enc \
-+			RSA_meth_set_priv_dec \
-+			RSA_meth_set_init \
-+			RSA_meth_set_finish \
-+			RSA_meth_set0_app_data \
- 		],
- 		,
- 		[]
 diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h
-index 458a6adbe2b3fcd5ea63dcea6596cc24315d463c..b1748754f821f472cf9ed7083ade918336c9b075 100644
+index b1748754f821f472cf9ed7083ade918336c9b075..6a89b91b05e0370a50ac5a1cae20ae659e6c7634 100644
 --- a/src/openvpn/openssl_compat.h
 +++ b/src/openvpn/openssl_compat.h
-@@ -41,6 +41,8 @@
- #include "config-msvc.h"
- #endif
- 
-+#include "buffer.h"
-+
- #include <openssl/ssl.h>
- #include <openssl/x509.h>
- 
-@@ -117,4 +119,188 @@ X509_OBJECT_get_type(const X509_OBJECT *obj)
+@@ -74,6 +74,21 @@ SSL_CTX_get_default_passwd_cb(SSL_CTX *ctx)
  }
  #endif
  
-+#if !defined(HAVE_RSA_METH_NEW)
++#if !defined(HAVE_X509_GET0_PUBKEY)
 +/**
-+ * Allocate a new RSA method object
++ * Get the public key from a X509 certificate
 + *
-+ * @param name               The object name
-+ * @param flags              Configuration flags
-+ * @return                   A new RSA method object
++ * @param x                  X509 certificate
++ * @return                   The certificate public key
 + */
-+static inline RSA_METHOD *
-+RSA_meth_new(const char *name, int flags)
++static inline EVP_PKEY *
++X509_get0_pubkey(const X509 *x)
 +{
-+    RSA_METHOD *rsa_meth = NULL;
-+    ALLOC_OBJ_CLEAR(rsa_meth, RSA_METHOD);
-+    rsa_meth->name = name;
-+    rsa_meth->flags = flags;
-+    return rsa_meth;
++    return (x && x->cert_info && x->cert_info->key) ?
++           x->cert_info->key->pkey : NULL;
 +}
 +#endif
 +
-+#if !defined(HAVE_RSA_METH_FREE)
-+/**
-+ * Free an existing RSA_METHOD object
-+ *
-+ * @param meth               The RSA_METHOD object
-+ */
-+static inline void
-+RSA_meth_free(RSA_METHOD *meth)
-+{
-+    free(meth);
-+}
-+#endif
-+
-+#if !defined(HAVE_RSA_METH_SET_PUB_ENC)
-+/**
-+ * Set the public encoding function of an RSA_METHOD object
-+ *
-+ * @param meth               The RSA_METHOD object
-+ * @param pub_enc            the public encoding function
-+ * @return                   1 on success, 0 on error
-+ */
-+static inline int
-+RSA_meth_set_pub_enc(RSA_METHOD *meth,
-+                     int (*pub_enc) (int flen, const unsigned char *from,
-+                                     unsigned char *to, RSA *rsa,
-+                                     int padding))
-+{
-+    if (meth)
-+    {
-+        meth->rsa_pub_enc = pub_enc;
-+        return 1;
-+    }
-+    return 0;
-+}
-+#endif
-+
-+#if !defined(HAVE_RSA_METH_SET_PUB_DEC)
-+/**
-+ * Set the public decoding function of an RSA_METHOD object
-+ *
-+ * @param meth               The RSA_METHOD object
-+ * @param pub_dec            the public decoding function
-+ * @return                   1 on success, 0 on error
-+ */
-+static inline int
-+RSA_meth_set_pub_dec(RSA_METHOD *meth,
-+                     int (*pub_dec) (int flen, const unsigned char *from,
-+                                     unsigned char *to, RSA *rsa,
-+                                     int padding))
-+{
-+    if (meth)
-+    {
-+        meth->rsa_pub_dec = pub_dec;
-+        return 1;
-+    }
-+    return 0;
-+}
-+#endif
-+
-+#if !defined(HAVE_RSA_METH_SET_PRIV_ENC)
-+/**
-+ * Set the private encoding function of an RSA_METHOD object
-+ *
-+ * @param meth               The RSA_METHOD object
-+ * @param priv_enc           the private encoding function
-+ * @return                   1 on success, 0 on error
-+ */
-+static inline int
-+RSA_meth_set_priv_enc(RSA_METHOD *meth,
-+                      int (*priv_enc) (int flen, const unsigned char *from,
-+                                       unsigned char *to, RSA *rsa,
-+                                       int padding))
-+{
-+    if (meth)
-+    {
-+        meth->rsa_priv_enc = priv_enc;
-+        return 1;
-+    }
-+    return 0;
-+}
-+#endif
-+
-+#if !defined(HAVE_RSA_METH_SET_PRIV_DEC)
-+/**
-+ * Set the private decoding function of an RSA_METHOD object
-+ *
-+ * @param meth               The RSA_METHOD object
-+ * @param priv_dec           the private decoding function
-+ * @return                   1 on success, 0 on error
-+ */
-+static inline int
-+RSA_meth_set_priv_dec(RSA_METHOD *meth,
-+                      int (*priv_dec) (int flen, const unsigned char *from,
-+                                       unsigned char *to, RSA *rsa,
-+                                       int padding))
-+{
-+    if (meth)
-+    {
-+        meth->rsa_priv_dec = priv_dec;
-+        return 1;
-+    }
-+    return 0;
-+}
-+#endif
-+
-+#if !defined(HAVE_RSA_METH_SET_INIT)
-+/**
-+ * Set the init function of an RSA_METHOD object
-+ *
-+ * @param meth               The RSA_METHOD object
-+ * @param init               the init function
-+ * @return                   1 on success, 0 on error
-+ */
-+static inline int
-+RSA_meth_set_init(RSA_METHOD *meth, int (*init) (RSA *rsa))
-+{
-+    if (meth)
-+    {
-+        meth->init = init;
-+        return 1;
-+    }
-+    return 0;
-+}
-+#endif
-+
-+#if !defined(HAVE_RSA_METH_SET_FINISH)
-+/**
-+ * Set the finish function of an RSA_METHOD object
-+ *
-+ * @param meth               The RSA_METHOD object
-+ * @param finish             the finish function
-+ * @return                   1 on success, 0 on error
-+ */
-+static inline int
-+RSA_meth_set_finish(RSA_METHOD *meth, int (*finish) (RSA *rsa))
-+{
-+    if (meth)
-+    {
-+        meth->finish = finish;
-+        return 1;
-+    }
-+    return 0;
-+}
-+#endif
-+
-+#if !defined(HAVE_RSA_METH_SET0_APP_DATA)
-+/**
-+ * Set the application data of an RSA_METHOD object
-+ *
-+ * @param meth               The RSA_METHOD object
-+ * @param app_data           Application data
-+ * @return                   1 on success, 0 on error
-+ */
-+static inline int
-+RSA_meth_set0_app_data(RSA_METHOD *meth, void *app_data)
-+{
-+    if (meth)
-+    {
-+        meth->app_data = app_data;
-+        return 1;
-+    }
-+    return 0;
-+}
-+#endif
-+
- #endif /* OPENSSL_COMPAT_H_ */
+ #if !defined(HAVE_X509_STORE_GET0_OBJECTS)
+ /**
+  * Fetch the X509 object stack from the X509 store
 diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-index bf0f643f25439f71cbfe71bf5a7e8eb834b0f012..f011e06702529ff34e91f6d0169d1adf8cc9d767 100644
+index f011e06702529ff34e91f6d0169d1adf8cc9d767..b683961d9e4e79b9ee04cfa7ecd1b377ade9651b 100644
 --- a/src/openvpn/ssl_openssl.c
 +++ b/src/openvpn/ssl_openssl.c
-@@ -978,7 +978,7 @@ rsa_priv_dec(int flen, const unsigned char *from, unsigned char *to, RSA *rsa, i
- static int
- rsa_finish(RSA *rsa)
+@@ -1073,7 +1073,8 @@ tls_ctx_use_external_private_key(struct tls_root_ctx *ctx,
+     }
+ 
+     /* get the public key */
+-    ASSERT(cert->cert_info->key->pkey); /* NULL before SSL_CTX_use_certificate() is called */
++    EVP_PKEY *pkey = X509_get0_pubkey(cert);
++    ASSERT(pkey); /* NULL before SSL_CTX_use_certificate() is called */
+     pub_rsa = cert->cert_info->key->pkey->pkey.rsa;
+ 
+     /* initialize RSA object */
+diff --git a/src/openvpn/ssl_verify_openssl.c b/src/openvpn/ssl_verify_openssl.c
+index 07975248035b48121d1383b47f40a56042bc7380..edc709b89eb05bca895639dde606b29f8e1f7024 100644
+--- a/src/openvpn/ssl_verify_openssl.c
++++ b/src/openvpn/ssl_verify_openssl.c
+@@ -285,18 +285,20 @@ backend_x509_get_serial_hex(openvpn_x509_cert_t *cert, struct gc_arena *gc)
+ struct buffer
+ x509_get_sha1_fingerprint(X509 *cert, struct gc_arena *gc)
  {
--    free((void *)rsa->meth);
-+    RSA_meth_free(rsa->meth);
-     rsa->meth = NULL;
-     return 1;
+-    struct buffer hash = alloc_buf_gc(sizeof(cert->sha1_hash), gc);
+-    memcpy(BPTR(&hash), cert->sha1_hash, sizeof(cert->sha1_hash));
+-    ASSERT(buf_inc_len(&hash, sizeof(cert->sha1_hash)));
++    const EVP_MD *sha1 = EVP_sha1();
++    struct buffer hash = alloc_buf_gc(EVP_MD_size(sha1), gc);
++    X509_digest(cert, EVP_sha1(), BPTR(&hash), NULL);
++    ASSERT(buf_inc_len(&hash, EVP_MD_size(sha1)));
+     return hash;
  }
-@@ -1053,16 +1053,16 @@ tls_ctx_use_external_private_key(struct tls_root_ctx *ctx,
-     ASSERT(NULL != cert);
  
-     /* allocate custom RSA method object */
--    ALLOC_OBJ_CLEAR(rsa_meth, RSA_METHOD);
--    rsa_meth->name = "OpenVPN external private key RSA Method";
--    rsa_meth->rsa_pub_enc = rsa_pub_enc;
--    rsa_meth->rsa_pub_dec = rsa_pub_dec;
--    rsa_meth->rsa_priv_enc = rsa_priv_enc;
--    rsa_meth->rsa_priv_dec = rsa_priv_dec;
--    rsa_meth->init = NULL;
--    rsa_meth->finish = rsa_finish;
--    rsa_meth->flags = RSA_METHOD_FLAG_NO_CHECK;
--    rsa_meth->app_data = NULL;
-+    rsa_meth = RSA_meth_new("OpenVPN external private key RSA Method",
-+                            RSA_METHOD_FLAG_NO_CHECK);
-+    check_malloc_return(rsa_meth);
-+    RSA_meth_set_pub_enc(rsa_meth, rsa_pub_enc);
-+    RSA_meth_set_pub_dec(rsa_meth, rsa_pub_dec);
-+    RSA_meth_set_priv_enc(rsa_meth, rsa_priv_enc);
-+    RSA_meth_set_priv_dec(rsa_meth, rsa_priv_dec);
-+    RSA_meth_set_init(rsa_meth, NULL);
-+    RSA_meth_set_finish(rsa_meth, rsa_finish);
-+    RSA_meth_set0_app_data(rsa_meth, NULL);
+ struct buffer
+ x509_get_sha256_fingerprint(X509 *cert, struct gc_arena *gc)
+ {
+-    struct buffer hash = alloc_buf_gc((EVP_sha256())->md_size, gc);
++    const EVP_MD *sha256 = EVP_sha256();
++    struct buffer hash = alloc_buf_gc(EVP_MD_size(sha256), gc);
+     X509_digest(cert, EVP_sha256(), BPTR(&hash), NULL);
+-    ASSERT(buf_inc_len(&hash, (EVP_sha256())->md_size));
++    ASSERT(buf_inc_len(&hash, EVP_MD_size(sha256)));
+     return hash;
+ }
  
-     /* allocate RSA object */
-     rsa = RSA_new();
+@@ -573,13 +575,21 @@ x509_verify_ns_cert_type(const openvpn_x509_cert_t *peer_cert, const int usage)
+     }
+     if (usage == NS_CERT_CHECK_CLIENT)
+     {
+-        return ((peer_cert->ex_flags & EXFLAG_NSCERT)
+-                && (peer_cert->ex_nscert & NS_SSL_CLIENT)) ? SUCCESS : FAILURE;
++        /*
++         * Unfortunately, X509_check_purpose() does some wierd thing that
++         * prevent it to take a const argument
++         */
++        return X509_check_purpose((X509 *)peer_cert, X509_PURPOSE_SSL_CLIENT, 0) ?
++	       SUCCESS : FAILURE;
+     }
+     if (usage == NS_CERT_CHECK_SERVER)
+     {
+-        return ((peer_cert->ex_flags & EXFLAG_NSCERT)
+-                && (peer_cert->ex_nscert & NS_SSL_SERVER))  ? SUCCESS : FAILURE;
++        /*
++         * Unfortunately, X509_check_purpose() does some wierd thing that
++         * prevent it to take a const argument
++         */
++        return X509_check_purpose((X509 *)peer_cert, X509_PURPOSE_SSL_SERVER, 0) ?
++	       SUCCESS : FAILURE;
+     }
+ 
+     return FAILURE;
 -- 
 2.7.4
 
