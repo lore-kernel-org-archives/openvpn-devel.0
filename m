@@ -1,13 +1,13 @@
 Sender: Emmanuel Deloget <emmanueldeloget53@...277...>
 From: logout@...260...
-Date: Fri, 17 Feb 2017 23:00:48 +0100
-Message-Id: <11477a0a3cf636572c84e0110a6f1b726bc60c2c.1487368114.git.logout@...260...>
+Date: Fri, 17 Feb 2017 23:00:47 +0100
+Message-Id: <12dafb6349262c17c1b6a83291a5ea175ca2c706.1487368114.git.logout@...260...>
 In-Reply-To: <cover.1487368114.git.logout@...260...>
 References: <cover.1487368114.git.logout@...260...>
 In-Reply-To: <cover.1487368114.git.logout@...260...>
 References: <cover.1487368114.git.logout@...260...>
-Subject: [Openvpn-devel] [RFC PATCH v1 09/15] OpenSSL: don't use direct
-	access to the internal of X509_STORE_CTX
+Subject: [Openvpn-devel] [RFC PATCH v1 08/15] OpenSSL: don't use direct
+	access to the internal of DSA
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -23,75 +23,95 @@ To: openvpn-devel@lists.sourceforge.net
 From: Emmanuel Deloget <logout@...260...>
 
 OpenSSL 1.1 does not allow us to directly access the internal of
-any data type, including X509_STORE_CTX. We have to use the defined
+any data type, including DSA. We have to use the defined
 functions to do so.
 
-Fortunately, these functions have existed since the dawn of time so
-we don't have any compatibility issue here.
+Compatibility with OpenSSL 1.0 is kept by defining the corresponding
+functions when they are not found in the library.
 
 Signed-off-by: Emmanuel Deloget <logout@...260...>
 ---
- src/openvpn/ssl_verify_openssl.c | 19 ++++++++++---------
- 1 file changed, 10 insertions(+), 9 deletions(-)
+ configure.ac                 |  1 +
+ src/openvpn/openssl_compat.h | 28 ++++++++++++++++++++++++++++
+ src/openvpn/ssl_openssl.c    | 13 +++++++++----
+ 3 files changed, 38 insertions(+), 4 deletions(-)
 
-diff --git a/src/openvpn/ssl_verify_openssl.c b/src/openvpn/ssl_verify_openssl.c
-index edc709b89eb05bca895639dde606b29f8e1f7024..5bdd1e3609c4a2693e16c0835a9e5c39babd5ff8 100644
---- a/src/openvpn/ssl_verify_openssl.c
-+++ b/src/openvpn/ssl_verify_openssl.c
-@@ -62,14 +62,15 @@ verify_callback(int preverify_ok, X509_STORE_CTX *ctx)
-     session = (struct tls_session *) SSL_get_ex_data(ssl, mydata_index);
-     ASSERT(session);
+diff --git a/configure.ac b/configure.ac
+index d2f9eb5aae7351fb76c94b4cccd7e0a7cd50ddee..3f59ba051692fa40304a203355c82812ca0962e8 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -911,6 +911,7 @@ if test "${enable_crypto}" = "yes" -a "${with_crypto_library}" = "openssl"; then
+ 			RSA_set_flags \
+ 			RSA_get0_key \
+ 			RSA_set0_key \
++			DSA_get0_pqg \
+ 			RSA_meth_new \
+ 			RSA_meth_free \
+ 			RSA_meth_set_pub_enc \
+diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h
+index 1e6f062b805022a3555204fe95cc0ef428b2bc54..d4f16e4a2ce485d80ad82ca1ef677cf6c4c4ebf7 100644
+--- a/src/openvpn/openssl_compat.h
++++ b/src/openvpn/openssl_compat.h
+@@ -246,6 +246,34 @@ RSA_set0_key(RSA *rsa, BIGNUM *n, BIGNUM *e, BIGNUM *d)
+ }
+ #endif
  
--    struct buffer cert_hash = x509_get_sha256_fingerprint(ctx->current_cert, &gc);
--    cert_hash_remember(session, ctx->error_depth, &cert_hash);
-+    X509 *current_cert = X509_STORE_CTX_get_current_cert(ctx);
-+    struct buffer cert_hash = x509_get_sha256_fingerprint(current_cert, &gc);
-+    cert_hash_remember(session, X509_STORE_CTX_get_error_depth(ctx), &cert_hash);
- 
-     /* did peer present cert which was signed by our root cert? */
-     if (!preverify_ok)
-     {
-         /* get the X509 name */
--        char *subject = x509_get_subject(ctx->current_cert, &gc);
-+        char *subject = x509_get_subject(current_cert, &gc);
- 
-         if (!subject)
-         {
-@@ -77,11 +78,11 @@ verify_callback(int preverify_ok, X509_STORE_CTX *ctx)
++#if !defined(HAVE_DSA_GET0_PQG)
++/**
++ * Get the DSA parameters
++ *
++ * @param dsa                 The DSA object
++ * @param p                   The @c p parameter
++ * @param q                   The @c q parameter
++ * @param g                   The @c g parameter
++ */
++static inline void
++DSA_get0_pqg(const DSA *dsa, const BIGNUM **p,
++             const BIGNUM **q, const BIGNUM **g)
++{
++    if (p != NULL)
++    {
++        *p = dsa ? dsa->p : NULL;
++    }
++    if (q != NULL)
++    {
++        *q = dsa ? dsa->q : NULL;
++    }
++    if (g != NULL)
++    {
++        *g = dsa ? dsa->g : NULL;
++    }
++}
++#endif
++
+ #if !defined(HAVE_RSA_METH_NEW)
+ /**
+  * Allocate a new RSA method object
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index 416ba0c5620a013d97db455c719a8fef60128b88..a9ae20f45fe60d35af97e7d14bfd2332f9360c30 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -1695,11 +1695,16 @@ print_details(struct key_state_ssl *ks_ssl, const char *prefix)
+                                      BN_num_bits(n));
+                 }
+             }
+-            else if (EVP_PKEY_id(pkey) == EVP_PKEY_DSA && EVP_PKEY_get0_DSA(pkey) != NULL
+-                     && pkey->pkey.dsa->p != NULL)
++            else if (EVP_PKEY_id(pkey) == EVP_PKEY_DSA && EVP_PKEY_get0_DSA(pkey) != NULL)
+             {
+-                openvpn_snprintf(s2, sizeof(s2), ", %d bit DSA",
+-                                 BN_num_bits(pkey->pkey.dsa->p));
++                DSA *dsa = EVP_PKEY_get0_DSA(pkey);
++                const BIGNUM *p = NULL;
++                DSA_get0_pqg(dsa, &p, NULL, NULL);
++                if (p != NULL)
++                {
++                    openvpn_snprintf(s2, sizeof(s2), ", %d bit DSA",
++                                     BN_num_bits(p));
++                }
+             }
+             EVP_PKEY_free(pkey);
          }
- 
-         /* Log and ignore missing CRL errors */
--        if (ctx->error == X509_V_ERR_UNABLE_TO_GET_CRL)
-+        if (X509_STORE_CTX_get_error(ctx) == X509_V_ERR_UNABLE_TO_GET_CRL)
-         {
-             msg(D_TLS_DEBUG_LOW, "VERIFY WARNING: depth=%d, %s: %s",
--                ctx->error_depth,
--                X509_verify_cert_error_string(ctx->error),
-+                X509_STORE_CTX_get_error_depth(ctx),
-+                X509_verify_cert_error_string(X509_STORE_CTX_get_error(ctx)),
-                 subject);
-             ret = 1;
-             goto cleanup;
-@@ -89,8 +90,8 @@ verify_callback(int preverify_ok, X509_STORE_CTX *ctx)
- 
-         /* Remote site specified a certificate, but it's not correct */
-         msg(D_TLS_ERRORS, "VERIFY ERROR: depth=%d, error=%s: %s",
--            ctx->error_depth,
--            X509_verify_cert_error_string(ctx->error),
-+            X509_STORE_CTX_get_error_depth(ctx),
-+            X509_verify_cert_error_string(X509_STORE_CTX_get_error(ctx)),
-             subject);
- 
-         ERR_clear_error();
-@@ -99,7 +100,7 @@ verify_callback(int preverify_ok, X509_STORE_CTX *ctx)
-         goto cleanup;
-     }
- 
--    if (SUCCESS != verify_cert(session, ctx->current_cert, ctx->error_depth))
-+    if (SUCCESS != verify_cert(session, current_cert, X509_STORE_CTX_get_error_depth(ctx)))
-     {
-         goto cleanup;
-     }
 -- 
 2.7.4
 
