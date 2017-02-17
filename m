@@ -1,8 +1,13 @@
 Sender: Emmanuel Deloget <emmanueldeloget53@...277...>
 From: logout@...260...
-Date: Fri, 17 Feb 2017 23:00:39 +0100
-Message-Id: <cover.1487368114.git.logout@...260...>
-Subject: [Openvpn-devel] [RFC PATCH v1 00/15] Add support for OpenSSL 1.1.x
+Date: Fri, 17 Feb 2017 23:00:40 +0100
+Message-Id: <a77187a66affdba318ef70e0e218b69cdad509d1.1487368114.git.logout@...260...>
+In-Reply-To: <cover.1487368114.git.logout@...260...>
+References: <cover.1487368114.git.logout@...260...>
+In-Reply-To: <cover.1487368114.git.logout@...260...>
+References: <cover.1487368114.git.logout@...260...>
+Subject: [Openvpn-devel] [RFC PATCH v1 01/15] OpenSSL: don't use direct
+	access to the internal of SSL_CTX
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,100 +22,166 @@ To: openvpn-devel@lists.sourceforge.net
 
 From: Emmanuel Deloget <logout@...260...>
 
-The purpose of this RFC series is to make the latest master of OpenVPN
-(2.5-git) linkable with OpenSSL v1.1.x. It may not be complete (I may
-have missed something due to my work environment, but any missing pieces
-will be added next week) so be a bit cautious with this. The 
-configuration I used (--without-systemd, --without-lzo) seems to work
-but I must confess I did not tested much. 
+OpenSSL 1.1 does not allow us to directly access the internal of
+any data type, including SSL_CTX. We have to use the defined functions
+to do so.
 
-As you may know, the important information about the API of OpenSSL 1.1
-if that it no longer provide access to the content of its objects. The
-structure types are now opaque and various functions have been added to
-fetch information from these objects. 
+Compatibility with OpenSSL 1.0 is kept by defining the corresponding
+functions when they are not found in the library.
 
-Once theses patches have been applied, it is possible to compile 
-OpenSSL with the latest 1.0.1 and with the latest 1.1.0. I still have to
-check whether compilation with 1.0.0 and 0.9.8 works. I don't try to 
-get the OpenSSL version -- I instead decided to check for the presence
-of individual functions in the library and chose to reimplement the 
-missing ones. Then I changed caller code in order to use this new
-interface. The net result is that OpenVPN is now using the OpenSSL 1.1
-API -- regardless of the real version of OpenSSL. This might make futur
-changes simpler at the cost of adding more functions in the 
-openssl_compat.h file. 
-
-Las but not least, because of the way I worked I introduced some strange 
-artefacts (I believe they are not really relevant but some of them are 
-weird enough to need some explaination). 
-
-* I had to introduce a function of the 1.0 API in the 1.1 code. In the
-  1.0 API, HMAC_CTX is populated with HMAC_CTX_init() and cleaned with
-  HMAC_CTX_cleanup(). In 1.1 these two functions are gone and replaced
-  with HMAC_CTX_reset(). I decided to use _reset() to implement 
-  _cleanup() but since I then could not use it for _init() (that would
-  break an OpenVPN linked with 1.0) I created a small wrapper in 1.1
-  mode. So, in 1.1, HMAC_CTX_init() calls _reset() -- and everybody is
-  happy (well, maybe not everybody).  
-  
-* HMAC_CTX, EVP_MD_CTX and a few other objects cannot be allocated using
-  malloc() so I had to change the way these object are used and 
-  initialized. I introduces a few new functions in the crypto backend to
-  handle this.
-
-* x509_verify_ns_cert_type() checks had to be changed. OpenSSL 1.1 does 
-  not provide any solution to access both X509::ex_flags and 
-  X509::ex_nscert so the check could not be implemented this way. The
-  only solution I found was to use X509_check_purpose() but I'm worried
-  that the implemented test is now far more strict. 
-
-* weirdly enough, it's no longer possible to duplicate the n parameter
-  of a RSA public key into another RSA public key. If you do so, you
-  also need to duplicate the e parameter. The reason is that you cannot
-  have (n && !e) or (!n && e) (see RSA_set0_key[1]). I deciced to go
-  the same route in my implementation and thus I needed to change the
-  code in tls_ctx_use_external_private_key(). 
-
-Thanks for your comprehension, 
-
-[1] https://github.com/openssl/openssl/blob/master/crypto/rsa/rsa_lib.c#L191
-
--- Emmanuel Deloget
-
-Emmanuel Deloget (15):
-  OpenSSL: don't use direct access to the internal of SSL_CTX
-  OpenSSL: don't use direct access to the internal of X509_STORE
-  OpenSSL: don't use direct access to the internal of X509_OBJECT
-  OpenSSL: don't use direct access to the internal of RSA_METHOD
-  OpenSSL: don't use direct access to the internal of X509
-  OpenSSL: don't use direct access to the internal of EVP_PKEY
-  OpenSSL: don't use direct access to the internal of RSA
-  OpenSSL: don't use direct access to the internal of DSA
-  OpenSSL: don't use direct access to the internal of X509_STORE_CTX
-  OpenSSL: don't use direct access to the internal of EVP_MD_CTX
-  OpenSSL: don't use direct access to the internal of EVP_CIPHER_CTX
-  OpenSSL: don't use direct access to the internal of HMAC_CTX
-  OpenSSL: SSLeay symbols are no longer available in OpenSSL 1.1
-  OpenSSL: check for the SSL reason, not the full error
-  OpenSSL: constify getbio() parameters
-
- configure.ac                     |  37 +++
- src/openvpn/crypto.c             |   8 +-
- src/openvpn/crypto_backend.h     |  42 +++
- src/openvpn/crypto_mbedtls.c     |  40 +++
- src/openvpn/crypto_openssl.c     |  53 +++-
- src/openvpn/httpdigest.c         |  78 ++---
- src/openvpn/misc.c               |  14 +-
- src/openvpn/ntlm.c               |  12 +-
- src/openvpn/openssl_compat.h     | 609 +++++++++++++++++++++++++++++++++++++++
- src/openvpn/openvpn.h            |   2 +-
- src/openvpn/push.c               |  11 +-
- src/openvpn/ssl.c                |  38 +--
- src/openvpn/ssl_openssl.c        |  94 +++---
- src/openvpn/ssl_verify_openssl.c |  55 ++--
- 14 files changed, 947 insertions(+), 146 deletions(-)
+Signed-off-by: Emmanuel Deloget <logout@...260...>
+---
+ configure.ac                 |  9 ++++++
+ src/openvpn/openssl_compat.h | 74 ++++++++++++++++++++++++++++++++++++++++++++
+ src/openvpn/ssl_openssl.c    | 13 +++++---
+ 3 files changed, 91 insertions(+), 5 deletions(-)
  create mode 100644 src/openvpn/openssl_compat.h
 
+diff --git a/configure.ac b/configure.ac
+index b29f8b410dfb69bce1145c3bb4a1ba011f0636ec..5fe5d6046ceafa2b577296af772c347ac2ad8039 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -898,6 +898,15 @@ if test "${enable_crypto}" = "yes" -a "${with_crypto_library}" = "openssl"; then
+ 		[have_crypto_aead_modes="no"; break]
+ 	)
+ 
++	AC_CHECK_FUNCS(
++		[ \
++			SSL_CTX_get_default_passwd_cb \
++			SSL_CTX_get_default_passwd_cb_userdata \
++		],
++		,
++		[]
++	)
++
+ 	CFLAGS="${saved_CFLAGS}"
+ 	LIBS="${saved_LIBS}"
+ 
+diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h
+new file mode 100644
+index 0000000000000000000000000000000000000000..59bad9ff24d10b358419d345181a0e2e52a0c662
+--- /dev/null
++++ b/src/openvpn/openssl_compat.h
+@@ -0,0 +1,74 @@
++/*
++ *  OpenVPN -- An application to securely tunnel IP networks
++ *             over a single TCP/UDP port, with support for SSL/TLS-based
++ *             session authentication and key exchange,
++ *             packet encryption, packet authentication, and
++ *             packet compression.
++ *
++ *  Copyright (C) 2002-2017 OpenVPN Technologies, Inc. <sales@...515...>
++ *  Copyright (C) 2010-2017 Fox Crypto B.V. <openvpn@...1435...>
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License version 2
++ *  as published by the Free Software Foundation.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License
++ *  along with this program (see the file COPYING included with this
++ *  distribution); if not, write to the Free Software Foundation, Inc.,
++ *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
++ */
++
++/**
++ * @file OpenSSL compatibility stub
++ *
++ * This file provide compatibility stubs for the OpenSSL libraries
++ * prior to version 1.1. This version introduces many changes in the
++ * library interface, including the fact that various objects and
++ * structures are not fully opaque.
++ */
++
++#ifndef OPENSSL_COMPAT_H_
++#define OPENSSL_COMPAT_H_
++
++#ifdef HAVE_CONFIG_H
++#include "config.h"
++#elif defined(_MSC_VER)
++#include "config-msvc.h"
++#endif
++
++#include <openssl/ssl.h>
++
++#if !defined(HAVE_SSL_CTX_GET_DEFAULT_PASSWD_CB_USERDATA)
++/**
++ * Fetch the default password callback user data from the SSL context
++ *
++ * @param ctx                SSL context
++ * @return                   The password callback user data
++ */
++static inline void *
++SSL_CTX_get_default_passwd_cb_userdata(SSL_CTX *ctx)
++{
++    return ctx ? ctx->default_passwd_callback_userdata : NULL;
++}
++#endif
++
++#if !defined(HAVE_SSL_CTX_GET_DEFAULT_PASSWD_CB)
++/**
++ * Fetch the default password callback from the SSL context
++ *
++ * @param ctx                SSL context
++ * @return                   The password callback
++ */
++static inline pem_password_cb *
++SSL_CTX_get_default_passwd_cb(SSL_CTX *ctx)
++{
++    return ctx ? ctx->default_passwd_callback : NULL;
++}
++#endif
++
++#endif /* OPENSSL_COMPAT_H_ */
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index abf69c91a60910e450ae6d2d49ea7e5b1cd3a535..39e92f8cdae52d54d0ad95a9362e4e0e1b2289f4 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -45,6 +45,7 @@
+ #include "ssl_backend.h"
+ #include "ssl_common.h"
+ #include "base64.h"
++#include "openssl_compat.h"
+ 
+ #ifdef ENABLE_CRYPTOAPI
+ #include "cryptoapi.h"
+@@ -658,7 +659,8 @@ tls_ctx_load_pkcs12(struct tls_root_ctx *ctx, const char *pkcs12_file,
+         {
+             for (i = 0; i < sk_X509_num(ca); i++)
+             {
+-                if (!X509_STORE_add_cert(ctx->ctx->cert_store,sk_X509_value(ca, i)))
++                X509_STORE *cert_store = SSL_CTX_get_cert_store(ctx->ctx);
++                if (!X509_STORE_add_cert(cert_store,sk_X509_value(ca, i)))
+                 {
+                     crypto_msg(M_FATAL,"Cannot add certificate to certificate chain (X509_STORE_add_cert)");
+                 }
+@@ -760,8 +762,9 @@ tls_ctx_load_cert_file_and_copy(struct tls_root_ctx *ctx,
+         goto end;
+     }
+ 
+-    x = PEM_read_bio_X509(in, NULL, ctx->ctx->default_passwd_callback,
+-                          ctx->ctx->default_passwd_callback_userdata);
++    x = PEM_read_bio_X509(in, NULL,
++                          SSL_CTX_get_default_passwd_cb(ctx->ctx),
++                          SSL_CTX_get_default_passwd_cb_userdata(ctx->ctx));
+     if (x == NULL)
+     {
+         SSLerr(SSL_F_SSL_CTX_USE_CERTIFICATE_FILE, ERR_R_PEM_LIB);
+@@ -843,8 +846,8 @@ tls_ctx_load_priv_file(struct tls_root_ctx *ctx, const char *priv_key_file,
+     }
+ 
+     pkey = PEM_read_bio_PrivateKey(in, NULL,
+-                                   ssl_ctx->default_passwd_callback,
+-                                   ssl_ctx->default_passwd_callback_userdata);
++                                   SSL_CTX_get_default_passwd_cb(ctx->ctx),
++                                   SSL_CTX_get_default_passwd_cb_userdata(ctx->ctx));
+     if (!pkey)
+     {
+         goto end;
 -- 
 2.7.4
 
