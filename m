@@ -1,13 +1,13 @@
 Sender: Emmanuel Deloget <emmanueldeloget53@...277...>
 From: logout@...260...
-Date: Fri, 17 Feb 2017 23:00:52 +0100
-Message-Id: <9ce17efda7b1ed100e73554b1916c0bfa687d9d1.1487368114.git.logout@...260...>
+Date: Fri, 17 Feb 2017 23:00:53 +0100
+Message-Id: <0e0d4a67192b563cd07d3f06685f85e34c304142.1487368114.git.logout@...260...>
 In-Reply-To: <cover.1487368114.git.logout@...260...>
 References: <cover.1487368114.git.logout@...260...>
 In-Reply-To: <cover.1487368114.git.logout@...260...>
 References: <cover.1487368114.git.logout@...260...>
-Subject: [Openvpn-devel] [RFC PATCH v1 13/15] OpenSSL: SSLeay symbols are no
-	longer available in OpenSSL 1.1
+Subject: [Openvpn-devel] [RFC PATCH v1 14/15] OpenSSL: check for the SSL
+	reason, not the full error
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,42 +22,36 @@ To: openvpn-devel@lists.sourceforge.net
 
 From: Emmanuel Deloget <logout@...260...>
 
-The old symbols do not exist anymore but the library gained new
-equivalent symbols (OSSL). Use them instead of the old ones
+OpenSSL 1.1 changed the SSLv3 API and removed many SSL_L_SSL3_*
+constants. Moreover, new code might use different function
+code for the same error.
+
+Thus, we extract the error reason from the error code before
+we compare it instead of trying to rebuild an error code
+that might not be correct.
+
+The new version is compatible with OpenSSL 1.0.x as well as
+with older versions (starting at 0.9.8).
 
 Signed-off-by: Emmanuel Deloget <logout@...260...>
 ---
- src/openvpn/openssl_compat.h | 5 +++++
- src/openvpn/ssl_openssl.c    | 2 +-
- 2 files changed, 6 insertions(+), 1 deletion(-)
+ src/openvpn/crypto_openssl.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h
-index f81ec59c134fb6da2b802e66339ecd0d67040928..054fd56cd1833bb5278eb5fd88a4c4d1908d6415 100644
---- a/src/openvpn/openssl_compat.h
-+++ b/src/openvpn/openssl_compat.h
-@@ -601,4 +601,9 @@ RSA_meth_set0_app_data(RSA_METHOD *meth, void *app_data)
- }
- #endif
- 
-+/* SSLeay symbols have been renamed in OpenSSL 1.1 */
-+#if !defined(RSA_F_RSA_OSSL_PRIVATE_ENCRYPT)
-+#define RSA_F_RSA_OSSL_PRIVATE_ENCRYPT       RSA_F_RSA_EAY_PRIVATE_ENCRYPT
-+#endif
-+
- #endif /* OPENSSL_COMPAT_H_ */
-diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-index a9ae20f45fe60d35af97e7d14bfd2332f9360c30..2ff3e12b93d6f829e4b27aefc2622d52e41ce589 100644
---- a/src/openvpn/ssl_openssl.c
-+++ b/src/openvpn/ssl_openssl.c
-@@ -996,7 +996,7 @@ rsa_priv_enc(int flen, const unsigned char *from, unsigned char *to, RSA *rsa, i
- 
-     if (padding != RSA_PKCS1_PADDING)
+diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
+index 2f77a9853ac484770dcd808efdf13671ade7e758..23de17542bf0f4a311825373ecf8d8261fd21c73 100644
+--- a/src/openvpn/crypto_openssl.c
++++ b/src/openvpn/crypto_openssl.c
+@@ -194,8 +194,7 @@ crypto_print_openssl_errors(const unsigned int flags)
+     while ((err = ERR_get_error()))
      {
--        RSAerr(RSA_F_RSA_EAY_PRIVATE_ENCRYPT, RSA_R_UNKNOWN_PADDING_TYPE);
-+        RSAerr(RSA_F_RSA_OSSL_PRIVATE_ENCRYPT, RSA_R_UNKNOWN_PADDING_TYPE);
-         goto done;
-     }
- 
+         /* Be more clear about frequently occurring "no shared cipher" error */
+-        if (err == ERR_PACK(ERR_LIB_SSL,SSL_F_SSL3_GET_CLIENT_HELLO,
+-                            SSL_R_NO_SHARED_CIPHER))
++        if (ERR_GET_REASON(err) == SSL_R_NO_SHARED_CIPHER)
+         {
+             msg(D_CRYPT_ERRORS, "TLS error: The server has no TLS ciphersuites "
+                 "in common with the client. Your --tls-cipher setting might be "
 -- 
 2.7.4
 
