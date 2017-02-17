@@ -1,13 +1,13 @@
 Sender: Emmanuel Deloget <emmanueldeloget53@...277...>
 From: logout@...260...
-Date: Fri, 17 Feb 2017 23:00:49 +0100
-Message-Id: <cce237dbf3716cc6b2d7c47da9e750365925bc62.1487368114.git.logout@...260...>
+Date: Fri, 17 Feb 2017 23:00:50 +0100
+Message-Id: <486b787a457fa098e5e9e9eeb2b728ffd8f7f622.1487368114.git.logout@...260...>
 In-Reply-To: <cover.1487368114.git.logout@...260...>
 References: <cover.1487368114.git.logout@...260...>
 In-Reply-To: <cover.1487368114.git.logout@...260...>
 References: <cover.1487368114.git.logout@...260...>
-Subject: [Openvpn-devel] [RFC PATCH v1 10/15] OpenSSL: don't use direct
-	access to the internal of EVP_MD_CTX
+Subject: [Openvpn-devel] [RFC PATCH v1 11/15] OpenSSL: don't use direct
+	access to the internal of EVP_CIPHER_CTX
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -23,7 +23,7 @@ To: openvpn-devel@lists.sourceforge.net
 From: Emmanuel Deloget <logout@...260...>
 
 OpenSSL 1.1 does not allow us to directly access the internal of
-any data type, including EVP_MD_CTX. We have to use the defined
+any data type, including EVP_CIPHER_CTX. We have to use the defined
 functions to do so.
 
 Compatibility with OpenSSL 1.0 is kept by defining the corresponding
@@ -31,326 +31,163 @@ functions when they are not found in the library.
 
 Signed-off-by: Emmanuel Deloget <logout@...260...>
 ---
- configure.ac                 |  3 ++
- src/openvpn/crypto_backend.h | 14 ++++++++
- src/openvpn/crypto_mbedtls.c | 12 +++++++
- src/openvpn/crypto_openssl.c | 18 ++++++++--
- src/openvpn/httpdigest.c     | 78 +++++++++++++++++++++++---------------------
- src/openvpn/misc.c           | 14 ++++----
- src/openvpn/openssl_compat.h | 50 ++++++++++++++++++++++++++++
- src/openvpn/openvpn.h        |  2 +-
- src/openvpn/push.c           | 11 ++++---
- 9 files changed, 150 insertions(+), 52 deletions(-)
+ configure.ac                 |  2 ++
+ src/openvpn/crypto.c         |  4 ++--
+ src/openvpn/crypto_backend.h | 14 ++++++++++++++
+ src/openvpn/crypto_mbedtls.c | 13 +++++++++++++
+ src/openvpn/crypto_openssl.c | 15 +++++++++++++--
+ src/openvpn/openssl_compat.h | 28 ++++++++++++++++++++++++++++
+ 6 files changed, 72 insertions(+), 4 deletions(-)
 
 diff --git a/configure.ac b/configure.ac
-index 3f59ba051692fa40304a203355c82812ca0962e8..c7e9df5e3ef3f3740f2db79fef6d5c1587c47800 100644
+index c7e9df5e3ef3f3740f2db79fef6d5c1587c47800..ff9b00447fce07d9f1c408a00ea2fafe8c786cb7 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -900,6 +900,9 @@ if test "${enable_crypto}" = "yes" -a "${with_crypto_library}" = "openssl"; then
+@@ -900,6 +900,8 @@ if test "${enable_crypto}" = "yes" -a "${with_crypto_library}" = "openssl"; then
  
  	AC_CHECK_FUNCS(
  		[ \
-+			EVP_MD_CTX_new \
-+			EVP_MD_CTX_free \
-+			EVP_MD_CTX_reset \
- 			SSL_CTX_get_default_passwd_cb \
- 			SSL_CTX_get_default_passwd_cb_userdata \
- 			X509_get0_pubkey \
++			EVP_CIPHER_CTX_new \
++			EVP_CIPHER_CTX_free \
+ 			EVP_MD_CTX_new \
+ 			EVP_MD_CTX_free \
+ 			EVP_MD_CTX_reset \
+diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
+index 909f725300fce7fb8986f4afb706a97e968ff195..4ba344d1f6185afcc2205a7ce501607a2b5fff87 100644
+--- a/src/openvpn/crypto.c
++++ b/src/openvpn/crypto.c
+@@ -820,7 +820,7 @@ init_key_ctx(struct key_ctx *ctx, struct key *key,
+     if (kt->cipher && kt->cipher_length > 0)
+     {
+ 
+-        ALLOC_OBJ(ctx->cipher, cipher_ctx_t);
++        ctx->cipher = cipher_ctx_new();
+         cipher_ctx_init(ctx->cipher, key->cipher, kt->cipher_length,
+                         kt->cipher, enc);
+ 
+@@ -869,7 +869,7 @@ free_key_ctx(struct key_ctx *ctx)
+     if (ctx->cipher)
+     {
+         cipher_ctx_cleanup(ctx->cipher);
+-        free(ctx->cipher);
++        cipher_ctx_free(ctx->cipher);
+         ctx->cipher = NULL;
+     }
+     if (ctx->hmac)
 diff --git a/src/openvpn/crypto_backend.h b/src/openvpn/crypto_backend.h
-index 2c79baa15c2021d679e1bddf269f4662e1686e5f..9b35cdaaf5a5f6c9f2b6af766fbb1b439db4c58f 100644
+index 9b35cdaaf5a5f6c9f2b6af766fbb1b439db4c58f..04876bffe9c9de0afd40ff58bcba5dce3eab18ca 100644
 --- a/src/openvpn/crypto_backend.h
 +++ b/src/openvpn/crypto_backend.h
-@@ -502,6 +502,20 @@ int md_kt_size(const md_kt_t *kt);
- int md_full(const md_kt_t *kt, const uint8_t *src, int src_len, uint8_t *dst);
+@@ -295,6 +295,20 @@ bool cipher_kt_mode_aead(const cipher_kt_t *cipher);
+  */
  
- /*
-+ * Allocate a new message digest context
+ /**
++ * Allocate a new cipher context
 + *
-+ * @return              a new zeroed MD context
++ * @return              a new cipher context
 + */
-+md_ctx_t *md_ctx_new(void);
++cipher_ctx_t *cipher_ctx_new(void);
 +
-+/*
-+ * Free an existing, non-null message digest context
++/**
++ * Free a cipher context
 + *
-+ * @param ctx           Message digest context
++ * @param ctx           Cipher context.
 + */
-+void md_ctx_free(md_ctx_t *ctx);
++void cipher_ctx_free(cipher_ctx_t *ctx);
 +
-+/*
-  * Initialises the given message digest context.
++/**
+  * Initialise a cipher context, based on the given key and key type.
   *
-  * @param ctx           Message digest context
+  * @param ctx           Cipher context. May not be NULL
 diff --git a/src/openvpn/crypto_mbedtls.c b/src/openvpn/crypto_mbedtls.c
-index 942684ce03f62761bee538ec1abf53e958218ad1..d67415233cd4f7d7b75a43ac30ad864458b75b47 100644
+index d67415233cd4f7d7b75a43ac30ad864458b75b47..4d38aadcdbd3a3158cd8a1da5f335e80e0c3a27d 100644
 --- a/src/openvpn/crypto_mbedtls.c
 +++ b/src/openvpn/crypto_mbedtls.c
-@@ -766,6 +766,18 @@ md_full(const md_kt_t *kt, const uint8_t *src, int src_len, uint8_t *dst)
-     return 0 == mbedtls_md(kt, src, src_len, dst);
- }
+@@ -509,6 +509,19 @@ cipher_kt_mode_aead(const cipher_kt_t *cipher)
+  *
+  */
  
-+mbedtls_md_context_t *
-+md_ctx_new(void)
++mbedtls_cipher_context_t *
++cipher_ctx_new(void)
 +{
-+    mbedtls_md_context_t *ctx;
-+    ALLOC_OBJ_CLEAR(ctx, mbedtls_md_context_t);
++    mbedtls_cipher_context_t *ctx;
++    ALLOC_OBJ(ctx, mbedtls_cipher_context_t);
 +    return ctx;
 +}
 +
-+void md_ctx_free(mbedtls_md_context_t *ctx)
++void
++cipher_ctx_free(mbedtls_cipher_context_t *ctx)
 +{
 +    free(ctx);
 +}
  
  void
- md_ctx_init(mbedtls_md_context_t *ctx, const mbedtls_md_info_t *kt)
+ cipher_ctx_init(mbedtls_cipher_context_t *ctx, uint8_t *key, int key_len,
 diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
-index e4557156106ae099ea07979a3dcc656995659502..da3abfb7ef30fe23d7b47cd398c5cbdf61a9718b 100644
+index da3abfb7ef30fe23d7b47cd398c5cbdf61a9718b..82da531f353a2430dbc2c4396aff459844af0cc2 100644
 --- a/src/openvpn/crypto_openssl.c
 +++ b/src/openvpn/crypto_openssl.c
-@@ -42,6 +42,7 @@
- #include "integer.h"
- #include "crypto.h"
- #include "crypto_backend.h"
-+#include "openssl_compat.h"
+@@ -653,6 +653,19 @@ cipher_kt_mode_aead(const cipher_kt_t *cipher)
+  *
+  */
  
- #include <openssl/des.h>
- #include <openssl/err.h>
-@@ -846,13 +847,24 @@ md_full(const EVP_MD *kt, const uint8_t *src, int src_len, uint8_t *dst)
-     return EVP_Digest(src, src_len, dst, &in_md_len, kt, NULL);
- }
- 
-+EVP_MD_CTX *
-+md_ctx_new(void)
++cipher_ctx_t *
++cipher_ctx_new(void)
 +{
-+    EVP_MD_CTX *ctx = EVP_MD_CTX_new();
++    EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
 +    check_malloc_return(ctx);
 +    return ctx;
 +}
 +
-+void md_ctx_free(EVP_MD_CTX *ctx)
++void
++cipher_ctx_free(EVP_CIPHER_CTX *ctx)
 +{
-+    EVP_MD_CTX_free(ctx);
++    EVP_CIPHER_CTX_free(ctx);
 +}
-+
+ 
  void
- md_ctx_init(EVP_MD_CTX *ctx, const EVP_MD *kt)
+ cipher_ctx_init(EVP_CIPHER_CTX *ctx, uint8_t *key, int key_len,
+@@ -660,8 +673,6 @@ cipher_ctx_init(EVP_CIPHER_CTX *ctx, uint8_t *key, int key_len,
  {
-     ASSERT(NULL != ctx && NULL != kt);
+     ASSERT(NULL != kt && NULL != ctx);
  
 -    CLEAR(*ctx);
 -
-     EVP_MD_CTX_init(ctx);
-     EVP_DigestInit(ctx, kt);
- }
-@@ -860,7 +872,7 @@ md_ctx_init(EVP_MD_CTX *ctx, const EVP_MD *kt)
- void
- md_ctx_cleanup(EVP_MD_CTX *ctx)
- {
--    EVP_MD_CTX_cleanup(ctx);
-+    EVP_MD_CTX_reset(ctx);
- }
- 
- int
-diff --git a/src/openvpn/httpdigest.c b/src/openvpn/httpdigest.c
-index ae4a638fbf9f1307a7e91da02c42edff95cc9307..2a66d9b8470d205e242463b55c0f549fd766d6f4 100644
---- a/src/openvpn/httpdigest.c
-+++ b/src/openvpn/httpdigest.c
-@@ -81,27 +81,28 @@ DigestCalcHA1(
-     )
- {
-     HASH HA1;
--    md_ctx_t md5_ctx;
-+    md_ctx_t *md5_ctx = md_ctx_new();
-     const md_kt_t *md5_kt = md_kt_get("MD5");
- 
--    md_ctx_init(&md5_ctx, md5_kt);
--    md_ctx_update(&md5_ctx, (const uint8_t *) pszUserName, strlen(pszUserName));
--    md_ctx_update(&md5_ctx, (const uint8_t *) ":", 1);
--    md_ctx_update(&md5_ctx, (const uint8_t *) pszRealm, strlen(pszRealm));
--    md_ctx_update(&md5_ctx, (const uint8_t *) ":", 1);
--    md_ctx_update(&md5_ctx, (const uint8_t *) pszPassword, strlen(pszPassword));
--    md_ctx_final(&md5_ctx, HA1);
-+    md_ctx_init(md5_ctx, md5_kt);
-+    md_ctx_update(md5_ctx, (const uint8_t *) pszUserName, strlen(pszUserName));
-+    md_ctx_update(md5_ctx, (const uint8_t *) ":", 1);
-+    md_ctx_update(md5_ctx, (const uint8_t *) pszRealm, strlen(pszRealm));
-+    md_ctx_update(md5_ctx, (const uint8_t *) ":", 1);
-+    md_ctx_update(md5_ctx, (const uint8_t *) pszPassword, strlen(pszPassword));
-+    md_ctx_final(md5_ctx, HA1);
-     if (pszAlg && strcasecmp(pszAlg, "md5-sess") == 0)
+     EVP_CIPHER_CTX_init(ctx);
+     if (!EVP_CipherInit(ctx, kt, NULL, NULL, enc))
      {
--        md_ctx_init(&md5_ctx, md5_kt);
--        md_ctx_update(&md5_ctx, HA1, HASHLEN);
--        md_ctx_update(&md5_ctx, (const uint8_t *) ":", 1);
--        md_ctx_update(&md5_ctx, (const uint8_t *) pszNonce, strlen(pszNonce));
--        md_ctx_update(&md5_ctx, (const uint8_t *) ":", 1);
--        md_ctx_update(&md5_ctx, (const uint8_t *) pszCNonce, strlen(pszCNonce));
--        md_ctx_final(&md5_ctx, HA1);
-+        md_ctx_init(md5_ctx, md5_kt);
-+        md_ctx_update(md5_ctx, HA1, HASHLEN);
-+        md_ctx_update(md5_ctx, (const uint8_t *) ":", 1);
-+        md_ctx_update(md5_ctx, (const uint8_t *) pszNonce, strlen(pszNonce));
-+        md_ctx_update(md5_ctx, (const uint8_t *) ":", 1);
-+        md_ctx_update(md5_ctx, (const uint8_t *) pszCNonce, strlen(pszCNonce));
-+        md_ctx_final(md5_ctx, HA1);
-     }
--    md_ctx_cleanup(&md5_ctx);
-+    md_ctx_cleanup(md5_ctx);
-+    md_ctx_free(md5_ctx);
-     CvtHex(HA1, SessionKey);
- }
- 
-@@ -123,40 +124,41 @@ DigestCalcResponse(
-     HASH RespHash;
-     HASHHEX HA2Hex;
- 
--    md_ctx_t md5_ctx;
-+    md_ctx_t *md5_ctx = md_ctx_new();
-     const md_kt_t *md5_kt = md_kt_get("MD5");
- 
-     /* calculate H(A2) */
--    md_ctx_init(&md5_ctx, md5_kt);
--    md_ctx_update(&md5_ctx, (const uint8_t *) pszMethod, strlen(pszMethod));
--    md_ctx_update(&md5_ctx, (const uint8_t *) ":", 1);
--    md_ctx_update(&md5_ctx, (const uint8_t *) pszDigestUri, strlen(pszDigestUri));
-+    md_ctx_init(md5_ctx, md5_kt);
-+    md_ctx_update(md5_ctx, (const uint8_t *) pszMethod, strlen(pszMethod));
-+    md_ctx_update(md5_ctx, (const uint8_t *) ":", 1);
-+    md_ctx_update(md5_ctx, (const uint8_t *) pszDigestUri, strlen(pszDigestUri));
-     if (strcasecmp(pszQop, "auth-int") == 0)
-     {
--        md_ctx_update(&md5_ctx, (const uint8_t *) ":", 1);
--        md_ctx_update(&md5_ctx, HEntity, HASHHEXLEN);
-+        md_ctx_update(md5_ctx, (const uint8_t *) ":", 1);
-+        md_ctx_update(md5_ctx, HEntity, HASHHEXLEN);
-     }
--    md_ctx_final(&md5_ctx, HA2);
-+    md_ctx_final(md5_ctx, HA2);
-     CvtHex(HA2, HA2Hex);
- 
-     /* calculate response */
--    md_ctx_init(&md5_ctx, md5_kt);
--    md_ctx_update(&md5_ctx, HA1, HASHHEXLEN);
--    md_ctx_update(&md5_ctx, (const uint8_t *) ":", 1);
--    md_ctx_update(&md5_ctx, (const uint8_t *) pszNonce, strlen(pszNonce));
--    md_ctx_update(&md5_ctx, (const uint8_t *) ":", 1);
-+    md_ctx_init(md5_ctx, md5_kt);
-+    md_ctx_update(md5_ctx, HA1, HASHHEXLEN);
-+    md_ctx_update(md5_ctx, (const uint8_t *) ":", 1);
-+    md_ctx_update(md5_ctx, (const uint8_t *) pszNonce, strlen(pszNonce));
-+    md_ctx_update(md5_ctx, (const uint8_t *) ":", 1);
-     if (*pszQop)
-     {
--        md_ctx_update(&md5_ctx, (const uint8_t *) pszNonceCount, strlen(pszNonceCount));
--        md_ctx_update(&md5_ctx, (const uint8_t *) ":", 1);
--        md_ctx_update(&md5_ctx, (const uint8_t *) pszCNonce, strlen(pszCNonce));
--        md_ctx_update(&md5_ctx, (const uint8_t *) ":", 1);
--        md_ctx_update(&md5_ctx, (const uint8_t *) pszQop, strlen(pszQop));
--        md_ctx_update(&md5_ctx, (const uint8_t *) ":", 1);
-+        md_ctx_update(md5_ctx, (const uint8_t *) pszNonceCount, strlen(pszNonceCount));
-+        md_ctx_update(md5_ctx, (const uint8_t *) ":", 1);
-+        md_ctx_update(md5_ctx, (const uint8_t *) pszCNonce, strlen(pszCNonce));
-+        md_ctx_update(md5_ctx, (const uint8_t *) ":", 1);
-+        md_ctx_update(md5_ctx, (const uint8_t *) pszQop, strlen(pszQop));
-+        md_ctx_update(md5_ctx, (const uint8_t *) ":", 1);
-     }
--    md_ctx_update(&md5_ctx, HA2Hex, HASHHEXLEN);
--    md_ctx_final(&md5_ctx, RespHash);
--    md_ctx_cleanup(&md5_ctx);
-+    md_ctx_update(md5_ctx, HA2Hex, HASHHEXLEN);
-+    md_ctx_final(md5_ctx, RespHash);
-+    md_ctx_cleanup(md5_ctx);
-+    md_ctx_free(md5_ctx);
-     CvtHex(RespHash, Response);
- }
- 
-diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
-index a2f45b61c1aa1dd279fddaf5031fc2bc9aa82145..0c422dd128a6f01f04b0943f86ed4648c4cb2576 100644
---- a/src/openvpn/misc.c
-+++ b/src/openvpn/misc.c
-@@ -1439,7 +1439,7 @@ get_user_pass_auto_userid(struct user_pass *up, const char *tag)
-     static const uint8_t hashprefix[] = "AUTO_USERID_DIGEST";
- 
-     const md_kt_t *md5_kt = md_kt_get("MD5");
--    md_ctx_t ctx;
-+    md_ctx_t *ctx;
- 
-     CLEAR(*up);
-     buf_set_write(&buf, (uint8_t *)up->username, USER_PASS_LEN);
-@@ -1447,11 +1447,13 @@ get_user_pass_auto_userid(struct user_pass *up, const char *tag)
-     if (get_default_gateway_mac_addr(macaddr))
-     {
-         dmsg(D_AUTO_USERID, "GUPAU: macaddr=%s", format_hex_ex(macaddr, sizeof(macaddr), 0, 1, ":", &gc));
--        md_ctx_init(&ctx, md5_kt);
--        md_ctx_update(&ctx, hashprefix, sizeof(hashprefix) - 1);
--        md_ctx_update(&ctx, macaddr, sizeof(macaddr));
--        md_ctx_final(&ctx, digest);
--        md_ctx_cleanup(&ctx)
-+        ctx = md_ctx_new();
-+        md_ctx_init(ctx, md5_kt);
-+        md_ctx_update(ctx, hashprefix, sizeof(hashprefix) - 1);
-+        md_ctx_update(ctx, macaddr, sizeof(macaddr));
-+        md_ctx_final(ctx, digest);
-+        md_ctx_cleanup(ctx);
-+        md_ctx_free(ctx);
-         buf_printf(&buf, "%s", format_hex_ex(digest, sizeof(digest), 0, 256, " ", &gc));
-     }
-     else
 diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h
-index d4f16e4a2ce485d80ad82ca1ef677cf6c4c4ebf7..3be0f4a5abe913e5b67115b86f840a4d107f9c56 100644
+index 3be0f4a5abe913e5b67115b86f840a4d107f9c56..9e3969c65bfdcf2a2453ba2196bb70a0102112bd 100644
 --- a/src/openvpn/openssl_compat.h
 +++ b/src/openvpn/openssl_compat.h
-@@ -46,6 +46,56 @@
- #include <openssl/ssl.h>
- #include <openssl/x509.h>
+@@ -96,6 +96,34 @@ EVP_MD_CTX_new(void)
+ }
+ #endif
  
-+#include <openssl/des.h>
-+#include <openssl/err.h>
-+#include <openssl/evp.h>
-+#include <openssl/objects.h>
-+#include <openssl/rand.h>
-+#include <openssl/ssl.h>
-+
-+#if !defined(HAVE_EVP_MD_CTX_RESET)
++#if !defined(HAVE_EVP_CIPHER_CTX_FREE)
 +/**
-+ * Reset a message digest context
++ * Free an existing cipher context
 + *
-+ * @param ctx                 The message digest context
-+ * @return                    1 on success, 0 on error
-+ */
-+static inline int
-+EVP_MD_CTX_reset(EVP_MD_CTX *ctx)
-+{
-+    EVP_MD_CTX_cleanup(ctx);
-+    return 1;
-+}
-+#endif
-+
-+#if !defined(HAVE_EVP_MD_CTX_FREE)
-+/**
-+ * Free an existing message digest context
-+ *
-+ * @param ctx                 The message digest context
++ * @param ctx                 The cipher context
 + */
 +static inline void
-+EVP_MD_CTX_free(EVP_MD_CTX *ctx)
++EVP_CIPHER_CTX_free(EVP_CIPHER_CTX *c)
 +{
-+    free(ctx);
++	free(c);
 +}
 +#endif
 +
-+#if !defined(HAVE_EVP_MD_CTX_NEW)
++#if !defined(HAVE_EVP_CIPHER_CTX_NEW)
 +/**
-+ * Allocate a new message digest object
++ * Allocate a new cipher context object
 + *
-+ * @return                    A zero'ed message digest object
++ * @return                    A zero'ed cipher context object
 + */
-+static inline EVP_MD_CTX *
-+EVP_MD_CTX_new(void)
++static inline EVP_CIPHER_CTX *
++EVP_CIPHER_CTX_new(void)
 +{
-+    EVP_MD_CTX *ctx = NULL;
-+    ALLOC_OBJ_CLEAR(ctx, EVP_MD_CTX);
++    EVP_CIPHER_CTX *ctx = NULL;
++    ALLOC_OBJ_CLEAR(ctx, EVP_CIPHER_CTX);
 +    return ctx;
 +}
 +#endif
@@ -358,53 +195,6 @@ index d4f16e4a2ce485d80ad82ca1ef677cf6c4c4ebf7..3be0f4a5abe913e5b67115b86f840a4d
  #if !defined(HAVE_SSL_CTX_GET_DEFAULT_PASSWD_CB_USERDATA)
  /**
   * Fetch the default password callback user data from the SSL context
-diff --git a/src/openvpn/openvpn.h b/src/openvpn/openvpn.h
-index 893296edc539800db6463b5861e6f7c83cbac115..e6cea506e37f987c8dffcef33033556d6f2c37ee 100644
---- a/src/openvpn/openvpn.h
-+++ b/src/openvpn/openvpn.h
-@@ -472,7 +472,7 @@ struct context_2
- 
-     /* hash of pulled options, so we can compare when options change */
-     bool pulled_options_digest_init_done;
--    md_ctx_t pulled_options_state;
-+    md_ctx_t *pulled_options_state;
-     struct sha256_digest pulled_options_digest;
- 
-     struct event_timeout scheduled_exit;
-diff --git a/src/openvpn/push.c b/src/openvpn/push.c
-index 8c3104ed7690cdf24463c1d610cecf955d744cf4..7479f7c2f925dd2f74011c73e283a4421ed60bf6 100644
---- a/src/openvpn/push.c
-+++ b/src/openvpn/push.c
-@@ -722,7 +722,8 @@ process_incoming_push_msg(struct context *c,
-             struct buffer buf_orig = buf;
-             if (!c->c2.pulled_options_digest_init_done)
-             {
--                md_ctx_init(&c->c2.pulled_options_state, md_kt_get("SHA256"));
-+                c->c2.pulled_options_state = md_ctx_new();
-+                md_ctx_init(c->c2.pulled_options_state, md_kt_get("SHA256"));
-                 c->c2.pulled_options_digest_init_done = true;
-             }
-             if (!c->c2.did_pre_pull_restore)
-@@ -736,14 +737,16 @@ process_incoming_push_msg(struct context *c,
-                                    option_types_found,
-                                    c->c2.es))
-             {
--                push_update_digest(&c->c2.pulled_options_state, &buf_orig,
-+                push_update_digest(c->c2.pulled_options_state, &buf_orig,
-                                    &c->options);
-                 switch (c->options.push_continuation)
-                 {
-                     case 0:
-                     case 1:
--                        md_ctx_final(&c->c2.pulled_options_state, c->c2.pulled_options_digest.digest);
--                        md_ctx_cleanup(&c->c2.pulled_options_state);
-+                        md_ctx_final(c->c2.pulled_options_state, c->c2.pulled_options_digest.digest);
-+                        md_ctx_cleanup(c->c2.pulled_options_state);
-+                        md_ctx_free(c->c2.pulled_options_state);
-+                        c->c2.pulled_options_state = NULL;
-                         c->c2.pulled_options_digest_init_done = false;
-                         ret = PUSH_MSG_REPLY;
-                         break;
 -- 
 2.7.4
 
