@@ -1,13 +1,13 @@
 Sender: Emmanuel Deloget <emmanueldeloget53@...277...>
 From: logout@...260...
-Date: Fri, 17 Feb 2017 23:00:51 +0100
-Message-Id: <ef553d7d197f02606f2761dea8f5193717fc1849.1487368114.git.logout@...260...>
+Date: Fri, 17 Feb 2017 23:00:52 +0100
+Message-Id: <9ce17efda7b1ed100e73554b1916c0bfa687d9d1.1487368114.git.logout@...260...>
 In-Reply-To: <cover.1487368114.git.logout@...260...>
 References: <cover.1487368114.git.logout@...260...>
 In-Reply-To: <cover.1487368114.git.logout@...260...>
 References: <cover.1487368114.git.logout@...260...>
-Subject: [Openvpn-devel] [RFC PATCH v1 12/15] OpenSSL: don't use direct
-	access to the internal of HMAC_CTX
+Subject: [Openvpn-devel] [RFC PATCH v1 13/15] OpenSSL: SSLeay symbols are no
+	longer available in OpenSSL 1.1
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,334 +22,42 @@ To: openvpn-devel@lists.sourceforge.net
 
 From: Emmanuel Deloget <logout@...260...>
 
-OpenSSL 1.1 does not allow us to directly access the internal of
-any data type, including HMAC_CTX. We have to use the defined
-functions to do so.
-
-Compatibility with OpenSSL 1.0 is kept by defining the corresponding
-functions when they are not found in the library.
+The old symbols do not exist anymore but the library gained new
+equivalent symbols (OSSL). Use them instead of the old ones
 
 Signed-off-by: Emmanuel Deloget <logout@...260...>
 ---
- configure.ac                 |  4 +++
- src/openvpn/crypto.c         |  4 +--
- src/openvpn/crypto_backend.h | 14 ++++++++++
- src/openvpn/crypto_mbedtls.c | 15 ++++++++++
- src/openvpn/crypto_openssl.c | 17 ++++++++++--
- src/openvpn/ntlm.c           | 12 ++++----
- src/openvpn/openssl_compat.h | 65 ++++++++++++++++++++++++++++++++++++++++++++
- src/openvpn/ssl.c            | 38 ++++++++++++++------------
- 8 files changed, 140 insertions(+), 29 deletions(-)
+ src/openvpn/openssl_compat.h | 5 +++++
+ src/openvpn/ssl_openssl.c    | 2 +-
+ 2 files changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/configure.ac b/configure.ac
-index ff9b00447fce07d9f1c408a00ea2fafe8c786cb7..b8afda2df90081b7e1a7272d019eddfc21cf7bc8 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -902,6 +902,10 @@ if test "${enable_crypto}" = "yes" -a "${with_crypto_library}" = "openssl"; then
- 		[ \
- 			EVP_CIPHER_CTX_new \
- 			EVP_CIPHER_CTX_free \
-+			HMAC_CTX_new \
-+			HMAC_CTX_free \
-+			HMAC_CTX_reset \
-+			HMAC_CTX_init \
- 			EVP_MD_CTX_new \
- 			EVP_MD_CTX_free \
- 			EVP_MD_CTX_reset \
-diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
-index 4ba344d1f6185afcc2205a7ce501607a2b5fff87..dd7c8d8a8113d5e8136544df325de9d39b2be2b9 100644
---- a/src/openvpn/crypto.c
-+++ b/src/openvpn/crypto.c
-@@ -844,7 +844,7 @@ init_key_ctx(struct key_ctx *ctx, struct key *key,
-     }
-     if (kt->digest && kt->hmac_length > 0)
-     {
--        ALLOC_OBJ(ctx->hmac, hmac_ctx_t);
-+        ctx->hmac = hmac_ctx_new();
-         hmac_ctx_init(ctx->hmac, key->hmac, kt->hmac_length, kt->digest);
- 
-         msg(D_HANDSHAKE,
-@@ -875,7 +875,7 @@ free_key_ctx(struct key_ctx *ctx)
-     if (ctx->hmac)
-     {
-         hmac_ctx_cleanup(ctx->hmac);
--        free(ctx->hmac);
-+        hmac_ctx_free(ctx->hmac);
-         ctx->hmac = NULL;
-     }
-     ctx->implicit_iv_len = 0;
-diff --git a/src/openvpn/crypto_backend.h b/src/openvpn/crypto_backend.h
-index 04876bffe9c9de0afd40ff58bcba5dce3eab18ca..e5442c5f7875dad6156c21870c5c168a4c8a2929 100644
---- a/src/openvpn/crypto_backend.h
-+++ b/src/openvpn/crypto_backend.h
-@@ -578,6 +578,20 @@ void md_ctx_final(md_ctx_t *ctx, uint8_t *dst);
-  */
- 
- /*
-+ * Create a new HMAC context
-+ *
-+ * @return              A new HMAC context
-+ */
-+hmac_ctx_t *hmac_ctx_new(void);
-+
-+/*
-+ * Free an existing HMAC context
-+ *
-+ * @param  ctx           HMAC context to free
-+ */
-+void hmac_ctx_free(hmac_ctx_t *ctx);
-+
-+/*
-  * Initialises the given HMAC context, using the given digest
-  * and key.
-  *
-diff --git a/src/openvpn/crypto_mbedtls.c b/src/openvpn/crypto_mbedtls.c
-index 4d38aadcdbd3a3158cd8a1da5f335e80e0c3a27d..f0698f61dd925f591cc39a9e931cbd7fb7a0dee0 100644
---- a/src/openvpn/crypto_mbedtls.c
-+++ b/src/openvpn/crypto_mbedtls.c
-@@ -841,6 +841,21 @@ md_ctx_final(mbedtls_md_context_t *ctx, uint8_t *dst)
- /*
-  * TODO: re-enable dmsg for crypto debug
-  */
-+
-+mbedtls_md_context_t *
-+hmac_ctx_new(void)
-+{
-+    mbedtls_md_context_t *ctx;
-+    ALLOC_OBJ(ctx, mbedtls_md_context_t);
-+    return ctx;
-+}
-+
-+void
-+hmac_ctx_free(mbedtls_md_context_t *ctx)
-+{
-+    free(ctx);
-+}
-+
- void
- hmac_ctx_init(mbedtls_md_context_t *ctx, const uint8_t *key, int key_len,
-               const mbedtls_md_info_t *kt)
-diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
-index 82da531f353a2430dbc2c4396aff459844af0cc2..2f77a9853ac484770dcd808efdf13671ade7e758 100644
---- a/src/openvpn/crypto_openssl.c
-+++ b/src/openvpn/crypto_openssl.c
-@@ -913,6 +913,19 @@ md_ctx_final(EVP_MD_CTX *ctx, uint8_t *dst)
-  *
-  */
- 
-+HMAC_CTX *
-+hmac_ctx_new(void)
-+{
-+    HMAC_CTX *ctx = HMAC_CTX_new();
-+    check_malloc_return(ctx);
-+    return ctx;
-+}
-+
-+void
-+hmac_ctx_free(HMAC_CTX *ctx)
-+{
-+    HMAC_CTX_free(ctx);
-+}
- 
- void
- hmac_ctx_init(HMAC_CTX *ctx, const uint8_t *key, int key_len,
-@@ -920,8 +933,6 @@ hmac_ctx_init(HMAC_CTX *ctx, const uint8_t *key, int key_len,
- {
-     ASSERT(NULL != kt && NULL != ctx);
- 
--    CLEAR(*ctx);
--
-     HMAC_CTX_init(ctx);
-     HMAC_Init_ex(ctx, key, key_len, kt, NULL);
- 
-@@ -932,7 +943,7 @@ hmac_ctx_init(HMAC_CTX *ctx, const uint8_t *key, int key_len,
- void
- hmac_ctx_cleanup(HMAC_CTX *ctx)
- {
--    HMAC_CTX_cleanup(ctx);
-+    HMAC_CTX_reset(ctx);
- }
- 
- int
-diff --git a/src/openvpn/ntlm.c b/src/openvpn/ntlm.c
-index 0c436812ece383331fc0106e9e399fb1e660786c..4a4e8b9b034efa6a8fd752aa43f892df585f94d5 100644
---- a/src/openvpn/ntlm.c
-+++ b/src/openvpn/ntlm.c
-@@ -86,13 +86,13 @@ static void
- gen_hmac_md5(const char *data, int data_len, const char *key, int key_len,char *result)
- {
-     const md_kt_t *md5_kt = md_kt_get("MD5");
--    hmac_ctx_t hmac_ctx;
--    CLEAR(hmac_ctx);
-+    hmac_ctx_t *hmac_ctx = hmac_ctx_new();
- 
--    hmac_ctx_init(&hmac_ctx, key, key_len, md5_kt);
--    hmac_ctx_update(&hmac_ctx, (const unsigned char *)data, data_len);
--    hmac_ctx_final(&hmac_ctx, (unsigned char *)result);
--    hmac_ctx_cleanup(&hmac_ctx);
-+    hmac_ctx_init(hmac_ctx, key, key_len, md5_kt);
-+    hmac_ctx_update(hmac_ctx, (const unsigned char *)data, data_len);
-+    hmac_ctx_final(hmac_ctx, (unsigned char *)result);
-+    hmac_ctx_cleanup(hmac_ctx);
-+    hmac_ctx_free(hmac_ctx);
- }
- 
- static void
 diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h
-index 9e3969c65bfdcf2a2453ba2196bb70a0102112bd..f81ec59c134fb6da2b802e66339ecd0d67040928 100644
+index f81ec59c134fb6da2b802e66339ecd0d67040928..054fd56cd1833bb5278eb5fd88a4c4d1908d6415 100644
 --- a/src/openvpn/openssl_compat.h
 +++ b/src/openvpn/openssl_compat.h
-@@ -124,6 +124,71 @@ EVP_CIPHER_CTX_new(void)
+@@ -601,4 +601,9 @@ RSA_meth_set0_app_data(RSA_METHOD *meth, void *app_data)
  }
  #endif
  
-+#if !defined(HAVE_HMAC_CTX_RESET)
-+/**
-+ * Reset a HMAC context
-+ *
-+ * @param ctx                 The HMAC context
-+ * @return                    1 on success, 0 on error
-+ */
-+static inline int
-+HMAC_CTX_reset(HMAC_CTX *ctx)
-+{
-+    HMAC_CTX_cleanup(ctx);
-+    return 1;
-+}
++/* SSLeay symbols have been renamed in OpenSSL 1.1 */
++#if !defined(RSA_F_RSA_OSSL_PRIVATE_ENCRYPT)
++#define RSA_F_RSA_OSSL_PRIVATE_ENCRYPT       RSA_F_RSA_EAY_PRIVATE_ENCRYPT
 +#endif
 +
-+#if !defined(HAVE_HMAC_CTX_INIT)
-+/**
-+ * Init a HMAC context
-+ *
-+ * @param ctx                 The HMAC context
-+ *
-+ * Contrary to many functions in this file, HMAC_CTX_init() is not
-+ * an OpenSSL 1.1 function: it comes from previous versions and was
-+ * removed in v1.1. As a consequence, there is no distincting in
-+ * v1.1 between a cleanup, and init and a reset. Yet, previous OpenSSL
-+ * version need this distinction.
-+ *
-+ * In order to respect previous OpenSSL versions, we implement init
-+ * as reset for OpenSSL 1.1+.
-+ */
-+static inline void
-+HMAC_CTX_init(HMAC_CTX *ctx)
-+{
-+    HMAC_CTX_reset(ctx);
-+}
-+#endif
-+
-+#if !defined(HAVE_HMAC_CTX_FREE)
-+/**
-+ * Free an existing HMAC context
-+ *
-+ * @param ctx                 The HMAC context
-+ */
-+static inline void
-+HMAC_CTX_free(HMAC_CTX *c)
-+{
-+	free(c);
-+}
-+#endif
-+
-+#if !defined(HAVE_HMAC_CTX_NEW)
-+/**
-+ * Allocate a new HMAC context object
-+ *
-+ * @return                    A zero'ed HMAC context object
-+ */
-+static inline HMAC_CTX *
-+HMAC_CTX_new(void)
-+{
-+    HMAC_CTX *ctx = NULL;
-+    ALLOC_OBJ_CLEAR(ctx, HMAC_CTX);
-+    return ctx;
-+}
-+#endif
-+
- #if !defined(HAVE_SSL_CTX_GET_DEFAULT_PASSWD_CB_USERDATA)
- /**
-  * Fetch the default password callback user data from the SSL context
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 86450fe057f33fa10803775da69d2506687a4313..03dc80ff9e4b69184bd90dc2f3b1fe1d2718be49 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -1614,8 +1614,8 @@ tls1_P_hash(const md_kt_t *md_kt,
- {
-     struct gc_arena gc = gc_new();
-     int chunk;
--    hmac_ctx_t ctx;
--    hmac_ctx_t ctx_tmp;
-+    hmac_ctx_t *ctx;
-+    hmac_ctx_t *ctx_tmp;
-     uint8_t A1[MAX_HMAC_KEY_LENGTH];
-     unsigned int A1_len;
+ #endif /* OPENSSL_COMPAT_H_ */
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index a9ae20f45fe60d35af97e7d14bfd2332f9360c30..2ff3e12b93d6f829e4b27aefc2622d52e41ce589 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -996,7 +996,7 @@ rsa_priv_enc(int flen, const unsigned char *from, unsigned char *to, RSA *rsa, i
  
-@@ -1624,8 +1624,8 @@ tls1_P_hash(const md_kt_t *md_kt,
-     const uint8_t *out_orig = out;
- #endif
- 
--    CLEAR(ctx);
--    CLEAR(ctx_tmp);
-+    ctx = hmac_ctx_new();
-+    ctx_tmp = hmac_ctx_new();
- 
-     dmsg(D_SHOW_KEY_SOURCE, "tls1_P_hash sec: %s", format_hex(sec, sec_len, 0, &gc));
-     dmsg(D_SHOW_KEY_SOURCE, "tls1_P_hash seed: %s", format_hex(seed, seed_len, 0, &gc));
-@@ -1633,36 +1633,38 @@ tls1_P_hash(const md_kt_t *md_kt,
-     chunk = md_kt_size(md_kt);
-     A1_len = md_kt_size(md_kt);
- 
--    hmac_ctx_init(&ctx, sec, sec_len, md_kt);
--    hmac_ctx_init(&ctx_tmp, sec, sec_len, md_kt);
-+    hmac_ctx_init(ctx, sec, sec_len, md_kt);
-+    hmac_ctx_init(ctx_tmp, sec, sec_len, md_kt);
- 
--    hmac_ctx_update(&ctx,seed,seed_len);
--    hmac_ctx_final(&ctx, A1);
-+    hmac_ctx_update(ctx,seed,seed_len);
-+    hmac_ctx_final(ctx, A1);
- 
-     for (;; )
+     if (padding != RSA_PKCS1_PADDING)
      {
--        hmac_ctx_reset(&ctx);
--        hmac_ctx_reset(&ctx_tmp);
--        hmac_ctx_update(&ctx,A1,A1_len);
--        hmac_ctx_update(&ctx_tmp,A1,A1_len);
--        hmac_ctx_update(&ctx,seed,seed_len);
-+        hmac_ctx_reset(ctx);
-+        hmac_ctx_reset(ctx_tmp);
-+        hmac_ctx_update(ctx,A1,A1_len);
-+        hmac_ctx_update(ctx_tmp,A1,A1_len);
-+        hmac_ctx_update(ctx,seed,seed_len);
- 
-         if (olen > chunk)
-         {
--            hmac_ctx_final(&ctx, out);
-+            hmac_ctx_final(ctx, out);
-             out += chunk;
-             olen -= chunk;
--            hmac_ctx_final(&ctx_tmp, A1); /* calc the next A1 value */
-+            hmac_ctx_final(ctx_tmp, A1); /* calc the next A1 value */
-         }
-         else    /* last one */
-         {
--            hmac_ctx_final(&ctx, A1);
-+            hmac_ctx_final(ctx, A1);
-             memcpy(out,A1,olen);
-             break;
-         }
+-        RSAerr(RSA_F_RSA_EAY_PRIVATE_ENCRYPT, RSA_R_UNKNOWN_PADDING_TYPE);
++        RSAerr(RSA_F_RSA_OSSL_PRIVATE_ENCRYPT, RSA_R_UNKNOWN_PADDING_TYPE);
+         goto done;
      }
--    hmac_ctx_cleanup(&ctx);
--    hmac_ctx_cleanup(&ctx_tmp);
-+    hmac_ctx_cleanup(ctx);
-+    hmac_ctx_free(ctx);
-+    hmac_ctx_cleanup(ctx_tmp);
-+    hmac_ctx_free(ctx_tmp);
-     secure_memzero(A1, sizeof(A1));
  
-     dmsg(D_SHOW_KEY_SOURCE, "tls1_P_hash out: %s", format_hex(out_orig, olen_orig, 0, &gc));
 -- 
 2.7.4
 
