@@ -1,13 +1,13 @@
 Sender: Emmanuel Deloget <emmanueldeloget53@...277...>
 From: logout@...260...
-Date: Fri, 17 Feb 2017 23:00:53 +0100
-Message-Id: <0e0d4a67192b563cd07d3f06685f85e34c304142.1487368114.git.logout@...260...>
+Date: Fri, 17 Feb 2017 23:00:54 +0100
+Message-Id: <45dbf05cd352ff703bbbf628f04190e08198c68e.1487368114.git.logout@...260...>
 In-Reply-To: <cover.1487368114.git.logout@...260...>
 References: <cover.1487368114.git.logout@...260...>
 In-Reply-To: <cover.1487368114.git.logout@...260...>
 References: <cover.1487368114.git.logout@...260...>
-Subject: [Openvpn-devel] [RFC PATCH v1 14/15] OpenSSL: check for the SSL
-	reason, not the full error
+Subject: [Openvpn-devel] [RFC PATCH v1 15/15] OpenSSL: constify getbio()
+	parameters
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,36 +22,37 @@ To: openvpn-devel@lists.sourceforge.net
 
 From: Emmanuel Deloget <logout@...260...>
 
-OpenSSL 1.1 changed the SSLv3 API and removed many SSL_L_SSL3_*
-constants. Moreover, new code might use different function
-code for the same error.
+Although it is required by BIO_new() to have a non-const object,
+this is merely an OpenSSL interface accident. Newer versions of
+OpenSSL (i.e. OpenSSL 1.1) have are a bit better w.r.t. constification
+and changed this.
 
-Thus, we extract the error reason from the error code before
-we compare it instead of trying to rebuild an error code
-that might not be correct.
-
-The new version is compatible with OpenSSL 1.0.x as well as
-with older versions (starting at 0.9.8).
+As a result, we can safely constify the BIO_METHOD parameter of getbio()
+(yet we still need to un-const the value when feeding it to BIO_new()
+for the sake of compatibility).
 
 Signed-off-by: Emmanuel Deloget <logout@...260...>
 ---
- src/openvpn/crypto_openssl.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ src/openvpn/ssl_openssl.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
-index 2f77a9853ac484770dcd808efdf13671ade7e758..23de17542bf0f4a311825373ecf8d8261fd21c73 100644
---- a/src/openvpn/crypto_openssl.c
-+++ b/src/openvpn/crypto_openssl.c
-@@ -194,8 +194,7 @@ crypto_print_openssl_errors(const unsigned int flags)
-     while ((err = ERR_get_error()))
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index 2ff3e12b93d6f829e4b27aefc2622d52e41ce589..46942c225d72e42760cbb9fae577c87aee553508 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -1389,10 +1389,10 @@ bio_debug_oc(const char *mode, BIO *bio)
+  * through "memory BIOs".
+  */
+ static BIO *
+-getbio(BIO_METHOD *type, const char *desc)
++getbio(const BIO_METHOD *type, const char *desc)
+ {
+     BIO *ret;
+-    ret = BIO_new(type);
++    ret = BIO_new((BIO_METHOD *)type);
+     if (!ret)
      {
-         /* Be more clear about frequently occurring "no shared cipher" error */
--        if (err == ERR_PACK(ERR_LIB_SSL,SSL_F_SSL3_GET_CLIENT_HELLO,
--                            SSL_R_NO_SHARED_CIPHER))
-+        if (ERR_GET_REASON(err) == SSL_R_NO_SHARED_CIPHER)
-         {
-             msg(D_CRYPT_ERRORS, "TLS error: The server has no TLS ciphersuites "
-                 "in common with the client. Your --tls-cipher setting might be "
+         crypto_msg(M_FATAL, "Error creating %s BIO", desc);
 -- 
 2.7.4
 
