@@ -1,8 +1,12 @@
+Date: Fri, 17 Feb 2017 17:41:31 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20170217164131.GU93896@...1296...>
+References: <CAKh=nwGz-NSEcSY9KhQ12gC1GNXP6XOBTEO3FdP8gyJN5VTggg@...278...>
 MIME-Version: 1.0
-Sender: emmanueldeloget53@...277...
-From: Emmanuel Deloget <logout@...260...>
-Date: Fri, 17 Feb 2017 17:35:04 +0100
-Message-ID: <CAKh=nwGz-NSEcSY9KhQ12gC1GNXP6XOBTEO3FdP8gyJN5VTggg@...278...>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="TuzloVs6SlI5NjIZ"
+Content-Disposition: inline
+In-Reply-To: <CAKh=nwGz-NSEcSY9KhQ12gC1GNXP6XOBTEO3FdP8gyJN5VTggg@...278...>
 Subject: Re: [Openvpn-devel] build against openssl 1.1.0
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -12,64 +16,57 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Emmanuel Deloget <logout@...260...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hello,
+--TuzloVs6SlI5NjIZ
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-First, sorry for the inconvenience: this message is not attached to
-the remaining of the discussion (I just joined the ML so I cannot
-answer to a one week old message). That being said:
+Hi,
 
-On Mon, Feb 13, 2017 at 08:17:58PM +0100, Christian Hesse wrote:
-> Arch Linux is about to upgrade openssl to version 1.1.0. OpenVPN does not
-> compile against this version. Did anybody start the work to support latest
-> openssl versions?
+On Fri, Feb 17, 2017 at 05:35:04PM +0100, Emmanuel Deloget wrote:
+> I understand that I'm the new guy in town, but can you allow me to
+> make the formal request to ditch OpenSSL 0.9.8, 1.0.0 and 1.0.1 and
+> require at least version 1.0.2?
 
-I did (yesterday). So far, I made good progress on many front,
-although I'm not sure the path I took is what you would expect.
+I'm not going to make a call on any of these versions, I just want
+to point out that we do need to (and *want* to) support older release
+of distributions that do not ship "most recent" OpenSSL versions yet.
 
-One of the main change in OpenSSL 1.1 is that types are now opaque,
-meaning that you need to access the internal fields using various
-(mostly short) functions. For most of them, these functions has been
-added to the API.
+So we're somewhat caught in the middle between arch linux with 1.1.0
+and something like RHEL that ships seriously old OpenSSL (with patches).
 
-To make OpenVPN support OpenSSL, I decided to
+This said, we need to regularily re-evaluate what the oldest distribution
+is that a given OpenVPN branch should support, and then we can drop support
+for older OpenSSL versions...
 
-  1. check whether the functions I need are in OpenSSL at configure
-time. The function list is quite large.
-  2. reimplement the missing functions as static inlines in an
-openssl_compat.h header, using the OpenSSL prototypes.
-  3. use the new interface in the OpenVPN code.
-  4. when possible (i.e. when the interface already exists in OpenSSL
-1.0), use this interface
+gert
 
-The motivation behind this is to ease the porting of OpenVPN to a new
-OpenSSL API -- if the code is already using the latest API, the next
-changes are going to be less radical.
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-Having done 2/3 of the job, the patch set is about +900 insertion,
--200 deletion (or something like that). I still have a lot of things
-to do and I should finish my first pass at the beginning of newt week.
-I don't expect the patch set to be much longer than it already is.
+--TuzloVs6SlI5NjIZ
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Now, I have a question which is related to this. The way I'm doing
-things, I will make sure that the new code is compatible with both
-OpenSSL 1.0.x and OpenSSL 1.1. There is a good chance that it will be
-compatible with version 0.9.8 as well, yet I can't stop wondering if
-this is a good thing. OpenSSL 0.9.8 has been EoL'ed 12 month ago and I
-believe it's OK to let it die. OpenVPN cannot rely on a dead SSL
-library -- unless it wants to make sure that future vulnerabilities in
-this old, deprecated version will affect it (and I'm not sure it's a
-good thing). Same goes for OpenSSL 1.0.1 which has been declared out
-of support in January 2017.
+-----BEGIN PGP SIGNATURE-----
 
-I understand that I'm the new guy in town, but can you allow me to
-make the formal request to ditch OpenSSL 0.9.8, 1.0.0 and 1.0.1 and
-require at least version 1.0.2?
+iQGcBAEBAgAGBQJYpye7AAoJEB2Cnv7KVigS2XAL/RTc2wr4Rq+etdTZcdAsagzI
+TeeDlyokcrWUR56LXYF9Ab96CvF/EMra/B3wULvTvjhfZmRmVaOFSE8dE+34gAVV
+F1ZAyXce7Umldd83/hWV5tL6RL3EMAuHZIYiKuYX7MU8ActsJiNLsv2an0tV3T1i
+81v97He+My8rj0bbSaOT2KXTXImkZdj2q2/ZD9JOV1Oq7UNO419HnRRKFtpZTP2w
+pfBt7ib2q6LlPheoTWkUzGsIZi0fOk6//aD7TSZD/AMSuYI1AS6tBQPFHr2NLGXy
+Vc+Zrm2qyG1qYBLMYcbpWIXSfcew55L6d0AT4Bz9IaOJfDhuvhA6dpBC84o86niP
+BpJoVWtzr+haX4mWLJZDHBkHCT2syvlo03sOh3a5F9oJrw1ydn8Q/fIY2g0KFM10
+jXAX5dXk+V7HFybq4QDfudWwfLef5K2xOhcxW35c9ppUUkoqO3W0ME5waxulIVS0
+HtdCEaoP+1VIm0G9ixq9W2Ja/WpDCAWGaRiLclyihg==
+=X/n3
+-----END PGP SIGNATURE-----
 
-Best regards,
-
--- Emmanuel Deloget
+--TuzloVs6SlI5NjIZ--
 
