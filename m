@@ -1,14 +1,12 @@
 MIME-Version: 1.0
-In-Reply-To: <20170216023446.GJ12961@...2182...>
+In-Reply-To: <201702160747.v1G7l61Y058076@...2054...>
 References: <20170213183826.73008-1-O2Graphics@...2243...>
-	<2b6b9f32-ef12-ea5f-ec3b-298f49bba1ec@...1856...>
-	<CAOAUwZHRLp5+29=ns3_jkEkXVhn9DMbg+hMpvvQF_9X9ekYdYQ@...278...>
-	<20170216023446.GJ12961@...2182...>
+	<201702160747.v1G7l61Y058076@...2054...>
 From: Olivier W <olivierw.ml@...277...>
-Date: Sat, 18 Feb 2017 02:31:53 +0100
-Message-ID: <CAOAUwZFoiehxnk=NKmq_xzGO4H6EeaRa_f99UZQmyCX=vZRb-A@...278...>
-Subject: Re: [Openvpn-devel] [PATCH] Fix building with LibreSSL 2.5.1 by
- cleaning a hack. Similar to what is done in curl:
+Date: Sat, 18 Feb 2017 02:37:30 +0100
+Message-ID: <CAOAUwZHZGVh+zWZJg8+JT6FzqhokyuaXT6YGiDHLtvu99SFCFg@...278...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Re: Fix building with LibreSSL
+ 2.5.1 by cleaning a hack. Similar to what is done in curl:
  https://github.com/curl/curl/blob/028391df5d84d9fae3433afdee9261d565900355/lib/vtls/openssl.c#L603-L619
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -20,24 +18,21 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-To: Antonio Quartulli <a@...2181...>
+To: Gert Doering <gert@...1296...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Hello Antonio,
+Hello Gert,
 
-2017-02-16 3:34 GMT+01:00 Antonio Quartulli <a@...2181...>:
+2017-02-16 8:47 GMT+01:00 Gert Doering <gert@...1296...>:
+> Your patch has been applied to the master and release/2.4 branch.
 >
-> You need to put an empty line between the subject and the body.
-> For example:
->
->
-> my commit message
->
-> this is the body and can be multiline
-> random text here...
-> and here...
+> Not sure if it is something we want in release/2.3, but it wouldn't apply
+> with "git cherry-pick" - too much formatting changes, so one would need
+> to do it manually ("but we knew this").
 
-Thanks, I'll remember for a next time.
+I just had a quick look at release/2.3 and the code I patched (around
+the SSL_get_privatekey() call) isn't present at all. So there's no
+need for a patch there.
 
 Best Regards,
 Olivier
