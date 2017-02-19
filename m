@@ -1,15 +1,19 @@
-Date: Sun, 19 Feb 2017 18:49:34 +0100
+Date: Sun, 19 Feb 2017 18:52:08 +0100
 From: Gert Doering <gert@...1296...>
-Message-ID: <20170219174934.GK93896@...1296...>
-References: <cover.1487368114.git.logout@...260...>
-	<3b87d588-aad7-433d-f802-ea9f9f7a0a63@...1856...>
+Message-ID: <20170219175208.GL93896@...1296...>
+References: <CAKh=nwGz-NSEcSY9KhQ12gC1GNXP6XOBTEO3FdP8gyJN5VTggg@...278...>
+	<de60bac0-2491-44af-2a65-00654b14f55b@...2080...>
+	<CAFHpkQFG5vKg95y6_7dUWA-cjtD0+HoV_BqEztxu0TjRJ42ezA@...278...>
+	<CAFHpkQEqTK+v6T2WM7Kk6Eax3VmqJcP7r=goykuVPoef+oWatQ@...278...>
+	<f3597b76-1fde-1ce0-67e8-577f7bc169bc@...2080...>
+	<CAFHpkQFNi0w665vv2tqvbx+L5-_ap003S6kZViwLLecDu0ATmw@...278...>
+	<c9f72a59-ca4e-6066-ae3c-4cb2a9cdf7d2@...2080...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="LXx4g46d83wF7unj"
+	protocol="application/pgp-signature"; boundary="keyOwv2R5UpfANsk"
 Content-Disposition: inline
-In-Reply-To: <3b87d588-aad7-433d-f802-ea9f9f7a0a63@...1856...>
-Subject: Re: [Openvpn-devel] [RFC PATCH v1 00/15] Add support for OpenSSL
- 1.1.x
+In-Reply-To: <c9f72a59-ca4e-6066-ae3c-4cb2a9cdf7d2@...2080...>
+Subject: Re: [Openvpn-devel] build against openssl 1.1.0
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,35 +22,25 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan@...1856...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
---LXx4g46d83wF7unj
+--keyOwv2R5UpfANsk
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Sun, Feb 19, 2017 at 01:03:45PM +0100, Steffan Karger wrote:
-> Thank you very much.  You approach looks good to me, and quite closely
-> matches what I had in mind for when I would find the time to tackle
-> this.  (Which might have taken me a while, so really happy to see these
-> patches!)
-[..]
-> Also very good that this is split up into small and independently
-> reviewable patches.  I'll start review soon.
+On Sun, Feb 19, 2017 at 04:12:02PM +0100, David Sommerseth wrote:
+> But things may change again.  I heard recently that Red Hat is migrating
+> over to OpenVPN as the only internal IT supported VPN solution.  So
+> about 10k employees will soon depend on OpenVPN for their daily VPN
+> need.  We will see when RHEL 8 gets released :)
 
-While Steffan is our resident expert on nasty crypto libraries, I just
-want to echo the sentiment - having these "chunks" tackle one API function
-at a time, they are easily testable, and in case something explodes, it's
-much easier to bisect to find the problematic one.
-
-Now back to being a commit slave for Steffan's ACKs :-)  (I do not know
-the APIs well enough to properly comment on the changes, I can only run
-tests...)
+Interesting times!
 
 gert
+
 --=20
 USENET is *not* the non-clickable part of WWW!
                                                            //www.muc.de/~ge=
@@ -54,22 +48,22 @@ rt/
 Gert Doering - Munich, Germany                             gert@...1296...
 fax: +49-89-35655025                        gert@...1297...
 
---LXx4g46d83wF7unj
+--keyOwv2R5UpfANsk
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJYqdqtAAoJEB2Cnv7KVigSvV8MAJEapwinvW09JRGEd8KYNo8s
-g5Ftj5xFMJEzG7x0+h1zQTHc/UDFDQ668DJvbOG4aknqGq7AnZjNh9rA8m7uG0Tr
-TV7T1mZK+2bvhjJyS71KxhJXOImZkmxKiUJm34FMHKsmyoEQ+eKSYoavYkhQD0My
-ue/dZt+msClzc8vZ6MqacSDUqgSFhZhGphzkwl3VJNLyBUQ/j1yR9D2N17zsJn4b
-AZIogTr9gLFEZpp4IgwnVJf6Htm09jX6qPiLjD5cX0wqKtFQk6FnDp5DFNsDm0Hi
-zzsPXsNuVQ1MWou8+hW8pjNKQKG9aqa3fvXSWmEEhgK0UNmP35KiQ/Yqes4Mr8QL
-/u0QJREHk7q69CP8IbWVO/c9w57a3+wZxCLA3lGzQWA+s0iis/bRADJQgpKVVKjW
-wShacXc5yP2u7/5/9L7EdPkLptKQjBzxzb16QeyHnarBGlCWaD26D7yJCQpU4j6U
-k+XYCaZ3n3IhLGD7g7G8zI2uXVWOH/lA7Tm+BzLkSQ==
-=Vllk
+iQGcBAEBAgAGBQJYqdtHAAoJEB2Cnv7KVigSRrwL/jsk6BrSZcztW5FsQq1+QBrY
+6mAJNj9A22d8udzu7gShoqr95/cpu4ZFRAM6q4O+05dNHoYCgN3iSevhdNDWRAUQ
+gkLz7+uxxRCmveZgsqCiMdEqGCfQFKjWfuMf+0thmWa6uCx91Pg8Ix3/0BsfKIPe
+EAUyQnE/85kkPVPqWMqdCSTGsH3gqwgFkHwz0kSqOhllGqkPgdgkWQzngdYAsWiH
+ayGJOQ6KTiwoH/BJEwTxlAymgyIaVcOyjBctwopdSOag35TvDYCCalC8xlmz3Eig
+/7Rsx9HhuR6J+7T7bo1CirffsKgpEeFYGZ67mzrcMOUlDrHXfX9ropSeYqAIRebU
+8Y1+aVobJtnvs32TzG32fpsFlJy91kBgQeMyPT78ANar9Lt/QSVY8rgiCWIpzPHc
+1ZNrVqg0humCjsZ4Rs/ryDFXqh33NwdgDbuYO1pTfnGxhl3wZRVbGoAdIFSlrkN5
+fumfoH7ZHmHZ83EjLj3UNIKMMflfcrEaLX+lesto2w==
+=JqaR
 -----END PGP SIGNATURE-----
 
---LXx4g46d83wF7unj--
+--keyOwv2R5UpfANsk--
 
