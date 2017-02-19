@@ -1,10 +1,18 @@
-Date: Sun, 19 Feb 2017 18:52:41 +0100 (CET)
-Message-Id: <201702191752.v1JHqfl5094527@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <0e0d4a67192b563cd07d3f06685f85e34c304142.1487368114.git.logout@...260...>
-References: <0e0d4a67192b563cd07d3f06685f85e34c304142.1487368114.git.logout@...260...>
-Subject: [Openvpn-devel] [PATCH applied] Re: OpenSSL: check for the SSL
-	reason, not the full error
+Date: Sun, 19 Feb 2017 20:54:53 +0100
+From: Christian Hesse <list@...1798...>
+Message-ID: <20170219205453.5ef61a1b@...1799...>
+In-Reply-To: <5d1e0392-2466-2ef2-677d-25d52188d1f9@...2080...>
+References: <CAKh=nwGz-NSEcSY9KhQ12gC1GNXP6XOBTEO3FdP8gyJN5VTggg@...278...>
+	<20170217164131.GU93896@...1296...>
+	<CAKh=nwFeHQ5DaCeRHnYswwfMiNMyysvsx=RHg9kDLZuLw=GwGg@...278...>
+	<20170217174223.GV93896@...1296...>
+	<CAKh=nwF4VJSDAE-fb0my1r64UUjXZjugj6ERfmNKnzgeZ_1_Jw@...278...>
+	<5d1e0392-2466-2ef2-677d-25d52188d1f9@...2080...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	boundary="Sig_/YrnnSwpQQYKQg1MR9NeNe8Y";
+	protocol="application/pgp-signature"
+Subject: Re: [Openvpn-devel] build against openssl 1.1.0
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,37 +21,31 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Emmanuel Deloget <logout@...260...>
+To: David Sommerseth <openvpn@...2080...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master and release/2.4 branch.
+--Sig_/YrnnSwpQQYKQg1MR9NeNe8Y
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: quoted-printable
 
-2.3 does not have this code, as far as I could see, so doesn't get 
-the patch.
+David Sommerseth <openvpn@...2080...> on Sat, 2017/02/18 02:52:
+> On 17/02/17 22:59, Emmanuel Deloget wrote:
+> > I'm not targetting 2.4 -- my work is done on the current master. Adding
+> > hundreds of lines to the current 2.4 for the purpose of supporting a
+> > library which is not yet present on the user systems does not make much
+> > sense :)=20=20
+>=20
+> Currently, master and release/2.4 are fairly close ... so it shouldn't
+> be too hard to cherry-pick stuff from master (which we usually prefer to
+> do).
+>=20
+> With that said ... I know Fedora have OpenSSL v1.1 support on their wish
+> list for for OpenVPN [1] and I believe Arch Linux guys have also been
+> asking about this too.  So the more leading edge distros are moving
+> towards OpenSSL v1.1 as fast as possible
 
-I can't reach sf.net right now (git.code.sf.net gives me "connection
-refused"), so only pushed to github and gitlab.
+Arch Linux guy started this thread. ;)
 
-commit 6ddc43d1bf9b3ea3ee5db8c50d56a98fe4db4c97 (master)
-commit c4c359736e3ab7f06a21f1eab09e6fd4cf2bef2f (release/2.4)
-
-Author: Emmanuel Deloget
-Date:   Fri Feb 17 23:00:53 2017 +0100
-
-     OpenSSL: check for the SSL reason, not the full error
-
-     Signed-off-by: Emmanuel Deloget <logout@...260...>
-     Acked-by: Steffan Karger <steffan.karger@...1435...>
-     Message-Id: <0e0d4a67192b563cd07d3f06685f85e34c304142.1487368114.git.logout@...260...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg14087.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
-
-
+Would be great to have openssl 1.1.0 support in master soon. Maintaining
+backported patches downstream should not be a problem.
+--Sig_/YrnnSwpQQYKQg1MR9NeNe8Y--
