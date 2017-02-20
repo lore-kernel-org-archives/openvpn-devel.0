@@ -1,14 +1,14 @@
 MIME-Version: 1.0
 Sender: emmanueldeloget53@...277...
-In-Reply-To: <20170220132900.050e2b1e@...1799...>
+In-Reply-To: <20170220123711.GX93896@...1296...>
 References: <cover.1487368114.git.logout@...260...>
 	<3b87d588-aad7-433d-f802-ea9f9f7a0a63@...1856...>
 	<20170219174934.GK93896@...1296...>
 	<CAKh=nwGOyR6reYpPvxqFVRKGDhpn7fLmw-GNBjMy=bJrqKTPmw@...278...>
-	<20170220132900.050e2b1e@...1799...>
+	<20170220123711.GX93896@...1296...>
 From: Emmanuel Deloget <logout@...260...>
-Date: Mon, 20 Feb 2017 14:33:21 +0100
-Message-ID: <CAKh=nwGpVqa5yRoFxJ7ojnHveLpVmy1OvBFoZ8V=acguGixbew@...278...>
+Date: Mon, 20 Feb 2017 14:38:12 +0100
+Message-ID: <CAKh=nwHu5GFd6rDsDzeTUdocOziBM1c+mKMSTLaMVnppnCV+pA@...278...>
 Subject: Re: [Openvpn-devel] [RFC PATCH v1 00/15] Add support for OpenSSL
 	1.1.x
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -21,75 +21,46 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-To: Christian Hesse <list@...1798...>
+To: Gert Doering <gert@...1296...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Hi Christian,
+Hi,
 
-On Mon, Feb 20, 2017 at 1:29 PM, Christian Hesse <list@...1798...> wrote:
-> That matches my findings. Built against openssl 1.1.0e (Arch Linux package
-> openssl 1.1.0.e-1 [0]) the build itself succeeds, but 'make check' reports
-> lots of cipher failures.
+On Mon, Feb 20, 2017 at 1:37 PM, Gert Doering <gert@...1296...> wrote:
 >
-> Are your patches available from a public git repository?
+> Interesting.  Anything useful in openvpn's logs?
+>
 
-I will make my patches available on github ASAP.
+Mon Feb 20 11:57:56 2017 us=371715 OpenSSL: error:0607B083:digital
+envelope routines:EVP_CipherInit_ex:no cipher set
+Mon Feb 20 11:57:56 2017 us=371746 EVP cipher init #2
 
-Best regards
+I found the culprit: OpenSSL's EVP_CipherInit() changed way too much
+for a 3 lines function. Prior to v1.1, the code did a check on cipher
+parameter and cleared the EVP context only if cipher was not null. In
+1.1, it clears the context unconditionnaly. Having to cope with
+changes in the interface is not that fun, having to cope with behavior
+changes is even worse :)
+
+I'm producing an additional commit to work around that change (the
+proposed change does not depend on the OpenSSL version).
+
+>> I don't have much time to test with other OpenSSL versions but I guess
+>> you have the infrastructure that will help.
+>
+> Well, *I* do not have specific "test across various OpenSSL versions"
+> infrastructure, but compiling across our buildbot zoo gives us quite a
+> bit of coverage...  and I assume Steffan has more coverage on SSL library
+> versions.
+>
+> thanks for your work!
+>
+> gert
+
+Well, thanks to everyone involved -- all of you have been really kind
+with me (for now :))
+
+Best regards,
 
 -- Emmanuel Deloget
-
-On Mon, Feb 20, 2017 at 1:29 PM, Christian Hesse <list@...1798...> wrote:
-> Emmanuel Deloget <logout@...260...> on Mon, 2017/02/20 12:45:
->> Hello,
->>
->> On Sun, Feb 19, 2017 at 6:49 PM, Gert Doering <gert@...1296...> wrote:
->> > Hi,
->> >
->> > On Sun, Feb 19, 2017 at 01:03:45PM +0100, Steffan Karger wrote:
->> >> Thank you very much.  You approach looks good to me, and quite closely
->> >> matches what I had in mind for when I would find the time to tackle
->> >> this.  (Which might have taken me a while, so really happy to see these
->> >> patches!)
->> > [..]
->> >> Also very good that this is split up into small and independently
->> >> reviewable patches.  I'll start review soon.
->> >
->> > While Steffan is our resident expert on nasty crypto libraries, I just
->> > want to echo the sentiment - having these "chunks" tackle one API function
->> > at a time, they are easily testable, and in case something explodes, it's
->> > much easier to bisect to find the problematic one.
->> >
->> > Now back to being a commit slave for Steffan's ACKs :-)  (I do not know
->> > the APIs well enough to properly comment on the changes, I can only run
->> > tests...)
->>
->> I resumed the work this morning. So far the results are :
->>
->> * 0.9.8zh --> EVP_PKEY_id() is not defined. I'm adding this to
->> openssl_compat.h and will provide a v2 patch with the change. Once
->> added, OpenVPN compiled successfully and was able to connect to my
->> /2.3 server.
->>
->> * 1.0.0t --> compile OK, connect OK
->>
->> * 1.0.1u --> compile OK, connect OK
->>
->> * 1.0.2.k --> compile OK, connect OK
->>
->> * 1.1.0-git --> compile OK, failure to connect. I'm currently
->> investigating this issue. I'll  provide a patch as soon as I fix this
->> (this is a bit ironic ; I may have forgotten something somewhere...).
->
-> That matches my findings. Built against openssl 1.1.0e (Arch Linux package
-> openssl 1.1.0.e-1 [0]) the build itself succeeds, but 'make check' reports
-> lots of cipher failures.
->
-> Are your patches available from a public git repository?
->
-> [0] https://www.archlinux.org/packages/staging/x86_64/openssl/
-> --
-> main(a){char*c=/*    Schoene Gruesse                         */"B?IJj;MEH"
-> "CX:;",b;for(a/*    Best regards             my address:    */=0;b=c[a++];)
-> putchar(b-1/(/*    Chris            cc -ox -xc - && ./x    */b/42*2-3)*42);}
 
