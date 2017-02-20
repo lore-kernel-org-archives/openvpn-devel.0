@@ -1,10 +1,18 @@
-Sender: Emmanuel Deloget <emmanueldeloget53@...277...>
-From: Emmanuel Deloget <logout@...260...>
-Date: Mon, 20 Feb 2017 15:32:32 +0100
-Message-Id: <cover.1487600539.git.logout@...260...>
-In-Reply-To: <cover.1487368114.git.logout@...260...>
+MIME-Version: 1.0
+Sender: emmanueldeloget53@...277...
+In-Reply-To: <CAKh=nwHU5cYRVKLp1eM5QRGU5V0KX2POVBCBFVHqR+F9d9USOA@...278...>
 References: <cover.1487368114.git.logout@...260...>
-Subject: [Openvpn-devel] [RFC PATCH v2 00/15] Add support for OpenSSL 1.1.x
+	<3b87d588-aad7-433d-f802-ea9f9f7a0a63@...1856...>
+	<20170219174934.GK93896@...1296...>
+	<CAKh=nwGOyR6reYpPvxqFVRKGDhpn7fLmw-GNBjMy=bJrqKTPmw@...278...>
+	<20170220132900.050e2b1e@...1799...>
+	<CAKh=nwGpVqa5yRoFxJ7ojnHveLpVmy1OvBFoZ8V=acguGixbew@...278...>
+	<CAKh=nwHU5cYRVKLp1eM5QRGU5V0KX2POVBCBFVHqR+F9d9USOA@...278...>
+From: Emmanuel Deloget <logout@...260...>
+Date: Mon, 20 Feb 2017 15:52:00 +0100
+Message-ID: <CAKh=nwE5D4P_nuJ6fjXwt-m0asbXu2rN-Aka8RTAd6WVKOry3A@...278...>
+Subject: Re: [Openvpn-devel] [RFC PATCH v1 00/15] Add support for OpenSSL
+	1.1.x
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,65 +21,31 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Christian Hesse <list@...1798...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-This (limited) series replaces a few patches on the v1 series, namely: 
+On Mon, Feb 20, 2017 at 2:53 PM, Emmanuel Deloget <logout@...260...> wrote:
+> Hi again,
+>
+> On Mon, Feb 20, 2017 at 2:33 PM, Emmanuel Deloget <logout@...260...> wrote:
+>> Hi Christian,
+>>
+>> On Mon, Feb 20, 2017 at 1:29 PM, Christian Hesse <list@...1798...> wrote:
+>>> That matches my findings. Built against openssl 1.1.0e (Arch Linux package
+>>> openssl 1.1.0.e-1 [0]) the build itself succeeds, but 'make check' reports
+>>> lots of cipher failures.
+>>>
+>>> Are your patches available from a public git repository?
+>>
+>> I will make my patches available on github ASAP.
+>
+> I did as fast as I could, here they are:
+>
+> https://github.com/emmanuel-deloget/openvpn/commits/openvpn-1.1
 
-* "OpenSSL: don't use direct access to the internal of EVP_PKEY"
-  This version replaces the previous version and adds function
-  EVP_PKEY_id() which is present in 1.0.0 and later but not in
-  0.9.8. 
-
-* "OpenSSL: use EVP_CipherInit_ex() instead of EVP_CipherInit()"
-
-This version has been compile-tested with the following versions:
-
-* 0.9.8zh
-* 1.0.0t
-* 1.0.1u
-* 1.0.2k
-* 1.1.0-git
-
-Each compilation test was followed by a connection test to an OpenVPN
-server (v2.3). So far, everything seems to work. 
-
-Emmanuel Deloget (15):
-  OpenSSL: don't use direct access to the internal of SSL_CTX
-  OpenSSL: don't use direct access to the internal of X509_STORE
-  OpenSSL: don't use direct access to the internal of X509_OBJECT
-  OpenSSL: don't use direct access to the internal of RSA_METHOD
-  OpenSSL: don't use direct access to the internal of X509
-  OpenSSL: don't use direct access to the internal of EVP_PKEY
-  OpenSSL: don't use direct access to the internal of RSA
-  OpenSSL: don't use direct access to the internal of DSA
-  OpenSSL: don't use direct access to the internal of X509_STORE_CTX
-  OpenSSL: don't use direct access to the internal of EVP_MD_CTX
-  OpenSSL: don't use direct access to the internal of EVP_CIPHER_CTX
-  OpenSSL: don't use direct access to the internal of HMAC_CTX
-  OpenSSL: SSLeay symbols are no longer available in OpenSSL 1.1
-  OpenSSL: constify getbio() parameters
-  OpenSSL: use EVP_CipherInit_ex() instead of EVP_CipherInit()
-
- configure.ac                     |  38 +++
- src/openvpn/crypto.c             |   8 +-
- src/openvpn/crypto_backend.h     |  42 +++
- src/openvpn/crypto_mbedtls.c     |  40 +++
- src/openvpn/crypto_openssl.c     |  54 +++-
- src/openvpn/httpdigest.c         |  78 ++---
- src/openvpn/misc.c               |  14 +-
- src/openvpn/ntlm.c               |  12 +-
- src/openvpn/openssl_compat.h     | 623 +++++++++++++++++++++++++++++++++++++++
- src/openvpn/openvpn.h            |   2 +-
- src/openvpn/push.c               |  11 +-
- src/openvpn/ssl.c                |  38 +--
- src/openvpn/ssl_openssl.c        |  94 +++---
- src/openvpn/ssl_verify_openssl.c |  55 ++--
- 14 files changed, 963 insertions(+), 146 deletions(-)
- create mode 100644 src/openvpn/openssl_compat.h
-
--- 
-2.7.4
-
+BTW, sorry for the branch name. I believe my fingers got stuck to a
+limited number of characters. This should have been openssl-1.1 but
+it's not too late to change it :)
 
