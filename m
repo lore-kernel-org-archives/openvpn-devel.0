@@ -1,16 +1,16 @@
-Date: Mon, 20 Feb 2017 14:19:33 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20170220131933.GF93896@...1296...>
-References: <20170125205302.23069-1-davids@...515...>
-	<20170220130341.GB93896@...1296...>
-	<d2dc71de-47f6-45f6-96b7-103d39725ea9@...2080...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="HwdYac1wHLTJyVrJ"
-Content-Disposition: inline
-In-Reply-To: <d2dc71de-47f6-45f6-96b7-103d39725ea9@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH] dev-tools: Simple tool wihch automates
- rebasing LZ4 compat library
+Sender: emmanueldeloget53@...277...
+In-Reply-To: <20170220132900.050e2b1e@...1799...>
+References: <cover.1487368114.git.logout@...260...>
+	<3b87d588-aad7-433d-f802-ea9f9f7a0a63@...1856...>
+	<20170219174934.GK93896@...1296...>
+	<CAKh=nwGOyR6reYpPvxqFVRKGDhpn7fLmw-GNBjMy=bJrqKTPmw@...278...>
+	<20170220132900.050e2b1e@...1799...>
+From: Emmanuel Deloget <logout@...260...>
+Date: Mon, 20 Feb 2017 14:33:21 +0100
+Message-ID: <CAKh=nwGpVqa5yRoFxJ7ojnHveLpVmy1OvBFoZ8V=acguGixbew@...278...>
+Subject: Re: [Openvpn-devel] [RFC PATCH v1 00/15] Add support for OpenSSL
+	1.1.x
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,77 +19,77 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
-Cc: David Sommerseth <davids@...515...>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+To: Christian Hesse <list@...1798...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---HwdYac1wHLTJyVrJ
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Hi Christian,
 
-Hi,
+On Mon, Feb 20, 2017 at 1:29 PM, Christian Hesse <list@...1798...> wrote:
+> That matches my findings. Built against openssl 1.1.0e (Arch Linux package
+> openssl 1.1.0.e-1 [0]) the build itself succeeds, but 'make check' reports
+> lots of cipher failures.
+>
+> Are your patches available from a public git repository?
 
-On Mon, Feb 20, 2017 at 02:13:20PM +0100, David Sommerseth wrote:
-> > and ran it against a local copy of lz4 v131, and that produced the
-> > expected result - no significant changes to compat-lz4.c/compat-lz4.h
-> > (the "#ifdef HAVE_CONFIG_H" block moves to the top of the file, but=20
-> > that is purely cosmetic - the block itself is fine)
->=20
-> I /did/ consider to do some clever sed hacks here too ... but I wasn't
-> in mood for that complexity, and I actually feared how *BSD would
-> explode in my face :)=20=20
+I will make my patches available on github ASAP.
 
-We'll always get you ;-)
+Best regards
 
-> But as it turned out, the BSD explosion trigger
-> was even lower than that ....... ;-)
+-- Emmanuel Deloget
 
-GNU sed enables "more complex" matching by default, but I can never
-remember which sed version does what, and when I need to turn on -E=20
-("extended regex") to make sed do what I want :-)
-
-> > So, any objections against the much simpler sed command there?  "lz4.h"
-> > with double quotes never shows up elsewhere in the file today - and=20
-> > when importing, we need to run a compile test anyway, so if it should
-> > ever garble the .c file, we fix the script...
->=20
-> This is purely my "match a precise as possible" approach I default to.
-> I have no issues making this simpler if that is what is required.
-
-Understood, but in this particular case, I think "simple is good enough"
-
-> New patch or fix at commit time?
-
-Whatever you prefer.  It's your code :)
-
-(And since this is not "main openvpn code", the rules are not as strict
-anyway - the actual lz4 commit change would need to be reviewed anyway)
-
-gert
-
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---HwdYac1wHLTJyVrJ
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJYquzlAAoJEB2Cnv7KVigSlqkMAJfRH1tDixF7n+B6GUajnq3k
-xE+McAcgSUYv/68Of7jAujEvHKfLWi87J4TMgBVRapIJSJcvnWO34emJFdGDuPb2
-xZcuC0TYRndap1vAwPVo+0o2iyt7WSnh/QAZwQ04oeHBUs/kqT91XCdeLNdeJ4z/
-2SPQPsLE/K6zV2tC83uhinzOIEGrW5ruoXGVYn03Kf+whbp9H4SBXoPDQoWb309T
-qBBZ4ax/7q8uiUt0gkVFeIXIim5Sm2esBTeiuDhC3vMv+9zuEATtYgqljndfWLS+
-f/OZUmetsOT51cJndZQtsAxue2GBvh17KfZfPcUlYQLoT4UC5hNRd5nqQDt8ea2L
-xNRaxdZxM/KLRMcyNRXssQEcCcoa7RDsItdEIrKoopI/zGvnKC5xlTd73g6ZkNyH
-kehBc6o7Y4bnnX3CMipQeHH83JyNQT2QKgbV25MMRlVgTZpMLXWE33kDb+EmV/8O
-Nn6qeAk+OKUQunROjksyAnKhNDxBlzpO/HH6SHWJUg==
-=hO54
------END PGP SIGNATURE-----
-
---HwdYac1wHLTJyVrJ--
+On Mon, Feb 20, 2017 at 1:29 PM, Christian Hesse <list@...1798...> wrote:
+> Emmanuel Deloget <logout@...260...> on Mon, 2017/02/20 12:45:
+>> Hello,
+>>
+>> On Sun, Feb 19, 2017 at 6:49 PM, Gert Doering <gert@...1296...> wrote:
+>> > Hi,
+>> >
+>> > On Sun, Feb 19, 2017 at 01:03:45PM +0100, Steffan Karger wrote:
+>> >> Thank you very much.  You approach looks good to me, and quite closely
+>> >> matches what I had in mind for when I would find the time to tackle
+>> >> this.  (Which might have taken me a while, so really happy to see these
+>> >> patches!)
+>> > [..]
+>> >> Also very good that this is split up into small and independently
+>> >> reviewable patches.  I'll start review soon.
+>> >
+>> > While Steffan is our resident expert on nasty crypto libraries, I just
+>> > want to echo the sentiment - having these "chunks" tackle one API function
+>> > at a time, they are easily testable, and in case something explodes, it's
+>> > much easier to bisect to find the problematic one.
+>> >
+>> > Now back to being a commit slave for Steffan's ACKs :-)  (I do not know
+>> > the APIs well enough to properly comment on the changes, I can only run
+>> > tests...)
+>>
+>> I resumed the work this morning. So far the results are :
+>>
+>> * 0.9.8zh --> EVP_PKEY_id() is not defined. I'm adding this to
+>> openssl_compat.h and will provide a v2 patch with the change. Once
+>> added, OpenVPN compiled successfully and was able to connect to my
+>> /2.3 server.
+>>
+>> * 1.0.0t --> compile OK, connect OK
+>>
+>> * 1.0.1u --> compile OK, connect OK
+>>
+>> * 1.0.2.k --> compile OK, connect OK
+>>
+>> * 1.1.0-git --> compile OK, failure to connect. I'm currently
+>> investigating this issue. I'll  provide a patch as soon as I fix this
+>> (this is a bit ironic ; I may have forgotten something somewhere...).
+>
+> That matches my findings. Built against openssl 1.1.0e (Arch Linux package
+> openssl 1.1.0.e-1 [0]) the build itself succeeds, but 'make check' reports
+> lots of cipher failures.
+>
+> Are your patches available from a public git repository?
+>
+> [0] https://www.archlinux.org/packages/staging/x86_64/openssl/
+> --
+> main(a){char*c=/*    Schoene Gruesse                         */"B?IJj;MEH"
+> "CX:;",b;for(a/*    Best regards             my address:    */=0;b=c[a++];)
+> putchar(b-1/(/*    Chris            cc -ox -xc - && ./x    */b/42*2-3)*42);}
 
