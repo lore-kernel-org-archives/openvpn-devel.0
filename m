@@ -1,14 +1,15 @@
+Date: Mon, 20 Feb 2017 13:18:52 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20170220121852.GW93896@...1296...>
+References: <1483905658-25267-1-git-send-email-selva.nair@...277...>
+	<1484428589-7882-1-git-send-email-selva.nair@...277...>
 MIME-Version: 1.0
-Sender: emmanueldeloget53@...277...
-In-Reply-To: <20170219174934.GK93896@...1296...>
-References: <cover.1487368114.git.logout@...260...>
-	<3b87d588-aad7-433d-f802-ea9f9f7a0a63@...1856...>
-	<20170219174934.GK93896@...1296...>
-From: Emmanuel Deloget <logout@...260...>
-Date: Mon, 20 Feb 2017 12:45:24 +0100
-Message-ID: <CAKh=nwGOyR6reYpPvxqFVRKGDhpn7fLmw-GNBjMy=bJrqKTPmw@...278...>
-Subject: Re: [Openvpn-devel] [RFC PATCH v1 00/15] Add support for OpenSSL
-	1.1.x
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="bGD25dtqTBkDy1zG"
+Content-Disposition: inline
+In-Reply-To: <1484428589-7882-1-git-send-email-selva.nair@...277...>
+Subject: Re: [Openvpn-devel] [PATCH v2] Fix user's group membership check in
+ interactive service to work with domains
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,57 +18,79 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
+To: selva.nair@...277...
 Cc: openvpn-devel@lists.sourceforge.net
 
-Hello,
+--bGD25dtqTBkDy1zG
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-On Sun, Feb 19, 2017 at 6:49 PM, Gert Doering <gert@...1296...> wrote:
-> Hi,
->
-> On Sun, Feb 19, 2017 at 01:03:45PM +0100, Steffan Karger wrote:
->> Thank you very much.  You approach looks good to me, and quite closely
->> matches what I had in mind for when I would find the time to tackle
->> this.  (Which might have taken me a while, so really happy to see these
->> patches!)
-> [..]
->> Also very good that this is split up into small and independently
->> reviewable patches.  I'll start review soon.
->
-> While Steffan is our resident expert on nasty crypto libraries, I just
-> want to echo the sentiment - having these "chunks" tackle one API function
-> at a time, they are easily testable, and in case something explodes, it's
-> much easier to bisect to find the problematic one.
->
-> Now back to being a commit slave for Steffan's ACKs :-)  (I do not know
-> the APIs well enough to properly comment on the changes, I can only run
-> tests...)
+HI,
 
-I resumed the work this morning. So far the results are :
+On Sat, Jan 14, 2017 at 04:16:29PM -0500, selva.nair@...277... wrote:
+> From: Selva Nair <selva.nair@...277...>
+>=20
+> Currently the username unqualified by the domain is used to validate
+> a user which fails for domain users. Instead authorize the user
+>=20
+> (i) if the built-in admin group or ovpn_admin group is in the process tok=
+en
+> (ii) else if the user's SID is in the built-in admin or ovpn_admin groups
+>=20
+> The second check is needed to recognize dynamic updates to group membersh=
+ip
+> on the local machine that will not be reflected in the token.
+>=20
+> These checks do not require connection to a domain controller and will
+> work even when user is logged in with cached credentials.
+>=20
+> Resolves Trac: #810
+>=20
+> v2: include the token check as described above
 
-* 0.9.8zh --> EVP_PKEY_id() is not defined. I'm adding this to
-openssl_compat.h and will provide a v2 patch with the change. Once
-added, OpenVPN compiled successfully and was able to connect to my
-/2.3 server.
+Took me way too long...  the code change looks reasonable ("does what it
+says on the tin, and safely so").=20=20
 
-* 1.0.0t --> compile OK, connect OK
+One questions occured to me, though...
 
-* 1.0.1u --> compile OK, connect OK
+MS documentation for GetTokenInformation() suggests that group membership=20
+tests should be done with "CheckTokenMembership()", which sounds more=20
+convenient than "extract them all and walk the list" - so maybe this=20
+is done to avoid domain controller contact?
 
-* 1.0.2.k --> compile OK, connect OK
+OTOH, the example given somewhere else does the same thing with
+EqualSid(), so MS doesn't know what to recommend either, it seems...
+https://msdn.microsoft.com/de-de/library/windows/desktop/aa379554(v=3Dvs.85=
+).aspx
 
-* 1.1.0-git --> compile OK, failure to connect. I'm currently
-investigating this issue. I'll  provide a patch as soon as I fix this
-(this is a bit ironic ; I may have forgotten something somewhere...).
 
-I don't have much time to test with other OpenSSL versions but I guess
-you have the infrastructure that will help.
+A few more tests, then merge...
 
-> gert
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-Best regards,
+--bGD25dtqTBkDy1zG
+Content-Type: application/pgp-signature; name="signature.asc"
 
--- Emmanuel Deloget
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJYqt6sAAoJEB2Cnv7KVigSpGcL/1hcZzvHr17vP+NFPjkvEcHC
+0nbZgSkz4WueFZsRAix8lUBLG8BfFW5/1KWst7Fjkz5j0FJAYmTRhOWgFitKgl+D
+PBx51gpJs6Qi19iER3Sd+zPGWRm6oPtHTCJTSHtOwGhYEbp1wZoLreIZY5KW/sEh
+OUmKID+ov3lh/KhgS/pst6NTNwio6Qh9japkzEDU+HrUqOBTAdATrr3wKfOjItjP
+d5mWPNQrnOAtHUs6MnoV1yu6i3HJsUxjBuiyTG7/OTE4PuG8UeP7fBaEaZGLKazi
+4lwFKTcU0W9Ovb7/aGNf8NTWBKnyVNtcYTBL4DGhIQSfpng+FUql7vOh8RdpcJJt
+JvPnbREH3GKt58slJrt0kautTsh4DF56IgBXlN6Szndx6jY/b2hqhL9BYD5G4NPd
+0ngpxO1T4YPttWfjFckLg1+u7wKsMUVGyq/csyBGA36YHfWcuXs95aSGWgoG6T3/
+mzjfM6AuYvmOuii7Zwrj7TzMTxpmHffyir/vqCYLRg==
+=gDpm
+-----END PGP SIGNATURE-----
+
+--bGD25dtqTBkDy1zG--
 
