@@ -1,8 +1,10 @@
 From: David Sommerseth <davids@...515...>
-Date: Tue, 21 Feb 2017 20:27:34 +0100
-Message-Id: <20170221192737.24166-1-davids@...515...>
-MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2 0/3] LZ4 updates
+Date: Tue, 21 Feb 2017 20:27:35 +0100
+Message-Id: <20170221192737.24166-2-davids@...515...>
+In-Reply-To: <20170221192737.24166-1-davids@...515...>
+References: <20170221192737.24166-1-davids@...515...>
+Subject: [Openvpn-devel] [PATCH v2 1/3] dev-tools: lz4-rebaser tool carried
+	a typo
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,37 +13,32 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This is an updated LZ4 patch series.  It fixes a silly bug
-which sneaked into the lz4-rebaser.sh tool, rebases LZ4 to
-upstream lz4-1.7.5 and updates our LZ4 usage to not use a
-deprecated API.
+The HAVE_CONFIG_H block which gets added to compat-lz4.c was
+missing a # before the first ifdef statement.
 
-This patch-set replaces the previous [1] LZ4 update series.
+Signed-off-by: David Sommerseth <davids@...515...>
+---
+ dev-tools/lz4-rebaser.sh | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-
-[1] Message-Id: <1481833246-32507-1-git-send-email-davids@...515...>
-    <http://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg135=
-76.html>
-
-Christian Hesse (1):
-  Replace deprecated LZ4 function
-
-David Sommerseth (2):
-  dev-tools: lz4-rebaser tool carried a typo
-  lz4: Rebase compat-lz4 against upstream v1.7.5
-
- dev-tools/lz4-rebaser.sh |   2 +-
- src/compat/compat-lz4.c  | 830 ++++++++++++++++++++++---------------------=
-----
- src/compat/compat-lz4.h  | 377 +++++++++++++--------
- src/openvpn/comp-lz4.c   |   4 +
- 4 files changed, 635 insertions(+), 578 deletions(-)
-
---=20
+diff --git a/dev-tools/lz4-rebaser.sh b/dev-tools/lz4-rebaser.sh
+index 8a45ffd..4ef4de8 100755
+--- a/dev-tools/lz4-rebaser.sh
++++ b/dev-tools/lz4-rebaser.sh
+@@ -50,7 +50,7 @@ echo "* Porting upstream lz4.c to compat-lz4.c"
+ /* This file has been backported by $0
+  * from upstream lz4 commit $lz4_commit ($lz4_tag)
+  */
+-ifdef HAVE_CONFIG_H
++#ifdef HAVE_CONFIG_H
+ #include "config.h"
+ #elif defined(_MSC_VER)
+ #include "config-msvc.h"
+-- 
 2.11.0
 
 
