@@ -1,9 +1,10 @@
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <abdf86bd-5f06-21da-2d27-81c961da2453@...515...>
-Date: Tue, 21 Feb 2017 15:24:37 +0200
-MIME-Version: 1.0
-Subject: [Openvpn-devel] Topics for the upcoming (Wednesday,
- 22nd February 2016) community meeting
+Date: Tue, 21 Feb 2017 14:46:38 +0100 (CET)
+Message-Id: <201702211346.v1LDkc1g022695@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20170125205302.23069-1-davids@...515...>
+References: <20170125205302.23069-1-davids@...515...>
+Subject: [Openvpn-devel] [PATCH applied] Re: dev-tools: Simple tool wihch
+	automates rebasing LZ4 compat library
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,32 +14,43 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
+Content-Transfer-Encoding: 8bit
+To: David Sommerseth <davids@...515...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
+ACK.
 
-We're going to have an IRC meeting on Wednesday 22nd February 2016. The
-meeting begins at 20:00 CET (19:00 UTC) on #openvpn-meeting <at>
-irc.freenode.net. You do not have to be logged in to Freenode to join
-the channel.
+Your patch has been applied to the master branch.
 
-Current topic list along with basic information is here:
+Some comments:
 
-<https://community.openvpn.net/openvpn/wiki/Topics-2017-02-22>
+ - I'm not putting this into release/2.4 branch, as we're only ever going
+   to use it in master - lz4 changes get applied to master, and then
+   cherrypicked to other branches.
 
-If you have any other things you'd like to bring up, respond to this
-mail, send me mail privately or add them to the list yourself.
+ - the sed statement has been fix-on-commit'ed as discussed on the list
 
-In case you can't attend the meeting, please feel free to make comments
-on the topics by responding to this email or to the summary email sent
-after the meeting. Whenever possible, we'll also respond to existing,
-related email threads.
+ - a small grammatical mistake in the comment added to the newly imported
+   compat-lz4.c has been fixed ("This file *has* been...")
+
+ - typo in the commit message fixed ("wihch")
+
+commit fce9d75b2c44c354457522643eddc914e41f2d84
+Author: David Sommerseth
+Date:   Wed Jan 25 21:53:02 2017 +0100
+
+     dev-tools: Simple tool which automates rebasing LZ4 compat library
+
+     Signed-off-by: David Sommerseth <davids@...515...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20170125205302.23069-1-davids@...515...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13962.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
 
 --
-Samuli Sepp=C3=A4nen
-Community Manager
-OpenVPN Technologies, Inc
+kind regards,
 
-irc freenode net: mattock
+Gert Doering
+
 
