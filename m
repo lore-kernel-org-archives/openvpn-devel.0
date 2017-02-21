@@ -1,10 +1,9 @@
-Date: Mon, 20 Feb 2017 20:47:48 +0100 (CET)
-Message-Id: <201702201947.v1KJlmXL014209@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20170131112131.13570-1-a@...2181...>
-References: <20170131112131.13570-1-a@...2181...>
-Subject: [Openvpn-devel] [PATCH applied] Re: attempt to add IPv6 route even
-	when no IPv6 address was configured
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <abdf86bd-5f06-21da-2d27-81c961da2453@...515...>
+Date: Tue, 21 Feb 2017 15:24:37 +0200
+MIME-Version: 1.0
+Subject: [Openvpn-devel] Topics for the upcoming (Wednesday,
+ 22nd February 2016) community meeting
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,42 +13,32 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Antonio Quartulli <a@...2181...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Transfer-Encoding: quoted-printable
+To: openvpn-devel@lists.sourceforge.net
 
-ACK.  What we had was too strict in some cases, breaking people's
-configs - with this change, we give users enough rope to hang themselves
-if they insist to do so, but point out in the log file that this might
-be a stupid idea...
+Hi,
 
-(That this came up in the first place is a consequence of commit
-86e2fa5597fd1ad8e, 2.3 "supported" this mode of operation "fine")
+We're going to have an IRC meeting on Wednesday 22nd February 2016. The
+meeting begins at 20:00 CET (19:00 UTC) on #openvpn-meeting <at>
+irc.freenode.net. You do not have to be logged in to Freenode to join
+the channel.
 
-Tested on linux - and it does the right motions.  Whether or not 
-"route6 without ifconfig6" does the right thing on platform <x>
-is not something we guarantee or promise :-)
+Current topic list along with basic information is here:
 
+<https://community.openvpn.net/openvpn/wiki/Topics-2017-02-22>
 
-Your patch has been applied to the master and release/2.4 branch.
+If you have any other things you'd like to bring up, respond to this
+mail, send me mail privately or add them to the list yourself.
 
-commit 2b7650e7ec9241745e4f66c932d6cffaece927d7 (master)
-commit c74d574417b8b491fe6ad44e89843af8479cc9be (release/2.4)
-Author: Antonio Quartulli
-Date:   Tue Jan 31 19:21:31 2017 +0800
-
-     attempt to add IPv6 route even when no IPv6 address was configured
-
-     Signed-off-by: Antonio Quartulli <a@...2181...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20170131112131.13570-1-a@...2181...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13994.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
+In case you can't attend the meeting, please feel free to make comments
+on the topics by responding to this email or to the summary email sent
+after the meeting. Whenever possible, we'll also respond to existing,
+related email threads.
 
 --
-kind regards,
+Samuli Sepp=C3=A4nen
+Community Manager
+OpenVPN Technologies, Inc
 
-Gert Doering
-
+irc freenode net: mattock
 
