@@ -1,10 +1,10 @@
 From: David Sommerseth <davids@...515...>
-Date: Tue, 21 Feb 2017 20:27:35 +0100
-Message-Id: <20170221192737.24166-2-davids@...515...>
+Date: Tue, 21 Feb 2017 20:27:37 +0100
+Message-Id: <20170221192737.24166-4-davids@...515...>
 In-Reply-To: <20170221192737.24166-1-davids@...515...>
 References: <20170221192737.24166-1-davids@...515...>
-Subject: [Openvpn-devel] [PATCH v2 1/3] dev-tools: lz4-rebaser tool carried
-	a typo
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH v2 3/3] Replace deprecated LZ4 function
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,32 +13,46 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 To: openvpn-devel@lists.sourceforge.net
+Cc: Christian Hesse <mail@...1798...>
 
-The HAVE_CONFIG_H block which gets added to compat-lz4.c was
-missing a # before the first ifdef statement.
+From: Christian Hesse <mail@...1798...>
 
-Signed-off-by: David Sommerseth <davids@...515...>
+The LZ4 function LZ4_compress_limitedOutput() is deprecated, compiler
+gives warning:
+
+warning: =E2=80=98LZ4_compress_limitedOutput=E2=80=99 is deprecated: use
+LZ4_compress_default() instead
+
+The new function LZ4_compress_default() appeared in r129 (1.7.0), so
+replace the function there.
+
+Signed-off-by: Christian Hesse <mail@...1798...>
 ---
- dev-tools/lz4-rebaser.sh | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ src/openvpn/comp-lz4.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/dev-tools/lz4-rebaser.sh b/dev-tools/lz4-rebaser.sh
-index 8a45ffd..4ef4de8 100755
---- a/dev-tools/lz4-rebaser.sh
-+++ b/dev-tools/lz4-rebaser.sh
-@@ -50,7 +50,7 @@ echo "* Porting upstream lz4.c to compat-lz4.c"
- /* This file has been backported by $0
-  * from upstream lz4 commit $lz4_commit ($lz4_tag)
-  */
--ifdef HAVE_CONFIG_H
-+#ifdef HAVE_CONFIG_H
- #include "config.h"
- #elif defined(_MSC_VER)
- #include "config-msvc.h"
--- 
+diff --git a/src/openvpn/comp-lz4.c b/src/openvpn/comp-lz4.c
+index e1f83e7..41b7d1b 100644
+--- a/src/openvpn/comp-lz4.c
++++ b/src/openvpn/comp-lz4.c
+@@ -87,7 +87,11 @@ do_lz4_compress(struct buffer *buf,
+             return false;
+         }
+=20
++#if defined LZ4_VERSION_NUMBER && LZ4_VERSION_NUMBER >=3D 10700
++        zlen =3D LZ4_compress_default((const char *)BPTR(buf), (char *)BPT=
+R(work), BLEN(buf), zlen_max );
++#else
+         zlen =3D LZ4_compress_limitedOutput((const char *)BPTR(buf), (char=
+ *)BPTR(work), BLEN(buf), zlen_max );
++#endif
+=20
+         if (zlen <=3D 0)
+         {
+--=20
 2.11.0
 
 
