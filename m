@@ -1,10 +1,14 @@
-From: Steffan Karger <steffan@...1856...>
-Message-ID: <345db0ac-f6e8-8490-a80a-ffbd81972c07@...1856...>
-Date: Tue, 21 Feb 2017 20:42:57 +0100
+Date: Tue, 21 Feb 2017 22:12:05 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20170221211205.GF93896@...1296...>
+References: <345db0ac-f6e8-8490-a80a-ffbd81972c07@...1856...>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="------------E6C11312877AF6331E8044C0"
-Subject: [Openvpn-devel] [PATCH] Fix segfault when using crypto lib without
- AES-256-CTR or SHA256
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="tbBCmy51UvWhYeBI"
+Content-Disposition: inline
+In-Reply-To: <345db0ac-f6e8-8490-a80a-ffbd81972c07@...1856...>
+Subject: Re: [Openvpn-devel] [PATCH] Fix segfault when using crypto lib
+ without AES-256-CTR or SHA256
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,81 +17,51 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Steffan Karger <steffan@...1856...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-This is a multi-part message in MIME format.
---------------E6C11312877AF6331E8044C0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+--tbBCmy51UvWhYeBI
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
 Hi,
 
-The attached patch from trac #825 fixes a silly bug in my --tls-crypt
-code.  I already confirmed this in trac, but now also on the list:
+On Tue, Feb 21, 2017 at 08:42:57PM +0100, Steffan Karger wrote:
+> ACK to the attached patch.
 
-ACK to the attached patch.
+> >From d97f526a2ddbf2abe60a64260601ebd742fc00cc Mon Sep 17 00:00:00 2001
+> From: "Simon (simix)" <via-trac>
 
--Steffan
+All previous commits (I'm aware of) carry a valid e-mail address, and
+most of them have a full name for the author.
 
---------------E6C11312877AF6331E8044C0
-Content-Type: text/x-patch;
-	name="0001-Fix-segfault-when-using-crypto-library-without-AES-2.patch"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment;
-	filename*0="0001-Fix-segfault-when-using-crypto-library-without-AES-2.pa";
-	filename*1="tch"
+Do we have a policy how to handle patches with missing author info?
 
-From d97f526a2ddbf2abe60a64260601ebd742fc00cc Mon Sep 17 00:00:00 2001
-From: "Simon (simix)" <via-trac>
-Date: Tue, 21 Feb 2017 20:34:15 +0100
-Subject: [PATCH] Fix segfault when using crypto lib without AES-256-CTR or
- SHA256
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-Openvpn segfaults on RHEL5/CentOS5 when using --tls-crypt, because it
-doesn't have AES-256-CTR support:
+--tbBCmy51UvWhYeBI
+Content-Type: application/pgp-signature; name="signature.asc"
 
-openvpn[15330]: OpenVPN 2.4.0 x86_64-redhat-linux-gnu [SSL (OpenSSL)] [LZO] [LZ4] [EPOLL] [MH/PKTINFO] built on Jan 17 2017
-openvpn[15330]: library versions: OpenSSL 0.9.8e-fips-rhel5 01 Jul 2008, LZO 2.09, LZ4 1.7.5
-openvpn[15331]: NOTE: the current --script-security setting may allow this configuration to call user-defined scripts
-kernel: openvpn[15331]: segfault at 0000000000000008 rip 000000000040ebe0 rsp 00007fffdcfc5738 error 4
+-----BEGIN PGP SIGNATURE-----
 
-This patch fixes it so it shows:
+iQGcBAEBAgAGBQJYrK0kAAoJEB2Cnv7KVigSD+QL/2yM7mihxv+BXOoRrFLDFEwf
+s1MKvoWogX5KZYjxCGAwFIMFs0fU5edbXfGGtcthxHxBVQvQCajpzPAH+DZxm60z
+vaj0KAeHnI5E14T1KjVIm4ppljRHV6tko8+EIaiX7UxItXAZVrf1mAAJ4cmq+96j
+fylnAeTXF8UXq9p/YFO1QtQHKmcqjHO7S8vqUNgZ2BfQXXqw60Ym0ZNAJNgsQ62/
+ryURZLxz6JZZkmoHZTQCdErP6MU5NJSdX07Bf8qG8iGIjZJ/cZXt1hn1S+/4gJoe
+f0QC8ZLlan17ne43qfNZ2KB09sv0LpmGnd4Ccoro8EMTQ4/iUB1dDAts6Sk7FNeK
+gT+JYcc0l6hCXepSWGM9wKmDaEtwg8Mz22xLoIsly31HNnVfxiIgOJY4B3VDD5ad
+bXaY19OAjAiPF+WNrnzhpnBcZn/D2tQfZgO59G+RxWXNSAyqLj/OG4YMMa7NST3r
+xIETOZxoIGr2TtSNYWqDe5HG21S7hsbOzlPcsHYAIA==
+=yTqZ
+-----END PGP SIGNATURE-----
 
-openvpn[424]: ERROR: --tls-crypt requires AES-256-CTR support.
-openvpn[424]: Exiting due to fatal error
-
-Trac: #825
----
- src/openvpn/tls_crypt.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
-
-diff --git a/src/openvpn/tls_crypt.c b/src/openvpn/tls_crypt.c
-index a227379..bda14fd 100644
---- a/src/openvpn/tls_crypt.c
-+++ b/src/openvpn/tls_crypt.c
-@@ -51,9 +51,7 @@ tls_crypt_init_key(struct key_ctx_bi *key, const char *key_file,
- 
-     struct key_type kt;
-     kt.cipher = cipher_kt_get("AES-256-CTR");
--    kt.cipher_length = cipher_kt_key_size(kt.cipher);
-     kt.digest = md_kt_get("SHA256");
--    kt.hmac_length = md_kt_size(kt.digest);
- 
-     if (!kt.cipher)
-     {
-@@ -64,6 +62,9 @@ tls_crypt_init_key(struct key_ctx_bi *key, const char *key_file,
-         msg(M_FATAL, "ERROR: --tls-crypt requires HMAC-SHA-256 support.");
-     }
- 
-+    kt.cipher_length = cipher_kt_key_size(kt.cipher);
-+    kt.hmac_length = md_kt_size(kt.digest);
-+
-     crypto_read_openvpn_key(&kt, key, key_file, key_inline, key_direction,
-                             "Control Channel Encryption", "tls-crypt");
- }
--- 
-2.7.4
-
-
---------------E6C11312877AF6331E8044C0--
+--tbBCmy51UvWhYeBI--
 
