@@ -1,10 +1,8 @@
-Date: Wed, 22 Feb 2017 17:07:29 +0100 (CET)
-Message-Id: <201702221607.v1MG7T23033426@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <11477a0a3cf636572c84e0110a6f1b726bc60c2c.1487368114.git.logout@...260...>
-References: <11477a0a3cf636572c84e0110a6f1b726bc60c2c.1487368114.git.logout@...260...>
-Subject: [Openvpn-devel] [PATCH applied] Re: OpenSSL: don't use direct
-	access to the internal of X509_STORE_CTX
+From: James Yonan <james@...515...>
+Message-ID: <003bd3ed-9a64-3e77-cd06-2212b82a6165@...515...>
+Date: Wed, 22 Feb 2017 11:48:00 -0700
+MIME-Version: 1.0
+Subject: [Openvpn-devel] Should we use mbedTLS certificate profiles?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,30 +11,28 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Emmanuel Deloget <logout@...260...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Your patch has been applied to the master and release/2.4 branch.
+mbedTLS 2 has a new feature that allows rejection of certificates if the 
+key size is too small or the signing hash is weak.
 
-commit 88046ad9e8e333259ae6fb4a295a9931a1a0e47f (master)
-commit 58efba5013f6dae4136cc038af9ffd23796cbc0d (release/2.4)
-Author: Emmanuel Deloget
-Date:   Fri Feb 17 23:00:48 2017 +0100
+The feature is controlled via struct mbedtls_x509_crt_profile.
 
-     OpenSSL: don't use direct access to the internal of X509_STORE_CTX
+For example, you could specify that certificates must be at least 2048 
+bits and use a SHA-2 signing alg.
 
-     Signed-off-by: Emmanuel Deloget <logout@...260...>
-     Acked-by: Steffan Karger <steffan.karger@...1435...>
-     Message-Id: <11477a0a3cf636572c84e0110a6f1b726bc60c2c.1487368114.git.logout@...260...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg14085.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+Wondering if we should enable this via an option, or tie it into the 
+existing tls-version-min.
 
+The granular approach would be to have specific options for each limit, 
+such as ssl-min-key-size, ssl-require-sha2
 
---
-kind regards,
+The bundled approach would be to take an existing option such as 
+tls-version-min and add additional constraints onto it.  For example, if 
+tls-version-min is 1.2 or higher, then also require minimum key size to 
+be 2048 and certificate signing hash to be SHA-2.
 
-Gert Doering
-
+James
 
