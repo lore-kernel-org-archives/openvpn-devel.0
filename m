@@ -1,14 +1,10 @@
-MIME-Version: 1.0
-In-Reply-To: <20170222154759.46402df4@...1799...>
-References: <cover.1487368114.git.logout@...260...>
-	<11477a0a3cf636572c84e0110a6f1b726bc60c2c.1487368114.git.logout@...260...>
-	<1b42bd0d-ffbf-8c09-e313-13474b723a16@...1856...>
-	<20170222154759.46402df4@...1799...>
-From: Steffan Karger <steffan@...1856...>
-Date: Wed, 22 Feb 2017 16:34:21 +0100
-Message-ID: <CAA1AbxLtDgsrw7pje-c_Qu4j2XbGZod6zjbPfQSTieL+RWiqSw@...278...>
-Subject: Re: [Openvpn-devel] [RFC PATCH v1 09/15] OpenSSL: don't use direct
- access to the internal of X509_STORE_CTX
+Date: Wed, 22 Feb 2017 17:07:29 +0100 (CET)
+Message-Id: <201702221607.v1MG7T23033426@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <11477a0a3cf636572c84e0110a6f1b726bc60c2c.1487368114.git.logout@...260...>
+References: <11477a0a3cf636572c84e0110a6f1b726bc60c2c.1487368114.git.logout@...260...>
+Subject: [Openvpn-devel] [PATCH applied] Re: OpenSSL: don't use direct
+	access to the internal of X509_STORE_CTX
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,21 +13,30 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Christian Hesse <list@...1798...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Emmanuel Deloget <logout@...260...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-On 22 February 2017 at 15:47, Christian Hesse <list@...1798...> wrote:
-> Steffan Karger <steffan@...1856...> on Tue, 2017/02/21 22:30:
->> ACK.  Changes look good and tested against OpenSSL 0.9.8, 1.0.0, 1.0.1
->> and 1.0.2.
->
-> You answered to a patch in the middle of a series. Does this ACK apply to the
-> complete series or just this patch?
+Your patch has been applied to the master and release/2.4 branch.
 
-Just this one.  Not much brains left last night, so I only reviewed
-this rather simple and independent patch out of the series :)
+commit 88046ad9e8e333259ae6fb4a295a9931a1a0e47f (master)
+commit 58efba5013f6dae4136cc038af9ffd23796cbc0d (release/2.4)
+Author: Emmanuel Deloget
+Date:   Fri Feb 17 23:00:48 2017 +0100
 
--Steffan
+     OpenSSL: don't use direct access to the internal of X509_STORE_CTX
+
+     Signed-off-by: Emmanuel Deloget <logout@...260...>
+     Acked-by: Steffan Karger <steffan.karger@...1435...>
+     Message-Id: <11477a0a3cf636572c84e0110a6f1b726bc60c2c.1487368114.git.logout@...260...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg14085.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
+
 
