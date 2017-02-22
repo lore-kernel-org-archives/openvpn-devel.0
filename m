@@ -1,15 +1,14 @@
-References: <cover.1487368114.git.logout@...260...>
-	<c849c9778d2b2faa4eb4d31367b37d993da5eb85.1487368114.git.logout@...260...>
-From: Steffan Karger <steffan@...1856...>
-Message-ID: <8c051c32-ed80-5d6c-9370-0577d66abcee@...1856...>
-Date: Wed, 22 Feb 2017 21:50:10 +0100
+References: <abdf86bd-5f06-21da-2d27-81c961da2453@...515...>
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <31fded00-2242-ac7f-0503-d0fa45a14ac6@...515...>
+Date: Wed, 22 Feb 2017 22:58:22 +0200
 MIME-Version: 1.0
-In-Reply-To: <c849c9778d2b2faa4eb4d31367b37d993da5eb85.1487368114.git.logout@...260...>
+In-Reply-To: <abdf86bd-5f06-21da-2d27-81c961da2453@...515...>
 Content-Type: multipart/signed; micalg=pgp-sha256;
 	protocol="application/pgp-signature";
-	boundary="xwvxsifrxrDeCtD00R5Gt9XVUrk1dwSgt"
-Subject: Re: [Openvpn-devel] [RFC PATCH v1 03/15] OpenSSL: don't use direct
- access to the internal of X509_OBJECT
+	boundary="gnpEwE5rcEmtwxfDbdsDbDE84Ddj5oXnP"
+Subject: [Openvpn-devel] Summary of today's (Wed 22nd Oct 2017) community
+	meeting
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,143 +20,326 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: openvpn-devel@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---xwvxsifrxrDeCtD00R5Gt9XVUrk1dwSgt
-Content-Type: multipart/mixed; boundary="hRAXx39pon6xbrKWVhXetDps8XGhdAbwO";
-	protected-headers="v1"
-From: Steffan Karger <steffan@...1856...>
-To: openvpn-devel@lists.sourceforge.net
-Message-ID: <8c051c32-ed80-5d6c-9370-0577d66abcee@...1856...>
-Subject: Re: [Openvpn-devel] [RFC PATCH v1 03/15] OpenSSL: don't use direct
-	access to the internal of X509_OBJECT
-References: <cover.1487368114.git.logout@...260...>
-	<c849c9778d2b2faa4eb4d31367b37d993da5eb85.1487368114.git.logout@...260...>
-In-Reply-To: <c849c9778d2b2faa4eb4d31367b37d993da5eb85.1487368114.git.logout@...260...>
+--gnpEwE5rcEmtwxfDbdsDbDE84Ddj5oXnP
+Content-Type: multipart/mixed; boundary="------------06F9D9F264265C109B47FB0E"
 
---hRAXx39pon6xbrKWVhXetDps8XGhdAbwO
-Content-Type: text/plain; charset="windows-1252"
+This is a multi-part message in MIME format.
+--------------06F9D9F264265C109B47FB0E
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
+Hi,
+
+Here's the summary of today's IRC meeting.
+
+---
+
+COMMUNITY MEETING
+
+Place: #openvpn-meeting on irc.freenode.net
+Date: Wednesday 22nd Oct 2017
+Time: 20:00 CET (19:00 UTC)
+
+Planned meeting topics for this meeting were here:
+
+<https://community.openvpn.net/openvpn/wiki/Topics-2017-02-22>
+
+The next meeting has not been scheduled yet.
+
+Your local meeting time is easy to check from services such as
+
+<http://www.timeanddate.com/worldclock>
+
+SUMMARY
+
+chipitsine, cron2, dazo, debbie10t, eworm, mattock and syzzer
+participated in this meeting
+
+--
+
+Discussed OpenVPN 2.4.1 release. Agreed that we should make the release
+in about two weeks. The OpenSSL 1.1.x support patches will be included
+if possible:
+
+<https://github.com/emmanuel-deloget/openvpn/commits/openvpn-1.1>
+
+The patches should not affect OpenSSL 1.0.x support, so including the
+patchset does not require us to bundle (Windows) installers with OpenSSL
+1.1.x.
+
+Eworm has done testing with the full patchset, and syzzer has tested
+each patch individually.
+
+Syzzer reviewed and ACKed a few of these patches during the meeting.
+
+--
+
+Discussed what to do with patches that can't be attributed properly
+(name + email), such as this one:
+
+<https://community.openvpn.net/openvpn/ticket/825>
+
+Agreed that we can take responsibility of the smaller patches if the
+author can't be reached. Larger patches that can't be attributed will be
+simply ignored.
+
+---
+
+Full chatlog has been attached to this email.
+
+--=20
+Samuli Sepp=C3=A4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
 
 
-On 17-02-17 23:00, logout@...260... wrote:
-> From: Emmanuel Deloget <logout@...260...>
->=20
-> OpenSSL 1.1 does not allow us to directly access the internal of
-> any data type, including X509_OBJECT. We have to use the defined
-> functions to do so.
->=20
-> Compatibility with OpenSSL 1.0 is kept by defining the corresponding
-> functions when they are not found in the library.
->=20
-> Signed-off-by: Emmanuel Deloget <logout@...260...>
-> ---
->  configure.ac                     |  2 ++
->  src/openvpn/openssl_compat.h     | 31 +++++++++++++++++++++++++++++++
->  src/openvpn/ssl_openssl.c        |  5 ++---
->  src/openvpn/ssl_verify_openssl.c |  2 +-
->  4 files changed, 36 insertions(+), 4 deletions(-)
->=20
-> diff --git a/configure.ac b/configure.ac
-> index 415128c9f8687a53e4a73419f3048d07f66b70cc..789ad08fbaa3b3fc4c95d2b7a=
-22332c0a93aeab4 100644
-> --- a/configure.ac
-> +++ b/configure.ac
-> @@ -903,6 +903,8 @@ if test "${enable_crypto}" =3D "yes" -a "${with_crypt=
-o_library}" =3D "openssl"; then
->  			SSL_CTX_get_default_passwd_cb \
->  			SSL_CTX_get_default_passwd_cb_userdata \
->  			X509_STORE_get0_objects \
-> +			X509_OBJECT_free \
-> +			X509_OBJECT_get_type \
->  		],
->  		,
->  		[]
-> diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h
-> index 016008bc1705a41ee0ee09fecfc0b16b282cede3..458a6adbe2b3fcd5ea63dcea6=
-596cc24315d463c 100644
-> --- a/src/openvpn/openssl_compat.h
-> +++ b/src/openvpn/openssl_compat.h
-> @@ -86,4 +86,35 @@ X509_STORE_get0_objects(X509_STORE *store)
->  }
->  #endif
->=20=20
-> +#if !defined(HAVE_X509_OBJECT_FREE)
-> +/**
-> + * Destroy a X509 object
-> + *
-> + * @param obj                X509 object
-> + */
-> +static inline void
-> +X509_OBJECT_free(X509_OBJECT *obj)
-> +{
-> +    if (obj)
-> +    {
-> +        X509_OBJECT_free_contents(obj);
-> +        OPENSSL_free(obj);
-> +    }
-> +}
-> +#endif
-> +
-> +#if !defined(HAVE_X509_OBJECT_GET_TYPE)
-> +/**
-> + * Get the type of an X509 object
-> + *
-> + * @param obj                X509 object
-> + * @return                   The underlying object type
-> + */
-> +static inline int
-> +X509_OBJECT_get_type(const X509_OBJECT *obj)
-> +{
-> +    return obj ? obj->type : X509_LU_FAIL;
-> +}
-> +#endif
-> +
->  #endif /* OPENSSL_COMPAT_H_ */
-> diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-> index e57de43a748c89ff58ea00abade0b1c317013258..bf0f643f25439f71cbfe71bf5=
-a7e8eb834b0f012 100644
-> --- a/src/openvpn/ssl_openssl.c
-> +++ b/src/openvpn/ssl_openssl.c
-> @@ -905,11 +905,10 @@ backend_tls_ctx_reload_crl(struct tls_root_ctx *ssl=
-_ctx, const char *crl_file,
->      {
->          X509_OBJECT *obj =3D sk_X509_OBJECT_value(objs, i);
->          ASSERT(obj);
-> -        if (obj->type =3D=3D X509_LU_CRL)
-> +        if (X509_OBJECT_get_type(obj) =3D=3D X509_LU_CRL)
->          {
->              sk_X509_OBJECT_delete(objs, i);
-> -            X509_OBJECT_free_contents(obj);
-> -            OPENSSL_free(obj);
-> +            X509_OBJECT_free(obj);
->          }
->      }
->=20=20
-> diff --git a/src/openvpn/ssl_verify_openssl.c b/src/openvpn/ssl_verify_op=
-enssl.c
-> index fabbb0c370b123f54ce4a1eaf5f9650b440f47f8..07975248035b48121d1383b47=
-f40a56042bc7380 100644
-> --- a/src/openvpn/ssl_verify_openssl.c
-> +++ b/src/openvpn/ssl_verify_openssl.c
-> @@ -721,7 +721,7 @@ tls_verify_crl_missing(const struct tls_options *opt)
->      {
->          X509_OBJECT *obj =3D sk_X509_OBJECT_value(objs, i);
->          ASSERT(obj);
-> -        if (obj->type =3D=3D X509_LU_CRL)
-> +        if (X509_OBJECT_get_type(obj) =3D=3D X509_LU_CRL)
->          {
->              return false;
->          }
->=20
+--------------06F9D9F264265C109B47FB0E
+Content-Type: text/plain; charset=UTF-8;
+	name="openvpn_irc_meeting_chatlog_2017-02-22.txt"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment;
+	filename="openvpn_irc_meeting_chatlog_2017-02-22.txt"
 
-ACK
+KDIxOjAxOjU1KSBzeXp6ZXI6IG1lZXRpbmcgdGltZSEKKDIxOjAxOjU3KSBtYXR0b2NrOiBo
+aQooMjE6MDE6NTkpIG1hdHRvY2s6IGh0dHBzOi8vY29tbXVuaXR5Lm9wZW52cG4ubmV0L29w
+ZW52cG4vd2lraS9Ub3BpY3MtMjAxNy0wMi0yMgooMjE6MDI6MDApIHZwbkhlbHBlcjogVGl0
+bGU6IFRvcGljcy0yMDE3LTAyLTIyIOKAkyBPcGVuVlBOIENvbW11bml0eSAoYXQgY29tbXVu
+aXR5Lm9wZW52cG4ubmV0KQooMjE6MDM6MDApIG1hdHRvY2s6IEknbGwgYmUgYmFjayBpbiB+
+NSBtaW5zLCBuZWVkIHRvIGRvIHNvbWV0aGluZyByZWFsIHF1aWNrCigyMTowMzowOCkgY3Jv
+bjJfOiBzby4uLiBpcyB0aGVyZSBhbnl0aGluZyB3ZSBjYW4gZGlzY3VzcyB3aXRob3V0IGRh
+em8/CigyMTowMzoyNikgc3l6emVyOiB0aGUgb3BlbnNzbCBwYXRjaGVzPwooMjE6MDM6NTcp
+IHN5enplcjogSSdtIGFwcGx5aW5nIHRoZW0gdG8gbXkgbG9jYWwgdHJlZSBub3csIGdldHRp
+bmcgcmVhZHkgcmV2aWV3CigyMTowNDoxMCkgY3JvbjJfOiB3ZWxsLCB0aGUgdHdvIG9mIHVz
+IGFyZSBpbiBhZ3JlZW1lbnQgYW55d2F5ICgiaW4gMi40IHRoZXkgZ28iKSwgYnV0IEknZCBs
+aWtlIHRvIGhlYXIgZGF6bydzIHRob3VnaHRzCigyMTowNDoyOSkgY3JvbjJfOiBidXQgeW91
+IGNhbiBkbyBhIGJpdCBvZiByZXZpZXdpbmcgYW5kIEkgZG8gYSBiaXQgb2YgbWVyZ2luZyA6
+KQooMjE6MTU6MjMpIG1hdHRvY2s6IGJhY2sKKDIxOjE2OjE1KSBld29ybTogSSBhcHBsaWVk
+IHRoZSBvcGVuc3NsIDEuMS4wIHBhdGNoZXMgdG8gbXkgcGFja2FnZS4gQnVpbGRzIGZpbmUg
+YW5kICdtYWtlIHRlc3QnIHN1Y2NlZWRzLgooMjE6MTc6NDEpIGNyb24yXzogd2hpY2ggaXMg
+ZGVmaW5pdGVseSB3ZWxjb21lIHRlc3RpbmcuICBQbGVhc2UgcnVuIG1vcmUgdGVzdHMsIGNv
+bm5lY3RpbmcgdG8gYWN0dWFsIFZQTnMsIHZhcmlvdXMgY2VydCB0eXBlcywgZXRjLiA6LSkK
+KDIxOjIyOjQ1KSBtYXR0b2NrOiBzeXp6ZXI6IGFyZSB5b3UgcmV2aWV3aW5nIHRoZSBvcGVu
+c3NsLTEuMS4wIHBhdGNoZXMgbm93IG9yIGxhdGVyPwooMjE6MjM6MDcpIHN5enplcjogSSdt
+IGRvaW5nIGl0IG5vdywgYXMgbG9uZyBhcyB3ZSBkb24ndCBoYXZlIGFueXRoaW5nIGVsc2Ug
+dG8gZGlzY3VzcwooMjE6MjM6MzApIG1hdHRvY2s6IHdlIGhhdmUgYSBkaXNjdXNzaW9uIHRv
+cGljOiAiSG93IHRvIGRlYWwgd2l0aCAoZ29vZCkgcGF0Y2hlcyB3aXRob3V0IHByb3BlciBh
+dHRyaWJ1dGlvbj8iCigyMToyMzozOSkgbWF0dG9jazogZS5nLiBodHRwczovL2NvbW11bml0
+eS5vcGVudnBuLm5ldC9vcGVudnBuL3RpY2tldC84MjUKKDIxOjIzOjQxKSB2cG5IZWxwZXI6
+IFRpdGxlOiAjODI1IChTZWdmYXVsdCB3aXRoIC0tdGxzLWNyeXB0IG9uIFJIRUw1L0NlbnRP
+UzUpIOKAkyBPcGVuVlBOIENvbW11bml0eSAoYXQgY29tbXVuaXR5Lm9wZW52cG4ubmV0KQoo
+MjE6MjQ6NTYpIHN5enplcjogeWVhaCwgYnV0IHdlIG5lZWQgZGF6by4uLgooMjE6MjQ6NTcp
+IG1hdHRvY2s6IHdlIGRvIGhhdmUgYSBuYW1lIGFuZCBlbWFpbCBhZGRyZXNzIG9uIGZpbGUg
+aW4gTERBUCwgYnV0IHRoZSBjb250cmlidXRvciBtaWdodCBub3Qgd2FudCBoaXMgZnVsbCBu
+YW1lIC8gZW1haWwgcHVibGlzaGVkCigyMToyNToxOCkgbWF0dG9jazogZGlkIGRhem8gc2F5
+IGhlJ2QgYmUgaGVyZT8KKDIxOjI1OjQxKSBzeXp6ZXI6IHllYWgsIEkgd2FzIGd1ZXNzaW5n
+IHRoYXQgaXQgd291bGQgYmUgaW4gdHJhYyBzb21ld2hlcmUsIGJ1dCBJIGRpZG4ndCB0aGlu
+ayBpdCB3YXMgYSBnb29kIHBsYW4gdG8ganVzdCBkZWNpZGUgdG8gdXNlIHRob3NlCigyMToy
+NTo0OCkgc3l6emVyOiB5ZWFoLCBidXQgYSBiaXQgbGF0ZXIKKDIxOjU5OjI1KSBzbHlwa25v
+dCBbfnNseXBrbm90QHVuYWZmaWxpYXRlZC9rZXR0bGVjYWxsaW5nXSDDqCBlbnRyYXRvIG5l
+bGxhIHN0YW56YS4KKDIyOjA1OjEzKSBtYXR0b2NrOiBmcm9tIG15IFBvViB0aGlzIGlzIHBy
+b2JhYmx5IHRoZSBtb3N0IHNpbGVudCBtZWV0aW5nIGV2ZXIKKDIyOjA1OjQ3KSBjaGlwaXRz
+aW5lIFt+Y2hpcGl0c2luQDE5NS42NC4yMDguMjM3XSDDqCBlbnRyYXRvIG5lbGxhIHN0YW56
+YS4KKDIyOjA2OjI5KSBjcm9uMl86IGRlZmluaXRlbHkgbm90IGEgdmVyeSBoZWF0ZWQgZGlz
+Y3Vzc2lvbiA6KQooMjI6MDY6MzUpIHN5enplcjogeW91IGp1c3QgL2lnbm9yZWQgZXZlcnlv
+bmUgOnAKKDIyOjA2OjQ2KSBjcm9uMl86IHNvLCB3aGF0IGhhdmUgeW91IGRlY2lkZWQ/Cigy
+MjoxMDowMCkgKioqZGF6byBpcyBoZXJlCigyMjoxMDoxMykgY3JvbjJfOiBkYXpvOiB3ZWxj
+b21lISAgc28gbGV0J3Mgc3RhcnQgOikKKDIyOjEwOjE5KSBtYXR0b2NrOiBoaSBkYXpvIQoo
+MjI6MTA6MjIpIGRhem86IGhleSEKKDIyOjExOjI3KSAqKipkYXpvIHBva2VzIGF0ICM4MjUK
+KDIyOjEyOjE4KSBzeXp6ZXI6IHllYWgsIHNvIEkgYWN0dWFsbHkgdGhpbmsgd2UgYWxsIG1v
+cmUtb3ItbGVzcyBhZ3JlZQooMjI6MTI6MjkpIHN5enplcjogYnV0IHdlIG5lZWQgdG8gZmln
+dXJlIG91dCB3aGF0IHRoZSBleGFjdCBwb2xpY3kgaXMgZ29pbmcgdG8gYmUKKDIyOjEyOjM0
+KSBjcm9uMl86IHdoYXQgd2FzIHRoZSBxdWVzdGlvbiBhZ2Fpbj8KKDIyOjEyOjQ5KSBzeXp6
+ZXI6ICJ3aGF0IHRvIGRvIHdpdGggbm90IHByb3Blcmx5IGF0dHJpYnV0ZWQgcGF0Y2hlcz8i
+CigyMjoxMjo0OSkgZGF6bzogcGF0Y2ggYWNjZXB0YW5jZSBwb2xpY3kgLi4uIGZ1bGwgbmFt
+ZSArIGVtYWlsCigyMjoxMjo1NykgY3JvbjJfOiBvawooMjI6MTM6NTQpIHNseXBrbm90OiB5
+b3UgbWFuYWdlIHRvIHByaXplIG15IG5hbWUgb3V0IG9mIG1lIC4uIHNvIGkgdGhpbmsgaXQg
+c2hvdWxkIGFwcGx5IDopCigyMjoxNTowMSkgZGF6bzogaGVoZSA6KSAgWWVzLCBJIGRvIG5v
+dCB3YW50IHRvIGRldmlhdGUgZnJvbSB0aGlzIGF0IGFsbCAuLi4uIHdlIGFyZSB3b3JraW5n
+IG9uIGEgc2VjdXJpdHkgcmVsYXRlZCBwcm9kdWN0LCBzbyBoYXZpbmcgcHJvcGVyIGNoYW5u
+ZWxzIHRvIGdldCBpbiB0b3VjaCBhbmQgdG8ga25vdyB3aG9tIGNvbnRyaWJ1dGVzIGlzIHZh
+bHVhYmxlIGZvciB0aGUgcHJvamVjdCBhcyB3ZWxsCigyMjoxNTo0MykgZGF6bzogcGx1cyBp
+dCBtYWtlcyBpdCBsZXNzIGludGVyZXN0aW5nIGZvciB0aG9zZSAiZHJvcCduJ3J1biIgcGF0
+Y2hlcyAuLi4gYSBjb250cmlidXRpb24gc2hvdWxkIGhhdmUgYSByZWFzb25hYmxlIG93bmVy
+LCBJTUhPCigyMjoxNjoxMSkgc2x5cGtub3Q6ICsxCigyMjoxNjoxMikgY3JvbjJfOiBzbyBo
+b3cgc2hvdWxkIHdlIGhhbmRsZSAjODI1LCB3aGljaCBpcyBhIGJ1Z2ZpeCAoYW5kIG5vdCBs
+aWtlIGEgImhlcmUncyA1MDAwIGxpbmVzIG9mIG5ldyBmZWF0dXJlcywgdGhhbmtzLCBieWUi
+KT8KKDIyOjE3OjM0KSBkYXpvOiBJZiBzaW1peCBkb2Vzbid0IHJlc3BvbmQgd2l0aGluIGEg
+cmVhc29uYWJsZSB0aW1lIEkgdGhpbmsgb25lIG9mIHVzIGNvcmUgcGVvcGxlIGNvdWxkIHRh
+a2UgdGhlIG93bmVyc2hpcAooMjI6MTc6NDEpIGNoaXBpdHNpbmU6IHdoYXQgaWYgd2UgcHV0
+IHRyYWMgbnVtYmVyIHRvIGNvbW1pdCBtZXNzYWdlID8KKDIyOjE3OjU2KSBzeXp6ZXI6IGNo
+aXBpdHNpbmU6IGl0J3MgYWxyZWFkeSB0aGVyZSA6KQooMjI6MTc6NTkpIGRhem86IHRoYXQn
+cyBzdGlsbCBub3QgYSByZWFsIHJlZmVyZW5jZSB0byBhIGNvbnRyaWJ1dG9yCigyMjoxODox
+MCkgZGF6bzogaXQncyBhIHJlZmVyZW5jZSB0byBhIGNvbnRyaWJ1dElPTgooMjI6MTk6MzYp
+IHN5enplcjogc28sIHdlIHdhaXQgYSBmZXcgZGF5cywgYW5kIG90aGVyd2lzZSBJIHJld3Jp
+dGUgdGhlIGNvbW1pdCBtZXNzYWdlLCBzdGF0aW5nICd0aGlzIHBhdGNoIGlzIGJhc2VkIG9u
+IHRoZSBwYXRjaCBmcm9tIHRyYWMgIzgyNSIsIGFuZCBhZGQgbXkgb3duIHNpZ25lZC1vZmYt
+YnkgbGluZT8KKDIyOjE5OjQ1KSBkYXpvOiAobG9va2luZyBhdCB0aGUgcGF0Y2ggLi4uIHRo
+YXQgbWF5IGFjdHVhbGx5IHJlc29sdmUgYW5vdGhlciBHQ0Mgb3B0aW1pemF0aW9uIGJ1ZyAu
+Li4uIGJlY2F1c2UgIGt0LmNpcGhlciAgaXMgYWNjZXNzZWQgKmJlZm9yZSogJ2lmICgha3Qu
+Y2lwaGVyKScsIHRoZSBjb21waWxlciBtYXkgY2hvb3NlIHRvIG9wdGltaXplIG91dCB0aGUg
+aWYoKSAuLi4uIHRoZSBrZXJuZWwgaGFkIGEgc2ltaWxhciBuYXN0eSBzZWN1cml0eSBidWcg
+YSBmZXcgeWVhcnMgYWdvKQooMjI6MjM6MjcpIGRhem86IHN5enplcisrCigyMjoyMzoyNykg
+Y3JvbjJfOiBzeXp6ZXI6IHNvdW5kcyBsaWtlIGl0CigyMjoyMzoyNykgY3JvbjJfOiBkYXpv
+OiB3ZWxsLCBpdCBkb2Vzbid0IG5lZWQgdG8gb3B0aW1pemllIG91dCB0aGUgY2hlY2sgLSBp
+ZiBrdC5jaXBoZXIgaXMgbnVsbCwgaXQgd2lsbCBjcmFzaCBiZWZvcmUgcmVhY2hpbmcgdGhl
+IGlmKCkuLi4gOikKKDIyOjI0OjI4KSBzbHlwa25vdDogaG93IGFib3V0IG1ha2luZyByZXF1
+aXJlbWVudHMgY2xlYXIgaW4gdGhpcyA6IGh0dHBzOi8vY29tbXVuaXR5Lm9wZW52cG4ubmV0
+L29wZW52cG4vd2lraS9Db250cmlidXRpbmcjTWFraW5nZmVhdHVyZXJlcXVlc3RzCigyMjoy
+NDoyOSkgdnBuSGVscGVyOiBUaXRsZTogQ29udHJpYnV0aW5nIOKAkyBPcGVuVlBOIENvbW11
+bml0eSAoYXQgY29tbXVuaXR5Lm9wZW52cG4ubmV0KQooMjI6MjQ6NDUpIHNseXBrbm90OiBv
+ciBhdCBsZWFzdCBhIGxpdHRsZSBtb3JlIGNsZWFyIC4uCigyMjoyNTo0MCkgc2x5cGtub3Q6
+IGkgY2FuJ3QgZXZlbiBwcm9ncmFtIGJ1dCBpIGhhdmUgcmVhZCB0aGF0IGEgY291cGxlIG9m
+IHRpbWVzCigyMjoyNzoyOCkgZGF6bzogY3JvbjJfOiBhaGggcmlnaHQhICB3ZSBhc3NpZ24g
+c29tZXRoaW5nIHRvIHRoYXQgKGx2YWx1ZSkuLi4uIGluIHRoZSBrZXJuZWwgaXNzdWUsIHRo
+ZSB2YXJpYWJsZSBjYXVzZWQgdGhpcyB3YXMgYSBydmFsdWUKKDIyOjI3OjQ3KSBkYXpvOiBz
+bHlwa25vdDogYWdyZWVkCigyMjoyOTozMCkgc3l6emVyOiBvaywgc28gd2UncmUgY2xlYXIg
+b24gdGhlICdwYXRjaC1hbmQtcnVuJy4gIHdoYXQgYWJvdXQgcGVvcGxlIHRoYXQgd2FudCB0
+byByZW1haW4gYW5vbnltb3VzPwooMjI6Mjk6NTEpIHN5enplcjogb3IgZG8gd2UgdGFja2xl
+IHRoYXQgb25jZSBpdCBiZWNvbWVzIGEgcmVhbCBwcm9ibGVtPyAgIHRoYXQncyBtYXliZSBi
+ZXR0ZXIKKDIyOjI5OjUyKSBjaGlwaXRzaW5lOiBJIGtpbmRhIGV4cGVjdGVkIHRoYXQgcXVl
+c3Rpb24gKSkKKDIyOjMyOjU4KSBzbHlwa25vdDogbGl0dGxlIHBhdGNoZXMgY2FuIGp1c3Qg
+YmUgcmUtb3duZWQgLi4geW91IGFsbCBhcHBlYXIgaGFwcHkgYWJvdXQgdGhlICM4MjUgcGF0
+Y2ggLi4gYnV0IGFsbCB0aGUgc3NsLTEuMSB3b3JrID8/Pz8KKDIyOjMzOjE4KSBzbHlwa25v
+dDogaWYgdGhhdCB3YXMgYW5vbiAuLiB3aGF0IHRoZW4gPwooMjI6MzM6MTkpIGNyb24yXzog
+c2x5cGtub3Q6IGh1aD8KKDIyOjMzOjMwKSBjcm9uMl86IHdlbGwsIGlmIHRoYXQgd2FzIGFu
+b24sIHdlJ2Qgbm90IHRha2UgaXQgLSBlYXN5CigyMjozNDoxMCkgc2x5cGtub3Q6IG9wZW5z
+c2wtMS4xIHBhdGNoZXMgZnJvbSBFbW1hbnVlbAooMjI6MzQ6NTApIGNyb24yXzogdGhleSBh
+cmUgbm90LCBzbyB0aGlzIGlzIHNvbWV3aGF0IGh5cG90aGV0aWNhbCAtIGJ1dCBpZiBzb21l
+b25lIHNlbmRzIGEgbGFyZ2UgaGl0LWFuZC1ydW4gY2hhbmdlLCBpdCdzIHF1aXRlIGxpa2Vs
+eSB0aGF0IHdlJ2xsIGp1c3QgaWdub3JlIGl0CigyMjozNTowMikgc2x5cGtub3Q6IG9rIDop
+CigyMjozNTozMikgbWF0dG9jazogeWVhaCwgd2UgcHJvYmFibHkgZG9uJ3Qgd2FudCB0byBt
+YWludGFpbiBsYXJnZSBoaXQtYW5kLXJ1biBwYXRjaGVzIG91cnNlbHZlcwooMjI6MzY6MDMp
+IG1hdHRvY2s6IGl0J3MgZ2V0dGluZyBxdWl0ZSBsYXRlCigyMjozNjoyMykgbWF0dG9jazog
+ZGlkIHdlIGRpc2N1c3MgMi40LjEgcHJvcGVybHk/IAooMjI6MzY6MzEpIGNyb24yXzogdmVy
+eSBxdWlldGx5IDotKQooMjI6MzY6MzUpIG1hdHRvY2s6IG9rIDopCigyMjozNjo0MCkgY3Jv
+bjJfOiB0aGUgcXVlc3Rpb24gaXMgIndoZW4gZG8gd2UgcmVsZWFzZSwgd2hhdCBpcyBtaXNz
+aW5nIgooMjI6MzY6NDQpIG1hdHRvY2s6IGV4YWN0bHkKKDIyOjM2OjQ5KSBzeXp6ZXI6IG9w
+ZW5zc2wtMS4xIHdvdWxkIGJlIG5pY2UKKDIyOjM3OjA1KSBtYXR0b2NrOiB0aGVyZSdzIG5v
+dGhpbmcgcmVhbGx5IHVyZ2VudCBpbiB0aGUgcGlwZWxpbmUsIHNvIHdlIGNvdWxkIHdhaXQg
+YSBiaXQsIHJpZ2h0PwooMjI6Mzc6MDcpIGNyb24yXzogYXMgZmFyIGFzIEkgdW5kZXJzdGFu
+ZCBTZWx2YSwgYSBidWdmaXggZm9yIHRoZSBncm91cCBoYW5kbGluZyBpbiB0aGUgR1VJIG5l
+ZWRzIHRvIGJlIG1lcmdlZAooMjI6Mzc6MTApIHN5enplcjogYnV0IEkga25vdyBvbiB3aG9t
+IHRoYXQncyBibG9ja2luZy4uLgooMjI6Mzc6MzgpIGNyb24yXzogdGhlcmUncyBhIG51bWJl
+ciBvZiBidWdmaXhlcyBpbiByZWxlYXNlLzIuNCBhbHJlYWR5LCBhbW9uZyB0aGVtIHRoZSBz
+eXp6ZXItYnJva2Utb3B0aW9uLWhhc2hpbmcgYnVnZml4CigyMjozODowNykgc3l6emVyOiB5
+ZWFoLCBxdWl0ZSBzb21lICdlbnRlcnByaXNlIHVzZXJzJyBzZWVtIHRvIGJlIHJ1bm5pbmcg
+aW50byB0aGUgZG9tYWluIGdyb3VwIHRoaW5nCigyMjozODoxMCkgY3JvbjJfOiBJIHRoaW5r
+IHdlIHNob3VsZCBkbyBhIDIuNC4xIGZhaXJseSBzb29uICgidHdvIHdlZWtzIi1pc2gpCigy
+MjozODoxOSkgc2x5cGtub3Q6IHBlcnNvbmFsbHkgLi4gb3BlbnNzbC0xLjEgc291bmRzIG1v
+cmUgbGlrZSBvcGVudnBuLTIuNSB0byBtZSAuLgooMjI6Mzg6MjcpIGNyb24yXzogc2x5cGtu
+b3Q6IGRpZmZlcmVudCB0b3BpYwooMjI6Mzg6NDYpIGRhem86IGFjdHVhbGx5IHdlIG5lZWQg
+b3BlbnNzbC0xLjEgaW50byAyLjQgLi4uIGNhbid0IHdhaXQgZm9yIDIuNSB1bmxlc3MgdGhh
+dCBpcyByZWxlYXNlZCBpbiBhIGZldyBtb250aHMKKDIyOjM4OjUxKSBtYXR0b2NrOiB3ZSBk
+b24ndCBuZWVkIHRvIGJ1bmRsZSBPcGVuVlBOIDIuNCB3aXRoIE9wZW5TU0wgMS4xLngKKDIy
+OjM4OjU3KSBjcm9uMl86IGRhem86IGRpZmZlcmVudCB0b3BpYyA6KQooMjI6Mzk6MTApIGRh
+em86IHdoYXQgd2Ugd2FudCBpbiAyLjQuMSByZWxlYXNlPwooMjI6Mzk6MTcpIG1hdHRvY2s6
+IGJ1dCB3ZSBjYW4gaGF2ZSBzdXBwb3J0IGZvciBPcGVuU1NMIDEuMS54IGluIE9wZW5WUE4g
+Mi40LngKKDIyOjM5OjI4KSBjcm9uMl86IChidXQgYWN0dWFsbHkgdGhhdCBzdGF0ZW1lbnQg
+ZnJvbSBkYXpvIHdhcyBpbiBzb2x2aW5nIHRoZSBvcGVuc3NsLTEuMSB0b3BpYyBhdCBoYW5k
+ICJkbyB3ZSB3YW50IHRoaXMgaW4gcmVsZWFzZS8yLjQgb3Igbm90PyIgbmljZWx5IDotKSAp
+CigyMjozOTozMCkgZGF6bzogSSBzYXkgd2Ugc2hvdWxkIGhhdmUgb3BlbnNzbCAxLjEgaW50
+byB2Mi40LjEKKDIyOjM5OjMxKSBtYXR0b2NrOiAoYXNzdW1pbmcgdGhlIHBhdGNoIGRvZXMg
+bm90IGJyZWFrIE9wZW5TU0wgMS4wLjAgc3VwcG9ydCA6KSApCigyMjozOTo0OCkgbWF0dG9j
+azogc29ycnkgMS4wLjEKKDIyOjM5OjQ5KSAqKipkYXpvIGJyYgooMjI6Mzk6NTApIHN5enpl
+cjogbWF0dG9jazogbm8sIGl0IHNob3VsZG4ndAooMjI6Mzk6NTYpIGNyb24yXzogZGF6bzog
+SSdkIHB1dCB0aGF0IGluIDIuNC4yLCBiZWNhdXNlIG90aGVyd2lzZSAyLjQuMSB3aWxsIGJl
+IGRlbGF5ZWQgdG9vIG11Y2gKKDIyOjM5OjU5KSBzeXp6ZXI6IEkgdGVzdGVkIGFnYWluc3Qg
+MC45LjgtMS4wLjIgYWxyZWFkeSA6KQooMjI6NDA6NTYpIHN5enplcjogbGV0J3Mgc2VlIGhv
+dyBtdWNoIHRpbWUgSSBuZWVkIHRvIEFDSyB0aGUgcGF0Y2ggc2V0LCBhbmQgdGhlbiB5b3Ug
+YW5kIGRhem8gY2FuIGRlY2lkZSBpZiB5b3Ugd2FudCB0byBpbmNsdWRlIGl0CigyMjo0MTow
+NSkgY3JvbjJfOiB3ZWxsLCB0byBjbGFyaWZ5IG15IHN0YW5jZSBvbiB0aGUgMS4xIHBhdGNo
+IHNldAooMjI6NDE6MjUpIGNyb24yXzogSSB0aGluayB3ZSBzaG91bGQganVzdCBtZXJnZSBp
+dCBpbnRvIHJlbGVhc2UvMi40LCBhcyBlYWNoIGluZGl2aWR1YWwgcGF0Y2ggc3RhbmRzIG9u
+IGl0cyBvd24sIGlzIG5pY2VseSB0ZXN0YWJsZQooMjI6NDE6NDQpIGNyb24yXzogYnV0IEkg
+d291bGQgbm90IHdhbnQgdG8gaG9sZCB1cCAyLjQuMSByZWxlYXNlIHVudGlsIHRoZSAxLjEg
+cGF0Y2ggc2V0IGlzIGNvbXBsZXRlLCB0aGF0IGlzICJ3ZSBkbyBzdXBwb3J0IG9wZW5zc2wg
+MS4xIgooMjI6NDE6NTIpIHN5enplcjogZnVsbHkgYWdyZWUKKDIyOjQyOjE3KSBzbHlwa25v
+dDogb2sKKDIyOjQyOjU2KSBzbHlwa25vdDogbm8gbm8gLi4gY2hhbmdlZCBteSBtaW5kIC4u
+IHNvcnJ5CigyMjo0MzoxOSkgc2x5cGtub3Q6IGVyIC4uIG1heWJlCigyMjo0Mzo1NSkgY3Jv
+bjJfOiBzeXp6ZXI6IEkgYXNzdW1lIHlvdSBoYXZlIHRlc3RzIHRoYXQgY292ZXIgImFsbW9z
+dCBhbGwiIG9mIHRoZSBTU0wgY29kZSBwYXRocz8KKDIyOjQ0OjE3KSBjcm9uMl86ICh3ZWxs
+LCBzL2Fzc3VtZS9zZWVtIHRvIHJlbWVtYmVyLykKKDIyOjQ0OjU1KSBzeXp6ZXI6IGNyb24y
+XzogeWVhaCwgdGhvdWdoIG1vc3RseSBtYW51YWxseSBmb3Igb3BlbnNzbAooMjI6NDU6MDQp
+IHN5enplcjogSSBoYXZlIGF1dG9tYXRlZCB0ZXN0cyBmb3IgbWJlZHRscwooMjI6NDU6MjEp
+IHN5enplcjogc2luY2UgdGhlIGJlaGF2aW91ciBpcyBzbGlnaHRseSBkaWZmZXJlbnQsIEkg
+Y2FuJ3QganVzdCB1c2UgdGhvc2UKKDIyOjQ1OjUwKSBzeXp6ZXI6IGJ1dCBiZWNhdXNlIHRo
+aXMgcGF0Y2ggc2V0IGlzIHNvIG5pY2VseSBzcGxpdCB1cCwgSSBqdXN0IG1hbnVhbGx5IGV4
+ZXJjaXNlIHRoZSByZWxldmFudCBjb2RlIHBhdGhzIHBlciBwYXRjaAooMjI6NDY6MDUpIGNy
+b24yXzogZXZlbiBiZXR0ZXIgOikKKDIyOjQ2OjU1KSBjcm9uMl86IHNvIEkgaGF2ZSBhIGxv
+dCBvZiB0cnVzdCBpbiB0aGVzZSBBQ0tzICAocGx1cyBld29ybSBhbHJlYWR5IHRlc3RzIHRo
+ZSBmdWxsIGJ1aWxkcykKKDIyOjQ4OjQ1KSBjcm9uMl86IGRhem86IGlmIHlvdSBjb3VsZCBq
+dXN0IHNheSAiSSBhZ3JlZSwgYW5kIGxldCdzIGRvIDIuNC4xIGluIGFib3V0IHR3byB3ZWVr
+cyIgd2UncmUgZG9uZSBmb3IgdG9kYXkuLi4gKmJhaXQqCigyMjo1Mjo0MykgZGF6bzogY3Jv
+bjJfOiBva2F5LCAyLjQuMiBpcyBva2F5CigyMjo1Mjo1NykgZGF6bzogb2ghCigyMjo1Mzow
+NSkgZGF6bzogIkkgYWdyZWUsIGFuZCBsZXQncyBkbyAyLjQuMSBpbiBhYm91dCB0d28gd2Vl
+a3MiCigyMjo1MzoxMikgY3JvbjJfOiAqZyoKKDIyOjUzOjE1KSBtYXR0b2NrOiArMQooMjI6
+NTM6NDApIGNyb24yXzogSSdsbCBnbyBhbmQgc2VlIHRoYXQgSSBjYW4gcmV2aWV3IFNlbHZh
+J3MgR1VJLXJlbGF0ZWQgcGF0Y2hlcywgYW5kIHdpdGggIzgyNSB3ZSBoYXZlIHNvbWV0aGlu
+ZyB1c2VmdWwgdG8gc2hpcAooMjI6NTU6MjgpIGRhem86IHRoZXJlIGlzIGFub3RoZXIgcGF0
+Y2ggd2hpY2ggbmVlZHMgdG8gYmUgbG9va2VkIGF0IGFnYWluIC4uLiB0aGUgYXV0aC1ub2Nh
+Y2hlICsgYXV0aC10b2tlbiAuLi4gb3JkZXggaXMgcXVpdGUgY2xvc2UsIGJ1dCB0aGVyZSBh
+cmUgc29tZSBjb3JuZXIgY2FzZXMgSSdtIGRpc2NvdmVyaW5nIHdoZW4gdGVzdGluZyBpdAoo
+MjI6NTU6MzYpIGRhem86IGJ1dCB0aGF0IGlzIDIuNC4yIG1hdGVyaWFsCigyMjo1NTo0OCkg
+Y3JvbjJfOiBsZXQncyBzZWUgd2hhdCB5b3UgdHdvIGNhbiBhY2hpZXZlIGluIHR3byB3ZWVr
+cyA6KQooMjI6NTU6NTMpIGRhem86IGhlaCA6KQooMjI6NTY6MjApIG1hdHRvY2s6IG1rYXks
+IGVuZCBvZiBtZWV0aW5nIEknZCBzYXkKKDIyOjU2OjM4KSBtYXR0b2NrOiBJJ2xsIHNlbmQg
+dGhlIHN1bW1hcnkgYW5kIHRoZW4gaGl0IHRoZSBzYWNrCigyMjo1Njo0MSkgbWF0dG9jazog
+Z2cKKDIyOjU2OjQ1KSBjcm9uMl86IGdvb2QgbmlnaHQhCigyMjo1Njo0NykgZGF6bzogOikK
 
--Steffan
+--------------06F9D9F264265C109B47FB0E
+Content-Type: application/pgp-keys;
+ name="0x40864578.asc"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: attachment;
+ filename="0x40864578.asc"
 
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+Version: GnuPG v2
 
---hRAXx39pon6xbrKWVhXetDps8XGhdAbwO--
+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
+XuwT7RpGDZ6jBfphYQ=3D=3D
+=3DFKLE
+-----END PGP PUBLIC KEY BLOCK-----
 
---xwvxsifrxrDeCtD00R5Gt9XVUrk1dwSgt
+--------------06F9D9F264265C109B47FB0E--
+
+--gnpEwE5rcEmtwxfDbdsDbDE84Ddj5oXnP
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -165,14 +347,14 @@ Content-Disposition: attachment; filename="signature.asc"
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQEcBAEBCAAGBQJYrfmDAAoJEJgCyj0AftKIUJ8H/iZSst5V6UAdIOwwfFG5Thyn
-B67irQQr9mX0YTvSwM/+DVT9NoZhsXwxF4ZHmZl6YYvVmsNDn0O52wSSavkMmvKp
-zwF2soDoU3dGo/w3gptBGba82LiPAnKJc79h9FiW/of6+7Zr3ExqMMzPuZj4X4dx
-emjBjKOic4eMWT3xpBQgqcTlT/+f/jDD9Wi/uRo09kHKLhjZRDvp1iD7e/hye3C3
-/B8u00Ojmvz9cuRMVwVY1+uCZhRcIK/rGnucjXdXrvrPGrJIb47MDw7SOXY5czuR
-FRsM0THPiq6JOCCSR6fqjRi8M+HS6EKau7VKFg/t1pTIJa0/Bx8FDf8pAYhpe+o=
-=uN/u
+iQEcBAEBCAAGBQJYrftuAAoJEClYTZ9AhkV4Z9gH/1iDVeDFfMd0X/cUKNKde5pe
+AFRe9Yfoe5Vh1TvmoY5sR2PuT9EwmsPjlDG27yDGDNVfB1g/n96FF7qn2yW2zo5D
+fId07RSfHlZRuyqjVqVjL08B9G90ACaDjx3oRt0kdB52X6Pvkx0N+ZBMErkDQxNq
+WF7brqxH1LmCo9uDUa4wFOutYLknTt66VFIuqD1sYAgSaeNChWCHaFeoWDA6yP3D
+aU78WbptZ2EZ6qZxxD8W5ucrprIzY7F1anK1nph9hkGaP91dLNcpfOuUForzoWc4
+4Z3rNV35XD56iH1nkQT8RvUCr7jROC7tHJsv1eWyJZa8JOkKmb1GdgDeK71U3vU=
+=ef0Y
 -----END PGP SIGNATURE-----
 
---xwvxsifrxrDeCtD00R5Gt9XVUrk1dwSgt--
+--gnpEwE5rcEmtwxfDbdsDbDE84Ddj5oXnP--
 
