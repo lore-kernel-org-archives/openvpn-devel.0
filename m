@@ -1,15 +1,15 @@
-References: <345db0ac-f6e8-8490-a80a-ffbd81972c07@...1856...>
-	<20170221211205.GF93896@...1296...>
+References: <20170213201758.0a04ecfa@...1799...>
+	<20170213193338.GV93896@...1296...> <20170213204947.10458306@...2245...>
+	<5b9e3a6f-f317-6b71-3cc9-7537c56b0137@...2080...>
 From: David Sommerseth <openvpn@...2080...>
-Message-ID: <250998c4-9b20-dcc0-90eb-d432a911e7ba@...2080...>
-Date: Wed, 22 Feb 2017 02:21:35 +0100
+Message-ID: <1b9b01a9-181d-7c7d-edd5-576fd337a3e4@...2080...>
+Date: Wed, 22 Feb 2017 02:30:30 +0100
 MIME-Version: 1.0
-In-Reply-To: <20170221211205.GF93896@...1296...>
+In-Reply-To: <5b9e3a6f-f317-6b71-3cc9-7537c56b0137@...2080...>
 Content-Type: multipart/signed; micalg=pgp-sha256;
 	protocol="application/pgp-signature";
-	boundary="N5pVlmgxEp3UJ7MuJrJjNlx7DiNqBjVC8"
-Subject: Re: [Openvpn-devel] [PATCH] Fix segfault when using crypto lib
- without AES-256-CTR or SHA256
+	boundary="63pxckdUNmoiuetVmpa0WgxH49nuH5tvm"
+Subject: Re: [Openvpn-devel] build against openssl 1.1.0
 Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -19,61 +19,46 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>, Steffan Karger <steffan@...1856...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---N5pVlmgxEp3UJ7MuJrJjNlx7DiNqBjVC8
-Content-Type: multipart/mixed; boundary="46UAJmvigOu87C87vTCEvm62nlb34jSAT";
+--63pxckdUNmoiuetVmpa0WgxH49nuH5tvm
+Content-Type: multipart/mixed; boundary="m5LuE2rg1hmv2HKv9oIBPjNPxo8K94hqg";
 	protected-headers="v1"
 From: David Sommerseth <openvpn@...2080...>
 Reply-To: openvpn-devel@lists.sourceforge.net
-To: Gert Doering <gert@...1296...>, Steffan Karger <steffan@...1856...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-Message-ID: <250998c4-9b20-dcc0-90eb-d432a911e7ba@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH] Fix segfault when using crypto lib
-	without AES-256-CTR or SHA256
-References: <345db0ac-f6e8-8490-a80a-ffbd81972c07@...1856...>
-	<20170221211205.GF93896@...1296...>
-In-Reply-To: <20170221211205.GF93896@...1296...>
+To: openvpn-devel@lists.sourceforge.net
+Message-ID: <1b9b01a9-181d-7c7d-edd5-576fd337a3e4@...2080...>
+Subject: Re: [Openvpn-devel] build against openssl 1.1.0
+References: <20170213201758.0a04ecfa@...1799...>
+	<20170213193338.GV93896@...1296...> <20170213204947.10458306@...2245...>
+	<5b9e3a6f-f317-6b71-3cc9-7537c56b0137@...2080...>
+In-Reply-To: <5b9e3a6f-f317-6b71-3cc9-7537c56b0137@...2080...>
 
---46UAJmvigOu87C87vTCEvm62nlb34jSAT
+--m5LuE2rg1hmv2HKv9oIBPjNPxo8K94hqg
 Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
 
-On 21/02/17 22:12, Gert Doering wrote:
-> Hi,
+On 13/02/17 21:16, David Sommerseth wrote:
+> On 13/02/17 20:50, Christian Hesse wrote:
+>> And a lot more has to be done... There's a long list of packages to be
+>> fixed. Sadly openssl developers do not care about ABI and API stability
+>> or compatibility. :(
 >=20
-> On Tue, Feb 21, 2017 at 08:42:57PM +0100, Steffan Karger wrote:
->> ACK to the attached patch.
+> I do understand the frustration ... but lets be fair too.  OpenSSL v1.1
+> is considered a major upgrade from v1.0 and they don't guarantee API/ABI
+> stability across major upgrades.
 >=20
->> >From d97f526a2ddbf2abe60a64260601ebd742fc00cc Mon Sep 17 00:00:00 2001
->> From: "Simon (simix)" <via-trac>
->=20
-> All previous commits (I'm aware of) carry a valid e-mail address, and
-> most of them have a full name for the author.
->=20
-> Do we have a policy how to handle patches with missing author info?
+> And the v1.1 API does indeed try to clean up a lot of the API mess and
+> confusions.  So it is a move in the right direction.  I attended an
+> OpenSSL v1.1 talk at devconf.cz in the end of January this year, I'll
+> try to dig up the slides from Tomas Mraz who had the talk.  It was quite
+> informative why it was needed to break several APIs in v1.1.
 
-I see no reason at all why we should not give proper credit with full
-name.  And we want to be able to reach out to people if there are issues
-we can't figure out.  And since I'm one who likes consistency, I think
-the policy should be the same for both large as well as small patches.
+Finally!
 
-If someone have issues with that they can get in touch with Samuli or me
-directly, as we are employed by OpenVPN Technologies.  Then we will sort
-out the details and figure out who will get the credit in the end.
-
-And we should see the Signed-off-by (SoB) line as well.  This carries
-more importance if there are legal issues later on (intellectual
-property issues, copyright infringements, etc).  The SoB line basically
-indicates that "Yes, I am allowed to share this contribution for
-inclusion".  The OpenVPN project is far to big to be ignorant to these
-possible challenges.  And we never knows whom will be a victim for the
-next patent troll.
-
-With that said, I am far more relaxed to the SoB when it comes to
-documentation and text snippets (unless it is a massive contribution).
+Here's a video of the presentation:
+<https://www.youtube.com/watch?v=3DRTRuXW93rqk>
 
 
 --=20
@@ -84,9 +69,9 @@ OpenVPN Technologies, Inc
 
 
 
---46UAJmvigOu87C87vTCEvm62nlb34jSAT--
+--m5LuE2rg1hmv2HKv9oIBPjNPxo8K94hqg--
 
---N5pVlmgxEp3UJ7MuJrJjNlx7DiNqBjVC8
+--63pxckdUNmoiuetVmpa0WgxH49nuH5tvm
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -94,20 +79,20 @@ Content-Disposition: attachment; filename="signature.asc"
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBCAAGBQJYrOenAAoJEIbPlEyWcf3yPwUQALpJPGQ/1FFUJXqmIcalc9mr
-ehe3tmGymcUTIvo58kWa43oUYerQavyo8DnRGzSls1o90o5o/pgE3v7z0uT26+fo
-AtLjVf5WLDN5VACpxINDM1tonVm55reNM+HboIRO0RZ3BDMueW+XeA6gXUzca4Fw
-Jo+OL/+8Po0MOnsD1nQpR03ol0kXjMZfsATuUG9ykrLM3o8rUJ9mhJl481eavw3x
-c74we8uPH1/wUjWYfCJV24xEH3yckb5pTIaM/0SIsMbcNZmmgoLMUfybXG3n5pjo
-gDL5OkCnvfpKtk0NNKJrLoop+t/F/+2fnhzVReX2uxOcKYZdD+l37B5nYptPH72u
-d2/haXIfL8WYzvgRddaFquHzl5idZDohrVzQLiwLN4aF04K4ojhRK2mFmouP5C3R
-5kJk8yKe4s+smaGlXKSLnTiKorcPttKIO7YMWMSObt+mCWLggj9nRvzPLjPk+M9Y
-8SHZR8V4QwY9Mb3BcN4ahzOjzFVcyR50ispBhDfhi4pPGkj3TV27JetH5MLr0VdF
-KFEwQAuJgxw55TdpC/Xh6MbRRz1RMNLsT5zIs0Kcac2QbkwGt0Dd++XnMeQRRZ0K
-o9AKObhDDWWgpQvgWCLyGFYaUFNvb2nq1lv6og09doDnM8z/xOJgHMCET6vi5SmX
-cmG8/VnFHCPl1k5UHcTK
-=4pcj
+iQIcBAEBCAAGBQJYrOm2AAoJEIbPlEyWcf3yQtoP/17fmuUg+1cdn3KhzsBLcUer
+DWNRB3ZEEw5gmt8tgly4PGJqsH561KgpjHaA81k3CtB+Kvc0PXSUvcqV0cOMptNv
+nl0dxdpGtd+G4er4bnji10Sc5ptbjbSJ02GmOUykdFh0GjHDDf0eGXGwhGzXXIUy
+cVhbIuxEHSd0SUv0Z3nLvH4eH8dBXHbhOvXCoRUnZdJRTWkr/uKIkwPCN/AXe7P+
+5XbgkxYr+iDljbFjxfj0QfI9XMxnqrHlrw9pJ/Imzy2Ulyc59SJEN/YEc3wAileS
+Nkcroongl7bsCsVwsj+Kpm6lSHaUdnCRGld3xTCHwuL/N+1Ip+ONIispU0Gsik50
+g9ZlZeevW7P0nIbw7xjj04/UPb9nwtPAfnaBsIuGJw5h54ybg1BoorqTvnnkg62y
+ew86lxDnlFAqXONP7UVLzz2Qam+kncDL0i1lGAqpaXTCL/q0YFp+ay7Qg+Vwxkl/
+4D18CDUoKGz1wmrkEaTvDE020HP/44x3XOGb9qPLNI1651qOnCpJ9ryBaYUS11UV
+iMLNbz0wiKWEl5Y+v8M5u/KQOZSc/oUzuA8AJoPlhSNhn+DVfHRFLy/uw48gOSn9
+5jrJ3O5cZOaL+J3WtStNzHIPpZetjBq2sKrZJRZepKCRBu5RW5nnN1TbKbSH7xpr
+BlggXpDZE/tDcKoN4xho
+=v5JI
 -----END PGP SIGNATURE-----
 
---N5pVlmgxEp3UJ7MuJrJjNlx7DiNqBjVC8--
+--63pxckdUNmoiuetVmpa0WgxH49nuH5tvm--
 
