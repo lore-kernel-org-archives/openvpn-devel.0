@@ -1,15 +1,15 @@
 References: <cover.1487368114.git.logout@...260...>
-	<a77187a66affdba318ef70e0e218b69cdad509d1.1487368114.git.logout@...260...>
+	<8e6d66e3a9a40abb3d7c99c48ba59bad1037d0ef.1487368114.git.logout@...260...>
 From: Steffan Karger <steffan@...1856...>
-Message-ID: <a4fccc39-ba53-5e7f-4dbb-7ace3aafefc5@...1856...>
-Date: Wed, 22 Feb 2017 21:27:30 +0100
+Message-ID: <a712429a-10f6-2951-4e71-c9f197fb0c01@...1856...>
+Date: Wed, 22 Feb 2017 21:36:32 +0100
 MIME-Version: 1.0
-In-Reply-To: <a77187a66affdba318ef70e0e218b69cdad509d1.1487368114.git.logout@...260...>
+In-Reply-To: <8e6d66e3a9a40abb3d7c99c48ba59bad1037d0ef.1487368114.git.logout@...260...>
 Content-Type: multipart/signed; micalg=pgp-sha256;
 	protocol="application/pgp-signature";
-	boundary="mS91iTqtHXjnMKbUqGSF1feG2wKjx6w8P"
-Subject: Re: [Openvpn-devel] [RFC PATCH v1 01/15] OpenSSL: don't use direct
- access to the internal of SSL_CTX
+	boundary="fUTSPnCvndxB4FoB0GgvVrCk7Bf2QkWBM"
+Subject: Re: [Openvpn-devel] [RFC PATCH v1 02/15] OpenSSL: don't use direct
+ access to the internal of X509_STORE
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,28 +21,29 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: openvpn-devel@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---mS91iTqtHXjnMKbUqGSF1feG2wKjx6w8P
-Content-Type: multipart/mixed; boundary="GoRP3gHdbSVpuLPhwfwRlPJwpke0BVbnl";
+--fUTSPnCvndxB4FoB0GgvVrCk7Bf2QkWBM
+Content-Type: multipart/mixed; boundary="0IJtaBtB5vX2CT6UXHxskfNIJTx17wsxj";
 	protected-headers="v1"
 From: Steffan Karger <steffan@...1856...>
 To: openvpn-devel@lists.sourceforge.net
-Message-ID: <a4fccc39-ba53-5e7f-4dbb-7ace3aafefc5@...1856...>
-Subject: Re: [Openvpn-devel] [RFC PATCH v1 01/15] OpenSSL: don't use direct
-	access to the internal of SSL_CTX
+Message-ID: <a712429a-10f6-2951-4e71-c9f197fb0c01@...1856...>
+Subject: Re: [Openvpn-devel] [RFC PATCH v1 02/15] OpenSSL: don't use direct
+	access to the internal of X509_STORE
 References: <cover.1487368114.git.logout@...260...>
-	<a77187a66affdba318ef70e0e218b69cdad509d1.1487368114.git.logout@...260...>
-In-Reply-To: <a77187a66affdba318ef70e0e218b69cdad509d1.1487368114.git.logout@...260...>
+	<8e6d66e3a9a40abb3d7c99c48ba59bad1037d0ef.1487368114.git.logout@...260...>
+In-Reply-To: <8e6d66e3a9a40abb3d7c99c48ba59bad1037d0ef.1487368114.git.logout@...260...>
 
---GoRP3gHdbSVpuLPhwfwRlPJwpke0BVbnl
+--0IJtaBtB5vX2CT6UXHxskfNIJTx17wsxj
 Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
+
 
 
 On 17-02-17 23:00, logout@...260... wrote:
 > From: Emmanuel Deloget <logout@...260...>
 >=20
 > OpenSSL 1.1 does not allow us to directly access the internal of
-> any data type, including SSL_CTX. We have to use the defined functions
+> any data type, including X509_STORE. We have to use the defined functions
 > to do so.
 >=20
 > Compatibility with OpenSSL 1.0 is kept by defining the corresponding
@@ -50,173 +51,109 @@ On 17-02-17 23:00, logout@...260... wrote:
 >=20
 > Signed-off-by: Emmanuel Deloget <logout@...260...>
 > ---
->  configure.ac                 |  9 ++++++
->  src/openvpn/openssl_compat.h | 74 ++++++++++++++++++++++++++++++++++++++=
-++++++
->  src/openvpn/ssl_openssl.c    | 13 +++++---
->  3 files changed, 91 insertions(+), 5 deletions(-)
->  create mode 100644 src/openvpn/openssl_compat.h
+>  configure.ac                     |  1 +
+>  src/openvpn/openssl_compat.h     | 15 +++++++++++++++
+>  src/openvpn/ssl_openssl.c        |  7 ++++---
+>  src/openvpn/ssl_verify_openssl.c |  6 ++++--
+>  4 files changed, 24 insertions(+), 5 deletions(-)
 >=20
 > diff --git a/configure.ac b/configure.ac
-> index b29f8b410dfb69bce1145c3bb4a1ba011f0636ec..5fe5d6046ceafa2b577296af7=
-72c347ac2ad8039 100644
+> index 5fe5d6046ceafa2b577296af772c347ac2ad8039..415128c9f8687a53e4a73419f=
+3048d07f66b70cc 100644
 > --- a/configure.ac
 > +++ b/configure.ac
-> @@ -898,6 +898,15 @@ if test "${enable_crypto}" =3D "yes" -a "${with_cryp=
-to_library}" =3D "openssl"; then
->  		[have_crypto_aead_modes=3D"no"; break]
->  	)
->=20=20
-> +	AC_CHECK_FUNCS(
-> +		[ \
-> +			SSL_CTX_get_default_passwd_cb \
-> +			SSL_CTX_get_default_passwd_cb_userdata \
-> +		],
-> +		,
-> +		[]
-> +	)
-> +
->  	CFLAGS=3D"${saved_CFLAGS}"
->  	LIBS=3D"${saved_LIBS}"
->=20=20
+> @@ -902,6 +902,7 @@ if test "${enable_crypto}" =3D "yes" -a "${with_crypt=
+o_library}" =3D "openssl"; then
+>  		[ \
+>  			SSL_CTX_get_default_passwd_cb \
+>  			SSL_CTX_get_default_passwd_cb_userdata \
+> +			X509_STORE_get0_objects \
+>  		],
+>  		,
+>  		[]
 > diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h
-> new file mode 100644
-> index 0000000000000000000000000000000000000000..59bad9ff24d10b358419d3451=
-81a0e2e52a0c662
-> --- /dev/null
+> index 59bad9ff24d10b358419d345181a0e2e52a0c662..016008bc1705a41ee0ee09fec=
+fc0b16b282cede3 100644
+> --- a/src/openvpn/openssl_compat.h
 > +++ b/src/openvpn/openssl_compat.h
-> @@ -0,0 +1,74 @@
-> +/*
-> + *  OpenVPN -- An application to securely tunnel IP networks
-> + *             over a single TCP/UDP port, with support for SSL/TLS-based
-> + *             session authentication and key exchange,
-> + *             packet encryption, packet authentication, and
-> + *             packet compression.
-> + *
-> + *  Copyright (C) 2002-2017 OpenVPN Technologies, Inc. <sales@...515...>
-> + *  Copyright (C) 2010-2017 Fox Crypto B.V. <openvpn@...1435...>
-> + *
-> + *  This program is free software; you can redistribute it and/or modify
-> + *  it under the terms of the GNU General Public License version 2
-> + *  as published by the Free Software Foundation.
-> + *
-> + *  This program is distributed in the hope that it will be useful,
-> + *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-> + *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-> + *  GNU General Public License for more details.
-> + *
-> + *  You should have received a copy of the GNU General Public License
-> + *  along with this program (see the file COPYING included with this
-> + *  distribution); if not, write to the Free Software Foundation, Inc.,
-> + *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-> + */
-> +
+> @@ -42,6 +42,7 @@
+>  #endif
+>=20=20
+>  #include <openssl/ssl.h>
+> +#include <openssl/x509.h>
+>=20=20
+>  #if !defined(HAVE_SSL_CTX_GET_DEFAULT_PASSWD_CB_USERDATA)
+>  /**
+> @@ -71,4 +72,18 @@ SSL_CTX_get_default_passwd_cb(SSL_CTX *ctx)
+>  }
+>  #endif
+>=20=20
+> +#if !defined(HAVE_X509_STORE_GET0_OBJECTS)
 > +/**
-> + * @file OpenSSL compatibility stub
+> + * Fetch the X509 object stack from the X509 store
 > + *
-> + * This file provide compatibility stubs for the OpenSSL libraries
-> + * prior to version 1.1. This version introduces many changes in the
-> + * library interface, including the fact that various objects and
-> + * structures are not fully opaque.
+> + * @param store              X509 object store
+> + * @return                   the X509 object stack
 > + */
-> +
-> +#ifndef OPENSSL_COMPAT_H_
-> +#define OPENSSL_COMPAT_H_
-> +
-> +#ifdef HAVE_CONFIG_H
-> +#include "config.h"
-> +#elif defined(_MSC_VER)
-> +#include "config-msvc.h"
-> +#endif
-> +
-> +#include <openssl/ssl.h>
-> +
-> +#if !defined(HAVE_SSL_CTX_GET_DEFAULT_PASSWD_CB_USERDATA)
-> +/**
-> + * Fetch the default password callback user data from the SSL context
-> + *
-> + * @param ctx                SSL context
-> + * @return                   The password callback user data
-> + */
-> +static inline void *
-> +SSL_CTX_get_default_passwd_cb_userdata(SSL_CTX *ctx)
+> +static inline STACK_OF(X509_OBJECT) *
+> +X509_STORE_get0_objects(X509_STORE *store)
 > +{
-> +    return ctx ? ctx->default_passwd_callback_userdata : NULL;
+> +    return store ? store->objs : NULL;
 > +}
 > +#endif
 > +
-> +#if !defined(HAVE_SSL_CTX_GET_DEFAULT_PASSWD_CB)
-> +/**
-> + * Fetch the default password callback from the SSL context
-> + *
-> + * @param ctx                SSL context
-> + * @return                   The password callback
-> + */
-> +static inline pem_password_cb *
-> +SSL_CTX_get_default_passwd_cb(SSL_CTX *ctx)
-> +{
-> +    return ctx ? ctx->default_passwd_callback : NULL;
-> +}
-> +#endif
-> +
-> +#endif /* OPENSSL_COMPAT_H_ */
+>  #endif /* OPENSSL_COMPAT_H_ */
 > diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-> index abf69c91a60910e450ae6d2d49ea7e5b1cd3a535..39e92f8cdae52d54d0ad95a93=
-62e4e0e1b2289f4 100644
+> index 39e92f8cdae52d54d0ad95a9362e4e0e1b2289f4..e57de43a748c89ff58ea00aba=
+de0b1c317013258 100644
 > --- a/src/openvpn/ssl_openssl.c
 > +++ b/src/openvpn/ssl_openssl.c
-> @@ -45,6 +45,7 @@
->  #include "ssl_backend.h"
->  #include "ssl_common.h"
->  #include "base64.h"
+> @@ -900,13 +900,14 @@ backend_tls_ctx_reload_crl(struct tls_root_ctx *ssl=
+_ctx, const char *crl_file,
+>      /* Always start with a cleared CRL list, for that we
+>       * we need to manually find the CRL object from the stack
+>       * and remove it */
+> -    for (int i =3D 0; i < sk_X509_OBJECT_num(store->objs); i++)
+> +    STACK_OF(X509_OBJECT) *objs =3D X509_STORE_get0_objects(store);
+> +    for (int i =3D 0; i < sk_X509_OBJECT_num(objs); i++)
+>      {
+> -        X509_OBJECT *obj =3D sk_X509_OBJECT_value(store->objs, i);
+> +        X509_OBJECT *obj =3D sk_X509_OBJECT_value(objs, i);
+>          ASSERT(obj);
+>          if (obj->type =3D=3D X509_LU_CRL)
+>          {
+> -            sk_X509_OBJECT_delete(store->objs, i);
+> +            sk_X509_OBJECT_delete(objs, i);
+>              X509_OBJECT_free_contents(obj);
+>              OPENSSL_free(obj);
+>          }
+> diff --git a/src/openvpn/ssl_verify_openssl.c b/src/openvpn/ssl_verify_op=
+enssl.c
+> index 274e2bbf96b6c943ce628eab143f8c76e1c47103..fabbb0c370b123f54ce4a1eaf=
+5f9650b440f47f8 100644
+> --- a/src/openvpn/ssl_verify_openssl.c
+> +++ b/src/openvpn/ssl_verify_openssl.c
+> @@ -43,6 +43,7 @@
+>  #include "ssl_openssl.h"
+>  #include "ssl_verify.h"
+>  #include "ssl_verify_backend.h"
 > +#include "openssl_compat.h"
 >=20=20
->  #ifdef ENABLE_CRYPTOAPI
->  #include "cryptoapi.h"
-> @@ -658,7 +659,8 @@ tls_ctx_load_pkcs12(struct tls_root_ctx *ctx, const c=
-har *pkcs12_file,
+>  #include <openssl/x509v3.h>
+>  #include <openssl/err.h>
+> @@ -715,9 +716,10 @@ tls_verify_crl_missing(const struct tls_options *opt)
+>          crypto_msg(M_FATAL, "Cannot get certificate store");
+>      }
+>=20=20
+> -    for (int i =3D 0; i < sk_X509_OBJECT_num(store->objs); i++)
+> +    STACK_OF(X509_OBJECT) *objs =3D X509_STORE_get0_objects(store);
+> +    for (int i =3D 0; i < sk_X509_OBJECT_num(objs); i++)
+>      {
+> -        X509_OBJECT *obj =3D sk_X509_OBJECT_value(store->objs, i);
+> +        X509_OBJECT *obj =3D sk_X509_OBJECT_value(objs, i);
+>          ASSERT(obj);
+>          if (obj->type =3D=3D X509_LU_CRL)
 >          {
->              for (i =3D 0; i < sk_X509_num(ca); i++)
->              {
-> -                if (!X509_STORE_add_cert(ctx->ctx->cert_store,sk_X509_va=
-lue(ca, i)))
-> +                X509_STORE *cert_store =3D SSL_CTX_get_cert_store(ctx->c=
-tx);
-> +                if (!X509_STORE_add_cert(cert_store,sk_X509_value(ca, i)=
-))
->                  {
->                      crypto_msg(M_FATAL,"Cannot add certificate to certif=
-icate chain (X509_STORE_add_cert)");
->                  }
-> @@ -760,8 +762,9 @@ tls_ctx_load_cert_file_and_copy(struct tls_root_ctx *=
-ctx,
->          goto end;
->      }
->=20=20
-> -    x =3D PEM_read_bio_X509(in, NULL, ctx->ctx->default_passwd_callback,
-> -                          ctx->ctx->default_passwd_callback_userdata);
-> +    x =3D PEM_read_bio_X509(in, NULL,
-> +                          SSL_CTX_get_default_passwd_cb(ctx->ctx),
-> +                          SSL_CTX_get_default_passwd_cb_userdata(ctx->ct=
-x));
->      if (x =3D=3D NULL)
->      {
->          SSLerr(SSL_F_SSL_CTX_USE_CERTIFICATE_FILE, ERR_R_PEM_LIB);
-> @@ -843,8 +846,8 @@ tls_ctx_load_priv_file(struct tls_root_ctx *ctx, cons=
-t char *priv_key_file,
->      }
->=20=20
->      pkey =3D PEM_read_bio_PrivateKey(in, NULL,
-> -                                   ssl_ctx->default_passwd_callback,
-> -                                   ssl_ctx->default_passwd_callback_user=
-data);
-> +                                   SSL_CTX_get_default_passwd_cb(ctx->ct=
-x),
-> +                                   SSL_CTX_get_default_passwd_cb_userdat=
-a(ctx->ctx));
->      if (!pkey)
->      {
->          goto end;
 >=20
 
 ACK
@@ -224,9 +161,9 @@ ACK
 -Steffan
 
 
---GoRP3gHdbSVpuLPhwfwRlPJwpke0BVbnl--
+--0IJtaBtB5vX2CT6UXHxskfNIJTx17wsxj--
 
---mS91iTqtHXjnMKbUqGSF1feG2wKjx6w8P
+--fUTSPnCvndxB4FoB0GgvVrCk7Bf2QkWBM
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -234,14 +171,14 @@ Content-Disposition: attachment; filename="signature.asc"
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQEcBAEBCAAGBQJYrfQ4AAoJEJgCyj0AftKIN+8IAMQIxyTRwqUJO2HVlEJXb4BR
-k3269OAJe7WEs5Ii8rJUJJBXE8/FpssvOCAtUCjV6Uf33nF/ua/X98h1Ljsk74q3
-vIk0hlmsMLJw5LB72KOkv7S8V2NFooabtYctwcyeWn6B+1mUBpJ1b4YsVoxerb6k
-r9Wz0qxRiKNE64sFlKllFI0r+Vio8ixB/TjPoAMwpNx39d6rOmbpw7It/FUiNYGa
-13s3lZfUyMESZSPo3LEJPQy3GvBwQ+k4tuMWgKjzmVIS9k4OBU4QE8uB65GpYEd/
-4Zz3euEtnI54O5uc2e+09GdwSwhDQC8zpvlh1zVEuaoO0zfUA1/xyEIBBhvskpI=
-=8LJH
+iQEcBAEBCAAGBQJYrfZQAAoJEJgCyj0AftKIhKkIANHP1GKiLhhJpFPPaViHbwlA
+yV6Ym9YCAHm+vYM2oDwIbFlyPTkYOwvx9apRc4OWy9EvfYUX0LbZIVJijhR2PnFI
+EHkxxKuF3ny/MQnTtBSn30VKITU0mhAOAA7HwJ3OvVuZBiYVBd/gDnXLfwisTlq/
+374R6pFkDC54T/emHflLy0BQFtKqekFPxCI1rUWsAvldRvCUvchvb3ipKKJsNFx+
+rTFSDr8gsQrFKvBpF/WXJG4u1Dzg+Yt9X3lzYREm3Fk49gNWYinxJrd0oKJIN8/u
+8npwE0xGwfyF110cLWHXjhlyONYd7fd4WHXe8ZUrcvi3MSLKSiWl42mDrExRkzk=
+=eaL3
 -----END PGP SIGNATURE-----
 
---mS91iTqtHXjnMKbUqGSF1feG2wKjx6w8P--
+--fUTSPnCvndxB4FoB0GgvVrCk7Bf2QkWBM--
 
