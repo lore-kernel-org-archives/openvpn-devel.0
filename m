@@ -1,13 +1,13 @@
 Sender: Emmanuel Deloget <emmanueldeloget53@...277...>
 From: Emmanuel Deloget <logout@...260...>
-Date: Thu, 23 Feb 2017 15:35:57 +0100
-Message-Id: <8424472e58e7648712c8cdd12f6ca0f3d0a0b6fc.1487859361.git.logout@...260...>
+Date: Thu, 23 Feb 2017 15:35:56 +0100
+Message-Id: <79d89580db6fd92c059dabc4f5f4d83b72bb9d3d.1487859361.git.logout@...260...>
 In-Reply-To: <cover.1487859361.git.logout@...260...>
 References: <cover.1487859361.git.logout@...260...>
 In-Reply-To: <20170220160816.114598d9@...1799...>
 References: <20170220160816.114598d9@...1799...>
-Subject: [Openvpn-devel] [PATCH v3 07/15] OpenSSL: don't use direct access
-	to the internal of RSA
+Subject: [Openvpn-devel] [PATCH v3 04/15] OpenSSL: don't use direct access
+	to the internal of RSA_METHOD
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,7 +21,7 @@ Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
 OpenSSL 1.1 does not allow us to directly access the internal of
-any data type, including RSA. We have to use the defined
+any data type, including RSA_METHOD. We have to use the defined
 functions to do so.
 
 Compatibility with OpenSSL 1.0 is kept by defining the corresponding
@@ -29,170 +29,277 @@ functions when they are not found in the library.
 
 Signed-off-by: Emmanuel Deloget <logout@...260...>
 ---
- configure.ac                 |  3 ++
- src/openvpn/openssl_compat.h | 84 ++++++++++++++++++++++++++++++++++++++++++++
- src/openvpn/ssl_openssl.c    | 24 ++++++++-----
- 3 files changed, 103 insertions(+), 8 deletions(-)
+ configure.ac                 |   9 ++
+ src/openvpn/openssl_compat.h | 190 +++++++++++++++++++++++++++++++++++++++++++
+ src/openvpn/ssl_openssl.c    |  22 ++---
+ 3 files changed, 210 insertions(+), 11 deletions(-)
 
 diff --git a/configure.ac b/configure.ac
-index 089aa89459803234f847579d393c2be6e17d958a..e9942e38f5675c8bcfcc30f5e5c30731a08abba2 100644
+index 0c55d78327597a0690fa9625e06adb8b055852b1..2406ad8d6bf10f202d3fc1e9b971bc8ec135bd4f 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -909,6 +909,9 @@ if test "${enable_crypto}" = "yes" -a "${with_crypto_library}" = "openssl"; then
- 			EVP_PKEY_id \
- 			EVP_PKEY_get0_RSA \
- 			EVP_PKEY_get0_DSA \
-+			RSA_set_flags \
-+			RSA_get0_key \
-+			RSA_set0_key \
- 			RSA_meth_new \
- 			RSA_meth_free \
- 			RSA_meth_set_pub_enc \
+@@ -905,6 +905,15 @@ if test "${enable_crypto}" = "yes" -a "${with_crypto_library}" = "openssl"; then
+ 			X509_STORE_get0_objects \
+ 			X509_OBJECT_free \
+ 			X509_OBJECT_get_type \
++			RSA_meth_new \
++			RSA_meth_free \
++			RSA_meth_set_pub_enc \
++			RSA_meth_set_pub_dec \
++			RSA_meth_set_priv_enc \
++			RSA_meth_set_priv_dec \
++			RSA_meth_set_init \
++			RSA_meth_set_finish \
++			RSA_meth_set0_app_data \
+ 		]
+ 	)
+ 
 diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h
-index 9d99c72920bd9ab450809e6d3247db846d4bd564..0f7b0bb799d2c5e506b6372aa9cc023e8cbf3b29 100644
+index 458a6adbe2b3fcd5ea63dcea6596cc24315d463c..e98e8dffc5773d73684398ae28215d4fdccac3c4 100644
 --- a/src/openvpn/openssl_compat.h
 +++ b/src/openvpn/openssl_compat.h
-@@ -176,6 +176,90 @@ EVP_PKEY_get0_DSA(EVP_PKEY *pkey)
+@@ -41,6 +41,8 @@
+ #include "config-msvc.h"
+ #endif
+ 
++#include "buffer.h"
++
+ #include <openssl/ssl.h>
+ #include <openssl/x509.h>
+ 
+@@ -117,4 +119,192 @@ X509_OBJECT_get_type(const X509_OBJECT *obj)
  }
  #endif
  
-+#if !defined(HAVE_RSA_SET_FLAGS)
++#if !defined(HAVE_RSA_METH_NEW)
 +/**
-+ * Set the RSA flags
++ * Allocate a new RSA method object
 + *
-+ * @param rsa                 The RSA object
-+ * @param flags               New flags value
++ * @param name               The object name
++ * @param flags              Configuration flags
++ * @return                   A new RSA method object
++ */
++static inline RSA_METHOD *
++RSA_meth_new(const char *name, int flags)
++{
++    RSA_METHOD *rsa_meth = NULL;
++    ALLOC_OBJ_CLEAR(rsa_meth, RSA_METHOD);
++    rsa_meth->name = string_alloc(name, NULL);
++    rsa_meth->flags = flags;
++    return rsa_meth;
++}
++#endif
++
++#if !defined(HAVE_RSA_METH_FREE)
++/**
++ * Free an existing RSA_METHOD object
++ *
++ * @param meth               The RSA_METHOD object
 + */
 +static inline void
-+RSA_set_flags(RSA *rsa, int flags)
++RSA_meth_free(RSA_METHOD *meth)
 +{
-+    if (rsa)
++    if (meth)
 +    {
-+        rsa->flags = flags;
++        free(meth->name);
++        free(meth);
 +    }
 +}
 +#endif
 +
-+#if !defined(HAVE_RSA_GET0_KEY)
++#if !defined(HAVE_RSA_METH_SET_PUB_ENC)
 +/**
-+ * Get the RSA parameters
++ * Set the public encoding function of an RSA_METHOD object
 + *
-+ * @param rsa                 The RSA object
-+ * @param n                   The @c n parameter
-+ * @param e                   The @c e parameter
-+ * @param d                   The @c d parameter
-+ */
-+static inline void
-+RSA_get0_key(const RSA *rsa, const BIGNUM **n,
-+             const BIGNUM **e, const BIGNUM **d)
-+{
-+    if (n != NULL)
-+    {
-+        *n = rsa ? rsa->n : NULL;
-+    }
-+    if (e != NULL)
-+    {
-+        *e = rsa ? rsa->e : NULL;
-+    }
-+    if (d != NULL)
-+    {
-+        *d = rsa ? rsa->d : NULL;
-+    }
-+}
-+#endif
-+
-+#if !defined(HAVE_RSA_SET0_KEY)
-+/**
-+ * Set the RSA parameters
-+ *
-+ * @param rsa                 The RSA object
-+ * @param n                   The @c n parameter
-+ * @param e                   The @c e parameter
-+ * @param d                   The @c d parameter
-+ * @return                    1 on success, 0 on error
++ * @param meth               The RSA_METHOD object
++ * @param pub_enc            the public encoding function
++ * @return                   1 on success, 0 on error
 + */
 +static inline int
-+RSA_set0_key(RSA *rsa, BIGNUM *n, BIGNUM *e, BIGNUM *d)
++RSA_meth_set_pub_enc(RSA_METHOD *meth,
++                     int (*pub_enc) (int flen, const unsigned char *from,
++                                     unsigned char *to, RSA *rsa,
++                                     int padding))
 +{
-+    if ((rsa->n == NULL && n == NULL)
-+        || (rsa->e == NULL && e == NULL))
++    if (meth)
 +    {
-+        return 0;
++        meth->rsa_pub_enc = pub_enc;
++        return 1;
 +    }
-+
-+    if (n != NULL)
-+    {
-+        BN_free(rsa->n);
-+        rsa->n = n;
-+    }
-+    if (e != NULL)
-+    {
-+        BN_free(rsa->e);
-+        rsa->e = e;
-+    }
-+    if (d != NULL)
-+    {
-+        BN_free(rsa->d);
-+        rsa->d = d;
-+    }
-+
-+    return 1;
++    return 0;
 +}
 +#endif
 +
- #if !defined(HAVE_RSA_METH_NEW)
- /**
-  * Allocate a new RSA method object
++#if !defined(HAVE_RSA_METH_SET_PUB_DEC)
++/**
++ * Set the public decoding function of an RSA_METHOD object
++ *
++ * @param meth               The RSA_METHOD object
++ * @param pub_dec            the public decoding function
++ * @return                   1 on success, 0 on error
++ */
++static inline int
++RSA_meth_set_pub_dec(RSA_METHOD *meth,
++                     int (*pub_dec) (int flen, const unsigned char *from,
++                                     unsigned char *to, RSA *rsa,
++                                     int padding))
++{
++    if (meth)
++    {
++        meth->rsa_pub_dec = pub_dec;
++        return 1;
++    }
++    return 0;
++}
++#endif
++
++#if !defined(HAVE_RSA_METH_SET_PRIV_ENC)
++/**
++ * Set the private encoding function of an RSA_METHOD object
++ *
++ * @param meth               The RSA_METHOD object
++ * @param priv_enc           the private encoding function
++ * @return                   1 on success, 0 on error
++ */
++static inline int
++RSA_meth_set_priv_enc(RSA_METHOD *meth,
++                      int (*priv_enc) (int flen, const unsigned char *from,
++                                       unsigned char *to, RSA *rsa,
++                                       int padding))
++{
++    if (meth)
++    {
++        meth->rsa_priv_enc = priv_enc;
++        return 1;
++    }
++    return 0;
++}
++#endif
++
++#if !defined(HAVE_RSA_METH_SET_PRIV_DEC)
++/**
++ * Set the private decoding function of an RSA_METHOD object
++ *
++ * @param meth               The RSA_METHOD object
++ * @param priv_dec           the private decoding function
++ * @return                   1 on success, 0 on error
++ */
++static inline int
++RSA_meth_set_priv_dec(RSA_METHOD *meth,
++                      int (*priv_dec) (int flen, const unsigned char *from,
++                                       unsigned char *to, RSA *rsa,
++                                       int padding))
++{
++    if (meth)
++    {
++        meth->rsa_priv_dec = priv_dec;
++        return 1;
++    }
++    return 0;
++}
++#endif
++
++#if !defined(HAVE_RSA_METH_SET_INIT)
++/**
++ * Set the init function of an RSA_METHOD object
++ *
++ * @param meth               The RSA_METHOD object
++ * @param init               the init function
++ * @return                   1 on success, 0 on error
++ */
++static inline int
++RSA_meth_set_init(RSA_METHOD *meth, int (*init) (RSA *rsa))
++{
++    if (meth)
++    {
++        meth->init = init;
++        return 1;
++    }
++    return 0;
++}
++#endif
++
++#if !defined(HAVE_RSA_METH_SET_FINISH)
++/**
++ * Set the finish function of an RSA_METHOD object
++ *
++ * @param meth               The RSA_METHOD object
++ * @param finish             the finish function
++ * @return                   1 on success, 0 on error
++ */
++static inline int
++RSA_meth_set_finish(RSA_METHOD *meth, int (*finish) (RSA *rsa))
++{
++    if (meth)
++    {
++        meth->finish = finish;
++        return 1;
++    }
++    return 0;
++}
++#endif
++
++#if !defined(HAVE_RSA_METH_SET0_APP_DATA)
++/**
++ * Set the application data of an RSA_METHOD object
++ *
++ * @param meth               The RSA_METHOD object
++ * @param app_data           Application data
++ * @return                   1 on success, 0 on error
++ */
++static inline int
++RSA_meth_set0_app_data(RSA_METHOD *meth, void *app_data)
++{
++    if (meth)
++    {
++        meth->app_data = app_data;
++        return 1;
++    }
++    return 0;
++}
++#endif
++
+ #endif /* OPENSSL_COMPAT_H_ */
 diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-index dbeb868ebe89f8c18a7b89afd797c3e42dda1503..25935b45dcac6dfc5c9d034fe14e7b29ec1cc1c3 100644
+index bf0f643f25439f71cbfe71bf5a7e8eb834b0f012..f011e06702529ff34e91f6d0169d1adf8cc9d767 100644
 --- a/src/openvpn/ssl_openssl.c
 +++ b/src/openvpn/ssl_openssl.c
-@@ -978,8 +978,8 @@ rsa_priv_dec(int flen, const unsigned char *from, unsigned char *to, RSA *rsa, i
+@@ -978,7 +978,7 @@ rsa_priv_dec(int flen, const unsigned char *from, unsigned char *to, RSA *rsa, i
  static int
  rsa_finish(RSA *rsa)
  {
--    RSA_meth_free(rsa->meth);
--    rsa->meth = NULL;
-+    const RSA_METHOD *meth = RSA_get_method(rsa);
-+    RSA_meth_free((RSA_METHOD *)meth);
+-    free((void *)rsa->meth);
++    RSA_meth_free(rsa->meth);
+     rsa->meth = NULL;
      return 1;
  }
+@@ -1053,16 +1053,16 @@ tls_ctx_use_external_private_key(struct tls_root_ctx *ctx,
+     ASSERT(NULL != cert);
  
-@@ -1078,8 +1078,11 @@ tls_ctx_use_external_private_key(struct tls_root_ctx *ctx,
-     pub_rsa = EVP_PKEY_get0_RSA(pkey);
+     /* allocate custom RSA method object */
+-    ALLOC_OBJ_CLEAR(rsa_meth, RSA_METHOD);
+-    rsa_meth->name = "OpenVPN external private key RSA Method";
+-    rsa_meth->rsa_pub_enc = rsa_pub_enc;
+-    rsa_meth->rsa_pub_dec = rsa_pub_dec;
+-    rsa_meth->rsa_priv_enc = rsa_priv_enc;
+-    rsa_meth->rsa_priv_dec = rsa_priv_dec;
+-    rsa_meth->init = NULL;
+-    rsa_meth->finish = rsa_finish;
+-    rsa_meth->flags = RSA_METHOD_FLAG_NO_CHECK;
+-    rsa_meth->app_data = NULL;
++    rsa_meth = RSA_meth_new("OpenVPN external private key RSA Method",
++                            RSA_METHOD_FLAG_NO_CHECK);
++    check_malloc_return(rsa_meth);
++    RSA_meth_set_pub_enc(rsa_meth, rsa_pub_enc);
++    RSA_meth_set_pub_dec(rsa_meth, rsa_pub_dec);
++    RSA_meth_set_priv_enc(rsa_meth, rsa_priv_enc);
++    RSA_meth_set_priv_dec(rsa_meth, rsa_priv_dec);
++    RSA_meth_set_init(rsa_meth, NULL);
++    RSA_meth_set_finish(rsa_meth, rsa_finish);
++    RSA_meth_set0_app_data(rsa_meth, NULL);
  
-     /* initialize RSA object */
--    rsa->n = BN_dup(pub_rsa->n);
--    rsa->flags |= RSA_FLAG_EXT_PKEY;
-+    const BIGNUM *n = NULL;
-+    const BIGNUM *e = NULL;
-+    RSA_get0_key(pub_rsa, &n, &e, NULL);
-+    RSA_set0_key(rsa, BN_dup(n), BN_dup(e), NULL);
-+    RSA_set_flags(rsa, RSA_flags(rsa) | RSA_FLAG_EXT_PKEY);
-     if (!RSA_set_method(rsa, rsa_meth))
-     {
-         goto err;
-@@ -1680,11 +1683,16 @@ print_details(struct key_state_ssl *ks_ssl, const char *prefix)
-         EVP_PKEY *pkey = X509_get_pubkey(cert);
-         if (pkey != NULL)
-         {
--            if (EVP_PKEY_id(pkey) == EVP_PKEY_RSA && EVP_PKEY_get0_RSA(pkey) != NULL
--                && pkey->pkey.rsa->n != NULL)
-+            if (EVP_PKEY_id(pkey) == EVP_PKEY_RSA && EVP_PKEY_get0_RSA(pkey) != NULL)
-             {
--                openvpn_snprintf(s2, sizeof(s2), ", %d bit RSA",
--                                 BN_num_bits(pkey->pkey.rsa->n));
-+                RSA *rsa = EVP_PKEY_get0_RSA(pkey);
-+                const BIGNUM *n = NULL;
-+                RSA_get0_key(rsa, &n, NULL, NULL);
-+                if (n != NULL)
-+                {
-+                    openvpn_snprintf(s2, sizeof(s2), ", %d bit RSA",
-+                                     BN_num_bits(n));
-+                }
-             }
-             else if (EVP_PKEY_id(pkey) == EVP_PKEY_DSA && EVP_PKEY_get0_DSA(pkey) != NULL
-                      && pkey->pkey.dsa->p != NULL)
+     /* allocate RSA object */
+     rsa = RSA_new();
 -- 
 2.7.4
 
