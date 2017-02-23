@@ -1,10 +1,10 @@
-Date: Thu, 23 Feb 2017 10:19:46 +0100 (CET)
-Message-Id: <201702230919.v1N9JkH0058802@...2054...>
+Date: Thu, 23 Feb 2017 10:20:05 +0100 (CET)
+Message-Id: <201702230920.v1N9K5h3058826@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20170223084954.58464-1-gert@...1296...>
-References: <20170223084954.58464-1-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Add openssl_compat.h to
-	openvpn_SOURCES
+In-Reply-To: <345db0ac-f6e8-8490-a80a-ffbd81972c07@...1856...>
+References: <345db0ac-f6e8-8490-a80a-ffbd81972c07@...1856...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix segfault when using crypto
+	lib without AES-256-CTR or SHA256
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,22 +15,23 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
+To: Simon Matter <simon.matter@...2249...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Patch has been applied to the master and release/2.4 branch.
+Thanks.
 
-commit 827c05732b0414dbf3cc05bf4ae6bfda042eadd3 (master)
-commit bbc671c2fdf6287605ef5057b1d44811bcd81785 (release/2.4)
-Author: Gert Doering
-Date:   Thu Feb 23 09:49:54 2017 +0100
+Your patch has been applied to the master and release/2.4 branches.
 
-     Add openssl_compat.h to openvpn_SOURCES
+commit 2fe5547c1df854d41611633ea533649fe88e3031 (master)
+commit c9b4313eae6fc59f7d075edf23a7f59b137ba11f (release/2.4)
+Author: Simon Matter
+Date:   Tue Feb 21 20:34:15 2017 +0100
 
-     Signed-off-by: Gert Doering <gert@...1296...>
+     Fix segfault when using crypto lib without AES-256-CTR or SHA256
+
      Acked-by: Steffan Karger <steffan.karger@...1435...>
-     Message-Id: <20170223084954.58464-1-gert@...1296...>
-     URL: http://www.mail-archive.com/search?l=mid&q=20170223084954.58464-1-gert@...1296...
+     Message-Id: <345db0ac-f6e8-8490-a80a-ffbd81972c07@...1856...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg14138.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
