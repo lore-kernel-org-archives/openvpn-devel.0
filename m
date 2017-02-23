@@ -1,10 +1,10 @@
-Date: Thu, 23 Feb 2017 11:59:53 +0100 (CET)
-Message-Id: <201702231059.v1NAxreU060542@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <1487846138-22231-1-git-send-email-steffan.karger@...1435...>
-References: <1487846138-22231-1-git-send-email-steffan.karger@...1435...>
-Subject: [Openvpn-devel] [PATCH applied] Re: OpenSSL: 1.1 fallout - fix
-	configure on old autoconf
+Sender: Emmanuel Deloget <emmanueldeloget53@...277...>
+From: Emmanuel Deloget <logout@...260...>
+Date: Thu, 23 Feb 2017 15:35:55 +0100
+Message-Id: <cover.1487859361.git.logout@...260...>
+In-Reply-To: <20170220160816.114598d9@...1799...>
+References: <20170220160816.114598d9@...1799...>
+Subject: [Openvpn-devel] [PATCH v3 00/15] Add support for OpenSSL 1.1.x
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,30 +15,54 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Steffan Karger <steffan.karger@...1435...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-ACK, thanks.
+This is v3 of the remaining patches for the "Add support for OpenSSL 
+1.1.x" series. This series is partial: only the modified patches are 
+sent to the ML -- the other have not changed. The stats are a bit off 
+so I don't include them in this mail.
 
-Your patch has been applied to the master and release/2.4 branch.
+They have been generated after a rebase from the master tree. Individual
+commits can be viewed at
 
-commit 07372a0fdeb3638204d197d0614f776a0eb73ab9 (master)
-commit b97a5cc044dc6db3f0e1f9f06a6f5da522f0a33a (release/2.4)
-Author: Steffan Karger
-Date:   Thu Feb 23 11:35:38 2017 +0100
+  https://github.com/emmanuel-deloget/openvpn/commits/openssl-1.1-v3
 
-     OpenSSL: 1.1 fallout - fix configure on old autoconf
+(This time, the branch name is correct :))
 
-     Signed-off-by: Steffan Karger <steffan.karger@...1435...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1487846138-22231-1-git-send-email-steffan.karger@...1435...>
-     URL: http://www.mail-archive.com/search?l=mid&q=1487846138-22231-1-git-send-email-steffan.karger@...1435...
-     Signed-off-by: Gert Doering <gert@...1296...>
+Changes v2 --> v3: 
+
+* RSA_METHOD (04/15): rsa_meth->name is now a dup of the name parameter; 
+  it's freed in RSA_meth_free(). 
+
+* RSA (07/15): calling RSA_set_method() in rsa_finish() is both a Bad 
+  Idea and not required so it has been removed.
+  
+Changes v1 --> v2:
+
+* EVP_PKEY (06/15): add missing function EVP_PKEY_id() for 0.9.8.
+
+* replace patch 15/15 with a new patch to use EVP_CipherInit_ex() 
+  instead of EVP_CipherInit() when a full init is not needed.
 
 
---
-kind regards,
+Emmanuel Deloget (15):
+  [commited] OpenSSL: don't use direct access to the internal of SSL_CTX
+  [commited] OpenSSL: don't use direct access to the internal of X509_STORE
+  [commited] OpenSSL: don't use direct access to the internal of X509_OBJECT
+  OpenSSL: don't use direct access to the internal of RSA_METHOD
+  OpenSSL: don't use direct access to the internal of X509
+  OpenSSL: don't use direct access to the internal of EVP_PKEY
+  OpenSSL: don't use direct access to the internal of RSA
+  OpenSSL: don't use direct access to the internal of DSA
+  [commited] OpenSSL: don't use direct access to the internal of X509_STORE_CTX
+  OpenSSL: don't use direct access to the internal of EVP_MD_CTX
+  OpenSSL: don't use direct access to the internal of EVP_CIPHER_CTX
+  OpenSSL: don't use direct access to the internal of HMAC_CTX
+  OpenSSL: SSLeay symbols are no longer available in OpenSSL 1.1
+  OpenSSL: constify getbio() parameters
+  OpenSSL: use EVP_CipherInit_ex() instead of EVP_CipherInit()
 
-Gert Doering
+-- 
+2.7.4
 
 
