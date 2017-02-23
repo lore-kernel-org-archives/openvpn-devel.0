@@ -1,10 +1,16 @@
-Date: Thu, 23 Feb 2017 10:20:05 +0100 (CET)
-Message-Id: <201702230920.v1N9K5h3058826@...2054...>
+Date: Thu, 23 Feb 2017 10:23:14 +0100
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <345db0ac-f6e8-8490-a80a-ffbd81972c07@...1856...>
-References: <345db0ac-f6e8-8490-a80a-ffbd81972c07@...1856...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix segfault when using crypto
-	lib without AES-256-CTR or SHA256
+Message-ID: <20170223092314.GR93896@...1296...>
+References: <cover.1487368114.git.logout@...260...>
+	<a77187a66affdba318ef70e0e218b69cdad509d1.1487368114.git.logout@...260...>
+	<20170223080347.GA56089@...1296...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="HlZi+g8Ywt2nzGP6"
+Content-Disposition: inline
+In-Reply-To: <20170223080347.GA56089@...1296...>
+Subject: Re: [Openvpn-devel] [RFC PATCH v1 01/15] OpenSSL: don't use direct
+ access to the internal of SSL_CTX
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,31 +19,67 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Simon Matter <simon.matter@...2249...>
+To: logout@...260...
 Cc: openvpn-devel@lists.sourceforge.net
 
-Thanks.
+--HlZi+g8Ywt2nzGP6
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Your patch has been applied to the master and release/2.4 branches.
+Hi,
 
-commit 2fe5547c1df854d41611633ea533649fe88e3031 (master)
-commit c9b4313eae6fc59f7d075edf23a7f59b137ba11f (release/2.4)
-Author: Simon Matter
-Date:   Tue Feb 21 20:34:15 2017 +0100
+On Thu, Feb 23, 2017 at 09:03:47AM +0100, Gert Doering wrote:
+> This patch brings two problems outside the "OpenSSL functionality"=20
+> part.
+>=20
+>  - openssl_compat.h is not included in the built tarballs, so mingw builds
+>    fail (and "builds for anyone building from tarballs" would break) ->
+>    findable by running "make distcheck"
 
-     Fix segfault when using crypto lib without AES-256-CTR or SHA256
+This has been fixed & pushed (so we can build windows snapshots again).
 
-     Acked-by: Steffan Karger <steffan.karger@...1435...>
-     Message-Id: <345db0ac-f6e8-8490-a80a-ffbd81972c07@...1856...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg14138.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+>  - configure.ac does something to CentOS 6 / RHEL 6 which makes configure
+>    explode:
+>=20
+> ...
+> checking for linux/if_tun.h... yes
+> checking tap-windows.h usability... no
+> checking tap-windows.h presence... no
+> checking for tap-windows.h... no
+> checking whether TUNSETPERSIST is declared... yes
+> checking for setcon in -lselinux... yes
+> checking for pam_start in -lpam... yes
+> checking for PKCS11_HELPER... no
+> ./configure: line 21440: syntax error near unexpected token `fi'
+> ./configure: line 21440: `fi'
 
+This still needs investigation.
 
---
-kind regards,
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-Gert Doering
+--HlZi+g8Ywt2nzGP6
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJYrqoBAAoJEB2Cnv7KVigSGOUL/iH5lml+UKoOmtElIm1MSb0N
+jpbS9Fh53+WedT1F0ZXGr+2hgD5G8ru9EOfSCcYfttmvEpXVuuK/PNYd1tOUTpX/
+obEZuHskW5ri8Ocid9A2L2YSJmUf7ClUdqwd3S7dR00LLupqWp3JLid2Gb0OiCZS
+0sORDcD/0c4isX2KQmSGMlbyJumFEXBUQ3iPEn6tx/xs4wW+KMbdU1Aqkl2A/p+4
+O8gDdChBIQlSgVvbLxtNhtp0yxL6gYeet3U9dhuZf/QX1WF0kufhS4yV35kA6qrW
+M7ZW5zMSvO7r5HwSIVwckO0N7YG6aPMiky8yNYkatrZg50agD9NmHoQTA5PQSBm2
+1Yj38KDu4Uo8Qoa10i+GCoiIIlx1gPGSxj/w5tcEMtZeG8Yhq5TBljaQDGue3FiW
+AimrE9h+RDJKKQnopatgoCTRRSBY4sObi8bGgcbRveMnL+zEtcgCWU/Rca/xfA++
+RXL1GEw1apru+q0u6oQsbLdoDjWYV1VaLzbKFAl5dA==
+=Qkga
+-----END PGP SIGNATURE-----
+
+--HlZi+g8Ywt2nzGP6--
 
