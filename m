@@ -1,14 +1,11 @@
-Date: Thu, 23 Feb 2017 21:57:07 +0100
-From: Christian Hesse <list@...1798...>
-Message-ID: <20170223215707.60e567de@...1799...>
-In-Reply-To: <cover.1487859361.git.logout@...260...>
-References: <20170220160816.114598d9@...1799...>
-	<cover.1487859361.git.logout@...260...>
+References: <003bd3ed-9a64-3e77-cd06-2212b82a6165@...515...>
+	<6a8f8780-a49c-9d1f-30ac-d3b804e9476b@...1435...>
+From: James Yonan <james@...515...>
+Message-ID: <5cab0f4b-c40e-c11d-25e7-dc276d18317c@...515...>
+Date: Thu, 23 Feb 2017 14:41:29 -0700
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	boundary="Sig_/y4N5rm/Vvh2b=m7cA0Hd7QI";
-	protocol="application/pgp-signature"
-Subject: Re: [Openvpn-devel] [PATCH v3 00/15] Add support for OpenSSL 1.1.x
+In-Reply-To: <6a8f8780-a49c-9d1f-30ac-d3b804e9476b@...1435...>
+Subject: Re: [Openvpn-devel] Should we use mbedTLS certificate profiles?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,92 +14,68 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Emmanuel Deloget <logout@...260...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
---Sig_/y4N5rm/Vvh2b=m7cA0Hd7QI
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: quoted-printable
+On 23/02/2017 01:22, Steffan Karger wrote:
 
-Emmanuel Deloget <logout@...260...> on Thu, 2017/02/23 15:35:
-> This is v3 of the remaining patches for the "Add support for OpenSSL=20
-> 1.1.x" series. This series is partial: only the modified patches are=20
-> sent to the ML -- the other have not changed. The stats are a bit off=20
-> so I don't include them in this mail.
->=20
-> They have been generated after a rebase from the master tree. Individual
-> commits can be viewed at
->=20
->   https://github.com/emmanuel-deloget/openvpn/commits/openssl-1.1-v3
->=20
-> (This time, the branch name is correct :))
->=20
-> Changes v2 --> v3:=20
->=20
-> * RSA_METHOD (04/15): rsa_meth->name is now a dup of the name parameter;=
-=20
->   it's freed in RSA_meth_free().=20
->=20
-> * RSA (07/15): calling RSA_set_method() in rsa_finish() is both a Bad=20
->   Idea and not required so it has been removed.
->=20=20=20
-> Changes v1 --> v2:
->=20
-> * EVP_PKEY (06/15): add missing function EVP_PKEY_id() for 0.9.8.
->=20
-> * replace patch 15/15 with a new patch to use EVP_CipherInit_ex()=20
->   instead of EVP_CipherInit() when a full init is not needed.
->=20
->=20
-> Emmanuel Deloget (15):
->   [commited] OpenSSL: don't use direct access to the internal of SSL_CTX
->   [commited] OpenSSL: don't use direct access to the internal of X509_STO=
-RE
->   [commited] OpenSSL: don't use direct access to the internal of X509_OBJ=
-ECT
->   OpenSSL: don't use direct access to the internal of RSA_METHOD
->   OpenSSL: don't use direct access to the internal of X509
->   OpenSSL: don't use direct access to the internal of EVP_PKEY
->   OpenSSL: don't use direct access to the internal of RSA
->   OpenSSL: don't use direct access to the internal of DSA
->   [commited] OpenSSL: don't use direct access to the internal of
-> X509_STORE_CTX OpenSSL: don't use direct access to the internal of
-> EVP_MD_CTX OpenSSL: don't use direct access to the internal of
-> EVP_CIPHER_CTX OpenSSL: don't use direct access to the internal of HMAC_C=
-TX
->   OpenSSL: SSLeay symbols are no longer available in OpenSSL 1.1
->   OpenSSL: constify getbio() parameters
->   OpenSSL: use EVP_CipherInit_ex() instead of EVP_CipherInit()
+> Hi James,
+>
+> On 22-02-17 19:48, James Yonan wrote:
+>> mbedTLS 2 has a new feature that allows rejection of certificates if the
+>> key size is too small or the signing hash is weak.
+>>
+>> The feature is controlled via struct mbedtls_x509_crt_profile.
+>>
+>> For example, you could specify that certificates must be at least 2048
+>> bits and use a SHA-2 signing alg.
+>>
+>> Wondering if we should enable this via an option, or tie it into the
+>> existing tls-version-min.
+>>
+>> The granular approach would be to have specific options for each limit,
+>> such as ssl-min-key-size, ssl-require-sha2
+>>
+>> The bundled approach would be to take an existing option such as
+>> tls-version-min and add additional constraints onto it.  For example, if
+>> tls-version-min is 1.2 or higher, then also require minimum key size to
+>> be 2048 and certificate signing hash to be SHA-2.
+> OpenVPN 2.4 currently just uses mbed TLS' default profile, and we tell
+> people to use stronger keys (RSA 2048+ / ECDSA) or a stronger hash
+> function (SHA1+) if that causes trouble.
+>
+> If we are going to make this configurable, I think we should separate it
+> from tls-version-min.  The main use case I see for using a lower
+> security setting would be an out-of-the-admins-control CA, or something
+> like (old) smart cards that don't support RSA-2048.  I wouldn't want to
+> block people from enforcing TLS 1.2, because their smart card is crappy.
+>
+> So I think we'll have to add the relevant --tls-rsa-key-size-min,
+> --tls-curves (could replace --ecdh-curves), --tls-digests options.  If
+> we want to make it configurable, that is.
 
-Built v3 against openssl 1.0.2k without issues, tests succeed and two
-instanced successfully established vpn connection (with server version 2.3.=
-12
-and 2.4.0).
+I think it needs to be configurable to allow for transitions to stronger 
+keys.
 
-Built against openssl 1.1.0e without issues, tests succeed. Did not test wi=
-th
-real world connectivity, though.
---=20
-main(a){char*c=3D/*    Schoene Gruesse                         */"B?IJj;MEH"
-"CX:;",b;for(a/*    Best regards             my address:    */=3D0;b=3Dc[a+=
-+];)
-putchar(b-1/(/*    Chris            cc -ox -xc - && ./x    */b/42*2-3)*42);}
+For naming, how about --tls-rsa-key-size-min and --tls-cert-sign-min?
 
---Sig_/y4N5rm/Vvh2b=m7cA0Hd7QI
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
+For --tls-cert-sign-min, the choices could be "none" (anything allowed 
+by the underlying SSL lib) or "sha2" (requiring sha256 or higher).
 
------BEGIN PGP SIGNATURE-----
+Wondering what the defaults should be.
 
-iQEzBAEBCAAdFiEEXHmveYAHrRp+prOviUUh18yA9HYFAlivTKMACgkQiUUh18yA
-9HYg4Af/R3jH+5TeDGVD/QVBaf9t/zbEI55xAS4UEPR21dHFVfMciJyqhjbAvL/b
-zMVuTLeRDT+TX6mTn8n46UtzoYItCLSGe6oQlvDBApqOvHxplRtfgkbO4qAFybm5
-Mkgy/3bZZmm8eP1f7g2ZBeGkBesDEp4kRYl/x9epPFSRmH2dxLgRe4yGtCNl92UN
-DaFSDtAb1I33JsU4lJCE4N/SsWDN2ORojYRxBicmNj1BSndWtbWjUMy7efzlcUUc
-dtRTrQ2MvjNgvoKc4w7Lm9o+iOym8RkhktG17LT1cnfWqOeQZMwli+loGUbxIob/
-3yPjvQvfVEaV5++YrlId1d+ch/HiIA==
-=L1VT
------END PGP SIGNATURE-----
+James
 
---Sig_/y4N5rm/Vvh2b=m7cA0Hd7QI--
+>
+> -Steffan
+>
+> ------------------------------------------------------------------------------
+> Check out the vibrant tech community on one of the world's most
+> engaging tech sites, SlashDot.org! http://sdm.link/slashdot
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+
 
