@@ -1,15 +1,14 @@
-Date: Fri, 24 Feb 2017 22:49:00 +0100
-From: Christian Hesse <list@...1798...>
-Message-ID: <20170224224900.52f0a022@...1799...>
-In-Reply-To: <20170224131307.45e14633@...1799...>
-References: <20170220160816.114598d9@...1799...>
-	<cover.1487859361.git.logout@...260...>
-	<20170223215707.60e567de@...1799...> <20170224131307.45e14633@...1799...>
+References: <003bd3ed-9a64-3e77-cd06-2212b82a6165@...515...>
+	<6a8f8780-a49c-9d1f-30ac-d3b804e9476b@...1435...>
+	<5cab0f4b-c40e-c11d-25e7-dc276d18317c@...515...>
+	<d86d9946-dfa1-785b-5fe5-fe44acadda18@...1435...>
+	<e0a6e693-96ee-3c3d-f17f-d62c45676b5a@...515...>
+From: Steffan Karger <steffan@...1856...>
+Message-ID: <4cfe9376-5bc1-51da-4082-9837b232a40f@...1856...>
+Date: Sat, 25 Feb 2017 00:10:57 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	boundary="Sig_/YrMbxqT/hQmEvU=UQw26_15";
-	protocol="application/pgp-signature"
-Subject: Re: [Openvpn-devel] [PATCH v3 00/15] Add support for OpenSSL 1.1.x
+In-Reply-To: <e0a6e693-96ee-3c3d-f17f-d62c45676b5a@...515...>
+Subject: Re: [Openvpn-devel] Should we use mbedTLS certificate profiles?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,56 +17,94 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Emmanuel Deloget <logout@...260...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---Sig_/YrMbxqT/hQmEvU=UQw26_15
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: quoted-printable
+Hi,
 
-Christian Hesse <list@...1798...> on Fri, 2017/02/24 13:13:
-> Christian Hesse <list@...1798...> on Thu, 2017/02/23 21:57:
-> > Built v3 against openssl 1.0.2k without issues, tests succeed and two
-> > instanced successfully established vpn connection (with server version
-> > 2.3.12 and 2.4.0).=20=20
->=20
-> Just tested a server instance with ancient client (version 2.1.4). Works =
-as
-> well.
->=20
-> I will try to restart another server instance later.
+On 24-02-17 22:28, James Yonan wrote:
+> On 24/02/2017 02:40, Steffan Karger wrote:
+>> On 23-02-17 22:41, James Yonan wrote:
+>>> On 23/02/2017 01:22, Steffan Karger wrote:
+>>>> On 22-02-17 19:48, James Yonan wrote:
+>>>>> mbedTLS 2 has a new feature that allows rejection of certificates if the
+>>>>> key size is too small or the signing hash is weak.
+>>>>>
+>>>>> The feature is controlled via struct mbedtls_x509_crt_profile.
+>>>>>
+>>>>> For example, you could specify that certificates must be at least 2048
+>>>>> bits and use a SHA-2 signing alg.
+>>>>>
+>>>>> Wondering if we should enable this via an option, or tie it into the
+>>>>> existing tls-version-min.
+>>>>>
+>>>>> The granular approach would be to have specific options for each limit,
+>>>>> such as ssl-min-key-size, ssl-require-sha2
+>>>>>
+>>>>> The bundled approach would be to take an existing option such as
+>>>>> tls-version-min and add additional constraints onto it.  For example, if
+>>>>> tls-version-min is 1.2 or higher, then also require minimum key size to
+>>>>> be 2048 and certificate signing hash to be SHA-2.
+>>>> OpenVPN 2.4 currently just uses mbed TLS' default profile, and we tell
+>>>> people to use stronger keys (RSA 2048+ / ECDSA) or a stronger hash
+>>>> function (SHA1+) if that causes trouble.
+>>>>
+>>>> If we are going to make this configurable, I think we should separate it
+>>>> from tls-version-min.  The main use case I see for using a lower
+>>>> security setting would be an out-of-the-admins-control CA, or something
+>>>> like (old) smart cards that don't support RSA-2048.  I wouldn't want to
+>>>> block people from enforcing TLS 1.2, because their smart card is crappy.
+>>>>
+>>>> So I think we'll have to add the relevant --tls-rsa-key-size-min,
+>>>> --tls-curves (could replace --ecdh-curves), --tls-digests options.  If
+>>>> we want to make it configurable, that is.
+>>> I think it needs to be configurable to allow for transitions to stronger
+>>> keys.
+>>>
+>>> For naming, how about --tls-rsa-key-size-min and --tls-cert-sign-min?
+>> Adding 'cert' in the option name is very good, it removes confusion
+>> between the TLS transcript digest and the cert digest.
+>>
+>> 'sign' reads like 'signature', while RSA (or ECDSA) is the signature
+>> algorithm, but 'SHAx' is the certificates message digest algorithm.
+>>
+>> So, I raise you '--tls-cert-digest-min' (or '--tls-cert-md-min'?).
+>>
+>>> For --tls-cert-sign-min, the choices could be "none" (anything allowed
+>>> by the underlying SSL lib) or "sha2" (requiring sha256 or higher).
+>> This makes sense for the SHA family, but 'or higher' becomes tricky when
+>> e.g. BLAKE2 enters the arena.  I'm uncertain whether we should worry
+>> about that.
+> 
+> I'm still somewhat on the fence about making these options granular vs. 
+> bundled.
 
-Just restarted the server. Here is the current client connect statistic:
+Yeah, I too find it hard to decide what the best approach is here.
+Being involved in OpenVPN the past few years has definitely learned me
+the importance of choosing the options right...
 
-      1  2.3.8
-      4  2.3.12
-      6  2.3.13
-      7  2.3.11
-     18  2.3.14
-     70  2.4.0
+> If we do granular, then we need to deal with every option, i.e. rsa key 
+> size, cert digests, curves, etc. and we need to establish defaults and a 
+> notion of "minimum" which is problematic as you mention above when new 
+> algs (such as BLAKE2 as you mention above) enter the mix and its not 
+> clear where to place them on the continuum.  Or avoid minimums by simple 
+> enumerating the whole whitelist.  But this can become unwieldy with so 
+> many options.
+> 
+> Using the bundled approach would be more like the mbedTLS cert profiles 
+> approach where you have a default that allows everything reasonable, and 
+> a somewhat stricter profile that requires RSA key sizes >= 2048 and 
+> disallows SHA1.  If we use this approach with OpenVPN, then we could 
+> have an option --tls-cert-profile <profile-name>.  We would of course 
+> need to define named profiles for this to work.
 
-So looks good for now. ;)
---=20
-main(a){char*c=3D/*    Schoene Gruesse                         */"B?IJj;MEH"
-"CX:;",b;for(a/*    Best regards             my address:    */=3D0;b=3Dc[a+=
-+];)
-putchar(b-1/(/*    Chris            cc -ox -xc - && ./x    */b/42*2-3)*42);}
+Something like --tls-cert-profile sounds good, I think.  It's decoupled
+from --tls-version-min (which I think is good), but still doesn't offer
+a gazillion combinations of configurations.  We good go for e.g.
+'legacy', 'default', 'suiteb' and perhaps something like 'paranoid'?
+We'd have to keep actively monitoring cryptographic advances, and kick
+out algs when they become deprecated and/or broken though.
 
---Sig_/YrMbxqT/hQmEvU=UQw26_15
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEXHmveYAHrRp+prOviUUh18yA9HYFAliwqkwACgkQiUUh18yA
-9HYGUQf/Q00S6NKnOWDGP1FP0khcni/d+ikqM8MgY47xneQ99/Vhmel+cXQfsDr6
-xU/1gn7yd3N4kw6FDPcu8idy6+Ppd2EzYiv2bu2fskZdJWRIJTrhmDnCQADhaVqa
-u9+2D2O068T/c0/f0e8w2zTFZ+INgcyTNTrdqL9qw3DHITluS0qNMYJ8Pi7KOo0J
-KIBzi6zvZFX3sfAyohFR19ksCY11WBkvqMNG+b5EQg4+r3nuryRW8zXlnrrDJ15N
-xmN58Fz6wgCZJBXXx5LTs0fvl6R5Ic/2iFPUOMcwJOytpv8E7ASlBL6DhdhcpCdW
-vEpteM1ggaZ2E4g0wv4nb4H0tYPtBw==
-=kHpK
------END PGP SIGNATURE-----
-
---Sig_/YrMbxqT/hQmEvU=UQw26_15--
+-Steffan
 
