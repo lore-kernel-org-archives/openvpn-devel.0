@@ -1,9 +1,7 @@
-Date: Fri, 24 Feb 2017 13:27:49 +0100 (CET)
-Message-Id: <201702241227.v1OCRnpg070896@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20170224122252.15199-1-list@...1798...>
-References: <20170224122252.15199-1-list@...1798...>
-Subject: [Openvpn-devel] [PATCH applied] Re: fix typo in notification message
+Date: Fri, 24 Feb 2017 14:52:22 +0100
+Message-Id: <20170224135222.44640-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH] Fix "--dev null"
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,30 +12,37 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Christian Hesse <mail@...1798...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-ACK.  See, I'm totally pro-systemd (today)!!
+To test whether a server is reachable and all the key handling is
+right, openvpn can connect with "--dev null --ifconfig-noexec" to
+avoid needing to the client with elevated privileges.
 
-Your patch has been applied to the master and release/2.4 branch.
+This was erroring out for no good reason (because the "set environment
+variables appropriately" code didn't know if this is a tun or tap
+device...) - treat --dev null as "tap", done.
 
-commit b13bc6c9570e00d12e26bb3b8e5bf9bdb0b16eff (master)
-commit 4c241acc67c1d6b42dbe1f6199c75d9f7f228ac2 (release/2.4)
-Author: Christian Hesse
-Date:   Fri Feb 24 13:22:52 2017 +0100
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+ src/openvpn/tun.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-     fix typo in notification message
-
-     Signed-off-by: Christian Hesse <mail@...1798...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20170224122252.15199-1-list@...1798...>
-     URL: http://www.mail-archive.com/search?l=mid&q=20170224122252.15199-1-list@...1798...
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index 31585b32..12ce99d5 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -560,7 +560,9 @@ is_tun_p2p(const struct tuntap *tt)
+ {
+     bool tun = false;
+ 
+-    if (tt->type == DEV_TYPE_TAP || (tt->type == DEV_TYPE_TUN && tt->topology == TOP_SUBNET))
++    if (tt->type == DEV_TYPE_TAP ||
++        (tt->type == DEV_TYPE_TUN && tt->topology == TOP_SUBNET) ||
++	tt->type == DEV_TYPE_NULL )
+     {
+         tun = false;
+     }
+-- 
+2.11.1
 
 
