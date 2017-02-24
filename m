@@ -1,9 +1,13 @@
+Date: Fri, 24 Feb 2017 15:34:16 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20170224143416.GW93896@...1296...>
 References: <20170224135222.44640-1-gert@...1296...>
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <caa34845-d758-4c93-4974-40728ff7f2ae@...515...>
-Date: Fri, 24 Feb 2017 16:32:14 +0200
+	<caa34845-d758-4c93-4974-40728ff7f2ae@...515...>
 MIME-Version: 1.0
-In-Reply-To: <20170224135222.44640-1-gert@...1296...>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="AQfDLMJ/cCCv3UHO"
+Content-Disposition: inline
+In-Reply-To: <caa34845-d758-4c93-4974-40728ff7f2ae@...515...>
 Subject: Re: [Openvpn-devel] [PATCH] Fix "--dev null"
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -13,54 +17,51 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="windows-1252"
+To: Samuli =?iso-8859-1?Q?Sepp=E4nen?= <samuli@...515...>
+Cc: openvpn-devel@lists.sourceforge.net
+
+--AQfDLMJ/cCCv3UHO
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
-To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+Content-Disposition: inline
 
 Hi,
 
-On 24/02/2017 15:52, Gert Doering wrote:
-> To test whether a server is reachable and all the key handling is
-> right, openvpn can connect with "--dev null --ifconfig-noexec" to
-> avoid needing to the client with elevated privileges.
-
-There seems to be a typo here. Did you mean "to avoid needing to
-_connect to_ the client with elevated privileges"?
-
+On Fri, Feb 24, 2017 at 04:32:14PM +0200, Samuli Sepp=E4nen wrote:
+> On 24/02/2017 15:52, Gert Doering wrote:
+> > To test whether a server is reachable and all the key handling is
+> > right, openvpn can connect with "--dev null --ifconfig-noexec" to
+> > avoid needing to the client with elevated privileges.
 >=20
-> This was erroring out for no good reason (because the "set environment
-> variables appropriately" code didn't know if this is a tun or tap
-> device...) - treat --dev null as "tap", done.
->=20
-> Signed-off-by: Gert Doering <gert@...1296...>
-> ---
->  src/openvpn/tun.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
->=20
-> diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-> index 31585b32..12ce99d5 100644
-> --- a/src/openvpn/tun.c
-> +++ b/src/openvpn/tun.c
-> @@ -560,7 +560,9 @@ is_tun_p2p(const struct tuntap *tt)
->  {
->      bool tun =3D false;
->=20=20
-> -    if (tt->type =3D=3D DEV_TYPE_TAP || (tt->type =3D=3D DEV_TYPE_TUN &&=
- tt->topology =3D=3D TOP_SUBNET))
-> +    if (tt->type =3D=3D DEV_TYPE_TAP ||
-> +        (tt->type =3D=3D DEV_TYPE_TUN && tt->topology =3D=3D TOP_SUBNET)=
- ||
-> +	tt->type =3D=3D DEV_TYPE_NULL )
->      {
->          tun =3D false;
->      }
->=20
+> There seems to be a typo here. Did you mean "to avoid needing to
+> _connect to_ the client with elevated privileges"?
 
+Actually "to _run_ the client" - indeed.
 
+gert
 --=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-irc freenode net: mattock
+--AQfDLMJ/cCCv3UHO
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJYsERoAAoJEB2Cnv7KVigS42sL/2qPAyHKrdNdINzzHFoqCS8/
+c7MwZ7GaE64wDBFwhDGPN2prcSjc1DL8/D+8UBEFylbU3QcwzvNnr32Yf1RHQotA
+3tk0rcHY7LvFGddLgqIu4OPIM6ZBIFKTjAcQ6PlXZHwD1vysC9T2faYaN/lo+aZE
+uiWQtK8fTceHAKXn901aOPj3D62GB6RuAuX/XmxXEktAfxZ4LYAAYA7o2l0jBokn
+9vhUKO5jnwDI0nWlZCACz2YolJlMAX6MlBHUNZSvR/zC2FORC8bC9JuwDkhlSTQ+
+cmfnqyjZ7KLJH7ZzJmysnvgbqoXNG663szcdoIlRPllnlO8FBlZlajkAf5QKdmr6
+9LNT29gBKJUK3yGvdeqcVVyCmbM/js5/hHjGqpM2yNW8woBCYHAthdrvqGTSYTGc
+K98X/3iIY2EBYvAc8xliCFdk9fdEJQOYUJ4qOn6jQWhrb1WINr3qb+M4UWLV4Y7I
+KrCGxmJbLvAGrM7ZaVKeemTUHjk/+chamSHJlsPyCA==
+=68+Y
+-----END PGP SIGNATURE-----
+
+--AQfDLMJ/cCCv3UHO--
 
