@@ -1,8 +1,15 @@
-From: David Sommerseth <davids@...515...>
-Date: Sat, 25 Feb 2017 03:02:29 +0100
-Message-Id: <20170225020229.17287-1-davids@...515...>
-Subject: [Openvpn-devel] [PATCH] cleanup: Remove faulty env processing
-	functions
+References: <003bd3ed-9a64-3e77-cd06-2212b82a6165@...515...>
+	<6a8f8780-a49c-9d1f-30ac-d3b804e9476b@...1435...>
+	<5cab0f4b-c40e-c11d-25e7-dc276d18317c@...515...>
+	<d86d9946-dfa1-785b-5fe5-fe44acadda18@...1435...>
+	<e0a6e693-96ee-3c3d-f17f-d62c45676b5a@...515...>
+	<4cfe9376-5bc1-51da-4082-9837b232a40f@...1856...>
+From: James Yonan <james@...515...>
+Message-ID: <1c3fb5b3-39c8-1c4b-c531-9cb2480a2382@...515...>
+Date: Fri, 24 Feb 2017 23:04:51 -0700
+MIME-Version: 1.0
+In-Reply-To: <4cfe9376-5bc1-51da-4082-9837b232a40f@...1856...>
+Subject: Re: [Openvpn-devel] Should we use mbedTLS certificate profiles?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,99 +18,98 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-The env_set_add_to_environmenti() and env_set_remove_from_environment()
-functions where not used in the code at all and they would cause an
-ASSERT() in setenv_str_ex() later on, as it would not allow the
-struct env_set *es pointer to be NULL (misc.c:807).
+On 24/02/2017 16:10, Steffan Karger wrote:
 
-Signed-off-by: David Sommerseth <davids@...515...>
----
- src/openvpn/misc.c | 51 ---------------------------------------------------
- src/openvpn/misc.h |  4 ----
- 2 files changed, 55 deletions(-)
+> Hi,
+>
+> On 24-02-17 22:28, James Yonan wrote:
+>> On 24/02/2017 02:40, Steffan Karger wrote:
+>>> On 23-02-17 22:41, James Yonan wrote:
+>>>> On 23/02/2017 01:22, Steffan Karger wrote:
+>>>>> On 22-02-17 19:48, James Yonan wrote:
+>>>>>> mbedTLS 2 has a new feature that allows rejection of certificates if the
+>>>>>> key size is too small or the signing hash is weak.
+>>>>>>
+>>>>>> The feature is controlled via struct mbedtls_x509_crt_profile.
+>>>>>>
+>>>>>> For example, you could specify that certificates must be at least 2048
+>>>>>> bits and use a SHA-2 signing alg.
+>>>>>>
+>>>>>> Wondering if we should enable this via an option, or tie it into the
+>>>>>> existing tls-version-min.
+>>>>>>
+>>>>>> The granular approach would be to have specific options for each limit,
+>>>>>> such as ssl-min-key-size, ssl-require-sha2
+>>>>>>
+>>>>>> The bundled approach would be to take an existing option such as
+>>>>>> tls-version-min and add additional constraints onto it.  For example, if
+>>>>>> tls-version-min is 1.2 or higher, then also require minimum key size to
+>>>>>> be 2048 and certificate signing hash to be SHA-2.
+>>>>> OpenVPN 2.4 currently just uses mbed TLS' default profile, and we tell
+>>>>> people to use stronger keys (RSA 2048+ / ECDSA) or a stronger hash
+>>>>> function (SHA1+) if that causes trouble.
+>>>>>
+>>>>> If we are going to make this configurable, I think we should separate it
+>>>>> from tls-version-min.  The main use case I see for using a lower
+>>>>> security setting would be an out-of-the-admins-control CA, or something
+>>>>> like (old) smart cards that don't support RSA-2048.  I wouldn't want to
+>>>>> block people from enforcing TLS 1.2, because their smart card is crappy.
+>>>>>
+>>>>> So I think we'll have to add the relevant --tls-rsa-key-size-min,
+>>>>> --tls-curves (could replace --ecdh-curves), --tls-digests options.  If
+>>>>> we want to make it configurable, that is.
+>>>> I think it needs to be configurable to allow for transitions to stronger
+>>>> keys.
+>>>>
+>>>> For naming, how about --tls-rsa-key-size-min and --tls-cert-sign-min?
+>>> Adding 'cert' in the option name is very good, it removes confusion
+>>> between the TLS transcript digest and the cert digest.
+>>>
+>>> 'sign' reads like 'signature', while RSA (or ECDSA) is the signature
+>>> algorithm, but 'SHAx' is the certificates message digest algorithm.
+>>>
+>>> So, I raise you '--tls-cert-digest-min' (or '--tls-cert-md-min'?).
+>>>
+>>>> For --tls-cert-sign-min, the choices could be "none" (anything allowed
+>>>> by the underlying SSL lib) or "sha2" (requiring sha256 or higher).
+>>> This makes sense for the SHA family, but 'or higher' becomes tricky when
+>>> e.g. BLAKE2 enters the arena.  I'm uncertain whether we should worry
+>>> about that.
+>> I'm still somewhat on the fence about making these options granular vs.
+>> bundled.
+> Yeah, I too find it hard to decide what the best approach is here.
+> Being involved in OpenVPN the past few years has definitely learned me
+> the importance of choosing the options right...
+>
+>> If we do granular, then we need to deal with every option, i.e. rsa key
+>> size, cert digests, curves, etc. and we need to establish defaults and a
+>> notion of "minimum" which is problematic as you mention above when new
+>> algs (such as BLAKE2 as you mention above) enter the mix and its not
+>> clear where to place them on the continuum.  Or avoid minimums by simple
+>> enumerating the whole whitelist.  But this can become unwieldy with so
+>> many options.
+>>
+>> Using the bundled approach would be more like the mbedTLS cert profiles
+>> approach where you have a default that allows everything reasonable, and
+>> a somewhat stricter profile that requires RSA key sizes >= 2048 and
+>> disallows SHA1.  If we use this approach with OpenVPN, then we could
+>> have an option --tls-cert-profile <profile-name>.  We would of course
+>> need to define named profiles for this to work.
+> Something like --tls-cert-profile sounds good, I think.  It's decoupled
+> from --tls-version-min (which I think is good), but still doesn't offer
+> a gazillion combinations of configurations.  We good go for e.g.
+> 'legacy', 'default', 'suiteb' and perhaps something like 'paranoid'?
+> We'd have to keep actively monitoring cryptographic advances, and kick
+> out algs when they become deprecated and/or broken though.
+>
 
-diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
-index a2f45b6..68d0687 100644
---- a/src/openvpn/misc.c
-+++ b/src/openvpn/misc.c
-@@ -701,57 +701,6 @@ env_set_inherit(struct env_set *es, const struct env_set *src)
-     }
- }
- 
--void
--env_set_add_to_environment(const struct env_set *es)
--{
--    if (es)
--    {
--        struct gc_arena gc = gc_new();
--        const struct env_item *e;
--
--        e = es->list;
--
--        while (e)
--        {
--            const char *name;
--            const char *value;
--
--            if (deconstruct_name_value(e->string, &name, &value, &gc))
--            {
--                setenv_str(NULL, name, value);
--            }
--
--            e = e->next;
--        }
--        gc_free(&gc);
--    }
--}
--
--void
--env_set_remove_from_environment(const struct env_set *es)
--{
--    if (es)
--    {
--        struct gc_arena gc = gc_new();
--        const struct env_item *e;
--
--        e = es->list;
--
--        while (e)
--        {
--            const char *name;
--            const char *value;
--
--            if (deconstruct_name_value(e->string, &name, &value, &gc))
--            {
--                setenv_del(NULL, name);
--            }
--
--            e = e->next;
--        }
--        gc_free(&gc);
--    }
--}
- 
- /* add/modify/delete environmental strings */
- 
-diff --git a/src/openvpn/misc.h b/src/openvpn/misc.h
-index 16be621..009767f 100644
---- a/src/openvpn/misc.h
-+++ b/src/openvpn/misc.h
-@@ -161,10 +161,6 @@ void env_set_print(int msglevel, const struct env_set *es);
- 
- void env_set_inherit(struct env_set *es, const struct env_set *src);
- 
--void env_set_add_to_environment(const struct env_set *es);
--
--void env_set_remove_from_environment(const struct env_set *es);
--
- /* Make arrays of strings */
- 
- const char **make_env_array(const struct env_set *es,
--- 
-2.11.0
+That sounds good.  So how about legacy allows 1024-bit RSA keys and 
+sha1, default requires 2048-bit keys and sha256 or higher?
+
+James
 
 
