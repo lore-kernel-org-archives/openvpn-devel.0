@@ -1,14 +1,12 @@
-Date: Sat, 25 Feb 2017 10:19:08 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20170225091908.GX93896@...1296...>
-References: <20170225004014.28638-1-a@...2181...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="KLR62ZwG+3BuLtMl"
-Content-Disposition: inline
-In-Reply-To: <20170225004014.28638-1-a@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH] Ignore auth-nocache for auth-user-pass
- if auth-token is pushed
+In-Reply-To: <1487874133-28780-1-git-send-email-chipitsine@...277...>
+References: <1487874133-28780-1-git-send-email-chipitsine@...277...>
+From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
+Date: Sat, 25 Feb 2017 14:37:50 +0500
+Message-ID: <CAFHpkQFgDC6mKe=VhR+Nh-xfD8imT+1V5pD_RWooqz8Sk1j5Jg@...278...>
+Content-Type: multipart/alternative; boundary=f403045f165296e89e0549579916
+Subject: Re: [Openvpn-devel] [PATCH] travis-ci: add "make distcheck" to test
+	scenario
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,51 +15,84 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Antonio Quartulli <a@...2181...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---KLR62ZwG+3BuLtMl
-Content-Type: text/plain; charset="us-ascii"
+--f403045f165296e89e0549579916
+Content-Type: text/plain; charset=UTF-8
+
+ack ? nack ?
+
+2017-02-23 23:22 GMT+05:00 Ilya Shipitsin <chipitsine@...277...>:
+
+> in rare cases openvpn is built from tarball, it happens during "installer
+> build"
+> process. "make distcheck" helps to prevent problems during such builds.
+>
+> Signed-off-by: Ilya Shipitsin <chipitsine@...277...>
+> ---
+>  .travis.yml | 1 +
+>  1 file changed, 1 insertion(+)
+>
+> diff --git a/.travis.yml b/.travis.yml
+> index a68374a..6ebfa39 100644
+> --- a/.travis.yml
+> +++ b/.travis.yml
+> @@ -79,6 +79,7 @@ script:
+>    - if [ "${TRAVIS_OS_NAME}" = "osx"   ]; then export
+> DYLD_LIBRARY_PATH="${PREFIX}/lib:${DYLD_LIBRARY_PATH}"; fi
+>    - autoreconf -vi
+>    - ./configure --with-crypto-library="${SSLLIB}" ${EXTRA_CONFIG} ||
+> (cat config.log && exit 1)
+> +  - make distcheck > build.log 2>&1 || (cat build.log && exit 1)
+>    - make -j$JOBS
+>    - src/openvpn/openvpn --version || true
+>    - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then ldd src/openvpn/openvpn; fi
+> --
+> 2.5.5
+>
+>
+
+--f403045f165296e89e0549579916
+Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
+<div dir=3D"ltr">ack ? nack ?<br></div><div class=3D"gmail_extra"><br><div =
+class=3D"gmail_quote">2017-02-23 23:22 GMT+05:00 Ilya Shipitsin <span dir=
+=3D"ltr">&lt;<a href=3D"mailto:chipitsine@...277..." target=3D"_blank">chip=
+itsine@...277...</a>&gt;</span>:<br><blockquote class=3D"gmail_quote" style=
+=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">in rare =
+cases openvpn is built from tarball, it happens during &quot;installer buil=
+d&quot;<br>
+process. &quot;make distcheck&quot; helps to prevent problems during such b=
+uilds.<br>
+<br>
+Signed-off-by: Ilya Shipitsin &lt;<a href=3D"mailto:chipitsine@...277...">c=
+hipitsine@...277...</a>&gt;<br>
+---<br>
+=C2=A0.travis.yml | 1 +<br>
+=C2=A01 file changed, 1 insertion(+)<br>
+<br>
+diff --git a/.travis.yml b/.travis.yml<br>
+index a68374a..6ebfa39 100644<br>
+--- a/.travis.yml<br>
++++ b/.travis.yml<br>
+@@ -79,6 +79,7 @@ script:<br>
+=C2=A0 =C2=A0- if [ &quot;${TRAVIS_OS_NAME}&quot; =3D &quot;osx&quot;=C2=A0=
+ =C2=A0]; then export DYLD_LIBRARY_PATH=3D&quot;${PREFIX}/<wbr>lib:${DYLD_L=
+IBRARY_PATH}&quot;; fi<br>
+=C2=A0 =C2=A0- autoreconf -vi<br>
+=C2=A0 =C2=A0- ./configure --with-crypto-library=3D&quot;${<wbr>SSLLIB}&quo=
+t; ${EXTRA_CONFIG} || (cat config.log &amp;&amp; exit 1)<br>
++=C2=A0 - make distcheck &gt; build.log 2&gt;&amp;1 || (cat build.log &amp;=
+&amp; exit 1)<br>
+=C2=A0 =C2=A0- make -j$JOBS<br>
+=C2=A0 =C2=A0- src/openvpn/openvpn --version || true<br>
+=C2=A0 =C2=A0- if [ &quot;${TRAVIS_OS_NAME}&quot; =3D &quot;linux&quot; ]; =
+then ldd src/openvpn/openvpn; fi<br>
+<span class=3D"HOEnZb"><font color=3D"#888888">--<br>
+2.5.5<br>
+<br>
+</font></span></blockquote></div><br></div>
 
-On Sat, Feb 25, 2017 at 08:40:14AM +0800, Antonio Quartulli wrote:
-> When the auth-token option is pushed from the server to the client,
-> the latter has to ignore the auth-nocache directive (if specified).
->=20
-> The password will now be substituted by the unique token, therefore
-> it can't be wiped out, otherwise the next renegotiation will fail.
-
-Without looking at the patch itself - is this suitable material for
-inclusion in 2.3?  We do have quite a few "slow adopters" - and this
-is a very useful feature to mitigate SWEET32 in 2FA environments...
-
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---KLR62ZwG+3BuLtMl
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJYsUwMAAoJEB2Cnv7KVigSYJAL/18OlgGl+chnhNr/MlcC3JRB
-FlD54GCvDovXSoZdjSjDDHphIufgVgi/BdJW1GLFdWJugS43oLEw1YHaiMUwtHmO
-aj3D5NgU5iQ93xMWR4GwuK6VEEEUaLk9djGt1wJjs4UsM8MObuKLSwsw8Bb/iGnK
-OE5VRBXbnd7ruqC1pieidiZv6SZpUvFw0fA++0bNTweKGFhIs9RTJjnj6VP1yHf3
-avtDqc/5msgoOQmU/BG74oza3UG0UDqUmnTmOEdVHmzMr27+zWoQlIEIx4IFdkgT
-O/fphhj8IpFG6XZyZEIYqkwuUg11DEhpeBlP2Dc/NxBoLtk0w8thjNTrJFJkd+xD
-IxjMwHRbViePaiFW6W2x7/VqPwR5c5UNtJKWJ/ar/xphdlui+YDhmb2mlMSG4Vrh
-TTLwzTTsyAp5pE834ZvEa43MBebrjxbj49uIoyV3Ut6psO6qjI0N4E20LAFhA8iE
-a8qcFZLIFD95G9kqAg7yvFP/v3O3glYBnaBMSo+7pg==
-=NH0L
------END PGP SIGNATURE-----
-
---KLR62ZwG+3BuLtMl--
+--f403045f165296e89e0549579916--
 
