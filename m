@@ -1,14 +1,8 @@
-References: <003bd3ed-9a64-3e77-cd06-2212b82a6165@...515...>
-	<6a8f8780-a49c-9d1f-30ac-d3b804e9476b@...1435...>
-	<5cab0f4b-c40e-c11d-25e7-dc276d18317c@...515...>
-	<d86d9946-dfa1-785b-5fe5-fe44acadda18@...1435...>
-	<e0a6e693-96ee-3c3d-f17f-d62c45676b5a@...515...>
-From: Steffan Karger <steffan@...1856...>
-Message-ID: <4cfe9376-5bc1-51da-4082-9837b232a40f@...1856...>
-Date: Sat, 25 Feb 2017 00:10:57 +0100
-MIME-Version: 1.0
-In-Reply-To: <e0a6e693-96ee-3c3d-f17f-d62c45676b5a@...515...>
-Subject: Re: [Openvpn-devel] Should we use mbedTLS certificate profiles?
+From: Antonio Quartulli <a@...2181...>
+Date: Sat, 25 Feb 2017 08:40:14 +0800
+Message-Id: <20170225004014.28638-1-a@...2181...>
+Subject: [Openvpn-devel] [PATCH] Ignore auth-nocache for auth-user-pass if
+	auth-token is pushed
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,94 +11,168 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
+Cc: Antonio Quartulli <a@...2181...>
 
-Hi,
+When the auth-token option is pushed from the server to the client,
+the latter has to ignore the auth-nocache directive (if specified).
 
-On 24-02-17 22:28, James Yonan wrote:
-> On 24/02/2017 02:40, Steffan Karger wrote:
->> On 23-02-17 22:41, James Yonan wrote:
->>> On 23/02/2017 01:22, Steffan Karger wrote:
->>>> On 22-02-17 19:48, James Yonan wrote:
->>>>> mbedTLS 2 has a new feature that allows rejection of certificates if the
->>>>> key size is too small or the signing hash is weak.
->>>>>
->>>>> The feature is controlled via struct mbedtls_x509_crt_profile.
->>>>>
->>>>> For example, you could specify that certificates must be at least 2048
->>>>> bits and use a SHA-2 signing alg.
->>>>>
->>>>> Wondering if we should enable this via an option, or tie it into the
->>>>> existing tls-version-min.
->>>>>
->>>>> The granular approach would be to have specific options for each limit,
->>>>> such as ssl-min-key-size, ssl-require-sha2
->>>>>
->>>>> The bundled approach would be to take an existing option such as
->>>>> tls-version-min and add additional constraints onto it.  For example, if
->>>>> tls-version-min is 1.2 or higher, then also require minimum key size to
->>>>> be 2048 and certificate signing hash to be SHA-2.
->>>> OpenVPN 2.4 currently just uses mbed TLS' default profile, and we tell
->>>> people to use stronger keys (RSA 2048+ / ECDSA) or a stronger hash
->>>> function (SHA1+) if that causes trouble.
->>>>
->>>> If we are going to make this configurable, I think we should separate it
->>>> from tls-version-min.  The main use case I see for using a lower
->>>> security setting would be an out-of-the-admins-control CA, or something
->>>> like (old) smart cards that don't support RSA-2048.  I wouldn't want to
->>>> block people from enforcing TLS 1.2, because their smart card is crappy.
->>>>
->>>> So I think we'll have to add the relevant --tls-rsa-key-size-min,
->>>> --tls-curves (could replace --ecdh-curves), --tls-digests options.  If
->>>> we want to make it configurable, that is.
->>> I think it needs to be configurable to allow for transitions to stronger
->>> keys.
->>>
->>> For naming, how about --tls-rsa-key-size-min and --tls-cert-sign-min?
->> Adding 'cert' in the option name is very good, it removes confusion
->> between the TLS transcript digest and the cert digest.
->>
->> 'sign' reads like 'signature', while RSA (or ECDSA) is the signature
->> algorithm, but 'SHAx' is the certificates message digest algorithm.
->>
->> So, I raise you '--tls-cert-digest-min' (or '--tls-cert-md-min'?).
->>
->>> For --tls-cert-sign-min, the choices could be "none" (anything allowed
->>> by the underlying SSL lib) or "sha2" (requiring sha256 or higher).
->> This makes sense for the SHA family, but 'or higher' becomes tricky when
->> e.g. BLAKE2 enters the arena.  I'm uncertain whether we should worry
->> about that.
-> 
-> I'm still somewhat on the fence about making these options granular vs. 
-> bundled.
+The password will now be substituted by the unique token, therefore
+it can't be wiped out, otherwise the next renegotiation will fail.
 
-Yeah, I too find it hard to decide what the best approach is here.
-Being involved in OpenVPN the past few years has definitely learned me
-the importance of choosing the options right...
+Trac: #840
+Cc: David Sommerseth <openvpn@...2080...>
+Signed-off-by: Antonio Quartulli <a@...2181...>
+---
+ src/openvpn/init.c | 12 ++++++++++++
+ src/openvpn/misc.c |  7 ++++++-
+ src/openvpn/misc.h |  2 ++
+ src/openvpn/ssl.c  | 33 ++++++++++++++++++++++++++++++++-
+ src/openvpn/ssl.h  |  2 ++
+ 5 files changed, 54 insertions(+), 2 deletions(-)
 
-> If we do granular, then we need to deal with every option, i.e. rsa key 
-> size, cert digests, curves, etc. and we need to establish defaults and a 
-> notion of "minimum" which is problematic as you mention above when new 
-> algs (such as BLAKE2 as you mention above) enter the mix and its not 
-> clear where to place them on the continuum.  Or avoid minimums by simple 
-> enumerating the whole whitelist.  But this can become unwieldy with so 
-> many options.
-> 
-> Using the bundled approach would be more like the mbedTLS cert profiles 
-> approach where you have a default that allows everything reasonable, and 
-> a somewhat stricter profile that requires RSA key sizes >= 2048 and 
-> disallows SHA1.  If we use this approach with OpenVPN, then we could 
-> have an option --tls-cert-profile <profile-name>.  We would of course 
-> need to define named profiles for this to work.
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index ff1551ea..3c0bb32b 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -1383,6 +1383,18 @@ initialization_sequence_completed(struct context *c, const unsigned int flags)
+     /* If we delayed UID/GID downgrade or chroot, do it now */
+     do_uid_gid_chroot(c, true);
+ 
++    /*
++     * In some cases (i.e. when receiving auth-token via
++     * push-reply) the auth-nocache option configured on the
++     * client is overridden; for this reason we have to wait
++     * for the push-reply message before attempting to wipe
++     * the user/pass entered by the user
++     */
++    if (c->options.mode == MODE_POINT_TO_POINT)
++    {
++        delayed_auth_pass_purge();
++    }
++
+     /* Test if errors */
+     if (flags & ISC_ERRORS)
+     {
+diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
+index a2f45b61..e6678ec8 100644
+--- a/src/openvpn/misc.c
++++ b/src/openvpn/misc.c
+@@ -1480,7 +1480,11 @@ purge_user_pass(struct user_pass *up, const bool force)
+         secure_memzero(up, sizeof(*up));
+         up->nocache = nocache;
+     }
+-    else if (!warn_shown)
++    /*
++     * don't show warning if the pass has been replaced by a token: this is an
++     * artificial "auth-nocache"
++     */
++    else if (!warn_shown && (!up->tokenized))
+     {
+         msg(M_WARN, "WARNING: this configuration may cache passwords in memory -- use the auth-nocache option to prevent this");
+         warn_shown = true;
+@@ -1494,6 +1498,7 @@ set_auth_token(struct user_pass *up, const char *token)
+     {
+         CLEAR(up->password);
+         strncpynt(up->password, token, USER_PASS_LEN);
++        up->tokenized = true;
+     }
+ }
+ 
+diff --git a/src/openvpn/misc.h b/src/openvpn/misc.h
+index 16be6219..201ebf62 100644
+--- a/src/openvpn/misc.h
++++ b/src/openvpn/misc.h
+@@ -206,6 +206,8 @@ struct user_pass
+ {
+     bool defined;
+     bool nocache;
++    bool tokenized; /* true if password has been substituted by a token */
++    bool wait_for_push; /* true if this object is waiting for a push-reply */
+ 
+ /* max length of username/password */
+ #ifdef ENABLE_PKCS11
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 86450fe0..ce301560 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -452,6 +452,8 @@ ssl_set_auth_nocache(void)
+ {
+     passbuf.nocache = true;
+     auth_user_pass.nocache = true;
++    /* wait for push-reply, because auth-token may invert nocache */
++    auth_user_pass.wait_for_push = true;
+ }
+ 
+ /*
+@@ -460,6 +462,14 @@ ssl_set_auth_nocache(void)
+ void
+ ssl_set_auth_token(const char *token)
+ {
++    if (auth_user_pass.nocache)
++    {
++        msg(M_INFO,
++            "auth-token received, disabling auth-nocache for the "
++            "authentication token");
++        auth_user_pass.nocache = false;
++    }
++
+     set_auth_token(&auth_user_pass, token);
+ }
+ 
+@@ -2383,7 +2393,21 @@ key_method_2_write(struct buffer *buf, struct tls_session *session)
+         {
+             goto error;
+         }
+-        purge_user_pass(&auth_user_pass, false);
++        /* if auth-nocache was specified, the auth_user_pass object reaches
++         * a "complete" state only after having received the push-reply
++         * message.
++         * This is the case because auth-token statement in a push-reply would
++         * invert its nocache.
++         *
++         * For this reason, skip the purge operation here if no push-reply
++         * message has been received yet.
++         *
++         * This normally happens upon first negotiation only.
++         */
++        if (!auth_user_pass.wait_for_push)
++        {
++            purge_user_pass(&auth_user_pass, false);
++        }
+     }
+     else
+     {
+@@ -4214,6 +4238,13 @@ done:
+     return BSTR(&out);
+ }
+ 
++void
++delayed_auth_pass_purge(void)
++{
++    auth_user_pass.wait_for_push = false;
++    purge_user_pass(&auth_user_pass, false);
++}
++
+ #else  /* if defined(ENABLE_CRYPTO) */
+ static void
+ dummy(void)
+diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
+index ed1344e7..33a02544 100644
+--- a/src/openvpn/ssl.h
++++ b/src/openvpn/ssl.h
+@@ -591,6 +591,8 @@ void show_tls_performance_stats(void);
+ /*#define EXTRACT_X509_FIELD_TEST*/
+ void extract_x509_field_test(void);
+ 
++void delayed_auth_pass_purge(void);
++
+ #endif /* ENABLE_CRYPTO */
+ 
+ #endif /* ifndef OPENVPN_SSL_H */
+-- 
+2.11.1
 
-Something like --tls-cert-profile sounds good, I think.  It's decoupled
-from --tls-version-min (which I think is good), but still doesn't offer
-a gazillion combinations of configurations.  We good go for e.g.
-'legacy', 'default', 'suiteb' and perhaps something like 'paranoid'?
-We'd have to keep actively monitoring cryptographic advances, and kick
-out algs when they become deprecated and/or broken though.
-
--Steffan
 
