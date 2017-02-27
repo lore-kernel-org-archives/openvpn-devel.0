@@ -1,11 +1,17 @@
-References: <1488045604-25460-1-git-send-email-chipitsine@...277...>
-From: Steffan Karger <steffan@...1856...>
-Message-ID: <d93f03a5-790f-c68d-83c4-a72b92b9a156@...1856...>
-Date: Sun, 26 Feb 2017 15:50:45 +0100
+From: James Yonan <james@...515...>
+References: <003bd3ed-9a64-3e77-cd06-2212b82a6165@...515...>
+	<6a8f8780-a49c-9d1f-30ac-d3b804e9476b@...1435...>
+	<5cab0f4b-c40e-c11d-25e7-dc276d18317c@...515...>
+	<d86d9946-dfa1-785b-5fe5-fe44acadda18@...1435...>
+	<e0a6e693-96ee-3c3d-f17f-d62c45676b5a@...515...>
+	<4cfe9376-5bc1-51da-4082-9837b232a40f@...1856...>
+	<1c3fb5b3-39c8-1c4b-c531-9cb2480a2382@...515...>
+	<13666431-ed44-1ac1-2fef-fe295b33cc97@...1856...>
+Message-ID: <419e734c-8879-8bdd-e6cf-94dd16de86cc@...515...>
+Date: Mon, 27 Feb 2017 15:06:46 -0700
 MIME-Version: 1.0
-In-Reply-To: <1488045604-25460-1-git-send-email-chipitsine@...277...>
-Subject: Re: [Openvpn-devel] [PATCH] travis-ci: add "make distcheck" to test
- scenario, V2
+In-Reply-To: <13666431-ed44-1ac1-2fef-fe295b33cc97@...1856...>
+Subject: Re: [Openvpn-devel] Should we use mbedTLS certificate profiles?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,43 +20,116 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=windows-1252; format=flowed
 Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
+On 25/02/2017 08:40, Steffan Karger wrote:
 
+> On 25-02-17 07:04, James Yonan wrote:
+>> On 24/02/2017 16:10, Steffan Karger wrote:
+>>> On 24-02-17 22:28, James Yonan wrote:
+>>>> On 24/02/2017 02:40, Steffan Karger wrote:
+>>>>> On 23-02-17 22:41, James Yonan wrote:
+>>>>>> On 23/02/2017 01:22, Steffan Karger wrote:
+>>>>>>> On 22-02-17 19:48, James Yonan wrote:
+>>>>>>>> mbedTLS 2 has a new feature that allows rejection of certificates if the
+>>>>>>>> key size is too small or the signing hash is weak.
+>>>>>>>>
+>>>>>>>> The feature is controlled via struct mbedtls_x509_crt_profile.
+>>>>>>>>
+>>>>>>>> For example, you could specify that certificates must be at least 2048
+>>>>>>>> bits and use a SHA-2 signing alg.
+>>>>>>>>
+>>>>>>>> Wondering if we should enable this via an option, or tie it into the
+>>>>>>>> existing tls-version-min.
+>>>>>>>>
+>>>>>>>> The granular approach would be to have specific options for each limit,
+>>>>>>>> such as ssl-min-key-size, ssl-require-sha2
+>>>>>>>>
+>>>>>>>> The bundled approach would be to take an existing option such as
+>>>>>>>> tls-version-min and add additional constraints onto it.  For example, if
+>>>>>>>> tls-version-min is 1.2 or higher, then also require minimum key size to
+>>>>>>>> be 2048 and certificate signing hash to be SHA-2.
+>>>>>>> OpenVPN 2.4 currently just uses mbed TLS' default profile, and we tell
+>>>>>>> people to use stronger keys (RSA 2048+ / ECDSA) or a stronger hash
+>>>>>>> function (SHA1+) if that causes trouble.
+>>>>>>>
+>>>>>>> If we are going to make this configurable, I think we should separate it
+>>>>>>> from tls-version-min.  The main use case I see for using a lower
+>>>>>>> security setting would be an out-of-the-admins-control CA, or something
+>>>>>>> like (old) smart cards that don't support RSA-2048.  I wouldn't want to
+>>>>>>> block people from enforcing TLS 1.2, because their smart card is crappy.
+>>>>>>>
+>>>>>>> So I think we'll have to add the relevant --tls-rsa-key-size-min,
+>>>>>>> --tls-curves (could replace --ecdh-curves), --tls-digests options.  If
+>>>>>>> we want to make it configurable, that is.
+>>>>>> I think it needs to be configurable to allow for transitions to stronger
+>>>>>> keys.
+>>>>>>
+>>>>>> For naming, how about --tls-rsa-key-size-min and --tls-cert-sign-min?
+>>>>> Adding 'cert' in the option name is very good, it removes confusion
+>>>>> between the TLS transcript digest and the cert digest.
+>>>>>
+>>>>> 'sign' reads like 'signature', while RSA (or ECDSA) is the signature
+>>>>> algorithm, but 'SHAx' is the certificates message digest algorithm.
+>>>>>
+>>>>> So, I raise you '--tls-cert-digest-min' (or '--tls-cert-md-min'?).
+>>>>>
+>>>>>> For --tls-cert-sign-min, the choices could be "none" (anything allowed
+>>>>>> by the underlying SSL lib) or "sha2" (requiring sha256 or higher).
+>>>>> This makes sense for the SHA family, but 'or higher' becomes tricky when
+>>>>> e.g. BLAKE2 enters the arena.  I'm uncertain whether we should worry
+>>>>> about that.
+>>>> I'm still somewhat on the fence about making these options granular vs.
+>>>> bundled.
+>>> Yeah, I too find it hard to decide what the best approach is here.
+>>> Being involved in OpenVPN the past few years has definitely learned me
+>>> the importance of choosing the options right...
+>>>
+>>>> If we do granular, then we need to deal with every option, i.e. rsa key
+>>>> size, cert digests, curves, etc. and we need to establish defaults and a
+>>>> notion of "minimum" which is problematic as you mention above when new
+>>>> algs (such as BLAKE2 as you mention above) enter the mix and its not
+>>>> clear where to place them on the continuum.  Or avoid minimums by simple
+>>>> enumerating the whole whitelist.  But this can become unwieldy with so
+>>>> many options.
+>>>>
+>>>> Using the bundled approach would be more like the mbedTLS cert profiles
+>>>> approach where you have a default that allows everything reasonable, and
+>>>> a somewhat stricter profile that requires RSA key sizes >= 2048 and
+>>>> disallows SHA1.  If we use this approach with OpenVPN, then we could
+>>>> have an option --tls-cert-profile <profile-name>.  We would of course
+>>>> need to define named profiles for this to work.
+>>> Something like --tls-cert-profile sounds good, I think.  It's decoupled
+>>> from --tls-version-min (which I think is good), but still doesn't offer
+>>> a gazillion combinations of configurations.  We good go for e.g.
+>>> 'legacy', 'default', 'suiteb' and perhaps something like 'paranoid'?
+>>> We'd have to keep actively monitoring cryptographic advances, and kick
+>>> out algs when they become deprecated and/or broken though.
+>>>
+>> That sounds good.  So how about legacy allows 1024-bit RSA keys and
+>> sha1, default requires 2048-bit keys and sha256 or higher?
+>>
+> I'd say so.  Something like:
+>
+> legacy: RSA 1024+, SHA1+, all curves
+> default: RSA 2048+, SHA2+, all curves
+> suiteb: no RSA, SHA256/SHA384, P-256/P-384
+>
+> As long as we kick anything that's deprecated out of 'default', that
+> should probably suffice.
 
-On 25-02-17 19:00, Ilya Shipitsin wrote:
-> in rare cases openvpn is built from tarball, it happens during "installer build"
-> process. "make distcheck" helps to prevent problems during such builds.
-> 
-> V2: limit "make distcheck" to one build configuration
-> Signed-off-by: Ilya Shipitsin <chipitsine@...277...>
-> ---
->  .travis.yml | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/.travis.yml b/.travis.yml
-> index a68374a..3c0aa7d 100644
-> --- a/.travis.yml
-> +++ b/.travis.yml
-> @@ -33,7 +33,7 @@ matrix:
->      - env: SSLLIB="mbedtls"
->        os: linux
->        compiler: clang
-> -    - env: SSLLIB="openssl" EXTRA_CONFIG="--disable-crypto"
-> +    - env: SSLLIB="openssl" EXTRA_CONFIG="--disable-crypto" EXTRA_SCRIPT="make distcheck"
->        os: linux
->        compiler: clang
->      - env: SSLLIB="openssl" EXTRA_CONFIG="--disable-lzo"
-> @@ -84,3 +84,4 @@ script:
->    - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then ldd src/openvpn/openvpn; fi
->    - if [ "${TRAVIS_OS_NAME}" = "osx" ]; then otool -L src/openvpn/openvpn; fi
->    - make check
-> +  - $EXTRA_SCRIPT
-> 
+That sounds good, but I'm thinking that we should probably name 
+"default" something else, such as "standard", so there's no confusion 
+between the cert profile name, and which cert profile is chosen by 
+default which may vary according to app preferences/settings.
 
-Thanks, this looks good.  ACK.
+For example in mobile clients, we would probably need an app-level 
+setting to indicate whether "legacy" or "standard" should be the 
+default, but that would be confusing if "default" was actually a profile 
+name.
 
--Steffan
+James
+
 
