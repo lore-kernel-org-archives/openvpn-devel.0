@@ -1,12 +1,12 @@
-References: <cover.1487368114.git.logout@...260...>
-	<9ce17efda7b1ed100e73554b1916c0bfa687d9d1.1487368114.git.logout@...260...>
+References: <cover.1487600539.git.logout@...260...>
+	<2faff7647151d7fe362c1c5db9f97e520444d09b.1487600539.git.logout@...260...>
 From: Steffan Karger <steffan@...1856...>
-Message-ID: <8d875740-e3a0-2c3c-08d4-a0490c28d69e@...1856...>
-Date: Thu, 2 Mar 2017 21:39:38 +0100
+Message-ID: <5a07fe90-5430-2c95-db18-f7a11af3fe56@...1856...>
+Date: Thu, 2 Mar 2017 21:44:17 +0100
 MIME-Version: 1.0
-In-Reply-To: <9ce17efda7b1ed100e73554b1916c0bfa687d9d1.1487368114.git.logout@...260...>
-Subject: Re: [Openvpn-devel] [RFC PATCH v1 13/15] OpenSSL: SSLeay symbols
- are no longer available in OpenSSL 1.1
+In-Reply-To: <2faff7647151d7fe362c1c5db9f97e520444d09b.1487600539.git.logout@...260...>
+Subject: Re: [Openvpn-devel] [RFC PATCH v2 15/15] OpenSSL: use
+ EVP_CipherInit_ex() instead of EVP_CipherInit()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,45 +21,44 @@ To: openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-On 17-02-17 23:00, logout@...260... wrote:
-> From: Emmanuel Deloget <logout@...260...>
+On 20-02-17 15:32, Emmanuel Deloget wrote:
+> The behavior of EVP_CipherInit() changed in OpenSSL 1.1 -- instead
+> of clearing the context when the cipher parameter was !NULL, it now
+> clears the context unconditionnaly. As a result, subsequent calls
+> to the function with additional information now fails.
 > 
-> The old symbols do not exist anymore but the library gained new
-> equivalent symbols (OSSL). Use them instead of the old ones
+> The bulk work is done by EVP_CipherInit_ex() which has been part of the
+> OpenSSL interface since the dawn of time (0.9.8 already has it). Thus,
+> the change allows us to get the old behavior back instead of relying
+> on dirty tricks.
 > 
 > Signed-off-by: Emmanuel Deloget <logout@...260...>
 > ---
->  src/openvpn/openssl_compat.h | 5 +++++
->  src/openvpn/ssl_openssl.c    | 2 +-
->  2 files changed, 6 insertions(+), 1 deletion(-)
+>  src/openvpn/crypto_openssl.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 > 
-> diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h
-> index f81ec59c134fb6da2b802e66339ecd0d67040928..054fd56cd1833bb5278eb5fd88a4c4d1908d6415 100644
-> --- a/src/openvpn/openssl_compat.h
-> +++ b/src/openvpn/openssl_compat.h
-> @@ -601,4 +601,9 @@ RSA_meth_set0_app_data(RSA_METHOD *meth, void *app_data)
->  }
->  #endif
->  
-> +/* SSLeay symbols have been renamed in OpenSSL 1.1 */
-> +#if !defined(RSA_F_RSA_OSSL_PRIVATE_ENCRYPT)
-> +#define RSA_F_RSA_OSSL_PRIVATE_ENCRYPT       RSA_F_RSA_EAY_PRIVATE_ENCRYPT
-> +#endif
-> +
->  #endif /* OPENSSL_COMPAT_H_ */
-> diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-> index a9ae20f45fe60d35af97e7d14bfd2332f9360c30..2ff3e12b93d6f829e4b27aefc2622d52e41ce589 100644
-> --- a/src/openvpn/ssl_openssl.c
-> +++ b/src/openvpn/ssl_openssl.c
-> @@ -996,7 +996,7 @@ rsa_priv_enc(int flen, const unsigned char *from, unsigned char *to, RSA *rsa, i
->  
->      if (padding != RSA_PKCS1_PADDING)
->      {
-> -        RSAerr(RSA_F_RSA_EAY_PRIVATE_ENCRYPT, RSA_R_UNKNOWN_PADDING_TYPE);
-> +        RSAerr(RSA_F_RSA_OSSL_PRIVATE_ENCRYPT, RSA_R_UNKNOWN_PADDING_TYPE);
->          goto done;
+> diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
+> index 23de175..2bca88b 100644
+> --- a/src/openvpn/crypto_openssl.c
+> +++ b/src/openvpn/crypto_openssl.c
+> @@ -683,7 +683,7 @@ cipher_ctx_init(EVP_CIPHER_CTX *ctx, uint8_t *key, int key_len,
+>          crypto_msg(M_FATAL, "EVP set key size");
 >      }
+>  #endif
+> -    if (!EVP_CipherInit(ctx, NULL, key, NULL, enc))
+> +    if (!EVP_CipherInit_ex(ctx, NULL, NULL, key, NULL, enc))
+>      {
+>          crypto_msg(M_FATAL, "EVP cipher init #2");
+>      }
+> @@ -736,7 +736,7 @@ cipher_ctx_get_cipher_kt(const cipher_ctx_t *ctx)
+>  int
+>  cipher_ctx_reset(EVP_CIPHER_CTX *ctx, uint8_t *iv_buf)
+>  {
+> -    return EVP_CipherInit(ctx, NULL, NULL, iv_buf, -1);
+> +    return EVP_CipherInit_ex(ctx, NULL, NULL, NULL, iv_buf, -1);
+>  }
 >  
+>  int
 > 
 
 ACK
