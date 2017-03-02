@@ -1,12 +1,12 @@
 References: <cover.1487368114.git.logout@...260...>
-	<e5e93420586b24b7df5b2f5ac2df02ccec5ffdb1.1487368114.git.logout@...260...>
+	<9ce17efda7b1ed100e73554b1916c0bfa687d9d1.1487368114.git.logout@...260...>
 From: Steffan Karger <steffan@...1856...>
-Message-ID: <66d4f562-4786-f3fd-a6ae-27ebe10abf59@...1856...>
-Date: Thu, 2 Mar 2017 21:36:32 +0100
+Message-ID: <8d875740-e3a0-2c3c-08d4-a0490c28d69e@...1856...>
+Date: Thu, 2 Mar 2017 21:39:38 +0100
 MIME-Version: 1.0
-In-Reply-To: <e5e93420586b24b7df5b2f5ac2df02ccec5ffdb1.1487368114.git.logout@...260...>
-Subject: Re: [Openvpn-devel] [RFC PATCH v1 05/15] OpenSSL: don't use direct
- access to the internal of X509
+In-Reply-To: <9ce17efda7b1ed100e73554b1916c0bfa687d9d1.1487368114.git.logout@...260...>
+Subject: Re: [Openvpn-devel] [RFC PATCH v1 13/15] OpenSSL: SSLeay symbols
+ are no longer available in OpenSSL 1.1
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,7 +16,7 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
 Hi,
@@ -24,161 +24,45 @@ Hi,
 On 17-02-17 23:00, logout@...260... wrote:
 > From: Emmanuel Deloget <logout@...260...>
 > 
-> OpenSSL 1.1 does not allow us to directly access the internal of
-> any data type, including X509. We have to use the defined
-> functions to do so.
-> 
-> In x509_verify_ns_cert_type() in particular, this means that we
-> cannot directly check for the extended flags to find whether the
-> certificate should be used as a client or as a server certificate.
-> We need to leverage the X509_check_purpose() API yet this API is
-> far stricter than the currently implemented check. So far, I have
-> not been able to find a situation where this stricter test fails
-> (although I must admit that I haven't tested that very well).
-
-The nsCertType x509 extension is very old, and replaced by keyUsage and
-extendedKeyUsage (supported by OpenVPN via --remote-cert-tls or
---remote-cert-ku and --remote-cert-eku).
-
-Changing this to the stricter API without warning will probably break
-some people's setups with certs that do have nsCertType set, but not
-keyUsage and/or extendedKeyUsage, while leaving them guessing why.
-
-So, what I propose instead is:
- * remove all the nsCertType code (except the option in add_option())
- * update the help strings and man page to indicate that --ns-cert-type
-is no longer supported and --remote-cert-tls should be used instead
- * in add_option(), if the option is enabled in a config file, act as if
---remote-cert-tls was specified correspondingly, and print a clear
-warning that --ns-cert-type is no longer supported and stricter checks
-are enabled instead.
-
-> Compatibility with OpenSSL 1.0 is kept by defining the corresponding
-> functions when they are not found in the library.
+> The old symbols do not exist anymore but the library gained new
+> equivalent symbols (OSSL). Use them instead of the old ones
 > 
 > Signed-off-by: Emmanuel Deloget <logout@...260...>
 > ---
->  configure.ac                     |  1 +
->  src/openvpn/openssl_compat.h     | 15 +++++++++++++++
->  src/openvpn/ssl_openssl.c        |  3 ++-
->  src/openvpn/ssl_verify_openssl.c | 28 +++++++++++++++++++---------
->  4 files changed, 37 insertions(+), 10 deletions(-)
+>  src/openvpn/openssl_compat.h | 5 +++++
+>  src/openvpn/ssl_openssl.c    | 2 +-
+>  2 files changed, 6 insertions(+), 1 deletion(-)
 > 
-> diff --git a/configure.ac b/configure.ac
-> index 6f31609d0aeedd2c7841d271ecadd1aa6f3b11da..c41db3effbb26318be4f44009a5055e808b89b56 100644
-> --- a/configure.ac
-> +++ b/configure.ac
-> @@ -902,6 +902,7 @@ if test "${enable_crypto}" = "yes" -a "${with_crypto_library}" = "openssl"; then
->  		[ \
->  			SSL_CTX_get_default_passwd_cb \
->  			SSL_CTX_get_default_passwd_cb_userdata \
-> +			X509_get0_pubkey \
->  			X509_STORE_get0_objects \
->  			X509_OBJECT_free \
->  			X509_OBJECT_get_type \
 > diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h
-> index b1748754f821f472cf9ed7083ade918336c9b075..6a89b91b05e0370a50ac5a1cae20ae659e6c7634 100644
+> index f81ec59c134fb6da2b802e66339ecd0d67040928..054fd56cd1833bb5278eb5fd88a4c4d1908d6415 100644
 > --- a/src/openvpn/openssl_compat.h
 > +++ b/src/openvpn/openssl_compat.h
-> @@ -74,6 +74,21 @@ SSL_CTX_get_default_passwd_cb(SSL_CTX *ctx)
+> @@ -601,4 +601,9 @@ RSA_meth_set0_app_data(RSA_METHOD *meth, void *app_data)
 >  }
 >  #endif
 >  
-> +#if !defined(HAVE_X509_GET0_PUBKEY)
-> +/**
-> + * Get the public key from a X509 certificate
-> + *
-> + * @param x                  X509 certificate
-> + * @return                   The certificate public key
-> + */
-> +static inline EVP_PKEY *
-> +X509_get0_pubkey(const X509 *x)
-> +{
-> +    return (x && x->cert_info && x->cert_info->key) ?
-> +           x->cert_info->key->pkey : NULL;
-> +}
+> +/* SSLeay symbols have been renamed in OpenSSL 1.1 */
+> +#if !defined(RSA_F_RSA_OSSL_PRIVATE_ENCRYPT)
+> +#define RSA_F_RSA_OSSL_PRIVATE_ENCRYPT       RSA_F_RSA_EAY_PRIVATE_ENCRYPT
 > +#endif
 > +
->  #if !defined(HAVE_X509_STORE_GET0_OBJECTS)
->  /**
->   * Fetch the X509 object stack from the X509 store
+>  #endif /* OPENSSL_COMPAT_H_ */
 > diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-> index f011e06702529ff34e91f6d0169d1adf8cc9d767..b683961d9e4e79b9ee04cfa7ecd1b377ade9651b 100644
+> index a9ae20f45fe60d35af97e7d14bfd2332f9360c30..2ff3e12b93d6f829e4b27aefc2622d52e41ce589 100644
 > --- a/src/openvpn/ssl_openssl.c
 > +++ b/src/openvpn/ssl_openssl.c
-> @@ -1073,7 +1073,8 @@ tls_ctx_use_external_private_key(struct tls_root_ctx *ctx,
->      }
+> @@ -996,7 +996,7 @@ rsa_priv_enc(int flen, const unsigned char *from, unsigned char *to, RSA *rsa, i
 >  
->      /* get the public key */
-> -    ASSERT(cert->cert_info->key->pkey); /* NULL before SSL_CTX_use_certificate() is called */
-> +    EVP_PKEY *pkey = X509_get0_pubkey(cert);
-> +    ASSERT(pkey); /* NULL before SSL_CTX_use_certificate() is called */
->      pub_rsa = cert->cert_info->key->pkey->pkey.rsa;
->  
->      /* initialize RSA object */
-> diff --git a/src/openvpn/ssl_verify_openssl.c b/src/openvpn/ssl_verify_openssl.c
-> index 07975248035b48121d1383b47f40a56042bc7380..edc709b89eb05bca895639dde606b29f8e1f7024 100644
-> --- a/src/openvpn/ssl_verify_openssl.c
-> +++ b/src/openvpn/ssl_verify_openssl.c
-> @@ -285,18 +285,20 @@ backend_x509_get_serial_hex(openvpn_x509_cert_t *cert, struct gc_arena *gc)
->  struct buffer
->  x509_get_sha1_fingerprint(X509 *cert, struct gc_arena *gc)
->  {
-> -    struct buffer hash = alloc_buf_gc(sizeof(cert->sha1_hash), gc);
-> -    memcpy(BPTR(&hash), cert->sha1_hash, sizeof(cert->sha1_hash));
-> -    ASSERT(buf_inc_len(&hash, sizeof(cert->sha1_hash)));
-> +    const EVP_MD *sha1 = EVP_sha1();
-> +    struct buffer hash = alloc_buf_gc(EVP_MD_size(sha1), gc);
-> +    X509_digest(cert, EVP_sha1(), BPTR(&hash), NULL);
-> +    ASSERT(buf_inc_len(&hash, EVP_MD_size(sha1)));
->      return hash;
->  }
->  
->  struct buffer
->  x509_get_sha256_fingerprint(X509 *cert, struct gc_arena *gc)
->  {
-> -    struct buffer hash = alloc_buf_gc((EVP_sha256())->md_size, gc);
-> +    const EVP_MD *sha256 = EVP_sha256();
-> +    struct buffer hash = alloc_buf_gc(EVP_MD_size(sha256), gc);
->      X509_digest(cert, EVP_sha256(), BPTR(&hash), NULL);
-> -    ASSERT(buf_inc_len(&hash, (EVP_sha256())->md_size));
-> +    ASSERT(buf_inc_len(&hash, EVP_MD_size(sha256)));
->      return hash;
->  }
->  
-> @@ -573,13 +575,21 @@ x509_verify_ns_cert_type(const openvpn_x509_cert_t *peer_cert, const int usage)
->      }
->      if (usage == NS_CERT_CHECK_CLIENT)
+>      if (padding != RSA_PKCS1_PADDING)
 >      {
-> -        return ((peer_cert->ex_flags & EXFLAG_NSCERT)
-> -                && (peer_cert->ex_nscert & NS_SSL_CLIENT)) ? SUCCESS : FAILURE;
-> +        /*
-> +         * Unfortunately, X509_check_purpose() does some wierd thing that
-> +         * prevent it to take a const argument
-> +         */
-> +        return X509_check_purpose((X509 *)peer_cert, X509_PURPOSE_SSL_CLIENT, 0) ?
-> +	       SUCCESS : FAILURE;
->      }
->      if (usage == NS_CERT_CHECK_SERVER)
->      {
-> -        return ((peer_cert->ex_flags & EXFLAG_NSCERT)
-> -                && (peer_cert->ex_nscert & NS_SSL_SERVER))  ? SUCCESS : FAILURE;
-> +        /*
-> +         * Unfortunately, X509_check_purpose() does some wierd thing that
-> +         * prevent it to take a const argument
-> +         */
-> +        return X509_check_purpose((X509 *)peer_cert, X509_PURPOSE_SSL_SERVER, 0) ?
-> +	       SUCCESS : FAILURE;
+> -        RSAerr(RSA_F_RSA_EAY_PRIVATE_ENCRYPT, RSA_R_UNKNOWN_PADDING_TYPE);
+> +        RSAerr(RSA_F_RSA_OSSL_PRIVATE_ENCRYPT, RSA_R_UNKNOWN_PADDING_TYPE);
+>          goto done;
 >      }
 >  
->      return FAILURE;
 > 
 
-If we are to use X509_check_purpose() (see my comments above), we should
-not cast away const here, but rather remove the const qualified from the
-peer_cert argument.  Casting away const is bad, in particular if a
-comment on the function states that it really can't take a const
-argument because it changes the object.
+ACK
 
 -Steffan
 
