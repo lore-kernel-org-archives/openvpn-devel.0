@@ -1,7 +1,19 @@
-From: Steffan Karger <steffan@...1856...>
-Date: Sat,  4 Mar 2017 19:49:57 +0100
-Message-Id: <1488653397-2309-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH] Deprecate --ns-cert-type
+References: <cover.1487368114.git.logout@...260...>
+	<e5e93420586b24b7df5b2f5ac2df02ccec5ffdb1.1487368114.git.logout@...260...>
+	<66d4f562-4786-f3fd-a6ae-27ebe10abf59@...1856...>
+	<20170302212621.GE93896@...1296...>
+	<735306eb-5dc4-19b0-75ad-2141fb2905b2@...1856...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <72797fe3-23f7-8b10-19df-29cc4f31ef98@...2080...>
+Date: Sat, 4 Mar 2017 23:38:21 +0100
+MIME-Version: 1.0
+In-Reply-To: <735306eb-5dc4-19b0-75ad-2141fb2905b2@...1856...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature";
+	boundary="ttkQQmcdfpoTjw39M9q8iuKk4ha47mplM"
+Subject: Re: [Openvpn-devel] [RFC PATCH v1 05/15] OpenSSL: don't use direct
+ access to the internal of X509
+Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -10,122 +22,110 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Steffan Karger <steffan@...1856...>, Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-The nsCertType x509 extension is very old, and barely used.  We already
-have had an alternative for a long time: --remote-cert-tls uses the far
-more common keyUsage and extendedKeyUsage extensions instead.
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--ttkQQmcdfpoTjw39M9q8iuKk4ha47mplM
+Content-Type: multipart/mixed; boundary="IUwBQeqHqgMxVCC2Ec7GsX3j24GGkMABr";
+	protected-headers="v1"
+From: David Sommerseth <openvpn@...2080...>
+Reply-To: openvpn-devel@lists.sourceforge.net
+To: Steffan Karger <steffan@...1856...>, Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
+Message-ID: <72797fe3-23f7-8b10-19df-29cc4f31ef98@...2080...>
+Subject: Re: [Openvpn-devel] [RFC PATCH v1 05/15] OpenSSL: don't use direct
+	access to the internal of X509
+References: <cover.1487368114.git.logout@...260...>
+	<e5e93420586b24b7df5b2f5ac2df02ccec5ffdb1.1487368114.git.logout@...260...>
+	<66d4f562-4786-f3fd-a6ae-27ebe10abf59@...1856...>
+	<20170302212621.GE93896@...1296...>
+	<735306eb-5dc4-19b0-75ad-2141fb2905b2@...1856...>
+In-Reply-To: <735306eb-5dc4-19b0-75ad-2141fb2905b2@...1856...>
 
-OpenSSL 1.1 longer exposes an API to (separately) check the nsCertType x509
-extension.  Since we want be able to migrate to OpenSSL 1.1, we should
-deprecate this option immediately.
+--IUwBQeqHqgMxVCC2Ec7GsX3j24GGkMABr
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Steffan Karger <steffan@...1856...>
----
- Changes.rst              | 13 +++++++++++--
- doc/openvpn.8            |  8 ++++++--
- src/openvpn/init.c       |  4 ++++
- src/openvpn/options.c    |  4 ++--
- tests/t_client.rc-sample |  2 +-
- 5 files changed, 24 insertions(+), 7 deletions(-)
+On 04/03/17 16:13, Steffan Karger wrote:
+> As a last resort, we could consider keeping the old code inside #if
+> OSSL_VER < 1.1.0 in release/2.4, but that might just create more
+> confusion...
 
-diff --git a/Changes.rst b/Changes.rst
-index 7ffd89e..0af29e3 100644
---- a/Changes.rst
-+++ b/Changes.rst
-@@ -1,5 +1,5 @@
--Version 2.4.0
--=============
-+Overview of changes in 2.4
-+==========================
- 
- 
- New features
-@@ -302,3 +302,12 @@ Maintainer-visible changes
-   header combinations.  In most of these situations it is recommended to
-   use -std=gnu99 in CFLAGS.  This is known to be needed when doing
-   i386/i686 builds on RHEL5.
-+
-+
-+Version 2.4.1
-+=============
-+ - ``--ns-cert-type`` is deprecated.  Use ``--remote-cert-tls`` instead.
-+   The nsCertType x509 extension is very old, and barely used.
-+   ``--remote-cert-tls`` uses the far more common keyUsage and extendedKeyUsage
-+   extension instead.  Make sure your certificates carry these to be able to
-+   use ``--remote-cert-tls``.
-diff --git a/doc/openvpn.8 b/doc/openvpn.8
-index e3d603e..f6822ec 100644
---- a/doc/openvpn.8
-+++ b/doc/openvpn.8
-@@ -327,7 +327,7 @@ http\-proxy 192.168.0.8 8080
- persist\-key
- persist\-tun
- pkcs12 client.p12
--ns\-cert\-type server
-+remote\-cert\-tls server
- verb 3
- .in -4
- .ft
-@@ -5313,7 +5313,11 @@ as X509_<depth>_<attribute>=<value>.  Multiple
- options can be defined to track multiple attributes.
- .\"*********************************************************
- .TP
--.B \-\-ns\-cert\-type client|server
-+.B \-\-ns\-cert\-type client|server (DEPRECATED)
-+This option is deprecated.  Use the more modern equivalent
-+.B \-\-remote\-cert\-tls
-+instead.  This option will be removed in OpenVPN 2.5.
-+
- Require that peer certificate was signed with an explicit
- .B nsCertType
- designation of "client" or "server".
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 975700b..5c34cda 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -2979,6 +2979,10 @@ do_option_warnings(struct context *c)
-     {
-         msg(M_WARN, "WARNING: No server certificate verification method has been enabled.  See http://openvpn.net/howto.html#mitm for more info.");
-     }
-+    if (o->ns_cert_type)
-+    {
-+        msg(M_WARN, "WARNING: --ns-cert-type is DEPRECATED.  Use --remote-cert-tls instead.");
-+    }
- #endif /* ifdef ENABLE_CRYPTO */
- 
-     /* If a script is used, print appropiate warnings */
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 0e6b393..1243db0 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -635,8 +635,8 @@ static const char usage_message[] =
-     "--verify-x509-name name: Accept connections only from a host with X509 subject\n"
-     "                  DN name. The remote host must also pass all other tests\n"
-     "                  of verification.\n"
--    "--ns-cert-type t: Require that peer certificate was signed with an explicit\n"
--    "                  nsCertType designation t = 'client' | 'server'.\n"
-+    "--ns-cert-type t: (DEPRECATED) Require that peer certificate was signed with \n"
-+    "                  an explicit nsCertType designation t = 'client' | 'server'.\n"
-     "--x509-track x  : Save peer X509 attribute x in environment for use by\n"
-     "                  plugins and management interface.\n"
- #if defined(ENABLE_CRYPTO_OPENSSL) && OPENSSL_VERSION_NUMBER >= 0x10001000
-diff --git a/tests/t_client.rc-sample b/tests/t_client.rc-sample
-index 4fdea48..355e8bb 100644
---- a/tests/t_client.rc-sample
-+++ b/tests/t_client.rc-sample
-@@ -40,7 +40,7 @@ TEST_RUN_LIST="1 2"
- #
- OPENVPN_BASE_P2MP="--client --ca $CA_CERT \
- 	--cert $CLIENT_CERT --key $CLIENT_KEY \
--	--ns-cert-type server --nobind --comp-lzo --verb 3"
-+	--remote-cert-tls server --nobind --comp-lzo --verb 3"
- 
- # base config for p2p tests
- #
--- 
-2.7.4
+Just a very quick thought here ... I do dislike different behaviours
+depending on which OpenSSL version being used.  But given that this
+feature is already deprecated and even removed in OpenSSL-1.1, I think
+that gives us some options.
 
+I agree with Gert that breaking --ns-cert-type isn't good at all.
+However, consider when people upgrade from OpenSSL v1.0 to v1.1 - that
+is most commonly when there is major distro update.  It is not something
+which happens "mid-term", as OpenSSL is quite commonly used by lots of
+base system packages these days.
+
+Regardless of OpenSSL version, I agree to loudly deprecate
+--ns-cert-type, through documentation, --help and log files.
+
+But I think we need to carry the existing behaviour for --ns-cert-type
+when built against OpenSSL v1.0.  And we can solve through some
+compatibility wrapper when built against OpenSSL v1.1 - with even louder
+warnings in the logs that this may break apart.
+
+The reason I say this, is that Fedora users are quite unhappy that
+--tls-remote disappeared in v2.4.0 *despite* a more recent
+NetworkManager-OpenVPN plug-in actually making it easy to switch to
+--verify-x509-name.  But IIRC, this wasn't backported to all older and
+still valid Fedora releases, so that caused additional pain for the
+users.   And don't get me started with the attempt of temporarily build
+against mbed TLS instead of OpenSSL in Fedora Rawhide (which will become
+Fedora 26), as that broke lots of configurations with CA certificates
+using RSA 1024 bit keys.  All this results in very little OpenVPN 2.4
+adaptation among many Fedora users.
+
+I can barely imagine what happens if we break --ns-cert-type on top of
+that ... Just that the behaviour might change for a minority of users in
+when Fedora 26 hits the streets, with OpenSSL v1.1, might hit us bad
+again.  But at least with OpenSSL v1.1, many users knows that things
+will be somewhat different too.  And we can actually point at OpenSSL
+and explain why it broke, which is not something we could do with
+the --tls-remote option.
+
+
+Just my way too many cents ..... :)
+
+
+--=20
+kind regards,
+
+David Sommerseth
+OpenVPN Technologies, Inc
+
+
+
+--IUwBQeqHqgMxVCC2Ec7GsX3j24GGkMABr--
+
+--ttkQQmcdfpoTjw39M9q8iuKk4ha47mplM
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBCAAGBQJYu0HiAAoJEIbPlEyWcf3yxkQP/Rz3jmLrvKF3SlFkMFRajb1A
+vUzlwtg9f7BrwDnppQo884ddQpVqA8uGZLkNOSJVw54PVEbGL+noooHmAH8VkW/h
+ins7vpqCZkOeyq9EWNDkJxZ+fwJrTXCwFwgs1tonbTJH/sfnjiQoe8QLLgE/C1mx
+VEzd4Ohpsh/rnFPekrfS7jLJFB+9tAYyz3koQ7oiYKPDS92i5ytaddIwzb+gKiCz
+ZktWN3xKTBAwIPk7ZeAIHN/l02yTd38eMk8qs34x8yhBlW306Qe19TRSWNqSPpMx
+hU0WaRKAkT4LMfFf9waU1m0wfFa9Mw5skoV84y3oOOlRou5JFiiLnYzxvtVl02uE
+ajzwsSR8YH+qoOZsA1qjy9Se8gjwxXmYm7qwcb3HdVF5QTC7dGwbVcsjljiP8vKK
+iKbsLoVovroDTasiv4M+3ztkrNU8i/zl05yh93VetU1YY2tHsY/ObJm+cE1UmLFT
+xSBxvTd2l23faEouONYVPrdbt9TX3pYpQmLvDCLX4TDbtcOgeCEcrKITXq7RWmaa
+MJ9gTYtq9fLA/fC39H0I5gy9tm2wd809j0bHkjBW8DkgHe8aP5D4zJKOhk56Y4/3
+W7XRjSZkbvkY2VViGG4gwU9vWYhr7dfRGKO7Fcq3IilgUyhwI7izDLE4iauYpYMk
+Sq7dGtUY5ZnlPlkhmEZe
+=C3iN
+-----END PGP SIGNATURE-----
+
+--ttkQQmcdfpoTjw39M9q8iuKk4ha47mplM--
 
