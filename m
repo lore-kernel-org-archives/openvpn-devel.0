@@ -1,9 +1,11 @@
+References: <CAFHpkQHx1b4hDbeW2eOJDURHQoN6eCb40AZ5U4bhJOJdyPLnMg@...278...>
+From: Steffan Karger <steffan@...1856...>
+Message-ID: <c441396b-e30e-c602-d6a0-aaafb82d8e7a@...1856...>
+Date: Sun, 5 Mar 2017 15:35:25 +0100
 MIME-Version: 1.0
-From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Date: Sun, 05 Mar 2017 14:25:51 +0000
-Message-ID: <CAFHpkQHx1b4hDbeW2eOJDURHQoN6eCb40AZ5U4bhJOJdyPLnMg@...278...>
-Content-Type: multipart/alternative; boundary=f403045f1a1eed0a490549fc8e06
-Subject: [Openvpn-devel] could be gitlab-ci an alternative to buildbot cloud?
+In-Reply-To: <CAFHpkQHx1b4hDbeW2eOJDURHQoN6eCb40AZ5U4bhJOJdyPLnMg@...278...>
+Subject: Re: [Openvpn-devel] could be gitlab-ci an alternative to buildbot
+ cloud?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,49 +14,34 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---f403045f1a1eed0a490549fc8e06
-Content-Type: text/plain; charset=UTF-8
+Hi,
 
-Hello,
+On 05-03-17 15:25, Илья Шипицин wrote:
+> there was some buzz related to improvement of testing system, like
+> patchwork.
+> we tried gitlab-ci on our internal project, it looks very promising.
+> 
+> since openvpn is already hosted on gitlab.com <http://gitlab.com>,
+> there's a possibility of
+> 
+> 1) users can add their own gitlab-ci agents to the repo
+> 2) it might be even windows agents
+> 3) build results are publicly available (not easy to get from buildbot)
+> 
+> it looks like a big step, and it is hard to predict its result. but, I
+> think we can try and have a look at it.
+> thoughts?
 
-there was some buzz related to improvement of testing system, like
-patchwork.
-we tried gitlab-ci on our internal project, it looks very promising.
+Does this mean that gitlab (as in, the company) controls the build
+slaves?  Or should we host our own gitlab-ci-master to control the slaves?
 
-since openvpn is already hosted on gitlab.com, there's a possibility of
+I currently don't contribute any slaves to the buildbot setup, but I for
+one would never want to give gitlab root on my machines.  Quite some
+OpenVPN functionality requires root, which makes it more tricky to test.
 
-1) users can add their own gitlab-ci agents to the repo
-2) it might be even windows agents
-3) build results are publicly available (not easy to get from buildbot)
-
-it looks like a big step, and it is hard to predict its result. but, I
-think we can try and have a look at it.
-thoughts?
-
-Cheers,
-Ilya Shipitsin
-
-p.s. for our internal projects gitlab agents are always available, I did
-not try yet how it works when some agents are unavalaible
-
---f403045f1a1eed0a490549fc8e06
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-Hello,<div><br></div><div>there was some buzz related to improvement of tes=
-ting system, like patchwork.</div><div>we tried gitlab-ci on our internal p=
-roject, it looks very promising.</div><div><br></div><div>since openvpn is =
-already hosted on <a href=3D"http://gitlab.com">gitlab.com</a>, there&#39;s=
- a possibility of</div><div><br></div><div>1) users can add their own gitla=
-b-ci agents to the repo</div><div>2) it might be even windows agents</div><=
-div>3) build results are publicly available (not easy to get from buildbot)=
-</div><div><br></div><div>it looks like a big step, and it is hard to predi=
-ct its result. but, I think we can try and have a look at it.</div><div>tho=
-ughts?</div><div><br></div><div>Cheers,</div><div>Ilya Shipitsin</div><div>=
-<br></div><div>p.s. for our internal projects gitlab agents are always avai=
-lable, I did not try yet how it works when some agents are unavalaible</div>
-
---f403045f1a1eed0a490549fc8e06--
+-Steffan
 
