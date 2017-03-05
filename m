@@ -1,7 +1,16 @@
-From: Ilya Shipitsin <chipitsine@...277...>
-Date: Sun,  5 Mar 2017 20:21:32 +0300
-Message-Id: <1488734492-5319-1-git-send-email-chipitsine@...277...>
-Subject: [Openvpn-devel] [PATCH] travis-ci: remove unused files
+Date: Sun, 5 Mar 2017 19:30:43 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20170305183043.GN93896@...1296...>
+References: <CAFHpkQHx1b4hDbeW2eOJDURHQoN6eCb40AZ5U4bhJOJdyPLnMg@...278...>
+	<c441396b-e30e-c602-d6a0-aaafb82d8e7a@...1856...>
+	<CAFHpkQHi_0LCYofSA1XDRmH2=Y-eJLWPo2j2gfdZvhOeGS=qEA@...278...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="5aNh9si8bffKePh3"
+Content-Disposition: inline
+In-Reply-To: <CAFHpkQHi_0LCYofSA1XDRmH2=Y-eJLWPo2j2gfdZvhOeGS=qEA@...278...>
+Subject: Re: [Openvpn-devel] could be gitlab-ci an alternative to buildbot
+ cloud?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -10,92 +19,54 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: ???????? ?????????????? <chipitsine@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Those files were commited by mistake. I implemented building
-dependencies in 4 separate scripts, later Steffan Karger combined
-all 4 scripts into "build-deps.sh".
+--5aNh9si8bffKePh3
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Signed-off-by: Ilya Shipitsin <chipitsine@...277...>
----
- .travis/build-mbedtls-linux.sh |  9 ---------
- .travis/build-mbedtls-osx.sh   |  9 ---------
- .travis/build-openssl-linux.sh | 12 ------------
- .travis/build-openssl-osx.sh   | 11 -----------
- 4 files changed, 41 deletions(-)
- delete mode 100755 .travis/build-mbedtls-linux.sh
- delete mode 100755 .travis/build-mbedtls-osx.sh
- delete mode 100755 .travis/build-openssl-linux.sh
- delete mode 100755 .travis/build-openssl-osx.sh
+Hi,
 
-diff --git a/.travis/build-mbedtls-linux.sh b/.travis/build-mbedtls-linux.sh
-deleted file mode 100755
-index dc92aaf..0000000
---- a/.travis/build-mbedtls-linux.sh
-+++ /dev/null
-@@ -1,9 +0,0 @@
--#!/bin/sh
--
--if [ ! -f download-cache/mbedtls-${MBEDTLS_VERSION}-apache.tgz ]; then
--	wget -O download-cache/mbedtls-${MBEDTLS_VERSION}-apache.tgz https://tls.mbed.org/download/mbedtls-${MBEDTLS_VERSION}-apache.tgz;
--fi
--
--tar zxf download-cache/mbedtls-${MBEDTLS_VERSION}-apache.tgz
--cd mbedtls-${MBEDTLS_VERSION} && make > build.log 2>&1 || (cat build.log && exit 1)
--make install DESTDIR=$MBEDTLS_PREFIX && cd ..
-diff --git a/.travis/build-mbedtls-osx.sh b/.travis/build-mbedtls-osx.sh
-deleted file mode 100755
-index dc92aaf..0000000
---- a/.travis/build-mbedtls-osx.sh
-+++ /dev/null
-@@ -1,9 +0,0 @@
--#!/bin/sh
--
--if [ ! -f download-cache/mbedtls-${MBEDTLS_VERSION}-apache.tgz ]; then
--	wget -O download-cache/mbedtls-${MBEDTLS_VERSION}-apache.tgz https://tls.mbed.org/download/mbedtls-${MBEDTLS_VERSION}-apache.tgz;
--fi
--
--tar zxf download-cache/mbedtls-${MBEDTLS_VERSION}-apache.tgz
--cd mbedtls-${MBEDTLS_VERSION} && make > build.log 2>&1 || (cat build.log && exit 1)
--make install DESTDIR=$MBEDTLS_PREFIX && cd ..
-diff --git a/.travis/build-openssl-linux.sh b/.travis/build-openssl-linux.sh
-deleted file mode 100755
-index 84f4aae..0000000
---- a/.travis/build-openssl-linux.sh
-+++ /dev/null
-@@ -1,12 +0,0 @@
--#!/bin/sh
--
--if [ ! -f download-cache/openssl-${OPENSSL_VERSION}.tar.gz ]; then
--	wget -O download-cache/openssl-${OPENSSL_VERSION}.tar.gz https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz;
--fi
--
--tar zxf download-cache/openssl-${OPENSSL_VERSION}.tar.gz
--cd openssl-${OPENSSL_VERSION}/
--./config shared --prefix=$OPENSSL_PREFIX -DPURIFY > build.log 2>&1 || (cat build.log && exit 1)
--make > build.log 2>&1 || (cat build.log && exit 1)
--make install_sw > build.log 2>&1 || (cat build.log && exit 1)
--cd ..
-diff --git a/.travis/build-openssl-osx.sh b/.travis/build-openssl-osx.sh
-deleted file mode 100755
-index 61c8016..0000000
---- a/.travis/build-openssl-osx.sh
-+++ /dev/null
-@@ -1,11 +0,0 @@
--#!/bin/sh
--
--if [ ! -f download-cache/openssl-${OPENSSL_VERSION}.tar.gz ]; then
--        wget -O download-cache/openssl-${OPENSSL_VERSION}.tar.gz https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz;
--fi
--
--tar zxf download-cache/openssl-${OPENSSL_VERSION}.tar.gz
--cd openssl-${OPENSSL_VERSION}/
--./Configure darwin64-x86_64-cc shared --prefix=$OPENSSL_PREFIX -DPURIFY > build.log 2>&1 || (cat build.log && exit 1)
--make depend install > build.log 2>&1 || (cat build.log && exit 1)
--cd ..
--- 
-2.5.5
+On Sun, Mar 05, 2017 at 02:42:49PM +0000, ???????? ?????????????? wrote:
+> as for test agents, I assume those are dedicated servers, with no other
+> applications. risk of root access
+> is not high
 
+Maintenance of throwaway systems (read: full re-image after every test
+run) is too high for me to consider that.
+
+I do not want to have my build slaves start contributing to the next
+DDoS attack - thus, ours build only stuff that is committed to "master"
+(or one of the branches if Samuli, David or I run a manual build - and
+I somewhat trust those guys :-) ).
+
+gert
+
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--5aNh9si8bffKePh3
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJYvFlSAAoJEB2Cnv7KVigS4c4L/ja8VMHVB+jnykk1abTpQhjc
+AKE6NvYd64Cvi2tty1RlUgcpbK66MbRpGafA/RKL9VBoESHpydXfHEk4BXOOThGE
+AIhEYDnM1yfmKfdqru4N8YYjCMSwjge5/GlU5Ukh3XhP3j1dsVVW5CQGFFPy+Jc6
+TKfIuKgl2PPfcb2/nQzTcHW2mn1324NEOArOGkdNVyWYk1+3UDGTDBoOMvd5TqlR
+aWIfhzUBiSW1uZxtkBoGJYtPkFJDatkXECKsLhJitJFlLVT4ic9coHXoOqpPhkdl
+B11MVCsKVnFVrY6tHtEat0yIeWvDZkFwLaajy4/dsgP/xDeQQxAZLm9B5nmezE52
+Iz16PnOPoF7J8LBk4KmsPOCQIS5LQv59mEWUvP6RQ1Qp3n26X7ztO9RKPr67aWig
+Fsd7pzWU10q+k1JBRybrDvvMzUzwR3YUOCM0Fbut/QB5ihT2a4EFLama29dwar/c
+BDcrxNsvUnJoRVPmJwc6PqGlgPT06IdeNJg0487T6A==
+=OWgy
+-----END PGP SIGNATURE-----
+
+--5aNh9si8bffKePh3--
 
