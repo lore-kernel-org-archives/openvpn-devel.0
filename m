@@ -1,14 +1,9 @@
-Date: Sun, 5 Mar 2017 19:30:43 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20170305183043.GN93896@...1296...>
 References: <CAFHpkQHx1b4hDbeW2eOJDURHQoN6eCb40AZ5U4bhJOJdyPLnMg@...278...>
-	<c441396b-e30e-c602-d6a0-aaafb82d8e7a@...1856...>
-	<CAFHpkQHi_0LCYofSA1XDRmH2=Y-eJLWPo2j2gfdZvhOeGS=qEA@...278...>
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <a766bfda-08dd-0984-c310-e9fc502326b0@...515...>
+Date: Wed, 8 Mar 2017 21:58:41 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="5aNh9si8bffKePh3"
-Content-Disposition: inline
-In-Reply-To: <CAFHpkQHi_0LCYofSA1XDRmH2=Y-eJLWPo2j2gfdZvhOeGS=qEA@...278...>
+In-Reply-To: <CAFHpkQHx1b4hDbeW2eOJDURHQoN6eCb40AZ5U4bhJOJdyPLnMg@...278...>
 Subject: Re: [Openvpn-devel] could be gitlab-ci an alternative to buildbot
  cloud?
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -19,54 +14,71 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: ???????? ?????????????? <chipitsine@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
-
---5aNh9si8bffKePh3
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+To: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
 Hi,
 
-On Sun, Mar 05, 2017 at 02:42:49PM +0000, ???????? ?????????????? wrote:
-> as for test agents, I assume those are dedicated servers, with no other
-> applications. risk of root access
-> is not high
+On 05/03/2017 16:25, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=B8=D1=
+=86=D0=B8=D0=BD wrote:
+> Hello,
+>=20
+> there was some buzz related to improvement of testing system, like
+> patchwork.
+> we tried gitlab-ci on our internal project, it looks very promising.
+>=20
+> since openvpn is already hosted on gitlab.com <http://gitlab.com>,
+> there's a possibility of
+>=20
+> 1) users can add their own gitlab-ci agents to the repo
+> 2) it might be even windows agents
+> 3) build results are publicly available (not easy to get from buildbot)
 
-Maintenance of throwaway systems (read: full re-image after every test
-run) is too high for me to consider that.
+Buildbot is behind VPN because of security reasons. We can easily grant
+more access to its WebUI if we need to. So far there has not been a
+pressing need to do that.
 
-I do not want to have my build slaves start contributing to the next
-DDoS attack - thus, ours build only stuff that is committed to "master"
-(or one of the branches if Samuli, David or I run a manual build - and
-I somewhat trust those guys :-) ).
+Afaik it would be possible to run a Windows buildslaves. The problem is
+that OpenVPN Windows building tends to suck. Hence we have the custom
+hacked together cross-compile "buildslave" that makes use of openvpn-build.
 
-gert
+> it looks like a big step, and it is hard to predict its result. but, I
+> think we can try and have a look at it.
+> thoughts?
+
+Personally I'm not too keen to migrate away from Buildbot unless there
+are very significant benefits. Not having to configure any
+agents/buildslaves would be such a benefit imho.
+
+That said, I will have a look at gitlab-ci to see what it can do.
+
+>=20
+> Cheers,
+> Ilya Shipitsin
+>=20
+> p.s. for our internal projects gitlab agents are always available, I did
+> not try yet how it works when some agents are unavalaible
+>=20
+>=20
+> -------------------------------------------------------------------------=
+-----
+> Check out the vibrant tech community on one of the world's most
+> engaging tech sites, SlashDot.org! http://sdm.link/slashdot
+>=20
+>=20
+>=20
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+>=20
+
 
 --=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+Samuli Sepp=C3=A4nen
+Community Manager
+OpenVPN Technologies, Inc
 
---5aNh9si8bffKePh3
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJYvFlSAAoJEB2Cnv7KVigS4c4L/ja8VMHVB+jnykk1abTpQhjc
-AKE6NvYd64Cvi2tty1RlUgcpbK66MbRpGafA/RKL9VBoESHpydXfHEk4BXOOThGE
-AIhEYDnM1yfmKfdqru4N8YYjCMSwjge5/GlU5Ukh3XhP3j1dsVVW5CQGFFPy+Jc6
-TKfIuKgl2PPfcb2/nQzTcHW2mn1324NEOArOGkdNVyWYk1+3UDGTDBoOMvd5TqlR
-aWIfhzUBiSW1uZxtkBoGJYtPkFJDatkXECKsLhJitJFlLVT4ic9coHXoOqpPhkdl
-B11MVCsKVnFVrY6tHtEat0yIeWvDZkFwLaajy4/dsgP/xDeQQxAZLm9B5nmezE52
-Iz16PnOPoF7J8LBk4KmsPOCQIS5LQv59mEWUvP6RQ1Qp3n26X7ztO9RKPr67aWig
-Fsd7pzWU10q+k1JBRybrDvvMzUzwR3YUOCM0Fbut/QB5ihT2a4EFLama29dwar/c
-BDcrxNsvUnJoRVPmJwc6PqGlgPT06IdeNJg0487T6A==
-=OWgy
------END PGP SIGNATURE-----
-
---5aNh9si8bffKePh3--
+irc freenode net: mattock
 
