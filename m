@@ -1,11 +1,7 @@
-References: <CAFHpkQHx1b4hDbeW2eOJDURHQoN6eCb40AZ5U4bhJOJdyPLnMg@...278...>
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <a766bfda-08dd-0984-c310-e9fc502326b0@...515...>
-Date: Wed, 8 Mar 2017 21:58:41 +0200
-MIME-Version: 1.0
-In-Reply-To: <CAFHpkQHx1b4hDbeW2eOJDURHQoN6eCb40AZ5U4bhJOJdyPLnMg@...278...>
-Subject: Re: [Openvpn-devel] could be gitlab-ci an alternative to buildbot
- cloud?
+From: Steffan Karger <steffan@...1856...>
+Date: Thu,  9 Mar 2017 09:13:32 +0100
+Message-Id: <1489047212-31994-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH] Remove duplicate X509 env variables
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,71 +10,82 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+Commit 13b585e8 added support for multiple X509 env variables with the
+same name, but as a side effect caused these variables to pile up for
+each renegotiation.  The old code would simply overwrite the old variables
+(as long as an equally-long chain was used for the new session).
 
-On 05/03/2017 16:25, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=B8=D1=
-=86=D0=B8=D0=BD wrote:
-> Hello,
->=20
-> there was some buzz related to improvement of testing system, like
-> patchwork.
-> we tried gitlab-ci on our internal project, it looks very promising.
->=20
-> since openvpn is already hosted on gitlab.com <http://gitlab.com>,
-> there's a possibility of
->=20
-> 1) users can add their own gitlab-ci agents to the repo
-> 2) it might be even windows agents
-> 3) build results are publicly available (not easy to get from buildbot)
+To stop the variables from piling up, this commit removes any old X509
+env variables if we start negotiating a new TLS session.
 
-Buildbot is behind VPN because of security reasons. We can easily grant
-more access to its WebUI if we need to. So far there has not been a
-pressing need to do that.
+Trac: #854
 
-Afaik it would be possible to run a Windows buildslaves. The problem is
-that OpenVPN Windows building tends to suck. Hence we have the custom
-hacked together cross-compile "buildslave" that makes use of openvpn-build.
+Signed-off-by: Steffan Karger <steffan@...1856...>
+---
+ src/openvpn/ssl.c        |  3 +++
+ src/openvpn/ssl_verify.c | 17 +++++++++++++++++
+ src/openvpn/ssl_verify.h |  3 +++
+ 3 files changed, 23 insertions(+)
 
-> it looks like a big step, and it is hard to predict its result. but, I
-> think we can try and have a look at it.
-> thoughts?
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 401b8fd..1189f56 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -2821,6 +2821,9 @@ tls_process(struct tls_multi *multi,
+                                    session->opt->crl_file, session->opt->crl_file_inline);
+             }
+ 
++            /* New connection, remove any old X509 env variables */
++            tls_x509_clear_env(session->opt->es);
++
+             dmsg(D_TLS_DEBUG_MED, "STATE S_START");
+         }
+ 
+diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
+index 9f12ab8..a6e9be3 100644
+--- a/src/openvpn/ssl_verify.c
++++ b/src/openvpn/ssl_verify.c
+@@ -1486,4 +1486,21 @@ verify_final_auth_checks(struct tls_multi *multi, struct tls_session *session)
+         gc_free(&gc);
+     }
+ }
++
++void
++tls_x509_clear_env(struct env_set *es)
++{
++    struct env_item *item = es->list;
++    while (item)
++    {
++        struct env_item *next = item->next;
++        if (item->string
++            && 0 == strncmp("X509_", item->string, strlen("X509_")))
++        {
++            env_set_del(es, item->string);
++        }
++        item = next;
++    }
++}
++
+ #endif /* ENABLE_CRYPTO */
+diff --git a/src/openvpn/ssl_verify.h b/src/openvpn/ssl_verify.h
+index ffab218..d91799e 100644
+--- a/src/openvpn/ssl_verify.h
++++ b/src/openvpn/ssl_verify.h
+@@ -238,6 +238,9 @@ tls_client_reason(struct tls_multi *multi)
+ #endif
+ }
+ 
++/** Remove any X509_ env variables from env_set es */
++void tls_x509_clear_env(struct env_set *es);
++
+ #endif /* ENABLE_CRYPTO */
+ 
+ #endif /* SSL_VERIFY_H_ */
+-- 
+2.7.4
 
-Personally I'm not too keen to migrate away from Buildbot unless there
-are very significant benefits. Not having to configure any
-agents/buildslaves would be such a benefit imho.
-
-That said, I will have a look at gitlab-ci to see what it can do.
-
->=20
-> Cheers,
-> Ilya Shipitsin
->=20
-> p.s. for our internal projects gitlab agents are always available, I did
-> not try yet how it works when some agents are unavalaible
->=20
->=20
-> -------------------------------------------------------------------------=
------
-> Check out the vibrant tech community on one of the world's most
-> engaging tech sites, SlashDot.org! http://sdm.link/slashdot
->=20
->=20
->=20
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->=20
-
-
---=20
-Samuli Sepp=C3=A4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
 
