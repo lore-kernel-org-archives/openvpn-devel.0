@@ -1,13 +1,14 @@
-Date: Thu, 9 Mar 2017 22:20:24 +0800
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <20170309142024.GA476@...2253...>
 References: <11de8219-d64d-a9d0-4fa7-a8c63a8d17ff@...1435...>
 	<1489068043-25668-1-git-send-email-steffan.karger@...1435...>
+	<20170309142024.GA476@...2253...>
+From: Steffan Karger <steffan.karger@...1435...>
+Message-ID: <57b1aa33-3468-7713-08c5-3b7d5d504207@...1435...>
+Date: Thu, 9 Mar 2017 15:26:31 +0100
 MIME-Version: 1.0
+In-Reply-To: <20170309142024.GA476@...2253...>
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="EVF5PPMfhYS0aIcm"
-Content-Disposition: inline
-In-Reply-To: <1489068043-25668-1-git-send-email-steffan.karger@...1435...>
+	protocol="application/pgp-signature";
+	boundary="p5j0vR1f4C5SV0dNdxOtXECL7g7iaxP57"
 Subject: Re: [Openvpn-devel] [PATCH v2] Fix windows-build format specifiers
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -17,87 +18,102 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan.karger@...1435...>
+To: Antonio Quartulli <a@...2181...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---EVF5PPMfhYS0aIcm
-Content-Type: text/plain; charset="us-ascii"
+--p5j0vR1f4C5SV0dNdxOtXECL7g7iaxP57
+Content-Type: multipart/mixed; boundary="11NLdVfpiDFN3DQ28RLlcshfCFLBXrbVq";
+	protected-headers="v1"
+From: Steffan Karger <steffan.karger@...1435...>
+To: Antonio Quartulli <a@...2181...>
+Cc: openvpn-devel@lists.sourceforge.net
+Message-ID: <57b1aa33-3468-7713-08c5-3b7d5d504207@...1435...>
+Subject: Re: [Openvpn-devel] [PATCH v2] Fix windows-build format specifiers
+References: <11de8219-d64d-a9d0-4fa7-a8c63a8d17ff@...1435...>
+	<1489068043-25668-1-git-send-email-steffan.karger@...1435...>
+	<20170309142024.GA476@...2253...>
+In-Reply-To: <20170309142024.GA476@...2253...>
+
+--11NLdVfpiDFN3DQ28RLlcshfCFLBXrbVq
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-On Thu, Mar 09, 2017 at 03:00:43PM +0100, Steffan Karger wrote:
-> A number of printf-like functions used incorrect format specifiers for
-> Windows builds, which could potentially lead to incorrect values being
-> printed / used when calling executables.
+On 09-03-17 15:20, Antonio Quartulli wrote:
+> On Thu, Mar 09, 2017 at 03:00:43PM +0100, Steffan Karger wrote:
+>> A number of printf-like functions used incorrect format specifiers for
+>> Windows builds, which could potentially lead to incorrect values being
+>> printed / used when calling executables.
+>>
+>> Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+>> ---
+>> v2: add OVPN_PRI_SKT define to print socket type across platforms
+>>
+>>  src/openvpn/init.c    |  2 +-
+>>  src/openvpn/route.c   | 12 ++++++------
+>>  src/openvpn/socket.c  |  7 ++++---
+>>  src/openvpn/syshead.h |  2 ++
+>>  src/openvpn/tun.c     |  4 ++--
+>>  5 files changed, 15 insertions(+), 12 deletions(-)
+>>
+>> diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+>> index 033318d..2a9a398 100644
+>> --- a/src/openvpn/init.c
+>> +++ b/src/openvpn/init.c
+>> @@ -1585,7 +1585,7 @@ do_open_tun(struct context *c)
+>>  #ifdef _WIN32
+>>      /* store (hide) interactive service handle in tuntap_options */
+>>      c->c1.tuntap->options.msg_channel =3D c->options.msg_channel;
+>> -    msg(D_ROUTE, "interactive service msg_channel=3D%u", (unsigned int)=
+ c->options.msg_channel);
+>> +    msg(D_ROUTE, "interactive service msg_channel=3D%"PRIuPTR, (uintptr=
+_t) c->options.msg_channel);
 >=20
-> Signed-off-by: Steffan Karger <steffan.karger@...1435...>
-> ---
-> v2: add OVPN_PRI_SKT define to print socket type across platforms
+> A little comment about the style (codestyle maniac here!).
+> Should this:
 >=20
->  src/openvpn/init.c    |  2 +-
->  src/openvpn/route.c   | 12 ++++++------
->  src/openvpn/socket.c  |  7 ++++---
->  src/openvpn/syshead.h |  2 ++
->  src/openvpn/tun.c     |  4 ++--
->  5 files changed, 15 insertions(+), 12 deletions(-)
+> msg_channel=3D%"PRIuPTR
 >=20
-> diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-> index 033318d..2a9a398 100644
-> --- a/src/openvpn/init.c
-> +++ b/src/openvpn/init.c
-> @@ -1585,7 +1585,7 @@ do_open_tun(struct context *c)
->  #ifdef _WIN32
->      /* store (hide) interactive service handle in tuntap_options */
->      c->c1.tuntap->options.msg_channel =3D c->options.msg_channel;
-> -    msg(D_ROUTE, "interactive service msg_channel=3D%u", (unsigned int) =
-c->options.msg_channel);
-> +    msg(D_ROUTE, "interactive service msg_channel=3D%"PRIuPTR, (uintptr_=
-t) c->options.msg_channel);
+> be:
+>=20
+> msg_channel=3D%" PRIuPTR
+>=20
+> ?
+>=20
+> the " is closing the const char and therefore a space would be needed bet=
+ween it and the
+> next constant.
+>=20
+> This appears several times in the patch and therefore I thought it was wo=
+rth
+> mentioning it.
 
-A little comment about the style (codestyle maniac here!).
-Should this:
+I don't have a strong preference about this.  I tend to not add spaces
+for these preprocessor-format-specifiers, because I view them as part of
+the string.  But I get your view too.  So I'd be perfectly fine with
+adding spaces if that's the general preference.
 
-msg_channel=3D%"PRIuPTR
-
-be:
-
-msg_channel=3D%" PRIuPTR
-
-?
-
-the " is closing the const char and therefore a space would be needed betwe=
-en it and the
-next constant.
-
-This appears several times in the patch and therefore I thought it was worth
-mentioning it.
-
-Cheers,
+-Steffan
 
 
---=20
-Antonio Quartulli
 
---EVF5PPMfhYS0aIcm
+--11NLdVfpiDFN3DQ28RLlcshfCFLBXrbVq--
+
+--p5j0vR1f4C5SV0dNdxOtXECL7g7iaxP57
 Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
 
-iQIcBAEBCAAGBQJYwWSkAAoJEJ6F1zG2JyOsKA8P/2c5spbjlsXWDVv6zmU44PGx
-LIGxNqMU/wFLVYXf6LblUW0O1u1loMzygeQwIBjvJdTIh/FrfAmyZ9cRnfV9OUZi
-leJgYzVuEUdPwBZIQDQ/qZn/ybNSI/O/q2fBK7tkU7HNBo87RsnerDQlU9BQyQL2
-3hWAIlpkeOIfC2BvKZs2fcWh9P8bIaTPCPjqOOneVfoQz1P4K5oIRgAsmTT8RqT7
-3W/ICmpdX/iyyycpLMrfOFOFB587q6tzB2QhsKxPcvhYvgZz6iPxlMNCFt63HOEp
-vxrM0obTO6T20NfdrcITcVdhLUZ50hbSRiuQ9bKjJuxNSpkDBDXGkWcA4rv3PlEE
-Ct0x3DTN7JqZ9rZV2QvjP2rwFm/e5kvlwQMp3HuAfo1wCCLifkU6M+cnIXNw120f
-0nXrZf6upRjRkDOXnjgg9AMwyXxwOC8vbPsBdr7noDFAZ5eFINMCfDnaqtMKe26b
-6axLx9EZC8OcZSHAu2dqOmR9jhmZ8EB50gwmbm1w7DFzB/OB+TG2V3Z3h/U2l0s/
-/A0BLjhQiLFZovh6SuAPSUtSHMz03gh1OnIHsUKI5vypEl0Y8Q8eWV2wXnryc0cX
-1IudRxfJ/a9koA1Z2PNuoXUxpw9xFgtRwnZGCsoAZOdL8xbt7d1d5c6Cvcp4NfOu
-+a3YQFcz1AZpe/zRGf4Z
-=pezb
+iQEcBAEBCAAGBQJYwWYdAAoJEEEwndWOY1w5r5kIAJSd5jNvYhRBy8KzCa1D5FoZ
+kjIvp0FX/9x8rlep8xG6RUAqiNcf/p+yrcmr9ADp6wgpreVxn4PKjWkpBBw4k07Z
+rj3A6KbFZwtx7pRNcIbuoGTxgEZbQiLEPXDVsseI4x+lMsCG5NHJEHo6Ou1ciAt3
+5ST4J8zccishjtwdYFXCdH+LHhrmne9CyM3HyexYrcneBxpC2Ag+RyhEvrfkm8xU
+r/h82O6DNAH5rPDuZtlodQTnGteh0B74tO+7NrbXjQtYywnPEZsF5ixbSg/NeAJs
+b26cg1HrCjrfYNGYUrapsE+JVCYLKCbBrf/EwR7lFEsJmN9FF7hoOHdLDWA9Qj0=
+=bx/F
 -----END PGP SIGNATURE-----
 
---EVF5PPMfhYS0aIcm--
+--p5j0vR1f4C5SV0dNdxOtXECL7g7iaxP57--
 
