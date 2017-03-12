@@ -1,9 +1,10 @@
-Date: Sun, 12 Mar 2017 19:23:45 +0100 (CET)
-Message-Id: <201703121823.v2CINjAL048856@...2054...>
+Date: Sun, 12 Mar 2017 19:41:02 +0100 (CET)
+Message-Id: <201703121841.v2CIf2lU049979@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1488734492-5319-1-git-send-email-chipitsine@...277...>
-References: <1488734492-5319-1-git-send-email-chipitsine@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: travis-ci: remove unused files
+In-Reply-To: <1489056455-6004-1-git-send-email-steffan.karger@...1435...>
+References: <1489056455-6004-1-git-send-email-steffan.karger@...1435...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix types in WIN32
+	socket_listen_accept()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,22 +15,22 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Ilya Shipitsin <chipitsine@...277...>
+To: Steffan Karger <steffan.karger@...1435...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master and release/2.4 branch.
+Your patch has been applied to the master and release/2.4 branch (bugfix).
 
-commit 85ac77c90bba0a912625ad6926a9595c3192f902 (master)
-commit 39e847e0c002b0d08bb3612e1b67e74369debf63 (release/2.4)
-Author: Ilya Shipitsin
-Date:   Sun Mar 5 20:21:32 2017 +0300
+commit 33e1a869fc6edb6bce5816b11dbecfaca57b20d4 (master)
+commit 8be20c210e3907209af08ede9f23d62b83665bd1 (release/2.4)
+Author: Steffan Karger
+Date:   Thu Mar 9 11:47:35 2017 +0100
 
-     travis-ci: remove unused files
+     Fix types in WIN32 socket_listen_accept()
 
-     Signed-off-by: Ilya Shipitsin <chipitsine@...277...>
-     Acked-by: Steffan Karger <steffan.karger@...1435...>
-     Message-Id: <1488734492-5319-1-git-send-email-chipitsine@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg14234.html
+     Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+     Acked-by: Arne Schwabe <arne@...1227...>
+     Message-Id: <1489056455-6004-1-git-send-email-steffan.karger@...1435...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg14239.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
