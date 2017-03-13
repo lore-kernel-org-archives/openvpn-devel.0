@@ -1,15 +1,12 @@
-References: <CAFHpkQHx1b4hDbeW2eOJDURHQoN6eCb40AZ5U4bhJOJdyPLnMg@...278...>
-	<a766bfda-08dd-0984-c310-e9fc502326b0@...515...>
 From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <ff77c70f-4ae2-8b53-3c81-747b7abab662@...515...>
-Date: Mon, 13 Mar 2017 17:30:22 +0200
+Message-ID: <2876de55-c3fa-05d5-6441-a78f39170d1c@...515...>
+Date: Mon, 13 Mar 2017 19:26:52 +0200
 MIME-Version: 1.0
-In-Reply-To: <a766bfda-08dd-0984-c310-e9fc502326b0@...515...>
 Content-Type: multipart/signed; micalg=pgp-sha256;
 	protocol="application/pgp-signature";
-	boundary="T8g8WagmrnJQlojT7Mk1KPcHN84h5uBkw"
-Subject: Re: [Openvpn-devel] could be gitlab-ci an alternative to buildbot
- cloud?
+	boundary="0E4dS0wUNO9slxBEhr4xUUfq9TEesG2HN"
+Subject: [Openvpn-devel] Reviewer(s) for French translation fixes in OpenVPN
+	GUI?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,78 +15,26 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---T8g8WagmrnJQlojT7Mk1KPcHN84h5uBkw
-Content-Type: multipart/mixed; boundary="------------133A6E5FA7F0F6F7809F3ACD"
+--0E4dS0wUNO9slxBEhr4xUUfq9TEesG2HN
+Content-Type: multipart/mixed; boundary="------------6A0F2CBD7B502D587FAFADFB"
 
 This is a multi-part message in MIME format.
---------------133A6E5FA7F0F6F7809F3ACD
+--------------6A0F2CBD7B502D587FAFADFB
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
-
-On 08/03/2017 21:58, Samuli Sepp=C3=A4nen wrote:
-> Hi,
->=20
-> On 05/03/2017 16:25, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=B8=D1=
-=86=D0=B8=D0=BD wrote:
->> Hello,
->>
->> there was some buzz related to improvement of testing system, like
->> patchwork.
->> we tried gitlab-ci on our internal project, it looks very promising.
->>
->> since openvpn is already hosted on gitlab.com <http://gitlab.com>,
->> there's a possibility of
->>
->> 1) users can add their own gitlab-ci agents to the repo
->> 2) it might be even windows agents
->> 3) build results are publicly available (not easy to get from buildbot)
->=20
-> Buildbot is behind VPN because of security reasons. We can easily grant
-> more access to its WebUI if we need to. So far there has not been a
-> pressing need to do that.
->=20
-> Afaik it would be possible to run a Windows buildslaves. The problem is
-> that OpenVPN Windows building tends to suck. Hence we have the custom
-> hacked together cross-compile "buildslave" that makes use of openvpn-buil=
-d.
->=20
->> it looks like a big step, and it is hard to predict its result. but, I
->> think we can try and have a look at it.
->> thoughts?
->=20
-> Personally I'm not too keen to migrate away from Buildbot unless there
-> are very significant benefits. Not having to configure any
-> agents/buildslaves would be such a benefit imho.
->=20
-> That said, I will have a look at gitlab-ci to see what it can do.
->=20
-
 Hi,
 
-I went through GitLab CI documentation and it seems we probably _could_
-use it as an alternative to Buildbot. That said, the switch would not be
-trivial, and would not add much value to the current Buildbot setup
-imho. Plus I have a feeling getting t_client.sh to work would be a lot
-of work.
+Is anyone interested in reviewing some French-language fixes to OpenVPN GUI?
 
-The good thing about Buildbot is that the buildmaster configuration is
-pure Python, so it is easily adaptable to our needs with minimal code
-changes. Plus buildbot is not limited to a particular web service
-(GitLab/GitHub), but still provides the hooks to integrate with almost
-anything[*]. We're thus not limited by the tool itself.
+<https://github.com/OpenVPN/openvpn-gui/pull/136>
 
-Buildbot build failure messages are available in the openvpn-builds
-mailing list archive:
+If we don't get any review, we'll have to merge the PR with a lazy-ACK.
 
-<https://sourceforge.net/p/openvpn/mailman/openvpn-builds/>
-
-For a "normal" developer the buildbot webui is not of much interest. One
-exception is manually triggering builds against other Git repos or
-branches (e.g. one with a proposed fix).
+Any help would be appreciated!
 
 --=20
 Samuli Sepp=C3=A4nen
@@ -98,9 +43,7 @@ OpenVPN Technologies, Inc
 
 irc freenode net: mattock
 
-[*] <http://docs.buildbot.net/latest/manual/cfg-changesources.html>
-
---------------133A6E5FA7F0F6F7809F3ACD
+--------------6A0F2CBD7B502D587FAFADFB
 Content-Type: application/pgp-keys;
  name="0x40864578.asc"
 Content-Transfer-Encoding: quoted-printable
@@ -149,9 +92,9 @@ XuwT7RpGDZ6jBfphYQ=3D=3D
 =3DFKLE
 -----END PGP PUBLIC KEY BLOCK-----
 
---------------133A6E5FA7F0F6F7809F3ACD--
+--------------6A0F2CBD7B502D587FAFADFB--
 
---T8g8WagmrnJQlojT7Mk1KPcHN84h5uBkw
+--0E4dS0wUNO9slxBEhr4xUUfq9TEesG2HN
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -159,14 +102,14 @@ Content-Disposition: attachment; filename="signature.asc"
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQEcBAEBCAAGBQJYxrsOAAoJEClYTZ9AhkV44SIH/1j5sCT9zJ7yndl13oIeGdlM
-JX0cVTvaClK/0DsHOAo/WULP2WqdqP8LuAtygegTsjODcNoQlwkdpf0OxQULXVMd
-F35Aa9giXRQXn6Oo6uhY6NEqDAx1RRhduAyR0yvDFwyHRXYEn74kXZfAZ7vqFELu
-jUGv958OpTr1M3F5PctVUhptKRtwzPgn5P053xm4lSCl2bSFlHxYhQD0slZmYwkl
-BQD+Pu1TXaZpLTiBvBqOWuPxCXNmxu1ydhdrrVw+9vdG5LW2S1t/98aLCVNkJlOe
-lfmJ9FFSx4/sIFmaGf6CVvhh9c/AXmk/dwMOQIGIodZhMV4lB9wNJeIb5Pj6wHI=
-=z6fs
+iQEcBAEBCAAGBQJYxtZcAAoJEClYTZ9AhkV4T8QH/iSPF2RbU9y/ltrzCN1i+pa9
+RODnaK0iHzt3tgvQI7hOpNP98tXiNuHA7sJ2wEaLqMGAkz6P8W/r4WYM4cz+NmFp
+LscdMyGqjS74yTN7m/pgj4McSQ+zcJOanhUcRv4sqX2LInCaARktWvBub38q8xlW
+sWtigUSiKM1+zWQJect2g6XS9b5e6awLWvp6yCBrj2u4eP8ChhvpZ4aPMQ3+EVuW
+K8+d+GinawXiulERQn74Wj5deKl95w2Jmr5q4CaXE5wgJxcE+uA1TbCCw+55/5KL
+AB30Prmrg4VIc4Uti8vHCN8RB4grv9RZ8lX4zO2lWXJE3i0Bx9sZedw+u+JGYTE=
+=IZkO
 -----END PGP SIGNATURE-----
 
---T8g8WagmrnJQlojT7Mk1KPcHN84h5uBkw--
+--0E4dS0wUNO9slxBEhr4xUUfq9TEesG2HN--
 
