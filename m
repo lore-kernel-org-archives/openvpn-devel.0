@@ -1,12 +1,8 @@
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <2876de55-c3fa-05d5-6441-a78f39170d1c@...515...>
-Date: Mon, 13 Mar 2017 19:26:52 +0200
+From: Eric Thorpe <eric@...1918...>
+Message-ID: <1b2fc2aa-74b0-6a91-aeb0-a45d7a8062cc@...1918...>
+Date: Tue, 14 Mar 2017 09:26:52 +1100
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature";
-	boundary="0E4dS0wUNO9slxBEhr4xUUfq9TEesG2HN"
-Subject: [Openvpn-devel] Reviewer(s) for French translation fixes in OpenVPN
-	GUI?
+Subject: [Openvpn-devel] [PATCH] Fix Building Using MSVC
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,101 +11,192 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---0E4dS0wUNO9slxBEhr4xUUfq9TEesG2HN
-Content-Type: multipart/mixed; boundary="------------6A0F2CBD7B502D587FAFADFB"
+This patch enables the building of OpenVPN for the 2.4 and master 
+branches using MSVC (Visual Studio 2013 / MSVC v120), which currently 
+doesn't work with 2.4 or a clone of master. 2013 is being used as it 
+reduces the complexity of the redistributable requirements and has 
+mostly complete C99 support. Further changes will be necessary for 2015 
+support when the switch is made.
 
-This is a multi-part message in MIME format.
---------------6A0F2CBD7B502D587FAFADFB
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Note the changes to config-msvc-version.h.in are more of a work around. 
+It was a simpler approach when compared to modifying msvc-generate.js to 
+handle m4 syntax, and so it may be dropped if there is an intention to 
+update the javascript generator.
 
-Hi,
+Signed-off by: Eric Thorpe <eric@...1918...>
+---
+diff --git a/config-msvc-version.h.in b/config-msvc-version.h.in
+index 4bc89e7..7977cb8 100644
+--- a/config-msvc-version.h.in
++++ b/config-msvc-version.h.in
+@@ -1,8 +1,12 @@
+  #define PACKAGE_NAME "@PRODUCT_NAME@"
+-#define PACKAGE_STRING "@PRODUCT_NAME@ @PRODUCT_VERSION@"
++#define PACKAGE_STRING "@PRODUCT_NAME@ 
+@PRODUCT_VERSION_MAJOR@...220...@PRODUCT_VERSION_MINOR@@PRODUCT_VERSION_PATCH@"
+  #define PACKAGE_TARNAME "@PRODUCT_TARNAME@"
+  #define PACKAGE "@PRODUCT_TARNAME@"
+-#define PACKAGE_VERSION "@PRODUCT_VERSION@"
++#define PRODUCT_VERSION_MAJOR "@PRODUCT_VERSION_MAJOR@"
++#define PRODUCT_VERSION_MINOR "@PRODUCT_VERSION_MINOR@"
++#define PRODUCT_VERSION_PATCH "@PRODUCT_VERSION_PATCH@"
++#define PACKAGE_VERSION 
+"@PRODUCT_VERSION_MAJOR@...220...@PRODUCT_VERSION_MINOR@...220...@PRODUCT_VERSION_PATCH@"
++#define PRODUCT_VERSION 
+"@PRODUCT_VERSION_MAJOR@...220...@PRODUCT_VERSION_MINOR@...220...@PRODUCT_VERSION_PATCH@"
+  #define PRODUCT_BUGREPORT "@PRODUCT_BUGREPORT@"
+  #define OPENVPN_VERSION_RESOURCE @PRODUCT_VERSION_RESOURCE@
+  #define TAP_WIN_COMPONENT_ID "@PRODUCT_TAP_WIN_COMPONENT_ID@"
+diff --git a/config-msvc.h b/config-msvc.h
+index 3e71c85..9b97e71 100644
+--- a/config-msvc.h
++++ b/config-msvc.h
+@@ -126,6 +126,7 @@ typedef __int64 int64_t;
+  typedef __int32 int32_t;
+  typedef __int16 int16_t;
+  typedef __int8 int8_t;
++typedef uint16_t in_port_t;
 
-Is anyone interested in reviewing some French-language fixes to OpenVPN GUI?
+  #ifdef HAVE_CONFIG_MSVC_LOCAL_H
+  #include <config-msvc-local.h>
+diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
+index 5549d70..bed39f3 100644
+--- a/src/openvpn/crypto_openssl.c
++++ b/src/openvpn/crypto_openssl.c
+@@ -287,7 +287,12 @@ show_available_ciphers()
 
-<https://github.com/OpenVPN/openvpn-gui/pull/136>
+      /* If we ever exceed this, we must be more selective */
+      const size_t cipher_list_len = 1000;
++#ifdef _MSC_VER
++    //While GCC will allow you to use a const, MSVC won't (at least 
+with a simple declaration). Use a compile time constant for now
++    const EVP_CIPHER *cipher_list[1000];
++#else
+      const EVP_CIPHER *cipher_list[cipher_list_len];
++#endif
+      size_t num_ciphers = 0;
+  #ifndef ENABLE_SMALL
+      printf("The following ciphers and cipher modes are available for 
+use\n"
+diff --git a/src/openvpn/openvpn.vcxproj b/src/openvpn/openvpn.vcxproj
+index 8dfbea5..e8a48e2 100644
+--- a/src/openvpn/openvpn.vcxproj
++++ b/src/openvpn/openvpn.vcxproj
+@@ -99,13 +99,16 @@
+      </Link>
+    </ItemDefinitionGroup>
+    <ItemGroup>
++    <ClCompile Include="argv.c" />
+      <ClCompile Include="base64.c" />
++    <ClCompile Include="block_dns.c" />
+      <ClCompile Include="buffer.c" />
+      <ClCompile Include="clinat.c" />
+      <ClCompile Include="comp-lz4.c" />
+      <ClCompile Include="comp.c" />
+      <ClCompile Include="compstub.c" />
+      <ClCompile Include="console.c" />
++    <ClCompile Include="console_builtin.c" />
+      <ClCompile Include="crypto.c" />
+      <ClCompile Include="crypto_openssl.c" />
+      <ClCompile Include="cryptoapi.c" />
+@@ -164,12 +167,15 @@
+      <ClCompile Include="ssl_verify.c" />
+      <ClCompile Include="ssl_verify_openssl.c" />
+      <ClCompile Include="status.c" />
++    <ClCompile Include="tls_crypt.c" />
+      <ClCompile Include="tun.c" />
+      <ClCompile Include="win32.c" />
+    </ItemGroup>
+    <ItemGroup>
++    <ClInclude Include="argv.h" />
+      <ClInclude Include="base64.h" />
+      <ClInclude Include="basic.h" />
++    <ClInclude Include="block_dns.h" />
+      <ClInclude Include="buffer.h" />
+      <ClInclude Include="circ_list.h" />
+      <ClInclude Include="clinat.h" />
+@@ -249,6 +255,7 @@
+      <ClInclude Include="ssl_verify_openssl.h" />
+      <ClInclude Include="status.h" />
+      <ClInclude Include="syshead.h" />
++    <ClInclude Include="tls_crypt.h" />
+      <ClInclude Include="tun.h" />
+      <ClInclude Include="win32.h" />
+    </ItemGroup>
+@@ -268,4 +275,4 @@
+    <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+    <ImportGroup Label="ExtensionTargets">
+    </ImportGroup>
+-</Project>
++</Project>
+\ No newline at end of file
+diff --git a/src/openvpn/openvpn.vcxproj.filters 
+b/src/openvpn/openvpn.vcxproj.filters
+index 8b6a269..30df5ec 100644
+--- a/src/openvpn/openvpn.vcxproj.filters
++++ b/src/openvpn/openvpn.vcxproj.filters
+@@ -216,6 +216,18 @@
+      <ClCompile Include="comp-lz4.c">
+        <Filter>Source Files</Filter>
+      </ClCompile>
++    <ClCompile Include="argv.c">
++      <Filter>Source Files</Filter>
++    </ClCompile>
++    <ClCompile Include="block_dns.c">
++      <Filter>Source Files</Filter>
++    </ClCompile>
++    <ClCompile Include="console_builtin.c">
++      <Filter>Source Files</Filter>
++    </ClCompile>
++    <ClCompile Include="tls_crypt.c">
++      <Filter>Source Files</Filter>
++    </ClCompile>
+    </ItemGroup>
+    <ItemGroup>
+      <ClInclude Include="base64.h">
+@@ -464,10 +476,22 @@
+      <ClInclude Include="win32.h">
+        <Filter>Header Files</Filter>
+      </ClInclude>
++    <ClInclude Include="compstub.h">
++      <Filter>Header Files</Filter>
++    </ClInclude>
++    <ClInclude Include="argv.h">
++      <Filter>Header Files</Filter>
++    </ClInclude>
++    <ClInclude Include="block_dns.h">
++      <Filter>Header Files</Filter>
++    </ClInclude>
++    <ClInclude Include="tls_crypt.h">
++      <Filter>Header Files</Filter>
++    </ClInclude>
+    </ItemGroup>
+    <ItemGroup>
+      <ResourceCompile Include="openvpn_win32_resources.rc">
+        <Filter>Resource Files</Filter>
+      </ResourceCompile>
+    </ItemGroup>
+-</Project>
++</Project>
+\ No newline at end of file
+diff --git a/src/openvpn/ssl_openssl.h b/src/openvpn/ssl_openssl.h
+index c64c65f..a974e7e 100644
+--- a/src/openvpn/ssl_openssl.h
++++ b/src/openvpn/ssl_openssl.h
+@@ -49,7 +49,11 @@
+   */
+  struct tls_root_ctx {
+      SSL_CTX *ctx;
++#ifdef _MSC_VER
++    struct timeval crl_last_mtime;
++#else
+      struct timespec crl_last_mtime;
++#endif
+      off_t crl_last_size;
+  };
 
-If we don't get any review, we'll have to merge the PR with a lazy-ACK.
-
-Any help would be appreciated!
-
---=20
-Samuli Sepp=C3=A4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
-
---------------6A0F2CBD7B502D587FAFADFB
-Content-Type: application/pgp-keys;
- name="0x40864578.asc"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: attachment;
- filename="0x40864578.asc"
-
------BEGIN PGP PUBLIC KEY BLOCK-----
-Version: GnuPG v2
-
-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
-XuwT7RpGDZ6jBfphYQ=3D=3D
-=3DFKLE
------END PGP PUBLIC KEY BLOCK-----
-
---------------6A0F2CBD7B502D587FAFADFB--
-
---0E4dS0wUNO9slxBEhr4xUUfq9TEesG2HN
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQEcBAEBCAAGBQJYxtZcAAoJEClYTZ9AhkV4T8QH/iSPF2RbU9y/ltrzCN1i+pa9
-RODnaK0iHzt3tgvQI7hOpNP98tXiNuHA7sJ2wEaLqMGAkz6P8W/r4WYM4cz+NmFp
-LscdMyGqjS74yTN7m/pgj4McSQ+zcJOanhUcRv4sqX2LInCaARktWvBub38q8xlW
-sWtigUSiKM1+zWQJect2g6XS9b5e6awLWvp6yCBrj2u4eP8ChhvpZ4aPMQ3+EVuW
-K8+d+GinawXiulERQn74Wj5deKl95w2Jmr5q4CaXE5wgJxcE+uA1TbCCw+55/5KL
-AB30Prmrg4VIc4Uti8vHCN8RB4grv9RZ8lX4zO2lWXJE3i0Bx9sZedw+u+JGYTE=
-=IZkO
------END PGP SIGNATURE-----
-
---0E4dS0wUNO9slxBEhr4xUUfq9TEesG2HN--
 
