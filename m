@@ -1,8 +1,9 @@
-From: Eric Thorpe <eric@...1918...>
-Message-ID: <1b2fc2aa-74b0-6a91-aeb0-a45d7a8062cc@...1918...>
-Date: Tue, 14 Mar 2017 09:26:52 +1100
+From: Stephan Kunz <Stephan.Kunz@...2254...>
+Date: Tue, 14 Mar 2017 12:27:18 +0100
+Message-ID: <1489490838-6570-1-git-send-email-Stephan.Kunz@...2254...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Fix Building Using MSVC
+Subject: [Openvpn-devel] [PATCH] This patch implements the command kill
+	addr:port for mixed ipv4 and ipv6.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,192 +12,357 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This patch enables the building of OpenVPN for the 2.4 and master 
-branches using MSVC (Visual Studio 2013 / MSVC v120), which currently 
-doesn't work with 2.4 or a clone of master. 2013 is being used as it 
-reduces the complexity of the redistributable requirements and has 
-mostly complete C99 support. Further changes will be necessary for 2015 
-support when the switch is made.
+The old command was only working for ipv4 and we needed the possibility to
+also kill other addresses. I did throw away the old parsing by ':' and now
+search for the last occurrence of a colon. If a colon is found the part after
+the colon is parsed and checked if it is a valid port. If this is the case I
+check via pton if the address is v4 or v6 and fill the openvpn_sockaddr
+accordingly. If not I assume we have a cn.
 
-Note the changes to config-msvc-version.h.in are more of a work around. 
-It was a simpler approach when compared to modifying msvc-generate.js to 
-handle m4 syntax, and so it may be dropped if there is an intention to 
-update the javascript generator.
+The patch supports following kill-commands:
+kill ipv6:port, kill ::ffff:ipv4:port, kill ipv4:port, kill cn
 
-Signed-off by: Eric Thorpe <eric@...1918...>
+Signed-off-by: Stephan Kunz <Stephan.Kunz@...2254...>
 ---
-diff --git a/config-msvc-version.h.in b/config-msvc-version.h.in
-index 4bc89e7..7977cb8 100644
---- a/config-msvc-version.h.in
-+++ b/config-msvc-version.h.in
-@@ -1,8 +1,12 @@
-  #define PACKAGE_NAME "@PRODUCT_NAME@"
--#define PACKAGE_STRING "@PRODUCT_NAME@ @PRODUCT_VERSION@"
-+#define PACKAGE_STRING "@PRODUCT_NAME@ 
-@PRODUCT_VERSION_MAJOR@...220...@PRODUCT_VERSION_MINOR@@PRODUCT_VERSION_PATCH@"
-  #define PACKAGE_TARNAME "@PRODUCT_TARNAME@"
-  #define PACKAGE "@PRODUCT_TARNAME@"
--#define PACKAGE_VERSION "@PRODUCT_VERSION@"
-+#define PRODUCT_VERSION_MAJOR "@PRODUCT_VERSION_MAJOR@"
-+#define PRODUCT_VERSION_MINOR "@PRODUCT_VERSION_MINOR@"
-+#define PRODUCT_VERSION_PATCH "@PRODUCT_VERSION_PATCH@"
-+#define PACKAGE_VERSION 
-"@PRODUCT_VERSION_MAJOR@...220...@PRODUCT_VERSION_MINOR@...220...@PRODUCT_VERSION_PATCH@"
-+#define PRODUCT_VERSION 
-"@PRODUCT_VERSION_MAJOR@...220...@PRODUCT_VERSION_MINOR@...220...@PRODUCT_VERSION_PATCH@"
-  #define PRODUCT_BUGREPORT "@PRODUCT_BUGREPORT@"
-  #define OPENVPN_VERSION_RESOURCE @PRODUCT_VERSION_RESOURCE@
-  #define TAP_WIN_COMPONENT_ID "@PRODUCT_TAP_WIN_COMPONENT_ID@"
-diff --git a/config-msvc.h b/config-msvc.h
-index 3e71c85..9b97e71 100644
---- a/config-msvc.h
-+++ b/config-msvc.h
-@@ -126,6 +126,7 @@ typedef __int64 int64_t;
-  typedef __int32 int32_t;
-  typedef __int16 int16_t;
-  typedef __int8 int8_t;
-+typedef uint16_t in_port_t;
+ src/openvpn/buffer.c | 94 ++++++++++++++++++++++++++++++++++++++++++++++++++++
+ src/openvpn/buffer.h | 27 +++++++++++++++
+ src/openvpn/manage.c | 89 ++++++++++++++++++++++++++++++-------------------
+ src/openvpn/manage.h |  2 +-
+ src/openvpn/multi.c  | 18 ++++------
+ 5 files changed, 183 insertions(+), 47 deletions(-)
 
-  #ifdef HAVE_CONFIG_MSVC_LOCAL_H
-  #include <config-msvc-local.h>
-diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
-index 5549d70..bed39f3 100644
---- a/src/openvpn/crypto_openssl.c
-+++ b/src/openvpn/crypto_openssl.c
-@@ -287,7 +287,12 @@ show_available_ciphers()
-
-      /* If we ever exceed this, we must be more selective */
-      const size_t cipher_list_len = 1000;
-+#ifdef _MSC_VER
-+    //While GCC will allow you to use a const, MSVC won't (at least 
-with a simple declaration). Use a compile time constant for now
-+    const EVP_CIPHER *cipher_list[1000];
-+#else
-      const EVP_CIPHER *cipher_list[cipher_list_len];
-+#endif
-      size_t num_ciphers = 0;
-  #ifndef ENABLE_SMALL
-      printf("The following ciphers and cipher modes are available for 
-use\n"
-diff --git a/src/openvpn/openvpn.vcxproj b/src/openvpn/openvpn.vcxproj
-index 8dfbea5..e8a48e2 100644
---- a/src/openvpn/openvpn.vcxproj
-+++ b/src/openvpn/openvpn.vcxproj
-@@ -99,13 +99,16 @@
-      </Link>
-    </ItemDefinitionGroup>
-    <ItemGroup>
-+    <ClCompile Include="argv.c" />
-      <ClCompile Include="base64.c" />
-+    <ClCompile Include="block_dns.c" />
-      <ClCompile Include="buffer.c" />
-      <ClCompile Include="clinat.c" />
-      <ClCompile Include="comp-lz4.c" />
-      <ClCompile Include="comp.c" />
-      <ClCompile Include="compstub.c" />
-      <ClCompile Include="console.c" />
-+    <ClCompile Include="console_builtin.c" />
-      <ClCompile Include="crypto.c" />
-      <ClCompile Include="crypto_openssl.c" />
-      <ClCompile Include="cryptoapi.c" />
-@@ -164,12 +167,15 @@
-      <ClCompile Include="ssl_verify.c" />
-      <ClCompile Include="ssl_verify_openssl.c" />
-      <ClCompile Include="status.c" />
-+    <ClCompile Include="tls_crypt.c" />
-      <ClCompile Include="tun.c" />
-      <ClCompile Include="win32.c" />
-    </ItemGroup>
-    <ItemGroup>
-+    <ClInclude Include="argv.h" />
-      <ClInclude Include="base64.h" />
-      <ClInclude Include="basic.h" />
-+    <ClInclude Include="block_dns.h" />
-      <ClInclude Include="buffer.h" />
-      <ClInclude Include="circ_list.h" />
-      <ClInclude Include="clinat.h" />
-@@ -249,6 +255,7 @@
-      <ClInclude Include="ssl_verify_openssl.h" />
-      <ClInclude Include="status.h" />
-      <ClInclude Include="syshead.h" />
-+    <ClInclude Include="tls_crypt.h" />
-      <ClInclude Include="tun.h" />
-      <ClInclude Include="win32.h" />
-    </ItemGroup>
-@@ -268,4 +275,4 @@
-    <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-    <ImportGroup Label="ExtensionTargets">
-    </ImportGroup>
--</Project>
-+</Project>
-\ No newline at end of file
-diff --git a/src/openvpn/openvpn.vcxproj.filters 
-b/src/openvpn/openvpn.vcxproj.filters
-index 8b6a269..30df5ec 100644
---- a/src/openvpn/openvpn.vcxproj.filters
-+++ b/src/openvpn/openvpn.vcxproj.filters
-@@ -216,6 +216,18 @@
-      <ClCompile Include="comp-lz4.c">
-        <Filter>Source Files</Filter>
-      </ClCompile>
-+    <ClCompile Include="argv.c">
-+      <Filter>Source Files</Filter>
-+    </ClCompile>
-+    <ClCompile Include="block_dns.c">
-+      <Filter>Source Files</Filter>
-+    </ClCompile>
-+    <ClCompile Include="console_builtin.c">
-+      <Filter>Source Files</Filter>
-+    </ClCompile>
-+    <ClCompile Include="tls_crypt.c">
-+      <Filter>Source Files</Filter>
-+    </ClCompile>
-    </ItemGroup>
-    <ItemGroup>
-      <ClInclude Include="base64.h">
-@@ -464,10 +476,22 @@
-      <ClInclude Include="win32.h">
-        <Filter>Header Files</Filter>
-      </ClInclude>
-+    <ClInclude Include="compstub.h">
-+      <Filter>Header Files</Filter>
-+    </ClInclude>
-+    <ClInclude Include="argv.h">
-+      <Filter>Header Files</Filter>
-+    </ClInclude>
-+    <ClInclude Include="block_dns.h">
-+      <Filter>Header Files</Filter>
-+    </ClInclude>
-+    <ClInclude Include="tls_crypt.h">
-+      <Filter>Header Files</Filter>
-+    </ClInclude>
-    </ItemGroup>
-    <ItemGroup>
-      <ResourceCompile Include="openvpn_win32_resources.rc">
-        <Filter>Resource Files</Filter>
-      </ResourceCompile>
-    </ItemGroup>
--</Project>
-+</Project>
-\ No newline at end of file
-diff --git a/src/openvpn/ssl_openssl.h b/src/openvpn/ssl_openssl.h
-index c64c65f..a974e7e 100644
---- a/src/openvpn/ssl_openssl.h
-+++ b/src/openvpn/ssl_openssl.h
-@@ -49,7 +49,11 @@
-   */
-  struct tls_root_ctx {
-      SSL_CTX *ctx;
-+#ifdef _MSC_VER
-+    struct timeval crl_last_mtime;
-+#else
-      struct timespec crl_last_mtime;
-+#endif
-      off_t crl_last_size;
-  };
+diff --git a/src/openvpn/buffer.c b/src/openvpn/buffer.c
+index 2defd18..1c0ac81 100644
+--- a/src/openvpn/buffer.c
++++ b/src/openvpn/buffer.c
+@@ -828,6 +828,100 @@ buf_parse(struct buffer *buf, const int delim, char *line, const int size)
+ }
+ 
+ /*
++ * parses string for the last occurance of a given delim
++ */
++int
++find_last_occurence_of_delim(struct buffer *buf, const int delim)
++{
++    bool found = false;
++
++    int idx = buf->len;
++    int delim_index = 0;
++
++    while (idx > 0 && !found)
++    {
++        delim_index = buf_read_u8_at_idx(buf, --idx);
++        if (delim_index == delim)
++        {
++            found = true;
++        }
++    }
++
++    if (!found)
++    {
++        return -1;
++    }
++
++    return idx;
++}
++
++/*
++ * String parsing from a given index to the eol
++ */
++bool
++buf_parse_from_idx(struct buffer *buf, const int start_idx, char *line, const int size)
++{
++    bool eol = false;
++
++    int idx = start_idx;
++    int n = 0;
++    int c;
++
++    ASSERT (size > 0);
++
++    do
++    {
++        c = buf_read_u8_at_idx(buf, idx++);
++        if (c < 0)
++        {
++            eol = true;
++            c = 0;
++        }
++        if (n >= size)
++        {
++            break;
++        }
++        line[n++] = c;
++    }
++    while (c);
++
++    line[size-1] = '\0';
++    return !(eol && !strlen (line));
++}
++
++/*
++ * String parsing from beginning to given index
++ */
++bool
++buf_parse_to_idx(struct buffer *buf, const int stop_idx, char *line, const int size)
++{
++    bool eol = false;
++    int n = 0;
++    int c;
++
++    ASSERT (size > 0);
++
++    do
++    {
++        c = buf_read_u8(buf);
++        if (c < 0)
++        {
++            eol = true;
++            c = 0;
++        }
++        if (n >= size)
++        {
++            break;
++        }
++        line[n++] = c;
++    }
++    while (c && buf->offset < stop_idx);
++
++    line[buf->offset] = '\0';
++    return !(eol && !strlen (line));
++}
++
++/*
+  * Print a string which might be NULL
+  */
+ const char *
+diff --git a/src/openvpn/buffer.h b/src/openvpn/buffer.h
+index 28b224e..851e923 100644
+--- a/src/openvpn/buffer.h
++++ b/src/openvpn/buffer.h
+@@ -486,6 +486,21 @@ void convert_to_one_line(struct buffer *buf);
+ bool buf_parse(struct buffer *buf, const int delim, char *line, const int size);
+ 
+ /*
++ * Parse a string from end to beginning based on a given delimiter char
++ */
++bool buf_parse_from_idx (struct buffer *buf, const int start_idx, char *line, const int size);
++
++/*
++ * String parsing from beginning to given index
++ */
++bool buf_parse_to_idx (struct buffer *buf, const int stop_idx, char *line, const int size);
++
++/*
++ * looks for the last occurence of a given delimiter char
++ */
++int find_last_occurence_of_delim (struct buffer *buf, const int delim);
++
++/*
+  * Hex dump -- Output a binary buffer to a hex string and return it.
+  */
+ #define FHE_SPACE_BREAK_MASK 0xFF /* space_break parameter in lower 8 bits */
+@@ -782,6 +797,18 @@ buf_read(struct buffer *src, void *dest, int size)
+ }
+ 
+ static inline int
++buf_read_u8_at_idx(struct buffer *buf, int idx)
++{
++    int ret;
++    if (BLEN (buf) < 1 || BLEN (buf) < idx)
++    {
++        return -1;
++    }
++    ret = *(buf->data+idx);
++    return ret;
++}
++
++static inline int
+ buf_read_u8(struct buffer *buf)
+ {
+     int ret;
+diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
+index 763f6c6..1ea49be 100644
+--- a/src/openvpn/manage.c
++++ b/src/openvpn/manage.c
+@@ -508,50 +508,73 @@ man_kill(struct management *man, const char *victim)
+     if (man->persist.callback.kill_by_cn && man->persist.callback.kill_by_addr)
+     {
+         struct buffer buf;
++        struct openvpn_sockaddr saddr;
+         char p1[128];
+         char p2[128];
+         int n_killed;
++        int last_delim;
++        bool cn = false;
++        int port;
+ 
+         buf_set_read(&buf, (uint8_t *) victim, strlen(victim) + 1);
+-        buf_parse(&buf, ':', p1, sizeof(p1));
+-        buf_parse(&buf, ':', p2, sizeof(p2));
++        last_delim = find_last_occurence_of_delim (&buf, ':');
++        if (last_delim != -1)
++        {
++            // parse from delim+1
++            buf_parse_from_idx(&buf, last_delim+1, p2, sizeof (p2));
++            port = atoi(p2);
++            // Check if port is in range
++            if ((strlen (p2) <= 5) && (port > 0 && port < 65536))
++            {
++                // if port seems correct we parse for ip, need to
++                buf_parse_to_idx(&buf, last_delim, p1, sizeof (p1));
++            }
++            else
++            {
++                // port seems wrong so we might have a cn here
++                buf_parse(&buf, -1, p1, sizeof (p1));
++                cn = true;
++            }
++        }
++        else
++        {
++            // as we do not found a delimiter we assume we have a cn
++            buf_parse(&buf, -1, p1, sizeof (p1));
++            cn = true;
++        }
+ 
+-        if (strlen(p1) && strlen(p2))
++        CLEAR (saddr);
++        // Check if address is v4
++        if (!cn && inet_pton(AF_INET, p1, &(saddr.addr.in4.sin_addr)))
+         {
+-            /* IP:port specified */
+-            bool status;
+-            const in_addr_t addr = getaddr(GETADDR_HOST_ORDER|GETADDR_MSG_VIRT_OUT, p1, 0, &status, NULL);
+-            if (status)
++            saddr.addr.in4.sin_family = AF_INET;
++            saddr.addr.in4.sin_port = htons(port);
++        }
++        // Check if address is v6
++        else if (!cn && inet_pton(AF_INET6, p1, &(saddr.addr.in6.sin6_addr)))
++        {
++            saddr.addr.in6.sin6_family = AF_INET6;
++            saddr.addr.in6.sin6_port = htons(port);
++        }
++
++        if (!cn)
++        {
++            n_killed = (*man->persist.callback.kill_by_addr) (man->persist.callback.arg, &saddr);
++            if (n_killed > 0)
+             {
+-                const int port = atoi(p2);
+-                if (port > 0 && port < 65536)
+-                {
+-                    n_killed = (*man->persist.callback.kill_by_addr)(man->persist.callback.arg, addr, port);
+-                    if (n_killed > 0)
+-                    {
+-                        msg(M_CLIENT, "SUCCESS: %d client(s) at address %s:%d killed",
+-                            n_killed,
+-                            print_in_addr_t(addr, 0, &gc),
+-                            port);
+-                    }
+-                    else
+-                    {
+-                        msg(M_CLIENT, "ERROR: client at address %s:%d not found",
+-                            print_in_addr_t(addr, 0, &gc),
+-                            port);
+-                    }
+-                }
+-                else
+-                {
+-                    msg(M_CLIENT, "ERROR: port number is out of range: %s", p2);
+-                }
++                msg(M_CLIENT, "SUCCESS: %d client(s) at address %s:%d killed",
++                    n_killed,
++                    p1,
++                    port);
+             }
+             else
+             {
+-                msg(M_CLIENT, "ERROR: error parsing IP address: %s", p1);
++                msg(M_CLIENT, "ERROR: client at address %s:%d not found",
++                    p1,
++                    port);
+             }
+         }
+-        else if (strlen(p1))
++        else
+         {
+             /* common name specified */
+             n_killed = (*man->persist.callback.kill_by_cn)(man->persist.callback.arg, p1);
+@@ -564,10 +587,6 @@ man_kill(struct management *man, const char *victim)
+                 msg(M_CLIENT, "ERROR: common name '%s' not found", p1);
+             }
+         }
+-        else
+-        {
+-            msg(M_CLIENT, "ERROR: kill parse");
+-        }
+     }
+     else
+     {
+diff --git a/src/openvpn/manage.h b/src/openvpn/manage.h
+index 6e5cb9b..e143e2d 100644
+--- a/src/openvpn/manage.h
++++ b/src/openvpn/manage.h
+@@ -162,7 +162,7 @@ struct management_callback
+     void (*status) (void *arg, const int version, struct status_output *so);
+     void (*show_net) (void *arg, const int msglevel);
+     int (*kill_by_cn) (void *arg, const char *common_name);
+-    int (*kill_by_addr) (void *arg, const in_addr_t addr, const int port);
++    int (*kill_by_addr) (void *arg, struct openvpn_sockaddr *saddr);
+     void (*delete_event) (void *arg, event_t event);
+     int (*n_clients) (void *arg);
+ #ifdef MANAGEMENT_DEF_AUTH
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index f6f3f5d..93f0f6c 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -3157,23 +3157,18 @@ management_callback_kill_by_cn(void *arg, const char *del_cn)
+ }
+ 
+ static int
+-management_callback_kill_by_addr(void *arg, const in_addr_t addr, const int port)
++management_callback_kill_by_addr(void *arg, struct openvpn_sockaddr *saddr)
+ {
+     struct multi_context *m = (struct multi_context *) arg;
+     struct hash_iterator hi;
+     struct hash_element *he;
+-    struct openvpn_sockaddr saddr;
+     struct mroute_addr maddr;
+     int count = 0;
+ 
+-    CLEAR(saddr);
+-    saddr.addr.in4.sin_family = AF_INET;
+-    saddr.addr.in4.sin_addr.s_addr = htonl(addr);
+-    saddr.addr.in4.sin_port = htons(port);
+-    if (mroute_extract_openvpn_sockaddr(&maddr, &saddr, true))
++    if (mroute_extract_openvpn_sockaddr(&maddr, saddr, true))
+     {
+-        hash_iterator_init(m->iter, &hi);
+-        while ((he = hash_iterator_next(&hi)))
++        hash_iterator_init (m->iter, &hi);
++        while ((he = hash_iterator_next (&hi)))
+         {
+             struct multi_instance *mi = (struct multi_instance *) he->value;
+             if (!mi->halt && mroute_addr_equal(&maddr, &mi->real))
+@@ -3182,8 +3177,9 @@ management_callback_kill_by_addr(void *arg, const in_addr_t addr, const int port
+                 ++count;
+             }
+         }
+-        hash_iterator_free(&hi);
+-    }
++        hash_iterator_free (&hi);
++   }
++
+     return count;
+ }
+ 
+-- 
+1.8.2.3
 
 
