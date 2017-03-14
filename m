@@ -1,12 +1,14 @@
+References: <b775444a-aaf6-4e93-5f9c-338ec105eaee@...515...>
 From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <b775444a-aaf6-4e93-5f9c-338ec105eaee@...515...>
-Date: Tue, 14 Mar 2017 15:14:17 +0200
+Message-ID: <88a33ea9-ef60-0378-b39e-ffb5c945e4ae@...515...>
+Date: Tue, 14 Mar 2017 15:17:35 +0200
 MIME-Version: 1.0
+In-Reply-To: <b775444a-aaf6-4e93-5f9c-338ec105eaee@...515...>
 Content-Type: multipart/signed; micalg=pgp-sha256;
 	protocol="application/pgp-signature";
-	boundary="K7vfG3K7UocwdB7QfI3xeXmOMuxbkNFSp"
-Subject: [Openvpn-devel] Topics for tomorrow's (Wed,
-	15th Mar 2017) community meeting
+	boundary="IkJTLtW4rvATGpFn3EjBoAglK5L9FSlUd"
+Subject: Re: [Openvpn-devel] Topics for tomorrow's (Wed,
+ 15th Mar 2017) community meeting
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,40 +20,66 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: openvpn-devel@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---K7vfG3K7UocwdB7QfI3xeXmOMuxbkNFSp
-Content-Type: multipart/mixed; boundary="------------22BD2A0FA915419AC2537311"
+--IkJTLtW4rvATGpFn3EjBoAglK5L9FSlUd
+Content-Type: multipart/mixed; boundary="------------E3818DB2F9A2024C43A0E845"
 
 This is a multi-part message in MIME format.
---------------22BD2A0FA915419AC2537311
+--------------E3818DB2F9A2024C43A0E845
 Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
 
-Hi,
+Correction to the below text. Today -> tomorrow.
 
-We're going to have an IRC meeting today starting at 20:00 CEST (18:00
-UTC) on #openvpn-meeting <at> irc.freenode.net. You do not have to be
-logged in to Freenode to join the channel.
+On 14/03/2017 15:14, Samuli Sepp=E4nen wrote:
+> Hi,
+>=20
+> We're going to have an IRC meeting today starting at 20:00 CEST (18:00
+> UTC) on #openvpn-meeting <at> irc.freenode.net. You do not have to be
+> logged in to Freenode to join the channel.
+>=20
+> Current topic list along with basic information is here:
+>=20
+> <https://community.openvpn.net/openvpn/wiki/Topics-2017-03-15>
+>=20
+> If you have any other things you'd like to bring up, respond to this
+> mail, send me mail privately or add them to the list yourself.
+>=20
+> In case you can't attend the meeting, please feel free to make comments
+> on the topics by responding to this email or to the summary email sent
+> after the meeting. Whenever possible, we'll also respond to existing,
+> related email threads.
+>=20
+> --
+> Samuli Sepp=E4nen
+> Community Manager
+> OpenVPN Technologies, Inc
+>=20
+> irc freenode net: mattock
+>=20
+>=20
+>=20
+> -------------------------------------------------------------------------=
+-----
+> Check out the vibrant tech community on one of the world's most
+> engaging tech sites, Slashdot.org! http://sdm.link/slashdot
+>=20
+>=20
+>=20
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+>=20
 
-Current topic list along with basic information is here:
 
-<https://community.openvpn.net/openvpn/wiki/Topics-2017-03-15>
-
-If you have any other things you'd like to bring up, respond to this
-mail, send me mail privately or add them to the list yourself.
-
-In case you can't attend the meeting, please feel free to make comments
-on the topics by responding to this email or to the summary email sent
-after the meeting. Whenever possible, we'll also respond to existing,
-related email threads.
-
---
+--=20
 Samuli Sepp=E4nen
 Community Manager
 OpenVPN Technologies, Inc
 
 irc freenode net: mattock
 
---------------22BD2A0FA915419AC2537311
+--------------E3818DB2F9A2024C43A0E845
 Content-Type: application/pgp-keys;
  name="0x40864578.asc"
 Content-Transfer-Encoding: quoted-printable
@@ -100,9 +128,9 @@ XuwT7RpGDZ6jBfphYQ=3D=3D
 =3DFKLE
 -----END PGP PUBLIC KEY BLOCK-----
 
---------------22BD2A0FA915419AC2537311--
+--------------E3818DB2F9A2024C43A0E845--
 
---K7vfG3K7UocwdB7QfI3xeXmOMuxbkNFSp
+--IkJTLtW4rvATGpFn3EjBoAglK5L9FSlUd
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -110,14 +138,14 @@ Content-Disposition: attachment; filename="signature.asc"
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQEcBAEBCAAGBQJYx+ypAAoJEClYTZ9AhkV4j7EH/2hoYi8JyPthucZwfJsQ65Lf
-TFILpl204/qhnPsomorrcQOI1QSnmi+pDN7r2532LPkV89CfhK8nZipqyrUSwo4M
-wdUt6xwaetclWtAx92uHsYJmTmFoEJOr5gmYNe9Xx+HQ2P9YumKdEWlc+rFzDcam
-5yrWYeJX1gd1t2Ba2DYDRbAH/H2JnVmmouhrvWj6+i3375bK1mc2LoDDL9Sgf6ep
-PsMrVhN7T8Wak2p5q34VkSJEPjA7Ne+jJC1l80Ccay+Mi4eXFKQr6eZcEbIzi9Xq
-0dLmIRIfEQFIIOkZYS5ORcUCHc+IcYNJyO8pdLfyKTVGVwdaFb+2pDGzZbHvJeY=
-=11Xa
+iQEcBAEBCAAGBQJYx+1vAAoJEClYTZ9AhkV4KC8H/3KYd316BTwjnGKDHGoqNQkf
+N13TxmN64mJVBhJ7RKPDlVGMAM6DOoXv1J7dz8E/4VtTzd1knZ4exr9g43lu6Lmw
+yFTbVlJ8AgCZholfPI/+Wcx5cq3eC4EeO5yY+AJ85NEGKC/NUN96u16ZGyEemsfj
+12F0E5cmhUs/WWe0ZSiw9VJjdCk+TAtJiaW0LVA0P2JgXNxr+lzD2lPwsl3DP2rK
+HMS2xStT+BAp1d73BVMdu4+OYJSyOrZM8Vg7YzLWKV5i1ETfmZjdCmRZBCkM/i5h
+h+O8dPczQbuit5qMZxqLDcxNFHYwfaBkFDDkv9XNCHMbX66QZucYegHkFZjtAus=
+=AZa1
 -----END PGP SIGNATURE-----
 
---K7vfG3K7UocwdB7QfI3xeXmOMuxbkNFSp--
+--IkJTLtW4rvATGpFn3EjBoAglK5L9FSlUd--
 
