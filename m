@@ -1,13 +1,7 @@
-Date: Wed, 15 Mar 2017 22:00:47 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20170315210046.GW93896@...1296...>
-References: <1b2fc2aa-74b0-6a91-aeb0-a45d7a8062cc@...1918...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="ibQy1PD9BIJOeb75"
-Content-Disposition: inline
-In-Reply-To: <1b2fc2aa-74b0-6a91-aeb0-a45d7a8062cc@...1918...>
-Subject: Re: [Openvpn-devel] [PATCH] Fix Building Using MSVC
+From: Steffan Karger <steffan@...1856...>
+Date: Wed, 15 Mar 2017 22:20:20 +0100
+Message-Id: <1489612820-15284-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH] Be less picky about keyUsage extensions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,186 +10,352 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Eric Thorpe <eric@...1918...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---ibQy1PD9BIJOeb75
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+We long recommended users to use --ns-cert-type to distinguish between
+client and server certificates, but that extension is long deprecated and
+now can even no longer be accurately checked in OpenSSL 1.1+.  We support
+a more modern alternative, --remote-cert-tls (which expands to
+--remote-cert-ku + --remote-cert-eku), but are overly strict in checking
+the keyUsage.  This patch makes our implementation less picky, so that
+correct-but-slightly-weird certicates will not immediately be rejected.
 
-Hi,
+We currently allow users to specify a list of allowed keyUsage values, and
+require that the remote certificate matches one of these values exactly.
+This is for more strict than keyUsage usually requires; which is that a
+certificate is okay to use if it can *at least* be used for our intended
+purpose.  This patch changes the behaviour to match that, by using the
+library-provided mbedtls_x509_crt_check_key_usage() function in mbed TLS
+builds, and performing the 'at least bits xyz' check for OpenSSL builds
+(OpenSSL unfortunately does not expose a similar function).
 
-thanks for your patch.  I'm not exactly happy with it for a number
-of reasons, but it's a good way to get started.
+Furthermore, this patch adds better error messages when the checking fails;
+it now explains that is expects to match either of the supplied values,
+and only does so if the check actually failed.
 
-Details...
+This patch also changes --remote-cert-tls to still require a specific EKU,
+but only *some* keyUsage value.  Both our supported crypto libraries will
+check the keyUsage value for correctness during the handshake, but only if
+it is present.  So this still enforces a correct keyUsage, but is a bit
+less picky about certificates that do not exactly match expectations.
 
-On Tue, Mar 14, 2017 at 09:26:52AM +1100, Eric Thorpe wrote:
-[..]
-> diff --git a/config-msvc-version.h.in b/config-msvc-version.h.in
-> index 4bc89e7..7977cb8 100644
-> --- a/config-msvc-version.h.in
-> +++ b/config-msvc-version.h.in
+This patch should be applied together with the 'deprecate --ns-cert-type'
+patch I sent earlier.
 
-I can't comment on these changes, but I assume that's "funny macro handling"
-related...  and since it's MSVC only, the risk of breaking anything else
-is small.
+Signed-off-by: Steffan Karger <steffan@...1856...>
+---
+ Changes.rst                      |  7 ++++
+ doc/openvpn.8                    | 33 ++++++++++--------
+ src/openvpn/options.c            | 15 +++++----
+ src/openvpn/ssl_verify.h         |  3 ++
+ src/openvpn/ssl_verify_mbedtls.c | 42 ++++++++++++++---------
+ src/openvpn/ssl_verify_openssl.c | 72 +++++++++++++++++++++-------------------
+ 6 files changed, 102 insertions(+), 70 deletions(-)
 
-> diff --git a/config-msvc.h b/config-msvc.h
-> index 3e71c85..9b97e71 100644
-> --- a/config-msvc.h
-> +++ b/config-msvc.h
-> @@ -126,6 +126,7 @@ typedef __int64 int64_t;
->   typedef __int32 int32_t;
->   typedef __int16 int16_t;
->   typedef __int8 int8_t;
-> +typedef uint16_t in_port_t;
+diff --git a/Changes.rst b/Changes.rst
+index 0af29e3..2a94990 100644
+--- a/Changes.rst
++++ b/Changes.rst
+@@ -306,6 +306,13 @@ Maintainer-visible changes
+ 
+ Version 2.4.1
+ =============
++ - ``--remote-cert-ku`` now only requires the certificate to have at least the
++   bits set of one of the values in the supplied list, instead of requiring an
++   exact match to one of the values in the list.
++ - ``--remote-cert-tls`` now only requires that a keyUsage is present in the
++   certificate, and leaves the verification of the value up to the crypto
++   library, which has more information (i.e. the key exchange method in use)
++   to verify that the keyUsage is correct.
+  - ``--ns-cert-type`` is deprecated.  Use ``--remote-cert-tls`` instead.
+    The nsCertType x509 extension is very old, and barely used.
+    ``--remote-cert-tls`` uses the far more common keyUsage and extendedKeyUsage
+diff --git a/doc/openvpn.8 b/doc/openvpn.8
+index f6822ec..89229fb 100644
+--- a/doc/openvpn.8
++++ b/doc/openvpn.8
+@@ -5344,15 +5344,25 @@ or
+ .B \-\-tls\-verify.
+ .\"*********************************************************
+ .TP
+-.B \-\-remote\-cert\-ku v...
++.B \-\-remote\-cert\-ku [v...]
+ Require that peer certificate was signed with an explicit
+ .B key usage.
+ 
+-This is a useful security option for clients, to ensure that
+-the host they connect to is a designated server.
++If present in the certificate, the keyUsage value is validated by the TLS
++library during the TLS handshake.  Specifying this option without arguments
++requires this extension to be present (so the TLS library will verify it).
+ 
+-The key usage should be encoded in hex, more than one key
+-usage can be specified.
++If the list
++.B v...
++is also supplied, the keyUsage field must have
++.B at least
++the same bits set as the bits in
++.B one of
++the values supplied in the list
++.B v...
++
++The key usage values in the list must be encoded in hex, e.g.
++"\-\-remote\-cert\-ku a0"
+ .\"*********************************************************
+ .TP
+ .B \-\-remote\-cert\-eku oid
+@@ -5373,24 +5383,21 @@ and
+ .B extended key usage
+ based on RFC3280 TLS rules.
+ 
+-This is a useful security option for clients, to ensure that
+-the host they connect to is a designated server.
++This is a useful security option for clients, to ensure that the host they
++connect to is a designated server.  Or the other way around; for a server to
++verify that only hosts with a client certificate can connect.
+ 
+ The
+ .B \-\-remote\-cert\-tls client
+ option is equivalent to
+ .B
+-\-\-remote\-cert\-ku 80 08 88 \-\-remote\-cert\-eku "TLS Web Client Authentication"
+-
+-The key usage is digitalSignature and/or keyAgreement.
++\-\-remote\-cert\-ku \-\-remote\-cert\-eku "TLS Web Client Authentication"
+ 
+ The
+ .B \-\-remote\-cert\-tls server
+ option is equivalent to
+ .B
+-\-\-remote\-cert\-ku a0 88 \-\-remote\-cert\-eku "TLS Web Server Authentication"
+-
+-The key usage is digitalSignature and ( keyEncipherment or keyAgreement ).
++\-\-remote\-cert\-ku \-\-remote\-cert\-eku "TLS Web Server Authentication"
+ 
+ This is an important security precaution to protect against
+ a man-in-the-middle attack where an authorized client
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 1243db0..d0d39f6 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -7950,14 +7950,18 @@ add_option(struct options *options,
+     }
+     else if (streq(p[0], "remote-cert-ku"))
+     {
+-        int j;
+-
+         VERIFY_PERMISSION(OPT_P_GENERAL);
+ 
++        size_t j;
+         for (j = 1; j < MAX_PARMS && p[j] != NULL; ++j)
+         {
+             sscanf(p[j], "%x", &(options->remote_cert_ku[j-1]));
+         }
++        if (j == 1)
++        {
++            /* No specific KU required, but require KU to be present */
++            options->remote_cert_ku[0] = OPENVPN_KU_REQUIRED;
++        }
+     }
+     else if (streq(p[0], "remote-cert-eku") && p[1] && !p[2])
+     {
+@@ -7970,15 +7974,12 @@ add_option(struct options *options,
+ 
+         if (streq(p[1], "server"))
+         {
+-            options->remote_cert_ku[0] = 0xa0;
+-            options->remote_cert_ku[1] = 0x88;
++            options->remote_cert_ku[0] = OPENVPN_KU_REQUIRED;
+             options->remote_cert_eku = "TLS Web Server Authentication";
+         }
+         else if (streq(p[1], "client"))
+         {
+-            options->remote_cert_ku[0] = 0x80;
+-            options->remote_cert_ku[1] = 0x08;
+-            options->remote_cert_ku[2] = 0x88;
++            options->remote_cert_ku[0] = OPENVPN_KU_REQUIRED;
+             options->remote_cert_eku = "TLS Web Client Authentication";
+         }
+         else
+diff --git a/src/openvpn/ssl_verify.h b/src/openvpn/ssl_verify.h
+index ffab218..22a6190 100644
+--- a/src/openvpn/ssl_verify.h
++++ b/src/openvpn/ssl_verify.h
+@@ -218,6 +218,9 @@ struct x509_track
+ /** Do not perform Netscape certificate type verification */
+ #define NS_CERT_CHECK_CLIENT (1<<1)
+ 
++/** Require keyUsage to be present in cert (0xFFFF is an invalid KU value) */
++#define OPENVPN_KU_REQUIRED (0xFFFF)
++
+ /*
+  * TODO: document
+  */
+diff --git a/src/openvpn/ssl_verify_mbedtls.c b/src/openvpn/ssl_verify_mbedtls.c
+index 4068dd3..c32e481 100644
+--- a/src/openvpn/ssl_verify_mbedtls.c
++++ b/src/openvpn/ssl_verify_mbedtls.c
+@@ -437,32 +437,42 @@ result_t
+ x509_verify_cert_ku(mbedtls_x509_crt *cert, const unsigned *const expected_ku,
+                     int expected_len)
+ {
+-    result_t fFound = FAILURE;
++    msg(D_HANDSHAKE, "Validating certificate key usage");
+ 
+     if (!(cert->ext_types & MBEDTLS_X509_EXT_KEY_USAGE))
+     {
+-        msg(D_HANDSHAKE, "Certificate does not have key usage extension");
++        msg(D_TLS_ERRORS,
++            "ERROR: Certificate does not have key usage extension");
++        return FAILURE;
+     }
+-    else
++
++    if (expected_ku[0] == OPENVPN_KU_REQUIRED)
+     {
+-        int i;
+-        unsigned nku = cert->key_usage;
++        /* Extension required, value checked by TLS library */
++        return SUCCESS;
++    }
+ 
+-        msg(D_HANDSHAKE, "Validating certificate key usage");
+-        for (i = 0; SUCCESS != fFound && i<expected_len; i++)
++    result_t fFound = FAILURE;
++    for (size_t i = 0; SUCCESS != fFound && i<expected_len; i++)
++    {
++        if (expected_ku[i] != 0
++            && 0 == mbedtls_x509_crt_check_key_usage(cert, expected_ku[i]))
+         {
+-            if (expected_ku[i] != 0)
+-            {
+-                msg(D_HANDSHAKE, "++ Certificate has key usage  %04x, expects "
+-                    "%04x", nku, expected_ku[i]);
++            fFound = SUCCESS;
++        }
++    }
+ 
+-                if (nku == expected_ku[i])
+-                {
+-                    fFound = SUCCESS;
+-                }
+-            }
++    if (fFound != SUCCESS)
++    {
++        msg(D_TLS_ERRORS,
++            "ERROR: Certificate has key usage %04x, expected one of:",
++            cert->key_usage);
++        for (size_t i = 0; i < expected_len && expected_ku[i]; i++)
++        {
++            msg(D_TLS_ERRORS, " * %04x", expected_ku[i]);
+         }
+     }
++
+     return fFound;
+ }
+ 
+diff --git a/src/openvpn/ssl_verify_openssl.c b/src/openvpn/ssl_verify_openssl.c
+index 5bdd1e3..d598240 100644
+--- a/src/openvpn/ssl_verify_openssl.c
++++ b/src/openvpn/ssl_verify_openssl.c
+@@ -600,55 +600,59 @@ result_t
+ x509_verify_cert_ku(X509 *x509, const unsigned *const expected_ku,
+                     int expected_len)
+ {
+-    ASN1_BIT_STRING *ku = NULL;
+-    result_t fFound = FAILURE;
++    ASN1_BIT_STRING *ku = X509_get_ext_d2i(x509, NID_key_usage, NULL, NULL);
+ 
+-    if ((ku = (ASN1_BIT_STRING *) X509_get_ext_d2i(x509, NID_key_usage, NULL,
+-                                                   NULL)) == NULL)
++    if (ku == NULL)
+     {
+-        msg(D_HANDSHAKE, "Certificate does not have key usage extension");
++        msg(D_TLS_ERRORS, "Certificate does not have key usage extension");
++        return FAILURE;
+     }
+-    else
++
++    if (expected_ku[0] == OPENVPN_KU_REQUIRED)
+     {
+-        unsigned nku = 0;
+-        int i;
+-        for (i = 0; i < 8; i++)
+-        {
+-            if (ASN1_BIT_STRING_get_bit(ku, i))
+-            {
+-                nku |= 1 << (7 - i);
+-            }
+-        }
++        /* Extension required, value checked by TLS library */
++        return SUCCESS;
++    }
+ 
+-        /*
+-         * Fixup if no LSB bits
+-         */
+-        if ((nku & 0xff) == 0)
++    unsigned nku = 0;
++    for (size_t i = 0; i < 8; i++)
++    {
++        if (ASN1_BIT_STRING_get_bit(ku, i))
+         {
+-            nku >>= 8;
++            nku |= 1 << (7 - i);
+         }
++    }
+ 
+-        msg(D_HANDSHAKE, "Validating certificate key usage");
+-        for (i = 0; fFound != SUCCESS && i < expected_len; i++)
+-        {
+-            if (expected_ku[i] != 0)
+-            {
+-                msg(D_HANDSHAKE, "++ Certificate has key usage  %04x, expects "
+-                    "%04x", nku, expected_ku[i]);
++    /*
++     * Fixup if no LSB bits
++     */
++    if ((nku & 0xff) == 0)
++    {
++        nku >>= 8;
++    }
+ 
+-                if (nku == expected_ku[i])
+-                {
+-                    fFound = SUCCESS;
+-                }
+-            }
++    msg(D_HANDSHAKE, "Validating certificate key usage");
++    result_t fFound = FAILURE;
++    for (size_t i = 0; fFound != SUCCESS && i < expected_len; i++)
++    {
++        if (expected_ku[i] != 0 && (nku & expected_ku[i]) == expected_ku[i])
++        {
++            fFound = SUCCESS;
+         }
+     }
+ 
+-    if (ku != NULL)
++    if (fFound != SUCCESS)
+     {
+-        ASN1_BIT_STRING_free(ku);
++        msg(D_TLS_ERRORS,
++            "ERROR: Certificate has key usage %04x, expected one of:", nku);
++        for (size_t i = 0; i < expected_len && expected_ku[i]; i++)
++        {
++            msg(D_TLS_ERRORS, " * %04x", expected_ku[i]);
++        }
+     }
+ 
++    ASN1_BIT_STRING_free(ku);
++
+     return fFound;
+ }
+ 
+-- 
+2.7.4
 
-The indenting of that chunk looks a bit weird (extra space at the=20
-beginning of the context lines) but that's easily sorted manually.
-
-
->   #ifdef HAVE_CONFIG_MSVC_LOCAL_H
->   #include <config-msvc-local.h>
-> diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
-> index 5549d70..bed39f3 100644
-> --- a/src/openvpn/crypto_openssl.c
-> +++ b/src/openvpn/crypto_openssl.c
-> @@ -287,7 +287,12 @@ show_available_ciphers()
->=20
->       /* If we ever exceed this, we must be more selective */
->       const size_t cipher_list_len =3D 1000;
-> +#ifdef _MSC_VER
-> +    //While GCC will allow you to use a const, MSVC won't (at least=20
-> with a simple declaration). Use a compile time constant for now
-> +    const EVP_CIPHER *cipher_list[1000];
-> +#else
->       const EVP_CIPHER *cipher_list[cipher_list_len];
-> +#endif
->       size_t num_ciphers =3D 0;
-
-I don't think we should do this.  If we have a length, use it.  If
-the compiler is too daft to understand consts, maybe we should go
-for "#define CIPHER_LIST_LEN 1000" instead - indeed, more changes,
-but no magic numbers.  Or abandon the definition, use [1000], and
-sizeof() in the out of bounds check below.
-
-Steffan, your code, what would you say?
-
-
-Style-wise: please do not use C++ comments, and break long lines.
-
-
-> --- a/src/openvpn/openvpn.vcxproj
-> +++ b/src/openvpn/openvpn.vcxproj
-> @@ -99,13 +99,16 @@
->       </Link>
->     </ItemDefinitionGroup>
->     <ItemGroup>
-> +    <ClCompile Include=3D"argv.c" />
->       <ClCompile Include=3D"base64.c" />
-> +    <ClCompile Include=3D"block_dns.c" />
-
-Yeah.  Oversight when we added new modules - these are easy enough :-)
-
-> diff --git a/src/openvpn/ssl_openssl.h b/src/openvpn/ssl_openssl.h
-> index c64c65f..a974e7e 100644
-> --- a/src/openvpn/ssl_openssl.h
-> +++ b/src/openvpn/ssl_openssl.h
-> @@ -49,7 +49,11 @@
->    */
->   struct tls_root_ctx {
->       SSL_CTX *ctx;
-> +#ifdef _MSC_VER
-> +    struct timeval crl_last_mtime;
-> +#else
->       struct timespec crl_last_mtime;
-> +#endif
->       off_t crl_last_size;
->   };
-
-
-We should not do this.  It's not your fault for finding this, but having
-looked at the code to understand why this would be fixing things, I=20
-wonder why we're using a "struct timespec" in the first place, or
-why we're having a structure "with subseconds" in there when all we use
-is the "seconds" bit *because* "windows has no nanoseconds"...
-
-src/openvpn/ssl.c
-
-    /*
-     * Store the CRL if this is the first time or if the file was changed s=
-ince
-     * the last load.
-     * Note: Windows does not support tv_nsec.
-     */
-    if ((ssl_ctx->crl_last_size =3D=3D crl_stat.st_size)
-        && (ssl_ctx->crl_last_mtime.tv_sec =3D=3D crl_stat.st_mtime))
-...
-    ssl_ctx->crl_last_mtime.tv_sec =3D crl_stat.st_mtime;
-    ssl_ctx->crl_last_size =3D crl_stat.st_size;
-
-
-Antonio, this is your code - how shall we handle this?
-
-Today, we only use seconds, so "struct timeval" on all platforms would
-be good enough.  Some platforms' "struct stat" actually has a st_mtim
-which is a "struct timespec" (and st_mtime is defined as st_mtim.tv_sec),
-so if we ever go for subsecond accuracy, timespec is the right thing to
-do - OTOH, that will need at least one extra configure test, given
-how various OSes <sys/stat.h> weasle around "struct timespec"...
-
-#if (_POSIX_C_SOURCE - 0) >=3D 200809L || (_XOPEN_SOURCE - 0) >=3D 700 || \
-    defined(_NETBSD_SOURCE)
-        struct    timespec st_atim;     /* time of last access */
-        struct    timespec st_mtim;     /* time of last data modification */
-        struct    timespec st_ctim;     /* time of last file status change =
-*/
-        struct    timespec st_birthtim; /* time of creation */
-#else
-        time_t    st_atime;             /* time of last access */
-        long      st_atimensec;         /* nsec of last access */
-        time_t    st_mtime;             /* time of last data modification */
-        long      st_mtimensec;         /* nsec of last data modification */
-...
-
-
-So, it might be worth considering just dropping the notion of interest
-in subseconds, and go for a plain "time_t" for "crl_last_mtime"...
-(slightly more code changes, but less portability hassle).
-
-Again, Antonio, your call...
-
-
-Eric, could you re-send the patch without the crypto_openssl.c and
-ssl_openssl.h hunks?  I could merge the rest while Steffan and Antonio
-ponder these changes...
-
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---ibQy1PD9BIJOeb75
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJYyat9AAoJEB2Cnv7KVigSoX0MAK9OaX8g6ghy3FR7HiuqqR+e
-7pIiigCNY8N2XIL/a2D+kCiUDmLRZQ+LGCW2IMcQi5vdsP55uPRFyBP/4NlOSOn2
-dnylMYRd1/mcH2p8DOmdn4g6nuZazJsb1VC/8ZL9J4kazFUqteT1UZoEGrYSeutK
-WBsJMKQc15r74nClFL+9eawtBAgNvnQdXkgiJJA07IoUNg7JPBOcBsBJTSz0ODPS
-pt3jHJnxHQABxyEqvTUuQEOYtgGE9dpepECAfYw652hWZ7JWYJbuuul6gIhufyd3
-4iGfZw54zZOrToKy1yZNxY/NPhLrkkooPLcVMWjvNxa7p5o5j/J2u7BznaIDARch
-l696HQx3c5jfv9Ap/7nu0ORq5iYF93aSm++c5zpulpRYqEkal1/56y7CgHaSmF0+
-ftsRFDRZqyudwOZyHNL3eDwpWLXqeD92xPfPGmL1dD/NhCB5DthEJgfWrRUztHRH
-avWY55mbhhl4JjSS2mZc5sxT+bMdOYhbN5y55qWw0Q==
-=/mTq
------END PGP SIGNATURE-----
-
---ibQy1PD9BIJOeb75--
 
