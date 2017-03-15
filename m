@@ -1,14 +1,17 @@
-References: <1b2fc2aa-74b0-6a91-aeb0-a45d7a8062cc@...1918...>
-	<20170315210046.GW93896@...1296...>
-From: Steffan Karger <steffan@...1856...>
-Message-ID: <d4b41c50-b5f8-cbe6-792f-62c2622da7d8@...1856...>
-Date: Wed, 15 Mar 2017 22:31:52 +0100
+References: <CAFHpkQGseLH-+NFRxgrF7KNdZ8Fc4A4HQGBOTEktwABW9ZALTw@...278...>
+	<20170315152840.GR93896@...1296...>
+	<CAFHpkQGKV3pAeTjabYbyP4LwwDqUa7Atuuqh0qyQ95DTdL39dA@...278...>
+	<CAKuzo_g-6RXk910xT-g7jjdBnzYm2O0edLPbUO+4srt_nGM1gw@...278...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <b51294e5-dfb9-20fc-b314-649ce596a8f3@...2080...>
+Date: Wed, 15 Mar 2017 22:53:33 +0100
 MIME-Version: 1.0
-In-Reply-To: <20170315210046.GW93896@...1296...>
+In-Reply-To: <CAKuzo_g-6RXk910xT-g7jjdBnzYm2O0edLPbUO+4srt_nGM1gw@...278...>
 Content-Type: multipart/signed; micalg=pgp-sha256;
 	protocol="application/pgp-signature";
-	boundary="SwwBWJAH2btjulrwfa7iOUIuQVd93doUG"
-Subject: Re: [Openvpn-devel] [PATCH] Fix Building Using MSVC
+	boundary="30bSldTgbJrVlkbBKOnowJgxsIuHd58Rm"
+Subject: Re: [Openvpn-devel] why "ifconfig" is required during build ?
+Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,81 +20,82 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+To: Selva Nair <selva.nair@...277...>, =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0Lg=?= =?UTF-8?B?0YbQuNC9?= <chipitsine@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---SwwBWJAH2btjulrwfa7iOUIuQVd93doUG
-Content-Type: multipart/mixed; boundary="BKRgvcldjcv3lEuPPQIcQs4lXjBxGHbf9";
+--30bSldTgbJrVlkbBKOnowJgxsIuHd58Rm
+Content-Type: multipart/mixed; boundary="9JmDkmrhgDHH4sTKnxVtsJuhW33ARV9oV";
 	protected-headers="v1"
-From: Steffan Karger <steffan@...1856...>
-To: openvpn-devel@lists.sourceforge.net
-Message-ID: <d4b41c50-b5f8-cbe6-792f-62c2622da7d8@...1856...>
-Subject: Re: [Openvpn-devel] [PATCH] Fix Building Using MSVC
-References: <1b2fc2aa-74b0-6a91-aeb0-a45d7a8062cc@...1918...>
-	<20170315210046.GW93896@...1296...>
-In-Reply-To: <20170315210046.GW93896@...1296...>
+From: David Sommerseth <openvpn@...2080...>
+Reply-To: openvpn-devel@lists.sourceforge.net
+To: Selva Nair <selva.nair@...277...>, =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0Lg=?=
+	=?UTF-8?B?0YbQuNC9?= <chipitsine@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Message-ID: <b51294e5-dfb9-20fc-b314-649ce596a8f3@...2080...>
+Subject: Re: [Openvpn-devel] why "ifconfig" is required during build ?
+References: <CAFHpkQGseLH-+NFRxgrF7KNdZ8Fc4A4HQGBOTEktwABW9ZALTw@...278...>
+	<20170315152840.GR93896@...1296...>
+	<CAFHpkQGKV3pAeTjabYbyP4LwwDqUa7Atuuqh0qyQ95DTdL39dA@...278...>
+	<CAKuzo_g-6RXk910xT-g7jjdBnzYm2O0edLPbUO+4srt_nGM1gw@...278...>
+In-Reply-To: <CAKuzo_g-6RXk910xT-g7jjdBnzYm2O0edLPbUO+4srt_nGM1gw@...278...>
 
---BKRgvcldjcv3lEuPPQIcQs4lXjBxGHbf9
+--9JmDkmrhgDHH4sTKnxVtsJuhW33ARV9oV
 Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
 
-Hi,
-
-On 15-03-17 22:00, Gert Doering wrote:
-> On Tue, Mar 14, 2017 at 09:26:52AM +1100, Eric Thorpe wrote:
->>   #ifdef HAVE_CONFIG_MSVC_LOCAL_H
->>   #include <config-msvc-local.h>
->> diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
->> index 5549d70..bed39f3 100644
->> --- a/src/openvpn/crypto_openssl.c
->> +++ b/src/openvpn/crypto_openssl.c
->> @@ -287,7 +287,12 @@ show_available_ciphers()
->>
->>       /* If we ever exceed this, we must be more selective */
->>       const size_t cipher_list_len =3D 1000;
->> +#ifdef _MSC_VER
->> +    //While GCC will allow you to use a const, MSVC won't (at least=20
->> with a simple declaration). Use a compile time constant for now
->> +    const EVP_CIPHER *cipher_list[1000];
->> +#else
->>       const EVP_CIPHER *cipher_list[cipher_list_len];
->> +#endif
->>       size_t num_ciphers =3D 0;
+On 15/03/17 16:46, Selva Nair wrote:
 >=20
-> I don't think we should do this.  If we have a length, use it.  If
-> the compiler is too daft to understand consts, maybe we should go
-> for "#define CIPHER_LIST_LEN 1000" instead - indeed, more changes,
-> but no magic numbers.  Or abandon the definition, use [1000], and
-> sizeof() in the out of bounds check below.
+> You can set custom path during configure like this:
 >=20
-> Steffan, your code, what would you say?
+> $ IFCONFIG=3D/opt/hacks/bin/ifconfig ./configure
 
-Hm, this is somewhat chewing on our decision that 'we now only support
-compilers that do C99', but I can see that this is easily fixed so I can
-live with just begin pragmatic.  In that case, let's go for the
-sizeof().  Adding a define of course works, but I find it somewhat clunky.
+This will work ... but generally this is a bit better:
 
--Steffan
+   $ ./configure IFCONFIG=3D/opt/hacks/bin/ifconfig
+
+The reason is that 'make' might some times decide to re-run autoreconf,
+which with the former approach will lead to "forgetting" this
+configuration setting.  The latter approach ensures ./configure will
+preserve all these settings when it calls itself again.
+
+You can easily spot if autoreconf have been re-run by looking at
+config.log ... you'll see '--no-create --no-recursion' in the command
+line "copy".
 
 
---BKRgvcldjcv3lEuPPQIcQs4lXjBxGHbf9--
+--=20
+kind regards,
 
---SwwBWJAH2btjulrwfa7iOUIuQVd93doUG
+David Sommerseth
+OpenVPN Technologies, Inc
+
+
+
+--9JmDkmrhgDHH4sTKnxVtsJuhW33ARV9oV--
+
+--30bSldTgbJrVlkbBKOnowJgxsIuHd58Rm
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
+Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQEcBAEBCAAGBQJYybLOAAoJEJgCyj0AftKIGlUH/0QxSOpZeefuHumaXsf8jS05
-bZ4ydCcP5+uDc23BPZU+THpAm0O+79MpMOAHHQiybMRQViL+CarmWEzao1Xf2KCY
-3hWt80kKYW/oC56oCtTK3D/a85uWyqLJA8+VlPGRgxY3cYaU/WppuGJoeO0dvgz3
-2Q67akU0zgqljzwmu/K0dpxkdO9HBPWRNla/FIyBlrGQwlTHG3ihSbQpCwb6fNwj
-YlEOGx0oAnIvh8q6CsqwPRYdvQVceDX5oFZzgjwFwFafeORGNgPFLFVFI1UhhALf
-1YFWNzczGbRt3ySV0hWwAuXdZ2Vl8EQ6MbMnuKXTQDd1ew8rsKERDQ4LW3PWD2c=
-=LHKX
+iQIcBAEBCAAGBQJYybfiAAoJEIbPlEyWcf3ylq8P/1/CyT2OsLFQrJMWYcBd466w
+2vN8OUonnTxNkGrLxOUbah7GDwquoXaeck/wsK/19UxQhuTELzJ4RAMWSYRddEsN
+9UGZg/KA0YBTcCvruS7w5aGtEU2efke6D+1oO9S9Q7EzQNnovz4iGbcHyYnjbHTb
+Quv1f6UQYI7N2I5CoeReRu6GKPus4R5SuYhZKTsVEcDfwn/adsgS3EY6XCvUArW8
+HsdbiruyfQpAYjU47LsImJCsxamUXTa+j04gsySez+gK0x5Sa2GYIvfqYZpHXxkY
+rWA/pf0tN5lC3OMuvMYevnNBht4jkd2tjlalSjim4rBYEkveckbFOv+/4rYfIaei
+gVVDkt0IQ4eIENyqibN6dx1g5LE+efYka+d4Vhsvuj6JixV8xMfW7arfBrLFWpue
+pn/Pg08lctnZahOftmqCaTK0dw4/l4GEbabS3kQFxHE4F37tjD2Fc6adjoGxOyGt
+s3IMt9i0yqKMyETh2gDe5UKBM1Y8aYFR6Ke4n31WbW62SgwUEHULfzE7pBUpbh8p
+e/Q5joIWpJPAJD/c44CUJGz9ntKHMBF13nnc14koiJwTOhXGIn6bnB2ZK+cRKdAD
+FP6WkZnJm3AdJrEDgTIgv8+hJVleT/uWYyQfalpLY/Tbum48KoC9VnmN68scuAiB
+kGEXpSLkv4M7gXXlz1f6
+=3H2i
 -----END PGP SIGNATURE-----
 
---SwwBWJAH2btjulrwfa7iOUIuQVd93doUG--
+--30bSldTgbJrVlkbBKOnowJgxsIuHd58Rm--
 
