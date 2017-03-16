@@ -1,8 +1,10 @@
-From: Steffan Karger <steffan@...1856...>
-Date: Thu, 16 Mar 2017 10:12:17 +0100
-Message-Id: <1489655537-19164-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH] Fix non-C99-compliant builds: don't use
-	const size_t as array length
+Date: Thu, 16 Mar 2017 11:05:30 +0100 (CET)
+Message-Id: <201703161005.v2GA5UJu099403@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <1489655537-19164-1-git-send-email-steffan@...1856...>
+References: <1489655537-19164-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix non-C99-compliant builds:
+	don't use const size_t as array length
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,37 +15,32 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Steffan Karger <steffan@...1856...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Signed-off-by: Steffan Karger <steffan@...1856...>
----
- src/openvpn/crypto_openssl.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ACK, thanks ("stared at code, ran my test suite").
 
-diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
-index 5f28391..9139480 100644
---- a/src/openvpn/crypto_openssl.c
-+++ b/src/openvpn/crypto_openssl.c
-@@ -292,8 +292,7 @@ show_available_ciphers()
-     size_t i;
- 
-     /* If we ever exceed this, we must be more selective */
--    const size_t cipher_list_len = 1000;
--    const EVP_CIPHER *cipher_list[cipher_list_len];
-+    const EVP_CIPHER *cipher_list[1000];
-     size_t num_ciphers = 0;
- #ifndef ENABLE_SMALL
-     printf("The following ciphers and cipher modes are available for use\n"
-@@ -318,7 +317,7 @@ show_available_ciphers()
-         {
-             cipher_list[num_ciphers++] = cipher;
-         }
--        if (num_ciphers == cipher_list_len)
-+        if (num_ciphers == (sizeof(cipher_list)/sizeof(*cipher_list)))
-         {
-             msg(M_WARN, "WARNING: Too many ciphers, not showing all");
-             break;
--- 
-2.7.4
+Your patch has been applied to the master and release/2.4 branch.
+
+Hopefully this should build with MSVC now :-)
+
+commit db1b4d96bfe7e744a0dec8f86cb041c32fb87964 (master)
+commit ce40258ddd0170df60633baab2c3d17f2c104671 (release/2.4)
+Author: Steffan Karger
+Date:   Thu Mar 16 10:12:17 2017 +0100
+
+     Fix non-C99-compliant builds: don't use const size_t as array length
+
+     Signed-off-by: Steffan Karger <steffan@...1856...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1489655537-19164-1-git-send-email-steffan@...1856...>
+     URL: http://www.mail-archive.com/search?l=mid&q=1489655537-19164-1-git-send-email-steffan@...1856...
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
