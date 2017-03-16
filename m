@@ -1,10 +1,8 @@
-Date: Thu, 16 Mar 2017 09:39:29 +0100 (CET)
-Message-Id: <201703160839.v2G8dTC1097756@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20170316082117.21020-1-a@...2181...>
-References: <20170316082117.21020-1-a@...2181...>
-Subject: [Openvpn-devel] [PATCH applied] Re: CRL: use time_t instead of
-	struct timespec to store last mtime
+From: Steffan Karger <steffan@...1856...>
+Date: Thu, 16 Mar 2017 10:12:17 +0100
+Message-Id: <1489655537-19164-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH] Fix non-C99-compliant builds: don't use
+	const size_t as array length
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,30 +13,37 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Antonio Quartulli <a@...2181...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-ACK, thanks.  Tested on FreeBSD, unsurprisingly no problems.
+Signed-off-by: Steffan Karger <steffan@...1856...>
+---
+ src/openvpn/crypto_openssl.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-Your patch has been applied to the master and release/2.4 branch.
-
-commit f3705dd1e711ee9f8546b841e4b18e9e9a224975 (master)
-commit 633138564d611b5abeff232c89dccb1b86def449 (release/2.4)
-Author: Antonio Quartulli
-Date:   Thu Mar 16 16:21:17 2017 +0800
-
-     CRL: use time_t instead of struct timespec to store last mtime
-
-     Signed-off-by: Antonio Quartulli <a@...2181...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20170316082117.21020-1-a@...2181...>
-     URL: http://www.mail-archive.com/search?l=mid&q=20170316082117.21020-1-a@...2181...
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
+index 5f28391..9139480 100644
+--- a/src/openvpn/crypto_openssl.c
++++ b/src/openvpn/crypto_openssl.c
+@@ -292,8 +292,7 @@ show_available_ciphers()
+     size_t i;
+ 
+     /* If we ever exceed this, we must be more selective */
+-    const size_t cipher_list_len = 1000;
+-    const EVP_CIPHER *cipher_list[cipher_list_len];
++    const EVP_CIPHER *cipher_list[1000];
+     size_t num_ciphers = 0;
+ #ifndef ENABLE_SMALL
+     printf("The following ciphers and cipher modes are available for use\n"
+@@ -318,7 +317,7 @@ show_available_ciphers()
+         {
+             cipher_list[num_ciphers++] = cipher;
+         }
+-        if (num_ciphers == cipher_list_len)
++        if (num_ciphers == (sizeof(cipher_list)/sizeof(*cipher_list)))
+         {
+             msg(M_WARN, "WARNING: Too many ciphers, not showing all");
+             break;
+-- 
+2.7.4
 
 
