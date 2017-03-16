@@ -1,9 +1,15 @@
-Date: Thu, 16 Mar 2017 09:00:07 +0100 (CET)
-Message-Id: <201703160800.v2G807Cq096517@...2054...>
+Date: Thu, 16 Mar 2017 09:14:44 +0100
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <df273b9b-6ca4-a539-cdf5-d4f9f991896b@...1918...>
-References: <df273b9b-6ca4-a539-cdf5-d4f9f991896b@...1918...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix Building Using MSVC
+Message-ID: <20170316081444.GZ93896@...1296...>
+References: <1b2fc2aa-74b0-6a91-aeb0-a45d7a8062cc@...1918...>
+	<20170315210046.GW93896@...1296...>
+	<20170316073535.GD15280@...2182...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="fS/HbthCZKMwXfkc"
+Content-Disposition: inline
+In-Reply-To: <20170316073535.GD15280@...2182...>
+Subject: Re: [Openvpn-devel] [PATCH] Fix Building Using MSVC
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,40 +18,49 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Eric Thorpe <eric@...1918...>
+To: Antonio Quartulli <a@...2181...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-ACK, thanks.
+--fS/HbthCZKMwXfkc
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Your patch has been applied to the master and release/2.4 branch.
+Hi,
 
-I've taken the commit message from v1 so there's a bit more explanation.
+On Thu, Mar 16, 2017 at 03:35:35PM +0800, Antonio Quartulli wrote:
+> If there is no objection, I'll send a patch for this.
 
-Also, I had to fix quite a bit of whitespace changes - lines in the
-config-msvc-version.h patch got wrapped, and all context lines got a
-extra blank in front.  So whatever client you used to send the patch
-with, please use "git send-email" instead :-)
+Please do.  We only check seconds today anyway - plus file size(!), so I'm=
+=20
+not really seeing a scenario where a CRL file gets refreshed more than
+once per second but the file size staying the same...
 
-Patch from Antonio for the "timespec" issue is coming in...
+gert
 
-commit 5ab106db7b091c6409fd0a7e43f557a7931c200f (master)
-commit 3fa863100033e7d6d0cbb19361a52efbe097e69d (release/2.4)
-Author: Eric Thorpe
-Date:   Thu Mar 16 09:40:31 2017 +1100
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-     Fix Building Using MSVC
+--fS/HbthCZKMwXfkc
+Content-Type: application/pgp-signature; name="signature.asc"
 
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <df273b9b-6ca4-a539-cdf5-d4f9f991896b@...1918...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg14268.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+-----BEGIN PGP SIGNATURE-----
 
+iQGcBAEBAgAGBQJYykl0AAoJEB2Cnv7KVigSip8L/3Zky8q0/xdW4zKkBdo3B56Q
+gCR1DOB8Srnwxf0dmBjQ+BYJAy6YRabIffB+6act3n1gFqmLdljV8ls85ds+3eP8
+pwNnspQ4yCvw8uAeqjMPwNtu3R7I6laA4KQ4/2JiEMCniZ/w+C2t8UosuF+sgesc
+1oZZ/ezudwAiRTgc2U87JCfqSewoYq9JAg9xC/foYGQkYi6aGwMOuIFKsbzAzn6k
+apptAqZe5EJfql6f8sTShGOhSop5iUKO5VNhEMc9baRjrRync49x3lIu1hWHNG+h
+cM4LDg/waTgd5YrTUDx5/I3cYYGQKe9WPWtLCFR3416OWbC4L27CegKEcd+otxSc
+V/tfp4lXHfsdsXzvgseGhtCC01WAn2RQ1ajfIqBmihM8p+fDghCqUMMmh9ehW7g+
+KPU2FtwHvqPf/AuGwD101IBZcZbKfvx5oeYBXuuJ3Wsbid57i0Bji8xq9J7mn1OL
+/Id/qi+JJa8JhgF/c2xyNmnHVcLczdIOm3wpqQShvw==
+=8wtT
+-----END PGP SIGNATURE-----
 
---
-kind regards,
-
-Gert Doering
-
+--fS/HbthCZKMwXfkc--
 
