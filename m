@@ -1,10 +1,8 @@
 From: Gert Doering <gert@...1296...>
-Date: Sun, 19 Mar 2017 19:41:35 +0100
-Message-Id: <20170319184135.23548-1-gert@...1296...>
-In-Reply-To: <e0ce41fa-d0b7-a5af-d021-133239911898@...277...>
-References: <e0ce41fa-d0b7-a5af-d021-133239911898@...277...>
-Subject: [Openvpn-devel] [PATCH] Make ENABLE_OCC no longer depend on
-	!ENABLE_SMALL
+Date: Sun, 19 Mar 2017 20:10:49 +0100
+Message-Id: <20170319191049.23970-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH] Fix installation of IPv6 host route to VPN
+	server when using iservice.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,33 +14,37 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: openvpn-users@lists.sourceforge.net
 
-OCC is useful functionality which (according to LEDE devs) adds only
-about 3k to the binary size - and if the embedded router folks can
-afford this trade-off, everyone else can :-)
+The "prepare IPv6 route message to interactive service" was properly
+handing the correct interface index (r->adapter_index) for this case,
+but then always overwrote the gateway address with our magic tun/tap
+fe80::8 value.  Only do this for "on tap adapter" routes.
 
-Inspired by https://git.lede-project.org/?p=source.git;a=commit;h=b613c96d94bcdcda7abb3be68ea1c281ce5fbb47
+Pinpointed by Selva Nair.
+
+Trac #850
 
 Signed-off-by: Gert Doering <gert@...1296...>
 ---
- src/openvpn/syshead.h | 2 --
- 1 file changed, 2 deletions(-)
+ src/openvpn/route.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/src/openvpn/syshead.h b/src/openvpn/syshead.h
-index a1b6047..f445864 100644
---- a/src/openvpn/syshead.h
-+++ b/src/openvpn/syshead.h
-@@ -589,9 +589,7 @@ socket_defined(const socket_descriptor_t sd)
- /*
-  * Should we include OCC (options consistency check) code?
-  */
--#ifndef ENABLE_SMALL
- #define ENABLE_OCC
--#endif
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index 7e536ef..08998d5 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -3061,8 +3061,10 @@ do_route_ipv6_service(const bool add, const struct route_ipv6 *r, const struct t
  
- /*
-  * Should we include NTLM proxy functionality
+     /* In TUN mode we use a special link-local address as the next hop.
+      * The tapdrvr knows about it and will answer neighbor discovery packets.
++     * (only do this for routes actually using the tun/tap device)
+      */
+-    if (tt->type == DEV_TYPE_TUN)
++    if (tt->type == DEV_TYPE_TUN
++	 && msg.iface.index == tt->adapter_index )
+     {
+         inet_pton(AF_INET6, "fe80::8", &msg.gateway.ipv6);
+     }
 -- 
 2.10.2
 
