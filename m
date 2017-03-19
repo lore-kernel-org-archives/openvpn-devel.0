@@ -1,10 +1,10 @@
-Date: Sun, 19 Mar 2017 19:14:57 +0100 (CET)
-Message-Id: <201703191814.v2JIEvwC034357@...2054...>
+Date: Sun, 19 Mar 2017 19:30:33 +0100 (CET)
+Message-Id: <201703191830.v2JIUXNm035467@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20170127142120.10492-1-davids@...515...>
-References: <20170127142120.10492-1-davids@...515...>
-Subject: [Openvpn-devel] [PATCH applied] Re: plugin: Improve the handling of
-	default plug-in directory
+In-Reply-To: <20170130152658.15786-1-a@...2181...>
+References: <20170130152658.15786-1-a@...2181...>
+Subject: [Openvpn-devel] [PATCH applied] Re: ignore remote-random-hostname
+	if a numeric host is provided
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,31 +15,25 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: David Sommerseth <davids@...515...>
+To: Antonio Quartulli <a@...2181...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-ACK.  The code change is straightforward enough :-) and makes sense.
-
-(And it brings LOTS of documentation, which is always welcome).
-
-As a side note: the behaviour on Windows is different from the behaviour
-on Unix now (actually, since the introduction of PLUGIN_LIBDIR), so this
-might warrant revisiting.
+ACK.  "Makes sense and the code does what it says on the lid" (tested!)
 
 Your patch has been applied to the master and release/2.4 branch.
 
-commit f9609f1df9d8c070245b7c008dc54ac9ccdbe231 (master)
-commit d21bed998bca21ab44e769896b0e9a8b4bfc0be1 (release/2.4)
+commit 3c748aeb5e4b82c449e7de28846a3915ab45aeec (master)
+commit 0dc790818876dac6e1cf1a82eda8ea15a538a333 (master)
 
-Author: David Sommerseth
-Date:   Fri Jan 27 15:21:20 2017 +0100
+Author: Antonio Quartulli
+Date:   Mon Jan 30 23:26:58 2017 +0800
 
-     plugin: Improve the handling of default plug-in directory
+     ignore remote-random-hostname if a numeric host is provided
 
-     Signed-off-by: David Sommerseth <davids@...515...>
+     Signed-off-by: Antonio Quartulli <a@...2181...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20170127142120.10492-1-davids@...515...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13970.html
+     Message-Id: <20170130152658.15786-1-a@...2181...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13993.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
