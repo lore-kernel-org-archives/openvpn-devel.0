@@ -1,10 +1,10 @@
-Date: Sun, 19 Mar 2017 17:21:46 +0100 (CET)
-Message-Id: <201703191621.v2JGLkEn031699@...2054...>
+Date: Sun, 19 Mar 2017 19:14:57 +0100 (CET)
+Message-Id: <201703191814.v2JIEvwC034357@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1489612820-15284-1-git-send-email-steffan@...1856...>
-References: <1489612820-15284-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Be less picky about keyUsage
-	extensions
+In-Reply-To: <20170127142120.10492-1-davids@...515...>
+References: <20170127142120.10492-1-davids@...515...>
+Subject: [Openvpn-devel] [PATCH applied] Re: plugin: Improve the handling of
+	default plug-in directory
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,52 +15,31 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Steffan Karger <steffan@...1856...>
+To: David Sommerseth <davids@...515...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-ACK.  While I'm certainly not the authority when it comes to crypto
-library innards, after the discussion we had on IRC, I'm fine with
-the changes - and testing against our own corp CA (which did not work
-with --remote-cert-tls server before, because it had "too many bits"
-set) it works now - that is, "remote-cert-tls server" works, ".. client" 
-fails (set on the client).
+ACK.  The code change is straightforward enough :-) and makes sense.
 
-The code change match the description, and the behaviour observed 
-for "the SSL library will check" also matches (I have not tried creating 
-a cert without ku/eku to see what happens then, but trust Steffan to have 
-done so).
+(And it brings LOTS of documentation, which is always welcome).
 
-The default error messages *could* be a bit more helpful, though...
+As a side note: the behaviour on Windows is different from the behaviour
+on Unix now (actually, since the introduction of PLUGIN_LIBDIR), so this
+might warrant revisiting.
 
-Sun Mar 19 17:07:17 2017 TLS_ERROR: read tls_read_plaintext error: X509 - Certificate verification failed, e.g. CRL, CA or signature check failed
+Your patch has been applied to the master and release/2.4 branch.
 
-.. but increasing debug to --verb 2 shows all the details:
+commit f9609f1df9d8c070245b7c008dc54ac9ccdbe231 (master)
+commit d21bed998bca21ab44e769896b0e9a8b4bfc0be1 (release/2.4)
 
-Sun Mar 19 17:07:45 2017 Validating certificate key usage
-Sun Mar 19 17:07:45 2017 VERIFY KU OK
-Sun Mar 19 17:07:45 2017 Validating certificate extended key usage
-Sun Mar 19 17:07:45 2017 ++ Certificate has EKU (str) TLS Web Server Authentication, expects TLS Web Client Authentication
-Sun Mar 19 17:07:45 2017 ++ Certificate has EKU (oid) 1.3.6.1.5.5.7.3.1, expects TLS Web Client Authentication
-Sun Mar 19 17:07:45 2017 VERIFY EKU ERROR
+Author: David Sommerseth
+Date:   Fri Jan 27 15:21:20 2017 +0100
 
-(intentional error)
+     plugin: Improve the handling of default plug-in directory
 
-
-Tested both for OpenSSL and mbedTLS builds.
-
-Patch has been applied to the master and release/2.4 branch.
-
-commit 92a5b9fb76cbb7f43a6aa86994ff559f06c55c7a (master)
-commit 60b23236329e6921729f51e7689042a29c794a6b (release/2.4)
-Author: Steffan Karger
-Date:   Wed Mar 15 22:20:20 2017 +0100
-
-     Be less picky about keyUsage extensions
-
-     Signed-off-by: Steffan Karger <steffan@...1856...>
+     Signed-off-by: David Sommerseth <davids@...515...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1489612820-15284-1-git-send-email-steffan@...1856...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg14265.html
+     Message-Id: <20170127142120.10492-1-davids@...515...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13970.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
