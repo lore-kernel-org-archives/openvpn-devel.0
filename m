@@ -1,10 +1,10 @@
-Date: Sun, 19 Mar 2017 19:46:46 +0100 (CET)
-Message-Id: <201703191846.v2JIkkLp043022@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20170225020229.17287-1-davids@...515...>
-References: <20170225020229.17287-1-davids@...515...>
-Subject: [Openvpn-devel] [PATCH applied] Re: cleanup: Remove faulty env
-	processing functions
+Date: Sun, 19 Mar 2017 19:41:35 +0100
+Message-Id: <20170319184135.23548-1-gert@...1296...>
+In-Reply-To: <e0ce41fa-d0b7-a5af-d021-133239911898@...277...>
+References: <e0ce41fa-d0b7-a5af-d021-133239911898@...277...>
+Subject: [Openvpn-devel] [PATCH] Make ENABLE_OCC no longer depend on
+	!ENABLE_SMALL
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,34 +15,35 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: David Sommerseth <davids@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
+Cc: openvpn-users@lists.sourceforge.net
 
-ACK.
+OCC is useful functionality which (according to LEDE devs) adds only
+about 3k to the binary size - and if the embedded router folks can
+afford this trade-off, everyone else can :-)
 
-While I'm always cautious about "cleanups", this one is really 
-straightforward :-) - unreferenced, not even from #if 0 testing code,
-gone with the wind...
+Inspired by https://git.lede-project.org/?p=source.git;a=commit;h=b613c96d94bcdcda7abb3be68ea1c281ce5fbb47
 
-Your patch has been applied to the master and release/2.4 branch.
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+ src/openvpn/syshead.h | 2 --
+ 1 file changed, 2 deletions(-)
 
-commit a87f119afcfcc1c855a6ea2ba3d765966f1f2591
-commit 860d79bc4eadd934390829bee0de37e5ded8907a
-Author: David Sommerseth
-Date:   Sat Feb 25 03:02:29 2017 +0100
-
-     cleanup: Remove faulty env processing functions
-
-     Signed-off-by: David Sommerseth <davids@...515...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20170225020229.17287-1-davids@...515...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg14195.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/src/openvpn/syshead.h b/src/openvpn/syshead.h
+index a1b6047..f445864 100644
+--- a/src/openvpn/syshead.h
++++ b/src/openvpn/syshead.h
+@@ -589,9 +589,7 @@ socket_defined(const socket_descriptor_t sd)
+ /*
+  * Should we include OCC (options consistency check) code?
+  */
+-#ifndef ENABLE_SMALL
+ #define ENABLE_OCC
+-#endif
+ 
+ /*
+  * Should we include NTLM proxy functionality
+-- 
+2.10.2
 
 
