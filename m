@@ -1,11 +1,13 @@
+References: <f36ea2bd-0db8-7c4a-39ad-8d30ba81f145@...515...>
 From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <f36ea2bd-0db8-7c4a-39ad-8d30ba81f145@...515...>
-Date: Wed, 22 Mar 2017 19:20:10 +0200
+Message-ID: <ba26bdf0-578f-1cdb-5e20-7b98ba6c9485@...515...>
+Date: Wed, 22 Mar 2017 19:34:17 +0200
 MIME-Version: 1.0
+In-Reply-To: <f36ea2bd-0db8-7c4a-39ad-8d30ba81f145@...515...>
 Content-Type: multipart/signed; micalg=pgp-sha256;
 	protocol="application/pgp-signature";
-	boundary="BxHP1BQlFsRNvMHNa4PCUBG7b1N0cVOrF"
-Subject: [Openvpn-devel] OpenVPN 2.4.1 released
+	boundary="BWRBDnoSXjIDoVDeTkuLj8oiSOGc134fv"
+Subject: Re: [Openvpn-devel] OpenVPN 2.4.1 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,54 +19,18 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: "openvpn users list (openvpn-users@lists.sourceforge.net)" <openvpn-users@lists.sourceforge.net>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, openvpn-announce@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---BxHP1BQlFsRNvMHNa4PCUBG7b1N0cVOrF
-Content-Type: multipart/mixed; boundary="------------02511CDADB09F37928BA8F09"
+--BWRBDnoSXjIDoVDeTkuLj8oiSOGc134fv
+Content-Type: multipart/mixed; boundary="------------C1A8B15BBD55B7CEEA0DEE48"
 
 This is a multi-part message in MIME format.
---------------02511CDADB09F37928BA8F09
+--------------C1A8B15BBD55B7CEEA0DEE48
 Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
 
-The OpenVPN community project team is proud to release OpenVPN 2.4.1. It
-can be downloaded from here:
+Please note that the GPG key used to sign the release files has changed.
+The new key is available here:
 
-<http://openvpn.net/index.php/open-source/downloads.html>
-
-Compared to OpenVPN 2.3 this is a major update with a large number of
-new features, improvements and fixes. Some of the major features are
-AEAD (GCM) cipher and Elliptic Curve DH key exchange support, improved
-IPv4/IPv6 dual stack support and more seamless connection migration when
-client's IP address changes (Peer-ID). Also, the new --tls-crypt feature
-can be used to increase users' connection privacy.
-
-Compared to OpenVPN 2.4.0 there are several bugfixes and small
-enhancements. A summary of the changes is available here:
-
-<https://github.com/OpenVPN/openvpn/blob/release/2.4/Changes.rst>
-
-A full list of changes is available here.
-
-<https://community.openvpn.net/openvpn/wiki/ChangesInOpenvpn24>
-
-OpenVPN GUI bundled with the Windows installer has a large number of new
-features compared to the one bundled with OpenVPN 2.3. Details are
-available on the "ChangesInOpenvpn24" page, above.
-
-For generic help use these support channels:
-
-Official documentation:
-<http://openvpn.net/index.php/open-source/documentation/howto.html>
-Wiki: <https://community.openvpn.net>
-Forums: <https://forums.openvpn.net>
-User mailing list: <http://sourceforge.net/mail/?group_id=3D48978>
-User IRC channel: #openvpn at irc.freenode.net
-
-Please report bugs and ask development questions here:
-
-Bug tracker and wiki: <https://community.openvpn.net>
-Developer mailing list: <http://sourceforge.net/mail/?group_id=3D48978>
-Developer IRC channel: #openvpn-devel at irc.freenode.net (requires
-Freenode registration)
+<https://openvpn.net/index.php/open-source/documentation/sig.html>
 
 --=20
 Samuli Sepp=E4nen
@@ -73,7 +39,66 @@ OpenVPN Technologies, Inc
 
 irc freenode net: mattock
 
---------------02511CDADB09F37928BA8F09
+On 22/03/2017 19:20, Samuli Sepp=E4nen wrote:
+> The OpenVPN community project team is proud to release OpenVPN 2.4.1. It
+> can be downloaded from here:
+>=20
+> <http://openvpn.net/index.php/open-source/downloads.html>
+>=20
+> Compared to OpenVPN 2.3 this is a major update with a large number of
+> new features, improvements and fixes. Some of the major features are
+> AEAD (GCM) cipher and Elliptic Curve DH key exchange support, improved
+> IPv4/IPv6 dual stack support and more seamless connection migration when
+> client's IP address changes (Peer-ID). Also, the new --tls-crypt feature
+> can be used to increase users' connection privacy.
+>=20
+> Compared to OpenVPN 2.4.0 there are several bugfixes and small
+> enhancements. A summary of the changes is available here:
+>=20
+> <https://github.com/OpenVPN/openvpn/blob/release/2.4/Changes.rst>
+>=20
+> A full list of changes is available here.
+>=20
+> <https://community.openvpn.net/openvpn/wiki/ChangesInOpenvpn24>
+>=20
+> OpenVPN GUI bundled with the Windows installer has a large number of new
+> features compared to the one bundled with OpenVPN 2.3. Details are
+> available on the "ChangesInOpenvpn24" page, above.
+>=20
+> For generic help use these support channels:
+>=20
+> Official documentation:
+> <http://openvpn.net/index.php/open-source/documentation/howto.html>
+> Wiki: <https://community.openvpn.net>
+> Forums: <https://forums.openvpn.net>
+> User mailing list: <http://sourceforge.net/mail/?group_id=3D48978>
+> User IRC channel: #openvpn at irc.freenode.net
+>=20
+> Please report bugs and ask development questions here:
+>=20
+> Bug tracker and wiki: <https://community.openvpn.net>
+> Developer mailing list: <http://sourceforge.net/mail/?group_id=3D48978>
+> Developer IRC channel: #openvpn-devel at irc.freenode.net (requires
+> Freenode registration)
+>=20
+>=20
+>=20
+> -------------------------------------------------------------------------=
+-----
+> Check out the vibrant tech community on one of the world's most
+> engaging tech sites, Slashdot.org! http://sdm.link/slashdot
+>=20
+>=20
+>=20
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+>=20
+
+
+
+--------------C1A8B15BBD55B7CEEA0DEE48
 Content-Type: application/pgp-keys;
  name="0x40864578.asc"
 Content-Transfer-Encoding: quoted-printable
@@ -122,9 +147,9 @@ XuwT7RpGDZ6jBfphYQ=3D=3D
 =3DFKLE
 -----END PGP PUBLIC KEY BLOCK-----
 
---------------02511CDADB09F37928BA8F09--
+--------------C1A8B15BBD55B7CEEA0DEE48--
 
---BxHP1BQlFsRNvMHNa4PCUBG7b1N0cVOrF
+--BWRBDnoSXjIDoVDeTkuLj8oiSOGc134fv
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -132,14 +157,14 @@ Content-Disposition: attachment; filename="signature.asc"
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQEcBAEBCAAGBQJY0rJKAAoJEClYTZ9AhkV4zrUH/j/VTM7VNaYzaLKKbQvdeaS7
-G4cav452hIBDeI91GcwAH0DxozsIlJkcM8vktMM/KFTLRiirq/aRQAxygaUX1J5A
-Wj73x/xQnPL0Lthz25VzBd0Loibrqn1nfSEYVl28WfZB4GZuXikUSLQH1Ca7fIsC
-gDzJ9Ds4mHAiRq5DCjYV2eSSLNs+BansmvxzMIBJFac7H7zEIvaQlXTLGCG+dsAp
-f0qm7I+vU9y27jGZQ10if99OCfISK7ZSQ/QgzLMfJgCVbUjY/EhQ2t6Ygo9snHu7
-9HTqU4Pugn6L20fjbBzk3yDvys1AQgAy5YGxAnmdJaKCWlnDyxhAkwTmnDzJWDU=
-=RLzS
+iQEcBAEBCAAGBQJY0rWZAAoJEClYTZ9AhkV4+iMH/20x+VSyhdx2Lyah8WKTQcE+
+KAuS8l9M1NtAKDlNhNfqqFv5BbHmsJqmB4EZ+r5vzuZrNBHobY1rOgHICrl9fHnZ
+bCfKHjGg5cskXWrkLWyjSZBNHsdahuYccsqmlZFOdLFUxfbw0QDYpk+B53X6g06P
+RR3C5gsng0Y5Rrzkxo/9cp3pW8mmkaTYe0O7vNWf81cphZHdpXZVYypbDYV2lOWo
+5+WO/orkocIYnd5fTS4AY4001fOlYVTo8lvSXd4WZPqSIil4hIsAFK8CV4Xkuu7W
+r6PAwsN87GqURK4+q9/GVDP9oOg8SPU389PgE9cgU8ThpQjl04t1KqXt9u64IWw=
+=q/NS
 -----END PGP SIGNATURE-----
 
---BxHP1BQlFsRNvMHNa4PCUBG7b1N0cVOrF--
+--BWRBDnoSXjIDoVDeTkuLj8oiSOGc134fv--
 
