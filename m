@@ -1,15 +1,7 @@
-References: <1490444478-13188-1-git-send-email-chipitsine@...277...>
-	<20170325131746.GC93896@...1296...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <5cbc00da-6297-c90a-611c-63ed9b0136a0@...2080...>
-Date: Mon, 27 Mar 2017 23:40:49 +0200
-MIME-Version: 1.0
-In-Reply-To: <20170325131746.GC93896@...1296...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature";
-	boundary="q2TQvi1NkTeU0fhRjW8k0N6UX7mx4SiLm"
-Subject: Re: [Openvpn-devel] [PATCH] resolve format string warnings
-Reply-To: openvpn-devel@lists.sourceforge.net
+From: David Sommerseth <davids@...515...>
+Date: Tue, 28 Mar 2017 00:16:20 +0200
+Message-Id: <20170327221620.24639-1-davids@...515...>
+Subject: [Openvpn-devel] [PATCH] systemd: Add and ship README.systemd
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,81 +10,114 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>, Ilya Shipitsin <chipitsine@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---q2TQvi1NkTeU0fhRjW8k0N6UX7mx4SiLm
-Content-Type: multipart/mixed; boundary="uHXGsVm73iTrr7GgOnQCv9oraiC78ObfE";
-	protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-Reply-To: openvpn-devel@lists.sourceforge.net
-To: Gert Doering <gert@...1296...>, Ilya Shipitsin <chipitsine@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
-Message-ID: <5cbc00da-6297-c90a-611c-63ed9b0136a0@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH] resolve format string warnings
-References: <1490444478-13188-1-git-send-email-chipitsine@...277...>
-	<20170325131746.GC93896@...1296...>
-In-Reply-To: <20170325131746.GC93896@...1296...>
+This new README file describes how to use the new
+openvpn-client@...1685... and openvpn-server@...1685... unit files properly.
 
---uHXGsVm73iTrr7GgOnQCv9oraiC78ObfE
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
+The purpose of this file is primarily for all systemd based
+distributions to have a common set of documentation.
 
-On 25/03/17 14:17, Gert Doering wrote:
-> Hi,
->=20
-> On Sat, Mar 25, 2017 at 05:21:18PM +0500, Ilya Shipitsin wrote:
->> [src/openvpn/options.c:1163]: (warning) %x in format string (no. 1) requ=
-ires 'unsigned int *' but the argument type is 'signed int *'.
->=20
-> Please use "uint8_t" then, and also adapt the "ret[i] =3D (uint8_t)byte"
-> line - the cast would then be obsolete.
+Signed-off-by: David Sommerseth <davids@...515...>
+---
+ distro/systemd/Makefile.am    |  2 ++
+ distro/systemd/README.systemd | 71 +++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 73 insertions(+)
+ create mode 100644 distro/systemd/README.systemd
 
-I would normally agree to use uint8_t ... but the man page for sscanf()
-on Linux says:
+diff --git a/distro/systemd/Makefile.am b/distro/systemd/Makefile.am
+index 1e3f3ea..5da926b 100644
+--- a/distro/systemd/Makefile.am
++++ b/distro/systemd/Makefile.am
+@@ -23,6 +23,8 @@ systemdunit_DATA = \
+ 	openvpn-server@...1685...
+ tmpfiles_DATA = \
+ 	tmpfiles-openvpn.conf
++dist_doc_DATA = \
++	README.systemd
+ 
+ install-data-hook:
+ 	mv $(DESTDIR)$(tmpfilesdir)/tmpfiles-openvpn.conf $(DESTDIR)$(tmpfilesdir)/openvpn.conf
+diff --git a/distro/systemd/README.systemd b/distro/systemd/README.systemd
+new file mode 100644
+index 0000000..cf0003e
+--- /dev/null
++++ b/distro/systemd/README.systemd
+@@ -0,0 +1,71 @@
++OpenVPN and systemd
++===================
++
++As of OpenVPN v2.4, upstream is shipping systemd unit files to provide a
++fine grained control of each OpenVPN configuration as well as trying to
++restrict the capabilities the OpenVPN process have on a system.
++
++
++Configuration profile types
++---------------------------
++These new unit files separates between client and server profiles.  The
++configuration files are kept in separate directories, to provide clarity
++of the profile they run under.
++
++Typically the client profile cannot bind to any ports below port 1024
++and the client configuration is always started with --nobind.
++
++The server profile is allowed to bind to any ports.  In addition it enables
++a client status file, usually found in the /run/openvpn-server directory.
++The status format is set to version 2 by default.  These settings may be
++overridden by adding --status and/or --status-version in the OpenVPN
++configuration file.
++
++Neither of these profiles makes use of PID files, but OpenVPN reports back to
++systemd its PID once it has initialized.
++
++For configuration using a peer-to-peer mode (not using --mode server on one
++of the sides) it is recommended to use the client profile.
++
++
++Configuration files
++-------------------
++These new unit files expects client configuration files to be made available
++in /etc/openvpn/client.  Similar for the server configurations, it is expected
++to be found in /etc/openvpn/server.  The configuration files must have a .conf
++file extension.
++
++
++Managing VPN tunnels
++--------------------
++Use the normal systemctl tool to start, stop VPN tunnels, as well as enable
++and disable tunnels at boot time.  The syntax is:
++
++ - client configurations:
++    # systemctl $OPER openvpn-client@$CONFIGNAME
++
++ - server configurations:
++    # systemctl $OPER openvpn-server@$CONFIGNAME
++
++Similarly, to view the OpenVPN journal log use a similar syntax:
++
++   # journalctl -u openvpn-client@$CONFIGNAME
++ or
++   # journalctl -u openvpn-server@$CONFIGNAME
++
++* Examples
++  Say your server configuration is /etc/openvpn/server/tun0.conf, you
++  start this VPN service like this:
++
++    # systemctl start openvpn-server@...2255...
++
++  A client configuration file in /etc/openvpn/client/corpvpn.conf is
++  started like this:
++
++    # systemctl start openvpn-client@...2256...
++
++  To view the server configuration's journal only listing entries from
++  yesterday and until today:
++
++    # journalctl --since yesterday -u openvpn-server@...2255...
++
+-- 
+2.11.0
 
-   "Matches an unsigned hexadecimal integer; the next pointer must be a
-    pointer to unsigned int."
-
-And stdint.h declares: typedef unsigned char           uint8_t;
-
-AFAIR, char is defined as 8 bits (hence uint*8*), while unsigned int are
-32 bits on my system.
-
-
---=20
-kind regards,
-
-David Sommerseth
-OpenVPN Technologies, Inc
-
-
-
---uHXGsVm73iTrr7GgOnQCv9oraiC78ObfE--
-
---q2TQvi1NkTeU0fhRjW8k0N6UX7mx4SiLm
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBCAAGBQJY2YbhAAoJEIbPlEyWcf3yoxQQAJu2VH/pKwE/4YfDXvV806rI
-1x397uW3x+5gMKYRU+FK6+6CjqUw+Vv9N+CqL5YsSlPM4NJdQQHRDszTSvP9lFkD
-0Z4XHco0pmzC9niSekoEywqz8+BuWE8CtY8w5HwlcSr5fyUR47OIwSvPLZMb+S+m
-AaBzF/ZdNNQbeigXwrJgqD9bU/rH4JnxSGfg/r0k/HCS/IyA3cAQ3QuYt4ZTambA
-CGZVkjDfTeUpbIF1ohOFkx4gOCvoXkrjFlVa/PIzT7qPYWR3t3c5oGwWICMrFJKo
-eDWmdqXNljNasPCHCcfce/5xciJFpzt6ZXjWOvVwy9qcYLF0OZvpFCXQa9d8xND8
-aluk8abiKPM1Ng12i5J+9GDkiBrOfpFfVU+tkny51CibVbX3/coDgGwzDsZniDcG
-CtOyW7OdIthbVAXM3YXYCMb+0xRrSjLob+bPjJcLX+qtH0xLlhV9VAUHlzFO1hGv
-40goWRARh1HN9Sd4GYbugHeZRhaXduA6z0qyAS2f+Utn2O9boxm3g9CxvCetcCd3
-WchG4ih+lY7cDJixk7FtNa0jAo3MQjLhnAq3/aBwSfcE434flOZWSVBsxTC4uGmK
-JJyLA96AnAXhFuVHsbYZHbMw2bBGPfF6weSngE1d3xtdqf0j4M7pdYSeAq0CenQT
-lBg2MWNNhfR9cCs1DY/h
-=Yvnv
------END PGP SIGNATURE-----
-
---q2TQvi1NkTeU0fhRjW8k0N6UX7mx4SiLm--
 
