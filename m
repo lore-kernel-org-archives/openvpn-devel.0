@@ -6,23 +6,18 @@ References: <ec21d010-67a3-0ff1-3c2a-d5db08039e45@...277...>
 	<20170328122131.GV93896@...1296...>
 	<131d865b-fd4d-0c8c-df75-eadc3fb4c658@...2080...>
 	<20170328124704.GW93896@...1296...>
-	<296b8d47-a05d-c4e5-1d87-1ffcff2166ca@...277...>
-	<ac9bbf70-f1a3-78b5-5d88-62df26cd12b9@...1435...>
-	<9e659389-963d-d071-00bc-a2ee3a3849d6@...515...>
-	<4f959c35-afbc-9f10-21cf-20da31aac35b@...1435...>
-	<da5c7f47-6341-920e-cc3c-592e47083e21@...277...>
-	<849096e2-fa0f-072c-4d75-c350dfa74255@...277...>
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <6c2ab78b-295e-9a55-19bc-c2f92d46e12c@...515...>
-Date: Tue, 28 Mar 2017 17:14:24 +0300
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <c00a64c9-1bc8-966e-6cf1-e05537b69021@...2080...>
+Date: Tue, 28 Mar 2017 19:46:32 +0200
 MIME-Version: 1.0
-In-Reply-To: <849096e2-fa0f-072c-4d75-c350dfa74255@...277...>
+In-Reply-To: <20170328124704.GW93896@...1296...>
 Content-Type: multipart/signed; micalg=pgp-sha256;
 	protocol="application/pgp-signature";
-	boundary="iKTwSX7a3UbLh4Fm4Lrb86awiFKVx85tX"
+	boundary="uFN0C7nJQEuHpq6O6UbWDaLXiS6bLCxDK"
 Subject: Re: [Openvpn-devel] building HEAD + openssl 1.1 api fails @
  "crypto.c:823:32: error: invalid application of ???sizeof??? to incomplete
  type ???cipher_ctx_t"
+Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -31,111 +26,158 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: debbie10t <debbie10t@...277...>, openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---iKTwSX7a3UbLh4Fm4Lrb86awiFKVx85tX
-Content-Type: multipart/mixed; boundary="------------56AF37FB0DD8356229BB17CC"
+--uFN0C7nJQEuHpq6O6UbWDaLXiS6bLCxDK
+Content-Type: multipart/mixed; boundary="SK6AtdgnpNLRq8wRNdKuh5hHJPL6iDrml";
+	protected-headers="v1"
+From: David Sommerseth <openvpn@...2080...>
+Reply-To: openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+Message-ID: <c00a64c9-1bc8-966e-6cf1-e05537b69021@...2080...>
+Subject: Re: [Openvpn-devel] building HEAD + openssl 1.1 api fails @
+	"crypto.c:823:32: error: invalid application of ???sizeof??? to
+	incomplete type ???cipher_ctx_t"
+References: <ec21d010-67a3-0ff1-3c2a-d5db08039e45@...277...>
+	<20170327183502.GJ93896@...1296...>
+	<CAKh=nwE-U4C6CVw+XpdBE1RXjG_VOYoT=UuJDAPs2AOFOoP+jw@...278...>
+	<668fd081-d9b4-1727-f506-07395cf0b475@...1435...>
+	<8c8a5600-0e9a-eb04-41de-33ebfdf36bfd@...2080...>
+	<20170328122131.GV93896@...1296...>
+	<131d865b-fd4d-0c8c-df75-eadc3fb4c658@...2080...>
+	<20170328124704.GW93896@...1296...>
+In-Reply-To: <20170328124704.GW93896@...1296...>
 
-This is a multi-part message in MIME format.
---------------56AF37FB0DD8356229BB17CC
+--SK6AtdgnpNLRq8wRNdKuh5hHJPL6iDrml
 Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
 
-On 28/03/2017 17:11, debbie10t wrote:
->>
->> Agreed: a simple Deprecation page on the wiki linking to changes.rst
->>
->> The wiki page *could* also be updated from time to time to provide
->> specific warnings of important changes like deprecating --ns-cert-type
->> as it has been identified that it will likely effect many people.
->>
->> I would be happy to help maintain such warnings as they are mentioned
->> the devel mailing list.
->>
+On 28/03/17 14:47, Gert Doering wrote:
+> Hi,
 >=20
-> I see a link has already just been added here:
-> https://community.openvpn.net/openvpn/wiki/WikiStart
+> On Tue, Mar 28, 2017 at 02:35:59PM +0200, David Sommerseth wrote:
+>> On 28/03/17 14:21, Gert Doering wrote:
+>>> On Tue, Mar 28, 2017 at 02:11:26PM +0200, David Sommerseth wrote:
+>>>>> That's great!  This way, 2.4 does not have to change it's behaviour.
+>>>>> Still, I think it makes sense to deprecate --ns-cert-type, and remove=
+ it
+>>>>> in favour or --remote-cert-tls in openvpn 2.5.
+>>>>
+>>>> Based on the feedback and discussions in Fedora regarding to us removi=
+ng
+>>>> --tls-remote .... I actually think 2.5 is too early.=20=20
+>>>
+>>> Nobody suggested removing --remote-cert-tls.
+>>
+>> I don't think I tried to say that :)  I mentioned --tls-remote in v2.4
+>> as that caused quite some noise.  I actually had to add a patch in the
+>> EPEL packages for EL6+EL7 bringing it back again, to ease these complain=
+ts.
 >=20
-> I was thinking of something a little more user friendly.
+> Ah, *that* one.  I see.  So "the last time we deprecated and removed=20
+> one of our zillion stale options, people complained, so we're not going
+> to do it again"?
+
+Nope.  We will deprecate features in the future too.  But we should be
+far more careful and not even expect users to turn around as quick as we
+really want.
+
+> We need to communicate better what might affect users in new versions, so
+> they can test and complain/adjust in time (like, the stricter CRL handling
+> in 2.4, and - obviously - the --tls-remote bit)
+
+Absolutely!  The --tls-remote feature was deprecated for 3(!) years, and
+still people didn't catch it.  In fact NetworkManager guys implemented
+the initial fix for it sometime in late last autumn, iirc.  But we only
+listed it as deprecated in the man-page, no log warnings.  And we added
+a note about it in Changes.rst, which also arrived fairly late in the
+2.4 cycle.
+
+I have a *hope* that annoying users with M_WARN in the log files will
+help a bit.  As well as stating it clearly in the man pages, wiki pages,
+Changes.rst.
+
+<sarcasm>
+If the log part is not enough as it is today, we might need to consider
+a new M_DEPRECATED which makes it even more obvious ... like this:
+
+   DEPRECATED: ******************************************
+   DEPRECATED: *** Option --x-y is deprecated
+   DEPRECATED: *** This option will be removed in v2.z
+   DEPRECATED: ******************************************
+
+Perhaps with a 1 minute start-up delay.
+
+If someone is not able to catch that one ... then I have no don't know
+what else can work.
+</sarcasm>
+
+>>>> and get in touch
+>>>> with at least NetworkManager guys to ensure they have time to implement
+>>>> a solution when this goes away.  So I think 2.6 is more realistic.
+>>>
+>>> Shouldn't be so hard to do a string-substitution in NM...   with
+>>> 60b23236329e6921729f51e7689042a29c794a6b, this is really straightforward
+>>
+>> If the behaviour is really close by doing a substitution, this should be
+>> good enough.  --tls-remote to --verify-x509-name is more complicated,
+>> due to character remapping and such ugly details.
 >=20
-> I will draft something on the wiki which you can review and keep or not=20
-> as preferred.
+> Indeed.
 >=20
-> Regards
+> So - this is something people need to test on their client/server certs.=
+=20=20
+>=20
+> Initially, it broke for ours (because the CA sets "more bits than needed",
+> and that confused the ku test on equality), but with the new check=20
+> "at least these bits, more are OK" all is fine.
+>=20
+>>> (unless your certs are really, *really* weird, providing a proper=20
+>>> nsCert extention, but no proper keyUsage/extKeyUsage extentions).
+>>
+>> Well, despite weirdness occurring (Way too) often, I think we can live
+>> with that noise if we have given enough time to adopt.  As long as we
+>> have a real and solid argument they have been doing things wrong in the
+>> beginning.
+>=20
+> Indeed, again ;-)
 
-+1.
-
-Samuli
+:)
 
 
---------------56AF37FB0DD8356229BB17CC
-Content-Type: application/pgp-keys;
- name="0x40864578.asc"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: attachment;
- filename="0x40864578.asc"
+--=20
+kind regards,
 
------BEGIN PGP PUBLIC KEY BLOCK-----
-Version: GnuPG v2
+David Sommerseth
+OpenVPN Technologies, Inc
 
-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
-XuwT7RpGDZ6jBfphYQ=3D=3D
-=3DFKLE
------END PGP PUBLIC KEY BLOCK-----
 
---------------56AF37FB0DD8356229BB17CC--
 
---iKTwSX7a3UbLh4Fm4Lrb86awiFKVx85tX
+--SK6AtdgnpNLRq8wRNdKuh5hHJPL6iDrml--
+
+--uFN0C7nJQEuHpq6O6UbWDaLXiS6bLCxDK
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
+Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQEcBAEBCAAGBQJY2m/AAAoJEClYTZ9AhkV4r0sH/jU0RYlD3QwLjD98szbAzIag
-iyoyM9WqHr7RT4UnLrCKkbEJWvACYFjoFjQN7M9uecA3mCdGcb8pMPZFC2gSfbBS
-e6ahNM9RdZ9KD1H90kp6HEB8lP2nbB8rLb+K8+cETGHRDvQS06QQHEMkhVubvpeI
-J3Ae0kySMvU6zhArZLVDA/j26+S+lAoWPqtdi2IgdC4fT5KlIsagR6bP0Tjrxu62
-ltK0WYKnngo7qPU6duA25GaIQbsNz2XHImtTWFL891rqnlW8SQOmXWhiGJcP862Q
-iLLXfx4WAyySny3XBHnOmwr8UmVfuHUnVS/aIiZ5bbs2v/Tk5o6ak5PCOY/Tel4=
-=9b44
+iQIcBAEBCAAGBQJY2qF/AAoJEIbPlEyWcf3yVpEP/26cqq8YYsHl19/c14EvnhD3
+/1j8ULA0+mmtTy2oG4EpNzjxUKLxvMn1hYFMXRgWMXFG94X+JVAfxR2tM4QGPBjx
+zFZUJNBW6D96A4K+1rmuRGpGhNFSujbyF+4H+x1bi7B98DSlwQZABJZQyh/N9LNE
+HGSNTxZkSHAFlNL0YCk4AB/H/tmssXgCq6a80zQnO4DtO7qnn9GpfQJzwgY7E1BX
+dWDp6Vep/NHJlGmkbyCw0mu2ynzwPo+F7lBtV5cDQLmczY4HnoHbM2GtCCftINP9
+UvEPNDHcrykYIzmC3g+CYZ01UuJA+pRihwhwW4Ao3QM9yekQs6hdH0jcKV4jKHWV
+zEkvwxa9rXd/XUObyuvdb1o4x9Y98JeEeSxn3SqtItTWcbKgq2UhMAKszCw0iHfY
+9fJvKCtJ8XhVfFYvUM/AFgcTGuWovVE8uxkPZ42keeysl5KStcMZy+i/qKz8BMuB
+1VmQoHfIB936CBK6hzDjl5HfBzuHAWfAITgKs/cNsmAy7VGHjgEQAYsLtQnc/oSi
+8gsXC+HPnc/xg0J3ZyYYgKsQteDnp5rHEH02lSUqcM5z3JlU3snrmn98kH1p8adr
+FQfwUg/liloS5WBnh1Nr2YKSxPZwT6pt0RsEgNbxBfG4hT5pwAmxBRFB35C7KbKk
+iNSoDqG5O5734lDcxNGm
+=kPls
 -----END PGP SIGNATURE-----
 
---iKTwSX7a3UbLh4Fm4Lrb86awiFKVx85tX--
+--uFN0C7nJQEuHpq6O6UbWDaLXiS6bLCxDK--
 
