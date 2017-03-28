@@ -1,20 +1,19 @@
-Date: Tue, 28 Mar 2017 14:58:53 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20170328125852.GX93896@...1296...>
-References: <1490444478-13188-1-git-send-email-chipitsine@...277...>
-	<20170325131746.GC93896@...1296...>
-	<5cbc00da-6297-c90a-611c-63ed9b0136a0@...2080...>
-	<20170328060459.GM93896@...1296...>
-	<CAFHpkQEWMDMs9k=6g3e5a2iMuVWMxP6zzOWZayYyL79r1U7vRg@...278...>
-	<20170328065648.GR93896@...1296...>
-	<CAFHpkQE9uFNLvTpmoUb3wKadQG4QHyQ6iu1dDsQnRh3hoPGOvA@...278...>
-	<1473eddd-c9f1-ddd7-3189-c9e4211c74e9@...2080...>
+References: <ec21d010-67a3-0ff1-3c2a-d5db08039e45@...277...>
+	<20170327183502.GJ93896@...1296...>
+	<CAKh=nwE-U4C6CVw+XpdBE1RXjG_VOYoT=UuJDAPs2AOFOoP+jw@...278...>
+	<668fd081-d9b4-1727-f506-07395cf0b475@...1435...>
+	<8c8a5600-0e9a-eb04-41de-33ebfdf36bfd@...2080...>
+	<20170328122131.GV93896@...1296...>
+	<131d865b-fd4d-0c8c-df75-eadc3fb4c658@...2080...>
+	<20170328124704.GW93896@...1296...>
+From: debbie10t <debbie10t@...277...>
+Message-ID: <296b8d47-a05d-c4e5-1d87-1ffcff2166ca@...277...>
+Date: Tue, 28 Mar 2017 14:02:05 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="517pCzpsiLFBzq6n"
-Content-Disposition: inline
-In-Reply-To: <1473eddd-c9f1-ddd7-3189-c9e4211c74e9@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH] resolve format string warnings
+In-Reply-To: <20170328124704.GW93896@...1296...>
+Subject: Re: [Openvpn-devel] building HEAD + openssl 1.1 api fails @
+ "crypto.c:823:32: error: invalid application of ???sizeof??? to incomplete
+ type ???cipher_ctx_t"
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -23,57 +22,19 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
---517pCzpsiLFBzq6n
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-
-Hi,
-
-On Tue, Mar 28, 2017 at 02:54:03PM +0200, David Sommerseth wrote:
-> Gert proposed by a mistake to use uint8_t.  As integers are most
-> commonly 32 bits, so uint32_t.  But that may be of a different length on
-> some other platforms.  So using 'unsigned int' is most likely the safest
-> type in this round.  Or if wanting to be really portability safe, have a
-> look at what Simon pointed out, inttypes.h.
-
-"unsigned int" is indeed perfectly correct for "%x"
-
-I was not paying enough attention (and this is why I call for extra
-care when doing "just a simple patch to fix a compiler warning", because
-more complicated patches usually get more attention...)
-
-Apologies for the noise I caused.  Actually the *first* patch in the
-series might have been perfectly fine - need to check ;-)
-
-gert
 
 
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+On 28/03/17 13:47, Gert Doering wrote:
 
---517pCzpsiLFBzq6n
-Content-Type: application/pgp-signature; name="signature.asc"
+> We need to communicate better what might affect users in new versions, so
+> they can test and complain/adjust in time (like, the stricter CRL handling
+> in 2.4, and - obviously - the --tls-remote bit)
 
------BEGIN PGP SIGNATURE-----
+Suggestion: A Wiki Page detailing deprecation plans with dated targets.
 
-iQGbBAEBAgAGBQJY2l4MAAoJEB2Cnv7KVigSQTsL939FX4VARrXdwCB9+rEfyf6P
-qblNFy6cQh4r9qkcZBE2tWU0Kl3JIwwdAEv7YNmqOZT6oolrBRtO5zEdRy/StpRF
-EnH0tAN9kIDAo37TIJyzQ2wKOHn2bX+gp2DVCFJ+c3pESFps/UeIyYY2D9YgTgqY
-aY3XWTAjtWDCUyW/eR7v+Qmp8AaEzV0GVHiZtlyRdTepECwOJ8O6zzjfvooUWQaU
-B8Wt7wZ69qZdqhAuS6k1kFrinrAuanYoPz0bZebdrbg2zZPbCMZpdHXbJGKNIh1v
-OgnFDdvk3tUWlqgWGFs2DjFgtvCztiz5/uKnqem6/dzPKz/6xf4uCEwEthEcAS3T
-LT2nGSRoFgKcSLQAWoSXD7eK3GWNuLmbP4aED6E7Pfie5g01bnktVB6zDZJTCv7Q
-9toaoxbGGtqHpH84bPTzBFLx4jo6XXlWuqNLSBB8e0U8NfdY/jKK0rRVusj+WrTp
-u84tXoZ2y5eMfGOhTDRdIl7lWexMXcL7dQ1LClUU
-=qfPD
------END PGP SIGNATURE-----
-
---517pCzpsiLFBzq6n--
+Regards
 
