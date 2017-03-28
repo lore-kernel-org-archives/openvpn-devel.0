@@ -1,13 +1,12 @@
-Date: Tue, 28 Mar 2017 00:04:19 +0200
-From: Simon Ruderich <simon@...2161...>
-Message-ID: <20170327220419.ezcexojotn4w7ak3@...2161...>
+Date: Tue, 28 Mar 2017 08:04:59 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20170328060459.GM93896@...1296...>
 References: <1490444478-13188-1-git-send-email-chipitsine@...277...>
 	<20170325131746.GC93896@...1296...>
 	<5cbc00da-6297-c90a-611c-63ed9b0136a0@...2080...>
-Mime-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature";
-	boundary="=_zucker.schokokeks.org-27430-1490652259-0001-2"
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="JJKOhZVZ8d05tF05"
 Content-Disposition: inline
 In-Reply-To: <5cbc00da-6297-c90a-611c-63ed9b0136a0@...2080...>
 Subject: Re: [Openvpn-devel] [PATCH] resolve format string warnings
@@ -21,65 +20,61 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: openvpn-devel@lists.sourceforge.net
 
-This is a MIME-formatted message.  If you see this text it means that your
-E-mail software does not support MIME-formatted messages.
-
---=_zucker.schokokeks.org-27430-1490652259-0001-2
+--JJKOhZVZ8d05tF05
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
+Hi,
+
 On Mon, Mar 27, 2017 at 11:40:49PM +0200, David Sommerseth wrote:
-> On 25/03/17 14:17, Gert Doering wrote:
->> Hi,
->>
->> On Sat, Mar 25, 2017 at 05:21:18PM +0500, Ilya Shipitsin wrote:
->>> [src/openvpn/options.c:1163]: (warning) %x in format string (no. 1) req=
-uires 'unsigned int *' but the argument type is 'signed int *'.
->>
->> Please use "uint8_t" then, and also adapt the "ret[i] =3D (uint8_t)byte"
->> line - the cast would then be obsolete.
->
+> > On Sat, Mar 25, 2017 at 05:21:18PM +0500, Ilya Shipitsin wrote:
+> >> [src/openvpn/options.c:1163]: (warning) %x in format string (no. 1) re=
+quires 'unsigned int *' but the argument type is 'signed int *'.
+> >=20
+> > Please use "uint8_t" then, and also adapt the "ret[i] =3D (uint8_t)byte"
+> > line - the cast would then be obsolete.
+>=20
 > I would normally agree to use uint8_t ... but the man page for sscanf()
 > on Linux says:
->
+>=20
 >    "Matches an unsigned hexadecimal integer; the next pointer must be a
 >     pointer to unsigned int."
->
+>=20
 > And stdint.h declares: typedef unsigned char           uint8_t;
->
+>=20
 > AFAIR, char is defined as 8 bits (hence uint*8*), while unsigned int are
 > 32 bits on my system.
 
-man inttypes.h yields the necessary constant for uint8_t : SCNu8
+Yeah, you're right.  I confused this discussion with our standard
+"char vs. signed char vs. unsigned char" warning.
 
-Regards
-Simon
+(See how dangerous "fixing compiler warnings" is?  :-) )
+
+gert
 --=20
-+ privacy is necessary
-+ using gnupg http://gnupg.org
-+ public key id: 0x92FEFDB7E44C32F9
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
---=_zucker.schokokeks.org-27430-1490652259-0001-2
+--JJKOhZVZ8d05tF05
 Content-Type: application/pgp-signature; name="signature.asc"
-Content-Transfer-Encoding: 7bit
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCgAdFiEEO7rfWMMObpFkF3n0kv79t+RMMvkFAljZjFgACgkQkv79t+RM
-MvnL/RAAkg89Xjduuh6Fj/mCD3mokWVXcYQq106url5ep/acu6GUUufPGs/R3GWF
-PvwNi45wNLoHLOZL64N9A2vSIyweCrMo8Z3aqTvSeitnckbKmrFreQIMncSZT8y4
-jxVO+AY2e0ru/GmllmK5AWx/AYBPlBU+lSmXbqm+q3+wNgdXAcDj/R/4l6BcjbPO
-ka5IEEDhd6UlZTRBJCVPng2MH6pska3d7/EZ1eL77lxs8WRbgrlg5jFxfO0lKW9y
-j79bMfhMKeUiD/sARU9S0JREjTysCzcdYlc6t3K0b3RO8TrmW2BEhc78ntwsQyhO
-fQ4CvUGCrFOd3U8a5tGPo3P+Kj8QylTDCbeiWdgy1X1G6O7D46rtsiYyztMh1Jd9
-jKZx66kyLEHfdyE6VBquOeAw392irdnkUaj8oJSkV/SOazLeEbe9B0pvwyfJCPHR
-Vua7WdJqYy+iL+vpDVbmZ8BV5CtMPoEiyKHulMJZl7/L4O8YId67X4R5Qvk85rKx
-Z63OKkk72JyVt4jDAV/8YqComX3yCOK5Tj31c2wMqSnTG/ta8JiMwv8LyAaHAgjO
-RMDckFxZG6+pb6vVVYLJoviwJe8pcxQpr4kpeDphY7cnVVzjCTYWybAmpAY2/eSz
-unufYmXhqaXryrBmf/agTkO0mvOHNCzajPkazbyFO2A6ZlKYO48=
-=xiZD
+iQGcBAEBAgAGBQJY2f0KAAoJEB2Cnv7KVigSM6ML+wbxJDNCpPdchiexTDadIV48
+GynpPq3aW5D3A6gbGQci9hXvKe8pAn09kE9RCLcavTHXU0LFCB/XgNjLRiNY8jZ3
+Op81yccMSDN/w8rn/q4Quebv+dLE/CSV/ostoGHmnQLeI4NEAR3l3R0N/sf7xMwz
+buC7C16y+ztDa53iy0VTm2m5Bj1CRmM4gCXiV0P9LVaFhiwsHxrrPZW72bE43DnU
+3sW1+9Uf53xUdC+yBapQSaw/ZW2MS7l5YR5WPWdy9iu4q1J6l9k/qs9aS8SocK0M
+sIthFQ6QfDkGa5aTlNboKMO60hsDfFV3IS/f7dc98BMtjbY3mI0vVVgNx7IXvMSy
+Dv+2mgUYN0qIAe1fG61G1a4wmGHNVNs4ZhpHPOKWDH6DtiErmOChMa3/FCGQzR5j
+RuYW5vSxTQl6ejJEEe1ld/rT8MU0TMs42UGLQIdziQ8NUSCDWFUIRpYe9rteSut9
+sHPxqxp3km8chZVdIfE3ZV667vqUgI6DC7RPOcYl9A==
+=qHNI
 -----END PGP SIGNATURE-----
 
---=_zucker.schokokeks.org-27430-1490652259-0001-2--
+--JJKOhZVZ8d05tF05--
 
