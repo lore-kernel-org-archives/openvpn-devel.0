@@ -10,11 +10,12 @@ References: <ec21d010-67a3-0ff1-3c2a-d5db08039e45@...277...>
 	<ac9bbf70-f1a3-78b5-5d88-62df26cd12b9@...1435...>
 	<9e659389-963d-d071-00bc-a2ee3a3849d6@...515...>
 	<4f959c35-afbc-9f10-21cf-20da31aac35b@...1435...>
+	<da5c7f47-6341-920e-cc3c-592e47083e21@...277...>
 From: debbie10t <debbie10t@...277...>
-Message-ID: <da5c7f47-6341-920e-cc3c-592e47083e21@...277...>
-Date: Tue, 28 Mar 2017 15:05:07 +0100
+Message-ID: <849096e2-fa0f-072c-4d75-c350dfa74255@...277...>
+Date: Tue, 28 Mar 2017 15:11:12 +0100
 MIME-Version: 1.0
-In-Reply-To: <4f959c35-afbc-9f10-21cf-20da31aac35b@...1435...>
+In-Reply-To: <da5c7f47-6341-920e-cc3c-592e47083e21@...277...>
 Subject: Re: [Openvpn-devel] building HEAD + openssl 1.1 api fails @
  "crypto.c:823:32: error: invalid application of ???sizeof??? to incomplete
  type ???cipher_ctx_t"
@@ -32,41 +33,54 @@ To: openvpn-devel@lists.sourceforge.net
 
 
 
-On 28/03/17 14:41, Steffan Karger wrote:
-> On 28-03-17 15:31, Samuli Sepp=E4nen wrote:
->> On 28/03/2017 16:08, Steffan Karger wrote:
->>> On 28-03-17 15:02, debbie10t wrote:
->>>> On 28/03/17 13:47, Gert Doering wrote:
->>>>> We need to communicate better what might affect users in new versions=
-, so
->>>>> they can test and complain/adjust in time (like, the stricter CRL han=
-dling
->>>>> in 2.4, and - obviously - the --tls-remote bit)
->>>>
->>>> Suggestion: A Wiki Page detailing deprecation plans with dated targets.
->>>
->>> We have Changes.rst for that:
->>> https://github.com/OpenVPN/openvpn/blob/master/Changes.rst
->>>
->>> Let's please keep this list on one location only, and I think
->>> Changes.rst is the right place.
->>
->> Ah, Changes.rst had "Deprecated features" section, good. I think that is
->> sufficient. The question then becomes: do we need to link to Changes.rst
->> from somewhere so that people find it?
->>
+On 28/03/17 15:05, debbie10t wrote:
 >
-> Yeah, linking to the changes.rst on github (which gets nicely rendered)
-> from the wiki sounds like a good plan.
+>
+> On 28/03/17 14:41, Steffan Karger wrote:
+>> On 28-03-17 15:31, Samuli Sepp=E4nen wrote:
+>>> On 28/03/2017 16:08, Steffan Karger wrote:
+>>>> On 28-03-17 15:02, debbie10t wrote:
+>>>>> On 28/03/17 13:47, Gert Doering wrote:
+>>>>>> We need to communicate better what might affect users in new
+>>>>>> versions, so
+>>>>>> they can test and complain/adjust in time (like, the stricter CRL
+>>>>>> handling
+>>>>>> in 2.4, and - obviously - the --tls-remote bit)
+>>>>>
+>>>>> Suggestion: A Wiki Page detailing deprecation plans with dated
+>>>>> targets.
+>>>>
+>>>> We have Changes.rst for that:
+>>>> https://github.com/OpenVPN/openvpn/blob/master/Changes.rst
+>>>>
+>>>> Let's please keep this list on one location only, and I think
+>>>> Changes.rst is the right place.
+>>>
+>>> Ah, Changes.rst had "Deprecated features" section, good. I think that is
+>>> sufficient. The question then becomes: do we need to link to Changes.rst
+>>> from somewhere so that people find it?
+>>>
+>>
+>> Yeah, linking to the changes.rst on github (which gets nicely rendered)
+>> from the wiki sounds like a good plan.
+>
+> Agreed: a simple Deprecation page on the wiki linking to changes.rst
+>
+> The wiki page *could* also be updated from time to time to provide
+> specific warnings of important changes like deprecating --ns-cert-type
+> as it has been identified that it will likely effect many people.
+>
+> I would be happy to help maintain such warnings as they are mentioned
+> the devel mailing list.
+>
 
-Agreed: a simple Deprecation page on the wiki linking to changes.rst
+I see a link has already just been added here:
+https://community.openvpn.net/openvpn/wiki/WikiStart
 
-The wiki page *could* also be updated from time to time to provide
-specific warnings of important changes like deprecating --ns-cert-type
-as it has been identified that it will likely effect many people.
+I was thinking of something a little more user friendly.
 
-I would be happy to help maintain such warnings as they are mentioned
-the devel mailing list.
+I will draft something on the wiki which you can review and keep or not=20
+as preferred.
 
 Regards
 
