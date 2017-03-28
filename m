@@ -1,15 +1,11 @@
-References: <7ff426e2-a389-c8e4-245e-a36328f5bf2e@...277...>
-	<1bd76716-c49f-0346-c1d2-f88feaba890e@...277...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <90dfe997-a962-3cda-1bfb-42c8157bc0ae@...2080...>
-Date: Tue, 28 Mar 2017 21:53:51 +0200
+References: <20170328191900.8488-1-davids@...515...>
+From: Steffan Karger <steffan@...1856...>
+Message-ID: <cb195f68-3e49-e766-926f-61271e7c3ec2@...1856...>
+Date: Tue, 28 Mar 2017 22:24:32 +0200
 MIME-Version: 1.0
-In-Reply-To: <1bd76716-c49f-0346-c1d2-f88feaba890e@...277...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature";
-	boundary="u6UmPSm8BwfXP3c1epidOR7QD4O4RlMqu"
-Subject: Re: [Openvpn-devel] Wik page drafti: DeprecationWarnings
-Reply-To: openvpn-devel@lists.sourceforge.net
+In-Reply-To: <20170328191900.8488-1-davids@...515...>
+Subject: Re: [Openvpn-devel] [PATCH] auth-token: Ensure tokens are always
+ wiped on de-auth
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,105 +14,121 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: debbie10t <debbie10t@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---u6UmPSm8BwfXP3c1epidOR7QD4O4RlMqu
-Content-Type: multipart/mixed; boundary="9PH3SBhUCDX8NsRWq4R9JIJ1xrkpttfxq";
-	protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-Reply-To: openvpn-devel@lists.sourceforge.net
-To: debbie10t <debbie10t@...277...>, "openvpn-devel@lists.sourceforge.net"
-	<openvpn-devel@lists.sourceforge.net>
-Message-ID: <90dfe997-a962-3cda-1bfb-42c8157bc0ae@...2080...>
-Subject: Re: [Openvpn-devel] Wik page drafti: DeprecationWarnings
-References: <7ff426e2-a389-c8e4-245e-a36328f5bf2e@...277...>
-	<1bd76716-c49f-0346-c1d2-f88feaba890e@...277...>
-In-Reply-To: <1bd76716-c49f-0346-c1d2-f88feaba890e@...277...>
+Hi,
 
---9PH3SBhUCDX8NsRWq4R9JIJ1xrkpttfxq
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
+On 28-03-17 21:19, David Sommerseth wrote:
+> If tls_deauthenticate() was called, it could in some scenarios leave the
+> authentication token for a session in memory.  This change just ensures
+> auth-tokens are always wiped as soon as a TLS session is considered
+> broken.
+> 
+> Signed-off-by: David Sommerseth <davids@...515...>
+> 
+> ---
+> 
+> The wipe_auth_token() function is otherwise moved to be declared before
+> tls_deauthenticate() and the latter function is also slightly modified to
+> make use of the C99 feature of inline declaration - mostly to have a more
+> reasonable coding style when adding the wipe_auth_token() call.
+> ---
+>  src/openvpn/ssl_verify.c | 44 ++++++++++++++++++++++++--------------------
+>  1 file changed, 24 insertions(+), 20 deletions(-)
+> 
+> diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
+> index a6e9be3..008a60d 100644
+> --- a/src/openvpn/ssl_verify.c
+> +++ b/src/openvpn/ssl_verify.c
+> @@ -80,6 +80,26 @@ setenv_untrusted(struct tls_session *session)
+>      setenv_link_socket_actual(session->opt->es, "untrusted", &session->untrusted_addr, SA_IP_PORT);
+>  }
+>  
+> +
+> +/**
+> + *  Wipes the authentication token out of the memory, frees and cleans up related buffers and flags
+> + *
+> + *  @param multi  Pointer to a multi object holding the auth_token variables
+> + */
+> +static void
+> +wipe_auth_token(struct tls_multi *multi)
+> +{
+> +    if( multi ) {
+> +	if (multi->auth_token ) {
 
-On 28/03/17 21:24, debbie10t wrote:
->=20
->=20
-> On 28/03/17 19:18, debbie10t wrote:
->> Hi,
->>
->> Following on from:
->> https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg1433=
-0.html
->>
->>
->> For your consideration:
->> https://community.openvpn.net/openvpn/wiki/DeprecationWarnings
->>
->> I do understand why duplicating work is not preferred, which is
->> why the page is for priority Warnings .. it could also be that
->> --ns-cert-type is going to be the only deprecation which qualifies
->> for such a warning, so the page could be recreated for --ns-cert-type
->> specifically.
->>
->> The page could also serve as a perma-link for log warnings.
->=20
-> Here is a further example of what I am thinking:
-> https://community.openvpn.net/openvpn/wiki/DeprecationWarnings#warnnsct
+The spaces in theses lines look a bit odd.
 
-Thanks, debbie10t!  This is a very good starting point.
+> +	    secure_memzero(multi->auth_token, AUTH_TOKEN_SIZE);
+> +	    free(multi->auth_token);
+> +	}
+> +	multi->auth_token = NULL;
+> +	multi->auth_token_sent = false;
+> +    }
+> +}
+> +
+> +
+>  /*
+>   * Remove authenticated state from all sessions in the given tunnel
+>   */
+> @@ -88,10 +108,10 @@ tls_deauthenticate(struct tls_multi *multi)
+>  {
+>      if (multi)
+>      {
+> -        int i, j;
+> -        for (i = 0; i < TM_SIZE; ++i)
+> +        wipe_auth_token(multi);
+> +        for (int i = 0; i < TM_SIZE; ++i)
+>          {
+> -            for (j = 0; j < KS_SIZE; ++j)
+> +            for (int j = 0; j < KS_SIZE; ++j)
+>              {
+>                  multi->session[i].key[j].authenticated = false;
+>              }
+> @@ -1219,21 +1239,6 @@ verify_user_pass_management(struct tls_session *session, const struct user_pass
+>  }
+>  #endif /* ifdef MANAGEMENT_DEF_AUTH */
+>  
+> -/**
+> - *  Wipes the authentication token out of the memory, frees and cleans up related buffers and flags
+> - *
+> - *  @param multi  Pointer to a multi object holding the auth_token variables
+> - */
+> -static void
+> -wipe_auth_token(struct tls_multi *multi)
+> -{
+> -    secure_memzero(multi->auth_token, AUTH_TOKEN_SIZE);
+> -    free(multi->auth_token);
+> -    multi->auth_token = NULL;
+> -    multi->auth_token_sent = false;
+> -}
+> -
+> -
+>  /*
+>   * Main username/password verification entry point
+>   */
+> @@ -1285,7 +1290,7 @@ verify_user_pass(struct user_pass *up, struct tls_multi *multi,
+>          /* Ensure that the username has not changed */
+>          if (!tls_lock_username(multi, up->username))
+>          {
+> -            wipe_auth_token(multi);
+> +            /* auth-token cleared in tls_lock_username() on failure */
+>              ks->authenticated = false;
+>              goto done;
+>          }
+> @@ -1306,7 +1311,6 @@ verify_user_pass(struct user_pass *up, struct tls_multi *multi,
+>          if (memcmp_constant_time(multi->auth_token, up->password,
+>                                   strlen(multi->auth_token)) != 0)
+>          {
+> -            wipe_auth_token(multi);
+>              ks->authenticated = false;
+>              tls_deauthenticate(multi);
+>  
+> 
 
-I am just wondering if we should have some kind of "standard table"
-within each of these warning blocks which contains a consistent overview
-of "what and when".  I don't have a good suggesting right now but
-something like:
+Shouldn't we also clear the token if the ccd authentication check in
+verify_final_auth_checks() fails?
 
-    | Feature                 | Deprecated    |  Removed  |
-    +-------------------------+---------------+-----------+
-    | option: --ns-cert-type  | v2.4.1        | TBD       |
-    +-------------------------+---------------+-----------+
-
-And then below such a table, the rationale for removing it, pointers to
-more information and other types of important notes related to this.
-The "Deprecated" and "Removed" columns could also point at the git
-commit containing the deprecation/removal.
-
-
-Of course, this wiki-page will require some maintenance ... and I hope
-this maintenance load will not just be dumped only to us core developers.
-
-
---
-kind regards,
-
-David Sommerseth
-OpenVPN Technologies, Inc
-
-
-
---9PH3SBhUCDX8NsRWq4R9JIJ1xrkpttfxq--
-
---u6UmPSm8BwfXP3c1epidOR7QD4O4RlMqu
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBCAAGBQJY2r9PAAoJEIbPlEyWcf3yp2cP/0gAlB6WpUfUu+WfFXpT5xMx
-HaTks+uOYuCVxJfYk4xXOBdFhocNhyYiSGWeh9amgsvZiwRLnJ7WMY+LVfw5nwiN
-K+CbY0MtiNto8DR1I3A7rfEhlJTm4rNpQe/TkPdac2ymzhNSaRQjqcCAvtB+POoY
-+fNRfOtbLR9UhyDUtR3LoKCMX8n90WLfEb2Nqy1sWpWug39l+81XYz/D/QBHAg83
-5XH6t1OgEYeMtf7cKvGqqzJ5GC2uXcyuhr9ezMlL3cjtvppGwSGS2OT0R02J8l9v
-2jbDQtHEdAl30IBt9QkEPfVGzf142oyt0rfYlTGzc5ItN79EPkEnPbGzAgeX5iyP
-eGD53b+J7Druodj8XJ0cE0qTvnls9QJyK3IfGn1Yc9GDKG8Ipp0nNSEvvnVzdv2O
-8nkqg7/P7YuZBLLFMhWKyhW4hBZ1lTgc45F7ZdFouu28Onqzi50dbsReYd3e9L22
-EwccREYlbkna2m21z1/NPrIjlKRqbyyexC6Sl6a+zQEgpsPcaS0+uRKhX/KjJf4w
-pA1drwYamnT5TuAkn55IhHRFdwgN3Cr83nNnPoi3YgVvtLQqw2GFZW6QfC02kRtL
-OJnfR+oJKVPA47+tsLufq0X47Z+NYDgOQPfE8q4AWp0cWdvnI2dW5GEzNhvftCzn
-4BmlMYmK0gqOBc+/pZii
-=vun6
------END PGP SIGNATURE-----
-
---u6UmPSm8BwfXP3c1epidOR7QD4O4RlMqu--
+-Steffan
 
