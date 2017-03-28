@@ -1,10 +1,16 @@
-From: David Sommerseth <davids@...515...>
-Date: Tue, 28 Mar 2017 22:53:46 +0200
-Message-Id: <20170328205346.18844-1-davids@...515...>
-In-Reply-To: <20170328191900.8488-1-davids@...515...>
 References: <20170328191900.8488-1-davids@...515...>
-Subject: [Openvpn-devel] [PATCH v2] auth-token: Ensure tokens are always
-	wiped on de-auth
+	<cb195f68-3e49-e766-926f-61271e7c3ec2@...1856...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <0a0813de-173e-bd6e-3e53-c0286b7ccc19@...2080...>
+Date: Tue, 28 Mar 2017 23:03:07 +0200
+MIME-Version: 1.0
+In-Reply-To: <cb195f68-3e49-e766-926f-61271e7c3ec2@...1856...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature";
+	boundary="F11eRqLkdtkvt8fsCClIV37j6LUmUKPxs"
+Subject: Re: [Openvpn-devel] [PATCH] auth-token: Ensure tokens are always
+ wiped on de-auth
+Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,125 +19,112 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Steffan Karger <steffan@...1856...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-If tls_deauthenticate() was called, it could in some scenarios leave the
-authentication token for a session in memory.  This change just ensures
-auth-tokens are always wiped as soon as a TLS session is considered
-broken.
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--F11eRqLkdtkvt8fsCClIV37j6LUmUKPxs
+Content-Type: multipart/mixed; boundary="Fe3SvpBUPaBACNSWVhVKNn4HPM0xaQXh2";
+	protected-headers="v1"
+From: David Sommerseth <openvpn@...2080...>
+Reply-To: openvpn-devel@lists.sourceforge.net
+To: Steffan Karger <steffan@...1856...>
+Cc: openvpn-devel@lists.sourceforge.net
+Message-ID: <0a0813de-173e-bd6e-3e53-c0286b7ccc19@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH] auth-token: Ensure tokens are always
+	wiped on de-auth
+References: <20170328191900.8488-1-davids@...515...>
+	<cb195f68-3e49-e766-926f-61271e7c3ec2@...1856...>
+In-Reply-To: <cb195f68-3e49-e766-926f-61271e7c3ec2@...1856...>
 
-Signed-off-by: David Sommerseth <davids@...515...>
+--Fe3SvpBUPaBACNSWVhVKNn4HPM0xaQXh2
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
 
+On 28/03/17 22:24, Steffan Karger wrote:
+> Hi,
+>=20
+> On 28-03-17 21:19, David Sommerseth wrote:
+>> If tls_deauthenticate() was called, it could in some scenarios leave the
+>> authentication token for a session in memory.  This change just ensures
+>> auth-tokens are always wiped as soon as a TLS session is considered
+>> broken.
+>>
+>> Signed-off-by: David Sommerseth <davids@...515...>
+>>
+>> ---
+>>
+>> The wipe_auth_token() function is otherwise moved to be declared before
+>> tls_deauthenticate() and the latter function is also slightly modified to
+>> make use of the C99 feature of inline declaration - mostly to have a more
+>> reasonable coding style when adding the wipe_auth_token() call.
+>> ---
+>>  src/openvpn/ssl_verify.c | 44 ++++++++++++++++++++++++-----------------=
 ---
+>>  1 file changed, 24 insertions(+), 20 deletions(-)
+>>
+[...snip...]
+>> +
+>> +/**
+>> + *  Wipes the authentication token out of the memory, frees and cleans =
+up related buffers and flags
+>> + *
+>> + *  @param multi  Pointer to a multi object holding the auth_token vari=
+ables
+>> + */
+>> +static void
+>> +wipe_auth_token(struct tls_multi *multi)
+>> +{
+>> +    if( multi ) {
+>> +	if (multi->auth_token ) {
+>=20
+> The spaces in theses lines look a bit odd.
 
-The wipe_auth_token() function is otherwise moved to be declared before
-tls_deauthenticate() and the latter function is also slightly modified to
-make use of the C99 feature of inline declaration - mostly to have a more
-reasonable coding style when adding the wipe_auth_token() call.
+Sigh ... seems my Emacs config have re-decided on tabs vs spaces :/  Fixed!
 
-v2 - Fixed coding style issues after changes in wipe_auth_token()
-   - Added wipe_auth_token() call when --ccd-exclusive auth fails
----
- src/openvpn/ssl_verify.c | 47 +++++++++++++++++++++++++++--------------------
- 1 file changed, 27 insertions(+), 20 deletions(-)
+[...snip...]
+>=20
+> Shouldn't we also clear the token if the ccd authentication check in
+> verify_final_auth_checks() fails?
 
-diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
-index a6e9be3..bc578fa 100644
---- a/src/openvpn/ssl_verify.c
-+++ b/src/openvpn/ssl_verify.c
-@@ -80,6 +80,28 @@ setenv_untrusted(struct tls_session *session)
-     setenv_link_socket_actual(session->opt->es, "untrusted", &session->untrusted_addr, SA_IP_PORT);
- }
- 
-+
-+/**
-+ *  Wipes the authentication token out of the memory, frees and cleans up related buffers and flags
-+ *
-+ *  @param multi  Pointer to a multi object holding the auth_token variables
-+ */
-+static void
-+wipe_auth_token(struct tls_multi *multi)
-+{
-+    if( multi )
-+    {
-+        if (multi->auth_token )
-+        {
-+            secure_memzero(multi->auth_token, AUTH_TOKEN_SIZE);
-+            free(multi->auth_token);
-+        }
-+        multi->auth_token = NULL;
-+        multi->auth_token_sent = false;
-+    }
-+}
-+
-+
- /*
-  * Remove authenticated state from all sessions in the given tunnel
-  */
-@@ -88,10 +110,10 @@ tls_deauthenticate(struct tls_multi *multi)
- {
-     if (multi)
-     {
--        int i, j;
--        for (i = 0; i < TM_SIZE; ++i)
-+        wipe_auth_token(multi);
-+        for (int i = 0; i < TM_SIZE; ++i)
-         {
--            for (j = 0; j < KS_SIZE; ++j)
-+            for (int j = 0; j < KS_SIZE; ++j)
-             {
-                 multi->session[i].key[j].authenticated = false;
-             }
-@@ -1219,21 +1241,6 @@ verify_user_pass_management(struct tls_session *session, const struct user_pass
- }
- #endif /* ifdef MANAGEMENT_DEF_AUTH */
- 
--/**
-- *  Wipes the authentication token out of the memory, frees and cleans up related buffers and flags
-- *
-- *  @param multi  Pointer to a multi object holding the auth_token variables
-- */
--static void
--wipe_auth_token(struct tls_multi *multi)
--{
--    secure_memzero(multi->auth_token, AUTH_TOKEN_SIZE);
--    free(multi->auth_token);
--    multi->auth_token = NULL;
--    multi->auth_token_sent = false;
--}
--
--
- /*
-  * Main username/password verification entry point
-  */
-@@ -1285,7 +1292,7 @@ verify_user_pass(struct user_pass *up, struct tls_multi *multi,
-         /* Ensure that the username has not changed */
-         if (!tls_lock_username(multi, up->username))
-         {
--            wipe_auth_token(multi);
-+            /* auth-token cleared in tls_lock_username() on failure */
-             ks->authenticated = false;
-             goto done;
-         }
-@@ -1306,7 +1313,6 @@ verify_user_pass(struct user_pass *up, struct tls_multi *multi,
-         if (memcmp_constant_time(multi->auth_token, up->password,
-                                  strlen(multi->auth_token)) != 0)
-         {
--            wipe_auth_token(multi);
-             ks->authenticated = false;
-             tls_deauthenticate(multi);
- 
-@@ -1478,6 +1484,7 @@ verify_final_auth_checks(struct tls_multi *multi, struct tls_session *session)
-         if (!cn || !strcmp(cn, CCD_DEFAULT) || !test_file(path))
-         {
-             ks->authenticated = false;
-+            wipe_auth_tokens(multi);
-             msg(D_TLS_ERRORS, "TLS Auth Error: --client-config-dir authentication failed for common name '%s' file='%s'",
-                 session->common_name,
-                 path ? path : "UNDEF");
--- 
-2.11.0
+Thanks!  I didn't consider that so much, as in my mind this check
+happened before the user/password auth ... but it seems it actually
+happens afterwards.  So you're right, as this is really happening after
+we have generated a token, this should be wiped here too.
 
+
+--=20
+kind regards,
+
+David Sommerseth
+OpenVPN Technologies, Inc
+
+
+
+--Fe3SvpBUPaBACNSWVhVKNn4HPM0xaQXh2--
+
+--F11eRqLkdtkvt8fsCClIV37j6LUmUKPxs
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBCAAGBQJY2s+LAAoJEIbPlEyWcf3yZAYQALIdv+jFd7qFqKxZtA6L4iHx
+bazmfy4xuCwLp9xrLSWbNT0ZpAcZPaFFx8PRvt2G73kyDstvmYQaQODfxnkHjj1T
+/arEyYrNuExFWPsdPf/S+zKKOABtQXN9UnmMbKUdpkE3u7+l9E3t9GgeK9XM895K
+nBaIJceIOw+TmGeHkzMua4xs+s7QNy87MB9WVgbBavW+BF23VuU/4IZwEqN22h9E
+SblbJZ/ujv59e7a9VtdZOSJF1Nx5scZpKaJIP8K3Rv665YQcENNK5hw/g5idgVdh
+vQ2M1fAjPsOZlH+Q8bB/gUSVIKRCRvFNaUVzgffOww1cqgBc3Zyx6REi2OfrUM1V
+/hog6RRaz/+7zthXIg/MkcWPVxkefv+SCvXuWVGdeeAc2sRdhrPSK2ShrzgG6pai
+JRO8j2nMNIKW8XKIVBd/XbKGzaMPth9hWgugG+iprFTx40rz1KNRHCLqSETmuz7E
+QSDub9ofB0fkFndOffOCSo3Xq2e9B3WSSDO0OuE7QExeOV0YyEv29v1w3pD3ZxCr
+027fOHz1a2ZJP9WkuXwv2SnWq1s6DrRU7xLKYJ0qQZMg5cjOYsyOzGfEGe3fy9dd
+zvcl5FOKdWbPzW51eEOflCShwM+Odh6l+T7eYWJDqa0oVwAiOX8t+cUgECA7Ndi5
+8isqkMrELOzFkg1MO0NM
+=kW10
+-----END PGP SIGNATURE-----
+
+--F11eRqLkdtkvt8fsCClIV37j6LUmUKPxs--
 
