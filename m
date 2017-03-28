@@ -1,8 +1,10 @@
-From: David Sommerseth <davids@...515...>
-Date: Tue, 28 Mar 2017 21:19:00 +0200
-Message-Id: <20170328191900.8488-1-davids@...515...>
-Subject: [Openvpn-devel] [PATCH] auth-token: Ensure tokens are always wiped
-	on de-auth
+References: <7ff426e2-a389-c8e4-245e-a36328f5bf2e@...277...>
+From: debbie10t <debbie10t@...277...>
+Message-ID: <1bd76716-c49f-0346-c1d2-f88feaba890e@...277...>
+Date: Tue, 28 Mar 2017 20:24:24 +0100
+MIME-Version: 1.0
+In-Reply-To: <7ff426e2-a389-c8e4-245e-a36328f5bf2e@...277...>
+Subject: Re: [Openvpn-devel] Wik page drafti: DeprecationWarnings
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,112 +13,32 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-If tls_deauthenticate() was called, it could in some scenarios leave the
-authentication token for a session in memory.  This change just ensures
-auth-tokens are always wiped as soon as a TLS session is considered
-broken.
 
-Signed-off-by: David Sommerseth <davids@...515...>
 
----
+On 28/03/17 19:18, debbie10t wrote:
+> Hi,
+>
+> Following on from:
+> https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg14330.html
+>
+>
+> For your consideration:
+> https://community.openvpn.net/openvpn/wiki/DeprecationWarnings
+>
+> I do understand why duplicating work is not preferred, which is
+> why the page is for priority Warnings .. it could also be that
+> --ns-cert-type is going to be the only deprecation which qualifies
+> for such a warning, so the page could be recreated for --ns-cert-type
+> specifically.
+>
+> The page could also serve as a perma-link for log warnings.
 
-The wipe_auth_token() function is otherwise moved to be declared before
-tls_deauthenticate() and the latter function is also slightly modified to
-make use of the C99 feature of inline declaration - mostly to have a more
-reasonable coding style when adding the wipe_auth_token() call.
----
- src/openvpn/ssl_verify.c | 44 ++++++++++++++++++++++++--------------------
- 1 file changed, 24 insertions(+), 20 deletions(-)
+Here is a further example of what I am thinking:
+https://community.openvpn.net/openvpn/wiki/DeprecationWarnings#warnnsct
 
-diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
-index a6e9be3..008a60d 100644
---- a/src/openvpn/ssl_verify.c
-+++ b/src/openvpn/ssl_verify.c
-@@ -80,6 +80,26 @@ setenv_untrusted(struct tls_session *session)
-     setenv_link_socket_actual(session->opt->es, "untrusted", &session->untrusted_addr, SA_IP_PORT);
- }
- 
-+
-+/**
-+ *  Wipes the authentication token out of the memory, frees and cleans up related buffers and flags
-+ *
-+ *  @param multi  Pointer to a multi object holding the auth_token variables
-+ */
-+static void
-+wipe_auth_token(struct tls_multi *multi)
-+{
-+    if( multi ) {
-+	if (multi->auth_token ) {
-+	    secure_memzero(multi->auth_token, AUTH_TOKEN_SIZE);
-+	    free(multi->auth_token);
-+	}
-+	multi->auth_token = NULL;
-+	multi->auth_token_sent = false;
-+    }
-+}
-+
-+
- /*
-  * Remove authenticated state from all sessions in the given tunnel
-  */
-@@ -88,10 +108,10 @@ tls_deauthenticate(struct tls_multi *multi)
- {
-     if (multi)
-     {
--        int i, j;
--        for (i = 0; i < TM_SIZE; ++i)
-+        wipe_auth_token(multi);
-+        for (int i = 0; i < TM_SIZE; ++i)
-         {
--            for (j = 0; j < KS_SIZE; ++j)
-+            for (int j = 0; j < KS_SIZE; ++j)
-             {
-                 multi->session[i].key[j].authenticated = false;
-             }
-@@ -1219,21 +1239,6 @@ verify_user_pass_management(struct tls_session *session, const struct user_pass
- }
- #endif /* ifdef MANAGEMENT_DEF_AUTH */
- 
--/**
-- *  Wipes the authentication token out of the memory, frees and cleans up related buffers and flags
-- *
-- *  @param multi  Pointer to a multi object holding the auth_token variables
-- */
--static void
--wipe_auth_token(struct tls_multi *multi)
--{
--    secure_memzero(multi->auth_token, AUTH_TOKEN_SIZE);
--    free(multi->auth_token);
--    multi->auth_token = NULL;
--    multi->auth_token_sent = false;
--}
--
--
- /*
-  * Main username/password verification entry point
-  */
-@@ -1285,7 +1290,7 @@ verify_user_pass(struct user_pass *up, struct tls_multi *multi,
-         /* Ensure that the username has not changed */
-         if (!tls_lock_username(multi, up->username))
-         {
--            wipe_auth_token(multi);
-+            /* auth-token cleared in tls_lock_username() on failure */
-             ks->authenticated = false;
-             goto done;
-         }
-@@ -1306,7 +1311,6 @@ verify_user_pass(struct user_pass *up, struct tls_multi *multi,
-         if (memcmp_constant_time(multi->auth_token, up->password,
-                                  strlen(multi->auth_token)) != 0)
-         {
--            wipe_auth_token(multi);
-             ks->authenticated = false;
-             tls_deauthenticate(multi);
- 
--- 
-2.11.0
-
+Regards
 
