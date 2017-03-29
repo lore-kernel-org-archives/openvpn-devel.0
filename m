@@ -1,10 +1,7 @@
-From: David Sommerseth <davids@...515...>
-Date: Wed, 29 Mar 2017 12:42:12 +0200
-Message-Id: <20170329104212.26477-1-davids@...515...>
-In-Reply-To: <20170329094925.25644-1-davids@...515...>
-References: <20170329094925.25644-1-davids@...515...>
-Subject: Re: [Openvpn-devel] [PATCH applied] docs: Fixed man-page warnings
-	discoverd by rpmlint
+From: Ilya Shipitsin <chipitsine@...277...>
+Date: Wed, 29 Mar 2017 18:43:02 +0500
+Message-Id: <1490794982-4550-1-git-send-email-chipitsine@...277...>
+Subject: [Openvpn-devel] [PATCH] v3: resolve format string warnings
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,48 +12,48 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: davids@...515...
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA256
+[src/openvpn/options.c:1163]: (warning) %x in format string (no. 1) requires 'unsigned int *' but the argument type is 'signed int *'.
+[src/openvpn/route.c:3187]: (warning) %d in format string (no. 5) requires 'int *' but the argument type is 'unsigned int *'.
 
-Your patch has been applied to the following branches
+Signed-off-by: Ilya Shipitsin <chipitsine@...277...>
+---
+v2: use "uint8_t" in options.c, thanks to Gert Doering
 
-commit 9636196d5efb719cf1011397a360d46bccb3fe29  (master)
-commit 8731dfa7caaf8b6d8757492f331e0b4c79851412  (release/2.4)
-Author: David Sommerseth
-Date:   Wed Mar 29 11:49:25 2017 +0200
+v3: switch back to "unsigned int", thanks to David Sommerseth
 
-     docs: Fixed man-page warnings discoverd by rpmlint
+ src/openvpn/options.c | 2 +-
+ src/openvpn/route.c   | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-     Signed-off-by: David Sommerseth <davids@...515...>
-     Acked-by: Steffan Karger <steffan.karger@...1435...>
-     Message-Id: <20170329094925.25644-1-davids@...515...>
-     URL: http://www.mail-archive.com/search?l=mid&q=20170329094925.25644-1-davids@...515...
-     Signed-off-by: David Sommerseth <davids@...515...>
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index dcb6ecf..2bc7e62 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -1147,7 +1147,7 @@ parse_hash_fingerprint(const char *str, int nbytes, int msglevel, struct gc_aren
+     const char *cp = str;
+     uint8_t *ret = (uint8_t *) gc_malloc(nbytes, true, gc);
+     char term = 1;
+-    int byte;
++    unsigned int byte;
+     char bs[3];
+ 
+     for (i = 0; i < nbytes; ++i)
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index 08998d5..ecfa60f 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -3184,7 +3184,7 @@ get_default_gateway(struct route_gateway_info *rgi)
+                     unsigned int flags = 0;
+                     char name[16];
+                     name[0] = 0;
+-                    const int np = sscanf(line, "%15s\t%x\t%x\t%x\t%*s\t%*s\t%d\t%x",
++                    const int np = sscanf(line, "%15s\t%x\t%x\t%x\t%*s\t%*s\t%u\t%x",
+                                           name,
+                                           &net_x,
+                                           &gw_x,
+-- 
+2.5.5
 
-
-- --
-kind regards,
-
-David Sommerseth
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBCAAGBQJY24+AAAoJEIbPlEyWcf3y15sP/10rKur7pplO4p9IzAt5C8PY
-LoNbwXNKjzUBjbaSaIvbOwVMAHHGCtEtq7fvWOajYm57CYN9J1dy43i7jXVyODpW
-AW3DJ0lUcGJQV4tQqIFZvNESgjpEOUhd/V9FzsNFx71pqz3QSMkk1fjptrAOw1us
-RAyJnB6ObOtdLvVBYkQ7lGgAu4D7NFr8DbAKQ1miBRaNAl3qg9szHvJZFa3w5STV
-tJDBsyUDmTuDzRwzQx48RZ2DvBksyj+fM/0Zw312ELBdvx5c2LV9LCFKRqO/JklH
-uEBgkavlfSqo6yy/5N8AuzPnf/IDf1aigeHk3Q9ZGCluu42b79GCuSkBecw2iSPQ
-WoBBfgaTBGmy6UEqtQYn1O+knrfAj2OmcgQHzBgtknOjiS67r1apNSpjac8eONdE
-Yqrx7KscfP5nPtIg0NXNw+BttpqbBbgvfTT6U1GW1wg6LRD+q2cAzW0T09NwFBXi
-cjf+XXiEeGST3r5aG4EVeX7Bu76m/4zzRs0iAV9WIoisnXDCHvasEZJD4E0+UHEB
-5qsnXaqDquJo/83cIsa1zNMthy3H28oUkoDztry0FhJKBLt+wgRgF48g06DD7iOd
-n+2qvau8qxzx8Q5hVI5j2o0sEDOAt7SvaxR/ieP80BLE/s8VWQ2jRYQzqlaUk2Ym
-IHOD04ueO0r2lniWkicn
-=9IuS
------END PGP SIGNATURE-----
 
