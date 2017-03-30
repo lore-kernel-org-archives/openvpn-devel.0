@@ -1,10 +1,11 @@
-Message-ID: <ee5a8207241568cedcccc4f7f2ea5bc8.squirrel@...2257...>
-Date: Thu, 30 Mar 2017 14:38:30 +0200
-From: "Simon Matter" <simon.matter@...2249...>
+From: Thomas =?ISO-8859-1?Q?Sch=E4fer?= <tschaefer@...75...>
+Date: Fri, 31 Mar 2017 00:14:29 +0200
+Message-ID: <1844330.lfjt6Ttcuz@...2258...>
+In-Reply-To: <b3afdbf7-ee12-3c1f-b8cd-c30cf3b0a025@...75...>
+References: <b3afdbf7-ee12-3c1f-b8cd-c30cf3b0a025@...75...>
 MIME-Version: 1.0
-Content-Type: multipart/mixed;boundary="----=_20170330143830_32338"
-Subject: [Openvpn-devel] [PATCH] Add per session pseudo-random component to
- --reneg-sec intervals
+Subject: Re: [Openvpn-devel] NOTE: unable to redirect default gateway --
+	Cannot read current default gateway from system
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,170 +14,12 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-------=_20170330143830_32338
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+By the way. 
+It works. (with 2.4.1)
 
-Hi,
-
-Initially I've created this RFE but have been told to send it to
-the devel list instead:
-
-https://community.openvpn.net/openvpn/ticket/865
-
-Unfortunately I'm not a developer and have never used git so please bear
-with me as I send a classic patch to the list.
-
-As suggested by user "syzzer" I also tried to improve the patch and here
-it is:
-
--------%<---------------------------------------------------------------
-While we were suffering from the "TLS Renegotiation Slowdown" bug here
-https://community.openvpn.net/openvpn/ticket/854 we realized that there is
-still room for improvement in our use case.
-
-It appears that TLS renegotiation is getting more and more expensive in
-terms of CPU cycles with recent changes for more security. To make things
-worse, we realized that most renegotiation procedures took place at almost
-the same time and increased the CPU load too much during these periods.
-That's especially true on large, multi-instance openvpn setups.
-
-I've created attached patch to add a per session pseudo-random component to
-the --reneg-sec intervals so that renegotiation is evenly spread over time.
-It is configured by simply adding a second value to --reneg-sec as described
-in the --help text:
-
---reneg-sec n [r] : Renegotiate data chan. key after n seconds default=3D36=
-00)
-                    and if r is specified, add a per session pseudo-random
-                    component in the range of 1 ... r to n (default=3D0).
-
-Note that the patch also slightly changes the log output to show the sec
-value
-in the same way as the bytes/pkts values:
-
-TLS: soft reset sec=3D3084/3084 bytes=3D279897/-1 pkts=3D1370/0
--------%<---------------------------------------------------------------
-
-
-The patch is tested and seems to work well in my environment. As always,
-comments are very welcome.
-
-Would be nice to have this patch accepted and included in OpenVPN 2.4.2.
-
-Regards,
-Simon=
-
-------=_20170330143830_32338
-Content-Type: application/octet-stream;
-	name="openvpn-2.4.1-reneg-sec_random.patch"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment;
-	filename="openvpn-2.4.1-reneg-sec_random.patch"
-
-ZGlmZiAtTmF1ciBvcGVudnBuLTIuNC4xLm9yaWcvZG9jL29wZW52cG4uOCBvcGVudnBuLTIuNC4x
-L2RvYy9vcGVudnBuLjgKLS0tIG9wZW52cG4tMi40LjEub3JpZy9kb2Mvb3BlbnZwbi44CTIwMTct
-MDMtMjIgMTY6MzQ6MjEuMDAwMDAwMDAwICswMTAwCisrKyBvcGVudnBuLTIuNC4xL2RvYy9vcGVu
-dnBuLjgJMjAxNy0wMy0zMCAxMjoxMTo1OC4wMDAwMDAwMDAgKzAyMDAKQEAgLTM0LDcgKzM0LDcg
-QEAKIC5cIiAuZnQgLS0gbm9ybWFsIGZhY2UKIC5cIiAuaW4gK3wte259IC0tIGluZGVudAogLlwi
-Ci0uVEggb3BlbnZwbiA4ICIyNSBBdWd1c3QgMjAxNiIKKy5USCBvcGVudnBuIDggIjI4IE1hcmNo
-IDIwMTciCiAuXCIqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioq
-KioqKioqKioqKioKIC5TSCBOQU1FCiBvcGVudnBuIFwtIHNlY3VyZSBJUCB0dW5uZWwgZGFlbW9u
-LgpAQCAtNDkxOSwxMSArNDkxOSwxOSBAQAogcGFja2V0cyBzZW50IGFuZCByZWNlaXZlZCAoZGlz
-YWJsZWQgYnkgZGVmYXVsdCkuCiAuXCIqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioq
-KioqKioqKioqKioqKioqKioqKioqKioKIC5UUAotLkIgXC1cLXJlbmVnXC1zZWMgbgorLkIgXC1c
-LXJlbmVnXC1zZWMgbiBbcmFuZG9tXQogUmVuZWdvdGlhdGUgZGF0YSBjaGFubmVsIGtleSBhZnRl
-cgogLkIgbgogc2Vjb25kcyAoZGVmYXVsdD0zNjAwKS4KIAorSWYgdGhlIG9wdGlvbmFsCisuQiBy
-YW5kb20KK3BhcmFtZXRlciBpcyBzcGVjaWZpZWQsIGEgcGVyIHNlc3Npb24gcHNldWRvLXJhbmRv
-bSBjb21wb25lbnQgaW4gdGhlIHJhbmdlIG9mCisuQiAxIC4uLiByYW5kb20KK2lzIGFkZGVkIHRv
-IHRoZQorLkIgbgorc2Vjb25kcyBhYm92ZSAoZGVmYXVsdD0wKS4KKwogV2hlbiB1c2luZyBkdWFs
-LWZhY3RvciBhdXRoZW50aWNhdGlvbiwgbm90ZSB0aGF0IHRoaXMgZGVmYXVsdCB2YWx1ZSBtYXkK
-IGNhdXNlIHRoZSBlbmQgdXNlciB0byBiZSBjaGFsbGVuZ2VkIHRvIHJlYXV0aG9yaXplIG9uY2Ug
-cGVyIGhvdXIuCiAKZGlmZiAtTmF1ciBvcGVudnBuLTIuNC4xLm9yaWcvc3JjL29wZW52cG4vaW5p
-dC5jIG9wZW52cG4tMi40LjEvc3JjL29wZW52cG4vaW5pdC5jCi0tLSBvcGVudnBuLTIuNC4xLm9y
-aWcvc3JjL29wZW52cG4vaW5pdC5jCTIwMTctMDMtMjIgMTY6MzQ6MjQuMDAwMDAwMDAwICswMTAw
-CisrKyBvcGVudnBuLTIuNC4xL3NyYy9vcGVudnBuL2luaXQuYwkyMDE3LTAzLTMwIDExOjUyOjA3
-LjAwMDAwMDAwMCArMDIwMApAQCAtMjU5Miw2ICsyNTkyLDEwIEBACiAgICAgdG8ucmVuZWdvdGlh
-dGVfYnl0ZXMgPSBvcHRpb25zLT5yZW5lZ290aWF0ZV9ieXRlczsKICAgICB0by5yZW5lZ290aWF0
-ZV9wYWNrZXRzID0gb3B0aW9ucy0+cmVuZWdvdGlhdGVfcGFja2V0czsKICAgICB0by5yZW5lZ290
-aWF0ZV9zZWNvbmRzID0gb3B0aW9ucy0+cmVuZWdvdGlhdGVfc2Vjb25kczsKKyAgICBpZiAob3B0
-aW9ucy0+cmVuZWdvdGlhdGVfc2Vjb25kc19yYW5kb20pCisgICAgeworICAgICAgICB0by5yZW5l
-Z290aWF0ZV9zZWNvbmRzICs9IG1heF9pbnQoKGludCkoZ2V0X3JhbmRvbSgpICUgb3B0aW9ucy0+
-cmVuZWdvdGlhdGVfc2Vjb25kc19yYW5kb20pICsgMSwgMSk7CisgICAgfQogICAgIHRvLnNpbmds
-ZV9zZXNzaW9uID0gb3B0aW9ucy0+c2luZ2xlX3Nlc3Npb247CiAgICAgdG8ubW9kZSA9IG9wdGlv
-bnMtPm1vZGU7CiAgICAgdG8ucHVsbCA9IG9wdGlvbnMtPnB1bGw7CmRpZmYgLU5hdXIgb3BlbnZw
-bi0yLjQuMS5vcmlnL3NyYy9vcGVudnBuL29wdGlvbnMuYyBvcGVudnBuLTIuNC4xL3NyYy9vcGVu
-dnBuL29wdGlvbnMuYwotLS0gb3BlbnZwbi0yLjQuMS5vcmlnL3NyYy9vcGVudnBuL29wdGlvbnMu
-YwkyMDE3LTAzLTIyIDE2OjM0OjI0LjAwMDAwMDAwMCArMDEwMAorKysgb3BlbnZwbi0yLjQuMS9z
-cmMvb3BlbnZwbi9vcHRpb25zLmMJMjAxNy0wMy0zMCAxMjoxMzo0MS4wMDAwMDAwMDAgKzAyMDAK
-QEAgLTYwMyw3ICs2MDMsOSBAQAogICAgICIgICAgICAgICAgICAgICAgICBpZiBubyBBQ0sgZnJv
-bSByZW1vdGUgd2l0aGluIG4gc2Vjb25kcyAoZGVmYXVsdD0lZCkuXG4iCiAgICAgIi0tcmVuZWct
-Ynl0ZXMgbiA6IFJlbmVnb3RpYXRlIGRhdGEgY2hhbi4ga2V5IGFmdGVyIG4gYnl0ZXMgc2VudCBh
-bmQgcmVjdmQuXG4iCiAgICAgIi0tcmVuZWctcGt0cyBuICA6IFJlbmVnb3RpYXRlIGRhdGEgY2hh
-bi4ga2V5IGFmdGVyIG4gcGFja2V0cyBzZW50IGFuZCByZWN2ZC5cbiIKLSAgICAiLS1yZW5lZy1z
-ZWMgbiAgIDogUmVuZWdvdGlhdGUgZGF0YSBjaGFuLiBrZXkgYWZ0ZXIgbiBzZWNvbmRzIChkZWZh
-dWx0PSVkKS5cbiIKKyAgICAiLS1yZW5lZy1zZWMgbiBbcl0gOiBSZW5lZ290aWF0ZSBkYXRhIGNo
-YW4uIGtleSBhZnRlciBuIHNlY29uZHMgKGRlZmF1bHQ9JWQpXG4iCisgICAgIiAgICAgICAgICAg
-ICAgICAgIGFuZCBpZiByIGlzIHNwZWNpZmllZCwgYWRkIGEgcGVyIHNlc3Npb24gcHNldWRvLXJh
-bmRvbVxuIgorICAgICIgICAgICAgICAgICAgICAgICBjb21wb25lbnQgaW4gdGhlIHJhbmdlIG9m
-IDEgLi4uIHIgdG8gbiAoZGVmYXVsdD0lZCkuXG4iCiAgICAgIi0taGFuZC13aW5kb3cgbiA6IERh
-dGEgY2hhbm5lbCBrZXkgZXhjaGFuZ2UgbXVzdCBmaW5hbGl6ZSB3aXRoaW4gbiBzZWNvbmRzXG4i
-CiAgICAgIiAgICAgICAgICAgICAgICAgIG9mIGhhbmRzaGFrZSBpbml0aWF0aW9uIGJ5IGFueSBw
-ZWVyIChkZWZhdWx0PSVkKS5cbiIKICAgICAiLS10cmFuLXdpbmRvdyBuIDogVHJhbnNpdGlvbiB3
-aW5kb3cgLS0gb2xkIGtleSBjYW4gbGl2ZSB0aGlzIG1hbnkgc2Vjb25kc1xuIgpAQCAtMTc3Myw2
-ICsxNzc1LDcgQEAKICAgICBTSE9XX0lOVChyZW5lZ290aWF0ZV9ieXRlcyk7CiAgICAgU0hPV19J
-TlQocmVuZWdvdGlhdGVfcGFja2V0cyk7CiAgICAgU0hPV19JTlQocmVuZWdvdGlhdGVfc2Vjb25k
-cyk7CisgICAgU0hPV19JTlQocmVuZWdvdGlhdGVfc2Vjb25kc19yYW5kb20pOwogCiAgICAgU0hP
-V19JTlQoaGFuZHNoYWtlX3dpbmRvdyk7CiAgICAgU0hPV19JTlQodHJhbnNpdGlvbl93aW5kb3cp
-OwpAQCAtMjc0MSw2ICsyNzQ0LDcgQEAKICAgICAgICAgTVVTVF9CRV9VTkRFRihyZW5lZ290aWF0
-ZV9ieXRlcyk7CiAgICAgICAgIE1VU1RfQkVfVU5ERUYocmVuZWdvdGlhdGVfcGFja2V0cyk7CiAg
-ICAgICAgIE1VU1RfQkVfVU5ERUYocmVuZWdvdGlhdGVfc2Vjb25kcyk7CisgICAgICAgIE1VU1Rf
-QkVfVU5ERUYocmVuZWdvdGlhdGVfc2Vjb25kc19yYW5kb20pOwogICAgICAgICBNVVNUX0JFX1VO
-REVGKGhhbmRzaGFrZV93aW5kb3cpOwogICAgICAgICBNVVNUX0JFX1VOREVGKHRyYW5zaXRpb25f
-d2luZG93KTsKICAgICAgICAgTVVTVF9CRV9VTkRFRih0bHNfYXV0aF9maWxlKTsKQEAgLTQwOTEs
-NiArNDA5NSw3IEBACiAgICAgICAgICAgICBvLmF1dGhuYW1lLCBvLmNpcGhlcm5hbWUsCiAgICAg
-ICAgICAgICBvLnJlcGxheV93aW5kb3csIG8ucmVwbGF5X3RpbWUsCiAgICAgICAgICAgICBvLnRs
-c190aW1lb3V0LCBvLnJlbmVnb3RpYXRlX3NlY29uZHMsCisgICAgICAgICAgICBvLnJlbmVnb3Rp
-YXRlX3NlY29uZHNfcmFuZG9tLAogICAgICAgICAgICAgby5oYW5kc2hha2Vfd2luZG93LCBvLnRy
-YW5zaXRpb25fd2luZG93KTsKICNlbHNlICAvKiBpZmRlZiBFTkFCTEVfQ1JZUFRPICovCiAgICAg
-ZnByaW50ZihmcCwgdXNhZ2VfbWVzc2FnZSwKQEAgLTc5ODMsMTAgKzc5ODgsMTQgQEAKICAgICAg
-ICAgVkVSSUZZX1BFUk1JU1NJT04oT1BUX1BfVExTX1BBUk1TKTsKICAgICAgICAgb3B0aW9ucy0+
-cmVuZWdvdGlhdGVfcGFja2V0cyA9IHBvc2l0aXZlX2F0b2kocFsxXSk7CiAgICAgfQotICAgIGVs
-c2UgaWYgKHN0cmVxKHBbMF0sICJyZW5lZy1zZWMiKSAmJiBwWzFdICYmICFwWzJdKQorICAgIGVs
-c2UgaWYgKHN0cmVxKHBbMF0sICJyZW5lZy1zZWMiKSAmJiBwWzFdICYmICFwWzNdKQogICAgIHsK
-ICAgICAgICAgVkVSSUZZX1BFUk1JU1NJT04oT1BUX1BfVExTX1BBUk1TKTsKICAgICAgICAgb3B0
-aW9ucy0+cmVuZWdvdGlhdGVfc2Vjb25kcyA9IHBvc2l0aXZlX2F0b2kocFsxXSk7CisgICAgICAg
-IGlmIChwWzJdKQorICAgICAgICB7CisgICAgICAgICAgICBvcHRpb25zLT5yZW5lZ290aWF0ZV9z
-ZWNvbmRzX3JhbmRvbSA9IHBvc2l0aXZlX2F0b2kocFsyXSk7CisgICAgICAgIH0KICAgICB9CiAg
-ICAgZWxzZSBpZiAoc3RyZXEocFswXSwgImhhbmQtd2luZG93IikgJiYgcFsxXSAmJiAhcFsyXSkK
-ICAgICB7CmRpZmYgLU5hdXIgb3BlbnZwbi0yLjQuMS5vcmlnL3NyYy9vcGVudnBuL29wdGlvbnMu
-aCBvcGVudnBuLTIuNC4xL3NyYy9vcGVudnBuL29wdGlvbnMuaAotLS0gb3BlbnZwbi0yLjQuMS5v
-cmlnL3NyYy9vcGVudnBuL29wdGlvbnMuaAkyMDE3LTAzLTIyIDE2OjM0OjI0LjAwMDAwMDAwMCAr
-MDEwMAorKysgb3BlbnZwbi0yLjQuMS9zcmMvb3BlbnZwbi9vcHRpb25zLmgJMjAxNy0wMy0yOSAx
-MDoyMDoyNy4wMDAwMDAwMDAgKzAyMDAKQEAgLTU0NSw2ICs1NDUsNyBAQAogICAgIGludCByZW5l
-Z290aWF0ZV9ieXRlczsKICAgICBpbnQgcmVuZWdvdGlhdGVfcGFja2V0czsKICAgICBpbnQgcmVu
-ZWdvdGlhdGVfc2Vjb25kczsKKyAgICBpbnQgcmVuZWdvdGlhdGVfc2Vjb25kc19yYW5kb207CiAK
-ICAgICAvKiBEYXRhIGNoYW5uZWwga2V5IGhhbmRzaGFrZSBtdXN0IGZpbmFsaXplCiAgICAgICog
-d2l0aGluIG4gc2Vjb25kcyBvZiBoYW5kc2hha2UgaW5pdGlhdGlvbi4gKi8KZGlmZiAtTmF1ciBv
-cGVudnBuLTIuNC4xLm9yaWcvc3JjL29wZW52cG4vc3NsLmMgb3BlbnZwbi0yLjQuMS9zcmMvb3Bl
-bnZwbi9zc2wuYwotLS0gb3BlbnZwbi0yLjQuMS5vcmlnL3NyYy9vcGVudnBuL3NzbC5jCTIwMTct
-MDMtMjIgMTY6MzQ6MjQuMDAwMDAwMDAwICswMTAwCisrKyBvcGVudnBuLTIuNC4xL3NyYy9vcGVu
-dnBuL3NzbC5jCTIwMTctMDMtMjkgMTA6MjA6MjcuMDAwMDAwMDAwICswMjAwCkBAIC0yNzE5LDgg
-KzI3MTksOCBAQAogICAgICAgICAgICAgfHwgKHBhY2tldF9pZF9jbG9zZV90b193cmFwcGluZygm
-a3MtPmNyeXB0b19vcHRpb25zLnBhY2tldF9pZC5zZW5kKSkpKQogICAgIHsKICAgICAgICAgbXNn
-KERfVExTX0RFQlVHX0xPVywKLSAgICAgICAgICAgICJUTFM6IHNvZnQgcmVzZXQgc2VjPSVkIGJ5
-dGVzPSIgY291bnRlcl9mb3JtYXQgIi8lZCBwa3RzPSIgY291bnRlcl9mb3JtYXQgIi8lZCIsCi0g
-ICAgICAgICAgICAoaW50KShrcy0+ZXN0YWJsaXNoZWQgKyBzZXNzaW9uLT5vcHQtPnJlbmVnb3Rp
-YXRlX3NlY29uZHMgLSBub3cpLAorICAgICAgICAgICAgIlRMUzogc29mdCByZXNldCBzZWM9JWQv
-JWQgYnl0ZXM9IiBjb3VudGVyX2Zvcm1hdCAiLyVkIHBrdHM9IiBjb3VudGVyX2Zvcm1hdCAiLyVk
-IiwKKyAgICAgICAgICAgIChpbnQpKG5vdyAtIGtzLT5lc3RhYmxpc2hlZCksIChpbnQpc2Vzc2lv
-bi0+b3B0LT5yZW5lZ290aWF0ZV9zZWNvbmRzLAogICAgICAgICAgICAga3MtPm5fYnl0ZXMsIHNl
-c3Npb24tPm9wdC0+cmVuZWdvdGlhdGVfYnl0ZXMsCiAgICAgICAgICAgICBrcy0+bl9wYWNrZXRz
-LCBzZXNzaW9uLT5vcHQtPnJlbmVnb3RpYXRlX3BhY2tldHMpOwogICAgICAgICBrZXlfc3RhdGVf
-c29mdF9yZXNldChzZXNzaW9uKTsK
-------=_20170330143830_32338--
-
-
+Thomas
 
