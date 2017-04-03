@@ -1,17 +1,18 @@
+References: <323226c5-b097-9d1c-5d43-0790cfa1ccfb@...277...>
+	<1b07213d-4844-d629-195e-3211735b854c@...277...>
+	<20170403201504.GA93896@...1296...>
+	<9cdcac22-40bb-0ebf-c21f-a8b96f55a5d2@...277...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <eb2af641-73a0-1395-8196-f8ce00237c87@...2080...>
+Date: Mon, 3 Apr 2017 23:21:05 +0200
 MIME-Version: 1.0
-In-Reply-To: <b0dbe975-53c0-65e0-27f3-788c3156dc11@...2080...>
-References: <61a238ea-3a52-da19-9a21-a127540e2b5e@...515...>
-	<CAFHpkQG3GOm-GKj24pccyn84pZaA=KsvMgfqYLVjs9DxEo6Y5w@...278...>
-	<0a77ede7-0374-ed7a-a10e-20d0ac9e31b9@...2080...>
-	<95c70c5e-22ac-81ab-0fca-b9195f426f7a@...1856...>
-	<a0821983-407a-dd9f-dbac-47f94a18c4dd@...515...>
-	<ea1e3d78-2534-e918-5b46-ac510822415d@...1147...>
-	<b0dbe975-53c0-65e0-27f3-788c3156dc11@...2080...>
-From: Selva Nair <selva.nair@...277...>
-Date: Mon, 3 Apr 2017 17:14:58 -0400
-Message-ID: <CAKuzo_j1hHgnDuFjTt4jYZg5q1QL5U15=iiLsYT-Uao++sYACQ@...278...>
-Content-Type: multipart/alternative; boundary=001a1149d300041bec054c49a80a
-Subject: Re: [Openvpn-devel] Upgrading EasyRSA 2's defaults
+In-Reply-To: <9cdcac22-40bb-0ebf-c21f-a8b96f55a5d2@...277...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature";
+	boundary="CjIMxq2hKrxVtk4ohdgWlMuCVISJE5xIF"
+Subject: Re: [Openvpn-devel] gentoo build inconsistency with openssl in
+ openvpn using elliptic curve cert
+Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,138 +21,89 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: debbie10t <debbie10t@...277...>, Gert Doering <gert@...1296...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---001a1149d300041bec054c49a80a
-Content-Type: text/plain; charset="UTF-8"
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--CjIMxq2hKrxVtk4ohdgWlMuCVISJE5xIF
+Content-Type: multipart/mixed; boundary="1H0eDE309dkSX6hvbIvOgEMpXVQi5Omxt";
+	protected-headers="v1"
+From: David Sommerseth <openvpn@...2080...>
+Reply-To: openvpn-devel@lists.sourceforge.net
+To: debbie10t <debbie10t@...277...>, Gert Doering <gert@...1296...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Message-ID: <eb2af641-73a0-1395-8196-f8ce00237c87@...2080...>
+Subject: Re: [Openvpn-devel] gentoo build inconsistency with openssl in
+	openvpn using elliptic curve cert
+References: <323226c5-b097-9d1c-5d43-0790cfa1ccfb@...277...>
+	<1b07213d-4844-d629-195e-3211735b854c@...277...>
+	<20170403201504.GA93896@...1296...>
+	<9cdcac22-40bb-0ebf-c21f-a8b96f55a5d2@...277...>
+In-Reply-To: <9cdcac22-40bb-0ebf-c21f-a8b96f55a5d2@...277...>
+
+--1H0eDE309dkSX6hvbIvOgEMpXVQi5Omxt
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Apr 3, 2017 at 4:43 PM, David Sommerseth <
-openvpn@...2080...> wrote:
+On 03/04/17 22:37, debbie10t wrote:
+>=20
+> Something to do with Licences:
+> #gentoo
+> <me> out of curiosity .. i presume gentoo intend to include elliptic=20
+> curve algos in openssl at some time ?
+> <iamben> they are included if you disable the bindist flag
+> <iamben> USE=3Dbindist disables them, so that you can legally redistribut=
+e=20
+> your package as built
+> <iamben> those algorithms are (possibly) patent-encumbered
 
-> On 03/04/17 16:12, Jan Just Keijser wrote:
-> > Hi Samuli,
-> >
-> > On 03/04/17 15:53, Samuli Sepp=C3=A4nen wrote:
-> >> On 02/04/2017 10:57, Steffan Karger wrote:
->
+Huh!?  Fedora and RHEL are usually very much weary in regards to such
+patents.  And they've distributed openssl-1.0.1 for quite some time now,
+with EC (backported?) ... but, I do see that at least the Fedora
+packages does a lot of funky stuff in regards to EC [1]
 
-snip..
+But there are some patent concerns, according to Wikipedia:
+<https://en.wikipedia.org/wiki/ECC_patents>
 
 
-> >>> DSA is _not_ a preferred choice.  The original 1024-bit DSA is too we=
-ak
-> >>> nowadays, and the 'larger' DSA variants are not even close to the wide
-> >>> support that RSA has.
-> >>>
-> >>> -Steffan
-> >>>
-> >> Hi,
-> >>
-> >> I've issue a pull request here and review would be appreciated:
-> >>
-> >> <https://github.com/OpenVPN/easy-rsa-old/pull/1>
-> >>
-> >> I tested these changes on Debian 8 which has OpenSSL-1.0.1. Key size w=
-as
-> >> set to 4096-bits and signature algorithm to SHA256WithRSAEncryption.
-> >>
-> >> The only real issue was DH parameter generation: it took ~25 minutes on
-> >> my Intel i5 laptop. Is that acceptable default behavior?
-> >>
-> > what kind of i5 is this? on my i7-4810 it took 5 minutes. Can you give
-> the full CPUID string (from /proc/cpuinfo) ?  then I can
-> > guestimate whether the 25 minutes is realistic for slower hardware.
->
-> I've run a a couple of "quick" tests ... on a two different laptops
->
-> --- test 1 ----------------------------------------------------------
-> $ time openssl gendh -out test 4096
-> [...snip...]
->
-> real    35m40.098s
-> user    35m38.922s
-> sys     0m0.367s
-> $ cat /proc/cpuinfo  | grep model\ name | uniq -c
->       4 model name      : Intel(R) Core(TM) i5-6200U CPU @ 2.30GHz
->
+[1] OpenSSL 1.1.0:
+<http://pkgs.fedoraproject.org/cgit/rpms/openssl.git/tree/>
+    OpenSSL 1.0.2:
+<http://pkgs.fedoraproject.org/cgit/rpms/openssl.git/tree/?h=3Df25>
 
-4096 bit "strong" prime is indeed an intensive computation.. Is using
--dsaparam  option not secure enough?
 
-openssl dhparam -dsaparam -out test 4096
+--=20
+kind regards,
 
-is 15 seconds vs forever without it on my ancient desktop.
+David Sommerseth
+OpenVPN Technologies, Inc
 
-Selva
 
---001a1149d300041bec054c49a80a
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr"><br><div class=3D"gmail_extra"><br><div class=3D"gmail_quo=
-te">On Mon, Apr 3, 2017 at 4:43 PM, David Sommerseth <span dir=3D"ltr">&lt;=
-<a href=3D"mailto:openvpn@...2080..." target=3D"_blank">openvpn@...2080...<=
-/a>&gt;</span> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:=
-0px 0px 0px 0.8ex;border-left-width:1px;border-left-color:rgb(204,204,204);=
-border-left-style:solid;padding-left:1ex">On 03/04/17 16:12, Jan Just Keijs=
-er wrote:<br>
-&gt; Hi Samuli,<br>
-&gt;<br>
-&gt; On 03/04/17 15:53, Samuli Sepp=C3=A4nen wrote:<br>
-&gt;&gt; On 02/04/2017 10:57, Steffan Karger wrote:<br></blockquote><div><b=
-r></div><div>snip..</div><div>=C2=A0</div><blockquote class=3D"gmail_quote"=
- style=3D"margin:0px 0px 0px 0.8ex;border-left-width:1px;border-left-color:=
-rgb(204,204,204);border-left-style:solid;padding-left:1ex">
-&gt;&gt;&gt; DSA is _not_ a preferred choice.=C2=A0 The original 1024-bit D=
-SA is too weak<br>
-&gt;&gt;&gt; nowadays, and the &#39;larger&#39; DSA variants are not even c=
-lose to the wide<br>
-&gt;&gt;&gt; support that RSA has.<br>
-&gt;&gt;&gt;<br>
-&gt;&gt;&gt; -Steffan<br>
-&gt;&gt;&gt;<br>
-&gt;&gt; Hi,<br>
-&gt;&gt;<br>
-&gt;&gt; I&#39;ve issue a pull request here and review would be appreciated=
-:<br>
-&gt;&gt;<br>
-&gt;&gt; &lt;<a href=3D"https://github.com/OpenVPN/easy-rsa-old/pull/1" rel=
-=3D"noreferrer" target=3D"_blank">https://github.com/OpenVPN/<wbr>easy-rsa-=
-old/pull/1</a>&gt;<br>
-&gt;&gt;<br>
-&gt;&gt; I tested these changes on Debian 8 which has OpenSSL-1.0.1. Key si=
-ze was<br>
-&gt;&gt; set to 4096-bits and signature algorithm to SHA256WithRSAEncryptio=
-n.<br>
-&gt;&gt;<br>
-&gt;&gt; The only real issue was DH parameter generation: it took ~25 minut=
-es on<br>
-&gt;&gt; my Intel i5 laptop. Is that acceptable default behavior?<br>
-&gt;&gt;<br>
-&gt; what kind of i5 is this? on my i7-4810 it took 5 minutes. Can you give=
- the full CPUID string (from /proc/cpuinfo) ?=C2=A0 then I can<br>
-&gt; guestimate whether the 25 minutes is realistic for slower hardware.<br>
-<br>
-I&#39;ve run a a couple of &quot;quick&quot; tests ... on a two different l=
-aptops<br>
-<br>
---- test 1 ------------------------------<wbr>----------------------------<=
-br>
-$ time openssl gendh -out test 4096<br>
-[...snip...]<br>
-<br>
-real=C2=A0 =C2=A0 35m40.098s<br>
-user=C2=A0 =C2=A0 35m38.922s<br>
-sys=C2=A0 =C2=A0 =C2=A00m0.367s<br>
-$ cat /proc/cpuinfo=C2=A0 | grep model\ name | uniq -c<br>
-=C2=A0 =C2=A0 =C2=A0 4 model name=C2=A0 =C2=A0 =C2=A0 : Intel(R) Core(TM) i=
-5-6200U CPU @ 2.30GHz<br></blockquote><div><br></div><div>4096 bit &quot;st=
-rong&quot; prime is indeed an intensive computation.. Is using -dsaparam =
-=C2=A0option not secure enough?</div><div><br></div><div>openssl dhparam -d=
-saparam -out test 4096</div><div><br></div><div>is 15 seconds vs forever wi=
-thout it on my ancient desktop.</div><div><br></div><div>Selva</div></div><=
-/div></div>
+--1H0eDE309dkSX6hvbIvOgEMpXVQi5Omxt--
 
---001a1149d300041bec054c49a80a--
+--CjIMxq2hKrxVtk4ohdgWlMuCVISJE5xIF
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBCAAGBQJY4rzCAAoJEIbPlEyWcf3yLUMQALqRhdjhTSba3NvXbyH1Rd9A
+n7T1lxQA6Vgqj9KRMeJQATFbj0KEhbJZk3AayiJy84rCv/PokpKG0qqdWFAof3EZ
+yc/la++oVfXe0VTDaSBQ0QVrvxL5GQJIK2dT2xpr3NoNlg8VNi5CQGp3QGfozbE7
+y4aeqiwDadJhQov2Z2jVe6PkgoaaxGUHFP2SXTk/wsKLWuMNJu7MIr3lVD1Jvy7D
+FiK8qf4PM+Ew15tplu+KB1XG1JbPVGjDFhCedzoDjfTz0JVmWQ1P9BAXK+JKdMnM
+0hkFQrpzUHQ/5ea5G2AhCQshX7C2r0+2wL72qc9tu9SoFYa6eA8oxEYZUqggGw9T
+LC7UgQm7dQOptx8zLPbCfnYCaI6xlqzsS9nEX+VmYcJh3e2rOW+1DAHDOe0TVI0A
+XSjEq0SyI6LILyyeB/UTUL0IPZ6KoGzYo3CBAlmwhxQ3wPiB2qysfYacaJ/0RC7A
+8qE5RkvW7UseZzSJEwKCN745Lc9uiOoaoP7KzwKgrTN7R8ZPHk9TaHitkjG1hMR6
+I5EYXjrNkQDr01yviK86uxAoHE0BvyQGuUpRa4uJZ5FOjhDIy+XwOOuRscK3brnO
+3ux3O7tsH/wcZ5EHEStzqfdPfJa5f+yDADRInjHRu9GUhlbGBK2mqI2zrsE+7+6a
+vBUX1ZER6+WhUVlerkI4
+=NbKr
+-----END PGP SIGNATURE-----
+
+--CjIMxq2hKrxVtk4ohdgWlMuCVISJE5xIF--
 
