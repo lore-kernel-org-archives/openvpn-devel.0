@@ -1,14 +1,11 @@
-Date: Sun, 2 Apr 2017 11:17:17 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20170402091717.GS93896@...1296...>
-References: <323226c5-b097-9d1c-5d43-0790cfa1ccfb@...277...>
+Message-ID: <b6bac00d6d7260eea944814b0c995806.squirrel@...2257...>
+In-Reply-To: <ee5a8207241568cedcccc4f7f2ea5bc8.squirrel@...2257...>
+References: <ee5a8207241568cedcccc4f7f2ea5bc8.squirrel@...2257...>
+Date: Mon, 3 Apr 2017 10:20:41 +0200
+From: "Simon Matter" <simon.matter@...2249...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="MWrNmmo+n+ez9Z40"
-Content-Disposition: inline
-In-Reply-To: <323226c5-b097-9d1c-5d43-0790cfa1ccfb@...277...>
-Subject: Re: [Openvpn-devel] gentoo build inconsistency with openssl in
- openvpn using elliptic curve cert
+Subject: Re: [Openvpn-devel] [PATCH] Add per session pseudo-random component
+ to --reneg-sec intervals
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,77 +14,63 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: debbie10t <debbie10t@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-
---MWrNmmo+n+ez9Z40
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+To: Simon Matter <simon.matter@...2249...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
+> Hi,
+>
+> Initially I've created this RFE but have been told to send it to
+> the devel list instead:
+>
+> https://community.openvpn.net/openvpn/ticket/865
+>
+> Unfortunately I'm not a developer and have never used git so please bear
+> with me as I send a classic patch to the list.
+>
+> As suggested by user "syzzer" I also tried to improve the patch and here
+> it is:
+>
+> -------%<---------------------------------------------------------------
+> While we were suffering from the "TLS Renegotiation Slowdown" bug here
+> https://community.openvpn.net/openvpn/ticket/854 we realized that there is
+> still room for improvement in our use case.
+>
+> It appears that TLS renegotiation is getting more and more expensive in
+> terms of CPU cycles with recent changes for more security. To make things
+> worse, we realized that most renegotiation procedures took place at almost
+> the same time and increased the CPU load too much during these periods.
+> That's especially true on large, multi-instance openvpn setups.
+>
+> I've created attached patch to add a per session pseudo-random component
+> to
+> the --reneg-sec intervals so that renegotiation is evenly spread over
+> time.
+> It is configured by simply adding a second value to --reneg-sec as
+> described
+> in the --help text:
+>
+> --reneg-sec n [r] : Renegotiate data chan. key after n seconds
+> default=3D3600)
+>                     and if r is specified, add a per session pseudo-random
+>                     component in the range of 1 ... r to n (default=3D0).
+>
+> Note that the patch also slightly changes the log output to show the sec
+> value
+> in the same way as the bytes/pkts values:
+>
+> TLS: soft reset sec=3D3084/3084 bytes=3D279897/-1 pkts=3D1370/0
+> -------%<---------------------------------------------------------------
+>
+>
+> The patch is tested and seems to work well in my environment. As always,
+> comments are very welcome.
+>
+> Would be nice to have this patch accepted and included in OpenVPN 2.4.2.
 
-On Sun, Apr 02, 2017 at 12:57:41AM +0100, debbie10t wrote:
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->=20
-> 1. BROKEN METHOD
->     *************
-[..]
-> me@...2259... ~/openvpn $ ldd -v 2.4/src/openvpn/openvpn
-[..]
-> 	libcrypto.so.1.0.0 =3D> /usr/lib64/libcrypto.so.1.0.0 (0x00007f44f2c3600=
-0)
-> 	libssl.so.1.0.0 =3D> /usr/lib64/libssl.so.1.0.0 (0x00007f44f29cc000)
-[..]
+Any comments on this patch? Would be nice to get some feedback :)
 
+Simon
 
-> 2. WORKING METHOD
->     **************
-[..]
-> me@...2259... ~/openvpn/btest/generic $ ldd -v=20
-> image-native/openvpn/sbin/openvpn
-[..]
-> 	libssl.so.1.0.0 =3D>=20
-> /home/me/openvpn/btest/generic/image-native/openvpn/lib/libssl.so.1.0.0=20
-> (0x00007f5832464000)
-> 	libcrypto.so.1.0.0 =3D>=20
-> /home/me/openvpn/btest/generic/image-native/openvpn/lib/libcrypto.so.1.0.=
-0=20
-> (0x00007f5832009000)
-
-
-This translates to "if you use the openssl library that you built yourself,
-EC works, if you use the system library, it doesn't".
-
-Now *why* this is so, I can't say, but filing a bug with the gentoo openssl
-port might be a reasonable starting point...
-
-gert
-
-
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---MWrNmmo+n+ez9Z40
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJY4MGdAAoJEB2Cnv7KVigSMGcL/RnEj63UYq8mWBiScvp+FK98
-WwckugFlNJVCiu1B99VWsu1IuOcHa3D0RBzH6wVnh0hjsTClPhWj3usaYEQPGj7B
-oCMgB7Bj81dSOzkqQWqkhmimQ6XD3jSzmZX0Uyt0cPuUfwOEKOhA8QMQFXvSp2JH
-P3jAh/PS/3pdjoN6WPerUjzxpAPefiQDnR77yLpOPTlY5smdDywfAMpWOBaZ1MXU
-DyYqT8O78rrSCS2me7LXoTZxicDzyDT+1j5BxLfSrOgUMHf2FRX8qbW+LiQlzQ78
-ORum4tZ3GU2lzrr02dh+eQrPl9Ieqs53B6OJcBulvHXvFMYB+JvDXwx7xhLNMm6b
-NdtoptKc0H4fXmYI59PgIGKydgMcBqynrit0uxngmI25R2fyKtTk7t/0+Ne6STaM
-p9tc0m7hWPn4UaO4m3pIzwC4EOwjKGsbrGIyTEARzJhMdSQMJ3v5fIZsfESVg7hk
-8YnzmTZlfBkzhqWQRHrpwTY+8PErbvl7E82DsmHJpQ==
-=tosh
------END PGP SIGNATURE-----
-
---MWrNmmo+n+ez9Z40--
 
