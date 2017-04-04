@@ -1,15 +1,19 @@
-References: <ee5a8207241568cedcccc4f7f2ea5bc8.squirrel@...2257...>
-	<b6bac00d6d7260eea944814b0c995806.squirrel@...2257...>
-	<53a21cf3f4e04fcf5d6b9798e04be3ce.squirrel@...2257...>
-	<20170404064534.GC93896@...1296...>
-	<6b3b8a029cd8761642ac3f8174238aa2.squirrel@...2260...>
-From: debbie10t <debbie10t@...277...>
-Message-ID: <8137f1e4-306c-a96b-b3c5-488cc4f08383@...277...>
-Date: Tue, 4 Apr 2017 12:08:09 +0100
 MIME-Version: 1.0
-In-Reply-To: <6b3b8a029cd8761642ac3f8174238aa2.squirrel@...2260...>
-Subject: Re: [Openvpn-devel] [PATCH] Add per session pseudo-random component
- to --reneg-sec intervals
+In-Reply-To: <CAA1AbxKDk40-RF68g-OadXtQxToH3oZ8C5B7Q7h27E1BEu-Opg@...278...>
+References: <61a238ea-3a52-da19-9a21-a127540e2b5e@...515...>
+	<CAFHpkQG3GOm-GKj24pccyn84pZaA=KsvMgfqYLVjs9DxEo6Y5w@...278...>
+	<0a77ede7-0374-ed7a-a10e-20d0ac9e31b9@...2080...>
+	<95c70c5e-22ac-81ab-0fca-b9195f426f7a@...1856...>
+	<a0821983-407a-dd9f-dbac-47f94a18c4dd@...515...>
+	<ea1e3d78-2534-e918-5b46-ac510822415d@...1147...>
+	<b0dbe975-53c0-65e0-27f3-788c3156dc11@...2080...>
+	<CAKuzo_j1hHgnDuFjTt4jYZg5q1QL5U15=iiLsYT-Uao++sYACQ@...278...>
+	<CAA1AbxKDk40-RF68g-OadXtQxToH3oZ8C5B7Q7h27E1BEu-Opg@...278...>
+From: Selva Nair <selva.nair@...277...>
+Date: Tue, 4 Apr 2017 10:43:18 -0400
+Message-ID: <CAKuzo_hFhDFK5F-w6fZ22wPpMN7caXLSDBwYevTzmmy2gNHTxA@...278...>
+Content-Type: multipart/alternative; boundary=001a1141b2ec2a1476054c584d7a
+Subject: Re: [Openvpn-devel] Upgrading EasyRSA 2's defaults
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,29 +22,54 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+To: Steffan Karger <steffan@...1856...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
+--001a1141b2ec2a1476054c584d7a
+Content-Type: text/plain; charset=UTF-8
 
+Hi,
 
-On 04/04/17 08:30, Simon Matter wrote:
->> Hi,
->>
->> On Tue, Apr 04, 2017 at 08:29:49AM +0200, Simon Matter wrote:
->>> Interesting to see that there is zero interest in this patch here.
->>
->> This is a misinterpretation.
->>
+On Tue, Apr 4, 2017 at 3:48 AM, Steffan Karger <steffan@...1856...> wrote:
+
+> From the openssl man page:
 >
-> Hi Gert,
+> "Beware that with such DSA-style DH parameters, a fresh DH key should
+> be created for each use to avoid small-subgroup attacks that may be
+> possible otherwise."
 >
-> Thanks for the explanation, I'll be patient then :)
+> This means that if for some reason a non-ephemeral diffie-hellman
+> cipher suite is selected, you are at risk of these attacks.
+>
 
-As a non-dev I can not help with implementing this.
-But for the record: I think it would be an excellent
-edition to openvpn as currently per peer --reneg-*
-in --mode server is not possible.
+Thanks for the clarification.
 
-Regards
+Selva
+
+--001a1141b2ec2a1476054c584d7a
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div class=3D"gmail_extra">Hi,</div><div class=3D"gmail_ex=
+tra"><br><div class=3D"gmail_quote">On Tue, Apr 4, 2017 at 3:48 AM, Steffan=
+ Karger <span dir=3D"ltr">&lt;<a href=3D"mailto:steffan@...1856..." target=
+=3D"_blank">steffan@...1856...</a>&gt;</span> wrote:<br><blockquote class=
+=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left-width:1px;bo=
+rder-left-color:rgb(204,204,204);border-left-style:solid;padding-left:1ex">=
+<div id=3D"m_-6120193760695807519gmail-:3jo" class=3D"m_-612019376069580751=
+9gmail-a3s m_-6120193760695807519gmail-aXjCH m_-6120193760695807519gmail-m1=
+5b37efee0ab5803">From the openssl man page:<br>
+<br>
+&quot;Beware that with such DSA-style DH parameters, a fresh DH key should<=
+br>
+be created for each use to avoid small-subgroup attacks that may be<br>
+possible otherwise.&quot;<br>
+<br>
+This means that if for some reason a non-ephemeral diffie-hellman<br>
+cipher suite is selected, you are at risk of these attacks.<br></div></bloc=
+kquote></div><br>Thanks for the clarification.</div><div class=3D"gmail_ext=
+ra"><div class=3D"gmail_extra"><br></div></div><div class=3D"gmail_extra">S=
+elva</div></div>
+
+--001a1141b2ec2a1476054c584d7a--
 
