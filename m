@@ -1,18 +1,12 @@
-References: <323226c5-b097-9d1c-5d43-0790cfa1ccfb@...277...>
-	<1b07213d-4844-d629-195e-3211735b854c@...277...>
-	<20170403201504.GA93896@...1296...>
-	<9cdcac22-40bb-0ebf-c21f-a8b96f55a5d2@...277...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <eb2af641-73a0-1395-8196-f8ce00237c87@...2080...>
-Date: Mon, 3 Apr 2017 23:21:05 +0200
+Message-ID: <53a21cf3f4e04fcf5d6b9798e04be3ce.squirrel@...2257...>
+In-Reply-To: <b6bac00d6d7260eea944814b0c995806.squirrel@...2257...>
+References: <ee5a8207241568cedcccc4f7f2ea5bc8.squirrel@...2257...>
+	<b6bac00d6d7260eea944814b0c995806.squirrel@...2257...>
+Date: Tue, 4 Apr 2017 08:29:49 +0200
+From: "Simon Matter" <simon.matter@...2249...>
 MIME-Version: 1.0
-In-Reply-To: <9cdcac22-40bb-0ebf-c21f-a8b96f55a5d2@...277...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature";
-	boundary="CjIMxq2hKrxVtk4ohdgWlMuCVISJE5xIF"
-Subject: Re: [Openvpn-devel] gentoo build inconsistency with openssl in
- openvpn using elliptic curve cert
-Reply-To: openvpn-devel@lists.sourceforge.net
+Subject: Re: [Openvpn-devel] [PATCH] Add per session pseudo-random component
+ to --reneg-sec intervals
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,89 +15,95 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: debbie10t <debbie10t@...277...>, Gert Doering <gert@...1296...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---CjIMxq2hKrxVtk4ohdgWlMuCVISJE5xIF
-Content-Type: multipart/mixed; boundary="1H0eDE309dkSX6hvbIvOgEMpXVQi5Omxt";
-	protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-Reply-To: openvpn-devel@lists.sourceforge.net
-To: debbie10t <debbie10t@...277...>, Gert Doering <gert@...1296...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-Message-ID: <eb2af641-73a0-1395-8196-f8ce00237c87@...2080...>
-Subject: Re: [Openvpn-devel] gentoo build inconsistency with openssl in
-	openvpn using elliptic curve cert
-References: <323226c5-b097-9d1c-5d43-0790cfa1ccfb@...277...>
-	<1b07213d-4844-d629-195e-3211735b854c@...277...>
-	<20170403201504.GA93896@...1296...>
-	<9cdcac22-40bb-0ebf-c21f-a8b96f55a5d2@...277...>
-In-Reply-To: <9cdcac22-40bb-0ebf-c21f-a8b96f55a5d2@...277...>
-
---1H0eDE309dkSX6hvbIvOgEMpXVQi5Omxt
-Content-Type: text/plain; charset="windows-1252"
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
+To: openvpn-devel@lists.sourceforge.net
 
-On 03/04/17 22:37, debbie10t wrote:
->=20
-> Something to do with Licences:
-> #gentoo
-> <me> out of curiosity .. i presume gentoo intend to include elliptic=20
-> curve algos in openssl at some time ?
-> <iamben> they are included if you disable the bindist flag
-> <iamben> USE=3Dbindist disables them, so that you can legally redistribut=
-e=20
-> your package as built
-> <iamben> those algorithms are (possibly) patent-encumbered
+Hi,
 
-Huh!?  Fedora and RHEL are usually very much weary in regards to such
-patents.  And they've distributed openssl-1.0.1 for quite some time now,
-with EC (backported?) ... but, I do see that at least the Fedora
-packages does a lot of funky stuff in regards to EC [1]
+>> Hi,
+>>
+>> Initially I've created this RFE but have been told to send it to
+>> the devel list instead:
+>>
+>> https://community.openvpn.net/openvpn/ticket/865
+>>
+>> Unfortunately I'm not a developer and have never used git so please bear
+>> with me as I send a classic patch to the list.
+>>
+>> As suggested by user "syzzer" I also tried to improve the patch and here
+>> it is:
+>>
+>> -------%<---------------------------------------------------------------
+>> While we were suffering from the "TLS Renegotiation Slowdown" bug here
+>> https://community.openvpn.net/openvpn/ticket/854 we realized that there
+>> is
+>> still room for improvement in our use case.
+>>
+>> It appears that TLS renegotiation is getting more and more expensive in
+>> terms of CPU cycles with recent changes for more security. To make
+>> things
+>> worse, we realized that most renegotiation procedures took place at
+>> almost
+>> the same time and increased the CPU load too much during these periods.
+>> That's especially true on large, multi-instance openvpn setups.
+>>
+>> I've created attached patch to add a per session pseudo-random component
+>> to
+>> the --reneg-sec intervals so that renegotiation is evenly spread over
+>> time.
+>> It is configured by simply adding a second value to --reneg-sec as
+>> described
+>> in the --help text:
+>>
+>> --reneg-sec n [r] : Renegotiate data chan. key after n seconds
+>> default=3D3600)
+>>                     and if r is specified, add a per session
+>> pseudo-random
+>>                     component in the range of 1 ... r to n (default=3D0).
+>>
+>> Note that the patch also slightly changes the log output to show the sec
+>> value
+>> in the same way as the bytes/pkts values:
+>>
+>> TLS: soft reset sec=3D3084/3084 bytes=3D279897/-1 pkts=3D1370/0
+>> -------%<---------------------------------------------------------------
+>>
+>>
+>> The patch is tested and seems to work well in my environment. As always,
+>> comments are very welcome.
+>>
+>> Would be nice to have this patch accepted and included in OpenVPN 2.4.2.
+>
+> Any comments on this patch? Would be nice to get some feedback :)
+>
+> Simon
 
-But there are some patent concerns, according to Wikipedia:
-<https://en.wikipedia.org/wiki/ECC_patents>
+Interesting to see that there is zero interest in this patch here.
 
+I'm very sure a lot of people are suffering this issue without knowing it.
+On heavy loaded multi instance servers OpenVPN tends to lose packets every
+hour (with default reneg-sec settings).
 
-[1] OpenSSL 1.1.0:
-<http://pkgs.fedoraproject.org/cgit/rpms/openssl.git/tree/>
-    OpenSSL 1.0.2:
-<http://pkgs.fedoraproject.org/cgit/rpms/openssl.git/tree/?h=3Df25>
+That's only in a short period of time but still very annoying for things
+like VoIP over the VPN links.
 
+We only found this out after the problem became worse with the bug
+mentioned above introduced in OpenVPN 2.4.0. The problem has always been
+there but we only became aware of it with the 2.4.0 release.
 
---=20
-kind regards,
+I guess I'll change the patch then to work without any changes to the
+config. That way our binary builds are still compatible with the upstream
+version but still improve the issue mentioned above.
 
-David Sommerseth
-OpenVPN Technologies, Inc
+For those interested to see how the problem shows up, try this:
 
+Run "prettyping -i 0.1 <destination>" to different locations in different
+terminals and let it run for a longer time. You will easily see the hourly
+packet losses in the patterns. Prettyping is here
+https://raw.githubusercontent.com/denilsonsa/prettyping/master/prettyping
 
+Regards,
+Simon
 
---1H0eDE309dkSX6hvbIvOgEMpXVQi5Omxt--
-
---CjIMxq2hKrxVtk4ohdgWlMuCVISJE5xIF
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBCAAGBQJY4rzCAAoJEIbPlEyWcf3yLUMQALqRhdjhTSba3NvXbyH1Rd9A
-n7T1lxQA6Vgqj9KRMeJQATFbj0KEhbJZk3AayiJy84rCv/PokpKG0qqdWFAof3EZ
-yc/la++oVfXe0VTDaSBQ0QVrvxL5GQJIK2dT2xpr3NoNlg8VNi5CQGp3QGfozbE7
-y4aeqiwDadJhQov2Z2jVe6PkgoaaxGUHFP2SXTk/wsKLWuMNJu7MIr3lVD1Jvy7D
-FiK8qf4PM+Ew15tplu+KB1XG1JbPVGjDFhCedzoDjfTz0JVmWQ1P9BAXK+JKdMnM
-0hkFQrpzUHQ/5ea5G2AhCQshX7C2r0+2wL72qc9tu9SoFYa6eA8oxEYZUqggGw9T
-LC7UgQm7dQOptx8zLPbCfnYCaI6xlqzsS9nEX+VmYcJh3e2rOW+1DAHDOe0TVI0A
-XSjEq0SyI6LILyyeB/UTUL0IPZ6KoGzYo3CBAlmwhxQ3wPiB2qysfYacaJ/0RC7A
-8qE5RkvW7UseZzSJEwKCN745Lc9uiOoaoP7KzwKgrTN7R8ZPHk9TaHitkjG1hMR6
-I5EYXjrNkQDr01yviK86uxAoHE0BvyQGuUpRa4uJZ5FOjhDIy+XwOOuRscK3brnO
-3ux3O7tsH/wcZ5EHEStzqfdPfJa5f+yDADRInjHRu9GUhlbGBK2mqI2zrsE+7+6a
-vBUX1ZER6+WhUVlerkI4
-=NbKr
------END PGP SIGNATURE-----
-
---CjIMxq2hKrxVtk4ohdgWlMuCVISJE5xIF--
 
