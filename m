@@ -1,14 +1,17 @@
-Message-ID: <063244418e0b88138db5b490037cb7a4.squirrel@...2257...>
-In-Reply-To: <6b3b8a029cd8761642ac3f8174238aa2.squirrel@...2260...>
+Date: Wed, 5 Apr 2017 08:57:45 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20170405065745.GI93896@...1296...>
 References: <ee5a8207241568cedcccc4f7f2ea5bc8.squirrel@...2257...>
 	<b6bac00d6d7260eea944814b0c995806.squirrel@...2257...>
 	<53a21cf3f4e04fcf5d6b9798e04be3ce.squirrel@...2257...>
 	<20170404064534.GC93896@...1296...>
 	<6b3b8a029cd8761642ac3f8174238aa2.squirrel@...2260...>
-Date: Wed, 5 Apr 2017 06:34:34 +0200
-From: "Simon Matter" <simon.matter@...2249...>
+	<063244418e0b88138db5b490037cb7a4.squirrel@...2257...>
 MIME-Version: 1.0
-Content-Type: multipart/mixed;boundary="----=_20170405063434_69081"
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="nt+vFqn/aPO6zu0j"
+Content-Disposition: inline
+In-Reply-To: <063244418e0b88138db5b490037cb7a4.squirrel@...2257...>
 Subject: Re: [Openvpn-devel] [PATCH v2] Add per session pseudo-random
  component to --reneg-sec intervals
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -22,114 +25,50 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: Simon Matter <simon.matter@...2249...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-------=_20170405063434_69081
-Content-Type: text/plain; charset="iso-8859-1"
+--nt+vFqn/aPO6zu0j
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
->> Hi,
->>
->> On Tue, Apr 04, 2017 at 08:29:49AM +0200, Simon Matter wrote:
->>> Interesting to see that there is zero interest in this patch here.
->>
->> This is a misinterpretation.
->>
->
-> Hi Gert,
->
-> Thanks for the explanation, I'll be patient then :)
->
-> If it's preferred for the patch to keep it even simpler and compatible the
-> current configs, it could be broken down to something like this in init.c:
+Hi,
 
-I've attached v2 now which works without any config change:
+On Wed, Apr 05, 2017 at 06:34:34AM +0200, Simon Matter wrote:
+> I've attached v2 now which works without any config change:
+[..]
+> I prefer this version as it allows everybody to profit from it without
+> touching any config files.
 
---reneg-sec n
-    Renegotiate data channel key after n seconds (default=3D3600).
+I can see the reasoning, but 25% feels a bit on the high side :-) - so
+let the ratholing begin what the number should be.
 
-    Note that the effective value used here is a per session pseudo-
-    randomized 25% of n deducted from n.  With the default value  of
-    3600 this results in an effective per session value in the range
-    of 2701 ... 3600 seconds.
+Steffan, any views from the crypto side of things?
+
+gert
 
 
-I prefer this version as it allows everybody to profit from it without
-touching any config files.
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-Thanks,
-Simon=
+--nt+vFqn/aPO6zu0j
+Content-Type: application/pgp-signature; name="signature.asc"
 
-------=_20170405063434_69081
-Content-Type: application/octet-stream;
-	name="openvpn-2.4.1-reneg-sec_randomize.patch"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment;
-	filename="openvpn-2.4.1-reneg-sec_randomize.patch"
+-----BEGIN PGP SIGNATURE-----
 
-ZGlmZiAtTmF1ciBvcGVudnBuLTIuNC4xLm9yaWcvZG9jL29wZW52cG4uOCBvcGVudnBuLTIuNC4x
-L2RvYy9vcGVudnBuLjgKLS0tIG9wZW52cG4tMi40LjEub3JpZy9kb2Mvb3BlbnZwbi44CTIwMTct
-MDMtMjIgMTY6MzQ6MjEuMDAwMDAwMDAwICswMTAwCisrKyBvcGVudnBuLTIuNC4xL2RvYy9vcGVu
-dnBuLjgJMjAxNy0wNC0wNCAxNzo0MzoxOC4wMDAwMDAwMDAgKzAyMDAKQEAgLTM0LDcgKzM0LDcg
-QEAKIC5cIiAuZnQgLS0gbm9ybWFsIGZhY2UKIC5cIiAuaW4gK3wte259IC0tIGluZGVudAogLlwi
-Ci0uVEggb3BlbnZwbiA4ICIyNSBBdWd1c3QgMjAxNiIKKy5USCBvcGVudnBuIDggIjA0IEFwcmls
-IDIwMTciCiAuXCIqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioq
-KioqKioqKioqKioKIC5TSCBOQU1FCiBvcGVudnBuIFwtIHNlY3VyZSBJUCB0dW5uZWwgZGFlbW9u
-LgpAQCAtNDkyNCw2ICs0OTI0LDE1IEBACiAuQiBuCiBzZWNvbmRzIChkZWZhdWx0PTM2MDApLgog
-CitOb3RlIHRoYXQgdGhlIGVmZmVjdGl2ZSB2YWx1ZSB1c2VkIGhlcmUgaXMgYSBwZXIgc2Vzc2lv
-biBwc2V1ZG8tcmFuZG9taXplZAorLkIgMjUlCitvZgorLkIgbgorZGVkdWN0ZWQgZnJvbQorLkIg
-blxmUi4KK1dpdGggdGhlIGRlZmF1bHQgdmFsdWUgb2YgMzYwMCB0aGlzIHJlc3VsdHMgaW4gYW4g
-ZWZmZWN0aXZlIHBlciBzZXNzaW9uCit2YWx1ZSBpbiB0aGUgcmFuZ2Ugb2YgMjcwMSAuLi4gMzYw
-MCBzZWNvbmRzLgorCiBXaGVuIHVzaW5nIGR1YWwtZmFjdG9yIGF1dGhlbnRpY2F0aW9uLCBub3Rl
-IHRoYXQgdGhpcyBkZWZhdWx0IHZhbHVlIG1heQogY2F1c2UgdGhlIGVuZCB1c2VyIHRvIGJlIGNo
-YWxsZW5nZWQgdG8gcmVhdXRob3JpemUgb25jZSBwZXIgaG91ci4KIApkaWZmIC1OYXVyIG9wZW52
-cG4tMi40LjEub3JpZy9zcmMvb3BlbnZwbi9pbml0LmMgb3BlbnZwbi0yLjQuMS9zcmMvb3BlbnZw
-bi9pbml0LmMKLS0tIG9wZW52cG4tMi40LjEub3JpZy9zcmMvb3BlbnZwbi9pbml0LmMJMjAxNy0w
-My0yMiAxNjozNDoyNC4wMDAwMDAwMDAgKzAxMDAKKysrIG9wZW52cG4tMi40LjEvc3JjL29wZW52
-cG4vaW5pdC5jCTIwMTctMDQtMDQgMTc6NDM6MTguMDAwMDAwMDAwICswMjAwCkBAIC0yNTkxLDcg
-KzI1OTEsOCBAQAogICAgIHRvLnBhY2tldF90aW1lb3V0ID0gb3B0aW9ucy0+dGxzX3RpbWVvdXQ7
-CiAgICAgdG8ucmVuZWdvdGlhdGVfYnl0ZXMgPSBvcHRpb25zLT5yZW5lZ290aWF0ZV9ieXRlczsK
-ICAgICB0by5yZW5lZ290aWF0ZV9wYWNrZXRzID0gb3B0aW9ucy0+cmVuZWdvdGlhdGVfcGFja2V0
-czsKLSAgICB0by5yZW5lZ290aWF0ZV9zZWNvbmRzID0gb3B0aW9ucy0+cmVuZWdvdGlhdGVfc2Vj
-b25kczsKKyAgICB0by5yZW5lZ290aWF0ZV9zZWNvbmRzID0gb3B0aW9ucy0+cmVuZWdvdGlhdGVf
-c2Vjb25kcyAtCisgICAgICAgIChnZXRfcmFuZG9tKCkgJSBtYXhfaW50KG9wdGlvbnMtPnJlbmVn
-b3RpYXRlX3NlY29uZHMgLyAoMTAwIC8gMjUpLCAxKSk7CiAgICAgdG8uc2luZ2xlX3Nlc3Npb24g
-PSBvcHRpb25zLT5zaW5nbGVfc2Vzc2lvbjsKICAgICB0by5tb2RlID0gb3B0aW9ucy0+bW9kZTsK
-ICAgICB0by5wdWxsID0gb3B0aW9ucy0+cHVsbDsKZGlmZiAtTmF1ciBvcGVudnBuLTIuNC4xLm9y
-aWcvc3JjL29wZW52cG4vb3B0aW9ucy5jIG9wZW52cG4tMi40LjEvc3JjL29wZW52cG4vb3B0aW9u
-cy5jCi0tLSBvcGVudnBuLTIuNC4xLm9yaWcvc3JjL29wZW52cG4vb3B0aW9ucy5jCTIwMTctMDMt
-MjIgMTY6MzQ6MjQuMDAwMDAwMDAwICswMTAwCisrKyBvcGVudnBuLTIuNC4xL3NyYy9vcGVudnBu
-L29wdGlvbnMuYwkyMDE3LTA0LTA0IDE3OjQzOjE4LjAwMDAwMDAwMCArMDIwMApAQCAtNjA0LDYg
-KzYwNCwxMCBAQAogICAgICItLXJlbmVnLWJ5dGVzIG4gOiBSZW5lZ290aWF0ZSBkYXRhIGNoYW4u
-IGtleSBhZnRlciBuIGJ5dGVzIHNlbnQgYW5kIHJlY3ZkLlxuIgogICAgICItLXJlbmVnLXBrdHMg
-biAgOiBSZW5lZ290aWF0ZSBkYXRhIGNoYW4uIGtleSBhZnRlciBuIHBhY2tldHMgc2VudCBhbmQg
-cmVjdmQuXG4iCiAgICAgIi0tcmVuZWctc2VjIG4gICA6IFJlbmVnb3RpYXRlIGRhdGEgY2hhbi4g
-a2V5IGFmdGVyIG4gc2Vjb25kcyAoZGVmYXVsdD0lZCkuXG4iCisgICAgIiAgICAgICAgICAgICAg
-ICAgIFRoZSBlZmZlY3RpdmUgdmFsdWUgdXNlZCBoZXJlIGlzIGEgcGVyIHNlc3Npb25cbiIKKyAg
-ICAiICAgICAgICAgICAgICAgICAgcHNldWRvLXJhbmRvbWl6ZWQgMjUlJSBvZiBuIGRlZHVjdGVk
-IGZyb20gbi4gV2l0aCB0aGVcbiIKKyAgICAiICAgICAgICAgICAgICAgICAgZGVmYXVsdCB2YWx1
-ZSBvZiAzNjAwIHRoaXMgcmVzdWx0cyBpbiBhbiBlZmZlY3RpdmUgcGVyXG4iCisgICAgIiAgICAg
-ICAgICAgICAgICAgIHNlc3Npb24gdmFsdWUgaW4gdGhlIHJhbmdlIG9mIDI3MDEgLi4uIDM2MDAg
-c2Vjb25kcy5cbiIKICAgICAiLS1oYW5kLXdpbmRvdyBuIDogRGF0YSBjaGFubmVsIGtleSBleGNo
-YW5nZSBtdXN0IGZpbmFsaXplIHdpdGhpbiBuIHNlY29uZHNcbiIKICAgICAiICAgICAgICAgICAg
-ICAgICAgb2YgaGFuZHNoYWtlIGluaXRpYXRpb24gYnkgYW55IHBlZXIgKGRlZmF1bHQ9JWQpLlxu
-IgogICAgICItLXRyYW4td2luZG93IG4gOiBUcmFuc2l0aW9uIHdpbmRvdyAtLSBvbGQga2V5IGNh
-biBsaXZlIHRoaXMgbWFueSBzZWNvbmRzXG4iCmRpZmYgLU5hdXIgb3BlbnZwbi0yLjQuMS5vcmln
-L3NyYy9vcGVudnBuL3NzbC5jIG9wZW52cG4tMi40LjEvc3JjL29wZW52cG4vc3NsLmMKLS0tIG9w
-ZW52cG4tMi40LjEub3JpZy9zcmMvb3BlbnZwbi9zc2wuYwkyMDE3LTAzLTIyIDE2OjM0OjI0LjAw
-MDAwMDAwMCArMDEwMAorKysgb3BlbnZwbi0yLjQuMS9zcmMvb3BlbnZwbi9zc2wuYwkyMDE3LTA0
-LTA0IDE3OjQzOjE4LjAwMDAwMDAwMCArMDIwMApAQCAtMjcxOSw4ICsyNzE5LDggQEAKICAgICAg
-ICAgICAgIHx8IChwYWNrZXRfaWRfY2xvc2VfdG9fd3JhcHBpbmcoJmtzLT5jcnlwdG9fb3B0aW9u
-cy5wYWNrZXRfaWQuc2VuZCkpKSkKICAgICB7CiAgICAgICAgIG1zZyhEX1RMU19ERUJVR19MT1cs
-Ci0gICAgICAgICAgICAiVExTOiBzb2Z0IHJlc2V0IHNlYz0lZCBieXRlcz0iIGNvdW50ZXJfZm9y
-bWF0ICIvJWQgcGt0cz0iIGNvdW50ZXJfZm9ybWF0ICIvJWQiLAotICAgICAgICAgICAgKGludCko
-a3MtPmVzdGFibGlzaGVkICsgc2Vzc2lvbi0+b3B0LT5yZW5lZ290aWF0ZV9zZWNvbmRzIC0gbm93
-KSwKKyAgICAgICAgICAgICJUTFM6IHNvZnQgcmVzZXQgc2VjPSVkLyVkIGJ5dGVzPSIgY291bnRl
-cl9mb3JtYXQgIi8lZCBwa3RzPSIgY291bnRlcl9mb3JtYXQgIi8lZCIsCisgICAgICAgICAgICAo
-aW50KShub3cgLSBrcy0+ZXN0YWJsaXNoZWQpLCAoaW50KXNlc3Npb24tPm9wdC0+cmVuZWdvdGlh
-dGVfc2Vjb25kcywKICAgICAgICAgICAgIGtzLT5uX2J5dGVzLCBzZXNzaW9uLT5vcHQtPnJlbmVn
-b3RpYXRlX2J5dGVzLAogICAgICAgICAgICAga3MtPm5fcGFja2V0cywgc2Vzc2lvbi0+b3B0LT5y
-ZW5lZ290aWF0ZV9wYWNrZXRzKTsKICAgICAgICAga2V5X3N0YXRlX3NvZnRfcmVzZXQoc2Vzc2lv
-bik7Cg==
-------=_20170405063434_69081--
+iQGcBAEBAgAGBQJY5JVoAAoJEB2Cnv7KVigSQHYL/RJ+QXzQJ4zqg3kIsQ9eVUxi
+MM/iKs3C256wvIkXIonjhspYQiNBBni2UeFRb557NplD3aC6tI51QjB9gMwNiYYJ
+tOz9FL8hm8ZJirMrHrfzKQ59Yvifu6IORrvag0xYa4gTZ4WU0RWfV3bryWiqORyI
+DafclMTDCvW4tFRHh7hTMIsbeqiq8cZOB4aJ0SWqpMEHMkyuGawMR4Fe4jBxqdL9
+0OeLNeM4Izgmm1rdudFIJ3zPUGsvtNplkmLQZ/wCGXFbjB7Gsf+BnTZQrSQM0JpD
+6p/PtUR9VaUA1leZzUixzFvkdN6N2wJFfWTIeH6KhtHbmYCKb9ReT+ZtSTJDlzkT
+HneMFTT+PeeO1qA/rgq4zaTrwdmXgjOfdywLDWPVJ+uJbwSCKsmn9YYQzzxw7vlr
+xq3aKTEjiFbNK7Q3/odWY1IoFchFToXkLuwW7W/Yc+9jXeMRYX7nkS9JLZ3wuOLV
+dt5ltwTDCkvGR1RFpkg3kBFQW3NV/4IaQMZhKeM4Dw==
+=d9Xc
+-----END PGP SIGNATURE-----
 
-
+--nt+vFqn/aPO6zu0j--
 
