@@ -1,19 +1,18 @@
-From: Arne Schwabe <arne@...1227...>
 References: <ee5a8207241568cedcccc4f7f2ea5bc8.squirrel@...2257...>
 	<b6bac00d6d7260eea944814b0c995806.squirrel@...2257...>
 	<53a21cf3f4e04fcf5d6b9798e04be3ce.squirrel@...2257...>
 	<20170404064534.GC93896@...1296...>
 	<6b3b8a029cd8761642ac3f8174238aa2.squirrel@...2260...>
 	<063244418e0b88138db5b490037cb7a4.squirrel@...2257...>
-	<20170405065745.GI93896@...1296...>
-	<c923cbd7-6876-dfcf-513c-f8bbba21f421@...1435...>
-	<f4e7f2e8-5310-a982-ffb3-67c0f0abb3ec@...2080...>
-	<e22e11f96343e7507b1270a30b37225d.squirrel@...2260...>
-Message-ID: <85b77b9a-a206-5a73-39fc-bffae999a50c@...1227...>
-Date: Wed, 5 Apr 2017 18:15:43 +0200
+	<267890da-2186-dddb-d4c4-d6374da7e086@...277...>
+	<049b9d27-d6a4-41cf-9742-bed02b2cc39b@...2080...>
+	<18a96a72-4778-22b3-8a57-ce87d3f7060b@...2080...>
+	<11253b26-cb11-8b7a-02e0-d5b1ad89e199@...277...>
+From: debbie10t <debbie10t@...277...>
+Message-ID: <2465b076-35e8-6144-f1b8-085ad5a016f0@...277...>
+Date: Wed, 5 Apr 2017 17:51:47 +0100
 MIME-Version: 1.0
-In-Reply-To: <e22e11f96343e7507b1270a30b37225d.squirrel@...2260...>
-Content-Language: en-US
+In-Reply-To: <11253b26-cb11-8b7a-02e0-d5b1ad89e199@...277...>
 Subject: Re: [Openvpn-devel] [PATCH v2] Add per session pseudo-random
  component to --reneg-sec intervals
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -24,39 +23,59 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=windows-1252; format=flowed
 Content-Transfer-Encoding: 7bit
-To: Simon Matter <simon.matter@...2249...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
 
-would probably be a good idea to enable that.
 
-> As I understand it client and server have 60 min. by default. Whatever is
-> configured, the smaller value wins. That means, bad clients can set their
-> reneg-sec to very low values and trash the server on the other end. From
-> the server side this looks more or less like a DDOS.
+On 05/04/17 17:13, debbie10t wrote:
 >
-> In our environment we have set reneg-sec=0 on all clients because we want
-> the server to have control over it. That's fine because we have only
-> trusted clients. Making it pushable could be a solution to overwrite bad
-> settings in clients. A more radical solution was to just remove the option
-> on the client side.
-At its heart OpenVPN is still p2p instead of client of server, (Actually
-client is p2p mode). So removing a client setting removes it also for p2p.
+>
+> On 05/04/17 16:58, David Sommerseth wrote:
+>> On 05/04/17 17:53, David Sommerseth wrote:
+>>> On 05/04/17 16:42, debbie10t wrote:
+>>>>
+>
+>>>>
+>>>> A different approach could be like so:
+>>>>
+>>>> --reneg-sec 3600
+>>>> --reneg-sec-1sttime-rand 1|0 (The name here for detail)
+>>>
+>
+>>
+>> Oh, and in regards to the first-time/non-first-time .... if we decide
+>> for such flexibility, that can be a flag after the randomness.
+>>
+>> For example  --reneg-sec 3600 12 first-only
+>>
+>> I am far from convinced if that should be configurable or not.  But
+>> still, this approach is still far better than introducing new options.
+>>
+>
+> Ok - accept that new options is not preferred but ..
+>
+> I like the idea of "first-only" addition (which is more or less as I
+> proposed anyway) - And so, instead of having randomness in the reneg-sec
+> itself, it is only randomness in the first run, after that the expected
+> behaviour would be restored.  eg: --reneg-sec 3600
+>
+> To my mind (as a non programmer) this essentially boils down to
+> setting the first --reneg-sec timer to something between 1 and
+> 3600 (default). This affords a much larger window for the scattering
+> of clients and further behaviour is "as expected now".
+>
+> and it looks very non-instrusive to me ..
+>
 
-I would also say have a 5% random component by default (makes 3 minutes
-for the 1h default) but let the user specify it as explicit range when
-then second (optional) parameter is present.
+To clarify:  --reneg-sec 3600 RAND
 
-Either
+Where RAND indicates that the first-run timer should run from a random
+integer from 1 upto the value of --reneg-sec.  RAND does not require a
+user to specify an amount.
 
-reneg-sec 3600 3500 for 3500s-3600s (absolute)
-or
-reneg-sec 3600 100 for 3500s-3600s (relative)
-
-I think percent based for user inputs are always creating confusion.
-
-Arne
+Regards
 
 
 
