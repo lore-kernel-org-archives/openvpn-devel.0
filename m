@@ -12,14 +12,17 @@ References: <6b3b8a029cd8761642ac3f8174238aa2.squirrel@...2260...>
 	<31b0e79c-99b3-0372-8e47-762dbc3990d7@...277...>
 	<93f91c48-94cb-c421-3f06-d7d76eb58511@...2080...>
 	<de982e46-7014-13a0-44e9-5d888233e299@...277...>
+	<fa12f155-3f85-5d2a-4350-7c7528bc22dc@...277...>
+	<ce9df1b0-bf09-2e80-2b7f-3708a980cfd2@...277...>
+	<944679a7-deca-bb18-27e3-18eacfbdb93b@...277...>
 From: David Sommerseth <openvpn@...2080...>
-Message-ID: <6e5f9ee2-8ef3-1d01-158a-df984765eee3@...2080...>
-Date: Thu, 6 Apr 2017 01:21:23 +0200
+Message-ID: <9ffd2b9d-2b29-d50c-19cd-33541b3d01bf@...2080...>
+Date: Thu, 6 Apr 2017 01:29:23 +0200
 MIME-Version: 1.0
-In-Reply-To: <de982e46-7014-13a0-44e9-5d888233e299@...277...>
+In-Reply-To: <944679a7-deca-bb18-27e3-18eacfbdb93b@...277...>
 Content-Type: multipart/signed; micalg=pgp-sha256;
 	protocol="application/pgp-signature";
-	boundary="IeBnLRW7pppaq33kkijHvH2AQsFOSEiWb"
+	boundary="3PQFiBIIIg4wKNg3jfHSL65Gl5NtLaaQb"
 Subject: Re: [Openvpn-devel] [PATCH v2] Add per session pseudo-random
  component to --reneg-sec intervals
 Reply-To: openvpn-devel@lists.sourceforge.net
@@ -34,13 +37,13 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: debbie10t <debbie10t@...277...>, openvpn-devel@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---IeBnLRW7pppaq33kkijHvH2AQsFOSEiWb
-Content-Type: multipart/mixed; boundary="2rqKjUsrPrSSEwkmIuP5UOkWLVxOKkFMA";
+--3PQFiBIIIg4wKNg3jfHSL65Gl5NtLaaQb
+Content-Type: multipart/mixed; boundary="W78aJ1CJoQOJaj1pIa7Nf6N9OpT1euriX";
 	protected-headers="v1"
 From: David Sommerseth <openvpn@...2080...>
 Reply-To: openvpn-devel@lists.sourceforge.net
 To: debbie10t <debbie10t@...277...>, openvpn-devel@lists.sourceforge.net
-Message-ID: <6e5f9ee2-8ef3-1d01-158a-df984765eee3@...2080...>
+Message-ID: <9ffd2b9d-2b29-d50c-19cd-33541b3d01bf@...2080...>
 Subject: Re: [Openvpn-devel] [PATCH v2] Add per session pseudo-random
 	component to --reneg-sec intervals
 References: <6b3b8a029cd8761642ac3f8174238aa2.squirrel@...2260...>
@@ -57,67 +60,41 @@ References: <6b3b8a029cd8761642ac3f8174238aa2.squirrel@...2260...>
 	<31b0e79c-99b3-0372-8e47-762dbc3990d7@...277...>
 	<93f91c48-94cb-c421-3f06-d7d76eb58511@...2080...>
 	<de982e46-7014-13a0-44e9-5d888233e299@...277...>
-In-Reply-To: <de982e46-7014-13a0-44e9-5d888233e299@...277...>
+	<fa12f155-3f85-5d2a-4350-7c7528bc22dc@...277...>
+	<ce9df1b0-bf09-2e80-2b7f-3708a980cfd2@...277...>
+	<944679a7-deca-bb18-27e3-18eacfbdb93b@...277...>
+In-Reply-To: <944679a7-deca-bb18-27e3-18eacfbdb93b@...277...>
 
---2rqKjUsrPrSSEwkmIuP5UOkWLVxOKkFMA
+--W78aJ1CJoQOJaj1pIa7Nf6N9OpT1euriX
 Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
 
-On 05/04/17 23:57, debbie10t wrote:
-> Hi,
+On 06/04/17 00:30, debbie10t wrote:
 >=20
-> On 05/04/17 22:39, David Sommerseth wrote:
->> On 05/04/17 23:13, debbie10t wrote:
->>> I don't believe there is any need to specify "max" because that would be
->>> --reneg-sec as is. Otherwise specify a smaller or larger --reneg-sec
->>
->> I think you, probably without being aware of it, are agreeing to what
->> the current proposal is:
->>
->>   --reneg-sec max
->>     A renegotiation happens within 'max' seconds, but with a 10%-ish
->>     randomness
->  >
->>   --reneg-sec min max
->>     A renegotiation happens within 'min' and 'max' seconds, fully
->>     controllable
->>
->> So using --reneg-sec 3600 3600, effectively removes the randomness.
+> One final clarification:
 >=20
-> I understand the proposed methods ..
->=20
-> Of the two above, I would be inclined toward option 2.
-> eg: (for me) --reneg-sec 0 3600 is ideal.
+> As a user, I would prefer to see an early 2fa re-connect than one in
+> the final few minutes, especially if I am already accustomed to a one
+> hour cut off. Such that, I do 45 mins of work and get cut off is more
+> annoying then doing 15 mins and get cut off.
 
-We are not going to change the behaviour much of what is already
-available today.  So if we end up at 10% ... the new default will be:
+This doesn't make much sense to me, to be honest.
 
-   --reneg-sec 3240 3600
+At least all those 2FA approaches I've used (both hardware and software
+tokens) usually have a life time of 30 seconds for each token.  So
+unless the user types username and the new OTP code and password within
+a reasonable time, the connection should be closed regardless.  Whenever
+this renegotiation happens, it doesn't matter if 2FA is used or not - as
+the 2FA code is most likely outdated already.
 
-If you you do  --reneg-sec 1800, that will effectively become:
+That said, doing a re-connect enforcing users to type in another 2FA is
+also less than ideal - which can in a short term scope be avoided by
+adding --auth-gen-token to the server config.  Which should preserve a
+reasonably well security level on the session anyway.
 
-   --reneg-sec 1620 1800
-
-If you want to have a larger time window, then you do what you say
-above.  Your "0 3600" will not become any default value.  But you may
-choose to use those values if you want to.
-
-The key point is that
-
-   --reneg-sec 1800
-
-will work; thus not breaking any configurations - this we will not
-deviate away from.  This syntax just calculates the "min" value
-automatically for you.  If you provide both "min" and "max" values,
-that's what ends up being used.
-
-Currently, I don't see the need to make it more complicated than this.
-And I don't think Gert nor Arne does either.
-
-What will need to be discussed though is if this randomness should only
-happen on the first or on all renegotiations; and if that should be
-configurable or not.  And we need a discussion around if we will allow
-this to be pushable or not.
+And in regards to the --reneg-sec discussion ... whether it happens
+after 3363 seconds or 3599 seconds doesn't really matter much for the
+end-user.  Regardless of 2FA or not.
 
 
 --=20
@@ -128,9 +105,9 @@ OpenVPN Technologies, Inc
 
 
 
---2rqKjUsrPrSSEwkmIuP5UOkWLVxOKkFMA--
+--W78aJ1CJoQOJaj1pIa7Nf6N9OpT1euriX--
 
---IeBnLRW7pppaq33kkijHvH2AQsFOSEiWb
+--3PQFiBIIIg4wKNg3jfHSL65Gl5NtLaaQb
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -138,20 +115,20 @@ Content-Disposition: attachment; filename="signature.asc"
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBCAAGBQJY5XvzAAoJEIbPlEyWcf3y/5gQAJxnDx798xZcguURBpYbohLg
-gzzg1rwiKPwBXwuKHByA+GwPlzKyM55xcZIiNFp2Pza0NJnQR0mdQRR8EeQvJ0Fc
-tN+nV9IcsSavgqVslQP5hTIRaUmk3Ez1QJoccOBEoOOqFD49Dtuog3fT0//GrDnY
-Xd7he9PQ85DtLnWpJeisP77VLBjZ7H69BeFPXlqQyk+FEepFX+fkhVLy9aXOjSQq
-zbJrRMmZRTCeiYvBBUM/uqcKhrP5Tzrk1NWNIMZBYzYDr9TQAif2+vaduisOAhAd
-hgrDteWcgghPkhAHAWbaW2D7MbSwcf2hjcxGPVNdfYWSpGAvsrEv8ixG62+3XWSv
-bjTM57xPE3IozvZYxqXs5C4RIn8+w1o6ROxAU2YAJgqFIA+BEWNXKqv8MUk966qA
-UpZGvQz85gCpW9/EWki+xAHDzn5b1I3zEGszPNrH8UMyQGIlIdNhGRzy1f7UTn5d
-PfSO+JGXy2F64+RcyIz7HrQCmCoLN+4D9WDU0VyKwQT91Gvm5gmQMa7BzXYbzFyE
-GCX8oYgQV8UecCei3Kg02kf4l7sKppopjg0/Qp+HLHC5+fbJSs5qlt1ihKBavlGH
-zsXrwV+plUryBOE1vI6suVEPzchTM8dy9UKccnluLRqQ4sBYD50kGx3gx6sCQhGd
-3iz9xDWiAOngIYNhg+7l
-=Gvnt
+iQIcBAEBCAAGBQJY5X3TAAoJEIbPlEyWcf3yws0QAIb1myKJyd3NDmd97gg8QtTj
+1sBvmqLst/gc5CPRcTRBQIp15kPe0CnPxlFPD/bB9whrPwRJ9oETNNIZ7YOYPGJr
+bPCrfal2xw6N0bOCh2bltxhbYIpvkQtYslE+mpVN9jorKWrLBNhHcJY29CKLTzjm
+jrboutZBN5Vnp+fmc/93EowBqhw41viMJ0H8AsBbE9kFQ5xTgDYFkXUyVPXdnQxy
+YJC+69w6SXoSY8nPv+vGmoeGgCUZG3CPaukw7UWvhXZEl8iMWyQjVFRqzJ3ujaFh
+6g8bWjvCURFkFqJU6QbrhfyRmZrjL7xDSVrsw0M+aWsS4m00UCTwA8cXSCptVthF
+6bnasdSpGO7t/KEBBN7WKtlLRqeebCpe9D9smBUZaLIFpRVBdA8BtvrANA7QqebV
+B95JrFXfqHbw6/qi95pvQ4mDHBT++hUGruFwQjQCXzH/z7i5OxlRWI/50127Fih1
+biLf2OweKGROaPQi0Wr8GOhfSCWjjCYAAMIIvwYI20U5HuSIFsxo0WubV+X/STwV
+PlsQ4EaJqojOGkiN0v/HzcOyNvNJBy45mbczbuXFhw8a3w1AQfxTT1riKue5Hda3
+ypvIVedqKjeRLtn8wyRy3VS99UIf38+iYqc+l5siK6BbBUj9WOptmF6YbSpjGL5r
+Lhkbgg4zRpE2jT9Ijshu
+=UHuU
 -----END PGP SIGNATURE-----
 
---IeBnLRW7pppaq33kkijHvH2AQsFOSEiWb--
+--3PQFiBIIIg4wKNg3jfHSL65Gl5NtLaaQb--
 
