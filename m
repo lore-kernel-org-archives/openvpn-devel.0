@@ -11,11 +11,12 @@ References: <6b3b8a029cd8761642ac3f8174238aa2.squirrel@...2260...>
 	<20170405204236.GM93896@...1296...>
 	<31b0e79c-99b3-0372-8e47-762dbc3990d7@...277...>
 	<93f91c48-94cb-c421-3f06-d7d76eb58511@...2080...>
+	<de982e46-7014-13a0-44e9-5d888233e299@...277...>
 From: debbie10t <debbie10t@...277...>
-Message-ID: <de982e46-7014-13a0-44e9-5d888233e299@...277...>
-Date: Wed, 5 Apr 2017 22:57:30 +0100
+Message-ID: <fa12f155-3f85-5d2a-4350-7c7528bc22dc@...277...>
+Date: Wed, 5 Apr 2017 23:01:41 +0100
 MIME-Version: 1.0
-In-Reply-To: <93f91c48-94cb-c421-3f06-d7d76eb58511@...2080...>
+In-Reply-To: <de982e46-7014-13a0-44e9-5d888233e299@...277...>
 Subject: Re: [Openvpn-devel] [PATCH v2] Add per session pseudo-random
  component to --reneg-sec intervals
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -30,30 +31,35 @@ Content-Type: text/plain; charset=windows-1252; format=flowed
 Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-Hi,
 
-On 05/04/17 22:39, David Sommerseth wrote:
-> On 05/04/17 23:13, debbie10t wrote:
->> I don't believe there is any need to specify "max" because that would be
->> --reneg-sec as is. Otherwise specify a smaller or larger --reneg-sec
+
+On 05/04/17 22:57, debbie10t wrote:
+> Hi,
 >
-> I think you, probably without being aware of it, are agreeing to what
-> the current proposal is:
+> On 05/04/17 22:39, David Sommerseth wrote:
+>> On 05/04/17 23:13, debbie10t wrote:
+>>> I don't believe there is any need to specify "max" because that would be
+>>> --reneg-sec as is. Otherwise specify a smaller or larger --reneg-sec
+>>
+>> I think you, probably without being aware of it, are agreeing to what
+>> the current proposal is:
+>>
+>>   --reneg-sec max
+>>     A renegotiation happens within 'max' seconds, but with a 10%-ish
+>>     randomness
+>>
+>>   --reneg-sec min max
+>>     A renegotiation happens within 'min' and 'max' seconds, fully
+>>     controllable
+>>
+>> So using --reneg-sec 3600 3600, effectively removes the randomness.
 >
->   --reneg-sec max
->     A renegotiation happens within 'max' seconds, but with a 10%-ish
->     randomness
- >
->   --reneg-sec min max
->     A renegotiation happens within 'min' and 'max' seconds, fully
->     controllable
+> I understand the proposed methods ..
 >
-> So using --reneg-sec 3600 3600, effectively removes the randomness.
+> Of the two above, I would be inclined toward option 2.
+> eg: (for me) --reneg-sec 0 3600 is ideal.
+>
+> Thanks :)
 
-I understand the proposed methods ..
-
-Of the two above, I would be inclined toward option 2.
-eg: (for me) --reneg-sec 0 3600 is ideal.
-
-Thanks :)
+With the proviso of "First-run only" ..
 
