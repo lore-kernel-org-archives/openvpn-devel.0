@@ -10,17 +10,14 @@ References: <6b3b8a029cd8761642ac3f8174238aa2.squirrel@...2260...>
 	<86ef0241-5144-206a-4691-6713434fdaa4@...277...>
 	<20170405204236.GM93896@...1296...>
 	<ec5b45716d7fad0f492b19e6c54b82fe.squirrel@...2260...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <e6e53a2e-55ff-656d-4eb1-1c4a31403dbc@...2080...>
-Date: Thu, 6 Apr 2017 12:26:21 +0200
+	<e6e53a2e-55ff-656d-4eb1-1c4a31403dbc@...2080...>
+From: debbie10t <debbie10t@...277...>
+Message-ID: <e212b2d7-9f6c-db82-b3be-5c51bb5fb972@...277...>
+Date: Thu, 6 Apr 2017 12:30:32 +0100
 MIME-Version: 1.0
-In-Reply-To: <ec5b45716d7fad0f492b19e6c54b82fe.squirrel@...2260...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature";
-	boundary="UAboVbdPttggbvOMiswKjPxwjg6jbFlGE"
+In-Reply-To: <e6e53a2e-55ff-656d-4eb1-1c4a31403dbc@...2080...>
 Subject: Re: [Openvpn-devel] [PATCH v2] Add per session pseudo-random
  component to --reneg-sec intervals
-Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -29,126 +26,51 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Simon Matter <simon.matter@...2249...>, Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---UAboVbdPttggbvOMiswKjPxwjg6jbFlGE
-Content-Type: multipart/mixed; boundary="epCHclCVHmEXgnanHif9IQ8miOIWlWPVu";
-	protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-Reply-To: openvpn-devel@lists.sourceforge.net
-To: Simon Matter <simon.matter@...2249...>, Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
-Message-ID: <e6e53a2e-55ff-656d-4eb1-1c4a31403dbc@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH v2] Add per session pseudo-random
-	component to --reneg-sec intervals
-References: <6b3b8a029cd8761642ac3f8174238aa2.squirrel@...2260...>
-	<063244418e0b88138db5b490037cb7a4.squirrel@...2257...>
-	<267890da-2186-dddb-d4c4-d6374da7e086@...277...>
-	<049b9d27-d6a4-41cf-9742-bed02b2cc39b@...2080...>
-	<18a96a72-4778-22b3-8a57-ce87d3f7060b@...2080...>
-	<11253b26-cb11-8b7a-02e0-d5b1ad89e199@...277...>
-	<2465b076-35e8-6144-f1b8-085ad5a016f0@...277...>
-	<e09e9fbc1ce629510c439bbc06569b1a.squirrel@...2260...>
-	<f6a87e19-4ac0-4ea2-69f3-2f424cbe8891@...1227...>
-	<86ef0241-5144-206a-4691-6713434fdaa4@...277...>
-	<20170405204236.GM93896@...1296...>
-	<ec5b45716d7fad0f492b19e6c54b82fe.squirrel@...2260...>
-In-Reply-To: <ec5b45716d7fad0f492b19e6c54b82fe.squirrel@...2260...>
-
---epCHclCVHmEXgnanHif9IQ8miOIWlWPVu
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
-
-On 06/04/17 11:45, Simon Matter wrote:
->=20
->> I like Arne's and David's suggestion - the existing option "as is" will
->> enable X% jitter, while a second parameter can specify a more specific
->> range.  Following Arne's argument about users and percent math, it might
->> indeed be better to have "min max" here ("3500 3600"), because that is
->> really easy to understand and explain.
->
-> After all the discussion I prefer the simple solution. I've changed my
-> systems to the reduced 10% jitter and I'm wondering if it has to be made
-> more complicated than this? I works very well and after some hours the
-> renegs have spread very well. If you ask me it's perfectly fine that way
-> as long as the docs clearly state that a pseudo random 10% us deducted
-> from reneg-sec automatically to spread renegs.
-
-It must be configurable, based on many years experience with helping out
-on configuring OpenVPN tunnels.  There are millions of OpenVPN
-configurations out in the world (and I don't even think I'm exaggerating
-that much even), many small ones and quite some large ones.  There are
-VPN service providers with several hundred thousands paying customers,
-and there are an enormous amount of VPN service providers in addition.
-In addition to all the private and corporate deployments.
-
-So enforcing a good feature equally on all these configurations will
-backfire at us.
-
-And the more I think about the 10% randomness vlaue (or any percentage),
-I really wonder how clever that is.  If a site uses --reneg-sec 1800 (I
-have seen that), that means a 3 minute window.  If a site uses 14400 (4
-hours, I've seen that too), that gives a 24 minute window.  These window
-sizes may be perfectly fine.  But depending on the amount of connected
-users, this may be troublesome too.
-
-Last night I chatted with krzee on #openvpn-devel about this.  He does
-quite some cool stuff with OpenVPN and have lots of IP phones connecting
-to VPN servers.  He said that randomness by default may not be ideal for
-some of the setups he manages.   But he loves the idea behind this
-feature.
-
-Krzee argued that configurations explicitly setting --reneg-sec 3600
-should not have any randomness.  If a configuration does _not* set
---reneg-sec, it may have randomness with 1 hour as the base.  And those
-wanting better control of the time window should use:
-  --reneg-sec min max
-
-I initially was of the opinion --reneg-sec 3600 should have randomness
-(the 10-17% base).  But after having slept on it, I think Krzee have a
-good point.  Setting --reneg-sec explicitly with only a single value
-should not have any randomness.
-
-With the 1 hour default, not setting --reneg-sec gives a time window of
-6 minutes with 10%.  That is a reasonable default unless explicitly
-overridden by either --reneg-sec 3600 (no randomness) or --reneg-sec
-3000 4000 (with a 1000 seconds large time window)
-
-
---=20
-kind regards,
-
-David Sommerseth
-OpenVPN Technologies, Inc
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
 
 
---epCHclCVHmEXgnanHif9IQ8miOIWlWPVu--
+On 06/04/17 11:26, David Sommerseth wrote:
 
---UAboVbdPttggbvOMiswKjPxwjg6jbFlGE
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+> With the 1 hour default, not setting --reneg-sec gives a time window of
+> 6 minutes with 10%.  That is a reasonable default unless explicitly
+> overridden by either --reneg-sec 3600 (no randomness) or --reneg-sec
+> 3000 4000 (with a 1000 seconds large time window)
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
+I still believe this approach is wrong.
 
-iQIcBAEBCAAGBQJY5hfNAAoJEIbPlEyWcf3y3VMP/250tW3P6gzl1g2286t0CenU
-kHWGGfyeQ0c0VgfNi/JBALnEtkonxneZv6JhhX5m5kM8+/R/F1/wtdhb5hQ7QuuQ
-blw0h785HWAc5cHh0FYBAm97s01owW+ZeLhfBtQjNlg/EbXkOCr05NROwS+NFtQD
-C5MCt1e6dkNvojJVw0fCKC/WzkizjADRrM/ipLe5md2WMfK56YAisTKDZiNBKDGz
-VSrr+3pLiGSAK0UmK/NcDs4/b9mMOVQjTZtGSuC8ZGtakI0GqoGQD5xcYVFQiFqQ
-let+tGp2wAyTOqqksSEuyZmcT5zIHOLV3EllInFVgNtTQI4SQYpuDRiV7yCu/ijf
-R52Hdzr67ROyRQB3AFZ37CxDbKoI+PeF8ZcpQlFQEBx8TXga0xTwyVVPoA5Xi0LY
-7OXIFFxJzZJqOZxN/Qvigq7qqtBwGF3KNMtZHcU4A3kYRwCisU7NSD+aM0IYijYn
-lJyv8RYtqCOmNloMpcTFjY/Bu1568tHS3tnyqfz7/N49UgscvYinezXLuECm8kui
-7aNGpyH+JEH2OV92PAHVN9YJ7ptT5pesDdXKdbEnHnCOYmm0CVbd32aPCyX9/a2V
-hK/sRUKJ/fqfbn+iUBpuqqD3RP7KWPy3MrSvjXAUmivA3Kv8ifWeDCEhWNLzROPK
-520NEwiMFSgmQpfDVLn8
-=v2fz
------END PGP SIGNATURE-----
+You are changing the meaning of an operand depending on the number of 
+operands and changing the function of the directive depending on number
+of operands and if the directive is explicitly specified or not.
 
---UAboVbdPttggbvOMiswKjPxwjg6jbFlGE--
+This is equivalent to:
+
+(no --server specified) = --server 10.8.0.0 255.255.255.0
+vs
+--server subnet mask (pool determined by default)
+vs
+--server *pool* subnet mask
+
+And so I re-submit my protest!
+
+The syntax for --reneg-sec should be "--reneg-sec seconds window"
+
+where "--reneg-sec 3600" is as it is now !
+where "--reneg-sec 3600 360" is as now with a 10% window of random.
+
+Not specifying --reneg-sec at all should *not* imply a default window,
+it should remain as it is now.
+
+Additionally, "window" *could* be + or - allowing for window to be 
+applied at the beginning of the session or at the end of the session.
+
+Also, IMO this should be first-run *only*
+
+I am sorry David but you have not changed my mind,
+although the decision is, of course, down to the devs.
+
+my2c
+regards
 
