@@ -1,5 +1,5 @@
-MIME-Version: 1.0
-In-Reply-To: <4f6776e3-3b9b-fae4-339c-6f28b6a24b1e@...2080...>
+Message-ID: <ec5b45716d7fad0f492b19e6c54b82fe.squirrel@...2260...>
+In-Reply-To: <20170405204236.GM93896@...1296...>
 References: <6b3b8a029cd8761642ac3f8174238aa2.squirrel@...2260...>
 	<063244418e0b88138db5b490037cb7a4.squirrel@...2257...>
 	<267890da-2186-dddb-d4c4-d6374da7e086@...277...>
@@ -11,14 +11,9 @@ References: <6b3b8a029cd8761642ac3f8174238aa2.squirrel@...2260...>
 	<f6a87e19-4ac0-4ea2-69f3-2f424cbe8891@...1227...>
 	<86ef0241-5144-206a-4691-6713434fdaa4@...277...>
 	<20170405204236.GM93896@...1296...>
-	<31b0e79c-99b3-0372-8e47-762dbc3990d7@...277...>
-	<93f91c48-94cb-c421-3f06-d7d76eb58511@...2080...>
-	<CAFHpkQFqq2HEdqeQL+f4W_vQtvuVswOVP9tXcoPPTU4=LMtYUw@...278...>
-	<4f6776e3-3b9b-fae4-339c-6f28b6a24b1e@...2080...>
-From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Date: Thu, 6 Apr 2017 09:08:03 +0500
-Message-ID: <CAFHpkQFhSAMWDduU2VuRkLDrWiXh0jhVQyTBZrNG8i59BK6EPA@...278...>
-Content-Type: multipart/alternative; boundary=001a114b3c2ada1e2e054c77a7b0
+Date: Thu, 6 Apr 2017 11:45:00 +0200
+From: "Simon Matter" <simon.matter@...2249...>
+MIME-Version: 1.0
 Subject: Re: [Openvpn-devel] [PATCH v2] Add per session pseudo-random
  component to --reneg-sec intervals
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -29,161 +24,58 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-
---001a114b3c2ada1e2e054c77a7b0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-2017-04-06 3:26 GMT+05:00 David Sommerseth <
-openvpn@...2080...>:
-
-> On 05/04/17 23:43, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=B8=D1=
-=86=D0=B8=D0=BD wrote:
-> > hello!
-> >
-> > just curious how renegotiation is handled in "https" ?
-> > is it "an abbrevated ssl handshake" (RFC 2246) or ... ?
+> Hi,
 >
-> The HTTPS and OpenVPN protocol is not comparable in this regard at all.
-> AFAIR, OpenVPN does not make use of the TLS renegotiation possibility at
-> all.  So a renegotiation in OpenVPN actually results in a completely new
-> and fresh TLS session, not related to previous TLS sessions at all.
+> On Wed, Apr 05, 2017 at 07:00:54PM +0100, debbie10t wrote:
+>> > Optional option does not mean that it is disabled by default. If you
+>> > don't the randomness you would need to do:
+>> >
+>> > reneg-sec 3600 3600
+>> >
+>> > the optional argument also allows it to fine tune it to your needs.
+>>
+>> As the reason for --reneg-sec is to specify how long a key should exist,
+>> I don't see any further need to make the "random window" be specifically
+>> configurable .. The reneg-sec period will remain as specified (def 3600)
+>> except for the first run, where --reneg-sec is started from a random
+>> time between now and then.  There after returning to "normal" with full
+>> randomisation of all connected clients --reneg-sec being spread over the
+>> *entire* period of --reneg-sec nn and not some unnecessary window.
 >
-
-both HTTPS and OpenVPN are
-
-1) client-->server
-2) long running
-3) SSL based
-
-
-they are similar from many point of view
-
-as, renegotiation does occur for https, and we do not observe "hourly" CPU
-peaks, I think it worth not reinventing the wheel here
-
-
-
+> Setups with 2FA will have to re-enter auth credentials on reneg.  Having
+> OpenVPN all of a sudden default to "it could be asking 5 minutes after
+> connection for the credentials again" is massive annoyance - and brings
+> no real benefit anyway.
 >
->
-> --
-> kind regards,
->
-> David Sommerseth
-> OpenVPN Technologies, Inc
->
->
->
-> > 2017-04-06 2:39 GMT+05:00 David Sommerseth
-> > <openvpn@...2080...
-> > <mailto:openvpn@...2080...>>:
-> >
-> >     On 05/04/17 23:13, debbie10t wrote:
-> >     > I don't believe there is any need to specify "max" because that
-> would be
-> >     > --reneg-sec as is. Otherwise specify a smaller or larger
-> --reneg-sec
-> >
-> >     I think you, probably without being aware of it, are agreeing to wh=
-at
-> >     the current proposal is:
-> >
-> >       --reneg-sec max
-> >         A renegotiation happens within 'max' seconds, but with a 10%-ish
-> >         randomness
-> >
-> >       --reneg-sec min max
-> >         A renegotiation happens within 'min' and 'max' seconds, fully
-> >         controllable
-> >
-> >     So using --reneg-sec 3600 3600, effectively removes the randomness.
-> >
-> >
-> >     --
-> >     kind regards,
-> >
-> >     David Sommerseth
-> >     OpenVPN Technologies, Inc
->
->
+> It makes sense to jitter reneg-sec somewhat (like, 10%-ish), but changing
+> behaviour too much is not bringing much benefit - you don't need to
+> spread the reneg over the whole period anyway, as different clients
+> connect and disconnect at different times anyway.  Just if all of them
+> connect at the same time, the identically-timed renegs are a problem.
 
---001a114b3c2ada1e2e054c77a7b0
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+That's exactly what happens in the event of an OpenVPN restart on the
+central server. Our router clients may all restart for updates at the same
+time and our desktop clients are automatically started in the morning most
+of them at the same time.
 
-<div dir=3D"ltr"><br><div class=3D"gmail_extra"><br><div class=3D"gmail_quo=
-te">2017-04-06 3:26 GMT+05:00 David Sommerseth <span dir=3D"ltr">&lt;<a hre=
-f=3D"mailto:openvpn@...2080..." target=3D"_blank">openvpn@...2080...</a>&gt=
-;</span>:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;b=
-order-left:1px #ccc solid;padding-left:1ex"><span class=3D"">On 05/04/17 23=
-:43, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=B8=D1=86=D0=B8=D0=BD wr=
-ote:<br>
-&gt; hello!<br>
-&gt;<br>
-&gt; just curious how renegotiation is handled in &quot;https&quot; ?<br>
-&gt; is it &quot;an abbrevated ssl handshake&quot; (RFC 2246) or ... ?<br>
-<br>
-</span>The HTTPS and OpenVPN protocol is not comparable in this regard at a=
-ll.<br>
-AFAIR, OpenVPN does not make use of the TLS renegotiation possibility at<br>
-all.=C2=A0 So a renegotiation in OpenVPN actually results in a completely n=
-ew<br>
-and fresh TLS session, not related to previous TLS sessions at all.<br></bl=
-ockquote><div><br></div><div>both HTTPS and OpenVPN are<br><br></div><div>1=
-) client--&gt;server<br></div><div>2) long running<br></div><div>3) SSL bas=
-ed<br><br><br></div><div>they are similar from many point of view<br><br></=
-div><div>as, renegotiation does occur for https, and we do not observe &quo=
-t;hourly&quot; CPU peaks, I think it worth not reinventing the wheel here<b=
-r></div><div><br>=C2=A0</div><blockquote class=3D"gmail_quote" style=3D"mar=
-gin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">
-<span class=3D""><br>
-<br>
---<br>
-kind regards,<br>
-<br>
-David Sommerseth<br>
-OpenVPN Technologies, Inc<br>
-<br>
-<br>
-<br>
-</span><span class=3D"">&gt; 2017-04-06 2:39 GMT+05:00 David Sommerseth<br>
-&gt; &lt;<a href=3D"mailto:openvpn@...2080...">openvpn@...2142...<wbr>topph=
-emmelig.net</a><br>
-</span>&gt; &lt;mailto:<a href=3D"mailto:openvpn@...2080...">openvpn@...2261...=
-2...<wbr>topphemmelig.net</a>&gt;&gt;:<br>
-<div class=3D"HOEnZb"><div class=3D"h5">&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0On 05/04/17 23:13, debbie10t wrote:<br>
-&gt;=C2=A0 =C2=A0 =C2=A0&gt; I don&#39;t believe there is any need to speci=
-fy &quot;max&quot; because that would be<br>
-&gt;=C2=A0 =C2=A0 =C2=A0&gt; --reneg-sec as is. Otherwise specify a smaller=
- or larger --reneg-sec<br>
-&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0I think you, probably without being aware of it, ar=
-e agreeing to what<br>
-&gt;=C2=A0 =C2=A0 =C2=A0the current proposal is:<br>
-&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0--reneg-sec max<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0A renegotiation happens within &#39;m=
-ax&#39; seconds, but with a 10%-ish<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0randomness<br>
-&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0--reneg-sec min max<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0A renegotiation happens within &#39;m=
-in&#39; and &#39;max&#39; seconds, fully<br>
-&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0controllable<br>
-&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0So using --reneg-sec 3600 3600, effectively removes=
- the randomness.<br>
-&gt;<br>
-&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0--<br>
-&gt;=C2=A0 =C2=A0 =C2=A0kind regards,<br>
-&gt;<br>
-&gt;=C2=A0 =C2=A0 =C2=A0David Sommerseth<br>
-&gt;=C2=A0 =C2=A0 =C2=A0OpenVPN Technologies, Inc<br>
-<br>
-</div></div></blockquote></div><br></div></div>
+> I like Arne's and David's suggestion - the existing option "as is" will
+> enable X% jitter, while a second parameter can specify a more specific
+> range.  Following Arne's argument about users and percent math, it might
+> indeed be better to have "min max" here ("3500 3600"), because that is
+> really easy to understand and explain.
 
---001a114b3c2ada1e2e054c77a7b0--
+After all the discussion I prefer the simple solution. I've changed my
+systems to the reduced 10% jitter and I'm wondering if it has to be made
+more complicated than this? I works very well and after some hours the
+renegs have spread very well. If you ask me it's perfectly fine that way
+as long as the docs clearly state that a pseudo random 10% us deducted
+from reneg-sec automatically to spread renegs.
+
+Simon
+
 
