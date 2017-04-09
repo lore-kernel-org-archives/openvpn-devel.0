@@ -1,15 +1,11 @@
-References: <1527b3e1-ac4f-14c8-d804-846949c57a31@...277...>
-	<CAFHpkQE6Hm-_dQTr78yWYDstFrzBi-vt2bwAgJ4ugk2dr89V5Q@...278...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <afbe51a2-f17b-1222-45c1-0b0d7e6af83c@...2080...>
-Date: Thu, 6 Apr 2017 17:22:57 +0200
+References: <1490527279-31426-1-git-send-email-chipitsine@...277...>
+From: Steffan Karger <steffan@...1856...>
+Message-ID: <12987e8a-1873-fc96-3b4f-0576939773fb@...1856...>
+Date: Sun, 9 Apr 2017 10:44:56 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAFHpkQE6Hm-_dQTr78yWYDstFrzBi-vt2bwAgJ4ugk2dr89V5Q@...278...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature";
-	boundary="HD5cR4RUd8suxEb0EgXi5rN2OTQ4HwA0i"
-Subject: Re: [Openvpn-devel] Listen on multiple interfaces but not all
-Reply-To: openvpn-devel@lists.sourceforge.net
+In-Reply-To: <1490527279-31426-1-git-send-email-chipitsine@...277...>
+Subject: Re: [Openvpn-devel] [PATCH] travis-ci: add 2 mingw "build only
+ configurations"
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,92 +14,228 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>, Kor Korrd <kor.korrd+openvpn@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---HD5cR4RUd8suxEb0EgXi5rN2OTQ4HwA0i
-Content-Type: multipart/mixed; boundary="LXb1pK8ihIjW089rNsv0ntHVf1CjHhdD1";
-	protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-Reply-To: openvpn-devel@lists.sourceforge.net
-To: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>,
-	Kor Korrd <kor.korrd+openvpn@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
-Message-ID: <afbe51a2-f17b-1222-45c1-0b0d7e6af83c@...2080...>
-Subject: Re: [Openvpn-devel] Listen on multiple interfaces but not all
-References: <1527b3e1-ac4f-14c8-d804-846949c57a31@...277...>
-	<CAFHpkQE6Hm-_dQTr78yWYDstFrzBi-vt2bwAgJ4ugk2dr89V5Q@...278...>
-In-Reply-To: <CAFHpkQE6Hm-_dQTr78yWYDstFrzBi-vt2bwAgJ4ugk2dr89V5Q@...278...>
+Hi,
 
---LXb1pK8ihIjW089rNsv0ntHVf1CjHhdD1
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+On 26-03-17 13:21, Ilya Shipitsin wrote:
+> Inspired by https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13032.html
+> build options are taken from regular windows installer builds
 
-On 06/04/17 17:11, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=B8=D1=86=
-=D0=B8=D0=BD wrote:
-> Usually, you can bind to certain interface and forward packets by
-> firewall from other interfaces
->=20
-> 6 =D0=B0=D0=BF=D1=80. 2017 =D0=B3. 19:41 =D0=BF=D0=BE=D0=BB=D1=8C=D0=B7=
-=D0=BE=D0=B2=D0=B0=D1=82=D0=B5=D0=BB=D1=8C "Kor Korrd"
-> <kor.korrd+openvpn@...277... <mailto:kor.korrd%2Bopenvpn@...277...>>
-> =D0=BD=D0=B0=D0=BF=D0=B8=D1=81=D0=B0=D0=BB:
->=20
->     Hi,
->=20
->     is it possible for the Server part to listen on more than one specific
->     interface but not on all interfaces?
+Feature-ACK.  Adding cross-compile builds for Windows on travis is a
+good plan.
 
-No.  Currently that is not possible in OpenVPN.  Some of the core
-developers are looking into resolving this, but it has turned out to be
-quite hard to resolve and fix properly.  So this is still being worked
-on, but we have no ETA for this.
+Initial feedback below.
 
-What most users do is to listen to all interfaces and only open up the
-port in the firewalling.  Some have chosen a different path using NAT to
-forward packets from one IP/interface to the one OpenVPN is listening
-too.  But some have needed to also add --multihome in the OpenVPN to
-make this work.
+> 
+> Signed-off-by: Ilya Shipitsin <chipitsine@...277...>
+> ---
+>  .travis.yml           | 30 +++++++++++++++++++++-------
+>  .travis/build-deps.sh | 55 ++++++++++++++++++++++++++++++++++++++++++++++-----
+>  2 files changed, 73 insertions(+), 12 deletions(-)
+> 
+> diff --git a/.travis.yml b/.travis.yml
+> index 3c0aa7d..9ab30a2 100644
+> --- a/.travis.yml
+> +++ b/.travis.yml
+> @@ -12,6 +12,9 @@ env:
+>    global:
+>      - JOBS=3
+>      - PREFIX="${HOME}/opt"
+> +    - TAP_WINDOWS_VERSION=9.21.2
+> +    - LZO_VERSION=2.10
+> +    - PKCS11_HELPER_VERSION=1.11
+>      - MBEDTLS_VERSION="2.4.0"
+>      - MBEDTLS_CFLAGS="-I${PREFIX}/include"
+>      - MBEDTLS_LIBS="-L${PREFIX}/lib -lmbedtls -lmbedx509 -lmbedcrypto"
+> @@ -50,6 +53,12 @@ matrix:
+>        os: osx
+>        osx_image: xcode7.3
+>        compiler: clang
+> +    - env: SSLLIB="openssl" CHOST=x86_64-w64-mingw32
+> +      os: linux
+> +      compiler: ": Win64 build only"
+> +    - env: SSLLIB="openssl" CHOST=i686-w64-mingw32
+> +      os: linux
+> +      compiler: ": Win32 build only"
+>    exclude:
+>      - compiler: gcc
+>  
+> @@ -60,6 +69,7 @@ addons:
+>        - libpam0g-dev
+>        - liblz4-dev
+>        - linux-libc-dev
+> +      - man2html
+>  
+>  cache:
+>    ccache: true
+> @@ -72,16 +82,22 @@ before_install:
+>    - if [ "${TRAVIS_OS_NAME}" = "osx" ]; then brew install lzo; fi
+>  
+>  install:
+> +  - if [ ! -z "${CHOST+xxx}" ]; then unset CC; unset CXX; fi
 
-For most of our OpenVPN users, only open up the OpenVPN port on specific
-interfaces/IP addresses in the firewall is more than good enough from a
-security perspective, and really simple to achieve without too much
-troubles.  But YMMV.
+What is the function of this +xxx ?  It seems to me that all you need is
+"if [ ! -z "${CHOST}" ]".
 
+>    - .travis/build-deps.sh > build-deps.log 2>&1 || (cat build-deps.log && exit 1)
+>  
+>  script:
+>    - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then export LD_LIBRARY_PATH="${PREFIX}/lib:${LD_LIBRARY_PATH}"; fi
+>    - if [ "${TRAVIS_OS_NAME}" = "osx"   ]; then export DYLD_LIBRARY_PATH="${PREFIX}/lib:${DYLD_LIBRARY_PATH}"; fi
+>    - autoreconf -vi
+> -  - ./configure --with-crypto-library="${SSLLIB}" ${EXTRA_CONFIG} || (cat config.log && exit 1)
+> -  - make -j$JOBS
+> -  - src/openvpn/openvpn --version || true
+> -  - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then ldd src/openvpn/openvpn; fi
+> -  - if [ "${TRAVIS_OS_NAME}" = "osx" ]; then otool -L src/openvpn/openvpn; fi
+> -  - make check
+> -  - $EXTRA_SCRIPT
+> +  - if [ -z "${CHOST+xxx}" ]; then
+> +      ./configure --with-crypto-library="${SSLLIB}" ${EXTRA_CONFIG} || (cat config.log && exit 1);
+> +      make -j$JOBS;
+> +      src/openvpn/openvpn --version || true;
+> +      if [ "${TRAVIS_OS_NAME}" = "linux" ]; then ldd src/openvpn/openvpn; fi;
+> +      if [ "${TRAVIS_OS_NAME}" = "osx" ]; then otool -L src/openvpn/openvpn; fi;
+> +      make check;
+> +      $EXTRA_SCRIPT;
+> +    else
+> +      TAP_CFLAGS="-I${PWD}/tap-windows-${TAP_WINDOWS_VERSION}/include" LZO_CFLAGS="-I${PREFIX}/include" LZO_LIBS="-L${PREFIX}/lib -llzo2" PKCS11_HELPER_LIBS="-L${PREFIX}/lib -lpkcs11-helper" PKCS11_HELPER_CFLAGS="-I${PREFIX}/include" ./configure --host=${CHOST} --build=x86_64-pc-linux-gnu --enable-pkcs11 --disable-plugins || (cat config.log && exit 1);
 
---=20
-kind regards,
+All these _CFLAGS and _LIBS should go into the env: section above.
 
-David Sommerseth
-OpenVPN Technologies, Inc
+Any reason to --enable-pkcs11 for the windows builds, while that's not
+done for the non-windows builds?
 
+> +      make -j$JOBS;
+> +    fi
+> diff --git a/.travis/build-deps.sh b/.travis/build-deps.sh
+> index 3ffba0b..18f40ec 100755
+> --- a/.travis/build-deps.sh
+> +++ b/.travis/build-deps.sh
+> @@ -31,7 +31,6 @@ download_openssl () {
+>  }
+>  
+>  build_openssl_linux () {
+> -    tar zxf "download-cache/openssl-${OPENSSL_VERSION}.tar.gz"
+>      (
+>          cd "openssl-${OPENSSL_VERSION}/"
+>          ./config shared --openssldir="${PREFIX}" -DPURIFY
+> @@ -40,7 +39,6 @@ build_openssl_linux () {
+>  }
+>  
+>  build_openssl_osx () {
+> -    tar zxf "download-cache/openssl-${OPENSSL_VERSION}.tar.gz"
+>      (
+>          cd "openssl-${OPENSSL_VERSION}/"
+>          ./Configure darwin64-x86_64-cc shared \
+> @@ -49,9 +47,25 @@ build_openssl_osx () {
+>      )
+>  }
+>  
+> +build_openssl_mingw () {
+> +    (
+> +        cd "openssl-${OPENSSL_VERSION}/"
+> +
+> +        if [ "${CHOST}" = "i686-w64-mingw32" ]; then export target=mingw; fi
+> +        if [ "${CHOST}" = "x86_64-w64-mingw32" ]; then export target=mingw64; fi
+> +
+> +        ./Configure --cross-compile-prefix=${CHOST}- shared \
+> +           $target no-multilib no-capieng --openssldir="${PREFIX}" -static-libgcc
 
+Can you try to keep style consistent?  I.e. use all-caps variable names
+(TARGET instead of target) and use quoting ("${TARGET}" instead of $target).
 
---LXb1pK8ihIjW089rNsv0ntHVf1CjHhdD1--
+> +        make install  
+> +    )
+> +}
+> +
+>  build_openssl () {
+>      if [ "$(cat ${PREFIX}/.openssl-version)" != "${OPENSSL_VERSION}" ]; then
+> -        if [ "${TRAVIS_OS_NAME}" = "osx" ]; then
+> +        tar zxf "download-cache/openssl-${OPENSSL_VERSION}.tar.gz"
+> +        if [ ! -z ${CHOST+xxx} ]; then
+> +            build_openssl_mingw
+> +        elif [ "${TRAVIS_OS_NAME}" = "osx" ]; then
+>              build_openssl_osx
+>          elif [ "${TRAVIS_OS_NAME}" = "linux" ]; then
+>              build_openssl_linux
+> @@ -61,7 +75,7 @@ build_openssl () {
+>  }
+>  
+>  # Enable ccache
+> -if [ "${TRAVIS_OS_NAME}" != "osx" ]; then
+> +if [ "${TRAVIS_OS_NAME}" != "osx" ] && [ -z "${CHOST+xxx}" ]; then
+>      # ccache not available on osx, see:
+>      # https://github.com/travis-ci/travis-ci/issues/5567
 
---HD5cR4RUd8suxEb0EgXi5rN2OTQ4HwA0i
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+Is ccache not available for mingw?  In that case, please update the
+comment, preferably with a reference to a travis issue so that we can
+enable it if travis adds support later on.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
+>      mkdir -p "${HOME}/bin"
+> @@ -70,7 +84,6 @@ if [ "${TRAVIS_OS_NAME}" != "osx" ]; then
+>  fi
+>  
+>  # Download and build crypto lib
+> -mkdir -p download-cache
+>  if [ "${SSLLIB}" = "openssl" ]; then
+>      download_openssl
+>      build_openssl
+> @@ -81,3 +94,35 @@ else
+>      echo "Invalid crypto lib: ${SSLLIB}"
+>      exit 1
+>  fi
+> +
+> +if [ ! -z ${CHOST+xxx} ]; then
+> +      echo "deb http://archive.ubuntu.com/ubuntu xenial main universe" | sudo tee -a /etc/apt/sources.list.d/xenial.list
+> +      echo "deb http://archive.ubuntu.com/ubuntu xenial main" | sudo tee -a /etc/apt/sources.list.d/xenial.list
+> +      sudo apt-get update
+> +      sudo apt-get -y install dpkg mingw-w64
+> +      if [ ! -f "download-cache/tap-windows-${TAP_WINDOWS_VERSION}.zip" ]; then
+> +         wget -P download-cache/ http://build.openvpn.net/downloads/releases/tap-windows-${TAP_WINDOWS_VERSION}.zip
+> +      fi
 
-iQIcBAEBCAAGBQJY5l1RAAoJEIbPlEyWcf3yUHYQALICflopAeGxHs9fyfMVEwvT
-SodWqRVVGBRJrordE8nrCofqwPFw9vloDD+67tF6zdM8p9GDarKix4x1viZlO0Tg
-ZPpmDpke5fws89EF68dRKv4WUQMNbhZGYOLMYQ20UDEOApjDLei6j4EWlDfiTp2r
-VVaqmkEygITkcCh/n2532tt0Rm71zL00/3zCG80D36XdW3IBja+P8ddtWYKlHJU5
-apsAEhlxLvgPu1EcUDX3BJCNmnEf1scnY0mQTti6MrE630hhNOM8BusogCDlcdGT
-XYvx+PhvZ17smHXDNwVdFs3ZYqijurYn07fce83hQtnEZNZJEg75dOmO49byHKcC
-tB6KXRO2F3h8DAkl8XlRs61lLM3rL8fs5F2BfLDuoMxHHlkxM07jtdKL67WNV1Y2
-3KejTlDKSTHccO9a/1dVkughU/3WDuNMUUZF0Vi4u7UGdu0hsUZG6Ouf6iFj6lpl
-gsF9/H7nv0JRjDw5picabrWXyWblxQ0/GER2gRkkQk+RDt6MGTUn5Q1Z7nHnUJIK
-uLfmEfCTzJrt8pMzVnSqJFY2SMtEnoWnlL9MNoCS2WR+HTiU88mhsTJghL4+bWj9
-bHnKKmWdbhmMJVcg0aikSd7bjeD+3AjxM/B7oErZz8lkF1xD5xQY/ybiylgwwayw
-v/9xIsYEifm+XQZI3mP8
-=Y9vb
------END PGP SIGNATURE-----
+This should be in a download_tap_windows() function.
 
---HD5cR4RUd8suxEb0EgXi5rN2OTQ4HwA0i--
+> +      unzip download-cache/tap-windows-${TAP_WINDOWS_VERSION}.zip
+> +
+> +      (
+> +      wget -P download-cache/ http://www.oberhumer.com/opensource/lzo/download/lzo-${LZO_VERSION}.tar.gz
+> +      tar zxf download-cache/lzo-${LZO_VERSION}.tar.gz
+
+This should be in a download_lzo() function.
+
+> +      cd lzo-${LZO_VERSION}
+> +
+> +      ./configure --host=${CHOST} --program-prefix='' --enable-shared --libdir=${PREFIX}/lib --prefix=${PREFIX} --build=x86_64-pc-linux-gnu
+> +      make
+> +      make install
+
+This should bin in a build_lzo() function.
+
+> +      )
+> +
+> +      (
+> +      wget -P download-cache/ http://downloads.sourceforge.net/project/opensc/pkcs11-helper/pkcs11-helper-${PKCS11_HELPER_VERSION}.tar.bz2
+
+This should be in a download_pkcs11helper() function.
+
+> +      tar jxf download-cache/pkcs11-helper-${PKCS11_HELPER_VERSION}.tar.bz2
+> +      cd pkcs11-helper-${PKCS11_HELPER_VERSION}
+> +
+> +      ./configure --host=${CHOST} --program-prefix='' --enable-shared --libdir=${PREFIX}/lib --prefix=${PREFIX} --build=x86_64-pc-linux-gnu --disable-crypto-engine-gnutls --disable-crypto-engine-nss
+> +      make
+> +      make install
+
+This should be in a build_pkcs11helper() function.
+
+> +      )
+> +
+> +fi
+> 
+
+-Steffan
 
