@@ -3,15 +3,17 @@ References: <1490527279-31426-1-git-send-email-chipitsine@...277...>
 	<CAFHpkQHyR+fO-PpK-q+vHvWC02sjRiOWkcwOTje7g6wqyZyEYg@...278...>
 	<7e470072-787c-c7c3-39cb-b9338720b79c@...1856...>
 	<CAFHpkQELjBpk4TXNrrOrkMaE1vooH=ZySG6HfQts+RuuPuXGfg@...278...>
-	<3b1c076e-4cd9-07f6-dd8c-9c687c0f5eb8@...1856...>
-	<CAFHpkQFtJ69J47w1SsSU-8qrmx8-xxT66VgewK2A8Vd4A_R43w@...278...>
-From: Steffan Karger <steffan@...1856...>
-Message-ID: <603e23fa-39e3-e1e9-b20e-491f5026fb31@...1856...>
-Date: Sun, 9 Apr 2017 22:26:49 +0200
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <57b33706-7042-d65a-0269-ba7d5ac932e8@...2080...>
+Date: Sun, 9 Apr 2017 23:44:32 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAFHpkQFtJ69J47w1SsSU-8qrmx8-xxT66VgewK2A8Vd4A_R43w@...278...>
+In-Reply-To: <CAFHpkQELjBpk4TXNrrOrkMaE1vooH=ZySG6HfQts+RuuPuXGfg@...278...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature";
+	boundary="lONhP81bDB78bX54d8v4aJOc8jKrC6JVg"
 Subject: Re: [Openvpn-devel] [PATCH] travis-ci: add 2 mingw "build only
  configurations"
+Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,164 +22,90 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
 To: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hi,
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--lONhP81bDB78bX54d8v4aJOc8jKrC6JVg
+Content-Type: multipart/mixed; boundary="fWiBHVUSr5HT9vTRKiSexR9E6gefxEooQ";
+	protected-headers="v1"
+From: David Sommerseth <openvpn@...2080...>
+Reply-To: openvpn-devel@lists.sourceforge.net
+To: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Message-ID: <57b33706-7042-d65a-0269-ba7d5ac932e8@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH] travis-ci: add 2 mingw "build only
+	configurations"
+References: <1490527279-31426-1-git-send-email-chipitsine@...277...>
+	<12987e8a-1873-fc96-3b4f-0576939773fb@...1856...>
+	<CAFHpkQHyR+fO-PpK-q+vHvWC02sjRiOWkcwOTje7g6wqyZyEYg@...278...>
+	<7e470072-787c-c7c3-39cb-b9338720b79c@...1856...>
+	<CAFHpkQELjBpk4TXNrrOrkMaE1vooH=ZySG6HfQts+RuuPuXGfg@...278...>
+In-Reply-To: <CAFHpkQELjBpk4TXNrrOrkMaE1vooH=ZySG6HfQts+RuuPuXGfg@...278...>
 
-[This will be my last on-list reply about this.]
+--fWiBHVUSr5HT9vTRKiSexR9E6gefxEooQ
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 09-04-17 19:10, Илья Шипицин wrote:
-> 
-> 
-> 2017-04-09 21:58 GMT+05:00 Steffan Karger <steffan@...1856...
-> <mailto:steffan@...1856...>>:
-> 
->     Hi,
-> 
->     On 09-04-17 15:31, Илья Шипицин wrote:
->     >     >     > @@ -70,7 +84,6 @@ if [ "${TRAVIS_OS_NAME}" != "osx" ]; then
->     >     >     >  fi
->     >     >     >
->     >     >     >  # Download and build crypto lib
->     >     >     > -mkdir -p download-cache
->     >     >     >  if [ "${SSLLIB}" = "openssl" ]; then
->     >     >     >      download_openssl
->     >     >     >      build_openssl
->     >     >     > @@ -81,3 +94,35 @@ else
->     >     >     >      echo "Invalid crypto lib: ${SSLLIB}"
->     >     >     >      exit 1
->     >     >     >  fi
->     >     >     > +
->     >     >     > +if [ ! -z ${CHOST+xxx} ]; then
->     >     >     > +      echo "deb http://archive.ubuntu.com/ubuntu <http://archive.ubuntu.com/ubuntu>
->     >     <http://archive.ubuntu.com/ubuntu
->     <http://archive.ubuntu.com/ubuntu>>
->     <http://archive.ubuntu.com/ubuntu <http://archive.ubuntu.com/ubuntu>
->     >     <http://archive.ubuntu.com/ubuntu <http://archive.ubuntu.com/ubuntu>>>
->     >     >     xenial main universe" | sudo tee -a /etc/apt/sources.list.d/xenial.list
->     >     >     > +      echo "deb http://archive.ubuntu.com/ubuntu <http://archive.ubuntu.com/ubuntu>
->     >     <http://archive.ubuntu.com/ubuntu
->     <http://archive.ubuntu.com/ubuntu>>
->     <http://archive.ubuntu.com/ubuntu <http://archive.ubuntu.com/ubuntu>
->     >     <http://archive.ubuntu.com/ubuntu
->     <http://archive.ubuntu.com/ubuntu>>>
->     >     >     xenial main" | sudo tee -a
->     /etc/apt/sources.list.d/xenial.list
->     >     >     > +      sudo apt-get update
->     >     >     > +      sudo apt-get -y install dpkg mingw-w64
->     >     >     > +      if [ ! -f
->     "download-cache/tap-windows-${TAP_WINDOWS_VERSION}.zip" ]; then
->     >     >     > +         wget -P download-cache/
->     http://build.openvpn.net/downloads/releases/tap-windows-${TAP_WINDOWS_VERSION}.zip
->     <http://build.openvpn.net/downloads/releases/tap-windows-${TAP_WINDOWS_VERSION}.zip>
->     >   
->      <http://build.openvpn.net/downloads/releases/tap-windows-${TAP_WINDOWS_VERSION}.zip
->     <http://build.openvpn.net/downloads/releases/tap-windows-${TAP_WINDOWS_VERSION}.zip>>
->     >     >   
->      <http://build.openvpn.net/downloads/releases/tap-windows-${TAP_WINDOWS_VERSION}.zip
->     <http://build.openvpn.net/downloads/releases/tap-windows-${TAP_WINDOWS_VERSION}.zip>
->     >   
->      <http://build.openvpn.net/downloads/releases/tap-windows-${TAP_WINDOWS_VERSION}.zip
->     <http://build.openvpn.net/downloads/releases/tap-windows-${TAP_WINDOWS_VERSION}.zip>>>
->     >     >     > +      fi
->     >     >
->     >     >     This should be in a download_tap_windows() function.
->     >     >
->     >     >
->     >     > can you be more particular on "should be".
->     >     > it does not mean "must be".
->     >     > if so, we can leave it, right ?
->     >
->     >     I'll be more clear (and less polite..):  writing long lists of
->     commands
->     >     is bad.  That's not only true for code, it goes for scripts as
->     well.
->     >     Writing functions (with good names!) allows the reader to not
->     have to
->     >     parse the commands to understand what the author wanted to do.
->     >
->     >     If we put this in functions, the pkcs11 section will read
->     >
->     >           download_pkcs11helper
->     >           build_pkcs11helper
->     >
->     >     Which makes it immediately clear what the intent of that code is.
->     >
->     >     For tap-windows we only have to download and extract, to that
->     would only
->     >     read
->     >
->     >          download_tap_windows
->     >
->     >     which makes this immediately clear too.
->     >
->     >     This really is basic software engineering, and the lack of
->     quality in
->     >     quite some of your contributions is an important reason why your
->     >     contributions aren't picked up quickly.  Your ideas and
->     intentions are
->     >     good, but we need to put in far too much effort to make the
->     quality of
->     >     your contribution acceptable.  Time that we can also spend on
->     >     better-quality contributions.  It would help us all (including
->     you) if
->     >     you would try to improve on that.
->     >
->     >
->     >
->     > those code lines are not reusable, so not splitting it into functions
->     > does not mean poor quality (for me)
->     > the rule of thumb is "to put into function piece of code, which is
->     > called many times"
->     >
->     > otherwise, it might be either function or not.
-> 
->     Functions are not only to prevent code duplication.  They are also for
->     structuring your code.  Which is exactly what I'm suggesting here.  Code
->     does not only need to do it's job, it also needs to be maintainable.
-> 
->     > how did you came to conclusion that it means poor code quality?
->     > is it written somewhere on the https://openvpn.net on how to write bash
->     > scripts ?
-> 
->     We're not here to give software engineering classes.  Nor is the openvpn
->     wiki meant to be a book on software engineering.
-> 
-> 
-> well, I did not ask for software engineering classes.
-> what I still do not understand is your "ultimate" statement about "poor
-> code quality".
-> bash allows either use or not use functions. openvpn does not propose
-> any standards on that.
-> 
-> so, what I did - I wrote very small piece of code, which fits single
-> screen, also it is
-> pretty self documented (wget --> tar --> make). I still think it is good
-> enough.
-> 
-> yes, we can use functions if people on list would agree on that, but I
-> think there were not enough reasons for calling that "poor code quality".
+On 09/04/17 15:31, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=B8=D1=86=
+=D0=B8=D0=BD wrote:
+>=20
+> how did you came to conclusion that it means poor code quality?
+> is it written somewhere on the https://openvpn.net on how to write bash
+> scripts ?
 
-Just look at the rest of the file.  There's a pattern: download_xyz()
-and build_xyz() functions that are called from a compact main function.
-How hard is it to follow the pattern?
+Steffan have given a good reasoning, and I completely agree with him.
 
-The patch that added travis support also needed a lot of rework.  Not
-just style-wise, but also because there were a number of bugs hiding
-behind the bad style.  I invested in refactoring that patch instead of
-just writing my own, because I think your ideas and enthusiasm are
-welcome and hoped I you would learn from it.
+Further, it is impossible to write a documentation which is 100% perfect
+on coding style, good coding practice and related subjects.  If you
+insist on that, I recommend you to visit http://shop.oreilly.com/ or
+Amazon and find some good books about it (the review ratings on those
+sites are usually fairly good in this regard).  So there are no reasons
+for us to try to duplicate the work of other writers.
 
-This is just one example.  If this was the only one I would not have
-been this hard on you.  Just scroll back through the mailing list and
-read the discussions about your patches.  You should notice a trend there.
+I would even dare to claim that programming isn't just a science with
+only one way to do things properly.  But it is a science which requires
+you to think thoroughly of what you try to solve, how to solve it and
+how to make it easy and understandable for others.  In fact, the real
+science part of programming (to solve a real and concrete issue) is just
+one little part of the whole picture.  And this makes me think of Reuven
+Lerner and his weekly newsletter.  He pulls up a lot of these things
+there too, perhaps consider to sign up for that too can be a good idea?
+<http://lerner.co.il/newsletter/>
 
-Anyway, feel free to find someone else to review and ACK this code.  I
-feel that an ACK is partly taking responsibility for the code in
-question, and I'm not taking responsibility for this.
 
--Steffan
+--=20
+kind regards,
+
+David Sommerseth
+OpenVPN Technologies, Inc
+
+
+
+--fWiBHVUSr5HT9vTRKiSexR9E6gefxEooQ--
+
+--lONhP81bDB78bX54d8v4aJOc8jKrC6JVg
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBCAAGBQJY6qtHAAoJEIbPlEyWcf3yi0IP/18GjeXTO8METTYyvxow5vuj
+2ca7vBYc8YrBrzqlTOS3WAO5XeRtWLId2XT3cjWasoXJcd12KRvakrp6LJhi+bcG
+Q4bjaV14koFV58fu9a+8sQn/fzWi8gZByNq9PDiNZ9nPhkAHlT8PV4GHPBjamGT5
+KbnzPGZHutb+fwtm4TXDH74uVbcIqSssptJNTf0ynzAxk+jCQFJ1heBo+hUsh3J3
+CqifEa0x1POj3+v7N4MOxlJAEecDGJ9q0cJOzMKSfDJXwhsV1bbRY0KoKV8eTse7
+cleTxRb8Mz2IQuOtZOzSQY4cOy10Qc19mZFikcqh3pKVrGtCkgUuwXYc34I5iksa
+xtlnMJN1R2Ka11IfxXYFaDJnbPmMpMtvulZBFaCNb1zNzpObkKbpQw2n5G6s/oFd
+MupjOBGzmqNr1nFnYSq9uzeHOPmMaxMFtwJ+c5lzGpVm2omKgnb+aMVH7Ul1TLYi
+GKsva88d8BrZ9T4RYYAd3LADwysXLCFIlI9vO6sDIoYdRMRPqHMjSkNMYM5xKGJ1
+HcFFpCTypjyXNAJ0yPRA22iBua21WxKiIzdoNB8XNMjhD0ZGyasDs3xLfrFDK0Cj
+TD12t9GNGgAdbntnFpyMfMM8CkG1mkOpeDGRNj/cjnilTPuH7DlTKDnqWNwRBKCf
+s1N9H4qmj73BIk5e5MlO
+=4BxT
+-----END PGP SIGNATURE-----
+
+--lONhP81bDB78bX54d8v4aJOc8jKrC6JVg--
 
