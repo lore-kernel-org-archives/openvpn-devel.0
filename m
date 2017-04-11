@@ -1,10 +1,7 @@
 From: David Sommerseth <davids@...515...>
-Date: Tue, 11 Apr 2017 16:59:43 +0200
-Message-Id: <20170411145943.18038-1-davids@...515...>
-In-Reply-To: <20170410222828.23612-1-davids@...515...>
-References: <20170410222828.23612-1-davids@...515...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Make --cipher/--auth none more
-	explicit on the risks
+Date: Tue, 11 Apr 2017 19:31:33 +0200
+Message-Id: <20170411173133.18060-1-davids@...515...>
+Subject: [Openvpn-devel] [PATCH] Require minimum OpenSSL 1.0.1
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,52 +12,162 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: davids@...515...
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA256
+As RHEL 5 has reached EOL, we no longer need to support OpenSSL v0.9.8.
+This also makes it possible to remove a few workaronds which was
+needed earlier, as well as some left overs from v0.9.6.
 
-Just a commit time correction added, fixing wrong spelling of RECONSIDER.
+This also makes ./configure really stop running unless a new enough
+OpenSSL library is found.
 
-Patch has been applied to the following branches
+Compile tested on RHEL7.3 and RHEL6.7 (mock chroot build), both shipping
+openssl-1.0.1e.
 
-commit 7a1b6a0dd706a81897457b0456a951c0b30bbcfb  (master)
-commit 1935729fe6d6badd978e9dfdd3402857b3d000a0  (release/2.4)
-commit 32b5cb60e354f486c98408e6870af3a9c03ff865  (release/2.3)
+Signed-off-by: David Sommerseth <davids@...515...>
+---
+ configure.ac                                                  |  6 +++---
+ doc/openvpn.8                                                 |  1 -
+ .../keying-material-exporter-demo/keyingmaterialexporter.c    |  3 +--
+ sample/sample-plugins/log/log_v3.c                            |  3 +--
+ src/openvpn/ssl_openssl.c                                     |  3 ---
+ src/openvpn/ssl_openssl.h                                     | 11 -----------
+ src/openvpn/ssl_verify_openssl.c                              |  6 ++----
+ 7 files changed, 7 insertions(+), 26 deletions(-)
 
-Author: David Sommerseth
-Date:   Tue Apr 11 00:28:28 2017 +0200
+diff --git a/configure.ac b/configure.ac
+index 2406ad8..acea060 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -859,9 +859,9 @@ if test "${enable_crypto}" = "yes" -a "${with_crypto_library}" = "openssl"; then
+ 		# if the user did not explicitly specify flags, try to autodetect
+ 		PKG_CHECK_MODULES(
+ 			[OPENSSL],
+-			[libcrypto >= 0.9.8, libssl >= 0.9.8],
+-	        [have_openssl="yes"],
+-			[have_openssl="no"] # Provide if-not-found to prevent erroring out
++			[libcrypto >= 1.0.1, libssl >= 1.0.1],
++	                [have_openssl="yes"],
++			[AC_MSG_ERROR([Minimum supported OpenSSL version is 1.0.1])]
+ 		)
+ 
+ 		OPENSSL_LIBS=${OPENSSL_LIBS:--lssl -lcrypto}
+diff --git a/doc/openvpn.8 b/doc/openvpn.8
+index a9f5db7..c3248fd 100644
+--- a/doc/openvpn.8
++++ b/doc/openvpn.8
+@@ -2773,7 +2773,6 @@ OPENVPN_PLUGIN_TLS_FINAL callback.
+ Note that exporter labels have the potential to collide with existing PRF
+ labels. In order to prevent this, labels MUST begin with "EXPORTER".
+ 
+-This option requires OpenSSL 1.0.1 or newer.
+ .\"*********************************************************
+ .SS Server Mode
+ Starting with OpenVPN 2.0, a multi-client TCP/UDP server mode
+diff --git a/sample/sample-plugins/keying-material-exporter-demo/keyingmaterialexporter.c b/sample/sample-plugins/keying-material-exporter-demo/keyingmaterialexporter.c
+index 177977d..a72b374 100644
+--- a/sample/sample-plugins/keying-material-exporter-demo/keyingmaterialexporter.c
++++ b/sample/sample-plugins/keying-material-exporter-demo/keyingmaterialexporter.c
+@@ -143,8 +143,7 @@ session_user_set(struct session *sess, X509 *x509)
+         {
+             continue;
+         }
+-        /* bug in OpenSSL 0.9.6b ASN1_STRING_to_UTF8 requires this workaround */
+-        unsigned char *buf = (unsigned char *)1;
++        unsigned char *buf = NULL;
+         if (ASN1_STRING_to_UTF8(&buf, val) <= 0)
+         {
+             continue;
+diff --git a/sample/sample-plugins/log/log_v3.c b/sample/sample-plugins/log/log_v3.c
+index 9037225..d3014f3 100644
+--- a/sample/sample-plugins/log/log_v3.c
++++ b/sample/sample-plugins/log/log_v3.c
+@@ -197,7 +197,7 @@ x509_print_info(X509 *x509crt)
+     X509_NAME *x509_name;
+     X509_NAME_ENTRY *ent;
+     const char *objbuf;
+-    unsigned char *buf;
++    unsigned char *buf = NULL;
+ 
+     x509_name = X509_get_subject_name(x509crt);
+     n = X509_NAME_entry_count(x509_name);
+@@ -228,7 +228,6 @@ x509_print_info(X509 *x509crt)
+         {
+             continue;
+         }
+-        buf = (unsigned char *)1; /* bug in OpenSSL 0.9.6b ASN1_STRING_to_UTF8 requires this workaround */
+         if (ASN1_STRING_to_UTF8(&buf, val) <= 0)
+         {
+             continue;
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index d7cc2ba..645ccf5 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -254,10 +254,7 @@ tls_ctx_set_options(struct tls_root_ctx *ctx, unsigned int ssl_flags)
+             sslopt |= SSL_OP_NO_TLSv1_2;
+         }
+ #endif
+-#ifdef SSL_OP_NO_COMPRESSION
+-        /* Disable compression - flag not available in OpenSSL 0.9.8 */
+         sslopt |= SSL_OP_NO_COMPRESSION;
+-#endif
+         SSL_CTX_set_options(ctx->ctx, sslopt);
+     }
+ 
+diff --git a/src/openvpn/ssl_openssl.h b/src/openvpn/ssl_openssl.h
+index 6ca4cb6..60a1f5e 100644
+--- a/src/openvpn/ssl_openssl.h
++++ b/src/openvpn/ssl_openssl.h
+@@ -33,17 +33,6 @@
+ #include <openssl/ssl.h>
+ 
+ /**
+- * SSL_OP_NO_TICKET tells OpenSSL to disable "stateless session resumption",
+- * as this is something we do not want nor need, but could potentially be
+- * used for a future attack.  For compatibility reasons we keep building if the
+- * OpenSSL version is too old (pre-0.9.8f) to support stateless session
+- * resumption (and the accompanying SSL_OP_NO_TICKET flag).
+- */
+-#ifndef SSL_OP_NO_TICKET
+-#define SSL_OP_NO_TICKET 0
+-#endif
+-
+-/**
+  * Structure that wraps the TLS context. Contents differ depending on the
+  * SSL library used.
+  */
+diff --git a/src/openvpn/ssl_verify_openssl.c b/src/openvpn/ssl_verify_openssl.c
+index 5624daa..54eadbd 100644
+--- a/src/openvpn/ssl_verify_openssl.c
++++ b/src/openvpn/ssl_verify_openssl.c
+@@ -458,8 +458,7 @@ x509_setenv_track(const struct x509_track *xt, struct env_set *es, const int dep
+                         if (ent)
+                         {
+                             ASN1_STRING *val = X509_NAME_ENTRY_get_data(ent);
+-                            unsigned char *buf;
+-                            buf = (unsigned char *)1; /* bug in OpenSSL 0.9.6b ASN1_STRING_to_UTF8 requires this workaround */
++                            unsigned char *buf = NULL;
+                             if (ASN1_STRING_to_UTF8(&buf, val) > 0)
+                             {
+                                 do_setenv_x509(es, xt->name, (char *)buf, depth);
+@@ -514,7 +513,7 @@ x509_setenv(struct env_set *es, int cert_depth, openvpn_x509_cert_t *peer_cert)
+     ASN1_STRING *val;
+     X509_NAME_ENTRY *ent;
+     const char *objbuf;
+-    unsigned char *buf;
++    unsigned char *buf = NULL;
+     char *name_expand;
+     size_t name_expand_size;
+     X509_NAME *x509 = X509_get_subject_name(peer_cert);
+@@ -547,7 +546,6 @@ x509_setenv(struct env_set *es, int cert_depth, openvpn_x509_cert_t *peer_cert)
+         {
+             continue;
+         }
+-        buf = (unsigned char *)1; /* bug in OpenSSL 0.9.6b ASN1_STRING_to_UTF8 requires this workaround */
+         if (ASN1_STRING_to_UTF8(&buf, val) <= 0)
+         {
+             continue;
+-- 
+2.11.0
 
-     Make --cipher/--auth none more explicit on the risks
-
-     Signed-off-by: David Sommerseth <davids@...515...>
-     Acked-by: Steffan Karger <steffan.karger@...1435...>
-     Message-Id: <20170410222828.23612-1-davids@...515...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg14436.html
-     Signed-off-by: David Sommerseth <davids@...515...>
-
-
-- --
-kind regards,
-
-David Sommerseth
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBCAAGBQJY7O9WAAoJEIbPlEyWcf3yQ08P/3/bWCmGRHPXMwMDdcs4mmyf
-Hna9ObtuAMqT4wYUAIGAXpzmpaVJtxteIGV7ahWLZVxiYrjeKSHrICRhZJOQ7ji6
-RKbmPlZ9VeICUwY59d/I37q6d69gCsFpz9D8KSb4XyklJ+/UUILvEimbJAvFpu8C
-+l0mFOinQxPkRJMKvU54Ry+yrgHRBvEPUI8X3ni8g97ZRVu1VQe81Kfc5y94WB6v
-RGQ/9YS4jeE0LgMI7PinMdD5esfcJQ9opTZaiXtApxz+YLTTyLFSrCiTX/gE3xUb
-vUCcTxfM8iPAYqCVWiX/ep7Z+npPugmzpDWq+gbxPvGPtbCluuw3lXdzT3Wq6EJw
-wfFT2GFoY4CtK7ynEt6ibjDuBzeSBXyqOHd0wlpU272H99P4li8DtBn6N6XzBCr8
-zfxPt00AUgo+eSYSVFdF3dZqjTFSWEO2SlS+L6zAekJOCSibIRFYU/BFC67hpvoO
-50Qp66EK1PDtcW3oMQBwUfV2TcFDrflBL99nk34P2+YyIiscvj2DoaT+PTkwNLz7
-Opy+16q7TIg2VhRgqi5gx03Ji0k/nAF01qjJOyyqBLFK7SKD85zCCIsV9TZMK09f
-TqPsQwtLeb/pNaZYIE2SVnExgYOpAJxLkPwkN93v7WvzBvFsCWxRbJjiN8Zjvu0G
-j47g3fFaHNuN4UYWYmT7
-=C6Nl
------END PGP SIGNATURE-----
 
