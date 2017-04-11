@@ -1,16 +1,10 @@
+From: David Sommerseth <davids@...515...>
+Date: Tue, 11 Apr 2017 16:59:43 +0200
+Message-Id: <20170411145943.18038-1-davids@...515...>
+In-Reply-To: <20170410222828.23612-1-davids@...515...>
 References: <20170410222828.23612-1-davids@...515...>
-	<523fde112159f8583eb7963b16acd85e.squirrel@...2257...>
-	<1920dd1e-d818-0d39-7dce-70318a47d2c6@...2080...>
-From: Steffan Karger <steffan.karger@...1435...>
-Message-ID: <de3cf140-145b-0876-ec8d-464da1703a19@...1435...>
-Date: Tue, 11 Apr 2017 13:30:38 +0200
-MIME-Version: 1.0
-In-Reply-To: <1920dd1e-d818-0d39-7dce-70318a47d2c6@...2080...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature";
-	boundary="HvwHS2npX1GsesAo9kofhixXw9DfWiruL"
-Subject: Re: [Openvpn-devel] [PATCH] Make --cipher/--auth none more explicit
- on the risks
+Subject: Re: [Openvpn-devel] [PATCH applied] Make --cipher/--auth none more
+	explicit on the risks
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,94 +13,54 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: davids@...515...
+Cc: openvpn-devel@lists.sourceforge.net
 
---HvwHS2npX1GsesAo9kofhixXw9DfWiruL
-Content-Type: multipart/mixed; boundary="PBe7kdLDREWO174hB4letCe2FanT9icDj";
-	protected-headers="v1"
-From: Steffan Karger <steffan.karger@...1435...>
-To: openvpn-devel@lists.sourceforge.net
-Message-ID: <de3cf140-145b-0876-ec8d-464da1703a19@...1435...>
-Subject: Re: [Openvpn-devel] [PATCH] Make --cipher/--auth none more explicit
-	on the risks
-References: <20170410222828.23612-1-davids@...515...>
-	<523fde112159f8583eb7963b16acd85e.squirrel@...2257...>
-	<1920dd1e-d818-0d39-7dce-70318a47d2c6@...2080...>
-In-Reply-To: <1920dd1e-d818-0d39-7dce-70318a47d2c6@...2080...>
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA256
 
---PBe7kdLDREWO174hB4letCe2FanT9icDj
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
+Just a commit time correction added, fixing wrong spelling of RECONSIDER.
 
-On 11-04-17 10:55, David Sommerseth wrote:
-> On 11/04/17 06:26, Simon Matter wrote:
->>> The warning provided to --cipher and --auth using the 'none' setting may
->>> not have been too clearly understandable to non-developers or people not
->>> fully understanding encryption and cryptography.  This tries to improve
->>> that.
->>>
->>> While at it, also break up the long source lines.
->>>
->>> Signed-off-by: David Sommerseth <davids@...515...>
->>> ---
->>>  src/openvpn/crypto.c | 11 +++++++++--
->>>  src/openvpn/init.c   |  5 ++++-
->>>  2 files changed, 13 insertions(+), 3 deletions(-)
->>>
->>> diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
->>> index 909f725..8a5c723 100644
->>> --- a/src/openvpn/crypto.c
->>> +++ b/src/openvpn/crypto.c
->>> @@ -784,7 +784,10 @@ init_key_type(struct key_type *kt, const char
->>> *ciphername,
->>>      {
->>>          if (warn)
->>>          {
->>> -            msg(M_WARN, "******* WARNING *******: null cipher specifie=
-d,
->>> no encryption will be used");
->>> +            msg(M_WARN, "******* WARNING *******: '--cipher none' was
->>> specified. "
->>> +                "This means NO encryption will be performed and tunnel=
-led
->>> "
->>> +                "data WILL be transmitted in clear text over the netwo=
-rk!
->>> "
->>> +                "PLEASE DO RECONIDER THIS SETTING!");
->>
->> Hi
->>
->> Small typos, you may want to 's/RECONIDER/RECONSIDER/g' the patches.
->=20
-> Meh, yeah, sorry about that.  That need to be fixed, but also something
-> I can fix on-the-fly at commit time; that's an uncritical last minute
-> change.  Just need an ACK first ;-)
+Patch has been applied to the following branches
 
-ACK if you fix the typos :)
+commit 7a1b6a0dd706a81897457b0456a951c0b30bbcfb  (master)
+commit 1935729fe6d6badd978e9dfdd3402857b3d000a0  (release/2.4)
+commit 32b5cb60e354f486c98408e6870af3a9c03ff865  (release/2.3)
 
--Steffan
+Author: David Sommerseth
+Date:   Tue Apr 11 00:28:28 2017 +0200
+
+     Make --cipher/--auth none more explicit on the risks
+
+     Signed-off-by: David Sommerseth <davids@...515...>
+     Acked-by: Steffan Karger <steffan.karger@...1435...>
+     Message-Id: <20170410222828.23612-1-davids@...515...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg14436.html
+     Signed-off-by: David Sommerseth <davids@...515...>
 
 
+- --
+kind regards,
 
---PBe7kdLDREWO174hB4letCe2FanT9icDj--
-
---HvwHS2npX1GsesAo9kofhixXw9DfWiruL
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+David Sommerseth
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
+Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQEcBAEBCAAGBQJY7L5eAAoJEEEwndWOY1w5pewH/iEYjXX2ulLnzMXco4lBsE7t
-5JxNvPzYLCuNWfTmHuJ4eO2S42UEVKbbFTz5AfrNSnN8UxCaf0D2ri+xS/L9lGGk
-kFG5Y8754swFLK1qkoUlaqM0hBgE+fJBOG97pz9DYw4FtCAxbwOPiiIAsfj+2S4c
-EfzXzo6haAScUjS97ExxQZqavGT1Kx8IIGkK4LP/9flZWJF18ZgnBcwknb26wqNx
-VDd32Ih325KyD8EQPXyGSUDqOuNAK7oqTW2St81GnSvzhe+/ebEc1rN0ZhPnetpb
-hUU70q5+GKrcum1KZ/dp14zJFUjAMyVr2e3xGxJZtVLryrTPSugcuDOlGU9zaMg=
-=ChjO
+iQIcBAEBCAAGBQJY7O9WAAoJEIbPlEyWcf3yQ08P/3/bWCmGRHPXMwMDdcs4mmyf
+Hna9ObtuAMqT4wYUAIGAXpzmpaVJtxteIGV7ahWLZVxiYrjeKSHrICRhZJOQ7ji6
+RKbmPlZ9VeICUwY59d/I37q6d69gCsFpz9D8KSb4XyklJ+/UUILvEimbJAvFpu8C
++l0mFOinQxPkRJMKvU54Ry+yrgHRBvEPUI8X3ni8g97ZRVu1VQe81Kfc5y94WB6v
+RGQ/9YS4jeE0LgMI7PinMdD5esfcJQ9opTZaiXtApxz+YLTTyLFSrCiTX/gE3xUb
+vUCcTxfM8iPAYqCVWiX/ep7Z+npPugmzpDWq+gbxPvGPtbCluuw3lXdzT3Wq6EJw
+wfFT2GFoY4CtK7ynEt6ibjDuBzeSBXyqOHd0wlpU272H99P4li8DtBn6N6XzBCr8
+zfxPt00AUgo+eSYSVFdF3dZqjTFSWEO2SlS+L6zAekJOCSibIRFYU/BFC67hpvoO
+50Qp66EK1PDtcW3oMQBwUfV2TcFDrflBL99nk34P2+YyIiscvj2DoaT+PTkwNLz7
+Opy+16q7TIg2VhRgqi5gx03Ji0k/nAF01qjJOyyqBLFK7SKD85zCCIsV9TZMK09f
+TqPsQwtLeb/pNaZYIE2SVnExgYOpAJxLkPwkN93v7WvzBvFsCWxRbJjiN8Zjvu0G
+j47g3fFaHNuN4UYWYmT7
+=C6Nl
 -----END PGP SIGNATURE-----
-
---HvwHS2npX1GsesAo9kofhixXw9DfWiruL--
 
