@@ -1,15 +1,14 @@
 References: <20170411173133.18060-1-davids@...515...>
 	<429bda10-5a65-785f-661e-f4ae2708349f@...1435...>
-	<050f70e9-1558-a354-ea36-8b786f0af086@...2080...>
-	<dd084b32-6e96-b9d0-9477-9fcff9c4a7df@...68...>
+	<d290d0456b329f2deae5992d92e1972f.squirrel@...2257...>
 From: David Sommerseth <openvpn@...2080...>
-Message-ID: <6c164552-40f6-f039-c829-03653ef9b26d@...2080...>
-Date: Wed, 12 Apr 2017 11:17:57 +0200
+Message-ID: <2efd6abc-3586-0ac8-6253-14578b3d7602@...2080...>
+Date: Wed, 12 Apr 2017 11:30:16 +0200
 MIME-Version: 1.0
-In-Reply-To: <dd084b32-6e96-b9d0-9477-9fcff9c4a7df@...68...>
+In-Reply-To: <d290d0456b329f2deae5992d92e1972f.squirrel@...2257...>
 Content-Type: multipart/signed; micalg=pgp-sha256;
 	protocol="application/pgp-signature";
-	boundary="t606DqhoEls4hqnksGEtc61a2KaJwKCDn"
+	boundary="hEDObHXUPtQN39ohWCdakaxXuxK46vk5P"
 Subject: Re: [Openvpn-devel] [PATCH] Require minimum OpenSSL 1.0.1
 Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,72 +19,246 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Matthias Andree <matthias.andree@...68...>, openvpn-devel@lists.sourceforge.net
+To: Simon Matter <simon.matter@...2249...>, Steffan Karger <steffan.karger@...1435...>
+Cc: openvpn-devel@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---t606DqhoEls4hqnksGEtc61a2KaJwKCDn
-Content-Type: multipart/mixed; boundary="s85tVtdCSUa0hUotgkor0BnKJmt80td80";
+--hEDObHXUPtQN39ohWCdakaxXuxK46vk5P
+Content-Type: multipart/mixed; boundary="2XRQpbSi56araHPtSjA21BbDWCbFifsF3";
 	protected-headers="v1"
 From: David Sommerseth <openvpn@...2080...>
 Reply-To: openvpn-devel@lists.sourceforge.net
-To: Matthias Andree <matthias.andree@...68...>,
-	openvpn-devel@lists.sourceforge.net
-Message-ID: <6c164552-40f6-f039-c829-03653ef9b26d@...2080...>
+To: Simon Matter <simon.matter@...2249...>,
+	Steffan Karger <steffan.karger@...1435...>
+Cc: openvpn-devel@lists.sourceforge.net
+Message-ID: <2efd6abc-3586-0ac8-6253-14578b3d7602@...2080...>
 Subject: Re: [Openvpn-devel] [PATCH] Require minimum OpenSSL 1.0.1
 References: <20170411173133.18060-1-davids@...515...>
 	<429bda10-5a65-785f-661e-f4ae2708349f@...1435...>
-	<050f70e9-1558-a354-ea36-8b786f0af086@...2080...>
-	<dd084b32-6e96-b9d0-9477-9fcff9c4a7df@...68...>
-In-Reply-To: <dd084b32-6e96-b9d0-9477-9fcff9c4a7df@...68...>
+	<d290d0456b329f2deae5992d92e1972f.squirrel@...2257...>
+In-Reply-To: <d290d0456b329f2deae5992d92e1972f.squirrel@...2257...>
 
---s85tVtdCSUa0hUotgkor0BnKJmt80td80
+--2XRQpbSi56araHPtSjA21BbDWCbFifsF3
 Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
 
-On 12/04/17 03:06, Matthias Andree wrote:
-> Am 11.04.2017 um 23:56 schrieb David Sommerseth:
->> On 11/04/17 23:20, Steffan Karger wrote:
->>> For release/2.4: I wonder whether we need to keep 0.9.8 support, as
->>> SLES11 still ships with 0.9.8h, and has general support until 31 Mar 20=
-19.
->> While it is James who insisted on RHEL being the oldest supported distro
->> many years ago, I have no issues with keeping SLES *or* RHEL as the
->> oldest supported distro, in regards to package dependencies.
+On 12/04/17 06:58, Simon Matter wrote:
+>> Hi,
 >>
->> Do we know if we have a large group of SLES 11 users?  Initially I
->> thought it was related to OpenVPN-NL ... until I recalled that
->> OPenVPN-NL should be built against mbed TLS :)
+>> On 11-04-17 19:31, David Sommerseth wrote:
+>>> As RHEL 5 has reached EOL, we no longer need to support OpenSSL v0.9.8.
+>>> This also makes it possible to remove a few workaronds which was
+>>> needed earlier, as well as some left overs from v0.9.6.
+>>>
+>>> This also makes ./configure really stop running unless a new enough
+>>> OpenSSL library is found.
+>>>
+>>> Compile tested on RHEL7.3 and RHEL6.7 (mock chroot build), both shipping
+>>> openssl-1.0.1e.
+>>>
+>>> Signed-off-by: David Sommerseth <davids@...515...>
+>>> ---
+>>>  configure.ac                                                  |  6
+>>> +++---
+>>>  doc/openvpn.8                                                 |  1 -
+>>>  .../keying-material-exporter-demo/keyingmaterialexporter.c    |  3 +--
+>>>  sample/sample-plugins/log/log_v3.c                            |  3 +--
+>>>  src/openvpn/ssl_openssl.c                                     |  3 ---
+>>>  src/openvpn/ssl_openssl.h                                     | 11
+>>> -----------
+>>>  src/openvpn/ssl_verify_openssl.c                              |  6
+>>> ++----
+>>>  7 files changed, 7 insertions(+), 26 deletions(-)
+>>>
+>>> diff --git a/configure.ac b/configure.ac
+>>> index 2406ad8..acea060 100644
+>>> --- a/configure.ac
+>>> +++ b/configure.ac
+>>> @@ -859,9 +859,9 @@ if test "${enable_crypto}" =3D "yes" -a
+>>> "${with_crypto_library}" =3D "openssl"; then
+>>>  		# if the user did not explicitly specify flags, try to autodetect
+>>>  		PKG_CHECK_MODULES(
+>>>  			[OPENSSL],
+>>> -			[libcrypto >=3D 0.9.8, libssl >=3D 0.9.8],
+>>> -	        [have_openssl=3D"yes"],
+>>> -			[have_openssl=3D"no"] # Provide if-not-found to prevent erroring out
+>>> +			[libcrypto >=3D 1.0.1, libssl >=3D 1.0.1],
+>>> +	                [have_openssl=3D"yes"],
+>>> +			[AC_MSG_ERROR([Minimum supported OpenSSL version is 1.0.1])]
+>>>  		)
+>>>
+>>>  		OPENSSL_LIBS=3D${OPENSSL_LIBS:--lssl -lcrypto}
+>>> diff --git a/doc/openvpn.8 b/doc/openvpn.8
+>>> index a9f5db7..c3248fd 100644
+>>> --- a/doc/openvpn.8
+>>> +++ b/doc/openvpn.8
+>>> @@ -2773,7 +2773,6 @@ OPENVPN_PLUGIN_TLS_FINAL callback.
+>>>  Note that exporter labels have the potential to collide with existing
+>>> PRF
+>>>  labels. In order to prevent this, labels MUST begin with "EXPORTER".
+>>>
+>>> -This option requires OpenSSL 1.0.1 or newer.
+>>>  .\"*********************************************************
+>>>  .SS Server Mode
+>>>  Starting with OpenVPN 2.0, a multi-client TCP/UDP server mode
+>>> diff --git
+>>> a/sample/sample-plugins/keying-material-exporter-demo/keyingmaterialexp=
+orter.c
+>>> b/sample/sample-plugins/keying-material-exporter-demo/keyingmaterialexp=
+orter.c
+>>> index 177977d..a72b374 100644
+>>> ---
+>>> a/sample/sample-plugins/keying-material-exporter-demo/keyingmaterialexp=
+orter.c
+>>> +++
+>>> b/sample/sample-plugins/keying-material-exporter-demo/keyingmaterialexp=
+orter.c
+>>> @@ -143,8 +143,7 @@ session_user_set(struct session *sess, X509 *x509)
+>>>          {
+>>>              continue;
+>>>          }
+>>> -        /* bug in OpenSSL 0.9.6b ASN1_STRING_to_UTF8 requires this
+>>> workaround */
+>>> -        unsigned char *buf =3D (unsigned char *)1;
+>>> +        unsigned char *buf =3D NULL;
+>>>          if (ASN1_STRING_to_UTF8(&buf, val) <=3D 0)
+>>>          {
+>>>              continue;
+>>> diff --git a/sample/sample-plugins/log/log_v3.c
+>>> b/sample/sample-plugins/log/log_v3.c
+>>> index 9037225..d3014f3 100644
+>>> --- a/sample/sample-plugins/log/log_v3.c
+>>> +++ b/sample/sample-plugins/log/log_v3.c
+>>> @@ -197,7 +197,7 @@ x509_print_info(X509 *x509crt)
+>>>      X509_NAME *x509_name;
+>>>      X509_NAME_ENTRY *ent;
+>>>      const char *objbuf;
+>>> -    unsigned char *buf;
+>>> +    unsigned char *buf =3D NULL;
+>>>
+>>>      x509_name =3D X509_get_subject_name(x509crt);
+>>>      n =3D X509_NAME_entry_count(x509_name);
+>>> @@ -228,7 +228,6 @@ x509_print_info(X509 *x509crt)
+>>>          {
+>>>              continue;
+>>>          }
+>>> -        buf =3D (unsigned char *)1; /* bug in OpenSSL 0.9.6b
+>>> ASN1_STRING_to_UTF8 requires this workaround */
+>>>          if (ASN1_STRING_to_UTF8(&buf, val) <=3D 0)
+>>>          {
+>>>              continue;
+>>> diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+>>> index d7cc2ba..645ccf5 100644
+>>> --- a/src/openvpn/ssl_openssl.c
+>>> +++ b/src/openvpn/ssl_openssl.c
+>>> @@ -254,10 +254,7 @@ tls_ctx_set_options(struct tls_root_ctx *ctx,
+>>> unsigned int ssl_flags)
+>>>              sslopt |=3D SSL_OP_NO_TLSv1_2;
+>>>          }
+>>>  #endif
+>>> -#ifdef SSL_OP_NO_COMPRESSION
+>>> -        /* Disable compression - flag not available in OpenSSL 0.9.8 */
+>>>          sslopt |=3D SSL_OP_NO_COMPRESSION;
+>>> -#endif
+>>>          SSL_CTX_set_options(ctx->ctx, sslopt);
+>>>      }
+>>>
+>>> diff --git a/src/openvpn/ssl_openssl.h b/src/openvpn/ssl_openssl.h
+>>> index 6ca4cb6..60a1f5e 100644
+>>> --- a/src/openvpn/ssl_openssl.h
+>>> +++ b/src/openvpn/ssl_openssl.h
+>>> @@ -33,17 +33,6 @@
+>>>  #include <openssl/ssl.h>
+>>>
+>>>  /**
+>>> - * SSL_OP_NO_TICKET tells OpenSSL to disable "stateless session
+>>> resumption",
+>>> - * as this is something we do not want nor need, but could potentially
+>>> be
+>>> - * used for a future attack.  For compatibility reasons we keep
+>>> building if the
+>>> - * OpenSSL version is too old (pre-0.9.8f) to support stateless session
+>>> - * resumption (and the accompanying SSL_OP_NO_TICKET flag).
+>>> - */
+>>> -#ifndef SSL_OP_NO_TICKET
+>>> -#define SSL_OP_NO_TICKET 0
+>>> -#endif
+>>> -
+>>> -/**
+>>>   * Structure that wraps the TLS context. Contents differ depending on
+>>> the
+>>>   * SSL library used.
+>>>   */
+>>> diff --git a/src/openvpn/ssl_verify_openssl.c
+>>> b/src/openvpn/ssl_verify_openssl.c
+>>> index 5624daa..54eadbd 100644
+>>> --- a/src/openvpn/ssl_verify_openssl.c
+>>> +++ b/src/openvpn/ssl_verify_openssl.c
+>>> @@ -458,8 +458,7 @@ x509_setenv_track(const struct x509_track *xt,
+>>> struct env_set *es, const int dep
+>>>                          if (ent)
+>>>                          {
+>>>                              ASN1_STRING *val =3D
+>>> X509_NAME_ENTRY_get_data(ent);
+>>> -                            unsigned char *buf;
+>>> -                            buf =3D (unsigned char *)1; /* bug in Open=
+SSL
+>>> 0.9.6b ASN1_STRING_to_UTF8 requires this workaround */
+>>> +                            unsigned char *buf =3D NULL;
+>>>                              if (ASN1_STRING_to_UTF8(&buf, val) > 0)
+>>>                              {
+>>>                                  do_setenv_x509(es, xt->name, (char
+>>> *)buf, depth);
+>>> @@ -514,7 +513,7 @@ x509_setenv(struct env_set *es, int cert_depth,
+>>> openvpn_x509_cert_t *peer_cert)
+>>>      ASN1_STRING *val;
+>>>      X509_NAME_ENTRY *ent;
+>>>      const char *objbuf;
+>>> -    unsigned char *buf;
+>>> +    unsigned char *buf =3D NULL;
+>>>      char *name_expand;
+>>>      size_t name_expand_size;
+>>>      X509_NAME *x509 =3D X509_get_subject_name(peer_cert);
+>>> @@ -547,7 +546,6 @@ x509_setenv(struct env_set *es, int cert_depth,
+>>> openvpn_x509_cert_t *peer_cert)
+>>>          {
+>>>              continue;
+>>>          }
+>>> -        buf =3D (unsigned char *)1; /* bug in OpenSSL 0.9.6b
+>>> ASN1_STRING_to_UTF8 requires this workaround */
+>>>          if (ASN1_STRING_to_UTF8(&buf, val) <=3D 0)
+>>>          {
+>>>              continue;
+>>>
+>>
+>> For master: ACK.
+>>
+>> For release/2.4: I wonder whether we need to keep 0.9.8 support, as
+>> SLES11 still ships with 0.9.8h, and has general support until 31 Mar 201=
+9.
 >=20
-> How many of the enterprise users will want to update and then can't be
-> bothered to install a newer OpenSSL into /opt?
-> Older OpenSSL versions are EOL, I don't think the community edition
-> should waste any energy on support such stuff. I'd even discontinue
-> 1.0.1 support on master for the same reason because 1.0.1 is also past
-> the end of its life.
+> To make the picture complete, there is also the "extended" support for EL5
+> for paying customers. For both RedHat EL5 and Oracle's EL5 clone extended
+> support ends somewhere in 2020.
 
-On Enterprise Linux (at least RHEL and SLES), OpenSSL 1.0.1 *is*
-supported by the distro.  I can't speak for SUSE, but I know for a fact
-that Red Hat have people ensuring important OpenSSL issues are
-backported and fixed during the life time of RHEL.  So on RHEL 5,
-OpenSSL 0.9.8 was even fully supported and updated all up until March
-31, 2017.  But it isn't supported by the OpenSSL community.
+That is correct.  But we decided that is for really special installs.
+Those users also pay an incredible high premium to Red Hat (and I
+wouldn't expect Oracle to be different) to get access to the ELS
+(Extended Life-cycle Support).  IIRC, it is also something not all
+customers are eligible to buy.  I don't even think you can buy ELS from
+their web-shop, you have to go through a sales contact.
 
-And the packaging side of side-loading libraries into /opt will also be
-a complete mess.  *EL distributions are updated continuously for at
-least 7-10 years.  Those basing their environment on these distributions
-will not be bothered manually maintaining an /opt based OpenSSL version;
-what will happen is that they make it run once and forgets to update it
-until OpenVPN installs breaks again.  And if the OpenVPN package
-maintainer need to maintain an /opt based OpenSSL package on-top of that
-and to ensure /usr/sbin/openvpn picks the right OpenSSL version ....
-nah, that's not going to fly well.
+<https://access.redhat.com/support/policy/updates/errata/#Extended_Life_Cyc=
+le_Phase>
 
-So as long as the *EL distributions keep their OpenSSL packages updated
-and backports fixes ... I see no reason why we shouldn't leverage on
-their work.  At least for RHEL, every RPM update goes through several QE
-steps, where regression testing happens for a lot of known issues in
-addition to package install/upgrade/downgrade/uninstall tests.  So the
-long-term package stability should be reasonably high.
+The ELS is also only supported on a very restricted set of packages:
+<https://access.redhat.com/articles/2901071>
+
+So considering that this isn't something being too common, we decided a
+long time ago it isn't worth the hassle for us.  We anyway do support
+OpenVPN v2.3 for a while more, which will work on EL5.  So if someone
+really wants to stay on EL5 longer, they need to accept that they won't
+get the newest OpenVPN versions.
 
 
 --=20
@@ -96,9 +269,9 @@ OpenVPN Technologies, Inc
 
 
 
---s85tVtdCSUa0hUotgkor0BnKJmt80td80--
+--2XRQpbSi56araHPtSjA21BbDWCbFifsF3--
 
---t606DqhoEls4hqnksGEtc61a2KaJwKCDn
+--hEDObHXUPtQN39ohWCdakaxXuxK46vk5P
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -106,20 +279,20 @@ Content-Disposition: attachment; filename="signature.asc"
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBCAAGBQJY7fDRAAoJEIbPlEyWcf3ytlAP/06/SpL+agbhcxlDvYmdKOEI
-ZTK0M+9YSB2jiMqlxUpaznfeG2RywdPVG1tn6Na0SkpSU3su/jtRFDjhfq6LQ1n0
-++qhmBiUTcrLZJuFSVtsigyAbhXu4Gh1phJyd/3cuwj88W5B6jCYjr8Q0iIXEOgu
-kZd0g0W/lZVumy3o/jsDy81mNN65JpNSnyOhiqqOPPE8POAKthSNE+lonJ0LJ/cH
-9/VGAtz4HkaV99aIU2vTzFWSIbRpnBz//TjbbMVtjaJ+1JcJ95PUkr1ZGTor4+Bt
-Rgso48N46kMxRcj0SsHJDq7asllG+10StQFf5M/rrC5fMwzBhethkb/KmEQUY2ff
-Zi7oauUD/LCs4gpP7QFZU79+5/6/8kaZrbmwBvP+yE6xwYQP8fP/tpaboh0fA3zN
-R2Zx2JfglPwo3l69KfCN5gTP3bMbPSdl934Mg3nBtqMsxEt4q3IlYDbAIuIsRapr
-l4LyAIAjpb8hqZ41nz+/DbKAgz5nDdHwTmFo5QB6zC6HCRMBUkPot9CxnD/6ky/H
-WwyAxoiGFSWpSgaIQJWO1uzoQxULgnkIzSPu6nY/4QvJY7rP2VnWM7xRzyl035tf
-qOjKk50VjjJheeK3uTUDaHfVR2nvpBzDuokqdRogHtbdrDlu+seWfUJk9eJTt6na
-YwqObce6UeneU9HeBAN9
-=hoZD
+iQIcBAEBCAAGBQJY7fOoAAoJEIbPlEyWcf3ykq0P/2utArUp69gat8ywdv1eQKe4
+eUEOugJV/OZpOxzy6rTMpSIBGKTuBIk+KJaX8a6iB+ij2EZ1SI/QDLsu9Jt8Kb0l
+GTq4eIG0u6S4TTGKFNmk+sjHDFXHh7Bd7JPF/CsX2lRg7/B5T3AacAXA3U2Q/T2N
+9tLOEEtP8vwOZLu3b2JU/FLWQbScNTRqcbulZYnOZe0GrBci92Z0xbeG767NRTyK
+vtjOGtConLL9hqW4ZBycJhsksSmieeWZ1+29H5ngeqEp1+wOcmmtdvUR3cg8aFhR
+u0gz/9damNikm3hjaWp/jWNB/wL+0G7hFiNL9zF4NuRaS1MlVv00ecy7FqcotNFC
+cYF22yNQS05OUyV2xJKL6+J0E+zjo/Odhwe7KT1lqFDqJQ+0pfoBbJf6Dw76g2Kt
+4OfGzGnX7nCAVFUwvoNHX9VbOzP9NlDvPZjqPd17hsIyn5r4v74pxAE/KH8ggOjA
+N1/1NzUGHZ2duAcljFvB7ZLCDKBAm/DhB2juJR8k3+zpcR4tKioEIOr+DnMZDeoR
+UNdlNt6kvRy2IfdgjhMi2rQIbVvSQasSX2RMS8bMg/IGQCVUUH8udyUZLHxO1PSL
+bZefAxfKNmmp0z8aqR2fKpp3wiG7Upu3gah1D0Z/pGoLTlROPk27Cj97r1+HxkpV
+cseXPzn7ENj0dO+QggMJ
+=H0yx
 -----END PGP SIGNATURE-----
 
---t606DqhoEls4hqnksGEtc61a2KaJwKCDn--
+--hEDObHXUPtQN39ohWCdakaxXuxK46vk5P--
 
