@@ -1,8 +1,8 @@
-From: David Sommerseth <davids@...515...>
-Date: Thu, 13 Apr 2017 19:26:09 +0200
-Message-Id: <20170413172609.29093-1-davids@...515...>
-Subject: [Openvpn-devel] [PATCH] Fix broken ./configure on systems without
-	openssl.pc
+From: Steven McDonald <steven@...2262...>
+Date: Fri, 14 Apr 2017 03:31:29 +1000
+Message-Id: <20170413173129.87367-1-steven@...2262...>
+Subject: [Openvpn-devel] [PATCH] Fix gateway detection with OpenBSD routing
+	domains
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,75 +15,54 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Commit 039a89c331e9b799 changed the OpenSSL check slightly, but that
-broke ./configure on systems which do not install the openssl.pc
-pkg-config support file.  This is typically an issue on most of the BSD
-platforms, where the OpenSSL package from the base repository does not
-provide that file.
+When OpenVPN is started using a non-default routing table on OpenBSD
+(e.g., with 'route -T10 exec openvpn ...'), it hangs forever trying to
+read its default gateway from a PF_ROUTE socket. This is because
+rtm_tableid is not being initialised after bzeroing the rt_msghdr we
+write to the socket, so we end up asking the kernel for the default
+route in routing table 0.
 
-We should anyway in this case have a better check of OpenSSL version
-available.  So in the case pkg-config fails, it will run an additional
-test looking for the OpenSSL version number in the opensslv.h header
-file and check against that version number.
+By default, the OpenBSD kernel will not respond to requests for routing
+table 0 from a process running in a different routing table, and even
+if it did, it would give us the wrong default gateway.
 
-I did consider to rip out the pkg-config test all together, but decided
-to let it stay.  If pkg-config works, it provides much more details to
-the ./configure script than just the version number check - such as
-include and library paths if those are outside the default system paths.
+The solution here is to set rtm_tableid to the value returned by
+getrtable(2), which always succeeds and returns the calling process's
+current routing table.
 
-If the user adds OPENSSL_CFLAGS or OPENSSL_LIBS to the ./configure
-script, the pkg-config will not be run.  But this patch ensures that the
-OpenSSL version is also checked in this situation.
-
-This patch have been tested on Scientic Linux 7.3 (RHEL clone) and
-FreeBSD 10.3-RELEASE-p11.
-
-Signed-off-by: David Sommerseth <davids@...515...>
+This patch makes the test suite (without a t_client.rc) pass when run
+in a non-default routing table, where it would fail previously. It has
+also been successfully tested in client mode against both git master
+and OpenVPN 2.4.1 from ports on an OpenBSD -current system.
 ---
- configure.ac | 24 +++++++++++++++++++++++-
- 1 file changed, 23 insertions(+), 1 deletion(-)
+ src/openvpn/route.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/configure.ac b/configure.ac
-index acea060..ffffcc6 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -861,12 +861,34 @@ if test "${enable_crypto}" = "yes" -a "${with_crypto_library}" = "openssl"; then
- 			[OPENSSL],
- 			[libcrypto >= 1.0.1, libssl >= 1.0.1],
- 	                [have_openssl="yes"],
--			[AC_MSG_ERROR([Minimum supported OpenSSL version is 1.0.1])]
-+			[] # If this fails, we will do another test next
- 		)
- 
- 		OPENSSL_LIBS=${OPENSSL_LIBS:--lssl -lcrypto}
- 	fi
- 
-+        # If pkgconfig check failed, add an additional version check
-+        if test "${have_openssl}" != "yes"; then
-+           AC_MSG_CHECKING([additionally if OpenSSL is available and version >= 1.0.1])
-+	   AC_COMPILE_IFELSE(
-+		[AC_LANG_PROGRAM(
-+			[[
-+#include <openssl/opensslv.h>
-+			]],
-+			[[
-+/* Strip out some of the version information we don't care about */
-+#define OSSLVER OPENSSL_VERSION_NUMBER >> 12
-+#if OSSLVER < 0x10001
-+#error OpneSSL too old
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index 08998d5f..33cdc0b0 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -3597,6 +3597,9 @@ get_default_gateway(struct route_gateway_info *rgi)
+     rtm.rtm_flags = RTF_UP | RTF_GATEWAY;
+     rtm.rtm_version = RTM_VERSION;
+     rtm.rtm_seq = ++seq;
++#ifdef TARGET_OPENBSD
++    rtm.rtm_tableid = getrtable();
 +#endif
-+			]]
-+		)],
-+		[AC_MSG_RESULT([ok])],
-+		[AC_MSG_ERROR([OpenSSL version too old])]
-+	   )
-+           OPENSSL_LIBS=${OPENSSL_LIBS:--lssl -lcrypto}
-+        fi
-+
- 	saved_CFLAGS="${CFLAGS}"
- 	saved_LIBS="${LIBS}"
- 	CFLAGS="${CFLAGS} ${OPENSSL_CFLAGS}"
+     rtm.rtm_addrs = rtm_addrs;
+ 
+     so_dst.sa_family = AF_INET;
+@@ -3812,6 +3815,9 @@ get_default_gateway_ipv6(struct route_ipv6_gateway_info *rgi6,
+     rtm.rtm_flags = RTF_UP;
+     rtm.rtm_version = RTM_VERSION;
+     rtm.rtm_seq = ++seq;
++#ifdef TARGET_OPENBSD
++    rtm.rtm_tableid = getrtable();
++#endif
+ 
+     so_dst.sin6_family = AF_INET6;
+     so_mask.sin6_family = AF_INET6;
 -- 
-2.11.0
+2.12.2
 
 
