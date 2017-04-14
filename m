@@ -1,21 +1,11 @@
-References: <e6f1b674-b382-0626-03c8-a20e0fbefc1b@...2080...>
-	<1491996924-24576-1-git-send-email-steffan.karger@...1435...>
-	<024c8d0b-b82d-4ea2-2445-9c57bf734c83@...1435...>
-	<afa63dbb-715c-8775-2ac9-4dbdf0e7aaf5@...2080...>
-	<193f3a1c-dab5-f1f1-7ed4-f34740c066a0@...1435...>
-	<0f9ad475-2cf0-de38-f6ed-be2389a87947@...2080...>
-	<ac344e5f-988e-9d0c-49a6-a56c6e97871a@...1435...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <3275c6bd-8194-2e23-2e64-3d3fd5d2f090@...2080...>
-Date: Fri, 14 Apr 2017 14:37:09 +0200
+From: Steffan Karger <steffan.karger@...1435...>
+Date: Fri, 14 Apr 2017 17:40:49 +0200
+Message-ID: <1492184450-11994-1-git-send-email-steffan.karger@...1435...>
+In-Reply-To: <3275c6bd-8194-2e23-2e64-3d3fd5d2f090@...2080...>
+References: <3275c6bd-8194-2e23-2e64-3d3fd5d2f090@...2080...>
 MIME-Version: 1.0
-In-Reply-To: <ac344e5f-988e-9d0c-49a6-a56c6e97871a@...1435...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature";
-	boundary="bktXwLg2GIhXeTxnjfGMcWqRoQTeMXEUf"
-Subject: Re: [Openvpn-devel] [PATCH v2] Add --tls-cert-profile option for
- mbedtls builds
-Reply-To: openvpn-devel@lists.sourceforge.net
+Subject: [Openvpn-devel] [PATCH v3] Add --tls-cert-profile option for
+	mbedtls builds
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -24,154 +14,317 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan.karger@...1435...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---bktXwLg2GIhXeTxnjfGMcWqRoQTeMXEUf
-Content-Type: multipart/mixed; boundary="2XCHvmLEDON84Omrx2uqfmPT1EdoBw7fD";
-	protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-Reply-To: openvpn-devel@lists.sourceforge.net
-To: Steffan Karger <steffan.karger@...1435...>,
-	openvpn-devel@lists.sourceforge.net
-Message-ID: <3275c6bd-8194-2e23-2e64-3d3fd5d2f090@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH v2] Add --tls-cert-profile option for
-	mbedtls builds
-References: <e6f1b674-b382-0626-03c8-a20e0fbefc1b@...2080...>
-	<1491996924-24576-1-git-send-email-steffan.karger@...1435...>
-	<024c8d0b-b82d-4ea2-2445-9c57bf734c83@...1435...>
-	<afa63dbb-715c-8775-2ac9-4dbdf0e7aaf5@...2080...>
-	<193f3a1c-dab5-f1f1-7ed4-f34740c066a0@...1435...>
-	<0f9ad475-2cf0-de38-f6ed-be2389a87947@...2080...>
-	<ac344e5f-988e-9d0c-49a6-a56c6e97871a@...1435...>
-In-Reply-To: <ac344e5f-988e-9d0c-49a6-a56c6e97871a@...1435...>
+This allows the user to specify what certificate crypto algorithms to
+support.  The supported profiles are 'preferred' (default), 'legacy' and
+'suiteb', as discussed in <84590a17-1c48-9df2-c48e-4160750b2e33@...1435...>
+(https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg14214.html).
 
---2XCHvmLEDON84Omrx2uqfmPT1EdoBw7fD
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
+This only implements the feature for mbed TLS builds, because for mbed it
+is both more easy to implement and the most relevant because mbed TLS 2+
+is by default somewhat restrictive by requiring 2048-bit+ for RSA keys.
 
-On 14/04/17 11:16, Steffan Karger wrote:
-> Hi,
->=20
-> On 13-04-17 18:40, David Sommerseth wrote:
->> On 13/04/17 15:37, Steffan Karger wrote:
->>> On 13-04-17 15:09, David Sommerseth wrote:
->>>> On a more generic note to this patch.  I wonder if we should keep
->>>> "legacy" the default in the v2.4 branch.  In the Fedora 26 (and
->>>> Rawhide/27) builds I had to do something similar [1] to keep users
->>>> happy.  As OpenVPN isn't ready for OpenSSL v1.1, I had to switch to mb=
-ed
->>>> TLS.  Unfortunately that haven't been as successful as I really hoped =
-it
->>>> would be, but that's an entirely different story (and mail thread).  As
->>>> long as the Fedora builds need to be built with mbed TLS, I will need =
-to
->>>> ensure 'legacy' is the default there for a while.  For the coming Fedo=
-ra
->>>> Rawhide (which will be F28), I can make some announcements preparing
->>>> users to move to stricter defaults.
->>>>
->>>> [1]
->>>> <http://pkgs.fedoraproject.org/cgit/rpms/openvpn.git/tree/0001-workaro=
-und-Allow-weaker-RSA-keys-and-MD-algorithms-i.patch?h=3Df26>
->>>
->>> The current mbed TLS builds already reject legacy crypto (except the
->>> fedora packaged build, apparently).  With this patch users have the
->>> ability to use legacy stuff again, but I would prefer to not go any
->>> further than that.  I think we should encourage people to drop the
->>> legacy.  Just like the browser vendors are doing.
->>
->> I do agree.  But the pain as a package maintainer is quite noticeable
->> when you're getting complaints about configurations this breaks.  In
->> fact, I got quite some dissatisfied remarks even for moving from 2.3 to
->> 2.4 on the OpenSSL builds (F25 + EPEL) - as that also broke some setups
->> - mostly due to our option parser now doesn't ignore configuration
->> errors any more or we actually implement the dual stack IPv4/IPv6
->> properly on the transport side.
->>
->> [..snip..]
->>
->>> And for Fedora, they chose to experience intense pain when they chose to
->>> go for OpenSSL 1.1 this fast, that's their problem I guess...  If they
->>> want to be that cutting edge, they should also stop using legacy crypto.
->>>  And otherwise, it will be a simple patch in the fedora packaging.
->>
->> Well, they do make things move forward fast.  And they do a lot of work
->> to get upstream projects moving towards OpenSSL 1.1.  As there is a
->> major Fedora release roughly every 6 months, it is a fast moving target.
->>
->> But Fedora users as side, they know each major release is a huge step
->> forward in many areas.  For most OpenVPN users, regardless of OS or
->> distro, they are used to the more sloppy legacy crypto support of
->> OpenSSL.  So enforcing a stricter set of crypto parameters in OpenVPN
->> v2.4 only on mbed TLS seems a bit odd to me.
->=20
-> I agree - which is why I plan to add similar behaviour to the OpenSSL
-> builds.  I'm convinced by the argument to better aligning OpenSSL and
-> mbed TLS behaviour, so I agree that we should default to 'legacy' as
-> long as the OpenSSL counterpart is missing.
->=20
-> Do you prefer a v3?
+Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+---
+v2:
+ - add documentation (manpage, Changes.rst and --help)
+ - no longer print a warning message on each startup for OpenSSL builds
+v3:
+ - remove format changes in unrelated items (introduced in v2)
+ - Update Changes.rst text to reflect that the default in 2.4.2 is 'legacy'
+   and the default in 2.5 will be 'preferred' (as discussed on the ML).
+ - This patch is for the master branch only now (due to the default).
 
-I think it's needed to improve some details in the man page and
-Changes.rst.  Perhaps also extend the man page to state that
---tls-cert-profile is currently a NOOP builds against OpenSSL?
+ Changes.rst               | 19 +++++++++++++++++-
+ doc/openvpn.8             | 19 ++++++++++++++++++
+ src/openvpn/options.c     | 14 ++++++++++++-
+ src/openvpn/options.h     |  1 +
+ src/openvpn/ssl.c         |  3 +++
+ src/openvpn/ssl_backend.h | 10 ++++++++++
+ src/openvpn/ssl_mbedtls.c | 51 +++++++++++++++++++++++++++++++++++++++++++++++
+ src/openvpn/ssl_mbedtls.h |  1 +
+ src/openvpn/ssl_openssl.c |  6 ++++++
+ 9 files changed, 122 insertions(+), 2 deletions(-)
 
-For git master (future v2.5) I have no issues having 'preferred' being
-the default.  And we need to start announcing that things will be
-stricter in v2.5 already now.   But for v2.4 I think we should go for
-'legacy' as the default.
+diff --git a/Changes.rst b/Changes.rst
+index 2a94990..4b4360a 100644
+--- a/Changes.rst
++++ b/Changes.rst
+@@ -1,6 +1,15 @@
+-Overview of changes in 2.4
++Overview of changes in 2.5
+ ==========================
+ 
++User-visible Changes
++--------------------
++- (For mbed TLS buils) The default certificate profile is now "preferred",
++  which means that only SHA2+, RSA-2048+ and EC certs are accepted.  Legacy
++  crypto can be re-enabled by setting ``--tls-cert-profile legacy``.
++
++
++Overview of changes in 2.4
++==========================
+ 
+ New features
+ ------------
+@@ -318,3 +327,11 @@ Version 2.4.1
+    ``--remote-cert-tls`` uses the far more common keyUsage and extendedKeyUsage
+    extension instead.  Make sure your certificates carry these to be able to
+    use ``--remote-cert-tls``.
++
++Version 2.4.2
++=============
++- The new option ``--tls-cert-profile`` can be used to restrict the set of
++  allowed crypto algorithms in TLS certificates in mbed TLS builds.  The
++  default profile is 'legacy' for now, which allows SHA1+, RSA-1024+ and any
++  elliptic curve certificates.  The default will be changed to the 'preferred'
++  profile in the future, which requires SHA2+, RSA-2048+ and any curve.
+diff --git a/doc/openvpn.8 b/doc/openvpn.8
+index a9f5db7..fd821c7 100644
+--- a/doc/openvpn.8
++++ b/doc/openvpn.8
+@@ -4879,6 +4879,25 @@ when using PolarSSL or
+ OpenSSL.
+ .\"*********************************************************
+ .TP
++.B \-\-tls\-cert\-profile profile
++Set the allowed cryptographic algorithms for certificates according to
++.B profile\fN.
++
++The following profiles are supported:
++
++.B preferred
++(default): SHA2 and newer, RSA 2048-bit+, any elliptic curve.
++
++.B legacy
++: SHA1 and newer, RSA 2048-bit+, any elliptic curve.
++
++.B suiteb
++: SHA256/SHA384, ECDSA with P-256 or P-384.
++
++This option is only supported for mbed TLS builds.  OpenSSL builds accept any
++certificate that OpenSSL accepts.
++.\"*********************************************************
++.TP
+ .B \-\-tls\-timeout n
+ Packet retransmit timeout on TLS control channel
+ if no acknowledgment from remote within
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 9fef394..74536fb 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -599,6 +599,8 @@ static const char usage_message[] =
+ #endif
+     "--tls-cipher l  : A list l of allowable TLS ciphers separated by : (optional).\n"
+     "                : Use --show-tls to see a list of supported TLS ciphers.\n"
++    "--tls-cert-profile p : Set the allowed certificate crypto algorithm profile\n"
++    "                  (default=%s).\n"
+     "--tls-timeout n : Packet retransmit timeout on TLS control channel\n"
+     "                  if no ACK from remote within n seconds (default=%d).\n"
+     "--reneg-bytes n : Renegotiate data chan. key after n bytes sent and recvd.\n"
+@@ -873,6 +875,7 @@ init_options(struct options *o, const bool init_gc)
+     o->renegotiate_seconds = 3600;
+     o->handshake_window = 60;
+     o->transition_window = 3600;
++    o->tls_cert_profile = "preferred";
+     o->ecdh_curve = NULL;
+ #ifdef ENABLE_X509ALTUSERNAME
+     o->x509_username_field = X509_USERNAME_FIELD_DEFAULT;
+@@ -1752,6 +1755,7 @@ show_settings(const struct options *o)
+     SHOW_STR(cryptoapi_cert);
+ #endif
+     SHOW_STR(cipher_list);
++    SHOW_STR(tls_cert_profile);
+     SHOW_STR(tls_verify);
+     SHOW_STR(tls_export_cert);
+     SHOW_INT(verify_x509_type);
+@@ -2734,6 +2738,7 @@ options_postprocess_verify_ce(const struct options *options, const struct connec
+         MUST_BE_UNDEF(pkcs12_file);
+ #endif
+         MUST_BE_UNDEF(cipher_list);
++        MUST_BE_UNDEF(tls_cert_profile);
+         MUST_BE_UNDEF(tls_verify);
+         MUST_BE_UNDEF(tls_export_cert);
+         MUST_BE_UNDEF(verify_x509_name);
+@@ -4090,7 +4095,7 @@ usage(void)
+             o.verbosity,
+             o.authname, o.ciphername,
+             o.replay_window, o.replay_time,
+-            o.tls_timeout, o.renegotiate_seconds,
++            o.tls_cert_profile, o.tls_timeout, o.renegotiate_seconds,
+             o.handshake_window, o.transition_window);
+ #else  /* ifdef ENABLE_CRYPTO */
+     fprintf(fp, usage_message,
+@@ -7813,6 +7818,13 @@ add_option(struct options *options,
+         VERIFY_PERMISSION(OPT_P_GENERAL);
+         options->cipher_list = p[1];
+     }
++#ifdef ENABLE_CRYPTO_MBEDTLS
++    else if (streq(p[0], "tls-cert-profile") && p[1] && !p[2])
++    {
++        VERIFY_PERMISSION(OPT_P_GENERAL);
++        options->tls_cert_profile = p[1];
++    }
++#endif
+     else if (streq(p[0], "crl-verify") && p[1] && ((p[2] && streq(p[2], "dir"))
+                                                    || (p[2] && streq(p[1], INLINE_FILE_TAG) ) || !p[2]) && !p[3])
+     {
+diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+index b3ab029..9085413 100644
+--- a/src/openvpn/options.h
++++ b/src/openvpn/options.h
+@@ -500,6 +500,7 @@ struct options
+     const char *priv_key_file;
+     const char *pkcs12_file;
+     const char *cipher_list;
++    const char *tls_cert_profile;
+     const char *ecdh_curve;
+     const char *tls_verify;
+     int verify_x509_type;
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 1033e58..72dbec3 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -702,6 +702,9 @@ init_ssl(const struct options *options, struct tls_root_ctx *new_ctx)
+     /* Allowable ciphers */
+     tls_ctx_restrict_ciphers(new_ctx, options->cipher_list);
+ 
++    /* Restrict allowed certificate crypto algorithms */
++    tls_ctx_set_cert_profile(new_ctx, options->tls_cert_profile);
++
+ #ifdef ENABLE_CRYPTO_MBEDTLS
+     /* Personalise the random by mixing in the certificate */
+     tls_ctx_personalise_random(new_ctx);
+diff --git a/src/openvpn/ssl_backend.h b/src/openvpn/ssl_backend.h
+index 206400f..3c4cf34 100644
+--- a/src/openvpn/ssl_backend.h
++++ b/src/openvpn/ssl_backend.h
+@@ -178,6 +178,16 @@ void tls_ctx_set_options(struct tls_root_ctx *ctx, unsigned int ssl_flags);
+ void tls_ctx_restrict_ciphers(struct tls_root_ctx *ctx, const char *ciphers);
+ 
+ /**
++ * Set the TLS certificate profile.  The profile defines which crypto
++ * algorithms may be used in the supplied certificate.
++ *
++ * @param ctx           TLS context to restrict, must be valid.
++ * @param profile       The profile name ('preferred', 'legacy' or 'suiteb').
++ *                      Defaults to 'preferred' if NULL.
++ */
++void tls_ctx_set_cert_profile(struct tls_root_ctx *ctx, const char *profile);
++
++/**
+  * Check our certificate notBefore and notAfter fields, and warn if the cert is
+  * either not yet valid or has expired.  Note that this is a non-fatal error,
+  * since we compare against the system time, which might be incorrect.
+diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
+index ba8dadf..6e27a83 100644
+--- a/src/openvpn/ssl_mbedtls.c
++++ b/src/openvpn/ssl_mbedtls.c
+@@ -63,6 +63,34 @@
+ #include <mbedtls/pem.h>
+ #include <mbedtls/sha256.h>
+ 
++static const mbedtls_x509_crt_profile openvpn_x509_crt_profile_legacy =
++{
++    /* Hashes from SHA-1 and above */
++    MBEDTLS_X509_ID_FLAG( MBEDTLS_MD_SHA1 ) |
++    MBEDTLS_X509_ID_FLAG( MBEDTLS_MD_RIPEMD160 ) |
++    MBEDTLS_X509_ID_FLAG( MBEDTLS_MD_SHA224 ) |
++    MBEDTLS_X509_ID_FLAG( MBEDTLS_MD_SHA256 ) |
++    MBEDTLS_X509_ID_FLAG( MBEDTLS_MD_SHA384 ) |
++    MBEDTLS_X509_ID_FLAG( MBEDTLS_MD_SHA512 ),
++    0xFFFFFFF, /* Any PK alg    */
++    0xFFFFFFF, /* Any curve     */
++    1024,      /* RSA-1024 and larger */
++};
++
++static const mbedtls_x509_crt_profile openvpn_x509_crt_profile_preferred =
++{
++    /* SHA-2 and above */
++    MBEDTLS_X509_ID_FLAG( MBEDTLS_MD_SHA224 ) |
++    MBEDTLS_X509_ID_FLAG( MBEDTLS_MD_SHA256 ) |
++    MBEDTLS_X509_ID_FLAG( MBEDTLS_MD_SHA384 ) |
++    MBEDTLS_X509_ID_FLAG( MBEDTLS_MD_SHA512 ),
++    0xFFFFFFF, /* Any PK alg    */
++    0xFFFFFFF, /* Any curve     */
++    2048,      /* RSA-2048 and larger */
++};
++
++#define openvpn_x509_crt_profile_suiteb mbedtls_x509_crt_profile_suiteb;
++
+ void
+ tls_init_lib()
+ {
+@@ -252,6 +280,27 @@ tls_ctx_restrict_ciphers(struct tls_root_ctx *ctx, const char *ciphers)
+ }
+ 
+ void
++tls_ctx_set_cert_profile(struct tls_root_ctx *ctx, const char *profile)
++{
++    if (!profile || 0 == strcmp(profile, "preferred"))
++    {
++        ctx->cert_profile = openvpn_x509_crt_profile_preferred;
++    }
++    else if (0 == strcmp(profile, "legacy"))
++    {
++        ctx->cert_profile = openvpn_x509_crt_profile_legacy;
++    }
++    else if (0 == strcmp(profile, "suiteb"))
++    {
++        ctx->cert_profile = openvpn_x509_crt_profile_suiteb;
++    }
++    else
++    {
++        msg (M_FATAL, "ERROR: Invalid cert profile: %s", profile);
++    }
++}
++
++void
+ tls_ctx_check_cert_time(const struct tls_root_ctx *ctx)
+ {
+     ASSERT(ctx);
+@@ -918,6 +967,8 @@ key_state_ssl_init(struct key_state_ssl *ks_ssl,
+     mbedtls_ssl_conf_rng(&ks_ssl->ssl_config, mbedtls_ctr_drbg_random,
+                          rand_ctx_get());
+ 
++    mbedtls_ssl_conf_cert_profile(&ks_ssl->ssl_config, &ssl_ctx->cert_profile);
++
+     if (ssl_ctx->allowed_ciphers)
+     {
+         mbedtls_ssl_conf_ciphersuites(&ks_ssl->ssl_config, ssl_ctx->allowed_ciphers);
+diff --git a/src/openvpn/ssl_mbedtls.h b/src/openvpn/ssl_mbedtls.h
+index d8f717c..0a4ad17 100644
+--- a/src/openvpn/ssl_mbedtls.h
++++ b/src/openvpn/ssl_mbedtls.h
+@@ -83,6 +83,7 @@ struct tls_root_ctx {
+     struct external_context *external_key; /**< Management external key */
+ #endif
+     int *allowed_ciphers;       /**< List of allowed ciphers for this connection */
++    mbedtls_x509_crt_profile cert_profile; /**< Allowed certificate types */
+ };
+ 
+ struct key_state_ssl {
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index d7cc2ba..5af0e4f 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -384,6 +384,12 @@ tls_ctx_restrict_ciphers(struct tls_root_ctx *ctx, const char *ciphers)
+ }
+ 
+ void
++tls_ctx_set_cert_profile(struct tls_root_ctx *ctx, const char *profile)
++{
++    /* TODO --tls-cert-profile not supported for OpenSSL builds */
++}
++
++void
+ tls_ctx_check_cert_time(const struct tls_root_ctx *ctx)
+ {
+     int ret;
+-- 
+2.7.4
 
-> The thing I still don't buy is that we have to jump through hoops
-> because Fedora pushes openssl 1.1 (even though 1.0.2 is fine and
-> supported and all), but we have to keep enabling deprecated crypto *by
-> default* that people should not be using anymore, and can easily
-> re-enable with a --enable-old-cruft flag if they really want to.
-
-Fedora was just an example of what was needed to avoid a rebellious
-revolution against the package maintainer.  But it illustrates the
-trickiness of pushing such changes too quickly to a user base.  Hence,
-how I see it, for the whole OpenVPN user base regardless of OS/distro,
-to have legacy being the default for v2.4 users.  Which also aligns well
-with the default chosen for the OpenVPN 3 user base (which includes all
-OpenVPN Connect users).
-
-But be sure, I think we need to move towards 'preferred'.  But doing it
-in a good way for all.
-
-
---=20
-kind regards,
-
-David Sommerseth
-OpenVPN Technologies, Inc
-
-
-
---2XCHvmLEDON84Omrx2uqfmPT1EdoBw7fD--
-
---bktXwLg2GIhXeTxnjfGMcWqRoQTeMXEUf
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBCAAGBQJY8MJ/AAoJEIbPlEyWcf3ypbsP/0y7k/BhOKf1yfQ9zAP2fIyV
-zu7K6GzmLoyKKLopvzdQNGO7pPSdreAdpqbrPB2RJ0raK6DJbU1IN2om5gzgCRVo
-Fo0vnilRTA1sK0Ts5skDELpPBfOU1IGZ/+ckUS6zAdhl5ldBdqhR/nfcM3aafQ0N
-f8EKACgAz6WIadamZLvR0WhqnIxLyZ4GWSnDViYMrN5y7GcXC7WYDNnrzlvZQQDk
-jYWJW/g+z6VN0du5VZvC6l8sZQ63AT0ciztAnjuyFCrquEIw6iNPB4uyKQq/xQ/R
-5ipYHgXL/9HL6VnxqbqFUvpvDXIwORNqjGpIVaMqO0MJc+3GxZ54c3pZvg8kIh4W
-xQw2qCDdF7ynq4H9CJhLucjIBtkSsTBA/tZsQWi+t1YJD3zeq1uufGZKL8TtIJEo
-9hjnSUKxrgl8efHA49lDvpv893jrFxR5lv8DgEeMgrLXg7mp5GRPQm2ujjz5v2Jr
-3FKMt+lrM23bWikMkFcbRnINwvP07tj20MrzegdzFz8TJniwDqoLpJvC22At1see
-cjyO0Dd9c2PW5D5Se85Aqa0e8n3WWYQv4UXQSPgnoQEgU8SM9PglFIRuiDmw18cV
-gVdVIKV/rIEcO/yxsNVjpnmdfI6HAsLb0e530SUrZAg307hLBO4sjnViU7gYPDYB
-q/zhrty92mJ8oh+wuxA2
-=ILHl
------END PGP SIGNATURE-----
-
---bktXwLg2GIhXeTxnjfGMcWqRoQTeMXEUf--
 
