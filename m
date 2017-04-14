@@ -1,11 +1,12 @@
 From: Steffan Karger <steffan.karger@...1435...>
-Date: Fri, 14 Apr 2017 17:40:49 +0200
-Message-ID: <1492184450-11994-1-git-send-email-steffan.karger@...1435...>
-In-Reply-To: <3275c6bd-8194-2e23-2e64-3d3fd5d2f090@...2080...>
+Date: Fri, 14 Apr 2017 17:40:50 +0200
+Message-ID: <1492184450-11994-2-git-send-email-steffan.karger@...1435...>
+In-Reply-To: <1492184450-11994-1-git-send-email-steffan.karger@...1435...>
 References: <3275c6bd-8194-2e23-2e64-3d3fd5d2f090@...2080...>
+	<1492184450-11994-1-git-send-email-steffan.karger@...1435...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v3] Add --tls-cert-profile option for
-	mbedtls builds
+Subject: [Openvpn-devel] [PATCH (release/2.4)] Add --tls-cert-profile option
+	for mbedtls builds
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,7 +20,7 @@ Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
 This allows the user to specify what certificate crypto algorithms to
-support.  The supported profiles are 'preferred' (default), 'legacy' and
+support.  The supported profiles are 'preferred', 'legacy' (default) and
 'suiteb', as discussed in <84590a17-1c48-9df2-c48e-4160750b2e33@...1435...>
 (https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg14214.html).
 
@@ -27,19 +28,18 @@ This only implements the feature for mbed TLS builds, because for mbed it
 is both more easy to implement and the most relevant because mbed TLS 2+
 is by default somewhat restrictive by requiring 2048-bit+ for RSA keys.
 
+In contrast with the patch for the master branch, this patch uses 'legacy'
+as the default profile following discussion on the openvpn-devel mailing
+list.
+
 Signed-off-by: Steffan Karger <steffan.karger@...1435...>
 ---
-v2:
- - add documentation (manpage, Changes.rst and --help)
- - no longer print a warning message on each startup for OpenSSL builds
-v3:
- - remove format changes in unrelated items (introduced in v2)
- - Update Changes.rst text to reflect that the default in 2.4.2 is 'legacy'
-   and the default in 2.5 will be 'preferred' (as discussed on the ML).
- - This patch is for the master branch only now (due to the default).
+This patch is a cherry-picked and adjusted version of the v3 patch for master.
+The only difference being that this patch uses 'legacy' as the default profile
+and documents that.
 
- Changes.rst               | 19 +++++++++++++++++-
- doc/openvpn.8             | 19 ++++++++++++++++++
+ Changes.rst               |  8 ++++++++
+ doc/openvpn.8             | 22 ++++++++++++++++++++
  src/openvpn/options.c     | 14 ++++++++++++-
  src/openvpn/options.h     |  1 +
  src/openvpn/ssl.c         |  3 +++
@@ -47,30 +47,13 @@ v3:
  src/openvpn/ssl_mbedtls.c | 51 +++++++++++++++++++++++++++++++++++++++++++++++
  src/openvpn/ssl_mbedtls.h |  1 +
  src/openvpn/ssl_openssl.c |  6 ++++++
- 9 files changed, 122 insertions(+), 2 deletions(-)
+ 9 files changed, 115 insertions(+), 1 deletion(-)
 
 diff --git a/Changes.rst b/Changes.rst
-index 2a94990..4b4360a 100644
+index 2a94990..91cd977 100644
 --- a/Changes.rst
 +++ b/Changes.rst
-@@ -1,6 +1,15 @@
--Overview of changes in 2.4
-+Overview of changes in 2.5
- ==========================
- 
-+User-visible Changes
-+--------------------
-+- (For mbed TLS buils) The default certificate profile is now "preferred",
-+  which means that only SHA2+, RSA-2048+ and EC certs are accepted.  Legacy
-+  crypto can be re-enabled by setting ``--tls-cert-profile legacy``.
-+
-+
-+Overview of changes in 2.4
-+==========================
- 
- New features
- ------------
-@@ -318,3 +327,11 @@ Version 2.4.1
+@@ -318,3 +318,11 @@ Version 2.4.1
     ``--remote-cert-tls`` uses the far more common keyUsage and extendedKeyUsage
     extension instead.  Make sure your certificates carry these to be able to
     use ``--remote-cert-tls``.
@@ -83,10 +66,10 @@ index 2a94990..4b4360a 100644
 +  elliptic curve certificates.  The default will be changed to the 'preferred'
 +  profile in the future, which requires SHA2+, RSA-2048+ and any curve.
 diff --git a/doc/openvpn.8 b/doc/openvpn.8
-index a9f5db7..fd821c7 100644
+index a9f5db7..19f755b 100644
 --- a/doc/openvpn.8
 +++ b/doc/openvpn.8
-@@ -4879,6 +4879,25 @@ when using PolarSSL or
+@@ -4879,6 +4879,28 @@ when using PolarSSL or
  OpenSSL.
  .\"*********************************************************
  .TP
@@ -97,23 +80,26 @@ index a9f5db7..fd821c7 100644
 +The following profiles are supported:
 +
 +.B preferred
-+(default): SHA2 and newer, RSA 2048-bit+, any elliptic curve.
++: SHA2 and newer, RSA 2048-bit+, any elliptic curve.
 +
 +.B legacy
-+: SHA1 and newer, RSA 2048-bit+, any elliptic curve.
++(default): SHA1 and newer, RSA 2048-bit+, any elliptic curve.
 +
 +.B suiteb
 +: SHA256/SHA384, ECDSA with P-256 or P-384.
 +
 +This option is only supported for mbed TLS builds.  OpenSSL builds accept any
 +certificate that OpenSSL accepts.
++
++OpenVPN will migrate to 'preferred' as default in the future.  Please ensure
++that your keys already comply.
 +.\"*********************************************************
 +.TP
  .B \-\-tls\-timeout n
  Packet retransmit timeout on TLS control channel
  if no acknowledgment from remote within
 diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 9fef394..74536fb 100644
+index 9fef394..19d732a 100644
 --- a/src/openvpn/options.c
 +++ b/src/openvpn/options.c
 @@ -599,6 +599,8 @@ static const char usage_message[] =
@@ -129,7 +115,7 @@ index 9fef394..74536fb 100644
      o->renegotiate_seconds = 3600;
      o->handshake_window = 60;
      o->transition_window = 3600;
-+    o->tls_cert_profile = "preferred";
++    o->tls_cert_profile = "legacy";
      o->ecdh_curve = NULL;
  #ifdef ENABLE_X509ALTUSERNAME
      o->x509_username_field = X509_USERNAME_FIELD_DEFAULT;
