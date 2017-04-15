@@ -1,11 +1,14 @@
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <7bb21bb3-c221-c78f-108f-c74c40962319@...515...>
-Date: Sat, 15 Apr 2017 11:25:06 +0300
+Date: Sat, 15 Apr 2017 11:16:47 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20170415091647.GG30424@...1296...>
+References: <20170413172609.29093-1-davids@...515...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature";
-	boundary="JxMJ0W8KpqRcC3L1ScTw5HP0Qb6nMTtF2"
-Subject: [Openvpn-devel] Reviewing Korean translation of OpenVPN-GUI?
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="EY/WZ/HvNxOox07X"
+Content-Disposition: inline
+In-Reply-To: <20170413172609.29093-1-davids@...515...>
+Subject: Re: [Openvpn-devel] [PATCH] Fix broken ./configure on systems
+ without openssl.pc
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,97 +17,59 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: David Sommerseth <davids@...515...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---JxMJ0W8KpqRcC3L1ScTw5HP0Qb6nMTtF2
-Content-Type: multipart/mixed; boundary="------------B022496A5B9BB6BD5F212E49"
-
-This is a multi-part message in MIME format.
---------------B022496A5B9BB6BD5F212E49
-Content-Type: text/plain; charset="utf-8"
+--EY/WZ/HvNxOox07X
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Hi all,
+Hi,
 
-Do we have any Korean speakers here who could review this PR?
+On Thu, Apr 13, 2017 at 07:26:09PM +0200, David Sommerseth wrote:
+> +/* Strip out some of the version information we don't care about */
+> +#define OSSLVER OPENSSL_VERSION_NUMBER >> 12
+> +#if OSSLVER < 0x10001
+> +#error OpneSSL too old
+> +#endif
 
-<https://github.com/OpenVPN/openvpn-gui/pull/155>
+While this works (except for the typo) - why not just do full-length math,=
+=20
+as in
 
+#if OPENSSL_VERSION_NUMBER < 0x10001000L
+#error OpneSSL too old
+#endif
+
+(note the L prefix, as in the opensslv.h #define)
+
+?
+
+gert
 --=20
-Samuli Sepp=C3=A4nen
-Community Manager
-OpenVPN Technologies, Inc
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-irc freenode net: mattock
-
---------------B022496A5B9BB6BD5F212E49
-Content-Type: application/pgp-keys;
- name="0x40864578.asc"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: attachment;
- filename="0x40864578.asc"
-
------BEGIN PGP PUBLIC KEY BLOCK-----
-Version: GnuPG v2
-
-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
-XuwT7RpGDZ6jBfphYQ=3D=3D
-=3DFKLE
------END PGP PUBLIC KEY BLOCK-----
-
---------------B022496A5B9BB6BD5F212E49--
-
---JxMJ0W8KpqRcC3L1ScTw5HP0Qb6nMTtF2
+--EY/WZ/HvNxOox07X
 Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
 
-iQEcBAEBCAAGBQJY8djiAAoJEClYTZ9AhkV4yDcH/jrkA+G5phFa87psN5OHGsRw
-iWeS7E2sK8oohHh3LfG+2wq91LHx3m8um5vpQrxkqbrSmbkaqnSFZjOJXXphqyUH
-nyU3aS5+ID7nuElSl5a5qLRNehFSpFI8C5nETtbS6HzBE7fqIGXxSE0FsP1CjFyS
-+VZq361EcGVgrJlOelpNu+RroDXTva6Az5kl9yPtcWUIrPiqZfaVtv0NLqWK6fmd
-DP5wNFH7LQFKn5WZDpiOxd9t+G2LhkSz6ZXMMymIcSKFIh8j6ksfL8+MnH0xXyuq
-pJyOOjMbJ/fJAW80YAo2hlqPWwjwGitiigIWedSIyITk9CZNgQquHQNSUYmCutI=
-=NfmO
+iQGcBAEBAgAGBQJY8eT+AAoJEB2Cnv7KVigSmAIL+wUrx62cIFiCuHxdSvhr1C8X
+GTOLoclPb9FRpSXYxMxbk3dsyT0QnzHhipXyPexevY2S7/zB5ji7VXMH1GsW5AJs
+TU6a9uYlNJCSJNzNTx0g6BbGxa9zJLzcb2YKGFrPhrpfKaw1BDxHkDee1/px1EhE
+bscBJWC3Vh6p9Q2ZUdr54jPqUN32SuIerwGXssoQd+pl4PnVevNfoLxV22eidwlu
+rhV9E/ekcjbre7VfleiNVkbKtj/HgeXVX3zemLAGRoSjsxL1wHjlz1IO3uobDQ+s
+pq5gJmamJFu5igoZQllTtl0TbvAQb6+DVCuNmNHMuoN03dHExLe5TgyVxnX+QIGW
+ajrp2tkJFaeou+ixrWhjHQWA5PSfZ2c56j7j/Qy0NYAI29j0wTBoZdxTJHzVfUrm
+1VQqcGXfIao/d3qHtkFOUe9+AO44gF47vjAcQK4mSFEP/NiZKnVbRRffNH6taZnH
+2sQL2tSuh0/SSvS6XymATsURs3AfDe9TJ8aILfpGBw==
+=1kRL
 -----END PGP SIGNATURE-----
 
---JxMJ0W8KpqRcC3L1ScTw5HP0Qb6nMTtF2--
+--EY/WZ/HvNxOox07X--
 
