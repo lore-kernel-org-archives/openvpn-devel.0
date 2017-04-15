@@ -1,15 +1,12 @@
+Date: Sat, 15 Apr 2017 23:06:18 +0200
+From: Christian Hesse <list@...1798...>
+Message-ID: <20170415230618.0b35c0a4@...1799...>
+In-Reply-To: <CAKuzo_jtWmupraMLHVme9+4YZjbJSQdsScRbuYRK0QjOJCN6EA@...278...>
 References: <CAKuzo_jtWmupraMLHVme9+4YZjbJSQdsScRbuYRK0QjOJCN6EA@...278...>
-	<cc0ce86b-9536-d0b3-a6f6-2cc5c1cf1fa2@...277...>
-	<e4e20ee9-f786-6ba8-ffa0-313bfbed4c1b@...2070...>
-	<CAKuzo_hyZ0Lre6FBE77X4owNFkn-KA-k+HSFrxoJPZRqVaYg9w@...278...>
-From: ValdikSS <iam@...2070...>
-Message-ID: <e9bbc084-1d96-bd99-33e4-bc4d265ea27f@...2070...>
-Date: Sun, 16 Apr 2017 00:22:16 +0300
 MIME-Version: 1.0
-In-Reply-To: <CAKuzo_hyZ0Lre6FBE77X4owNFkn-KA-k+HSFrxoJPZRqVaYg9w@...278...>
-Content-Type: multipart/alternative;
-	boundary="------------EF390F952D26EC58FD04712F"
-Content-Language: en-GB
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	boundary="Sig_/MelfmhgBO6sN/N+2FeZREAo";
+	protocol="application/pgp-signature"
 Subject: Re: [Openvpn-devel] devel mailing list
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
@@ -22,94 +19,39 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: Selva Nair <selva.nair@...277...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-This is a multi-part message in MIME format.
---------------EF390F952D26EC58FD04712F
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+--Sig_/MelfmhgBO6sN/N+2FeZREAo
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: quoted-printable
 
-It's not just gmail. I didn't get any bounce back and I can't see this message over gmane NNTP. Don't know what has happened. Reposting again.
+Selva Nair <selva.nair@...277...> on Sat, 2017/04/15 16:08:
+> I did not get this mail
+>=20
+> https://sourceforge.net/p/openvpn/mailman/message/35789733/
+>=20
+> Something up with the list or is it only me?
 
-On 16.04.2017 00:19, Selva Nair wrote:
->
-> On Sat, Apr 15, 2017 at 5:17 PM, ValdikSS <iam@...2070... <mailto:iam@...2070...>> wrote:
->
-> Possibly gmail blocked it in my case -- I thought 7z will be blocked only if contained an executable (.exe, .bat etc..)
->
-> Please do post again -- the registry entry may be added as a foot note in plain text ?
->
-> Thanks,
->
-> Selva
->
->
-> ------------------------------------------------------------------------------
-> Check out the vibrant tech community on one of the world's most
-> engaging tech sites, Slashdot.org! http://sdm.link/slashdot
->
->
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+I did receive the mail. Possibly anything blocked the 7z attachment for you?
+--=20
+main(a){char*c=3D/*    Schoene Gruesse                         */"B?IJj;MEH"
+"CX:;",b;for(a/*    Best regards             my address:    */=3D0;b=3Dc[a+=
++];)
+putchar(b-1/(/*    Chris            cc -ox -xc - && ./x    */b/42*2-3)*42);}
 
+--Sig_/MelfmhgBO6sN/N+2FeZREAo
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
 
---------------EF390F952D26EC58FD04712F
-Content-Type: text/html; charset=utf-8
-Content-Transfer-Encoding: 7bit
+-----BEGIN PGP SIGNATURE-----
 
-<html>
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  </head>
-  <body text="#000000" bgcolor="#FFFFFF">
-    It's not just gmail. I didn't get any bounce back and I can't see
-    this message over gmane NNTP. Don't know what has happened.
-    Reposting again.<br>
-    <br>
-    <div class="moz-cite-prefix">On 16.04.2017 00:19, Selva Nair wrote:<br>
-    </div>
-    <blockquote type="cite"
-cite="mid:CAKuzo_hyZ0Lre6FBE77X4owNFkn-KA-k+HSFrxoJPZRqVaYg9w@...278...">
-      <div dir="ltr">
-        <div class="gmail_extra"><br>
-          <div class="gmail_quote">On Sat, Apr 15, 2017 at 5:17 PM,
-            ValdikSS <span dir="ltr">&lt;<a
-                href="mailto:iam@...2070..." target="_blank"
-                moz-do-not-send="true">iam@...2070...</a>&gt;</span>
-            wrote:<br>
-          </div>
-          <br>
-          Possibly gmail blocked it in my case -- I thought 7z will be
-          blocked only if contained an executable (.exe, .bat etc..)</div>
-        <div class="gmail_extra"><br>
-        </div>
-        <div class="gmail_extra">Please do post again -- the registry
-          entry may be added as a foot note in plain text ?</div>
-        <div class="gmail_extra"><br>
-        </div>
-        <div class="gmail_extra">Thanks,</div>
-        <div class="gmail_extra"><br>
-        </div>
-        <div class="gmail_extra">Selva</div>
-      </div>
-      <br>
-      <fieldset class="mimeAttachmentHeader"></fieldset>
-      <br>
-      <pre wrap="">------------------------------------------------------------------------------
-Check out the vibrant tech community on one of the world's most
-engaging tech sites, Slashdot.org! <a class="moz-txt-link-freetext" href="http://sdm.link/slashdot">http://sdm.link/slashdot</a></pre>
-      <br>
-      <fieldset class="mimeAttachmentHeader"></fieldset>
-      <br>
-      <pre wrap="">_______________________________________________
-Openvpn-devel mailing list
-<a class="moz-txt-link-abbreviated" href="mailto:Openvpn-devel@lists.sourceforge.net">Openvpn-devel@lists.sourceforge.net</a>
-<a class="moz-txt-link-freetext" href="https://lists.sourceforge.net/lists/listinfo/openvpn-devel">https://lists.sourceforge.net/lists/listinfo/openvpn-devel</a>
-</pre>
-    </blockquote>
-    <br>
-  </body>
-</html>
+iQEzBAEBCAAdFiEEXHmveYAHrRp+prOviUUh18yA9HYFAljyi0oACgkQiUUh18yA
+9HbU9Qf/XKZYSJjj8PrSA9biobpzhKTUFvDcup6LpjhLknF6kCY/T94GB+fUD7dJ
+feojU/LmwBm5Xm0FP2tFVfoWqo4tDsTSnehA+/87plxK47QR4MqxQkM/IZd3OgPM
+76A7Zf3W+StYBzGsCtmlpL1Iy1TDaLe000ct/7kQPZOv3mLUvR0cYbKs1wjxy6OY
+iikNvPQQN8yFGZyAFYBAVJhaGGdHWTbXbHPDYsMmqtdUV8Z5rAsR3Ll7vRmOYCa+
+nvBwKCjW7m6hN5Gms4cuMxzF8aReA0H1Yt41UE/ehjDGrKgBssA11T1o1rLWSiic
+Oa6QTGuymV71M9nptDRX7OZ8tI6Ctg==
+=/X0o
+-----END PGP SIGNATURE-----
 
---------------EF390F952D26EC58FD04712F--
+--Sig_/MelfmhgBO6sN/N+2FeZREAo--
 
