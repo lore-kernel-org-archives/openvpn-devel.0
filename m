@@ -1,9 +1,9 @@
 From: ValdikSS <iam@...2070...>
-Message-ID: <9b337a53-5b05-aa88-cb19-1dbec6b9da46@...2070...>
-Date: Sun, 16 Apr 2017 00:25:56 +0300
+Message-ID: <18d16ae2-dcdb-a0af-d44e-56e4125fce60@...2070...>
+Date: Sun, 16 Apr 2017 01:00:28 +0300
 MIME-Version: 1.0
 Content-Type: multipart/alternative;
-	boundary="------------C0C146A3C0147B2EEF77CD48"
+	boundary="------------03C189845F4F57AE0AECE6A4"
 Content-Language: en-GB
 Subject: [Openvpn-devel] Windows 10 Creators Update broke --block-outside-dns
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -17,7 +17,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: openvpn-devel@lists.sourceforge.net
 
 This is a multi-part message in MIME format.
---------------C0C146A3C0147B2EEF77CD48
+--------------03C189845F4F57AE0AECE6A4
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
 
@@ -27,24 +27,24 @@ This behaviour introduces significant lag for web browsing.
 
 Another thing is that Windows always prefers IPv6, just as any other OS. Some home routers give IPv6 Unique local address with DNS server to the computers using DHCPv6, even if there's no IPv6 connectivity from the provider.
 
-More importantly, DisableSmartNameResolution switch, which didn't work in previous Windows 10 versions, now works correctly (see below).
+More importantly, DisableSmartNameResolution switch, which didn't work in previous Windows 10 versions, now works correctly.
 
 *Workaround #1*, If VPN infrastructure is IPv6-enabled and pushes IPv6 address and DNS and route to the client:
 
- 1. Apply DisableSmartNameResolution registry patch.
+ 1. Apply DisableSmartNameResolution registry patch: https://files.catbox.moe/vng9wm.reg
 
 
 
 *Workaround #2*, if VPN infrastructure is not IPv6-enabled:
 
- 1. Apply DisableSmartNameResolution registry patch.
+ 1. Apply DisableSmartNameResolution registry patch: https://files.catbox.moe/vng9wm.reg
  2. If there's IPv6 DNS from the router, set static IPv6 DNS to ::2 (alternative to 127.0.0.2 in IPv4) or just disable IPv6 completely on internet interface.
 
 
 
 *Workaround #3*, if VPN infrastructure is not IPv6-enabled and client's infrastructure is not IPv6-enabled:
 
- 1. Apply DisableSmartNameResolution registry patch.
+ 1. Apply DisableSmartNameResolution registry patch: https://files.catbox.moe/vng9wm.reg
  2. Push IPv6 Unique local address and DNS server to the client, but do not push any routes. Client would use DNS over IPv6 but would not route anything else.
 
     *Note*: it would route IPv6 traffic over internet interface (not via VPN) if client's ISP is IPv6-enabled.
@@ -54,16 +54,7 @@ More importantly, DisableSmartNameResolution switch, which didn't work in previo
 *Question*: Fixing registry with --block-outside-dns is simple, but what should we do with IPv6 in OpenVPN? Should we introduce an option to disable IPv6 DNS on other interfaces if there's no IPv6 DNS pushed from the VPN?
 
 
-=== DisableSmartNameResolution.reg ===
-
-Windows Registry Editor Version 5.00
-
-[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows NT\DNSClient]
-"DisableSmartNameResolution"=dword:00000001
-
-
-
---------------C0C146A3C0147B2EEF77CD48
+--------------03C189845F4F57AE0AECE6A4
 Content-Type: text/html; charset=utf-8
 Content-Transfer-Encoding: 7bit
 
@@ -88,19 +79,22 @@ Content-Transfer-Encoding: 7bit
     from the provider.<br>
     <br>
     More importantly, DisableSmartNameResolution switch, which didn't
-    work in previous Windows 10 versions, now works correctly (see
-    below).<br>
+    work in previous Windows 10 versions, now works correctly.<br>
     <br>
     <b>Workaround #1</b>, If VPN infrastructure is IPv6-enabled and
     pushes IPv6 address and DNS and route to the client:<br>
     <ol>
-      <li>Apply DisableSmartNameResolution registry patch.</li>
+      <li>Apply DisableSmartNameResolution registry patch: <a
+          class="moz-txt-link-freetext"
+          href="https://files.catbox.moe/vng9wm.reg">https://files.catbox.moe/vng9wm.reg</a></li>
     </ol>
     <br>
     <br>
     <b>Workaround #2</b>, if VPN infrastructure is not IPv6-enabled:<br>
     <ol>
-      <li>Apply DisableSmartNameResolution registry patch.</li>
+      <li>Apply DisableSmartNameResolution registry patch: <a
+          class="moz-txt-link-freetext"
+          href="https://files.catbox.moe/vng9wm.reg">https://files.catbox.moe/vng9wm.reg</a></li>
       <li>If there's IPv6 DNS from the router, set static IPv6 DNS to
         ::2 (alternative to 127.0.0.2 in IPv4) or just disable IPv6
         completely on internet interface.</li>
@@ -110,7 +104,9 @@ Content-Transfer-Encoding: 7bit
     <b>Workaround #3</b>, if VPN infrastructure is not IPv6-enabled and
     client's infrastructure is not IPv6-enabled:<br>
     <ol>
-      <li>Apply DisableSmartNameResolution registry patch.</li>
+      <li>Apply DisableSmartNameResolution registry patch: <a
+          class="moz-txt-link-freetext"
+          href="https://files.catbox.moe/vng9wm.reg">https://files.catbox.moe/vng9wm.reg</a></li>
       <li>Push IPv6 Unique local address and DNS server to the client,
         but do not push any routes. Client would use DNS over IPv6 but
         would not route anything else.<br>
@@ -125,18 +121,8 @@ Content-Transfer-Encoding: 7bit
     option to disable IPv6 DNS on other interfaces if there's no IPv6
     DNS pushed from the VPN?<br>
     <br>
-    <br>
-    === DisableSmartNameResolution.reg ===<br>
-    <br>
-    Windows Registry Editor Version 5.00<br>
-    <br>
-    [HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows
-    NT\DNSClient]<br>
-    "DisableSmartNameResolution"=dword:00000001<br>
-    <br>
-    <br>
   </body>
 </html>
 
---------------C0C146A3C0147B2EEF77CD48--
+--------------03C189845F4F57AE0AECE6A4--
 
