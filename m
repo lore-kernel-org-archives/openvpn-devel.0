@@ -1,16 +1,11 @@
-Date: Sat, 15 Apr 2017 14:34:55 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20170415123455.GH30424@...1296...>
-References: <20170413172609.29093-1-davids@...515...>
-	<20170415091647.GG30424@...1296...>
-	<924aa9d7-bf6e-6428-4d24-9009d36b635f@...2080...>
+From: ValdikSS <iam@...2070...>
+Message-ID: <c9884a20-a65d-2b9a-9b2b-767fadced8f7@...2070...>
+Date: Sat, 15 Apr 2017 17:36:36 +0300
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="zjcmjzIkjQU2rmur"
-Content-Disposition: inline
-In-Reply-To: <924aa9d7-bf6e-6428-4d24-9009d36b635f@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH] Fix broken ./configure on systems
- without openssl.pc
+Content-Type: multipart/mixed; boundary="------------51C73D076036AD8207E48185"
+Content-Language: en-GB
+Subject: [Openvpn-devel] Windows 10 Anniversary Update broke
+	--block-outside-dns
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,49 +15,129 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: openvpn-devel@lists.sourceforge.net
-Cc: David Sommerseth <davids@...515...>
 
---zjcmjzIkjQU2rmur
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+This is a multi-part message in MIME format.
+--------------51C73D076036AD8207E48185
+Content-Type: multipart/alternative;
+	boundary="------------393D4F70F53586F1761097FA"
 
-Hi,
+--------------393D4F70F53586F1761097FA
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 
-On Sat, Apr 15, 2017 at 11:42:30AM +0200, David Sommerseth wrote:
-> So reviewing this now, this 12 bit shift may actually fail on big endian
-> machines.  It would probably be better to do a full 16 bit shift.
->=20
-> But if we don't want to reduce the match set to only version numbers,
-> I'm fine with skipping the shifts all together.
+Windows 10 Anniversary Update changed the way DNS works. It used to resolve DNS address using all available adapters and IP addresses in parallel, now it still resolves addresses using all available adapters but in sequence, beginning with random adapter.
+This interfere with how --block-outside-dns currently work. Sometimes OS chooses VPN TAP adapter and things work as intended, sometimes the other adapter and user have to wait until DNS request times out and DNS resolution goes via VPN.
+This behaviour introduces significant lag for web browsing.
 
-Since this is a nice number, comparing with "<" or ">" will just ignore
-those lower bits anyway.
+Another thing is that Windows always prefers IPv6, just as any other OS. Some home routers give IPv6 Unique local address with DNS server to the computers using DHCPv6, even if there's no IPv6 connectivity from the provider.
 
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+More importantly, DisableSmartNameResolution switch, which didn't work in previous Windows 10 versions, now works correctly.
 
---zjcmjzIkjQU2rmur
-Content-Type: application/pgp-signature; name="signature.asc"
+*Workaround #1*, If VPN infrastructure is IPv6-enabled and pushes IPv6 address and DNS and route to the client:
 
------BEGIN PGP SIGNATURE-----
+ 1. Apply DisableSmartNameResolution registry patch.
 
-iQGcBAEBAgAGBQJY8hNuAAoJEB2Cnv7KVigS7/0L/ib1uKgB/tBHjsMXMOUXRpNq
-GvRsjYpjDvFtajB4sVg44W7Idez+PCdq50nHoFxlFBQN5mCzUYgyMPZ324GmCYAu
-q/z0PTUY4XzygenZYl5vDc7E6QxpJHZ4PCFDojx+Pdm6KULecjdYHSGWPgMQW7Ru
-eCINwDQwq72/D/R2n4VmOVFZca5LhsCqxYCL37b5PnSMuMzZfvdVJzyj8mD/pBU4
-8g0JIjQ9OfBPDqsE6RzY5WTTkqqR3Mj7p2zDC0ZoRoZpT3RUYAe/dl3xWBi+2h5E
-V9Re2fvZZxnwWEEL/OHroQbJLAA/JKUXl07fwiXi0rMmnZE0fwX6lJglOigku7mQ
-sMoTxInOOL7Ut9I9+VQsoCCorbfBMOkdcL7rODdoGMRz5vrKnNDdBVaGyHLV8chW
-Qh5pJsVmN3Iqq7qqqMDbd1C8chSALfqoDxQ4xAdaV7FXGEwEfzGNnnq8/dIhi4QE
-hmNdrP/jcMdnIOhgaR38ZvzgE9vIyeR8e4M3o8hB+A==
-=EQuG
------END PGP SIGNATURE-----
 
---zjcmjzIkjQU2rmur--
+
+*Workaround #2*, if VPN infrastructure is not IPv6-enabled:
+
+ 1. Apply DisableSmartNameResolution registry patch.
+ 2. If there's IPv6 DNS from the router, set static IPv6 DNS to ::2 (alternative to 127.0.0.2 in IPv4) or just disable IPv6 completely on internet interface.
+
+
+
+*Workaround #3*, if VPN infrastructure is not IPv6-enabled and client's infrastructure is not IPv6-enabled:
+
+ 1. Apply DisableSmartNameResolution registry patch.
+ 2. Push IPv6 Unique local address and DNS server to the client, but do not push any routes. Client would use DNS over IPv6 but would not route anything else.
+
+    *Note*: it would route IPv6 traffic over internet interface (not via VPN) if client's ISP is IPv6-enabled.
+
+
+
+*Question: *Fixing registry with --block-outside-dns is simple, but what should we do with IPv6 in OpenVPN? Should we introduce an option to disable IPv6 DNS on other interfaces if there's no IPv6 DNS pushed from the VPN?
+
+
+
+--------------393D4F70F53586F1761097FA
+Content-Type: text/html; charset=utf-8
+Content-Transfer-Encoding: 7bit
+
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  </head>
+  <body text="#000000" bgcolor="#FFFFFF">
+    Windows 10 Anniversary Update changed the way DNS works. It used to
+    resolve DNS address using all available adapters and IP addresses in
+    parallel, now it still resolves addresses using all available
+    adapters but in sequence, beginning with random adapter.<br>
+    This interfere with how --block-outside-dns currently work.
+    Sometimes OS chooses VPN TAP adapter and things work as intended,
+    sometimes the other adapter and user have to wait until DNS request
+    times out and DNS resolution goes via VPN.<br>
+    This behaviour introduces significant lag for web browsing.<br>
+    <br>
+    Another thing is that Windows always prefers IPv6, just as any other
+    OS. Some home routers give IPv6 Unique local address with DNS server
+    to the computers using DHCPv6, even if there's no IPv6 connectivity
+    from the provider.<br>
+    <br>
+    More importantly, DisableSmartNameResolution switch, which didn't
+    work in previous Windows 10 versions, now works correctly.<br>
+    <br>
+    <b>Workaround #1</b>, If VPN infrastructure is IPv6-enabled and
+    pushes IPv6 address and DNS and route to the client:<br>
+    <ol>
+      <li>Apply DisableSmartNameResolution registry patch.</li>
+    </ol>
+    <br>
+    <br>
+    <b>Workaround #2</b>, if VPN infrastructure is not IPv6-enabled:<br>
+    <ol>
+      <li>Apply DisableSmartNameResolution registry patch.</li>
+      <li>If there's IPv6 DNS from the router, set static IPv6 DNS to
+        ::2 (alternative to 127.0.0.2 in IPv4) or just disable IPv6
+        completely on internet interface.</li>
+    </ol>
+    <br>
+    <br>
+    <b>Workaround #3</b>, if VPN infrastructure is not IPv6-enabled and
+    client's infrastructure is not IPv6-enabled:<br>
+    <ol>
+      <li>Apply DisableSmartNameResolution registry patch.</li>
+      <li>Push IPv6 Unique local address and DNS server to the client,
+        but do not push any routes. Client would use DNS over IPv6 but
+        would not route anything else.<br>
+        <br>
+        <b>Note</b>: it would route IPv6 traffic over internet interface
+        (not via VPN) if client's ISP is IPv6-enabled.</li>
+    </ol>
+    <br>
+    <br>
+    <b>Question: </b>Fixing registry with --block-outside-dns is
+    simple, but what should we do with IPv6 in OpenVPN? Should we
+    introduce an option to disable IPv6 DNS on other interfaces if
+    there's no IPv6 DNS pushed from the VPN?<br>
+    <br>
+    <br>
+  </body>
+</html>
+
+--------------393D4F70F53586F1761097FA--
+
+--------------51C73D076036AD8207E48185
+Content-Type: application/x-7z-compressed; name="DisableSmartNameResolution.7z"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment;
+ filename="DisableSmartNameResolution.7z"
+
+N3q8ryccAARSdjIvuwAAAAAAAACKAAAAAAAAAGhRGvvgAT0As10Af7+GiQMs9AFCgNY6KPFa
+Z0yWMRlFvk2FuWH8sovr24Fr/gUif0PGiV2MhuehqXIfb0txmm8PYsb82g5FyC8MYgIxZ2WM
+t7MYFh8r+lEvVIwZB58VDU/NeoL37lLBcv3e2COOlwrF1rm8mtmQoRwlrhWgQq4vB/zX0DMI
+zr9P2aaFZ1m/DP9FwB2oAdgD05YospHwPH+CfDXOKJEWmRhIOR2F+3qtkCxKQcPg3WjlU633
+9uYAAQQGAAEJgLsABwsBAAEhIQEADIE+AAgKAUE6IqEAAAUBGQoAAAAAAAAAAAAAET8ARABp
+AHMAYQBiAGwAZQBTAG0AYQByAHQATgBhAG0AZQBSAGUAcwBvAGwAdQB0AGkAbwBuAC4AcgBl
+AGcAAAAZBAAAAAAUCgEAgGHn5Nu10gEVBgEAIIC0gQAA
+--------------51C73D076036AD8207E48185--
 
