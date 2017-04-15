@@ -1,9 +1,9 @@
-From: ValdikSS <iam@...2070...>
-Message-ID: <a3f6874b-35ee-0c6f-e28f-95f3c422e27a@...277...>
-Date: Sun, 16 Apr 2017 01:13:23 +0300
+From: ValdikSS <valdikss@...277...>
+Message-ID: <d0cc2a54-cd65-9ebd-1e6f-8d2b75bfb223@...277...>
+Date: Sun, 16 Apr 2017 01:41:32 +0300
 MIME-Version: 1.0
 Content-Type: multipart/alternative;
-	boundary="------------9C4A48849D109A61A20DFA0A"
+	boundary="------------963B036FAD59763CA330521D"
 Content-Language: en-GB
 Subject: [Openvpn-devel] Windows 10 Creators Update broke --block-outside-dns
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -17,7 +17,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: openvpn-devel@lists.sourceforge.net
 
 This is a multi-part message in MIME format.
---------------9C4A48849D109A61A20DFA0A
+--------------963B036FAD59763CA330521D
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
 
@@ -57,7 +57,7 @@ More importantly, DisableSmartNameResolution switch, which didn't work in previo
 *Question*: Fixing registry with --block-outside-dns is simple, but what should we do with IPv6 in OpenVPN? Should we introduce an option to disable IPv6 DNS on other interfaces if there's no IPv6 DNS pushed from the VPN?
 
 
---------------9C4A48849D109A61A20DFA0A
+--------------963B036FAD59763CA330521D
 Content-Type: text/html; charset=utf-8
 Content-Transfer-Encoding: 7bit
 
@@ -131,5 +131,5 @@ Content-Transfer-Encoding: 7bit
   </body>
 </html>
 
---------------9C4A48849D109A61A20DFA0A--
+--------------963B036FAD59763CA330521D--
 
