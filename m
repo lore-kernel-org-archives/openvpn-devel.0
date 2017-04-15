@@ -1,13 +1,11 @@
-Date: Sat, 15 Apr 2017 23:06:18 +0200
-From: Christian Hesse <list@...1798...>
-Message-ID: <20170415230618.0b35c0a4@...1799...>
-In-Reply-To: <CAKuzo_jtWmupraMLHVme9+4YZjbJSQdsScRbuYRK0QjOJCN6EA@...278...>
-References: <CAKuzo_jtWmupraMLHVme9+4YZjbJSQdsScRbuYRK0QjOJCN6EA@...278...>
+From: ValdikSS <iam@...2070...>
+Message-ID: <9b337a53-5b05-aa88-cb19-1dbec6b9da46@...2070...>
+Date: Sun, 16 Apr 2017 00:25:56 +0300
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	boundary="Sig_/MelfmhgBO6sN/N+2FeZREAo";
-	protocol="application/pgp-signature"
-Subject: Re: [Openvpn-devel] devel mailing list
+Content-Type: multipart/alternative;
+	boundary="------------C0C146A3C0147B2EEF77CD48"
+Content-Language: en-GB
+Subject: [Openvpn-devel] Windows 10 Creators Update broke --block-outside-dns
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,42 +14,129 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
---Sig_/MelfmhgBO6sN/N+2FeZREAo
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: quoted-printable
+This is a multi-part message in MIME format.
+--------------C0C146A3C0147B2EEF77CD48
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 
-Selva Nair <selva.nair@...277...> on Sat, 2017/04/15 16:08:
-> I did not get this mail
->=20
-> https://sourceforge.net/p/openvpn/mailman/message/35789733/
->=20
-> Something up with the list or is it only me?
+Windows 10 Creators Update changed the way DNS works. It used to resolve DNS address using all available adapters and IP addresses in parallel, now it still resolves addresses using all available adapters but in sequence, beginning with random adapter.
+This interfere with how --block-outside-dns currently work. Sometimes OS chooses VPN TAP adapter and things work as intended, sometimes the other adapter and user have to wait until DNS request times out and DNS resolution goes via VPN.
+This behaviour introduces significant lag for web browsing.
 
-I did receive the mail. Possibly anything blocked the 7z attachment for you?
---=20
-main(a){char*c=3D/*    Schoene Gruesse                         */"B?IJj;MEH"
-"CX:;",b;for(a/*    Best regards             my address:    */=3D0;b=3Dc[a+=
-+];)
-putchar(b-1/(/*    Chris            cc -ox -xc - && ./x    */b/42*2-3)*42);}
+Another thing is that Windows always prefers IPv6, just as any other OS. Some home routers give IPv6 Unique local address with DNS server to the computers using DHCPv6, even if there's no IPv6 connectivity from the provider.
 
---Sig_/MelfmhgBO6sN/N+2FeZREAo
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
+More importantly, DisableSmartNameResolution switch, which didn't work in previous Windows 10 versions, now works correctly (see below).
 
------BEGIN PGP SIGNATURE-----
+*Workaround #1*, If VPN infrastructure is IPv6-enabled and pushes IPv6 address and DNS and route to the client:
 
-iQEzBAEBCAAdFiEEXHmveYAHrRp+prOviUUh18yA9HYFAljyi0oACgkQiUUh18yA
-9HbU9Qf/XKZYSJjj8PrSA9biobpzhKTUFvDcup6LpjhLknF6kCY/T94GB+fUD7dJ
-feojU/LmwBm5Xm0FP2tFVfoWqo4tDsTSnehA+/87plxK47QR4MqxQkM/IZd3OgPM
-76A7Zf3W+StYBzGsCtmlpL1Iy1TDaLe000ct/7kQPZOv3mLUvR0cYbKs1wjxy6OY
-iikNvPQQN8yFGZyAFYBAVJhaGGdHWTbXbHPDYsMmqtdUV8Z5rAsR3Ll7vRmOYCa+
-nvBwKCjW7m6hN5Gms4cuMxzF8aReA0H1Yt41UE/ehjDGrKgBssA11T1o1rLWSiic
-Oa6QTGuymV71M9nptDRX7OZ8tI6Ctg==
-=/X0o
------END PGP SIGNATURE-----
+ 1. Apply DisableSmartNameResolution registry patch.
 
---Sig_/MelfmhgBO6sN/N+2FeZREAo--
+
+
+*Workaround #2*, if VPN infrastructure is not IPv6-enabled:
+
+ 1. Apply DisableSmartNameResolution registry patch.
+ 2. If there's IPv6 DNS from the router, set static IPv6 DNS to ::2 (alternative to 127.0.0.2 in IPv4) or just disable IPv6 completely on internet interface.
+
+
+
+*Workaround #3*, if VPN infrastructure is not IPv6-enabled and client's infrastructure is not IPv6-enabled:
+
+ 1. Apply DisableSmartNameResolution registry patch.
+ 2. Push IPv6 Unique local address and DNS server to the client, but do not push any routes. Client would use DNS over IPv6 but would not route anything else.
+
+    *Note*: it would route IPv6 traffic over internet interface (not via VPN) if client's ISP is IPv6-enabled.
+
+
+
+*Question*: Fixing registry with --block-outside-dns is simple, but what should we do with IPv6 in OpenVPN? Should we introduce an option to disable IPv6 DNS on other interfaces if there's no IPv6 DNS pushed from the VPN?
+
+
+=== DisableSmartNameResolution.reg ===
+
+Windows Registry Editor Version 5.00
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows NT\DNSClient]
+"DisableSmartNameResolution"=dword:00000001
+
+
+
+--------------C0C146A3C0147B2EEF77CD48
+Content-Type: text/html; charset=utf-8
+Content-Transfer-Encoding: 7bit
+
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  </head>
+  <body text="#000000" bgcolor="#FFFFFF">
+    Windows 10 Creators Update changed the way DNS works. It used to
+    resolve DNS address using all available adapters and IP addresses in
+    parallel, now it still resolves addresses using all available
+    adapters but in sequence, beginning with random adapter.<br>
+    This interfere with how --block-outside-dns currently work.
+    Sometimes OS chooses VPN TAP adapter and things work as intended,
+    sometimes the other adapter and user have to wait until DNS request
+    times out and DNS resolution goes via VPN.<br>
+    This behaviour introduces significant lag for web browsing.<br>
+    <br>
+    Another thing is that Windows always prefers IPv6, just as any other
+    OS. Some home routers give IPv6 Unique local address with DNS server
+    to the computers using DHCPv6, even if there's no IPv6 connectivity
+    from the provider.<br>
+    <br>
+    More importantly, DisableSmartNameResolution switch, which didn't
+    work in previous Windows 10 versions, now works correctly (see
+    below).<br>
+    <br>
+    <b>Workaround #1</b>, If VPN infrastructure is IPv6-enabled and
+    pushes IPv6 address and DNS and route to the client:<br>
+    <ol>
+      <li>Apply DisableSmartNameResolution registry patch.</li>
+    </ol>
+    <br>
+    <br>
+    <b>Workaround #2</b>, if VPN infrastructure is not IPv6-enabled:<br>
+    <ol>
+      <li>Apply DisableSmartNameResolution registry patch.</li>
+      <li>If there's IPv6 DNS from the router, set static IPv6 DNS to
+        ::2 (alternative to 127.0.0.2 in IPv4) or just disable IPv6
+        completely on internet interface.</li>
+    </ol>
+    <br>
+    <br>
+    <b>Workaround #3</b>, if VPN infrastructure is not IPv6-enabled and
+    client's infrastructure is not IPv6-enabled:<br>
+    <ol>
+      <li>Apply DisableSmartNameResolution registry patch.</li>
+      <li>Push IPv6 Unique local address and DNS server to the client,
+        but do not push any routes. Client would use DNS over IPv6 but
+        would not route anything else.<br>
+        <br>
+        <b>Note</b>: it would route IPv6 traffic over internet interface
+        (not via VPN) if client's ISP is IPv6-enabled.</li>
+    </ol>
+    <br>
+    <br>
+    <b>Question</b>: Fixing registry with --block-outside-dns is simple,
+    but what should we do with IPv6 in OpenVPN? Should we introduce an
+    option to disable IPv6 DNS on other interfaces if there's no IPv6
+    DNS pushed from the VPN?<br>
+    <br>
+    <br>
+    === DisableSmartNameResolution.reg ===<br>
+    <br>
+    Windows Registry Editor Version 5.00<br>
+    <br>
+    [HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows
+    NT\DNSClient]<br>
+    "DisableSmartNameResolution"=dword:00000001<br>
+    <br>
+    <br>
+  </body>
+</html>
+
+--------------C0C146A3C0147B2EEF77CD48--
 
