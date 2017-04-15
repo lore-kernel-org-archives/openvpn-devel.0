@@ -1,14 +1,11 @@
-References: <CAKuzo_jtWmupraMLHVme9+4YZjbJSQdsScRbuYRK0QjOJCN6EA@...278...>
-	<20170415230618.0b35c0a4@...1799...>
 From: ValdikSS <iam@...2070...>
-Message-ID: <4adfb5fe-0361-3555-1c32-bfc0cf789d6e@...2070...>
-Date: Sun, 16 Apr 2017 01:09:29 +0300
+Message-ID: <a3f6874b-35ee-0c6f-e28f-95f3c422e27a@...277...>
+Date: Sun, 16 Apr 2017 01:13:23 +0300
 MIME-Version: 1.0
-In-Reply-To: <20170415230618.0b35c0a4@...1799...>
 Content-Type: multipart/alternative;
-	boundary="------------5DEB8A0BA34312CBE8EEF33C"
+	boundary="------------9C4A48849D109A61A20DFA0A"
 Content-Language: en-GB
-Subject: Re: [Openvpn-devel] devel mailing list
+Subject: [Openvpn-devel] Windows 10 Creators Update broke --block-outside-dns
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,73 +14,122 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Christian Hesse <list@...1798...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
 This is a multi-part message in MIME format.
---------------5DEB8A0BA34312CBE8EEF33C
-Content-Type: text/plain; charset=windows-1252
+--------------9C4A48849D109A61A20DFA0A
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
 
-Sorry, I totally forgot that OpenVPN mail list does not support DMARC. My domain has strict DMARC policy, that's why some of you didn't get and won't get my emails.
-
-On 16.04.2017 00:06, Christian Hesse wrote:
-> Selva Nair <selva.nair@...277...> on Sat, 2017/04/15 16:08:
-> I did receive the mail. Possibly anything blocked the 7z attachment for you?
->
->
-> ------------------------------------------------------------------------------
-> Check out the vibrant tech community on one of the world's most
-> engaging tech sites, Slashdot.org! http://sdm.link/slashdot
->
->
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+I hope this message would finally receive everyone. Sorry for spamming mail list.
 
 
---------------5DEB8A0BA34312CBE8EEF33C
-Content-Type: text/html; charset=windows-1252
+Windows 10 Creators Update changed the way DNS works. It used to resolve DNS address using all available adapters and IP addresses in parallel, now it still resolves addresses using all available adapters but in sequence, beginning with random adapter.
+This interfere with how --block-outside-dns currently work. Sometimes OS chooses VPN TAP adapter and things work as intended, sometimes the other adapter and user have to wait until DNS request times out and DNS resolution goes via VPN.
+This behaviour introduces significant lag for web browsing.
+
+Another thing is that Windows always prefers IPv6, just as any other OS. Some home routers give IPv6 Unique local address with DNS server to the computers using DHCPv6, even if there's no IPv6 connectivity from the provider.
+
+More importantly, DisableSmartNameResolution switch, which didn't work in previous Windows 10 versions, now works correctly.
+
+*Workaround #1*, If VPN infrastructure is IPv6-enabled and pushes IPv6 address and DNS and route to the client:
+
+ 1. Apply DisableSmartNameResolution registry patch: https://files.catbox.moe/vng9wm.reg
+
+
+
+*Workaround #2*, if VPN infrastructure is not IPv6-enabled:
+
+ 1. Apply DisableSmartNameResolution registry patch: https://files.catbox.moe/vng9wm.reg
+ 2. If there's IPv6 DNS from the router, set static IPv6 DNS to ::2 (alternative to 127.0.0.2 in IPv4) or just disable IPv6 completely on internet interface.
+
+
+
+*Workaround #3*, if VPN infrastructure is not IPv6-enabled and client's infrastructure is not IPv6-enabled:
+
+ 1. Apply DisableSmartNameResolution registry patch: https://files.catbox.moe/vng9wm.reg
+ 2. Push IPv6 Unique local address and DNS server to the client, but do not push any routes. Client would use DNS over IPv6 but would not route anything else.
+
+    *Note*: it would route IPv6 traffic over internet interface (not via VPN) if client's ISP is IPv6-enabled.
+
+
+
+*Question*: Fixing registry with --block-outside-dns is simple, but what should we do with IPv6 in OpenVPN? Should we introduce an option to disable IPv6 DNS on other interfaces if there's no IPv6 DNS pushed from the VPN?
+
+
+--------------9C4A48849D109A61A20DFA0A
+Content-Type: text/html; charset=utf-8
 Content-Transfer-Encoding: 7bit
 
 <html>
   <head>
-    <meta http-equiv="Content-Type" content="text/html;
-      charset=windows-1252">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
   </head>
   <body text="#000000" bgcolor="#FFFFFF">
-    Sorry, I totally forgot that OpenVPN mail list does not support
-    DMARC. My domain has strict DMARC policy, that's why some of you
-    didn't get and won't get my emails.<br>
+    I hope this message would finally receive everyone. Sorry for
+    spamming mail list.<br>
     <br>
-    <div class="moz-cite-prefix">On 16.04.2017 00:06, Christian Hesse
-      wrote:<br>
-    </div>
-    <blockquote type="cite" cite="mid:20170415230618.0b35c0a4@...1799...">
-      <pre wrap="">Selva Nair <a class="moz-txt-link-rfc2396E" href="mailto:selva.nair@...277...">&lt;selva.nair@...277...&gt;</a> on Sat, 2017/04/15 16:08:
-</pre>
-      <pre wrap="">
-I did receive the mail. Possibly anything blocked the 7z attachment for you?
-</pre>
-      <br>
-      <fieldset class="mimeAttachmentHeader"></fieldset>
-      <br>
-      <pre wrap="">------------------------------------------------------------------------------
-Check out the vibrant tech community on one of the world's most
-engaging tech sites, Slashdot.org! <a class="moz-txt-link-freetext" href="http://sdm.link/slashdot">http://sdm.link/slashdot</a></pre>
-      <br>
-      <fieldset class="mimeAttachmentHeader"></fieldset>
-      <br>
-      <pre wrap="">_______________________________________________
-Openvpn-devel mailing list
-<a class="moz-txt-link-abbreviated" href="mailto:Openvpn-devel@lists.sourceforge.net">Openvpn-devel@lists.sourceforge.net</a>
-<a class="moz-txt-link-freetext" href="https://lists.sourceforge.net/lists/listinfo/openvpn-devel">https://lists.sourceforge.net/lists/listinfo/openvpn-devel</a>
-</pre>
-    </blockquote>
+    <br>
+    Windows 10 Creators Update changed the way DNS works. It used to
+    resolve DNS address using all available adapters and IP addresses in
+    parallel, now it still resolves addresses using all available
+    adapters but in sequence, beginning with random adapter.<br>
+    This interfere with how --block-outside-dns currently work.
+    Sometimes OS chooses VPN TAP adapter and things work as intended,
+    sometimes the other adapter and user have to wait until DNS request
+    times out and DNS resolution goes via VPN.<br>
+    This behaviour introduces significant lag for web browsing.<br>
+    <br>
+    Another thing is that Windows always prefers IPv6, just as any other
+    OS. Some home routers give IPv6 Unique local address with DNS server
+    to the computers using DHCPv6, even if there's no IPv6 connectivity
+    from the provider.<br>
+    <br>
+    More importantly, DisableSmartNameResolution switch, which didn't
+    work in previous Windows 10 versions, now works correctly.<br>
+    <br>
+    <b>Workaround #1</b>, If VPN infrastructure is IPv6-enabled and
+    pushes IPv6 address and DNS and route to the client:<br>
+    <ol>
+      <li>Apply DisableSmartNameResolution registry patch: <a
+          class="moz-txt-link-freetext"
+          href="https://files.catbox.moe/vng9wm.reg">https://files.catbox.moe/vng9wm.reg</a></li>
+    </ol>
+    <br>
+    <br>
+    <b>Workaround #2</b>, if VPN infrastructure is not IPv6-enabled:<br>
+    <ol>
+      <li>Apply DisableSmartNameResolution registry patch: <a
+          class="moz-txt-link-freetext"
+          href="https://files.catbox.moe/vng9wm.reg">https://files.catbox.moe/vng9wm.reg</a></li>
+      <li>If there's IPv6 DNS from the router, set static IPv6 DNS to
+        ::2 (alternative to 127.0.0.2 in IPv4) or just disable IPv6
+        completely on internet interface.</li>
+    </ol>
+    <br>
+    <br>
+    <b>Workaround #3</b>, if VPN infrastructure is not IPv6-enabled and
+    client's infrastructure is not IPv6-enabled:<br>
+    <ol>
+      <li>Apply DisableSmartNameResolution registry patch: <a
+          class="moz-txt-link-freetext"
+          href="https://files.catbox.moe/vng9wm.reg">https://files.catbox.moe/vng9wm.reg</a></li>
+      <li>Push IPv6 Unique local address and DNS server to the client,
+        but do not push any routes. Client would use DNS over IPv6 but
+        would not route anything else.<br>
+        <br>
+        <b>Note</b>: it would route IPv6 traffic over internet interface
+        (not via VPN) if client's ISP is IPv6-enabled.</li>
+    </ol>
+    <br>
+    <br>
+    <b>Question</b>: Fixing registry with --block-outside-dns is simple,
+    but what should we do with IPv6 in OpenVPN? Should we introduce an
+    option to disable IPv6 DNS on other interfaces if there's no IPv6
+    DNS pushed from the VPN?<br>
     <br>
   </body>
 </html>
 
---------------5DEB8A0BA34312CBE8EEF33C--
+--------------9C4A48849D109A61A20DFA0A--
 
