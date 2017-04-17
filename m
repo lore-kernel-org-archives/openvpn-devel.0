@@ -1,17 +1,10 @@
-Date: Sun, 16 Apr 2017 13:11:19 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20170416111119.GJ30424@...1296...>
-References: <CAKuzo_jtWmupraMLHVme9+4YZjbJSQdsScRbuYRK0QjOJCN6EA@...278...>
-	<cc0ce86b-9536-d0b3-a6f6-2cc5c1cf1fa2@...277...>
-	<e4e20ee9-f786-6ba8-ffa0-313bfbed4c1b@...2070...>
-	<CAKuzo_hyZ0Lre6FBE77X4owNFkn-KA-k+HSFrxoJPZRqVaYg9w@...278...>
-	<e9bbc084-1d96-bd99-33e4-bc4d265ea27f@...2070...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="27ZtN5FSuKKSZcBU"
-Content-Disposition: inline
-In-Reply-To: <e9bbc084-1d96-bd99-33e4-bc4d265ea27f@...2070...>
-Subject: Re: [Openvpn-devel] devel mailing list
+From: David Sommerseth <davids@...515...>
+Date: Mon, 17 Apr 2017 11:01:56 +0200
+Message-Id: <20170417090156.5218-1-davids@...515...>
+In-Reply-To: <20170413172609.29093-1-davids@...515...>
+References: <20170413172609.29093-1-davids@...515...>
+Subject: [Openvpn-devel] [PATCH v2] Fix broken ./configure on systems
+	without openssl.pc
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,50 +13,84 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: ValdikSS <iam@...2070...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---27ZtN5FSuKKSZcBU
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Commit 039a89c331e9b799 changed the OpenSSL check slightly, but that
+broke ./configure on systems which do not install the openssl.pc
+pkg-config support file.  This is typically an issue on most of the BSD
+platforms, where the OpenSSL package from the base repository does not
+provide that file.
 
-Hi,
+We should anyway in this case have a better check of OpenSSL version
+available.  So in the case pkg-config fails, it will run an additional
+test looking for the OpenSSL version number in the opensslv.h header
+file and check against that version number.
 
-On Sun, Apr 16, 2017 at 12:22:16AM +0300, ValdikSS wrote:
-> It's not just gmail. I didn't get any bounce back and I can't see this me=
-ssage over gmane NNTP. Don't know what has happened. Reposting again.
+I did consider to rip out the pkg-config test all together, but decided
+to let it stay.  If pkg-config works, it provides much more details to
+the ./configure script than just the version number check - such as
+include and library paths if those are outside the default system paths.
 
-I received it just fine.  No idea why some receivers got it and others
-didn't - might have been the .7z upsetting virus filters.
+If the user adds OPENSSL_CFLAGS or OPENSSL_LIBS to the ./configure
+script, the pkg-config will not be run.  But this patch ensures that the
+OpenSSL version is also checked in this situation.
 
-(And .reg could be considered "malicious content", so maybe rename that
-into a .txt and just attach as plaintext)
+This patch have been tested on Scientic Linux 7.3 (RHEL clone) and
+FreeBSD 10.3-RELEASE-p11.
 
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+v2 - Don't use try to simplify the version matching, use the full
+     OPENSSL_VERSION_NUMBER
+   - Fixed typo (OpneSSL -> OpenSSL)
+   - Improve a few comments
 
---27ZtN5FSuKKSZcBU
-Content-Type: application/pgp-signature; name="signature.asc"
+Signed-off-by: David Sommerseth <davids@...515...>
+---
+ configure.ac | 24 +++++++++++++++++++++++-
+ 1 file changed, 23 insertions(+), 1 deletion(-)
 
------BEGIN PGP SIGNATURE-----
+diff --git a/configure.ac b/configure.ac
+index acea060..cdd7847 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -861,12 +861,34 @@ if test "${enable_crypto}" = "yes" -a "${with_crypto_library}" = "openssl"; then
+ 			[OPENSSL],
+ 			[libcrypto >= 1.0.1, libssl >= 1.0.1],
+ 	                [have_openssl="yes"],
+-			[AC_MSG_ERROR([Minimum supported OpenSSL version is 1.0.1])]
++			[] # If this fails, we will do another test next
+ 		)
+ 
+ 		OPENSSL_LIBS=${OPENSSL_LIBS:--lssl -lcrypto}
+ 	fi
+ 
++        # If pkgconfig check failed or OPENSSL_CFLAGS/OPENSSL_LIBS env vars
++        # are used, check the version directly in the OpenSSL include file
++        if test "${have_openssl}" != "yes"; then
++           AC_MSG_CHECKING([additionally if OpenSSL is available and version >= 1.0.1])
++	   AC_COMPILE_IFELSE(
++		[AC_LANG_PROGRAM(
++			[[
++#include <openssl/opensslv.h>
++			]],
++			[[
++/*           Version encoding: MNNFFPPS - see opensslv.h for details */
++#if OPENSSL_VERSION_NUMBER < 0x10001000L
++#error OpenSSL too old
++#endif
++			]]
++		)],
++		[AC_MSG_RESULT([ok])],
++		[AC_MSG_ERROR([OpenSSL version too old])]
++	   )
++           OPENSSL_LIBS=${OPENSSL_LIBS:--lssl -lcrypto}
++        fi
++
+ 	saved_CFLAGS="${CFLAGS}"
+ 	saved_LIBS="${LIBS}"
+ 	CFLAGS="${CFLAGS} ${OPENSSL_CFLAGS}"
+-- 
+2.11.0
 
-iQGcBAEBAgAGBQJY81FXAAoJEB2Cnv7KVigSN9IMAI1007GYWb0DwUJ9r3uk4V+e
-ZtWPuZvMq3XBYvmYvDUE1wUf8q6wx0PjefHgwY2qMRliYEdPurLRsWyPoUlwT3EZ
-WvQe/B/KnnoXGDtRMSl02WV2LGW3b8T0hXnvbnuXGeaDvDuzYCqyciXruf1aMVZT
-rjevloLrlf1KLnDR++FvQ5VDAyF2vTgQTFKb6gQJVE0xbPwzCe+LBXFO+vqkwc7H
-42avokSVtOFkDfS5urXhhKVnXbq5BV6YBou7HAZIIP6uB63vDdn5o/t9mQ98No9a
-hCLyhoI2F4XOvY0UoFcnBdY6mSM4K0dQTnzocIQ3mY3nUP32sQj17x0TcnMXmbEz
-+zQB/NTdIdiZCi/eL3gVDqT6UOnPLgITH56hWGrt4B0KdadjOqGum9bljDf9UcWQ
-FFLGF7iyKmWO/9c/pNQQGwOmaaqevLGjmjkJD2Iz4vMvvSqCwMjcY9RW4WfRyOjR
-j6idjDBde4/+slk0FEDbSItNwi58XQ8fTSfZLPYPxg==
-=qPGk
------END PGP SIGNATURE-----
-
---27ZtN5FSuKKSZcBU--
 
