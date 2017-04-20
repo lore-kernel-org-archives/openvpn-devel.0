@@ -1,11 +1,12 @@
-Message-ID: <1492699272.18647.3.camel@...2264...>
-From: Hristo Venev <hristo@...2264...>
-Date: Thu, 20 Apr 2017 15:41:12 +0100
-Content-Type: multipart/signed; micalg="pgp-sha512";
-	protocol="application/pgp-signature"; boundary="=-lvLOuv/xiNCoJNGRBNe9"
-Mime-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Fix extract_x509_field_ssl for external
-	objects
+References: <20170413172609.29093-1-davids@...515...>
+	<20170417232817.18305-1-davids@...515...>
+From: Steffan Karger <steffan@...1856...>
+Message-ID: <9a80fada-2caa-e739-6f2f-3b1094701a6b@...1856...>
+Date: Fri, 21 Apr 2017 00:06:19 +0200
+MIME-Version: 1.0
+In-Reply-To: <20170417232817.18305-1-davids@...515...>
+Subject: Re: [Openvpn-devel] [PATCH v3] Fix broken ./configure on systems
+ without openssl.pc
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,77 +15,96 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
---=-lvLOuv/xiNCoJNGRBNe9
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Hi,
 
-Only fields known to OpenSSL have a NID. OBJ_txt2obj allows specifying
-a numeric OID.
+On 18-04-17 01:28, David Sommerseth wrote:
+> Commit 039a89c331e9b799 changed the OpenSSL check slightly, but that
+> broke ./configure on systems which do not install the openssl.pc
+> pkg-config support file.  This is typically an issue on most of the BSD
+> platforms, where the OpenSSL package from the base repository does not
+> provide that file.
+> 
+> We should anyway in this case have a better check of OpenSSL version
+> available.  So in the case pkg-config fails, it will run an additional
+> test looking for the OpenSSL version number in the opensslv.h header
+> file and check against that version number.
+> 
+> I did consider to rip out the pkg-config test all together, but decided
+> to let it stay.  If pkg-config works, it provides much more details to
+> the ./configure script than just the version number check - such as
+> include and library paths if those are outside the default system paths.
+> 
+> If the user adds OPENSSL_CFLAGS or OPENSSL_LIBS to the ./configure
+> script, the pkg-config will not be run.  But this patch ensures that the
+> OpenSSL version is also checked in this situation.
+> 
+> This patch have been tested on Scientic Linux 7.3 (RHEL clone) and
+> FreeBSD 10.3-RELEASE-p11.
+> 
+> v3 - Remove not needed and duplicated OPENSSL_LIBS assignment
+>    - Fix tab/space issues in modified lines
+> 
+> v2 - Don't use try to simplify the version matching, use the full
+>      OPENSSL_VERSION_NUMBER
+>    - Fixed typo (OpneSSL -> OpenSSL)
+>    - Improve a few comments
+> 
+> Signed-off-by: David Sommerseth <davids@...515...>
+> ---
+>  configure.ac | 26 +++++++++++++++++++++++---
+>  1 file changed, 23 insertions(+), 3 deletions(-)
+> 
+> diff --git a/configure.ac b/configure.ac
+> index acea060..a0cbc98 100644
+> --- a/configure.ac
+> +++ b/configure.ac
+> @@ -860,11 +860,31 @@ if test "${enable_crypto}" = "yes" -a "${with_crypto_library}" = "openssl"; then
+>  		PKG_CHECK_MODULES(
+>  			[OPENSSL],
+>  			[libcrypto >= 1.0.1, libssl >= 1.0.1],
+> -	                [have_openssl="yes"],
+> -			[AC_MSG_ERROR([Minimum supported OpenSSL version is 1.0.1])]
+> +			[have_openssl="yes"],
+> +			[] # If this fails, we will do another test next
+>  		)
+> +	fi
+>  
+> -		OPENSSL_LIBS=${OPENSSL_LIBS:--lssl -lcrypto}
+> +	# If pkgconfig check failed or OPENSSL_CFLAGS/OPENSSL_LIBS env vars
+> +	# are used, check the version directly in the OpenSSL include file
+> +	if test "${have_openssl}" != "yes"; then
+> +	   AC_MSG_CHECKING([additionally if OpenSSL is available and version >= 1.0.1])
+> +	   AC_COMPILE_IFELSE(
+> +		[AC_LANG_PROGRAM(
+> +			[[
+> +#include <openssl/opensslv.h>
+> +			]],
+> +			[[
+> +/*	     Version encoding: MNNFFPPS - see opensslv.h for details */
+> +#if OPENSSL_VERSION_NUMBER < 0x10001000L
+> +#error OpenSSL too old
+> +#endif
+> +			]]
+> +		)],
+> +		[AC_MSG_RESULT([ok])],
+> +		[AC_MSG_ERROR([OpenSSL version too old])]
+> +	   )
+> +	   OPENSSL_LIBS=${OPENSSL_LIBS:--lssl -lcrypto}
+>  	fi
+>  
+>  	saved_CFLAGS="${CFLAGS}"
+> 
 
-Signed-off-by: Hristo Venev <hristo@...2264...>
----
- src/openvpn/ssl_verify_openssl.c | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+Sorry I didn't spot this before, but the new check should come after the
+lines that update the CFLAGS and LIBS, otherwise this checks the system
+lib, rather than the one specified though OPENSSL_LIBS and
+OPENSSL_CFLAGS.  (The first line of that is the last line of this patch.)
 
-diff --git a/src/openvpn/ssl_verify_openssl.c b/src/openvpn/ssl_verify_open=
-ssl.c
-index 87f71f21..114cf39c 100644
---- a/src/openvpn/ssl_verify_openssl.c
-+++ b/src/openvpn/ssl_verify_openssl.c
-@@ -191,16 +191,23 @@ extract_x509_field_ssl(X509_NAME *x509, const char *f=
-ield_name, char *out,
-     X509_NAME_ENTRY *x509ne =3D 0;
-     ASN1_STRING *asn1 =3D 0;
-     unsigned char *buf =3D NULL;
--    int nid =3D OBJ_txt2nid(field_name);
-+    ASN1_OBJECT *obj =3D OBJ_txt2obj(field_name, 0);
-+
-+    if (obj =3D=3D NULL)
-+    {
-+        crypto_msg(M_FATAL, "Cannot get ASN1_OBJECT for %s", field_name);
-+    }
-=20
-     ASSERT(size > 0);
-     *out =3D '\0';
-     do
-     {
-         lastpos =3D tmp;
--        tmp =3D X509_NAME_get_index_by_NID(x509, nid, lastpos);
-+        tmp =3D X509_NAME_get_index_by_OBJ(x509, obj, lastpos);
-     } while (tmp > -1);
-=20
-+    ASN1_OBJECT_free(obj);
-+
-     /* Nothing found */
-     if (lastpos =3D=3D -1)
-     {
---=20
-2.12.2=
+And still some spaces in there ;-)
 
---=-lvLOuv/xiNCoJNGRBNe9
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-Content-Transfer-Encoding: 7bit
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEETdMrh1lhmLmNEKGzzwXo0E3DKboFAlj4yIgACgkQzwXo0E3D
-KbqrAw/+JQBA8nzFNVMmXYMUiA1wJlRqa+9ft24we/te0zhYW81/kAdB7Sz/qn8f
-RBMW8WbhuqcMNaRkH0LrtoHr8BGheXWGanCfThV8L8XUSRMxJpWOgAeYydTToPR8
-pIc69RIdp1ryUO9PBWcD0ghLmoPCCS+/tidCj10Y5ge+E7XHSP5Lw74jn9LTqglh
-HVDSIjSoDz6jFDiI7L+NyLdhnXomBuW1POrQwKE3EH+KtQsbIjuVop/TUAFG5RHj
-pL3QwAjOmrHVJh5QIYnvHefUy24m/BK6b4gXjlG6WvO+daGfGcxIU4443F6bmNk/
-9sCewhp3RfuKPXHnfZQCPjE+szWlwxrD9aWN7YpOx40RWJauoMQfw1y+YlR+NsK4
-bjRo/2ykaX7M0Eqp1MMGw1VcwxwqDrTA4Ci2eq8bBwmZIOxkOn8NNUh7JFIQnwFU
-WZq0ao8Py/9MMx8Ahgn6VrRguYabgdCt82RPTNc6/lsmrVm/H77s6FQY5DVu4Szc
-iLcnvggBnPAgOO8HnEn8GXxBlUb/FeqdBEUEj4g9YJbUS8PWyJYfYWmsBIF9y92a
-V2kKEQ0RMFu/UL8EBfmelHqN8qpAVc5BpCQExGffO22IV/s6YTHyC08juIUxWp2s
-RGBoWCN+uTLmIzTjRLhaYlveb/Hb5CmPqZKrYW1i3fzfDqxZobQ=
-=uBkw
------END PGP SIGNATURE-----
-
---=-lvLOuv/xiNCoJNGRBNe9--
-
+-Steffan
 
