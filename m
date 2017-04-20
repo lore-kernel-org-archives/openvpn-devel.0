@@ -1,15 +1,11 @@
-References: <d0cc2a54-cd65-9ebd-1e6f-8d2b75bfb223@...277...>
-	<CAKuzo_iam5RwR=grdc9cT8OL6AWdEp_bEh9jo1dhiyVf9T21sQ@...278...>
-From: ValdikSS <valdikss@...277...>
-Message-ID: <67275b0c-0491-b8e0-23d8-7ed548a6f3e3@...277...>
-Date: Tue, 18 Apr 2017 21:42:51 +0300
-MIME-Version: 1.0
-In-Reply-To: <CAKuzo_iam5RwR=grdc9cT8OL6AWdEp_bEh9jo1dhiyVf9T21sQ@...278...>
-Content-Type: multipart/alternative;
-	boundary="------------61B0EDE5E451407EDF55CBFB"
-Content-Language: en-GB
-Subject: Re: [Openvpn-devel] Windows 10 Creators Update broke
- --block-outside-dns
+Message-ID: <1492699272.18647.3.camel@...2264...>
+From: Hristo Venev <hristo@...2264...>
+Date: Thu, 20 Apr 2017 15:41:12 +0100
+Content-Type: multipart/signed; micalg="pgp-sha512";
+	protocol="application/pgp-signature"; boundary="=-lvLOuv/xiNCoJNGRBNe9"
+Mime-Version: 1.0
+Subject: [Openvpn-devel] [PATCH] Fix extract_x509_field_ssl for external
+	objects
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,112 +14,77 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
-This is a multi-part message in MIME format.
---------------61B0EDE5E451407EDF55CBFB
-Content-Type: text/plain; charset=utf-8
+--=-lvLOuv/xiNCoJNGRBNe9
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+Only fields known to OpenSSL have a NID. OBJ_txt2obj allows specifying
+a numeric OID.
+
+Signed-off-by: Hristo Venev <hristo@...2264...>
+---
+ src/openvpn/ssl_verify_openssl.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
+
+diff --git a/src/openvpn/ssl_verify_openssl.c b/src/openvpn/ssl_verify_open=
+ssl.c
+index 87f71f21..114cf39c 100644
+--- a/src/openvpn/ssl_verify_openssl.c
++++ b/src/openvpn/ssl_verify_openssl.c
+@@ -191,16 +191,23 @@ extract_x509_field_ssl(X509_NAME *x509, const char *f=
+ield_name, char *out,
+     X509_NAME_ENTRY *x509ne =3D 0;
+     ASN1_STRING *asn1 =3D 0;
+     unsigned char *buf =3D NULL;
+-    int nid =3D OBJ_txt2nid(field_name);
++    ASN1_OBJECT *obj =3D OBJ_txt2obj(field_name, 0);
++
++    if (obj =3D=3D NULL)
++    {
++        crypto_msg(M_FATAL, "Cannot get ASN1_OBJECT for %s", field_name);
++    }
+=20
+     ASSERT(size > 0);
+     *out =3D '\0';
+     do
+     {
+         lastpos =3D tmp;
+-        tmp =3D X509_NAME_get_index_by_NID(x509, nid, lastpos);
++        tmp =3D X509_NAME_get_index_by_OBJ(x509, obj, lastpos);
+     } while (tmp > -1);
+=20
++    ASN1_OBJECT_free(obj);
++
+     /* Nothing found */
+     if (lastpos =3D=3D -1)
+     {
+--=20
+2.12.2=
+
+--=-lvLOuv/xiNCoJNGRBNe9
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
 Content-Transfer-Encoding: 7bit
 
-On 18.04.2017 21:37, Selva Nair wrote:
->
-> On Sat, Apr 15, 2017 at 6:41 PM, ValdikSS <valdikss@...277... <mailto:valdikss@...277...>> wrote:
->
-> How does this registry entry tell Windows that TAP adapter should be preferred for DNS? Or is this to be done in addition to setting up a preferred ordering of network adapters?
+-----BEGIN PGP SIGNATURE-----
 
-It doesn't. I just remembered that option and set it. It worked for me when DNS is in the same subnet with user, but it fails if DNS is in the internet.
-Setting lower metric to the TAP interface correctly works in both cases, without reg patch.
+iQIzBAABCgAdFiEETdMrh1lhmLmNEKGzzwXo0E3DKboFAlj4yIgACgkQzwXo0E3D
+KbqrAw/+JQBA8nzFNVMmXYMUiA1wJlRqa+9ft24we/te0zhYW81/kAdB7Sz/qn8f
+RBMW8WbhuqcMNaRkH0LrtoHr8BGheXWGanCfThV8L8XUSRMxJpWOgAeYydTToPR8
+pIc69RIdp1ryUO9PBWcD0ghLmoPCCS+/tidCj10Y5ge+E7XHSP5Lw74jn9LTqglh
+HVDSIjSoDz6jFDiI7L+NyLdhnXomBuW1POrQwKE3EH+KtQsbIjuVop/TUAFG5RHj
+pL3QwAjOmrHVJh5QIYnvHefUy24m/BK6b4gXjlG6WvO+daGfGcxIU4443F6bmNk/
+9sCewhp3RfuKPXHnfZQCPjE+szWlwxrD9aWN7YpOx40RWJauoMQfw1y+YlR+NsK4
+bjRo/2ykaX7M0Eqp1MMGw1VcwxwqDrTA4Ci2eq8bBwmZIOxkOn8NNUh7JFIQnwFU
+WZq0ao8Py/9MMx8Ahgn6VrRguYabgdCt82RPTNc6/lsmrVm/H77s6FQY5DVu4Szc
+iLcnvggBnPAgOO8HnEn8GXxBlUb/FeqdBEUEj4g9YJbUS8PWyJYfYWmsBIF9y92a
+V2kKEQ0RMFu/UL8EBfmelHqN8qpAVc5BpCQExGffO22IV/s6YTHyC08juIUxWp2s
+RGBoWCN+uTLmIzTjRLhaYlveb/Hb5CmPqZKrYW1i3fzfDqxZobQ=
+=uBkw
+-----END PGP SIGNATURE-----
 
->
-> Can WFP be used to rewrite the source address? In that case we could just redirect all DNS requests through the TAP interface instead of dropping packets.
+--=-lvLOuv/xiNCoJNGRBNe9--
 
-Unfortunately not, not without kernel driver.
-
-> As for local ipv6 DNS servers, I do not think we should do anything about it unless the tunnel can handle v6 traffic.
->
-> Selva
-
-I made a perliminary patch to set interface metric to 7:
-https://github.com/ValdikSS/openvpn-with-patches/commit/0651c0469038dd0ba39329f4b83ecd7e1d04323e
-
-This is static change for the interface. Currently this patch does not revert previous metric value if there were any or set it back to automatic. Should it be implemented in your opinion? It still won't revert this value back in case of OpenVPN crash or power outage. Yet I don't think that lower metric on TAP interface would have any influence for networking at all.
-
-Please tell your opinion guys. Selva said it should revert the previous value upon termination.
-
-
---------------61B0EDE5E451407EDF55CBFB
-Content-Type: text/html; charset=utf-8
-Content-Transfer-Encoding: 7bit
-
-<html>
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  </head>
-  <body text="#000000" bgcolor="#FFFFFF">
-    On 18.04.2017 21:37, Selva Nair wrote:<br>
-    <blockquote type="cite"
-cite="mid:CAKuzo_iam5RwR=grdc9cT8OL6AWdEp_bEh9jo1dhiyVf9T21sQ@...278...">
-      <div dir="ltr">
-        <div class="gmail_extra"><br>
-          <div class="gmail_quote">On Sat, Apr 15, 2017 at 6:41 PM,
-            ValdikSS <span dir="ltr">&lt;<a
-                href="mailto:valdikss@...277..." target="_blank"
-                moz-do-not-send="true">valdikss@...277...</a>&gt;</span>
-            wrote:<br>
-          </div>
-          <br>
-          How does this registry entry tell Windows that TAP adapter
-          should be preferred for DNS? Or is this to be done in addition
-          to setting up a preferred ordering of network adapters?</div>
-      </div>
-    </blockquote>
-    <br>
-    It doesn't. I just remembered that option and set it. It worked for
-    me when DNS is in the same subnet with user, but it fails if DNS is
-    in the internet.<br>
-    Setting lower metric to the TAP interface correctly works in both
-    cases, without reg patch.<br>
-    <br>
-    <blockquote type="cite"
-cite="mid:CAKuzo_iam5RwR=grdc9cT8OL6AWdEp_bEh9jo1dhiyVf9T21sQ@...278...">
-      <div dir="ltr">
-        <div class="gmail_extra"><br>
-        </div>
-        <div class="gmail_extra">Can WFP be used to rewrite the source
-          address? In that case we could just redirect all DNS requests
-          through the TAP interface instead of dropping packets.</div>
-      </div>
-    </blockquote>
-    <br>
-    Unfortunately not, not without kernel driver.<br>
-    <br>
-    <blockquote type="cite"
-cite="mid:CAKuzo_iam5RwR=grdc9cT8OL6AWdEp_bEh9jo1dhiyVf9T21sQ@...278...">
-      <div dir="ltr">
-        <div class="gmail_extra"> As for local ipv6 DNS servers, I do
-          not think we should do anything about it unless the tunnel can
-          handle v6 traffic.</div>
-        <div class="gmail_extra"><br>
-        </div>
-        <div class="gmail_extra">Selva</div>
-      </div>
-    </blockquote>
-    <br>
-    I made a perliminary patch to set interface metric to 7:<br>
-<a class="moz-txt-link-freetext" href="https://github.com/ValdikSS/openvpn-with-patches/commit/0651c0469038dd0ba39329f4b83ecd7e1d04323e">https://github.com/ValdikSS/openvpn-with-patches/commit/0651c0469038dd0ba39329f4b83ecd7e1d04323e</a><br>
-    <br>
-    This is static change for the interface. Currently this patch does
-    not revert previous metric value if there were any or set it back to
-    automatic. Should it be implemented in your opinion? It still won't
-    revert this value back in case of OpenVPN crash or power outage. Yet
-    I don't think that lower metric on TAP interface would have any
-    influence for networking at all.<br>
-    <br>
-    Please tell your opinion guys. Selva said it should revert the
-    previous value upon termination.<br>
-    <br>
-  </body>
-</html>
-
---------------61B0EDE5E451407EDF55CBFB--
 
