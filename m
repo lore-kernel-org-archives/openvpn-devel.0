@@ -1,10 +1,14 @@
+Date: Sat, 22 Apr 2017 13:29:28 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20170422112928.GA30424@...1296...>
 References: <20170413172609.29093-1-davids@...515...>
 	<20170421220728.31867-1-davids@...515...>
-From: Steffan Karger <steffan@...1856...>
-Message-ID: <258342e4-0ba9-cae0-0e23-88a4aab0eacc@...1856...>
-Date: Sat, 22 Apr 2017 08:28:33 +0200
+	<258342e4-0ba9-cae0-0e23-88a4aab0eacc@...1856...>
 MIME-Version: 1.0
-In-Reply-To: <20170421220728.31867-1-davids@...515...>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="5LiOUhUlsRX0HDkW"
+Content-Disposition: inline
+In-Reply-To: <258342e4-0ba9-cae0-0e23-88a4aab0eacc@...1856...>
 Subject: Re: [Openvpn-devel] [PATCH v4] Fix broken ./configure on systems
  without openssl.pc
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -15,103 +19,102 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+To: Steffan Karger <steffan@...1856...>
+Cc: openvpn-devel@lists.sourceforge.net
+
+--5LiOUhUlsRX0HDkW
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
 Hi,
 
-On 22-04-17 00:07, David Sommerseth wrote:
-> Commit 039a89c331e9b799 changed the OpenSSL check slightly, but that
-> broke ./configure on systems which do not install the openssl.pc
-> pkg-config support file.  This is typically an issue on most of the BSD
-> platforms, where the OpenSSL package from the base repository does not
-> provide that file.
-> 
-> We should anyway in this case have a better check of OpenSSL version
-> available.  So in the case pkg-config fails, it will run an additional
-> test looking for the OpenSSL version number in the opensslv.h header
-> file and check against that version number.
-> 
-> I did consider to rip out the pkg-config test all together, but decided
-> to let it stay.  If pkg-config works, it provides much more details to
-> the ./configure script than just the version number check - such as
-> include and library paths if those are outside the default system paths.
-> 
-> If the user adds OPENSSL_CFLAGS or OPENSSL_LIBS to the ./configure
-> script, the pkg-config will not be run.  But this patch ensures that the
-> OpenSSL version is also checked in this situation.
-> 
-> This patch have been tested on Scientic Linux 7.3 (RHEL clone) and
-> FreeBSD 10.3-RELEASE-p11.
-> 
-> v4 - Move the CFLAGS/LDFLAGS declarations before the manual
->      version test; otherwise we're still testing the system install
->      version
-> 
-> v3 - Remove not needed and duplicated OPENSSL_LIBS assignment
->    - Fix tab/space issues in modified lines
-> 
-> v2 - Don't use try to simplify the version matching, use the full
->      OPENSSL_VERSION_NUMBER
->    - Fixed typo (OpneSSL -> OpenSSL)
->    - Improve a few comments
-> 
-> Signed-off-by: David Sommerseth <davids@...515...>
-> ---
->  configure.ac | 28 ++++++++++++++++++++++++----
->  1 file changed, 24 insertions(+), 4 deletions(-)
-> 
-> diff --git a/configure.ac b/configure.ac
-> index acea060..2b98375 100644
-> --- a/configure.ac
-> +++ b/configure.ac
-> @@ -860,11 +860,9 @@ if test "${enable_crypto}" = "yes" -a "${with_crypto_library}" = "openssl"; then
->  		PKG_CHECK_MODULES(
->  			[OPENSSL],
->  			[libcrypto >= 1.0.1, libssl >= 1.0.1],
-> -	                [have_openssl="yes"],
-> -			[AC_MSG_ERROR([Minimum supported OpenSSL version is 1.0.1])]
-> +			[have_openssl="yes"],
-> +			[] # If this fails, we will do another test next
->  		)
-> -
-> -		OPENSSL_LIBS=${OPENSSL_LIBS:--lssl -lcrypto}
->  	fi
->  
->  	saved_CFLAGS="${CFLAGS}"
-> @@ -872,6 +870,28 @@ if test "${enable_crypto}" = "yes" -a "${with_crypto_library}" = "openssl"; then
->  	CFLAGS="${CFLAGS} ${OPENSSL_CFLAGS}"
->  	LIBS="${LIBS} ${OPENSSL_LIBS}"
->  
-> +	# If pkgconfig check failed or OPENSSL_CFLAGS/OPENSSL_LIBS env vars
-> +	# are used, check the version directly in the OpenSSL include file
-> +	if test "${have_openssl}" != "yes"; then
-> +	   AC_MSG_CHECKING([additionally if OpenSSL is available and version >= 1.0.1])
-> +	   AC_COMPILE_IFELSE(
-> +		[AC_LANG_PROGRAM(
-> +			[[
-> +#include <openssl/opensslv.h>
-> +			]],
-> +			[[
-> +/*	     Version encoding: MNNFFPPS - see opensslv.h for details */
-> +#if OPENSSL_VERSION_NUMBER < 0x10001000L
-> +#error OpenSSL too old
-> +#endif
-> +			]]
-> +		)],
-> +		[AC_MSG_RESULT([ok])],
-> +		[AC_MSG_ERROR([OpenSSL version too old])]
-> +	   )
-> +	   OPENSSL_LIBS=${OPENSSL_LIBS:--lssl -lcrypto}
-> +	fi
-> +
->  	AC_CHECK_FUNCS([SSL_CTX_new EVP_CIPHER_CTX_set_key_length],
->  				   ,
->  				   [AC_MSG_ERROR([openssl check failed])]
-> 
+On Sat, Apr 22, 2017 at 08:28:33AM +0200, Steffan Karger wrote:
+> > v4 - Move the CFLAGS/LDFLAGS declarations before the manual
+> >      version test; otherwise we're still testing the system install
+> >      version
+[..]
+> This looks good now, ACK.
 
-This looks good now, ACK.
+I'm not exactly sure what happened here in v4 - but now it's broken for
+"just run configure, with no extra WITH_OPENSSL_* arguments" (on a system=20
+without pkgconfig).  So, NAK, as annoying as you'll surely find me :-/
 
--Steffan
+It does the version check just fine...
+
+configure:16566: checking additionally if OpenSSL is available and version =
+>=3D 1.
+0.1
+configure:16587: cc -c -g -O2 -std=3Dc99   conftest.c >&5
+configure:16587: $? =3D 0
+configure:16588: result: ok
+
+... and then it tests for SSL_CTX_new, omitting the -lssl/-lcrypto bits:
+
+configure:16601: checking for SSL_CTX_new
+configure:16601: cc -o conftest -g -O2 -std=3Dc99    conftest.c   >&5
+/var/tmp/conftest-e1c536.o: In function `main':
+/home/gert/src/openvpn-maint/test-build-master-fbsd/conftest.c:193: undefin=
+ed re
+ference to `SSL_CTX_new'
+cc: error: linker command failed with exit code 1 (use -v to see invocation)
+
+
+... failing.
+
+This is on FreeBSD 10.3, with the system libs, having pkg-config installed,=
+=20
+but no openssl.pc:
+
+configure:16509: $PKG_CONFIG --exists --print-errors "libcrypto >=3D 1.0.1,=
+ libssl
+ >=3D 1.0.1"
+Package libcrypto was not found in the pkg-config search path.
+Perhaps you should add the directory containing `libcrypto.pc'
+to the PKG_CONFIG_PATH environment variable
+Package 'libcrypto', required by 'virtual:world', not found
+Package 'libssl', required by 'virtual:world', not found
+
+(not sure if this is related, but maybe the configure code path for
+"pkg-config exists" is different from "no pkg-config found")
+
+
+On Linux, with pkg-config + openssl.pc, it works fine:
+
+configure:16601: checking for SSL_CTX_new
+configure:16601: gcc -o conftest -g -O2 -std=3Dc99    conftest.c  -lcrypto =
+-lssl
+>&5
+configure:16601: $? =3D 0
+configure:16601: result: yes
+
+(-lcrypto -lssl present, though I wonder why it's putting -lcrypto=20
+first - dependency order should have -lssl first)
+
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--5LiOUhUlsRX0HDkW
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJY+z6XAAoJEB2Cnv7KVigSTwYL/igsCZubcK4lVgQyFGYc7EGM
+n7S2dIJe2j3AmQLRH2l6lHx4GdAqVLYnsfeVpe65MpXU+lkSYozi6kPgdCt5xB2U
+FOJaE1qMlNX4hL2OAeTifygfrtBH+s+y5VOzVSflBJXP+amHDoH2qgyKjKREoluC
+GoTEb8RNdsdfqgYgeyFQdSXQM2514G/nbXbSUlgGz4VBYZUfsV/pbOlZb0SNrlmx
+6Ac5Elr1b8VaE1fxqlmRRN+yeUhoYor3bsHxMzeEZ051KlzYe4qvx8zoXt+He9nr
+0lmudqDD+Kg957iRGBBHfFs6J9N4KQV0LfJ+8LZ9ertmV0Jp984y4OtB6nZhyWYb
+nFCkC0Aawcif0mQN2gxu+etDMwatFSRakS8dWj/wySZZZ1qsRltNWN3Onarsd9qb
+xHUH21uKD/6cZC0eevWr/JDuc/Bv4ZwoBlYaNPu/XaLsn1UDi+0HvIqSOs4ws7el
+4xKR0j0IpJ99Cp54YX2QTypNfJG7l08tx+ziJpz7Tw==
+=xDI2
+-----END PGP SIGNATURE-----
+
+--5LiOUhUlsRX0HDkW--
 
