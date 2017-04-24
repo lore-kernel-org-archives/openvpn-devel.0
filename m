@@ -1,14 +1,18 @@
-References: <1492699272.18647.3.camel@...2264...>
-From: Steffan Karger <steffan@...1856...>
-Message-ID: <0e3d6163-c8bb-bf76-1012-59dcfd264783@...1856...>
-Date: Sun, 23 Apr 2017 10:59:28 +0200
+References: <20170102141723.mtgdfznx5rcsdurs@...30...>
+	<20170102142646.GL78624@...1296...>
+	<1fe64726-57a5-0496-5e40-67b80d8e9b3b@...1435...>
+	<1483370642.926699217@...2230...>
+	<061fcbb0-b364-63cf-9291-42db17348ca1@...1435...>
+	<cfbed6af-0ee3-208d-3a94-2cc3c19f802d@...277...>
+	<4957e2b9-46de-ca29-447d-37f4fb1b46e6@...1856...>
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <339f4682-9baa-1eda-ef0c-ffece696384c@...515...>
+Date: Mon, 24 Apr 2017 10:58:50 +0300
 MIME-Version: 1.0
-In-Reply-To: <1492699272.18647.3.camel@...2264...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature";
-	boundary="oadDMaowgmVurTO7uDdH2W6FKdRQvObQf"
-Subject: Re: [Openvpn-devel] [PATCH] Fix extract_x509_field_ssl for external
- objects
+In-Reply-To: <4957e2b9-46de-ca29-447d-37f4fb1b46e6@...1856...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] 2.4 sees all client certificates as expired
+ when using crl-verify
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,71 +21,82 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---oadDMaowgmVurTO7uDdH2W6FKdRQvObQf
-Content-Type: multipart/mixed; boundary="etRMcEi9gsEakntVm4kx8j4TAWIVj8Owr"
-From: Steffan Karger <steffan@...1856...>
-To: openvpn-devel@lists.sourceforge.net
-Message-ID: <0e3d6163-c8bb-bf76-1012-59dcfd264783@...1856...>
-Subject: Re: [Openvpn-devel] [PATCH] Fix extract_x509_field_ssl for external
-	objects
-References: <1492699272.18647.3.camel@...2264...>
-In-Reply-To: <1492699272.18647.3.camel@...2264...>
-
---etRMcEi9gsEakntVm4kx8j4TAWIVj8Owr
-Content-Type: text/plain; charset="windows-1252"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
+To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
 
-Hi,
+On 23/04/2017 11:02, Steffan Karger wrote:
+>=20
+> On 22-04-17 20:24, debbie10t wrote:
+>>
+>> On 02/01/17 15:39, Steffan Karger wrote:
+>>> On 02-01-17 16:24, SviMik wrote:
+>>>>
+>>>>> On 02-01-17 15:26, Gert Doering wrote:
+>>>>>> On Mon, Jan 02, 2017 at 03:17:23PM +0100, Alberto Gonzalez
+>>>>>> Iniesta wrote:
+>>>>>>> I just got this [1] bug report on OpenVPN 2.4 threating all
+>>>>>>> certs as expired when upgrading from 2.3. I find this quite
+>>>>>>> weird, but until I have some time to test it I thought asking
+>>>>>>> here would be faster.
+>>>>>>
+>>>>>> From the bug report:
+>>>>>>
+>>>>>> Mon Jan  2 07:37:10 2017 us=3D466023 1.2.3.4:36241 VERIFY ERROR:
+>>>>>> depth=3D0,
+>>>>> error=3DCRL has expired: C=3DXX, ST=3DXX, L=3DXXX, O=3DNone, CN=3Dmyc=
+n,
+>>>>> emailAddress=3Dmy@...2228...
+>>>>>>
+>>>>>> "what the log says" :-)
+>>>>>>
+>>>>>> 2.4 checks CRLs much more rigidly than 2.3 (precisely: 2.3 had
+>>>>>> some built-in checking which only looked at revocations, while
+>>>>>> 2.4 leaves this to the crypto library, and they check all fields
+>>>>>> more rigidly).
+>>>>>>
+>>>>>> Specifically, CRLs with an expired "next update" field are
+>>>>>> flagged as "expired" by OpenSSL, while the built-in check in 2.3
+>>>>>> did not.
+>>>>>
+>>>>> This.  I replied something similar on the debian bug tracker, but I
+>>>>> have no clue what will happen with that mail.
+>>>>>
+>>>>>> Since this bit a few people already, I wonder how we could
+>>>>>> communicate this better.
+>>>>>
+>>>>> I wonder about that too.  Maybe some more verbose text on a wiki
+>>>>> page? We could even detect this specific error and add a link to
+>>>>> that page in the warning.
+>>>>>
+>>>>
+>>>> Is there an option to disable this check? It would be extremely
+>>>> useful to maintain (at least optional) backward compatibility with
+>>>> already existing setups, which originally relied on 2.3 behaviour.
+>>>>
+>>>
+>>> No, there is not.  And I don't think there is an easy way to implement
+>>> that either.
+>>>
+>>> But, the fix is just as easy as the workaround:  just regenerate the
+>>> CRL, with a more correct nextUpdate value.  If you don't want your CRLs
+>>> expire, just put that value far enough into the future.
+>>
+>> Following this up, something like:
+>> https://community.openvpn.net/openvpn/wiki/SandBox
+>=20
+> Excellent text!  Thanks.  Let's give this a good spot on the wiki.
+>=20
+> -Steffan
+>=20
 
-The change makes sense, so 'Feature-ACK', but one remark:
+Perhaps a condensed version of that text should go to the --crl-verify
+section on the man-page?
 
-On 20-04-17 16:41, Hristo Venev wrote:
-> @@ -191,16 +191,23 @@ extract_x509_field_ssl(X509_NAME *x509, const char =
-*field_name, char *out,
->      X509_NAME_ENTRY *x509ne =3D 0;
->      ASN1_STRING *asn1 =3D 0;
->      unsigned char *buf =3D NULL;
-> -    int nid =3D OBJ_txt2nid(field_name);
-> +    ASN1_OBJECT *obj =3D OBJ_txt2obj(field_name, 0);
-> +
-> +    if (obj =3D=3D NULL)
-> +    {
-> +        crypto_msg(M_FATAL, "Cannot get ASN1_OBJECT for %s", field_name);
-> +    }
+--=20
+Samuli Sepp=C3=A4nen
+Community Manager
+OpenVPN Technologies, Inc
 
-M_FATAL is currently acceptable, because field_name always comes from
-the local config file, but I'd prefer to make this non-fatal, and return
-FAILURE.  That ensures that if someone decides to use this function in a
-way where field_name *is* attacker controlled, we do not introduce a
-remote DoS.
-
-As for the log level of this message: I think D_TLS_DEBUG_LOW (--verb 3)
-or possibly D_TLS_ERRORS (--verb 1) are appropriate.
-
--Steffan
-
-
---etRMcEi9gsEakntVm4kx8j4TAWIVj8Owr--
-
---oadDMaowgmVurTO7uDdH2W6FKdRQvObQf
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQEcBAEBCAAGBQJY/GzwAAoJEJgCyj0AftKIbhMIAKp4plFGsGk2sX33p60whGzD
-C3xapHEX+b+tV57SsuSYTxQA689LZ/FzINTrwXcWq4f9RSpVDU5h9sRlpHGoC1Cu
-eB8yOsVTiWXpjYaTG5MjlUAUouFsMtG0FB/np4N1h/u6Hi6qulzwaXSNWdBEPsLT
-hqw6wrF2WbwOB4kQ5fPz8N7nIcddTbp42LS1vPeI/tusQAKeVuOW9oK3fVnBTFjE
-o9ZXFSTW+gFUGWCJ1BFtRMPWhKweP6KuU60I1g9mgZOkb5wH5wisXWlVHDflIyKZ
-fPMqUp5OUL0Ka9FPgOiTcd5/h2ICJbPcN3nwbApKHhWdzlQBFBFbnQvZJN8Tfg8=
-=xTxO
------END PGP SIGNATURE-----
-
---oadDMaowgmVurTO7uDdH2W6FKdRQvObQf--
+irc freenode net: mattock
 
