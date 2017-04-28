@@ -1,8 +1,13 @@
-From: David Sommerseth <davids@...515...>
-Date: Wed, 26 Apr 2017 18:00:21 +0200
-Message-Id: <20170426160021.25122-1-davids@...515...>
-Subject: [Openvpn-devel] [PATCH] crypto: Enable SHA256 fingerprint checking
-	in --verify-hash
+From: Hubert Kario <hkario@...1347...>
+Date: Sat, 29 Apr 2017 00:14:00 +0200
+Message-ID: <2865913.JP0f70X5bG@...2232...>
+In-Reply-To: <de60bac0-2491-44af-2a65-00654b14f55b@...2080...>
+References: <CAKh=nwGz-NSEcSY9KhQ12gC1GNXP6XOBTEO3FdP8gyJN5VTggg@...278...>
+	<de60bac0-2491-44af-2a65-00654b14f55b@...2080...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; boundary="nextPart2141465.tycXRiuii4";
+	micalg="pgp-sha512"; protocol="application/pgp-signature"
+Subject: Re: [Openvpn-devel] build against openssl 1.1.0
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,249 +16,96 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This enhances --verify-hash with an optional algorithm flag.  If not
-provided, it defaults to SHA1 to preserve backwards compatbilitity with
-existing configurations.  The only valid flags are SHA1 and SHA256.
+--nextPart2141465.tycXRiuii4
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-In addition it moves the hash verification away from memcmp() to
-memcmp_constant_time().  And slightly it enhances the layout of the
---verify-hash section in the man page.
+On Friday, 17 February 2017 18:18:27 CEST David Sommerseth wrote:
+> On 17/02/17 17:35, Emmanuel Deloget wrote:
+> > I understand that I'm the new guy in town, but can you allow me to
+> > make the formal request to ditch OpenSSL 0.9.8, 1.0.0 and 1.0.1 and
+> > require at least version 1.0.2?
+>=20
+> So to the RHEL releases and the OpenSSL versions.  RHEL 5 ships with
+> openssl-0.9.8e.  Both RHEL 6 and RHEL 7 ships with openssl-1.0.1e.
+>=20
+> The way Red Hat releases works is that versions are close to never
+> rebased, at least not core libraries such as OpenSSL.=20
 
-Signed-off-by: David Sommerseth <davids@...515...>
+Both core libraries and non-core libraries are rebased in RHEL. Case in poi=
+nt,=20
+RHEL 6 originally shipped with openssl-1.0.0[1].
+But rebases to releases that are ABI incompatible happen only to packages t=
+hat=20
+are explicitly excluded[2] from ABI guarantee. OpenSSL is not one of such=20
+packages. For obvious reasons, I hope.
 
----
+> But Red Hat
+> employs a lot of users to ensure all packages they distribute is secure
+> and maintained.  That means that security and important bug fixes will
+> be backported from newer OpenSSL releases to the openssl-1.0.1e
+> baseline.  And this happens for the whole life cycle of each major releas=
+e.
 
-Simple test script
-==================
+Correct[3].
 
-* Server:
-  # openvpn --dev tun --reneg-sec 60 --verb 4 \
-            --server 10.8.0.0 255.255.255.0 --topology subnet \
-            --ca sample/sample-keys/ca.crt \
-            --key sample/sample-keys/server.key \
-            --cert sample/sample-keys/server.crt \
-            --dh sample/sample-keys/dh2048.pem \
-            --cipher AES-256-CBC --auth SHA256 \
-            --verify-hash 57:4D:B3:49:7E:FB:9E:FD:DC:BC:A4:ED:BC:B3:C2:8D:C3:D7:2A:E3:0F:6F:76:57:F0:BB:F4:90:56:1C:DC:F9 SHA256
+> Sometimes even features are backported as well.
 
-* Client:
-  # openvpn --dev tun --verb 4 \
-            --remote 192.168.122.1 --explicit-exit-notify \
-            --client --ca sample/sample-keys/ca.crt \
-            --key sample/sample-keys/client.key \
-            --cert sample/sample-keys/client.crt \
-            --cipher AES-256-CBC --auth SHA256 \
-            --verify-hash 06:30:DA:EA:77:41:5B:D6:8C:C5:CC:CA:F5:D7:91:87:FA:6D:89:44
+Unfortunately because RHEL-6 is currently in Production Phase 2, soon enter=
+ing=20
+Phase 3, providing new feature like openssl-1.0.2 would be an exception[4].
 
-  Alternative --verify-hash variant which must succeed:
-     --verify-hash 06:30:DA:EA:77:41:5B:D6:8C:C5:CC:CA:F5:D7:91:87:FA:6D:89:44 SHA1
+> But I have gotten
+> fairly clear signals that TLSv1.3 from openssl-1.1 will not be
+> backported, as the code has changed too much since the 1.0.1 baseline.
+> But I would be surprised if a future RHEL 8 does not ship with openssl-1.=
+1.x
 
-  These --verify-hash variants must fail:
-     --verify-hash 06:30:DA:EA:77:41:5B:D6:8C:C5:CC:CA:F5:D7:91:87:FA:6D:89:44 SHA256
-     --verify-hash 57:4D:B3:49:7E:FB:9E:FD:DC:BC:A4:ED:BC:B3:C2:8D:C3:D7:2A:E3:0F:6F:76:57:F0:BB:F4:90:56:1C:DC:F9
-     --verify-hash 57:4D:B3:49:7E:FB:9E:FD:DC:BC:A4:ED:BC:B3:C2:8D:C3:D7:2A:E3:0F:6F:76:57:F0:BB:F4:90:56:1C:DC:00 SHA256
-     --verify-hash 06:30:DA:EA:77:41:5B:D6:8C:C5:CC:CA:F5:D7:91:87:FA:6D:89:00 SHA1
-     --verify-hash 06:30:DA:EA:77:41:5B:D6:8C:C5:CC:CA:F5:D7:91:87:FA:6D:89:00
-     --verify-hash 06:30:DA:EA:77:41:5B:D6:8C:C5:CC:CA:F5:D7:91:87:FA:6D:89:XX
+Well, openssl-1.1.0 is already available for Fedora rawhide :)
 
-To retrieve the SHA fingerprints in certificates:
+(Hope I don't sound too much like a markedroid, but I appreciate the suppor=
+t=20
+for RHEL you provide so I wanted to let you know exactly where everything i=
+s,=20
+the least I can do)
 
-    $ openssl x509 -noout -fingerprint -in sample/sample-keys/ca.crt
-    $ openssl x509 -noout -fingerprint -sha256 -in sample/sample-keys/ca.crt
----
- Changes.rst                  |  3 +++
- doc/openvpn.8                | 18 +++++++++++++++---
- src/openvpn/crypto_backend.h |  6 ++++++
- src/openvpn/init.c           |  1 +
- src/openvpn/options.c        | 22 +++++++++++++++++++---
- src/openvpn/options.h        |  5 +++++
- src/openvpn/ssl_common.h     |  1 +
- src/openvpn/ssl_verify.c     | 15 +++++++++++++--
- 8 files changed, 63 insertions(+), 8 deletions(-)
+ 1 - http://vault.centos.org/6.0/os/x86_64/Packages/
+openssl-1.0.0-4.el6.x86_64.rpm
+ 2 - https://access.redhat.com/articles/rhel-abi-compatibility
+ 3 - https://access.redhat.com/security/updates/backporting
+ 4 - https://access.redhat.com/support/policy/updates/errata
+--=20
+Regards,
+Hubert Kario
+Senior Quality Engineer, QE BaseOS Security team
+Web: www.cz.redhat.com
+Red Hat Czech s.r.o., Purky=C5=88ova 99/71, 612 45, Brno, Czech Republic=
 
-diff --git a/Changes.rst b/Changes.rst
-index 2a94990e..da93060c 100644
---- a/Changes.rst
-+++ b/Changes.rst
-@@ -318,3 +318,6 @@ Version 2.4.1
-    ``--remote-cert-tls`` uses the far more common keyUsage and extendedKeyUsage
-    extension instead.  Make sure your certificates carry these to be able to
-    use ``--remote-cert-tls``.
-+ - ``--verify-hash`` can now take an optional flag which changes the hashing
-+   algorithm. It can be either SHA1 or SHA256.  The default if not provided is
-+   SHA1 to preserve backwards compatibility with existing configurations.
-diff --git a/doc/openvpn.8 b/doc/openvpn.8
-index c3248fde..fcf825c6 100644
---- a/doc/openvpn.8
-+++ b/doc/openvpn.8
-@@ -4694,15 +4694,27 @@ and
- Not available with PolarSSL.
- .\"*********************************************************
- .TP
--.B \-\-verify\-hash hash
--Specify SHA1 fingerprint for level-1 cert.  The level-1 cert is the
-+.B \-\-verify\-hash hash [algo]
-+Specify SHA1 or SHA256 fingerprint for level-1 cert.  The level-1 cert is the
- CA (or intermediate cert) that signs the leaf certificate, and is
- one removed from the leaf certificate in the direction of the root.
- When accepting a connection from a peer, the level-1 cert
- fingerprint must match
- .B hash
- or certificate verification will fail.  Hash is specified
--as XX:XX:...  For example: AD:B0:95:D8:09:C8:36:45:12:A9:89:C8:90:09:CB:13:72:A6:AD:16
-+as XX:XX:... For example:
-+
-+.nf
-+.ft 3
-+.in +4
-+AD:B0:95:D8:09:C8:36:45:12:A9:89:C8:90:09:CB:13:72:A6:AD:16
-+.in -4
-+.ft
-+.fi
-+
-+The
-+.B algo
-+flag can be either SHA1 or SHA256.  If not provided, it defaults to SHA1.
- .\"*********************************************************
- .TP
- .B \-\-pkcs11\-cert\-private [0|1]...
-diff --git a/src/openvpn/crypto_backend.h b/src/openvpn/crypto_backend.h
-index 2c79baa1..9b113d7b 100644
---- a/src/openvpn/crypto_backend.h
-+++ b/src/openvpn/crypto_backend.h
-@@ -47,6 +47,12 @@
- /* Maximum HMAC digest size (bytes) */
- #define OPENVPN_MAX_HMAC_SIZE   64
- 
-+/** Types referencing specific message digest hashing algorithms */
-+typedef enum {
-+    MD_SHA1,
-+    MD_SHA256
-+} hash_algo_type ;
-+
- /** Struct used in cipher name translation table */
- typedef struct {
-     const char *openvpn_name;   /**< Cipher name used by OpenVPN */
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index ee14f672..e9455039 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -2619,6 +2619,7 @@ do_init_crypto_tls(struct context *c, const unsigned int flags)
-     memmove(to.remote_cert_ku, options->remote_cert_ku, sizeof(to.remote_cert_ku));
-     to.remote_cert_eku = options->remote_cert_eku;
-     to.verify_hash = options->verify_hash;
-+    to.verify_hash_algo = options->verify_hash_algo;
- #ifdef ENABLE_X509ALTUSERNAME
-     to.x509_username_field = (char *) options->x509_username_field;
- #else
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index dcb6ecfa..f38abad7 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -591,7 +591,8 @@ static const char usage_message[] =
-     "--x509-username-field : Field in x509 certificate containing the username.\n"
-     "                        Default is CN in the Subject field.\n"
- #endif
--    "--verify-hash   : Specify SHA1 fingerprint for level-1 cert.\n"
-+    "--verify-hash hash [algo] : Specify fingerprint for level-1 certificate.\n"
-+    "                            Valid algo flags are SHA1 and SHA256. \n"
- #ifdef _WIN32
-     "--cryptoapicert select-string : Load the certificate and private key from the\n"
-     "                  Windows Certificate System Store.\n"
-@@ -7687,10 +7688,25 @@ add_option(struct options *options,
-             options->extra_certs_file_inline = p[2];
-         }
-     }
--    else if (streq(p[0], "verify-hash") && p[1] && !p[2])
-+    else if (streq(p[0], "verify-hash") && p[1] && !p[3])
-     {
-         VERIFY_PERMISSION(OPT_P_GENERAL);
--        options->verify_hash = parse_hash_fingerprint(p[1], SHA_DIGEST_LENGTH, msglevel, &options->gc);
-+
-+        if (!p[2] || (p[2] && streq(p[2], "SHA1")))
-+        {
-+            options->verify_hash = parse_hash_fingerprint(p[1], SHA_DIGEST_LENGTH, msglevel, &options->gc);
-+            options->verify_hash_algo = MD_SHA1;
-+        }
-+        else if (p[2] && streq(p[2], "SHA256"))
-+        {
-+            options->verify_hash = parse_hash_fingerprint(p[1], SHA256_DIGEST_LENGTH, msglevel, &options->gc);
-+            options->verify_hash_algo = MD_SHA256;
-+        }
-+        else
-+        {
-+            msg(msglevel, "invalid or unsupported hashing algorithm: %s  (only SHA1 and SHA256 are valid)", p[2]);
-+            goto err;
-+        }
-     }
- #ifdef ENABLE_CRYPTOAPI
-     else if (streq(p[0], "cryptoapicert") && p[1] && !p[2])
-diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-index dc63aeda..5ad087e0 100644
---- a/src/openvpn/options.h
-+++ b/src/openvpn/options.h
-@@ -42,6 +42,10 @@
- #include "comp.h"
- #include "pushlist.h"
- #include "clinat.h"
-+#ifdef ENABLE_CRYPTO
-+#include "crypto_backend.h"
-+#endif
-+
- 
- /*
-  * Maximum number of parameters associated with an option,
-@@ -518,6 +522,7 @@ struct options
-     unsigned remote_cert_ku[MAX_PARMS];
-     const char *remote_cert_eku;
-     uint8_t *verify_hash;
-+    hash_algo_type verify_hash_algo;
-     unsigned int ssl_flags; /* set to SSLF_x flags from ssl.h */
- 
- #ifdef ENABLE_PKCS11
-diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
-index 9a16d77e..a99d24d6 100644
---- a/src/openvpn/ssl_common.h
-+++ b/src/openvpn/ssl_common.h
-@@ -271,6 +271,7 @@ struct tls_options
-     unsigned remote_cert_ku[MAX_PARMS];
-     const char *remote_cert_eku;
-     uint8_t *verify_hash;
-+    hash_algo_type verify_hash_algo;
-     char *x509_username_field;
- 
-     /* allow openvpn config info to be
-diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
-index ac1e110a..b4dbaf9b 100644
---- a/src/openvpn/ssl_verify.c
-+++ b/src/openvpn/ssl_verify.c
-@@ -718,8 +718,19 @@ verify_cert(struct tls_session *session, openvpn_x509_cert_t *cert, int cert_dep
-     /* verify level 1 cert, i.e. the CA that signed our leaf cert */
-     if (cert_depth == 1 && opt->verify_hash)
-     {
--        struct buffer sha1_hash = x509_get_sha1_fingerprint(cert, &gc);
--        if (memcmp(BPTR(&sha1_hash), opt->verify_hash, BLEN(&sha1_hash)))
-+        struct buffer ca_hash;
-+
-+        switch (opt->verify_hash_algo)
-+        {
-+        case MD_SHA1:
-+            ca_hash = x509_get_sha1_fingerprint(cert, &gc);
-+            break;
-+
-+        case MD_SHA256:
-+            ca_hash = x509_get_sha256_fingerprint(cert, &gc);
-+            break;
-+        }
-+        if (memcmp_constant_time(BPTR(&ca_hash), opt->verify_hash, BLEN(&ca_hash)))
-         {
-             msg(D_TLS_ERRORS, "TLS Error: level-1 certificate hash verification failed");
-             goto cleanup;
--- 
-2.11.0
+--nextPart2141465.tycXRiuii4
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part.
+Content-Transfer-Encoding: 7Bit
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQIcBAABCgAGBQJZA76oAAoJEJKo0bgB0vX1W8oP/i7m4DGS32Dp9XJQZEWzZUm3
+l95CBzlxtaCSj4LkZNrG9K2L0lUrjk3JjAJOY9Hi2cYrVaodJJCxn/dE3GQZw+5/
+RQHI033Rr66BxuSR+l31yBSWUu5Dbq0jNTdzJgPh25hbZn/tdltwGYe8IHFRVDm+
+k9OIJOAPl0VzX4Tk1eiEBAJ4tq7axswhQbYxmDK5na5L4JbWN9KiNfRZf08QyWA2
+lB2rIa57EjhG7VZLa93EW/Pi+C0WnCdqqGCaV/U4cRJsRuLpeQ2jiI23/xdAE573
+hRB5GHbW4h8S1wtIipc9D+hxbLeipi0CTz9qFpYZsGQzrc/ZoNre6m/SPIiKguJL
+qu48poKEb1e9+GrwnEszyD6Ua5l++XLxucbs9TsbTDQOuyNyowwzbtd/xzNcwigs
+Nvgtiag6lsAONylBvVSkSxW/Z5qShSmCKfESoK7YMzfrDn4t8f8GNhhXL2FmeEei
+NQmtAFKcJuxfDr1m35AdkoUVaTeaJGXyVHkijjSXZqvxk607vSm6noD3m5Zw8rnL
+G4xnJc2SyghicyvWSCrv3QaYTO/bm07IqVUfoOMuWq/NpJwqmm70Bb7AbxCBkvm5
+ZGeGHi+eJHXLK+F/GV/gRJ+kk2ddPy46gVA3wB9ph4OMRXJQuNVWzibUu49vmZHi
+VHh6W8M6194jJNL/EqoV
+=5hBa
+-----END PGP SIGNATURE-----
+
+--nextPart2141465.tycXRiuii4--
 
 
