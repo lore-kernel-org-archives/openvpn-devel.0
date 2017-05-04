@@ -1,8 +1,10 @@
-From: ValdikSS <valdikss@...277...>
-Date: Thu,  4 May 2017 20:36:05 +0300
-Message-Id: <20170504173605.8269-1-valdikss@...277...>
-Subject: [Openvpn-devel] [PATCH] Set a low interface metric for tap adapter
-	when block-outside-dns is in use
+From: David Sommerseth <davids@...515...>
+Date: Thu,  4 May 2017 22:42:01 +0200
+Message-Id: <20170504204201.1257-1-davids@...515...>
+In-Reply-To: <20170426160021.25122-1-davids@...515...>
+References: <20170426160021.25122-1-davids@...515...>
+Subject: [Openvpn-devel] [PATCH v2] crypto: Enable SHA256 fingerprint
+	checking in --verify-hash
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,362 +16,262 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: ValdikSS <iam@...2070...>
 
-From: ValdikSS <iam@...2070...>
+This enhances --verify-hash with an optional algorithm flag.  If not
+provided, it defaults to SHA1 to preserve backwards compatbilitity with
+existing configurations.  The only valid flags are SHA1 and SHA256.
 
-Windows 10 before Creators Update used to resolve DNS using all available adapters and IP addresses in parallel.
-Now it still resolves addresses using all available adapters but in a round-robin way, beginning with random adapter.
-This behaviour introduces significant delay when block-outside-dns is in use.
-Fortunately, setting low metric for the TAP interface solves this issue, making Windows always pick with TAP adapter first.
+In addition enhance the layout of the --verify-hash section in the man
+page.
+
+Signed-off-by: David Sommerseth <davids@...515...>
 ---
- src/openvpn/block_dns.c       | 75 +++++++++++++++++++++++++++++++++++++++++++
- src/openvpn/block_dns.h       | 30 +++++++++++++++++
- src/openvpn/init.c            |  4 +--
- src/openvpn/win32.c           | 29 +++++++++++++++--
- src/openvpn/win32.h           |  2 +-
- src/openvpnserv/interactive.c | 61 ++++++++++++++++++++++++++++++++---
- 6 files changed, 191 insertions(+), 10 deletions(-)
 
-diff --git a/src/openvpn/block_dns.c b/src/openvpn/block_dns.c
-index e31765e..9d49355 100644
---- a/src/openvpn/block_dns.c
-+++ b/src/openvpn/block_dns.c
-@@ -341,4 +341,79 @@ delete_block_dns_filters(HANDLE engine_handle)
-     return err;
- }
+ v2 - Ensure ca_hash is initialized to a known value
+    - Add a default target to the switch()
+    - Move back to memcmp(), as memcmp_constant_time() isn't really
+      needed here; the result of MD hashes have defined lengths
+      regardless of the certificates an attacker may decide to use.
+
+Simple test script
+==================
+
+* Server:
+  # openvpn --dev tun --reneg-sec 60 --verb 4 \
+            --server 10.8.0.0 255.255.255.0 --topology subnet \
+            --ca sample/sample-keys/ca.crt \
+            --key sample/sample-keys/server.key \
+            --cert sample/sample-keys/server.crt \
+            --dh sample/sample-keys/dh2048.pem \
+            --cipher AES-256-CBC --auth SHA256 \
+            --verify-hash 57:4D:B3:49:7E:FB:9E:FD:DC:BC:A4:ED:BC:B3:C2:8D:C3:D7:2A:E3:0F:6F:76:57:F0:BB:F4:90:56:1C:DC:F8 SHA256
+
+* Client:
+  # openvpn --dev tun --verb 4 \
+            --remote 192.168.122.1 --explicit-exit-notify \
+            --client --ca sample/sample-keys/ca.crt \
+            --key sample/sample-keys/client.key \
+            --cert sample/sample-keys/client.crt \
+            --cipher AES-256-CBC --auth SHA256 \
+            --verify-hash 06:30:DA:EA:77:41:5B:D6:8C:C5:CC:CA:F5:D7:91:87:FA:6D:89:44
+
+  Alternative --verify-hash variant which must succeed:
+     --verify-hash 06:30:DA:EA:77:41:5B:D6:8C:C5:CC:CA:F5:D7:91:87:FA:6D:89:44 SHA1
+
+  These --verify-hash variants must fail:
+     --verify-hash 06:30:DA:EA:77:41:5B:D6:8C:C5:CC:CA:F5:D7:91:87:FA:6D:89:44 SHA256
+     --verify-hash 57:4D:B3:49:7E:FB:9E:FD:DC:BC:A4:ED:BC:B3:C2:8D:C3:D7:2A:E3:0F:6F:76:57:F0:BB:F4:90:56:1C:DC:F9
+     --verify-hash 57:4D:B3:49:7E:FB:9E:FD:DC:BC:A4:ED:BC:B3:C2:8D:C3:D7:2A:E3:0F:6F:76:57:F0:BB:F4:90:56:1C:DC:00 SHA256
+     --verify-hash 06:30:DA:EA:77:41:5B:D6:8C:C5:CC:CA:F5:D7:91:87:FA:6D:89:00 SHA1
+     --verify-hash 06:30:DA:EA:77:41:5B:D6:8C:C5:CC:CA:F5:D7:91:87:FA:6D:89:00
+     --verify-hash 06:30:DA:EA:77:41:5B:D6:8C:C5:CC:CA:F5:D7:91:87:FA:6D:89:XX
+
+To retrieve the SHA fingerprints in certificates:
+
+    $ openssl x509 -noout -fingerprint -in sample/sample-keys/ca.crt
+    $ openssl x509 -noout -fingerprint -sha256 -in sample/sample-keys/ca.crt
+---
+ Changes.rst                  |  3 +++
+ doc/openvpn.8                | 18 +++++++++++++++---
+ src/openvpn/crypto_backend.h |  6 ++++++
+ src/openvpn/init.c           |  1 +
+ src/openvpn/options.c        | 22 +++++++++++++++++++---
+ src/openvpn/options.h        |  5 +++++
+ src/openvpn/ssl_common.h     |  1 +
+ src/openvpn/ssl_verify.c     | 27 +++++++++++++++++++++++++--
+ 8 files changed, 75 insertions(+), 8 deletions(-)
+
+diff --git a/Changes.rst b/Changes.rst
+index 2a94990e..da93060c 100644
+--- a/Changes.rst
++++ b/Changes.rst
+@@ -318,3 +318,6 @@ Version 2.4.1
+    ``--remote-cert-tls`` uses the far more common keyUsage and extendedKeyUsage
+    extension instead.  Make sure your certificates carry these to be able to
+    use ``--remote-cert-tls``.
++ - ``--verify-hash`` can now take an optional flag which changes the hashing
++   algorithm. It can be either SHA1 or SHA256.  The default if not provided is
++   SHA1 to preserve backwards compatibility with existing configurations.
+diff --git a/doc/openvpn.8 b/doc/openvpn.8
+index c3248fde..fcf825c6 100644
+--- a/doc/openvpn.8
++++ b/doc/openvpn.8
+@@ -4694,15 +4694,27 @@ and
+ Not available with PolarSSL.
+ .\"*********************************************************
+ .TP
+-.B \-\-verify\-hash hash
+-Specify SHA1 fingerprint for level-1 cert.  The level-1 cert is the
++.B \-\-verify\-hash hash [algo]
++Specify SHA1 or SHA256 fingerprint for level-1 cert.  The level-1 cert is the
+ CA (or intermediate cert) that signs the leaf certificate, and is
+ one removed from the leaf certificate in the direction of the root.
+ When accepting a connection from a peer, the level-1 cert
+ fingerprint must match
+ .B hash
+ or certificate verification will fail.  Hash is specified
+-as XX:XX:...  For example: AD:B0:95:D8:09:C8:36:45:12:A9:89:C8:90:09:CB:13:72:A6:AD:16
++as XX:XX:... For example:
++
++.nf
++.ft 3
++.in +4
++AD:B0:95:D8:09:C8:36:45:12:A9:89:C8:90:09:CB:13:72:A6:AD:16
++.in -4
++.ft
++.fi
++
++The
++.B algo
++flag can be either SHA1 or SHA256.  If not provided, it defaults to SHA1.
+ .\"*********************************************************
+ .TP
+ .B \-\-pkcs11\-cert\-private [0|1]...
+diff --git a/src/openvpn/crypto_backend.h b/src/openvpn/crypto_backend.h
+index 2c79baa1..9b113d7b 100644
+--- a/src/openvpn/crypto_backend.h
++++ b/src/openvpn/crypto_backend.h
+@@ -47,6 +47,12 @@
+ /* Maximum HMAC digest size (bytes) */
+ #define OPENVPN_MAX_HMAC_SIZE   64
  
-+/* 
-+ * Returns interface metric value for specified interface index.
-+ * 
-+ * Arguments:
-+ *   index         : The index of TAP adapter.
-+ *   family        : Address family (AF_INET for IPv4 and AF_INET6 for IPv6).
-+ * Returns positive metric value or zero for automatic metric on success,
-+ * a less then zero error code on failure.
-+ */
++/** Types referencing specific message digest hashing algorithms */
++typedef enum {
++    MD_SHA1,
++    MD_SHA256
++} hash_algo_type ;
 +
-+int
-+get_interface_metric(const NET_IFINDEX index, const ADDRESS_FAMILY family)
-+{
-+    DWORD err = 0;
-+    MIB_IPINTERFACE_ROW ipiface;
-+    InitializeIpInterfaceEntry(&ipiface);
-+    ipiface.Family = family;
-+    ipiface.InterfaceIndex = index;
-+    err = GetIpInterfaceEntry(&ipiface);
-+    if (err == NO_ERROR)
-+    {
-+        if (ipiface.UseAutomaticMetric)
+ /** Struct used in cipher name translation table */
+ typedef struct {
+     const char *openvpn_name;   /**< Cipher name used by OpenVPN */
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index ee14f672..e9455039 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -2619,6 +2619,7 @@ do_init_crypto_tls(struct context *c, const unsigned int flags)
+     memmove(to.remote_cert_ku, options->remote_cert_ku, sizeof(to.remote_cert_ku));
+     to.remote_cert_eku = options->remote_cert_eku;
+     to.verify_hash = options->verify_hash;
++    to.verify_hash_algo = options->verify_hash_algo;
+ #ifdef ENABLE_X509ALTUSERNAME
+     to.x509_username_field = (char *) options->x509_username_field;
+ #else
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index dcb6ecfa..f38abad7 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -591,7 +591,8 @@ static const char usage_message[] =
+     "--x509-username-field : Field in x509 certificate containing the username.\n"
+     "                        Default is CN in the Subject field.\n"
+ #endif
+-    "--verify-hash   : Specify SHA1 fingerprint for level-1 cert.\n"
++    "--verify-hash hash [algo] : Specify fingerprint for level-1 certificate.\n"
++    "                            Valid algo flags are SHA1 and SHA256. \n"
+ #ifdef _WIN32
+     "--cryptoapicert select-string : Load the certificate and private key from the\n"
+     "                  Windows Certificate System Store.\n"
+@@ -7687,10 +7688,25 @@ add_option(struct options *options,
+             options->extra_certs_file_inline = p[2];
+         }
+     }
+-    else if (streq(p[0], "verify-hash") && p[1] && !p[2])
++    else if (streq(p[0], "verify-hash") && p[1] && !p[3])
+     {
+         VERIFY_PERMISSION(OPT_P_GENERAL);
+-        options->verify_hash = parse_hash_fingerprint(p[1], SHA_DIGEST_LENGTH, msglevel, &options->gc);
++
++        if (!p[2] || (p[2] && streq(p[2], "SHA1")))
 +        {
-+            return 0;
++            options->verify_hash = parse_hash_fingerprint(p[1], SHA_DIGEST_LENGTH, msglevel, &options->gc);
++            options->verify_hash_algo = MD_SHA1;
 +        }
-+        return ipiface.Metric;
-+    }
-+    return -err;
-+}
-+
-+/* 
-+ * Sets interface metric value for specified interface index.
-+ * 
-+ * Arguments:
-+ *   index         : The index of TAP adapter.
-+ *   family        : Address family (AF_INET for IPv4 and AF_INET6 for IPv6).
-+ *   metric        : Metric value. 0 for automatic metric.
-+ * Returns 0 on success, a non-zero status code of the last failed action on failure.
-+ */
-+
-+DWORD
-+set_interface_metric(const NET_IFINDEX index, const ADDRESS_FAMILY family,
-+                     const ULONG metric)
-+{
-+    DWORD err = 0;
-+    MIB_IPINTERFACE_ROW ipiface;
-+    InitializeIpInterfaceEntry(&ipiface);
-+    ipiface.Family = family;
-+    ipiface.InterfaceIndex = index;
-+    err = GetIpInterfaceEntry(&ipiface);
-+    if (err == NO_ERROR)
-+    {
-+        if (family == AF_INET)
++        else if (p[2] && streq(p[2], "SHA256"))
 +        {
-+            /* required for IPv4 as per MSDN */
-+            ipiface.SitePrefixLength = 0;
-+        }
-+        ipiface.Metric = metric;
-+        if (metric == 0)
-+        {
-+            ipiface.UseAutomaticMetric = TRUE;
++            options->verify_hash = parse_hash_fingerprint(p[1], SHA256_DIGEST_LENGTH, msglevel, &options->gc);
++            options->verify_hash_algo = MD_SHA256;
 +        }
 +        else
 +        {
-+            ipiface.UseAutomaticMetric = FALSE;
++            msg(msglevel, "invalid or unsupported hashing algorithm: %s  (only SHA1 and SHA256 are valid)", p[2]);
++            goto err;
 +        }
-+        err = SetIpInterfaceEntry(&ipiface);
-+        if (err == NO_ERROR)
-+        {
-+            return 0;
-+        }
-+    }
-+    return err;
-+}
+     }
+ #ifdef ENABLE_CRYPTOAPI
+     else if (streq(p[0], "cryptoapicert") && p[1] && !p[2])
+diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+index dc63aeda..5ad087e0 100644
+--- a/src/openvpn/options.h
++++ b/src/openvpn/options.h
+@@ -42,6 +42,10 @@
+ #include "comp.h"
+ #include "pushlist.h"
+ #include "clinat.h"
++#ifdef ENABLE_CRYPTO
++#include "crypto_backend.h"
++#endif
 +
- #endif /* ifdef _WIN32 */
-diff --git a/src/openvpn/block_dns.h b/src/openvpn/block_dns.h
-index a7dadc4..e7b1cca 100644
---- a/src/openvpn/block_dns.h
-+++ b/src/openvpn/block_dns.h
-@@ -27,6 +27,9 @@
- #ifndef OPENVPN_BLOCK_DNS_H
- #define OPENVPN_BLOCK_DNS_H
- 
-+/* Any value less than 5 should work fine. 3 is choosen without any real reason. */
-+#define BLOCK_DNS_IFACE_METRIC 3
-+
- typedef void (*block_dns_msg_handler_t) (DWORD err, const char *msg);
- 
- DWORD
-@@ -36,5 +39,32 @@ DWORD
- add_block_dns_filters(HANDLE *engine, int iface_index, const WCHAR *exe_path,
-                       block_dns_msg_handler_t msg_handler_callback);
- 
-+/**
-+ * Sets interface metric value for specified interface index
-+ *
-+ * @param index The index of TAP adapter
-+ * @param family Address family (AF_INET for IPv4 and AF_INET6 for IPv6)
-+ * 
-+ * @return positive metric value or zero for automatic metric on success,
-+ * a less then zero error code on failure.
-+ */
-+
-+int
-+get_interface_metric(const NET_IFINDEX index, const ADDRESS_FAMILY family);
-+
-+/**
-+ * Sets interface metric value for specified interface index
-+ *
-+ * @param index The index of TAP adapter
-+ * @param family Address family (AF_INET for IPv4 and AF_INET6 for IPv6)
-+ * @param metric Metric value. 0 for automatic metric
-+ * 
-+ * @return 0 on success, a non-zero status code of the last failed action on failure.
-+ */
-+
-+DWORD
-+set_interface_metric(const NET_IFINDEX index, const ADDRESS_FAMILY family,
-+                     const ULONG metric);
-+
- #endif
- #endif
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index ee14f67..2a2e7b0 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -1837,7 +1837,7 @@ do_close_tun(struct context *c, bool force)
- #if defined(_WIN32)
-             if (c->options.block_outside_dns)
-             {
--                if (!win_wfp_uninit(c->options.msg_channel))
-+                if (!win_wfp_uninit(adapter_index, c->options.msg_channel))
-                 {
-                     msg(M_FATAL, "Uninitialising WFP failed!");
-                 }
-@@ -1877,7 +1877,7 @@ do_close_tun(struct context *c, bool force)
- #if defined(_WIN32)
-             if (c->options.block_outside_dns)
-             {
--                if (!win_wfp_uninit(c->options.msg_channel))
-+                if (!win_wfp_uninit(adapter_index, c->options.msg_channel))
-                 {
-                     msg(M_FATAL, "Uninitialising WFP failed!");
-                 }
-diff --git a/src/openvpn/win32.c b/src/openvpn/win32.c
-index 18e7aee..dc411fc 100644
---- a/src/openvpn/win32.c
-+++ b/src/openvpn/win32.c
-@@ -61,6 +61,11 @@
- static HANDLE m_hEngineHandle = NULL; /* GLOBAL */
  
  /*
-+ * TAP adapter original metric value
-+ */
-+static int tap_metric = -1; /* GLOBAL */
+  * Maximum number of parameters associated with an option,
+@@ -518,6 +522,7 @@ struct options
+     unsigned remote_cert_ku[MAX_PARMS];
+     const char *remote_cert_eku;
+     uint8_t *verify_hash;
++    hash_algo_type verify_hash_algo;
+     unsigned int ssl_flags; /* set to SSLF_x flags from ssl.h */
+ 
+ #ifdef ENABLE_PKCS11
+diff --git a/src/openvpn/ssl_common.h b/src/openvpn/ssl_common.h
+index 9a16d77e..a99d24d6 100644
+--- a/src/openvpn/ssl_common.h
++++ b/src/openvpn/ssl_common.h
+@@ -271,6 +271,7 @@ struct tls_options
+     unsigned remote_cert_ku[MAX_PARMS];
+     const char *remote_cert_eku;
+     uint8_t *verify_hash;
++    hash_algo_type verify_hash_algo;
+     char *x509_username_field;
+ 
+     /* allow openvpn config info to be
+diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
+index ac1e110a..078b65ad 100644
+--- a/src/openvpn/ssl_verify.c
++++ b/src/openvpn/ssl_verify.c
+@@ -718,8 +718,31 @@ verify_cert(struct tls_session *session, openvpn_x509_cert_t *cert, int cert_dep
+     /* verify level 1 cert, i.e. the CA that signed our leaf cert */
+     if (cert_depth == 1 && opt->verify_hash)
+     {
+-        struct buffer sha1_hash = x509_get_sha1_fingerprint(cert, &gc);
+-        if (memcmp(BPTR(&sha1_hash), opt->verify_hash, BLEN(&sha1_hash)))
++        struct buffer ca_hash = {0};
 +
-+/*
-  * Windows internal socket API state (opaque).
-  */
- static struct WSAData wsa_state; /* GLOBAL */
-@@ -1337,6 +1342,21 @@ win_wfp_block_dns(const NET_IFINDEX index, const HANDLE msg_channel)
- 
-     status = add_block_dns_filters(&m_hEngineHandle, index, openvpnpath,
-                                    block_dns_msg_handler);
-+    if (status == 0)
-+    {
-+        tap_metric = get_interface_metric(index, AF_INET);
-+        if (tap_metric < 0)
++        switch (opt->verify_hash_algo)
 +        {
-+            /* error, should not restore metric */
-+            tap_metric = -1;
-+        }
-+        status = set_interface_metric(index, AF_INET, BLOCK_DNS_IFACE_METRIC);
-+        if (!status)
-+        {
-+            set_interface_metric(index, AF_INET6, BLOCK_DNS_IFACE_METRIC);
-+        }
-+    }
++        case MD_SHA1:
++            ca_hash = x509_get_sha1_fingerprint(cert, &gc);
++            break;
 +
-     ret = (status == 0);
- 
- out:
-@@ -1345,19 +1365,24 @@ out:
- }
- 
- bool
--win_wfp_uninit(const HANDLE msg_channel)
-+win_wfp_uninit(const NET_IFINDEX index, const HANDLE msg_channel)
- {
-     dmsg(D_LOW, "Uninitializing WFP");
- 
-     if (msg_channel)
-     {
-         msg(D_LOW, "Using service to delete block dns filters");
--        win_block_dns_service(false, -1, msg_channel);
-+        win_block_dns_service(false, index, msg_channel);
-     }
-     else
-     {
-         delete_block_dns_filters(m_hEngineHandle);
-         m_hEngineHandle = NULL;
-+        if (tap_metric >= 0)
-+        {
-+            set_interface_metric(index, AF_INET, tap_metric);
-+            set_interface_metric(index, AF_INET6, tap_metric);
-+        }
-     }
- 
-     return true;
-diff --git a/src/openvpn/win32.h b/src/openvpn/win32.h
-index 4ee44fd..cd1f101 100644
---- a/src/openvpn/win32.h
-+++ b/src/openvpn/win32.h
-@@ -293,7 +293,7 @@ WCHAR *wide_string(const char *utf8, struct gc_arena *gc);
- 
- bool win_wfp_block_dns(const NET_IFINDEX index, const HANDLE msg_channel);
- 
--bool win_wfp_uninit(const HANDLE msg_channel);
-+bool win_wfp_uninit(const NET_IFINDEX index, const HANDLE msg_channel);
- 
- #define WIN_XP 0
- #define WIN_VISTA 1
-diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
-index 2bce598..362b271 100644
---- a/src/openvpnserv/interactive.c
-+++ b/src/openvpnserv/interactive.c
-@@ -94,6 +94,12 @@ typedef enum {
- } undo_type_t;
- typedef list_item_t *undo_lists_t[_undo_type_max];
- 
-+typedef struct {
-+    HANDLE engine;
-+    int index;
-+    int metric;
-+} block_dns_data_t;
++        case MD_SHA256:
++            ca_hash = x509_get_sha256_fingerprint(cert, &gc);
++            break;
 +
- 
- static DWORD
- AddListItem(list_item_t **pfirst, LPVOID data)
-@@ -885,6 +891,8 @@ static DWORD
- HandleBlockDNSMessage(const block_dns_message_t *msg, undo_lists_t *lists)
- {
-     DWORD err = 0;
-+    int metric = 0;
-+    block_dns_data_t *interface_data;
-     HANDLE engine = NULL;
-     LPCWSTR exe_path;
- 
-@@ -901,16 +909,51 @@ HandleBlockDNSMessage(const block_dns_message_t *msg, undo_lists_t *lists)
-         err = add_block_dns_filters(&engine, msg->iface.index, exe_path, BlockDNSErrHandler);
-         if (!err)
++        default:
++            /* This should normally not happen at all; the algorithm used
++             * is parsed by add_option() [options.c] and set to a predefined
++             * value in an enumerated type.  So if this unlikely scenario
++             * happens, consider this a failure
++             */
++            msg(M_WARN, "Unexpected invalid algorithm used with "
++                "--verify-hash (%i)", opt->verify_hash_algo);
++            ret = FAILURE;
++            goto cleanup;
++        }
++
++        if (memcmp(BPTR(&ca_hash), opt->verify_hash, BLEN(&ca_hash)))
          {
--            err = AddListItem(&(*lists)[block_dns], engine);
-+            interface_data = malloc(sizeof(block_dns_data_t));
-+            if (!interface_data)
-+            {
-+                return ERROR_OUTOFMEMORY;
-+            }
-+            interface_data->engine = engine;
-+            interface_data->index = msg->iface.index;
-+            metric = get_interface_metric(msg->iface.index, AF_INET);
-+            if (metric >= 0)
-+            {
-+                interface_data->metric = metric;
-+            }
-+            else
-+            {
-+                interface_data->metric = -1;
-+            }
-+            err = AddListItem(&(*lists)[block_dns], interface_data);
-+            if (!err)
-+            {
-+                err = set_interface_metric(msg->iface.index, AF_INET,
-+                                           BLOCK_DNS_IFACE_METRIC);
-+                if (!err)
-+                {
-+                    set_interface_metric(msg->iface.index, AF_INET6,
-+                                         BLOCK_DNS_IFACE_METRIC);
-+                }
-+            }
-         }
-     }
-     else
-     {
--        engine = RemoveListItem(&(*lists)[block_dns], CmpEngine, NULL);
--        if (engine)
-+        interface_data = RemoveListItem(&(*lists)[block_dns], CmpEngine, NULL);
-+        if (interface_data)
-         {
-+            engine = interface_data->engine;
-             err = delete_block_dns_filters(engine);
-             engine = NULL;
-+            if (interface_data->metric >= 0)
-+            {
-+                set_interface_metric(msg->iface.index, AF_INET,
-+                                     interface_data->metric);
-+                set_interface_metric(msg->iface.index, AF_INET6,
-+                                     interface_data->metric);
-+            }
-+            free(interface_data);
-         }
-         else
-         {
-@@ -1325,6 +1368,7 @@ static VOID
- Undo(undo_lists_t *lists)
- {
-     undo_type_t type;
-+    block_dns_data_t *interface_data;
-     for (type = 0; type < _undo_type_max; type++)
-     {
-         list_item_t **pnext = &(*lists)[type];
-@@ -1350,8 +1394,15 @@ Undo(undo_lists_t *lists)
-                     break;
- 
-                 case block_dns:
--                    delete_block_dns_filters(item->data);
--                    item->data = NULL;
-+                    interface_data = (block_dns_data_t*)(item->data);
-+                    delete_block_dns_filters(interface_data->engine);
-+                    if (interface_data->metric > 0)
-+                    {
-+                        set_interface_metric(interface_data->index, AF_INET,
-+                                             interface_data->metric);
-+                        set_interface_metric(interface_data->index, AF_INET6,
-+                                             interface_data->metric);
-+                    }
-                     break;
-             }
- 
+             msg(D_TLS_ERRORS, "TLS Error: level-1 certificate hash verification failed");
+             goto cleanup;
 -- 
-2.9.3
+2.11.0
 
 
