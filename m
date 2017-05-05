@@ -1,7 +1,16 @@
-From: David Sommerseth <davids@...515...>
-Date: Fri,  5 May 2017 20:46:22 +0200
-Message-Id: <20170505184622.24520-1-davids@...515...>
-Subject: [Openvpn-devel] [PATCH] plugin: Export secure_memzero() to plug-ins
+References: <1494008642-7239-1-git-send-email-selva.nair@...277...>
+	<20170505182851.GJ97029@...1296...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <81644640-b057-f177-e7ba-eb3957370109@...2080...>
+Date: Fri, 5 May 2017 21:01:56 +0200
+MIME-Version: 1.0
+In-Reply-To: <20170505182851.GJ97029@...1296...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature";
+	boundary="DtvMUowNllDulMu1spcVA0VHxSMANCwLa"
+Subject: Re: [Openvpn-devel] [PATCH 1/2] In auth-pam plugin clear the
+ password after use
+Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -10,101 +19,89 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>, selva.nair@...277...
+Cc: openvpn-devel@lists.sourceforge.net
 
-The provides plug-ins with a safe and secure way to santize sensitive
-information such as passwords, by re-using the secure_memzero()
-implementation in OpenVPN.
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--DtvMUowNllDulMu1spcVA0VHxSMANCwLa
+Content-Type: multipart/mixed; boundary="2V6In4AOein6Hg3D8RdCO4eAwVbTVOJlj";
+	protected-headers="v1"
+From: David Sommerseth <openvpn@...2080...>
+Reply-To: openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>, selva.nair@...277...
+Cc: openvpn-devel@lists.sourceforge.net
+Message-ID: <81644640-b057-f177-e7ba-eb3957370109@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH 1/2] In auth-pam plugin clear the password
+	after use
+References: <1494008642-7239-1-git-send-email-selva.nair@...277...>
+	<20170505182851.GJ97029@...1296...>
+In-Reply-To: <20170505182851.GJ97029@...1296...>
 
-Signed-off-by: David Sommerseth <davids@...515...>
----
- include/openvpn-plugin.h.in | 25 ++++++++++++++++++++++---
- src/openvpn/plugin.c        |  3 ++-
- 2 files changed, 24 insertions(+), 4 deletions(-)
+--2V6In4AOein6Hg3D8RdCO4eAwVbTVOJlj
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/include/openvpn-plugin.h.in b/include/openvpn-plugin.h.in
-index 0b303520..ec83f3a6 100644
---- a/include/openvpn-plugin.h.in
-+++ b/include/openvpn-plugin.h.in
-@@ -199,7 +199,8 @@ struct openvpn_plugin_string_list
- 
- /* openvpn_plugin_{open,func}_v3() related structs */
- 
--/* Defines version of the v3 plugin argument structs
-+/**
-+ * Defines version of the v3 plugin argument structs
-  *
-  * Whenever one or more of these structs are modified, this constant
-  * must be updated.  A changelog should be appended in this comment
-@@ -218,8 +219,10 @@ struct openvpn_plugin_string_list
-  *    3      Added ovpn_version, ovpn_version_major, ovpn_version_minor
-  *           and ovpn_version_patch to provide the runtime version of
-  *           OpenVPN to plug-ins.
-+ *
-+ *    4      Exported secure_memzero() as plugin_secure_memzero()
-  */
--#define OPENVPN_PLUGINv3_STRUCTVER 3
-+#define OPENVPN_PLUGINv3_STRUCTVER 4
- 
- /**
-  * Definitions needed for the plug-in callback functions.
-@@ -255,10 +258,19 @@ typedef void (*plugin_vlog_t)(openvpn_plugin_log_flags_t flags,
-                               const char *plugin_name,
-                               const char *format,
-                               va_list arglist) _ovpn_chk_fmt (3, 0);
--
- #undef _ovpn_chk_fmt
- 
- /**
-+ *  Export of secure_memzero() to be used inside plug-ins
-+ *
-+ *  @param data   Pointer to data to zeroise
-+ *  @param len    Length of data, in bytes
-+ *
-+ */
-+typedef void (*plugin_secure_memzero_t)(void *data, size_t len);
-+
-+
-+/**
-  * Used by the openvpn_plugin_open_v3() function to pass callback
-  * function pointers to the plug-in.
-  *
-@@ -267,11 +279,18 @@ typedef void (*plugin_vlog_t)(openvpn_plugin_log_flags_t flags,
-  *               Messages will only be displayed if the plugin_name parameter
-  *               is set. PLOG_DEBUG messages will only be displayed with plug-in
-  *               debug log verbosity (at the time of writing that's verb >= 7).
-+ *
-+ * plugin_secure_memzero
-+ *             : Use this function to securely wipe sensitive information from
-+ *               memory.  This function is declared in a way that the compiler
-+ *               will not remove these function calls during the compiler
-+ *               optimization phase.
-  */
- struct openvpn_plugin_callbacks
- {
-     plugin_log_t plugin_log;
-     plugin_vlog_t plugin_vlog;
-+    plugin_secure_memzero_t plugin_secure_memzero;
- };
- 
- /**
-diff --git a/src/openvpn/plugin.c b/src/openvpn/plugin.c
-index 05cbae3e..a652d528 100644
---- a/src/openvpn/plugin.c
-+++ b/src/openvpn/plugin.c
-@@ -410,7 +410,8 @@ plugin_log(openvpn_plugin_log_flags_t flags, const char *name, const char *forma
- 
- static struct openvpn_plugin_callbacks callbacks = {
-     plugin_log,
--    plugin_vlog
-+    plugin_vlog,
-+    secure_memzero   /* plugin_secure_memzero */
- };
- 
- 
--- 
-2.11.0
+On 05/05/17 20:28, Gert Doering wrote:
+> Hi,
+>=20
+> On Fri, May 05, 2017 at 02:24:01PM -0400, selva.nair@...277... wrote:
+>> From: Selva Nair <selva.nair@...277...>
+>>
+>> This adds a minimal secure_memzero()
+>>
+>> Signed-off-by: Selva Nair <selva.nair@...277...>
+>=20
+> Feature-ACK, Code-NAK, but just because David is planning to export
+> secure_memzero() to plugins from OpenVPN proper - mentioned just today
+> on IRC
+>=20
+> 17:09 <@dazo> syzzer: just thinking aloud (remembered our discussion on w=
+iping=20
+>               passwords securely in plug-ins) ... what do you think about=
+=20
+>               exposing secure_memzero() to plug-ins, similar to what we d=
+o with=20
+>               plugin_{log,vlog}()?
+> 17:09 <@dazo> to avoid each plug-in needing to re-implement this
+> 17:09 <@syzzer> yeah, sounds useful
+> 17:10 <@dazo> I'll send a patch doing that too (should be quick to solve)
+>=20
+>=20
+> So I'd postpone this until David's patch plus instructions for plugin
+> authors show up.
+>=20
+> Good timing :-)
 
+Indeed :)
 
+So the patch exporting secure_memzero() is on the way to the mailing
+list now.
+
+To use this, you need to switch the openvpn_plugin_open_v1() to
+openvpn_plugin_open_v3().  The API on this function is quite different,
+but you shouldn't need to tweak too much.  All the pointers are
+available in the new struct pointers the _v3 function uses.
+
+Then you basically can declare a global variable like this:
+
+  plugin_secure_memzero_t ovpn_secure_memzero =3D NULL;
+
+And in the the openvpn_plugin_open_v3() function, you should add an API
+check:
+
+    if (v3structver < 4)
+    {
+         /* printf() some noise to the log */
+         return OPENVPN_PLUGIN_FUNC_ERROR;
+    }
+
+This ensures that the OpenVPN version is new enough to export the
+secure_memzero() function.
+
+Then you just assign the ovpn_secure_memzero pointer:
+
+     /* Hook into exported plug-in functions */
+     ovpn_secure_memzero =3D args->callbacks->plugin_secure_memzero;
+--2V6In4AOein6Hg3D8RdCO4eAwVbTVOJlj--
+
+--DtvMUowNllDulMu1spcVA0VHxSMANCwLa--
