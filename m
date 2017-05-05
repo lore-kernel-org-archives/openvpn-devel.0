@@ -1,9 +1,8 @@
 From: Steffan Karger <steffan.karger@...1435...>
-Date: Fri, 5 May 2017 22:07:28 +0200
-Message-ID: <1494014848-20099-1-git-send-email-steffan.karger@...1435...>
+Date: Fri, 5 May 2017 22:14:46 +0200
+Message-ID: <1494015286-20368-1-git-send-email-steffan.karger@...1435...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Don't run packet_id unit tests for
-	--disable-crypto builds
+Subject: [Openvpn-devel] [PATCH] Fix Changes.rst layout
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,32 +15,46 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Because there is no packet_id in those builds...  This fixes 'make check'
-for --disable-crypto builds, caught by travis.
+The extra space before each line made the 2.4.1 section stand out from the
+other sections.
 
 Signed-off-by: Steffan Karger <steffan.karger@...1435...>
 ---
- tests/unit_tests/openvpn/Makefile.am | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ Changes.rst | 24 ++++++++++++------------
+ 1 file changed, 12 insertions(+), 12 deletions(-)
 
-diff --git a/tests/unit_tests/openvpn/Makefile.am b/tests/unit_tests/openvpn/Makefile.am
-index 5d7123e..3bd382c 100644
---- a/tests/unit_tests/openvpn/Makefile.am
-+++ b/tests/unit_tests/openvpn/Makefile.am
-@@ -3,11 +3,11 @@ AUTOMAKE_OPTIONS = foreign
- check_PROGRAMS=
+diff --git a/Changes.rst b/Changes.rst
+index 2a94990..c1583b3 100644
+--- a/Changes.rst
++++ b/Changes.rst
+@@ -306,15 +306,15 @@ Maintainer-visible changes
  
- if HAVE_LD_WRAP_SUPPORT
--check_PROGRAMS += argv_testdriver buffer_testdriver packet_id_testdriver
-+check_PROGRAMS += argv_testdriver buffer_testdriver
- endif
- 
- if ENABLE_CRYPTO
--check_PROGRAMS += tls_crypt_testdriver
-+check_PROGRAMS += packet_id_testdriver tls_crypt_testdriver
- endif
- 
- TESTS = $(check_PROGRAMS)
+ Version 2.4.1
+ =============
+- - ``--remote-cert-ku`` now only requires the certificate to have at least the
+-   bits set of one of the values in the supplied list, instead of requiring an
+-   exact match to one of the values in the list.
+- - ``--remote-cert-tls`` now only requires that a keyUsage is present in the
+-   certificate, and leaves the verification of the value up to the crypto
+-   library, which has more information (i.e. the key exchange method in use)
+-   to verify that the keyUsage is correct.
+- - ``--ns-cert-type`` is deprecated.  Use ``--remote-cert-tls`` instead.
+-   The nsCertType x509 extension is very old, and barely used.
+-   ``--remote-cert-tls`` uses the far more common keyUsage and extendedKeyUsage
+-   extension instead.  Make sure your certificates carry these to be able to
+-   use ``--remote-cert-tls``.
++- ``--remote-cert-ku`` now only requires the certificate to have at least the
++  bits set of one of the values in the supplied list, instead of requiring an
++  exact match to one of the values in the list.
++- ``--remote-cert-tls`` now only requires that a keyUsage is present in the
++  certificate, and leaves the verification of the value up to the crypto
++  library, which has more information (i.e. the key exchange method in use)
++  to verify that the keyUsage is correct.
++- ``--ns-cert-type`` is deprecated.  Use ``--remote-cert-tls`` instead.
++  The nsCertType x509 extension is very old, and barely used.
++  ``--remote-cert-tls`` uses the far more common keyUsage and extendedKeyUsage
++  extension instead.  Make sure your certificates carry these to be able to
++  use ``--remote-cert-tls``.
 -- 
 2.7.4
 
