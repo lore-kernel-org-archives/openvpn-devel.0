@@ -1,11 +1,9 @@
-From: Steffan Karger <steffan.karger@...1435...>
-Date: Fri, 5 May 2017 19:44:51 +0200
-Message-ID: <1494006291-3522-1-git-send-email-steffan.karger@...1435...>
-In-Reply-To: <2b6a9a4a-2126-7c7d-25d3-23af23050a65@...1435...>
-References: <2b6a9a4a-2126-7c7d-25d3-23af23050a65@...1435...>
+From: Ilya Shipitsin <chipitsine@...277...>
+Date: Fri,  5 May 2017 23:08:17 +0500
+Message-Id: <1494007697-6882-1-git-send-email-chipitsine@...277...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] cleanup: merge
-	packet_id_alloc_outgoing() into packet_id_write()
+Subject: [Openvpn-devel] [PATCH] v4,
+	travis-ci: add 2 mingw "build only" configurations
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,439 +16,271 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-The functions packet_id_alloc_outgoing() and packet_id_write() were
-always called in tandem.  Instead of forcing the caller to allocate a
-packet_id_net to do so, merge the two functions.  This simplifies the API
-and reduces the chance on mistakes in the future.
+Inspired by https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13032.html
+build options are taken from regular windows installer builds
 
-This patch adds unit tests to verify the behaviour of packet_id_write().
-Verifying that we assert out correctly required the change to mock_msg.c.
-
-Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+Signed-off-by: Ilya Shipitsin <chipitsine@...277...>
 ---
-v2 - rebased onto current master branch
+v2: moved download/build dependencies into functions, changed cross build
+detection from shell expansion ${CHOST+x} to more recognised -z "${CHOST}",
+which required changing 'set -eux' to 'set -ex'. Added comments to make
+code readable without looking into commit message.
 
- src/openvpn/crypto.c                      |  20 ++--
- src/openvpn/packet_id.c                   |  24 ++++-
- src/openvpn/packet_id.h                   |  35 +++----
- src/openvpn/tls_crypt.c                   |   6 +-
- tests/unit_tests/openvpn/Makefile.am      |  13 ++-
- tests/unit_tests/openvpn/mock_msg.c       |  15 ++-
- tests/unit_tests/openvpn/test_packet_id.c | 168 ++++++++++++++++++++++++++++++
- 7 files changed, 228 insertions(+), 53 deletions(-)
- create mode 100644 tests/unit_tests/openvpn/test_packet_id.c
+v3: fixed "trailing whitespaces" found by Samuli Seppänen. Added back "set -u",
+thanks to Steffan Karger. Changed repo manipulation to "apt-add-repository", thanks
+to Nathan Stratton Treadway.
 
-diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
-index 7b00601..f5250ac 100644
---- a/src/openvpn/crypto.c
-+++ b/src/openvpn/crypto.c
-@@ -85,7 +85,6 @@ openvpn_encrypt_aead(struct buffer *buf, struct buffer work,
-     /* Prepare IV */
-     {
-         struct buffer iv_buffer;
--        struct packet_id_net pin;
-         uint8_t iv[OPENVPN_MAX_IV_LENGTH] = {0};
-         const int iv_len = cipher_ctx_iv_length(ctx->cipher);
+v4: moved build/test logic into separate script running with "set -eux", thanks
+to Steffan Karger
+
+ .travis.yml            | 22 ++++++------
+ .travis/build-check.sh | 30 ++++++++++++++++
+ .travis/build-deps.sh  | 98 +++++++++++++++++++++++++++++++++++++++++++++++---
+ 3 files changed, 135 insertions(+), 15 deletions(-)
+ create mode 100755 .travis/build-check.sh
+
+diff --git a/.travis.yml b/.travis.yml
+index 3c0aa7d..bb44222 100644
+--- a/.travis.yml
++++ b/.travis.yml
+@@ -12,6 +12,9 @@ env:
+   global:
+     - JOBS=3
+     - PREFIX="${HOME}/opt"
++    - TAP_WINDOWS_VERSION=9.21.2
++    - LZO_VERSION=2.10
++    - PKCS11_HELPER_VERSION=1.11
+     - MBEDTLS_VERSION="2.4.0"
+     - MBEDTLS_CFLAGS="-I${PREFIX}/include"
+     - MBEDTLS_LIBS="-L${PREFIX}/lib -lmbedtls -lmbedx509 -lmbedcrypto"
+@@ -50,6 +53,12 @@ matrix:
+       os: osx
+       osx_image: xcode7.3
+       compiler: clang
++    - env: SSLLIB="openssl" CHOST=x86_64-w64-mingw32
++      os: linux
++      compiler: ": Win64 build only"
++    - env: SSLLIB="openssl" CHOST=i686-w64-mingw32
++      os: linux
++      compiler: ": Win32 build only"
+   exclude:
+     - compiler: gcc
  
-@@ -94,8 +93,7 @@ openvpn_encrypt_aead(struct buffer *buf, struct buffer work,
-         buf_set_write(&iv_buffer, iv, iv_len);
+@@ -60,6 +69,7 @@ addons:
+       - libpam0g-dev
+       - liblz4-dev
+       - linux-libc-dev
++      - man2html
  
-         /* IV starts with packet id to make the IV unique for packet */
--        packet_id_alloc_outgoing(&opt->packet_id.send, &pin, false);
--        ASSERT(packet_id_write(&pin, &iv_buffer, false, false));
-+        ASSERT(packet_id_write(&opt->packet_id.send, &iv_buffer, false, false));
+ cache:
+   ccache: true
+@@ -72,16 +82,8 @@ before_install:
+   - if [ "${TRAVIS_OS_NAME}" = "osx" ]; then brew install lzo; fi
  
-         /* Remainder of IV consists of implicit part (unique per session) */
-         ASSERT(buf_write(&iv_buffer, ctx->implicit_iv, ctx->implicit_iv_len));
-@@ -195,22 +193,20 @@ openvpn_encrypt_v1(struct buffer *buf, struct buffer work,
-                 /* Put packet ID in plaintext buffer */
-                 if (packet_id_initialized(&opt->packet_id))
-                 {
--                    struct packet_id_net pin;
--                    packet_id_alloc_outgoing(&opt->packet_id.send, &pin, BOOL_CAST(opt->flags & CO_PACKET_ID_LONG_FORM));
--                    ASSERT(packet_id_write(&pin, buf, BOOL_CAST(opt->flags & CO_PACKET_ID_LONG_FORM), true));
-+                    ASSERT(packet_id_write(&opt->packet_id.send, buf,
-+                                           opt->flags & CO_PACKET_ID_LONG_FORM,
-+                                           true));
-                 }
-             }
-             else if (cipher_kt_mode_ofb_cfb(cipher_kt))
-             {
--                struct packet_id_net pin;
-                 struct buffer b;
+ install:
++  - if [ ! -z "${CHOST}" ]; then unset CC; fi
+   - .travis/build-deps.sh > build-deps.log 2>&1 || (cat build-deps.log && exit 1)
  
-                 /* packet-ID required for this mode. */
-                 ASSERT(packet_id_initialized(&opt->packet_id));
- 
--                packet_id_alloc_outgoing(&opt->packet_id.send, &pin, true);
-                 buf_set_write(&b, iv_buf, iv_size);
--                ASSERT(packet_id_write(&pin, &b, true, false));
-+                ASSERT(packet_id_write(&opt->packet_id.send, &b, true, false));
-             }
-             else /* We only support CBC, CFB, or OFB modes right now */
-             {
-@@ -257,9 +253,9 @@ openvpn_encrypt_v1(struct buffer *buf, struct buffer work,
-         {
-             if (packet_id_initialized(&opt->packet_id))
-             {
--                struct packet_id_net pin;
--                packet_id_alloc_outgoing(&opt->packet_id.send, &pin, BOOL_CAST(opt->flags & CO_PACKET_ID_LONG_FORM));
--                ASSERT(packet_id_write(&pin, buf, BOOL_CAST(opt->flags & CO_PACKET_ID_LONG_FORM), true));
-+                ASSERT(packet_id_write(&opt->packet_id.send, buf,
-+                        BOOL_CAST(opt->flags & CO_PACKET_ID_LONG_FORM),
-+                        true));
-             }
-             if (ctx->hmac)
-             {
-diff --git a/src/openvpn/packet_id.c b/src/openvpn/packet_id.c
-index e34c228..5175fb0 100644
---- a/src/openvpn/packet_id.c
-+++ b/src/openvpn/packet_id.c
-@@ -325,12 +325,30 @@ packet_id_read(struct packet_id_net *pin, struct buffer *buf, bool long_form)
-     return true;
- }
- 
-+static void
-+packet_id_send_update(struct packet_id_send *p, bool long_form)
-+{
-+    if (!p->time)
-+    {
-+        p->time = now;
-+    }
-+    p->id++;
-+    if (!p->id)
-+    {
-+        ASSERT(long_form);
-+        p->time = now;
-+        p->id = 1;
-+    }
-+}
-+
- bool
--packet_id_write(const struct packet_id_net *pin, struct buffer *buf, bool long_form, bool prepend)
-+packet_id_write(struct packet_id_send *p, struct buffer *buf, bool long_form,
-+        bool prepend)
- {
--    packet_id_type net_id = htonpid(pin->id);
--    net_time_t net_time = htontime(pin->time);
-+    packet_id_send_update(p, long_form);
- 
-+    const packet_id_type net_id = htonpid(p->id);
-+    const net_time_t net_time = htontime(p->time);
-     if (prepend)
-     {
-         if (long_form)
-diff --git a/src/openvpn/packet_id.h b/src/openvpn/packet_id.h
-index ecc25a6..109e56a 100644
---- a/src/openvpn/packet_id.h
-+++ b/src/openvpn/packet_id.h
-@@ -254,7 +254,18 @@ const char *packet_id_persist_print(const struct packet_id_persist *p, struct gc
- 
- bool packet_id_read(struct packet_id_net *pin, struct buffer *buf, bool long_form);
- 
--bool packet_id_write(const struct packet_id_net *pin, struct buffer *buf, bool long_form, bool prepend);
-+/**
-+ * Write a packet ID to buf, and update the packet ID state.
-+ *
-+ * @param p             Packet ID state.
-+ * @param buf           Buffer to write the packet ID too
-+ * @param long_form     If true, also update and write time_t to buf
-+ * @param prepend       If true, prepend to buffer, otherwise apppend.
-+ *
-+ * @return true if successful, false otherwise.
-+ */
-+bool packet_id_write(struct packet_id_send *p, struct buffer *buf,
-+        bool long_form, bool prepend);
- 
- /*
-  * Inline functions.
-@@ -304,28 +315,6 @@ packet_id_close_to_wrapping(const struct packet_id_send *p)
-     return p->id >= PACKET_ID_WRAP_TRIGGER;
- }
- 
--/*
-- * Allocate an outgoing packet id.
-- * Sequence number ranges from 1 to 2^32-1.
-- * In long_form, a time_t is added as well.
-- */
--static inline void
--packet_id_alloc_outgoing(struct packet_id_send *p, struct packet_id_net *pin, bool long_form)
--{
--    if (!p->time)
--    {
--        p->time = now;
--    }
--    pin->id = ++p->id;
--    if (!pin->id)
--    {
--        ASSERT(long_form);
--        p->time = now;
--        pin->id = p->id = 1;
--    }
--    pin->time = p->time;
--}
--
- static inline bool
- check_timestamp_delta(time_t remote, unsigned int max_delta)
- {
-diff --git a/src/openvpn/tls_crypt.c b/src/openvpn/tls_crypt.c
-index e2fdbed..e47d25c 100644
---- a/src/openvpn/tls_crypt.c
-+++ b/src/openvpn/tls_crypt.c
-@@ -98,11 +98,7 @@ tls_crypt_wrap(const struct buffer *src, struct buffer *dst,
-          format_hex(BPTR(src), BLEN(src), 80, &gc));
- 
-     /* Get packet ID */
--    {
--        struct packet_id_net pin;
--        packet_id_alloc_outgoing(&opt->packet_id.send, &pin, true);
--        packet_id_write(&pin, dst, true, false);
--    }
-+    ASSERT(packet_id_write(&opt->packet_id.send, dst, true, false));
- 
-     dmsg(D_PACKET_CONTENT, "TLS-CRYPT WRAP AD: %s",
-          format_hex(BPTR(dst), BLEN(dst), 0, &gc));
-diff --git a/tests/unit_tests/openvpn/Makefile.am b/tests/unit_tests/openvpn/Makefile.am
-index b902b20..5d7123e 100644
---- a/tests/unit_tests/openvpn/Makefile.am
-+++ b/tests/unit_tests/openvpn/Makefile.am
-@@ -3,7 +3,7 @@ AUTOMAKE_OPTIONS = foreign
- check_PROGRAMS=
- 
- if HAVE_LD_WRAP_SUPPORT
--check_PROGRAMS += argv_testdriver buffer_testdriver
-+check_PROGRAMS += argv_testdriver buffer_testdriver packet_id_testdriver
- endif
- 
- if ENABLE_CRYPTO
-@@ -31,6 +31,17 @@ buffer_testdriver_SOURCES = test_buffer.c mock_msg.c \
- 	$(openvpn_srcdir)/buffer.c \
- 	$(openvpn_srcdir)/platform.c
- 
-+packet_id_testdriver_CFLAGS  = @TEST_CFLAGS@ \
-+	-I$(openvpn_includedir) -I$(compat_srcdir) -I$(openvpn_srcdir) \
-+	$(OPTIONAL_CRYPTO_CFLAGS)
-+packet_id_testdriver_LDFLAGS = @TEST_LDFLAGS@ \
-+	$(OPTIONAL_CRYPTO_LIBS)
-+packet_id_testdriver_SOURCES = test_packet_id.c mock_msg.c \
-+	$(openvpn_srcdir)/buffer.c \
-+	$(openvpn_srcdir)/otime.c \
-+	$(openvpn_srcdir)/packet_id.c \
-+	$(openvpn_srcdir)/platform.c
-+
- tls_crypt_testdriver_CFLAGS  = @TEST_CFLAGS@ \
- 	-I$(openvpn_includedir) -I$(compat_srcdir) -I$(openvpn_srcdir) \
- 	$(OPTIONAL_CRYPTO_CFLAGS)
-diff --git a/tests/unit_tests/openvpn/mock_msg.c b/tests/unit_tests/openvpn/mock_msg.c
-index eb0d5e9..060588f 100644
---- a/tests/unit_tests/openvpn/mock_msg.c
-+++ b/tests/unit_tests/openvpn/mock_msg.c
-@@ -29,9 +29,12 @@
- #endif
- 
- #include <stdarg.h>
--#include <stdbool.h>
-+#include <stddef.h>
- #include <stdio.h>
- #include <stdlib.h>
-+#include <setjmp.h>
-+#include <cmocka.h>
-+
- 
- #include "errlevel.h"
- #include "error.h"
-@@ -70,14 +73,8 @@ x_msg(const unsigned int flags, const char *format, ...)
- void
- assert_failed(const char *filename, int line, const char *condition)
- {
--    if (condition)
--    {
--        printf("Assertion failed at %s:%d (%s)", filename, line, condition);
--    }
--    else
--    {
--        printf("Assertion failed at %s:%d", filename, line);
--    }
-+    mock_assert(false, condition ? condition : "", filename, line);
-+    /* Keep compiler happy.  Should not happen, mock_assert() does not return */
-     exit(1);
- }
- 
-diff --git a/tests/unit_tests/openvpn/test_packet_id.c b/tests/unit_tests/openvpn/test_packet_id.c
-new file mode 100644
-index 0000000..5627a5b
+ script:
+-  - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then export LD_LIBRARY_PATH="${PREFIX}/lib:${LD_LIBRARY_PATH}"; fi
+-  - if [ "${TRAVIS_OS_NAME}" = "osx"   ]; then export DYLD_LIBRARY_PATH="${PREFIX}/lib:${DYLD_LIBRARY_PATH}"; fi
+-  - autoreconf -vi
+-  - ./configure --with-crypto-library="${SSLLIB}" ${EXTRA_CONFIG} || (cat config.log && exit 1)
+-  - make -j$JOBS
+-  - src/openvpn/openvpn --version || true
+-  - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then ldd src/openvpn/openvpn; fi
+-  - if [ "${TRAVIS_OS_NAME}" = "osx" ]; then otool -L src/openvpn/openvpn; fi
+-  - make check
+-  - $EXTRA_SCRIPT
++  - .travis/build-check.sh
+diff --git a/.travis/build-check.sh b/.travis/build-check.sh
+new file mode 100755
+index 0000000..5ef8c6c
 --- /dev/null
-+++ b/tests/unit_tests/openvpn/test_packet_id.c
-@@ -0,0 +1,168 @@
-+/*
-+ *  OpenVPN -- An application to securely tunnel IP networks
-+ *             over a single UDP port, with support for SSL/TLS-based
-+ *             session authentication and key exchange,
-+ *             packet encryption, packet authentication, and
-+ *             packet compression.
-+ *
-+ *  Copyright (C) 2016 Fox Crypto B.V. <openvpn@...1435...>
-+ *
-+ *  This program is free software; you can redistribute it and/or modify
-+ *  it under the terms of the GNU General Public License version 2
-+ *  as published by the Free Software Foundation.
-+ *
-+ *  This program is distributed in the hope that it will be useful,
-+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ *  GNU General Public License for more details.
-+ *
-+ *  You should have received a copy of the GNU General Public License
-+ *  along with this program (see the file COPYING included with this
-+ *  distribution); if not, write to the Free Software Foundation, Inc.,
-+ *  59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-+ */
++++ b/.travis/build-check.sh
+@@ -0,0 +1,30 @@
++#!/bin/sh
++set -eux
 +
-+#ifdef HAVE_CONFIG_H
-+#include "config.h"
-+#elif defined(_MSC_VER)
-+#include "config-msvc.h"
-+#endif
++if [ "${TRAVIS_OS_NAME}" = "linux" ]; then 
++	export LD_LIBRARY_PATH="${PREFIX}/lib:${LD_LIBRARY_PATH:-}"
++fi
 +
-+#include "syshead.h"
++if [ "${TRAVIS_OS_NAME}" = "osx"   ]; then 
++	export DYLD_LIBRARY_PATH="${PREFIX}/lib:${DYLD_LIBRARY_PATH:-}"
++fi
 +
-+#include <stdarg.h>
-+#include <stddef.h>
-+#include <setjmp.h>
-+#include <cmocka.h>
++autoreconf -vi
 +
-+#include "packet_id.h"
-+
-+#include "mock_msg.h"
-+
-+struct test_packet_id_write_data {
-+    struct {
-+        uint32_t buf_id;
-+        uint32_t buf_time;
-+    } test_buf_data;
-+    struct buffer test_buf;
-+    struct packet_id_send pis;
-+};
-+
-+static int
-+test_packet_id_write_setup(void **state) {
-+    struct test_packet_id_write_data *data =
-+            calloc(1, sizeof(struct test_packet_id_write_data));
-+
-+    if (!data)
-+    {
-+        return -1;
-+    }
-+
-+    data->test_buf.data = (void *) &data->test_buf_data;
-+    data->test_buf.capacity = sizeof(data->test_buf_data);
-+
-+    *state = data;
-+    return 0;
++if [ -z ${CHOST+x} ]; then
++	./configure --with-crypto-library="${SSLLIB}" ${EXTRA_CONFIG:-} || (cat config.log && exit 1)
++	make -j$JOBS
++	src/openvpn/openvpn --version || true
++	if [ "${TRAVIS_OS_NAME}" = "linux" ]; then ldd src/openvpn/openvpn; fi
++	if [ "${TRAVIS_OS_NAME}" = "osx" ]; then otool -L src/openvpn/openvpn; fi
++	make check
++	${EXTRA_SCRIPT:-}
++else
++	export TAP_CFLAGS="-I${PWD}/tap-windows-${TAP_WINDOWS_VERSION}/include"
++	export LZO_CFLAGS="-I${PREFIX}/include"
++	export LZO_LIBS="-L${PREFIX}/lib -llzo2"
++	export PKCS11_HELPER_LIBS="-L${PREFIX}/lib -lpkcs11-helper"
++	export PKCS11_HELPER_CFLAGS="-I${PREFIX}/include"
++	./configure --with-crypto-library="${SSLLIB}" --host=${CHOST} --build=x86_64-pc-linux-gnu --enable-pkcs11 --disable-plugins || (cat config.log && exit 1)
++	make -j${JOBS}
++fi
+diff --git a/.travis/build-deps.sh b/.travis/build-deps.sh
+index 3ffba0b..c5c1188 100755
+--- a/.travis/build-deps.sh
++++ b/.travis/build-deps.sh
+@@ -4,6 +4,55 @@ set -eux
+ # Set defaults
+ PREFIX="${PREFIX:-${HOME}/opt}"
+ 
++download_tap_windows () {
++    if [ ! -f "download-cache/tap-windows-${TAP_WINDOWS_VERSION}.zip" ]; then
++       wget -P download-cache/ \
++           "http://build.openvpn.net/downloads/releases/tap-windows-${TAP_WINDOWS_VERSION}.zip"
++    fi
 +}
 +
-+static int
-+test_packet_id_write_teardown(void **state) {
-+    free(*state);
-+    return 0;
++download_lzo () {
++    if [ ! -f "download-cache/lzo-${LZO_VERSION}.tar.gz" ]; then
++        wget -P download-cache/ \
++            "http://www.oberhumer.com/opensource/lzo/download/lzo-${LZO_VERSION}.tar.gz"
++    fi
 +}
 +
-+static void
-+test_packet_id_write_short(void **state)
-+{
-+    struct test_packet_id_write_data *data = *state;
++build_lzo () {
++    if [ "$(cat ${PREFIX}/.lzo-version)" != "${LZO_VERSION}" ]; then
++        tar zxf download-cache/lzo-${LZO_VERSION}.tar.gz
++        (
++            cd "lzo-${LZO_VERSION}"
 +
-+    now = 5010;
-+    assert_true(packet_id_write(&data->pis, &data->test_buf, false, false));
-+    assert_true(data->pis.id == 1);
-+    assert_true(data->test_buf_data.buf_id == htonl(1));
-+    assert_true(data->test_buf_data.buf_time == 0);
++            ./configure --host=${CHOST} --program-prefix='' \
++                --libdir=${PREFIX}/lib --prefix=${PREFIX} --build=x86_64-pc-linux-gnu
++            make all install
++        )
++        echo "${LZO_VERSION}" > "${PREFIX}/.lzo-version"
++    fi
 +}
 +
-+static void
-+test_packet_id_write_long(void **state)
-+{
-+    struct test_packet_id_write_data *data = *state;
-+
-+    now = 5010;
-+    assert_true(packet_id_write(&data->pis, &data->test_buf, true, false));
-+    assert(data->pis.id == 1);
-+    assert(data->pis.time == now);
-+    assert_true(data->test_buf_data.buf_id == htonl(1));
-+    assert_true(data->test_buf_data.buf_time == htonl(now));
++download_pkcs11_helper () {
++    if [ ! -f "pkcs11-helper-${PKCS11_HELPER_VERSION}.tar.bz2" ]; then
++        wget -P download-cache/ \
++            "http://downloads.sourceforge.net/project/opensc/pkcs11-helper/pkcs11-helper-${PKCS11_HELPER_VERSION}.tar.bz2"
++    fi
 +}
 +
-+static void
-+test_packet_id_write_short_prepend(void **state)
-+{
-+    struct test_packet_id_write_data *data = *state;
++build_pkcs11_helper () {
++    if [ "$(cat ${PREFIX}/.pkcs11_helper-version)" != "${PKCS11_HELPER_VERSION}" ]; then
++        tar jxf download-cache/pkcs11-helper-${PKCS11_HELPER_VERSION}.tar.bz2
++        (
++            cd "pkcs11-helper-${PKCS11_HELPER_VERSION}"
 +
-+    data->test_buf.offset = sizeof(packet_id_type);
-+    now = 5010;
-+    assert_true(packet_id_write(&data->pis, &data->test_buf, false, true));
-+    assert_true(data->pis.id == 1);
-+    assert_true(data->test_buf_data.buf_id == htonl(1));
-+    assert_true(data->test_buf_data.buf_time == 0);
++            ./configure --host=${CHOST} --program-prefix='' --libdir=${PREFIX}/lib \
++                 --prefix=${PREFIX} --build=x86_64-pc-linux-gnu --disable-crypto-engine-gnutls --disable-crypto-engine-nss
++            make all install
++         )
++         echo "${PKCS11_HELPER_VERSION}" > "${PREFIX}/.pkcs11_helper-version"
++    fi
 +}
 +
-+static void
-+test_packet_id_write_long_prepend(void **state)
-+{
-+    struct test_packet_id_write_data *data = *state;
+ download_mbedtls () {
+     if [ ! -f "download-cache/mbedtls-${MBEDTLS_VERSION}-apache.tgz" ]; then
+         wget -P download-cache/ \
+@@ -31,7 +80,6 @@ download_openssl () {
+ }
+ 
+ build_openssl_linux () {
+-    tar zxf "download-cache/openssl-${OPENSSL_VERSION}.tar.gz"
+     (
+         cd "openssl-${OPENSSL_VERSION}/"
+         ./config shared --openssldir="${PREFIX}" -DPURIFY
+@@ -40,7 +88,6 @@ build_openssl_linux () {
+ }
+ 
+ build_openssl_osx () {
+-    tar zxf "download-cache/openssl-${OPENSSL_VERSION}.tar.gz"
+     (
+         cd "openssl-${OPENSSL_VERSION}/"
+         ./Configure darwin64-x86_64-cc shared \
+@@ -49,9 +96,28 @@ build_openssl_osx () {
+     )
+ }
+ 
++build_openssl_mingw () {
++    (
++        cd "openssl-${OPENSSL_VERSION}/"
 +
-+    data->test_buf.offset = sizeof(data->test_buf_data);
-+    now = 5010;
-+    assert_true(packet_id_write(&data->pis, &data->test_buf, true, true));
-+    assert(data->pis.id == 1);
-+    assert(data->pis.time == now);
-+    assert_true(data->test_buf_data.buf_id == htonl(1));
-+    assert_true(data->test_buf_data.buf_time == htonl(now));
++        if [ "${CHOST}" = "i686-w64-mingw32" ]; then
++            export TARGET=mingw
++        elif [ "${CHOST}" = "x86_64-w64-mingw32" ]; then
++            export TARGET=mingw64
++        fi
++
++        ./Configure --cross-compile-prefix=${CHOST}- shared \
++           ${TARGET} no-multilib no-capieng --openssldir="${PREFIX}" -static-libgcc
++        make install
++    )
 +}
 +
-+static void
-+test_packet_id_write_short_wrap(void **state)
-+{
-+    struct test_packet_id_write_data *data = *state;
+ build_openssl () {
+     if [ "$(cat ${PREFIX}/.openssl-version)" != "${OPENSSL_VERSION}" ]; then
+-        if [ "${TRAVIS_OS_NAME}" = "osx" ]; then
++        tar zxf "download-cache/openssl-${OPENSSL_VERSION}.tar.gz"
++        if [ ! -z ${CHOST+x} ]; then
++            build_openssl_mingw
++        elif [ "${TRAVIS_OS_NAME}" = "osx" ]; then
+             build_openssl_osx
+         elif [ "${TRAVIS_OS_NAME}" = "linux" ]; then
+             build_openssl_linux
+@@ -61,16 +127,25 @@ build_openssl () {
+ }
+ 
+ # Enable ccache
+-if [ "${TRAVIS_OS_NAME}" != "osx" ]; then
++if [ "${TRAVIS_OS_NAME}" != "osx" ] && [ -z ${CHOST+x} ]; then
+     # ccache not available on osx, see:
+     # https://github.com/travis-ci/travis-ci/issues/5567
++    # also ccache not enabled for cross builds
+     mkdir -p "${HOME}/bin"
+     ln -s "$(which ccache)" "${HOME}/bin/${CC}"
+     PATH="${HOME}/bin:${PATH}"
+ fi
+ 
++if [ ! -z ${CHOST+x} ]; then
++      #
++      # openvpn requires at least mingw-gcc-4.9, which is available at xenial repo
++      #
++      sudo apt-add-repository "deb http://archive.ubuntu.com/ubuntu xenial main universe"
++      sudo apt-get update
++      sudo apt-get -y install dpkg mingw-w64
++fi
 +
-+    data->pis.id = ~0;
-+    expect_assert_failure(
-+            packet_id_write(&data->pis, &data->test_buf, false, false));
-+}
+ # Download and build crypto lib
+-mkdir -p download-cache
+ if [ "${SSLLIB}" = "openssl" ]; then
+     download_openssl
+     build_openssl
+@@ -81,3 +156,16 @@ else
+     echo "Invalid crypto lib: ${SSLLIB}"
+     exit 1
+ fi
 +
-+static void
-+test_packet_id_write_long_wrap(void **state)
-+{
-+    struct test_packet_id_write_data *data = *state;
++# Download and build dependencies for mingw cross build
++# dependencies are the same as in regular windows installer build
++if [ ! -z ${CHOST+x} ]; then
++      download_tap_windows
++      unzip download-cache/tap-windows-${TAP_WINDOWS_VERSION}.zip
 +
-+    data->pis.id = ~0;
-+    now = 5010;
-+    assert_true(packet_id_write(&data->pis, &data->test_buf, true, false));
-+    assert(data->pis.id == 1);
-+    assert(data->pis.time == now);
-+    assert_true(data->test_buf_data.buf_id == htonl(1));
-+    assert_true(data->test_buf_data.buf_time == htonl(now));
-+}
++      download_lzo
++      build_lzo
 +
-+int
-+main(void) {
-+    const struct CMUnitTest tests[] = {
-+            cmocka_unit_test_setup_teardown(test_packet_id_write_short,
-+                    test_packet_id_write_setup, test_packet_id_write_teardown),
-+            cmocka_unit_test_setup_teardown(test_packet_id_write_long,
-+                    test_packet_id_write_setup, test_packet_id_write_teardown),
-+            cmocka_unit_test_setup_teardown(test_packet_id_write_short_prepend,
-+                    test_packet_id_write_setup, test_packet_id_write_teardown),
-+            cmocka_unit_test_setup_teardown(test_packet_id_write_long_prepend,
-+                    test_packet_id_write_setup, test_packet_id_write_teardown),
-+            cmocka_unit_test_setup_teardown(test_packet_id_write_short_wrap,
-+                    test_packet_id_write_setup, test_packet_id_write_teardown),
-+            cmocka_unit_test_setup_teardown(test_packet_id_write_long_wrap,
-+                    test_packet_id_write_setup, test_packet_id_write_teardown),
-+    };
-+
-+    return cmocka_run_group_tests_name("packet_id tests", tests, NULL, NULL);
-+}
++      download_pkcs11_helper
++      build_pkcs11_helper
++fi
 -- 
-2.7.4
+2.5.5
 
 
