@@ -1,14 +1,7 @@
-Date: Fri, 5 May 2017 20:28:51 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20170505182851.GJ97029@...1296...>
-References: <1494008642-7239-1-git-send-email-selva.nair@...277...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="0ntfKIWw70PvrIHh"
-Content-Disposition: inline
-In-Reply-To: <1494008642-7239-1-git-send-email-selva.nair@...277...>
-Subject: Re: [Openvpn-devel] [PATCH 1/2] In auth-pam plugin clear the
- password after use
+From: David Sommerseth <davids@...515...>
+Date: Fri,  5 May 2017 20:46:22 +0200
+Message-Id: <20170505184622.24520-1-davids@...515...>
+Subject: [Openvpn-devel] [PATCH] plugin: Export secure_memzero() to plug-ins
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,68 +10,101 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: selva.nair@...277...
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---0ntfKIWw70PvrIHh
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+The provides plug-ins with a safe and secure way to santize sensitive
+information such as passwords, by re-using the secure_memzero()
+implementation in OpenVPN.
 
-Hi,
+Signed-off-by: David Sommerseth <davids@...515...>
+---
+ include/openvpn-plugin.h.in | 25 ++++++++++++++++++++++---
+ src/openvpn/plugin.c        |  3 ++-
+ 2 files changed, 24 insertions(+), 4 deletions(-)
 
-On Fri, May 05, 2017 at 02:24:01PM -0400, selva.nair@...277... wrote:
-> From: Selva Nair <selva.nair@...277...>
->=20
-> This adds a minimal secure_memzero()
->=20
-> Signed-off-by: Selva Nair <selva.nair@...277...>
+diff --git a/include/openvpn-plugin.h.in b/include/openvpn-plugin.h.in
+index 0b303520..ec83f3a6 100644
+--- a/include/openvpn-plugin.h.in
++++ b/include/openvpn-plugin.h.in
+@@ -199,7 +199,8 @@ struct openvpn_plugin_string_list
+ 
+ /* openvpn_plugin_{open,func}_v3() related structs */
+ 
+-/* Defines version of the v3 plugin argument structs
++/**
++ * Defines version of the v3 plugin argument structs
+  *
+  * Whenever one or more of these structs are modified, this constant
+  * must be updated.  A changelog should be appended in this comment
+@@ -218,8 +219,10 @@ struct openvpn_plugin_string_list
+  *    3      Added ovpn_version, ovpn_version_major, ovpn_version_minor
+  *           and ovpn_version_patch to provide the runtime version of
+  *           OpenVPN to plug-ins.
++ *
++ *    4      Exported secure_memzero() as plugin_secure_memzero()
+  */
+-#define OPENVPN_PLUGINv3_STRUCTVER 3
++#define OPENVPN_PLUGINv3_STRUCTVER 4
+ 
+ /**
+  * Definitions needed for the plug-in callback functions.
+@@ -255,10 +258,19 @@ typedef void (*plugin_vlog_t)(openvpn_plugin_log_flags_t flags,
+                               const char *plugin_name,
+                               const char *format,
+                               va_list arglist) _ovpn_chk_fmt (3, 0);
+-
+ #undef _ovpn_chk_fmt
+ 
+ /**
++ *  Export of secure_memzero() to be used inside plug-ins
++ *
++ *  @param data   Pointer to data to zeroise
++ *  @param len    Length of data, in bytes
++ *
++ */
++typedef void (*plugin_secure_memzero_t)(void *data, size_t len);
++
++
++/**
+  * Used by the openvpn_plugin_open_v3() function to pass callback
+  * function pointers to the plug-in.
+  *
+@@ -267,11 +279,18 @@ typedef void (*plugin_vlog_t)(openvpn_plugin_log_flags_t flags,
+  *               Messages will only be displayed if the plugin_name parameter
+  *               is set. PLOG_DEBUG messages will only be displayed with plug-in
+  *               debug log verbosity (at the time of writing that's verb >= 7).
++ *
++ * plugin_secure_memzero
++ *             : Use this function to securely wipe sensitive information from
++ *               memory.  This function is declared in a way that the compiler
++ *               will not remove these function calls during the compiler
++ *               optimization phase.
+  */
+ struct openvpn_plugin_callbacks
+ {
+     plugin_log_t plugin_log;
+     plugin_vlog_t plugin_vlog;
++    plugin_secure_memzero_t plugin_secure_memzero;
+ };
+ 
+ /**
+diff --git a/src/openvpn/plugin.c b/src/openvpn/plugin.c
+index 05cbae3e..a652d528 100644
+--- a/src/openvpn/plugin.c
++++ b/src/openvpn/plugin.c
+@@ -410,7 +410,8 @@ plugin_log(openvpn_plugin_log_flags_t flags, const char *name, const char *forma
+ 
+ static struct openvpn_plugin_callbacks callbacks = {
+     plugin_log,
+-    plugin_vlog
++    plugin_vlog,
++    secure_memzero   /* plugin_secure_memzero */
+ };
+ 
+ 
+-- 
+2.11.0
 
-Feature-ACK, Code-NAK, but just because David is planning to export
-secure_memzero() to plugins from OpenVPN proper - mentioned just today
-on IRC
-
-17:09 <@dazo> syzzer: just thinking aloud (remembered our discussion on wip=
-ing=20
-              passwords securely in plug-ins) ... what do you think about=20
-              exposing secure_memzero() to plug-ins, similar to what we do =
-with=20
-              plugin_{log,vlog}()?
-17:09 <@dazo> to avoid each plug-in needing to re-implement this
-17:09 <@syzzer> yeah, sounds useful
-17:10 <@dazo> I'll send a patch doing that too (should be quick to solve)
-
-
-So I'd postpone this until David's patch plus instructions for plugin
-authors show up.
-
-Good timing :-)
-
-gert
-
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---0ntfKIWw70PvrIHh
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJZDMRjAAoJEB2Cnv7KVigSkRoL/2fbbeRn6UtlLMrNthIvwdXL
-cDL0XWJONa/z39PHFCFrHXqvD46GmahEpqIvJx8MLH/Ijd7WAPWrla6FhLPhkH4s
-l/tHBTYk4wqN4woIVg8GAvSSxFaZgOWd0uBXzv+QaMK2fKtcX3beK1zRRhUCbE5z
-qcVhAh6/vl0hLUiLxAgunF+0Ii4O8u1wXafEhJ8mrDjIXMEn3Aj+5pFSnbch3vx6
-PM+a9pShapmpnc6o1I0Q04QFrBSIVQqtQDSSp7u5TsDhnKG/yDFX3JEEGGVc9h0n
-VWO88JxcIZdLCfHwvCr3L4JELIiOGxxbTXUSL5koQ4X50/yQHOy07c+of2Xm+BK2
-qjFMTtohFm9/TN7T0voz7v8k9jNotpxZleq3oGldAtggU/xTe+dvqkX2lEeED2+H
-fgqg4IB8XJQekO5HnNqjBaLk8EDbYOG8y7IgivreE4mGZQIS1XBSjkRJF9R3jUej
-aUu23Wo1zU3an4XpNV/I0LhkGiHsjg3qi5LOnn/17w==
-=8EVz
------END PGP SIGNATURE-----
-
---0ntfKIWw70PvrIHh--
 
