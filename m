@@ -1,16 +1,15 @@
-From: Antonio Quartulli <a@...2181...>
-Message-Id: <5E3AAEBC-4B0F-409B-9ADE-2DFFED3CF29E@...2181...>
-Content-Type: multipart/signed;
-	boundary="Apple-Mail=_0CA56EDE-C030-4D9D-B5D9-B3F9B5C4E5F7";
-	protocol="application/pgp-signature"; micalg=pgp-sha512
-Mime-Version: 1.0 (Mac OS X Mail 10.3 \(3273\))
-Date: Sun, 7 May 2017 19:56:27 +0800
-In-Reply-To: <1349e743-76a0-b021-0e26-94bb7694e820@...2080...>
-References: <20170426160021.25122-1-davids@...515...>
-	<29e6daf6-6423-5fb7-ff55-7710b528ddab@...1856...>
-	<1349e743-76a0-b021-0e26-94bb7694e820@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH] crypto: Enable SHA256 fingerprint
- checking in --verify-hash
+References: <1492699272.18647.3.camel@...2264...>
+	<1493853048.30207.1.camel@...2264...>
+From: Steffan Karger <steffan@...1856...>
+Message-ID: <4f72f2c8-6cf3-275e-d89b-921b0320395e@...1856...>
+Date: Sun, 7 May 2017 17:53:36 +0200
+MIME-Version: 1.0
+In-Reply-To: <1493853048.30207.1.camel@...2264...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature";
+	boundary="96xpa6t9oMwrEoPOaPEuxnrHMrB5B3nc7"
+Subject: Re: [Openvpn-devel] [PATCH] Fix extract_x509_field_ssl for external
+ objects, v2
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,72 +18,96 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net, openvpn@...2080...
+To: openvpn-devel@lists.sourceforge.net
 
---Apple-Mail=_0CA56EDE-C030-4D9D-B5D9-B3F9B5C4E5F7
-Content-Type: text/plain; charset="us-ascii"
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--96xpa6t9oMwrEoPOaPEuxnrHMrB5B3nc7
+Content-Type: multipart/mixed; boundary="hTV4XnBE0JEjXl4Jw09GovPwuQjrxI2Qh";
+	protected-headers="v1"
+From: Steffan Karger <steffan@...1856...>
+To: openvpn-devel@lists.sourceforge.net
+Message-ID: <4f72f2c8-6cf3-275e-d89b-921b0320395e@...1856...>
+Subject: Re: [Openvpn-devel] [PATCH] Fix extract_x509_field_ssl for external
+	objects, v2
+References: <1492699272.18647.3.camel@...2264...>
+	<1493853048.30207.1.camel@...2264...>
+In-Reply-To: <1493853048.30207.1.camel@...2264...>
+
+--hTV4XnBE0JEjXl4Jw09GovPwuQjrxI2Qh
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
 
+Hi,
+
+On 04-05-17 01:10, Hristo Venev wrote:
+> Only fields known to OpenSSL have a NID. OBJ_txt2obj allows specifying
+> fields by numeric OID.
 >=20
-> On 4 May 2017, at 06:57, David Sommerseth <openvpn@...2080...> wrote:
+> Signed-off-by: Hristo Venev <hristo@...2264...>
+> ---
+>  src/openvpn/ssl_verify_openssl.c | 12 ++++++++++--
+>  1 file changed, 10 insertions(+), 2 deletions(-)
 >=20
-> On 03/05/17 22:15, Steffan Karger wrote:
->>> +        switch (opt->verify_hash_algo)
->>> +        {
->>> +        case MD_SHA1:
->>> +            ca_hash =3D x509_get_sha1_fingerprint(cert, &gc);
->>> +            break;
->>> +
->>> +        case MD_SHA256:
->>> +            ca_hash =3D x509_get_sha256_fingerprint(cert, &gc);
->>> +            break;
->>> +        }
->> This switch should have a default: case that fails, otherwise we might
->> be reading from uninitialized memory.  And you might want to consider
->> initializing ca_hash to "{ 0 }".  (But you still need to default: case,
->> otherwise you'll be doing a 0-length memcmp()).
->=20
-> *grmbl*  I was sure the enumerated type would make the compiler
-> complain, but I must have mixed this with some C++ stuff I read not too
-> long ago.  But my stupid test allows assigning an enumerated type to any
-> invalid value as well.
+> diff --git a/src/openvpn/ssl_verify_openssl.c b/src/openvpn/ssl_verify_op=
+enssl.c
+> index 87f71f21..b6867c65 100644
+> --- a/src/openvpn/ssl_verify_openssl.c
+> +++ b/src/openvpn/ssl_verify_openssl.c
+> @@ -191,16 +191,24 @@ extract_x509_field_ssl(X509_NAME *x509, const char =
+*field_name, char *out,
+>      X509_NAME_ENTRY *x509ne =3D 0;
+>      ASN1_STRING *asn1 =3D 0;
+>      unsigned char *buf =3D NULL;
+> -    int nid =3D OBJ_txt2nid(field_name);
+> +    ASN1_OBJECT *field_name_obj =3D OBJ_txt2obj(field_name, 0);
+> +
+> +    if (field_name_obj =3D=3D NULL)
+> +    {
+> +        msg(D_TLS_ERRORS, "Invalid X509 attribute name '%s'", field_name=
+);
+> +        return FAILURE;
+> +    }
+>=20=20
+>      ASSERT(size > 0);
+>      *out =3D '\0';
+>      do
+>      {
+>          lastpos =3D tmp;
+> -        tmp =3D X509_NAME_get_index_by_NID(x509, nid, lastpos);
+> +        tmp =3D X509_NAME_get_index_by_OBJ(x509, field_name_obj, lastpos=
+);
+>      } while (tmp > -1);
+>=20=20
+> +    ASN1_OBJECT_free(field_name_obj);
+> +
+>      /* Nothing found */
+>      if (lastpos =3D=3D -1)
+>      {
 >=20
 
-You are right.
-The compiler would have complained if you had left out any value from the e=
-num set.
-But the enum set is made of those two values only, hence a default case is =
-not plausible unless you
-assign verify_hash_algo with a value out of the enum set (but then you shou=
-ld have a compiler warning
-on the assignment).
+Thanks for following up.  ACK.
 
-Cheers,
+-Steffan
 
---Apple-Mail=_0CA56EDE-C030-4D9D-B5D9-B3F9B5C4E5F7
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment;
-	filename=signature.asc
-Content-Type: application/pgp-signature;
-	name=signature.asc
-Content-Description: Message signed with OpenPGP
+
+--hTV4XnBE0JEjXl4Jw09GovPwuQjrxI2Qh--
+
+--96xpa6t9oMwrEoPOaPEuxnrHMrB5B3nc7
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
 
-iQIcBAEBCgAGBQJZDwtxAAoJENPhyAjNbKBQYOwP/ialzi+LbCuJbUFrCMgvJHsZ
-H5rXKlYkFdEaaTHYN3qNqNfdvqQAB4siC9VcmfIov8AjG5qB7BST3PaaP30wuqcF
-l0fA2SE9MyypmJFUFl25cFeSbgGrcA9NXo3swB/5fKYE7Sgq6UmUQ7tXCxYEV6dp
-vsjDfWETP5RkrNV9/4F2YKk3ds58OQVnVDxA/qtC96hJCSHT0gWZ/+jfMdF7NWty
-+CAC7tanwIsVXk0+wXy8b7x2lHadYKDDtDZjEk3V1zEWsg5fenZJ0s3HR/NoXx9X
-90WvUMomQU4B0E1wFSs4c7dtUpdoFJOAhoZZ+P0XgcPY+8JN90vS57npLcDFso/l
-zS58hLtxdnli6oZWxMZCxdtLDKvumzj9V8i5cj0rLSDBHKkbwN3Y7ClTI0SHcEzX
-9E7r35jNG9xKoS7ze0d3lq0xFXS03apNr3MYov9eL3MxxZwYDyTUY/fxJsXRZdZw
-fsSIGygl8Y14u8J+38tzR3mmz+ZIKs9igC57ETpywPgFOTweHeR2eM0Emv7x2C8V
-EdzftYFzlYNN4sl9xVh52kOcD9px8kUzssTTEMUS3jgN4bX66YWp+zc3XdW6hEAa
-Q56xWe9awTm5QDJ/uAtlET4GwlWtjyyt3HJBSOWjem3FT9bENW/HeqZCNAoO4Xif
-8hh3C5pF2TxsQCaN51ZW
-=otku
+iQEcBAEBCAAGBQJZD0MJAAoJEJgCyj0AftKItSoIAJF/iRMOs/OS4YGb7LbUDCgH
+gkAU3qKllSdYzhY1K32Bp0nwVXSyHHMeSWKzrw+ahCkyPSnK/3kem35obyluGbBL
+/ECukV0tZck+vg//AHHxU+1N8o91hvWffLtH7H2fxnpShHIELKovInVDgES8PB2V
+Ep8/h10y8ARjQXYPHUZcqJTSZ4mGFlrkdDgSTx0EFfN9BpmehrSyMCV9VTKwmnfz
+84AaSc6aWKJIiOLSLZbGcdRMg4a/XzXQ3rxTlzM/ewSewUst9Df7pJMVR0XhQSVV
+nMJOWXHQhbLjvjI2BLcZWnMKGzdRPbu4ZH5BSnYu2N8Y0XN9o3jqgYSKDusPCuU=
+=5TKV
 -----END PGP SIGNATURE-----
 
---Apple-Mail=_0CA56EDE-C030-4D9D-B5D9-B3F9B5C4E5F7--
+--96xpa6t9oMwrEoPOaPEuxnrHMrB5B3nc7--
 
