@@ -1,21 +1,12 @@
-From: Antonio Quartulli <a@...2181...>
-Message-Id: <B29A8F93-E775-447D-A53D-EC52C1EB052F@...2181...>
-Content-Type: multipart/signed;
-	boundary="Apple-Mail=_71DE2428-CFC0-4049-A6A6-64D3EFD0FF13";
-	protocol="application/pgp-signature"; micalg=pgp-sha512
-Mime-Version: 1.0 (Mac OS X Mail 10.3 \(3273\))
-Date: Mon, 8 May 2017 09:02:11 +0800
-In-Reply-To: <3ce9d9c3-fb19-39a5-d3c7-446a95bc5c6d@...2080...>
-References: <20170426160021.25122-1-davids@...515...>
-	<29e6daf6-6423-5fb7-ff55-7710b528ddab@...1856...>
-	<1349e743-76a0-b021-0e26-94bb7694e820@...2080...>
-	<5E3AAEBC-4B0F-409B-9ADE-2DFFED3CF29E@...2181...>
-	<338076EC-09A1-4CDA-9D12-A905FD846831@...2181...>
-	<f7f3b9b7-f3ca-fb16-3972-aa6ea7c7991c@...1856...>
-	<497C1C9D-DBB7-415E-8FEB-B68FAC3D2D35@...2181...>
-	<3ce9d9c3-fb19-39a5-d3c7-446a95bc5c6d@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH] crypto: Enable SHA256 fingerprint
- checking in --verify-hash
+MIME-Version: 1.0
+In-Reply-To: <20170505214624.11675-1-davids@...515...>
+References: <20170505214624.11675-1-davids@...515...>
+From: Selva Nair <selva.nair@...277...>
+Date: Sun, 7 May 2017 23:28:49 -0400
+Message-ID: <CAKuzo_hOntpCXhSUJFZk3QbKiVMLn87_t+2YAYcirLcX0z17SQ@...278...>
+Content-Type: multipart/alternative; boundary=001a113fe0faa42289054efad704
+Subject: Re: [Openvpn-devel] [PATCH 1/2] plugin: Export base64 encode and
+ decode functions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -24,56 +15,97 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+To: David Sommerseth <davids@...515...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---Apple-Mail=_71DE2428-CFC0-4049-A6A6-64D3EFD0FF13
-Content-Type: text/plain; charset="utf-8"
+--001a113fe0faa42289054efad704
+Content-Type: text/plain; charset=UTF-8
+
+Hi,
+
+Thanks for the patch exporting base64_encode/decode
+
+A quick question/comment though: quoting from your sample base64.c
+
+On Fri, May 5, 2017 at 5:46 PM, David Sommerseth <davids@...515...> wrote:
+
+> +    /*  Which callbacks to intercept.  */
+> +    ret->type_mask =
+> +        OPENVPN_PLUGIN_MASK(OPENVPN_PLUGIN_TLS_VERIFY)
+> +        |OPENVPN_PLUGIN_MASK(OPENVPN_PLUGIN_CLIENT_CONNECT_V2);
+> +
+> +    /* we don't need a plug-in context in this example, but OpenVPN
+> expects "something" */
+> +    ret->handle = calloc(1, 1);
+>
+
+While this looks right[*], in openvpn-plugin.h (lines 344-370) the handle
+in the _return struct
+is defined as openvpn_plugin_handle_t * where that type itself is void *,
+making handle void **.
+Also the comment accompanying  "struct openvpn_plugin_args_open_return"
+indicates
+*handle should be set to the pointer to the context but that cant be right.
+
+The compiler will not warn about void * and void ** mismatches, so ignoring
+the definition and
+saving the context pointer in ret->handle works,  but the declaration of
+handle in the return struct
+should be simply openvpn_plugin_handle_t without the *. The same comment
+also refers to
+*type_mask instead of type_mask.which is not right either.
+.
+Am I missing something?
+
+Selva
+
+[*] By the way, this being an example, it may be best to show the correct
+type by casting the
+return value of calloc to (openvpn_plugin_handle_t)
+
+--001a113fe0faa42289054efad704
+Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
+<div dir=3D"ltr"><div class=3D"gmail_extra">Hi,</div><div class=3D"gmail_ex=
+tra"><br></div><div class=3D"gmail_extra">Thanks for the patch exporting ba=
+se64_encode/decode</div><div class=3D"gmail_extra"><br></div><div class=3D"=
+gmail_extra">A quick question/comment though: quoting from your sample base=
+64.c</div><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">On Fri,=
+ May 5, 2017 at 5:46 PM, David Sommerseth <span dir=3D"ltr">&lt;<a href=3D"=
+mailto:davids@...515..." target=3D"_blank">davids@...515...</a>&gt;</span> =
+wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8=
+ex;border-left:1px solid rgb(204,204,204);padding-left:1ex"><div id=3D"gmai=
+l-:1je" class=3D"gmail-a3s gmail-aXjCH gmail-m15bda95fa5f31677">+=C2=A0 =C2=
+=A0 /*=C2=A0 Which callbacks to intercept.=C2=A0 */<br>
++=C2=A0 =C2=A0 ret-&gt;type_mask =3D<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 OPENVPN_PLUGIN_MASK(OPENVPN_<wbr>PLUGIN_TLS_VE=
+RIFY)<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 |OPENVPN_PLUGIN_MASK(OPENVPN_<wbr>PLUGIN_CLIEN=
+T_CONNECT_V2);<br>
++<br>
++=C2=A0 =C2=A0 /* we don&#39;t need a plug-in context in this example, but =
+OpenVPN expects &quot;something&quot; */<br>
++=C2=A0 =C2=A0 ret-&gt;handle =3D calloc(1, 1);</div></blockquote></div><br=
+>While this looks right[*], in openvpn-plugin.h (lines 344-370) the handle =
+in the _return struct</div><div class=3D"gmail_extra">is defined as openvpn=
+_plugin_handle_t * where that type itself is void *, making handle void **.=
+=C2=A0</div><div class=3D"gmail_extra">Also the comment accompanying =C2=A0=
+&quot;struct openvpn_plugin_args_open_return&quot; indicates=C2=A0</div><di=
+v class=3D"gmail_extra">*handle should be set to the pointer to the context=
+ but that cant be right.</div><div class=3D"gmail_extra"><br></div><div cla=
+ss=3D"gmail_extra">The compiler will not warn about void * and void ** mism=
+atches, so ignoring the definition and</div><div class=3D"gmail_extra">savi=
+ng the context pointer in ret-&gt;handle works, =C2=A0but the declaration o=
+f handle in the return struct</div><div class=3D"gmail_extra">should be sim=
+ply openvpn_plugin_handle_t without the *. The same comment also refers to<=
+/div><div class=3D"gmail_extra">*type_mask instead of type_mask.which is no=
+t right either.</div><div class=3D"gmail_extra">.</div><div class=3D"gmail_=
+extra">Am I missing something?</div><div class=3D"gmail_extra"><br></div><d=
+iv class=3D"gmail_extra">Selva</div><div class=3D"gmail_extra"><br></div><d=
+iv class=3D"gmail_extra">[*] By the way, this being an example, it may be b=
+est to show the correct type by casting the</div><div class=3D"gmail_extra"=
+>return value of calloc to (openvpn_plugin_handle_t)</div></div>
 
-> On 8 May 2017, at 06:05, David Sommerseth <openvpn@...2080...> wrote:
->=20
-> On 07/05/17 14:17, Antonio Quartulli wrote:
->>=20
->> Agreed. This sounds like a call for a cleanup mission :]
->=20
-> I presume you meant this on a generic level, not this patch explicitly,
-> right?  If so, I don't need to worry about a v3, as the v2 of this patch
-> is already in this mail thread.
-
-Yeah, I meant in general. For this patch we don=E2=80=99t need to worry :)
-
-Cheers,
-
-
---
-Antonio Quartulli
-
-
---Apple-Mail=_71DE2428-CFC0-4049-A6A6-64D3EFD0FF13
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment;
-	filename=signature.asc
-Content-Type: application/pgp-signature;
-	name=signature.asc
-Content-Description: Message signed with OpenPGP
-
------BEGIN PGP SIGNATURE-----
-
-iQIcBAEBCgAGBQJZD8OhAAoJENPhyAjNbKBQtUwQAI/Zc82qP+i85QLQNl6ycnwj
-iYlFBMEJy9TQawbog3eXsqYvqiGMPDF6eymrGaRf3f/DenHgZiwu94yt451Fzfcp
-ER2b1bOzri6UAQXkc7WKqXLE0Xdc+iXCGY0bcfe2Lg54wPJn4mvXVJO2JZyTIrli
-Edrj0dfKsyasC65jZqYEbNmEghHsb1zBLkrEnbZZknD8jA97D8vv5iWBjkIaZZyw
-PpXki92nbxeHlZFTlhznuYdm3RD/g5r2FED72Pzz0/T5SKLyBIq/CcWA/seK/ZQH
-MMJ+5WObLbLG+pXtP43yfdknYOflnOplIln+mUdLrkRbfsYZKB0TbH6yyfP4EO4K
-Xx6FcfpEBXvrZlf5ue//lxH8wzfUPOoVSYC7+a74KV99aH++ZmRz0ZA3Xpzthjep
-CmHwqvnROGGhUJ+CbAWxtKGj4StXuROUjnYymbx5mGpZzw6JN/qiNskQKxhTrcJR
-a0l1pu32kPvfqdzDZV3ri+cHJnTd7nHGhY3Qp0hLfjf8tD+Q1374qhYRAgCGt82V
-Y2gCMRru+SMRXTWRj5qQ+eTKyGkZdcJ3sdaWYpjo1FYbLqevfNT98V84THjmnnDi
-ZT5t51mdj3MAa68J40cfYmOKZ/sPqJX0UzbIiOHPOi68xFcqO6cldiZi7NC+EUGD
-01d+zT+Eq9/rux9rVq+W
-=VMD4
------END PGP SIGNATURE-----
-
---Apple-Mail=_71DE2428-CFC0-4049-A6A6-64D3EFD0FF13--
+--001a113fe0faa42289054efad704--
 
