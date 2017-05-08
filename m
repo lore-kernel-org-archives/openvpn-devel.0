@@ -1,10 +1,10 @@
 From: David Sommerseth <davids@...515...>
-Date: Mon,  8 May 2017 18:21:39 +0200
-Message-Id: <20170508162139.8086-1-davids@...515...>
-In-Reply-To: <1493853048.30207.1.camel@...2264...>
-References: <1493853048.30207.1.camel@...2264...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Fix extract_x509_field_ssl for
-	external objects, v2
+Date: Mon,  8 May 2017 18:22:09 +0200
+Message-Id: <20170508162209.8274-1-davids@...515...>
+In-Reply-To: <1494154878-18403-1-git-send-email-steffan@...1856...>
+References: <1494154878-18403-1-git-send-email-steffan@...1856...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Fix memory leak in
+	x509_verify_cert_ku()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,25 +15,27 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: hristo@...2264...
+To: steffan@...1856...
 Cc: openvpn-devel@lists.sourceforge.net
 
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA256
 
+Looking good to me.  ACK!
+
 Your patch has been applied to the following branches
 
-commit 69311687da55b8c0e6966b25c94c72494ea44e57  (master)
-commit f5d41cc68407f77f8fab41e242fa1d651c55c257  (release/2.4)
-Author: Hristo Venev
-Date:   Thu May 4 00:10:48 2017 +0100
+commit 7b94d3bbbea46efcea12e1df24da52fe508d0173  (master)
+commit d7a13af789daecf38fb6a3ca2d6e6cf0ab939a73  (release/2.4)
+Author: Steffan Karger
+Date:   Sun May 7 13:01:18 2017 +0200
 
-     Fix extract_x509_field_ssl for external objects, v2
+     Fix memory leak in x509_verify_cert_ku()
 
-     Signed-off-by: Hristo Venev <hristo@...2264...>
-     Acked-by: Steffan Karger <steffan@...1856...>
-     Message-Id: <1493853048.30207.1.camel@...2264...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg14535.html
+     Signed-off-by: Steffan Karger <steffan@...1856...>
+     Acked-by: David Sommerseth <davids@...515...>
+     Message-Id: <1494154878-18403-1-git-send-email-steffan@...1856...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg14563.html
      Signed-off-by: David Sommerseth <davids@...515...>
 
 
@@ -45,18 +47,18 @@ David Sommerseth
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBCAAGBQJZEJsRAAoJEIbPlEyWcf3y3EMP/1CZyQm5kj/CmTe354EZhWTL
-RkRf6KE0oZLAKk9JqnlV7d93OgLTpyLtgj0ZcM75zIPnEAIMM+KZGkHcYeB7OmS5
-WBoA5MxHm1QteBKexEBaFsrdzYNlGymZ+bpnhuL5+AqV998akOQVR6xVdtsoV+c0
-ZdCqHWASd9cGvw6EwJGcAq5gdOj3w6+x3q0k8jN5DNZvfkr8tixStf283gBhOkzc
-d32XWPIHA1Vp5C/8/VTWWEx/4cvK1KK373QeZDwzww6KvhqISX+cUOu08i09DQ/1
-S91RzV+54qxa2FO/lIyqS0MRv0lgXzXKKRXTXd8e6hhiyX6AA49ltOnJo6YbAMMk
-IiLv9YipEiSS9WzKu0LRuBMYRgHFH0+lHXi8+h99+0oaZpXI2fSc+ruvSVMbrcNB
-TpcOK5aJD0M7IbsjE2jSMpSUXqhhzYwc5H5iK7rwbv89mpCnaynv4nG4Rr4IKSYO
-BViX6KpZMEWGMoyhbV8UvwDYhkm5qibK/zLWzQQ5AdVxV+2JygvdBz2gwnynIdmB
-hFzYacWGRhZmtXICXLzDfidJOErnDV4NYzrj5DTvykZlL3QD3gpQO1CLSvgFUjoB
-UOYxPlsUIBFiy8hQXx2IR+gmSDl1Wc/s7Qte9kEtB3ql1OcgwwxcFBf1AzpySRyY
-EPKq4oEuBEWpvvcghIxI
-=xoYg
+iQIcBAEBCAAGBQJZEJswAAoJEIbPlEyWcf3ys1oP/jeCx+xu9GRMbcgR3hudPHQY
+c7ujhO0jvRMbWdaFtdNcX9QDfVSTCHAnAyGSnI/z33oQIz45uI3PS+Z3O3KwrOdQ
+2ZI5UnG1l/QlBvdDvsD9dCNxTIzTXwHLPAxLtL4KsRMlefZPPYC5W9ziMkEBcYvr
+wLEShlK8IFx3zpU+wpND9xvBTA71wPQmzKqtJYv6O7qI+7FZUEphFGDmVdu4hPxu
+/owH6BCBqxCK9Tkcg7tJeMfIdZ+1dQz1fG6rLz/HVtDdRDq/FtT/3wISTMqKmmsL
+ugwGm39v3QaDuHQzOyCr2ORX6Ht44AbMwjgyDnblg9rWvsRy/wWCOFSaJqQdPQVV
+BquYDh3tALcCkCMByMQDnXZkeKww+3bIxOEagj1f0C+RjzzUT87OoWm/qOj/jLs+
+fvEnZTf4Zeh5Icx2Xd0kEHzM2+Y9q06qm6iZoAgDI383mvgTcQNXCzAHQijEsZC1
+mlJ65GWQcdgAB+A3vUPuy1qoUSyB5ZGucCLebGpn4THyzeMC3ihWn1shxlH66XoL
+GeKvuJmyRWjTItuLg0CHles1/11XQSCeBqrkJKgKS51IOistpP2Pgy6tyS5POIzn
+Q/DP7O+n3g3ezU/mB7UQ2/ctpk938iq/ecMEtD3/qH8MxQd8Abq2QwbjBAj6gT6N
+tiHhKxFdQTy9bw/uSVjZ
+=gRag
 -----END PGP SIGNATURE-----
 
