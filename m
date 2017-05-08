@@ -1,14 +1,16 @@
-From: Antonio Quartulli <a@...2181...>
-Content-Type: multipart/signed;
-	boundary="Apple-Mail=_E7C00C3A-5CAE-4D85-9E48-178F13D6615B";
-	protocol="application/pgp-signature"; micalg=pgp-sha512
-Mime-Version: 1.0 (Mac OS X Mail 10.3 \(3273\))
-Date: Mon, 8 May 2017 21:32:00 +0800
-References: <20170123030020.11473-1-a@...2181...>
-	<db8d39f3-a736-9d14-d5fe-6a079f13644b@...1856...>
-In-Reply-To: <db8d39f3-a736-9d14-d5fe-6a079f13644b@...1856...>
-Message-Id: <9F38D8A4-F3E1-4EB7-A440-E9A5B84A5E2A@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH v6] convert *_inline attributes to bool
+From: David Sommerseth <openvpn@...2080...>
+References: <20170505214624.11675-1-davids@...515...>
+	<CAKuzo_hOntpCXhSUJFZk3QbKiVMLn87_t+2YAYcirLcX0z17SQ@...278...>
+Message-ID: <2501c02c-8ab7-8826-628c-9385c1aa70b5@...2080...>
+Date: Mon, 8 May 2017 15:56:27 +0200
+MIME-Version: 1.0
+In-Reply-To: <CAKuzo_hOntpCXhSUJFZk3QbKiVMLn87_t+2YAYcirLcX0z17SQ@...278...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature";
+	boundary="GlwbCslDUL2NRbKsNRxjkAVUQ1AaNVO1B"
+Subject: Re: [Openvpn-devel] [PATCH 1/2] plugin: Export base64 encode and
+ decode functions
+Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,68 +19,178 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
+To: Selva Nair <selva.nair@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---Apple-Mail=_E7C00C3A-5CAE-4D85-9E48-178F13D6615B
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--GlwbCslDUL2NRbKsNRxjkAVUQ1AaNVO1B
+Content-Type: multipart/mixed; boundary="hv2d7kiT3BnUR6qfPm2p6BDevGBlU9Pe6";
+	protected-headers="v1"
+From: David Sommerseth <openvpn@...2080...>
+Reply-To: openvpn-devel@lists.sourceforge.net
+To: Selva Nair <selva.nair@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Message-ID: <2501c02c-8ab7-8826-628c-9385c1aa70b5@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH 1/2] plugin: Export base64 encode and
+	decode functions
+References: <20170505214624.11675-1-davids@...515...>
+	<CAKuzo_hOntpCXhSUJFZk3QbKiVMLn87_t+2YAYcirLcX0z17SQ@...278...>
+In-Reply-To: <CAKuzo_hOntpCXhSUJFZk3QbKiVMLn87_t+2YAYcirLcX0z17SQ@...278...>
+
+--hv2d7kiT3BnUR6qfPm2p6BDevGBlU9Pe6
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
-Hi,
-
-> On 25 Jan 2017, at 03:58, Steffan Karger <steffan@...1856...> wrote:
-
-[cut]
-
-> ACK, no more nagging from me, thanks!
+On 08/05/17 05:28, Selva Nair wrote:
+> Hi,
 >=20
-> Now someone needs to go and review "[PATCH (master)] reformatting: fix
-> style in crypto*.{c, h}"[1], because this patch needs that one ;)
+> Thanks for the patch exporting base64_encode/decode
 >=20
-> -Steffan
+> A quick question/comment though: quoting from your sample base64.c
 >=20
-> [1]
-> https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13854=
-.html
-> // <1484082098-29664-1-git-send-email-steffan@...1856...>
+> On Fri, May 5, 2017 at 5:46 PM, David Sommerseth <davids@...515...
+> <mailto:davids@...515...>> wrote:
+>=20
+>     +    /*  Which callbacks to intercept.  */
+>     +    ret->type_mask =3D
+>     +        OPENVPN_PLUGIN_MASK(OPENVPN_PLUGIN_TLS_VERIFY)
+>     +        |OPENVPN_PLUGIN_MASK(OPENVPN_PLUGIN_CLIENT_CONNECT_V2);
+>     +
+>     +    /* we don't need a plug-in context in this example, but OpenVPN
+>     expects "something" */
+>     +    ret->handle =3D calloc(1, 1);
+>=20
+>=20
+> While this looks right[*], in openvpn-plugin.h (lines 344-370) the
+> handle in the _return struct
+> is defined as openvpn_plugin_handle_t * where that type itself is void
+> *, making handle void **.=20
+> Also the comment accompanying  "struct openvpn_plugin_args_open_return"
+> indicates=20
+> *handle should be set to the pointer to the context but that cant be righ=
+t.
+>=20
+> The compiler will not warn about void * and void ** mismatches, so
+> ignoring the definition and
+> saving the context pointer in ret->handle works,  but the declaration of
+> handle in the return struct
+> should be simply openvpn_plugin_handle_t without the *.
+
+I had to dig into the history here, to refresh how these things came to
+be.  This really puzzled me a lot.  Both the v1 and v2 APIs declares:
+
+OPENVPN_PLUGIN_DEF openvpn_plugin_handle_t  \
+OPENVPN_PLUGIN_FUNC(openvpn_plugin_open_vX)
+
+Which basically renders to:
+
+ openvpn_plugin_handle_t openvpn_plugin_open_vX(...)
+
+Which then ends up as:
+
+ void * openvpn_plugin_open_vX(...)
+
+So these functions return a pointer.
+
+Similar to the _func_vX(...) and _close_v1(...) functions, they also use
+just `openvpn_plugin_handle_t handle` in the argument declaration, which
+means the argument is a pointer (void *).
+
+The v3 API is the only one ending up using
+`openvpn_plugin_handle_t * handle`.  And the same happens to the
+`return_list` member as well, which
+
+This truly looks like an oversight in the patch review.  So the core
+intention was to make it end up as 'void *'.  Instead the API was
+"copy-pasted" from the v2 API without thoroughly reviewing this well
+enough. And then we end up with `openvpn_plugin_handle_t *' which in
+effect is `void **`.
+
+On the other hand, I vaguely remember there were some issues in these
+areas when writing the v3 plug-in API back in late 2010.  But my memory
+is failing me now.  As we also didn't have the same traceability back
+then as we have today, finding the threads to recall why things.
+
+The traces I found are:
+
+- IRC reviews
+
+<https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg04664.=
+html>
+
+<https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg04689.=
+html>
+
+- Patches sent to the mailing list:
+  v2:
+<https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg04564.=
+html>
+  v1:
+<https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg04238.=
+html>
+My hunch now is that this is just an oversight.
+
+v3 is what got applied to the ML.
+
+(It is so good we've improved our track-ability since those earlier days.)
 
 
-Now that "[PATCH (master)] reformatting: fix style in crypto*.{c, h}=E2=80=
-=9D has been merged, maybe this patch here could be considered for inclusio=
-n? :)
+I think it is a bit too risky to actually fix the plug-in API to fix
+this.  So we need to use (openvpn_plugin_handle_t *) in the v3 API.
+
+I'll update the patch accordingly.
 
 
-Cheers,
+> The same comment also refers to *type_mask instead of type_mask.which
+> is not right either.
 
---
-Antonio Quartulli
+That is an error in the  documentation  That's an easy and safe fix.
+
+> Am I missing something?
+
+No, I don't think so.  You seem just to have caught a somewhat sloppy
+review which was done many years ago.
+
+> [*] By the way, this being an example, it may be best to show the
+> correct type by casting the
+> return value of calloc to (openvpn_plugin_handle_t)
+
+Yes, but shouldn't it be `(openvpn_plugin_handle_t *)` ?
+
+
+--=20
+kind regards,
+
+David Sommerseth
+OpenVPN Technologies, Inc
 
 
 
 
---Apple-Mail=_E7C00C3A-5CAE-4D85-9E48-178F13D6615B
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment;
-	filename=signature.asc
-Content-Type: application/pgp-signature;
-	name=signature.asc
-Content-Description: Message signed with OpenPGP
+--hv2d7kiT3BnUR6qfPm2p6BDevGBlU9Pe6--
+
+--GlwbCslDUL2NRbKsNRxjkAVUQ1AaNVO1B
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBCgAGBQJZEHNUAAoJENPhyAjNbKBQGlQP/iNxzCty6j497yASCAcpGL4s
-5RrqvGw13EWL2gTbKrn2ov+CO65MaXOeZ4VQ0GUKMUL6yUlGWBxeATPIjw1CPj7h
-5JpuPRQDRHJ462DTiOEB8a+g9yLKNF6B60BstuVT0ITV7Ld8AsyQYpT4hfKZJ2XC
-MSDbQkcZffXiAVGWvjXZfdSSttGP49Pqy95sX14kag1AAGtIaN7aR8R6qAklhC7M
-xJQ/L/WJJ8PTpQkUveX2QtvvD7b2KkxncekNOZPZzRFWykVL54HzUYxSkczGJ9ax
-In/U0e1e5FRG8+EllJZhx0e9/6cFLf18HTrsLPNLI+EBj6UG7ZdS+pViBPUN4uiM
-ANpbOUBWo1loWF223QscMVL1fovhX36aLNdVcGdBWvofBM1MlOZO5rkkgYAn87bG
-JOWIDA3fFe/U0O+Z19wztBs5l3jetnMTAzh7zcb5xTEeihI7H7M+3vDi4Wy9/lMX
-FLqhWuIsf0ccoaT76f/M4PyKF8to1S70adIwpkQBl4+D1+Uqow76wqPpr6nyfM8S
-PRTLQVsH33Z0jUjerJgnB2/Y2J4OmLi9IrJ5K1+TjUuAlKkCn4pudmSJQCO8PwSw
-QmXaNXUBgDeHQOWkf4Bmx6+LujkanvtnOVAC/lDEepriZwUI4bcUrpqFBMKC69uf
-t2RI32Qg8D5qxj4aWT6q
-=vEF0
+iQIcBAEBCAAGBQJZEHkXAAoJEIbPlEyWcf3yXdgP/1XeQzrtj/KoehGMI0DUKlk5
+5U0UaI38uZDhIggC5NJYHNoett1uZndmiRXffSs1UQbvWSXBji0P8Y42ZfqsRZ3k
+pEDpFfSGqrH7brTs3LLND2H7vhhOrD+RkzIkIStbdI7IZ5S8zsKSODJzuQMVOLrT
+BIzXQSZZfNnZNx8rvl+GFHe/qGAIWdJd+EdHGLOVvxzTrtubOTBYako1oLJO6/nk
+fnSSriahClXJYIVXcHTuXNlROXfquKDM694NNNalC/E/wF6PsjAeQTSUZ39SUyU3
+aFWTNSOWVtgOFpsOUSSfICND8xi5f0bK/IPS9+dNwa9gCQHgJSko8jGeJUfVc06o
+K+KrnG1eBGEauINNAqYFfqq0E8o5fjbjzR90BV1zLcvCCVGZ5+cvQndhGlMQAY73
+JAko26nlvZEGi0rs1JZ+GnrJz6eU+giuifZdAo36FuBL4roBk/JzwDPMBYSmGsZO
+GFzr7TaWjQkkAn1i5PMZgii14rulqjq8paz0Wui7AHKMNKuBIXmsWJ6nf2P7W9/z
+Cb9a6TxXawftlIj9/i27rzivyTD23BBT/+lWPzen2pcVUWAB5zPVrHZbJ+ZvZeWL
+5uYQi4xvW+4ynWsZZXnxnTqkHCSx0kHXSrSwI64rKw7+oB0qfm6qXc4iuoCTvJsV
+H9KTn+k7E8+Gdur+8JAZ
+=fQxy
 -----END PGP SIGNATURE-----
 
---Apple-Mail=_E7C00C3A-5CAE-4D85-9E48-178F13D6615B--
+--GlwbCslDUL2NRbKsNRxjkAVUQ1AaNVO1B--
 
