@@ -1,14 +1,12 @@
 MIME-Version: 1.0
-In-Reply-To: <2501c02c-8ab7-8826-628c-9385c1aa70b5@...2080...>
-References: <20170505214624.11675-1-davids@...515...>
-	<CAKuzo_hOntpCXhSUJFZk3QbKiVMLn87_t+2YAYcirLcX0z17SQ@...278...>
-	<2501c02c-8ab7-8826-628c-9385c1aa70b5@...2080...>
+In-Reply-To: <20170508141939.31224-1-davids@...515...>
+References: <20170508141939.31224-1-davids@...515...>
 From: Selva Nair <selva.nair@...277...>
-Date: Mon, 8 May 2017 10:32:03 -0400
-Message-ID: <CAKuzo_hrTp=ELrGpXbvd14HkXnoKpDntWO19+J2=zsgeXfqDBA@...278...>
-Content-Type: multipart/alternative; boundary=001a1149b46a835dba054f041b7e
-Subject: Re: [Openvpn-devel] [PATCH 1/2] plugin: Export base64 encode and
- decode functions
+Date: Mon, 8 May 2017 10:38:56 -0400
+Message-ID: <CAKuzo_jU+ufz5vkLKdzbf5637hF8bPRNrV3q4Ttq+5YQBqWGtA@...278...>
+Content-Type: multipart/alternative; boundary=94eb2c050a9222ca7a054f043407
+Subject: Re: [Openvpn-devel] [PATCH] plugin: Fix documentation typo for
+	type_mask
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,115 +15,98 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: David Sommerseth <davids@...515...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---001a1149b46a835dba054f041b7e
+--94eb2c050a9222ca7a054f043407
 Content-Type: text/plain; charset=UTF-8
 
 Hi,
 
-Thanks for the follow up with details. I also put some further thought into
-this overnight and totally agree with your observations. With one exception
-:)
+On Mon, May 8, 2017 at 10:19 AM, David Sommerseth <davids@...515...>
+wrote:
 
-On Mon, May 8, 2017 at 9:56 AM, David Sommerseth <openvpn@...2142...
-topphemmelig.net> wrote:
-
-> I think it is a bit too risky to actually fix the plug-in API to fix
-> this.  So we need to use (openvpn_plugin_handle_t *) in the v3 API.
+>   *
+>   * STRUCT MEMBERS
+>   *
+> - * *type_mask : The plug-in should set this value to the logical OR of
+> all script
+> + * type_mask  : The plug-in should set this value to the logical OR of
+> all script
+>   *              types which the plug-in wants to intercept.  For example,
+> if the
+>   *              script wants to intercept the client-connect and
+> client-disconnect
+>   *              script types:
+>   *
+> - *              *type_mask = OPENVPN_PLUGIN_MASK(OPENVPN_PL
+> UGIN_CLIENT_CONNECT)
+> + *              type_mask = OPENVPN_PLUGIN_MASK(OPENVPN_PL
+> UGIN_CLIENT_CONNECT)
+>   *                         | OPENVPN_PLUGIN_MASK(OPENVPN_PL
+> UGIN_CLIENT_DISCONNECT)
+>   *
+>   * *handle :    Pointer to a global plug-in context, created by the
+> plug-in.  This pointer
 >
 
-We can fix it by removing the * without breaking the API. And I think that
-is the right thing to do. In any case all working plugins that use v3 has
-to be using handle (an not *handle) to store the context pointer and then
-retrieving it as passed back in the func call.
 
-A code that sets *handle = context_ptr is clearly wrong and would segfault
-Any that sets handle = &context_ptr would get the wrong pointer back in
-the func call so would not function properly.
+Asking to set *handle to context_ptr is wrong too. One can't dereference
+handle. So it will have to be interpreted as set handle to pointer to
+pointer to the context but that is wrong.
 
-So both those usages can be assumed not to exist.
+But as discussed in the other thread I think we should also change the
+definition of handle in this struct.
 
-So the only concern would be plugins which set handle =
-(openvpn_plugin_handle_t *) context_ptr. That is only a cast issue and will
-continue to compile and "work" even if the struct is changed to have
-"openvpn_plugin_handle_t handle).
-
-
-> I'll update the patch accordingly.
->
-
-So I suggest to change the API to define handle in the return struct as
-openvpn_plugin_handle_t without the *.  It also avoids giving the wrong
-impression that one should set handle = &context_ptr in the _open_v3() call.
-
-> [*] By the way, this being an example, it may be best to show the
-> > correct type by casting the
-> > return value of calloc to (openvpn_plugin_handle_t)
->
-> Yes, but shouldn't it be `(openvpn_plugin_handle_t *)` ?
->
-
-I assumed the fix would be to change the struct.
+Reference to *handle in line 390 needs correction too (comment only --
+struct is fine).
 
 Thanks,
 
 Selva
 
---001a1149b46a835dba054f041b7e
+--94eb2c050a9222ca7a054f043407
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <div dir=3D"ltr"><div class=3D"gmail_extra">Hi,<br><br></div><div class=3D"=
-gmail_extra">Thanks for the follow up with details. I also put some further=
- thought into this overnight and totally agree with your observations. With=
- one exception :)<br><br></div><div class=3D"gmail_extra"><div class=3D"gma=
-il_quote">On Mon, May 8, 2017 at 9:56 AM, David Sommerseth <span dir=3D"ltr=
-">&lt;<a href=3D"mailto:openvpn@...2080..." target=3D"_blank">openvpn@...2267...=
-42...<wbr>topphemmelig.net</a>&gt;</span> wrote:<br><blockquote class=3D"gm=
-ail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,=
-204,204);padding-left:1ex"><div id=3D"m_1437483382290807461gmail-:4ho" clas=
-s=3D"m_1437483382290807461gmail-a3s m_1437483382290807461gmail-aXjCH m_1437=
-483382290807461gmail-m15be85928327a99a">I think it is a bit too risky to ac=
-tually fix the plug-in API to fix<br>
-this.=C2=A0 So we need to use (openvpn_plugin_handle_t *) in the v3 API.<br=
-></div></blockquote><br>We can fix it by removing the * without breaking th=
-e API. And I think that is the right thing to do. In any case all working p=
-lugins that use v3 has to be using handle (an not *handle) to store the con=
-text pointer and then retrieving it as passed back in the func call.<br><br=
->A code that sets *handle =3D context_ptr is clearly wrong and would segfau=
-lt<br>Any that sets handle =3D &amp;context_ptr would get the wrong pointer=
- back in=C2=A0 the func call so would not function properly.<br><div><br></=
-div><div>So both those usages can be assumed not to exist.<br><br></div><di=
-v>So the only concern would be plugins which set handle =3D (openvpn_plugin=
-_handle_t *) context_ptr. That is only a cast issue and will continue to co=
-mpile and &quot;work&quot; even if the struct is changed to have &quot;open=
-vpn_plugin_handle_t handle). <br></div><div><br></div><blockquote class=3D"=
-gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(20=
-4,204,204);padding-left:1ex"><div id=3D"m_1437483382290807461gmail-:4ho" cl=
-ass=3D"m_1437483382290807461gmail-a3s m_1437483382290807461gmail-aXjCH m_14=
-37483382290807461gmail-m15be85928327a99a">
-<br>
-I&#39;ll update the patch accordingly.<br>
-<span class=3D"m_1437483382290807461gmail-"></span></div></blockquote></div=
-><br></div><div class=3D"gmail_extra">So I suggest to change the API to def=
-ine handle in the return struct as openvpn_plugin_handle_t without the *.=
-=C2=A0 It also avoids giving the wrong impression that one should set handl=
-e =3D &amp;context_ptr in the _open_v3() call.<br><span class=3D"m_14374833=
-82290807461gmail-im"><br></span><blockquote style=3D"margin:0px 0px 0px 0.8=
-ex;border-left:1px solid rgb(204,204,204);padding-left:1ex" class=3D"gmail_=
-quote"><span class=3D"m_1437483382290807461gmail-im">
-&gt; [*] By the way, this being an example, it may be best to show the</spa=
-n><br><span class=3D"m_1437483382290807461gmail-im">
-&gt; correct type by casting the</span><br><span class=3D"m_143748338229080=
-7461gmail-im">
-&gt; return value of calloc to (openvpn_plugin_handle_t)</span><br><span cl=
-ass=3D"m_1437483382290807461gmail-im">
-</span><br><span class=3D"m_1437483382290807461gmail-im">
-</span>Yes, but shouldn&#39;t it be `(openvpn_plugin_handle_t *)` ?<br></bl=
-ockquote><div><br></div><div>I assumed the fix would be to change the struc=
-t. <br></div><br></div><div class=3D"gmail_extra">Thanks,<br><br></div><div=
- class=3D"gmail_extra">Selva<br></div></div>
+gmail_extra"><div class=3D"gmail_quote">On Mon, May 8, 2017 at 10:19 AM, Da=
+vid Sommerseth <span dir=3D"ltr">&lt;<a href=3D"mailto:davids@...515..." ta=
+rget=3D"_blank">davids@...515...</a>&gt;</span> wrote:<br><blockquote class=
+=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padd=
+ing-left:1ex"><div id=3D"m_6492574060144710172:4ij" class=3D"m_649257406014=
+4710172a3s m_6492574060144710172aXjCH m_6492574060144710172m15be86fdb64e5c1=
+9">=C2=A0 *<br>
+=C2=A0 * STRUCT MEMBERS<br>
+=C2=A0 *<br>
+- * *type_mask : The plug-in should set this value to the logical OR of all=
+ script<br>
++ * type_mask=C2=A0 : The plug-in should set this value to the logical OR o=
+f all script<br>
+=C2=A0 *=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 types which the pl=
+ug-in wants to intercept.=C2=A0 For example, if the<br>
+=C2=A0 *=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 script wants to in=
+tercept the client-connect and client-disconnect<br>
+=C2=A0 *=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 script types:<br>
+=C2=A0 *<br>
+- *=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 *type_mask =3D OPENVPN_=
+PLUGIN_MASK(OPENVPN_PL<wbr>UGIN_CLIENT_CONNECT)<br>
++ *=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 type_mask =3D OPENVPN_P=
+LUGIN_MASK(OPENVPN_PL<wbr>UGIN_CLIENT_CONNECT)<br>
+=C2=A0 *=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0| OPENVPN_PLUGIN_MASK(OPENVPN_PL<wbr>UGIN_CLIENT_DI=
+SCONNECT)<br>
+=C2=A0 *<br>
+=C2=A0 * *handle :=C2=A0 =C2=A0 Pointer to a global plug-in context, create=
+d by the plug-in.=C2=A0 This pointer</div></blockquote></div><br><br></div>=
+<div class=3D"gmail_extra">Asking to set *handle to context_ptr is wrong to=
+o. One can&#39;t dereference handle. So it will have to be interpreted as s=
+et handle to pointer to pointer to the context but that is wrong.<br><br></=
+div><div class=3D"gmail_extra">But as discussed in the other thread I think=
+ we should also change the definition of handle in this struct.<br><br></di=
+v><div class=3D"gmail_extra">Reference to *handle in line 390 needs correct=
+ion too (comment only -- struct is fine).<br><br></div><div class=3D"gmail_=
+extra">Thanks,<br><br></div><div class=3D"gmail_extra">Selva<br></div></div>
 
---001a1149b46a835dba054f041b7e--
+--94eb2c050a9222ca7a054f043407--
 
