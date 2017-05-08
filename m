@@ -1,14 +1,9 @@
-References: <1494154878-18403-1-git-send-email-steffan@...1856...>
-	<bfbabfcb-6b0f-5cc7-41f5-23da19bb9051@...2080...>
-From: Steffan Karger <steffan.karger@...1435...>
-Message-ID: <7fbb1933-c607-b62b-bf69-de60deceae19@...1435...>
-Date: Mon, 8 May 2017 17:36:51 +0200
+From: Farkas Levente <lfarkas@...193...>
+Message-ID: <15905c0a-8735-f447-f81a-750c834e46d7@...193...>
+Date: Mon, 8 May 2017 17:26:12 +0200
 MIME-Version: 1.0
-In-Reply-To: <bfbabfcb-6b0f-5cc7-41f5-23da19bb9051@...2080...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature";
-	boundary="FBIKufKbr1bcnSdRcViT1huplp4c4WOnD"
-Subject: Re: [Openvpn-devel] [PATCH] Fix memory leak in x509_verify_cert_ku()
+Content-Language: en-US
+Subject: [Openvpn-devel] regressions in openvpn 2.4.1
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,110 +12,62 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
---FBIKufKbr1bcnSdRcViT1huplp4c4WOnD
-Content-Type: multipart/mixed; boundary="o8KrJ25vn1BUmNVhkIGnOT7bjrOqTNBh4";
-	protected-headers="v1"
-From: Steffan Karger <steffan.karger@...1435...>
-To: openvpn-devel@lists.sourceforge.net
-Message-ID: <7fbb1933-c607-b62b-bf69-de60deceae19@...1435...>
-Subject: Re: [Openvpn-devel] [PATCH] Fix memory leak in x509_verify_cert_ku()
-References: <1494154878-18403-1-git-send-email-steffan@...1856...>
-	<bfbabfcb-6b0f-5cc7-41f5-23da19bb9051@...2080...>
-In-Reply-To: <bfbabfcb-6b0f-5cc7-41f5-23da19bb9051@...2080...>
+hi,
+after we upgrade our servers and client to 2.4.1 we detect many regressions.
 
---o8KrJ25vn1BUmNVhkIGnOT7bjrOqTNBh4
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
+- first was that with this the server no longer works and the server
+restart fail after upgrade. imho it's not a safe behavior. but it was
+easy to fix at least.
+script-security 2 system
 
-Hi,
+- then the new systemd unit files (ie openvpn-server and openvpn-client)
+not working. ie if i move all th config file from /etc/openvpn to
+/etc/openvpn/server then the server fail to start. and still not found
+any other solution then move back the config files. i open a bugzilla:
+https://bugzilla.redhat.com/show_bug.cgi?id=1446795
 
-On 08-05-17 16:54, David Sommerseth wrote:
-> On 07/05/17 13:01, Steffan Karger wrote:
-> --------------------------------------------------------------------
-> result_t
-> x509_verify_cert_ku(X509 *x509, const unsigned *const expected_ku,
->                     int expected_len)
-> {
->     ASN1_BIT_STRING *ku =3D X509_get_ext_d2i(x509, NID_key_usage,
->                                            NULL, NULL);
->=20
->     if (ku =3D=3D NULL)
->     {
->         msg(D_TLS_ERRORS, "Certificate does not have key "
->                            "usage extension");
->         return FAILURE;
->     }
->=20
->     if (expected_ku[0] =3D=3D OPENVPN_KU_REQUIRED)
->     {
->         /* Extension required, value checked by TLS library */
->         ASN1_BIT_STRING_free(ku);   /** new line **/
->         return SUCCESS;
->     }
->=20
->     unsigned nku =3D 0;
->     for (size_t i =3D 0; i < 8; i++)
-> --------------------------------------------------------------------
->=20
-> Wouldn't it make more sense to rather move the
-> `if (expected_ku[0] =3D=3D OPENVPN_KU_REQUIRED)` block above the
-> `ASN1_BIT_STRING *ku` declaration?   Like this:
->=20
->=20
-> --------------------------------------------------------------------
-> result_t
-> x509_verify_cert_ku(X509 *x509, const unsigned *const expected_ku,
->                     int expected_len)
-> {
->     if (expected_ku[0] =3D=3D OPENVPN_KU_REQUIRED)
->     {
->         /* Extension required, value checked by TLS library */
->         return SUCCESS;
->     }
->=20
->     ASN1_BIT_STRING *ku =3D X509_get_ext_d2i(x509, NID_key_usage,
->                                            NULL, NULL);
->     if (ku =3D=3D NULL)
->     {
->         msg(D_TLS_ERRORS, "Certificate does not have key "
->                            "usage extension");
->         return FAILURE;
->     }
->=20
->     unsigned nku =3D 0;
->     for (size_t i =3D 0; i < 8; i++)
-> --------------------------------------------------------------------
->=20
-> Or is the implicit check that ku !=3D NULL important when checking
-> OPENVPN_KU_REQUIRED ?
+- but the most annoying on is that if the server runs and a client
+already connected but reboot the client then in most case it's not able
+to reconnect. on the server log we see this error message:
 
-Exactly.  OPENVPN_KU_REQUIRED means that we need *some* ku, so we need
-to first get ku, and error out if it's NULL.  At the location in my
-patch, we know that it's non-null, so it's good.
+Sun May  7 23:46:57 2017 .. PUSH: client wants to negotiate cipher
+(NCP), but server has already generated data channel keys, ignoring
+client request
+Sun May  7 23:46:57 2017 ... AEAD Decrypt error: cipher final failed
+Sun May  7 23:47:02 2017 ... AEAD Decrypt error: cipher final failed
 
--Steffan
+but if i restart the server then everything working perfectly and a the
+clients can reconnect.
+relevant part of the server config:
 
+proto udp
+dev-type tun
+dev vpn-udp
 
---o8KrJ25vn1BUmNVhkIGnOT7bjrOqTNBh4--
+remote-cert-tls client
+cipher		AES-256-CBC
+auth		SHA256
+tls-cipher
+TLS-ECDHE-ECDSA-WITH-AES-128-GCM-SHA256:TLS-ECDHE-ECDSA-WITH-AES-256-GCM-SHA384:TLS-ECDHE-RSA-WITH-AES-128-GCM-SHA256:TLS-ECDHE-RSA-WITH-AES-256-GCM-SHA384:TLS-DHE-RSA-WITH-AES-256-CBC-SHA256:TLS-DHE-RSA-WITH-AES-256-CBC-SHA
 
---FBIKufKbr1bcnSdRcViT1huplp4c4WOnD
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+topology subnet
+client-to-client
+comp-lzo no
+persist-tun
+persist-key
+persist-local-ip
+keepalive 10 120
+push "comp-lzo no"
+push "persist-tun"
+push "persist-key"
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
+nobody has the same problems?
+thanks
 
-iQEcBAEBCAAGBQJZEJCXAAoJEEEwndWOY1w50/AIAIvdy1DzmpaXbik1BuciCddr
-0D2XXgoZZnu+6dJIukv/NzTlXzVZJ9yKrBGMm7GrEitMFZzn6r06zRC+LyhfbFua
-1d1jKx0wGSe91bKJMAglJ1Us0APxl6LOujM2wTm1GPhQU+OOxUKPOrD62QU0uCiO
-DDh4wUSztbew1zM++uzp4Rr6S+yAc7YNrwcVqA3VOM9PJcmYy5fkpbFpQgl5uQRC
-/P5JSy2h7w8P5SPSJebsETEe4ApzRbFcgXhQluqJoHZptFz4PqKqQDIarL5FghAI
-oCnDd8gZ3gxNqrPX7plq1efIl9BljZ1x5TmDsRse8sW7+k0m1KWWr6+80YDrqTE=
-=JKIL
------END PGP SIGNATURE-----
-
---FBIKufKbr1bcnSdRcViT1huplp4c4WOnD--
+-- 
+  Levente                               "Si vis pacem para bellum!"
 
