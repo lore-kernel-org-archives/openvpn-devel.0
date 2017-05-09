@@ -1,10 +1,10 @@
 From: David Sommerseth <davids@...515...>
-Date: Tue,  9 May 2017 22:04:54 +0200
-Message-Id: <20170509200454.22705-1-davids@...515...>
-In-Reply-To: <1494359069-13824-1-git-send-email-selva.nair@...277...>
-References: <1494359069-13824-1-git-send-email-selva.nair@...277...>
-Subject: Re: [Openvpn-devel] [PATCH applied] In auth-pam plugin clear the
-	password after use
+Date: Tue,  9 May 2017 22:16:39 +0200
+Message-Id: <20170509201639.31433-1-davids@...515...>
+In-Reply-To: <1494355368-20238-1-git-send-email-steffan.karger@...1435...>
+References: <1494355368-20238-1-git-send-email-steffan.karger@...1435...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Document tls-crypt security
+	considerations in man page
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,28 +15,35 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: selva.nair@...277...
+To: steffan.karger@...1435...
 Cc: openvpn-devel@lists.sourceforge.net
 
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA256
 
-ACK.  Looking good now.  Tests are good too, and the password wiping works
-as expected.
+Fixed a few typos during commit time, as pointed out by Selva.  The
+changes are:
+
+ -direction.  Assuming both initial negotation and renogatiations are at most
+ +direction.  Assuming both initial negotiation and renegotiations are at most
+
+ -2^16 (65536) packets (too be conservative), and (re)negotiations happen each
+ +2^16 (65536) packets (to be conservative), and (re)negotiations happen each
+
 
 Your patch has been applied to the following branches
 
-commit f403b9a2bf93f0fa35ee8316c2d219f48638a3e5  (master)
-commit 4702cf5a898f33693f4f705038e1b4f2568bde71  (release/2.4)
-Author: Selva Nair
-Date:   Tue May 9 15:44:29 2017 -0400
+commit 5806f66eb927a6a698c0f067f563d7bc2203a376  (master)
+commit 9444506e45df86e6c8fbabfbf4a97c538cd971f4  (release/2.4)
+Author: Steffan Karger
+Date:   Tue May 9 20:42:48 2017 +0200
 
-     In auth-pam plugin clear the password after use
+     Document tls-crypt security considerations in man page
 
-     Signed-off-by: Selva Nair <selva.nair@...277...>
-     Acked-by: David Sommerseth <davids@...515...>
-     Message-Id: <1494359069-13824-1-git-send-email-selva.nair@...277...>
-     URL: http://www.mail-archive.com/search?l=mid&q=1494359069-13824-1-git-send-email-selva.nair@...277...
+     Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+     Acked-by: Selva Nair <selva.nair@...277...>
+     Message-Id: <1494355368-20238-1-git-send-email-steffan.karger@...1435...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg14610.html
      Signed-off-by: David Sommerseth <davids@...515...>
 
 
@@ -48,18 +55,18 @@ David Sommerseth
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBCAAGBQJZEiDkAAoJEIbPlEyWcf3yqlgP/RtbbUqmtZ+4GOTSe7bZO4Hp
-s07SovaN+xAfNgEa7Gr1UfrfDVkmYjkshtlBTn7CP4arC/dRyI7nKZzbdzg75m9/
-krCIZgfELrrWKK4dnx+oe78LCxwM4aSA2F/bmKcf4gjbAPb+H/OK2J3OpbAy2/u8
-fVTvt+uq0yzDTHIP77iCAuyC+Ss5248D4/Tc2s8ahyqi06ozKzsM3+FY0nuzVRk6
-Qml8CyiwiBqCeO6RC4uVst/9vr9A5scyDb1te2tHuxU/Ue8AA7imxrF1OXqmCF0U
-I/0x16+dWLhPBfDp1ISPQ072uejJynTrWvRStckiC5uvVrY5CHxDC1IhwwUg9cml
-zYesKzNhXJfXp6BGTr7YOKSLrSOpSRLSmRDhzgCzQ4N2Ov877Yx46uNzfv5D+17D
-GHpZXgGyfqKs8NMTr9U+fcAgKTe6cxE/q/NAtdK83L4Xi6L3hkm3vksy7zUQM/xf
-mkF3fRkKew2gnx4AieGWNTXL3etzeb+yQUvkWwzScldgB2xJ9zNfyryJ2aa3lL7g
-M9clMooBOxCP51heWiVse/YvcuWb4SuqzKff57RH/MgQBWUELokTJSJqL40Eege5
-2m1RGBqo/u3HOjycrmVLm8nqMicAIR0QWBhfwrNQ4nnS6GBQv7Aj+2U4B5+871ch
-3AsqMrSR3hIAWonO5x42
-=23Zp
+iQIcBAEBCAAGBQJZEiOhAAoJEIbPlEyWcf3yy3kP/0SpNIeLUVRcGg/oHClYoM5y
+UvSU4oJ2KCLssliNC66RwoFg+q2A0+oAl1p6z2AIXt4VBgkRxm5VZsd9lMZX0JAs
+i6hV7EGoF1Fl0/9PYp6zNyNHspe2qQT3x1NNEHYHK91w3aUwXMlarJEfV2lmFoy9
+cRbsBzQSK4o71on9EsFnNxLDFJrr2gBqM80AYu1JsT3DeWIHRyC+QFWX8qqmC4YX
+80TSqWFkH90BA+qJypdaEizw0nTJWZjkFmRIN/Qa/0hXwtlUJToAbI9uL4W+oo5h
+ZLD8WFCeM6PtTGX411uN/uU1Ky/cME61/CNJyd7/qIMDKQcU2+a0kxC5XsPRlaXD
+d/WR06ruWFU34pLqwU6VJnwsKL841NQCASuYMDddzpULbYmuyLgLrkbQZ69Wgv+z
+t91LpQAjoMQ6wkXpXq6175smypjvIUVfktUP9g/UnPDVPIdJmdMIDkf4I9zVYOtP
+cW2DTOlnaBH7hEdwZCZmVSts/uu3b1eXowDlFTppO2914+g6tTs4aBzzYnkYdCcL
+XpA3+zPNuXhgspRQ/q47e8EsMraSrV8zIRu27B1CowjwnFrBe9Z6oOzI9SH23Nzg
+lkvvY1drp5EZm+Ewoomi5kLeUOb4SgDT+0ud2vsl3lFNUV5D9NQXQruVpScu+8sF
+UgFuGmnlmWm+S8lkSxrP
+=erjH
 -----END PGP SIGNATURE-----
 
