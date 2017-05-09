@@ -1,17 +1,15 @@
 References: <1494327032-3035-1-git-send-email-steffan.karger@...1435...>
 	<b2e1af67-2b5c-44ba-e8db-4d325d6e1e0b@...2080...>
-	<CAKuzo_iVrROZsuU+DhHfuu6m6jKutftqfqNB2WW5d4fV5YH7Pw@...278...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <d804c70f-62b4-e50a-aa69-323d3631a21f@...2080...>
-Date: Tue, 9 May 2017 20:23:25 +0200
+From: Steffan Karger <steffan.karger@...1435...>
+Message-ID: <8f79c477-9952-fea3-3f55-2a3d4541760a@...1435...>
+Date: Tue, 9 May 2017 20:28:17 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAKuzo_iVrROZsuU+DhHfuu6m6jKutftqfqNB2WW5d4fV5YH7Pw@...278...>
+In-Reply-To: <b2e1af67-2b5c-44ba-e8db-4d325d6e1e0b@...2080...>
 Content-Type: multipart/signed; micalg=pgp-sha256;
 	protocol="application/pgp-signature";
-	boundary="3xHSSHAd03kW0XggvdHLs1dHUq6MgmXW8"
+	boundary="TUcUle8eo0dQ52oDHe8ELvJkIWCL6JoDx"
 Subject: Re: [Openvpn-devel] [PATCH] Always clear username/password from
  memory on error
-Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,89 +18,101 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---3xHSSHAd03kW0XggvdHLs1dHUq6MgmXW8
-Content-Type: multipart/mixed; boundary="cFWWwmRCm07mmpqpMAiMGXrDhLk6QVelS";
+--TUcUle8eo0dQ52oDHe8ELvJkIWCL6JoDx
+Content-Type: multipart/mixed; boundary="rCelxVuFLCWwTQXRaMNVBt6p3qupRGcLo";
 	protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-Reply-To: openvpn-devel@lists.sourceforge.net
-To: Selva Nair <selva.nair@...277...>, "openvpn-devel@lists.sourceforge.net"
-	<openvpn-devel@lists.sourceforge.net>
-Message-ID: <d804c70f-62b4-e50a-aa69-323d3631a21f@...2080...>
+From: Steffan Karger <steffan.karger@...1435...>
+To: openvpn-devel@lists.sourceforge.net
+Message-ID: <8f79c477-9952-fea3-3f55-2a3d4541760a@...1435...>
 Subject: Re: [Openvpn-devel] [PATCH] Always clear username/password from
 	memory on error
 References: <1494327032-3035-1-git-send-email-steffan.karger@...1435...>
 	<b2e1af67-2b5c-44ba-e8db-4d325d6e1e0b@...2080...>
-	<CAKuzo_iVrROZsuU+DhHfuu6m6jKutftqfqNB2WW5d4fV5YH7Pw@...278...>
-In-Reply-To: <CAKuzo_iVrROZsuU+DhHfuu6m6jKutftqfqNB2WW5d4fV5YH7Pw@...278...>
+In-Reply-To: <b2e1af67-2b5c-44ba-e8db-4d325d6e1e0b@...2080...>
 
---cFWWwmRCm07mmpqpMAiMGXrDhLk6QVelS
-Content-Language: en-GB
+--rCelxVuFLCWwTQXRaMNVBt6p3qupRGcLo
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
-On 09/05/17 20:08, Selva Nair wrote:
-> Hi,
+On 09-05-17 19:47, David Sommerseth wrote:
+> On 09/05/17 12:50, Steffan Karger wrote:
+>> This issue was found by Quarkslab during the OSTIF-founded security audit
+>> (issue 5.4), we agree with their analysis:
+>>
+>> "There=E2=80=99s a special case where the client username and password a=
+re not
+>> erased when the server is launched without an external script or
+>> authentication plugin. While being invalid, this configuration does not
+>> raise any error. If the client transmits its credentials and the session
+>> is not established (for instance if the certificates chain has not been
+>> verified), these credentials are not erased from memory by the server.
+>>
+>> The likelihood of an occurrence of this issue in real life is exceptiona=
+lly low since an attacker
+>> needs elevated privileges on the server to exploit this kind of informat=
+ion leak. The severity of
+>> this issue is rated as very low."
+>>
+>>
+>> Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+>> ---
+>>  src/openvpn/ssl.c | 1 +
+>>  1 file changed, 1 insertion(+)
+>>
+>> diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+>> index 1033e58..abf5786 100644
+>> --- a/src/openvpn/ssl.c
+>> +++ b/src/openvpn/ssl.c
+>> @@ -2661,6 +2661,7 @@ key_method_2_read(struct buffer *buf, struct tls_m=
+ulti *multi, struct tls_sessio
+>>=20=20
+>>  error:
+>>      secure_memzero(ks->key_src, sizeof(*ks->key_src));
+>> +    secure_memzero(up, sizeof(*up));
+>>      buf_clear(buf);
+>>      gc_free(&gc);
+>>      return false;
+>>
 >=20
-> On Tue, May 9, 2017 at 1:47 PM, David Sommerseth
-> <openvpn@...2080...
-> <mailto:openvpn@...2080...>> wrote:
+> Feature-ACK, but code-NAK.
 >=20
->     That said, I think we should fix secure_memzero() to just return if t=
-he
->     input pointer is NULL.  And even though most compilers do initialize
->     variables, I think it's good to be defensive here and initialize
->     `up` too.
+> In key_method_2_read() there are a few places where `goto error;` can be
+> used before `up` is allocated.  This will make secure_memzero()
+> segfault, as it does not handle NULL pointers.  Or even worse (if the
+> compiler let this pointer point at a random address), which leads to an
+> unpredictable behaviour.
 >=20
+> That said, I think we should fix secure_memzero() to just return if the
+> input pointer is NULL.  And even though most compilers do initialize
+> variables, I think it's good to be defensive here and initialize `up` too.
 >=20
-> No, compiler will not initialize such non-static local variables. In
-> fact in this case gcc will warn (with -Wall) that "up" may be used
-> uninitalized because of code paths where "up" is not allocated as you
-> pointed out.
->=20
-> In that sense its better not to initialize such variables as
-> initialization can hide errors.
 
-I agree that getting the warning is useful for developers.  But I've
-just seen way too many packagers ignoring these warnings (or even
-removing -Wall) - and then ship binaries with undefined behaviour.  I
-don't like that scenario at all.
+Oof, good catch.  I'll send a v2 in a minute.
 
-
---=20
-kind regards,
-
-David Sommerseth
-OpenVPN Technologies, Inc
+-Steffan
 
 
 
---cFWWwmRCm07mmpqpMAiMGXrDhLk6QVelS--
+--rCelxVuFLCWwTQXRaMNVBt6p3qupRGcLo--
 
---3xHSSHAd03kW0XggvdHLs1dHUq6MgmXW8
+--TUcUle8eo0dQ52oDHe8ELvJkIWCL6JoDx
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
+Version: GnuPG v2
 
-iQIcBAEBCAAGBQJZEgkdAAoJEIbPlEyWcf3yFqUQAJ/3K046l8+Y4kmaHtmU3TtK
-tBa5LF4JJD8M8sc0TwYjaulNSEq1eGEL3EM2oHtD7aeSujly4S5kzH3cRrT4zvFe
-h7dCYl2H/+/TXnZdTUGEyY7OVM2jKzfHwpCAw6ooSoRFHvzQhtVp8TACIwztJBNA
-J5LH030fgmyP8TRrjbPkzOVEWjQcCMBVtz7U3Kj/6aq0fZWc2v9nKl8/e1W6Kd/k
-7crClwFkndN/Qeq9/n5WGdWXuD+7KdYrVkLOrdvnTSQLlJNZzxQ9iv8JebIjBolQ
-nIzQcRTbTWgSWG5EILsu22O99lz4X0yCZaC46kP2w7Ax4a9faWZ91wKDh4TbJPIE
-AZe0qk6Dwc3k3tbM83KGG6OLVGqdoIf12XOMkG+13Wo7CjK+vYWWtjITcdy2tqnB
-j5VUyaFzG3WShJ3+L9bhP+BGxdPyGJ/H9n0OgqTLyVFV2xhTE9DQ06qCTvp8oAks
-+Fjfckv4WfCpXQkc+NPkSdx1IahRMocjnCKke3xyJiPpByYR7Zu/E/Vh9Qktt/V6
-gFnZKEo++dkLuCTAIScfg9aff6Q5DEPZy/cAIiogn56gUhNnu+O4J4/QdTuBCIQi
-TC0woRE7MSj+3o+VC1pTnJw48g1KtzUz0ol4qx3N5SOzLu08ncyKFlSHjj7qOmHc
-U6y8mXbzo7PoUbMz62Nc
-=0n+0
+iQEcBAEBCAAGBQJZEgpEAAoJEEEwndWOY1w5Y50H/Rwwve4BDHFdRNV9sGFjIk5F
+/m36MU4gsfsxm+26YB5M6cQ956TEUSgZscIzwm6dlciwP2NJpFltCC5shyaeLFBk
+ooeCiaYaOG+yVLxXNPyn1DcdG90LH7W4avIKiUyUP1CiJtTSA5tsICT7hRUmt4wj
+aLzAplahrRm22uJI7R5SAWrS7SOgirshr1W/39ilczYJ9tscpopS9Re440cmEmtz
+1KEJbjNeum8NdKbavcK/Xqt75FdjtgSjeuvl4oDeGQWVAhXO1O1J+xf3ORo4Aj11
+MOohQwemdCJ9F62LYuOQUQpxd1dObgn1xUngrxT+7C5PsWGl7N6h8R/7NI9BE10=
+=Dz2q
 -----END PGP SIGNATURE-----
 
---3xHSSHAd03kW0XggvdHLs1dHUq6MgmXW8--
+--TUcUle8eo0dQ52oDHe8ELvJkIWCL6JoDx--
 
