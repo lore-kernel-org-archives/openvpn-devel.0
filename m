@@ -1,10 +1,10 @@
-From: David Sommerseth <davids@...515...>
-Date: Tue,  9 May 2017 21:41:34 +0200
-Message-Id: <20170509194134.30077-1-davids@...515...>
-In-Reply-To: <1494354764-19354-1-git-send-email-steffan.karger@...1435...>
-References: <1494354764-19354-1-git-send-email-steffan.karger@...1435...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Always clear username/password
-	from memory on error
+From: selva.nair@...277...
+Date: Tue,  9 May 2017 15:44:29 -0400
+Message-Id: <1494359069-13824-1-git-send-email-selva.nair@...277...>
+In-Reply-To: <1494341557-11721-1-git-send-email-selva.nair@...277...>
+References: <1494341557-11721-1-git-send-email-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH 1/2 v3] In auth-pam plugin clear the
+	password after use
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,50 +15,127 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: steffan.karger@...1435...
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA256
+From: Selva Nair <selva.nair@...277...>
 
-ACK.  This covers the concerns raised and avoids unexpected behaviours.
+v2: Change the plugin open to use v3 API so that secure_memzero()
+    exported from OpenVPN can be used.
+v3: Relaxe API compatibility check: struct version 4 or higher
+    will have secure_memzero exported.
 
-Your patch has been applied to the following branches
+Note: context is cast as (openvpn_plugin_handle_t *) for consistency
+with the current plugin header. If/when the header is fixed, change
+this cast as well.
 
-commit 2b60198e08a9d7e8de9beeb65a587ee34107efe8  (master)
-commit 47d80b95646a3cf62c9cd46ab589c442124c0474  (release/2.4)
-Author: Steffan Karger
-Date:   Tue May 9 20:32:44 2017 +0200
+Signed-off-by: Selva Nair <selva.nair@...277...>
+---
+ src/plugins/auth-pam/auth-pam.c       | 31 ++++++++++++++++++++++++++-----
+ src/plugins/auth-pam/auth-pam.exports |  2 +-
+ 2 files changed, 27 insertions(+), 6 deletions(-)
 
-     Always clear username/password from memory on error
+diff --git a/src/plugins/auth-pam/auth-pam.c b/src/plugins/auth-pam/auth-pam.c
+index d3e2c89..54471a3 100644
+--- a/src/plugins/auth-pam/auth-pam.c
++++ b/src/plugins/auth-pam/auth-pam.c
+@@ -63,6 +63,9 @@
+ #define RESPONSE_VERIFY_SUCCEEDED 12
+ #define RESPONSE_VERIFY_FAILED    13
+ 
++/* Pointers to functions exported from openvpn */
++static plugin_secure_memzero_t plugin_secure_memzero = NULL;
++
+ /*
+  * Plugin state, used by foreground
+  */
+@@ -274,8 +277,10 @@ name_value_match(const char *query, const char *match)
+     return strncasecmp(match, query, strlen(match)) == 0;
+ }
+ 
+-OPENVPN_EXPORT openvpn_plugin_handle_t
+-openvpn_plugin_open_v1(unsigned int *type_mask, const char *argv[], const char *envp[])
++OPENVPN_EXPORT int
++openvpn_plugin_open_v3(const int v3structver,
++                       struct openvpn_plugin_args_open_in const *args,
++                       struct openvpn_plugin_args_open_return *ret)
+ {
+     pid_t pid;
+     int fd[2];
+@@ -285,6 +290,16 @@ openvpn_plugin_open_v1(unsigned int *type_mask, const char *argv[], const char *
+ 
+     const int base_parms = 2;
+ 
++    const char **argv = args->argv;
++    const char **envp = args->envp;
++
++    /* Check API compatibility -- struct version 4 or higher needed */
++    if (v3structver < 4)
++    {
++        fprintf(stderr, "AUTH-PAM: This plugin is incompatible with the running version of OpenVPN\n");
++        return OPENVPN_PLUGIN_FUNC_ERROR;
++    }
++
+     /*
+      * Allocate our context
+      */
+@@ -298,7 +313,10 @@ openvpn_plugin_open_v1(unsigned int *type_mask, const char *argv[], const char *
+     /*
+      * Intercept the --auth-user-pass-verify callback.
+      */
+-    *type_mask = OPENVPN_PLUGIN_MASK(OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY);
++    ret->type_mask = OPENVPN_PLUGIN_MASK(OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY);
++
++    /* Save global pointers to functions exported from openvpn */
++    plugin_secure_memzero = args->callbacks->plugin_secure_memzero;
+ 
+     /*
+      * Make sure we have two string arguments: the first is the .so name,
+@@ -386,7 +404,8 @@ openvpn_plugin_open_v1(unsigned int *type_mask, const char *argv[], const char *
+         if (status == RESPONSE_INIT_SUCCEEDED)
+         {
+             context->foreground_fd = fd[0];
+-            return (openvpn_plugin_handle_t) context;
++            ret->handle = (openvpn_plugin_handle_t *) context;
++            return OPENVPN_PLUGIN_FUNC_SUCCESS;
+         }
+     }
+     else
+@@ -420,7 +439,7 @@ error:
+     {
+         free(context);
+     }
+-    return NULL;
++    return OPENVPN_PLUGIN_FUNC_ERROR;
+ }
+ 
+ OPENVPN_EXPORT int
+@@ -785,6 +804,7 @@ pam_server(int fd, const char *service, int verb, const struct name_value_list *
+                         goto done;
+                     }
+                 }
++                plugin_secure_memzero(up.password, sizeof(up.password));
+                 break;
+ 
+             case COMMAND_EXIT:
+@@ -802,6 +822,7 @@ pam_server(int fd, const char *service, int verb, const struct name_value_list *
+     }
+ done:
+ 
++    plugin_secure_memzero(up.password, sizeof(up.password));
+ #ifdef USE_PAM_DLOPEN
+     dlclose_pam();
+ #endif
+diff --git a/src/plugins/auth-pam/auth-pam.exports b/src/plugins/auth-pam/auth-pam.exports
+index b07937c..597e33f 100644
+--- a/src/plugins/auth-pam/auth-pam.exports
++++ b/src/plugins/auth-pam/auth-pam.exports
+@@ -1,4 +1,4 @@
+-openvpn_plugin_open_v1
++openvpn_plugin_open_v3
+ openvpn_plugin_func_v1
+ openvpn_plugin_close_v1
+ openvpn_plugin_abort_v1
+-- 
+2.1.4
 
-     Signed-off-by: Steffan Karger <steffan.karger@...1435...>
-     Acked-by: David Sommerseth <davids@...515...>
-     Message-Id: <1494354764-19354-1-git-send-email-steffan.karger@...1435...>
-     URL: http://www.mail-archive.com/search?l=mid&q=1494354764-19354-1-git-send-email-steffan.karger@...1435...
-     Signed-off-by: David Sommerseth <davids@...515...>
-
-
-- --
-kind regards,
-
-David Sommerseth
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBCAAGBQJZEhtsAAoJEIbPlEyWcf3yV+oP/i+1q3oISx2W/O6cBiQBRvJ8
-oCzOY3P/VeFNJK2Z4KSG+PDDw5qt0/3AsrI9BHGhYAE98LeR7lcRkRCN/F8ta5KP
-/OYRHX1mh9X3tretR9GhnH6Zeab0K33Kqd+v8saxujlPz2uqnXnlAkpecgHZcdGe
-PmldC/CSJbcrGGIBgy7rWdhOytpWlQmb+DA/+aIOvfEGFT0aGwWtKSokZG+JNdPa
-OJBrj0zPBSDly/z1qirnFgmL2AYQtn1/1BO9ntUtUl8TrfT4cTaMnxMR0doGA/6o
-NbPGJuTOa6Vto2HNwyl2AC2MerJ5kvqXgRnifqFRGdB63/fh1HMuuQOf0ch+cOAz
-sZ6UboFLZjINicfO8nkap4ouDL6eynho2LWV5Qhfqq19qezif8KVMv+TtPepZMzK
-Emtva0fpOAltsVg/p/QzIp6XnmWcyYo0qmYN1YEFmMfCVB1kfUoglO3tghpUTVMv
-ZINB0AnNIpemvJ9sX8thqCyJcdlR69Sx1JcJz1RuAdzzrNtz7Spwm43PRWEsBSHO
-D0i5jb1KxGcRxLHwbKrfwVuPhP1D1elWYFphyKmY4qIB0BwLcysEh/QUZypKbrOw
-6FGSLAJaMI6TL+ezB9YBrmKvLoQMx4TtqQDryXiR/zL5mGzjrmMzHpORBMXe4VlZ
-wxD9ALn6SSTN3Zydipjb
-=AID1
------END PGP SIGNATURE-----
 
