@@ -1,11 +1,11 @@
 From: Steffan Karger <steffan.karger@...1435...>
-Date: Tue, 9 May 2017 20:32:44 +0200
-Message-ID: <1494354764-19354-1-git-send-email-steffan.karger@...1435...>
-In-Reply-To: <8f79c477-9952-fea3-3f55-2a3d4541760a@...1435...>
-References: <8f79c477-9952-fea3-3f55-2a3d4541760a@...1435...>
+Date: Tue, 9 May 2017 20:42:48 +0200
+Message-ID: <1494355368-20238-1-git-send-email-steffan.karger@...1435...>
+In-Reply-To: <1664a9e5-12f1-116f-5515-deec2d8392dc@...1856...>
+References: <1664a9e5-12f1-116f-5515-deec2d8392dc@...1856...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] Always clear username/password from
-	memory on error
+Subject: [Openvpn-devel] [PATCH v2] Document tls-crypt security
+	considerations in man page
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,60 +14,65 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This issue was found by Quarkslab during the OSTIF-founded security audit
-(issue 5.4), we are with their analysis:
+The tls-crypt commit message contained an elaborate discussion on the
+function's security properties.  This commit adds the gist of that
+discussion, "rotate keys periodically" to the man page.
 
-"There=E2=80=99s a special case where the client username and password are =
-not
-erased when the server is launched without an external script or
-authentication plugin. While being invalid, this configuration does not
-raise any error. If the client transmits its credentials and the session
-is not established (for instance if the certificates chain has not been
-verified), these credentials are not erased from memory by the server.
+(The 'real' solution will follow later: add support for per-client
+tls-crypt keys.  That will make tls-crypt useful for VPN providers too.)
 
-The likelihood of an occurrence of this issue in real life is
-exceptionally low since an attacker needs elevated privileges on the
-server to exploit this kind of information leak. The severity of this
-issue is rated as very low."
+Note to non-crypto-geek reviewers: please verify that this text is clear
+enough to explain you when you need to replace tls-crypt keys.
+
+Note to crypto-geek reviewers: please check the numbers - see the
+--tls-crypt commit message (c6e24fa3) for details.
 
 Signed-off-by: Steffan Karger <steffan.karger@...1435...>
 ---
-v2: only clear up if it is non-null
+v2: clarify that 2^16 packets is a conservative estimate, use plural year*s*
 
- src/openvpn/ssl.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ doc/openvpn.8 | 23 +++++++++++++++++++++++
+ 1 file changed, 23 insertions(+)
 
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 4fca283..21c9d6f 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -2492,7 +2492,7 @@ key_method_2_read(struct buffer *buf, struct tls_mult=
-i *multi, struct tls_sessio
-=20
-     struct gc_arena gc =3D gc_new();
-     char *options;
--    struct user_pass *up;
-+    struct user_pass *up =3D NULL;
-=20
-     /* allocate temporary objects */
-     ALLOC_ARRAY_CLEAR_GC(options, char, TLS_OPTIONS_LEN, &gc);
-@@ -2654,6 +2654,10 @@ key_method_2_read(struct buffer *buf, struct tls_mul=
-ti *multi, struct tls_sessio
-=20
- error:
-     secure_memzero(ks->key_src, sizeof(*ks->key_src));
-+    if (up)
-+    {
-+        secure_memzero(up, sizeof(*up));
-+    }
-     buf_clear(buf);
-     gc_free(&gc);
-     return false;
---=20
+diff --git a/doc/openvpn.8 b/doc/openvpn.8
+index c3248fd..06f8c66 100644
+--- a/doc/openvpn.8
++++ b/doc/openvpn.8
+@@ -5090,6 +5090,29 @@ In contrast to
+ .B \-\-tls\-crypt
+ does *not* require the user to set
+ .B \-\-key\-direction\fR.
++
++.B Security Considerations
++
++All peers use the same
++.B \-\-tls-crypt
++pre-shared group key to authenticate and encrypt control channel messages.  To
++ensure that IV collisions remain unlikely, this key should not be used to
++encrypt more than 2^48 client-to-server or 2^48 server-to-client control
++channel messages.  A typical initial negotiation is about 10 packets in each
++direction.  Assuming both initial negotation and renogatiations are at most
++2^16 (65536) packets (too be conservative), and (re)negotiations happen each
++minute for each user (24/7), this limits the tls\-crypt key lifetime to 8171
++years divided by the number of users.  So a setup with 1000 users should rotate
++the key at least once each eight years.  (And a setup with 8000 users each
++year.)
++
++If IV collisions were to occur, this could result in the security of
++.B \-\-tls\-crypt
++degrading to the same security as using
++.B \-\-tls\-auth\fR.
++That is, the control channel still benefits from the extra protection against
++active man-in-the-middle-attacks and DoS attacks, but may no longer offer
++extra privacy and post-quantum security on top of what TLS itself offers.
+ .\"*********************************************************
+ .TP
+ .B \-\-askpass [file]
+-- 
 2.7.4
 
 
