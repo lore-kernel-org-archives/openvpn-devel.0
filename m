@@ -1,10 +1,8 @@
-From: selva.nair@...277...
-Date: Tue,  9 May 2017 10:52:37 -0400
-Message-Id: <1494341557-11721-1-git-send-email-selva.nair@...277...>
-In-Reply-To: <1494008642-7239-1-git-send-email-selva.nair@...277...>
-References: <1494008642-7239-1-git-send-email-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH 1/2 v2] In auth-pam plugin clear the
-	password after use
+From: Antonio Quartulli <a@...2181...>
+Date: Tue,  9 May 2017 23:24:22 +0800
+Message-Id: <20170509152422.12606-1-a@...2181...>
+Subject: [Openvpn-devel] [PATCH release/2.3] fix redirect-gateway behaviour
+	when an IPv4 default route does not exist
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,124 +14,115 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
+Cc: Antonio Quartulli <a@...2181...>
 
-From: Selva Nair <selva.nair@...277...>
+When no IPv4 default route exists, the "redirect-gateway" routine
+aborts even if the sub-option "local" was specified or if we are
+connecting to the remote host using IPv6.
 
-v2: Change the plugin open to use v3 API so that
-  openvpn_secure_memzero() exported from OpenVPN can be used.
+This is not expected because in either case OpenVPN should not
+bother checking the existence of the default route as it is not
+required at all.
 
-Note: context is cast as (openvpn_plugin_handle_t *) for consistency
-with the current plugin header. If/when the header is fixed, change
-this cast as well.
+Therefore, skip the IPv4 default route check when "local" is
+specified or we are connecting to an IPv6 remote host.
 
-Signed-off-by: Selva Nair <selva.nair@...277...>
+Signed-off-by: Antonio Quartulli <a@...2181...>
 ---
- src/plugins/auth-pam/auth-pam.c       | 31 ++++++++++++++++++++++++++-----
- src/plugins/auth-pam/auth-pam.exports |  2 +-
- 2 files changed, 27 insertions(+), 6 deletions(-)
 
-diff --git a/src/plugins/auth-pam/auth-pam.c b/src/plugins/auth-pam/auth-pam.c
-index d3e2c89..f3566c7 100644
---- a/src/plugins/auth-pam/auth-pam.c
-+++ b/src/plugins/auth-pam/auth-pam.c
-@@ -63,6 +63,9 @@
- #define RESPONSE_VERIFY_SUCCEEDED 12
- #define RESPONSE_VERIFY_FAILED    13
+Backport of the same patch from 2.4 to 2.3.
+Compiled tested only.
+
+ src/openvpn/route.c | 50 ++++++++++++++++++++++++++++++++------------------
+ 1 file changed, 32 insertions(+), 18 deletions(-)
+
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index 74f0a011..4ae0d6a4 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -840,11 +840,18 @@ redirect_default_route_to_vpn (struct route_list *rl, const struct tuntap *tt, u
  
-+/* Pointers to functions exported from openvpn */
-+static plugin_secure_memzero_t plugin_secure_memzero = NULL;
-+
- /*
-  * Plugin state, used by foreground
-  */
-@@ -274,8 +277,10 @@ name_value_match(const char *query, const char *match)
-     return strncasecmp(match, query, strlen(match)) == 0;
- }
- 
--OPENVPN_EXPORT openvpn_plugin_handle_t
--openvpn_plugin_open_v1(unsigned int *type_mask, const char *argv[], const char *envp[])
-+OPENVPN_EXPORT int
-+openvpn_plugin_open_v3(const int v3structver,
-+                       struct openvpn_plugin_args_open_in const *args,
-+                       struct openvpn_plugin_args_open_return *ret)
- {
-     pid_t pid;
-     int fd[2];
-@@ -285,6 +290,16 @@ openvpn_plugin_open_v1(unsigned int *type_mask, const char *argv[], const char *
- 
-     const int base_parms = 2;
- 
-+    const char **argv = args->argv;
-+    const char **envp = args->envp;
-+
-+    /* Check API compatibility */
-+    if (v3structver != OPENVPN_PLUGINv3_STRUCTVER)
-+    {
-+        fprintf(stderr, "AUTH-PAM: This plugin is incompatible with the running version of OpenVPN\n");
-+        return OPENVPN_PLUGIN_FUNC_ERROR;
-+    }
-+
-     /*
-      * Allocate our context
-      */
-@@ -298,7 +313,10 @@ openvpn_plugin_open_v1(unsigned int *type_mask, const char *argv[], const char *
-     /*
-      * Intercept the --auth-user-pass-verify callback.
-      */
--    *type_mask = OPENVPN_PLUGIN_MASK(OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY);
-+    ret->type_mask = OPENVPN_PLUGIN_MASK(OPENVPN_PLUGIN_AUTH_USER_PASS_VERIFY);
-+
-+    /* Save global pointers to functions exported from openvpn */
-+    plugin_secure_memzero = args->callbacks->plugin_secure_memzero;
- 
-     /*
-      * Make sure we have two string arguments: the first is the .so name,
-@@ -386,7 +404,8 @@ openvpn_plugin_open_v1(unsigned int *type_mask, const char *argv[], const char *
-         if (status == RESPONSE_INIT_SUCCEEDED)
-         {
-             context->foreground_fd = fd[0];
--            return (openvpn_plugin_handle_t) context;
-+            ret->handle = (openvpn_plugin_handle_t *) context;
-+            return OPENVPN_PLUGIN_FUNC_SUCCESS;
-         }
-     }
-     else
-@@ -420,7 +439,7 @@ error:
+   if ( rl && rl->flags & RG_ENABLE )
      {
-         free(context);
-     }
--    return NULL;
-+    return OPENVPN_PLUGIN_FUNC_ERROR;
- }
++      bool local = BOOL_CAST(rl->flags & RG_LOCAL);
+       if (!(rl->spec.flags & RTSA_REMOTE_ENDPOINT) && (rl->flags & RG_REROUTE_GW))
+ 	{
+ 	  msg (M_WARN, "%s VPN gateway parameter (--route-gateway or --ifconfig) is missing", err);
+ 	}
+-      else if (!(rl->rgi.flags & RGI_ADDR_DEFINED))
++      /*
++       * check if a default route is defined, unless:
++       * - we are connecting to a remote host in our network
++       * - we are connecting to a non-IPv4 remote host (i.e. we use IPv6)
++       */
++      else if (!(rl->rgi.flags & RGI_ADDR_DEFINED) && !local
++	       && (rl->spec.remote_host != IPV4_INVALID_ADDR))
+ 	{
+ 	  msg (M_WARN, "%s Cannot read current default gateway from system", err);
+ 	}
+@@ -854,7 +861,6 @@ redirect_default_route_to_vpn (struct route_list *rl, const struct tuntap *tt, u
+ 	}
+       else
+ 	{
+-	  bool local = BOOL_CAST(rl->flags & RG_LOCAL);
+ 	  if (rl->flags & RG_AUTO_LOCAL) {
+ 	    const int tla = rl->spec.remote_host_local;
+ 	    if (tla == TLA_NONLOCAL)
+@@ -914,14 +920,18 @@ redirect_default_route_to_vpn (struct route_list *rl, const struct tuntap *tt, u
+ 		}
+ 	      else
+ 		{
+-		  /* delete default route */
+-		  del_route3 (0,
+-			      0,
+-			      rl->rgi.gateway.addr,
+-			      tt,
+-			      flags | ROUTE_REF_GW,
+-			      &rl->rgi,
+-			      es);
++		  /* don't try to remove the def route if it does not exist */
++		  if (rl->rgi.flags & RGI_ADDR_DEFINED)
++		  {
++		      /* delete default route */
++		      del_route3 (0,
++				  0,
++				  rl->rgi.gateway.addr,
++				  tt,
++				  flags | ROUTE_REF_GW,
++				  &rl->rgi,
++				  es);
++		  }
  
- OPENVPN_EXPORT int
-@@ -785,6 +804,7 @@ pam_server(int fd, const char *service, int verb, const struct name_value_list *
-                         goto done;
-                     }
-                 }
-+                plugin_secure_memzero(up.password, sizeof(up.password));
-                 break;
+ 		  /* add new default route */
+ 		  add_route3 (0,
+@@ -994,14 +1004,18 @@ undo_redirect_default_route_to_vpn (struct route_list *rl, const struct tuntap *
+ 			  &rl->rgi,
+ 			  es);
  
-             case COMMAND_EXIT:
-@@ -802,6 +822,7 @@ pam_server(int fd, const char *service, int verb, const struct name_value_list *
-     }
- done:
+-	      /* restore original default route */
+-	      add_route3 (0,
+-			  0,
+-			  rl->rgi.gateway.addr,
+-			  tt,
+-			  flags | ROUTE_REF_GW,
+-			  &rl->rgi,
+-			  es);
++	      /* restore original default route if there was any */
++	      if (rl->rgi.flags & RGI_ADDR_DEFINED)
++	        {
++		  /* restore original default route */
++		  add_route3 (0,
++			      0,
++			      rl->rgi.gateway.addr,
++			      tt,
++			      flags | ROUTE_REF_GW,
++			      &rl->rgi,
++			      es);
++	        }
+ 	    }
+ 	}
  
-+    plugin_secure_memzero(up.password, sizeof(up.password));
- #ifdef USE_PAM_DLOPEN
-     dlclose_pam();
- #endif
-diff --git a/src/plugins/auth-pam/auth-pam.exports b/src/plugins/auth-pam/auth-pam.exports
-index b07937c..597e33f 100644
---- a/src/plugins/auth-pam/auth-pam.exports
-+++ b/src/plugins/auth-pam/auth-pam.exports
-@@ -1,4 +1,4 @@
--openvpn_plugin_open_v1
-+openvpn_plugin_open_v3
- openvpn_plugin_func_v1
- openvpn_plugin_close_v1
- openvpn_plugin_abort_v1
 -- 
-2.1.4
+2.12.2
 
 
