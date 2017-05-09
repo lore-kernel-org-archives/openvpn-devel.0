@@ -1,10 +1,14 @@
-From: Steffan Karger <steffan@...1856...>
-Date: Mon,  8 May 2017 23:44:38 +0200
-Message-Id: <1494279878-24601-1-git-send-email-steffan@...1856...>
-In-Reply-To: <b10bce22-0b79-100f-d880-8388d23c6267@...1856...>
-References: <b10bce22-0b79-100f-d880-8388d23c6267@...1856...>
-Subject: [Openvpn-devel] [PATCH] Restore pre-NCP frame parameters for new
-	sessions
+MIME-Version: 1.0
+In-Reply-To: <55a3770f-be19-4f37-bd29-c8d9f7f47088@...2080...>
+References: <20170508141939.31224-1-davids@...515...>
+	<CAKuzo_jU+ufz5vkLKdzbf5637hF8bPRNrV3q4Ttq+5YQBqWGtA@...278...>
+	<55a3770f-be19-4f37-bd29-c8d9f7f47088@...2080...>
+From: Selva Nair <selva.nair@...277...>
+Date: Mon, 8 May 2017 22:40:27 -0400
+Message-ID: <CAKuzo_jktqSrKfGvQ0=uMr=3jHVaNjSgVbAwayxSMbeE+Jey4w@...278...>
+Content-Type: multipart/alternative; boundary=94eb2c059dfe874907054f0e4899
+Subject: Re: [Openvpn-devel] [PATCH] plugin: Fix documentation typo for
+	type_mask
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,115 +17,130 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-As reported in trac #879, as of the introduction of NCP we always adjust
-the frame parameters on session negotiations, but do not reset the frame
-state for a new session on an existing state instance.  That caused the
-frame parameters to be reduced for each reconnect, resulting in smaller
-and smaller packet size limits until no traffic could go through the
-tunnel at all.  This patch resolves that omission.
+--94eb2c059dfe874907054f0e4899
+Content-Type: text/plain; charset=UTF-8
 
-Trac: #879
-Signed-off-by: Steffan Karger <steffan@...1856...>
----
- src/openvpn/forward.c | 7 +++++++
- src/openvpn/init.c    | 2 ++
- src/openvpn/openvpn.h | 3 ++-
- src/openvpn/ssl.c     | 9 +--------
- src/openvpn/ssl.h     | 8 ++++++++
- 5 files changed, 20 insertions(+), 9 deletions(-)
+Hi,
 
-diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index 8102e94..2f3f3c5 100644
---- a/src/openvpn/forward.c
-+++ b/src/openvpn/forward.c
-@@ -866,9 +866,16 @@ process_incoming_link_part1(struct context *c, struct link_socket_info *lsi, boo
-              * will load crypto_options with the correct encryption key
-              * and return false.
-              */
-+            uint8_t opcode = *BPTR(&c->c2.buf) >> P_OPCODE_SHIFT;
-             if (tls_pre_decrypt(c->c2.tls_multi, &c->c2.from, &c->c2.buf, &co,
-                                 floated, &ad_start))
-             {
-+                /* Restore pre-NCP frame parameters */
-+                if (is_hard_reset(opcode, c->options.key_method))
-+                {
-+                    c->c2.frame = c->c2.frame_initial;
-+                }
-+
-                 interval_action(&c->c2.tmp_int);
- 
-                 /* reset packet received timer if TLS packet */
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index ee14f67..3c22d67 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -4051,6 +4051,8 @@ init_instance(struct context *c, const struct env_set *env, const unsigned int f
-         c->c2.did_open_tun = do_open_tun(c);
-     }
- 
-+    c->c2.frame_initial = c->c2.frame;
-+
-     /* print MTU info */
-     do_print_data_channel_mtu_parms(c);
- 
-diff --git a/src/openvpn/openvpn.h b/src/openvpn/openvpn.h
-index 893296e..f8682d1 100644
---- a/src/openvpn/openvpn.h
-+++ b/src/openvpn/openvpn.h
-@@ -263,7 +263,8 @@ struct context_2
-     struct link_socket_actual from;             /* address of incoming datagram */
- 
-     /* MTU frame parameters */
--    struct frame frame;
-+    struct frame frame;                         /* Active frame parameters */
-+    struct frame frame_initial;                 /* Restored on new session */
- 
- #ifdef ENABLE_FRAGMENT
-     /* Object to handle advanced MTU negotiation and datagram fragmentation */
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index fca1e7c..b1f0f6b 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -832,14 +832,7 @@ print_key_id(struct tls_multi *multi, struct gc_arena *gc)
-     return BSTR(&out);
- }
- 
--/*
-- * Given a key_method, return true if op
-- * represents the required form of hard_reset.
-- *
-- * If key_method = 0, return true if any
-- * form of hard reset is used.
-- */
--static bool
-+bool
- is_hard_reset(int op, int key_method)
- {
-     if (!key_method || key_method == 1)
-diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
-index ed1344e..03688ca 100644
---- a/src/openvpn/ssl.h
-+++ b/src/openvpn/ssl.h
-@@ -591,6 +591,14 @@ void show_tls_performance_stats(void);
- /*#define EXTRACT_X509_FIELD_TEST*/
- void extract_x509_field_test(void);
- 
-+/**
-+ * Given a key_method, return true if opcode represents the required form of
-+ * hard_reset.
-+ *
-+ * If key_method == 0, return true if any form of hard reset is used.
-+ */
-+bool is_hard_reset(int op, int key_method);
-+
- #endif /* ENABLE_CRYPTO */
- 
- #endif /* ifndef OPENVPN_SSL_H */
--- 
-2.7.4
+On Mon, May 8, 2017 at 10:57 AM, David Sommerseth <
+openvpn@...2080...> wrote:
 
+> On 08/05/17 16:38, Selva Nair wrote:
+> > Hi,
+> >
+>
+On Mon, May 8, 2017 at 10:19 AM, David Sommerseth <davids@...515...>
+>>  wrote:
+>>   *
+>>   * STRUCT MEMBERS
+>>   *
+>> - * *type_mask : The plug-in should set this value to the logical OR of
+>> all script
+>> + * type_mask  : The plug-in should set this value to the logical OR of
+>> all script
+>>   *              types which the plug-in wants to intercept.  For
+>> example, if the
+>>   *              script wants to intercept the client-connect and
+>> client-disconnect
+>>   *              script types:
+>>   *
+>> - *              *type_mask = OPENVPN_PLUGIN_MASK(OPENVPN_PL
+>> UGIN_CLIENT_CONNECT)
+>> + *              type_mask = OPENVPN_PLUGIN_MASK(OPENVPN_PL
+>> UGIN_CLIENT_CONNECT)
+>>   *                         | OPENVPN_PLUGIN_MASK(OPENVPN_PL
+>> UGIN_CLIENT_DISCONNECT)
+>>   *
+>>   * *handle :    Pointer to a global plug-in context, created by the
+>> plug-in.  This pointer
+>
+>
+
+>
+> >
+> > Asking to set *handle to context_ptr is wrong too. One can't
+> > dereference handle. So it will have to be interpreted as set handle
+> > to pointer to pointer to the context but that is wrong.
+> >
+> > But as discussed in the other thread I think we should also change
+> > the definition of handle in this struct.
+> >
+> > Reference to *handle in line 390 needs correction too (comment only
+> > -- struct is fine).
+>
+> Yes, I saw that, but thought we should fix that when we know what is
+> the right solution for the *handle vs handle.   Just to keep things
+> separate.
+
+
+OK, that makes sense.  Then this is good to go.
+
+ACK.
+
+Selva
+
+--94eb2c059dfe874907054f0e4899
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div class=3D"gmail_extra">Hi,</div><div class=3D"gmail_ex=
+tra"><br><div class=3D"gmail_quote">On Mon, May 8, 2017 at 10:57 AM, David =
+Sommerseth <span dir=3D"ltr">&lt;<a href=3D"mailto:openvpn@...2080..." targ=
+et=3D"_blank">openvpn@...2080...</a>&gt;</span> wrote:<br><blockquote class=
+=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rg=
+b(204,204,204);padding-left:1ex"><span class=3D"gmail-">On 08/05/17 16:38, =
+Selva Nair wrote:<br>
+&gt; Hi,<br>
+&gt;<br>
+</span></blockquote><blockquote class=3D"gmail_quote" style=3D"margin:0px 0=
+px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex"><bloc=
+kquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:=
+1px solid rgb(204,204,204);padding-left:1ex"><span style=3D"color:rgb(80,0,=
+80);font-size:12.8px">On Mon, May 8, 2017 at 10:19 AM, David Sommerseth=C2=
+=A0</span><span dir=3D"ltr" style=3D"color:rgb(80,0,80);font-size:12.8px">&=
+lt;<a href=3D"mailto:davids@...515..." target=3D"_blank">davids@...515...</=
+a>&gt;</span><span style=3D"color:rgb(80,0,80);font-size:12.8px">=C2=A0wrot=
+e:<br></span>=C2=A0 *<br>=C2=A0 * STRUCT MEMBERS<br>=C2=A0 *<br>- * *type_m=
+ask : The plug-in should set this value to the logical OR of all script<br>=
++ * type_mask=C2=A0 : The plug-in should set this value to the logical OR o=
+f all script<br>=C2=A0 *=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 ty=
+pes which the plug-in wants to intercept.=C2=A0 For example, if the<br>=C2=
+=A0 *=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 script wants to inter=
+cept the client-connect and client-disconnect<br>=C2=A0 *=C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 script types:<br>=C2=A0 *<br>- *=C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 *type_mask =3D OPENVPN_PLUGIN_MASK(O=
+PENVPN_PL<wbr>UGIN_CLIENT_CONNECT)<br>+ *=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
+ =C2=A0 =C2=A0 type_mask =3D OPENVPN_PLUGIN_MASK(OPENVPN_PL<wbr>UGIN_CLIENT=
+_CONNECT)<br>=C2=A0 *=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0| OPENVPN_PLUGIN_MASK(OPENVPN_PL<wbr>=
+UGIN_CLIENT_DISCONNECT)<br>=C2=A0 *<br><span style=3D"color:rgb(80,0,80);fo=
+nt-size:12.8px">=C2=A0 * *handle :=C2=A0 =C2=A0 Pointer to a global plug-in=
+ context, created by the plug-in.=C2=A0 This pointer</span>=C2=A0</blockquo=
+te>=C2=A0</blockquote><blockquote class=3D"gmail_quote" style=3D"margin:0px=
+ 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex"><sp=
+an class=3D"gmail-">
+&gt;<br>
+&gt;<br>
+&gt; Asking to set *handle to context_ptr is wrong too. One can&#39;t<br>
+&gt; dereference handle. So it will have to be interpreted as set handle<br>
+&gt; to pointer to pointer to the context but that is wrong.<br>
+&gt;<br>
+&gt; But as discussed in the other thread I think we should also change<br>
+&gt; the definition of handle in this struct.<br>
+&gt;<br>
+&gt; Reference to *handle in line 390 needs correction too (comment only<br>
+&gt; -- struct is fine).<br>
+<br>
+</span>Yes, I saw that, but thought we should fix that when we know what is=
+<br>
+the right solution for the *handle vs handle.=C2=A0 =C2=A0Just to keep thin=
+gs<br>
+separate.</blockquote></div><div class=3D"gmail_extra"><br></div>OK, that m=
+akes sense.=C2=A0 Then this is good to go.</div><div class=3D"gmail_extra">=
+<br></div><div class=3D"gmail_extra">ACK.<br><br></div><div class=3D"gmail_=
+extra">Selva</div></div>
+
+--94eb2c059dfe874907054f0e4899--
 
