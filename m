@@ -1,16 +1,10 @@
-References: <b10bce22-0b79-100f-d880-8388d23c6267@...1856...>
-	<1494279878-24601-1-git-send-email-steffan@...1856...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <18f36661-f955-86d6-e948-755bdb401fd7@...2080...>
-Date: Tue, 9 May 2017 12:46:48 +0200
-MIME-Version: 1.0
-In-Reply-To: <1494279878-24601-1-git-send-email-steffan@...1856...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature";
-	boundary="K1AUxFsGI4H28siegmsWc7FwHqtwR4QjO"
-Subject: Re: [Openvpn-devel] [PATCH] Restore pre-NCP frame parameters for
- new sessions
-Reply-To: openvpn-devel@lists.sourceforge.net
+From: David Sommerseth <davids@...515...>
+Date: Tue,  9 May 2017 12:48:00 +0200
+Message-Id: <20170509104800.15378-1-davids@...515...>
+In-Reply-To: <1494317563-6303-1-git-send-email-steffan.karger@...1435...>
+References: <1494317563-6303-1-git-send-email-steffan.karger@...1435...>
+Subject: Re: [Openvpn-devel] [PATCH applied] mbedtls: correctly check return
+	value in pkcs11_certificate_dn()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,106 +13,50 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---K1AUxFsGI4H28siegmsWc7FwHqtwR4QjO
-Content-Type: multipart/mixed; boundary="JLwEEXMvBrFGdpDKX36qGm4fUhT78AMKo";
-	protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-Reply-To: openvpn-devel@lists.sourceforge.net
-To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
-Message-ID: <18f36661-f955-86d6-e948-755bdb401fd7@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH] Restore pre-NCP frame parameters for new
-	sessions
-References: <b10bce22-0b79-100f-d880-8388d23c6267@...1856...>
-	<1494279878-24601-1-git-send-email-steffan@...1856...>
-In-Reply-To: <1494279878-24601-1-git-send-email-steffan@...1856...>
-
---JLwEEXMvBrFGdpDKX36qGm4fUhT78AMKo
-Content-Language: en-GB
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+To: steffan.karger@...1435...
+Cc: openvpn-devel@lists.sourceforge.net
 
-On 08/05/17 23:44, Steffan Karger wrote:
-> As reported in trac #879, as of the introduction of NCP we always adjust
-> the frame parameters on session negotiations, but do not reset the frame
-> state for a new session on an existing state instance.  That caused the
-> frame parameters to be reduced for each reconnect, resulting in smaller
-> and smaller packet size limits until no traffic could go through the
-> tunnel at all.  This patch resolves that omission.
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA256
 
+Your patch has been applied to the following branches
 
-Only glared at the code changes, and it makes sense to me.  I'll try to
-run a few tests to see if I can reproduce this issue.  If others can
-help test this patch, that will also help tremendously - and I'll try to
-remember to add a Tested-by: tag in the commit log too for all those
-confirming this fix.
+commit 423bb16e8a8fe22a907f469074a25533208fa0bc  (master)
+commit 1ebd3ade5f3fcdefa40790f2e9d16c473bac370a  (release/2.4)
+Author: Steffan Karger
+Date:   Tue May 9 10:12:43 2017 +0200
 
-A little nit-pick below though.
+     mbedtls: correctly check return value in pkcs11_certificate_dn()
 
-
-> Trac: #879
-> Signed-off-by: Steffan Karger <steffan@...1856...>
-> ---
->  src/openvpn/forward.c | 7 +++++++
->  src/openvpn/init.c    | 2 ++
->  src/openvpn/openvpn.h | 3 ++-
->  src/openvpn/ssl.c     | 9 +--------
->  src/openvpn/ssl.h     | 8 ++++++++
->  5 files changed, 20 insertions(+), 9 deletions(-)
->=20
-> diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-> index 8102e94..2f3f3c5 100644
-> --- a/src/openvpn/forward.c
-> +++ b/src/openvpn/forward.c
-> @@ -866,9 +866,16 @@ process_incoming_link_part1(struct context *c, struc=
-t link_socket_info *lsi, boo
->               * will load crypto_options with the correct encryption key
->               * and return false.
->               */
-> +            uint8_t opcode =3D *BPTR(&c->c2.buf) >> P_OPCODE_SHIFT;
->              if (tls_pre_decrypt(c->c2.tls_multi, &c->c2.from, &c->c2.buf=
-, &co,
->                                  floated, &ad_start))
->              {
-
-Wouldn't it make more sense to move the opcode declaration to inside the
-if (tls_pre_decrypt(...)) block?  I can do that on-the-fly though.
+     Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1494317563-6303-1-git-send-email-steffan.karger@...1435...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg14591.html
+     Signed-off-by: David Sommerseth <davids@...515...>
 
 
---=20
+- --
 kind regards,
 
 David Sommerseth
-OpenVPN Technologies, Inc
-
-
-
---JLwEEXMvBrFGdpDKX36qGm4fUhT78AMKo--
-
---K1AUxFsGI4H28siegmsWc7FwHqtwR4QjO
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBCAAGBQJZEZ4YAAoJEIbPlEyWcf3yClkP/R+Vqf7Ov++ew24EB073l59W
-Kb+ZgJPCf+H9iGjnODrL5bpv+ZkU7Bo3zqz3+/M+QiIvfPJVsoxGFQ5iVRH6+4lM
-lJOO02kVyLeYafthl8tCjmij145tBfZlpIz0e70KYdwJujPPZpPgsqyV7yptP2gh
-FmblOfZ1xdfMqZOykLDF8Z1qcgIB4/MIuYSilc/THn2Ud8lnAzQZVNwP5Ulwb2a8
-2coMnPivsy/nRhKK6Gqi0KOPbQtKfh9cIW+mZShxHt9M6Pbuf46IM1H/AieRD0UE
-2uALhrKSHxg/oWzQfulXrjCmLjnJ6RzA5d+/0yIohYl6fbwOMYiySfnwyijowgNd
-fOYTmTK0JluXukBJ2TD1hqfcf6pBIdo9vqY8Is4jOGzuJwBIR2rs6iGfMKVJI59S
-Pd8hXAl5loXqJQFaKi+olfXZH9Dw4VNynz3V3a0FDdsb9eCLzaCkszS16lGEI8/a
-4GtsPt6hzOt61LEDHcYvOMd0pjUG9bPXw7ug1PZq9FtNzDU/Og4orLsA2ET/0/P3
-VaH0XGnIuxy+bJzHVPQjLMAKBqDiuDHwxvoIvuQ6k4YwFOlvW4GLm9w6WzW4jrVn
-UnA6v8odifgWJ/WYWhC1Clzq6sn5mRj3VHUbXEjRn4r+q+/aI/W00I57lku58U4f
-PRzFRJnaft2yMIqmcL8a
-=xgw6
+iQIcBAEBCAAGBQJZEZ5dAAoJEIbPlEyWcf3yaV8P/A/PASUpOs7zxM52wIErQUZ9
+H+Wos+U7URoJpnFIwP1J0X6n3bn/OJML4Vu7c/v+ZpOA8gQ4WS4cNPG3iLipgee8
+Otpgxv7nJZM47DYUC//plxjFKxhpTQF4ogmTY3LoB/1yFJdxAy6I9GWWdIZvCxBx
+ttpiQt78XzVAHHIcqzH7zAf926by1aoPUJaQrHwG1DfV4+CG6LXd7WWLg3y5+/CI
+sO8MxLIomIHhogCJDIY8ISbqgXZ3VJsf3/l/NjqpPx3OWS3A4CgSriWDzI4aKtH5
+jYilBu7NmQQnm8yQf4kQQ7XbMsAZIAU+vRkXvJLy9p0Z3z8QWB9m4+Ql8m39Yd2c
+R0yr+0YtcSagCc6ipCKatiNEWBLkRQqRRwGsL+dSkVLVaOUmg3k//pBWERnS3JrR
+hRdM6nsoyM//solAO0oYP9DXn3vCgJAXiSjceWI9O4IH2MGD5OArOKLZE0XVlVIa
+Cl18A7tAC0u5H8BXo88NF478F8RWbwDE0VG0Eu2cu8V/jHRemk4iwlKDdjcRpSaO
+s982RfTleJbekm+eSB16lNwMfjeK6vMH9l4RxHYs1nAhOzgOyB06Et17K31+R8cj
+z4ZSjhVEmZxA6e3lQVOe6I6RbGz0DUKllVGWUHSmFN2iOegDXoZIzbo40GYw9u7V
+ugOT5E0twiES4NsqLP+q
+=gu5r
 -----END PGP SIGNATURE-----
-
---K1AUxFsGI4H28siegmsWc7FwHqtwR4QjO--
 
