@@ -1,15 +1,14 @@
-References: <1494327032-3035-1-git-send-email-steffan.karger@...1435...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <b2e1af67-2b5c-44ba-e8db-4d325d6e1e0b@...2080...>
-Date: Tue, 9 May 2017 19:47:48 +0200
 MIME-Version: 1.0
-In-Reply-To: <1494327032-3035-1-git-send-email-steffan.karger@...1435...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature";
-	boundary="5D31ml9xgTv820MTgqcvFigwh4lChUcX1"
-Subject: Re: [Openvpn-devel] [PATCH] Always clear username/password from
- memory on error
-Reply-To: openvpn-devel@lists.sourceforge.net
+In-Reply-To: <fc90b284-5cb5-ec0e-3609-1187551aecdb@...2080...>
+References: <1494008642-7239-1-git-send-email-selva.nair@...277...>
+	<1494341557-11721-1-git-send-email-selva.nair@...277...>
+	<fc90b284-5cb5-ec0e-3609-1187551aecdb@...2080...>
+From: Selva Nair <selva.nair@...277...>
+Date: Tue, 9 May 2017 14:00:55 -0400
+Message-ID: <CAKuzo_jh8AXZJRd6kcao5ABf+nayrG-LWn4g45GYG6=YHxf_dg@...278...>
+Content-Type: multipart/alternative; boundary=001a1146fe6253b0db054f1b24b4
+Subject: Re: [Openvpn-devel] [PATCH 1/2 v2] In auth-pam plugin clear the
+ password after use
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,111 +17,75 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan.karger@...1435...>, openvpn-devel@lists.sourceforge.net
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---5D31ml9xgTv820MTgqcvFigwh4lChUcX1
-Content-Type: multipart/mixed; boundary="00RqPVjvVeNtf3kAUIeSNpf3wU3SrA3R4";
-	protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-Reply-To: openvpn-devel@lists.sourceforge.net
-To: Steffan Karger <steffan.karger@...1435...>,
-	openvpn-devel@lists.sourceforge.net
-Message-ID: <b2e1af67-2b5c-44ba-e8db-4d325d6e1e0b@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH] Always clear username/password from
-	memory on error
-References: <1494327032-3035-1-git-send-email-steffan.karger@...1435...>
-In-Reply-To: <1494327032-3035-1-git-send-email-steffan.karger@...1435...>
+--001a1146fe6253b0db054f1b24b4
+Content-Type: text/plain; charset=UTF-8
 
---00RqPVjvVeNtf3kAUIeSNpf3wU3SrA3R4
-Content-Language: en-GB
-Content-Type: text/plain; charset="utf-8"
+Hi,
+
+On Tue, May 9, 2017 at 1:34 PM, David Sommerseth <openvpn@...2142...
+topphemmelig.net> wrote:
+
+> If the plug-in built and packaged separately and that build is not tied
+> to OpenVPN itself, this can make this plug-in fail without any
+> particular real reason if the OpenVPN binary gets updated independently.
+>
+> Even though not explicitly documented, we should never remove any
+> information from the plug-in v3 structs, only append to and only append
+> at the end of the existing structs.
+>
+
+I just assumed these "official" plugins will always be built and
+distributed with openvpn core.
+But if future revisions is guaranteed not to reorder/remove items in the
+structs, a less strict check
+is definitely better.
+
+
+> The plug-ins in src/plugins should use, which ensures forward
+> compatibility against the OpenVPN binary:
+>
+>    if (v3structver < OPENVPN_PLUGINv3_STRUCTVER)
+>
+
+Yes, will change to this.
+
+Selva
+
+--001a1146fe6253b0db054f1b24b4
+Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On 09/05/17 12:50, Steffan Karger wrote:
-> This issue was found by Quarkslab during the OSTIF-founded security audit
-> (issue 5.4), we agree with their analysis:
->=20
-> "There=E2=80=99s a special case where the client username and password ar=
-e not
-> erased when the server is launched without an external script or
-> authentication plugin. While being invalid, this configuration does not
-> raise any error. If the client transmits its credentials and the session
-> is not established (for instance if the certificates chain has not been
-> verified), these credentials are not erased from memory by the server.
->=20
-> The likelihood of an occurrence of this issue in real life is exceptional=
-ly low since an attacker
-> needs elevated privileges on the server to exploit this kind of informati=
-on leak. The severity of
-> this issue is rated as very low."
->=20
->=20
-> Signed-off-by: Steffan Karger <steffan.karger@...1435...>
-> ---
->  src/openvpn/ssl.c | 1 +
->  1 file changed, 1 insertion(+)
->=20
-> diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-> index 1033e58..abf5786 100644
-> --- a/src/openvpn/ssl.c
-> +++ b/src/openvpn/ssl.c
-> @@ -2661,6 +2661,7 @@ key_method_2_read(struct buffer *buf, struct tls_mu=
-lti *multi, struct tls_sessio
->=20=20
->  error:
->      secure_memzero(ks->key_src, sizeof(*ks->key_src));
-> +    secure_memzero(up, sizeof(*up));
->      buf_clear(buf);
->      gc_free(&gc);
->      return false;
->=20
+<div dir=3D"ltr"><div class=3D"gmail_extra">Hi,<br><br></div><div class=3D"=
+gmail_extra"><div class=3D"gmail_quote">On Tue, May 9, 2017 at 1:34 PM, Dav=
+id Sommerseth <span dir=3D"ltr">&lt;<a href=3D"mailto:openvpn@...2080..." t=
+arget=3D"_blank">openvpn@...2142...<wbr>topphemmelig.net</a>&gt;</span> wro=
+te:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-=
+left:1px #ccc solid;padding-left:1ex"><div id=3D"m_901749328671586206:8fx" =
+class=3D"m_901749328671586206a3s m_901749328671586206aXjCH m_90174932867158=
+6206m15bee46715c05994">If the plug-in built and packaged separately and tha=
+t build is not tied<br>
+to OpenVPN itself, this can make this plug-in fail without any<br>
+particular real reason if the OpenVPN binary gets updated independently.<br>
+<br>
+Even though not explicitly documented, we should never remove any<br>
+information from the plug-in v3 structs, only append to and only append<br>
+at the end of the existing structs.=C2=A0 </div></blockquote><div><br></div=
+><div>I just assumed these &quot;official&quot; plugins will always be buil=
+t and distributed with openvpn core.<br>But if future revisions is guarante=
+ed not to reorder/remove items in the structs, a less strict check<br>is de=
+finitely better.<br></div><div id=3D"m_901749328671586206:8fx" class=3D"m_9=
+01749328671586206a3s m_901749328671586206aXjCH m_901749328671586206m15bee46=
+715c05994">=C2=A0<br><blockquote style=3D"margin:0px 0px 0px 0.8ex;border-l=
+eft:1px solid rgb(204,204,204);padding-left:1ex" class=3D"gmail_quote">
+The plug-ins in src/plugins should use, which ensures forward<br>
+compatibility against the OpenVPN binary:<br>
+<br>
+=C2=A0 =C2=A0if (v3structver &lt; OPENVPN_PLUGINv3_STRUCTVER)=C2=A0<br></bl=
+ockquote><div><br></div><div>Yes, will change to this.=C2=A0</div></div></d=
+iv><br></div><div class=3D"gmail_extra">Selva<br></div><div class=3D"gmail_=
+extra"><br></div></div>
 
-Feature-ACK, but code-NAK.
-
-In key_method_2_read() there are a few places where `goto error;` can be
-used before `up` is allocated.  This will make secure_memzero()
-segfault, as it does not handle NULL pointers.  Or even worse (if the
-compiler let this pointer point at a random address), which leads to an
-unpredictable behaviour.
-
-That said, I think we should fix secure_memzero() to just return if the
-input pointer is NULL.  And even though most compilers do initialize
-variables, I think it's good to be defensive here and initialize `up` too.
-
-
---=20
-kind regards,
-
-David Sommerseth
-OpenVPN Technologies, Inc
-
-
-
---00RqPVjvVeNtf3kAUIeSNpf3wU3SrA3R4--
-
---5D31ml9xgTv820MTgqcvFigwh4lChUcX1
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBCAAGBQJZEgDEAAoJEIbPlEyWcf3yM9wQAMNK/mUaC243JnXurj3N4Pwn
-Y1je1FTzRwCuzc8/pMF835zzjb1v/7S+nFVGelyDYEYwwDI7nD5zQ2Dy3qGGv6OD
-0BbYC7BtUIZFkLEb1gUvpRHRFI7AjKXZSQszXluQWm42LnduUxd5UVf9vyBreILb
-3t4+uGEghs3vXqF1ktT5G0WpHAHQ6A+bLsWCLqUeCn60s3/z1AMnS/hMlY0xdCVO
-ADOIunmLuj8xkOi7uuTIJMVaXQA4NZ9UG2b7eyGeHHfsqXJn9fX0fGM3cCP/FC06
-LM1rsyio388NQ1ff+ruGrKAtIYvzp3UJPy04o7bpZYktaTpw77+GeThhn7boIOQD
-l1nQIftzi0QdEUzhwQOM0oaK2RRQ1rj3gv1hZxLpQ9n3PrcVngqMeFAG02Dr4Tlk
-T6N7elPO+AmWQme/n0kVRqJ8yiHzUzNsfVCnfNIrSkyHC46AQeXUYJW9ZqB8RGAN
-t7GXtPyuW2GnEifh1ZZfTV4I6TfHxd1eaDNbX58t0Bv/tEOtJDXCn1MuRwLiwWyj
-8TFu1IQIEmaqiCC/ESvrlhGaa1zKCPdsfivyNu5XPKbL2O4uBoG/TYqKk1xBtNHz
-iiUbdCZ/zBPlgci7fCbT2FwcQDFN6wU8VSEJ3Rs4wgAjiMtc6QkJSq2pHWwHno4g
-naX6vKQku0crcnlfhdXf
-=E5F2
------END PGP SIGNATURE-----
-
---5D31ml9xgTv820MTgqcvFigwh4lChUcX1--
+--001a1146fe6253b0db054f1b24b4--
 
