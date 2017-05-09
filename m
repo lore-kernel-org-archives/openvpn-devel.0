@@ -1,11 +1,14 @@
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <c0d99f25-3b34-961b-c60c-4302d609c4fd@...515...>
-Date: Thu, 11 May 2017 17:19:49 +0300
+Resent-To: "openvpn-devel@lists.sourceforge.net"
+	<openvpn-devel@lists.sourceforge.net>
+Resent-Message-ID: <55963684-9521-f808-8281-eca2a4117308@...2162...>
+From: Steffan Karger <steffan.karger@...1435...>
+Date: Tue, 9 May 2017 21:30:09 +0200
+Message-ID: <1494358209-4568-3-git-send-email-steffan.karger@...1435...>
+In-Reply-To: <1494358209-4568-1-git-send-email-steffan.karger@...1435...>
+References: <1494358209-4568-1-git-send-email-steffan.karger@...1435...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature";
-	boundary="cSEdF4CD0MdTK3pPpPvbPxrp8iStvioQw"
-Subject: [Openvpn-devel] OpenVPN 2.3.15 released (with security fixes)
+Subject: [Openvpn-devel] [PATCH 2/2 (master)] Drop packets instead of assert
+	out if packet id rolls over (CVE-2017-7479)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,145 +17,227 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>, openvpn-announce@lists.sourceforge.net
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---cSEdF4CD0MdTK3pPpPvbPxrp8iStvioQw
-Content-Type: multipart/mixed; boundary="O2VAu0DSnA4ftrrAxAktlq0MeJRi5UXGL";
-	protected-headers="v1"
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-To: "openvpn-devel@lists.sourceforge.net"
-	<openvpn-devel@lists.sourceforge.net>,
-	"openvpn-users@lists.sourceforge.net"
-	<openvpn-users@lists.sourceforge.net>, 
-	openvpn-announce@lists.sourceforge.net
-Message-ID: <c0d99f25-3b34-961b-c60c-4302d609c4fd@...515...>
-Subject: OpenVPN 2.3.15 released (with security fixes)
-
---O2VAu0DSnA4ftrrAxAktlq0MeJRi5UXGL
-Content-Type: multipart/mixed; boundary="------------8D1C9F522898632CAF7AD662"
-Content-Language: en-US
-
-This is a multi-part message in MIME format.
---------------8D1C9F522898632CAF7AD662
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
+To: security@...515...
 
-The OpenVPN community project team is proud to release OpenVPN 2.3.15.
-It can be downloaded from here:
+Previously, if a mode was selected where packet ids are not allowed to roll
+over, but renegotiation does not succeed for some reason (e.g. no password
+entered in time, certificate expired or a malicious peer that refuses the
+renegotiaion on purpose) we would continue to use the old keys.  Until the
+packet ID would roll over and we would ASSERT() out.
 
-<http://openvpn.net/index.php/open-source/downloads.html>
+Given that this can be triggered on purpose by an authenticated peer, this
+is a fix for an authenticated remote DoS vulnerability.  An attack is
+rather inefficient though; a peer would need to get us to send 2^32
+packets (min-size packet is IP+UDP+OPCODE+PID+TAG (no payload), results in
+(20+8+1+4+16)=C3=972^32 bytes, or approx. 196 GB).
 
-OpenVPN v2.4.0 was audited for security vulnerabilities independently by
-Quarkslabs (funded by OSTIF) and Cryptography Engineering (funded by
-Private Internet Access) between December 2016 and April 2017. The
-primary findings were two remote denial-of-service vulnerabilities.
-Fixes to them have been backported to v2.3.15.  Our official security
-announcement is here:
+This is a fix for finding 5.2 from the OSTIF / Quarkslab audit.
 
-<https://community.openvpn.net/openvpn/wiki/QuarkslabAndCryptographyEnginee=
-rAudits>
+Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+---
+ Changes.rst                               |  4 ++++
+ src/openvpn/crypto.c                      | 25 ++++++++++++++++---------
+ src/openvpn/packet_id.c                   | 22 ++++++++++++++++------
+ src/openvpn/packet_id.h                   |  1 +
+ src/openvpn/tls_crypt.c                   |  6 +++++-
+ tests/unit_tests/openvpn/test_packet_id.c | 11 +++++++++--
+ 6 files changed, 51 insertions(+), 18 deletions(-)
 
-A summary of the changes is available here:
-
-<https://github.com/OpenVPN/openvpn/blob/release/2.3/Changes.rst>
-
-A full list of changes is available here:
-
-<https://community.openvpn.net/openvpn/wiki/ChangesInOpenvpn23>
-
-For generic help use these support channels:
-
-Official documentation:
-<http://openvpn.net/index.php/open-source/documentation/howto.html>
-Wiki: <https://community.openvpn.net>
-Forums: <https://forums.openvpn.net>
-User mailing list: <http://sourceforge.net/mail/?group_id=3D48978>
-User IRC channel: #openvpn at irc.freenode.net
-
-Please report bugs and ask development questions here:
-
-Bug tracker and wiki: <https://community.openvpn.net>
-Developer mailing list: <http://sourceforge.net/mail/?group_id=3D48978>
-Developer IRC channel: #openvpn-devel at irc.freenode.net (requires
-Freenode registration)
-
+diff --git a/Changes.rst b/Changes.rst
+index 734ef73..5a02ad0 100644
+--- a/Changes.rst
++++ b/Changes.rst
+@@ -335,3 +335,7 @@ Security
+   to hit an ASSERT() and stop the process.  If ``--tls-auth`` or ``--tls-c=
+rypt``
+   is used, only attackers that have the ``--tls-auth`` or ``--tls-crypt`` =
+key
+   can mount an attack. (OSTIF/Quarkslab audit finding 5.1, CVE-2017-7478)
++- Fix an authenticated remote DoS vulnerability that could be triggered by
++  causing a packet id roll over.  An attack is rather inefficient; a peer
++  would need to get us to send at least about 196 GB of data.
++  (OSTIF/Quarkslab audit finding 5.2, CVE-2017-7479)
+diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
+index f5250ac..50e6a73 100644
+--- a/src/openvpn/crypto.c
++++ b/src/openvpn/crypto.c
+@@ -93,7 +93,11 @@ openvpn_encrypt_aead(struct buffer *buf, struct buffer w=
+ork,
+         buf_set_write(&iv_buffer, iv, iv_len);
+=20
+         /* IV starts with packet id to make the IV unique for packet */
+-        ASSERT(packet_id_write(&opt->packet_id.send, &iv_buffer, false, fa=
+lse));
++        if (!packet_id_write(&opt->packet_id.send, &iv_buffer, false, fals=
+e))
++        {
++            msg(D_CRYPT_ERRORS, "ENCRYPT ERROR: packet ID roll over");
++            goto err;
++        }
+=20
+         /* Remainder of IV consists of implicit part (unique per session) =
+*/
+         ASSERT(buf_write(&iv_buffer, ctx->implicit_iv, ctx->implicit_iv_le=
+n));
+@@ -191,11 +195,13 @@ openvpn_encrypt_v1(struct buffer *buf, struct buffer =
+work,
+                 prng_bytes(iv_buf, iv_size);
+=20
+                 /* Put packet ID in plaintext buffer */
+-                if (packet_id_initialized(&opt->packet_id))
++                if (packet_id_initialized(&opt->packet_id)
++                    && !packet_id_write(&opt->packet_id.send, buf,
++                                        opt->flags & CO_PACKET_ID_LONG_FOR=
+M,
++                                        true))
+                 {
+-                    ASSERT(packet_id_write(&opt->packet_id.send, buf,
+-                                           opt->flags & CO_PACKET_ID_LONG_=
+FORM,
+-                                           true));
++                    msg(D_CRYPT_ERRORS, "ENCRYPT ERROR: packet ID roll ove=
+r");
++                    goto err;
+                 }
+             }
+             else if (cipher_kt_mode_ofb_cfb(cipher_kt))
+@@ -251,11 +257,12 @@ openvpn_encrypt_v1(struct buffer *buf, struct buffer =
+work,
+         }
+         else                            /* No Encryption */
+         {
+-            if (packet_id_initialized(&opt->packet_id))
++            if (packet_id_initialized(&opt->packet_id)
++                && !packet_id_write(&opt->packet_id.send, buf,
++                                    opt->flags & CO_PACKET_ID_LONG_FORM, t=
+rue))
+             {
+-                ASSERT(packet_id_write(&opt->packet_id.send, buf,
+-                        BOOL_CAST(opt->flags & CO_PACKET_ID_LONG_FORM),
+-                        true));
++                msg(D_CRYPT_ERRORS, "ENCRYPT ERROR: packet ID roll over");
++                goto err;
+             }
+             if (ctx->hmac)
+             {
+diff --git a/src/openvpn/packet_id.c b/src/openvpn/packet_id.c
+index 5175fb0..10fe402 100644
+--- a/src/openvpn/packet_id.c
++++ b/src/openvpn/packet_id.c
+@@ -325,27 +325,37 @@ packet_id_read(struct packet_id_net *pin, struct buff=
+er *buf, bool long_form)
+     return true;
+ }
+=20
+-static void
++static bool
+ packet_id_send_update(struct packet_id_send *p, bool long_form)
+ {
+     if (!p->time)
+     {
+         p->time =3D now;
+     }
+-    p->id++;
+-    if (!p->id)
++    if (p->id =3D=3D PACKET_ID_MAX)
+     {
+-        ASSERT(long_form);
++        /* Packet ID only allowed to roll over if using long form and time=
+ has
++         * moved forward since last roll over.
++         */
++        if (!long_form || now <=3D p->time)
++        {
++            return false;
++        }
+         p->time =3D now;
+-        p->id =3D 1;
++        p->id =3D 0;
+     }
++    p->id++;
++    return true;
+ }
+=20
+ bool
+ packet_id_write(struct packet_id_send *p, struct buffer *buf, bool long_fo=
+rm,
+         bool prepend)
+ {
+-    packet_id_send_update(p, long_form);
++    if (!packet_id_send_update(p, long_form))
++    {
++        return false;
++    }
+=20
+     const packet_id_type net_id =3D htonpid(p->id);
+     const net_time_t net_time =3D htontime(p->time);
+diff --git a/src/openvpn/packet_id.h b/src/openvpn/packet_id.h
+index 109e56a..aceacf8 100644
+--- a/src/openvpn/packet_id.h
++++ b/src/openvpn/packet_id.h
+@@ -50,6 +50,7 @@
+  * to for network transmission.
+  */
+ typedef uint32_t packet_id_type;
++#define PACKET_ID_MAX UINT32_MAX
+ typedef uint32_t net_time_t;
+=20
+ /*
+diff --git a/src/openvpn/tls_crypt.c b/src/openvpn/tls_crypt.c
+index e47d25c..7f59b1d 100644
+--- a/src/openvpn/tls_crypt.c
++++ b/src/openvpn/tls_crypt.c
+@@ -98,7 +98,11 @@ tls_crypt_wrap(const struct buffer *src, struct buffer *=
+dst,
+          format_hex(BPTR(src), BLEN(src), 80, &gc));
+=20
+     /* Get packet ID */
+-    ASSERT(packet_id_write(&opt->packet_id.send, dst, true, false));
++    if (!packet_id_write(&opt->packet_id.send, dst, true, false))
++    {
++        msg(D_CRYPT_ERRORS, "TLS-CRYPT ERROR: packet ID roll over.");
++        goto err;
++    }
+=20
+     dmsg(D_PACKET_CONTENT, "TLS-CRYPT WRAP AD: %s",
+          format_hex(BPTR(dst), BLEN(dst), 0, &gc));
+diff --git a/tests/unit_tests/openvpn/test_packet_id.c b/tests/unit_tests/o=
+penvpn/test_packet_id.c
+index 5627a5b..0a785ad 100644
+--- a/tests/unit_tests/openvpn/test_packet_id.c
++++ b/tests/unit_tests/openvpn/test_packet_id.c
+@@ -129,8 +129,7 @@ test_packet_id_write_short_wrap(void **state)
+     struct test_packet_id_write_data *data =3D *state;
+=20
+     data->pis.id =3D ~0;
+-    expect_assert_failure(
+-            packet_id_write(&data->pis, &data->test_buf, false, false));
++    assert_false(packet_id_write(&data->pis, &data->test_buf, false, false=
+));
+ }
+=20
+ static void
+@@ -139,8 +138,16 @@ test_packet_id_write_long_wrap(void **state)
+     struct test_packet_id_write_data *data =3D *state;
+=20
+     data->pis.id =3D ~0;
++    data->pis.time =3D 5006;
++
++    /* Write fails if time did not change */
++    now =3D 5006;
++    assert_false(packet_id_write(&data->pis, &data->test_buf, true, false)=
+);
++
++    /* Write succeeds if time moved forward */
+     now =3D 5010;
+     assert_true(packet_id_write(&data->pis, &data->test_buf, true, false));
++
+     assert(data->pis.id =3D=3D 1);
+     assert(data->pis.time =3D=3D now);
+     assert_true(data->test_buf_data.buf_id =3D=3D htonl(1));
 --=20
-Samuli Sepp=C3=A4nen
-Community Manager
-OpenVPN Technologies, Inc
+2.7.4
 
-irc freenode net: mattock
-
---------------8D1C9F522898632CAF7AD662
-Content-Type: application/pgp-keys;
- name="0x40864578.asc"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: attachment;
- filename="0x40864578.asc"
-
------BEGIN PGP PUBLIC KEY BLOCK-----
-Version: GnuPG v2
-
-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
-XuwT7RpGDZ6jBfphYQ=3D=3D
-=3DFKLE
------END PGP PUBLIC KEY BLOCK-----
-
---------------8D1C9F522898632CAF7AD662--
-
---O2VAu0DSnA4ftrrAxAktlq0MeJRi5UXGL--
-
---cSEdF4CD0MdTK3pPpPvbPxrp8iStvioQw
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQEcBAEBCAAGBQJZFHMGAAoJEClYTZ9AhkV4goEH/17jhDaop7zkBoFacUZA7rlr
-v75qcLYvm08ERsu5LZ6q07yu0+8ooNSONcirtc5dgzvhPyEpxPQjLG78MEXmqfLv
-XU6C+wJhb7WreENVjA0CQA9yRiQ5W7w1l9SUEsykxEzwnj3CuKrVHPJSuV0bAhqJ
-FDzKPJmfn5DDH1p2RjfozodRZagZfRzgnNT/kNDtJSJdBn6OHn8j+x8o6X+fIb1C
-+wRwbrLFqhPTMv9+sAnKsmSVcBeFqEdCIEA6cSetcQS6xGJI0Tg4dFBzHmJPVudg
-R2+py6Df1lxUX4KK1ztamNcYUeLmkaf1DTtJIbbDV2R9hCDjnNJpvE+EFqDftPM=
-=cqAC
------END PGP SIGNATURE-----
-
---cSEdF4CD0MdTK3pPpPvbPxrp8iStvioQw--
 
