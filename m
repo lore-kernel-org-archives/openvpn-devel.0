@@ -1,9 +1,14 @@
-From: Steffan Karger <steffan.karger@...1435...>
-Date: Tue, 9 May 2017 10:12:43 +0200
-Message-ID: <1494317563-6303-1-git-send-email-steffan.karger@...1435...>
+Date: Tue, 9 May 2017 11:19:10 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20170509091910.GM97029@...1296...>
+References: <1494317563-6303-1-git-send-email-steffan.karger@...1435...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] mbedtls: correctly check return value in
-	pkcs11_certificate_dn()
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="LKTjZJSUETSlgu2t"
+Content-Disposition: inline
+In-Reply-To: <1494317563-6303-1-git-send-email-steffan.karger@...1435...>
+Subject: Re: [Openvpn-devel] [PATCH] mbedtls: correctly check return value
+ in pkcs11_certificate_dn()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,65 +17,64 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Steffan Karger <steffan.karger@...1435...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-mbedtls_x509_dn_gets() would not always return -1 error, which could cause
-us to incorrectly continue after the function call failed.  To fix this,
-just call our own x509_get_subject(), which does all the neccesary error
-checking correctly.
+--LKTjZJSUETSlgu2t
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-pkcs11_certificate_dn() is only called by show_pkcs11_ids(), to list the
-certificates on the pkcs11 token.  Therefor, this mistake did not have a
-security impact.
+Hi,
 
-This issue was found by Quarkslab during the OSTIF-founded security audit
-(issue 5.3).
+On Tue, May 09, 2017 at 10:12:43AM +0200, Steffan Karger wrote:
+>          goto cleanup;
+>      }
+>=20=20
+> -    if (-1 =3D=3D mbedtls_x509_dn_gets(dn, sizeof(dn), &mbed_crt.subject=
+))
+> +    if (!(ret =3D x509_get_subject(&mbed_crt, gc)))
+>      {
+>          msg(M_FATAL, "PKCS#11: mbed TLS cannot parse subject");
+>          goto cleanup;
+>      }
+>=20=20
+> -    ret =3D string_alloc(dn, gc);
+> -
 
-Signed-off-by: Steffan Karger <steffan.karger@...1435...>
----
- src/openvpn/pkcs11_mbedtls.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+ACK.=20=20
 
-diff --git a/src/openvpn/pkcs11_mbedtls.c b/src/openvpn/pkcs11_mbedtls.c
-index bdca893..dee97bc 100644
---- a/src/openvpn/pkcs11_mbedtls.c
-+++ b/src/openvpn/pkcs11_mbedtls.c
-@@ -39,6 +39,7 @@
- 
- #include "errlevel.h"
- #include "pkcs11_backend.h"
-+#include "ssl_verify_backend.h"
- #include <mbedtls/pkcs11.h>
- #include <mbedtls/x509.h>
- 
-@@ -82,8 +83,6 @@ char *
- pkcs11_certificate_dn(pkcs11h_certificate_t cert, struct gc_arena *gc)
- {
-     char *ret = NULL;
--    char dn[1024] = {0};
--
-     mbedtls_x509_crt mbed_crt = {0};
- 
-     if (mbedtls_pkcs11_x509_cert_bind(&mbed_crt, cert))
-@@ -92,14 +91,12 @@ pkcs11_certificate_dn(pkcs11h_certificate_t cert, struct gc_arena *gc)
-         goto cleanup;
-     }
- 
--    if (-1 == mbedtls_x509_dn_gets(dn, sizeof(dn), &mbed_crt.subject))
-+    if (!(ret = x509_get_subject(&mbed_crt, gc)))
-     {
-         msg(M_FATAL, "PKCS#11: mbed TLS cannot parse subject");
-         goto cleanup;
-     }
- 
--    ret = string_alloc(dn, gc);
--
- cleanup:
-     mbedtls_x509_crt_free(&mbed_crt);
- 
--- 
-2.7.4
+x509_get_subject() does exactly the same thing, just with error handling
+for the case "mbedtls_x509_dn_gets() returns 0".  So - less code, and
+error case handled :-)
 
+(Note: cleanup patch expected, to remove the "goto cleanup" calls after
+a msg(M_FATAL, ...) line which is guaranteed to never return)
+
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--LKTjZJSUETSlgu2t
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJZEYmNAAoJEB2Cnv7KVigSc0kL+wfgS8nf4Tkr2oTJ61JbwziF
+jk19k1Hp3KiKwvwAn6yhp3HoDHNG9nBPYPiXZ/+a20BU3JreBIiCgMVIITBfluaK
+4IDowcu7CXSwadplkfn7jCZSF+3FgNIjXIwO6vYbxHh8+pMOw2ccOS+F0sk2VSkJ
+q03IKsViGyBUIEE650w77+KxOgB7GDbATjj7sY4CFMm4aQMSSN0rgTLeJ0TVMVrs
+cwhTB4uyFB1mD5cYj3AmesQ5C/LWtpwW8jMYdA0oSEr/xCA+GEkPAhXO1QNWuBlV
+qCJKyGYyrG5b20NctesAKozA6Hz28MU5N7WuyTN1kSho38T1E1mnzJfNPKnLu5Xe
+C5RDaaIrhYx2JJwoHQCIRKnGVE1BlcGzO6plSYT3FedHdP9Z9ShhsnIUm0TuVX1K
+Lr5MCUXyiBP4H6w+U+abIiCAWOFVP+PGCtpH1nvFGWmpEqO33kECj41+xJGY34nJ
+jRGbJDaxkaSLrA7qNzehbLSFulqZIh0Mm3CgqcvOPA==
+=WFPT
+-----END PGP SIGNATURE-----
+
+--LKTjZJSUETSlgu2t--
 
