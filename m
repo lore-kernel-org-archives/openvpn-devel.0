@@ -1,14 +1,16 @@
-Date: Tue, 9 May 2017 11:19:10 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20170509091910.GM97029@...1296...>
-References: <1494317563-6303-1-git-send-email-steffan.karger@...1435...>
+References: <b10bce22-0b79-100f-d880-8388d23c6267@...1856...>
+	<1494279878-24601-1-git-send-email-steffan@...1856...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <18f36661-f955-86d6-e948-755bdb401fd7@...2080...>
+Date: Tue, 9 May 2017 12:46:48 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="LKTjZJSUETSlgu2t"
-Content-Disposition: inline
-In-Reply-To: <1494317563-6303-1-git-send-email-steffan.karger@...1435...>
-Subject: Re: [Openvpn-devel] [PATCH] mbedtls: correctly check return value
- in pkcs11_certificate_dn()
+In-Reply-To: <1494279878-24601-1-git-send-email-steffan@...1856...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature";
+	boundary="K1AUxFsGI4H28siegmsWc7FwHqtwR4QjO"
+Subject: Re: [Openvpn-devel] [PATCH] Restore pre-NCP frame parameters for
+ new sessions
+Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,64 +19,106 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan.karger@...1435...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
 
---LKTjZJSUETSlgu2t
-Content-Type: text/plain; charset="us-ascii"
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--K1AUxFsGI4H28siegmsWc7FwHqtwR4QjO
+Content-Type: multipart/mixed; boundary="JLwEEXMvBrFGdpDKX36qGm4fUhT78AMKo";
+	protected-headers="v1"
+From: David Sommerseth <openvpn@...2080...>
+Reply-To: openvpn-devel@lists.sourceforge.net
+To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
+Message-ID: <18f36661-f955-86d6-e948-755bdb401fd7@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH] Restore pre-NCP frame parameters for new
+	sessions
+References: <b10bce22-0b79-100f-d880-8388d23c6267@...1856...>
+	<1494279878-24601-1-git-send-email-steffan@...1856...>
+In-Reply-To: <1494279878-24601-1-git-send-email-steffan@...1856...>
+
+--JLwEEXMvBrFGdpDKX36qGm4fUhT78AMKo
+Content-Language: en-GB
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
+On 08/05/17 23:44, Steffan Karger wrote:
+> As reported in trac #879, as of the introduction of NCP we always adjust
+> the frame parameters on session negotiations, but do not reset the frame
+> state for a new session on an existing state instance.  That caused the
+> frame parameters to be reduced for each reconnect, resulting in smaller
+> and smaller packet size limits until no traffic could go through the
+> tunnel at all.  This patch resolves that omission.
 
-On Tue, May 09, 2017 at 10:12:43AM +0200, Steffan Karger wrote:
->          goto cleanup;
->      }
->=20=20
-> -    if (-1 =3D=3D mbedtls_x509_dn_gets(dn, sizeof(dn), &mbed_crt.subject=
-))
-> +    if (!(ret =3D x509_get_subject(&mbed_crt, gc)))
->      {
->          msg(M_FATAL, "PKCS#11: mbed TLS cannot parse subject");
->          goto cleanup;
->      }
->=20=20
-> -    ret =3D string_alloc(dn, gc);
-> -
 
-ACK.=20=20
+Only glared at the code changes, and it makes sense to me.  I'll try to
+run a few tests to see if I can reproduce this issue.  If others can
+help test this patch, that will also help tremendously - and I'll try to
+remember to add a Tested-by: tag in the commit log too for all those
+confirming this fix.
 
-x509_get_subject() does exactly the same thing, just with error handling
-for the case "mbedtls_x509_dn_gets() returns 0".  So - less code, and
-error case handled :-)
+A little nit-pick below though.
 
-(Note: cleanup patch expected, to remove the "goto cleanup" calls after
-a msg(M_FATAL, ...) line which is guaranteed to never return)
 
-gert
+> Trac: #879
+> Signed-off-by: Steffan Karger <steffan@...1856...>
+> ---
+>  src/openvpn/forward.c | 7 +++++++
+>  src/openvpn/init.c    | 2 ++
+>  src/openvpn/openvpn.h | 3 ++-
+>  src/openvpn/ssl.c     | 9 +--------
+>  src/openvpn/ssl.h     | 8 ++++++++
+>  5 files changed, 20 insertions(+), 9 deletions(-)
+>=20
+> diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+> index 8102e94..2f3f3c5 100644
+> --- a/src/openvpn/forward.c
+> +++ b/src/openvpn/forward.c
+> @@ -866,9 +866,16 @@ process_incoming_link_part1(struct context *c, struc=
+t link_socket_info *lsi, boo
+>               * will load crypto_options with the correct encryption key
+>               * and return false.
+>               */
+> +            uint8_t opcode =3D *BPTR(&c->c2.buf) >> P_OPCODE_SHIFT;
+>              if (tls_pre_decrypt(c->c2.tls_multi, &c->c2.from, &c->c2.buf=
+, &co,
+>                                  floated, &ad_start))
+>              {
+
+Wouldn't it make more sense to move the opcode declaration to inside the
+if (tls_pre_decrypt(...)) block?  I can do that on-the-fly though.
+
+
 --=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+kind regards,
 
---LKTjZJSUETSlgu2t
+David Sommerseth
+OpenVPN Technologies, Inc
+
+
+
+--JLwEEXMvBrFGdpDKX36qGm4fUhT78AMKo--
+
+--K1AUxFsGI4H28siegmsWc7FwHqtwR4QjO
 Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQGcBAEBAgAGBQJZEYmNAAoJEB2Cnv7KVigSc0kL+wfgS8nf4Tkr2oTJ61JbwziF
-jk19k1Hp3KiKwvwAn6yhp3HoDHNG9nBPYPiXZ/+a20BU3JreBIiCgMVIITBfluaK
-4IDowcu7CXSwadplkfn7jCZSF+3FgNIjXIwO6vYbxHh8+pMOw2ccOS+F0sk2VSkJ
-q03IKsViGyBUIEE650w77+KxOgB7GDbATjj7sY4CFMm4aQMSSN0rgTLeJ0TVMVrs
-cwhTB4uyFB1mD5cYj3AmesQ5C/LWtpwW8jMYdA0oSEr/xCA+GEkPAhXO1QNWuBlV
-qCJKyGYyrG5b20NctesAKozA6Hz28MU5N7WuyTN1kSho38T1E1mnzJfNPKnLu5Xe
-C5RDaaIrhYx2JJwoHQCIRKnGVE1BlcGzO6plSYT3FedHdP9Z9ShhsnIUm0TuVX1K
-Lr5MCUXyiBP4H6w+U+abIiCAWOFVP+PGCtpH1nvFGWmpEqO33kECj41+xJGY34nJ
-jRGbJDaxkaSLrA7qNzehbLSFulqZIh0Mm3CgqcvOPA==
-=WFPT
+iQIcBAEBCAAGBQJZEZ4YAAoJEIbPlEyWcf3yClkP/R+Vqf7Ov++ew24EB073l59W
+Kb+ZgJPCf+H9iGjnODrL5bpv+ZkU7Bo3zqz3+/M+QiIvfPJVsoxGFQ5iVRH6+4lM
+lJOO02kVyLeYafthl8tCjmij145tBfZlpIz0e70KYdwJujPPZpPgsqyV7yptP2gh
+FmblOfZ1xdfMqZOykLDF8Z1qcgIB4/MIuYSilc/THn2Ud8lnAzQZVNwP5Ulwb2a8
+2coMnPivsy/nRhKK6Gqi0KOPbQtKfh9cIW+mZShxHt9M6Pbuf46IM1H/AieRD0UE
+2uALhrKSHxg/oWzQfulXrjCmLjnJ6RzA5d+/0yIohYl6fbwOMYiySfnwyijowgNd
+fOYTmTK0JluXukBJ2TD1hqfcf6pBIdo9vqY8Is4jOGzuJwBIR2rs6iGfMKVJI59S
+Pd8hXAl5loXqJQFaKi+olfXZH9Dw4VNynz3V3a0FDdsb9eCLzaCkszS16lGEI8/a
+4GtsPt6hzOt61LEDHcYvOMd0pjUG9bPXw7ug1PZq9FtNzDU/Og4orLsA2ET/0/P3
+VaH0XGnIuxy+bJzHVPQjLMAKBqDiuDHwxvoIvuQ6k4YwFOlvW4GLm9w6WzW4jrVn
+UnA6v8odifgWJ/WYWhC1Clzq6sn5mRj3VHUbXEjRn4r+q+/aI/W00I57lku58U4f
+PRzFRJnaft2yMIqmcL8a
+=xgw6
 -----END PGP SIGNATURE-----
 
---LKTjZJSUETSlgu2t--
+--K1AUxFsGI4H28siegmsWc7FwHqtwR4QjO--
 
