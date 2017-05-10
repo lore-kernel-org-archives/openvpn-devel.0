@@ -1,10 +1,15 @@
-From: David Sommerseth <davids@...515...>
-Date: Tue,  9 May 2017 22:16:39 +0200
-Message-Id: <20170509201639.31433-1-davids@...515...>
-In-Reply-To: <1494355368-20238-1-git-send-email-steffan.karger@...1435...>
-References: <1494355368-20238-1-git-send-email-steffan.karger@...1435...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Document tls-crypt security
-	considerations in man page
+References: <20170504173605.8269-1-valdikss@...277...>
+	<CAKuzo_hKv+0LTi-pNh8xGMNTazgUjhXSkw2ZPGo0KDQ0SgsOHA@...278...>
+From: ValdikSS <valdikss@...277...>
+Message-ID: <9cc5162b-d81b-9286-e715-e6c7d807385d@...277...>
+Date: Wed, 10 May 2017 19:08:27 +0300
+MIME-Version: 1.0
+In-Reply-To: <CAKuzo_hKv+0LTi-pNh8xGMNTazgUjhXSkw2ZPGo0KDQ0SgsOHA@...278...>
+Content-Type: multipart/alternative;
+	boundary="------------96C8D10282057CD1BFE4F1AA"
+Content-Language: en-GB
+Subject: Re: [Openvpn-devel] [PATCH] Set a low interface metric for tap
+ adapter when block-outside-dns is in use
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,60 +18,313 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+To: Selva Nair <selva.nair@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+
+This is a multi-part message in MIME format.
+--------------96C8D10282057CD1BFE4F1AA
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+
+On 08.05.2017 17:47, Selva Nair wrote:
+> Hi,
+>
+> Please bear with me for making a few more comments.
+
+Please don't excuse. That's totally fine.
+
+> This close to final so only
+> a few minor issues.
+>
+> On Thu, May 4, 2017 at 1:36 PM, ValdikSS <valdikss@...277... <mailto:valdikss@...277...>> wrote:
+>
+> Nitpicking here, but anyway a new version is required (see below), so
+> it would be nice if you wrap lines in commit message to something
+> like about 70 to 80 at most. Not sure whether we have a policy on this..
+
+Done.
+
+>
+>
+> InitializeIpInterfaceEntry() is missing in all but very recent mingw32 versions
+> (their commit logs show it was added in early 2015) so we may need
+> to declare it in block_dns.c. I use Debian jessie (8.7) -- mingw gcc 4.9.1 and its
+> not there. I believe Samuli's build system uses an even older version.
+
+I don't know how to do that correctly. Can you please help me?
+
+>
+> Note that 64 bit build still succeeds with a warning but 32 bit will fail because
+> of stdcall. Yes, its stdcall though MSDN doesn't mention it as such.
+>
+>
+> This would be "Get" or "Return" not "Set"
+
+Done.
+
+>  
+>
+> ..
+>
+>  
+>
+> The current metric is queried and saved only for v4 while the metric is
+> set and restored for both v4 and v6. Isn't it necessary to also save the
+> metric for both independently? I'm not sure whether anyone really uses
+> different metric for v4 and v6 but Windows allows it.
+
+Done.
+
+>  
+>
+> Here ">" should be ">=0", else automatic metric is not restored.
+
+Done.
+
+>  
+>
+> Finally there are some trailing white space errors (6 places). This is a good
+> opportunity to fix those too.
+
+Done.
+
+Please check
+https://github.com/ValdikSS/openvpn-with-patches/commit/02058c8f043d2731011222a05686478a09e479ec
+
+Text vesion:
+https://github.com/ValdikSS/openvpn-with-patches/commit/02058c8f043d2731011222a05686478a09e479ec.patch
+
+>
+> Thanks,
+>
+> Selva
+>
+>
+> ------------------------------------------------------------------------------
+> Check out the vibrant tech community on one of the world's most
+> engaging tech sites, Slashdot.org! http://sdm.link/slashdot
+>
+>
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+
+
+--------------96C8D10282057CD1BFE4F1AA
+Content-Type: text/html; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: steffan.karger@...1435...
-Cc: openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA256
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  </head>
+  <body text="#000000" bgcolor="#FFFFFF">
+    On 08.05.2017 17:47, Selva Nair wrote:<br>
+    <blockquote type="cite"
+cite="mid:CAKuzo_hKv+0LTi-pNh8xGMNTazgUjhXSkw2ZPGo0KDQ0SgsOHA@...278...">
+      <div dir="ltr">Hi,
+        <div><br>
+        </div>
+        <div>Please bear with me for making a few more comments.</div>
+      </div>
+    </blockquote>
+    <br>
+    Please don't excuse. That's totally fine.<br>
+    <br>
+    <blockquote type="cite"
+cite="mid:CAKuzo_hKv+0LTi-pNh8xGMNTazgUjhXSkw2ZPGo0KDQ0SgsOHA@...278...">
+      <div dir="ltr">
+        <div> This close to final so only<br>
+          a few minor issues.<br>
+        </div>
+        <div>
+          <div class="gmail_extra"><br>
+            <div class="gmail_quote">On Thu, May 4, 2017 at 1:36 PM,
+              ValdikSS <span dir="ltr">&lt;<a
+                  href="mailto:valdikss@...277..." target="_blank"
+                  moz-do-not-send="true">valdikss@...277...</a>&gt;</span>
+              wrote:
+              <div><br>
+              </div>
+              <div>Nitpicking here, but anyway a new version is required
+                (see below), so</div>
+              <div>it would be nice if you wrap lines in commit message
+                to something</div>
+              <div>like about 70 to 80 at most. Not sure whether we have
+                a policy on this..</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </blockquote>
+    <br>
+    Done.<br>
+    <br>
+    <blockquote type="cite"
+cite="mid:CAKuzo_hKv+0LTi-pNh8xGMNTazgUjhXSkw2ZPGo0KDQ0SgsOHA@...278...">
+      <div dir="ltr">
+        <div>
+          <div class="gmail_extra">
+            <div class="gmail_quote">
+              <div><br>
+              </div>
+              <div><br>
+              </div>
+              <div>InitializeIpInterfaceEntry() is missing in all but
+                very recent mingw32 versions<br>
+              </div>
+              <div>(their commit logs show it was added in early 2015)
+                so we may need</div>
+              <div>to declare it in block_dns.c. I use Debian jessie
+                (8.7) -- mingw gcc 4.9.1 and its<br>
+              </div>
+              <div>not there. I believe Samuli's build system uses an
+                even older version.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </blockquote>
+    <br>
+    I don't know how to do that correctly. Can you please help me?<br>
+    <br>
+    <blockquote type="cite"
+cite="mid:CAKuzo_hKv+0LTi-pNh8xGMNTazgUjhXSkw2ZPGo0KDQ0SgsOHA@...278...">
+      <div dir="ltr">
+        <div>
+          <div class="gmail_extra">
+            <div class="gmail_quote">
+              <div><br>
+              </div>
+              <div>Note that 64 bit build still succeeds with a warning
+                but 32 bit will fail because</div>
+              <div>of stdcall. Yes, its stdcall though MSDN doesn't
+                mention it as such.<br>
+              </div>
+              <div><br>
+              </div>
+              <div><br>
+              </div>
+              <div>This would be "Get" or "Return" not "Set"</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </blockquote>
+    <br>
+    Done.<br>
+    <br>
+    <blockquote type="cite"
+cite="mid:CAKuzo_hKv+0LTi-pNh8xGMNTazgUjhXSkw2ZPGo0KDQ0SgsOHA@...278...">
+      <div dir="ltr">
+        <div>
+          <div class="gmail_extra">
+            <div class="gmail_quote">
+              <div> </div>
+              <div><br>
+              </div>
+              <div>..</div>
+              <div><br>
+              </div>
+              <div> </div>
+              <div><br>
+              </div>
+              <div>The current metric is queried and saved only for v4
+                while the metric is</div>
+              <div>set and restored for both v4 and v6. Isn't it
+                necessary to also save the</div>
+              <div>metric for both independently? I'm not sure whether
+                anyone really uses<br>
+                different metric for v4 and v6 but Windows allows it.<br>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </blockquote>
+    <br>
+    Done.<br>
+    <br>
+    <blockquote type="cite"
+cite="mid:CAKuzo_hKv+0LTi-pNh8xGMNTazgUjhXSkw2ZPGo0KDQ0SgsOHA@...278...">
+      <div dir="ltr">
+        <div>
+          <div class="gmail_extra">
+            <div class="gmail_quote">
+              <div> </div>
+              <div><br>
+              </div>
+              <div>Here "&gt;" should be "&gt;=0", else automatic metric
+                is not restored.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </blockquote>
+    <br>
+    Done.<br>
+    <br>
+    <blockquote type="cite"
+cite="mid:CAKuzo_hKv+0LTi-pNh8xGMNTazgUjhXSkw2ZPGo0KDQ0SgsOHA@...278...">
+      <div dir="ltr">
+        <div>
+          <div class="gmail_extra">
+            <div class="gmail_quote">
+              <div> </div>
+              <div><br>
+              </div>
+              <div>Finally there are some trailing white space errors (6
+                places). This is a good</div>
+              <div>opportunity to fix those too.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </blockquote>
+    <br>
+    Done.<br>
+    <br>
+    Please check<br>
+<a class="moz-txt-link-freetext" href="https://github.com/ValdikSS/openvpn-with-patches/commit/02058c8f043d2731011222a05686478a09e479ec">https://github.com/ValdikSS/openvpn-with-patches/commit/02058c8f043d2731011222a05686478a09e479ec</a><br>
+    <br>
+    Text vesion:<br>
+<a class="moz-txt-link-freetext" href="https://github.com/ValdikSS/openvpn-with-patches/commit/02058c8f043d2731011222a05686478a09e479ec.patch">https://github.com/ValdikSS/openvpn-with-patches/commit/02058c8f043d2731011222a05686478a09e479ec.patch</a><br>
+    <br>
+    <blockquote type="cite"
+cite="mid:CAKuzo_hKv+0LTi-pNh8xGMNTazgUjhXSkw2ZPGo0KDQ0SgsOHA@...278...">
+      <div dir="ltr">
+        <div>
+          <div class="gmail_extra">
+            <div class="gmail_quote">
+              <div><br>
+              </div>
+              <div>Thanks,</div>
+              <div><br>
+              </div>
+              <div>Selva</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <br>
+      <fieldset class="mimeAttachmentHeader"></fieldset>
+      <br>
+      <pre wrap="">------------------------------------------------------------------------------
+Check out the vibrant tech community on one of the world's most
+engaging tech sites, Slashdot.org! <a class="moz-txt-link-freetext" href="http://sdm.link/slashdot">http://sdm.link/slashdot</a></pre>
+      <br>
+      <fieldset class="mimeAttachmentHeader"></fieldset>
+      <br>
+      <pre wrap="">_______________________________________________
+Openvpn-devel mailing list
+<a class="moz-txt-link-abbreviated" href="mailto:Openvpn-devel@lists.sourceforge.net">Openvpn-devel@lists.sourceforge.net</a>
+<a class="moz-txt-link-freetext" href="https://lists.sourceforge.net/lists/listinfo/openvpn-devel">https://lists.sourceforge.net/lists/listinfo/openvpn-devel</a>
+</pre>
+    </blockquote>
+    <br>
+  </body>
+</html>
 
-Fixed a few typos during commit time, as pointed out by Selva.  The
-changes are:
-
- -direction.  Assuming both initial negotation and renogatiations are at most
- +direction.  Assuming both initial negotiation and renegotiations are at most
-
- -2^16 (65536) packets (too be conservative), and (re)negotiations happen each
- +2^16 (65536) packets (to be conservative), and (re)negotiations happen each
-
-
-Your patch has been applied to the following branches
-
-commit 5806f66eb927a6a698c0f067f563d7bc2203a376  (master)
-commit 9444506e45df86e6c8fbabfbf4a97c538cd971f4  (release/2.4)
-Author: Steffan Karger
-Date:   Tue May 9 20:42:48 2017 +0200
-
-     Document tls-crypt security considerations in man page
-
-     Signed-off-by: Steffan Karger <steffan.karger@...1435...>
-     Acked-by: Selva Nair <selva.nair@...277...>
-     Message-Id: <1494355368-20238-1-git-send-email-steffan.karger@...1435...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg14610.html
-     Signed-off-by: David Sommerseth <davids@...515...>
-
-
-- --
-kind regards,
-
-David Sommerseth
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBCAAGBQJZEiOhAAoJEIbPlEyWcf3yy3kP/0SpNIeLUVRcGg/oHClYoM5y
-UvSU4oJ2KCLssliNC66RwoFg+q2A0+oAl1p6z2AIXt4VBgkRxm5VZsd9lMZX0JAs
-i6hV7EGoF1Fl0/9PYp6zNyNHspe2qQT3x1NNEHYHK91w3aUwXMlarJEfV2lmFoy9
-cRbsBzQSK4o71on9EsFnNxLDFJrr2gBqM80AYu1JsT3DeWIHRyC+QFWX8qqmC4YX
-80TSqWFkH90BA+qJypdaEizw0nTJWZjkFmRIN/Qa/0hXwtlUJToAbI9uL4W+oo5h
-ZLD8WFCeM6PtTGX411uN/uU1Ky/cME61/CNJyd7/qIMDKQcU2+a0kxC5XsPRlaXD
-d/WR06ruWFU34pLqwU6VJnwsKL841NQCASuYMDddzpULbYmuyLgLrkbQZ69Wgv+z
-t91LpQAjoMQ6wkXpXq6175smypjvIUVfktUP9g/UnPDVPIdJmdMIDkf4I9zVYOtP
-cW2DTOlnaBH7hEdwZCZmVSts/uu3b1eXowDlFTppO2914+g6tTs4aBzzYnkYdCcL
-XpA3+zPNuXhgspRQ/q47e8EsMraSrV8zIRu27B1CowjwnFrBe9Z6oOzI9SH23Nzg
-lkvvY1drp5EZm+Ewoomi5kLeUOb4SgDT+0ud2vsl3lFNUV5D9NQXQruVpScu+8sF
-UgFuGmnlmWm+S8lkSxrP
-=erjH
------END PGP SIGNATURE-----
+--------------96C8D10282057CD1BFE4F1AA--
 
