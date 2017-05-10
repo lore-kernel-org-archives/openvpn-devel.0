@@ -1,14 +1,8 @@
-MIME-Version: 1.0
-In-Reply-To: <9cc5162b-d81b-9286-e715-e6c7d807385d@...277...>
-References: <20170504173605.8269-1-valdikss@...277...>
-	<CAKuzo_hKv+0LTi-pNh8xGMNTazgUjhXSkw2ZPGo0KDQ0SgsOHA@...278...>
-	<9cc5162b-d81b-9286-e715-e6c7d807385d@...277...>
-From: Selva Nair <selva.nair@...277...>
-Date: Wed, 10 May 2017 12:40:41 -0400
-Message-ID: <CAKuzo_hw3A1tAmqq_OQWgnrEyn2FSB9_T1ME5+TnrDDmkv0eXg@...278...>
-Content-Type: multipart/alternative; boundary=001a11403b5045737d054f2e2379
-Subject: Re: [Openvpn-devel] [PATCH] Set a low interface metric for tap
- adapter when block-outside-dns is in use
+From: ValdikSS <valdikss@...277...>
+Date: Wed, 10 May 2017 21:47:53 +0300
+Message-Id: <20170510184753.27145-1-valdikss@...277...>
+Subject: [Openvpn-devel] [PATCH v2] Set a low interface metric for tap
+	adapter when block-outside-dns is in use
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,93 +11,398 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: ValdikSS <valdikss@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: ValdikSS <iam@...2070...>
 
---001a11403b5045737d054f2e2379
-Content-Type: text/plain; charset=UTF-8
+From: ValdikSS <iam@...2070...>
 
-On Wed, May 10, 2017 at 12:08 PM, ValdikSS <valdikss@...277...> wrote:
+Windows 10 before Creators Update used to resolve DNS using all
+available adapters and IP addresses in parallel. Now it still
+resolves addresses using all available adapters but in a round-robin
+way, beginning with random adapter.
+This behaviour introduces significant delay when block-outside-dns is
+in use. Fortunately, setting low metric for the TAP interface solves
+this issue, making Windows always pick TAP adapter first and disable
+round-robin.
+---
+ src/openvpn/block_dns.c       | 78 +++++++++++++++++++++++++++++++++++++++++++
+ src/openvpn/block_dns.h       | 30 +++++++++++++++++
+ src/openvpn/init.c            |  4 +--
+ src/openvpn/win32.c           | 39 ++++++++++++++++++++--
+ src/openvpn/win32.h           |  2 +-
+ src/openvpnserv/interactive.c | 70 +++++++++++++++++++++++++++++++++++---
+ 6 files changed, 213 insertions(+), 10 deletions(-)
 
->
-> InitializeIpInterfaceEntry() is missing in all but very recent mingw32
-> versions
-> (their commit logs show it was added in early 2015) so we may need
-> to declare it in block_dns.c. I use Debian jessie (8.7) -- mingw gcc 4.9.1
-> and its
-> not there. I believe Samuli's build system uses an even older version.
->
->
-> I don't know how to do that correctly. Can you please help me?
+diff --git a/src/openvpn/block_dns.c b/src/openvpn/block_dns.c
+index e31765e..d916aff 100644
+--- a/src/openvpn/block_dns.c
++++ b/src/openvpn/block_dns.c
+@@ -110,6 +110,9 @@ DEFINE_GUID(
+ 
+ static WCHAR *FIREWALL_NAME = L"OpenVPN";
+ 
++VOID NETIOAPI_API_
++InitializeIpInterfaceEntry(PMIB_IPINTERFACE_ROW Row);
++
+ /*
+  * Default msg handler does nothing
+  */
+@@ -341,4 +344,79 @@ delete_block_dns_filters(HANDLE engine_handle)
+     return err;
+ }
+ 
++/*
++ * Returns interface metric value for specified interface index.
++ *
++ * Arguments:
++ *   index         : The index of TAP adapter.
++ *   family        : Address family (AF_INET for IPv4 and AF_INET6 for IPv6).
++ * Returns positive metric value or zero for automatic metric on success,
++ * a less then zero error code on failure.
++ */
++
++int
++get_interface_metric(const NET_IFINDEX index, const ADDRESS_FAMILY family)
++{
++    DWORD err = 0;
++    MIB_IPINTERFACE_ROW ipiface;
++    InitializeIpInterfaceEntry(&ipiface);
++    ipiface.Family = family;
++    ipiface.InterfaceIndex = index;
++    err = GetIpInterfaceEntry(&ipiface);
++    if (err == NO_ERROR)
++    {
++        if (ipiface.UseAutomaticMetric)
++        {
++            return 0;
++        }
++        return ipiface.Metric;
++    }
++    return -err;
++}
++
++/*
++ * Sets interface metric value for specified interface index.
++ *
++ * Arguments:
++ *   index         : The index of TAP adapter.
++ *   family        : Address family (AF_INET for IPv4 and AF_INET6 for IPv6).
++ *   metric        : Metric value. 0 for automatic metric.
++ * Returns 0 on success, a non-zero status code of the last failed action on failure.
++ */
++
++DWORD
++set_interface_metric(const NET_IFINDEX index, const ADDRESS_FAMILY family,
++                     const ULONG metric)
++{
++    DWORD err = 0;
++    MIB_IPINTERFACE_ROW ipiface;
++    InitializeIpInterfaceEntry(&ipiface);
++    ipiface.Family = family;
++    ipiface.InterfaceIndex = index;
++    err = GetIpInterfaceEntry(&ipiface);
++    if (err == NO_ERROR)
++    {
++        if (family == AF_INET)
++        {
++            /* required for IPv4 as per MSDN */
++            ipiface.SitePrefixLength = 0;
++        }
++        ipiface.Metric = metric;
++        if (metric == 0)
++        {
++            ipiface.UseAutomaticMetric = TRUE;
++        }
++        else
++        {
++            ipiface.UseAutomaticMetric = FALSE;
++        }
++        err = SetIpInterfaceEntry(&ipiface);
++        if (err == NO_ERROR)
++        {
++            return 0;
++        }
++    }
++    return err;
++}
++
+ #endif /* ifdef _WIN32 */
+diff --git a/src/openvpn/block_dns.h b/src/openvpn/block_dns.h
+index a7dadc4..dc607ff 100644
+--- a/src/openvpn/block_dns.h
++++ b/src/openvpn/block_dns.h
+@@ -27,6 +27,9 @@
+ #ifndef OPENVPN_BLOCK_DNS_H
+ #define OPENVPN_BLOCK_DNS_H
+ 
++/* Any value less than 5 should work fine. 3 is choosen without any real reason. */
++#define BLOCK_DNS_IFACE_METRIC 3
++
+ typedef void (*block_dns_msg_handler_t) (DWORD err, const char *msg);
+ 
+ DWORD
+@@ -36,5 +39,32 @@ DWORD
+ add_block_dns_filters(HANDLE *engine, int iface_index, const WCHAR *exe_path,
+                       block_dns_msg_handler_t msg_handler_callback);
+ 
++/**
++ * Returns interface metric value for specified interface index.
++ *
++ * @param index The index of TAP adapter
++ * @param family Address family (AF_INET for IPv4 and AF_INET6 for IPv6)
++ *
++ * @return positive metric value or zero for automatic metric on success,
++ * a less then zero error code on failure.
++ */
++
++int
++get_interface_metric(const NET_IFINDEX index, const ADDRESS_FAMILY family);
++
++/**
++ * Sets interface metric value for specified interface index.
++ *
++ * @param index The index of TAP adapter
++ * @param family Address family (AF_INET for IPv4 and AF_INET6 for IPv6)
++ * @param metric Metric value. 0 for automatic metric
++ *
++ * @return 0 on success, a non-zero status code of the last failed action on failure.
++ */
++
++DWORD
++set_interface_metric(const NET_IFINDEX index, const ADDRESS_FAMILY family,
++                     const ULONG metric);
++
+ #endif
+ #endif
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index ee14f67..2a2e7b0 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -1837,7 +1837,7 @@ do_close_tun(struct context *c, bool force)
+ #if defined(_WIN32)
+             if (c->options.block_outside_dns)
+             {
+-                if (!win_wfp_uninit(c->options.msg_channel))
++                if (!win_wfp_uninit(adapter_index, c->options.msg_channel))
+                 {
+                     msg(M_FATAL, "Uninitialising WFP failed!");
+                 }
+@@ -1877,7 +1877,7 @@ do_close_tun(struct context *c, bool force)
+ #if defined(_WIN32)
+             if (c->options.block_outside_dns)
+             {
+-                if (!win_wfp_uninit(c->options.msg_channel))
++                if (!win_wfp_uninit(adapter_index, c->options.msg_channel))
+                 {
+                     msg(M_FATAL, "Uninitialising WFP failed!");
+                 }
+diff --git a/src/openvpn/win32.c b/src/openvpn/win32.c
+index 18e7aee..0cbf5fd 100644
+--- a/src/openvpn/win32.c
++++ b/src/openvpn/win32.c
+@@ -61,6 +61,12 @@
+ static HANDLE m_hEngineHandle = NULL; /* GLOBAL */
+ 
+ /*
++ * TAP adapter original metric value
++ */
++static int tap_metric_v4 = -1; /* GLOBAL */
++static int tap_metric_v6 = -1; /* GLOBAL */
++
++/*
+  * Windows internal socket API state (opaque).
+  */
+ static struct WSAData wsa_state; /* GLOBAL */
+@@ -1337,6 +1343,27 @@ win_wfp_block_dns(const NET_IFINDEX index, const HANDLE msg_channel)
+ 
+     status = add_block_dns_filters(&m_hEngineHandle, index, openvpnpath,
+                                    block_dns_msg_handler);
++    if (status == 0)
++    {
++        tap_metric_v4 = get_interface_metric(index, AF_INET);
++        tap_metric_v6 = get_interface_metric(index, AF_INET6);
++        if (tap_metric_v4 < 0)
++        {
++            /* error, should not restore metric */
++            tap_metric_v4 = -1;
++        }
++        if (tap_metric_v6 < 0)
++        {
++            /* error, should not restore metric */
++            tap_metric_v6 = -1;
++        }
++        status = set_interface_metric(index, AF_INET, BLOCK_DNS_IFACE_METRIC);
++        if (!status)
++        {
++            set_interface_metric(index, AF_INET6, BLOCK_DNS_IFACE_METRIC);
++        }
++    }
++
+     ret = (status == 0);
+ 
+ out:
+@@ -1345,19 +1372,27 @@ out:
+ }
+ 
+ bool
+-win_wfp_uninit(const HANDLE msg_channel)
++win_wfp_uninit(const NET_IFINDEX index, const HANDLE msg_channel)
+ {
+     dmsg(D_LOW, "Uninitializing WFP");
+ 
+     if (msg_channel)
+     {
+         msg(D_LOW, "Using service to delete block dns filters");
+-        win_block_dns_service(false, -1, msg_channel);
++        win_block_dns_service(false, index, msg_channel);
+     }
+     else
+     {
+         delete_block_dns_filters(m_hEngineHandle);
+         m_hEngineHandle = NULL;
++        if (tap_metric_v4 >= 0)
++        {
++            set_interface_metric(index, AF_INET, tap_metric_v4);
++        }
++        if (tap_metric_v6 >= 0)
++        {
++            set_interface_metric(index, AF_INET6, tap_metric_v6);
++        }
+     }
+ 
+     return true;
+diff --git a/src/openvpn/win32.h b/src/openvpn/win32.h
+index 4ee44fd..cd1f101 100644
+--- a/src/openvpn/win32.h
++++ b/src/openvpn/win32.h
+@@ -293,7 +293,7 @@ WCHAR *wide_string(const char *utf8, struct gc_arena *gc);
+ 
+ bool win_wfp_block_dns(const NET_IFINDEX index, const HANDLE msg_channel);
+ 
+-bool win_wfp_uninit(const HANDLE msg_channel);
++bool win_wfp_uninit(const NET_IFINDEX index, const HANDLE msg_channel);
+ 
+ #define WIN_XP 0
+ #define WIN_VISTA 1
+diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
+index 2bce598..68ab057 100644
+--- a/src/openvpnserv/interactive.c
++++ b/src/openvpnserv/interactive.c
+@@ -94,6 +94,13 @@ typedef enum {
+ } undo_type_t;
+ typedef list_item_t *undo_lists_t[_undo_type_max];
+ 
++typedef struct {
++    HANDLE engine;
++    int index;
++    int metric_v4;
++    int metric_v6;
++} block_dns_data_t;
++
+ 
+ static DWORD
+ AddListItem(list_item_t **pfirst, LPVOID data)
+@@ -885,6 +892,7 @@ static DWORD
+ HandleBlockDNSMessage(const block_dns_message_t *msg, undo_lists_t *lists)
+ {
+     DWORD err = 0;
++    block_dns_data_t *interface_data;
+     HANDLE engine = NULL;
+     LPCWSTR exe_path;
+ 
+@@ -901,16 +909,57 @@ HandleBlockDNSMessage(const block_dns_message_t *msg, undo_lists_t *lists)
+         err = add_block_dns_filters(&engine, msg->iface.index, exe_path, BlockDNSErrHandler);
+         if (!err)
+         {
+-            err = AddListItem(&(*lists)[block_dns], engine);
++            interface_data = malloc(sizeof(block_dns_data_t));
++            if (!interface_data)
++            {
++                return ERROR_OUTOFMEMORY;
++            }
++            interface_data->engine = engine;
++            interface_data->index = msg->iface.index;
++            interface_data->metric_v4 = get_interface_metric(msg->iface.index,
++                                                             AF_INET);
++            if (interface_data->metric_v4 < 0)
++            {
++                interface_data->metric_v4 = -1;
++            }
++            interface_data->metric_v6 = get_interface_metric(msg->iface.index,
++                                                             AF_INET6);
++            if (interface_data->metric_v6 < 0)
++            {
++                interface_data->metric_v6 = -1;
++            }
++            err = AddListItem(&(*lists)[block_dns], interface_data);
++            if (!err)
++            {
++                err = set_interface_metric(msg->iface.index, AF_INET,
++                                           BLOCK_DNS_IFACE_METRIC);
++                if (!err)
++                {
++                    set_interface_metric(msg->iface.index, AF_INET6,
++                                         BLOCK_DNS_IFACE_METRIC);
++                }
++            }
+         }
+     }
+     else
+     {
+-        engine = RemoveListItem(&(*lists)[block_dns], CmpEngine, NULL);
+-        if (engine)
++        interface_data = RemoveListItem(&(*lists)[block_dns], CmpEngine, NULL);
++        if (interface_data)
+         {
++            engine = interface_data->engine;
+             err = delete_block_dns_filters(engine);
+             engine = NULL;
++            if (interface_data->metric_v4 >= 0)
++            {
++                set_interface_metric(msg->iface.index, AF_INET,
++                                     interface_data->metric_v4);
++            }
++            if (interface_data->metric_v6 >= 0)
++            {
++                set_interface_metric(msg->iface.index, AF_INET6,
++                                     interface_data->metric_v6);
++            }
++            free(interface_data);
+         }
+         else
+         {
+@@ -1325,6 +1374,7 @@ static VOID
+ Undo(undo_lists_t *lists)
+ {
+     undo_type_t type;
++    block_dns_data_t *interface_data;
+     for (type = 0; type < _undo_type_max; type++)
+     {
+         list_item_t **pnext = &(*lists)[type];
+@@ -1350,8 +1400,18 @@ Undo(undo_lists_t *lists)
+                     break;
+ 
+                 case block_dns:
+-                    delete_block_dns_filters(item->data);
+-                    item->data = NULL;
++                    interface_data = (block_dns_data_t*)(item->data);
++                    delete_block_dns_filters(interface_data->engine);
++                    if (interface_data->metric_v4 >= 0)
++                    {
++                        set_interface_metric(interface_data->index, AF_INET,
++                                             interface_data->metric_v4);
++                    }
++                    if (interface_data->metric_v6 >= 0)
++                    {
++                        set_interface_metric(interface_data->index, AF_INET6,
++                                             interface_data->metric_v6);
++                    }
+                     break;
+             }
+ 
+-- 
+2.9.3
 
-
-
-In block-dns.c where "WFP-related defines and GUIDs not in mingw32" are
-defined, add this
-
-VOID NETIOAPI_API_
-InitializeIpInterfaceEntry(PMIB_IPINTERFACE_ROW Row );
-
-Do a test build for 32 bit to see now this function compiles without
-warnings
-and links without errors. 32 bit is a more stringent test because only in
-this
-case the linker will fail to find stdcall functions without proper
-declarations.
-
-That should be it.
-
-Selva
-
---001a11403b5045737d054f2e2379
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">=
-On Wed, May 10, 2017 at 12:08 PM, ValdikSS <span dir=3D"ltr">&lt;<a href=3D=
-"mailto:valdikss@...277..." target=3D"_blank">valdikss@...277...</a>&gt;</s=
-pan> wrote:<br><blockquote style=3D"margin:0px 0px 0px 0.8ex;border-left:1p=
-x solid rgb(204,204,204);padding-left:1ex" class=3D"gmail_quote"><span clas=
-s=3D"m_4209327532875772628gmail-"><blockquote type=3D"cite"><div dir=3D"ltr=
-"><div><div class=3D"gmail_extra"><div class=3D"gmail_quote"><div><br>
-              </div>
-              <div>InitializeIpInterfaceEntry() is missing in all but
-                very recent mingw32 versions<br>
-              </div>
-              <div>(their commit logs show it was added in early 2015)
-                so we may need</div>
-              <div>to declare it in block_dns.c. I use Debian jessie
-                (8.7) -- mingw gcc 4.9.1 and its<br>
-              </div>
-              <div>not there. I believe Samuli&#39;s build system uses an
-                even older version.</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </blockquote>
-    <br></span>
-    I don&#39;t know how to do that correctly. Can you please help me?</blo=
-ckquote></div><br><br></div><div class=3D"gmail_extra">In block-dns.c where=
- &quot;WFP-related defines and GUIDs not in mingw32&quot; are defined, add =
-this<br><br>VOID
-=20=20=20=20=20=20
-=20=20=20=20=20=20
-=20=20=20=20=20=20=20=20
-        NETIOAPI_API_
-=20=20=20=20=20=20
-=20=20=20=20=20=20
-=20=20=20=20=20=20=20=20
-        <br>InitializeIpInterfaceEntry(<wbr>PMIB_IPINTERFACE_ROW Row
-=20=20=20=20=20=20
-=20=20=20=20=20=20
-=20=20=20=20=20=20=20=20
-            );<br><br></div><div class=3D"gmail_extra">Do a test build for =
-32 bit to see now this function compiles without warnings<br>and links with=
-out errors. 32 bit is a more stringent test because only in this<br>case th=
-e linker will fail to find stdcall functions without proper declarations.<b=
-r><br></div><div class=3D"gmail_extra">That should be it.<br><br></div><div=
- class=3D"gmail_extra">Selva<br></div></div>
-
---001a11403b5045737d054f2e2379--
 
