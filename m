@@ -1,14 +1,10 @@
-Resent-To: "openvpn-devel@lists.sourceforge.net"
-	<openvpn-devel@lists.sourceforge.net>
-Resent-Message-ID: <d42aeed3-5d5f-9bbb-763a-918fc087be9a@...2162...>
-Date: Thu, 11 May 2017 11:24:09 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20170511092409.GU97029@...1296...>
-References: <1494493257-8125-1-git-send-email-steffan.karger@...1435...>
-In-Reply-To: <1494493257-8125-1-git-send-email-steffan.karger@...1435...>
-MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH (release/2.3)] Don't assert out on
- receiving too-large control packets (CVE-2017-7478)
+From: David Sommerseth <davids@...515...>
+Date: Thu, 11 May 2017 18:36:11 +0200
+Message-Id: <20170511163611.32630-1-davids@...515...>
+In-Reply-To: <1494358209-4568-2-git-send-email-steffan.karger@...1435...>
+References: <1494358209-4568-2-git-send-email-steffan.karger@...1435...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Don't assert out on receiving
+	too-large control packets (CVE-2017-7478)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,76 +13,54 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Content-Disposition: inline
-To: Steffan Karger <steffan.karger@...1435...>
-Cc: security@...515...
+To: steffan.karger@...1435...
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA256
 
-On Thu, May 11, 2017 at 11:00:57AM +0200, Steffan Karger wrote:
-> Commit 358f513c changed the maximum size of accepted control channel
-> packets.  This was needed for crypto negotiation (which is needed for a
-> nice transition to a new default cipher), but exposed a DoS
-> vulnerability.  The vulnerability was found during the OpenVPN 2.4 code
-> audit by Quarkslab (commisioned by OSTIF).
-> 
-> To fix the issue, we should not ASSERT() on external input (in this case
-> the received packet size), but instead gracefully error out and drop the
-> invalid packet.
-> 
-> Signed-off-by: Steffan Karger <steffan.karger@...1435...>
-> ---
->  Changes.rst       | 5 +++++
->  src/openvpn/ssl.c | 7 ++++++-
->  2 files changed, 11 insertions(+), 1 deletion(-)
-> 
-> diff --git a/Changes.rst b/Changes.rst
-> index 183e9fa..cc6ca2b 100644
-> --- a/Changes.rst
-> +++ b/Changes.rst
-> @@ -109,6 +109,11 @@ Version 2.3.15
->  
->  Security fixes
->  --------------
-> +- Fix a pre-authentication denial-of-service attack on both clients and servers.
-> +  By sending a too-large control packet, OpenVPN 2.3.12 and newer can be forced
-> +  to hit an ASSERT() and stop the process.  If ``--tls-auth`` or ``--tls-crypt``
-> +  is used, only attackers that have the ``--tls-auth`` or ``--tls-crypt`` key
-
-When applying, please remove the "--tls-crypt" reference as 2.3 does not
-have this (so it's confusing at best).
-
-> +  can mount an attack. (OSTIF/Quarkslab audit finding 5.1, CVE-2017-7478)
->  - Fix an authenticated remote DoS vulnerability that could be triggered by
->    causing a packet id roll over.  An attack is rather inefficient; a peer
->    would need to get us to send at least about 196 GB of data.
-> diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-> index 32d0b6b..c8f093d 100644
-> --- a/src/openvpn/ssl.c
-> +++ b/src/openvpn/ssl.c
-> @@ -3228,7 +3228,12 @@ tls_pre_decrypt (struct tls_multi *multi,
->  			    /* Save incoming ciphertext packet to reliable buffer */
->  			    struct buffer *in = reliable_get_buf (ks->rec_reliable);
->  			    ASSERT (in);
-> -			    ASSERT (buf_copy (in, buf));
-> +			    if (!buf_copy (in, buf))
-> +			      {
-> +				msg (D_MULTI_DROPPED,
-> +				     "Incoming control channel packet too big, dropping.");
-> +				goto error;
-> +			      }
->  			    reliable_mark_active_incoming (ks->rec_reliable, in, id, op);
->  			  }
+This resolves the issue in my tests, code looks sane ... so ACK!
 
 
-ACK.  Same patch as in 2.4+master.
+Your patch has been applied to the following branches
 
-gert
--- 
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~gert/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+commit 5774cf4c25e1d8bf4e544702db8f157f111c9d93  (master)
+commit 66b99a0753352c5cc43e11e39835b6423112df98  (release/2.4)
+Author: Steffan Karger
+Date:   Tue May 9 21:30:08 2017 +0200
+
+     Don't assert out on receiving too-large control packets (CVE-2017-7478)
+
+     CVE: 2017-7478
+     Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+     Acked-by: David Sommerseth <davids@...515...>
+     Message-Id: <1494358209-4568-2-git-send-email-steffan.karger@...1435...>
+     URL: http://www.mail-archive.com/search?l=mid&q=1494358209-4568-2-git-send-email-steffan.karger@...1435...
+     Signed-off-by: David Sommerseth <davids@...515...>
+
+
+- --
+kind regards,
+
+David Sommerseth
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBCAAGBQJZFJLzAAoJEIbPlEyWcf3yMkAP/jQ3M60uZ1i6xcjNiwWlrIbn
+UXg7/pWGll62M4lBnr0ePTNkXMDEw74amoHtrmSahVMPZuIzHtLU3P+6q5g7aVES
+iuZuvmUJFbrc6QHqjIuUmWLi5DERt3946hKaVuuV/nug6cYURmHgf6Y9q/9lse/M
+EVEXqyU5WWqJzcK8ArAyTd0Ade4/PAUtyYdvKVWqAtugbLL+nfJV9hNkZV/iOSiH
+T9xpW8mhQyu6iqmdtvPux4bPwVZjODHTeCT5aOnpLaTGhRUQmDu3G4KdhPLYI9H5
+TYGrjTI5CPvQ5/gRZx6HD93gYhU/uBq2cQROdzQbFCqQc/yMOqWVy4vkAGey4Kj3
+RpFhgwDiClChDFNilV3s6OswW3vCml3Dl992jJVxsasUZDCibp3mEWxHGAbTKnQT
+i7pxOL7yTHEaU4U2tfEk+0sKq0ur0qX2JUBQbOIrBg1TVstyhSBxLVAL306qxCPN
+GwcgSYtWP0iIOx1/9C3gh3OOex4f6v3rxMFXg0hq1gQbsr9YXoYm0jgE92vADdMc
+RAUj9sQRl0J8Uy/u8p8tEQKho0gjkXSlowVgsxaOo96y2kj5lncqGrg2xnk7CRvv
+5+Xjho26P9RjiC1GH5z7GvM8hL1jKazMRRVWX8FqYOhf7EwBoxnlMY4ZixEz+3iy
+kFEQazOrRBW4gXAPe/N7
+=EVP5
+-----END PGP SIGNATURE-----
 
