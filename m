@@ -1,11 +1,11 @@
 From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <a06a95d2-54b0-0e57-3d9f-a21f735db5e2@...515...>
-Date: Thu, 11 May 2017 17:18:00 +0300
+Message-ID: <c0d99f25-3b34-961b-c60c-4302d609c4fd@...515...>
+Date: Thu, 11 May 2017 17:19:49 +0300
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
 	protocol="application/pgp-signature";
-	boundary="b8vqknvTTLgHWv3xXB8giEclqqim8PNUl"
-Subject: [Openvpn-devel] OpenVPN 2.4.2 released (with security fixes)
+	boundary="cSEdF4CD0MdTK3pPpPvbPxrp8iStvioQw"
+Subject: [Openvpn-devel] OpenVPN 2.3.15 released (with security fixes)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,8 +17,8 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>, openvpn-announce@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---b8vqknvTTLgHWv3xXB8giEclqqim8PNUl
-Content-Type: multipart/mixed; boundary="6cicsc64CCQAxHuKS9MKWVNsGcppv9rkH";
+--cSEdF4CD0MdTK3pPpPvbPxrp8iStvioQw
+Content-Type: multipart/mixed; boundary="O2VAu0DSnA4ftrrAxAktlq0MeJRi5UXGL";
 	protected-headers="v1"
 From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
 To: "openvpn-devel@lists.sourceforge.net"
@@ -26,20 +26,20 @@ To: "openvpn-devel@lists.sourceforge.net"
 	"openvpn-users@lists.sourceforge.net"
 	<openvpn-users@lists.sourceforge.net>, 
 	openvpn-announce@lists.sourceforge.net
-Message-ID: <a06a95d2-54b0-0e57-3d9f-a21f735db5e2@...515...>
-Subject: OpenVPN 2.4.2 released (with security fixes)
+Message-ID: <c0d99f25-3b34-961b-c60c-4302d609c4fd@...515...>
+Subject: OpenVPN 2.3.15 released (with security fixes)
 
---6cicsc64CCQAxHuKS9MKWVNsGcppv9rkH
-Content-Type: multipart/mixed; boundary="------------4D4077BA7ACF605AD9844A93"
+--O2VAu0DSnA4ftrrAxAktlq0MeJRi5UXGL
+Content-Type: multipart/mixed; boundary="------------8D1C9F522898632CAF7AD662"
 Content-Language: en-US
 
 This is a multi-part message in MIME format.
---------------4D4077BA7ACF605AD9844A93
+--------------8D1C9F522898632CAF7AD662
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
-The OpenVPN community project team is proud to release OpenVPN 2.4.2. It
-can be downloaded from here:
+The OpenVPN community project team is proud to release OpenVPN 2.3.15.
+It can be downloaded from here:
 
 <http://openvpn.net/index.php/open-source/downloads.html>
 
@@ -55,32 +55,11 @@ rAudits>
 
 A summary of the changes is available here:
 
-<https://github.com/OpenVPN/openvpn/blob/release/2.4/Changes.rst>
+<https://github.com/OpenVPN/openvpn/blob/release/2.3/Changes.rst>
 
 A full list of changes is available here:
 
-<https://community.openvpn.net/openvpn/wiki/ChangesInOpenvpn24>
-
-Compared to OpenVPN 2.3 this is a major update with a large number of
-new features, improvements and fixes. Some of the major features are
-AEAD (GCM) cipher and Elliptic Curve DH key exchange support, improved
-IPv4/IPv6 dual stack support and more seamless connection migration when
-client's IP address changes (Peer-ID). Also, the new --tls-crypt feature
-can be used to increase users' connection privacy.
-
-OpenVPN GUI bundled with the Windows installer has a large number of new
-features compared to the one bundled with OpenVPN 2.3. One of major
-features is the ability to run OpenVPN GUI without administrator privileges.
-
-For full details, look here:
-
-<https://community.openvpn.net/openvpn/wiki/ChangesInOpenvpn24>
-
-The new OpenVPN GUI features are documented here:
-
-<https://github.com/OpenVPN/openvpn-gui>
-
-Please note that OpenVPN 2.4 installers will not work on Windows XP.
+<https://community.openvpn.net/openvpn/wiki/ChangesInOpenvpn23>
 
 For generic help use these support channels:
 
@@ -97,6 +76,7 @@ Bug tracker and wiki: <https://community.openvpn.net>
 Developer mailing list: <http://sourceforge.net/mail/?group_id=3D48978>
 Developer IRC channel: #openvpn-devel at irc.freenode.net (requires
 Freenode registration)
+
 --=20
 Samuli Sepp=C3=A4nen
 Community Manager
@@ -104,7 +84,7 @@ OpenVPN Technologies, Inc
 
 irc freenode net: mattock
 
---------------4D4077BA7ACF605AD9844A93
+--------------8D1C9F522898632CAF7AD662
 Content-Type: application/pgp-keys;
  name="0x40864578.asc"
 Content-Transfer-Encoding: quoted-printable
@@ -153,11 +133,11 @@ XuwT7RpGDZ6jBfphYQ=3D=3D
 =3DFKLE
 -----END PGP PUBLIC KEY BLOCK-----
 
---------------4D4077BA7ACF605AD9844A93--
+--------------8D1C9F522898632CAF7AD662--
 
---6cicsc64CCQAxHuKS9MKWVNsGcppv9rkH--
+--O2VAu0DSnA4ftrrAxAktlq0MeJRi5UXGL--
 
---b8vqknvTTLgHWv3xXB8giEclqqim8PNUl
+--cSEdF4CD0MdTK3pPpPvbPxrp8iStvioQw
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -165,14 +145,14 @@ Content-Disposition: attachment; filename="signature.asc"
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQEcBAEBCAAGBQJZFHKZAAoJEClYTZ9AhkV4c9sIAJspuHzy7TVTjgCbAp0dO3ac
-E3Cec3wd3D48nn2ia9yTm1slhFnWXAAv/YRzsiobvOBUBCf2+q+u36ZwRwnxwrJH
-qY/UqaPfHyLcZFigFS61SbdjfaSathTsmooAAhc2dPul5EYsrOiIOIZAN0P3EllH
-3aBYQwRjcG9eEXDGhboVpKpmQlNF6KKdUJZ/HaW7l6tNouq6jCEuY7znqs1Prh1a
-wOyK7/xWV1eNrc11XfXWfPUNop3HlfSCGNEXapfKjDexU+dKlZ0TgxQIwxFWqqHQ
-LXJMT/CbsBgrvvwtKNlW9JNTcX/be2KvoZfXJJ7TKr2YUy2obqRUaDL0fmYM+wk=
-=M/+g
+iQEcBAEBCAAGBQJZFHMGAAoJEClYTZ9AhkV4goEH/17jhDaop7zkBoFacUZA7rlr
+v75qcLYvm08ERsu5LZ6q07yu0+8ooNSONcirtc5dgzvhPyEpxPQjLG78MEXmqfLv
+XU6C+wJhb7WreENVjA0CQA9yRiQ5W7w1l9SUEsykxEzwnj3CuKrVHPJSuV0bAhqJ
+FDzKPJmfn5DDH1p2RjfozodRZagZfRzgnNT/kNDtJSJdBn6OHn8j+x8o6X+fIb1C
++wRwbrLFqhPTMv9+sAnKsmSVcBeFqEdCIEA6cSetcQS6xGJI0Tg4dFBzHmJPVudg
+R2+py6Df1lxUX4KK1ztamNcYUeLmkaf1DTtJIbbDV2R9hCDjnNJpvE+EFqDftPM=
+=cqAC
 -----END PGP SIGNATURE-----
 
---b8vqknvTTLgHWv3xXB8giEclqqim8PNUl--
+--cSEdF4CD0MdTK3pPpPvbPxrp8iStvioQw--
 
