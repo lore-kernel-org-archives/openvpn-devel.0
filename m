@@ -1,8 +1,11 @@
-From: Steffan Karger <steffan@...1856...>
-Date: Wed, 10 May 2017 22:56:15 +0200
-Message-Id: <1494449775-22199-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH (release/2.3)] Introduce and use
-	secure_memzero() to erase secrets
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <a06a95d2-54b0-0e57-3d9f-a21f735db5e2@...515...>
+Date: Thu, 11 May 2017 17:18:00 +0300
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature";
+	boundary="b8vqknvTTLgHWv3xXB8giEclqqim8PNUl"
+Subject: [Openvpn-devel] OpenVPN 2.4.2 released (with security fixes)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,388 +14,165 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>, openvpn-announce@lists.sourceforge.net
+
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--b8vqknvTTLgHWv3xXB8giEclqqim8PNUl
+Content-Type: multipart/mixed; boundary="6cicsc64CCQAxHuKS9MKWVNsGcppv9rkH";
+	protected-headers="v1"
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+To: "openvpn-devel@lists.sourceforge.net"
+	<openvpn-devel@lists.sourceforge.net>,
+	"openvpn-users@lists.sourceforge.net"
+	<openvpn-users@lists.sourceforge.net>, 
+	openvpn-announce@lists.sourceforge.net
+Message-ID: <a06a95d2-54b0-0e57-3d9f-a21f735db5e2@...515...>
+Subject: OpenVPN 2.4.2 released (with security fixes)
+
+--6cicsc64CCQAxHuKS9MKWVNsGcppv9rkH
+Content-Type: multipart/mixed; boundary="------------4D4077BA7ACF605AD9844A93"
+Content-Language: en-US
+
+This is a multi-part message in MIME format.
+--------------4D4077BA7ACF605AD9844A93
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Transfer-Encoding: quoted-printable
 
-This is a cherry-pick of commit 009521ac (master).
+The OpenVPN community project team is proud to release OpenVPN 2.4.2. It
+can be downloaded from here:
 
-As described in trac #751, and shortly after reported by Zhaomo Yang, of
-the University of California, San Diego, we use memset() (often through
-the CLEAR() macro) to erase secrets after use.  In some cases however, the
-compiler might optimize these calls away.
+<http://openvpn.net/index.php/open-source/downloads.html>
 
-This patch replaces these memset() calls on secrets by calls to a new
-secure_memzero() function, that will not be optimized away.
+OpenVPN v2.4.0 was audited for security vulnerabilities independently by
+Quarkslabs (funded by OSTIF) and Cryptography Engineering (funded by
+Private Internet Access) between December 2016 and April 2017. The
+primary findings were two remote denial-of-service vulnerabilities.
+Fixes to them have been backported to v2.3.15.  Our official security
+announcement is here:
 
-Since we use CLEAR() a LOT of times, I'm not changing that to use
-secure_memzero() to prevent performance impact.  I did annotate the macro
-to point people at secure_memzero().
+<https://community.openvpn.net/openvpn/wiki/QuarkslabAndCryptographyEnginee=
+rAudits>
 
-This patch also replaces some CLEAR() or memset() calls with a zero-
-initialization using "= { 0 }" if that has the same effect.
+A summary of the changes is available here:
 
-Signed-off-by: Steffan Karger <steffan@...1856...>
----
- src/openvpn/basic.h   |  2 +-
- src/openvpn/buffer.c  |  8 ++++----
- src/openvpn/buffer.h  | 43 +++++++++++++++++++++++++++++++++++++++++++
- src/openvpn/crypto.c  | 14 +++++---------
- src/openvpn/init.c    |  2 +-
- src/openvpn/manage.c  |  2 +-
- src/openvpn/misc.c    |  2 +-
- src/openvpn/options.c |  6 +++---
- src/openvpn/ssl.c     | 31 ++++++++++++++-----------------
- 9 files changed, 73 insertions(+), 37 deletions(-)
+<https://github.com/OpenVPN/openvpn/blob/release/2.4/Changes.rst>
 
-diff --git a/src/openvpn/basic.h b/src/openvpn/basic.h
-index 95caf76..dac6f01 100644
---- a/src/openvpn/basic.h
-+++ b/src/openvpn/basic.h
-@@ -30,7 +30,7 @@
- /* size of an array */
- #define SIZE(x) (sizeof(x)/sizeof(x[0]))
- 
--/* clear an object */
-+/* clear an object (may be optimized away, use secure_memzero() to erase secrets) */
- #define CLEAR(x) memset(&(x), 0, sizeof(x))
- 
- #define IPV4_NETMASK_HOST 0xffffffffU
-diff --git a/src/openvpn/buffer.c b/src/openvpn/buffer.c
-index 4d217d1..1c17b61 100644
---- a/src/openvpn/buffer.c
-+++ b/src/openvpn/buffer.c
-@@ -155,7 +155,9 @@ void
- buf_clear (struct buffer *buf)
- {
-   if (buf->capacity > 0)
--    memset (buf->data, 0, buf->capacity);
-+    {
-+      secure_memzero (buf->data, buf->capacity);
-+    }
-   buf->len = 0;
-   buf->offset = 0;
- }
-@@ -579,9 +581,7 @@ string_clear (char *str)
- {
-   if (str)
-     {
--      const int len = strlen (str);
--      if (len > 0)
--	memset (str, 0, len);
-+      secure_memzero (str, strlen (str));
-     }
- }
- 
-diff --git a/src/openvpn/buffer.h b/src/openvpn/buffer.h
-index c34c4a3..3f600e7 100644
---- a/src/openvpn/buffer.h
-+++ b/src/openvpn/buffer.h
-@@ -307,6 +307,49 @@ has_digit (const unsigned char* src)
-   return false;
- }
- 
-+/**
-+ * Securely zeroise memory.
-+ *
-+ * This code and description are based on code supplied by Zhaomo Yang, of the
-+ * University of California, San Diego (which was released into the public
-+ * domain).
-+ *
-+ * The secure_memzero function attempts to ensure that an optimizing compiler
-+ * does not remove the intended operation if cleared memory is not accessed
-+ * again by the program. This code has been tested under Clang 3.9.0 and GCC
-+ * 6.2 with optimization flags -O, -Os, -O0, -O1, -O2, and -O3 on
-+ * Ubuntu 16.04.1 LTS; under Clang 3.9.0 with optimization flags -O, -Os,
-+ * -O0, -O1, -O2, and -O3 on FreeBSD 10.2-RELEASE; under Microsoft Visual Studio
-+ * 2015 with optimization flags /O1, /O2 and /Ox on Windows 10.
-+ *
-+ * Theory of operation:
-+ *
-+ * 1. On Windows, use the SecureZeroMemory which ensures that data is
-+ *    overwritten.
-+ * 2. Under GCC or Clang, use a memory barrier, which forces the preceding
-+ *    memset to be carried out. The overhead of a memory barrier is usually
-+ *    negligible.
-+ * 3. If none of the above are available, use the volatile pointer
-+ *    technique to zero memory one byte at a time.
-+ *
-+ * @param data	Pointer to data to zeroise.
-+ * @param len	Length of data, in bytes.
-+ */
-+static inline void
-+secure_memzero (void *data, size_t len)
-+{
-+#if defined(_WIN32)
-+  SecureZeroMemory (data, len);
-+#elif defined(__GNUC__) || defined(__clang__)
-+  memset(data, 0, len);
-+  __asm__ __volatile__("" : : "r"(data) : "memory");
-+#else
-+  volatile char *p = (volatile char *) data;
-+  while (len--)
-+    *p++ = 0;
-+#endif
-+}
-+
- /*
-  * printf append to a buffer with overflow check,
-  * due to usage of vsnprintf, it will leave space for
-diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
-index f153367..6fc97dd 100644
---- a/src/openvpn/crypto.c
-+++ b/src/openvpn/crypto.c
-@@ -98,15 +98,13 @@ openvpn_encrypt (struct buffer *buf, struct buffer work,
-       /* Do Encrypt from buf -> work */
-       if (ctx->cipher)
- 	{
--	  uint8_t iv_buf[OPENVPN_MAX_IV_LENGTH];
-+	  uint8_t iv_buf[OPENVPN_MAX_IV_LENGTH] = {0};
- 	  const int iv_size = cipher_ctx_iv_length (ctx->cipher);
- 	  const cipher_kt_t *cipher_kt = cipher_ctx_get_cipher_kt (ctx->cipher);
- 	  int outlen;
- 
- 	  if (cipher_kt_mode_cbc(cipher_kt))
- 	    {
--	      CLEAR (iv_buf);
--
- 	      /* generate pseudo-random IV */
- 	      if (opt->flags & CO_USE_IV)
- 		prng_bytes (iv_buf, iv_size);
-@@ -124,7 +122,6 @@ openvpn_encrypt (struct buffer *buf, struct buffer work,
- 	      ASSERT (opt->flags & CO_USE_IV);    /* IV and packet-ID required */
- 	      ASSERT (opt->packet_id); /*  for this mode. */
- 
--	      memset (iv_buf, 0, iv_size);
- 	      buf_set_write (&b, iv_buf, iv_size);
- 	      ASSERT (packet_id_write (&opt->packet_id->send, &b, true, false));
- 	    }
-@@ -271,14 +268,13 @@ openvpn_decrypt (struct buffer *buf, struct buffer work,
- 	{
- 	  const int iv_size = cipher_ctx_iv_length (ctx->cipher);
- 	  const cipher_kt_t *cipher_kt = cipher_ctx_get_cipher_kt (ctx->cipher);
--	  uint8_t iv_buf[OPENVPN_MAX_IV_LENGTH];
-+	  uint8_t iv_buf[OPENVPN_MAX_IV_LENGTH] = { 0 };
- 	  int outlen;
- 
- 	  /* initialize work buffer with FRAME_HEADROOM bytes of prepend capacity */
- 	  ASSERT (buf_init (&work, FRAME_HEADROOM_ADJ (frame, FRAME_HEADROOM_MARKER_DECRYPT)));
- 
- 	  /* use IV if user requested it */
--	  CLEAR (iv_buf);
- 	  if (opt->flags & CO_USE_IV)
- 	    {
- 	      if (buf->len < iv_size)
-@@ -828,7 +824,7 @@ get_tls_handshake_key (const struct key_type *key_type,
-       init_key_ctx (&ctx->decrypt, &key2.keys[kds.in_key], &kt, OPENVPN_OP_DECRYPT,
- 		    "Incoming Control Channel Authentication");
- 
--      CLEAR (key2);
-+      secure_memzero (&key2, sizeof (key2));
-     }
-   else
-     {
-@@ -1138,8 +1134,8 @@ write_key_file (const int nkeys, const char *filename)
-       buf_printf (&out, "%s\n", fmt);
- 
-       /* zero memory which held key component (will be freed by GC) */
--      memset (fmt, 0, strlen(fmt));
--      CLEAR (key);
-+      secure_memzero (fmt, strlen (fmt));
-+      secure_memzero (&key, sizeof (key));
-     }
- 
-   buf_printf (&out, "%s\n", static_key_foot);
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 227d2c6..42380b7 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -2115,7 +2115,7 @@ do_init_crypto_static (struct context *c, const unsigned int flags)
- 		    &c->c1.ks.key_type, OPENVPN_OP_DECRYPT, "Static Decrypt");
- 
-       /* Erase the temporary copy of key */
--      CLEAR (key2);
-+      secure_memzero (&key2, sizeof(key2));
-     }
-   else
-     {
-diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
-index cf6fec1..d9471d1 100644
---- a/src/openvpn/manage.c
-+++ b/src/openvpn/manage.c
-@@ -2975,7 +2975,7 @@ management_query_user_pass (struct management *man,
- 	  man->connection.up_query.nocache = up->nocache; /* preserve caller's nocache setting */
- 	  *up = man->connection.up_query;
- 	}
--      CLEAR (man->connection.up_query);
-+      secure_memzero (&man->connection.up_query, sizeof (man->connection.up_query));
-     }
- 
-   gc_free (&gc);
-diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
-index 39aa936..dc650c6 100644
---- a/src/openvpn/misc.c
-+++ b/src/openvpn/misc.c
-@@ -1340,7 +1340,7 @@ purge_user_pass (struct user_pass *up, const bool force)
-   static bool warn_shown = false;
-   if (nocache || force)
-     {
--      CLEAR (*up);
-+      secure_memzero (up, sizeof(*up));
-       up->nocache = nocache;
-     }
-   else if (!warn_shown)
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 3a6b4f2..79f861b 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -3819,7 +3819,7 @@ read_inline_file (struct in_src *is, const char *close_tag, struct gc_arena *gc)
-   ret = string_alloc (BSTR (&buf), gc);
-   buf_clear (&buf);
-   free_buf (&buf);
--  CLEAR (line);
-+  secure_memzero (line, sizeof (line));
-   return ret;
- }
- 
-@@ -3934,7 +3934,7 @@ read_config_file (struct options *options,
-     {
-       msg (msglevel, "In %s:%d: Maximum recursive include levels exceeded in include attempt of file %s -- probably you have a configuration file that tries to include itself.", top_file, top_line, file);
-     }
--  CLEAR (line);
-+  secure_memzero (line, sizeof (line));
-   CLEAR (p);
- }
- 
-@@ -3966,7 +3966,7 @@ read_config_string (const char *prefix,
- 	}
-       CLEAR (p);
-     }
--  CLEAR (line);
-+  secure_memzero (line, sizeof (line));
- }
- 
- void
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 32d0b6b..c52a0e4 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -1427,7 +1427,7 @@ tls1_P_hash(const md_kt_t *md_kt,
-     }
-   hmac_ctx_cleanup(&ctx);
-   hmac_ctx_cleanup(&ctx_tmp);
--  CLEAR (A1);
-+  secure_memzero (A1, sizeof (A1));
- 
-   dmsg (D_SHOW_KEY_SOURCE, "tls1_P_hash out: %s", format_hex (out_orig, olen_orig, 0, &gc));
-   gc_free (&gc);
-@@ -1537,14 +1537,11 @@ generate_key_expansion (struct key_ctx_bi *key,
- 			const struct session_id *server_sid,
- 			bool server)
- {
--  uint8_t master[48];
--  struct key2 key2;
-+  uint8_t master[48] = { 0 };
-+  struct key2 key2 = { 0 };
-   bool ret = false;
-   int i;
- 
--  CLEAR (master);
--  CLEAR (key2);
--
-   /* debugging print of source key material */
-   key_source2_print (key_src);
- 
-@@ -1608,8 +1605,8 @@ generate_key_expansion (struct key_ctx_bi *key,
-   ret = true;
- 
-  exit:
--  CLEAR (master);
--  CLEAR (key2);
-+  secure_memzero (&master, sizeof (master));
-+  secure_memzero (&key2, sizeof (key2));
- 
-   return ret;
- }
-@@ -1806,7 +1803,7 @@ key_method_1_write (struct buffer *buf, struct tls_session *session)
- 
-   init_key_ctx (&ks->key.encrypt, &key, &session->opt->key_type,
- 		OPENVPN_OP_ENCRYPT, "Data Channel Encrypt");
--  CLEAR (key);
-+  secure_memzero (&key, sizeof (key));
- 
-   /* send local options string */
-   {
-@@ -1976,7 +1973,7 @@ key_method_2_write (struct buffer *buf, struct tls_session *session)
- 	    }
- 	}
- 		      
--      CLEAR (*ks->key_src);
-+      secure_memzero (ks->key_src, sizeof (*ks->key_src));
-       tls_limit_reneg_bytes (session->opt->key_type.cipher,
- 			     &session->opt->renegotiate_bytes);
-     }
-@@ -1985,7 +1982,7 @@ key_method_2_write (struct buffer *buf, struct tls_session *session)
- 
-  error:
-   msg (D_TLS_ERRORS, "TLS Error: Key Method #2 write failed");
--  CLEAR (*ks->key_src);
-+  secure_memzero (ks->key_src, sizeof (*ks->key_src));
-   return false;
- }
- 
-@@ -2040,13 +2037,13 @@ key_method_1_read (struct buffer *buf, struct tls_session *session)
- 
-   init_key_ctx (&ks->key.decrypt, &key, &session->opt->key_type,
- 		OPENVPN_OP_DECRYPT, "Data Channel Decrypt");
--  CLEAR (key);
-+  secure_memzero (&key, sizeof (key));
-   ks->authenticated = true;
-   return true;
- 
-  error:
-   buf_clear (buf);
--  CLEAR (key);
-+  secure_memzero (&key, sizeof (key));
-   return false;
- }
- 
-@@ -2111,7 +2108,7 @@ key_method_2_read (struct buffer *buf, struct tls_multi *multi, struct tls_sessi
- 
-       if (!username_status || !password_status)
- 	{
--	  CLEAR (*up);
-+	  secure_memzero (up, sizeof(*up));
- 	  if (!(session->opt->ssl_flags & SSLF_AUTH_USER_PASS_OPTIONAL))
- 	    {
- 	      msg (D_TLS_ERRORS, "TLS Error: Auth Username/Password was not provided by peer");
-@@ -2126,7 +2123,7 @@ key_method_2_read (struct buffer *buf, struct tls_multi *multi, struct tls_sessi
- #endif
- 
-       verify_user_pass(up, multi, session);
--      CLEAR (*up);
-+      secure_memzero (up, sizeof (*up));
-     }
-   else
-     {
-@@ -2188,14 +2185,14 @@ key_method_2_read (struct buffer *buf, struct tls_multi *multi, struct tls_sessi
- 	  goto error;
- 	}
- 		      
--      CLEAR (*ks->key_src);
-+      secure_memzero (ks->key_src, sizeof (*ks->key_src));
-     }
- 
-   gc_free (&gc);
-   return true;
- 
-  error:
--  CLEAR (*ks->key_src);
-+  secure_memzero (ks->key_src, sizeof (*ks->key_src));
-   buf_clear (buf);
-   gc_free (&gc);
-   return false;
--- 
-2.7.4
+A full list of changes is available here:
 
+<https://community.openvpn.net/openvpn/wiki/ChangesInOpenvpn24>
+
+Compared to OpenVPN 2.3 this is a major update with a large number of
+new features, improvements and fixes. Some of the major features are
+AEAD (GCM) cipher and Elliptic Curve DH key exchange support, improved
+IPv4/IPv6 dual stack support and more seamless connection migration when
+client's IP address changes (Peer-ID). Also, the new --tls-crypt feature
+can be used to increase users' connection privacy.
+
+OpenVPN GUI bundled with the Windows installer has a large number of new
+features compared to the one bundled with OpenVPN 2.3. One of major
+features is the ability to run OpenVPN GUI without administrator privileges.
+
+For full details, look here:
+
+<https://community.openvpn.net/openvpn/wiki/ChangesInOpenvpn24>
+
+The new OpenVPN GUI features are documented here:
+
+<https://github.com/OpenVPN/openvpn-gui>
+
+Please note that OpenVPN 2.4 installers will not work on Windows XP.
+
+For generic help use these support channels:
+
+Official documentation:
+<http://openvpn.net/index.php/open-source/documentation/howto.html>
+Wiki: <https://community.openvpn.net>
+Forums: <https://forums.openvpn.net>
+User mailing list: <http://sourceforge.net/mail/?group_id=3D48978>
+User IRC channel: #openvpn at irc.freenode.net
+
+Please report bugs and ask development questions here:
+
+Bug tracker and wiki: <https://community.openvpn.net>
+Developer mailing list: <http://sourceforge.net/mail/?group_id=3D48978>
+Developer IRC channel: #openvpn-devel at irc.freenode.net (requires
+Freenode registration)
+--=20
+Samuli Sepp=C3=A4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
+
+--------------4D4077BA7ACF605AD9844A93
+Content-Type: application/pgp-keys;
+ name="0x40864578.asc"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: attachment;
+ filename="0x40864578.asc"
+
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+Version: GnuPG v2
+
+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
+XuwT7RpGDZ6jBfphYQ=3D=3D
+=3DFKLE
+-----END PGP PUBLIC KEY BLOCK-----
+
+--------------4D4077BA7ACF605AD9844A93--
+
+--6cicsc64CCQAxHuKS9MKWVNsGcppv9rkH--
+
+--b8vqknvTTLgHWv3xXB8giEclqqim8PNUl
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQEcBAEBCAAGBQJZFHKZAAoJEClYTZ9AhkV4c9sIAJspuHzy7TVTjgCbAp0dO3ac
+E3Cec3wd3D48nn2ia9yTm1slhFnWXAAv/YRzsiobvOBUBCf2+q+u36ZwRwnxwrJH
+qY/UqaPfHyLcZFigFS61SbdjfaSathTsmooAAhc2dPul5EYsrOiIOIZAN0P3EllH
+3aBYQwRjcG9eEXDGhboVpKpmQlNF6KKdUJZ/HaW7l6tNouq6jCEuY7znqs1Prh1a
+wOyK7/xWV1eNrc11XfXWfPUNop3HlfSCGNEXapfKjDexU+dKlZ0TgxQIwxFWqqHQ
+LXJMT/CbsBgrvvwtKNlW9JNTcX/be2KvoZfXJJ7TKr2YUy2obqRUaDL0fmYM+wk=
+=M/+g
+-----END PGP SIGNATURE-----
+
+--b8vqknvTTLgHWv3xXB8giEclqqim8PNUl--
 
