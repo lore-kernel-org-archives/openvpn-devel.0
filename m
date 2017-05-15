@@ -1,8 +1,8 @@
-From: selva.nair@...277...
-Date: Mon, 15 May 2017 10:40:03 -0400
-Message-Id: <1494859203-21904-1-git-send-email-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH] Correct the declaration of handle in
-	'struct openvpn_plugin_args_open_return'
+From: Steffan Karger <steffan.karger@...1435...>
+Date: Mon, 15 May 2017 16:43:55 +0200
+Message-ID: <1494859435-16379-1-git-send-email-steffan.karger@...1435...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH] Log the negotiated (NCP) cipher
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,52 +15,32 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-From: Selva Nair <selva.nair@...277...>
+To make it clear that NCP is in effect, print a log message (at --verb 2)
+to show that we selected a cipher using NCP.
 
-- This is an opaque pointer so the change should not affect existing plugins.
-  But it makes the code consistent and clears up the documentation as the handle
-  pointer is treated as of type "openvpn_plugin_handle_t" in the rest of the code.
-
-Signed-off-by: Selva Nair <selva.nair@...277...>
+Signed-off-by: Steffan Karger <steffan.karger@...1435...>
 ---
- include/openvpn-plugin.h.in | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ src/openvpn/ssl.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/include/openvpn-plugin.h.in b/include/openvpn-plugin.h.in
-index 5e6f874..b745307 100644
---- a/include/openvpn-plugin.h.in
-+++ b/include/openvpn-plugin.h.in
-@@ -355,7 +355,7 @@ struct openvpn_plugin_args_open_in
-  *              type_mask = OPENVPN_PLUGIN_MASK(OPENVPN_PLUGIN_CLIENT_CONNECT)
-  *                         | OPENVPN_PLUGIN_MASK(OPENVPN_PLUGIN_CLIENT_DISCONNECT)
-  *
-- * *handle :    Pointer to a global plug-in context, created by the plug-in.  This pointer
-+ * handle :     Pointer to a global plug-in context, created by the plug-in.  This pointer
-  *              is passed on to the other plug-in calls.
-  *
-  * return_list : used to return data back to OpenVPN.
-@@ -364,7 +364,7 @@ struct openvpn_plugin_args_open_in
- struct openvpn_plugin_args_open_return
- {
-     int type_mask;
--    openvpn_plugin_handle_t *handle;
-+    openvpn_plugin_handle_t handle;
-     struct openvpn_plugin_string_list **return_list;
- };
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 21c9d6f..3d5e824 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -1959,6 +1959,12 @@ tls_session_update_crypto_params(struct tls_session *session,
+         return false;
+     }
  
-@@ -386,9 +386,9 @@ struct openvpn_plugin_args_open_return
-  *        these variables are not actually written to the "official"
-  *        environmental variable store of the process.
-  *
-- * *handle : Pointer to a global plug-in context, created by the plug-in's openvpn_plugin_open_v3().
-+ * handle : Pointer to a global plug-in context, created by the plug-in's openvpn_plugin_open_v3().
-  *
-- * *per_client_context : the per-client context pointer which was returned by
-+ * per_client_context : the per-client context pointer which was returned by
-  *        openvpn_plugin_client_constructor_v1, if defined.
-  *
-  * current_cert_depth : Certificate depth of the certificate being passed over (only if compiled with ENABLE_CRYPTO defined)
++    if (strcmp(options->ciphername, session->opt->config_ciphername))
++    {
++        msg(D_HANDSHAKE, "Data Channel: using negotiated cipher '%s'",
++            options->ciphername);
++    }
++
+     init_key_type(&session->opt->key_type, options->ciphername,
+                   options->authname, options->keysize, true, true);
+ 
 -- 
-2.1.4
+2.7.4
 
 
