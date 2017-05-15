@@ -1,8 +1,8 @@
 From: selva.nair@...277...
-Date: Sun, 14 May 2017 18:16:36 -0400
-Message-Id: <1494800196-8144-1-git-send-email-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH for 2.3] Check for errors in the return
-	value of GetModuleFileNameW()
+Date: Mon, 15 May 2017 10:40:03 -0400
+Message-Id: <1494859203-21904-1-git-send-email-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH] Correct the declaration of handle in
+	'struct openvpn_plugin_args_open_return'
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,32 +17,49 @@ To: openvpn-devel@lists.sourceforge.net
 
 From: Selva Nair <selva.nair@...277...>
 
-Also replace MAX_PATH by _countof(openvpnpath) as the latter
-is arguably more robust.
+- This is an opaque pointer so the change should not affect existing plugins.
+  But it makes the code consistent and clears up the documentation as the handle
+  pointer is treated as of type "openvpn_plugin_handle_t" in the rest of the code.
 
 Signed-off-by: Selva Nair <selva.nair@...277...>
 ---
- src/openvpn/win32.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ include/openvpn-plugin.h.in | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/src/openvpn/win32.c b/src/openvpn/win32.c
-index b271597..56c3a1d 100644
---- a/src/openvpn/win32.c
-+++ b/src/openvpn/win32.c
-@@ -1271,7 +1271,12 @@ win_wfp_block_dns (const NET_IFINDEX index)
-     dmsg (D_LOW, "Tap Luid: %I64d", tapluid.Value);
+diff --git a/include/openvpn-plugin.h.in b/include/openvpn-plugin.h.in
+index 5e6f874..b745307 100644
+--- a/include/openvpn-plugin.h.in
++++ b/include/openvpn-plugin.h.in
+@@ -355,7 +355,7 @@ struct openvpn_plugin_args_open_in
+  *              type_mask = OPENVPN_PLUGIN_MASK(OPENVPN_PLUGIN_CLIENT_CONNECT)
+  *                         | OPENVPN_PLUGIN_MASK(OPENVPN_PLUGIN_CLIENT_DISCONNECT)
+  *
+- * *handle :    Pointer to a global plug-in context, created by the plug-in.  This pointer
++ * handle :     Pointer to a global plug-in context, created by the plug-in.  This pointer
+  *              is passed on to the other plug-in calls.
+  *
+  * return_list : used to return data back to OpenVPN.
+@@ -364,7 +364,7 @@ struct openvpn_plugin_args_open_in
+ struct openvpn_plugin_args_open_return
+ {
+     int type_mask;
+-    openvpn_plugin_handle_t *handle;
++    openvpn_plugin_handle_t handle;
+     struct openvpn_plugin_string_list **return_list;
+ };
  
-     /* Get OpenVPN path. */
--    GetModuleFileNameW(NULL, openvpnpath, MAX_PATH);
-+    status = GetModuleFileNameW(NULL, openvpnpath, _countof(openvpnpath));
-+    if (status == 0 || status == _countof(openvpnpath))
-+    {
-+        msg(M_WARN|M_ERRNO, "block_dns: failed to get executable path");
-+        goto err;
-+    }
- 
-     if (FwpmGetAppIdFromFileName0(openvpnpath, &openvpnblob) != ERROR_SUCCESS)
-         goto err;
+@@ -386,9 +386,9 @@ struct openvpn_plugin_args_open_return
+  *        these variables are not actually written to the "official"
+  *        environmental variable store of the process.
+  *
+- * *handle : Pointer to a global plug-in context, created by the plug-in's openvpn_plugin_open_v3().
++ * handle : Pointer to a global plug-in context, created by the plug-in's openvpn_plugin_open_v3().
+  *
+- * *per_client_context : the per-client context pointer which was returned by
++ * per_client_context : the per-client context pointer which was returned by
+  *        openvpn_plugin_client_constructor_v1, if defined.
+  *
+  * current_cert_depth : Certificate depth of the certificate being passed over (only if compiled with ENABLE_CRYPTO defined)
 -- 
 2.1.4
 
