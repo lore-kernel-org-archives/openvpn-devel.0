@@ -1,8 +1,10 @@
-From: =?utf-8?Q?Adam_=C5=A0tevko?= <adam.stevko@...277...>
-Mime-Version: 1.0 (1.0)
-Date: Wed, 17 May 2017 10:53:58 +0200
-Message-Id: <8925EED7-0E13-4DEE-B3F8-1A5E3E970F4A@...277...>
-Subject: [Openvpn-devel] [PATCH] OpenVPN rpm packaging - iproute2 support
+From: Arne Schwabe <arne@...1227...>
+References: <1494859435-16379-1-git-send-email-steffan.karger@...1435...>
+Message-ID: <7281bab4-266a-0c7e-e45c-d2577bd36395@...1227...>
+Date: Wed, 17 May 2017 18:24:14 +0200
+MIME-Version: 1.0
+In-Reply-To: <1494859435-16379-1-git-send-email-steffan.karger@...1435...>
+Subject: Re: [Openvpn-devel] [PATCH] Log the negotiated (NCP) cipher
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,61 +13,20 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+To: Steffan Karger <steffan.karger@...1435...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hello,
+Am 15.05.17 um 16:43 schrieb Steffan Karger:
+> To make it clear that NCP is in effect, print a log message (at --verb 2)
+> to show that we selected a cipher using NCP.
 
-this patch adds support to build openvpn rpms with iproute2 support. It's a=
- rather simple change, which defaults to off. Please review.
+ACK, also works as advertised:
 
-Cheers,
-Adam
+May 17 18:23:09 hermes ovpn-aead-v6[15271]:
+keto.blinkt.de/188.109.222.115 Data Channel: using negotiated cipher
+'AES-256-GCM'
 
-Date: Fri, 12 May 2017 12:00:50 +0200
-Subject: [PATCH] Add option to enable iproute2 support
 
----
-distro/rpm/openvpn.spec.in | 10 +++++++++-
-1 file changed, 9 insertions(+), 1 deletion(-)
-
-diff --git a/distro/rpm/openvpn.spec.in b/distro/rpm/openvpn.spec.in
-index 20a8c890..eca39257 100644
---- a/distro/rpm/openvpn.spec.in
-+++ b/distro/rpm/openvpn.spec.in
-@@ -10,6 +10,10 @@
-#
-# Allow passwords to be read from files
-#   rpmbuild -tb [openvpn.x.tar.gz] --define 'with_password_save 1'
-+#
-+# Enable iproute2 support
-+#   rpmbuild -tb [openvpn.x.tar.gz] --define 'with_iproute2 1'
-+#
-
-Summary:    OpenVPN is a robust and highly flexible VPN daemon by James Yon=
-an.
-Name:        @PACKAGE@
-@@ -52,6 +56,9 @@ Requires:    openssl       >=3D 0.9.7
-%{?with_pkcs11:BuildRequires:    pkcs11-helper-devel}
-%{?with_pkcs11:Requires:    pkcs11-helper}
-
-+%{?with_iproute2:BuildRequires:    iputils}
-+%{?with_iproute2:Requires:    iputils}
-+
-#
-# Description
-#
-@@ -102,7 +109,8 @@ Development support for OpenVPN.
-   %{?with_password_save:--enable-password-save} \
-   %{!?without_lzo:--enable-lzo} \
-   %{?with_pkcs11:--enable-pkcs11} \
--    %{?without_pam:--disable-plugin-auth-pam}
-+    %{?without_pam:--disable-plugin-auth-pam} \
-+    %{?with_iproute2:--enable-iproute2}
-%__make
-
-#
---=20
-2.13.0
 
