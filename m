@@ -1,8 +1,15 @@
-From: David Sommerseth <davids@...515...>
-Date: Thu, 18 May 2017 15:24:32 +0200
-Message-Id: <20170518132432.22776-1-davids@...515...>
-Subject: [Openvpn-devel] [PATCH] dev-tools: Script generating the source
-	releases in an automated fashion
+References: <8925EED7-0E13-4DEE-B3F8-1A5E3E970F4A@...277...>
+	<20170517191418.GF97029@...1296...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <7e53d2f9-40c3-a009-e34f-983cbc3d509b@...2080...>
+Date: Thu, 18 May 2017 17:06:43 +0200
+MIME-Version: 1.0
+In-Reply-To: <20170517191418.GF97029@...1296...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature";
+	boundary="QGuQoRT8wFprvSwFOmgHkaMGaSgp97lH3"
+Subject: Re: [Openvpn-devel] [PATCH] OpenVPN rpm packaging - iproute2 support
+Reply-To: openvpn-devel@lists.sourceforge.net
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,275 +18,98 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>, Adam ??tevko <adam.stevko@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-As we've had an ugly blunder with the v2.3.15 release, this release
-tries to avoid making the same mistake once again.  Plus it documents
-how we produce the source packages.
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--QGuQoRT8wFprvSwFOmgHkaMGaSgp97lH3
+Content-Type: multipart/mixed; boundary="VRx73xWRAnuWUku2Uhs7OFaPPkc3XQp1g";
+	protected-headers="v1"
+From: David Sommerseth <openvpn@...2080...>
+Reply-To: openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>, Adam ??tevko <adam.stevko@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
+Message-ID: <7e53d2f9-40c3-a009-e34f-983cbc3d509b@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH] OpenVPN rpm packaging - iproute2 support
+References: <8925EED7-0E13-4DEE-B3F8-1A5E3E970F4A@...277...>
+	<20170517191418.GF97029@...1296...>
+In-Reply-To: <20170517191418.GF97029@...1296...>
 
-Signed-off-by: David Sommerseth <davids@...515...>
----
- dev-tools/gen-release-tarballs.sh | 248 ++++++++++++++++++++++++++++++++++++++
- 1 file changed, 248 insertions(+)
- create mode 100755 dev-tools/gen-release-tarballs.sh
+--VRx73xWRAnuWUku2Uhs7OFaPPkc3XQp1g
+Content-Language: en-GB
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/dev-tools/gen-release-tarballs.sh b/dev-tools/gen-release-tarballs.sh
-new file mode 100755
-index 00000000..4969d72a
---- /dev/null
-+++ b/dev-tools/gen-release-tarballs.sh
-@@ -0,0 +1,248 @@
-+#!/bin/sh
-+# gen-release-tarballs.sh  -  Generates release tarballs with signatures
-+#
-+# Copyright (C) 2017 - David Sommerseth <davids@...515...>
-+#
-+# This program is free software; you can redistribute it and/or
-+# modify it under the terms of the GNU General Public License
-+# as published by the Free Software Foundation; either version 2
-+# of the License.
-+#
-+# This program is distributed in the hope that it will be useful,
-+# but WITHOUT ANY WARRANTY; without even the implied warranty of
-+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+# GNU General Public License for more details.
-+#
-+# You should have received a copy of the GNU General Public License
-+# along with this program; if not, write to the Free Software
-+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-+#
-+set -u
-+
-+if [ $# -ne 4 ]; then
-+    echo "Usage: $0 <remote-name> <tag-name> <sign-key> <dest-dir>"
-+    echo ""
-+    echo "   remote-name  -- valid remotes: `git remote | tr \\\n ' '`"
-+    echo "   tag-name     -- An existing release tag"
-+    echo "   sign-key     -- PGP key used to sign all files"
-+    echo "   dest-dir     -- Where to put the complete set of release tarballs"
-+    echo ""
-+    echo "   Example: $0 origin v2.4.2 /tmp/openvpn-release"
-+    echo
-+    exit 1
-+fi
-+
-+arg_remote_name="$1"
-+arg_tag_name="$2"
-+arg_sign_key="$3"
-+arg_dest_dir="$4"
-+
-+#
-+# Sanity checks
-+#
-+
-+# Check that the tag exists
-+git tag | grep "$arg_tag_name" 1>/dev/null
-+if [ $? -ne 0 ]; then
-+    echo "** ERROR **  The tag '$arg_tag_name' does not exist"
-+    exit 2
-+fi
-+
-+# Extract the git URL
-+giturl="`git remote get-url $arg_remote_name 2>/dev/null`"
-+if [ $? -ne 0 ]; then
-+    echo "** ERROR ** Invalid git remote name: $arg_remote_name"
-+    exit 2
-+fi
-+
-+# Check we have the needed signing key
-+echo "test" | gpg -a --clearsign -u "$arg_sign_key" 2>/dev/null 1>/dev/null
-+if [ $? -ne 0 ]; then
-+    echo "** ERROR ** Failed when testing the PGP signing.  Wrong signing key?"
-+    exit 2;
-+fi
-+
-+
-+#
-+# Helper functions
-+#
-+
-+get_filename()
-+{
-+    local wildcard="$1"
-+
-+    res="`find . -maxdepth 1 -type f -name \"$wildcard\" | head -n1 | cut -d/ -f2-`"
-+    if [ $? -ne 0 ]; then
-+        echo "-- 'find' failed."
-+        exit 5
-+    fi
-+    if [ -z "$res" ]; then
-+        echo "-- Could not find a file with the wildcard: $wildcard"
-+        exit 4
-+    fi
-+    echo "$res"
-+}
-+
-+copy_files()
-+{
-+    local fileext="$1"
-+    local dest="$2"
-+
-+    file="`get_filename openvpn-*.*.*.$fileext`"
-+    if [ -z "$file" ]; then
-+        echo "** ERROR Failed to find source file"
-+        exit 5
-+    fi
-+    echo "-- Copying $file"
-+    cp "$file" "$dest"
-+    if [ $? -ne 0 ]; then
-+        echo "** ERROR ** Failed to copy $file to $destdir"
-+        exit 3;
-+    fi
-+}
-+
-+sign_file()
-+{
-+    local signkey="$1"
-+    local srchfile="$2"
-+    local signtype="$3"
-+    local file="`get_filename $srchfile`"
-+
-+    echo "-- Signing $file ..."
-+    case "$signtype" in
-+        inline)
-+            # Have the signature in the same file as the data
-+            gpg -a --clearsign -u "$signkey" "$file" 2>/dev/null
-+            res=$?
-+            if [ $res -eq 0 ]; then
-+                rm -f "$file"
-+            fi
-+            ;;
-+
-+        detached)
-+            # Have the signature in a separate file
-+            gpg -a --detach-sign -u "$signkey" "$file" 2>/dev/null
-+            res=$?
-+            ;;
-+
-+        *)
-+            echo "** ERROR **  Unknown signing type \"$signtype\"."
-+            exit 4;
-+    esac
-+
-+    if [ $res -ne 0 ]; then
-+        echo "** ERROR **  Failed to sign the file $PWD/$file"
-+        exit 4;
-+    fi
-+}
-+
-+
-+#
-+# Preparations
-+#
-+
-+# Create the destination directory, using a sub-dir with the tag-name
-+destdir=""
-+case "$arg_dest_dir" in
-+    /*) # Absolute path
-+        destdir="$arg_dest_dir/$arg_tag_name"
-+        ;;
-+    *)  # Make absolute path from relative path
-+        destdir="$PWD/$arg_dest_dir/$arg_tag_name"
-+        ;;
-+esac
-+echo "-- Destination directory: $destdir"
-+if [ -e "$destdir" ]; then
-+    echo "** ERROR ** Destination directory already exists.  "
-+    echo "            Please check your command line carefully."
-+    exit 2
-+fi
-+
-+mkdir -p "$destdir"
-+if [ $? -ne 0 ]; then
-+    echo "** ERROR ** Failed to create destination directory"
-+    exit 2
-+fi
-+
-+#
-+# Start the release process
-+#
-+
-+# Clone the remote repository
-+workdir="`mktemp -d -p /var/tmp openvpn-build-release-XXXXXX`"
-+cd $workdir
-+echo "-- Working directory: $workdir"
-+echo "-- git clone $giturl"
-+git clone $giturl openvpn-gen-tarball 2> "$workdir/git-clone.log" 1>&2
-+if [ $? -ne 0 ]; then
-+    echo "** ERROR **  git clone failed.  See $workdir/git-clone.log for details"
-+    exit 3;
-+fi
-+cd openvpn-gen-tarball
-+
-+# Check out the proper release tag
-+echo "-- Checking out tag $arg_tag_name ... "
-+git checkout -b mkrelease "$arg_tag_name" 2> "$workdir/git-checkout-tag.log" 1>&2
-+if [ $? -ne 0 ]; then
-+    echo "** ERROR **  git checkout failed.  See $workdir/git-checkout-tag.log for details"
-+    exit 3;
-+fi
-+
-+# Prepare the source tree
-+echo "-- Running autoreconf + a simple configure ... "
-+(autoreconf -vi && ./configure) 2> "$workdir/autotools-prep.log" 1>&2
-+if [ $? -ne 0 ]; then
-+    echo "** ERROR **  Failed running autotools.  See $workdir/autotools-prep.log for details"
-+    exit 3;
-+fi
-+
-+# Generate the tar/zip files
-+echo "-- Running make distcheck (generates .tar.gz) ... "
-+(make distcheck) 2> "$workdir/make-distcheck.log" 1>&2
-+if [ $? -ne 0 ]; then
-+    echo "** ERROR **  make distcheck failed.  See $workdir/make-distcheck.log for details"
-+    exit 3;
-+fi
-+copy_files tar.gz "$destdir"
-+
-+echo "-- Running make dist-xz (generates .tar.xz) ... "
-+(make dist-xz) 2> "$workdir/make-dist-xz.log" 1>&2
-+if [ $? -ne 0 ]; then
-+    echo "** ERROR **  make dist-xz failed.  See $workdir/make-dist-xz.log for details"
-+    exit 3;
-+fi
-+copy_files tar.xz "$destdir"
-+
-+echo "-- Running make dist-zip (generates .zip) ... "
-+(make dist-zip) 2> "$workdir/make-dist-zip.log" 1>&2
-+if [ $? -ne 0 ]; then
-+    echo "** ERROR **  make dist-zip failed.  See $workdir/make-dist-zip.log for details"
-+    exit 3;
-+fi
-+copy_files zip "$destdir"
-+
-+# Generate SHA256 checksums
-+cd "$destdir"
-+sha256sum openvpn-*.tar.{gz,xz} openvpn-*.zip > "openvpn-$arg_tag_name.sha256sum"
-+
-+# Sign all the files
-+echo "-- Signing files ... "
-+sign_file "$arg_sign_key" "openvpn-$arg_tag_name.sha256sum" inline
-+sign_file "$arg_sign_key" "openvpn-*.tar.gz" detached
-+sign_file "$arg_sign_key" "openvpn-*.tar.xz" detached
-+sign_file "$arg_sign_key" "openvpn-*.zip" detached
-+
-+# Create a tar-bundle with everything
-+echo "-- Creating final tarbundle with everything ..."
-+tar cf "openvpn-$arg_tag_name.tar" openvpn-*.{tar.gz,tar.xz,zip}{,.asc} openvpn-*.sha256sum.asc
-+
-+echo "-- Cleaning up ..."
-+# Save the log files
-+mkdir -p "$destdir/logs"
-+mv $workdir/*.log "$destdir/logs"
-+
-+# Finally, done!
-+rm -rf "$workdir"
-+echo "-- Done"
-+exit 0
-+
--- 
-2.11.0
+On 17/05/17 21:14, Gert Doering wrote:
+> Hi,
+>=20
+> On Wed, May 17, 2017 at 10:53:58AM +0200, Adam ??tevko wrote:
+>> this patch adds support to build openvpn rpms with iproute2 support. It'=
+s a rather simple change, which defaults to off. Please review.
+>=20
+> Is there a particular reason not to *always* build with iproute2 support?
+>=20
+> David, what can a program expect to find on RPM based distributions?
 
+It would surprise me if any of them these days don't have iproutes
+available.
+
+> (Is this .spec file what Fedora builds use?)
+
+Far from that. This .spec file is again horridly outdated, and I've done
+a ton of updates on the Fedora .spec files.
+
+To be very honest, I've been considering to strip the .spec file from
+our project.  The approach of shipping a .spec made sense in the "old
+days" when the .spec file was merely just a script tackling a source
+tarball and patches; when distros where not that different from each
+other.  But just looking at difference in the packaging guidelines
+between SUSE and Fedora today is just the first headache.  Even though
+they mostly agree, they also have subtle different preferences on how to
+do things.  Like, is the package called iproute or iproute2 ?
+
+Of course we could have a massive .spec file doing all the right things
+with lots of %if blocks .... but ... no, thank you very much! :)
+
+So then we would need to pick a flavour, or having a spec file per
+distro.  And if we're doing that, we can rather just gather a list of
+pointers to various RPM distros' .spec files instead - with a "pick the
+one closest to your need".  Those .spec files are hopefully better
+maintained than our .spec file will most likely be.
+
+
+--=20
+kind regards,
+
+David Sommerseth
+OpenVPN Technologies, Inc
+
+
+
+--VRx73xWRAnuWUku2Uhs7OFaPPkc3XQp1g--
+
+--QGuQoRT8wFprvSwFOmgHkaMGaSgp97lH3
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBCAAGBQJZHbiPAAoJEIbPlEyWcf3y4c4P/2aZF6hk+jNIvGJ5vn3KsFe4
+a2rawh7AqYcXfJiA0o7omV37vI8V0AhGAOyARNUR4ilqD5e4XNKb1JSyDSufQbjP
+ZzwW4BuG8foR+wecGFoY0h2b+O2/NvLuML/ENW4gtafEVSgyGW8DAIzQ6AXXQkSo
+IKJoFcrI5j6QHW4XZdCRutWStWbakw2as0Ow9WG2UlL4gnFCqYZu6nBRMd+8XMiA
+BftCXfcunZHfWcCI/6Nvrbng+z7Waragbo70HwXee2KpqAL47nDpS5yONWcgx+ba
+wNGBbFlHPsCPq4ihBOnm5552G9QLRZl2ZwbwIs13Uv3ykUTct/fWiOr1p5gyyfpi
+YTXxwbQSiU/znnoi37PQw/eyOye9tnVPNKIkGwMkAbwrw0Lnl+ABjgxVFIxTp8wJ
+PZ1BiV3YJsbH53iLkcezAYtynvq3gpLbcj/No4FAcrkcNrPrn/+6DZfi9vVp6lZ7
+T5QSlfj0RrlNO45Deli3U9xchIMsn87feOWbyrYTnEsdtErlwJJG1duH1MXUFBbo
+1cbYpwT1HkGyQeYdtc3H24dOviaCejI1+soI2WgLZs9qKJe2oc1zzfGokfDhcAVI
+CZFGGTMAKLvvK+QlborS6z7OLGm6Ql9wPQDviQQjit5Frw3giRcaSFhWcL8mlp4L
+/Xj6erHZubNVyENKRMh+
+=mLmk
+-----END PGP SIGNATURE-----
+
+--QGuQoRT8wFprvSwFOmgHkaMGaSgp97lH3--
 
