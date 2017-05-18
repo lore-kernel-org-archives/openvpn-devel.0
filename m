@@ -1,15 +1,10 @@
-Date: Thu, 18 May 2017 17:50:20 +0200
+Date: Thu, 18 May 2017 19:40:43 +0200 (CEST)
+Message-Id: <201705181740.v4IHeh5I089532@...2054...>
 From: Gert Doering <gert@...1296...>
-Message-ID: <20170518155020.GN97029@...1296...>
-References: <8925EED7-0E13-4DEE-B3F8-1A5E3E970F4A@...277...>
-	<20170517191418.GF97029@...1296...>
-	<7e53d2f9-40c3-a009-e34f-983cbc3d509b@...2080...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="uGrbifh0UoBBidu/"
-Content-Disposition: inline
-In-Reply-To: <7e53d2f9-40c3-a009-e34f-983cbc3d509b@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH] OpenVPN rpm packaging - iproute2 support
+In-Reply-To: <20170509152422.12606-1-a@...2181...>
+References: <20170509152422.12606-1-a@...2181...>
+Subject: [Openvpn-devel] [PATCH applied] Re: fix redirect-gateway behaviour
+	when an IPv4 default route does not exist
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,50 +13,34 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
-Cc: Adam ??tevko <adam.stevko@...277...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Antonio Quartulli <a@...2181...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---uGrbifh0UoBBidu/
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+ACK, thanks.
 
-Hi,
+For reference, this is the same patch as 14670a9d654b in master, just
+adapted to the different code style in 2.3.  Tested on FreeBSD 11.
 
-On Thu, May 18, 2017 at 05:06:43PM +0200, David Sommerseth wrote:
-> To be very honest, I've been considering to strip the .spec file from
-> our project.  The approach of shipping a .spec made sense in the "old
-> days" when the .spec file was merely just a script tackling a source
-> tarball and patches; when distros where not that different from each
-> other.=20=20
+Your patch has been applied to the release/2.3 branch.
 
-So... how to proceed here, and with this patch?
+commit 0b339bf9588a8bca70b74926f03f8be05f06faa6
+Author: Antonio Quartulli
+Date:   Tue May 9 23:24:22 2017 +0800
 
-gert
+     fix redirect-gateway behaviour when an IPv4 default route does not exist
 
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+     Signed-off-by: Antonio Quartulli <a@...2181...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20170509152422.12606-1-a@...2181...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg14602.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
---uGrbifh0UoBBidu/
-Content-Type: application/pgp-signature; name="signature.asc"
 
------BEGIN PGP SIGNATURE-----
+--
+kind regards,
 
-iQGcBAEBAgAGBQJZHcK7AAoJEB2Cnv7KVigSlUwL/jl1ypL70h6/a3WajV1G60sT
-d6jK7MUZsCtEfBeEIgKffBab2/Gl7mkQZ6oeTbFCF0pZ7LFMKhFsSGzkrAQTOh4P
-T7xu/r29ugmW+pOKH1QQ5TCNE2YJecWyPTvAV4c6z1RxJ8WVFJ9o37Ql5w2LUwjU
-tXrR2z2/hPPv6H4zXI0XU+xmASd+5XRmK/vOH41P4aGXT4b1exaWx+Jo0vWxbbWM
-n48Jg7JpysOS60hUpGzGR/iL3mOmU9eR4OWC16BuRDUnTl97wl0Y/pa4irroMxvl
-w19UF7EevtUz8kQ7usMBwKJCZy35Xhgs6TEcQkVx0ZncbnzVMs6+bkIkAd1S82SY
-yi/98o2YtmUDgqZWneahyxaHpFSV20Ix0KMozT2nn2MMxE4+XKcekHR3+V3uPwBg
-I646iGTDX5NsTkHixqPvrF1DuLq9mEr/jJ2R5g+LqCnKOrhIFsS9yPPqMjdyhu0t
-K7PMjJ/zCLeM/utclEa7E8cgWV+HaYauPvxORlAIjg==
-=VFdU
------END PGP SIGNATURE-----
+Gert Doering
 
---uGrbifh0UoBBidu/--
 
