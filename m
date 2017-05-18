@@ -1,10 +1,10 @@
-Date: Thu, 18 May 2017 13:33:04 +0200 (CEST)
-Message-Id: <201705181133.v4IBX4Hl082790@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20170504204201.1257-1-davids@...515...>
-References: <20170504204201.1257-1-davids@...515...>
-Subject: [Openvpn-devel] [PATCH applied] Re: crypto: Enable SHA256
-	fingerprint checking in --verify-hash
+References: <20170518102246.5496-1-gert@...1296...>
+From: Steffan Karger <steffan.karger@...1435...>
+Message-ID: <021364a7-2a5e-ae35-e730-b6d7a5310227@...1435...>
+Date: Thu, 18 May 2017 13:54:55 +0200
+MIME-Version: 1.0
+In-Reply-To: <20170518102246.5496-1-gert@...1296...>
+Subject: Re: [Openvpn-devel] [PATCH] Fix NCP behaviour on TLS reconnect.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,32 +13,80 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: David Sommerseth <davids@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master and release/2.4 branch.
+Hi,
 
-"Changes.rst" changes adjusted - this is no longer "new in 2.4.1" :-)
+On 18-05-17 12:22, Gert Doering wrote:
+> If a client reconnects on a soft-restart from the same port (due to --bind
+> in use on the client), both sides will handle this as a "reconnect" and
+> not a "full new connect" internally, re-using existing crypto context.
 
-commit 2193d7c08484d56ed07ba2e649abc2d08adcb245 (master)
-commit 5d5437710c282b1a60a892d1910160027a81db92 (release/2.4)
-Author: David Sommerseth
-Date:   Thu May 4 22:42:01 2017 +0200
+This is actually a "hard reset", rather than a soft-restart.  A "soft
+reset" does not trigger a new pull/push, just a new TLS key negotiation.
 
-     crypto: Enable SHA256 fingerprint checking in --verify-hash
+> The client will still ask the server for pushed options, and the server
+> code to handle this refuses to do NCP if a key has already been negotiated
+> (because there is no way to *change* the cipher after that) - which ends
+> up in "the client uses the non-negotiated cipher from the config file,
+> while the server uses the previously-negotiated NCP cipher", and nothing
+> works.
+> 
+> The easy workaround: if we find us in the situation that we think NCP
+> has already been done, just re-push "cipher o->ciphername" with the
+> current cipher for this client context.
+> 
+> All credits for this go to Stefan Behrens <sbehrens@...2269...>
+> who found and diagnosed the issue in trac #887, came up with a first
+> patch to solve the issue quite similar to this (simplified) one, and
+> helped testing.
+> 
+> Trac: #887
+> ---
+>  src/openvpn/push.c | 10 ++++++----
+>  1 file changed, 6 insertions(+), 4 deletions(-)
+> 
+> diff --git a/src/openvpn/push.c b/src/openvpn/push.c
+> index 8c3104e..bcef0ef 100644
+> --- a/src/openvpn/push.c
+> +++ b/src/openvpn/push.c
+> @@ -372,15 +372,17 @@ prepare_push_reply(struct context *c, struct gc_arena *gc,
+>      /* Push cipher if client supports Negotiable Crypto Parameters */
+>      if (tls_peer_info_ncp_ver(peer_info) >= 2 && o->ncp_enabled)
+>      {
+> -        /* if we have already created our key, we cannot change our own
+> -         * cipher, so disable NCP and warn = explain why
+> +        /* if we have already created our key, we cannot *change* our own
+> +         * cipher -> so log the fact and push the "what we have now" cipher
+> +         * (so the client is always told what we expect it to use)
+>           */
+>          const struct tls_session *session = &tls_multi->session[TM_ACTIVE];
+>          if (session->key[KS_PRIMARY].crypto_options.key_ctx_bi.initialized)
+>          {
+>              msg( M_INFO, "PUSH: client wants to negotiate cipher (NCP), but "
+>                   "server has already generated data channel keys, "
+> -                 "ignoring client request" );
+> +                 "re-sending previously negotiated cipher '%s'",
+> +                 o->ciphername );
+>          }
+>          else
+>          {
+> @@ -388,8 +390,8 @@ prepare_push_reply(struct context *c, struct gc_arena *gc,
+>               * TODO: actual negotiation, instead of server dictatorship. */
+>              char *push_cipher = string_alloc(o->ncp_ciphers, &o->gc);
+>              o->ciphername = strtok(push_cipher, ":");
+> -            push_option_fmt(gc, push_list, M_USAGE, "cipher %s", o->ciphername);
+>          }
+> +        push_option_fmt(gc, push_list, M_USAGE, "cipher %s", o->ciphername);
+>      }
+>      else if (o->ncp_enabled)
+>      {
+> 
 
-     Signed-off-by: David Sommerseth <davids@...515...>
-     Acked-by: Steffan Karger <steffan.karger@...1435...>
-     Message-Id: <20170504204201.1257-1-davids@...515...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg14538.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+Otherwise, patch looks good, builds fine and does as specifiek.  So ACK,
+if you do s/soft/hard/ in the commit msg.
 
-
---
-kind regards,
-
-Gert Doering
-
+-Steffan
 
