@@ -1,10 +1,10 @@
-Date: Thu, 18 May 2017 13:07:13 +0200 (CEST)
-Message-Id: <201705181107.v4IB7DNq074251@...2054...>
+Date: Thu, 18 May 2017 13:33:04 +0200 (CEST)
+Message-Id: <201705181133.v4IBX4Hl082790@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1494884925-12539-1-git-send-email-matthias.andree@...68...>
-References: <1494884925-12539-1-git-send-email-matthias.andree@...68...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Make openvpn-plugin.h
-	self-contained again.
+In-Reply-To: <20170504204201.1257-1-davids@...515...>
+References: <20170504204201.1257-1-davids@...515...>
+Subject: [Openvpn-devel] [PATCH applied] Re: crypto: Enable SHA256
+	fingerprint checking in --verify-hash
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,24 +15,24 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Matthias Andree <matthias.andree@...68...>
+To: David Sommerseth <davids@...515...>
 Cc: openvpn-devel@lists.sourceforge.net
-
-ACK, thanks.  Tested standalone compilation before/after.
 
 Your patch has been applied to the master and release/2.4 branch.
 
-commit cf9deedf425c945906d5cc482fb962796d21f123 (master)
-commit 37b3409681ee04b7cb7c246a7fd701a883e582e2 (release/2.4)
-Author: Matthias Andree
-Date:   Mon May 15 23:48:45 2017 +0200
+"Changes.rst" changes adjusted - this is no longer "new in 2.4.1" :-)
 
-     Make openvpn-plugin.h self-contained again.
+commit 2193d7c08484d56ed07ba2e649abc2d08adcb245 (master)
+commit 5d5437710c282b1a60a892d1910160027a81db92 (release/2.4)
+Author: David Sommerseth
+Date:   Thu May 4 22:42:01 2017 +0200
 
-     Signed-off-by: Matthias Andree <matthias.andree@...68...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1494884925-12539-1-git-send-email-matthias.andree@...68...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg14658.html
+     crypto: Enable SHA256 fingerprint checking in --verify-hash
+
+     Signed-off-by: David Sommerseth <davids@...515...>
+     Acked-by: Steffan Karger <steffan.karger@...1435...>
+     Message-Id: <20170504204201.1257-1-davids@...515...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg14538.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
