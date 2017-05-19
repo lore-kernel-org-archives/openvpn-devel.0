@@ -1,12 +1,15 @@
-References: <CAEsd45RwFwUp84WJ9OXdtVy_cSvEw3vRMzgo9DWfyr43Ny+-dw@...278...>
-	<51ef426c-c8ee-6019-c4c0-124558888fbc@...2080...>
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <86da1d4c-d798-da76-9079-6037f0c1cd9a@...515...>
-Date: Fri, 19 May 2017 20:44:32 +0300
+Date: Fri, 19 May 2017 20:42:08 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20170519184208.GH97029@...1296...>
+References: <9a257a3b-e899-42a8-d67d-7a5b1a559535@...1376...>
+	<e80f9e3d-5def-bc6f-871a-2ce1a76ddaff@...1376...>
+	<85cba9aa-2ddd-d11b-b06a-d575f667ca44@...68...>
 MIME-Version: 1.0
-In-Reply-To: <51ef426c-c8ee-6019-c4c0-124558888fbc@...2080...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] Problem with sig for 2.3.16?
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="VAM/tfeJyUfWz6bO"
+Content-Disposition: inline
+In-Reply-To: <85cba9aa-2ddd-d11b-b06a-d575f667ca44@...68...>
+Subject: Re: [Openvpn-devel] security/openvpn23 tarball size mismatch
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,68 +18,53 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net, David Sommerseth <openvpn@...2080...>, "Jonathan K. Bullard" <jkbullard@...277...>
+To: Matthias Andree <matthias.andree@...68...>
+Cc: ports-secteam@...1249..., openvpn-devel@lists.sourceforge.net, freebsd-ports@...1376..., Renato Botelho <garga@...1376...>
 
-On 19/05/2017 17:50, David Sommerseth wrote:
-> On 19/05/17 16:28, Jonathan K. Bullard wrote:
->> When I try to verify the signature on openvpn-2.3.16.tar.gz (using
->> openvpn-2.3.16.tar.gz.asc) from the "Downloads" page [1], I get the
->> following:
->>
->>      gpg: assuming signed data in `XXX/openvpn-2.3.16.tar.gz'
->>      gpg: Signature made Thu May 18 16:56:48 2017 EDT using RSA key ID 8=
-CC2B034
->>      gpg: Can't check signature: public key not found
->>
->> The signatures on openvpn-2.3.15.tar.gz (downloaded last week) and on
->> openvpn-2.4.2.tar.gz both verify fine.
->>
->> I think this is because Samuli's new key's ID is not 8CC2B034, it is
->> 40864578 (if I understand correctly what is meant by "ID".)
->=20
-> Samuli have an old key (0x198D22A3, RSA-1024) and a new key (0x40864578,
-> RSA-2048).  He have switched to the new key and prefers to use that one.
->=20
-> We decided just a few days ago that we will switch to use the
-> security@...515... key for signing the officially released tarballs.
->=20
->=20
->> Is 8CC2B034 the "Security mailing list GPGP key" on the "GnuPG Public
->> Key" page [2]?=20
-> The proper key is:
-> pub   4096R/0x12F5F7B42F2B01E7 2017-02-09 [expires: 2027-02-07]
-> Key fingerprint =3D F554 A368 7412 CFFE BDEF  E0A3 12F5 F7B4 2F2B 01E7
-> uid   OpenVPN - Security Mailing List <security@...515...>
->=20
-> Which can also be found here:
-> <http://pgp.mit.edu/pks/lookup?op=3Dget&search=3D0x12F5F7B42F2B01E7>
->=20
->=20
->> The link on that page to that key is broken (and includes
->> Javascript!).
->=20
-> Yes!  I discovered the same issue and reported it internally a couple of
-> hours ago.  I expect it to be fixed in not too long.
->=20
+--VAM/tfeJyUfWz6bO
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
 Hi,
 
-Joomla did not seem to like the fact that file name was
-security@...2270... So I renamed it as security.key.asc. That
-seems to work fine.
+(let's see if I can actually mail to the folks and lists on CC: or
+not :) )
 
-Right now the signature situation is a bit confusing, as 2.4.2 is still
-signed with my new key, and 2.3.16 is using the security@...515...
-key. That is all documented here, though:
+On Thu, May 18, 2017 at 09:27:04AM +0200, Matthias Andree wrote:
+> Upstream maintainers will need to talk about this and may need to
+> release 2.3.16 to resolve any uncertainties.
 
-<https://openvpn.net/index.php/open-source/documentation/sig.html>
+Which is what we did.  Rounded up a handful of minor bugfixes, and
+released a single, well-defined and well-distributed 2.3.16 tarball.
+
+Apologies again for the mess.
+
+gert
 
 --=20
-Samuli Sepp=C3=A4nen
-Community Manager
-OpenVPN Technologies, Inc
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-irc freenode net: mattock
+--VAM/tfeJyUfWz6bO
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJZHzyAAAoJEB2Cnv7KVigSh58L/A59lTF0Tv80MXMNhpCORxtP
+P0xjlmFminMZsCxaz7EHBzxW+tg02mfdkxCwHS5YxAz1VDp3BUqnup7qimiHMx0j
+1HcHVRK6VV81U5BvvE9SZfrKqNQ/1SiyIeB7Wlg+DcmN3iSF+hgDoRlc1ul7tYzd
+0yQ9ZtfbAWtqfmYoALDEpCzQQbqm3iO0YyVLNzcjVGJAfjnIeADacJJm0qGOlx0J
+3LZ9oS0Q5xNK3xd+hmWWlQ0aZK7YxsM3z23NBiNn4keNYIO2EFGTx+MMnlT+MrEW
+bGs+sCRqoyHvJ2sOfz0LUAJDlaBwmOoBqMFrJMx2T4JOZXcWO/hK8tVOxuqYqcdF
+sdgdhD8pz5DVVsBfV6ylru+ifEm+QYASncC4hBFn5Vq2UttnbEH1clj2PZ8XhF18
+XTlYQKVujxWFvTeuQkWOBRSd5W9hEEFoipO9lSZzQgARxvZDKw7KIr7HD7yPQmCX
+1IPbjR/JSf5b1AIKuat9kPCS3YKKmqDqTFpTE+gJ+A==
+=lt5D
+-----END PGP SIGNATURE-----
+
+--VAM/tfeJyUfWz6bO--
 
