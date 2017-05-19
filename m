@@ -1,21 +1,12 @@
-Date: Fri, 19 May 2017 13:41:27 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20170519114126.GD97029@...1296...>
-References: <cover.1487368114.git.logout@...260...>
-	<e5e93420586b24b7df5b2f5ac2df02ccec5ffdb1.1487368114.git.logout@...260...>
-	<66d4f562-4786-f3fd-a6ae-27ebe10abf59@...1856...>
-	<20170302212621.GE93896@...1296...>
-	<735306eb-5dc4-19b0-75ad-2141fb2905b2@...1856...>
-	<72797fe3-23f7-8b10-19df-29cc4f31ef98@...2080...>
-	<CAKh=nwFF-Lc-Q52QCoh0WgP3g0gr0P7_i9CqwcpC2mDzGCi8sw@...278...>
-	<20170518204910.GT97029@...1296...>
-	<CAKh=nwFot6GZiv1cs2-X8kL0UNS6r8BGsNQ2RtC+0eyiJRMZtA@...278...>
+References: <515a2f96-e50d-3de5-bf54-e6d00834ca01@...515...>
+	<CAEsd45RwW+oa8B1er1FSYZ8-B_OxWojNnYB81zd707isPSJM5w@...278...>
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <cf908a4b-41f4-3b25-89a0-bcc459b2e0f6@...515...>
+Date: Fri, 19 May 2017 14:59:50 +0300
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="EjUKZjov3T4fFoFJ"
-Content-Disposition: inline
-In-Reply-To: <CAKh=nwFot6GZiv1cs2-X8kL0UNS6r8BGsNQ2RtC+0eyiJRMZtA@...278...>
-Subject: Re: [Openvpn-devel] OpenSSL 1.1 patch set - status?
+In-Reply-To: <CAEsd45RwW+oa8B1er1FSYZ8-B_OxWojNnYB81zd707isPSJM5w@...278...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] OpenVPN 2.3.16 released
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -24,57 +15,48 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Emmanuel Deloget <logout@...260...>
-Cc: openvpn-devel@lists.sourceforge.net
-
---EjUKZjov3T4fFoFJ
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+To: "Jonathan K. Bullard" <jkbullard@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hi,
-
-On Fri, May 19, 2017 at 12:37:17PM +0200, Emmanuel Deloget wrote:
-> > I'm wondering where this got stuck - are you waiting for us to move
-> > forward (like, missing review of parts of the patch set), or are we
-> > waiting for you, and you've been busy?
+On 19/05/2017 13:46, Jonathan K. Bullard wrote:
+> On Fri, May 19, 2017 at 5:29 AM, Samuli Sepp=C3=A4nen <samuli@...515...> =
+wrote:
+>>
+>> The OpenVPN community project team is proud to release OpenVPN 2.3.16.
+>> It can be downloaded from here:
+>>
+>> <http://openvpn.net/index.php/open-source/downloads.html>
+>>
+>> This is a minor release that fixes a few bugs. This release was made
+>> primarily because CloudFlare managed to serve obsolete pre-release
+>> OpenVPN 2.3.15 tarballs which lack a fix for CVE-2017-7478:
 >=20
-> Problem is that I'm working in a more-than-full-time manner on
-> way-too-many-other subjects :)
+> Were all copies of openvpn-2.3.15.tar.gz that were downloaded from the
+> website pre-release versions and not the final versions, or only some?
+>=20
+> If only some were the pre-release version, is there a way to tell if a
+> tarball was the pre-release version or was the actual version? (The
+> SHA256s of both would be helpful here.)
+>=20
+> (I will release three new versions of Tunnelblick with 2.3.16 anyway;
+> I'd just like to know.)
+>=20
+> Best regards to all,
+>=20
+> Jon Bullard
+>=20
 
-Thanks for quickly sending us the current patch set.  Now it's on us again.
+Hi Jonathan,
 
-(And yes, we fully understand the "too many projects, too many complaining
-customers, angry wife as well, and too little time" thing :) )
+I asked what hashes the "correct" tarballs have on #openvpn-devel a few
+hours ago. I don't yet have an answer, but I'm hoping the person who
+does will answer both of us :).
 
-
-Over to Steffan now - I'm so happy that I do not have to understand
-OpenSSL code... ;-)
-
-gert
 --=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+Samuli Sepp=C3=A4nen
+Community Manager
+OpenVPN Technologies, Inc
 
---EjUKZjov3T4fFoFJ
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJZHtnmAAoJEB2Cnv7KVigSFlgL+wXJKuML2ZI7+BUlir+x55Lu
-AwC1slZhnAwA4sX/40g7w4FMxWbsVnizNs7eZ87qNo7D0Fmbm6lQKud7S51ee0+U
-ja0Vh0AjP+mcjkKIwDFXOgYde8DTvXvOdReG5wLh9aQTyPhkriS7m27qLgSxXc0L
-CObPRvF44koS55JbDf9CJl39PiBLKYQ/uY879UDuPsrk2XBCFLiELF88Kdm9J3eR
-rEloqhQvM/LZHZK/GmkNDAH73huwmrpsuJAwchjbME1ATfDQjU3K/34ryW/UDR4e
-aZob43cRQSVhRrhQUyV132t1ZnWvEMEEhXGaJTrkNolMBnUlOJwmQFUVLpzyQ+P4
-uwnavXHWMjzHay6yqyiZHoUQDiPPln8x9nA80oZDjQZx/9wuiwmHCjKn2Yezl6cH
-sp6orObbrSM3r1KJBhKprmvMQNXyIGdiEHD8IB5Am8AaujEreZHHec7PjesK6mkg
-POSjBuHSyzEt0e25ZmjljnC1uIsn/gMUZv3Vwz2E3g==
-=Yo4G
------END PGP SIGNATURE-----
-
---EjUKZjov3T4fFoFJ--
+irc freenode net: mattock
 
