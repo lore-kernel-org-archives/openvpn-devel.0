@@ -1,18 +1,11 @@
-MIME-Version: 1.0
-Sender: emmanueldeloget53@...277...
-In-Reply-To: <20170518204910.GT97029@...1296...>
-References: <cover.1487368114.git.logout@...260...>
-	<e5e93420586b24b7df5b2f5ac2df02ccec5ffdb1.1487368114.git.logout@...260...>
-	<66d4f562-4786-f3fd-a6ae-27ebe10abf59@...1856...>
-	<20170302212621.GE93896@...1296...>
-	<735306eb-5dc4-19b0-75ad-2141fb2905b2@...1856...>
-	<72797fe3-23f7-8b10-19df-29cc4f31ef98@...2080...>
-	<CAKh=nwFF-Lc-Q52QCoh0WgP3g0gr0P7_i9CqwcpC2mDzGCi8sw@...278...>
-	<20170518204910.GT97029@...1296...>
+Sender: Emmanuel Deloget <emmanueldeloget53@...277...>
 From: Emmanuel Deloget <logout@...260...>
-Date: Fri, 19 May 2017 12:37:17 +0200
-Message-ID: <CAKh=nwFot6GZiv1cs2-X8kL0UNS6r8BGsNQ2RtC+0eyiJRMZtA@...278...>
-Subject: Re: [Openvpn-devel] OpenSSL 1.1 patch set - status?
+Date: Fri, 19 May 2017 12:38:10 +0200
+Message-Id: <20170519103816.19851-1-logout@...260...>
+In-Reply-To: <CAKh=nwFot6GZiv1cs2-X8kL0UNS6r8BGsNQ2RtC+0eyiJRMZtA@...278...>
+References: <CAKh=nwFot6GZiv1cs2-X8kL0UNS6r8BGsNQ2RtC+0eyiJRMZtA@...278...>
+Subject: [Openvpn-devel] [PATCH 1/7] OpenSSL: don't use direct access to the
+	internal of X509
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,55 +14,185 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Hi Gert,
+OpenSSL 1.1 does not allow us to directly access the internal of
+any data type, including X509. We have to use the defined
+functions to do so.
 
+In x509_verify_ns_cert_type() in particular, this means that we
+cannot directly check for the extended flags to find whether the
+certificate should be used as a client or as a server certificate.
+We need to leverage the X509_check_purpose() API yet this API is
+far stricter than the currently implemented check. So far, I have
+not been able to find a situation where this stricter test fails
+(although I must admit that I haven't tested that very well).
 
-On Thu, May 18, 2017 at 10:49 PM, Gert Doering <gert@...1296...> wrote:
->
-> Hi Emmanuel,
->
-> On Mon, Mar 27, 2017 at 05:49:48PM +0200, Emmanuel Deloget wrote:
-> > I'll post my new patches as soon as I get over every issues
-> > that have been talked on the ML (is that even a valid
-> > sentence?)
->
-> I'm wondering where this got stuck - are you waiting for us to move
-> forward (like, missing review of parts of the patch set), or are we
-> waiting for you, and you've been busy?
+We double-check the certificate purpose using "direct access" to the
+internal of the certificate object (of course, this is not a real
+direct access, but we still fetch ASN1 strings within the X509 object
+and we check the internal value of these strings). This allow us to
+warn the user if there is a discrepancy between the X509_check_purpose()
+return value and our internal, less strict check.
 
-Problem is that I'm working in a more-than-full-time manner on
-way-too-many-other subjects :)
+Compatibility with OpenSSL 1.0 is kept by defining the corresponding
+functions when they are not found in the library.
 
-> We didn't really follow up on this from our end since the CVEs and
-> 2.4.2 got in the way - but I think now would be a good time to move
-> ahead with this...
+Signed-off-by: Emmanuel Deloget <logout@...260...>
+---
+ configure.ac                     |  1 +
+ src/openvpn/openssl_compat.h     | 15 ++++++++++
+ src/openvpn/ssl_openssl.c        |  3 +-
+ src/openvpn/ssl_verify_openssl.c | 64 ++++++++++++++++++++++++++++++++++------
+ 4 files changed, 73 insertions(+), 10 deletions(-)
 
-I have a git tree out there that I have not fully tested yet. It
-compiles OK with OpenSSL 0.9.8, 1.0.0, 1.0.1, 1.0.2 and 1.1.0 but I
-haven't checked the behavior.
+diff --git a/configure.ac b/configure.ac
+index 7d3fce5b..9d5e340b 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -922,6 +922,7 @@ if test "${enable_crypto}" = "yes" -a "${with_crypto_library}" = "openssl"; then
+ 		[ \
+ 			SSL_CTX_get_default_passwd_cb \
+ 			SSL_CTX_get_default_passwd_cb_userdata \
++			X509_get0_pubkey \
+ 			X509_STORE_get0_objects \
+ 			X509_OBJECT_free \
+ 			X509_OBJECT_get_type \
+diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h
+index 92f014d5..29a7588c 100644
+--- a/src/openvpn/openssl_compat.h
++++ b/src/openvpn/openssl_compat.h
+@@ -74,6 +74,21 @@ SSL_CTX_get_default_passwd_cb(SSL_CTX *ctx)
+ }
+ #endif
+ 
++#if !defined(HAVE_X509_GET0_PUBKEY)
++/**
++ * Get the public key from a X509 certificate
++ *
++ * @param x                  X509 certificate
++ * @return                   The certificate public key
++ */
++static inline EVP_PKEY *
++X509_get0_pubkey(const X509 *x)
++{
++    return (x && x->cert_info && x->cert_info->key) ?
++           x->cert_info->key->pkey : NULL;
++}
++#endif
++
+ #if !defined(HAVE_X509_STORE_GET0_OBJECTS)
+ /**
+  * Fetch the X509 object stack from the X509 store
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index 645ccf51..a082c3cd 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -1070,7 +1070,8 @@ tls_ctx_use_external_private_key(struct tls_root_ctx *ctx,
+     }
+ 
+     /* get the public key */
+-    ASSERT(cert->cert_info->key->pkey); /* NULL before SSL_CTX_use_certificate() is called */
++    EVP_PKEY *pkey = X509_get0_pubkey(cert);
++    ASSERT(pkey); /* NULL before SSL_CTX_use_certificate() is called */
+     pub_rsa = cert->cert_info->key->pkey->pkey.rsa;
+ 
+     /* initialize RSA object */
+diff --git a/src/openvpn/ssl_verify_openssl.c b/src/openvpn/ssl_verify_openssl.c
+index 9b1533bc..4785f314 100644
+--- a/src/openvpn/ssl_verify_openssl.c
++++ b/src/openvpn/ssl_verify_openssl.c
+@@ -294,18 +294,20 @@ backend_x509_get_serial_hex(openvpn_x509_cert_t *cert, struct gc_arena *gc)
+ struct buffer
+ x509_get_sha1_fingerprint(X509 *cert, struct gc_arena *gc)
+ {
+-    struct buffer hash = alloc_buf_gc(sizeof(cert->sha1_hash), gc);
+-    memcpy(BPTR(&hash), cert->sha1_hash, sizeof(cert->sha1_hash));
+-    ASSERT(buf_inc_len(&hash, sizeof(cert->sha1_hash)));
++    const EVP_MD *sha1 = EVP_sha1();
++    struct buffer hash = alloc_buf_gc(EVP_MD_size(sha1), gc);
++    X509_digest(cert, EVP_sha1(), BPTR(&hash), NULL);
++    ASSERT(buf_inc_len(&hash, EVP_MD_size(sha1)));
+     return hash;
+ }
+ 
+ struct buffer
+ x509_get_sha256_fingerprint(X509 *cert, struct gc_arena *gc)
+ {
+-    struct buffer hash = alloc_buf_gc((EVP_sha256())->md_size, gc);
++    const EVP_MD *sha256 = EVP_sha256();
++    struct buffer hash = alloc_buf_gc(EVP_MD_size(sha256), gc);
+     X509_digest(cert, EVP_sha256(), BPTR(&hash), NULL);
+-    ASSERT(buf_inc_len(&hash, (EVP_sha256())->md_size));
++    ASSERT(buf_inc_len(&hash, EVP_MD_size(sha256)));
+     return hash;
+ }
+ 
+@@ -578,13 +580,57 @@ x509_verify_ns_cert_type(const openvpn_x509_cert_t *peer_cert, const int usage)
+     }
+     if (usage == NS_CERT_CHECK_CLIENT)
+     {
+-        return ((peer_cert->ex_flags & EXFLAG_NSCERT)
+-                && (peer_cert->ex_nscert & NS_SSL_CLIENT)) ? SUCCESS : FAILURE;
++        /*
++         * Unfortunately, X509_check_purpose() does some wierd thing that
++         * prevent it to take a const argument
++         */
++        result_t result = X509_check_purpose((X509 *)peer_cert, X509_PURPOSE_SSL_CLIENT, 0) ?
++	       SUCCESS : FAILURE;
++
++        /*
++         * old versions of OpenSSL allow us to make the less strict check we used to
++         * do. If this less strict check pass, warn user that this might not be the
++         * case when its distribution will update to OpenSSL 1.1
++         */
++        if (result == FAILURE)
++        {
++            ASN1_BIT_STRING *ns;
++            ns = X509_get_ext_d2i((X509 *)peer_cert, NID_netscape_cert_type, NULL, NULL);
++            result = (ns && ns->length > 0 && (ns->data[0] & NS_SSL_CLIENT)) ? SUCCESS : FAILURE;
++            if (result == SUCCESS)
++            {
++                msg(M_WARN, "X509: Certificate is a client certificate yet it's purpose "
++                    "cannot be verified (check may fail in the future)");
++            }
++        }
++        return result;
+     }
+     if (usage == NS_CERT_CHECK_SERVER)
+     {
+-        return ((peer_cert->ex_flags & EXFLAG_NSCERT)
+-                && (peer_cert->ex_nscert & NS_SSL_SERVER))  ? SUCCESS : FAILURE;
++        /*
++         * Unfortunately, X509_check_purpose() does some wierd thing that
++         * prevent it to take a const argument
++         */
++        result_t result = X509_check_purpose((X509 *)peer_cert, X509_PURPOSE_SSL_SERVER, 0) ?
++	       SUCCESS : FAILURE;
++
++        /*
++         * old versions of OpenSSL allow us to make the less strict check we used to
++         * do. If this less strict check pass, warn user that this might not be the
++         * case when its distribution will update to OpenSSL 1.1
++         */
++        if (result == FAILURE)
++        {
++            ASN1_BIT_STRING *ns;
++            ns = X509_get_ext_d2i((X509 *)peer_cert, NID_netscape_cert_type, NULL, NULL);
++            result = (ns && ns->length > 0 && (ns->data[0] & NS_SSL_SERVER)) ? SUCCESS : FAILURE;
++            if (result == SUCCESS)
++            {
++                msg(M_WARN, "X509: Certificate is a server certificate yet it's purpose "
++                    "cannot be verified (check may fail in the future)");
++            }
++        }
++        return result;
+     }
+ 
+     return FAILURE;
+-- 
+2.11.0
 
-The main difference with the previous version of the patch is the way
-the certificate purpose is checked.
-
-A) we do a fairly full check of the purpose using
-X509_check_purpose(). This check is harder that the previous version
-
-B) if that fails, we check for the certificate purpose using a lighter
-method which is strictly equivalent to what was done before (it uses
-X509_get_ext_d2i() to fetch the certificate type from within the
-certificate).
-
-The branch is available for viewing on github at
-https://github.com/emmanuel-deloget/openvpn/tree/openssl-1.1-v6.
-
-The followup emails contains the 7 patches which are needed to finish the work.
-
-BR,
-
--- Emmanuel Deloget
 
