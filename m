@@ -1,17 +1,11 @@
-References: <CAEsd45RwFwUp84WJ9OXdtVy_cSvEw3vRMzgo9DWfyr43Ny+-dw@...278...>
-	<51ef426c-c8ee-6019-c4c0-124558888fbc@...2080...>
-	<86da1d4c-d798-da76-9079-6037f0c1cd9a@...515...>
-	<CAEsd45Q1goosYtGHD4iZUU3ZfT+Vng8sp6F6Oo2ZuNKMVtMgpw@...278...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <717aba44-6a5b-5bfc-793d-89a015636367@...2080...>
-Date: Sat, 20 May 2017 00:41:18 +0200
+From: "Mahawar, Sunil" <sunil.mahawar@...753...>
+Date: Fri, 19 May 2017 22:45:47 +0000
+Message-ID: <745143357771014FBD32EE04E1307B435E901E6F@...2271...>
+Content-Language: en-US
+Content-Type: multipart/alternative;
+	boundary="_000_745143357771014FBD32EE04E1307B435E901E6FFMSMSX106amrcor_"
 MIME-Version: 1.0
-In-Reply-To: <CAEsd45Q1goosYtGHD4iZUU3ZfT+Vng8sp6F6Oo2ZuNKMVtMgpw@...278...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature";
-	boundary="geffDjuIvLXr801ro6LiNUVTOrclmWFv9"
-Subject: Re: [Openvpn-devel] Problem with sig for 2.3.16?
-Reply-To: openvpn-devel@lists.sourceforge.net
+Subject: [Openvpn-devel] Question about easy-rsa
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,111 +14,121 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "Jonathan K. Bullard" <jkbullard@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---geffDjuIvLXr801ro6LiNUVTOrclmWFv9
-Content-Type: multipart/mixed; boundary="OJEk7POGUQk6AreBpXkarKf2G573AkVj9";
-	protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-Reply-To: openvpn-devel@lists.sourceforge.net
-To: "Jonathan K. Bullard" <jkbullard@...277...>,
-	"openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-Cc: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <717aba44-6a5b-5bfc-793d-89a015636367@...2080...>
-Subject: Re: [Openvpn-devel] Problem with sig for 2.3.16?
-References: <CAEsd45RwFwUp84WJ9OXdtVy_cSvEw3vRMzgo9DWfyr43Ny+-dw@...278...>
-	<51ef426c-c8ee-6019-c4c0-124558888fbc@...2080...>
-	<86da1d4c-d798-da76-9079-6037f0c1cd9a@...515...>
-	<CAEsd45Q1goosYtGHD4iZUU3ZfT+Vng8sp6F6Oo2ZuNKMVtMgpw@...278...>
-In-Reply-To: <CAEsd45Q1goosYtGHD4iZUU3ZfT+Vng8sp6F6Oo2ZuNKMVtMgpw@...278...>
-
---OJEk7POGUQk6AreBpXkarKf2G573AkVj9
-Content-Language: en-GB
-Content-Type: text/plain; charset="utf-8"
+--_000_745143357771014FBD32EE04E1307B435E901E6FFMSMSX106amrcor_
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 
-On 19/05/17 21:23, Jonathan K. Bullard wrote:
-[...snip...]
->> Right now the signature situation is a bit confusing, as 2.4.2 is still
->> signed with my new key, and 2.3.16 is using the security@...515...
->> key. That is all documented here, though:
->>
->> <https://openvpn.net/index.php/open-source/documentation/sig.html>
->=20
-> OK, I get that, but the key file from the link David provided (and
-> which was also in his reply to the email announcing 2.3.16):
->=20
->  <http://pgp.mit.edu/pks/lookup?op=3Dget&search=3D0x12F5F7B42F2B01E7>
->=20
-> is not identical to the "Security mailing list GPG key" I just
-> downloaded from the "sig" page.
->=20
-> Is that a problem?
+Hi,
+     I loved easy-rsa tool and its user friendly interface. I am using this=
+ tool for one of my project for OpenHPC (http://openhpc.community ). Howeve=
+r one my colleague pointed out that easy-rsa project is not an active proje=
+ct, its last release was 2 year back, last commit was June 2016, and there =
+are multiple open issues on git hub (40), which are not yet addressed. So t=
+here was concern that any security related vulnerability (if found) will no=
+t be fixed in timely manner. Because of that I was asked to reevaluate easy=
+-rsa utility for my use.
 
-What is the difference you see?  To mem both looks identical when
-importing them into GPG.  But I haven't dug too deep into the details.
-
-One detail though, the "real" key ID is always the finger print.  Then
-there is two types of key IDs, one short and one long.  But those are
-just from the last bytes from the fingerprint.
-
-Key fingerprint: F554 A368 7412 CFFE BDEF  E0A3 12F5 F7B4 2F2B 01E7
-Key ID - long:                                  12F5 F7B4 2F2B 01E7
-Key ID - short:                                           2F2B 01E7
+As per the documentation, easy-rsa development co-exists with OpenVPN, I am=
+ assuming that openvpn community will take care of any vulnerability in eas=
+y-rsa (if found). I will appreciate if someone on community confirm my assu=
+mption that openvpn community will also be maintain easy-rsa any vulnerabil=
+ity in this utility?
 
 
-When I import both keys into the different brand new GPG key rings, I do
-get the same result when listing these keys.  But I haven't dug too deep
-into the context.  Plus the pgp.mit.edu site might have done some
-non-critical, minor changes in how the key looks like - compared to
-Samuli's version.
-
-That said, this security key is based upon the recommended sub-key
-approach [0].  That means that those of us among the developers can only
-use that key for signing and decryption data and with a fairly short
-lifetime (1 year).  They are not capable to sign other keys, updating
-the lifetime of the keys or any operation requiring the master key.  So
-I highly doubt Samuli have done anything special with that key.  Only I
-have the master key, which is well stored on a protected medium which is
-offline the very most of the time.
+Thanks & Regards
+-Sunil Mahawar
 
 
-[0] <https://alexcabal.com/creating-the-perfect-gpg-keypair/>
+--_000_745143357771014FBD32EE04E1307B435E901E6FFMSMSX106amrcor_
+Content-Type: text/html; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 
+<html xmlns:v=3D"urn:schemas-microsoft-com:vml" xmlns:o=3D"urn:schemas-micr=
+osoft-com:office:office" xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
+xmlns:m=3D"http://schemas.microsoft.com/office/2004/12/omml" xmlns=3D"http:=
+//www.w3.org/TR/REC-html40">
+<head>
+<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3Dus-ascii">
+<meta name=3D"Generator" content=3D"Microsoft Word 15 (filtered medium)">
+<style><!--
+/* Font Definitions */
+@font-face
+	{font-family:"Cambria Math";
+	panose-1:2 4 5 3 5 4 6 3 2 4;}
+@font-face
+	{font-family:Calibri;
+	panose-1:2 15 5 2 2 2 4 3 2 4;}
+/* Style Definitions */
+p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0in;
+	margin-bottom:.0001pt;
+	font-size:11.0pt;
+	font-family:"Calibri",sans-serif;}
+a:link, span.MsoHyperlink
+	{mso-style-priority:99;
+	color:#0563C1;
+	text-decoration:underline;}
+a:visited, span.MsoHyperlinkFollowed
+	{mso-style-priority:99;
+	color:#954F72;
+	text-decoration:underline;}
+span.EmailStyle17
+	{mso-style-type:personal;
+	font-family:"Calibri",sans-serif;
+	color:windowtext;}
+span.EmailStyle18
+	{mso-style-type:personal;
+	font-family:"Calibri",sans-serif;
+	color:#1F497D;}
+span.EmailStyle19
+	{mso-style-type:personal-compose;
+	font-family:"Calibri",sans-serif;
+	color:windowtext;}
+.MsoChpDefault
+	{mso-style-type:export-only;
+	font-size:10.0pt;}
+@page WordSection1
+	{size:8.5in 11.0in;
+	margin:1.0in 1.0in 1.0in 1.0in;}
+div.WordSection1
+	{page:WordSection1;}
+--></style><!--[if gte mso 9]><xml>
+<o:shapedefaults v:ext=3D"edit" spidmax=3D"1026" />
+</xml><![endif]--><!--[if gte mso 9]><xml>
+<o:shapelayout v:ext=3D"edit">
+<o:idmap v:ext=3D"edit" data=3D"1" />
+</o:shapelayout></xml><![endif]-->
+</head>
+<body lang=3D"EN-US" link=3D"#0563C1" vlink=3D"#954F72">
+<div class=3D"WordSection1">
+<p class=3D"MsoNormal">Hi,<o:p></o:p></p>
+<p class=3D"MsoNormal">&nbsp;&nbsp;&nbsp;&nbsp; I loved easy-rsa tool and i=
+ts user friendly interface. I am using this tool for one of my project for =
+OpenHPC (<a href=3D"http://openhpc.community">http://openhpc.community</a> =
+). However one my colleague pointed out that easy-rsa project
+ is not an active project, its last release was 2 year back, last commit wa=
+s June 2016, and there are multiple open issues on git hub (40), which are =
+not yet addressed. So there was concern that any security related vulnerabi=
+lity (if found) will not be fixed
+ in timely manner. Because of that I was asked to reevaluate easy-rsa utili=
+ty for my use.<o:p></o:p></p>
+<p class=3D"MsoNormal"><o:p>&nbsp;</o:p></p>
+<p class=3D"MsoNormal">As per the documentation, easy-rsa development co-ex=
+ists with OpenVPN, I am assuming that openvpn community will take care of a=
+ny vulnerability in easy-rsa (if found). I will appreciate if someone on co=
+mmunity confirm my assumption that
+ openvpn community will also be maintain easy-rsa any vulnerability in this=
+ utility?<o:p></o:p></p>
+<p class=3D"MsoNormal"><o:p>&nbsp;</o:p></p>
+<p class=3D"MsoNormal"><o:p>&nbsp;</o:p></p>
+<p class=3D"MsoNormal">Thanks &amp; Regards<o:p></o:p></p>
+<p class=3D"MsoNormal">-Sunil Mahawar<o:p></o:p></p>
+<p class=3D"MsoNormal"><o:p>&nbsp;</o:p></p>
+</div>
+</body>
+</html>
 
---=20
-kind regards,
-
-David Sommerseth
-OpenVPN Technologies, Inc
-
-
-
---OJEk7POGUQk6AreBpXkarKf2G573AkVj9--
-
---geffDjuIvLXr801ro6LiNUVTOrclmWFv9
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBCAAGBQJZH3SWAAoJEIbPlEyWcf3yNOIP/3iI2DApWQmWYZ0RZ+aAbU2m
-ZiuVUKJf0fxiyxspCTHWMF6NwLWXxeim+G1vIZoWotvg7YN7ldjXxuFMcFyj+Trl
-ORU1DQcjShx/ZjerT7U4OuJMeNocOKekrJw/Pgk1uJEbMc4waAR6PaqDvBl9BEf7
-C+ttgDb1mVdE52qBdVykN1w/BToXKPg9IBsHK4U6tozEbb8t9/dh7AjC5mE0Vod1
-XfVpEuA4lj/jiaGvmEYVH5X1u3MTcifSW4wBMkhToXs+cCl4KlKQdYNgVrBYZ2Uf
-HO/PUkVh641AlxBs2pYEa+U6gYe1NbkSD+GHPj0bCAHG0QUXv40U/vjbMpnIYjnl
-qRBA3SvavnxOyAkNGf+JCe97MSDUQcrswZhK1RsKQFPRjnePRO9/Am3q5vvLLxvv
-8vSkwVf7yV1ElW5UywA5O0l0+FR6fWpQwhErlsgq5xT0j/VR2FFXNx6eIdbJuw8x
-Rz9n7VUM9XbkLz/taLj+pUaekFHwvtMGdcsFFfAf+Tt3a3hEvaYF3L2fJX9TNANo
-4coXda6q5m9wpIuQ6jjN7kZCQ/7oNED3SoAUV98TjaqN+sviwsy1z+srr6mhTofx
-DFJyqYvC1I/9lWhb3IxWvjW4jEgbhnr5nfDXrvCqlTWqUzjw3oqBPVGA9jUhtW/a
-confU+HPsyNcMc+0/BG7
-=V4O3
------END PGP SIGNATURE-----
-
---geffDjuIvLXr801ro6LiNUVTOrclmWFv9--
+--_000_745143357771014FBD32EE04E1307B435E901E6FFMSMSX106amrcor_--
 
