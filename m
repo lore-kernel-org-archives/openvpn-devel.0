@@ -1,11 +1,11 @@
 From: "Mahawar, Sunil" <sunil.mahawar@...753...>
-Date: Fri, 19 May 2017 22:45:47 +0000
-Message-ID: <745143357771014FBD32EE04E1307B435E901E6F@...2271...>
+Date: Fri, 19 May 2017 22:52:54 +0000
+Message-ID: <745143357771014FBD32EE04E1307B435E901EAC@...2271...>
 Content-Language: en-US
 Content-Type: multipart/alternative;
-	boundary="_000_745143357771014FBD32EE04E1307B435E901E6FFMSMSX106amrcor_"
+	boundary="_000_745143357771014FBD32EE04E1307B435E901EACFMSMSX106amrcor_"
 MIME-Version: 1.0
-Subject: [Openvpn-devel] Question about easy-rsa
+Subject: [Openvpn-devel] Question regarding easy-rsa
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,32 +16,35 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---_000_745143357771014FBD32EE04E1307B435E901E6FFMSMSX106amrcor_
+--_000_745143357771014FBD32EE04E1307B435E901EACFMSMSX106amrcor_
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 
-Hi,
-     I loved easy-rsa tool and its user friendly interface. I am using this=
- tool for one of my project for OpenHPC (http://openhpc.community ). Howeve=
-r one my colleague pointed out that easy-rsa project is not an active proje=
-ct, its last release was 2 year back, last commit was June 2016, and there =
-are multiple open issues on git hub (40), which are not yet addressed. So t=
-here was concern that any security related vulnerability (if found) will no=
-t be fixed in timely manner. Because of that I was asked to reevaluate easy=
--rsa utility for my use.
+Hello Eric,
+                     I loved easy-rsa tool and its user friendly interface.=
+ I am using this utility for one of my project for OpenHPC (http://openhpc.=
+community ). However one of my colleague pointed out that easy-rsa project =
+is not an active project, its last release was 2 year back, last commit was=
+ June 2016, and there are multiple open issues on git hub (40), which are n=
+ot yet addressed. So there was concern that any security related vulnerabil=
+ity (if found) will not be fixed in timely manner. Because of that I was as=
+ked to reevaluate easy-rsa utility for my use.
 
-As per the documentation, easy-rsa development co-exists with OpenVPN, I am=
- assuming that openvpn community will take care of any vulnerability in eas=
-y-rsa (if found). I will appreciate if someone on community confirm my assu=
-mption that openvpn community will also be maintain easy-rsa any vulnerabil=
-ity in this utility?
+I am assuming you are an active maintainer/developer for easy-rsa, can you =
+please confirm? I am also assuming if there is any security related issue c=
+omes in, you will drive those issue to closure, however so far I have not s=
+een any vulnerability in this project. Though I am not the expert, but I ca=
+n also provide my help if needed. Could you please confirm your involvement=
+ in easy-rsa utility?
+
+If you are not the right person then I am sorry for this email.
 
 
 Thanks & Regards
 -Sunil Mahawar
 
 
---_000_745143357771014FBD32EE04E1307B435E901E6FFMSMSX106amrcor_
+--_000_745143357771014FBD32EE04E1307B435E901EACFMSMSX106amrcor_
 Content-Type: text/html; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 
@@ -75,20 +78,12 @@ a:visited, span.MsoHyperlinkFollowed
 	color:#954F72;
 	text-decoration:underline;}
 span.EmailStyle17
-	{mso-style-type:personal;
-	font-family:"Calibri",sans-serif;
-	color:windowtext;}
-span.EmailStyle18
-	{mso-style-type:personal;
-	font-family:"Calibri",sans-serif;
-	color:#1F497D;}
-span.EmailStyle19
 	{mso-style-type:personal-compose;
 	font-family:"Calibri",sans-serif;
 	color:windowtext;}
 .MsoChpDefault
 	{mso-style-type:export-only;
-	font-size:10.0pt;}
+	font-family:"Calibri",sans-serif;}
 @page WordSection1
 	{size:8.5in 11.0in;
 	margin:1.0in 1.0in 1.0in 1.0in;}
@@ -103,24 +98,29 @@ div.WordSection1
 </head>
 <body lang=3D"EN-US" link=3D"#0563C1" vlink=3D"#954F72">
 <div class=3D"WordSection1">
-<p class=3D"MsoNormal">Hi,<o:p></o:p></p>
-<p class=3D"MsoNormal">&nbsp;&nbsp;&nbsp;&nbsp; I loved easy-rsa tool and i=
-ts user friendly interface. I am using this tool for one of my project for =
-OpenHPC (<a href=3D"http://openhpc.community">http://openhpc.community</a> =
-). However one my colleague pointed out that easy-rsa project
- is not an active project, its last release was 2 year back, last commit wa=
-s June 2016, and there are multiple open issues on git hub (40), which are =
-not yet addressed. So there was concern that any security related vulnerabi=
-lity (if found) will not be fixed
- in timely manner. Because of that I was asked to reevaluate easy-rsa utili=
-ty for my use.<o:p></o:p></p>
+<p class=3D"MsoNormal">Hello Eric,<o:p></o:p></p>
+<p class=3D"MsoNormal">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; I loved eas=
+y-rsa tool and its user friendly interface. I am using this utility for one=
+ of my project for OpenHPC (<a href=3D"http://openhpc.community">http://ope=
+nhpc.community</a> ). However one of my colleague pointed
+ out that easy-rsa project is not an active project, its last release was 2=
+ year back, last commit was June 2016, and there are multiple open issues o=
+n git hub (40), which are not yet addressed. So there was concern that any =
+security related vulnerability (if
+ found) will not be fixed in timely manner. Because of that I was asked to =
+reevaluate easy-rsa utility for my use.<o:p></o:p></p>
 <p class=3D"MsoNormal"><o:p>&nbsp;</o:p></p>
-<p class=3D"MsoNormal">As per the documentation, easy-rsa development co-ex=
-ists with OpenVPN, I am assuming that openvpn community will take care of a=
-ny vulnerability in easy-rsa (if found). I will appreciate if someone on co=
-mmunity confirm my assumption that
- openvpn community will also be maintain easy-rsa any vulnerability in this=
- utility?<o:p></o:p></p>
+<p class=3D"MsoNormal">I am assuming you are an active maintainer/developer=
+ for easy-rsa, can you please confirm? I am also assuming if there is any s=
+ecurity related issue comes in, you will drive those issue to closure, howe=
+ver so far I have not seen any vulnerability
+ in this project. Though I am not the expert, but I can also provide my hel=
+p if needed. Could you please confirm your involvement in easy-rsa utility?
+<o:p></o:p></p>
+<p class=3D"MsoNormal"><o:p>&nbsp;</o:p></p>
+<p class=3D"MsoNormal">If you are not the right person then I am sorry for =
+this email.<o:p></o:p></p>
 <p class=3D"MsoNormal"><o:p>&nbsp;</o:p></p>
 <p class=3D"MsoNormal"><o:p>&nbsp;</o:p></p>
 <p class=3D"MsoNormal">Thanks &amp; Regards<o:p></o:p></p>
@@ -130,5 +130,5 @@ mmunity confirm my assumption that
 </body>
 </html>
 
---_000_745143357771014FBD32EE04E1307B435E901E6FFMSMSX106amrcor_--
+--_000_745143357771014FBD32EE04E1307B435E901EACFMSMSX106amrcor_--
 
