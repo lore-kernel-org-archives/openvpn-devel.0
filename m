@@ -1,14 +1,10 @@
-MIME-Version: 1.0
-In-Reply-To: <717aba44-6a5b-5bfc-793d-89a015636367@...2080...>
-References: <CAEsd45RwFwUp84WJ9OXdtVy_cSvEw3vRMzgo9DWfyr43Ny+-dw@...278...>
-	<51ef426c-c8ee-6019-c4c0-124558888fbc@...2080...>
-	<86da1d4c-d798-da76-9079-6037f0c1cd9a@...515...>
-	<CAEsd45Q1goosYtGHD4iZUU3ZfT+Vng8sp6F6Oo2ZuNKMVtMgpw@...278...>
-	<717aba44-6a5b-5bfc-793d-89a015636367@...2080...>
-From: "Jonathan K. Bullard" <jkbullard@...277...>
-Date: Sat, 20 May 2017 09:25:47 -0400
-Message-ID: <CAEsd45TuPaA4gOftbkhCoESYZB+9X5TXyuZYW4pqB84aBEq_0w@...278...>
-Subject: Re: [Openvpn-devel] Problem with sig for 2.3.16?
+Date: Sat, 20 May 2017 20:01:29 +0200 (CEST)
+Message-Id: <201705201801.v4KI1TM0011591@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <20170518191311.4769-1-gert@...1296...>
+References: <20170518191311.4769-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Remove erroneous limitation on
+	max number of args for --plugin
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,69 +13,30 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-Cc: David Sommerseth <davids@...515...>
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-On Fri, May 19, 2017 at 6:41 PM, David Sommerseth
-<openvpn@...2080...> wrote:
-> On 19/05/17 21:23, Jonathan K. Bullard wrote:
-[snip]
-> > OK, I get that, but the key file from the link David provided (and
-> > which was also in his reply to the email announcing 2.3.16):
-> >
-> >  <http://pgp.mit.edu/pks/lookup?op=get&search=0x12F5F7B42F2B01E7>
-> >
-> > is not identical to the "Security mailing list GPG key" I just
-> > downloaded from the "sig" page.
-> >
-> > Is that a problem?
->
-> What is the difference you see?  To mem both looks identical when
-> importing them into GPG.  But I haven't dug too deep into the details.
+Patch has been applied to the master and release/2.4 branch.
 
-The contents of the files were different, which bothered me. I now
-understand that that is OK -- I apologize for being too paranoid :)
+commit 3f181eaa324892845e0857d80c154512d9e8c59c (master)
+commit a4d200a34617388e45837b7a9a8ccb25a7b1aa99 (release/2.4)
+Author: Gert Doering
+Date:   Thu May 18 21:13:11 2017 +0200
 
-They import identically for me, so all is well.
+     Remove erroneous limitation on max number of args for --plugin
+
+     Signed-off-by: Gert Doering <gert@...1296...>
+     Acked-by: Steffan Karger <steffan.karger@...1435...>
+     Message-Id: <20170518191311.4769-1-gert@...1296...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg14678.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
-> One detail though, the "real" key ID is always the finger print.  Then
-> there is two types of key IDs, one short and one long.  But those are
-> just from the last bytes from the fingerprint.
->
-> Key fingerprint: F554 A368 7412 CFFE BDEF  E0A3 12F5 F7B4 2F2B 01E7
-> Key ID - long:                                  12F5 F7B4 2F2B 01E7
-> Key ID - short:                                           2F2B 01E7
+--
+kind regards,
 
-Ah. Thanks for the explanation. That makes sense! :)
+Gert Doering
 
-
-> When I import both keys into the different brand new GPG key rings, I do
-> get the same result when listing these keys.  But I haven't dug too deep
-> into the context.  Plus the pgp.mit.edu site might have done some
-> non-critical, minor changes in how the key looks like - compared to
-> Samuli's version.
-
-Yes, that's apparently what happened.
-
-
-> That said, this security key is based upon the recommended sub-key
-> approach [0].  That means that those of us among the developers can only
-> use that key for signing and decryption data and with a fairly short
-> lifetime (1 year).  They are not capable to sign other keys, updating
-> the lifetime of the keys or any operation requiring the master key.  So
-> I highly doubt Samuli have done anything special with that key.  Only I
-> have the master key, which is well stored on a protected medium which is
-> offline the very most of the time.
->
->
-> [0] <https://alexcabal.com/creating-the-perfect-gpg-keypair/>
-
-Thank you for your clear explanations, David -- and your patience!
-
-Best regards,
-
-Jon
 
