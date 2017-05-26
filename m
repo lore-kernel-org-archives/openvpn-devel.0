@@ -1,93 +1,70 @@
-References: <20170225004014.28638-1-a@...2181...>
-	<20170225091908.GX93896@...1296...>
-	<f7ac719e-0b28-4c4d-5e8a-2932827789b6@...2080...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <c11a42bc-0748-eec7-875b-aecbc6d73cbf@...1227...>
-Date: Tue, 23 May 2017 23:52:21 +0200
+From: Jeremie Courreges-Anglas <jca@...2272...>
+Date: Fri, 26 May 2017 16:30:53 +0200
+Message-ID: <8737brk7vm.fsf@...2274...>
 MIME-Version: 1.0
-In-Reply-To: <f7ac719e-0b28-4c4d-5e8a-2932827789b6@...2080...>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="pAX04C7tpimJR57FxgOLsnriHX6am8HcK"
-Subject: Re: [Openvpn-devel] [PATCH] Ignore auth-nocache for auth-user-pass
- if auth-token is pushed
+Subject: [Openvpn-devel] Alignement crash on sparc64
 List-Id: <openvpn-devel.lists.sourceforge.net>
-List-Unsubscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
+List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
 List-Archive: <http://sourceforge.net/mailarchive/forum.php?forum_name=openvpn-devel>
 List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---pAX04C7tpimJR57FxgOLsnriHX6am8HcK
-Content-Type: multipart/mixed; boundary="xElKMnSCALUGoNtl7N6HHOvmlCPrtRqhD";
-	protected-headers="v1"
-From: Arne Schwabe <arne@...1227...>
-To: openvpn-devel@lists.sourceforge.net
-Message-ID: <c11a42bc-0748-eec7-875b-aecbc6d73cbf@...1227...>
-Subject: Re: [Openvpn-devel] [PATCH] Ignore auth-nocache for auth-user-pass if
-	auth-token is pushed
-References: <20170225004014.28638-1-a@...2181...>
-	<20170225091908.GX93896@...1296...>
-	<f7ac719e-0b28-4c4d-5e8a-2932827789b6@...2080...>
-In-Reply-To: <f7ac719e-0b28-4c4d-5e8a-2932827789b6@...2080...>
-
---xElKMnSCALUGoNtl7N6HHOvmlCPrtRqhD
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
-
-Am 25.02.17 um 14:10 schrieb David Sommerseth:
-> On 25/02/17 10:19, Gert Doering wrote:
->> Hi,
->>
->> On Sat, Feb 25, 2017 at 08:40:14AM +0800, Antonio Quartulli wrote:
->>> When the auth-token option is pushed from the server to the client,
->>> the latter has to ignore the auth-nocache directive (if specified).
->>>
->>> The password will now be substituted by the unique token, therefore
->>> it can't be wiped out, otherwise the next renegotiation will fail.
->>
->> Without looking at the patch itself - is this suitable material for
->> inclusion in 2.3?  We do have quite a few "slow adopters" - and this
->> is a very useful feature to mitigate SWEET32 in 2FA environments...
->=20
-> The code paths involved shouldn't be very differ too much between v2.3
-> and v2.4.  So I would say this should go into v2.3 as well.
->=20
-> Attached is a very preliminary (and only compile and 'make check'
-> tested) patch of a backport to v2.3.  This needs to get a thorough test
-> as well before we'll send an official patch to this ML.
->=20
-> Btw. since I have worked closely with Antonio on this patch,  testing
-> and debugging and discussing it for some time, I think it would be good
-> if someone else than me does the final code review and ACK/NAK it.  I'm
-> not able to be objective on this patch.
->=20
-
-Code looks good. So ACK. We probably need another revision on this
-auth-token client support (for reconnects) but this is going in the
-right direction.
-
-Arne
+Cc: Stefan Sperling <stsp@...2273...>
 
 
+Hi,
 
---xElKMnSCALUGoNtl7N6HHOvmlCPrtRqhD--
+I am the maintainer of openvpn in the OpenBSD ports tree.  Here's
+a report from Stefan Sperling (Cc'ed).
 
---pAX04C7tpimJR57FxgOLsnriHX6am8HcK
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+> An openvpn server running on OpenBSD/sparc64 6.1 crashes when a client
+> connects and starts doing traffic. Is anyone else seeing this?
+> 
+> (gdb) run
+> Starting program: /usr/local/sbin/openvpn /etc/openvpn/server.conf
+> (no debugging symbols found)
+> 
+> Program received signal SIGBUS, Bus error.
+> 0x000000a99df82664 in write_tun_header () from /usr/local/sbin/openvpn
+> (gdb) bt
+> #0  0x000000a99df82664 in write_tun_header () from /usr/local/sbin/openvpn
+> #1  0x000000a99df136d4 in process_outgoing_tun () from /usr/local/sbin/openvpn
+> #2  0x000000a99df31094 in tunnel_server_udp () from /usr/local/sbin/openvpn
+> #3  0x000000a99df3a6ac in main () from /usr/local/sbin/openvpn
 
------BEGIN PGP SIGNATURE-----
+To work around this, the patch below (also written by Stefan) was
+committed in our ports tree.  TARGET_FREEBSD and TARGET_DRAGONFLY seem
+to be affected too.
 
-iF0EARECAB0WIQReA6r9qqhQzJnD/WZ7z5ww1LjNFwUCWSSvJAAKCRB7z5ww1LjN
-F0OJAKDPxRGvzaPXReSYpPVePdEIDy8VNQCeJj0cIYXYmFzgDh8NGs8XEpr43Mo=
-=Pkte
------END PGP SIGNATURE-----
+Thoughts?
 
---pAX04C7tpimJR57FxgOLsnriHX6am8HcK--
+
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index 3504fbf4..51a7f82d 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -1654,11 +1654,11 @@ write_tun_header(struct tuntap *tt, uint8_t *buf, int len)
+     {
+         u_int32_t type;
+         struct iovec iv[2];
+-        struct ip *iph;
++        struct ip iph;
+ 
+-        iph = (struct ip *) buf;
++        memcpy(&iph, buf, sizeof(iph));
+ 
+-        if (iph->ip_v == 6)
++        if (iph.ip_v == 6)
+         {
+             type = htonl(AF_INET6);
+         }
+
+
+-- 
+jca | PGP : 0x1524E7EE / 5135 92C1 AD36 5293 2BDF  DDCC 0DFA 74AE 1524 E7EE
 
