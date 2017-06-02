@@ -1,13 +1,22 @@
+Reply-To: openvpn-devel@lists.sourceforge.net
+References: <1496177444-18373-1-git-send-email-steffan@...1856...>
+	<29f51139-a525-fd92-0fe1-195d308d2924@...2080...>
+	<20170531070258.GC97029@...1296...>
+	<ae93b702-4edd-6772-0f1d-ac9629589ee8@...2080...>
+	<20170531092817.GH97029@...1296...>
+	<7bb03bbe8955dacd3a3130f64724024f.squirrel@...2257...>
+	<8fb2b96f-67c8-73ba-3dfd-13ddce59b599@...2080...>
+	<b18b1487fb12a6eb6b4ccb7c7f6ca517.squirrel@...2257...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <f3799853-eece-2f39-dd81-333f1b681297@...2080...>
+Date: Fri, 2 Jun 2017 11:02:38 +0200
 MIME-Version: 1.0
-In-Reply-To: <OpenVPN/openvpn-gui/issues/168/305250704@...1714...>
-References: <OpenVPN/openvpn-gui/issues/168@...1714...>
-	<OpenVPN/openvpn-gui/issues/168/305250704@...1714...>
-From: Selva Nair <selva.nair@...277...>
-Date: Wed, 31 May 2017 13:54:40 -0400
-Message-ID: <CAKuzo_iMXUVZJz0U3OKLi3VvC4vv2S_5+8uTdn5o=21mA8tODA@...278...>
-Content-Type: multipart/alternative; boundary="001a113d73a07c1ef20550d59e94"
-Subject: Re: [Openvpn-devel] [OpenVPN/openvpn-gui] better handling of
- interactive service failure (#168)
+In-Reply-To: <b18b1487fb12a6eb6b4ccb7c7f6ca517.squirrel@...2257...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature";
+	boundary="HDFa3DuvL6LkIM2RmlMj8vLGPIpdTCLPI"
+Subject: Re: [Openvpn-devel] [PATCH release/2.4] configure.ac: fix building
+ against static openssl
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,108 +25,141 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Simon Matter <simon.matter@...2249...>, openvpn-devel@lists.sourceforge.net
 
---001a113d73a07c1ef20550d59e94
-Content-Type: text/plain; charset="UTF-8"
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--HDFa3DuvL6LkIM2RmlMj8vLGPIpdTCLPI
+Content-Type: multipart/mixed; boundary="o2k4sOAQ2PVCXtNXe4bi3vPEM4lEWRJDB";
+ protected-headers="v1"
+From: David Sommerseth <openvpn@...2080...>
+Reply-To: openvpn-devel@lists.sourceforge.net
+To: Simon Matter <simon.matter@...2249...>, openvpn-devel@lists.sourceforge.net
+Message-ID: <f3799853-eece-2f39-dd81-333f1b681297@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH release/2.4] configure.ac: fix building
+ against static openssl
+References: <1496177444-18373-1-git-send-email-steffan@...1856...>
+ <29f51139-a525-fd92-0fe1-195d308d2924@...2080...>
+ <20170531070258.GC97029@...1296...>
+ <ae93b702-4edd-6772-0f1d-ac9629589ee8@...2080...>
+ <20170531092817.GH97029@...1296...>
+ <7bb03bbe8955dacd3a3130f64724024f.squirrel@...2257...>
+ <8fb2b96f-67c8-73ba-3dfd-13ddce59b599@...2080...>
+ <b18b1487fb12a6eb6b4ccb7c7f6ca517.squirrel@...2257...>
+In-Reply-To: <b18b1487fb12a6eb6b4ccb7c7f6ca517.squirrel@...2257...>
 
-Hi,
-
-Copying openvpn-devel:
-As this is related to openvpn best to have this discussion in the devel
-list, I suppose.
-(see also:
-https://github.com/OpenVPN/openvpn-gui/issues/168#issuecomment-305250704)
-
-On Wed, May 31, 2017 at 12:58 PM, Gert Doering <notifications@...1714...>
-wrote:
-
-> On Wed, May 31, 2017 at 09:43:21AM -0700, Selva Nair wrote:
-> > As I said, get openvpn to report route errors in the status and then we
-> can
-> > add a warning to the status popup, turn the icon red etc instead of the
-> > current misleading "successfully connected" behaviour.
->
-> This is actually a discussion I was trying to have a long time ago
-> (a few years) - "why do we ignore route addition errors?".
->
-> The IPv6 code doesn't (because I think that errors are errors, not
-> warnings...) and that was always some sort of weird asymmetry...
->
-> I still don't know the reasoning here, but I suspect it's something along
-> "you push a route that is identical to the local subnet" (192.168.1.0/24,
-> for example, because the user happens to be in a bad NAT network) and
-> "all of a sudden it fails"... so this might need more discussion, and
-> also some code cleanups to gracefully handle situations where an error
-> is "tolerated".
->
-
-That and some route addition errors like "route already exists" are often
-benign. So a fatal error is not appropriate. But, IIRC,
- openvpn_execve_check only allows printing of errors as FATAL or WARN.
-Currently we do not parse the log message flags (error vs warning etc.) in
-the Windows GUI, but that could be improved if openvpn can log route errors
-like access denied as such.
-
-In any case, the status reported to the management when connected with
-errors should be something other than "CONNECTED,SUCCESS" -- say
-"CONNECTED,ROUTE-FAILED" etc. so that  UI can intimate the user.
-
-Selva
-
---001a113d73a07c1ef20550d59e94
-Content-Type: text/html; charset="UTF-8"
+--o2k4sOAQ2PVCXtNXe4bi3vPEM4lEWRJDB
+Content-Language: en-GB
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr"><div class=3D"gmail_extra">Hi,<br></div><div class=3D"gmai=
-l_extra"><br></div><div class=3D"gmail_extra">Copying openvpn-devel:</div><=
-div class=3D"gmail_extra">As this is related to openvpn best to have this d=
-iscussion in the devel list, I suppose.=C2=A0<br><div class=3D"gmail_quote"=
->(see also:=C2=A0<a href=3D"https://github.com/OpenVPN/openvpn-gui/issues/1=
-68#issuecomment-305250704">https://github.com/OpenVPN/openvpn-gui/issues/16=
-8#issuecomment-305250704</a>)</div><div class=3D"gmail_quote"><br></div><di=
-v class=3D"gmail_quote">On Wed, May 31, 2017 at 12:58 PM, Gert Doering <spa=
-n dir=3D"ltr">&lt;<a href=3D"mailto:notifications@...1714..." target=3D"_bl=
-ank">notifications@...1714...</a>&gt;</span> wrote:<br><blockquote class=3D=
-"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left-width:1px;borde=
-r-left-color:rgb(204,204,204);border-left-style:solid;padding-left:1ex"><di=
-v id=3D"gmail-m_-6518952545098238565m_8520566217958298647:2n" class=3D"gmai=
-l-m_-6518952545098238565m_8520566217958298647a3s gmail-m_-65189525450982385=
-65m_8520566217958298647aXjCH gmail-m_-6518952545098238565m_8520566217958298=
-647m15c5f719c883a87f">On Wed, May 31, 2017 at 09:43:21AM -0700, Selva Nair =
-wrote:<br>
-&gt; As I said, get openvpn to report route errors in the status and then w=
-e can<br>
-&gt; add a warning to the status popup, turn the icon red etc instead of th=
-e<br>
-&gt; current misleading &quot;successfully connected&quot; behaviour.<br>
-<br>
-This is actually a discussion I was trying to have a long time ago<br>
-(a few years) - &quot;why do we ignore route addition errors?&quot;.  <br>
-<br>
-The IPv6 code doesn&#39;t (because I think that errors are errors, not <br>
-warnings...) and that was always some sort of weird asymmetry...<br>
-<br>
-I still don&#39;t know the reasoning here, but I suspect it&#39;s something=
- along<br>
-&quot;you push a route that is identical to the local subnet&quot; (<a href=
-=3D"http://192.168.1.0/24" target=3D"_blank">192.168.1.0/24</a>,<br>
-for example, because the user happens to be in a bad NAT network) and <br>
-&quot;all of a sudden it fails&quot;...  so this might need more discussion=
-, and<br>
-also some code cleanups to gracefully handle situations where an error<br>
-is &quot;tolerated&quot;.</div></blockquote></div><div class=3D"gmail_extra=
-"><br></div><div class=3D"gmail_extra">That and some route addition errors =
-like &quot;route already exists&quot; are often benign. So a fatal error is=
- not appropriate. But, IIRC, =C2=A0openvpn_execve_check only allows printin=
-g of errors as FATAL or WARN. Currently we do not parse the log message fla=
-gs (error vs warning etc.) in the Windows GUI, but that could be improved i=
-f openvpn can log route errors like access denied as such.</div><div class=
-=3D"gmail_extra"><br></div>In any case, the status reported to the manageme=
-nt when connected with errors should be something other than &quot;CONNECTE=
-D,SUCCESS&quot; -- say &quot;CONNECTED,ROUTE-FAILED&quot; etc. so that =C2=
-=A0UI can intimate the user.</div><div class=3D"gmail_extra"><br></div><div=
- class=3D"gmail_extra">Selva</div></div>
+On 31/05/17 17:48, Simon Matter wrote:
+[...snip...]
+>>
+>> Do you depend on building against OpenSSL 0.9.8?  If so, which
+>> OS/distribution do you use?
+>=20
+> Yes, I have a case with very customized CentOS 5 systems where we also
+> backport security related patches.=20
 
---001a113d73a07c1ef20550d59e94--
+Well, officially we no longer support RHEL 5 or older as of v2.4.
+AFAIR, we even agreed late last year when getting ready for the 2.4
+release that we won't intentionally break 2.4 builds on unsupported
+distros but we will not bother supporting it when we want to move forward.
+
+It is good you take care of backporting security related patches.  But
+wanting the OpenVPN community to maintain new OpenVPN releases buildable
+on those old distros is effectively shifting that responsibility over to
+the OpenVPN community.
+
+Had the v2.5 release been in the pipe for the next 6-7 months or so,
+then I would be more easily persuaded to let v2.4 keep support for
+openssl-0.9.8 around.   But the reality is that we don't currently have
+a release plan for v2.5.
+
+> Of course the same could be done for openvpn but it's easier to just
+> follow the current 2.4 stream.=20
+Right, having others doing your work is always the easiest path for
+yourself ;-)
+
+> That's why my suggestion to keep all the compat hacks in 2.4.x and
+> kick them out only in the main devel branch.
+
+Which is really speaking against what was the agreement when the 2.4
+release started to take shape late last year.
+
+But AFAIR, there also exists compat-openssl10 in RHEL5.  Which could
+resolve this issue for you.
+
+> I guess that's what most package maintainers expect to happen and
+> it keep mailing lists quiet
+
+Most package maintainers wants to have as little work as possible while
+providing the latest and greatest to their users.  But how that is
+achieved is primarily the package maintainer's responsibility.
+
+We as a the upstream project will strive to make life as easy as
+possible for package maintainers, but not at any cost.
+
+I further encourage you to read chapter 6.9 in the Quarklabs security
+audit [1].  Their recommendation is:
+
+    "We thus recommend suppressing these workarounds and to return an
+     error during compile time if the OpenSSL version is too old. Only
+     versions 1.0.2 and further should be satisfactory."
+
+Also have in mind that this audit is performed against the v2.4 code base.
+
+So when we're having 1.0.1e as the oldest supported OpenSSL version (as
+that is what RHEL6 and RHEL7 ships and gets security fixes), I think
+that enforcing v2.4 to comply to this strengthens the overall security
+in OpenVPN.
+
+If package maintainers want to run OpenVPN v2.4 on older OS/distro
+releases with older OpenSSL libraries, then that is their own decision
+and they need to take care of the additional work themselves.  Insisting
+on upstream OpenVPN developers to make package maintainer's life easy
+and disregarding recommendations from security auditors at the same time
+is at best a fairly ignorant attitude.
+
+And in practicality, package maintainers will then need to revert the
+two commits which removes support for older OpenSSL versions.
+
+
+[1] <https://ostif.org/wp-content/uploads/2017/05/OpenVPN1.2final.pdf>
+
+
+--=20
+kind regards,
+
+David Sommerseth
+OpenVPN Technologies, Inc
+
+
+
+--o2k4sOAQ2PVCXtNXe4bi3vPEM4lEWRJDB--
+
+--HDFa3DuvL6LkIM2RmlMj8vLGPIpdTCLPI
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBCAAGBQJZMSm3AAoJEIbPlEyWcf3ybc4P/iza6wCGguo0zegWoFLC88hg
+KIEtTyVOsHxGBCtIZ7ZJMHdJWkgvSYjAZ3x6MUWPLcWhMSC3Wmh3dUiZAGjxBKn/
+9O9WKb01nOmmjvjyeRsUebdu7sGNlsLvuqQS9+8oldClsXP+qXS0QWtDBdH1GFdU
+8o+18AW7+bkDnzQSZ/x/PlEivhT+F5m7IkF5viEDqvfxj3W7eJryMnk7Czwbth9g
+Zu7gGp51lXIVgrdaifSVMk3Tya1rN19Tf8LFBc24N2m3idMs69v7A/2bptBOd9cX
+0IvAfG4qJtOCoKldlVY8E14eCDnkAjxonE3k3n7MQ6g3xOPKwcKsVbSS/E+8DxE8
+uBQe1vJKKmN/Kb9ZYaX0sAYcMz0LlnJPfqNS3q/EFvF1Ud4LA5Iiwf9h1Gruj/z6
+VjdPdyxRuxuuNdgyKsgLXgOMJKfkT5xTieZTzTeJVTy3xGFvL6W/tMXHuPo09ZCE
+6Lkv/n9+7/6W+Wa9QD38U3QwuaH2vGUHOe6YJcfPKJhJl4i+SU+3+KlG+dMDB1/j
+9NeQXVEWqvOuVGYWGvpi4geUBAtBrRPpsyY4EvumwZc6kmjTJnwrxsyDEWdku+pD
+tHqzCdsx9tnzQFBDHg4kOAYRd4vtj5amKeyKULnUJJvw4AQgxsqPm2v+fK2RG3oP
+8BvjSEwWoDhajcPkgJAp
+=+d+r
+-----END PGP SIGNATURE-----
+
+--HDFa3DuvL6LkIM2RmlMj8vLGPIpdTCLPI--
 
