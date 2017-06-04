@@ -1,13 +1,12 @@
+MIME-Version: 1.0
+In-Reply-To: <1a7a5efc-2de2-db0b-0aa0-4340379b84f7@...277...>
 References: <d925da2c-5715-6452-1c38-097a123c0de1@...277...>
 	<CAKuzo_hWtk=vpR1P4T7O6e6udL8o+yySciD7VveTYdt25c7DRA@...278...>
-From: ValdikSS <valdikss@...277...>
-Message-ID: <1a7a5efc-2de2-db0b-0aa0-4340379b84f7@...277...>
-Date: Sat, 3 Jun 2017 23:13:23 +0300
-MIME-Version: 1.0
-In-Reply-To: <CAKuzo_hWtk=vpR1P4T7O6e6udL8o+yySciD7VveTYdt25c7DRA@...278...>
-Content-Type: multipart/alternative;
-	boundary="------------3399DFF290B782993A183D10"
-Content-Language: en-GB
+	<1a7a5efc-2de2-db0b-0aa0-4340379b84f7@...277...>
+From: Selva Nair <selva.nair@...277...>
+Date: Sun, 4 Jun 2017 00:11:50 -0400
+Message-ID: <CAKuzo_iB=pNkgkKBD_N-ZPTeeDiEMp_qD7uvHst3dhPMkJ=4Jg@...278...>
+Content-Type: multipart/alternative; boundary="001a113e21242b4fb605511a9747"
 Subject: Re: [Openvpn-devel] block-outside-dns and persist-tun
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -17,123 +16,89 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-Cc: Pavel Zhovner <pavel@...2275...>
+To: ValdikSS <valdikss@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, Pavel Zhovner <pavel@...2275...>
 
-This is a multi-part message in MIME format.
---------------3399DFF290B782993A183D10
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+--001a113e21242b4fb605511a9747
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 28.05.2017 18:20, Selva Nair wrote:
-> Hi,
+On Sat, Jun 3, 2017 at 4:13 PM, ValdikSS <valdikss@...277...> wrote:
+
 >
-> Copying the -devel list:
->
-> On Sun, May 28, 2017 at 10:16 AM, ValdikSS <valdikss@...277... <mailto:valdikss@...277...>> wrote:
->
-> Is this only with 2.4.2 or is 2.4.1 also affected?  As you imply, the filters won't persist after the process ends (in this case the service), restarting service should be enough to clear them. Further, even if the openvpn client process terminates without removing the filters, the service should clean up all filters added in that session during the undo() processing. However, that wont happen if the openvpn.exe process fails to exit. Verify that a stale client process is not hanging around.
-
-I believe it was tested with 2.4.2. I cannot reproduce this issue and persons who reported it are not tech-savvy. Pavel configured server to push "persist-tun" to clients and says it works correctly now.
-
->  
->
-> The tap adapter index is used to allow dns traffic through it, not block it, so I would think the failure is in unblocking dns through non-tap adapters. If that is the case, dns should start working again through the tunnel when the client reconnects.
->
-> Anyway, we need to see the client logs and any error event logged by the service when this happens. Can you get the user to open a ticket with logs?
-
-Since this service is becoming popular and Pavel has 4000+ users, we have seen a lot of absolutely crazy OpenVPN errors on Windows. Most of them are because of old Windowses with disabled updates, but some of them are interesting, like sometimes block-outside-dns fails to remove it's own filters.
-
-We ask people to create bugs on OpenVPN bugtracker but I think almost nobody feels comfortable for their English and do not do that.
-
-You can skip through comments on https://zaborona.help/ to see some screenshots and logs.
-Like this one: https://zaborona.help/faq.html#comment-3328754341
+> You can skip through comments on https://zaborona.help/ to see some
+> screenshots and logs.
+> Like this one: https://zaborona.help/faq.html#comment-3328754341
 
 
---------------3399DFF290B782993A183D10
-Content-Type: text/html; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+I did not find any related to failure to remove WFP filters. That specific
+comment link reads
 
-<html>
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  </head>
-  <body text="#000000" bgcolor="#FFFFFF">
-    On 28.05.2017 18:20, Selva Nair wrote:<br>
-    <blockquote type="cite"
-cite="mid:CAKuzo_hWtk=vpR1P4T7O6e6udL8o+yySciD7VveTYdt25c7DRA@...278...">
-      <div dir="ltr">
-        <div class="gmail_extra">Hi,</div>
-        <div class="gmail_extra"><br>
-        </div>
-        <div class="gmail_extra">Copying the -devel list:</div>
-        <div class="gmail_extra"><br>
-          <div class="gmail_quote">On Sun, May 28, 2017 at 10:16 AM,
-            ValdikSS <span dir="ltr">&lt;<a
-                href="mailto:valdikss@...277..." target="_blank"
-                moz-do-not-send="true">valdikss@...277...</a>&gt;</span>
-            wrote:<br>
-            <div><br>
-            </div>
-            <div>Is this only with 2.4.2 or is 2.4.1 also affected?  As
-              you imply, the filters won't persist after the process
-              ends (in this case the service), restarting service should
-              be enough to clear them. Further, even if the openvpn
-              client process terminates without removing the filters,
-              the service should clean up all filters added in that
-              session during the undo() processing. However, that wont
-              happen if the openvpn.exe process fails to exit. Verify
-              that a stale client process is not hanging around. <br>
-            </div>
-          </div>
-        </div>
-      </div>
-    </blockquote>
-    <br>
-    I believe it was tested with 2.4.2. I cannot reproduce this issue
-    and persons who reported it are not tech-savvy. Pavel configured
-    server to push "persist-tun" to clients and says it works correctly
-    now.<br>
-    <br>
-    <blockquote type="cite"
-cite="mid:CAKuzo_hWtk=vpR1P4T7O6e6udL8o+yySciD7VveTYdt25c7DRA@...278...">
-      <div dir="ltr">
-        <div class="gmail_extra">
-          <div class="gmail_quote">
-            <div> </div>
-            <div><br>
-            </div>
-            <div>The tap adapter index is used to allow dns traffic
-              through it, not block it, so I would think the failure is
-              in unblocking dns through non-tap adapters. If that is the
-              case, dns should start working again through the tunnel
-              when the client reconnects.</div>
-            <div><br>
-            </div>
-            <div>Anyway, we need to see the client logs and any error
-              event logged by the service when this happens. Can you get
-              the user to open a ticket with logs?</div>
-          </div>
-        </div>
-      </div>
-    </blockquote>
-    <br>
-    Since this service is becoming popular and Pavel has 4000+ users, we
-    have seen a lot of absolutely crazy OpenVPN errors on Windows. Most
-    of them are because of old Windowses with disabled updates, but some
-    of them are interesting, like sometimes block-outside-dns fails to
-    remove it's own filters.<br>
-    <br>
-    We ask people to create bugs on OpenVPN bugtracker but I think
-    almost nobody feels comfortable for their English and do not do
-    that.<br>
-    <br>
-    You can skip through comments on <a class="moz-txt-link-freetext" href="https://zaborona.help/">https://zaborona.help/</a> to see some
+<quote>
+Sun May 28 18:07:25 2017 Block_DNS: WFP engine opened
+Sun May 28 18:07:25 2017 Error in add_block_dns_filters(): add_sublayer:
+failed to add persistent sublayer : =D0=9E=D1=82=D0=BA=D0=B0=D0=B7=D0=B0=D0=
+=BD=D0=BE =D0=B2 =D0=B4=D0=BE=D1=81=D1=82=D1=83=D0=BF=D0=B5. [status=3D0x5]
+Sun May 28 18:07:25 2017 Blocking DNS failed!
+Sun May 28 18:07:25 2017 Exiting due to fatal error
+</quote>
+
+Obviously "access denied" due to not running as admin and service not in
+use.
+
+Selva
+
+--001a113e21242b4fb605511a9747
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">=
+On Sat, Jun 3, 2017 at 4:13 PM, ValdikSS <span dir=3D"ltr">&lt;<a href=3D"m=
+ailto:valdikss@...277..." target=3D"_blank">valdikss@...277...</a>&gt;</spa=
+n> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px =
+0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex"><br>
+    You can skip through comments on <a class=3D"gmail-m_162739014374420315=
+5moz-txt-link-freetext" href=3D"https://zaborona.help/" target=3D"_blank">h=
+ttps://zaborona.help/</a> to see some
     screenshots and logs.<br>
-    Like this one: <a class="moz-txt-link-freetext" href="https://zaborona.help/faq.html#comment-3328754341">https://zaborona.help/faq.html#comment-3328754341</a><br>
-    <br>
-  </body>
-</html>
+    Like this one: <a class=3D"gmail-m_1627390143744203155moz-txt-link-free=
+text" href=3D"https://zaborona.help/faq.html#comment-3328754341" target=3D"=
+_blank">https://zaborona.help/faq.<wbr>html#comment-3328754341</a></blockqu=
+ote></div><div class=3D"gmail_extra"><br></div>I did not find any related t=
+o failure to remove WFP filters. That specific comment link reads</div><div=
+ class=3D"gmail_extra"><span style=3D"color:rgb(42,46,46);font-family:&quot=
+;Helvetica Neue&quot;,arial,sans-serif;font-size:15px"><br></span></div><di=
+v class=3D"gmail_extra"><span style=3D"color:rgb(42,46,46);font-family:&quo=
+t;Helvetica Neue&quot;,arial,sans-serif;font-size:15px">&lt;quote&gt;</span=
+></div><div class=3D"gmail_extra"><span style=3D"color:rgb(42,46,46);font-f=
+amily:&quot;Helvetica Neue&quot;,arial,sans-serif;font-size:15px">Sun May 2=
+8 18:07:25 2017 Block_DNS: WFP engine opened</span><br style=3D"box-sizing:=
+border-box;color:rgb(42,46,46);font-family:&quot;Helvetica Neue&quot;,arial=
+,sans-serif;font-size:15px"><span style=3D"color:rgb(42,46,46);font-family:=
+&quot;Helvetica Neue&quot;,arial,sans-serif;font-size:15px">Sun May 28 18:0=
+7:25 2017 Error in add_block_dns_filters(): add_sublayer: failed to add per=
+sistent sublayer : =D0=9E=D1=82=D0=BA=D0=B0=D0=B7=D0=B0=D0=BD=D0=BE =D0=B2 =
+=D0=B4=D0=BE=D1=81=D1=82=D1=83=D0=BF=D0=B5. [status=3D0x5]</span><br style=
+=3D"box-sizing:border-box;color:rgb(42,46,46);font-family:&quot;Helvetica N=
+eue&quot;,arial,sans-serif;font-size:15px"><span style=3D"color:rgb(42,46,4=
+6);font-family:&quot;Helvetica Neue&quot;,arial,sans-serif;font-size:15px">=
+Sun May 28 18:07:25 2017 Blocking DNS failed!</span><br style=3D"box-sizing=
+:border-box;color:rgb(42,46,46);font-family:&quot;Helvetica Neue&quot;,aria=
+l,sans-serif;font-size:15px"><span style=3D"color:rgb(42,46,46);font-family=
+:&quot;Helvetica Neue&quot;,arial,sans-serif;font-size:15px">Sun May 28 18:=
+07:25 2017 Exiting due to fatal error</span><br></div><div class=3D"gmail_e=
+xtra"><span style=3D"color:rgb(42,46,46);font-family:&quot;Helvetica Neue&q=
+uot;,arial,sans-serif;font-size:15px">&lt;/quote&gt;</span></div><div class=
+=3D"gmail_extra"><span style=3D"color:rgb(42,46,46);font-family:&quot;Helve=
+tica Neue&quot;,arial,sans-serif;font-size:15px"><br></span></div><div clas=
+s=3D"gmail_extra"><span style=3D"color:rgb(42,46,46);font-family:&quot;Helv=
+etica Neue&quot;,arial,sans-serif;font-size:15px">Obviously &quot;access de=
+nied&quot; due to not running as admin and service not in use.</span></div>=
+<div class=3D"gmail_extra"><span style=3D"color:rgb(42,46,46);font-family:&=
+quot;Helvetica Neue&quot;,arial,sans-serif;font-size:15px"><br></span></div=
+><div class=3D"gmail_extra"><span style=3D"color:rgb(42,46,46);font-family:=
+&quot;Helvetica Neue&quot;,arial,sans-serif;font-size:15px">Selva</span></d=
+iv><div class=3D"gmail_extra"><br><br></div></div>
 
---------------3399DFF290B782993A183D10--
+--001a113e21242b4fb605511a9747--
 
