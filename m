@@ -3,12 +3,12 @@ References: <d925da2c-5715-6452-1c38-097a123c0de1@...277...>
 	<1a7a5efc-2de2-db0b-0aa0-4340379b84f7@...277...>
 	<CAKuzo_iB=pNkgkKBD_N-ZPTeeDiEMp_qD7uvHst3dhPMkJ=4Jg@...278...>
 From: ValdikSS <valdikss@...277...>
-Message-ID: <cebb9947-c9bb-e13c-9013-c9c486793123@...277...>
-Date: Sun, 4 Jun 2017 09:43:12 +0300
+Message-ID: <88b7b1a5-c364-a8d5-9b2e-ee9995acbec7@...277...>
+Date: Sun, 4 Jun 2017 10:11:45 +0300
 MIME-Version: 1.0
 In-Reply-To: <CAKuzo_iB=pNkgkKBD_N-ZPTeeDiEMp_qD7uvHst3dhPMkJ=4Jg@...278...>
 Content-Type: multipart/alternative;
-	boundary="------------AC8CADE19105AFF9FD1002C6"
+	boundary="------------DC52195A96C49356669B0B78"
 Content-Language: en-GB
 Subject: Re: [Openvpn-devel] block-outside-dns and persist-tun
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -23,19 +23,22 @@ To: Selva Nair <selva.nair@...277...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, Pavel Zhovner <pavel@...2275...>
 
 This is a multi-part message in MIME format.
---------------AC8CADE19105AFF9FD1002C6
+--------------DC52195A96C49356669B0B78
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 
-What about a bit later comment?
+Also this:
+http://clip2net.com/s/3KOUHWv
+"Unable to start OpenVPN Interactive Service on local computer: Error 1075: parent service does not exist or has been marked as removed".
+This is on fresh installation.
 
-Sun May 28 18:32:38 2017 Block_DNS: WFP engine opened
-Sun May 28 18:32:38 2017 Block_DNS: Using existing sublayer
-Sun May 28 18:32:38 2017 Block_DNS: Added permit filters for exe_path
-Sun May 28 18:32:38 2017 Block_DNS: Added block filters for all interfaces
-Sun May 28 18:32:38 2017 Block_DNS: Added permit filters for TAP interface
-Sun May 28 18:32:38 2017 Blocking DNS failed!
-Sun May 28 18:32:38 2017 Exiting due to fatal error
+And this:
+
+Error in add_block_dns_filters(): FwpEngineOpen: open fwp session failed : В системе отображения конечных точек не осталось доступных конечных точек.   [status=0x6d9]
+Tue May 30 02:28:26 2017 Blocking DNS failed!
+
+"open fwp session failed : There are no more endpoints available from the endpoint mapper."
+
 
 On 04.06.2017 07:11, Selva Nair wrote:
 >
@@ -68,7 +71,7 @@ On 04.06.2017 07:11, Selva Nair wrote:
 > https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
 
---------------AC8CADE19105AFF9FD1002C6
+--------------DC52195A96C49356669B0B78
 Content-Type: text/html; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 
@@ -77,18 +80,23 @@ Content-Transfer-Encoding: 8bit
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   </head>
   <body text="#000000" bgcolor="#FFFFFF">
-    What about a bit later comment?<br>
+    Also this:<br>
+    <a class="moz-txt-link-freetext" href="http://clip2net.com/s/3KOUHWv">http://clip2net.com/s/3KOUHWv</a><br>
+    "Unable to start OpenVPN Interactive Service on local computer:
+    Error 1075: parent service does not exist or has been marked as
+    removed".<br>
+    This is on fresh installation.<br>
     <br>
-    <tt>Sun May 28 18:32:38 2017 Block_DNS: WFP engine opened</tt><tt><br>
-    </tt><tt>Sun May 28 18:32:38 2017 Block_DNS: Using existing sublayer</tt><tt><br>
-    </tt><tt>Sun May 28 18:32:38 2017 Block_DNS: Added permit filters
-      for exe_path</tt><tt><br>
-    </tt><tt>Sun May 28 18:32:38 2017 Block_DNS: Added block filters for
-      all interfaces</tt><tt><br>
-    </tt><tt>Sun May 28 18:32:38 2017 Block_DNS: Added permit filters
-      for TAP interface</tt><tt><br>
-    </tt><tt>Sun May 28 18:32:38 2017 Blocking DNS failed!</tt><tt><br>
-    </tt><tt>Sun May 28 18:32:38 2017 Exiting due to fatal error</tt><br>
+    And this:<br>
+    <tt><br>
+      Error in add_block_dns_filters(): FwpEngineOpen: open fwp session
+      failed : В системе отображения конечных точек не осталось
+      доступных конечных точек.   [status=0x6d9]</tt><tt><br>
+    </tt><tt>Tue May 30 02:28:26 2017 Blocking DNS failed! </tt><br>
+    <br>
+    "open fwp session failed : There are no more endpoints available
+    from the endpoint mapper."<br>
+    <br>
     <br>
     <div class="moz-cite-prefix">On 04.06.2017 07:11, Selva Nair wrote:<br>
     </div>
@@ -177,5 +185,5 @@ Openvpn-devel mailing list
   </body>
 </html>
 
---------------AC8CADE19105AFF9FD1002C6--
+--------------DC52195A96C49356669B0B78--
 
