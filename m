@@ -1,20 +1,9 @@
-MIME-Version: 1.0
-In-Reply-To: <CAKh=nwGZXXnCmSv1=1peHLF-WuGsrALhaQ+kpimbhs4xuA6aDQ@...278...>
-References: <cover.1487368114.git.logout@...260...>
-	<e5e93420586b24b7df5b2f5ac2df02ccec5ffdb1.1487368114.git.logout@...260...>
-	<66d4f562-4786-f3fd-a6ae-27ebe10abf59@...1856...>
-	<20170302212621.GE93896@...1296...>
-	<735306eb-5dc4-19b0-75ad-2141fb2905b2@...1856...>
-	<72797fe3-23f7-8b10-19df-29cc4f31ef98@...2080...>
-	<CAKh=nwFF-Lc-Q52QCoh0WgP3g0gr0P7_i9CqwcpC2mDzGCi8sw@...278...>
-	<20170518204910.GT97029@...1296...>
-	<CAKh=nwFot6GZiv1cs2-X8kL0UNS6r8BGsNQ2RtC+0eyiJRMZtA@...278...>
-	<20170519114126.GD97029@...1296...>
-	<CAKh=nwGZXXnCmSv1=1peHLF-WuGsrALhaQ+kpimbhs4xuA6aDQ@...278...>
-From: Steffan Karger <steffan@...1856...>
-Date: Thu, 8 Jun 2017 18:11:46 +0200
-Message-ID: <CAA1AbxJGxCJkvx8SU11EN2M3um5SUb9GpEiF2yDf_z6J2z-bwA@...278...>
-Subject: Re: [Openvpn-devel] OpenSSL 1.1 patch set - status?
+Date: Thu, 8 Jun 2017 21:24:34 +0200 (CEST)
+Message-Id: <201706081924.v58JOYX5011601@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <CAO5O-ELXwXgGtRFou=FY1TAhW4W4BHPZF4=rqSY877njtXNMJg@...278...>
+References: <CAO5O-ELXwXgGtRFou=FY1TAhW4W4BHPZF4=rqSY877njtXNMJg@...278...>
+Subject: [Openvpn-devel] [PATCH applied] Re: refactor my_strupr
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -23,49 +12,42 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Emmanuel Deloget <logout@...260...>
-Cc: Gert Doering <gert@...1296...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: Guido Vranken <guidovranken@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
+ACK, thanks.
 
-On 8 June 2017 at 17:57, Emmanuel Deloget <logout@...260...> wrote:
-> On Fri, May 19, 2017 at 1:41 PM, Gert Doering <gert@...1296...> wrote:
->> On Fri, May 19, 2017 at 12:37:17PM +0200, Emmanuel Deloget wrote:
->> > > I'm wondering where this got stuck - are you waiting for us to move
->> > > forward (like, missing review of parts of the patch set), or are we
->> > > waiting for you, and you've been busy?
->> >
->> > Problem is that I'm working in a more-than-full-time manner on
->> > way-too-many-other subjects :)
->>
->> Thanks for quickly sending us the current patch set.  Now it's on us
->> again.
->
-> If there is anything bad, please tell me - I should be able to do another
-> round if needed :)
->
->> (And yes, we fully understand the "too many projects, too many complaining
->> customers, angry wife as well, and too little time" thing :) )
->
-> Yeah. It seems that "somebody" limited the day length to a small value that
-> fit on a 5 bit word. I'm wondering if this "person" was told about
-> uint32_t...
->
->> Over to Steffan now - I'm so happy that I do not have to understand
->> OpenSSL code... ;-)
->
-> Good thing is : there is nothing complex in the changes I made. I'm pretty
-> sure you'll be able to understand both the changes and what the original
-> code does :)
+Your patch has been applied to the master, release/2.4 and release/2.3 
+branch (needed some manual work).
 
-This is probably the most polite bump mail I've ever seen :-p
+I have changed the commit message to be friendlier to "git shortlog" -
+please do not make the first line of the commit message longer than
+about 60-70 characters, and then include a blank line.  Your original
+commit message would show up "in full" in git shortlog, which makes it 
+much less "short"...  (the message is still as you put it, I just moved
+it into the "not first line" block, and wrapped the lines to ~70 chars)
 
-Just so you know:  I haven't forgotten about these - they are
-confronting me with my back log each time I open my mailbox...  I'll
-get to it at some point, but in the mean time (as always) other
-reviewers are of course welcome to look at them too!
+commit 69162924de3600bfe8ae9708a1d6e3f4515ef995 (master)
+commit 69f00d8ce6862772919e2714adb72f13f3e92ca7 (release/2.4)
+commit 8dd598e89f25074f2d4d23f77cb601cf48a810e3 (release/2.3)
 
--Steffan
+Author: Guido Vranken
+Date:   Thu Jun 8 00:44:15 2017 +0200
+
+     refactor my_strupr
+
+     Signed-off-by: Guido Vranken <guidovranken@...277...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <CAO5O-ELXwXgGtRFou=FY1TAhW4W4BHPZF4=rqSY877njtXNMJg@...278...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg14756.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
+
 
