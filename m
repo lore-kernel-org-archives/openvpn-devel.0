@@ -1,14 +1,15 @@
-From: Jeremie Courreges-Anglas <jca@...2272...>
+Date: Sat, 10 Jun 2017 19:46:42 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20170610174642.GK97029@...1296...>
 References: <8737brk7vm.fsf@...2274...>
 	<20170526165606.GQ97029@...1296...>
 	<CADxRZqwYw0RLxCDB-u3NmrLUBONng5DyT-1e9q-37HDHPpnCrQ@...278...>
-Date: Sat, 10 Jun 2017 18:16:13 +0200
-In-Reply-To: <CADxRZqwYw0RLxCDB-u3NmrLUBONng5DyT-1e9q-37HDHPpnCrQ@...278...>
-	(Anatoly Pugachev's message of "Tue, 6 Jun 2017 12:59:18 +0300")
-Message-ID: <877f0jvmwi.fsf@...2274...>
+	<877f0jvmwi.fsf@...2274...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
-	micalg=pgp-sha512; protocol="application/pgp-signature"
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="vWwfxLGz5ocz9zEe"
+Content-Disposition: inline
+In-Reply-To: <877f0jvmwi.fsf@...2274...>
 Subject: Re: [Openvpn-devel] Alignement crash on sparc64
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -18,129 +19,90 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Anatoly Pugachev <matorola@...277...>
-Cc: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net, Stefan Sperling <stsp@...2273...>
+To: Anatoly Pugachev <matorola@...277...>, Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net, Stefan Sperling <stsp@...2273...>
 
---=-=-=
-Content-Type: text/plain
+--vWwfxLGz5ocz9zEe
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Anatoly Pugachev <matorola@...277...> writes:
+Hi,
 
-> On Fri, May 26, 2017 at 7:56 PM, Gert Doering <gert@...1296...> wrote:
->> Hi,
->>
->> On Fri, May 26, 2017 at 04:30:53PM +0200, Jeremie Courreges-Anglas wrote:
->>> I am the maintainer of openvpn in the OpenBSD ports tree.  Here's
->>> a report from Stefan Sperling (Cc'ed).
->>>
->>> > An openvpn server running on OpenBSD/sparc64 6.1 crashes when a client
->>> > connects and starts doing traffic. Is anyone else seeing this?
->>
->> Thanks for the report.  I'll look into it.
->>
->> Copying around the IP header doesn't feel like the proper solution,
->> though - it's basically replacing an unaligned access somewhere with
->> a larger (unaligned!) mem copy, where most likely changing a word
->> access to 2x byte access (etc) might achieve the same thing without
->> copying.
->>
->>> To work around this, the patch below (also written by Stefan) was
->>> committed in our ports tree.  TARGET_FREEBSD and TARGET_DRAGONFLY seem
->>> to be affected too.
->>
->> FreeBSD/Sparc64 traps unaligned memory accesses and handles them
->> kernel-side.  So you'll see a slowdown, but no signal.
->>
->> Linux/Sparc64 has the same restrictions (unaligned access causing a
->> signal), but nobody has reported that yet, so maybe the underlying
->> memory alignment of the allocated buffer happens to be good enough
->> there.
->
-> Using mostly with linux sparc64, but I have openbsd sparc64 installed
-> and I can't reproduce it here....
->
-> we are using openvpn (2.4.0-6) on sparc64 linux (debian sid/unstable)
-> as clients to x86_64 server (openvpn-2.3.14-137.4.x86_64) - works
-> without errors.
->
-> I made a few tests yesterday with openvpn static key:
->
-> 1. server openvpn (2.4.0-6) on sparc64 linux, client is linux
-> openvpn-2.3.14-1.fc25.x86_64 - works
->
-> 2. server openvpn (2.4.0-6) on sparc64 linux, client openvpn 2.3.11
-> openbsd 6.1 sparc64 - works
->
-> 3. server 2.3.11 (old 6.0 version) openbsd 6.1 sparc64, client openvpn
-> (2.4.0-6) on sparc64 linux - works
->
-> 4. server 2.4.1 (6.1 version) openbsd 6.1 sparc64, client openvpn
-> (2.4.0-6) on sparc64 linux - works
+On Sat, Jun 10, 2017 at 06:16:13PM +0200, Jeremie Courreges-Anglas wrote:
+> Loaded symbols for /usr/libexec/ld.so
+> #0  write_tun_header (tt=3D0x1ddd4e1900, buf=3D0x1d336921c5 "E", len=3D84=
+) at tun.c:1661
+> 1661            if (iph->ip_v =3D=3D 6)
+> (gdb)
+>=20
+> buf points to an odd address.
 
-That's a lot of tests, thank you.  Dunno why you can't reproduce it with
-2.4.1 (and 2.3.11 seems to contain the same code in write_tun_header).
+That's a single-byte access...?  Nothing to be aligned here.
 
-[...]
+On FreeBSD, ip_v is defined as such:
 
-> -bash-4.3$ cat l1.conf
-> dev tun
-> ifconfig 10.9.0.2 10.9.0.1
-> comp-lzo
-> mute-replay-warnings
-> <secret>
-> ...
-> </secret>
+ * Structure of an internet header, naked of options.
+ */
+struct ip {
+#if BYTE_ORDER =3D=3D LITTLE_ENDIAN
+        u_char  ip_hl:4,                /* header length */
+                ip_v:4;                 /* version */
+#endif
+#if BYTE_ORDER =3D=3D BIG_ENDIAN
+        u_char  ip_v:4,                 /* version */
+                ip_hl:4;                /* header length */
+#endif
+...
 
-OpenBSD 6.1 on sparc64, vanilla openvpn-2.4.2 freshly built.  Using
-client mode with your configuration snippet and an IPv4 remote, I can
-reliably trigger a SIGBUS.
+... so whatever it is, it's part of a single uchar at the very=20
+beginning of that header...  strange.
 
-xxx ~/src/openvpn-2.4.2$ gdb src/openvpn/openvpn openvpn.core
-GNU gdb 6.3
-Copyright 2004 Free Software Foundation, Inc.
-GDB is free software, covered by the GNU General Public License, and you are
-welcome to change it and/or distribute copies of it under certain conditions.
-Type "show copying" to see the conditions.
-There is absolutely no warranty for GDB.  Type "show warranty" for details.
-This GDB was configured as "sparc64-unknown-openbsd6.1"...
-Core was generated by `openvpn'.
-Program terminated with signal 10, Bus error.
-Loaded symbols for /home/jca/src/openvpn-2.4.2/src/openvpn/openvpn
-Reading symbols from /usr/lib/libssl.so.43.2...done.
-Loaded symbols for /usr/lib/libssl.so.43.2
-Reading symbols from /usr/lib/libcrypto.so.41.1...done.
-Loaded symbols for /usr/lib/libcrypto.so.41.1
-Reading symbols from /usr/lib/libc.so.89.3...done.
-Loaded symbols for /usr/lib/libc.so.89.3
-Reading symbols from /usr/libexec/ld.so...done.
-Loaded symbols for /usr/libexec/ld.so
-#0  write_tun_header (tt=0x1ddd4e1900, buf=0x1d336921c5 "E", len=84) at tun.c:1661
-1661            if (iph->ip_v == 6)
-(gdb)
 
-buf points to an odd address.
+OTOH, the compiler might assume 16bit-alignment here and use a 16bit-
+access to get the first word, then bit-shift (someone who understands
+sparc64 assembly around to check?) - in this case, the following=20
+change should help:
 
--- 
-jca | PGP : 0x1524E7EE / 5135 92C1 AD36 5293 2BDF  DDCC 0DFA 74AE 1524 E7EE
 
---=-=-=
+old:
+    if (iph->ip_v =3D=3D 6)
+
+new:
+    if (OPENVPN_IPH_GET_VER(*buf) =3D=3D 6)
+
+this is an existing macro which takes an int argument, shifting and
+masking the right bits, and since *buf is "uint8_t *buf", this should
+both be correct and alignment-ignorant.=20=20
+
+It might be less efficient than accessing the bit field - but then, it's=20
+the same work to do, so hopefully the compiler is smart enough to compile=20
+it to the same instructions.
+
+gert
+
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--vWwfxLGz5ocz9zEe
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCgAdFiEEUTWSwa02UpMr393MDfp0rhUk5+4FAlk8G00ACgkQDfp0rhUk
-5+5DUA/9EK5XElSOktBVD/ysPx924xV3tUGIwzTd2S/TWRFEJCAYxL6XIreKxJDs
-deoDB/sSRHkI6S4wQqrpSMBmOeOleTf0WYsiBOzZGDIxvI5mat3OWEW0d77WlFNm
-jv5gTyGiAYOILxj6iL56yoG33Hu71rng1VEbUYCUTIaNxzK9vBYA1lKVtomfuMn6
-NDCI3SNutMBJyQUDxVFnW0ixz7wmDLOps40ioJObUZ/SIf/yWKltmXkLlBWEN9Q5
-VJ5Y9EuqT2+vMO9jOhA/0/vJTXLsbj70/O1jQr4AEdSiRiikcJCiFJTsgK7SUJ4I
-W7b2UEa7tYlSm0lDJ39rjekb54yFKTusSN/aL2aDRJTWA1lRubUJJS/pbCDDTJgx
-0i87muwNMZR/one86EfXWvUX2QtlF3vCk8QAP2V104K7RX5NuMC0DNsPgsyp3ohL
-+WXB9Dqx+bz5rkqIDRUmlhH+SJgdquw+yJKpE4HraAnn0a52ODN8e4oLNKnI/0Wx
-nLlKUDYQC3nGfY86jWwpecA0Ah0vkiuS+QiDgnDyTqg0uR7ynOTcf3rN8R2WU+l/
-7xY2wx5wo+YozzEMVZ8fqL76hWk1l0f1YPFtFLwW4ws5MFMyrhBkYD9PUteNe6Dx
-5stKs1Bd3wympeEtTMFk6VWmx7RvJsqeU49NhSEo1htRNTfMRPg=
-=QL6G
+iQGcBAEBAgAGBQJZPDCCAAoJEB2Cnv7KVigSMagL+wUhv6qr+D86HeKcizZKokwt
+mnWQK3uqWUDGbvg+joee3zn2XrASpvCLjbMjC9OO/9sN1bD4PS2ASm1bSeNkss5Y
+8f+dzJtwkFlyx6vMh9FQ94+M9YEOIpFLZuI3uWTeFMol7QtTX0CO6gxmCsUrcKzC
+FgswCaXi25YesMeRkRdudEXMlOSwEkxMq+7ztg9hCekUYTfGV3copIUR9iAbgy73
+hVtuZ+8wo7Cnc5p7SvjqNPDBmKBqnUTYGuupn/CzzGE+wTh2c8IOQxxXTn0dQdWg
++AhMZ6752RB2M/oNKXAagTCGwSw3pJAVeLX3TYuiHjFfezfBBomDz6uAKJmCnxKS
+KyM3OKDUiIkbLl/YdxryNNwQJsWOoGgfN0M7XHAXStO7gJFYJEX7Jb0MPDRsx0I6
+huYFgiCt3ymKjtM9vzVPlh56vB4tQQ9IuJ0LdXNXMMk/50xl3fFTQxDJ38J4Z4WZ
+n3KieUqMdALL1uGyEdOi8hQVWTDcu4Hgd/zUEYZQgg==
+=/XH5
 -----END PGP SIGNATURE-----
---=-=-=--
+
+--vWwfxLGz5ocz9zEe--
 
