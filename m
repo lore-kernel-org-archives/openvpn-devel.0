@@ -1,14 +1,18 @@
-Date: Sat, 10 Jun 2017 20:00:46 +0200
+Date: Sat, 10 Jun 2017 20:11:26 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20170610180046.GM97029@...1296...>
-References: <87fuf7u455.fsf@...2274...>
+Message-ID: <20170610181126.GN97029@...1296...>
+References: <8737brk7vm.fsf@...2274...>
+	<20170526165606.GQ97029@...1296...>
+	<CADxRZqwYw0RLxCDB-u3NmrLUBONng5DyT-1e9q-37HDHPpnCrQ@...278...>
+	<877f0jvmwi.fsf@...2274...>
+	<20170610174642.GK97029@...1296...>
+	<8760g3u3m2.fsf@...2274...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="MtzsW+Yl6G+Nb1ry"
+	protocol="application/pgp-signature"; boundary="ZyxZXZIJnjGEVj9R"
 Content-Disposition: inline
-In-Reply-To: <87fuf7u455.fsf@...2274...>
-Subject: Re: [Openvpn-devel] Missing include for socket-flags TCP_NODELAY on
- OpenBSD
+In-Reply-To: <8760g3u3m2.fsf@...2274...>
+Subject: Re: [Openvpn-devel] Alignement crash on sparc64
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,54 +21,106 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>, Anatoly Pugachev <matorola@...277...>, openvpn-devel@lists.sourceforge.net, Stefan Sperling <stsp@...2273...>
 
---MtzsW+Yl6G+Nb1ry
+--ZyxZXZIJnjGEVj9R
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Sat, Jun 10, 2017 at 07:46:46PM +0200, Jeremie Courreges-Anglas wrote:
-> --- a/src/openvpn/syshead.h
-> +++ b/src/openvpn/syshead.h
-> @@ -288,6 +288,10 @@
->  #include <netinet/ip.h>
->  #endif
->=20=20
-> +#ifdef HAVE_NETINET_TCP_H
-> +#include <netinet/tcp.h>
-> +#endif
-> +
+On Sat, Jun 10, 2017 at 07:58:13PM +0200, Jeremie Courreges-Anglas wrote:
+> OpenBSD:
+>=20
+> struct ip {
+> #if _BYTE_ORDER =3D=3D _LITTLE_ENDIAN
+> 	u_int     ip_hl:4,		/* header length */
+> 		  ip_v:4;		/* version */
+> #endif
+> #if _BYTE_ORDER =3D=3D _BIG_ENDIAN
+> 	u_int     ip_v:4,		/* version */
+> 		  ip_hl:4;		/* header length */
+> #endif
+> ...
+>=20
+> u_char -> u_int.  Dunno if it matters to the compiler, I can take a look
+> later.
 
-*grumble* - our syshead.h has *five* such code blocks today...
+I'm fairly sure it does matter.  An int is likely to be at least 16 bit,=20
+maybe 32 bit, so the compiler can assume "word aligned" - and *boom*.
 
-$ grep -n netinet/tcp.h syshead.h
-
-243:#include <netinet/tcp.h>
-272:#include <netinet/tcp.h>
-312:#include <netinet/tcp.h>
-328:#include <netinet/tcp.h>
-356:#include <netinet/tcp.h>
-
-(Linux, Solaris, FreeBSD, NetBSD and Darwin/MacOS) - but not OpenBSD,
-most recent additions
-
-commit 37170767a221a4847416fc339083704ae1b4c001  (Darwin)
-commit 3e86f688757529f8b33f9e6b49e31ba8d8564c5e  (FreeBSD)
-
-... so basically all platforms but Windows have an identical code=20
-block afterwards...  (and "but DragonFly", but I assume that if someone
-would care about TCP_NODELAY there, we'd add another such chunk)...
+(Wonder why it doesn't crash for Mator, as our buffer alignment in memory
+should be fairly consistent - it might depend on crypto and compression
+options, though)
 
 
-Anyway: thanks for your patch, I'll add it later this weekend to
-all relevant branches (2.3, 2.4, master) - and then send a refactoring
-patch for master that joins all these into a common (unix) block...
+> > old:
+> >     if (iph->ip_v =3D=3D 6)
+> >
+> > new:
+> >     if (OPENVPN_IPH_GET_VER(*buf) =3D=3D 6)
+> >
+> > this is an existing macro which takes an int argument, shifting and
+> > masking the right bits, and since *buf is "uint8_t *buf", this should
+> > both be correct and alignment-ignorant.=20=20
+>=20
+> See my proposed patch, also in this thread.=20=20
+
+"Copying around 20 bytes to ensure a single-byte access is really a
+single-byte access" is definitely *not* the right way here.  So NAK on
+that patch.
+
+It will stop the crashes, of course, but since no other parts of=20
+struct ip are ever needed, it's just waste of CPU cycles.
+
+
+> I merely copy/pasted the NetBSD code.
+
+Uh?  Is this from the NetBSD ports tree?  Because our tun.c does not
+have a single memcpy() today... :-)
+
+Actually, my tun.c's TARGET_NETBSD version of write_tun() has something
+similar to what I suggested:
+
+        struct openvpn_iphdr *iph;
+
+        iph =3D (struct openvpn_iphdr *) buf;
+
+        if (OPENVPN_IPH_GET_VER(iph->version_len) =3D=3D 6)
+
+... slightly more speaking, and since "openvpn_iphdr" is a locally=20
+defined structure with "uchar version_len" at the very beginning, this
+amounts to the same thing.
+
+
+> > It might be less efficient than accessing the bit field - but then, it'=
+s=20
+> > the same work to do, so hopefully the compiler is smart enough to compi=
+le=20
+> > it to the same instructions.
+>=20
+> master (32 bits access):
+> 0x0000000000081844 <write_tun_header+100>:      ld  [ %i1 ], %g1
+> 0x0000000000081848 <write_tun_header+104>:      sethi  %hi(0xf0000000), %=
+g2
+> 0x000000000008184c <write_tun_header+108>:      sethi  %hi(0x60000000), %=
+g3
+> 0x0000000000081850 <write_tun_header+112>:      and  %g1, %g2, %g1
+> 0x0000000000081854 <write_tun_header+116>:      cmp  %g1, %g3
+>=20
+> patched:
+> 0x0000000000081844 <write_tun_header+100>:      ldub  [ %i1 ], %g1
+> 0x0000000000081848 <write_tun_header+104>:      srl  %g1, 4, %g1
+> 0x000000000008184c <write_tun_header+108>:      cmp  %g1, 6
+
+Sounds like an improvement, at least in code size :-)  (but I have no=20
+idea how the performance of these operations compares)
+
+... and I can see that the "master" version is going to fail on
+unaligned packets...  so, needs fixing.
 
 gert
-
 --=20
 USENET is *not* the non-clickable part of WWW!
                                                            //www.muc.de/~ge=
@@ -72,22 +128,22 @@ rt/
 Gert Doering - Munich, Germany                             gert@...1296...
 fax: +49-89-35655025                        gert@...1297...
 
---MtzsW+Yl6G+Nb1ry
+--ZyxZXZIJnjGEVj9R
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJZPDPOAAoJEB2Cnv7KVigSMh8L/idB44vNvIhmBKdupOqThLWB
-ByY57GTmN6o7aCWsIKV2KqTCxzep7Cx6P7jpHezFsaZs/i6UzGrJOtk3Tuv2OXx+
-saj/gT8vrB1zgqhij/upsUNlNdIWS+nrDrDsLLybJJ93WxXMCTJ3R2SMbL4wzC6S
-pnVl5wwVJWY46rycsH4N5FfmQQz301BVDeBU5FXu8cmljHHArpfqx1oibYR+WWYh
-1JYhR7gpIlmR6fH0CGNQAdlzxv7UdRIis/b9vEBc2LVVvMO2wfgYgpRRzoBTJYai
-x73tC2hdUWVBtQkEwy1dr8XYWBeehHVlPc0Gw23lQE88mC8glXxtT2f9wYGvt0XB
-3/+qSa+O7YVC5G2cfe9BmGOqn4DxGWQyucWsx6kh1ZuKNRUclw7lsXNtTauQ6ktv
-vLX+5Yj0z6ANZy0bPPb6ESDSFXElGJgBLRq8DkW8RkyAhlQvPipAtV+W+p9eyj6y
-xZvVfkhtzbTh+LZJBtPRHEFV8YHvs5NdbCoV50NIFQ==
-=q6IY
+iQGcBAEBAgAGBQJZPDZOAAoJEB2Cnv7KVigS8GQL/AoiA0jOaxDmmJylY9QkDoDK
+y18EJ+/w2z/Ynl37BKHX/OlU721YGWmkIvmtMbG3tA9LM19jaOXjWWgcSgMzapIq
+vBpPuNJXtVYipZwbMfFfRHzhL6aml25HLgmSr0ATEQSS/SjaqB05sRt9s9QE27Hj
+2BZSIGUnNB6kGJy2LRZlmsHoM1fAzryet71lH+CGqGo03HQm/bWYRUeVNGDUn5W9
+wrBevs2akCH5MmLgb4vKRhdX8psLI+AAKVP8nUFBmAQXoIpOq8ssVOotk+3Q1/pz
+QU92VQZ+Tkw+e/GLaCzcs/YTOIkuZ30tdc5jTnqEBonJBxZu420eetHLByrBVqB8
+by+lE/8XsUtuTbTD7QWIhSQky3AtQKTB0XSewf9l44dz3PmveYQUAxQbZN8HP5cH
+rVLYNjITC3tLLmczbqvLV93aLCqX982QfLPgSRqFtTQmyZjxufQmEDmiSpbGHt+H
+qIDDBEb4GdOXnZ5/6m/BsU6XOJFquywLeZ7PdaWc9w==
+=bvBA
 -----END PGP SIGNATURE-----
 
---MtzsW+Yl6G+Nb1ry--
+--ZyxZXZIJnjGEVj9R--
 
