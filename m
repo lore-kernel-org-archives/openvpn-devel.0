@@ -1,17 +1,14 @@
-From: Jeremie Courreges-Anglas <jca@...2272...>
-References: <8737brk7vm.fsf@...2274...>
-	<20170526165606.GQ97029@...1296...>
-	<CADxRZqwYw0RLxCDB-u3NmrLUBONng5DyT-1e9q-37HDHPpnCrQ@...278...>
-	<877f0jvmwi.fsf@...2274...>
-	<20170610174642.GK97029@...1296...>
-Date: Sat, 10 Jun 2017 19:58:13 +0200
-In-Reply-To: <20170610174642.GK97029@...1296...> (Gert Doering's message
-	of "Sat, 10 Jun 2017 19:46:42 +0200")
-Message-ID: <8760g3u3m2.fsf@...2274...>
+Date: Sat, 10 Jun 2017 20:00:46 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20170610180046.GM97029@...1296...>
+References: <87fuf7u455.fsf@...2274...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
-	micalg=pgp-sha512; protocol="application/pgp-signature"
-Subject: Re: [Openvpn-devel] Alignement crash on sparc64
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="MtzsW+Yl6G+Nb1ry"
+Content-Disposition: inline
+In-Reply-To: <87fuf7u455.fsf@...2274...>
+Subject: Re: [Openvpn-devel] Missing include for socket-flags TCP_NODELAY on
+ OpenBSD
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,116 +17,77 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
-Cc: Anatoly Pugachev <matorola@...277...>, openvpn-devel@lists.sourceforge.net, Stefan Sperling <stsp@...2273...>
+To: openvpn-devel@lists.sourceforge.net
 
---=-=-=
-Content-Type: text/plain
+--MtzsW+Yl6G+Nb1ry
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Gert Doering <gert@...1296...> writes:
+Hi,
 
-> Hi,
->
-> On Sat, Jun 10, 2017 at 06:16:13PM +0200, Jeremie Courreges-Anglas wrote:
->> Loaded symbols for /usr/libexec/ld.so
->> #0  write_tun_header (tt=0x1ddd4e1900, buf=0x1d336921c5 "E", len=84) at tun.c:1661
->> 1661            if (iph->ip_v == 6)
->> (gdb)
->> 
->> buf points to an odd address.
->
-> That's a single-byte access...?  Nothing to be aligned here.
->
-> On FreeBSD, ip_v is defined as such:
->
->  * Structure of an internet header, naked of options.
->  */
-> struct ip {
-> #if BYTE_ORDER == LITTLE_ENDIAN
->         u_char  ip_hl:4,                /* header length */
->                 ip_v:4;                 /* version */
-> #endif
-> #if BYTE_ORDER == BIG_ENDIAN
->         u_char  ip_v:4,                 /* version */
->                 ip_hl:4;                /* header length */
-> #endif
-> ...
->
-> ... so whatever it is, it's part of a single uchar at the very 
-> beginning of that header...  strange.
+On Sat, Jun 10, 2017 at 07:46:46PM +0200, Jeremie Courreges-Anglas wrote:
+> --- a/src/openvpn/syshead.h
+> +++ b/src/openvpn/syshead.h
+> @@ -288,6 +288,10 @@
+>  #include <netinet/ip.h>
+>  #endif
+>=20=20
+> +#ifdef HAVE_NETINET_TCP_H
+> +#include <netinet/tcp.h>
+> +#endif
+> +
 
-OpenBSD:
+*grumble* - our syshead.h has *five* such code blocks today...
 
-struct ip {
-#if _BYTE_ORDER == _LITTLE_ENDIAN
-	u_int     ip_hl:4,		/* header length */
-		  ip_v:4;		/* version */
-#endif
-#if _BYTE_ORDER == _BIG_ENDIAN
-	u_int     ip_v:4,		/* version */
-		  ip_hl:4;		/* header length */
-#endif
-...
+$ grep -n netinet/tcp.h syshead.h
 
-u_char -> u_int.  Dunno if it matters to the compiler, I can take a look
-later.
+243:#include <netinet/tcp.h>
+272:#include <netinet/tcp.h>
+312:#include <netinet/tcp.h>
+328:#include <netinet/tcp.h>
+356:#include <netinet/tcp.h>
 
-> OTOH, the compiler might assume 16bit-alignment here and use a 16bit-
-> access to get the first word, then bit-shift (someone who understands
-> sparc64 assembly around to check?) - in this case, the following 
-> change should help:
->
->
-> old:
->     if (iph->ip_v == 6)
->
-> new:
->     if (OPENVPN_IPH_GET_VER(*buf) == 6)
->
-> this is an existing macro which takes an int argument, shifting and
-> masking the right bits, and since *buf is "uint8_t *buf", this should
-> both be correct and alignment-ignorant.  
+(Linux, Solaris, FreeBSD, NetBSD and Darwin/MacOS) - but not OpenBSD,
+most recent additions
 
-See my proposed patch, also in this thread.  I merely copy/pasted the
-NetBSD code.
+commit 37170767a221a4847416fc339083704ae1b4c001  (Darwin)
+commit 3e86f688757529f8b33f9e6b49e31ba8d8564c5e  (FreeBSD)
 
-> It might be less efficient than accessing the bit field - but then, it's 
-> the same work to do, so hopefully the compiler is smart enough to compile 
-> it to the same instructions.
+... so basically all platforms but Windows have an identical code=20
+block afterwards...  (and "but DragonFly", but I assume that if someone
+would care about TCP_NODELAY there, we'd add another such chunk)...
 
-master (32 bits access):
-0x0000000000081844 <write_tun_header+100>:      ld  [ %i1 ], %g1
-0x0000000000081848 <write_tun_header+104>:      sethi  %hi(0xf0000000), %g2
-0x000000000008184c <write_tun_header+108>:      sethi  %hi(0x60000000), %g3
-0x0000000000081850 <write_tun_header+112>:      and  %g1, %g2, %g1
-0x0000000000081854 <write_tun_header+116>:      cmp  %g1, %g3
 
-patched:
-0x0000000000081844 <write_tun_header+100>:      ldub  [ %i1 ], %g1
-0x0000000000081848 <write_tun_header+104>:      srl  %g1, 4, %g1
-0x000000000008184c <write_tun_header+108>:      cmp  %g1, 6
+Anyway: thanks for your patch, I'll add it later this weekend to
+all relevant branches (2.3, 2.4, master) - and then send a refactoring
+patch for master that joins all these into a common (unix) block...
 
--- 
-jca | PGP : 0x1524E7EE / 5135 92C1 AD36 5293 2BDF  DDCC 0DFA 74AE 1524 E7EE
+gert
 
---=-=-=
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--MtzsW+Yl6G+Nb1ry
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCgAdFiEEUTWSwa02UpMr393MDfp0rhUk5+4FAlk8MzUACgkQDfp0rhUk
-5+6RoQ/+J/XY2Qg8yesnQI89XpeZ7I1WDkE91hqh2TPryr44Mxk5a0zvkPyGkvhi
-L5ZfLfdZiuZEZt1GqMdjB32zxw157tYwjRjVRhJys+kBitsJB64dWMlLECNtOSt4
-ou3Y1pzj5TMyhdE9bUv5syk1+h9acsnM8iG6WaYLavuABk+RZusfFcEo5acuI7vq
-eSDJOuvH+4cCgavZzUwIy4Rvq1U3PdFEz6ZM20+zU6ns5J1V1YdqhBt7ZliKXuKb
-cuB502Bn+YJmYFLHcN46rkQBgWSNEiqRAyEEbzapOqNq8P8/zCpIOzaWMR5iuc0r
-aIvvlmtReaRiWi98C3cPdwhKWous1ymmqhPLv1q9wuxRrvrbHVua9/naTSnXP/37
-AKlodpwOTfmndMhFsELvtFNWZeccyaGuVELsVeQpyfxFh603QAclhnfKcLwHiyVs
-vUq9/u14zZNglSlSVMO8QgZRhEb4wsYG8Tn+2OOAQVdigUvO7StWLqXVbqWGUYtK
-Hx29QGhNXfGpj7zGfAKzqQC8DlPJXUdKpG2ZbKX21EL5iAvatkDDmXYgeqarY9Kr
-G23FoHx2o59MEtom1DVrEbQIwil2sao4joTcnqg19XVQkmK1WQbczkfNAiUGk0iN
-T1WaoJ4qEpoBecjSnDnlcdR3HntjckeSYAq0VmuiwBt+aeoHhpk=
-=o+ML
+iQGcBAEBAgAGBQJZPDPOAAoJEB2Cnv7KVigSMh8L/idB44vNvIhmBKdupOqThLWB
+ByY57GTmN6o7aCWsIKV2KqTCxzep7Cx6P7jpHezFsaZs/i6UzGrJOtk3Tuv2OXx+
+saj/gT8vrB1zgqhij/upsUNlNdIWS+nrDrDsLLybJJ93WxXMCTJ3R2SMbL4wzC6S
+pnVl5wwVJWY46rycsH4N5FfmQQz301BVDeBU5FXu8cmljHHArpfqx1oibYR+WWYh
+1JYhR7gpIlmR6fH0CGNQAdlzxv7UdRIis/b9vEBc2LVVvMO2wfgYgpRRzoBTJYai
+x73tC2hdUWVBtQkEwy1dr8XYWBeehHVlPc0Gw23lQE88mC8glXxtT2f9wYGvt0XB
+3/+qSa+O7YVC5G2cfe9BmGOqn4DxGWQyucWsx6kh1ZuKNRUclw7lsXNtTauQ6ktv
+vLX+5Yj0z6ANZy0bPPb6ESDSFXElGJgBLRq8DkW8RkyAhlQvPipAtV+W+p9eyj6y
+xZvVfkhtzbTh+LZJBtPRHEFV8YHvs5NdbCoV50NIFQ==
+=q6IY
 -----END PGP SIGNATURE-----
---=-=-=--
+
+--MtzsW+Yl6G+Nb1ry--
 
