@@ -1,10 +1,15 @@
-Date: Mon, 12 Jun 2017 19:51:06 +0200 (CEST)
-Message-Id: <201706121751.v5CHp62u062010@...2054...>
+Date: Mon, 12 Jun 2017 20:14:03 +0200
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1494859483-16466-1-git-send-email-steffan.karger@...1435...>
-References: <1494859483-16466-1-git-send-email-steffan.karger@...1435...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Skip tls-crypt unit tests if
- required crypto mode not supported
+Message-ID: <20170612181403.GK97029@...1296...>
+References: <1494008642-7239-1-git-send-email-selva.nair@...277...>
+	<1494008642-7239-2-git-send-email-selva.nair@...277...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="NqiZnzhFL7JHQOqO"
+Content-Disposition: inline
+In-Reply-To: <1494008642-7239-2-git-send-email-selva.nair@...277...>
+Subject: Re: [Openvpn-devel] [PATCH 2/2] Parse static challenge response in
+ auth-pam plugin
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,38 +18,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Steffan Karger <steffan.karger@...1435...>
+To: selva.nair@...277...
 Cc: openvpn-devel@lists.sourceforge.net
 
-ACK.  The patch looks generally reasonable ("if there is no such cipher,
-do not try to use it but print a clear message") though I have not been
-able to verify actual *failure* - tried on FreeBSD 9.3, which' openssl
-claims "no AES-256-CTR", but still, "PASS: tls_crypt_testdriver"
+--NqiZnzhFL7JHQOqO
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Since this is *test* infrastructure not "core code", this is still
-good enough to me.
+Hi,
 
-Your patch has been applied to the master and release/2.4 branch.
+wading through my heap of mails that did not get proper attention...
 
-commit 534c8f24bd8ceeaebb326f53363a4e40e970df1e (master)
-commit 84372cb6a67d1c088b01ed253697199995a8ab85 (release/2.4)
-Author: Steffan Karger
-Date:   Mon May 15 16:44:43 2017 +0200
+On Fri, May 05, 2017 at 02:24:02PM -0400, selva.nair@...277... wrote:
+> From: Selva Nair <selva.nair@...277...>
+>=20
+> If static challenge is in use, the password passed to the plugin by openv=
+pn
+> is of the form "SCRV1:base64-pass:base64-response". Parse this string to
+> separate it into password and response and use them to respond to queries
+> in the pam conversation function.
+>=20
+> On the plugin parameters line the substitution keyword for the static
+> challenge response is "OTP". For example, for pam config named "test" that
+> prompts for "user", "password" and "pin", use
+>=20
+> plugin openvpn-auth-pam.so "test user USERNAME password PASSWORD pin OTP"
 
-     Skip tls-crypt unit tests if required crypto mode not supported
-
-     Signed-off-by: Steffan Karger <steffan.karger@...1435...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1494859483-16466-1-git-send-email-steffan.karger@...1435...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg14657.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
-
-
+What is the status of this one?  Does it need updating after 1/2 got
+changed to v2 and v3 are these independent enough that 2/2 is standalone?
+--NqiZnzhFL7JHQOqO--
