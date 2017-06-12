@@ -1,10 +1,15 @@
-Date: Mon, 12 Jun 2017 17:08:24 +0200 (CEST)
-Message-Id: <201706121508.v5CF8O3o060922@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <CAO5O-EKCLjPpdKUH6cCoqoZDAfekSafpc7Ga55H2_5Hs4rBopg@...278...>
-References: <CAO5O-EKCLjPpdKUH6cCoqoZDAfekSafpc7Ga55H2_5Hs4rBopg@...278...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Ensure option array p[] is
- always NULL-terminated
+From: Jeremie Courreges-Anglas <jca@...2272...>
+References: <87fuf7u455.fsf@...2274...>
+	<201706111148.v5BBmmVn038597@...2054...>
+Date: Mon, 12 Jun 2017 17:25:37 +0200
+In-Reply-To: <201706111148.v5BBmmVn038597@...2054...> (Gert
+	Doering's message of "Sun, 11 Jun 2017 13:48:48 +0200 (CEST)")
+Message-ID: <87wp8hp6ry.fsf@...2274...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; boundary="=-=-=";
+	micalg=pgp-sha512; protocol="application/pgp-signature"
+Subject: Re: [Openvpn-devel] [PATCH applied] Re: Missing include for
+ socket-flags TCP_NODELAY on OpenBSD
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,38 +18,48 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Guido Vranken <guidovranken@...277...>
+To: Gert Doering <gert@...1296...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-ACK.  I'm not sure if this can ever be exploited (there's enough NULLs 
-on the stack to eventually terminate), but it's certainly not looking
-healthy.
+--=-=-=
+Content-Type: text/plain
 
-I've reformatted your commit message & un-wrapped a number of broken long
-lines.
+Gert Doering <gert@...1296...> writes:
 
-Your patch has been applied to the master, release/2.4 and release/2.3 branch.
+> ACK, thanks.
+>
+> (While I'm not exactly happy with the mess we have in syshead.h, this
+> is not your fault - you just happen to add the 6th identical chunk...)
+>
+> Applying this to all branches to fix the bug, putting "rework syshead.h
+> for master, to clean up the zillion nearly-identical blocks" on my TODO
+> list.
+>
+> Your patch has been applied to the master, release/2.4 and release/2.3 branch.
 
-commit 8b03d3d9307b407b0da98ebefb052b1fa87aefe7 (master)
-commit 110f1e14da97918592a36d4405c807e76d9ad51c (release/2.4)
-commit 8ee7fae5f65a2bcce5a4201ddab63d32d9b59a16 (release/2.3)
-Author: Guido Vranken
-Date:   Thu Jun 8 01:02:38 2017 +0200
+Great, thanks a lot. :)
 
-     Ensure option array p[] is always NULL-terminated
+-- 
+jca | PGP : 0x1524E7EE / 5135 92C1 AD36 5293 2BDF  DDCC 0DFA 74AE 1524 E7EE
 
-     Signed-off-by: Guido Vranken <guidovranken@...277...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <CAO5O-EKCLjPpdKUH6cCoqoZDAfekSafpc7Ga55H2_5Hs4rBopg@...278...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg14757.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
 
---
-kind regards,
-
-Gert Doering
-
+iQIzBAEBCgAdFiEEUTWSwa02UpMr393MDfp0rhUk5+4FAlk+snIACgkQDfp0rhUk
+5+7FSw//YQqqirlMT5Iz80UjMnDbmPbcrvgtv+zR87X7QC/IDByfue/c8ZkcvLy0
+3ncGVElG5zifmISYhP/sHMfOqB16XfACBOvEQGlH+pGoxLcIoUnlQAf8penJFtEM
+d+nUCAf5w7gcnvMPJpDOXhS+h64THEdKEsdB6JGFTUuDUn14GUuDyTchfZGOKLaC
+LloUVQ+UXFRfrmsvIUOCXNyx74ohTE9zhA2wH6qUgaTjaUOAPLy3JcI7sZHviTkW
+E6bJxIBSzMEh3ISB7XaLuIj7IFqRjdQmLDn8n3r4Rttohfdzfexjb6Pj6JtJIRc9
+Ejkdg4cvj8EuK74KAoIFZkcMxdBLX/t5DutytA0dj+e/PwQNGL7RYr0apT+lItxf
+9ZW4IzIYGcTsM08mi+MrvzUP3xqKNI8INrrgYZ9oKJHsGW7XIbY03+we/G/HYIdH
+8cRvHGqc/P9OOYDSdVrAdsm7o36V3SsAW/u4nzuATytc1JXHMBB46ZXEEDQUuS42
+y+CujT2TTMfTnkqt6WCu4o264aO4qX04Daplu5xPLMhp+b2hJQf7gnj1QLdcDY3t
+yO1HOXlYFJIfQw0iwlQKwxRSgOr/G1K3vAEF2m8APkxhJvSTBIygk/uDN9wpzX1M
+0sp+trgrvrCJqYlQ9IU1VSKwFbq6ekWqu2qXAfEOQkhsbWfBodM=
+=F4Cf
+-----END PGP SIGNATURE-----
+--=-=-=--
 
