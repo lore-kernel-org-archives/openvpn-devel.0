@@ -1,15 +1,12 @@
-Reply-To: openvpn-devel@lists.sourceforge.net
+MIME-Version: 1.0
+In-Reply-To: <20170612181403.GK97029@...1296...>
 References: <1494008642-7239-1-git-send-email-selva.nair@...277...>
 	<1494008642-7239-2-git-send-email-selva.nair@...277...>
 	<20170612181403.GK97029@...1296...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <e9c7eff1-0638-12b6-b5cb-85473483de59@...2080...>
-Date: Mon, 12 Jun 2017 20:27:49 +0200
-MIME-Version: 1.0
-In-Reply-To: <20170612181403.GK97029@...1296...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature";
-	boundary="ssN8i0dMNrsXgnhrxRB9m8EOHJVWonDrJ"
+From: Selva Nair <selva.nair@...277...>
+Date: Mon, 12 Jun 2017 14:28:16 -0400
+Message-ID: <CAKuzo_iD6H_O0AvCvheLc9jskVCZeGV5FaWQjJbmUQZB2w9JaQ@...278...>
+Content-Type: multipart/alternative; boundary="001a113d2f52c8741e0551c77c5f"
 Subject: Re: [Openvpn-devel] [PATCH 2/2] Parse static challenge response in
  auth-pam plugin
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,85 +17,118 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>, selva.nair@...277...
-Cc: openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---ssN8i0dMNrsXgnhrxRB9m8EOHJVWonDrJ
-Content-Type: multipart/mixed; boundary="IBXWm55590gMA6NDEP2gbPb1o39U6AEq3";
- protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-Reply-To: openvpn-devel@lists.sourceforge.net
-To: Gert Doering <gert@...1296...>, selva.nair@...277...
-Cc: openvpn-devel@lists.sourceforge.net
-Message-ID: <e9c7eff1-0638-12b6-b5cb-85473483de59@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH 2/2] Parse static challenge response in
- auth-pam plugin
-References: <1494008642-7239-1-git-send-email-selva.nair@...277...>
- <1494008642-7239-2-git-send-email-selva.nair@...277...>
- <20170612181403.GK97029@...1296...>
-In-Reply-To: <20170612181403.GK97029@...1296...>
+--001a113d2f52c8741e0551c77c5f
+Content-Type: text/plain; charset="UTF-8"
 
---IBXWm55590gMA6NDEP2gbPb1o39U6AEq3
-Content-Language: en-GB
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
+On Mon, Jun 12, 2017 at 2:14 PM, Gert Doering <gert@...1296...> wrote:
 
-On 12/06/17 20:14, Gert Doering wrote:
->=20
+> Hi,
+>
+> wading through my heap of mails that did not get proper attention...
+>
+> On Fri, May 05, 2017 at 02:24:02PM -0400, selva.nair@...277... wrote:
+> > From: Selva Nair <selva.nair@...277...>
+> >
+> > If static challenge is in use, the password passed to the plugin by
+> openvpn
+> > is of the form "SCRV1:base64-pass:base64-response". Parse this string to
+> > separate it into password and response and use them to respond to queries
+> > in the pam conversation function.
+> >
+> > On the plugin parameters line the substitution keyword for the static
+> > challenge response is "OTP". For example, for pam config named "test"
+> that
+> > prompts for "user", "password" and "pin", use
+> >
+> > plugin openvpn-auth-pam.so "test user USERNAME password PASSWORD pin OTP"
+>
 > What is the status of this one?  Does it need updating after 1/2 got
 > changed to v2 and v3 are these independent enough that 2/2 is standalone?
->=20
+>
 > From a cursory glance, it calls secure_memzero() which is now, I think,
 > plugin_secure_memzero() - right?
-
-Yes, that seems to be correct to me.  A v2 is needed .... but ...
-
+>
+>
 > I also seem to remember discussions between you and David regarding
 > base64 function exporting - what's the state on this?
-
-... I have managed to inadvertently managed to drop this ball.  Yes, we
-should export the base64 functions.  I had a patch out, which Selva
-reviewed and he discovered a few issues with the plug-in v3 API.  And I
-remember Selva sent some patches fixing this too - but I've lost track
-on those patches too.
-
-Regardless, we should get the API fixes and the base64 export in place,
-then a v2 of this patch makes far more sense.
+>
 
 
---=20
-kind regards,
+I have a version 2 that uses exported base64 but waiting on the following
+patch to get an NAK or ACK to finalize it.
 
-David Sommerseth
-OpenVPN Technologies, Inc
+   https://www.mail-archive.com/openvpn-devel@...1357...
+rge.net/msg14655.html
 
+That would also help David's base64 export patch revised, reviewed and
+merged. For background, see the thread
 
+https://www.mail-archive.com/openvpn-devel@...1199...
+sourceforge.net/msg14577.html
 
---IBXWm55590gMA6NDEP2gbPb1o39U6AEq3--
+Selva
 
---ssN8i0dMNrsXgnhrxRB9m8EOHJVWonDrJ
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+--001a113d2f52c8741e0551c77c5f
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
+<div dir=3D"ltr"><br><div class=3D"gmail_extra"><br><div class=3D"gmail_quo=
+te">On Mon, Jun 12, 2017 at 2:14 PM, Gert Doering <span dir=3D"ltr">&lt;<a =
+href=3D"mailto:gert@...1296..." target=3D"_blank">gert@...1296...</a>&gt;</=
+span> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0=
+px 0.8ex;border-left-width:1px;border-left-color:rgb(204,204,204);border-le=
+ft-style:solid;padding-left:1ex">Hi,<br>
+<br>
+wading through my heap of mails that did not get proper attention...<br>
+<span class=3D"m_5899158160508331057gmail-m_-2333955419087183461gmail-"><br>
+On Fri, May 05, 2017 at 02:24:02PM -0400, <a href=3D"mailto:selva.nair@...1665...=
+77..." target=3D"_blank">selva.nair@...277...</a> wrote:<br>
+&gt; From: Selva Nair &lt;<a href=3D"mailto:selva.nair@...277..." target=3D=
+"_blank">selva.nair@...277...</a>&gt;<br>
+&gt;<br>
+&gt; If static challenge is in use, the password passed to the plugin by op=
+envpn<br>
+&gt; is of the form &quot;SCRV1:base64-pass:base64-resp<wbr>onse&quot;. Par=
+se this string to<br>
+&gt; separate it into password and response and use them to respond to quer=
+ies<br>
+&gt; in the pam conversation function.<br>
+&gt;<br>
+&gt; On the plugin parameters line the substitution keyword for the static<=
+br>
+&gt; challenge response is &quot;OTP&quot;. For example, for pam config nam=
+ed &quot;test&quot; that<br>
+&gt; prompts for &quot;user&quot;, &quot;password&quot; and &quot;pin&quot;=
+, use<br>
+&gt;<br>
+&gt; plugin openvpn-auth-pam.so &quot;test user USERNAME password PASSWORD =
+pin OTP&quot;<br>
+<br>
+</span>What is the status of this one?=C2=A0 Does it need updating after 1/=
+2 got<br>
+changed to v2 and v3 are these independent enough that 2/2 is standalone?<b=
+r>
+<br>
+From a cursory glance, it calls secure_memzero() which is now, I think,<br>
+plugin_secure_memzero() - right?<br>
+<br>
+<br>
+I also seem to remember discussions between you and David regarding<br>
+base64 function exporting - what&#39;s the state on this?<br></blockquote><=
+div><br></div><div><br></div><div>I have a version 2 that uses exported bas=
+e64 but waiting on the following patch to get an NAK or ACK to finalize it.=
+</div><div><br></div><div>=C2=A0=C2=A0=C2=A0<a href=3D"https://www.mail-arc=
+hive.com/openvpn-devel@lists.sourceforge.net/msg14655.html" target=3D"_blan=
+k">https://www.mail-archive.co<wbr>m/openvpn-devel@...1357...<wbr>rge.net/m=
+sg14655.html</a></div><div><br></div><div>That would also help David&#39;s =
+base64 export patch revised, reviewed and merged. For background, see the t=
+hread</div><div><br></div><div><a href=3D"https://www.mail-archive.com/open=
+vpn-devel@lists.sourceforge.net/msg14577.html" target=3D"_blank">https://ww=
+w.mail-archive.com/<wbr>openvpn-devel@...1199...<wbr>sourceforge.net/msg145=
+77.html</a><br></div><div><br></div><div>Selva</div></div></div></div>
 
-iQIcBAEBCAAGBQJZPt0xAAoJEIbPlEyWcf3yS4YP/iCLflwVmmEMAyAkU3QiKSVD
-kv+Nv1q5/weyHujcnhK/mx6MvdnhIHK8AFEABTYOF9MoA6cTjHRqWKUOt+yGaWZy
-20bF1whD2aMJP3nYMoH578Ud0qf0rgethzKoC/whpEXK+UxUC4BwG9/PuXgmn88G
-TgVghvSvMm41a4fFbPeVn3jxpIMjC3JXn0X8NrLr1s95txR/NkWOvKbIVzmCXWsW
-yzenTTRLSmXeEXlya6Ig6rUMcEF2apBqla6/nYIbKODDm1ufqpvwmW1zvo1q37fI
-5VQjkH6oYWXHo7CcZoQp1XoWIlNXNmH/GLXzQrUC0x3ZKMPpw6m5MEmUFdXf/l+e
-Lt6GV/4umNbLuRK3erQPm/qi66Vye8ISy3uQB+PTAFzcV4hOZpwRdJTCXy2d3vI+
-CfNs4VyfKt+JM79wS8QetcaQE4laQPkJkMiidGcEqGij88HnNJLd8XDjidkjHedy
-VfJKC4gQQPJLcyJHyr6NdrlXKa4udWgDPai09z76Qqyi5qF7EozLbb5tuGmY/lbp
-NfuG1L4wqo1GvKb9MnqUgq29LAdThEip4hHLjAn2llbGl2PjQeESYXfNDxvqUIQp
-KMRR4joMbW4cHpfNC6lNCtaFfPSgq+mlhGkypDYNySW4vd1s+koQ937pjgvmrcj5
-g4hpKqBSOUuFd2IcQ4wD
-=U4jo
------END PGP SIGNATURE-----
-
---ssN8i0dMNrsXgnhrxRB9m8EOHJVWonDrJ--
+--001a113d2f52c8741e0551c77c5f--
 
