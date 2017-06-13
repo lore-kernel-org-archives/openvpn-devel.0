@@ -1,10 +1,10 @@
-Date: Wed, 21 Jun 2017 12:06:17 +0200 (CEST)
-Message-Id: <201706211006.v5LA6HwR073890@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1497864520-12219-6-git-send-email-steffan.karger@...1435...>
-References: <1497864520-12219-6-git-send-email-steffan.karger@...1435...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix potential double-free in
- --x509-alt-username (CVE-2017-7521)
+Date: Tue, 13 Jun 2017 22:08:32 +0200
+Message-Id: <20170613200832.15027-1-gert@...1296...>
+In-Reply-To: <0d685667-eeef-f798-3b71-5e548f4f646c@...1435...>
+References: <0d685667-eeef-f798-3b71-5e548f4f646c@...1435...>
+Subject: [Openvpn-devel] [PATCH v2] Fix remotely-triggerable ASSERT() on
+ malformed IPv6 packet.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,31 +15,58 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Steffan Karger <steffan.karger@...1435...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master, release/2.4 and release/2.3 branch.
+Correct sanity checks on IPv6 packet length in mss_fixup_ipv6(),
+and change the ASSERT() check in mss_fixup_dowork() into a simple
+"return" (= the TCP header will simply not be inspected further).
 
-commit cb4e35ece4a5b70b10ef9013be3bff263d82f32b (master)
-commit 040084067119dd5a9e15eb3bcfc0079debaa3777 (release/2.4)
-commit 1dde0cd6e5e6a0f2f45ec9969b7ff1b6537514ad (release/2.3)
-Author: Steffan Karger
-Date:   Mon Jun 19 11:28:40 2017 +0200
+CVE-2017-7508 has been assigned due to the serious nature of the
+bug: it can be used to remotely shutdown an openvpn server or
+client, if IPv6 and --mssfix are enabled and the IPv6 networks used
+inside the VPN are known.
 
-     Fix potential double-free in --x509-alt-username (CVE-2017-7521)
+Found by Guido Vranken <guidovranken@...277...>.
 
-     Signed-off-by: Steffan Karger <steffan.karger@...1435...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Acked-by: David Sommerseth <davids@...515...>
-     Acked-by: Guido Vranken <guidovranken@...277...>
-     Message-Id: <1497864520-12219-6-git-send-email-steffan.karger@...1435...>
-     URL: https://www.mail-archive.com/search?l=mid&q=1497864520-12219-6-git-send-email-steffan.karger@...1435...
-     Signed-off-by: Gert Doering <gert@...1296...>
+v2: style changes
 
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+ src/openvpn/mss.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
---
-kind regards,
+diff --git a/src/openvpn/mss.c b/src/openvpn/mss.c
+index 51e1ae0..e451350 100644
+--- a/src/openvpn/mss.c
++++ b/src/openvpn/mss.c
+@@ -120,8 +120,12 @@ mss_fixup_ipv6(struct buffer *buf, int maxmss)
+         return;
+     }
+ 
++    /* skip IPv6 header (40 bytes),
++     * verify remainder is large enough to contain a full TCP header
++     */
+     newbuf = *buf;
+-    if (buf_advance( &newbuf, 40 ) )
++    if (buf_advance( &newbuf, 40 )
++        && BLEN(&newbuf) >= (int) sizeof(struct openvpn_tcphdr))
+     {
+         struct openvpn_tcphdr *tc = (struct openvpn_tcphdr *) BPTR(&newbuf);
+         if (tc->flags & OPENVPN_TCPH_SYN_MASK)
+@@ -145,7 +149,10 @@ mss_fixup_dowork(struct buffer *buf, uint16_t maxmss)
+     int accumulate;
+     struct openvpn_tcphdr *tc;
+ 
+-    ASSERT(BLEN(buf) >= (int) sizeof(struct openvpn_tcphdr));
++    if (BLEN(buf) < (int) sizeof(struct openvpn_tcphdr))
++    {
++	return;
++    }
+ 
+     verify_align_4(buf);
+     tc = (struct openvpn_tcphdr *) BPTR(buf);
+-- 
+2.10.2
 
-Gert Doering
 
 
