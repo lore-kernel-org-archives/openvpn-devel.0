@@ -1,10 +1,14 @@
-Date: Tue, 13 Jun 2017 11:28:57 +0200 (CEST)
-Message-Id: <201706130928.v5D9SvC1071105@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <1495461253-20111-1-git-send-email-steffan.karger@...1435...>
-References: <1495461253-20111-1-git-send-email-steffan.karger@...1435...>
-Subject: [Openvpn-devel] [PATCH applied] Re: openssl: fix overflow check for
- long --tls-cipher option
+References: <c97c0fd6-3d34-fb94-40e4-3ec8dc7af0c9@...277...>
+	<f73269d2-ba02-5360-9498-378f1e221a56@...277...>
+	<CAKuzo_jkyATwPyQkg4mZRAYbUFqc198+yKE-4kyK_--KbRtU=g@...278...>
+From: debbie10t <debbie10t@...277...>
+Message-ID: <d9c2e940-e72b-cb12-193d-a164bc4ac270@...277...>
+Date: Tue, 13 Jun 2017 15:26:51 +0100
+MIME-Version: 1.0
+In-Reply-To: <CAKuzo_jkyATwPyQkg4mZRAYbUFqc198+yKE-4kyK_--KbRtU=g@...278...>
+Content-Language: en-GB
+Subject: Re: [Openvpn-devel] W10 Client assigns old AND new IPv6 address to
+ TAP with GUI+Service but not with cmd prompt
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,38 +17,61 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Steffan Karger <steffan.karger@...1435...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Selva Nair <selva.nair@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-ACK ("stared at code").  
+Hi Selva, thanks for your answer.
 
-Have no ASAN setup here so replicating the original problem involved
-a bit of extra msg()'ing and then scratching my head, but I can confirm
-that the original math ended up with an integer underflow / unsigned,
-and the comarison not firing...
+On 12/06/17 20:23, Selva Nair wrote:
+> On Wed, Jun 7, 2017 at 12:41 PM, debbie10t <debbie10t@...277...> wrote:
+> 
+>> Hi,
+>>
+>> I have a basic setup and discovered that my W10 client was assigning a
+>> second IPv6 address to TAP even though it is *not* being pushed by the
+>> server.  The second address is an old address from a server that I
+>> sometimes connect to.  The server is still running but the client is not
+>> connected to it.
+>>
+>> The most significant information here is that this *only* happens when
+>> using the openvpn-GUI + interactive-service.
 
-Your patch has been applied to the master, release/2.4 and release/2.3 branch.
+> The service should delete the address when openvpn terminates so can't
+> think of any reason why an old address would linger even if the same tap
+> adapter was used for the previous connection.
 
-commit e6bf7e033d063535a4414a4cf49c8f367ecdbb4f (master)
-commit b52c1ff43b23c3cf438fb99b807a7309d3229a56 (release/2.4)
-commit 236807276368514f8ab80155f440a1d377ab412b (release/2.3)
-Author: Steffan Karger
-Date:   Mon May 22 15:54:13 2017 +0200
+I decided to try some tests .. in fact I only did one test.
+I rebooted the PC and now the second IP address has gone.
+(Windows Fast shutdown/reboot disabled .. so full reboot)
 
-     openssl: fix overflow check for long --tls-cipher option
+I also tried to recreate the problem but so far cannot ..
+No changes have been made to my configs or host W10 pc ..
+but I did realise that both configs in question *do* use the same TAP 
+adapter .. connecting to each server in turn repeatedly did not recreate 
+the problem .. and even doing crazy things one might do while under the 
+influence did not recreate the problem.  Even terminating via task 
+manager could not recreate the problem ..
 
-     Signed-off-by: Steffan Karger <steffan.karger@...1435...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1495461253-20111-1-git-send-email-steffan.karger@...1435...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg14716.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+Chalk this one down to windows weirdness .. Just have to watch out if it 
+ever happens again.
 
+> Does this happen only on Win 10?
 
---
-kind regards,
+Only one time I have seen it and now can't recreate it.
 
-Gert Doering
+> Wed Jun 07 16:33:53 2017 us=125353 ROUTE: route addition failed using
+>> service: The object already exists.   [status=5010 if_index=17]
+> 
+> 
+> This is a known issue (route not deleted on termination so fails to
+> recreate later) and is not a critical. FWIW, there is a patch on the ML to
+> fix it.
+
+I'll keep an eye open for this.
+
+Thanks
+
 
 
