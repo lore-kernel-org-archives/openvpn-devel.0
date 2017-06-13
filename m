@@ -1,3 +1,5 @@
+MIME-Version: 1.0
+In-Reply-To: <79b0624d-53fe-8e17-c58a-221434caad32@...1227...>
 References: <c97c0fd6-3d34-fb94-40e4-3ec8dc7af0c9@...277...>
 	<f73269d2-ba02-5360-9498-378f1e221a56@...277...>
 	<CAKuzo_jkyATwPyQkg4mZRAYbUFqc198+yKE-4kyK_--KbRtU=g@...278...>
@@ -5,11 +7,11 @@ References: <c97c0fd6-3d34-fb94-40e4-3ec8dc7af0c9@...277...>
 	<CAFHpkQF2fF_69jsquGJ=eamkSMVWPRbO7bFOLixP=27QgEEs5g@...278...>
 	<CAKuzo_gL-D8mSbOvEzN6N1MZ816=f1xNP_ZUzyiucb4-K0t0hg@...278...>
 	<CAFHpkQH3kE62G-EtavknAAZWOdS=0wkERy9FfYyDpbCKZuuHNw@...278...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <79b0624d-53fe-8e17-c58a-221434caad32@...1227...>
-Date: Tue, 13 Jun 2017 21:54:04 +0200
-MIME-Version: 1.0
-In-Reply-To: <CAFHpkQH3kE62G-EtavknAAZWOdS=0wkERy9FfYyDpbCKZuuHNw@...278...>
+	<79b0624d-53fe-8e17-c58a-221434caad32@...1227...>
+From: Selva Nair <selva.nair@...277...>
+Date: Tue, 13 Jun 2017 16:05:23 -0400
+Message-ID: <CAKuzo_gwi_T0MFygSN=tCMCMtuaeS2TGwxm7Kin=bhv0H+u4pw@...278...>
+Content-Type: multipart/alternative; boundary="001a1136fa54ebccc20551dcf51a"
 Subject: Re: [Openvpn-devel] W10 Client assigns old AND new IPv6 address to
  TAP with GUI+Service but not with cmd prompt
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,21 +22,65 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 8bit
-To: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>, Selva Nair <selva.nair@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Arne Schwabe <arne@...1227...>
+Cc: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+
+--001a1136fa54ebccc20551dcf51a
+Content-Type: text/plain; charset="UTF-8"
+
+On Tue, Jun 13, 2017 at 3:54 PM, Arne Schwabe <arne@...1227...> wrote:
+
+> >
+> >
+> > if user is administrator, interactive service is not used.
+> > well, I did miss that about interactive service.
+> >
+>
+> I wonder we should always use the interactive service if available and
+> add (dont-use-interactive) option, so behaviour is always the same.
 
 
-> 
-> 
-> if user is administrator, interactive service is not used.
-> well, I did miss that about interactive service.
->  
+This was done for security -- some Windows versions have broken handling of
+passing credentials through named pipe which could be used for privilege
+escalation. I have seen this exploit work only on Windows XP[*], but to be
+cautious we opted not to allow openvpn running as admin connect to the
+service pipe.
 
-I wonder we should always use the interactive service if available and
-add (dont-use-interactive) option, so behaviour is always the same.
+But anyway, in this case its the service that's doing the wrong thing.
 
-Arne
+Selva
 
+[*] On XP, a rogue program running as user can gain admin rights if a
+program running as admin connects to it through a named pipe.
+
+--001a1136fa54ebccc20551dcf51a
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">=
+On Tue, Jun 13, 2017 at 3:54 PM, Arne Schwabe <span dir=3D"ltr">&lt;<a href=
+=3D"mailto:arne@...1227..." target=3D"_blank">arne@...1227...</a>&gt;</span=
+> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;bo=
+rder-left:1px #ccc solid;padding-left:1ex"><span class=3D"">&gt;<br>
+&gt;<br>
+&gt; if user is administrator, interactive service is not used.<br>
+&gt; well, I did miss that about interactive service.<br>
+&gt;<br>
+<br>
+</span>I wonder we should always use the interactive service if available a=
+nd<br>
+add (dont-use-interactive) option, so behaviour is always the same.</blockq=
+uote></div><br>This was done for security -- some Windows versions have bro=
+ken handling of passing credentials through named pipe which could be used =
+for privilege escalation. I have seen this exploit work only on Windows XP[=
+*], but to be cautious we opted not to allow openvpn running as admin conne=
+ct to the service pipe.</div><div class=3D"gmail_extra"><br></div><div clas=
+s=3D"gmail_extra">But anyway, in this case its the service that&#39;s doing=
+ the wrong thing.</div><div class=3D"gmail_extra"><br></div><div class=3D"g=
+mail_extra">Selva</div><div class=3D"gmail_extra"><br></div><div class=3D"g=
+mail_extra">[*] On XP, a rogue program running as user can gain admin right=
+s if a program running as admin connects to it through a named pipe.</div><=
+/div>
+
+--001a1136fa54ebccc20551dcf51a--
 
