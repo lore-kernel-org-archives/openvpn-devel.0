@@ -1,15 +1,15 @@
 References: <c97c0fd6-3d34-fb94-40e4-3ec8dc7af0c9@...277...>
-	<f910a64e-235f-56ad-52b4-aff5dae46acf@...277...>
-	<CAKuzo_hUiYVxZSEnB=8=ijO86_VbiZep2mR=1_FCi2pFJYLYmg@...278...>
-	<20170613192559.GX97029@...1296...>
-	<CAKuzo_gGy8xWAwBCzrxshHBPyzV=iMA=17vxnfSngfZ_b5MUrQ@...278...>
-	<20170613193756.GY97029@...1296...>
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <864bbbd2-09d7-718b-ca99-4f428ed0ba95@...515...>
-Date: Tue, 13 Jun 2017 22:50:45 +0300
+	<f73269d2-ba02-5360-9498-378f1e221a56@...277...>
+	<CAKuzo_jkyATwPyQkg4mZRAYbUFqc198+yKE-4kyK_--KbRtU=g@...278...>
+	<d9c2e940-e72b-cb12-193d-a164bc4ac270@...277...>
+	<CAFHpkQF2fF_69jsquGJ=eamkSMVWPRbO7bFOLixP=27QgEEs5g@...278...>
+	<CAKuzo_gL-D8mSbOvEzN6N1MZ816=f1xNP_ZUzyiucb4-K0t0hg@...278...>
+	<CAFHpkQH3kE62G-EtavknAAZWOdS=0wkERy9FfYyDpbCKZuuHNw@...278...>
+From: Arne Schwabe <arne@...1227...>
+Message-ID: <79b0624d-53fe-8e17-c58a-221434caad32@...1227...>
+Date: Tue, 13 Jun 2017 21:54:04 +0200
 MIME-Version: 1.0
-In-Reply-To: <20170613193756.GY97029@...1296...>
-Content-Language: en-US
+In-Reply-To: <CAFHpkQH3kE62G-EtavknAAZWOdS=0wkERy9FfYyDpbCKZuuHNw@...278...>
 Subject: Re: [Openvpn-devel] W10 Client assigns old AND new IPv6 address to
  TAP with GUI+Service but not with cmd prompt
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,50 +20,21 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
-To: Gert Doering <gert@...1296...>, Selva Nair <selva.nair@...277...>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 8bit
+To: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>, Selva Nair <selva.nair@...277...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-On 13/06/2017 22:37, Gert Doering wrote:
-> Hi,
->=20
-> On Tue, Jun 13, 2017 at 03:33:35PM -0400, Selva Nair wrote:
->> Right :)  But we could probably do better using Set instead of Add while
->> the address is set using the service. I'm not that familiar with ipapi, =
-but
->> looks like SetUnicastIpAddressEnrty instead of AddUnicastIpAddressEntry
->> may be the right thing.
->>
->> The netsh command used when service is not in use does correctly do a set
->> not add.
->=20
-> Good point.  Wouldn't solve the first problem, but at least a subsequent
-> run would "magically fix it", provided the same tap interface is used
-> (which, I think, is the case in the great majority of windows installatio=
-ns)
->=20
-> gert
->=20
 
-Hi,
+> 
+> 
+> if user is administrator, interactive service is not used.
+> well, I did miss that about interactive service.
+>  
 
-If I'm not mistaken, this is the same or related problem to the one I
-reported early on in 2.4.x release cycle. There might actually be a Trac
-ticket for it.
+I wonder we should always use the interactive service if available and
+add (dont-use-interactive) option, so behaviour is always the same.
 
-I encountered the issue with the Powershell test suite
-(openvpn-windows-test) which ran through a bunch of t_client test
-configs and forcibly killed the OpenVPN process at the end of each test.
-All ping6 tests except the first one would then fail, because adding a
-default IPv6 route failed as one existed already.
+Arne
 
-If you want I can dig up the Trac ticket number later.
-
---=20
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
 
