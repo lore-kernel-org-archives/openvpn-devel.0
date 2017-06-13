@@ -1,15 +1,18 @@
 MIME-Version: 1.0
-In-Reply-To: <20170613193756.GY97029@...1296...>
+In-Reply-To: <CAKuzo_gwi_T0MFygSN=tCMCMtuaeS2TGwxm7Kin=bhv0H+u4pw@...278...>
 References: <c97c0fd6-3d34-fb94-40e4-3ec8dc7af0c9@...277...>
-	<f910a64e-235f-56ad-52b4-aff5dae46acf@...277...>
-	<CAKuzo_hUiYVxZSEnB=8=ijO86_VbiZep2mR=1_FCi2pFJYLYmg@...278...>
-	<20170613192559.GX97029@...1296...>
-	<CAKuzo_gGy8xWAwBCzrxshHBPyzV=iMA=17vxnfSngfZ_b5MUrQ@...278...>
-	<20170613193756.GY97029@...1296...>
-From: Selva Nair <selva.nair@...277...>
-Date: Tue, 13 Jun 2017 16:15:15 -0400
-Message-ID: <CAKuzo_ig=HFtgzxc3qSzFWZ5H4pGi_JKjiL50DRc3GRdFL1Yaw@...278...>
-Content-Type: multipart/alternative; boundary="94eb2c03d46831d2780551dd199a"
+	<f73269d2-ba02-5360-9498-378f1e221a56@...277...>
+	<CAKuzo_jkyATwPyQkg4mZRAYbUFqc198+yKE-4kyK_--KbRtU=g@...278...>
+	<d9c2e940-e72b-cb12-193d-a164bc4ac270@...277...>
+	<CAFHpkQF2fF_69jsquGJ=eamkSMVWPRbO7bFOLixP=27QgEEs5g@...278...>
+	<CAKuzo_gL-D8mSbOvEzN6N1MZ816=f1xNP_ZUzyiucb4-K0t0hg@...278...>
+	<CAFHpkQH3kE62G-EtavknAAZWOdS=0wkERy9FfYyDpbCKZuuHNw@...278...>
+	<79b0624d-53fe-8e17-c58a-221434caad32@...1227...>
+	<CAKuzo_gwi_T0MFygSN=tCMCMtuaeS2TGwxm7Kin=bhv0H+u4pw@...278...>
+From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
+Date: Wed, 14 Jun 2017 01:30:21 +0500
+Message-ID: <CAFHpkQG30rhrg5+coYSN-aevYNxSZ8Ucbd=1ncmkMru1rtSz-Q@...278...>
+Content-Type: multipart/alternative; boundary="94eb2c074b4e046f100551dd4e23"
 Subject: Re: [Openvpn-devel] W10 Client assigns old AND new IPv6 address to
  TAP with GUI+Service but not with cmd prompt
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,123 +23,89 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Selva Nair <selva.nair@...277...>
+Cc: Arne Schwabe <arne@...1227...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---94eb2c03d46831d2780551dd199a
+--94eb2c074b4e046f100551dd4e23
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-On Tue, Jun 13, 2017 at 3:37 PM, Gert Doering <gert@...1296...> wrote:
+2017-06-14 1:05 GMT+05:00 Selva Nair <selva.nair@...277...>:
 
-> On Tue, Jun 13, 2017 at 03:33:35PM -0400, Selva Nair wrote:
-> > Right :)  But we could probably do better using Set instead of Add while
-> > the address is set using the service. I'm not that familiar with ipapi,
-> but
-> > looks like SetUnicastIpAddressEnrty instead of AddUnicastIpAddressEntry
-> > may be the right thing.
-> >
-> > The netsh command used when service is not in use does correctly do a s=
-et
-> > not add.
 >
-> Good point.  Wouldn't solve the first problem, but at least a subsequent
-> run would "magically fix it", provided the same tap interface is used
-> (which, I think, is the case in the great majority of windows
-> installations)
+> On Tue, Jun 13, 2017 at 3:54 PM, Arne Schwabe <arne@...1227...> wrote:
+>
+>> >
+>> >
+>> > if user is administrator, interactive service is not used.
+>> > well, I did miss that about interactive service.
+>> >
+>>
+>> I wonder we should always use the interactive service if available and
+>> add (dont-use-interactive) option, so behaviour is always the same.
+>
+>
+> This was done for security -- some Windows versions have broken handling
+> of passing credentials through named pipe which could be used for privilege
+> escalation. I have seen this exploit work only on Windows XP[*], but to be
+> cautious we opted not to allow openvpn running as admin connect to the
+> service pipe.
+>
+> But anyway, in this case its the service that's doing the wrong thing.
+>
+
+well, I'm lost here.
+
+sounds like "we do not use interactive service if user is already an
+administrator ... due to possible privilege escalation", right ? escalation
+to "system" ?
 
 
-Okay, I can say that the issue is indeed the service effectively doing an
-"add address" instead
-of "set address". Reproduced this without using an admin run:
+>
+> Selva
+>
+> [*] On XP, a rogue program running as user can gain admin rights if a
+> program running as admin connects to it through a named pipe.
+>
 
-1. Connect to server 1 using GUI/iservice
-2. Kill iservice using taskmanager or taskkill (do not do sc stop
-service-name.. as that will do a graceful stop)
-3. Start the service again
-4. Disconnect  from server 1
-At this point "netsh int ipv6 show addr" will show that v6 addres is
-retained although the connection is down
-4. connect to server 2 using GUI/iservice
-
-Now the adapter will have two ipv6 addresses.
-
-On Tue, Jun 13, 2017 at 3:50 PM, Samuli Sepp=C3=A4nen <samuli@...515...> wr=
-ote:
-
-> I encountered the issue with the Powershell test suite
-> (openvpn-windows-test) which ran through a bunch of t_client test
-> configs and forcibly killed the OpenVPN process at the end of each test.
-> All ping6 tests except the first one would then fail, because adding a
-> default IPv6 route failed as one existed already.
-
-
-Probably the same issue. The real culprit here is force-killing without
-impunity. I'll be posting a PR to the GUI that allows sending connect,
-disconnect and exit commands to the running GUI, so we could use that in
-the script. That said using "set address" in the service will mitigate this
-to some extent -- looks easy to do a patch..
-
-Selva
-
---94eb2c03d46831d2780551dd199a
+--94eb2c074b4e046f100551dd4e23
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr"><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">=
-On Tue, Jun 13, 2017 at 3:37 PM, Gert Doering <span dir=3D"ltr">&lt;<a href=
-=3D"mailto:gert@...1296..." target=3D"_blank">gert@...1296...</a>&gt;</span=
-> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0=
-.8ex;border-left-width:1px;border-left-color:rgb(204,204,204);border-left-s=
-tyle:solid;padding-left:1ex"><span>On Tue, Jun 13, 2017 at 03:33:35PM -0400=
-, Selva Nair wrote:<br>
-&gt; Right :)=C2=A0 But we could probably do better using Set instead of Ad=
-d while<br>
-&gt; the address is set using the service. I&#39;m not that familiar with i=
-papi, but<br>
-&gt; looks like SetUnicastIpAddressEnrty instead of AddUnicastIpAddressEntr=
-y<br>
-&gt; may be the right thing.<br>
+<div dir=3D"ltr"><br><div class=3D"gmail_extra"><br><div class=3D"gmail_quo=
+te">2017-06-14 1:05 GMT+05:00 Selva Nair <span dir=3D"ltr">&lt;<a href=3D"m=
+ailto:selva.nair@...277..." target=3D"_blank">selva.nair@...277...</a>&gt;<=
+/span>:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;bor=
+der-left:1px #ccc solid;padding-left:1ex"><div dir=3D"ltr"><div class=3D"gm=
+ail_extra"><span class=3D""><br><div class=3D"gmail_quote">On Tue, Jun 13, =
+2017 at 3:54 PM, Arne Schwabe <span dir=3D"ltr">&lt;<a href=3D"mailto:arne@=
+...1227..." target=3D"_blank">arne@...1227...</a>&gt;</span> wrote:<br><blo=
+ckquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #c=
+cc solid;padding-left:1ex"><span>&gt;<br>
 &gt;<br>
-&gt; The netsh command used when service is not in use does correctly do a =
-set<br>
-&gt; not add.<br>
+&gt; if user is administrator, interactive service is not used.<br>
+&gt; well, I did miss that about interactive service.<br>
+&gt;<br>
 <br>
-</span>Good point.=C2=A0 Wouldn&#39;t solve the first problem, but at least=
- a subsequent<br>
-run would &quot;magically fix it&quot;, provided the same tap interface is =
-used<br>
-(which, I think, is the case in the great majority of windows installations=
-)</blockquote></div><br>Okay, I can say that the issue is indeed the servic=
-e effectively doing an &quot;add address&quot; instead</div><div class=3D"g=
-mail_extra">of &quot;set address&quot;. Reproduced this without using an ad=
-min run:</div><div class=3D"gmail_extra"><br></div><div class=3D"gmail_extr=
-a">1. Connect to server 1 using GUI/iservice</div><div class=3D"gmail_extra=
-">2. Kill iservice using taskmanager or taskkill (do not do sc stop service=
--name.. as that will do a graceful stop)</div><div class=3D"gmail_extra">3.=
- Start the service again</div><div class=3D"gmail_extra">4. Disconnect =C2=
-=A0from server 1</div><div class=3D"gmail_extra">At this point &quot;netsh =
-int ipv6 show addr&quot; will show that v6 addres is retained although the =
-connection is down</div><div class=3D"gmail_extra">4. connect to server 2 u=
-sing GUI/iservice</div><div class=3D"gmail_extra"><br></div><div class=3D"g=
-mail_extra">Now the adapter will have two ipv6 addresses.</div><div class=
-=3D"gmail_extra"><br></div><div class=3D"gmail_extra"><div class=3D"gmail_e=
-xtra">On Tue, Jun 13, 2017 at 3:50 PM, Samuli Sepp=C3=A4nen &lt;<a href=3D"=
-mailto:samuli@...515...">samuli@...515...</a>&gt; wrote:</div><blockquote c=
-lass=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left-width:1p=
-x;border-left-color:rgb(204,204,204);border-left-style:solid;padding-left:1=
-ex">I encountered the issue with the Powershell test suite<br>(openvpn-wind=
-ows-test) which ran through a bunch of t_client test<br>configs and forcibl=
-y killed the OpenVPN process at the end of each test.<br>All ping6 tests ex=
-cept the first one would then fail, because adding a<br>default IPv6 route =
-failed as one existed already.</blockquote></div><div class=3D"gmail_extra"=
-><br></div><div class=3D"gmail_extra">Probably the same issue. The real cul=
-prit here is force-killing without impunity. I&#39;ll be posting a PR to th=
-e GUI that allows sending connect, disconnect and exit commands to the runn=
-ing GUI, so we could use that in the script. That said using &quot;set addr=
-ess&quot; in the service will mitigate this to some extent -- looks easy to=
- do a patch..</div><div class=3D"gmail_extra"><br></div><div class=3D"gmail=
-_extra">Selva</div></div>
+</span>I wonder we should always use the interactive service if available a=
+nd<br>
+add (dont-use-interactive) option, so behaviour is always the same.</blockq=
+uote></div><br></span>This was done for security -- some Windows versions h=
+ave broken handling of passing credentials through named pipe which could b=
+e used for privilege escalation. I have seen this exploit work only on Wind=
+ows XP[*], but to be cautious we opted not to allow openvpn running as admi=
+n connect to the service pipe.</div><div class=3D"gmail_extra"><br></div><d=
+iv class=3D"gmail_extra">But anyway, in this case its the service that&#39;=
+s doing the wrong thing.</div></div></blockquote><div><br></div><div>well, =
+I&#39;m lost here.<br><br></div><div>sounds like &quot;we do not use intera=
+ctive service if user is already an administrator ... due to possible privi=
+lege escalation&quot;, right ? escalation to &quot;system&quot; ?<br></div>=
+<div>=C2=A0</div><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8=
+ex;border-left:1px #ccc solid;padding-left:1ex"><div dir=3D"ltr"><div class=
+=3D"gmail_extra"><br></div><div class=3D"gmail_extra">Selva</div><div class=
+=3D"gmail_extra"><br></div><div class=3D"gmail_extra">[*] On XP, a rogue pr=
+ogram running as user can gain admin rights if a program running as admin c=
+onnects to it through a named pipe.</div></div>
+</blockquote></div><br></div></div>
 
---94eb2c03d46831d2780551dd199a--
+--94eb2c074b4e046f100551dd4e23--
 
