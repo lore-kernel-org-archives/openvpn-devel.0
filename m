@@ -1,17 +1,18 @@
-From: Antonio Quartulli <a@...2181...>
-Message-Id: <82761970-4D2B-4102-A33C-684829FA01B6@...2181...>
-Content-Type: multipart/signed;
-	boundary="Apple-Mail=_321D4AAC-74BA-4954-B41E-9359363EAD4D";
-	protocol="application/pgp-signature"; micalg=pgp-sha512
-Mime-Version: 1.0 (Mac OS X Mail 10.3 \(3273\))
-Date: Fri, 16 Jun 2017 07:19:44 +0800
-In-Reply-To: <9e766589-ac6e-e418-1b07-41a2889e0a17@...2080...>
-References: <7860b0e6a671e51e0853cf7a351d874e@...2277...>
-	<20170615074739.GI97029@...1296...>
-	<1649446.B7buzjzcZ2@...2279...>
-	<9e766589-ac6e-e418-1b07-41a2889e0a17@...2080...>
-Subject: Re: [Openvpn-devel] Bug or Feature? Username in environment in
- auth-user-pass-verify
+References: <c97c0fd6-3d34-fb94-40e4-3ec8dc7af0c9@...277...>
+	<f910a64e-235f-56ad-52b4-aff5dae46acf@...277...>
+	<CAKuzo_hUiYVxZSEnB=8=ijO86_VbiZep2mR=1_FCi2pFJYLYmg@...278...>
+	<20170613192559.GX97029@...1296...>
+	<CAKuzo_gGy8xWAwBCzrxshHBPyzV=iMA=17vxnfSngfZ_b5MUrQ@...278...>
+	<20170613193756.GY97029@...1296...>
+	<CAKuzo_ig=HFtgzxc3qSzFWZ5H4pGi_JKjiL50DRc3GRdFL1Yaw@...278...>
+From: debbie10t <debbie10t@...277...>
+Message-ID: <1c726aa0-84eb-5956-1621-e0afef500193@...277...>
+Date: Fri, 16 Jun 2017 00:59:55 +0100
+MIME-Version: 1.0
+In-Reply-To: <CAKuzo_ig=HFtgzxc3qSzFWZ5H4pGi_JKjiL50DRc3GRdFL1Yaw@...278...>
+Content-Language: en-GB
+Subject: Re: [Openvpn-devel] W10 Client assigns old AND new IPv6 address to
+ TAP with GUI+Service but not with cmd prompt
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,78 +21,61 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: Steven Haigh <netwiz@...2277...>
-
---Apple-Mail=_321D4AAC-74BA-4954-B41E-9359363EAD4D
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-
-
-> On 16 Jun 2017, at 06:01, David Sommerseth <openvpn@...2080...> wrote:
-> That said ... this needs to be changed, I think it makes sense to take
-> some action to reduce this possibility.  By manipulating pointers
-> provided to you via the the plug-in interface, you can make the OpenVPN
-> process crash and burn ... and it is fairly easily.  If you manage to
-> modify memory regions too much so other OpenVPN data structures gets
-> corrupted, it will explode in interesting ways.
-
-What happens if a plugin crashes on its own because of a segfault (for exam=
-ple)? I think the entire openvpn process will crash, right?
-If I am right, this means that protecting openvpn private objects is not re=
-ally going to save the process from a possible horrible death.
-
->=20
->> If so, should these changes also be in the client-connect script?
->=20
-> That should not be possible.  There exist no direct API to modify the
-> environment variables from plug-ins, that is purely a side-effect if how
-> the memory buffers and pointers sent to plug-ins are handled.
->=20
->> If not, the environment might need a reset before the auth-user-pass-ver=
-ify
->> script is called?
-> Either reset (which I think is harder) or to copy the information into
-> new fresh buffers which are discarded once the plug-ins returns.
->=20
-
-I second this idea - sounds easy and protects the openvpn env from changes.=
- (assuming this is not done on a fast path, because a full blown copy of th=
-e env might have perf issues).
-
-Cheers,
-
-
---
-Antonio Quartulli
 
 
 
+On 13/06/17 21:15, Selva Nair wrote:
+> On Tue, Jun 13, 2017 at 3:37 PM, Gert Doering <gert@...1296...> wrote:
+> 
+>> On Tue, Jun 13, 2017 at 03:33:35PM -0400, Selva Nair wrote:
+>>> Right :)  But we could probably do better using Set instead of Add while
+>>> the address is set using the service. I'm not that familiar with ipapi,
+>> but
+>>> looks like SetUnicastIpAddressEnrty instead of AddUnicastIpAddressEntry
+>>> may be the right thing.
+>>>
+>>> The netsh command used when service is not in use does correctly do a set
+>>> not add.
+>>
+>> Good point.  Wouldn't solve the first problem, but at least a subsequent
+>> run would "magically fix it", provided the same tap interface is used
+>> (which, I think, is the case in the great majority of windows
+>> installations)
+> 
+> 
+> Okay, I can say that the issue is indeed the service effectively doing an
+> "add address" instead
+> of "set address". Reproduced this without using an admin run:
+> 
+> 1. Connect to server 1 using GUI/iservice
+> 2. Kill iservice using taskmanager or taskkill (do not do sc stop
+> service-name.. as that will do a graceful stop)
+> 3. Start the service again
+> 4. Disconnect  from server 1
+> At this point "netsh int ipv6 show addr" will show that v6 addres is
+> retained although the connection is down
+> 4. connect to server 2 using GUI/iservice
+> 
+> Now the adapter will have two ipv6 addresses.
+> 
+> On Tue, Jun 13, 2017 at 3:50 PM, Samuli Seppänen <samuli@...515...> wrote:
+> 
+>> I encountered the issue with the Powershell test suite
+>> (openvpn-windows-test) which ran through a bunch of t_client test
+>> configs and forcibly killed the OpenVPN process at the end of each test.
+>> All ping6 tests except the first one would then fail, because adding a
+>> default IPv6 route failed as one existed already.
+> 
+> 
+> Probably the same issue. The real culprit here is force-killing without
+> impunity. I'll be posting a PR to the GUI that allows sending connect,
+> disconnect and exit commands to the running GUI, so we could use that in
+> the script. That said using "set address" in the service will mitigate this
+> to some extent -- looks easy to do a patch..
+> 
 
---Apple-Mail=_321D4AAC-74BA-4954-B41E-9359363EAD4D
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment;
-	filename=signature.asc
-Content-Type: application/pgp-signature;
-	name=signature.asc
-Content-Description: Message signed with OpenPGP
-
------BEGIN PGP SIGNATURE-----
-
-iQIcBAEBCgAGBQJZQxYVAAoJENPhyAjNbKBQYWMP/3MPCxYFuENf2ze6TZKmU5WO
-8swvz2EsXxQVZ/K6R0lGFhYYI3nIMgeQW2YHix72EEEovJJg4osA7Xt7k3XMvQEv
-95I7dqKSdJ7HDxaAKbHTh1DGxobPSdPE2ZHLqoss+P8gaBffi3h7OV3Nt1r7vvAn
-MaLx0sCLCp7uJU6GURLQp8oW2dM6lssQXKGMeD8TJaD83gDjd2Gd2Mn7UleBVRN1
-8ohDkCD33tVyD4TfMmHvHGlKUQeKQrgC3j3hjsRAXQzEgKxa2oZnmOiPbH4ZEeUx
-rt+vlfN0c/m0eU/56ZC4M+rFf3DMok8hmN+JZE8EPR5BrpDP9nVCdgSEHGLI7kFE
-K+pK5AxtNGXb9tI87mXCi6S7r3zwRRkOImebNFjjeRJ+0ayuhCLeEY1NR2LuhR/X
-WSP1s+YhPjtcEvAsfyDnwHal7nBD/HndprkOirH4oomegm/ZnS2EcO8IAMQO/G8v
-lO5X3j7clHt4xI5p2y+z18Twb2bPcg6lVusaInsa0WrM2dYBUmbfSg4TZL0J9COg
-tyT4uB+/29i7ZuQlicRt1ghDEza61J8DHBOB/ZBboAVCA+1H+Jy5ys+Rf/i47wA1
-u0VeObFDBhJwkrqI+pfZGCf05dRTLcRnRT5Ul/nbop0UAvmTZqg9rvNfg3C/b5tH
-DiMse3gtfTY2LJZicd3+
-=gXrn
------END PGP SIGNATURE-----
-
---Apple-Mail=_321D4AAC-74BA-4954-B41E-9359363EAD4D--
+PEBKAC's aside .. +1 to 'set not add'
 
