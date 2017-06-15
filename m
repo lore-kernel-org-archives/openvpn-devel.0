@@ -1,15 +1,15 @@
-Reply-To: openvpn-devel@lists.sourceforge.net
+From: Antonio Quartulli <a@...2181...>
+Message-Id: <82761970-4D2B-4102-A33C-684829FA01B6@...2181...>
+Content-Type: multipart/signed;
+	boundary="Apple-Mail=_321D4AAC-74BA-4954-B41E-9359363EAD4D";
+	protocol="application/pgp-signature"; micalg=pgp-sha512
+Mime-Version: 1.0 (Mac OS X Mail 10.3 \(3273\))
+Date: Fri, 16 Jun 2017 07:19:44 +0800
+In-Reply-To: <9e766589-ac6e-e418-1b07-41a2889e0a17@...2080...>
 References: <7860b0e6a671e51e0853cf7a351d874e@...2277...>
 	<20170615074739.GI97029@...1296...>
 	<1649446.B7buzjzcZ2@...2279...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <9e766589-ac6e-e418-1b07-41a2889e0a17@...2080...>
-Date: Fri, 16 Jun 2017 00:01:03 +0200
-MIME-Version: 1.0
-In-Reply-To: <1649446.B7buzjzcZ2@...2279...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature";
-	boundary="99BDMLgCXbblub5HHAmtuUUmXr0mDuNRW"
+	<9e766589-ac6e-e418-1b07-41a2889e0a17@...2080...>
 Subject: Re: [Openvpn-devel] Bug or Feature? Username in environment in
  auth-user-pass-verify
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,130 +20,78 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steven Haigh <netwiz@...2277...>, openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
+Cc: Steven Haigh <netwiz@...2277...>
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---99BDMLgCXbblub5HHAmtuUUmXr0mDuNRW
-Content-Type: multipart/mixed; boundary="78VFoK7jRV4hE1vHAb38sEvwHE8SGqL3H";
- protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-Reply-To: openvpn-devel@lists.sourceforge.net
-To: Steven Haigh <netwiz@...2277...>, openvpn-devel@lists.sourceforge.net
-Message-ID: <9e766589-ac6e-e418-1b07-41a2889e0a17@...2080...>
-Subject: Re: [Openvpn-devel] Bug or Feature? Username in environment in
- auth-user-pass-verify
-References: <7860b0e6a671e51e0853cf7a351d874e@...2277...>
- <20170615074739.GI97029@...1296...>
- <1649446.B7buzjzcZ2@...2279...>
-In-Reply-To: <1649446.B7buzjzcZ2@...2279...>
-
---78VFoK7jRV4hE1vHAb38sEvwHE8SGqL3H
-Content-Language: en-GB
-Content-Type: text/plain; charset="utf-8"
+--Apple-Mail=_321D4AAC-74BA-4954-B41E-9359363EAD4D
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 
-On 15/06/17 18:11, Steven Haigh wrote:
-> On Thursday, 15 June 2017 5:47:39 PM AEST Gert Doering wrote:
->> Hi,
->>
->> On Thu, Jun 15, 2017 at 12:50:40PM +1000, Steven Haigh wrote:
-[...snip...]
->>
->> old:
->>
->>         else
->>         {
->>             setenv_str(session->opt->es, "username", up->username);
->>             setenv_str(session->opt->es, "password", up->password);
->>         }
->>
->> new:
->>
->>         else
->>         {
->>             setenv_str(session->opt->es, "password", up->password);
->>         }
->>         setenv_str(session->opt->es, "username", up->username);
->>
->> ... then it should show up in client-connect as well.
+
+> On 16 Jun 2017, at 06:01, David Sommerseth <openvpn@...2080...> wrote:
+> That said ... this needs to be changed, I think it makes sense to take
+> some action to reduce this possibility.  By manipulating pointers
+> provided to you via the the plug-in interface, you can make the OpenVPN
+> process crash and burn ... and it is fairly easily.  If you manage to
+> modify memory regions too much so other OpenVPN data structures gets
+> corrupted, it will explode in interesting ways.
+
+What happens if a plugin crashes on its own because of a segfault (for exam=
+ple)? I think the entire openvpn process will crash, right?
+If I am right, this means that protecting openvpn private objects is not re=
+ally going to save the process from a possible horrible death.
+
 >=20
-> I managed to track this down today.
+>> If so, should these changes also be in the client-connect script?
 >=20
-> It seems the pam plugin sets the environment variable. As such, as soon a=
-s I=20
-> add the following line to the server config, the username variable appear=
-s=20
-> back in the environment for auth-user-pass-verify:
-> 	plugin /usr/lib64/openvpn/plugins/openvpn-plugin-auth-pam.so openvpn
-
-Ouch.
-
-> After commenting this line out and restarting the daemon, the username en=
-v=20
-> variable is gone.
+> That should not be possible.  There exist no direct API to modify the
+> environment variables from plug-ins, that is purely a side-effect if how
+> the memory buffers and pointers sent to plug-ins are handled.
 >=20
-> That still poses the question, is a plugin supposed to be able to alter t=
-he=20
-> environment presented to the auth-user-pass-verify script?
+>> If not, the environment might need a reset before the auth-user-pass-ver=
+ify
+>> script is called?
+> Either reset (which I think is harder) or to copy the information into
+> new fresh buffers which are discarded once the plug-ins returns.
+>=20
 
-You have discovered something I've not been thinking of.  But yes,
-plug-ins can actually manage to do that if they manipulate the
-environment pointer provided to it.  All plug-ins runs within the same
-memory scope as the main OpenVPN process - in fact, plug-ins is a way to
-extend the features of the core OpenVPN process.
+I second this idea - sounds easy and protects the openvpn env from changes.=
+ (assuming this is not done on a fast path, because a full blown copy of th=
+e env might have perf issues).
 
-That said ... this needs to be changed, I think it makes sense to take
-some action to reduce this possibility.  By manipulating pointers
-provided to you via the the plug-in interface, you can make the OpenVPN
-process crash and burn ... and it is fairly easily.  If you manage to
-modify memory regions too much so other OpenVPN data structures gets
-corrupted, it will explode in interesting ways.
-
-> If so, should these changes also be in the client-connect script?
-
-That should not be possible.  There exist no direct API to modify the
-environment variables from plug-ins, that is purely a side-effect if how
-the memory buffers and pointers sent to plug-ins are handled.
-
-> If not, the environment might need a reset before the auth-user-pass-veri=
-fy=20
-> script is called?
-Either reset (which I think is harder) or to copy the information into
-new fresh buffers which are discarded once the plug-ins returns.
+Cheers,
 
 
---=20
-kind regards,
-
-David Sommerseth
-OpenVPN Technologies, Inc
+--
+Antonio Quartulli
 
 
 
---78VFoK7jRV4hE1vHAb38sEvwHE8SGqL3H--
 
---99BDMLgCXbblub5HHAmtuUUmXr0mDuNRW
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+--Apple-Mail=_321D4AAC-74BA-4954-B41E-9359363EAD4D
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+	filename=signature.asc
+Content-Type: application/pgp-signature;
+	name=signature.asc
+Content-Description: Message signed with OpenPGP
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBCAAGBQJZQwOfAAoJEIbPlEyWcf3ya8oQAMLp0F+zPcXWAsqwEVrtlsTr
-RrGItoqJOvF0wCQcEGMAaUxzZfUFNeqcKymlgGl5/1fN1um10C5bgjrhjbyqf7ZE
-ReeRHlzjNbEacFIjAwdwlQuJylMSop/5pqkCyk1sqsr5QM3M+5lmOnXzl8gP0HJn
-5GazoU64dUYn9eHT6mM/XElVDTnUwbg5GyzAdNuzf3L9SiFEuk41qzFmJiuaTC1u
-dMxQdHEp4i6nIF/DryrFBMg4JJ5nkDx7GUXLQMJt6FqYxUKlS8iUXA4Y8LS3U3an
-jPX2w5ecWVU/7o1J3d5cgMsASvVHOZEvcjHCgTMiqfd44ZqzsayJ7ZxwsK7DHkem
-2ozUK+/MNe6WFGMPJgM1QI5cJyLUquBe+VJzcLo6D26hsn6JL6jsLauttM5nqYFp
-hucrcRvvJ8whSNjIMXi6+/zEy7YL++OHbnqp1NGidi1y7cM6OE0rlBDcm3g+hsIt
-JtP/xMIu4nfx6Q1DeH1UKCgxiQjgtDmYQWoyaUy94tFgbBhkSV3CL2g2fFvdSlef
-LlnMpQfD1mcpfhC9ktNpTodlW/V4D5CWEooPvpxKSANPBgY5+wwin5VSky+faQxh
-6jCb91/O6LpT59L8HtcOA9beH0so7kZcu1T8q4swjcz3ATncc57SWVlE9dkVR5+A
-G0d3rsNCguUpfnIf9Ntk
-=3l4T
+iQIcBAEBCgAGBQJZQxYVAAoJENPhyAjNbKBQYWMP/3MPCxYFuENf2ze6TZKmU5WO
+8swvz2EsXxQVZ/K6R0lGFhYYI3nIMgeQW2YHix72EEEovJJg4osA7Xt7k3XMvQEv
+95I7dqKSdJ7HDxaAKbHTh1DGxobPSdPE2ZHLqoss+P8gaBffi3h7OV3Nt1r7vvAn
+MaLx0sCLCp7uJU6GURLQp8oW2dM6lssQXKGMeD8TJaD83gDjd2Gd2Mn7UleBVRN1
+8ohDkCD33tVyD4TfMmHvHGlKUQeKQrgC3j3hjsRAXQzEgKxa2oZnmOiPbH4ZEeUx
+rt+vlfN0c/m0eU/56ZC4M+rFf3DMok8hmN+JZE8EPR5BrpDP9nVCdgSEHGLI7kFE
+K+pK5AxtNGXb9tI87mXCi6S7r3zwRRkOImebNFjjeRJ+0ayuhCLeEY1NR2LuhR/X
+WSP1s+YhPjtcEvAsfyDnwHal7nBD/HndprkOirH4oomegm/ZnS2EcO8IAMQO/G8v
+lO5X3j7clHt4xI5p2y+z18Twb2bPcg6lVusaInsa0WrM2dYBUmbfSg4TZL0J9COg
+tyT4uB+/29i7ZuQlicRt1ghDEza61J8DHBOB/ZBboAVCA+1H+Jy5ys+Rf/i47wA1
+u0VeObFDBhJwkrqI+pfZGCf05dRTLcRnRT5Ul/nbop0UAvmTZqg9rvNfg3C/b5tH
+DiMse3gtfTY2LJZicd3+
+=gXrn
 -----END PGP SIGNATURE-----
 
---99BDMLgCXbblub5HHAmtuUUmXr0mDuNRW--
+--Apple-Mail=_321D4AAC-74BA-4954-B41E-9359363EAD4D--
 
