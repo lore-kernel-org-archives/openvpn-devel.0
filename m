@@ -1,18 +1,8 @@
-References: <c97c0fd6-3d34-fb94-40e4-3ec8dc7af0c9@...277...>
-	<f910a64e-235f-56ad-52b4-aff5dae46acf@...277...>
-	<CAKuzo_hUiYVxZSEnB=8=ijO86_VbiZep2mR=1_FCi2pFJYLYmg@...278...>
-	<20170613192559.GX97029@...1296...>
-	<CAKuzo_gGy8xWAwBCzrxshHBPyzV=iMA=17vxnfSngfZ_b5MUrQ@...278...>
-	<20170613193756.GY97029@...1296...>
-	<CAKuzo_ig=HFtgzxc3qSzFWZ5H4pGi_JKjiL50DRc3GRdFL1Yaw@...278...>
-From: debbie10t <debbie10t@...277...>
-Message-ID: <1c726aa0-84eb-5956-1621-e0afef500193@...277...>
-Date: Fri, 16 Jun 2017 00:59:55 +0100
-MIME-Version: 1.0
-In-Reply-To: <CAKuzo_ig=HFtgzxc3qSzFWZ5H4pGi_JKjiL50DRc3GRdFL1Yaw@...278...>
-Content-Language: en-GB
-Subject: Re: [Openvpn-devel] W10 Client assigns old AND new IPv6 address to
- TAP with GUI+Service but not with cmd prompt
+From: gv@...2280...
+Date: Fri, 16 Jun 2017 02:58:56 +0200
+Message-Id: <1497574736-2092-1-git-send-email-gv@...2280...>
+Subject: [Openvpn-devel] [PATCH] Fix a null-pointer dereference in
+ establish_http_proxy_passthru()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,61 +11,41 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
+From: Guido Vranken <guidovranken@...277...>
 
+Prevents that the client crashes if the peer does not specify
+the 'realm' and/or 'nonce' values. These pointers are
+dereferenced in DigestCalcHA1() and DigestCalcResponse();
+hence, if not set, a null-pointer dereference would occur.
 
-On 13/06/17 21:15, Selva Nair wrote:
-> On Tue, Jun 13, 2017 at 3:37 PM, Gert Doering <gert@...1296...> wrote:
-> 
->> On Tue, Jun 13, 2017 at 03:33:35PM -0400, Selva Nair wrote:
->>> Right :)  But we could probably do better using Set instead of Add while
->>> the address is set using the service. I'm not that familiar with ipapi,
->> but
->>> looks like SetUnicastIpAddressEnrty instead of AddUnicastIpAddressEntry
->>> may be the right thing.
->>>
->>> The netsh command used when service is not in use does correctly do a set
->>> not add.
->>
->> Good point.  Wouldn't solve the first problem, but at least a subsequent
->> run would "magically fix it", provided the same tap interface is used
->> (which, I think, is the case in the great majority of windows
->> installations)
-> 
-> 
-> Okay, I can say that the issue is indeed the service effectively doing an
-> "add address" instead
-> of "set address". Reproduced this without using an admin run:
-> 
-> 1. Connect to server 1 using GUI/iservice
-> 2. Kill iservice using taskmanager or taskkill (do not do sc stop
-> service-name.. as that will do a graceful stop)
-> 3. Start the service again
-> 4. Disconnect  from server 1
-> At this point "netsh int ipv6 show addr" will show that v6 addres is
-> retained although the connection is down
-> 4. connect to server 2 using GUI/iservice
-> 
-> Now the adapter will have two ipv6 addresses.
-> 
-> On Tue, Jun 13, 2017 at 3:50 PM, Samuli Seppänen <samuli@...515...> wrote:
-> 
->> I encountered the issue with the Powershell test suite
->> (openvpn-windows-test) which ran through a bunch of t_client test
->> configs and forcibly killed the OpenVPN process at the end of each test.
->> All ping6 tests except the first one would then fail, because adding a
->> default IPv6 route failed as one existed already.
-> 
-> 
-> Probably the same issue. The real culprit here is force-killing without
-> impunity. I'll be posting a PR to the GUI that allows sending connect,
-> disconnect and exit commands to the running GUI, so we could use that in
-> the script. That said using "set address" in the service will mitigate this
-> to some extent -- looks easy to do a patch..
-> 
+Signed-off-by: Guido Vranken <guidovranken@...277...>
+---
+ src/openvpn/proxy.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-PEBKAC's aside .. +1 to 'set not add'
+diff --git a/src/openvpn/proxy.c b/src/openvpn/proxy.c
+index 05f362d..46cb2bb 100644
+--- a/src/openvpn/proxy.c
++++ b/src/openvpn/proxy.c
+@@ -875,6 +875,13 @@ establish_http_proxy_passthru(struct http_proxy_info *p,
+                 const char *algor = get_pa_var("algorithm", pa, &gc);
+                 const char *opaque = get_pa_var("opaque", pa, &gc);
+ 
++                if ( !realm || !nonce )
++                {
++                    msg(D_LINK_ERRORS, "HTTP proxy: digest auth failed, malformed response "
++                            "from server: realm= or nonce= missing" );
++                    goto error;
++                }
++
+                 /* generate a client nonce */
+                 ASSERT(rand_bytes(cnonce_raw, sizeof(cnonce_raw)));
+                 cnonce = make_base64_string2(cnonce_raw, sizeof(cnonce_raw), &gc);
+-- 
+2.1.4
+
 
