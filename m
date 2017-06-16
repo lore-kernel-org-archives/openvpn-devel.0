@@ -1,10 +1,10 @@
-Date: Fri, 16 Jun 2017 10:40:11 +0200 (CEST)
-Message-Id: <201706160840.v5G8eBoJ000442@...2054...>
+Date: Fri, 16 Jun 2017 11:07:13 +0200 (CEST)
+Message-Id: <201706160907.v5G97DDf032779@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20170329093648.10156-1-davids@...515...>
-References: <20170329093648.10156-1-davids@...515...>
-Subject: [Openvpn-devel] [PATCH applied] Re: copyright: Update GPLv2 license
- texts
+In-Reply-To: <20170518132432.22776-1-davids@...515...>
+References: <20170518132432.22776-1-davids@...515...>
+Subject: [Openvpn-devel] [PATCH applied] Re: dev-tools: Script generating
+ the source releases in an automated fashion
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,26 +18,56 @@ Content-Transfer-Encoding: 8bit
 To: David Sommerseth <davids@...515...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-ACK.  As in: I have verified that this does exactly what it say: updating
-the address in all the files, and in the COPYING file (COPYING has a few
-more changes, but that's nearly all whitespace, except for one change
-"library" -> "Lesser", which might have been a typo originally).
+ACK.
 
-No code changes.
+This makes sense, and does what it says on the lid.
 
-Your patch has been applied to the master and release/2.4 branch.
+I tested on FreeBSD/ksh and it worked nicely and built a nice 2.3.14 tarball
+for me, except for the small beef that "mktemp" does not have a "-p" option 
+there, so it needs to be "mktemp -d /var/tmp/openvpn-build-release-XXXXXX" 
+instead... (changed in my local copy, not in-tree), and that it needs
+a system with "easy to find" LZO (no configure options)...  otherwise
+you need to pass in LZO_CFLAGS/LZO_LIBS as env vars beforehand.  With
+that, it works :)
 
-commit caa54ac398db25b72d7d1d633d2ee330b5b8a3e9 (master)
-commit b11f646ebfd148de807ca8744040397c5e4b47de (release/2.4)
+
+Well, nearly...  at the very end, it fails because you can't do {foo,bar}
+in non-bash/non-zsh shells...
+
+-- Creating final tarbundle with everything ...
+tar: openvpn-*.{tar.gz,tar.xz,zip}{,.asc}: Cannot stat: No such file or directory
+-- Cleaning up ...
+
+.. but the files are all there, so it's just a matter of explicitely
+listing the 6 to-be-expected files...
+
+-rw-r--r--  1 gert  wheel  1266905 Jun 16 11:02 openvpn-2.3.14.tar.gz
+-rw-r--r--  1 gert  wheel      630 Jun 16 11:03 openvpn-2.3.14.tar.gz.asc
+-rw-r--r--  1 gert  wheel   840472 Jun 16 11:02 openvpn-2.3.14.tar.xz
+-rw-r--r--  1 gert  wheel      630 Jun 16 11:03 openvpn-2.3.14.tar.xz.asc
+-rw-r--r--  1 gert  wheel  1543383 Jun 16 11:02 openvpn-2.3.14.zip
+-rw-r--r--  1 gert  wheel      630 Jun 16 11:03 openvpn-2.3.14.zip.asc
+-rw-r--r--  1 gert  wheel      678 Jun 16 11:03 openvpn-v2.3.14.sha256sum.asc
+-rw-r--r--  1 gert  wheel     2560 Jun 16 11:03 openvpn-v2.3.14.tar
+
+
+
+As this is a dev-tool, sticking to "master" - we use it to *build* a
+release, but it does not have to be *part* of the release (and isn't
+packed itself into the tarballs anyway).
+
+Your patch has been applied to the master branch.
+
+commit 0776a8c60f1d68e72be2dcc30710855a855d1e0a
 Author: David Sommerseth
-Date:   Wed Mar 29 11:36:48 2017 +0200
+Date:   Thu May 18 15:24:32 2017 +0200
 
-     copyright: Update GPLv2 license texts
+     dev-tools: Script generating the source releases in an automated fashion
 
      Signed-off-by: David Sommerseth <davids@...515...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20170329093648.10156-1-davids@...515...>
-     URL: https://www.mail-archive.com/search?l=mid&q=20170329093648.10156-1-davids@...515...
+     Message-Id: <20170518132432.22776-1-davids@...515...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg14672.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
