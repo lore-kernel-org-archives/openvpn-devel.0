@@ -1,10 +1,10 @@
-Date: Sun, 18 Jun 2017 14:35:00 +0200 (CEST)
-Message-Id: <201706181235.v5ICZ0XV073740@...2054...>
+Date: Sun, 18 Jun 2017 15:20:58 +0200 (CEST)
+Message-Id: <201706181320.v5IDKw53098561@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1495285075-4957-1-git-send-email-steffan@...1856...>
-References: <1495285075-4957-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix mbedtls fingerprint
- calculation
+In-Reply-To: <20170612134330.20971-6-logout@...260...>
+References: <20170612134330.20971-6-logout@...260...>
+Subject: [Openvpn-devel] [PATCH applied] Re: OpenSSL: don't use direct
+ access to the internal of EVP_MD_CTX
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,24 +15,27 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Steffan Karger <steffan@...1856...>
+To: Emmanuel Deloget <logout@...260...>
 Cc: openvpn-devel@lists.sourceforge.net
 
 Your patch has been applied to the master and release/2.4 branch.
 
-Changes.rst has been adjusted to put this under the 2.4.3 heading.
+I have removed the extra #include lines again, as suggested by Steffan,
+and they do not seem to be missing - if they are part of a larger 
+cleanup (like "move all the <openssl/foo.h> includes into a central
+place") please re-send as an additional patch.
 
-commit 21a540f92bf65f39eb92967476eba0bcd2a34ef6 (master)
-commit d7b7f93e526a21919ad54ce8cce41c3acc39128d (release/2.4)
-Author: Steffan Karger
-Date:   Sat May 20 14:57:55 2017 +0200
+commit c481ef002803f360743c72727ae3ca971ce59a5d (master)
+commit 87a392369d812d8c2ac81174bb2d6fad17544408 (release/2.4)
+Author: Emmanuel Deloget
+Date:   Mon Jun 12 15:43:27 2017 +0200
 
-     Fix mbedtls fingerprint calculation
+     OpenSSL: don't use direct access to the internal of EVP_MD_CTX
 
-     Signed-off-by: Steffan Karger <steffan@...1856...>
-     Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <1495285075-4957-1-git-send-email-steffan@...1856...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg14711.html
+     Signed-off-by: Emmanuel Deloget <logout@...260...>
+     Acked-by: Steffan Karger <steffan.karger@...1435...>
+     Message-Id: <20170612134330.20971-6-logout@...260...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg14793.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
