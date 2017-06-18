@@ -1,11 +1,10 @@
-References: <20170618194104.25179-1-gert@...1296...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <965e3aed-cd78-c860-5a01-a71c8ea7adb2@...1227...>
-Date: Sun, 18 Jun 2017 21:46:48 +0200
-MIME-Version: 1.0
+Date: Sun, 18 Jun 2017 22:35:38 +0200 (CEST)
+Message-Id: <201706182035.v5IKZcCt002247@...2054...>
+From: Gert Doering <gert@...1296...>
 In-Reply-To: <20170618194104.25179-1-gert@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH] Fix potential 1-byte overread in TCP
- option parsing.
+References: <20170618194104.25179-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix potential 1-byte overread
+ in TCP option parsing.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,50 +13,32 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Am 18.06.17 um 21:41 schrieb Gert Doering:
-> A malformed TCP header could lead to a one-byte overread when
-> searching for the MSS option (but as far as we know, with no
-> adverse consequences).
-> 
-> Change outer loop to always ensure there's one extra byte available
-> in the buffer examined.
-> 
-> Technically, this would cause OpenVPN to ignore the only single-byte
-> TCP option available, 'NOP', if it ends up being the very last
-> option in the buffer - so what, it's a NOP anyway, and all we
-> are interested is MSS, which needs 4 bytes.
-> (https://www.iana.org/assignments/tcp-parameters/tcp-parameters.xhtml)
-> 
-> Found and reported by Guido Vranken <guidovranken@...277...>.
-> 
-> Trac: #745
-> 
-> Signed-off-by: Gert Doering <gert@...1296...>
-> ---
->  src/openvpn/mss.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/src/openvpn/mss.c b/src/openvpn/mss.c
-> index ff24068..7c596d7 100644
-> --- a/src/openvpn/mss.c
-> +++ b/src/openvpn/mss.c
-> @@ -159,7 +159,7 @@ mss_fixup_dowork(struct buffer *buf, uint16_t maxmss)
->  
->      for (olen = hlen - sizeof(struct openvpn_tcphdr),
->           opt = (uint8_t *)(tc + 1);
-> -         olen > 0;
-> +         olen > 1;
->           olen -= optlen, opt += optlen)
->      {
->          if (*opt == OPENVPN_TCPOPT_EOL)
-> 
+Patch has been applied to the master, release/2.4, 2.3 and 2.2 branch.
 
-ACK. That for is strangely formatted. I have to look very hard to figure
-out that.
+commit 22046a88342878cf43a9a553c83470eeaf97f000 (master)
+commit 529de430ce07d0c3210a4636b1cb4c89cc6c8fc1 (master)
+commit 4d343fbe9166e14187775567db00c0a91017df83 (release/2.3)
+commit 2cc3583ddbc7ce98d859475422cb4e1c217c8083 (release/2.2)
+Author: Gert Doering
+Date:   Sun Jun 18 21:41:04 2017 +0200
 
-Arne
+     Fix potential 1-byte overread in TCP option parsing.
+
+     Signed-off-by: Gert Doering <gert@...1296...>
+     Acked-by: Arne Schwabe <arne@...1227...>
+     Message-Id: <20170618194104.25179-1-gert@...1296...>
+     URL: https://www.mail-archive.com/search?l=mid&q=20170618194104.25179-1-gert@...1296...
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
+
 
