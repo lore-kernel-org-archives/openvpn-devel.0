@@ -1,10 +1,10 @@
-Date: Sun, 18 Jun 2017 15:21:04 +0200 (CEST)
-Message-Id: <201706181321.v5IDL44X098570@...2054...>
+Date: Sun, 18 Jun 2017 15:21:08 +0200 (CEST)
+Message-Id: <201706181321.v5IDL8W8098574@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20170612134330.20971-7-logout@...260...>
-References: <20170612134330.20971-7-logout@...260...>
+In-Reply-To: <20170612134330.20971-8-logout@...260...>
+References: <20170612134330.20971-8-logout@...260...>
 Subject: [Openvpn-devel] [PATCH applied] Re: OpenSSL: don't use direct
- access to the internal of EVP_CIPHER_CTX
+ access to the internal of HMAC_CTX
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,17 +20,24 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Your patch has been applied to the master and release/2.4 branch.
 
-commit 6cbd48a3ead23f004f25943d067fa668efdc580e (master)
-commit a5ac1ecf35f35cecbbb89111f914fe95c5560df2 (release/2.4)
-Author: Emmanuel Deloget
-Date:   Mon Jun 12 15:43:28 2017 +0200
+I have not changed anything wrt _init()/reset() to not delay getting
+this in-tree before the upcoming v2.4.3 release - but if you agree to
+Steffan's comment on that, please send a followup patch which can then
+go in later.
 
-     OpenSSL: don't use direct access to the internal of EVP_CIPHER_CTX
+(Thanks for all your work!)
+
+commit aba98e9050eb54d72d921e70bcd422cb892b9c6c (master)
+commit 2bf4aee4b043151bd2abe7101421fd74763f1230 (release/2.4)
+Author: Emmanuel Deloget
+Date:   Mon Jun 12 15:43:29 2017 +0200
+
+     OpenSSL: don't use direct access to the internal of HMAC_CTX
 
      Signed-off-by: Emmanuel Deloget <logout@...260...>
      Acked-by: Steffan Karger <steffan.karger@...1435...>
-     Message-Id: <20170612134330.20971-7-logout@...260...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg14796.html
+     Message-Id: <20170612134330.20971-8-logout@...260...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg14797.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
