@@ -1,10 +1,10 @@
-References: <1495285075-4957-1-git-send-email-steffan@...1856...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <4649a444-b819-2143-a102-dd54a0e1c035@...1227...>
-Date: Sun, 18 Jun 2017 14:04:36 +0200
-MIME-Version: 1.0
+Date: Sun, 18 Jun 2017 14:35:00 +0200 (CEST)
+Message-Id: <201706181235.v5ICZ0XV073740@...2054...>
+From: Gert Doering <gert@...1296...>
 In-Reply-To: <1495285075-4957-1-git-send-email-steffan@...1856...>
-Subject: Re: [Openvpn-devel] [PATCH] Fix mbedtls fingerprint calculation
+References: <1495285075-4957-1-git-send-email-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix mbedtls fingerprint
+ calculation
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,34 +13,32 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Steffan Karger <steffan@...1856...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Am 20.05.17 um 14:57 schrieb Steffan Karger:
-> Commit 'Migrate to mbed TLS 2.x' (86d8cd68) introduced a bug in mbedtls
-> builds where we would calculate the certificate fingerprint over the
-> (too-short) 'to-be-signed' length of the certificate, rather than over the
-> certificate including the signature.  Fix that.
-> 
-> The security impact of the incorrect calculation is very minimal; the last
-> few bytes (max 4, typically 4) are not verified by the fingerprint.  We
-> expect no real-world impact, because users that used this feature before
-> will notice that it has suddenly stopped working, and users that didn't
-> will notice that connection setup fails.
-> 
-> Even if the user managed to somehow extract the incorrect hash (e.g. by
-> reading out the tls_digest_* env vars using a --tls-verify script), the
-> impact is miminal: the last 4 bytes must still be properly signed by the
-> CA, and typically contain extension fields, or the last bytes of the
-> public key (which are hard to choose).  The most important bits of the
-> certificate were always checked: the version, serial, signature algorithm,
-> issuer, validity and subject.
-> 
+Your patch has been applied to the master and release/2.4 branch.
 
-ACK and I agreee that we should not include backbwards compatible
-behaviour for the buggy hash.
+Changes.rst has been adjusted to put this under the 2.4.3 heading.
 
-Arne
+commit 21a540f92bf65f39eb92967476eba0bcd2a34ef6 (master)
+commit d7b7f93e526a21919ad54ce8cce41c3acc39128d (release/2.4)
+Author: Steffan Karger
+Date:   Sat May 20 14:57:55 2017 +0200
+
+     Fix mbedtls fingerprint calculation
+
+     Signed-off-by: Steffan Karger <steffan@...1856...>
+     Acked-by: Arne Schwabe <arne@...1227...>
+     Message-Id: <1495285075-4957-1-git-send-email-steffan@...1856...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg14711.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
