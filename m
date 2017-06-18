@@ -1,10 +1,8 @@
-Date: Sun, 18 Jun 2017 15:21:08 +0200 (CEST)
-Message-Id: <201706181321.v5IDL8W8098574@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20170612134330.20971-8-logout@...260...>
-References: <20170612134330.20971-8-logout@...260...>
-Subject: [Openvpn-devel] [PATCH applied] Re: OpenSSL: don't use direct
- access to the internal of HMAC_CTX
+Date: Sun, 18 Jun 2017 21:41:04 +0200
+Message-Id: <20170618194104.25179-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH] Fix potential 1-byte overread in TCP option
+ parsing.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,35 +13,44 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Emmanuel Deloget <logout@...260...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master and release/2.4 branch.
+A malformed TCP header could lead to a one-byte overread when
+searching for the MSS option (but as far as we know, with no
+adverse consequences).
 
-I have not changed anything wrt _init()/reset() to not delay getting
-this in-tree before the upcoming v2.4.3 release - but if you agree to
-Steffan's comment on that, please send a followup patch which can then
-go in later.
+Change outer loop to always ensure there's one extra byte available
+in the buffer examined.
 
-(Thanks for all your work!)
+Technically, this would cause OpenVPN to ignore the only single-byte
+TCP option available, 'NOP', if it ends up being the very last
+option in the buffer - so what, it's a NOP anyway, and all we
+are interested is MSS, which needs 4 bytes.
+(https://www.iana.org/assignments/tcp-parameters/tcp-parameters.xhtml)
 
-commit aba98e9050eb54d72d921e70bcd422cb892b9c6c (master)
-commit 2bf4aee4b043151bd2abe7101421fd74763f1230 (release/2.4)
-Author: Emmanuel Deloget
-Date:   Mon Jun 12 15:43:29 2017 +0200
+Found and reported by Guido Vranken <guidovranken@...277...>.
 
-     OpenSSL: don't use direct access to the internal of HMAC_CTX
+Trac: #745
 
-     Signed-off-by: Emmanuel Deloget <logout@...260...>
-     Acked-by: Steffan Karger <steffan.karger@...1435...>
-     Message-Id: <20170612134330.20971-8-logout@...260...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg14797.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+ src/openvpn/mss.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-
---
-kind regards,
-
-Gert Doering
+diff --git a/src/openvpn/mss.c b/src/openvpn/mss.c
+index ff24068..7c596d7 100644
+--- a/src/openvpn/mss.c
++++ b/src/openvpn/mss.c
+@@ -159,7 +159,7 @@ mss_fixup_dowork(struct buffer *buf, uint16_t maxmss)
+ 
+     for (olen = hlen - sizeof(struct openvpn_tcphdr),
+          opt = (uint8_t *)(tc + 1);
+-         olen > 0;
++         olen > 1;
+          olen -= optlen, opt += optlen)
+     {
+         if (*opt == OPENVPN_TCPOPT_EOL)
+-- 
+2.10.2
 
 
