@@ -1,10 +1,11 @@
-Date: Wed, 21 Jun 2017 12:07:17 +0200 (CEST)
-Message-Id: <201706211007.v5LA7HSB073905@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20170613200832.15027-1-gert@...1296...>
-References: <20170613200832.15027-1-gert@...1296...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix remotely-triggerable
- ASSERT() on malformed IPv6 packet.
+From: Steffan Karger <steffan.karger@...1435...>
+Date: Mon, 19 Jun 2017 11:28:37 +0200
+Message-ID: <1497864520-12219-3-git-send-email-steffan.karger@...1435...>
+In-Reply-To: <1497864520-12219-1-git-send-email-steffan.karger@...1435...>
+References: <1497864520-12219-1-git-send-email-steffan.karger@...1435...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH 2/5] mbedtls: require C-string compatible
+ types for --x509-username-field
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,29 +16,38 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Patch has been applied to the master, release/2.4 and release/2.3 branch.
+In the --x509-username-field extenstion, we handle the subject string as
+if it is a C string.  Make this assumption explicit and reject incomatible
+ASN.1 string types.
 
-commit c3f47077a7756de5929094569421a95aa66f2022 (master)
-commit ed28cde3d8bf3f1459b2f42f0e27d64801009f92 (release/2.4)
-commit fc61d1bda112ffc669dbde961fab19f60b3c7439 (release/2.3)
-Author: Gert Doering
-Date:   Tue Jun 13 22:08:32 2017 +0200
+Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+---
+ src/openvpn/ssl_verify_mbedtls.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-     Fix remotely-triggerable ASSERT() on malformed IPv6 packet.
+diff --git a/src/openvpn/ssl_verify_mbedtls.c b/src/openvpn/ssl_verify_mbedtls.c
+index d3b36dc..838c217 100644
+--- a/src/openvpn/ssl_verify_mbedtls.c
++++ b/src/openvpn/ssl_verify_mbedtls.c
+@@ -267,6 +267,14 @@ asn1_buf_to_c_string(const mbedtls_asn1_buf *orig, struct gc_arena *gc)
+     size_t i;
+     char *val;
+ 
++    if (!(orig->tag == MBEDTLS_ASN1_UTF8_STRING
++          || orig->tag == MBEDTLS_ASN1_PRINTABLE_STRING
++          || orig->tag == MBEDTLS_ASN1_IA5_STRING))
++    {
++        /* Only support C-string compatible types */
++        return string_alloc("ERROR: unsupported ASN.1 string type", gc);
++    }
++
+     for (i = 0; i < orig->len; ++i)
+     {
+         if (orig->p[i] == '\0')
+-- 
+2.7.4
 
-     Signed-off-by: Gert Doering <gert@...1296...>
-     Acked-by: Steffan Karger <steffan.karger@...1435...>
-     Message-Id: <20170613200832.15027-1-gert@...1296...>
-     URL: https://www.mail-archive.com/search?l=mid&q=20170613200832.15027-1-gert@...1296...
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
 
 
