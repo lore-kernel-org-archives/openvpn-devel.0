@@ -1,15 +1,10 @@
-Date: Sun, 18 Jun 2017 22:43:25 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20170618204325.GA2343@...1296...>
-References: <20170618194104.25179-1-gert@...1296...>
-	<201706182035.v5IKZcCt002247@...2054...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="bp/iNruPH9dso1Pn"
-Content-Disposition: inline
-In-Reply-To: <201706182035.v5IKZcCt002247@...2054...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: Fix potential 1-byte
- overread in TCP option parsing.
+From: David Sommerseth <davids@...515...>
+Date: Mon, 19 Jun 2017 13:08:25 +0200
+Message-Id: <20170619110825.17249-1-davids@...515...>
+In-Reply-To: <20170225004014.28638-1-a@...2181...>
+References: <20170225004014.28638-1-a@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Ignore auth-nocache for
+ auth-user-pass if auth-token is pushed
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,61 +13,51 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: a@...2181...
 Cc: openvpn-devel@lists.sourceforge.net
 
---bp/iNruPH9dso1Pn
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA256
 
-Hi,
+Your patch has been applied to the following branches
 
-On Sun, Jun 18, 2017 at 10:35:38PM +0200, Gert Doering wrote:
-> Patch has been applied to the master, release/2.4, 2.3 and 2.2 branch.
->=20
-> commit 22046a88342878cf43a9a553c83470eeaf97f000 (master)
-> commit 529de430ce07d0c3210a4636b1cb4c89cc6c8fc1 (master)
-> commit 4d343fbe9166e14187775567db00c0a91017df83 (release/2.3)
-> commit 2cc3583ddbc7ce98d859475422cb4e1c217c8083 (release/2.2)
+commit 571165360db0392fa83ec8e6f8de145f623c53fe  (master)
+commit e4b0600c990b06ef4c94856e12b24a37110e0860  (release/2.4)
+Author: Antonio Quartulli
+Date:   Sat Feb 25 08:40:14 2017 +0800
 
-The second "master" up there is obviously a "release/2.4" - sorry, and
-thanks to Arne for noticing.  Too many numbers (try opening up all the
-sub-levels in wireshark for a single TCP SYN, then you understand :-) ).
+     Ignore auth-nocache for auth-user-pass if auth-token is pushed
 
-Here's the correct block:
+     Trac: #840
+     Signed-off-by: Antonio Quartulli <a@...2181...>
+     Acked-by: Arne Schwabe <arne@...1227...>
+     Message-Id: <20170225004014.28638-1-a@...2181...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg14194.html
+     Signed-off-by: David Sommerseth <davids@...515...>
 
-  commit 22046a88342878cf43a9a553c83470eeaf97f000 (master)
-  commit 529de430ce07d0c3210a4636b1cb4c89cc6c8fc1 (release/2.4)
-  commit 4d343fbe9166e14187775567db00c0a91017df83 (release/2.3)
-  commit 2cc3583ddbc7ce98d859475422cb4e1c217c8083 (release/2.2)
 
-(verified against "git branch -v")
+- --
+kind regards,
 
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---bp/iNruPH9dso1Pn
-Content-Type: application/pgp-signature; name="signature.asc"
+David Sommerseth
 
 -----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQGcBAEBAgAGBQJZRuXsAAoJEB2Cnv7KVigS0GwL/12xoVFHy9sHCCHqMWJ8JC+X
-90BHGytuprdBXQMuCVccIpTL90JJn7EKAfoWM5wB6yN74KduUELNHkXXvT87lQ/p
-4BpBHSUMadV61/Zh/6YAt7LXIOW25bl5Ey3Y98PR+GKE95lIqy5qM3i5lF46BjYV
-RG5c1NMhdWeF8ddw0swKEKYxYERyemZ1emCDkf0NaPO6Yndw/EGnxn7kMT5Gv78B
-81/NzeiPl09zEPSmHFWNzU3XuzruLEusx90ADX8XSwo2FllZfzwKri2WiSR+rYFf
-vocEf9gBuQStosCwdZCX4+2LbQs0BcBCN9xJ1ZiwWeQz3rKhyM5JDbNtxkSpfaU0
-40mnBydA+wQnwiIJm5l1+Pn96TDw2+dtLBMsZVYdWE+REskOQkuxRSNoVLOFndpc
-GE9p+6mmJPvtfPDNbdwhOB/WGnitXf8Xzrru8++Km1Bfyty8M9J/LDxGDrwBcdjx
-wQbxCwOYQ9Ino94vKTKw0dotK9ps0Zkg5XUSdqGz2w==
-=gLPE
+iQIcBAEBCAAGBQJZR7CbAAoJEIbPlEyWcf3yD3kP/0UYeVTOU55Yr//+vHKFEGHK
+Ncw5CQ1KQuefGHZrNATlN1GlZUpg2BAXuUVUHg/LM5fv2PX2xOhSQxmL4gIJkTrp
+JytLaZEuzj50kxP92BSP57u8VktrX/MIlu6Qi9+wiUR4VI6t2+KpUO0m7e33ojV/
+JLO7svccNpmAz6IVoHd0+y0ZXzdxVw2lGSrcnaLkk8JKj1hLXHfkNlNp7USN6LpO
+17sOZD1Iyxr4UAdZXDkJtqt3MaeKisZ6lQZbHfcspJl++2dmzIkAPirnyLkgfvrs
+4ksv59Al03YNOlwHMbwXS1eacD3cobioxAfqyH1/cISc/G/XZqZjsJt5HWBELc5M
+di35lOaTDymTGw+s3uTSKuo0V1CHLcRj+bpo2m+pgjlT7nzecHq79fUYmZXH6Axs
+ABGL7DflcKGo+radf+YSXVVv5XrDj4B1T2Pl7Fx+4e3HlTsJMDAHUL5IHmEWkQRa
+NWg6FCtZUjjBEg19NFua6vJSWwZ2IeW+G5mlt5zrTyCJONtzxz4zIjdwT++zfDgP
+DkjZ3WH08KON0H5VOqERvMoGm7Q9UycA72DJjU8pPGbI53ROYoI2CKmYCFFofNoL
+0oUy6gmaBdO0Vvr1xINVLK0yZCoZuzjP/hGQV8nK4bPHNsVLhNiyL0Yee2U0zDtg
+szDR4Rnz530S9yGT1tR5
+=QgGQ
 -----END PGP SIGNATURE-----
-
---bp/iNruPH9dso1Pn--
 
