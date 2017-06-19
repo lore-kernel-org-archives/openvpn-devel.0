@@ -1,10 +1,10 @@
 From: David Sommerseth <davids@...515...>
-Date: Mon, 19 Jun 2017 13:08:25 +0200
-Message-Id: <20170619110825.17249-1-davids@...515...>
-In-Reply-To: <20170225004014.28638-1-a@...2181...>
-References: <20170225004014.28638-1-a@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Ignore auth-nocache for
- auth-user-pass if auth-token is pushed
+Date: Mon, 19 Jun 2017 13:11:41 +0200
+Message-Id: <20170619111141.17692-1-davids@...515...>
+In-Reply-To: <f7ac719e-0b28-4c4d-5e8a-2932827789b6@...2080...>
+References: <f7ac719e-0b28-4c4d-5e8a-2932827789b6@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH applied] backport: Ignore auth-nocache
+ for auth-user-pass if auth-token is pushed
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,27 +15,30 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: a@...2181...
+To: davids@...515...
 Cc: openvpn-devel@lists.sourceforge.net
 
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA256
 
-Your patch has been applied to the following branches
+Your patch has been applied to the release/2.3 branch
 
-commit 571165360db0392fa83ec8e6f8de145f623c53fe  (master)
-commit e4b0600c990b06ef4c94856e12b24a37110e0860  (release/2.4)
-Author: Antonio Quartulli
-Date:   Sat Feb 25 08:40:14 2017 +0800
+commit 199ef1321c77c43ca5151119bef65c7a3d8b716f
+Author: David Sommerseth
+Date:   Sat Feb 25 14:10:29 2017 +0100
 
-     Ignore auth-nocache for auth-user-pass if auth-token is pushed
+     backport: Ignore auth-nocache for auth-user-pass if auth-token is pushed
 
-     Trac: #840
-     Signed-off-by: Antonio Quartulli <a@...2181...>
-     Acked-by: Arne Schwabe <arne@...1227...>
-     Message-Id: <20170225004014.28638-1-a@...2181...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg14194.html
-     Signed-off-by: David Sommerseth <davids@...515...>
+         Trac: #840
+         Signed-off-by: Antonio Quartulli
+         Acked-by: Arne Schwabe
+         Message-Id: <20170225004014.28638-1-a@...2181...>
+         URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg14194.html
+
+     Signed-off-by: David Sommerseth
+     Message-Id: <f7ac719e-0b28-4c4d-5e8a-2932827789b6@...2080...>
+     Acked-by: Arne Schwabe
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg14201.html
 
 
 - --
@@ -46,18 +49,18 @@ David Sommerseth
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBCAAGBQJZR7CbAAoJEIbPlEyWcf3yD3kP/0UYeVTOU55Yr//+vHKFEGHK
-Ncw5CQ1KQuefGHZrNATlN1GlZUpg2BAXuUVUHg/LM5fv2PX2xOhSQxmL4gIJkTrp
-JytLaZEuzj50kxP92BSP57u8VktrX/MIlu6Qi9+wiUR4VI6t2+KpUO0m7e33ojV/
-JLO7svccNpmAz6IVoHd0+y0ZXzdxVw2lGSrcnaLkk8JKj1hLXHfkNlNp7USN6LpO
-17sOZD1Iyxr4UAdZXDkJtqt3MaeKisZ6lQZbHfcspJl++2dmzIkAPirnyLkgfvrs
-4ksv59Al03YNOlwHMbwXS1eacD3cobioxAfqyH1/cISc/G/XZqZjsJt5HWBELc5M
-di35lOaTDymTGw+s3uTSKuo0V1CHLcRj+bpo2m+pgjlT7nzecHq79fUYmZXH6Axs
-ABGL7DflcKGo+radf+YSXVVv5XrDj4B1T2Pl7Fx+4e3HlTsJMDAHUL5IHmEWkQRa
-NWg6FCtZUjjBEg19NFua6vJSWwZ2IeW+G5mlt5zrTyCJONtzxz4zIjdwT++zfDgP
-DkjZ3WH08KON0H5VOqERvMoGm7Q9UycA72DJjU8pPGbI53ROYoI2CKmYCFFofNoL
-0oUy6gmaBdO0Vvr1xINVLK0yZCoZuzjP/hGQV8nK4bPHNsVLhNiyL0Yee2U0zDtg
-szDR4Rnz530S9yGT1tR5
-=QgGQ
+iQIcBAEBCAAGBQJZR7FkAAoJEIbPlEyWcf3yikEP/2hNM6ZrkrG+dPO2wDc1zJVl
+3radjwCBMWJmXaBIEDMr7c/qauAlThUJSqYtAsWD4Gb1yNxyxm2XzJ/T/DvduWAF
+p/pXl/9y6ZeWSxTbmUlyLJmgV4G6wV7X+InztvY6ewTe78JWRN3qf/NPHaO46VlK
+vCiB01d3YBRmIaflvhm3/JVWCsiQ22i4VTzdhJ+1hFe8u+QmqW5RRDzI97+RvOlz
+qdQJP48DZF80JDgLv+ZshqZF9CfjhaG6c3xj/8kzmExrY1VvLl0HaohHEVlO8NJ3
+hqVsgOESy0WzvnPt7uP2o8+Emy3eY6m3qz6Kw75mppU/1Ts0XH7JT3hOQn3OUjE5
+hGDv4FvtEoUnw5SjZllvJmghJF17siqfijsT4OdWbPwtgi5FOuva18EjeIHhnxlm
+EXDZwld69daLtluKfSW+lmtDrjjgHXyC3jQxjzUJ2z4bav+ZoEMG67WBHphpSbVY
+QdIqpKzuqXjdJrNNeIKOQXtlzAzQAlyvW916YK1DVwTFnb8X87Fi2vxbPKqq1i2E
+zQVAz+YEnc/oXGbODFA2yB/5udOpTTNFdxrDQ79gKBYwlrpJyo/9/IUv62lE8LdT
+oq5YTMeQ/n++peKVrYEjKa7737Q+jsybc51liD4eywjKiIrxvnVLiHdztp2/qBpU
+qHg9V6wdtnEhrd2vwcld
+=I6qm
 -----END PGP SIGNATURE-----
 
