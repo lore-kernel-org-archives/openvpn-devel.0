@@ -1,15 +1,8 @@
-Date: Mon, 19 Jun 2017 14:45:55 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20170619124555.GG97029@...1296...>
-References: <f7ac719e-0b28-4c4d-5e8a-2932827789b6@...2080...>
-	<20170619111141.17692-1-davids@...515...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="BdDRKbxUqzNp7SCP"
-Content-Disposition: inline
-In-Reply-To: <20170619111141.17692-1-davids@...515...>
-Subject: Re: [Openvpn-devel] [PATCH applied] backport: Ignore auth-nocache
- for auth-user-pass if auth-token is pushed
+From: David Sommerseth <davids@...515...>
+Date: Mon, 19 Jun 2017 15:05:07 +0200
+Message-Id: <20170619130507.13892-1-davids@...515...>
+Subject: [Openvpn-devel] [PATCH] auth-token with auth-nocache fix broke
+ --disable-crypto builds
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,57 +11,42 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: David Sommerseth <davids@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---BdDRKbxUqzNp7SCP
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+After adding commit 571165360db0392fa83e, it broke builds where
+the --disable-crypto was used with ./configure.  This was due to
+the delayed_auth_pass_purge() which requires the crypto code paths
+being called from init.c without the proper #ifdef encapsulation.
 
-Hi,
+Signed-off-by: David Sommerseth <davids@...515...>
+---
+ src/openvpn/init.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-On Mon, Jun 19, 2017 at 01:11:41PM +0200, David Sommerseth wrote:
-> Your patch has been applied to the release/2.3 branch
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 0832f1d1..a54307ad 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -1382,6 +1382,8 @@ initialization_sequence_completed(struct context *c, const unsigned int flags)
+     /* If we delayed UID/GID downgrade or chroot, do it now */
+     do_uid_gid_chroot(c, true);
+ 
++
++#ifdef ENABLE_CRYPTO
+     /*
+      * In some cases (i.e. when receiving auth-token via
+      * push-reply) the auth-nocache option configured on the
+@@ -1393,6 +1395,7 @@ initialization_sequence_completed(struct context *c, const unsigned int flags)
+     {
+         delayed_auth_pass_purge();
+     }
++#endif /* ENABLE_CRYPTO */
+ 
+     /* Test if errors */
+     if (flags & ISC_ERRORS)
+-- 
+2.11.0
 
-Uh?  We were talking master and release/2.4, not release/2.3...
-
-But anyway: whatever that patch does, buildbot does not like the result
-- all builds have exploded, and as far as I can see, with the same
-error:
-
-init.o(.text+0x2625): In function `initialization_sequence_completed':
-/home/buildbot/build-openvpn/build-cron2-freebsd-74-amd64-stable-master--di=
-sable-crypto/build/src/openvpn/init.c:1394: undefined reference to `delayed=
-_auth_pass_purge'
-
-What did happen here?
-
-gert
-
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---BdDRKbxUqzNp7SCP
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJZR8eBAAoJEB2Cnv7KVigSa5EMAKp5flrlVFnXopWEftdZxLI4
-8In7qNb0QAXJNYHFiSiv37gNYShEmpEsY+gCPOT2cbYK9a1xFGVFOdj17nVtgcX2
-XWjabAAQUYZNs+Ka0xrjqTqqJG9dhQRMG0ZJPzEsLvXQiE8BnmBnv1I1dQ3sOc4k
-S0PlQUM6lMGoxorbDlgzNewNkzCJNBgzsBQkk3Ze4qHUuAjz+sJ2hPq+hhjQQ3J5
-tQnZbeu3rcmFk3JDZa54PK+UuZbuXqhOumjt85zFbEf/A8UKTixaQRyDH01ytGPm
-rf4JunB8RYMLRP9+tk/D4kY74ZTUmYhvrw5dwvs4tGm7x5ySbJFQ3XOowvf6Wr6N
-HERPL0qIGKQlN9hC1WXkuvhRKuLkJvJ15g5QUFcpGrS4P4uyxjVIbUnQ9Y1p9PfZ
-RwR94RmDqEpdtajdNyVkrdw1T4NF4+g3j4gqHyf+n7x2j5PUX0uyKigh2VPacI0p
-++qcKL41WWA9uFvi5fI66AvwCYH6fRvaFJOwf+UXSg==
-=2jLW
------END PGP SIGNATURE-----
-
---BdDRKbxUqzNp7SCP--
 
