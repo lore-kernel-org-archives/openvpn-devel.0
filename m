@@ -1,10 +1,8 @@
-From: David Sommerseth <davids@...515...>
-Date: Mon, 19 Jun 2017 13:11:41 +0200
-Message-Id: <20170619111141.17692-1-davids@...515...>
-In-Reply-To: <f7ac719e-0b28-4c4d-5e8a-2932827789b6@...2080...>
-References: <f7ac719e-0b28-4c4d-5e8a-2932827789b6@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH applied] backport: Ignore auth-nocache
- for auth-user-pass if auth-token is pushed
+From: Steffan Karger <steffan.karger@...1435...>
+Date: Mon, 19 Jun 2017 13:47:33 +0200
+Message-ID: <1497872853-1464-1-git-send-email-steffan.karger@...1435...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH] Move adjust_power_of_2() to integer.h
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,52 +13,124 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: davids@...515...
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA256
+misc.c it a mess of incoherent functions, and is therefore included by
+virtually all our source files.  That makes testing harder than it should
+be.  As a first step of cleaning up misc.c, move adjust_power_of_2() to
+integer.h, which is a more suitable place for a function like this.
 
-Your patch has been applied to the release/2.3 branch
+This allows us to remove the duplicate implementation from test_argv.c.
 
-commit 199ef1321c77c43ca5151119bef65c7a3d8b716f
-Author: David Sommerseth
-Date:   Sat Feb 25 14:10:29 2017 +0100
+Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+---
+ src/openvpn/integer.h                | 17 +++++++++++++++++
+ src/openvpn/misc.c                   | 18 ------------------
+ src/openvpn/misc.h                   |  2 --
+ tests/unit_tests/openvpn/test_argv.c | 19 +------------------
+ 4 files changed, 18 insertions(+), 38 deletions(-)
 
-     backport: Ignore auth-nocache for auth-user-pass if auth-token is pushed
+diff --git a/src/openvpn/integer.h b/src/openvpn/integer.h
+index 240781b..882322a 100644
+--- a/src/openvpn/integer.h
++++ b/src/openvpn/integer.h
+@@ -118,6 +118,23 @@ modulo_add(int x, int y, int mod)
+     return sum;
+ }
+ 
++/*
++ * Return the next largest power of 2
++ * or u if u is a power of 2.
++ */
++static inline size_t adjust_power_of_2(size_t u)
++{
++    size_t ret = 1;
++
++    while (ret < u)
++    {
++        ret <<= 1;
++        ASSERT(ret > 0);
++    }
++
++    return ret;
++}
++
+ static inline int
+ index_verify(int index, int size, const char *file, int line)
+ {
+diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
+index df108b0..561f80f 100644
+--- a/src/openvpn/misc.c
++++ b/src/openvpn/misc.c
+@@ -1641,24 +1641,6 @@ openvpn_sleep(const int n)
+ }
+ 
+ /*
+- * Return the next largest power of 2
+- * or u if u is a power of 2.
+- */
+-size_t
+-adjust_power_of_2(size_t u)
+-{
+-    size_t ret = 1;
+-
+-    while (ret < u)
+-    {
+-        ret <<= 1;
+-        ASSERT(ret > 0);
+-    }
+-
+-    return ret;
+-}
+-
+-/*
+  * Remove security-sensitive strings from control message
+  * so that they will not be output to log file.
+  */
+diff --git a/src/openvpn/misc.h b/src/openvpn/misc.h
+index 94573b2..f55186f 100644
+--- a/src/openvpn/misc.h
++++ b/src/openvpn/misc.h
+@@ -325,8 +325,6 @@ extern const char *iproute_path;
+ #define SSEC_PW_ENV    3 /* allow calling of built-in programs and user-defined scripts that may receive a password as an environmental variable */
+ extern int script_security; /* GLOBAL */
+ 
+-/* return the next largest power of 2 */
+-size_t adjust_power_of_2(size_t u);
+ 
+ #define COMPAT_FLAG_QUERY         0       /** compat_flags operator: Query for a flag */
+ #define COMPAT_FLAG_SET           (1<<0)  /** compat_flags operator: Set a compat flag */
+diff --git a/tests/unit_tests/openvpn/test_argv.c b/tests/unit_tests/openvpn/test_argv.c
+index 8c90eb9..c5ebc09 100644
+--- a/tests/unit_tests/openvpn/test_argv.c
++++ b/tests/unit_tests/openvpn/test_argv.c
+@@ -12,24 +12,7 @@
+ 
+ #include "argv.h"
+ #include "buffer.h"
+-
+-/*
+- * This is defined here to prevent #include'ing misc.h
+- * which makes things difficult beyond any recognition
+- */
+-size_t
+-adjust_power_of_2(size_t u)
+-{
+-    size_t ret = 1;
+-
+-    while (ret < u)
+-    {
+-        ret <<= 1;
+-        assert(ret > 0);
+-    }
+-
+-    return ret;
+-}
++#include "integer.h"
+ 
+ /* Defines for use in the tests and the mock parse_line() */
+ #define PATH1       "/s p a c e"
+-- 
+2.7.4
 
-         Trac: #840
-         Signed-off-by: Antonio Quartulli
-         Acked-by: Arne Schwabe
-         Message-Id: <20170225004014.28638-1-a@...2181...>
-         URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg14194.html
-
-     Signed-off-by: David Sommerseth
-     Message-Id: <f7ac719e-0b28-4c4d-5e8a-2932827789b6@...2080...>
-     Acked-by: Arne Schwabe
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg14201.html
-
-
-- --
-kind regards,
-
-David Sommerseth
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBCAAGBQJZR7FkAAoJEIbPlEyWcf3yikEP/2hNM6ZrkrG+dPO2wDc1zJVl
-3radjwCBMWJmXaBIEDMr7c/qauAlThUJSqYtAsWD4Gb1yNxyxm2XzJ/T/DvduWAF
-p/pXl/9y6ZeWSxTbmUlyLJmgV4G6wV7X+InztvY6ewTe78JWRN3qf/NPHaO46VlK
-vCiB01d3YBRmIaflvhm3/JVWCsiQ22i4VTzdhJ+1hFe8u+QmqW5RRDzI97+RvOlz
-qdQJP48DZF80JDgLv+ZshqZF9CfjhaG6c3xj/8kzmExrY1VvLl0HaohHEVlO8NJ3
-hqVsgOESy0WzvnPt7uP2o8+Emy3eY6m3qz6Kw75mppU/1Ts0XH7JT3hOQn3OUjE5
-hGDv4FvtEoUnw5SjZllvJmghJF17siqfijsT4OdWbPwtgi5FOuva18EjeIHhnxlm
-EXDZwld69daLtluKfSW+lmtDrjjgHXyC3jQxjzUJ2z4bav+ZoEMG67WBHphpSbVY
-QdIqpKzuqXjdJrNNeIKOQXtlzAzQAlyvW916YK1DVwTFnb8X87Fi2vxbPKqq1i2E
-zQVAz+YEnc/oXGbODFA2yB/5udOpTTNFdxrDQ79gKBYwlrpJyo/9/IUv62lE8LdT
-oq5YTMeQ/n++peKVrYEjKa7737Q+jsybc51liD4eywjKiIrxvnVLiHdztp2/qBpU
-qHg9V6wdtnEhrd2vwcld
-=I6qm
------END PGP SIGNATURE-----
 
