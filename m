@@ -1,16 +1,14 @@
 MIME-Version: 1.0
 Sender: emmanueldeloget53@...277...
-In-Reply-To: <30121809-005b-983f-75e7-8c65c1dd897f@...1856...>
-References: <CAA1AbxLbVut1Z8pWF78kD=vy3rx5mxDf8MyDSR4BpxfbXoQZiQ@...278...>
-	<20170612134330.20971-1-logout@...260...>
-	<20170612134330.20971-8-logout@...260...>
-	<30121809-005b-983f-75e7-8c65c1dd897f@...1856...>
+In-Reply-To: <201706181321.v5IDL8W8098574@...2054...>
+References: <20170612134330.20971-8-logout@...260...>
+	<201706181321.v5IDL8W8098574@...2054...>
 From: Emmanuel Deloget <logout@...260...>
-Date: Mon, 19 Jun 2017 16:04:15 +0200
-Message-ID: <CAKh=nwGUsa5YC9sejuAeQqKd9NgvfkUZAni3OPx2woB95PR57w@...278...>
-Content-Type: multipart/alternative; boundary="f403043efc043d38910552509ce7"
-Subject: Re: [Openvpn-devel] [PATCH 7/8] OpenSSL: don't use direct access to
- the internal of HMAC_CTX
+Date: Mon, 19 Jun 2017 16:06:05 +0200
+Message-ID: <CAKh=nwHrUpipAcz8HXgh1XAT2v1RtmmvuRyKukw3hS65EnZ+tw@...278...>
+Content-Type: multipart/alternative; boundary="f403045df14acdd8fd055250a241"
+Subject: Re: [Openvpn-devel] [PATCH applied] Re: OpenSSL: don't use direct
+ access to the internal of HMAC_CTX
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,142 +17,137 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan@...1856...>
+To: Gert Doering <gert@...1296...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---f403043efc043d38910552509ce7
+--f403045df14acdd8fd055250a241
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Hello Steffan,
+Hi Gert,
 
-On Sun, Jun 18, 2017 at 1:38 PM, Steffan Karger <steffan@...1856...> wrote:
+On Sun, Jun 18, 2017 at 3:21 PM, Gert Doering <gert@...1296...> wrote:
 
-> Hi,
+> Your patch has been applied to the master and release/2.4 branch.
 >
-> On 12-06-17 15:43, logout@...260... wrote:
-> > +#if !defined(HAVE_HMAC_CTX_INIT)
-> > +/**
-> > + * Init a HMAC context
-> > + *
-> > + * @param ctx                 The HMAC context
-> > + *
-> > + * Contrary to many functions in this file, HMAC_CTX_init() is not
-> > + * an OpenSSL 1.1 function: it comes from previous versions and was
-> > + * removed in v1.1. As a consequence, there is no distincting in
-> > + * v1.1 between a cleanup, and init and a reset. Yet, previous OpenSSL
-> > + * version need this distinction.
-> > + *
-> > + * In order to respect previous OpenSSL versions, we implement init
-> > + * as reset for OpenSSL 1.1+.
-> > + */
-> > +static inline void
-> > +HMAC_CTX_init(HMAC_CTX *ctx)
-> > +{
-> > +    HMAC_CTX_reset(ctx);
-> > +}
-> > +#endif
->
-> Hm, shouldn't we do this the other way around then?  Implement a
-> HMAC_CTX_reset() here that calls HMAC_CTX_init(), and use _reset() in
-> our hmac_ctx_init() function?
->
->
-I think I did it that way to enhance code reading but it's true that it
-introduces a pre-1.1 artefact into an interface which is based upon OpenSSL
-1.1.
-
-I'm sending a patch to fix that.
-
-
-> =E2=80=8B> <snip
-> >
->
-> Otherwise this looks good, and passes my tests.  I would prefer to
-> change the _init()/reset() thing before applying (if you agree that this
-> is better), but if this is the only thing left to get 1.1 support into
-> our next release that shouldn't block applying the patch.
->
-> So, basically, ACK :)
->
-> -Steffan
+> I have not changed anything wrt _init()/reset() to not delay getting
+> this in-tree before the upcoming v2.4.3 release - but if you agree to
+> Steffan's comment on that, please send a followup patch which can then
+> go in later.
 >
 
+=E2=80=8BI'm going to do that ASAP. =E2=80=8B
+
+
+>
+> (Thanks for all your work!)
+>
+
+
+=E2=80=8BIt's me who want to thank you all: you did a marvellous job at poi=
+nting my
+mistakes :) =E2=80=8B
+
+=E2=80=8BSo thanks to you, Steffan, David, and all the other who helped me.=
+ =E2=80=8B
+
+
+
+>
+> commit aba98e9050eb54d72d921e70bcd422cb892b9c6c (master)
+> commit 2bf4aee4b043151bd2abe7101421fd74763f1230 (release/2.4)
+> Author: Emmanuel Deloget
+> Date:   Mon Jun 12 15:43:29 2017 +0200
+>
+>      OpenSSL: don't use direct access to the internal of HMAC_CTX
+>
+>      Signed-off-by: Emmanuel Deloget <logout@...260...>
+>      Acked-by: Steffan Karger <steffan.karger@...1435...>
+>      Message-Id: <20170612134330.20971-8-logout@...260...>
+>      URL: https://www.mail-archive.com/openvpn-devel@...1199...
+> sourceforge.net/msg14797.html
+>      Signed-off-by: Gert Doeri
+> =E2=80=8B=E2=80=8B
+> ng <gert@...1296...>
+>
+>
+> --
+> kind regards,
+>
+> Gert Doering
+>
+>
 =E2=80=8BBR,
 
 -- Emmanuel Deloget=E2=80=8B
 
---f403043efc043d38910552509ce7
+--f403045df14acdd8fd055250a241
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <div dir=3D"ltr"><div class=3D"gmail_default" style=3D"font-family:courier =
-new,monospace">Hello Steffan,=C2=A0</div><div class=3D"gmail_extra"><br><di=
-v class=3D"gmail_quote">On Sun, Jun 18, 2017 at 1:38 PM, Steffan Karger <sp=
-an dir=3D"ltr">&lt;<a href=3D"mailto:steffan@...1856..." target=3D"_blank">=
-steffan@...1856...</a>&gt;</span> wrote:<br><blockquote class=3D"gmail_quot=
-e" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">=
-Hi,<br>
-<div><div class=3D"h5"><br>
-On 12-06-17 15:43, <a href=3D"mailto:logout@...260...">logout@...260...</a>=
- wrote:<br>&gt; +#if !defined(HAVE_HMAC_CTX_INIT)<br>
-&gt; +/**<br>
-&gt; + * Init a HMAC context<br>
-&gt; + *<br>
-&gt; + * @param ctx=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0The HMAC context<br>
-&gt; + *<br>
-&gt; + * Contrary to many functions in this file, HMAC_CTX_init() is not<br>
-&gt; + * an OpenSSL 1.1 function: it comes from previous versions and was<b=
-r>
-&gt; + * removed in v1.1. As a consequence, there is no distincting in<br>
-&gt; + * v1.1 between a cleanup, and init and a reset. Yet, previous OpenSS=
-L<br>
-&gt; + * version need this distinction.<br>
-&gt; + *<br>
-&gt; + * In order to respect previous OpenSSL versions, we implement init<b=
-r>
-&gt; + * as reset for OpenSSL 1.1+.<br>
-&gt; + */<br>
-&gt; +static inline void<br>
-&gt; +HMAC_CTX_init(HMAC_CTX *ctx)<br>
-&gt; +{<br>
-&gt; +=C2=A0 =C2=A0 HMAC_CTX_reset(ctx);<br>
-&gt; +}<br>
-&gt; +#endif<br>
+new,monospace">Hi Gert,=C2=A0</div><div class=3D"gmail_extra"><br><div clas=
+s=3D"gmail_quote">On Sun, Jun 18, 2017 at 3:21 PM, Gert Doering <span dir=
+=3D"ltr">&lt;<a href=3D"mailto:gert@...1296..." target=3D"_blank">gert@...1386...=
+296...</a>&gt;</span> wrote:<br><blockquote class=3D"gmail_quote" style=3D"=
+margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">Your patch h=
+as been applied to the master and release/2.4 branch.<br>
 <br>
-</div></div>Hm, shouldn&#39;t we do this the other way around then?=C2=A0 I=
-mplement a<br>
-HMAC_CTX_reset() here that calls HMAC_CTX_init(), and use _reset() in<br>
-our hmac_ctx_init() function?<br>
-<div><div class=3D"h5"><br></div></div></blockquote><div><br></div><div><di=
-v class=3D"gmail_default"><font face=3D"courier new, monospace">I think I d=
-id it that way to enhance code reading but it&#39;s true that it introduces=
- a pre-1.1 artefact into an interface which is based upon OpenSSL 1.1.=C2=
-=A0</font></div><div class=3D"gmail_default"><font face=3D"courier new, mon=
-ospace"><br></font></div><div class=3D"gmail_default"><font face=3D"courier=
- new, monospace">I&#39;m sending a patch to fix that.</font></div><div clas=
-s=3D"gmail_default"><span style=3D"font-family:arial,sans-serif">=C2=A0</sp=
-an><br></div></div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0p=
-x 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex"><div><=
-div class=3D"h5">
-<div class=3D"gmail_default" style=3D"font-family:&quot;courier new&quot;,m=
-onospace;display:inline">=E2=80=8B&gt; &lt;snip</div>&gt;<br>
+I have not changed anything wrt _init()/reset() to not delay getting<br>
+this in-tree before the upcoming v2.4.3 release - but if you agree to<br>
+Steffan&#39;s comment on that, please send a followup patch which can then<=
+br>
+go in later.<br></blockquote><div><br></div><div><div class=3D"gmail_defaul=
+t" style=3D"font-family:&quot;courier new&quot;,monospace">=E2=80=8BI&#39;m=
+ going to do that ASAP. =E2=80=8B</div></div><div>=C2=A0</div><blockquote c=
+lass=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;=
+padding-left:1ex">
 <br>
-</div></div>Otherwise this looks good, and passes my tests.=C2=A0 I would p=
-refer to<br>
-change the _init()/reset() thing before applying (if you agree that this<br>
-is better), but if this is the only thing left to get 1.1 support into<br>
-our next release that shouldn&#39;t block applying the patch.<br>
+(Thanks for all your work!)<br></blockquote><div><br></div><div><br></div><=
+div><div class=3D"gmail_default" style=3D"font-family:&quot;courier new&quo=
+t;,monospace">=E2=80=8BIt&#39;s me who want to thank you all: you did a mar=
+vellous job at pointing my mistakes :) =E2=80=8B</div><br></div><div><div c=
+lass=3D"gmail_default" style=3D"font-family:&quot;courier new&quot;,monospa=
+ce">=E2=80=8BSo thanks to you, Steffan, David, and all the other who helped=
+ me. =E2=80=8B</div><br></div><div>=C2=A0</div><blockquote class=3D"gmail_q=
+uote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1e=
+x">
 <br>
-So, basically, ACK :)<br>
+commit aba98e9050eb54d72d921e70bcd422<wbr>cb892b9c6c (master)<br>
+commit 2bf4aee4b043151bd2abe7101421fd<wbr>74763f1230 (release/2.4)<br>
+Author: Emmanuel Deloget<br>
+Date:=C2=A0 =C2=A0Mon Jun 12 15:43:29 2017 +0200<br>
 <br>
--Steffan<br></blockquote><div><br></div><div class=3D"gmail_default" style=
-=3D"font-family:&quot;courier new&quot;,monospace">=E2=80=8BBR,=C2=A0</div>=
-<div class=3D"gmail_default" style=3D"font-family:&quot;courier new&quot;,m=
-onospace"><br></div><div class=3D"gmail_default" style=3D"font-family:&quot=
-;courier new&quot;,monospace">-- Emmanuel Deloget=E2=80=8B</div></div></div=
-></div>
+=C2=A0 =C2=A0 =C2=A0OpenSSL: don&#39;t use direct access to the internal of=
+ HMAC_CTX<br>
+<br>
+=C2=A0 =C2=A0 =C2=A0Signed-off-by: Emmanuel Deloget &lt;<a href=3D"mailto:l=
+ogout@...260...">logout@...260...</a>&gt;<br>
+=C2=A0 =C2=A0 =C2=A0Acked-by: Steffan Karger &lt;<a href=3D"mailto:steffan.=
+karger@...1435...">steffan.karger@...1435...</a>&gt;<br>
+=C2=A0 =C2=A0 =C2=A0Message-Id: &lt;<a href=3D"mailto:20170612134330.20971-=
+8-logout@...260...">20170612134330.20971-8-<wbr>logout@...260...</a>&gt;<br>
+=C2=A0 =C2=A0 =C2=A0URL: <a href=3D"https://www.mail-archive.com/openvpn-de=
+vel@lists.sourceforge.net/msg14797.html" rel=3D"noreferrer" target=3D"_blan=
+k">https://www.mail-archive.com/<wbr>openvpn-devel@...1199...<wbr>sourcefor=
+ge.net/msg14797.html</a><br>
+=C2=A0 =C2=A0 =C2=A0Signed-off-by: Gert Doeri<div class=3D"gmail_default" s=
+tyle=3D"font-family:&quot;courier new&quot;,monospace;display:inline">=E2=
+=80=8B=E2=80=8B</div>ng &lt;<a href=3D"mailto:gert@...1296...">gert@...1726...=
+...</a>&gt;<br>
+<br>
+<br>
+--<br>
+kind regards,<br>
+<br>
+Gert Doering<br>
+<br>
+</blockquote></div><br></div><div class=3D"gmail_extra"><div class=3D"gmail=
+_default" style=3D"font-family:&quot;courier new&quot;,monospace">=E2=80=8B=
+BR,=C2=A0</div><div class=3D"gmail_default" style=3D"font-family:&quot;cour=
+ier new&quot;,monospace"><br></div><div class=3D"gmail_default" style=3D"fo=
+nt-family:&quot;courier new&quot;,monospace">-- Emmanuel Deloget=E2=80=8B</=
+div><br></div></div>
 
---f403043efc043d38910552509ce7--
+--f403045df14acdd8fd055250a241--
 
