@@ -1,11 +1,11 @@
 From: Steffan Karger <steffan.karger@...1435...>
-Date: Mon, 19 Jun 2017 11:28:38 +0200
-Message-ID: <1497864520-12219-4-git-send-email-steffan.karger@...1435...>
+Date: Mon, 19 Jun 2017 11:28:39 +0200
+Message-ID: <1497864520-12219-5-git-send-email-steffan.karger@...1435...>
 In-Reply-To: <1497864520-12219-1-git-send-email-steffan.karger@...1435...>
 References: <1497864520-12219-1-git-send-email-steffan.karger@...1435...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 3/5] Fix remote-triggerable memory leaks
- (CVE-2017-7521)
+Subject: [Openvpn-devel] [PATCH 4/5] Restrict --x509-alt-username extension
+ types
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,86 +18,124 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Several of our OpenSSL-specific certificate-parsing code paths did not
-always clear all allocated memory.  Since a client can cause a few bytes
-of memory to be leaked for each connection attempt, a client can cause a
-server to run out of memory and thereby kill the server.  That makes this
-a (quite inefficient) DoS attack.
+The code never supported all extension types.  Make this explicit by only
+allowing subjectAltName and issuerAltName (for which the current code does
+work).
 
-When using the --x509-alt-username option on openssl builds with an
-extension (argument prefixed with "ext:", e.g. "ext:subjectAltName"), the
-code would not free all allocated memory.  Fix this by using the proper
-free function.
+Using unsupported extension fields would most likely cause OpenVPN to crash
+as soon as a client connects.  This does not have a real-world security
+impact, as such a configuration would not be possible to use in practice.
 
-If ASN1_STRING_to_UTF8() returns 0, it didn't fail and *did* allocate
-memory.  So also free the returned buffer if it returns 0.
-
-These issues were found, analysed and reported to the OpenVPN team by Guido
-Vranken.
+This bug was discovered, analysed and reported to the OpenVPN team by
+Guido Vranken.
 
 Signed-off-by: Steffan Karger <steffan.karger@...1435...>
 ---
- Changes.rst                      | 5 +++++
- src/openvpn/ssl_verify_openssl.c | 9 ++++-----
- 2 files changed, 9 insertions(+), 5 deletions(-)
+ Changes.rst                      |  3 +++
+ doc/openvpn.8                    |  2 ++
+ src/openvpn/options.c            |  4 ++++
+ src/openvpn/ssl_verify_backend.h |  8 ++++++++
+ src/openvpn/ssl_verify_openssl.c | 19 ++++++++++++++++---
+ 5 files changed, 33 insertions(+), 3 deletions(-)
 
 diff --git a/Changes.rst b/Changes.rst
-index f1aed2d..89cfae8 100644
+index 89cfae8..6fa1c0c 100644
 --- a/Changes.rst
 +++ b/Changes.rst
-@@ -313,6 +313,11 @@ Security
-   --x509-track option and the client has a correct, signed and unrevoked
-   certificate that contains an embedded NUL in the certificate subject.
-   Discovered and reported to the OpenVPN security team by Guido Vranken.
-+- CVE-2017-7521: Fix post-authentication remote-triggerable memory leaks
-+  A client could cause a server to leak a few bytes each time it connects to the
-+  server.  That can eventuall cause the server to run out of memory, and thereby
-+  causing the server process to terminate. Discovered and reported to the
-+  OpenVPN security team by Guido Vranken.  (OpenSSL builds only.)
+@@ -324,6 +324,9 @@ User-visible Changes
+ - ``--verify-hash`` can now take an optional flag which changes the hashing
+   algorithm. It can be either SHA1 or SHA256.  The default if not provided is
+   SHA1 to preserve backwards compatibility with existing configurations.
++- Restrict the supported --x509-alt-username extension fields to subjectAltName
++  and issuerAltName.  Other extensions probably didn't work anyway, and would
++  cause OpenVPN to crash when a client connects.
  
- User-visible Changes
- --------------------
-diff --git a/src/openvpn/ssl_verify_openssl.c b/src/openvpn/ssl_verify_openssl.c
-index 31c1638..7c1a481 100644
---- a/src/openvpn/ssl_verify_openssl.c
-+++ b/src/openvpn/ssl_verify_openssl.c
-@@ -163,7 +163,7 @@ extract_x509_extension(X509 *cert, char *fieldname, char *out, int size)
-                     break;
+ Bugfixes
+ --------
+diff --git a/doc/openvpn.8 b/doc/openvpn.8
+index 3f183e6..20bdd91 100644
+--- a/doc/openvpn.8
++++ b/doc/openvpn.8
+@@ -5307,6 +5307,8 @@ option will match against the chosen
+ .B fieldname
+ instead of the Common Name.
+ 
++Only the subjectAltName and issuerAltName X.509 extensions are supported.
++
+ .B Please note:
+ This option has a feature which will convert an all-lowercase
+ .B fieldname
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 76a8550..505c5b2 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -8083,6 +8083,10 @@ add_option(struct options *options,
+                     "configuration", p[1]);
              }
          }
--        sk_GENERAL_NAME_free(extensions);
-+        GENERAL_NAMES_free(extensions);
++        else if (!x509_username_field_ext_supported(s+4))
++        {
++            msg(msglevel, "Unsupported x509-username-field extension: %s", s);
++        }
+         options->x509_username_field = p[1];
      }
-     return retval;
+ #endif /* ENABLE_X509ALTUSERNAME */
+diff --git a/src/openvpn/ssl_verify_backend.h b/src/openvpn/ssl_verify_backend.h
+index 978e54f..e8eaabe 100644
+--- a/src/openvpn/ssl_verify_backend.h
++++ b/src/openvpn/ssl_verify_backend.h
+@@ -124,6 +124,14 @@ struct buffer x509_get_sha256_fingerprint(openvpn_x509_cert_t *cert,
+ result_t backend_x509_get_username(char *common_name, int cn_len,
+                                    char *x509_username_field, openvpn_x509_cert_t *peer_cert);
+ 
++#ifdef ENABLE_X509ALTUSERNAME
++/**
++ * Return true iff the supplied extension field is supported by the
++ * --x509-username-field option.
++ */
++bool x509_username_field_ext_supported(const char *extname);
++#endif
++
+ /*
+  * Return the certificate's serial number in decimal string representation.
+  *
+diff --git a/src/openvpn/ssl_verify_openssl.c b/src/openvpn/ssl_verify_openssl.c
+index 7c1a481..08451f2 100644
+--- a/src/openvpn/ssl_verify_openssl.c
++++ b/src/openvpn/ssl_verify_openssl.c
+@@ -113,16 +113,29 @@ cleanup:
  }
-@@ -225,8 +225,7 @@ extract_x509_field_ssl(X509_NAME *x509, const char *field_name, char *out,
+ 
+ #ifdef ENABLE_X509ALTUSERNAME
++bool x509_username_field_ext_supported(const char *fieldname)
++{
++    int nid = OBJ_txt2nid(fieldname);
++    return nid == NID_subject_alt_name || nid == NID_issuer_alt_name;
++}
++
+ static
+ bool
+ extract_x509_extension(X509 *cert, char *fieldname, char *out, int size)
+ {
+     bool retval = false;
+     char *buf = 0;
+-    GENERAL_NAMES *extensions;
+-    int nid = OBJ_txt2nid(fieldname);
+ 
+-    extensions = (GENERAL_NAMES *)X509_get_ext_d2i(cert, nid, NULL, NULL);
++    if (!x509_username_field_ext_supported(fieldname))
++    {
++        msg(D_TLS_ERRORS,
++            "ERROR: --x509-alt-username field 'ext:%s' not supported",
++            fieldname);
++        return false;
++    }
++
++    int nid = OBJ_txt2nid(fieldname);
++    GENERAL_NAMES *extensions = X509_get_ext_d2i(cert, nid, NULL, NULL);
+     if (extensions)
      {
-         return FAILURE;
-     }
--    tmp = ASN1_STRING_to_UTF8(&buf, asn1);
--    if (tmp <= 0)
-+    if (ASN1_STRING_to_UTF8(&buf, asn1) < 0)
-     {
-         return FAILURE;
-     }
-@@ -466,7 +465,7 @@ x509_setenv_track(const struct x509_track *xt, struct env_set *es, const int dep
-                         {
-                             ASN1_STRING *val = X509_NAME_ENTRY_get_data(ent);
-                             unsigned char *buf = NULL;
--                            if (ASN1_STRING_to_UTF8(&buf, val) > 0)
-+                            if (ASN1_STRING_to_UTF8(&buf, val) >= 0)
-                             {
-                                 do_setenv_x509(es, xt->name, (char *)buf, depth);
-                                 OPENSSL_free(buf);
-@@ -553,7 +552,7 @@ x509_setenv(struct env_set *es, int cert_depth, openvpn_x509_cert_t *peer_cert)
-         {
-             continue;
-         }
--        if (ASN1_STRING_to_UTF8(&buf, val) <= 0)
-+        if (ASN1_STRING_to_UTF8(&buf, val) < 0)
-         {
-             continue;
-         }
+         int numalts;
 -- 
 2.7.4
 
