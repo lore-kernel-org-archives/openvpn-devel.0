@@ -1,8 +1,13 @@
-From: Ilya Shipitsin <chipitsine@...277...>
-Date: Mon, 19 Jun 2017 23:38:08 +0500
-Message-Id: <1497897488-15999-1-git-send-email-chipitsine@...277...>
-Subject: [Openvpn-devel] [PATCH] travis-ci: added gcc and clang
- openssl-1.1.0 builds
+Mime-Version: 1.0 (Mac OS X Mail 10.3 \(3273\))
+From: Antonio Quartulli <a@...2181...>
+In-Reply-To: <17910477-83a7-9ca7-c388-3f164759e36b@...2080...>
+Date: Tue, 20 Jun 2017 05:47:05 +0800
+Message-Id: <0C28488A-E6E8-48AB-A3FB-D79707785C05@...2181...>
+References: <20170619130507.13892-1-davids@...515...>
+	<20170619131630.GK97029@...1296...>
+	<17910477-83a7-9ca7-c388-3f164759e36b@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH] auth-token with auth-nocache fix broke
+ --disable-crypto builds
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,68 +17,55 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
 To: openvpn-devel@lists.sourceforge.net
+Cc: Gert Doering <gert@...1296...>, David Sommerseth <davids@...515...>
 
-openssl build script was modified according to official openssl manual:
-https://wiki.openssl.org/index.php/Compilation_and_Installation
----
- .travis.yml           | 6 ++++++
- .travis/build-deps.sh | 6 +++---
- 2 files changed, 9 insertions(+), 3 deletions(-)
 
-diff --git a/.travis.yml b/.travis.yml
-index bb44222..db90e03 100644
---- a/.travis.yml
-+++ b/.travis.yml
-@@ -27,9 +27,15 @@ matrix:
-     - env: SSLLIB="openssl"
-       os: linux
-       compiler: gcc
-+    - env: SSLLIB="openssl" OPENSSL_VERSION="1.1.0f"
-+      os: linux
-+      compiler: gcc
-     - env: SSLLIB="openssl"
-       os: linux
-       compiler: clang
-+    - env: SSLLIB="openssl" OPENSSL_VERSION="1.1.0f"
-+      os: linux
-+      compiler: clang
-     - env: SSLLIB="mbedtls"
-       os: linux
-       compiler: gcc
-diff --git a/.travis/build-deps.sh b/.travis/build-deps.sh
-index c5c1188..9cc1858 100755
---- a/.travis/build-deps.sh
-+++ b/.travis/build-deps.sh
-@@ -82,7 +82,7 @@ download_openssl () {
- build_openssl_linux () {
-     (
-         cd "openssl-${OPENSSL_VERSION}/"
--        ./config shared --openssldir="${PREFIX}" -DPURIFY
-+        ./config shared --prefix="${PREFIX}" --openssldir="${PREFIX}" -DPURIFY
-         make all install_sw
-     )
- }
-@@ -91,7 +91,7 @@ build_openssl_osx () {
-     (
-         cd "openssl-${OPENSSL_VERSION}/"
-         ./Configure darwin64-x86_64-cc shared \
--            --openssldir="${PREFIX}" -DPURIFY
-+            --prefix="${PREFIX}" --openssldir="${PREFIX}" -DPURIFY
-         make depend all install_sw
-     )
- }
-@@ -107,7 +107,7 @@ build_openssl_mingw () {
-         fi
- 
-         ./Configure --cross-compile-prefix=${CHOST}- shared \
--           ${TARGET} no-multilib no-capieng --openssldir="${PREFIX}" -static-libgcc
-+           ${TARGET} no-multilib no-capieng --prefix="${PREFIX}" --openssldir="${PREFIX}" -static-libgcc
-         make install
-     )
- }
--- 
-2.5.5
+> On 19 Jun 2017, at 21:22, David Sommerseth <openvpn@...2080...> wrote:
+>=20
+> On 19/06/17 15:16, Gert Doering wrote:
+>>=20
+>> Somewhat ugly (is there no existing #ifdef ENABLE_CRYPTO block nearby
+>> that we could hide this in?) but I need a clean tree tonight, and this
+>> will fix things.  So, will to go with it.
+>=20
+> There are no other ENABLE_CRYPTO blocks in
+> initialization_sequence_completed() [init.c:1375].  The alternative
+> could be to put this #ifdef inside the delayed_auth_pass_purge() and
+> make that function be "empty" without ENABLE_CRYPTO.  But as init.c is
+> the only place this is called outside the ENABLE_CRYPTO scope, this is
+> where my dice rolled.
+
+Something I have been doing in the kernel code was to put this kind of bloc=
+ks in the .h file where the function is declared: in case of CONSTANT not-d=
+efined the function would be defined inline within the .h file with an empt=
+y body. The assumption is that the corresponding .c file is not compiled in=
+ this case.
+This is usually quite clean and avoids having more and more ifdefs inside t=
+he code. For example in this case it would result in:
+
+#ifdef ENABLE_CRYPTO
+void delayed_auth_pass_purge(void);
+#else
+void delayed_auth_pass_purge(void)
+{
+}
+#endif
+
+Obviously you=E2=80=99ll want to group multiple functions in the same ifdef.
+
+This might be helpful to beautify (->make easy to read) several parts of th=
+e openvpn code.
+
+my 2 cents.
+
+Cheers,
+
+
+--
+Antonio Quartulli
+
+
 
 
