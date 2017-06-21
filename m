@@ -1,13 +1,15 @@
-Message-ID: <4d071b3c48736cbbc2139b7cc25de8e5.squirrel@...2257...>
-In-Reply-To: <710b1427-8240-56ba-bb26-40cfbb38dd3f@...515...>
+Date: Wed, 21 Jun 2017 17:18:36 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20170621151835.GU97029@...1296...>
 References: <c129e755-6c9e-a35f-2958-84b44baa96f2@...515...>
 	<CAEsd45RR25O+vw=70Q5ZXRc+nnw19t+gjtz4+yiuOMM350vgcg@...278...>
-	<ff190c51-3e5b-f7e9-f176-d86ea9dcaefd@...2080...>
-	<7ba5f9c16f138ec7e90c015fb813c240.squirrel@...2257...>
-	<710b1427-8240-56ba-bb26-40cfbb38dd3f@...515...>
-Date: Wed, 21 Jun 2017 17:08:19 +0200
-From: "Simon Matter" <simon.matter@...2249...>
+	<173d674815ccc3a42fc615dbebeb3b0a.squirrel@...2257...>
+	<5ffac4ab73daf53a27b5df238e7548e8.squirrel@...2257...>
 MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="vqCYXlPyQFtVi6O7"
+Content-Disposition: inline
+In-Reply-To: <5ffac4ab73daf53a27b5df238e7548e8.squirrel@...2257...>
 Subject: Re: [Openvpn-devel] OpenVPN 2.4.3 released (with security fixes)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -17,39 +19,50 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+To: Simon Matter <simon.matter@...2249...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+
+--vqCYXlPyQFtVi6O7
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-To: =?utf-8?B?IlNhbXVsaSBTZXBww6RuZW4i?= <samuli@...515...>
-Cc: openvpn-devel@lists.sourceforge.net, "Jonathan K. Bullard" <jkbullard@...277...>
+Content-Disposition: inline
 
->>> I believe it is Cloudflare playing tricks on us again.
->>>
->>> Attached are the proper signature files and below a list of the SHA256
->>> checksums:
->>>
->>> 7aa86167a5b8923e54e8795b814ed77288c793671f59fd830d9ab76d4b480571
->>> openvpn-2.4.3.tar.xz
->>>
->>> This is based on the files I've already pushed to the Fedora builder
->>> (koji), which
->>
->> I have the following sums:
->>
->> 15e15fc97f189b52aee7c90ec8355aa77469c773125110b4c2f089abecde36fb
->> openvpn-2.4.3.tar.xz
->>
->
-> Those sha256sums are the correct ones.
+Hi,
 
-That's the problem, which one is the correct one for openvpn-2.4.3.tar.xz?
+On Wed, Jun 21, 2017 at 04:18:41PM +0200, Simon Matter wrote:
+> An additional source of confusion seems that the tarball of the .gz and
+> .xz files don't match. Maybe this could easily be fixed in the build
+> process.
 
-7aa86167a5b8923e54e8795b814ed77288c793671f59fd830d9ab76d4b480571
+.gz is built with "make distcheck", .xz right after from the same
+tree with "make dist-xz".
 
-or
+What differs?
 
-15e15fc97f189b52aee7c90ec8355aa77469c773125110b4c2f089abecde36fb
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-Thanks,
-Simon
+--vqCYXlPyQFtVi6O7
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJZSo5KAAoJEB2Cnv7KVigSRJcL/3v/Tt7V3uhg3haA9ajaKfUV
+L55N/0ZyrNMQghpBQTiifV88lhaXNyyta2pCm0WFk4Z8POkxuXiAi2EgbiqXxGRb
+lb+7LKha9coT4vCQpLXW0OELHC4sRbB4w9vuJwOWXTgKhHKzwzfRxl5NVO7CINj9
++4zhcoysV64iUORjqowIOq1RXFW4caFR2WDhEHXJDKDOfzfM2DlnVg6gXgKxobYH
+kiJn9VZcv5voiAvfVHue+EHg8ELvjdA577+mfMXh2hKKuR8gpfNoRc8uikKzJMnh
+wWRMOj3ou+dPi0T05ZQBMNeYIvxWuyn5U0ZVwz5thQYtQ8bkJ3yPTsxbCcqnU0lv
+H3K0LSbVrAll4mMwa2hTVmLEX22jUIAnShKQ8/RezkflffqtmQhnKybuNWj+wlbx
+RZS34qqp9dngXNyVA9eRr0yZBdAbXZzpT3cPPu8zWO965VoIdPCL3ttpwuB4nNmd
+XZs9utjdJMrwCe35OPz9EXeTxZhs7S5w07i2oeAT8A==
+=LF38
+-----END PGP SIGNATURE-----
+
+--vqCYXlPyQFtVi6O7--
 
