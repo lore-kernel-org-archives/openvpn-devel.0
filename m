@@ -1,13 +1,12 @@
-Date: Thu, 22 Jun 2017 04:17:53 +0800
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <20170621201753.GA31123@...2287...>
-References: <1497872853-1464-1-git-send-email-steffan.karger@...1435...>
+References: <20170619153513.5420-1-logout@...260...>
+From: Steffan Karger <steffan@...1856...>
+Message-ID: <8df54a20-26d2-26ae-b236-c29f87b7f2d3@...1856...>
+Date: Wed, 21 Jun 2017 22:45:04 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="y0ulUmNC+osPPQO6"
-Content-Disposition: inline
-In-Reply-To: <1497872853-1464-1-git-send-email-steffan.karger@...1435...>
-Subject: Re: [Openvpn-devel] [PATCH] Move adjust_power_of_2() to integer.h
+In-Reply-To: <20170619153513.5420-1-logout@...260...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH] OpenSSL: remove pre-1.1 function from
+ the OpenSSL compat interface
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,180 +15,130 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan.karger@...1435...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
---y0ulUmNC+osPPQO6
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Hi,
 
-On Mon, Jun 19, 2017 at 01:47:33PM +0200, Steffan Karger wrote:
-> misc.c it a mess of incoherent functions, and is therefore included by
-
-little typ0 here: s/it/is/
-
-> virtually all our source files.  That makes testing harder than it should
-> be.  As a first step of cleaning up misc.c, move adjust_power_of_2() to
-> integer.h, which is a more suitable place for a function like this.
->=20
-> This allows us to remove the duplicate implementation from test_argv.c.
->=20
-> Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+On 19-06-17 17:35, logout@...260... wrote:
+> From: Emmanuel Deloget <logout@...260...>
+> 
+> HMAC_CTX_init() has been removed from OpenSSL 1.1. Both this function
+> and function HMAC_CTX_cleanup() has been replaced by HMAC_CTX_reset().
+> 
+> Commit aba98e9050eb54d72d921e70bcd422cb892b9c6c introduced support for
+> HMAC_CTX_init() for OpenSSL 1.1+ while other functions were mimicking
+> the OpenSSL 1.1 interface for earlier version. This is clearly not a
+> good idea -- a better approach would be to provide the new interface for
+> pre-1.1 versions in order to have the dependant code use only one
+> interface version. To implement that, we remove HMAC_CTX_init() from our
+> compatibility layer and implement HMAC_CTX_reset() in terms of a cleanup
+> followed by an init (as the regular HMAC_CTX_reset() function does in
+> OpenSSL 1.1. This change has a consequence on HMAC_CTX_free() which now
+> need to cleanup() the HMAC context before freeing it.
 > ---
->  src/openvpn/integer.h                | 17 +++++++++++++++++
->  src/openvpn/misc.c                   | 18 ------------------
->  src/openvpn/misc.h                   |  2 --
->  tests/unit_tests/openvpn/test_argv.c | 19 +------------------
->  4 files changed, 18 insertions(+), 38 deletions(-)
->=20
-> diff --git a/src/openvpn/integer.h b/src/openvpn/integer.h
-> index 240781b..882322a 100644
-> --- a/src/openvpn/integer.h
-> +++ b/src/openvpn/integer.h
-> @@ -118,6 +118,23 @@ modulo_add(int x, int y, int mod)
->      return sum;
->  }
->=20=20
-> +/*
-> + * Return the next largest power of 2
-> + * or u if u is a power of 2.
-> + */
-> +static inline size_t adjust_power_of_2(size_t u)
-> +{
-> +    size_t ret =3D 1;
-> +
-> +    while (ret < u)
-> +    {
-> +        ret <<=3D 1;
-> +        ASSERT(ret > 0);
-> +    }
-> +
-> +    return ret;
-> +}
-> +
->  static inline int
->  index_verify(int index, int size, const char *file, int line)
+>  configure.ac                 |  1 -
+>  src/openvpn/crypto_openssl.c |  2 +-
+>  src/openvpn/openssl_compat.h | 39 ++++++++++++++-------------------------
+>  3 files changed, 15 insertions(+), 27 deletions(-)
+> 
+> diff --git a/configure.ac b/configure.ac
+> index 56ce5f82..22f91cb6 100644
+> --- a/configure.ac
+> +++ b/configure.ac
+> @@ -924,7 +924,6 @@ if test "${enable_crypto}" = "yes" -a "${with_crypto_library}" = "openssl"; then
+>  			HMAC_CTX_new \
+>  			HMAC_CTX_free \
+>  			HMAC_CTX_reset \
+> -			HMAC_CTX_init \
+>  			EVP_MD_CTX_new \
+>  			EVP_MD_CTX_free \
+>  			EVP_MD_CTX_reset \
+> diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
+> index a55e65c1..9cf3355b 100644
+> --- a/src/openvpn/crypto_openssl.c
+> +++ b/src/openvpn/crypto_openssl.c
+> @@ -930,7 +930,7 @@ hmac_ctx_init(HMAC_CTX *ctx, const uint8_t *key, int key_len,
 >  {
-> diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
-> index df108b0..561f80f 100644
-> --- a/src/openvpn/misc.c
-> +++ b/src/openvpn/misc.c
-> @@ -1641,24 +1641,6 @@ openvpn_sleep(const int n)
->  }
->=20=20
->  /*
-> - * Return the next largest power of 2
-> - * or u if u is a power of 2.
-> - */
-> -size_t
-> -adjust_power_of_2(size_t u)
-> -{
-> -    size_t ret =3D 1;
-> -
-> -    while (ret < u)
-> -    {
-> -        ret <<=3D 1;
-> -        ASSERT(ret > 0);
-> -    }
-> -
-> -    return ret;
-> -}
-> -
-> -/*
->   * Remove security-sensitive strings from control message
->   * so that they will not be output to log file.
+>      ASSERT(NULL != kt && NULL != ctx);
+>  
+> -    HMAC_CTX_init(ctx);
+> +    HMAC_CTX_reset(ctx);
+>      HMAC_Init_ex(ctx, key, key_len, kt, NULL);
+>  
+>      /* make sure we used a big enough key */
+> diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h
+> index c765f0bb..617410e0 100644
+> --- a/src/openvpn/openssl_compat.h
+> +++ b/src/openvpn/openssl_compat.h
+> @@ -120,6 +120,15 @@ EVP_CIPHER_CTX_new(void)
+>  /**
+>   * Reset a HMAC context
+>   *
+> + * OpenSSL 1.1+ removes APIs HMAC_CTX_init() and HMAC_CTX_cleanup()
+> + * and replace them with a single call that does a cleanup followed
+> + * by an init. A proper _reset() for OpenSSL < 1.1 should perform
+> + * a similar set of operations.
+> + *
+> + * It means that before we kill a HMAC context, we'll have to cleanup
+> + * again, as we probably have allocated a few resources when we forced
+> + * an init.
+> + *
+>   * @param ctx                 The HMAC context
+>   * @return                    1 on success, 0 on error
 >   */
-> diff --git a/src/openvpn/misc.h b/src/openvpn/misc.h
-> index 94573b2..f55186f 100644
-> --- a/src/openvpn/misc.h
-> +++ b/src/openvpn/misc.h
-> @@ -325,8 +325,6 @@ extern const char *iproute_path;
->  #define SSEC_PW_ENV    3 /* allow calling of built-in programs and user-=
-defined scripts that may receive a password as an environmental variable */
->  extern int script_security; /* GLOBAL */
->=20=20
-> -/* return the next largest power of 2 */
-> -size_t adjust_power_of_2(size_t u);
->=20=20
->  #define COMPAT_FLAG_QUERY         0       /** compat_flags operator: Que=
-ry for a flag */
->  #define COMPAT_FLAG_SET           (1<<0)  /** compat_flags operator: Set=
- a compat flag */
-> diff --git a/tests/unit_tests/openvpn/test_argv.c b/tests/unit_tests/open=
-vpn/test_argv.c
-> index 8c90eb9..c5ebc09 100644
-> --- a/tests/unit_tests/openvpn/test_argv.c
-> +++ b/tests/unit_tests/openvpn/test_argv.c
-> @@ -12,24 +12,7 @@
->=20=20
->  #include "argv.h"
->  #include "buffer.h"
-> -
-> -/*
-> - * This is defined here to prevent #include'ing misc.h
-> - * which makes things difficult beyond any recognition
+> @@ -127,42 +136,22 @@ static inline int
+>  HMAC_CTX_reset(HMAC_CTX *ctx)
+>  {
+>      HMAC_CTX_cleanup(ctx);
+> +    HMAC_CTX_init(ctx);
+>      return 1;
+>  }
+>  #endif
+>  
+> -#if !defined(HAVE_HMAC_CTX_INIT)
+> -/**
+> - * Init a HMAC context
+> - *
+> - * @param ctx                 The HMAC context
+> - *
+> - * Contrary to many functions in this file, HMAC_CTX_init() is not
+> - * an OpenSSL 1.1 function: it comes from previous versions and was
+> - * removed in v1.1. As a consequence, there is no distincting in
+> - * v1.1 between a cleanup, and init and a reset. Yet, previous OpenSSL
+> - * version need this distinction.
+> - *
+> - * In order to respect previous OpenSSL versions, we implement init
+> - * as reset for OpenSSL 1.1+.
 > - */
-> -size_t
-> -adjust_power_of_2(size_t u)
+> -static inline void
+> -HMAC_CTX_init(HMAC_CTX *ctx)
 > -{
-> -    size_t ret =3D 1;
-> -
-> -    while (ret < u)
-> -    {
-> -        ret <<=3D 1;
-> -        assert(ret > 0);
-> -    }
-> -
-> -    return ret;
+> -    HMAC_CTX_reset(ctx);
 > -}
-> +#include "integer.h"
+> -#endif
+> -
+>  #if !defined(HAVE_HMAC_CTX_FREE)
+>  /**
+> - * Free an existing HMAC context
+> + * Cleanup and free an existing HMAC context
+>   *
+>   * @param ctx                 The HMAC context
+>   */
+>  static inline void
+> -HMAC_CTX_free(HMAC_CTX *c)
+> +HMAC_CTX_free(HMAC_CTX *ctx)
+>  {
+> -	free(c);
+> +    HMAC_CTX_cleanup(ctx);
+> +    free(ctx);
+>  }
+>  #endif
+>  
+> 
 
-This duplication was really ugly :-P Thanks for getting rid of it.
+Thanks, ACK.
 
-However, now that adjust_power_of_2() has been moved to integer.h, shouldn't
-this file be included by every .c where the function is used? Or do we have=
- some
-other rule about header files inclusion?
-
-Personally I prefer when every .c file directly includes the .h it relies o=
-n,
-without assuming any indirect inclusion. What's the common habit here?
-
-
-Cheers,
-
-
->=20=20
->  /* Defines for use in the tests and the mock parse_line() */
->  #define PATH1       "/s p a c e"
-> --=20
-> 2.7.4
->=20
-
---=20
-Antonio Quartulli
-
---y0ulUmNC+osPPQO6
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEEbd2mMhAXbmSCipS40+HICM1soFAFAllK1G4ACgkQ0+HICM1s
-oFDQZRAAmiPUpmdqBjj/GuKOtYkBJdqIVWiK/7EoaMXBtcwHS+OEuZ4YQXYJooTJ
-+PaCYSfd5HY73LNuuMSxRsHSiuUCtzA0hg4SiMyOttRtylkL5eiMia7ApeINlus8
-RT392Bs9zEsWQtuT21d4QhxlvxkwcHjJA/UzbwF2HoRjA/iCsWkaLHneNXPrewL4
-KFpTdWJ0dU2FtuBePrPcwhVlKBMZYgDqupH7EVUxMjt6hpqlhJo4Ogi3sh+bNSHR
-N2/zGTURLSzP+K8U771MWkvxRqoYsiwZDOkwIxwOFwDZZeQ/26lo89KcNdWZy+eC
-mW4053ZSVrRkmwtJA4GCDK7+d9Sullnt0zPI3kWnnfz6u7MeW6t/QWLAlXf1MFxp
-GFT3SZVHTlHV7mVbk1HRnPiYdakGyrvZH8CqbO1fSNEwwLmYARepuxA2ixIRKSow
-XUvsmMjV+MyvU+1eLwY+a1BGEB4FMbZEb2I45h38llr567Sd7yJw4r1nyGlcRBwU
-pkgqSejMvl/H65vxGzOjCAQKfuATN8uUh8B8dU2MsT9oKW3tc/GLwo9jc1Ms/Shh
-PoVC/0Oior4hnb0nbzf11tHIHvCxvMjoPLdhTcfy7VWZBSEpV18in7sGEhAGNuSJ
-Gs9J+OudkmoKZ7HTLpwaczfM3aRQ6p68YvjYmRiginprcMjqJMc=
-=YXPa
------END PGP SIGNATURE-----
-
---y0ulUmNC+osPPQO6--
+-Steffan
 
