@@ -1,12 +1,8 @@
-References: <1497872853-1464-1-git-send-email-steffan.karger@...1435...>
-	<20170621201753.GA31123@...2287...>
 From: Steffan Karger <steffan@...1856...>
-Message-ID: <62da7142-d087-7d89-5974-7533b1be0713@...1856...>
-Date: Wed, 21 Jun 2017 23:09:45 +0200
-MIME-Version: 1.0
-In-Reply-To: <20170621201753.GA31123@...2287...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH] Move adjust_power_of_2() to integer.h
+Date: Wed, 21 Jun 2017 23:21:31 +0200
+Message-Id: <20170621212131.6776-1-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH] Fix typo in extract_x509_extension() debug
+ message
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,22 +11,32 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+This message should use the external name, not the internal one.
 
-On 21-06-17 22:17, Antonio Quartulli wrote:
-> However, now that adjust_power_of_2() has been moved to integer.h, shouldn't
-> this file be included by every .c where the function is used? Or do we have some
-> other rule about header files inclusion?
-> 
-> Personally I prefer when every .c file directly includes the .h it relies on,
-> without assuming any indirect inclusion. What's the common habit here?
+Signed-off-by: Steffan Karger <steffan@...1856...>
+---
+ src/openvpn/ssl_verify_openssl.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-We have no consistent rule or habit that I know of, but I fully agree
-with you.  So thanks for paying attention, will send a v2 in a minute.
+diff --git a/src/openvpn/ssl_verify_openssl.c b/src/openvpn/ssl_verify_openssl.c
+index f9e889ff..ea474955 100644
+--- a/src/openvpn/ssl_verify_openssl.c
++++ b/src/openvpn/ssl_verify_openssl.c
+@@ -129,8 +129,7 @@ extract_x509_extension(X509 *cert, char *fieldname, char *out, int size)
+     if (!x509_username_field_ext_supported(fieldname))
+     {
+         msg(D_TLS_ERRORS,
+-            "ERROR: --x509-alt-username field 'ext:%s' not supported",
+-            fieldname);
++            "ERROR: --x509-username-field 'ext:%s' not supported", fieldname);
+         return false;
+     }
+ 
+-- 
+2.11.0
 
--Steffan
 
