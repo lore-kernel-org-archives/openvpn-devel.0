@@ -1,16 +1,13 @@
-Message-ID: <36894307888518e6c9fa20594668882d.squirrel@...2257...>
-In-Reply-To: <20170621154928.GX97029@...1296...>
-References: <c129e755-6c9e-a35f-2958-84b44baa96f2@...515...>
-	<CAEsd45RR25O+vw=70Q5ZXRc+nnw19t+gjtz4+yiuOMM350vgcg@...278...>
-	<173d674815ccc3a42fc615dbebeb3b0a.squirrel@...2257...>
-	<5ffac4ab73daf53a27b5df238e7548e8.squirrel@...2257...>
-	<20170621151835.GU97029@...1296...>
-	<103f1dec82c50941570c7103355b8457.squirrel@...2257...>
-	<20170621154928.GX97029@...1296...>
-Date: Wed, 21 Jun 2017 22:17:51 +0200
-From: "Simon Matter" <simon.matter@...2249...>
+Date: Thu, 22 Jun 2017 04:17:53 +0800
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <20170621201753.GA31123@...2287...>
+References: <1497872853-1464-1-git-send-email-steffan.karger@...1435...>
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] OpenVPN 2.4.3 released (with security fixes)
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="y0ulUmNC+osPPQO6"
+Content-Disposition: inline
+In-Reply-To: <1497872853-1464-1-git-send-email-steffan.karger@...1435...>
+Subject: Re: [Openvpn-devel] [PATCH] Move adjust_power_of_2() to integer.h
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,41 +16,180 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+To: Steffan Karger <steffan.karger@...1435...>
+Cc: openvpn-devel@lists.sourceforge.net
+
+--y0ulUmNC+osPPQO6
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-To: Gert Doering <gert@...1296...>
-Cc: Gert Doering <gert@...1296...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Disposition: inline
 
-> Hi,
->
-> On Wed, Jun 21, 2017 at 05:25:32PM +0200, Simon Matter wrote:
->> > .gz is built with "make distcheck", .xz right after from the same
->> > tree with "make dist-xz".
->> >
->> > What differs?
->>
->> The check sum of both extracted tarballs, not really their content.
->
-> Ah.  Yeah, that's one of the drawbacks of building two independent
-> tarballs - timestamps in the tar header (IIRC), so the end result always
-> differs in a few bytes.
->
->> I suggest to create .xz from .gz instead of building another tarball.
->> That
->> way the extracted tarballs from .gz and .xz share the same checksum ->
->> less confusion in case something goes wrong - as it did with 2.4.2 and
->> now.
->
-> David, you're listening?  Should be an easy-enough change from what
-> we have now... ("gunzip <...tar.gz | xz >...tar.xz" or however you
-> do xz balls) :-)
+On Mon, Jun 19, 2017 at 01:47:33PM +0200, Steffan Karger wrote:
+> misc.c it a mess of incoherent functions, and is therefore included by
 
-One more idea to make things go even smoother: In the release announcement
-mails, you could also add the check sums for each release. That way
-whatever Cloadflare delivers, one can check the sums which were received
-trough a different channel.
+little typ0 here: s/it/is/
 
-Regards,
-Simon
+> virtually all our source files.  That makes testing harder than it should
+> be.  As a first step of cleaning up misc.c, move adjust_power_of_2() to
+> integer.h, which is a more suitable place for a function like this.
+>=20
+> This allows us to remove the duplicate implementation from test_argv.c.
+>=20
+> Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+> ---
+>  src/openvpn/integer.h                | 17 +++++++++++++++++
+>  src/openvpn/misc.c                   | 18 ------------------
+>  src/openvpn/misc.h                   |  2 --
+>  tests/unit_tests/openvpn/test_argv.c | 19 +------------------
+>  4 files changed, 18 insertions(+), 38 deletions(-)
+>=20
+> diff --git a/src/openvpn/integer.h b/src/openvpn/integer.h
+> index 240781b..882322a 100644
+> --- a/src/openvpn/integer.h
+> +++ b/src/openvpn/integer.h
+> @@ -118,6 +118,23 @@ modulo_add(int x, int y, int mod)
+>      return sum;
+>  }
+>=20=20
+> +/*
+> + * Return the next largest power of 2
+> + * or u if u is a power of 2.
+> + */
+> +static inline size_t adjust_power_of_2(size_t u)
+> +{
+> +    size_t ret =3D 1;
+> +
+> +    while (ret < u)
+> +    {
+> +        ret <<=3D 1;
+> +        ASSERT(ret > 0);
+> +    }
+> +
+> +    return ret;
+> +}
+> +
+>  static inline int
+>  index_verify(int index, int size, const char *file, int line)
+>  {
+> diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
+> index df108b0..561f80f 100644
+> --- a/src/openvpn/misc.c
+> +++ b/src/openvpn/misc.c
+> @@ -1641,24 +1641,6 @@ openvpn_sleep(const int n)
+>  }
+>=20=20
+>  /*
+> - * Return the next largest power of 2
+> - * or u if u is a power of 2.
+> - */
+> -size_t
+> -adjust_power_of_2(size_t u)
+> -{
+> -    size_t ret =3D 1;
+> -
+> -    while (ret < u)
+> -    {
+> -        ret <<=3D 1;
+> -        ASSERT(ret > 0);
+> -    }
+> -
+> -    return ret;
+> -}
+> -
+> -/*
+>   * Remove security-sensitive strings from control message
+>   * so that they will not be output to log file.
+>   */
+> diff --git a/src/openvpn/misc.h b/src/openvpn/misc.h
+> index 94573b2..f55186f 100644
+> --- a/src/openvpn/misc.h
+> +++ b/src/openvpn/misc.h
+> @@ -325,8 +325,6 @@ extern const char *iproute_path;
+>  #define SSEC_PW_ENV    3 /* allow calling of built-in programs and user-=
+defined scripts that may receive a password as an environmental variable */
+>  extern int script_security; /* GLOBAL */
+>=20=20
+> -/* return the next largest power of 2 */
+> -size_t adjust_power_of_2(size_t u);
+>=20=20
+>  #define COMPAT_FLAG_QUERY         0       /** compat_flags operator: Que=
+ry for a flag */
+>  #define COMPAT_FLAG_SET           (1<<0)  /** compat_flags operator: Set=
+ a compat flag */
+> diff --git a/tests/unit_tests/openvpn/test_argv.c b/tests/unit_tests/open=
+vpn/test_argv.c
+> index 8c90eb9..c5ebc09 100644
+> --- a/tests/unit_tests/openvpn/test_argv.c
+> +++ b/tests/unit_tests/openvpn/test_argv.c
+> @@ -12,24 +12,7 @@
+>=20=20
+>  #include "argv.h"
+>  #include "buffer.h"
+> -
+> -/*
+> - * This is defined here to prevent #include'ing misc.h
+> - * which makes things difficult beyond any recognition
+> - */
+> -size_t
+> -adjust_power_of_2(size_t u)
+> -{
+> -    size_t ret =3D 1;
+> -
+> -    while (ret < u)
+> -    {
+> -        ret <<=3D 1;
+> -        assert(ret > 0);
+> -    }
+> -
+> -    return ret;
+> -}
+> +#include "integer.h"
 
+This duplication was really ugly :-P Thanks for getting rid of it.
+
+However, now that adjust_power_of_2() has been moved to integer.h, shouldn't
+this file be included by every .c where the function is used? Or do we have=
+ some
+other rule about header files inclusion?
+
+Personally I prefer when every .c file directly includes the .h it relies o=
+n,
+without assuming any indirect inclusion. What's the common habit here?
+
+
+Cheers,
+
+
+>=20=20
+>  /* Defines for use in the tests and the mock parse_line() */
+>  #define PATH1       "/s p a c e"
+> --=20
+> 2.7.4
+>=20
+
+--=20
+Antonio Quartulli
+
+--y0ulUmNC+osPPQO6
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEbd2mMhAXbmSCipS40+HICM1soFAFAllK1G4ACgkQ0+HICM1s
+oFDQZRAAmiPUpmdqBjj/GuKOtYkBJdqIVWiK/7EoaMXBtcwHS+OEuZ4YQXYJooTJ
++PaCYSfd5HY73LNuuMSxRsHSiuUCtzA0hg4SiMyOttRtylkL5eiMia7ApeINlus8
+RT392Bs9zEsWQtuT21d4QhxlvxkwcHjJA/UzbwF2HoRjA/iCsWkaLHneNXPrewL4
+KFpTdWJ0dU2FtuBePrPcwhVlKBMZYgDqupH7EVUxMjt6hpqlhJo4Ogi3sh+bNSHR
+N2/zGTURLSzP+K8U771MWkvxRqoYsiwZDOkwIxwOFwDZZeQ/26lo89KcNdWZy+eC
+mW4053ZSVrRkmwtJA4GCDK7+d9Sullnt0zPI3kWnnfz6u7MeW6t/QWLAlXf1MFxp
+GFT3SZVHTlHV7mVbk1HRnPiYdakGyrvZH8CqbO1fSNEwwLmYARepuxA2ixIRKSow
+XUvsmMjV+MyvU+1eLwY+a1BGEB4FMbZEb2I45h38llr567Sd7yJw4r1nyGlcRBwU
+pkgqSejMvl/H65vxGzOjCAQKfuATN8uUh8B8dU2MsT9oKW3tc/GLwo9jc1Ms/Shh
+PoVC/0Oior4hnb0nbzf11tHIHvCxvMjoPLdhTcfy7VWZBSEpV18in7sGEhAGNuSJ
+Gs9J+OudkmoKZ7HTLpwaczfM3aRQ6p68YvjYmRiginprcMjqJMc=
+=YXPa
+-----END PGP SIGNATURE-----
+
+--y0ulUmNC+osPPQO6--
 
