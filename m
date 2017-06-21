@@ -1,9 +1,13 @@
-From: Steffan Karger <steffan@...1856...>
-Date: Wed, 21 Jun 2017 23:10:43 +0200
-Message-Id: <20170621211043.6490-1-steffan@...1856...>
-In-Reply-To: <62da7142-d087-7d89-5974-7533b1be0713@...1856...>
-References: <62da7142-d087-7d89-5974-7533b1be0713@...1856...>
-Subject: [Openvpn-devel] [PATCH v2] Move adjust_power_of_2() to integer.h
+MIME-Version: 1.0
+Sender: emmanueldeloget53@...277...
+In-Reply-To: <8a543794-fa2e-cc1b-5db5-7cc9106d126b@...2080...>
+References: <c129e755-6c9e-a35f-2958-84b44baa96f2@...515...>
+	<8a543794-fa2e-cc1b-5db5-7cc9106d126b@...2080...>
+From: Emmanuel Deloget <logout@...260...>
+Date: Thu, 22 Jun 2017 00:36:27 +0200
+Message-ID: <CAKh=nwF2mKg_YTz34b_wH9c3dLj6ht+jvZnozzB=zXZ1n17fEQ@...278...>
+Content-Type: multipart/alternative; boundary="94eb2c1b0e2cba46a305527fffe5"
+Subject: Re: [Openvpn-devel] OpenVPN 2.4.3 released (with security fixes)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,169 +16,119 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
+Cc: "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>, openvpn-announce@lists.sourceforge.net
 
-From: Steffan Karger <steffan.karger@...1435...>
+--94eb2c1b0e2cba46a305527fffe5
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-misc.c is a mess of incoherent functions, and is therefore included by
-virtually all our source files.  That makes testing harder than it should
-be.  As a first step of cleaning up misc.c, move adjust_power_of_2() to
-integer.h, which is a more suitable place for a function like this.
+Hi David,
 
-This allows us to remove the duplicate implementation from test_argv.c.
+On Wed, Jun 21, 2017 at 11:06 PM, David Sommerseth <
+openvpn@...2080...> wrote:
 
-Signed-off-by: Steffan Karger <steffan.karger@...1435...>
----
-v2: fix includes, fix typo in commit msg
+=E2=80=8B<snip>=E2=80=8B
 
- src/openvpn/argv.c                   |  1 +
- src/openvpn/integer.h                | 18 ++++++++++++++++++
- src/openvpn/list.c                   |  1 +
- src/openvpn/mbuf.c                   |  1 +
- src/openvpn/misc.c                   | 18 ------------------
- src/openvpn/misc.h                   |  2 --
- tests/unit_tests/openvpn/test_argv.c | 18 ------------------
- 7 files changed, 21 insertions(+), 38 deletions(-)
 
-diff --git a/src/openvpn/argv.c b/src/openvpn/argv.c
-index a71d261c..95bdfeac 100644
---- a/src/openvpn/argv.c
-+++ b/src/openvpn/argv.c
-@@ -36,6 +36,7 @@
- #include "syshead.h"
- 
- #include "argv.h"
-+#include "integer.h"
- #include "options.h"
- 
- static void
-diff --git a/src/openvpn/integer.h b/src/openvpn/integer.h
-index 884b849f..600e1384 100644
---- a/src/openvpn/integer.h
-+++ b/src/openvpn/integer.h
-@@ -114,6 +114,24 @@ modulo_add(int x, int y, int mod)
-     return sum;
- }
- 
-+/*
-+ * Return the next largest power of 2
-+ * or u if u is a power of 2.
-+ */
-+static inline size_t
-+adjust_power_of_2(size_t u)
-+{
-+    size_t ret = 1;
-+
-+    while (ret < u)
-+    {
-+        ret <<= 1;
-+        ASSERT(ret > 0);
-+    }
-+
-+    return ret;
-+}
-+
- static inline int
- index_verify(int index, int size, const char *file, int line)
- {
-diff --git a/src/openvpn/list.c b/src/openvpn/list.c
-index edca6f79..91765d20 100644
---- a/src/openvpn/list.c
-+++ b/src/openvpn/list.c
-@@ -31,6 +31,7 @@
- 
- #if P2MP_SERVER
- 
-+#include "integer.h"
- #include "list.h"
- #include "misc.h"
- 
-diff --git a/src/openvpn/mbuf.c b/src/openvpn/mbuf.c
-index fafbce01..f969a2b5 100644
---- a/src/openvpn/mbuf.c
-+++ b/src/openvpn/mbuf.c
-@@ -33,6 +33,7 @@
- 
- #include "buffer.h"
- #include "error.h"
-+#include "integer.h"
- #include "misc.h"
- #include "mbuf.h"
- 
-diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
-index 608204ee..0b65e6e2 100644
---- a/src/openvpn/misc.c
-+++ b/src/openvpn/misc.c
-@@ -1646,24 +1646,6 @@ openvpn_sleep(const int n)
- }
- 
- /*
-- * Return the next largest power of 2
-- * or u if u is a power of 2.
-- */
--size_t
--adjust_power_of_2(size_t u)
--{
--    size_t ret = 1;
--
--    while (ret < u)
--    {
--        ret <<= 1;
--        ASSERT(ret > 0);
--    }
--
--    return ret;
--}
--
--/*
-  * Remove security-sensitive strings from control message
-  * so that they will not be output to log file.
-  */
-diff --git a/src/openvpn/misc.h b/src/openvpn/misc.h
-index d504e68a..c9fa97ab 100644
---- a/src/openvpn/misc.h
-+++ b/src/openvpn/misc.h
-@@ -328,8 +328,6 @@ extern const char *iproute_path;
- #define SSEC_PW_ENV    3 /* allow calling of built-in programs and user-defined scripts that may receive a password as an environmental variable */
- extern int script_security; /* GLOBAL */
- 
--/* return the next largest power of 2 */
--size_t adjust_power_of_2(size_t u);
- 
- #define COMPAT_FLAG_QUERY         0       /** compat_flags operator: Query for a flag */
- #define COMPAT_FLAG_SET           (1<<0)  /** compat_flags operator: Set a compat flag */
-diff --git a/tests/unit_tests/openvpn/test_argv.c b/tests/unit_tests/openvpn/test_argv.c
-index 8c90eb9c..4a3ba559 100644
---- a/tests/unit_tests/openvpn/test_argv.c
-+++ b/tests/unit_tests/openvpn/test_argv.c
-@@ -13,24 +13,6 @@
- #include "argv.h"
- #include "buffer.h"
- 
--/*
-- * This is defined here to prevent #include'ing misc.h
-- * which makes things difficult beyond any recognition
-- */
--size_t
--adjust_power_of_2(size_t u)
--{
--    size_t ret = 1;
--
--    while (ret < u)
--    {
--        ret <<= 1;
--        assert(ret > 0);
--    }
--
--    return ret;
--}
--
- /* Defines for use in the tests and the mock parse_line() */
- #define PATH1       "/s p a c e"
- #define PATH2       "/foo bar/baz"
--- 
-2.11.0
+> But for reasons unknown to me, those tarballs got re-created somewhere
+> later in the release chain.  The contents of all tarballs are
+> essentially the same, but due to the "nice" artefact that the tar format
+> is non-deterministic on the output, even though the input is the same,
+> that begins to prepare the stage for this chaos.  Especially when what
+> is being uploaded is partly from the initial run and then some files
+> from a different run
+> =E2=80=8B.
+>
 
+=E2=80=8BIt might be possible to pay with several tar options, including:
+
+--sort=3Dname : sort added files by name, and not by the order specified by
+the OS
+--mtime=3DDATE-OR-FILE : set mtime of added file to a known value (either t=
+he
+mtime of a file or an arbitrary date/time string).  =E2=80=8B
+
+=E2=80=8BThese two options should help=E2=80=8B
+
+=E2=80=8BBoth options are being used by the LEDE project=E2=80=8B which cla=
+im support of
+reproducible builds for a limited list of targets (tar is used when
+building packages [1]).
+
+=E2=80=8B[1]
+https://git.lede-project.org/?p=3Dsource.git;a=3Dblob;f=3Dscripts/ipkg-buil=
+d#l142=E2=80=8B
+
+
+
+> --
+> kind regards,
+>
+> David Sommerseth
+> OpenVPN Technologies, Inc
+>
+>
+=E2=80=8BBR,
+
+-- Emmanuel Deloget=E2=80=8B
+
+--94eb2c1b0e2cba46a305527fffe5
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div class=3D"gmail_default" style=3D"font-family:&quot;co=
+urier new&quot;,monospace">Hi David,=C2=A0</div><div class=3D"gmail_extra">=
+<br><div class=3D"gmail_quote">On Wed, Jun 21, 2017 at 11:06 PM, David Somm=
+erseth <span dir=3D"ltr">&lt;<a href=3D"mailto:openvpn@...2080..." target=
+=3D"_blank">openvpn@...2080...</a>&gt;</span> wrote:</div><div class=3D"gma=
+il_quote"><br><div><div class=3D"gmail_default" style=3D"font-family:&quot;=
+courier new&quot;,monospace">=E2=80=8B&lt;snip&gt;=E2=80=8B</div></div><div=
+>=C2=A0</div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px =
+0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">
+But for reasons unknown to me, those tarballs got re-created somewhere<br>
+later in the release chain.=C2=A0 The contents of all tarballs are<br>
+essentially the same, but due to the &quot;nice&quot; artefact that the tar=
+ format<br>
+is non-deterministic on the output, even though the input is the same,<br>
+that begins to prepare the stage for this chaos.=C2=A0 Especially when what=
+<br>
+is being uploaded is partly from the initial run and then some files<br>
+from a different run<div class=3D"gmail_default" style=3D"font-family:&quot=
+;courier new&quot;,monospace;display:inline">=E2=80=8B.</div></blockquote><=
+div><br></div><div><div class=3D"gmail_default" style=3D"font-family:&quot;=
+courier new&quot;,monospace">=E2=80=8BIt might be possible to pay with seve=
+ral tar options, including:</div><div class=3D"gmail_default" style=3D"font=
+-family:&quot;courier new&quot;,monospace"><br></div><div class=3D"gmail_de=
+fault" style=3D"font-family:&quot;courier new&quot;,monospace">--sort=3Dnam=
+e : sort added files by name, and not by the order specified by the OS</div=
+><div class=3D"gmail_default" style=3D"font-family:&quot;courier new&quot;,=
+monospace">--mtime=3DDATE-OR-FILE : set mtime of added file to a known valu=
+e (either the mtime of a file or an arbitrary date/time string). =C2=A0=E2=
+=80=8B</div><br></div><div><div class=3D"gmail_default" style=3D"font-famil=
+y:&quot;courier new&quot;,monospace">=E2=80=8BThese two options should help=
+=E2=80=8B</div><br></div><div><div class=3D"gmail_default" style=3D"font-fa=
+mily:&quot;courier new&quot;,monospace">=E2=80=8BBoth options are being use=
+d by the LEDE project=E2=80=8B which claim support of reproducible builds f=
+or a limited list of targets (tar is used when building packages [1]).=C2=
+=A0</div><br></div><div><div class=3D"gmail_default" style=3D"font-family:&=
+quot;courier new&quot;,monospace">=E2=80=8B[1] <a href=3D"https://git.lede-=
+project.org/?p=3Dsource.git;a=3Dblob;f=3Dscripts/ipkg-build#l142">https://g=
+it.lede-project.org/?p=3Dsource.git;a=3Dblob;f=3Dscripts/ipkg-build#l142</a=
+>=E2=80=8B</div><br></div><div>=C2=A0</div><blockquote class=3D"gmail_quote=
+" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);=
+padding-left:1ex"><div class=3D"gmail-HOEnZb"><div class=3D"gmail-h5">
+--<br>
+kind regards,<br>
+<br>
+David Sommerseth<br>
+OpenVPN Technologies, Inc<br>
+<br></div></div></blockquote><div><br></div><div class=3D"gmail_default" st=
+yle=3D"font-family:&quot;courier new&quot;,monospace">=E2=80=8BBR,=C2=A0</d=
+iv><div class=3D"gmail_default" style=3D"font-family:&quot;courier new&quot=
+;,monospace"><br></div><div class=3D"gmail_default" style=3D"font-family:&q=
+uot;courier new&quot;,monospace">-- Emmanuel Deloget=E2=80=8B</div></div></=
+div></div>
+
+--94eb2c1b0e2cba46a305527fffe5--
 
