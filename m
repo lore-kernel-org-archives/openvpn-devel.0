@@ -1,10 +1,10 @@
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <2119e50f-7d01-5c70-5aed-e1567b05953b@...2080...>
-Date: Tue, 20 Jun 2017 14:37:18 +0200
-MIME-Version: 1.0
-Content-Language: en-GB
-Subject: [Openvpn-devel] Heads-up - security release of OpenVPN arriving Wed
- Jun 21st
+Date: Wed, 21 Jun 2017 12:02:39 +0200 (CEST)
+Message-Id: <201706211002.v5LA2dJI073810@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <1497864520-12219-2-git-send-email-steffan.karger@...1435...>
+References: <1497864520-12219-2-git-send-email-steffan.karger@...1435...>
+Subject: [Openvpn-devel] [PATCH applied] Re: mbedtls: fix --x509-track
+ post-authentication remote DoS (CVE-2017-7522)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,26 +14,29 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, OpenVPN Users <Openvpn-users@lists.sourceforge.net>
+Content-Transfer-Encoding: 8bit
+To: Steffan Karger <steffan.karger@...1435...>
+Cc: openvpn-devel@lists.sourceforge.net
+
+Your patch has been applied to the master and release/2.4 branch.
+
+commit 426392940c7060300a10077c389f5156c790c2f6 (master)
+commit 67edada0beaf5ce6e47f13526b9f678dad4fc126 (release/2.4)
+Author: Steffan Karger
+Date:   Mon Jun 19 11:28:36 2017 +0200
+
+     mbedtls: fix --x509-track post-authentication remote DoS (CVE-2017-7522)
+
+     Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1497864520-12219-2-git-send-email-steffan.karger@...1435...>
+     URL: https://www.mail-archive.com/search?l=mid&q=1497864520-12219-2-git-send-email-steffan.karger@...1435...
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
-Hi,
-
-This is a heads-up notice that we will release OpenVPN v2.3.17 and
-OpenVPN v2.4.3 tomorrow, Wednesday June 21st shortly after 10:00 UTC.
-
-This is primarily a security update which covers several issues found
-recently and was reported to us on our security list.
-
-All details related to these issues will be made public once we have
-pushed out these new releases tomorrow.
-
-
---=20
+--
 kind regards,
 
-David Sommerseth
-OpenVPN Technologies, Inc
+Gert Doering
 
 
