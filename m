@@ -1,11 +1,11 @@
-Date: Wed, 21 Jun 2017 12:21:50 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20170621102150.GA74026@...1296...>
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <c129e755-6c9e-a35f-2958-84b44baa96f2@...515...>
+Date: Wed, 21 Jun 2017 13:47:13 +0300
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="bCsyhTFzCvuiizWE"
-Content-Disposition: inline
-Subject: [Openvpn-devel] NTLM.c security fix / CVE-2017-7520
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature";
+	boundary="qqnhIot8DREc65MJXoP8v0Va8KscuoaEs"
+Subject: [Openvpn-devel] OpenVPN 2.4.3 released (with security fixes)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,157 +14,221 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>, openvpn-announce@lists.sourceforge.net
 
---bCsyhTFzCvuiizWE
-Content-Type: multipart/mixed; boundary="liOOAslEiF7prFVr"
-Content-Disposition: inline
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--qqnhIot8DREc65MJXoP8v0Va8KscuoaEs
+Content-Type: multipart/mixed; boundary="QV0NqC0ae2QGTvvxRAGBDT7DCXIifHthM";
+ protected-headers="v1"
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+To: "openvpn-devel@lists.sourceforge.net"
+ <openvpn-devel@lists.sourceforge.net>,
+ "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>,
+ openvpn-announce@lists.sourceforge.net
+Message-ID: <c129e755-6c9e-a35f-2958-84b44baa96f2@...515...>
+Subject: OpenVPN 2.4.3 released (with security fixes)
 
---liOOAslEiF7prFVr
-Content-Type: text/plain; charset="us-ascii"
+--QV0NqC0ae2QGTvvxRAGBDT7DCXIifHthM
+Content-Type: multipart/mixed;
+ boundary="------------AA90490ABDAC16B2B31DBC0C"
+Content-Language: en-US
+
+This is a multi-part message in MIME format.
+--------------AA90490ABDAC16B2B31DBC0C
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
+The OpenVPN community project team is proud to release OpenVPN 2.4.3. It
+can be downloaded from here:
 
-most patches that went into the tree today came to me by git-send-email,
-so I could re-send them to the list after embargo, and message-id:s=20
-referenced in the code match between mailing list, git tree, and
-in-reply-to in the ACK mail.
+<http://openvpn.net/index.php/open-source/downloads.html>
 
-One patch came as a patch attached to a longer mail that I do not want
-to bounce "as is" to the list - so here's the patch that originally came
-to me as=20
+OpenVPN v2.4.2 was analyzed closely using a fuzzer by Guido Vranken. In
+the process several vulnerabilities were found, some of which are
+remotely exploitable in certain circumstances. We recommend you to
+upgrade to OpenVPN 2.4.3 or 2.3.17 as soon as possible. More details are
+available in our official security announcement:
 
-  Message-Id: <CAO5O-EJvHKid-zTj+hmFG_3Gv78ixqCayE9=3DC62DZaxN32WNtQ@...2283...=
-...>
+<https://community.openvpn.net/openvpn/wiki/VulnerabilitiesFixedInOpenVPN24=
+3>
 
-and is referenced as such, plus my ACK-and-merge mail, both as attachments.
+In addition a number of bugs with no security impact have been fixed.
+The one big feature in the 2.4.3 release is support for building with
+OpenSSL 1.1.
 
-gert
+A summary of all included changes is available here:
+
+<https://github.com/OpenVPN/openvpn/blob/release/2.4/Changes.rst>
+
+A full list of changes is available here:
+
+<https://community.openvpn.net/openvpn/wiki/ChangesInOpenvpn24>
+
+Compared to OpenVPN 2.3 this is a major update with a large number of
+new features, improvements and fixes. Some of the major features are
+AEAD (GCM) cipher and Elliptic Curve DH key exchange support, improved
+IPv4/IPv6 dual stack support and more seamless connection migration when
+client's IP address changes (Peer-ID). Also, the new --tls-crypt feature
+can be used to increase users' connection privacy.
+
+OpenVPN GUI bundled with the Windows installer has a large number of new
+features compared to the one bundled with OpenVPN 2.3. One of major
+features is the ability to run OpenVPN GUI without administrator privileges.
+
+For full details, look here:
+
+<https://community.openvpn.net/openvpn/wiki/ChangesInOpenvpn24>
+
+The new OpenVPN GUI features are documented here:
+
+<https://github.com/OpenVPN/openvpn-gui>
+
+Please note that OpenVPN 2.4 installers will not work on Windows XP.
+
+For generic help use these support channels:
+
+Official documentation:
+<http://openvpn.net/index.php/open-source/documentation/howto.html>
+Wiki: <https://community.openvpn.net>
+Forums: <https://forums.openvpn.net>
+User mailing list: <http://sourceforge.net/mail/?group_id=3D48978>
+User IRC channel: #openvpn at irc.freenode.net
+
+Please report bugs and ask development questions here:
+
+Bug tracker and wiki: <https://community.openvpn.net>
+Developer mailing list: <http://sourceforge.net/mail/?group_id=3D48978>
+Developer IRC channel: #openvpn-devel at irc.freenode.net (requires
+Freenode registration)
+
 --=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+Samuli Sepp=C3=A4nen
+Community Manager
+OpenVPN Technologies, Inc
 
---liOOAslEiF7prFVr
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: attachment; filename="guido-ntlm.txt"
+irc freenode net: mattock
+
+
+
+--------------AA90490ABDAC16B2B31DBC0C
+Content-Type: application/pgp-keys;
+ name="0x40864578.asc"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: attachment;
+ filename="0x40864578.asc"
 
-=46rom 83694284a1b7918fdf55c2e4ebebce2126bd92fa Mon Sep 17 00:00:00 2001
-=46rom: Guido Vranken <guidovranken@...277...>
-Date: Fri, 19 May 2017 14:04:25 +0200
-Subject: [PATCH] Prevent two kinds of stack buffer OOB reads and a crash for
- invalid input data
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+Version: GnuPG v2
 
-Signed-off-by: Guido Vranken <guidovranken@...277...>
----
- src/openvpn/ntlm.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
-
-diff --git a/src/openvpn/ntlm.c b/src/openvpn/ntlm.c
-index 0c43681..bb8679f 100644
---- a/src/openvpn/ntlm.c
-+++ b/src/openvpn/ntlm.c
-@@ -197,7 +197,7 @@ ntlm_phase_3(const struct http_proxy_info *p, const cha=
-r *phase_2, struct gc_are
-      */
-=20
-     char pwbuf[sizeof(p->up.password) * 2]; /* for unicode password */
--    char buf2[128]; /* decoded reply from proxy */
-+    unsigned char buf2[128]; /* decoded reply from proxy */
-     unsigned char phase3[464];
-=20
-     char md4_hash[MD4_DIGEST_LENGTH+5];
-@@ -303,7 +303,13 @@ ntlm_phase_3(const struct http_proxy_info *p, const ch=
-ar *phase_2, struct gc_are
-                 tib_len =3D 96;
-             }
-             {
--                char *tib_ptr =3D buf2 + buf2[0x2c];           /* Get Targ=
-et Information block pointer */
-+                char *tib_ptr;
-+                int tib_pos =3D buf2[0x2c];
-+                if (tib_pos + tib_len > sizeof(buf2))
-+                {
-+                    return NULL;
-+                }
-+                tib_ptr =3D buf2 + tib_pos;                               =
-/* Get Target Information block pointer */
-                 memcpy(&ntlmv2_blob[0x1c], tib_ptr, tib_len);           /*=
- Copy Target Information block into the blob */
-             }
-         }
---=20
-2.1.4
+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
+XuwT7RpGDZ6jBfphYQ=3D=3D
+=3DFKLE
+-----END PGP PUBLIC KEY BLOCK-----
 
 
---liOOAslEiF7prFVr
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: attachment; filename="guido-ntlm.reply"
+--------------AA90490ABDAC16B2B31DBC0C
+Content-Type: application/pgp-keys;
+ name="0x40864578.asc"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: attachment;
+ filename="0x40864578.asc"
 
-=46rom: Gert Doering <gert@...1296...>
-To: Guido Vranken <guidovranken@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
-Subject: [PATCH applied] Re: Prevent two kinds of stack buffer OOB reads an=
-d a crash for invalid input data
-In-Reply-To: <CAO5O-EJvHKid-zTj+hmFG_3Gv78ixqCayE9=3DC62DZaxN32WNtQ@...2284...=
-ail.com>
-References: <CAO5O-EJvHKid-zTj+hmFG_3Gv78ixqCayE9=3DC62DZaxN32WNtQ@...2285...=
-il.com>
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+Version: GnuPG v2
 
-ACK.
+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
+XuwT7RpGDZ6jBfphYQ=3D=3D
+=3DFKLE
+-----END PGP PUBLIC KEY BLOCK-----
 
-Your patch has been applied to the master, release/2.4, 2.3 and 2.2 branch.
+--------------AA90490ABDAC16B2B31DBC0C--
 
-commit 7718c8984f04b507c1885f363970e2124e3c6c77 (master)
-commit 043fe327878eba75efa13794c9845f85c3c629f2 (release/2.4)
-commit f38a4a105979b87ebebe9be1c3d323116d3fb924 (release/2.3)
-commit 4bec9d25d519a56bc40458e947d3dfa964b82b13 (release/2.2)
-Author: Guido Vranken
-Date:   Fri May 19 14:04:25 2017 +0200
+--QV0NqC0ae2QGTvvxRAGBDT7DCXIifHthM--
 
-     Prevent two kinds of stack buffer OOB reads and a crash for invalid in=
-put data
-
-     CVE: 2017-7520
-     Signed-off-by: Guido Vranken <guidovranken@...277...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <CAO5O-EJvHKid-zTj+hmFG_3Gv78ixqCayE9=3DC62DZaxN32WNtQ@...2286...=
-l.gmail.com>
-     URL: https://www.mail-archive.com/search?l=3Dmid&q=3DCAO5O-EJvHKid-zTj=
-+hmFG_3Gv78ixqCayE9=3DC62DZaxN32WNtQ@...278...
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
-
-
---liOOAslEiF7prFVr--
-
---bCsyhTFzCvuiizWE
+--qqnhIot8DREc65MJXoP8v0Va8KscuoaEs
 Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
 
-iQGcBAEBAgAGBQJZSki9AAoJEB2Cnv7KVigSxs4L/iQWWUkIeHAO0JXtbdAsDnta
-cobBWCLe3ZnmXWzcKenKMO02Q8bjfu2GgZc/dcKsDtQmKEz3YG1DiMTGBL3PDmCp
-at4EvKa2jSMcN3oIPwoMyrMNTgScLRlJ6fl4EbpLCp7x2H/N74I5X7enPRdQs7Dt
-qxdyCKJ9cKUZQMb5d5v3crITDVZCtY/fvzbLhj0ooMkHX23991pF8yl3bScfwCyx
-3cqXEgxlF36muFBSD91Gt3NZIt+2EtJNVpH1GTziZ9vBCz68ssI32jB0j+qon99O
-XlQP7fJ2FnttfqMcZmoUmq5KyLCI1E/gSLp1oDZY8p9NmKCa2KRtPcaK59YdwUxp
-JzudcPpmb3e8xKZQKTzRfMKLV77sI24M+IglV8fu7witTx7cR12f6fCgDlRvptgP
-vPKJxhR93Q2Kp9XUZ4+LnBVJVOguvstPGVMrDPzVRtNdDgiSfSHFsst2dvz01c0u
-I5gxMe1XVELGzr64qpI8QU6f/zqaiMU+te0/vvmdGw==
-=syET
+iQEcBAEBCAAGBQJZSk6xAAoJEClYTZ9AhkV4onEH/06hD+DluB9VUuw4rv+ESlZQ
+YFxEZv8fnHbH+7iiXJs54AfD7ylpiTE3YiiSjWeh31fb6sY0zjz0RI4Nvws1aNQn
+ADcUC2GOcRUNZvIJYs6zL7rTS+JAdeYeBVA4cnvl4NFZ63ZQAMI2p2Pl2y9ImjWY
+8VSwVwo/eMYwycnxZIEeaRpAaXx0rMUDs59Jv+bb/rk3Nc0d+Kp4akmp6C9UUjKB
+xsUJoXanCcjsiWbgXC/sYqYdl6ZC1oncGttOvbPT7KJPaspNp/sG1WdF33MtbBri
+7c+R3fx3JUOiCA4DmC8Z8+njI2MLB/MfMraT9lOmbbb4HqknkLUz4XI4QQUBHro=
+=NHTl
 -----END PGP SIGNATURE-----
 
---bCsyhTFzCvuiizWE--
+--qqnhIot8DREc65MJXoP8v0Va8KscuoaEs--
 
