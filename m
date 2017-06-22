@@ -1,10 +1,10 @@
-From: James Bekkema <james@...1918...>
-Mime-Version: 1.0 (Mac OS X Mail 10.3 \(3273\))
-Date: Thu, 22 Jun 2017 10:17:22 +1000
+From: Jeremie Courreges-Anglas <jca@...2272...>
 References: <c129e755-6c9e-a35f-2958-84b44baa96f2@...515...>
 	<8a543794-fa2e-cc1b-5db5-7cc9106d126b@...2080...>
-In-Reply-To: <8a543794-fa2e-cc1b-5db5-7cc9106d126b@...2080...>
-Message-Id: <89BEB5CA-98CB-47C4-8DBD-9160F5EE9554@...1918...>
+	<CAKh=nwF2mKg_YTz34b_wH9c3dLj6ht+jvZnozzB=zXZ1n17fEQ@...278...>
+Date: Thu, 22 Jun 2017 02:41:31 +0200
+Message-ID: <87efucvop0.fsf@...2274...>
+MIME-Version: 1.0
 Subject: Re: [Openvpn-devel] OpenVPN 2.4.3 released (with security fixes)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -16,62 +16,64 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
-
-> On 22 Jun 2017, at 7:06 am, David Sommerseth <openvpn@...2080...> wrote:
->=20
-> - What can be done with Cloudflare to fully ensure their caches are
->  truly purged when we ask for it?  As Jonathan noticed, their caches
->  are tightly connected to the web browser and have a non-deterministic
->  behaviour across browsers, even on the same computer.
-
-Cloudflare=E2=80=99s API supports clearing the cache (as does their web con=
-trol panel), and this can be done on a file-by-file basis. Based on our exp=
-erience it only takes around 15-20 seconds for the cache to be cleared on a=
-ll of Cloudflare's CDN nodes for a file and it can be easily thrown into a =
-release script.
-https://api.cloudflare.com/#zone-purge-individual-files-by-url-and-cache-ta=
-gs
-
-As for some web browsers, proxy servers, etc. in-between the user and a Clo=
-udflare node, they=E2=80=99re respecting the HTTP cache-control headers whi=
-ch are currently set to cache for 24 hours:
-
-curl -I https://swupdate.openvpn.org/community/releases/openvpn-2.4.3.tar.gz
-Expires: Fri, 23 Jun 2017 00:14:19 GMT
-Cache-Control: public, max-age=3D86400
-
-Of course, many proxy servers and web browsers have different approaches to=
- handling caching headers (especially for zipped files), so you will get so=
-me differing behaviour. The best approach is to still have an appropriate c=
-aching time between nodes and the web server (24 hours is fine) so they don=
-=E2=80=99t need to re-fetch the files too often, but then have a Cloudflare=
- Page Rule to rewrite these with a lower time to clients (we use 4 hours) t=
-o limit the impact in the (hopefully rare) event of a file update being nee=
-ded.
-https://support.cloudflare.com/hc/en-us/articles/200168306-Is-there-a-tutor=
-ial-for-Page-Rules-#cache
-
-The final cause of differing behaviour is that each Cloudflare node=E2=80=
-=99s caching time of a file starts when that individual node first gets a r=
-equest for it. But this can easily be ignored by just using the API to clea=
-r the cache of all nodes when needed.
-
-> So I suggest we take a few weeks holiday, let this sink in, and then we
-> can schedule a meeting some time in August where we discuss these
-> issues.
+To: Emmanuel Deloget <logout@...260...>
+Cc: openvpn-devel@lists.sourceforge.net
 
 
-Sorry to throw more noise at the mailing list, but I figured I=E2=80=99d pu=
-t up some comments as IRC meeting times don=E2=80=99t usually align for tho=
-se of us in Australia :-)
+Hi,
 
-Regards,
-James
+Emmanuel Deloget <logout@...260...> writes:
 
---
-James Bekkema
-SparkLabs Developer
-https://www.sparklabs.com
-https://twitter.com/sparklabs
-support@...1918...
+> Hi David,
+>
+> On Wed, Jun 21, 2017 at 11:06 PM, David Sommerseth <
+> openvpn@...2080...> wrote:
+>
+> =E2=80=8B<snip>=E2=80=8B
+>
+>
+>> But for reasons unknown to me, those tarballs got re-created somewhere
+>> later in the release chain.  The contents of all tarballs are
+>> essentially the same, but due to the "nice" artefact that the tar format
+>> is non-deterministic on the output, even though the input is the same,
+>> that begins to prepare the stage for this chaos.  Especially when what
+>> is being uploaded is partly from the initial run and then some files
+>> from a different run
+>> =E2=80=8B.
+>>
+>
+> =E2=80=8BIt might be possible to pay with several tar options, including:
+>
+> --sort=3Dname : sort added files by name, and not by the order specified =
+by
+> the OS
+> --mtime=3DDATE-OR-FILE : set mtime of added file to a known value (either=
+ the
+> mtime of a file or an arbitrary date/time string).  =E2=80=8B
+>
+> =E2=80=8BThese two options should help=E2=80=8B
+
+--sort and --mtime seem like GNU tar options.
+
+It would be cool if whatever is used to produce the tarballs was
+portable to systems where the default tar program is not GNU tar.
+If those tar options end up being used, then it would make sense to add
+a knob to specify the the GNU tar program used to build the tarballs.
+
+> =E2=80=8BBoth options are being used by the LEDE project=E2=80=8B which c=
+laim support of
+> reproducible builds for a limited list of targets (tar is used when
+> building packages [1]).
+>
+> =E2=80=8B[1]
+> https://git.lede-project.org/?p=3Dsource.git;a=3Dblob;f=3Dscripts/ipkg-bu=
+ild#l142=E2=80=8B
+
+Since OpenVPN uses automake, I'll just mention that the automake folks
+also discussed reproducible tarballs:
+
+  https://lists.gnu.org/archive/html/automake/2015-12/msg00012.html
+
+--=20
+jca | PGP : 0x1524E7EE / 5135 92C1 AD36 5293 2BDF  DDCC 0DFA 74AE 1524 E7EE
+
