@@ -1,11 +1,14 @@
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <b35c6dfc-d877-fe10-0619-34521738d872@...2080...>
-Date: Thu, 22 Jun 2017 15:29:35 +0200
+Date: Thu, 22 Jun 2017 21:31:02 +0800
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <20170622133102.GC31123@...2287...>
+References: <62da7142-d087-7d89-5974-7533b1be0713@...1856...>
+	<20170621211043.6490-1-steffan@...1856...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature";
-	boundary="JKxtkUNfMbVtuU0qUCmXe3k4eG4LsnMiK"
-Subject: [Openvpn-devel] * UPDATE * OpenVPN v2.4.3 and v2.3.17 releases
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="/Uq4LBwYP4y1W6pO"
+Content-Disposition: inline
+In-Reply-To: <20170621211043.6490-1-steffan@...1856...>
+Subject: Re: [Openvpn-devel] [PATCH v2] Move adjust_power_of_2() to integer.h
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,87 +17,59 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, OpenVPN Users <Openvpn-users@lists.sourceforge.net>
+To: Steffan Karger <steffan@...1856...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---JKxtkUNfMbVtuU0qUCmXe3k4eG4LsnMiK
-Content-Type: multipart/mixed; boundary="g9UaLK9JfXualUOaACCxndGcU63EKLrPU";
- protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-To: "openvpn-devel@lists.sourceforge.net"
- <openvpn-devel@lists.sourceforge.net>,
- OpenVPN Users <Openvpn-users@lists.sourceforge.net>
-Message-ID: <b35c6dfc-d877-fe10-0619-34521738d872@...2080...>
-Subject: * UPDATE * OpenVPN v2.4.3 and v2.3.17 releases
-
---g9UaLK9JfXualUOaACCxndGcU63EKLrPU
-Content-Language: en-GB
-Content-Type: text/plain; charset="utf-8"
+--/Uq4LBwYP4y1W6pO
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+
+Thanks for sending v2 Steffan,
+
+On Wed, Jun 21, 2017 at 11:10:43PM +0200, Steffan Karger wrote:
+> From: Steffan Karger <steffan.karger@...1435...>
+>=20
+> misc.c is a mess of incoherent functions, and is therefore included by
+> virtually all our source files.  That makes testing harder than it should
+> be.  As a first step of cleaning up misc.c, move adjust_power_of_2() to
+> integer.h, which is a more suitable place for a function like this.
+>=20
+> This allows us to remove the duplicate implementation from test_argv.c.
+>=20
+> Signed-off-by: Steffan Karger <steffan.karger@...1435...>
 
 
-Hi,
+This change is quite simple and passes basic tests.
+Thanks also for adding explicit #include statements.
 
-We are in an unfortunate situation that our Cloudflare front is
-providing various results, depending on a lot of factors (region,
-browser, computer, etc, etc).  And it causes a massive noise on people
-trying to download and verify that these downloads are correct.
+Acked-by: Antonio Quartulli <antonio@...515...>
 
-As most of this noise have been related to the source code downloads, I
-have setup an emergency wiki page where an alternative download URL is
-provided ... In addition the proper SHA256 checksums and proper
-signature files are available too.
-
-This will hopefully help people to get the right download.
-
-<http://community.openvpn.net/openvpn/wiki/release-packages-2.4.3-2.3.17>
-
-
-We will go more carefully through our release process and figure out how
-to avoid this mess with the next release.  The discussion have already
-been initiated [1], and we will dig into this for the next release.
-
-[1]
-<https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg14937.=
-html>
-
-
-On behalf of the OpenVPN core community team, I am truly sorry for this
-mess.  This is not how we want our releases to appear.
-
+Cheers,
 
 --=20
-kind regards,
+Antonio Quartulli
 
-David Sommerseth
-OpenVPN Technologies, Inc
-
-
-
---g9UaLK9JfXualUOaACCxndGcU63EKLrPU--
-
---JKxtkUNfMbVtuU0qUCmXe3k4eG4LsnMiK
+--/Uq4LBwYP4y1W6pO
 Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+Content-Description: Digital signature
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBCgAGBQJZS8ZKAAoJEIbPlEyWcf3yIqYP/jq0C/Re0/WA/KdcB5X3tJ/W
-ln7F+W5JrC50Use+gbIvk8vTm5YOJOqbsi/4jdT6BZ/KXz9Jx03VICa9js5PP/24
-AvdvfpIX+oUWB+xQSAkPC88kp1UyMebILN3TnOyN5WBcHeSG1u0QLtHi5aCATFwD
-a1xE5GFUMDtg2iCgdoFiN8hx++uEhaZNQqsEXDgRpI72FEZ+JSmavGItIfRwJqiE
-lA013dtSEnFfs24I09oiWxxjaQtmTci25qvbkW/7llum1+q4YMiCTNAc8VQHIfYM
-UKop/LUaswrtN362R8RDyndKeu5/7oDMR9WQOpMov7eOCZa3s9lcGmzHwqTqvHXt
-4XXOSNA+n3TtT82GhYr2U5XW67EnTWQME1ZvQC10WEccWQ7FReoFUvzzrBEdfLFK
-y5DsDeSPeGR88+sO26Kz9P3ncHT0a4JSlbgYoZMYq+yG6dHen8R/MoACmfow73cF
-7rQBgEdJN/DAhd36LkU5gTb5TWfyjNcdi4biboN5MTbUXd/jn4PH/jzKnhAc66TY
-NjkUH4OSGqnVa2mXs8coLyaKv3bBiY8YGHgqdfH6V5HpfNR7FCFJX42xWsDiNDwP
-oQhLqOyrl9lGzrCPjyEiL/4cMWdOD303+mT/i3FUMQLoMZRvDWZk4TgPmloweIoR
-15hRPCcKyCvO+i30CnoL
-=q4ax
+iQIzBAEBCAAdFiEEbd2mMhAXbmSCipS40+HICM1soFAFAllLxpQACgkQ0+HICM1s
+oFBqjhAAkhePI3f+2GnGJtsSI5R1IBNDRwxVazr30l9ovlMLQ2izyxljO8N8+JFm
+vSmAjVdTA7bAKbKkEXYP8DZkhc2Bp0fc9FTyENJTr79oSw3q2NcveHuTLrawKM/k
+CFsO+GdS9tN73F5oNDCFJpNsEo8RJFlLpiic1uJVoTsWgTIz0zycwXg2KeC8UNX3
+ylJf6cPZSaZF7N6G1g2I04SZFw0lvcIe6VXewto3Nw6FEsT458WgxkuBnphjbUky
+zKGG1bvsPKfnIWJyR1zrHFhCyty9oTfjYvn9vPaEHKKVcUgGZSZD4IShY5j2p/oe
+sZdxFlSf54ED4/URYSvJHvwf2Y9P02Q5/YCxBdK4QCqo0fWiGmUMvPC1BgXaDWYu
+w6QnlKAexy1xFKIt4ODvdHmhusWZgOh/9tJ3zMBet5R5KAw7VA6riSmLSz4xmyIw
+XSCPHCbOgPTKthnAJs1kZYIVFyEcl9P9b2gq4+Q2ELerQHGb5M07Tp1itxNXCKWD
+inmzC26oa8v99NVEKTHS7+uLB+XyPJS8E2cp1WzRZ1xMpmVTIw86H0mmPobnHK0z
+NmV87AmBTfFDtCnGXgqChzTuJHDi1O3KPg87pNrx3dhmXuevO62xK8x/TFU0qk0d
+ag/rMAHFVR7uQuv27mIC5GD6cPdyOfdZSBQLQ0x9eYfhZ+rFWzg=
+=e/oK
 -----END PGP SIGNATURE-----
 
---JKxtkUNfMbVtuU0qUCmXe3k4eG4LsnMiK--
+--/Uq4LBwYP4y1W6pO--
 
