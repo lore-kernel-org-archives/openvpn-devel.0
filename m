@@ -1,17 +1,10 @@
-Date: Thu, 22 Jun 2017 20:05:12 +0200
+Date: Thu, 22 Jun 2017 20:27:16 +0200 (CEST)
+Message-Id: <201706221827.v5MIRGIh085908@...2054...>
 From: Gert Doering <gert@...1296...>
-Message-ID: <20170622180512.GI97029@...1296...>
-References: <62da7142-d087-7d89-5974-7533b1be0713@...1856...>
-	<20170621211043.6490-1-steffan@...1856...>
-	<20170622133102.GC31123@...2287...>
-	<CAKh=nwF7UfzoDaUWM1RNfx8tULmMVyP_wn69ZGORztx6qMYWWQ@...278...>
-	<20170622160805.GD31123@...2287...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="N9dE88m3/9rHioVI"
-Content-Disposition: inline
-In-Reply-To: <20170622160805.GD31123@...2287...>
-Subject: Re: [Openvpn-devel] [PATCH v2] Move adjust_power_of_2() to integer.h
+In-Reply-To: <20170619153513.5420-1-logout@...260...>
+References: <20170619153513.5420-1-logout@...260...>
+Subject: [Openvpn-devel] [PATCH applied] Re: OpenSSL: remove pre-1.1
+ function from the OpenSSL compat interface
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,48 +13,29 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Antonio Quartulli <a@...2181...>
-Cc: Emmanuel Deloget <logout@...260...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Emmanuel Deloget <logout@...260...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---N9dE88m3/9rHioVI
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Your patch has been applied to the master and release/2.4 branch.
 
-Hi,
+commit 64b8a4ae9d7edb39f802d0d4cbdf9d46116f2461 (master)
+commit 20884e5e64e8fb30d6b1cbf1f0749ebef5dea283 (release/2.4)
+Author: Emmanuel Deloget
+Date:   Mon Jun 19 17:35:13 2017 +0200
 
-On Fri, Jun 23, 2017 at 12:08:05AM +0800, Antonio Quartulli wrote:
-> yeah...not sure we need to make some code a bit "obscure" if there is=20
-> really no need.
+     OpenSSL: remove pre-1.1 function from the OpenSSL compat interface
 
-It's only obscure if you forget that 2^0+2^1+2^(n-1) =3D (2^n)-1... :-)
+     Acked-by: Steffan Karger <steffan.karger@...1435...>
+     Message-Id: <20170619153513.5420-1-logout@...260...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg14889.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-(Admittedly, it needed quite a bit of thinking at first glance)
 
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+--
+kind regards,
 
---N9dE88m3/9rHioVI
-Content-Type: application/pgp-signature; name="signature.asc"
+Gert Doering
 
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJZTAbXAAoJEB2Cnv7KVigSAKIL/26f/rbG+l2TAykRK1K62rm5
-Dfm8i6j8Kjs88YNmQnfM0I3oIt09VqlRa5Bu4NefyrY6m+g9cFKyWjHTFBCLaJd9
-/JsWp/p45mdlT2bsP7WUXMDnrneAhX/1aQiHv71rNA0EM1baqHMmuME8qnvAwq20
-JqtssYxgXXztgHbm81CA/RW68/iC1KUwpoKMNiRp5ZJW+1AsCPdBlE7GvQrN1wYQ
-OBb5xguF7QEFYx0Q6lv7A5HAixPk5rmzoMZQtB0Ln5ZCNpj+bS0cHCTCdtteGlEM
-Ip4XinZFoykHzxoC6Os+Yq/UhGUJNhwV6C0gStbrreLIXmAukFa6fyp5omMHdYM9
-PhvsrPdvTxIkW+7kApUEXcCF+OyrWdXOQfG89edbNEo1Vb5X9pU3c/5QZDse0X6O
-6W/X4MvOL6+1i3ZbcbKP4gpyZFv6ev/Ut/zlTfARYVVMewGQvglNRinsuZ8souc+
-G9PoUvZdgSxaVrUQL91lxsEwZPUpFuUPdoR+OmyUTA==
-=y0eR
------END PGP SIGNATURE-----
-
---N9dE88m3/9rHioVI--
 
