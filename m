@@ -1,14 +1,9 @@
-Date: Fri, 23 Jun 2017 15:33:26 +0800
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <20170623073326.GF31123@...2287...>
-References: <1497873065-2229-1-git-send-email-steffan.karger@...1435...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="R6sEYoIZpp9JErk7"
-Content-Disposition: inline
-In-Reply-To: <1497873065-2229-1-git-send-email-steffan.karger@...1435...>
-Subject: Re: [Openvpn-devel] [PATCH] init_key_ctx: key and iv arguments can
- (now) be const
+From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
+Date: Fri, 23 Jun 2017 14:59:45 +0500
+Message-ID: <CAFHpkQFO7thcucb_iCb2vz2ySvVbDFc0qj2BY2b5B+TG9LG_Gg@...278...>
+Content-Type: multipart/alternative; boundary="001a114690643d04d905529da9bd"
+Subject: [Openvpn-devel] test usage() ?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,57 +12,49 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan.karger@...1435...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---R6sEYoIZpp9JErk7
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+--001a114690643d04d905529da9bd
+Content-Type: text/plain; charset="UTF-8"
 
-On Mon, Jun 19, 2017 at 01:51:05PM +0200, Steffan Karger wrote:
-> In older OpenSSL, the key and iv arguments of EVP_CipherInit_ex() were not
-> const, which meant that our API could not be const either.  Since we
-> dropped support for OpenSSL 0.9.8, we can now fix our internal API.
->=20
-> Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+Hello,
 
-This patch is quite simple and just does what it says.
+following to
+https://github.com/OpenVPN/openvpn/commit/49629380a7bdba25c24c9d410b79946fe29249f0
 
-Acked-by: Antonio Quartulli <antonio@...515...>
+I spent some days on trying to get cmocka to test usage(), I gave up :-)
+now, I think, we should just add "src/openvpn/openvpn --help" to .travis.yml
+
+the question is - can we rely on exit status "1"  here ?
 
 
-Maybe we should spend some time checking for other potentially const argume=
-nts
-around the code ..
+$ src/openvpn/openvpn --help >/dev/null
+$ echo $?
+1
+$
+
+
+why does "1" mean "ok" here ?
 
 
 Cheers,
+Ilya Shipitsin
 
+--001a114690643d04d905529da9bd
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
---=20
-Antonio Quartulli
+<div dir=3D"ltr"><div><div><div>Hello,<br><br></div><div>following to <a hr=
+ef=3D"https://github.com/OpenVPN/openvpn/commit/49629380a7bdba25c24c9d410b7=
+9946fe29249f0">https://github.com/OpenVPN/openvpn/commit/49629380a7bdba25c2=
+4c9d410b79946fe29249f0</a><br></div><div><br></div>I spent some days on try=
+ing to get cmocka to test usage(), I gave up :-)<br></div>now, I think, we =
+should just add &quot;src/openvpn/openvpn --help&quot; to .travis.yml<br><b=
+r></div>the question is - can we rely on exit status &quot;1&quot;=C2=A0 he=
+re ?<br><br><div><div><br>$ src/openvpn/openvpn --help &gt;/dev/null<br>$ e=
+cho $?<br>1<br>$ <br><br><br></div><div>why does &quot;1&quot; mean &quot;o=
+k&quot; here ?<br><br><br></div><div>Cheers,<br></div><div>Ilya Shipitsin<b=
+r></div><div><br></div></div></div>
 
---R6sEYoIZpp9JErk7
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEEbd2mMhAXbmSCipS40+HICM1soFAFAllMxEQACgkQ0+HICM1s
-oFDxJg//aCSGjjBbwl10jrCgqbckoQSxtsB4OG3QK4Eu+7SVNxGHuX9RbzXxcuee
-7pyJi51O69cWTNwP4ejRZoNiuWFs8wJ2pw1BBpCt24pTMiQKzDsx5EqPIadIb5jp
-uC+Bdcd+271z+5Do/SydeLPhWe/1FiGAMuQQOG6sN/0RgGltJqxGdCnlK9L7bqO1
-qbIrXanaJU+S4NJl6LRdppbwIcApjiB3sMcopLeT3BTQ6wsAmh/+Hi3HvqSF4SuG
-x2k8iH+SRxrpGFtuoxVMLTF6zokPa+n6aJWZdFxTcCyFs8GS4+QfkZGHVrM01sp/
-LUj5mkrs08pHneBlh/pWx94yx6O18bpMrwoqKGAmGGXfrLdG3SAVDrVdg7ShVeUP
-kaBWirKEhs8XXoISkO9qAuots8rWwuzFF+nWayZxBEp661CcIO0JzZRwzeiaFA26
-CDOT4HSA13L33qHXdEPVZB+SomQ0d1BMF9Q0MSe2smNSpd6I+gb/qLWT+ltPDDjD
-b8Qf7dOhBJ1yBZtIZcwjeUKDb+1AGz4hX9nxoesHOE4soRFWTYw+MkgeDs7ktOOa
-KokDgpI2qNRl1fDKSJZl6xZTa33CGJPj1rlFBkoyBUsdClMMz//FAUGCaqaposcl
-CLQB5v/BN5BVkwHM9GHQPBbD3VHcqQ7O1KnPJcQWScBDt2BGRKc=
-=eNri
------END PGP SIGNATURE-----
-
---R6sEYoIZpp9JErk7--
+--001a114690643d04d905529da9bd--
 
