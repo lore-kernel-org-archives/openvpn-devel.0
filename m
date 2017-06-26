@@ -1,8 +1,11 @@
-From: Steffan Karger <steffan@...1856...>
-Date: Mon, 26 Jun 2017 23:15:40 +0200
-Message-Id: <20170626211540.32502-1-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH] Undo cipher push in client options state if
- cipher is rejected
+References: <20170626211540.32502-1-steffan@...1856...>
+From: Arne Schwabe <arne@...1227...>
+Message-ID: <3f62163c-4e76-4cfc-9c00-b877dd26ee20@...1227...>
+Date: Mon, 26 Jun 2017 23:39:26 +0200
+MIME-Version: 1.0
+In-Reply-To: <20170626211540.32502-1-steffan@...1856...>
+Subject: Re: [Openvpn-devel] [PATCH] Undo cipher push in client options
+ state if cipher is rejected
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,40 +14,25 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
 
-Because of the way we re-use the options parser for both config files and
-pushed options, we always update the local options state when we accept an
-option.  This resulted in a pushed cipher being rejected the first time it
-was pushed, but being accepted the second time.
+Am 26.06.17 um 23:15 schrieb Steffan Karger:
+> Because of the way we re-use the options parser for both config files and
+> pushed options, we always update the local options state when we accept an
+> option.  This resulted in a pushed cipher being rejected the first time it
+> was pushed, but being accepted the second time.
+> 
+> This patch is a minimal way to resolve this issue in the master and
+> release/2.4 branches.  I'll send a more invasive patch for master, to
+> reset the entire options state on reconnects, later.
+> 
 
-This patch is a minimal way to resolve this issue in the master and
-release/2.4 branches.  I'll send a more invasive patch for master, to
-reset the entire options state on reconnects, later.
+ACK. Not as Steffan says, minimal way to achieve this. Should be applied
+to both master and 2.4.
 
-Trac: #906
 
-Signed-off-by: Steffan Karger <steffan@...1856...>
----
- src/openvpn/ssl.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index bbc1c965..f152218e 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -1967,6 +1967,8 @@ tls_session_update_crypto_params(struct tls_session *session,
-         msg(D_TLS_ERRORS, "Error: pushed cipher not allowed - %s not in %s or %s",
-             options->ciphername, session->opt->config_ciphername,
-             options->ncp_ciphers);
-+        /* undo cipher push, abort connection setup */
-+        options->ciphername = session->opt->config_ciphername;
-         return false;
-     }
- 
--- 
-2.11.0
+Arne
 
 
