@@ -1,18 +1,14 @@
-Reply-To: openvpn-devel@lists.sourceforge.net
-From: David Sommerseth <openvpn@...2080...>
-References: <1498475606-8337-1-git-send-email-arne@...1227...>
-	<99e7102e-8b4a-6b42-3095-40fcfada8c28@...2080...>
-	<73f851af-608e-7a15-1021-82cb0b05dada@...1227...>
-	<96916139-fed0-fae9-1c36-b4e2417eb26a@...2080...>
-Message-ID: <a486ae43-afd7-5066-5f32-459c90c7a976@...2080...>
-Date: Mon, 26 Jun 2017 15:34:16 +0200
 MIME-Version: 1.0
-In-Reply-To: <96916139-fed0-fae9-1c36-b4e2417eb26a@...2080...>
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature";
-	boundary="HmiUvefiUxmUgiPtNjwGksSU1toDnhmrA"
-Subject: Re: [Openvpn-devel] [PATCH] Set tls-cipher restriction before
- loading certificates
+In-Reply-To: <CAKuzo_iMXUVZJz0U3OKLi3VvC4vv2S_5+8uTdn5o=21mA8tODA@...278...>
+References: <OpenVPN/openvpn-gui/issues/168@...1714...>
+	<OpenVPN/openvpn-gui/issues/168/305250704@...1714...>
+	<CAKuzo_iMXUVZJz0U3OKLi3VvC4vv2S_5+8uTdn5o=21mA8tODA@...278...>
+From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
+Date: Mon, 26 Jun 2017 18:57:13 +0500
+Message-ID: <CAFHpkQHWem3ozYj_X1RF-9ttz6UfOGV6oXdKM0bAKbU6vkYvnQ@...278...>
+Content-Type: multipart/alternative; boundary="001a11441ffc00b01a0552dd5499"
+Subject: Re: [Openvpn-devel] [OpenVPN/openvpn-gui] better handling of
+ interactive service failure (#168)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,134 +17,159 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+To: Selva Nair <selva.nair@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---HmiUvefiUxmUgiPtNjwGksSU1toDnhmrA
-Content-Type: multipart/mixed; boundary="MN97IGipan3VVn9DHjvHKKoR4jPse9mQD";
- protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-Reply-To: openvpn-devel@lists.sourceforge.net
-To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
-Message-ID: <a486ae43-afd7-5066-5f32-459c90c7a976@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH] Set tls-cipher restriction before loading
- certificates
-References: <1498475606-8337-1-git-send-email-arne@...1227...>
- <99e7102e-8b4a-6b42-3095-40fcfada8c28@...2080...>
- <73f851af-608e-7a15-1021-82cb0b05dada@...1227...>
- <96916139-fed0-fae9-1c36-b4e2417eb26a@...2080...>
-In-Reply-To: <96916139-fed0-fae9-1c36-b4e2417eb26a@...2080...>
+--001a11441ffc00b01a0552dd5499
+Content-Type: text/plain; charset="UTF-8"
 
---MN97IGipan3VVn9DHjvHKKoR4jPse9mQD
-Content-Language: en-GB
-Content-Type: text/plain; charset="utf-8"
+2017-05-31 22:54 GMT+05:00 Selva Nair <selva.nair@...277...>:
+
+> Hi,
+>
+> Copying openvpn-devel:
+> As this is related to openvpn best to have this discussion in the devel
+> list, I suppose.
+> (see also: https://github.com/OpenVPN/openvpn-gui/issues/
+> 168#issuecomment-305250704)
+>
+> On Wed, May 31, 2017 at 12:58 PM, Gert Doering <notifications@...1714...>
+> wrote:
+>
+>> On Wed, May 31, 2017 at 09:43:21AM -0700, Selva Nair wrote:
+>> > As I said, get openvpn to report route errors in the status and then we
+>> can
+>> > add a warning to the status popup, turn the icon red etc instead of the
+>> > current misleading "successfully connected" behaviour.
+>>
+>> This is actually a discussion I was trying to have a long time ago
+>> (a few years) - "why do we ignore route addition errors?".
+>>
+>> The IPv6 code doesn't (because I think that errors are errors, not
+>> warnings...) and that was always some sort of weird asymmetry...
+>>
+>> I still don't know the reasoning here, but I suspect it's something along
+>> "you push a route that is identical to the local subnet" (192.168.1.0/24,
+>> for example, because the user happens to be in a bad NAT network) and
+>> "all of a sudden it fails"... so this might need more discussion, and
+>> also some code cleanups to gracefully handle situations where an error
+>> is "tolerated".
+>>
+>
+> That and some route addition errors like "route already exists" are often
+> benign. So a fatal error is not appropriate. But, IIRC,
+>  openvpn_execve_check only allows printing of errors as FATAL or WARN.
+> Currently we do not parse the log message flags (error vs warning etc.) in
+> the Windows GUI, but that could be improved if openvpn can log route errors
+> like access denied as such.
+>
+> In any case, the status reported to the management when connected with
+> errors should be something other than "CONNECTED,SUCCESS" -- say
+> "CONNECTED,ROUTE-FAILED" etc. so that  UI can intimate the user.
+>
+> Selva
+>
+
+I want to bring it to attention again.
+actually, there're couple of things
+
+a) should "ipv4 route manipulation failure" be fatal
+b) how to signal (and handle) those failures within openvpn-gui
+
+
+
+
+>
+> ------------------------------------------------------------
+> ------------------
+> Check out the vibrant tech community on one of the world's most
+> engaging tech sites, Slashdot.org! http://sdm.link/slashdot
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+>
+>
+
+--001a11441ffc00b01a0552dd5499
+Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On 26/06/17 15:21, David Sommerseth wrote:
-> On 26/06/17 14:12, Arne Schwabe wrote:
->> Am 26.06.17 um 13:51 schrieb David Sommerseth:
->>> On 26/06/17 13:13, Arne Schwabe wrote:
->>>> OpenSSL 1.1 does not allow MD5 signed certificates by default anymore.=
- This can be enabled again by settings tls-cipher "DEFAULT:@SECLEVEL=3D0" b=
-ut only if the cipher list is set before loading the certificates. This pat=
-ch changes the order of loading.
->>>
->>> I'm not fully convinced of the argumentation for this feature - unless
->>> something have changed in OpenSSL 1.1.  I believe the same can be
->>> achieved by setting an environment variable before starting OpenVPN.
->>>
->>>   $ OPENSSL_ENABLE_MD5_VERIFY=3D1 /usr/sbin/openvpn ....
->>>
->>> I know several Fedora users have deployed this, even when systemd is
->>> involved.  This is needed on systems with OpenSSL 1.0 as well when they
->>> connect to a server having an MD5 based certificate or signed by a CA
->>> with an MD5 based certificate.
->>>
->>> So unless OpenSSL 1.1 have changed this behaviour from OpenSSL 1.0, I'm
->>> not really convinced we need this.
->>>
->>>
->>
->> See this also a bugfix. Since tls-cipher options affect certificate
->> loading, it is good to set it before certificate loading. E.g. you might
->> want to use @SECLEVEL=3D5 to only allow loading of SHA256 based certific=
-ates.
-Oh, btw ... We need to align this with another patch-set from Steffan.
-There is a feature we have in OpenVPN 3 and the proposed patches from
-Steffan which adds --tls-cert-profile.  This is aimed at controlling
-what kind of TLS security parameters which is required.
+<div dir=3D"ltr"><br><div class=3D"gmail_extra"><br><div class=3D"gmail_quo=
+te">2017-05-31 22:54 GMT+05:00 Selva Nair <span dir=3D"ltr">&lt;<a href=3D"=
+mailto:selva.nair@...277..." target=3D"_blank">selva.nair@...277...</a>&gt;=
+</span>:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;bo=
+rder-left:1px #ccc solid;padding-left:1ex"><div dir=3D"ltr"><div class=3D"g=
+mail_extra">Hi,<br></div><div class=3D"gmail_extra"><br></div><div class=3D=
+"gmail_extra">Copying openvpn-devel:</div><div class=3D"gmail_extra">As thi=
+s is related to openvpn best to have this discussion in the devel list, I s=
+uppose.=C2=A0<br><div class=3D"gmail_quote">(see also:=C2=A0<a href=3D"http=
+s://github.com/OpenVPN/openvpn-gui/issues/168#issuecomment-305250704" targe=
+t=3D"_blank">https://github.com/<wbr>OpenVPN/openvpn-gui/issues/<wbr>168#is=
+suecomment-305250704</a>)</div><span class=3D""><div class=3D"gmail_quote">=
+<br></div><div class=3D"gmail_quote">On Wed, May 31, 2017 at 12:58 PM, Gert=
+ Doering <span dir=3D"ltr">&lt;<a href=3D"mailto:notifications@...1714..." =
+target=3D"_blank">notifications@...1714...</a>&gt;</span> wrote:<br><blockq=
+uote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left-wi=
+dth:1px;border-left-color:rgb(204,204,204);border-left-style:solid;padding-=
+left:1ex"><div id=3D"m_-2263706883911241230gmail-m_-6518952545098238565m_85=
+20566217958298647:2n" class=3D"m_-2263706883911241230gmail-m_-6518952545098=
+238565m_8520566217958298647a3s m_-2263706883911241230gmail-m_-6518952545098=
+238565m_8520566217958298647aXjCH m_-2263706883911241230gmail-m_-65189525450=
+98238565m_8520566217958298647m15c5f719c883a87f">On Wed, May 31, 2017 at 09:=
+43:21AM -0700, Selva Nair wrote:<br>
+&gt; As I said, get openvpn to report route errors in the status and then w=
+e can<br>
+&gt; add a warning to the status popup, turn the icon red etc instead of th=
+e<br>
+&gt; current misleading &quot;successfully connected&quot; behaviour.<br>
+<br>
+This is actually a discussion I was trying to have a long time ago<br>
+(a few years) - &quot;why do we ignore route addition errors?&quot;.  <br>
+<br>
+The IPv6 code doesn&#39;t (because I think that errors are errors, not <br>
+warnings...) and that was always some sort of weird asymmetry...<br>
+<br>
+I still don&#39;t know the reasoning here, but I suspect it&#39;s something=
+ along<br>
+&quot;you push a route that is identical to the local subnet&quot; (<a href=
+=3D"http://192.168.1.0/24" target=3D"_blank">192.168.1.0/24</a>,<br>
+for example, because the user happens to be in a bad NAT network) and <br>
+&quot;all of a sudden it fails&quot;...  so this might need more discussion=
+, and<br>
+also some code cleanups to gracefully handle situations where an error<br>
+is &quot;tolerated&quot;.</div></blockquote></div><div class=3D"gmail_extra=
+"><br></div></span><div class=3D"gmail_extra">That and some route addition =
+errors like &quot;route already exists&quot; are often benign. So a fatal e=
+rror is not appropriate. But, IIRC, =C2=A0openvpn_execve_check only allows =
+printing of errors as FATAL or WARN. Currently we do not parse the log mess=
+age flags (error vs warning etc.) in the Windows GUI, but that could be imp=
+roved if openvpn can log route errors like access denied as such.</div><div=
+ class=3D"gmail_extra"><br></div>In any case, the status reported to the ma=
+nagement when connected with errors should be something other than &quot;CO=
+NNECTED,SUCCESS&quot; -- say &quot;CONNECTED,ROUTE-FAILED&quot; etc. so tha=
+t =C2=A0UI can intimate the user.</div><span class=3D"HOEnZb"><font color=
+=3D"#888888"><div class=3D"gmail_extra"><br></div><div class=3D"gmail_extra=
+">Selva</div></font></span></div></blockquote><div><br></div><div>I want to=
+ bring it to attention again.<br></div><div>actually, there&#39;re couple o=
+f things<br><br></div><div>a) should &quot;ipv4 route manipulation failure&=
+quot; be fatal<br></div><div>b) how to signal (and handle) those failures w=
+ithin openvpn-gui<br><br></div><div><br>=C2=A0</div><blockquote class=3D"gm=
+ail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-le=
+ft:1ex">
+<br>------------------------------<wbr>------------------------------<wbr>-=
+-----------------<br>
+Check out the vibrant tech community on one of the world&#39;s most<br>
+engaging tech sites, Slashdot.org! <a href=3D"http://sdm.link/slashdot" rel=
+=3D"noreferrer" target=3D"_blank">http://sdm.link/slashdot</a><br>_________=
+_____________________<wbr>_________________<br>
+Openvpn-devel mailing list<br>
+<a href=3D"mailto:Openvpn-devel@lists.sourceforge.net">Openvpn-devel@...2155...=
+9...<wbr>sourceforge.net</a><br>
+<a href=3D"https://lists.sourceforge.net/lists/listinfo/openvpn-devel" rel=
+=3D"noreferrer" target=3D"_blank">https://lists.sourceforge.net/<wbr>lists/=
+listinfo/openvpn-devel</a><br>
+<br></blockquote></div><br></div></div>
 
-Currently there is an agreement of the following profiles:
-
-  - legacy: SHA1 and newer, RSA 2048-bit+, any elliptic curve.
-  - preferred: SHA2 and newer, RSA 2048-bit+, any elliptic curve.
-               (default in v2.5)
-  - suiteb: SHA256/SHA384, ECDSA with P-256 or P-384.
-
-The mbed TLS definition of these profiles in OpenVPN 3 is like this.
-
-  const mbedtls_x509_crt_profile crt_profile_legacy =3D // CONST GLOBAL
-        {
-          MBEDTLS_X509_ID_FLAG( MBEDTLS_MD_SHA1 ) |
-          MBEDTLS_X509_ID_FLAG( MBEDTLS_MD_RIPEMD160 ) |
-          MBEDTLS_X509_ID_FLAG( MBEDTLS_MD_SHA224 ) |
-          MBEDTLS_X509_ID_FLAG( MBEDTLS_MD_SHA256 ) |
-          MBEDTLS_X509_ID_FLAG( MBEDTLS_MD_SHA384 ) |
-          MBEDTLS_X509_ID_FLAG( MBEDTLS_MD_SHA512 ),
-          0xFFFFFFF, /* Any PK alg    */
-          0xFFFFFFF, /* Any curve     */
-          1024,      /* Minimum size for RSA keys */
-        };
-
-  const mbedtls_x509_crt_profile crt_profile_preferred =3D // CONST GLOBAL
-        {
-          MBEDTLS_X509_ID_FLAG( MBEDTLS_MD_SHA256 ) |
-          MBEDTLS_X509_ID_FLAG( MBEDTLS_MD_SHA384 ) |
-          MBEDTLS_X509_ID_FLAG( MBEDTLS_MD_SHA512 ),
-          0xFFFFFFF, /* Any PK alg    */
-          0xFFFFFFF, /* Any curve     */
-          2048,      /* Minimum size for RSA keys */
-        };
-
-
-The suiteb profile is just reusing the mbed TLS definition directly.
-
-With that said ... The legacy profile does not include MD5.  So either
-we allow MD5 into the legacy profile; or we need legacy-md5.
-
-
---=20
-kind regards,
-
-David Sommerseth
-OpenVPN Technologies, Inc
-
-
-
---MN97IGipan3VVn9DHjvHKKoR4jPse9mQD--
-
---HmiUvefiUxmUgiPtNjwGksSU1toDnhmrA
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBCgAGBQJZUQ1YAAoJEIbPlEyWcf3yi7sP/1LOBWp4JRdbI/fit8WeYguR
-VB+k6wvqaR0ckvbZ3tB9zZqoDp8cauo4/i1zpe+fGmQTU4oPkF8lpc06tlUVQRm5
-RA4lPichmtM2GfNOFctOD4qe/Wr/QFSZz8xX3F9Of0se5LXkBs26jMoUyOO+hJ1f
-yms2MV9zOIkJWjK4gUjTIfRIq1ahRXa3HZ38pUNbs15bIuL3cmBsN3r/7xZCsUPM
-4KDbtj9+fRHF/Y9x4N+xaPoc6xnvKZujodtW1pbGRhd+u2zenx/6BqickxQpsFXI
-U6RzSdttYdbW+ODPKdq8/dk26EDCG8REKUPfaA/RC3rvsRaJCEJMN5VNPDNfOHUX
-NKDhdo23PSZtoaommfWI2hMeGzjcmvuqLUtLW5fsL4iYFAUgaRg/wujIuN/BO+bK
-mifbdxlEKF+dRe7UYVCtNxa9ixNQEgo7MWyEWbM2LBEQDKZAAHyEi5n/1SWlqNAT
-WvTkpbz4KXrzuz3Et+nUqUmHam3CBhqtECZ6mzobgjusu6whCmpSmCEszo+TqnoT
-EdZyS8sOYIjQvuY32KSk0JOKmMYMMErTLHPFotvsRv2cm9nUOrtLPJpWyR87cNIS
-Fw7uJyHD2BpoUyPQ25K1/9WOlgxnr3H5o8des+5eFISnrfRB9WyV0kZp8/q3BBO7
-5yt5e3jWjV+DMYWuk5Mx
-=GCO1
------END PGP SIGNATURE-----
-
---HmiUvefiUxmUgiPtNjwGksSU1toDnhmrA--
+--001a11441ffc00b01a0552dd5499--
 
