@@ -1,10 +1,8 @@
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <60ed4f7c-3fad-3569-87f6-c40a653bee33@...515...>
-Date: Mon, 26 Jun 2017 14:26:21 +0300
-MIME-Version: 1.0
-Content-Language: en-US
-Subject: [Openvpn-devel] New maintainer(s) wanted for Debian's OpenVPN
- packages
+From: Arne Schwabe <arne@...1227...>
+Date: Mon, 26 Jun 2017 13:13:26 +0200
+Message-Id: <1498475606-8337-1-git-send-email-arne@...1227...>
+Subject: [Openvpn-devel] [PATCH] Set tls-cipher restriction before loading
+ certificates
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,28 +12,41 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-Hi all,
+OpenSSL 1.1 does not allow MD5 signed certificates by default anymore. This can be enabled again by settings tls-cipher "DEFAULT:@SECLEVEL=0" but only if the cipher list is set before loading the certificates. This patch changes the order of loading.
+---
+ src/openvpn/ssl.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-Alberto Gonzales Iniesta ("agi") is, after 15 years of excellent work,
-letting others take over maintainance of Debian's OpenVPN packages[1]:
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 29280dce..9ca300c0 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -616,6 +616,11 @@ init_ssl(const struct options *options, struct tls_root_ctx *new_ctx)
+         tls_ctx_client_new(new_ctx);
+     }
+ 
++    /* Allowable ciphers */
++    /* Since @SECLEVEL also influces loading of certificates, set the
++     * cipher restrictions before loading certificates */
++    tls_ctx_restrict_ciphers(new_ctx, options->cipher_list);
++
+     tls_ctx_set_options(new_ctx, options->ssl_flags);
+ 
+     if (options->pkcs12_file)
+@@ -708,9 +713,6 @@ init_ssl(const struct options *options, struct tls_root_ctx *new_ctx)
+         tls_ctx_load_ecdh_params(new_ctx, options->ecdh_curve);
+     }
+ 
+-    /* Allowable ciphers */
+-    tls_ctx_restrict_ciphers(new_ctx, options->cipher_list);
+-
+ #ifdef ENABLE_CRYPTO_MBEDTLS
+     /* Personalise the random by mixing in the certificate */
+     tls_ctx_personalise_random(new_ctx);
+-- 
+2.11.0 (Apple Git-81)
 
-<https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=3D865555>
-
-If you're interested in maintaining (or co-maintaining) OpenVPN packages
-on Debian, please comment in the above bug report.
-
-Thank you Alberto for all the work you've put into OpenVPN!
-
---=20
-Samuli Sepp=C3=A4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
-
-[1] Not to be confused with OpenVPN project's Debian packages which are
-maintained by me.
 
