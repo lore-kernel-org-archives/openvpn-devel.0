@@ -1,10 +1,10 @@
-Date: Tue, 27 Jun 2017 19:58:47 +0200 (CEST)
-Message-Id: <201706271758.v5RHwldp034515@...2054...>
+Date: Tue, 27 Jun 2017 20:11:21 +0200 (CEST)
+Message-Id: <201706271811.v5RIBLH0035604@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1498475606-8337-1-git-send-email-arne@...1227...>
-References: <1498475606-8337-1-git-send-email-arne@...1227...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Set tls-cipher restriction
- before loading certificates
+In-Reply-To: <1497873065-2229-1-git-send-email-steffan.karger@...1435...>
+References: <1497873065-2229-1-git-send-email-steffan.karger@...1435...>
+Subject: [Openvpn-devel] [PATCH applied] Re: init_key_ctx: key and iv
+ arguments can (now) be const
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,22 +15,21 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
+To: Steffan Karger <steffan.karger@...1435...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master and release/2.4 branch.
+Your patch has been applied to the master branch.
 
-commit 26345ba61b8d5bccb1331894ab6d1468e3b09adf (master)
-commit 95c07b13ce112ceb8b15175fcae0d95c70e93eee (release/2.4)
-Author: Arne Schwabe
-Date:   Mon Jun 26 13:13:26 2017 +0200
+commit 5e6e4b7d21150ea2f0738948d5a9bd0c7d910e1a
+Author: Steffan Karger
+Date:   Mon Jun 19 13:51:05 2017 +0200
 
-     Set tls-cipher restriction before loading certificates
+     init_key_ctx: key and iv arguments can (now) be const
 
-     Acked-by: Christian Hesse <list@...1798...>
-     Acked-by: Steffan Karger <steffan.karger@...1435...>
-     Message-Id: <1498475606-8337-1-git-send-email-arne@...1227...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg14961.html
+     Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+     Acked-by: Antonio Quartulli <antonio@...515...>
+     Message-Id: <1497873065-2229-1-git-send-email-steffan.karger@...1435...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg14881.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
