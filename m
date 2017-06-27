@@ -1,16 +1,10 @@
-Date: Tue, 27 Jun 2017 21:08:08 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20170627190808.GZ97029@...1296...>
-References: <1497897488-15999-1-git-send-email-chipitsine@...277...>
-	<201706211957.v5LJv8M1076904@...2054...>
-	<fe23e999-4d93-f90a-674e-3bd608497fba@...1856...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="p/Yi3qgMZoap51CI"
-Content-Disposition: inline
-In-Reply-To: <fe23e999-4d93-f90a-674e-3bd608497fba@...1856...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: travis-ci: added gcc and
- clang openssl-1.1.0 builds
+From: Steffan Karger <steffan@...1856...>
+Date: Wed, 28 Jun 2017 00:20:29 +0200
+Message-Id: <20170627222029.26623-1-steffan@...1856...>
+In-Reply-To: <20170627172948.GX97029@...1296...>
+References: <20170627172948.GX97029@...1296...>
+Subject: [Openvpn-devel] [PATCH v2] Undo cipher push in client options state
+ if cipher is rejected
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,59 +13,65 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan@...1856...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---p/Yi3qgMZoap51CI
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Because of the way we re-use the options parser for both config files and
+pushed options, we always update the local options state when we accept an
+option.  This resulted in a pushed cipher being rejected the first time it
+was pushed, but being accepted the second time.
 
-Hi,
+This patch is a minimal way to resolve this issue in the master and
+release/2.4 branches.  I'll send a more invasive patch for master, to
+reset the entire options state on reconnects, later.
 
-On Wed, Jun 21, 2017 at 10:50:00PM +0200, Steffan Karger wrote:
-> The following have to be cherry-picked (just tested, works without fuzz):
->=20
-> 56e6bd8967d72c4374389dfd5cf32f5e3b86242c
-> 81ba70b39b78d7677aabab957421264800028f53
-> aeac1139a34321a7f770ca20bfef886a21a89fe9
+Trac: #906
 
-I have done this, and squashed them into a single commit for simplicity
-(but keeping the original URL and Message-IDs).
+Signed-off-by: Steffan Karger <steffan@...1856...>
+---
+v2 - send the _entire_ patch, not just 1 hunk...
 
-commit 5852a035b444a41140a7fc7007b7df718a2e6c43 (HEAD -> release/2.4)
-Author: Ilya Shipitsin <chipitsine@...277...>
-Date:   Sat Feb 25 23:00:04 2017 +0500
+ src/openvpn/ssl.c | 4 +++-
+ src/openvpn/ssl.h | 2 +-
+ 2 files changed, 4 insertions(+), 2 deletions(-)
 
-    travis-ci: add 3 missing patches from master to release/2.4
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index bbc1c965..f868457e 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -1958,7 +1958,7 @@ cleanup:
+ 
+ bool
+ tls_session_update_crypto_params(struct tls_session *session,
+-                                 const struct options *options, struct frame *frame)
++                                 struct options *options, struct frame *frame)
+ {
+     if (!session->opt->server
+         && 0 != strcmp(options->ciphername, session->opt->config_ciphername)
+@@ -1967,6 +1967,8 @@ tls_session_update_crypto_params(struct tls_session *session,
+         msg(D_TLS_ERRORS, "Error: pushed cipher not allowed - %s not in %s or %s",
+             options->ciphername, session->opt->config_ciphername,
+             options->ncp_ciphers);
++        /* undo cipher push, abort connection setup */
++        options->ciphername = session->opt->config_ciphername;
+         return false;
+     }
+ 
+diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
+index 56ea6013..0e0f68fa 100644
+--- a/src/openvpn/ssl.h
++++ b/src/openvpn/ssl.h
+@@ -481,7 +481,7 @@ void tls_update_remote_addr(struct tls_multi *multi,
+  * @return true if updating succeeded, false otherwise.
+  */
+ bool tls_session_update_crypto_params(struct tls_session *session,
+-                                      const struct options *options, struct frame *frame);
++                                      struct options *options, struct frame *frame);
+ 
+ /**
+  * "Poor man's NCP": Use peer cipher if it is an allowed (NCP) cipher.
+-- 
+2.11.0
 
-
-"Testing infrastructure only, no code changes"
-
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---p/Yi3qgMZoap51CI
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJZUq0XAAoJEB2Cnv7KVigSVlkMAKTS/yj7WfOBu/ZYZu/m/qc1
-Ez3saF6LgtUHbHZEQ3T2SwHE/UI+ucdFkRvToFU8S7YN/isqXSybsqm5Y/CschCU
-Qx55UjUpsG2fVPopa/IzzspS5pqBKZKBC13iEZ32kpYDBjXIIvzw+Xyall1yKaeX
-3+vUbUaJtaUStAV6Uz6OTLE+RYz1mIPQx0WZ7+HYjK+rP6YwgdiUY7sdM+dMGdMH
-nrv3a+3rUpnGNINtr0+Q5yiXojYqIhwssFO5Ehmo2bicu/BWrG+moeE9hL6cRns3
-5vAJWkACDooEJzbt6evSJWLSMyHGtyORuLRb63mnZZGVD6nAZxYuzZNjXDKWAUUQ
-qaecm50ERskgjbUSSFo4cGWA9pP8SjOSd8maT8UFi7UqV4g1qn9LW01wMF2QGWJD
-dp4ZzLn4kSdjZKQKXpfGxkzGHelndvXMftSEKtPnpX3AMscGfCXnCli2eVpqwEBt
-J3KAirE+Kpvui5adHRMhUK6VR13TxjkqLTlKB7cT0g==
-=tWU9
------END PGP SIGNATURE-----
-
---p/Yi3qgMZoap51CI--
 
