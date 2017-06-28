@@ -1,10 +1,8 @@
-From: Steffan Karger <steffan@...1856...>
-Date: Wed, 28 Jun 2017 00:20:29 +0200
-Message-Id: <20170627222029.26623-1-steffan@...1856...>
-In-Reply-To: <20170627172948.GX97029@...1296...>
-References: <20170627172948.GX97029@...1296...>
-Subject: [Openvpn-devel] [PATCH v2] Undo cipher push in client options state
- if cipher is rejected
+From: David Sommerseth <davids@...515...>
+Date: Wed, 28 Jun 2017 21:15:38 +0200
+Message-Id: <20170628191538.9135-1-davids@...515...>
+Subject: [Openvpn-devel] [PATCH] doc: The CRL processing is not a deprecated
+ feature
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,60 +15,52 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Because of the way we re-use the options parser for both config files and
-pushed options, we always update the local options state when we accept an
-option.  This resulted in a pushed cipher being rejected the first time it
-was pushed, but being accepted the second time.
+The note related to the CRL processing was somehow put into
+the deprecated section.  This is quite confusing.
 
-This patch is a minimal way to resolve this issue in the master and
-release/2.4 branches.  I'll send a more invasive patch for master, to
-reset the entire options state on reconnects, later.
+Since this is a fairly important change, and there have been
+a noticable amount of supports questions related to OpenVPN
+not starting due to CRL errors, I put this into the
+"New features" section labelled as an improvement.  Otherwise
+I fear this would drown in the list of "User-visible Changes"
+later on.
 
-Trac: #906
-
-Signed-off-by: Steffan Karger <steffan@...1856...>
+Signed-off-by: David Sommerseth <davids@...515...>
 ---
-v2 - send the _entire_ patch, not just 1 hunk...
+ Changes.rst | 13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
 
- src/openvpn/ssl.c | 4 +++-
- src/openvpn/ssl.h | 2 +-
- 2 files changed, 4 insertions(+), 2 deletions(-)
-
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index bbc1c965..f868457e 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -1958,7 +1958,7 @@ cleanup:
+diff --git a/Changes.rst b/Changes.rst
+index 9db0a451..0b2b04dd 100644
+--- a/Changes.rst
++++ b/Changes.rst
+@@ -44,6 +44,13 @@ ECDH key exchange
+     The TLS control channel now supports for elliptic curve diffie-hellmann
+     key exchange (ECDH).
  
- bool
- tls_session_update_crypto_params(struct tls_session *session,
--                                 const struct options *options, struct frame *frame)
-+                                 struct options *options, struct frame *frame)
- {
-     if (!session->opt->server
-         && 0 != strcmp(options->ciphername, session->opt->config_ciphername)
-@@ -1967,6 +1967,8 @@ tls_session_update_crypto_params(struct tls_session *session,
-         msg(D_TLS_ERRORS, "Error: pushed cipher not allowed - %s not in %s or %s",
-             options->ciphername, session->opt->config_ciphername,
-             options->ncp_ciphers);
-+        /* undo cipher push, abort connection setup */
-+        options->ciphername = session->opt->config_ciphername;
-         return false;
-     }
++Improved Certificate Revocation List (CRL) processing
++    CRLs are now handled by the crypto library (OpenSSL or mbed TLS), instead
++    of inside OpenVPN itself.  The crypto library implementations are more
++    strict than the OpenVPN implementation was.  This might reject peer
++    certificates that would previously be accepted.  If this occurs, OpenVPN
++    will log the crypto library's error description.
++
+ Dualstack round-robin DNS client connect
+     Instead of only using the first address of each ``--remote`` OpenVPN
+     will now try all addresses (IPv6 and IPv4) of a ``--remote`` entry.
+@@ -160,12 +167,6 @@ Deprecated features
+   will then use ``--key-method 2`` by default.  Note that this requires changing
+   the option in both the client and server side configs.
  
-diff --git a/src/openvpn/ssl.h b/src/openvpn/ssl.h
-index 56ea6013..0e0f68fa 100644
---- a/src/openvpn/ssl.h
-+++ b/src/openvpn/ssl.h
-@@ -481,7 +481,7 @@ void tls_update_remote_addr(struct tls_multi *multi,
-  * @return true if updating succeeded, false otherwise.
-  */
- bool tls_session_update_crypto_params(struct tls_session *session,
--                                      const struct options *options, struct frame *frame);
-+                                      struct options *options, struct frame *frame);
- 
- /**
-  * "Poor man's NCP": Use peer cipher if it is an allowed (NCP) cipher.
+-- CRLs are now handled by the crypto library (OpenSSL or mbed TLS), instead of
+-  inside OpenVPN itself.  The crypto library implementations are more strict
+-  than the OpenVPN implementation was.  This might reject peer certificates
+-  that would previously be accepted.  If this occurs, OpenVPN will log the
+-  crypto library's error description.
+-
+ - ``--tls-remote`` is removed in 2.4, as indicated in the 2.3 man-pages.  Similar
+   functionality is provided via ``--verify-x509-name``, which does the same job in
+   a better way.
 -- 
 2.11.0
 
