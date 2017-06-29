@@ -1,13 +1,12 @@
 References: <20170629142119.29502-1-logout@...260...>
-	<20170629142119.29502-2-logout@...260...>
 From: Steffan Karger <steffan@...1856...>
-Message-ID: <76fb2205-ceed-063e-f751-40fa8056f0b3@...1856...>
-Date: Thu, 29 Jun 2017 19:34:51 +0200
+Message-ID: <c8dd4caf-a318-252e-8dfc-7d8c662fb633@...1856...>
+Date: Thu, 29 Jun 2017 19:35:09 +0200
 MIME-Version: 1.0
-In-Reply-To: <20170629142119.29502-2-logout@...260...>
+In-Reply-To: <20170629142119.29502-1-logout@...260...>
 Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH 2/2] OpenSSL: remove
- EVP_CIPHER_CTX_free() from the compat layer
+Subject: Re: [Openvpn-devel] [PATCH 1/2] OpenSSL: remove
+ EVP_CIPHER_CTX_new() from the compat layer
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -33,39 +32,41 @@ On 29-06-17 16:21, Emmanuel Deloget wrote:
 > Signed-off-by: Emmanuel Deloget <logout@...260...>
 > ---
 >  configure.ac                 |  1 -
->  src/openvpn/openssl_compat.h | 13 -------------
->  2 files changed, 14 deletions(-)
+>  src/openvpn/openssl_compat.h | 15 ---------------
+>  2 files changed, 16 deletions(-)
 > 
 > diff --git a/configure.ac b/configure.ac
-> index cb121795..60bb4658 100644
+> index 22f91cb6..cb121795 100644
 > --- a/configure.ac
 > +++ b/configure.ac
 > @@ -919,7 +919,6 @@ if test "${enable_crypto}" = "yes" -a "${with_crypto_library}" = "openssl"; then
 >  
 >  	AC_CHECK_FUNCS(
 >  		[ \
-> -			EVP_CIPHER_CTX_free \
+> -			EVP_CIPHER_CTX_new \
+>  			EVP_CIPHER_CTX_free \
 >  			HMAC_CTX_new \
 >  			HMAC_CTX_free \
->  			HMAC_CTX_reset \
 > diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h
-> index cd25bd37..36f68b01 100644
+> index 617410e0..cd25bd37 100644
 > --- a/src/openvpn/openssl_compat.h
 > +++ b/src/openvpn/openssl_compat.h
-> @@ -88,19 +88,6 @@ EVP_MD_CTX_new(void)
+> @@ -101,21 +101,6 @@ EVP_CIPHER_CTX_free(EVP_CIPHER_CTX *c)
 >  }
 >  #endif
 >  
-> -#if !defined(HAVE_EVP_CIPHER_CTX_FREE)
+> -#if !defined(HAVE_EVP_CIPHER_CTX_NEW)
 > -/**
-> - * Free an existing cipher context
+> - * Allocate a new cipher context object
 > - *
-> - * @param ctx                 The cipher context
+> - * @return                    A zero'ed cipher context object
 > - */
-> -static inline void
-> -EVP_CIPHER_CTX_free(EVP_CIPHER_CTX *c)
+> -static inline EVP_CIPHER_CTX *
+> -EVP_CIPHER_CTX_new(void)
 > -{
-> -	free(c);
+> -    EVP_CIPHER_CTX *ctx = NULL;
+> -    ALLOC_OBJ_CLEAR(ctx, EVP_CIPHER_CTX);
+> -    return ctx;
 > -}
 > -#endif
 > -
