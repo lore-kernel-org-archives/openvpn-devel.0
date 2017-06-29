@@ -1,12 +1,11 @@
-References: <20170629142119.29502-1-logout@...260...>
+References: <1498683921-432-1-git-send-email-arne@...1227...>
 From: Steffan Karger <steffan@...1856...>
-Message-ID: <c8dd4caf-a318-252e-8dfc-7d8c662fb633@...1856...>
-Date: Thu, 29 Jun 2017 19:35:09 +0200
+Message-ID: <d7604f16-8385-f0de-9d87-77d954a3c0cc@...1856...>
+Date: Thu, 29 Jun 2017 19:52:39 +0200
 MIME-Version: 1.0
-In-Reply-To: <20170629142119.29502-1-logout@...260...>
+In-Reply-To: <1498683921-432-1-git-send-email-arne@...1227...>
 Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH 1/2] OpenSSL: remove
- EVP_CIPHER_CTX_new() from the compat layer
+Subject: Re: [Openvpn-devel] [PATCH] show the right string for key-direction
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,69 +15,36 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Hi,
 
-On 29-06-17 16:21, Emmanuel Deloget wrote:
-> For unknown reason, the write of the compat layer seemed to think that
-> this function was only present in OpenSSL 1.1. This is not the case at
-> all, since it has been introduced in OpenSSL before version 0.9.8.
-> 
-> Thus, there is no need to add this function to the compat layer, and it
-> can be safely removed.
-> 
-> Signed-off-by: Emmanuel Deloget <logout@...260...>
+On 28-06-17 23:05, Arne Schwabe wrote:
 > ---
->  configure.ac                 |  1 -
->  src/openvpn/openssl_compat.h | 15 ---------------
->  2 files changed, 16 deletions(-)
+>  src/openvpn/options.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> diff --git a/configure.ac b/configure.ac
-> index 22f91cb6..cb121795 100644
-> --- a/configure.ac
-> +++ b/configure.ac
-> @@ -919,7 +919,6 @@ if test "${enable_crypto}" = "yes" -a "${with_crypto_library}" = "openssl"; then
+> diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+> index 61af6e3a..d8049e76 100644
+> --- a/src/openvpn/options.c
+> +++ b/src/openvpn/options.c
+> @@ -1697,7 +1697,7 @@ show_settings(const struct options *o)
 >  
->  	AC_CHECK_FUNCS(
->  		[ \
-> -			EVP_CIPHER_CTX_new \
->  			EVP_CIPHER_CTX_free \
->  			HMAC_CTX_new \
->  			HMAC_CTX_free \
-> diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h
-> index 617410e0..cd25bd37 100644
-> --- a/src/openvpn/openssl_compat.h
-> +++ b/src/openvpn/openssl_compat.h
-> @@ -101,21 +101,6 @@ EVP_CIPHER_CTX_free(EVP_CIPHER_CTX *c)
->  }
->  #endif
->  
-> -#if !defined(HAVE_EVP_CIPHER_CTX_NEW)
-> -/**
-> - * Allocate a new cipher context object
-> - *
-> - * @return                    A zero'ed cipher context object
-> - */
-> -static inline EVP_CIPHER_CTX *
-> -EVP_CIPHER_CTX_new(void)
-> -{
-> -    EVP_CIPHER_CTX *ctx = NULL;
-> -    ALLOC_OBJ_CLEAR(ctx, EVP_CIPHER_CTX);
-> -    return ctx;
-> -}
-> -#endif
-> -
->  #if !defined(HAVE_HMAC_CTX_RESET)
->  /**
->   * Reset a HMAC context
+>  #ifdef ENABLE_CRYPTO
+>      SHOW_STR(shared_secret_file);
+> -    SHOW_INT(key_direction);
+> +    SHOW_PARM(key_direction, keydirection2ascii(o->key_direction, false), "%s");
+>      SHOW_STR(ciphername);
+>      SHOW_BOOL(ncp_enabled);
+>      SHOW_STR(ncp_ciphers);
 > 
 
-For some reason, the reviewer seemed to think this author was right
-about that.  He should crearly have looked a bit better...
+Makes sense, but keydirection2acrii() can return NULL, which technically
+is undefined behaviour as input for a %s format string specifier...
 
-ACK
+I know it's slightly lame, but still think either keydirection2ascii
+should always return a valid string, or this needs to wrapped in a np()
+call.
 
 -Steffan
 
