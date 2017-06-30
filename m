@@ -1,10 +1,10 @@
-Date: Thu, 29 Jun 2017 20:47:17 +0200 (CEST)
-Message-Id: <201706291847.v5TIlHL3057055@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20170628191538.9135-1-davids@...515...>
-References: <20170628191538.9135-1-davids@...515...>
-Subject: [Openvpn-devel] [PATCH applied] Re: doc: The CRL processing is not
- a deprecated feature
+From: Bernhard Schmidt <berni@...376...>
+Date: Fri, 30 Jun 2017 08:30:05 +0000 (UTC)
+Message-ID: <oj526d$ai7$1@...2213...>
+References: <60ed4f7c-3fad-3569-87f6-c40a653bee33@...515...>
+Mime-Version: 1.0
+Subject: Re: [Openvpn-devel] New maintainer(s) wanted for Debian's OpenVPN
+ packages
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,28 +15,46 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: David Sommerseth <davids@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Your patch has been applied to the master and release/2.4 branch.
+Samuli Seppänen <samuli@...515...> wrote:
 
-commit f9ebfe1b5a011e55fb87a5026b1897c8ffb8f75e (master)
-commit 67e3f0280937757ce716211829c82c3795d21ad1 (release/2.4)
-Author: David Sommerseth
-Date:   Wed Jun 28 21:15:38 2017 +0200
+Hi everyone,
 
-     doc: The CRL processing is not a deprecated feature
+> Alberto Gonzales Iniesta ("agi") is, after 15 years of excellent work,
+> letting others take over maintainance of Debian's OpenVPN packages[1]:
+>
+><https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=865555>
+>
+> If you're interested in maintaining (or co-maintaining) OpenVPN packages
+> on Debian, please comment in the above bug report.
 
-     Signed-off-by: David Sommerseth <davids@...515...>
-     Acked-by: Steffan Karger <steffan.karger@...1435...>
-     Message-Id: <20170628191538.9135-1-davids@...515...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg14985.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+Jörg Frings-Fürst and me have taken over maintainership of OpenVPN in
+Debian. Thanks to Alberto for the maintainership in the last decade.
 
+We will slowly wade through the open bugs. There are a couple of things
+in the pipeline already (updated debian specific systemd units, build
+against OpenSSL 1.1.0, ...), and we will try to keep up with new
+upstream releases when they happen.
 
---
-kind regards,
+I'd like to remind here that Debian has a strict policy for updating
+packages in stable. We will not ever update the upstream release within
+stable, so Debian 9 (stretch) will stay on OpenVPN 2.4.0.
 
-Gert Doering
+Security bugs will be fixed through applying individual patches from the
+2.4-branch on top of 2.4.0.
+
+We can fix major annoyances or usability issues in Debian stable point
+releases (approx. every 2-4 months), if they can be fixed by backporting
+commits from the git repo on top of 2.4.0. If you have something like
+this feel free to drop us a note (or even better, file a bug in the
+Debian BTS).
+
+We'll have a look at Samuli's source package within the next weeks and
+try to reduce the diff between Debian and his packages as much as
+possible.
+
+Best Regards,
+Bernhard
 
 
