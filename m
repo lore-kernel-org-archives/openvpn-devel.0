@@ -1,7 +1,7 @@
 From: Steffan Karger <steffan@...1856...>
-Date: Sat,  1 Jul 2017 13:22:08 +0200
-Message-Id: <20170701112208.18803-1-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH] Deprecate --no-replay
+Date: Sat,  1 Jul 2017 13:29:51 +0200
+Message-Id: <20170701112951.19119-1-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH] Deprecate --keysize
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,79 +14,59 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Following the removal of --no-iv, and as suggested by both recent audits
-(and done by OpenVPN-NL for 7 years now), it's time to get rid of the
---no-replay option.
-
-The only valid use case I can imagine is to slightly reduce the per-packet
-overhead for setups that do not use any authentication mechanism, but I
-do not believe that warrants keeping an option around that generally
-reduces security and makes our code more complex.
+The --keysize option can only be used with already deprecated ciphers,
+such as CAST5, RC2 or BF.  Deviating from the default keysize is
+generally not a good idea (see man page text), and otherwise only
+complicates our code.
 
 (If this patch is accepted, I'll send a follow-up patch to remove the
 option from the master branch.)
 
 Signed-off-by: Steffan Karger <steffan@...1856...>
 ---
- Changes.rst           | 8 ++++++++
+ Changes.rst           | 1 +
  doc/openvpn.8         | 4 ++++
- src/openvpn/options.c | 7 ++++++-
- 3 files changed, 18 insertions(+), 1 deletion(-)
+ src/openvpn/options.c | 5 +++++
+ 3 files changed, 10 insertions(+)
 
 diff --git a/Changes.rst b/Changes.rst
-index 0b2b04dd..39d83a2d 100644
+index 39d83a2d..fdb56752 100644
 --- a/Changes.rst
 +++ b/Changes.rst
-@@ -306,6 +306,14 @@ Maintainer-visible changes
-   i386/i686 builds on RHEL5.
+@@ -313,6 +313,7 @@ Deprecated features
+ -------------------
+ - ``--no-replay`` is deprecated and will be removed in OpenVPN 2.5.
  
++- ``--keysize`` is deprecated and will be removed in OpenVPN 2.5.
  
-+Version 2.4.4
-+=============
-+
-+Deprecated features
-+-------------------
-+- ``--no-replay`` is deprecated and will be removed in OpenVPN 2.5.
-+
-+
  Version 2.4.3
  =============
- 
 diff --git a/doc/openvpn.8 b/doc/openvpn.8
-index 20bdd91b..3600b8fa 100644
+index 3600b8fa..c373c2af 100644
 --- a/doc/openvpn.8
 +++ b/doc/openvpn.8
-@@ -4257,6 +4257,10 @@ supported by OpenSSL.
+@@ -4217,6 +4217,10 @@ negotiation.
  .\"*********************************************************
  .TP
- .B \-\-no\-replay
+ .B \-\-keysize n
 +
 +.B DEPRECATED
 +This option will be removed in OpenVPN 2.5.
 +
- (Advanced) Disable OpenVPN's protection against replay attacks.
- Don't use this option unless you are prepared to make
- a tradeoff of greater efficiency in exchange for less
+ Size of cipher key in bits (optional).
+ If unspecified, defaults to cipher-specific default.  The
+ .B \-\-show\-ciphers
 diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index a84878ef..5246cb5a 100644
+index 5246cb5a..95fdcc77 100644
 --- a/src/openvpn/options.c
 +++ b/src/openvpn/options.c
-@@ -545,7 +545,7 @@ static const char usage_message[] =
- #ifndef ENABLE_CRYPTO_MBEDTLS
-     "--engine [name] : Enable OpenSSL hardware crypto engine functionality.\n"
- #endif
--    "--no-replay     : Disable replay protection.\n"
-+    "--no-replay     : (DEPRECATED) Disable replay protection.\n"
-     "--mute-replay-warnings : Silence the output of replay warnings to log file.\n"
-     "--replay-window n [t]  : Use a replay protection sliding window of size n\n"
-     "                         and a time window of t seconds.\n"
-@@ -2484,6 +2484,11 @@ options_postprocess_verify_ce(const struct options *options, const struct connec
-         msg(M_USAGE, "NCP cipher list contains unsupported ciphers.");
+@@ -2489,6 +2489,11 @@ options_postprocess_verify_ce(const struct options *options, const struct connec
+         msg(M_WARN, "WARNING: --no-replay is DEPRECATED and will be removed in 2.5");
      }
  
-+    if (!options->replay)
++    if (options->keysize)
 +    {
-+        msg(M_WARN, "WARNING: --no-replay is DEPRECATED and will be removed in 2.5");
++        msg(M_WARN, "WARNING: --keysize is DEPRECATED and will be removed in 2.5");
 +    }
 +
      /*
