@@ -1,7 +1,9 @@
-From: Steffan Karger <steffan@...1856...>
-Date: Sat,  1 Jul 2017 13:29:51 +0200
-Message-Id: <20170701112951.19119-1-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH] Deprecate --keysize
+From: Steffan Karger <steffan.karger@...1435...>
+Date: Sat, 1 Jul 2017 14:53:58 +0200
+Message-ID: <1498913642-32459-1-git-send-email-steffan.karger@...1435...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH 1/5] buffer_list_aggregate_separator(): add
+ unit tests
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,65 +16,221 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-The --keysize option can only be used with already deprecated ciphers,
-such as CAST5, RC2 or BF.  Deviating from the default keysize is
-generally not a good idea (see man page text), and otherwise only
-complicates our code.
+Before refactoring this function, add tests to verify the new
+implementation.
 
-(If this patch is accepted, I'll send a follow-up patch to remove the
-option from the master branch.)
+While writing the tests, it became clear that this function is not
+behaving very well.  We'll fix that in follow-up commits.
 
-Signed-off-by: Steffan Karger <steffan@...1856...>
+Signed-off-by: Steffan Karger <steffan.karger@...1435...>
 ---
- Changes.rst           | 1 +
- doc/openvpn.8         | 4 ++++
- src/openvpn/options.c | 5 +++++
- 3 files changed, 10 insertions(+)
+ tests/unit_tests/openvpn/test_buffer.c | 181 ++++++++++++++++++++++++++++++++-
+ 1 file changed, 179 insertions(+), 2 deletions(-)
 
-diff --git a/Changes.rst b/Changes.rst
-index 39d83a2d..fdb56752 100644
---- a/Changes.rst
-+++ b/Changes.rst
-@@ -313,6 +313,7 @@ Deprecated features
- -------------------
- - ``--no-replay`` is deprecated and will be removed in OpenVPN 2.5.
+diff --git a/tests/unit_tests/openvpn/test_buffer.c b/tests/unit_tests/openvpn/test_buffer.c
+index 69bb2e5..acfeb1a 100644
+--- a/tests/unit_tests/openvpn/test_buffer.c
++++ b/tests/unit_tests/openvpn/test_buffer.c
+@@ -35,7 +35,7 @@
+ #include "buffer.h"
  
-+- ``--keysize`` is deprecated and will be removed in OpenVPN 2.5.
+ static void
+-buffer_strprefix(void **state)
++test_buffer_strprefix(void **state)
+ {
+     assert_true(strprefix("123456", "123456"));
+     assert_true(strprefix("123456", "123"));
+@@ -44,11 +44,188 @@ buffer_strprefix(void **state)
+     assert_false(strprefix("12", "123"));
+ }
  
- Version 2.4.3
- =============
-diff --git a/doc/openvpn.8 b/doc/openvpn.8
-index 3600b8fa..c373c2af 100644
---- a/doc/openvpn.8
-+++ b/doc/openvpn.8
-@@ -4217,6 +4217,10 @@ negotiation.
- .\"*********************************************************
- .TP
- .B \-\-keysize n
++#define testsep ","
++#define testnosep ""
++#define teststr1 "one"
++#define teststr2 "two"
++#define teststr3 "three"
++#define teststr4 "four"
 +
-+.B DEPRECATED
-+This option will be removed in OpenVPN 2.5.
++struct test_buffer_list_aggregate_ctx {
++    struct buffer_list *empty;
++    struct buffer_list *one_two_three;
++    struct buffer_list *zero_length_strings;
++    struct buffer_list *empty_buffers;
++};
 +
- Size of cipher key in bits (optional).
- If unspecified, defaults to cipher-specific default.  The
- .B \-\-show\-ciphers
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 5246cb5a..95fdcc77 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -2489,6 +2489,11 @@ options_postprocess_verify_ce(const struct options *options, const struct connec
-         msg(M_WARN, "WARNING: --no-replay is DEPRECATED and will be removed in 2.5");
-     }
++static int test_buffer_list_setup(void **state)
++{
++    struct test_buffer_list_aggregate_ctx *ctx  = calloc(1, sizeof(*ctx));
++    ctx->empty = buffer_list_new(0);
++
++    ctx->one_two_three = buffer_list_new(3);
++    buffer_list_push(ctx->one_two_three, teststr1);
++    buffer_list_push(ctx->one_two_three, teststr2);
++    buffer_list_push(ctx->one_two_three, teststr3);
++
++    ctx->zero_length_strings = buffer_list_new(2);
++    buffer_list_push(ctx->zero_length_strings, "");
++    buffer_list_push(ctx->zero_length_strings, "");
++
++    ctx->empty_buffers = buffer_list_new(2);
++    uint8_t *data1 = malloc(1);
++    uint8_t *data2 = malloc(1);
++    buffer_list_push_data(ctx->empty_buffers, data1, 0);
++    buffer_list_push_data(ctx->empty_buffers, data2, 0);
++
++    *state = ctx;
++    return 0;
++}
++
++static int test_buffer_list_teardown(void **state)
++{
++    struct test_buffer_list_aggregate_ctx *ctx = *state;
++
++    buffer_list_free(ctx->empty);
++    buffer_list_free(ctx->one_two_three);
++    buffer_list_free(ctx->zero_length_strings);
++    buffer_list_free(ctx->empty_buffers);
++    free(ctx);
++    return 0;
++}
++
++static void
++test_buffer_list_full(void **state)
++{
++    struct test_buffer_list_aggregate_ctx *ctx = *state;
++
++    /* list full */
++    assert_int_equal(ctx->one_two_three->size, 3);
++    buffer_list_push(ctx->one_two_three, teststr4);
++    assert_int_equal(ctx->one_two_three->size, 3);
++}
++
++static void
++test_buffer_list_aggregate_separator_empty(void **state)
++{
++    struct test_buffer_list_aggregate_ctx *ctx = *state;
++
++    /* aggregating an empty buffer list results in an empty buffer list */
++    buffer_list_aggregate_separator(ctx->empty, 3, testsep);
++    assert_null(ctx->empty->head);
++}
++
++static void
++test_buffer_list_aggregate_separator_noop(void **state)
++{
++    struct test_buffer_list_aggregate_ctx *ctx = *state;
++
++    /* With a max length of 2, no aggregation should take place */
++    buffer_list_aggregate_separator(ctx->one_two_three, 2, testsep);
++    assert_int_equal(ctx->one_two_three->size, 3);
++    struct buffer *buf = buffer_list_peek(ctx->one_two_three);
++    assert_string_equal((const char *)buf->data, teststr1);
++}
++
++static void
++test_buffer_list_aggregate_separator_two(void **state)
++{
++    struct test_buffer_list_aggregate_ctx *ctx = *state;
++
++    /* Aggregate the first two elements */
++    /* FIXME this exceeds the supplied max */
++    buffer_list_aggregate_separator(ctx->one_two_three, 4, testsep);
++    /* FIXME size does not get adjusted after aggregating */
++    assert_int_equal(ctx->one_two_three->size, 3);
++    struct buffer *buf = buffer_list_peek(ctx->one_two_three);
++    assert_string_equal((const char *)buf->data,
++                        teststr1 testsep teststr2 testsep);
++}
++
++static void
++test_buffer_list_aggregate_separator_all(void **state)
++{
++    struct test_buffer_list_aggregate_ctx *ctx = *state;
++
++    /* Aggregate all */
++    buffer_list_aggregate_separator(ctx->one_two_three, 1<<16, testsep);
++    /* FIXME size does not get adjusted after aggregating */
++    assert_int_equal(ctx->one_two_three->size, 3);
++    struct buffer *buf = buffer_list_peek(ctx->one_two_three);
++    assert_string_equal((const char *)buf->data,
++                        teststr1 testsep teststr2 testsep teststr3 testsep);
++}
++
++static void
++test_buffer_list_aggregate_separator_nosep(void **state)
++{
++    struct test_buffer_list_aggregate_ctx *ctx = *state;
++
++    /* Aggregate all */
++    buffer_list_aggregate_separator(ctx->one_two_three, 1<<16, testnosep);
++    /* FIXME size does not get adjusted after aggregating */
++    assert_int_equal(ctx->one_two_three->size, 3);
++    struct buffer *buf = buffer_list_peek(ctx->one_two_three);
++    assert_string_equal((const char *)buf->data, teststr1 teststr2 teststr3);
++}
++
++static void
++test_buffer_list_aggregate_separator_zerolen(void **state)
++{
++    struct test_buffer_list_aggregate_ctx *ctx = *state;
++    struct buffer_list *bl_zerolen = ctx->zero_length_strings;
++
++    /* Aggregate all */
++    buffer_list_aggregate_separator(bl_zerolen, 1<<16, testnosep);
++    /* FIXME size does not get adjusted after aggregating */
++    assert_int_equal(bl_zerolen->size, 2);
++    struct buffer *buf = buffer_list_peek(bl_zerolen);
++    assert_string_equal((const char *)buf->data, "");
++}
++
++static void
++test_buffer_list_aggregate_separator_emptybuffers(void **state)
++{
++    struct test_buffer_list_aggregate_ctx *ctx = *state;
++    struct buffer_list *bl_emptybuffers = ctx->empty_buffers;
++
++    /* Aggregate all */
++    buffer_list_aggregate_separator(bl_emptybuffers, 1<<16, testnosep);
++    /* FIXME size does not get adjusted after aggregating */
++    assert_int_equal(bl_emptybuffers->size, 2);
++    struct buffer *buf = buffer_list_peek(bl_emptybuffers);
++    assert_int_equal(BLEN(buf), 0);
++}
++
+ int
+ main(void)
+ {
+     const struct CMUnitTest tests[] = {
+-        cmocka_unit_test(buffer_strprefix),
++        cmocka_unit_test(test_buffer_strprefix),
++        cmocka_unit_test_setup_teardown(test_buffer_list_full,
++                                        test_buffer_list_setup,
++                                        test_buffer_list_teardown),
++        cmocka_unit_test_setup_teardown(test_buffer_list_aggregate_separator_empty,
++                                        test_buffer_list_setup,
++                                        test_buffer_list_teardown),
++        cmocka_unit_test_setup_teardown(test_buffer_list_aggregate_separator_noop,
++                                        test_buffer_list_setup,
++                                        test_buffer_list_teardown),
++        cmocka_unit_test_setup_teardown(test_buffer_list_aggregate_separator_two,
++                                        test_buffer_list_setup,
++                                        test_buffer_list_teardown),
++        cmocka_unit_test_setup_teardown(test_buffer_list_aggregate_separator_all,
++                                        test_buffer_list_setup,
++                                        test_buffer_list_teardown),
++        cmocka_unit_test_setup_teardown(test_buffer_list_aggregate_separator_nosep,
++                                        test_buffer_list_setup,
++                                        test_buffer_list_teardown),
++        cmocka_unit_test_setup_teardown(test_buffer_list_aggregate_separator_zerolen,
++                                        test_buffer_list_setup,
++                                        test_buffer_list_teardown),
++        cmocka_unit_test_setup_teardown(test_buffer_list_aggregate_separator_emptybuffers,
++                                        test_buffer_list_setup,
++                                        test_buffer_list_teardown),
+     };
  
-+    if (options->keysize)
-+    {
-+        msg(M_WARN, "WARNING: --keysize is DEPRECATED and will be removed in 2.5");
-+    }
-+
-     /*
-      * Check consistency of replay options
-      */
+     return cmocka_run_group_tests_name("buffer", tests, NULL, NULL);
 -- 
-2.11.0
+2.7.4
 
 
