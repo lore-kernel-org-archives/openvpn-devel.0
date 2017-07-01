@@ -1,9 +1,11 @@
 From: Steffan Karger <steffan.karger@...1435...>
-Date: Sat, 1 Jul 2017 14:53:58 +0200
-Message-ID: <1498913642-32459-1-git-send-email-steffan.karger@...1435...>
+Date: Sat, 1 Jul 2017 14:54:00 +0200
+Message-ID: <1498913642-32459-3-git-send-email-steffan.karger@...1435...>
+In-Reply-To: <1498913642-32459-1-git-send-email-steffan.karger@...1435...>
+References: <1498913642-32459-1-git-send-email-steffan.karger@...1435...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 1/5] buffer_list_aggregate_separator(): add
- unit tests
+Subject: [Openvpn-devel] [PATCH 3/5] buffer_list_aggregate_separator():
+ don't exceed max_len
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,220 +18,92 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Before refactoring this function, add tests to verify the new
-implementation.
-
-While writing the tests, it became clear that this function is not
-behaving very well.  We'll fix that in follow-up commits.
+buffer_list_aggregate_separator() would merge buffer_list entries until it
+had exceeded the provided max_len, instead of stopping *before* exceeding
+the max value.
 
 Signed-off-by: Steffan Karger <steffan.karger@...1435...>
 ---
- tests/unit_tests/openvpn/test_buffer.c | 181 ++++++++++++++++++++++++++++++++-
- 1 file changed, 179 insertions(+), 2 deletions(-)
+ src/openvpn/buffer.c                   | 17 +++++++++++++----
+ src/openvpn/buffer.h                   |  2 +-
+ tests/unit_tests/openvpn/test_buffer.c | 12 +++++++-----
+ 3 files changed, 21 insertions(+), 10 deletions(-)
 
-diff --git a/tests/unit_tests/openvpn/test_buffer.c b/tests/unit_tests/openvpn/test_buffer.c
-index 69bb2e5..acfeb1a 100644
---- a/tests/unit_tests/openvpn/test_buffer.c
-+++ b/tests/unit_tests/openvpn/test_buffer.c
-@@ -35,7 +35,7 @@
- #include "buffer.h"
- 
- static void
--buffer_strprefix(void **state)
-+test_buffer_strprefix(void **state)
- {
-     assert_true(strprefix("123456", "123456"));
-     assert_true(strprefix("123456", "123"));
-@@ -44,11 +44,188 @@ buffer_strprefix(void **state)
-     assert_false(strprefix("12", "123"));
+diff --git a/src/openvpn/buffer.c b/src/openvpn/buffer.c
+index 1cc2957..2700ad1 100644
+--- a/src/openvpn/buffer.c
++++ b/src/openvpn/buffer.c
+@@ -1231,7 +1231,8 @@ buffer_list_peek(struct buffer_list *ol)
  }
  
-+#define testsep ","
-+#define testnosep ""
-+#define teststr1 "one"
-+#define teststr2 "two"
-+#define teststr3 "three"
-+#define teststr4 "four"
-+
-+struct test_buffer_list_aggregate_ctx {
-+    struct buffer_list *empty;
-+    struct buffer_list *one_two_three;
-+    struct buffer_list *zero_length_strings;
-+    struct buffer_list *empty_buffers;
-+};
-+
-+static int test_buffer_list_setup(void **state)
-+{
-+    struct test_buffer_list_aggregate_ctx *ctx  = calloc(1, sizeof(*ctx));
-+    ctx->empty = buffer_list_new(0);
-+
-+    ctx->one_two_three = buffer_list_new(3);
-+    buffer_list_push(ctx->one_two_three, teststr1);
-+    buffer_list_push(ctx->one_two_three, teststr2);
-+    buffer_list_push(ctx->one_two_three, teststr3);
-+
-+    ctx->zero_length_strings = buffer_list_new(2);
-+    buffer_list_push(ctx->zero_length_strings, "");
-+    buffer_list_push(ctx->zero_length_strings, "");
-+
-+    ctx->empty_buffers = buffer_list_new(2);
-+    uint8_t *data1 = malloc(1);
-+    uint8_t *data2 = malloc(1);
-+    buffer_list_push_data(ctx->empty_buffers, data1, 0);
-+    buffer_list_push_data(ctx->empty_buffers, data2, 0);
-+
-+    *state = ctx;
-+    return 0;
-+}
-+
-+static int test_buffer_list_teardown(void **state)
-+{
-+    struct test_buffer_list_aggregate_ctx *ctx = *state;
-+
-+    buffer_list_free(ctx->empty);
-+    buffer_list_free(ctx->one_two_three);
-+    buffer_list_free(ctx->zero_length_strings);
-+    buffer_list_free(ctx->empty_buffers);
-+    free(ctx);
-+    return 0;
-+}
-+
-+static void
-+test_buffer_list_full(void **state)
-+{
-+    struct test_buffer_list_aggregate_ctx *ctx = *state;
-+
-+    /* list full */
-+    assert_int_equal(ctx->one_two_three->size, 3);
-+    buffer_list_push(ctx->one_two_three, teststr4);
-+    assert_int_equal(ctx->one_two_three->size, 3);
-+}
-+
-+static void
-+test_buffer_list_aggregate_separator_empty(void **state)
-+{
-+    struct test_buffer_list_aggregate_ctx *ctx = *state;
-+
-+    /* aggregating an empty buffer list results in an empty buffer list */
-+    buffer_list_aggregate_separator(ctx->empty, 3, testsep);
-+    assert_null(ctx->empty->head);
-+}
-+
-+static void
-+test_buffer_list_aggregate_separator_noop(void **state)
-+{
-+    struct test_buffer_list_aggregate_ctx *ctx = *state;
-+
-+    /* With a max length of 2, no aggregation should take place */
-+    buffer_list_aggregate_separator(ctx->one_two_three, 2, testsep);
-+    assert_int_equal(ctx->one_two_three->size, 3);
-+    struct buffer *buf = buffer_list_peek(ctx->one_two_three);
-+    assert_string_equal((const char *)buf->data, teststr1);
-+}
-+
-+static void
-+test_buffer_list_aggregate_separator_two(void **state)
-+{
-+    struct test_buffer_list_aggregate_ctx *ctx = *state;
-+
-+    /* Aggregate the first two elements */
-+    /* FIXME this exceeds the supplied max */
-+    buffer_list_aggregate_separator(ctx->one_two_three, 4, testsep);
-+    /* FIXME size does not get adjusted after aggregating */
-+    assert_int_equal(ctx->one_two_three->size, 3);
-+    struct buffer *buf = buffer_list_peek(ctx->one_two_three);
-+    assert_string_equal((const char *)buf->data,
-+                        teststr1 testsep teststr2 testsep);
-+}
-+
-+static void
-+test_buffer_list_aggregate_separator_all(void **state)
-+{
-+    struct test_buffer_list_aggregate_ctx *ctx = *state;
-+
-+    /* Aggregate all */
-+    buffer_list_aggregate_separator(ctx->one_two_three, 1<<16, testsep);
-+    /* FIXME size does not get adjusted after aggregating */
-+    assert_int_equal(ctx->one_two_three->size, 3);
-+    struct buffer *buf = buffer_list_peek(ctx->one_two_three);
-+    assert_string_equal((const char *)buf->data,
-+                        teststr1 testsep teststr2 testsep teststr3 testsep);
-+}
-+
-+static void
-+test_buffer_list_aggregate_separator_nosep(void **state)
-+{
-+    struct test_buffer_list_aggregate_ctx *ctx = *state;
-+
-+    /* Aggregate all */
-+    buffer_list_aggregate_separator(ctx->one_two_three, 1<<16, testnosep);
-+    /* FIXME size does not get adjusted after aggregating */
-+    assert_int_equal(ctx->one_two_three->size, 3);
-+    struct buffer *buf = buffer_list_peek(ctx->one_two_three);
-+    assert_string_equal((const char *)buf->data, teststr1 teststr2 teststr3);
-+}
-+
-+static void
-+test_buffer_list_aggregate_separator_zerolen(void **state)
-+{
-+    struct test_buffer_list_aggregate_ctx *ctx = *state;
-+    struct buffer_list *bl_zerolen = ctx->zero_length_strings;
-+
-+    /* Aggregate all */
-+    buffer_list_aggregate_separator(bl_zerolen, 1<<16, testnosep);
-+    /* FIXME size does not get adjusted after aggregating */
-+    assert_int_equal(bl_zerolen->size, 2);
-+    struct buffer *buf = buffer_list_peek(bl_zerolen);
-+    assert_string_equal((const char *)buf->data, "");
-+}
-+
-+static void
-+test_buffer_list_aggregate_separator_emptybuffers(void **state)
-+{
-+    struct test_buffer_list_aggregate_ctx *ctx = *state;
-+    struct buffer_list *bl_emptybuffers = ctx->empty_buffers;
-+
-+    /* Aggregate all */
-+    buffer_list_aggregate_separator(bl_emptybuffers, 1<<16, testnosep);
-+    /* FIXME size does not get adjusted after aggregating */
-+    assert_int_equal(bl_emptybuffers->size, 2);
-+    struct buffer *buf = buffer_list_peek(bl_emptybuffers);
-+    assert_int_equal(BLEN(buf), 0);
-+}
-+
- int
- main(void)
+ void
+-buffer_list_aggregate_separator(struct buffer_list *bl, const size_t max, const char *sep)
++buffer_list_aggregate_separator(struct buffer_list *bl, const size_t max_len,
++                                const char *sep)
  {
-     const struct CMUnitTest tests[] = {
--        cmocka_unit_test(buffer_strprefix),
-+        cmocka_unit_test(test_buffer_strprefix),
-+        cmocka_unit_test_setup_teardown(test_buffer_list_full,
-+                                        test_buffer_list_setup,
-+                                        test_buffer_list_teardown),
-+        cmocka_unit_test_setup_teardown(test_buffer_list_aggregate_separator_empty,
-+                                        test_buffer_list_setup,
-+                                        test_buffer_list_teardown),
-+        cmocka_unit_test_setup_teardown(test_buffer_list_aggregate_separator_noop,
-+                                        test_buffer_list_setup,
-+                                        test_buffer_list_teardown),
-+        cmocka_unit_test_setup_teardown(test_buffer_list_aggregate_separator_two,
-+                                        test_buffer_list_setup,
-+                                        test_buffer_list_teardown),
-+        cmocka_unit_test_setup_teardown(test_buffer_list_aggregate_separator_all,
-+                                        test_buffer_list_setup,
-+                                        test_buffer_list_teardown),
-+        cmocka_unit_test_setup_teardown(test_buffer_list_aggregate_separator_nosep,
-+                                        test_buffer_list_setup,
-+                                        test_buffer_list_teardown),
-+        cmocka_unit_test_setup_teardown(test_buffer_list_aggregate_separator_zerolen,
-+                                        test_buffer_list_setup,
-+                                        test_buffer_list_teardown),
-+        cmocka_unit_test_setup_teardown(test_buffer_list_aggregate_separator_emptybuffers,
-+                                        test_buffer_list_setup,
-+                                        test_buffer_list_teardown),
-     };
+     int sep_len = strlen(sep);
  
-     return cmocka_run_group_tests_name("buffer", tests, NULL, NULL);
+@@ -1240,10 +1241,18 @@ buffer_list_aggregate_separator(struct buffer_list *bl, const size_t max, const
+         struct buffer_entry *more = bl->head;
+         size_t size = 0;
+         int count = 0;
+-        for (count = 0; more && size <= max; ++count)
++        for (count = 0; more; ++count)
+         {
+-            size += BLEN(&more->buf) + sep_len;
+-            more = more->next;
++            size_t extra_len = BLEN(&more->buf) + sep_len;
++            if (size + extra_len <= max_len)
++            {
++                size += extra_len;
++                more = more->next;
++            }
++            else
++            {
++                break;
++            }
+         }
+ 
+         if (count >= 2)
+diff --git a/src/openvpn/buffer.h b/src/openvpn/buffer.h
+index 8bc4428..019e606 100644
+--- a/src/openvpn/buffer.h
++++ b/src/openvpn/buffer.h
+@@ -1102,7 +1102,7 @@ void buffer_list_pop(struct buffer_list *ol);
+ 
+ void buffer_list_aggregate(struct buffer_list *bl, const size_t max);
+ 
+-void buffer_list_aggregate_separator(struct buffer_list *bl, const size_t max, const char *sep);
++void buffer_list_aggregate_separator(struct buffer_list *bl, const size_t max_len, const char *sep);
+ 
+ struct buffer_list *buffer_list_file(const char *fn, int max_line_len);
+ 
+diff --git a/tests/unit_tests/openvpn/test_buffer.c b/tests/unit_tests/openvpn/test_buffer.c
+index 6842114..8b2575f 100644
+--- a/tests/unit_tests/openvpn/test_buffer.c
++++ b/tests/unit_tests/openvpn/test_buffer.c
+@@ -131,14 +131,16 @@ static void
+ test_buffer_list_aggregate_separator_two(void **state)
+ {
+     struct test_buffer_list_aggregate_ctx *ctx = *state;
++    const char *expected = teststr1 testsep teststr2 testsep;
+ 
+-    /* Aggregate the first two elements */
+-    /* FIXME this exceeds the supplied max */
+-    buffer_list_aggregate_separator(ctx->one_two_three, 4, testsep);
++    /* Aggregate the first two elements
++     * (add 1 to max_len to test if "three" is not sneaked in too)
++     */
++    buffer_list_aggregate_separator(ctx->one_two_three, strlen(expected)+1,
++                                    testsep);
+     assert_int_equal(ctx->one_two_three->size, 2);
+     struct buffer *buf = buffer_list_peek(ctx->one_two_three);
+-    assert_string_equal((const char *)buf->data,
+-                        teststr1 testsep teststr2 testsep);
++    assert_string_equal((const char *)buf->data, expected);
+ }
+ 
+ static void
 -- 
 2.7.4
 
