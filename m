@@ -1,11 +1,11 @@
 From: Steffan Karger <steffan.karger@...1435...>
-Date: Sat, 1 Jul 2017 14:53:59 +0200
-Message-ID: <1498913642-32459-2-git-send-email-steffan.karger@...1435...>
+Date: Sat, 1 Jul 2017 14:54:02 +0200
+Message-ID: <1498913642-32459-5-git-send-email-steffan.karger@...1435...>
 In-Reply-To: <1498913642-32459-1-git-send-email-steffan.karger@...1435...>
 References: <1498913642-32459-1-git-send-email-steffan.karger@...1435...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 2/5] buffer_list_aggregate_separator():
- update list size after aggregating
+Subject: [Openvpn-devel] [PATCH 5/5] buffer_list_aggregate_separator():
+ simplify code
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,79 +18,105 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-After aggregating a buffer_list, the size should be adjusted accordingly.
+Clean up the function by slightly simplifying the logic.
+
+Mostly witespace changes, so best reviewed using 'git diff -w'.
 
 Signed-off-by: Steffan Karger <steffan.karger@...1435...>
 ---
- src/openvpn/buffer.c                   |  1 +
- tests/unit_tests/openvpn/test_buffer.c | 15 +++++----------
- 2 files changed, 6 insertions(+), 10 deletions(-)
+ src/openvpn/buffer.c | 75 ++++++++++++++++++++++++----------------------------
+ 1 file changed, 35 insertions(+), 40 deletions(-)
 
 diff --git a/src/openvpn/buffer.c b/src/openvpn/buffer.c
-index 87e27ec..1cc2957 100644
+index ecbdc1b..abb2342 100644
 --- a/src/openvpn/buffer.c
 +++ b/src/openvpn/buffer.c
-@@ -1265,6 +1265,7 @@ buffer_list_aggregate_separator(struct buffer_list *bl, const size_t max, const
-                 e = next;
-             }
-             bl->head = f;
-+            bl->size -= count-1;
-             f->next = more;
-             if (!more)
-             {
-diff --git a/tests/unit_tests/openvpn/test_buffer.c b/tests/unit_tests/openvpn/test_buffer.c
-index acfeb1a..6842114 100644
---- a/tests/unit_tests/openvpn/test_buffer.c
-+++ b/tests/unit_tests/openvpn/test_buffer.c
-@@ -135,8 +135,7 @@ test_buffer_list_aggregate_separator_two(void **state)
-     /* Aggregate the first two elements */
-     /* FIXME this exceeds the supplied max */
-     buffer_list_aggregate_separator(ctx->one_two_three, 4, testsep);
--    /* FIXME size does not get adjusted after aggregating */
--    assert_int_equal(ctx->one_two_three->size, 3);
-+    assert_int_equal(ctx->one_two_three->size, 2);
-     struct buffer *buf = buffer_list_peek(ctx->one_two_three);
-     assert_string_equal((const char *)buf->data,
-                         teststr1 testsep teststr2 testsep);
-@@ -149,8 +148,7 @@ test_buffer_list_aggregate_separator_all(void **state)
+@@ -1234,51 +1234,46 @@ void
+ buffer_list_aggregate_separator(struct buffer_list *bl, const size_t max_len,
+                                 const char *sep)
+ {
+-    int sep_len = strlen(sep);
++    const int sep_len = strlen(sep);
++    struct buffer_entry *more = bl->head;
++    size_t size = 0;
++    int count = 0;
++    for (count = 0; more; ++count)
++    {
++        size_t extra_len = BLEN(&more->buf) + sep_len;
++        if (size + extra_len <= max_len)
++        {
++            size += extra_len;
++            more = more->next;
++        }
++        else
++        {
++            break;
++        }
++    }
  
-     /* Aggregate all */
-     buffer_list_aggregate_separator(ctx->one_two_three, 1<<16, testsep);
--    /* FIXME size does not get adjusted after aggregating */
--    assert_int_equal(ctx->one_two_three->size, 3);
-+    assert_int_equal(ctx->one_two_three->size, 1);
-     struct buffer *buf = buffer_list_peek(ctx->one_two_three);
-     assert_string_equal((const char *)buf->data,
-                         teststr1 testsep teststr2 testsep teststr3 testsep);
-@@ -163,8 +161,7 @@ test_buffer_list_aggregate_separator_nosep(void **state)
- 
-     /* Aggregate all */
-     buffer_list_aggregate_separator(ctx->one_two_three, 1<<16, testnosep);
--    /* FIXME size does not get adjusted after aggregating */
--    assert_int_equal(ctx->one_two_three->size, 3);
-+    assert_int_equal(ctx->one_two_three->size, 1);
-     struct buffer *buf = buffer_list_peek(ctx->one_two_three);
-     assert_string_equal((const char *)buf->data, teststr1 teststr2 teststr3);
- }
-@@ -177,8 +174,7 @@ test_buffer_list_aggregate_separator_zerolen(void **state)
- 
-     /* Aggregate all */
-     buffer_list_aggregate_separator(bl_zerolen, 1<<16, testnosep);
--    /* FIXME size does not get adjusted after aggregating */
--    assert_int_equal(bl_zerolen->size, 2);
-+    assert_int_equal(bl_zerolen->size, 1);
-     struct buffer *buf = buffer_list_peek(bl_zerolen);
-     assert_string_equal((const char *)buf->data, "");
- }
-@@ -191,8 +187,7 @@ test_buffer_list_aggregate_separator_emptybuffers(void **state)
- 
-     /* Aggregate all */
-     buffer_list_aggregate_separator(bl_emptybuffers, 1<<16, testnosep);
--    /* FIXME size does not get adjusted after aggregating */
--    assert_int_equal(bl_emptybuffers->size, 2);
-+    assert_int_equal(bl_emptybuffers->size, 1);
-     struct buffer *buf = buffer_list_peek(bl_emptybuffers);
-     assert_int_equal(BLEN(buf), 0);
+-    if (bl->head)
++    if (count >= 2)
+     {
+-        struct buffer_entry *more = bl->head;
+-        size_t size = 0;
+-        int count = 0;
+-        for (count = 0; more; ++count)
++        struct buffer_entry *f;
++        ALLOC_OBJ_CLEAR(f, struct buffer_entry);
++        f->buf = alloc_buf(size+1); /* prevent 0-byte malloc */
++
++        struct buffer_entry *e = bl->head;
++        for (size_t i = 0; e && i < count; ++i)
+         {
+-            size_t extra_len = BLEN(&more->buf) + sep_len;
+-            if (size + extra_len <= max_len)
+-            {
+-                size += extra_len;
+-                more = more->next;
+-            }
+-            else
+-            {
+-                break;
+-            }
++            struct buffer_entry *next = e->next;
++            buf_copy(&f->buf, &e->buf);
++            buf_write(&f->buf, sep, sep_len);
++            free_buf(&e->buf);
++            free(e);
++            e = next;
+         }
+-
+-        if (count >= 2)
++        bl->head = f;
++        bl->size -= count-1;
++        f->next = more;
++        if (!more)
+         {
+-            int i;
+-            struct buffer_entry *e = bl->head, *f;
+-
+-            ALLOC_OBJ_CLEAR(f, struct buffer_entry);
+-            f->buf = alloc_buf(size+1); /* prevent 0-byte malloc */
+-            f->buf.capacity = size;
+-            for (i = 0; e && i < count; ++i)
+-            {
+-                struct buffer_entry *next = e->next;
+-                buf_copy(&f->buf, &e->buf);
+-                buf_write(&f->buf, sep, sep_len);
+-                free_buf(&e->buf);
+-                free(e);
+-                e = next;
+-            }
+-            bl->head = f;
+-            bl->size -= count-1;
+-            f->next = more;
+-            if (!more)
+-            {
+-                bl->tail = f;
+-            }
++            bl->tail = f;
+         }
+     }
  }
 -- 
 2.7.4
