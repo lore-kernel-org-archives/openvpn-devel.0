@@ -1,11 +1,12 @@
-References: <20170707195941.61773-1-thomas.veerman@...1862...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <e243395d-f494-0262-fd29-2759391d907c@...1227...>
-Date: Fri, 7 Jul 2017 23:01:14 +0200
+References: <20170707102238.8781-1-a@...2181...>
+From: Steffan Karger <steffan@...1856...>
+Message-ID: <ee98edb4-79df-26e0-ed2b-9b04eefacb70@...1856...>
+Date: Fri, 7 Jul 2017 23:01:22 +0200
 MIME-Version: 1.0
-In-Reply-To: <20170707195941.61773-1-thomas.veerman@...1862...>
-Subject: Re: [Openvpn-devel] [PATCH] Fix socks_proxy_port pointing to
- invalid data
+In-Reply-To: <20170707102238.8781-1-a@...2181...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH] tls-crypt: avoid warnings when
+ --disable-crypto is used
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,37 +15,53 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
-To: Thomas Veerman <thomas.veerman@...1862...>, openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Am 07.07.17 um 21:59 schrieb Thomas Veerman via Openvpn-devel:
-> When setting the SOCKS proxy through the management interface, the
-> socks_proxy_port pointer would be set to a value that's no longer valid
-> by the time it's used by do_preresolve_host.
+Hi,
+
+On 07-07-17 12:22, Antonio Quartulli wrote:
+> From: Antonio Quartulli <antonio@...515...>
 > 
-> Signed-off-by: Thomas Veerman <thomas.veerman@...1862...>
+> Avoid including the content of tls_crypt.h when --disable-crypto
+> is used, as it will trigger some warnings due to missing
+> structures declarations.
+> 
+> Signed-off-by: Antonio Quartulli <antonio@...515...>
 > ---
->  src/openvpn/init.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-> index a54307ad..80a8f5fa 100644
-> --- a/src/openvpn/init.c
-> +++ b/src/openvpn/init.c
-> @@ -150,7 +150,7 @@ management_callback_proxy_cmd(void *arg, const char **p)
->          else if (streq(p[1], "SOCKS"))
->          {
->              ce->socks_proxy_server = string_alloc(p[2], gc);
-> -            ce->socks_proxy_port = p[3];
-> +            ce->socks_proxy_port = string_alloc(p[3], gc);
->              ret = true;
->          }
->      }
+> - also checked via travis-ci.org
+> 
+>  src/openvpn/tls_crypt.h | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+> diff --git a/src/openvpn/tls_crypt.h b/src/openvpn/tls_crypt.h
+> index e8080df9..4071ac94 100644
+> --- a/src/openvpn/tls_crypt.h
+> +++ b/src/openvpn/tls_crypt.h
+> @@ -74,6 +74,8 @@
+>  #ifndef TLSCRYPT_H
+>  #define TLSCRYPT_H
+>  
+> +#ifdef ENABLE_CRYPTO
+> +
+>  #include "buffer.h"
+>  #include "crypto.h"
+>  #include "session_id.h"
+> @@ -140,4 +142,6 @@ bool tls_crypt_unwrap(const struct buffer *src, struct buffer *dst,
+>  
+>  /** @} */
+>  
+> +#endif /* ENABLE_CRYPTO */
+> +
+>  #endif /* TLSCRYPT_H */
 > 
 
+ACK
 
-ACK. Probably my fault, when I changed that from int to string.
+(This is quite similar to the fix I have in my tls-crypt-v2 tree:
+https://github.com/syzzer/openvpn/commit/ba30a88e, so can't agree more ;-) )
 
-Arne
+-Steffan
 
