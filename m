@@ -1,10 +1,10 @@
-From: Steven Haigh <netwiz@...2277...>
-Date: Sat, 08 Jul 2017 02:27:08 +1000
-Message-ID: <3012771.c7NFhoKYci@...2289...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="nextPart2061514.rZSe0U6Upi";
-	micalg="pgp-sha256"; protocol="application/pgp-signature"
-Subject: [Openvpn-devel] RFCv2: Yubikey authentication for OpenVPN
+In-Reply-To: <1499355218-21120-1-git-send-email-arne@...1227...>
+References: <1499355218-21120-1-git-send-email-arne@...1227...>
+From: "Jonathan K. Bullard" <jkbullard@...277...>
+Date: Fri, 7 Jul 2017 14:11:05 -0400
+Message-ID: <CAEsd45TcQP9BDxyV+k+UXJUoZ7ZNoLGZuAq03C=6=gTBv-=Dfg@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] Implement block-ipv6
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,272 +13,77 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
-Cc: David Sommerseth <davids@...515...>
-
---nextPart2061514.rZSe0U6Upi
-Content-Type: multipart/mixed; boundary="nextPart2116710.z68aUiNQX9"
-Content-Transfer-Encoding: 7Bit
-
-This is a multi-part message in MIME format.
-
---nextPart2116710.z68aUiNQX9
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+To: Arne Schwabe <arne@...1227...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hi all,
+Hi.
 
-I have attached this script for comment to be considered for inclusion in t=
-he=20
-contrib section of openvpn to use the Yubico Yubicloud authentication for t=
-he=20
-Yubikey OTP.
+I have one small nit-pick.
 
-Setup instructions are included in the top of the script file.
+On Thu, Jul 6, 2017 at 11:33 AM, Arne Schwabe <arne@...1227...> wrote:
+> This can be used to redirect all IPv6 traffic to the tun interface, effectively black holing the IPv6 traffic. Without ICMPv6 error messages this will result in timeouts when the server does not send error codes.
+> block-ipv6 allows client side only blocking on all platforms that OpenVPN supports IPv6. On Android it is only way to do sensible IPv6 blocking on Android < 5.0 and broken devices (Samsung).
 
-There is a current patch pending merging to fix client operation for auth=20
-tokens by ordex and dazo.
+[snip]
+> diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+> index 505c5b2e..04505251 100644
+> --- a/src/openvpn/options.c
+> +++ b/src/openvpn/options.c
+> @@ -226,6 +226,8 @@ static const char usage_message[] =
+>      "                  Add 'bypass-dns' flag to similarly bypass tunnel for DNS.\n"
+>      "--redirect-private [flags]: Like --redirect-gateway, but omit actually changing\n"
+>      "                  the default gateway.  Useful when pushing private subnets.\n"
+> +    "--block-ipv6     : (client only) Instead sending IPv6 to the server generate\n"
+> +    "                   ICMPv6 host unreachable messages.\n"
+>      "--client-nat snat|dnat network netmask alias : on client add 1-to-1 NAT rule.\n"
+>  #ifdef ENABLE_PUSH_PEER_INFO
+>      "--push-peer-info : (client only) push client info to server.\n"
+> @@ -2083,6 +2085,11 @@ options_postprocess_verify_ce(const struct options *options, const struct connec
+>          msg(M_USAGE, "--lladdr can only be used in --dev tap mode");
+>      }
+>
+> +    if (options->block_ipv6 && !options->ifconfig_ipv6_remote)
+> +    {
+> +        msg(M_USAGE, "--block-ipv6 needs a valid --ifconfig-ipv6 configuration");
+> +    }
+> +
+>      /*
+>       * Sanity check on MTU parameters
+>       */
+> @@ -2241,6 +2248,7 @@ options_postprocess_verify_ce(const struct options *options, const struct connec
+>          msg(M_USAGE, "TCP server mode allows at most one --remote address");
+>      }
+>
+> +
+>  #if P2MP_SERVER
+>
+>      /*
+> @@ -6346,6 +6354,11 @@ add_option(struct options *options,
+>  #endif
+>          options->routes->flags |= RG_ENABLE;
+>      }
+> +    else if (streq(p[0], "block-ipv6"))
+> +    {
+> +        VERIFY_PERMISSION(OPT_P_ROUTE);
+> +        options->block_ipv6 = true;
+> +    }
+>      else if (streq(p[0], "remote-random-hostname") && !p[1])
+>      {
+>          VERIFY_PERMISSION(OPT_P_GENERAL);
 
-Ticket details:
-https://community.openvpn.net/openvpn/ticket/904
+This (8th line from the end):
 
-Happy to receive feedback on the script, its operation, or implementation.
+ +    else if (streq(p[0], "block-ipv6"))
 
---=20
-Steven Haigh
+should be:
 
-=F0=9F=93=A7 netwiz@...2277...       =F0=9F=92=BB http://www.crc.id.au
-=F0=9F=93=9E +61 (3) 9001 6090    =F0=9F=93=B1 0412 935 897=
+ +    else if (streq(p[0], "block-ipv6") && !p[1])
 
---nextPart2116710.z68aUiNQX9
-Content-Disposition: attachment; filename="yubikey-auth-tokens"
-Content-Transfer-Encoding: 7Bit
-Content-Type: application/x-perl; name="yubikey-auth-tokens"
+So "block-ipv6 abc" will be detected as an error.
 
-#!/usr/bin/perl
-# Copyright (c) 2017 Steven Haigh <netwiz@...2277...>
-# https://www.crc.id.au
-# Licensed under the GPL version 2
+Best regards,
 
-# PURPOSE: This script automatically can be used to handle authentication
-# of Yubikey enabled accounts for One Time Password (OTP) use.
-
-# INSTALL NOTES:
-# Place this script in /etc/openvpn and use the following in your server
-# configuration file:
-
-# script-security 2
-# client-connect          /etc/openvpn/yubikey-auth-tokens
-# client-disconnect       /etc/openvpn/yubikey-auth-tokens
-# auth-user-pass-verify   /etc/openvpn/yubikey-auth-tokens via-file
-# client-cert-not-required
-
-# If you wish to use Client Certificate + username + OTP for authentication
-# exclude the 'client-cert-not-required' option and use any other guide on
-# how to manage the certificate side of authentication.
-
-# USAGE NOTES:
-# To set up your Yubikey in Yubico OTP mode, use the personalisation tool
-# in "Yubico OTP mode", and choose 'Quick' setup. Be sure to generate new
-# values and then use the 'Upload to Yubico' to activate your key within
-# the Yubico Validation Server.
-
-# Edit the %yubikeys definition below to include your chosen username and
-# the first 12 digits of one of your Yubico OTP passwords.
-
-# If you have a Yubico API ID, you may substitute the $yubico_id value
-# for your own, or use the default '16'.
-
-# The token store specified in $tokenstore should point to a file in a
-# directory that openvpn can write to. Tokens will be stored here between
-# renegotions. The token will be deleted at last access + 2 hours, or
-# when the client disconnects.
-
-# NOTE: Tokens are only removed when something triggers a read of the
-# tokens file. This can be a new client connecting, a renegotiation or
-# a client disconnecting.
-
-# ------------------ CODE BEGINS HERE -----------------
-use strict;
-use warnings;
-use Fcntl qw( :flock );
-use Storable qw( retrieve store_fd );
-use LWP::UserAgent;
-use LWP::Protocol::https;
-use MIME::Base64 qw( encode_base64 );
-
-my $yubico_id = '16';
-my %yubikeys = (
-	# username		#yubikey ID
-	'yubikey'	=> "vvaaaaaaaaaa",
-);
-my $tokenstore = "/etc/openvpn/jail/token_store.bin";
-
-$| = 1;
-
-sub load_tokenstore(){
-	my %tokens = ();
-	if ( -f $tokenstore ) { 
-		%tokens = %{ retrieve($tokenstore) };
-	}
-
-	## Expire tokens that should be expired.
-	foreach my $key ( keys %tokens ) {
-		if ( $tokens{$key}{expires} < time ) {
-			delete $tokens{$key};
-		}
-	}
-
-	return %tokens;
-}
-
-sub write_tokenstore(\%) {
-	my $hashref = shift;
-	open ( my $STORE, ">$tokenstore" ) || die "Unable to open token store: $!\n";
-	flock $STORE, LOCK_EX;
-	store_fd $hashref, \*$STORE;
-	close $STORE;
-}
-
-if ( $ENV{'script_type'} eq "user-pass-verify" ) {
-	my $auth_file = $ARGV[0];
-
-	## Read the auth file.
-	open my $fh, '<', $auth_file;
-	chomp(my @lines = <$fh>);
-	close $fh;
-
-	my $username = $lines[0];
-	my $password = $lines[1];
-
-	## Ensure we have a valid entry for the expected username.
-	if ( ! defined( $yubikeys{$username} ) ) {
-		print "No yubikey enabled for $username\n";
-		exit 1;
-	}
-
-	## If we have the start of a yubikey, validate the OTP against yubico.
-	if ( $password =~ m/^${yubikeys{$username}}/ ) {
-		## Check the yubikey entry is valid.
-		print "Attempting Yubikey authentication for user: $username\n";
-		my $ua = LWP::UserAgent->new;
-		$ua->timeout(10);
-		my $res = $ua->get( "https://api.yubico.com/wsapi/verify?id=$yubico_id&otp=$password" );
-	
-		## Only go further if the request was successful.
-		if ( ! $res->is_success ) {
-			print "Error querying the YubiCo Servers: " . $res->status_line . " - " . $res->decoded_content . "\n";
-			exit 1;
-		}
-
-		## Pull out the status returned from YubiCo.
-		my $result = "";
-		if ( $res->decoded_content =~ m/status=(\w+)/ ) {
-			$result = $1;
-		}
-
-		## Allow access on ONLY an OK response.
-		if ( $result eq "OK" ) {
-			print "Yubikey authentication successful for user: $username\n";
-			exit 0;
-		} else {
-			print "Yubikey authentication for user $username failed with result: $result\n";
-			exit 1;
-		}
-	}
-
-	## We may have a token, not an OTP... Check.
-	if ( $password =~ m/^Token:/ ) {
-		print "Performing token authentication for user: $username\n";
-		$password =~ s/^Token://g;
-
-		## Load the token database.
-		my %tokens = load_tokenstore(); 
-		my $key = $ENV{'dev'} . '-' . $ENV{'trusted_ip'} . '-' . $ENV{'trusted_port'};
-		$tokens{$key}{'expires'} = time + 7200; ## Push the expiry back another 2 hours
-		write_tokenstore(%tokens);
-
-		if ( $password eq $tokens{$key}{'token'} ) {
-			print "Token authentication successful for user: $username\n";
-			exit 0;
-		} else {
-			print "Token authentication failed for user: $username\n";
-			exit 1;
-		}
-	}
-
-	## Fall back to an authentication failed error.
-	print "Authentication failed for user $username\n";
-	exit 1;
-} 
-
-## Handle generation of the auth-token to be pushed to the client.
-elsif ( $ENV{'script_type'} eq "client-connect" ) {
-	my $key = $ENV{'dev'} . '-' . $ENV{'trusted_ip'} . '-' . $ENV{'trusted_port'};
-	
-	## Create our random data.
-	open ( my $random, "<", "/dev/random");
-	read $random, my $random_data, 128;
-	close $random;
-	my $token = encode_base64($random_data, "");
-
-	my $push = 'push "auth-token Token:' . $token . '"' . "\n";
-	print "Pushing Auth-Token: $token\n";
-
-	## Add the token to the token store.
-	my %tokens = load_tokenstore(); 
-	$tokens{$key}{'token'} = $token;
-	$tokens{$key}{'expires'} = time + 7200; ## Expire in now + 2 hours.
-	write_tokenstore(%tokens);
-
-	open my $fh, '>', $ARGV[0];
-	print $fh $push . "\n";
-	close $fh;
-	exit 0;
-}
-
-## Handle client disconnects by nuking the token.
-elsif ( $ENV{'script_type'} eq "client-disconnect" ) {
-	print "Handling client disconnect. Nuking token\n";
-	my $key = $ENV{'dev'} . '-' . $ENV{'trusted_ip'} . '-' . $ENV{'trusted_port'};
-	my %tokens = load_tokenstore();
-	if ( defined( $tokens{$key} ) ) {
-		delete $tokens{$key};
-	}
-	write_tokenstore(%tokens);
-}
-
-else {
-	print "We should never get here unless we have the wrong config!\n";
-	exit 1;
-}
-
-exit 1;
-
---nextPart2116710.z68aUiNQX9--
-
---nextPart2061514.rZSe0U6Upi
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part.
-Content-Transfer-Encoding: 7Bit
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEFHf0gfgNrH6ofcYGQa811Xp9MdwFAllftlwACgkQQa811Xp9
-MdwuUw/9EEvAkVjNg2HtGFFxXcRrhTr3slnSvgJol5Oh66JI1THAgpwv7hBgOHNk
-XFVxDYiE0445SKH/SeiGaAwK7kROAWB/745qqvT/ozFsvDxLB1PWIleTmcLtBVPz
-hEfqxhIDQNO3PhXH9exLg59XD/Bc51Q1DJHSMU17X2z3/ZotF72bSfuaS7kq2FhM
-cSP0gM4W14V01AMHochyXdev+qRlEeugDKPlJhKJGjwV13ecFRohAvhoMpgnE0O4
-4QBjQV7T3RnGosZGrJwAvoBi8wWNw4EWnoGLKoDMFh00MTHQHOd/RNNFW9Eyg4Nb
-NZukr7oD1s7fw1GfdhWNl7u5C/aSIjJRP2oqLCjXjWlwrL87NbaU5bf+kR02Nf0X
-wuqo4TocNQltSxXc5liyfUsmte7X9R+kNMtcwX6WwtqqjuB39q3ICtOMPFLszH75
-YkvgXZc8ihDO9J5/RRUAxG7snlYlThkFmmDS6dtto1DDDA3gxWoBsJYjHYRgMrqH
-78ncs0jwp0L47b6RSAMMcHyAGbAatAwGgpn5fL8Us/YUbJExfnswPrRsdhEfcuLg
-g/n1LerEKRUAdR2qePqmR1Qicma2su/sDONoyclpnioq4sFC5oNYk1lAAkz2smFB
-Bk5KZjSE93wQDMypvchFKwH4MR46LFp7/9r+W+GwehD36KMKPr4=
-=vUB+
------END PGP SIGNATURE-----
-
---nextPart2061514.rZSe0U6Upi--
-
+Jon
 
