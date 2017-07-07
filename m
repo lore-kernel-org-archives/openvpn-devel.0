@@ -1,15 +1,8 @@
 From: Antonio Quartulli <a@...2181...>
-References: <20170707044704.7239-1-a@...2181...>
-	<3cb90709-9fdb-e9f1-dabe-ad3f8663bcd6@...2181...>
-Message-ID: <e33381a4-b8ce-3965-6c46-5791d97015a4@...2181...>
-Date: Fri, 07 Jul 2017 10:02:00 +0000
-MIME-Version: 1.0
-In-Reply-To: <3cb90709-9fdb-e9f1-dabe-ad3f8663bcd6@...2181...>
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature";
-	boundary="wDwUg8kgVJGafFc6J3sMbxRKMupmCrIok"
-Subject: Re: [Openvpn-devel] [PATCH] crypto: create function to initialize
- encrypt and decrypt key
+Date: Fri,  7 Jul 2017 18:22:38 +0800
+Message-Id: <20170707102238.8781-1-a@...2181...>
+Subject: [Openvpn-devel] [PATCH] tls-crypt: avoid warnings when
+ --disable-crypto is used
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,68 +11,46 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---wDwUg8kgVJGafFc6J3sMbxRKMupmCrIok
-Content-Type: multipart/mixed; boundary="rJW0Mrt6ROxsdE6W0WUvdB1jcKemF41Bb";
- protected-headers="v1"
-From: Antonio Quartulli <a@...2181...>
-To: openvpn-devel@lists.sourceforge.net
-Message-ID: <e33381a4-b8ce-3965-6c46-5791d97015a4@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH] crypto: create function to initialize
- encrypt and decrypt key
-References: <20170707044704.7239-1-a@...2181...>
- <3cb90709-9fdb-e9f1-dabe-ad3f8663bcd6@...2181...>
-In-Reply-To: <3cb90709-9fdb-e9f1-dabe-ad3f8663bcd6@...2181...>
-
---rJW0Mrt6ROxsdE6W0WUvdB1jcKemF41Bb
-Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Antonio Quartulli <antonio@...515...>
 
+From: Antonio Quartulli <antonio@...515...>
 
-Antonio Quartulli:
->> Acked-by: Antonio Quartulli <antonio@...515...>
->> Signed-off-by: Steffan Karger <steffan@...1856...>
->=20
-> I have to retreat my ACK. This patch is generating some new warnings
-> that have to be fixed before being considered for merging.
->=20
+Avoid including the content of tls_crypt.h when --disable-crypto
+is used, as it will trigger some warnings due to missing
+structures declarations.
 
-Sorry, please ignore my previous email. I am working with too many
-branches at the same time and I mixed up the warnings.
+Signed-off-by: Antonio Quartulli <antonio@...515...>
+---
 
-Cheers,
+- also checked via travis-ci.org
 
+ src/openvpn/tls_crypt.h | 4 ++++
+ 1 file changed, 4 insertions(+)
 
---=20
-Antonio Quartulli
+diff --git a/src/openvpn/tls_crypt.h b/src/openvpn/tls_crypt.h
+index e8080df9..4071ac94 100644
+--- a/src/openvpn/tls_crypt.h
++++ b/src/openvpn/tls_crypt.h
+@@ -74,6 +74,8 @@
+ #ifndef TLSCRYPT_H
+ #define TLSCRYPT_H
+ 
++#ifdef ENABLE_CRYPTO
++
+ #include "buffer.h"
+ #include "crypto.h"
+ #include "session_id.h"
+@@ -140,4 +142,6 @@ bool tls_crypt_unwrap(const struct buffer *src, struct buffer *dst,
+ 
+ /** @} */
+ 
++#endif /* ENABLE_CRYPTO */
++
+ #endif /* TLSCRYPT_H */
+-- 
+2.13.2
 
-
---rJW0Mrt6ROxsdE6W0WUvdB1jcKemF41Bb--
-
---wDwUg8kgVJGafFc6J3sMbxRKMupmCrIok
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCgAdFiEEbd2mMhAXbmSCipS40+HICM1soFAFAllfXDMACgkQ0+HICM1s
-oFBqtQ//RxwoGFtkrAPyPoZyzIy+QlmmiCtPkNi93otFWY3zFB+D6b+m2jJdxl7C
-RzY8Q/d0pbPHWgFb80xt8dnNEt52m4BQO6fz28rUD2n7mAzWfKx/KdAZJBJzs5xi
-mQ/7oPwEd6k2exjP9mKKLlo7/7/vnYgmHExFYgHyYkcsAotz/9//0yZsSCfduOo8
-jh41RfPX7BbApcXDMGiHPleZSdTQ7VbthyoWNji8IaukwPpcwHKp/4qB6YFld/9q
-ML3kJgo9Tif7t7pLl6MRFYj+x1GXkjDMrsvQ0V2HUCif5nmrwP9AttrSMUcDmS6X
-lVYjVn/azuEK3AIjffSQriXLBQwT62vTTbq+2Oqx4Lxbd/G6erhhCY6wb8mVfKzg
-ASs6oynwNiJ0vOFPDderkzXjwC5zdIom7FmNqNj7AI02STgOrKW+D7rbCpmbK+O1
-Z3TyhNR0+3P2FKtu1Y+sBKxWyeLiUawb1JTt41d0iQN0TOdbQlZ6GNbNS1TSfBs6
-/NqQGmZ2VVJ9GCwA0j/U+uFiRVzJKv6oT1lckKJfcWJq7WvmYPGz7ozkAASuw35C
-o+bvDnZqedzFru+rCfYqk52wNy4iurG/ZNGBPJSCR29xsKXVFURrw0VxPXm5V+0T
-FRsSs76er7A4Of1/KLrSR8M5JLQK/tGrNJj3JsOhL4c5F6481O4=
-=1+Qg
------END PGP SIGNATURE-----
-
---wDwUg8kgVJGafFc6J3sMbxRKMupmCrIok--
 
