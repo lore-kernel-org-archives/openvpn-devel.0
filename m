@@ -1,12 +1,10 @@
-References: <20170707044704.7239-1-a@...2181...>
-From: Steffan Karger <steffan@...1856...>
-Message-ID: <fd42bf13-3f4f-959c-71a2-2947acd067da@...1856...>
-Date: Fri, 7 Jul 2017 23:19:28 +0200
+From: Steven Haigh <netwiz@...2277...>
+Date: Sat, 08 Jul 2017 14:45:55 +1000
+Message-ID: <3866491.A1B4H0lngg@...2289...>
 MIME-Version: 1.0
-In-Reply-To: <20170707044704.7239-1-a@...2181...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH] crypto: create function to initialize
- encrypt and decrypt key
+Content-Type: multipart/signed; boundary="nextPart3686077.1VT8VPzPc8";
+	micalg="pgp-sha256"; protocol="application/pgp-signature"
+Subject: [Openvpn-devel] RFCv3: Yubikey authentication for OpenVPN
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,141 +13,203 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: Antonio Quartulli <a@...2181...>, openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
+Cc: David Sommerseth <davids@...515...>, openvpn-users@lists.sourceforge.net
 
-Hi,
+--nextPart3686077.1VT8VPzPc8
+Content-Type: multipart/mixed; boundary="nextPart3112802.d0KMZ28gQD"
+Content-Transfer-Encoding: 7Bit
 
-On 07-07-17 06:47, Antonio Quartulli wrote:
-> From: Steffan Karger <steffan@...1856...>
-> 
-> Instead of always initialize the encrypt and decrypt keys separately,
-> implement an helper function init_key_ctx_bi() that takes care of
-> both of them for us.
-> 
-> Reduces code duplication and improves readability.
-> 
-> Acked-by: Antonio Quartulli <antonio@...515...>
-> Signed-off-by: Steffan Karger <steffan@...1856...>
-> ---
->  src/openvpn/crypto.c | 29 +++++++++++++++++++++--------
->  src/openvpn/crypto.h |  4 ++++
->  src/openvpn/ssl.c    | 17 ++---------------
->  3 files changed, 27 insertions(+), 23 deletions(-)
-> 
-> diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
-> index 78ca4197..4ea0af09 100644
-> --- a/src/openvpn/crypto.c
-> +++ b/src/openvpn/crypto.c
-> @@ -873,6 +873,26 @@ init_key_ctx(struct key_ctx *ctx, const struct key *key,
->  }
->  
->  void
-> +init_key_ctx_bi(struct key_ctx_bi *ctx, const struct key2 *key2,
-> +                int key_direction, const struct key_type *kt, const char *name)
-> +{
-> +    char log_prefix[128] = { 0 };
-> +    struct key_direction_state kds;
-> +
-> +    key_direction_state_init(&kds, key_direction);
-> +
-> +    openvpn_snprintf(log_prefix, sizeof(log_prefix), "Outgoing %s", name);
-> +    init_key_ctx(&ctx->encrypt, &key2->keys[kds.out_key], kt,
-> +                 OPENVPN_OP_ENCRYPT, log_prefix);
-> +
-> +    openvpn_snprintf(log_prefix, sizeof(log_prefix), "Incoming %s", name);
-> +    init_key_ctx(&ctx->decrypt, &key2->keys[kds.in_key], kt,
-> +                 OPENVPN_OP_DECRYPT, log_prefix);
-> +
-> +    ctx->initialized = true;
-> +}
-> +
-> +void
->  free_key_ctx(struct key_ctx *ctx)
->  {
->      if (ctx->cipher)
-> @@ -1161,7 +1181,6 @@ crypto_read_openvpn_key(const struct key_type *key_type,
->  {
->      struct key2 key2;
->      struct key_direction_state kds;
-> -    char log_prefix[128] = { 0 };
->  
->      if (key_inline)
->      {
-> @@ -1186,13 +1205,7 @@ crypto_read_openvpn_key(const struct key_type *key_type,
->      must_have_n_keys(key_file, opt_name, &key2, kds.need_keys);
->  
->      /* initialize key in both directions */
-> -    openvpn_snprintf(log_prefix, sizeof(log_prefix), "Outgoing %s", key_name);
-> -    init_key_ctx(&ctx->encrypt, &key2.keys[kds.out_key], key_type,
-> -                 OPENVPN_OP_ENCRYPT, log_prefix);
-> -    openvpn_snprintf(log_prefix, sizeof(log_prefix), "Incoming %s", key_name);
-> -    init_key_ctx(&ctx->decrypt, &key2.keys[kds.in_key], key_type,
-> -                 OPENVPN_OP_DECRYPT, log_prefix);
-> -
-> +    init_key_ctx_bi(ctx, &key2, key_direction, key_type, key_name);
->      secure_memzero(&key2, sizeof(key2));
->  }
->  
-> diff --git a/src/openvpn/crypto.h b/src/openvpn/crypto.h
-> index fec2eea7..86d2cfcc 100644
-> --- a/src/openvpn/crypto.h
-> +++ b/src/openvpn/crypto.h
-> @@ -318,6 +318,10 @@ void init_key_ctx(struct key_ctx *ctx, const struct key *key,
->  
->  void free_key_ctx(struct key_ctx *ctx);
->  
-> +void init_key_ctx_bi(struct key_ctx_bi *ctx, const struct key2 *key2,
-> +                     int key_direction, const struct key_type *kt,
-> +		     const char *name);
-> +
->  void free_key_ctx_bi(struct key_ctx_bi *ctx);
->  
->  
-> diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-> index df232894..56daec38 100644
-> --- a/src/openvpn/ssl.c
-> +++ b/src/openvpn/ssl.c
-> @@ -1840,20 +1840,8 @@ generate_key_expansion(struct key_ctx_bi *key,
->      }
->  
->      /* Initialize OpenSSL key contexts */
-> -
-> -    ASSERT(server == true || server == false);
-> -
-> -    init_key_ctx(&key->encrypt,
-> -                 &key2.keys[(int)server],
-> -                 key_type,
-> -                 OPENVPN_OP_ENCRYPT,
-> -                 "Data Channel Encrypt");
-> -
-> -    init_key_ctx(&key->decrypt,
-> -                 &key2.keys[1-(int)server],
-> -                 key_type,
-> -                 OPENVPN_OP_DECRYPT,
-> -                 "Data Channel Decrypt");
-> +    int key_direction = server ? KEY_DIRECTION_INVERSE : KEY_DIRECTION_NORMAL;
-> +    init_key_ctx_bi(key, &key2, key_direction, key_type, "Data Channel");
->  
->      /* Initialize implicit IVs */
->      key_ctx_update_implicit_iv(&key->encrypt, key2.keys[(int)server].hmac,
-> @@ -1861,7 +1849,6 @@ generate_key_expansion(struct key_ctx_bi *key,
->      key_ctx_update_implicit_iv(&key->decrypt, key2.keys[1-(int)server].hmac,
->                                 MAX_HMAC_KEY_LENGTH);
->  
-> -    key->initialized = true;
->      ret = true;
->  
->  exit:
-> 
+This is a multi-part message in MIME format.
 
-Apart from three extra newlines (which increase code readability) and a
-slightly improved commit message, this is the same commit as in my
-tls-crypt-v2-preview branch:
-https://github.com/syzzer/openvpn/commit/9837b498
+--nextPart3112802.d0KMZ28gQD
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-So I confirm that I agree to include this patch with me as the author.
+Hi all,
 
--Steffan
+I have attached this script for comment to be considered for inclusion in t=
+he=20
+contrib section of openvpn to use the Yubico Yubicloud authentication for t=
+he=20
+Yubikey OTP.
+
+Setup instructions are included in the top of the script file.
+
+There is a current patch pending merging to fix client operation for auth=20
+tokens by ordex and dazo.
+
+Ticket details:
+https://community.openvpn.net/openvpn/ticket/904
+
+Changes since v1:
+* We now generate a completely random token by reading 128 bytes from /dev/
+random and base64 encoding it  - not partially created from connection=20
+attributes.
+* Tokens are now stored in a token store file
+
+Changes since v2:
+* Multiple operations running at the exact same time could lead to lost=20
+tokens. The file lock (LOCK_EX) now applies from when we read in the token=
+=20
+store until the file is closed after a write. This should stop any in-fligh=
+t=20
+read/write conflicts losing tokens.
+
+Happy to receive feedback on the script, its operation, or implementation.
+
+--=20
+Steven Haigh
+
+=F0=9F=93=A7 netwiz@...2277...       =F0=9F=92=BB http://www.crc.id.au
+=F0=9F=93=9E +61 (3) 9001 6090    =F0=9F=93=B1 0412 935 897=
+
+--nextPart3112802.d0KMZ28gQD
+Content-Disposition: attachment; filename="yubikey-auth-tokens"
+Content-Transfer-Encoding: base64
+Content-Type: application/x-perl; name="yubikey-auth-tokens"
+
+IyEvdXNyL2Jpbi9wZXJsCiMgQ29weXJpZ2h0IChjKSAyMDE3IFN0ZXZlbiBIYWlnaCA8bmV0d2l6
+QGNyYy5pZC5hdT4KIyBodHRwczovL3d3dy5jcmMuaWQuYXUKIyBMaWNlbnNlZCB1bmRlciB0aGUg
+R1BMIHZlcnNpb24gMgoKIyBQVVJQT1NFOiBUaGlzIHNjcmlwdCBhdXRvbWF0aWNhbGx5IGNhbiBi
+ZSB1c2VkIHRvIGhhbmRsZSBhdXRoZW50aWNhdGlvbgojIG9mIFl1YmlrZXkgZW5hYmxlZCBhY2Nv
+dW50cyBmb3IgT25lIFRpbWUgUGFzc3dvcmQgKE9UUCkgdXNlLgoKIyBJTlNUQUxMIE5PVEVTOgoj
+IFBsYWNlIHRoaXMgc2NyaXB0IGluIC9ldGMvb3BlbnZwbiBhbmQgdXNlIHRoZSBmb2xsb3dpbmcg
+aW4geW91ciBzZXJ2ZXIKIyBjb25maWd1cmF0aW9uIGZpbGU6CgojIHNjcmlwdC1zZWN1cml0eSAy
+CiMgY2xpZW50LWNvbm5lY3QgICAgICAgICAgL2V0Yy9vcGVudnBuL3l1YmlrZXktYXV0aC10b2tl
+bnMKIyBjbGllbnQtZGlzY29ubmVjdCAgICAgICAvZXRjL29wZW52cG4veXViaWtleS1hdXRoLXRv
+a2VucwojIGF1dGgtdXNlci1wYXNzLXZlcmlmeSAgIC9ldGMvb3BlbnZwbi95dWJpa2V5LWF1dGgt
+dG9rZW5zIHZpYS1maWxlCiMgY2xpZW50LWNlcnQtbm90LXJlcXVpcmVkCgojIElmIHlvdSB3aXNo
+IHRvIHVzZSBDbGllbnQgQ2VydGlmaWNhdGUgKyB1c2VybmFtZSArIE9UUCBmb3IgYXV0aGVudGlj
+YXRpb24KIyBleGNsdWRlIHRoZSAnY2xpZW50LWNlcnQtbm90LXJlcXVpcmVkJyBvcHRpb24gYW5k
+IHVzZSBhbnkgb3RoZXIgZ3VpZGUgb24KIyBob3cgdG8gbWFuYWdlIHRoZSBjZXJ0aWZpY2F0ZSBz
+aWRlIG9mIGF1dGhlbnRpY2F0aW9uLgoKIyBVU0FHRSBOT1RFUzoKIyBUbyBzZXQgdXAgeW91ciBZ
+dWJpa2V5IGluIFl1YmljbyBPVFAgbW9kZSwgdXNlIHRoZSBwZXJzb25hbGlzYXRpb24gdG9vbAoj
+IGluICJZdWJpY28gT1RQIG1vZGUiLCBhbmQgY2hvb3NlICdRdWljaycgc2V0dXAuIEJlIHN1cmUg
+dG8gZ2VuZXJhdGUgbmV3CiMgdmFsdWVzIGFuZCB0aGVuIHVzZSB0aGUgJ1VwbG9hZCB0byBZdWJp
+Y28nIHRvIGFjdGl2YXRlIHlvdXIga2V5IHdpdGhpbgojIHRoZSBZdWJpY28gVmFsaWRhdGlvbiBT
+ZXJ2ZXIuCgojIEVkaXQgdGhlICV5dWJpa2V5cyBkZWZpbml0aW9uIGJlbG93IHRvIGluY2x1ZGUg
+eW91ciBjaG9zZW4gdXNlcm5hbWUgYW5kCiMgdGhlIGZpcnN0IDEyIGRpZ2l0cyBvZiBvbmUgb2Yg
+eW91ciBZdWJpY28gT1RQIHBhc3N3b3Jkcy4KCiMgSWYgeW91IGhhdmUgYSBZdWJpY28gQVBJIElE
+LCB5b3UgbWF5IHN1YnN0aXR1dGUgdGhlICR5dWJpY29faWQgdmFsdWUKIyBmb3IgeW91ciBvd24s
+IG9yIHVzZSB0aGUgZGVmYXVsdCAnMTYnLgoKIyBUaGUgdG9rZW4gc3RvcmUgc3BlY2lmaWVkIGlu
+ICR0b2tlbnN0b3JlIHNob3VsZCBwb2ludCB0byBhIGZpbGUgaW4gYQojIGRpcmVjdG9yeSB0aGF0
+IG9wZW52cG4gY2FuIHdyaXRlIHRvLiBUb2tlbnMgd2lsbCBiZSBzdG9yZWQgaGVyZSBiZXR3ZWVu
+CiMgcmVuZWdvdGlvbnMuIFRoZSB0b2tlbiB3aWxsIGJlIGRlbGV0ZWQgYXQgbGFzdCBhY2Nlc3Mg
+KyAyIGhvdXJzLCBvcgojIHdoZW4gdGhlIGNsaWVudCBkaXNjb25uZWN0cy4KCiMgTk9URTogVG9r
+ZW5zIGFyZSBvbmx5IHJlbW92ZWQgd2hlbiBzb21ldGhpbmcgdHJpZ2dlcnMgYSByZWFkIG9mIHRo
+ZQojIHRva2VucyBmaWxlLiBUaGlzIGNhbiBiZSBhIG5ldyBjbGllbnQgY29ubmVjdGluZywgYSBy
+ZW5lZ290aWF0aW9uIG9yCiMgYSBjbGllbnQgZGlzY29ubmVjdGluZy4KCiMgLS0tLS0tLS0tLS0t
+LS0tLS0tIENPREUgQkVHSU5TIEhFUkUgLS0tLS0tLS0tLS0tLS0tLS0KdXNlIHN0cmljdDsKdXNl
+IHdhcm5pbmdzOwp1c2UgRmNudGwgcXcoIDpmbG9jayApOwp1c2UgU3RvcmFibGUgcXcoIHJldHJp
+ZXZlX2ZkIHN0b3JlX2ZkICk7CnVzZSBMV1A6OlVzZXJBZ2VudDsKdXNlIExXUDo6UHJvdG9jb2w6
+Omh0dHBzOwp1c2UgTUlNRTo6QmFzZTY0IHF3KCBlbmNvZGVfYmFzZTY0ICk7CnVzZSBEYXRhOjpE
+dW1wZXI7CiREYXRhOjpEdW1wZXI6OlNvcnRrZXlzID0gMTsKCm15ICR5dWJpY29faWQgPSAnOTQx
+NCc7Cm15ICV5dWJpa2V5cyA9ICgKCSMgdXNlcm5hbWUgICAgICAgICAgI3l1YmlrZXkgSUQKCSd5
+dWJpa2V5X3VzZXInCT0+ICJ2dmFhYWFhYWFhYWEiLAopOwpteSAkdG9rZW5zdG9yZSA9ICIvZXRj
+L29wZW52cG4vamFpbC90b2tlbl9zdG9yZS5iaW4iOwpteSAkZGVidWcgPSAwOwoKc3ViIGxvYWRf
+dG9rZW5zdG9yZSgpIHsKCSMjIElmIHRoZSB0b2tlbiBzdG9yZSBkb2Vzbid0IGV4aXN0LCB0aGVu
+IGNyZWF0ZSBhbiBlbXB0eSBvbmUuCglpZiAoICEgLWYgJHRva2Vuc3RvcmUgKSB7CgkJb3BlbiAo
+IG15ICRmZCwgIj4iLCAkdG9rZW5zdG9yZSApOwoJCW15ICV0b2tlbnMgPSAoKTsKCQlzdG9yZV9m
+ZCBcJXRva2VucywgXCokZmQ7CgkJY2xvc2UgJGZkOwoJfQoKCSMjIE9wZW4gdGhlIHRva2Vuc3Rv
+cmUgYW5kIHJlYWQgaW4gdGhlIGNvbnRlbnRzLgoJb3BlbiAoIG15ICRmZCwgIis8IiwgJHRva2Vu
+c3RvcmUgKSBvciBkaWUgIlVuYWJsZSB0byBvcGVuIHRva2VuIHN0b3JlICR0b2tlbnN0b3JlOiAk
+IVxuIjsKCWZsb2NrICRmZCwgTE9DS19FWDsKCW15ICV0b2tlbnMgPSAleyByZXRyaWV2ZV9mZCgk
+ZmQpIH07CgoJIyMgRXhwaXJlIHRva2VucyB0aGF0IHNob3VsZCBiZSBleHBpcmVkLgoJZm9yZWFj
+aCBteSAka2V5ICgga2V5cyAldG9rZW5zICkgewoJCWlmICggJHRva2Vuc3ska2V5fXtleHBpcmVz
+fSA8IHRpbWUgKSB7CgkJCWRlbGV0ZSAkdG9rZW5zeyRrZXl9OwoJCX0KCX0KCglpZiAoICRkZWJ1
+ZyApIHsgCgkJcHJpbnQgIkxvYWRlZCBUb2tlbnM6XG4iIC4gRHVtcGVyKFwldG9rZW5zKTsKCX0K
+CglyZXR1cm4gJGZkLCAldG9rZW5zOwp9CgpzdWIgd3JpdGVfdG9rZW5zdG9yZSgkXCUpIHsKCW15
+ICRmZCA9IHNoaWZ0OwoJbXkgJGhhc2hyZWYgPSBzaGlmdDsKCXNlZWsgJGZkLCAwLCAwOwoJc3Rv
+cmVfZmQgJGhhc2hyZWYsIFwqJGZkOwoJY2xvc2UgJGZkOwoJaWYgKCAkZGVidWcgKSB7IAoJCXBy
+aW50ICJTYXZlZCBUb2tlbnM6XG4iIC4gRHVtcGVyKCRoYXNocmVmKTsKCX0KfQoKaWYgKCAkRU5W
+eydzY3JpcHRfdHlwZSd9IGVxICJ1c2VyLXBhc3MtdmVyaWZ5IiApIHsKCW15ICRhdXRoX2ZpbGUg
+PSAkQVJHVlswXTsKCgkjIyBSZWFkIHRoZSBhdXRoIGZpbGUuCglvcGVuIG15ICRmaCwgJzwnLCAk
+YXV0aF9maWxlOwoJY2hvbXAobXkgQGxpbmVzID0gPCRmaD4pOwoJY2xvc2UgJGZoOwoKCW15ICR1
+c2VybmFtZSA9ICRsaW5lc1swXTsKCW15ICRwYXNzd29yZCA9ICRsaW5lc1sxXTsKCgkjIyBFbnN1
+cmUgd2UgaGF2ZSBhIHZhbGlkIGVudHJ5IGZvciB0aGUgZXhwZWN0ZWQgdXNlcm5hbWUuCglpZiAo
+ICEgZGVmaW5lZCggJHl1YmlrZXlzeyR1c2VybmFtZX0gKSApIHsKCQlwcmludCAiTm8geXViaWtl
+eSBlbmFibGVkIGZvciAkdXNlcm5hbWVcbiI7CgkJZXhpdCAxOwoJfQoKCSMjIElmIHdlIGhhdmUg
+dGhlIHN0YXJ0IG9mIGEgeXViaWtleSwgdmFsaWRhdGUgdGhlIE9UUCBhZ2FpbnN0IHl1Ymljby4K
+CWlmICggJHBhc3N3b3JkID1+IG0vXiR7eXViaWtleXN7JHVzZXJuYW1lfX0vICkgewoJCSMjIENo
+ZWNrIHRoZSB5dWJpa2V5IGVudHJ5IGlzIHZhbGlkLgoJCXByaW50ICJBdHRlbXB0aW5nIFl1Ymlr
+ZXkgYXV0aGVudGljYXRpb24gZm9yIHVzZXI6ICR1c2VybmFtZVxuIjsKCQlteSAkdWEgPSBMV1A6
+OlVzZXJBZ2VudC0+bmV3OwoJCSR1YS0+dGltZW91dCgxMCk7CgkJbXkgJHJlcyA9ICR1YS0+Z2V0
+KCAiaHR0cHM6Ly9hcGkueXViaWNvLmNvbS93c2FwaS92ZXJpZnk/aWQ9JHl1Ymljb19pZCZvdHA9
+JHBhc3N3b3JkIiApOwoJCgkJIyMgT25seSBnbyBmdXJ0aGVyIGlmIHRoZSByZXF1ZXN0IHdhcyBz
+dWNjZXNzZnVsLgoJCWlmICggISAkcmVzLT5pc19zdWNjZXNzICkgewoJCQlwcmludCAiRXJyb3Ig
+cXVlcnlpbmcgdGhlIFl1YmlDbyBTZXJ2ZXJzOiAiIC4gJHJlcy0+c3RhdHVzX2xpbmUgLiAiIC0g
+IiAuICRyZXMtPmRlY29kZWRfY29udGVudCAuICJcbiI7CgkJCWV4aXQgMTsKCQl9CgoJCSMjIFB1
+bGwgb3V0IHRoZSBzdGF0dXMgcmV0dXJuZWQgZnJvbSBZdWJpQ28uCgkJbXkgJHJlc3VsdCA9ICIi
+OwoJCWlmICggJHJlcy0+ZGVjb2RlZF9jb250ZW50ID1+IG0vc3RhdHVzPShcdyspLyApIHsKCQkJ
+JHJlc3VsdCA9ICQxOwoJCX0KCgkJIyMgQWxsb3cgYWNjZXNzIG9uIE9OTFkgYW4gT0sgcmVzcG9u
+c2UuCgkJaWYgKCAkcmVzdWx0IGVxICJPSyIgKSB7CgkJCXByaW50ICJZdWJpa2V5IGF1dGhlbnRp
+Y2F0aW9uIHN1Y2Nlc3NmdWwgZm9yIHVzZXI6ICR1c2VybmFtZVxuIjsKCQkJZXhpdCAwOwoJCX0g
+ZWxzZSB7CgkJCXByaW50ICJZdWJpa2V5IGF1dGhlbnRpY2F0aW9uIGZvciB1c2VyICR1c2VybmFt
+ZSBmYWlsZWQgd2l0aCByZXN1bHQ6ICRyZXN1bHRcbiI7CgkJCWV4aXQgMTsKCQl9Cgl9CgoJIyMg
+V2UgbWF5IGhhdmUgYSB0b2tlbiwgbm90IGFuIE9UUC4uLiBDaGVjay4KCWlmICggJHBhc3N3b3Jk
+ID1+IG0vXlRva2VuOi8gKSB7CgkJcHJpbnQgIlBlcmZvcm1pbmcgdG9rZW4gYXV0aGVudGljYXRp
+b24gZm9yIHVzZXI6ICR1c2VybmFtZVxuIjsKCQkkcGFzc3dvcmQgPX4gcy9eVG9rZW46Ly9nOwoK
+CQkjIyBMb2FkIHRoZSB0b2tlbiBkYXRhYmFzZS4KCQlteSAoJHRva2Vuc3RvcmVfZmgsICV0b2tl
+bnMpID0gbG9hZF90b2tlbnN0b3JlKCk7IAoJCW15ICRrZXkgPSAkRU5WeydkZXYnfSAuICctJyAu
+ICRFTlZ7J3RydXN0ZWRfaXAnfSAuICctJyAuICRFTlZ7J3RydXN0ZWRfcG9ydCd9OwoJCSR0b2tl
+bnN7JGtleX17J2V4cGlyZXMnfSA9IHRpbWUgKyA3MjAwOyAjIyBQdXNoIHRoZSBleHBpcnkgYmFj
+ayBhbm90aGVyIDIgaG91cnMKCQl3cml0ZV90b2tlbnN0b3JlKCR0b2tlbnN0b3JlX2ZoLCAldG9r
+ZW5zKTsKCgkJaWYgKCAkcGFzc3dvcmQgZXEgJHRva2Vuc3ska2V5fXsndG9rZW4nfSApIHsKCQkJ
+cHJpbnQgIlRva2VuIGF1dGhlbnRpY2F0aW9uIHN1Y2Nlc3NmdWwgZm9yIHVzZXI6ICR1c2VybmFt
+ZVxuIjsKCQkJZXhpdCAwOwoJCX0gZWxzZSB7CgkJCXByaW50ICJUb2tlbiBhdXRoZW50aWNhdGlv
+biBmYWlsZWQgZm9yIHVzZXI6ICR1c2VybmFtZVxuIjsKCQkJZXhpdCAxOwoJCX0KCX0KCgkjIyBG
+YWxsIGJhY2sgdG8gYW4gYXV0aGVudGljYXRpb24gZmFpbGVkIGVycm9yLgoJcHJpbnQgIkF1dGhl
+bnRpY2F0aW9uIGZhaWxlZCBmb3IgdXNlciAkdXNlcm5hbWVcbiI7CglleGl0IDE7Cn0gCgojIyBI
+YW5kbGUgZ2VuZXJhdGlvbiBvZiB0aGUgYXV0aC10b2tlbiB0byBiZSBwdXNoZWQgdG8gdGhlIGNs
+aWVudC4KZWxzaWYgKCAkRU5WeydzY3JpcHRfdHlwZSd9IGVxICJjbGllbnQtY29ubmVjdCIgKSB7
+CglteSAka2V5ID0gJEVOVnsnZGV2J30gLiAnLScgLiAkRU5Weyd0cnVzdGVkX2lwJ30gLiAnLScg
+LiAkRU5Weyd0cnVzdGVkX3BvcnQnfTsKCQoJIyMgQ3JlYXRlIG91ciByYW5kb20gZGF0YS4KCW9w
+ZW4gKCBteSAkcmFuZG9tLCAiPCIsICIvZGV2L3JhbmRvbSIpOwoJcmVhZCAkcmFuZG9tLCBteSAk
+cmFuZG9tX2RhdGEsIDEyODsKCWNsb3NlICRyYW5kb207CglteSAkdG9rZW4gPSBlbmNvZGVfYmFz
+ZTY0KCRyYW5kb21fZGF0YSwgIiIpOwoKCW15ICRwdXNoID0gJ3B1c2ggImF1dGgtdG9rZW4gVG9r
+ZW46JyAuICR0b2tlbiAuICciJyAuICJcbiI7CglwcmludCAiUHVzaGluZyBBdXRoLVRva2VuOiAk
+dG9rZW5cbiI7CgoJIyMgQWRkIHRoZSB0b2tlbiB0byB0aGUgdG9rZW4gc3RvcmUuCglteSAoJHRv
+a2Vuc3RvcmVfZmgsICV0b2tlbnMpID0gbG9hZF90b2tlbnN0b3JlKCk7IAoJJHRva2Vuc3ska2V5
+fXsndG9rZW4nfSA9ICR0b2tlbjsKCSR0b2tlbnN7JGtleX17J2V4cGlyZXMnfSA9IHRpbWUgKyA3
+MjAwOyAjIyBFeHBpcmUgaW4gbm93ICsgMiBob3Vycy4KCXdyaXRlX3Rva2Vuc3RvcmUoJHRva2Vu
+c3RvcmVfZmgsICV0b2tlbnMpOwoKCW9wZW4gbXkgJGZoLCAnPicsICRBUkdWWzBdOwoJcHJpbnQg
+JGZoICRwdXNoIC4gIlxuIjsKCWNsb3NlICRmaDsKCWV4aXQgMDsKfQoKIyMgSGFuZGxlIGNsaWVu
+dCBkaXNjb25uZWN0cyBieSBudWtpbmcgdGhlIHRva2VuLgplbHNpZiAoICRFTlZ7J3NjcmlwdF90
+eXBlJ30gZXEgImNsaWVudC1kaXNjb25uZWN0IiApIHsKCXByaW50ICJIYW5kbGluZyBjbGllbnQg
+ZGlzY29ubmVjdC4gTnVraW5nIHRva2VuXG4iOwoJbXkgJGtleSA9ICRFTlZ7J2Rldid9IC4gJy0n
+IC4gJEVOVnsndHJ1c3RlZF9pcCd9IC4gJy0nIC4gJEVOVnsndHJ1c3RlZF9wb3J0J307CglteSAo
+JHRva2Vuc3RvcmVfZmgsICV0b2tlbnMpID0gbG9hZF90b2tlbnN0b3JlKCk7IAoJaWYgKCBkZWZp
+bmVkKCAkdG9rZW5zeyRrZXl9ICkgKSB7CgkJZGVsZXRlICR0b2tlbnN7JGtleX07Cgl9Cgl3cml0
+ZV90b2tlbnN0b3JlKCR0b2tlbnN0b3JlX2ZoLCAldG9rZW5zKTsKfQoKZWxzZSB7CglwcmludCAi
+V2Ugc2hvdWxkIG5ldmVyIGdldCBoZXJlIHVubGVzcyB3ZSBoYXZlIHRoZSB3cm9uZyBjb25maWch
+XG4iOwoJZXhpdCAxOwp9CgpleGl0IDE7Cg==
+
+
+--nextPart3112802.d0KMZ28gQD--
+
+--nextPart3686077.1VT8VPzPc8
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part.
+Content-Transfer-Encoding: 7Bit
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEFHf0gfgNrH6ofcYGQa811Xp9MdwFAllgY4MACgkQQa811Xp9
+MdwZoBAAlEz8/fOSBj0Oo7nBcKSka2xF1bTiZ48t0nMjIcvyVrGMN1N3kHQfOJ/M
+it5YwuY4S82VJob6QZSUeJLQRBdwcQ6Q7CNcP0PVFA3pp7m8K8820P3VPNF1dc0h
+n/XGOZHEYMVQwwAB/UjfqxnbbqSwM1KQmhX7nudjHAThU7+HktFskmXeWuS/9QX6
+jayD7I6ujGsw9eRl+K+bYcDtvkDYIJ+pei0utmUfCjX8swdY0hOHKOSdcqm2ObVU
+mgkLe8HXRsvxSU8zDYSGFTwAZm2uHEzwWiiSzSHN45zLNgAMMctDWg/dCfxp5Au1
+S7M3SK6+36H3kz9VwGQyzKRRkghRtWSVKzqsvRfDWVOh3qnmuEQJiD36omGvrzBI
+tz0pzm/HsTR+r+Lhb+kPNZhPrjImMhSX3h5XHaptxlFFngjNGoo7mqdYd4EHX+NP
+TNQtoH0Xe8RJQvWHVug8XgG13MVeXnGZi742jazWYXDqpuCMQg8wmuIBxLfaIA4b
+AAvpE1Y+Nx5lJZFN0brVmbQF8LWK1d67Fe8PUvF+Tv5a+1fcL0psZ5/a0a2OvI4e
+rVOaXnzLWpHA6K1JbmMck6tGSQUXS2jFOF9DHpHpaIvHp9PCMHzZpnV8ai1TnkB6
+AKK/gwTzfXbIJ5o7i4JL+Mkfw25AUBlSBrtcI8YNuUWAB7yrCm4=
+=nBgB
+-----END PGP SIGNATURE-----
+
+--nextPart3686077.1VT8VPzPc8--
+
 
