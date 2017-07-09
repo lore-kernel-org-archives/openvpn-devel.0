@@ -1,8 +1,7 @@
-From: Antonio Quartulli <a@...2181...>
-Date: Sun,  9 Jul 2017 10:27:39 +0800
-Message-Id: <20170709022739.359-1-a@...2181...>
-Subject: [Openvpn-devel] [PATCH] route: avoid definition of variable on
- unused platforms
+From: Ilya Shipitsin <chipitsine@...277...>
+Date: Sun,  9 Jul 2017 19:46:46 +0500
+Message-Id: <20170709144646.10352-1-chipitsine@...277...>
+Subject: [Openvpn-devel] [PATCH] win32 build: check for ENETUNREACH
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,40 +13,42 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: Antonio Quartulli <antonio@...515...>
 
-From: Antonio Quartulli <antonio@...515...>
-
-Signed-off-by: Antonio Quartulli <antonio@...515...>
+Currently, we do not check for mingw-gcc version. For example,
+Debian 7 is shipped with 4.6.3, which does not know about ENETUNREACH
 ---
- src/openvpn/route.c | 4 ++++
- 1 file changed, 4 insertions(+)
 
-diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index a1811f41..349b2c76 100644
---- a/src/openvpn/route.c
-+++ b/src/openvpn/route.c
-@@ -2133,7 +2133,9 @@ delete_route(struct route_ipv4 *r,
-     struct argv argv = argv_new();
-     const char *network;
-     const char *netmask;
-+#if !defined(TARGET_LINUX) && !defined(TARGET_ANDROID)
-     const char *gateway;
+this is for 2.4 and HEAD branches
+
+ configure.ac | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
+
+diff --git a/configure.ac b/configure.ac
+index 60bb465..80b26ff 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -708,6 +708,20 @@ m4_define(
+ 	[setsockopt getsockopt getsockname poll]dnl
+ )
+ if test "${WIN32}" = "yes"; then
++
++#
++# check for ENETUNREACH 
++# at least Debian 7 is shipped with gcc-mingw-w64-4.6.3, which is too old
++#
++AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
++[[#include <errno.h>
++#if !defined (ENETUNREACH)
++# error ENETUNREACH not defined
 +#endif
-     int is_local_route;
- 
-     if ((r->flags & (RT_DEFINED|RT_ADDED)) != (RT_DEFINED|RT_ADDED))
-@@ -2145,7 +2147,9 @@ delete_route(struct route_ipv4 *r,
- 
-     network = print_in_addr_t(r->network, 0, &gc);
-     netmask = print_in_addr_t(r->netmask, 0, &gc);
-+#if !defined(TARGET_LINUX) && !defined(TARGET_ANDROID)
-     gateway = print_in_addr_t(r->gateway, 0, &gc);
-+#endif
- 
-     is_local_route = local_route(r->network, r->netmask, r->gateway, rgi);
-     if (is_local_route == LR_ERROR)
++]])],
++                   ,
++                   [AC_MSG_ERROR([gcc-mingw is too old, please update])])
++
+ # normal autoconf function checking does not find inet_ntop/inet_pton
+ # because they need to include the actual header file and link ws2_32.dll
+ 	LIBS="${LIBS} -lws2_32"
 -- 
-2.13.2
+2.9.4
 
 
