@@ -1,11 +1,11 @@
 References: <20170713080527.13299-1-a@...2181...>
+	<20170713080527.13299-2-a@...2181...>
 From: Arne Schwabe <arne@...1227...>
-Message-ID: <8832a0ea-909d-b043-3310-2e3d83c4205a@...1227...>
-Date: Thu, 13 Jul 2017 18:20:27 +0200
+Message-ID: <3e2f1a38-76f8-318f-e3d6-bfee89b1e560@...1227...>
+Date: Thu, 13 Jul 2017 18:20:59 +0200
 MIME-Version: 1.0
-In-Reply-To: <20170713080527.13299-1-a@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH 1/2] use M_ERRNO instead of explicitly
- printing errno
+In-Reply-To: <20170713080527.13299-2-a@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH 2/2] don't print errno twice
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,14 +22,12 @@ Cc: Antonio Quartulli <antonio@...515...>
 Am 13.07.17 um 10:05 schrieb Antonio Quartulli:
 > From: Antonio Quartulli <antonio@...515...>
 > 
-> the msg() function will print the errno for us when
-> provided with the M_ERRNO flag.
-> 
-> Therefore, don't bother printing errno explicitly and always
-> pass M_ERRNO to msg().
+> when passing the M_ERRNO flag to msg(), the latter will already
+> print the errno message (in a form of a string and number) for us,
+> hence there is no need to explicitly print it a second time.
 > 
 
-ACK and shame on me for the utun ones.
+ACK. Does what it says.
 
 Arne
 
