@@ -1,11 +1,10 @@
-References: <20170713080527.13299-1-a@...2181...>
-	<20170713080527.13299-2-a@...2181...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <3e2f1a38-76f8-318f-e3d6-bfee89b1e560@...1227...>
-Date: Thu, 13 Jul 2017 18:20:59 +0200
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <f7687ebf-a75f-095d-67ca-e32a5c4e53e7@...515...>
+Date: Fri, 14 Jul 2017 17:07:33 +0300
 MIME-Version: 1.0
-In-Reply-To: <20170713080527.13299-2-a@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH 2/2] don't print errno twice
+Content-Language: en-US
+Subject: [Openvpn-devel] Windows installer with updated pkcs11-helper (1.22)
+ available for testing
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,21 +13,27 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-To: Antonio Quartulli <a@...2181...>, openvpn-devel@lists.sourceforge.net
-Cc: Antonio Quartulli <antonio@...515...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Am 13.07.17 um 10:05 schrieb Antonio Quartulli:
-> From: Antonio Quartulli <antonio@...515...>
-> 
-> when passing the M_ERRNO flag to msg(), the latter will already
-> print the errno message (in a form of a string and number) for us,
-> hence there is no need to explicitly print it a second time.
-> 
+Hi all,
 
-ACK. Does what it says.
+Those of you who use pkcs11 on Windows: could you please test this new
+Windows installer:
 
-Arne
+<http://build.openvpn.net/downloads/releases/openvpn-install-2.4.3-I602.exe>
 
+The previous installer(s) had pkcs11-helper 1.11. This one has 1.22, so
+some regression testing would be good to have.
+
+I'd like to push the updated installer out early next week, preferably
+on Monday.
+
+--=20
+Samuli Sepp=C3=A4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
 
