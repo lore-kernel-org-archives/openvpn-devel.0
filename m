@@ -1,14 +1,15 @@
+From: Antonio Quartulli <a@...2181...>
 References: <20170716082207.23646-1-coroner@...2290...>
 	<53e22340-d528-13b8-8ed2-2954bef71557@...2181...>
 	<71634ec3-3179-a976-afb5-e41e1e076a55@...2290...>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <18d68a41-9903-4118-182f-355e52f27149@...2181...>
-Date: Sun, 16 Jul 2017 17:24:26 +0800
+	<18d68a41-9903-4118-182f-355e52f27149@...2181...>
+Message-ID: <bda8bfa8-701a-99a1-4d02-676918cf1fe2@...2181...>
+Date: Sun, 16 Jul 2017 17:26:54 +0800
 MIME-Version: 1.0
-In-Reply-To: <71634ec3-3179-a976-afb5-e41e1e076a55@...2290...>
+In-Reply-To: <18d68a41-9903-4118-182f-355e52f27149@...2181...>
 Content-Type: multipart/signed; micalg=pgp-sha256;
 	protocol="application/pgp-signature";
-	boundary="UdkQAUlxgSvnGmcRtQjkTT74DI6WnxmCV"
+	boundary="MjhbmHOlTlHrNOJDulqe7ai7rKFSKr1SX"
 Subject: Re: [Openvpn-devel] [PATCH] Support server cipher preference
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -22,102 +23,110 @@ To: =?UTF-8?Q?Szil=c3=a1rd_Pfeiffer?= <coroner@...2290...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---UdkQAUlxgSvnGmcRtQjkTT74DI6WnxmCV
-Content-Type: multipart/mixed; boundary="jv3igmAs6rsS4T14sbkrCnvRwsAFFnBDa";
+--MjhbmHOlTlHrNOJDulqe7ai7rKFSKr1SX
+Content-Type: multipart/mixed; boundary="nWiu1kJafXEXBs8aHs1Lw4IObw62C4gIq";
  protected-headers="v1"
 From: Antonio Quartulli <a@...2181...>
 To: =?UTF-8?Q?Szil=c3=a1rd_Pfeiffer?= <coroner@...2290...>
 Cc: "openvpn-devel@lists.sourceforge.net"
  <openvpn-devel@lists.sourceforge.net>
-Message-ID: <18d68a41-9903-4118-182f-355e52f27149@...2181...>
+Message-ID: <bda8bfa8-701a-99a1-4d02-676918cf1fe2@...2181...>
 Subject: Re: [Openvpn-devel] [PATCH] Support server cipher preference
 References: <20170716082207.23646-1-coroner@...2290...>
  <53e22340-d528-13b8-8ed2-2954bef71557@...2181...>
  <71634ec3-3179-a976-afb5-e41e1e076a55@...2290...>
-In-Reply-To: <71634ec3-3179-a976-afb5-e41e1e076a55@...2290...>
+ <18d68a41-9903-4118-182f-355e52f27149@...2181...>
+In-Reply-To: <18d68a41-9903-4118-182f-355e52f27149@...2181...>
 
---jv3igmAs6rsS4T14sbkrCnvRwsAFFnBDa
+--nWiu1kJafXEXBs8aHs1Lw4IObw62C4gIq
 Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
-(re-adding the ml: please keep it in the CC list)
 
-On 16/07/17 17:16, Szil=C3=A1rd Pfeiffer wrote:
-> On 2017-07-16 10:47, Antonio Quartulli wrote:
->> Hi Szil=C3=A1rd,
->>
->>
->> On 16/07/17 16:22, Szil=C3=A1rd Pfeiffer wrote:
->>> ---
->>>  doc/openvpn.8             |  4 ++++
->>>  src/openvpn/options.c     | 17 +++++++++++++++++
->>>  src/openvpn/ssl_common.h  |  7 ++++---
->>>  src/openvpn/ssl_openssl.c |  6 ++++++
->>>  4 files changed, 31 insertions(+), 3 deletions(-)
+
+On 16/07/17 17:24, Antonio Quartulli wrote:
+> (re-adding the ml: please keep it in the CC list)
+>=20
+> On 16/07/17 17:16, Szil=C3=A1rd Pfeiffer wrote:
+>> On 2017-07-16 10:47, Antonio Quartulli wrote:
+>>> Hi Szil=C3=A1rd,
 >>>
->> how about adding some text in the commit message explaining what the
->> patch is doing and *why* it would be helpful? casual reader not into TLS
->> (like me) may miss the benefit of this changes.
-> The option does what ssl_prefer_server_ciphers options does in NGINX, the=
- SSLHonorCipherOrder option does in Apache, ...
->=20
-> http://nginx.org/en/docs/http/ngx_http_ssl_module.html#ssl_prefer_server_=
-ciphers
-> https://httpd.apache.org/docs/current/mod/mod_ssl.html#sslhonorcipherorder
->=20
-> The reason explained for example in the following blog post.
->=20
-> https://tribut.de/blog/secure-your-services-using-sane-cipher-ordering/#w=
-hat-cipher-ordering-is-all-about
+>>>
+>>> On 16/07/17 16:22, Szil=C3=A1rd Pfeiffer wrote:
+>>>> ---
+>>>>  doc/openvpn.8             |  4 ++++
+>>>>  src/openvpn/options.c     | 17 +++++++++++++++++
+>>>>  src/openvpn/ssl_common.h  |  7 ++++---
+>>>>  src/openvpn/ssl_openssl.c |  6 ++++++
+>>>>  4 files changed, 31 insertions(+), 3 deletions(-)
+>>>>
+>>> how about adding some text in the commit message explaining what the
+>>> patch is doing and *why* it would be helpful? casual reader not into TLS
+>>> (like me) may miss the benefit of this changes.
+>> The option does what ssl_prefer_server_ciphers options does in NGINX, th=
+e SSLHonorCipherOrder option does in Apache, ...
 >>
-
-why not putting some of this information in the commit message as well?
-
->> And why making it a compile time option?
-> What do you mean? It can be set from command line.
+>> http://nginx.org/en/docs/http/ngx_http_ssl_module.html#ssl_prefer_server=
+_ciphers
+>> https://httpd.apache.org/docs/current/mod/mod_ssl.html#sslhonorcipherord=
+er
+>>
+>> The reason explained for example in the following blog post.
+>>
+>> https://tribut.de/blog/secure-your-services-using-sane-cipher-ordering/#=
+what-cipher-ordering-is-all-about
+>>>
+>=20
+> why not putting some of this information in the commit message as well?
+>=20
+>>> And why making it a compile time option?
+>> What do you mean? It can be set from command line.
+>>
+>=20
+> all your code is surrounded by "#ifdef SSL_OP_CIPHER_SERVER_PREFERENCE",
+> hence I imagined you wanted your code to be included based on a compile
+> time option. However, I don't see where SSL_OP_CIPHER_SERVER_PREFERENCE
+> should be defined? Am I missing something or it was forgotten?
 >=20
 
-all your code is surrounded by "#ifdef SSL_OP_CIPHER_SERVER_PREFERENCE",
-hence I imagined you wanted your code to be included based on a compile
-time option. However, I don't see where SSL_OP_CIPHER_SERVER_PREFERENCE
-should be defined? Am I missing something or it was forgotten?
+Sorry, but I realized just now that this is an OpenSSL specific
+mechanism and that the define is coming from OpenSSL itself.
 
->> Another question: may this option lead the client to an incompatible
->> configuration?
-> No, it is not. Only the cipher choosen by the server may change if the op=
-tion is on.
->=20
+This is not my field, so I'll leave the review to somebody else, but
+still, this should be explained in the commit message,
 
 Cheers,
+
+
 
 --=20
 Antonio Quartulli
 
 
---jv3igmAs6rsS4T14sbkrCnvRwsAFFnBDa--
+--nWiu1kJafXEXBs8aHs1Lw4IObw62C4gIq--
 
---UdkQAUlxgSvnGmcRtQjkTT74DI6WnxmCV
+--MjhbmHOlTlHrNOJDulqe7ai7rKFSKr1SX
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCAAdFiEEbd2mMhAXbmSCipS40+HICM1soFAFAllrMMoACgkQ0+HICM1s
-oFAT/A/9EeYtkNHcXffA/k81cH7Z3V8+5zs5VAHmgNQhTqsYAikjK3/SgDbL7B2X
-g73IpeORxMLNlvV7gi8eTP6CWFlEBX3QH0/yEb/z8yzIcJcSqv+UBjlkxrMeX0N8
-A9Hg8RNJxCFvEXWWplPC8wPTqtjAOanlwfNIxwmWPZ7NqIGYtBEnJWmjq6cE8lfH
-6Nsja1eTHXw2CvIXGMV3vSCMtnyr7chEfJyMWZeuT2CcRZf9P30dwF9iY48w5UTd
-rWkCPkDmjr6RdtyQ0FjARG4USxbxAO2eptEhQcP7nHYOyn8Z4qXnFW5V2HZZc19e
-nXjRn5p0wuD53K97cmmUR4I/A/zko9bGtqeS0RQVQDakmlhRRfF0xF9wQoZ3QIVJ
-zsbyER7k7/r5UuGZqUoKY2SKafMf6caEBY5WPU+WYg7s0HyIsZeGt+eqRdApYevz
-+ZREl6zYKnJ7xNqaCIo19RxEdI4h/+ad354j4sa6gA2CGD3OZsotZkwqCV+EWr8X
-lpDGzWVuzK2ClbAvER7BK4T9b5MBjSGwvgMf1+nFP0bkPuIoeCmQd0rF7MguFgKF
-HkgJFEk8BJMm0PJqzvuI7+NkoNU/iUOW7w/62naYK6F1Mzffpfl4hhTNNFVoO7Wz
-m/GOZnOPybFkZCBko43VpVUSKAZ4qoPNg7Jxuuw5c6fUfkl3fEY=
-=qblN
+iQIzBAEBCAAdFiEEbd2mMhAXbmSCipS40+HICM1soFAFAllrMV4ACgkQ0+HICM1s
+oFAa/g/9EoVbAWX8wLQ16RpkoA7WuCypQo0cO+P830RrUmVcl+menpxSSsixa41X
+7afl8j9P+2RjwtE6V6CZH31pc0P0KYjrEFOzdX2+3iBXdXfOU8gEKdL7oKHAvD7o
+Uqcr3FC2kjuX+xY8gvnlbzpWE0l3tI9V3nEQXyxmgksg4YaSpNGj0F10woqU4fKX
+0fqAGHiWXJoXbulLSEZwPH7QXXbG9Y49TBNjtKsc0yBgYuzrmZIOYSVidFHV7Dk5
+vI2LRRkWVFyPh7Oqd00hdgboXFRLHvR9CVtAzyA2SRO3wVs1zsyowgLwXAghYhq9
+cXENdw3Y0zd4OgZ7p4QaheTecim1k5UuDRxwy5J5+uA4hqheQ0SWFTbi0JWSRcxw
+KRx8DjyHQOJtahObEUO2cj2xKZhgwPXsEJMNcDUm0QTtvOhUbQZKWdDgD6QrXTeF
+Auud9zb13M8CLvhEF2TFfRPFl7SgcJCVNFYAk46NGuJERSEKoK16pxh8VIbz8Npl
+XIcXXhhhv7NwjPoOD/PVyMHEh+f5r0glbCIEnYjXDmJDl8bBe4gHytXEQhEF4KYC
+w5r0udO/bcIbSMiM2tMYEeoS5qSj/jWUpoULhERDOjJVUL+IE+cM4m8yiJR0albc
+n609JER5xC+EjJWOQQciI34UuDcaHvWYIOqaxZHYdzoP9blGwqk=
+=RvLv
 -----END PGP SIGNATURE-----
 
---UdkQAUlxgSvnGmcRtQjkTT74DI6WnxmCV--
+--MjhbmHOlTlHrNOJDulqe7ai7rKFSKr1SX--
 
