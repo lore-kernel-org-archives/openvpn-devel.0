@@ -1,9 +1,13 @@
+References: <f7687ebf-a75f-095d-67ca-e32a5c4e53e7@...515...>
+	<41c0e750-b27e-22ea-d5fb-b17fe391636d@...1147...>
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <689096e2-8bb8-95b8-5daf-22fd600a00ca@...515...>
+Date: Mon, 17 Jul 2017 13:34:37 +0300
 MIME-Version: 1.0
-From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Date: Mon, 17 Jul 2017 13:30:55 +0500
-Message-ID: <CAFHpkQGs2cH+SsiCPQwmqgAjWco9ahJjWW+wzV6vEANLZuh1Tw@...278...>
-Content-Type: multipart/alternative; boundary="94eb2c0d2332c011dd05547f3734"
-Subject: [Openvpn-devel] "fail delay" (in order to slow down brute force) ?
+In-Reply-To: <41c0e750-b27e-22ea-d5fb-b17fe391636d@...1147...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] Windows installer with updated pkcs11-helper
+ (1.22) available for testing
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,36 +16,42 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-
---94eb2c0d2332c011dd05547f3734
-Content-Type: text/plain; charset="UTF-8"
-
-Hello,
-
-we use pam_faildelay.so for some projects
-from the openvpn point of view, am I right, if using command line auth (no
-cert auth), it will also block running process ?
-
-is there an alternative of "so" async plugin ?
-
-(we were not very lucky with "so" plugins, for example radius plugin used
-to crash openvpn, also it is not any flexible)
-
-Cheers,
-Ilya Shipitsin
-
---94eb2c0d2332c011dd05547f3734
-Content-Type: text/html; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
+To: Jan Just Keijser <janjust@...1147...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-<div dir=3D"ltr"><div><div><div><div><div><div>Hello,<br><br></div>we use p=
-am_faildelay.so for some projects<br></div>from the openvpn point of view, =
-am I right, if using command line auth (no cert auth), it will also block r=
-unning process ?<br><br></div>is there an alternative of &quot;so&quot; asy=
-nc plugin ?<br><br></div>(we were not very lucky with &quot;so&quot; plugin=
-s, for example radius plugin used to crash openvpn, also it is not any flex=
-ible)<br><br></div>Cheers,<br></div>Ilya Shipitsin<br></div>
+On 15/07/2017 00:43, Jan Just Keijser wrote:
+> Hi Samuli,
+>=20
+> On 14/07/17 16:07, Samuli Sepp=C3=A4nen wrote:
+>> Hi all,
+>>
+>> Those of you who use pkcs11 on Windows: could you please test this new
+>> Windows installer:
+>>
+>> <http://build.openvpn.net/downloads/releases/openvpn-install-2.4.3-I602.=
+exe>
+>>
+>>
+>> The previous installer(s) had pkcs11-helper 1.11. This one has 1.22, so
+>> some regression testing would be good to have.
+>>
+>> I'd like to push the updated installer out early next week, preferably
+>> on Monday.
+>>
+> nice to see that pkcs11 support is still included in the Windows
+> version; I can test the installer on monday morning(no Windows laptop in
+> my house ;))  I will let you know my findings.
+>=20
+> cheers,
+>=20
+> JJK
+>=20
 
---94eb2c0d2332c011dd05547f3734--
+Hi JJK,
+
+Excellent, thanks! I will push out the new installer if everything looks
+good at your end.
+
+Samuli
 
