@@ -1,13 +1,16 @@
-From: Jan Just Keijser <janjust@...1147...>
+Date: Mon, 17 Jul 2017 14:14:51 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20170717121451.GQ70062@...1296...>
 References: <f7687ebf-a75f-095d-67ca-e32a5c4e53e7@...515...>
 	<41c0e750-b27e-22ea-d5fb-b17fe391636d@...1147...>
 	<689096e2-8bb8-95b8-5daf-22fd600a00ca@...515...>
 	<da7671c8-6768-f718-79a0-996cdb0d8d87@...1147...>
-Message-ID: <82ec1478-ec53-3980-05b1-4529a74aa789@...1147...>
-Date: Mon, 17 Jul 2017 14:10:11 +0200
+	<82ec1478-ec53-3980-05b1-4529a74aa789@...1147...>
 MIME-Version: 1.0
-In-Reply-To: <da7671c8-6768-f718-79a0-996cdb0d8d87@...1147...>
-Content-Language: en-US
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="ZfOjI3PrQbgiZnxM"
+Content-Disposition: inline
+In-Reply-To: <82ec1478-ec53-3980-05b1-4529a74aa789@...1147...>
 Subject: Re: [Openvpn-devel] Windows installer with updated pkcs11-helper
  (1.22) available for testing
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -18,90 +21,47 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"; format=flowed
+To: Jan Just Keijser <janjust@...1147...>
+Cc: Samuli =?iso-8859-1?Q?Sepp=E4nen?= <samuli@...515...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+
+--ZfOjI3PrQbgiZnxM
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-To: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Disposition: inline
 
-Follow-up:
+Hi,
 
-this problem is NOT present in OpenVPN 2.3.17; the same warning appears (ro=
-ute gateway is ambiguous) but the route is added=20
-anyway. This seems to be a regression in 2.4.
+On Mon, Jul 17, 2017 at 02:10:11PM +0200, Jan Just Keijser wrote:
+> this problem is NOT present in OpenVPN 2.3.17; the same warning appears (=
+route gateway is ambiguous) but the route is added=20
+> anyway. This seems to be a regression in 2.4.
 
-JJK
+Can we have a log, please?
 
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-On 17/07/17 14:01, Jan Just Keijser wrote:
-> Hi all,
->
-> On 17/07/17 12:34, Samuli Sepp=C3=A4nen wrote:
->> On 15/07/2017 00:43, Jan Just Keijser wrote:
->>> Hi Samuli,
->>>
->>> On 14/07/17 16:07, Samuli Sepp=C3=A4nen wrote:
->>>> Hi all,
->>>>
->>>> Those of you who use pkcs11 on Windows: could you please test this new
->>>> Windows installer:
->>>>
->>>> <http://build.openvpn.net/downloads/releases/openvpn-install-2.4.3-I60=
-2.exe>
->>>>
->>>>
->>>> The previous installer(s) had pkcs11-helper 1.11. This one has 1.22, so
->>>> some regression testing would be good to have.
->>>>
->>>> I'd like to push the updated installer out early next week, preferably
->>>> on Monday.
->>>>
->>> nice to see that pkcs11 support is still included in the Windows
->>> version; I can test the installer on monday morning(no Windows laptop in
->>> my house ;))  I will let you know my findings.
->>>
->>> cheers,
->>>
->>> JJK
->>>
->> Hi JJK,
->>
->> Excellent, thanks! I will push out the new installer if everything looks
->> good at your end.
->>
->
-> good news and bad news:
->
-> + the pkcs11 stuff works as expected, no problems there
-> - with openvpn 2.4.3 my existing setup using "redirect-gateway def1"  sto=
-pped working!
->
-> I'll downgrade OpenVPN to see if this problem was already there in 2.3.XX=
- ; what happens is this:
-> - openvpn wants to add a direct route to the VPN server
-> - there happen to be TWO gateways to that server with the SAME IP address=
-, one via wired ethernet, one via wireless
-> - openvpn gets confused and says "route gateway is ambiguous" and refuses=
- to add it
-> - after that, all traffic is jammed, as there is no direct route to the V=
-PN server itself, and thus all encrypted traffic is=20
-> fed back into the tunnel, where it is encrypted again, etc etc ("biting y=
-our own tail").
->
-> Disconnecting either wired or wireless solves the issue AFTER restarting =
-OpenVPN. Annoying.
-> It looks like a (minor) patch is needed to deal with this special case
->
-> cheers,
->
-> JJK
->
->
-> -------------------------------------------------------------------------=
------
-> Check out the vibrant tech community on one of the world's most
-> engaging tech sites, Slashdot.org! http://sdm.link/slashdot
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+--ZfOjI3PrQbgiZnxM
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJZbKo7AAoJEB2Cnv7KVigSbrgL/iaq9Jp5PgHPmWM8DfXerxEJ
+OEDd/xOV4Zag48bAcypKxPMbjjvuzclxZ6UpcHFI67IabhLQ4lste0ulJCv5eMKh
+cjXcvKUha9IWiy4c6W/dzQZW7YsLm77tEyd1gqjIL348B5oyIFz7rzKl1ZOYLGJn
+v5QCewLMcUhIDLcIt2ymDpvyHxx910c/IoS0myk0RksKiWpL3ASG8CpsTd9GOMsL
+j0EGgtfwra54myxgy74g/+mIgYM0nYtQsYSgfDYleD0N40M39fJYbwe4Sq12G1pf
+jS4Yoa/CsyQrQkaJdCmjV44TPcOJs9MJFUa5bvY4y9f6P2422PhhXp6GT8CJ40dC
+og9KyUf3J6luXGpifVod36+r6fcNx6dVeeNmww7KbGaXDJhVTUSwSxkdmmxdTIkc
+0D71TvbcujtVz31PPR+0eH9r8hLmWBnoRL34fio2k5UnWKjB0bdpXy8XGlaYlMQA
+EC1+qX134nASbnnLFOKWq9LKJTInClXgOfQWsYNZOg==
+=Y1Df
+-----END PGP SIGNATURE-----
+
+--ZfOjI3PrQbgiZnxM--
 
