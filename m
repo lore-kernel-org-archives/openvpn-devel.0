@@ -1,12 +1,11 @@
-Message-ID: <1500293278.28621.32.camel@...1866...>
-From: David Woodhouse <dwmw2@...1866...>
-In-Reply-To: <f7687ebf-a75f-095d-67ca-e32a5c4e53e7@...515...>
+MIME-Version: 1.0
+In-Reply-To: <1500293278.28621.32.camel@...1866...>
 References: <f7687ebf-a75f-095d-67ca-e32a5c4e53e7@...515...>
-Content-Type: multipart/signed; micalg="sha-256";
-	protocol="application/x-pkcs7-signature";
-	boundary="=-i3s+Nf+Rlt4EXQIE808h"
-Date: Mon, 17 Jul 2017 13:07:58 +0100
-Mime-Version: 1.0
+	<1500293278.28621.32.camel@...1866...>
+From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
+Date: Mon, 17 Jul 2017 23:27:21 +0500
+Message-ID: <CAFHpkQEyiPKUAYhnbfJ3HkiEOZ0Mxd0MJxD4URYEHp4+7=0mAA@...278...>
+Content-Type: multipart/alternative; boundary="94eb2c0d2332c5049e0554878c4e"
 Subject: Re: [Openvpn-devel] Windows installer with updated pkcs11-helper
  (1.22) available for testing
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -17,124 +16,113 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Samuli =?ISO-8859-1?Q?Sepp=E4nen?= <samuli@...515...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: David Woodhouse <dwmw2@...1866...>
+Cc: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---=-i3s+Nf+Rlt4EXQIE808h
+--94eb2c0d2332c5049e0554878c4e
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, 2017-07-14 at 17:07 +0300, Samuli Sepp=C3=A4nen wrote:
-> Hi all,
->=20
-> Those of you who use pkcs11 on Windows: could you please test this new
-> Windows installer:
->=20
->=20
->=20
-> The previous installer(s) had pkcs11-helper 1.11. This one has 1.22, so
-> some regression testing would be good to have.
+2017-07-17 17:07 GMT+05:00 David Woodhouse <dwmw2@...1866...>:
 
-Please include the pkcs11-helper patch from
-https://github.com/OpenSC/pkcs11-helper/pull/4=C2=A0to make it support using
-RFC7512 PKCS#11 URIs to specify certificates/keys instead of its own
-non-standard identifiers.
+> On Fri, 2017-07-14 at 17:07 +0300, Samuli Sepp=C3=A4nen wrote:
+> > Hi all,
+> >
+> > Those of you who use pkcs11 on Windows: could you please test this new
+> > Windows installer:
+> >
+> >
+> >
+> > The previous installer(s) had pkcs11-helper 1.11. This one has 1.22, so
+> > some regression testing would be good to have.
+>
+> Please include the pkcs11-helper patch from
+> https://github.com/OpenSC/pkcs11-helper/pull/4 to make it support using
+> RFC7512 PKCS#11 URIs to specify certificates/keys instead of its own
+> non-standard identifiers.
+>
 
-(It still accepts the old form, for compatibility).=
+openvpn is split into several repo, we have pkcs11-helper at least here:
 
---=-i3s+Nf+Rlt4EXQIE808h
-Content-Type: application/x-pkcs7-signature; name="smime.p7s"
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Transfer-Encoding: base64
-
-MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAAKCCDzUw
-ggSvMIIDl6ADAgECAhEA4CPLFRKDU4mtYW56VGdrITANBgkqhkiG9w0BAQsFADBvMQswCQYDVQQG
-EwJTRTEUMBIGA1UEChMLQWRkVHJ1c3QgQUIxJjAkBgNVBAsTHUFkZFRydXN0IEV4dGVybmFsIFRU
-UCBOZXR3b3JrMSIwIAYDVQQDExlBZGRUcnVzdCBFeHRlcm5hbCBDQSBSb290MB4XDTE0MTIyMjAw
-MDAwMFoXDTIwMDUzMDEwNDgzOFowgZsxCzAJBgNVBAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1h
-bmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAYBgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMUEw
-PwYDVQQDEzhDT01PRE8gU0hBLTI1NiBDbGllbnQgQXV0aGVudGljYXRpb24gYW5kIFNlY3VyZSBF
-bWFpbCBDQTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAImxDdp6UxlOcFIdvFamBia3
-uEngludRq/HwWhNJFaO0jBtgvHpRQqd5jKQi3xdhTpHVdiMKFNNKAn+2HQmAbqUEPdm6uxb+oYep
-LkNSQxZ8rzJQyKZPWukI2M+TJZx7iOgwZOak+FaA/SokFDMXmaxE5WmLo0YGS8Iz1OlAnwawsayT
-QLm1CJM6nCpToxDbPSBhPFUDjtlOdiUCISn6o3xxdk/u4V+B6ftUgNvDezVSt4TeIj0sMC0xf1m9
-UjewM2ktQ+v61qXxl3dnUYzZ7ifrvKUHOHaMpKk4/9+M9QOsSb7K93OZOg8yq5yVOhM9DkY6V3Rh
-UL7GQD/L5OKfoiECAwEAAaOCARcwggETMB8GA1UdIwQYMBaAFK29mHo0tCb3+sQmVO8DveAky1Qa
-MB0GA1UdDgQWBBSSYWuC4aKgqk/sZ/HCo/e0gADB7DAOBgNVHQ8BAf8EBAMCAYYwEgYDVR0TAQH/
-BAgwBgEB/wIBADAdBgNVHSUEFjAUBggrBgEFBQcDAgYIKwYBBQUHAwQwEQYDVR0gBAowCDAGBgRV
-HSAAMEQGA1UdHwQ9MDswOaA3oDWGM2h0dHA6Ly9jcmwudXNlcnRydXN0LmNvbS9BZGRUcnVzdEV4
-dGVybmFsQ0FSb290LmNybDA1BggrBgEFBQcBAQQpMCcwJQYIKwYBBQUHMAGGGWh0dHA6Ly9vY3Nw
-LnVzZXJ0cnVzdC5jb20wDQYJKoZIhvcNAQELBQADggEBABsqbqxVwTqriMXY7c1V86prYSvACRAj
-mQ/FZmpvsfW0tXdeDwJhAN99Bf4Ss6SAgAD8+x1banICCkG8BbrBWNUmwurVTYT7/oKYz1gb4yJj
-nFL4uwU2q31Ypd6rO2Pl2tVz7+zg+3vio//wQiOcyraNTT7kSxgDsqgt1Ni7QkuQaYUQ26Y3NOh7
-4AEQpZzKOsefT4g0bopl0BqKu6ncyso20fT8wmQpNa/WsadxEdIDQ7GPPprsnjJT9HaSyoY0B7ks
-yuYcStiZDcGG4pCS+1pCaiMhEOllx/XVu37qjIUgAmLq0ToHLFnFmTPyOInltukWeh95FPZKEBom
-+nyK+5swggU9MIIEJaADAgECAhBqC1BYlVMtBFBN4igR/howMA0GCSqGSIb3DQEBCwUAMIGbMQsw
-CQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYDVQQHEwdTYWxmb3Jk
-MRowGAYDVQQKExFDT01PRE8gQ0EgTGltaXRlZDFBMD8GA1UEAxM4Q09NT0RPIFNIQS0yNTYgQ2xp
-ZW50IEF1dGhlbnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1haWwgQ0EwHhcNMTYxMjIwMDAwMDAwWhcN
-MTcxMjIwMjM1OTU5WjAkMSIwIAYJKoZIhvcNAQkBFhNkd213MkBpbmZyYWRlYWQub3JnMIIBIjAN
-BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwbTrFaiGdvN2pThnR9q+4eaXB2wQZQNqhter5ZrJ
-pPO47e87bZ+f1tmYoh6+rB90G/XN24NErPRfvU4zVzNT9pCtCzSSVnBlZQBpaEYMKhcXo5PGKNsm
-An8BoGwNXjlxwbBNRaNO+ky0wNCaMNd1JLxEuvqg9J7rrcpHhWmnpXD5IKa8gv9GyVAJgOpiBOts
-p91sShc2kHvWJ5waPEWPCHDH9J+twGGKqKIIU7fdbURLUgUL1wlDSAHf/lgIAVCSj2H2HpoGqHpy
-HgOAClX9iRSLNa0Znj8HTaqfOwxXevsz1KkLFY+Ahm426GIEqdfkK2iT6Hhgc7tjNO3f8i5ALQID
-AQABo4IB8TCCAe0wHwYDVR0jBBgwFoAUkmFrguGioKpP7GfxwqP3tIAAwewwHQYDVR0OBBYEFILE
-dmHLtK6oxmFJZvBhTQhvqrS0MA4GA1UdDwEB/wQEAwIFoDAMBgNVHRMBAf8EAjAAMCAGA1UdJQQZ
-MBcGCCsGAQUFBwMEBgsrBgEEAbIxAQMFAjARBglghkgBhvhCAQEEBAMCBSAwRgYDVR0gBD8wPTA7
-BgwrBgEEAbIxAQIBAQEwKzApBggrBgEFBQcCARYdaHR0cHM6Ly9zZWN1cmUuY29tb2RvLm5ldC9D
-UFMwXQYDVR0fBFYwVDBSoFCgToZMaHR0cDovL2NybC5jb21vZG9jYS5jb20vQ09NT0RPU0hBMjU2
-Q2xpZW50QXV0aGVudGljYXRpb25hbmRTZWN1cmVFbWFpbENBLmNybDCBkAYIKwYBBQUHAQEEgYMw
-gYAwWAYIKwYBBQUHMAKGTGh0dHA6Ly9jcnQuY29tb2RvY2EuY29tL0NPTU9ET1NIQTI1NkNsaWVu
-dEF1dGhlbnRpY2F0aW9uYW5kU2VjdXJlRW1haWxDQS5jcnQwJAYIKwYBBQUHMAGGGGh0dHA6Ly9v
-Y3NwLmNvbW9kb2NhLmNvbTAeBgNVHREEFzAVgRNkd213MkBpbmZyYWRlYWQub3JnMA0GCSqGSIb3
-DQEBCwUAA4IBAQA+AfvNhFwtapF5Lzjapgul3zYuEnMfR538Ya1vhP8wuOkcoJeT2gEFXzVO2WUu
-eWM0g0/DumnRB53htV/Qq/+vsL0i6a2+iOO7kHi5O7bZkgbdNv0t2lzonDUHi6LTa7NUj+tv+j6y
-hW+iNquC3ACP1dIZH8gJmicHblW63qRgp6wxhn315MLBeavi3uiSag2eeKFePiTIwJjN2UYq6kWg
-PL5G/Ycf9x/xN1XBTfJiURc0FsXhrA98VMWnt52C5Lo4txhGjzTI+IZg40b3YDs6E7mTYb5KKmbc
-QZA9priOFDdj1z5W9BdWhU6I/D0P9y8Z4Tr6+ZscMUVD0RqWy2LeMIIFPTCCBCWgAwIBAgIQagtQ
-WJVTLQRQTeIoEf4aMDANBgkqhkiG9w0BAQsFADCBmzELMAkGA1UEBhMCR0IxGzAZBgNVBAgTEkdy
-ZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgGA1UEChMRQ09NT0RPIENBIExp
-bWl0ZWQxQTA/BgNVBAMTOENPTU9ETyBTSEEtMjU2IENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQg
-U2VjdXJlIEVtYWlsIENBMB4XDTE2MTIyMDAwMDAwMFoXDTE3MTIyMDIzNTk1OVowJDEiMCAGCSqG
-SIb3DQEJARYTZHdtdzJAaW5mcmFkZWFkLm9yZzCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoC
-ggEBAMG06xWohnbzdqU4Z0favuHmlwdsEGUDaobXq+WayaTzuO3vO22fn9bZmKIevqwfdBv1zduD
-RKz0X71OM1czU/aQrQs0klZwZWUAaWhGDCoXF6OTxijbJgJ/AaBsDV45ccGwTUWjTvpMtMDQmjDX
-dSS8RLr6oPSe663KR4Vpp6Vw+SCmvIL/RslQCYDqYgTrbKfdbEoXNpB71iecGjxFjwhwx/SfrcBh
-iqiiCFO33W1ES1IFC9cJQ0gB3/5YCAFQko9h9h6aBqh6ch4DgApV/YkUizWtGZ4/B02qnzsMV3r7
-M9SpCxWPgIZuNuhiBKnX5Ctok+h4YHO7YzTt3/IuQC0CAwEAAaOCAfEwggHtMB8GA1UdIwQYMBaA
-FJJha4LhoqCqT+xn8cKj97SAAMHsMB0GA1UdDgQWBBSCxHZhy7SuqMZhSWbwYU0Ib6q0tDAOBgNV
-HQ8BAf8EBAMCBaAwDAYDVR0TAQH/BAIwADAgBgNVHSUEGTAXBggrBgEFBQcDBAYLKwYBBAGyMQED
-BQIwEQYJYIZIAYb4QgEBBAQDAgUgMEYGA1UdIAQ/MD0wOwYMKwYBBAGyMQECAQEBMCswKQYIKwYB
-BQUHAgEWHWh0dHBzOi8vc2VjdXJlLmNvbW9kby5uZXQvQ1BTMF0GA1UdHwRWMFQwUqBQoE6GTGh0
-dHA6Ly9jcmwuY29tb2RvY2EuY29tL0NPTU9ET1NIQTI1NkNsaWVudEF1dGhlbnRpY2F0aW9uYW5k
-U2VjdXJlRW1haWxDQS5jcmwwgZAGCCsGAQUFBwEBBIGDMIGAMFgGCCsGAQUFBzAChkxodHRwOi8v
-Y3J0LmNvbW9kb2NhLmNvbS9DT01PRE9TSEEyNTZDbGllbnRBdXRoZW50aWNhdGlvbmFuZFNlY3Vy
-ZUVtYWlsQ0EuY3J0MCQGCCsGAQUFBzABhhhodHRwOi8vb2NzcC5jb21vZG9jYS5jb20wHgYDVR0R
-BBcwFYETZHdtdzJAaW5mcmFkZWFkLm9yZzANBgkqhkiG9w0BAQsFAAOCAQEAPgH7zYRcLWqReS84
-2qYLpd82LhJzH0ed/GGtb4T/MLjpHKCXk9oBBV81TtllLnljNINPw7pp0Qed4bVf0Kv/r7C9Iumt
-vojju5B4uTu22ZIG3Tb9Ldpc6Jw1B4ui02uzVI/rb/o+soVvojargtwAj9XSGR/ICZonB25Vut6k
-YKesMYZ99eTCwXmr4t7okmoNnnihXj4kyMCYzdlGKupFoDy+Rv2HH/cf8TdVwU3yYlEXNBbF4awP
-fFTFp7edguS6OLcYRo80yPiGYONG92A7OhO5k2G+Sipm3EGQPaa4jhQ3Y9c+VvQXVoVOiPw9D/cv
-GeE6+vmbHDFFQ9Ealsti3jGCA9MwggPPAgEBMIGwMIGbMQswCQYDVQQGEwJHQjEbMBkGA1UECBMS
-R3JlYXRlciBNYW5jaGVzdGVyMRAwDgYDVQQHEwdTYWxmb3JkMRowGAYDVQQKExFDT01PRE8gQ0Eg
-TGltaXRlZDFBMD8GA1UEAxM4Q09NT0RPIFNIQS0yNTYgQ2xpZW50IEF1dGhlbnRpY2F0aW9uIGFu
-ZCBTZWN1cmUgRW1haWwgQ0ECEGoLUFiVUy0EUE3iKBH+GjAwDQYJYIZIAWUDBAIBBQCgggHzMBgG
-CSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE3MDcxNzEyMDc1OFowLwYJ
-KoZIhvcNAQkEMSIEIByBODkZ1XXA9ZaJpCxYElywL+PEmy+vRfeDQsGU5EwBMIHBBgkrBgEEAYI3
-EAQxgbMwgbAwgZsxCzAJBgNVBAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAO
-BgNVBAcTB1NhbGZvcmQxGjAYBgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMUEwPwYDVQQDEzhDT01P
-RE8gU0hBLTI1NiBDbGllbnQgQXV0aGVudGljYXRpb24gYW5kIFNlY3VyZSBFbWFpbCBDQQIQagtQ
-WJVTLQRQTeIoEf4aMDCBwwYLKoZIhvcNAQkQAgsxgbOggbAwgZsxCzAJBgNVBAYTAkdCMRswGQYD
-VQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAYBgNVBAoTEUNPTU9E
-TyBDQSBMaW1pdGVkMUEwPwYDVQQDEzhDT01PRE8gU0hBLTI1NiBDbGllbnQgQXV0aGVudGljYXRp
-b24gYW5kIFNlY3VyZSBFbWFpbCBDQQIQagtQWJVTLQRQTeIoEf4aMDANBgkqhkiG9w0BAQEFAASC
-AQAL0HjIUbhYnkNtu1z9iAS1L/K63lM8jZXHfGcy41mw6LKu9epi8udkI51DTes0yLwFcLLr4t5Y
-S1SFBzdm8/ETl3zGxB7MNd9tHNiGPtTbV6b5/tsQR3nxFQy5WGKSp+BhG8rI/plG/mdp2thIcUCT
-HDJc2TBrlEdMxaOKdpNEHRtaei/GU2u3fVhGT2IdGxrVmGl+ZtTWVxWGEIsTaJnuEUiiFUFkChwi
-ke3DDwLXMppJEDcDABwT/RtEa3XcQ7VUDAzqohiEMXu9L7pk9dEMVCiIpXJ0b6d79xlCiMCa02Lw
-kLUwZUEWMgGIzCHjvOnWJLAqh4gFvO6XSmumtS7PAAAAAAAA
+https://github.com/OpenVPN/openvpn-build/blob/master/generic/build.vars#L12
 
 
---=-i3s+Nf+Rlt4EXQIE808h--
+and here:
 
+https://github.com/OpenVPN/openvpn/blob/master/.travis/build-deps.sh#L38
+
+it is not trivial to maintain distro + patch (while openvpn-build does
+include a "patch" folder).
+
+thoughts?
+
+
+
+>
+> (It still accepts the old form, for compatibility).
+> ------------------------------------------------------------
+> ------------------
+> Check out the vibrant tech community on one of the world's most
+> engaging tech sites, Slashdot.org! http://sdm.link/slashdot
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+>
+>
+
+--94eb2c0d2332c5049e0554878c4e
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><br><div class=3D"gmail_extra"><br><div class=3D"gmail_quo=
+te">2017-07-17 17:07 GMT+05:00 David Woodhouse <span dir=3D"ltr">&lt;<a hre=
+f=3D"mailto:dwmw2@...1866..." target=3D"_blank">dwmw2@...1866...</a>&gt;</s=
+pan>:<br><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8e=
+x;border-left:1px solid rgb(204,204,204);padding-left:1ex"><span class=3D"g=
+mail-">On Fri, 2017-07-14 at 17:07 +0300, Samuli Sepp=C3=A4nen wrote:<br>
+&gt; Hi all,<br>
+&gt;<br>
+&gt; Those of you who use pkcs11 on Windows: could you please test this new=
+<br>
+&gt; Windows installer:<br>
+&gt;<br>
+&gt;<br>
+&gt;<br>
+</span><span class=3D"gmail-">&gt; The previous installer(s) had pkcs11-hel=
+per 1.11. This one has 1.22, so<br>
+&gt; some regression testing would be good to have.<br>
+<br>
+</span>Please include the pkcs11-helper patch from<br>
+<a href=3D"https://github.com/OpenSC/pkcs11-helper/pull/4" rel=3D"noreferre=
+r" target=3D"_blank">https://github.com/OpenSC/<wbr>pkcs11-helper/pull/4</a=
+>=C2=A0to make it support using<br>
+RFC7512 PKCS#11 URIs to specify certificates/keys instead of its own<br>
+non-standard identifiers.<br></blockquote><div><br></div><div>openvpn is sp=
+lit into several repo, we have pkcs11-helper at least here:<br><br><a href=
+=3D"https://github.com/OpenVPN/openvpn-build/blob/master/generic/build.vars=
+#L12">https://github.com/OpenVPN/openvpn-build/blob/master/generic/build.va=
+rs#L12</a><br><br><br></div><div>and here:<br><br><a href=3D"https://github=
+.com/OpenVPN/openvpn/blob/master/.travis/build-deps.sh#L38">https://github.=
+com/OpenVPN/openvpn/blob/master/.travis/build-deps.sh#L38</a><br><br></div>=
+<div>it is not trivial to maintain distro + patch (while openvpn-build does=
+ include a &quot;patch&quot; folder).<br><br></div><div>thoughts?<br></div>=
+<div><br>=C2=A0</div><blockquote class=3D"gmail_quote" style=3D"margin:0px =
+0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">
+<br>
+(It still accepts the old form, for compatibility).<br>--------------------=
+----------<wbr>------------------------------<wbr>------------------<br>
+Check out the vibrant tech community on one of the world&#39;s most<br>
+engaging tech sites, Slashdot.org! <a href=3D"http://sdm.link/slashdot" rel=
+=3D"noreferrer" target=3D"_blank">http://sdm.link/slashdot</a><br>_________=
+_____________________<wbr>_________________<br>
+Openvpn-devel mailing list<br>
+<a href=3D"mailto:Openvpn-devel@lists.sourceforge.net">Openvpn-devel@...2155...=
+9...<wbr>sourceforge.net</a><br>
+<a href=3D"https://lists.sourceforge.net/lists/listinfo/openvpn-devel" rel=
+=3D"noreferrer" target=3D"_blank">https://lists.sourceforge.net/<wbr>lists/=
+listinfo/openvpn-devel</a><br>
+<br></blockquote></div><br></div></div>
+
+--94eb2c0d2332c5049e0554878c4e--
 
