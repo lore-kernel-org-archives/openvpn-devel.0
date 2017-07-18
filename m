@@ -1,14 +1,13 @@
-Date: Tue, 18 Jul 2017 23:16:00 +0200
+Date: Tue, 18 Jul 2017 23:26:09 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20170718211600.GB70062@...1296...>
-References: <20170718132030.19820-1-a@...2181...>
-	<20170718134612.10695-1-a@...2181...>
+Message-ID: <20170718212609.GC70062@...1296...>
+References: <82384304.20170718084649@...1934...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="xB0nW4MQa6jZONgY"
+	protocol="application/pgp-signature"; boundary="gMR3gsNFwZpnI/Ts"
 Content-Disposition: inline
-In-Reply-To: <20170718134612.10695-1-a@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH v2] route: improve error message
+In-Reply-To: <82384304.20170718084649@...1934...>
+Subject: Re: [Openvpn-devel] iOS key decrypts
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,22 +16,41 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Antonio Quartulli <a@...2181...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Greg Sloop <gregs@...1934...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---xB0nW4MQa6jZONgY
+--gMR3gsNFwZpnI/Ts
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Tue, Jul 18, 2017 at 09:46:12PM +0800, Antonio Quartulli wrote:
-> - fix typ0 in message: NLSMG -> NLMSG
-> - use strerror() to print a human readable message
+On Tue, Jul 18, 2017 at 08:46:49AM -0700, Gregory Sloop wrote:
+> But in iOS, unified confg files can't be pulled from a website -=20
+> essentially you either email the config, or transfer it via itunes.
 
-Thanks.  What about "not printing an error for ENETUNREACH", if
-that's the new "no error, but there is no such route"?
+Downloading from a website works just fine.  You need to coax Apache
+to set a few headers, but then, all good :-)
+
+This is what I have in my apache conf:
+
+<FilesMatch "\.ovpn$">
+    SetEnvIf Request_URI "^.*/([^/]*)$" FILENAME=3D$1
+    Header set "Content-Disposition" "attachment; filename=3D\"%{FILENAME}e=
+\""
+    UnsetEnv FILENAME
+</FilesMatch>
+
+(it looks slightly convoluted, but I found no other way to specify the
+filename, and that's needed)
+
+In addition, mime.types has
+
+application/x-openvpn-profile                   ovpn=20=20=20
+
+
+no idea about the encrypted keys in iOS, though.
 
 gert
 --=20
@@ -42,22 +60,22 @@ rt/
 Gert Doering - Munich, Germany                             gert@...1296...
 fax: +49-89-35655025                        gert@...1297...
 
---xB0nW4MQa6jZONgY
+--gMR3gsNFwZpnI/Ts
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJZbnqQAAoJEB2Cnv7KVigSWiEL/3s1EmAlVj8lX+LaCIkEz6vs
-Ep9+x2KPE6p3WgZ0CaoItytR4cJeC9a3Ns52BEENdNdJzHT8he0gRdN7GpmOY5P1
-me65frHnaCGme/FIM0t2N8kC3Nxl8dGrk3rMTh8iXHG0xhQnuiciRYmWujwLdUEq
-zO8T1/0UFgaJNSX7ul5EbZ4fne+Mof/sbYdLd6+s7S3YLaS7haYlTHXlH+YjfVE+
-Mca3ndWf9Aq4NROm7Tf5DCeFI2S2lYx/BhQclQKQEWFtBk9I+hohmYkJcwaeX8NJ
-sdoFYQb7HcJspCf+cxSVbVyrcjtD3I3+zHZxHPIEUhTlQjFJEq+LBzelrptIkkDe
-HppwCPKdz5VyLC7+WI0kQoNKt9It5Wnjr89kluzUrMibfpWRiFGqlFyRJc6VOtUY
-GMAVRmxMHaSswUH7MVs6k26tfl9T3bDyO2ZBDoPE5e2KJRYPAWhIKwoXRKhzauV4
-gyVO4NgstPyH6KIFi4tGSQS4dtDBH12yBbzkU2Q64A==
-=/z4e
+iQGcBAEBAgAGBQJZbnzxAAoJEB2Cnv7KVigSBXsL/20Z2WNXoV7SaXE1yFTfxers
+PgAGvgbIaU3BiZJzrxqCH4c6CS+kGoPLLj3bT1KwODv5J4TvNMWRTJ+sHvPe4vux
+5FSOCjohpUx+WmW9b9QK/E3jw7QC3419nNV+PxfhCo+bsxI7CRpcjM5Na2fCZ1Ds
+BrV2d4pi9zZls3r4nUJztoLIb155rkrQKgw/evpPBnisSsXgNH9RHKDKo1TCla02
+HQlAZYXR7//SnslUiB/MEEWppydWJixdgLipjt5BZiEj5sPennI+1UqSM5hTpCJU
+Ka0jTy2ePo7fYOqkFubBtPyiucEh3tZ+YlVmEFT8sBlxgp4CCRdgpao+nBUbHGz6
+cxRravluekLzquXoSCkS/UzDIey4kw3AyOCNd503YZKfZBxWjtly+VEIgflE38/C
+1OYIk5PR5Ul9gi9R8JJiP07Hip1wDVrZnFqsYHPLjT4XZNORHJCxNvrQI02Rs/js
+ZcR77QD5GxHNnaZPc7OV7YtjWmbfNZ1YuBfF8uZsog==
+=d+W7
 -----END PGP SIGNATURE-----
 
---xB0nW4MQa6jZONgY--
+--gMR3gsNFwZpnI/Ts--
 
