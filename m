@@ -1,9 +1,11 @@
-From: Antonio Quartulli <a@...2181...>
-Date: Tue, 18 Jul 2017 21:46:12 +0800
-Message-Id: <20170718134612.10695-1-a@...2181...>
-In-Reply-To: <20170718132030.19820-1-a@...2181...>
-References: <20170718132030.19820-1-a@...2181...>
-Subject: [Openvpn-devel] [PATCH v2] route: improve error message
+Date: Tue, 18 Jul 2017 08:46:49 -0700
+From: Gregory Sloop <gregs@...1934...>
+Reply-To: Greg Sloop <gregs@...1934...>
+Message-ID: <82384304.20170718084649@...1934...>
+MIME-Version: 1.0
+Content-Type: multipart/alternative;
+ boundary="----------01802B17C3F6AFF19"
+Subject: [Openvpn-devel] iOS key decrypts
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,37 +14,78 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Antonio Quartulli <a@...2181...>
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-- fix typ0 in message: NLSMG -> NLMSG
-- use strerror() to print a human readable message
+------------01802B17C3F6AFF19
+Content-Type: text/plain; charset="iso-8859-15"
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Antonio Quartulli <a@...2181...>
----
+So, I'm not sure if this [the dev list] is the place to post this - though =
+I suspect the well of knowledge here vs the regular list will be more appro=
+priate to answer.
 
-v2:
- - change %d to %s (thanks Michael Shiels for catching this)
+It's been a long time since I needed to roll out openvpn to an iOS device a=
+nd the last time I did it, I did it via separate PKCS12 and config files. [=
+IIRC, PKCS12 is 3DES encrypted - not very secure.]
 
- src/openvpn/route.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+The last time, I also had a modestly secure way of getting the PKCS12 files=
+ to the clients. But in iOS, unified confg files can't be pulled from a web=
+site - essentially you either email the config, or transfer it via itunes.
 
-diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index 349b2c76..9c33863c 100644
---- a/src/openvpn/route.c
-+++ b/src/openvpn/route.c
-@@ -3445,7 +3445,7 @@ get_default_gateway_ipv6(struct route_ipv6_gateway_info *rgi6,
-         if (nh->nlmsg_type == NLMSG_ERROR)
-         {
-             struct nlmsgerr *ne = (struct nlmsgerr *)NLMSG_DATA(nh);
--            msg(M_WARN, "GDG6: NLSMG_ERROR: error %d\n", ne->error);
-+            msg(M_WARN, "GDG6: NLMSG_ERROR: error %s\n", strerror(-ne->error));
-             break;
-         }
- 
--- 
-2.13.3
+So, I'm trying to do a unified config file with the ca, certs and keys embe=
+dded. However, it appears that current versions of iOS can't handle AES-256=
+ encrypted keys. [At least that's my best guess from the errors I get - usi=
+ng my weak google-foo etc. "OpenVPN error polarssl error parsing config pri=
+vate key : PK - Bad input parameters to function."]
+
+So all that dross above to ask:
+Does anyone know definitively what key encryptions/decryptions the iOS clie=
+nt will properly handle? [And if there's any difference using unfied vs non=
+-unified setups.]
+
+
+TIA
+
+-Greg=
+
+------------01802B17C3F6AFF19
+Content-Type: text/html; charset="iso-8859-15"
+Content-Transfer-Encoding: quoted-printable
+
+<html><head><title>iOS key decrypts</title>
+</head>
+<body>
+<span style=3D" font-family:'Courier New'; font-size: 9pt;">So, I'm not sur=
+e if this [the dev list] is the place to post this - though I suspect the w=
+ell of knowledge here vs the regular list will be more appropriate to answe=
+r.<br>
+<br>
+It's been a long time since I needed to roll out openvpn to an iOS device a=
+nd the last time I did it, I did it via separate PKCS12 and config files. [=
+IIRC, PKCS12 is 3DES encrypted - not very secure.]<br>
+<br>
+The last time, I also had a modestly secure way of getting the PKCS12 files=
+ to the clients. But in iOS, unified confg files can't be pulled from a web=
+site - essentially you either email the config, or transfer it via itunes.<=
+br>
+<br>
+So, I'm trying to do a unified config file with the ca, certs and keys embe=
+dded. However, it appears that current versions of iOS can't handle AES-256=
+ encrypted keys. [At least that's my best guess from the errors I get - usi=
+ng my weak google-foo etc. "OpenVPN error polarssl error parsing config pri=
+vate key : PK - Bad input parameters to function."]<br>
+<br>
+So all that dross above to ask:<br>
+Does anyone know definitively what key encryptions/decryptions the iOS clie=
+nt will properly handle? [And if there's any difference using unfied vs non=
+-unified setups.]<br>
+<br>
+</span><a style=3D" font-family:'arial';" href=3D"mailto:gregs@...1934...">=
+</a><br>
+<span style=3D" font-family:'Courier New'; font-size: 9pt;">TIA<br>
+<br>
+-Greg</body></html>=
+
+------------01802B17C3F6AFF19--
 
 
