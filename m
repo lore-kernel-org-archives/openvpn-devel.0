@@ -1,9 +1,9 @@
 From: Antonio Quartulli <a@...2181...>
-Date: Thu, 20 Jul 2017 16:22:20 +0800
-Message-Id: <20170720082220.31160-1-a@...2181...>
-In-Reply-To: <20170720081421.15894-1-a@...2181...>
-References: <20170720081421.15894-1-a@...2181...>
-Subject: [Openvpn-devel] [PATCH v3] route: improve error message
+Date: Thu, 20 Jul 2017 16:23:38 +0800
+Message-Id: <20170720082338.1302-1-a@...2181...>
+In-Reply-To: <20170720082220.31160-1-a@...2181...>
+References: <20170720082220.31160-1-a@...2181...>
+Subject: [Openvpn-devel] [PATCH v4] route: improve error message
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -31,15 +31,17 @@ v2:
 v3:
 - don't print error when ENETUNREACH is returned
 
+v4:
+- put { } around if block
 
- src/openvpn/route.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ src/openvpn/route.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
 diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index 349b2c76..69f4fd6d 100644
+index 349b2c76..5994cdca 100644
 --- a/src/openvpn/route.c
 +++ b/src/openvpn/route.c
-@@ -3445,7 +3445,12 @@ get_default_gateway_ipv6(struct route_ipv6_gateway_info *rgi6,
+@@ -3445,7 +3445,14 @@ get_default_gateway_ipv6(struct route_ipv6_gateway_info *rgi6,
          if (nh->nlmsg_type == NLMSG_ERROR)
          {
              struct nlmsgerr *ne = (struct nlmsgerr *)NLMSG_DATA(nh);
@@ -48,8 +50,10 @@ index 349b2c76..69f4fd6d 100644
 +            /* since linux-4.11 -ENETUNREACH is returned when no route can be
 +             * found. Don't print any error message in this case */
 +            if (ne->error != -ENETUNREACH)
++            {
 +                msg(M_WARN, "GDG6: NLMSG_ERROR: error %s\n",
 +                    strerror(-ne->error));
++            }
              break;
          }
  
