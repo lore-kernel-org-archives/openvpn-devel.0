@@ -1,10 +1,9 @@
-From: Steffan Karger <steffan@...1856...>
-Date: Thu, 20 Jul 2017 21:17:02 +0200
-Message-Id: <1500578222-21689-1-git-send-email-steffan@...1856...>
+Date: Thu, 20 Jul 2017 22:40:00 +0200 (CEST)
+Message-Id: <201707202040.v6KKe0pO039679@...2054...>
+From: Gert Doering <gert@...1296...>
 In-Reply-To: <1500566435-29920-1-git-send-email-steffan.karger@...1435...>
 References: <1500566435-29920-1-git-send-email-steffan.karger@...1435...>
-Subject: [Openvpn-devel] [PATCH] fixup: also change missed openvpn_sleep()
- occurrences
+Subject: [Openvpn-devel] [PATCH applied] Re: Move openvpn_sleep() to manage.c
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,57 +14,30 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Steffan Karger <steffan.karger@...1435...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-45b2af9c missed some openvpn_sleep() occurrences in platform-specific code
-in tun.c - fix that.
+ACK.
 
-Signed-off-by: Steffan Karger <steffan@...1856...>
----
- src/openvpn/tun.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+Your patch has been applied to the master and release/2.4 branch.
 
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index 68fb488..3639718 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -1862,7 +1862,7 @@ open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tun
-     if (oldtunfd >=0 && android_method == ANDROID_OPEN_AFTER_CLOSE)
-     {
-         close(oldtunfd);
--        openvpn_sleep(2);
-+        management_sleep(2);
-     }
- 
-     if (oldtunfd >=0  && android_method == ANDROID_KEEP_OLD_TUN)
-@@ -4999,7 +4999,7 @@ netsh_command(const struct argv *a, int n, int msglevel)
-     for (i = 0; i < n; ++i)
-     {
-         bool status;
--        openvpn_sleep(1);
-+        management_sleep(1);
-         netcmd_semaphore_lock();
-         argv_msg_prefix(M_INFO, a, "NETSH");
-         status = openvpn_execve_check(a, NULL, 0, "ERROR: netsh command failed");
-@@ -5008,7 +5008,7 @@ netsh_command(const struct argv *a, int n, int msglevel)
-         {
-             return;
-         }
--        openvpn_sleep(4);
-+        management_sleep(4);
-     }
-     msg(msglevel, "NETSH: command failed");
- }
-@@ -5991,7 +5991,7 @@ open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tun
-         if (s > 0)
-         {
-             msg(M_INFO, "Sleeping for %d seconds...", s);
--            openvpn_sleep(s);
-+            management_sleep(s);
-         }
-     }
- 
--- 
-2.7.4
+commit 45b2af9c7719d9a40c6c2b9d0693e4db0d917a04 (master)
+commit 80ece420966b21b9a6cee2a36a19e3d200dcd3e7 (release/2.4)
+Author: Steffan Karger
+Date:   Thu Jul 20 18:00:35 2017 +0200
+
+     Move openvpn_sleep() to manage.c
+
+     Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1500566435-29920-1-git-send-email-steffan.karger@...1435...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg15109.html
+     Signed-off-by: Gert Doering <gert@...1296...>
+
+
+--
+kind regards,
+
+Gert Doering
 
 
