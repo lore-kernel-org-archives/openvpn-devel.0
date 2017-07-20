@@ -1,14 +1,13 @@
-Date: Wed, 19 Jul 2017 18:41:26 -0700
-From: Gregory Sloop <gregs@...1934...>
-Reply-To: Greg Sloop <gregs@...1934...>
-Message-ID: <625907428.20170719184126@...1934...>
-In-Reply-To: <3cc66768-4fb0-108c-433d-85599295ed7f@...1435...>
-References: <82384304.20170718084649@...1934...>
-	<3cc66768-4fb0-108c-433d-85599295ed7f@...1435...>
+Date: Thu, 20 Jul 2017 08:11:43 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20170720061143.GI70062@...1296...>
+References: <20170719213923.18843-1-steffan@...1856...>
 MIME-Version: 1.0
-Content-Type: multipart/alternative;
- boundary="----------0150F31B63DE4F769"
-Subject: Re: [Openvpn-devel] iOS key decrypts
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="jkO+KyKz7TfD21mV"
+Content-Disposition: inline
+In-Reply-To: <20170719213923.18843-1-steffan@...1856...>
+Subject: Re: [Openvpn-devel] [PATCH] Move strerror_ts() to error.h/c
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,189 +16,82 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan.karger@...1435...>, openvpn-devel@lists.sourceforge.net
+To: Steffan Karger <steffan@...1856...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-------------0150F31B63DE4F769
+--jkO+KyKz7TfD21mV
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-=0D
+Hi,
 
-SK> Hi,
+On Wed, Jul 19, 2017 at 11:39:23PM +0200, Steffan Karger wrote:
+> Move strerror_ts() to error.c, which is a more suitable location than the
+> random collection of unrelated stuff called misc.c.  While doing so,
+> simplify the implementation.
+>=20
+> (I think we should find a better place for everything currently in misc.c,
+> and get rid of it all together.  This patch is part of that effort.)
 
-SK> On 18-07-17 17:46, Gregory Sloop wrote:
->> Does anyone know definitively what key encryptions/decryptions the iOS
->> client will properly handle? [And if there's any difference using unfied
->> vs non-unified setups.]
+While I do like the patch, parts of it do not make sense :-)
 
-SK> The iOS client is not part of the current community development, but
-SK> maintained by OpenVPN Technologies.  You could try to get in touch with
-SK> them.
+> +#ifdef HAVE_STRERROR
+> +const char *
+> +strerror_ts(int errnum, struct gc_arena *gc)
+> +{
+> +    return string_alloc(openvpn_strerror(errnum, gc), gc);
+> +}
+> +#endif
+> +
 
-SK> That said, I see no reason why it could not support AES-encrypted keys.
-SK> The 2.x community code base even uses AES-encrypted test keys (PEM, not
-SK> PKCS12), and those work with both OpenSSL and mbed TLS crypto backends
-SK> (just tested as for back as PolarSSL 1.2, but earlier versions probably
-SK> too).
+... so where's the "#else" here?
 
-SK> -Steffan
+OTOH, the old code was a bit weird - #ifndef HAVE_STRERROR, the function
+itself would return a static string, but the *prototype* would disappear
+from the header file.
 
-Thanks.
-
-Yeah, these same unified configs with the AES-256 encrypted keys work just =
-fine on the Windows and OSX versions of OpenVPN/TunnelBlick. Thus I expecte=
-d them to work without issue on iOS. [Exact same config installed fine on O=
-SX for the same client.]
-
-My problem at the moment is I don't have an iOS device where I can easily t=
-est, and this client is more than an hour away from me physically - so "tes=
-ting" isn't very easy. [They're a very non-tech savvy client.]
-
-So, I hate to try to "test" on this client - by sending several different u=
-nified configs with different key encryptions, hoping to luck onto the righ=
-t combination.
-
----
-Perhaps another line of thought.
-The unified config I sent looks like this
----
-client
-dev tun
-proto udp
-resolv-retry infinite
-nobind
-persist-key
-persist-tun
-cipher aes-256-cbc
-auth sha256
-remote-cert-tls server
-verb 3
-remote 1.2.3.4 1194
-
-<cert>
-</cert>
-
-<key>
-</key>
-
-<ca>
-</ca>
-
----
-Most examples have the order different - ca - cert - key.
-Could this have any impact? [Seems totally NUTS if it does - but I'm graspi=
-ng at straws a bit....
-
-[I like them in this order because the ca doesn't change for each client-ma=
-chine, but obviously the cert/key do - and having them at the top is just a=
- bit easier.]
-
-I'll see if I can dig up an iOS device to test with, but if anyone really w=
-ants to kill some time and check it for me - I'd be eternally grateful. :)
-
--Greg
+I think we can safely assume that strerror() is available on all the
+platforms (so, kick out the test from configure.ac as well :) ) - but it=20
+might be worthwile to have a look at strerror_r() or strerror_s(), if we=20
+really are concerned about eventual threading OpenVPN and making this=20
+properly reentrant.
 
 
----=
+As a side note, why anyone would implement strerror() in a non-thread-
+safe way ("it's only returning a pointer to a static string table, isn't
+it?") - reading through=20
 
-------------0150F31B63DE4F769
-Content-Type: text/html; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+  https://stackoverflow.com/questions/900338/why-cant-i-use-strerror
 
-<html><head><title>Re: [Openvpn-devel] iOS key decrypts</title>
-</head>
-<body>
-<br><br>
-<br>
-<span style=3D" font-family:'courier new'; font-size: 9pt; color: #800000;"=
-><b>SK&gt; Hi,<br>
-<br>
-SK&gt; On 18-07-17 17:46, Gregory Sloop wrote:<br>
-&gt;&gt; Does anyone know definitively what key encryptions/decryptions the=
- iOS<br>
-&gt;&gt; client will properly handle? [And if there's any difference using =
-unfied<br>
-&gt;&gt; vs non-unified setups.]<br>
-<br>
-SK&gt; The iOS client is not part of the current community development, but=
-<br>
-SK&gt; maintained by OpenVPN Technologies. &nbsp;You could try to get in to=
-uch with<br>
-SK&gt; them.<br>
-<br>
-SK&gt; That said, I see no reason why it could not support AES-encrypted ke=
-ys.<br>
-SK&gt; The 2.x community code base even uses AES-encrypted test keys (PEM, =
-not<br>
-SK&gt; PKCS12), and those work with both OpenSSL and mbed TLS crypto backen=
-ds<br>
-SK&gt; (just tested as for back as PolarSSL 1.2, but earlier versions proba=
-bly<br>
-SK&gt; too).<br>
-<br>
-SK&gt; -Steffan<br>
-<br>
-</b><span style=3D" color: #000000;">Thanks.<br>
-<br>
-Yeah, these same unified configs with the AES-256 encrypted keys work just =
-fine on the Windows and OSX versions of OpenVPN/TunnelBlick. Thus I expecte=
-d them to work without issue on iOS. [Exact same config installed fine on O=
-SX for the same client.]<br>
-<br>
-My problem at the moment is I don't have an iOS device where I can easily t=
-est, and this client is more than an hour away from me physically - so "tes=
-ting" isn't very easy. [They're a very non-tech savvy client.]<br>
-<br>
-So, I hate to try to "test" on this client - by sending several different u=
-nified configs with different key encryptions, hoping to luck onto the righ=
-t combination.<br>
-<br>
----<br>
-Perhaps another line of thought.<br>
-The unified config I sent looks like this<br>
----<br>
-client<br>
-dev tun<br>
-proto udp<br>
-resolv-retry infinite<br>
-nobind<br>
-persist-key<br>
-persist-tun<br>
-cipher aes-256-cbc<br>
-auth sha256<br>
-remote-cert-tls server<br>
-verb 3<br>
-remote 1.2.3.4 1194<br>
-<br>
-&lt;cert&gt;<br>
-&lt;/cert&gt;<br>
-<br>
-&lt;key&gt;<br>
-&lt;/key&gt;<br>
-<br>
-&lt;ca&gt;<br>
-&lt;/ca&gt;<br>
-<br>
----<br>
-Most examples have the order different - ca - cert - key.<br>
-Could this have any impact? [Seems totally NUTS if it does - but I'm graspi=
-ng at straws a bit....<br>
-<br>
-[I like them in this order because the ca doesn't change for each client-ma=
-chine, but obviously the cert/key do - and having them at the top is just a=
- bit easier.]<br>
-<br>
-I'll see if I can dig up an iOS device to test with, but if anyone really w=
-ants to kill some time and check it for me - I'd be eternally grateful. :)<=
-br>
-<br>
--Greg<br>
-<br>
-<br>
-<span style=3D" font-family:'arial'; font-size: 8pt; color: #c0c0c0;"><i>--=
--<br>
-</body></html>=
+has the answer: NLS, and "string tables dynamically loaded at run-time",
+so the string isn't actually static inside strerror().
 
-------------0150F31B63DE4F769--
+gert
 
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--jkO+KyKz7TfD21mV
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJZcEmfAAoJEB2Cnv7KVigSYJwMAIH1blY2rZCk14EXNjA9roP2
+YkuvDTDA8gjHoVBSx94KF3BmsXj1GSA6QGGBchA4eWSysh+KphgSkC8SEMkZg3kN
+253RLvCwp9hB78uGeg0Of1Gba4U0CRboJ9RX2zfeN0wmgKpL4Df8mr4qdU0hSEyg
+yEvloO7qjUnkwHBGqEf9FVzUo6s363s8CCvQDvhvPM19yBDlGMZUQa5I8U3ad3Ig
+IHejmJFIPv1F6yLPKhtr1tuBdaA+eljwuEK8N8CG8Ac310kWEORc+pKpTGNP9kN5
+/+pXVW1BF9oERcEG6XA6lYghY/3VPUGS0qlKPrUsuwM8QLVOT8Edtvqn/TSxatfm
+7K8EE+HJmCiV1DVguPniCXtiIaBpQhcGcpWshWmAEkf0tV84vkHqc6j7pcyPBMrs
+LIn8FJFwfx+eljTPw7EzcvZRdQ1iji3nAjcyXTgtaf+IOKLP7vWr60S6m5pJq6nN
+XCNr/EzPh+Jv26wfqFKYMz+rebQcWheUZgfIbqpxyA==
+=SoA+
+-----END PGP SIGNATURE-----
+
+--jkO+KyKz7TfD21mV--
 
