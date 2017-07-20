@@ -1,16 +1,10 @@
+From: Steffan Karger <steffan.karger@...1435...>
+Date: Thu, 20 Jul 2017 12:51:53 +0200
+Message-ID: <1500547913-16653-1-git-send-email-steffan.karger@...1435...>
+In-Reply-To: <1500537403-15079-1-git-send-email-steffan.karger@...1435...>
+References: <1500537403-15079-1-git-send-email-steffan.karger@...1435...>
 MIME-Version: 1.0
-In-Reply-To: <CAFHpkQEFZ92ncqzBGjX7TXDPYRCob7QiU8tgoccudGi5kfkGzw@...278...>
-References: <20170709144646.10352-1-chipitsine@...277...>
-	<CAFHpkQEPAzvnkRAZLPgLwt8i8LjJrVcKwTp6H32v7Dxz4Jb0Lg@...278...>
-	<CAKuzo_joBeJomLCzBMYB4qWnjV-AKCPB_auQ2zcWYdH1D50eHA@...278...>
-	<CAFHpkQExC-X_e5_0Xd8w4BM=iYaW98ob7Fcnnx_3=tQG3i9MBw@...278...>
-	<CAKuzo_gh=Hm82BdzXohiLr1CaZ_KpeKqpKDP0j6pCj_cHs6s9Q@...278...>
-	<CAFHpkQEFZ92ncqzBGjX7TXDPYRCob7QiU8tgoccudGi5kfkGzw@...278...>
-From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Date: Thu, 20 Jul 2017 13:36:04 +0500
-Message-ID: <CAFHpkQHzTp1Zg6cukMqZRxMqaKrHkqTxj-pUeQ-U=hWG-BQO+Q@...278...>
-Content-Type: multipart/alternative; boundary="94eb2c1cc5b6ad04fd0554bba341"
-Subject: Re: [Openvpn-devel] [PATCH] win32 build: check for ENETUNREACH
+Subject: [Openvpn-devel] [PATCH v3] Remove strerror_ts()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,204 +13,165 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---94eb2c1cc5b6ad04fd0554bba341
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+This function was only called in string format functions, which already
+copy the contents, so all this ever did was adding redundant malloc() and
+free() calls.
 
-any news ?
+Also, this wasn't as thread-safe as it claims: another thread could still
+change the string value between the strerror() and buf_printf() calls. So,
+instead of a not needed false sense of thread-safeness, just be honest and
+use strerror() directly.  If we ever need thread-safeness, we should do a
+proper solution based on e.g. strerror_r()/strerror_s().
 
-2017-07-12 20:50 GMT+05:00 =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=
-=B8=D1=86=D0=B8=D0=BD <chipitsine@...277...>:
+(I think we should find a better place for everything currently in misc.c,
+and get rid of the file all together.  In this case, the better place is
+/dev/null.  This patch is part of that effort.)
 
->
->
-> 2017-07-12 20:06 GMT+05:00 Selva Nair <selva.nair@...277...>:
->
->>
->> On Wed, Jul 12, 2017 at 10:45 AM, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=
-=D0=BF=D0=B8=D1=86=D0=B8=D0=BD <chipitsine@...277...>
->> wrote:
->>
->>> 2017-07-12 18:54 GMT+05:00 Selva Nair <selva.nair@...277...>:
->>>
->>>>
->>>> On Wed, Jul 12, 2017 at 4:46 AM, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=
-=D0=BF=D0=B8=D1=86=D0=B8=D0=BD <chipitsine@...277...>
->>>> wrote:
->>>>
->>>>> No interest ?
->>>>>
->>>>> 9 =D0=B8=D1=8E=D0=BB. 2017 =D0=B3. 19:46 =D0=BF=D0=BE=D0=BB=D1=8C=D0=
-=B7=D0=BE=D0=B2=D0=B0=D1=82=D0=B5=D0=BB=D1=8C "Ilya Shipitsin" <
->>>>> chipitsine@...277...> =D0=BD=D0=B0=D0=BF=D0=B8=D1=81=D0=B0=D0=BB:
->>>>>
->>>>>> Currently, we do not check for mingw-gcc version. For example,
->>>>>> Debian 7 is shipped with 4.6.3, which does not know about ENETUNREACH
->>>>>> ---
->>>>>>
->>>>>> this is for 2.4 and HEAD branches
->>>>>>
->>>>>>  configure.ac | 14 ++++++++++++++
->>>>>>  1 file changed, 14 insertions(+)
->>>>>>
->>>>>> diff --git a/configure.ac b/configure.ac
->>>>>> index 60bb465..80b26ff 100644
->>>>>> --- a/configure.ac
->>>>>> +++ b/configure.ac
->>>>>> @@ -708,6 +708,20 @@ m4_define(
->>>>>>         [setsockopt getsockopt getsockname poll]dnl
->>>>>>  )
->>>>>>  if test "${WIN32}" =3D "yes"; then
->>>>>> +
->>>>>> +#
->>>>>> +# check for ENETUNREACH
->>>>>> +# at least Debian 7 is shipped with gcc-mingw-w64-4.6.3, which is
->>>>>> too old
->>>>>
->>>>>
->>>> Instead of checking for a particular define why not require a minimal
->>>> version of gcc ? I do not know what version that would be, though..
->>>>
->>>
->>>
->>> if you would try to build using ubuntu-14.04, build would fail (I'll
->>> submit configure patch for that soon as well).
->>> however, if modified compiler would used https://community.openvpn.net/
->>> openvpn/wiki/PatchingDebs ... the build will succeed
->>>
->>
->> There is no reliable way to support arbitrarily patched build
->> environments. If I patch mingw in ubuntu 14-04 to have ENETUNREACH
->> defined, the above check would pass but build may still fail somewhere e=
-lse.
->>
->
->
-> ENETUNREACH check is for Debian 7.
->
-> Ubuntu 14.04 is shipped with broken fwpmu.h:
-> https://github.com/chipitsine/openvpn/commit/
-> 03013fd6f5b57a122302ce1a534a7061acde9d5b  :)
->
->
->>
->> I still think we should just determine what official version of mingw-gcc
->> is required and add a test for it.
->>
->> Selva
->>
->
->
+Signed-off-by: Steffan Karger <steffan@...1856...>
+---
+v2 - don't check for strerror presence, it's in C99.
+v3 - just remove the function, it serves no real purpose.
 
---94eb2c1cc5b6ad04fd0554bba341
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+ configure.ac         |  2 +-
+ src/openvpn/error.c  | 15 +++++----------
+ src/openvpn/manage.c |  5 ++---
+ src/openvpn/misc.c   | 15 ---------------
+ src/openvpn/misc.h   |  6 ------
+ src/openvpn/socket.c |  6 ++----
+ 6 files changed, 10 insertions(+), 39 deletions(-)
 
-<div dir=3D"ltr">any news ?<br></div><div class=3D"gmail_extra"><br><div cl=
-ass=3D"gmail_quote">2017-07-12 20:50 GMT+05:00 =D0=98=D0=BB=D1=8C=D1=8F =D0=
-=A8=D0=B8=D0=BF=D0=B8=D1=86=D0=B8=D0=BD <span dir=3D"ltr">&lt;<a href=3D"ma=
-ilto:chipitsine@...277..." target=3D"_blank">chipitsine@...277...</a>&gt;</=
-span>:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;bord=
-er-left:1px #ccc solid;padding-left:1ex"><div dir=3D"ltr"><br><div class=3D=
-"gmail_extra"><br><div class=3D"gmail_quote"><div><div class=3D"h5">2017-07=
--12 20:06 GMT+05:00 Selva Nair <span dir=3D"ltr">&lt;<a href=3D"mailto:selv=
-a.nair@...277..." target=3D"_blank">selva.nair@...277...</a>&gt;</span>:<br=
-><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border=
--left:1px solid rgb(204,204,204);padding-left:1ex"><div dir=3D"ltr"><div cl=
-ass=3D"gmail_extra"><div><div class=3D"m_2072090559873341923gmail-h5"><br><=
-div class=3D"gmail_quote">On Wed, Jul 12, 2017 at 10:45 AM, =D0=98=D0=BB=D1=
-=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=B8=D1=86=D0=B8=D0=BD <span dir=3D"ltr">&lt;=
-<a href=3D"mailto:chipitsine@...277..." target=3D"_blank"><span id=3D"m_207=
-2090559873341923gmail-m_-601479893549234029:bfh.1">chipitsine</span>@gmail.=
-com</a>&gt;</span> wrote:<br><blockquote class=3D"gmail_quote" style=3D"mar=
-gin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1=
-ex"><span>2017-07-12 18:54 GMT+05:00 Selva Nair <span dir=3D"ltr">&lt;<a hr=
-ef=3D"mailto:selva.nair@...277..." target=3D"_blank">selva.nair@...277...</=
-a>&gt;</span>:<br><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px=
- 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex"><div di=
-r=3D"ltr"><div class=3D"gmail_extra"><span class=3D"m_2072090559873341923gm=
-ail-m_-601479893549234029m_8690419433193343298gmail-"><br><div class=3D"gma=
-il_quote">On Wed, Jul 12, 2017 at 4:46 AM, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=
-=D0=B8=D0=BF=D0=B8=D1=86=D0=B8=D0=BD <span dir=3D"ltr">&lt;<a href=3D"mailt=
-o:chipitsine@...277..." target=3D"_blank">chipitsine@...277...</a>&gt;</spa=
-n> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px =
-0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex"><div dir=3D"=
-auto">No interest ?</div><div class=3D"gmail_extra"><br><div class=3D"gmail=
-_quote">9 =D0=B8=D1=8E=D0=BB. 2017 =D0=B3. <span class=3D"m_207209055987334=
-1923gmail-m_-601479893549234029m_8690419433193343298gmail-m_476959620194550=
-0580aBn"><span class=3D"m_2072090559873341923gmail-m_-601479893549234029m_8=
-690419433193343298gmail-m_4769596201945500580aQJ"><span class=3D"m_20720905=
-59873341923gmail-m_-601479893549234029aBn"><span class=3D"m_207209055987334=
-1923gmail-m_-601479893549234029aQJ">19:46</span></span></span></span> =D0=
-=BF=D0=BE=D0=BB=D1=8C=D0=B7=D0=BE=D0=B2=D0=B0=D1=82=D0=B5=D0=BB=D1=8C &quot=
-;Ilya Shipitsin&quot; &lt;<a href=3D"mailto:chipitsine@...277..." target=3D=
-"_blank">chipitsine@...277...</a>&gt; =D0=BD=D0=B0=D0=BF=D0=B8=D1=81=D0=B0=
-=D0=BB:<br type=3D"attribution"><blockquote class=3D"gmail_quote" style=3D"=
-margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-lef=
-t:1ex">Currently, we do not check for mingw-gcc version. For example,<br>
-Debian 7 is shipped with 4.6.3, which does not know about ENETUNREACH<br>
----<br>
-<br>
-this is for 2.4 and HEAD branches<br>
-<br>
-=C2=A0<a href=3D"http://configure.ac" rel=3D"noreferrer" target=3D"_blank">=
-configure.ac</a> | 14 ++++++++++++++<br>
-=C2=A01 file changed, 14 insertions(+)<br>
-<br>
-diff --git a/<a href=3D"http://configure.ac" rel=3D"noreferrer" target=3D"_=
-blank">configure.ac</a> b/<a href=3D"http://configure.ac" rel=3D"noreferrer=
-" target=3D"_blank">configure.ac</a><br>
-index 60bb465..80b26ff 100644<br>
---- a/<a href=3D"http://configure.ac" rel=3D"noreferrer" target=3D"_blank">=
-configure.ac</a><br>
-+++ b/<a href=3D"http://configure.ac" rel=3D"noreferrer" target=3D"_blank">=
-configure.ac</a><br>
-@@ -708,6 +708,20 @@ m4_define(<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 [setsockopt getsockopt getsockname poll]dnl<br>
-=C2=A0)<br>
-=C2=A0if test &quot;${WIN32}&quot; =3D &quot;yes&quot;; then<br>
-+<br>
-+#<br>
-+# check for ENETUNREACH<br>
-+# at least Debian 7 is shipped with gcc-mingw-w64-4.6.3, which is too old<=
-/blockquote></div></div></blockquote></div><br></span>Instead of checking f=
-or a particular define why not require a minimal version of gcc ? I do not =
-know what version that would be, though..</div></div></blockquote><div><br>=
-<br></div></span><div>if you would try to build using ubuntu-14.04, build w=
-ould fail (I&#39;ll submit configure patch for that soon as well).<br></div=
-><div>however, if modified compiler would used <a href=3D"https://community=
-.openvpn.net/openvpn/wiki/PatchingDebs" target=3D"_blank">https://community=
-.openvpn.net/<wbr>openvpn/wiki/PatchingDebs</a> ... the build will succeed<=
-/div></blockquote></div><br></div></div>There is no reliable way to support=
- arbitrarily patched build environments. If I patch <span id=3D"m_207209055=
-9873341923gmail-m_-601479893549234029:bfh.3">mingw</span> in <span id=3D"m_=
-2072090559873341923gmail-m_-601479893549234029:bfh.4">ubuntu</span> 14-04 t=
-o have <span id=3D"m_2072090559873341923gmail-m_-601479893549234029:bfh.5">=
-ENETUNREACH</span> defined, the above check would pass but build may still =
-fail somewhere else.</div></div></blockquote></div></div><div><br><br><span=
-><span class=3D"m_2072090559873341923gmail-m_-601479893549234029m_869041943=
-3193343298gmail-">ENETUNREACH check is for Debian 7.<br><br></span></span><=
-/div><div><span><span class=3D"m_2072090559873341923gmail-m_-60147989354923=
-4029m_8690419433193343298gmail-">Ubuntu 14.04 is shipped with broken fwpmu.=
-h:=C2=A0 <a href=3D"https://github.com/chipitsine/openvpn/commit/03013fd6f5=
-b57a122302ce1a534a7061acde9d5b" target=3D"_blank">https://github.com/chipit=
-sine/<wbr>openvpn/commit/<wbr>03013fd6f5b57a122302ce1a534a70<wbr>61acde9d5b=
-</a>=C2=A0 :)<br></span></span></div><span class=3D""><div>=C2=A0</div><blo=
-ckquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left=
-:1px solid rgb(204,204,204);padding-left:1ex"><div dir=3D"ltr"><div class=
-=3D"gmail_extra"><br></div><div class=3D"gmail_extra">I still think we shou=
-ld just determine what official version of <span id=3D"m_207209055987334192=
-3gmail-m_-601479893549234029:bfh.7">mingw</span>-<span id=3D"m_207209055987=
-3341923gmail-m_-601479893549234029:bfh.8">gcc</span> is required and add a =
-test for it.</div><span class=3D"m_2072090559873341923gmail-HOEnZb"><font c=
-olor=3D"#888888"><div class=3D"gmail_extra"><br></div><div class=3D"gmail_e=
-xtra"><span id=3D"m_2072090559873341923gmail-m_-601479893549234029:bfh.9">S=
-elva</span></div></font></span></div>
-</blockquote></span></div><br></div></div>
-</blockquote></div><br></div>
+diff --git a/configure.ac b/configure.ac
+index 60bb465..39d992c 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -662,7 +662,7 @@ AC_FUNC_FORK
+ 
+ AC_CHECK_FUNCS([ \
+ 	daemon chroot getpwnam setuid nice system getpid dup dup2 \
+-	getpass strerror syslog openlog mlockall getgrnam setgid \
++	getpass syslog openlog mlockall getgrnam setgid \
+ 	setgroups stat flock readv writev time gettimeofday \
+ 	ctime memset vsnprintf strdup \
+ 	setsid chdir putenv getpeername unlink \
+diff --git a/src/openvpn/error.c b/src/openvpn/error.c
+index ce50ff9..28818fe 100644
+--- a/src/openvpn/error.c
++++ b/src/openvpn/error.c
+@@ -267,7 +267,7 @@ x_msg_va(const unsigned int flags, const char *format, va_list arglist)
+     if ((flags & M_ERRNO) && e)
+     {
+         openvpn_snprintf(m2, ERR_BUF_SIZE, "%s: %s (errno=%d)",
+-                         m1, strerror_ts(e, &gc), e);
++                         m1, strerror(e, &gc), e);
+         SWAP;
+     }
+ 
+@@ -693,20 +693,15 @@ x_check_status(int status,
+         {
+             if (extended_msg)
+             {
+-                msg(x_cs_info_level, "%s %s [%s]: %s (code=%d)",
+-                    description,
++                msg(x_cs_info_level, "%s %s [%s]: %s (code=%d)", description,
+                     sock ? proto2ascii(sock->info.proto, sock->info.af, true) : "",
+-                    extended_msg,
+-                    strerror_ts(my_errno, &gc),
+-                    my_errno);
++                    extended_msg, strerror(my_errno, &gc), my_errno);
+             }
+             else
+             {
+-                msg(x_cs_info_level, "%s %s: %s (code=%d)",
+-                    description,
++                msg(x_cs_info_level, "%s %s: %s (code=%d)", description,
+                     sock ? proto2ascii(sock->info.proto, sock->info.af, true) : "",
+-                    strerror_ts(my_errno, &gc),
+-                    my_errno);
++                    strerror(my_errno, &gc), my_errno);
+             }
+ 
+             if (x_cs_err_delay_ms)
+diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
+index 39ce8b3..165b347 100644
+--- a/src/openvpn/manage.c
++++ b/src/openvpn/manage.c
+@@ -2006,9 +2006,8 @@ man_io_error(struct management *man, const char *prefix)
+     if (!ignore_sys_error(err))
+     {
+         struct gc_arena gc = gc_new();
+-        msg(D_MANAGEMENT, "MANAGEMENT: TCP %s error: %s",
+-            prefix,
+-            strerror_ts(err, &gc));
++        msg(D_MANAGEMENT, "MANAGEMENT: TCP %s error: %s", prefix,
++            strerror(err, &gc));
+         gc_free(&gc);
+         return true;
+     }
+diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
+index ef779ee..f6d6c6a 100644
+--- a/src/openvpn/misc.c
++++ b/src/openvpn/misc.c
+@@ -444,21 +444,6 @@ init_random_seed(void)
+     }
+ }
+ 
+-/* thread-safe strerror */
+-
+-const char *
+-strerror_ts(int errnum, struct gc_arena *gc)
+-{
+-#ifdef HAVE_STRERROR
+-    struct buffer out = alloc_buf_gc(256, gc);
+-
+-    buf_printf(&out, "%s", openvpn_strerror(errnum, gc));
+-    return BSTR(&out);
+-#else
+-    return "[error string unavailable]";
+-#endif
+-}
+-
+ /*
+  * Set environmental variable (int or string).
+  *
+diff --git a/src/openvpn/misc.h b/src/openvpn/misc.h
+index 3116ec4..bc267d7 100644
+--- a/src/openvpn/misc.h
++++ b/src/openvpn/misc.h
+@@ -95,12 +95,6 @@ openvpn_run_script(const struct argv *a, const struct env_set *es, const unsigne
+ }
+ 
+ 
+-#ifdef HAVE_STRERROR
+-/* a thread-safe version of strerror */
+-const char *strerror_ts(int errnum, struct gc_arena *gc);
+-
+-#endif
+-
+ /* Set standard file descriptors to /dev/null */
+ void set_std_files_to_null(bool stdin_only);
+ 
+diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
+index a814b95..c48dbf7 100644
+--- a/src/openvpn/socket.c
++++ b/src/openvpn/socket.c
+@@ -1473,10 +1473,8 @@ socket_connect(socket_descriptor_t *sd,
+     if (status)
+     {
+ 
+-        msg(D_LINK_ERRORS,
+-            "TCP: connect to %s failed: %s",
+-            print_sockaddr(dest, &gc),
+-            strerror_ts(status, &gc));
++        msg(D_LINK_ERRORS, "TCP: connect to %s failed: %s",
++            print_sockaddr(dest, &gc), strerror(status, &gc));
+ 
+         openvpn_close_socket(*sd);
+         *sd = SOCKET_UNDEFINED;
+-- 
+2.7.4
 
---94eb2c1cc5b6ad04fd0554bba341--
 
