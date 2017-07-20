@@ -1,13 +1,10 @@
-Date: Thu, 20 Jul 2017 08:11:43 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20170720061143.GI70062@...1296...>
-References: <20170719213923.18843-1-steffan@...1856...>
+From: Steffan Karger <steffan.karger@...1435...>
+Date: Thu, 20 Jul 2017 09:56:43 +0200
+Message-ID: <1500537403-15079-1-git-send-email-steffan.karger@...1435...>
+In-Reply-To: <20170720061143.GI70062@...1296...>
+References: <20170720061143.GI70062@...1296...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="jkO+KyKz7TfD21mV"
-Content-Disposition: inline
-In-Reply-To: <20170719213923.18843-1-steffan@...1856...>
-Subject: Re: [Openvpn-devel] [PATCH] Move strerror_ts() to error.h/c
+Subject: [Openvpn-devel] [PATCH] Move strerror_ts() to error.h/c
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,82 +13,124 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
 	<mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan@...1856...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---jkO+KyKz7TfD21mV
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Move strerror_ts() to error.c, which is a more suitable location than the
+random collection of unrelated stuff called misc.c.
 
-Hi,
+While doing so, simplify the implementation and remove the defines.
+strerror() is required by C89 and C99, and we require C99, so no need to
+check.
 
-On Wed, Jul 19, 2017 at 11:39:23PM +0200, Steffan Karger wrote:
-> Move strerror_ts() to error.c, which is a more suitable location than the
-> random collection of unrelated stuff called misc.c.  While doing so,
-> simplify the implementation.
->=20
-> (I think we should find a better place for everything currently in misc.c,
-> and get rid of it all together.  This patch is part of that effort.)
+We might want to switch to strerror_r() and get rid of this function all
+together (it isn't as thread-safe as it claims), but while strerror() is
+part of the C standard, strerror_r() is 'just' posix.  So I'd prefer not
+to pull that into this patch.
 
-While I do like the patch, parts of it do not make sense :-)
+(I think we should find a better place for everything currently in misc.c,
+and get rid of it all together.  This patch is part of that effort.)
 
-> +#ifdef HAVE_STRERROR
-> +const char *
-> +strerror_ts(int errnum, struct gc_arena *gc)
-> +{
-> +    return string_alloc(openvpn_strerror(errnum, gc), gc);
-> +}
-> +#endif
-> +
+Signed-off-by: Steffan Karger <steffan@...1856...>
+---
+v2 - don't check for strerror presence, it's in C99.
 
-... so where's the "#else" here?
+ configure.ac        |  2 +-
+ src/openvpn/error.c |  6 ++++++
+ src/openvpn/error.h |  3 +++
+ src/openvpn/misc.c  | 15 ---------------
+ src/openvpn/misc.h  |  6 ------
+ 5 files changed, 10 insertions(+), 22 deletions(-)
 
-OTOH, the old code was a bit weird - #ifndef HAVE_STRERROR, the function
-itself would return a static string, but the *prototype* would disappear
-from the header file.
+diff --git a/configure.ac b/configure.ac
+index 60bb465..39d992c 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -662,7 +662,7 @@ AC_FUNC_FORK
+ 
+ AC_CHECK_FUNCS([ \
+ 	daemon chroot getpwnam setuid nice system getpid dup dup2 \
+-	getpass strerror syslog openlog mlockall getgrnam setgid \
++	getpass syslog openlog mlockall getgrnam setgid \
+ 	setgroups stat flock readv writev time gettimeofday \
+ 	ctime memset vsnprintf strdup \
+ 	setsid chdir putenv getpeername unlink \
+diff --git a/src/openvpn/error.c b/src/openvpn/error.c
+index ce50ff9..66685cd 100644
+--- a/src/openvpn/error.c
++++ b/src/openvpn/error.c
+@@ -815,6 +815,12 @@ msg_flags_string(const unsigned int flags, struct gc_arena *gc)
+     return BSTR(&out);
+ }
+ 
++const char *
++strerror_ts(int errnum, struct gc_arena *gc)
++{
++    return string_alloc(openvpn_strerror(errnum, gc), gc);
++}
++
+ #ifdef ENABLE_DEBUG
+ void
+ crash(void)
+diff --git a/src/openvpn/error.h b/src/openvpn/error.h
+index 14ef7e6..ff68d58 100644
+--- a/src/openvpn/error.h
++++ b/src/openvpn/error.h
+@@ -398,6 +398,9 @@ nonfatal(const unsigned int err)
+     return err & M_FATAL ? (err ^ M_FATAL) | M_NONFATAL : err;
+ }
+ 
++/** A thread-safe version of strerror */
++const char *strerror_ts(int errnum, struct gc_arena *gc);
++
+ #include "errlevel.h"
+ 
+ #endif /* ifndef ERROR_H */
+diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
+index ef779ee..f6d6c6a 100644
+--- a/src/openvpn/misc.c
++++ b/src/openvpn/misc.c
+@@ -444,21 +444,6 @@ init_random_seed(void)
+     }
+ }
+ 
+-/* thread-safe strerror */
+-
+-const char *
+-strerror_ts(int errnum, struct gc_arena *gc)
+-{
+-#ifdef HAVE_STRERROR
+-    struct buffer out = alloc_buf_gc(256, gc);
+-
+-    buf_printf(&out, "%s", openvpn_strerror(errnum, gc));
+-    return BSTR(&out);
+-#else
+-    return "[error string unavailable]";
+-#endif
+-}
+-
+ /*
+  * Set environmental variable (int or string).
+  *
+diff --git a/src/openvpn/misc.h b/src/openvpn/misc.h
+index 3116ec4..bc267d7 100644
+--- a/src/openvpn/misc.h
++++ b/src/openvpn/misc.h
+@@ -95,12 +95,6 @@ openvpn_run_script(const struct argv *a, const struct env_set *es, const unsigne
+ }
+ 
+ 
+-#ifdef HAVE_STRERROR
+-/* a thread-safe version of strerror */
+-const char *strerror_ts(int errnum, struct gc_arena *gc);
+-
+-#endif
+-
+ /* Set standard file descriptors to /dev/null */
+ void set_std_files_to_null(bool stdin_only);
+ 
+-- 
+2.7.4
 
-I think we can safely assume that strerror() is available on all the
-platforms (so, kick out the test from configure.ac as well :) ) - but it=20
-might be worthwile to have a look at strerror_r() or strerror_s(), if we=20
-really are concerned about eventual threading OpenVPN and making this=20
-properly reentrant.
-
-
-As a side note, why anyone would implement strerror() in a non-thread-
-safe way ("it's only returning a pointer to a static string table, isn't
-it?") - reading through=20
-
-  https://stackoverflow.com/questions/900338/why-cant-i-use-strerror
-
-has the answer: NLS, and "string tables dynamically loaded at run-time",
-so the string isn't actually static inside strerror().
-
-gert
-
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---jkO+KyKz7TfD21mV
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJZcEmfAAoJEB2Cnv7KVigSYJwMAIH1blY2rZCk14EXNjA9roP2
-YkuvDTDA8gjHoVBSx94KF3BmsXj1GSA6QGGBchA4eWSysh+KphgSkC8SEMkZg3kN
-253RLvCwp9hB78uGeg0Of1Gba4U0CRboJ9RX2zfeN0wmgKpL4Df8mr4qdU0hSEyg
-yEvloO7qjUnkwHBGqEf9FVzUo6s363s8CCvQDvhvPM19yBDlGMZUQa5I8U3ad3Ig
-IHejmJFIPv1F6yLPKhtr1tuBdaA+eljwuEK8N8CG8Ac310kWEORc+pKpTGNP9kN5
-/+pXVW1BF9oERcEG6XA6lYghY/3VPUGS0qlKPrUsuwM8QLVOT8Edtvqn/TSxatfm
-7K8EE+HJmCiV1DVguPniCXtiIaBpQhcGcpWshWmAEkf0tV84vkHqc6j7pcyPBMrs
-LIn8FJFwfx+eljTPw7EzcvZRdQ1iji3nAjcyXTgtaf+IOKLP7vWr60S6m5pJq6nN
-XCNr/EzPh+Jv26wfqFKYMz+rebQcWheUZgfIbqpxyA==
-=SoA+
------END PGP SIGNATURE-----
-
---jkO+KyKz7TfD21mV--
 
