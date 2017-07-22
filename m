@@ -1,9 +1,10 @@
-Date: Thu, 20 Jul 2017 22:48:37 +0200 (CEST)
-Message-Id: <201707202048.v6KKmbVi040753@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20170720082338.1302-1-a@...2181...>
-References: <20170720082338.1302-1-a@...2181...>
-Subject: [Openvpn-devel] [PATCH applied] Re: route: improve error message
+MIME-Version: 1.0
+From: Qi Zhang <nemozqqz@...277...>
+Date: Sat, 22 Jul 2017 21:58:12 +0800
+Message-ID: <CACtAv3-fW=Pw_gW42D=a8091qDK5BeDp0=hiv3oce2P4bmnp2w@...278...>
+Content-Type: multipart/alternative; boundary="94eb2c123f1a69592f0554e85f0b"
+Subject: [Openvpn-devel] Default file permission of the unix domain socket
+ for management
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,34 +13,60 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Antonio Quartulli <a@...2181...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-ACK.  Have no such recent Linux system around, but I trust you to have
-tested it - tested on older linuxes where it does not break anything, and 
-the code looks reasonable.
+--94eb2c123f1a69592f0554e85f0b
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Your patch has been applied to the master and release/2.4 branch.
+I've noticed the default file permission of the unix domain socket for
+OpenVPN mgmt interface on my linux is srwxrwxrwx.
+"default' I mean management-client-user is not set
+*.*
+Is this default permission secure ?  Other process might connect to the
+interface and causing DoS ?
 
-commit 20d98427ef37e3b748dbcca2174cd243dcc963dc (master)
-commit f62720269db5299b8779780476c533fba00b354a (release/2.4)
-Author: Antonio Quartulli
-Date:   Thu Jul 20 16:23:38 2017 +0800
+I find that *umask(0)* is used in this socket_bind_unix
+<https://github.com/OpenVPN/openvpn/blob/master/src/openvpn/socket.c#L3882>
+function and I think that's the reason for the defautl 777 permission.
 
-     route: improve error message
+I also observe that some Android OpenVPN apps create the unix domain socket
+as the permission of 777.
+I guess the reason is that mgmt socket is created by the native OpenVPN
+library, not by the Java code.
+Also, I think the OpenVPN process on Android won't know the user to set
+management-client-user
 
-     Signed-off-by: Antonio Quartulli <a@...2181...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20170720082338.1302-1-a@...2181...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg15101.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+So, I think the default file permission of unix domain socket is insecure
+*. Will umask(077) solve this problem?*
 
+Thx.
+--=20
+=E5=BC=A0=E5=A5=87
+Anything worth doing is worth attaching your name to.
 
---
-kind regards,
+--94eb2c123f1a69592f0554e85f0b
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Gert Doering
+<div dir=3D"ltr"><div><div><div><div><div>I&#39;ve noticed the default file=
+ permission of the unix domain socket for OpenVPN mgmt interface on my linu=
+x is srwxrwxrwx.<br>&quot;default&#39; I mean management-client-user is not=
+ set<b>.<br></b></div>Is this default permission secure ?=C2=A0 Other proce=
+ss might connect to the interface and causing DoS ?<br><br></div>I find tha=
+t <b>umask(0)</b> is used in this<a href=3D"https://github.com/OpenVPN/open=
+vpn/blob/master/src/openvpn/socket.c#L3882"> socket_bind_unix</a> function =
+and I think that&#39;s the reason for the defautl 777 permission.<br><br></=
+div>I also observe that some Android OpenVPN apps create the unix domain so=
+cket as the permission of 777.<br></div>I guess the reason is that mgmt soc=
+ket is created by the native OpenVPN library, not by the Java code.<br></di=
+v><div>Also, I think the OpenVPN process on Android won&#39;t know the user=
+ to set management-client-user</div><div><br></div>So, I think the default =
+file permission of unix domain socket is insecure<b>. Will umask(077) solve=
+ this problem?<br></b><div><div><div><div><br clear=3D"all"><div><div><div>=
+<div><div>Thx.<br></div><div>-- <br><div class=3D"gmail_signature">=E5=BC=
+=A0=E5=A5=87<br>Anything worth doing is worth attaching your name to.</div>
+</div></div></div></div></div></div></div></div></div></div>
 
+--94eb2c123f1a69592f0554e85f0b--
 
