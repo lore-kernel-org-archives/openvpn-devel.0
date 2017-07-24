@@ -1,13 +1,11 @@
-References: <500813015-27739-1-git-send-email-arne@...1227...>
- <1500828336-30314-1-git-send-email-arne@...1227...>
-From: Steffan Karger <steffan@...1856...>
-Message-ID: <c4fd8dae-c152-ee73-4d9b-2fd6d0335f56@...1856...>
-Date: Sun, 23 Jul 2017 20:37:52 +0200
+From: Steffan Karger <steffan.karger@...1435...>
+Message-ID: <a1b3eba7-50a9-ea7b-0f40-db4bdb9b8156@...1435...>
+Date: Mon, 24 Jul 2017 09:11:16 +0200
 MIME-Version: 1.0
-In-Reply-To: <1500828336-30314-1-git-send-email-arne@...1227...>
+Content-Type: multipart/mixed; boundary="------------7F66BB19C7C20555619F9371"
 Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH v4] Print ec bit details,
- refuse management-external-key if key is not RSA
+Subject: [Openvpn-devel] Proposal: tls-crypt-v2 (client-specific tls-crypt
+ keys)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,155 +14,146 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
+
+--------------7F66BB19C7C20555619F9371
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 
 Hi,
 
-On 23-07-17 18:45, Arne Schwabe wrote:
-> V2: Print also curve details, add missing ifdef
-> V3: Goto err instead of using M_FATAL, format fixes, use EC_GROUP_get_curve_name + OBJ_nid2sn instead of ECPKParameters_print, add compat headers for 1.0.2
-> V4: Formatting changes and change M_ERR to M_WARN
-> ---
->  configure.ac                 |  2 ++
->  src/openvpn/openssl_compat.h | 32 ++++++++++++++++++++++++++++++++
->  src/openvpn/ssl_openssl.c    | 29 +++++++++++++++++++++++++++--
->  3 files changed, 61 insertions(+), 2 deletions(-)
-> 
-> diff --git a/configure.ac b/configure.ac
-> index 39d992c0..f6eeb40d 100644
-> --- a/configure.ac
-> +++ b/configure.ac
-> @@ -934,6 +934,7 @@ if test "${enable_crypto}" = "yes" -a "${with_crypto_library}" = "openssl"; then
->  			EVP_PKEY_id \
->  			EVP_PKEY_get0_RSA \
->  			EVP_PKEY_get0_DSA \
-> +			EVP_PKEY_get0_EC_KEY \
->  			RSA_set_flags \
->  			RSA_bits \
->  			RSA_get0_key \
-> @@ -949,6 +950,7 @@ if test "${enable_crypto}" = "yes" -a "${with_crypto_library}" = "openssl"; then
->  			RSA_meth_set_init \
->  			RSA_meth_set_finish \
->  			RSA_meth_set0_app_data \
-> +			EC_GROUP_order_bits
->  		]
->  	)
->  
-> diff --git a/src/openvpn/openssl_compat.h b/src/openvpn/openssl_compat.h
-> index 36f68b01..70b19aea 100644
-> --- a/src/openvpn/openssl_compat.h
-> +++ b/src/openvpn/openssl_compat.h
-> @@ -244,6 +244,20 @@ EVP_PKEY_get0_RSA(EVP_PKEY *pkey)
->  }
->  #endif
->  
-> +#if !defined(HAVE_EVP_PKEY_GET0_EC_KEY) && !defined(OPENSSL_NO_EC)
-> +/**
-> + * Get the EC_KEY object of a public key
-> + *
-> + * @param pkey                Public key object
-> + * @return                    The underlying EC_KEY object
-> + */
-> +static inline EC_KEY *
-> +EVP_PKEY_get0_EC_KEY(EVP_PKEY *pkey)
-> +{
-> +    return pkey ? pkey->pkey.ec : NULL;
-> +}
-> +#endif
-> +
->  #if !defined(HAVE_EVP_PKEY_ID)
->  /**
->   * Get the PKEY type
-> @@ -610,6 +624,24 @@ RSA_meth_set0_app_data(RSA_METHOD *meth, void *app_data)
->  }
->  #endif
->  
-> +#if !defined(HAVE_EC_GROUP_ORDER_BITS) && !defined(OPENSSL_NO_EC)
-> +/**
-> + * Gets the number of bits of the order of an EC_GROUP
-> + *
-> + *  @param  group               EC_GROUP object
-> + *  @return                     number of bits of group order.
-> + */
-> +static inline int
-> +EC_GROUP_order_bits(const EC_GROUP *group)
-> +{
-> +    BIGNUM* order = BN_new();
-> +    EC_GROUP_get_order(group, order, NULL);
-> +    int bits = BN_num_bits(order);
-> +    BN_free(order);
-> +    return bits;
-> +}
-> +#endif
-> +
->  /* SSLeay symbols have been renamed in OpenSSL 1.1 */
->  #if !defined(RSA_F_RSA_OSSL_PRIVATE_ENCRYPT)
->  #define RSA_F_RSA_OSSL_PRIVATE_ENCRYPT       RSA_F_RSA_EAY_PRIVATE_ENCRYPT
-> diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-> index 11f4a567..459fe371 100644
-> --- a/src/openvpn/ssl_openssl.c
-> +++ b/src/openvpn/ssl_openssl.c
-> @@ -1077,6 +1077,13 @@ tls_ctx_use_external_private_key(struct tls_root_ctx *ctx,
->      ASSERT(pkey); /* NULL before SSL_CTX_use_certificate() is called */
->      pub_rsa = EVP_PKEY_get0_RSA(pkey);
->  
-> +    /* Certificate might not be RSA but DSA or EC */
-> +    if (!pub_rsa)
-> +    {
-> +        crypto_msg(M_WARN, "management-external-key requires a RSA certificate");
-> +        goto err;
-> +    }
-> +        
->      /* initialize RSA object */
->      const BIGNUM *n = NULL;
->      const BIGNUM *e = NULL;
-> @@ -1683,18 +1690,36 @@ print_details(struct key_state_ssl *ks_ssl, const char *prefix)
->          EVP_PKEY *pkey = X509_get_pubkey(cert);
->          if (pkey != NULL)
->          {
-> -            if (EVP_PKEY_id(pkey) == EVP_PKEY_RSA && EVP_PKEY_get0_RSA(pkey) != NULL)
-> +            if ((EVP_PKEY_id(pkey) == EVP_PKEY_RSA) && (EVP_PKEY_get0_RSA(pkey) != NULL))
->              {
->                  RSA *rsa = EVP_PKEY_get0_RSA(pkey);
->                  openvpn_snprintf(s2, sizeof(s2), ", %d bit RSA",
->                                   RSA_bits(rsa));
->              }
-> -            else if (EVP_PKEY_id(pkey) == EVP_PKEY_DSA && EVP_PKEY_get0_DSA(pkey) != NULL)
-> +            else if ((EVP_PKEY_id(pkey) == EVP_PKEY_DSA) && (EVP_PKEY_get0_DSA(pkey) != NULL))
->              {
->                  DSA *dsa = EVP_PKEY_get0_DSA(pkey);
->                  openvpn_snprintf(s2, sizeof(s2), ", %d bit DSA",
->                                   DSA_bits(dsa));
->              }
-> +#ifndef OPENSSL_NO_EC
-> +            else if ((EVP_PKEY_id(pkey) == EVP_PKEY_EC) && (EVP_PKEY_get0_EC_KEY(pkey) != NULL))
-> +            {
-> +                EC_KEY *ec = EVP_PKEY_get0_EC_KEY(pkey);
-> +                const EC_GROUP *group = EC_KEY_get0_group(ec);
-> +                const char* curve;
-> +                
-> +                int nid = EC_GROUP_get_curve_name(group);
-> +                if (nid == 0 || (curve = OBJ_nid2sn(nid)) == NULL)
-> +                {
-> +                    curve = "Error getting curve name";
-> +                }
-> +                
-> +                openvpn_snprintf(s2, sizeof(s2), ", %d bit EC, curve: %s",
-> +                                 EC_GROUP_order_bits(group), curve);
-> +                
-> +            }
-> +#endif
->              EVP_PKEY_free(pkey);
->          }
->          X509_free(cert);
-> 
+As mentioned previously on hackathons, IRC and the mailing list, we've
+been working on tls-crypt (which is available in 2.4) and a variant that
+requires a bit more provisioning, but is better suited for large VPN
+setups and also useful for VPN providers: tls-crypt-v2.  This is a
+public request for comments on the design of this feature.
 
-Patch looks good now, thanks.  ACK.
+The existing --tls-auth and tls-crypt options use a pre-shared group
+key, which is shared amongst all clients and servers in an OpenVPN
+deployment.  If any client or server is compromised, the attacker will
+have access to this shared key, and it will no longer provide any
+security.  To reduce the risk of loosing pre-shared keys, tls-crypt-v2
+adds the ability to supply each client with a unique tls-crypt key.
 
-(Some trailing whitespace in the patch, but I guess that's easy enough
-to fix when applying.)
+Also, even if all peers succeed in keeping the key secret, the
+--tls-crypt key lifetime is limited to roughly 8000 years, divided by
+the number of clients (see the --tls-crypt section of the man page).
+Using client-specific keys, we lift this lifetime requirement to roughly
+8000 years for each client key (which "Should Be Enough For Everybody
+(tm)").
+
+The full specification is attached.  Antonio and I have been working on
+an implementation, a preview is available on:
+https://github.com/syzzer/openvpn/tree/tls-crypt-v2-preview
+(NOT READY FOR PRODUCTION USE!  Also, this is not a stable branch and
+might be force-pushed or disappear at any moment.)
+
+Any comments (both on the design as well as the text), bug reports or
+suggestions are welcome!
 
 -Steffan
+
+
+--------------7F66BB19C7C20555619F9371
+Content-Type: text/plain; charset="UTF-8"; name="tls-crypt-v2.txt"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="tls-crypt-v2.txt"
+
+Q2xpZW50LXNwZWNpZmljIHRscy1jcnlwdCBrZXlzICgtLXRscy1jcnlwdC12MikKPT09PT09
+PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KClRoaXMgZG9jdW1l
+bnQgZGVzY3JpYmVzIHRoZSBgYC0tdGxzLWNyeXB0LXYyYGAgb3B0aW9uLCB3aGljaCBlbmFi
+bGVzIE9wZW5WUE4KdG8gdXNlIGNsaWVudC1zcGVjaWZpYyBgYC0tdGxzLWNyeXB0YGAga2V5
+cy4KClJhdGlvbmFsZQotLS0tLS0tLS0KCmBgLS10bHMtYXV0aGBgIGFuZCBgYHRscy1jcnlw
+dGBgIHVzZSBhIHByZS1zaGFyZWQgZ3JvdXAga2V5LCB3aGljaCBpcyBzaGFyZWQKYW1vbmdz
+dCBhbGwgY2xpZW50IGFuZCBzZXJ2ZXJzIGluIGFuIE9wZW5WUE4gZGVwbG95bWVudC4gIElm
+IGFueSBjbGllbnQgb3IKc2VydmVyIGlzIGNvbXByb21pc2VkLCB0aGUgYXR0YWNrZXIgd2ls
+bCBoYXZlIGFjY2VzcyB0byB0aGlzIHNoYXJlZCBrZXksIGFuZCBpdAp3aWxsIG5vIGxvbmdl
+ciBwcm92aWRlIGFueSBzZWN1cml0eS4gIFRvIHJlZHVjZSB0aGUgcmlzayBvZiBsb29zaW5n
+IHByZS1zaGFyZWQKa2V5cywgYGB0bHMtY3J5cHQtdjJgYCBhZGRzIHRoZSBhYmlsaXR5IHRv
+IHN1cHBseSBlYWNoIGNsaWVudCB3aXRoIGEgdW5pcXVlCnRscy1jcnlwdCBrZXkuCgpgYHRs
+cy1jcnlwdGBgIHNoYXJlcyBhIGdyb3VwIGtleSBhbW9uZ3N0IGEgbG90IG9mIHNlcnZlcnMg
+YW5kIGNsaWVudHMuICBFdmVuIGlmCmFsbCB0aGVzZSBwZWVycyBzdWNjZWVkIGluIGtlZXBp
+bmcgdGhlIGtleSBzZWNyZXQsIHRoZSBrZXkgbGlmZXRpbWUgaXMgbGltaXRlZAp0byByb3Vn
+aGx5IDgwMDAgeWVhcnMsIGRpdmlkZWQgYnkgdGhlIG51bWJlciBvZiBjbGllbnRzIChzZWUg
+dGhlCmBgLS10bHMtY3J5cHRgYCBzZWN0aW9uIG9mIHRoZSBtYW4gcGFnZSkuICBVc2luZyBj
+bGllbnQtc3BlY2lmaWMga2V5cywgd2UgbGlmdAp0aGlzIGxpZmV0aW1lIHJlcXVpcmVtZW50
+IHRvIHJvdWdobHkgODAwMCB5ZWFycyBmb3IgZWFjaCBjbGllbnQga2V5ICh3aGljaAoiU2hv
+dWxkIEJlIEVub3VnaCBGb3IgRXZlcnlib2R5ICh0bSkiKS4KCgpJbXBsZW1lbnRhdGlvbgot
+LS0tLS0tLS0tLS0tLQoKQ2xpZW50LXNwZWNpZmljIHRscy1jcnlwdCBrZXlzIHVzaW5nIGFu
+IGVuY3J5cHRlZCBjb29raWUgbWVjaGFuaXNtLiAgVGhlCm1lY2hhbmlzbSB3b3JrcyBhcyBm
+b2xsb3dzOgoKV2hlbiBzZXR0aW5nIHVwIGEgdGxzLWNyeXB0LXYyIGdyb3VwIChzaW1pbGFy
+IHRvIGdlbmVyYXRpbmcgYSB0bHMtY3J5cHQgb3IKdGxzLWF1dGgga2V5IHByZXZpb3VzbHkp
+OgoKMS4gR2VuZXJhdGUgYSB0bHMtY3J5cHQtdjIgc2VydmVyIGtleSB1c2luZyBPcGVuVlBO
+J3MgYGAtLWdlbmtleWBgLiAgVGhpcyBrZXkKICAgY29udGFpbnMgNCA1MTItYml0IGtleXMs
+IG9mIHdoaWNoIHdlIHVzZToKCiAgICogdGhlIGZpcnN0IDI1NiBiaXRzIG9mIGtleSAxIGFz
+IEFFUy0yNTYtQ1RSIGVuY3J5cHRpb24ga2V5IGBgS2VgYAogICAqIHRoZSBmaXJzdCAyNTYg
+Yml0cyBvZiBrZXkgMiBhcyBITUFDLVNIQS0yNTYgYXV0aGVudGljYXRpb24ga2V5IGBgS2Fg
+YAoKMi4gQWRkIHRoZSB0bHMtY3J5cHQtdjIgc2VydmVyIGtleSB0byBhbGwgc2VydmVyIGNv
+bmZpZ3MKICAgKGBgdGxzLWNyeXB0LXYyIC9wYXRoL3RvL3NlcnZlci5rZXlgYCkKCgpXaGVu
+IHByb3Zpc2lvbmluZyBhIGNsaWVudCwgY3JlYXRlIGEgY2xpZW50LXNwZWNpZmljIHRscy1j
+cnlwdCBrZXk6CgoxLiBHZW5lcmF0ZSAyMDQ4IGJpdHMgY2xpZW50LXNwZWNpZmljIGtleSBg
+YEtjYGAKMi4gT3B0aW9uYWxseSBnZW5lcmF0ZSBtZXRhZGF0YQozLiBDcmVhdGUgYSB3cmFw
+cGVkIGNsaWVudCBrZXkgYGBXS2NgYCwgdXNpbmcgdGhlIHNhbWUgbm9uY2UtbWlzdXNlLXJl
+c2lzdGFudAogICBTSVYgY29udHJ1Y3Rpb24gd2UgdXNlIGZvciB0bHMtY3J5cHQ6CgogICBg
+YFQgPSBITUFDLVNIQTI1NihLYSwgS2MgfHwgbWV0YWRhdGEpYGAKCiAgIGBgSVYgPSAxMjgg
+bW9zdCBzaWduaWZpY2FudCBiaXRzIG9mIFRgYAoKICAgYGBXS2MgPSBUIHx8IEFFUy0yNTYt
+Q1RSKEtlLCBJViwgS2MgfHwgbWV0YWRhdGEpYGAKCjQuIENyZWF0ZSBhIHRscy1jcnlwdC12
+MiBjbGllbnQga2V5OiBQRU0tZW5jb2RlIGBgS2MgfHwgV0tjYGAgYW5kIHN0b3JlIGluIGEK
+ICAgZmlsZSwgdXNpbmcgdGhlIGhlYWRlciBgYC0tLS0tQkVHSU4gT3BlblZQTiB0bHMtY3J5
+cHQtdjIgY2xpZW50IGtleS0tLS0tYGAKICAgYW5kIHRoZSBmb290ZXIgYGAtLS0tLUVORCBP
+cGVuVlBOIHRscy1jcnlwdC12MiBjbGllbnQga2V5LS0tLS1gYC4gIChUaGUgUEVNCiAgIGZv
+cm1hdCBpcyBzaW1wbGUsIGFuZCBmb2xsb3dpbmcgUEVNIGFsbG93cyB1cyB0byB1c2UgdGhl
+IGNyeXB0byBsaWIgZnVuY3Rpb24KICAgZm9yIGVuL2RlY29kaW5nLikKNS4gQWRkIHRoZSB0
+bHMtY3J5cHQtdjIgY2xpZW50IGtleSB0byB0aGUgY2xpZW50IGNvbmZpZwogICAoYGB0bHMt
+Y3J5cHQtdjIgL3BhdGgvdG8vY2xpZW50LXNwZWNpZmljLmtleWBgKQoKCldoZW4gc2V0dGlu
+ZyB1cCB0aGUgb3BlbnZwbiBjb25uZWN0aW9uOgoKMS4gVGhlIGNsaWVudCByZWFkcyB0aGUg
+dGxzLWNyeXB0LXYyIGtleSBmcm9tIGl0cyBjb25maWcsIGFuZDoKCiAgIDEuIGxvYWRzIGBg
+S2NgYCBhcyBpdHMgdGxzLWNyeXB0IGtleSwKICAgMi4gc3RvcmVzIGBgV0tjYGAgaW4gbWVt
+b3J5IGZvciBzZW5kaW5nIHRvIHRoZSBzZXJ2ZXIuCgoyLiBUbyBzdGFydCB0aGUgY29ubmVj
+dGlvbiwgdGhlIGNsaWVudCBjcmVhdGVzIGEgUF9DT05UUk9MX0hBUkRfUkVTRVRfQ0xJRU5U
+X1YzCiAgIG1lc3NhZ2Ugd2l0aCBgYFdLY2BgIGFzIHBheWxvYWQuICBUaGUgZW50aXJlIG1l
+c3NhZ2UgaXMgYXV0aGVudGljYXRlZCBhcwogICBBZGRpdGlvbmFsIERhdGEgdXNpbmcgYGBL
+Y2BgIChmb2xsb3dpbmcgdGhlIHRscy1jcnlwdCB3cmFwcGluZykuCgozLiBTZXJ2ZXIgcmVj
+ZWl2ZXMgdGhlIFBfQ09OVFJPTF9IQVJEX1JFU0VUX0NMSUVOVF9WMyBtZXNzYWdlLCBhbmQK
+CiAgIGEuIHVud3JhcHMgYGBXS2NgYC4KICAgYi4gdXNlcyB1bndyYXBwZWQgYGBLY2BgIHRv
+IHZlcmlmeSB0aGUgUF9DT05UUk9MX0hBUkRfUkVTRVRfQ0xJRU5UX1YzCiAgICAgIG1lc3Nh
+Z2UncyBhdXRoZW50aWNhdGlvbi4KCiAgIFBhY2tldCBpcyBkcm9wcGVkIGFuZCBubyBlcnJv
+ciByZXNwb25zZSBpcyBzZW50IHdoZW4gZWl0aGVyIGEgb3IgYiBmYWlscyAoRG9TCiAgIHBy
+b3RlY3Rpb24pLgoKNC4gU2VydmVyIG9wdGlvbmFsbHkgY2hlY2tzIG1ldGFkYXRhIHVzaW5n
+IHNjcmlwdC9wbHVnaW4KICAgKGFsbG93cyBlYXJseSBhYm9ydCBvZiBjb25ubmVjdGlvbiwg
+KmJlZm9yZSogZGFuZ2Vyb3VzIFRMUyBwYXJzaW5nKS4KCiAgIFRoZSBtZXRhZGF0YSBpcyBj
+aGVja2VkICphZnRlciogdGhlIE9wZW5WUE4gdGhyZWUtd2F5IGhhbmRzaGFrZSBoYXMKICAg
+Y29tcGxldGVkLCB0byBwcmV2ZW50IERvUyBhdHRhY2tzLiAgKFRoYXQgaXMsIG9uY2UgdGhl
+IGNsaWVudCBoYXMgcHJvdmVkIHRvCiAgIHRoZSBzZXJ2ZXIgdGhhdCBpdCBwb3Nlc3NlcyBL
+YywgYnkgYXV0aGVudGljYXRpbmcgYSBwYWNrZXQgdGhhdCBjb250YWlucyB0aGUKICAgc2Vz
+c2lvbiBJRCBwaWNrZWQgYnkgdGhlIHNlcnZlci4pCgogICBSRkM6IHNob3VsZCB0aGUgc2Vy
+dmVyIHNlbmQgYSAna2V5IHJlamVjdGVkJyBtZXNzYWdlIGlmIHRoZSBrZXkgaXMgZS5nLgog
+ICByZXZva2VkIG9yIGV4cGlyZWQ/ICBBbGxvd3MgZm9yIGJldHRlciBjbGllbnQtc2lkZSBl
+cnJvciByZXBvcnRpbmcuCgo2LiBDbGllbnQgYW5kIHNlcnZlciB1c2UgYGBLY2BgIGZvciAo
+dW4pd3JhcHBpbmcgYW55IGZvbGxvd2luZyBjb250cm9sIGNoYW5uZWwKICAgbWVzc2FnZXMu
+CgoKQ29uc2lkZXJhdGlvbnMKLS0tLS0tLS0tLS0tLS0KCmBgdGxzLWNyeXB0LXYyYGAgdXNl
+cyBmaXhlZCBjcnlwdG8gYWxnb3JpdGhtcywgYmVjYXVzZToKCiAqIFRoZSBjcnlwdG8gaXMg
+dXNlZCBiZWZvcmUgd2UgY2FuIGRvIGFueSBuZWdvdGlhdGlvbiwgc28gdGhlIGFsZ29yaXRo
+bXMgaGF2ZQogICB0byBiZSBwcmVkZWZpbmVkLgogKiBUaGUgY3J5cHRvIHByaW1pdGl2ZXMg
+YXJlIGNob3NlbiBjb25zZXJ2YXRpdmVseSwgbWFraW5nIHByb2JsZW1zIHdpdGggdGhlc2UK
+ICAgcHJpbWl0ZXMgdW5saWtlbHkuCiAqIE1ha2luZyBhbnl0aGluZyBjb25maWd1cmFibGUg
+YWRkcyBjb21wbGV4aXR5LCBib3RoIGluIGltcGxlbWVudGF0aW9uIGFuZAogICB1c2FnZS4g
+IFdlIHNob3VsZCBub3QgYWRkIGFueW1vcmUgY29tcGxleGl0eSB0aGFuIGlzIHJlYWxseSBu
+ZWNjZXNzYXJ5LgoKYGB0bHMtY3J5cHQtdjJgYCBwcm8nczoKCiAqIEFsbG93cyB1c2VyLXNw
+ZWNpZmljIGtleXMKICogQWxsb3dzIHJldm9raW5nIGtleXMgYmFzZWQgb24gbWV0YWRhdGEK
+ICogRmxleGlibGUgbWV0YWRhdGEgYWxsb3dzIHNpbXBsZXIgYW5kIG1vcmUgY29tcGxleCBy
+ZXZvY2F0aW9uIHNjaGVtZXMsIGUuZy46CgogICAqIE5vIHJldm9jYXRpb24KICAgKiBVc2Ug
+b3duIGtleSBpZGVudGlmaWVycyAoZS5nLiB3aGVuIHVzaW5nIHVzZXJuYW1lL3Bhc3N3b3Jk
+IGF1dGgpCiAgICogVXNlIGNlcnRpZmljYXRlIGZpbmdlcnByaW50CiAgICogVXNlIGNlcnRp
+ZmljYXRlIHNlcmlhbCAoKyBDQSBmaW5nZXJwcmludD8pLCBhbGxvd3MgdXNpbmcgQ1JMIGZv
+ciByZXZvY2F0aW9uCiAgICogVXNlIG93biBleHBpcmF0aW9uIG1lY2hhbmlzbQoKICogU0lW
+IHVzaW5nIEhNQUMtU0hBMjU2IGFuZCBBRVMtMjU2LUNUUiBpcyBxdWFudHVtIHJlc2lzdGVu
+dAoKYGB0bHMtY3J5cHQtdjJgYCBjb24nczoKCiAqIFNsaWdodGx5IG1vcmUgd29yayB1biBm
+aXJzdCBjb25uZWN0aW9uIChgYFdLY2BgIHVud3JhcCkKICogRmxleGlibGUgbWV0YWRhdGEg
+YWxsb3cgbWlzdGFrZXMKICAgKFNvIHdlIHNob3VsZCBtYWtlIGl0IGVhc3kgdG8gZG8gaXQg
+cmlnaHQuICBQcm92aWRlIHRvb2xpbmcgaW4gY29tcGF0LyB0bwogICBjcmVhdGUgY2xpZW50
+IGtleXMgYmFzZWQgb24gY2VydCBzZXJpYWwgKyBDQSBmaW5nZXJwcmludCwgcHJvdmlkZSBz
+Y3JpcHQgdGhhdAogICB1c2VzIENSTCAoaWYgYXZhaWxhYmxlKSB0byBkcm9wIHJldm9rZWQg
+Y29va2llcy4pCg==
+--------------7F66BB19C7C20555619F9371--
 
