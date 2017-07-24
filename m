@@ -1,10 +1,8 @@
-From: David Sommerseth <davids@...515...>
-Date: Mon, 24 Jul 2017 15:27:15 +0200
-Message-Id: <20170724132715.9094-1-davids@...515...>
-In-Reply-To: <20170707140108.31612-1-a@...2181...>
-References: <20170707140108.31612-1-a@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH applied] management: preserve
- wait_for_push field when asking for user/pass
+From: Antonio Quartulli <a@...2181...>
+Date: Mon, 24 Jul 2017 22:35:59 +0800
+Message-Id: <20170724143559.11503-1-a@...2181...>
+Subject: [Openvpn-devel] [PATCH] rename mroute_extract_addr_ipv4 to
+ mroute_extract_addr_ip
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,52 +13,71 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: a@...2181...
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
+Cc: Antonio Quartulli <a@...2181...>
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA512
+mroute_extract_addr_ipv4() is able to extract an IPv4 as well as an
+IPv6. Remove the "v4" suffix from its name to make this behaviour more
+explicit.
 
-ACK.  Tested and glared at code.  This matches quite well the analyzsis
-I had done before Antonio took over and completed.  And it works as expected.
+Signed-off-by: Antonio Quartulli <a@...2181...>
+---
+ src/openvpn/mroute.c | 7 +++----
+ src/openvpn/mroute.h | 8 ++++----
+ 2 files changed, 7 insertions(+), 8 deletions(-)
 
+diff --git a/src/openvpn/mroute.c b/src/openvpn/mroute.c
+index 7b46a6a2..74ee360c 100644
+--- a/src/openvpn/mroute.c
++++ b/src/openvpn/mroute.c
+@@ -159,9 +159,8 @@ mroute_extract_addr_arp(struct mroute_addr *src,
+ #endif /* ifdef ENABLE_PF */
+ 
+ unsigned int
+-mroute_extract_addr_ipv4(struct mroute_addr *src,
+-                         struct mroute_addr *dest,
+-                         const struct buffer *buf)
++mroute_extract_addr_ip(struct mroute_addr *src, struct mroute_addr *dest,
++                       const struct buffer *buf)
+ {
+     unsigned int ret = 0;
+     if (BLEN(buf) >= 1)
+@@ -267,7 +266,7 @@ mroute_extract_addr_ether(struct mroute_addr *src,
+                 switch (ntohs(eth->proto))
+                 {
+                     case OPENVPN_ETH_P_IPV4:
+-                        ret |= (mroute_extract_addr_ipv4(esrc, edest, &b) << MROUTE_SEC_SHIFT);
++                        ret |= (mroute_extract_addr_ip(esrc, edest, &b) << MROUTE_SEC_SHIFT);
+                         break;
+ 
+                     case OPENVPN_ETH_P_ARP:
+diff --git a/src/openvpn/mroute.h b/src/openvpn/mroute.h
+index e57a9506..35361fbd 100644
+--- a/src/openvpn/mroute.h
++++ b/src/openvpn/mroute.h
+@@ -181,9 +181,9 @@ mroute_extract_addr_from_packet(struct mroute_addr *src,
+                                 const struct buffer *buf,
+                                 int tunnel_type)
+ {
+-    unsigned int mroute_extract_addr_ipv4(struct mroute_addr *src,
+-                                          struct mroute_addr *dest,
+-                                          const struct buffer *buf);
++    unsigned int mroute_extract_addr_ip(struct mroute_addr *src,
++                                     struct mroute_addr *dest,
++                                     const struct buffer *buf);
+ 
+     unsigned int mroute_extract_addr_ether(struct mroute_addr *src,
+                                            struct mroute_addr *dest,
+@@ -195,7 +195,7 @@ mroute_extract_addr_from_packet(struct mroute_addr *src,
+     verify_align_4(buf);
+     if (tunnel_type == DEV_TYPE_TUN)
+     {
+-        ret = mroute_extract_addr_ipv4(src, dest, buf);
++        ret = mroute_extract_addr_ip(src, dest, buf);
+     }
+     else if (tunnel_type == DEV_TYPE_TAP)
+     {
+-- 
+2.13.3
 
-Your patch has been applied to the following branches
-
-commit 3322c558fa742cb823fa919f682486973abc4f8e  (master)
-commit e7ae4040efc5c48e00374f8863da58eef32e0709  (release/2.4)
-Author: Antonio Quartulli
-Date:   Fri Jul 7 22:01:08 2017 +0800
-
-     management: preserve wait_for_push field when asking for user/pass
-
-     Signed-off-by: Antonio Quartulli <a@...2181...>
-     Acked-by: David Sommerseth <davids@...515...>
-     Message-Id: <20170707140108.31612-1-a@...2181...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg15015.html
-     Signed-off-by: David Sommerseth <davids@...515...>
-
-
-- --
-kind regards,
-
-David Sommerseth
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBCgAGBQJZdfWwAAoJEIbPlEyWcf3yO8wQAIIkYjGfx0NjA/lbjm1qnEfq
-I4pc9sDgNGPo9NF5hWz+NDfkK6fxVjakW0fRJZe4HLXxrsSQIh64VX3BpfZglrIz
-gGvmbxrts9/TnXTwGhMOGZW/3GjwmhmUXT8yCxR0K8rOi41NNF8D6HmtDUxCI+Pa
-Tzfh5ddHgJu4E+kd+F1+k0CO6dyTyZCjuVSpT/MufGpZ0YcWr86F9xdtuzrprJda
-+FTpjpXD8eD8uHP3WTcrO+rGgWHkjoRErO+nlFwPSVH7Ob/Oc9xWL5ptjEmig/gW
-xBGRn+Sxp1GmDn326Wd4WdIYFqgdYlzs27/rR6xhDlmF9ger5EISYoETQuso5J2s
-GFKxjEV8IK8TJdSK8Fm5DyQNaOdTV5rwssUn6I6XDqJRDW4yNoyEEnVZKphYvTis
-eYBm2ckTjEvAs1dR9Of8LQUm/53aDwwzrkH/7pcZeo0rLIS05gpk6FUYtFFS1g8r
-yPxV6rrcCbDPozdXSiH0fF30jQDA/bmTkJJjJj54nDVPe4FAWNUvU4Kw7TH95O6c
-tEADa2hQl2kQwKY1eRVkA/PnA9rKx65WN1V8MU9NSC/gLuNC/IBqd90QL/aZ0l/Z
-I6ANDhbcNh0NkhFC+dQkS3InI/aFed0A1GpTNtzGswVRIpJ3LUGYGTKb8cQ0xr5c
-e2l7cIMeTzme9pyaybfu
-=BxCy
------END PGP SIGNATURE-----
 
