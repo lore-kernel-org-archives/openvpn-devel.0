@@ -1,11 +1,13 @@
+References: <a1b3eba7-50a9-ea7b-0f40-db4bdb9b8156@...1435...>
 From: Steffan Karger <steffan.karger@...1435...>
-Message-ID: <a1b3eba7-50a9-ea7b-0f40-db4bdb9b8156@...1435...>
-Date: Mon, 24 Jul 2017 09:11:16 +0200
+Message-ID: <e2228fa0-de08-a81f-99dd-cc52b32196c5@...1435...>
+Date: Mon, 24 Jul 2017 09:24:55 +0200
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="------------7F66BB19C7C20555619F9371"
+In-Reply-To: <a1b3eba7-50a9-ea7b-0f40-db4bdb9b8156@...1435...>
+Content-Type: multipart/mixed; boundary="------------AF89748DF1072EC243A1D32F"
 Content-Language: en-US
-Subject: [Openvpn-devel] Proposal: tls-crypt-v2 (client-specific tls-crypt
- keys)
+Subject: Re: [Openvpn-devel] Proposal: tls-crypt-v2 (client-specific
+ tls-crypt keys)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,45 +18,20 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: openvpn-devel@lists.sourceforge.net
 
---------------7F66BB19C7C20555619F9371
+--------------AF89748DF1072EC243A1D32F
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 
-Hi,
+On 24-07-17 09:11, Steffan Karger wrote:
+> The full specification is attached.
 
-As mentioned previously on hackathons, IRC and the mailing list, we've
-been working on tls-crypt (which is available in 2.4) and a variant that
-requires a bit more provisioning, but is better suited for large VPN
-setups and also useful for VPN providers: tls-crypt-v2.  This is a
-public request for comments on the design of this feature.
-
-The existing --tls-auth and tls-crypt options use a pre-shared group
-key, which is shared amongst all clients and servers in an OpenVPN
-deployment.  If any client or server is compromised, the attacker will
-have access to this shared key, and it will no longer provide any
-security.  To reduce the risk of loosing pre-shared keys, tls-crypt-v2
-adds the ability to supply each client with a unique tls-crypt key.
-
-Also, even if all peers succeed in keeping the key secret, the
---tls-crypt key lifetime is limited to roughly 8000 years, divided by
-the number of clients (see the --tls-crypt section of the man page).
-Using client-specific keys, we lift this lifetime requirement to roughly
-8000 years for each client key (which "Should Be Enough For Everybody
-(tm)").
-
-The full specification is attached.  Antonio and I have been working on
-an implementation, a preview is available on:
-https://github.com/syzzer/openvpn/tree/tls-crypt-v2-preview
-(NOT READY FOR PRODUCTION USE!  Also, this is not a stable branch and
-might be force-pushed or disappear at any moment.)
-
-Any comments (both on the design as well as the text), bug reports or
-suggestions are welcome!
+Argh, attachments are hard.  The previous mail carried an older version
+of the spec.  Attached the newest spec.  This aims to describe the same
+implementation, but should have improved wording.
 
 -Steffan
 
-
---------------7F66BB19C7C20555619F9371
+--------------AF89748DF1072EC243A1D32F
 Content-Type: text/plain; charset="UTF-8"; name="tls-crypt-v2.txt"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="tls-crypt-v2.txt"
@@ -111,49 +88,50 @@ dGxzLWNyeXB0LXYyIGtleSBmcm9tIGl0cyBjb25maWcsIGFuZDoKCiAgIDEuIGxvYWRzIGBg
 S2NgYCBhcyBpdHMgdGxzLWNyeXB0IGtleSwKICAgMi4gc3RvcmVzIGBgV0tjYGAgaW4gbWVt
 b3J5IGZvciBzZW5kaW5nIHRvIHRoZSBzZXJ2ZXIuCgoyLiBUbyBzdGFydCB0aGUgY29ubmVj
 dGlvbiwgdGhlIGNsaWVudCBjcmVhdGVzIGEgUF9DT05UUk9MX0hBUkRfUkVTRVRfQ0xJRU5U
-X1YzCiAgIG1lc3NhZ2Ugd2l0aCBgYFdLY2BgIGFzIHBheWxvYWQuICBUaGUgZW50aXJlIG1l
-c3NhZ2UgaXMgYXV0aGVudGljYXRlZCBhcwogICBBZGRpdGlvbmFsIERhdGEgdXNpbmcgYGBL
-Y2BgIChmb2xsb3dpbmcgdGhlIHRscy1jcnlwdCB3cmFwcGluZykuCgozLiBTZXJ2ZXIgcmVj
-ZWl2ZXMgdGhlIFBfQ09OVFJPTF9IQVJEX1JFU0VUX0NMSUVOVF9WMyBtZXNzYWdlLCBhbmQK
-CiAgIGEuIHVud3JhcHMgYGBXS2NgYC4KICAgYi4gdXNlcyB1bndyYXBwZWQgYGBLY2BgIHRv
-IHZlcmlmeSB0aGUgUF9DT05UUk9MX0hBUkRfUkVTRVRfQ0xJRU5UX1YzCiAgICAgIG1lc3Nh
-Z2UncyBhdXRoZW50aWNhdGlvbi4KCiAgIFBhY2tldCBpcyBkcm9wcGVkIGFuZCBubyBlcnJv
-ciByZXNwb25zZSBpcyBzZW50IHdoZW4gZWl0aGVyIGEgb3IgYiBmYWlscyAoRG9TCiAgIHBy
-b3RlY3Rpb24pLgoKNC4gU2VydmVyIG9wdGlvbmFsbHkgY2hlY2tzIG1ldGFkYXRhIHVzaW5n
-IHNjcmlwdC9wbHVnaW4KICAgKGFsbG93cyBlYXJseSBhYm9ydCBvZiBjb25ubmVjdGlvbiwg
-KmJlZm9yZSogZGFuZ2Vyb3VzIFRMUyBwYXJzaW5nKS4KCiAgIFRoZSBtZXRhZGF0YSBpcyBj
-aGVja2VkICphZnRlciogdGhlIE9wZW5WUE4gdGhyZWUtd2F5IGhhbmRzaGFrZSBoYXMKICAg
-Y29tcGxldGVkLCB0byBwcmV2ZW50IERvUyBhdHRhY2tzLiAgKFRoYXQgaXMsIG9uY2UgdGhl
-IGNsaWVudCBoYXMgcHJvdmVkIHRvCiAgIHRoZSBzZXJ2ZXIgdGhhdCBpdCBwb3Nlc3NlcyBL
-YywgYnkgYXV0aGVudGljYXRpbmcgYSBwYWNrZXQgdGhhdCBjb250YWlucyB0aGUKICAgc2Vz
-c2lvbiBJRCBwaWNrZWQgYnkgdGhlIHNlcnZlci4pCgogICBSRkM6IHNob3VsZCB0aGUgc2Vy
-dmVyIHNlbmQgYSAna2V5IHJlamVjdGVkJyBtZXNzYWdlIGlmIHRoZSBrZXkgaXMgZS5nLgog
-ICByZXZva2VkIG9yIGV4cGlyZWQ/ICBBbGxvd3MgZm9yIGJldHRlciBjbGllbnQtc2lkZSBl
-cnJvciByZXBvcnRpbmcuCgo2LiBDbGllbnQgYW5kIHNlcnZlciB1c2UgYGBLY2BgIGZvciAo
-dW4pd3JhcHBpbmcgYW55IGZvbGxvd2luZyBjb250cm9sIGNoYW5uZWwKICAgbWVzc2FnZXMu
-CgoKQ29uc2lkZXJhdGlvbnMKLS0tLS0tLS0tLS0tLS0KCmBgdGxzLWNyeXB0LXYyYGAgdXNl
-cyBmaXhlZCBjcnlwdG8gYWxnb3JpdGhtcywgYmVjYXVzZToKCiAqIFRoZSBjcnlwdG8gaXMg
-dXNlZCBiZWZvcmUgd2UgY2FuIGRvIGFueSBuZWdvdGlhdGlvbiwgc28gdGhlIGFsZ29yaXRo
-bXMgaGF2ZQogICB0byBiZSBwcmVkZWZpbmVkLgogKiBUaGUgY3J5cHRvIHByaW1pdGl2ZXMg
-YXJlIGNob3NlbiBjb25zZXJ2YXRpdmVseSwgbWFraW5nIHByb2JsZW1zIHdpdGggdGhlc2UK
-ICAgcHJpbWl0ZXMgdW5saWtlbHkuCiAqIE1ha2luZyBhbnl0aGluZyBjb25maWd1cmFibGUg
-YWRkcyBjb21wbGV4aXR5LCBib3RoIGluIGltcGxlbWVudGF0aW9uIGFuZAogICB1c2FnZS4g
-IFdlIHNob3VsZCBub3QgYWRkIGFueW1vcmUgY29tcGxleGl0eSB0aGFuIGlzIHJlYWxseSBu
-ZWNjZXNzYXJ5LgoKYGB0bHMtY3J5cHQtdjJgYCBwcm8nczoKCiAqIEFsbG93cyB1c2VyLXNw
-ZWNpZmljIGtleXMKICogQWxsb3dzIHJldm9raW5nIGtleXMgYmFzZWQgb24gbWV0YWRhdGEK
-ICogRmxleGlibGUgbWV0YWRhdGEgYWxsb3dzIHNpbXBsZXIgYW5kIG1vcmUgY29tcGxleCBy
-ZXZvY2F0aW9uIHNjaGVtZXMsIGUuZy46CgogICAqIE5vIHJldm9jYXRpb24KICAgKiBVc2Ug
-b3duIGtleSBpZGVudGlmaWVycyAoZS5nLiB3aGVuIHVzaW5nIHVzZXJuYW1lL3Bhc3N3b3Jk
-IGF1dGgpCiAgICogVXNlIGNlcnRpZmljYXRlIGZpbmdlcnByaW50CiAgICogVXNlIGNlcnRp
-ZmljYXRlIHNlcmlhbCAoKyBDQSBmaW5nZXJwcmludD8pLCBhbGxvd3MgdXNpbmcgQ1JMIGZv
-ciByZXZvY2F0aW9uCiAgICogVXNlIG93biBleHBpcmF0aW9uIG1lY2hhbmlzbQoKICogU0lW
-IHVzaW5nIEhNQUMtU0hBMjU2IGFuZCBBRVMtMjU2LUNUUiBpcyBxdWFudHVtIHJlc2lzdGVu
-dAoKYGB0bHMtY3J5cHQtdjJgYCBjb24nczoKCiAqIFNsaWdodGx5IG1vcmUgd29yayB1biBm
-aXJzdCBjb25uZWN0aW9uIChgYFdLY2BgIHVud3JhcCkKICogRmxleGlibGUgbWV0YWRhdGEg
-YWxsb3cgbWlzdGFrZXMKICAgKFNvIHdlIHNob3VsZCBtYWtlIGl0IGVhc3kgdG8gZG8gaXQg
-cmlnaHQuICBQcm92aWRlIHRvb2xpbmcgaW4gY29tcGF0LyB0bwogICBjcmVhdGUgY2xpZW50
-IGtleXMgYmFzZWQgb24gY2VydCBzZXJpYWwgKyBDQSBmaW5nZXJwcmludCwgcHJvdmlkZSBz
-Y3JpcHQgdGhhdAogICB1c2VzIENSTCAoaWYgYXZhaWxhYmxlKSB0byBkcm9wIHJldm9rZWQg
-Y29va2llcy4pCg==
---------------7F66BB19C7C20555619F9371--
+X1YzCiAgIG1lc3NhZ2Ugd2l0aG91dCBwYXlsb2FkLCB3cmFwcyBpdCB3aXRoIHRscy1jcnlw
+dCB1c2luZyBgYEtjYGAgYXMgdGhlIGtleSwKICAgYW5kIGFwcGVuZHMgYGBXS2NgYC4gIChg
+YFdLY2BgIG11c3Qgbm90IGJlIGVuY3J5cHRlZCwgdG8gcHJldmVudCBhCiAgIGNoaWNrZW4t
+YW5kLWVnZyBwcm9ibGVtLikKCjMuIFRoZSBzZXJ2ZXIgcmVjZWl2ZXMgdGhlIFBfQ09OVFJP
+TF9IQVJEX1JFU0VUX0NMSUVOVF9WMyBtZXNzYWdlLCBhbmQKCiAgIGEuIHVud3JhcHMgYGBX
+S2NgYCBhbmQgc3RyaXBzIGBgV0tjYGAgZnJvbSB0aGUgbWVzc2FnZS4KICAgYi4gdXNlcyB1
+bndyYXBwZWQgYGBLY2BgIHRvIHZlcmlmeSB0aGUgcmVtYWluaW5nCiAgICAgIFBfQ09OVFJP
+TF9IQVJEX1JFU0VUX0NMSUVOVF9WMyBtZXNzYWdlJ3MgYXV0aGVudGljYXRpb24uCgogICBU
+aGUgbWVzc2FnZSBpcyBkcm9wcGVkIGFuZCBubyBlcnJvciByZXNwb25zZSBpcyBzZW50IHdo
+ZW4gZWl0aGVyIGEgb3IgYgogICBmYWlscyAoRG9TIHByb3RlY3Rpb24pLgoKNC4gU2VydmVy
+IG9wdGlvbmFsbHkgY2hlY2tzIG1ldGFkYXRhIHVzaW5nIGEgLS10bHMtY3J5cHQtdjItdmVy
+aWZ5IHNjcmlwdAoKICAgTWV0YWRhdGEgY291bGQgZm9yIGV4YW1wbGUgY29udGFpbiB0aGUg
+dXNlcnMgY2VydGlmaWNhdGUgc2VyaWFsLCBzdWNoIHRoYXQKICAgdGhlIGluY29taW5nIGNv
+bm5lY3Rpb24gY2FuIGJlIHZlcmlmaWVkIGFnYWluc3QgYSBDUkwsIG9yIGEgbm90QWZ0ZXIK
+ICAgdGltZXN0YW1wIHRoYXQgbGltaXRzIHRoZSBrZXkncyB2YWxpZGl0eSBwZXJpb2QuCgog
+ICBUaGlzIGFsbG93cyBlYXJseSBhYm9ydCBvZiBjb25ubmVjdGlvbiwgKmJlZm9yZSogd2Ug
+ZXhwb3NlIGFueSBvZiB0aGUKICAgbm90b3Jpb3VzbHkgZGFuZ2Vyb3VzIFRMUywgWC41MDkg
+YW5kIEFTTi4xIHBhcnNlcnMgYW5kIHRoZXJlYnkgcmVkdWNlcyB0aGUKICAgYXR0YWNrIHN1
+cmZhY2Ugb2YgdGhlIHNlcnZlci4KCiAgIFRoZSBtZXRhZGF0YSBpcyBjaGVja2VkICphZnRl
+ciogdGhlIE9wZW5WUE4gdGhyZWUtd2F5IGhhbmRzaGFrZSBoYXMKICAgY29tcGxldGVkLCB0
+byBwcmV2ZW50IERvUyBhdHRhY2tzLiAgKFRoYXQgaXMsIG9uY2UgdGhlIGNsaWVudCBoYXMg
+cHJvdmVkIHRvCiAgIHRoZSBzZXJ2ZXIgdGhhdCBpdCBwb3Nlc3NlcyBLYywgYnkgYXV0aGVu
+dGljYXRpbmcgYSBwYWNrZXQgdGhhdCBjb250YWlucyB0aGUKICAgc2Vzc2lvbiBJRCBwaWNr
+ZWQgYnkgdGhlIHNlcnZlci4pCgogICBSRkM6IHNob3VsZCB0aGUgc2VydmVyIHNlbmQgYSAn
+a2V5IHJlamVjdGVkJyBtZXNzYWdlIGlmIHRoZSBrZXkgaXMgZS5nLgogICByZXZva2VkIG9y
+IGV4cGlyZWQ/ICBUaGF0IGFsbG93cyBmb3IgYmV0dGVyIGNsaWVudC1zaWRlIGVycm9yIHJl
+cG9ydGluZywgYnV0CiAgIGFsc28gcmVkdWNlcyB0aGUgRG9TIHJlc2lsaWVuY2UuCgo2LiBD
+bGllbnQgYW5kIHNlcnZlciB1c2UgYGBLY2BgIGZvciAodW4pd3JhcHBpbmcgYW55IGZvbGxv
+d2luZyBjb250cm9sIGNoYW5uZWwKICAgbWVzc2FnZXMuCgoKQ29uc2lkZXJhdGlvbnMKLS0t
+LS0tLS0tLS0tLS0KCmBgdGxzLWNyeXB0LXYyYGAgdXNlcyBmaXhlZCBjcnlwdG8gYWxnb3Jp
+dGhtcywgYmVjYXVzZToKCiAqIFRoZSBjcnlwdG8gaXMgdXNlZCBiZWZvcmUgd2UgY2FuIGRv
+IGFueSBuZWdvdGlhdGlvbiwgc28gdGhlIGFsZ29yaXRobXMgaGF2ZQogICB0byBiZSBwcmVk
+ZWZpbmVkLgogKiBUaGUgY3J5cHRvIHByaW1pdGl2ZXMgYXJlIGNob3NlbiBjb25zZXJ2YXRp
+dmVseSwgbWFraW5nIHByb2JsZW1zIHdpdGggdGhlc2UKICAgcHJpbWl0ZXMgdW5saWtlbHku
+CiAqIE1ha2luZyBhbnl0aGluZyBjb25maWd1cmFibGUgYWRkcyBjb21wbGV4aXR5LCBib3Ro
+IGluIGltcGxlbWVudGF0aW9uIGFuZAogICB1c2FnZS4gIFdlIHNob3VsZCBub3QgYWRkIGFu
+eW1vcmUgY29tcGxleGl0eSB0aGFuIGlzIGFic29sdXRlbHkgbmVjY2Vzc2FyeS4KClBvdGVu
+dGlhbCBgYHRscy1jcnlwdC12MmBgIHJpc2tzOgoKICogU2xpZ2h0bHkgbW9yZSB3b3JrIG9u
+IGZpcnN0IGNvbm5lY3Rpb24gKGBgV0tjYGAgdW53cmFwICsgaGFyZCByZXNldCB1bndyYXAp
+CiAgIHRoYW4gd2l0aCBgYHRscy1jcnlwdGBgIChoYXJkIHJlc2V0IHVud3JhcCkgb3IgYGB0
+bHMtYXV0aGBgIChoYXJkIHJlc2V0IGF1dGgpLgogKiBGbGV4aWJsZSBtZXRhZGF0YSBhbGxv
+dyBtaXN0YWtlcwogICAoU28gd2Ugc2hvdWxkIG1ha2UgaXQgZWFzeSB0byBkbyBpdCByaWdo
+dC4gIFByb3ZpZGUgdG9vbGluZyB0byBjcmVhdGUgY2xpZW50CiAgIGtleXMgYmFzZWQgb24g
+Y2VydCBzZXJpYWwgKyBDQSBmaW5nZXJwcmludCwgcHJvdmlkZSBzY3JpcHQgdGhhdCB1c2Vz
+IENSTCAoaWYKICAgYXZhaWxhYmxlKSB0byBkcm9wIHJldm9rZWQga2V5cy4pCg==
+--------------AF89748DF1072EC243A1D32F--
 
