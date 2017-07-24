@@ -1,13 +1,10 @@
-References: <a1b3eba7-50a9-ea7b-0f40-db4bdb9b8156@...1435...>
-From: Steffan Karger <steffan.karger@...1435...>
-Message-ID: <e2228fa0-de08-a81f-99dd-cc52b32196c5@...1435...>
-Date: Mon, 24 Jul 2017 09:24:55 +0200
-MIME-Version: 1.0
-In-Reply-To: <a1b3eba7-50a9-ea7b-0f40-db4bdb9b8156@...1435...>
-Content-Type: multipart/mixed; boundary="------------AF89748DF1072EC243A1D32F"
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] Proposal: tls-crypt-v2 (client-specific
- tls-crypt keys)
+From: David Sommerseth <davids@...515...>
+Date: Mon, 24 Jul 2017 15:27:15 +0200
+Message-Id: <20170724132715.9094-1-davids@...515...>
+In-Reply-To: <20170707140108.31612-1-a@...2181...>
+References: <20170707140108.31612-1-a@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH applied] management: preserve
+ wait_for_push field when asking for user/pass
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,122 +13,54 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
-
---------------AF89748DF1072EC243A1D32F
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+To: a@...2181...
+Cc: openvpn-devel@lists.sourceforge.net
 
-On 24-07-17 09:11, Steffan Karger wrote:
-> The full specification is attached.
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
 
-Argh, attachments are hard.  The previous mail carried an older version
-of the spec.  Attached the newest spec.  This aims to describe the same
-implementation, but should have improved wording.
+ACK.  Tested and glared at code.  This matches quite well the analyzsis
+I had done before Antonio took over and completed.  And it works as expected.
 
--Steffan
 
---------------AF89748DF1072EC243A1D32F
-Content-Type: text/plain; charset="UTF-8"; name="tls-crypt-v2.txt"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="tls-crypt-v2.txt"
+Your patch has been applied to the following branches
 
-Q2xpZW50LXNwZWNpZmljIHRscy1jcnlwdCBrZXlzICgtLXRscy1jcnlwdC12MikKPT09PT09
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KClRoaXMgZG9jdW1l
-bnQgZGVzY3JpYmVzIHRoZSBgYC0tdGxzLWNyeXB0LXYyYGAgb3B0aW9uLCB3aGljaCBlbmFi
-bGVzIE9wZW5WUE4KdG8gdXNlIGNsaWVudC1zcGVjaWZpYyBgYC0tdGxzLWNyeXB0YGAga2V5
-cy4KClJhdGlvbmFsZQotLS0tLS0tLS0KCmBgLS10bHMtYXV0aGBgIGFuZCBgYHRscy1jcnlw
-dGBgIHVzZSBhIHByZS1zaGFyZWQgZ3JvdXAga2V5LCB3aGljaCBpcyBzaGFyZWQKYW1vbmdz
-dCBhbGwgY2xpZW50IGFuZCBzZXJ2ZXJzIGluIGFuIE9wZW5WUE4gZGVwbG95bWVudC4gIElm
-IGFueSBjbGllbnQgb3IKc2VydmVyIGlzIGNvbXByb21pc2VkLCB0aGUgYXR0YWNrZXIgd2ls
-bCBoYXZlIGFjY2VzcyB0byB0aGlzIHNoYXJlZCBrZXksIGFuZCBpdAp3aWxsIG5vIGxvbmdl
-ciBwcm92aWRlIGFueSBzZWN1cml0eS4gIFRvIHJlZHVjZSB0aGUgcmlzayBvZiBsb29zaW5n
-IHByZS1zaGFyZWQKa2V5cywgYGB0bHMtY3J5cHQtdjJgYCBhZGRzIHRoZSBhYmlsaXR5IHRv
-IHN1cHBseSBlYWNoIGNsaWVudCB3aXRoIGEgdW5pcXVlCnRscy1jcnlwdCBrZXkuCgpgYHRs
-cy1jcnlwdGBgIHNoYXJlcyBhIGdyb3VwIGtleSBhbW9uZ3N0IGEgbG90IG9mIHNlcnZlcnMg
-YW5kIGNsaWVudHMuICBFdmVuIGlmCmFsbCB0aGVzZSBwZWVycyBzdWNjZWVkIGluIGtlZXBp
-bmcgdGhlIGtleSBzZWNyZXQsIHRoZSBrZXkgbGlmZXRpbWUgaXMgbGltaXRlZAp0byByb3Vn
-aGx5IDgwMDAgeWVhcnMsIGRpdmlkZWQgYnkgdGhlIG51bWJlciBvZiBjbGllbnRzIChzZWUg
-dGhlCmBgLS10bHMtY3J5cHRgYCBzZWN0aW9uIG9mIHRoZSBtYW4gcGFnZSkuICBVc2luZyBj
-bGllbnQtc3BlY2lmaWMga2V5cywgd2UgbGlmdAp0aGlzIGxpZmV0aW1lIHJlcXVpcmVtZW50
-IHRvIHJvdWdobHkgODAwMCB5ZWFycyBmb3IgZWFjaCBjbGllbnQga2V5ICh3aGljaAoiU2hv
-dWxkIEJlIEVub3VnaCBGb3IgRXZlcnlib2R5ICh0bSkiKS4KCgpJbXBsZW1lbnRhdGlvbgot
-LS0tLS0tLS0tLS0tLQoKQ2xpZW50LXNwZWNpZmljIHRscy1jcnlwdCBrZXlzIHVzaW5nIGFu
-IGVuY3J5cHRlZCBjb29raWUgbWVjaGFuaXNtLiAgVGhlCm1lY2hhbmlzbSB3b3JrcyBhcyBm
-b2xsb3dzOgoKV2hlbiBzZXR0aW5nIHVwIGEgdGxzLWNyeXB0LXYyIGdyb3VwIChzaW1pbGFy
-IHRvIGdlbmVyYXRpbmcgYSB0bHMtY3J5cHQgb3IKdGxzLWF1dGgga2V5IHByZXZpb3VzbHkp
-OgoKMS4gR2VuZXJhdGUgYSB0bHMtY3J5cHQtdjIgc2VydmVyIGtleSB1c2luZyBPcGVuVlBO
-J3MgYGAtLWdlbmtleWBgLiAgVGhpcyBrZXkKICAgY29udGFpbnMgNCA1MTItYml0IGtleXMs
-IG9mIHdoaWNoIHdlIHVzZToKCiAgICogdGhlIGZpcnN0IDI1NiBiaXRzIG9mIGtleSAxIGFz
-IEFFUy0yNTYtQ1RSIGVuY3J5cHRpb24ga2V5IGBgS2VgYAogICAqIHRoZSBmaXJzdCAyNTYg
-Yml0cyBvZiBrZXkgMiBhcyBITUFDLVNIQS0yNTYgYXV0aGVudGljYXRpb24ga2V5IGBgS2Fg
-YAoKMi4gQWRkIHRoZSB0bHMtY3J5cHQtdjIgc2VydmVyIGtleSB0byBhbGwgc2VydmVyIGNv
-bmZpZ3MKICAgKGBgdGxzLWNyeXB0LXYyIC9wYXRoL3RvL3NlcnZlci5rZXlgYCkKCgpXaGVu
-IHByb3Zpc2lvbmluZyBhIGNsaWVudCwgY3JlYXRlIGEgY2xpZW50LXNwZWNpZmljIHRscy1j
-cnlwdCBrZXk6CgoxLiBHZW5lcmF0ZSAyMDQ4IGJpdHMgY2xpZW50LXNwZWNpZmljIGtleSBg
-YEtjYGAKMi4gT3B0aW9uYWxseSBnZW5lcmF0ZSBtZXRhZGF0YQozLiBDcmVhdGUgYSB3cmFw
-cGVkIGNsaWVudCBrZXkgYGBXS2NgYCwgdXNpbmcgdGhlIHNhbWUgbm9uY2UtbWlzdXNlLXJl
-c2lzdGFudAogICBTSVYgY29udHJ1Y3Rpb24gd2UgdXNlIGZvciB0bHMtY3J5cHQ6CgogICBg
-YFQgPSBITUFDLVNIQTI1NihLYSwgS2MgfHwgbWV0YWRhdGEpYGAKCiAgIGBgSVYgPSAxMjgg
-bW9zdCBzaWduaWZpY2FudCBiaXRzIG9mIFRgYAoKICAgYGBXS2MgPSBUIHx8IEFFUy0yNTYt
-Q1RSKEtlLCBJViwgS2MgfHwgbWV0YWRhdGEpYGAKCjQuIENyZWF0ZSBhIHRscy1jcnlwdC12
-MiBjbGllbnQga2V5OiBQRU0tZW5jb2RlIGBgS2MgfHwgV0tjYGAgYW5kIHN0b3JlIGluIGEK
-ICAgZmlsZSwgdXNpbmcgdGhlIGhlYWRlciBgYC0tLS0tQkVHSU4gT3BlblZQTiB0bHMtY3J5
-cHQtdjIgY2xpZW50IGtleS0tLS0tYGAKICAgYW5kIHRoZSBmb290ZXIgYGAtLS0tLUVORCBP
-cGVuVlBOIHRscy1jcnlwdC12MiBjbGllbnQga2V5LS0tLS1gYC4gIChUaGUgUEVNCiAgIGZv
-cm1hdCBpcyBzaW1wbGUsIGFuZCBmb2xsb3dpbmcgUEVNIGFsbG93cyB1cyB0byB1c2UgdGhl
-IGNyeXB0byBsaWIgZnVuY3Rpb24KICAgZm9yIGVuL2RlY29kaW5nLikKNS4gQWRkIHRoZSB0
-bHMtY3J5cHQtdjIgY2xpZW50IGtleSB0byB0aGUgY2xpZW50IGNvbmZpZwogICAoYGB0bHMt
-Y3J5cHQtdjIgL3BhdGgvdG8vY2xpZW50LXNwZWNpZmljLmtleWBgKQoKCldoZW4gc2V0dGlu
-ZyB1cCB0aGUgb3BlbnZwbiBjb25uZWN0aW9uOgoKMS4gVGhlIGNsaWVudCByZWFkcyB0aGUg
-dGxzLWNyeXB0LXYyIGtleSBmcm9tIGl0cyBjb25maWcsIGFuZDoKCiAgIDEuIGxvYWRzIGBg
-S2NgYCBhcyBpdHMgdGxzLWNyeXB0IGtleSwKICAgMi4gc3RvcmVzIGBgV0tjYGAgaW4gbWVt
-b3J5IGZvciBzZW5kaW5nIHRvIHRoZSBzZXJ2ZXIuCgoyLiBUbyBzdGFydCB0aGUgY29ubmVj
-dGlvbiwgdGhlIGNsaWVudCBjcmVhdGVzIGEgUF9DT05UUk9MX0hBUkRfUkVTRVRfQ0xJRU5U
-X1YzCiAgIG1lc3NhZ2Ugd2l0aG91dCBwYXlsb2FkLCB3cmFwcyBpdCB3aXRoIHRscy1jcnlw
-dCB1c2luZyBgYEtjYGAgYXMgdGhlIGtleSwKICAgYW5kIGFwcGVuZHMgYGBXS2NgYC4gIChg
-YFdLY2BgIG11c3Qgbm90IGJlIGVuY3J5cHRlZCwgdG8gcHJldmVudCBhCiAgIGNoaWNrZW4t
-YW5kLWVnZyBwcm9ibGVtLikKCjMuIFRoZSBzZXJ2ZXIgcmVjZWl2ZXMgdGhlIFBfQ09OVFJP
-TF9IQVJEX1JFU0VUX0NMSUVOVF9WMyBtZXNzYWdlLCBhbmQKCiAgIGEuIHVud3JhcHMgYGBX
-S2NgYCBhbmQgc3RyaXBzIGBgV0tjYGAgZnJvbSB0aGUgbWVzc2FnZS4KICAgYi4gdXNlcyB1
-bndyYXBwZWQgYGBLY2BgIHRvIHZlcmlmeSB0aGUgcmVtYWluaW5nCiAgICAgIFBfQ09OVFJP
-TF9IQVJEX1JFU0VUX0NMSUVOVF9WMyBtZXNzYWdlJ3MgYXV0aGVudGljYXRpb24uCgogICBU
-aGUgbWVzc2FnZSBpcyBkcm9wcGVkIGFuZCBubyBlcnJvciByZXNwb25zZSBpcyBzZW50IHdo
-ZW4gZWl0aGVyIGEgb3IgYgogICBmYWlscyAoRG9TIHByb3RlY3Rpb24pLgoKNC4gU2VydmVy
-IG9wdGlvbmFsbHkgY2hlY2tzIG1ldGFkYXRhIHVzaW5nIGEgLS10bHMtY3J5cHQtdjItdmVy
-aWZ5IHNjcmlwdAoKICAgTWV0YWRhdGEgY291bGQgZm9yIGV4YW1wbGUgY29udGFpbiB0aGUg
-dXNlcnMgY2VydGlmaWNhdGUgc2VyaWFsLCBzdWNoIHRoYXQKICAgdGhlIGluY29taW5nIGNv
-bm5lY3Rpb24gY2FuIGJlIHZlcmlmaWVkIGFnYWluc3QgYSBDUkwsIG9yIGEgbm90QWZ0ZXIK
-ICAgdGltZXN0YW1wIHRoYXQgbGltaXRzIHRoZSBrZXkncyB2YWxpZGl0eSBwZXJpb2QuCgog
-ICBUaGlzIGFsbG93cyBlYXJseSBhYm9ydCBvZiBjb25ubmVjdGlvbiwgKmJlZm9yZSogd2Ug
-ZXhwb3NlIGFueSBvZiB0aGUKICAgbm90b3Jpb3VzbHkgZGFuZ2Vyb3VzIFRMUywgWC41MDkg
-YW5kIEFTTi4xIHBhcnNlcnMgYW5kIHRoZXJlYnkgcmVkdWNlcyB0aGUKICAgYXR0YWNrIHN1
-cmZhY2Ugb2YgdGhlIHNlcnZlci4KCiAgIFRoZSBtZXRhZGF0YSBpcyBjaGVja2VkICphZnRl
-ciogdGhlIE9wZW5WUE4gdGhyZWUtd2F5IGhhbmRzaGFrZSBoYXMKICAgY29tcGxldGVkLCB0
-byBwcmV2ZW50IERvUyBhdHRhY2tzLiAgKFRoYXQgaXMsIG9uY2UgdGhlIGNsaWVudCBoYXMg
-cHJvdmVkIHRvCiAgIHRoZSBzZXJ2ZXIgdGhhdCBpdCBwb3Nlc3NlcyBLYywgYnkgYXV0aGVu
-dGljYXRpbmcgYSBwYWNrZXQgdGhhdCBjb250YWlucyB0aGUKICAgc2Vzc2lvbiBJRCBwaWNr
-ZWQgYnkgdGhlIHNlcnZlci4pCgogICBSRkM6IHNob3VsZCB0aGUgc2VydmVyIHNlbmQgYSAn
-a2V5IHJlamVjdGVkJyBtZXNzYWdlIGlmIHRoZSBrZXkgaXMgZS5nLgogICByZXZva2VkIG9y
-IGV4cGlyZWQ/ICBUaGF0IGFsbG93cyBmb3IgYmV0dGVyIGNsaWVudC1zaWRlIGVycm9yIHJl
-cG9ydGluZywgYnV0CiAgIGFsc28gcmVkdWNlcyB0aGUgRG9TIHJlc2lsaWVuY2UuCgo2LiBD
-bGllbnQgYW5kIHNlcnZlciB1c2UgYGBLY2BgIGZvciAodW4pd3JhcHBpbmcgYW55IGZvbGxv
-d2luZyBjb250cm9sIGNoYW5uZWwKICAgbWVzc2FnZXMuCgoKQ29uc2lkZXJhdGlvbnMKLS0t
-LS0tLS0tLS0tLS0KCmBgdGxzLWNyeXB0LXYyYGAgdXNlcyBmaXhlZCBjcnlwdG8gYWxnb3Jp
-dGhtcywgYmVjYXVzZToKCiAqIFRoZSBjcnlwdG8gaXMgdXNlZCBiZWZvcmUgd2UgY2FuIGRv
-IGFueSBuZWdvdGlhdGlvbiwgc28gdGhlIGFsZ29yaXRobXMgaGF2ZQogICB0byBiZSBwcmVk
-ZWZpbmVkLgogKiBUaGUgY3J5cHRvIHByaW1pdGl2ZXMgYXJlIGNob3NlbiBjb25zZXJ2YXRp
-dmVseSwgbWFraW5nIHByb2JsZW1zIHdpdGggdGhlc2UKICAgcHJpbWl0ZXMgdW5saWtlbHku
-CiAqIE1ha2luZyBhbnl0aGluZyBjb25maWd1cmFibGUgYWRkcyBjb21wbGV4aXR5LCBib3Ro
-IGluIGltcGxlbWVudGF0aW9uIGFuZAogICB1c2FnZS4gIFdlIHNob3VsZCBub3QgYWRkIGFu
-eW1vcmUgY29tcGxleGl0eSB0aGFuIGlzIGFic29sdXRlbHkgbmVjY2Vzc2FyeS4KClBvdGVu
-dGlhbCBgYHRscy1jcnlwdC12MmBgIHJpc2tzOgoKICogU2xpZ2h0bHkgbW9yZSB3b3JrIG9u
-IGZpcnN0IGNvbm5lY3Rpb24gKGBgV0tjYGAgdW53cmFwICsgaGFyZCByZXNldCB1bndyYXAp
-CiAgIHRoYW4gd2l0aCBgYHRscy1jcnlwdGBgIChoYXJkIHJlc2V0IHVud3JhcCkgb3IgYGB0
-bHMtYXV0aGBgIChoYXJkIHJlc2V0IGF1dGgpLgogKiBGbGV4aWJsZSBtZXRhZGF0YSBhbGxv
-dyBtaXN0YWtlcwogICAoU28gd2Ugc2hvdWxkIG1ha2UgaXQgZWFzeSB0byBkbyBpdCByaWdo
-dC4gIFByb3ZpZGUgdG9vbGluZyB0byBjcmVhdGUgY2xpZW50CiAgIGtleXMgYmFzZWQgb24g
-Y2VydCBzZXJpYWwgKyBDQSBmaW5nZXJwcmludCwgcHJvdmlkZSBzY3JpcHQgdGhhdCB1c2Vz
-IENSTCAoaWYKICAgYXZhaWxhYmxlKSB0byBkcm9wIHJldm9rZWQga2V5cy4pCg==
---------------AF89748DF1072EC243A1D32F--
+commit 3322c558fa742cb823fa919f682486973abc4f8e  (master)
+commit e7ae4040efc5c48e00374f8863da58eef32e0709  (release/2.4)
+Author: Antonio Quartulli
+Date:   Fri Jul 7 22:01:08 2017 +0800
+
+     management: preserve wait_for_push field when asking for user/pass
+
+     Signed-off-by: Antonio Quartulli <a@...2181...>
+     Acked-by: David Sommerseth <davids@...515...>
+     Message-Id: <20170707140108.31612-1-a@...2181...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg15015.html
+     Signed-off-by: David Sommerseth <davids@...515...>
+
+
+- --
+kind regards,
+
+David Sommerseth
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBCgAGBQJZdfWwAAoJEIbPlEyWcf3yO8wQAIIkYjGfx0NjA/lbjm1qnEfq
+I4pc9sDgNGPo9NF5hWz+NDfkK6fxVjakW0fRJZe4HLXxrsSQIh64VX3BpfZglrIz
+gGvmbxrts9/TnXTwGhMOGZW/3GjwmhmUXT8yCxR0K8rOi41NNF8D6HmtDUxCI+Pa
+Tzfh5ddHgJu4E+kd+F1+k0CO6dyTyZCjuVSpT/MufGpZ0YcWr86F9xdtuzrprJda
++FTpjpXD8eD8uHP3WTcrO+rGgWHkjoRErO+nlFwPSVH7Ob/Oc9xWL5ptjEmig/gW
+xBGRn+Sxp1GmDn326Wd4WdIYFqgdYlzs27/rR6xhDlmF9ger5EISYoETQuso5J2s
+GFKxjEV8IK8TJdSK8Fm5DyQNaOdTV5rwssUn6I6XDqJRDW4yNoyEEnVZKphYvTis
+eYBm2ckTjEvAs1dR9Of8LQUm/53aDwwzrkH/7pcZeo0rLIS05gpk6FUYtFFS1g8r
+yPxV6rrcCbDPozdXSiH0fF30jQDA/bmTkJJjJj54nDVPe4FAWNUvU4Kw7TH95O6c
+tEADa2hQl2kQwKY1eRVkA/PnA9rKx65WN1V8MU9NSC/gLuNC/IBqd90QL/aZ0l/Z
+I6ANDhbcNh0NkhFC+dQkS3InI/aFed0A1GpTNtzGswVRIpJ3LUGYGTKb8cQ0xr5c
+e2l7cIMeTzme9pyaybfu
+=BxCy
+-----END PGP SIGNATURE-----
 
