@@ -1,8 +1,15 @@
-From: Steffan Karger <steffan@...1856...>
-Date: Tue, 25 Jul 2017 23:02:34 +0200
-Message-Id: <20170725210234.5673-1-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH] Move create_temp_file() out of #ifdef
- ENABLE_CRYPTO
+MIME-Version: 1.0
+Sender: emmanueldeloget53@...277...
+In-Reply-To: <1501010486.4771.113.camel@...1866...>
+References: <f7687ebf-a75f-095d-67ca-e32a5c4e53e7@...515...>
+ <1500293278.28621.32.camel@...1866...>
+ <b6adb528-5d31-fa7b-cd0c-e87b69e0854c@...515...>
+ <1501010486.4771.113.camel@...1866...>
+From: Emmanuel Deloget <logout@...260...>
+Date: Tue, 25 Jul 2017 23:56:52 +0200
+Message-ID: <CAKh=nwEKFfAho0F7v0y3QJCq0s9-+iWfvg=YQVRHU=2JhNErcA@...278...>
+Subject: Re: [Openvpn-devel] Windows installer with updated pkcs11-helper
+ (1.22) available for testing
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,69 +18,83 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+To: David Woodhouse <dwmw2@...1866...>
+Cc: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-From: Steffan Karger <steffan.karger@...1435...>
+Hi David, other,
 
-By using get_random() instead of prng_bytes(), we no longer have to place
-create_temp_file() inside #ifdef ENABLE_CRYPTO.
+It seems that my "I'm using my phone, sorry for top posting" went far
+beyond that because I also forgot to add the list as a recipient.
 
-The resulting filename now has 62 bits of entropy (2 * [0-INT_MAX])
-instead of the previous 128 bits, but that should be plenty.  Assuming an
-int is 32 bits, we would need about 2**31 (2147483648) files to have a
-(roughly) 0.5 chance of failing in one of the 6 attempts we do.
+So, here is my message (minus the top-posting) sent to David only (sorry Da=
+vid)
 
-(This is preparing to move the function out of misc.c, where I'd prefer to
-not have to add a #include "crypto.h".)
+On Tue, Jul 25, 2017 at 9:21 PM, David Woodhouse <dwmw2@...1866...> wrote:
+>
+> On Tue, 2017-07-25 at 19:53 +0300, Samuli Sepp=C3=A4nen wrote:
+> >
+> > I released the new Windows installer but without this patch. That said,
+> > the patch/PR you linked to makes sense. Does the patch have an active
+> > maintainer?
+>
+> That would be me, I suppose. Until/unless the upstream maintainer
+> applies the patch, I or someone else will continue to maintain the
+> patch in the Fedora package at least.
+>
+> > If yes, then I propose is that we
+> >
+> > - Fork OpenSC/pkcs11-helper to OpenVPN/pkcs11-helper
+> > - Apply the patch to our fork
+> > - Produce and publish our own pkcs11-helper tarballs
+> > - Point openvpn-build to our tarballs
+> > - Periodically rebase our fork with upstream
+> >
+> > Thoughts?
+>
+>
+> Hi,
+>
+> Sorry for the top posting, I'm writing that from my phone.
+>
+> To add to the NAK, such a move would make integration to various embedded
+> distribution more difficult, as maintainers may have to deal with 2 versi=
+ons of the
+> same lib (with possibly different behavior needed by different binaries).
+>
+> Do I would advise against such a solution.
+>
+> Best regards,
+>
+> -- Emmanuel Deloget
 
-Signed-off-by: Steffan Karger <steffan.karger@...1435...>
----
- src/openvpn/misc.c | 12 ++++--------
- 1 file changed, 4 insertions(+), 8 deletions(-)
+To which David replied (hope you don't mind if I quote you):
 
-diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
-index 4f729911..1537a2e4 100644
---- a/src/openvpn/misc.c
-+++ b/src/openvpn/misc.c
-@@ -831,8 +831,6 @@ test_file(const char *filename)
-     return ret;
- }
- 
--#ifdef ENABLE_CRYPTO
--
- /* create a temporary filename in directory */
- const char *
- create_temp_file(const char *directory, const char *prefix, struct gc_arena *gc)
-@@ -845,15 +843,11 @@ create_temp_file(const char *directory, const char *prefix, struct gc_arena *gc)
- 
-     do
-     {
--        uint8_t rndbytes[16];
--        const char *rndstr;
--
-         ++attempts;
-         ++counter;
- 
--        prng_bytes(rndbytes, sizeof rndbytes);
--        rndstr = format_hex_ex(rndbytes, sizeof rndbytes, 40, 0, NULL, gc);
--        buf_printf(&fname, PACKAGE "_%s_%s.tmp", prefix, rndstr);
-+        buf_printf(&fname, PACKAGE "_%s_%08lx%08lx.tmp", prefix,
-+                   (unsigned long) get_random(), (unsigned long) get_random());
- 
-         retfname = gen_path(directory, BSTR(&fname), gc);
-         if (!retfname)
-@@ -884,6 +878,8 @@ create_temp_file(const char *directory, const char *prefix, struct gc_arena *gc)
-     return NULL;
- }
- 
-+#ifdef ENABLE_CRYPTO
-+
- /*
-  * Prepend a random string to hostname to prevent DNS caching.
-  * For example, foo.bar.gov would be modified to <random-chars>.foo.bar.gov.
--- 
-2.11.0
+> There is no API/ABI change. One accepts cert identifier strings confirming
+> to RFC7512, the other (without the patch) doesn't.
+>
+> So aside from the RFC-compliance they are interchangeable.
 
+(I think I'm already using this patch, so thanks you David for your work).
+
+A single patch would not a a problem for distro maintainers, but
+subsequent/future changes in the forked repository might introduce
+other, less compatible changes in the library, leading to two versions
+of the same library, with maybe the same ABI and the same name -- and
+that worries me a bit (not that much, but I also maintain a fork of
+lede for my own purpose, and I'm not sure I'd like to deal with such
+complexity :)). Aviding that would require a library name change and
+I'm not sure it's a good thing at all.
+
+And you also have to take into account weird people like me who also
+add their own changes into various libraries or binaries to suit their
+needs (the whole "hey, it's free software, I can change it" thing).
+Pointing them to a fork is not going to work well IMHO. It would be
+better if the maintainer finally decide to either implement the
+required change or merge your patch to the library.
+
+Best regards,
+
+-- Emmanuel Deloget
 
