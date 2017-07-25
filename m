@@ -1,10 +1,10 @@
 From: David Sommerseth <davids@...515...>
-Date: Tue, 25 Jul 2017 17:24:43 +0200
-Message-Id: <20170725152443.9409-1-davids@...515...>
-In-Reply-To: <20170707102238.8781-1-a@...2181...>
-References: <20170707102238.8781-1-a@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH applied] tls-crypt: avoid warnings when
- --disable-crypto is used
+Date: Tue, 25 Jul 2017 17:35:29 +0200
+Message-Id: <20170725153529.3830-1-davids@...515...>
+In-Reply-To: <20170725145718.13175-1-davids@...515...>
+References: <20170725145718.13175-1-davids@...515...>
+Subject: Re: [Openvpn-devel] [PATCH applied] cleanup: Move write_pid() to
+ where it is being used
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,29 +15,25 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: antonio@...515...
+To: davids@...515...
 Cc: openvpn-devel@lists.sourceforge.net
 
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA512
 
-ACK as well.  Tested with --disable-crypto and no tls-crypt.c compiler
-complaints any more.
-
 Your patch has been applied to the following branches
 
-commit 2dfbf62b6ace1eb39f1ae7126bc5530a541bed58  (master)
-commit 8295f62f84be3dbc5203b9695d99a4f74fcb7295  (release/2.4)
-Author: Antonio Quartulli
-Date:   Fri Jul 7 18:22:38 2017 +0800
+commit c5b12817c9aa3ae97fbdd2c2a9a9ab605087dff1  (master)
+commit cb438b513223744949e0958d9f14870880cfc407  (release/2.4)
+Author: David Sommerseth
+Date:   Tue Jul 25 16:57:18 2017 +0200
 
-     tls-crypt: avoid warnings when --disable-crypto is used
+     cleanup: Move write_pid() to where it is being used
 
-     Signed-off-by: Antonio Quartulli <antonio@...515...>
-     Acked-by: Steffan Karger <steffan@...1856...>
-     Acked-by: David Sommerseth <davids@...515...>
-     Message-Id: <20170707102238.8781-1-a@...2181...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg15014.html
+     Signed-off-by: David Sommerseth <davids@...515...>
+     Acked-by: Steffan Karger <steffan.karger@...1435...>
+     Message-Id: <20170725145718.13175-1-davids@...515...>
+     URL: https://www.mail-archive.com/search?l=mid&q=20170725145718.13175-1-davids@...515...
      Signed-off-by: David Sommerseth <davids@...515...>
 
 
@@ -49,18 +45,18 @@ David Sommerseth
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBCgAGBQJZd2K5AAoJEIbPlEyWcf3ysZgP/3yh9FM0DsTOYJ0XGNZRzrHO
-kHZfzkqLidjdsZMHKcp7UNtV9YgV2++vUbAptGZBC6ECLoHZHblPRUK4CrFFwL4d
-ErvGBu4k3+3hz6SApGi62dUHBguT2gPAiF2bIHhWUy1yOQfF/3ycSZaWz/hVml1a
-UF2hRUCCdObERP3Ho61LlCKeV+1HAjXyTOtb7JBFZ3UJD6vKBPSYeefZyojYx3Iw
-Vsov9RUUAJE0+ZJJ7jINB9EYe7nCdEJ78iTG7PXfd90E98QCL7g9ThZtR0nwhqGv
-ONmQDBghS0TBjB98cIml4G0mKMaVtCO5LxaC+lx776H3qZYw48himu0HD01/iNrQ
-tieSVdBvNvPfDcL/44T19US5ra6FJLLoQELwcSzctf90QLhpo1OSOTxKKu7XRr7V
-HwxQy/pWDFVbgDN5EpXJLL1H+0XHXpwifhZ07MfhPuzunB7lodocH7RsbuYxhSGD
-TyWZbnC+yPUoRCdC5K6Rof5jW+NUbQCcgJ6Jlvee2gDsjZAnlFxxCQm7Bp2TMpBe
-Et+HsKbWQf2Bl3lqc7+pMpuuELvputS8aoPhrCwH7JJN3bL/VdLQbpuu5YFGhG+6
-BZnUqHcnOqzKL3HEZO5LEZQO+/xVqe7HsoRVF6Eir/bzJBM6bYSGV+0Tsuea/U7d
-1vtIZc6hG/p5NuH2Pj42
-=0ctS
+iQIcBAEBCgAGBQJZd2U/AAoJEIbPlEyWcf3yu/MP/jo74puMyZVUVTqtw/PlS7WA
+rrp5/x7hGPT634urKbqwZ60tvPCCn+uDs4lCy6XDZ5FTWgHDnpmNwaAOC8IZ5W1o
+HgBef2J8fiyloqGwE8C99OYAe04KdbCkQoxbKc1A6AWPXlP5wSd+vpGZtitM1HIa
+O4Pvj6mp0jf8+2JUj+nHebEfS8XcH9Tvv+xCivvPD4V4c3IoohYiTpO7whe88lGD
+oGr5fA3iK6X3xkkO5jrTTaP6qAnjKXqdB+3Ng83s1zKb01w3zquhXom46fBgiY/o
+QIn0MjRHiye01OLSrK0xo+ly0DGihTiAJpRc52+b83DcVSUB+nWbQr6xR/xw6xMg
+EK/paWg/mPvwFbUwUw74cMqThboWpJQtK6zlbCDqf7boOgEjdSCcMGMTeMxUAEYs
+fzBYPVAq/uxRlow02Ex/6z6QWv6YePRsFFr4AjXSCcvkHVJzCPuoKnJKmqvE115e
++8Qv8kh7U/tXIzEd6nwkPwS5JqeJ9AaVom3Wx/Ithbc4dJIvW0CRCV6HNqqjeKOV
+jVvjDtQxYk05eRd0ASnCSA9MzrBwwfmpMVytNeVkoA4i13L+nFNHlV+1vsYfsaVP
+eBKULUuRHFd2dPLgS5mXpmhMadsCG/BNOZkZRFyJSqGFqSGuvBYiT2U+nKumrKtI
+GW46gViLXkoAWn5LEqTL
+=gDou
 -----END PGP SIGNATURE-----
 
