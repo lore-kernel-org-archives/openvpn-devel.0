@@ -1,12 +1,8 @@
-References: <20170725150723.14919-1-davids@...515...>
 From: Steffan Karger <steffan@...1856...>
-Message-ID: <a01e43e2-8c1a-2c16-a50c-eadbe1ee8a76@...1856...>
-Date: Tue, 25 Jul 2017 22:17:51 +0200
-MIME-Version: 1.0
-In-Reply-To: <20170725150723.14919-1-davids@...515...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH] cleanup: Move init_random_seed() to
- where it is being used
+Date: Tue, 25 Jul 2017 23:02:34 +0200
+Message-Id: <20170725210234.5673-1-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH] Move create_temp_file() out of #ifdef
+ ENABLE_CRYPTO
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,113 +11,69 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+From: Steffan Karger <steffan.karger@...1435...>
 
-On 25-07-17 17:07, David Sommerseth wrote:
-> The init_random_seed() function is only used by the init_static() in
-> init.c.  As this function was pretty basic and it is only being called
-> once, it was merged into init_static() instead of keeping it as a separate
-> function.
-> 
-> (I agree that calling functions often makes the code more readable, but
-> I would rather see that as a part of cleaning up the whole init_static()
-> function - in fact when moving all "unit tests" in init_static() to cmocka,
-> it will not be too bad in the end.)
-> 
-> Signed-off-by: David Sommerseth <davids@...515...>
-> ---
->  src/openvpn/init.c | 17 +++++++++++++++--
->  src/openvpn/misc.c | 19 -------------------
->  src/openvpn/misc.h |  3 ---
->  3 files changed, 15 insertions(+), 24 deletions(-)
-> 
-> diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-> index bc3b81e3..860df774 100644
-> --- a/src/openvpn/init.c
-> +++ b/src/openvpn/init.c
-> @@ -610,6 +610,7 @@ init_port_share(struct context *c)
->  
->  #endif /* if PORT_SHARE */
->  
-> +
->  bool
->  init_static(void)
->  {
-> @@ -619,8 +620,20 @@ init_static(void)
->      crypto_init_dmalloc();
->  #endif
->  
-> -    init_random_seed();         /* init random() function, only used as
-> -                                 * source for weak random numbers */
-> +
-> +    /*
-> +     * Initialize random number seed.  random() is only used
-> +     * when "weak" random numbers are acceptable.
-> +     * SSL library routines are always used when cryptographically
-> +     * strong random numbers are required.
-> +     */
-> +    struct timeval tv;
-> +    if (!gettimeofday(&tv, NULL))
-> +    {
-> +        const unsigned int seed = (unsigned int) tv.tv_sec ^ tv.tv_usec;
-> +        srandom(seed);
-> +    }
-> +
->      error_reset();              /* initialize error.c */
->      reset_check_status();       /* initialize status check code in socket.c */
->  
-> diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
-> index 8a76bba8..aff1bb2e 100644
-> --- a/src/openvpn/misc.c
-> +++ b/src/openvpn/misc.c
-> @@ -405,25 +405,6 @@ openvpn_popen(const struct argv *a,  const struct env_set *es)
->  
->  
->  /*
-> - * Initialize random number seed.  random() is only used
-> - * when "weak" random numbers are acceptable.
-> - * OpenSSL routines are always used when cryptographically
-> - * strong random numbers are required.
-> - */
-> -
-> -void
-> -init_random_seed(void)
-> -{
-> -    struct timeval tv;
-> -
-> -    if (!gettimeofday(&tv, NULL))
-> -    {
-> -        const unsigned int seed = (unsigned int) tv.tv_sec ^ tv.tv_usec;
-> -        srandom(seed);
-> -    }
-> -}
-> -
-> -/*
->   * Set environmental variable (int or string).
->   *
->   * On Posix, we use putenv for portability,
-> diff --git a/src/openvpn/misc.h b/src/openvpn/misc.h
-> index 734e679c..a7aa7622 100644
-> --- a/src/openvpn/misc.h
-> +++ b/src/openvpn/misc.h
-> @@ -100,9 +100,6 @@ void set_std_files_to_null(bool stdin_only);
->  extern int inetd_socket_descriptor;
->  void save_inetd_socket_descriptor(void);
->  
-> -/* init random() function, only used as source for weak random numbers, when !ENABLE_CRYPTO */
-> -void init_random_seed(void);
-> -
->  /* set/delete environmental variable */
->  void setenv_str_ex(struct env_set *es,
->                     const char *name,
-> 
+By using get_random() instead of prng_bytes(), we no longer have to place
+create_temp_file() inside #ifdef ENABLE_CRYPTO.
 
-I think I would have preferred to keep the function, but I can live with
-this approach.  So, ACK.
+The resulting filename now has 62 bits of entropy (2 * [0-INT_MAX])
+instead of the previous 128 bits, but that should be plenty.  Assuming an
+int is 32 bits, we would need about 2**31 (2147483648) files to have a
+(roughly) 0.5 chance of failing in one of the 6 attempts we do.
 
--Steffan
+(This is preparing to move the function out of misc.c, where I'd prefer to
+not have to add a #include "crypto.h".)
+
+Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+---
+ src/openvpn/misc.c | 12 ++++--------
+ 1 file changed, 4 insertions(+), 8 deletions(-)
+
+diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
+index 4f729911..1537a2e4 100644
+--- a/src/openvpn/misc.c
++++ b/src/openvpn/misc.c
+@@ -831,8 +831,6 @@ test_file(const char *filename)
+     return ret;
+ }
+ 
+-#ifdef ENABLE_CRYPTO
+-
+ /* create a temporary filename in directory */
+ const char *
+ create_temp_file(const char *directory, const char *prefix, struct gc_arena *gc)
+@@ -845,15 +843,11 @@ create_temp_file(const char *directory, const char *prefix, struct gc_arena *gc)
+ 
+     do
+     {
+-        uint8_t rndbytes[16];
+-        const char *rndstr;
+-
+         ++attempts;
+         ++counter;
+ 
+-        prng_bytes(rndbytes, sizeof rndbytes);
+-        rndstr = format_hex_ex(rndbytes, sizeof rndbytes, 40, 0, NULL, gc);
+-        buf_printf(&fname, PACKAGE "_%s_%s.tmp", prefix, rndstr);
++        buf_printf(&fname, PACKAGE "_%s_%08lx%08lx.tmp", prefix,
++                   (unsigned long) get_random(), (unsigned long) get_random());
+ 
+         retfname = gen_path(directory, BSTR(&fname), gc);
+         if (!retfname)
+@@ -884,6 +878,8 @@ create_temp_file(const char *directory, const char *prefix, struct gc_arena *gc)
+     return NULL;
+ }
+ 
++#ifdef ENABLE_CRYPTO
++
+ /*
+  * Prepend a random string to hostname to prevent DNS caching.
+  * For example, foo.bar.gov would be modified to <random-chars>.foo.bar.gov.
+-- 
+2.11.0
+
 
