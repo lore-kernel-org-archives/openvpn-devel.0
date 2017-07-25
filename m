@@ -1,8 +1,12 @@
-From: David Sommerseth <davids@...515...>
-Date: Tue, 25 Jul 2017 17:07:23 +0200
-Message-Id: <20170725150723.14919-1-davids@...515...>
-Subject: [Openvpn-devel] [PATCH] cleanup: Move init_random_seed() to where
- it is being used
+References: <20170725145718.13175-1-davids@...515...>
+From: Steffan Karger <steffan.karger@...1435...>
+Message-ID: <f06ba94e-2ac9-f8e4-5748-8c521f9b0624@...1435...>
+Date: Tue, 25 Jul 2017 17:15:01 +0200
+MIME-Version: 1.0
+In-Reply-To: <20170725145718.13175-1-davids@...515...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH] cleanup: Move write_pid() to where it
+ is being used
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,106 +16,105 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
-The init_random_seed() function is only used by the init_static() in
-init.c.  As this function was pretty basic and it is only being called
-once, it was merged into init_static() instead of keeping it as a separate
-function.
+Hi,
 
-(I agree that calling functions often makes the code more readable, but
-I would rather see that as a part of cleaning up the whole init_static()
-function - in fact when moving all "unit tests" in init_static() to cmocka,
-it will not be too bad in the end.)
+On 25-07-17 16:57, David Sommerseth wrote:
+> The write_pid() function is only used in openvpn.c, so no
+> need to have that in the misc.[ch] mixed bag.
+> 
+> Signed-off-by: David Sommerseth <davids@...515...>
+> ---
+>  src/openvpn/misc.c    | 21 ---------------------
+>  src/openvpn/misc.h    |  2 --
+>  src/openvpn/openvpn.c | 21 +++++++++++++++++++++
+>  3 files changed, 21 insertions(+), 23 deletions(-)
+> 
+> diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
+> index ae96aa69..8a76bba8 100644
+> --- a/src/openvpn/misc.c
+> +++ b/src/openvpn/misc.c
+> @@ -142,27 +142,6 @@ run_up_down(const char *command,
+>      gc_free(&gc);
+>  }
+>  
+> -/* Write our PID to a file */
+> -void
+> -write_pid(const char *filename)
+> -{
+> -    if (filename)
+> -    {
+> -        unsigned int pid = 0;
+> -        FILE *fp = platform_fopen(filename, "w");
+> -        if (!fp)
+> -        {
+> -            msg(M_ERR, "Open error on pid file %s", filename);
+> -        }
+> -
+> -        pid = platform_getpid();
+> -        fprintf(fp, "%u\n", pid);
+> -        if (fclose(fp))
+> -        {
+> -            msg(M_ERR, "Close error on pid file %s", filename);
+> -        }
+> -    }
+> -}
+>  
+>  /*
+>   * Set standard file descriptors to /dev/null
+> diff --git a/src/openvpn/misc.h b/src/openvpn/misc.h
+> index 32b64e8b..734e679c 100644
+> --- a/src/openvpn/misc.h
+> +++ b/src/openvpn/misc.h
+> @@ -68,8 +68,6 @@ void run_up_down(const char *command,
+>                   const char *script_type,
+>                   struct env_set *es);
+>  
+> -void write_pid(const char *filename);
+> -
+>  /* system flags */
+>  #define S_SCRIPT (1<<0)
+>  #define S_FATAL  (1<<1)
+> diff --git a/src/openvpn/openvpn.c b/src/openvpn/openvpn.c
+> index 08c09e6b..794de1a8 100644
+> --- a/src/openvpn/openvpn.c
+> +++ b/src/openvpn/openvpn.c
+> @@ -47,6 +47,27 @@ process_signal_p2p(struct context *c)
+>      return process_signal(c);
+>  }
+>  
+> +/* Write our PID to a file */
+> +static void
+> +write_pid(const char *filename)
+> +{
+> +    if (filename)
+> +    {
+> +        unsigned int pid = 0;
+> +        FILE *fp = platform_fopen(filename, "w");
+> +        if (!fp)
+> +        {
+> +            msg(M_ERR, "Open error on pid file %s", filename);
+> +        }
+> +
+> +        pid = platform_getpid();
+> +        fprintf(fp, "%u\n", pid);
+> +        if (fclose(fp))
+> +        {
+> +            msg(M_ERR, "Close error on pid file %s", filename);
+> +        }
+> +    }
+> +}
+>  
+>  
+>  /**************************************************************************/
+> 
 
-Signed-off-by: David Sommerseth <davids@...515...>
----
- src/openvpn/init.c | 17 +++++++++++++++--
- src/openvpn/misc.c | 19 -------------------
- src/openvpn/misc.h |  3 ---
- 3 files changed, 15 insertions(+), 24 deletions(-)
+Looks good, but let's make the (new?) dependency of openvpn.c to
+platforum.h/c explicit by adding an #include "platform.h".
 
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index bc3b81e3..860df774 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -610,6 +610,7 @@ init_port_share(struct context *c)
- 
- #endif /* if PORT_SHARE */
- 
-+
- bool
- init_static(void)
- {
-@@ -619,8 +620,20 @@ init_static(void)
-     crypto_init_dmalloc();
- #endif
- 
--    init_random_seed();         /* init random() function, only used as
--                                 * source for weak random numbers */
-+
-+    /*
-+     * Initialize random number seed.  random() is only used
-+     * when "weak" random numbers are acceptable.
-+     * SSL library routines are always used when cryptographically
-+     * strong random numbers are required.
-+     */
-+    struct timeval tv;
-+    if (!gettimeofday(&tv, NULL))
-+    {
-+        const unsigned int seed = (unsigned int) tv.tv_sec ^ tv.tv_usec;
-+        srandom(seed);
-+    }
-+
-     error_reset();              /* initialize error.c */
-     reset_check_status();       /* initialize status check code in socket.c */
- 
-diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
-index 8a76bba8..aff1bb2e 100644
---- a/src/openvpn/misc.c
-+++ b/src/openvpn/misc.c
-@@ -405,25 +405,6 @@ openvpn_popen(const struct argv *a,  const struct env_set *es)
- 
- 
- /*
-- * Initialize random number seed.  random() is only used
-- * when "weak" random numbers are acceptable.
-- * OpenSSL routines are always used when cryptographically
-- * strong random numbers are required.
-- */
--
--void
--init_random_seed(void)
--{
--    struct timeval tv;
--
--    if (!gettimeofday(&tv, NULL))
--    {
--        const unsigned int seed = (unsigned int) tv.tv_sec ^ tv.tv_usec;
--        srandom(seed);
--    }
--}
--
--/*
-  * Set environmental variable (int or string).
-  *
-  * On Posix, we use putenv for portability,
-diff --git a/src/openvpn/misc.h b/src/openvpn/misc.h
-index 734e679c..a7aa7622 100644
---- a/src/openvpn/misc.h
-+++ b/src/openvpn/misc.h
-@@ -100,9 +100,6 @@ void set_std_files_to_null(bool stdin_only);
- extern int inetd_socket_descriptor;
- void save_inetd_socket_descriptor(void);
- 
--/* init random() function, only used as source for weak random numbers, when !ENABLE_CRYPTO */
--void init_random_seed(void);
--
- /* set/delete environmental variable */
- void setenv_str_ex(struct env_set *es,
-                    const char *name,
--- 
-2.11.0
+Trivial enough to do when applying, so ACK.
 
+-Steffan
 
