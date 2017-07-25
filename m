@@ -1,8 +1,7 @@
-From: Antonio Quartulli <a@...2181...>
-Date: Mon, 24 Jul 2017 22:35:59 +0800
-Message-Id: <20170724143559.11503-1-a@...2181...>
-Subject: [Openvpn-devel] [PATCH] rename mroute_extract_addr_ipv4 to
- mroute_extract_addr_ip
+From: David Sommerseth <davids@...515...>
+Date: Tue, 25 Jul 2017 15:03:14 +0200
+Message-Id: <20170725130314.12919-1-davids@...515...>
+Subject: [Openvpn-devel] [PATCH] contrib: Remove keychain-mcd code
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,70 +13,1770 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: Antonio Quartulli <a@...2181...>
 
-mroute_extract_addr_ipv4() is able to extract an IPv4 as well as an
-IPv6. Remove the "v4" suffix from its name to make this behaviour more
-explicit.
+After the security audits performed by Cryptography Engineering the
+spring of 2017 [1], there were several concerns about the contrib code
+for the macOS keychain support.  After more careful review of this
+code base, it was considered to be in such a bad shape that it will
+need a massive overhaul.  There were more issues than what the security
+audit revealed.
 
-Signed-off-by: Antonio Quartulli <a@...2181...>
+It was attempted several times to get in touch with the contributor
+of this code; with no response at all [2].  There has however
+been some discussions with the Tunnelblick project [3]. There is one
+person there willing to go through this and improve the situation.
+The main Tunnelblick maintainer is also willing to include the improved
+code to their project instead of having this as a contrib code in
+the upstream OpenVPN project.
+
+So this patch just removes the code which we will no longer
+ship as part of OpenVPN - and the Tunnelblick project will take
+over the responsibility for this code base on their own.  And since
+this code base is purely macOS specific, this seems to be a far
+better place for this code to reside.
+
+Signed-off-by: David Sommerseth <davids@...515...>
+
+[1] <http://community.openvpn.net/openvpn/wiki/QuarkslabAndCryptographyEngineerAudits#OVPN-04-1:PossibleNULLpointerderefenceincontribkeychain-mcdcert_data.c>
+[2] <https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg14559.html>
+[3] <https://github.com/Tunnelblick/Tunnelblick/pull/369>
 ---
- src/openvpn/mroute.c | 7 +++----
- src/openvpn/mroute.h | 8 ++++----
- 2 files changed, 7 insertions(+), 8 deletions(-)
+ contrib/keychain-mcd/Makefile       |  13 -
+ contrib/keychain-mcd/cert_data.c    | 866 ------------------------------------
+ contrib/keychain-mcd/cert_data.h    |  50 ---
+ contrib/keychain-mcd/common_osx.c   | 100 -----
+ contrib/keychain-mcd/common_osx.h   |  38 --
+ contrib/keychain-mcd/crypto_osx.c   |  79 ----
+ contrib/keychain-mcd/crypto_osx.h   |  44 --
+ contrib/keychain-mcd/keychain-mcd.8 | 161 -------
+ contrib/keychain-mcd/main.c         | 310 -------------
+ 9 files changed, 1661 deletions(-)
+ delete mode 100644 contrib/keychain-mcd/Makefile
+ delete mode 100644 contrib/keychain-mcd/cert_data.c
+ delete mode 100644 contrib/keychain-mcd/cert_data.h
+ delete mode 100644 contrib/keychain-mcd/common_osx.c
+ delete mode 100644 contrib/keychain-mcd/common_osx.h
+ delete mode 100644 contrib/keychain-mcd/crypto_osx.c
+ delete mode 100644 contrib/keychain-mcd/crypto_osx.h
+ delete mode 100644 contrib/keychain-mcd/keychain-mcd.8
+ delete mode 100644 contrib/keychain-mcd/main.c
 
-diff --git a/src/openvpn/mroute.c b/src/openvpn/mroute.c
-index 7b46a6a2..74ee360c 100644
---- a/src/openvpn/mroute.c
-+++ b/src/openvpn/mroute.c
-@@ -159,9 +159,8 @@ mroute_extract_addr_arp(struct mroute_addr *src,
- #endif /* ifdef ENABLE_PF */
- 
- unsigned int
--mroute_extract_addr_ipv4(struct mroute_addr *src,
--                         struct mroute_addr *dest,
--                         const struct buffer *buf)
-+mroute_extract_addr_ip(struct mroute_addr *src, struct mroute_addr *dest,
-+                       const struct buffer *buf)
- {
-     unsigned int ret = 0;
-     if (BLEN(buf) >= 1)
-@@ -267,7 +266,7 @@ mroute_extract_addr_ether(struct mroute_addr *src,
-                 switch (ntohs(eth->proto))
-                 {
-                     case OPENVPN_ETH_P_IPV4:
--                        ret |= (mroute_extract_addr_ipv4(esrc, edest, &b) << MROUTE_SEC_SHIFT);
-+                        ret |= (mroute_extract_addr_ip(esrc, edest, &b) << MROUTE_SEC_SHIFT);
-                         break;
- 
-                     case OPENVPN_ETH_P_ARP:
-diff --git a/src/openvpn/mroute.h b/src/openvpn/mroute.h
-index e57a9506..35361fbd 100644
---- a/src/openvpn/mroute.h
-+++ b/src/openvpn/mroute.h
-@@ -181,9 +181,9 @@ mroute_extract_addr_from_packet(struct mroute_addr *src,
-                                 const struct buffer *buf,
-                                 int tunnel_type)
- {
--    unsigned int mroute_extract_addr_ipv4(struct mroute_addr *src,
--                                          struct mroute_addr *dest,
--                                          const struct buffer *buf);
-+    unsigned int mroute_extract_addr_ip(struct mroute_addr *src,
-+                                     struct mroute_addr *dest,
-+                                     const struct buffer *buf);
- 
-     unsigned int mroute_extract_addr_ether(struct mroute_addr *src,
-                                            struct mroute_addr *dest,
-@@ -195,7 +195,7 @@ mroute_extract_addr_from_packet(struct mroute_addr *src,
-     verify_align_4(buf);
-     if (tunnel_type == DEV_TYPE_TUN)
-     {
--        ret = mroute_extract_addr_ipv4(src, dest, buf);
-+        ret = mroute_extract_addr_ip(src, dest, buf);
-     }
-     else if (tunnel_type == DEV_TYPE_TAP)
-     {
+diff --git a/contrib/keychain-mcd/Makefile b/contrib/keychain-mcd/Makefile
+deleted file mode 100644
+index c6431df1..00000000
+--- a/contrib/keychain-mcd/Makefile
++++ /dev/null
+@@ -1,13 +0,0 @@
+-CFILES = cert_data.c common_osx.c crypto_osx.c main.c
+-OFILES = $(CFILES:.c=.o) ../../src/openvpn/base64.o
+-prog = keychain-mcd
+-
+-CC = gcc
+-CFLAGS = -Wall
+-LDFLAGS =  -framework CoreFoundation -framework Security -framework CoreServices
+-
+-$(prog): $(OFILES)
+-	$(CC) $(LDFLAGS) $(OFILES) -o $(prog)
+-
+-%.o: %.c
+-	$(CC) $(CFLAGS) -c $< -o $@
+diff --git a/contrib/keychain-mcd/cert_data.c b/contrib/keychain-mcd/cert_data.c
+deleted file mode 100644
+index c04f68ec..00000000
+--- a/contrib/keychain-mcd/cert_data.c
++++ /dev/null
+@@ -1,866 +0,0 @@
+-/*
+- *  OpenVPN -- An application to securely tunnel IP networks
+- *             over a single UDP port, with support for SSL/TLS-based
+- *             session authentication and key exchange,
+- *             packet encryption, packet authentication, and
+- *             packet compression.
+- *
+- *  Copyright (C) 2010 Brian Raderman <brian@...1360...>
+- *  Copyright (C) 2013-2015 Vasily Kulikov <segoon@...2008...>
+- *
+- *  This program is free software; you can redistribute it and/or modify
+- *  it under the terms of the GNU General Public License version 2
+- *  as published by the Free Software Foundation.
+- *
+- *  This program is distributed in the hope that it will be useful,
+- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- *  GNU General Public License for more details.
+- *
+- *  You should have received a copy of the GNU General Public License along
+- *  with this program; if not, write to the Free Software Foundation, Inc.,
+- *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+- */
+-
+-
+-#include "cert_data.h"
+-#include <CommonCrypto/CommonDigest.h>
+-#include <openssl/ssl.h>
+-
+-#include "common_osx.h"
+-#include "crypto_osx.h"
+-#include <err.h>
+-
+-CFStringRef kCertDataSubjectName = CFSTR("subject"),
+-            kCertDataIssuerName = CFSTR("issuer"),
+-            kCertDataSha1Name = CFSTR("SHA1"),
+-            kCertDataMd5Name = CFSTR("MD5"),
+-            kCertDataSerialName = CFSTR("serial"),
+-            kCertNameFwdSlash = CFSTR("/"),
+-            kCertNameEquals = CFSTR("=");
+-CFStringRef kCertNameOrganization = CFSTR("o"),
+-            kCertNameOrganizationalUnit = CFSTR("ou"),
+-            kCertNameCountry = CFSTR("c"),
+-            kCertNameLocality = CFSTR("l"),
+-            kCertNameState = CFSTR("st"),
+-            kCertNameCommonName = CFSTR("cn"),
+-            kCertNameEmail = CFSTR("e");
+-CFStringRef kStringSpace = CFSTR(" "),
+-            kStringEmpty = CFSTR("");
+-
+-typedef struct _CertName
+-{
+-    CFArrayRef countryName, organization, organizationalUnit, commonName, description, emailAddress,
+-               stateName, localityName;
+-} CertName, *CertNameRef;
+-
+-typedef struct _DescData
+-{
+-    CFStringRef name, value;
+-} DescData, *DescDataRef;
+-
+-void destroyDescData(DescDataRef pData);
+-
+-CertNameRef
+-createCertName()
+-{
+-    CertNameRef pCertName = (CertNameRef)malloc(sizeof(CertName));
+-    pCertName->countryName = CFArrayCreateMutable(NULL, 0, &kCFTypeArrayCallBacks);
+-    pCertName->organization =  CFArrayCreateMutable(NULL, 0, &kCFTypeArrayCallBacks);
+-    pCertName->organizationalUnit = CFArrayCreateMutable(NULL, 0, &kCFTypeArrayCallBacks);
+-    pCertName->commonName = CFArrayCreateMutable(NULL, 0, &kCFTypeArrayCallBacks);
+-    pCertName->description = CFArrayCreateMutable(NULL, 0, &kCFTypeArrayCallBacks);
+-    pCertName->emailAddress = CFArrayCreateMutable(NULL, 0, &kCFTypeArrayCallBacks);
+-    pCertName->stateName = CFArrayCreateMutable(NULL, 0, &kCFTypeArrayCallBacks);
+-    pCertName->localityName = CFArrayCreateMutable(NULL, 0, &kCFTypeArrayCallBacks);
+-    return pCertName;
+-}
+-
+-void
+-destroyCertName(CertNameRef pCertName)
+-{
+-    if (!pCertName)
+-    {
+-        return;
+-    }
+-
+-    CFRelease(pCertName->countryName);
+-    CFRelease(pCertName->organization);
+-    CFRelease(pCertName->organizationalUnit);
+-    CFRelease(pCertName->commonName);
+-    CFRelease(pCertName->description);
+-    CFRelease(pCertName->emailAddress);
+-    CFRelease(pCertName->stateName);
+-    CFRelease(pCertName->localityName);
+-    free(pCertName);
+-}
+-
+-bool
+-CFStringRefCmpCString(CFStringRef cfstr, const char *str)
+-{
+-    CFStringRef tmp = CFStringCreateWithCStringNoCopy(NULL, str, kCFStringEncodingUTF8, kCFAllocatorNull);
+-    CFComparisonResult cresult = CFStringCompare(cfstr, tmp, 0);
+-    bool result = cresult == kCFCompareEqualTo;
+-    CFRelease(tmp);
+-    return result;
+-}
+-
+-CFDateRef
+-GetDateFieldFromCertificate(SecCertificateRef certificate, CFTypeRef oid)
+-{
+-    const void *keys[] = { oid };
+-    CFDictionaryRef dict = NULL;
+-    CFErrorRef error;
+-    CFDateRef date = NULL;
+-
+-    CFArrayRef keySelection = CFArrayCreate(NULL, keys, sizeof(keys)/sizeof(keys[0]), &kCFTypeArrayCallBacks);
+-    dict = SecCertificateCopyValues(certificate, keySelection, &error);
+-    if (dict == NULL)
+-    {
+-        printErrorMsg("GetDateFieldFromCertificate: SecCertificateCopyValues", error);
+-        goto release_ks;
+-    }
+-    CFDictionaryRef vals = dict ? CFDictionaryGetValue(dict, oid) : NULL;
+-    CFNumberRef vals2 = vals ? CFDictionaryGetValue(vals, kSecPropertyKeyValue) : NULL;
+-    if (vals2 == NULL)
+-    {
+-        goto release_dict;
+-    }
+-
+-    CFAbsoluteTime validityNotBefore;
+-    if (CFNumberGetValue(vals2, kCFNumberDoubleType, &validityNotBefore))
+-    {
+-        date = CFDateCreate(kCFAllocatorDefault,validityNotBefore);
+-    }
+-
+-release_dict:
+-    CFRelease(dict);
+-release_ks:
+-    CFRelease(keySelection);
+-    return date;
+-}
+-
+-CFArrayRef
+-GetFieldsFromCertificate(SecCertificateRef certificate, CFTypeRef oid)
+-{
+-    CFMutableArrayRef fields = CFArrayCreateMutable(NULL, 0, NULL);
+-    CertNameRef pCertName = createCertName();
+-    const void *keys[] = { oid, };
+-    CFDictionaryRef dict;
+-    CFErrorRef error;
+-
+-    CFArrayRef keySelection = CFArrayCreate(NULL, keys, 1, NULL);
+-
+-    dict = SecCertificateCopyValues(certificate, keySelection, &error);
+-    if (dict == NULL)
+-    {
+-        printErrorMsg("GetFieldsFromCertificate: SecCertificateCopyValues", error);
+-        CFRelease(keySelection);
+-        CFRelease(fields);
+-        destroyCertName(pCertName);
+-        return NULL;
+-    }
+-    CFDictionaryRef vals = CFDictionaryGetValue(dict, oid);
+-    CFArrayRef vals2 = vals ? CFDictionaryGetValue(vals, kSecPropertyKeyValue) : NULL;
+-    if (vals2)
+-    {
+-        for (int i = 0; i < CFArrayGetCount(vals2); i++) {
+-            CFDictionaryRef subDict = CFArrayGetValueAtIndex(vals2, i);
+-            CFStringRef label = CFDictionaryGetValue(subDict, kSecPropertyKeyLabel);
+-            CFStringRef value = CFDictionaryGetValue(subDict, kSecPropertyKeyValue);
+-
+-            if (CFStringCompare(label, kSecOIDEmailAddress, 0) == kCFCompareEqualTo)
+-            {
+-                CFArrayAppendValue((CFMutableArrayRef)pCertName->emailAddress, value);
+-            }
+-            else if (CFStringCompare(label, kSecOIDCountryName, 0) == kCFCompareEqualTo)
+-            {
+-                CFArrayAppendValue((CFMutableArrayRef)pCertName->countryName, value);
+-            }
+-            else if (CFStringCompare(label, kSecOIDOrganizationName, 0) == kCFCompareEqualTo)
+-            {
+-                CFArrayAppendValue((CFMutableArrayRef)pCertName->organization, value);
+-            }
+-            else if (CFStringCompare(label, kSecOIDOrganizationalUnitName, 0) == kCFCompareEqualTo)
+-            {
+-                CFArrayAppendValue((CFMutableArrayRef)pCertName->organizationalUnit, value);
+-            }
+-            else if (CFStringCompare(label, kSecOIDCommonName, 0) == kCFCompareEqualTo)
+-            {
+-                CFArrayAppendValue((CFMutableArrayRef)pCertName->commonName, value);
+-            }
+-            else if (CFStringCompare(label, kSecOIDDescription, 0) == kCFCompareEqualTo)
+-            {
+-                CFArrayAppendValue((CFMutableArrayRef)pCertName->description, value);
+-            }
+-            else if (CFStringCompare(label, kSecOIDStateProvinceName, 0) == kCFCompareEqualTo)
+-            {
+-                CFArrayAppendValue((CFMutableArrayRef)pCertName->stateName, value);
+-            }
+-            else if (CFStringCompare(label, kSecOIDLocalityName, 0) == kCFCompareEqualTo)
+-            {
+-                CFArrayAppendValue((CFMutableArrayRef)pCertName->localityName, value);
+-            }
+-        }
+-        CFArrayAppendValue(fields, pCertName);
+-    }
+-
+-    CFRelease(dict);
+-    CFRelease(keySelection);
+-    return fields;
+-}
+-
+-CertDataRef
+-createCertDataFromCertificate(SecCertificateRef certificate)
+-{
+-    CertDataRef pCertData = (CertDataRef)malloc(sizeof(CertData));
+-    pCertData->subject = GetFieldsFromCertificate(certificate, kSecOIDX509V1SubjectName);
+-    pCertData->issuer = GetFieldsFromCertificate(certificate, kSecOIDX509V1IssuerName);
+-
+-    CFDataRef data = SecCertificateCopyData(certificate);
+-    if (data == NULL)
+-    {
+-        warnx("SecCertificateCopyData() returned NULL");
+-        destroyCertData(pCertData);
+-        return NULL;
+-    }
+-
+-    unsigned char sha1[CC_SHA1_DIGEST_LENGTH];
+-    CC_SHA1(CFDataGetBytePtr(data), CFDataGetLength(data), sha1);
+-    pCertData->sha1 = createHexString(sha1, CC_SHA1_DIGEST_LENGTH);
+-
+-    unsigned char md5[CC_MD5_DIGEST_LENGTH];
+-    CC_MD5(CFDataGetBytePtr(data), CFDataGetLength(data), md5);
+-    pCertData->md5 = createHexString((unsigned char *)md5, CC_MD5_DIGEST_LENGTH);
+-
+-    CFDataRef serial = SecCertificateCopySerialNumber(certificate, NULL);
+-    pCertData->serial = createHexString((unsigned char *)CFDataGetBytePtr(serial), CFDataGetLength(serial));
+-    CFRelease(serial);
+-
+-    return pCertData;
+-}
+-
+-CFStringRef
+-stringFromRange(const char *cstring, CFRange range)
+-{
+-    CFStringRef str = CFStringCreateWithBytes(NULL, (uint8 *)&cstring[range.location], range.length, kCFStringEncodingUTF8, false);
+-    CFMutableStringRef mutableStr = CFStringCreateMutableCopy(NULL, 0, str);
+-    CFStringTrimWhitespace(mutableStr);
+-    CFRelease(str);
+-    return mutableStr;
+-}
+-
+-DescDataRef
+-createDescData(const char *description, CFRange nameRange, CFRange valueRange)
+-{
+-    DescDataRef pRetVal = (DescDataRef)malloc(sizeof(DescData));
+-
+-    memset(pRetVal, 0, sizeof(DescData));
+-
+-    if (nameRange.length > 0)
+-    {
+-        pRetVal->name = stringFromRange(description, nameRange);
+-    }
+-
+-    if (valueRange.length > 0)
+-    {
+-        pRetVal->value = stringFromRange(description, valueRange);
+-    }
+-
+-#if 0
+-    fprintf(stderr, "name = '%s', value = '%s'\n",
+-            CFStringGetCStringPtr(pRetVal->name, kCFStringEncodingUTF8),
+-            CFStringGetCStringPtr(pRetVal->value, kCFStringEncodingUTF8));
+-#endif
+-    return pRetVal;
+-}
+-
+-void
+-destroyDescData(DescDataRef pData)
+-{
+-    if (pData->name)
+-    {
+-        CFRelease(pData->name);
+-    }
+-
+-    if (pData->value)
+-    {
+-        CFRelease(pData->value);
+-    }
+-
+-    free(pData);
+-}
+-
+-CFArrayRef
+-createDescDataPairs(const char *description)
+-{
+-    int numChars = strlen(description);
+-    CFRange nameRange, valueRange;
+-    DescDataRef pData;
+-    CFMutableArrayRef retVal = CFArrayCreateMutable(NULL, 0, NULL);
+-
+-    int i = 0;
+-
+-    nameRange = CFRangeMake(0, 0);
+-    valueRange = CFRangeMake(0, 0);
+-    bool bInValue = false;
+-
+-    while (i < numChars)
+-    {
+-        if (!bInValue && (description[i] != ':'))
+-        {
+-            nameRange.length++;
+-        }
+-        else if (bInValue && (description[i] != ':'))
+-        {
+-            valueRange.length++;
+-        }
+-        else if (!bInValue)
+-        {
+-            bInValue = true;
+-            valueRange.location = i + 1;
+-            valueRange.length = 0;
+-        }
+-        else /*(bInValue) */
+-        {
+-            bInValue = false;
+-            while (description[i] != ' ')
+-            {
+-                valueRange.length--;
+-                i--;
+-            }
+-
+-            pData = createDescData(description, nameRange, valueRange);
+-            CFArrayAppendValue(retVal, pData);
+-
+-            nameRange.location = i + 1;
+-            nameRange.length = 0;
+-        }
+-
+-        i++;
+-    }
+-
+-    pData = createDescData(description, nameRange, valueRange);
+-    CFArrayAppendValue(retVal, pData);
+-    return retVal;
+-}
+-
+-void
+-arrayDestroyDescData(const void *val, void *context)
+-{
+-    DescDataRef pData = (DescDataRef) val;
+-    destroyDescData(pData);
+-}
+-
+-
+-int
+-parseNameComponent(CFStringRef dn, CFStringRef *pName, CFStringRef *pValue)
+-{
+-    CFArrayRef nameStrings = CFStringCreateArrayBySeparatingStrings(NULL, dn, kCertNameEquals);
+-
+-    *pName = *pValue = NULL;
+-
+-    if (CFArrayGetCount(nameStrings) != 2)
+-    {
+-        return 0;
+-    }
+-
+-    CFMutableStringRef str;
+-
+-    str = CFStringCreateMutableCopy(NULL, 0, CFArrayGetValueAtIndex(nameStrings, 0));
+-    CFStringTrimWhitespace(str);
+-    *pName = str;
+-
+-    str = CFStringCreateMutableCopy(NULL, 0, CFArrayGetValueAtIndex(nameStrings, 1));
+-    CFStringTrimWhitespace(str);
+-    *pValue = str;
+-
+-    CFRelease(nameStrings);
+-    return 1;
+-}
+-
+-int
+-tryAppendSingleCertField(CertNameRef pCertName, CFArrayRef where, CFStringRef key,
+-                         CFStringRef name, CFStringRef value)
+-{
+-    if (CFStringCompareWithOptions(name, key, CFRangeMake(0, CFStringGetLength(name)), kCFCompareCaseInsensitive)
+-        == kCFCompareEqualTo)
+-    {
+-        CFArrayAppendValue((CFMutableArrayRef)where, value);
+-        return 1;
+-    }
+-    return 0;
+-}
+-
+-int
+-appendCertField(CertNameRef pCert, CFStringRef name, CFStringRef value)
+-{
+-    struct {
+-        CFArrayRef field;
+-        CFStringRef key;
+-    } fields[] = {
+-        { pCert->organization, kCertNameOrganization},
+-        { pCert->organizationalUnit, kCertNameOrganizationalUnit},
+-        { pCert->countryName, kCertNameCountry},
+-        { pCert->localityName, kCertNameLocality},
+-        { pCert->stateName, kCertNameState},
+-        { pCert->commonName, kCertNameCommonName},
+-        { pCert->emailAddress, kCertNameEmail},
+-    };
+-    int i;
+-    int ret = 0;
+-
+-    for (i = 0; i<sizeof(fields)/sizeof(fields[0]); i++)
+-        ret += tryAppendSingleCertField(pCert, fields[i].field, fields[i].key, name, value);
+-    return ret;
+-}
+-
+-int
+-parseCertName(CFStringRef nameDesc, CFMutableArrayRef names)
+-{
+-    CFArrayRef nameStrings = CFStringCreateArrayBySeparatingStrings(NULL, nameDesc, kCertNameFwdSlash);
+-    int count = CFArrayGetCount(nameStrings);
+-    int i;
+-    int ret = 1;
+-
+-    CertNameRef pCertName = createCertName();
+-
+-    for (i = 0; i < count; i++)
+-    {
+-        CFMutableStringRef dn = CFStringCreateMutableCopy(NULL, 0, CFArrayGetValueAtIndex(nameStrings, i));
+-        CFStringTrimWhitespace(dn);
+-
+-        CFStringRef name, value;
+-
+-        if (!parseNameComponent(dn, &name, &value))
+-        {
+-            ret = 0;
+-        }
+-
+-        if (!name || !value)
+-        {
+-            if (name)
+-            {
+-                CFRelease(name);
+-            }
+-
+-            if (value)
+-            {
+-                CFRelease(value);
+-            }
+-            if (name && !value)
+-            {
+-                ret = 0;
+-            }
+-
+-            CFRelease(dn);
+-            continue;
+-        }
+-
+-        if (!appendCertField(pCertName, name, value))
+-        {
+-            ret = 0;
+-        }
+-        CFRelease(name);
+-        CFRelease(value);
+-        CFRelease(dn);
+-    }
+-
+-    CFArrayAppendValue(names, pCertName);
+-    CFRelease(nameStrings);
+-    return ret;
+-}
+-
+-int
+-arrayParseDescDataPair(const void *val, void *context)
+-{
+-    DescDataRef pDescData = (DescDataRef)val;
+-    CertDataRef pCertData = (CertDataRef)context;
+-    int ret = 1;
+-
+-    if (!pDescData->name || !pDescData->value)
+-    {
+-        return 0;
+-    }
+-
+-    if (CFStringCompareWithOptions(pDescData->name, kCertDataSubjectName, CFRangeMake(0, CFStringGetLength(pDescData->name)), kCFCompareCaseInsensitive) == kCFCompareEqualTo)
+-    {
+-        ret = parseCertName(pDescData->value, (CFMutableArrayRef)pCertData->subject);
+-    }
+-    else if (CFStringCompareWithOptions(pDescData->name, kCertDataIssuerName, CFRangeMake(0, CFStringGetLength(pDescData->name)), kCFCompareCaseInsensitive) == kCFCompareEqualTo)
+-    {
+-        ret = parseCertName(pDescData->value, (CFMutableArrayRef)pCertData->issuer);
+-    }
+-    else if (CFStringCompareWithOptions(pDescData->name, kCertDataSha1Name, CFRangeMake(0, CFStringGetLength(pDescData->name)), kCFCompareCaseInsensitive) == kCFCompareEqualTo)
+-    {
+-        pCertData->sha1 = CFRetain(pDescData->value);
+-    }
+-    else if (CFStringCompareWithOptions(pDescData->name, kCertDataMd5Name, CFRangeMake(0, CFStringGetLength(pDescData->name)), kCFCompareCaseInsensitive) == kCFCompareEqualTo)
+-    {
+-        pCertData->md5 = CFRetain(pDescData->value);
+-    }
+-    else if (CFStringCompareWithOptions(pDescData->name, kCertDataSerialName, CFRangeMake(0, CFStringGetLength(pDescData->name)), kCFCompareCaseInsensitive) == kCFCompareEqualTo)
+-    {
+-        pCertData->serial = CFRetain(pDescData->value);
+-    }
+-    else
+-    {
+-        return 0;
+-    }
+-
+-    return ret;
+-}
+-
+-CertDataRef
+-createCertDataFromString(const char *description)
+-{
+-    CertDataRef pCertData = (CertDataRef)malloc(sizeof(CertData));
+-    pCertData->subject = CFArrayCreateMutable(NULL, 0, NULL);
+-    pCertData->issuer = CFArrayCreateMutable(NULL, 0, NULL);
+-    pCertData->sha1 = NULL;
+-    pCertData->md5 = NULL;
+-    pCertData->serial = NULL;
+-
+-    CFArrayRef pairs = createDescDataPairs(description);
+-    for (int i = 0; i<CFArrayGetCount(pairs); i++)
+-        if (!arrayParseDescDataPair(CFArrayGetValueAtIndex(pairs, i), pCertData))
+-        {
+-            arrayDestroyDescData(pCertData, NULL);
+-            CFArrayApplyFunction(pairs, CFRangeMake(0, CFArrayGetCount(pairs)), arrayDestroyDescData, NULL);
+-            CFRelease(pairs);
+-            return 0;
+-        }
+-
+-    CFArrayApplyFunction(pairs, CFRangeMake(0, CFArrayGetCount(pairs)), arrayDestroyDescData, NULL);
+-    CFRelease(pairs);
+-    return pCertData;
+-}
+-
+-void
+-arrayDestroyCertName(const void *val, void *context)
+-{
+-    CertNameRef pCertName = (CertNameRef)val;
+-    destroyCertName(pCertName);
+-}
+-
+-void
+-destroyCertData(CertDataRef pCertData)
+-{
+-    if (pCertData->subject)
+-    {
+-        CFArrayApplyFunction(pCertData->subject, CFRangeMake(0, CFArrayGetCount(pCertData->subject)), arrayDestroyCertName, NULL);
+-        CFRelease(pCertData->subject);
+-    }
+-
+-    if (pCertData->issuer)
+-    {
+-        CFArrayApplyFunction(pCertData->issuer, CFRangeMake(0, CFArrayGetCount(pCertData->issuer)), arrayDestroyCertName, NULL);
+-        CFRelease(pCertData->issuer);
+-    }
+-
+-    if (pCertData->sha1)
+-    {
+-        CFRelease(pCertData->sha1);
+-    }
+-
+-    if (pCertData->md5)
+-    {
+-        CFRelease(pCertData->md5);
+-    }
+-
+-    if (pCertData->serial)
+-    {
+-        CFRelease(pCertData->serial);
+-    }
+-
+-    free(pCertData);
+-}
+-
+-bool
+-stringArrayMatchesTemplate(CFArrayRef strings, CFArrayRef templateArray)
+-{
+-    int templateCount, stringCount, i;
+-
+-    templateCount = CFArrayGetCount(templateArray);
+-
+-    if (templateCount > 0)
+-    {
+-        stringCount = CFArrayGetCount(strings);
+-        if (stringCount != templateCount)
+-        {
+-            return false;
+-        }
+-
+-        for (i = 0; i < stringCount; i++)
+-        {
+-            CFStringRef str, template;
+-
+-            template = (CFStringRef)CFArrayGetValueAtIndex(templateArray, i);
+-            str = (CFStringRef)CFArrayGetValueAtIndex(strings, i);
+-
+-            if (CFStringCompareWithOptions(template, str, CFRangeMake(0, CFStringGetLength(template)), kCFCompareCaseInsensitive) != kCFCompareEqualTo)
+-            {
+-                return false;
+-            }
+-        }
+-    }
+-
+-    return true;
+-
+-}
+-
+-bool
+-certNameMatchesTemplate(CertNameRef pCertName, CertNameRef pTemplate)
+-{
+-    if (!stringArrayMatchesTemplate(pCertName->countryName, pTemplate->countryName))
+-    {
+-        return false;
+-    }
+-    else if (!stringArrayMatchesTemplate(pCertName->organization, pTemplate->organization))
+-    {
+-        return false;
+-    }
+-    else if (!stringArrayMatchesTemplate(pCertName->organizationalUnit, pTemplate->organizationalUnit))
+-    {
+-        return false;
+-    }
+-    else if (!stringArrayMatchesTemplate(pCertName->commonName, pTemplate->commonName))
+-    {
+-        return false;
+-    }
+-    else if (!stringArrayMatchesTemplate(pCertName->emailAddress, pTemplate->emailAddress))
+-    {
+-        return false;
+-    }
+-    else if (!stringArrayMatchesTemplate(pCertName->stateName, pTemplate->stateName))
+-    {
+-        return false;
+-    }
+-    else if (!stringArrayMatchesTemplate(pCertName->localityName, pTemplate->localityName))
+-    {
+-        return false;
+-    }
+-    else
+-    {
+-        return true;
+-    }
+-}
+-
+-bool
+-certNameArrayMatchesTemplate(CFArrayRef certNameArray, CFArrayRef templateArray)
+-{
+-    int templateCount, certCount, i;
+-
+-    templateCount = CFArrayGetCount(templateArray);
+-
+-    if (templateCount > 0)
+-    {
+-        certCount = CFArrayGetCount(certNameArray);
+-        if (certCount != templateCount)
+-        {
+-            return false;
+-        }
+-
+-        for (i = 0; i < certCount; i++)
+-        {
+-            CertNameRef pName, pTemplateName;
+-
+-            pTemplateName = (CertNameRef)CFArrayGetValueAtIndex(templateArray, i);
+-            pName = (CertNameRef)CFArrayGetValueAtIndex(certNameArray, i);
+-
+-            if (!certNameMatchesTemplate(pName, pTemplateName))
+-            {
+-                return false;
+-            }
+-        }
+-    }
+-
+-    return true;
+-}
+-
+-bool
+-hexStringMatchesTemplate(CFStringRef str, CFStringRef template)
+-{
+-    if (template)
+-    {
+-        if (!str)
+-        {
+-            return false;
+-        }
+-
+-        CFMutableStringRef strMutable, templateMutable;
+-
+-        strMutable = CFStringCreateMutableCopy(NULL, 0, str);
+-        templateMutable = CFStringCreateMutableCopy(NULL, 0, template);
+-
+-        CFStringFindAndReplace(strMutable, kStringSpace, kStringEmpty, CFRangeMake(0, CFStringGetLength(strMutable)), 0);
+-        CFStringFindAndReplace(templateMutable, kStringSpace, kStringEmpty, CFRangeMake(0, CFStringGetLength(templateMutable)), 0);
+-
+-        CFComparisonResult result = CFStringCompareWithOptions(templateMutable, strMutable, CFRangeMake(0, CFStringGetLength(templateMutable)), kCFCompareCaseInsensitive);
+-
+-        CFRelease(strMutable);
+-        CFRelease(templateMutable);
+-
+-        if (result != kCFCompareEqualTo)
+-        {
+-            return false;
+-        }
+-    }
+-
+-    return true;
+-}
+-
+-bool
+-certDataMatchesTemplate(CertDataRef pCertData, CertDataRef pTemplate)
+-{
+-    if (!certNameArrayMatchesTemplate(pCertData->subject, pTemplate->subject))
+-    {
+-        return false;
+-    }
+-
+-    if (!certNameArrayMatchesTemplate(pCertData->issuer, pTemplate->issuer))
+-    {
+-        return false;
+-    }
+-
+-    if (!hexStringMatchesTemplate(pCertData->sha1, pTemplate->sha1))
+-    {
+-        return false;
+-    }
+-
+-    if (!hexStringMatchesTemplate(pCertData->md5, pTemplate->md5))
+-    {
+-        return false;
+-    }
+-
+-    if (!hexStringMatchesTemplate(pCertData->serial, pTemplate->serial))
+-    {
+-        return false;
+-    }
+-
+-    return true;
+-}
+-
+-bool
+-certExpired(SecCertificateRef certificate)
+-{
+-    bool result;
+-    CFDateRef notAfter = GetDateFieldFromCertificate(certificate, kSecOIDX509V1ValidityNotAfter);
+-    CFDateRef notBefore = GetDateFieldFromCertificate(certificate, kSecOIDX509V1ValidityNotBefore);
+-    CFDateRef now = CFDateCreate(kCFAllocatorDefault, CFAbsoluteTimeGetCurrent());
+-
+-    if (!notAfter || !notBefore || !now)
+-    {
+-        warnx("GetDateFieldFromCertificate() returned NULL");
+-        result = true;
+-    }
+-    else
+-    {
+-        if (CFDateCompare(notBefore, now, NULL) != kCFCompareLessThan
+-            || CFDateCompare(now, notAfter, NULL) != kCFCompareLessThan)
+-        {
+-            result = true;
+-        }
+-        else
+-        {
+-            result = false;
+-        }
+-    }
+-
+-    CFRelease(notAfter);
+-    CFRelease(notBefore);
+-    CFRelease(now);
+-    return result;
+-}
+-
+-SecIdentityRef
+-findIdentity(CertDataRef pCertDataTemplate)
+-{
+-    const void *keys[] = {
+-        kSecClass,
+-        kSecReturnRef,
+-        kSecMatchLimit
+-    };
+-    const void *values[] = {
+-        kSecClassIdentity,
+-        kCFBooleanTrue,
+-        kSecMatchLimitAll
+-    };
+-    CFArrayRef result = NULL;
+-
+-    CFDictionaryRef query = CFDictionaryCreate(NULL, keys, values,
+-                                               sizeof(keys) / sizeof(*keys),
+-                                               &kCFTypeDictionaryKeyCallBacks,
+-                                               &kCFTypeDictionaryValueCallBacks);
+-    OSStatus status = SecItemCopyMatching(query, (CFTypeRef *)&result);
+-    CFRelease(query);
+-    if (status != noErr)
+-    {
+-        warnx("No identities in keychain found");
+-        return NULL;
+-    }
+-
+-    SecIdentityRef bestIdentity = NULL;
+-    CFDateRef bestNotBeforeDate = NULL;
+-
+-    for (int i = 0; i<CFArrayGetCount(result); i++)
+-    {
+-        SecIdentityRef identity = (SecIdentityRef)CFArrayGetValueAtIndex(result, i);
+-        if (identity == NULL)
+-        {
+-            warnx("identity == NULL");
+-            continue;
+-        }
+-
+-        SecCertificateRef certificate = NULL;
+-        SecIdentityCopyCertificate(identity, &certificate);
+-        if (certificate == NULL)
+-        {
+-            warnx("SecIdentityCopyCertificate() returned NULL");
+-            continue;
+-        }
+-
+-        CertDataRef pCertData2 = createCertDataFromCertificate(certificate);
+-        if (pCertData2 == NULL)
+-        {
+-            warnx("createCertDataFromCertificate() returned NULL");
+-            goto release_cert;
+-        }
+-        bool bMatches = certDataMatchesTemplate(pCertData2, pCertDataTemplate);
+-        bool bExpired = certExpired(certificate);
+-        destroyCertData(pCertData2);
+-
+-        if (bMatches && !bExpired)
+-        {
+-            CFDateRef notBeforeDate = GetDateFieldFromCertificate(certificate, kSecOIDX509V1ValidityNotBefore);
+-            if (!notBeforeDate)
+-            {
+-                warnx("GetDateFieldFromCertificate() returned NULL");
+-                goto release_cert;
+-            }
+-            if (bestIdentity == NULL)
+-            {
+-                CFRetain(identity);
+-                bestIdentity = identity;
+-
+-                bestNotBeforeDate = notBeforeDate;
+-                CFRetain(notBeforeDate);
+-            }
+-            else if (CFDateCompare(bestNotBeforeDate, notBeforeDate, NULL) == kCFCompareLessThan)
+-            {
+-                CFRelease(bestIdentity);
+-                CFRetain(identity);
+-                bestIdentity = identity;
+-
+-                bestNotBeforeDate = notBeforeDate;
+-                CFRetain(notBeforeDate);
+-            }
+-            CFRelease(notBeforeDate);
+-        }
+-release_cert:
+-        CFRelease(certificate);
+-    }
+-    CFRelease(result);
+-
+-    return bestIdentity;
+-}
+diff --git a/contrib/keychain-mcd/cert_data.h b/contrib/keychain-mcd/cert_data.h
+deleted file mode 100644
+index c01251f2..00000000
+--- a/contrib/keychain-mcd/cert_data.h
++++ /dev/null
+@@ -1,50 +0,0 @@
+-/*
+- *  OpenVPN -- An application to securely tunnel IP networks
+- *             over a single UDP port, with support for SSL/TLS-based
+- *             session authentication and key exchange,
+- *             packet encryption, packet authentication, and
+- *             packet compression.
+- *
+- *  Copyright (C) 2010 Brian Raderman <brian@...1360...>
+- *  Copyright (C) 2013-2015 Vasily Kulikov <segoon@...2008...>
+- *
+- *  This program is free software; you can redistribute it and/or modify
+- *  it under the terms of the GNU General Public License version 2
+- *  as published by the Free Software Foundation.
+- *
+- *  This program is distributed in the hope that it will be useful,
+- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- *  GNU General Public License for more details.
+- *
+- *  You should have received a copy of the GNU General Public License along
+- *  with this program; if not, write to the Free Software Foundation, Inc.,
+- *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+- */
+-#ifndef __cert_data_h__
+-#define __cert_data_h__
+-
+-#include <CoreFoundation/CoreFoundation.h>
+-#include <Security/Security.h>
+-
+-typedef struct _CertData
+-{
+-    CFArrayRef subject;
+-    CFArrayRef issuer;
+-    CFStringRef serial;
+-    CFStringRef md5, sha1;
+-} CertData, *CertDataRef;
+-
+-CertDataRef createCertDataFromCertificate(SecCertificateRef certificate);
+-
+-CertDataRef createCertDataFromString(const char *description);
+-
+-void destroyCertData(CertDataRef pCertData);
+-
+-bool certDataMatchesTemplate(CertDataRef pCertData, CertDataRef pTemplate);
+-
+-void printCertData(CertDataRef pCertData);
+-
+-SecIdentityRef findIdentity(CertDataRef pCertDataTemplate);
+-
+-#endif /* ifndef __cert_data_h__ */
+diff --git a/contrib/keychain-mcd/common_osx.c b/contrib/keychain-mcd/common_osx.c
+deleted file mode 100644
+index f8178149..00000000
+--- a/contrib/keychain-mcd/common_osx.c
++++ /dev/null
+@@ -1,100 +0,0 @@
+-/*
+- *  OpenVPN -- An application to securely tunnel IP networks
+- *             over a single UDP port, with support for SSL/TLS-based
+- *             session authentication and key exchange,
+- *             packet encryption, packet authentication, and
+- *             packet compression.
+- *
+- *  Copyright (C) 2010 Brian Raderman <brian@...1360...>
+- *  Copyright (C) 2013-2015 Vasily Kulikov <segoon@...2008...>
+- *
+- *  This program is free software; you can redistribute it and/or modify
+- *  it under the terms of the GNU General Public License version 2
+- *  as published by the Free Software Foundation.
+- *
+- *  This program is distributed in the hope that it will be useful,
+- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- *  GNU General Public License for more details.
+- *
+- *  You should have received a copy of the GNU General Public License along
+- *  with this program; if not, write to the Free Software Foundation, Inc.,
+- *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+- */
+-
+-/*
+- #include "config.h"
+- #include "syshead.h"
+- #include "common.h"
+- #include "buffer.h"
+- #include "error.h"
+- */
+-
+-#include "common_osx.h"
+-#include <err.h>
+-
+-void
+-printCFString(CFStringRef str)
+-{
+-    CFIndex bufferLength = CFStringGetLength(str) + 1;
+-    char *pBuffer = (char *)malloc(sizeof(char) * bufferLength);
+-    CFStringGetCString(str, pBuffer, bufferLength, kCFStringEncodingUTF8);
+-    warnx("%s\n", pBuffer);
+-    free(pBuffer);
+-}
+-
+-char *
+-cfstringToCstr(CFStringRef str)
+-{
+-    CFIndex bufferLength = CFStringGetLength(str) + 1;
+-    char *pBuffer = (char *)malloc(sizeof(char) * bufferLength);
+-    CFStringGetCString(str, pBuffer, bufferLength, kCFStringEncodingUTF8);
+-    return pBuffer;
+-}
+-
+-void
+-appendHexChar(CFMutableStringRef str, unsigned char halfByte)
+-{
+-    if (halfByte < 10)
+-    {
+-        CFStringAppendFormat(str, NULL, CFSTR("%d"), halfByte);
+-    }
+-    else
+-    {
+-        char tmp[2] = {'A'+halfByte-10, 0};
+-        CFStringAppendCString(str, tmp, kCFStringEncodingUTF8);
+-    }
+-}
+-
+-CFStringRef
+-createHexString(unsigned char *pData, int length)
+-{
+-    unsigned char byte, low, high;
+-    int i;
+-    CFMutableStringRef str = CFStringCreateMutable(NULL, 0);
+-
+-    for (i = 0; i < length; i++)
+-    {
+-        byte = pData[i];
+-        low = byte & 0x0F;
+-        high = (byte >> 4);
+-
+-        appendHexChar(str, high);
+-        appendHexChar(str, low);
+-
+-        if (i != (length - 1))
+-        {
+-            CFStringAppendCString(str, " ", kCFStringEncodingUTF8);
+-        }
+-    }
+-
+-    return str;
+-}
+-
+-void
+-printHex(unsigned char *pData, int length)
+-{
+-    CFStringRef hexStr = createHexString(pData, length);
+-    printCFString(hexStr);
+-    CFRelease(hexStr);
+-}
+diff --git a/contrib/keychain-mcd/common_osx.h b/contrib/keychain-mcd/common_osx.h
+deleted file mode 100644
+index d37e059e..00000000
+--- a/contrib/keychain-mcd/common_osx.h
++++ /dev/null
+@@ -1,38 +0,0 @@
+-/*
+- *  OpenVPN -- An application to securely tunnel IP networks
+- *             over a single UDP port, with support for SSL/TLS-based
+- *             session authentication and key exchange,
+- *             packet encryption, packet authentication, and
+- *             packet compression.
+- *
+- *  Copyright (C) 2010 Brian Raderman <brian@...1360...>
+- *  Copyright (C) 2013-2015 Vasily Kulikov <segoon@...2008...>
+- *
+- *  This program is free software; you can redistribute it and/or modify
+- *  it under the terms of the GNU General Public License version 2
+- *  as published by the Free Software Foundation.
+- *
+- *  This program is distributed in the hope that it will be useful,
+- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- *  GNU General Public License for more details.
+- *
+- *  You should have received a copy of the GNU General Public License along
+- *  with this program; if not, write to the Free Software Foundation, Inc.,
+- *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+- */
+-
+-#ifndef __common_osx_h__
+-#define __common_osx_h__
+-
+-#include <CoreFoundation/CoreFoundation.h>
+-
+-void printCFString(CFStringRef str);
+-
+-char *cfstringToCstr(CFStringRef str);
+-
+-CFStringRef createHexString(unsigned char *pData, int length);
+-
+-void printHex(unsigned char *pData, int length);
+-
+-#endif /*__Common_osx_h__ */
+diff --git a/contrib/keychain-mcd/crypto_osx.c b/contrib/keychain-mcd/crypto_osx.c
+deleted file mode 100644
+index 27ac4f5b..00000000
+--- a/contrib/keychain-mcd/crypto_osx.c
++++ /dev/null
+@@ -1,79 +0,0 @@
+-/*
+- *  OpenVPN -- An application to securely tunnel IP networks
+- *             over a single UDP port, with support for SSL/TLS-based
+- *             session authentication and key exchange,
+- *             packet encryption, packet authentication, and
+- *             packet compression.
+- *
+- *  Copyright (C) 2010 Brian Raderman <brian@...1360...>
+- *  Copyright (C) 2013-2015 Vasily Kulikov <segoon@...2008...>
+- *
+- *  This program is free software; you can redistribute it and/or modify
+- *  it under the terms of the GNU General Public License version 2
+- *  as published by the Free Software Foundation.
+- *
+- *  This program is distributed in the hope that it will be useful,
+- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- *  GNU General Public License for more details.
+- *
+- *  You should have received a copy of the GNU General Public License along
+- *  with this program; if not, write to the Free Software Foundation, Inc.,
+- *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+- */
+-
+-
+-#include <CommonCrypto/CommonDigest.h>
+-#include <Security/SecKey.h>
+-#include <Security/Security.h>
+-
+-#include "crypto_osx.h"
+-#include <err.h>
+-
+-void
+-printErrorMsg(const char *func, CFErrorRef error)
+-{
+-    CFStringRef desc = CFErrorCopyDescription(error);
+-    warnx("%s failed: %s", func, CFStringGetCStringPtr(desc, kCFStringEncodingUTF8));
+-    CFRelease(desc);
+-}
+-
+-void
+-printErrorStatusMsg(const char *func, OSStatus status)
+-{
+-    CFStringRef error;
+-    error = SecCopyErrorMessageString(status, NULL);
+-    if (error)
+-    {
+-        warnx("%s failed: %s", func, CFStringGetCStringPtr(error, kCFStringEncodingUTF8));
+-        CFRelease(error);
+-    }
+-    else
+-    {
+-        warnx("%s failed: %X", func, (int)status);
+-    }
+-}
+-
+-void
+-signData(SecIdentityRef identity, const uint8_t *from, int flen, uint8_t *to, size_t *tlen)
+-{
+-    SecKeyRef privateKey = NULL;
+-    OSStatus status;
+-
+-    status = SecIdentityCopyPrivateKey(identity,  &privateKey);
+-    if (status != noErr)
+-    {
+-        printErrorStatusMsg("signData: SecIdentityCopyPrivateKey", status);
+-        *tlen = 0;
+-        return;
+-    }
+-
+-    status = SecKeyRawSign(privateKey, kSecPaddingPKCS1, from, flen, to, tlen);
+-    CFRelease(privateKey);
+-    if (status != noErr)
+-    {
+-        printErrorStatusMsg("signData: SecKeyRawSign", status);
+-        *tlen = 0;
+-        return;
+-    }
+-}
+diff --git a/contrib/keychain-mcd/crypto_osx.h b/contrib/keychain-mcd/crypto_osx.h
+deleted file mode 100644
+index 9f4b3f9d..00000000
+--- a/contrib/keychain-mcd/crypto_osx.h
++++ /dev/null
+@@ -1,44 +0,0 @@
+-/*
+- *  OpenVPN -- An application to securely tunnel IP networks
+- *             over a single UDP port, with support for SSL/TLS-based
+- *             session authentication and key exchange,
+- *             packet encryption, packet authentication, and
+- *             packet compression.
+- *
+- *  Copyright (C) 2010 Brian Raderman <brian@...1360...>
+- *  Copyright (C) 2013-2015 Vasily Kulikov <segoon@...2008...>
+- *
+- *  This program is free software; you can redistribute it and/or modify
+- *  it under the terms of the GNU General Public License version 2
+- *  as published by the Free Software Foundation.
+- *
+- *  This program is distributed in the hope that it will be useful,
+- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- *  GNU General Public License for more details.
+- *
+- *  You should have received a copy of the GNU General Public License along
+- *  with this program; if not, write to the Free Software Foundation, Inc.,
+- *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+- */
+-
+-#ifndef __crypto_osx_h__
+-#define __crypto_osx_h__
+-
+-#include <CoreFoundation/CoreFoundation.h>
+-#include <Security/Security.h>
+-
+-extern OSStatus SecKeyRawSign(
+-    SecKeyRef key,
+-    SecPadding padding,
+-    const uint8_t *dataToSign,
+-    size_t dataToSignLen,
+-    uint8_t *sig,
+-    size_t *sigLen
+-    );
+-
+-void signData(SecIdentityRef identity, const uint8_t *from, int flen, uint8_t *to, size_t *tlen);
+-
+-void printErrorMsg(const char *func, CFErrorRef error);
+-
+-#endif /*__crypto_osx_h__ */
+diff --git a/contrib/keychain-mcd/keychain-mcd.8 b/contrib/keychain-mcd/keychain-mcd.8
+deleted file mode 100644
+index 676b1646..00000000
+--- a/contrib/keychain-mcd/keychain-mcd.8
++++ /dev/null
+@@ -1,161 +0,0 @@
+-.TH keychain-mcd 8
+-.SH NAME
+-
+-keychain-mcd \- Mac OS X Keychain management daemon for OpenVPN
+-
+-.SH SYNOPSIS
+-
+-.B keychain-mcd
+-.I identity-template management-server-ip management-server-port
+-[
+-.I password-file
+-]
+-
+-.SH DESCRIPTION
+-
+-.B keychain-mcd
+-is Mac OS X Keychain management daemon for OpenVPN.
+-It loads the certificate and private key from the Mac OSX Keychain (Mac OSX Only).
+-.B keychain-mcd
+-connects to OpenVPN via management interface and handles
+-certificate and private key commands (namely
+-.B NEED-CERTIFICATE
+-and
+-.B RSA-SIGN
+-commands).
+-
+-.B keychain-mcd
+-makes it possible to use any smart card supported by Mac OSX using the tokend interface, but also any
+-kind of certificate, residing in the Keychain, where you have access to
+-the private key.  This option has been tested on the client side with an Aladdin eToken
+-on Mac OSX Leopard and with software certificates stored in the Keychain on Mac OS X.
+-
+-Note that Mac OS X might need to present the user with an authentication GUI when the Keychain
+-is accessed by keychain-mcd.
+-
+-Use
+-.B keychain-mcd
+-along with
+-.B --management-external-key
+-and/or
+-.B --management-external-cert
+-passed to
+-.B openvpn.
+-
+-.SH OPTIONS
+-
+-.TP
+-.BR identity-template
+-
+-A select string which is used to choose a keychain identity from
+-Mac OS X Keychain or
+-.I auto
+-if the identity template is passed from openvpn.
+-
+-\fBSubject\fR, \fBIssuer\fR, \fBSerial\fR, \fBSHA1\fR, \fBMD5\fR selectors can be used.
+-
+-To select a certificate based on a string search in the
+-certificate's subject and/or issuer:
+-
+-.nf
+-
+-"SUBJECT:c=US/o=Apple Inc./ou=me.com/cn=username ISSUER:c=US/o=Apple Computer, Inc./ou=Apple Computer Certificate Authority/cn=Apple .Mac Certificate Authority"
+-
+-.fi
+-
+-.I "Distinguished Name Component Abbreviations:"
+-.br
+-o = organization
+-.br
+-ou = organizational unit
+-.br
+-c = country
+-.br
+-l = locality
+-.br
+-st = state
+-.br
+-cn = common name
+-.br
+-e = email
+-.br
+-
+-All of the distinguished name components are optional, although you do need to specify at least one of them.  You can
+-add spaces around the '/' and '=' characters, e.g. "SUBJECT: c = US / o = Apple Inc.".  You do not need to specify
+-both the subject and the issuer, one or the other will work fine.
+-The identity searching algorithm will return the
+-certificate it finds that matches all of the criteria you have specified.
+-If there are several certificates matching all of the criteria then the youngest certificate is returned
+-(i.e. with the greater "not before" validity field).
+-You can also include the MD5 and/or SHA1 thumbprints and/or serial number
+-along with the subject and issuer.
+-
+-To select a certificate based on certificate's MD5 or SHA1 thumbprint:
+-
+-.nf
+-"SHA1: 30 F7 3A 7A B7 73 2A 98 54 33 4A A7 00 6F 6E AC EC D1 EF 02"
+-
+-"MD5: D5 F5 11 F1 38 EB 5F 4D CF 23 B6 94 E8 33 D8 B5"
+-.fi
+-
+-Again, you can include both the SHA1 and the MD5 thumbprints, but you can also use just one of them.
+-The thumbprint hex strings can easily be copy-and-pasted from the OSX Keychain Access GUI in the Applications/Utilities folder.
+-The hex string comparison is not case sensitive.
+-
+-To select a certificate based on certificate's serial number:
+-
+-"Serial: 3E 9B 6F 02 00 00 00 01 1F 20"
+-
+-If
+-.BR identity-template
+-equals to
+-.I auto
+-then the actual identity template is
+-obtained from argument of NEED-CERTIFICATE notification of openvpn.
+-In this case the argument of NEED-CERTIFICATE must begin with 'macosx-keychain:' prefix
+-and the rest of it must contain the actual identity template in the format described above.
+-
+-
+-.TP
+-.BR management-server-ip
+-OpenVPN management IP to connect to.
+-Both IPv4 and IPv6 addresses can be used.
+-
+-.TP
+-.BR management-server-port
+-OpenVPN management port to connect to.
+-Use
+-.B unix
+-for
+-.I management-server-port
+-and socket path for
+-.I management-server-ip
+-to connect to a local unix socket.
+-
+-.TP
+-.BR password-file
+-
+-Password file containing the management password on first line.
+-The password will be used to connect to
+-.B openvpn
+-management interface.
+-
+-Pass
+-.I password-file
+-to
+-.B keychain-mcd
+-if
+-.I pw-file
+-was specified in
+-.B --management
+-option to
+-.B openvpn.
+-
+-
+-.SH AUTHOR
+-
+-Vasily Kulikov <segoon@...2008...>
+-
+-.SH "SEE ALSO"
+-
+-.BR openvpn (8)
+diff --git a/contrib/keychain-mcd/main.c b/contrib/keychain-mcd/main.c
+deleted file mode 100644
+index c1d091ea..00000000
+--- a/contrib/keychain-mcd/main.c
++++ /dev/null
+@@ -1,310 +0,0 @@
+-/*
+- *  OpenVPN -- An application to securely tunnel IP networks
+- *             over a single UDP port, with support for SSL/TLS-based
+- *             session authentication and key exchange,
+- *             packet encryption, packet authentication, and
+- *             packet compression.
+- *
+- *  Copyright (C) 2015 Vasily Kulikov <segoon@...2008...>
+- *
+- *  This program is free software; you can redistribute it and/or modify
+- *  it under the terms of the GNU General Public License version 2
+- *  as published by the Free Software Foundation.
+- *
+- *  This program is distributed in the hope that it will be useful,
+- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- *  GNU General Public License for more details.
+- *
+- *  You should have received a copy of the GNU General Public License along
+- *  with this program; if not, write to the Free Software Foundation, Inc.,
+- *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+- */
+-
+-
+-#include <sys/socket.h>
+-#include <netinet/in.h>
+-#include <arpa/inet.h>
+-#include <sys/un.h>
+-#include <err.h>
+-#include <netdb.h>
+-
+-#include <Security/Security.h>
+-#include <CoreServices/CoreServices.h>
+-
+-#include "cert_data.h"
+-#include "crypto_osx.h"
+-#include "../../src/openvpn/base64.h"
+-
+-
+-SecIdentityRef
+-template_to_identity(const char *template)
+-{
+-    SecIdentityRef identity;
+-    CertDataRef pCertDataTemplate = createCertDataFromString(template);
+-    if (pCertDataTemplate == NULL)
+-    {
+-        errx(1, "Bad certificate template");
+-    }
+-    identity = findIdentity(pCertDataTemplate);
+-    if (identity == NULL)
+-    {
+-        errx(1, "No such identify");
+-    }
+-    fprintf(stderr, "Identity found\n");
+-    destroyCertData(pCertDataTemplate);
+-    return identity;
+-}
+-
+-int
+-connect_to_management_server(const char *ip, const char *port)
+-{
+-    int fd;
+-    struct sockaddr_un addr_un;
+-    struct sockaddr *addr;
+-    size_t addr_len;
+-
+-    if (strcmp(port, "unix") == 0)
+-    {
+-        addr = (struct sockaddr *)&addr_un;
+-        addr_len = sizeof(addr_un);
+-
+-        addr_un.sun_family = AF_UNIX;
+-        strncpy(addr_un.sun_path, ip, sizeof(addr_un.sun_path));
+-        fd = socket(AF_UNIX, SOCK_STREAM, 0);
+-    }
+-    else
+-    {
+-        int rv;
+-        struct addrinfo *result;
+-        struct addrinfo hints;
+-
+-        memset(&hints, 0, sizeof(hints));
+-        hints.ai_family = AF_UNSPEC;
+-        hints.ai_socktype = SOCK_STREAM;
+-
+-        rv = getaddrinfo(ip, port, &hints, &result);
+-        if (rv < 0)
+-        {
+-            errx(1, "getaddrinfo: %s", gai_strerror(rv));
+-        }
+-        if (result == NULL)
+-        {
+-            errx(1, "getaddrinfo returned 0 addressed");
+-        }
+-
+-        /* Use the first found address */
+-        fd = socket(result->ai_family, result->ai_socktype, result->ai_protocol);
+-        addr = result->ai_addr;
+-        addr_len = result->ai_addrlen;
+-    }
+-    if (fd < 0)
+-    {
+-        err(1, "socket");
+-    }
+-
+-    if (connect(fd, addr, addr_len) < 0)
+-    {
+-        err(1, "connect");
+-    }
+-
+-    return fd;
+-}
+-
+-int
+-is_prefix(const char *s, const char *prefix)
+-{
+-    return strncmp(s, prefix, strlen(prefix)) == 0;
+-}
+-
+-void
+-handle_rsasign(FILE *man_file, SecIdentityRef identity, const char *input)
+-{
+-    const char *input_b64 = strchr(input, ':') + 1;
+-    char *input_binary;
+-    int input_len;
+-    char *output_binary;
+-    size_t output_len;
+-    char *output_b64;
+-
+-    input_len = strlen(input_b64)*8/6 + 4;
+-    input_binary = malloc(input_len);
+-    input_len = openvpn_base64_decode(input_b64, input_binary, input_len);
+-    if (input_len < 0)
+-    {
+-        errx(1, "openvpn_base64_decode: overflow");
+-    }
+-
+-    output_len = 1024;
+-    output_binary = malloc(output_len);
+-    signData(identity, (const uint8_t *)input_binary, input_len, (uint8_t *)output_binary, &output_len);
+-    if (output_len == 0)
+-    {
+-        errx(1, "handle_rsasign: failed to sign data");
+-    }
+-
+-    openvpn_base64_encode(output_binary, output_len, &output_b64);
+-    fprintf(man_file, "rsa-sig\n%s\nEND\n", output_b64);
+-    free(output_b64);
+-    free(input_binary);
+-    free(output_binary);
+-
+-    fprintf(stderr, "Handled RSA_SIGN command\n");
+-}
+-
+-void
+-handle_needcertificate(FILE *man_file, SecIdentityRef identity)
+-{
+-    OSStatus status;
+-    SecCertificateRef certificate = NULL;
+-    CFDataRef data;
+-    const unsigned char *cert;
+-    size_t cert_len;
+-    char *result_b64, *tmp_b64;
+-
+-    status = SecIdentityCopyCertificate(identity, &certificate);
+-    if (status != noErr)
+-    {
+-        const char *msg = GetMacOSStatusErrorString(status);
+-        err(1, "SecIdentityCopyCertificate() failed: %s", msg);
+-    }
+-
+-    data = SecCertificateCopyData(certificate);
+-    if (data == NULL)
+-    {
+-        err(1, "SecCertificateCopyData() returned NULL");
+-    }
+-
+-    cert = CFDataGetBytePtr(data);
+-    cert_len = CFDataGetLength(data);
+-
+-    openvpn_base64_encode(cert, cert_len, &result_b64);
+-#if 0
+-    fprintf(stderr, "certificate %s\n", result_b64);
+-#endif
+-
+-    fprintf(man_file, "certificate\n");
+-    fprintf(man_file, "-----BEGIN CERTIFICATE-----\n");
+-    tmp_b64 = result_b64;
+-    while (strlen(tmp_b64) > 64) {
+-        fprintf(man_file, "%.64s\n", tmp_b64);
+-        tmp_b64 += 64;
+-    }
+-    if (*tmp_b64)
+-    {
+-        fprintf(man_file, "%s\n", tmp_b64);
+-    }
+-    fprintf(man_file, "-----END CERTIFICATE-----\n");
+-    fprintf(man_file, "END\n");
+-
+-    free(result_b64);
+-    CFRelease(data);
+-    CFRelease(certificate);
+-
+-    fprintf(stderr, "Handled NEED 'cert' command\n");
+-}
+-
+-void
+-management_loop(SecIdentityRef identity, int man_fd, const char *password)
+-{
+-    char *buffer = NULL;
+-    size_t buffer_len = 0;
+-    FILE *man = fdopen(man_fd, "w+");
+-    if (man == 0)
+-    {
+-        err(1, "fdopen");
+-    }
+-
+-    if (password)
+-    {
+-        fprintf(man, "%s\n", password);
+-    }
+-
+-    while (1) {
+-        if (getline(&buffer, &buffer_len, man) < 0)
+-        {
+-            err(1, "getline");
+-        }
+-#if 0
+-        fprintf(stderr, "M: %s", buffer);
+-#endif
+-
+-        if (is_prefix(buffer, ">RSA_SIGN:"))
+-        {
+-            handle_rsasign(man, identity, buffer);
+-        }
+-        if (is_prefix(buffer, ">NEED-CERTIFICATE"))
+-        {
+-            if (!identity)
+-            {
+-                const char prefix[] = ">NEED-CERTIFICATE:macosx-keychain:";
+-                if (!is_prefix(buffer, prefix))
+-                {
+-                    errx(1, "No identity template is passed via command line and " \
+-                         "NEED-CERTIFICATE management interface command " \
+-                         "misses 'macosx-keychain' prefix.");
+-                }
+-                identity = template_to_identity(buffer+strlen(prefix));
+-            }
+-            handle_needcertificate(man, identity);
+-        }
+-        if (is_prefix(buffer, ">FATAL"))
+-        {
+-            fprintf(stderr, "Fatal message from OpenVPN: %s\n", buffer+7);
+-        }
+-        if (is_prefix(buffer, ">INFO"))
+-        {
+-            fprintf(stderr, "INFO message from OpenVPN: %s\n", buffer+6);
+-        }
+-    }
+-}
+-
+-char *
+-read_password(const char *fname)
+-{
+-    char *password = NULL;
+-    FILE *pwf = fopen(fname, "r");
+-    size_t n = 0;
+-
+-    if (pwf == NULL)
+-    {
+-        errx(1, "fopen(%s) failed", fname);
+-    }
+-    if (getline(&password, &n, pwf) < 0)
+-    {
+-        err(1, "getline");
+-    }
+-    fclose(pwf);
+-    return password;
+-}
+-
+-int
+-main(int argc, char *argv[])
+-{
+-    if (argc < 4)
+-    {
+-        err(1, "usage: %s <identity_template> <management_ip> <management_port> [<pw-file>]", argv[0]);
+-    }
+-
+-    char *identity_template = argv[1];
+-    char *s_ip = argv[2];
+-    char *s_port = argv[3];
+-    char *password = NULL;
+-    int man_fd;
+-
+-    if (argc > 4)
+-    {
+-        char *s_pw_file = argv[4];
+-        password = read_password(s_pw_file);
+-    }
+-
+-    SecIdentityRef identity = NULL;
+-    if (strcmp(identity_template, "auto"))
+-    {
+-        identity = template_to_identity(identity_template);
+-    }
+-    man_fd = connect_to_management_server(s_ip, s_port);
+-    fprintf(stderr, "Successfully connected to openvpn\n");
+-
+-    management_loop(identity, man_fd, password);
+-}
 -- 
-2.13.3
+2.11.0
 
 
