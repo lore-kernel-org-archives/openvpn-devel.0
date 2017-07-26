@@ -1,9 +1,11 @@
+References: <CADtuLXQbi4E6A5hZyLiLhd=U4CJjT=qbx7n5heFDbusuh72jGQ@...278...>
+From: debbie10t <debbie10t@...277...>
+Message-ID: <0935a9bd-387a-9411-d7d7-34150baa1384@...277...>
+Date: Wed, 26 Jul 2017 19:33:00 +0100
 MIME-Version: 1.0
-From: "sameer.s.athaley" <sameera.athaley@...277...>
-Date: Wed, 26 Jul 2017 23:10:48 +0530
-Message-ID: <CADtuLXQbi4E6A5hZyLiLhd=U4CJjT=qbx7n5heFDbusuh72jGQ@...278...>
-Content-Type: multipart/alternative; boundary="001a114021a0e0765305553bf2cc"
-Subject: [Openvpn-devel] Plz remove my mail id
+In-Reply-To: <CADtuLXQbi4E6A5hZyLiLhd=U4CJjT=qbx7n5heFDbusuh72jGQ@...278...>
+Content-Language: en-GB
+Subject: Re: [Openvpn-devel] Plz remove my mail id
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,17 +14,28 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
---001a114021a0e0765305553bf2cc
-Content-Type: text/plain; charset="UTF-8"
+https://sourceforge.net/projects/openvpn/lists/openvpn-devel/unsubscribe
 
-Hi could you help.me to remove my mail I'd from mailing list
 
---001a114021a0e0765305553bf2cc
-Content-Type: text/html; charset="UTF-8"
 
-<div dir="auto">Hi could you <a href="http://help.me">help.me</a> to remove my mail I&#39;d from mailing list</div>
-
---001a114021a0e0765305553bf2cc--
+On 26/07/17 18:40, sameer.s.athaley wrote:
+> Hi could you help.me to remove my mail I'd from mailing list
+> 
+> 
+> 
+> ------------------------------------------------------------------------------
+> Check out the vibrant tech community on one of the world's most
+> engaging tech sites, Slashdot.org! http://sdm.link/slashdot
+> 
+> 
+> 
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+> 
 
