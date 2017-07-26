@@ -1,13 +1,15 @@
-MIME-Version: 1.0
-Sender: emmanueldeloget53@...277...
-In-Reply-To: <1501010486.4771.113.camel@...1866...>
+Message-ID: <1501056157.4771.133.camel@...1866...>
+From: David Woodhouse <dwmw2@...1866...>
+In-Reply-To: <CAKh=nwEKFfAho0F7v0y3QJCq0s9-+iWfvg=YQVRHU=2JhNErcA@...278...>
 References: <f7687ebf-a75f-095d-67ca-e32a5c4e53e7@...515...>
  <1500293278.28621.32.camel@...1866...>
  <b6adb528-5d31-fa7b-cd0c-e87b69e0854c@...515...>
  <1501010486.4771.113.camel@...1866...>
-From: Emmanuel Deloget <logout@...260...>
-Date: Tue, 25 Jul 2017 23:56:52 +0200
-Message-ID: <CAKh=nwEKFfAho0F7v0y3QJCq0s9-+iWfvg=YQVRHU=2JhNErcA@...278...>
+ <CAKh=nwEKFfAho0F7v0y3QJCq0s9-+iWfvg=YQVRHU=2JhNErcA@...278...>
+Content-Type: multipart/signed; micalg="sha-256";
+ protocol="application/x-pkcs7-signature"; boundary="=-GwQHGzDAJbxmvGuiaSR/"
+Date: Wed, 26 Jul 2017 09:02:37 +0100
+Mime-Version: 1.0
 Subject: Re: [Openvpn-devel] Windows installer with updated pkcs11-helper
  (1.22) available for testing
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -18,83 +20,144 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: Emmanuel Deloget <logout@...260...>
+Cc: Samuli =?ISO-8859-1?Q?Sepp=E4nen?= <samuli@...515...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+
+--=-GwQHGzDAJbxmvGuiaSR/
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-To: David Woodhouse <dwmw2@...1866...>
-Cc: =?UTF-8?Q?Samuli_Sepp=C3=A4nen?= <samuli@...515...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hi David, other,
+On Tue, 2017-07-25 at 23:56 +0200, Emmanuel Deloget wrote:
+> A single patch would not a a problem for distro maintainers, but
+> subsequent/future changes in the forked repository might introduce
+> other, less compatible changes in the library, leading to two versions
+> of the same library, with maybe the same ABI and the same name=20
 
-It seems that my "I'm using my phone, sorry for top posting" went far
-beyond that because I also forgot to add the list as a recipient.
+Don't Do That Then. :)
 
-So, here is my message (minus the top-posting) sent to David only (sorry Da=
-vid)
+It's one thing to have a simple patch which makes it accept the RFC
+compliant identifiers that the upstream maintainer is being weirdly
+recalcitrant about, without changing the API/ABI at all.
 
-On Tue, Jul 25, 2017 at 9:21 PM, David Woodhouse <dwmw2@...1866...> wrote:
->
-> On Tue, 2017-07-25 at 19:53 +0300, Samuli Sepp=C3=A4nen wrote:
-> >
-> > I released the new Windows installer but without this patch. That said,
-> > the patch/PR you linked to makes sense. Does the patch have an active
-> > maintainer?
->
-> That would be me, I suppose. Until/unless the upstream maintainer
-> applies the patch, I or someone else will continue to maintain the
-> patch in the Fedora package at least.
->
-> > If yes, then I propose is that we
-> >
-> > - Fork OpenSC/pkcs11-helper to OpenVPN/pkcs11-helper
-> > - Apply the patch to our fork
-> > - Produce and publish our own pkcs11-helper tarballs
-> > - Point openvpn-build to our tarballs
-> > - Periodically rebase our fork with upstream
-> >
-> > Thoughts?
->
->
-> Hi,
->
-> Sorry for the top posting, I'm writing that from my phone.
->
-> To add to the NAK, such a move would make integration to various embedded
-> distribution more difficult, as maintainers may have to deal with 2 versi=
-ons of the
-> same lib (with possibly different behavior needed by different binaries).
->
-> Do I would advise against such a solution.
->
-> Best regards,
->
-> -- Emmanuel Deloget
+To add other things to a "fork"... or really even to consider it a
+fork... would be silly.
 
-To which David replied (hope you don't mind if I quote you):
+> And you also have to take into account weird people like me who also
+> add their own changes into various libraries or binaries to suit their
+> needs (the whole "hey, it's free software, I can change it" thing).
+> Pointing them to a fork is not going to work well IMHO.
 
-> There is no API/ABI change. One accepts cert identifier strings confirming
-> to RFC7512, the other (without the patch) doesn't.
->
-> So aside from the RFC-compliance they are interchangeable.
+People who build from source can already merge the fix into their
+pkcs11-helper or not as they see fit; this conversation was about the
+*binaries* being provided. AFAIK the only binary being provided for
+pkcs11-helper is on Windows; there are Ubuntu binaries but if they have
+PKCS#11 support they'll be using the system's version of pkcs11-helper.=20
+(Which probably also lacks the patch; I have rarely seen any sign of
+anyone in Debian/Ubuntu caring about doing the right thing w.r.t. any
+crypto-related stuff, unfortunately.)
 
-(I think I'm already using this patch, so thanks you David for your work).
+> =C2=A0It would be=C2=A0better if the maintainer finally decide to either
+> implement the required change or merge your patch to the library.
 
-A single patch would not a a problem for distro maintainers, but
-subsequent/future changes in the forked repository might introduce
-other, less compatible changes in the library, leading to two versions
-of the same library, with maybe the same ABI and the same name -- and
-that worries me a bit (not that much, but I also maintain a fork of
-lede for my own purpose, and I'm not sure I'd like to deal with such
-complexity :)). Aviding that would require a library name change and
-I'm not sure it's a good thing at all.
+Well yes, that's true. But it's more likely that I'll finally get round
+to porting OpenVPN to something other than pkcs11-helper before that
+happens, unfortunately.
 
-And you also have to take into account weird people like me who also
-add their own changes into various libraries or binaries to suit their
-needs (the whole "hey, it's free software, I can change it" thing).
-Pointing them to a fork is not going to work well IMHO. It would be
-better if the maintainer finally decide to either implement the
-required change or merge your patch to the library.
 
-Best regards,
+--=-GwQHGzDAJbxmvGuiaSR/
+Content-Type: application/x-pkcs7-signature; name="smime.p7s"
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Transfer-Encoding: base64
 
--- Emmanuel Deloget
+MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAAKCCDzUw
+ggSvMIIDl6ADAgECAhEA4CPLFRKDU4mtYW56VGdrITANBgkqhkiG9w0BAQsFADBvMQswCQYDVQQG
+EwJTRTEUMBIGA1UEChMLQWRkVHJ1c3QgQUIxJjAkBgNVBAsTHUFkZFRydXN0IEV4dGVybmFsIFRU
+UCBOZXR3b3JrMSIwIAYDVQQDExlBZGRUcnVzdCBFeHRlcm5hbCBDQSBSb290MB4XDTE0MTIyMjAw
+MDAwMFoXDTIwMDUzMDEwNDgzOFowgZsxCzAJBgNVBAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1h
+bmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAYBgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMUEw
+PwYDVQQDEzhDT01PRE8gU0hBLTI1NiBDbGllbnQgQXV0aGVudGljYXRpb24gYW5kIFNlY3VyZSBF
+bWFpbCBDQTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAImxDdp6UxlOcFIdvFamBia3
+uEngludRq/HwWhNJFaO0jBtgvHpRQqd5jKQi3xdhTpHVdiMKFNNKAn+2HQmAbqUEPdm6uxb+oYep
+LkNSQxZ8rzJQyKZPWukI2M+TJZx7iOgwZOak+FaA/SokFDMXmaxE5WmLo0YGS8Iz1OlAnwawsayT
+QLm1CJM6nCpToxDbPSBhPFUDjtlOdiUCISn6o3xxdk/u4V+B6ftUgNvDezVSt4TeIj0sMC0xf1m9
+UjewM2ktQ+v61qXxl3dnUYzZ7ifrvKUHOHaMpKk4/9+M9QOsSb7K93OZOg8yq5yVOhM9DkY6V3Rh
+UL7GQD/L5OKfoiECAwEAAaOCARcwggETMB8GA1UdIwQYMBaAFK29mHo0tCb3+sQmVO8DveAky1Qa
+MB0GA1UdDgQWBBSSYWuC4aKgqk/sZ/HCo/e0gADB7DAOBgNVHQ8BAf8EBAMCAYYwEgYDVR0TAQH/
+BAgwBgEB/wIBADAdBgNVHSUEFjAUBggrBgEFBQcDAgYIKwYBBQUHAwQwEQYDVR0gBAowCDAGBgRV
+HSAAMEQGA1UdHwQ9MDswOaA3oDWGM2h0dHA6Ly9jcmwudXNlcnRydXN0LmNvbS9BZGRUcnVzdEV4
+dGVybmFsQ0FSb290LmNybDA1BggrBgEFBQcBAQQpMCcwJQYIKwYBBQUHMAGGGWh0dHA6Ly9vY3Nw
+LnVzZXJ0cnVzdC5jb20wDQYJKoZIhvcNAQELBQADggEBABsqbqxVwTqriMXY7c1V86prYSvACRAj
+mQ/FZmpvsfW0tXdeDwJhAN99Bf4Ss6SAgAD8+x1banICCkG8BbrBWNUmwurVTYT7/oKYz1gb4yJj
+nFL4uwU2q31Ypd6rO2Pl2tVz7+zg+3vio//wQiOcyraNTT7kSxgDsqgt1Ni7QkuQaYUQ26Y3NOh7
+4AEQpZzKOsefT4g0bopl0BqKu6ncyso20fT8wmQpNa/WsadxEdIDQ7GPPprsnjJT9HaSyoY0B7ks
+yuYcStiZDcGG4pCS+1pCaiMhEOllx/XVu37qjIUgAmLq0ToHLFnFmTPyOInltukWeh95FPZKEBom
++nyK+5swggU9MIIEJaADAgECAhBqC1BYlVMtBFBN4igR/howMA0GCSqGSIb3DQEBCwUAMIGbMQsw
+CQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYDVQQHEwdTYWxmb3Jk
+MRowGAYDVQQKExFDT01PRE8gQ0EgTGltaXRlZDFBMD8GA1UEAxM4Q09NT0RPIFNIQS0yNTYgQ2xp
+ZW50IEF1dGhlbnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1haWwgQ0EwHhcNMTYxMjIwMDAwMDAwWhcN
+MTcxMjIwMjM1OTU5WjAkMSIwIAYJKoZIhvcNAQkBFhNkd213MkBpbmZyYWRlYWQub3JnMIIBIjAN
+BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwbTrFaiGdvN2pThnR9q+4eaXB2wQZQNqhter5ZrJ
+pPO47e87bZ+f1tmYoh6+rB90G/XN24NErPRfvU4zVzNT9pCtCzSSVnBlZQBpaEYMKhcXo5PGKNsm
+An8BoGwNXjlxwbBNRaNO+ky0wNCaMNd1JLxEuvqg9J7rrcpHhWmnpXD5IKa8gv9GyVAJgOpiBOts
+p91sShc2kHvWJ5waPEWPCHDH9J+twGGKqKIIU7fdbURLUgUL1wlDSAHf/lgIAVCSj2H2HpoGqHpy
+HgOAClX9iRSLNa0Znj8HTaqfOwxXevsz1KkLFY+Ahm426GIEqdfkK2iT6Hhgc7tjNO3f8i5ALQID
+AQABo4IB8TCCAe0wHwYDVR0jBBgwFoAUkmFrguGioKpP7GfxwqP3tIAAwewwHQYDVR0OBBYEFILE
+dmHLtK6oxmFJZvBhTQhvqrS0MA4GA1UdDwEB/wQEAwIFoDAMBgNVHRMBAf8EAjAAMCAGA1UdJQQZ
+MBcGCCsGAQUFBwMEBgsrBgEEAbIxAQMFAjARBglghkgBhvhCAQEEBAMCBSAwRgYDVR0gBD8wPTA7
+BgwrBgEEAbIxAQIBAQEwKzApBggrBgEFBQcCARYdaHR0cHM6Ly9zZWN1cmUuY29tb2RvLm5ldC9D
+UFMwXQYDVR0fBFYwVDBSoFCgToZMaHR0cDovL2NybC5jb21vZG9jYS5jb20vQ09NT0RPU0hBMjU2
+Q2xpZW50QXV0aGVudGljYXRpb25hbmRTZWN1cmVFbWFpbENBLmNybDCBkAYIKwYBBQUHAQEEgYMw
+gYAwWAYIKwYBBQUHMAKGTGh0dHA6Ly9jcnQuY29tb2RvY2EuY29tL0NPTU9ET1NIQTI1NkNsaWVu
+dEF1dGhlbnRpY2F0aW9uYW5kU2VjdXJlRW1haWxDQS5jcnQwJAYIKwYBBQUHMAGGGGh0dHA6Ly9v
+Y3NwLmNvbW9kb2NhLmNvbTAeBgNVHREEFzAVgRNkd213MkBpbmZyYWRlYWQub3JnMA0GCSqGSIb3
+DQEBCwUAA4IBAQA+AfvNhFwtapF5Lzjapgul3zYuEnMfR538Ya1vhP8wuOkcoJeT2gEFXzVO2WUu
+eWM0g0/DumnRB53htV/Qq/+vsL0i6a2+iOO7kHi5O7bZkgbdNv0t2lzonDUHi6LTa7NUj+tv+j6y
+hW+iNquC3ACP1dIZH8gJmicHblW63qRgp6wxhn315MLBeavi3uiSag2eeKFePiTIwJjN2UYq6kWg
+PL5G/Ycf9x/xN1XBTfJiURc0FsXhrA98VMWnt52C5Lo4txhGjzTI+IZg40b3YDs6E7mTYb5KKmbc
+QZA9priOFDdj1z5W9BdWhU6I/D0P9y8Z4Tr6+ZscMUVD0RqWy2LeMIIFPTCCBCWgAwIBAgIQagtQ
+WJVTLQRQTeIoEf4aMDANBgkqhkiG9w0BAQsFADCBmzELMAkGA1UEBhMCR0IxGzAZBgNVBAgTEkdy
+ZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgGA1UEChMRQ09NT0RPIENBIExp
+bWl0ZWQxQTA/BgNVBAMTOENPTU9ETyBTSEEtMjU2IENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQg
+U2VjdXJlIEVtYWlsIENBMB4XDTE2MTIyMDAwMDAwMFoXDTE3MTIyMDIzNTk1OVowJDEiMCAGCSqG
+SIb3DQEJARYTZHdtdzJAaW5mcmFkZWFkLm9yZzCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoC
+ggEBAMG06xWohnbzdqU4Z0favuHmlwdsEGUDaobXq+WayaTzuO3vO22fn9bZmKIevqwfdBv1zduD
+RKz0X71OM1czU/aQrQs0klZwZWUAaWhGDCoXF6OTxijbJgJ/AaBsDV45ccGwTUWjTvpMtMDQmjDX
+dSS8RLr6oPSe663KR4Vpp6Vw+SCmvIL/RslQCYDqYgTrbKfdbEoXNpB71iecGjxFjwhwx/SfrcBh
+iqiiCFO33W1ES1IFC9cJQ0gB3/5YCAFQko9h9h6aBqh6ch4DgApV/YkUizWtGZ4/B02qnzsMV3r7
+M9SpCxWPgIZuNuhiBKnX5Ctok+h4YHO7YzTt3/IuQC0CAwEAAaOCAfEwggHtMB8GA1UdIwQYMBaA
+FJJha4LhoqCqT+xn8cKj97SAAMHsMB0GA1UdDgQWBBSCxHZhy7SuqMZhSWbwYU0Ib6q0tDAOBgNV
+HQ8BAf8EBAMCBaAwDAYDVR0TAQH/BAIwADAgBgNVHSUEGTAXBggrBgEFBQcDBAYLKwYBBAGyMQED
+BQIwEQYJYIZIAYb4QgEBBAQDAgUgMEYGA1UdIAQ/MD0wOwYMKwYBBAGyMQECAQEBMCswKQYIKwYB
+BQUHAgEWHWh0dHBzOi8vc2VjdXJlLmNvbW9kby5uZXQvQ1BTMF0GA1UdHwRWMFQwUqBQoE6GTGh0
+dHA6Ly9jcmwuY29tb2RvY2EuY29tL0NPTU9ET1NIQTI1NkNsaWVudEF1dGhlbnRpY2F0aW9uYW5k
+U2VjdXJlRW1haWxDQS5jcmwwgZAGCCsGAQUFBwEBBIGDMIGAMFgGCCsGAQUFBzAChkxodHRwOi8v
+Y3J0LmNvbW9kb2NhLmNvbS9DT01PRE9TSEEyNTZDbGllbnRBdXRoZW50aWNhdGlvbmFuZFNlY3Vy
+ZUVtYWlsQ0EuY3J0MCQGCCsGAQUFBzABhhhodHRwOi8vb2NzcC5jb21vZG9jYS5jb20wHgYDVR0R
+BBcwFYETZHdtdzJAaW5mcmFkZWFkLm9yZzANBgkqhkiG9w0BAQsFAAOCAQEAPgH7zYRcLWqReS84
+2qYLpd82LhJzH0ed/GGtb4T/MLjpHKCXk9oBBV81TtllLnljNINPw7pp0Qed4bVf0Kv/r7C9Iumt
+vojju5B4uTu22ZIG3Tb9Ldpc6Jw1B4ui02uzVI/rb/o+soVvojargtwAj9XSGR/ICZonB25Vut6k
+YKesMYZ99eTCwXmr4t7okmoNnnihXj4kyMCYzdlGKupFoDy+Rv2HH/cf8TdVwU3yYlEXNBbF4awP
+fFTFp7edguS6OLcYRo80yPiGYONG92A7OhO5k2G+Sipm3EGQPaa4jhQ3Y9c+VvQXVoVOiPw9D/cv
+GeE6+vmbHDFFQ9Ealsti3jGCA9MwggPPAgEBMIGwMIGbMQswCQYDVQQGEwJHQjEbMBkGA1UECBMS
+R3JlYXRlciBNYW5jaGVzdGVyMRAwDgYDVQQHEwdTYWxmb3JkMRowGAYDVQQKExFDT01PRE8gQ0Eg
+TGltaXRlZDFBMD8GA1UEAxM4Q09NT0RPIFNIQS0yNTYgQ2xpZW50IEF1dGhlbnRpY2F0aW9uIGFu
+ZCBTZWN1cmUgRW1haWwgQ0ECEGoLUFiVUy0EUE3iKBH+GjAwDQYJYIZIAWUDBAIBBQCgggHzMBgG
+CSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE3MDcyNjA4MDIzN1owLwYJ
+KoZIhvcNAQkEMSIEIDvjtGmisxEleAArD3AwQIRVKoDFCsvjD0tD80pJdyz9MIHBBgkrBgEEAYI3
+EAQxgbMwgbAwgZsxCzAJBgNVBAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAO
+BgNVBAcTB1NhbGZvcmQxGjAYBgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMUEwPwYDVQQDEzhDT01P
+RE8gU0hBLTI1NiBDbGllbnQgQXV0aGVudGljYXRpb24gYW5kIFNlY3VyZSBFbWFpbCBDQQIQagtQ
+WJVTLQRQTeIoEf4aMDCBwwYLKoZIhvcNAQkQAgsxgbOggbAwgZsxCzAJBgNVBAYTAkdCMRswGQYD
+VQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAYBgNVBAoTEUNPTU9E
+TyBDQSBMaW1pdGVkMUEwPwYDVQQDEzhDT01PRE8gU0hBLTI1NiBDbGllbnQgQXV0aGVudGljYXRp
+b24gYW5kIFNlY3VyZSBFbWFpbCBDQQIQagtQWJVTLQRQTeIoEf4aMDANBgkqhkiG9w0BAQEFAASC
+AQAyt92pRvJljEadT4YkjmyAX8bsXc76UMut/fxZ7VCyeCW/oeSRx0LbpuOk48bZs5SorLvuLW+Y
+TYV9oe4pUMYEVg4BiGVi8ywYFeaXpChWCSA8OhJbDwkFatTNsH5+AKJpoelDjir2psErkwYs1Wo4
+bOSlAeYV1MCNFsgNMtmogvMqqWQcLmoG5lfZe577BNYerNMo7QQjfpo4av2MYKa3oT4AvY31fkv3
+W+dlgVlse/b6tyhXYDXqKQ20xr7+KPhwcDnX7h4/ZQqty8G+QccPzVNZ2ncgAClI1ORShkw3N2iK
+BZfCpwvdLICe1Ck7fh5K9moWxlcCSIMP9yNBh6ehAAAAAAAA
+
+
+--=-GwQHGzDAJbxmvGuiaSR/--
+
 
