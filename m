@@ -1,19 +1,10 @@
-Message-ID: <1501062172.4771.141.camel@...1866...>
-From: David Woodhouse <dwmw2@...1866...>
-In-Reply-To: <1cf29ced-4413-6b37-5cab-b6f0a8a1674d@...2080...>
-References: <f7687ebf-a75f-095d-67ca-e32a5c4e53e7@...515...>
- <1500293278.28621.32.camel@...1866...>
- <b6adb528-5d31-fa7b-cd0c-e87b69e0854c@...515...>
- <1501010486.4771.113.camel@...1866...>
- <CAKh=nwEKFfAho0F7v0y3QJCq0s9-+iWfvg=YQVRHU=2JhNErcA@...278...>
- <1501056157.4771.133.camel@...1866...>
- <1cf29ced-4413-6b37-5cab-b6f0a8a1674d@...2080...>
-Content-Type: multipart/signed; micalg="sha-256";
- protocol="application/x-pkcs7-signature"; boundary="=-E3w93q4lPTHfi7YPhkpG"
-Date: Wed, 26 Jul 2017 10:42:52 +0100
-Mime-Version: 1.0
-Subject: Re: [Openvpn-devel] Windows installer with updated pkcs11-helper
- (1.22) available for testing
+From: Karl Mueller <ewiley@...277...>
+Content-Type: multipart/alternative;
+ boundary="Apple-Mail=_4395F877-144F-4BC0-9183-D8D8F9AF1897"
+Message-Id: <334D9817-7B72-4E78-B0CB-BC65EC004037@...277...>
+Date: Wed, 26 Jul 2017 08:50:09 -0400
+Mime-Version: 1.0 (Mac OS X Mail 9.3 \(3124\))
+Subject: [Openvpn-devel] TAP-adapter iftype question
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,149 +13,126 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: David Sommerseth <openvpn@...2080...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
---=-E3w93q4lPTHfi7YPhkpG
-Content-Type: text/plain; charset="UTF-8"
+--Apple-Mail=_4395F877-144F-4BC0-9183-D8D8F9AF1897
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, 2017-07-26 at 11:16 +0200, David Sommerseth wrote:
-> On 26/07/17 10:02, David Woodhouse wrote:
-> [...snip...]
-> >=20
-> >=20
-> > Well yes, that's true. But it's more likely that I'll finally get round
-> > to porting OpenVPN to something other than pkcs11-helper before that
-> > happens, unfortunately.
-> TL;DR:=C2=A0=C2=A0If you or anyone else have a chance to look into this, =
-we will
-> appreciate that effort enormously!=C2=A0=C2=A0Just grab us on ML or the
-> #openvpn-devel IRC channel (FreeNode) and we can discuss it further.
->=20
->=20
-> Steffan and I discussed what is needed to be done to port p11-kit awhile
-> ago; we're also not too happy about the pkcs11-helper dependency.=C2=A0=
-=C2=A0If we
-> had only had support for one SSL library, it probably would have been
-> somewhat simpler.=C2=A0=C2=A0But as we strive hard to have both mbed TLS =
-and
-> OpenSSL builds to be fairly feature comparable (from an OpenVPN
-> perspective), this gets a bit more challenging.
->=20
-> IIRC, one of the more challenging parts here is to get p11-kit to play
-> nicely along with mbed TLS.=C2=A0=C2=A0We are concerned that there are so=
-me need
-> to also adopt mbed TLS to support p11-kit.=C2=A0=C2=A0However, I quite re=
-cently
-> heard some rumours that mbed TLS provides some API for offloading sign
-> and decrypt operations outside of the library; that needs to be
-> investigated further and to consider if this is a better way for the
-> integration.
+I=E2=80=99m hoping this is the right place to bring this issue, i=E2=80=99v=
+e had no luck with searching or bodging a solution on my own, and may need =
+some help with a slightly-modified TAP adapter driver.
 
-Yeah... in my Copious Spare Time I have also been looking at
-integrating PKCS#11 support as a first-class citizen into OpenSSL. You
-really ought to be able to just pass a PKCS#11 URI instead of a
-filename into fairly much any API and have it Just Work.
+I=E2=80=99m running into an issue between the TAP adapter and Windows 10 =
+=E2=80=98soft disconnect=E2=80=99 behavior for wireless connections causing=
+ recursive routing when connected to a redirect-gateway VPN. The service/fe=
+ature in Windows is called Windows Connection Manager service, poorly docum=
+ented here: https://docs.microsoft.com/en-us/windows-hardware/drivers/mobil=
+ebroadband/understanding-and-configuring-windows-connection-manager <https:=
+//docs.microsoft.com/en-us/windows-hardware/drivers/mobilebroadband/underst=
+anding-and-configuring-windows-connection-manager> In a nutshell it silentl=
+y redirects traffic to the more =E2=80=98reliable=E2=80=99 Ethernet OpenVPN=
+ adapter, overriding my /32 route and causing all traffic to fail as it rec=
+ursively routes my traffic.
 
-But implementing the basic crypto primitives in libp11-kit might be
-interesting, which makes it easier to wrap them for various crypto
-libraries.
+Microsoft makes some suggestion to disable the =E2=80=98prevent multiple co=
+nnections to the Internet=E2=80=99 setting, but doing this does not seem to=
+ change the behavior when weak (but still functional) wireless signal is de=
+tected on the WLAN adapter. Microsoft see this as a problem with OpenVPN an=
+d refuse to do anything about it.
+https://support.microsoft.com/en-us/help/2919900/windows-connection-manager=
+-disconnects-wlan-if-a-vpn-connection-is-est <https://support.microsoft.com=
+/en-us/help/2919900/windows-connection-manager-disconnects-wlan-if-a-vpn-co=
+nnection-is-est>
 
---=-E3w93q4lPTHfi7YPhkpG
-Content-Type: application/x-pkcs7-signature; name="smime.p7s"
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Transfer-Encoding: base64
+The upshot is that if Windows detected the TAP adapter as something other t=
+han iftype 0x6 EthernetCSMACD it wouldn=E2=80=99t exhibit this behavior, an=
+d Microsoft suggest 0x53 =E2=80=98virtual=E2=80=99 or 0x83 =E2=80=99tunnel=
+=E2=80=99 as the VPN adapter=E2=80=99s iftype (I=E2=80=99d suggest 0x84 for=
+ the comedy option).
 
-MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAAKCCDzUw
-ggSvMIIDl6ADAgECAhEA4CPLFRKDU4mtYW56VGdrITANBgkqhkiG9w0BAQsFADBvMQswCQYDVQQG
-EwJTRTEUMBIGA1UEChMLQWRkVHJ1c3QgQUIxJjAkBgNVBAsTHUFkZFRydXN0IEV4dGVybmFsIFRU
-UCBOZXR3b3JrMSIwIAYDVQQDExlBZGRUcnVzdCBFeHRlcm5hbCBDQSBSb290MB4XDTE0MTIyMjAw
-MDAwMFoXDTIwMDUzMDEwNDgzOFowgZsxCzAJBgNVBAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1h
-bmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAYBgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMUEw
-PwYDVQQDEzhDT01PRE8gU0hBLTI1NiBDbGllbnQgQXV0aGVudGljYXRpb24gYW5kIFNlY3VyZSBF
-bWFpbCBDQTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAImxDdp6UxlOcFIdvFamBia3
-uEngludRq/HwWhNJFaO0jBtgvHpRQqd5jKQi3xdhTpHVdiMKFNNKAn+2HQmAbqUEPdm6uxb+oYep
-LkNSQxZ8rzJQyKZPWukI2M+TJZx7iOgwZOak+FaA/SokFDMXmaxE5WmLo0YGS8Iz1OlAnwawsayT
-QLm1CJM6nCpToxDbPSBhPFUDjtlOdiUCISn6o3xxdk/u4V+B6ftUgNvDezVSt4TeIj0sMC0xf1m9
-UjewM2ktQ+v61qXxl3dnUYzZ7ifrvKUHOHaMpKk4/9+M9QOsSb7K93OZOg8yq5yVOhM9DkY6V3Rh
-UL7GQD/L5OKfoiECAwEAAaOCARcwggETMB8GA1UdIwQYMBaAFK29mHo0tCb3+sQmVO8DveAky1Qa
-MB0GA1UdDgQWBBSSYWuC4aKgqk/sZ/HCo/e0gADB7DAOBgNVHQ8BAf8EBAMCAYYwEgYDVR0TAQH/
-BAgwBgEB/wIBADAdBgNVHSUEFjAUBggrBgEFBQcDAgYIKwYBBQUHAwQwEQYDVR0gBAowCDAGBgRV
-HSAAMEQGA1UdHwQ9MDswOaA3oDWGM2h0dHA6Ly9jcmwudXNlcnRydXN0LmNvbS9BZGRUcnVzdEV4
-dGVybmFsQ0FSb290LmNybDA1BggrBgEFBQcBAQQpMCcwJQYIKwYBBQUHMAGGGWh0dHA6Ly9vY3Nw
-LnVzZXJ0cnVzdC5jb20wDQYJKoZIhvcNAQELBQADggEBABsqbqxVwTqriMXY7c1V86prYSvACRAj
-mQ/FZmpvsfW0tXdeDwJhAN99Bf4Ss6SAgAD8+x1banICCkG8BbrBWNUmwurVTYT7/oKYz1gb4yJj
-nFL4uwU2q31Ypd6rO2Pl2tVz7+zg+3vio//wQiOcyraNTT7kSxgDsqgt1Ni7QkuQaYUQ26Y3NOh7
-4AEQpZzKOsefT4g0bopl0BqKu6ncyso20fT8wmQpNa/WsadxEdIDQ7GPPprsnjJT9HaSyoY0B7ks
-yuYcStiZDcGG4pCS+1pCaiMhEOllx/XVu37qjIUgAmLq0ToHLFnFmTPyOInltukWeh95FPZKEBom
-+nyK+5swggU9MIIEJaADAgECAhBqC1BYlVMtBFBN4igR/howMA0GCSqGSIb3DQEBCwUAMIGbMQsw
-CQYDVQQGEwJHQjEbMBkGA1UECBMSR3JlYXRlciBNYW5jaGVzdGVyMRAwDgYDVQQHEwdTYWxmb3Jk
-MRowGAYDVQQKExFDT01PRE8gQ0EgTGltaXRlZDFBMD8GA1UEAxM4Q09NT0RPIFNIQS0yNTYgQ2xp
-ZW50IEF1dGhlbnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1haWwgQ0EwHhcNMTYxMjIwMDAwMDAwWhcN
-MTcxMjIwMjM1OTU5WjAkMSIwIAYJKoZIhvcNAQkBFhNkd213MkBpbmZyYWRlYWQub3JnMIIBIjAN
-BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwbTrFaiGdvN2pThnR9q+4eaXB2wQZQNqhter5ZrJ
-pPO47e87bZ+f1tmYoh6+rB90G/XN24NErPRfvU4zVzNT9pCtCzSSVnBlZQBpaEYMKhcXo5PGKNsm
-An8BoGwNXjlxwbBNRaNO+ky0wNCaMNd1JLxEuvqg9J7rrcpHhWmnpXD5IKa8gv9GyVAJgOpiBOts
-p91sShc2kHvWJ5waPEWPCHDH9J+twGGKqKIIU7fdbURLUgUL1wlDSAHf/lgIAVCSj2H2HpoGqHpy
-HgOAClX9iRSLNa0Znj8HTaqfOwxXevsz1KkLFY+Ahm426GIEqdfkK2iT6Hhgc7tjNO3f8i5ALQID
-AQABo4IB8TCCAe0wHwYDVR0jBBgwFoAUkmFrguGioKpP7GfxwqP3tIAAwewwHQYDVR0OBBYEFILE
-dmHLtK6oxmFJZvBhTQhvqrS0MA4GA1UdDwEB/wQEAwIFoDAMBgNVHRMBAf8EAjAAMCAGA1UdJQQZ
-MBcGCCsGAQUFBwMEBgsrBgEEAbIxAQMFAjARBglghkgBhvhCAQEEBAMCBSAwRgYDVR0gBD8wPTA7
-BgwrBgEEAbIxAQIBAQEwKzApBggrBgEFBQcCARYdaHR0cHM6Ly9zZWN1cmUuY29tb2RvLm5ldC9D
-UFMwXQYDVR0fBFYwVDBSoFCgToZMaHR0cDovL2NybC5jb21vZG9jYS5jb20vQ09NT0RPU0hBMjU2
-Q2xpZW50QXV0aGVudGljYXRpb25hbmRTZWN1cmVFbWFpbENBLmNybDCBkAYIKwYBBQUHAQEEgYMw
-gYAwWAYIKwYBBQUHMAKGTGh0dHA6Ly9jcnQuY29tb2RvY2EuY29tL0NPTU9ET1NIQTI1NkNsaWVu
-dEF1dGhlbnRpY2F0aW9uYW5kU2VjdXJlRW1haWxDQS5jcnQwJAYIKwYBBQUHMAGGGGh0dHA6Ly9v
-Y3NwLmNvbW9kb2NhLmNvbTAeBgNVHREEFzAVgRNkd213MkBpbmZyYWRlYWQub3JnMA0GCSqGSIb3
-DQEBCwUAA4IBAQA+AfvNhFwtapF5Lzjapgul3zYuEnMfR538Ya1vhP8wuOkcoJeT2gEFXzVO2WUu
-eWM0g0/DumnRB53htV/Qq/+vsL0i6a2+iOO7kHi5O7bZkgbdNv0t2lzonDUHi6LTa7NUj+tv+j6y
-hW+iNquC3ACP1dIZH8gJmicHblW63qRgp6wxhn315MLBeavi3uiSag2eeKFePiTIwJjN2UYq6kWg
-PL5G/Ycf9x/xN1XBTfJiURc0FsXhrA98VMWnt52C5Lo4txhGjzTI+IZg40b3YDs6E7mTYb5KKmbc
-QZA9priOFDdj1z5W9BdWhU6I/D0P9y8Z4Tr6+ZscMUVD0RqWy2LeMIIFPTCCBCWgAwIBAgIQagtQ
-WJVTLQRQTeIoEf4aMDANBgkqhkiG9w0BAQsFADCBmzELMAkGA1UEBhMCR0IxGzAZBgNVBAgTEkdy
-ZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgGA1UEChMRQ09NT0RPIENBIExp
-bWl0ZWQxQTA/BgNVBAMTOENPTU9ETyBTSEEtMjU2IENsaWVudCBBdXRoZW50aWNhdGlvbiBhbmQg
-U2VjdXJlIEVtYWlsIENBMB4XDTE2MTIyMDAwMDAwMFoXDTE3MTIyMDIzNTk1OVowJDEiMCAGCSqG
-SIb3DQEJARYTZHdtdzJAaW5mcmFkZWFkLm9yZzCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoC
-ggEBAMG06xWohnbzdqU4Z0favuHmlwdsEGUDaobXq+WayaTzuO3vO22fn9bZmKIevqwfdBv1zduD
-RKz0X71OM1czU/aQrQs0klZwZWUAaWhGDCoXF6OTxijbJgJ/AaBsDV45ccGwTUWjTvpMtMDQmjDX
-dSS8RLr6oPSe663KR4Vpp6Vw+SCmvIL/RslQCYDqYgTrbKfdbEoXNpB71iecGjxFjwhwx/SfrcBh
-iqiiCFO33W1ES1IFC9cJQ0gB3/5YCAFQko9h9h6aBqh6ch4DgApV/YkUizWtGZ4/B02qnzsMV3r7
-M9SpCxWPgIZuNuhiBKnX5Ctok+h4YHO7YzTt3/IuQC0CAwEAAaOCAfEwggHtMB8GA1UdIwQYMBaA
-FJJha4LhoqCqT+xn8cKj97SAAMHsMB0GA1UdDgQWBBSCxHZhy7SuqMZhSWbwYU0Ib6q0tDAOBgNV
-HQ8BAf8EBAMCBaAwDAYDVR0TAQH/BAIwADAgBgNVHSUEGTAXBggrBgEFBQcDBAYLKwYBBAGyMQED
-BQIwEQYJYIZIAYb4QgEBBAQDAgUgMEYGA1UdIAQ/MD0wOwYMKwYBBAGyMQECAQEBMCswKQYIKwYB
-BQUHAgEWHWh0dHBzOi8vc2VjdXJlLmNvbW9kby5uZXQvQ1BTMF0GA1UdHwRWMFQwUqBQoE6GTGh0
-dHA6Ly9jcmwuY29tb2RvY2EuY29tL0NPTU9ET1NIQTI1NkNsaWVudEF1dGhlbnRpY2F0aW9uYW5k
-U2VjdXJlRW1haWxDQS5jcmwwgZAGCCsGAQUFBwEBBIGDMIGAMFgGCCsGAQUFBzAChkxodHRwOi8v
-Y3J0LmNvbW9kb2NhLmNvbS9DT01PRE9TSEEyNTZDbGllbnRBdXRoZW50aWNhdGlvbmFuZFNlY3Vy
-ZUVtYWlsQ0EuY3J0MCQGCCsGAQUFBzABhhhodHRwOi8vb2NzcC5jb21vZG9jYS5jb20wHgYDVR0R
-BBcwFYETZHdtdzJAaW5mcmFkZWFkLm9yZzANBgkqhkiG9w0BAQsFAAOCAQEAPgH7zYRcLWqReS84
-2qYLpd82LhJzH0ed/GGtb4T/MLjpHKCXk9oBBV81TtllLnljNINPw7pp0Qed4bVf0Kv/r7C9Iumt
-vojju5B4uTu22ZIG3Tb9Ldpc6Jw1B4ui02uzVI/rb/o+soVvojargtwAj9XSGR/ICZonB25Vut6k
-YKesMYZ99eTCwXmr4t7okmoNnnihXj4kyMCYzdlGKupFoDy+Rv2HH/cf8TdVwU3yYlEXNBbF4awP
-fFTFp7edguS6OLcYRo80yPiGYONG92A7OhO5k2G+Sipm3EGQPaa4jhQ3Y9c+VvQXVoVOiPw9D/cv
-GeE6+vmbHDFFQ9Ealsti3jGCA9MwggPPAgEBMIGwMIGbMQswCQYDVQQGEwJHQjEbMBkGA1UECBMS
-R3JlYXRlciBNYW5jaGVzdGVyMRAwDgYDVQQHEwdTYWxmb3JkMRowGAYDVQQKExFDT01PRE8gQ0Eg
-TGltaXRlZDFBMD8GA1UEAxM4Q09NT0RPIFNIQS0yNTYgQ2xpZW50IEF1dGhlbnRpY2F0aW9uIGFu
-ZCBTZWN1cmUgRW1haWwgQ0ECEGoLUFiVUy0EUE3iKBH+GjAwDQYJYIZIAWUDBAIBBQCgggHzMBgG
-CSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE3MDcyNjA5NDI1MlowLwYJ
-KoZIhvcNAQkEMSIEIFNm2t+Rd+U7b3bPXb+W0azaY+eDs4bjEvLdT9h13QSTMIHBBgkrBgEEAYI3
-EAQxgbMwgbAwgZsxCzAJBgNVBAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAO
-BgNVBAcTB1NhbGZvcmQxGjAYBgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMUEwPwYDVQQDEzhDT01P
-RE8gU0hBLTI1NiBDbGllbnQgQXV0aGVudGljYXRpb24gYW5kIFNlY3VyZSBFbWFpbCBDQQIQagtQ
-WJVTLQRQTeIoEf4aMDCBwwYLKoZIhvcNAQkQAgsxgbOggbAwgZsxCzAJBgNVBAYTAkdCMRswGQYD
-VQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAYBgNVBAoTEUNPTU9E
-TyBDQSBMaW1pdGVkMUEwPwYDVQQDEzhDT01PRE8gU0hBLTI1NiBDbGllbnQgQXV0aGVudGljYXRp
-b24gYW5kIFNlY3VyZSBFbWFpbCBDQQIQagtQWJVTLQRQTeIoEf4aMDANBgkqhkiG9w0BAQEFAASC
-AQBA09EYrsbT92V2PnDck6/STjPgMz40Sl7ksBYE2HN3153RhXG98WaqTik72kxj/LZ/5lknQnFJ
-y29PJNPHEDYUbZRQDalfk7feAmUhL0HaMQrVRZ6nlfCI9Dj0Oh72Ovb5k9W/iulRFo4yMgtVn1UL
-19kdmTagEmxHv+0yrteVfkZ+HVSb7gpcgiAl5wMtsCueh22Sdel0j5TsGmdxQuG+IqWL2/WgnMkM
-oCB51cB4J1XqSNZ0/ZJpiLnpi4ahALTKW9qQ7pUtFs+jS0yVnbKO+2O6s1satFJXW35b3Dl4R8v/
-h/0jwMC/HyKNl91lJRFbHCI/stkNjfXw7TjXimlQAAAAAAAA
+I=E2=80=99ve found someone who=E2=80=99s successfully hacked this to work h=
+ttps://forums.openvpn.net/viewtopic.php?t=3D14942 <https://forums.openvpn.n=
+et/viewtopic.php?t=3D14942> but I=E2=80=99m not able to reproduce it on my =
+own, but it seems reasonable that it should work. I=E2=80=99m wondering if =
+it makes sense to change the underlying TAP driver (or make the if type an =
+option) since Windows seems to be getting =E2=80=9Csmarter=E2=80=9D about i=
+nterfaces and making routing or even security policy decisions based on the=
+ interface type presented.
+
+The reason I=E2=80=99m posting this to the Dev list is I=E2=80=99ve no idea=
+ what the ramifications of changing the iftype, maybe someone=E2=80=99s loo=
+ked in to this, but I haven=E2=80=99t seen any mention on this list about i=
+t. It seems reasonable that the change should be relatively minor, but agai=
+n i=E2=80=99m not aware of all the corner cases that might rely on the if t=
+ype being Ethernet for Windows to work properly.
+
+Thanks for listening
+
+Karl Mueller
+ewiley@...277...
 
 
---=-E3w93q4lPTHfi7YPhkpG--
 
+
+--Apple-Mail=_4395F877-144F-4BC0-9183-D8D8F9AF1897
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+
+<html><head><meta http-equiv=3D"Content-Type" content=3D"text/html charset=
+=3Dutf-8"></head><body style=3D"word-wrap: break-word; -webkit-nbsp-mode: s=
+pace; -webkit-line-break: after-white-space;" class=3D"">I=E2=80=99m hoping=
+ this is the right place to bring this issue, i=E2=80=99ve had no luck with=
+ searching or bodging a solution on my own, and may need some help with a s=
+lightly-modified TAP adapter driver.<div class=3D""><br class=3D""></div><d=
+iv class=3D"">I=E2=80=99m running into an issue between the TAP adapter and=
+ Windows 10 =E2=80=98soft disconnect=E2=80=99 behavior for wireless connect=
+ions causing recursive routing when connected to a redirect-gateway VPN. Th=
+e service/feature in Windows is called Windows Connection Manager service, =
+poorly documented here:&nbsp;<a href=3D"https://docs.microsoft.com/en-us/wi=
+ndows-hardware/drivers/mobilebroadband/understanding-and-configuring-window=
+s-connection-manager" class=3D"">https://docs.microsoft.com/en-us/windows-h=
+ardware/drivers/mobilebroadband/understanding-and-configuring-windows-conne=
+ction-manager</a>&nbsp;In a nutshell it silently redirects traffic to the m=
+ore =E2=80=98reliable=E2=80=99 Ethernet OpenVPN adapter, overriding my /32 =
+route and causing all traffic to fail as it recursively routes my traffic.<=
+div class=3D""><br class=3D""></div><div class=3D"">Microsoft makes some su=
+ggestion to disable the =E2=80=98prevent multiple connections to the Intern=
+et=E2=80=99 setting, but doing this does not seem to change the behavior wh=
+en weak (but still functional) wireless signal is detected on the WLAN adap=
+ter. Microsoft see this as a problem with OpenVPN and refuse to do anything=
+ about it.</div><div class=3D""><a href=3D"https://support.microsoft.com/en=
+-us/help/2919900/windows-connection-manager-disconnects-wlan-if-a-vpn-conne=
+ction-is-est" class=3D"">https://support.microsoft.com/en-us/help/2919900/w=
+indows-connection-manager-disconnects-wlan-if-a-vpn-connection-is-est</a><b=
+r class=3D""><div class=3D""><br class=3D""></div><div class=3D"">The upsho=
+t is that if Windows detected the TAP adapter as something other than iftyp=
+e 0x6 EthernetCSMACD it wouldn=E2=80=99t exhibit this behavior, and Microso=
+ft suggest 0x53 =E2=80=98virtual=E2=80=99 or 0x83 =E2=80=99tunnel=E2=80=99 =
+as the VPN adapter=E2=80=99s iftype (I=E2=80=99d suggest 0x84 for the comed=
+y option).</div><div class=3D""><br class=3D""></div><div class=3D"">I=E2=
+=80=99ve found someone who=E2=80=99s successfully hacked this to work&nbsp;=
+<a href=3D"https://forums.openvpn.net/viewtopic.php?t=3D14942" class=3D"">h=
+ttps://forums.openvpn.net/viewtopic.php?t=3D14942</a>&nbsp;but I=E2=80=99m =
+not able to reproduce it on my own, but it seems reasonable that it should =
+work. I=E2=80=99m wondering if it makes sense to change the underlying TAP =
+driver (or make the if type an option) since Windows seems to be getting =
+=E2=80=9Csmarter=E2=80=9D about interfaces and making routing or even secur=
+ity policy decisions based on the interface type presented.</div><div class=
+=3D""><br class=3D""></div><div class=3D"">The reason I=E2=80=99m posting t=
+his to the Dev list is I=E2=80=99ve no idea what the ramifications of chang=
+ing the iftype, maybe someone=E2=80=99s looked in to this, but I haven=E2=
+=80=99t seen any mention on this list about it. It seems reasonable that th=
+e change should be relatively minor, but again i=E2=80=99m not aware of all=
+ the corner cases that might rely on the if type being Ethernet for Windows=
+ to work properly.</div><div class=3D""><br class=3D""></div><div class=3D"=
+">Thanks for listening</div><div class=3D""><br class=3D""><div class=3D"">
+<div class=3D"">Karl Mueller</div><div class=3D""><a href=3D"mailto:ewiley@=
+...277..." class=3D"">ewiley@...277...</a></div><div class=3D""><br class=
+=3D""></div><br class=3D"Apple-interchange-newline">
+
+</div>
+<br class=3D""></div></div></div></body></html>=
+
+--Apple-Mail=_4395F877-144F-4BC0-9183-D8D8F9AF1897--
 
