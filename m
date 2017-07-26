@@ -1,9 +1,11 @@
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <29e1d57c-dfa5-ca26-2485-8654a85fdeff@...515...>
-Date: Wed, 26 Jul 2017 17:48:24 +0300
-MIME-Version: 1.0
-Content-Language: en-US
-Subject: [Openvpn-devel] Old OpenVPN apt repository key about to expire
+Mime-Version: 1.0 (Mac OS X Mail 9.3 \(3124\))
+From: Karl Mueller <ewiley@...277...>
+In-Reply-To: <20170726143612.GJ70062@...1296...>
+Date: Wed, 26 Jul 2017 13:28:26 -0400
+Message-Id: <870CFEC0-4040-4DA0-A56B-E7CF835765A7@...277...>
+References: <334D9817-7B72-4E78-B0CB-BC65EC004037@...277...>
+ <20170726143612.GJ70062@...1296...>
+Subject: Re: [Openvpn-devel] TAP-adapter iftype question
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,30 +14,26 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
 
-The previous GPG key used to sign our Debian and Ubuntu packages was
-bound to expire on 4th August. I extended the lifetime of the key by
-three years (26th July 2020).
+>=20
+> I have no idea what the effect would be ("will it stop doing ethernet
+> framing?  no more ARP?"), but it's an interesting idea to try.
+>=20
 
-To prevent apt from complaining after 4th August please do this:
+Thanks, seems OpenVPN is not the only VPN client that may recognize this as=
+ an issue and change their iftype. https://quickview.cloudapps.cisco.com/qu=
+ickview/bug/CSCut51057 The Cisco adapter previously used 0x6 judging by an =
+old Cisco VPN installation I had access to.
 
-apt-key del E158C569
-wget -O - https://swupdate.openvpn.net/repos/repo-public.gpg|\
-apt-key add -
+Is it possible to have someone create a signed test build of the TAP adapte=
+r with iftype 131 in the oemvista.inf?
 
-More information here:
+Karl Mueller
+ewiley@...277...
 
-<https://community.openvpn.net/openvpn/wiki/OpenvpnSoftwareRepos>
-
---
-Samuli Sepp=C3=A4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
 
