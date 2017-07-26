@@ -1,11 +1,9 @@
-Mime-Version: 1.0 (Mac OS X Mail 9.3 \(3124\))
-From: Karl Mueller <ewiley@...277...>
-In-Reply-To: <20170726143612.GJ70062@...1296...>
-Date: Wed, 26 Jul 2017 13:28:26 -0400
-Message-Id: <870CFEC0-4040-4DA0-A56B-E7CF835765A7@...277...>
-References: <334D9817-7B72-4E78-B0CB-BC65EC004037@...277...>
- <20170726143612.GJ70062@...1296...>
-Subject: Re: [Openvpn-devel] TAP-adapter iftype question
+MIME-Version: 1.0
+From: "sameer.s.athaley" <sameera.athaley@...277...>
+Date: Wed, 26 Jul 2017 23:10:48 +0530
+Message-ID: <CADtuLXQbi4E6A5hZyLiLhd=U4CJjT=qbx7n5heFDbusuh72jGQ@...278...>
+Content-Type: multipart/alternative; boundary="001a114021a0e0765305553bf2cc"
+Subject: [Openvpn-devel] Plz remove my mail id
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,26 +12,17 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Openvpn-devel@lists.sourceforge.net
 
+--001a114021a0e0765305553bf2cc
+Content-Type: text/plain; charset="UTF-8"
 
->=20
-> I have no idea what the effect would be ("will it stop doing ethernet
-> framing?  no more ARP?"), but it's an interesting idea to try.
->=20
+Hi could you help.me to remove my mail I'd from mailing list
 
-Thanks, seems OpenVPN is not the only VPN client that may recognize this as=
- an issue and change their iftype. https://quickview.cloudapps.cisco.com/qu=
-ickview/bug/CSCut51057 The Cisco adapter previously used 0x6 judging by an =
-old Cisco VPN installation I had access to.
+--001a114021a0e0765305553bf2cc
+Content-Type: text/html; charset="UTF-8"
 
-Is it possible to have someone create a signed test build of the TAP adapte=
-r with iftype 131 in the oemvista.inf?
+<div dir="auto">Hi could you <a href="http://help.me">help.me</a> to remove my mail I&#39;d from mailing list</div>
 
-Karl Mueller
-ewiley@...277...
-
+--001a114021a0e0765305553bf2cc--
 
