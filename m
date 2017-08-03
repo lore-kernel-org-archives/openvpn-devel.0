@@ -1,17 +1,15 @@
 Reply-To: openvpn-devel@lists.sourceforge.net
-References: <20170803160304.35518-1-debbie10t@...277...>
- <df6d3edb-3f2d-6a83-68f0-0899f58bf785@...2080...>
- <db3fbd7b-3fac-6bc2-b99f-9188fe553cfc@...277...>
+References: <20170802181435.14549-1-ch@...2291...>
 From: David Sommerseth <openvpn@...2080...>
-Message-ID: <35baffeb-acf1-3a43-0b6e-bd6c8a2e7253@...2080...>
-Date: Thu, 3 Aug 2017 22:49:49 +0200
+Message-ID: <d4481d5c-319c-c888-bfec-e74fc557527e@...2080...>
+Date: Thu, 3 Aug 2017 22:54:29 +0200
 MIME-Version: 1.0
-In-Reply-To: <db3fbd7b-3fac-6bc2-b99f-9188fe553cfc@...277...>
+In-Reply-To: <20170802181435.14549-1-ch@...2291...>
 Content-Type: multipart/signed; micalg=pgp-sha512;
  protocol="application/pgp-signature";
- boundary="rTAKMw7xbtLXWx0rVU0DLp7Igi3x6TwFN"
-Subject: Re: [Openvpn-devel] [PATCH] doc/openvpn.8: Correct
- --verify-x509-name *type* example
+ boundary="Sd9DB9WBsRXoXgULDq71sArKb8mekaEqu"
+Subject: Re: [Openvpn-devel] [PATCH 0/2] Improve usability of non-privileged
+ operation
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,68 +18,62 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: debbie10t <debbie10t@...277...>, openvpn-devel@lists.sourceforge.net
+To: Conrad Hoffmann <ch@...2291...>, openvpn-devel@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---rTAKMw7xbtLXWx0rVU0DLp7Igi3x6TwFN
-Content-Type: multipart/mixed; boundary="jFu0xrJiUtPE3HSUDv0LsNHstgghDra1H";
+--Sd9DB9WBsRXoXgULDq71sArKb8mekaEqu
+Content-Type: multipart/mixed; boundary="A2tfg9jUDEd0pRQ8KpRbRqKFHC68Tg22k";
  protected-headers="v1"
 From: David Sommerseth <openvpn@...2080...>
 Reply-To: openvpn-devel@lists.sourceforge.net
-To: debbie10t <debbie10t@...277...>, openvpn-devel@lists.sourceforge.net
-Cc: Richard Bonhomme <fragmentux@...277...>
-Message-ID: <35baffeb-acf1-3a43-0b6e-bd6c8a2e7253@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH] doc/openvpn.8: Correct --verify-x509-name
- *type* example
-References: <20170803160304.35518-1-debbie10t@...277...>
- <df6d3edb-3f2d-6a83-68f0-0899f58bf785@...2080...>
- <db3fbd7b-3fac-6bc2-b99f-9188fe553cfc@...277...>
-In-Reply-To: <db3fbd7b-3fac-6bc2-b99f-9188fe553cfc@...277...>
+To: Conrad Hoffmann <ch@...2291...>, openvpn-devel@lists.sourceforge.net
+Message-ID: <d4481d5c-319c-c888-bfec-e74fc557527e@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH 0/2] Improve usability of non-privileged
+ operation
+References: <20170802181435.14549-1-ch@...2291...>
+In-Reply-To: <20170802181435.14549-1-ch@...2291...>
 
---jFu0xrJiUtPE3HSUDv0LsNHstgghDra1H
+--A2tfg9jUDEd0pRQ8KpRbRqKFHC68Tg22k
 Content-Language: en-GB
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
-On 03/08/17 19:07, debbie10t wrote:
+On 02/08/17 20:14, Conrad Hoffmann wrote:
+> Ohai!
 >=20
+> I recently undertook the project of not having my VPN client run as root
+> anymore. I noticed there are a lot of questions about this on the interne=
+t, and
+> I think one reason that this is more difficult then necessary is that the
+> "official" client.down script doesn't work when used in the conjunction w=
+ith
+> the down-root plugin.
 >=20
-> On 03/08/17 17:46, David Sommerseth wrote:
->> On 03/08/17 18:03, debbie10t@...277... wrote:
->>> From: Richard Bonhomme <fragmentux@...277...>
->>>
->>> Signed-off-by: Richard Bonhomme <fragmentux@...277...>
->>> ---
->>>   doc/openvpn.8 | 2 +-
->>>   1 file changed, 1 insertion(+), 1 deletion(-)
->>>
->>> diff --git a/doc/openvpn.8 b/doc/openvpn.8
->>> index 20bdd91..fdd5dde 100644
->>> --- a/doc/openvpn.8
->>> +++ b/doc/openvpn.8
->>> @@ -5340,7 +5340,7 @@ subject DN "C=3DKG, ST=3DNA, L=3DBishkek,
->>> CN=3DServer-1" would be matched by:
->>>   and
->>>   .B \-\-verify\-x509\-name Server\-1 name
->>>   or you could use
->>> -.B \-\-verify\-x509\-name Server -name-prefix
->>> +.B \-\-verify\-x509\-name Server\- name\-prefix
->>>   if you want a client to only accept connections to "Server-1",
->>> "Server-2", etc.
->>
->> Just wondering ... Shouldn't the "Server-1" and "Server-2" be escaped
->> too?
->>
->>
+> I noticed that both the up and the down script get a lot of information t=
+hrough
+> environment variables, and the up script relies on that already anyways. =
+So I
+> figured doing the same in the down script would be a reasonable thing to =
+do
+> (it's also what the most commonly referred to external up/down scripts do=
+).
 >=20
-> Yes of course but I only wanted to correct the example at this time
-> and, as this is my first submission, I just wanted to get that right.
-> I will start a project to format the man page more thoroughly in time.
+> With this change, the down script can actually be used with the down-root
+> plugin just like this:
+>=20
+>   plugin openvpn-plugin-down-root.so "/etc/openvpn/client.down"
+>=20
+> Hope this makes sense,
+> Conrad
 
-Ahh, right.  Well, I think we can fix at least the surrounding escape
-issues at the same time too.  I do like small commits, but we can afford
-a bit bigger change sets on the man page on the surrounding issues.  We
-seldom need to bisect man page issues ;-)
+Hi Conrad,
+
+Nice catch!  And thanks for your patches!  As you're a new contributor,
+I just wanted to let you know your patch is in the pipe now and will be
+reviewed and tested as soon as some of us are ready to process it.
+
+And based on a 10 seconds look, this does look correct - we just need to
+need to do a little test run first.
 
 
 --=20
@@ -92,9 +84,9 @@ OpenVPN Technologies, Inc
 
 
 
---jFu0xrJiUtPE3HSUDv0LsNHstgghDra1H--
+--A2tfg9jUDEd0pRQ8KpRbRqKFHC68Tg22k--
 
---rTAKMw7xbtLXWx0rVU0DLp7Igi3x6TwFN
+--Sd9DB9WBsRXoXgULDq71sArKb8mekaEqu
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -102,20 +94,20 @@ Content-Disposition: attachment; filename="signature.asc"
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBCgAGBQJZg4xuAAoJEIbPlEyWcf3yEtsQAIu3SxFdCG6soS91N6BWN36o
-T9EB3KoMZei0bSADZtfkiH6Gug39rEdjf2EcYzZw0YwhkF3yqkoPGTIYA72fWeUb
-ZuN7tExCLD1VkYJH/Ll6cmcQORFMaGcAZqbVjXFI69v2LcsVJW7Jk3BM5wgfATda
-OU8bi0rhUC32Iq+uaKWLe70YbbU+H6qN+iVT0GPUi5JhbVN5itDJHqJ0OA498iEh
-zJZJ6E7VIEv7l0w2fqc8j4C0waCdYwrZOEQvm2i+lBSZYVFwaF7nxT6IoBHWiOSh
-XFyaLpePoMHrsMgyLh2iLk2R3e94ffpRA6BCvmytL+tbVBFW38CThoOL6zCynTCR
-T+xGTmQzfLZv6vbIq7akVO/gs/KFVY0rUPBkGCVO4iEmIwXK6lTN4q6AMZM6dRxD
-iP7inoHbBVZTcFL+1/51sMeamEK0D7Jqul/N8RniOyGRc9TTihi+fidD2MAjo36r
-qhhFhyg2l6qKqPdlz6l4saxk87ZMuCeMBBaPUVKp+ChdWYTZTyXYfN8e8RHCivWg
-GonZcXCrDxKbgMdS107/VEt4hqSB64Qf6HcQByxyOve8sBjDtwudR2KymuaRLeGY
-nN9AoofwvvozZBBsOBbyrA4sWhrvcrwCpZLyGx3ekXZ0SRvBp3x0fE9gRV73caG2
-aabcmWvy0AfAjvMCN/ru
-=LcyP
+iQIcBAEBCgAGBQJZg42FAAoJEIbPlEyWcf3yTUYQALmeq0oj4ZdyU4cpch4vwMRb
+ipt6HtrnT2FN7NDHtALY2qUXNbxrbQQ6oT1TEpRd3YI5r9aQSNVq8vHMstITTICA
+BENyJLoc3jE7P6aXsuVDYRxIpmTNkkGy0FS7kU7Gude4QVEeurD3lgHFW/oyVFri
+QujvCDhfFCi4hfX8HvdRY8Hn4TIUPra98PAUB0MhMt1pj8yVqkBlMzuqpGDTBJAa
+VxXb19OFQcg60fSbeapPIN3UBGMXtdI9utFvoDme1+QQ1W6nRFzOZVDb+Ten1jK+
+2Byy+yU1hgd09+nVQ+1l8luSCaQo/QpDdaA/Tueg/qcpIKqRektMiDl+gh4YhZS+
+TV52wEjTfcsfshpvyGhzYgOG89mIhHjzD7bIX99sp8yU0rBNeZLvNTcOas1mKfLe
+/ysrSO7A1pZb2Qk6MYbZfs9k65doIReevTELp0g8E/G03y+6U8jTWsPXBmHQvkPS
+G1hyiybDt0X3RRk3Hsef87OKloKzZ16AnD09IdT7kIeWCGk6VHvv3W05Yaq121Sl
+SAr6iG6ik8HxWlnDhq98b9ILJPAIWkP9HbPSOVpWXxaw4PLKakyuHHumW6qQh4YN
+eeRZwyUGOP7TRTpwOSRwOHK5uLrd2NwkWyDn/8MtYz/2iJTG1aFBu9W/VT9z7rt/
+6V4VWFmAVWK45ka4Yp9O
+=SGmS
 -----END PGP SIGNATURE-----
 
---rTAKMw7xbtLXWx0rVU0DLp7Igi3x6TwFN--
+--Sd9DB9WBsRXoXgULDq71sArKb8mekaEqu--
 
