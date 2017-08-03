@@ -1,8 +1,9 @@
-From: Conrad Hoffmann <ch@...2291...>
-Date: Wed,  2 Aug 2017 20:14:33 +0200
-Message-Id: <20170802181435.14549-1-ch@...2291...>
-Subject: [Openvpn-devel] [PATCH 0/2] Improve usability of non-privileged
- operation
+From: debbie10t@...277...
+Date: Thu,  3 Aug 2017 17:03:04 +0100
+Message-Id: <20170803160304.35518-1-debbie10t@...277...>
+MIME-Version: 1.0
+Subject: [Openvpn-devel] [PATCH] doc/openvpn.8: Correct --verify-x509-name
+ *type* example
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,39 +13,31 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
+Cc: Richard Bonhomme <fragmentux@...277...>
 
-Ohai!
+From: Richard Bonhomme <fragmentux@...277...>
 
-I recently undertook the project of not having my VPN client run as root
-anymore. I noticed there are a lot of questions about this on the internet, and
-I think one reason that this is more difficult then necessary is that the
-"official" client.down script doesn't work when used in the conjunction with
-the down-root plugin.
+Signed-off-by: Richard Bonhomme <fragmentux@...277...>
+---
+ doc/openvpn.8 | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-I noticed that both the up and the down script get a lot of information through
-environment variables, and the up script relies on that already anyways. So I
-figured doing the same in the down script would be a reasonable thing to do
-(it's also what the most commonly referred to external up/down scripts do).
-
-With this change, the down script can actually be used with the down-root
-plugin just like this:
-
-  plugin openvpn-plugin-down-root.so "/etc/openvpn/client.down"
-
-Hope this makes sense,
-Conrad
-
-Conrad Hoffmann (2):
-  Use provided env vars in up/down script.
-  Document down-root plugin usage in client.down
-
- contrib/pull-resolv-conf/client.down | 6 +++++-
- contrib/pull-resolv-conf/client.up   | 4 ++--
- 2 files changed, 7 insertions(+), 3 deletions(-)
-
+diff --git a/doc/openvpn.8 b/doc/openvpn.8
+index 20bdd91..fdd5dde 100644
+--- a/doc/openvpn.8
++++ b/doc/openvpn.8
+@@ -5340,7 +5340,7 @@ subject DN "C=KG, ST=NA, L=Bishkek, CN=Server-1" would be matched by:
+ and
+ .B \-\-verify\-x509\-name Server\-1 name
+ or you could use
+-.B \-\-verify\-x509\-name Server -name-prefix
++.B \-\-verify\-x509\-name Server\- name\-prefix
+ if you want a client to only accept connections to "Server-1", "Server-2", etc.
+ 
+ .B \-\-verify\-x509\-name
 -- 
-2.13.3
+2.10.2
 
 
