@@ -1,15 +1,7 @@
-Reply-To: openvpn-devel@lists.sourceforge.net
-References: <20170802181435.14549-1-ch@...2291...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <d4481d5c-319c-c888-bfec-e74fc557527e@...2080...>
-Date: Thu, 3 Aug 2017 22:54:29 +0200
-MIME-Version: 1.0
-In-Reply-To: <20170802181435.14549-1-ch@...2291...>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="Sd9DB9WBsRXoXgULDq71sArKb8mekaEqu"
-Subject: Re: [Openvpn-devel] [PATCH 0/2] Improve usability of non-privileged
- operation
+From: Ilya Shipitsin <chipitsine@...277...>
+Date: Mon,  7 Aug 2017 18:22:59 +0500
+Message-Id: <20170807132301.22759-1-chipitsine@...277...>
+Subject: [Openvpn-devel] [PATCH 1/3] travis-ci: update pkcs11-helper to 1.22
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,96 +10,53 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Conrad Hoffmann <ch@...2291...>, openvpn-devel@lists.sourceforge.net
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---Sd9DB9WBsRXoXgULDq71sArKb8mekaEqu
-Content-Type: multipart/mixed; boundary="A2tfg9jUDEd0pRQ8KpRbRqKFHC68Tg22k";
- protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-Reply-To: openvpn-devel@lists.sourceforge.net
-To: Conrad Hoffmann <ch@...2291...>, openvpn-devel@lists.sourceforge.net
-Message-ID: <d4481d5c-319c-c888-bfec-e74fc557527e@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH 0/2] Improve usability of non-privileged
- operation
-References: <20170802181435.14549-1-ch@...2291...>
-In-Reply-To: <20170802181435.14549-1-ch@...2291...>
-
---A2tfg9jUDEd0pRQ8KpRbRqKFHC68Tg22k
-Content-Language: en-GB
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-On 02/08/17 20:14, Conrad Hoffmann wrote:
-> Ohai!
->=20
-> I recently undertook the project of not having my VPN client run as root
-> anymore. I noticed there are a lot of questions about this on the interne=
-t, and
-> I think one reason that this is more difficult then necessary is that the
-> "official" client.down script doesn't work when used in the conjunction w=
-ith
-> the down-root plugin.
->=20
-> I noticed that both the up and the down script get a lot of information t=
-hrough
-> environment variables, and the up script relies on that already anyways. =
-So I
-> figured doing the same in the down script would be a reasonable thing to =
-do
-> (it's also what the most commonly referred to external up/down scripts do=
-).
->=20
-> With this change, the down script can actually be used with the down-root
-> plugin just like this:
->=20
->   plugin openvpn-plugin-down-root.so "/etc/openvpn/client.down"
->=20
-> Hope this makes sense,
-> Conrad
+use pkcs11-helper from https://github.com/OpenSC/pkcs11-helper/
+to match build process used in windows installer build
+---
+ .travis.yml           | 2 +-
+ .travis/build-deps.sh | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
-Hi Conrad,
+diff --git a/.travis.yml b/.travis.yml
+index db90e03a..fc98a4d0 100644
+--- a/.travis.yml
++++ b/.travis.yml
+@@ -14,7 +14,7 @@ env:
+     - PREFIX="${HOME}/opt"
+     - TAP_WINDOWS_VERSION=9.21.2
+     - LZO_VERSION=2.10
+-    - PKCS11_HELPER_VERSION=1.11
++    - PKCS11_HELPER_VERSION=1.22
+     - MBEDTLS_VERSION="2.4.0"
+     - MBEDTLS_CFLAGS="-I${PREFIX}/include"
+     - MBEDTLS_LIBS="-L${PREFIX}/lib -lmbedtls -lmbedx509 -lmbedcrypto"
+diff --git a/.travis/build-deps.sh b/.travis/build-deps.sh
+index 9cc18584..7d8f911b 100755
+--- a/.travis/build-deps.sh
++++ b/.travis/build-deps.sh
+@@ -35,7 +35,7 @@ build_lzo () {
+ download_pkcs11_helper () {
+     if [ ! -f "pkcs11-helper-${PKCS11_HELPER_VERSION}.tar.bz2" ]; then
+         wget -P download-cache/ \
+-            "http://downloads.sourceforge.net/project/opensc/pkcs11-helper/pkcs11-helper-${PKCS11_HELPER_VERSION}.tar.bz2"
++            "https://github.com/OpenSC/pkcs11-helper/releases/download/pkcs11-helper-${PKCS11_HELPER_VERSION}/pkcs11-helper-${PKCS11_HELPER_VERSION}.tar.bz2"
+     fi
+ }
+ 
+@@ -46,7 +46,7 @@ build_pkcs11_helper () {
+             cd "pkcs11-helper-${PKCS11_HELPER_VERSION}"
+ 
+             ./configure --host=${CHOST} --program-prefix='' --libdir=${PREFIX}/lib \
+-                 --prefix=${PREFIX} --build=x86_64-pc-linux-gnu --disable-crypto-engine-gnutls --disable-crypto-engine-nss
++                 --prefix=${PREFIX} --build=x86_64-pc-linux-gnu --disable-crypto-engine-gnutls --disable-crypto-engine-nss --disable-crypto-engine-polarssl --disable-crypto-engine-mbedtls
+             make all install
+          )
+          echo "${PKCS11_HELPER_VERSION}" > "${PREFIX}/.pkcs11_helper-version"
+-- 
+2.13.3
 
-Nice catch!  And thanks for your patches!  As you're a new contributor,
-I just wanted to let you know your patch is in the pipe now and will be
-reviewed and tested as soon as some of us are ready to process it.
-
-And based on a 10 seconds look, this does look correct - we just need to
-need to do a little test run first.
-
-
---=20
-kind regards,
-
-David Sommerseth
-OpenVPN Technologies, Inc
-
-
-
---A2tfg9jUDEd0pRQ8KpRbRqKFHC68Tg22k--
-
---Sd9DB9WBsRXoXgULDq71sArKb8mekaEqu
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBCgAGBQJZg42FAAoJEIbPlEyWcf3yTUYQALmeq0oj4ZdyU4cpch4vwMRb
-ipt6HtrnT2FN7NDHtALY2qUXNbxrbQQ6oT1TEpRd3YI5r9aQSNVq8vHMstITTICA
-BENyJLoc3jE7P6aXsuVDYRxIpmTNkkGy0FS7kU7Gude4QVEeurD3lgHFW/oyVFri
-QujvCDhfFCi4hfX8HvdRY8Hn4TIUPra98PAUB0MhMt1pj8yVqkBlMzuqpGDTBJAa
-VxXb19OFQcg60fSbeapPIN3UBGMXtdI9utFvoDme1+QQ1W6nRFzOZVDb+Ten1jK+
-2Byy+yU1hgd09+nVQ+1l8luSCaQo/QpDdaA/Tueg/qcpIKqRektMiDl+gh4YhZS+
-TV52wEjTfcsfshpvyGhzYgOG89mIhHjzD7bIX99sp8yU0rBNeZLvNTcOas1mKfLe
-/ysrSO7A1pZb2Qk6MYbZfs9k65doIReevTELp0g8E/G03y+6U8jTWsPXBmHQvkPS
-G1hyiybDt0X3RRk3Hsef87OKloKzZ16AnD09IdT7kIeWCGk6VHvv3W05Yaq121Sl
-SAr6iG6ik8HxWlnDhq98b9ILJPAIWkP9HbPSOVpWXxaw4PLKakyuHHumW6qQh4YN
-eeRZwyUGOP7TRTpwOSRwOHK5uLrd2NwkWyDn/8MtYz/2iJTG1aFBu9W/VT9z7rt/
-6V4VWFmAVWK45ka4Yp9O
-=SGmS
------END PGP SIGNATURE-----
-
---Sd9DB9WBsRXoXgULDq71sArKb8mekaEqu--
 
