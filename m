@@ -1,7 +1,14 @@
-From: Steffan Karger <steffan@...1856...>
-Date: Tue,  8 Aug 2017 22:00:47 +0200
-Message-Id: <1502222447-8186-1-git-send-email-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH (2.3)] Deprecate --ns-cert-type
+References: <1502207741-31750-1-git-send-email-steffan.karger@...1435...>
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <4bea390a-1882-6c22-63d4-bf2c9f8fbd43@...2181...>
+Date: Wed, 9 Aug 2017 06:17:56 +0800
+MIME-Version: 1.0
+In-Reply-To: <1502207741-31750-1-git-send-email-steffan.karger@...1435...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="hWo1pGLmi6V7WaaRcJdov6IHdrK3g0goA"
+Subject: Re: [Openvpn-devel] [PATCH] Add coverity static analysis to Travis
+ CI config
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -10,125 +17,80 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: Steffan Karger <steffan.karger@...1435...>, openvpn-devel@lists.sourceforge.net
+
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--hWo1pGLmi6V7WaaRcJdov6IHdrK3g0goA
+Content-Type: multipart/mixed; boundary="lmI1G9C3r5ss4wkBb0XRVOq4GVqDjuddI";
+ protected-headers="v1"
+From: Antonio Quartulli <a@...2181...>
+To: Steffan Karger <steffan.karger@...1435...>,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <4bea390a-1882-6c22-63d4-bf2c9f8fbd43@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH] Add coverity static analysis to Travis CI
+ config
+References: <1502207741-31750-1-git-send-email-steffan.karger@...1435...>
+In-Reply-To: <1502207741-31750-1-git-send-email-steffan.karger@...1435...>
+
+--lmI1G9C3r5ss4wkBb0XRVOq4GVqDjuddI
+Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Transfer-Encoding: quoted-printable
 
-This is a manual cherry-pick of commit 2dc33226 of the master branch,
-for the release/2.3 branch.
 
-The nsCertType x509 extension is very old, and barely used.  We already
-have had an alternative for a long time: --remote-cert-tls uses the far
-more common keyUsage and extendedKeyUsage extensions instead.
 
-OpenSSL 1.1 no longer exposes an API to (separately) check the nsCertType
-x509 extension.  Since we want be able to migrate to OpenSSL 1.1, we
-should deprecate this option immediately.
+On 08/08/17 23:55, Steffan Karger wrote:
+> Enable coverity analysis for the release/2.4 branch.
+>=20
+> We can only do a limited number of coverity scans per week with our FOSS
+> account, but since we only occasionally push commits, that should work out
+> fine.  But this limit is the reason we don't use the standard travis addo=
+n,
+> because that would cause the coverity script to run on all of our matrix
+> builds.  That would cause us to reach our limit faster, and waste travis'
+> resources.
+>=20
+> Since our FOSS coverity account doesn't handle multiple branches very wel=
+l,
+> we have to pick one branch to run coverity on.  I think it's best to use
+> the most recent stable branch for that (i.e. for now, release/2.4).
+> Though for ease of maintenance, it's probably best to apply the patch to
+> both master and release/2.4.
+>=20
+> Signed-off-by: Steffan Karger <steffan.karger@...1435...>
 
-Trac: #876
+ACK. This would allow to run the coverity scan on a periodic base
+without having to push yet another branch every time.
 
-Signed-off-by: Steffan Karger <steffan@...1856...>
----
- Changes.rst              | 12 ++++++++++++
- doc/openvpn.8            |  8 ++++++--
- src/openvpn/init.c       |  4 ++++
- src/openvpn/options.c    |  4 ++--
- tests/t_client.rc-sample |  2 +-
- 5 files changed, 25 insertions(+), 5 deletions(-)
 
-diff --git a/Changes.rst b/Changes.rst
-index b9fe6d5..3d164b9 100644
---- a/Changes.rst
-+++ b/Changes.rst
-@@ -105,6 +105,18 @@ Behavioral changes
- - Do not randomize resolving of IP addresses in getaddr()
- 
- 
-+Version 2.3.18
-+==============
-+
-+Deprecated features
-+-------------------
-+- ``--ns-cert-type`` is deprecated.  Use ``--remote-cert-tls`` instead.
-+  The nsCertType x509 extension is very old, and barely used.
-+  ``--remote-cert-tls`` uses the far more common keyUsage and extendedKeyUsage
-+  extension instead.  Make sure your certificates carry these to be able to
-+  use ``--remote-cert-tls``.
-+
-+
- Version 2.3.17
- ==============
- 
-diff --git a/doc/openvpn.8 b/doc/openvpn.8
-index 109afe6..c6389f1 100644
---- a/doc/openvpn.8
-+++ b/doc/openvpn.8
-@@ -324,7 +324,7 @@ http-proxy-retry
- persist-key
- persist-tun
- pkcs12 client.p12
--ns-cert-type server
-+remote-cert-tls server
- verb 3
- .in -4
- .ft
-@@ -5094,7 +5094,11 @@ options can be defined to track multiple attributes.
- Not available with PolarSSL.
- .\"*********************************************************
- .TP
--.B \-\-ns\-cert\-type client|server
-+.B \-\-ns\-cert\-type client|server (DEPRECATED)
-+This option is deprecated.  Use the more modern equivalent
-+.B \-\-remote\-cert\-tls
-+instead.  This option will be removed in OpenVPN 2.5.
-+
- Require that peer certificate was signed with an explicit
- .B nsCertType
- designation of "client" or "server".
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index c6546e6..f676b51 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -2591,6 +2591,10 @@ do_option_warnings (struct context *c)
-       && !(o->ns_cert_type & NS_CERT_CHECK_SERVER)
-       && !o->remote_cert_eku)
-     msg (M_WARN, "WARNING: No server certificate verification method has been enabled.  See http://openvpn.net/howto.html#mitm for more info.");
-+  if (o->ns_cert_type)
-+    {
-+      msg(M_WARN, "WARNING: --ns-cert-type is DEPRECATED.  Use --remote-cert-tls instead.");
-+    }
- #endif
- #endif
- 
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 6faa280..20ca37e 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -622,8 +622,8 @@ static const char usage_message[] =
-   "--verify-x509-name name: Accept connections only from a host with X509 subject\n"
-   "                  DN name. The remote host must also pass all other tests\n"
-   "                  of verification.\n"
--  "--ns-cert-type t: Require that peer certificate was signed with an explicit\n"
--  "                  nsCertType designation t = 'client' | 'server'.\n"
-+  "--ns-cert-type t: (DEPRECATED) Require that peer certificate was signed with \n"
-+  "                  an explicit nsCertType designation t = 'client' | 'server'.\n"
- #ifdef ENABLE_X509_TRACK
-   "--x509-track x  : Save peer X509 attribute x in environment for use by\n"
-   "                  plugins and management interface.\n"
-diff --git a/tests/t_client.rc-sample b/tests/t_client.rc-sample
-index 59f34c7..78b0ebb 100644
---- a/tests/t_client.rc-sample
-+++ b/tests/t_client.rc-sample
-@@ -39,7 +39,7 @@ TEST_RUN_LIST="1 2"
- #
- OPENVPN_BASE_P2MP="--client --ca $CA_CERT \
- 	--cert $CLIENT_CERT --key $CLIENT_KEY \
--	--ns-cert-type server --nobind --comp-lzo --verb 3"
-+	--remote-cert-tls server --nobind --comp-lzo --verb 3"
- 
- # base config for p2p tests
- #
--- 
-2.7.4
 
+--=20
+Antonio Quartulli
+
+
+--lmI1G9C3r5ss4wkBb0XRVOq4GVqDjuddI--
+
+--hWo1pGLmi6V7WaaRcJdov6IHdrK3g0goA
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEbd2mMhAXbmSCipS40+HICM1soFAFAlmKOJgACgkQ0+HICM1s
+oFARAA/9EVxEzktBTG5csZpVEMVwqtNAOTVxSlG8IoB+g6T/wW6pBQXHpdqA6/SE
+JZpuytroNSf0WLlj8rvtnlsCjppy5r/Hex3ayKTPl0HDilAtf754qfdsePou9wp1
+PLoVMmMCwb+LcxWKB3AywYzav9sBpeMaaZw2oE3WvMkUQBV6XjwG/oqSwXd0JpW1
+BqjjxuYxR3hmm51H1RuqN1or2vGj00+fSg/SX2Ta7gUmzvk/7uHw57pGOkmluQDb
+GW98MJbp4zUzM9tsuCt4T5I6P3LMPPLJzZ4gcLuHtZNi03ViPHo26pIlgJPqxYmY
+Y2RcpfazdzwPYP3DztQntP8GB0N41B4jrHoQmVP65hCUNSL9E70nktPFqQ/jeLpm
+6KCGWRvTufUlPI/gfyARtgxncrv5iCFg+KvaIir9JIB7JXZUebvqKlUM1lGDiCj7
+K5vHZYkWwb/JQx+rSW0D4iYD0wFsvTfcw+lyxGbggEfoVKG84je6NltPO7Cy7NRg
+G6DGGPty2Hh2JFkP+RRCy2617AdauMne/lQ0EsnwndfwSR9M2JnlzvmBvVuSkwBW
+iHzUoLm6v3lgi3hOWMsWEm3nXgBU29IcPSouJFYlOeH2csCO3DJp2C9mfmHXObay
+hlajaxziEZWtpuMamUag66f24jiWaVc8nF9wrMgBJthSYkoUBGw=
+=GjFx
+-----END PGP SIGNATURE-----
+
+--hWo1pGLmi6V7WaaRcJdov6IHdrK3g0goA--
 
