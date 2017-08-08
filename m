@@ -1,9 +1,17 @@
-From: Steffan Karger <steffan.karger@...1435...>
-Date: Tue, 8 Aug 2017 17:55:41 +0200
-Message-ID: <1502207741-31750-1-git-send-email-steffan.karger@...1435...>
+Reply-To: openvpn-devel@lists.sourceforge.net
+References: <20170807132301.22759-1-chipitsine@...277...>
+ <20170807132301.22759-3-chipitsine@...277...>
+ <a2e7511e-2416-cfbc-4b0f-5ffcf8f15e17@...2080...>
+ <CAFHpkQHkXWR512UXjQiTFf78fOJE+9_xo6fpYvhm8xRS8y3Aqg@...278...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <0f2ce121-9076-810b-373c-fcc3357a2981@...2080...>
+Date: Tue, 8 Aug 2017 20:44:04 +0200
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] Add coverity static analysis to Travis CI
- config
+In-Reply-To: <CAFHpkQHkXWR512UXjQiTFf78fOJE+9_xo6fpYvhm8xRS8y3Aqg@...278...>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="IJbEx11430Xp82On3MXBJ0XI4lTTIvbLR"
+Subject: Re: [Openvpn-devel] [PATCH 3/3] add a test to "openvpn --help"
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,84 +20,111 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>, openvpn-devel@lists.sourceforge.net
+
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--IJbEx11430Xp82On3MXBJ0XI4lTTIvbLR
+Content-Type: multipart/mixed; boundary="nRWox3FMSct8nfivj614Bqh2TvAWlHM3J";
+ protected-headers="v1"
+From: David Sommerseth <openvpn@...2080...>
+Reply-To: openvpn-devel@lists.sourceforge.net
+To: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <0f2ce121-9076-810b-373c-fcc3357a2981@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH 3/3] add a test to "openvpn --help"
+References: <20170807132301.22759-1-chipitsine@...277...>
+ <20170807132301.22759-3-chipitsine@...277...>
+ <a2e7511e-2416-cfbc-4b0f-5ffcf8f15e17@...2080...>
+ <CAFHpkQHkXWR512UXjQiTFf78fOJE+9_xo6fpYvhm8xRS8y3Aqg@...278...>
+In-Reply-To: <CAFHpkQHkXWR512UXjQiTFf78fOJE+9_xo6fpYvhm8xRS8y3Aqg@...278...>
+
+--nRWox3FMSct8nfivj614Bqh2TvAWlHM3J
+Content-Language: en-GB
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Transfer-Encoding: quoted-printable
 
-Enable coverity analysis for the release/2.4 branch.
+On 07/08/17 20:25, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=B8=D1=86=
+=D0=B8=D0=BD wrote:
+[...]
+>     > +"${top_builddir}/src/openvpn/openvpn" --help >/dev/null
+>     > +
+>     > +if [ $? -ne 1 ]
+>     > +then
+>     > +   exit_code=3D1
+>     > +fi
+>=20
+>     This check is odd.  Where the --help option is parsed, it calls usage=
+(),
+>     usage_small().  And those functions will always call:
+>=20
+> Sometimes it segfaults.
 
-We can only do a limited number of coverity scans per week with our FOSS
-account, but since we only occasionally push commits, that should work out
-fine.  But this limit is the reason we don't use the standard travis addon,
-because that would cause the coverity script to run on all of our matrix
-builds.  That would cause us to reach our limit faster, and waste travis'
-resources.
+That's no real argument, see below.
 
-Since our FOSS coverity account doesn't handle multiple branches very well,
-we have to pick one branch to run coverity on.  I think it's best to use
-the most recent stable branch for that (i.e. for now, release/2.4).
-Though for ease of maintenance, it's probably best to apply the patch to
-both master and release/2.4.
+>        openvpn_exit(OPENVPN_EXIT_STATUS_USAGE);
+>=20
+>     And OPENVPN_EXIT_STATUS_USAGE is defined as:
+>=20
+>     error.h:#define OPENVPN_EXIT_STATUS_USAGE                   1
+>=20
+>     I would rather recommend you to grep for some information you expect =
+to
+>     be listed in --help and check if that was found instead.
+>=20
+>=20
+> I tried to implement it with cmocka. However, I gave up
 
-Signed-off-by: Steffan Karger <steffan.karger@...1435...>
----
- .travis.yml         |  8 +++++++-
- .travis/coverity.sh | 17 +++++++++++++++++
- 2 files changed, 24 insertions(+), 1 deletion(-)
- create mode 100755 .travis/coverity.sh
+I didn't say this should be implemented in C and CMocka ... hence the
+example below.  And that check below would implicitly account for SEGV
+scenarios as well.
 
-diff --git a/.travis.yml b/.travis.yml
-index db90e03..131d002 100644
---- a/.travis.yml
-+++ b/.travis.yml
-@@ -21,10 +21,13 @@ env:
-     - OPENSSL_VERSION="1.0.2k"
-     - OPENSSL_CFLAGS="-I${PREFIX}/include"
-     - OPENSSL_LIBS="-L${PREFIX}/lib -lssl -lcrypto"
-+    # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
-+    #   via the "travis encrypt" command using the project repo's public key
-+    - secure: "l9mSnEW4LJqjxftH5i1NdDaYfGmQB1mPXnSB3DXnsjzkCWZ+yJLfBemfQ0tx/wS7chBYxqUaUIMT0hw4zJVp/LANFJo2vfh//ymTS6h0uApRY1ofg9Pp1BFcV1laG6/u8pwSZ2EBy/GhCd3DS436oE8sYBRaFM9FU62L/oeQBfJ7r4ID/0eB1b8bqlbD4paty9MHui2P8EZJwR+KAD84prtfpZOcrSMxPh9OUhJxzxUvvVoP4s4+lZ5Kgg1bBQ3yzKGDqe8VOgK2BWCEuezqhMMc8oeKmAe7CUkoz5gsGYH++k3I9XzP9Z4xeJKoQnC/82qi4xkJmlaOxdionej9bHIcjfRt7D8j1J0U+wOj4p8VrDy7yHaxuN2fi0K5MGa/CaXQSrkna8dePniCng+xQ2MY/zxuRX2gA6xPNLUyQLU9LqIug7wj4z84Hk9iWib4L20MoPjeEo+vAUNq8FtjOPxMuHNpv4iGGx6kgJm7RXl5vC5hxfK6MprrnYe2U5Mcd8jpzagKBaKHL3zV2FxX9k0jRO9Mccz7M2WnaV0MQ6zcngzTN4+s0kCjhfGKd2F2ANT2Gkhj3Me36eNHfuE0dBbvYCMh4b3Mgd7b/OuXwQWdJ8PjJ1WHXjSOw5sHw1suaV6cEO2Meyz5j1tOkyOi0M9QF+LFenQ9vLH4sBCww8U="
- 
- matrix:
-   include:
--    - env: SSLLIB="openssl"
-+    - env: SSLLIB="openssl" RUN_COVERITY="1"
-       os: linux
-       compiler: gcc
-     - env: SSLLIB="openssl" OPENSSL_VERSION="1.1.0f"
-@@ -91,5 +94,8 @@ install:
-   - if [ ! -z "${CHOST}" ]; then unset CC; fi
-   - .travis/build-deps.sh > build-deps.log 2>&1 || (cat build-deps.log && exit 1)
- 
-+before_script:
-+  - .travis/coverity.sh
-+
- script:
-   - .travis/build-check.sh
-diff --git a/.travis/coverity.sh b/.travis/coverity.sh
-new file mode 100755
-index 0000000..8bb40f4
---- /dev/null
-+++ b/.travis/coverity.sh
-@@ -0,0 +1,17 @@
-+#!/bin/sh
-+set -eu
-+
-+RUN_COVERITY="${RUN_COVERITY:-0}"
-+
-+export COVERITY_SCAN_PROJECT_NAME="OpenVPN/openvpn"
-+export COVERITY_SCAN_BRANCH_PATTERN="release\/2.4"
-+export COVERITY_SCAN_NOTIFICATION_EMAIL="scan-reports@...515..."
-+export COVERITY_SCAN_BUILD_COMMAND_PREPEND="autoreconf -vi && ./configure --enable-iproute2 && make clean"
-+export COVERITY_SCAN_BUILD_COMMAND="make"
-+
-+if [ "${RUN_COVERITY}" = "1" ]; then
-+    # Ignore exit code, script exits with 1 if we're not on the right branch
-+    curl -s "https://scan.coverity.com/scripts/travisci_build_coverity_scan.sh" | bash || true
-+else
-+    echo "Skipping coverity scan because \$RUN_COVERITY != \"1\""
-+fi
--- 
-2.7.4
+>     For example:
+>=20
+>     $ ./openvpn --help | grep -- ^-- | wc -l
+>     238
 
+But to do the spoon feeding:
+
+optcount=3D"$(${top_builddir}/src/openvpn/openvpn --help | grep -E -- ^-- |=
+ wc -l)"
+if [ $outcount -lt 220 ];
+then
+	exit_code=3D1
+fi
+
+
+--=20
+kind regards,
+
+David Sommerseth
+OpenVPN Technologies, Inc
+
+
+
+--nRWox3FMSct8nfivj614Bqh2TvAWlHM3J--
+
+--IJbEx11430Xp82On3MXBJ0XI4lTTIvbLR
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBCgAGBQJZigZ6AAoJEIbPlEyWcf3yT54P/1PuusdYvq0zYoCVzuzHJhAU
+yQ7aoIzbHKQU3Ryz2zpwUe2R01O1mi9ogBIkiG6f8KkU+D0L8l03bHpLFl1g+1KT
+XcNV38TkWVOe1aO9Zv4CVQnysHiFxOVEbebVHYKcxGLBKjUMGUAVtsprolwBGaBd
+BvZUORcctUqaT+j46Jev/G40J9Ai61X90W+wpyQqH1oFvaR59pKwCBrRcEV1m6AL
+aOaWrdP26E9fGj9OAkKjSoUyT3EIe41swrsmRTweofevPCSdmYzTa0DV92KLHSbf
+F7aj75XinhK2ChZ2LF/zA7Qe+zVh/qc6hpNWk89cZZSeL6XYgqK3GlCUvqNd5OEE
+KUBZFp7IOgNtM5+FHKZcvwOMBBhCfwAzuuZRLi/ZYyKXy9B5WuN9Z59EnMIEnr7M
+68sfz+2vFzCti/mL0Vo/5YCj1orojvm8WjopfZo9aGRS5ZqjluWMxZTl7aVnyd7t
+1/N+dnQ3FR4XRO//yYw6i0IZWHcgtKDEkD8P9FWRBlHfHy2vzA+LDmZrix8+sHdx
+NmC0BnW443O49uhUcrB0tsdOLqsRKhSnc43hHN5Vu6bIFPPyPom7mmwiZGkZVzMk
+Wc2fk0r7Esz+7TZVdksdW/Qt/HxiVRYDgWZDJK/4BuN9caCxR87y1arKO7N1/UtS
+NBZwnOZEnll8LaOkqp7t
+=XPcg
+-----END PGP SIGNATURE-----
+
+--IJbEx11430Xp82On3MXBJ0XI4lTTIvbLR--
 
