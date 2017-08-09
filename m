@@ -1,21 +1,7 @@
-Reply-To: openvpn-devel@lists.sourceforge.net
-References: <20170807132301.22759-1-chipitsine@...277...>
- <20170807132301.22759-3-chipitsine@...277...>
- <a2e7511e-2416-cfbc-4b0f-5ffcf8f15e17@...2080...>
- <CAFHpkQHkXWR512UXjQiTFf78fOJE+9_xo6fpYvhm8xRS8y3Aqg@...278...>
- <0f2ce121-9076-810b-373c-fcc3357a2981@...2080...>
- <CAFHpkQFdg7Q-4ep9usyZ_6FyJGdWM0VYhRzghnMN5aerivWA9A@...278...>
- <d4f5b393-ee52-9a84-ed96-e8b5e16f47f4@...2080...>
- <CAFHpkQFFPVGOFr=F-5zTFUqgEjfEv1xyLEs95j5KihyyC6AKmA@...278...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <d2dfddc7-a5cb-d9a6-c450-a5bc7732c79f@...2080...>
-Date: Wed, 9 Aug 2017 13:03:35 +0200
-MIME-Version: 1.0
-In-Reply-To: <CAFHpkQFFPVGOFr=F-5zTFUqgEjfEv1xyLEs95j5KihyyC6AKmA@...278...>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="oABis58IUKv2Dh8esra0QSrbnMAsL83JF"
-Subject: Re: [Openvpn-devel] [PATCH 3/3] add a test to "openvpn --help"
+From: David Sommerseth <davids@...515...>
+Date: Wed,  9 Aug 2017 14:32:56 +0200
+Message-Id: <20170809123256.25694-1-davids@...515...>
+Subject: [Openvpn-devel] [PATCH] tests: Add a simple build sanity check
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -24,136 +10,165 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---oABis58IUKv2Dh8esra0QSrbnMAsL83JF
-Content-Type: multipart/mixed; boundary="pW0EiTKC139NKRXugNrG4bobA0Dpc86Vv";
- protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-Reply-To: openvpn-devel@lists.sourceforge.net
-To: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>,
- "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-Message-ID: <d2dfddc7-a5cb-d9a6-c450-a5bc7732c79f@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH 3/3] add a test to "openvpn --help"
-References: <20170807132301.22759-1-chipitsine@...277...>
- <20170807132301.22759-3-chipitsine@...277...>
- <a2e7511e-2416-cfbc-4b0f-5ffcf8f15e17@...2080...>
- <CAFHpkQHkXWR512UXjQiTFf78fOJE+9_xo6fpYvhm8xRS8y3Aqg@...278...>
- <0f2ce121-9076-810b-373c-fcc3357a2981@...2080...>
- <CAFHpkQFdg7Q-4ep9usyZ_6FyJGdWM0VYhRzghnMN5aerivWA9A@...278...>
- <d4f5b393-ee52-9a84-ed96-e8b5e16f47f4@...2080...>
- <CAFHpkQFFPVGOFr=F-5zTFUqgEjfEv1xyLEs95j5KihyyC6AKmA@...278...>
-In-Reply-To: <CAFHpkQFFPVGOFr=F-5zTFUqgEjfEv1xyLEs95j5KihyyC6AKmA@...278...>
-
---pW0EiTKC139NKRXugNrG4bobA0Dpc86Vv
-Content-Language: en-GB
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-On 09/08/17 12:28, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=B8=D1=86=
-=D0=B8=D0=BD wrote:
->=20
->=20
-> 2017-08-09 14:31 GMT+05:00 David Sommerseth
-> <openvpn@...2080...
-> <mailto:openvpn@...2080...>>:
->=20
->     On 09/08/17 07:55, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=B8=
-=D1=86=D0=B8=D0=BD wrote:
->     [...]
->     >     >     For example:
->     >     >
->     >     >     $ ./openvpn --help | grep -- ^-- | wc -l
->     >     >     238
->     >
->     >     But to do the spoon feeding:
->     >
->     >     optcount=3D"$(${top_builddir}/src/openvpn/openvpn --help | grep=
- -E --
->     >     ^-- | wc -l)"
->     >     if [ $outcount -lt 220 ];
->     >     then
->     >             exit_code=3D1
->     >     fi
->     >
->     >
->     > if you suggest "that's a better check", please describe your idea.
->     > it is not clear for me why your approach is better
->=20
->=20
->     The approach I suggest above covers:
->=20
->     a)  The program is able to execute and usage() works
->=20
->     b)  There is no unexpected bigger changes in usage(), the
->         number of options are within a reasonable threshold.
->         Granted, only minimum options is checked in the example above;
->         extending with an upper limit is easy and quick (for example
->         add '-o -gt 245')
->=20
->     c) If the program segfaults, optcount =3D> 0 which ensures this test
->        fails.
->=20
->     With your check only testing if the exit code is not 1, you only have=
- an
->     indication if the program segfaults or not.  You don't know if usage()
->     provides nothing but garbage and then exiting with 1.  Checking that a
->     certain amount of outputted lines starting with '--' gives an indicat=
-ion
->     that usage() most likely have a reasonable output.
->=20
->     It would also be possible to build further on this check I suggest, to
->     also check for mandatory options (--dev, --dev-type, --remote, --list=
-en,
->     --port, --proto, etc, etc).  It is also possible to have a copy of the
->     expected "openvpn --help | grep -E -- ^--" output and do a diff -
->     probably filter out some less important/deprecated options).   While
->     these are a nice checks too, it is not as crucial as ensuring we have=
- at
->     least an reasonable expected amount of options.
->=20
->=20
->=20
-> I'm afraid that that approach introduce implicit things (while my is
-> pretty explicit).
-> Value seems questionable for me.
+This runs openvpn --help to check if the output is somewhat
+sensible and sane.  It will catch if the binary segfaults,
+if it is a normal build or an --enable-small build and
+does some simple checks when a list of options is produced.
 
-Well, then I'm just giving this patch a NAK, to be explicit.
+This is based on the discussions in this [1] mailing thread.
 
+[1] https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg15172.html
+    Message-Id: <20170807132301.22759-3-chipitsine@...277...>
 
---=20
-kind regards,
+Signed-off-by: David Sommerseth <davids@...515...>
+---
+ tests/Makefile.am       |   2 +-
+ tests/t_sanity_check.sh | 118 ++++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 119 insertions(+), 1 deletion(-)
+ create mode 100755 tests/t_sanity_check.sh
 
-David Sommerseth
-OpenVPN Technologies, Inc
+diff --git a/tests/Makefile.am b/tests/Makefile.am
+index 0795680c..7af5101e 100644
+--- a/tests/Makefile.am
++++ b/tests/Makefile.am
+@@ -14,7 +14,7 @@ MAINTAINERCLEANFILES = \
+ 
+ SUBDIRS = unit_tests
+ 
+-test_scripts = t_client.sh
++test_scripts = t_sanity_check.sh t_client.sh
+ if ENABLE_CRYPTO
+ test_scripts += t_lpback.sh t_cltsrv.sh
+ endif
+diff --git a/tests/t_sanity_check.sh b/tests/t_sanity_check.sh
+new file mode 100755
+index 00000000..e6c228c8
+--- /dev/null
++++ b/tests/t_sanity_check.sh
+@@ -0,0 +1,118 @@
++#! /bin/sh
++#
++# t_sanity_check.sh  --  Check that openvpn --help makes somewhat sense
++#
++# Copyright (C) 2017  David Sommerseth <davids@...515...>
++#
++# This program is free software; you can redistribute it and/or
++# modify it under the terms of the GNU General Public License
++# as published by the Free Software Foundation; either version 2
++# of the License, or (at your option) any later version.
++#
++# This program is distributed in the hope that it will be useful,
++# but WITHOUT ANY WARRANTY; without even the implied warranty of
++# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++# GNU General Public License for more details.
++#
++# You should have received a copy of the GNU General Public License
++# along with this program; if not, write to the Free Software
++# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
++# 02110-1301, USA.
++
++set -u
++top_builddir="${top_builddir:-..}"
++
++failed=0
++count_failure()
++{
++    failed=$(($failed + 1))
++}
++
++
++check_option_count()
++{
++    num_min="$1"
++    num_max="$2"
++
++    echo -n "Checking if number of options are between $num_min and $num_max ... "
++    optcount="$(cat sanity_check_options.$$ | wc -l )"
++    if [ $optcount -le $num_min ]; then
++        echo "FAIL  (too few, found $optcount options)"
++        count_failure
++        return
++    fi
++    if [ $optcount -gt $num_max ]; then
++        echo "FAIL  (too many, found $optcount options)"
++        count_failure
++        return
++    fi
++    echo "PASS (found $optcount options)"
++}
++
++
++check_options_present()
++{
++    for opt in $*;
++    do
++        echo -n "Checking for option --${opt} ..."
++        grep -E "^--${opt} " sanity_check_options.$$ 1>/dev/null 2>&1
++        if [ $? -ne 0 ]; then
++            echo "FAIL (missing option)"
++            count_failure
++        else
++            echo "PASS"
++        fi
++    done
++}
++
++echo "*** OpenVPN sanity check: openvpn --help"
++echo -n "Running 'openvpn --help' ... "
++"${top_builddir}/src/openvpn/openvpn" --help > sanity_check_log.$$ 2>&1
++res=$?
++if [ $res -ne 1 ]; then
++    echo "FAIL   (Something bad happened)"
++    cat sanity_check_log.$$
++    count_failure
++else
++    echo "PASS"
++    echo -n "Check build type ... "
++    linecount="$(cat sanity_check_log.$$ | wc -l)"
++    if [ $linecount -eq 1 ]; then
++        # Is this an --enable-small build?
++        grep "Usage message not available" sanity_check_log.$$ \
++            1> /dev/null 2> /dev/null
++        if [ $? -ne 0 ]; then
++            echo "Unknown build type"
++            cat sanity_check_log.$$
++            count_failure
++        else
++            echo "PASS  (--enable-small build, no further checks)"
++        fi
++    else
++        echo "PASS  (normal build)"
++
++        # Extract only the options
++        echo -n "Extracting options ... "
++        grep -E -- ^-- sanity_check_log.$$ > sanity_check_options.$$
++        if [ $? -ne 0 ]; then
++            echo "FAIL"
++            count_failure
++        else
++            echo "PASS"
++
++            # Check that the number of option counts are between 220 and 245
++            check_option_count 225 245
++
++            # Check for a selected subset of options we always expect to see
++            options_check="dev dev-type remote local port proto topology route ifconfig"
++            check_options_present $options_check
++        fi
++    fi
++fi
++echo "*** OpenVPN sanity check result - Failed tasks: $failed"
++
++rm -f sanity_check_log.$$ sanity_check_options.$$
++if [ $failed -gt 0 ]; then
++    exit 1
++fi
++exit 0
+-- 
+2.11.0
 
-
-
---pW0EiTKC139NKRXugNrG4bobA0Dpc86Vv--
-
---oABis58IUKv2Dh8esra0QSrbnMAsL83JF
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBCgAGBQJZiuwHAAoJEIbPlEyWcf3ySakQAKl+/2yreZ+E/dTVn4kjysEW
-hzFM4mTAmbUMcWLniN8ma10dDiH+DCJYTB66WFFq2t/6eBROdoWTAwIy9TGzjxmP
-eUha9j+4zDd6HQ2xb9dy3nkqjOaXU5PtdWLaVaAW6yEqqUv87BlCd88yq/1GKiK4
-7N3bDoBXNnnJTtyrE8KCS3YVhN4Uof8FeexbdOdyHQ5zgXezhRrLW1WSGL8wRcl0
-oHCbSjHm9Gw7ucGJFFDAjCCPKNAa53Lxzjh2RxrZeBwnAIPPBXT9o7da2ob+o4cD
-1+vEBHZUyR2/EC30YCcYqNM7DIrfJ65avJlTCRS5w8yRqxD9uAArCSHFCI75FFS6
-wuyfjIREbq8Berb+rwZ2jHGJCC6rjKffl574YetMS1pd8G3XaOXaJiKd0DaorQVK
-M39z5JQ9RxfI34ewH9iEvdhIHLu19lS19IxzJlzPP7V/KJHTfhHnar1uXJnsOHSO
-D7UEY0K6hTWhQDVrcYZDytUXBO6VKMnB+aQo7BgWMa1gGV3nzJB5shQez4yhdghw
-rxrbLWGcQubOXcBWPelRpc2K8xB8XQgPaMkOF12Ud4eSEDKfwNUis1WOprteNcBZ
-83t2WuYQUi3PI0oWHi/QlXoU7gZ59PxiQwLKvPbkicjXfnsiNwJQ3GuRD+tbB4IQ
-kBUwl5f1waoK2kPSNOtl
-=BGfB
------END PGP SIGNATURE-----
-
---oABis58IUKv2Dh8esra0QSrbnMAsL83JF--
 
