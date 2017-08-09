@@ -1,8 +1,7 @@
-From: Antonio Quartulli <a@...2181...>
-Date: Wed,  9 Aug 2017 15:42:37 +0800
-Message-Id: <20170809074237.31291-1-a@...2181...>
-Subject: [Openvpn-devel] [PATCH] OpenSSL: remove unreachable call to
- SSL_CTX_get0_privatekey()
+From: Ilya Shipitsin <chipitsine@...277...>
+Date: Wed,  9 Aug 2017 13:12:19 +0500
+Message-Id: <20170809081219.10367-1-chipitsine@...277...>
+Subject: [Openvpn-devel] [PATCH] v2 travis-ci: update pkcs11-helper to 1.22
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,93 +13,57 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: Steffan Karger <steffan@...1856...>, Antonio Quartulli <antonio@...515...>
 
-From: Antonio Quartulli <antonio@...515...>
+use pkcs11-helper from https://github.com/OpenSC/pkcs11-helper/
+to match build process used in windows installer build
 
-In tls_ctx_load_ecdh_params() the SSL_CTX_get0_privatekey() function
-is invoked only when "OPENSSL_VERSION_NUMBER >= 0x10002000L" and
-curve_name is NULL.
-
-However, under the very same conditions the code flow will
-lead to an earlier return, thus never reaching the invocation of
-SSL_CTX_get0_privatekey().
-
-Restructure the surrounding code in order to make the if/else
-block a bit easier to read and get rid of the unreachable
-invocation.
-
-Signed-off-by: Antonio Quartulli <antonio@...515...>
+Signed-off-by: Ilya Shipitsin <chipitsine@...277...>
 ---
+v2: break lines up into 80-char, thanks Steffan Karger
 
-Note: I believe that code sections like this, trying to deal with
-different library versions, should be cleaned up by moving the
-various #ifs to header files, instead of having them in the code.
-However, this should be done in a later (and bigger) cleanup.
+ .travis.yml           | 2 +-
+ .travis/build-deps.sh | 8 ++++++--
+ 2 files changed, 7 insertions(+), 3 deletions(-)
 
-
- src/openvpn/ssl_openssl.c | 23 +++++++++--------------
- 1 file changed, 9 insertions(+), 14 deletions(-)
-
-diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-index e18fffc1..7ad6414e 100644
---- a/src/openvpn/ssl_openssl.c
-+++ b/src/openvpn/ssl_openssl.c
-@@ -484,15 +484,7 @@ tls_ctx_load_ecdh_params(struct tls_root_ctx *ctx, const char *curve_name
+diff --git a/.travis.yml b/.travis.yml
+index db90e03a..fc98a4d0 100644
+--- a/.travis.yml
++++ b/.travis.yml
+@@ -14,7 +14,7 @@ env:
+     - PREFIX="${HOME}/opt"
+     - TAP_WINDOWS_VERSION=9.21.2
+     - LZO_VERSION=2.10
+-    - PKCS11_HELPER_VERSION=1.11
++    - PKCS11_HELPER_VERSION=1.22
+     - MBEDTLS_VERSION="2.4.0"
+     - MBEDTLS_CFLAGS="-I${PREFIX}/include"
+     - MBEDTLS_LIBS="-L${PREFIX}/lib -lmbedtls -lmbedx509 -lmbedcrypto"
+diff --git a/.travis/build-deps.sh b/.travis/build-deps.sh
+index 9cc18584..e787abab 100755
+--- a/.travis/build-deps.sh
++++ b/.travis/build-deps.sh
+@@ -35,7 +35,7 @@ build_lzo () {
+ download_pkcs11_helper () {
+     if [ ! -f "pkcs11-helper-${PKCS11_HELPER_VERSION}.tar.bz2" ]; then
+         wget -P download-cache/ \
+-            "http://downloads.sourceforge.net/project/opensc/pkcs11-helper/pkcs11-helper-${PKCS11_HELPER_VERSION}.tar.bz2"
++            "https://github.com/OpenSC/pkcs11-helper/releases/download/pkcs11-helper-${PKCS11_HELPER_VERSION}/pkcs11-helper-${PKCS11_HELPER_VERSION}.tar.bz2"
+     fi
+ }
  
-     /* Generate a new ECDH key for each SSL session (for non-ephemeral ECDH) */
-     SSL_CTX_set_options(ctx->ctx, SSL_OP_SINGLE_ECDH_USE);
--#if OPENSSL_VERSION_NUMBER >= 0x10002000L
--    /* OpenSSL 1.0.2 and newer can automatically handle ECDH parameter loading */
--    if (NULL == curve_name)
--    {
--        SSL_CTX_set_ecdh_auto(ctx->ctx, 1);
--        return;
--    }
--#endif
--    /* For older OpenSSL, we'll have to do the parameter loading on our own */
-+
-     if (curve_name != NULL)
-     {
-         /* Use user supplied curve if given */
-@@ -501,14 +493,17 @@ tls_ctx_load_ecdh_params(struct tls_root_ctx *ctx, const char *curve_name
-     }
-     else
-     {
--        /* Extract curve from key */
-+#if OPENSSL_VERSION_NUMBER >= 0x10002000L
-+        /* OpenSSL 1.0.2 and newer can automatically handle ECDH parameter
-+         * loading */
-+        SSL_CTX_set_ecdh_auto(ctx->ctx, 1);
-+        return;
-+#else
-+        /* For older OpenSSL we have to extract the curve from key on our own */
-         EC_KEY *eckey = NULL;
-         const EC_GROUP *ecgrp = NULL;
-         EVP_PKEY *pkey = NULL;
+@@ -46,7 +46,11 @@ build_pkcs11_helper () {
+             cd "pkcs11-helper-${PKCS11_HELPER_VERSION}"
  
--#if OPENSSL_VERSION_NUMBER >= 0x10002000L && !defined(LIBRESSL_VERSION_NUMBER)
--        pkey = SSL_CTX_get0_privatekey(ctx->ctx);
--#else
-         /* Little hack to get private key ref from SSL_CTX, yay OpenSSL... */
-         SSL *ssl = SSL_new(ctx->ctx);
-         if (!ssl)
-@@ -517,7 +512,6 @@ tls_ctx_load_ecdh_params(struct tls_root_ctx *ctx, const char *curve_name
-         }
-         pkey = SSL_get_privatekey(ssl);
-         SSL_free(ssl);
--#endif
- 
-         msg(D_TLS_DEBUG, "Extracting ECDH curve from private key");
- 
-@@ -526,6 +520,7 @@ tls_ctx_load_ecdh_params(struct tls_root_ctx *ctx, const char *curve_name
-         {
-             nid = EC_GROUP_get_curve_name(ecgrp);
-         }
-+#endif
-     }
- 
-     /* Translate NID back to name , just for kicks */
+             ./configure --host=${CHOST} --program-prefix='' --libdir=${PREFIX}/lib \
+-                 --prefix=${PREFIX} --build=x86_64-pc-linux-gnu --disable-crypto-engine-gnutls --disable-crypto-engine-nss
++                 --prefix=${PREFIX} --build=x86_64-pc-linux-gnu \
++                 --disable-crypto-engine-gnutls \
++                 --disable-crypto-engine-nss \
++                 --disable-crypto-engine-polarssl \
++                 --disable-crypto-engine-mbedtls
+             make all install
+          )
+          echo "${PKCS11_HELPER_VERSION}" > "${PREFIX}/.pkcs11_helper-version"
 -- 
 2.13.3
 
