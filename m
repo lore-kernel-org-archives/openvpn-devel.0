@@ -1,13 +1,16 @@
 MIME-Version: 1.0
-In-Reply-To: <99D61A626FDA8A4B90A270669121BE10806D643C@...2294...>
-References: <99D61A626FDA8A4B90A270669121BE10806D5BC3@...2294...>
- <CAKuzo_gmn-B6=4Vho9OwUENzqT0C5ibNZghOY-9B1cpTGRE42Q@...278...>
- <99D61A626FDA8A4B90A270669121BE10806D643C@...2294...>
-From: Selva Nair <selva.nair@...277...>
-Date: Wed, 9 Aug 2017 16:22:43 -0400
-Message-ID: <CAKuzo_g+n5cTz3K6aHLKTvVzF5NheJdo2sJJCS_UOG1wpy6z+Q@...278...>
-Content-Type: multipart/alternative; boundary="001a113d2950daecd1055657d8f0"
-Subject: Re: [Openvpn-devel] OVPN Interactive Service for non-admin users
+In-Reply-To: <ad14aa0a-4741-381a-8811-319b7726f349@...1856...>
+References: <1502207741-31750-1-git-send-email-steffan.karger@...1435...>
+ <CAFHpkQG8Lw5Va2PHT=BA86z-WgXv2Lqe+r9Q+fBeFsgRniKSCw@...278...>
+ <CAFHpkQE+2_BCADNJFVDreLagvhNONQP8eP_s7W4s835ChfSpiA@...278...>
+ <CAFHpkQHNoM+zRjALQ5vxYQ8jG6oY=8jDzHihfSKDjt4YKaAtyA@...278...>
+ <ad14aa0a-4741-381a-8811-319b7726f349@...1856...>
+From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
+Date: Thu, 10 Aug 2017 10:48:40 +0500
+Message-ID: <CAFHpkQE+G8_gkbzBApipYEnWcUrFn1XeSowi__Kxsxr7WTwL7A@...278...>
+Content-Type: multipart/alternative; boundary="f403045f502cadd34405565fbfe6"
+Subject: Re: [Openvpn-devel] [PATCH] Add coverity static analysis to Travis
+ CI config
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,72 +19,211 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Simon Rozman <simon@...2293...>
+To: Steffan Karger <steffan@...1856...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---001a113d2950daecd1055657d8f0
+--f403045f502cadd34405565fbfe6
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Hi,
+2017-08-10 1:09 GMT+05:00 Steffan Karger <steffan@...1856...>:
 
-
->  But that would open the OpenVPN Interactive Service to any user and
-> application. This is why we would like your opinion first.
+> Hi,
 >
-> Yes the service will then launch openvpn with arbitrary configs as any
-> user, but that is what you want isn't it?
+> On 09-08-17 08:12, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=B8=D1=
+=86=D0=B8=D0=BD wrote:
+> > 2017-08-09 10:47 GMT+05:00 =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=
+=D0=B8=D1=86=D0=B8=D0=BD <chipitsine@...277...
+> > <mailto:chipitsine@...277...>>:
+> >     2017-08-09 10:41 GMT+05:00 =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=
+=BF=D0=B8=D1=86=D0=B8=D0=BD <chipitsine@...277...
+> >     <mailto:chipitsine@...277...>>:
+> >         2017-08-08 20:55 GMT+05:00 Steffan Karger
+> >         <steffan.karger@...1435... <mailto:steffan.karger@...1435...>>:
+> >
+> >             Enable coverity analysis for the release/2.4 branch.
+> >
+> >             We can only do a limited number of coverity scans per week
+> >             with our FOSS
+> >             account, but since we only occasionally push commits, that
+> >             should work out
+> >             fine.  But this limit is the reason we don't use the
+> >             standard travis addon,
+> >             because that would cause the coverity script to run on all
+> >             of our matrix
+> >             builds.  That would cause us to reach our limit faster, and
+> >             waste travis'
+> >             resources.
+> >
+> >             Since our FOSS coverity account doesn't handle multiple
+> >             branches very well,
+> >             we have to pick one branch to run coverity on.  I think it's
+> >             best to use
+> >             the most recent stable branch for that (i.e. for now,
+> >             release/2.4).
+> >             Though for ease of maintenance, it's probably best to apply
+> >             the patch to
+> >             both master and release/2.4.
+> >
+> >         I would refactor it like that
+> >         https://gist.github.com/chipitsine/
+> 8dcae4ff1d59eb43df39f6015c6106fd
+> >         <https://gist.github.com/chipitsine/
+> 8dcae4ff1d59eb43df39f6015c6106fd>
+> >         however, your is ok as well
+> >
+> >     maybe, "script" would be better here
+> >     https://gist.github.com/chipitsine/8dcae4ff1d59eb43df39f6015c6106
+> fd#file-gistfile1-txt-L74
+> >     <https://gist.github.com/chipitsine/8dcae4ff1d59eb43df39f6015c6106
+> fd#file-gistfile1-txt-L74>
+> >     than "before_script"
+> >
+> > oops, travis does not support braches within matrix
+> >
+> > https://gist.github.com/chipitsine/8dcae4ff1d59eb43df39f6015c6106
+> fd#file-gistfile1-txt-L70-L72
+> >
+> > sorry for that
 >
->
->
-> True, I want that indeed. I was just trying to find the official way of
-> doing it only to learn it's against OpenVPN team's principles. :(
+> I like your idea, and toyed with it a bit.  But in the end, it needs too
+> much fiddling to get right.  So I prefer my own suggested approach.
 >
 
-The official way is to add the user to the designated group which by
-default is expected to be named "OpenVPN Administrators". Recursive group
-membership will work, so you could create a group named, say, "eduVPN
-Users" or just use "Users" and add that to "OpenVPN Administrators" group
-at install time (and remove it on uninstall). Personally I would avoid
-tweaking permissions of a folder inside "Program Files\OpenVPN\config\"
+nevermind :)
 
-Selva
 
---001a113d2950daecd1055657d8f0
+>
+> -Steffan
+>
+> ------------------------------------------------------------
+> ------------------
+> Check out the vibrant tech community on one of the world's most
+> engaging tech sites, Slashdot.org! http://sdm.link/slashdot
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+>
+
+--f403045f502cadd34405565fbfe6
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr">Hi,<div><br><div class=3D"gmail_extra"><div class=3D"gmail=
-_quote"><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border=
--left:1px #ccc solid;padding-left:1ex"><div lang=3D"SL" link=3D"blue" vlink=
-=3D"purple"><div class=3D"m_-8356383149772598265m_-4640609107708078336m_434=
-8739888793403891m_-812610513514368962WordSection1"><br><span><blockquote st=
-yle=3D"border:none;border-left:solid #cccccc 1.0pt;padding:0cm 0cm 0cm 6.0p=
-t;margin-left:4.8pt;margin-right:0cm"><div><div><p class=3D"MsoNormal"><spa=
-n lang=3D"EN-GB">=C2=A0But that would open the OpenVPN Interactive Service =
-to any user and application. This is why we would like your opinion first.<=
-/span><u></u><u></u></p></div></div></blockquote></span><div><span><p class=
-=3D"MsoNormal">Yes the service will then launch openvpn with arbitrary conf=
-igs as any user, but that is what you want isn&#39;t it?<span style=3D"font=
--size:11.0pt;font-family:&quot;Calibri&quot;,&quot;sans-serif&quot;;color:#=
-1f497d"><u></u><u></u></span></p><p class=3D"MsoNormal"><span style=3D"font=
--size:11.0pt;font-family:&quot;Calibri&quot;,&quot;sans-serif&quot;;color:#=
-1f497d"><u></u>=C2=A0<u></u></span></p></span><p class=3D"MsoNormal"><span =
-lang=3D"EN-GB" style=3D"font-size:11.0pt;font-family:&quot;Calibri&quot;,&q=
-uot;sans-serif&quot;;color:#1f497d">True, I want that indeed. I was just tr=
-ying to find the official way of doing it only to learn it&#39;s against Op=
-enVPN team&#39;s principles. :(</span></p></div></div></div></blockquote><d=
-iv><br></div><div>The official way is to add the user to the designated gro=
-up which by default is expected to be named &quot;<span class=3D"" id=3D":a=
-fi.1" tabindex=3D"-1">OpenVPN</span> Administrators&quot;. Recursive group =
-membership will work, so you could create a group named, say, &quot;<span c=
-lass=3D"" id=3D":afi.2" tabindex=3D"-1">eduVPN</span> Users&quot; or just u=
-se &quot;Users&quot; and add that to &quot;<span class=3D"" id=3D":afi.3" t=
-abindex=3D"-1">OpenVPN</span> Administrators&quot; group at install time (a=
-nd remove it on <span class=3D"" id=3D":afi.4" tabindex=3D"-1">uninstall</s=
-pan>). Personally I would avoid tweaking permissions of a folder inside &qu=
-ot;Program Files\OpenVPN\config\&quot;</div><div><br></div><div><span class=
-=3D"" id=3D":afi.5" tabindex=3D"-1">Selva</span>=C2=A0</div></div></div></d=
-iv></div>
+<div dir=3D"ltr"><br><div class=3D"gmail_extra"><br><div class=3D"gmail_quo=
+te">2017-08-10 1:09 GMT+05:00 Steffan Karger <span dir=3D"ltr">&lt;<a href=
+=3D"mailto:steffan@...1856..." target=3D"_blank">steffan@...1856...</a>&gt;=
+</span>:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;bo=
+rder-left:1px #ccc solid;padding-left:1ex">Hi,<br>
+<span class=3D""><br>
+On 09-08-17 08:12, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=B8=D1=86=
+=D0=B8=D0=BD wrote:<br>
+&gt; 2017-08-09 10:47 GMT+05:00 =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=
+=D0=B8=D1=86=D0=B8=D0=BD &lt;<a href=3D"mailto:chipitsine@...277...">chipit=
+sine@...277...</a><br>
+</span>&gt; &lt;mailto:<a href=3D"mailto:chipitsine@...277...">chipitsine@...220...=
+..277...</a>&gt;&gt;<wbr>:<br>
+<span class=3D"">&gt;=C2=A0 =C2=A0 =C2=A02017-08-09 10:41 GMT+05:00 =D0=98=
+=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=B8=D1=86=D0=B8=D0=BD &lt;<a href=
+=3D"mailto:chipitsine@...277...">chipitsine@...277...</a><br>
+</span>&gt;=C2=A0 =C2=A0 =C2=A0&lt;mailto:<a href=3D"mailto:chipitsine@...1665...=
+77...">chipitsine@...277...</a>&gt;&gt;<wbr>:<br>
+<span class=3D"">&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A02017-08-08 20:55 GMT=
++05:00 Steffan Karger<br>
+</span>&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0&lt;<a href=3D"mailto:steffan.=
+karger@...1435...">steffan.karger@...1435...</a> &lt;mailto:<a href=3D"mail=
+to:steffan.karger@...1435...">steffan.karger@...2295...<wbr>com</a>&gt;&gt;=
+:<br>
+<div><div class=3D"h5">&gt;<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0Enable coverity analysi=
+s for the release/2.4 branch.<br>
+&gt;<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0We can only do a limite=
+d number of coverity scans per week<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0with our FOSS<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0account, but since we o=
+nly occasionally push commits, that<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0should work out<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0fine.=C2=A0 But this li=
+mit is the reason we don&#39;t use the<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0standard travis addon,<=
+br>
+&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0because that would caus=
+e the coverity script to run on all<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0of our matrix<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0builds.=C2=A0 That woul=
+d cause us to reach our limit faster, and<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0waste travis&#39;<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0resources.<br>
+&gt;<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0Since our FOSS coverity=
+ account doesn&#39;t handle multiple<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0branches very well,<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0we have to pick one bra=
+nch to run coverity on.=C2=A0 I think it&#39;s<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0best to use<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0the most recent stable =
+branch for that (i.e. for now,<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0release/2.4).<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0Though for ease of main=
+tenance, it&#39;s probably best to apply<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0the patch to<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0both master and release=
+/2.4.<br>
+&gt;<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0I would refactor it like that<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0<a href=3D"https://gist.github.com/ch=
+ipitsine/8dcae4ff1d59eb43df39f6015c6106fd" rel=3D"noreferrer" target=3D"_bl=
+ank">https://gist.github.com/<wbr>chipitsine/<wbr>8dcae4ff1d59eb43df39f6015=
+c6106<wbr>fd</a><br>
+&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0&lt;<a href=3D"https://gist.github.co=
+m/chipitsine/8dcae4ff1d59eb43df39f6015c6106fd" rel=3D"noreferrer" target=3D=
+"_blank">https://gist.github.com/<wbr>chipitsine/<wbr>8dcae4ff1d59eb43df39f=
+6015c6106<wbr>fd</a>&gt;<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0however, your is ok as well<br>
+&gt;<br>
+&gt;=C2=A0 =C2=A0 =C2=A0maybe, &quot;script&quot; would be better here<br>
+&gt;=C2=A0 =C2=A0 =C2=A0<a href=3D"https://gist.github.com/chipitsine/8dcae=
+4ff1d59eb43df39f6015c6106fd#file-gistfile1-txt-L74" rel=3D"noreferrer" targ=
+et=3D"_blank">https://gist.github.com/<wbr>chipitsine/<wbr>8dcae4ff1d59eb43=
+df39f6015c6106<wbr>fd#file-gistfile1-txt-L74</a><br>
+&gt;=C2=A0 =C2=A0 =C2=A0&lt;<a href=3D"https://gist.github.com/chipitsine/8=
+dcae4ff1d59eb43df39f6015c6106fd#file-gistfile1-txt-L74" rel=3D"noreferrer" =
+target=3D"_blank">https://gist.github.com/<wbr>chipitsine/<wbr>8dcae4ff1d59=
+eb43df39f6015c6106<wbr>fd#file-gistfile1-txt-L74</a>&gt;<br>
+&gt;=C2=A0 =C2=A0 =C2=A0than &quot;before_script&quot;<br>
+&gt;<br>
+&gt; oops, travis does not support braches within matrix<br>
+&gt;<br>
+&gt; <a href=3D"https://gist.github.com/chipitsine/8dcae4ff1d59eb43df39f601=
+5c6106fd#file-gistfile1-txt-L70-L72" rel=3D"noreferrer" target=3D"_blank">h=
+ttps://gist.github.com/<wbr>chipitsine/<wbr>8dcae4ff1d59eb43df39f6015c6106<=
+wbr>fd#file-gistfile1-txt-L70-L72</a><br>
+&gt;<br>
+&gt; sorry for that<br>
+<br>
+</div></div>I like your idea, and toyed with it a bit.=C2=A0 But in the end=
+, it needs too<br>
+much fiddling to get right.=C2=A0 So I prefer my own suggested approach.<br=
+></blockquote><div><br></div><div>nevermind :)<br></div><div>=C2=A0</div><b=
+lockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px =
+#ccc solid;padding-left:1ex">
+<span class=3D"HOEnZb"><font color=3D"#888888"><br>
+-Steffan<br>
+</font></span><div class=3D"HOEnZb"><div class=3D"h5"><br>
+------------------------------<wbr>------------------------------<wbr>-----=
+-------------<br>
+Check out the vibrant tech community on one of the world&#39;s most<br>
+engaging tech sites, Slashdot.org! <a href=3D"http://sdm.link/slashdot" rel=
+=3D"noreferrer" target=3D"_blank">http://sdm.link/slashdot</a><br>
+______________________________<wbr>_________________<br>
+Openvpn-devel mailing list<br>
+<a href=3D"mailto:Openvpn-devel@lists.sourceforge.net">Openvpn-devel@...2155...=
+9...<wbr>sourceforge.net</a><br>
+<a href=3D"https://lists.sourceforge.net/lists/listinfo/openvpn-devel" rel=
+=3D"noreferrer" target=3D"_blank">https://lists.sourceforge.net/<wbr>lists/=
+listinfo/openvpn-devel</a><br>
+</div></div></blockquote></div><br></div></div>
 
---001a113d2950daecd1055657d8f0--
+--f403045f502cadd34405565fbfe6--
 
