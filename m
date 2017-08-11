@@ -1,12 +1,10 @@
-References: <20170811090744.31750-1-a@...2181...>
- <20170811090744.31750-5-a@...2181...>
-From: Steffan Karger <steffan@...1856...>
-Message-ID: <aeb17a7c-ee50-1212-6103-961402856d09@...1856...>
-Date: Fri, 11 Aug 2017 21:01:34 +0200
-MIME-Version: 1.0
-In-Reply-To: <20170811090744.31750-5-a@...2181...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH 4/5] remove unused functions
+From: David Sommerseth <davids@...515...>
+Date: Fri, 11 Aug 2017 22:11:00 +0200
+Message-Id: <20170811201100.3586-1-davids@...515...>
+In-Reply-To: <20170710043441.24770-2-a@...2181...>
+References: <20170710043441.24770-2-a@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH applied] ntlm: convert binary buffers to
+ uint8_t *
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,97 +13,50 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: a@...2181...
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
 
-On 11-08-17 11:07, Antonio Quartulli wrote:
-> From: Antonio Quartulli <antonio@...515...>
-> 
-> Signed-off-by: Antonio Quartulli <antonio@...515...>
-> ---
->  src/openvpn/misc.c        | 23 -----------------------
->  src/openvpn/ssl.c         | 10 ----------
->  src/openvpn/ssl_openssl.c |  6 ------
->  3 files changed, 39 deletions(-)
-> 
-> diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
-> index 07775992..a599fd70 100644
-> --- a/src/openvpn/misc.c
-> +++ b/src/openvpn/misc.c
-> @@ -448,29 +448,6 @@ construct_name_value(const char *name, const char *value, struct gc_arena *gc)
->      return BSTR(&out);
->  }
->  
-> -bool
-> -deconstruct_name_value(const char *str, const char **name, const char **value, struct gc_arena *gc)
-> -{
-> -    char *cp;
-> -
-> -    ASSERT(str);
-> -    ASSERT(name && value);
-> -
-> -    *name = cp = string_alloc(str, gc);
-> -    *value = NULL;
-> -
-> -    while ((*cp))
-> -    {
-> -        if (*cp == '=' && !*value)
-> -        {
-> -            *cp = 0;
-> -            *value = cp + 1;
-> -        }
-> -        ++cp;
-> -    }
-> -    return *name && *value;
-> -}
-> -
->  static bool
->  env_string_equal(const char *s1, const char *s2)
->  {
-> diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-> index 45b20e56..460ef9e8 100644
-> --- a/src/openvpn/ssl.c
-> +++ b/src/openvpn/ssl.c
-> @@ -2177,16 +2177,6 @@ read_string_alloc(struct buffer *buf)
->      return str;
->  }
->  
-> -void
-> -read_string_discard(struct buffer *buf)
-> -{
-> -    char *data = read_string_alloc(buf);
-> -    if (data)
-> -    {
-> -        free(data);
-> -    }
-> -}
-> -
->  /*
->   * Handle the reading and writing of key data to and from
->   * the TLS control channel (cleartext).
-> diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-> index 7ad6414e..fa06f068 100644
-> --- a/src/openvpn/ssl_openssl.c
-> +++ b/src/openvpn/ssl_openssl.c
-> @@ -797,12 +797,6 @@ tls_ctx_load_cert_file(struct tls_root_ctx *ctx, const char *cert_file,
->      tls_ctx_load_cert_file_and_copy(ctx, cert_file, cert_file_inline, NULL);
->  }
->  
-> -void
-> -tls_ctx_free_cert_file(X509 *x509)
-> -{
-> -    X509_free(x509);
-> -}
-> -
->  int
->  tls_ctx_load_priv_file(struct tls_root_ctx *ctx, const char *priv_key_file,
->                         bool priv_key_file_inline)
-> 
+Your patch has been applied to the following branches
 
-Verified that these are indeed not used, and safe to remove.  ACK.
+commit e7e4070cb7b90f4836b65c53360166e11fc3f383  (master)
+commit 3ace1139e7aa00580300fb5bef37ac6d47378630  (release/2.4)
+Author: Antonio Quartulli
+Date:   Mon Jul 10 12:34:38 2017 +0800
 
--Steffan
+     ntlm: convert binary buffers to uint8_t *
+
+     Signed-off-by: Antonio Quartulli <a@...2181...>
+     Acked-by: Steffan Karger <steffan@...1856...>
+     Message-Id: <20170710043441.24770-2-a@...2181...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg15032.html
+     Signed-off-by: David Sommerseth <davids@...515...>
+
+
+- --
+kind regards,
+
+David Sommerseth
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBCgAGBQJZjg9SAAoJEIbPlEyWcf3y0HgP/i35Nvj4wDpV/akcBP0SWLvR
+L6AcwCM7LBEgqOeNfSO18ysoK1nzp9EpglPyyFDrWtszJQ0ow+Dtwp7VqlzPUM7W
+fmFe6c0YaogaRCOyv1l/RJ+0E5BoTi7wj3baC2znEkE3MEDGE6I+Yjnxpy2QirTj
+/arxtDSmtap2/Ygyvtt7K5iRPJZ0y2macUHCGk3b7lPXMVFjyA1akTU7tiVmgUrp
+JFfiLXOOtJu50jGcE8oF+D7hZ6/cq21S/nfQPUKbG/0t1li43/wGt9exp5mHnHFx
+LvprBmjoKaQHj9eR/iqrirSvd/Sl9okDeuaFsNfgcTi87wtbwz7wfCudd/11f25H
+H+uVLT9Whq+PnFpF2ZuDVi7Z1/DejLxEY/uxK2TolV1MfO9hLeSiCPoz2NxPq179
+FolBa2/8IzrC+8UhDL652Cp0kYZmSyal1jfQGr5fx8uNPGivQeUo6Y+Zmh8H5jEy
+2Ij0dSc9Y+m6F+3VpxMGwhx7IR3Ro9vwW6jjmYpB/HK5o+sMQJ3g8wgqKpbDAzN3
+/OTN/9vC47foHTuSGDyyTGR9Hf6zToYamMFX3sIV08XLRSMe92NPljL5pI9S+SS5
+xQDLaPIERZLR7CSi9uKzpL5+lcSLNK6sNp2pN29W1e+uwASoszZe6qqqZ1yiLQ6w
+pV/MW6TKGqH+Ta0UrBO1
+=Esi3
+-----END PGP SIGNATURE-----
 
