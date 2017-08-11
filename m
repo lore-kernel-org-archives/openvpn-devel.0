@@ -1,9 +1,10 @@
 From: Antonio Quartulli <a@...2181...>
-Date: Fri, 11 Aug 2017 17:07:43 +0800
-Message-Id: <20170811090744.31750-5-a@...2181...>
+Date: Fri, 11 Aug 2017 17:07:44 +0800
+Message-Id: <20170811090744.31750-6-a@...2181...>
 In-Reply-To: <20170811090744.31750-1-a@...2181...>
 References: <20170811090744.31750-1-a@...2181...>
-Subject: [Openvpn-devel] [PATCH 4/5] remove unused functions
+Subject: [Openvpn-devel] [PATCH 5/5] use NULL instead of 0 when assigning
+ pointers
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,83 +22,52 @@ From: Antonio Quartulli <antonio@...515...>
 
 Signed-off-by: Antonio Quartulli <antonio@...515...>
 ---
- src/openvpn/misc.c        | 23 -----------------------
- src/openvpn/ssl.c         | 10 ----------
- src/openvpn/ssl_openssl.c |  6 ------
- 3 files changed, 39 deletions(-)
+ src/openvpn/ps.c                 | 2 +-
+ src/openvpn/ssl_openssl.c        | 2 +-
+ src/openvpn/ssl_verify_openssl.c | 4 ++--
+ 3 files changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
-index 07775992..a599fd70 100644
---- a/src/openvpn/misc.c
-+++ b/src/openvpn/misc.c
-@@ -448,29 +448,6 @@ construct_name_value(const char *name, const char *value, struct gc_arena *gc)
-     return BSTR(&out);
- }
+diff --git a/src/openvpn/ps.c b/src/openvpn/ps.c
+index 45e24ded..5136a20c 100644
+--- a/src/openvpn/ps.c
++++ b/src/openvpn/ps.c
+@@ -922,7 +922,7 @@ port_share_open(const char *host,
+         openvpn_close_socket(fd[1]);
  
--bool
--deconstruct_name_value(const char *str, const char **name, const char **value, struct gc_arena *gc)
--{
--    char *cp;
--
--    ASSERT(str);
--    ASSERT(name && value);
--
--    *name = cp = string_alloc(str, gc);
--    *value = NULL;
--
--    while ((*cp))
--    {
--        if (*cp == '=' && !*value)
--        {
--            *cp = 0;
--            *value = cp + 1;
--        }
--        ++cp;
--    }
--    return *name && *value;
--}
--
- static bool
- env_string_equal(const char *s1, const char *s2)
- {
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 45b20e56..460ef9e8 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -2177,16 +2177,6 @@ read_string_alloc(struct buffer *buf)
-     return str;
- }
+         exit(0);
+-        return 0; /* NOTREACHED */
++        return NULL; /* NOTREACHED */
+     }
  
--void
--read_string_discard(struct buffer *buf)
--{
--    char *data = read_string_alloc(buf);
--    if (data)
--    {
--        free(data);
--    }
--}
--
- /*
-  * Handle the reading and writing of key data to and from
-  * the TLS control channel (cleartext).
+ error:
 diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-index 7ad6414e..fa06f068 100644
+index fa06f068..c977b9e2 100644
 --- a/src/openvpn/ssl_openssl.c
 +++ b/src/openvpn/ssl_openssl.c
-@@ -797,12 +797,6 @@ tls_ctx_load_cert_file(struct tls_root_ctx *ctx, const char *cert_file,
-     tls_ctx_load_cert_file_and_copy(ctx, cert_file, cert_file_inline, NULL);
- }
+@@ -703,7 +703,7 @@ tls_ctx_add_extra_certs(struct tls_root_ctx *ctx, BIO *bio)
+     for (;; )
+     {
+         cert = NULL;
+-        if (!PEM_read_bio_X509(bio, &cert, 0, NULL)) /* takes ownership of cert */
++        if (!PEM_read_bio_X509(bio, &cert, NULL, NULL)) /* takes ownership of cert */
+         {
+             break;
+         }
+diff --git a/src/openvpn/ssl_verify_openssl.c b/src/openvpn/ssl_verify_openssl.c
+index ea474955..2f3b10b9 100644
+--- a/src/openvpn/ssl_verify_openssl.c
++++ b/src/openvpn/ssl_verify_openssl.c
+@@ -202,8 +202,8 @@ extract_x509_field_ssl(X509_NAME *x509, const char *field_name, char *out,
+ {
+     int lastpos = -1;
+     int tmp = -1;
+-    X509_NAME_ENTRY *x509ne = 0;
+-    ASN1_STRING *asn1 = 0;
++    X509_NAME_ENTRY *x509ne = NULL;
++    ASN1_STRING *asn1 = NULL;
+     unsigned char *buf = NULL;
+     ASN1_OBJECT *field_name_obj = OBJ_txt2obj(field_name, 0);
  
--void
--tls_ctx_free_cert_file(X509 *x509)
--{
--    X509_free(x509);
--}
--
- int
- tls_ctx_load_priv_file(struct tls_root_ctx *ctx, const char *priv_key_file,
-                        bool priv_key_file_inline)
 -- 
 2.14.0
 
