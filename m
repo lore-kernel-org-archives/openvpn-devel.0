@@ -1,14 +1,11 @@
-From: Simon Rozman <simon@...2293...>
-Date: Fri, 11 Aug 2017 14:05:11 +0000
-Message-ID: <99D61A626FDA8A4B90A270669121BE10806F444A@...2294...>
+MIME-Version: 1.0
+In-Reply-To: <20170811102147.GT4090@...1281...>
 References: <99D61A626FDA8A4B90A270669121BE10806D5BC3@...2294...>
  <20170811102147.GT4090@...1281...>
-In-Reply-To: <20170811102147.GT4090@...1281...>
-Content-Language: en-US
-Content-Type: multipart/signed; protocol="application/x-pkcs7-signature";
- micalg=2.16.840.1.101.3.4.2.1;
- boundary="----=_NextPart_000_0000_01D312BB.9BCF6140"
-MIME-Version: 1.0
+From: Selva Nair <selva.nair@...277...>
+Date: Fri, 11 Aug 2017 10:43:53 -0400
+Message-ID: <CAKuzo_jPnS5xVmL9LO_V6tL6Tt92jtRzQ62s6W3665pVrZUaYg@...278...>
+Content-Type: multipart/alternative; boundary="001a11409566d432a105567b58dc"
 Subject: Re: [Openvpn-devel] OVPN Interactive Service for non-admin users
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -18,113 +15,131 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: =?iso-8859-2?Q?Pasi_K=E4rkk=E4inen?= <pasik@...124...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-------=_NextPart_000_0000_01D312BB.9BCF6140
-Content-Type: text/plain;
-	charset="iso-8859-2"
-Content-Transfer-Encoding: 7bit
+--001a11409566d432a105567b58dc
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
 Hi,
 
-> 
+On Fri, Aug 11, 2017 at 6:21 AM, Pasi K=C3=A4rkk=C3=A4inen <pasik@...124...=
+> wrote:
+
+> Hi,
+>
+> On Wed, Aug 09, 2017 at 02:31:58PM +0000, Simon Rozman via Openvpn-devel
+> wrote:
+> >    Hi!
+> >
+> >    I am developing an eduVPN client for Windows. Imagine the eduVPN
+> client as
+> >    a custom OpenVPN GUI. The client uses openvpn.exe for connecting, the
+> >    configuration file is provided by eduVPN server once user
+> authenticates
+> >    using OAuth. User running the eduVPN client is not an administrator.
+> >    Elevation is out of the question.
+> >
+> >
+> >    I would like to use the Interactive Service to start openvpn.exe, but
+> I
+> >    have some problems:
+> >
+> >
+> >    1.       The configuration file is dynamically downloaded by the
+> eduVPN
+> >    client and stored somewhere user can write (user's temporary folder
+> for
+> >    example). But the Interactive Service was specifically programmed to
+> allow
+> >    configurations from "C:\Program Files\OpenVPN\config" folder only. B=
+ut
+> >    user running eduVPN client can't write to this folder.
+> >
+>
+>
 > Wasn't this changed in the latest version, allowing config files to be
-under
-> user home/profile directory?
-> 
+> under user home/profile directory?
+>
+>
+The change you are referring to is that OpenVPN-GUI now looks for configs
+in the global location and in user's profile with the latter given priority
+in case of duplicates.
 
-Nope, 2.4.3 refuses to run the openvpn.exe if --config points to an .ovpn
-file in the user home directory (namely user's temporary folder). I also did
-a brief openvpnserv source code audit not to find anything supporting it.
+However, to use the interactive service, config could be in any directory
+only if the user is a member of (i) Administrators group OR (ii) a custom
+group (named "OpenVPN Administrators" by default). Otherwise only configs
+in the pre-defined global location are allowed[*]. This is done to make
+sure that admins has control over who is allowed to manipulate routes etc
+using the interactive service. Note that only group membership is needed,
+the group need not be enabled in the token which means elevation is not
+required.
 
-If you add that option, that would void entire Interactive Service
-"security" scheme, wouldn't it?
+Selva
 
-But that's what I wanted in the first place, as I believe Interactive
-Service "security" scheme makes no sense.
+[*] This actual requirement is a bit more relaxed than that as some limited
+options are allowed in user-editable configs or command line for all users.
 
-Why does OpenVPN restrict non-admin users from using Interactive Service in
-the first place, while Windows' out-of-the-box VPN connects them just fine?
-If you are afraid a malware would start connecting - they already can: using
-Windows' VPN.
+--001a11409566d432a105567b58dc
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Flushing ARP cache, client DNS registration, and other tasks OpenVPN can't
-perform as non-admin user is a technical issue of OpenVPN running in user
-space. Not a security one. Interactive Service overcomes that, but in the
-same time it assumes it's a security sensitive issue.
+<div dir=3D"ltr"><div style=3D"font-size:12.8px">Hi,</div><div class=3D"gma=
+il_extra"><br><div class=3D"gmail_quote">On Fri, Aug 11, 2017 at 6:21 AM, P=
+asi K=C3=A4rkk=C3=A4inen <span dir=3D"ltr">&lt;<a href=3D"mailto:pasik@...1386...=
+24..." target=3D"_blank">pasik@...124...</a>&gt;</span> wrote:<br><blockquo=
+te class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px =
+solid rgb(204,204,204);padding-left:1ex">Hi,<br>
+<span class=3D"gmail-"><br>
+On Wed, Aug 09, 2017 at 02:31:58PM +0000, Simon Rozman via Openvpn-devel wr=
+ote:<br>
+&gt;=C2=A0 =C2=A0 Hi!<br>
+&gt;<br>
+&gt;=C2=A0 =C2=A0 I am developing an eduVPN client for Windows. Imagine the=
+ eduVPN client as<br>
+&gt;=C2=A0 =C2=A0 a custom OpenVPN GUI. The client uses openvpn.exe for con=
+necting, the<br>
+&gt;=C2=A0 =C2=A0 configuration file is provided by eduVPN server once user=
+ authenticates<br>
+&gt;=C2=A0 =C2=A0 using OAuth. User running the eduVPN client is not an adm=
+inistrator.<br>
+&gt;=C2=A0 =C2=A0 Elevation is out of the question.<br>
+&gt;<br>
+&gt;<br>
+&gt;=C2=A0 =C2=A0 I would like to use the Interactive Service to start open=
+vpn.exe, but I<br>
+&gt;=C2=A0 =C2=A0 have some problems:<br>
+&gt;<br>
+&gt;<br>
+&gt;=C2=A0 =C2=A0 1.=C2=A0 =C2=A0 =C2=A0 =C2=A0The configuration file is dy=
+namically downloaded by the eduVPN<br>
+&gt;=C2=A0 =C2=A0 client and stored somewhere user can write (user&#39;s te=
+mporary folder for<br>
+&gt;=C2=A0 =C2=A0 example). But the Interactive Service was specifically pr=
+ogrammed to allow<br>
+&gt;=C2=A0 =C2=A0 configurations from &quot;C:\Program Files\OpenVPN\config=
+&quot; folder only. But<br>
+&gt;=C2=A0 =C2=A0 user running eduVPN client can&#39;t write to this folder=
+.<br>
+&gt;<br>
+<br>
+<br>
+</span>Wasn&#39;t this changed in the latest version, allowing config files=
+ to be under user home/profile directory?<br><br></blockquote><div><br></di=
+v><div><div>The change you are referring to is that OpenVPN-GUI now looks f=
+or configs in the global location and in user&#39;s profile with the latter=
+ given priority in case of duplicates.</div><div><br></div><div>However, to=
+ use the interactive service, config could be in any directory only if the =
+user is a member of (i) Administrators group OR (ii) a custom group (named =
+&quot;OpenVPN Administrators&quot; by default). Otherwise only configs in t=
+he pre-defined global location are allowed[*]. This is done to make sure th=
+at admins has control over who is allowed to manipulate routes etc using th=
+e interactive service. Note that only group membership is needed, the group=
+ need not be enabled in the token which means elevation is not required.</d=
+iv><div><br></div><div>Selva</div><div><br></div><div>[*] This actual requi=
+rement is a bit more relaxed than that as some limited options are allowed =
+in user-editable configs or command line for all users.</div></div></div></=
+div></div>
 
-This limitation can and will be turned off with one or another simple
-administrator task (performed by eduVPN setup). So, this is no biggie...
-Just me ranting. :)
-
-Best regards,
-Simon
-
-------=_NextPart_000_0000_01D312BB.9BCF6140
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-
-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
-909xLB4AAAAAAAA=
-
-------=_NextPart_000_0000_01D312BB.9BCF6140--
+--001a11409566d432a105567b58dc--
 
