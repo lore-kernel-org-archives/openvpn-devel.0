@@ -1,16 +1,12 @@
-Date: Fri, 11 Aug 2017 20:26:04 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20170811182603.GA70062@...1296...>
 References: <20170811090744.31750-1-a@...2181...>
- <20170811090744.31750-6-a@...2181...>
- <CAKuzo_gpjo3d6O+Z8XrCGt0DVaySR8AZrQ4MyVxqpx0spD8gwQ@...278...>
+ <20170811090744.31750-5-a@...2181...>
+From: Steffan Karger <steffan@...1856...>
+Message-ID: <aeb17a7c-ee50-1212-6103-961402856d09@...1856...>
+Date: Fri, 11 Aug 2017 21:01:34 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="xd7ZVmXU2EjaW0+X"
-Content-Disposition: inline
-In-Reply-To: <CAKuzo_gpjo3d6O+Z8XrCGt0DVaySR8AZrQ4MyVxqpx0spD8gwQ@...278...>
-Subject: Re: [Openvpn-devel] [PATCH 5/5] use NULL instead of 0 when
- assigning pointers
+In-Reply-To: <20170811090744.31750-5-a@...2181...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH 4/5] remove unused functions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,54 +15,97 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva Nair <selva.nair@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-
---xd7ZVmXU2EjaW0+X
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-On Fri, Aug 11, 2017 at 11:11:21AM -0400, Selva Nair wrote:
-> Constant 0 or (void *) 0 assigned to a pointer are the same as NULL
-> pointer, so why bother?
+On 11-08-17 11:07, Antonio Quartulli wrote:
+> From: Antonio Quartulli <antonio@...515...>
+> 
+> Signed-off-by: Antonio Quartulli <antonio@...515...>
+> ---
+>  src/openvpn/misc.c        | 23 -----------------------
+>  src/openvpn/ssl.c         | 10 ----------
+>  src/openvpn/ssl_openssl.c |  6 ------
+>  3 files changed, 39 deletions(-)
+> 
+> diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
+> index 07775992..a599fd70 100644
+> --- a/src/openvpn/misc.c
+> +++ b/src/openvpn/misc.c
+> @@ -448,29 +448,6 @@ construct_name_value(const char *name, const char *value, struct gc_arena *gc)
+>      return BSTR(&out);
+>  }
+>  
+> -bool
+> -deconstruct_name_value(const char *str, const char **name, const char **value, struct gc_arena *gc)
+> -{
+> -    char *cp;
+> -
+> -    ASSERT(str);
+> -    ASSERT(name && value);
+> -
+> -    *name = cp = string_alloc(str, gc);
+> -    *value = NULL;
+> -
+> -    while ((*cp))
+> -    {
+> -        if (*cp == '=' && !*value)
+> -        {
+> -            *cp = 0;
+> -            *value = cp + 1;
+> -        }
+> -        ++cp;
+> -    }
+> -    return *name && *value;
+> -}
+> -
+>  static bool
+>  env_string_equal(const char *s1, const char *s2)
+>  {
+> diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+> index 45b20e56..460ef9e8 100644
+> --- a/src/openvpn/ssl.c
+> +++ b/src/openvpn/ssl.c
+> @@ -2177,16 +2177,6 @@ read_string_alloc(struct buffer *buf)
+>      return str;
+>  }
+>  
+> -void
+> -read_string_discard(struct buffer *buf)
+> -{
+> -    char *data = read_string_alloc(buf);
+> -    if (data)
+> -    {
+> -        free(data);
+> -    }
+> -}
+> -
+>  /*
+>   * Handle the reading and writing of key data to and from
+>   * the TLS control channel (cleartext).
+> diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+> index 7ad6414e..fa06f068 100644
+> --- a/src/openvpn/ssl_openssl.c
+> +++ b/src/openvpn/ssl_openssl.c
+> @@ -797,12 +797,6 @@ tls_ctx_load_cert_file(struct tls_root_ctx *ctx, const char *cert_file,
+>      tls_ctx_load_cert_file_and_copy(ctx, cert_file, cert_file_inline, NULL);
+>  }
+>  
+> -void
+> -tls_ctx_free_cert_file(X509 *x509)
+> -{
+> -    X509_free(x509);
+> -}
+> -
+>  int
+>  tls_ctx_load_priv_file(struct tls_root_ctx *ctx, const char *priv_key_file,
+>                         bool priv_key_file_inline)
+> 
 
-Technically, it is (and NULL is quite often defined to be "(void *)0L"
-or the like).
+Verified that these are indeed not used, and safe to remove.  ACK.
 
-Personally, I like using NULL - and seeing NULL being used - when in
-pointer context and "0" when in numeric context - it's more a visual
-thing.
-
-Since we use NULL about everywhere else in OpenVPN, I think this change
-to get the few remaining places in line is a good thing.  Thus, ACK :)
-
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---xd7ZVmXU2EjaW0+X
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJZjfa7AAoJEB2Cnv7KVigSpDUL/A7AbkeuKeQaQ6hji2p9tNUT
-hkYqghvT4MYLe66LPvMz2p6VpZFPe18UsrxWNY+RoL9bvsrIvc1Ne1Pp4YXbDMSV
-B63ruHcpevIWLd/23tSFp1Pzpu/O9vWXuSQ+gOyFLkoc60VBbrqAg9jrqI1uDUuk
-C5CK+Gfx87jFciE7NBgIHAYgGsL1ZEeS/Gh2RhLTht3SejUoastlaqwpuFnx1Iyg
-aHAZI8r4fTTUTA+jZglqGaq/ETX6aWUrbub+wCGSflSx3t+YxI7mmPrRs3kBg0W+
-Us1edBnwiaMGZVi4hFcCk/c97l3qltFPaB7EZ+ht0KBgJOGlNQ3Atw2Z470pzdkJ
-uoH1TQqiDmSP8M90weEv/sjSA/9clMWGT9izmDlwynyMD634xvJDgtANcbaATffN
-OMbmOeNMXWMoUgI3EenORAl+XfkSjKD9WBWTmEyztKW1KhEYFgIYrIGoZRnE9r76
-K6mihHJqun37RcB52y4TA+/jp5DOQ0YkCXMzGJJrug==
-=DtQu
------END PGP SIGNATURE-----
-
---xd7ZVmXU2EjaW0+X--
+-Steffan
 
