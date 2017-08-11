@@ -1,10 +1,10 @@
 From: David Sommerseth <davids@...515...>
-Date: Fri, 11 Aug 2017 22:12:35 +0200
-Message-Id: <20170811201235.11536-1-davids@...515...>
-In-Reply-To: <20170807132301.22759-2-chipitsine@...277...>
-References: <20170807132301.22759-2-chipitsine@...277...>
-Subject: Re: [Openvpn-devel] [PATCH applied] travis-ci: update openssl to
- 1.0.2l, update mbedtls to 2.5.1
+Date: Fri, 11 Aug 2017 22:12:50 +0200
+Message-Id: <20170811201250.11660-1-davids@...515...>
+In-Reply-To: <20170809081219.10367-1-chipitsine@...277...>
+References: <20170809081219.10367-1-chipitsine@...277...>
+Subject: Re: [Openvpn-devel] [PATCH applied] travis-ci: update pkcs11-helper
+ to 1.22
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -23,16 +23,17 @@ Hash: SHA512
 
 Your patch has been applied to the following branches
 
-commit 4a9306255cf0e1cc056e66ed4fa0f2e687c137f6  (master)
-commit 14f67c3c9091c4adf903c25eb88c0b281fa3b15f  (release/2.4)
+commit 28dba48541f5b212c7510ab3b0776dc39044502a  (master)
+commit 9fffbfd094203126d2c7b8039762cd258c36631e  (release/2.4)
 Author: Ilya Shipitsin
-Date:   Mon Aug 7 18:23:00 2017 +0500
+Date:   Wed Aug 9 13:12:19 2017 +0500
 
-     travis-ci: update openssl to 1.0.2l, update mbedtls to 2.5.1
+     travis-ci: update pkcs11-helper to 1.22
 
+     Signed-off-by: Ilya Shipitsin <chipitsine@...277...>
      Acked-by: Steffan Karger <steffan@...1856...>
-     Message-Id: <20170807132301.22759-2-chipitsine@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg15171.html
+     Message-Id: <20170809081219.10367-1-chipitsine@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg15187.html
      Signed-off-by: David Sommerseth <davids@...515...>
 
 
@@ -44,18 +45,18 @@ David Sommerseth
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBCgAGBQJZjg+wAAoJEIbPlEyWcf3yrGwQAJwuwvNBwon3WAoMC7qxx8gm
-j/at9JNZKUaehhinZOOrmGYXeC6W/z/DxVYUjiALcNPHVabEex12C+Wo8ycOWVt8
-nrEtOtrzrCHiHm69VRhhsiOvJlbJF0qfjboLeLq2YWEOtkYHL4TIMbU00DpbJKe+
-a9r9LZe0Tv4UiMFIGeWgG+0xUtsARdhyJBhEmZ9XOYEexuqhDA8Fgc9/5oWf5K6S
-ajVV8AClaqYYhQFY2Zr9eZx1d7uDfVbKux6OvIyCnHT1HtTDdE9URHsboGwAOzy0
-Vg2yOJz0gWflkUy0RXky/jmkBMBVquCBamsSrW4CM9nshIO+8wrFgJDWdmHf02hb
-qpLjIbLJbJixflaSBfUUP5AVpdGF55ViDGR53T6XmW9X24Sa0Xc5EC7KGo1o0Nvy
-5lGAoAQjAQjaQah/zRQcdcoyklXjnojZracLQIzeOSsTPuQksPo2OTLw/Rxxv65K
-0l+zIC0rDmQdBmvoArrzQ0nSX7bpfZPqXT7PKmwqZhOPvyBshjxx6SfdG42sTUMY
-6+IRgPvIWYwu5dQ2IH1yrwrUl4Hg2yovhyvpsVmVdPc4s63m1DwIs+kwhj4qA319
-GRdx6Eu6ro8S7hWWy+mtrFgmTUm1b4f2okbULnk/UB6L4JlvnzPUXc0wPRmZfiXq
-UshMOTMNvwU3QwhlIqW/
-=P+7T
+iQIcBAEBCgAGBQJZjg+/AAoJEIbPlEyWcf3ybecP/0L9hhRQ6nK6sPaTaGrlzTwl
+3ae/F+td5Ve8vTKuGn3P93LAiA15KR2E4BxQ6yJh8nJnTPrGIdM4a9l48TkaTME5
+kxeWc/K7dArOuIzooOvacPHeR359bMYkBHmqdDcP5R8HBTDVxay+2teyKzy5P7/y
+nryjmnOR5ZXdFHYy+8sXj+vthcwEJM9lZSoJzUk7d6syfsNYyBqx5xXrgey5dKON
+EdB8q0n/Ea7yI+KNpPq3zZ01II6Kn4fcKZRN3as4XCru7a+YJGVFWll3fw//VQIE
+pmguUad6kAAFiAvaltB0FCdAgRmAVQYVl1g6HdP7Fq4Slov7LwklNwXyEfGUJvmf
+PXTmqbcjBlavGpf9uMSNHZVWwfBn3DNAEx244N3fthK0IabPi6sf9wCb4ssaYAiy
+Zajn2H9gTiEBQxU9Akqt6iZS86MfqtKMb06KKZWTjCzXgCJr0KScABxVVDI2/7i1
+9KdwkXPg0b9LhN3myVZFNXrTRKObQKjs0E+FUIYO4XQoFtYFFxTS+iT7qM6abYKq
+Xl2Yl0nfv7j7Oqd5xvSysnt8zJCBTUY/nsVHxOp6lhDpF29U41YwgGs1eHk0slVU
+iBmCAR4/3WlvYWphfZoG/LQtcvNR3y5LJxYFHLmhOTG2LtfL/y4McIdJ1TXoQQCa
+re+OGjU9/v16ZfzuP6m1
+=URQP
 -----END PGP SIGNATURE-----
 
