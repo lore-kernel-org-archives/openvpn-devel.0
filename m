@@ -1,9 +1,10 @@
 From: Antonio Quartulli <a@...2181...>
-Date: Fri, 11 Aug 2017 17:07:40 +0800
-Message-Id: <20170811090744.31750-2-a@...2181...>
+Date: Fri, 11 Aug 2017 17:07:41 +0800
+Message-Id: <20170811090744.31750-3-a@...2181...>
 In-Reply-To: <20170811090744.31750-1-a@...2181...>
 References: <20170811090744.31750-1-a@...2181...>
-Subject: [Openvpn-devel] [PATCH 1/5] make function declarations C99 compliant
+Subject: [Openvpn-devel] [PATCH 2/5] ensure function declarations are
+ compiled with their definitions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,642 +20,578 @@ Cc: Antonio Quartulli <antonio@...515...>
 
 From: Antonio Quartulli <antonio@...515...>
 
-In the attempt of adhering to the C99 standard as much as possible,
-ensure that all the function declarations with no parameter contain
-the "void" keyword[1].
+Function prototypes should be included when compiling their
+definitions so that it is clear to compilers and static
+analyzers that they are not static.
 
-Defects identified with sparse[2].
+This means that several declarations have to be moved to the
+related header files which in turn have to be included by the
+source files implementing them.
 
-[1] ISO/IEC 9899:1999 spec, TC3 - section 6.7.5.3
-[1] https://sparse.wiki.kernel.org/index.php/Main_Page
+Generally speaking this also improves the coding style and
+makes this code more consistent with the rest that already
+follows this rule.
 
 Signed-off-by: Antonio Quartulli <antonio@...515...>
 ---
- src/openvpn/buffer.c          |  2 +-
- src/openvpn/console.c         |  2 +-
- src/openvpn/console.h         |  8 ++++----
- src/openvpn/console_builtin.c |  2 +-
- src/openvpn/console_systemd.c |  4 ++--
- src/openvpn/crypto.c          |  4 ++--
- src/openvpn/crypto.h          |  2 +-
- src/openvpn/crypto_mbedtls.c  | 10 +++++-----
- src/openvpn/crypto_mbedtls.h  |  4 ++--
- src/openvpn/crypto_openssl.c  |  6 +++---
- src/openvpn/error.c           |  6 +++---
- src/openvpn/error.h           |  2 +-
- src/openvpn/init.c            |  2 +-
- src/openvpn/interval.h        |  2 +-
- src/openvpn/manage.c          |  2 +-
- src/openvpn/occ-inline.h      |  2 +-
- src/openvpn/packet_id.c       |  2 +-
- src/openvpn/packet_id.h       |  2 +-
- src/openvpn/pkcs11.c          |  6 +++---
- src/openvpn/platform.c        |  2 +-
- src/openvpn/ps.c              |  2 +-
- src/openvpn/ssl.c             |  4 ++--
- src/openvpn/ssl_backend.h     |  6 +++---
- src/openvpn/ssl_mbedtls.c     |  6 +++---
- src/openvpn/ssl_openssl.c     | 12 ++++++------
- src/openvpn/win32.c           |  6 +++---
- src/openvpn/win32.h           |  4 ++--
- 27 files changed, 56 insertions(+), 56 deletions(-)
+ src/openvpn/crypto.h         |  3 +++
+ src/openvpn/error.c          |  3 +--
+ src/openvpn/forward-inline.h | 28 ++--------------------------
+ src/openvpn/forward.h        | 35 +++++++++++++++++++++++++++++++++++
+ src/openvpn/init.h           |  2 ++
+ src/openvpn/lladdr.c         |  1 +
+ src/openvpn/manage.h         | 11 ++++++-----
+ src/openvpn/mbuf.h           |  4 ++--
+ src/openvpn/mroute.h         | 21 +++++++++++----------
+ src/openvpn/multi.h          |  7 +++----
+ src/openvpn/occ-inline.h     |  8 ++------
+ src/openvpn/occ.h            |  6 ++++++
+ src/openvpn/pf-inline.h      |  6 ++----
+ src/openvpn/pf.h             |  6 ++++++
+ src/openvpn/ping-inline.h    |  6 ++----
+ src/openvpn/ping.h           |  4 ++++
+ src/openvpn/plugin.h         |  2 ++
+ src/openvpn/socket.h         | 13 +++++++------
+ 18 files changed, 97 insertions(+), 69 deletions(-)
 
-diff --git a/src/openvpn/buffer.c b/src/openvpn/buffer.c
-index 87e27ec0..a63ce14a 100644
---- a/src/openvpn/buffer.c
-+++ b/src/openvpn/buffer.c
-@@ -180,7 +180,7 @@ buf_assign(struct buffer *dest, const struct buffer *src)
- }
- 
- struct buffer
--clear_buf()
-+clear_buf(void)
- {
-     struct buffer buf;
-     CLEAR(buf);
-diff --git a/src/openvpn/console.c b/src/openvpn/console.c
-index eb6944d0..7e170241 100644
---- a/src/openvpn/console.c
-+++ b/src/openvpn/console.c
-@@ -44,7 +44,7 @@ struct _query_user query_user[QUERY_USER_NUMSLOTS];  /* GLOBAL */
- 
- 
- void
--query_user_clear()
-+query_user_clear(void)
- {
-     int i;
- 
-diff --git a/src/openvpn/console.h b/src/openvpn/console.h
-index aa51e6f6..3f74e77e 100644
---- a/src/openvpn/console.h
-+++ b/src/openvpn/console.h
-@@ -46,7 +46,7 @@ extern struct _query_user query_user[];  /**< Global variable, declared in conso
-  * Wipes all data put into all of the query_user structs
-  *
-  */
--void query_user_clear();
-+void query_user_clear(void);
- 
- 
- /**
-@@ -72,7 +72,7 @@ void query_user_add(char *prompt, size_t prompt_len,
-  *
-  * @return True if executing all the defined steps completed successfully
-  */
--bool query_user_exec_builtin();
-+bool query_user_exec_builtin(void);
- 
- 
- #if defined(ENABLE_SYSTEMD)
-@@ -83,7 +83,7 @@ bool query_user_exec_builtin();
-  *
-  * @return True if executing all the defined steps completed successfully
-  */
--bool query_user_exec();
-+bool query_user_exec(void);
- 
- #else  /* ENABLE_SYSTEMD not defined*/
- /**
-@@ -92,7 +92,7 @@ bool query_user_exec();
-  *
-  */
- static bool
--query_user_exec()
-+query_user_exec(void)
- {
-     return query_user_exec_builtin();
- }
-diff --git a/src/openvpn/console_builtin.c b/src/openvpn/console_builtin.c
-index 7b95da9d..f005ed74 100644
---- a/src/openvpn/console_builtin.c
-+++ b/src/openvpn/console_builtin.c
-@@ -267,7 +267,7 @@ get_console_input(const char *prompt, const bool echo, char *input, const int ca
-  *
-  */
- bool
--query_user_exec_builtin()
-+query_user_exec_builtin(void)
- {
-     bool ret = true; /* Presume everything goes okay */
-     int i;
-diff --git a/src/openvpn/console_systemd.c b/src/openvpn/console_systemd.c
-index 8cee8c8e..e7a72ae3 100644
---- a/src/openvpn/console_systemd.c
-+++ b/src/openvpn/console_systemd.c
-@@ -41,7 +41,7 @@
-  */
- 
- static bool
--check_systemd_running()
-+check_systemd_running(void)
- {
-     struct stat c;
- 
-@@ -95,7 +95,7 @@ get_console_input_systemd(const char *prompt, const bool echo, char *input, cons
-  *
-  */
- bool
--query_user_exec()
-+query_user_exec(void)
- {
-     bool ret = true;  /* Presume everything goes okay */
-     int i;
-diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
-index 909e901f..692501d2 100644
---- a/src/openvpn/crypto.c
-+++ b/src/openvpn/crypto.c
-@@ -1715,7 +1715,7 @@ static int nonce_secret_len = 0; /* GLOBAL */
- 
- /* Reset the nonce value, also done periodically to refresh entropy */
- static void
--prng_reset_nonce()
-+prng_reset_nonce(void)
- {
-     const int size = md_kt_size(nonce_md) + nonce_secret_len;
- #if 1 /* Must be 1 for real usage */
-@@ -1799,7 +1799,7 @@ prng_bytes(uint8_t *output, int len)
- 
- /* an analogue to the random() function, but use prng_bytes */
- long int
--get_random()
-+get_random(void)
- {
-     long int l;
-     prng_bytes((unsigned char *)&l, sizeof(l));
 diff --git a/src/openvpn/crypto.h b/src/openvpn/crypto.h
-index f00a6d8f..f1b6c20a 100644
+index f1b6c20a..5f0790a6 100644
 --- a/src/openvpn/crypto.h
 +++ b/src/openvpn/crypto.h
-@@ -465,7 +465,7 @@ void prng_init(const char *md_name, const int nonce_secret_len_parm);
-  */
- void prng_bytes(uint8_t *output, int len);
+@@ -467,6 +467,9 @@ void prng_bytes(uint8_t *output, int len);
  
--void prng_uninit();
-+void prng_uninit(void);
+ void prng_uninit(void);
  
++/* an analogue to the random() function, but use prng_bytes */
++long int get_random(void);
++
  void test_crypto(struct crypto_options *co, struct frame *f);
  
-diff --git a/src/openvpn/crypto_mbedtls.c b/src/openvpn/crypto_mbedtls.c
-index 7bd69695..a387a7e9 100644
---- a/src/openvpn/crypto_mbedtls.c
-+++ b/src/openvpn/crypto_mbedtls.c
-@@ -160,7 +160,7 @@ print_cipher(const cipher_kt_t *info)
- }
  
- void
--show_available_ciphers()
-+show_available_ciphers(void)
- {
-     const int *ciphers = mbedtls_cipher_list();
- 
-@@ -197,7 +197,7 @@ show_available_ciphers()
- }
- 
- void
--show_available_digests()
-+show_available_digests(void)
- {
-     const int *digests = mbedtls_md_list();
- 
-@@ -224,7 +224,7 @@ show_available_digests()
- }
- 
- void
--show_available_engines()
-+show_available_engines(void)
- {
-     printf("mbed TLS hardware crypto engine functionality is not available\n");
- }
-@@ -243,7 +243,7 @@ show_available_engines()
-  * entropy gathering function.
-  */
- mbedtls_ctr_drbg_context *
--rand_ctx_get()
-+rand_ctx_get(void)
- {
-     static mbedtls_entropy_context ec = {0};
-     static mbedtls_ctr_drbg_context cd_ctx = {0};
-@@ -282,7 +282,7 @@ rand_ctx_get()
- 
- #ifdef ENABLE_PREDICTION_RESISTANCE
- void
--rand_ctx_enable_prediction_resistance()
-+rand_ctx_enable_prediction_resistance(void)
- {
-     mbedtls_ctr_drbg_context *cd_ctx = rand_ctx_get();
- 
-diff --git a/src/openvpn/crypto_mbedtls.h b/src/openvpn/crypto_mbedtls.h
-index e457f3a9..18723856 100644
---- a/src/openvpn/crypto_mbedtls.h
-+++ b/src/openvpn/crypto_mbedtls.h
-@@ -85,13 +85,13 @@ typedef mbedtls_md_context_t hmac_ctx_t;
-  * added. During initialisation, a personalisation string will be added based
-  * on the time, the PID, and a pointer to the random context.
-  */
--mbedtls_ctr_drbg_context *rand_ctx_get();
-+mbedtls_ctr_drbg_context *rand_ctx_get(void);
- 
- #ifdef ENABLE_PREDICTION_RESISTANCE
- /**
-  * Enable prediction resistance on the random number generator.
-  */
--void rand_ctx_enable_prediction_resistance();
-+void rand_ctx_enable_prediction_resistance(void);
- 
- #endif
- 
-diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
-index 1bbdfe47..8a043a68 100644
---- a/src/openvpn/crypto_openssl.c
-+++ b/src/openvpn/crypto_openssl.c
-@@ -286,7 +286,7 @@ print_cipher(const EVP_CIPHER *cipher)
- }
- 
- void
--show_available_ciphers()
-+show_available_ciphers(void)
- {
-     int nid;
-     size_t i;
-@@ -347,7 +347,7 @@ show_available_ciphers()
- }
- 
- void
--show_available_digests()
-+show_available_digests(void)
- {
-     int nid;
- 
-@@ -372,7 +372,7 @@ show_available_digests()
- }
- 
- void
--show_available_engines()
-+show_available_engines(void)
- {
- #if HAVE_OPENSSL_ENGINE /* Only defined for OpenSSL */
-     ENGINE *e;
 diff --git a/src/openvpn/error.c b/src/openvpn/error.c
-index 3817666b..04bf0da5 100644
+index 04bf0da5..e885ec3b 100644
 --- a/src/openvpn/error.c
 +++ b/src/openvpn/error.c
-@@ -159,7 +159,7 @@ set_machine_readable_output(bool parsable)
- }
+@@ -31,6 +31,7 @@
  
- void
--error_reset()
-+error_reset(void)
+ #include "error.h"
+ #include "buffer.h"
++#include "init.h"
+ #include "misc.h"
+ #include "win32.h"
+ #include "socket.h"
+@@ -734,8 +735,6 @@ openvpn_exit(const int status)
  {
-     use_syslog = std_redir = false;
-     suppress_timestamps = false;
-@@ -480,7 +480,7 @@ open_syslog(const char *pgmname, bool stdio_to_null)
- }
+     if (!forked)
+     {
+-        void tun_abort();
+-
+ #ifdef ENABLE_PLUGIN
+         void plugin_abort(void);
  
- void
--close_syslog()
-+close_syslog(void)
- {
- #if SYSLOG_CAPABILITY
-     if (use_syslog)
-@@ -635,7 +635,7 @@ unsigned int x_cs_verbose_level; /* GLOBAL */
- unsigned int x_cs_err_delay_ms;  /* GLOBAL */
+diff --git a/src/openvpn/forward-inline.h b/src/openvpn/forward-inline.h
+index ab83ea40..04601e8c 100644
+--- a/src/openvpn/forward-inline.h
++++ b/src/openvpn/forward-inline.h
+@@ -24,6 +24,8 @@
+ #ifndef FORWARD_INLINE_H
+ #define FORWARD_INLINE_H
  
- void
--reset_check_status()
-+reset_check_status(void)
- {
-     x_cs_info_level = 0;
-     x_cs_verbose_level = 0;
-diff --git a/src/openvpn/error.h b/src/openvpn/error.h
-index 14ef7e65..023cec46 100644
---- a/src/openvpn/error.h
-+++ b/src/openvpn/error.h
-@@ -261,7 +261,7 @@ void msg_forked(void);
- 
- void open_syslog(const char *pgmname, bool stdio_to_null);
- 
--void close_syslog();
-+void close_syslog(void);
- 
- /* log file output */
- void redirect_stdout_stderr(const char *file, bool append);
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index bc3b81e3..627da510 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -1904,7 +1904,7 @@ do_close_tun(struct context *c, bool force)
- }
- 
- void
--tun_abort()
-+tun_abort(void)
- {
-     struct context *c = static_context;
-     if (c)
-diff --git a/src/openvpn/interval.h b/src/openvpn/interval.h
-index 8095c0b9..dd5dfbc8 100644
---- a/src/openvpn/interval.h
-+++ b/src/openvpn/interval.h
-@@ -155,7 +155,7 @@ event_timeout_clear(struct event_timeout *et)
- }
- 
- static inline struct event_timeout
--event_timeout_clear_ret()
-+event_timeout_clear_ret(void)
- {
-     struct event_timeout ret;
-     event_timeout_clear(&ret);
-diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
-index ff948240..3bbe972e 100644
---- a/src/openvpn/manage.c
-+++ b/src/openvpn/manage.c
-@@ -68,7 +68,7 @@ static void man_output_standalone(struct management *man, volatile int *signal_r
- static void man_reset_client_socket(struct management *man, const bool exiting);
- 
- static void
--man_help()
-+man_help(void)
- {
-     msg(M_CLIENT, "Management Interface for %s", title_string);
-     msg(M_CLIENT, "Commands:");
-diff --git a/src/openvpn/occ-inline.h b/src/openvpn/occ-inline.h
-index 68e9098f..0fa8e5ba 100644
---- a/src/openvpn/occ-inline.h
-+++ b/src/openvpn/occ-inline.h
-@@ -31,7 +31,7 @@
++#include "forward.h"
++
+ /*
+  * Inline functions
   */
- 
- static inline int
--occ_reset_op()
-+occ_reset_op(void)
+@@ -35,8 +37,6 @@ static inline void
+ check_tls(struct context *c)
  {
-     return -1;
- }
-diff --git a/src/openvpn/packet_id.c b/src/openvpn/packet_id.c
-index 30ae8fbc..a3ff5722 100644
---- a/src/openvpn/packet_id.c
-+++ b/src/openvpn/packet_id.c
-@@ -643,7 +643,7 @@ packet_id_debug_print(int msglevel,
- #ifdef PID_TEST
- 
- void
--packet_id_interactive_test()
-+packet_id_interactive_test(void)
+ #if defined(ENABLE_CRYPTO)
+-    void check_tls_dowork(struct context *c);
+-
+     if (c->c2.tls_multi)
+     {
+         check_tls_dowork(c);
+@@ -52,10 +52,6 @@ static inline void
+ check_tls_errors(struct context *c)
  {
-     struct packet_id pid;
-     struct packet_id_net pin;
-diff --git a/src/openvpn/packet_id.h b/src/openvpn/packet_id.h
-index a370936c..8509e590 100644
---- a/src/openvpn/packet_id.h
-+++ b/src/openvpn/packet_id.h
-@@ -299,7 +299,7 @@ packet_id_persist_save_obj(struct packet_id_persist *p, const struct packet_id *
- const char *packet_id_net_print(const struct packet_id_net *pin, bool print_timestamp, struct gc_arena *gc);
+ #if defined(ENABLE_CRYPTO)
+-    void check_tls_errors_co(struct context *c);
+-
+-    void check_tls_errors_nco(struct context *c);
+-
+     if (c->c2.tls_multi && c->c2.tls_exit_signal)
+     {
+         if (link_socket_connection_oriented(c->c2.link_socket))
+@@ -84,8 +80,6 @@ static inline void
+ check_incoming_control_channel(struct context *c)
+ {
+ #if P2MP
+-    void check_incoming_control_channel_dowork(struct context *c);
+-
+     if (tls_test_payload_len(c->c2.tls_multi) > 0)
+     {
+         check_incoming_control_channel_dowork(c);
+@@ -100,8 +94,6 @@ check_incoming_control_channel(struct context *c)
+ static inline void
+ check_connection_established(struct context *c)
+ {
+-    void check_connection_established_dowork(struct context *c);
+-
+     if (event_timeout_defined(&c->c2.wait_for_connect))
+     {
+         check_connection_established_dowork(c);
+@@ -114,8 +106,6 @@ check_connection_established(struct context *c)
+ static inline void
+ check_add_routes(struct context *c)
+ {
+-    void check_add_routes_dowork(struct context *c);
+-
+     if (event_timeout_trigger(&c->c2.route_wakeup, &c->c2.timeval, ETT_DEFAULT))
+     {
+         check_add_routes_dowork(c);
+@@ -128,8 +118,6 @@ check_add_routes(struct context *c)
+ static inline void
+ check_inactivity_timeout(struct context *c)
+ {
+-    void check_inactivity_timeout_dowork(struct context *c);
+-
+     if (c->options.inactivity_timeout
+         && event_timeout_trigger(&c->c2.inactivity_interval, &c->c2.timeval, ETT_DEFAULT))
+     {
+@@ -142,8 +130,6 @@ check_inactivity_timeout(struct context *c)
+ static inline void
+ check_server_poll_timeout(struct context *c)
+ {
+-    void check_server_poll_timeout_dowork(struct context *c);
+-
+     if (c->options.ce.connect_timeout
+         && event_timeout_trigger(&c->c2.server_poll_interval, &c->c2.timeval, ETT_DEFAULT))
+     {
+@@ -157,8 +143,6 @@ check_server_poll_timeout(struct context *c)
+ static inline void
+ check_scheduled_exit(struct context *c)
+ {
+-    void check_scheduled_exit_dowork(struct context *c);
+-
+     if (event_timeout_defined(&c->c2.scheduled_exit))
+     {
+         if (event_timeout_trigger(&c->c2.scheduled_exit, &c->c2.timeval, ETT_DEFAULT))
+@@ -175,8 +159,6 @@ check_scheduled_exit(struct context *c)
+ static inline void
+ check_status_file(struct context *c)
+ {
+-    void check_status_file_dowork(struct context *c);
+-
+     if (c->c1.status_output)
+     {
+         if (status_trigger_tv(c->c1.status_output, &c->c2.timeval))
+@@ -193,8 +175,6 @@ check_status_file(struct context *c)
+ static inline void
+ check_fragment(struct context *c)
+ {
+-    void check_fragment_dowork(struct context *c);
+-
+     if (c->c2.fragment)
+     {
+         check_fragment_dowork(c);
+@@ -210,8 +190,6 @@ check_fragment(struct context *c)
+ static inline void
+ check_push_request(struct context *c)
+ {
+-    void check_push_request_dowork(struct context *c);
+-
+     if (event_timeout_trigger(&c->c2.push_request_interval, &c->c2.timeval, ETT_DEFAULT))
+     {
+         check_push_request_dowork(c);
+@@ -313,8 +291,6 @@ p2p_iow_flags(const struct context *c)
+ static inline void
+ io_wait(struct context *c, const unsigned int flags)
+ {
+-    void io_wait_dowork(struct context *c, const unsigned int flags);
+-
+     if (c->c2.fast_io && (flags & (IOW_TO_TUN|IOW_TO_LINK|IOW_MBUF)))
+     {
+         /* fast path -- only for TUN/TAP/UDP writes */
+diff --git a/src/openvpn/forward.h b/src/openvpn/forward.h
+index 9fde5a30..bc016e5d 100644
+--- a/src/openvpn/forward.h
++++ b/src/openvpn/forward.h
+@@ -60,6 +60,41 @@
  
- #ifdef PID_TEST
--void packet_id_interactive_test();
-+void packet_id_interactive_test(void);
+ #define IOW_READ            (IOW_READ_TUN|IOW_READ_LINK)
+ 
++extern counter_type link_read_bytes_global;
++
++extern counter_type link_write_bytes_global;
++
++#ifdef ENABLE_CRYPTO
++void check_tls_dowork(struct context *c);
++
++void check_tls_errors_co(struct context *c);
++
++void check_tls_errors_nco(struct context *c);
++#endif /* ENABLE_CRYPTO */
++
++#if P2MP
++void check_incoming_control_channel_dowork(struct context *c);
++
++void check_scheduled_exit_dowork(struct context *c);
++
++void check_push_request_dowork(struct context *c);
++#endif /* P2MP */
++
++#ifdef ENABLE_FRAGMENT
++void check_fragment_dowork(struct context *c);
++#endif /* ENABLE_FRAGMENT */
++
++void check_connection_established_dowork(struct context *c);
++
++void check_add_routes_dowork(struct context *c);
++
++void check_inactivity_timeout_dowork(struct context *c);
++
++void check_server_poll_timeout_dowork(struct context *c);
++
++void check_status_file_dowork(struct context *c);
++
++void io_wait_dowork(struct context *c, const unsigned int flags);
+ 
+ void pre_select(struct context *c);
+ 
+diff --git a/src/openvpn/init.h b/src/openvpn/init.h
+index 15feb677..b681cd9d 100644
+--- a/src/openvpn/init.h
++++ b/src/openvpn/init.h
+@@ -140,4 +140,6 @@ void open_plugins(struct context *c, const bool import_options, int init_point);
  
  #endif
  
-diff --git a/src/openvpn/pkcs11.c b/src/openvpn/pkcs11.c
-index 60418280..a0d0906a 100644
---- a/src/openvpn/pkcs11.c
-+++ b/src/openvpn/pkcs11.c
-@@ -356,7 +356,7 @@ cleanup:
- }
- 
- void
--pkcs11_terminate()
-+pkcs11_terminate(void)
- {
-     dmsg(
-         D_PKCS11_DEBUG,
-@@ -422,13 +422,13 @@ pkcs11_addProvider(
- }
++void tun_abort(void);
++
+ #endif /* ifndef INIT_H */
+diff --git a/src/openvpn/lladdr.c b/src/openvpn/lladdr.c
+index ff71e48c..ea35e4d9 100644
+--- a/src/openvpn/lladdr.c
++++ b/src/openvpn/lladdr.c
+@@ -11,6 +11,7 @@
+ #include "syshead.h"
+ #include "error.h"
+ #include "misc.h"
++#include "lladdr.h"
  
  int
--pkcs11_logout()
-+pkcs11_logout(void)
- {
-     return pkcs11h_logout() == CKR_OK;
+ set_lladdr(const char *ifname, const char *lladdr,
+diff --git a/src/openvpn/manage.h b/src/openvpn/manage.h
+index 676be640..d77e5f18 100644
+--- a/src/openvpn/manage.h
++++ b/src/openvpn/manage.h
+@@ -581,6 +581,12 @@ management_bytes_in(struct management *man, const int size)
+     }
  }
  
- int
--pkcs11_management_id_count()
-+pkcs11_management_id_count(void)
- {
-     pkcs11h_certificate_id_list_t id_list = NULL;
-     pkcs11h_certificate_id_list_t t = NULL;
-diff --git a/src/openvpn/platform.c b/src/openvpn/platform.c
-index d936890e..e942ba94 100644
---- a/src/openvpn/platform.c
-+++ b/src/openvpn/platform.c
-@@ -173,7 +173,7 @@ platform_nice(int niceval)
++
++void man_bytecount_output_server(struct management *man,
++                                 const counter_type *bytes_in_total,
++                                 const counter_type *bytes_out_total,
++                                 struct man_def_auth_context *mdac);
++
+ #ifdef MANAGEMENT_DEF_AUTH
  
- /* Get current PID */
- unsigned int
--platform_getpid()
-+platform_getpid(void)
+ static inline void
+@@ -589,11 +595,6 @@ management_bytes_server(struct management *man,
+                         const counter_type *bytes_out_total,
+                         struct man_def_auth_context *mdac)
  {
- #ifdef _WIN32
-     return (unsigned int) GetCurrentProcessId();
-diff --git a/src/openvpn/ps.c b/src/openvpn/ps.c
-index c2b05cd9..45e24ded 100644
---- a/src/openvpn/ps.c
-+++ b/src/openvpn/ps.c
-@@ -172,7 +172,7 @@ send_control(const socket_descriptor_t fd, int code)
+-    void man_bytecount_output_server(struct management *man,
+-                                     const counter_type *bytes_in_total,
+-                                     const counter_type *bytes_out_total,
+-                                     struct man_def_auth_context *mdac);
+-
+     if (man->connection.bytecount_update_seconds > 0
+         && now >= mdac->bytecount_last_update + man->connection.bytecount_update_seconds
+         && (mdac->flags & (DAF_CONNECTION_ESTABLISHED|DAF_CONNECTION_CLOSED)) == DAF_CONNECTION_ESTABLISHED)
+diff --git a/src/openvpn/mbuf.h b/src/openvpn/mbuf.h
+index e0643de1..1c35432f 100644
+--- a/src/openvpn/mbuf.h
++++ b/src/openvpn/mbuf.h
+@@ -96,11 +96,11 @@ mbuf_maximum_queued(const struct mbuf_set *ms)
+     return (int) ms->max_queued;
  }
  
- static int
--cmsg_size()
-+cmsg_size(void)
++struct multi_instance *mbuf_peek_dowork(struct mbuf_set *ms);
++
+ static inline struct multi_instance *
+ mbuf_peek(struct mbuf_set *ms)
  {
-     return CMSG_SPACE(sizeof(socket_descriptor_t));
- }
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index 44a5ee0a..f5c59b77 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -347,7 +347,7 @@ tls_init_control_channel_frame_parameters(const struct frame *data_channel_frame
- }
- 
- void
--init_ssl_lib()
-+init_ssl_lib(void)
- {
-     tls_init_lib();
- 
-@@ -355,7 +355,7 @@ init_ssl_lib()
- }
- 
- void
--free_ssl_lib()
-+free_ssl_lib(void)
- {
-     crypto_uninit_lib();
-     prng_uninit();
-diff --git a/src/openvpn/ssl_backend.h b/src/openvpn/ssl_backend.h
-index 0b822ae3..02f64057 100644
---- a/src/openvpn/ssl_backend.h
-+++ b/src/openvpn/ssl_backend.h
-@@ -88,17 +88,17 @@ int pem_password_callback(char *buf, int size, int rwflag, void *u);
-  * Perform any static initialisation necessary by the library.
-  * Called on OpenVPN initialisation
-  */
--void tls_init_lib();
-+void tls_init_lib(void);
- 
- /**
-  * Free any global SSL library-specific data structures.
-  */
--void tls_free_lib();
-+void tls_free_lib(void);
- 
- /**
-  * Clear the underlying SSL library's error state.
-  */
--void tls_clear_error();
-+void tls_clear_error(void);
- 
- /**
-  * Parse a TLS version specifier
-diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
-index 86d65e17..dd5b9854 100644
---- a/src/openvpn/ssl_mbedtls.c
-+++ b/src/openvpn/ssl_mbedtls.c
-@@ -63,17 +63,17 @@
- #include <mbedtls/sha256.h>
- 
- void
--tls_init_lib()
-+tls_init_lib(void)
- {
- }
- 
- void
--tls_free_lib()
-+tls_free_lib(void)
- {
- }
- 
- void
--tls_clear_error()
-+tls_clear_error(void)
- {
- }
- 
-diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
-index dbaeb803..7ad6414e 100644
---- a/src/openvpn/ssl_openssl.c
-+++ b/src/openvpn/ssl_openssl.c
-@@ -69,7 +69,7 @@
- int mydata_index; /* GLOBAL */
- 
- void
--tls_init_lib()
-+tls_init_lib(void)
- {
-     SSL_library_init();
- #ifndef ENABLE_SMALL
-@@ -82,7 +82,7 @@ tls_init_lib()
- }
- 
- void
--tls_free_lib()
-+tls_free_lib(void)
- {
-     EVP_cleanup();
- #ifndef ENABLE_SMALL
-@@ -91,7 +91,7 @@ tls_free_lib()
- }
- 
- void
--tls_clear_error()
-+tls_clear_error(void)
- {
-     ERR_clear_error();
- }
-@@ -1320,7 +1320,7 @@ static time_t biofp_last_open;                 /* GLOBAL */
- static const int biofp_reopen_interval = 600;  /* GLOBAL */
- 
- static void
--close_biofp()
-+close_biofp(void)
- {
-     if (biofp)
+-    struct multi_instance *mbuf_peek_dowork(struct mbuf_set *ms);
+-
+     if (mbuf_defined(ms))
      {
-@@ -1330,7 +1330,7 @@ close_biofp()
- }
+         return mbuf_peek_dowork(ms);
+diff --git a/src/openvpn/mroute.h b/src/openvpn/mroute.h
+index cf3be509..19d2899d 100644
+--- a/src/openvpn/mroute.h
++++ b/src/openvpn/mroute.h
+@@ -170,6 +170,17 @@ void mroute_helper_add_iroute46(struct mroute_helper *mh, int netbits);
  
- static void
--open_biofp()
-+open_biofp(void)
- {
-     const time_t current = time(NULL);
-     const pid_t pid = getpid();
-@@ -1748,7 +1748,7 @@ show_available_tls_ciphers(const char *cipher_list)
-  * in the OpenSSL library.
-  */
- void
--show_available_curves()
-+show_available_curves(void)
- {
- #ifndef OPENSSL_NO_EC
-     EC_builtin_curve *curves = NULL;
-diff --git a/src/openvpn/win32.c b/src/openvpn/win32.c
-index d0b10bad..95fea5df 100644
---- a/src/openvpn/win32.c
-+++ b/src/openvpn/win32.c
-@@ -1235,7 +1235,7 @@ set_win_sys_path_via_env(struct env_set *es)
+ void mroute_helper_del_iroute46(struct mroute_helper *mh, int netbits);
  
- 
- const char *
--win_get_tempdir()
-+win_get_tempdir(void)
- {
-     static char tmpdir[MAX_PATH];
-     WCHAR wtmpdir[MAX_PATH];
-@@ -1398,7 +1398,7 @@ win_wfp_uninit(const NET_IFINDEX index, const HANDLE msg_channel)
- }
- 
- int
--win32_version_info()
-+win32_version_info(void)
- {
-     if (!IsWindowsXPOrGreater())
-     {
-@@ -1426,7 +1426,7 @@ win32_version_info()
- }
- 
- bool
--win32_is_64bit()
-+win32_is_64bit(void)
- {
- #if defined(_WIN64)
-     return true;  /* 64-bit programs run only on Win64 */
-diff --git a/src/openvpn/win32.h b/src/openvpn/win32.h
-index 21a1021a..7fc57ccc 100644
---- a/src/openvpn/win32.h
-+++ b/src/openvpn/win32.h
-@@ -285,7 +285,7 @@ char *get_win_sys_path(void);
- void fork_to_self(const char *cmdline);
- 
- /* Find temporary directory */
--const char *win_get_tempdir();
-+const char *win_get_tempdir(void);
- 
- /* Convert a string from UTF-8 to UCS-2 */
- WCHAR *wide_string(const char *utf8, struct gc_arena *gc);
-@@ -299,7 +299,7 @@ bool win_wfp_uninit(const NET_IFINDEX index, const HANDLE msg_channel);
- #define WIN_7 2
- #define WIN_8 3
- 
--int win32_version_info();
-+int win32_version_info(void);
- 
++
++unsigned int mroute_extract_addr_ipv4(struct mroute_addr *src,
++                                      struct mroute_addr *dest,
++                                      const struct buffer *buf);
++
++unsigned int mroute_extract_addr_ether(struct mroute_addr *src,
++                                       struct mroute_addr *dest,
++                                       struct mroute_addr *esrc,
++                                       struct mroute_addr *edest,
++                                       const struct buffer *buf);
++
  /*
-  * String representation of Windows version number and name, see
+  * Given a raw packet in buf, return the src and dest
+  * addresses of the packet.
+@@ -182,16 +193,6 @@ mroute_extract_addr_from_packet(struct mroute_addr *src,
+                                 const struct buffer *buf,
+                                 int tunnel_type)
+ {
+-    unsigned int mroute_extract_addr_ipv4(struct mroute_addr *src,
+-                                          struct mroute_addr *dest,
+-                                          const struct buffer *buf);
+-
+-    unsigned int mroute_extract_addr_ether(struct mroute_addr *src,
+-                                           struct mroute_addr *dest,
+-                                           struct mroute_addr *esrc,
+-                                           struct mroute_addr *edest,
+-                                           const struct buffer *buf);
+-
+     unsigned int ret = 0;
+     verify_align_4(buf);
+     if (tunnel_type == DEV_TYPE_TUN)
+diff --git a/src/openvpn/multi.h b/src/openvpn/multi.h
+index 63afbaf0..5892ac07 100644
+--- a/src/openvpn/multi.h
++++ b/src/openvpn/multi.h
+@@ -536,11 +536,12 @@ clear_prefix(void)
+  */
+ #define MULTI_CACHE_ROUTE_TTL 60
+ 
++void multi_reap_process_dowork(const struct multi_context *m);
++void multi_process_per_second_timers_dowork(struct multi_context *m);
++
+ static inline void
+ multi_reap_process(const struct multi_context *m)
+ {
+-    void multi_reap_process_dowork(const struct multi_context *m);
+-
+     if (m->reaper->last_call != now)
+     {
+         multi_reap_process_dowork(m);
+@@ -552,8 +553,6 @@ multi_process_per_second_timers(struct multi_context *m)
+ {
+     if (m->per_second_trigger != now)
+     {
+-        void multi_process_per_second_timers_dowork(struct multi_context *m);
+-
+         multi_process_per_second_timers_dowork(m);
+         m->per_second_trigger = now;
+     }
+diff --git a/src/openvpn/occ-inline.h b/src/openvpn/occ-inline.h
+index 0fa8e5ba..7ca2a26f 100644
+--- a/src/openvpn/occ-inline.h
++++ b/src/openvpn/occ-inline.h
+@@ -26,6 +26,8 @@
+ 
+ #ifdef ENABLE_OCC
+ 
++#include "occ.h"
++
+ /*
+  * Inline functions
+  */
+@@ -42,8 +44,6 @@ occ_reset_op(void)
+ static inline void
+ check_send_occ_req(struct context *c)
+ {
+-    void check_send_occ_req_dowork(struct context *c);
+-
+     if (event_timeout_defined(&c->c2.occ_interval)
+         && event_timeout_trigger(&c->c2.occ_interval,
+                                  &c->c2.timeval,
+@@ -59,8 +59,6 @@ check_send_occ_req(struct context *c)
+ static inline void
+ check_send_occ_load_test(struct context *c)
+ {
+-    void check_send_occ_load_test_dowork(struct context *c);
+-
+     if (event_timeout_defined(&c->c2.occ_mtu_load_test_interval)
+         && event_timeout_trigger(&c->c2.occ_mtu_load_test_interval,
+                                  &c->c2.timeval,
+@@ -76,8 +74,6 @@ check_send_occ_load_test(struct context *c)
+ static inline void
+ check_send_occ_msg(struct context *c)
+ {
+-    void check_send_occ_msg_dowork(struct context *c);
+-
+     if (c->c2.occ_op >= 0)
+     {
+         if (!TO_LINK_DEF(c))
+diff --git a/src/openvpn/occ.h b/src/openvpn/occ.h
+index 12d7bc57..29de99c2 100644
+--- a/src/openvpn/occ.h
++++ b/src/openvpn/occ.h
+@@ -90,5 +90,11 @@ is_occ_msg(const struct buffer *buf)
+ 
+ void process_received_occ_msg(struct context *c);
+ 
++void check_send_occ_req_dowork(struct context *c);
++
++void check_send_occ_load_test_dowork(struct context *c);
++
++void check_send_occ_msg_dowork(struct context *c);
++
+ #endif /* ifdef ENABLE_OCC */
+ #endif /* ifndef OCC_H */
+diff --git a/src/openvpn/pf-inline.h b/src/openvpn/pf-inline.h
+index ac19ac4c..0db7b262 100644
+--- a/src/openvpn/pf-inline.h
++++ b/src/openvpn/pf-inline.h
+@@ -24,6 +24,8 @@
+ #if defined(ENABLE_PF) && !defined(PF_INLINE_H)
+ #define PF_INLINE_H
+ 
++#include "pf.h"
++
+ /*
+  * Inline functions
+  */
+@@ -33,8 +35,6 @@
+ static inline bool
+ pf_c2c_test(const struct context *src, const struct context *dest, const char *prefix)
+ {
+-    bool pf_cn_test(struct pf_set *pfs, const struct tls_multi *tm, const int type, const char *prefix);
+-
+     return (!src->c2.pf.enabled  || pf_cn_test(src->c2.pf.pfs,  dest->c2.tls_multi, PCT_DEST, prefix))
+            && (!dest->c2.pf.enabled || pf_cn_test(dest->c2.pf.pfs, src->c2.tls_multi,  PCT_SRC,  prefix));
+ }
+@@ -42,8 +42,6 @@ pf_c2c_test(const struct context *src, const struct context *dest, const char *p
+ static inline bool
+ pf_addr_test(const struct context *src, const struct mroute_addr *dest, const char *prefix)
+ {
+-    bool pf_addr_test_dowork(const struct context *src, const struct mroute_addr *dest, const char *prefix);
+-
+     if (src->c2.pf.enabled)
+     {
+         return pf_addr_test_dowork(src, dest, prefix);
+diff --git a/src/openvpn/pf.h b/src/openvpn/pf.h
+index 414c85b8..f6a3b61e 100644
+--- a/src/openvpn/pf.h
++++ b/src/openvpn/pf.h
+@@ -101,4 +101,10 @@ void pf_context_print(const struct pf_context *pfc, const char *prefix, const in
+ 
+ #endif
+ 
++bool pf_cn_test(struct pf_set *pfs, const struct tls_multi *tm, const int type,
++                const char *prefix);
++
++bool pf_addr_test_dowork(const struct context *src,
++                         const struct mroute_addr *dest, const char *prefix);
++
+ #endif /* if defined(ENABLE_PF) && !defined(OPENVPN_PF_H) */
+diff --git a/src/openvpn/ping-inline.h b/src/openvpn/ping-inline.h
+index 0642b851..9d590dc4 100644
+--- a/src/openvpn/ping-inline.h
++++ b/src/openvpn/ping-inline.h
+@@ -24,6 +24,8 @@
+ #ifndef PING_INLINE_H
+ #define PING_INLINE_H
+ 
++#include "ping.h"
++
+ /*
+  * Should we exit or restart due to ping (or other authenticated packet)
+  * not received in n seconds?
+@@ -31,8 +33,6 @@
+ static inline void
+ check_ping_restart(struct context *c)
+ {
+-    void check_ping_restart_dowork(struct context *c);
+-
+     if (c->options.ping_rec_timeout
+         && event_timeout_trigger(&c->c2.ping_rec_interval,
+                                  &c->c2.timeval,
+@@ -50,8 +50,6 @@ check_ping_restart(struct context *c)
+ static inline void
+ check_ping_send(struct context *c)
+ {
+-    void check_ping_send_dowork(struct context *c);
+-
+     if (c->options.ping_send_timeout
+         && event_timeout_trigger(&c->c2.ping_send_interval,
+                                  &c->c2.timeval,
+diff --git a/src/openvpn/ping.h b/src/openvpn/ping.h
+index 5bd5c089..66c3a54f 100644
+--- a/src/openvpn/ping.h
++++ b/src/openvpn/ping.h
+@@ -43,4 +43,8 @@ is_ping_msg(const struct buffer *buf)
+     return buf_string_match(buf, ping_string, PING_STRING_SIZE);
+ }
+ 
++void check_ping_restart_dowork(struct context *c);
++
++void check_ping_send_dowork(struct context *c);
++
+ #endif
+diff --git a/src/openvpn/plugin.h b/src/openvpn/plugin.h
+index 818b6285..67549cda 100644
+--- a/src/openvpn/plugin.h
++++ b/src/openvpn/plugin.h
+@@ -216,4 +216,6 @@ plugin_call(const struct plugin_list *pl,
+                            );
+ }
+ 
++void plugin_abort(void);
++
+ #endif /* OPENVPN_PLUGIN_H */
+diff --git a/src/openvpn/socket.h b/src/openvpn/socket.h
+index 81e9e9ae..13b94606 100644
+--- a/src/openvpn/socket.h
++++ b/src/openvpn/socket.h
+@@ -1021,11 +1021,11 @@ void stream_buf_close(struct stream_buf *sb);
+ 
+ bool stream_buf_added(struct stream_buf *sb, int length_added);
+ 
++bool stream_buf_read_setup_dowork(struct link_socket *sock);
++
+ static inline bool
+ stream_buf_read_setup(struct link_socket *sock)
+ {
+-    bool stream_buf_read_setup_dowork(struct link_socket *sock);
+-
+     if (link_socket_connection_oriented(sock))
+     {
+         return stream_buf_read_setup_dowork(sock);
+@@ -1130,16 +1130,17 @@ link_socket_write_win32(struct link_socket *sock,
+ 
+ #else  /* ifdef _WIN32 */
+ 
++size_t link_socket_write_udp_posix_sendmsg(struct link_socket *sock,
++                                           struct buffer *buf,
++                                           struct link_socket_actual *to);
++
++
+ static inline size_t
+ link_socket_write_udp_posix(struct link_socket *sock,
+                             struct buffer *buf,
+                             struct link_socket_actual *to)
+ {
+ #if ENABLE_IP_PKTINFO
+-    size_t link_socket_write_udp_posix_sendmsg(struct link_socket *sock,
+-                                               struct buffer *buf,
+-                                               struct link_socket_actual *to);
+-
+     if (proto_is_udp(sock->info.proto) && (sock->sockflags & SF_USE_IP_PKTINFO)
+         && addr_defined_ipi(to))
+     {
 -- 
 2.14.0
 
