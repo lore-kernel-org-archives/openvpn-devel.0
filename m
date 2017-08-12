@@ -1,14 +1,15 @@
-Date: Sat, 12 Aug 2017 18:43:38 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20170812164338.GG70062@...1296...>
-References: <20170812170700.31a0868b@...1661...>
+Reply-To: openvpn-devel@lists.sourceforge.net
+References: <20170809123256.25694-1-davids@...515...>
+ <7a76d766-5349-ec0d-2a08-e15f9fd3f01f@...1856...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <466551cd-ab70-72b4-00a6-0d4ef12bfa3f@...2080...>
+Date: Sat, 12 Aug 2017 23:12:08 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="Ilsi/0vOxQ+fn9lZ"
-Content-Disposition: inline
-In-Reply-To: <20170812170700.31a0868b@...1661...>
-Subject: Re: [Openvpn-devel] In P2P and IPv6 only mode: do_ifconfig() does
- not set up tun interface
+In-Reply-To: <7a76d766-5349-ec0d-2a08-e15f9fd3f01f@...1856...>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="7pf2cFodd4FOQqcKxKNi1imGOApLfB7ND"
+Subject: Re: [Openvpn-devel] [PATCH] tests: Add a simple build sanity check
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,65 +18,151 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Michael Kress <m-kress@...1660...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
 
---Ilsi/0vOxQ+fn9lZ
-Content-Type: text/plain; charset="us-ascii"
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--7pf2cFodd4FOQqcKxKNi1imGOApLfB7ND
+Content-Type: multipart/mixed; boundary="ShonbjQUo4R2Vl6Rm0qWLHtQCP8CW00nH";
+ protected-headers="v1"
+From: David Sommerseth <openvpn@...2080...>
+Reply-To: openvpn-devel@lists.sourceforge.net
+To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
+Message-ID: <466551cd-ab70-72b4-00a6-0d4ef12bfa3f@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH] tests: Add a simple build sanity check
+References: <20170809123256.25694-1-davids@...515...>
+ <7a76d766-5349-ec0d-2a08-e15f9fd3f01f@...1856...>
+In-Reply-To: <7a76d766-5349-ec0d-2a08-e15f9fd3f01f@...1856...>
+
+--ShonbjQUo4R2Vl6Rm0qWLHtQCP8CW00nH
+Content-Language: en-GB
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
-
-On Sat, Aug 12, 2017 at 05:07:00PM +0200, Michael Kress wrote:
-> it seems that OpenVPN in P2P mode (static keys) doesn't configure and
-> start the tun interface when there are no configured IPv4 addresses:
+On 12/08/17 12:33, Steffan Karger wrote:
+[...]
+>> ---
+>>  tests/Makefile.am       |   2 +-
+>>  tests/t_sanity_check.sh | 118 +++++++++++++++++++++++++++++++++++++++++=
++++++++
 >=20
-> OpenVPN 2.4.3
-> In "void do_ifconfig()" of tun.c line 881: if (tt->did_ifconfig_setup)
+> t_sanity_check is less descriptive than the t_usage proposed by Ilya.
+> (Sanity check could be anything, while we specifically test the usage
+> output.)
+
+
+Fair point.  I tried to avoid t_usage, as it also checks for a segfault
+(which is where this all started).  But when thinking of it, it does
+strictly tests usage*() for segfault.  I can switch back to t_usage.
+
+[...]
+
+>> +check_option_count()
+>> +{
+>> +    num_min=3D"$1"
+>> +    num_max=3D"$2"
+>> +
+>> +    echo -n "Checking if number of options are between $num_min and $nu=
+m_max ... "
+>> +    optcount=3D"$(cat sanity_check_options.$$ | wc -l )"
+>> +    if [ $optcount -le $num_min ]; then
+>> +        echo "FAIL  (too few, found $optcount options)"
+>> +        count_failure
+>> +        return
+>> +    fi
+>> +    if [ $optcount -gt $num_max ]; then
+>> +        echo "FAIL  (too many, found $optcount options)"
+>> +        count_failure
+>> +        return
+>> +    fi
+>> +    echo "PASS (found $optcount options)"
+>> +}
 >=20
-> The flag tt->did_ifconfig_ipv6_setup is not considered at all. Is there
-> a reason to not start an IPv6 only tun device? Maybe this has simply
-> been overseen?
+> This is quite fragile.  For example, this breaks 'make check' for
+> --disable-crypto builds.  It will also fail easily after adding or
+> removing some options, and we probably have more configure flags that
+> will cause this check to fail.  That's we I don't like it very much.
 
-IPv6-only is currently not supported (it works if you do not use any
-ifconfig at all inside OpenVPN, but not with --ifconfig/ifconfig-ipv6).
+Eeek, so the threshold values are not good enough.  Well, that said, I
+never expected this proposal to get acceptance on the first review :)
+This is just to have a starting point for these checks.
 
-The reason is fairly simple - there's lots of assumptions inside OpenVPN
-about "IPv4 will be there" and nobody has checked everything to make
-sure nothing will blow up (or the blowups are fixed) in case IPv4 is
-not.
+Based on how the current option parser is designed, it is hard to get
+this 100% correct.  So I think we need to consider a threshold.  For
+example, my system:
 
-No hard technical reason, just a matter of available time.
+$ openvpn --help | grep -E -- '^--'  | wc -l
+237
+$ grep -E 'if \(streq\(p\[0\], ".*"\) && ' options.c  | wc -l
+277
 
-(The routing layer *nowadays* actually happily deals with "no IPv4=20
-routes" - initially, the scenario "IPv6 routes, no IPv4 routes" caused a=20
-segfault...)
+We might be able to get closer to a realistic number by sending
+options.c via the preprocessor with the right set of "define" arguments.
 
-gert
+Or to rework the complete option parser to be based on a struct-like
+model where it is easy to write a tool which extracts the number of
+options and which options to expect which can be compared against the
+--help output.  This way we could get a close to 100% perfect match.
+But I don't think doing such a code refactoring shoul be based purely on
+the testing requirements in our case.  The code paths involved are quite
+solid and re-used in almost every possible way by OpenVPN (config files,
+PUSH_REPLY, CCD, CCD via management/plug-ins/script hooks, etc).
+
+Or we could get started on moving the man page over to a more parseable
+file format so we could extract options from the man page and compare it
+to --help.  This way we enforce that the man page is up-to-date too.
+And it could make the man-page be generated according to which features
+OpenVPN is built with.
+
+Another approach is to make the threshold values (min/max) be based on
+which configure options/defines are enabled - which directly impacts the
+add_option() function in options.c.  So have a baseline of arguments, if
+ENABLE_CRYPTO - add X to the baseline, and so on.
+
+I do think this test makes sense, as it can ensure 'make check' fails if
+we do something wonky with options.c.  But I agree it is hard to get it
+right.  So just pondering the alternatives and which ones makes most sense.
+
+That said, I don't buy the argument that testing options can make 'make
+check' fail if adding/removing options.  To me that is similar to say
+unit tests are bad because they will fail when you change the behaviour
+or API of a function which already have a unit test.  So tests will need
+to be adopted according to the changes done on code it is expected to
+test.  But we can ensure doing those changes in the test-case can be
+done in an easily and understandable way.
+
+
 --=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+kind regards,
 
---Ilsi/0vOxQ+fn9lZ
+David Sommerseth
+OpenVPN Technologies, Inc
+
+
+
+--ShonbjQUo4R2Vl6Rm0qWLHtQCP8CW00nH--
+
+--7pf2cFodd4FOQqcKxKNi1imGOApLfB7ND
 Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQGcBAEBAgAGBQJZjzA6AAoJEB2Cnv7KVigSyUcL/2cqJV8ikthnkt7LsonHN9eh
-XCGKoIwkIRGLUDdVDsH3M+d+CWo08ubhbJbH94KjUN6lJMR2Wn5whAcdirCGY58H
-zPm4UF4Doscr2llQa86szVrwfOCJUFD3dmKShsNDeVT8Bf1SSjlQ2uQgsC1XsTuZ
-9uqR5VnSvQxWJIHPncL0iaiBCRluGDiR2zyVDveOVOmE4X1cIcVYRmTp0jutzLcu
-qRbY0t+3u+KqK2WCg8KvYwEKonw22PGgsRk4lcpN9c64T4M6ePKjPyronfldjbv0
-3bT7pZOyyzXFs+Fk86PeFSgVEjy0THHfpJeWQiHgaXqJGpc7izjWAxC/jDDRvF7l
-vhcfi2+TydK0v2OGEj0sSjSJIIB4uEBxoFpVWYdH6ncKsplEuLG022JXqCod4e6I
-/2UOtd8lGpMQaKUr1dYDocs6HbWcVHGJt7DRDKhQOMuvaLWXOzL9401Qq2DqFnBm
-/MYK96B5HFO+IzLzGebsxTIzR13dHE/owZH3LVJIDQ==
-=md5f
+iQIcBAEBCgAGBQJZj28oAAoJEIbPlEyWcf3yztsP/RHkcaG7xiy1Z0LfFSJYJfKk
+ZKtz29RnTZLARZvZIHMPXDzpU2oSQGG+dClPVYdPkQj4JizfGUNmBtdcu3wNY61a
+gpldcr1PFZAdF9dhlwhYo+2RPP1t20JT99Itnm9ZQt6gUMx4on/rhTVsHNBuP+3+
+uSNRYzW/AjGjEWFeRHwKTPtFn2JFFT0npjje3fHAKjNCmuLpnRtIMIwQzs+17bVi
+LgEEJ4xp2cAaZ8dVmDA8aZFUk7xnCKsKgySL3MJv8eWbR2Zj0rNLvpZTEDZISbMW
+KLWlYW6Y7/vVauv3etVtkQVP3+h5Ful1uGK1GVXDGj9xOjMV6OVWlnj8tKePF26V
+2rZdSB3iqxKJ5f+USGBy6d/2A1j7qREqMcb84qhP6S835yux97MAzh/Z+5SXg42E
+7bceFO8pwk95Dfi/WQqDiemqqf7PXCe4DpinSzba3hw+qgXVbiVt2e+Dl6VXFORV
+PWbrNXW05Lk9LztQNgIfyNu7l509ZuAOnCUpVk8cBCVU358k/wXcM1biJjZWuj8X
+hKxk1sRng1MMc6wb5Bbjo7fP212CWNjuAk9UBjA1aEmtK4WcPn47PiuWuJFP50b0
+pAr7rK9LmM4/6LleXqkVlcUeNeR4mtjtLm7sjzlY/DcVafS056drZMZ89P8a9+P/
+ILFQI2WZhzhzJNQsm0Gv
+=B1pB
 -----END PGP SIGNATURE-----
 
---Ilsi/0vOxQ+fn9lZ--
+--7pf2cFodd4FOQqcKxKNi1imGOApLfB7ND--
 
