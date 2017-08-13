@@ -1,15 +1,13 @@
-Reply-To: openvpn-devel@lists.sourceforge.net
-References: <20170809123256.25694-1-davids@...515...>
- <7a76d766-5349-ec0d-2a08-e15f9fd3f01f@...1856...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <466551cd-ab70-72b4-00a6-0d4ef12bfa3f@...2080...>
-Date: Sat, 12 Aug 2017 23:12:08 +0200
+References: <20170811090744.31750-1-a@...2181...>
+ <20170811090744.31750-4-a@...2181...>
+From: Steffan Karger <steffan@...1856...>
+Message-ID: <b338acfb-acb9-b802-f8e6-03138a51b28d@...1856...>
+Date: Sun, 13 Aug 2017 20:26:01 +0200
 MIME-Version: 1.0
-In-Reply-To: <7a76d766-5349-ec0d-2a08-e15f9fd3f01f@...1856...>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="7pf2cFodd4FOQqcKxKNi1imGOApLfB7ND"
-Subject: Re: [Openvpn-devel] [PATCH] tests: Add a simple build sanity check
+In-Reply-To: <20170811090744.31750-4-a@...2181...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH 3/5] add missing static attribute to
+ functions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,151 +16,243 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---7pf2cFodd4FOQqcKxKNi1imGOApLfB7ND
-Content-Type: multipart/mixed; boundary="ShonbjQUo4R2Vl6Rm0qWLHtQCP8CW00nH";
- protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-Reply-To: openvpn-devel@lists.sourceforge.net
-To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
-Message-ID: <466551cd-ab70-72b4-00a6-0d4ef12bfa3f@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH] tests: Add a simple build sanity check
-References: <20170809123256.25694-1-davids@...515...>
- <7a76d766-5349-ec0d-2a08-e15f9fd3f01f@...1856...>
-In-Reply-To: <7a76d766-5349-ec0d-2a08-e15f9fd3f01f@...1856...>
-
---ShonbjQUo4R2Vl6Rm0qWLHtQCP8CW00nH
-Content-Language: en-GB
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-
-On 12/08/17 12:33, Steffan Karger wrote:
-[...]
->> ---
->>  tests/Makefile.am       |   2 +-
->>  tests/t_sanity_check.sh | 118 +++++++++++++++++++++++++++++++++++++++++=
-+++++++
->=20
-> t_sanity_check is less descriptive than the t_usage proposed by Ilya.
-> (Sanity check could be anything, while we specifically test the usage
-> output.)
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
 
-Fair point.  I tried to avoid t_usage, as it also checks for a segfault
-(which is where this all started).  But when thinking of it, it does
-strictly tests usage*() for segfault.  I can switch back to t_usage.
+On 11-08-17 11:07, Antonio Quartulli wrote:
+> From: Antonio Quartulli <antonio@...515...>
+> 
+> Functions used only in the file where they are
+> defined and not exported in any header, should
+> always defined as static in order to make the scope
+> clear to the compiler and the developers.
+> 
+> Add the static attribute where missing.
+> 
+> Signed-off-by: Antonio Quartulli <antonio@...515...>
+> ---
+>  src/openvpn/comp-lz4.c | 2 +-
+>  src/openvpn/forward.c  | 2 +-
+>  src/openvpn/manage.c   | 6 +++---
+>  src/openvpn/mtcp.c     | 2 +-
+>  src/openvpn/multi.c    | 4 ++--
+>  src/openvpn/ntlm.c     | 2 +-
+>  src/openvpn/options.c  | 8 ++++----
+>  src/openvpn/proxy.c    | 2 +-
+>  src/openvpn/route.c    | 4 ++--
+>  src/openvpn/socket.c   | 2 +-
+>  src/openvpn/ssl.c      | 2 +-
+>  11 files changed, 18 insertions(+), 18 deletions(-)
+> 
+> diff --git a/src/openvpn/comp-lz4.c b/src/openvpn/comp-lz4.c
+> index 6e40c325..e056caa8 100644
+> --- a/src/openvpn/comp-lz4.c
+> +++ b/src/openvpn/comp-lz4.c
+> @@ -185,7 +185,7 @@ lz4v2_compress(struct buffer *buf, struct buffer work,
+>      }
+>  }
+>  
+> -void
+> +static void
+>  do_lz4_decompress(size_t zlen_max,
+>                    struct buffer *work,
+>                    struct buffer *buf,
+> diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+> index c45d1259..6cc59383 100644
+> --- a/src/openvpn/forward.c
+> +++ b/src/openvpn/forward.c
+> @@ -1007,7 +1007,7 @@ process_incoming_link_part2(struct context *c, struct link_socket_info *lsi, con
+>      }
+>  }
+>  
+> -void
+> +static void
+>  process_incoming_link(struct context *c)
+>  {
+>      perf_push(PERF_PROC_IN_LINK);
+> diff --git a/src/openvpn/manage.c b/src/openvpn/manage.c
+> index 3bbe972e..88121a38 100644
+> --- a/src/openvpn/manage.c
+> +++ b/src/openvpn/manage.c
+> @@ -3515,7 +3515,7 @@ management_query_user_pass(struct management *man,
+>  
+>  #ifdef MANAGMENT_EXTERNAL_KEY
+>  
+> -int
+> +static int
+>  management_query_multiline(struct management *man,
+>                             const char *b64_data, const char *prompt, const char *cmd, int *state, struct buffer_list **input)
+>  {
+> @@ -3591,7 +3591,7 @@ done:
+>      return ret;
+>  }
+>  
+> -char *
+> +static char *
+>  /* returns allocated base64 signature */
+>  management_query_multiline_flatten_newline(struct management *man,
+>                                             const char *b64_data, const char *prompt, const char *cmd, int *state, struct buffer_list **input)
+> @@ -3620,7 +3620,7 @@ management_query_multiline_flatten_newline(struct management *man,
+>      return result;
+>  }
+>  
+> -char *
+> +static char *
+>  /* returns allocated base64 signature */
+>  management_query_multiline_flatten(struct management *man,
+>                                     const char *b64_data, const char *prompt, const char *cmd, int *state, struct buffer_list **input)
+> diff --git a/src/openvpn/mtcp.c b/src/openvpn/mtcp.c
+> index 851643a9..3cb52113 100644
+> --- a/src/openvpn/mtcp.c
+> +++ b/src/openvpn/mtcp.c
+> @@ -521,7 +521,7 @@ multi_tcp_dispatch(struct multi_context *m, struct multi_instance *mi, const int
+>      return touched;
+>  }
+>  
+> -int
+> +static int
+>  multi_tcp_post(struct multi_context *m, struct multi_instance *mi, const int action)
+>  {
+>      struct context *c = multi_tcp_context(m, mi);
+> diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+> index f5df58fa..fc20e0f9 100644
+> --- a/src/openvpn/multi.c
+> +++ b/src/openvpn/multi.c
+> @@ -485,7 +485,7 @@ multi_instance_string(const struct multi_instance *mi, bool null, struct gc_aren
+>      }
+>  }
+>  
+> -void
+> +static void
+>  generate_prefix(struct multi_instance *mi)
+>  {
+>      struct gc_arena gc = gc_new();
+> @@ -2966,7 +2966,7 @@ gremlin_flood_clients(struct multi_context *m)
+>  }
+>  #endif /* ifdef ENABLE_DEBUG */
+>  
+> -bool
+> +static bool
+>  stale_route_check_trigger(struct multi_context *m)
+>  {
+>      struct timeval null;
+> diff --git a/src/openvpn/ntlm.c b/src/openvpn/ntlm.c
+> index a251c11d..b43c0058 100644
+> --- a/src/openvpn/ntlm.c
+> +++ b/src/openvpn/ntlm.c
+> @@ -131,7 +131,7 @@ gen_nonce(unsigned char *nonce)
+>      }
+>  }
+>  
+> -void
+> +static void
+>  my_strupr(char *str)
+>  {
+>      /* converts string to uppercase in place */
+> diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+> index 9f2ceea2..b1e04310 100644
+> --- a/src/openvpn/options.c
+> +++ b/src/openvpn/options.c
+> @@ -959,7 +959,7 @@ pull_filter_type_name(int type)
+>  
+>  #endif
+>  
+> -void
+> +static void
+>  setenv_connection_entry(struct env_set *es,
+>                          const struct connection_entry *e,
+>                          const int i)
+> @@ -1378,7 +1378,7 @@ rol_check_alloc(struct options *options)
+>      }
+>  }
+>  
+> -void
+> +static void
+>  rol6_check_alloc(struct options *options)
+>  {
+>      if (!options->routes_ipv6)
+> @@ -1808,7 +1808,7 @@ parse_http_proxy_override(const char *server,
+>      }
+>  }
+>  
+> -void
+> +static void
+>  options_postprocess_http_proxy_override(struct options *o)
+>  {
+>      const struct connection_list *l = o->connection_list;
+> @@ -1925,7 +1925,7 @@ alloc_pull_filter(struct options *o, const int msglevel)
+>      return f;
+>  }
+>  
+> -void
+> +static void
+>  connection_entry_load_re(struct connection_entry *ce, const struct remote_entry *re)
+>  {
+>      if (re->remote)
+> diff --git a/src/openvpn/proxy.c b/src/openvpn/proxy.c
+> index 1ae93ad5..fdc73b4a 100644
+> --- a/src/openvpn/proxy.c
+> +++ b/src/openvpn/proxy.c
+> @@ -549,7 +549,7 @@ http_proxy_close(struct http_proxy_info *hp)
+>      free(hp);
+>  }
+>  
+> -bool
+> +static bool
+>  add_proxy_headers(struct http_proxy_info *p,
+>                    socket_descriptor_t sd, /* already open to proxy */
+>                    const char *host,       /* openvpn server remote */
+> diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+> index 5994cdca..762f489c 100644
+> --- a/src/openvpn/route.c
+> +++ b/src/openvpn/route.c
+> @@ -518,14 +518,14 @@ add_route_ipv6_to_option_list(struct route_ipv6_option_list *l,
+>      l->routes_ipv6 = ro;
+>  }
+>  
+> -void
+> +static void
+>  clear_route_list(struct route_list *rl)
+>  {
+>      gc_free(&rl->gc);
+>      CLEAR(*rl);
+>  }
+>  
+> -void
+> +static void
+>  clear_route_ipv6_list(struct route_ipv6_list *rl6)
+>  {
+>      gc_free(&rl6->gc);
+> diff --git a/src/openvpn/socket.c b/src/openvpn/socket.c
+> index 09973d61..c8ab2f8d 100644
+> --- a/src/openvpn/socket.c
+> +++ b/src/openvpn/socket.c
+> @@ -1533,7 +1533,7 @@ set_actual_address(struct link_socket_actual *actual, struct addrinfo *ai)
+>  
+>  }
+>  
+> -void
+> +static void
+>  socket_connect(socket_descriptor_t *sd,
+>                 const struct sockaddr *dest,
+>                 const int connect_timeout,
+> diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+> index f5c59b77..45b20e56 100644
+> --- a/src/openvpn/ssl.c
+> +++ b/src/openvpn/ssl.c
+> @@ -1607,7 +1607,7 @@ key_source2_print(const struct key_source2 *k)
+>   * @param out           Output buffer
+>   * @param olen          Length of the output buffer
+>   */
+> -void
+> +static void
+>  tls1_P_hash(const md_kt_t *md_kt,
+>              const uint8_t *sec,
+>              int sec_len,
+> 
+ACK
 
-[...]
-
->> +check_option_count()
->> +{
->> +    num_min=3D"$1"
->> +    num_max=3D"$2"
->> +
->> +    echo -n "Checking if number of options are between $num_min and $nu=
-m_max ... "
->> +    optcount=3D"$(cat sanity_check_options.$$ | wc -l )"
->> +    if [ $optcount -le $num_min ]; then
->> +        echo "FAIL  (too few, found $optcount options)"
->> +        count_failure
->> +        return
->> +    fi
->> +    if [ $optcount -gt $num_max ]; then
->> +        echo "FAIL  (too many, found $optcount options)"
->> +        count_failure
->> +        return
->> +    fi
->> +    echo "PASS (found $optcount options)"
->> +}
->=20
-> This is quite fragile.  For example, this breaks 'make check' for
-> --disable-crypto builds.  It will also fail easily after adding or
-> removing some options, and we probably have more configure flags that
-> will cause this check to fail.  That's we I don't like it very much.
-
-Eeek, so the threshold values are not good enough.  Well, that said, I
-never expected this proposal to get acceptance on the first review :)
-This is just to have a starting point for these checks.
-
-Based on how the current option parser is designed, it is hard to get
-this 100% correct.  So I think we need to consider a threshold.  For
-example, my system:
-
-$ openvpn --help | grep -E -- '^--'  | wc -l
-237
-$ grep -E 'if \(streq\(p\[0\], ".*"\) && ' options.c  | wc -l
-277
-
-We might be able to get closer to a realistic number by sending
-options.c via the preprocessor with the right set of "define" arguments.
-
-Or to rework the complete option parser to be based on a struct-like
-model where it is easy to write a tool which extracts the number of
-options and which options to expect which can be compared against the
---help output.  This way we could get a close to 100% perfect match.
-But I don't think doing such a code refactoring shoul be based purely on
-the testing requirements in our case.  The code paths involved are quite
-solid and re-used in almost every possible way by OpenVPN (config files,
-PUSH_REPLY, CCD, CCD via management/plug-ins/script hooks, etc).
-
-Or we could get started on moving the man page over to a more parseable
-file format so we could extract options from the man page and compare it
-to --help.  This way we enforce that the man page is up-to-date too.
-And it could make the man-page be generated according to which features
-OpenVPN is built with.
-
-Another approach is to make the threshold values (min/max) be based on
-which configure options/defines are enabled - which directly impacts the
-add_option() function in options.c.  So have a baseline of arguments, if
-ENABLE_CRYPTO - add X to the baseline, and so on.
-
-I do think this test makes sense, as it can ensure 'make check' fails if
-we do something wonky with options.c.  But I agree it is hard to get it
-right.  So just pondering the alternatives and which ones makes most sense.
-
-That said, I don't buy the argument that testing options can make 'make
-check' fail if adding/removing options.  To me that is similar to say
-unit tests are bad because they will fail when you change the behaviour
-or API of a function which already have a unit test.  So tests will need
-to be adopted according to the changes done on code it is expected to
-test.  But we can ensure doing those changes in the test-case can be
-done in an easily and understandable way.
-
-
---=20
-kind regards,
-
-David Sommerseth
-OpenVPN Technologies, Inc
-
-
-
---ShonbjQUo4R2Vl6Rm0qWLHtQCP8CW00nH--
-
---7pf2cFodd4FOQqcKxKNi1imGOApLfB7ND
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBCgAGBQJZj28oAAoJEIbPlEyWcf3yztsP/RHkcaG7xiy1Z0LfFSJYJfKk
-ZKtz29RnTZLARZvZIHMPXDzpU2oSQGG+dClPVYdPkQj4JizfGUNmBtdcu3wNY61a
-gpldcr1PFZAdF9dhlwhYo+2RPP1t20JT99Itnm9ZQt6gUMx4on/rhTVsHNBuP+3+
-uSNRYzW/AjGjEWFeRHwKTPtFn2JFFT0npjje3fHAKjNCmuLpnRtIMIwQzs+17bVi
-LgEEJ4xp2cAaZ8dVmDA8aZFUk7xnCKsKgySL3MJv8eWbR2Zj0rNLvpZTEDZISbMW
-KLWlYW6Y7/vVauv3etVtkQVP3+h5Ful1uGK1GVXDGj9xOjMV6OVWlnj8tKePF26V
-2rZdSB3iqxKJ5f+USGBy6d/2A1j7qREqMcb84qhP6S835yux97MAzh/Z+5SXg42E
-7bceFO8pwk95Dfi/WQqDiemqqf7PXCe4DpinSzba3hw+qgXVbiVt2e+Dl6VXFORV
-PWbrNXW05Lk9LztQNgIfyNu7l509ZuAOnCUpVk8cBCVU358k/wXcM1biJjZWuj8X
-hKxk1sRng1MMc6wb5Bbjo7fP212CWNjuAk9UBjA1aEmtK4WcPn47PiuWuJFP50b0
-pAr7rK9LmM4/6LleXqkVlcUeNeR4mtjtLm7sjzlY/DcVafS056drZMZ89P8a9+P/
-ILFQI2WZhzhzJNQsm0Gv
-=B1pB
------END PGP SIGNATURE-----
-
---7pf2cFodd4FOQqcKxKNi1imGOApLfB7ND--
+-Steffan
 
