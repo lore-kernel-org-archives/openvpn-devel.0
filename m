@@ -1,10 +1,10 @@
 From: David Sommerseth <davids@...515...>
-Date: Mon, 14 Aug 2017 15:55:53 +0200
-Message-Id: <20170814135553.21682-1-davids@...515...>
-In-Reply-To: <20170802181435.14549-3-ch@...2291...>
-References: <20170802181435.14549-3-ch@...2291...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Document down-root plugin usage
- in client.down
+Date: Mon, 14 Aug 2017 15:58:16 +0200
+Message-Id: <20170814135816.22191-1-davids@...515...>
+In-Reply-To: <1501238302-16714-1-git-send-email-steffan.karger@...1435...>
+References: <1501238302-16714-1-git-send-email-steffan.karger@...1435...>
+Subject: Re: [Openvpn-devel] [PATCH applied] sample-plugins: fix
+ ASN1_STRING_to_UTF8 return value checks
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,27 +15,28 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: ch@...2291...
+To: steffan.karger@...1435...
 Cc: openvpn-devel@lists.sourceforge.net
 
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA512
 
-ACK.
+ACK.  I have a slightly modified version of this patch pending for
+release/2.4 (which lacks the OpenSSL 0.9.6b workaround removal).  This
+will be considered to be added a bit later.
 
-Your patch has been applied to the following branches
+Your patch has been applied to the master branch
 
-commit cbeff7b1b3f2815ee27f4479dca502c220fc4d15  (master)
-commit 597b6224e254775915956b8db45c090709b17b1a  (release/2.4)
-Author: Conrad Hoffmann
-Date:   Wed Aug 2 20:14:35 2017 +0200
+commit c43045ca0590364552fbd060cc65ee1c50a4866a
+Author: Steffan Karger
+Date:   Fri Jul 28 12:38:22 2017 +0200
 
-     Document down-root plugin usage in client.down
+     sample-plugins: fix ASN1_STRING_to_UTF8 return value checks
 
-     Signed-off-by: Conrad Hoffmann <ch@...2291...>
+     Signed-off-by: Steffan Karger <steffan.karger@...1435...>
      Acked-by: David Sommerseth <davids@...515...>
-     Message-Id: <20170802181435.14549-3-ch@...2291...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg15164.html
+     Message-Id: <1501238302-16714-1-git-send-email-steffan.karger@...1435...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg15161.html
      Signed-off-by: David Sommerseth <davids@...515...>
 
 
@@ -47,18 +48,18 @@ David Sommerseth
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBCgAGBQJZkavnAAoJEIbPlEyWcf3y9HMP/ihfyiarn7ADfF1wCrWxCrcU
-ZbtPELZHmIMxgAhmK7z6RSiomr7MmfCHi4M9MGrqBNYKSWTyySHg9vaPE5sT8ThP
-Rky9zwrgMBhJVvKIQEv63B/h3HjVGw9eg8SvkRbNlUYPh3lH8q1h7/2pmRiBsQi7
-o6QUWrSSlX2/w2WFg21S8Uj0I+2pzMx7fHykEjbC/EUTuYGzxMWPxLqUEXY+ayD8
-E92hewWDkVo8cNXTxQaw2UUk59LBUsux8hf7GnCnlTZ2yCTsaYbWFOOWsuW0FuKZ
-liN/xzIstlQn3HbWA27gbcUrjkOfdl7thANnFjormV8TSm8BYYmjhyKqyVx2g6pH
-jwWgOEuP3GlvykFj5dC3S5D4DfhHGVqgtYs9h+TieeN7qXO+hrkD+94cLqyYEAb4
-rGeAUWKUjRCWzTG5doADRj3RA37ScUjtJptgXfqiWWUcKpUlIfxG90tiOTV1J737
-bDgi8eSnSxCYSg56Difwtr7mAGuXejZNqil8zMXVjkRa5fc7qaxzk4pw/3T4o/aU
-R3Jl99KJtb/BKqL3GbQTZSEY7E8n3hGxCznK3t4u6Asu0f6eXrK/1TF4A1adOTVm
-ZBkpjrWWE+YAOtMCoiKBz/1R0fzCbbGVYoSrwuiXx+DJBg+pTWxRuKxrzcLtoB9r
-Jnh5QxUVgRguD7Z36lby
-=dFSr
+iQIcBAEBCgAGBQJZkax0AAoJEIbPlEyWcf3ytLkQAIojuE34qq8HN2UTkIPoEDNz
+/LUzFJjLovzMEibI3Q1g8h3MkSlEi0ar6CHo1X4q4uXoD6dkb6K7Ccy2iU4HglqU
+rQtrjU/0tC/iVHmdRayhJc7aez4QIbovIfRuamA0dqC4zoEZutMRrbHF4prRy7Lc
+VFprsfEjJPV8yRvEfU34PWHaxFehU8l/9P530oMPeO+mFG0oKP7FCaYbgmV9KZLF
+CxjbHY8ZdEXQ++GBmKa/vklsdxb+QF03OoDTmNvqM5YqaCHsWkAxesu5ESwpJomC
+pkfG2dSd/0WZI8vuw02sgOAGDPXx5+rNSFpg2eDbynhC1w30lk9w5e281ViyDMcl
+h1DrLyP+MTMhIPYYQ5bZSwyct5Mwao+biGxdFmtnTOn1zWrG4M8d4uSA6Sf0pu2b
+/u+68KxrHG5/yra3RyTTIza4fCdLUVriepAQAqtHXlPSyGwKS8/eFzlzrFbFhEa8
+iDeHJvtQSyPQvt/N3sprvtIKnv88GS3orrpEdDtFJYL2KSVJ4eb2mXKgYqkSDhL0
+2KADnwl9cOmiHKBYKPq515GI6b6i63CmLmO32wXh44yU00k26vLfEX8s3ItOWlRD
+eJi7t1R8sZm1IJWmZM3AHsv+5h+Kn84f8YZit/fiZJivIREMb5LAVS/h9ZqBMyNX
+4LgYGutbSjKU+fSrG2JB
+=KULp
 -----END PGP SIGNATURE-----
 
