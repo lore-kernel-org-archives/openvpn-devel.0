@@ -1,10 +1,10 @@
 From: David Sommerseth <davids@...515...>
-Date: Mon, 14 Aug 2017 15:55:10 +0200
-Message-Id: <20170814135510.21436-1-davids@...515...>
-In-Reply-To: <20170802181435.14549-2-ch@...2291...>
-References: <20170802181435.14549-2-ch@...2291...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Use provided env vars in
- up/down script.
+Date: Mon, 14 Aug 2017 15:55:53 +0200
+Message-Id: <20170814135553.21682-1-davids@...515...>
+In-Reply-To: <20170802181435.14549-3-ch@...2291...>
+References: <20170802181435.14549-3-ch@...2291...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Document down-root plugin usage
+ in client.down
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,23 +21,21 @@ Cc: openvpn-devel@lists.sourceforge.net
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA512
 
-ACK.  Verified that ${dev} does indeed exists in --up and when the plug-in
-runs with OPENVPN_PLUGIN_DOWN mode, which is facilitated via the down-root
-plug-in.
+ACK.
 
 Your patch has been applied to the following branches
 
-commit 94c1ce22ebcc1f672bb80598afccc130aa01fafc  (master)
-commit 9f390f0209aa119f7625a75ae309787bc6785831  (release/2.4)
+commit cbeff7b1b3f2815ee27f4479dca502c220fc4d15  (master)
+commit 597b6224e254775915956b8db45c090709b17b1a  (release/2.4)
 Author: Conrad Hoffmann
-Date:   Wed Aug 2 20:14:34 2017 +0200
+Date:   Wed Aug 2 20:14:35 2017 +0200
 
-     Use provided env vars in up/down script.
+     Document down-root plugin usage in client.down
 
      Signed-off-by: Conrad Hoffmann <ch@...2291...>
      Acked-by: David Sommerseth <davids@...515...>
-     Message-Id: <20170802181435.14549-2-ch@...2291...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg15165.html
+     Message-Id: <20170802181435.14549-3-ch@...2291...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg15164.html
      Signed-off-by: David Sommerseth <davids@...515...>
 
 
@@ -49,18 +47,18 @@ David Sommerseth
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBCgAGBQJZkau8AAoJEIbPlEyWcf3yxFwP/jdgEw7U5naNlSTSOmDnOE32
-ox/JMuKEeWx4U4j+ngsijBGciX+kaEWihPCFfYgTnZw25aR2vQfz5eGeDpdNrf7h
-Sk/sddAjy1urIn97aA2gdbNOt2JXjuPYXPbTMvbp/HAby3rjdsP+WwftRS5PlNfC
-wh85felObSHULdw/9keLZMVYgrkNWKB1FdAsKxXW0ky5bj3qTYL5BNPtqPe0Iw6D
-iSi3XeUwRYDQ0tegzoIJYaEIzEfCSiTpr64mOvotVvmNDDg5y5QkMJg9UtXrkBsC
-xFd7CIOjBArht44U7OM0tK1KNEqa5W7n3EFUu10hsuEUVI5VAQwPLppTt9Zf7ja2
-X0MhMBD7+Eh3lOX+SKjuOfO+lKhNtM3f0T3Nklrz7zxhNlMinn3a4w9xgDMHrsj2
-vhBuQfRtvsnQEY41egibEL0dNRvwVSDdGziFtgRBc75qUihFD+yVbLdYxz1lQ9RP
-jmWKJn6QS6U4at88z0h+gYM2XYLXTbNzAn49C78HQZbTw2gSlpUcrVEEF554FPSt
-zWQ47p5sUbUDptS1pPrCPsh+s03drWYOYqVY6O2NHz4Qz+vgd//eXW2pKMf90l2E
-wuPxbA7wIzUGhwGWFzGyf/u7v9zqJnj9a7hOS7Poka90tSiMCsw1iIkLPsR5Lu2d
-yyhWjWqhpKLTr1rpc3dq
-=dG9l
+iQIcBAEBCgAGBQJZkavnAAoJEIbPlEyWcf3y9HMP/ihfyiarn7ADfF1wCrWxCrcU
+ZbtPELZHmIMxgAhmK7z6RSiomr7MmfCHi4M9MGrqBNYKSWTyySHg9vaPE5sT8ThP
+Rky9zwrgMBhJVvKIQEv63B/h3HjVGw9eg8SvkRbNlUYPh3lH8q1h7/2pmRiBsQi7
+o6QUWrSSlX2/w2WFg21S8Uj0I+2pzMx7fHykEjbC/EUTuYGzxMWPxLqUEXY+ayD8
+E92hewWDkVo8cNXTxQaw2UUk59LBUsux8hf7GnCnlTZ2yCTsaYbWFOOWsuW0FuKZ
+liN/xzIstlQn3HbWA27gbcUrjkOfdl7thANnFjormV8TSm8BYYmjhyKqyVx2g6pH
+jwWgOEuP3GlvykFj5dC3S5D4DfhHGVqgtYs9h+TieeN7qXO+hrkD+94cLqyYEAb4
+rGeAUWKUjRCWzTG5doADRj3RA37ScUjtJptgXfqiWWUcKpUlIfxG90tiOTV1J737
+bDgi8eSnSxCYSg56Difwtr7mAGuXejZNqil8zMXVjkRa5fc7qaxzk4pw/3T4o/aU
+R3Jl99KJtb/BKqL3GbQTZSEY7E8n3hGxCznK3t4u6Asu0f6eXrK/1TF4A1adOTVm
+ZBkpjrWWE+YAOtMCoiKBz/1R0fzCbbGVYoSrwuiXx+DJBg+pTWxRuKxrzcLtoB9r
+Jnh5QxUVgRguD7Z36lby
+=dFSr
 -----END PGP SIGNATURE-----
 
