@@ -1,10 +1,10 @@
 From: David Sommerseth <davids@...515...>
-Date: Mon, 14 Aug 2017 15:53:32 +0200
-Message-Id: <20170814135332.21172-1-davids@...515...>
-In-Reply-To: <20170725210234.5673-1-steffan@...1856...>
-References: <20170725210234.5673-1-steffan@...1856...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Move create_temp_file() out of
- #ifdef ENABLE_CRYPTO
+Date: Mon, 14 Aug 2017 15:55:10 +0200
+Message-Id: <20170814135510.21436-1-davids@...515...>
+In-Reply-To: <20170802181435.14549-2-ch@...2291...>
+References: <20170802181435.14549-2-ch@...2291...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Use provided env vars in
+ up/down script.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,27 +15,29 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: steffan.karger@...1435...
+To: ch@...2291...
 Cc: openvpn-devel@lists.sourceforge.net
 
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA512
 
-ACK.  This makes sense, code looks good and passes initial tests.
+ACK.  Verified that ${dev} does indeed exists in --up and when the plug-in
+runs with OPENVPN_PLUGIN_DOWN mode, which is facilitated via the down-root
+plug-in.
 
 Your patch has been applied to the following branches
 
-commit cd5a74d0d7c6347b31e261e98ca8984819e594df  (master)
-commit a91c38fbabf6f949990ef8a3801d56225a47a33f  (release/2.4)
-Author: Steffan Karger
-Date:   Tue Jul 25 23:02:34 2017 +0200
+commit 94c1ce22ebcc1f672bb80598afccc130aa01fafc  (master)
+commit 9f390f0209aa119f7625a75ae309787bc6785831  (release/2.4)
+Author: Conrad Hoffmann
+Date:   Wed Aug 2 20:14:34 2017 +0200
 
-     Move create_temp_file() out of #ifdef ENABLE_CRYPTO
+     Use provided env vars in up/down script.
 
-     Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+     Signed-off-by: Conrad Hoffmann <ch@...2291...>
      Acked-by: David Sommerseth <davids@...515...>
-     Message-Id: <20170725210234.5673-1-steffan@...1856...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg15146.html
+     Message-Id: <20170802181435.14549-2-ch@...2291...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg15165.html
      Signed-off-by: David Sommerseth <davids@...515...>
 
 
@@ -47,18 +49,18 @@ David Sommerseth
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBCgAGBQJZkatbAAoJEIbPlEyWcf3yjUQP/1yZE+5cYLEdBYrkbv61p1wY
-f7EG3F29hdCYEYHS1rTvYQbPZFy48YJL5mqvs6IKemQxVIYoEFkCF5KLdYIU6ZlU
-1n6Km+yUqeYpU3Tm07Yl+20qCv3+H9FAMJkDjosoh6BIuF8HJD7NsAmDFoY23X2k
-TXicBKu9zgIHszzFhYQkhQBIBxhpVirZ2r2TqgXOmiz/rbRtmRsHeqFEEcfWv/mT
-YULxqREKDPTWKHsH/s1JbwoWwrhkzeeYdxoaYs6/qN7zuNj5bmfxfvzJXmtbRlH3
-mi/fCtgxq9OJvokUpfSNVoKwf90VGEVy+occziE7KdOmWNCh4QpPBVt27PdloEmc
-dbbDES7YSndiaHXYoU9I15SP9pGgUI8DmUc9SU9PUPSGSdVG+aRhw4DzY400EQRL
-jTzdiOZB33xWJivKuxWXM0kWbdu1Nga4Q/aTwJCLaa+Xcuh/mdMZMCuPKfNiRTFZ
-iU4ZIqSGi84h1pt9azWftI9+7fLIaAsdmwhnQBy9rGz5afzC8rf2TlOmSTYzwdqA
-fI6TVlu9JosMxDnUtXN5NANRVB79JVYaCVxshCajDBUe4m/j1Ywz5R/PLqMk29zt
-WBbNdMsVBijJ1DhMFqZDxrBCyKh9OwPHRawdonRU4MD53aXbfBNRR7kCrCAcd3Rt
-/qnAV7+hg5KxbpF0UrC9
-=CjJG
+iQIcBAEBCgAGBQJZkau8AAoJEIbPlEyWcf3yxFwP/jdgEw7U5naNlSTSOmDnOE32
+ox/JMuKEeWx4U4j+ngsijBGciX+kaEWihPCFfYgTnZw25aR2vQfz5eGeDpdNrf7h
+Sk/sddAjy1urIn97aA2gdbNOt2JXjuPYXPbTMvbp/HAby3rjdsP+WwftRS5PlNfC
+wh85felObSHULdw/9keLZMVYgrkNWKB1FdAsKxXW0ky5bj3qTYL5BNPtqPe0Iw6D
+iSi3XeUwRYDQ0tegzoIJYaEIzEfCSiTpr64mOvotVvmNDDg5y5QkMJg9UtXrkBsC
+xFd7CIOjBArht44U7OM0tK1KNEqa5W7n3EFUu10hsuEUVI5VAQwPLppTt9Zf7ja2
+X0MhMBD7+Eh3lOX+SKjuOfO+lKhNtM3f0T3Nklrz7zxhNlMinn3a4w9xgDMHrsj2
+vhBuQfRtvsnQEY41egibEL0dNRvwVSDdGziFtgRBc75qUihFD+yVbLdYxz1lQ9RP
+jmWKJn6QS6U4at88z0h+gYM2XYLXTbNzAn49C78HQZbTw2gSlpUcrVEEF554FPSt
+zWQ47p5sUbUDptS1pPrCPsh+s03drWYOYqVY6O2NHz4Qz+vgd//eXW2pKMf90l2E
+wuPxbA7wIzUGhwGWFzGyf/u7v9zqJnj9a7hOS7Poka90tSiMCsw1iIkLPsR5Lu2d
+yyhWjWqhpKLTr1rpc3dq
+=dG9l
 -----END PGP SIGNATURE-----
 
