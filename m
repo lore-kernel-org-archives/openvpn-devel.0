@@ -1,9 +1,11 @@
-From: David Sommerseth <davids@...515...>
-Date: Tue, 15 Aug 2017 21:37:06 +0200
-Message-Id: <20170815193706.18080-1-davids@...515...>
-In-Reply-To: <20170701112208.18803-1-steffan@...1856...>
-References: <20170701112208.18803-1-steffan@...1856...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Deprecate --no-replay
+References: <20170812040546.8439-1-a@...2181...>
+From: Steffan Karger <steffan@...1856...>
+Message-ID: <7f21e47a-5d35-7fff-eed7-cc29e9d0bfcb@...1856...>
+Date: Tue, 15 Aug 2017 22:15:57 +0200
+MIME-Version: 1.0
+In-Reply-To: <20170812040546.8439-1-a@...2181...>
+Content-Language: en-GB
+Subject: Re: [Openvpn-devel] [PATCH] ntlm: avoid breaking anti-aliasing rules
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,51 +16,85 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: steffan@...1856...
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA512
+Hi,
 
-ACK.  Please send patch for git master removing this feature.  I
-considered applying it to git master, as a way to track it. But decided not
-to do that now.
+On 12-08-17 06:05, Antonio Quartulli wrote:
+> From: Antonio Quartulli <antonio@...515...>
+> 
+> The problem is visible when compiling with -O2:
+> 
+> ntlm.c: In function ‘ntlm_phase_3’:
+> ntlm.c:305:9: warning: dereferencing type-punned pointer will break strict-aliasing rules [-Wstrict-aliasing]
+>          if ((*((long *)&buf2[0x14]) & 0x00800000) == 0x00800000)
+> 
+> The spec suggests to interpret those 4 bytes as a long, but
+> this needs to be done carefully.
+> 
+> Signed-off-by: Antonio Quartulli <antonio@...515...>
+> ---
+> 
+> I have tried to make the statement more clear and "aliasing safe" at the same
+> time. However, this is only compiled tested as I have no way to test the whole
+> NTLM thing. Sorry :(
+> 
+> Cheers,
+> 
+>  src/openvpn/ntlm.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/src/openvpn/ntlm.c b/src/openvpn/ntlm.c
+> index 65c1cbf5..a251c11d 100644
+> --- a/src/openvpn/ntlm.c
+> +++ b/src/openvpn/ntlm.c
+> @@ -302,7 +302,8 @@ ntlm_phase_3(const struct http_proxy_info *p, const char *phase_2,
+>          /* Add target information block to the blob */
+>  
+>          /* Check for Target Information block */
+> -        if ((*((long *)&buf2[0x14]) & 0x00800000) == 0x00800000)
+> +        unsigned long *flags = (unsigned long *)(buf2 + 0x14);
+> +        if ((*flags & htonl(0x00800000)) == htonl(0x00800000))
+>          {
+>              tib_len = buf2[0x28];            /* Get Target Information block size */
+>              if (tib_len > 96)
+> 
 
-Your patch has been applied to the release/2.4 branch.
 
-commit e3da00918d2dd99c116f6da1a14a2a73b72829f4
-Author: Steffan Karger
-Date:   Sat Jul 1 13:22:08 2017 +0200
+I *think* this will break the functionality.  Consider the following
+test code:
 
-     Deprecate --no-replay
+#include <arpa/inet.h>
+#include <stdio.h>
 
-     Signed-off-by: Steffan Karger
-     Acked-by: David Sommerseth
-     Message-Id: <20170701112208.18803-1-steffan@...1856...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg15003.html
-     Signed-off-by: David Sommerseth
+int main(char *argv[], int argc)
+{
+    unsigned char buf[4] = {0, 0, 0x80, 0};
 
+    if ((*((long *)&buf[0]) & 0x00800000) == 0x00800000)
+        printf("old: true\n");
+    else
+        printf("old: false\n");
 
-- --
-kind regards,
+    unsigned long *flags = (unsigned long *)(buf);
+    if ((*flags & htonl(0x00800000)) == htonl(0x00800000))
+        printf("new: true\n");
+    else
+        printf("new: false\n");
 
-David Sommerseth
+    return 0;
+}
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
+On amd64, this prints:
 
-iQIcBAEBCgAGBQJZk01dAAoJEIbPlEyWcf3yTzoQAKR5rlvu5wf+TtXjluxO9CNx
-q9Ausjy8C8C87ltHEPm2CgNcq3BywqCyaxxoy+yox97PGeCgQ1EBRkOtlnwBdrZi
-9Ad3gnyNlYw0iX/oZ3A7MH1dr6jH8f2gTLcxdwcyvacmeDpS0Y2R31VFKJbYHMKX
-9afXWqxkpkFhVvi1Mwph3RR+dTO8OSxmVExGKM1E1q5aSB3Vfsp2vk2qtlUyaij7
-uOAS/TaBole5k2VUnwfMH5fdw6fBnosc2eRw+kqY3NdjQKE3TiH5MuwqnsP5tsbt
-eW4Do5xT2kU+XgY2jp0dPI4ImD8aUfVYg0Ud54A4n0E0uf6KCkGCPkDBr5KhObiP
-if+Yl5Zv3W2W5ZsN7tbB+IyZGJMoqghqG0a/fw8Ef4A6ZsH+aSCtgQyE/CoTvFA/
-5I6q97EFQIiLsbyMAnk2Wb1IC1nxgO1HcHudOcGOtqLwz+ungHcdZQv6H5xecDDi
-0YLteRG5sxM7CBxjOD3gs1nk+BbbtSp/DAFe3VNw+F0EVOCcmcuSGdBvW5ZwZcq8
-FIrm6znVgvOklO+a0/jm0lYLSSiJmvhDh2zEK5ovFOD+Rw6KAodDoyz3d84oyRJG
-A9mb+v/3WgqxDRuM+O173Hti9pHcv3zXmmF5e9tuQIOEQdXSliGG+UV7fRvhW9up
-BemIFv02Qac9uW9yKFjJ
-=HIXh
------END PGP SIGNATURE-----
+old: true
+new: false
+
+I'd expect some 'ntohl' call in this code somewhere, but that assumes
+that the NTLM spec was designed somewhat sane and uses network byte order...
+
+For now, I'd suggest to stick to just fixing the type-punned dereference
+and leave out any htonl/ntohl calls.
+
+-Steffan
 
