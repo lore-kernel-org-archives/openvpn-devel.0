@@ -1,15 +1,9 @@
-References: <20170701112951.19119-1-steffan@...1856...>
- <b67daad4-362b-3605-5716-3e17c5f0c362@...2080...>
- <CAFHpkQFADMG50xb4UD_bAvT4a94EbLVstAuPEmhkxhUEnZoXQg@...278...>
- <480c51a7-a17d-c29f-1b8e-33c874ca9670@...2181...>
- <CAFHpkQGNS60dNn7eFED26A6ewVFNjw0eMome9CQZ=Tg=23Kmsw@...278...>
- <cde83666-7a39-4aa5-bc51-27ef42dc5a88@...2080...>
-From: Arne Schwabe <arne@...1227...>
-Message-ID: <ffc817b5-f17f-0cfb-85bc-66f07bb3604b@...1227...>
-Date: Tue, 15 Aug 2017 13:16:42 +0200
-MIME-Version: 1.0
-In-Reply-To: <cde83666-7a39-4aa5-bc51-27ef42dc5a88@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH] Deprecate --keysize
+From: David Sommerseth <davids@...515...>
+Date: Tue, 15 Aug 2017 13:53:00 +0200
+Message-Id: <20170815115300.15810-1-davids@...515...>
+In-Reply-To: <1502222447-8186-1-git-send-email-steffan@...1856...>
+References: <1502222447-8186-1-git-send-email-steffan@...1856...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Deprecate --ns-cert-type
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,44 +14,50 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: steffan@...1856...
+Cc: openvpn-devel@lists.sourceforge.net
 
-Am 15.08.17 um 11:29 schrieb David Sommerseth:
-> On 15/08/17 11:17, Илья Шипицин wrote:
-> [...]
->>     > there are special cases like Mikrotik openvpn (pretty popular), where
->>     > user simply use what hardware vendor installed (without possibility to
->>     > recompile).
->>     >
->>     > should we contact such hardware vendors as well ?
->>
->>     there might be an non-predictable number of vendors shipping their own
->>     openvpn version. We can't contact them all. It's their responsibility to
->>     stay behind the changes in what they ship.
->>
->>     If they don't, their users will complain aloud with them ;)
->>
->>     On top of that, this does not prevent users from using their own config,
->>     right? So they can still configure the client to avoid deprecated
->>     options.
->>
->>
->> you cannot use regular openvpn config with Mikrotik
->> https://wiki.mikrotik.com/wiki/OpenVPN
->>
->> you can use mikrotik configuration options
-> 
-> Which just emphasizes even more that Mikrotik needs to do their own
-> homework on their own.  Their config syntax is completely alien to us,
-> so we have no direct influence on how their syntax ends up as a
-> configuration OpenVPN is capable of understanding.  And _we_ shouldn't
-> care how Mikrotik does that, it's their own implementation design.
-> 
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
 
-Also Mikrotek broke at least two times with my app. First when we
-enabled TLS 1.1+ and second time when we disabled non PFS ciphers. I
-have enough of their crappy OpenVPN/SSL support.
+ACK.  This makes sense and works as expected.
 
-Arne
+Your patch has been applied to the release/2.3 branch
 
+commit 49e12a39abdecb4c63ea0e577f9abc18e0eda082
+Author: Steffan Karger
+Date:   Tue Aug 8 22:00:47 2017 +0200
+
+     Deprecate --ns-cert-type
+
+     Trac: #876
+     Signed-off-by: Steffan Karger <steffan@...1856...>
+     Acked-by: David Sommerseth <davids@...515...>
+     Message-Id: <1502222447-8186-1-git-send-email-steffan@...1856...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg15180.html
+     Signed-off-by: David Sommerseth <davids@...515...>
+
+
+- --
+kind regards,
+
+David Sommerseth
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBCgAGBQJZkuCYAAoJEIbPlEyWcf3y+84P/2g4Jn4jdgMd4yM/diLyWPBP
+Nyu3ukvrB9pAN81tekdr1H3ZtOaQEfLkBV3DfAsymaSC5NEODBWHVStgypcN6wRI
+azOuOBgsKF4jW32CWZWG76ZBvzkVutNUue/FCU0SxddFgvE0lFBcKTpY5oAzvNPx
+pHc4TLZ6ZpGPEuCCb3ypyYLvBHRK8oSmTZNnSVGsOby20ZWI8Lrn5JC+f6AavKQQ
+2BcS4ke0r74tRDg+PnZ07BY3xGKlExkrrKIJfYzFhpMf8Nv7qzV0y6/sM1CEn43G
+RjQd5NaBx53ByVqpvMTgutlymr57W424y0uBdAXTGe2VvzwVP8duiTJ8OR+bKkKV
+y8MnZ7bDu8UFHqACMtd10KUCRgBBC5S0wSG2lUxtb31Qz2OG+dh6W7arMyPeUl7s
+XNAWgVJFUoNeqGLuvIfcgE+F667vvDIRODI4MccXoRDHrBtsQrFTPyRYNOIotMOO
+DVESfFCUKT6flU2l70rM0Oi1lAKpqg+RtZSNbA3eUo/wLnfqsYeGpDd7cx7q1WH3
+erSnu6I6BJxob+h/O+aY8qJaYnj6qhye6qPg2Bwbykb/Pc35s7aqxI/wsFxKKSFL
+U5ZFzeceZokni1Ucurb0S+yiwHC23O0pFaNLU7KaaxJfqIYZCidFSeUDAOtQRybp
+VQloJpr/pdjBCRrMwfke
+=ia5o
+-----END PGP SIGNATURE-----
 
