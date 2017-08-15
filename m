@@ -1,14 +1,13 @@
-From: David Sommerseth <openvpn@...2080...>
-References: <20170815215451.21662-1-davids@...515...>
-Reply-To: openvpn-devel@lists.sourceforge.net
-Message-ID: <c67e7964-3dec-4637-11bc-13308608afba@...2080...>
-Date: Tue, 15 Aug 2017 23:58:35 +0200
+References: <1502811586-19578-1-git-send-email-steffan.karger@...1435...>
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <2286872c-539c-434c-4e1b-16fd082424b6@...2181...>
+Date: Wed, 16 Aug 2017 06:54:01 +0800
 MIME-Version: 1.0
-In-Reply-To: <20170815215451.21662-1-davids@...515...>
-Content-Type: multipart/signed; micalg=pgp-sha512;
+In-Reply-To: <1502811586-19578-1-git-send-email-steffan.karger@...1435...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
  protocol="application/pgp-signature";
- boundary="61tCANbjpVqONJDVuSMUtaTlobiPlolCA"
-Subject: Re: [Openvpn-devel] [PATCH] Highlight deprecated features
+ boundary="GWeoifN1edF8jdggTsN2190f1VdKwoTEl"
+Subject: Re: [Openvpn-devel] [PATCH] Move run_up_down() to init.c
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,72 +16,73 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+To: Steffan Karger <steffan.karger@...1435...>, openvpn-devel@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---61tCANbjpVqONJDVuSMUtaTlobiPlolCA
-Content-Type: multipart/mixed; boundary="BhUJpdNm65oCK3Qo8PCknbwa272CKAvPF";
+--GWeoifN1edF8jdggTsN2190f1VdKwoTEl
+Content-Type: multipart/mixed; boundary="kjasPSb62KXxI4Ve9tuKkqFaCKlssowsA";
  protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-Reply-To: openvpn-devel@lists.sourceforge.net
-To: openvpn-devel@lists.sourceforge.net
-Message-ID: <c67e7964-3dec-4637-11bc-13308608afba@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH] Highlight deprecated features
-References: <20170815215451.21662-1-davids@...515...>
-In-Reply-To: <20170815215451.21662-1-davids@...515...>
+From: Antonio Quartulli <a@...2181...>
+To: Steffan Karger <steffan.karger@...1435...>,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <2286872c-539c-434c-4e1b-16fd082424b6@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH] Move run_up_down() to init.c
+References: <1502811586-19578-1-git-send-email-steffan.karger@...1435...>
+In-Reply-To: <1502811586-19578-1-git-send-email-steffan.karger@...1435...>
 
---BhUJpdNm65oCK3Qo8PCknbwa272CKAvPF
-Content-Language: en-GB
+--kjasPSb62KXxI4Ve9tuKkqFaCKlssowsA
+Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
-On 15/08/17 23:54, David Sommerseth wrote:
-> We have quite a list of deprecated options currently.  Ensure this
-> is highlighted both in documentation and code.
->=20
-> This patch builds on the wiki page [1] enlisting all deprecated features
-> and their status.  There are also some options not listed here, as
-> there exists patches in release/2.4 which awaits an update for git master.
->=20
-> Signed-off-by: David Sommerseth <davids@...515...>
+Aloha,
 
-Sorry, I forgot the [1] reference in the commit message:
+On 15/08/17 23:39, Steffan Karger wrote:
+> This function is only used in init.c, and is not easy to fit into a
+> specific category because it both runs scripts and plugin hooks.  Making
+> it static in init.c is probably the best place for this function.
+>=20
+> (I think we should find a better place for everything currently in misc.c,
+> and get rid of it all together.  This patch is part of that effort.)
+>=20
+> Signed-off-by: Steffan Karger <steffan.karger@...1435...>
 
-[1] <https://community.openvpn.net/openvpn/wiki/DeprecatedOptions>
+This patch just does what it says without introducing any functional change.
+I also agree that we should try to shrink misc.c as much as
+possible..therefore any cleanup going towards that direction is welcome.
+
+ACK
+
+Cheers,
 
 
 --=20
-kind regards,
-
-David Sommerseth
-OpenVPN Technologies, Inc
+Antonio Quartulli
 
 
+--kjasPSb62KXxI4Ve9tuKkqFaCKlssowsA--
 
---BhUJpdNm65oCK3Qo8PCknbwa272CKAvPF--
-
---61tCANbjpVqONJDVuSMUtaTlobiPlolCA
+--GWeoifN1edF8jdggTsN2190f1VdKwoTEl
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBCgAGBQJZk26LAAoJEIbPlEyWcf3yWF0P/33RQU7cebk/LMdowUWQhNJU
-vX9YvZzQFeoIsIzdUlJlD2zNIwmeKMN2HkdndxgcmYHkL4u/I/uPJGaSbJ4dmfSP
-wByMqPwsHEe7yBRwMypJMyieSX4wFdJzzW+ERmQpRH/W2yp1JfTeNGCgKfNOK3zR
-+vTO/+50mIH25E+bqbLh0D8fcfrrR2sK6Z/S1MR+1ayUxSQv+IGBlK858VTgqXwi
-0MhaQYyw0cxVc5OcGvGsWdIZiTcRWHq4f2N1+HdaMgPNvonWlgJ+82ywMlzbH4HR
-ksJn4XQSmHUDTVT7vhdwUoz/k5qGvF1UwZBF91zEvghMLMTohaMLWJAR/Gsw4xYc
-0OcUlMbbZraOt5S6SqOddEymsktkTiYS6U6nBYjgFP67UryMrFY2o/dssBvaovxS
-WeLHObQ6SobXecS470oVtt9+fpXUSPcPPKG5NMy228BTCtDWhrS3Tf/omKD5/7DW
-KY1pXpkdK+OuJDXSJslozCHcilrtCDLagidWEowdlGpcNePIASorNPP8oyaJcR9G
-PUVHGH5EBC0DXcizPIn09zNH3pO8TS6SIoR7tNgt8IAN49108hPqQHY2iBh/Kcd9
-kssT33pJhUfXF+u0qt9V/zZnsEHTogWtkKHbd72HUjz1rslNTgess/UMhUXV7Kqg
-Yb2SSJn6tsqdgtoqBIks
-=uzcb
+iQIzBAEBCAAdFiEEbd2mMhAXbmSCipS40+HICM1soFAFAlmTe4kACgkQ0+HICM1s
+oFBbGxAAgAKAg6rBSec0Ut5rlCpGjDQRw7IGeRYeu6Dgp0rVJiR/uQkkB3NtLYwt
+Eh540Shw7/Bp+YzP1cHIl8pTulCrqSghFRJOTrv0Najna/egC8bpgClj8pFLYD4l
+dq9+NbzcdOEdqT3XVpwLWf3EOtmN4P9t3mhCywggLAmo7M36rGVUhY0wSSJaFrr2
+Vgl3P3krvS7gk93vKNPETS9sRaG0B4IoiegfY+5nOg+yom3uN9FFltKurJjhWDH2
+E1IVqSOA5f7neQre3/KNQEZgVI1Jo+u3p4M3LVagDOxGHhIB3Z7hLLhD1/nG3CMZ
++bpsDGfpEqQpxXxSZcjpDBJ/3vTd7Rb5EBckMFJx6Jm/BAKGsIKY6y0MMu7rTHzK
+1K/z5D2lMFrAzJhuVNb1CKmz2j4o4LjK/fFG+7hrairfVyGPFVzP1Ndk7rEynMMb
+L7DLpY7UJrKDiVjBk1DvsM43qUde+7WXiQjB00KgVbS/ZkptHDZAxO7ZTT4JqnXJ
+Gmo8MFDWiI/LnARnC7ZPyhFBR8DpKU/miJ/5PPDfEbEien71e1OjiMt7zkR6lTUd
+7pk6VRHTIIBeYysDgW3kt0wJIipgYyNZ40L4Upq5OODWlqSBccr401adKYAveFFl
+dPn/YPQyFEYNaOI33StIRleNqHFMKGuWK/RdzD3PN8fdA/NsRbY=
+=X/On
 -----END PGP SIGNATURE-----
 
---61tCANbjpVqONJDVuSMUtaTlobiPlolCA--
+--GWeoifN1edF8jdggTsN2190f1VdKwoTEl--
 
