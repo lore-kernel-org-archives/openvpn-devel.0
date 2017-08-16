@@ -1,13 +1,10 @@
-References: <20170816010105.21777-1-a@...2181...>
- <20170816121806.26471-1-a@...2181...>
-From: Steffan Karger <steffan.karger@...1435...>
-Message-ID: <11fa3a5e-5d71-c447-4939-0c6317ad5260@...1435...>
-Date: Wed, 16 Aug 2017 14:51:29 +0200
-MIME-Version: 1.0
-In-Reply-To: <20170816121806.26471-1-a@...2181...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH v4] ntlm: avoid breaking anti-aliasing
- rules
+From: Antonio Quartulli <a@...2181...>
+Date: Wed, 16 Aug 2017 20:55:04 +0800
+Message-Id: <20170816125504.21181-1-a@...2181...>
+In-Reply-To: <20170816114643.1860-1-a@...2181...>
+References: <20170816114643.1860-1-a@...2181...>
+Subject: [Openvpn-devel] [PATCH v4] route: avoid definition of unused
+ variables in certain configurations
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,73 +14,83 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
+Cc: Antonio Quartulli <antonio@...515...>
 
-Hi,
+From: Antonio Quartulli <antonio@...515...>
 
-On 16-08-17 14:18, Antonio Quartulli wrote:
-> From: Antonio Quartulli <antonio@...515...>
->=20
-> The problem is visible when compiling with -O2:
->=20
-> ntlm.c: In function =E2=80=98ntlm_phase_3=E2=80=99:
-> ntlm.c:305:9: warning: dereferencing type-punned pointer will break stric=
-t-aliasing rules [-Wstrict-aliasing]
->          if ((*((long *)&buf2[0x14]) & 0x00800000) =3D=3D 0x00800000)
->=20
-> The spec suggests to interpret those 4 bytes as a long, but
-> this needs to be done carefully.
->=20
-> Signed-off-by: Antonio Quartulli <antonio@...515...>
-> ---
->=20
-> v2: remove htonl/ntohl conversion as there is none in the original code
-> v3: correct author's email
-> v4: code used in v3 was not really alias-safe (thanks Steffan), fix it
->=20
->=20
->  src/openvpn/ntlm.c | 16 +++++++++++++++-
->  1 file changed, 15 insertions(+), 1 deletion(-)
->=20
-> diff --git a/src/openvpn/ntlm.c b/src/openvpn/ntlm.c
-> index 167c10b8..077fa3e2 100644
-> --- a/src/openvpn/ntlm.c
-> +++ b/src/openvpn/ntlm.c
-> @@ -302,7 +302,21 @@ ntlm_phase_3(const struct http_proxy_info *p, const =
-char *phase_2,
->          /* Add target information block to the blob */
->=20=20
->          /* Check for Target Information block */
-> -        if ((*((long *)&buf2[0x14]) & 0x00800000) =3D=3D 0x00800000)
-> +        /* The NTLM spec instructs to interpret these 4 consecutive byte=
-s as a
-> +         * 32bit long integer. However, no endianness is specified.
-> +         * The code here and that found in other NTLM implementations po=
-int
-> +         * towards the assumption that the byte order on the wire has to
-> +         * match the order on the sending and receiving hosts. Probably =
-NTLM has
-> +         * been thought to be always running on x86_64/i386 machine thus
-> +         * implying Little-Endian everywhere.
-> +         *
-> +         * This said, in case of future changes, we should keep in mind =
-that the
-> +         * byte order on the wire for the NTLM header is LE.
-> +         */
-> +        const size_t hoff =3D 0x14;
-> +        unsigned long flags =3D buf2[hoff] | (buf2[hoff + 1] << 8) |
-> +                              (buf2[hoff + 2] << 16) | (buf2[hoff + 3] <=
-< 24);
-> +        if ((flags & 0x00800000) =3D=3D 0x00800000)
->          {
->              tib_len =3D buf2[0x28];            /* Get Target Information=
- block size */
->              if (tib_len > 96)
->=20
+Although this patch adds more ifdefs, this is an easy
+fix towards a no-warning-build process.
 
-This fixes the strict aliasing, makes the LE assumption explicit, and
-doesn't change the behaviour on LE machines.  Good enough for me, ACK.
+A proper cleanup should be carried out later on route.c.
 
--Steffan
+Signed-off-by: Antonio Quartulli <antonio@...515...>
+---
+
+v2:
+- add commit message
+- fix warning about another unused variable when --enable-iproute2 is selected
+v3:
+- don't write into (now) removed variables
+v4:
+- the netmask variable should not be declared on AIX too (thanks Steffan)
+
+
+ src/openvpn/route.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index 1d8bb001..8c71e6ec 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -1530,7 +1530,9 @@ add_route(struct route_ipv4 *r,
+     struct gc_arena gc;
+     struct argv argv = argv_new();
+     const char *network;
++#if !defined(ENABLE_IPROUTE) && !defined(TARGET_AIX)
+     const char *netmask;
++#endif
+     const char *gateway;
+     bool status = false;
+     int is_local_route;
+@@ -1543,7 +1545,9 @@ add_route(struct route_ipv4 *r,
+     gc_init(&gc);
+ 
+     network = print_in_addr_t(r->network, 0, &gc);
++#if !defined(ENABLE_IPROUTE) && !defined(TARGET_AIX)
+     netmask = print_in_addr_t(r->netmask, 0, &gc);
++#endif
+     gateway = print_in_addr_t(r->gateway, 0, &gc);
+ 
+     is_local_route = local_route(r->network, r->netmask, r->gateway, rgi);
+@@ -2132,8 +2136,12 @@ delete_route(struct route_ipv4 *r,
+     struct gc_arena gc;
+     struct argv argv = argv_new();
+     const char *network;
++#if !defined(ENABLE_IPROUTE) && !defined(TARGET_AIX)
+     const char *netmask;
++#endif
++#if !defined(TARGET_LINUX) && !defined(TARGET_ANDROID)
+     const char *gateway;
++#endif
+     int is_local_route;
+ 
+     if ((r->flags & (RT_DEFINED|RT_ADDED)) != (RT_DEFINED|RT_ADDED))
+@@ -2144,8 +2152,12 @@ delete_route(struct route_ipv4 *r,
+     gc_init(&gc);
+ 
+     network = print_in_addr_t(r->network, 0, &gc);
++#if !defined(ENABLE_IPROUTE) && !defined(TARGET_AIX)
+     netmask = print_in_addr_t(r->netmask, 0, &gc);
++#endif
++#if !defined(TARGET_LINUX) && !defined(TARGET_ANDROID)
+     gateway = print_in_addr_t(r->gateway, 0, &gc);
++#endif
+ 
+     is_local_route = local_route(r->network, r->netmask, r->gateway, rgi);
+     if (is_local_route == LR_ERROR)
+-- 
+2.14.0
+
 
