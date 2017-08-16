@@ -1,11 +1,11 @@
-References: <20170815205301.14542-1-davids@...515...>
+References: <20170815215451.21662-1-davids@...515...>
 From: Steffan Karger <steffan@...1856...>
-Message-ID: <2906d8f6-95d4-0142-918d-f59c3b74798e@...1856...>
-Date: Wed, 16 Aug 2017 23:35:40 +0200
+Message-ID: <5209cd28-1e57-6de0-c6ec-2bc0e24c6f2a@...1856...>
+Date: Wed, 16 Aug 2017 23:43:13 +0200
 MIME-Version: 1.0
-In-Reply-To: <20170815205301.14542-1-davids@...515...>
+In-Reply-To: <20170815215451.21662-1-davids@...515...>
 Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH] Use consistent version references
+Subject: Re: [Openvpn-devel] [PATCH] Highlight deprecated features
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,351 +20,309 @@ To: openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-On 15-08-17 22:53, David Sommerseth wrote:
-> A simple clean-up where the version references have been unified
-> all those places I could find now.  The versioning scheme used is:
+On 15-08-17 23:54, David Sommerseth wrote:
+> We have quite a list of deprecated options currently.  Ensure this
+> is highlighted both in documentation and code.
 > 
->     * OpenVPN 2.x
->     * v2.x
-> 
-> We want to avoid:
->     * 2.x  (2.4 can be just an ordindary decimal number,
->             OID reference, a version number or anything else)
->     * OpenVPN v2.x (OpenVPN indicates we're talking about a version)
-> 
-> In addition, several places where it made sense I tried to ensure
-> the first version reference uses "OpenVPN 2.x" and the following
-> references in the same section/paragraph uses "v2.x", to set the
-> context for the version reference.
-> 
-> In Changes.rst modified paragraphs exceeding 80 chars lines where
-> reformatted as well.
+> This patch builds on the wiki page [1] enlisting all deprecated features
+> and their status.  There are also some options not listed here, as
+> there exists patches in release/2.4 which awaits an update for git master.
 > 
 > Signed-off-by: David Sommerseth <davids@...515...>
 > ---
->  Changes.rst                            | 52 ++++++++++++++++++----------------
->  doc/openvpn.8                          | 34 +++++++++++-----------
->  sample/sample-config-files/client.conf |  2 +-
->  sample/sample-config-files/server.conf |  4 +--
->  src/openvpn/options.c                  |  8 +++---
->  5 files changed, 51 insertions(+), 49 deletions(-)
+>  Changes.rst           | 15 ++++++++++
+>  doc/openvpn.8         | 78 ++++++++++++++++++++++++++++++++++-----------------
+>  src/openvpn/options.c | 16 ++++++-----
+>  3 files changed, 77 insertions(+), 32 deletions(-)
 > 
 > diff --git a/Changes.rst b/Changes.rst
-> index 4358f78b..0999a835 100644
+> index 4358f78b..74d038a0 100644
 > --- a/Changes.rst
 > +++ b/Changes.rst
-> @@ -161,25 +161,26 @@ Asynchronous push reply
+> @@ -161,6 +161,9 @@ Asynchronous push reply
 >  
 >  Deprecated features
 >  -------------------
-> -- ``--key-method 1`` is deprecated in 2.4 and will be removed in 2.5.  Migrate
-> -  away from ``--key-method 1`` as soon as possible.  The recommended approach
-> -  is to remove the ``--key-method`` option from the configuration files, OpenVPN
-> -  will then use ``--key-method 2`` by default.  Note that this requires changing
-> -  the option in both the client and server side configs.
-> +- ``--key-method 1`` is deprecated in OpenVPN 2.4 and will be removed in v2.5.
-> +  Migrate away from ``--key-method 1`` as soon as possible.  The recommended
-> +  approach is to remove the ``--key-method`` option from the configuration
-> +  files, OpenVPN will then use ``--key-method 2`` by default.  Note that this
-> +  requires changing the option in both the client and server side configs.
+> +For an up-to-date list of all deprecated options, see this wiki page:
+> +https://community.openvpn.net/openvpn/wiki/DeprecatedOptions
+> +
+>  - ``--key-method 1`` is deprecated in 2.4 and will be removed in 2.5.  Migrate
+>    away from ``--key-method 1`` as soon as possible.  The recommended approach
+>    is to remove the ``--key-method`` option from the configuration files, OpenVPN
+> @@ -181,6 +184,18 @@ Deprecated features
+>  - ``--keysize`` is deprecated and will be removed in v2.6 together
+>    with the support of ciphers with cipher block size less than 128 bits.
 >  
-> -- ``--tls-remote`` is removed in 2.4, as indicated in the 2.3 man-pages.  Similar
-> -  functionality is provided via ``--verify-x509-name``, which does the same job in
-> -  a better way.
-> +- ``--tls-remote`` is removed in OpenVPN 2.4, as indicated in the v2.3
-> +  man-pages.  Similar functionality is provided via ``--verify-x509-name``,
-> +  which does the same job in a better way.
->  
-> -- ``--compat-names`` and ``--no-name-remapping`` were deprecated in 2.3 and will
-> -  be removed in 2.5.  All scripts and plug-ins depending on the old non-standard
-> -  X.509 subject formatting must be updated to the standardized formatting.  See
-> -  the man page for more information.
-> +- ``--compat-names`` and ``--no-name-remapping`` were deprecated in OpenVPN 2.3
-> +  and will be removed in v2.5.  All scripts and plug-ins depending on the old
-> +  non-standard X.509 subject formatting must be updated to the standardized
-> +  formatting.  See the man page for more information.
->  
-> -- ``--no-iv`` is deprecated in 2.4 and will be removed in 2.5.
-> +- ``--no-iv`` is deprecated in OpenVPN 2.4 and will be removed in v2.5.
->  
-> -- ``--keysize`` is deprecated and will be removed in v2.6 together
-> -  with the support of ciphers with cipher block size less than 128 bits.
-> +- ``--keysize`` is deprecated in OpenVPN 2.4 and will be removed in v2.6
-> +  together with the support of ciphers with cipher block size less than
-> +  128-bits.
->  
+> +- ``--comp-lzo`` is deprecated in OpenVPN 2.4.  Use ``--compress`` instead.
+> +
+> +- ``--ifconfig-pool-linear`` has been deprecated since OpenVPN 2.1 and will be
+> +  removed in v2.5.  Use ``--topology p2p`` instead.
+> +
+> +- ``--client-cert-not-required`` is deprecated in OpenVPN 2.4 and will be removed
+> +  in v2.5.  Use ``--verify-client-cert none`` for a functional equivalent.
+> +
+> +- ``--ns-cert-type`` is deprecated in OpenVPN 2.3.18 and v2.4.  It will be removed
+> +  in v2.5.  Use the far better ``--remote-cert-tls`` option which replaces this
+> +  feature.
+> +
 >  
 >  User-visible Changes
-> @@ -302,7 +303,7 @@ Maintainer-visible changes
->    files instead of older ones, to provide a unified behaviour across systemd
->    based Linux distributions.
->  
-> -- With OpenVPN v2.4, the project has moved over to depend on and actively use
-> +- With OpenVPN 2.4, the project has moved over to depend on and actively use
->    the official C99 standard (-std=c99).  This may fail on some older compiler/libc
->    header combinations.  In most of these situations it is recommended to
->    use -std=gnu99 in CFLAGS.  This is known to be needed when doing
-> @@ -324,7 +325,7 @@ New features
->  Security
->  --------
->  - CVE-2017-7522: Fix ``--x509-track`` post-authentication remote DoS
-> -  A client could crash a 2.4+ mbedtls server, if that server uses the
-> +  A client could crash a v2.4+ mbedtls server, if that server uses the
->    ``--x509-track`` option and the client has a correct, signed and unrevoked
->    certificate that contains an embedded NUL in the certificate subject.
->    Discovered and reported to the OpenVPN security team by Guido Vranken.
-> @@ -381,7 +382,7 @@ User-visible Changes
->  Bugfixes
->  --------
->  - Fix fingerprint calculation in mbed TLS builds.  This means that mbed TLS users
-> -  of OpenVPN 2.4.0, 2.4.1 and 2.4.2 that rely on the values of the
-> +  of OpenVPN 2.4.0, v2.4.1 and v2.4.2 that rely on the values of the
->    ``tls_digest_*`` env vars, or that use ``--verify-hash`` will have to change
->    the fingerprint values they check against.  The security impact of the
->    incorrect calculation is very minimal; the last few bytes (max 4, typically
-> @@ -410,17 +411,18 @@ Version 2.4.2
->  
->  Bugfixes
->  --------
-> -- Fix memory leak introduced in 2.4.1: if ``--remote-cert-tls`` is used, we leaked
-> -  some memory on each TLS (re)negotiation.
-> +- Fix memory leak introduced in OpenVPN 2.4.1: if ``--remote-cert-tls`` is
-> +  used, we leaked some memory on each TLS (re)negotiation.
->  
->  
->  Security
->  --------
-> -- Fix a pre-authentication denial-of-service attack on both clients and servers.
-> -  By sending a too-large control packet, OpenVPN 2.4.0 or 2.4.1 can be forced
-> -  to hit an ASSERT() and stop the process.  If ``--tls-auth`` or ``--tls-crypt``
-> -  is used, only attackers that have the ``--tls-auth`` or ``--tls-crypt`` key
-> -  can mount an attack. (OSTIF/Quarkslab audit finding 5.1, CVE-2017-7478)
-> +- Fix a pre-authentication denial-of-service attack on both clients and
-> +  servers.  By sending a too-large control packet, OpenVPN 2.4.0 or v2.4.1 can
-> +  be forced to hit an ASSERT() and stop the process.  If ``--tls-auth`` or
-> +  ``--tls-crypt`` is used, only attackers that have the ``--tls-auth`` or
-> +  ``--tls-crypt`` key can mount an attack.
-> +  (OSTIF/Quarkslab audit finding 5.1, CVE-2017-7478)
->  
->  - Fix an authenticated remote DoS vulnerability that could be triggered by
->    causing a packet id roll over.  An attack is rather inefficient; a peer
+>  --------------------
 > diff --git a/doc/openvpn.8 b/doc/openvpn.8
-> index 056ae145..2d22fb57 100644
+> index 056ae145..5da29300 100644
 > --- a/doc/openvpn.8
 > +++ b/doc/openvpn.8
-> @@ -1994,7 +1994,7 @@ could be either
->  .B execve
->  or 
->  .B system. 
-> -As of OpenVPN v2.3, this flag is no longer accepted.  In most *nix environments the execve()
-> +As of OpenVPN 2.3, this flag is no longer accepted.  In most *nix environments the execve()
->  approach has been used without any issues.
+> @@ -769,7 +769,8 @@ Only use
+>  when none of the connecting clients are Windows systems.  This mode
+>  is functionally equivalent to the
+>  .B \-\-ifconfig\-pool\-linear
+> -directive which is available in OpenVPN 2.0 and is now deprecated.
+> +directive which is available in OpenVPN 2.0, is deprecated and will be
+> +removed in OpenVPN 2.5
 >  
->  Some directives such as \-\-up allow options to be passed to the external
-> @@ -2006,7 +2006,7 @@ To run scripts in Windows in earlier OpenVPN
->  versions you needed to either add a full path to the script interpreter which can parse the
->  script or use the
->  .B system
-> -flag to run these scripts.  As of OpenVPN v2.3 it is now a strict requirement to have
-> +flag to run these scripts.  As of OpenVPN 2.3 it is now a strict requirement to have
->  full path to the script interpreter when running non-executables files.
->  This is not needed for executable files, such as .exe, .com, .bat or .cmd files.  For
->  example, if you have a Visual Basic script, you must use this syntax now:
-> @@ -2201,7 +2201,7 @@ passwords, or key pass phrases anymore.  This has certain consequences,
->  namely that using a password-protected private key will fail unless the
->  .B \-\-askpass
->  option is used to tell OpenVPN to ask for the pass phrase (this
-> -requirement is new in 2.3.7, and is a consequence of calling daemon()
-> +requirement is new in v2.3.7, and is a consequence of calling daemon()
->  before initializing the crypto layer).
+>  .B subnet \-\-
+>  Use a subnet rather than a point-to-point topology by
+> @@ -2485,15 +2486,17 @@ setting to be pushed later.
+>  .\"*********************************************************
+>  .TP
+>  .B \-\-comp\-lzo [mode]
+> +.B DEPRECATED
+> +This option will be removed in a future OpenVPN release.  Use the
+> +newer
+> +.B \-\-compress
+> +instead.
+> +
+>  Use LZO compression -- may add up to 1 byte per
+>  packet for incompressible data.
+>  .B mode
+>  may be "yes", "no", or "adaptive" (default).
 >  
->  Further, using
-> @@ -2474,7 +2474,7 @@ The
->  parameter may be "lzo", "lz4", or empty.  LZO and LZ4
->  are different compression algorithms, with LZ4 generally
->  offering the best performance with least CPU usage.
-> -For backwards compatibility with OpenVPN versions before 2.4, use "lzo"
-> +For backwards compatibility with OpenVPN versions before v2.4, use "lzo"
->  (which is identical to the older option "\-\-comp\-lzo yes").
+> -This option is deprecated in favor of the newer
+> -.B --compress
+> -option.
+> -
+>  In a server mode setup, it is possible to selectively turn
+>  compression on or off for individual clients.
 >  
->  If the
-> @@ -3678,7 +3678,7 @@ is less secure than requiring certificates from all clients.
+> @@ -3106,9 +3109,13 @@ a common name and IP address.  They do not guarantee that the given common
+>  name will always receive the given IP address.  If you want guaranteed
+>  assignment, use
+>  .B \-\-ifconfig\-push
+> +
+>  .\"*********************************************************
+>  .TP
+>  .B \-\-ifconfig\-pool\-linear
+> +.B DEPRECATED
+> +This option will be removed in OpenVPN 2.5
+> +
+>  Modifies the
+>  .B \-\-ifconfig\-pool
+>  directive to
+> @@ -3671,15 +3678,16 @@ to empty strings ("").  The authentication module/script MUST have logic
+>  to detect this condition and respond accordingly.
+>  .\"*********************************************************
+>  .TP
+> -.B \-\-client\-cert\-not\-required (DEPRECATED)
+> +.B \-\-client\-cert\-not\-required
+> +.B DEPRECATED
+> +This option will be removed in OpenVPN 2.5
+> +
+>  Don't require client certificate, client will authenticate
+>  using username/password only.  Be aware that using this directive
+>  is less secure than requiring certificates from all clients.
 >  
->  
+> -
 >  .B Please note:
 > -This option is now deprecated and will be removed in OpenVPN v2.5.
-> +This option is now deprecated and will be removed in OpenVPN 2.5.
->  It is replaced by
+> -It is replaced by
+> +This is replaced by
 >  .B \-\-verify\-client\-cert
 >  which allows for more flexibility. The option
-> @@ -3745,7 +3745,7 @@ rather than the common name from the client cert.
+>  .B \-\-verify\-client\-cert none
+> @@ -3744,7 +3752,10 @@ the authenticated username as the common name,
+>  rather than the common name from the client cert.
 >  .\"*********************************************************
 >  .TP
->  .B \-\-compat\-names [no\-remapping] (DEPRECATED)
-> -Until OpenVPN v2.3 the format of the X.509 Subject fields was formatted
-> +Until OpenVPN 2.3 the format of the X.509 Subject fields was formatted
+> -.B \-\-compat\-names [no\-remapping] (DEPRECATED)
+> +.B \-\-compat\-names [no\-remapping]
+> +.B DEPRECATED
+> +This option will be removed in OpenVPN 2.5
+> +
+>  Until OpenVPN v2.3 the format of the X.509 Subject fields was formatted
 >  like this:
 >  .IP
->  .B
-> @@ -3763,13 +3763,13 @@ option, this old formatting and remapping will be re-enabled again.  This is
->  purely implemented for compatibility reasons when using older plug-ins or
->  scripts which does not handle the new formatting or UTF-8 characters.
->  .IP
-> -In OpenVPN v2.3 the formatting of these fields changed into a more
-> +In OpenVPN 2.3 the formatting of these fields changed into a more
->  standardised format.  It now looks like:
->  .IP
->  .B
->  C=US, L=Somewhere, CN=John Doe, emailAddress=john@...1113...
->  .IP
-> -The new default format in OpenVPN v2.3 also does not do the character remapping
-> +The new default format in OpenVPN 2.3 also does not do the character remapping
->  which happened earlier.  This new format enables proper support for UTF\-8
->  characters in the usernames, X.509 Subject fields and Common Name variables and
->  it complies to the RFC 2253, UTF\-8 String Representation of Distinguished
-> @@ -3789,7 +3789,7 @@ carriage-return. no-remapping is only available on the server side.
->  .B Please note:
->  This option is immediately deprecated.  It is only implemented
->  to make the transition to the new formatting less intrusive.  It will be
-> -removed in OpenVPN v2.5.  So please update your scripts/plug-ins where necessary.
-> +removed in OpenVPN 2.5.  So please update your scripts/plug-ins where necessary.
+> @@ -3792,7 +3803,10 @@ to make the transition to the new formatting less intrusive.  It will be
+>  removed in OpenVPN v2.5.  So please update your scripts/plug-ins where necessary.
 >  .\"*********************************************************
 >  .TP
->  .B \-\-no\-name\-remapping (DEPRECATED)
-> @@ -3802,7 +3802,7 @@ It ensures compatibility with server configurations using the
->  option.
+> -.B \-\-no\-name\-remapping (DEPRECATED)
+> +.B \-\-no\-name\-remapping
+> +.B DEPRECATED
+> +This option will be removed in OpenVPN 2.5
+> +
+>  The
+>  .B \-\-no\-name\-remapping
+>  option is an alias for
+> @@ -4150,13 +4164,29 @@ For more information on HMAC see
+>  .B \-\-cipher alg
+>  Encrypt data channel packets with cipher algorithm
+>  .B alg.
+> +
+>  The default is
+>  .B BF-CBC,
+> -an abbreviation for Blowfish in Cipher Block Chaining mode.
+> +an abbreviation for Blowfish in Cipher Block Chaining mode.  When cipher
+> +negotiation (NCP) is allowed, OpenVPN 2.4 and newer on both client and server
+> +side will automatically upgrade to
+> +.B AES-256-GCM.
+> +See
+> +.B \-\-ncp\-ciphers
+> +and
+> +.B \-\-ncp\-disable
+> +for more details on NCP.
 >  
->  .B Please note:
-> -This option is now deprecated.  It will be removed in OpenVPN v2.5.
-> +This option is now deprecated.  It will be removed in OpenVPN 2.5.
->  So please make sure you support the new X.509 name formatting
->  described with the
->  .B \-\-compat\-names
-> @@ -4204,8 +4204,8 @@ will inherit the cipher of the peer if that cipher is different from the local
->  .B \-\-cipher
->  setting, but the peer cipher is one of the ciphers specified in
->  .B \-\-ncp\-ciphers\fR.
-> -E.g. a non-NCP client (<=2.3, or with \-\-ncp\-disabled set) connecting to a
-> -NCP server (2.4+) with "\-\-cipher BF-CBC" and "\-\-ncp-ciphers
-> +E.g. a non-NCP client (<=v2.3, or with \-\-ncp\-disabled set) connecting to a
-> +NCP server (v2.4+) with "\-\-cipher BF-CBC" and "\-\-ncp-ciphers
->  AES-256-GCM:AES-256-CBC" set can either specify "\-\-cipher BF-CBC" or
->  "\-\-cipher AES-256-CBC" and both will work.
+> -Using BF-CBC is no longer recommended, because of it's 64-bit block size.  This
+> +Using
+> +.B BF-CBC
+> +is no longer recommended, because of its 64-bit block size.  This
+>  small block size allows attacks based on collisions, as demonstrated by SWEET32.
+> -See https://community.openvpn.net/openvpn/wiki/SWEET32 for details.
+> +See https://community.openvpn.net/openvpn/wiki/SWEET32 for details.  Due to
+> +this, support for
+> +.B BF-CBC, DES, CAST5, IDEA
+> +and
+> +.B RC2
+> +ciphers will be removed in OpenVPN 2.6.
 >  
-> @@ -5010,8 +5010,8 @@ response.
->  (required) is a file in OpenVPN static key format which can be generated by
->  .B \-\-genkey
+>  To see other ciphers that are available with OpenVPN, use the
+>  .B \-\-show\-ciphers
+> @@ -4166,14 +4196,6 @@ Set
+>  .B alg=none
+>  to disable encryption.
 >  
-> -Older versions (up to 2.3) supported a freeform passphrase file.
-> -This is no longer supported in newer versions (2.4+).
-> +Older versions (up to OpenVPN 2.3) supported a freeform passphrase file.
-> +This is no longer supported in newer versions (v2.4+).
->  
->  See the
->  .B \-\-secret
-> @@ -5568,7 +5568,7 @@ Write key to
->  .B file.
->  .\"*********************************************************
->  .SS TUN/TAP persistent tunnel config mode:
-> -Available with linux 2.4.7+.  These options comprise a standalone mode
-> +Available with Linux 2.4.7+.  These options comprise a standalone mode
->  of OpenVPN which can be used to create and delete persistent tunnels.
+> -As of OpenVPN 2.4, cipher negotiation (NCP) can override the cipher specified by
+> -.B \-\-cipher\fR.
+> -See
+> -.B \-\-ncp\-ciphers
+> -and
+> -.B \-\-ncp\-disable
+> -for more on NCP.
+> -
 >  .\"*********************************************************
 >  .TP
-> @@ -5895,7 +5895,7 @@ flag.
->  .TP
->  .B \-\-dhcp\-release
->  Ask Windows to release the TAP adapter lease on shutdown.
-> -This option has no effect now, as it is enabled by default starting with version 2.4.1.
-> +This option has no effect now, as it is enabled by default starting with OpenVPN 2.4.1.
+>  .B \-\-ncp\-ciphers cipher_list
+> @@ -4260,6 +4282,9 @@ supported by OpenSSL.
 >  .\"*********************************************************
 >  .TP
->  .B \-\-register\-dns
-> @@ -6178,7 +6178,7 @@ isprint() function to return true.
+>  .B \-\-no\-replay
+> +.B DEPRECATED
+> +This option will be removed in OpenVPN 2.5.
+> +
+>  (Advanced) Disable OpenVPN's protection against replay attacks.
+>  Don't use this option unless you are prepared to make
+>  a tradeoff of greater efficiency in exchange for less
+> @@ -4423,7 +4448,6 @@ This option only makes sense when replay protection is enabled
+>  .\"*********************************************************
+>  .TP
+>  .B \-\-no\-iv
+> -
+>  .B DEPRECATED
+>  This option will be removed in OpenVPN 2.5.
 >  
->  .B \-\-client\-config\-dir filename as derived from common name or username:
->  Alphanumeric, underbar ('_'), dash ('-'), and dot ('.') except for "." or 
-> -".." as standalone strings.  As of 2.0.1-rc6, the at ('@') character has
-> +".." as standalone strings.  As of v2.0.1-rc6, the at ('@') character has
->  been added as well for compatibility with the common name character class.
+> @@ -4823,6 +4847,9 @@ Certificate Store GUI.
+>  .\"*********************************************************
+>  .TP
+>  .B \-\-key\-method m
+> +.B DEPRECATED
+> +This option will be removed in OpenVPN 2.5
+> +
+>  Use data channel key negotiation method
+>  .B m.
+>  The key method must match on both sides of the connection.
+> @@ -5379,8 +5406,9 @@ as X509_<depth>_<attribute>=<value>.  Multiple
+>  options can be defined to track multiple attributes.
+>  .\"*********************************************************
+>  .TP
+> -.B \-\-ns\-cert\-type client|server (DEPRECATED)
+> -This option is deprecated.  Use the more modern equivalent
+> +.B \-\-ns\-cert\-type client|server
+> +.B DEPRECATED
+> +This option will be removed in OpenVPN 2.5.  Use the more modern equivalent
+>  .B \-\-remote\-cert\-tls
+>  instead.  This option will be removed in OpenVPN 2.5.
 >  
->  .B Environmental variable names:
-> diff --git a/sample/sample-config-files/client.conf b/sample/sample-config-files/client.conf
-> index f5c69e34..5fd4a948 100644
-> --- a/sample/sample-config-files/client.conf
-> +++ b/sample/sample-config-files/client.conf
-> @@ -110,7 +110,7 @@ tls-auth ta.key 1
->  # Select a cryptographic cipher.
->  # If the cipher option is used on the server
->  # then you must also specify it here.
-> -# Note that 2.4 client/server will automatically
-> +# Note that v2.4 client/server will automatically
->  # negotiate AES-256-GCM in TLS mode.
->  # See also the ncp-cipher option in the manpage
->  cipher AES-256-CBC
-> diff --git a/sample/sample-config-files/server.conf b/sample/sample-config-files/server.conf
-> index aa7d5b39..1dd477bd 100644
-> --- a/sample/sample-config-files/server.conf
-> +++ b/sample/sample-config-files/server.conf
-> @@ -246,13 +246,13 @@ tls-auth ta.key 0 # This file is secret
->  # Select a cryptographic cipher.
->  # This config item must be copied to
->  # the client config file as well.
-> -# Note that 2.4 client/server will automatically
-> +# Note that v2.4 client/server will automatically
->  # negotiate AES-256-GCM in TLS mode.
->  # See also the ncp-cipher option in the manpage
->  cipher AES-256-CBC
->  
->  # Enable compression on the VPN link and push the
-> -# option to the client (2.4+ only, for earlier
-> +# option to the client (v2.4+ only, for earlier
->  # versions see below)
->  ;compress lz4-v2
->  ;push "compress lz4-v2"
 > diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-> index ef7009c1..5346fcdc 100644
+> index ef7009c1..860bc859 100644
 > --- a/src/openvpn/options.c
 > +++ b/src/openvpn/options.c
-> @@ -6186,7 +6186,7 @@ add_option(struct options *options,
->      else if (streq(p[0], "max-routes") && !p[2])
->      {
->          msg(M_WARN, "DEPRECATED OPTION: --max-routes option ignored."
-> -            "The number of routes is unlimited as of version 2.4. "
-> +            "The number of routes is unlimited as of OpenVPN 2.4. "
->              "This option will be removed in a future version, "
->              "please remove it from your configuration.");
->      }
-> @@ -7016,7 +7016,7 @@ add_option(struct options *options,
->          VERIFY_PERMISSION(OPT_P_GENERAL);
->          if (streq(p[1], "env"))
->          {
-> -            msg(M_INFO, "NOTE: --win-sys env is default from OpenVPN v2.3.	 "
-> +            msg(M_INFO, "NOTE: --win-sys env is default from OpenVPN 2.3.	 "
->                  "This entry will now be ignored.  "
->                  "Please remove this entry from your configuration file.");
->          }
-> @@ -7862,7 +7862,7 @@ add_option(struct options *options,
->              msg(msglevel, "you cannot use --compat-names with --verify-x509-name");
->              goto err;
->          }
-> -        msg(M_WARN, "DEPRECATED OPTION: --compat-names, please update your configuration. This will be removed in OpenVPN v2.5.");
-> +        msg(M_WARN, "DEPRECATED OPTION: --compat-names, please update your configuration. This will be removed in OpenVPN 2.5.");
->          compat_flag(COMPAT_FLAG_SET | COMPAT_NAMES);
->  #if P2MP_SERVER
->          if (p[1] && streq(p[1], "no-remapping"))
-> @@ -7878,7 +7878,7 @@ add_option(struct options *options,
->              msg(msglevel, "you cannot use --no-name-remapping with --verify-x509-name");
->              goto err;
->          }
-> -        msg(M_WARN, "DEPRECATED OPTION: --no-name-remapping, please update your configuration. This will be removed in OpenVPN v2.5.");
-> +        msg(M_WARN, "DEPRECATED OPTION: --no-name-remapping, please update your configuration. This will be removed in OpenVPN 2.5.");
->          compat_flag(COMPAT_FLAG_SET | COMPAT_NAMES);
->          compat_flag(COMPAT_FLAG_SET | COMPAT_NO_NAME_REMAPPING);
+> @@ -415,8 +415,9 @@ static const char usage_message[] =
+>      "                  client instance.\n"
+>      "--ifconfig-pool start-IP end-IP [netmask] : Set aside a pool of subnets\n"
+>      "                  to be dynamically allocated to connecting clients.\n"
+> -    "--ifconfig-pool-linear : Use individual addresses rather than /30 subnets\n"
+> -    "                  in tun mode.  Not compatible with Windows clients.\n"
+> +    "--ifconfig-pool-linear : (DEPRECATED) Use individual addresses rather \n"
+> +    "                  than /30 subnets\n in tun mode.  Not compatible with\n"
+> +    "                  Windows clients.\n"
+>      "--ifconfig-pool-persist file [seconds] : Persist/unpersist ifconfig-pool\n"
+>      "                  data to file, at seconds intervals (default=600).\n"
+>      "                  If seconds=0, file will be treated as read-only.\n"
+> @@ -434,7 +435,7 @@ static const char usage_message[] =
+>      "                  Only valid in a client-specific config file.\n"
+>      "--disable       : Client is disabled.\n"
+>      "                  Only valid in a client-specific config file.\n"
+> -    "--client-cert-not-required : Don't require client certificate, client\n"
+> +    "--client-cert-not-required : (DEPRECATED) Don't require client certificate, client\n"
+>      "                  will authenticate using username/password.\n"
+>      "--verify-client-cert [none|optional|require] : perform no, optional or\n"
+>      "                  mandatory client certificate verification.\n"
+> @@ -455,7 +456,7 @@ static const char usage_message[] =
+>      "                  with those of the server will be disconnected.\n"
+>      "--auth-user-pass-optional : Allow connections by clients that don't\n"
+>      "                  specify a username/password.\n"
+> -    "--no-name-remapping : Allow Common Name and X509 Subject to include\n"
+> +    "--no-name-remapping : (DEPRECATED) Allow Common Name and X509 Subject to include\n"
+>      "                      any printable character.\n"
+>      "--client-to-client : Internally route client-to-client traffic.\n"
+>      "--duplicate-cn  : Allow multiple clients with the same common name to\n"
+> @@ -539,13 +540,13 @@ static const char usage_message[] =
+>      "--prng alg [nsl] : For PRNG, use digest algorithm alg, and\n"
+>      "                   nonce_secret_len=nsl.  Set alg=none to disable PRNG.\n"
+>  #ifdef HAVE_EVP_CIPHER_CTX_SET_KEY_LENGTH
+> -    "--keysize n     : Size of cipher key in bits (optional).\n"
+> +    "--keysize n     : (DEPRECATED) Size of cipher key in bits (optional).\n"
+>      "                  If unspecified, defaults to cipher-specific default.\n"
 >  #endif
+>  #ifndef ENABLE_CRYPTO_MBEDTLS
+>      "--engine [name] : Enable OpenSSL hardware crypto engine functionality.\n"
+>  #endif
+> -    "--no-replay     : Disable replay protection.\n"
+> +    "--no-replay     : (DEPRECATED) Disable replay protection.\n"
+>      "--mute-replay-warnings : Silence the output of replay warnings to log file.\n"
+>      "--replay-window n [t]  : Use a replay protection sliding window of size n\n"
+>      "                         and a time window of t seconds.\n"
+> @@ -563,7 +564,7 @@ static const char usage_message[] =
+>      "(These options are meaningful only for TLS-mode)\n"
+>      "--tls-server    : Enable TLS and assume server role during TLS handshake.\n"
+>      "--tls-client    : Enable TLS and assume client role during TLS handshake.\n"
+> -    "--key-method m  : Data channel key exchange method.  m should be a method\n"
+> +    "--key-method m  : (DEPRECATED) Data channel key exchange method.  m should be a method\n"
+>      "                  number, such as 1 (default), 2, etc.\n"
+>      "--ca file       : Certificate authority file in .pem format containing\n"
+>      "                  root certificate.\n"
+> @@ -6570,6 +6571,7 @@ add_option(struct options *options,
+>      {
+>          VERIFY_PERMISSION(OPT_P_GENERAL);
+>          options->topology = TOP_P2P;
+> +        msg(M_WARN, "DEPRECATED OPTION: --ifconfig-pool-linear, use --topology p2p instead");
+>      }
+>      else if (streq(p[0], "ifconfig-ipv6-pool") && p[1] && !p[2])
+>      {
 > 
 
-Makes our communication more consistent, which is good.  ACK.
+Better documentation and more consistency, nice!  ACK.
+
+(Given that you add that reference to the commit message ;-) )
 
 -Steffan
 
