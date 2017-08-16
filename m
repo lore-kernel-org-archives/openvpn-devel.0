@@ -1,9 +1,9 @@
 From: Antonio Quartulli <a@...2181...>
-Date: Wed, 16 Aug 2017 18:31:20 +0800
-Message-Id: <20170816103120.13752-1-a@...2181...>
-In-Reply-To: <20170709022739.359-1-a@...2181...>
-References: <20170709022739.359-1-a@...2181...>
-Subject: [Openvpn-devel] [PATCH v2] route: avoid definition of unused
+Date: Wed, 16 Aug 2017 19:46:43 +0800
+Message-Id: <20170816114643.1860-1-a@...2181...>
+In-Reply-To: <20170816103120.13752-1-a@...2181...>
+References: <20170816103120.13752-1-a@...2181...>
+Subject: [Openvpn-devel] [PATCH v3] route: avoid definition of unused
  variables in certain configurations
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -27,16 +27,18 @@ A proper cleanup should be carried out later on route.c.
 
 Signed-off-by: Antonio Quartulli <antonio@...515...>
 ---
-
 v2:
 - add commit message
 - fix warning about another unused variable when --enable-iproute2 is selected
+v3:
+- don't write into (now) removed variables
 
- src/openvpn/route.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+
+ src/openvpn/route.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
 diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-index 1d8bb001..3b187a1d 100644
+index 1d8bb001..081cfec0 100644
 --- a/src/openvpn/route.c
 +++ b/src/openvpn/route.c
 @@ -1530,7 +1530,9 @@ add_route(struct route_ipv4 *r,
@@ -49,7 +51,17 @@ index 1d8bb001..3b187a1d 100644
      const char *gateway;
      bool status = false;
      int is_local_route;
-@@ -2132,8 +2134,12 @@ delete_route(struct route_ipv4 *r,
+@@ -1543,7 +1545,9 @@ add_route(struct route_ipv4 *r,
+     gc_init(&gc);
+ 
+     network = print_in_addr_t(r->network, 0, &gc);
++#ifndef ENABLE_IPROUTE
+     netmask = print_in_addr_t(r->netmask, 0, &gc);
++#endif
+     gateway = print_in_addr_t(r->gateway, 0, &gc);
+ 
+     is_local_route = local_route(r->network, r->netmask, r->gateway, rgi);
+@@ -2132,8 +2136,12 @@ delete_route(struct route_ipv4 *r,
      struct gc_arena gc;
      struct argv argv = argv_new();
      const char *network;
@@ -62,10 +74,13 @@ index 1d8bb001..3b187a1d 100644
      int is_local_route;
  
      if ((r->flags & (RT_DEFINED|RT_ADDED)) != (RT_DEFINED|RT_ADDED))
-@@ -2145,7 +2151,9 @@ delete_route(struct route_ipv4 *r,
+@@ -2144,8 +2152,12 @@ delete_route(struct route_ipv4 *r,
+     gc_init(&gc);
  
      network = print_in_addr_t(r->network, 0, &gc);
++#ifndef ENABLE_IPROUTE
      netmask = print_in_addr_t(r->netmask, 0, &gc);
++#endif
 +#if !defined(TARGET_LINUX) && !defined(TARGET_ANDROID)
      gateway = print_in_addr_t(r->gateway, 0, &gc);
 +#endif
