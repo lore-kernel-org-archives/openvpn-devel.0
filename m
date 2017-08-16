@@ -1,10 +1,8 @@
-From: David Sommerseth <davids@...515...>
-Date: Wed, 16 Aug 2017 17:10:12 +0200
-Message-Id: <20170816151012.32706-1-davids@...515...>
-In-Reply-To: <1502531632-16833-1-git-send-email-steffan.karger@...1435...>
-References: <1502531632-16833-1-git-send-email-steffan.karger@...1435...>
-Subject: Re: [Openvpn-devel] [PATCH applied] tls-crypt: introduce
- tls_crypt_kt()
+From: Steffan Karger <steffan@...1856...>
+Date: Wed, 16 Aug 2017 19:04:50 +0200
+Message-Id: <20170816170450.10415-1-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH] tls-crypt: don't leak memory for incorrect
+ tls-crypt messages
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,48 +13,40 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: steffan.karger@...1435...
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA512
+If tls_crypt_unwrap() failed, we would jump to cleanup and forget to free
+the buffer.  Instead, allocate the buffer through gc, which is free'd in
+the cleanup section.
 
-Your patch has been applied to the following branches
+Signed-off-by: Steffan Karger <steffan@...1856...>
+---
+ src/openvpn/ssl.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-commit 489c7bf93ec618e03dbd9618efbb6e251a65e76c  (master)
-commit d47228e71de6cbbf860746a50a3ecf8025e35653  (release/2.4)
-Author: Steffan Karger
-Date:   Sat Aug 12 11:53:52 2017 +0200
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index 2a476800..806172ea 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -1534,7 +1534,7 @@ read_control_auth(struct buffer *buf,
+     }
+     else if (ctx->mode == TLS_WRAP_CRYPT)
+     {
+-        struct buffer tmp = alloc_buf(buf_forward_capacity_total(buf));
++        struct buffer tmp = alloc_buf_gc(buf_forward_capacity_total(buf), &gc);
+         if (!tls_crypt_unwrap(buf, &tmp, &ctx->opt))
+         {
+             msg(D_TLS_ERRORS, "TLS Error: tls-crypt unwrapping failed from %s",
+@@ -1543,7 +1543,7 @@ read_control_auth(struct buffer *buf,
+         }
+         ASSERT(buf_init(buf, buf->offset));
+         ASSERT(buf_copy(buf, &tmp));
+-        free_buf(&tmp);
++        buf_clear(&tmp);
+     }
+ 
+     if (ctx->mode == TLS_WRAP_NONE || ctx->mode == TLS_WRAP_AUTH)
+-- 
+2.11.0
 
-     tls-crypt: introduce tls_crypt_kt()
-
-     Signed-off-by: Steffan Karger <steffan.karger@...1435...>
-     Acked-by: Antonio Quartulli <a@...2181...>
-     Message-Id: <1502531632-16833-1-git-send-email-steffan.karger@...1435...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg15229.html
-     Signed-off-by: David Sommerseth <davids@...515...>
-
-
-- --
-kind regards,
-
-David Sommerseth
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBCgAGBQJZlGBTAAoJEIbPlEyWcf3ykpwP/3iuOWQMf6jgWs0ezR9A5YcT
-08AjJ9aS5hfx/d8NWzuO6ZnOgm8AgepD+nnMbYSyBHWaRfkf1BOOHBeu7xuTXxA5
-CpYWjEtAVA+cDlqn/BYjiT3mtTcg4ghX8itrSws2VLmVeg7LNy3zpvbkCZKcBfVR
-P/XjHdMQFTRlAYYsllKlIXYz94HawtjCti3ijCkMqUNekle7ufHQog8RDC0LJr8i
-bPRqxoIiqUrZVs/PUqdGbggWu/UiEzwgeAIBY4J2/0YC1ZVYWv18kbOatNIpGIbb
-wIH9T4+kvaiZ840+SaPmcZA1LRjsyxsEj8WwS6os3dmFp9H58PCO/Uyu/lvPRR8E
-7o6kvdbFXoYsQMIpHwyUV025kIDPj+bWDSF4K3pTcb0yHr8cXqPpWqO6K7r9NqEc
-CTpWWNuD1Fy3gEAV8HYn5hM2yCQDzJmkHXnjQrb2ER3re2yB+4kFNiaZwmZd0Gmi
-uKBq0DP6qGEzSfxPpZdYHEoqHJ5pm9HavZIvG+5mt95rvwqBIvuVU8PdQ9g1qUzc
-nOKSYErbs0vvEVXlLWl2vWo3xwcsdMI4ut6nR0fxA1YQTwPyuh8+gbPgkBRB8DUk
-SjlJ5WcmWWbfN6L8IGpGCZMpjlcSwA/lTygzyqcFGvWHruap1J8qNMLrj2Gec7Dp
-3D8sygBqVNi5Mrrxj/hh
-=W/rQ
------END PGP SIGNATURE-----
 
