@@ -1,10 +1,9 @@
 From: David Sommerseth <davids@...515...>
-Date: Wed, 16 Aug 2017 17:09:27 +0200
-Message-Id: <20170816150927.32432-1-davids@...515...>
-In-Reply-To: <20170816132454.13046-1-a@...2181...>
-References: <20170816132454.13046-1-a@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH applied] remove the --disable-multi
- config switch
+Date: Wed, 16 Aug 2017 17:09:59 +0200
+Message-Id: <20170816150959.32565-1-davids@...515...>
+In-Reply-To: <1502811586-19578-1-git-send-email-steffan.karger@...1435...>
+References: <1502811586-19578-1-git-send-email-steffan.karger@...1435...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Move run_up_down() to init.c
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,7 +14,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: a@...2181...
+To: steffan.karger@...1435...
 Cc: openvpn-devel@lists.sourceforge.net
 
 -----BEGIN PGP SIGNED MESSAGE-----
@@ -23,17 +22,17 @@ Hash: SHA512
 
 Your patch has been applied to the following branches
 
-commit 299a8f8f1aa10b5b0d006ae77c26de33d55d4a25  (master)
-commit 12df7c26a5210052029acbf47bdf9aee673b34ee  (release/2.4)
-Author: Antonio Quartulli
-Date:   Wed Aug 16 21:24:54 2017 +0800
+commit 4a9d1d70d5b0ff04dbf26ba7e679733a54c694b6  (master)
+commit 81b78cf5de03f843cdf917bb2ee350ba85f49cbd  (release/2.4)
+Author: Steffan Karger
+Date:   Tue Aug 15 17:39:46 2017 +0200
 
-     remove the --disable-multi config switch
+     Move run_up_down() to init.c
 
-     Signed-off-by: Antonio Quartulli <a@...2181...>
-     Acked-by: Steffan Karger <steffan.karger@...1435...>
-     Message-Id: <20170816132454.13046-1-a@...2181...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg15275.html
+     Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+     Acked-by: Antonio Quartulli <a@...2181...>
+     Message-Id: <1502811586-19578-1-git-send-email-steffan.karger@...1435...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg15256.html
      Signed-off-by: David Sommerseth <davids@...515...>
 
 
@@ -45,18 +44,18 @@ David Sommerseth
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBCgAGBQJZlGAmAAoJEIbPlEyWcf3yHFMP/jU0S1g9wVZFNtvQQ2wL/ZxZ
-wFSP+jPrHVwOm3fKz8VVGVRdrjtaO1Cwja5xADJWt5KHVh5Bci8C+Yk0sEXoItYz
-uy9ko1JlRNIMQzjtrh8sLGCAYqlSUsR5GuqNpWqWLB92HdVIi882GNIBC3l0Uo0m
-XqH4/2agCxaTPO5nZk3+VtEhEkJoCFxcROjPiLgPUoHNUn4rg1MPc6EhhyBVzzeH
-QjccUEdYLA0Lar9fv2B/Nzke6CzXVzrCq/eyOXyP0PplxqSqAlnnDg9PKPrS9psl
-WT/lBlKOfb6AnwK870IRo+BoQVwNbI1d6mLbZNKoojdtRKDmqRvcx6vwFxirjklO
-WpGJoTEGtcjswXAHuGwCfPclsSQUtoKSkFjI863XtJsTvTXONrIzqW391Fmxb1x+
-mWL08opLcBvTmOgT89G12wxzjaq5vV9jb6hPjNd2c//IeD1fXqFyPyNnFA9K+pYE
-PtywIuUt07kBOb7dBVkE/QFcYUNZBeGiuysSQPY4NOU0tY174MDpAIz0+1RfXlvW
-llQk3RPyp+TD5Z1NOZMgx5PrYlfpSKu9qDyeJAUxsT1w1iKV8gaySHeTd+c0RJol
-d8wuEwlnLqgs3N5T9LnPGb3HWGw82RNRhcq4+lr2+qGOfWGESYg1vz5rR3v8UueA
-VNY7h3NZ3rz/gIarz4Cy
-=HsyD
+iQIcBAEBCgAGBQJZlGAuAAoJEIbPlEyWcf3ylAQP/3mQukJluWtKhHBsbwNvC6RV
+pm0kQ6BXwhIpQoR0FrUo8uCWsH+Orlo/OfdwiImY7Kit+hCyUuCb4Bg7AlVj3MEE
+YQefMXJdu0SWyhUPITlDykW3RbtR6ATcoEsigi+BVmUbjZ3+nKtW5feN/OtHcsuk
+AMp1+NPIg5tM0cQPUxCZUFx2kObkNYDgk4IsgApMNeNgZmpVfAIv3yajOUyy347U
+XoAZUF2igUP3xjjGvXdNa9v/bZvQAX05xfs4avcOjVHS8445CCl9kROQ1fcF1iAf
+8c6zlq/GfS7xT4XJ377dkpbiquPMSc8qJnI11c0t7Dxp29+shKaWY28dUuJ8SS7s
+dUQPd7tvWt3hV2fMHQ/NKROZDILwjTsU5BCZQBkvijJdjeCYxs+lpA+Qolab9e0h
+ekyZsiuHMBUsEH33F5V8noGooZMvx9+XmQVN4M0rMaMTwSUC/7xhrNkg0SoZPZve
+8PxxQmeF9XXY6PfcBc90SSwP6cjqUCiQCVsJm9RWUaHC+6fF0ec6Lzg4NRf77DEn
+mxHCmCGikP0zcQB6/7lPaGS/iERFfrn3Y2i4u/so0ci1C/7WMOk0rnImoDAXiW40
+AyCwbB0Efrt7Y2/W1RDwfK7B/Z4U8Ow747P6adaW0SiYkQSe/EmRsGE8S8lvdNcU
+qMYAqEXEk3khDZEvDX/p
+=qS4+
 -----END PGP SIGNATURE-----
 
