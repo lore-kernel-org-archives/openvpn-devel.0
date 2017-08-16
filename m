@@ -1,7 +1,9 @@
 From: Antonio Quartulli <a@...2181...>
-Date: Wed, 16 Aug 2017 21:11:56 +0800
-Message-Id: <20170816131156.20704-1-a@...2181...>
-Subject: [Openvpn-devel] [PATCH] remove the --disable-multi config switch
+Date: Wed, 16 Aug 2017 21:24:54 +0800
+Message-Id: <20170816132454.13046-1-a@...2181...>
+In-Reply-To: <20170816131156.20704-1-a@...2181...>
+References: <20170816131156.20704-1-a@...2181...>
+Subject: [Openvpn-devel] [PATCH v2] remove the --disable-multi config switch
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,14 +21,30 @@ This switch is broken and unmaintained.
 However there wasn't any ticket about it so far,
 which means that it is practically unused.
 
-Get rid of it and simplify the P2MP logic.
+Get rid of it and simplify P2MP logic.
 
 Signed-off-by: Antonio Quartulli <a@...2181...>
 ---
+
+v2: remove ENABLE_CLIENT_SERVEr define from config-msvc.h
+
+ config-msvc.h         | 1 -
  configure.ac          | 8 --------
  src/openvpn/syshead.h | 2 +-
- 2 files changed, 1 insertion(+), 9 deletions(-)
+ 3 files changed, 1 insertion(+), 10 deletions(-)
 
+diff --git a/config-msvc.h b/config-msvc.h
+index 9b97e712..0bb153df 100644
+--- a/config-msvc.h
++++ b/config-msvc.h
+@@ -4,7 +4,6 @@
+ 
+ #define ENABLE_DEF_AUTH 1
+ #define ENABLE_PF 1
+-#define ENABLE_CLIENT_SERVER 1
+ #define ENABLE_CRYPTO 1
+ #define ENABLE_CRYPTO_OPENSSL 1
+ #define ENABLE_DEBUG 1
 diff --git a/configure.ac b/configure.ac
 index 8fb204ac..6f1044e8 100644
 --- a/configure.ac
