@@ -1,10 +1,10 @@
 From: Antonio Quartulli <a@...2181...>
-Date: Wed, 16 Aug 2017 08:58:15 +0800
-Message-Id: <20170816005815.16376-1-a@...2181...>
-In-Reply-To: <144b3f2c-346a-fa04-716a-e5e094d07b55@...2181...>
-References: <144b3f2c-346a-fa04-716a-e5e094d07b55@...2181...>
+Date: Wed, 16 Aug 2017 09:01:05 +0800
+Message-Id: <20170816010105.21777-1-a@...2181...>
+In-Reply-To: <20170816005815.16376-1-a@...2181...>
+References: <20170816005815.16376-1-a@...2181...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH v2] ntlm: avoid breaking anti-aliasing rules
+Subject: [Openvpn-devel] [PATCH v3] ntlm: avoid breaking anti-aliasing rules
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,9 +16,9 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: Antonio Quartulli <antonio@...2296...>, Antonio Quartulli <antonio@...515...>
+Cc: Antonio Quartulli <antonio@...515...>
 
-From: Antonio Quartulli <antonio@...2296...>
+From: Antonio Quartulli <antonio@...515...>
 
 The problem is visible when compiling with -O2:
 
@@ -33,7 +33,7 @@ Signed-off-by: Antonio Quartulli <antonio@...515...>
 ---
 
 v2: remove htonl/ntohl conversion as there is none in the original code
-
+v3: correct author's email
 
  src/openvpn/ntlm.c | 14 +++++++++++++-
  1 file changed, 13 insertions(+), 1 deletion(-)
