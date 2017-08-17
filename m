@@ -1,15 +1,10 @@
-Reply-To: openvpn-devel@lists.sourceforge.net
-References: <20170815215451.21662-1-davids@...515...>
- <ede38864-9bf4-7cdf-252f-7fcdf9b04d2d@...1227...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <ce8da174-8318-430b-5bb6-87920b8d9319@...2080...>
-Date: Thu, 17 Aug 2017 17:18:33 +0200
-MIME-Version: 1.0
-In-Reply-To: <ede38864-9bf4-7cdf-252f-7fcdf9b04d2d@...1227...>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="FlVL8Eg2WsMihIMlg0Olk9AdP4edmoA1c"
-Subject: Re: [Openvpn-devel] [PATCH] Highlight deprecated features
+From: David Sommerseth <davids@...515...>
+Date: Thu, 17 Aug 2017 17:39:02 +0200
+Message-Id: <20170817153902.15115-1-davids@...515...>
+In-Reply-To: <20170707044704.7239-1-a@...2181...>
+References: <20170707044704.7239-1-a@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH applied] crypto: create function to
+ initialize encrypt and decrypt key
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,42 +13,50 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>, David Sommerseth <davids@...515...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---FlVL8Eg2WsMihIMlg0Olk9AdP4edmoA1c
-Content-Type: multipart/mixed; boundary="Ek9vKavKVlp3NeC5cju9v0Ncuu2tWKURS";
- protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-Reply-To: openvpn-devel@lists.sourceforge.net
-To: Arne Schwabe <arne@...1227...>, David Sommerseth <davids@...515...>
-Cc: "openvpn-devel@lists.sourceforge.net"
- <openvpn-devel@lists.sourceforge.net>
-Message-ID: <ce8da174-8318-430b-5bb6-87920b8d9319@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH] Highlight deprecated features
-References: <20170815215451.21662-1-davids@...515...>
- <ede38864-9bf4-7cdf-252f-7fcdf9b04d2d@...1227...>
-In-Reply-To: <ede38864-9bf4-7cdf-252f-7fcdf9b04d2d@...1227...>
-
---Ek9vKavKVlp3NeC5cju9v0Ncuu2tWKURS
-Content-Language: en-GB
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+To: steffan@...1856...
+Cc: openvpn-devel@lists.sourceforge.net
 
-On 17/08/17 17:13, Arne Schwabe wrote:
-> Am 15.08.17 um 23:54 schrieb David Sommerseth:
->> We have quite a list of deprecated options currently.  Ensure this
->> is highlighted both in documentation and code.
->>
->> This patch builds on the wiki page [1] enlisting all deprecated features
->> and their status.  There are also some options not listed here, as
->> there exists patches in release/2.4 which awaits an update for git maste=
-r.
->=20
-> I think tls-remote-name (or what was it called?) which has been replaced
-> by verify-x509-name should be in the list. It has already been removed
-> from master and is deprecated since 2.3?
---Ek9vKavKVlp3NeC5cju9v0Ncuu2tWKURS--
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
 
---FlVL8Eg2WsMihIMlg0Olk9AdP4edmoA1c--
+Your patch has been applied to the following branches
+
+commit 974513ea64020c956b531b1cabd76fdbac6655d8  (master)
+commit 9df6a9f66463e0b3ffe3c186b213e80942c13b52  (release/2.4)
+Author: Steffan Karger
+Date:   Fri Jul 7 12:47:04 2017 +0800
+
+     crypto: create function to initialize encrypt and decrypt key
+
+     Signed-off-by: Steffan Karger <steffan@...1856...>
+     Acked-by: Antonio Quartulli <a@...2181...>
+     Message-Id: <20170707044704.7239-1-a@...2181...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg15011.html
+     Signed-off-by: David Sommerseth <davids@...515...>
+
+
+- --
+kind regards,
+
+David Sommerseth
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBCgAGBQJZlbiUAAoJEIbPlEyWcf3yN60QAJqE7LguoLJis3whFL4Iv+Hg
+lGOXbNQdEkGyMPh0P4QBWrjX2kJuxdg925sdocy1Rj4f8nIAQSr0j5ENIHn0fQI9
+eXG0FpKlsdIbd1rcVEAJ7/Zk3P/FrhbMKoVIm0aSxDgmrT9r7tBCg3UlIXBkF5Iu
+8k5akJYg1CA2sjRf3SXs629OojNHyiZ0RUB41gZfHd0JOCNbzlDuioLWbPJ6rmyV
+GBsTy4tiehTJdljFeaaHCbRGzjcIO4cNkeR5Gqhk7QUQeInips8QQlzst/nTlEsN
+DMtDM0xdeoWDQKu8Yd8iGAzXpMLHI0TtEuvugZL7u2l5T+DcyFQ5kueKts9A+zMn
+rRe9H16Xgp0mudVw34C5dJIe/NuN1+l85kgHFH3yozg35ggZuYPE/yxSUAaDBPMm
+E4tlC+tJ3EL/CUM3WaZYxxYtcN2nAdF3Atzoo6badi70B4IBQjbUUw70LGemlASx
+Me9FZxVWuCSxzHQrCR6GOaE+ZNHY9sk4GF7LqDU/Qg5qrDYgbfo1LKHjD4Oeso+v
+wFHRLN83LVP6TEl2+vSALylQb1XMfILrR85/rarN2krToh4sOws2C6bV5zmc5RyW
+MUlhxRvDs9LnIKHVa2c1vmiQTS7K9P6pBIkawwGX14QgSMJMjXwdWE5egVXvgyEx
+aDCLpgMOasYSeMvJP3S0
+=BRt7
+-----END PGP SIGNATURE-----
+
