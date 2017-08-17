@@ -1,10 +1,10 @@
 From: David Sommerseth <davids@...515...>
-Date: Thu, 17 Aug 2017 16:50:13 +0200
-Message-Id: <20170817145013.20172-1-davids@...515...>
-In-Reply-To: <20170815205301.14542-1-davids@...515...>
-References: <20170815205301.14542-1-davids@...515...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Use consistent version
- references
+Date: Thu, 17 Aug 2017 16:51:21 +0200
+Message-Id: <20170817145121.20400-1-davids@...515...>
+In-Reply-To: <20170724143559.11503-1-a@...2181...>
+References: <20170724143559.11503-1-a@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH applied] rename mroute_extract_addr_ipv4
+ to mroute_extract_addr_ip
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,25 +15,27 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: davids@...515...
+To: a@...2181...
 Cc: openvpn-devel@lists.sourceforge.net
 
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA512
 
+ACK.  Simple and easy change.
+
 Your patch has been applied to the following branches
 
-commit 500854c3fc956b274790991e4d6771ad9bf6f641  (master)
-commit 35e81e1a3d6809772f49f777ed6ec8e868505c6c  (release/2.4)
-Author: David Sommerseth
-Date:   Tue Aug 15 22:53:01 2017 +0200
+commit 3b38c43b8d7aa22b3df12029ff43e0414891e48c  (master)
+commit 78b329180bc1f1365b421907c6ad370c448db406  (release/2.4)
+Author: Antonio Quartulli
+Date:   Mon Jul 24 22:35:59 2017 +0800
 
-     Use consistent version references
+     rename mroute_extract_addr_ipv4 to mroute_extract_addr_ip
 
-     Signed-off-by: David Sommerseth <davids@...515...>
-     Acked-by: Steffan Karger <steffan@...1856...>
-     Message-Id: <20170815205301.14542-1-davids@...515...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg15260.html
+     Signed-off-by: Antonio Quartulli <a@...2181...>
+     Acked-by: David Sommerseth <davids@...515...>
+     Message-Id: <20170724143559.11503-1-a@...2181...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg15129.html
      Signed-off-by: David Sommerseth <davids@...515...>
 
 
@@ -45,18 +47,18 @@ David Sommerseth
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBCgAGBQJZla0jAAoJEIbPlEyWcf3yxDUP/iPqvMgXylxBHnBnzHHNwNEo
-20x+FdnbKWA5GbjeZ3Gdk2NKrlrvl6lPBXBhxCg36dlwzl2oCumgn6cyj77B5hHy
-4JItf3m33b/UmG8sc32TftA7AKi5qRGOIrj4es+YuHWEElVl/eB0ObcKENW5pdOf
-+tLvJBe8roNBmzl0gdaDzWDLQnv+XRvjSlI+8PAFKi2/HD3f/LMUJdZg5QTKwd9q
-IInk9x07poBNQ5ZoJi0Bb/fJ58bl+P3rVr8R19HkQ9uswwjOcow/q0M2Q8rD/iJT
-+0IiwzAUr1b503jJgX+KjYd3PCgEt1aIc4CMBsCD/1PUcFeUOJd4F+zKE98huFTG
-wctuzXM4Z7it3LHrQamBqWWzlOurt7UitkkS/w9ufiEMlcfiQxFgQBMO1tyUXqKm
-jRUp+aj1qKMa2QSA4vBhtfXfj/qyRBWmxbHzeU4xx2dF73aWhJbFcw/EzKAMcSb9
-IaYOL3h/bAU05HIWmWmRdia092YjWWs/iNZNSJzTFk1COlMKvLhtN9fi9fn3YJAX
-VH5fyNjLILMX88dDAtPGK7y5I3qK9EddBmaw0Ma0KF62/wSdOKOnUUysHtNdHWia
-dQGMYpxVApuc7BoXh2TkYsKTNU2bahDhWregCgzFCfXFf2QuPyr1GcoLXo8iJuFe
-2HCR7TFb0sR5Da2tauB2
-=5Lvz
+iQIcBAEBCgAGBQJZla1kAAoJEIbPlEyWcf3yZvIP/273G4Lp7RkcG5SNZW9dEgfC
+CffqIJb9shJstX+XKaFiGFjgYLbxmlc2YlNSLK8FKjRr9hvGZfqyw2NaDX2ojVBU
+6pRmt4S+1wCoimGMjWBw8iH7n6cDAGsdmojPnfWJzi94MV9XPsJ2E9k870hpayH7
+Jnm4hgc8W/FXJbM2vedhyMpDS5QwBxUikSptphKodAZdFXZm/fKt3JCLBi6ZnKOA
+pMHb/ZRduuySur0Z550Af4LymWmJabKLy/FpO5VZRcCN7VZ3Vz9PDiHVeuVrUO0z
+9dp2NH4ZZ421/WOAHH2l7dCIFpccNg375iY7a2xXRsgexACJXZ03yUC+c81+NjDc
+taaQXKJX9tDIQtVGg03rJdAyTAYBbwyEk7MICk+Oqz6oER3wXIlVyONrPhwnaXlg
+DS3/EBVcQl9uExRBo7kW38SgZrmy6jvIkoJb35QTBJGhdgw2zrE78NAo+p8wLTxC
+cWs9PY6DUB+rSLDe1bN0xPwlh+Xv72BiZQ3OT8A51lh3qXNRK981wz/cTVY7U1Oh
+jLJ5Oex924uws2nxb3w9eKvhklFb6GttOF3rPO9OTAX/tI1f7GX/5QjdOumcaewG
+HKnfI3zJ6Yq5QIZdjg5kVil1v9lYpHspL6httDKR6gni957vKJ0YGyH4o7L0BLA2
+MfYl6+SOHfSKOEuXeNBX
+=zrkJ
 -----END PGP SIGNATURE-----
 
