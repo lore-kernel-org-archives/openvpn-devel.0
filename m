@@ -1,9 +1,10 @@
 From: David Sommerseth <davids@...515...>
-Date: Thu, 17 Aug 2017 16:49:51 +0200
-Message-Id: <20170817144951.20013-1-davids@...515...>
-In-Reply-To: <20170815215451.21662-1-davids@...515...>
-References: <20170815215451.21662-1-davids@...515...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Highlight deprecated features
+Date: Thu, 17 Aug 2017 16:50:13 +0200
+Message-Id: <20170817145013.20172-1-davids@...515...>
+In-Reply-To: <20170815205301.14542-1-davids@...515...>
+References: <20170815205301.14542-1-davids@...515...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Use consistent version
+ references
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,17 +23,17 @@ Hash: SHA512
 
 Your patch has been applied to the following branches
 
-commit 6e4a817589de85481a5cbfe5bcae4fa872c9fb5d  (master)
-commit e710d709b7e604abd1e86b6fc04695a472aed977  (release/2.4)
+commit 500854c3fc956b274790991e4d6771ad9bf6f641  (master)
+commit 35e81e1a3d6809772f49f777ed6ec8e868505c6c  (release/2.4)
 Author: David Sommerseth
-Date:   Tue Aug 15 23:54:51 2017 +0200
+Date:   Tue Aug 15 22:53:01 2017 +0200
 
-     Highlight deprecated features
+     Use consistent version references
 
      Signed-off-by: David Sommerseth <davids@...515...>
      Acked-by: Steffan Karger <steffan@...1856...>
-     Message-Id: <20170815215451.21662-1-davids@...515...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg15261.html
+     Message-Id: <20170815205301.14542-1-davids@...515...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg15260.html
      Signed-off-by: David Sommerseth <davids@...515...>
 
 
@@ -44,18 +45,18 @@ David Sommerseth
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBCgAGBQJZla0NAAoJEIbPlEyWcf3yaZYQAKQn0znvqxKGoX3E8/HT87u9
-sC/mOsmlAmtDh0nJ1gZxeEv2BkLTzek5kyJNUnrGA6WYwDpf+hHJ/jY3/ZY86Zaf
-w8rj0gUl+4smDDbndGhtAwBKbdQtN0o43X+W1udbuNe1rDjSnAzI6HCZrxB5Yv0/
-70gpRyLdW9mrIxN8I5UDETEw4W6y+t5AoHuWvZIoLpEc0gncenIjbRHIAa4oB1lP
-VmvH10O8culiFYChg7ZuWX7yhc3YDCtNxjfCNu2APp7qP8eatHvnGtRn2LE1Cl/1
-LwvgP6jREJhWvIy22bCbpIc2evkLJR67rpkUoBLg1M6oNemR3VdzXnouhg8DArhX
-iMXZZYAA2BlmYa06CiyK00kppHI6wMBlbaSt+KJD6+/t0KOsJxO2r/aw51TL6dfL
-Pq8+po2KAspDO8CYlohPjdX7NyWwnLHbOr/iTT3Hrx5+U2IkhHM66SIkNY9LmnP7
-UVPWOum96nO0TmlQ/9TWdJqWG2IOTBUegqrZKKmooE7RW6opvHsjnMjhN7JrvC76
-ZdjGJaUFvH4Ce45Z3DzVzaBv6CSlVqgzv3m4ldm/erWylsUHRM1Wpi09B77sSuyx
-JFWlgQT4RSE7I5tZmxhsOfWYp3ed/FxvEElQDPr0saZbM5pjGHpeHSdU0RN3ze4V
-8h6fJe5igLTy5raXvPLT
-=7lpX
+iQIcBAEBCgAGBQJZla0jAAoJEIbPlEyWcf3yxDUP/iPqvMgXylxBHnBnzHHNwNEo
+20x+FdnbKWA5GbjeZ3Gdk2NKrlrvl6lPBXBhxCg36dlwzl2oCumgn6cyj77B5hHy
+4JItf3m33b/UmG8sc32TftA7AKi5qRGOIrj4es+YuHWEElVl/eB0ObcKENW5pdOf
++tLvJBe8roNBmzl0gdaDzWDLQnv+XRvjSlI+8PAFKi2/HD3f/LMUJdZg5QTKwd9q
+IInk9x07poBNQ5ZoJi0Bb/fJ58bl+P3rVr8R19HkQ9uswwjOcow/q0M2Q8rD/iJT
++0IiwzAUr1b503jJgX+KjYd3PCgEt1aIc4CMBsCD/1PUcFeUOJd4F+zKE98huFTG
+wctuzXM4Z7it3LHrQamBqWWzlOurt7UitkkS/w9ufiEMlcfiQxFgQBMO1tyUXqKm
+jRUp+aj1qKMa2QSA4vBhtfXfj/qyRBWmxbHzeU4xx2dF73aWhJbFcw/EzKAMcSb9
+IaYOL3h/bAU05HIWmWmRdia092YjWWs/iNZNSJzTFk1COlMKvLhtN9fi9fn3YJAX
+VH5fyNjLILMX88dDAtPGK7y5I3qK9EddBmaw0Ma0KF62/wSdOKOnUUysHtNdHWia
+dQGMYpxVApuc7BoXh2TkYsKTNU2bahDhWregCgzFCfXFf2QuPyr1GcoLXo8iJuFe
+2HCR7TFb0sR5Da2tauB2
+=5Lvz
 -----END PGP SIGNATURE-----
 
