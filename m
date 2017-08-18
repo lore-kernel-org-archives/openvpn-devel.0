@@ -1,10 +1,10 @@
 From: David Sommerseth <davids@...515...>
-Date: Thu, 17 Aug 2017 17:39:02 +0200
-Message-Id: <20170817153902.15115-1-davids@...515...>
-In-Reply-To: <20170707044704.7239-1-a@...2181...>
-References: <20170707044704.7239-1-a@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH applied] crypto: create function to
- initialize encrypt and decrypt key
+Date: Fri, 18 Aug 2017 19:56:58 +0200
+Message-Id: <20170818175658.27175-1-davids@...515...>
+In-Reply-To: <1502207741-31750-1-git-send-email-steffan.karger@...1435...>
+References: <1502207741-31750-1-git-send-email-steffan.karger@...1435...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Add coverity static analysis to
+ Travis CI config
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,7 +15,7 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: steffan@...1856...
+To: steffan.karger@...1435...
 Cc: openvpn-devel@lists.sourceforge.net
 
 -----BEGIN PGP SIGNED MESSAGE-----
@@ -23,17 +23,17 @@ Hash: SHA512
 
 Your patch has been applied to the following branches
 
-commit 974513ea64020c956b531b1cabd76fdbac6655d8  (master)
-commit 9df6a9f66463e0b3ffe3c186b213e80942c13b52  (release/2.4)
+commit 4a05f15c9aafe314ae4d3642813ebf234c09276e  (master)
+commit e12d5e35d56103357301d28e3f9ee0468e306bb1  (release/2.4)
 Author: Steffan Karger
-Date:   Fri Jul 7 12:47:04 2017 +0800
+Date:   Tue Aug 8 17:55:41 2017 +0200
 
-     crypto: create function to initialize encrypt and decrypt key
+     Add coverity static analysis to Travis CI config
 
-     Signed-off-by: Steffan Karger <steffan@...1856...>
+     Signed-off-by: Steffan Karger <steffan.karger@...1435...>
      Acked-by: Antonio Quartulli <a@...2181...>
-     Message-Id: <20170707044704.7239-1-a@...2181...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg15011.html
+     Message-Id: <1502207741-31750-1-git-send-email-steffan.karger@...1435...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg15176.html
      Signed-off-by: David Sommerseth <davids@...515...>
 
 
@@ -45,18 +45,18 @@ David Sommerseth
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBCgAGBQJZlbiUAAoJEIbPlEyWcf3yN60QAJqE7LguoLJis3whFL4Iv+Hg
-lGOXbNQdEkGyMPh0P4QBWrjX2kJuxdg925sdocy1Rj4f8nIAQSr0j5ENIHn0fQI9
-eXG0FpKlsdIbd1rcVEAJ7/Zk3P/FrhbMKoVIm0aSxDgmrT9r7tBCg3UlIXBkF5Iu
-8k5akJYg1CA2sjRf3SXs629OojNHyiZ0RUB41gZfHd0JOCNbzlDuioLWbPJ6rmyV
-GBsTy4tiehTJdljFeaaHCbRGzjcIO4cNkeR5Gqhk7QUQeInips8QQlzst/nTlEsN
-DMtDM0xdeoWDQKu8Yd8iGAzXpMLHI0TtEuvugZL7u2l5T+DcyFQ5kueKts9A+zMn
-rRe9H16Xgp0mudVw34C5dJIe/NuN1+l85kgHFH3yozg35ggZuYPE/yxSUAaDBPMm
-E4tlC+tJ3EL/CUM3WaZYxxYtcN2nAdF3Atzoo6badi70B4IBQjbUUw70LGemlASx
-Me9FZxVWuCSxzHQrCR6GOaE+ZNHY9sk4GF7LqDU/Qg5qrDYgbfo1LKHjD4Oeso+v
-wFHRLN83LVP6TEl2+vSALylQb1XMfILrR85/rarN2krToh4sOws2C6bV5zmc5RyW
-MUlhxRvDs9LnIKHVa2c1vmiQTS7K9P6pBIkawwGX14QgSMJMjXwdWE5egVXvgyEx
-aDCLpgMOasYSeMvJP3S0
-=BRt7
+iQIcBAEBCgAGBQJZlypjAAoJEIbPlEyWcf3yuQEP/jOPlCPbSsgCDLWUHkNgLhOM
+CQ32K1dbYuOrPo7pmjewyebF0NdkB6dbUVAMBvy5vWtyPawAz+65KwtKVwORKcf/
+INkJwerRG5W9gymd0OeFAydmvQ/OvgI40u8jrLAeGIFlqTsoqg4SmmyNgCnxL7zP
+u5p3J1j5RcWUBGaOGcUYyJsHGGkMSxlp3CcrDpXevqp65Pb8CvAHuxtOZHxKOrw4
+Xm8SfdXaSm2NU0gUeKibQdPqkSq9bU1W1LH22EbxFFJLJVOKtpMvVF3bzbG4xR2c
+Zw8yFwqLxgwuT7a0/8dIGEgNLapkGKC5NFX+MlVAdG+EjX1cFaLoyeapvBANYqEB
+8YjrJZjJPSEUmaejFcnIgMhWIIbsFGg+qzrXfRC601JuxYEEdANknIIlwIo5hXfq
+NmRD3ViqnBiKCTuW2cs1iMQvsWfyijgKUHkzPZlzllAUlEjKit8KGxbqtmZg5VDI
+UPOS+gvqQtqK0VRm1IJyKyHLQGIYYmV35rEEBZpA/Yf0sfohaRhzDOVIi1Lq/xQ4
+mPyCU978f8plD1Q7QO+x5TGvFYsQaPoYwpd7uApDwDQN5wttMnBebnuHyej0a9Iv
+w19Brl8N8pypYHM44gkGG40jZaevE+7/qxxNScp5MbbEsJlyCZYCjwyEwUvMZ3ym
+WVjUZ3xdckzOjQDD0YiG
+=M2pE
 -----END PGP SIGNATURE-----
 
