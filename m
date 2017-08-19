@@ -1,8 +1,13 @@
-From: Antonio Quartulli <a@...2181...>
-Date: Sat, 19 Aug 2017 15:52:09 +0800
-Message-Id: <20170819075209.28520-1-a@...2181...>
-Subject: [Openvpn-devel] [PATCH] fix a couple of typ0s in comments and
- strings
+References: <bda8bfa8-701a-99a1-4d02-676918cf1fe2@...2181...>
+ <20170716130605.27527-1-coroner@...2290...>
+From: Steffan Karger <steffan@...1856...>
+Message-ID: <e2b8f8df-5506-e9da-4619-4af83c5867e7@...1856...>
+Date: Sat, 19 Aug 2017 10:00:49 +0200
+MIME-Version: 1.0
+In-Reply-To: <20170716130605.27527-1-coroner@...2290...>
+Content-Language: en-GB
+Subject: Re: [Openvpn-devel] [PATCH v2] Implement tls-prefer-server-ciphers
+ option to prefer server cipher order
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,69 +19,44 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
-Cc: Antonio Quartulli <a@...2181...>
 
-Signed-off-by: Antonio Quartulli <a@...2181...>
----
- configure.ac            | 2 +-
- src/openvpn/block_dns.h | 2 +-
- src/openvpn/buffer.h    | 2 +-
- src/openvpn/options.h   | 2 +-
- 4 files changed, 4 insertions(+), 4 deletions(-)
+Hi,
 
-diff --git a/configure.ac b/configure.ac
-index 70660621..6f1044e8 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -230,7 +230,7 @@ AC_ARG_ENABLE(
- 
- AC_ARG_ENABLE(
- 	[werror],
--	[AS_HELP_STRING([--enable-werror], [promote compiler warnings to errors, will cause builds to fail is the compiler issues warnings (debugging option) @<:@default=no@:>@])],
-+	[AS_HELP_STRING([--enable-werror], [promote compiler warnings to errors, will cause builds to fail if the compiler issues warnings (debugging option) @<:@default=no@:>@])],
- 	,
- 	[enable_werror="no"]
- )
-diff --git a/src/openvpn/block_dns.h b/src/openvpn/block_dns.h
-index c4b6693b..c9a9d708 100644
---- a/src/openvpn/block_dns.h
-+++ b/src/openvpn/block_dns.h
-@@ -26,7 +26,7 @@
- #ifndef OPENVPN_BLOCK_DNS_H
- #define OPENVPN_BLOCK_DNS_H
- 
--/* Any value less than 5 should work fine. 3 is choosen without any real reason. */
-+/* Any value less than 5 should work fine. 3 is chosen without any real reason. */
- #define BLOCK_DNS_IFACE_METRIC 3
- 
- typedef void (*block_dns_msg_handler_t) (DWORD err, const char *msg);
-diff --git a/src/openvpn/buffer.h b/src/openvpn/buffer.h
-index 8bc44287..1ed56316 100644
---- a/src/openvpn/buffer.h
-+++ b/src/openvpn/buffer.h
-@@ -91,7 +91,7 @@ struct gc_entry
- };
- 
- /**
-- * Gargabe collection entry for a specially allocated structure that needs
-+ * Garbage collection entry for a specially allocated structure that needs
-  * a custom free function to be freed like struct addrinfo
-  *
-  */
-diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-index 95ff4cda..41fc5b9e 100644
---- a/src/openvpn/options.h
-+++ b/src/openvpn/options.h
-@@ -181,7 +181,7 @@ struct options
- 
-     /* enable forward compatibility for post-2.1 features */
-     bool forward_compatible;
--    /* list of options that should be ignored even if unkown */
-+    /* list of options that should be ignored even if unknown */
-     const char **ignore_unknown_option;
- 
-     /* persist parms */
--- 
-2.14.1
+On 16-07-17 15:06, Szilárd Pfeiffer wrote:
+> Prefer server ciphers over client ciphers during the TLS handshake. Part
+> of the ClientHello message client sends supported cipher suites in order
+> of its preference. If tls-prefer-server-ciphers is when server choosing
+> a cipher, use the server's preferences instead of the client preferences.
+> 
+> The functionality is the same as the folowings:
+> 
+> * ssl_prefer_server_ciphers in NGINX
+> * SSLHonorCipherOrder in Apache
+> * ...
 
+Took me a while to ponder about this one, sorry about that.
+
+You probably know this, but as context for other readers:  OpenVPN uses
+TLS differently than HTTP (nginx/apache) do, because we barely use the
+TLS record protocol.  The reason to prefer client ciphers, is that a
+client can e.g. prefer a cipher that performs better on the client
+platform.  Think chacha20-poly1305 on ARM chips without AES hardware
+acceleration.  For OpenVPN, this is not really relevant, because the
+actual performance-relevant crypto is the data channel, which is
+negotiated (or statically configured) separately from the TLS ciphers.
+
+All in all, I don't think we need an option for this, but can simply
+always use the server cipher preference.  I think it's a safe bet to say
+that server admins are better at updating their configs than client
+users are.  And if client do want to restrict their ciphers, they should
+simply evict the ciphers they don't want from their cipher suite.
+
+Since mbed TLS by default already prefers the server-side cipher list,
+all we would need to do is or in the SSL_OP_CIPHER_SERVER_PREFERENCE
+flag in the OpenSSL-specific code.  That makes the patch a lot simpler
+*and* we have less option combinations to test and maintain.  We can
+even safely do that without #ifdef guards, because this define is
+available since OpenSSL 0.9.8, which is the oldest version we support.
+
+-Steffan
 
