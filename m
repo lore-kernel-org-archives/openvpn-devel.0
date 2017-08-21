@@ -1,11 +1,15 @@
-MIME-Version: 1.0
-In-Reply-To: <b524e527-9881-1e25-2ba0-fd7e4117afc4@...1856...>
+Reply-To: openvpn-devel@lists.sourceforge.net
 References: <CAFHpkQHXhe4UBAePJQXkBYJ+Sahc-3XpVPfPBo5oT6EKbzm3mA@...278...>
  <b524e527-9881-1e25-2ba0-fd7e4117afc4@...1856...>
-From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Date: Mon, 21 Aug 2017 13:23:22 +0500
-Message-ID: <CAFHpkQHbGSsU7gsRcogr+7JzpDXoBd9r669cOpRxp1k8h91Smg@...278...>
-Content-Type: multipart/alternative; boundary="001a113f9f8c25481605573f31f2"
+ <CAFHpkQHbGSsU7gsRcogr+7JzpDXoBd9r669cOpRxp1k8h91Smg@...278...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <0526aa24-77dd-7901-a9c9-1287648fcf9a@...2080...>
+Date: Mon, 21 Aug 2017 12:54:21 +0200
+MIME-Version: 1.0
+In-Reply-To: <CAFHpkQHbGSsU7gsRcogr+7JzpDXoBd9r669cOpRxp1k8h91Smg@...278...>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="SuvdA8PBM91rLirBLHhj02j9lJJEhTlWA"
 Subject: Re: [Openvpn-devel] testing openvpn on gitlab-ci cloud ?
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -15,140 +19,125 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan@...1856...>
+To: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>, Steffan Karger <steffan@...1856...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---001a113f9f8c25481605573f31f2
-Content-Type: text/plain; charset="UTF-8"
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--SuvdA8PBM91rLirBLHhj02j9lJJEhTlWA
+Content-Type: multipart/mixed; boundary="M6xhvgxMmJvl0Q5QjsNqB8qLJXwabhh7f";
+ protected-headers="v1"
+From: David Sommerseth <openvpn@...2080...>
+Reply-To: openvpn-devel@lists.sourceforge.net
+To: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>,
+ Steffan Karger <steffan@...1856...>
+Cc: "openvpn-devel@lists.sourceforge.net"
+ <openvpn-devel@lists.sourceforge.net>
+Message-ID: <0526aa24-77dd-7901-a9c9-1287648fcf9a@...2080...>
+Subject: Re: [Openvpn-devel] testing openvpn on gitlab-ci cloud ?
+References: <CAFHpkQHXhe4UBAePJQXkBYJ+Sahc-3XpVPfPBo5oT6EKbzm3mA@...278...>
+ <b524e527-9881-1e25-2ba0-fd7e4117afc4@...1856...>
+ <CAFHpkQHbGSsU7gsRcogr+7JzpDXoBd9r669cOpRxp1k8h91Smg@...278...>
+In-Reply-To: <CAFHpkQHbGSsU7gsRcogr+7JzpDXoBd9r669cOpRxp1k8h91Smg@...278...>
+
+--M6xhvgxMmJvl0Q5QjsNqB8qLJXwabhh7f
+Content-Language: en-GB
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
-2017-08-20 14:10 GMT+05:00 Steffan Karger <steffan@...1856...>:
+On 21/08/17 10:23, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=B8=D1=86=
+=D0=B8=D0=BD wrote:
+>=20
+>     2) The travis-ci setup for coverity and an early check of github pull
+>     requests (which only is an early staging area for patches to be sent =
+to
+>     the -devel list later).
+>=20
+>     So I think we have everything that gitlab offers covered.  Let's not =
+add
+>     another setup to maintain.
+>=20
+>=20
+> what I suggest is not "implement gitlab-ci immediately", I also do not
+> want to support more configurations. It's rather "let us take gitlab-ci
+> into account and implement it when there'll be appropriate task for it"
 
-> Hi,
->
-> On 20-08-17 09:43, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=B8=D1=
-=86=D0=B8=D0=BD wrote:
-> > I was playing with gitlab-ci:
-> >
-> > https://gitlab.com/chipitsine/openvpn/pipelines/11012659
-> >
-> >
-> > are we interested in something like that ? thoughts?
-> >
-> > some benefits of gitlab-ci:
-> >
-> > 1) ipv6 on loopback (travis-ci runs in GCE without ipv6)
-> > 2) ability to attach own gitlab-ci runners to repo
-> > (freebsd/netbsd/.../windows/.../etc)
->
-> This does look nice, but I think we should not add another CI setup.  We
-> now have:
->
-> 1) The private buildbot setup for the maintainers, which runs a wide
-> variety of platforms, configs and real-network tests (across various
-> combinations platforms, to test e.g. endianness).
->
+I agree that we should not duplicate the Travis/GitHub efforts.  But I
+think it is good to look at alternatives to that setup as well from time
+to time and spread out how we use various free services.  Not that we
+change anything now and today.  But keep the options open to see if
+there are better alternatives in a longer run.
 
-I've seen buildbot matrix, its (mbedtls, openssl) x (various configure
-options) x (various distros) - it's really big. and it includes real world
-tests.
+One of my biggest concerns regarding both Travis and GitHub is that they
+are free services built on proprietary solutions.  Which means, our
+usage is completely depending on their willingness and grace.  If they
+decide to change their business model, we're back on scratch unless we
+decide to follow along and take the consequences of their change - which
+may result in needing to cash out or accept fewer features.
+
+GitLab is different, in the sense that in addition to offer a free
+service (which is even less restricted than GitHub), they also offer the
+software running their service as an open source package you can host
+yourself.  Or you can cash out for their enterprise solution, with even
+more advanced features and improved support.  On top of that GitLab
+allows you to export most of your (meta)data in addition to the source code.
+
+So if GitLab changes their business model, we have an escape route.  And
+a company who provide that possibility needs to be much more weary and
+careful to how they treat their users so they won't escape (unless they
+deliberately want that to happen, as part of a business decision).
+
+If I had to choose today which service provider to use, I would go for
+GitLab instantly.  Because of their business model, I trust them more.
+And I don't see their solution been worse or better than GitHub.  It is
+different, not 100% comparable and doesn't have the same amount of
+traction which GitHub does (if that is really important; I'm not
+convinced it does).  But GitLab allows users to authenticate with GitHub
+credentials, so if you're on GitHub already it doesn't cost you that
+much to log into GitLab.
+
+Bottom line: I appreciate the efforts of Ilya. I think it is valuable
+work.  I also don't think we should switch right now, but if there are
+some clear and obvious benefits of GitLab-CI over GitHub/Travis-CI, I
+think we should consider to switch within a reasonable time window
+(perhaps 3-6 months after decision is taken?).  _But that decision
+cannot be taken without some clear and concise evidence of GitLab-CI
+being superior and worth the efforts of switching_.  Without any
+evidence, we're just painting the bike shed.  If changing, I prefer
+changing to a feature-improved bike shed.
 
 
->
-> 2) The travis-ci setup for coverity and an early check of github pull
-> requests (which only is an early staging area for patches to be sent to
-> the -devel list later).
->
-> So I think we have everything that gitlab offers covered.  Let's not add
-> another setup to maintain.
->
+--=20
+kind regards,
 
-what I suggest is not "implement gitlab-ci immediately", I also do not want
-to support more configurations. It's rather "let us take gitlab-ci into
-account and implement it when there'll be appropriate task for it"
+David Sommerseth
+OpenVPN Technologies, Inc
 
 
->
-> -Steffan
->
-> ------------------------------------------------------------
-> ------------------
-> Check out the vibrant tech community on one of the world's most
-> engaging tech sites, Slashdot.org! http://sdm.link/slashdot
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->
 
---001a113f9f8c25481605573f31f2
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+--M6xhvgxMmJvl0Q5QjsNqB8qLJXwabhh7f--
 
-<div dir=3D"ltr"><br><div class=3D"gmail_extra"><br><div class=3D"gmail_quo=
-te">2017-08-20 14:10 GMT+05:00 Steffan Karger <span dir=3D"ltr">&lt;<a href=
-=3D"mailto:steffan@...1856..." target=3D"_blank">steffan@...1856...</a>&gt;=
-</span>:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;bo=
-rder-left:1px #ccc solid;padding-left:1ex">Hi,<br>
-<span class=3D""><br>
-On 20-08-17 09:43, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=B8=D1=86=
-=D0=B8=D0=BD wrote:<br>
-&gt; I was playing with gitlab-ci:<br>
-&gt;<br>
-&gt; <a href=3D"https://gitlab.com/chipitsine/openvpn/pipelines/11012659" r=
-el=3D"noreferrer" target=3D"_blank">https://gitlab.com/chipitsine/<wbr>open=
-vpn/pipelines/11012659</a><br>
-&gt;<br>
-&gt;<br>
-&gt; are we interested in something like that ? thoughts?<br>
-&gt;<br>
-&gt; some benefits of gitlab-ci:<br>
-&gt;<br>
-&gt; 1) ipv6 on loopback (travis-ci runs in GCE without ipv6)<br>
-&gt; 2) ability to attach own gitlab-ci runners to repo<br>
-&gt; (freebsd/netbsd/.../windows/..<wbr>./etc)<br>
-<br>
-</span>This does look nice, but I think we should not add another CI setup.=
-=C2=A0 We<br>
-now have:<br>
-<br>
-1) The private buildbot setup for the maintainers, which runs a wide<br>
-variety of platforms, configs and real-network tests (across various<br>
-combinations platforms, to test e.g. endianness).<br></blockquote><div><br>=
-</div><div>I&#39;ve seen buildbot matrix, its (mbedtls, openssl) x (various=
- configure options) x (various distros) - it&#39;s really big. and it inclu=
-des real world tests.<br></div><div>=C2=A0</div><blockquote class=3D"gmail_=
-quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1=
-ex">
-<br>
-2) The travis-ci setup for coverity and an early check of github pull<br>
-requests (which only is an early staging area for patches to be sent to<br>
-the -devel list later).<br>
-<br>
-So I think we have everything that gitlab offers covered.=C2=A0 Let&#39;s n=
-ot add<br>
-another setup to maintain.<br></blockquote><div><br></div><div>what I sugge=
-st is not &quot;implement gitlab-ci immediately&quot;, I also do not want t=
-o support more configurations. It&#39;s rather &quot;let us take gitlab-ci =
-into account and implement it when there&#39;ll be appropriate task for it&=
-quot;<br></div><div>=C2=A0</div><blockquote class=3D"gmail_quote" style=3D"=
-margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">
-<br>
--Steffan<br>
-<br>
-------------------------------<wbr>------------------------------<wbr>-----=
--------------<br>
-Check out the vibrant tech community on one of the world&#39;s most<br>
-engaging tech sites, Slashdot.org! <a href=3D"http://sdm.link/slashdot" rel=
-=3D"noreferrer" target=3D"_blank">http://sdm.link/slashdot</a><br>
-______________________________<wbr>_________________<br>
-Openvpn-devel mailing list<br>
-<a href=3D"mailto:Openvpn-devel@lists.sourceforge.net">Openvpn-devel@...2155...=
-9...<wbr>sourceforge.net</a><br>
-<a href=3D"https://lists.sourceforge.net/lists/listinfo/openvpn-devel" rel=
-=3D"noreferrer" target=3D"_blank">https://lists.sourceforge.net/<wbr>lists/=
-listinfo/openvpn-devel</a><br>
-</blockquote></div><br></div></div>
+--SuvdA8PBM91rLirBLHhj02j9lJJEhTlWA
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
---001a113f9f8c25481605573f31f2--
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBCgAGBQJZmrvoAAoJEIbPlEyWcf3yuUEP/jwVWkVdl95jybcZHY4tWl0B
+AVSlx7v52Ev+YH+6hj2wVAbmZlmSHPm4QMbipHhYzG10zE4LXAksVaBtToXJPf/U
+iYYt4W5lHlVCt3gigDKZU74M5NtmyTF6kXWRfU5yBhlvle39hQRn7KGkJc8/gw+i
+eofJBTAt0JXQbEH7d6jX/e3+KhGgr844+Sv6MehMLKKLutmk0BfjUH5fyvJfoLRC
+almf7wq8UlByiXBSLoD9QfbZiBWeQZoz0k+ALyyrOie2pZxwdO09Bd1zDOpRsF+M
+Fv9hPeH10mXqKn7Auza8CWjXUmQnPypJwoRJWoZqpJotguIa2IfT9oQQ53UQdman
+vqZ4i8BpJc6UUWUp792jHNNNSa6pZcZTYbV5fFHGwjSF5Bqz/C2HuB0XRdxifRQz
+UBlIdUIq1iD75o1tZtS1tuhYohEFpNvjkwaVwZ/PJuC7vRx8Fhy2osA+rr4MyKE9
+RsRLnpQgWv/aMX4QBpfbHlZnP3Ipyl7Ou7EX0CqBG0nPIVYj7VmrGeEcbVANcaAU
+VlFMYupTxZsXGIukZSSrHnalMo+T4TxJ2fHsjNONUsIH+OK7LU86AyGaBpKF1ISs
+TijtdAnMnDOpmrWe06+nTPa3ZPHxmpeIpozagWMRf9qBQtdvF8pWFm1PHvrTnkdJ
+lEUi8e1+kRDT3m1elix/
+=NQiK
+-----END PGP SIGNATURE-----
+
+--SuvdA8PBM91rLirBLHhj02j9lJJEhTlWA--
 
