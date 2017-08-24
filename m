@@ -1,19 +1,17 @@
-References: <20170824133305.25604-1-a@...2181...>
- <CAFHpkQEJefeuqwbfy638M0AYO4EvcN8tamQQAHfxH-uPDwm=+g@...278...>
- <CAFHpkQHi0==66QDo8zVkktdCS4evKhQBkpkTZLbnt0WPMpXzsQ@...278...>
- <CAFHpkQFfWXACzHXuxXDDHOiZSQRaFro=QJoEcfcSx01Ao-m9iw@...278...>
- <d31c59c4-a512-f335-41fc-e6389915a270@...2181...>
- <4555eb8e-62db-e24c-c297-d27a63c40942@...2080...>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <275f5d58-bf11-783c-0a2a-efb78d404c9d@...2181...>
-Date: Fri, 25 Aug 2017 02:52:27 +0800
+Date: Thu, 24 Aug 2017 20:55:12 +0200
+From: Christian Hesse <list@...1798...>
+Message-ID: <20170824205512.2d89b29d@...1799...>
+In-Reply-To: <4f5262ab-4a6e-83e1-2950-35db895ddf22@...2080...>
+References: <20170824075312.24801-1-a@...2181...>
+ <f9c5ce4e-1527-c1a0-9427-7bfc316df306@...2181...>
+ <bff6ef6f-f02a-3a47-c78e-3eb27be0de49@...2080...>
+ <20170824204045.2937b4d6@...1799...>
+ <1749ebf9-6823-5420-3bcf-79b72eae2e76@...2181...>
+ <4f5262ab-4a6e-83e1-2950-35db895ddf22@...2080...>
 MIME-Version: 1.0
-In-Reply-To: <4555eb8e-62db-e24c-c297-d27a63c40942@...2080...>
 Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="ag5Mu5Cq7DR4RifbHhabhQUgbCgRq9NUE"
-Subject: Re: [Openvpn-devel] [PATCH] bash: substitute legacy `` with modern
- $()
+ boundary="Sig_/QI49J_7cHSLyy7fXGA6xfUi"; protocol="application/pgp-signature"
+Subject: Re: [Openvpn-devel] [PATCH] avoid useless assignment
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,82 +20,84 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net, David Sommerseth <openvpn@...2080...>, =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
+To: David Sommerseth <openvpn@...2080...>
+Cc: openvpn-devel@lists.sourceforge.net, Antonio Quartulli <a@...2181...>
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---ag5Mu5Cq7DR4RifbHhabhQUgbCgRq9NUE
-Content-Type: multipart/mixed; boundary="XC40Gq7E2q2AFFn3sGeI9444dhvCs4n4L";
- protected-headers="v1"
-From: Antonio Quartulli <a@...2181...>
-To: openvpn-devel@lists.sourceforge.net,
- David Sommerseth <openvpn@...2080...>,
- =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Message-ID: <275f5d58-bf11-783c-0a2a-efb78d404c9d@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH] bash: substitute legacy `` with modern
- $()
-References: <20170824133305.25604-1-a@...2181...>
- <CAFHpkQEJefeuqwbfy638M0AYO4EvcN8tamQQAHfxH-uPDwm=+g@...278...>
- <CAFHpkQHi0==66QDo8zVkktdCS4evKhQBkpkTZLbnt0WPMpXzsQ@...278...>
- <CAFHpkQFfWXACzHXuxXDDHOiZSQRaFro=QJoEcfcSx01Ao-m9iw@...278...>
- <d31c59c4-a512-f335-41fc-e6389915a270@...2181...>
- <4555eb8e-62db-e24c-c297-d27a63c40942@...2080...>
-In-Reply-To: <4555eb8e-62db-e24c-c297-d27a63c40942@...2080...>
-
---XC40Gq7E2q2AFFn3sGeI9444dhvCs4n4L
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
+--Sig_/QI49J_7cHSLyy7fXGA6xfUi
+Content-Type: text/plain; charset="US-ASCII"
 Content-Transfer-Encoding: quoted-printable
 
-
-
-On 25/08/17 02:06, David Sommerseth wrote:
-> On 24/08/17 16:42, Antonio Quartulli wrote:
->> dev-tools/gen-release-tarballs.sh is only for devs, while
->> tests/t_cltsrv.sh is for running some tests, but I am not sure sure how
->> the latter would interact with non-linux systems.
->>
->> Maybe Gert knows(?)
+David Sommerseth <openvpn@...2080...> on Thu, 2017/08/24 20:51:
+> On 24/08/17 20:40, Antonio Quartulli wrote:
+> >=20
+> >=20
+> > On 25/08/17 02:40, Christian Hesse wrote:=20=20
+> >> David Sommerseth <openvpn@...2080...> on Thu, 2017/08/24
+> >> 20:16:=20=20
+> >>> On 24/08/17 09:57, Antonio Quartulli wrote:=20=20
+> >>>> My effort in writing the commit message has been quite poor.
+> >>>>
+> >>>> The assignment is useless because 'ret' is re-assigned a few lines
+> >>>> later without ever being read.=20=20=20=20
+> >>>
+> >>> Hmmm.  I'm not convinced of this change.  But I'm also weird in these
+> >>> cases :)
+> >>>
+> >>> I think it is good defensive programming to predefine the state of
+> >>> variables.  When that is not done, it is up the the compiler to decide
+> >>> what to do - which most of the times does a sane job these days.  But
+> >>> you're at the mercy of the compiler.
+> >>>
+> >>> In this case,  I would expect the compiler to optimize this out anywa=
+y,
+> >>> regardless of the approaches used.  The compiler doesn't necessarily =
+set
+> >>> the value first to true and then to change it to the output of
+> >>> multi_process_post().  It might just as well postpone the declaration.
+> >>>
+> >>> So I think a better approach would be to completely move the "bool re=
+t"
+> >>> down.  So it will become:
+> >>>
+> >>>    bool ret =3D multi_process_post(m, mi, mpp_flags);
+> >>>
+> >>> Which I think is also closer to what the compiler would end up with
+> >>> anyway.=20=20
+> >>
+> >> ISO C90 forbids mixed declarations and code in C. Probably compilers w=
+ill
+> >> start to complain.=20=20
+> >=20
+> > We try to stick to C99. I think it allows such mix, no?=20=20
 >=20
-> Tried running them through ksh or dash?  Those are the most feature
-> restrictive shells I can think of right now.  Dash is supposed to be the
-> most POSIX compliant shell, iirc.
+> That is correct.  We set -std=3Dc99 unless CFLAGS already contains -std=
+=3D.
+> But we expect OpenVPN to be C99 compliant.
+>=20
+> And C99 allows this.
 
-A quick test with dash on ubuntu shown that the line:
-
-    echo "   remote-name  -- valid remotes: $(git remote | tr \\\n ' ')"
-
-is interpreted correctly.
-
-Cheers,
-
-
+You are right... So scratch my concern.
 --=20
-Antonio Quartulli
+main(a){char*c=3D/*    Schoene Gruesse                         */"B?IJj;MEH"
+"CX:;",b;for(a/*    Best regards             my address:    */=3D0;b=3Dc[a+=
++];)
+putchar(b-1/(/*    Chris            cc -ox -xc - && ./x    */b/42*2-3)*42);}
 
-
---XC40Gq7E2q2AFFn3sGeI9444dhvCs4n4L--
-
---ag5Mu5Cq7DR4RifbHhabhQUgbCgRq9NUE
-Content-Type: application/pgp-signature; name="signature.asc"
+--Sig_/QI49J_7cHSLyy7fXGA6xfUi
+Content-Type: application/pgp-signature
 Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCAAdFiEEbd2mMhAXbmSCipS40+HICM1soFAFAlmfIGsACgkQ0+HICM1s
-oFAOBRAAgwjBWI//UFojawuAPTfGLxTmkaTsulgyFZrkzR7XbxNRv43vcdqUmy4H
-f8CCDIOcZCOUUTeO9nSZGIv8PFWMdF4kUzsqVQ15PK4dN7hRkn4g2XGrgn3QNdMj
-IWrcIPgNvJtPMQJpRHoTsNZptmTlYnt8K8kH1rxPq5NepeYRIxEl3B4jCKAyBBAc
-ChKf7N+zvO0PDypnMD+p0o18w1C3vDLdm5uKE8MMs8PeBoIYqlplp+XiXp8Y4hRK
-HKf/0ssAJTICFlTZaz6nD1ZRzI1oY+VDhB2kUGGjSRLZ6x6mEOCV/Qk6/sPfDo1b
-M6xQxNAavIAtGMpRs1nAIOi1q3QTa2Meys/nRHtQx6SnYBH6J8zPz4cPAxqzXl1m
-Dt4FICjnIJt6ZgTcEj8HQ7wPfWTySexIklGU/h38KUlZyNBf35FuUOOrvk1esepJ
-i/GXIk9tTt2xE94428KFeiUXOebUwiWllW9XB7ldw69y7aezOjOhCLv5hsWfwUSf
-34Dm8sLMqtVbTks1YPmPZKG0C72BuYI3TQjnPv6bcqfCFGYgLyqE5DWQQKoWViap
-6wLy6Cdqc3dClNyWlbmCDJ08qSmjbpIi4vw72Lrot9Fni+WOrpGuU+5JlJgu2O4C
-97AI3IOqeV7srZxNf+UALsAx/fcRRnsAjSKhYTzjelrRBXf9XZo=
-=a1E3
+iQEzBAEBCAAdFiEEXHmveYAHrRp+prOviUUh18yA9HYFAlmfIRAACgkQiUUh18yA
+9HYe8wf+O+2r3wObPw4zJHkl8lstv7VijVVu5qtH0yyqDne9f5zgr7ibRTKSAsgb
+A1IgzQvRltlgaFwWC2qh93ced/MMcaYUj4jZ1DA02sjXyK5Hq+g5w6SIlIKSw+Gt
+OjVE4ZPmCKSV/RguflHn0RgMd8j9CCwaj3llE9Uk+0EWi47Xg63UfZlX4LzsB8mE
+sSNs7UKy4Cm3BL7itr+bQPE9JrqdbEsBl+gzO4KRdyYqiiDB2s21y5zTtV4GiHR8
+tzRBNIq2njeW/fKA+jqIc49aIyDZh55hTl17f78JrUE+Ga51O8rBEyDo+6o6dOK/
+3jjZTZBBXKYqrhVJDXFFOPxf6EdZFw==
+=deEI
 -----END PGP SIGNATURE-----
 
---ag5Mu5Cq7DR4RifbHhabhQUgbCgRq9NUE--
+--Sig_/QI49J_7cHSLyy7fXGA6xfUi--
 
