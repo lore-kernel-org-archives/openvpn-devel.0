@@ -1,15 +1,16 @@
-Date: Thu, 24 Aug 2017 21:20:38 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20170824192038.GI70062@...1296...>
+Reply-To: openvpn-devel@lists.sourceforge.net
 References: <20170824133305.25604-1-a@...2181...>
- <20170824133845.3984-1-a@...2181...>
+ <20170824191848.GH70062@...1296...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <011fb50e-4b84-6f2c-c730-dc419b840f6f@...2080...>
+Date: Thu, 24 Aug 2017 22:21:52 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="3LbzE+0aVzOo6fIw"
-Content-Disposition: inline
-In-Reply-To: <20170824133845.3984-1-a@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH v2] bash: substitute legacy `` with
- modern $()
+In-Reply-To: <20170824191848.GH70062@...1296...>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="Ll0ruifUHUotbOfVkJ7rbH5Vgb0CcLd37"
+Subject: Re: [Openvpn-devel] [PATCH] bash: substitute legacy `` with modern
+ $()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,60 +19,76 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Antonio Quartulli <a@...2181...>
+To: Gert Doering <gert@...1296...>, Antonio Quartulli <a@...2181...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---3LbzE+0aVzOo6fIw
-Content-Type: text/plain; charset="us-ascii"
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--Ll0ruifUHUotbOfVkJ7rbH5Vgb0CcLd37
+Content-Type: multipart/mixed; boundary="C3vU8Q0FvJ9I281KI0lrFWxJFCLsq2NkG";
+ protected-headers="v1"
+From: David Sommerseth <openvpn@...2080...>
+Reply-To: openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>, Antonio Quartulli <a@...2181...>
+Cc: openvpn-devel@lists.sourceforge.net
+Message-ID: <011fb50e-4b84-6f2c-c730-dc419b840f6f@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH] bash: substitute legacy `` with modern
+ $()
+References: <20170824133305.25604-1-a@...2181...>
+ <20170824191848.GH70062@...1296...>
+In-Reply-To: <20170824191848.GH70062@...1296...>
+
+--C3vU8Q0FvJ9I281KI0lrFWxJFCLsq2NkG
+Content-Language: en-GB
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
 
-Hi,
+On 24/08/17 21:18, Gert Doering wrote:
+> (gen-release-tarballs.sh only needs to work on FreeBSD and Linux, and
+> FreeBSD's /bin/sh is sufficiently modern so so it's likely to work
+>  - but the test scripts need to run robustly everywhere a user builds,
+> so never assume "because bash says so!" is a way anywhere but into worlds
+> of pain.  And yes, we've been there before :-) )
 
-On Thu, Aug 24, 2017 at 09:38:45PM +0800, Antonio Quartulli wrote:
-> The backquotes for command substitution in bash are
-> considered old-style in favour of the more modern $() [1].
-> Substitute them.
->=20
-> [1]https://www.gnu.org/software/bash/manual/html_node/Command-Substitutio=
-n.html#Command-Substitution
->=20
-> Signed-off-by: Antonio Quartulli <a@...2181...>
-> ---
->=20
-> v2: added overlooked occurrence
+And to avoid style confusions ... as long as we can avoid having "one
+style" on the test scripts and "another style" on the dev-tools scripts,
+that will be easier to review and maintain.
 
-Still NAK.
+We can have more slack in dev-tools, but if we deviate, then we need to
+properly document it so we won't forget why.
 
-> note: I did not really know how to test this patch.
-
-More reason for NAK.
-
-gert
 
 --=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+kind regards,
 
---3LbzE+0aVzOo6fIw
+David Sommerseth
+OpenVPN Technologies, Inc
+
+
+
+--C3vU8Q0FvJ9I281KI0lrFWxJFCLsq2NkG--
+
+--Ll0ruifUHUotbOfVkJ7rbH5Vgb0CcLd37
 Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQGcBAEBAgAGBQJZnycGAAoJEB2Cnv7KVigScT8L/1zGH/Z7qBTjZV1F3/tvapvn
-gA/fBb9L5cdw8dafripnct4T95BJbsmSonnlC4FXtRZVHfIOLA+nsOo/jEoiWkaH
-/TEuKmdxRKu3Gh3fIT0mqZOLKKcOu/effi8AeANARpHU6ig6nUbxZM2u5Jpu9pok
-HKsSNtCMvTokLpm8EIS7M8FPv5Zb+WI4X75hiCinK91ROhFiM/YN1fOtUu+5leZx
-zW4RD/480DmNAg9reSjDIebZYG9738DHT8pV/TIWT6gVMlSWnYuedHBskFVz4lP1
-UfaQf8Nys7iWcMGEEH5WEChwfHl6sDk1QWGb2VUoM83hKsVneWx+lGL6lDNBt/Y0
-mNQP7z6LagPGwYo4KahQGVfH25qv8RTPcvQqNPeS6llFzthWUUo9G6fxE4O7RtN8
-DLH+m8/XpW4Km9ZsFqfJ8RIOlQLmmfI5SkDJFYOvrOQNmQaFgx7FFm/Sg02cSAx8
-fOGdbNsPTjjqR5AQeKetEZBUE6z/Grbxzo8x5kM64w==
-=ipet
+iQIcBAEBCgAGBQJZnzVgAAoJEIbPlEyWcf3yOGkQAKXpoDGSV++xr+UhWW/YEOAe
+WuAVejouEYBTAT/aVax3MUYYCRqAknXj95TcVStKF9SGnN2qeRrKyIvLP0Pc/Ofu
+/qiC/csqJhmPrA+rGD+O5b2LSr8Oc8u668XOPxjpJDEDZLiYHgo1NuVpaYalCpa5
+KHj4gD15a6ZYQYWWw5TEZKdB97wDC8AOcAFsSKycKXPtldd0usbf3iyCsUtxdCk5
+cUVpLq85SQRM08VGaXW4sn9vY7A8/rCru9E/MhF7W0avrfrqHWVPj3bcN8Kc/tbP
+OoWTL83k+diDcA/bPpwJrQGa33bn7MiA/XapOsKLT8EF6FFaWH6g4bp71sYZCUEY
+K+pmub2GG5o+tWvKKDgxSDOwSZ/+RGxhWW+TTgxsxtkuwCsKMBwcPtRkDj9g5p+T
+Kzq/W+Q34OAlPKohKPNRXMyE66SWOniztU9BDZr1f83HWNfdX7y9eQe2nWiL7ptU
+C9CKWyIDjy6woU+kQMdYE6L2XKozkdrEA1rh5FuCrYVWGzOeuedv6Lnmckq1BIn4
+/mSkPrdkkfcRtEHAW3hOiuIl/8svWo2E0gsdAbgL0M7pesuvnpV0YuNEsBhGWoB+
+XKSP/OoAVdeXMf9+eEwHco/VMThrHvZV+2Oe9bsS71RMZzsw6iB6UEIgdabSSSci
+Aae4Xx7PhYrhF/Jc6xSW
+=sGW2
 -----END PGP SIGNATURE-----
 
---3LbzE+0aVzOo6fIw--
+--Ll0ruifUHUotbOfVkJ7rbH5Vgb0CcLd37--
 
