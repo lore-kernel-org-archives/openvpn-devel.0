@@ -1,18 +1,19 @@
-Reply-To: openvpn-devel@lists.sourceforge.net
-References: <20170824075312.24801-1-a@...2181...>
- <f9c5ce4e-1527-c1a0-9427-7bfc316df306@...2181...>
- <bff6ef6f-f02a-3a47-c78e-3eb27be0de49@...2080...>
- <20170824204045.2937b4d6@...1799...>
- <1749ebf9-6823-5420-3bcf-79b72eae2e76@...2181...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <4f5262ab-4a6e-83e1-2950-35db895ddf22@...2080...>
-Date: Thu, 24 Aug 2017 20:51:52 +0200
+References: <20170824133305.25604-1-a@...2181...>
+ <CAFHpkQEJefeuqwbfy638M0AYO4EvcN8tamQQAHfxH-uPDwm=+g@...278...>
+ <CAFHpkQHi0==66QDo8zVkktdCS4evKhQBkpkTZLbnt0WPMpXzsQ@...278...>
+ <CAFHpkQFfWXACzHXuxXDDHOiZSQRaFro=QJoEcfcSx01Ao-m9iw@...278...>
+ <d31c59c4-a512-f335-41fc-e6389915a270@...2181...>
+ <4555eb8e-62db-e24c-c297-d27a63c40942@...2080...>
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <275f5d58-bf11-783c-0a2a-efb78d404c9d@...2181...>
+Date: Fri, 25 Aug 2017 02:52:27 +0800
 MIME-Version: 1.0
-In-Reply-To: <1749ebf9-6823-5420-3bcf-79b72eae2e76@...2181...>
-Content-Type: multipart/signed; micalg=pgp-sha512;
+In-Reply-To: <4555eb8e-62db-e24c-c297-d27a63c40942@...2080...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
  protocol="application/pgp-signature";
- boundary="xqdjpAF87Nc8O3u6rEx5qIuGO5mrXq97E"
-Subject: Re: [Openvpn-devel] [PATCH] avoid useless assignment
+ boundary="ag5Mu5Cq7DR4RifbHhabhQUgbCgRq9NUE"
+Subject: Re: [Openvpn-devel] [PATCH] bash: substitute legacy `` with modern
+ $()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,107 +22,82 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Antonio Quartulli <a@...2181...>, Christian Hesse <list@...1798...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net, David Sommerseth <openvpn@...2080...>, =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---xqdjpAF87Nc8O3u6rEx5qIuGO5mrXq97E
-Content-Type: multipart/mixed; boundary="lUsIHbqR7vg8OM9S4bVHwwXKCerMGHTfF";
+--ag5Mu5Cq7DR4RifbHhabhQUgbCgRq9NUE
+Content-Type: multipart/mixed; boundary="XC40Gq7E2q2AFFn3sGeI9444dhvCs4n4L";
  protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-Reply-To: openvpn-devel@lists.sourceforge.net
-To: Antonio Quartulli <a@...2181...>, Christian Hesse <list@...1798...>
-Cc: openvpn-devel@lists.sourceforge.net
-Message-ID: <4f5262ab-4a6e-83e1-2950-35db895ddf22@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH] avoid useless assignment
-References: <20170824075312.24801-1-a@...2181...>
- <f9c5ce4e-1527-c1a0-9427-7bfc316df306@...2181...>
- <bff6ef6f-f02a-3a47-c78e-3eb27be0de49@...2080...>
- <20170824204045.2937b4d6@...1799...>
- <1749ebf9-6823-5420-3bcf-79b72eae2e76@...2181...>
-In-Reply-To: <1749ebf9-6823-5420-3bcf-79b72eae2e76@...2181...>
+From: Antonio Quartulli <a@...2181...>
+To: openvpn-devel@lists.sourceforge.net,
+ David Sommerseth <openvpn@...2080...>,
+ =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
+Message-ID: <275f5d58-bf11-783c-0a2a-efb78d404c9d@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH] bash: substitute legacy `` with modern
+ $()
+References: <20170824133305.25604-1-a@...2181...>
+ <CAFHpkQEJefeuqwbfy638M0AYO4EvcN8tamQQAHfxH-uPDwm=+g@...278...>
+ <CAFHpkQHi0==66QDo8zVkktdCS4evKhQBkpkTZLbnt0WPMpXzsQ@...278...>
+ <CAFHpkQFfWXACzHXuxXDDHOiZSQRaFro=QJoEcfcSx01Ao-m9iw@...278...>
+ <d31c59c4-a512-f335-41fc-e6389915a270@...2181...>
+ <4555eb8e-62db-e24c-c297-d27a63c40942@...2080...>
+In-Reply-To: <4555eb8e-62db-e24c-c297-d27a63c40942@...2080...>
 
---lUsIHbqR7vg8OM9S4bVHwwXKCerMGHTfF
-Content-Language: en-GB
-Content-Type: text/plain; charset="windows-1252"
+--XC40Gq7E2q2AFFn3sGeI9444dhvCs4n4L
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
-On 24/08/17 20:40, Antonio Quartulli wrote:
->=20
->=20
-> On 25/08/17 02:40, Christian Hesse wrote:
->> David Sommerseth <openvpn@...2080...> on Thu, 2017/08/24 20:16:
->>> On 24/08/17 09:57, Antonio Quartulli wrote:
->>>> My effort in writing the commit message has been quite poor.
->>>>
->>>> The assignment is useless because 'ret' is re-assigned a few lines lat=
-er
->>>> without ever being read.=20=20
->>>
->>> Hmmm.  I'm not convinced of this change.  But I'm also weird in these
->>> cases :)
->>>
->>> I think it is good defensive programming to predefine the state of
->>> variables.  When that is not done, it is up the the compiler to decide
->>> what to do - which most of the times does a sane job these days.  But
->>> you're at the mercy of the compiler.
->>>
->>> In this case,  I would expect the compiler to optimize this out anyway,
->>> regardless of the approaches used.  The compiler doesn't necessarily set
->>> the value first to true and then to change it to the output of
->>> multi_process_post().  It might just as well postpone the declaration.
->>>
->>> So I think a better approach would be to completely move the "bool ret"
->>> down.  So it will become:
->>>
->>>    bool ret =3D multi_process_post(m, mi, mpp_flags);
->>>
->>> Which I think is also closer to what the compiler would end up with any=
-way.
+
+
+On 25/08/17 02:06, David Sommerseth wrote:
+> On 24/08/17 16:42, Antonio Quartulli wrote:
+>> dev-tools/gen-release-tarballs.sh is only for devs, while
+>> tests/t_cltsrv.sh is for running some tests, but I am not sure sure how
+>> the latter would interact with non-linux systems.
 >>
->> ISO C90 forbids mixed declarations and code in C. Probably compilers will
->> start to complain.
+>> Maybe Gert knows(?)
 >=20
-> We try to stick to C99. I think it allows such mix, no?
+> Tried running them through ksh or dash?  Those are the most feature
+> restrictive shells I can think of right now.  Dash is supposed to be the
+> most POSIX compliant shell, iirc.
 
-That is correct.  We set -std=3Dc99 unless CFLAGS already contains -std=3D.
-But we expect OpenVPN to be C99 compliant.
+A quick test with dash on ubuntu shown that the line:
 
-And C99 allows this.
+    echo "   remote-name  -- valid remotes: $(git remote | tr \\\n ' ')"
+
+is interpreted correctly.
+
+Cheers,
 
 
 --=20
-kind regards,
-
-David Sommerseth
-OpenVPN Technologies, Inc
+Antonio Quartulli
 
 
+--XC40Gq7E2q2AFFn3sGeI9444dhvCs4n4L--
 
---lUsIHbqR7vg8OM9S4bVHwwXKCerMGHTfF--
-
---xqdjpAF87Nc8O3u6rEx5qIuGO5mrXq97E
+--ag5Mu5Cq7DR4RifbHhabhQUgbCgRq9NUE
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBCgAGBQJZnyBIAAoJEIbPlEyWcf3yP1UP/022UL1iRfwYSz1TrXmpxnTR
-zvA7/FWwaanW8IqLrTHz3BZb5NO0L9jNcZfdE01pd+Xo0Y0BcRRs9m4eMn8auTGo
-i2Vuj1siqym3R0em5CwyItk2BUqJBM7QZQ0J8hzxrkMpPIUw3ide0wcbF1+fVD4s
-AZ9hDFudwEIpVhwqG0lp/XiARyO6g5otCcMitRedWQcmh4mV/Km1D74rVfPNk7IE
-C3JXlxX10S54iM6eIlrATr1AdF+ajvVsdRyCd0ygjKXhnlPL1Ctqr/Lr3dFwwHJ9
-dy5vuHKgzhNqlM844MZ05zKgwZMle4kXtJsscvFwZymEklbHAvpO5ctJMkkVUFQd
-ldaG4lOTQABSgn1758LlRdTFnzoHYGd3XjulZI3mHhoJYDe52Ph/2RKfF3pExA4e
-wzEhpkWRQL6djcrdY6OujBaraYmzc5YWEVIoAZwQ4o1tn1h6AhTq0z2TI75pmRjX
-Y6uUEk6BmYojAZe5Inu9eEjWxSgwNOBrSB6GTuVxGtptbOITO7XOONPo1Pa+axax
-rXFlDvd0sbyvmQfkc5K3eufgnOwgWo5Q6NOjaaiGAGOI9BMWy9KDuqR3Q9ucmyom
-yJQ6zOgpWIX/cRrgVdr0YaPSO9+jOJqqzOQDnFIwK0Cm9AWdAZcWow+yA9OJ6oy0
-Ny5wBzZQ2k50/565pwJw
-=I6/a
+iQIzBAEBCAAdFiEEbd2mMhAXbmSCipS40+HICM1soFAFAlmfIGsACgkQ0+HICM1s
+oFAOBRAAgwjBWI//UFojawuAPTfGLxTmkaTsulgyFZrkzR7XbxNRv43vcdqUmy4H
+f8CCDIOcZCOUUTeO9nSZGIv8PFWMdF4kUzsqVQ15PK4dN7hRkn4g2XGrgn3QNdMj
+IWrcIPgNvJtPMQJpRHoTsNZptmTlYnt8K8kH1rxPq5NepeYRIxEl3B4jCKAyBBAc
+ChKf7N+zvO0PDypnMD+p0o18w1C3vDLdm5uKE8MMs8PeBoIYqlplp+XiXp8Y4hRK
+HKf/0ssAJTICFlTZaz6nD1ZRzI1oY+VDhB2kUGGjSRLZ6x6mEOCV/Qk6/sPfDo1b
+M6xQxNAavIAtGMpRs1nAIOi1q3QTa2Meys/nRHtQx6SnYBH6J8zPz4cPAxqzXl1m
+Dt4FICjnIJt6ZgTcEj8HQ7wPfWTySexIklGU/h38KUlZyNBf35FuUOOrvk1esepJ
+i/GXIk9tTt2xE94428KFeiUXOebUwiWllW9XB7ldw69y7aezOjOhCLv5hsWfwUSf
+34Dm8sLMqtVbTks1YPmPZKG0C72BuYI3TQjnPv6bcqfCFGYgLyqE5DWQQKoWViap
+6wLy6Cdqc3dClNyWlbmCDJ08qSmjbpIi4vw72Lrot9Fni+WOrpGuU+5JlJgu2O4C
+97AI3IOqeV7srZxNf+UALsAx/fcRRnsAjSKhYTzjelrRBXf9XZo=
+=a1E3
 -----END PGP SIGNATURE-----
 
---xqdjpAF87Nc8O3u6rEx5qIuGO5mrXq97E--
+--ag5Mu5Cq7DR4RifbHhabhQUgbCgRq9NUE--
 
