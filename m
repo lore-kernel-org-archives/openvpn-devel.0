@@ -1,7 +1,10 @@
 From: Antonio Quartulli <a@...2181...>
-Date: Thu, 24 Aug 2017 21:33:05 +0800
-Message-Id: <20170824133305.25604-1-a@...2181...>
-Subject: [Openvpn-devel] [PATCH] bash: substitute legacy `` with modern $()
+Date: Thu, 24 Aug 2017 21:38:45 +0800
+Message-Id: <20170824133845.3984-1-a@...2181...>
+In-Reply-To: <20170824133305.25604-1-a@...2181...>
+References: <20170824133305.25604-1-a@...2181...>
+Subject: [Openvpn-devel] [PATCH v2] bash: substitute legacy `` with modern
+ $()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -24,16 +27,27 @@ Substitute them.
 Signed-off-by: Antonio Quartulli <a@...2181...>
 ---
 
+v2: added overlooked occurrence
+
 note: I did not really know how to test this patch.
 
- dev-tools/gen-release-tarballs.sh | 10 +++++-----
+ dev-tools/gen-release-tarballs.sh | 12 ++++++------
  tests/t_cltsrv.sh                 |  6 +++---
- 2 files changed, 8 insertions(+), 8 deletions(-)
+ 2 files changed, 9 insertions(+), 9 deletions(-)
 
 diff --git a/dev-tools/gen-release-tarballs.sh b/dev-tools/gen-release-tarballs.sh
-index f9c620e3..550e5cd2 100755
+index f9c620e3..b4f5edc0 100755
 --- a/dev-tools/gen-release-tarballs.sh
 +++ b/dev-tools/gen-release-tarballs.sh
+@@ -22,7 +22,7 @@ set -u
+ if [ $# -ne 4 ]; then
+     echo "Usage: $0 <remote-name> <tag-name> <sign-key> <dest-dir>"
+     echo ""
+-    echo "   remote-name  -- valid remotes: `git remote | tr \\\n ' '`"
++    echo "   remote-name  -- valid remotes: $(git remote | tr \\\n ' ')"
+     echo "   tag-name     -- An existing release tag"
+     echo "   sign-key     -- PGP key used to sign all files"
+     echo "   dest-dir     -- Where to put the complete set of release tarballs"
 @@ -49,7 +49,7 @@ if [ $? -ne 0 ]; then
  fi
  
