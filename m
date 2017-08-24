@@ -1,13 +1,7 @@
-References: <20170824075312.24801-1-a@...2181...>
 From: Antonio Quartulli <a@...2181...>
-Message-ID: <f9c5ce4e-1527-c1a0-9427-7bfc316df306@...2181...>
-Date: Thu, 24 Aug 2017 15:57:17 +0800
-MIME-Version: 1.0
-In-Reply-To: <20170824075312.24801-1-a@...2181...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="aqoMARwqc8eHdUXd68BeberomtN5OQMbJ"
-Subject: Re: [Openvpn-devel] [PATCH] avoid useless assignment
+Date: Thu, 24 Aug 2017 21:33:05 +0800
+Message-Id: <20170824133305.25604-1-a@...2181...>
+Subject: [Openvpn-devel] [PATCH] bash: substitute legacy `` with modern $()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,81 +10,98 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---aqoMARwqc8eHdUXd68BeberomtN5OQMbJ
-Content-Type: multipart/mixed; boundary="x076waNqdW0vsk0DQawXU478lWcgiIMl0";
- protected-headers="v1"
-From: Antonio Quartulli <a@...2181...>
-To: openvpn-devel@lists.sourceforge.net
-Message-ID: <f9c5ce4e-1527-c1a0-9427-7bfc316df306@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH] avoid useless assignment
-References: <20170824075312.24801-1-a@...2181...>
-In-Reply-To: <20170824075312.24801-1-a@...2181...>
-
---x076waNqdW0vsk0DQawXU478lWcgiIMl0
-Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
+Cc: Antonio Quartulli <a@...2181...>
 
-My effort in writing the commit message has been quite poor.
+The backquotes for command substitution in bash are
+considered old-style in favour of the more modern $() [1].
+Substitute them.
 
-The assignment is useless because 'ret' is re-assigned a few lines later
-without ever being read.
+[1]https://www.gnu.org/software/bash/manual/html_node/Command-Substitution.html#Command-Substitution
 
-Cheers,
+Signed-off-by: Antonio Quartulli <a@...2181...>
+---
 
-On 24/08/17 15:53, Antonio Quartulli wrote:
-> Signed-off-by: Antonio Quartulli <a@...2181...>
-> ---
->  src/openvpn/multi.h | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->=20
-> diff --git a/src/openvpn/multi.h b/src/openvpn/multi.h
-> index 5892ac07..6cdb0110 100644
-> --- a/src/openvpn/multi.h
-> +++ b/src/openvpn/multi.h
-> @@ -633,7 +633,7 @@ multi_process_outgoing_tun(struct multi_context *m, c=
-onst unsigned int mpp_flags
->  static inline bool
->  multi_process_outgoing_link_dowork(struct multi_context *m, struct multi=
-_instance *mi, const unsigned int mpp_flags)
->  {
-> -    bool ret =3D true;
-> +    bool ret;
->      set_prefix(mi);
->      process_outgoing_link(&mi->context);
->      ret =3D multi_process_post(m, mi, mpp_flags);
->=20
+note: I did not really know how to test this patch.
 
---=20
-Antonio Quartulli
+ dev-tools/gen-release-tarballs.sh | 10 +++++-----
+ tests/t_cltsrv.sh                 |  6 +++---
+ 2 files changed, 8 insertions(+), 8 deletions(-)
 
+diff --git a/dev-tools/gen-release-tarballs.sh b/dev-tools/gen-release-tarballs.sh
+index f9c620e3..550e5cd2 100755
+--- a/dev-tools/gen-release-tarballs.sh
++++ b/dev-tools/gen-release-tarballs.sh
+@@ -49,7 +49,7 @@ if [ $? -ne 0 ]; then
+ fi
+ 
+ # Extract the git URL
+-giturl="`git remote get-url $arg_remote_name 2>/dev/null`"
++giturl="$(git remote get-url $arg_remote_name 2>/dev/null)"
+ if [ $? -ne 0 ]; then
+     echo "** ERROR ** Invalid git remote name: $arg_remote_name"
+     exit 2
+@@ -71,7 +71,7 @@ get_filename()
+ {
+     local wildcard="$1"
+ 
+-    res="`find . -maxdepth 1 -type f -name \"$wildcard\" | head -n1 | cut -d/ -f2-`"
++    res="$(find . -maxdepth 1 -type f -name \"$wildcard\" | head -n1 | cut -d/ -f2-)"
+     if [ $? -ne 0 ]; then
+         echo "-- 'find' failed."
+         exit 5
+@@ -88,7 +88,7 @@ copy_files()
+     local fileext="$1"
+     local dest="$2"
+ 
+-    file="`get_filename openvpn-*.*.*.$fileext`"
++    file="$(get_filename openvpn-*.*.*.$fileext)"
+     if [ -z "$file" ]; then
+         echo "** ERROR Failed to find source file"
+         exit 5
+@@ -106,7 +106,7 @@ sign_file()
+     local signkey="$1"
+     local srchfile="$2"
+     local signtype="$3"
+-    local file="`get_filename $srchfile`"
++    local file="$(get_filename $srchfile)"
+ 
+     echo "-- Signing $file ..."
+     case "$signtype" in
+@@ -169,7 +169,7 @@ fi
+ #
+ 
+ # Clone the remote repository
+-workdir="`mktemp -d -p /var/tmp openvpn-build-release-XXXXXX`"
++workdir="$(mktemp -d -p /var/tmp openvpn-build-release-XXXXXX)"
+ cd $workdir
+ echo "-- Working directory: $workdir"
+ echo "-- git clone $giturl"
+diff --git a/tests/t_cltsrv.sh b/tests/t_cltsrv.sh
+index 752251e4..1ab3db3e 100755
+--- a/tests/t_cltsrv.sh
++++ b/tests/t_cltsrv.sh
+@@ -25,14 +25,14 @@ top_builddir="${top_builddir:-..}"
+ trap "rm -f log.$$ log.$$.signal ; trap 0 ; exit 77" 1 2 15
+ trap "rm -f log.$$ log.$$.signal ; exit 1" 0 3
+ addopts=
+-case `uname -s` in
++case $(uname -s) in
+     FreeBSD)
+     # FreeBSD jails map the outgoing IP to the jail IP - we need to
+     # allow the real IP unless we want the test to run forever.
+-    if test "`sysctl 2>/dev/null -n security.jail.jailed`" = 1 \
++    if test "$(sysctl 2>/dev/null -n security.jail.jailed)" = 1 \
+     || ps -ostate= -p $$ | grep -q J; then
+ 	addopts="--float"
+-	if test "x`ifconfig | grep inet`" = x ; then
++	if test "x$(ifconfig | grep inet)" = x ; then
+ 	    echo "###"
+ 	    echo "### To run the test in a FreeBSD jail, you MUST add an IP alias for the jail's IP."
+ 	    echo "###"
+-- 
+2.14.1
 
---x076waNqdW0vsk0DQawXU478lWcgiIMl0--
-
---aqoMARwqc8eHdUXd68BeberomtN5OQMbJ
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEEbd2mMhAXbmSCipS40+HICM1soFAFAlmehuEACgkQ0+HICM1s
-oFBn/w/+LCe1fMnYJS0jwOmyCo7SSf4iYvx/4ZrhdjiokwNFRpts4VGVwr7m+dZd
-6BrMbsaZU0uCE4ysofBDlavNFl3eZqFBMGJSsLQGBNxp1r+1TAYGcqlIXjSjyB3h
-606kUSMwyZIM6py3JvR07TkC/6vyHFpwrFG/OnT6MmlPaq8KWZKsiJZ2Xy8ertzJ
-NumJfzSkwKq0oWRjjcAPoUk0mDpDxM7Bjozj7ECSKkmxps8I2n+SBLd6MBLI/HW+
-pxBY8LBOO/dDq7mwUtJf7ncnhDyu4mQkkUTGZdbRwFtsZCiAztHs8dFc3/O9O1+m
-JySU9Fr+y/B+QbR2W0h706iKpcX8uXms1XrnlEsXkD+SSMm8+BCczWNKxHaw3Xkj
-oPp51pAcgQdqpx7TRisKBE2YcLaNADVfcTvhaDrHRvc0lOJpa51G30Vky3IId+y5
-FDkMm7u8IOPCNY1cASY1ZbL246FkJyQe2T/NseEHwPSTVU57eelaYbSrLdPW3If5
-a3xuR6knyNimQzhWsfR4J3ZCtyRzXJmdJeOAQWnjv46ObkRv+ChCmYr2VhHIVLUa
-fyKlhbu+y6R7GGqJp9Gd1+iud1V1jyPm7h8+l+Kk8UyEdZmbs+BdguBvkqxCnw9M
-AcjoNk44I7qh1gwFd5FDYT/mchMFfq0W+hJB4dANrbP+nTk4fss=
-=Wz5w
------END PGP SIGNATURE-----
-
---aqoMARwqc8eHdUXd68BeberomtN5OQMbJ--
 
