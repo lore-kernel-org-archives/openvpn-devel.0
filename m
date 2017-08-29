@@ -1,13 +1,18 @@
-Date: Tue, 29 Aug 2017 21:03:53 +0200
+Date: Tue, 29 Aug 2017 21:16:38 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20170829190353.GX70062@...1296...>
-References: <201708291322.v7TDMcY3029206@...2300...>
+Message-ID: <20170829191638.GZ70062@...1296...>
+References: <20170824133305.25604-1-a@...2181...>
+ <20170824191848.GH70062@...1296...>
+ <011fb50e-4b84-6f2c-c730-dc419b840f6f@...2080...>
+ <f9727fce-bda2-e21d-c944-22b5b28f7629@...2181...>
+ <6e449f4b-271a-f738-7ee9-f9120ed0e714@...1147...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="uwJuRjKj6RbLtb4h"
+ protocol="application/pgp-signature"; boundary="XLbFcQSK8m6qgUdZ"
 Content-Disposition: inline
-In-Reply-To: <201708291322.v7TDMcY3029206@...2300...>
-Subject: Re: [Openvpn-devel] Solaris 11: t_lpback.sh coredump on AES-GCM
+In-Reply-To: <6e449f4b-271a-f738-7ee9-f9120ed0e714@...1147...>
+Subject: Re: [Openvpn-devel] [PATCH] bash: substitute legacy `` with modern
+ $()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,49 +21,36 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Casper.Dik@...2299...
-Cc: openvpn-devel@lists.sourceforge.net
+To: Jan Just Keijser <janjust@...1147...>
+Cc: Antonio Quartulli <a@...2181...>, David Sommerseth <openvpn@...2080...>, openvpn-devel@lists.sourceforge.net
 
---uwJuRjKj6RbLtb4h
+--XLbFcQSK8m6qgUdZ
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
-Hi Casper,
+Hi,
 
-On Tue, Aug 29, 2017 at 03:22:38PM +0200, Casper.Dik@...2299... wrote:
-> I recently run into the same problem as Jens Neuhalfen has reported
-> more than a year ago in this mailing list.
+On Tue, Aug 29, 2017 at 06:19:21PM +0200, Jan Just Keijser wrote:
+> my biggest complaint about the so-called modern $() notation is that it=20
+> clashes/confuses the heck out of me when using proper variable usage,=20
+> e.g. I find
+>    output=3D`${SOME_COMMAND} ${SOME_ARGS}`
+> much better readable than
+>    output=3D$(${SOME_COMMAND} ${SOME_ARGS})
 >=20
-> As I was somewhat confused why the shipped Solaris openssl version failed=
-,=20
-> I looked into that issue as I also wanted to run a recent=20
-> openvpn on Solaris 11.x.
-
-Oh.  That's the bit I missed - I tried reproducing it with various
-openssl versions, but my OpenSolaris test VM is so old that the *shipped*
-version didn't have GCM support yet...
-
-> After I figured out where we went wrong, I filed:
+> especially since you are allowed to **NEST** $() strings, IIRC. Things li=
+ke
 >=20
-> 26336744 Solaris specific cleanup code breaks gcm_aes for, e.g., openvpn
+>    output=3D$(${cmd} $(${cmd2}))
 >=20
-> which has now been fixed in oracle solaris-userland on git hub
->=20
-> https://github.com/oracle/solaris-userland/tree/master/components/openssl
+> work, and in my view, thank god that you cannot do that using backtics ;)
 
-Cool, thanks a lot!
+well, yes, what you say :-)=20
 
-> It cannot say exactly when it will be in Solaris 11.3 SRU (patch) release.
->=20
-> Current workaround is disabling AES-GCM for openvpn but that should not b=
-e=20
-> needed in the future.
-
-Is there a way to reliably detect this issue from a test program (or by
-looking at system versions, like "uname")?  It might be worth adding a=20
-configure test so users won't run into it ("AES-GCM disabled due to=20
-bug 26336744 in Solaris OpenSSL").
+(but I thought this was just my old age showing... having learned shell
+scripting on a SCO Unix box, with only a *true* bourne shell installed,
+no korn shell, no bash...)
 
 gert
 --=20
@@ -68,22 +60,22 @@ rt/
 Gert Doering - Munich, Germany                             gert@...1296...
 fax: +49-89-35655025                        gert@...1297...
 
---uwJuRjKj6RbLtb4h
+--XLbFcQSK8m6qgUdZ
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJZpbqYAAoJEB2Cnv7KVigSqkwL/RiYYFK9TZSZfKZXvBlh3Cyu
-jNhptsK6lgqXZf3Bo2Wz1KbFdAzpde1HBklDU4Cwo+AdlpDmoK3u85/Nf2BaoSos
-UfnP8wwT0tJVH2W3CpEzbgcUm0JQhhoo2a4i1quF6h+/toKDuYDuI3kuQGy7dInB
-bouCVpoEs8xwE0wFt8vr4cxZwvuMWUxQF47JtRGfQHKS0gWn6owz2DArK8s6Xpt/
-c6p9ahAztQJTOpJPsyPeYVH+BuPj2YATFhbm5Hv2lF8LF6spjJ4ab6nUaP5hKpCB
-4vu0wsL7QTZMD+Z+PbOnzMLu4z617XsGF1dFpH72B5TREsz5LNf1GftBkcvITzxY
-ruBwvmMORLlZcORpfNNnqTh/j4eFS1CDH/h7t79FkYk/9n9jwkExw0FmrU8OL08C
-eFNyrtBsR1U+/A6msqV2Gj/irvyuaXeyKFvIK8W/Hi8dfszFCkQCyC2g4Bn9QRXz
-bogd1Rq38K0FtLlhnIH5WUw6nDPqkAjZQzXtqnlv/A==
-=/29j
+iQGcBAEBAgAGBQJZpb2VAAoJEB2Cnv7KVigSPVoMAITqb3bRlY81JOG9omVSw34e
+oilv0LnUleZy9AVX1X67B98amTBl7zlYTEmX2hoI33LZJDIAGkjBWxHvFDcKe5Db
+fZLmKM6/dPNlFN5Pp6tpgZ6xLariZX/T3O/kFhIJQd9pDEX/xQ7hTByACnmuxos9
+HUztcYchtL+13usXXhGHIUBFMqE/Gr5cB92wtdW6CSBP+kgbCTTJCJiCxm42d4nT
+TIoZECVgkLZX1jiGaSieaGaMlisiW1UicTifa55UlW/ser1XSFenhfKHo1PsOFxL
+b/GDBEMGzq3/VAwcE79+q5mtMRc7fPPJeJgSwTxrutKJF6JCPaLtyxriRI44W2Px
+xPX1ZVBCDZ9W2rdL0LXTkfpItyv18JAap5pKPcGcwRSNNSx9K+5dK7pktbUbBeXW
+OVNZo6Wsa4kLq6djp0e6sFrsGEuAEYdcYwha4EtNoyloO9cxOE/mSqoZoU6j07mf
+znVjrF30NeXoJ6JaVhIcVKLi3hQuV7vH10o/v+N+jA==
+=8KQQ
 -----END PGP SIGNATURE-----
 
---uwJuRjKj6RbLtb4h--
+--XLbFcQSK8m6qgUdZ--
 
