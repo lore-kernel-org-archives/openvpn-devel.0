@@ -1,14 +1,13 @@
-References: <20170824133305.25604-1-a@...2181...>
- <20170824191848.GH70062@...1296...>
- <011fb50e-4b84-6f2c-c730-dc419b840f6f@...2080...>
- <f9727fce-bda2-e21d-c944-22b5b28f7629@...2181...>
-From: Jan Just Keijser <janjust@...1147...>
-Message-ID: <6e449f4b-271a-f738-7ee9-f9120ed0e714@...1147...>
-Date: Tue, 29 Aug 2017 18:19:21 +0200
+Date: Tue, 29 Aug 2017 21:03:53 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20170829190353.GX70062@...1296...>
+References: <201708291322.v7TDMcY3029206@...2300...>
 MIME-Version: 1.0
-In-Reply-To: <f9727fce-bda2-e21d-c944-22b5b28f7629@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH] bash: substitute legacy `` with modern
- $()
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="uwJuRjKj6RbLtb4h"
+Content-Disposition: inline
+In-Reply-To: <201708291322.v7TDMcY3029206@...2300...>
+Subject: Re: [Openvpn-devel] Solaris 11: t_lpback.sh coredump on AES-GCM
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,50 +16,74 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
-To: Antonio Quartulli <a@...2181...>, David Sommerseth <openvpn@...2080...>
+To: Casper.Dik@...2299...
 Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
+--uwJuRjKj6RbLtb4h
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-On 25/08/17 03:41, Antonio Quartulli wrote:
->
-> On 25/08/17 04:21, David Sommerseth wrote:
->> On 24/08/17 21:18, Gert Doering wrote:
->>> (gen-release-tarballs.sh only needs to work on FreeBSD and Linux, and
->>> FreeBSD's /bin/sh is sufficiently modern so so it's likely to work
->>>   - but the test scripts need to run robustly everywhere a user builds,
->>> so never assume "because bash says so!" is a way anywhere but into worlds
->>> of pain.  And yes, we've been there before :-) )
->> And to avoid style confusions ... as long as we can avoid having "one
->> style" on the test scripts and "another style" on the dev-tools scripts,
->> that will be easier to review and maintain.
->>
->> We can have more slack in dev-tools, but if we deviate, then we need to
->> properly document it so we won't forget why.
-> I also think it is a bad idea to have different styles. If we have to
-> agree on something, it should be valid for every file of that type.
->
-> Let's postpone this for when we'll have tested various platforms.
->
->
-my biggest complaint about the so-called modern $() notation is that it 
-clashes/confuses the heck out of me when using proper variable usage, 
-e.g. I find
-   output=`${SOME_COMMAND} ${SOME_ARGS}`
-much better readable than
-   output=$(${SOME_COMMAND} ${SOME_ARGS})
+Hi Casper,
 
-especially since you are allowed to **NEST** $() strings, IIRC. Things like
+On Tue, Aug 29, 2017 at 03:22:38PM +0200, Casper.Dik@...2299... wrote:
+> I recently run into the same problem as Jens Neuhalfen has reported
+> more than a year ago in this mailing list.
+>=20
+> As I was somewhat confused why the shipped Solaris openssl version failed=
+,=20
+> I looked into that issue as I also wanted to run a recent=20
+> openvpn on Solaris 11.x.
 
-   output=$(${cmd} $(${cmd2}))
+Oh.  That's the bit I missed - I tried reproducing it with various
+openssl versions, but my OpenSolaris test VM is so old that the *shipped*
+version didn't have GCM support yet...
 
-work, and in my view, thank god that you cannot do that using backtics ;)
+> After I figured out where we went wrong, I filed:
+>=20
+> 26336744 Solaris specific cleanup code breaks gcm_aes for, e.g., openvpn
+>=20
+> which has now been fixed in oracle solaris-userland on git hub
+>=20
+> https://github.com/oracle/solaris-userland/tree/master/components/openssl
 
-JM2CW,
+Cool, thanks a lot!
 
-JJK
+> It cannot say exactly when it will be in Solaris 11.3 SRU (patch) release.
+>=20
+> Current workaround is disabling AES-GCM for openvpn but that should not b=
+e=20
+> needed in the future.
 
+Is there a way to reliably detect this issue from a test program (or by
+looking at system versions, like "uname")?  It might be worth adding a=20
+configure test so users won't run into it ("AES-GCM disabled due to=20
+bug 26336744 in Solaris OpenSSL").
 
+gert
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--uwJuRjKj6RbLtb4h
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJZpbqYAAoJEB2Cnv7KVigSqkwL/RiYYFK9TZSZfKZXvBlh3Cyu
+jNhptsK6lgqXZf3Bo2Wz1KbFdAzpde1HBklDU4Cwo+AdlpDmoK3u85/Nf2BaoSos
+UfnP8wwT0tJVH2W3CpEzbgcUm0JQhhoo2a4i1quF6h+/toKDuYDuI3kuQGy7dInB
+bouCVpoEs8xwE0wFt8vr4cxZwvuMWUxQF47JtRGfQHKS0gWn6owz2DArK8s6Xpt/
+c6p9ahAztQJTOpJPsyPeYVH+BuPj2YATFhbm5Hv2lF8LF6spjJ4ab6nUaP5hKpCB
+4vu0wsL7QTZMD+Z+PbOnzMLu4z617XsGF1dFpH72B5TREsz5LNf1GftBkcvITzxY
+ruBwvmMORLlZcORpfNNnqTh/j4eFS1CDH/h7t79FkYk/9n9jwkExw0FmrU8OL08C
+eFNyrtBsR1U+/A6msqV2Gj/irvyuaXeyKFvIK8W/Hi8dfszFCkQCyC2g4Bn9QRXz
+bogd1Rq38K0FtLlhnIH5WUw6nDPqkAjZQzXtqnlv/A==
+=/29j
+-----END PGP SIGNATURE-----
+
+--uwJuRjKj6RbLtb4h--
 
