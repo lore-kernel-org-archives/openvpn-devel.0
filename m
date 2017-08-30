@@ -1,11 +1,12 @@
-MIME-Version: 1.0
+From: Steven Haigh <netwiz@...2277...>
+Date: Wed, 30 Aug 2017 20:23:20 +1000
+Message-ID: <8647024.clnTTMXkck@...2289...>
 In-Reply-To: <4777209f-c480-0404-91c6-cf1bd3b3f507@...1227...>
 References: <CAEycoiUeA+zbn3vT9t3F3Df6yxsKp8HmAdiaHCMmLV1ew+d8Xw@...278...>
  <4777209f-c480-0404-91c6-cf1bd3b3f507@...1227...>
-From: wang yu <wangyu.cn@...277...>
-Date: Wed, 30 Aug 2017 02:53:18 -0700
-Message-ID: <CAEycoiVZ+Mdfyr6k9cQt79e46Ts-zdW7B8L=dz7T2qVBrs1=bw@...278...>
-Content-Type: multipart/alternative; boundary="001a114096465aa27a0557f57f9d"
+MIME-Version: 1.0
+Content-Type: multipart/signed; boundary="nextPart1657499.O1gDSDKrI5";
+ micalg="pgp-sha256"; protocol="application/pgp-signature"
 Subject: Re: [Openvpn-devel] Please take a second look at "#2 Improve
  TCP-over-TCP performance"
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -16,184 +17,110 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-users@lists.sourceforge.net, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---001a114096465aa27a0557f57f9d
+--nextPart1657499.O1gDSDKrI5
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Hi,Arne:
-
-Got it.Thank you very much.
-
-On Tue, Aug 29, 2017 at 6:49 PM, Arne Schwabe <arne@...1227...> wrote:
-
+On Wednesday, 30 August 2017 11:49:33 AM AEST Arne Schwabe wrote:
 > Am 29.08.17 um 22:53 schrieb wang yu:
 > > URL  https://community.openvpn.net/openvpn/ticket/2
 > > <https://community.openvpn.net/openvpn/ticket/2>
-> >
+> >=20
 > > As I mentioned,the custom TCP protocol(I called FakeTCP) bypasses the
 > > TCP over TCP performance issue.Its helpful when UDP is not
 > > avaliable(being blocked or being throttled or not well supported by NAT
 > > devices).
-> >
+> >=20
 > > This was your reply:
 > >>We are not going to implement it, though. OpenVPN over TCP is needed
+> >>
 > > when you have nasty firewalls out there that do sequence number checking
 > > and all that - and then your FakeTCP is not going to work either. If you
 > > have no firewalls in the way, OpenVPN over UDP works perfectly well
 > > (including "through NAT").
-> >
+> >=20
 > > Sorry,I cant get the logic behind the sentence.
-> >
+> >=20
 > > UDP not avaliable is a much more common circumstance,while a nasty
 > > firewall which tracks everything of TCP is just a rare circumstance.
-> >
+> >=20
 > > This method solves most of the troubles when UDP is not avaliable just
 > > except the nasty-firewall circumstance you mentioned.
-> >
+> >=20
 > > It seems like you rejected a commonly workable feature for a rare
 > > circumstance.
-> >
+> >=20
 > > I tried to have a further discussion with you by another reply in the
 > > Tracker,but you closed the issue without a word.
-> >
+> >=20
 > > I am okay wheter or not the feature can be implemented.I just hope its
 > > well discussed and there is a convincing reason if it cant
 > > be implemented.If this feature is acceptable I can make patches.
-> >
+> >=20
 > > If you dont have time to discuss with me,plz leave the ticket open for a
 > > few days,so that I can possibly get some more convincing feedback from
 > > others.
-> >
->
+>=20
 > While a fake TCP as UDP sounds like a nice idea, OpenVPN itself is
 > probably the wrong place to implement it. It would mean to implement a
 > TCP/IP stack in userspace, something that would complicate OpenVPN
 > without much gain. Much better would be to teach the kernel to speak
 > this fake TCP UDP protocol so openvpn can just set the socket options on
 > its tcp socket to enable this special mode.
->
+>=20
 > Take a look at Multipath TCP to get an idea what implementing such a
 > fake TCP might entail. Also OpenVSwitch implemts a STT [1], a fake TCP
 > protocol but for a very different reason.
->
+>=20
 > [1]
-> https://networkheresy.com/2012/03/04/network-virtualization-encapsulation-
-> and-stateless-tcp-transport-stt/
->
+> https://networkheresy.com/2012/03/04/network-virtualization-encapsulation=
+-an
+> d-stateless-tcp-transport-stt/
+>=20
 > In sum and I think I speak for all us, we are not against such a FakeTCP
 > protocol but it should be
->
+>=20
 > a) implemented outside openvpn (the kernel)
 > b) nobody of the OpenVPN core team will implement it
->
+>=20
 > This protocol will probably help only if people just block all UDP and
 > allowed a few TCP protocol. You won't fool a real firewall that checks
 > TCP with it.
->
-> Arne
->
 
---001a114096465aa27a0557f57f9d
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Something like this?
 
-<div dir=3D"ltr"><span style=3D"font-size:12.8px">Hi,Arne:</span><div style=
-=3D"font-size:12.8px"><br><div>Got it.Thank you very much.</div></div></div=
-><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">On Tue, Aug 29, =
-2017 at 6:49 PM, Arne Schwabe <span dir=3D"ltr">&lt;<a href=3D"mailto:arne@=
-...1227..." target=3D"_blank">arne@...1227...</a>&gt;</span> wrote:<br><blo=
-ckquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #c=
-cc solid;padding-left:1ex">Am 29.08.17 um 22:53 schrieb wang yu:<br>
-&gt; URL =C2=A0<a href=3D"https://community.openvpn.net/openvpn/ticket/2" r=
-el=3D"noreferrer" target=3D"_blank">https://community.openvpn.<wbr>net/open=
-vpn/ticket/2</a><br>
-<div><div class=3D"h5">&gt; &lt;<a href=3D"https://community.openvpn.net/op=
-envpn/ticket/2" rel=3D"noreferrer" target=3D"_blank">https://community.open=
-vpn.<wbr>net/openvpn/ticket/2</a>&gt;<br>
-&gt;<br>
-&gt; As I mentioned,the custom TCP protocol(I called FakeTCP)=C2=A0bypasses=
- the<br>
-&gt; TCP over TCP performance issue.Its helpful when UDP is not<br>
-&gt; avaliable(being=C2=A0blocked or being=C2=A0throttled or not well suppo=
-rted by NAT<br>
-&gt; devices).<br>
-&gt;<br>
-&gt; This was your reply:<br>
-&gt;&gt;We are not going to implement it, though. OpenVPN over TCP is neede=
-d<br>
-&gt; when you have nasty firewalls out there that do sequence number checki=
-ng<br>
-&gt; and all that - and then your FakeTCP is not going to work either. If y=
-ou<br>
-&gt; have no firewalls in the way, OpenVPN over UDP works perfectly well<br>
-&gt; (including &quot;through NAT&quot;).<br>
-&gt;<br>
-&gt; Sorry,I cant get the logic behind the sentence.<br>
-&gt;<br>
-&gt; UDP not avaliable is a much more common=C2=A0circumstance,while a=C2=
-=A0nasty<br>
-&gt; firewall which tracks everything of TCP is just a rare=C2=A0circumstan=
-ce.<br>
-&gt;<br>
-&gt; This method solves most of the troubles when UDP is not avaliable just=
-<br>
-&gt; except the nasty-firewall=C2=A0circumstance you mentioned.<br>
-&gt;<br>
-&gt; It seems like you rejected a=C2=A0commonly workable feature for a rare=
-<br>
-&gt; circumstance.<br>
-&gt;<br>
-&gt; I tried to have a further discussion with you by another reply in the<=
-br>
-&gt; Tracker,but you closed the issue without a word.<br>
-&gt;<br>
-&gt; I am okay=C2=A0wheter or not=C2=A0the feature can be implemented.I jus=
-t hope its<br>
-&gt; well=C2=A0discussed and=C2=A0there is a convincing reason if it cant<b=
-r>
-&gt; be=C2=A0implemented.If this feature is acceptable I can make patches.<=
-br>
-&gt;<br>
-&gt; If you dont have time to discuss with me,plz leave the ticket open for=
- a<br>
-&gt; few days,so that I can possibly=C2=A0get some more=C2=A0convincing=C2=
-=A0feedback from<br>
-&gt; others.<br>
-&gt;<br>
-<br>
-</div></div>While a fake TCP as UDP sounds like a nice idea, OpenVPN itself=
- is<br>
-probably the wrong place to implement it. It would mean to implement a<br>
-TCP/IP stack in userspace, something that would complicate OpenVPN<br>
-without much gain. Much better would be to teach the kernel to speak<br>
-this fake TCP UDP protocol so openvpn can just set the socket options on<br>
-its tcp socket to enable this special mode.<br>
-<br>
-Take a look at Multipath TCP to get an idea what implementing such a<br>
-fake TCP might entail. Also OpenVSwitch implemts a STT [1], a fake TCP<br>
-protocol but for a very different reason.<br>
-<br>
-[1]<br>
-<a href=3D"https://networkheresy.com/2012/03/04/network-virtualization-enca=
-psulation-and-stateless-tcp-transport-stt/" rel=3D"noreferrer" target=3D"_b=
-lank">https://networkheresy.com/<wbr>2012/03/04/network-<wbr>virtualization=
--encapsulation-<wbr>and-stateless-tcp-transport-<wbr>stt/</a><br>
-<br>
-In sum and I think I speak for all us, we are not against such a FakeTCP<br>
-protocol but it should be<br>
-<br>
-a) implemented outside openvpn (the kernel)<br>
-b) nobody of the OpenVPN core team will implement it<br>
-<br>
-This protocol will probably help only if people just block all UDP and<br>
-allowed a few TCP protocol. You won&#39;t fool a real firewall that checks<=
-br>
-TCP with it.<br>
-<span class=3D"HOEnZb"><font color=3D"#888888"><br>
-Arne<br>
-</font></span></blockquote></div><br></div>
+https://lwn.net/Articles/614348/
 
---001a114096465aa27a0557f57f9d--
+--=20
+Steven Haigh
+
+=F0=9F=93=A7 netwiz@...2277...       =F0=9F=92=BB http://www.crc.id.au
+=F0=9F=93=9E +61 (3) 9001 6090    =F0=9F=93=B1 0412 935 897=
+
+--nextPart1657499.O1gDSDKrI5
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part.
+Content-Transfer-Encoding: 7Bit
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEFHf0gfgNrH6ofcYGQa811Xp9MdwFAlmmkhgACgkQQa811Xp9
+Mdz27Q//QMSxY4Q1PjA2w6u95OLOZUGqq6BAaAfVROAb1Cmc3dCOuMM7NDfFDHGN
+NYUPZm+Eos/NHasQVIl68Nu/c4Q/sTc9Qbx4RbkQUEb0weCfK2v5GpFkjVdq1zQ0
+oxEzIugeK+waTv3wBm4pyBhZNE2nrs9UAEdv3MujmY2ggXeLcqtrm5H5j/cKLXpx
+9OUDRAmh5vvRY/X6VL+RQhyeOtAWIrmNTDeJ3fU+/Q/S0pwOgkMQNeJDKjerhrXe
+eZ9n66I6DqLmFMz+1SrX4lbKa1fu2xwU6EXXjokXxAO0b0LfSWoSJs0iUpvFTBIG
+M+mZ+6O+jrcwKAWlsZb5YvvRGnCsCi4JRixwWVMUo9i6EIFIDI+MA1qeWuIUolq4
+pOOU+Wtc3jDrik8PRBxE3JwAGnyOQUHqK8QmSXmLt7pAt+4Ij8ANMHINpR8vP7vm
+uIXUseEVeVVIbacJXFJuQUO/NCwc3FaZOy1jZbNsItV1qsM/yCBv59s6gtPrX0MS
+UsvRPFEFATI37D/2elKK4cL703ENSjrn1Ot+3oSAFFcxgXrjvE9JMZDVhiL7qKhQ
+m6fxtr1u+eXiAZ1VFLaGp2Lx2qH9PG0dVh24quzS3QSUvCD4FZVlybAfeln7Nidw
+bplSa41d7VfJrzhJVOo2rv6psKEeXmRm0mhK9+JU0nqRImUxp4A=
+=2B44
+-----END PGP SIGNATURE-----
+
+--nextPart1657499.O1gDSDKrI5--
+
 
