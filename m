@@ -1,13 +1,13 @@
-Message-Id: <201708310611.v7V6Bj1f010862@...2300...>
-From: Casper.Dik@...2299...
-In-Reply-To: <ed6292e5-2877-7ca8-bf7b-80fe8e7da72e@...1227...> 
-References: <201708291322.v7TDMcY3029206@...2300...>
- <20170829190353.GX70062@...1296...>
- <201708300839.v7U8dklY019715@...2300...>
- <ed6292e5-2877-7ca8-bf7b-80fe8e7da72e@...1227...> 
-Mime-Version: 1.0
-Date: Thu, 31 Aug 2017 08:11:45 +0200
-Subject: Re: [Openvpn-devel] Solaris 11: t_lpback.sh coredump on AES-GCM
+References: <3069bcad-548c-4f90-91ce-b8950095bfd9@...2080...>
+ <20170821210933.11460-1-coroner@...2290...>
+From: Steffan Karger <steffan@...1856...>
+Message-ID: <01ea7971-ae7a-573b-8845-30b04b0b8112@...1856...>
+Date: Thu, 31 Aug 2017 23:02:25 +0200
+MIME-Version: 1.0
+In-Reply-To: <20170821210933.11460-1-coroner@...2290...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH] OpenSSL: Always set
+ SSL_OP_CIPHER_SERVER_PREFERENCE flag
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,42 +16,43 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Arne Schwabe <arne@...1227...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
+Hi,
 
->Am 30.08.17 um 10:39 schrieb Casper.Dik@...2299...:
->> 
->> 
->>>> After I figured out where we went wrong, I filed:
->>>> 26336744 Solaris specific cleanup code breaks gcm_aes for, e.g., openvpn
->>>> which has now been fixed in oracle solaris-userland on git hub
->>>> https://github.com/oracle/solaris-userland/tree/master/components/openssl
->>>
->>> Cool, thanks a lot!
->>>
->>>> It cannot say exactly when it will be in Solaris 11.3 SRU (patch) release.
->>>> Current workaround is disabling AES-GCM for openvpn but that should not be
->>>> needed in the future.
->>>
->>> Is there a way to reliably detect this issue from a test program (or by
->>> looking at system versions, like "uname")?  It might be worth adding a
->>> configure test so users won't run into it ("AES-GCM disabled due to
->>> bug 26336744 in Solaris OpenSSL").
->> 
->> Well, t_lpback would fail but that is late as then you would have 
->> configured and compiled openvpn.
->>
->
->Does it fail reliable? If yes we could just run a quick version of
->failing and if this fails disable AES support, especially disabling
->cipher negoiation.
+On 21-08-17 23:09, Szilárd Pfeiffer wrote:
+> * safe bet to say that server admins are better at updating their configs
+>   than client users are and if client do want to restrict their ciphers,
+>   they should simply evict the ciphers they don't want from their cipher
+>   suite
+> * mbed TLS and OpenSSL behave more similar with the
+>   SSL_OP_CIPHER_SERVER_PREFERENCE flag
+> ---
+>  src/openvpn/ssl_openssl.c | 3 +++
+>  1 file changed, 3 insertions(+)
+> 
+> diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+> index 597c62d8..bb8098cc 100644
+> --- a/src/openvpn/ssl_openssl.c
+> +++ b/src/openvpn/ssl_openssl.c
+> @@ -252,6 +252,9 @@ tls_ctx_set_options(struct tls_root_ctx *ctx, unsigned int ssl_flags)
+>          {
+>              sslopt |= SSL_OP_NO_TLSv1_2;
+>          }
+> +#endif
+> +#ifdef SSL_OP_CIPHER_SERVER_PREFERENCE
+> +       sslopt |= SSL_OP_CIPHER_SERVER_PREFERENCE;
+>  #endif
+>          sslopt |= SSL_OP_NO_COMPRESSION;
+>          SSL_CTX_set_options(ctx->ctx, sslopt);
+> 
 
+The indent is one space short, but that can be fixed when applying the
+patch.
 
-Yes, very reliable (NULL pointer dereference)
+Other that that, this looks good.  ACK.
 
-Casper
-
+-Steffan
 
