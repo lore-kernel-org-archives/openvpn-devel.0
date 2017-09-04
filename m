@@ -1,13 +1,13 @@
-References: <e1f20a18-e44f-b282-bc9f-52a8aeaaac68@...515...>
- <36F1E9D9-EE3F-47AE-80EF-9DE4C86C16A8@...1286...>
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <70793078-8852-02ba-aeeb-cee7913736f9@...515...>
-Date: Mon, 4 Sep 2017 14:30:12 +0300
+References: <01ea7971-ae7a-573b-8845-30b04b0b8112@...1856...>
+ <20170904081012.1975-1-coroner@...2290...>
+From: Steffan Karger <steffan.karger@...1435...>
+Message-ID: <2d289af9-669c-60f5-2e52-b3a42fa5da70@...1435...>
+Date: Mon, 4 Sep 2017 14:52:56 +0200
 MIME-Version: 1.0
-In-Reply-To: <36F1E9D9-EE3F-47AE-80EF-9DE4C86C16A8@...1286...>
+In-Reply-To: <20170904081012.1975-1-coroner@...2290...>
 Content-Language: en-US
-Subject: Re: [Openvpn-devel] Reviewer for French openvpn-gui localization
- patch?
+Subject: Re: [Openvpn-devel] [PATCH] OpenSSL: Always set
+ SSL_OP_CIPHER_SERVER_PREFERENCE flag
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,47 +18,39 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
-To: Eric Crist <ecrist@...1286...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
-Ping :). The translator was asking about (your) input.
-
-Samuli
-
-On 28/08/2017 16:30, Eric Crist wrote:
-> I have a few comments I'll share later when I'm back home. This mostly
-> looks OK, but can be improved with a few clarifications and additions.=C2=
-=A0
+On 04-09-17 10:10, coroner@...2290... wrote:
+> From: Szil=C3=A1rd Pfeiffer <coroner@...2290...>
 >=20
-> Eric Crist
+> * safe bet to say that server admins are better at updating their configs
+>   than client users are and if client do want to restrict their ciphers,
+>   they should simply evict the ciphers they don't want from their cipher
+>   suite
+> * mbed TLS and OpenSSL behave more similar with the
+>   SSL_OP_CIPHER_SERVER_PREFERENCE flag
+> ---
+>  src/openvpn/ssl_openssl.c | 3 +++
+>  1 file changed, 3 insertions(+)
 >=20
-> On Aug 28, 2017, at 7:08 AM, Samuli Sepp=C3=A4nen <samuli@...515...
-> <mailto:samuli@...515...>> wrote:
+> diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+> index 597c62d8..92a662b5 100644
+> --- a/src/openvpn/ssl_openssl.c
+> +++ b/src/openvpn/ssl_openssl.c
+> @@ -252,6 +252,9 @@ tls_ctx_set_options(struct tls_root_ctx *ctx, unsigne=
+d int ssl_flags)
+>          {
+>              sslopt |=3D SSL_OP_NO_TLSv1_2;
+>          }
+> +#endif
+> +#ifdef SSL_OP_CIPHER_SERVER_PREFERENCE
+> +        sslopt |=3D SSL_OP_CIPHER_SERVER_PREFERENCE;
+>  #endif
+>          sslopt |=3D SSL_OP_NO_COMPRESSION;
+>          SSL_CTX_set_options(ctx->ctx, sslopt);
 >=20
->> Hi,
->>
->> Could a French-speaker review this openvpn-gui pull request?
->>
->> <https://github.com/OpenVPN/openvpn-gui/pull/184/files>
->>
->> It would be good to have these changes in the next OpenVPN GUI version.
->>
->> --=20
->> Samuli Sepp=C3=A4nen
->> Community Manager
->> OpenVPN Technologies, Inc
->>
->> irc freenode net: mattock
->>
->> ------------------------------------------------------------------------=
-------
->> Check out the vibrant tech community on one of the world's most
->> engaging tech sites, Slashdot.org <http://Slashdot.org>!
->> http://sdm.link/slashdot
->> _______________________________________________
->> Openvpn-devel mailing list
->> Openvpn-devel@lists.sourceforge.net
->> <mailto:Openvpn-devel@lists.sourceforge.net>
->> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
+ACK
+
+-Steffan
 
