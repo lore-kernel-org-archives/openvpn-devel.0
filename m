@@ -1,10 +1,10 @@
 From: David Sommerseth <davids@...515...>
-Date: Thu,  7 Sep 2017 01:09:45 +0200
-Message-Id: <20170906230945.23592-1-davids@...515...>
-In-Reply-To: <20170819203735.8681-1-fragmentux@...277...>
-References: <20170819203735.8681-1-fragmentux@...277...>
-Subject: Re: [Openvpn-devel] [PATCH applied] man: Corrections to
- doc/openvpn.8
+Date: Thu,  7 Sep 2017 01:10:19 +0200
+Message-Id: <20170906231019.23767-1-davids@...515...>
+In-Reply-To: <1503220744-5569-1-git-send-email-steffan@...1856...>
+References: <1503220744-5569-1-git-send-email-steffan@...1856...>
+Subject: Re: [Openvpn-devel] [PATCH applied] travis: reorder matrix to speed
+ up build
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,35 +15,25 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: fragmentux@...277...
+To: steffan@...1856...
 Cc: openvpn-devel@lists.sourceforge.net
 
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA512
 
-ACK.
-
-Thanks a lot for putting efforts into improving this.  It will for
-sure make various distribution packagers happy, as this should remove
-several potential complaints from lint/sanity checkers.  Plus it
-fixes a glaring and ugly typo for --verify-x509-name.
-
-I did a quick on-the-fly update, changing the Copyright year 2010
-to 2017.
-
 Your patch has been applied to the following branches
 
-commit 510c8ade804566868a1e0aa4e046a69e576f4478  (master)
-commit b437bf1c0f60cc5e42d70334bde83a2f9e09be88  (release/2.4)
-Author: Richard Bonhomme
-Date:   Sat Aug 19 21:37:35 2017 +0100
+commit e0a6afa12ea14685d0497ab27453ccc2b09e6e1f  (master)
+commit cac73d4b93e14f3bd5a1ed11b33f73adb29507a3  (release/2.4)
+Author: Steffan Karger
+Date:   Sun Aug 20 11:19:04 2017 +0200
 
-     man: Corrections to doc/openvpn.8
+     travis: reorder matrix to speed up build
 
-     Signed-off-by: Richard Bonhomme <fragmentux@...277...>
-     Acked-by: David Sommerseth <davids@...515...>
-     Message-Id: <20170819203735.8681-1-fragmentux@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg15297.html
+     Signed-off-by: Steffan Karger <steffan@...1856...>
+     Acked-by: Antonio Quartulli <a@...2181...>
+     Message-Id: <1503220744-5569-1-git-send-email-steffan@...1856...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg15302.html
      Signed-off-by: David Sommerseth <davids@...515...>
 
 
@@ -55,18 +45,18 @@ David Sommerseth
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBCgAGBQJZsIA1AAoJEIbPlEyWcf3y/M4P/30R8DzRSt5GgblnijteLwa6
-EWVxv5G94DF3e2XBIT3qkL0JaReaB3hPTh9yQGQPAQh0/bh+x0MSDsVPdpj1l8lY
-8uITiS6n1uIXqi/35JgOvCcjCa7rRJP5w/J9tglAjkzxw+qM7Y5DUuyyVBYspLjf
-z0z9YBE6OtMnlr/H96b22IjrsDtKk2dqo06aXjk0CsTZHqAkwWgZy8AJHLjMRkSr
-PHgsHwSIBgX0+RnpKF/trVDKFXq1QHjJxmeYlzSPLMOJJ035MUpIU+zwEWWOz63C
-v/NXbOzf9pj9ZbKaqE68Pja3BM8jbCYLxwooUM5MIko3VgPAWUG8iEQcl7Mb/G/e
-Tnxju2OYd3FwoFp0YTKR25WwB9yEzlXX9EyTlLmkGf5Eg8+5jOXv+3c62u4CzXk2
-xzcAv5xUALj1h7t419UKk2PZxpw34hRjwXHr67BtRtDIsaZNE2152147u/c7NVgU
-zG9zZNliSeLo4gNK6ae0Mc4bAqmFUOJs4hxAzXgToQg3wpRXafH8xQxh6FXG4pEe
-dY+JJlc50g8kdK7DWlPCp57642u8EJYxIsMGBYnDfpAkbmgPoYAQ++knBuA6r9mK
-pS3izYw+4C3twOLXhg7eDwaq2VIcLLl2qRf/y1jzH3Dix7n+GgM4Mrs59d06n7Bw
-cNLsORRojTRj6ugpJ8ZY
-=bD+x
+iQIcBAEBCgAGBQJZsIBaAAoJEIbPlEyWcf3ynvYQALjESHxTRQZtKF32rkvGWChA
+cFrKXwYqVy/Imfk8IF/ZYC9PHFtg2iD7atK/kQWSV8zcV9zQu5lUaB06JWxO5tP/
+JfbNGENNKNJiFtY8uvxr9FlJF65ozViZP9sbFy/vn/0TSC8/zYNFdjSdWdzS+nHx
+Dxba8g8O9t2HOHEbfHQpaRCaIpYeI29q5l6eNv3LfNUrDvvpeJZI/yh6kt3X0J/S
+pKCPlUbZYs4BJ9hWMDBmVtqjrrQ2aEyEywzruk8AzeXoFUQrNdqlUULycB0u7W2H
+J0pib7uMqsWBED4zhJUmgTXHTTaNT9CErwuPGyNFT9tPYIrW3ibOn6afnq8mD5ZW
+WiV+wwXbWbSsYwfhApLzfUffKeIiKU0h27wF/RZTLnxuB4lJsxxwSJ0K8Af7ZD+F
+lFrwLzTK8CKFdN/UTIvmzX4x8/DwvPvnjgkGMTMj7HGvRgsYvfz5R0BO0+2lnPhV
+XdTkx860mGXnVVyzlGD41FEnUiv2GhkZJ6HreD64ZGpPbATuVFUG7YkP8L6EsgrB
+wIj3om9KEPP9rslqQstaz3A4Oe0kfnWL0h7amQhCzV+CYQhDwoNL+z7Ih290qubM
+xxKOvSV1lTaNbWz1JHbsWzhcPIxs5Z9J9AHU9eoSb/MxJvyV2vwvS/cAVIRHZ26d
+C61tRqicyurJm9lC7KyU
+=GDqd
 -----END PGP SIGNATURE-----
 
