@@ -1,10 +1,10 @@
 From: David Sommerseth <davids@...515...>
-Date: Thu,  7 Sep 2017 01:10:19 +0200
-Message-Id: <20170906231019.23767-1-davids@...515...>
-In-Reply-To: <1503220744-5569-1-git-send-email-steffan@...1856...>
-References: <1503220744-5569-1-git-send-email-steffan@...1856...>
-Subject: Re: [Openvpn-devel] [PATCH applied] travis: reorder matrix to speed
- up build
+Date: Thu,  7 Sep 2017 01:12:48 +0200
+Message-Id: <20170906231248.23944-1-davids@...515...>
+In-Reply-To: <20170822114715.14225-1-davids@...515...>
+References: <20170822114715.14225-1-davids@...515...>
+Subject: Re: [Openvpn-devel] [PATCH applied] docs: Replace all PolarSSL
+ references to mbed TLS
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,25 +15,32 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: steffan@...1856...
+To: davids@...515...
 Cc: openvpn-devel@lists.sourceforge.net
 
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA512
 
+Thanks for the ACK.
+
+I did a quick on-the-fly update on top of this, to ensure our buildbots
+and Make in general wouldn't explode or complain.  Makefile.am still
+referenced README.polarssl instead of README.mbedtls, so this is the
+only additional change.  It now passes 'make distcheck'.
+
 Your patch has been applied to the following branches
 
-commit e0a6afa12ea14685d0497ab27453ccc2b09e6e1f  (master)
-commit cac73d4b93e14f3bd5a1ed11b33f73adb29507a3  (release/2.4)
-Author: Steffan Karger
-Date:   Sun Aug 20 11:19:04 2017 +0200
+commit ed0e79938e801ec656d70cf02bcea4cdd0b79532  (master)
+commit 1bea2dc0f89af74281d30e1f27dea6c434ff0c5e  (release/2.4)
+Author: David Sommerseth
+Date:   Tue Aug 22 13:47:15 2017 +0200
 
-     travis: reorder matrix to speed up build
+     docs: Replace all PolarSSL references to mbed TLS
 
-     Signed-off-by: Steffan Karger <steffan@...1856...>
-     Acked-by: Antonio Quartulli <a@...2181...>
-     Message-Id: <1503220744-5569-1-git-send-email-steffan@...1856...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg15302.html
+     Signed-off-by: David Sommerseth <davids@...515...>
+     Acked-by: Steffan Karger <steffan.karger@...1435...>
+     Message-Id: <20170822114715.14225-1-davids@...515...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg15309.html
      Signed-off-by: David Sommerseth <davids@...515...>
 
 
@@ -45,18 +52,18 @@ David Sommerseth
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBCgAGBQJZsIBaAAoJEIbPlEyWcf3ynvYQALjESHxTRQZtKF32rkvGWChA
-cFrKXwYqVy/Imfk8IF/ZYC9PHFtg2iD7atK/kQWSV8zcV9zQu5lUaB06JWxO5tP/
-JfbNGENNKNJiFtY8uvxr9FlJF65ozViZP9sbFy/vn/0TSC8/zYNFdjSdWdzS+nHx
-Dxba8g8O9t2HOHEbfHQpaRCaIpYeI29q5l6eNv3LfNUrDvvpeJZI/yh6kt3X0J/S
-pKCPlUbZYs4BJ9hWMDBmVtqjrrQ2aEyEywzruk8AzeXoFUQrNdqlUULycB0u7W2H
-J0pib7uMqsWBED4zhJUmgTXHTTaNT9CErwuPGyNFT9tPYIrW3ibOn6afnq8mD5ZW
-WiV+wwXbWbSsYwfhApLzfUffKeIiKU0h27wF/RZTLnxuB4lJsxxwSJ0K8Af7ZD+F
-lFrwLzTK8CKFdN/UTIvmzX4x8/DwvPvnjgkGMTMj7HGvRgsYvfz5R0BO0+2lnPhV
-XdTkx860mGXnVVyzlGD41FEnUiv2GhkZJ6HreD64ZGpPbATuVFUG7YkP8L6EsgrB
-wIj3om9KEPP9rslqQstaz3A4Oe0kfnWL0h7amQhCzV+CYQhDwoNL+z7Ih290qubM
-xxKOvSV1lTaNbWz1JHbsWzhcPIxs5Z9J9AHU9eoSb/MxJvyV2vwvS/cAVIRHZ26d
-C61tRqicyurJm9lC7KyU
-=GDqd
+iQIcBAEBCgAGBQJZsIDmAAoJEIbPlEyWcf3yoEUQAMCybv8ahJinXwQuT61c7iBl
+duAKO1vmdjoMmDT4OFVzicRJnNizHo3TGxdqyqJgG7nk0UK9EZ6y7TRc9OSPr2Px
+4JFfdMhsA2W87WMO21mu/g5PSDWd+zZ8XIFEr72RJQEAWxO+eXT2HoGOMOH/Um5O
+OeeFnbUge4z+nZQfni8vL4mmpdgE1HtxcFlYJxhv7DEOyqyc+lApjLn5nPf3+h7m
+4lgx1VBy4/WSR0J7I9xoT/EVxH4YXL63hj6vZxT8Y2PSWXDvRT7jfnM5ZJ7DknMQ
+h6ExsmscjW/h0W+CTwgxsQeVkvk4SzeK8lO1l5DlkkB2R2apnm+vkW+1T0cdgzbw
+wqjPOK8+yaTSOShmXAmNFLudGasJ3eKcy4oldHiD+nbmZX+fMuVWjXzE18HJluje
+K8OqPpdiB5hbRSnJ3xQLdLZVSIaiTsSjgsQ4svEr4yPvP+HUWQN27ncF/9yi6RA2
+ly4g8e1UxOE+me8FRUzqosLzWmM7/7S8/zA6lciG9HJLqWYeF2YBrA1bddIcTc5f
+GVkmplJ2WZ+LgAelFhwJlwNClPQhesOP3f7/c6oUL3qVKkuSJX5jgCuph800LF5d
+c+KCd0KBCQJcGmJGgXtriqfcdQcAZU42XP/4Nxa/hd5FX5SJjXsyeH6hgI9KQv1Z
+nMgz5+IfqUcSh8GYWdM9
+=4/RZ
 -----END PGP SIGNATURE-----
 
