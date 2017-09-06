@@ -1,11 +1,8 @@
 From: David Sommerseth <davids@...515...>
-Date: Thu,  7 Sep 2017 01:16:01 +0200
-Message-Id: <20170906231601.24447-1-davids@...515...>
-In-Reply-To: <20170904081012.1975-1-coroner@...2290...>
-References: <20170904081012.1975-1-coroner@...2290...>
-MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH applied] OpenSSL: Always set
- SSL_OP_CIPHER_SERVER_PREFERENCE flag
+Date: Thu,  7 Sep 2017 01:47:05 +0200
+Message-Id: <20170906234705.26202-1-davids@...515...>
+Subject: [Openvpn-devel] [PATCH] systemd: Ensure systemd shuts down OpenVPN
+ in a proper way
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,51 +11,55 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-To: coroner@...2290...
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA512
+By default, when systemd is stopping OpenVPN it will send the SIGTERM
+to all processes within the same process control-group.  This can come
+as a surprise to plug-ins which may have fork()ed out child processes.
 
-Your patch has been applied to the following branches
+So we tell systemd to only send the SIGTERM signal to the main OpenVPN
+process and let OpenVPN take care of the shutdown process on its own.
 
-commit 5fd8e94d311825571931414064e4d13ed808f9b5  (master)
-commit a4c5c4bba4963ad107d6bf6eb5937a4cde6c1a0c  (release/2.4)
-Author: Szil=C3=A1rd Pfeiffer
-Date:   Mon Sep 4 10:10:12 2017 +0200
+If the main OpenVPN process does not stop within 90 seconds (unless
+changed), it will send SIGKILL to all remaining processes within
+the same process control-group.
 
-     OpenSSL: Always set SSL_OP_CIPHER_SERVER_PREFERENCE flag
+This issue have been reported in both Debian and Fedora.
 
-     Signed-off-by: Szil=C3=A1rd Pfeiffer <coroner@...2290...>
-     Acked-by: Steffan Karger <steffan.karger@...1435...>
-     Message-Id: <20170904081012.1975-1-coroner@...2290...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/=
-msg15356.html
-     Signed-off-by: David Sommerseth <davids@...515...>
+Trac: 581
+Signed-off-by: David Sommerseth <davids@...515...>
+---
+ distro/systemd/openvpn-client@...2221... | 1 +
+ distro/systemd/openvpn-server@...2221... | 1 +
+ 2 files changed, 2 insertions(+)
 
+diff --git a/distro/systemd/openvpn-client@...2221... b/distro/systemd/openvpn-client@...2221...
+index 49e3f51c..cbcef653 100644
+--- a/distro/systemd/openvpn-client@...2221...
++++ b/distro/systemd/openvpn-client@...2221...
+@@ -17,6 +17,7 @@ DeviceAllow=/dev/null rw
+ DeviceAllow=/dev/net/tun rw
+ ProtectSystem=true
+ ProtectHome=true
++KillMode=process
+ 
+ [Install]
+ WantedBy=multi-user.target
+diff --git a/distro/systemd/openvpn-server@...2221... b/distro/systemd/openvpn-server@...2221...
+index 9a8a2c73..b343868a 100644
+--- a/distro/systemd/openvpn-server@...2221...
++++ b/distro/systemd/openvpn-server@...2221...
+@@ -17,6 +17,7 @@ DeviceAllow=/dev/null rw
+ DeviceAllow=/dev/net/tun rw
+ ProtectSystem=true
+ ProtectHome=true
++KillMode=process
+ 
+ [Install]
+ WantedBy=multi-user.target
+-- 
+2.13.5
 
-- --
-kind regards,
-
-David Sommerseth
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBCgAGBQJZsIGwAAoJEIbPlEyWcf3yszEP/0fmB/zeaW8PYUGFtibr7pWv
-To4m59Levm/xbMngDHEIfD4vUzWffaw77yNSDjCKow3+eevjox1jtxcRfj8cFV0W
-rQ+VcuEPerIpkgKewBK36wdjZguEmR74IoLFYQMOyOEK66gxl4+KQoXMeUsSZCmJ
-8g5tt43pfQfGdt5xJz4wDwMWSlXmVnEs4E9yhs4OP7HQEGQpnFZVz5oQyEJQAh0L
-1URRZitqm4A5ny2mKfbc2k29r56D5gCzHONIhMVYNlLh7tjqCEs6FJEsV6OCI6Bz
-s8eTdC9/hZwxFzPU+VKQ4hPkWxqSSRI1GDwna4kCtYAUtUbU1YTplN1IohBqoBAA
-McNVEvRRAXwB9o9dBNhT30E/hepsFhpfbE2slrJwXK1U81gQjxuriJKcjfg1p9I5
-NGYbQSgsmp6aUyyS1rjy+hx7MxByvEphJydhWCKRkQkV4Z0gNr6Ah3mzyDnxnTcr
-VbnSH34nDlT8FBHl3vt7G7GVpcsFWL7Zt75tpBSwxCgZ8bO6LsTsD+cmktwkdpCb
-gTrSeiA27sDr02I40RHoBgO9wl89U0UUfZc/d+AdQmFE/Pkgj2XfwVAT8ZsqaHZR
-T4sQQEPw7aa3BZZJlqy1WdYJd3z7+ZToosi151/hYM/HbDo82/sk6QeIhFFAU74C
-Ye11BnY4kZG1J04RD58s
-=3DbH+Z
------END PGP SIGNATURE-----
 
