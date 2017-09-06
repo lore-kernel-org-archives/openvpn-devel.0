@@ -1,8 +1,8 @@
 From: David Sommerseth <davids@...515...>
-Date: Thu,  7 Sep 2017 01:47:05 +0200
-Message-Id: <20170906234705.26202-1-davids@...515...>
-Subject: [Openvpn-devel] [PATCH] systemd: Ensure systemd shuts down OpenVPN
- in a proper way
+Date: Thu,  7 Sep 2017 01:52:02 +0200
+Message-Id: <20170906235202.26551-1-davids@...515...>
+Subject: [Openvpn-devel] [PATCH] systemd: Enable systemd's auto-restart
+ feature for server profiles
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,47 +15,30 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-By default, when systemd is stopping OpenVPN it will send the SIGTERM
-to all processes within the same process control-group.  This can come
-as a surprise to plug-ins which may have fork()ed out child processes.
+Systemd supervises services it has started and can act upon unexpected
+scenarios.  This change will restart OpenVPN after 5 seconds if the OpenVPN
+process exits unexpectedly.
 
-So we tell systemd to only send the SIGTERM signal to the main OpenVPN
-process and let OpenVPN take care of the shutdown process on its own.
+The on-failure mode is the recommended mode by upstream systemd.
 
-If the main OpenVPN process does not stop within 90 seconds (unless
-changed), it will send SIGKILL to all remaining processes within
-the same process control-group.
+This change have been tested on a test server for some month, and it
+works indeed as intended when provoking the OpenVPN process to stop.
 
-This issue have been reported in both Debian and Fedora.
-
-Trac: 581
 Signed-off-by: David Sommerseth <davids@...515...>
 ---
- distro/systemd/openvpn-client@...2221... | 1 +
- distro/systemd/openvpn-server@...2221... | 1 +
- 2 files changed, 2 insertions(+)
+ distro/systemd/openvpn-server@...2221... | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/distro/systemd/openvpn-client@...2221... b/distro/systemd/openvpn-client@...2221...
-index 49e3f51c..cbcef653 100644
---- a/distro/systemd/openvpn-client@...2221...
-+++ b/distro/systemd/openvpn-client@...2221...
-@@ -17,6 +17,7 @@ DeviceAllow=/dev/null rw
- DeviceAllow=/dev/net/tun rw
- ProtectSystem=true
- ProtectHome=true
-+KillMode=process
- 
- [Install]
- WantedBy=multi-user.target
 diff --git a/distro/systemd/openvpn-server@...2221... b/distro/systemd/openvpn-server@...2221...
-index 9a8a2c73..b343868a 100644
+index b343868a..a8366a04 100644
 --- a/distro/systemd/openvpn-server@...2221...
 +++ b/distro/systemd/openvpn-server@...2221...
-@@ -17,6 +17,7 @@ DeviceAllow=/dev/null rw
- DeviceAllow=/dev/net/tun rw
+@@ -18,6 +18,8 @@ DeviceAllow=/dev/net/tun rw
  ProtectSystem=true
  ProtectHome=true
-+KillMode=process
+ KillMode=process
++RestartSec=5s
++Restart=on-failure
  
  [Install]
  WantedBy=multi-user.target
