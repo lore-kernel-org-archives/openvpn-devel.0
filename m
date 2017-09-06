@@ -1,10 +1,10 @@
 From: David Sommerseth <davids@...515...>
-Date: Thu,  7 Sep 2017 01:06:47 +0200
-Message-Id: <20170906230647.23409-1-davids@...515...>
-In-Reply-To: <20170819075209.28520-1-a@...2181...>
-References: <20170819075209.28520-1-a@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH applied] fix a couple of typ0s in
- comments and strings
+Date: Thu,  7 Sep 2017 01:09:45 +0200
+Message-Id: <20170906230945.23592-1-davids@...515...>
+In-Reply-To: <20170819203735.8681-1-fragmentux@...277...>
+References: <20170819203735.8681-1-fragmentux@...277...>
+Subject: Re: [Openvpn-devel] [PATCH applied] man: Corrections to
+ doc/openvpn.8
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,27 +15,35 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: a@...2181...
+To: fragmentux@...277...
 Cc: openvpn-devel@lists.sourceforge.net
 
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA512
 
-ACK.  No real code change, so this is safe.
+ACK.
+
+Thanks a lot for putting efforts into improving this.  It will for
+sure make various distribution packagers happy, as this should remove
+several potential complaints from lint/sanity checkers.  Plus it
+fixes a glaring and ugly typo for --verify-x509-name.
+
+I did a quick on-the-fly update, changing the Copyright year 2010
+to 2017.
 
 Your patch has been applied to the following branches
 
-commit 42d9f324f7362abfb9b51b24ef0fb7635b0194fc  (master)
-commit 010ffbed20bcb19c59aeb6e46ae76d93c08c67ea  (release/2.4)
-Author: Antonio Quartulli
-Date:   Sat Aug 19 15:52:09 2017 +0800
+commit 510c8ade804566868a1e0aa4e046a69e576f4478  (master)
+commit b437bf1c0f60cc5e42d70334bde83a2f9e09be88  (release/2.4)
+Author: Richard Bonhomme
+Date:   Sat Aug 19 21:37:35 2017 +0100
 
-     fix a couple of typ0s in comments and strings
+     man: Corrections to doc/openvpn.8
 
-     Signed-off-by: Antonio Quartulli <a@...2181...>
+     Signed-off-by: Richard Bonhomme <fragmentux@...277...>
      Acked-by: David Sommerseth <davids@...515...>
-     Message-Id: <20170819075209.28520-1-a@...2181...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg15293.html
+     Message-Id: <20170819203735.8681-1-fragmentux@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg15297.html
      Signed-off-by: David Sommerseth <davids@...515...>
 
 
@@ -47,18 +55,18 @@ David Sommerseth
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBCgAGBQJZsH+FAAoJEIbPlEyWcf3yqoAP/AwQrZtjXg2ekianydhRsoyn
-cR/DGj7K30NKXireJy85gxo1rxm4wDLfrHaxJukoVBeqF+fWS8b+paGQH4RI8Ne2
-sMUzOZuIDfIzqkZay8I7A3KHc0yhMh2RNG6E52uRMlpyCxJDVpRc2SRAGPKeNxxE
-POibpsGPhRwRbdRsHGIbZnHEW1Lj2cxmtociXIxMuRLvPtU8T6HJPR9Xyd79Pz4w
-BfJi73YJI3CLd+bgLc6hd2qvHtWZ+IBVDQbZlhKrd9+aFcj/py7bhjiNryvvPKuL
-kbRqXheO3+TUQpmUv8/raMtEbu/ZewoOkjPNheX9V5/ojfWxE4tccwzrk1fXWmn9
-CC5XrMzEm8kdRtlip/2HZ23VbNe2poVdjIy8DLeaVhJQbixNImdlrIKCGyNjc1Xf
-MTMl4cFsoixU10VFesDuN+Bc0uN/1zVpenukDslNrZsmG8/DHwNFK3vCuvoUDZnM
-qitefzBdjGuL4MI9Etz/BdZfaSF9xJRPT/kq7W6Bj9tmqTrI/SkBpwdRdzw/2Zps
-4xBdTwN4i24mAVNBRUEd7H+8aqsU4nQ4NGjnQgGsiU3JU2EeAMxJvmU0OkZR0WJL
-utVPRNXzc+BfbB/AfGvDRVOy0rX7jEXU6U9SqnQg/SPKdqOa70yRUgm/Mw3P/EeA
-oXLtAcjqdp2B6JtMoj+L
-=MiqZ
+iQIcBAEBCgAGBQJZsIA1AAoJEIbPlEyWcf3y/M4P/30R8DzRSt5GgblnijteLwa6
+EWVxv5G94DF3e2XBIT3qkL0JaReaB3hPTh9yQGQPAQh0/bh+x0MSDsVPdpj1l8lY
+8uITiS6n1uIXqi/35JgOvCcjCa7rRJP5w/J9tglAjkzxw+qM7Y5DUuyyVBYspLjf
+z0z9YBE6OtMnlr/H96b22IjrsDtKk2dqo06aXjk0CsTZHqAkwWgZy8AJHLjMRkSr
+PHgsHwSIBgX0+RnpKF/trVDKFXq1QHjJxmeYlzSPLMOJJ035MUpIU+zwEWWOz63C
+v/NXbOzf9pj9ZbKaqE68Pja3BM8jbCYLxwooUM5MIko3VgPAWUG8iEQcl7Mb/G/e
+Tnxju2OYd3FwoFp0YTKR25WwB9yEzlXX9EyTlLmkGf5Eg8+5jOXv+3c62u4CzXk2
+xzcAv5xUALj1h7t419UKk2PZxpw34hRjwXHr67BtRtDIsaZNE2152147u/c7NVgU
+zG9zZNliSeLo4gNK6ae0Mc4bAqmFUOJs4hxAzXgToQg3wpRXafH8xQxh6FXG4pEe
+dY+JJlc50g8kdK7DWlPCp57642u8EJYxIsMGBYnDfpAkbmgPoYAQ++knBuA6r9mK
+pS3izYw+4C3twOLXhg7eDwaq2VIcLLl2qRf/y1jzH3Dix7n+GgM4Mrs59d06n7Bw
+cNLsORRojTRj6ugpJ8ZY
+=bD+x
 -----END PGP SIGNATURE-----
 
