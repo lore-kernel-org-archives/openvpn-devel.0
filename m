@@ -1,14 +1,7 @@
-References: <20170907012225.21661-1-davids@...515...>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <dd61a1ce-2301-e3bc-a57c-2fbb3d072a00@...2181...>
-Date: Thu, 7 Sep 2017 09:55:54 +0800
-MIME-Version: 1.0
-In-Reply-To: <20170907012225.21661-1-davids@...515...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="Mf3uGX9Ehem05UxKFF0vjGNfvXHk0OR6r"
-Subject: Re: [Openvpn-devel] [PATCH] lz4: Changing how LZ4 library handling
- is done
+From: David Sommerseth <davids@...515...>
+Date: Thu,  7 Sep 2017 04:28:27 +0200
+Message-Id: <20170907022827.10658-1-davids@...515...>
+Subject: [Openvpn-devel] [PATCH] lz4: Move towards a newer LZ4 API
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,76 +10,70 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: David Sommerseth <davids@...515...>, openvpn-devel@lists.sourceforge.net
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---Mf3uGX9Ehem05UxKFF0vjGNfvXHk0OR6r
-Content-Type: multipart/mixed; boundary="ll721AcktSuLad1jqgosf2tRf8mnBepXs";
- protected-headers="v1"
-From: Antonio Quartulli <a@...2181...>
-To: David Sommerseth <davids@...515...>, openvpn-devel@lists.sourceforge.net
-Message-ID: <dd61a1ce-2301-e3bc-a57c-2fbb3d072a00@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH] lz4: Changing how LZ4 library handling is
- done
-References: <20170907012225.21661-1-davids@...515...>
-In-Reply-To: <20170907012225.21661-1-davids@...515...>
-
---ll721AcktSuLad1jqgosf2tRf8mnBepXs
-Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
+We are using a deprecated function, LZ4_compress_limitedOutput(), which
+will be removed with time.  The correct function to use is LZ4_compress_default().
+Both function takes the same number of arguments and data types, so the change
+is minimal.
 
+To ensure we still build without issues against older LZ4 libraries without
+this new API, a simple wrapper function have been added and will only be enabled
+if we don't have the proper LZ4 versions, which means versions older than v1.7.0.
 
-On 07/09/17 09:22, David Sommerseth wrote:
-> This change will expect the system to have LZ4 libraries and headers
-> installed by default.  We still carry a bundled LZ4 library, which
-> must now be explicitly enabled through providing --enable-bundled-lz4
-> to ./configure.  Otherwise, as before, --disable-lz4 will completely
-> remove any LZ4 support.
->=20
-> Also improve the autoconf code slightly, to use AS_HELP_STRING() where
-> needed and wrap some strings/values with [] where it was missing in
-> the LZ4 segment of ./confiugre.ac.
->=20
-> Signed-off-by: David Sommerseth <davids@...515...>
+This compat API wrapper is currently located in comp-lz4.c, simply because adding
+it to compat-lz4.h would mean adding logic to lz4-rebaser.sh to preserve this
+wrapper; lz4-rebaser.sh will overwrite compat-lz4.[ch].  I didn't see any other
+files where it would make reasonable sense to add it.  And it seemed overkill
+to add a completely new file to support a single file which would basically carry
+8 lines of code for a function only used comp-lz4.c.  In addition, adding new
+files means Makefile.am files needs to be updated accordingly and the new
+header file would be required to be included in comp-lz4.c.  So, placing it
+in comp-lz4.c seemed to be the best fit, and it is closely tied to where it
+is used so it won't be that easy to just ignore it later on.
 
-ACK.
+This patch is a result of the discussions in this mail thread:
+https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg14135.html
 
-Imho, this is a very good step towards moving the bundled lib apart.
-The bundled lib is still there, so still usable by the maintainer who
-wants that, but it basically becomes legacy.
+Signed-off-by: David Sommerseth <davids@...515...>
+---
+ src/openvpn/comp-lz4.c | 13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
 
-Cheers,
+diff --git a/src/openvpn/comp-lz4.c b/src/openvpn/comp-lz4.c
+index e056caa8..ad95968a 100644
+--- a/src/openvpn/comp-lz4.c
++++ b/src/openvpn/comp-lz4.c
+@@ -43,6 +43,17 @@
+ 
+ #include "memdbg.h"
+ 
++
++#if defined(LZ4_VERSION_NUMBER) && LZ4_VERSION_NUMBER < 10700
++/* Wrapper to re-enable the old API if LZ4 is older than v1.7.0 */
++static int
++LZ4_compress_default(const char* source, char* dest, int inputSize, int maxOutputSize)
++{
++    return LZ4_compress_limitedOutput(source, dest, inputSize, maxOutputSize);
++}
++#endif
++
++
+ static void
+ lz4_compress_init(struct compress_context *compctx)
+ {
+@@ -86,7 +97,7 @@ do_lz4_compress(struct buffer *buf,
+             return false;
+         }
+ 
+-        zlen = LZ4_compress_limitedOutput((const char *)BPTR(buf), (char *)BPTR(work), BLEN(buf), zlen_max );
++        zlen = LZ4_compress_default((const char *)BPTR(buf), (char *)BPTR(work), BLEN(buf), zlen_max );
+ 
+         if (zlen <= 0)
+         {
+-- 
+2.13.5
 
-
---=20
-Antonio Quartulli
-
-
---ll721AcktSuLad1jqgosf2tRf8mnBepXs--
-
---Mf3uGX9Ehem05UxKFF0vjGNfvXHk0OR6r
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEEbd2mMhAXbmSCipS40+HICM1soFAFAlmwpy4ACgkQ0+HICM1s
-oFDv4g//aRpzj+hDFDQq81VZ9rGZkKtAKrpu9A0NPW9OkBLL3bAHatrGWGvypznF
-MLfQKgKfPcI0f+SDw04M5hV/YuH9chiStGozEFseegIMoLqPxHwBlLZ5e2/3ne6o
-JRc4IQfB9dlFuzpYBrqqgWzxDMBV/YaNBK/ciSUgClyiveNqqToLRT/pER1O+adN
-c+7xbdOnBBdAwNyRhI9nSX/ip1Es5GL26vi/ORO1fXUH6vNxvCenIZUUWeOIurge
-mQ4TO/RisNdGfpffypVwZrtHUHAGnAqLQWQ1l4NUqitNiPTgzNYrp9oTDaUmDcOR
-GzNNAZ/h/DZXPKILw6XA351zwRsUniyjeRq2bjG8N4esy6H87x/AAUFvsnUnkgyp
-QZwPYGurqbtjubUDEvPUZ20rKmFyD3687sxdaPL3XMFdDBh1WHPs6dT7Q6cBKt/W
-PHEQLl5v2fdQFESGvqKP81+lOOOcKdfcknsTK5Yto5QpAOysAHeuhcXsPisDJeY8
-ptpz7Prg7qlCh6/FVU+c10XtY4OedDb2kSpLG2cyR47c9hsAnQdf0031HuhpWsMl
-P+QwyIEjj0rutisj5JrQPygpY2ub0frVRD61ZSy7LcRXQsQV+Zzt9tzJ/v6+fRU2
-cu/t+kKhcoLU9F+Y/ECoBph9g2GEETrzYvAVtH7tiTnBCnr5sGc=
-=8Cn0
------END PGP SIGNATURE-----
-
---Mf3uGX9Ehem05UxKFF0vjGNfvXHk0OR6r--
 
