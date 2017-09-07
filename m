@@ -1,16 +1,16 @@
-Reply-To: openvpn-devel@lists.sourceforge.net
-References: <20170907012225.21661-1-davids@...515...>
- <20170907061200.GB70062@...1296...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <73fb2899-edfb-1399-39de-e84d9c3e87fe@...2080...>
-Date: Thu, 7 Sep 2017 16:06:35 +0200
+References: <20170906235202.26551-1-davids@...515...>
+ <20170907061646.GD70062@...1296...>
+ <79762b44-c8c8-b765-1711-22ba3f210af0@...515...>
+ <1e1b1ed5-5a4e-5234-1e57-06a609a6f2b9@...515...>
+ <7d8b3364-b806-e21a-7772-06fa1eedb4ad@...2080...>
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <48a89d95-bccd-7df2-7ba3-4410e8475a9a@...515...>
+Date: Thu, 7 Sep 2017 17:24:58 +0300
 MIME-Version: 1.0
-In-Reply-To: <20170907061200.GB70062@...1296...>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="DeRaInGpxIEWLEhTovNOWLoNpApLXQkIU"
-Subject: Re: [Openvpn-devel] [PATCH] lz4: Changing how LZ4 library handling
- is done
+In-Reply-To: <7d8b3364-b806-e21a-7772-06fa1eedb4ad@...2080...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH] systemd: Enable systemd's auto-restart
+ feature for server profiles
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,171 +19,105 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>, David Sommerseth <davids@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---DeRaInGpxIEWLEhTovNOWLoNpApLXQkIU
-Content-Type: multipart/mixed; boundary="Spa8bNDtw1dgBdTu5oQHGtHv9bR0cTTt9";
- protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-Reply-To: openvpn-devel@lists.sourceforge.net
-To: Gert Doering <gert@...1296...>, David Sommerseth <davids@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
-Message-ID: <73fb2899-edfb-1399-39de-e84d9c3e87fe@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH] lz4: Changing how LZ4 library handling is
- done
-References: <20170907012225.21661-1-davids@...515...>
- <20170907061200.GB70062@...1296...>
-In-Reply-To: <20170907061200.GB70062@...1296...>
-
---Spa8bNDtw1dgBdTu5oQHGtHv9bR0cTTt9
-Content-Language: en-GB
 Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
+To: openvpn-devel@lists.sourceforge.net, Gert Doering <gert@...1296...>, David Sommerseth <davids@...515...>
 
-On 07/09/17 08:12, Gert Doering wrote:
-> Hi,
+On 07/09/2017 16:00, David Sommerseth wrote:
+> On 07/09/17 10:04, Samuli Sepp=E4nen wrote:
+>> On 07/09/2017 10:16, Samuli Sepp=E4nen wrote:
+>>> On 07/09/2017 09:16, Gert Doering wrote:
+>>>> Hi,
+>>>>
+>>>> On Thu, Sep 07, 2017 at 01:52:02AM +0200, David Sommerseth wrote:
+>>>>> @@ -18,6 +18,8 @@ DeviceAllow=3D/dev/net/tun rw
+>>>>>  ProtectSystem=3Dtrue
+>>>>>  ProtectHome=3Dtrue
+>>>>>  KillMode=3Dprocess
+>>>>> +RestartSec=3D5s
+>>>>> +Restart=3Don-failure
+>>>>
+>>>> Is there a way to get exponential backoff on restart?
+>>>>
+>>>> Restarting is good, but if there is something faulty that leads to
+>>>> "the process always dies right away", this can lead to very quickly
+>>>> filling disks with not-so-useful logging...
+>>>>
+>>>> (Otherwise, yes, restarting is good :-) )
+>>>>
+>>>
+>>> Hi,
+>>>
+>>> From systemd.unit man-page[1]:
+>>>
+>>>   StartLimitIntervalSec=3D, StartLimitBurst=3D
+>>>
+>>>     Configure unit start rate limiting. By default, units which are
+>>>     started more than 5 times within 10 seconds are not permitted to
+>>>     start any more times until the 10 second interval ends.
+>>>
+>>> I verified this behavior on CentOS 7 using another daemon (monit) by
+>>> setting "Restart=3Don-failure" for it, breaking its config file and
+>>> forcibly killing it. Note that RestartSec is the default, i.e. 100ms:
+>>>
+>>> ---
+>>>
+>>> Sep 07 09:55:37 centos-7 systemd[1]: monit.service: control process
+>>> exited, code=3Dexited status=3D1
+>>>
+>>> Sep 07 09:55:37 centos-7 systemd[1]: Unit monit.service entered failed
+>>> state.
+>>>
+>>> Sep 07 09:55:37 centos-7 systemd[1]: monit.service holdoff time over,
+>>> scheduling restart.
+>>>
+>>> Sep 07 09:55:37 centos-7 systemd[1]: Stopping Pro-active monitoring
+>>> utility for unix systems...
+>>>
+>>> Sep 07 09:55:37 centos-7 systemd[1]: Starting Pro-active monitoring
+>>> utility for unix systems...
+>>>
+>>> Sep 07 09:55:37 centos-7 systemd[1]: monit.service start request
+>>> repeated too quickly, refusing to start.
+>>>
+>>> Sep 07 09:55:37 centos-7 systemd[1]: Failed to start Pro-active
+>>> monitoring utility for unix systems.
+>>>
+>>> Sep 07 09:55:37 centos-7 systemd[1]: Unit monit.service entered failed
+>>> state.
+>>>
+>>> ---
+>>>
+>>> As you can see, systemd quickly realizes that monit will not come back
+>>> up and stops trying.
+>>>
+>>> However, when I added "RestartSec=3D5s" the StartLimit* thresholds were
+>>> never triggered. This meant that systemd never ceased trying to restart
+>>> the monit service.
+>>>
+>>> David: any particular reason why you added RestartSec? Why not just let
+>>> it be the default (100ms)?
 >=20
-> On Thu, Sep 07, 2017 at 03:22:25AM +0200, David Sommerseth wrote:
->> This change will expect the system to have LZ4 libraries and headers
->> installed by default.  We still carry a bundled LZ4 library, which
->> must now be explicitly enabled through providing --enable-bundled-lz4
->> to ./configure.  Otherwise, as before, --disable-lz4 will completely
->> remove any LZ4 support.
+> Partly to avoid respawning too fast.  We don't know what kind of
+> additional plug-ins or management interface tools have been integrated
+> and how they react if OpenVPN goes into a tight restart-loop.  And
+> partly to _escape_ the stopping of restarts.
 >=20
-> I'm totally missing the *reason* why you want to change this
+> I'm not sure I'm easily buying into the "faulty configuration" argument.
 
-Bundled libraries are considered to be bad, as it requires active
-maintenance.  Just look at which version we ship in OpenVPN (1.6.0) and
-we've had two rebase patches on the -devel ML which have been ignored,
-first updating to v1.7.4.2 [0] and then v1.7.5 [1].  I have not bothered
-yet to send a new rebase request to the latest v1.8.0 [2].  That is an
-awfully bad track record.
+There is no "faulty configuration argument". I broke monit's
+configuration file intentionally for the sole purpose of testing
+systemd's restart functionality.
 
-[0] Dec 15, 2016
-<https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg13575.=
-html>
-[1] Feb 21, 2017
-<https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg14137.=
-html>
-[2] Aug 17, 2017 <https://github.com/lz4/lz4/releases/tag/v1.8.0>
-
-If we even manage to miss that there are CVE fixes in the LZ4 library,
-then we've in even bigger trouble.  Especially if we're so bad at
-updating just the maintenance releases.
-
-Yes, I can already hear you say that updates caused by CVEs will be
-handled more promptly.  But from my point of view, that's just words.
-We do not have any processes for handling bundled libraries nor response
-times nor who and how updates in bundled libraries are tracked.
-
-
-> We don't have --enable-bundled-compat flags for the rest of the things
-> in compat/ either, don't we?
-
-Somehow I expected that argument from you, Gert.  But that is truly
-comparing apples and oranges.
-
-LZ4 is a large library compared to the compat functions we do provide:
-
-  1605  compat-basename.c
-  2208  compat-inet_ntop.c
-  2261  compat-inet_pton.c
-  2353  compat-daemon.c
-  3210  compat-gettimeofday.c
-  4057  compat-dirname.c
- 49760  compat-lz4.c
-
-The code complexity of compat-dirname.c (which is the second largest
-compat code) is negligible compared to compat-lz4.c  So the risk of a
-security issue should be considerably lower in these other functions we add.
-
-Secondly, we only use our compat-*.c functions if the underlying system
-does not carry those features - most commonly, these are libc related
-functions.  So if a systems libc does not carry a function we need, we
-need to have a wrapper for a specific function.  And strictly speaking,
-LZ4 is not a requirement for OpenVPN to function as an application.
-
-> Also, I can't see consensus that "remove the bundled lz4" is the way to=20
-> go - this was on the plate for the hackathon to discuss.  You and Antonio
-> are convinced that this is a good way forward, applying a very specific=20
-> Linux-distro-based mindset to it ("missing libraries are a problem of the
-> package builder, why should we care?") - please listen to my arguments: t=
-here
-> are people out there that build OpenVPN from source (tarball or git), and
-> they are looking at library dependencies with a slightly different view.
-
-Hence the --enable-bundled-lz4.  If you do not have or want to build LZ4
-yourself first, then you can use our bundled LZ4 - with the risks that
-implies.  But this is done explicitly, so a developer or package
-maintainer is forced to take a decision here first.
-
-But equally important, if anyone is going to build OpenVPN from source,
-what is the chances that they will not be able to build LZ4 from source
-before building OpenVPN?
-
-And we already have several other external libraries we depend on which
-we do not carry a compat-* version for ... LZO being the most obvious
-one, as it is a 1:1 comparison to LZ4.  Then there is openssl/mbedtls.
-But we do have feature specific dependencies  pkcs11-helper, p11kit,
-which is available on all our supported platforms.  Then there is libpam
-(for *nix).  And Linux can add libselinux and libsystemd into the mix as
-well.
-
-This patch actually aligns LZ4 to be treated more equally to LZO, with
-the distinction that we do have --enable-bundled-lz4 - at least for some
-time forward.
-
-
-And some more arguments why bundled libraries are bad, here even from a
-FreeBSD perspective:
-<https://www.freebsd.org/doc/en/books/porters-handbook/bundled-libs.html>
-
-A couple of other with more generic perspectives:
-<http://www.professionalsecurity.co.uk/products/computer-systems-and-it-sec=
-urity-news/library-bundles-a-game-of-chance/>
-<https://blog.flameeyes.eu/2009/03/bundling-libraries-the-curse-of-the-anci=
-ents/>
-
-And the perspective from a few Linux distros:
-<https://wiki.gentoo.org/wiki/Why_not_bundle_dependencies>
-<https://fedoraproject.org/wiki/Bundled_Libraries?rd=3DPackaging:Bundled_Li=
-braries>
-
-
---=20
-kind regards,
-
-David Sommerseth
-OpenVPN Technologies, Inc
-
-
-
---Spa8bNDtw1dgBdTu5oQHGtHv9bR0cTTt9--
-
---DeRaInGpxIEWLEhTovNOWLoNpApLXQkIU
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBCgAGBQJZsVJrAAoJEIbPlEyWcf3yJ9YP/2ET9loBxI8sRD7/7kf03xD3
-DpUugmsNh1LcyXamIz35+3Z3sOC5TRnxqIklAJArtOkdnHPDOTCCiVtqq0EYpILP
-xzKfnLsCdJf4hXiFGQOnB3q8H6Dx1OnnGMhkibeWCX21A3GfKV1D7IJqEqye857F
-QnSiG1x0QVox1spc71DPa9Posp6o7bzlHg0toIEMw3SzIp03VqpdOhUCJMGXJWXZ
-IVE/IIqUH3XNuEGIKK+9lSkV0ZVkf0m5NZRaFF9FXAt6B0zWPzAwINRwOtW4rQu6
-xgawwNCBBiBx/ceSgDQBZcVXSXrIE3iF3VP0GS5ekLTYr/efNM7xdVR99so07NKw
-mbTcdxAaTYNCKviJoE6uTw/reFYvEmv3hu3lNhWT49IBsj9Dc6fgF91of6+rpEdQ
-jEToFzSrE6bAGomLNQ4TQs8rkdHrTqamze8UmQj81eK/RxiAIa+eg8fCi8ZAXCNj
-ZS4K8Ow6CEKJQ93c06XGJuC5BfHB7e/xxOrYfxh4SVIouM4b1EiQB1DLtaFBHwTQ
-leezZCtvi9k1tvAa7g98nRnbUhQnOK9PdfIHCPZ11cCd5ypwzckmjn1OaOK0JNu2
-t/W4uGogyYXuH95cMMjFFfqejjtV6toiqYfGo2Ehtnuzi2z4zq81Fx/9TnYKemKF
-TjzaXlmgIwjzH2H3QOJC
-=3P2L
------END PGP SIGNATURE-----
-
---DeRaInGpxIEWLEhTovNOWLoNpApLXQkIU--
+>  Because these restart scenarios mostly happens when a sys-admin is
+> _not_ around.  If you're playing with configurations, do a restart to
+> test the new config, you are around to handle a failed situation.  The
+> only area where this can fail is when we break options and OpenVPN get
+> updated automatically.  But in both these scenarios, a restart delay of
+> 5 seconds won't cause too much stress on the system.
+>=20
+> I also opted for not much longer delay, as if a restart happens
+> successfully, most users won't notice that too much.  If it is 30
+> seconds or 1 minute, that is much more noticeable.  But I'm open for
+> adjusting this too.
 
