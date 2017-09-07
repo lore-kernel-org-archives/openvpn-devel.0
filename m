@@ -1,16 +1,9 @@
-Reply-To: openvpn-devel@lists.sourceforge.net
-References: <20170906235202.26551-1-davids@...515...>
- <45ee0784-77cf-bba1-85cf-f7c6265b25f5@...277...>
-From: David Sommerseth <openvpn@...2080...>
-Message-ID: <41cf1b9e-bb4b-a2f1-3c3a-cde43c8e0eb4@...2080...>
-Date: Thu, 7 Sep 2017 17:46:14 +0200
-MIME-Version: 1.0
-In-Reply-To: <45ee0784-77cf-bba1-85cf-f7c6265b25f5@...277...>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="r5hg2xrmciJc9DfTP6XiMi56rmwJ6Q6Vj"
-Subject: Re: [Openvpn-devel] [PATCH] systemd: Enable systemd's auto-restart
- feature for server profiles
+From: David Sommerseth <davids@...515...>
+Date: Thu,  7 Sep 2017 19:20:04 +0200
+Message-Id: <20170907172004.22534-1-davids@...515...>
+In-Reply-To: <20170907022827.10658-1-davids@...515...>
+References: <20170907022827.10658-1-davids@...515...>
+Subject: [Openvpn-devel] [PATCH v2] lz4: Move towards a newer LZ4 API
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,161 +12,151 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: fragmentux <fragmentux@...277...>, openvpn-devel@lists.sourceforge.net
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---r5hg2xrmciJc9DfTP6XiMi56rmwJ6Q6Vj
-Content-Type: multipart/mixed; boundary="sR5EMLSxJqJAvUUPaoLOtbFtlKEs0GxiC";
- protected-headers="v1"
-From: David Sommerseth <openvpn@...2080...>
-Reply-To: openvpn-devel@lists.sourceforge.net
-To: fragmentux <fragmentux@...277...>, openvpn-devel@lists.sourceforge.net
-Message-ID: <41cf1b9e-bb4b-a2f1-3c3a-cde43c8e0eb4@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH] systemd: Enable systemd's auto-restart
- feature for server profiles
-References: <20170906235202.26551-1-davids@...515...>
- <45ee0784-77cf-bba1-85cf-f7c6265b25f5@...277...>
-In-Reply-To: <45ee0784-77cf-bba1-85cf-f7c6265b25f5@...277...>
-
---sR5EMLSxJqJAvUUPaoLOtbFtlKEs0GxiC
-Content-Language: en-GB
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-On 07/09/17 17:08, fragmentux wrote:
-> Hi,
->=20
-> On 07/09/17 00:52, David Sommerseth wrote:
->> Systemd supervises services it has started and can act upon unexpected
->> scenarios.=C2=A0 This change will restart OpenVPN after 5 seconds if the
->> OpenVPN
->> process exits unexpectedly.
->=20
-> Define "unexpectedly"
-> (my2c: something needs to be fixed)
+We are using a deprecated function, LZ4_compress_limitedOutput(), which
+will be removed with time.  The correct function to use is LZ4_compress_default().
+Both function takes the same number of arguments and data types, so the change
+is minimal.
 
-Yes, that _could_ be, but is not for sure.  It is hard to define
-"unexpectedly".  Or to flip it around, if we could define "unexpectedly"
-properly, there is nothing unexpected happening.
+This patch will also enforce the system LZ4 library to be at least v1.7.1.  If
+the system library is not found or it is older, it will be build using the bundled
+LZ4 library.  The version number requirement is based on the LZ4 version we ship.
 
-But _some_ scenarios
+The changes in configure.ac for the version check is modelled around the same
+approach we use for OpenSSL.  Plus it does a few minor reformats and improvements
+to comply with more recommend autoconf coding style.
 
- - The out-of-memory killer picks an openvpn process
-   Fix: Add more memory, reduce the number of memory hungry processes,
-   usually nothing OpenVPN can do anything with
+This patch is a result of the discussions in this mail thread:
+https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg14135.html
 
- - The server process segfaults dies (segfault)
-   This happens most commonly due to poor/badly written plug-ins
-   Fix: Get an updated/fixed plug-in, not something OpenVPN can
-   fully control.
+Signed-off-by: David Sommerseth <davids@...515...>
 
- - A fatal error happened
-   Which can have many reasons (grep M_FATAL in the source), most
-   of them it is safe to restart the OpenVPN process.  It could be
-   caused by the crypto layer not getting enough random data, it
-   could be a malicious attempt of an attack, triggering some of
-   the ASSERT() checks in the code.  M_FATAL in general is more
-   of the error type "It is not safe to continue running this process"
-   but it doesn't mean it isn't safe to restart the process.  Again,
-   situations outside OpenVPN influences its ability to run.
+---
+v2 - Don't use LZ4 version based #ifdef wrapper function
+     Do the LZ4 version check in ./configure
+---
+ configure.ac           | 72 +++++++++++++++++++++++++++++++++++---------------
+ src/openvpn/comp-lz4.c |  3 ++-
+ 2 files changed, 53 insertions(+), 22 deletions(-)
 
-And there's a plethora of other scenarios too.
+diff --git a/configure.ac b/configure.ac
+index 6f1044e8..74443353 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -1088,37 +1088,67 @@ dnl
+ AC_ARG_VAR([LZ4_CFLAGS], [C compiler flags for lz4])
+ AC_ARG_VAR([LZ4_LIBS], [linker flags for lz4])
+ if test "$enable_lz4" = "yes" && test "$enable_comp_stub" = "no"; then
+-    AC_CHECKING([for LZ4 Library and Header files])
+-    havelz4lib=1
+-
+-    # if LZ4_LIBS is set, we assume it will work, otherwise test
+-    if test -z "${LZ4_LIBS}"; then
+-	AC_CHECK_LIB(lz4, LZ4_compress,
+-	    [ LZ4_LIBS="-llz4" ],
+-	    [
+-	        AC_MSG_RESULT([LZ4 library not found.])
+-	        havelz4lib=0
+-	    ])
++    if test -z "${LZ4_CFLAGS}" -a -z "${LZ4_LIBS}"; then
++	# if the user did not explicitly specify flags, try to autodetect
++	PKG_CHECK_MODULES([LZ4],
++			  [liblz4 >= 1.7.1],
++			  [have_lz4="yes"],
++			  [] # If this fails, we will do another test next
++	)
+     fi
+ 
+     saved_CFLAGS="${CFLAGS}"
++    saved_LIBS="${LIBS}"
+     CFLAGS="${CFLAGS} ${LZ4_CFLAGS}"
+-    AC_CHECK_HEADERS(lz4.h,
+-       ,
+-       [
+-	   AC_MSG_RESULT([LZ4 headers not found.])
+-	   havelz4lib=0
+-       ])
+-
+-    if test $havelz4lib = 0 ; then
+-	AC_MSG_RESULT([LZ4 library or header not found, using version in src/compat/compat-lz4.*])
++    LIBS="${LIBS} ${LZ4_LIBS}"
++
++    # If pkgconfig check failed or LZ4_CFLAGS/LZ4_LIBS env vars
++    # are used, check the version directly in the LZ4 include file
++    if test "${have_lz4}" != "yes"; then
++	AC_CHECK_HEADERS([lz4.h],
++			 [have_lz4h="yes"],
++			 [])
++
++	if test "${have_lz4h}" = "yes" ; then
++	    AC_MSG_CHECKING([additionally if system LZ4 version >= 1.7.1])
++	    AC_COMPILE_IFELSE(
++		[AC_LANG_PROGRAM([[
++#include <lz4.h>
++				 ]],
++				 [[
++/* Version encoding: MMNNPP (Major miNor Patch) - see lz4.h for details */
++#if LZ4_VERSION_NUMBER < 10701L
++#error LZ4 is too old
++#endif
++				 ]]
++				)],
++		[
++		    AC_MSG_RESULT([ok])
++		    have_lz4="yes"
++		],
++		[AC_MSG_RESULT([system LZ4 library is too old])]
++	    )
++	fi
++    fi
++
++    # if LZ4_LIBS is set, we assume it will work, otherwise test
++    if test -z "${LZ4_LIBS}"; then
++	AC_CHECK_LIB([lz4],
++		     [LZ4_compress],
++		     [LZ4_LIBS="-llz4"],
++		     [have_lz4="no"])
++    fi
++
++    if test "${have_lz4}" != "yes" ; then
++	AC_MSG_RESULT([		usuable LZ4 library or header not found, using version in src/compat/compat-lz4.*])
+ 	AC_DEFINE([NEED_COMPAT_LZ4], [1], [use copy of LZ4 source in compat/])
+ 	LZ4_LIBS=""
+     fi
+     OPTIONAL_LZ4_CFLAGS="${LZ4_CFLAGS}"
+     OPTIONAL_LZ4_LIBS="${LZ4_LIBS}"
+-    AC_DEFINE(ENABLE_LZ4, 1, [Enable LZ4 compression library])
++    AC_DEFINE(ENABLE_LZ4, [1], [Enable LZ4 compression library])
+     CFLAGS="${saved_CFLAGS}"
++    LIBS="${saved_LIBS}"
+ fi
+ 
+ 
+diff --git a/src/openvpn/comp-lz4.c b/src/openvpn/comp-lz4.c
+index e056caa8..bdb3247d 100644
+--- a/src/openvpn/comp-lz4.c
++++ b/src/openvpn/comp-lz4.c
+@@ -43,6 +43,7 @@
+ 
+ #include "memdbg.h"
+ 
++
+ static void
+ lz4_compress_init(struct compress_context *compctx)
+ {
+@@ -86,7 +87,7 @@ do_lz4_compress(struct buffer *buf,
+             return false;
+         }
+ 
+-        zlen = LZ4_compress_limitedOutput((const char *)BPTR(buf), (char *)BPTR(work), BLEN(buf), zlen_max );
++        zlen = LZ4_compress_default((const char *)BPTR(buf), (char *)BPTR(work), BLEN(buf), zlen_max );
+ 
+         if (zlen <= 0)
+         {
+-- 
+2.13.5
 
-So to define "unexpectedly" is not far away from trying to define "life".
-
-
->> The on-failure mode is the recommended mode by upstream systemd.
->=20
-> IE:
-> This is the way "upstream systemd" recommend to use systemd
-> *if*=C2=A0 "some failed process"=C2=A0 is to be restarted.
->=20
-> (my2c: A decision better left to the sys-admin not openvpn developer)
-
-Why is it bad to have this behaviour being the default?  The sys-admin
-still have the ability to override this.
-
-And even though I have the role of developer here in the OpenVPN
-community, outside of my day-work role I do also have the role as a
-sys-admin.  From my point of view, this isn't a "this sounds like a cool
-feature".  It is actually something I have enabled on systems manually
-for some time, so if my smaller scale environment finds this useful -
-why wouldn't others find it useful?  And also having had sys-admin roles
-in former work life, this is something we deployed on many services in
-far larger environments.
-
->> This change have been tested on a test server for some month, and it
->> works indeed as intended when provoking the OpenVPN process to stop.
->=20
-> Define "provoking"
-> (my2c: not unexpectedly at all, nothing to fix here)
-
-Like adding a plug-in which triggers a segfault on the first connection
-attempt.  Or sending a SIGKILL to the process.  This was needed to test
-and verify that the restart mechanism did work.  Otherwise I would not
-have had confidence in believing this was done correctly.  And even
-though that my triggering isn't unexpected, it is unexpected by the
-OpenVPN process.
-
-But sure, if you have a way to trigger OpenVPN to unexpectedly failing,
-we'd be delighted to hear about it .... as that is most likely something
-we should fix in OpenVPN ;-)
-
-In case you haven't noticed, OpenVPN is quite stable and seldom fails by
-itself.  But when it does, it is for most end-users depending on it a
-nice feature that things do try to recover on its own.
-
-These events do also not happen in complete silence.  They are logged.
-And a responsible sys-admin will check logs at regular intervals, some
-even have automated alerts happening.  But most sys-admins will be
-pleased that they don't have to go into panic rescue mode instantly
-because a VPN server went down and they have 50 users on the phone
-complaining they can't reach the intranet.
-
-> Either way,
-> it is only a few lines of a systemd unit.service file
-> to be deleted/customised by the relevant sys-admin.
-
-systemctl edit openvpn-server@...2302...
-then add Restart=3Dno
-
-Which have the advantage of disabling this feature on selected
-configurations, not all configs by default.  If you want the default, I
-believe you just do: systemctl edit openvpn-server@
-
-
---=20
-kind regards,
-
-David Sommerseth
-OpenVPN Technologies, Inc
-
-
-
---sR5EMLSxJqJAvUUPaoLOtbFtlKEs0GxiC--
-
---r5hg2xrmciJc9DfTP6XiMi56rmwJ6Q6Vj
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.22 (GNU/Linux)
-
-iQIcBAEBCgAGBQJZsWnGAAoJEIbPlEyWcf3ydRoP/2RnbSmOrVUgsWUkVyvC9L6m
-YWVRuadzJWvLZ9JWIFdZ2vPtc4Cz4chDg3NrqFTscg5vEsfB+6f8GflvU7MNR05p
-kZjRofUc8KMq5P78l0dbKFIH/TB9ueEoAz14GzPj8VZZ4/K8ddeuZYVFFIkJJdcM
-TxmJDbA0nVvaeo2v+hCbdT6GerjrEasoUSJ+OiaNi9Adnx3xnPXpg2WyzU+0Wv11
-gqXvnyqC6/Os7F52b1Nd+Mp37DcJiOT0WAG5uoIhliecRrLCbAnXQsru3MiEXmeC
-+vxMryzmZghZH5LpjxLCDe2UhQ7EBR2Ux4IvB0bQaqgULLoqPhJnZhPMiHs5kTk9
-wM7PZeloHeAphZd0La9I10jhw2GcpowD2rqXtE3CgZrPwwj3uh2bX0e6ZF+n+w7Y
-iZcAkLVxTvreCpLMpNYCbGUCR0Anfev8TyhczCHVj8TklJThQH9DJGeMRTDTAUTW
-Cn2s6mJdT2Sc1MAdF+iQ6Pc8sO49W4z0iPJ1eecqvhi/PfY2pNGLnucRJQsZML4C
-XpLrs9wdgOGFMoPS/UTZZonWC/GT6sHPlD3MAZU3/6yORhJHuL8tYTMCgwP8aOgg
-NqJPocryvqpJtGHbWUHwOdJieiC94KYpSdXZzp+Gf1BSurGJ+6M9y4219z5wvm0w
-xM3tx4e7sj11mTEXWzsh
-=BbvC
------END PGP SIGNATURE-----
-
---r5hg2xrmciJc9DfTP6XiMi56rmwJ6Q6Vj--
 
