@@ -1,8 +1,14 @@
-From: David Sommerseth <davids@...515...>
-Date: Thu,  7 Sep 2017 03:22:25 +0200
-Message-Id: <20170907012225.21661-1-davids@...515...>
-Subject: [Openvpn-devel] [PATCH] lz4: Changing how LZ4 library handling is
- done
+References: <20170907012225.21661-1-davids@...515...>
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <dd61a1ce-2301-e3bc-a57c-2fbb3d072a00@...2181...>
+Date: Thu, 7 Sep 2017 09:55:54 +0800
+MIME-Version: 1.0
+In-Reply-To: <20170907012225.21661-1-davids@...515...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="Mf3uGX9Ehem05UxKFF0vjGNfvXHk0OR6r"
+Subject: Re: [Openvpn-devel] [PATCH] lz4: Changing how LZ4 library handling
+ is done
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,145 +17,76 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: David Sommerseth <davids@...515...>, openvpn-devel@lists.sourceforge.net
+
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--Mf3uGX9Ehem05UxKFF0vjGNfvXHk0OR6r
+Content-Type: multipart/mixed; boundary="ll721AcktSuLad1jqgosf2tRf8mnBepXs";
+ protected-headers="v1"
+From: Antonio Quartulli <a@...2181...>
+To: David Sommerseth <davids@...515...>, openvpn-devel@lists.sourceforge.net
+Message-ID: <dd61a1ce-2301-e3bc-a57c-2fbb3d072a00@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH] lz4: Changing how LZ4 library handling is
+ done
+References: <20170907012225.21661-1-davids@...515...>
+In-Reply-To: <20170907012225.21661-1-davids@...515...>
+
+--ll721AcktSuLad1jqgosf2tRf8mnBepXs
+Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Transfer-Encoding: quoted-printable
 
-This change will expect the system to have LZ4 libraries and headers
-installed by default.  We still carry a bundled LZ4 library, which
-must now be explicitly enabled through providing --enable-bundled-lz4
-to ./configure.  Otherwise, as before, --disable-lz4 will completely
-remove any LZ4 support.
 
-Also improve the autoconf code slightly, to use AS_HELP_STRING() where
-needed and wrap some strings/values with [] where it was missing in
-the LZ4 segment of ./confiugre.ac.
 
-Signed-off-by: David Sommerseth <davids@...515...>
----
- Changes.rst            |  8 +++++++
- configure.ac           | 57 ++++++++++++++++++++++++++------------------------
- src/compat/Makefile.am |  5 ++++-
- 3 files changed, 42 insertions(+), 28 deletions(-)
+On 07/09/17 09:22, David Sommerseth wrote:
+> This change will expect the system to have LZ4 libraries and headers
+> installed by default.  We still carry a bundled LZ4 library, which
+> must now be explicitly enabled through providing --enable-bundled-lz4
+> to ./configure.  Otherwise, as before, --disable-lz4 will completely
+> remove any LZ4 support.
+>=20
+> Also improve the autoconf code slightly, to use AS_HELP_STRING() where
+> needed and wrap some strings/values with [] where it was missing in
+> the LZ4 segment of ./confiugre.ac.
+>=20
+> Signed-off-by: David Sommerseth <davids@...515...>
 
-diff --git a/Changes.rst b/Changes.rst
-index 53a14438..128f148a 100644
---- a/Changes.rst
-+++ b/Changes.rst
-@@ -308,6 +308,14 @@ User-visible Changes
- 
- Maintainer-visible changes
- --------------------------
-+- OpenVPN will not use the bundled LZ4 library by default if a system
-+  library have not been found.  The bundled library needs to be enabled
-+  explicitly by adding --enable-bundled-lz4 to ./configure.  This is to
-+  remove any ambiguity of which library is being used.  And defaulting to
-+  use the system library is best from a security perspective; this way the
-+  LZ4 library can be updated externally without requiring OpenVPN to be
-+  rebuilt and packaged.
-+
- - OpenVPN no longer supports building with crypto support, but without TLS
-   support.  As a consequence, OPENSSL_CRYPTO_{CFLAGS,LIBS} and
-   OPENSSL_SSL_{CFLAGS,LIBS} have been merged into OPENSSL_{CFLAGS,LIBS}.  This
-diff --git a/configure.ac b/configure.ac
-index 6f1044e8..a33e9172 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -66,11 +66,17 @@ AC_ARG_ENABLE(
- )
- 
- AC_ARG_ENABLE(lz4,
--	[  --disable-lz4           Disable LZ4 compression support],
--	[enable_lz4="$enableval"],
-+	[AS_HELP_STRING([--disable-lz4], [disable LZ4 compression support @<:@default=enabled@:>@])],
-+	,
- 	[enable_lz4="yes"]
- )
- 
-+AC_ARG_ENABLE(bundled-lz4,
-+	[AS_HELP_STRING([--enable-bundled-lz4], [enable bundled LZ4 library instead of system library @<:@default=disabled@:>@])],
-+	[enable_bundled_lz4="$enableval"],
-+	[enable_bundled_lz4="no"]
-+)
-+
- AC_ARG_ENABLE(comp-stub,
- 	[  --enable-comp-stub      Don't compile compression support but still allow limited interoperability with compression-enabled peers],
- 	[enable_comp_stub="$enableval"],
-@@ -1087,37 +1093,34 @@ dnl
- 
- AC_ARG_VAR([LZ4_CFLAGS], [C compiler flags for lz4])
- AC_ARG_VAR([LZ4_LIBS], [linker flags for lz4])
-+AM_CONDITIONAL([ENABLE_BUNDLED_LZ4], [test "${enable_bundled_lz4}" = "yes"])
- if test "$enable_lz4" = "yes" && test "$enable_comp_stub" = "no"; then
--    AC_CHECKING([for LZ4 Library and Header files])
--    havelz4lib=1
-+    if test "$enable_bundled_lz4" = "no"; then
-+	AC_CHECKING([for LZ4 Library and Header files])
- 
--    # if LZ4_LIBS is set, we assume it will work, otherwise test
--    if test -z "${LZ4_LIBS}"; then
--	AC_CHECK_LIB(lz4, LZ4_compress,
--	    [ LZ4_LIBS="-llz4" ],
--	    [
--	        AC_MSG_RESULT([LZ4 library not found.])
--	        havelz4lib=0
--	    ])
--    fi
--
--    saved_CFLAGS="${CFLAGS}"
--    CFLAGS="${CFLAGS} ${LZ4_CFLAGS}"
--    AC_CHECK_HEADERS(lz4.h,
--       ,
--       [
--	   AC_MSG_RESULT([LZ4 headers not found.])
--	   havelz4lib=0
--       ])
--
--    if test $havelz4lib = 0 ; then
--	AC_MSG_RESULT([LZ4 library or header not found, using version in src/compat/compat-lz4.*])
--	AC_DEFINE([NEED_COMPAT_LZ4], [1], [use copy of LZ4 source in compat/])
-+	# if LZ4_LIBS is set, we assume it will work, otherwise test
-+	if test -z "${LZ4_LIBS}"; then
-+	   AC_CHECK_LIB(lz4, LZ4_compress,
-+			[ LZ4_LIBS="-llz4" ],
-+			[
-+			     AC_MSG_ERROR([LZ4 library not found.  An alternative is to use --enable-bundled-lz4, or just --disable-lz4])
-+			])
-+	fi
-+	saved_CFLAGS="${CFLAGS}"
-+	CFLAGS="${CFLAGS} ${LZ4_CFLAGS}"
-+	AC_CHECK_HEADERS(lz4.h,
-+			 ,
-+			 [
-+			     AC_MSG_ERROR([LZ4 headers not found.  An alternative is to use --enable-bundled-lz4, or just --disable-lz4])
-+			 ])
-+    else
-+	AC_MSG_RESULT([using bundled lz4 library (in src/compat/compat-lz4.*)])
-+	AC_DEFINE([NEED_COMPAT_LZ4], [1], [use bundled copy of LZ4 source in compat/])
- 	LZ4_LIBS=""
-     fi
-     OPTIONAL_LZ4_CFLAGS="${LZ4_CFLAGS}"
-     OPTIONAL_LZ4_LIBS="${LZ4_LIBS}"
--    AC_DEFINE(ENABLE_LZ4, 1, [Enable LZ4 compression library])
-+    AC_DEFINE(ENABLE_LZ4, [1], [Enable LZ4 compression library])
-     CFLAGS="${saved_CFLAGS}"
- fi
- 
-diff --git a/src/compat/Makefile.am b/src/compat/Makefile.am
-index 444a8f8b..3dc25f39 100644
---- a/src/compat/Makefile.am
-+++ b/src/compat/Makefile.am
-@@ -26,5 +26,8 @@ libcompat_la_SOURCES = \
- 	compat-daemon.c \
- 	compat-inet_ntop.c \
- 	compat-inet_pton.c \
--	compat-lz4.c compat-lz4.h \
- 	compat-versionhelpers.h
-+
-+if ENABLE_BUNDLED_LZ4
-+libcompat_la_SOURCES += compat-lz4.c compat-lz4.h
-+endif
--- 
-2.13.5
+ACK.
 
+Imho, this is a very good step towards moving the bundled lib apart.
+The bundled lib is still there, so still usable by the maintainer who
+wants that, but it basically becomes legacy.
+
+Cheers,
+
+
+--=20
+Antonio Quartulli
+
+
+--ll721AcktSuLad1jqgosf2tRf8mnBepXs--
+
+--Mf3uGX9Ehem05UxKFF0vjGNfvXHk0OR6r
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEbd2mMhAXbmSCipS40+HICM1soFAFAlmwpy4ACgkQ0+HICM1s
+oFDv4g//aRpzj+hDFDQq81VZ9rGZkKtAKrpu9A0NPW9OkBLL3bAHatrGWGvypznF
+MLfQKgKfPcI0f+SDw04M5hV/YuH9chiStGozEFseegIMoLqPxHwBlLZ5e2/3ne6o
+JRc4IQfB9dlFuzpYBrqqgWzxDMBV/YaNBK/ciSUgClyiveNqqToLRT/pER1O+adN
+c+7xbdOnBBdAwNyRhI9nSX/ip1Es5GL26vi/ORO1fXUH6vNxvCenIZUUWeOIurge
+mQ4TO/RisNdGfpffypVwZrtHUHAGnAqLQWQ1l4NUqitNiPTgzNYrp9oTDaUmDcOR
+GzNNAZ/h/DZXPKILw6XA351zwRsUniyjeRq2bjG8N4esy6H87x/AAUFvsnUnkgyp
+QZwPYGurqbtjubUDEvPUZ20rKmFyD3687sxdaPL3XMFdDBh1WHPs6dT7Q6cBKt/W
+PHEQLl5v2fdQFESGvqKP81+lOOOcKdfcknsTK5Yto5QpAOysAHeuhcXsPisDJeY8
+ptpz7Prg7qlCh6/FVU+c10XtY4OedDb2kSpLG2cyR47c9hsAnQdf0031HuhpWsMl
+P+QwyIEjj0rutisj5JrQPygpY2ub0frVRD61ZSy7LcRXQsQV+Zzt9tzJ/v6+fRU2
+cu/t+kKhcoLU9F+Y/ECoBph9g2GEETrzYvAVtH7tiTnBCnr5sGc=
+=8Cn0
+-----END PGP SIGNATURE-----
+
+--Mf3uGX9Ehem05UxKFF0vjGNfvXHk0OR6r--
 
