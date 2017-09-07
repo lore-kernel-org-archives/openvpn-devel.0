@@ -1,12 +1,14 @@
-Message-ID: <c122b7ac9f1d63ac0ba060f7f7d3ceff.squirrel@...2257...>
-In-Reply-To: <20170907172004.22534-1-davids@...515...>
-References: <20170907022827.10658-1-davids@...515...>
- <20170907172004.22534-1-davids@...515...>
-Date: Thu, 7 Sep 2017 22:40:21 +0200
-From: "Simon Matter" <simon.matter@...2249...>
+References: <20170906235202.26551-1-davids@...515...>
+ <45ee0784-77cf-bba1-85cf-f7c6265b25f5@...277...>
+ <41cf1b9e-bb4b-a2f1-3c3a-cde43c8e0eb4@...2080...>
+From: fragmentux <fragmentux@...277...>
+Message-ID: <84bc7ec5-886e-7ae6-87a7-0385d0506376@...277...>
+Date: Thu, 7 Sep 2017 22:02:08 +0100
 MIME-Version: 1.0
-Content-Type: multipart/mixed;boundary="----=_20170907224021_30193"
-Subject: Re: [Openvpn-devel] [PATCH v2] lz4: Move towards a newer LZ4 API
+In-Reply-To: <41cf1b9e-bb4b-a2f1-3c3a-cde43c8e0eb4@...2080...>
+Content-Language: en-GB
+Subject: Re: [Openvpn-devel] [PATCH] systemd: Enable systemd's auto-restart
+ feature for server profiles
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,244 +17,134 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: David Sommerseth <davids@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
-
-------=_20170907224021_30193
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-While we are at it, I found it useful to see the used LZ4 version at
-runtime as it is done with LZO and other libraries.
+all your comment are totally valid from a sys-admin point of view but
+from an openvpn POV, the only responsibility is to provide a secure VPN.
 
-I've patched my rpms with the patch attached.
+Use all of systemd's functions to maximize openvpn's process *security*
+But *forcing* restart as an almost unconditional default is nonsense.
+How would you do this for non-systemd systems ?
 
-Regards,
-Simon
+I disagree with making this change to the default
+openvpn-server@...1685... unit file.
 
-> We are using a deprecated function, LZ4_compress_limitedOutput(), which
-> will be removed with time.  The correct function to use is
-> LZ4_compress_default().
-> Both function takes the same number of arguments and data types, so the
-> change
-> is minimal.
->
-> This patch will also enforce the system LZ4 library to be at least v1.7.1.
->  If
-> the system library is not found or it is older, it will be build using the
-> bundled
-> LZ4 library.  The version number requirement is based on the LZ4 version
-> we ship.
->
-> The changes in configure.ac for the version check is modelled around the
-> same
-> approach we use for OpenSSL.  Plus it does a few minor reformats and
-> improvements
-> to comply with more recommend autoconf coding style.
->
-> This patch is a result of the discussions in this mail thread:
-> https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg14135=
-.html
->
-> Signed-off-by: David Sommerseth <davids@...515...>
->
-> ---
-> v2 - Don't use LZ4 version based #ifdef wrapper function
->      Do the LZ4 version check in ./configure
-> ---
->  configure.ac           | 72
-> +++++++++++++++++++++++++++++++++++---------------
->  src/openvpn/comp-lz4.c |  3 ++-
->  2 files changed, 53 insertions(+), 22 deletions(-)
->
-> diff --git a/configure.ac b/configure.ac
-> index 6f1044e8..74443353 100644
-> --- a/configure.ac
-> +++ b/configure.ac
-> @@ -1088,37 +1088,67 @@ dnl
->  AC_ARG_VAR([LZ4_CFLAGS], [C compiler flags for lz4])
->  AC_ARG_VAR([LZ4_LIBS], [linker flags for lz4])
->  if test "$enable_lz4" =3D "yes" && test "$enable_comp_stub" =3D "no"; th=
-en
-> -    AC_CHECKING([for LZ4 Library and Header files])
-> -    havelz4lib=3D1
-> -
-> -    # if LZ4_LIBS is set, we assume it will work, otherwise test
-> -    if test -z "${LZ4_LIBS}"; then
-> -	AC_CHECK_LIB(lz4, LZ4_compress,
-> -	    [ LZ4_LIBS=3D"-llz4" ],
-> -	    [
-> -	        AC_MSG_RESULT([LZ4 library not found.])
-> -	        havelz4lib=3D0
-> -	    ])
-> +    if test -z "${LZ4_CFLAGS}" -a -z "${LZ4_LIBS}"; then
-> +	# if the user did not explicitly specify flags, try to autodetect
-> +	PKG_CHECK_MODULES([LZ4],
-> +			  [liblz4 >=3D 1.7.1],
-> +			  [have_lz4=3D"yes"],
-> +			  [] # If this fails, we will do another test next
-> +	)
->      fi
->
->      saved_CFLAGS=3D"${CFLAGS}"
-> +    saved_LIBS=3D"${LIBS}"
->      CFLAGS=3D"${CFLAGS} ${LZ4_CFLAGS}"
-> -    AC_CHECK_HEADERS(lz4.h,
-> -       ,
-> -       [
-> -	   AC_MSG_RESULT([LZ4 headers not found.])
-> -	   havelz4lib=3D0
-> -       ])
-> -
-> -    if test $havelz4lib =3D 0 ; then
-> -	AC_MSG_RESULT([LZ4 library or header not found, using version in
-> src/compat/compat-lz4.*])
-> +    LIBS=3D"${LIBS} ${LZ4_LIBS}"
-> +
-> +    # If pkgconfig check failed or LZ4_CFLAGS/LZ4_LIBS env vars
-> +    # are used, check the version directly in the LZ4 include file
-> +    if test "${have_lz4}" !=3D "yes"; then
-> +	AC_CHECK_HEADERS([lz4.h],
-> +			 [have_lz4h=3D"yes"],
-> +			 [])
-> +
-> +	if test "${have_lz4h}" =3D "yes" ; then
-> +	    AC_MSG_CHECKING([additionally if system LZ4 version >=3D 1.7.1])
-> +	    AC_COMPILE_IFELSE(
-> +		[AC_LANG_PROGRAM([[
-> +#include <lz4.h>
-> +				 ]],
-> +				 [[
-> +/* Version encoding: MMNNPP (Major miNor Patch) - see lz4.h for details
-> */
-> +#if LZ4_VERSION_NUMBER < 10701L
-> +#error LZ4 is too old
-> +#endif
-> +				 ]]
-> +				)],
-> +		[
-> +		    AC_MSG_RESULT([ok])
-> +		    have_lz4=3D"yes"
-> +		],
-> +		[AC_MSG_RESULT([system LZ4 library is too old])]
-> +	    )
-> +	fi
-> +    fi
-> +
-> +    # if LZ4_LIBS is set, we assume it will work, otherwise test
-> +    if test -z "${LZ4_LIBS}"; then
-> +	AC_CHECK_LIB([lz4],
-> +		     [LZ4_compress],
-> +		     [LZ4_LIBS=3D"-llz4"],
-> +		     [have_lz4=3D"no"])
-> +    fi
-> +
-> +    if test "${have_lz4}" !=3D "yes" ; then
-> +	AC_MSG_RESULT([		usuable LZ4 library or header not found, using version
-> in src/compat/compat-lz4.*])
->  	AC_DEFINE([NEED_COMPAT_LZ4], [1], [use copy of LZ4 source in compat/])
->  	LZ4_LIBS=3D""
->      fi
->      OPTIONAL_LZ4_CFLAGS=3D"${LZ4_CFLAGS}"
->      OPTIONAL_LZ4_LIBS=3D"${LZ4_LIBS}"
-> -    AC_DEFINE(ENABLE_LZ4, 1, [Enable LZ4 compression library])
-> +    AC_DEFINE(ENABLE_LZ4, [1], [Enable LZ4 compression library])
->      CFLAGS=3D"${saved_CFLAGS}"
-> +    LIBS=3D"${saved_LIBS}"
->  fi
->
->
-> diff --git a/src/openvpn/comp-lz4.c b/src/openvpn/comp-lz4.c
-> index e056caa8..bdb3247d 100644
-> --- a/src/openvpn/comp-lz4.c
-> +++ b/src/openvpn/comp-lz4.c
-> @@ -43,6 +43,7 @@
->
->  #include "memdbg.h"
->
-> +
->  static void
->  lz4_compress_init(struct compress_context *compctx)
->  {
-> @@ -86,7 +87,7 @@ do_lz4_compress(struct buffer *buf,
->              return false;
->          }
->
-> -        zlen =3D LZ4_compress_limitedOutput((const char *)BPTR(buf), (ch=
-ar
-> *)BPTR(work), BLEN(buf), zlen_max );
-> +        zlen =3D LZ4_compress_default((const char *)BPTR(buf), (char
-> *)BPTR(work), BLEN(buf), zlen_max );
->
->          if (zlen <=3D 0)
->          {
-> --
-> 2.13.5
->
->
-> -------------------------------------------------------------------------=
------
-> Check out the vibrant tech community on one of the world's most
-> engaging tech sites, Slashdot.org! http://sdm.link/slashdot
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->
+If you really want to include them then how about:
 
-------=_20170907224021_30193
-Content-Type: text/x-patch; name="openvpn-2.4.0-lz4_version_string.patch"
-Content-Disposition: attachment;
- filename="openvpn-2.4.0-lz4_version_string.patch"
-Content-Transfer-Encoding: quoted-printable
+Either:
+   openvpn-server@...1685... (responsible for start/stop etc actions)
+   openvpn-server-auto-restart@...1685... (speaks for itself)
 
-diff -Naur openvpn-2.4.0.orig/src/openvpn/comp-lz4.h openvpn-2.4.0/src/op=
-envpn/comp-lz4.h
---- openvpn-2.4.0.orig/src/openvpn/comp-lz4.h	2016-12-26 12:51:00.0000000=
-00 +0100
-+++ openvpn-2.4.0/src/openvpn/comp-lz4.h	2017-01-17 09:11:12.000000000 +0=
-100
-@@ -28,6 +28,10 @@
-=20
- #if defined(ENABLE_LZ4)
-=20
-+#if defined(HAVE_LZ4_H)
-+#include "lz4.h"
-+#endif
-+
- #include "buffer.h"
-=20
- extern const struct compress_alg lz4_alg;
-diff -Naur openvpn-2.4.0.orig/src/openvpn/options.c openvpn-2.4.0/src/ope=
-nvpn/options.c
---- openvpn-2.4.0.orig/src/openvpn/options.c	2016-12-26 12:51:00.00000000=
-0 +0100
-+++ openvpn-2.4.0/src/openvpn/options.c	2017-01-17 09:11:12.000000000 +01=
-00
-@@ -4121,11 +4121,17 @@
- #else
- #define LZO_LIB_VER_STR "", ""
- #endif
-+#ifdef ENABLE_LZ4
-+#define LZ4_LIB_VER_STR ", LZ4 ", LZ4_versionString()
-+#else
-+#define LZ4_LIB_VER_STR "", ""
-+#endif
-=20
--    msg(flags, "library versions: %s%s%s", SSL_LIB_VER_STR, LZO_LIB_VER_=
-STR);
-+    msg(flags, "library versions: %s%s%s%s%s", SSL_LIB_VER_STR, LZO_LIB_=
-VER_STR, LZ4_LIB_VER_STR);
-=20
- #undef SSL_LIB_VER_STR
- #undef LZO_LIB_VER_STR
-+#undef LZ4_LIB_VER_STR
- }
-=20
- static void
-------=_20170907224021_30193--
+Or rather
+   include extra .service files in ./contrib. as samples or such.
 
+regards,
 
+On 07/09/17 16:46, David Sommerseth wrote:
+> On 07/09/17 17:08, fragmentux wrote:
+>> Hi,
+>>
+>> On 07/09/17 00:52, David Sommerseth wrote:
+>>> Systemd supervises services it has started and can act upon unexpected
+>>> scenarios.  This change will restart OpenVPN after 5 seconds if the
+>>> OpenVPN
+>>> process exits unexpectedly.
+>>
+>> Define "unexpectedly"
+>> (my2c: something needs to be fixed)
+> 
+> Yes, that _could_ be, but is not for sure.  It is hard to define
+> "unexpectedly".  Or to flip it around, if we could define "unexpectedly"
+> properly, there is nothing unexpected happening.
+> 
+> But _some_ scenarios
+> 
+>   - The out-of-memory killer picks an openvpn process
+>     Fix: Add more memory, reduce the number of memory hungry processes,
+>     usually nothing OpenVPN can do anything with
+> 
+>   - The server process segfaults dies (segfault)
+>     This happens most commonly due to poor/badly written plug-ins
+>     Fix: Get an updated/fixed plug-in, not something OpenVPN can
+>     fully control.
+> 
+>   - A fatal error happened
+>     Which can have many reasons (grep M_FATAL in the source), most
+>     of them it is safe to restart the OpenVPN process.  It could be
+>     caused by the crypto layer not getting enough random data, it
+>     could be a malicious attempt of an attack, triggering some of
+>     the ASSERT() checks in the code.  M_FATAL in general is more
+>     of the error type "It is not safe to continue running this process"
+>     but it doesn't mean it isn't safe to restart the process.  Again,
+>     situations outside OpenVPN influences its ability to run.
+> 
+> And there's a plethora of other scenarios too.
+> 
+> So to define "unexpectedly" is not far away from trying to define "life".
+> 
+> 
+>>> The on-failure mode is the recommended mode by upstream systemd.
+>>
+>> IE:
+>> This is the way "upstream systemd" recommend to use systemd
+>> *if*  "some failed process"  is to be restarted.
+>>
+>> (my2c: A decision better left to the sys-admin not openvpn developer)
+> 
+> Why is it bad to have this behaviour being the default?  The sys-admin
+> still have the ability to override this.
+> 
+> And even though I have the role of developer here in the OpenVPN
+> community, outside of my day-work role I do also have the role as a
+> sys-admin.  From my point of view, this isn't a "this sounds like a cool
+> feature".  It is actually something I have enabled on systems manually
+> for some time, so if my smaller scale environment finds this useful -
+> why wouldn't others find it useful?  And also having had sys-admin roles
+> in former work life, this is something we deployed on many services in
+> far larger environments.
+> 
+>>> This change have been tested on a test server for some month, and it
+>>> works indeed as intended when provoking the OpenVPN process to stop.
+>>
+>> Define "provoking"
+>> (my2c: not unexpectedly at all, nothing to fix here)
+> 
+> Like adding a plug-in which triggers a segfault on the first connection
+> attempt.  Or sending a SIGKILL to the process.  This was needed to test
+> and verify that the restart mechanism did work.  Otherwise I would not
+> have had confidence in believing this was done correctly.  And even
+> though that my triggering isn't unexpected, it is unexpected by the
+> OpenVPN process.
+> 
+> But sure, if you have a way to trigger OpenVPN to unexpectedly failing,
+> we'd be delighted to hear about it .... as that is most likely something
+> we should fix in OpenVPN ;-)
+> 
+> In case you haven't noticed, OpenVPN is quite stable and seldom fails by
+> itself.  But when it does, it is for most end-users depending on it a
+> nice feature that things do try to recover on its own.
+> 
+> These events do also not happen in complete silence.  They are logged.
+> And a responsible sys-admin will check logs at regular intervals, some
+> even have automated alerts happening.  But most sys-admins will be
+> pleased that they don't have to go into panic rescue mode instantly
+> because a VPN server went down and they have 50 users on the phone
+> complaining they can't reach the intranet.
+> 
+>> Either way,
+>> it is only a few lines of a systemd unit.service file
+>> to be deleted/customised by the relevant sys-admin.
+> 
+> systemctl edit openvpn-server@...2302...
+> then add Restart=no
+> 
+> Which have the advantage of disabling this feature on selected
+> configurations, not all configs by default.  If you want the default, I
+> believe you just do: systemctl edit openvpn-server@
+> 
+> 
 
