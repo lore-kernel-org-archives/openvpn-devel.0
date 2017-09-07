@@ -1,16 +1,17 @@
 Reply-To: openvpn-devel@lists.sourceforge.net
-References: <20170906235202.26551-1-davids@...515...>
- <20170907061646.GD70062@...1296...>
+References: <20170907012225.21661-1-davids@...515...>
+ <20170907061200.GB70062@...1296...>
+ <73fb2899-edfb-1399-39de-e84d9c3e87fe@...2080...>
 From: David Sommerseth <openvpn@...2080...>
-Message-ID: <feb52e8f-971d-bdc8-2320-9eefe647356e@...2080...>
-Date: Thu, 7 Sep 2017 16:38:25 +0200
+Message-ID: <bcd4211c-b553-5c41-0a84-2985e79e4376@...2080...>
+Date: Thu, 7 Sep 2017 16:54:01 +0200
 MIME-Version: 1.0
-In-Reply-To: <20170907061646.GD70062@...1296...>
+In-Reply-To: <73fb2899-edfb-1399-39de-e84d9c3e87fe@...2080...>
 Content-Type: multipart/signed; micalg=pgp-sha512;
  protocol="application/pgp-signature";
- boundary="UoH3IBTACmwOolDCLRcPCuCVMiWToegD3"
-Subject: Re: [Openvpn-devel] [PATCH] systemd: Enable systemd's auto-restart
- feature for server profiles
+ boundary="T00SJCwEtviL3KiPugIvvT6TEkXvmqGvP"
+Subject: Re: [Openvpn-devel] [PATCH] lz4: Changing how LZ4 library handling
+ is done
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,54 +20,48 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>, David Sommerseth <davids@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net, Gert Doering <gert@...1296...>, David Sommerseth <davids@...515...>
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---UoH3IBTACmwOolDCLRcPCuCVMiWToegD3
-Content-Type: multipart/mixed; boundary="JkLvcIKiKp16w3OLnkSIsa2SJDPNqs3RP";
+--T00SJCwEtviL3KiPugIvvT6TEkXvmqGvP
+Content-Type: multipart/mixed; boundary="lip9mgb1fgfpL98hOErt8GSG19qMddWnw";
  protected-headers="v1"
 From: David Sommerseth <openvpn@...2080...>
 Reply-To: openvpn-devel@lists.sourceforge.net
-To: Gert Doering <gert@...1296...>, David Sommerseth <davids@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
-Message-ID: <feb52e8f-971d-bdc8-2320-9eefe647356e@...2080...>
-Subject: Re: [Openvpn-devel] [PATCH] systemd: Enable systemd's auto-restart
- feature for server profiles
-References: <20170906235202.26551-1-davids@...515...>
- <20170907061646.GD70062@...1296...>
-In-Reply-To: <20170907061646.GD70062@...1296...>
+To: openvpn-devel@lists.sourceforge.net, Gert Doering <gert@...1296...>,
+ David Sommerseth <davids@...515...>
+Message-ID: <bcd4211c-b553-5c41-0a84-2985e79e4376@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH] lz4: Changing how LZ4 library handling is
+ done
+References: <20170907012225.21661-1-davids@...515...>
+ <20170907061200.GB70062@...1296...>
+ <73fb2899-edfb-1399-39de-e84d9c3e87fe@...2080...>
+In-Reply-To: <73fb2899-edfb-1399-39de-e84d9c3e87fe@...2080...>
 
---JkLvcIKiKp16w3OLnkSIsa2SJDPNqs3RP
+--lip9mgb1fgfpL98hOErt8GSG19qMddWnw
 Content-Language: en-GB
 Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
 
-On 07/09/17 08:16, Gert Doering wrote:
+On 07/09/17 16:06, David Sommerseth wrote:
+> On 07/09/17 08:12, Gert Doering wrote:
+>> Hi,
+>>
+>> On Thu, Sep 07, 2017 at 03:22:25AM +0200, David Sommerseth wrote:
+>>> This change will expect the system to have LZ4 libraries and headers
+>>> installed by default.  We still carry a bundled LZ4 library, which
+>>> must now be explicitly enabled through providing --enable-bundled-lz4
+>>> to ./configure.  Otherwise, as before, --disable-lz4 will completely
+>>> remove any LZ4 support.
+>>
+>> I'm totally missing the *reason* why you want to change this
 >=20
-> Restarting is good, but if there is something faulty that leads to
-> "the process always dies right away", this can lead to very quickly
-> filling disks with not-so-useful logging...
-Oh, I overlooked this one.  Just one comment in regards to the "filling
-disks".  That naturally depends on how logging is configured on the
-system, and that varies a lot.  But my experience based on defaults in
-the environments I use:
+> Bundled libraries are considered to be bad, as it requires active
+> maintenance.  Just look at which version we ship in OpenVPN (1.6.0) and
 
-* systemd journal have some reasonably sane defaults to avoid this to
-  happen; IIRC it defaults to rotate the journal when reaching 10-15% of
-  available disk space *or* 4GB of log data.
-
-* RHEL (and clones) usually have rsyslog installed too, which the
-  journal forwards log data too.  And it most commonly it also have
-  logrotate installed too (at least on the server variant) which runs
-  on a regular basis.  But it also depends on how big the partition
-   where /var/log resides is.
-
-So the risks for such restarts to cause full disks should be fairly
-minimal.  And for those who have enabled remote logging, that is often
-to pay more attention to log events, so then such scenarios would
-probably be detected even quicker.
-
+Just a correction.  We bundle lz4-1.7.1, not 1.6.0.  That was a
+left-over from my testing of the API update patch.  But that doesn't
+change my argument that much.
 
 --=20
 kind regards,
@@ -76,9 +71,9 @@ OpenVPN Technologies, Inc
 
 
 
---JkLvcIKiKp16w3OLnkSIsa2SJDPNqs3RP--
+--lip9mgb1fgfpL98hOErt8GSG19qMddWnw--
 
---UoH3IBTACmwOolDCLRcPCuCVMiWToegD3
+--T00SJCwEtviL3KiPugIvvT6TEkXvmqGvP
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -86,20 +81,20 @@ Content-Disposition: attachment; filename="signature.asc"
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBCgAGBQJZsVnhAAoJEIbPlEyWcf3yDyYP/1jO+pUHFng23yIwqrc745K7
-JNiRZwaD+FXkXfo0TH/qGWcL9iK0tB6abZf8zDTjiJY40Pdxy8iMQYEjI94t2TS9
-50tH/QHdcHoPRGqMpXdsHsWnj5bjOmNoTarl7dlA68fauwEuoIpySSeDYZbdioKI
-xtTdbrzA5AU3VXdSkvJ0fvYGLJRCELK5pQENRjiAUpVoB/bvRbdM+LfvfKn2tLH7
-+nlMPXM81YhtPXtNc8nNULH73giEkyopQJhfxN/CAofLs0ACAZGHveNjfr/5luU+
-O3S2wXS0AegTTYpUygP4volcfhmLmaXhT3GJrNVExmyNoVKArDrNybrFJvP6Fm4y
-ZKKGgiD9Lnqj7A6hX+oNYlq6SBvP+OqrQ7O3Zd29Bris21PcCLQCmmtnElIyPpVV
-+Gc7zRVh28qgbkIzOvAWgrUGmJVlGl2NmN6fQusq9WaDISkYkdJPfJhCsGhfUq6s
-MPLtEdnz2+RsaHRnEoCCmq/3xnAbCgq4QlfMsF9Kuy42EudBEBSdI0xxoMqnZt9Q
-la0tZAZ9w3oMvwtx3YTNQwqzRl+kyEl0UzIQNz9gunqG+gP/C0prywHgUK2g/tMn
-KgTofLEQTKIIegVbnhNJIOYhNUeWuV2qyfb+35umDQHhIcOCbVjMyvVD3stTWvqj
-v6tUvWSveTmNQnnWA7Wo
-=7gTR
+iQIcBAEBCgAGBQJZsV2JAAoJEIbPlEyWcf3yQ9sP/jld6Eu4p0mT476r5fMvvr/R
+1Sm7TKm8kuqjzmBjH+ZdtlRY6/rtACNNvjYNIGmvBs1Yom66c/1mm/zta9oKRpNs
+Qhm7aua5cqQcVQOh6sR17f76KrQAriXHYUm5r1FUZrlRvFoeGBSH8uZTYsJB+l0v
+TFP+CrSMW2L5P6DtlpPUCFbx9UeJEY6mQFc5c6ErATbqq0sMg1Fz+xDHq2BBLr7L
+qrpGIwKAk182AQXsZQK6Gg3hJx5Jw3PXfWRN4vLAaOD+aKLz3hgMIeM0NR0Ca9l1
+QIlZoLvVEhzRm7ovCLj2vFk8guqGOW7DJ4UVliDjzIdlsE9FmBnexHknixsZnU4Q
+Rqk4vRrP50PaLxX1P4i+0khUTeHRpqh0amqDlH22kvMMlT7gmhMxY/SVKaTjGOyJ
+EWt+U1vNrUUBgCVKoDU5sZNtjpzy+3ikpIAxnTHWodkDTVvqn2MfOTBsUngYmWVz
+RCsNGBQHbADzOjy4GucuzetJYSsKbrkUe6xS9BcR7SlIMqpNjPSLmQoIikEjDTB1
+AS/51GBBeLzZs89h4hM4UVCKqb84XtK7t8gqEgMAQW1CCL6dXx3pWYyKEuGXQSfi
+A7jm1QJmGrxIWUGwseCtGwGrVb2X41uESJyl6I+UPcxsoxFtAEd+/WozWv7muwWB
++gkN0LF93ZqG3Fd6MzgF
+=KPHB
 -----END PGP SIGNATURE-----
 
---UoH3IBTACmwOolDCLRcPCuCVMiWToegD3--
+--T00SJCwEtviL3KiPugIvvT6TEkXvmqGvP--
 
