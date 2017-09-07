@@ -1,13 +1,14 @@
-Date: Thu, 7 Sep 2017 08:13:33 +0200
+Date: Thu, 7 Sep 2017 08:16:46 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20170907061333.GC70062@...1296...>
-References: <20170907022827.10658-1-davids@...515...>
+Message-ID: <20170907061646.GD70062@...1296...>
+References: <20170906235202.26551-1-davids@...515...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="m62MDEjg5u5lTXSK"
+ protocol="application/pgp-signature"; boundary="3x4RsK4fNlfzJGUz"
 Content-Disposition: inline
-In-Reply-To: <20170907022827.10658-1-davids@...515...>
-Subject: Re: [Openvpn-devel] [PATCH] lz4: Move towards a newer LZ4 API
+In-Reply-To: <20170906235202.26551-1-davids@...515...>
+Subject: Re: [Openvpn-devel] [PATCH] systemd: Enable systemd's auto-restart
+ feature for server profiles
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,30 +20,31 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: David Sommerseth <davids@...515...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---m62MDEjg5u5lTXSK
+--3x4RsK4fNlfzJGUz
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
-HI,
+Hi,
 
-On Thu, Sep 07, 2017 at 04:28:27AM +0200, David Sommerseth wrote:
-> We are using a deprecated function, LZ4_compress_limitedOutput(), which
-> will be removed with time.  The correct function to use is LZ4_compress_d=
-efault().
-> Both function takes the same number of arguments and data types, so the c=
-hange
-> is minimal.
+On Thu, Sep 07, 2017 at 01:52:02AM +0200, David Sommerseth wrote:
+> @@ -18,6 +18,8 @@ DeviceAllow=3D/dev/net/tun rw
+>  ProtectSystem=3Dtrue
+>  ProtectHome=3Dtrue
+>  KillMode=3Dprocess
+> +RestartSec=3D5s
+> +Restart=3Don-failure
 
-I wonder why we should bother to have a wrapper function here.
+Is there a way to get exponential backoff on restart?
 
-We can ship a lz4 library that has the new function, and if a system only
-provides an older version, declare it unsuitable (configure check) and
-use the bundled one.
+Restarting is good, but if there is something faulty that leads to
+"the process always dies right away", this can lead to very quickly
+filling disks with not-so-useful logging...
 
-Less #ifdef
+(Otherwise, yes, restarting is good :-) )
 
 gert
+
 --=20
 USENET is *not* the non-clickable part of WWW!
                                                            //www.muc.de/~ge=
@@ -50,22 +52,22 @@ rt/
 Gert Doering - Munich, Germany                             gert@...1296...
 fax: +49-89-35655025                        gert@...1297...
 
---m62MDEjg5u5lTXSK
+--3x4RsK4fNlfzJGUz
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJZsOONAAoJEB2Cnv7KVigSzbIL/1O9QOit8LZ6ViC/QU0A/awb
-Ki1TMRLD2BtVG1sd5cjGJiDLXz3Hvtkatt1R+C8WgFgH5oB9UbuEEX8XS7isqeTd
-vhUgOLQhgAaZCCGknlizc0i+bFu4a4z6k/whtnasUCts96shDvNWH8s+mWCk6t/4
-Nk//DcedKHPhIVFLOHSq+qYSx0LKjljXtENpBKGwq3EzRHxrcbVLFQYASoi4PlP+
-xgJQfgPn9llrs8yj3iqae4//dszCGG7yKmzGOGUhwxIoWV9wLWBMXmgWiv1S2sJw
-UNmxnp9G5WtHY+EiktmINx0HzirNBlx3w/6MdPfVRobsS4b2MbsyTApCwXSA6Qp3
-xm185A2STRM3ICO5e6AZ8tXH0RPWU14BqO8k9xz23ZcEzyp9e0K00LefGcSxKiEY
-8d2yl8N2b545XxunvL0WZUjtK39hAR6bKUEbkI0KT8rg5cfz/iG1wwQ52B2KzNVu
-99CdramAGxVT1Vo13ALeLlcsEF/r1R3f3mcHz4q7Fw==
-=69NA
+iQGcBAEBAgAGBQJZsOROAAoJEB2Cnv7KVigSsrcL/0nAqPas+DxRqyi9XP1WDrPL
+qLQT7xqsVQe4NITEi4uewBdmQF6pG4/45kTuy0eUCLHLjobMSVqDkRAN9r4E0i/j
+8nfMabzPzZMhDxSaoAkhSe9v3RnQVFMPNCwJQY8zQVQ5gXlC2OFq5aFzepvo/ziw
+sRE2pj2AIm9AcWl3CRcKMgy/u0UmPVKwTN8a+LqwtKozfHFjw7riEgMDZv3eofDI
+WtNGQT6bmpNYxLgZeLCVSC6Pjc55cuvsu4Fy8ZvGghVPucmek1wNEAW2a0wzw/nh
+5paF9t3E3seNhNjzyFaGiEHsbaGo8KIkMteKUgkDix6NiUPeM0bYKS2w7yh/kLjx
+USMhtp4yb2/frj2EVHAIIUZt37QMZqmG4kr/nuX+3jv7TpysxUFO4ZhaWXf/3yBS
+A11BA1R23awkv575m5DOuxYqfUi9i5WrlEdoSgk1YY/v1aB+2Wf5L0BaJJwVN6ZK
+dBr84sOd3UjgDQF3wRQfb1ygP5Vrmug/bWc7Gt/9iA==
+=URxc
 -----END PGP SIGNATURE-----
 
---m62MDEjg5u5lTXSK--
+--3x4RsK4fNlfzJGUz--
 
