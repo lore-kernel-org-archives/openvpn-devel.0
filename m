@@ -1,15 +1,18 @@
-Date: Fri, 8 Sep 2017 09:01:06 +0200
+Date: Fri, 8 Sep 2017 09:05:29 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20170908070106.GQ70062@...1296...>
+Message-ID: <20170908070529.GR70062@...1296...>
 References: <20170906235202.26551-1-davids@...515...>
  <45ee0784-77cf-bba1-85cf-f7c6265b25f5@...277...>
  <41cf1b9e-bb4b-a2f1-3c3a-cde43c8e0eb4@...2080...>
  <84bc7ec5-886e-7ae6-87a7-0385d0506376@...277...>
+ <8c9c7f22-30a6-a192-f56d-961605a6d1c2@...2080...>
+ <8aaacc62-7c5f-14d0-e1a4-a38b89c90625@...277...>
+ <f5e56e77-e810-78d0-47b0-474f660f78b5@...277...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="fJz81ohldq3XijGc"
+ protocol="application/pgp-signature"; boundary="zkS4nBu7xsy2hAaK"
 Content-Disposition: inline
-In-Reply-To: <84bc7ec5-886e-7ae6-87a7-0385d0506376@...277...>
+In-Reply-To: <f5e56e77-e810-78d0-47b0-474f660f78b5@...277...>
 Subject: Re: [Openvpn-devel] [PATCH] systemd: Enable systemd's auto-restart
  feature for server profiles
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -23,31 +26,28 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: fragmentux <fragmentux@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---fJz81ohldq3XijGc
+--zkS4nBu7xsy2hAaK
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Thu, Sep 07, 2017 at 10:02:08PM +0100, fragmentux wrote:
-> all your comment are totally valid from a sys-admin point of view but
-> from an openvpn POV, the only responsibility is to provide a secure VPN.
+On Fri, Sep 08, 2017 at 01:41:15AM +0100, fragmentux wrote:
+> WRT systemd and 3rd party 'servers'
+>=20
+> I am curious to know of any other "Server service" who decide ..
+> to *rely* on ..
+> a *forced* 'systemd (almost) unconditional restart by default'
 
-Uh, no.  Part of our responsibility is also to provide a reasonably good
-experience to sysadmins installing and running openvpn - and if we can
-provide a systemd unit file that does "the right thing" for "most of the
-time", users will be happier.
+Some software provides their own wrapper scripts to ensure restarts
+(like squid, for example) because not all systems have facilities to
+do that.  So being able to use systemd to ensure the daemon stays up
+relieves the developers from cooking their own scripts.
 
-(I do not always agree with David on what the best approach to "good
-experience" is, so you'll see discussions - but we *do* agree on the
-general principle "it should work and not annoy users or sysadmins")
-
-Another example: why do we bother to have warnings about option combinations
-that will not work right in our code, instead of "just exit(1) with no
-further explanation"?  Because "secure VPN" alone isn't good enought, it
-needs to be reasonably robust against misuse, and *tell* users what is
-wrong so they can fix their errors.
+mgetty+sendfax' faxrunqd, for example, is started from /etc/inittab on
+systems that do not have systemd - for exactly the same reason: if=20
+something happens, faxrunqd gets automatically restarted.
 
 gert
 --=20
@@ -57,22 +57,22 @@ rt/
 Gert Doering - Munich, Germany                             gert@...1296...
 fax: +49-89-35655025                        gert@...1297...
 
---fJz81ohldq3XijGc
+--zkS4nBu7xsy2hAaK
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJZskAyAAoJEB2Cnv7KVigSGYML/RPZjRx5sMts1wPlS93otMMC
-FSN1LVpRv8AmnGTXWfMKxz0pwh3aMpO+jBpzw9Tx3TqlEgiiKdB3LVCpELPxpDTx
-UTthdD7Yp0HhlPKjxUY1YM7Dfsa1YRKnrm02eWEqWIuLZ8J5S1UKKAilSGG+m7VC
-05CzwtmqAudxJhwSSHVc5WxLmK3MaKkllq9DeRsf42ehB9IzCp6cltWeNMmQ3s+A
-bwyBBBoC8Emo0Dqiv3VrvygGjy//erZcEiiTLvq/xM3+peH8p+izJ+8xxGtzT/Ku
-OtpzYk4juijBNSNFOmPcHC9TbTWrIlI9Rbv7XHbvlJjmaaBZHPXMo61pOJwL8IXF
-97zINbC9FVHO7Vw1YSWMjug4uge/jLCXv888qamRxQwJE3aC/dDg8WSkwcRJ4m9I
-qNN/oX78jGcJh4xIuZczUIBO3Q3pJRedXSJTs0Bh7kw43pbCL3WetlUksixZBLYy
-SDj4U+TACzikA6bgAr/9Zq70urdaioAFzcbmofG80Q==
-=G3yc
+iQGcBAEBAgAGBQJZskE5AAoJEB2Cnv7KVigSWL0MAJqoiAqGym5KcxjYShykCQHi
+KyQsf6i/y+LP5BdgCeh1scxAUshKhySSxfQfijXEzFcEGjm9eTqcTAqzck0itVja
+F96cOzz87y/5KkBfxm0PwJJZMbBSyxCSnm0qiScZSOtGzSR8ucIBUSukKYSt3qad
+7JCu5uPSe9znKcQhp3r7QmlT67ufiiJjZpRonAjFOgG9hBsbjV1rSZQKgzb09MA+
+fU3u0149gLYw0RHX5XJ4CspzeUOfis6nHakXFdvC7skXd4GUrAQ8cuWRjxlVi4+L
+xG9/NHWjyrxQ/WbF65q3r3dskFPfz0bFc6Ju3/ZiPj9Nho8UsCJw8IioDghXobzA
+/HnVccV88Wk8EERcddcY2ihHpv3hIN39EmHQPAfOm+GtJUdXEALz6rSZ4WIS3a3S
+uRDyfA2cXwFZRB4MctDfo3YTCfFCnJvIbFAFVDYjQCm/jfrCfZiEvZe6muFcfDeY
+0JiBSizffwp7e/FiVmBj6YgU+xOZfvL2tWnhHPUbOQ==
+=sCOA
 -----END PGP SIGNATURE-----
 
---fJz81ohldq3XijGc--
+--zkS4nBu7xsy2hAaK--
 
