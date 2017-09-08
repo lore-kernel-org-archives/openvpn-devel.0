@@ -1,14 +1,19 @@
-References: <20170907022827.10658-1-davids@...515...>
- <20170907172004.22534-1-davids@...515...>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <a9189aa3-f5a0-8204-6656-956325a06aa4@...2181...>
-Date: Fri, 8 Sep 2017 09:42:02 +0800
+References: <20170906235202.26551-1-davids@...515...>
+ <45ee0784-77cf-bba1-85cf-f7c6265b25f5@...277...>
+ <41cf1b9e-bb4b-a2f1-3c3a-cde43c8e0eb4@...2080...>
+ <84bc7ec5-886e-7ae6-87a7-0385d0506376@...277...>
+ <8c9c7f22-30a6-a192-f56d-961605a6d1c2@...2080...>
+ <8aaacc62-7c5f-14d0-e1a4-a38b89c90625@...277...>
+ <f5e56e77-e810-78d0-47b0-474f660f78b5@...277...>
+ <dbb9942d9beb584473690320e9603933@...2277...>
+From: fragmentux <fragmentux@...277...>
+Message-ID: <61364cfa-6ccf-e894-4c88-674f8b9afdb2@...277...>
+Date: Fri, 8 Sep 2017 02:45:15 +0100
 MIME-Version: 1.0
-In-Reply-To: <20170907172004.22534-1-davids@...515...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="ODKolUcGW6f39w6je5LUF7h1je4Pk5Ajo"
-Subject: Re: [Openvpn-devel] [PATCH v2] lz4: Move towards a newer LZ4 API
+In-Reply-To: <dbb9942d9beb584473690320e9603933@...2277...>
+Content-Language: en-GB
+Subject: Re: [Openvpn-devel] [PATCH] systemd: Enable systemd's auto-restart
+ feature for server profiles
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,89 +22,69 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: David Sommerseth <davids@...515...>, openvpn-devel@lists.sourceforge.net
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---ODKolUcGW6f39w6je5LUF7h1je4Pk5Ajo
-Content-Type: multipart/mixed; boundary="pcFx0LwVMWhnoUi7xmM428w1Sqwrh9qHC";
- protected-headers="v1"
-From: Antonio Quartulli <a@...2181...>
-To: David Sommerseth <davids@...515...>, openvpn-devel@lists.sourceforge.net
-Message-ID: <a9189aa3-f5a0-8204-6656-956325a06aa4@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH v2] lz4: Move towards a newer LZ4 API
-References: <20170907022827.10658-1-davids@...515...>
- <20170907172004.22534-1-davids@...515...>
-In-Reply-To: <20170907172004.22534-1-davids@...515...>
-
---pcFx0LwVMWhnoUi7xmM428w1Sqwrh9qHC
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+To: openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-On 08/09/17 01:20, David Sommerseth wrote:
+On 08/09/17 02:30, Steven Haigh wrote:
+> On 2017-09-08 10:41, fragmentux wrote:
+>> WRT systemd and 3rd party 'servers'
+>>
+>> I am curious to know of any other "Server service" who decide ..
+>> to *rely* on ..
+>> a *forced* 'systemd (almost) unconditional restart by default'
+> 
+> As a basic list:
+> 
+> /usr/lib/systemd/system $ grep -r Restart *.service
 
-[CUT]
-
-> diff --git a/src/openvpn/comp-lz4.c b/src/openvpn/comp-lz4.c
-> index e056caa8..bdb3247d 100644
-> --- a/src/openvpn/comp-lz4.c
-> +++ b/src/openvpn/comp-lz4.c
-> @@ -43,6 +43,7 @@
->=20=20
->  #include "memdbg.h"
->=20=20
-> +
->  static void
->  lz4_compress_init(struct compress_context *compctx)
->  {
-> @@ -86,7 +87,7 @@ do_lz4_compress(struct buffer *buf,
->              return false;
->          }
->=20=20
-> -        zlen =3D LZ4_compress_limitedOutput((const char *)BPTR(buf), (ch=
-ar *)BPTR(work), BLEN(buf), zlen_max );
-> +        zlen =3D LZ4_compress_default((const char *)BPTR(buf), (char *)B=
-PTR(work), BLEN(buf), zlen_max );
-
-while at it, could you remove the annoying space between the last
-argument and the closing parenthesis? (you or the committer)
-
-Cheers,
-
->=20=20
->          if (zlen <=3D 0)
->          {
->=20
-
---=20
-Antonio Quartulli
+This is the wrong place to grep ..
 
 
---pcFx0LwVMWhnoUi7xmM428w1Sqwrh9qHC--
+> autovt@...1685...:Restart=always
+> autovt@...1685...:RestartSec=0
+> console-getty.service:Restart=always
+> console-getty.service:RestartSec=0
+> container-getty@...1685...:Restart=always
+> container-getty@...1685...:RestartSec=0
+> dbus-org.freedesktop.login1.service:Restart=always
+> dbus-org.freedesktop.login1.service:RestartSec=0
+> debug-shell.service:Restart=always
+> debug-shell.service:RestartSec=0
+> getty@...1685...:Restart=always
+> getty@...1685...:RestartSec=0
+> mariadb.service:# Restart crashed server only, on-failure would also 
+> restart, for example, when
+> mariadb.service:Restart=on-abort
+> mariadb.service:RestartSec=5s
+> NetworkManager.service:Restart=on-failure
+> rsyslog.service:Restart=on-failure
+> rsyslog.service:Restart=on-failure
+> serial-getty@...1685...:Restart=always
+> sshd.service:Restart=on-failure
+> sshd.service:RestartSec=42s
+> sssd-autofs.service:Restart=on-failure
+> sssd-nss.service:Restart=on-failure
+> sssd-pac.service:Restart=on-failure
+> sssd-pam.service:Restart=on-failure
+> sssd-ssh.service:Restart=on-failure
+> sssd-sudo.service:Restart=on-failure
+> systemd-journald.service:Restart=always
+> systemd-journald.service:RestartSec=0
+> systemd-logind.service:Restart=always
+> systemd-logind.service:RestartSec=0
+> systemd-nspawn@...1685...:RestartForceExitStatus=133
+> systemd-udevd.service:Restart=always
+> systemd-udevd.service:RestartSec=0
 
---ODKolUcGW6f39w6je5LUF7h1je4Pk5Ajo
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+I said Server as in 'Server' not localhost.
 
------BEGIN PGP SIGNATURE-----
+(other than sshd  ..
+but that is a whole `nother ball game, let us not get into that)
 
-iQIzBAEBCAAdFiEEbd2mMhAXbmSCipS40+HICM1soFAFAlmx9WoACgkQ0+HICM1s
-oFCL1w//eTSqukn9r61efKFQSMC5G6zoiVz9fq6zBTwHDvJovLkV5yW0+i8HG8gv
-5t1MlT2Yn+dNrtq8384pDTgcksjHve7RkBQSYmtQnu5du/+2sAgIfYyKQK3dJQc+
-issEmH+/QLFb3AE/wq1HW1JFQtzWH0n58K6rzyWFOLiQXAHA0fqOnHHwJrivFvh7
-KSjzfN5p6u9O+ZP5n6xpXFUrj/8zUrh1rlqXJhfqg1k9MH/Iv7P6S9PJ9gOG9/vn
-0nBfyS3jp8bg28OtfUaHw6a5bmkKiw0TCO4zLNEHutjvl51HkMNWAtw1VLS3K5Qx
-acNulQeQ2mUAY6I/xC30S2gPh49gZHTRdwcudlATXAaLBbKE9Q8uzIPD51BHmS/9
-muneMWxi2F0fbrFvnnKOFFEdavy9U3LeyvyKacmys29C8xp+IZcp2E3O5/VU7IPr
-bR3+qXV9L+sPPZjWYtV92+X/aGEonntH1GSKUPDIjgP1wqDlS0sWv6fnDVczFwzK
-CeIlRFjdjEleGSbl238JNwcA0ksFTxby76tIESWtr0woaH9+frQN/AMZn/vPZ4rL
-5mtYrtHHyFyC3ksBDQ1NM8olKipAYpDq/HcHcAd1bF8YF/4zzFpoliIi7xEVfj71
-sNHvugWSHgoHMCu1H047ty6aS0Onp/H7paSjrXeo1R+GR8uJ6D0=
-=kK36
------END PGP SIGNATURE-----
+cheers :)
 
---ODKolUcGW6f39w6je5LUF7h1je4Pk5Ajo--
+Regards,
 
