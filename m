@@ -1,11 +1,11 @@
 From: Steffan Karger <steffan.karger@...1435...>
-Date: Mon, 11 Sep 2017 23:52:01 +0200
-Message-ID: <1505166722-5409-3-git-send-email-steffan.karger@...1435...>
+Date: Mon, 11 Sep 2017 23:52:02 +0200
+Message-ID: <1505166722-5409-4-git-send-email-steffan.karger@...1435...>
 In-Reply-To: <1505166722-5409-1-git-send-email-steffan.karger@...1435...>
 References: <1505166722-5409-1-git-send-email-steffan.karger@...1435...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [PATCH 2/3] mbedtls: make external signing code
- generic
+Subject: [Openvpn-devel] [PATCH 3/3] mbedtls: remove dependency on mbedtls
+ pkcs11 module
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,273 +18,265 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-This prepares for reusing this code from the mbedtls pkcs11 implementation.
-The change itself should not have any functional impact.
+Instead of using mbedtls's pkcs11 module, reuse the code we already have
+for management-external-key to also do pkcs11 signatures.  As far as mbed
+is concerned, we simply provide an external signature.
+
+This has the following advantages:
+ * We no longer need mbed TLS to be compiled with the pkcs11 modules
+   enabled (which is not enabled by default).  This makes it easier to use
+   a system/distribution-provided mbed shared library.
+ * We no longer have a dependency on pkcs11-helper through mbed TLS.  So if
+   we want to migrate to some other pkcs11 lib (see e.g. trac #491, #538
+   and #549 for reason why), this will be easier.
+
+While touching this code, switch from M_FATAL to M_WARN and proper error
+handling.  This improves the error reporting, and helps prevent potential
+future DoS attacks if someone starts using these functions on peer input.
 
 Signed-off-by: Steffan Karger <steffan.karger@...1435...>
 ---
- src/openvpn/ssl_mbedtls.c | 115 ++++++++++++++++++++++++----------------------
- src/openvpn/ssl_mbedtls.h |  41 +++++++++++++++--
- 2 files changed, 98 insertions(+), 58 deletions(-)
+ configure.ac                 | 29 ---------------
+ src/openvpn/pkcs11_mbedtls.c | 87 +++++++++++++++++++++++++++++---------------
+ src/openvpn/ssl_mbedtls.c    |  7 +---
+ src/openvpn/ssl_mbedtls.h    |  6 +--
+ 4 files changed, 62 insertions(+), 67 deletions(-)
 
-diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
-index 6d023af..0cf89a8 100644
---- a/src/openvpn/ssl_mbedtls.c
-+++ b/src/openvpn/ssl_mbedtls.c
-@@ -146,12 +146,6 @@ tls_ctx_free(struct tls_root_ctx *ctx)
-             free(ctx->priv_key_pkcs11);
-         }
- #endif
--#if defined(MANAGMENT_EXTERNAL_KEY)
--        if (ctx->external_key != NULL)
--        {
--            free(ctx->external_key);
--        }
+diff --git a/configure.ac b/configure.ac
+index 6f1044e..50d0352 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -992,35 +992,6 @@ elif test "${enable_crypto}" = "yes" -a "${with_crypto_library}" = "mbedtls"; th
+ 		[AC_MSG_ERROR([mbed TLS 2.y.z required])]
+ 	)
+ 
+-	mbedtls_with_pkcs11="no"
+-	AC_COMPILE_IFELSE(
+-		[AC_LANG_PROGRAM(
+-			[[
+-#include <mbedtls/config.h>
+-			]],
+-			[[
+-#ifndef MBEDTLS_PKCS11_C
+-#error pkcs11 wrapper missing
 -#endif
- 
-         if (ctx->allowed_ciphers)
-         {
-@@ -413,13 +407,6 @@ tls_ctx_load_priv_file(struct tls_root_ctx *ctx, const char *priv_key_file,
-     return 0;
- }
- 
--#ifdef MANAGMENT_EXTERNAL_KEY
+-			]]
+-		)],
+-		mbedtls_with_pkcs11="yes")
 -
+-	AC_MSG_CHECKING([mbedtls pkcs11 support])
+-	if test "${enable_pkcs11}" = "yes"; then
+-		if test "${mbedtls_with_pkcs11}" = "yes"; then
+-			AC_MSG_RESULT([ok])
+-		else
+-			AC_MSG_ERROR([mbedtls has no pkcs11 wrapper compiled in])
+-		fi
+-	else
+-		if test "${mbedtls_with_pkcs11}" != "yes"; then
+-			AC_MSG_RESULT([ok])
+-		else
+-			AC_MSG_ERROR([mbed TLS compiled with PKCS11, while OpenVPN is not])
+-		fi
+-	fi
 -
--struct external_context {
--    size_t signature_length;
--};
--
- /**
-  * external_pkcs1_sign implements a mbed TLS rsa_sign_func callback, that uses
-  * the management interface to request an RSA signature for the supplied hash.
-@@ -446,11 +433,9 @@ external_pkcs1_sign( void *ctx_voidptr,
-                      unsigned char *sig )
- {
-     struct external_context *const ctx = ctx_voidptr;
--    char *in_b64 = NULL;
--    char *out_b64 = NULL;
-     int rv;
--    unsigned char *p = sig;
--    size_t asn_len = 0, oid_size = 0, sig_len = 0;
-+    uint8_t *to_sign = NULL;
-+    size_t asn_len = 0, oid_size = 0;
-     const char *oid = NULL;
+ 	have_crypto_aead_modes="yes"
+ 	AC_CHECK_FUNCS(
+ 		[ \
+diff --git a/src/openvpn/pkcs11_mbedtls.c b/src/openvpn/pkcs11_mbedtls.c
+index 45372e4..12109cf 100644
+--- a/src/openvpn/pkcs11_mbedtls.c
++++ b/src/openvpn/pkcs11_mbedtls.c
+@@ -39,60 +39,89 @@
+ #include "errlevel.h"
+ #include "pkcs11_backend.h"
+ #include "ssl_verify_backend.h"
+-#include <mbedtls/pkcs11.h>
+ #include <mbedtls/x509.h>
  
-     if (NULL == ctx)
-@@ -486,12 +471,14 @@ external_pkcs1_sign( void *ctx_voidptr,
-         asn_len = 10 + oid_size;
-     }
- 
--    sig_len = ctx->signature_length;
--    if ( (SIZE_MAX - hashlen) < asn_len || (hashlen + asn_len) > sig_len)
-+    if ((SIZE_MAX - hashlen) < asn_len
-+        || ctx->signature_length < (asn_len + hashlen))
-     {
-         return MBEDTLS_ERR_RSA_BAD_INPUT_DATA;
-     }
- 
-+    ALLOC_ARRAY_CLEAR(to_sign, uint8_t, asn_len + hashlen);
-+    uint8_t *p = to_sign;
-     if (md_alg != MBEDTLS_MD_NONE)
-     {
-         /*
-@@ -516,34 +503,16 @@ external_pkcs1_sign( void *ctx_voidptr,
-         *p++ = MBEDTLS_ASN1_OCTET_STRING;
-         *p++ = hashlen;
- 
--        /* Determine added ASN length */
--        asn_len = p - sig;
-+        /* Double-check ASN length */
-+        ASSERT(asn_len == p - to_sign);
-     }
- 
-     /* Copy the hash to be signed */
--    memcpy( p, hash, hashlen );
--
--    /* convert 'from' to base64 */
--    if (openvpn_base64_encode(sig, asn_len + hashlen, &in_b64) <= 0)
--    {
--        rv = MBEDTLS_ERR_RSA_BAD_INPUT_DATA;
--        goto done;
--    }
-+    memcpy(p, hash, hashlen);
- 
--    /* call MI for signature */
--    if (management)
--    {
--        out_b64 = management_query_rsa_sig(management, in_b64);
--    }
--    if (!out_b64)
--    {
--        rv = MBEDTLS_ERR_RSA_PRIVATE_FAILED;
--        goto done;
--    }
--
--    /* decode base64 signature to binary and verify length */
--    if (openvpn_base64_decode(out_b64, sig, ctx->signature_length) !=
--        ctx->signature_length)
-+    /* Call external signature function */
-+    if (!ctx->sign(ctx->sign_ctx, to_sign, asn_len + hashlen, sig,
-+                   ctx->signature_length))
-     {
-         rv = MBEDTLS_ERR_RSA_PRIVATE_FAILED;
-         goto done;
-@@ -552,14 +521,7 @@ external_pkcs1_sign( void *ctx_voidptr,
-     rv = 0;
- 
- done:
--    if (in_b64)
--    {
--        free(in_b64);
--    }
--    if (out_b64)
--    {
--        free(out_b64);
--    }
-+    free(to_sign);
-     return rv;
- }
- 
-@@ -572,7 +534,8 @@ external_key_len(void *vctx)
- }
- 
- int
--tls_ctx_use_management_external_key(struct tls_root_ctx *ctx)
-+tls_ctx_use_external_signing_func(struct tls_root_ctx *ctx,
-+                                  external_sign_func sign_func, void *sign_ctx)
- {
-     ASSERT(NULL != ctx);
- 
-@@ -582,11 +545,12 @@ tls_ctx_use_management_external_key(struct tls_root_ctx *ctx)
-         return 0;
-     }
- 
--    ALLOC_OBJ_CLEAR(ctx->external_key, struct external_context);
--    ctx->external_key->signature_length = mbedtls_pk_get_len(&ctx->crt_chain->pk);
-+    ctx->external_key.signature_length = mbedtls_pk_get_len(&ctx->crt_chain->pk);
-+    ctx->external_key.sign = sign_func;
-+    ctx->external_key.sign_ctx = sign_ctx;
- 
-     ALLOC_OBJ_CLEAR(ctx->priv_key, mbedtls_pk_context);
--    if (!mbed_ok(mbedtls_pk_setup_rsa_alt(ctx->priv_key, ctx->external_key,
-+    if (!mbed_ok(mbedtls_pk_setup_rsa_alt(ctx->priv_key, &ctx->external_key,
-                                           NULL, external_pkcs1_sign, external_key_len)))
-     {
-         return 0;
-@@ -594,6 +558,47 @@ tls_ctx_use_management_external_key(struct tls_root_ctx *ctx)
- 
-     return 1;
- }
-+
-+#ifdef MANAGMENT_EXTERNAL_KEY
-+
-+/** Query the management interface for a signature, see external_sign_func. */
+-int
+-pkcs11_init_tls_session(pkcs11h_certificate_t certificate,
+-                        struct tls_root_ctx *const ssl_ctx)
 +static bool
-+management_sign_func(void *sign_ctx, const void *src, size_t src_len,
-+                     void *dst, size_t dst_len)
-+{
++pkcs11_get_x509_cert(pkcs11h_certificate_t pkcs11_cert, mbedtls_x509_crt *cert)
+ {
+-    int ret = 1;
++    unsigned char *cert_blob = NULL;
++    size_t cert_blob_size = 0;
 +    bool ret = false;
-+    char *src_b64 = NULL;
-+    char *dst_b64 = NULL;
-+
-+    if (!management || (openvpn_base64_encode(src, src_len, &src_b64) <= 0))
-+    {
-+        goto cleanup;
-+    }
-+
-+    if (!(dst_b64 = management_query_rsa_sig(management, src_b64)))
-+    {
-+        goto cleanup;
-+    }
-+
-+    if (openvpn_base64_decode(dst_b64, dst, dst_len) != dst_len)
-+    {
-+        goto cleanup;
-+    }
-+
+ 
+-    ASSERT(NULL != ssl_ctx);
+-
+-    ALLOC_OBJ_CLEAR(ssl_ctx->crt_chain, mbedtls_x509_crt);
+-    if (mbedtls_pkcs11_x509_cert_bind(ssl_ctx->crt_chain, certificate))
++    if (pkcs11h_certificate_getCertificateBlob(pkcs11_cert, NULL,
++                                               &cert_blob_size) != CKR_OK)
+     {
+-        msg(M_FATAL, "PKCS#11: Cannot retrieve mbed TLS certificate object");
++        msg(M_WARN, "PKCS#11: Cannot retrieve certificate object size");
+         goto cleanup;
+     }
+ 
+-    ALLOC_OBJ_CLEAR(ssl_ctx->priv_key_pkcs11, mbedtls_pkcs11_context);
+-    if (mbedtls_pkcs11_priv_key_bind(ssl_ctx->priv_key_pkcs11, certificate))
++    check_malloc_return((cert_blob = calloc(1, cert_blob_size)));
++    if (pkcs11h_certificate_getCertificateBlob(pkcs11_cert, cert_blob,
++                                               &cert_blob_size) != CKR_OK)
+     {
+-        msg(M_FATAL, "PKCS#11: Cannot initialize mbed TLS private key object");
++        msg(M_WARN, "PKCS#11: Cannot retrieve certificate object");
+         goto cleanup;
+     }
+ 
+-    ALLOC_OBJ_CLEAR(ssl_ctx->priv_key, mbedtls_pk_context);
+-    if (!mbed_ok(mbedtls_pk_setup_rsa_alt(ssl_ctx->priv_key,
+-                                          ssl_ctx->priv_key_pkcs11, mbedtls_ssl_pkcs11_decrypt,
+-                                          mbedtls_ssl_pkcs11_sign, mbedtls_ssl_pkcs11_key_len)))
++    if (!mbed_ok(mbedtls_x509_crt_parse(cert, cert_blob, cert_blob_size)))
+     {
++        msg(M_WARN, "PKCS#11: Could not parse certificate");
+         goto cleanup;
+     }
+ 
+-    ret = 0;
+-
 +    ret = true;
-+cleanup:
-+    free (src_b64);
-+    free (dst_b64);
-+
-+    return ret;
+ cleanup:
++    free(cert_blob);
+     return ret;
+ }
+ 
++static bool
++pkcs11_sign(void *pkcs11_cert, const void *src, size_t src_len,
++            void *dst, size_t dst_len)
++{
++    return CKR_OK == pkcs11h_certificate_signAny(pkcs11_cert, CKM_RSA_PKCS,
++                                                 src, src_len, dst, &dst_len);
 +}
 +
 +int
-+tls_ctx_use_management_external_key(struct tls_root_ctx *ctx)
++pkcs11_init_tls_session(pkcs11h_certificate_t certificate,
++                        struct tls_root_ctx *const ssl_ctx)
 +{
-+    return tls_ctx_use_external_signing_func(ctx, management_sign_func, NULL);
++    ASSERT(NULL != ssl_ctx);
++
++    ssl_ctx->pkcs11_cert = certificate;
++
++    ALLOC_OBJ_CLEAR(ssl_ctx->crt_chain, mbedtls_x509_crt);
++    if (!pkcs11_get_x509_cert(certificate, ssl_ctx->crt_chain))
++    {
++        msg(M_WARN, "PKCS#11: Cannot initialize certificate");
++        return 1;
++    }
++
++    if (!tls_ctx_use_external_signing_func(ssl_ctx, pkcs11_sign, certificate))
++    {
++        msg(M_WARN, "PKCS#11: Cannot register signing function");
++        return 1;
++    }
++
++    return 0;
 +}
 +
- #endif /* ifdef MANAGMENT_EXTERNAL_KEY */
+ char *
+ pkcs11_certificate_dn(pkcs11h_certificate_t cert, struct gc_arena *gc)
+ {
+     char *ret = NULL;
+-    mbedtls_x509_crt mbed_crt = {0};
++    mbedtls_x509_crt mbed_crt = { 0 };
  
- void
+-    if (mbedtls_pkcs11_x509_cert_bind(&mbed_crt, cert))
++    if (!pkcs11_get_x509_cert(cert, &mbed_crt))
+     {
+-        msg(M_FATAL, "PKCS#11: Cannot retrieve mbed TLS certificate object");
++        msg(M_WARN, "PKCS#11: Cannot retrieve mbed TLS certificate object");
+         goto cleanup;
+     }
+ 
+     if (!(ret = x509_get_subject(&mbed_crt, gc)))
+     {
+-        msg(M_FATAL, "PKCS#11: mbed TLS cannot parse subject");
++        msg(M_WARN, "PKCS#11: mbed TLS cannot parse subject");
+         goto cleanup;
+     }
+ 
+@@ -107,23 +136,21 @@ pkcs11_certificate_serial(pkcs11h_certificate_t cert, char *serial,
+                           size_t serial_len)
+ {
+     int ret = 1;
++    mbedtls_x509_crt mbed_crt = { 0 };
+ 
+-    mbedtls_x509_crt mbed_crt = {0};
+-
+-    if (mbedtls_pkcs11_x509_cert_bind(&mbed_crt, cert))
++    if (!pkcs11_get_x509_cert(cert, &mbed_crt))
+     {
+-        msg(M_FATAL, "PKCS#11: Cannot retrieve mbed TLS certificate object");
++        msg(M_WARN, "PKCS#11: Cannot retrieve mbed TLS certificate object");
+         goto cleanup;
+     }
+ 
+-    if (-1 == mbedtls_x509_serial_gets(serial, serial_len, &mbed_crt.serial))
++    if (mbedtls_x509_serial_gets(serial, serial_len, &mbed_crt.serial) < 0)
+     {
+-        msg(M_FATAL, "PKCS#11: mbed TLS cannot parse serial");
++        msg(M_WARN, "PKCS#11: mbed TLS cannot parse serial");
+         goto cleanup;
+     }
+ 
+     ret = 0;
+-
+ cleanup:
+     mbedtls_x509_crt_free(&mbed_crt);
+ 
+diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
+index 0cf89a8..975d0b9 100644
+--- a/src/openvpn/ssl_mbedtls.c
++++ b/src/openvpn/ssl_mbedtls.c
+@@ -43,6 +43,7 @@
+ #include "buffer.h"
+ #include "misc.h"
+ #include "manage.h"
++#include "pkcs11_backend.h"
+ #include "ssl_common.h"
+ 
+ #include <mbedtls/havege.h>
+@@ -140,11 +141,7 @@ tls_ctx_free(struct tls_root_ctx *ctx)
+         }
+ 
+ #if defined(ENABLE_PKCS11)
+-        if (ctx->priv_key_pkcs11 != NULL)
+-        {
+-            mbedtls_pkcs11_priv_key_free(ctx->priv_key_pkcs11);
+-            free(ctx->priv_key_pkcs11);
+-        }
++        pkcs11h_certificate_freeCertificate(ctx->pkcs11_cert);
+ #endif
+ 
+         if (ctx->allowed_ciphers)
 diff --git a/src/openvpn/ssl_mbedtls.h b/src/openvpn/ssl_mbedtls.h
-index f69b610..2b76cc6 100644
+index 2b76cc6..adb9541 100644
 --- a/src/openvpn/ssl_mbedtls.h
 +++ b/src/openvpn/ssl_mbedtls.h
-@@ -58,6 +58,30 @@ typedef struct {
- } bio_ctx;
+@@ -35,7 +35,7 @@
+ #include <mbedtls/x509_crt.h>
  
- /**
-+ * External signing function prototype.  A function pointer to a function
-+ * implementing this prototype is provided to
-+ * tls_ctx_use_external_signing_func().
-+ *
-+ * @param sign_ctx  The context for the signing function.
-+ * @param src       The data to be signed,
-+ * @param src_len   The length of src, in bytes.
-+ * @param dst       The destination buffer for the signature.
-+ * @param dst_len   The length of the destination buffer.
-+ *
-+ * @return true if signing succeeded, false otherwise.
-+ */
-+typedef bool (*external_sign_func)(
-+        void *sign_ctx, const void *src, size_t src_size,
-+        void *dst, size_t dst_size);
-+
-+/** Context used by external_pkcs1_sign() */
-+struct external_context {
-+    size_t signature_length;
-+    external_sign_func sign;
-+    void *sign_ctx;
-+};
-+
-+/**
-  * Structure that wraps the TLS context. Contents differ depending on the
-  * SSL library used.
-  *
-@@ -78,9 +102,7 @@ struct tls_root_ctx {
  #if defined(ENABLE_PKCS11)
-     mbedtls_pkcs11_context *priv_key_pkcs11;    /**< PKCS11 private key */
+-#include <mbedtls/pkcs11.h>
++#include <pkcs11-helper-1.0/pkcs11h-certificate.h>
  #endif
--#ifdef MANAGMENT_EXTERNAL_KEY
--    struct external_context *external_key; /**< Management external key */
--#endif
-+    struct external_context external_key; /**< External key context */
+ 
+ typedef struct _buffer_entry buffer_entry;
+@@ -99,8 +99,8 @@ struct tls_root_ctx {
+     mbedtls_x509_crl *crl;              /**< Certificate Revocation List */
+     time_t crl_last_mtime;              /**< CRL last modification time */
+     off_t crl_last_size;                /**< size of last loaded CRL */
+-#if defined(ENABLE_PKCS11)
+-    mbedtls_pkcs11_context *priv_key_pkcs11;    /**< PKCS11 private key */
++#ifdef ENABLE_PKCS11
++    pkcs11h_certificate_t pkcs11_cert;  /**< PKCS11 certificate */
+ #endif
+     struct external_context external_key; /**< External key context */
      int *allowed_ciphers;       /**< List of allowed ciphers for this connection */
- };
- 
-@@ -90,5 +112,18 @@ struct key_state_ssl {
-     bio_ctx bio_ctx;
- };
- 
-+/**
-+ * Call the supplied signing function to create a TLS signature during the
-+ * TLS handshake.
-+ *
-+ * @param ctx                   TLS context to use.
-+ * @param sign_func             Signing function to call.
-+ * @param sign_ctx              Context for the sign function.
-+ *
-+ * @return                      0 if successful, 1 if an error occurred.
-+ */
-+int tls_ctx_use_external_signing_func(struct tls_root_ctx *ctx,
-+                                      external_sign_func sign_func,
-+                                      void *sign_ctx);
- 
- #endif /* SSL_MBEDTLS_H_ */
 -- 
 2.7.4
 
