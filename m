@@ -1,10 +1,9 @@
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <d1cbb582-42dd-3c61-069e-887aed9bfaa4@...515...>
-Date: Mon, 11 Sep 2017 14:14:45 +0300
 MIME-Version: 1.0
-Content-Language: en-US
-Subject: [Openvpn-devel] Topics for tomorrow's (Tue,
- 12th Sep 2017) community meeting
+From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
+Date: Mon, 11 Sep 2017 16:22:43 +0500
+Message-ID: <CAFHpkQGG9x_kYP6bthSxgB+1Y38r45ffD1WCnaA+Jp4Ed8PbQw@...278...>
+Content-Type: multipart/alternative; boundary="001a11408a4e3fdad10558e825db"
+Subject: [Openvpn-devel] proper configuring of "tls-verify"
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,33 +12,33 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="windows-1252"
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+
+--001a11408a4e3fdad10558e825db
+Content-Type: text/plain; charset="UTF-8"
+
+Hello,
+
+is someone actually using "tls-verify" in production ?
+we tried to implement additional certificate check using tls-verify
+
+
+while it works in general, in case when it hits "exit 1", it look like a
+timeout from client point of view. it is not any good
+
+Cheers,
+Ilya Shipitsin
+
+--001a11408a4e3fdad10558e825db
+Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+<div dir=3D"ltr"><div><div><div><div><div>Hello,<br><br></div>is someone ac=
+tually using &quot;tls-verify&quot; in production ?<br></div>we tried to im=
+plement additional certificate check using tls-verify<br><br><br></div>whil=
+e it works in general, in case when it hits &quot;exit 1&quot;, it look lik=
+e a timeout from client point of view. it is not any good<br><br></div>Chee=
+rs,<br></div>Ilya Shipitsin<br></div>
 
-We're going to have an IRC meeting tomorrow starting at 20:00 CEST
-(18:00 UTC) on #openvpn-meeting <at> irc.freenode.net. You do not have
-to be logged in to Freenode to join the channel.
-
-Current topic list along with basic information is here:
-
-<https://community.openvpn.net/openvpn/wiki/Topics-2017-09-12>
-
-If you have any other things you'd like to bring up, respond to this
-mail, send me mail privately or add them to the list yourself.
-
-In case you can't attend the meeting, please feel free to make comments
-on the topics by responding to this email or to the summary email sent
-after the meeting. Whenever possible, we'll also respond to existing,
-related email threads.
-
---
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
-
+--001a11408a4e3fdad10558e825db--
 
