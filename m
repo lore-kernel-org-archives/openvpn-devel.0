@@ -1,12 +1,13 @@
-References: <59B26C92.1040105@...1147...>
- <61c0c096-14e8-1e8d-cfc5-7726d667a31f@...515...>
-From: Jan Just Keijser <janjust@...1147...>
-Message-ID: <5f8ed7e5-7a0a-7019-0b25-265a92004a62@...1147...>
-Date: Thu, 14 Sep 2017 17:16:05 +0200
-MIME-Version: 1.0
-In-Reply-To: <61c0c096-14e8-1e8d-cfc5-7726d667a31f@...515...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] how to roll your own OpenVPN Windows installer
+Content-Type: multipart/alternative;
+ boundary=Apple-Mail-E9DB0E34-D067-4A8A-840D-8371F00FDD1A
+Mime-Version: 1.0 (1.0)
+From: Eric Crist <ecrist@...1286...>
+In-Reply-To: <13a39edc-f624-6b35-fb5e-e78516805bae@...277...>
+Date: Thu, 14 Sep 2017 11:29:53 -0500
+Content-Transfer-Encoding: 7bit
+Message-Id: <788CC994-AFDA-40E2-9A07-851D0ED407BE@...1286...>
+References: <13a39edc-f624-6b35-fb5e-e78516805bae@...277...>
+Subject: Re: [Openvpn-devel] [openvpn-devel] Forum upgrade problems
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,61 +16,73 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-15"; format=flowed
+To: fragmentux <fragmentux@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+
+--Apple-Mail-E9DB0E34-D067-4A8A-840D-8371F00FDD1A
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-To: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>, openvpn-devel@lists.sourceforge.net
 
-Hi all,
+I will look into these. I'm surprised [oconf] is broken, since I wrote that=
+ myself and it is not a normal part of phpBB.=20
 
-On 11/09/17 09:06, Samuli Sepp=E4nen wrote:
-> Il 08/09/2017 13:10, Jan Just Keijser ha scritto:
->> hi dev list,
->>
->> someone asked me this question: how can one roll their own Windows OpenV=
-PN installer, including a signed TAP driver? There's=20
->> no need to rebuild OpenVPN or the TAP driver, but they do need to includ=
-e other things, such as certificates, config files etc.
->> Is there a way to repackage the existing TAP driver?=A0 are there instru=
-ctions for that?
->>
->> TIA,
->>
->> JJK
->>
-> Hi,
->
-> I meant to answer this earlier, but then apparently forgot. The tap-windo=
-ws installer is simply embedded into the main OpenVPN=20
-> installer, so the pre-existing, signed tap-windows6 driver can be reused =
-as-is. An OpenVPN installer can be generated in the=20
-> openvpn-build cross-compile environment:
->
-> <https://github.com/OpenVPN/openvpn-build>
->
-> Usage of openvpn-build is pretty well documented on Trac:
->
-> <https://community.openvpn.net/openvpn/wiki/BuildingUsingGenericBuildsyst=
-em>
->
-> On this page you can find automated cross-compile environment setup scrip=
-ts which work for Ubuntu 14.04 and 16.04:
->
-> <https://community.openvpn.net/openvpn/wiki/SettingUpGenericBuildsystem>
->
-> It is also possible to generate a new installer without actually building=
- anything. The challenge is that the NSI install=20
-> script (openvpn.nsi) in openvpn-build depends on a number of variables se=
-t during the build process, and on a certain=20
-> directory structure. So it is generally easier just to rebuild everything.
->
-thanks all for the feedback, this is exactly what my colleague was looking =
-for!
-He's now convinced that he no longer wants to rebuild openvpn or the tap dr=
-iver :)
+Eric Crist
 
-cheers,
+> On Sep 14, 2017, at 6:36 AM, fragmentux <fragmentux@...277...> wrote:
+>=20
+> The forum upgrade has broken the following BBCodes.
+>=20
+> 1. [quote=3D"Name"]
+> "Name" is no longer shown.
+>=20
+> 2. [code]
+> Appears to strip out all newline / CRLF.
+>=20
+> 3. [oconf=3Dx]
+> Appears to strip off last line.
+>=20
+> 4. [list]
+> Always inserts a bullet point even if no [*] is used.
+>=20
+>=20
+>=20
+> -------------------------------------------------------------------------=
+-----
+> Check out the vibrant tech community on one of the world's most
+> engaging tech sites, Slashdot.org! http://sdm.link/slashdot
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
 
-JJK
+--Apple-Mail-E9DB0E34-D067-4A8A-840D-8371F00FDD1A
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 
+<html><head><meta http-equiv=3D"content-type" content=3D"text/html; charset=
+=3Dutf-8"></head><body dir=3D"auto"><div>I will look into these. I'm surpri=
+sed [oconf] is broken, since I wrote that myself and it is not a normal par=
+t of phpBB.&nbsp;<br><br><div style=3D"direction: inherit;">Eric Crist</div=
+></div><div><br>On Sep 14, 2017, at 6:36 AM, fragmentux &lt;<a href=3D"mail=
+to:fragmentux@...277...">fragmentux@...277...</a>&gt; wrote:<br><br></div><=
+blockquote type=3D"cite"><div><span>The forum upgrade has broken the follow=
+ing BBCodes.</span><br><span></span><br><span>1. [quote=3D"Name"]</span><br=
+><span>"Name" is no longer shown.</span><br><span></span><br><span>2. [code=
+]</span><br><span>Appears to strip out all newline / CRLF.</span><br><span>=
+</span><br><span>3. [oconf=3Dx]</span><br><span>Appears to strip off last l=
+ine.</span><br><span></span><br><span>4. [list]</span><br><span>Always inse=
+rts a bullet point even if no [*] is used.</span><br><span></span><br><span=
+></span><br><span></span><br><span>----------------------------------------=
+--------------------------------------</span><br><span>Check out the vibran=
+t tech community on one of the world's most</span><br><span>engaging tech s=
+ites, <a href=3D"http://Slashdot.org">Slashdot.org</a>! <a href=3D"http://s=
+dm.link/slashdot">http://sdm.link/slashdot</a></span><br><span>____________=
+___________________________________</span><br><span>Openvpn-devel mailing l=
+ist</span><br><span><a href=3D"mailto:Openvpn-devel@lists.sourceforge.net">=
+Openvpn-devel@lists.sourceforge.net</a></span><br><span><a href=3D"https://=
+lists.sourceforge.net/lists/listinfo/openvpn-devel">https://lists.sourcefor=
+ge.net/lists/listinfo/openvpn-devel</a></span><br></div></blockquote></body=
+></html>=
 
+--Apple-Mail-E9DB0E34-D067-4A8A-840D-8371F00FDD1A--
 
