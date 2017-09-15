@@ -1,10 +1,12 @@
-From: selva.nair@...277...
-Date: Fri, 15 Sep 2017 14:46:15 -0400
-Message-Id: <1505501175-9016-1-git-send-email-selva.nair@...277...>
-In-Reply-To: <1505450463-459-1-git-send-email-selva.nair@...277...>
-References: <1505450463-459-1-git-send-email-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH v2] Check whether in pull_mode before
- warning about previous connection blocks
+References: <13a39edc-f624-6b35-fb5e-e78516805bae@...277...>
+ <788CC994-AFDA-40E2-9A07-851D0ED407BE@...1286...>
+From: fragmentux <fragmentux@...277...>
+Message-ID: <b4415051-4f7d-4a56-8815-9cd539b273ec@...277...>
+Date: Sat, 16 Sep 2017 00:36:18 +0100
+MIME-Version: 1.0
+In-Reply-To: <788CC994-AFDA-40E2-9A07-851D0ED407BE@...1286...>
+Content-Language: en-GB
+Subject: Re: [Openvpn-devel] [openvpn-devel] Forum upgrade problems
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,49 +15,48 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Eric Crist <ecrist@...1286...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-From: Selva Nair <selva.nair@...277...>
 
-In particular, this eliminates the message that says "explicit-exit-notify
-is ignored by previous <connection> blocks" when the option is pushed.
 
-Note: pull_mode is identified as "allowed & OPT_P_PULL_MODE" matching with the
-definition in add_options().
+On 14/09/17 17:29, Eric Crist wrote:
+> I will look into these. I'm surprised [oconf] is broken, since I wrote that myself and it is not a normal part of phpBB.
 
-Reported by: Eike Lohmann e.lohmann@...1294...
-https://www.mail-archive.com/openvpn-users@lists.sourceforge.net/msg04052.html
+Is the "[oconf=x]" source 'open' ?
 
-v2: move the check to verify_permissions() as suggested by
-Gert <gert@...1296...>
+the "[code]" shit is particularly annoying for logs ..
 
-Signed-off-by: Selva Nair <selva.nair@...277...>
----
- src/openvpn/options.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 3a5bccf..b4613df 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -4824,11 +4824,13 @@ verify_permission(const char *name,
- #ifndef ENABLE_SMALL
-     /* Check if this options is allowed in connection block,
-      * but we are currently not in a connection block
-+     * unless this is a pushed option.
-      * Parsing a connection block uses a temporary options struct without
-      * connection_list
-      */
- 
--    if ((type & OPT_P_CONNECTION) && options->connection_list)
-+    if ((type & OPT_P_CONNECTION) && options->connection_list
-+        && !(allowed & OPT_P_PULL_MODE))
-     {
-         if (file)
-         {
--- 
-2.6.2
-
+> 
+> Eric Crist
+> 
+>> On Sep 14, 2017, at 6:36 AM, fragmentux <fragmentux@...277...> wrote:
+>>
+>> The forum upgrade has broken the following BBCodes.
+>>
+>> 1. [quote="Name"]
+>> "Name" is no longer shown.
+>>
+>> 2. [code]
+>> Appears to strip out all newline / CRLF.
+>>
+>> 3. [oconf=x]
+>> Appears to strip off last line.
+>>
+>> 4. [list]
+>> Always inserts a bullet point even if no [*] is used.
+>>
+>>
+>>
+>> ------------------------------------------------------------------------------
+>> Check out the vibrant tech community on one of the world's most
+>> engaging tech sites, Slashdot.org! http://sdm.link/slashdot
+>> _______________________________________________
+>> Openvpn-devel mailing list
+>> Openvpn-devel@lists.sourceforge.net
+>> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+> 
 
