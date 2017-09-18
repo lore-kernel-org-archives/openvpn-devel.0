@@ -1,16 +1,16 @@
-From: Antonio Quartulli <a@...2181...>
+Date: Mon, 18 Sep 2017 10:31:16 +0200
+From: Simon Ruderich <simon@...2161...>
+Message-ID: <20170918083116.w67qmug4imxyjmns@...2161...>
 References: <20170828085620.23186-1-a@...2181...>
- <e22ea0fa-4e1b-980b-a1a2-dc4ba1352a6d@...1856...>
- <a187f8ca-afe6-5633-9d3b-be22aee9a3ec@...2181...>
-Message-ID: <0193f862-eb79-b20e-30a1-48dd6d057c87@...2181...>
-Date: Mon, 18 Sep 2017 14:15:13 +0800
-MIME-Version: 1.0
-In-Reply-To: <a187f8ca-afe6-5633-9d3b-be22aee9a3ec@...2181...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
+ <20170828085620.23186-2-a@...2181...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
  protocol="application/pgp-signature";
- boundary="w128S9wvleSVjc6oWi14HdDLOR8x67bBD"
-Subject: Re: [Openvpn-devel] [PATCH 1/2] merge *-inline.h files with their
- main header
+ boundary="=_zucker.schokokeks.org-28118-1505723477-0001-2"
+Content-Disposition: inline
+In-Reply-To: <20170828085620.23186-2-a@...2181...>
+Subject: Re: [Openvpn-devel] [PATCHv3 2/2] ensure function declarations are
+ compiled with their definitions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,133 +19,108 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan@...1856...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Antonio Quartulli <a@...2181...>
+Cc: openvpn-devel@lists.sourceforge.net, Antonio Quartulli <antonio@...515...>
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---w128S9wvleSVjc6oWi14HdDLOR8x67bBD
-Content-Type: multipart/mixed; boundary="wPqCejwu7WfWGA6DGsBQvAwH0QNU4XP68";
- protected-headers="v1"
-From: Antonio Quartulli <a@...2181...>
-To: Steffan Karger <steffan@...1856...>
-Cc: openvpn-devel@lists.sourceforge.net
-Message-ID: <0193f862-eb79-b20e-30a1-48dd6d057c87@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH 1/2] merge *-inline.h files with their
- main header
-References: <20170828085620.23186-1-a@...2181...>
- <e22ea0fa-4e1b-980b-a1a2-dc4ba1352a6d@...1856...>
- <a187f8ca-afe6-5633-9d3b-be22aee9a3ec@...2181...>
-In-Reply-To: <a187f8ca-afe6-5633-9d3b-be22aee9a3ec@...2181...>
+This is a MIME-formatted message.  If you see this text it means that your
+E-mail software does not support MIME-formatted messages.
 
---wPqCejwu7WfWGA6DGsBQvAwH0QNU4XP68
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
+--=_zucker.schokokeks.org-28118-1505723477-0001-2
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
+Hello,
 
+The patch contains conflict markers.
 
-On 18/09/17 13:18, Antonio Quartulli wrote:
-> Hi,
->=20
-> On 17/09/17 20:00, Steffan Karger wrote:
->=20
-> [CUT]
->=20
->>> @@ -101,4 +104,16 @@ void pf_context_print(const struct pf_context *pfc=
-, const char *prefix, const in
->>>=20=20
->>>  #endif
->>>=20=20
->>> +bool pf_c2c_test(const struct context *src, const struct context *dest,
->>> +                 const char *prefix);
->>> +
->>> +bool pf_addr_test(const struct context *src, const struct mroute_addr =
-*dest,
->>> +                  const char *prefix);
->>
->> Why are these no longer inline?  They seem to be simple wrappers to
->> prevent a function call is pf is not enabled.
->>
->=20
-> Oh, I needed sometime, but then I understood what you mean :)
->=20
-> You are saying that by keeping this function inline, we have a slight
-> performance gain because we won't invoke pf_cn_test() when pf is
-> disabled. And such decision can be made inline.
+On Mon, Aug 28, 2017 at 04:56:20PM +0800, Antonio Quartulli wrote:
+> [snip]
+>
+> diff --git a/src/openvpn/occ.h b/src/openvpn/occ.h
+> index 369ebac4..f81e68d7 100644
+> --- a/src/openvpn/occ.h
+> +++ b/src/openvpn/occ.h
+> @@ -90,6 +90,19 @@ is_occ_msg(const struct buffer *buf)
+>
+>  void process_received_occ_msg(struct context *c);
+>
+> +<<<<<<< HEAD
+> +=3D=3D=3D=3D=3D=3D=3D
+> +void check_send_occ_req_dowork(struct context *c);
+> +
+> +void check_send_occ_load_test_dowork(struct context *c);
+> +
+> +void check_send_occ_msg_dowork(struct context *c);
+> +
+> +/*
+> + * Inline functions
+> + */
+> +
+> +>>>>>>> 5222207d... ensure function declarations are compiled with their=
+ definitions
 
-Now I recall why I changed that.
+Here.
 
-pf_c2c_test is dereferencing an object of type "struct context" for
-which we have no definition available at that point.
+> [snip]
+>
+> diff --git a/src/openvpn/pf.h b/src/openvpn/pf.h
+> index 480d5b7b..e588f0e0 100644
+> --- a/src/openvpn/pf.h
+> +++ b/src/openvpn/pf.h
+> @@ -104,6 +104,21 @@ void pf_context_print(const struct pf_context *pfc, =
+const char *prefix, const in
+>
+>  #endif
+>
+> +<<<<<<< HEAD
+> +=3D=3D=3D=3D=3D=3D=3D
+> +bool pf_cn_test(struct pf_set *pfs, const struct tls_multi *tm, const in=
+t type,
+> +                const char *prefix);
+> +
+> +bool pf_addr_test_dowork(const struct context *src,
+> +                         const struct mroute_addr *dest, const char *pre=
+fix);
+> +
+> +/*
+> + * Inline functions
+> + */
+> +
+> +#define PCT_SRC  1
+> +#define PCT_DEST 2
+> +>>>>>>> 5222207d... ensure function declarations are compiled with their=
+ definitions
 
-A fix could be to include openvpn.h in pf.h, but then we get other weird
-problems due to circular inclusions. Having pf-inline.h was, of course,
-much easier because you could place its inclusion at the most convenient
-place and the problem was solved.
+And here.
 
-I'll try to restructure the functions a bit so that we don't lose the
-gain given by the inline attribute, but we don't need to dereference the
-context as well.
-
-Cheers,
-
->=20
->=20
-> I agree. I will send a v2 of this patch.
->=20
->=20
->>>
->>
->> Otherwise this patch looks good.
->=20
-> Thanks for reviewing!
->=20
-> Cheers,
->=20
->=20
->=20
->=20
->=20
-> -------------------------------------------------------------------------=
------
-> Check out the vibrant tech community on one of the world's most
-> engaging tech sites, Slashdot.org! http://sdm.link/slashdot
->=20
->=20
->=20
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->=20
-
+Regards
+Simon
 --=20
-Antonio Quartulli
++ privacy is necessary
++ using gnupg http://gnupg.org
++ public key id: 0x92FEFDB7E44C32F9
 
-
---wPqCejwu7WfWGA6DGsBQvAwH0QNU4XP68--
-
---w128S9wvleSVjc6oWi14HdDLOR8x67bBD
+--=_zucker.schokokeks.org-28118-1505723477-0001-2
 Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+Content-Transfer-Encoding: 7bit
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCAAdFiEEbd2mMhAXbmSCipS40+HICM1soFAFAlm/ZHEACgkQ0+HICM1s
-oFCQIA//WwKgI601ceIkGjR5df+UkUeuplKzOh6gPwVG/N1IWhcLMd48RKDlhD87
-4UnTCwqnO3TtZBVooaJsA5KM08xOVJx5w0NeXsmPeIp1rk/vElxH0NVpf9iEqx+y
-1h+9tj2E3BDV+BLyifoGdNle0Ov5dI5S+D3AbpwUcavfhJsyCJtFu3+1xdiSnBwf
-UThI1nEKakqdWDmxQvF14d6RPEXAuYXQwB76/HbIep4UIiOsPKySSsvVfUEwb0z1
-14oTgcf3E+snRmsLgCch09gx2Z7RbPRIFJ092e/C3IeOj5A+0AcP1BdTXPW26/p4
-ioEFcVMyiuCe9L9rp/LNhH97shsLulT6wQm5IhYZduCG+u+9d2pFpuwuPOSMRsrM
-u4B6t0uyAz1yExRQPPK0krukoXty62UTeJM3NHBTgDVGa6YZscMFL8elZXAAbmz0
-xhNnfeO2kAtPoLsycuSlm0WNhipVmdipfyocm9acQLwyXpc16HeFG88x07jjUX2v
-4ZabYrTB6Xr5LyqKbditNnDDhwzWR2pFefcEbdQZbe3/X36UvmZUsFyr5Dsb7Yge
-kx/ewXjh3OhOn3hFFaZ8gS4tAMpcEJXx0swYMwO1B8Kht+0Pf3uF+AeaoC9aMeNU
-KbytvVEALMy1s7+1uLG7cHjs6UsTwKXvoL8d5rV9rQkzUdhwf2A=
-=8i/g
+iQIzBAEBCgAdFiEEO7rfWMMObpFkF3n0kv79t+RMMvkFAlm/hE8ACgkQkv79t+RM
+MvlEGQ//bmFPSN7J8oy5k6owYvjJRVIoFovSTdsx1GuUA2M1HLFUnw2aVVUul20t
+ruhrnPCN0rq9+jzgqsRnJqLAvZZ8o0UGzW8wjAaKVj66IHuUPkvG/GqQJcfWrP3A
+nClsywmVykoY3U57o/YHvI/ungpTuUcfXa6hJtjlFgXJ3gVJIDsv4MfETGVLbwzk
+VIPSwqRRTN48/CLJFpDuKtQrtSGmvUqTmcL9uFCIfOve3eEGdzga4iGeunqQtlYl
+pbI4yhj5umpcVafvy9PSaCam4ayDvzdolf6FSzc+BeBV7vYi9iD1T/mNQi0y2BGV
+s4AVPbtBla/RjcVwFHnkh5xpLQmcfktz6iE8RWBjiDHtK5ufuXxB6zoIWwIeFuQS
+Vkwe0RY1+WsVa9JUVIgV6Pxtc9CgO+ItPBiC3Be0I6F7wK3j0bwyEdANQHZlUm2o
+fwsIFT6SYjIohmRo7e+S+Ts9Toq7LSH2vzWa/TI18+Ywv3JneF93d2G+HBJzZBoE
+pP53gu+zBXs/06Oy5d57neDQRXUmaZI98Nqk5I2Yus2SaE1F6OfVPFwP9RLV6etN
+RTp/JFSgQJN0LSyUGUvzoggKplqL+ljt40ZuOcL5Pp16a7MX2lZEGSooTlpXkOF9
+OavqB6i2lYqKMYUkeqryktgYUyMf36s1Rml6zRiy5YabC+QM9Go=
+=TCJ3
 -----END PGP SIGNATURE-----
 
---w128S9wvleSVjc6oWi14HdDLOR8x67bBD--
+--=_zucker.schokokeks.org-28118-1505723477-0001-2--
 
