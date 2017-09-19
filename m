@@ -1,14 +1,10 @@
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <e1a7b7cb-85e6-037d-4c2e-d9e5f6c95bcd@...515...>
+Date: Tue, 19 Sep 2017 18:27:25 +0300
 MIME-Version: 1.0
-Date: Tue, 19 Sep 2017 09:39:06 -0500
-From: Eric F Crist <ecrist@...1286...>
-In-Reply-To: <9f2db472d51e79fdbfa1ec4b65d8bd17@...1286...>
-References: <13a39edc-f624-6b35-fb5e-e78516805bae@...277...>
- <788CC994-AFDA-40E2-9A07-851D0ED407BE@...1286...>
- <ab2e90c9-0e4b-532c-759f-1e14b4a26a90@...277...>
- <599C2298-FED1-4B44-B8DD-B2EB7ECE4A38@...1286...>
- <9f2db472d51e79fdbfa1ec4b65d8bd17@...1286...>
-Message-ID: <5cddd371c185b12e21395d56f27969ac@...1286...>
-Subject: Re: [Openvpn-devel] [openvpn-devel] Forum upgrade problems
+Content-Language: en-US
+Subject: [Openvpn-devel] Topics for next community meeting (Wed,
+ 20th Sep 2017)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,87 +13,32 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
-To: fragmentux <fragmentux@...277...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-Switching the forum back from our custom style to the prosilver default=20
-resolves at least the [code] BBCode.  I'll look at the differences=20
-tonight.
+Hi,
 
----
-Eric F Crist
+We're going to have an IRC meeting tomorrow starting at 20:00 CEST
+(18:00 UTC) on #openvpn-meeting <at> irc.freenode.net. You do not have
+to be logged in to Freenode to join the channel.
 
+Current topic list along with basic information is here:
 
-On 2017-09-19 09:34, Eric F Crist wrote:
-> I've uploaded the [oconf] BBcode to github:=20
-> https://github.com/ecrist/oconf
->=20
-> There may be style/template issues on the forum, and I will look into
-> those based on your other messages.
->=20
-> ---
-> Eric F Crist
->=20
->=20
-> On 2017-09-18 16:29, Eric Crist wrote:
->> The oconf stuff is something I can share. I=E2=80=99ll post to github th=
-is
->> afternoon. This white space problem appears to be a known
->> =E2=80=9Cfeature=E2=80=9D.
->>=20
->> Eric Crist
->>=20
->> On Sep 18, 2017, at 4:26 PM, fragmentux <fragmentux@...277...> wrote:
->>=20
->>> Any update ?
->>>=20
->>> here is a good example of the problem:
->>> https://forums.openvpn.net/viewtopic.php?f=3D6&t=3D24907
->>>=20
->>> On 14/09/17 17:29, Eric Crist wrote:
->>>=20
->>>> I will look into these. I'm surprised [oconf] is broken, since I
->>>> wrote that myself and it is not a normal part of phpBB.
->>>=20
->>>> Eric Crist
->>> On Sep 14, 2017, at 6:36 AM, fragmentux <fragmentux@...277...>
->>> wrote:
->>=20
->>>>=20
->>=20
->>>> The forum upgrade has broken the following BBCodes.
->>=20
->>>>=20
->>=20
->>>> 1. [quote=3D"Name"]
->>=20
->>>> "Name" is no longer shown.
->>=20
->>>>=20
->>=20
->>>> 2. [code]
->>=20
->>>> Appears to strip out all newline / CRLF.
->>=20
->>=20
->> ------------------------------------------------------------------------=
-------
->> Check out the vibrant tech community on one of the world's most
->> engaging tech sites, Slashdot.org! http://sdm.link/slashdot
->>=20
->> _______________________________________________
->> Openvpn-devel mailing list
->> Openvpn-devel@lists.sourceforge.net
->> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->=20
-> -------------------------------------------------------------------------=
------
-> Check out the vibrant tech community on one of the world's most
-> engaging tech sites, Slashdot.org! http://sdm.link/slashdot
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+<https://community.openvpn.net/openvpn/wiki/Topics-2017-09-20>
+
+If you have any other things you'd like to bring up, respond to this
+mail, send me mail privately or add them to the list yourself.
+
+In case you can't attend the meeting, please feel free to make comments
+on the topics by responding to this email or to the summary email sent
+after the meeting. Whenever possible, we'll also respond to existing,
+related email threads.
+
+--
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
 
