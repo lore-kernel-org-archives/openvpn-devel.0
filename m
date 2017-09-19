@@ -1,14 +1,12 @@
-From: fragmentux <fragmentux@...277...>
+MIME-Version: 1.0
+Date: Tue, 19 Sep 2017 09:34:57 -0500
+From: Eric F Crist <ecrist@...1286...>
+In-Reply-To: <599C2298-FED1-4B44-B8DD-B2EB7ECE4A38@...1286...>
 References: <13a39edc-f624-6b35-fb5e-e78516805bae@...277...>
  <788CC994-AFDA-40E2-9A07-851D0ED407BE@...1286...>
  <ab2e90c9-0e4b-532c-759f-1e14b4a26a90@...277...>
  <599C2298-FED1-4B44-B8DD-B2EB7ECE4A38@...1286...>
- <ff2fcdd5-0d3e-36a2-4fc1-79d2acb03ed7@...277...>
-Message-ID: <59d89406-3b4a-ace9-16f0-ed4d8d28f144@...277...>
-Date: Tue, 19 Sep 2017 12:35:37 +0100
-MIME-Version: 1.0
-In-Reply-To: <ff2fcdd5-0d3e-36a2-4fc1-79d2acb03ed7@...277...>
-Content-Language: en-GB
+Message-ID: <9f2db472d51e79fdbfa1ec4b65d8bd17@...1286...>
 Subject: Re: [Openvpn-devel] [openvpn-devel] Forum upgrade problems
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -18,59 +16,68 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="windows-1251"; format="flowed"
-Content-Transfer-Encoding: base64
-To: Eric Crist <ecrist@...1286...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: quoted-printable
+To: fragmentux <fragmentux@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-QWRkaXRpb25hbDoKCjxzZWd3ZW50PiBJIGFsc28gaGF2ZSBhbm90aGVyIFE6IHVzaW5nIFtxdW90
-ZT0iTmFtZSJdICJOYW1lIiBpcyBubyAKbG9uZ2VyIHNob3duLCBpcyB0aGlzIGEga25vd24gYnVn
-IG9yIGhhcyB0aGUgYWRtaW4gZG9uZSBzb21ldGhpbmcgZWxzZSAKd3JvbmcgPwo8SmltLUE+IFRo
-ZSBxdW90ZXMgYXJlIG5vIGxvbmdlciBuZWNlc3NhcnksIGV2ZW4gdGhvdWdoIHRoaXMgdG9vIHNo
-b3VsZCAKc3RpbGwgd29yayBpbiBteSB0ZXN0aW5nLgo8SmltLUE+IERvZXMgW3F1b3RlPW5hbWVd
-IHdvcmsgZm9yIHlvdT8KPHNlZ3dlbnQ+IEppbS1BOiBubyAuLiBuZWl0aGVyIHdpdGggb3Igd2l0
-aG91dCBxdW90ZXMgKGVnOiA9Ik5hbWUiIG9yIAo9TmFtZSkgd29yawo8SmltLUE+IFRoaXMgc2hv
-dWxkIHdvcmssIGFuZCBkb2VzIGF0IG15IHRlc3RpbmcgYm9hcmQgYXMgd2VsbC4gU28gaXQgCnNl
-ZW1zIHNvbWV0aGluZyByZWxhdGVkIHRvIHRoZSBiYmNvZGUgcGFyc2VyIGhhcyBwcm9ibGVtcyBh
-dCB5b3VyIGJvYXJkLiAKVGhlc2UgYXJlbid0IGtub3duIGJ1Z3MuCjxzZWd3ZW50PiBvayB0aGFu
-a3MgYWdhaW4KCgpPbiAxOS8wOS8xNyAxMjoxNywgZnJhZ21lbnR1eCB3cm90ZToKPiBDYW4geW91
-IHBvc3QgZGV0YWlscyBvZiB0aGlzIGBrbm93biBmZWF0dXJlYCA/Cj4gCj4gQWNjb3JkaW5nIHRv
-IGZyZWVub2RlLiNwaHBiYgo+IDxxdW90ZT4KPiA8c2Vnd2VudD4gaGksIHRoZSBsYXRlc3QgdmVy
-c2lvbiBvZiBwaHBiYiBkb2VzIG5vdCB1c2UgYmJjb2RlIFtjb2RlXSAKPiBjb3JyZWN0bHkgYXMg
-aXQgc3RyaXBzIG91dCBhbGwgbmV3bGluZXMKPiA8c2Vnd2VudD4gaXMgdGhpcyBhIGtub3cgYnVn
-ID8KPiA8SmltLUE+IHNlZ3dlbnQ6IEFyZSB5b3UgdXNpbmcgMy4yLjE/IEJlY2F1c2UgbXkgdGVz
-dCBwb3N0IHNlZW1zIHRvIGRvIAo+IHRoaXMganVzdCBmaW5lLgo+IDxKaW0tQT4gaHR0cHM6Ly93
-d3cucGhwYmIuY29tL2NvbW11bml0eS92aWV3dG9waWMucGhwP2Y9MjYmdD0yNDM5MTE2Cj4gPHJ1
-YmVuY20+IGh0dHBzOi8vYXJlYTUxLnBocGJiLmNvbS9waHBCQi92aWV3dG9waWMucGhwP2Y9NyZ0
-PTUyMzMxIDMuMwo+IDxzZWd3ZW50PiBKaW0tQTogdGhpcyBpcyBhbiBleGFtcGxlIG9mIHRoZSBw
-cm9ibGVtIEkgYW0gaGF2aW5nCj4gPHNlZ3dlbnQ+IGh0dHBzOi8vZm9ydW1zLm9wZW52cG4ubmV0
-L3ZpZXd0b3BpYy5waHA/Zj02JnQ9MjQ5MDcKPiA8c2Vnd2VudD4gVGhlIGZvcnVtIGFkbWluIGlz
-IHNheWluZyB0aGF0IGl0IGlzIGluZmFjdCBhIG5ldyBgZmVhdHVyZWAKPiA8c2Vnd2VudD4gaWUu
-IHBicGJiIGZhdWx0Cj4gcnViZW5jbT4gaW4geW91ciBwYWdlIDxjb2RlPiB0YWcgaXNudCBpbnNp
-ZGUgYSA8cHJlPgo+IDxydWJlbmNtPiBtYXliZSB5b3UgdG91Y2hlZCBzb21ldGhpbmcgaW4gdGhl
-IHN0eWxlPwo+IDxzZWd3ZW50PiB1bmZvcnR1bmF0ZWx5LCBJIHdhcyBub3QgdGhlIHBlcnNvbiBk
-b2luZyB0aGlzIHVwZ3JhZGUgc28gaSAKPiBkb24ndCBrbm93IHdoYXQgaGFzIGJlZW4gZG9uZQo+
-IDxzZWd3ZW50PiBydWJlbmNtOiBhcyB5b3UgbWVudGlvbiA8Y29kZT4gbm90IFtjb2RlXSBkb2Vz
-IHRoYXQgbWVhbiB0aGF0IAo+IFtjb2RlXSBpcyBhIGxvY2FsIGN1c3RvbWlzYXRpb24gdG8gdGhl
-IGZvcnVtID8KPiA8cnViZW5jbT4gbm8sIGkgc2F5IHRoYXQgd2hlbiBbY29kZV0gaXMgY29udmVy
-dGVkIHRvIGh0bWwsIGkgdGhpbmsgdGhhdCAKPiB0aGVyZSBpcyBhIG1pc3NpbmcgaHRtbCB0YWcK
-PiA8cnViZW5jbT4gbWF5YmUgYmVjYXVzZSB5b3UgbW9kaWZpZWQgCj4gc3RsZXMvcHJvc2lsdmVy
-L3RlbXBsYXRlL2JiY29kZS5odG1sIG9yIHNvbWV0aGluZyBsaWtlIHRoYXQKPiA8c2Vnd2VudD4g
-b2sgdGhhbmtzCj4gPHJ1YmVuY20+IG1heWJlIGltIHdyb25nLCBidXQgaXRzIGEgZ29vZCBwbGFj
-ZSB0byBzdGFydCBsb29raW5nCj4gPC9xdW90ZT4KPiAKPiAKPiAKPiAKPiBPbiAxOC8wOS8xNyAy
-MjoyOSwgRXJpYyBDcmlzdCB3cm90ZToKPj4gVGhlIG9jb25mIHN0dWZmIGlzIHNvbWV0aGluZyBJ
-IGNhbiBzaGFyZS4gSZJsbCBwb3N0IHRvIGdpdGh1YiB0aGlzIAo+PiBhZnRlcm5vb24uIFRoaXMg
-d2hpdGUgc3BhY2UgcHJvYmxlbSBhcHBlYXJzIHRvIGJlIGEga25vd24gk2ZlYXR1cmWULgo+Pgo+
-PiBFcmljIENyaXN0Cj4+Cj4+PiBPbiBTZXAgMTgsIDIwMTcsIGF0IDQ6MjYgUE0sIGZyYWdtZW50
-dXggPGZyYWdtZW50dXhALi4uMjc3Li4uPiB3cm90ZToKPj4+Cj4+PiBBbnkgdXBkYXRlID8KPj4+
-Cj4+PiBoZXJlIGlzIGEgZ29vZCBleGFtcGxlIG9mIHRoZSBwcm9ibGVtOgo+Pj4gaHR0cHM6Ly9m
-b3J1bXMub3BlbnZwbi5uZXQvdmlld3RvcGljLnBocD9mPTYmdD0yNDkwNwo+Pj4KPj4+Cj4+Pj4g
-T24gMTQvMDkvMTcgMTc6MjksIEVyaWMgQ3Jpc3Qgd3JvdGU6Cj4+Pj4gSSB3aWxsIGxvb2sgaW50
-byB0aGVzZS4gSSdtIHN1cnByaXNlZCBbb2NvbmZdIGlzIGJyb2tlbiwgc2luY2UgSSAKPj4+PiB3
-cm90ZSB0aGF0IG15c2VsZiBhbmQgaXQgaXMgbm90IGEgbm9ybWFsIHBhcnQgb2YgcGhwQkIuCj4+
-Pj4gRXJpYyBDcmlzdAo+Pj4+PiBPbiBTZXAgMTQsIDIwMTcsIGF0IDY6MzYgQU0sIGZyYWdtZW50
-dXggPGZyYWdtZW50dXhALi4uMjc3Li4uPiB3cm90ZToKPj4+Pj4KPj4+Pj4gVGhlIGZvcnVtIHVw
-Z3JhZGUgaGFzIGJyb2tlbiB0aGUgZm9sbG93aW5nIEJCQ29kZXMuCj4+Pj4+Cj4+Pj4+IDEuIFtx
-dW90ZT0iTmFtZSJdCj4+Pj4+ICJOYW1lIiBpcyBubyBsb25nZXIgc2hvd24uCj4+Pj4+Cj4+Pj4+
-IDIuIFtjb2RlXQo+Pj4+PiBBcHBlYXJzIHRvIHN0cmlwIG91dCBhbGwgbmV3bGluZSAvIENSTEYu
-Cj4+Pgo+Pj4KPj4KCg==
+I've uploaded the [oconf] BBcode to github:=20
+https://github.com/ecrist/oconf
+
+There may be style/template issues on the forum, and I will look into=20
+those based on your other messages.
+
+---
+Eric F Crist
+
+
+On 2017-09-18 16:29, Eric Crist wrote:
+> The oconf stuff is something I can share. I=E2=80=99ll post to github this
+> afternoon. This white space problem appears to be a known
+> =E2=80=9Cfeature=E2=80=9D.
+>=20
+> Eric Crist
+>=20
+> On Sep 18, 2017, at 4:26 PM, fragmentux <fragmentux@...277...> wrote:
+>=20
+>> Any update ?
+>>=20
+>> here is a good example of the problem:
+>> https://forums.openvpn.net/viewtopic.php?f=3D6&t=3D24907
+>>=20
+>> On 14/09/17 17:29, Eric Crist wrote:
+>>=20
+>>> I will look into these. I'm surprised [oconf] is broken, since I
+>>> wrote that myself and it is not a normal part of phpBB.
+>>=20
+>>> Eric Crist
+>> On Sep 14, 2017, at 6:36 AM, fragmentux <fragmentux@...277...>
+>> wrote:
+>=20
+>>>=20
+>=20
+>>> The forum upgrade has broken the following BBCodes.
+>=20
+>>>=20
+>=20
+>>> 1. [quote=3D"Name"]
+>=20
+>>> "Name" is no longer shown.
+>=20
+>>>=20
+>=20
+>>> 2. [code]
+>=20
+>>> Appears to strip out all newline / CRLF.
+>=20
+>=20
+> -------------------------------------------------------------------------=
+-----
+> Check out the vibrant tech community on one of the world's most
+> engaging tech sites, Slashdot.org! http://sdm.link/slashdot
+>=20
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+
