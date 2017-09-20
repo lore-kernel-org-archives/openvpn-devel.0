@@ -1,16 +1,15 @@
-References: <13a39edc-f624-6b35-fb5e-e78516805bae@...277...>
- <788CC994-AFDA-40E2-9A07-851D0ED407BE@...1286...>
- <ab2e90c9-0e4b-532c-759f-1e14b4a26a90@...277...>
- <599C2298-FED1-4B44-B8DD-B2EB7ECE4A38@...1286...>
- <9f2db472d51e79fdbfa1ec4b65d8bd17@...1286...>
- <5cddd371c185b12e21395d56f27969ac@...1286...>
-From: fragmentux <fragmentux@...277...>
-Message-ID: <0f853bfc-e7fe-41f7-8e8b-a7e38f9fe925@...277...>
-Date: Wed, 20 Sep 2017 11:39:01 +0100
-MIME-Version: 1.0
-In-Reply-To: <5cddd371c185b12e21395d56f27969ac@...1286...>
-Content-Language: en-GB
-Subject: Re: [Openvpn-devel] [openvpn-devel] Forum upgrade problems
+Message-Id: <201709201059.v8KAxOc2014584@...2300...>
+From: Casper.Dik@...2299...
+In-Reply-To: <80a5d2fc-819c-76d7-f51d-2a2d476bf31a@...1937...> 
+References: <201708291322.v7TDMcY3029206@...2300...>
+ <20170829190353.GX70062@...1296...>
+ <201708300839.v7U8dklY019715@...2300...>
+ <ed6292e5-2877-7ca8-bf7b-80fe8e7da72e@...1227...>
+ <201708310611.v7V6Bj1f010862@...2300...>
+ <80a5d2fc-819c-76d7-f51d-2a2d476bf31a@...1937...> 
+Mime-Version: 1.0
+Date: Wed, 20 Sep 2017 12:59:24 +0200
+Subject: Re: [Openvpn-devel] Solaris 11: t_lpback.sh coredump on AES-GCM
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,97 +18,38 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 8bit
-To: Eric F Crist <ecrist@...1286...>
-Cc: openvpn-devel@lists.sourceforge.net
-
-Another suggestion:
-Can you please change [oconf=x] to simply [oconf]
-There is enough remaining information to be able to determine what
-the config is used for .. and if there isn't then a simple question
-can be asked to clarify.
-
-Otherwise, people just use it blindly and assume it does not work.
-eg: https://forums.openvpn.net/viewtopic.php?f=4&t=24913
+To: Alexander Pyhalov <alp@...1937...>
+Cc: Arne Schwabe <arne@...1227...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
 
-On 19/09/17 15:39, Eric F Crist wrote:
-> Switching the forum back from our custom style to the prosilver default 
-> resolves at least the [code] BBCode.  I'll look at the differences tonight.
-> 
-> ---
-> Eric F Crist
-> 
-> 
-> On 2017-09-19 09:34, Eric F Crist wrote:
->> I've uploaded the [oconf] BBcode to github: 
->> https://github.com/ecrist/oconf
->>
->> There may be style/template issues on the forum, and I will look into
->> those based on your other messages.
->>
->> ---
->> Eric F Crist
->>
->>
->> On 2017-09-18 16:29, Eric Crist wrote:
->>> The oconf stuff is something I can share. I’ll post to github this
->>> afternoon. This white space problem appears to be a known
->>> “feature”.
->>>
->>> Eric Crist
->>>
->>> On Sep 18, 2017, at 4:26 PM, fragmentux <fragmentux@...277...> wrote:
->>>
->>>> Any update ?
->>>>
->>>> here is a good example of the problem:
->>>> https://forums.openvpn.net/viewtopic.php?f=6&t=24907
->>>>
->>>> On 14/09/17 17:29, Eric Crist wrote:
->>>>
->>>>> I will look into these. I'm surprised [oconf] is broken, since I
->>>>> wrote that myself and it is not a normal part of phpBB.
->>>>
->>>>> Eric Crist
->>>> On Sep 14, 2017, at 6:36 AM, fragmentux <fragmentux@...277...>
->>>> wrote:
->>>
->>>>>
->>>
->>>>> The forum upgrade has broken the following BBCodes.
->>>
->>>>>
->>>
->>>>> 1. [quote="Name"]
->>>
->>>>> "Name" is no longer shown.
->>>
->>>>>
->>>
->>>>> 2. [code]
->>>
->>>>> Appears to strip out all newline / CRLF.
->>>
->>>
->>> ------------------------------------------------------------------------------ 
->>>
->>> Check out the vibrant tech community on one of the world's most
->>> engaging tech sites, Slashdot.org! http://sdm.link/slashdot
->>>
->>> _______________________________________________
->>> Openvpn-devel mailing list
->>> Openvpn-devel@lists.sourceforge.net
->>> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->>
->> ------------------------------------------------------------------------------ 
->>
->> Check out the vibrant tech community on one of the world's most
->> engaging tech sites, Slashdot.org! http://sdm.link/slashdot
->> _______________________________________________
->> Openvpn-devel mailing list
->> Openvpn-devel@lists.sourceforge.net
->> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
-> 
+>Hello.
+>
+>Spent a day debugging this issue on OpenIndiana.
+>If anyone steps on this once again...
+>It seems the issue was caused OI/Solaris OpenSSL specific patches, in 
+>particular by 
+>https://github.com/OpenIndiana/oi-userland/blob/oi/hipster/components/library/openssl/openssl-1.0.
+2/patches/036-evp_leak.patch 
+>. It was fixed in solaris-userland in this commit - 
+>https://github.com/oracle/solaris-userland/commit/05790938481cdceaedb2a9aee700bcec6fca7e34 
+>  .
+
+
+Yes I had bug 26336744 filed for this and figured out what was causing it; 
+as a result it has been fixed in Solaris userland (in both branches).
+
+The fix was also delivered in Solaris 11.3 SRU 24 which was released 
+somewhere in the last week.
+
+# pkg list -H entire openssl
+entire                                            0.5.11-0.175.3.24.0.4.0    i--
+library/security/openssl                          1.0.2.11-0.175.3.24.0.4.0  i--
+
+(the weird numbers are historic and should be changed to a more easily 
+understandable numbers in 11.4)
+
+Casper
+
 
