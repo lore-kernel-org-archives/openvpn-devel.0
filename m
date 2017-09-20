@@ -1,15 +1,13 @@
-Message-Id: <201709201059.v8KAxOc2014584@...2300...>
-From: Casper.Dik@...2299...
-In-Reply-To: <80a5d2fc-819c-76d7-f51d-2a2d476bf31a@...1937...> 
-References: <201708291322.v7TDMcY3029206@...2300...>
- <20170829190353.GX70062@...1296...>
- <201708300839.v7U8dklY019715@...2300...>
- <ed6292e5-2877-7ca8-bf7b-80fe8e7da72e@...1227...>
- <201708310611.v7V6Bj1f010862@...2300...>
- <80a5d2fc-819c-76d7-f51d-2a2d476bf31a@...1937...> 
-Mime-Version: 1.0
-Date: Wed, 20 Sep 2017 12:59:24 +0200
-Subject: Re: [Openvpn-devel] Solaris 11: t_lpback.sh coredump on AES-GCM
+MIME-Version: 1.0
+In-Reply-To: <1505501175-9016-1-git-send-email-selva.nair@...277...>
+References: <1505450463-459-1-git-send-email-selva.nair@...277...>
+ <1505501175-9016-1-git-send-email-selva.nair@...277...>
+From: Selva <selva.nair@...277...>
+Date: Wed, 20 Sep 2017 11:34:03 -0400
+Message-ID: <CAKuzo_iN6kzukk7ZETjwb6A8pXTkAgXUuQs3E1cf_enYbh-uCA@...278...>
+Content-Type: multipart/alternative; boundary="001a113d5a6ed8db2a0559a0b5a6"
+Subject: Re: [Openvpn-devel] [PATCH v2] Check whether in pull_mode before
+ warning about previous connection blocks
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,38 +16,79 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 8bit
-To: Alexander Pyhalov <alp@...1937...>
-Cc: Arne Schwabe <arne@...1227...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, Gert Doering <gert@...1296...>
 
+--001a113d5a6ed8db2a0559a0b5a6
+Content-Type: text/plain; charset="UTF-8"
 
->Hello.
+Hi,
+
+On Fri, Sep 15, 2017 at 2:46 PM, <selva.nair@...277...> wrote:
+
+> From: Selva Nair <selva.nair@...277...>
 >
->Spent a day debugging this issue on OpenIndiana.
->If anyone steps on this once again...
->It seems the issue was caused OI/Solaris OpenSSL specific patches, in 
->particular by 
->https://github.com/OpenIndiana/oi-userland/blob/oi/hipster/components/library/openssl/openssl-1.0.
-2/patches/036-evp_leak.patch 
->. It was fixed in solaris-userland in this commit - 
->https://github.com/oracle/solaris-userland/commit/05790938481cdceaedb2a9aee700bcec6fca7e34 
->  .
+> In particular, this eliminates the message that says "explicit-exit-notify
+> is ignored by previous <connection> blocks" when the option is pushed.
+>
+> Note: pull_mode is identified as "allowed & OPT_P_PULL_MODE" matching with
+> the
+> definition in add_options().
+>
+> Reported by: Eike Lohmann e.lohmann@...1294...
+> https://www.mail-archive.com/openvpn-users@...1199...
+> sourceforge.net/msg04052.html
+>
+> v2: move the check to verify_permissions() as suggested by
+> Gert <gert@...1296...>
+>
+> Signed-off-by: Selva Nair <selva.nair@...277...>
+> ---
+>  src/openvpn/options.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
+>
 
 
-Yes I had bug 26336744 filed for this and figured out what was causing it; 
-as a result it has been fixed in Solaris userland (in both branches).
+Does this look good now?
 
-The fix was also delivered in Solaris 11.3 SRU 24 which was released 
-somewhere in the last week.
+Selva
 
-# pkg list -H entire openssl
-entire                                            0.5.11-0.175.3.24.0.4.0    i--
-library/security/openssl                          1.0.2.11-0.175.3.24.0.4.0  i--
+--001a113d5a6ed8db2a0559a0b5a6
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-(the weird numbers are historic and should be changed to a more easily 
-understandable numbers in 11.4)
+<div dir=3D"ltr">Hi,<br><div class=3D"gmail_extra"><br><div class=3D"gmail_=
+quote">On Fri, Sep 15, 2017 at 2:46 PM,  <span dir=3D"ltr">&lt;<a href=3D"m=
+ailto:selva.nair@...277..." target=3D"_blank">selva.nair@...277...</a>&gt;<=
+/span> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8=
+ex;border-left:1px #ccc solid;padding-left:1ex">From: Selva Nair &lt;<a hre=
+f=3D"mailto:selva.nair@...277...">selva.nair@...277...</a>&gt;<br>
+<br>
+In particular, this eliminates the message that says &quot;explicit-exit-no=
+tify<br>
+<span class=3D"">is ignored by previous &lt;connection&gt; blocks&quot; whe=
+n the option is pushed.<br>
+<br>
+</span>Note: pull_mode is identified as &quot;allowed &amp; OPT_P_PULL_MODE=
+&quot; matching with the<br>
+definition in add_options().<br>
+<span class=3D""><br>
+Reported by: Eike Lohmann <a href=3D"mailto:e.lohmann@...1294...">e.lohmann=
+@...1294...</a><br>
+<a href=3D"https://www.mail-archive.com/openvpn-users@lists.sourceforge.net=
+/msg04052.html" rel=3D"noreferrer" target=3D"_blank">https://www.mail-archi=
+ve.com/<wbr>openvpn-users@...1199...<wbr>sourceforge.net/msg04052.html</a><=
+br>
+<br>
+</span>v2: move the check to verify_permissions() as suggested by<br>
+Gert &lt;<a href=3D"mailto:gert@...1296...">gert@...1296...</a>&gt;<br>
+<span class=3D""><br>
+Signed-off-by: Selva Nair &lt;<a href=3D"mailto:selva.nair@...277...">selva=
+.nair@...277...</a>&gt;<br>
+---<br>
+</span>=C2=A0src/openvpn/options.c | 4 +++-<br>
+=C2=A01 file changed, 3 insertions(+), 1 deletion(-)<br></blockquote><div><=
+br></div><div><br></div><div>Does this look good now?</div><div><br></div><=
+div>Selva</div></div></div></div>
 
-Casper
-
+--001a113d5a6ed8db2a0559a0b5a6--
 
