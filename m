@@ -1,19 +1,13 @@
-Content-Type: multipart/alternative;
- boundary=Apple-Mail-EF440822-C696-4B51-B655-2F95FB9F6855
-Mime-Version: 1.0 (1.0)
-From: Eric Crist <ecrist@...1286...>
-In-Reply-To: <0f853bfc-e7fe-41f7-8e8b-a7e38f9fe925@...277...>
-Date: Wed, 20 Sep 2017 10:40:56 -0500
-Content-Transfer-Encoding: 7bit
-Message-Id: <7239E5E5-B6AD-4022-9E09-D4B2E8B81717@...1286...>
-References: <13a39edc-f624-6b35-fb5e-e78516805bae@...277...>
- <788CC994-AFDA-40E2-9A07-851D0ED407BE@...1286...>
- <ab2e90c9-0e4b-532c-759f-1e14b4a26a90@...277...>
- <599C2298-FED1-4B44-B8DD-B2EB7ECE4A38@...1286...>
- <9f2db472d51e79fdbfa1ec4b65d8bd17@...1286...>
- <5cddd371c185b12e21395d56f27969ac@...1286...>
- <0f853bfc-e7fe-41f7-8e8b-a7e38f9fe925@...277...>
-Subject: Re: [Openvpn-devel] [openvpn-devel] Forum upgrade problems
+MIME-Version: 1.0
+In-Reply-To: <CAKuzo_hGkfDCUnLSg54za+NFS1jabfEm2620hiGwJox45L_bfg@...278...>
+References: <CAKuzo_jzvzxh-exre_W1oG7pUU7+RBOe-zX2P0RDq4nv-pSbQw@...278...>
+ <CAKuzo_hGkfDCUnLSg54za+NFS1jabfEm2620hiGwJox45L_bfg@...278...>
+From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
+Date: Wed, 20 Sep 2017 20:50:47 +0500
+Message-ID: <CAFHpkQHQHX4NyDavubf2iY0vAHu76NO2hic9Hm51nCzq6Pk1Ew@...278...>
+Content-Type: multipart/alternative; boundary="001a11448be684ea9b0559a0f073"
+Subject: Re: [Openvpn-devel] Better error recognition and error/status
+ reporting to the mgmt i/f
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,284 +16,229 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: fragmentux <fragmentux@...277...>
+To: Selva Nair <selva.nair@...277...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---Apple-Mail-EF440822-C696-4B51-B655-2F95FB9F6855
-Content-Type: text/plain; charset="windows-1251"
+--001a11448be684ea9b0559a0f073
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-I=92m not going to make that change.=20
+Hello, I beleive that people will ignore "not green" status. I think
+there're should be an option of treating that situation as fatal error.
 
-Eric Crist
+However, I agree that it requires help from core
 
-> On Sep 20, 2017, at 5:39 AM, fragmentux <fragmentux@...277...> wrote:
->=20
-> Another suggestion:
-> Can you please change [oconf=3Dx] to simply [oconf]
-> There is enough remaining information to be able to determine what
-> the config is used for .. and if there isn't then a simple question
-> can be asked to clarify.
->=20
-> Otherwise, people just use it blindly and assume it does not work.
-> eg: https://forums.openvpn.net/viewtopic.php?f=3D4&t=3D24913
->=20
->=20
->> On 19/09/17 15:39, Eric F Crist wrote:
->> Switching the forum back from our custom style to the prosilver default =
-resolves at least the [code] BBCode.  I'll look at the differences tonight.
->> ---
->> Eric F Crist
->>> On 2017-09-19 09:34, Eric F Crist wrote:
->>> I've uploaded the [oconf] BBcode to github: https://github.com/ecrist/o=
-conf
->>>=20
->>> There may be style/template issues on the forum, and I will look into
->>> those based on your other messages.
->>>=20
->>> ---
->>> Eric F Crist
->>>=20
->>>=20
->>>> On 2017-09-18 16:29, Eric Crist wrote:
->>>> The oconf stuff is something I can share. I=92ll post to github this
->>>> afternoon. This white space problem appears to be a known
->>>> =93feature=94.
->>>>=20
->>>> Eric Crist
->>>>=20
->>>>> On Sep 18, 2017, at 4:26 PM, fragmentux <fragmentux@...277...> wrote:
->>>>>=20
->>>>> Any update ?
->>>>>=20
->>>>> here is a good example of the problem:
->>>>> https://forums.openvpn.net/viewtopic.php?f=3D6&t=3D24907
->>>>>=20
->>>>>> On 14/09/17 17:29, Eric Crist wrote:
->>>>>>=20
->>>>>> I will look into these. I'm surprised [oconf] is broken, since I
->>>>>> wrote that myself and it is not a normal part of phpBB.
->>>>>=20
->>>>>> Eric Crist
->>>>> On Sep 14, 2017, at 6:36 AM, fragmentux <fragmentux@...277...>
->>>>> wrote:
->>>>=20
->>>>>>=20
->>>>=20
->>>>>> The forum upgrade has broken the following BBCodes.
->>>>=20
->>>>>>=20
->>>>=20
->>>>>> 1. [quote=3D"Name"]
->>>>=20
->>>>>> "Name" is no longer shown.
->>>>=20
->>>>>>=20
->>>>=20
->>>>>> 2. [code]
->>>>=20
->>>>>> Appears to strip out all newline / CRLF.
->>>>=20
->>>>=20
->>>> ----------------------------------------------------------------------=
---------=20
->>>> Check out the vibrant tech community on one of the world's most
->>>> engaging tech sites, Slashdot.org! http://sdm.link/slashdot
->>>>=20
->>>> _______________________________________________
->>>> Openvpn-devel mailing list
->>>> Openvpn-devel@lists.sourceforge.net
->>>> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->>>=20
->>> -----------------------------------------------------------------------=
--------=20
->>> Check out the vibrant tech community on one of the world's most
->>> engaging tech sites, Slashdot.org! http://sdm.link/slashdot
->>> _______________________________________________
->>> Openvpn-devel mailing list
->>> Openvpn-devel@lists.sourceforge.net
->>> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+20 =D1=81=D0=B5=D0=BD=D1=82. 2017 =D0=B3. 8:39 =D0=9F=D0=9F =D0=BF=D0=BE=D0=
+=BB=D1=8C=D0=B7=D0=BE=D0=B2=D0=B0=D1=82=D0=B5=D0=BB=D1=8C "Selva" <selva.na=
+ir@...277...>
+=D0=BD=D0=B0=D0=BF=D0=B8=D1=81=D0=B0=D0=BB:
 
---Apple-Mail-EF440822-C696-4B51-B655-2F95FB9F6855
-Content-Type: text/html; charset="utf-8"
+> Hi,
+>
+> On Thu, Sep 14, 2017 at 3:21 PM, Selva <selva.nair@...277...> wrote:
+>
+>> Hi,
+>>
+>> Quoting from the meeting logs:
+>>
+>>
+>>> Discussed having more fine-grained signalling from OpenVPN to OpenVPN
+>>> GUI. The lack of clear signals from OpenVPN to OpenVPN GUI has been a
+>>> rather common problem:
+>>>
+>>
+>>
+>>> <https://github.com/OpenVPN/openvpn-gui/issues/168#issuecomm
+>>> ent-305243166>
+>>> <https://github.com/OpenVPN/openvpn-gui/issues/9>
+>>> <https://github.com/OpenVPN/openvpn-gui/issues/183>
+>>>
+>>
+>>
+>>> This problem is probably not limited to OpenVPN GUI (Windows), but also
+>>> affects other GUI's like NetworkManager. It was agreed that the best
+>>> approach is that Selva, mattock and others involved on the Windows side
+>>> come up with a PoC or "RFC" of how this issue could be tackled ...
+>>> OpenVPN core will then be modified if necessary.
+>>
+>>
+>> No time to write an "RFC" or such for something of this sort, but here
+>> are some comments/suggestions:
+>>
+>> 0. Do not send a status message that reads "CONNECTED, SUCCESS" to the
+>> management when there has been critical errors such as: failed to add
+>> routes or to set ipv6 address using the service or to talk to the servic=
+e,
+>> etc.. Send something like "CONNECTED,ERROR".
+>>
+>> A status signalling with more fine-grained info to the management would
+>> be helpful, but as a short-term fix, just changing SUCCESS to ERROR in s=
+ome
+>> cases may be a good start.
+>>
+>> 1. Mark all messages to the management as I (for info), W (for warning),
+>> N (for non fatal error) etc. -- on some log lines this info is currently
+>> missing. I think, part of the problem is not all messages are printed wi=
+th
+>> an M_xx flag.
+>>
+>> 2. Mark non-fatal opevpn_execve errors as M_NONFATAL instead of M_WARN
+>>
+>> 3. Treat failure to talk to the service (when msg_channnel is defined)
+>> as M_NONFATAL not M_WARN
+>>
+>> 4. Mark route add/del errors via service as M_NONFATAL -- currently
+>> M_WARN.
+>>  Mark route addition failure by other means as M_NONFATAL -- currently
+>> M_WARN on all platforms, and all methods, I think.
+>>
+>> 5. Mark "ifconfig" (set address) errors as consistently M_FATAL or
+>> M_NONFATAL (see comment on "fatality" below).
+>> Currently these are M_WARN if done by service, M_FATAL otherwise.
+>>
+>> Given that M_FATAL should be used only very rarely, if at all --- e.g.,
+>> if proceeding further makes no sense ---  most errors should be M_NONFAT=
+AL.
+>> The above comments reflect that sentiment.
+>>
+>> That said, whether address and route addition errors should be FATAL
+>> deserves some discussion -- In case of address addition, an error probab=
+ly
+>> has to be FATAL, but "route add" failures are borderline cases. E.g., if
+>>  "--redirect-gateway" fails, the tunnel may be  considered meaningless in
+>> many use cases and thus a fatal error. So, some but not all route-add
+>> errors may have to be treated as FATAL.
+>>
+>> If there is consensus, and an appetite for patch review, I can send in
+>> some patches for 2 to 5 and possibly 1. For 0, I'm not sure how to keep
+>> track of past errors to construct a useful status message.
+>>
+>> Thanks,
+>>
+>
+> Any feedback on how to go about these ? I want to make the GUI not show
+> green when there are route errors, but need some co-operation from the
+> core..
+>
+> Selva
+>
+> ------------------------------------------------------------
+> ------------------
+> Check out the vibrant tech community on one of the world's most
+> engaging tech sites, Slashdot.org! http://sdm.link/slashdot
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+>
+>
+
+--001a11448be684ea9b0559a0f073
+Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<html><head><meta http-equiv=3D"content-type" content=3D"text/html; charset=
-=3Dutf-8"></head><body dir=3D"auto">I=E2=80=99m not going to make that chan=
-ge.&nbsp;<br><br><div id=3D"AppleMailSignature"><div style=3D"direction: in=
-herit;">Eric Crist</div></div><div><br>On Sep 20, 2017, at 5:39 AM, fragmen=
-tux &lt;<a href=3D"mailto:fragmentux@...277...">fragmentux@...277...</a>&gt=
-; wrote:<br><br></div><blockquote type=3D"cite"><div><span>Another suggesti=
-on:</span><br><span>Can you please change [oconf=3Dx] to simply [oconf]</sp=
-an><br><span>There is enough remaining information to be able to determine =
-what</span><br><span>the config is used for .. and if there isn't then a si=
-mple question</span><br><span>can be asked to clarify.</span><br><span></sp=
-an><br><span>Otherwise, people just use it blindly and assume it does not w=
-ork.</span><br><span>eg: <a href=3D"https://forums.openvpn.net/viewtopic.ph=
-p?f=3D4&amp;t=3D24913">https://forums.openvpn.net/viewtopic.php?f=3D4&amp;t=
-=3D24913</a></span><br><span></span><br><span></span><br><span>On 19/09/17 =
-15:39, Eric F Crist wrote:</span><br><blockquote type=3D"cite"><span>Switch=
-ing the forum back from our custom style to the prosilver default resolves =
-at least the [code] BBCode.&nbsp; I'll look at the differences tonight.</sp=
-an><br></blockquote><blockquote type=3D"cite"><span>---</span><br></blockqu=
-ote><blockquote type=3D"cite"><span>Eric F Crist</span><br></blockquote><bl=
-ockquote type=3D"cite"><span>On 2017-09-19 09:34, Eric F Crist wrote:</span=
-><br></blockquote><blockquote type=3D"cite"><blockquote type=3D"cite"><span=
->I've uploaded the [oconf] BBcode to github: <a href=3D"https://github.com/=
-ecrist/oconf">https://github.com/ecrist/oconf</a></span><br></blockquote></=
-blockquote><blockquote type=3D"cite"><blockquote type=3D"cite"><span></span=
-><br></blockquote></blockquote><blockquote type=3D"cite"><blockquote type=
-=3D"cite"><span>There may be style/template issues on the forum, and I will=
- look into</span><br></blockquote></blockquote><blockquote type=3D"cite"><b=
-lockquote type=3D"cite"><span>those based on your other messages.</span><br=
-></blockquote></blockquote><blockquote type=3D"cite"><blockquote type=3D"ci=
-te"><span></span><br></blockquote></blockquote><blockquote type=3D"cite"><b=
-lockquote type=3D"cite"><span>---</span><br></blockquote></blockquote><bloc=
-kquote type=3D"cite"><blockquote type=3D"cite"><span>Eric F Crist</span><br=
-></blockquote></blockquote><blockquote type=3D"cite"><blockquote type=3D"ci=
-te"><span></span><br></blockquote></blockquote><blockquote type=3D"cite"><b=
-lockquote type=3D"cite"><span></span><br></blockquote></blockquote><blockqu=
-ote type=3D"cite"><blockquote type=3D"cite"><span>On 2017-09-18 16:29, Eric=
- Crist wrote:</span><br></blockquote></blockquote><blockquote type=3D"cite"=
-><blockquote type=3D"cite"><blockquote type=3D"cite"><span>The oconf stuff =
-is something I can share. I=E2=80=99ll post to github this</span><br></bloc=
-kquote></blockquote></blockquote><blockquote type=3D"cite"><blockquote type=
-=3D"cite"><blockquote type=3D"cite"><span>afternoon. This white space probl=
-em appears to be a known</span><br></blockquote></blockquote></blockquote><=
-blockquote type=3D"cite"><blockquote type=3D"cite"><blockquote type=3D"cite=
-"><span>=E2=80=9Cfeature=E2=80=9D.</span><br></blockquote></blockquote></bl=
-ockquote><blockquote type=3D"cite"><blockquote type=3D"cite"><blockquote ty=
-pe=3D"cite"><span></span><br></blockquote></blockquote></blockquote><blockq=
-uote type=3D"cite"><blockquote type=3D"cite"><blockquote type=3D"cite"><spa=
-n>Eric Crist</span><br></blockquote></blockquote></blockquote><blockquote t=
-ype=3D"cite"><blockquote type=3D"cite"><blockquote type=3D"cite"><span></sp=
-an><br></blockquote></blockquote></blockquote><blockquote type=3D"cite"><bl=
-ockquote type=3D"cite"><blockquote type=3D"cite"><span>On Sep 18, 2017, at =
-4:26 PM, fragmentux &lt;<a href=3D"mailto:fragmentux@...277...">fragmentux@=
-...277...</a>&gt; wrote:</span><br></blockquote></blockquote></blockquote><=
-blockquote type=3D"cite"><blockquote type=3D"cite"><blockquote type=3D"cite=
-"><span></span><br></blockquote></blockquote></blockquote><blockquote type=
-=3D"cite"><blockquote type=3D"cite"><blockquote type=3D"cite"><blockquote t=
-ype=3D"cite"><span>Any update ?</span><br></blockquote></blockquote></block=
-quote></blockquote><blockquote type=3D"cite"><blockquote type=3D"cite"><blo=
-ckquote type=3D"cite"><blockquote type=3D"cite"><span></span><br></blockquo=
-te></blockquote></blockquote></blockquote><blockquote type=3D"cite"><blockq=
-uote type=3D"cite"><blockquote type=3D"cite"><blockquote type=3D"cite"><spa=
-n>here is a good example of the problem:</span><br></blockquote></blockquot=
-e></blockquote></blockquote><blockquote type=3D"cite"><blockquote type=3D"c=
-ite"><blockquote type=3D"cite"><blockquote type=3D"cite"><span><a href=3D"h=
-ttps://forums.openvpn.net/viewtopic.php?f=3D6&amp;t=3D24907">https://forums=
-.openvpn.net/viewtopic.php?f=3D6&amp;t=3D24907</a></span><br></blockquote><=
-/blockquote></blockquote></blockquote><blockquote type=3D"cite"><blockquote=
- type=3D"cite"><blockquote type=3D"cite"><blockquote type=3D"cite"><span></=
-span><br></blockquote></blockquote></blockquote></blockquote><blockquote ty=
-pe=3D"cite"><blockquote type=3D"cite"><blockquote type=3D"cite"><blockquote=
- type=3D"cite"><span>On 14/09/17 17:29, Eric Crist wrote:</span><br></block=
-quote></blockquote></blockquote></blockquote><blockquote type=3D"cite"><blo=
-ckquote type=3D"cite"><blockquote type=3D"cite"><blockquote type=3D"cite"><=
-span></span><br></blockquote></blockquote></blockquote></blockquote><blockq=
-uote type=3D"cite"><blockquote type=3D"cite"><blockquote type=3D"cite"><blo=
-ckquote type=3D"cite"><blockquote type=3D"cite"><span>I will look into thes=
-e. I'm surprised [oconf] is broken, since I</span><br></blockquote></blockq=
-uote></blockquote></blockquote></blockquote><blockquote type=3D"cite"><bloc=
-kquote type=3D"cite"><blockquote type=3D"cite"><blockquote type=3D"cite"><b=
-lockquote type=3D"cite"><span>wrote that myself and it is not a normal part=
- of phpBB.</span><br></blockquote></blockquote></blockquote></blockquote></=
-blockquote><blockquote type=3D"cite"><blockquote type=3D"cite"><blockquote =
-type=3D"cite"><blockquote type=3D"cite"><span></span><br></blockquote></blo=
-ckquote></blockquote></blockquote><blockquote type=3D"cite"><blockquote typ=
-e=3D"cite"><blockquote type=3D"cite"><blockquote type=3D"cite"><blockquote =
-type=3D"cite"><span>Eric Crist</span><br></blockquote></blockquote></blockq=
-uote></blockquote></blockquote><blockquote type=3D"cite"><blockquote type=
-=3D"cite"><blockquote type=3D"cite"><blockquote type=3D"cite"><span>On Sep =
-14, 2017, at 6:36 AM, fragmentux &lt;<a href=3D"mailto:fragmentux@...277...=
-">fragmentux@...277...</a>&gt;</span><br></blockquote></blockquote></blockq=
-uote></blockquote><blockquote type=3D"cite"><blockquote type=3D"cite"><bloc=
-kquote type=3D"cite"><blockquote type=3D"cite"><span>wrote:</span><br></blo=
-ckquote></blockquote></blockquote></blockquote><blockquote type=3D"cite"><b=
-lockquote type=3D"cite"><blockquote type=3D"cite"><span></span><br></blockq=
-uote></blockquote></blockquote><blockquote type=3D"cite"><blockquote type=
-=3D"cite"><blockquote type=3D"cite"><blockquote type=3D"cite"><blockquote t=
-ype=3D"cite"><span></span><br></blockquote></blockquote></blockquote></bloc=
-kquote></blockquote><blockquote type=3D"cite"><blockquote type=3D"cite"><bl=
-ockquote type=3D"cite"><span></span><br></blockquote></blockquote></blockqu=
-ote><blockquote type=3D"cite"><blockquote type=3D"cite"><blockquote type=3D=
-"cite"><blockquote type=3D"cite"><blockquote type=3D"cite"><span>The forum =
-upgrade has broken the following BBCodes.</span><br></blockquote></blockquo=
-te></blockquote></blockquote></blockquote><blockquote type=3D"cite"><blockq=
-uote type=3D"cite"><blockquote type=3D"cite"><span></span><br></blockquote>=
-</blockquote></blockquote><blockquote type=3D"cite"><blockquote type=3D"cit=
-e"><blockquote type=3D"cite"><blockquote type=3D"cite"><blockquote type=3D"=
-cite"><span></span><br></blockquote></blockquote></blockquote></blockquote>=
-</blockquote><blockquote type=3D"cite"><blockquote type=3D"cite"><blockquot=
-e type=3D"cite"><span></span><br></blockquote></blockquote></blockquote><bl=
-ockquote type=3D"cite"><blockquote type=3D"cite"><blockquote type=3D"cite">=
-<blockquote type=3D"cite"><blockquote type=3D"cite"><span>1. [quote=3D"Name=
-"]</span><br></blockquote></blockquote></blockquote></blockquote></blockquo=
-te><blockquote type=3D"cite"><blockquote type=3D"cite"><blockquote type=3D"=
-cite"><span></span><br></blockquote></blockquote></blockquote><blockquote t=
-ype=3D"cite"><blockquote type=3D"cite"><blockquote type=3D"cite"><blockquot=
-e type=3D"cite"><blockquote type=3D"cite"><span>"Name" is no longer shown.<=
-/span><br></blockquote></blockquote></blockquote></blockquote></blockquote>=
-<blockquote type=3D"cite"><blockquote type=3D"cite"><blockquote type=3D"cit=
-e"><span></span><br></blockquote></blockquote></blockquote><blockquote type=
-=3D"cite"><blockquote type=3D"cite"><blockquote type=3D"cite"><blockquote t=
-ype=3D"cite"><blockquote type=3D"cite"><span></span><br></blockquote></bloc=
-kquote></blockquote></blockquote></blockquote><blockquote type=3D"cite"><bl=
-ockquote type=3D"cite"><blockquote type=3D"cite"><span></span><br></blockqu=
-ote></blockquote></blockquote><blockquote type=3D"cite"><blockquote type=3D=
-"cite"><blockquote type=3D"cite"><blockquote type=3D"cite"><blockquote type=
-=3D"cite"><span>2. [code]</span><br></blockquote></blockquote></blockquote>=
-</blockquote></blockquote><blockquote type=3D"cite"><blockquote type=3D"cit=
-e"><blockquote type=3D"cite"><span></span><br></blockquote></blockquote></b=
-lockquote><blockquote type=3D"cite"><blockquote type=3D"cite"><blockquote t=
-ype=3D"cite"><blockquote type=3D"cite"><blockquote type=3D"cite"><span>Appe=
-ars to strip out all newline / CRLF.</span><br></blockquote></blockquote></=
-blockquote></blockquote></blockquote><blockquote type=3D"cite"><blockquote =
-type=3D"cite"><blockquote type=3D"cite"><span></span><br></blockquote></blo=
-ckquote></blockquote><blockquote type=3D"cite"><blockquote type=3D"cite"><b=
-lockquote type=3D"cite"><span></span><br></blockquote></blockquote></blockq=
-uote><blockquote type=3D"cite"><blockquote type=3D"cite"><blockquote type=
-=3D"cite"><span>-----------------------------------------------------------=
-------------------- </span><br></blockquote></blockquote></blockquote><bloc=
-kquote type=3D"cite"><blockquote type=3D"cite"><blockquote type=3D"cite"><s=
-pan>Check out the vibrant tech community on one of the world's most</span><=
-br></blockquote></blockquote></blockquote><blockquote type=3D"cite"><blockq=
-uote type=3D"cite"><blockquote type=3D"cite"><span>engaging tech sites, <a =
-href=3D"http://Slashdot.org">Slashdot.org</a>! <a href=3D"http://sdm.link/s=
-lashdot">http://sdm.link/slashdot</a></span><br></blockquote></blockquote><=
-/blockquote><blockquote type=3D"cite"><blockquote type=3D"cite"><blockquote=
- type=3D"cite"><span></span><br></blockquote></blockquote></blockquote><blo=
-ckquote type=3D"cite"><blockquote type=3D"cite"><blockquote type=3D"cite"><=
-span>_______________________________________________</span><br></blockquote=
-></blockquote></blockquote><blockquote type=3D"cite"><blockquote type=3D"ci=
-te"><blockquote type=3D"cite"><span>Openvpn-devel mailing list</span><br></=
-blockquote></blockquote></blockquote><blockquote type=3D"cite"><blockquote =
-type=3D"cite"><blockquote type=3D"cite"><span><a href=3D"mailto:Openvpn-dev=
-el@lists.sourceforge.net">Openvpn-devel@lists.sourceforge.net</a></span><br=
-></blockquote></blockquote></blockquote><blockquote type=3D"cite"><blockquo=
-te type=3D"cite"><blockquote type=3D"cite"><span><a href=3D"https://lists.s=
-ourceforge.net/lists/listinfo/openvpn-devel">https://lists.sourceforge.net/=
-lists/listinfo/openvpn-devel</a></span><br></blockquote></blockquote></bloc=
-kquote><blockquote type=3D"cite"><blockquote type=3D"cite"><span></span><br=
-></blockquote></blockquote><blockquote type=3D"cite"><blockquote type=3D"ci=
-te"><span>-----------------------------------------------------------------=
-------------- </span><br></blockquote></blockquote><blockquote type=3D"cite=
-"><blockquote type=3D"cite"><span>Check out the vibrant tech community on o=
-ne of the world's most</span><br></blockquote></blockquote><blockquote type=
-=3D"cite"><blockquote type=3D"cite"><span>engaging tech sites, <a href=3D"h=
-ttp://Slashdot.org">Slashdot.org</a>! <a href=3D"http://sdm.link/slashdot">=
-http://sdm.link/slashdot</a></span><br></blockquote></blockquote><blockquot=
-e type=3D"cite"><blockquote type=3D"cite"><span>___________________________=
-____________________</span><br></blockquote></blockquote><blockquote type=
-=3D"cite"><blockquote type=3D"cite"><span>Openvpn-devel mailing list</span>=
-<br></blockquote></blockquote><blockquote type=3D"cite"><blockquote type=3D=
-"cite"><span><a href=3D"mailto:Openvpn-devel@lists.sourceforge.net">Openvpn=
--devel@lists.sourceforge.net</a></span><br></blockquote></blockquote><block=
-quote type=3D"cite"><blockquote type=3D"cite"><span><a href=3D"https://list=
-s.sourceforge.net/lists/listinfo/openvpn-devel">https://lists.sourceforge.n=
-et/lists/listinfo/openvpn-devel</a></span><br></blockquote></blockquote></d=
-iv></blockquote></body></html>=
+<div dir=3D"auto">Hello, I beleive that people will ignore &quot;not green&=
+quot; status. I think there&#39;re should be an option of treating that sit=
+uation as fatal error.<div dir=3D"auto"><br></div><div dir=3D"auto">However=
+, I agree that it requires help from core</div></div><div class=3D"gmail_ex=
+tra"><br><div class=3D"gmail_quote">20 =D1=81=D0=B5=D0=BD=D1=82. 2017 =D0=
+=B3. 8:39 =D0=9F=D0=9F =D0=BF=D0=BE=D0=BB=D1=8C=D0=B7=D0=BE=D0=B2=D0=B0=D1=
+=82=D0=B5=D0=BB=D1=8C &quot;Selva&quot; &lt;<a href=3D"mailto:selva.nair@...1186...=
+.277...">selva.nair@...277...</a>&gt; =D0=BD=D0=B0=D0=BF=D0=B8=D1=81=D0=B0=
+=D0=BB:<br type=3D"attribution"><blockquote class=3D"gmail_quote" style=3D"=
+margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex"><div dir=3D"=
+ltr">Hi,<br><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">On Th=
+u, Sep 14, 2017 at 3:21 PM, Selva <span dir=3D"ltr">&lt;<a href=3D"mailto:s=
+elva.nair@...277..." target=3D"_blank">selva.nair@...277...</a>&gt;</span> =
+wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;bord=
+er-left:1px #ccc solid;padding-left:1ex"><div dir=3D"ltr"><div>Hi,</div><di=
+v><br></div><div>Quoting from the meeting logs:</div><div>=C2=A0</div><bloc=
+kquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:=
+1px solid rgb(204,204,204);padding-left:1ex">Discussed having more fine-gra=
+ined signalling from OpenVPN to OpenVPN<br>GUI. The lack of clear signals f=
+rom OpenVPN to OpenVPN GUI has been a<br>rather common problem:<br></blockq=
+uote><div>=C2=A0</div><blockquote class=3D"gmail_quote" style=3D"margin:0px=
+ 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">&lt=
+;<a href=3D"https://github.com/OpenVPN/openvpn-gui/issues/168#issuecomment-=
+305243166" target=3D"_blank">https://github.com/OpenVPN/op<wbr>envpn-gui/is=
+sues/168#issuecomm<wbr>ent-305243166</a>&gt;<br>&lt;<a href=3D"https://gith=
+ub.com/OpenVPN/openvpn-gui/issues/9" target=3D"_blank">https://github.com/O=
+penVPN/op<wbr>envpn-gui/issues/9</a>&gt;<br>&lt;<a href=3D"https://github.c=
+om/OpenVPN/openvpn-gui/issues/183" target=3D"_blank">https://github.com/Ope=
+nVPN/op<wbr>envpn-gui/issues/183</a>&gt;<br></blockquote><div>=C2=A0</div><=
+blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-l=
+eft:1px solid rgb(204,204,204);padding-left:1ex">This problem is probably n=
+ot limited to OpenVPN GUI (Windows), but also<br>affects other GUI&#39;s li=
+ke NetworkManager. It was agreed that the best<br>approach is that Selva, m=
+attock and others involved on the Windows side<br>come up with a PoC or &qu=
+ot;RFC&quot; of how this issue could be tackled ...<br>OpenVPN core will th=
+en be modified if necessary.</blockquote><div><br></div><div>No time to wri=
+te an &quot;RFC&quot; or such for something of this sort, but here are some=
+ comments/suggestions:<br></div><div><br></div><div>0. Do not send a status=
+ message that reads &quot;CONNECTED, SUCCESS&quot; to the management when t=
+here has been critical errors such as: failed to add routes or to set ipv6 =
+address using the service or to talk to the service, etc.. Send something l=
+ike &quot;CONNECTED,ERROR&quot;.</div><div><br></div><div>A status signalli=
+ng with more fine-grained info to the management would be helpful, but as a=
+ short-term fix, just changing SUCCESS to ERROR in some cases may be a good=
+ start.</div><div>=C2=A0</div><div>1. Mark all messages to the management a=
+s I (for info), W (for warning), N (for non fatal error) etc. -- on some lo=
+g lines this info is currently missing. I think, part of the problem is not=
+ all messages are printed with an M_xx flag.</div><div><br></div><div>2. Ma=
+rk non-fatal=C2=A0<span class=3D"m_8048013445085075463m_-705294039537763233=
+6J-JK9eJ-PJVNOc" id=3D"m_8048013445085075463m_-7052940395377632336gmail-:2m=
+k.1" style=3D"background:yellow">opevpn</span>_<span class=3D"m_80480134450=
+85075463m_-7052940395377632336J-JK9eJ-PJVNOc" id=3D"m_8048013445085075463m_=
+-7052940395377632336gmail-:2mk.2" style=3D"background:yellow">execve</span>=
+=C2=A0errors as M_NONFATAL instead of M_WARN =C2=A0</div><div><br></div><di=
+v>3. Treat failure to talk to the service (when=C2=A0<span class=3D"m_80480=
+13445085075463m_-7052940395377632336J-JK9eJ-PJVNOc" id=3D"m_804801344508507=
+5463m_-7052940395377632336gmail-:2mk.3" style=3D"background:yellow">msg</sp=
+an>_<span class=3D"m_8048013445085075463m_-7052940395377632336J-JK9eJ-PJVNO=
+c" id=3D"m_8048013445085075463m_-7052940395377632336gmail-:2mk.4" style=3D"=
+background:yellow">channnel</span>=C2=A0is defined) as M_NONFATAL not M_WAR=
+N</div><div><br></div><div>4. Mark route add/<span class=3D"m_8048013445085=
+075463m_-7052940395377632336J-JK9eJ-PJVNOc" id=3D"m_8048013445085075463m_-7=
+052940395377632336gmail-:2mk.5" style=3D"background:yellow">del</span>=C2=
+=A0errors via service as M_NONFATAL -- currently M_WARN.</div><div>=C2=A0Ma=
+rk route addition failure by other means as M_NONFATAL -- currently M_WARN =
+on all platforms, and all methods, I think.</div><div><br></div><div>5. Mar=
+k &quot;<span class=3D"m_8048013445085075463m_-7052940395377632336J-JK9eJ-P=
+JVNOc" id=3D"m_8048013445085075463m_-7052940395377632336gmail-:2mk.6" style=
+=3D"background:yellow">ifconfig</span>&quot; (set address) errors as consis=
+tently M_FATAL or M_NONFATAL (see comment on &quot;fatality&quot; below).</=
+div><div>Currently these are M_WARN if done by service, M_FATAL otherwise.<=
+/div><div><br></div><div>Given that M_FATAL should be used only very rarely=
+, if at all --- e.g., if proceeding further makes no sense --- =C2=A0most e=
+rrors should be M_NONFATAL. The above comments reflect that sentiment.<br><=
+/div><div><br></div><div>That said, whether address and route addition erro=
+rs should be FATAL deserves some discussion -- In case of address addition,=
+ an error probably has to be FATAL, but &quot;route add&quot; failures are =
+borderline cases. E.g., if =C2=A0&quot;--redirect-gateway&quot; fails, the =
+tunnel may be =C2=A0considered meaningless in many use cases and thus a fat=
+al error. So, some but not all route-add errors may have to be treated as F=
+ATAL.=C2=A0</div><div><br></div><div>If there is consensus, and an appetite=
+ for patch review, I can send in some patches for 2 to 5 and possibly 1. Fo=
+r 0, I&#39;m not sure how to keep track of past errors to construct a usefu=
+l status message.</div><div><br></div><div>Thanks,</div></div>
+</blockquote></div></div><div class=3D"gmail_extra"><br></div><div class=3D=
+"gmail_extra">Any feedback on how to go about these ? I want to make the GU=
+I not show green when there are route errors, but need some co-operation fr=
+om the core..<br></div><div class=3D"gmail_extra"><br></div><div class=3D"g=
+mail_extra">Selva</div></div>
+<br>------------------------------<wbr>------------------------------<wbr>-=
+-----------------<br>
+Check out the vibrant tech community on one of the world&#39;s most<br>
+engaging tech sites, Slashdot.org! <a href=3D"http://sdm.link/slashdot" rel=
+=3D"noreferrer" target=3D"_blank">http://sdm.link/slashdot</a><br>_________=
+_____________________<wbr>_________________<br>
+Openvpn-devel mailing list<br>
+<a href=3D"mailto:Openvpn-devel@lists.sourceforge.net">Openvpn-devel@...2155...=
+9...<wbr>sourceforge.net</a><br>
+<a href=3D"https://lists.sourceforge.net/lists/listinfo/openvpn-devel" rel=
+=3D"noreferrer" target=3D"_blank">https://lists.sourceforge.net/<wbr>lists/=
+listinfo/openvpn-devel</a><br>
+<br></blockquote></div></div>
 
---Apple-Mail-EF440822-C696-4B51-B655-2F95FB9F6855--
+--001a11448be684ea9b0559a0f073--
 
