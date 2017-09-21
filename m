@@ -1,16 +1,15 @@
-References: <1505450463-459-1-git-send-email-selva.nair@...277...>
- <1505501175-9016-1-git-send-email-selva.nair@...277...>
- <CAKuzo_iN6kzukk7ZETjwb6A8pXTkAgXUuQs3E1cf_enYbh-uCA@...278...>
+References: <c39d1e54-04f8-8ca3-34dc-5d023078286a@...2181...>
+ <1505457556-8557-1-git-send-email-steffan.karger@...1435...>
 From: Antonio Quartulli <a@...2181...>
-Message-ID: <5cd04f5c-fb34-5586-f60d-ea65c8dea445@...2181...>
-Date: Fri, 22 Sep 2017 00:58:31 +0800
+Message-ID: <3d846409-458a-efd0-c554-9c7f24144a49@...2181...>
+Date: Fri, 22 Sep 2017 00:59:53 +0800
 MIME-Version: 1.0
-In-Reply-To: <CAKuzo_iN6kzukk7ZETjwb6A8pXTkAgXUuQs3E1cf_enYbh-uCA@...278...>
+In-Reply-To: <1505457556-8557-1-git-send-email-steffan.karger@...1435...>
 Content-Type: multipart/signed; micalg=pgp-sha256;
  protocol="application/pgp-signature";
- boundary="Nsohts6mXJxHIm8oMQoo8RqUMcIadJvBI"
-Subject: Re: [Openvpn-devel] [PATCH v2] Check whether in pull_mode before
- warning about previous connection blocks
+ boundary="RXkLmwDvKQ23LW5697vurthIKFFmDQUKd"
+Subject: Re: [Openvpn-devel] [PATCH v2] pf: clean up temporary files if
+ plugin init fails
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,100 +18,69 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva <selva.nair@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, Gert Doering <gert@...1296...>
+To: Steffan Karger <steffan.karger@...1435...>
+Cc: openvpn-devel@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---Nsohts6mXJxHIm8oMQoo8RqUMcIadJvBI
-Content-Type: multipart/mixed; boundary="KGRlGo1qHkCjuRmcJsiu9U9GWuAxgPiIw";
+--RXkLmwDvKQ23LW5697vurthIKFFmDQUKd
+Content-Type: multipart/mixed; boundary="wKdrdkfduCe2JFmdfKBbS3K3RxX6vcbgJ";
  protected-headers="v1"
 From: Antonio Quartulli <a@...2181...>
-To: Selva <selva.nair@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net"
- <openvpn-devel@lists.sourceforge.net>, Gert Doering <gert@...1296...>
-Message-ID: <5cd04f5c-fb34-5586-f60d-ea65c8dea445@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH v2] Check whether in pull_mode before
- warning about previous connection blocks
-References: <1505450463-459-1-git-send-email-selva.nair@...277...>
- <1505501175-9016-1-git-send-email-selva.nair@...277...>
- <CAKuzo_iN6kzukk7ZETjwb6A8pXTkAgXUuQs3E1cf_enYbh-uCA@...278...>
-In-Reply-To: <CAKuzo_iN6kzukk7ZETjwb6A8pXTkAgXUuQs3E1cf_enYbh-uCA@...278...>
+To: Steffan Karger <steffan.karger@...1435...>
+Cc: openvpn-devel@lists.sourceforge.net
+Message-ID: <3d846409-458a-efd0-c554-9c7f24144a49@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH v2] pf: clean up temporary files if plugin
+ init fails
+References: <c39d1e54-04f8-8ca3-34dc-5d023078286a@...2181...>
+ <1505457556-8557-1-git-send-email-steffan.karger@...1435...>
+In-Reply-To: <1505457556-8557-1-git-send-email-steffan.karger@...1435...>
 
---KGRlGo1qHkCjuRmcJsiu9U9GWuAxgPiIw
+--wKdrdkfduCe2JFmdfKBbS3K3RxX6vcbgJ
 Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
 
 
-On 20/09/17 23:34, Selva wrote:
-> Hi,
+On 15/09/17 14:39, Steffan Karger wrote:
+> close_instance() tries to remove the file in c2.pf.filename, but that only
+> works if we actually set that if we fail.  So, set that filename as soon
+> as we know we've created the file.
 >=20
-> On Fri, Sep 15, 2017 at 2:46 PM, <selva.nair@...277...> wrote:
->=20
->> From: Selva Nair <selva.nair@...277...>
->>
->> In particular, this eliminates the message that says "explicit-exit-noti=
-fy
->> is ignored by previous <connection> blocks" when the option is pushed.
->>
->> Note: pull_mode is identified as "allowed & OPT_P_PULL_MODE" matching wi=
-th
->> the
->> definition in add_options().
->>
->> Reported by: Eike Lohmann e.lohmann@...1294...
->> https://www.mail-archive.com/openvpn-users@...1199...
->> sourceforge.net/msg04052.html
->>
->> v2: move the check to verify_permissions() as suggested by
->> Gert <gert@...1296...>
->>
->> Signed-off-by: Selva Nair <selva.nair@...277...>
->> ---
->>  src/openvpn/options.c | 4 +++-
->>  1 file changed, 3 insertions(+), 1 deletion(-)
->>
->=20
->=20
-> Does this look good now?
+> Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+> ---
+> v2: As suggested by Antionio, get rid of local 'gc' and 'file' vars.
 
-pull_mode is already computed in add_options() and could just be passed
-to verify_permission(). However, adding another parameter to the
-function call is probably not worth the gain.
+ACK.
 
-Personally, I think this patch looks good now.
-
-
-Cheers,
 
 --=20
 Antonio Quartulli
 
 
---KGRlGo1qHkCjuRmcJsiu9U9GWuAxgPiIw--
+--wKdrdkfduCe2JFmdfKBbS3K3RxX6vcbgJ--
 
---Nsohts6mXJxHIm8oMQoo8RqUMcIadJvBI
+--RXkLmwDvKQ23LW5697vurthIKFFmDQUKd
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCAAdFiEERdCuyFSHc3WdqS4EB6U8WA7yzXQFAlnD77oACgkQB6U8WA7y
-zXQl/g//Z+b+ya5b+9JMRORNqH+nvNOC5+mxuprXfRN3CEIlxXjK6IY6aJP5SUhQ
-9MFuwqfMaKnhStgcG9Spav4CkqpB5WFF4YM83LeGRwBmLa0lL1ACnuGO+k/VOh/s
-kHpWPemsjplSsAfhR9XrB4MEICcs2P7uVboCQBHyZCquLfzyH6mbUxOIamTsnlGA
-45JYuU9GvDXs58/y04hE30HM9Gu3X8AuAM5AmXRTu3Dl+U6hHs8pWi3w833xgIpc
-L+7WPrx7zLI3PZ9TPD8XHHzUM/r8cza1fedVBVt4r5rftyCDwRv/DO9HyP+bnz5w
-2BJrKMAq1pBncFb58dGrv27LFGNRuqwfdTS4bay9/ZAdnRnd0pijA1rWNT1MmWCI
-EfNXrduLlzEZoB9lkqe9WUvFFTM8lsOoSTzsIGnNn/l/C6FAWWJQuZGcQ/0/xNtm
-PIJtj/qspqHiLsgsE4PBg/8RHxIMr2TcJ0wJO+yD5b4W0P7J6z/1fAxdN3gH2s/M
-uQBqETQWL6xEsln6buq8TZwNbFOj0uH2zbjb18JSoPyzUP/nF5DKY5vscDF147IP
-1aT86Vjvdzudt5rQKKwgJ62Vs4Plh6UJ3z94GswtL2tJFT5A1hdUKxQdChyl/zsU
-Mk294/JPlEbQvUdZWYof5GT3wAGCnYuSbQ1HefTMzE4hc85v1ek=
-=ZdvT
+iQIzBAEBCAAdFiEERdCuyFSHc3WdqS4EB6U8WA7yzXQFAlnD8AkACgkQB6U8WA7y
+zXQZUQ//enY4afvhoLf0A4vCZsRb5fB9w2/3xXVmMj0r5vm3G3DxKHv/NKCnadT0
+8tG+Nbyx4u5LNPq5O8If8wVFizNXC8xIk4n83CVoCpEfWcJ/qo8GIdmrQXpf0h7w
+aJuC4VQDTXewb4wQp4al7ftNw9biZFRqJQ5B1Uf1/Lkc1l7HBFpfN86pDvVNKL4e
+1LALWwaFGCgcnBz21pAeW/Va2scEfyYRR52h/WNLZJ0D4slBJxJ8E2cLZRgGiJ0X
+jl05Eqghw6lYir76hPE3BaoUk1QMhpXPze6J38RnlIuUJQV6UfxBiaNPW0VKsOyi
+786/Ar9Wrh8174OHjY85cYwIMhkSb3rLbVsISW/NkZ/6XKVfjma+OtbpaVlvnGng
+iwPmJjPCNRSJlY37KnDzRqzwpQOZViK9Xeqix6e0HPwP3218KHMH4ExvLAROX/S+
+6Fo0pX39yAR2wKVF37UuqLeFKnI9j1nmMvx7DzxHOruzdbHyP8jZyN2EBKX53OW/
+/xmJCgrLUrHt7eAT4iyaFz1Cu3D1+WEEkQGHS3x1SafCeUEn21nr+hlRtvYQ34Zg
+HzuAS86URVMF/PujH6DFgwbjzdSHmuszEaPVPutLrlYlk61K7uCvfRk5+9/9fhqx
+sqrz8T9PQT3rfWPd8F+DS1AwxJQisCgpzZYZe8p1Xhj8j8RyIr4=
+=Lw2R
 -----END PGP SIGNATURE-----
 
---Nsohts6mXJxHIm8oMQoo8RqUMcIadJvBI--
+--RXkLmwDvKQ23LW5697vurthIKFFmDQUKd--
 
