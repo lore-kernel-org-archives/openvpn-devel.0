@@ -1,14 +1,20 @@
-Date: Fri, 22 Sep 2017 23:20:57 +0200
+Date: Fri, 22 Sep 2017 23:25:54 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20170922212057.GB70062@...1296...>
-References: <20170907022827.10658-1-davids@...515...>
- <20170907172004.22534-1-davids@...515...>
+Message-ID: <20170922212554.GC70062@...1296...>
+References: <20170906235202.26551-1-davids@...515...>
+ <20170907061646.GD70062@...1296...>
+ <79762b44-c8c8-b765-1711-22ba3f210af0@...515...>
+ <1e1b1ed5-5a4e-5234-1e57-06a609a6f2b9@...515...>
+ <20170907081340.GG70062@...1296...>
+ <8f028968-1263-af79-4b49-863a202b9d93@...515...>
+ <188385e3-e632-5ae4-4b16-4c724bcec6b1@...2080...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="hmAoQ2KfXDe4pzCq"
+ protocol="application/pgp-signature"; boundary="SCk9FC6hAD6beNza"
 Content-Disposition: inline
-In-Reply-To: <20170907172004.22534-1-davids@...515...>
-Subject: Re: [Openvpn-devel] [PATCH v2] lz4: Move towards a newer LZ4 API
+In-Reply-To: <188385e3-e632-5ae4-4b16-4c724bcec6b1@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH] systemd: Enable systemd's auto-restart
+ feature for server profiles
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,94 +23,40 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: David Sommerseth <davids@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
+Cc: Samuli =?iso-8859-1?Q?Sepp=E4nen?= <samuli@...515...>, Gert Doering <gert@...1296...>, David Sommerseth <davids@...515...>
 
---hmAoQ2KfXDe4pzCq
+--SCk9FC6hAD6beNza
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Thu, Sep 07, 2017 at 07:20:04PM +0200, David Sommerseth wrote:
-> We are using a deprecated function, LZ4_compress_limitedOutput(), which
-> will be removed with time.  The correct function to use is LZ4_compress_d=
-efault().
-> Both function takes the same number of arguments and data types, so the c=
-hange
-> is minimal.
+On Thu, Sep 07, 2017 at 03:16:45PM +0200, David Sommerseth wrote:
+> So the RestartForceExitStatus/RestartPreventExitStatus is not going to
+> be helpful if all graceful errors results in 1, which is the most common
+> way OpenVPN stops - through the M_FATAL.  So that leaves us with
+> SIGSEGV, SIGABRT and similar unclean exit signals.
 >=20
-> This patch will also enforce the system LZ4 library to be at least v1.7.1=
-.  If
-> the system library is not found or it is older, it will be build using th=
-e bundled
-> LZ4 library.  The version number requirement is based on the LZ4 version =
-we ship.
->=20
-> The changes in configure.ac for the version check is modelled around the =
-same
-> approach we use for OpenSSL.  Plus it does a few minor reformats and impr=
-ovements
-> to comply with more recommend autoconf coding style.
->=20
-> This patch is a result of the discussions in this mail thread:
-> https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg14135=
-.html
->=20
-> Signed-off-by: David Sommerseth <davids@...515...>
->=20
-> ---
-> v2 - Don't use LZ4 version based #ifdef wrapper function
->      Do the LZ4 version check in ./configure
+> To avoid restarts on faulty configurations or if we can define scenarios
+> where we do not want OpenVPN to be restarted automatically, we need to
+> introduce more exit codes.  This way we can implicitly tell systemd if
+> it should restart OpenVPN or not.
 
-This looks good to me.
+Indeed.  Just to agree publically here :-) - it seems we'll need to
+revisit exit codes as well, for "restarting this won't do any good"
+(fatal config errors, for example) vs. "we have crashed, and please do
+restart!!" (out of memory as something obvious we can't easily catch,
+most other error situations wrt network *should* not cause a M_FATAL,
+even if some still do).
 
-I have tested on
-
- - FreeBSD with lz4 installed, lz4.pc -> uses system lib
- - FreeBSD with lz4 installed, no lz4.pc, lz4 stuff in LZ4_CFLAGS/LIBS=20
-                                      -> uses system lib
- - FreeBSD with lz4 installed, but not in include path
-                                      -> uses compat-lz4.*
- - Gentoo Linux with lz4 installed, lz4.pc=20
-                                      -> uses system lib
- - Gentoo Linux with lz4 installed, no lz4.pc, but lz4 in /usr/{include,lib=
-}/
-                                      -> uses system lib
- - Gentoo Linux with no lz4 installed -> uses compat-lz4.*
-
-In all cases, the system builds and produces a working openvpn binary.
-
-The messages in case "2" and "5" are slightly weird, though...
-
-(2)
-checking lz4.h usability... yes
-checking lz4.h presence... no
-configure: WARNING: lz4.h: accepted by the compiler, rejected by the prepro=
-cessor!
-configure: WARNING: lz4.h: proceeding with the compiler's result
-checking for lz4.h... yes
-checking additionally if system LZ4 version >=3D 1.7.1... ok
-
-(5)
-checking for LZ4... no
-checking lz4.h usability... yes
-checking lz4.h presence... yes
-checking for lz4.h... yes
-checking additionally if system LZ4 version >=3D 1.7.1... ok
-checking for LZ4_compress in -llz4... yes
-
-(but this is configure...)
-
-
-There's an extra added blank line in comp-lz4.c and the bracket whitespace=
-=20
-Antonio complained about - but those can be fixed on commit.
-
-So, ACK.  Thanks for wading through this.
+Where do we keep this as "we need to look into it, but it's complicated"
+reminder?  trac?
 
 gert
+
+
 --=20
 USENET is *not* the non-clickable part of WWW!
                                                            //www.muc.de/~ge=
@@ -112,22 +64,22 @@ rt/
 Gert Doering - Munich, Germany                             gert@...1296...
 fax: +49-89-35655025                        gert@...1297...
 
---hmAoQ2KfXDe4pzCq
+--SCk9FC6hAD6beNza
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJZxX6cAAoJEB2Cnv7KVigSCjML/1+II5ODuah+hF4muJG8QMHs
-MrmdhLKvtHJxj8VZmfOSjewuxWr7We7qeqcIS95lMdNBRUqnqyK0sbgvVBiBr/8z
-nNhU/YPy5lwWhfnOj6XgPghok/FVezt3mNKzgyKTLGwESw00ReRPxs1Qclv6O7lZ
-UAOb6bEJjnJVHFQL9jWx0281joEz8cYPOxrRfmkLTOciCqMO4KpHsRbBWN0Q28Ha
-LmEETcVdTGnFQlc7hpTbS22+N6lk05B1F+NTVEr7hF+W+IY7GSglxQx0Vcq/4H2g
-N9T2RV6HvE/1fCM1B5X5/6j7jrRShDhh5sUWJjcy8XB2pbcuQJ42q4c+0bWURJj5
-ZHHvna8UqZXflHIcjs25OfmU+VoSWq6f1GP898rZkVFMoUTiGi3lGC39Y70ZADxE
-fl5CYTouKNUeb/Gykkk5aIkTc3kBIRPNoEJ3y8oNOunDwetSc52ygpNLl9r+Nioj
-kJ+p4snXh/1dgWmj1ks1up78evDHx4KyZGTgV/bOpA==
-=iv9P
+iQGcBAEBAgAGBQJZxX/hAAoJEB2Cnv7KVigS8XcL/RnzoHkPhZkEUdiUBx377ufm
+v84E1eXWfZuXqQQYR6Fh7HYkuAPOUzKAvXgun0ssEsPC+iRp28Y3fF8U3PoIMtzH
+uUmhfCT8tfJb5Tkzym6hlvDljWdm+x6M/KEXR4m+hxevzSfhl7NpIpUSxE/4ZazA
+6JCRuhHC2o+Y0fGafsnmqNmxCO54b3ockrDtZ1vqiXMBvzzat9unBcZtUoTcZWu4
+3OtkF80tUx1YiEJTZaJMQx3H5/KelEEjmkitLDxorSWJwMdLCShhgaNBxaKdh66u
+RqooKysHbJF7FWd5K1h7kGZftgpNJn8MdiUnRRxsgYrLQRvk6XnQOFAxKSDFPolD
+5odIZc+Fb2RvDDcJhl2yAS7hdEf46qVXX+SnEPyZcW23Mgh43wEXVuFg3EONyNlN
+RIO21AldxAsKWM9SkRS+XpaMU0t5Hd7O26tXmMP50oLT6IzuEmaUfTCoMZKdjZCy
+vAEK0xLS2NVVRdsF9INexaMY8o4dCI9t+9UFzh5H3A==
+=NE+o
 -----END PGP SIGNATURE-----
 
---hmAoQ2KfXDe4pzCq--
+--SCk9FC6hAD6beNza--
 
