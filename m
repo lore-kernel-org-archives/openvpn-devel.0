@@ -1,14 +1,13 @@
-Date: Fri, 22 Sep 2017 22:59:44 +0200
+Date: Fri, 22 Sep 2017 23:20:57 +0200
 From: Gert Doering <gert@...1296...>
-Message-ID: <20170922205944.GA70062@...1296...>
+Message-ID: <20170922212057.GB70062@...1296...>
 References: <20170907022827.10658-1-davids@...515...>
  <20170907172004.22534-1-davids@...515...>
- <c122b7ac9f1d63ac0ba060f7f7d3ceff.squirrel@...2257...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="fzxPtQiUsqZaJiu9"
+ protocol="application/pgp-signature"; boundary="hmAoQ2KfXDe4pzCq"
 Content-Disposition: inline
-In-Reply-To: <c122b7ac9f1d63ac0ba060f7f7d3ceff.squirrel@...2257...>
+In-Reply-To: <20170907172004.22534-1-davids@...515...>
 Subject: Re: [Openvpn-devel] [PATCH v2] lz4: Move towards a newer LZ4 API
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -18,86 +17,94 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Simon Matter <simon.matter@...2249...>
-Cc: David Sommerseth <davids@...515...>, openvpn-devel@lists.sourceforge.net
+To: David Sommerseth <davids@...515...>
+Cc: openvpn-devel@lists.sourceforge.net
 
---fzxPtQiUsqZaJiu9
+--hmAoQ2KfXDe4pzCq
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Thu, Sep 07, 2017 at 10:40:21PM +0200, Simon Matter wrote:
-> While we are at it, I found it useful to see the used LZ4 version at
-> runtime as it is done with LZO and other libraries.
+On Thu, Sep 07, 2017 at 07:20:04PM +0200, David Sommerseth wrote:
+> We are using a deprecated function, LZ4_compress_limitedOutput(), which
+> will be removed with time.  The correct function to use is LZ4_compress_d=
+efault().
+> Both function takes the same number of arguments and data types, so the c=
+hange
+> is minimal.
 >=20
-> I've patched my rpms with the patch attached.
-[..]
+> This patch will also enforce the system LZ4 library to be at least v1.7.1=
+.  If
+> the system library is not found or it is older, it will be build using th=
+e bundled
+> LZ4 library.  The version number requirement is based on the LZ4 version =
+we ship.
+>=20
+> The changes in configure.ac for the version check is modelled around the =
+same
+> approach we use for OpenSSL.  Plus it does a few minor reformats and impr=
+ovements
+> to comply with more recommend autoconf coding style.
+>=20
+> This patch is a result of the discussions in this mail thread:
+> https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg14135=
+.html
+>=20
+> Signed-off-by: David Sommerseth <davids@...515...>
+>=20
+> ---
+> v2 - Don't use LZ4 version based #ifdef wrapper function
+>      Do the LZ4 version check in ./configure
 
-> diff -Naur openvpn-2.4.0.orig/src/openvpn/comp-lz4.h openvpn-2.4.0/src/op=
-envpn/comp-lz4.h
-> --- openvpn-2.4.0.orig/src/openvpn/comp-lz4.h	2016-12-26 12:51:00.0000000=
-00 +0100
-> +++ openvpn-2.4.0/src/openvpn/comp-lz4.h	2017-01-17 09:11:12.000000000 +0=
-100
-> @@ -28,6 +28,10 @@
->=20=20
->  #if defined(ENABLE_LZ4)
->=20=20
-> +#if defined(HAVE_LZ4_H)
-> +#include "lz4.h"
-> +#endif
-> +
->  #include "buffer.h"
+This looks good to me.
 
-Feature-ACK (I think this is a useful idea, for the same reasons we have
-LZO and OpenSSL versions :-) ), but that will not work if we use=20
-compat-lz4.h, so "code NAK".
+I have tested on
 
-comp-lz4.c currently has
+ - FreeBSD with lz4 installed, lz4.pc -> uses system lib
+ - FreeBSD with lz4 installed, no lz4.pc, lz4 stuff in LZ4_CFLAGS/LIBS=20
+                                      -> uses system lib
+ - FreeBSD with lz4 installed, but not in include path
+                                      -> uses compat-lz4.*
+ - Gentoo Linux with lz4 installed, lz4.pc=20
+                                      -> uses system lib
+ - Gentoo Linux with lz4 installed, no lz4.pc, but lz4 in /usr/{include,lib=
+}/
+                                      -> uses system lib
+ - Gentoo Linux with no lz4 installed -> uses compat-lz4.*
 
-#if defined(NEED_COMPAT_LZ4)
-#include "compat-lz4.h"
-#else
-#include "lz4.h"
-#endif
+In all cases, the system builds and produces a working openvpn binary.
 
-which might just be moved to comp-lz4.h, and then things should work.
+The messages in case "2" and "5" are slightly weird, though...
+
+(2)
+checking lz4.h usability... yes
+checking lz4.h presence... no
+configure: WARNING: lz4.h: accepted by the compiler, rejected by the prepro=
+cessor!
+configure: WARNING: lz4.h: proceeding with the compiler's result
+checking for lz4.h... yes
+checking additionally if system LZ4 version >=3D 1.7.1... ok
+
+(5)
+checking for LZ4... no
+checking lz4.h usability... yes
+checking lz4.h presence... yes
+checking for lz4.h... yes
+checking additionally if system LZ4 version >=3D 1.7.1... ok
+checking for LZ4_compress in -llz4... yes
+
+(but this is configure...)
 
 
->  extern const struct compress_alg lz4_alg;
-> diff -Naur openvpn-2.4.0.orig/src/openvpn/options.c openvpn-2.4.0/src/ope=
-nvpn/options.c
-> --- openvpn-2.4.0.orig/src/openvpn/options.c	2016-12-26 12:51:00.00000000=
-0 +0100
-> +++ openvpn-2.4.0/src/openvpn/options.c	2017-01-17 09:11:12.000000000 +01=
-00
-> @@ -4121,11 +4121,17 @@
->  #else
->  #define LZO_LIB_VER_STR "", ""
->  #endif
-> +#ifdef ENABLE_LZ4
-> +#define LZ4_LIB_VER_STR ", LZ4 ", LZ4_versionString()
-> +#else
-> +#define LZ4_LIB_VER_STR "", ""
-> +#endif
->=20=20
-> -    msg(flags, "library versions: %s%s%s", SSL_LIB_VER_STR, LZO_LIB_VER_=
-STR);
-> +    msg(flags, "library versions: %s%s%s%s%s", SSL_LIB_VER_STR, LZO_LIB_=
-VER_STR, LZ4_LIB_VER_STR);
->=20=20
->  #undef SSL_LIB_VER_STR
->  #undef LZO_LIB_VER_STR
-> +#undef LZ4_LIB_VER_STR
->  }
+There's an extra added blank line in comp-lz4.c and the bracket whitespace=
+=20
+Antonio complained about - but those can be fixed on commit.
 
-That part looks good.
+So, ACK.  Thanks for wading through this.
 
 gert
-
-
 --=20
 USENET is *not* the non-clickable part of WWW!
                                                            //www.muc.de/~ge=
@@ -105,22 +112,22 @@ rt/
 Gert Doering - Munich, Germany                             gert@...1296...
 fax: +49-89-35655025                        gert@...1297...
 
---fzxPtQiUsqZaJiu9
+--hmAoQ2KfXDe4pzCq
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJZxXm/AAoJEB2Cnv7KVigSpEcMALQsJkgi0eZYZuxIK3VPk4rB
-zNxpkVypQd8aTD8SgytqS5biNX2iyq+IAS6m/bTCyQIsqz2i5tDzUIX5gij3UJpg
-0MjM6tkz+QNOsTxmO16qClDtL32CIESFPOGp6WbILghU4ANbs/ETSPJtS3qESo6S
-36okTtLDLlx0P9KzksabWj+BQsoUUaeGCIk/T4SF1dCInPeAwyUAXVtL35EjwQ5k
-5JpiptA7n9k0viRlfm1vDavv6CMahTVReLNEOcauSXUV9fLF3gTfn7y0dFijAnG7
-ebWOQcdnqdwoR1q01pAw7Y6utJWLMjx0Xf4pHfJbe96lPqJdYT874+Fe2BEM9U0u
-aagsNmqgVqWSOrSxioDev3+FFy5PZ1EHBJRhCTNWOOX9sr6Gwe+C1yXMf2x+w3/d
-SvnP4KQvv+2hdS9/G237SHVmVU74Vt1R1WH6CHDHW8VJmv7wHBUkNV1NsXUm78hh
-6R8p0brg97eD2M0Td21YvOcxw8OmVklF1R2iNKfWMg==
-=GVxm
+iQGcBAEBAgAGBQJZxX6cAAoJEB2Cnv7KVigSCjML/1+II5ODuah+hF4muJG8QMHs
+MrmdhLKvtHJxj8VZmfOSjewuxWr7We7qeqcIS95lMdNBRUqnqyK0sbgvVBiBr/8z
+nNhU/YPy5lwWhfnOj6XgPghok/FVezt3mNKzgyKTLGwESw00ReRPxs1Qclv6O7lZ
+UAOb6bEJjnJVHFQL9jWx0281joEz8cYPOxrRfmkLTOciCqMO4KpHsRbBWN0Q28Ha
+LmEETcVdTGnFQlc7hpTbS22+N6lk05B1F+NTVEr7hF+W+IY7GSglxQx0Vcq/4H2g
+N9T2RV6HvE/1fCM1B5X5/6j7jrRShDhh5sUWJjcy8XB2pbcuQJ42q4c+0bWURJj5
+ZHHvna8UqZXflHIcjs25OfmU+VoSWq6f1GP898rZkVFMoUTiGi3lGC39Y70ZADxE
+fl5CYTouKNUeb/Gykkk5aIkTc3kBIRPNoEJ3y8oNOunDwetSc52ygpNLl9r+Nioj
+kJ+p4snXh/1dgWmj1ks1up78evDHx4KyZGTgV/bOpA==
+=iv9P
 -----END PGP SIGNATURE-----
 
---fzxPtQiUsqZaJiu9--
+--hmAoQ2KfXDe4pzCq--
 
