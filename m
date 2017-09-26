@@ -1,17 +1,11 @@
-References: <c39d1e54-04f8-8ca3-34dc-5d023078286a@...2181...>
- <1505457556-8557-1-git-send-email-steffan.karger@...1435...>
- <af093d4a-50c1-d18c-11d7-1f6a84fa130c@...2080...>
- <3dadff5b-c169-30b1-c4fe-27f9dd39edae@...1856...>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <57ab9396-0960-f915-e1d8-2c4fe0906f2d@...2181...>
-Date: Wed, 27 Sep 2017 10:34:57 +0800
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <efd38ba7-773a-c4d1-498a-bc36bbf59d48@...515...>
+Date: Tue, 26 Sep 2017 17:43:37 +0300
 MIME-Version: 1.0
-In-Reply-To: <3dadff5b-c169-30b1-c4fe-27f9dd39edae@...1856...>
 Content-Type: multipart/signed; micalg=pgp-sha256;
  protocol="application/pgp-signature";
- boundary="6Ub9eEV9Er8wDJtrmmi1xTRwudgpsKbbc"
-Subject: Re: [Openvpn-devel] [PATCH v2] pf: clean up temporary files if
- plugin init fails
+ boundary="BMFw6AuxhPkrbe577Vu1pPBg2ru9mtFMb"
+Subject: [Openvpn-devel] OpenVPN 2.4.4 released (with security fixes)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,127 +14,186 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan@...1856...>
-Cc: openvpn-devel@lists.sourceforge.net, David Sommerseth <openvpn@...2080...>
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>, openvpn-announce@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---6Ub9eEV9Er8wDJtrmmi1xTRwudgpsKbbc
-Content-Type: multipart/mixed; boundary="kWSPHVpK2wFuXt27NXS8KblehefofqF5L";
+--BMFw6AuxhPkrbe577Vu1pPBg2ru9mtFMb
+Content-Type: multipart/mixed; boundary="NCb6p2xqSdRiO7OCekWsBixBEh420qAw0";
  protected-headers="v1"
-From: Antonio Quartulli <a@...2181...>
-To: Steffan Karger <steffan@...1856...>
-Cc: openvpn-devel@lists.sourceforge.net,
- David Sommerseth <openvpn@...2080...>
-Message-ID: <57ab9396-0960-f915-e1d8-2c4fe0906f2d@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH v2] pf: clean up temporary files if plugin
- init fails
-References: <c39d1e54-04f8-8ca3-34dc-5d023078286a@...2181...>
- <1505457556-8557-1-git-send-email-steffan.karger@...1435...>
- <af093d4a-50c1-d18c-11d7-1f6a84fa130c@...2080...>
- <3dadff5b-c169-30b1-c4fe-27f9dd39edae@...1856...>
-In-Reply-To: <3dadff5b-c169-30b1-c4fe-27f9dd39edae@...1856...>
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+To: "openvpn-devel@lists.sourceforge.net"
+ <openvpn-devel@lists.sourceforge.net>,
+ "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>,
+ openvpn-announce@lists.sourceforge.net
+Message-ID: <efd38ba7-773a-c4d1-498a-bc36bbf59d48@...515...>
+Subject: OpenVPN 2.4.4 released (with security fixes)
 
---kWSPHVpK2wFuXt27NXS8KblehefofqF5L
+--NCb6p2xqSdRiO7OCekWsBixBEh420qAw0
+Content-Type: multipart/mixed;
+ boundary="------------404C041EE721FC85D12C8CED"
 Content-Language: en-US
+
+This is a multi-part message in MIME format.
+--------------404C041EE721FC85D12C8CED
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
+The OpenVPN community project team is proud to release OpenVPN 2.4.4. It
+can be downloaded from here:
 
+<http://openvpn.net/index.php/open-source/downloads.html>
 
-On 26/09/17 00:22, Steffan Karger wrote:
-> Hi,
->=20
-> On 21-09-17 23:03, David Sommerseth wrote:
->> On 15/09/17 08:39, Steffan Karger wrote:
->>> close_instance() tries to remove the file in c2.pf.filename, but that o=
-nly
->>> works if we actually set that if we fail.  So, set that filename as soon
->>> as we know we've created the file.
->>>
->>> Signed-off-by: Steffan Karger <steffan.karger@...1435...>
->>> ---
->>> v2: As suggested by Antionio, get rid of local 'gc' and 'file' vars.
->>>
->>>  src/openvpn/pf.c | 10 ++++------
->>>  1 file changed, 4 insertions(+), 6 deletions(-)
->>>
->>> diff --git a/src/openvpn/pf.c b/src/openvpn/pf.c
->>> index 5fe1734..7479347 100644
->>> --- a/src/openvpn/pf.c
->>> +++ b/src/openvpn/pf.c
->>> @@ -618,19 +618,18 @@ pf_load_from_buffer_list(struct context *c, const=
- struct buffer_list *config)
->>>  void
->>>  pf_init_context(struct context *c)
->>>  {
->>> -    struct gc_arena gc =3D gc_new();
->>>  #ifdef PLUGIN_PF
->>>      if (plugin_defined(c->plugins, OPENVPN_PLUGIN_ENABLE_PF))
->>>      {
->>> -        const char *pf_file =3D create_temp_file(c->options.tmp_dir, "=
-pf", &gc);
->>> -        if (pf_file)
->>> +        c->c2.pf.filename =3D create_temp_file(c->options.tmp_dir, "pf=
-",
->>> +                                             &c->c2.gc);
->>
->> Patch looks good.  But it introduces a new compile warning.
->>
->> pf.c: In function =E2=80=98pf_init_context=E2=80=99:
->> pf.c:624:27: warning: assignment discards =E2=80=98const=E2=80=99 qualif=
-ier from pointer target type [enabled by default]
->>          c->c2.pf.filename =3D create_temp_file(c->options.tmp_dir, "pf",
->>
->> I'm pondering if we need create_temp_file() to actually return
->> a const char * - wouldn't just a plain char * be enough?
->=20
-> Good point.  But I think it's best to return a const char * here,
-> because the memory is allocated through a gc and therefore should also
-> be free'd through the gc.  The const modifier prevents freeing the data
-> without a warning (as long as you keep smacking me for discarding const
-> qualifiers, or we add a -Werror compile flag ;-) ).
->=20
->> The alternative is to cast the const away here; but that just
->> feels too hacky in this code path.
->=20
-> Or change c->c2.filename to be const char *.  I think that's the way to
-> go here.  And possibly reject a NULL gc argument in create_temp_file(),
-> because that would make the function leak memory...
->=20
-> What do you think?
+This release includes a large number of small fixes and enhancements.
+There is also an important security fix for legacy setups that may still
+be using key-method 1:
 
-I personally like that. It somehow brings in the concept of 'ownership'
-and avoids introducing faulty code (we'd get warned as you said above).
+<https://community.openvpn.net/openvpn/wiki/CVE-2017-12166>
 
-Cheers,
+As that option was deprecated 12 years ago we estimate that not many
+production setups are affected in practice.
+
+In addition Windows installers have been built with NSIS version that
+has been patched against several NSIS installer code execution and
+privilege escalation problems:
+
+<https://community.openvpn.net/openvpn/wiki/NSISBug1125>
+
+Based on our testing, though, older Windows versions such as Windows 7
+might not benefit from these fixes. We thus strongly encourage you to
+always move NSIS installers to a non-user-writeable location before
+running them. Our long-term plan is to migrate to using MSI installers
+instead.
+
+Windows installer I601 includes updated OpenVPN GUI (11.9.0.0) and
+easy-rsa (2.3.2). Note that OpenVPN's bin directory is no longer added
+to system PATH. While most users will be unaffected by this change, you
+should have a look at vars.bat.sample if you are migrating an old
+easy-rsa CA to a new easy-rsa installation.
+
+A summary of all included changes is available here:
+
+<https://github.com/OpenVPN/openvpn/blob/release/2.4/Changes.rst>
+
+A full list of changes is available here:
+
+<https://community.openvpn.net/openvpn/wiki/ChangesInOpenvpn24>
+
+Compared to OpenVPN 2.3 this is a major update with a large number of
+new features, improvements and fixes. Some of the major features are
+AEAD (GCM) cipher and Elliptic Curve DH key exchange support, improved
+IPv4/IPv6 dual stack support and more seamless connection migration when
+client's IP address changes (Peer-ID). Also, the new --tls-crypt feature
+can be used to increase users' connection privacy.
+
+OpenVPN GUI bundled with the Windows installer has a large number of new
+features compared to the one bundled with OpenVPN 2.3. One of major
+features is the ability to run OpenVPN GUI without administrator privileges.
+
+For full details, look here:
+
+<https://community.openvpn.net/openvpn/wiki/ChangesInOpenvpn24>
+
+The new OpenVPN GUI features are documented here:
+
+<https://github.com/OpenVPN/openvpn-gui>
+
+Please note that OpenVPN 2.4 installers will not work on Windows XP.
+
+For generic help use these support channels:
+
+Official documentation:
+<http://openvpn.net/index.php/open-source/documentation/howto.html>
+Wiki: <https://community.openvpn.net>
+Forums: <https://forums.openvpn.net>
+User mailing list: <http://sourceforge.net/mail/?group_id=3D48978>
+User IRC channel: #openvpn at irc.freenode.net
+
+Please report bugs and ask development questions here:
+
+Bug tracker and wiki: <https://community.openvpn.net>
+Developer mailing list: <http://sourceforge.net/mail/?group_id=3D48978>
+Developer IRC channel: #openvpn-devel at irc.freenode.net (requires
+Freenode registration)
 
 --=20
-Antonio Quartulli
+Samuli Sepp=C3=A4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
 
 
---kWSPHVpK2wFuXt27NXS8KblehefofqF5L--
 
---6Ub9eEV9Er8wDJtrmmi1xTRwudgpsKbbc
+
+--------------404C041EE721FC85D12C8CED
+Content-Type: application/pgp-keys;
+ name="0x40864578.asc"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: attachment;
+ filename="0x40864578.asc"
+
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+Version: GnuPG v2
+
+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
+XuwT7RpGDZ6jBfphYQ=3D=3D
+=3DFKLE
+-----END PGP PUBLIC KEY BLOCK-----
+
+--------------404C041EE721FC85D12C8CED--
+
+--NCb6p2xqSdRiO7OCekWsBixBEh420qAw0--
+
+--BMFw6AuxhPkrbe577Vu1pPBg2ru9mtFMb
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
 
-iQIzBAEBCAAdFiEERdCuyFSHc3WdqS4EB6U8WA7yzXQFAlnLDlUACgkQB6U8WA7y
-zXTU2A//UTvvLDR8rKahtUlKmAm4dLN+0pHYoPIq4vJOK9dritLM5oZmPT677IFe
-CPQpdHd6S9ZeUIYGRjkS9+JsCPf4GUv7bv6JaUtRzygSAihXBjvtCoQHL69nM/qF
-Rc1BoEKuZ8zjg1RIEWGMxSohz2Tt6Oiy6ABKiFyx/N6aDvTARygLgc4KO8gczPzS
-tPQqS1ZwAXS3vik0HXlakEhAOu76AOGAhuAaN2EvsNbMPLGKe1xAV8WxOAFUKS9B
-M6SI94d9yfP5U6CywV/H1GcOtJ2TgTup4wrlH44ygquuw9b3Nhgq0F1mGxdpaVl2
-dUPHcW4tP7Fw6q8jmJQ9Kg2PLdHUCaJ7T5f5ckC7wqYHy/nO0fX0PYuQIVoqNNv9
-kGDoaKR08TE1BBzkS1XCFQ7a7fXbJ7AfpbxuvzjL4nz2tok5MV7NXhxuYkkr0CzY
-8/cLUlU8qxpdvvwVjKEy+lHZj8Lz+KU0uAPKM81mwKDtE+akrE8GCKXjSyqcl+La
-8gIbLXfswZV/rYYlsRu8DKhq5UjF409zIJG8U6gyGwal2pZGPrDHYHijljmfhpp8
-bOw93wbrgVG3VMDFZcwITzlj67xn0Taim9oNw0gnQQhmd54Cd5xivhdlKsuYXBnc
-O/T4P6bNJCVJY1dvCCRM08wz0QFtQW11hLFVXt0prDlZ2aCJ0WI=
-=Xo2g
+iQEcBAEBCAAGBQJZymeeAAoJEClYTZ9AhkV4GoEH/1QJmlVlZsII0iDCW2vrlxWG
+K4wSF8AcYmh9EoANaKJ0Z2jMVUJ/LOQPHuMzbYUWPN3SPOnpXBJr+/JOsajUNmLQ
+7KDRo+E1HzB4TyJONebLhFbv+N7TNqbIR67xypF8sl/vwImvfc0rV9neqUL00Dp5
+vsvK81bW8Fn0Fi9AG44tHbwBm2xAZTldEiV1L8nd2d1eiyinif3R8nDURdEd1m/l
+6vUMh2okXy6G1QpYZmEkqszbq3l4EjOAYlRtRnjWGU1aRpCNXgx7vypcdtkDtf/L
+NcC2Y32EPw3//fXYdcuX2hwB3V538H/P58VnhhkaAEN6wOzghmDyg8s767Z1ah4=
+=Gaze
 -----END PGP SIGNATURE-----
 
---6Ub9eEV9Er8wDJtrmmi1xTRwudgpsKbbc--
+--BMFw6AuxhPkrbe577Vu1pPBg2ru9mtFMb--
 
