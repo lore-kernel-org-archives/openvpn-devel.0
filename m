@@ -1,11 +1,11 @@
 From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <d84d5c33-0bca-6bec-2b53-7cc3056c6d81@...515...>
-Date: Tue, 26 Sep 2017 19:20:24 +0300
+Message-ID: <1bb496e1-aa1e-9404-14ea-255fc4eba9ac@...515...>
+Date: Tue, 26 Sep 2017 19:20:12 +0300
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
  protocol="application/pgp-signature";
- boundary="Nte14GInNqPd3poEFpImD1DdoH4g9KQdb"
-Subject: [Openvpn-devel] OpenVPN 2.3.18 released (with security fixes)
+ boundary="FsS0dNpPNXibTvCfm5NLmhiAREIL0CNGA"
+Subject: [Openvpn-devel] OpenVPN 2.4.4 released (with security fixes)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,34 +17,35 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>, openvpn-announce@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---Nte14GInNqPd3poEFpImD1DdoH4g9KQdb
-Content-Type: multipart/mixed; boundary="QxcPbuLQuGodlSbhBxxHvBU31BbwDXKX0";
+--FsS0dNpPNXibTvCfm5NLmhiAREIL0CNGA
+Content-Type: multipart/mixed; boundary="OpPXUIUDqIvF8lAr8m3vn9dt0b715OsK8";
  protected-headers="v1"
 From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
 To: "openvpn-devel@lists.sourceforge.net"
  <openvpn-devel@lists.sourceforge.net>,
  "openvpn-users@lists.sourceforge.net" <openvpn-users@lists.sourceforge.net>,
  openvpn-announce@lists.sourceforge.net
-Message-ID: <d84d5c33-0bca-6bec-2b53-7cc3056c6d81@...515...>
-Subject: OpenVPN 2.3.18 released (with security fixes)
+Message-ID: <1bb496e1-aa1e-9404-14ea-255fc4eba9ac@...515...>
+Subject: OpenVPN 2.4.4 released (with security fixes)
 
---QxcPbuLQuGodlSbhBxxHvBU31BbwDXKX0
+--OpPXUIUDqIvF8lAr8m3vn9dt0b715OsK8
 Content-Type: multipart/mixed;
- boundary="------------3BE0C43F857741E8614E470F"
+ boundary="------------47C6C44EBA464D1E9EDFA250"
 Content-Language: en-US
 
 This is a multi-part message in MIME format.
---------------3BE0C43F857741E8614E470F
+--------------47C6C44EBA464D1E9EDFA250
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
-The OpenVPN community project team is proud to release OpenVPN 2.3.18.
-It can be downloaded from here:
+The OpenVPN community project team is proud to release OpenVPN 2.4.4. It
+can be downloaded from here:
 
 <http://openvpn.net/index.php/open-source/downloads.html>
 
-This release has an important security fix for legacy setups that may
-still be using key-method 1:
+This release includes a large number of small fixes and enhancements.
+There is also an important security fix for legacy setups that may still
+be using key-method 1:
 
 <https://community.openvpn.net/openvpn/wiki/CVE-2017-12166>
 
@@ -63,13 +64,40 @@ always move NSIS installers to a non-user-writeable location before
 running them. Our long-term plan is to migrate to using MSI installers
 instead.
 
-A summary of the changes is available here:
+Windows installer I601 includes updated OpenVPN GUI (11.9.0.0) and
+easy-rsa (2.3.2). Note that OpenVPN's bin directory is no longer added
+to system PATH. While most users will be unaffected by this change, you
+should have a look at vars.bat.sample if you are migrating an old
+easy-rsa CA to a new easy-rsa installation.
 
-<https://github.com/OpenVPN/openvpn/blob/release/2.3/Changes.rst>
+A summary of all included changes is available here:
+
+<https://github.com/OpenVPN/openvpn/blob/release/2.4/Changes.rst>
 
 A full list of changes is available here:
 
-<https://community.openvpn.net/openvpn/wiki/ChangesInOpenvpn23>
+<https://community.openvpn.net/openvpn/wiki/ChangesInOpenvpn24>
+
+Compared to OpenVPN 2.3 this is a major update with a large number of
+new features, improvements and fixes. Some of the major features are
+AEAD (GCM) cipher and Elliptic Curve DH key exchange support, improved
+IPv4/IPv6 dual stack support and more seamless connection migration when
+client's IP address changes (Peer-ID). Also, the new --tls-crypt feature
+can be used to increase users' connection privacy.
+
+OpenVPN GUI bundled with the Windows installer has a large number of new
+features compared to the one bundled with OpenVPN 2.3. One of major
+features is the ability to run OpenVPN GUI without administrator privileges.
+
+For full details, look here:
+
+<https://community.openvpn.net/openvpn/wiki/ChangesInOpenvpn24>
+
+The new OpenVPN GUI features are documented here:
+
+<https://github.com/OpenVPN/openvpn-gui>
+
+Please note that OpenVPN 2.4 installers will not work on Windows XP.
 
 For generic help use these support channels:
 
@@ -96,7 +124,9 @@ irc freenode net: mattock
 
 
 
---------------3BE0C43F857741E8614E470F
+
+
+--------------47C6C44EBA464D1E9EDFA250
 Content-Type: application/pgp-keys;
  name="0x40864578.asc"
 Content-Transfer-Encoding: quoted-printable
@@ -146,7 +176,7 @@ XuwT7RpGDZ6jBfphYQ=3D=3D
 -----END PGP PUBLIC KEY BLOCK-----
 
 
---------------3BE0C43F857741E8614E470F
+--------------47C6C44EBA464D1E9EDFA250
 Content-Type: application/pgp-keys;
  name="0x40864578.asc"
 Content-Transfer-Encoding: quoted-printable
@@ -195,11 +225,11 @@ XuwT7RpGDZ6jBfphYQ=3D=3D
 =3DFKLE
 -----END PGP PUBLIC KEY BLOCK-----
 
---------------3BE0C43F857741E8614E470F--
+--------------47C6C44EBA464D1E9EDFA250--
 
---QxcPbuLQuGodlSbhBxxHvBU31BbwDXKX0--
+--OpPXUIUDqIvF8lAr8m3vn9dt0b715OsK8--
 
---Nte14GInNqPd3poEFpImD1DdoH4g9KQdb
+--FsS0dNpPNXibTvCfm5NLmhiAREIL0CNGA
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -207,14 +237,14 @@ Content-Disposition: attachment; filename="signature.asc"
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2
 
-iQEcBAEBCAAGBQJZyn5JAAoJEClYTZ9AhkV4dpcH/0GrJQZz8uwRCd9zXWMl+fud
-UQLSZBlYEtbU/dtVkIYH9HYGNmttLLzd65dSuqn/iXmisZqezJdmfiXJBXhyqn9h
-c7tG48OnA5J80h3+CCyQfL/sbB6LGLwqt1yGCOsalo2K020dN2h6G1siDQeAeQh3
-ZyB1PjqXBOsiaH5l8TKMRj9Ah6dWPSJFVwstH4KVU9ZhT0j7AxMYr5R6T214ILuY
-pE2b9lYrBoUkgWIuuc9FNLOyfZuW0sQ07A8gWnP3mh6nSDcTKxjhlQHPtA1OiZgg
-gVU5GSlsIJ3SfkxFl1My1Ou6K6S2mqbKoNgvm1yPj+dHDjVIF354QcNWeZJpBVA=
-=Zjf4
+iQEcBAEBCAAGBQJZyn48AAoJEClYTZ9AhkV41XsH/iEgjAbfVbIVrugXaap+7aj7
+aJnhOcB1FGuQgYee2RseYbW+trGXmkVt11vLcn/hWq4h+FcX4/WXY+Cy0yA4G6hM
+VWJx2IQyDwl95PpDpF+Yb8d6ARq+dK/PeHh9kaTA0LmdOQIVs3R3D4O/79FzqbdL
+EtGbVZBPABn77WYrKkB5NyenqHeG5uPu6/xMYn3wbjhzPQYebae6OxBifbp1cQ4/
+V919QUbUhBOWUHk4rLGUUx/yi3ofz5NFLkBuRzh1XTje1SbKgLgfVMKYbgrTsIeg
+3wXUVWi4d3LT+FUSXvkqktXoRKSJwfwm+Ho0OFgWIVeR19McWACEeJUUGGBhWUY=
+=b2qv
 -----END PGP SIGNATURE-----
 
---Nte14GInNqPd3poEFpImD1DdoH4g9KQdb--
+--FsS0dNpPNXibTvCfm5NLmhiAREIL0CNGA--
 
