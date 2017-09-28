@@ -1,10 +1,9 @@
-From: Steffan Karger <steffan@...1856...>
-Date: Thu, 28 Sep 2017 17:54:46 +0200
-Message-Id: <20170928155446.32382-1-steffan@...1856...>
-In-Reply-To: <57ab9396-0960-f915-e1d8-2c4fe0906f2d@...2181...>
-References: <57ab9396-0960-f915-e1d8-2c4fe0906f2d@...2181...>
-Subject: [Openvpn-devel] [PATCH 3/2] create_temp_file: prevent memory leak
- if gc == NULL
+From: hashiz <hashiz@...2305...>
+Date: Thu, 28 Sep 2017 12:16:20 +0900
+Message-Id: <20170928031620.22331-1-hashiz@...2305...>
+Subject: [Openvpn-devel] [PATCH] Fixed that "--bind ipv6only" did not work
+ due to incorrect parameter processing. It seems that "ipv6only" did not
+ work from the beginning.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,34 +16,23 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-If gc == NULL, the data allocated in the alloc_gc_buf() call would never
-be free'd.  The function is never called that way, but let's prevent
-future problems.
-
-Signed-off-by: Steffan Karger <steffan@...1856...>
 ---
- src/openvpn/misc.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ src/openvpn/options.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
-index 90632706..86f80a6a 100644
---- a/src/openvpn/misc.c
-+++ b/src/openvpn/misc.c
-@@ -724,10 +724,13 @@ const char *
- create_temp_file(const char *directory, const char *prefix, struct gc_arena *gc)
- {
-     static unsigned int counter;
--    struct buffer fname = alloc_buf_gc(256, gc);
-     int fd;
-     const char *retfname = NULL;
-     unsigned int attempts = 0;
-+    struct buffer fname = (struct buffer) { 0 };
-+    char buf_data[256] = { 0 };
-+
-+    buf_set_write(&fname, buf_data, sizeof(buf_data));
- 
-     do
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 3a5bccfc..5f31e7eb 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -5881,7 +5881,7 @@ add_option(struct options *options,
+         VERIFY_PERMISSION(OPT_P_GENERAL|OPT_P_CONNECTION);
+         options->ce.remote_port = p[1];
+     }
+-    else if (streq(p[0], "bind") && !p[1])
++    else if (streq(p[0], "bind") && !p[2])
      {
+         VERIFY_PERMISSION(OPT_P_GENERAL|OPT_P_CONNECTION);
+         options->ce.bind_defined = true;
 -- 
 2.11.0
 
