@@ -1,16 +1,15 @@
-References: <1505424872-27434-1-git-send-email-steffan.karger@...1435...>
- <97d5028c-4861-320b-c5ef-3e09de45e983@...2181...>
- <00bccb6d-164e-3773-105a-9d2e7014ba9f@...1856...>
+References: <57ab9396-0960-f915-e1d8-2c4fe0906f2d@...2181...>
+ <20170928155446.32382-1-steffan@...1856...>
 From: Antonio Quartulli <a@...2181...>
-Message-ID: <cda9d511-43b5-cc6f-ead0-017f0f869e61@...2181...>
-Date: Fri, 29 Sep 2017 10:40:13 +0800
+Message-ID: <c0a7b735-640b-23e3-c39f-96e8961fd25c@...2181...>
+Date: Fri, 29 Sep 2017 10:51:35 +0800
 MIME-Version: 1.0
-In-Reply-To: <00bccb6d-164e-3773-105a-9d2e7014ba9f@...1856...>
+In-Reply-To: <20170928155446.32382-1-steffan@...1856...>
 Content-Type: multipart/signed; micalg=pgp-sha256;
  protocol="application/pgp-signature";
- boundary="rCU67OrgPrfu9UMAAGwUGdRWUvHXVfK1p"
-Subject: Re: [Openvpn-devel] [PATCH 1/2] Don't throw fatal errors from
- create_temp_file()
+ boundary="Mjn6xeNaJoHiXDWsx3DiLEPgV0aJeTqSp"
+Subject: Re: [Openvpn-devel] [PATCH 3/2] create_temp_file: prevent memory
+ leak if gc == NULL
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -23,158 +22,106 @@ To: Steffan Karger <steffan@...1856...>
 Cc: openvpn-devel@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---rCU67OrgPrfu9UMAAGwUGdRWUvHXVfK1p
-Content-Type: multipart/mixed; boundary="05xK9jlpQLMJwcp6wwjktwcnsugHN4lAW";
+--Mjn6xeNaJoHiXDWsx3DiLEPgV0aJeTqSp
+Content-Type: multipart/mixed; boundary="7WFSpcgAGlPnp80UUPViNk2BXjQoJ6GJn";
  protected-headers="v1"
 From: Antonio Quartulli <a@...2181...>
 To: Steffan Karger <steffan@...1856...>
 Cc: openvpn-devel@lists.sourceforge.net
-Message-ID: <cda9d511-43b5-cc6f-ead0-017f0f869e61@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH 1/2] Don't throw fatal errors from
- create_temp_file()
-References: <1505424872-27434-1-git-send-email-steffan.karger@...1435...>
- <97d5028c-4861-320b-c5ef-3e09de45e983@...2181...>
- <00bccb6d-164e-3773-105a-9d2e7014ba9f@...1856...>
-In-Reply-To: <00bccb6d-164e-3773-105a-9d2e7014ba9f@...1856...>
+Message-ID: <c0a7b735-640b-23e3-c39f-96e8961fd25c@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH 3/2] create_temp_file: prevent memory leak
+ if gc == NULL
+References: <57ab9396-0960-f915-e1d8-2c4fe0906f2d@...2181...>
+ <20170928155446.32382-1-steffan@...1856...>
+In-Reply-To: <20170928155446.32382-1-steffan@...1856...>
 
---05xK9jlpQLMJwcp6wwjktwcnsugHN4lAW
+--7WFSpcgAGlPnp80UUPViNk2BXjQoJ6GJn
 Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
-Hi=C2=B2,
+Hi,
 
-On 26/09/17 00:05, Steffan Karger wrote:
-> Hi,
->=20
-> On 21-09-17 19:15, Antonio Quartulli wrote:
->> On 15/09/17 05:34, Steffan Karger wrote:
->>> diff --git a/src/openvpn/pf.c b/src/openvpn/pf.c
->>> index 5cb002b..5fe1734 100644
->>> --- a/src/openvpn/pf.c
->>> +++ b/src/openvpn/pf.c
->>> @@ -639,10 +639,10 @@ pf_init_context(struct context *c)
->>>                  }
->>>  #endif
->>>              }
->>> -            else
->>> -            {
->>> -                msg(M_WARN, "WARNING: OPENVPN_PLUGIN_ENABLE_PF disable=
-d");
->>> -            }
->>
->> Why removing this chunk above? Isn't that supposed to be printed when
->> the init function of the plugin fails?
->=20
-> Because it's no longer true; instead of disabling the firewall, we will
-> now reject the connection.  I tried to explain that in the commit message:
->=20
->> On 15/09/17 05:34, Steffan Karger wrote:
->>> Note that this changes the behavior for pf plugins: instead of just not
->>> initializing the firewall rules and happily continuing, this now rejects
->>> the client in the case of an (unlikely) failure to initialize the pf.
->=20
-> I think rejecting a client is the sensible thing to do when initializing
-> the firewall failed.  (Rather than accepting the client and not
-> enforcing the firewall rules.)
+On 28/09/17 23:54, Steffan Karger wrote:
+> If gc =3D=3D NULL, the data allocated in the alloc_gc_buf() call would ne=
+ver
+> be free'd.  The function is never called that way, but let's prevent
+> future problems.
 
-Right.
-This makes sense, but don't you think this is worth its own commit
-instead of hiding a behavioural change like this behind "Don't throw
-fatal errors from create_temp_file()" ? :-)
+Same problem exists with the invocation of gen_path() a few lines below:
+it invokes string_mod_const() that invokes string_alloc(.., gc).
 
-It could be done in a patch preceding this one, imho.
+Would you fix that as well? Under the same umbrella patch maybe?
 
 >=20
->>> +        }
->>> +        if (!c->c2.pf.enabled)
->>> +        {
->>> +            register_signal(c, SIGUSR1, "plugin-pf-init-failed");
->>>          }
->>
->> Maybe it's just me missing how the signaling part really works, but what
->> happens on the server when the SIGUSR1 is delivered? And why registering
->> the signal when PF is disabled? I am missing something I think...
+> Signed-off-by: Steffan Karger <steffan@...1856...>
+> ---
+>  src/openvpn/misc.c | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
 >=20
-> This registers a SIGUSR1 on the instance context, not the top-level
-> context.  This leads to an instance reset.  See e.g. check_tls_errors(),
-> which does the same in case of an error (or even uses SIGTERM, if
-> --tls-exit is used).
->=20
-> Registering a signal is how error reporting is this part of the code work=
-s.
+> diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
+> index 90632706..86f80a6a 100644
+> --- a/src/openvpn/misc.c
+> +++ b/src/openvpn/misc.c
+> @@ -724,10 +724,13 @@ const char *
+>  create_temp_file(const char *directory, const char *prefix, struct gc_ar=
+ena *gc)
+>  {
+>      static unsigned int counter;
+> -    struct buffer fname =3D alloc_buf_gc(256, gc);
+>      int fd;
+>      const char *retfname =3D NULL;
+>      unsigned int attempts =3D 0;
+> +    struct buffer fname =3D (struct buffer) { 0 };
+> +    char buf_data[256] =3D { 0 };
+> +
+> +    buf_set_write(&fname, buf_data, sizeof(buf_data));
 
-I see, we basically use signals as they were flags. Thanks for
-clarifying that. I can see this is handled in init_instance() where we
-check for a signal and possibly abort the initialization of the child
-context. I think it makes sense and as you are saying this is similar to
-other error handling procedures.
+This buffer is really only used to create a filename and then it's
+passed to gen_path().
+
+Is it really worth creating a struct buffer, embedding a string and then
+extrapolating the string again to call gen_path()?
+
+How about directly using the string directly?
+
+The only argument against this approach I can see is that buf_printf()
+does all the checks for us, while if we switch to a snprintf() we need
+to add a one-line-check to ensure the resulting string could fit fname.
+
+What do you think?
+I am just trying to simplify the code while at it ..
 
 
 Cheers,
-
->=20
->>>      }
->>>  #endif /* ifdef PLUGIN_PF */
->>> diff --git a/src/openvpn/ssl_verify.c b/src/openvpn/ssl_verify.c
->>> index 9cd36d7..df2736c 100644
->>> --- a/src/openvpn/ssl_verify.c
->>> +++ b/src/openvpn/ssl_verify.c
->>> @@ -547,14 +547,14 @@ verify_cert_export_cert(openvpn_x509_cert_t *peer=
-cert, const char *tmp_dir, stru
->>>      FILE *peercert_file;
->>>      const char *peercert_filename =3D "";
->>>=20=20
->>> -    if (!tmp_dir)
->>> +    /* create tmp file to store peer cert */
->>> +    if (!tmp_dir ||
->>> +        !(peercert_filename =3D create_temp_file(tmp_dir, "pcf", gc)))
->>
->> || at the beginning of the next line (as mentioned in my previous email)
->=20
-> Will do, once we agree on the above discussion points.
->=20
-> Hope this clarifies things.
->=20
-> -Steffan
->=20
-> -------------------------------------------------------------------------=
------
-> Check out the vibrant tech community on one of the world's most
-> engaging tech sites, Slashdot.org! http://sdm.link/slashdot
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->=20
 
 --=20
 Antonio Quartulli
 
 
---05xK9jlpQLMJwcp6wwjktwcnsugHN4lAW--
+--7WFSpcgAGlPnp80UUPViNk2BXjQoJ6GJn--
 
---rCU67OrgPrfu9UMAAGwUGdRWUvHXVfK1p
+--Mjn6xeNaJoHiXDWsx3DiLEPgV0aJeTqSp
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCAAdFiEERdCuyFSHc3WdqS4EB6U8WA7yzXQFAlnNspAACgkQB6U8WA7y
-zXQifxAAwDCzY6RPkKK7Zy9aS15AwBH917086ggjqgrdgTXnZOwje60eokVfvLEA
-iddDl7clKzCsvFQ3Wa3dGRU3kfd6l7DlCTw5J59k/QaDPeF21PCPUV8DzEFK6v0h
-xlo3gRKZHc2LT2hJsH6j8lmga0/wLeeWQoohxRxFuQ5IhbQG7oBcXqHN26/1Shnq
-1xjgdqqLA1JP+QVqJ9VrnFKgRwOlOiC9xgbC2DEGS4frHiCBxZresN5t/r9aaTsP
-/8iFWuBjfFoy8DmJjO+2dqlKXjdZDxxUPjGrfkJ0vRzw5cCYq/dtI9LoX/6j5Rmn
-0Yu56ULGE6R+QUcTRZCVG2RZ2spJocOhQcYpa35IyU2b3iMrfi8UjGs/DS3thrl9
-5aKsLcrOjUVv9eEn6GCQ5UIGlkZXRtO8EFIpWZZElAI2zX1koZOwk+BkTLVoU/2v
-KBgLuurViKiCKuGmclevWcdtzPPImIhjxv9ZMV5DxJzRVgjkV/oep+Ih1NTqqBxy
-gJ1HXmihb49RbWDNrdiSWPUoGGiG6OevR8IITaxGPc6/aIROW87sGGYC0RcVsb+K
-S6vY6OIXMfYSlryU1lW2dr7iKt/Uzki6i6d1ujJqFmAFIV/AUkcWtV9dVG6yw3HY
-SsL3GmyduRRNENLJdLUg1hX9CCfI43cfFhtFd8WdT7MDt+HK0gw=
-=2UOX
+iQIzBAEBCAAdFiEERdCuyFSHc3WdqS4EB6U8WA7yzXQFAlnNtTcACgkQB6U8WA7y
+zXToaw/9E+j0RprkDRQGvl2XQZ/7K//2ipTbiColRMW5XtoMPW474KGFVcC0isSI
+C/SV46LA88hzl6kZUmo7oUO9JUR5dyac/demlJMdAJRzPQnC2z4Zggde5zOh2azl
+/ya4ZRwC7BkTI/+bw9W7OZaT9gn39+P2fKjnubsMlBIPPQBNsD7QiwgAHS+Agki8
+KYXkCaDStYcbEnykERlIo629dxIU3RBu2wUsX5vS4CSz4Rm7HlPqXYBpd6VJYmO8
+ya9eXg8NBEh8FLRVX28N6YerIWoCxfUc1lfiA6hTmSPRM5uIHlcpOpIPhCKQos5Y
+DljnmJH1p7CcGYsv6/DR2fU1g+E+UO0D9o0EpNCKg/8m4qvKsJfNTtBKEhVjwmFf
+3MJP0137UA/gZcKJIdwRxeJ1CG2dye+Oxs6IsR3p+V9XE5mv/q+W76U6wpxV5d8L
+Ohs1YlVNIqZGyiXVVDzesHy74fJpccojiwX1tiqPWfcCjL6Pyy5Ib1eqbotHilTv
+cAYZeDIoL+p58Bfu0nF/pXEkeQCjUontNXPlj+4xWPDfr4g7DTie74/NYXb132vp
+npvi6Z2l4RljVEw1dX/4hkqktdO6bkLeX780C5Skk6vXeHgZvziGYvCWG9BXqHGm
+APYQesB3ITtKRkKDjeYh1Np22uajreJhtplmkmWtkeWLkph0ws8=
+=L3Rk
 -----END PGP SIGNATURE-----
 
---rCU67OrgPrfu9UMAAGwUGdRWUvHXVfK1p--
+--Mjn6xeNaJoHiXDWsx3DiLEPgV0aJeTqSp--
 
