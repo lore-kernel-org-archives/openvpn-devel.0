@@ -1,15 +1,15 @@
-References: <c0a7b735-640b-23e3-c39f-96e8961fd25c@...2181...>
- <20170929161025.13654-1-steffan@...1856...>
+References: <cda9d511-43b5-cc6f-ead0-017f0f869e61@...2181...>
+ <20170929162458.16514-1-steffan@...1856...>
 From: Antonio Quartulli <a@...2181...>
-Message-ID: <7dab664f-db8a-ee66-3391-f88a04b9350e@...2181...>
-Date: Sat, 30 Sep 2017 08:48:58 +0800
+Message-ID: <23b4e635-04ac-42c9-d47d-42a80171ec76@...2181...>
+Date: Sat, 30 Sep 2017 09:00:16 +0800
 MIME-Version: 1.0
-In-Reply-To: <20170929161025.13654-1-steffan@...1856...>
+In-Reply-To: <20170929162458.16514-1-steffan@...1856...>
 Content-Type: multipart/signed; micalg=pgp-sha256;
  protocol="application/pgp-signature";
- boundary="pv4akjPTGvfx5DSrT2A928EE0XjqcGwg5"
-Subject: Re: [Openvpn-devel] [PATCH v2] create_temp_file/gen_path: prevent
- memory leak if gc == NULL
+ boundary="1esoSINMqwjp6whwpGoT48OmhRmqI8MaI"
+Subject: Re: [Openvpn-devel] [PATCH 0/2] Reject client if PF plugin is
+ configured, but init fails
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,132 +22,108 @@ To: Steffan Karger <steffan@...1856...>
 Cc: openvpn-devel@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---pv4akjPTGvfx5DSrT2A928EE0XjqcGwg5
-Content-Type: multipart/mixed; boundary="RxtPUS322NKtHqXQkD7n2auxDednxpAq3";
+--1esoSINMqwjp6whwpGoT48OmhRmqI8MaI
+Content-Type: multipart/mixed; boundary="Wr5QDsqkS3d7pADNpQNtuVfWHHmDSfND4";
  protected-headers="v1"
 From: Antonio Quartulli <a@...2181...>
 To: Steffan Karger <steffan@...1856...>
 Cc: openvpn-devel@lists.sourceforge.net
-Message-ID: <7dab664f-db8a-ee66-3391-f88a04b9350e@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH v2] create_temp_file/gen_path: prevent
- memory leak if gc == NULL
-References: <c0a7b735-640b-23e3-c39f-96e8961fd25c@...2181...>
- <20170929161025.13654-1-steffan@...1856...>
-In-Reply-To: <20170929161025.13654-1-steffan@...1856...>
+Message-ID: <23b4e635-04ac-42c9-d47d-42a80171ec76@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH 0/2] Reject client if PF plugin is
+ configured, but init fails
+References: <cda9d511-43b5-cc6f-ead0-017f0f869e61@...2181...>
+ <20170929162458.16514-1-steffan@...1856...>
+In-Reply-To: <20170929162458.16514-1-steffan@...1856...>
 
---RxtPUS322NKtHqXQkD7n2auxDednxpAq3
+--Wr5QDsqkS3d7pADNpQNtuVfWHHmDSfND4
 Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
 
 
-On 30/09/17 00:10, Steffan Karger wrote:
-> If gc =3D=3D NULL, the data allocated in the alloc_gc_buf() call in
-> create_temp_file or the string_mod_const call in gen_path would never
-> be free'd.
->=20
-> These functions are currently never called that way, but let's prevent
-> future problems.
->=20
-> While touching create_temp_file, also remove the counter variable, which =
-is
-> never read.
+On 30/09/17 00:24, Steffan Karger wrote:
+> This changes the behavior for pf plugins: instead of just not initializing
+> the firewall rules and happily continuing, this now rejects the client in
+> the case of an (unlikely) failure to initialize the pf.
 >=20
 > Signed-off-by: Steffan Karger <steffan@...1856...>
 > ---
-> v2:
->  - change create_temp_file to avoid using a struct buffer (simpler)
->  - add gc !=3D NULL check for gen_path (avoid similar memleak pitfall)
+>  src/openvpn/pf.c | 9 +++++----
+>  1 file changed, 5 insertions(+), 4 deletions(-)
 >=20
->  src/openvpn/misc.c | 17 +++++++++++------
->  1 file changed, 11 insertions(+), 6 deletions(-)
->=20
-> diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
-> index 90632706..b6f92526 100644
-> --- a/src/openvpn/misc.c
-> +++ b/src/openvpn/misc.c
-> @@ -723,21 +723,20 @@ test_file(const char *filename)
->  const char *
->  create_temp_file(const char *directory, const char *prefix, struct gc_ar=
-ena *gc)
->  {
-> -    static unsigned int counter;
-> -    struct buffer fname =3D alloc_buf_gc(256, gc);
->      int fd;
->      const char *retfname =3D NULL;
->      unsigned int attempts =3D 0;
-> +    char fname[256] =3D { 0 };
->=20=20
->      do
->      {
->          ++attempts;
-> -        ++counter;
->=20=20
-> -        buf_printf(&fname, PACKAGE "_%s_%08lx%08lx.tmp", prefix,
-> -                   (unsigned long) get_random(), (unsigned long) get_ran=
-dom());
-> +        openvpn_snprintf(fname, sizeof(fname), PACKAGE "_%s_%08lx%08lx.t=
-mp",
-> +                         prefix, (unsigned long) get_random(),
-> +                         (unsigned long) get_random());
+> diff --git a/src/openvpn/pf.c b/src/openvpn/pf.c
+> index 5cb002bf..29231b67 100644
+> --- a/src/openvpn/pf.c
+> +++ b/src/openvpn/pf.c
+> @@ -639,10 +639,11 @@ pf_init_context(struct context *c)
+>                  }
+>  #endif
+>              }
+> -            else
+> -            {
+> -                msg(M_WARN, "WARNING: OPENVPN_PLUGIN_ENABLE_PF disabled"=
+);
+> -            }
+> +        }
+> +        if (!c->c2.pf.enabled)
+> +        {
+> +            msg(M_WARN, "WARNING: failed to init PF plugin, rejecting cl=
+ient.");
+> +            register_signal(c, SIGUSR1, "plugin-pf-init-failed");
+>          }
 
-Minor thought: do we want to check if the return value of snprintf is >=3D
-sizeof(fname)? That would tell us if the string did not entirely fit in
-the buffer so that we can abort the whole file creation.
+after this part there is some code dealing with the management
+interface: wouldn't it be better to have a return after registering the
+signal so that we don't attempt any interaction with the management
+interface? If the plugin initialization failed, we should exit right
+away no?
+
+(although this PF thing with the plugin being optional makes everything
+more complicated every time :/)
+
+Another thought: if we abort every time we can't initialize the pf
+context, do you think we need the c->c2.pf.enabled member at all?
+
+It looks to me that after this patch if PF is enabled, either a client
+is connected and has a PF context, or its connection was rejected
+entirely. Thus a overall state should be enough rather than a per-client
+one. (Can probably be adjusted with another patch if you don't feel like
+doing all this in here?)
 
 Cheers,
 
->=20=20
-> -        retfname =3D gen_path(directory, BSTR(&fname), gc);
-> +        retfname =3D gen_path(directory, fname, gc);
->          if (!retfname)
->          {
->              msg(M_WARN, "Failed to create temporary filename and path");
-> @@ -812,6 +811,12 @@ gen_path(const char *directory, const char *filename=
-, struct gc_arena *gc)
->  #else
->      const int CC_PATH_RESERVED =3D CC_SLASH;
->  #endif
-> +
-> +    if (!gc)
-> +    {
-> +        return NULL; /* Would leak memory otherwise */
-> +    }
-> +
->      const char *safe_filename =3D string_mod_const(filename, CC_PRINT, C=
-C_PATH_RESERVED, '_', gc);
->=20=20
->      if (safe_filename
+>      }
+>  #endif /* ifdef PLUGIN_PF */
 >=20
 
 --=20
 Antonio Quartulli
 
 
---RxtPUS322NKtHqXQkD7n2auxDednxpAq3--
+--Wr5QDsqkS3d7pADNpQNtuVfWHHmDSfND4--
 
---pv4akjPTGvfx5DSrT2A928EE0XjqcGwg5
+--1esoSINMqwjp6whwpGoT48OmhRmqI8MaI
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCAAdFiEERdCuyFSHc3WdqS4EB6U8WA7yzXQFAlnO6f0ACgkQB6U8WA7y
-zXSoww//clr02K5WDJcn5k/QvFKMP8twJVg1/tL46Akz8ylIC+FtAy+iCTIWHRyc
-kG238TZRffhsYEngTQwR/K0YeloHAHZ0PHYjS3kC8sXTOJfP3inkUfLbxradig/d
-EeXF6PGfnbqwgVwOgFMmHH5bUunzj9Zk7GQv32eemLepO2PIfqTKLi6aVw+h3RhX
-ZI27CMiWt+cUhBr0HANIqzxyQPp1C6eGHfcvI7djzpUJHH1PD1Z/WjL4fLfWs96r
-Sm4yOo4S3HZ3gjQYEul1JBV4KW3qxMJvRw1Btm3vK1y7U2d1aOs3nstDsBSH+hGS
-x9HOilHs2LG2JSePMZqKvvx+kFl4tX3zMqU4+7hcm0ZvJBlnljVPfae3K+VMHtA4
-8LJWazkHHdiCAztZ46UmHIGCC5IqFeyqJRVmPyJuFRfNOii6A2BS+FqNWDDIluiW
-5mW80/Prdv5vtU6TPnW7g+NxegdfvzyLgYJ5xWO4zlNpoHARVJqNyzkwTWSR8Z+x
-VLL1Dk4WRgTsj3HjqqYphYUDQ51fz/BN5EJN9WN8XIkyFhdg43jV4Av+4zZx35FO
-tSM5abv6U8chXTzCF0W7Rz/V9MuGVRMUxoLh2nqbDHhlgA3wNIsrZtojDyBNspY8
-QkBAdHzBJYUdXokqzXyAo7v6+12S4xaqnaLxYF/Dhvs0KZ2C87U=
-=7Vpe
+iQIzBAEBCAAdFiEERdCuyFSHc3WdqS4EB6U8WA7yzXQFAlnO7KAACgkQB6U8WA7y
+zXTReQ//YZUXhGZQKpkgg4sZwwIuJPXRx8gG8nlOPcOx2KkrUTxBo0pGytHbOVuQ
+5/CnJ3J3sH0BrirnVuD+Yv+MuJ1dcSTh1W+hdJKZjo0JwY2tLdmnC9LtDEeBg15R
+SOnFcx0e0bwQQUvq/wCWsu9OTkVgai7utU5eMyrt6lv0fMnL86qIrEAPC3UIfUPu
+t0L+GIDp714T9JZGh4Lk2Rkc9Lkg+Fu2+l8alM3Uz7TuNWkJxmBnWQ1ScXt0IB4+
+S6LhAjMElwgezXL7v/etvAvdS0zhpZDqX+v4e/o1Ez6TzYlDV32hpUkWIyNyo4fF
+4/PGYyjSswVHbe75KwfDqDTVmlPRDp6HWzjgD3xc7bHVnbRSif+EQpbe2bRx6iml
+Ahdm+MDGYPF3KVE6Skt9oeExH424WDglgIOccvcVf1W2OqHYMKkOMRlIYPPnLC6h
+5E7/g5Gqb8iZoZS7vwTapLMtQ0XgA17+H1H/WFz7BfiArFZxMaue3XppK1xyIP+z
+6mV6H5Fv7HNBiuffHlMBaj2cAfaP6mimCJdHAtDTvb0ORE+jusi9SKhCHibqKWTG
+Jw2K+3rGzTGzOpApMMxSw1meoebOKkUnWcL3dNC/MrCvSBn9AN0qC8gRI5aXpQKE
++RBBRp/6xH8cjeJ8YBmE1Lu/GmPDe7NWchSmBGMFuz02Kr2gg+s=
+=2cwQ
 -----END PGP SIGNATURE-----
 
---pv4akjPTGvfx5DSrT2A928EE0XjqcGwg5--
+--1esoSINMqwjp6whwpGoT48OmhRmqI8MaI--
 
