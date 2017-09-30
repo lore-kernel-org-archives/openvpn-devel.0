@@ -1,15 +1,14 @@
+Date: Sat, 30 Sep 2017 18:19:10 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20170930161910.GX70062@...1296...>
+References: <1506735276.3927298.1123095944.62A302FF@...2307...>
+ <20170930074629.GT70062@...1296...>
 MIME-Version: 1.0
-In-Reply-To: <5cd04f5c-fb34-5586-f60d-ea65c8dea445@...2181...>
-References: <1505450463-459-1-git-send-email-selva.nair@...277...>
- <1505501175-9016-1-git-send-email-selva.nair@...277...>
- <CAKuzo_iN6kzukk7ZETjwb6A8pXTkAgXUuQs3E1cf_enYbh-uCA@...278...>
- <5cd04f5c-fb34-5586-f60d-ea65c8dea445@...2181...>
-From: Selva <selva.nair@...277...>
-Date: Sat, 30 Sep 2017 11:29:22 -0400
-Message-ID: <CAKuzo_i5MMar3XmrHes_aLUHsuisRJgXTWYTN3Xx-GM9bm8x=Q@...278...>
-Content-Type: multipart/alternative; boundary="001a11499908880e1c055a69cf97"
-Subject: Re: [Openvpn-devel] [PATCH v2] Check whether in pull_mode before
- warning about previous connection blocks
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="qdXEecL5KnboUGfM"
+Content-Disposition: inline
+In-Reply-To: <20170930074629.GT70062@...1296...>
+Subject: Re: [Openvpn-devel] Unreferenced function in 2.4.4 Linux build
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,125 +17,87 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Antonio Quartulli <a@...2181...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, Gert Doering <gert@...1296...>
+To: logcabin@...2306...
+Cc: openvpn-devel@lists.sourceforge.net
 
---001a11499908880e1c055a69cf97
-Content-Type: text/plain; charset="UTF-8"
+--qdXEecL5KnboUGfM
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
 Hi,
 
-On Thu, Sep 21, 2017 at 12:58 PM, Antonio Quartulli <a@...2181...> wrote:
+(copying back in the list)
 
->
->
-> On 20/09/17 23:34, Selva wrote:
-> > Hi,
-> >
-> > On Fri, Sep 15, 2017 at 2:46 PM, <selva.nair@...277...> wrote:
-> >
-> >> From: Selva Nair <selva.nair@...277...>
-> >>
-> >> In particular, this eliminates the message that says
-> "explicit-exit-notify
-> >> is ignored by previous <connection> blocks" when the option is pushed.
-> >>
-> >> Note: pull_mode is identified as "allowed & OPT_P_PULL_MODE" matching
-> with
-> >> the
-> >> definition in add_options().
-> >>
-> >> Reported by: Eike Lohmann e.lohmann@...1294...
-> >> https://www.mail-archive.com/openvpn-users@...1199...
-> >> sourceforge.net/msg04052.html
-> >>
-> >> v2: move the check to verify_permissions() as suggested by
-> >> Gert <gert@...1296...>
-> >>
-> >> Signed-off-by: Selva Nair <selva.nair@...277...>
-> >> ---
-> >>  src/openvpn/options.c | 4 +++-
-> >>  1 file changed, 3 insertions(+), 1 deletion(-)
-> >>
-> >
-> >
-> > Does this look good now?
->
-> pull_mode is already computed in add_options() and could just be passed
-> to verify_permission(). However, adding another parameter to the
-> function call is probably not worth the gain.
->
-> Personally, I think this patch looks good now.
->
->
-> Cheers,
->
+On Sat, Sep 30, 2017 at 09:46:29AM +0200, Gert Doering wrote:
+> Which linux distribution is this, in which version?  Can you upload
+> config.log and your system's "lz4.h" somewhere so we can see what it=20
+> tried to do, and why it is failing?
 
-Thanks :)
+I received the files in the meantime, and I'm not fully understanding
+the issue yet.=20=20
 
-Selva
+lz4.h says it's 1.8.0, so is passing the "newer than 1.7.1" check just=20
+fine.  The lz4.h also has a prototype for LZ4_compress_default(), so it
+really should work fine...
 
---001a11499908880e1c055a69cf97
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr">Hi,<br><div class=3D"gmail_extra"><br><div class=3D"gmail_=
-quote">On Thu, Sep 21, 2017 at 12:58 PM, Antonio Quartulli <span dir=3D"ltr=
-">&lt;<a href=3D"mailto:a@...2181..." target=3D"_blank">a@...2181...</a>&gt=
-;</span> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 =
-.8ex;border-left:1px #ccc solid;padding-left:1ex"><span class=3D""><br>
-<br>
-On 20/09/17 23:34, Selva wrote:<br>
-&gt; Hi,<br>
-&gt;<br>
-&gt; On Fri, Sep 15, 2017 at 2:46 PM, &lt;<a href=3D"mailto:selva.nair@...1665...=
-77...">selva.nair@...277...</a>&gt; wrote:<br>
-&gt;<br>
-&gt;&gt; From: Selva Nair &lt;<a href=3D"mailto:selva.nair@...277...">selva=
-.nair@...277...</a>&gt;<br>
-&gt;&gt;<br>
-&gt;&gt; In particular, this eliminates the message that says &quot;explici=
-t-exit-notify<br>
-&gt;&gt; is ignored by previous &lt;connection&gt; blocks&quot; when the op=
-tion is pushed.<br>
-&gt;&gt;<br>
-&gt;&gt; Note: pull_mode is identified as &quot;allowed &amp; OPT_P_PULL_MO=
-DE&quot; matching with<br>
-&gt;&gt; the<br>
-&gt;&gt; definition in add_options().<br>
-&gt;&gt;<br>
-&gt;&gt; Reported by: Eike Lohmann <a href=3D"mailto:e.lohmann@...1294...">=
-e.lohmann@...1294...</a><br>
-&gt;&gt; <a href=3D"https://www.mail-archive.com/openvpn-users@...1697..." =
-rel=3D"noreferrer" target=3D"_blank">https://www.mail-archive.com/<wbr>open=
-vpn-users@...1697...</a>.<br>
-&gt;&gt; <a href=3D"http://sourceforge.net/msg04052.html" rel=3D"noreferrer=
-" target=3D"_blank">sourceforge.net/msg04052.html</a><br>
-&gt;&gt;<br>
-&gt;&gt; v2: move the check to verify_permissions() as suggested by<br>
-&gt;&gt; Gert &lt;<a href=3D"mailto:gert@...1296...">gert@...1296...</a>&gt=
-;<br>
-&gt;&gt;<br>
-&gt;&gt; Signed-off-by: Selva Nair &lt;<a href=3D"mailto:selva.nair@...1354...=
-..">selva.nair@...277...</a>&gt;<br>
-&gt;&gt; ---<br>
-&gt;&gt;=C2=A0 src/openvpn/options.c | 4 +++-<br>
-&gt;&gt;=C2=A0 1 file changed, 3 insertions(+), 1 deletion(-)<br>
-&gt;&gt;<br>
-&gt;<br>
-&gt;<br>
-&gt; Does this look good now?<br>
-<br>
-</span>pull_mode is already computed in add_options() and could just be pas=
-sed<br>
-to verify_permission(). However, adding another parameter to the<br>
-function call is probably not worth the gain.<br>
-<br>
-Personally, I think this patch looks good now.<br>
-<br>
-<br>
-Cheers,<br></blockquote><div><br></div><div>Thanks :)</div><div><br></div><=
-div>Selva=C2=A0</div></div></div></div>
+What I noticed in config.log is that we test for "is it working?" by
+checking LZ4_compress()
 
---001a11499908880e1c055a69cf97--
+    # if LZ4_LIBS is set, we assume it will work, otherwise test
+    if test -z "${LZ4_LIBS}"; then
+        AC_CHECK_LIB([lz4],
+                     [LZ4_compress],
+                     [LZ4_LIBS=3D"-llz4"],
+                     [have_lz4=3D"no"])
+    fi
+
+... which we might want to change to LZ4_compress_default().
+
+But it should still work.
+
+
+@logcabin: can you show me the failing compiler call as well?  Like,
+the last 30 lines from a failing "make" run?
+
+You said you found a workaround for it - what did you do to fix it?
+
+Could it be that there are multiple liblz4.a or liblz4.so.* on your
+system?  What does "locate liblz4." print out?
+
+(So maybe there's a lz4.h for 1.8.0, but the liblz4.* that the linker
+picks up is from an older version that did not have LZ4_compress_default()
+yet...)
+
+
+Slightly puzzling :-)
+
+gert
+
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--qdXEecL5KnboUGfM
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJZz8P9AAoJEB2Cnv7KVigSA8gL/2aSuQsQxkryJdDlws7s6q2H
+LCbvk2jrhAzfH5VTlzyU/qSGgtVfUB836tJcXcTJxxQpsUncD1+Gs/kkXYfmoa43
+AV/GffGTZMi3hoQLYmIc8YvSMDIGWx8xwz6ntautgSV6KTFHd13+Er8ugh2OvwRT
+PtO+iDM+ho11Uq6hkob+4E0vujYm7WkN/lHBMv+z8VuGy2bHHhZb7RwiQ8J0KncL
+IVm+YNxYGpr+A2FB/+iGDF6IHnWdxsGaKtT96rr/jcW6dL6zcOX76OktqeTI3nvW
+ux6uep8L5gy4xoGOHTuzBQKcS1M6O5KgQKEnP4gxQUGMLQeSgcvQ5YTmdgE1aOGO
+pY8QYxgXn/678K5LEbuv2FgubirTq5htNLc5kneVk1E3wjCJUn4j01DzSxxioYFU
+mRlU/7ztFxhSdlmhYJQBcSQBMXkbtgrkRMunhBm4j78mYWDJoyA6F5VJwNyjxeDD
+jk5sCEHr+7RqxnksV3N4xNivzfzMdZ3X9gkyQZNr4Q==
+=y/A2
+-----END PGP SIGNATURE-----
+
+--qdXEecL5KnboUGfM--
 
