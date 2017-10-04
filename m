@@ -1,10 +1,9 @@
-Date: Mon, 2 Oct 2017 21:13:23 +0200 (CEST)
-Message-Id: <201710021913.v92JDNvw040527@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20171002190732.12531-1-davids@...515...>
-References: <20171002190732.12531-1-davids@...515...>
-Subject: [Openvpn-devel] [PATCH applied] Re: lz4: Fix broken builds when
- pkg-config is not present but system library is
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <c09edfe0-8a4c-dbae-cf14-2b468b4b50a4@...515...>
+Date: Wed, 4 Oct 2017 10:05:35 +0300
+MIME-Version: 1.0
+Content-Language: en-US
+Subject: [Openvpn-devel] Topics for the community meeting (Wed, 4th Oct 2017)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,32 +12,32 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: David Sommerseth <davids@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
+To: openvpn-devel@lists.sourceforge.net
 
-ACK.  Tested locally.  Now let's see what MacOS thinks about it :-)
+Hi,
 
-Your patch has been applied to the master and release/2.4 branch.
+We're going to have an IRC meeting today starting at 19:00 CEST
+(17:00 UTC) on #openvpn-meeting <at> irc.freenode.net. You do not have
+to be logged in to Freenode to join the channel.
 
-commit e5b279f1b62e75569ee8d988b55e6ee0dc93464e (master)
-commit c70a80b1b73d658bfe16225048d95958daf034e7 (release/2.4)
-Author: David Sommerseth
-Date:   Mon Oct 2 21:07:32 2017 +0200
+Current topic list along with basic information is here:
 
-     lz4: Fix broken builds when pkg-config is not present but system library is
+<https://community.openvpn.net/openvpn/wiki/Topics-2017-10-04>
 
-     Signed-off-by: David Sommerseth <davids@...515...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20171002190732.12531-1-davids@...515...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg15549.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+If you have any other things you'd like to bring up, respond to this
+mail, send me mail privately or add them to the list yourself.
 
+In case you can't attend the meeting, please feel free to make comments
+on the topics by responding to this email or to the summary email sent
+after the meeting. Whenever possible, we'll also respond to existing,
+related email threads.
 
 --
-kind regards,
+Samuli Sepp=E4nen
+Community Manager
+OpenVPN Technologies, Inc
 
-Gert Doering
-
+irc freenode net: mattock
 
