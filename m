@@ -1,10 +1,9 @@
-From: Bernhard Schmidt <berni@...376...>
-Message-ID: <80e6b449-c536-dc87-7215-3693872bce5a@...376...>
-Date: Wed, 4 Oct 2017 16:38:39 +0200
+From: Jeremie Courreges-Anglas <jca@...2272...>
+Date: Thu, 05 Oct 2017 01:47:17 +0200
+Message-ID: <87fuaymq62.fsf@...2274...>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="------------483169EBD63CDC5D6C20314F"
-Content-Language: de-LU
-Subject: [Openvpn-devel] [PATCH] openssl 1.1 tls version support
+Content-Type: multipart/mixed; boundary="=-=-="
+Subject: [Openvpn-devel] [patch] Fix time_t printing
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,84 +13,105 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: openvpn-devel@lists.sourceforge.net
-Cc: Kurt Roeckx <kurt@...2310...>
 
-This is a multi-part message in MIME format.
---------------483169EBD63CDC5D6C20314F
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-
-Hi,
-
-in https://bugs.debian.org/873302 Kurt Roeckx (Debian OpenSSL
-maintainer) submitted a patch for OpenVPN to properly set  the minimum
-and maximum TLS version. On Debian Buster (current development) OpenSSL
-1.1 defaults to TLSv1.2+ only.
-
-I'm unwilling to carry crypto specific patches in Debian. Can anyone
-make some sense out of this and apply the patch if possible?
-
-Please keep Kurt CCed and direct any questions to him.
-
-Bernhard
+--=-=-=
+Content-Type: text/plain
 
 
---------------483169EBD63CDC5D6C20314F
-Content-Type: text/x-patch;
- name="openvpn-version.patch"
-Content-Transfer-Encoding: 7bit
+When building openvpn-2.4.4 on OpenBSD, I noticed the following warning:
+
+--8<--
+cc -DHAVE_CONFIG_H -I. -I/usr/ports/pobj/openvpn-2.4.4/openvpn-2.4.4/src/openvpn -I../.. -I../../include  -I/usr/ports/pobj/openvpn-2.4.4/openvpn-2.4.4/include  -I/usr/ports/pobj/openvpn-2.4.4/openvpn-2.4.4/src/compat  -I/usr/local/include     -I/usr/local/include    -DPLUGIN_LIBDIR=\"/usr/local/lib/openvpn/plugins\"  -O2 -pipe -std=c99 -MT error.o -MD -MP -MF .deps/error.Tpo -c -o error.o /usr/ports/pobj/openvpn-2.4.4/openvpn-2.4.4/src/openvpn/error.c
+/usr/ports/pobj/openvpn-2.4.4/openvpn-2.4.4/src/openvpn/error.c:346:25: warning: format specifies type 'unsigned long' but the argument has type 'time_t' (aka 'long long') [-Wformat]
+                        tv.tv_sec,
+                        ^~~~~~~~~
+1 warning generated.
+mv -f .deps/error.Tpo .deps/error.Po
+-->8--
+
+OpenBSD uses long long for time_t on all architectures, 32 or 64 bits,
+in order to cope with dates beyond 2038.  This is also the case on
+NetBSD and Linux x32.
+
+The warning is not innocuous, as a mismatch between the format and the
+type of parameters passed to variadic functions can result in nasty
+problems (crashes, etc).  For example, the code below crashes on
+OpenBSD/arm (32 bits long).
+
+--8<--
+#include <stdio.h>
+#include <time.h>
+
+int
+main(void)
+{
+        time_t t;
+
+        time(&t);
+        printf("%ld %s\n", t, "foobar");
+        return 0;
+}
+-->8--
+
+The diff below fixes the potential issue and the warning.  The method
+used is a cast to (long long), a method successfully used since OpenBSD
+switched to a 64 bits time_t.  More data at
+
+  https://www.openbsd.org/papers/eurobsdcon_2013_time_t/mgp00029.html
+
+openvpn already uses long long in a few places.  Note that I did not
+audit the whole openvpn tree for other possible time_t problems, but
+I can't spot similar warnings in the build logs.
+
+
+--=-=-=
+Content-Type: text/x-patch
 Content-Disposition: attachment;
- filename="openvpn-version.patch"
+ filename=0001-Cast-time_t-to-long-double-in-order-to-print-it.patch
 
---- src/openvpn/ssl_openssl.c.bak	2017-08-26 13:10:40.333428825 +0200
-+++ src/openvpn/ssl_openssl.c	2017-08-26 13:12:05.143672978 +0200
-@@ -215,6 +215,19 @@
- #endif
- }
+From d620431f661375d3564b60f110d1f69575ac78d7 Mon Sep 17 00:00:00 2001
+From: Jeremie Courreges-Anglas <jca@...2272...>
+Date: Thu, 5 Oct 2017 01:43:33 +0200
+Subject: [PATCH] Cast time_t to long double in order to print it.
+
+The underlying type of time_t can be anything from unsigned 32 bits to
+signed 64 bits to float.  To reliably print it, better cast it to "long
+long", which is at least 64 bits wide and can represent values beyond
+2038.
+
+Printing as a "long" could cause problems on ILP32 systems using a 64
+bits time_t (eg OpenBSD/armv7).
+
+Signed-off-by: Jeremie Courreges-Anglas <jca@...2272...>
+---
+ src/openvpn/error.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/openvpn/error.c b/src/openvpn/error.c
+index 04bf0da5..7b46c5ec 100644
+--- a/src/openvpn/error.c
++++ b/src/openvpn/error.c
+@@ -342,8 +342,8 @@ x_msg_va(const unsigned int flags, const char *format, va_list arglist)
+                 struct timeval tv;
+                 gettimeofday(&tv, NULL);
  
-+/* convert internal version number to openssl version number */
-+static int
-+openssl_tls_version(int ver)
-+{
-+    if (ver == TLS_VER_1_0)
-+        return TLS1_VERSION;
-+    else if (ver == TLS_VER_1_1)
-+        return TLS1_1_VERSION;
-+    else if (ver == TLS_VER_1_2)
-+        return TLS1_2_VERSION;
-+    return 0;
-+}
-+
- void
- tls_ctx_set_options(struct tls_root_ctx *ctx, unsigned int ssl_flags)
- {
-@@ -232,6 +245,17 @@
- 
-         tls_ver_max =
-             (ssl_flags >> SSLF_TLS_VERSION_MAX_SHIFT) & SSLF_TLS_VERSION_MAX_MASK;
-+
-+#if OPENSSL_VERSION_NUMBER >= 0x10100000
-+        if (tls_ver_min <= TLS_VER_UNSPEC)
-+        {
-+            SSL_CTX_set_min_proto_version(ctx->ctx, openssl_tls_version(tls_ver_min));
-+        }
-+        if (tls_ver_max <= TLS_VER_UNSPEC)
-+        {
-+            SSL_CTX_set_max_proto_version(ctx->ctx, openssl_tls_version(tls_ver_max));
-+        }
-+#else /* OPENSSL_VERSION_NUMBER >= 0x10100000*/
-         if (tls_ver_max <= TLS_VER_UNSPEC)
-         {
-             tls_ver_max = tls_version_max();
-@@ -253,6 +277,7 @@
-             sslopt |= SSL_OP_NO_TLSv1_2;
-         }
- #endif
-+#endif /* OPENSSL_VERSION_NUMBER */
- #ifdef SSL_OP_NO_COMPRESSION
-         /* Disable compression - flag not available in OpenSSL 0.9.8 */
-         sslopt |= SSL_OP_NO_COMPRESSION;
+-                fprintf(fp, "%lu.%06lu %x %s%s%s%s",
+-                        tv.tv_sec,
++                fprintf(fp, "%lld.%06lu %x %s%s%s%s",
++                        (long long)tv.tv_sec,
+                         (unsigned long)tv.tv_usec,
+                         flags,
+                         prefix,
+-- 
+2.14.2
 
 
---------------483169EBD63CDC5D6C20314F--
+--=-=-=
+Content-Type: text/plain
+
+
+-- 
+jca | PGP : 0x1524E7EE / 5135 92C1 AD36 5293 2BDF  DDCC 0DFA 74AE 1524 E7EE
+
+--=-=-=--
 
