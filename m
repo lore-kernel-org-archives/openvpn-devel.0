@@ -1,15 +1,10 @@
-Message-Id: <1507503487.3920753.1131984624.1DA42F97@...2307...>
-From: logcabin@...2306...
 MIME-Version: 1.0
-Date: Sun, 08 Oct 2017 18:58:07 -0400
-In-Reply-To: <20171008153814.GO70062@...1296...>
+In-Reply-To: <1506735276.3927298.1123095944.62A302FF@...2307...>
 References: <1506735276.3927298.1123095944.62A302FF@...2307...>
- <20170930074629.GT70062@...1296...>
- <20170930161910.GX70062@...1296...>
- <1506794899.87173.1123548520.4DA7A99E@...2307...>
- <20170930181555.GA70062@...1296...>
- <1506797785.3933973.1123579944.40D80593@...2307...>
- <20171008153814.GO70062@...1296...>
+From: "sameer.s.athaley" <sameera.athaley@...277...>
+Date: Mon, 9 Oct 2017 09:08:53 +0530
+Message-ID: <CADtuLXRBmuMkJF+wSrfJs+Vik8pELS2ox_xufLE-9v1NG1pbnA@...278...>
+Content-Type: multipart/alternative; boundary="94eb2c1c1fa0fd9b7a055b14eda1"
 Subject: Re: [Openvpn-devel] Unreferenced function in 2.4.4 Linux build
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -19,47 +14,56 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-To: Gert Doering <gert@...1296...>
+To: logcabin@...2306...
 Cc: openvpn-devel@lists.sourceforge.net
 
-Thanks for the followup - I checked out the source from the master
-branch and it builds with no problems. 
+--94eb2c1c1fa0fd9b7a055b14eda1
+Content-Type: text/plain; charset="UTF-8"
 
-Looking forward to 2.4.5!
+This is really disgusting after unsubscribe again and againg still getting
+messgs, what the f*** who is admin plz help here.
 
-On Sun, Oct 8, 2017, at 11:38 AM, Gert Doering wrote:
-> Hi,
-> 
-> On Sat, Sep 30, 2017 at 02:56:25PM -0400, logcabin@...2306... wrote:
-> > This has solved the problem:
-> > 
-> > ./configure LZ4_CFLAGS=-I/usr/local/include LZ4_LIBS="-L/usr/local/lib
-> > -llz4"
-> > 
-> > My mistake was to assume that since ./configure had found LZ4 version >=
-> > 1.7.1, it would also locate the latest lz4 library. My bad.
-> 
-> Just as a small followup - we've discovered that this was not (only)
-> a problem of your installation, but hit all Debian 8 systems.
-> 
-> We have adjusted our "configure" script to check for this particular
-> problem (the version number reported is "130", which is "greater than
-> 1.7.1",
-> but actually a very old version), so 2.4.5 should build out of the box
-> just fine.
-> 
-> gert
-> 
-> -- 
-> USENET is *not* the non-clickable part of WWW!
->                                                            //www.muc.de/~gert/
-> Gert Doering - Munich, Germany                            
-> gert@...1296...
-> fax: +49-89-35655025                       
-> gert@...1297...
-> Email had 1 attachment:
-> + signature.asc
->   1k (application/pgp-signature)
+On 30-Sep-2017 7:22 AM, <logcabin@...2306...> wrote:
+
+> In file comp-lz4.c, g++ flags  LZ4_compress_default as unreferenced and
+> the build fails.
+>
+> ------------------------------------------------------------
+> ------------------
+> Check out the vibrant tech community on one of the world's most
+> engaging tech sites, Slashdot.org! http://sdm.link/slashdot
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+>
+
+--94eb2c1c1fa0fd9b7a055b14eda1
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"auto">This is really disgusting after unsubscribe again and aga=
+ing still getting messgs, what the f*** who is admin plz help here.</div><d=
+iv class=3D"gmail_extra"><br><div class=3D"gmail_quote">On 30-Sep-2017 7:22=
+ AM,  &lt;<a href=3D"mailto:logcabin@...2306...">logcabin@...2306...</a>&gt=
+; wrote:<br type=3D"attribution"><blockquote class=3D"gmail_quote" style=3D=
+"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">In file com=
+p-lz4.c, g++ flags=C2=A0 LZ4_compress_default as unreferenced and<br>
+the build fails.<br>
+<br>
+------------------------------<wbr>------------------------------<wbr>-----=
+-------------<br>
+Check out the vibrant tech community on one of the world&#39;s most<br>
+engaging tech sites, Slashdot.org! <a href=3D"http://sdm.link/slashdot" rel=
+=3D"noreferrer" target=3D"_blank">http://sdm.link/slashdot</a><br>
+______________________________<wbr>_________________<br>
+Openvpn-devel mailing list<br>
+<a href=3D"mailto:Openvpn-devel@lists.sourceforge.net">Openvpn-devel@...2155...=
+9...<wbr>sourceforge.net</a><br>
+<a href=3D"https://lists.sourceforge.net/lists/listinfo/openvpn-devel" rel=
+=3D"noreferrer" target=3D"_blank">https://lists.sourceforge.net/<wbr>lists/=
+listinfo/openvpn-devel</a><br>
+</blockquote></div></div>
+
+--94eb2c1c1fa0fd9b7a055b14eda1--
 
