@@ -1,11 +1,12 @@
+From: Simon Rozman <simon@...2293...>
+Date: Tue, 10 Oct 2017 12:22:22 +0000
+Message-ID: <99D61A626FDA8A4B90A270669121BE10857D3DCD@...2294...>
+Content-Language: en-US
+Content-Type: multipart/signed; protocol="application/x-pkcs7-signature";
+ micalg=2.16.840.1.101.3.4.2.1;
+ boundary="----=_NextPart_000_0037_01D341D3.2FC8A5A0"
 MIME-Version: 1.0
-In-Reply-To: <1506735276.3927298.1123095944.62A302FF@...2307...>
-References: <1506735276.3927298.1123095944.62A302FF@...2307...>
-From: "sameer.s.athaley" <sameera.athaley@...277...>
-Date: Mon, 9 Oct 2017 09:08:53 +0530
-Message-ID: <CADtuLXRBmuMkJF+wSrfJs+Vik8pELS2ox_xufLE-9v1NG1pbnA@...278...>
-Content-Type: multipart/alternative; boundary="94eb2c1c1fa0fd9b7a055b14eda1"
-Subject: Re: [Openvpn-devel] Unreferenced function in 2.4.4 Linux build
+Subject: [Openvpn-devel] openvpnserv building under MSVC
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,56 +15,105 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: logcabin@...2306...
-Cc: openvpn-devel@lists.sourceforge.net
+To: "openvpn-devel (openvpn-devel@lists.sourceforge.net)" <openvpn-devel@lists.sourceforge.net>
 
---94eb2c1c1fa0fd9b7a055b14eda1
-Content-Type: text/plain; charset="UTF-8"
+------=_NextPart_000_0037_01D341D3.2FC8A5A0
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 
-This is really disgusting after unsubscribe again and againg still getting
-messgs, what the f*** who is admin plz help here.
+Hi!
 
-On 30-Sep-2017 7:22 AM, <logcabin@...2306...> wrote:
+It's me again - author of the eduVPN client for Windows. This time I have a 
+new problem. And, a solution I'd like to share with OpenVPN community.
 
-> In file comp-lz4.c, g++ flags  LZ4_compress_default as unreferenced and
-> the build fails.
->
-> ------------------------------------------------------------
-> ------------------
-> Check out the vibrant tech community on one of the world's most
-> engaging tech sites, Slashdot.org! http://sdm.link/slashdot
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->
+I am considering bundling openvpn.exe, openvpnserv.exe, and standard TAP 
+drivers with eduVPN client to allow some degree of independence from stock 
+OpenVPN installations.
 
---94eb2c1c1fa0fd9b7a055b14eda1
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+However, our version of openvpnserv.exe should have some modifications 
+(different named pipe, different registry key) to avoid collision with stock 
+OpenVPN installation. But that's our long term goal.
 
-<div dir=3D"auto">This is really disgusting after unsubscribe again and aga=
-ing still getting messgs, what the f*** who is admin plz help here.</div><d=
-iv class=3D"gmail_extra"><br><div class=3D"gmail_quote">On 30-Sep-2017 7:22=
- AM,  &lt;<a href=3D"mailto:logcabin@...2306...">logcabin@...2306...</a>&gt=
-; wrote:<br type=3D"attribution"><blockquote class=3D"gmail_quote" style=3D=
-"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">In file com=
-p-lz4.c, g++ flags=C2=A0 LZ4_compress_default as unreferenced and<br>
-the build fails.<br>
-<br>
-------------------------------<wbr>------------------------------<wbr>-----=
--------------<br>
-Check out the vibrant tech community on one of the world&#39;s most<br>
-engaging tech sites, Slashdot.org! <a href=3D"http://sdm.link/slashdot" rel=
-=3D"noreferrer" target=3D"_blank">http://sdm.link/slashdot</a><br>
-______________________________<wbr>_________________<br>
-Openvpn-devel mailing list<br>
-<a href=3D"mailto:Openvpn-devel@lists.sourceforge.net">Openvpn-devel@...2155...=
-9...<wbr>sourceforge.net</a><br>
-<a href=3D"https://lists.sourceforge.net/lists/listinfo/openvpn-devel" rel=
-=3D"noreferrer" target=3D"_blank">https://lists.sourceforge.net/<wbr>lists/=
-listinfo/openvpn-devel</a><br>
-</blockquote></div></div>
+Unfortunately, maintaining a mingw build environment for our own OpenVPN 
+binaries is an overkill. Therefore, in the first stage, I have updated the 
+Microsoft Visual Studio C++ project files to be able to compile 
+openvpnserv.exe again:
+- Project files were updated to Microsoft Visual Studio C++ 2017 Community 
+Edition.
+- Some minor updates were made to .h/.c files to compile using MSVC again.
+- Support for x64 platform was added.
+- All MSVC warnings were addressed and fixed.
 
---94eb2c1c1fa0fd9b7a055b14eda1--
+Can I deliver the patches for above?
+
+Best regards,
+Simon Rozman
+
+------=_NextPart_000_0037_01D341D3.2FC8A5A0
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+
+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
+TqTaQ+IAAAAAAAA=
+
+------=_NextPart_000_0037_01D341D3.2FC8A5A0--
 
