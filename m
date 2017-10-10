@@ -1,9 +1,15 @@
-From: simon@...2293...
-Date: Wed, 11 Oct 2017 01:11:30 +0200
-Message-Id: <20171010231130.6832-13-simon@...2293...>
-In-Reply-To: <20171010231130.6832-1-simon@...2293...>
-References: <20171010231130.6832-1-simon@...2293...>
-Subject: [Openvpn-devel] [PATCH 13/13] x64 MSVC configurations introduced
+From: Simon Rozman <simon@...2293...>
+Date: Tue, 10 Oct 2017 23:28:52 +0000
+Message-ID: <99D61A626FDA8A4B90A270669121BE10857D7AE0@...2294...>
+References: <99D61A626FDA8A4B90A270669121BE10857D3DCD@...2294...>
+ <20171010142717.GH958@...1296...>
+In-Reply-To: <20171010142717.GH958@...1296...>
+Content-Language: en-US
+Content-Type: multipart/signed; protocol="application/x-pkcs7-signature";
+ micalg=2.16.840.1.101.3.4.2.1;
+ boundary="----=_NextPart_000_0030_01D34230.4BD32AB0"
+MIME-Version: 1.0
+Subject: Re: [Openvpn-devel] openvpnserv building under MSVC
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,435 +18,117 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>
+Cc: "openvpn-devel (openvpn-devel@lists.sourceforge.net)" <openvpn-devel@lists.sourceforge.net>
 
-From: Simon Rozman <simon@...2293...>
+------=_NextPart_000_0030_01D34230.4BD32AB0
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 
----
- .gitignore                                     |  1 +
- build/msvc/msvc-generate/msvc-generate.vcxproj | 42 ++++++++++++--
- msvc-env.bat                                   |  1 -
- openvpn.sln                                    | 16 ++++++
- src/compat/compat.vcxproj                      | 61 +++++++++++++++++++-
- src/openvpnserv/openvpnserv.vcxproj            | 77 ++++++++++++++++++++++++--
- 6 files changed, 186 insertions(+), 12 deletions(-)
+Hi,
 
-diff --git a/.gitignore b/.gitignore
-index 4543674..ced65ec 100644
---- a/.gitignore
-+++ b/.gitignore
-@@ -17,6 +17,7 @@
- Release
- Debug
- Win32-Output
-+x64-Output
- .vs
- .deps
- .libs
-diff --git a/build/msvc/msvc-generate/msvc-generate.vcxproj b/build/msvc/msvc-generate/msvc-generate.vcxproj
-index f5fc921..8978197 100644
---- a/build/msvc/msvc-generate/msvc-generate.vcxproj
-+++ b/build/msvc/msvc-generate/msvc-generate.vcxproj
-@@ -5,10 +5,18 @@
-       <Configuration>Debug</Configuration>
-       <Platform>Win32</Platform>
-     </ProjectConfiguration>
-+    <ProjectConfiguration Include="Debug|x64">
-+      <Configuration>Debug</Configuration>
-+      <Platform>x64</Platform>
-+    </ProjectConfiguration>
-     <ProjectConfiguration Include="Release|Win32">
-       <Configuration>Release</Configuration>
-       <Platform>Win32</Platform>
-     </ProjectConfiguration>
-+    <ProjectConfiguration Include="Release|x64">
-+      <Configuration>Release</Configuration>
-+      <Platform>x64</Platform>
-+    </ProjectConfiguration>
-   </ItemGroup>
-   <PropertyGroup Label="Globals">
-     <VCProjectVersion>15.0</VCProjectVersion>
-@@ -19,13 +27,23 @@
-   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-     <ConfigurationType>Makefile</ConfigurationType>
--    <OutDir>$(Configuration)\</OutDir>
--    <IntDir>$(Configuration)\</IntDir>
-+    <OutDir>$(Configuration)\$(Platform)\</OutDir>
-+    <IntDir>$(Configuration)\$(Platform)\</IntDir>
-+  </PropertyGroup>
-+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-+    <ConfigurationType>Makefile</ConfigurationType>
-+    <OutDir>$(Configuration)\$(Platform)\</OutDir>
-+    <IntDir>$(Configuration)\$(Platform)\</IntDir>
-   </PropertyGroup>
-   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-     <ConfigurationType>Makefile</ConfigurationType>
--    <OutDir>$(Configuration)\</OutDir>
--    <IntDir>$(Configuration)\</IntDir>
-+    <OutDir>$(Configuration)\$(Platform)\</OutDir>
-+    <IntDir>$(Configuration)\$(Platform)\</IntDir>
-+  </PropertyGroup>
-+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-+    <ConfigurationType>Makefile</ConfigurationType>
-+    <OutDir>$(Configuration)\$(Platform)\</OutDir>
-+    <IntDir>$(Configuration)\$(Platform)\</IntDir>
-   </PropertyGroup>
-   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
-   <ImportGroup Label="ExtensionSettings">
-@@ -35,20 +53,36 @@
-   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
-     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-   </ImportGroup>
-+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
-+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-+  </ImportGroup>
-   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
-     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-   </ImportGroup>
-+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
-+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-+  </ImportGroup>
-   <PropertyGroup Label="UserMacros" />
-   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-     <NMakeBuildCommandLine>nmake -ls -f Makefile.mak all</NMakeBuildCommandLine>
-     <NMakeCleanCommandLine>nmake -ls -f Makefile.mak clean</NMakeCleanCommandLine>
-     <NMakeReBuildCommandLine>nmake -lsa -f Makefile.mak all</NMakeReBuildCommandLine>
-   </PropertyGroup>
-+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-+    <NMakeBuildCommandLine>nmake -ls -f Makefile.mak all</NMakeBuildCommandLine>
-+    <NMakeCleanCommandLine>nmake -ls -f Makefile.mak clean</NMakeCleanCommandLine>
-+    <NMakeReBuildCommandLine>nmake -lsa -f Makefile.mak all</NMakeReBuildCommandLine>
-+  </PropertyGroup>
-   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-     <NMakeBuildCommandLine>nmake -ls -f Makefile.mak all</NMakeBuildCommandLine>
-     <NMakeCleanCommandLine>nmake -ls -f Makefile.mak clean</NMakeCleanCommandLine>
-     <NMakeReBuildCommandLine>nmake -lsa -f Makefile.mak all</NMakeReBuildCommandLine>
-   </PropertyGroup>
-+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-+    <NMakeBuildCommandLine>nmake -ls -f Makefile.mak all</NMakeBuildCommandLine>
-+    <NMakeCleanCommandLine>nmake -ls -f Makefile.mak clean</NMakeCleanCommandLine>
-+    <NMakeReBuildCommandLine>nmake -lsa -f Makefile.mak all</NMakeReBuildCommandLine>
-+  </PropertyGroup>
-   <ItemDefinitionGroup>
-   </ItemDefinitionGroup>
-   <ItemGroup>
-diff --git a/msvc-env.bat b/msvc-env.bat
-index aabed75..56b469f 100644
---- a/msvc-env.bat
-+++ b/msvc-env.bat
-@@ -13,7 +13,6 @@ set SOURCEBASE=%cd%
- set SOLUTION=openvpn.sln
- set CPPFLAGS=%CPPFLAGS%;_CRT_SECURE_NO_WARNINGS;WIN32_LEAN_AND_MEAN;_CRT_NONSTDC_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS
- set CPPFLAGS=%CPPFLAGS%;NTDDI_VERSION=NTDDI_VISTA;_WIN32_WINNT=_WIN32_WINNT_VISTA
--set CPPFLAGS=%CPPFLAGS%;_USE_32BIT_TIME_T
- set CPPFLAGS=%CPPFLAGS%;%EXTRA_CPPFLAGS%
- 
- if exist config-msvc-local.h set CPPFLAGS="%CPPFLAGS%;HAVE_CONFIG_MSVC_LOCAL_H"
-diff --git a/openvpn.sln b/openvpn.sln
-index ac865bb..cf5a089 100644
---- a/openvpn.sln
-+++ b/openvpn.sln
-@@ -14,23 +14,39 @@ EndProject
- Global
- 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
- 		Debug|Win32 = Debug|Win32
-+		Debug|x64 = Debug|x64
- 		Release|Win32 = Release|Win32
-+		Release|x64 = Release|x64
- 	EndGlobalSection
- 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
- 		{9C91EE0B-817D-420A-A1E6-15A5A9D98BAD}.Debug|Win32.ActiveCfg = Debug|Win32
- 		{9C91EE0B-817D-420A-A1E6-15A5A9D98BAD}.Debug|Win32.Build.0 = Debug|Win32
-+		{9C91EE0B-817D-420A-A1E6-15A5A9D98BAD}.Debug|x64.ActiveCfg = Debug|x64
-+		{9C91EE0B-817D-420A-A1E6-15A5A9D98BAD}.Debug|x64.Build.0 = Debug|x64
- 		{9C91EE0B-817D-420A-A1E6-15A5A9D98BAD}.Release|Win32.ActiveCfg = Release|Win32
- 		{9C91EE0B-817D-420A-A1E6-15A5A9D98BAD}.Release|Win32.Build.0 = Release|Win32
-+		{9C91EE0B-817D-420A-A1E6-15A5A9D98BAD}.Release|x64.ActiveCfg = Release|x64
-+		{9C91EE0B-817D-420A-A1E6-15A5A9D98BAD}.Release|x64.Build.0 = Release|x64
- 		{29DF226E-4D4E-440F-ADAF-5829CFD4CA94}.Debug|Win32.ActiveCfg = Debug|Win32
-+		{29DF226E-4D4E-440F-ADAF-5829CFD4CA94}.Debug|x64.ActiveCfg = Debug|Win32
- 		{29DF226E-4D4E-440F-ADAF-5829CFD4CA94}.Release|Win32.ActiveCfg = Release|Win32
-+		{29DF226E-4D4E-440F-ADAF-5829CFD4CA94}.Release|x64.ActiveCfg = Release|Win32
- 		{8598C2C8-34C4-47A1-99B0-7C295A890615}.Debug|Win32.ActiveCfg = Debug|Win32
- 		{8598C2C8-34C4-47A1-99B0-7C295A890615}.Debug|Win32.Build.0 = Debug|Win32
-+		{8598C2C8-34C4-47A1-99B0-7C295A890615}.Debug|x64.ActiveCfg = Debug|x64
-+		{8598C2C8-34C4-47A1-99B0-7C295A890615}.Debug|x64.Build.0 = Debug|x64
- 		{8598C2C8-34C4-47A1-99B0-7C295A890615}.Release|Win32.ActiveCfg = Release|Win32
- 		{8598C2C8-34C4-47A1-99B0-7C295A890615}.Release|Win32.Build.0 = Release|Win32
-+		{8598C2C8-34C4-47A1-99B0-7C295A890615}.Release|x64.ActiveCfg = Release|x64
-+		{8598C2C8-34C4-47A1-99B0-7C295A890615}.Release|x64.Build.0 = Release|x64
- 		{4B2E2719-E661-45D7-9203-F6F456B22F19}.Debug|Win32.ActiveCfg = Debug|Win32
- 		{4B2E2719-E661-45D7-9203-F6F456B22F19}.Debug|Win32.Build.0 = Debug|Win32
-+		{4B2E2719-E661-45D7-9203-F6F456B22F19}.Debug|x64.ActiveCfg = Debug|x64
-+		{4B2E2719-E661-45D7-9203-F6F456B22F19}.Debug|x64.Build.0 = Debug|x64
- 		{4B2E2719-E661-45D7-9203-F6F456B22F19}.Release|Win32.ActiveCfg = Release|Win32
- 		{4B2E2719-E661-45D7-9203-F6F456B22F19}.Release|Win32.Build.0 = Release|Win32
-+		{4B2E2719-E661-45D7-9203-F6F456B22F19}.Release|x64.ActiveCfg = Release|x64
-+		{4B2E2719-E661-45D7-9203-F6F456B22F19}.Release|x64.Build.0 = Release|x64
- 	EndGlobalSection
- 	GlobalSection(SolutionProperties) = preSolution
- 		HideSolutionNode = FALSE
-diff --git a/src/compat/compat.vcxproj b/src/compat/compat.vcxproj
-index 997aaf7..0ebd3d5 100644
---- a/src/compat/compat.vcxproj
-+++ b/src/compat/compat.vcxproj
-@@ -5,10 +5,18 @@
-       <Configuration>Debug</Configuration>
-       <Platform>Win32</Platform>
-     </ProjectConfiguration>
-+    <ProjectConfiguration Include="Debug|x64">
-+      <Configuration>Debug</Configuration>
-+      <Platform>x64</Platform>
-+    </ProjectConfiguration>
-     <ProjectConfiguration Include="Release|Win32">
-       <Configuration>Release</Configuration>
-       <Platform>Win32</Platform>
-     </ProjectConfiguration>
-+    <ProjectConfiguration Include="Release|x64">
-+      <Configuration>Release</Configuration>
-+      <Platform>x64</Platform>
-+    </ProjectConfiguration>
-   </ItemGroup>
-   <PropertyGroup Label="Globals">
-     <VCProjectVersion>15.0</VCProjectVersion>
-@@ -23,11 +31,22 @@
-     <WholeProgramOptimization>true</WholeProgramOptimization>
-     <PlatformToolset>v141</PlatformToolset>
-   </PropertyGroup>
-+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-+    <ConfigurationType>StaticLibrary</ConfigurationType>
-+    <CharacterSet>Unicode</CharacterSet>
-+    <WholeProgramOptimization>true</WholeProgramOptimization>
-+    <PlatformToolset>v141</PlatformToolset>
-+  </PropertyGroup>
-   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-     <ConfigurationType>StaticLibrary</ConfigurationType>
-     <CharacterSet>Unicode</CharacterSet>
-     <PlatformToolset>v141</PlatformToolset>
-   </PropertyGroup>
-+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-+    <ConfigurationType>StaticLibrary</ConfigurationType>
-+    <CharacterSet>Unicode</CharacterSet>
-+    <PlatformToolset>v141</PlatformToolset>
-+  </PropertyGroup>
-   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
-   <ImportGroup Label="ExtensionSettings">
-   </ImportGroup>
-@@ -36,17 +55,31 @@
-   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
-     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-   </ImportGroup>
-+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
-+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-+  </ImportGroup>
-   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
-     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-   </ImportGroup>
-+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
-+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-+  </ImportGroup>
-   <PropertyGroup Label="UserMacros" />
-   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-     <OutDir>$(SolutionDir)$(Platform)-Output\$(Configuration)\</OutDir>
--    <IntDir>$(Configuration)\</IntDir>
-+    <IntDir>$(Configuration)\$(Platform)\</IntDir>
-+  </PropertyGroup>
-+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-+    <OutDir>$(SolutionDir)$(Platform)-Output\$(Configuration)\</OutDir>
-+    <IntDir>$(Configuration)\$(Platform)\</IntDir>
-   </PropertyGroup>
-   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-     <OutDir>$(SolutionDir)$(Platform)-Output\$(Configuration)\</OutDir>
--    <IntDir>$(Configuration)\</IntDir>
-+    <IntDir>$(Configuration)\$(Platform)\</IntDir>
-+  </PropertyGroup>
-+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-+    <OutDir>$(SolutionDir)$(Platform)-Output\$(Configuration)\</OutDir>
-+    <IntDir>$(Configuration)\$(Platform)\</IntDir>
-   </PropertyGroup>
-   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-     <ClCompile>
-@@ -59,6 +92,17 @@
-       <WarningLevel>Level3</WarningLevel>
-     </ClCompile>
-   </ItemDefinitionGroup>
-+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-+    <ClCompile>
-+      <Optimization>Disabled</Optimization>
-+      <AdditionalIncludeDirectories>$(SOURCEBASE);$(SOURCEBASE)\include;$(OPENSSL_HOME)\include;$(LZO_HOME)\include;$(PKCS11H_HOME)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;$(CPPFLAGS);%(PreprocessorDefinitions)</PreprocessorDefinitions>
-+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-+      <PrecompiledHeader>
-+      </PrecompiledHeader>
-+      <WarningLevel>Level3</WarningLevel>
-+    </ClCompile>
-+  </ItemDefinitionGroup>
-   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-     <ClCompile>
-       <Optimization>MaxSpeed</Optimization>
-@@ -70,6 +114,17 @@
-       <WarningLevel>Level3</WarningLevel>
-     </ClCompile>
-   </ItemDefinitionGroup>
-+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-+    <ClCompile>
-+      <Optimization>MaxSpeed</Optimization>
-+      <AdditionalIncludeDirectories>$(SOURCEBASE);$(SOURCEBASE)\include;$(OPENSSL_HOME)\include;$(LZO_HOME)\include;$(PKCS11H_HOME)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;$(CPPFLAGS);%(PreprocessorDefinitions)</PreprocessorDefinitions>
-+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-+      <PrecompiledHeader>
-+      </PrecompiledHeader>
-+      <WarningLevel>Level3</WarningLevel>
-+    </ClCompile>
-+  </ItemDefinitionGroup>
-   <ItemGroup>
-     <ClCompile Include="compat-basename.c" />
-     <ClCompile Include="compat-dirname.c" />
-@@ -85,4 +140,4 @@
-   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-   <ImportGroup Label="ExtensionTargets">
-   </ImportGroup>
--</Project>
-+</Project>
-\ No newline at end of file
-diff --git a/src/openvpnserv/openvpnserv.vcxproj b/src/openvpnserv/openvpnserv.vcxproj
-index a865bf0..3cbc287 100644
---- a/src/openvpnserv/openvpnserv.vcxproj
-+++ b/src/openvpnserv/openvpnserv.vcxproj
-@@ -5,10 +5,18 @@
-       <Configuration>Debug</Configuration>
-       <Platform>Win32</Platform>
-     </ProjectConfiguration>
-+    <ProjectConfiguration Include="Debug|x64">
-+      <Configuration>Debug</Configuration>
-+      <Platform>x64</Platform>
-+    </ProjectConfiguration>
-     <ProjectConfiguration Include="Release|Win32">
-       <Configuration>Release</Configuration>
-       <Platform>Win32</Platform>
-     </ProjectConfiguration>
-+    <ProjectConfiguration Include="Release|x64">
-+      <Configuration>Release</Configuration>
-+      <Platform>x64</Platform>
-+    </ProjectConfiguration>
-   </ItemGroup>
-   <PropertyGroup Label="Globals">
-     <VCProjectVersion>15.0</VCProjectVersion>
-@@ -23,11 +31,22 @@
-     <WholeProgramOptimization>true</WholeProgramOptimization>
-     <PlatformToolset>v141</PlatformToolset>
-   </PropertyGroup>
-+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-+    <ConfigurationType>Application</ConfigurationType>
-+    <CharacterSet>Unicode</CharacterSet>
-+    <WholeProgramOptimization>true</WholeProgramOptimization>
-+    <PlatformToolset>v141</PlatformToolset>
-+  </PropertyGroup>
-   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-     <ConfigurationType>Application</ConfigurationType>
-     <CharacterSet>Unicode</CharacterSet>
-     <PlatformToolset>v141</PlatformToolset>
-   </PropertyGroup>
-+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-+    <ConfigurationType>Application</ConfigurationType>
-+    <CharacterSet>Unicode</CharacterSet>
-+    <PlatformToolset>v141</PlatformToolset>
-+  </PropertyGroup>
-   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
-   <ImportGroup Label="ExtensionSettings">
-   </ImportGroup>
-@@ -36,17 +55,31 @@
-   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
-     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-   </ImportGroup>
-+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
-+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-+  </ImportGroup>
-   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
-     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-   </ImportGroup>
-+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
-+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-+  </ImportGroup>
-   <PropertyGroup Label="UserMacros" />
-   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-     <OutDir>$(SolutionDir)$(Platform)-Output\$(Configuration)\</OutDir>
--    <IntDir>$(Configuration)\</IntDir>
-+    <IntDir>$(Configuration)\$(Platform)\</IntDir>
-+  </PropertyGroup>
-+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-+    <OutDir>$(SolutionDir)$(Platform)-Output\$(Configuration)\</OutDir>
-+    <IntDir>$(Configuration)\$(Platform)\</IntDir>
-   </PropertyGroup>
-   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-     <OutDir>$(SolutionDir)$(Platform)-Output\$(Configuration)\</OutDir>
--    <IntDir>$(Configuration)\</IntDir>
-+    <IntDir>$(Configuration)\$(Platform)\</IntDir>
-+  </PropertyGroup>
-+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-+    <OutDir>$(SolutionDir)$(Platform)-Output\$(Configuration)\</OutDir>
-+    <IntDir>$(Configuration)\$(Platform)\</IntDir>
-   </PropertyGroup>
-   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-     <ClCompile>
-@@ -63,7 +96,24 @@
-     </ResourceCompile>
-     <Link>
-       <SubSystem>Console</SubSystem>
--      <TargetMachine>MachineX86</TargetMachine>
-+      <AdditionalDependencies>fwpuclnt.lib;ntdll.lib;shlwapi.lib;netapi32.lib;userenv.lib;iphlpapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
-+    </Link>
-+  </ItemDefinitionGroup>
-+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-+    <ClCompile>
-+      <Optimization>Disabled</Optimization>
-+      <AdditionalIncludeDirectories>$(SOURCEBASE);$(SOURCEBASE)\include;$(SOURCEBASE)\src\openvpn;$(SOURCEBASE)\src\compat;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;$(CPPFLAGS);%(PreprocessorDefinitions)</PreprocessorDefinitions>
-+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-+      <PrecompiledHeader>
-+      </PrecompiledHeader>
-+      <WarningLevel>Level3</WarningLevel>
-+    </ClCompile>
-+    <ResourceCompile>
-+      <AdditionalIncludeDirectories>$(SOURCEBASE);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-+    </ResourceCompile>
-+    <Link>
-+      <SubSystem>Console</SubSystem>
-       <AdditionalDependencies>fwpuclnt.lib;ntdll.lib;shlwapi.lib;netapi32.lib;userenv.lib;iphlpapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
-     </Link>
-   </ItemDefinitionGroup>
-@@ -84,7 +134,26 @@
-       <SubSystem>Console</SubSystem>
-       <OptimizeReferences>true</OptimizeReferences>
-       <EnableCOMDATFolding>true</EnableCOMDATFolding>
--      <TargetMachine>MachineX86</TargetMachine>
-+      <AdditionalDependencies>fwpuclnt.lib;ntdll.lib;shlwapi.lib;netapi32.lib;userenv.lib;iphlpapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
-+    </Link>
-+  </ItemDefinitionGroup>
-+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-+    <ClCompile>
-+      <Optimization>MaxSpeed</Optimization>
-+      <AdditionalIncludeDirectories>$(SOURCEBASE);$(SOURCEBASE)\include;$(SOURCEBASE)\src\openvpn;$(SOURCEBASE)\src\compat;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;$(CPPFLAGS);%(PreprocessorDefinitions)</PreprocessorDefinitions>
-+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-+      <PrecompiledHeader>
-+      </PrecompiledHeader>
-+      <WarningLevel>Level3</WarningLevel>
-+    </ClCompile>
-+    <ResourceCompile>
-+      <AdditionalIncludeDirectories>$(SOURCEBASE);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-+    </ResourceCompile>
-+    <Link>
-+      <SubSystem>Console</SubSystem>
-+      <OptimizeReferences>true</OptimizeReferences>
-+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-       <AdditionalDependencies>fwpuclnt.lib;ntdll.lib;shlwapi.lib;netapi32.lib;userenv.lib;iphlpapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
-     </Link>
-   </ItemDefinitionGroup>
--- 
-2.9.0.windows.1
+> This sounds good.  Please send patches (preferably with git-send-email, in
+> reasonable chunks) to the list so we can review and merge.  Please rebase
+on
+> top of master.
+> 
+> "Reasonable chunks" is a very subjective thing, of course :-) - in this
+case I'd
+> group the MSVC specific things into one patch (like, project files and
+such),
+> and the rest into one or more patches depending on the number of changes.
+> 
+> MSVC-only things are easier to review as there won't be any impact to
+other
+> platforms or build systems, while generic "fix warning" patches have the
+> tendency to introduce warnings elsewhere (like, printf() format specifiers
+vs.
+> "what is a time_t" being a prime example).
+> 
+> Anyway, thanks for dusting off these corners :-)
 
+I hope I haven't over-divided things into chunks. Following your
+recommendations, no single chunk updates both C sources and MSVC related
+files. I'm afraid the [PATCH 05/13] might fail on mingw, but as mentioned in
+its description there are a couple of work-arounds possible. I am not
+comfortable with mingw to test it myself. Hence, I got this MSVC
+resurrection idea.
+
+I shall look into the building of openvpn.exe under MSVC in the days to
+come. At least to get an estimate how much work would require me to
+re-establish MSVC build for it as well.
+
+I have been happily using OpenVPN to connect remote computers for more than
+a decade. Perhaps it's time now to give something in return. :)
+
+Best regards,
+Simon
+
+------=_NextPart_000_0030_01D34230.4BD32AB0
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+
+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
+5W8xwTIAAAAAAAA=
+
+------=_NextPart_000_0030_01D34230.4BD32AB0--
 
