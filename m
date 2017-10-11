@@ -1,18 +1,17 @@
 From: Simon Rozman <simon@...2293...>
-Date: Wed, 11 Oct 2017 13:57:03 +0000
-Message-ID: <99D61A626FDA8A4B90A270669121BE10857E3A0D@...2294...>
+Date: Wed, 11 Oct 2017 14:03:15 +0000
+Message-ID: <99D61A626FDA8A4B90A270669121BE10857E3A4B@...2294...>
 References: <20171010231130.6832-1-simon@...2293...>
- <20171010231130.6832-5-simon@...2293...>
- <CAKuzo_iQtWLganoH3n39hASRThrqmpHYh8ec=STm9yxeeROGYg@...278...>
-In-Reply-To: <CAKuzo_iQtWLganoH3n39hASRThrqmpHYh8ec=STm9yxeeROGYg@...278...>
+ <67ed8854-4290-468e-9773-2bdde5cd8909@...2080...>
+ <99D61A626FDA8A4B90A270669121BE10857E33EE@...2294...>
+ <CAKuzo_i2gtJ9YS09mhmf4Y1T0SDiJ=0HHpyW72XFowbOfNJ3CA@...278...>
+In-Reply-To: <CAKuzo_i2gtJ9YS09mhmf4Y1T0SDiJ=0HHpyW72XFowbOfNJ3CA@...278...>
 Content-Language: en-US
 Content-Type: multipart/signed; protocol="application/x-pkcs7-signature";
  micalg=2.16.840.1.101.3.4.2.1;
- boundary="----=_NextPart_000_0000_01D342A9.941114D0"
+ boundary="----=_NextPart_000_0007_01D342AA.71D69C40"
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH 05/13] Function prototypes are declared
- as "typedef <return type> (<calling convention> *type_name)(<arguments>)"
- in MSVC.
+Subject: Re: [Openvpn-devel] [PATCH 01/13] snwprintf() => _snwprintf()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -24,11 +23,11 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: Selva <selva.nair@...277...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-------=_NextPart_000_0000_01D342A9.941114D0
+------=_NextPart_000_0007_01D342AA.71D69C40
 Content-Type: multipart/alternative;
-	boundary="----=_NextPart_001_0001_01D342A9.941114D0"
+	boundary="----=_NextPart_001_0008_01D342AA.71D69C40"
 
-------=_NextPart_001_0001_01D342A9.941114D0
+------=_NextPart_001_0008_01D342AA.71D69C40
 Content-Type: text/plain;
 	charset="utf-8"
 Content-Transfer-Encoding: 7bit
@@ -37,15 +36,13 @@ Hi,
 
 
 
-I shall happily rewrite the code to remove those declarations. However, I'll 
-need to check MSDN on a case-by-case basis to replace only API calls that are 
-standard from Vista on.
+I agree migration towards ISO-C's snwprintf() is better.
 
 
 
-Do you still maintain 2.3 branch for Windows XP? You do know, that replacing 
-GetProcAddr() with statically linked Vista+ API calls would break 
-compatibility with Windows XP.
+We can do it two way: using #define, or implementing a simple wrapper 
+function. The advantage of wrapper function is we can introduce guaranteed 
+null-terminated output to match ISO-C experience.
 
 
 
@@ -56,60 +53,63 @@ Simon
 
 
 From: Selva [mailto:selva.nair@...277...]
-Sent: Wednesday, October 11, 2017 3:21 PM
+Sent: Wednesday, October 11, 2017 3:20 PM
 To: Simon Rozman
 Cc: openvpn-devel@lists.sourceforge.net
-Subject: Re: [Openvpn-devel] [PATCH 05/13] Function prototypes are declared as 
-"typedef <return type> (<calling convention> *type_name)(<arguments>)" in 
-MSVC.
+Subject: Re: [Openvpn-devel] [PATCH 01/13] snwprintf() => _snwprintf()
 
 
+
+
+
+On Wed, Oct 11, 2017 at 6:06 AM, Simon Rozman <simon@...2293...> wrote:
 
 Hi,
 
+> From a technical point of view, it looks like a fine patch.  But it is hard
+> for me
+> (as a non-Windows dev) to understand *why* this is needed.
+> It would be good to explain the rationale for a change so others can
+> understand it as quickly as possible.
 
+snwprintf() is not defined in Windows SDK. _snwprintf() is.
+[https://docs.microsoft.com/en-us/cpp/c-runtime-library/reference/snprintf-snprintf-snprintf-l-snwprintf-snwprintf-l]
 
-Thanks for these patches.
+Mingw probably accepts both. That's why nobody noticed. Looking around OpenVPN
+code, I have found some code using _snwprintf(), some snwprintf(). Probably,
+since MSVC was neglected for so long, nobody paid attention to such a subtle
+difference.
 
+For the code to compile on MSVC all snwprintf() should be replaced with
+_snwprintf(). Or, since the prefix underscore imposed by Windows SDK is not
+mostly aesthetical, the following #define could be introduced:
+#ifdef _MSVC_VER
+#define snwprintf _snwprintf
+#endif
 
-
-On Tue, Oct 10, 2017 at 7:11 PM, <simon@...2293...> wrote:
-
-From: Simon Rozman <simon@...2293...>
-
-Note: NETIOAPI_API is defined as:
-#define NETIOAPI_API NETIO_STATUS NETIOAPI_API_
-#define NETIOAPI_API_ WINAPI
-
-I am not sure whether interactive.c will compile using mingw with this patch. 
-If not:
-1. We can introduce some
-   #ifdef _MSC_VER
-   #else
-   #endif
-2. Since NTDDI_VERSION=NTDDI_VISTA, most of the dynamic API loading by 
-GetProcAddress() could be simplified to statically linked API calls, avoiding 
-function prototype declarations altogether. I suggest we do this anyway to 
-clean-up the code in the future.
-
-
-
-Yes, those declarations and run-time lookup were slated for removal but 
-somehow never happened. Its a good idea to get rid of those -- no point in 
-tweaking them to suit MSVC.
+Nevertheless, I suggest consistent use of snwprintf/_snwprintf.
 
 
 
-IIRC, at least the versions of mingw that I use (gcc 4.9.3 or later) will 
-build with those stripped but I can test again if you replace this patch with 
-one removing those declarations.
+
+
+While its true that mingw accepts both and Windows has only the latter, I 
+think the best option here is swprintf. Its ISO-C, does the same thing as 
+_snwprintf with added advantage that nul-termination is guaranteed by the 
+standard (though we need not bank on that and better continue the practice of 
+explicit nul termination).  Note that swprintf is like snprintf in that it 
+takes the buffer size as an argument.
 
 
 
 Selva
 
 
-------=_NextPart_001_0001_01D342A9.941114D0
+
+
+
+
+------=_NextPart_001_0008_01D342AA.71D69C40
 Content-Type: text/html; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -143,13 +143,6 @@ a:visited, span.MsoHyperlinkFollowed
 code
 	{mso-style-priority:99;
 	font-family:"Courier New";}
-p.MsoAcetate, li.MsoAcetate, div.MsoAcetate
-	{mso-style-priority:99;
-	mso-style-link:"Balloon Text Char";
-	margin:0cm;
-	margin-bottom:.0001pt;
-	font-size:8.0pt;
-	font-family:"Tahoma","sans-serif";}
 p.MsoQuote, li.MsoQuote, div.MsoQuote
 	{mso-style-priority:29;
 	mso-style-link:"Quote Char";
@@ -168,12 +161,6 @@ span.EmailStyle20
 	{mso-style-type:personal-reply;
 	font-family:"Calibri","sans-serif";
 	color:#1F497D;}
-span.BalloonTextChar
-	{mso-style-name:"Balloon Text Char";
-	mso-style-priority:99;
-	mso-style-link:"Balloon Text";
-	font-family:"Tahoma","sans-serif";
-	mso-fareast-language:SL;}
 .MsoChpDefault
 	{mso-style-type:export-only;
 	font-family:"Calibri","sans-serif";
@@ -194,63 +181,67 @@ div.WordSection1
 '>Hi,<o:p></o:p></span></p><p class=3DMsoNormal><span lang=3DEN-GB style=3D=
 'font-size:11.0pt;font-family:"Calibri","sans-serif";color:#1F497D'><o:p>&n=
 bsp;</o:p></span></p><p class=3DMsoNormal><span lang=3DEN-GB style=3D'font-=
-size:11.0pt;font-family:"Calibri","sans-serif";color:#1F497D'>I shall happi=
-ly rewrite the code to remove those declarations. However, I'll need to che=
-ck MSDN on a case-by-case basis to replace only API calls that are standard=
- from Vista on.<o:p></o:p></span></p><p class=3DMsoNormal><span lang=3DEN-G=
-B style=3D'font-size:11.0pt;font-family:"Calibri","sans-serif";color:#1F497=
-D'><o:p>&nbsp;</o:p></span></p><p class=3DMsoNormal><span lang=3DEN-GB styl=
-e=3D'font-size:11.0pt;font-family:"Calibri","sans-serif";color:#1F497D'>Do =
-you still maintain 2.3 branch for Windows XP? You do know, that replacing G=
-etProcAddr() with statically linked Vista+ API calls would break compatibil=
-ity with Windows XP.<o:p></o:p></span></p><p class=3DMsoNormal><span lang=
-=3DEN-GB style=3D'font-size:11.0pt;font-family:"Calibri","sans-serif";color=
-:#1F497D'><o:p>&nbsp;</o:p></span></p><p class=3DMsoNormal><span lang=3DEN-=
-GB style=3D'font-size:11.0pt;font-family:"Calibri","sans-serif";color:#1F49=
-7D'>Best regards,<o:p></o:p></span></p><p class=3DMsoNormal><span lang=3DEN=
--GB style=3D'font-size:11.0pt;font-family:"Calibri","sans-serif";color:#1F4=
-97D'>Simon<o:p></o:p></span></p><p class=3DMsoNormal><span lang=3DEN-GB sty=
-le=3D'font-size:11.0pt;font-family:"Calibri","sans-serif";color:#1F497D'><o=
-:p>&nbsp;</o:p></span></p><div style=3D'border:none;border-left:solid blue =
-1.5pt;padding:0cm 0cm 0cm 4.0pt'><div><div style=3D'border:none;border-top:=
-solid #B5C4DF 1.0pt;padding:3.0pt 0cm 0cm 0cm'><p class=3DMsoNormal><b><spa=
-n lang=3DEN-US style=3D'font-size:10.0pt;font-family:"Tahoma","sans-serif"'=
->From:</span></b><span lang=3DEN-US style=3D'font-size:10.0pt;font-family:"=
-Tahoma","sans-serif"'> Selva [mailto:selva.nair@...277...] <br><b>Sent:</b>=
- Wednesday, October 11, 2017 3:21 PM<br><b>To:</b> Simon Rozman<br><b>Cc:</=
-b> openvpn-devel@lists.sourceforge.net<br><b>Subject:</b> Re: [Openvpn-deve=
-l] [PATCH 05/13] Function prototypes are declared as &quot;typedef &lt;retu=
-rn type&gt; (&lt;calling convention&gt; *type_name)(&lt;arguments&gt;)&quot=
-; in MSVC.<o:p></o:p></span></p></div></div><p class=3DMsoNormal><o:p>&nbsp=
-;</o:p></p><div><p class=3DMsoNormal>Hi,<o:p></o:p></p><div><div><p class=
-=3DMsoNormal><o:p>&nbsp;</o:p></p></div><div><p class=3DMsoNormal>Thanks fo=
-r these patches.<o:p></o:p></p></div><div><p class=3DMsoNormal><o:p>&nbsp;<=
-/o:p></p><div><p class=3DMsoNormal>On Tue, Oct 10, 2017 at 7:11 PM, &lt;<a =
-href=3D"mailto:simon@...2293..." target=3D"_blank">simon@...2293...</a>&gt;=
- wrote:<o:p></o:p></p><p class=3DMsoNormal>From: Simon Rozman &lt;<a href=
-=3D"mailto:simon@...2293..." target=3D"_blank">simon@...2293...</a>&gt;<br>=
-<br>Note: NETIOAPI_API is defined as:<br>#define NETIOAPI_API NETIO_STATUS =
-NETIOAPI_API_<br>#define NETIOAPI_API_ WINAPI<br><br>I am not sure whether =
-interactive.c will compile using mingw with this patch. If not:<br>1. We ca=
-n introduce some<br>&nbsp; &nbsp;#ifdef _MSC_VER<br>&nbsp; &nbsp;#else<br>&=
-nbsp; &nbsp;#endif<br>2. Since NTDDI_VERSION=3DNTDDI_VISTA, most of the dyn=
-amic API loading by GetProcAddress() could be simplified to statically link=
-ed API calls, avoiding function prototype declarations altogether. I sugges=
-t we do this anyway to clean-up the code in the future.<o:p></o:p></p><div>=
-<p class=3DMsoNormal><o:p>&nbsp;</o:p></p></div><div><p class=3DMsoNormal>Y=
-es, those declarations and run-time lookup were slated for removal but some=
-how never happened. Its a good idea to get rid of those -- no point in twea=
-king them to suit MSVC. &nbsp;<o:p></o:p></p></div><div><p class=3DMsoNorma=
-l><o:p>&nbsp;</o:p></p></div><div><p class=3DMsoNormal>IIRC, at least the v=
-ersions of mingw that I use (gcc 4.9.3 or later) will build with those stri=
-pped but I can test again if you replace this patch with one removing those=
- declarations.<o:p></o:p></p></div><div><p class=3DMsoNormal><o:p>&nbsp;</o=
-:p></p></div><div><p class=3DMsoNormal>Selva<o:p></o:p></p></div></div></di=
-v></div></div></div></div></body></html>=
+size:11.0pt;font-family:"Calibri","sans-serif";color:#1F497D'>I agree migra=
+tion towards ISO-C's snwprintf() is better.<o:p></o:p></span></p><p class=
+=3DMsoNormal><span lang=3DEN-GB style=3D'font-size:11.0pt;font-family:"Cali=
+bri","sans-serif";color:#1F497D'><o:p>&nbsp;</o:p></span></p><p class=3DMso=
+Normal><span lang=3DEN-GB style=3D'font-size:11.0pt;font-family:"Calibri","=
+sans-serif";color:#1F497D'>We can do it two way: using #define, or implemen=
+ting a simple wrapper function. The advantage of wrapper function is we can=
+ introduce guaranteed null-terminated output to match ISO-C experience.<o:p=
+></o:p></span></p><p class=3DMsoNormal><span lang=3DEN-GB style=3D'font-siz=
+e:11.0pt;font-family:"Calibri","sans-serif";color:#1F497D'><o:p>&nbsp;</o:p=
+></span></p><p class=3DMsoNormal><span lang=3DEN-GB style=3D'font-size:11.0=
+pt;font-family:"Calibri","sans-serif";color:#1F497D'>Best regards,<o:p></o:=
+p></span></p><p class=3DMsoNormal><span lang=3DEN-GB style=3D'font-size:11.=
+0pt;font-family:"Calibri","sans-serif";color:#1F497D'>Simon<o:p></o:p></spa=
+n></p><p class=3DMsoNormal><span lang=3DEN-GB style=3D'font-size:11.0pt;fon=
+t-family:"Calibri","sans-serif";color:#1F497D'><o:p>&nbsp;</o:p></span></p>=
+<div style=3D'border:none;border-left:solid blue 1.5pt;padding:0cm 0cm 0cm =
+4.0pt'><div><div style=3D'border:none;border-top:solid #B5C4DF 1.0pt;paddin=
+g:3.0pt 0cm 0cm 0cm'><p class=3DMsoNormal><b><span lang=3DEN-US style=3D'fo=
+nt-size:10.0pt;font-family:"Tahoma","sans-serif"'>From:</span></b><span lan=
+g=3DEN-US style=3D'font-size:10.0pt;font-family:"Tahoma","sans-serif"'> Sel=
+va [mailto:selva.nair@...277...] <br><b>Sent:</b> Wednesday, October 11, 20=
+17 3:20 PM<br><b>To:</b> Simon Rozman<br><b>Cc:</b> openvpn-devel@...1885...=
+rceforge.net<br><b>Subject:</b> Re: [Openvpn-devel] [PATCH 01/13] snwprintf=
+() =3D&gt; _snwprintf()<o:p></o:p></span></p></div></div><p class=3DMsoNorm=
+al><o:p>&nbsp;</o:p></p><div><div><p class=3DMsoNormal><o:p>&nbsp;</o:p></p=
+><div><p class=3DMsoNormal>On Wed, Oct 11, 2017 at 6:06 AM, Simon Rozman &l=
+t;<a href=3D"mailto:simon@...2293..." target=3D"_blank">simon@...2293...</a=
+>&gt; wrote:<o:p></o:p></p><p class=3DMsoNormal>Hi,<br><br>&gt; From a tech=
+nical point of view, it looks like a fine patch.&nbsp; But it is hard<br>&g=
+t; for me<br>&gt; (as a non-Windows dev) to understand *why* this is needed=
+.<br>&gt; It would be good to explain the rationale for a change so others =
+can<br>&gt; understand it as quickly as possible.<br><br>snwprintf() is not=
+ defined in Windows SDK. _snwprintf() is.<br>[<a href=3D"https://docs.micro=
+soft.com/en-us/cpp/c-runtime-library/reference/snprintf-snprintf-snprintf-l=
+-snwprintf-snwprintf-l" target=3D"_blank">https://docs.microsoft.com/en-us/=
+cpp/c-runtime-library/reference/snprintf-snprintf-snprintf-l-snwprintf-snwp=
+rintf-l</a>]<br><br>Mingw probably accepts both. That's why nobody noticed.=
+ Looking around OpenVPN<br>code, I have found some code using _snwprintf(),=
+ some snwprintf(). Probably,<br>since MSVC was neglected for so long, nobod=
+y paid attention to such a subtle<br>difference.<br><br>For the code to com=
+pile on MSVC all snwprintf() should be replaced with<br>_snwprintf(). Or, s=
+ince the prefix underscore imposed by Windows SDK is not<br>mostly aestheti=
+cal, the following #define could be introduced:<br>#ifdef _MSVC_VER<br>#def=
+ine snwprintf _snwprintf<br>#endif<br><br>Nevertheless, I suggest consisten=
+t use of snwprintf/_snwprintf.<o:p></o:p></p><div><p class=3DMsoNormal><o:p=
+>&nbsp;</o:p></p></div><div><p class=3DMsoNormal>&nbsp;<o:p></o:p></p></div=
+><div><p class=3DMsoNormal>While its true that mingw accepts both and Windo=
+ws has only the latter, I think the best option here is swprintf. Its ISO-C=
+, does the same thing as _snwprintf with added advantage that nul-terminati=
+on is guaranteed by the standard (though we need not bank on that and bette=
+r continue the practice of explicit nul termination).&nbsp; Note that swpri=
+ntf is like snprintf in that it takes the buffer size as an argument.<o:p><=
+/o:p></p></div><div><p class=3DMsoNormal><o:p>&nbsp;</o:p></p></div><div><p=
+ class=3DMsoNormal>Selva<o:p></o:p></p></div><div><p class=3DMsoNormal><o:p=
+>&nbsp;</o:p></p></div><div><p class=3DMsoNormal>&nbsp;<o:p></o:p></p></div=
+></div></div></div></div></div></body></html>=
 
-------=_NextPart_001_0001_01D342A9.941114D0--
+------=_NextPart_001_0008_01D342AA.71D69C40--
 
-------=_NextPart_000_0000_01D342A9.941114D0
+------=_NextPart_000_0007_01D342AA.71D69C40
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -301,19 +292,19 @@ J1nlAZZNwcev00XWu5MF83BRMbfkThrdGCY22Qjd5He7MHEb0U+oBIvS+p9Vy4IcD0mIc2Y2i+X1
 7yNdSbkqEAstd11gZKt+TKKOImNfcGp0tVulDPGKtDGCAzkwggM1AgEBMEUwPTELMAkGA1UEBhMC
 c2kxGzAZBgNVBAoTEnN0YXRlLWluc3RpdHV0aW9uczERMA8GA1UECxMIc2lnZW4tY2ECBDtKDS4w
 DQYJYIZIAWUDBAIBBQCgggHFMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkF
-MQ8XDTE3MTAxMTEzNTcwMlowLwYJKoZIhvcNAQkEMSIEIBSMBbot8F3617obOFvT5AmbGtPXlwZ2
-iUArQKCWvMK6MFQGCSsGAQQBgjcQBDFHMEUwPTELMAkGA1UEBhMCc2kxGzAZBgNVBAoTEnN0YXRl
+MQ8XDTE3MTAxMTE0MDMxNFowLwYJKoZIhvcNAQkEMSIEIPajGU2+Wqeb6jRSuzQNNVc+W32G+a0F
+fTzHn0UnpMzyMFQGCSsGAQQBgjcQBDFHMEUwPTELMAkGA1UEBhMCc2kxGzAZBgNVBAoTEnN0YXRl
 LWluc3RpdHV0aW9uczERMA8GA1UECxMIc2lnZW4tY2ECBDtKDS4wVgYLKoZIhvcNAQkQAgsxR6BF
 MD0xCzAJBgNVBAYTAnNpMRswGQYDVQQKExJzdGF0ZS1pbnN0aXR1dGlvbnMxETAPBgNVBAsTCHNp
 Z2VuLWNhAgQ7Sg0uMIGrBgkqhkiG9w0BCQ8xgZ0wgZowCwYJYIZIAWUDBAEqMAsGCWCGSAFlAwQB
 FjAKBggqhkiG9w0DBzALBglghkgBZQMEAQIwDgYIKoZIhvcNAwICAgCAMAcGBSsOAwIHMA0GCCqG
 SIb3DQMCAgFAMA0GCCqGSIb3DQMCAgEoMAsGCWCGSAFlAwQCATALBglghkgBZQMEAgMwCwYJYIZI
-AWUDBAICMAcGBSsOAwIaMA0GCSqGSIb3DQEBAQUABIIBAAklI1ipkmyH3lwjLdsEAATCWJ7xJUzl
-N3tZ9W+a5KVO5rLwJ8wYs7cdRVcZB3R+RAnNGu/u33SfnyskutwIGd68a0aPx4r4AimksmmLDSLc
-CYHPU+xnoCudm0VXd0af4MB3Grnm/1suQb9L5vdwrqlQ/vq3dVHQUrgiq7IGiyUYWffMJ7rl4xjo
-eA4tiZqXwmWZkoKCezuduM/EPZgIABsCPCfM3XYle0+jUevg+EQk4SLIPqQBB1VvwwBoklfIuMIU
-O329HoV87+wcjqmzClbMM4nzvvnqOj6/KZ4qJfd/DNF0nulERx8Otwy851Vn/FVpH1iWnIDADpBs
-Z5OzDEYAAAAAAAA=
+AWUDBAICMAcGBSsOAwIaMA0GCSqGSIb3DQEBAQUABIIBAN2EihVBm+7+f3wPRtsJPV2PhQN1m9dJ
+z3GYYKqz6TsVRGbrXgP6JBtzWCbLsCsQ6LjgFgHH1T/SsXhdVDgG/9JCf4HjjObeywuuVyBxO8px
+z8tcbMhLjhpNZnPHabULeQXBDPM2XMFjqYj8oY0+BKhCUzb4ilfjMRdAnRzmzjBXpQ8Dx8jADnZ+
+QRDTtQigF7CB+GLF7bR2riTIconXqnx5dplflUJz+bJzjGJ5C/S5bDV4R2d759OmcHGvWB1qIQ8E
+5k4quLX1dKIZT13rUgCxcX87H6oFsMgL2hmn6QcON4/YWBxQf6GO8Xr2zrhfoMSYDDrPWRQN1mew
+Fcmd5doAAAAAAAA=
 
-------=_NextPart_000_0000_01D342A9.941114D0--
+------=_NextPart_000_0007_01D342AA.71D69C40--
 
