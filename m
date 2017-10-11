@@ -1,12 +1,15 @@
-References: <ff439b51-a63e-049c-afc6-56018e3b88b3@...515...>
- <acb8f237-9c4e-e545-a341-7e2daf585c4e@...1856...>
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <d75c3f63-f0fd-af99-811e-6ed769b3386b@...515...>
-Date: Wed, 11 Oct 2017 11:24:15 +0300
-MIME-Version: 1.0
-In-Reply-To: <acb8f237-9c4e-e545-a341-7e2daf585c4e@...1856...>
+From: Simon Rozman <simon@...2293...>
+Date: Wed, 11 Oct 2017 10:06:56 +0000
+Message-ID: <99D61A626FDA8A4B90A270669121BE10857E33EE@...2294...>
+References: <20171010231130.6832-1-simon@...2293...>
+ <67ed8854-4290-468e-9773-2bdde5cd8909@...2080...>
+In-Reply-To: <67ed8854-4290-468e-9773-2bdde5cd8909@...2080...>
 Content-Language: en-US
-Subject: Re: [Openvpn-devel] How to manage code under the contrib/ directory?
+Content-Type: multipart/signed; protocol="application/x-pkcs7-signature";
+ micalg=2.16.840.1.101.3.4.2.1;
+ boundary="----=_NextPart_000_0008_01D34289.6DE2CFD0"
+MIME-Version: 1.0
+Subject: Re: [Openvpn-devel] [PATCH 01/13] snwprintf() => _snwprintf()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,108 +18,110 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Il 05/10/2017 17:04, Steffan Karger ha scritto:
-> Hi,
->=20
-> On 05-10-17 12:35, Samuli Sepp=C3=A4nen wrote:
->> In yesterday's community meeting we talked a bit about how to best
->> manage code under contrib/ directory:
->>
->> <https://github.com/OpenVPN/openvpn/tree/master/contrib>
->>
->> We agreed that code going there does not necessarily need to go through
->> our usual pretty strict review process. Accepting things without some
->> review, however, would definitely bite us back later.
->>
->> Getting more people involved in maintaining "contrib/" would be good, as
->> the brain-cycles of the core developers are fairly limited. We discussed
->> several options for encouraging participation from new people:
->>
->> 1) Allow GitHub pull requests for "contrib/"
->>
->> This is the least invasive approach. We would document this new policy
->> in GitHub, Trac and the Git repository. This would lower the barrier for
->> participation somewhat. Things under "contrib/" would still be
->> considered "official" OpenVPN code.
->=20
-> Please don't mix contribution models within a single repo.  Accepting
-> pull requests for contrib/, but rejecting them for other bits is going
-> to be confusing for people.  Also, that would introduce merge commits in
-> our git history, while our current workflow avoids those and results in
-> a nice and clean history.
+------=_NextPart_000_0008_01D34289.6DE2CFD0
+Content-Type: text/plain;
+	charset="utf-8"
+Content-Transfer-Encoding: 7bit
 
-I tend to agree. Merge commits do make history look very messy (we use
-them in some internal projects).
+Hi,
 
->> 2) Move "contrib/" to a separate "openvpn-contrib" Git repository
->>
->> Everything under "contrib/" would be in a single Git repository. Code in
->> that repository would be less "official" than for option #1.
->>
->>
->> 3) Create a separate Git repository for each contributed project
->>
->> In this model each contributed feature would become its own Git
->> repository. We've split things out of the main repository before and the
->> results have been a bit mixed. The OpenVPN GUI project has been a big
->> success with several developers contributing significant amounts of code:
->>
->> <https://github.com/OpenVPN/openvpn-gui/graphs/contributors>
->>
->> EasyRSA 3 has been surprisingly successful despite the fact that it has
->> not yet even become the "official" EasyRSA version:
->>
->> <https://github.com/OpenVPN/easy-rsa/graphs/contributors>
->>
->> The openvpn-build cross-compile buildsystem project has been moderately
->> successful, even though there are only a few regular contributors:
->>
->> <https://github.com/OpenVPN/openvpn-build/graphs/contributors>
->>
->> The EasyRSA 2 project could be considered a failure:
->>
->> <https://github.com/OpenVPN/easy-rsa-old/graphs/contributors>
->>
->> It was noted in the meeting, however, that EasyRSA 2 is mature and
->> probably there's not that much need to fix it. This could partly explain
->> why there have been very few contributions to EasyRSA 2.
->>
->> ---
->>
->> We do not wish to "drop the ball" on code under "contrib/". We would
->> also like to avoid the fate of the OpenVPN RADIUS plugin, which has been
->> forked several times in a row by individuals, leaving users with no idea
->> of which version is the least buggy one.
->>
->> Any thoughts on which of these options would be best if the goal is to
->> encourage participation in developing code under "contrib/"? Are there
->> other approaches which we have overlooked?
->>
->=20
-> Why do we need to change anything at all?  I mean, the problem isn't the
-> mailinglist, the problem is lack of reviewers, as far as I can tell.
+> From a technical point of view, it looks like a fine patch.  But it is hard 
+> for me
+> (as a non-Windows dev) to understand *why* this is needed.
+> It would be good to explain the rationale for a change so others can
+> understand it as quickly as possible.
 
-The reason for changing the status quo is to get more people involved.
-Based on our previous experience (openvpn-gui, openvpn-build, easy-rsa
-3) splitting things out seems to attract new developers. I think this is
-because of lower barrier of entry (GitHub) plus bigger feeling of ownership.
+snwprintf() is not defined in Windows SDK. _snwprintf() is. 
+[https://docs.microsoft.com/en-us/cpp/c-runtime-library/reference/snprintf-snprintf-snprintf-l-snwprintf-snwprintf-l]
 
-That said, I think we could argue this topic forever.
+Mingw probably accepts both. That's why nobody noticed. Looking around OpenVPN 
+code, I have found some code using _snwprintf(), some snwprintf(). Probably, 
+since MSVC was neglected for so long, nobody paid attention to such a subtle 
+difference.
 
-I suggest we start by making the RADIUS and LDAP plugins separate
-subprojects under OpenVPN GitHub organization and see where that leads.
-When/if a new development team has formed around the plugins we can
-figure out what to do next. The new development teams will be able to
-chime in at that point.
+For the code to compile on MSVC all snwprintf() should be replaced with 
+_snwprintf(). Or, since the prefix underscore imposed by Windows SDK is not 
+mostly aesthetical, the following #define could be introduced:
+#ifdef _MSVC_VER
+#define snwprintf _snwprintf
+#endif
 
---=20
-Samuli Sepp=C3=A4nen
-Community Manager
-OpenVPN Technologies, Inc
+Nevertheless, I suggest consistent use of snwprintf/_snwprintf.
 
-irc freenode net: mattock
+> I won't dive deep into how to write good commit messages here, as this blog
+> post covers it very well: <https://chris.beams.io/posts/git-commit/>
+
+Please apologize. I'll learn. Thank you for pointing me in the right 
+direction.
+
+Best regards,
+Simon
+
+------=_NextPart_000_0008_01D34289.6DE2CFD0
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+
+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
+
+------=_NextPart_000_0008_01D34289.6DE2CFD0--
 
