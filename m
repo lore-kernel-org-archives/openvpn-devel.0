@@ -1,15 +1,13 @@
 MIME-Version: 1.0
-In-Reply-To: <99D61A626FDA8A4B90A270669121BE10857E3A4B@...2294...>
+In-Reply-To: <20171010231130.6832-4-simon@...2293...>
 References: <20171010231130.6832-1-simon@...2293...>
- <67ed8854-4290-468e-9773-2bdde5cd8909@...2080...>
- <99D61A626FDA8A4B90A270669121BE10857E33EE@...2294...>
- <CAKuzo_i2gtJ9YS09mhmf4Y1T0SDiJ=0HHpyW72XFowbOfNJ3CA@...278...>
- <99D61A626FDA8A4B90A270669121BE10857E3A4B@...2294...>
+ <20171010231130.6832-4-simon@...2293...>
 From: Selva <selva.nair@...277...>
-Date: Wed, 11 Oct 2017 10:32:24 -0400
-Message-ID: <CAKuzo_hhqgT23+rcdpdbOH74zYg6QvdcV4_ymo18VbuL+WkvFQ@...278...>
-Content-Type: multipart/alternative; boundary="001a1138e72603de87055b464c84"
-Subject: Re: [Openvpn-devel] [PATCH 01/13] snwprintf() => _snwprintf()
+Date: Wed, 11 Oct 2017 11:50:22 -0400
+Message-ID: <CAKuzo_iEKPgAgWkGq+c2FqbjDgOPviP0-LV7W6A+1jiRonag-A@...278...>
+Content-Type: multipart/alternative; boundary="001a11406242dfbed6055b4762bd"
+Subject: Re: [Openvpn-devel] [PATCH 04/13] Local functions are not supported
+ in MSVC. Bummer.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,45 +19,110 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: Simon Rozman <simon@...2293...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---001a1138e72603de87055b464c84
+--001a11406242dfbed6055b4762bd
 Content-Type: text/plain; charset="UTF-8"
 
-Hi
+Hi,
 
-On Wed, Oct 11, 2017 at 10:03 AM, Simon Rozman <simon@...2293...> wrote:
+On Tue, Oct 10, 2017 at 7:11 PM, <simon@...2293...> wrote:
 
-> Hi,
+> From: Simon Rozman <simon@...2293...>
 >
+> ---
+>  src/openvpnserv/interactive.c | 10 +++++-----
+>  1 file changed, 5 insertions(+), 5 deletions(-)
 >
+> diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
+> index 2019d38..7ff45b1 100644
+> --- a/src/openvpnserv/interactive.c
+> +++ b/src/openvpnserv/interactive.c
+> @@ -1891,6 +1891,11 @@ FreeWaitHandles(LPHANDLE h)
+>      free(h);
+>  }
 >
-> I agree migration towards ISO-C's snwprintf() is better.
+> +static BOOL
+> +CmpHandle(LPVOID item, LPVOID hnd)
+> +{
+> +    return item == hnd;
+> +}
+>
+>  VOID WINAPI
+>  ServiceStartInteractive(DWORD dwArgc, LPTSTR *lpszArgv)
+> @@ -1901,11 +1906,6 @@ ServiceStartInteractive(DWORD dwArgc, LPTSTR
+> *lpszArgv)
+>      list_item_t *threads = NULL;
+>      PHANDLE handles = NULL;
+>      DWORD handle_count;
+> -    BOOL
+> -    CmpHandle(LPVOID item, LPVOID hnd)
+> -    {
+> -        return item == hnd;
+> -    }
+>
+>      service = RegisterServiceCtrlHandlerEx(interactive_service.name,
+> ServiceCtrlInteractive, &status);
+>      if (!service)
 >
 
-Just to be sure, ISO-C is 'swprintf' not 'snwprintf'. In spite of 'n'
-misisng from that name, it takes the buffer size argument and nul
-terminates even if output is truncated.
 
---001a1138e72603de87055b464c84
+Well, nested function is a GNU extension so we can't blame MSVC here..
+We had more of these and removed by a previous patch but it keeps coming
+back -- this one from me (commit 600dd9a16fc)
+
+ACK.
+
+--001a11406242dfbed6055b4762bd
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr">Hi<br><div class=3D"gmail_extra"><br><div class=3D"gmail_q=
-uote">On Wed, Oct 11, 2017 at 10:03 AM, Simon Rozman <span dir=3D"ltr">&lt;=
-<a href=3D"mailto:simon@...2293..." target=3D"_blank">simon@...2293...</a>&=
-gt;</span> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 =
-0 .8ex;border-left:1px #ccc solid;padding-left:1ex"><div lang=3D"SL" link=
-=3D"blue" vlink=3D"purple"><div class=3D"m_-8897449481704970227WordSection1=
-"><p class=3D"MsoNormal"><span lang=3D"EN-GB" style=3D"font-size:11.0pt;fon=
-t-family:&quot;Calibri&quot;,&quot;sans-serif&quot;;color:#1f497d">Hi,<u></=
-u><u></u></span></p><p class=3D"MsoNormal"><span lang=3D"EN-GB" style=3D"fo=
-nt-size:11.0pt;font-family:&quot;Calibri&quot;,&quot;sans-serif&quot;;color=
-:#1f497d"><u></u>=C2=A0<u></u></span></p><p class=3D"MsoNormal"><span lang=
-=3D"EN-GB" style=3D"font-size:11.0pt;font-family:&quot;Calibri&quot;,&quot;=
-sans-serif&quot;;color:#1f497d">I agree migration towards ISO-C&#39;s snwpr=
-intf() is better.</span></p></div></div></blockquote><div><br></div><div>Ju=
-st to be sure, ISO-C is &#39;swprintf&#39; not &#39;snwprintf&#39;. In spit=
-e of &#39;n&#39; misisng from that name, it takes the buffer size argument =
-and nul terminates even if output is truncated.<br></div></div></div></div>
+<div dir=3D"ltr"><div class=3D"gmail_extra">Hi,</div><div class=3D"gmail_ex=
+tra"><br><div class=3D"gmail_quote">On Tue, Oct 10, 2017 at 7:11 PM,  <span=
+ dir=3D"ltr">&lt;<a href=3D"mailto:simon@...2293..." target=3D"_blank">simo=
+n@...2293...</a>&gt;</span> wrote:<br><blockquote class=3D"gmail_quote" sty=
+le=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);paddi=
+ng-left:1ex">From: Simon Rozman &lt;<a href=3D"mailto:simon@...2293..." tar=
+get=3D"_blank">simon@...2293...</a>&gt;<br>
+<br>
+---<br>
+=C2=A0src/openvpnserv/interactive.c | 10 +++++-----<br>
+=C2=A01 file changed, 5 insertions(+), 5 deletions(-)<br>
+<br>
+diff --git a/src/openvpnserv/interactive.<wbr>c b/src/openvpnserv/interacti=
+ve.<wbr>c<br>
+index 2019d38..7ff45b1 100644<br>
+--- a/src/openvpnserv/interactive.<wbr>c<br>
++++ b/src/openvpnserv/interactive.<wbr>c<br>
+@@ -1891,6 +1891,11 @@ FreeWaitHandles(LPHANDLE h)<br>
+=C2=A0 =C2=A0 =C2=A0free(h);<br>
+=C2=A0}<br>
+<br>
++static BOOL<br>
++CmpHandle(LPVOID item, LPVOID hnd)<br>
++{<br>
++=C2=A0 =C2=A0 return item =3D=3D hnd;<br>
++}<br>
+<br>
+=C2=A0VOID WINAPI<br>
+=C2=A0ServiceStartInteractive(DWORD dwArgc, LPTSTR *lpszArgv)<br>
+@@ -1901,11 +1906,6 @@ ServiceStartInteractive(DWORD dwArgc, LPTSTR *lpszAr=
+gv)<br>
+=C2=A0 =C2=A0 =C2=A0list_item_t *threads =3D NULL;<br>
+=C2=A0 =C2=A0 =C2=A0PHANDLE handles =3D NULL;<br>
+=C2=A0 =C2=A0 =C2=A0DWORD handle_count;<br>
+-=C2=A0 =C2=A0 BOOL<br>
+-=C2=A0 =C2=A0 CmpHandle(LPVOID item, LPVOID hnd)<br>
+-=C2=A0 =C2=A0 {<br>
+-=C2=A0 =C2=A0 =C2=A0 =C2=A0 return item =3D=3D hnd;<br>
+-=C2=A0 =C2=A0 }<br>
+<br>
+=C2=A0 =C2=A0 =C2=A0service =3D RegisterServiceCtrlHandlerEx(<a href=3D"htt=
+p://interactive_service.name" rel=3D"noreferrer" target=3D"_blank">i<wbr>nt=
+eractive_service.name</a>, ServiceCtrlInteractive, &amp;status);<br>
+=C2=A0 =C2=A0 =C2=A0if (!service)<br></blockquote><div><br></div><div><br><=
+/div><div>Well, nested function is a GNU extension so we can&#39;t blame MS=
+VC here..=C2=A0</div><div>We had more of these and removed by a previous pa=
+tch but it keeps coming back -- this one from me (commit=C2=A0600dd9a16fc)<=
+br></div><div><br></div><div>ACK.</div></div></div></div>
 
---001a1138e72603de87055b464c84--
+--001a11406242dfbed6055b4762bd--
 
