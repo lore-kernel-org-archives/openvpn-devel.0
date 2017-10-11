@@ -1,13 +1,10 @@
-MIME-Version: 1.0
+Date: Wed, 11 Oct 2017 18:19:03 +0200 (CEST)
+Message-Id: <201710111619.v9BGJ3U1010118@...2054...>
+From: Gert Doering <gert@...1296...>
 In-Reply-To: <20171010231130.6832-4-simon@...2293...>
-References: <20171010231130.6832-1-simon@...2293...>
- <20171010231130.6832-4-simon@...2293...>
-From: Selva <selva.nair@...277...>
-Date: Wed, 11 Oct 2017 11:50:22 -0400
-Message-ID: <CAKuzo_iEKPgAgWkGq+c2FqbjDgOPviP0-LV7W6A+1jiRonag-A@...278...>
-Content-Type: multipart/alternative; boundary="001a11406242dfbed6055b4762bd"
-Subject: Re: [Openvpn-devel] [PATCH 04/13] Local functions are not supported
- in MSVC. Bummer.
+References: <20171010231130.6832-4-simon@...2293...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Local functions are not
+ supported in MSVC. Bummer.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,113 +13,29 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: Simon Rozman <simon@...2293...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Cc: openvpn-devel@lists.sourceforge.net
 
---001a11406242dfbed6055b4762bd
-Content-Type: text/plain; charset="UTF-8"
+Your patch has been applied to the master and release/2.4 branch.
 
-Hi,
+commit 0893b14a7f8023964760e6229badcd2cfef57de2 (master)
+commit 1b49bda5e10435dd42c2fe48d40893689fbdf986 (release/2.4)
+Author: Simon Rozman
+Date:   Wed Oct 11 01:11:21 2017 +0200
 
-On Tue, Oct 10, 2017 at 7:11 PM, <simon@...2293...> wrote:
+     Local functions are not supported in MSVC. Bummer.
 
-> From: Simon Rozman <simon@...2293...>
->
-> ---
->  src/openvpnserv/interactive.c | 10 +++++-----
->  1 file changed, 5 insertions(+), 5 deletions(-)
->
-> diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
-> index 2019d38..7ff45b1 100644
-> --- a/src/openvpnserv/interactive.c
-> +++ b/src/openvpnserv/interactive.c
-> @@ -1891,6 +1891,11 @@ FreeWaitHandles(LPHANDLE h)
->      free(h);
->  }
->
-> +static BOOL
-> +CmpHandle(LPVOID item, LPVOID hnd)
-> +{
-> +    return item == hnd;
-> +}
->
->  VOID WINAPI
->  ServiceStartInteractive(DWORD dwArgc, LPTSTR *lpszArgv)
-> @@ -1901,11 +1906,6 @@ ServiceStartInteractive(DWORD dwArgc, LPTSTR
-> *lpszArgv)
->      list_item_t *threads = NULL;
->      PHANDLE handles = NULL;
->      DWORD handle_count;
-> -    BOOL
-> -    CmpHandle(LPVOID item, LPVOID hnd)
-> -    {
-> -        return item == hnd;
-> -    }
->
->      service = RegisterServiceCtrlHandlerEx(interactive_service.name,
-> ServiceCtrlInteractive, &status);
->      if (!service)
->
+     Acked-by: Selva Nair <selva.nair@...277...>
+     Message-Id: <20171010231130.6832-4-simon@...2293...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg15587.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
-Well, nested function is a GNU extension so we can't blame MSVC here..
-We had more of these and removed by a previous patch but it keeps coming
-back -- this one from me (commit 600dd9a16fc)
+--
+kind regards,
 
-ACK.
+Gert Doering
 
---001a11406242dfbed6055b4762bd
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><div class=3D"gmail_extra">Hi,</div><div class=3D"gmail_ex=
-tra"><br><div class=3D"gmail_quote">On Tue, Oct 10, 2017 at 7:11 PM,  <span=
- dir=3D"ltr">&lt;<a href=3D"mailto:simon@...2293..." target=3D"_blank">simo=
-n@...2293...</a>&gt;</span> wrote:<br><blockquote class=3D"gmail_quote" sty=
-le=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);paddi=
-ng-left:1ex">From: Simon Rozman &lt;<a href=3D"mailto:simon@...2293..." tar=
-get=3D"_blank">simon@...2293...</a>&gt;<br>
-<br>
----<br>
-=C2=A0src/openvpnserv/interactive.c | 10 +++++-----<br>
-=C2=A01 file changed, 5 insertions(+), 5 deletions(-)<br>
-<br>
-diff --git a/src/openvpnserv/interactive.<wbr>c b/src/openvpnserv/interacti=
-ve.<wbr>c<br>
-index 2019d38..7ff45b1 100644<br>
---- a/src/openvpnserv/interactive.<wbr>c<br>
-+++ b/src/openvpnserv/interactive.<wbr>c<br>
-@@ -1891,6 +1891,11 @@ FreeWaitHandles(LPHANDLE h)<br>
-=C2=A0 =C2=A0 =C2=A0free(h);<br>
-=C2=A0}<br>
-<br>
-+static BOOL<br>
-+CmpHandle(LPVOID item, LPVOID hnd)<br>
-+{<br>
-+=C2=A0 =C2=A0 return item =3D=3D hnd;<br>
-+}<br>
-<br>
-=C2=A0VOID WINAPI<br>
-=C2=A0ServiceStartInteractive(DWORD dwArgc, LPTSTR *lpszArgv)<br>
-@@ -1901,11 +1906,6 @@ ServiceStartInteractive(DWORD dwArgc, LPTSTR *lpszAr=
-gv)<br>
-=C2=A0 =C2=A0 =C2=A0list_item_t *threads =3D NULL;<br>
-=C2=A0 =C2=A0 =C2=A0PHANDLE handles =3D NULL;<br>
-=C2=A0 =C2=A0 =C2=A0DWORD handle_count;<br>
--=C2=A0 =C2=A0 BOOL<br>
--=C2=A0 =C2=A0 CmpHandle(LPVOID item, LPVOID hnd)<br>
--=C2=A0 =C2=A0 {<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 return item =3D=3D hnd;<br>
--=C2=A0 =C2=A0 }<br>
-<br>
-=C2=A0 =C2=A0 =C2=A0service =3D RegisterServiceCtrlHandlerEx(<a href=3D"htt=
-p://interactive_service.name" rel=3D"noreferrer" target=3D"_blank">i<wbr>nt=
-eractive_service.name</a>, ServiceCtrlInteractive, &amp;status);<br>
-=C2=A0 =C2=A0 =C2=A0if (!service)<br></blockquote><div><br></div><div><br><=
-/div><div>Well, nested function is a GNU extension so we can&#39;t blame MS=
-VC here..=C2=A0</div><div>We had more of these and removed by a previous pa=
-tch but it keeps coming back -- this one from me (commit=C2=A0600dd9a16fc)<=
-br></div><div><br></div><div>ACK.</div></div></div></div>
-
---001a11406242dfbed6055b4762bd--
 
