@@ -1,14 +1,8 @@
-MIME-Version: 1.0
-In-Reply-To: <20171010231130.6832-5-simon@...2293...>
-References: <20171010231130.6832-1-simon@...2293...>
- <20171010231130.6832-5-simon@...2293...>
-From: Selva <selva.nair@...277...>
-Date: Wed, 11 Oct 2017 09:21:12 -0400
-Message-ID: <CAKuzo_iQtWLganoH3n39hASRThrqmpHYh8ec=STm9yxeeROGYg@...278...>
-Content-Type: multipart/alternative; boundary="f403043ae6046b82fb055b454da4"
-Subject: Re: [Openvpn-devel] [PATCH 05/13] Function prototypes are declared
- as "typedef <return type> (<calling convention> *type_name)(<arguments>)"
- in MSVC.
+From: simon@...2293...
+Date: Wed, 11 Oct 2017 15:45:30 +0200
+Message-Id: <20171011134530.6676-1-simon@...2293...>
+Subject: [Openvpn-devel] [PATCH] Document ">PASSWORD:Auth-Token" real-time
+ message
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,79 +11,43 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Simon Rozman <simon@...2293...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---f403043ae6046b82fb055b454da4
-Content-Type: text/plain; charset="UTF-8"
+From: Simon Rozman <simon@...2293...>
 
-Hi,
+Authentication tokens are security enhancement eliminating client
+need to cache passwords, and are indispensable at two factor
+authentication methods, such as HOTP or TOTP.
 
-Thanks for these patches.
+The ">PASSWORD:Auth-Token" message was not mentioned anywhere in
+the OpenVPN Management Interface Notes. This patch adds a simple use
+case example, while the more detailed feature description remains
+explained in the OpenVPN manual.
+---
+ doc/management-notes.txt | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-On Tue, Oct 10, 2017 at 7:11 PM, <simon@...2293...> wrote:
+diff --git a/doc/management-notes.txt b/doc/management-notes.txt
+index 0e7a7d4..c31ff5c 100644
+--- a/doc/management-notes.txt
++++ b/doc/management-notes.txt
+@@ -317,6 +317,13 @@ COMMAND -- password and username
+ 
+     >PASSWORD:Verification Failed: 'custom server-generated string'
+ 
++  Example 6: If server pushes --auth-token to the client, the OpenVPN
++  will produce a real-time PASSWORD message:
++
++    >PASSWORD:Auth-Token:foobar
++
++  The client should replace the local password with the "foobar".
++
+ COMMAND -- forget-passwords
+ ---------------------------
+ 
+-- 
+2.9.0.windows.1
 
-> From: Simon Rozman <simon@...2293...>
->
-> Note: NETIOAPI_API is defined as:
-> #define NETIOAPI_API NETIO_STATUS NETIOAPI_API_
-> #define NETIOAPI_API_ WINAPI
->
-> I am not sure whether interactive.c will compile using mingw with this
-> patch. If not:
-> 1. We can introduce some
->    #ifdef _MSC_VER
->    #else
->    #endif
-> 2. Since NTDDI_VERSION=NTDDI_VISTA, most of the dynamic API loading by
-> GetProcAddress() could be simplified to statically linked API calls,
-> avoiding function prototype declarations altogether. I suggest we do this
-> anyway to clean-up the code in the future.
-
-
-Yes, those declarations and run-time lookup were slated for removal but
-somehow never happened. Its a good idea to get rid of those -- no point in
-tweaking them to suit MSVC.
-
-IIRC, at least the versions of mingw that I use (gcc 4.9.3 or later) will
-build with those stripped but I can test again if you replace this patch
-with one removing those declarations.
-
-Selva
-
---f403043ae6046b82fb055b454da4
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr">Hi,<div><div class=3D"gmail_extra"><br></div><div class=3D=
-"gmail_extra">Thanks for these patches.</div><div class=3D"gmail_extra"><br=
-><div class=3D"gmail_quote">On Tue, Oct 10, 2017 at 7:11 PM,  <span dir=3D"=
-ltr">&lt;<a href=3D"mailto:simon@...2293..." target=3D"_blank">simon@...2311...=
-3...</a>&gt;</span> wrote:<br><blockquote class=3D"gmail_quote" style=3D"ma=
-rgin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">From: Simon Ro=
-zman &lt;<a href=3D"mailto:simon@...2293..." target=3D"_blank">simon@...2311...=
-3...</a>&gt;<br>
-<br>
-Note: NETIOAPI_API is defined as:<br>
-#define NETIOAPI_API NETIO_STATUS NETIOAPI_API_<br>
-#define NETIOAPI_API_ WINAPI<br>
-<br>
-I am not sure whether interactive.c will compile using mingw with this patc=
-h. If not:<br>
-1. We can introduce some<br>
-=C2=A0 =C2=A0#ifdef _MSC_VER<br>
-=C2=A0 =C2=A0#else<br>
-=C2=A0 =C2=A0#endif<br>
-2. Since NTDDI_VERSION=3DNTDDI_VISTA, most of the dynamic API loading by Ge=
-tProcAddress() could be simplified to statically linked API calls, avoiding=
- function prototype declarations altogether. I suggest we do this anyway to=
- clean-up the code in the future.</blockquote><div><br></div><div>Yes, thos=
-e declarations and run-time lookup were slated for removal but somehow neve=
-r happened. Its a good idea to get rid of those -- no point in tweaking the=
-m to suit MSVC. =C2=A0</div><div><br></div><div>IIRC, at least the versions=
- of mingw that I use (gcc 4.9.3 or later) will build with those stripped bu=
-t I can test again if you replace this patch with one removing those declar=
-ations.</div><div><br></div><div>Selva</div></div></div></div></div>
-
---f403043ae6046b82fb055b454da4--
 
