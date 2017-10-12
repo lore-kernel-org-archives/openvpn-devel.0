@@ -1,11 +1,14 @@
-MIME-Version: 1.0
-In-Reply-To: <20171010231130.6832-6-simon@...2293...>
+Date: Thu, 12 Oct 2017 18:26:02 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20171012162601.GQ958@...1296...>
 References: <20171010231130.6832-1-simon@...2293...>
  <20171010231130.6832-6-simon@...2293...>
-From: Selva <selva.nair@...277...>
-Date: Thu, 12 Oct 2017 11:56:23 -0400
-Message-ID: <CAKuzo_jwyz+AgUmcXi-bCdxiCLzb4YD2uF6AV=oxTPxvm6SwAA@...278...>
-Content-Type: multipart/alternative; boundary="001a114794e4377fc8055b5b9683"
+ <CAKuzo_jwyz+AgUmcXi-bCdxiCLzb4YD2uF6AV=oxTPxvm6SwAA@...278...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="Hf61M2y+wYpnELGG"
+Content-Disposition: inline
+In-Reply-To: <CAKuzo_jwyz+AgUmcXi-bCdxiCLzb4YD2uF6AV=oxTPxvm6SwAA@...278...>
 Subject: Re: [Openvpn-devel] [PATCH 06/13] openvpnserv.vcxproj project file
  recreated using Visual Studio 2017
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -16,75 +19,59 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Simon Rozman <simon@...2293...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Selva <selva.nair@...277...>
+Cc: Simon Rozman <simon@...2293...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---001a114794e4377fc8055b5b9683
-Content-Type: text/plain; charset="UTF-8"
+--Hf61M2y+wYpnELGG
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
 Hi,
 
-On Tue, Oct 10, 2017 at 7:11 PM, <simon@...2293...> wrote:
+On Thu, Oct 12, 2017 at 11:56:23AM -0400, Selva wrote:
+> Though we do not have a patch allocation policy, as I have responded to 1
+> to 5 I might have become the de-facto reviewer of this patch set.=20
 
-> From: Simon Rozman <simon@...2293...>
->
-> 1. The project file was created from scratch.
-> 2. XML nodes were reordered to match old project order for easier diff-ing.
-> 3. All non-essential settings reset to MSVC defaults.
-> 4. .h/.c file list updated.
-> 5. Missing /I include paths added.
-> 6. List of required .lib files updated.
->
-> The openvpnserv.exe compiles now. Warnings will be addressed in future
-> patches.
->
+I had hoped that you'll review this, as you *are* the one who understands
+windows best :-)
 
-Though we do not have a patch allocation policy, as I have responded to 1
-to 5
-I might have become the de-facto reviewer of this patch set. So this is
-just to say
-patches 6 to 13 (except 9 and 12) are VS project files and related stuff
-that I
-have no idea about and will be hard for me to review. Hope someone else take
-a look at those.
+> So this is just to say patches 6 to 13 (except 9 and 12) are VS project=20
+> files and related stuff that I have no idea about and will be hard for=20
+> me to review. Hope someone else take a look at those.
 
-Patches 9 and 12 are not Windows specific and so hopefully someone will get
-to
-those before I may find time..
+I'll take those if nobody else volunteers.  I have no idea about that
+stuff, but if it looks like "it's the same thing, we just have new source
+files that were not added when introducing the .c file" I can handle it :-)
 
-Thanks,
+thanks,
 
-Selva
+gert
 
---001a114794e4377fc8055b5b9683
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr">Hi,<br><div class=3D"gmail_extra"><br><div class=3D"gmail_=
-quote">On Tue, Oct 10, 2017 at 7:11 PM,  <span dir=3D"ltr">&lt;<a href=3D"m=
-ailto:simon@...2293..." target=3D"_blank">simon@...2293...</a>&gt;</span> w=
-rote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;borde=
-r-left:1px #ccc solid;padding-left:1ex">From: Simon Rozman &lt;<a href=3D"m=
-ailto:simon@...2293..." target=3D"_blank">simon@...2293...</a>&gt;<br>
-<br>
-1. The project file was created from scratch.<br>
-2. XML nodes were reordered to match old project order for easier diff-ing.=
-<br>
-3. All non-essential settings reset to MSVC defaults.<br>
-4. .h/.c file list updated.<br>
-5. Missing /I include paths added.<br>
-6. List of required .lib files updated.<br>
-<br>
-The openvpnserv.exe compiles now. Warnings will be addressed in future patc=
-hes.<br></blockquote><div><br></div><div>Though we do not have a patch allo=
-cation policy, as I have responded to 1 to 5</div><div>I might have become =
-the de-facto reviewer of this patch set. So this is just to say</div><div>p=
-atches 6 to 13 (except 9 and 12) are VS project files and related stuff tha=
-t I</div><div>have no idea about and will be hard for me to review. Hope so=
-meone else take</div><div>a look at those.</div><div><br></div><div>Patches=
- 9 and 12 are not Windows specific and so hopefully someone will get to</di=
-v><div>those before I may find time..</div><div><br></div><div>Thanks,</div=
-><div><br></div><div>Selva</div></div></div></div>
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
---001a114794e4377fc8055b5b9683--
+--Hf61M2y+wYpnELGG
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJZ35eZAAoJEB2Cnv7KVigSpK4L/RYE7a1QxmeNAO6Tz/Lt080d
+351Qj2MFfeZBXEkdNBi6yCA+LAROWGohAdJcQHwAbb7QLC9wDFUvKkYwUbIHiWMe
+UMsqZzqDjOX5NWqziff/To40ieec7QPYVI6P+CBBmwIdTolblfhtLP5CAu8bH476
+HdkW2CXoJ8qf+0Ge90nK49/z59gAN0L8J8C7Ykh5WTfUPbFcku9E1XZnAuDFUd3l
+kDWacYEQAoRNP18m7D0C4YnOButzlXxDa26kB9IMf+8uPwSKSEM2K+iSWAJhcFXq
+/vrqJ8hw4llSNlUKaLGCQj5r3Prc2f2xgR3U4sjAxFP13xts9JxfyoX1hvgRhzI0
+7OlIHN9uj83F8M3ja1NF353jPy5Q9kTZRNavs7/+urC9yb966B/IjkAqSu1N8HZB
+Z5qZ8BNo/+i5VD4A4V4oTLOnyeYL9Mupoq0ilMHO1zcsAmxaWC4SgNib85MEogM/
+OgNLaseObUBuzFB5Ej/J9Lxe0ZoSF//20OeazVACGQ==
+=S4tL
+-----END PGP SIGNATURE-----
+
+--Hf61M2y+wYpnELGG--
 
