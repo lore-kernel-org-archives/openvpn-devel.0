@@ -1,11 +1,13 @@
 MIME-Version: 1.0
-In-Reply-To: <20171012103448.7632-1-simon@...2293...>
-References: <20171012103448.7632-1-simon@...2293...>
+In-Reply-To: <20171010231130.6832-6-simon@...2293...>
+References: <20171010231130.6832-1-simon@...2293...>
+ <20171010231130.6832-6-simon@...2293...>
 From: Selva <selva.nair@...277...>
-Date: Thu, 12 Oct 2017 11:50:04 -0400
-Message-ID: <CAKuzo_i9_Luh2pjqgae8h2zkM5sh7dqRD+G_oCPdk6Bi29jhkA@...278...>
-Content-Type: multipart/alternative; boundary="f403043ae604a8ddeb055b5b7f0a"
-Subject: Re: [Openvpn-devel] [PATCH] Fix local #include to use quoted form
+Date: Thu, 12 Oct 2017 11:56:23 -0400
+Message-ID: <CAKuzo_jwyz+AgUmcXi-bCdxiCLzb4YD2uF6AV=oxTPxvm6SwAA@...278...>
+Content-Type: multipart/alternative; boundary="001a114794e4377fc8055b5b9683"
+Subject: Re: [Openvpn-devel] [PATCH 06/13] openvpnserv.vcxproj project file
+ recreated using Visual Studio 2017
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,93 +19,72 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: Simon Rozman <simon@...2293...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---f403043ae604a8ddeb055b5b7f0a
+--001a114794e4377fc8055b5b9683
 Content-Type: text/plain; charset="UTF-8"
 
 Hi,
 
-On Thu, Oct 12, 2017 at 6:34 AM, Simon Rozman <simon@...2293...> wrote:
+On Tue, Oct 10, 2017 at 7:11 PM, <simon@...2293...> wrote:
 
-> .h include files from the same folder or addressed relatively to the
-> same folder should be #included using quoted form in MSVC. The angled
-> form is reserved for include files from folders specified using /I
-> path.
+> From: Simon Rozman <simon@...2293...>
 >
-> Using angled form, MSVC fails to locate local #include file, unless
-> current folder is added to the include search path: /I .
-> ---
->  src/openvpnserv/common.c | 5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
+> 1. The project file was created from scratch.
+> 2. XML nodes were reordered to match old project order for easier diff-ing.
+> 3. All non-essential settings reset to MSVC defaults.
+> 4. .h/.c file list updated.
+> 5. Missing /I include paths added.
+> 6. List of required .lib files updated.
 >
-> diff --git a/src/openvpnserv/common.c b/src/openvpnserv/common.c
-> index 0c9098f..e77d7ab 100644
-> --- a/src/openvpnserv/common.c
-> +++ b/src/openvpnserv/common.c
-> @@ -21,8 +21,9 @@
->   *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
->   */
->
-> -#include <service.h>
-> -#include <validate.h>
-> +#include "service.h"
-> +#include "validate.h"
-> +
->  /*
->   * These are necessary due to certain buggy implementations of
-> (v)snprintf,
->   * that don't guarantee null termination for size > 0.
+> The openvpnserv.exe compiles now. Warnings will be addressed in future
+> patches.
 >
 
-In mingw builds it works either way as our Makefile includes -I ./ as the
-first search path.
-But conventionally quoted path is the right thing to use here.
+Though we do not have a patch allocation policy, as I have responded to 1
+to 5
+I might have become the de-facto reviewer of this patch set. So this is
+just to say
+patches 6 to 13 (except 9 and 12) are VS project files and related stuff
+that I
+have no idea about and will be hard for me to review. Hope someone else take
+a look at those.
 
-ACK.
+Patches 9 and 12 are not Windows specific and so hopefully someone will get
+to
+those before I may find time..
+
+Thanks,
 
 Selva
 
---f403043ae604a8ddeb055b5b7f0a
+--001a114794e4377fc8055b5b9683
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 <div dir=3D"ltr">Hi,<br><div class=3D"gmail_extra"><br><div class=3D"gmail_=
-quote">On Thu, Oct 12, 2017 at 6:34 AM, Simon Rozman <span dir=3D"ltr">&lt;=
-<a href=3D"mailto:simon@...2293..." target=3D"_blank">simon@...2293...</a>&=
-gt;</span> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 =
-0 .8ex;border-left:1px #ccc solid;padding-left:1ex">.h include files from t=
-he same folder or addressed relatively to the<br>
-same folder should be #included using quoted form in MSVC. The angled<br>
-form is reserved for include files from folders specified using /I<br>
-path.<br>
+quote">On Tue, Oct 10, 2017 at 7:11 PM,  <span dir=3D"ltr">&lt;<a href=3D"m=
+ailto:simon@...2293..." target=3D"_blank">simon@...2293...</a>&gt;</span> w=
+rote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;borde=
+r-left:1px #ccc solid;padding-left:1ex">From: Simon Rozman &lt;<a href=3D"m=
+ailto:simon@...2293..." target=3D"_blank">simon@...2293...</a>&gt;<br>
 <br>
-Using angled form, MSVC fails to locate local #include file, unless<br>
-current folder is added to the include search path: /I .<br>
----<br>
-=C2=A0src/openvpnserv/common.c | 5 +++--<br>
-=C2=A01 file changed, 3 insertions(+), 2 deletions(-)<br>
+1. The project file was created from scratch.<br>
+2. XML nodes were reordered to match old project order for easier diff-ing.=
 <br>
-diff --git a/src/openvpnserv/common.c b/src/openvpnserv/common.c<br>
-index 0c9098f..e77d7ab 100644<br>
---- a/src/openvpnserv/common.c<br>
-+++ b/src/openvpnserv/common.c<br>
-@@ -21,8 +21,9 @@<br>
-=C2=A0 *=C2=A0 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.<=
-br>
-=C2=A0 */<br>
+3. All non-essential settings reset to MSVC defaults.<br>
+4. .h/.c file list updated.<br>
+5. Missing /I include paths added.<br>
+6. List of required .lib files updated.<br>
 <br>
--#include &lt;service.h&gt;<br>
--#include &lt;validate.h&gt;<br>
-+#include &quot;service.h&quot;<br>
-+#include &quot;validate.h&quot;<br>
-+<br>
-=C2=A0/*<br>
-=C2=A0 * These are necessary due to certain buggy implementations of (v)snp=
-rintf,<br>
-=C2=A0 * that don&#39;t guarantee null termination for size &gt; 0.<br></bl=
-ockquote><div><br></div><div>In mingw builds it works either way as our Mak=
-efile includes -I ./ as the first search path.</div><div>But conventionally=
- quoted path is the right thing to use here.</div><div><br></div><div>ACK.<=
-/div><div><br></div><div>Selva</div></div></div></div>
+The openvpnserv.exe compiles now. Warnings will be addressed in future patc=
+hes.<br></blockquote><div><br></div><div>Though we do not have a patch allo=
+cation policy, as I have responded to 1 to 5</div><div>I might have become =
+the de-facto reviewer of this patch set. So this is just to say</div><div>p=
+atches 6 to 13 (except 9 and 12) are VS project files and related stuff tha=
+t I</div><div>have no idea about and will be hard for me to review. Hope so=
+meone else take</div><div>a look at those.</div><div><br></div><div>Patches=
+ 9 and 12 are not Windows specific and so hopefully someone will get to</di=
+v><div>those before I may find time..</div><div><br></div><div>Thanks,</div=
+><div><br></div><div>Selva</div></div></div></div>
 
---f403043ae604a8ddeb055b5b7f0a--
+--001a114794e4377fc8055b5b9683--
 
