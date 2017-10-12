@@ -1,16 +1,16 @@
 From: Simon Rozman <simon@...2293...>
-Date: Thu, 12 Oct 2017 09:35:01 +0000
-Message-ID: <99D61A626FDA8A4B90A270669121BE10857E5F87@...2294...>
-References: <20171011134530.6676-1-simon@...2293...>
- <58155e1c-bdf3-9529-8b98-f4193dc6114f@...2080...>
-In-Reply-To: <58155e1c-bdf3-9529-8b98-f4193dc6114f@...2080...>
+Date: Thu, 12 Oct 2017 09:40:36 +0000
+Message-ID: <99D61A626FDA8A4B90A270669121BE10857E5FB6@...2294...>
+References: <20171011134902.3876-1-simon@...2293...>
+ <3dc994ce-0267-c047-b962-b4267b752c17@...2080...>
+In-Reply-To: <3dc994ce-0267-c047-b962-b4267b752c17@...2080...>
 Content-Language: en-US
 Content-Type: multipart/signed; micalg=2.16.840.1.101.3.4.2.1;
  protocol="application/x-pkcs7-signature";
- boundary="----=_NextPart_000_007E_01D3434E.238B7B10"
+ boundary="----=_NextPart_000_0093_01D3434E.EB82E310"
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH] Document ">PASSWORD:Auth-Token"
- real-time message
+Subject: [Openvpn-devel] [SPAM] - RE: [PATCH] Fix typo in "verb" command
+ examples
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,46 +21,29 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-------=_NextPart_000_007E_01D3434E.238B7B10
+------=_NextPart_000_0093_01D3434E.EB82E310
 Content-Type: text/plain;
 	charset="utf-8"
 Content-Transfer-Encoding: 7bit
 
 Hi,
 
-> Really great to see all your patches!  Thanks a lot!
+> ACK.  This is obviously correct.  And I double checked it on a running
+> OpenVPN server with the management interface enable.
 
-I have a strong motivation for it, as I am planning some future changes for 
-openvpnserv.exe. It would help me to keep in sync with official OpenVPN source 
-base if the majority of base issues MSVC has with OpenVPN sources is resolved 
-first.
+I did. It works! :)
 
-Or perhaps the change I am planning for openvpnserv.exe is aligned with 
-OpenVPN dev team and it might get integrated once. But that's a discussion for 
-a separate thread.
-
-> This area is part of the code I've been involved with fairly recently.
->
-> You are not incorrect, and this was the behaviour until we released OpenVPN
-> 2.4.4.  As of v2.4.4, the >PASSWORD: line will be sent to the management
-> interface, but the code which implements usage of the management
-> interface can basically ignore it.  The caching of the token is now handled
-> properly by the OpenVPN core, also if you are using --auth-nocache in the
-> client config.
-
-Thank you for notifying me of this. I haven't had time to test eduVPN Client 
-(which currently does handle ">PASSWORD:Auth-Token" messages) with 2.4.4 yet.
-
-> I can give this patch an ACK if we just remove the line about "replacing the
-> local password".  For me, that can be done on-the-fly on commit time in this
-> case.
-
-Yes, please.
+If you have an idea, how to extend management-notes.txt documentation with 
+expected management interface response, I'd gladly document it too. Since the 
+lack of it in the documentation, I had to test all commands to see the actual 
+OpenVPN response to implement response parsing. Unfortunately, I did that for 
+client based commands only, as I was not able to implement server based 
+management interface communication as well in the project time framework.
 
 Best regards,
 Simon
 
-------=_NextPart_000_007E_01D3434E.238B7B10
+------=_NextPart_000_0093_01D3434E.EB82E310
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -111,19 +94,20 @@ J1nlAZZNwcev00XWu5MF83BRMbfkThrdGCY22Qjd5He7MHEb0U+oBIvS+p9Vy4IcD0mIc2Y2i+X1
 7yNdSbkqEAstd11gZKt+TKKOImNfcGp0tVulDPGKtDGCAzkwggM1AgEBMEUwPTELMAkGA1UEBhMC
 c2kxGzAZBgNVBAoTEnN0YXRlLWluc3RpdHV0aW9uczERMA8GA1UECxMIc2lnZW4tY2ECBDtKDS4w
 DQYJYIZIAWUDBAIBBQCgggHFMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkF
-MQ8XDTE3MTAxMjA5MzUwMFowLwYJKoZIhvcNAQkEMSIEIOEy9ls1KECqUzmdoMPPmAh4vwhTc6Ys
-hZ0voQUgfn2dMFQGCSsGAQQBgjcQBDFHMEUwPTELMAkGA1UEBhMCc2kxGzAZBgNVBAoTEnN0YXRl
+MQ8XDTE3MTAxMjA5NDAzNlowLwYJKoZIhvcNAQkEMSIEIMlQA2V6eMht6uZhgcRvUogE5t6PEmer
+yyJvMnDhEU7AMFQGCSsGAQQBgjcQBDFHMEUwPTELMAkGA1UEBhMCc2kxGzAZBgNVBAoTEnN0YXRl
 LWluc3RpdHV0aW9uczERMA8GA1UECxMIc2lnZW4tY2ECBDtKDS4wVgYLKoZIhvcNAQkQAgsxR6BF
 MD0xCzAJBgNVBAYTAnNpMRswGQYDVQQKExJzdGF0ZS1pbnN0aXR1dGlvbnMxETAPBgNVBAsTCHNp
 Z2VuLWNhAgQ7Sg0uMIGrBgkqhkiG9w0BCQ8xgZ0wgZowCwYJYIZIAWUDBAEqMAsGCWCGSAFlAwQB
 FjAKBggqhkiG9w0DBzALBglghkgBZQMEAQIwDgYIKoZIhvcNAwICAgCAMAcGBSsOAwIHMA0GCCqG
 SIb3DQMCAgFAMA0GCCqGSIb3DQMCAgEoMAsGCWCGSAFlAwQCATALBglghkgBZQMEAgMwCwYJYIZI
-AWUDBAICMAcGBSsOAwIaMA0GCSqGSIb3DQEBAQUABIIBAHwebTN58wdB5Obai5dYFs6JYjxIjNGI
-rAFUkPxnPUPTjwvb2bFUdKSVYHqGZCVH6mdVpkmkJWpFL2JOqpoHFU5r6GSPrpk6UG3HMl+Tjsen
-dQHWnP8qum1Olb6HX6WLQtn8vZG/7iub6/5J2anGC1CvCO+scJ3G7F20Nc8ySdhCEeeiyPpo0UIL
-vwgiymhO0ZFQXSYYkOwMeUajEVOKDm1uh9K66eGSa1RqDGMtGSik22PDri89Lm5RhQzcgopGl9+V
-p/IKSK/kEBDZvcSsyUWmEzVfFuUdFOEDwG5WOiT5+o/KwepUVC3ubRnpDCLSO3ATAmXS3gODCzIc
-04ALfbYAAAAAAAA=
+AWUDBAICMAcGBSsOAwIaMA0GCSqGSIb3DQEBAQUABIIBAIJNMvVF8lEQ76zkz5NV3Tc6JaLRwaiQ
+9LBjaqdi+bKOf09wAEj39c5WfGOnXJasKKX8CLSciBYDVqzrdCtLN60qsuY2rV1ZWMYWXpL8kQlP
+87RqWMQM+4Cz6NQFQdVSjgfaKBBEGA5X245bVTIp0+gEJiciWY4U4PRtzy9D7LSuZFjH20tgGLuE
+HqRBvjnxfyYxWlGqZ6xynSKEDt00jMKUa7VLTBYlSwH0iKBsOLP1msaY+UuGytoIQI8JZ+SzOE5L
+Zp81i96VDuUNN+3tmtnn0Ti1CgXLEwVlGOSkQDY1FQZ2NPoZzKnifxuKf1uJc+90ogMdgQpcz2Hv
+lWlbol0AAAAAAAA=
 
-------=_NextPart_000_007E_01D3434E.238B7B10--
+------=_NextPart_000_0093_01D3434E.EB82E310--
+
 
