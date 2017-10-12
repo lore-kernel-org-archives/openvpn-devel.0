@@ -1,7 +1,14 @@
-From: Simon Rozman <simon@...2293...>
-Date: Thu, 12 Oct 2017 12:34:48 +0200
-Message-Id: <20171012103448.7632-1-simon@...2293...>
-Subject: [Openvpn-devel] [PATCH] Fix local #include to use quoted form
+Date: Thu, 12 Oct 2017 12:49:59 +0200
+From: Gert Doering <gert@...1296...>
+Message-ID: <20171012104959.GO958@...1296...>
+References: <87fuaymq62.fsf@...2274...>
+ <87infkk75q.fsf@...2274...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="ncSAzJYg3Aa9+CRW"
+Content-Disposition: inline
+In-Reply-To: <87infkk75q.fsf@...2274...>
+Subject: Re: [Openvpn-devel] [patch] Fix time_t printing
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -10,46 +17,46 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-.h include files from the same folder or addressed relatively to the
-same folder should be #included using quoted form in MSVC. The angled
-form is reserved for include files from folders specified using /I
-path.
+--ncSAzJYg3Aa9+CRW
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Using angled form, MSVC fails to locate local #include file, unless
-current folder is added to the include search path: /I .
----
- src/openvpnserv/common.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+Hi Jeremie,
 
-diff --git a/src/openvpnserv/common.c b/src/openvpnserv/common.c
-index 0c9098f..e77d7ab 100644
---- a/src/openvpnserv/common.c
-+++ b/src/openvpnserv/common.c
-@@ -21,8 +21,9 @@
-  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-  */
- 
--#include <service.h>
--#include <validate.h>
-+#include "service.h"
-+#include "validate.h"
-+
- /*
-  * These are necessary due to certain buggy implementations of (v)snprintf,
-  * that don't guarantee null termination for size > 0.
--- 
-2.9.0.windows.1
+On Thu, Oct 12, 2017 at 12:11:13PM +0200, Jeremie Courreges-Anglas wrote:
+> any opinion regarding this diff?
 
-This patch is a stand-alone fix, that was accidentaly included in
-"[PATCH 06/13] openvpnserv.vcxproj project file recreated using Visual
-Studio 2017".
+Quickly skimmed over it, looked reasonable.  Lack of time...  (so, thanks
+for the reminder).
 
-I estimate this way it'll get better chance of being ACK-ed. :)
+gert
 
-Best regards,
-Simon
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--ncSAzJYg3Aa9+CRW
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJZ30jWAAoJEB2Cnv7KVigSrUoL/1WwnzsWfKaYucY4Mjrp/BeZ
+gZJW0m41+4o1SseqYbwAaMdRLtWcOINcPgdPs8FppzLcpAU8dVld2veubV/GCL+q
+U9EvuHnGCkL8w/I0hPnP96kzKkyLU4BPz5TVBXIkHzsoUiEBStzz76/lbjT0MeRC
+pSAiMzOcXbZqcrQABbS75dgtN4V9qlI2pR8irHJYP7nBFa+nCfiJo+5aed5F958Z
+aAptwyn/pD68r7GiLKs2t2yWt5kf4Z6Ly0NxDM/+1oTc+nOIQ0joWOBZVTQZxsX/
+EcJXKnVUFyWkrn47e6411Fd/cM8+KUBpDf/Ia787mDjapdgDuf1+wt9Nm6jZ1dax
+RB7YlcCBfqSvBzy2Hf1uv9hHs8RE/2OnXmEGn2RWvZ3pvOloslY4FVgLFmi0bYkR
+os1ljSJyA3cbEsldhKl9ICo09wwAIdCPRzJdHGA1hDI8gvm3S6abFZmfT+jl/FG8
+ROiZ/y34EiFmo+n3BttZ/VpTS4iK3jlAEWe8mILCRQ==
+=edTh
+-----END PGP SIGNATURE-----
+
+--ncSAzJYg3Aa9+CRW--
 
