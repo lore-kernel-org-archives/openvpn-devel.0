@@ -1,13 +1,8 @@
-MIME-Version: 1.0
-In-Reply-To: <20171010231130.6832-3-simon@...2293...>
-References: <20171010231130.6832-1-simon@...2293...>
- <20171010231130.6832-3-simon@...2293...>
-From: Selva <selva.nair@...277...>
-Date: Wed, 11 Oct 2017 22:44:58 -0400
-Message-ID: <CAKuzo_h=KGNOMkyJXKD8ih07+zFcd9oRtGN9hwM9QyDQJtwW2w@...278...>
-Content-Type: multipart/alternative; boundary="001a11406242defdc0055b508777"
-Subject: Re: [Openvpn-devel] [PATCH 03/13] RtlIpv6AddressToStringW() and
- RtlIpv4AddressToStringW() require mstcpip.h
+From: Simon Rozman <simon@...2293...>
+Date: Thu, 12 Oct 2017 09:24:40 +0200
+Message-Id: <20171012072440.8704-1-simon@...2293...>
+Subject: [Openvpn-devel] [PATCH] Uniform snwprintf() across MinGW and MSVC
+ compilers
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,80 +11,91 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Simon Rozman <simon@...2293...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---001a11406242defdc0055b508777
-Content-Type: text/plain; charset="UTF-8"
+MinGW's snwprintf() is a replacement for ISO C's swprintf() used by
+MSVC. MSVC also provides _snwprintf(), however using it leads to
+unportable code.
 
-Hi,
+After a discussion with Selva Nair on devel mailing list, an agreement
+was reached to use swprintf() for MSVC builds.
 
-On Tue, Oct 10, 2017 at 7:11 PM, <simon@...2293...> wrote:
+This patch uniforms snwprintf() usage while making it compile using
+MinGW and MSVC.
 
-> From: Simon Rozman <simon@...2293...>
->
-> ---
->  src/openvpnserv/interactive.c | 1 +
->  1 file changed, 1 insertion(+)
->
-> diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
-> index 4b08086..2019d38 100644
-> --- a/src/openvpnserv/interactive.c
-> +++ b/src/openvpnserv/interactive.c
-> @@ -33,6 +33,7 @@
->  #include <stdio.h>
->  #include <sddl.h>
->  #include <shellapi.h>
-> +#include <mstcpip.h>
->
->  #ifdef HAVE_VERSIONHELPERS_H
->  #include <versionhelpers.h>
->
+Assigning _snwprintf() return value to unused variable was also removed
+at one occasion.
+---
+ config-msvc.h                 | 3 ++-
+ src/openvpn/tun.c             | 2 +-
+ src/openvpnserv/interactive.c | 8 ++++----
+ 3 files changed, 7 insertions(+), 6 deletions(-)
 
-In mingw build mstcpip.h gets pulled-in though ws2tcpip.h but MSDN says to
-explicitly include it for RtlIpv4AddressToStringW etc.
+diff --git a/config-msvc.h b/config-msvc.h
+index 0bb153d..c940d15 100644
+--- a/config-msvc.h
++++ b/config-msvc.h
+@@ -93,9 +93,10 @@
+ #define strncasecmp strnicmp
+ #define strcasecmp _stricmp
+ 
+-#if _MSC_VER<1900
++#if _MSC_VER < 1900
+ #define snprintf _snprintf
+ #endif
++#define snwprintf swprintf
+ 
+ #if _MSC_VER < 1800
+ #define strtoull strtoul
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index 3639718..9e3ca41 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -4622,7 +4622,7 @@ get_adapter_index_method_1(const char *guid)
+     DWORD index;
+     ULONG aindex;
+     wchar_t wbuf[256];
+-    _snwprintf(wbuf, SIZE(wbuf), L"\\DEVICE\\TCPIP_%S", guid);
++    snwprintf(wbuf, SIZE(wbuf), L"\\DEVICE\\TCPIP_%S", guid);
+     wbuf [SIZE(wbuf) - 1] = 0;
+     if (GetAdapterIndex(wbuf, &aindex) != NO_ERROR)
+     {
+diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
+index 823b25b..a060a06 100644
+--- a/src/openvpnserv/interactive.c
++++ b/src/openvpnserv/interactive.c
+@@ -276,7 +276,7 @@ ReturnProcessId(HANDLE pipe, DWORD pid, DWORD count, LPHANDLE events)
+      * Same format as error messages (3 line string) with error = 0 in
+      * 0x%08x format, PID on line 2 and a description "Process ID" on line 3
+      */
+-    _snwprintf(buf, _countof(buf), L"0x%08x\n0x%08x\n%s", 0, pid, msg);
++    snwprintf(buf, _countof(buf), L"0x%08x\n0x%08x\n%s", 0, pid, msg);
+     buf[_countof(buf) - 1] = '\0';
+ 
+     WritePipeAsync(pipe, buf, wcslen(buf) * 2, count, events);
+@@ -1066,7 +1066,7 @@ RegisterDNS(LPVOID unused)
+ 
+     if (GetSystemDirectory(sys_path, MAX_PATH))
+     {
+-        _snwprintf(ipcfg, MAX_PATH, L"%s\\%s", sys_path, L"ipconfig.exe");
++        snwprintf(ipcfg, MAX_PATH, L"%s\\%s", sys_path, L"ipconfig.exe");
+         ipcfg[MAX_PATH-1] = L'\0';
+     }
+ 
+@@ -1706,8 +1706,8 @@ RunOpenvpn(LPVOID p)
+     else if (exit_code != 0)
+     {
+         WCHAR buf[256];
+-        int len = _snwprintf(buf, _countof(buf),
+-                             L"OpenVPN exited with error: exit code = %lu", exit_code);
++        snwprintf(buf, _countof(buf),
++                  L"OpenVPN exited with error: exit code = %lu", exit_code);
+         buf[_countof(buf) - 1] =  L'\0';
+         ReturnError(pipe, ERROR_OPENVPN_STARTUP, buf, 1, &exit_event);
+     }
+-- 
+2.9.0.windows.1
 
-Anyway mingw is still happy at least with this order of includes, so looks
-good to me.
-
-ACK.
-
-Selva
-
---001a11406242defdc0055b508777
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr">Hi,<div class=3D"gmail_extra"><br><div class=3D"gmail_quot=
-e">On Tue, Oct 10, 2017 at 7:11 PM,  <span dir=3D"ltr">&lt;<a href=3D"mailt=
-o:simon@...2293..." target=3D"_blank">simon@...2293...</a>&gt;</span> wrote=
-:<br><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;bo=
-rder-left:1px solid rgb(204,204,204);padding-left:1ex">From: Simon Rozman &=
-lt;<a href=3D"mailto:simon@...2293..." target=3D"_blank">simon@...2293...</=
-a>&gt;<br>
-<br>
----<br>
-=C2=A0src/openvpnserv/interactive.c | 1 +<br>
-=C2=A01 file changed, 1 insertion(+)<br>
-<br>
-diff --git a/src/openvpnserv/interactive.<wbr>c b/src/openvpnserv/interacti=
-ve.<wbr>c<br>
-index 4b08086..2019d38 100644<br>
---- a/src/openvpnserv/interactive.<wbr>c<br>
-+++ b/src/openvpnserv/interactive.<wbr>c<br>
-@@ -33,6 +33,7 @@<br>
-=C2=A0#include &lt;stdio.h&gt;<br>
-=C2=A0#include &lt;sddl.h&gt;<br>
-=C2=A0#include &lt;shellapi.h&gt;<br>
-+#include &lt;mstcpip.h&gt;<br>
-<br>
-=C2=A0#ifdef HAVE_VERSIONHELPERS_H<br>
-=C2=A0#include &lt;versionhelpers.h&gt;<br></blockquote><div><br></div><div=
->In mingw build mstcpip.h gets pulled-in though ws2tcpip.h but MSDN says to=
- explicitly include it for RtlIpv4AddressToStringW etc.</div><div><br></div=
-><div>Anyway mingw is still happy at least with this order of includes, so =
-looks good to me.</div><div><br></div><div>ACK.</div><div><br>Selva</div></=
-div></div></div>
-
---001a11406242defdc0055b508777--
 
