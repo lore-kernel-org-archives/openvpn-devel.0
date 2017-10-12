@@ -1,16 +1,13 @@
-From: Simon Rozman <simon@...2293...>
-Date: Thu, 12 Oct 2017 09:40:36 +0000
-Message-ID: <99D61A626FDA8A4B90A270669121BE10857E5FB6@...2294...>
-References: <20171011134902.3876-1-simon@...2293...>
- <3dc994ce-0267-c047-b962-b4267b752c17@...2080...>
-In-Reply-To: <3dc994ce-0267-c047-b962-b4267b752c17@...2080...>
-Content-Language: en-US
-Content-Type: multipart/signed; micalg=2.16.840.1.101.3.4.2.1;
- protocol="application/x-pkcs7-signature";
- boundary="----=_NextPart_000_0093_01D3434E.EB82E310"
+From: Jeremie Courreges-Anglas <jca@...2272...>
+References: <87fuaymq62.fsf@...2274...>
+Date: Thu, 12 Oct 2017 12:11:13 +0200
+In-Reply-To: <87fuaymq62.fsf@...2274...> (Jeremie Courreges-Anglas's
+ message of "Thu, 05 Oct 2017 01:47:17 +0200")
+Message-ID: <87infkk75q.fsf@...2274...>
 MIME-Version: 1.0
-Subject: [Openvpn-devel] [SPAM] - RE: [PATCH] Fix typo in "verb" command
- examples
+Content-Type: multipart/signed; boundary="=-=-=";
+ micalg=pgp-sha512; protocol="application/pgp-signature"
+Subject: Re: [Openvpn-devel] [patch] Fix time_t printing
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,95 +16,38 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
-------=_NextPart_000_0093_01D3434E.EB82E310
-Content-Type: text/plain;
-	charset="utf-8"
-Content-Transfer-Encoding: 7bit
+--=-=-=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+
 
 Hi,
 
-> ACK.  This is obviously correct.  And I double checked it on a running
-> OpenVPN server with the management interface enable.
+any opinion regarding this diff?
 
-I did. It works! :)
+--=20
+jca | PGP : 0x1524E7EE / 5135 92C1 AD36 5293 2BDF  DDCC 0DFA 74AE 1524 E7EE
 
-If you have an idea, how to extend management-notes.txt documentation with 
-expected management interface response, I'd gladly document it too. Since the 
-lack of it in the documentation, I had to test all commands to see the actual 
-OpenVPN response to implement response parsing. Unfortunately, I did that for 
-client based commands only, as I was not able to implement server based 
-management interface communication as well in the project time framework.
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Best regards,
-Simon
+-----BEGIN PGP SIGNATURE-----
 
-------=_NextPart_000_0093_01D3434E.EB82E310
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-
-MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAAKCCCXow
-ggQZMIIDAaADAgECAgQ7PPnJMA0GCSqGSIb3DQEBBQUAMD0xCzAJBgNVBAYTAnNpMRswGQYDVQQK
-ExJzdGF0ZS1pbnN0aXR1dGlvbnMxETAPBgNVBAsTCHNpZ2VuLWNhMB4XDTAxMDYyOTIxMjc0NloX
-DTIxMDYyOTIxNTc0NlowPTELMAkGA1UEBhMCc2kxGzAZBgNVBAoTEnN0YXRlLWluc3RpdHV0aW9u
-czERMA8GA1UECxMIc2lnZW4tY2EwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCw5WWy
-wKxklvKIG7PtnuQCxk8riM4uilGAda8QW/LLOGabog5tNEeWpZIRr/Y1R6J3IgzOFohiqtNJbhi8
-LkTYvsaewhoZrEGO/DAHAvLGatRbIwDvQTTYpHNj3yKSM4QBpY3zg1z6uNR6Nd/s+G0P4EztrZw6
-fYbWpQiUvn16ER/+hT9UWohjh5ylsadOzbdEc6/PiklrH+PN10lNWisX5lx2s7tyuW8n0puJFYjf
-EF92IQFqxxUxCtGcWPgoFgVt2U7ZodcHIMtLJolNkrKnupbo41iPIpwBllrE9zFNC0m14Xhh4lQY
-BrueVDR+DD7r7rWAH90WhB1oOGZnc/iRAgMBAAGjggEfMIIBGzARBglghkgBhvhCAQEEBAMCAAcw
-XwYDVR0fBFgwVjBUoFKgUKROMEwxCzAJBgNVBAYTAnNpMRswGQYDVQQKExJzdGF0ZS1pbnN0aXR1
-dGlvbnMxETAPBgNVBAsTCHNpZ2VuLWNhMQ0wCwYDVQQDEwRDUkwxMCsGA1UdEAQkMCKADzIwMDEw
-NjI5MjEyNzQ2WoEPMjAyMTA2MjkyMTU3NDZaMAsGA1UdDwQEAwIBBjAfBgNVHSMEGDAWgBRxe4oG
-HzEFVatgEndHIB4DiBjsiTAdBgNVHQ4EFgQUcXuKBh8xBVWrYBJ3RyAeA4gY7IkwDAYDVR0TBAUw
-AwEB/zAdBgkqhkiG9n0HQQAEEDAOGwhWNS4wOjQuMAMCBJAwDQYJKoZIhvcNAQEFBQADggEBAAC6
-YzTzGBjurn6Nksc19cIT1NYAqiEyFtbQW/opsI36F3eS+aW29vmHPwYPIO5iPTT3qS/HqTvQJ4hM
-rN3JqeVaWIXXEjU93LCCW3L0u3O3+/44IZgEgLKIYg8erDoWqeazCvYVEEUDo5fizawQ3PkAHr9z
-bEPsdyIWBi+Wg4l7sLhTREEI3IAfBdsZCXaHvjWdTiFLtJPBaDqdXzb+oa4wLEveeCQ6WNYWQ++d
-mTiLKpj+MNHC6tavJdWldgu570A5Lvbr3zJeHX2HtUTMAjnSJpVy2G+FQ6iPDqNGztfO6LlWqfiJ
-FxIfQ0kGejLnP75veb7WM9dMPCj8EvF2dhgwggVZMIIEQaADAgECAgQ7Sg0uMA0GCSqGSIb3DQEB
-BQUAMD0xCzAJBgNVBAYTAnNpMRswGQYDVQQKExJzdGF0ZS1pbnN0aXR1dGlvbnMxETAPBgNVBAsT
-CHNpZ2VuLWNhMB4XDTE2MDIxOTE3NTQ0MVoXDTIxMDIxOTIxMzgxNVowgYAxCzAJBgNVBAYTAlNJ
-MRswGQYDVQQKExJzdGF0ZS1pbnN0aXR1dGlvbnMxETAPBgNVBAsTCHNpZ2VuLWNhMRQwEgYDVQQL
-EwtpbmRpdmlkdWFsczErMBMGA1UEAxMMU2ltb24gUm96bWFuMBQGA1UEBRMNMjM0NTY3OTUxMjA0
-MjCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAP4sRW6WY3p8+Rp2p7zZXwzXGtDnYFgY
-ORrGpXD+0TBqWkoSIxHoM7xV8KmSOPUprkkShTbVKubUwWDpOSi31vzKQcAYRYZqQFEFKAkYEFAC
-qI7ySeO1C6iFdIAV5RaMsx8DeY5kbyslsasLKDf0WabWN57NZi4H/uzbGuortK1z8bMiF6qxgTQ/
-DUWGq0QIDnYm7Ogi05ffrx3fW0387XKeQfsXRNfLjwYWdyarliJ3d3dBU6TWpALryWggvBJKQsDn
-E5XqYfP9eUABv+N80t+wjLFPVE7j6s+U66VNhV7H9t/GVsoZc3ip8r+jzhMWpdbV1sNQruNL0/Mz
-G2FalN8CAwEAAaOCAhswggIXMA4GA1UdDwEB/wQEAwIFoDBLBgNVHSAERDBCMDYGCysGAQQBr1kC
-AgMDMCcwJQYIKwYBBQUHAgEWGWh0dHA6Ly93d3cuY2EuZ292LnNpL2Nwcy8wCAYGBACLMAECMBgG
-CCsGAQUFBwEDBAwwCjAIBgYEAI5GAQEwGgYDVR0RBBMwEYEPc2ltb25Acm96bWFuLnNpMIHuBgNV
-HR8EgeYwgeMwVqBUoFKkUDBOMQswCQYDVQQGEwJzaTEbMBkGA1UEChMSc3RhdGUtaW5zdGl0dXRp
-b25zMREwDwYDVQQLEwhzaWdlbi1jYTEPMA0GA1UEAxMGQ1JMNDU1MIGIoIGFoIGChldsZGFwOi8v
-eDUwMC5nb3Yuc2kvb3U9c2lnZW4tY2Esbz1zdGF0ZS1pbnN0aXR1dGlvbnMsYz1zaT9jZXJ0aWZp
-Y2F0ZVJldm9jYXRpb25MaXN0P2Jhc2WGJ2h0dHA6Ly93d3cuc2lnZW4tY2Euc2kvY3JsL3NpZ2Vu
-LWNhLmNybDArBgNVHRAEJDAigA8yMDE2MDIxOTE3NTQ0MVqBDzIwMjEwMjE5MjEzODE1WjAfBgNV
-HSMEGDAWgBRxe4oGHzEFVatgEndHIB4DiBjsiTAdBgNVHQ4EFgQUu/+wB8kGCNHvBjj5sE3NWUzc
-OZcwCQYDVR0TBAIwADAZBgkqhkiG9n0HQQAEDDAKGwRWOC4xAwIDqDANBgkqhkiG9w0BAQUFAAOC
-AQEAQVC+ChtWdaASCHSiGbPcicZyYPy3xD1b8zR/PggqnoKtA+pOPA6KO9qFRIrJI6oIHW1Bo99L
-gB/D4wg+ZCxlaA8IeWtmrUN6kM2mAP5Y9ibNn+H3VzZ+tL0ae182xrEHcGGHnCKyszucel1QCEW/
-kx2TY1y91V+rzqM8AUL//ncdT/R/6zFJ+3fHIu7+D3qkoW1m1sIuns9fXGb0ikpM/5Vn+LY/EGwN
-J1nlAZZNwcev00XWu5MF83BRMbfkThrdGCY22Qjd5He7MHEb0U+oBIvS+p9Vy4IcD0mIc2Y2i+X1
-7yNdSbkqEAstd11gZKt+TKKOImNfcGp0tVulDPGKtDGCAzkwggM1AgEBMEUwPTELMAkGA1UEBhMC
-c2kxGzAZBgNVBAoTEnN0YXRlLWluc3RpdHV0aW9uczERMA8GA1UECxMIc2lnZW4tY2ECBDtKDS4w
-DQYJYIZIAWUDBAIBBQCgggHFMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkF
-MQ8XDTE3MTAxMjA5NDAzNlowLwYJKoZIhvcNAQkEMSIEIMlQA2V6eMht6uZhgcRvUogE5t6PEmer
-yyJvMnDhEU7AMFQGCSsGAQQBgjcQBDFHMEUwPTELMAkGA1UEBhMCc2kxGzAZBgNVBAoTEnN0YXRl
-LWluc3RpdHV0aW9uczERMA8GA1UECxMIc2lnZW4tY2ECBDtKDS4wVgYLKoZIhvcNAQkQAgsxR6BF
-MD0xCzAJBgNVBAYTAnNpMRswGQYDVQQKExJzdGF0ZS1pbnN0aXR1dGlvbnMxETAPBgNVBAsTCHNp
-Z2VuLWNhAgQ7Sg0uMIGrBgkqhkiG9w0BCQ8xgZ0wgZowCwYJYIZIAWUDBAEqMAsGCWCGSAFlAwQB
-FjAKBggqhkiG9w0DBzALBglghkgBZQMEAQIwDgYIKoZIhvcNAwICAgCAMAcGBSsOAwIHMA0GCCqG
-SIb3DQMCAgFAMA0GCCqGSIb3DQMCAgEoMAsGCWCGSAFlAwQCATALBglghkgBZQMEAgMwCwYJYIZI
-AWUDBAICMAcGBSsOAwIaMA0GCSqGSIb3DQEBAQUABIIBAIJNMvVF8lEQ76zkz5NV3Tc6JaLRwaiQ
-9LBjaqdi+bKOf09wAEj39c5WfGOnXJasKKX8CLSciBYDVqzrdCtLN60qsuY2rV1ZWMYWXpL8kQlP
-87RqWMQM+4Cz6NQFQdVSjgfaKBBEGA5X245bVTIp0+gEJiciWY4U4PRtzy9D7LSuZFjH20tgGLuE
-HqRBvjnxfyYxWlGqZ6xynSKEDt00jMKUa7VLTBYlSwH0iKBsOLP1msaY+UuGytoIQI8JZ+SzOE5L
-Zp81i96VDuUNN+3tmtnn0Ti1CgXLEwVlGOSkQDY1FQZ2NPoZzKnifxuKf1uJc+90ogMdgQpcz2Hv
-lWlbol0AAAAAAAA=
-
-------=_NextPart_000_0093_01D3434E.EB82E310--
-
+iQIzBAEBCgAdFiEEUTWSwa02UpMr393MDfp0rhUk5+4FAlnfP8EACgkQDfp0rhUk
+5+6A1g/+MOb380QOErg8Pe3Aw3IEC7XlkGSx5hG5YC5n7YsGE/UayKejBXyJYv2o
+pxQjr3eGG5oTKXyo+GrtLSDuZcvZz79w2TDVn576PhcCRYAvIBD5t3aum1T3ugws
+cCWPBlB8D472gevkh9vfij/d37OkjyVEKHw21a6pwbK9krv71rEU0MLgXVe1Ravd
+6zD0StGu1mF1xSkQuDS2bFwta9HT7+KzykndrUmwuBRjngnCnrjuQpTHkJe0ow0c
+q03vSD/fx+ev8ZKBBBQvyt3TcivfswutoWXHiGhVHuMpan3YZpaJ/PHEwt1COieb
+Z/FtVV3ZuZveHX4KLXKvPCoOHG9iV4sZPTUS2/oQo1+4whM1AftR+iZH45B/Mc6h
+e8nnF6kCkxrB5sqkFJbPQUv6MY0KNpzrWmiCUrENlbGFyvHmkRK4yaIim1KlOhuR
+n1zR0aOm31r1v86Is0YIENI8LXVmMrQdoqwF+Mjnb/VYXcyn5vb1+e07S4B3hU6F
+4TKRbZZ66FGkDbTglKuOqJW1BWDked8cnurrfLOKJ/gnLSgoEO8g+t952jmjP7IK
+co8M99rZMGx6i3eW2IalzjbMxLUBtYwmWUTtF6HpP5gyyP4HeE3Dfq5whG6fUYJN
+Y9JnfTDs5K5tSzNnnNw3/51++iVmo3oGnQFAxb5qpQOY1H6FUYU=
+=SNpg
+-----END PGP SIGNATURE-----
+--=-=-=--
 
