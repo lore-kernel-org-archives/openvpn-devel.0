@@ -1,15 +1,15 @@
-References: <20171012072440.8704-1-simon@...2293...>
- <99D61A626FDA8A4B90A270669121BE10857E4741@...2294...>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <fc8fb665-ee87-9162-5d79-4578f429dfce@...2181...>
-Date: Thu, 12 Oct 2017 16:19:43 +0800
+Reply-To: openvpn-devel@lists.sourceforge.net
+References: <20171011134530.6676-1-simon@...2293...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <58155e1c-bdf3-9529-8b98-f4193dc6114f@...2080...>
+Date: Thu, 12 Oct 2017 11:12:38 +0200
 MIME-Version: 1.0
-In-Reply-To: <99D61A626FDA8A4B90A270669121BE10857E4741@...2294...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
+In-Reply-To: <20171011134530.6676-1-simon@...2293...>
+Content-Type: multipart/signed; micalg=pgp-sha512;
  protocol="application/pgp-signature";
- boundary="hmOjH7cEA75urTI3jEjGUoiENwJPiDnmQ"
-Subject: Re: [Openvpn-devel] [PATCH] Uniform snwprintf() across MinGW and
- MSVC compilers
+ boundary="pSXWN1A3Ue6WPHABktj1kNtKs1fQ2LFjC"
+Subject: Re: [Openvpn-devel] [PATCH] Document ">PASSWORD:Auth-Token"
+ real-time message
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,198 +18,114 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Simon Rozman <simon@...2293...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: simon@...2293..., openvpn-devel@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---hmOjH7cEA75urTI3jEjGUoiENwJPiDnmQ
-Content-Type: multipart/mixed; boundary="G5F5iAMqVRDx8iDLGRXiEsVeBB0rsdEOG";
+--pSXWN1A3Ue6WPHABktj1kNtKs1fQ2LFjC
+Content-Type: multipart/mixed; boundary="RIEEx6jDxtmKllEdNQiqLmbQC3fmnoQn4";
  protected-headers="v1"
-From: Antonio Quartulli <a@...2181...>
-To: Simon Rozman <simon@...2293...>
-Cc: "openvpn-devel@lists.sourceforge.net"
- <openvpn-devel@lists.sourceforge.net>
-Message-ID: <fc8fb665-ee87-9162-5d79-4578f429dfce@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH] Uniform snwprintf() across MinGW and MSVC
- compilers
-References: <20171012072440.8704-1-simon@...2293...>
- <99D61A626FDA8A4B90A270669121BE10857E4741@...2294...>
-In-Reply-To: <99D61A626FDA8A4B90A270669121BE10857E4741@...2294...>
+From: David Sommerseth <openvpn@...2080...>
+Reply-To: openvpn-devel@lists.sourceforge.net
+To: simon@...2293..., openvpn-devel@lists.sourceforge.net
+Message-ID: <58155e1c-bdf3-9529-8b98-f4193dc6114f@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH] Document ">PASSWORD:Auth-Token" real-time
+ message
+References: <20171011134530.6676-1-simon@...2293...>
+In-Reply-To: <20171011134530.6676-1-simon@...2293...>
 
---G5F5iAMqVRDx8iDLGRXiEsVeBB0rsdEOG
-Content-Language: en-US
-Content-Type: text/plain; charset="windows-1252"
+--RIEEx6jDxtmKllEdNQiqLmbQC3fmnoQn4
+Content-Language: en-GB
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
+
 
 Hi Simon,
 
-On 12/10/17 16:09, Simon Rozman wrote:
-> This is a follow-up (or better worded: a replacement) patch for "[PATCH
-> 01/13] snwprintf() =3D> _snwprintf()".
->=20
-> I have taken into consideration all Selva's recommendations.
->=20
-
-In case you weren't, you can write comments like the one above right
-after the '---' in the patch itself.
-This way you don't need to rush to reply to your own patch, but
-everything comes together.
-
-So basically you first create the patch with git-format-patch, then edit
-it and then send it with git-send-email.
-
-> Best regards,
-> Simon
->=20
->> -----Original Message-----
->> From: Simon Rozman [mailto:simon@...2293...]
->> Sent: Thursday, October 12, 2017 9:25 AM
->> To: openvpn-devel@lists.sourceforge.net
->> Cc: Simon Rozman
->> Subject: [PATCH] Uniform snwprintf() across MinGW and MSVC compilers
->>
->> MinGW's snwprintf() is a replacement for ISO C's swprintf() used by MSVC.
->> MSVC also provides _snwprintf(), however using it leads to unportable
-> code.
->>
->> After a discussion with Selva Nair on devel mailing list, an agreement w=
-as
->> reached to use swprintf() for MSVC builds.
->>
->> This patch uniforms snwprintf() usage while making it compile using MinGW
->> and MSVC.
->>
->> Assigning _snwprintf() return value to unused variable was also removed =
-at
->> one occasion.
->> ---
-
-Here you can write what you want. This text will be dropped when
-applying the patch.
+Really great to see all your patches!  Thanks a lot!
 
 
-Cheers,
+On 11/10/17 15:45, simon@...2293... wrote:
+> From: Simon Rozman <simon@...2293...>
+>=20
+> Authentication tokens are security enhancement eliminating client
+> need to cache passwords, and are indispensable at two factor
+> authentication methods, such as HOTP or TOTP.
+>=20
+> The ">PASSWORD:Auth-Token" message was not mentioned anywhere in
+> the OpenVPN Management Interface Notes. This patch adds a simple use
+> case example, while the more detailed feature description remains
+> explained in the OpenVPN manual.
+> ---
+>  doc/management-notes.txt | 7 +++++++
+>  1 file changed, 7 insertions(+)
+>=20
+> diff --git a/doc/management-notes.txt b/doc/management-notes.txt
+> index 0e7a7d4..c31ff5c 100644
+> --- a/doc/management-notes.txt
+> +++ b/doc/management-notes.txt
+> @@ -317,6 +317,13 @@ COMMAND -- password and username
+>=20=20
+>      >PASSWORD:Verification Failed: 'custom server-generated string'
+>=20=20
+> +  Example 6: If server pushes --auth-token to the client, the OpenVPN
+> +  will produce a real-time PASSWORD message:
+> +
+> +    >PASSWORD:Auth-Token:foobar
+> +
+> +  The client should replace the local password with the "foobar".
+> +
 
+This area is part of the code I've been involved with fairly recently.
 
->>  config-msvc.h                 | 3 ++-
->>  src/openvpn/tun.c             | 2 +-
->>  src/openvpnserv/interactive.c | 8 ++++----
->>  3 files changed, 7 insertions(+), 6 deletions(-)
->>
->> diff --git a/config-msvc.h b/config-msvc.h index 0bb153d..c940d15 100644
->> --- a/config-msvc.h
->> +++ b/config-msvc.h
->> @@ -93,9 +93,10 @@
->>  #define strncasecmp strnicmp
->>  #define strcasecmp _stricmp
->>
->> -#if _MSC_VER<1900
->> +#if _MSC_VER < 1900
->>  #define snprintf _snprintf
->>  #endif
->> +#define snwprintf swprintf
->>
->>  #if _MSC_VER < 1800
->>  #define strtoull strtoul
->> diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c index 3639718..9e3ca41
->> 100644
->> --- a/src/openvpn/tun.c
->> +++ b/src/openvpn/tun.c
->> @@ -4622,7 +4622,7 @@ get_adapter_index_method_1(const char *guid)
->>      DWORD index;
->>      ULONG aindex;
->>      wchar_t wbuf[256];
->> -    _snwprintf(wbuf, SIZE(wbuf), L"\\DEVICE\\TCPIP_%S", guid);
->> +    snwprintf(wbuf, SIZE(wbuf), L"\\DEVICE\\TCPIP_%S", guid);
->>      wbuf [SIZE(wbuf) - 1] =3D 0;
->>      if (GetAdapterIndex(wbuf, &aindex) !=3D NO_ERROR)
->>      {
->> diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive=
-.c
->> index 823b25b..a060a06 100644
->> --- a/src/openvpnserv/interactive.c
->> +++ b/src/openvpnserv/interactive.c
->> @@ -276,7 +276,7 @@ ReturnProcessId(HANDLE pipe, DWORD pid, DWORD
->> count, LPHANDLE events)
->>       * Same format as error messages (3 line string) with error =3D 0 in
->>       * 0x%08x format, PID on line 2 and a description "Process ID" on
-> line 3
->>       */
->> -    _snwprintf(buf, _countof(buf), L"0x%08x\n0x%08x\n%s", 0, pid, msg);
->> +    snwprintf(buf, _countof(buf), L"0x%08x\n0x%08x\n%s", 0, pid, msg);
->>      buf[_countof(buf) - 1] =3D '\0';
->>
->>      WritePipeAsync(pipe, buf, wcslen(buf) * 2, count, events); @@ -1066=
-,7
->> +1066,7 @@ RegisterDNS(LPVOID unused)
->>
->>      if (GetSystemDirectory(sys_path, MAX_PATH))
->>      {
->> -        _snwprintf(ipcfg, MAX_PATH, L"%s\\%s", sys_path,
-> L"ipconfig.exe");
->> +        snwprintf(ipcfg, MAX_PATH, L"%s\\%s", sys_path,
->> + L"ipconfig.exe");
->>          ipcfg[MAX_PATH-1] =3D L'\0';
->>      }
->>
->> @@ -1706,8 +1706,8 @@ RunOpenvpn(LPVOID p)
->>      else if (exit_code !=3D 0)
->>      {
->>          WCHAR buf[256];
->> -        int len =3D _snwprintf(buf, _countof(buf),
->> -                             L"OpenVPN exited with error: exit code =3D
-> %lu", exit_code);
->> +        snwprintf(buf, _countof(buf),
->> +                  L"OpenVPN exited with error: exit code =3D %lu",
->> + exit_code);
->>          buf[_countof(buf) - 1] =3D  L'\0';
->>          ReturnError(pipe, ERROR_OPENVPN_STARTUP, buf, 1, &exit_event);
->>      }
->> --
->> 2.9.0.windows.1
->=20
->=20
->=20
-> -------------------------------------------------------------------------=
------
-> Check out the vibrant tech community on one of the world's most
-> engaging tech sites, Slashdot.org! http://sdm.link/slashdot
->=20
->=20
->=20
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->=20
+You are not incorrect, and this was the behaviour until we released
+OpenVPN 2.4.4.  As of v2.4.4, the >PASSWORD: line will be sent to the
+management interface, but the code which implements usage of the
+management interface can basically ignore it.  The caching of the
+token is now handled properly by the OpenVPN core, also if you are using
+--auth-nocache in the client config.
+
+(Quick remark, it seems we did not fix this issue in v2.3 at all, it
+only have a partial fix but is lacking a backport of commit 3322c558fa7)
+
+We might actually consider to remove the >PASSWORD: response in the future.
+
+I can give this patch an ACK if we just remove the line about "replacing
+the local password".  For me, that can be done on-the-fly on commit time
+in this case.
+
 
 --=20
-Antonio Quartulli
+kind regards,
+
+David Sommerseth
+OpenVPN, Inc
 
 
---G5F5iAMqVRDx8iDLGRXiEsVeBB0rsdEOG--
 
---hmOjH7cEA75urTI3jEjGUoiENwJPiDnmQ
+--RIEEx6jDxtmKllEdNQiqLmbQC3fmnoQn4--
+
+--pSXWN1A3Ue6WPHABktj1kNtKs1fQ2LFjC
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIzBAEBCAAdFiEERdCuyFSHc3WdqS4EB6U8WA7yzXQFAlnfJZ8ACgkQB6U8WA7y
-zXRgqRAAnTsXXKnGiOyuSIWIyoJeP/CabHIWVNqf3R38HUSva4Mx2KfauuiqXVFz
-ne1S9QNpoaVw1BSsPs6XbWi31Hl6ModL6Y9b9Km9z5u8mjRIUPnHrN8bVkaHBGEm
-fcqE21Sb7biekwXUJKMgbBA1hmCf6dekQJsvVM8uxCqSbPfkB2GS1DQn+F5B8KQ2
-3AXDtGcsmXpJL595AwTzYCB7hv3uLo86sCWMYcLQ+apnODOaflRvF4NH2bXVzOCW
-18NYjsdi8jgFTgb07t24b+QUsBzKZCYxh9gHuHCr8NkaOxUGtB9kNYO/t/pt+v0U
-kpZOejkDZcjfHq4FWgO7gSQ6k0Q+2X/ZFt1QnY1pv83Cmz5OcHGXT6WWxBO0gqgG
-okTGE0Uw1u/uE6SypZ+pwPhg4WidvNAgn9rDj1w7ChKm3pJFFG7mGvQrjIKsiwmL
-pZf1wxXnqaYnEkUoXofs2W/3+vIsRsvONsK5BXjJ72qmBnoy1aYfJwc+Ewxowutc
-9qGNAlGZ0R3gpjk8OSwGWXXbe+bKemtbltfZg9jSIXNsUaGO8Nic0BK1DCREf8s2
-AOTFfpXQe1aIDtUwIyaxeEqLphCaDZ1VTqurK7m7XCPu16fv0RO0W+jVfikFV09u
-ZL3SpoihCh3220xLGpUaqmwxbKxQtA1Jf2PAqKqornnO4Ej0EGU=
-=GlIm
+iQIcBAEBCgAGBQJZ3zIHAAoJEIbPlEyWcf3yzhAQAJnd9LFp24ovJoGCWHme78YS
+h+D3GJZFiYlECxhzfaJYrQU+4yqH4DndrS5cJuKaR1Wg7AXjM2PD+d0CrPUjxcWD
+Pl1EWUMHpFMtJcVEoX+Aj7eNzndzFWz1ThAhguD98u2TevU+zX+ktsDtzRmpA1In
+ooPlgdVA9s5m3iJ4KEQe+diQI/NoWMRjJdxOIdU6BtfXtEtmLkYMom70XS/618jA
+6aHBkW90Vy7VK/XZzUGWW++nzSaYVC1AOTtDx+cjUQXtjkcBkBatgP6cv1eH3VvY
+oYVfbK8XlMuBxSGOwxLs2hYGRDJoDLQZh+MamrRWw6qpwdYSd+7w8CQfWA3fn7aW
+j2lIwb6bJuwA7XxnowbWgdlnEYf7VPyaSr7Aol2WQ5bepCVacHR5KbyVyZqqX1jk
+Zj6sHlCg3Dya5MbkHbEe19qfwrMSoxqfOpipDetYrep9JiKIY4TA6TsDSXzlFUG0
+ufuIA/uu2OF65/igpJ4KXkLT8xmaPHTkpYSmOIXcpBuqlBguUqb8QPZNtaJHx9n0
+a/27joyKXH05m7esdrAOZDMHUf0zHiliLscnle45oZf9NAGQF6dDLRYR76n0sTgd
+XZBp9K8qIA9UNyOk4jezHIyJXcbgsXylTuDKG9iH34pHBsjdRejvFXkbT+OztPKP
++qAQ/R4TzsT0ZyiWIkxs
+=Jy4x
 -----END PGP SIGNATURE-----
 
---hmOjH7cEA75urTI3jEjGUoiENwJPiDnmQ--
+--pSXWN1A3Ue6WPHABktj1kNtKs1fQ2LFjC--
 
