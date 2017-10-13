@@ -1,13 +1,10 @@
-MIME-Version: 1.0
-In-Reply-To: <99D61A626FDA8A4B90A270669121BE1085811CC4@...2294...>
-References: <99D61A626FDA8A4B90A270669121BE10857D3DCD@...2294...>
- <CAFHpkQGZuQUZBqPmsZkBDx1CPiG5KmKKi1Kn_pL9JqwiiQcOaA@...278...>
- <99D61A626FDA8A4B90A270669121BE1085811CC4@...2294...>
-From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Date: Fri, 13 Oct 2017 13:28:29 +0500
-Message-ID: <CAFHpkQF1GuNwEeZ0oCh7RKEzS2oBvO_+oxXvx_oEo-VtjQizqw@...278...>
-Content-Type: multipart/alternative; boundary="001a113ec2ac0cc9cf055b69716f"
-Subject: Re: [Openvpn-devel] openvpnserv building under MSVC
+From: Simon Rozman <simon@...2293...>
+Date: Fri, 13 Oct 2017 11:50:08 +0200
+Message-Id: <20171013095008.8288-1-simon@...2293...>
+In-Reply-To: <99D61A626FDA8A4B90A270669121BE108580F7E3@...2294...>
+References: <99D61A626FDA8A4B90A270669121BE108580F7E3@...2294...>
+Subject: [Openvpn-devel] [PATCH] Uniform swprintf() across MinGW and MSVC
+ compilers
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,125 +13,116 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Simon Rozman <simon@...2293...>
-Cc: "openvpn-devel (openvpn-devel@lists.sourceforge.net)" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---001a113ec2ac0cc9cf055b69716f
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Legacy _snwprintf() and snwprintf() functions replaced with ISO C
+swprintf().
 
-2017-10-13 13:10 GMT+05:00 Simon Rozman <simon@...2293...>:
+Assigning _snwprintf() return value to unused variable was also removed
+at one occasion.
+---
+ src/openvpn/tun.c             |  2 +-
+ src/openvpnserv/interactive.c | 20 ++++++++++----------
+ src/openvpnserv/validate.c    |  2 +-
+ 3 files changed, 12 insertions(+), 12 deletions(-)
 
-> Hi,
->
->
->
-> I am learning this whole mingw-generic build environment just to be able
-> to test openvpn build before I submit any patch. And only now, I realized
-> what you probably meant below.
->
->
->
-> No, I haven=E2=80=99t upgraded openvpn-build to build on MSVC yet. Let al=
-one on
-> App Veyor. I'd
->
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index 3639718..25831ce 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -4622,7 +4622,7 @@ get_adapter_index_method_1(const char *guid)
+     DWORD index;
+     ULONG aindex;
+     wchar_t wbuf[256];
+-    _snwprintf(wbuf, SIZE(wbuf), L"\\DEVICE\\TCPIP_%S", guid);
++    swprintf(wbuf, SIZE(wbuf), L"\\DEVICE\\TCPIP_%S", guid);
+     wbuf [SIZE(wbuf) - 1] = 0;
+     if (GetAdapterIndex(wbuf, &aindex) != NO_ERROR)
+     {
+diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
+index 0b57eb9..0169617 100644
+--- a/src/openvpnserv/interactive.c
++++ b/src/openvpnserv/interactive.c
+@@ -277,7 +277,7 @@ ReturnProcessId(HANDLE pipe, DWORD pid, DWORD count, LPHANDLE events)
+      * Same format as error messages (3 line string) with error = 0 in
+      * 0x%08x format, PID on line 2 and a description "Process ID" on line 3
+      */
+-    _snwprintf(buf, _countof(buf), L"0x%08x\n0x%08x\n%s", 0, pid, msg);
++    swprintf(buf, _countof(buf), L"0x%08x\n0x%08x\n%s", 0, pid, msg);
+     buf[_countof(buf) - 1] = '\0';
+ 
+     WritePipeAsync(pipe, buf, wcslen(buf) * 2, count, events);
+@@ -403,8 +403,8 @@ ValidateOptions(HANDLE pipe, const WCHAR *workdir, const WCHAR *options)
+ 
+         if (!CheckOption(workdir, 2, argv_tmp, &settings))
+         {
+-            snwprintf(buf, _countof(buf), msg1, argv[0], workdir,
+-                      settings.ovpn_admin_group);
++            swprintf(buf, _countof(buf), msg1, argv[0], workdir,
++                     settings.ovpn_admin_group);
+             buf[_countof(buf) - 1] = L'\0';
+             ReturnError(pipe, ERROR_STARTUP_DATA, buf, 1, &exit_event);
+         }
+@@ -422,15 +422,15 @@ ValidateOptions(HANDLE pipe, const WCHAR *workdir, const WCHAR *options)
+         {
+             if (wcscmp(L"--config", argv[i]) == 0 && argc-i > 1)
+             {
+-                snwprintf(buf, _countof(buf), msg1, argv[i+1], workdir,
+-                          settings.ovpn_admin_group);
++                swprintf(buf, _countof(buf), msg1, argv[i+1], workdir,
++                         settings.ovpn_admin_group);
+                 buf[_countof(buf) - 1] = L'\0';
+                 ReturnError(pipe, ERROR_STARTUP_DATA, buf, 1, &exit_event);
+             }
+             else
+             {
+-                snwprintf(buf, _countof(buf), msg2, argv[i],
+-                          settings.ovpn_admin_group);
++                swprintf(buf, _countof(buf), msg2, argv[i],
++                         settings.ovpn_admin_group);
+                 buf[_countof(buf) - 1] = L'\0';
+                 ReturnError(pipe, ERROR_STARTUP_DATA, buf, 1, &exit_event);
+             }
+@@ -1067,7 +1067,7 @@ RegisterDNS(LPVOID unused)
+ 
+     if (GetSystemDirectory(sys_path, MAX_PATH))
+     {
+-        _snwprintf(ipcfg, MAX_PATH, L"%s\\%s", sys_path, L"ipconfig.exe");
++        swprintf(ipcfg, MAX_PATH, L"%s\\%s", sys_path, L"ipconfig.exe");
+         ipcfg[MAX_PATH-1] = L'\0';
+     }
+ 
+@@ -1707,8 +1707,8 @@ RunOpenvpn(LPVOID p)
+     else if (exit_code != 0)
+     {
+         WCHAR buf[256];
+-        int len = _snwprintf(buf, _countof(buf),
+-                             L"OpenVPN exited with error: exit code = %lu", exit_code);
++        swprintf(buf, _countof(buf),
++                 L"OpenVPN exited with error: exit code = %lu", exit_code);
+         buf[_countof(buf) - 1] =  L'\0';
+         ReturnError(pipe, ERROR_OPENVPN_STARTUP, buf, 1, &exit_event);
+     }
+diff --git a/src/openvpnserv/validate.c b/src/openvpnserv/validate.c
+index f6a97e9..653bd12 100644
+--- a/src/openvpnserv/validate.c
++++ b/src/openvpnserv/validate.c
+@@ -65,7 +65,7 @@ CheckConfigPath(const WCHAR *workdir, const WCHAR *fname, const settings_t *s)
+     /* convert fname to full path */
+     if (PathIsRelativeW(fname) )
+     {
+-        snwprintf(tmp, _countof(tmp), L"%s\\%s", workdir, fname);
++        swprintf(tmp, _countof(tmp), L"%s\\%s", workdir, fname);
+         tmp[_countof(tmp)-1] = L'\0';
+         config_file = tmp;
+     }
+-- 
+2.9.0.windows.1
 
-openvpn-build is a separate project
+Here's a revised patch that converts all _snwprintf() and snwprintf() oddities to swprintf(). It replaces the previous patch. Hopefuly, this one nails it.
 
-
-> like to fix building of the core openvpn project first.
->
-
-yep, I meant App Veyor for openvpn core itself
-
-
->
->
-> Best regards,
->
-> Simon
->
->
->
-> *From:* =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=B8=D1=86=D0=B8=D0=
-=BD [mailto:chipitsine@...277...]
-> *Sent:* Tuesday, October 10, 2017 3:10 PM
-> *To:* Simon Rozman
-> *Cc:* openvpn-devel (openvpn-devel@lists.sourceforge.net)
-> *Subject:* Re: [Openvpn-devel] openvpnserv building under MSVC
->
->
->
-> wow.
->
-> did you try to build it on App Veyor ? (I tried, no success)
->
-
---001a113ec2ac0cc9cf055b69716f
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><br><div class=3D"gmail_extra"><br><div class=3D"gmail_quo=
-te">2017-10-13 13:10 GMT+05:00 Simon Rozman <span dir=3D"ltr">&lt;<a href=
-=3D"mailto:simon@...2293..." target=3D"_blank">simon@...2293...</a>&gt;</sp=
-an>:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border=
--left:1px #ccc solid;padding-left:1ex"><div link=3D"blue" vlink=3D"purple" =
-lang=3D"SL"><div class=3D"m_7162098547268930406WordSection1"><p class=3D"Ms=
-oNormal"><span style=3D"font-size:11.0pt;font-family:&quot;Calibri&quot;,&q=
-uot;sans-serif&quot;;color:#1f497d" lang=3D"EN-GB">Hi,<u></u><u></u></span>=
-</p><p class=3D"MsoNormal"><span style=3D"font-size:11.0pt;font-family:&quo=
-t;Calibri&quot;,&quot;sans-serif&quot;;color:#1f497d" lang=3D"EN-GB"><u></u=
->=C2=A0<u></u></span></p><p class=3D"MsoNormal"><span style=3D"font-size:11=
-.0pt;font-family:&quot;Calibri&quot;,&quot;sans-serif&quot;;color:#1f497d" =
-lang=3D"EN-GB">I am learning this whole mingw-generic build environment jus=
-t to be able to test openvpn build before I submit any patch. And only now,=
- I realized what you probably meant below.<u></u><u></u></span></p><p class=
-=3D"MsoNormal"><span style=3D"font-size:11.0pt;font-family:&quot;Calibri&qu=
-ot;,&quot;sans-serif&quot;;color:#1f497d" lang=3D"EN-GB"><u></u>=C2=A0<u></=
-u></span></p><p class=3D"MsoNormal"><span style=3D"font-size:11.0pt;font-fa=
-mily:&quot;Calibri&quot;,&quot;sans-serif&quot;;color:#1f497d" lang=3D"EN-G=
-B">No, I haven=E2=80=99t upgraded openvpn-build to build on MSVC yet. Let a=
-lone on App Veyor. I&#39;d </span></p></div></div></blockquote><div><br></d=
-iv><div>openvpn-build is a separate project<br></div><div>=C2=A0</div><bloc=
-kquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #cc=
-c solid;padding-left:1ex"><div link=3D"blue" vlink=3D"purple" lang=3D"SL"><=
-div class=3D"m_7162098547268930406WordSection1"><p class=3D"MsoNormal"><spa=
-n style=3D"font-size:11.0pt;font-family:&quot;Calibri&quot;,&quot;sans-seri=
-f&quot;;color:#1f497d" lang=3D"EN-GB">like to fix building of the core open=
-vpn project first.</span></p></div></div></blockquote><div><br></div><div>y=
-ep, I meant App Veyor for openvpn core itself <br></div><div>=C2=A0</div><b=
-lockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px =
-#ccc solid;padding-left:1ex"><div link=3D"blue" vlink=3D"purple" lang=3D"SL=
-"><div class=3D"m_7162098547268930406WordSection1"><p class=3D"MsoNormal"><=
-span style=3D"font-size:11.0pt;font-family:&quot;Calibri&quot;,&quot;sans-s=
-erif&quot;;color:#1f497d" lang=3D"EN-GB"><u></u><u></u></span></p><p class=
-=3D"MsoNormal"><span style=3D"font-size:11.0pt;font-family:&quot;Calibri&qu=
-ot;,&quot;sans-serif&quot;;color:#1f497d" lang=3D"EN-GB"><u></u>=C2=A0<u></=
-u></span></p><p class=3D"MsoNormal"><span style=3D"font-size:11.0pt;font-fa=
-mily:&quot;Calibri&quot;,&quot;sans-serif&quot;;color:#1f497d" lang=3D"EN-G=
-B">Best regards,<u></u><u></u></span></p><p class=3D"MsoNormal"><span style=
-=3D"font-size:11.0pt;font-family:&quot;Calibri&quot;,&quot;sans-serif&quot;=
-;color:#1f497d" lang=3D"EN-GB">Simon<u></u><u></u></span></p><p class=3D"Ms=
-oNormal"><span style=3D"font-size:11.0pt;font-family:&quot;Calibri&quot;,&q=
-uot;sans-serif&quot;;color:#1f497d" lang=3D"EN-GB"><u></u>=C2=A0<u></u></sp=
-an></p><div style=3D"border:none;border-left:solid blue 1.5pt;padding:0cm 0=
-cm 0cm 4.0pt"><span class=3D""><div><div style=3D"border:none;border-top:so=
-lid #b5c4df 1.0pt;padding:3.0pt 0cm 0cm 0cm"><p class=3D"MsoNormal"><b><spa=
-n style=3D"font-size:10.0pt;font-family:&quot;Tahoma&quot;,&quot;sans-serif=
-&quot;" lang=3D"EN-US">From:</span></b><span style=3D"font-size:10.0pt;font=
--family:&quot;Tahoma&quot;,&quot;sans-serif&quot;" lang=3D"EN-US"> =D0=98=
-=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=B8=D1=86=D0=B8=D0=BD [mailto:<a hr=
-ef=3D"mailto:chipitsine@...277..." target=3D"_blank">chipitsine@...277...</=
-a>] <br><b>Sent:</b> Tuesday, October 10, 2017 3:10 PM<br><b>To:</b> Simon =
-Rozman<br><b>Cc:</b> openvpn-devel (<a href=3D"mailto:openvpn-devel@...1096...=
-ourceforge.net" target=3D"_blank">openvpn-devel@...1199...<wbr>sourceforge.=
-net</a>)<br><b>Subject:</b> Re: [Openvpn-devel] openvpnserv building under =
-MSVC<u></u><u></u></span></p></div></div><p class=3D"MsoNormal"><u></u>=C2=
-=A0<u></u></p></span><div><div><p class=3D"MsoNormal" style=3D"margin-botto=
-m:12.0pt">wow.<u></u><u></u></p></div><span class=3D""><p class=3D"MsoNorma=
-l">did you try to build it on App Veyor ? (I tried, no success)<u></u><u></=
-u></p></span></div></div></div></div></blockquote></div><br></div></div>
-
---001a113ec2ac0cc9cf055b69716f--
+Best regards,
+Simon
 
