@@ -1,16 +1,15 @@
 From: Simon Rozman <simon@...2293...>
-Date: Fri, 13 Oct 2017 04:55:40 +0000
-Message-ID: <99D61A626FDA8A4B90A270669121BE108580F7E3@...2294...>
-References: <20171012072440.8704-1-simon@...2293...>
- <CAKuzo_jUnvMkHwHXZ=cAre-=z7WACU0b2qKV27FyymfBTncX=g@...278...>
-In-Reply-To: <CAKuzo_jUnvMkHwHXZ=cAre-=z7WACU0b2qKV27FyymfBTncX=g@...278...>
+Date: Fri, 13 Oct 2017 08:10:08 +0000
+Message-ID: <99D61A626FDA8A4B90A270669121BE1085811CC4@...2294...>
+References: <99D61A626FDA8A4B90A270669121BE10857D3DCD@...2294...>
+ <CAFHpkQGZuQUZBqPmsZkBDx1CPiG5KmKKi1Kn_pL9JqwiiQcOaA@...278...>
+In-Reply-To: <CAFHpkQGZuQUZBqPmsZkBDx1CPiG5KmKKi1Kn_pL9JqwiiQcOaA@...278...>
 Content-Language: en-US
 Content-Type: multipart/signed; protocol="application/x-pkcs7-signature";
  micalg=2.16.840.1.101.3.4.2.1;
- boundary="----=_NextPart_000_0014_01D343F0.47B8C5E0"
+ boundary="----=_NextPart_000_001F_01D3440B.7286C400"
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH] Uniform snwprintf() across MinGW and
- MSVC compilers
+Subject: Re: [Openvpn-devel] openvpnserv building under MSVC
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,59 +18,158 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva <selva.nair@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: =?utf-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
+Cc: "openvpn-devel (openvpn-devel@lists.sourceforge.net)" <openvpn-devel@lists.sourceforge.net>
 
-------=_NextPart_000_0014_01D343F0.47B8C5E0
-Content-Type: text/plain;
-	charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+------=_NextPart_000_001F_01D3440B.7286C400
+Content-Type: multipart/alternative;
+	boundary="----=_NextPart_001_0020_01D3440B.7286C400"
+
+------=_NextPart_001_0020_01D3440B.7286C400
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
 Hi,
 
-> For book keeping its easier if version 2 of a patch is sent to the same 
-> thread
-> as the original (e.g., use --in-reply-to: <msgid> in git send-email) and 
-> [PATCH
-> v2 01/13] in header.
+=20
 
-Thank you, I'll learn the team-play. Please have patience with me. :)
+I am learning this whole mingw-generic build environment just to be able to=
+ test openvpn build before I submit any patch. And only now, I realized wha=
+t you probably meant below.
 
-> > On Thu, Oct 12, 2017 at 3:24 AM, Simon Rozman <simon@...2293...> wrote:
-> > MinGW's snwprintf() is a replacement for ISO C's swprintf() used by MSVC.
->
-> A confusing statement as MinGW too has 'swprintf' and my suggestion was
-> to just use 'swprintf' both for mingw and MSVC. Then neither build would
-> depend on non-standard variants.
+=20
 
-Actually, the statement would have been correct if you change "MSVC" to 
-"MSVC2017".
+No, I haven=E2=80=99t upgraded openvpn-build to build on MSVC yet. Let alon=
+e on App Veyor. I'd like to fix building of the core openvpn project first.
 
-> As said above, I would have replaced all _snwprintf and snwprintf by 
-> swprintf
-> and avoided the #define. That has the added advantage that mingw builds
-> also will no longer depend on the non-standard snwprintf.
-
-Are you sure MinGW supports swprintf() in an ISO C conformant way? People all 
-over the web complain about MinGW's non-ISO C conformant swprintf() 
-declaration being a legacy of VC 6.0 runtime library used: 
-https://stackoverflow.com/questions/35072373/swprintf-declaration-mismatch
-As said before, I am not familiar with MinGW. I read OpenVPN has a patched 
-version of it. Perhaps you moved to a more recent VC runtime library 
-meanwhile.
-
-If we change _snwprintf/snwprintf() to swprintf() as you suggested, I am 
-afraid OpenVPN would not compile on MinGW anymore without #define tweaks. But, 
-this time MinGW will need them, not MSVC*2017*.
-
-Selva, if you can confirm that swprintf() really works on OpenVPN's 
-distribution of MinGW in an ISO C conformant way, I'll gladly use it. I can 
-prepare a patch for you if you can give it a try.
+=20
 
 Best regards,
+
 Simon
 
-------=_NextPart_000_0014_01D343F0.47B8C5E0
+=20
+
+From: =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=B8=D1=86=D0=B8=D0=BD [=
+mailto:chipitsine@...277...]=20
+Sent: Tuesday, October 10, 2017 3:10 PM
+To: Simon Rozman
+Cc: openvpn-devel (openvpn-devel@lists.sourceforge.net)
+Subject: Re: [Openvpn-devel] openvpnserv building under MSVC
+
+=20
+
+wow.
+
+did you try to build it on App Veyor ? (I tried, no success)
+
+
+------=_NextPart_001_0020_01D3440B.7286C400
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<html xmlns:v=3D"urn:schemas-microsoft-com:vml" xmlns:o=3D"urn:schemas-micr=
+osoft-com:office:office" xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
+xmlns:m=3D"http://schemas.microsoft.com/office/2004/12/omml" xmlns=3D"http:=
+//www.w3.org/TR/REC-html40"><head><meta http-equiv=3DContent-Type content=
+=3D"text/html; charset=3Dutf-8"><meta name=3DGenerator content=3D"Microsoft=
+ Word 14 (filtered medium)"><style><!--
+/* Font Definitions */
+@font-face
+	{font-family:Calibri;
+	panose-1:2 15 5 2 2 2 4 3 2 4;}
+@font-face
+	{font-family:Tahoma;
+	panose-1:2 11 6 4 3 5 4 4 2 4;}
+/* Style Definitions */
+p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0cm;
+	margin-bottom:.0001pt;
+	font-size:12.0pt;
+	font-family:"Times New Roman","serif";}
+a:link, span.MsoHyperlink
+	{mso-style-priority:99;
+	color:blue;
+	text-decoration:underline;}
+a:visited, span.MsoHyperlinkFollowed
+	{mso-style-priority:99;
+	color:purple;
+	text-decoration:underline;}
+code
+	{mso-style-priority:99;
+	font-family:"Courier New";}
+p.MsoQuote, li.MsoQuote, div.MsoQuote
+	{mso-style-priority:29;
+	mso-style-link:"Quote Char";
+	margin:0cm;
+	margin-bottom:.0001pt;
+	font-size:12.0pt;
+	font-family:"Calibri","sans-serif";
+	font-style:italic;}
+span.QuoteChar
+	{mso-style-name:"Quote Char";
+	mso-style-priority:29;
+	mso-style-link:Quote;
+	font-family:"Calibri","sans-serif";
+	font-style:italic;}
+span.EmailStyle20
+	{mso-style-type:personal-reply;
+	font-family:"Calibri","sans-serif";
+	color:#1F497D;}
+.MsoChpDefault
+	{mso-style-type:export-only;
+	font-family:"Calibri","sans-serif";
+	mso-fareast-language:EN-US;}
+@page WordSection1
+	{size:612.0pt 792.0pt;
+	margin:70.85pt 70.85pt 70.85pt 70.85pt;}
+div.WordSection1
+	{page:WordSection1;}
+--></style><!--[if gte mso 9]><xml>
+<o:shapedefaults v:ext=3D"edit" spidmax=3D"1026" />
+</xml><![endif]--><!--[if gte mso 9]><xml>
+<o:shapelayout v:ext=3D"edit">
+<o:idmap v:ext=3D"edit" data=3D"1" />
+</o:shapelayout></xml><![endif]--></head><body lang=3DSL link=3Dblue vlink=
+=3Dpurple><div class=3DWordSection1><p class=3DMsoNormal><span lang=3DEN-GB=
+ style=3D'font-size:11.0pt;font-family:"Calibri","sans-serif";color:#1F497D=
+'>Hi,<o:p></o:p></span></p><p class=3DMsoNormal><span lang=3DEN-GB style=3D=
+'font-size:11.0pt;font-family:"Calibri","sans-serif";color:#1F497D'><o:p>&n=
+bsp;</o:p></span></p><p class=3DMsoNormal><span lang=3DEN-GB style=3D'font-=
+size:11.0pt;font-family:"Calibri","sans-serif";color:#1F497D'>I am learning=
+ this whole mingw-generic build environment just to be able to test openvpn=
+ build before I submit any patch. And only now, I realized what you probabl=
+y meant below.<o:p></o:p></span></p><p class=3DMsoNormal><span lang=3DEN-GB=
+ style=3D'font-size:11.0pt;font-family:"Calibri","sans-serif";color:#1F497D=
+'><o:p>&nbsp;</o:p></span></p><p class=3DMsoNormal><span lang=3DEN-GB style=
+=3D'font-size:11.0pt;font-family:"Calibri","sans-serif";color:#1F497D'>No, =
+I haven=E2=80=99t upgraded openvpn-build to build on MSVC yet. Let alone on=
+ App Veyor. I'd like to fix building of the core openvpn project first.<o:p=
+></o:p></span></p><p class=3DMsoNormal><span lang=3DEN-GB style=3D'font-siz=
+e:11.0pt;font-family:"Calibri","sans-serif";color:#1F497D'><o:p>&nbsp;</o:p=
+></span></p><p class=3DMsoNormal><span lang=3DEN-GB style=3D'font-size:11.0=
+pt;font-family:"Calibri","sans-serif";color:#1F497D'>Best regards,<o:p></o:=
+p></span></p><p class=3DMsoNormal><span lang=3DEN-GB style=3D'font-size:11.=
+0pt;font-family:"Calibri","sans-serif";color:#1F497D'>Simon<o:p></o:p></spa=
+n></p><p class=3DMsoNormal><span lang=3DEN-GB style=3D'font-size:11.0pt;fon=
+t-family:"Calibri","sans-serif";color:#1F497D'><o:p>&nbsp;</o:p></span></p>=
+<div style=3D'border:none;border-left:solid blue 1.5pt;padding:0cm 0cm 0cm =
+4.0pt'><div><div style=3D'border:none;border-top:solid #B5C4DF 1.0pt;paddin=
+g:3.0pt 0cm 0cm 0cm'><p class=3DMsoNormal><b><span lang=3DEN-US style=3D'fo=
+nt-size:10.0pt;font-family:"Tahoma","sans-serif"'>From:</span></b><span lan=
+g=3DEN-US style=3D'font-size:10.0pt;font-family:"Tahoma","sans-serif"'> =D0=
+=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=B8=D1=86=D0=B8=D0=BD [mailto:ch=
+ipitsine@...277...] <br><b>Sent:</b> Tuesday, October 10, 2017 3:10 PM<br><=
+b>To:</b> Simon Rozman<br><b>Cc:</b> openvpn-devel (openvpn-devel@...1885...=
+rceforge.net)<br><b>Subject:</b> Re: [Openvpn-devel] openvpnserv building u=
+nder MSVC<o:p></o:p></span></p></div></div><p class=3DMsoNormal><o:p>&nbsp;=
+</o:p></p><div><div><p class=3DMsoNormal style=3D'margin-bottom:12.0pt'>wow=
+.<o:p></o:p></p></div><p class=3DMsoNormal>did you try to build it on App V=
+eyor ? (I tried, no success)<o:p></o:p></p></div></div></div></body></html>=
+
+------=_NextPart_001_0020_01D3440B.7286C400--
+
+------=_NextPart_000_001F_01D3440B.7286C400
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -122,19 +220,19 @@ J1nlAZZNwcev00XWu5MF83BRMbfkThrdGCY22Qjd5He7MHEb0U+oBIvS+p9Vy4IcD0mIc2Y2i+X1
 7yNdSbkqEAstd11gZKt+TKKOImNfcGp0tVulDPGKtDGCAzkwggM1AgEBMEUwPTELMAkGA1UEBhMC
 c2kxGzAZBgNVBAoTEnN0YXRlLWluc3RpdHV0aW9uczERMA8GA1UECxMIc2lnZW4tY2ECBDtKDS4w
 DQYJYIZIAWUDBAIBBQCgggHFMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkF
-MQ8XDTE3MTAxMzA0NTUzOVowLwYJKoZIhvcNAQkEMSIEIIO3u5+oYiqEgQaS3ym7lxOGgzLfAtDJ
-gacCeduPOH88MFQGCSsGAQQBgjcQBDFHMEUwPTELMAkGA1UEBhMCc2kxGzAZBgNVBAoTEnN0YXRl
+MQ8XDTE3MTAxMzA4MTAwOFowLwYJKoZIhvcNAQkEMSIEINIfpFS8irVE3gE5meVarD1MMcjIuiCD
+ekkWENB7a223MFQGCSsGAQQBgjcQBDFHMEUwPTELMAkGA1UEBhMCc2kxGzAZBgNVBAoTEnN0YXRl
 LWluc3RpdHV0aW9uczERMA8GA1UECxMIc2lnZW4tY2ECBDtKDS4wVgYLKoZIhvcNAQkQAgsxR6BF
 MD0xCzAJBgNVBAYTAnNpMRswGQYDVQQKExJzdGF0ZS1pbnN0aXR1dGlvbnMxETAPBgNVBAsTCHNp
 Z2VuLWNhAgQ7Sg0uMIGrBgkqhkiG9w0BCQ8xgZ0wgZowCwYJYIZIAWUDBAEqMAsGCWCGSAFlAwQB
 FjAKBggqhkiG9w0DBzALBglghkgBZQMEAQIwDgYIKoZIhvcNAwICAgCAMAcGBSsOAwIHMA0GCCqG
 SIb3DQMCAgFAMA0GCCqGSIb3DQMCAgEoMAsGCWCGSAFlAwQCATALBglghkgBZQMEAgMwCwYJYIZI
-AWUDBAICMAcGBSsOAwIaMA0GCSqGSIb3DQEBAQUABIIBADtlql00KqYBmmyAvG+9Q6w3CcDi6rHf
-5Bi14D8LKsKRqlIG6/q5NDQyLys/wePv9DdaO9Jc/xlpu9UaE0BJ2PG/Dr2uPOj5lUz2GVBDrY3p
-WQHVpEuc3svQFLdDUtOggp0fRdZ4/bxDKdoB5P+MqQ3EnQNs5dXr6YRZUfjZwxx8Q4y4OZgIOXMs
-UmlorwmYqt2Rh91Gez6IciG1BzrDbEne6b3lk7JgOtIbcJgyuf552aBIzlu8PZA7O00XKi9Qbh+K
-EwCk61B+ofIS8q5j+YzQTe0lXlc8MTsSRM4qHv25dO/K8h4BpZ4ErycYEs16iYoPP1CMmJZduY6r
-0BmeXbcAAAAAAAA=
+AWUDBAICMAcGBSsOAwIaMA0GCSqGSIb3DQEBAQUABIIBAAKYHlGQXTxPkJkuAvAvVjj8eEe6UBEe
+d5uVdVtWAtDDHTVTzhAFmOLgkDZU15znky1MyGNOpt2wlMvMt9dkXgfEoJ/oir8zFScuQHZx2o/3
+aX5IuWX3xywKDbf+uOtojRGG8A8uxJl1u6iGawcjE/WwZ84KXwTWlF/WYXXHiairo8KPFuntq5sC
+TSmBr+nytOim550iYfKM4swtnpjzp3ecWeEg2Okp26K6LYLYa3XeP0xOEXQwIfHbZJhZuFAcWcn9
+3QiztEnviAP1dSJ2p8sb4QFbKxxx9ze2XUUSzUgFlwSKQpzdquFSdhx6JrfsWOQw7X2/MU42X/cF
+0i36QU8AAAAAAAA=
 
-------=_NextPart_000_0014_01D343F0.47B8C5E0--
+------=_NextPart_000_001F_01D3440B.7286C400--
 
