@@ -1,16 +1,12 @@
-Date: Thu, 12 Oct 2017 18:26:02 +0200
-From: Gert Doering <gert@...1296...>
-Message-ID: <20171012162601.GQ958@...1296...>
-References: <20171010231130.6832-1-simon@...2293...>
- <20171010231130.6832-6-simon@...2293...>
- <CAKuzo_jwyz+AgUmcXi-bCdxiCLzb4YD2uF6AV=oxTPxvm6SwAA@...278...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="Hf61M2y+wYpnELGG"
-Content-Disposition: inline
-In-Reply-To: <CAKuzo_jwyz+AgUmcXi-bCdxiCLzb4YD2uF6AV=oxTPxvm6SwAA@...278...>
-Subject: Re: [Openvpn-devel] [PATCH 06/13] openvpnserv.vcxproj project file
- recreated using Visual Studio 2017
+In-Reply-To: <20171012072440.8704-1-simon@...2293...>
+References: <20171012072440.8704-1-simon@...2293...>
+From: Selva <selva.nair@...277...>
+Date: Thu, 12 Oct 2017 22:18:49 -0400
+Message-ID: <CAKuzo_jUnvMkHwHXZ=cAre-=z7WACU0b2qKV27FyymfBTncX=g@...278...>
+Content-Type: multipart/alternative; boundary="001a114c86ae38cad2055b64488b"
+Subject: Re: [Openvpn-devel] [PATCH] Uniform snwprintf() across MinGW and
+ MSVC compilers
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,59 +15,276 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva <selva.nair@...277...>
-Cc: Simon Rozman <simon@...2293...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Simon Rozman <simon@...2293...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---Hf61M2y+wYpnELGG
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+--001a114c86ae38cad2055b64488b
+Content-Type: text/plain; charset="UTF-8"
 
 Hi,
 
-On Thu, Oct 12, 2017 at 11:56:23AM -0400, Selva wrote:
-> Though we do not have a patch allocation policy, as I have responded to 1
-> to 5 I might have become the de-facto reviewer of this patch set.=20
+For book keeping its easier if version 2 of a patch is sent to the same
+thread as
+the original (e.g., use --in-reply-to: <msgid> in git send-email) and
+[PATCH v2 01/13]
+in header.
 
-I had hoped that you'll review this, as you *are* the one who understands
-windows best :-)
+Anyway, this one is v2 of [PATCH 01/13]
+https://www.mail-archive.com/openvpn-devel@...282...
+.net/msg15583.html
 
-> So this is just to say patches 6 to 13 (except 9 and 12) are VS project=20
-> files and related stuff that I have no idea about and will be hard for=20
-> me to review. Hope someone else take a look at those.
+On Thu, Oct 12, 2017 at 3:24 AM, Simon Rozman <simon@...2293...> wrote:
 
-I'll take those if nobody else volunteers.  I have no idea about that
-stuff, but if it looks like "it's the same thing, we just have new source
-files that were not added when introducing the .c file" I can handle it :-)
-
-thanks,
-
-gert
+> MinGW's snwprintf() is a replacement for ISO C's swprintf() used by
+> MSVC.
 
 
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
+A confusing statement as MinGW too has 'swprintf' and my suggestion
+was to just use 'swprintf' both for mingw and MSVC. Then neither build
+would depend on non-standard variants.
 
---Hf61M2y+wYpnELGG
-Content-Type: application/pgp-signature; name="signature.asc"
+That said its fine if you want to keep this as just an MSVC compliance
+patch..
 
------BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJZ35eZAAoJEB2Cnv7KVigSpK4L/RYE7a1QxmeNAO6Tz/Lt080d
-351Qj2MFfeZBXEkdNBi6yCA+LAROWGohAdJcQHwAbb7QLC9wDFUvKkYwUbIHiWMe
-UMsqZzqDjOX5NWqziff/To40ieec7QPYVI6P+CBBmwIdTolblfhtLP5CAu8bH476
-HdkW2CXoJ8qf+0Ge90nK49/z59gAN0L8J8C7Ykh5WTfUPbFcku9E1XZnAuDFUd3l
-kDWacYEQAoRNP18m7D0C4YnOButzlXxDa26kB9IMf+8uPwSKSEM2K+iSWAJhcFXq
-/vrqJ8hw4llSNlUKaLGCQj5r3Prc2f2xgR3U4sjAxFP13xts9JxfyoX1hvgRhzI0
-7OlIHN9uj83F8M3ja1NF353jPy5Q9kTZRNavs7/+urC9yb966B/IjkAqSu1N8HZB
-Z5qZ8BNo/+i5VD4A4V4oTLOnyeYL9Mupoq0ilMHO1zcsAmxaWC4SgNib85MEogM/
-OgNLaseObUBuzFB5Ej/J9Lxe0ZoSF//20OeazVACGQ==
-=S4tL
------END PGP SIGNATURE-----
+> MSVC also provides _snwprintf(), however using it leads to
+> unportable code.
+>
+> After a discussion with Selva Nair on devel mailing list, an agreement
+> was reached to use swprintf() for MSVC builds.
+>
+> This patch uniforms snwprintf() usage while making it compile using
+> MinGW and MSVC.
+>
+> Assigning _snwprintf() return value to unused variable was also removed
+> at one occasion.
+> ---
+>  config-msvc.h                 | 3 ++-
+>  src/openvpn/tun.c             | 2 +-
+>  src/openvpnserv/interactive.c | 8 ++++----
+>  3 files changed, 7 insertions(+), 6 deletions(-)
+>
+> diff --git a/config-msvc.h b/config-msvc.h
+> index 0bb153d..c940d15 100644
+> --- a/config-msvc.h
+> +++ b/config-msvc.h
+> @@ -93,9 +93,10 @@
+>  #define strncasecmp strnicmp
+>  #define strcasecmp _stricmp
+>
+> -#if _MSC_VER<1900
+> +#if _MSC_VER < 1900
+>  #define snprintf _snprintf
+>  #endif
+> +#define snwprintf swprintf
 
---Hf61M2y+wYpnELGG--
+
+>  #if _MSC_VER < 1800
+>  #define strtoull strtoul
+> diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+> index 3639718..9e3ca41 100644
+> --- a/src/openvpn/tun.c
+> +++ b/src/openvpn/tun.c
+> @@ -4622,7 +4622,7 @@ get_adapter_index_method_1(const char *guid)
+>      DWORD index;
+>      ULONG aindex;
+>      wchar_t wbuf[256];
+> -    _snwprintf(wbuf, SIZE(wbuf), L"\\DEVICE\\TCPIP_%S", guid);
+> +    snwprintf(wbuf, SIZE(wbuf), L"\\DEVICE\\TCPIP_%S", guid);
+>      wbuf [SIZE(wbuf) - 1] = 0;
+>      if (GetAdapterIndex(wbuf, &aindex) != NO_ERROR)
+>      {
+> diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
+> index 823b25b..a060a06 100644
+> --- a/src/openvpnserv/interactive.c
+> +++ b/src/openvpnserv/interactive.c
+> @@ -276,7 +276,7 @@ ReturnProcessId(HANDLE pipe, DWORD pid, DWORD count,
+> LPHANDLE events)
+>       * Same format as error messages (3 line string) with error = 0 in
+>       * 0x%08x format, PID on line 2 and a description "Process ID" on
+> line 3
+>       */
+> -    _snwprintf(buf, _countof(buf), L"0x%08x\n0x%08x\n%s", 0, pid, msg);
+> +    snwprintf(buf, _countof(buf), L"0x%08x\n0x%08x\n%s", 0, pid, msg);
+>      buf[_countof(buf) - 1] = '\0';
+>
+>      WritePipeAsync(pipe, buf, wcslen(buf) * 2, count, events);
+> @@ -1066,7 +1066,7 @@ RegisterDNS(LPVOID unused)
+>
+>      if (GetSystemDirectory(sys_path, MAX_PATH))
+>      {
+> -        _snwprintf(ipcfg, MAX_PATH, L"%s\\%s", sys_path, L"ipconfig.exe");
+> +        snwprintf(ipcfg, MAX_PATH, L"%s\\%s", sys_path, L"ipconfig.exe");
+>          ipcfg[MAX_PATH-1] = L'\0';
+>      }
+>
+> @@ -1706,8 +1706,8 @@ RunOpenvpn(LPVOID p)
+>      else if (exit_code != 0)
+>      {
+>          WCHAR buf[256];
+> -        int len = _snwprintf(buf, _countof(buf),
+> -                             L"OpenVPN exited with error: exit code =
+> %lu", exit_code);
+> +        snwprintf(buf, _countof(buf),
+> +                  L"OpenVPN exited with error: exit code = %lu",
+> exit_code);
+>          buf[_countof(buf) - 1] =  L'\0';
+>          ReturnError(pipe, ERROR_OPENVPN_STARTUP, buf, 1, &exit_event);
+>      }
+>
+
+As said above, I would have replaced all _snwprintf and snwprintf by
+swprintf and avoided the #define. That has the added advantage that mingw
+builds also will no longer depend on the non-standard snwprintf.
+
+Nevertheless I'm ok with this unless someone else objects.
+
+Selva
+
+--001a114c86ae38cad2055b64488b
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr">Hi,<div><br></div><div>For book keeping its easier if vers=
+ion 2 of a patch is sent to the same thread as</div><div>the original (e.g.=
+, use --in-reply-to: &lt;<span class=3D"" id=3D":3c6.1" tabindex=3D"-1">msg=
+id</span>&gt; in git send-email) and [PATCH v2 01/13]</div><div>in header.=
+=C2=A0</div><div><br></div><div>Anyway, this one is v2 of [PATCH 01/13]=C2=
+=A0</div><div><a href=3D"https://www.mail-archive.com/openvpn-devel@...1096...=
+ourceforge.net/msg15583.html" target=3D"_blank">https://www.mail-archive.co=
+m/o<wbr><span class=3D"" id=3D":3c6.2" tabindex=3D"-1">penvpn</span>-<span =
+class=3D"" id=3D":3c6.3" tabindex=3D"-1">devel</span>@lists.<span class=3D"=
+" id=3D":3c6.4" tabindex=3D"-1">sourceforge</span><wbr>.net/msg15583.html</=
+a></div><div><br><div><div class=3D"gmail_extra"><div class=3D"gmail_quote"=
+>On Thu, Oct 12, 2017 at 3:24 AM, Simon <span class=3D"" id=3D":3c6.5" tabi=
+ndex=3D"-1">Rozman</span> <span dir=3D"ltr">&lt;<a href=3D"mailto:simon@...493...=
+2293..." target=3D"_blank"><span class=3D"" id=3D":3c6.6" tabindex=3D"-1">s=
+imon</span>@<span class=3D"" id=3D":3c6.7" tabindex=3D"-1">rozman</span>.<s=
+pan class=3D"" id=3D":3c6.8" tabindex=3D"-1">si</span></a>&gt;</span> wrote=
+:<br><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;bo=
+rder-left:1px solid rgb(204,204,204);padding-left:1ex">MinGW&#39;s snwprint=
+f() is a replacement for ISO C&#39;s swprintf() used by<br>
+MSVC. </blockquote><div><br></div><div>A confusing statement as <span class=
+=3D"" id=3D":3c6.9" tabindex=3D"-1">MinGW</span> too has &#39;swprintf&#39;=
+ and my suggestion</div><div>was to just use &#39;swprintf&#39; both for <s=
+pan class=3D"" id=3D":3c6.10" tabindex=3D"-1">mingw</span> and <span class=
+=3D"" id=3D":3c6.11" tabindex=3D"-1">MSVC</span>. Then neither build</div><=
+div>would depend on non-standard variants.</div><div><br></div><div>That sa=
+id its fine if you want to keep this as just an=C2=A0<span class=3D"" id=3D=
+":3c6.12" tabindex=3D"-1">MSVC</span> compliance patch..</div><div>=C2=A0=
+=C2=A0</div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0=
+.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">MSVC also pro=
+vides _snwprintf(), however using it leads to<br>
+unportable code.<br>
+<br>
+After a discussion with Selva Nair on devel mailing list, an agreement<br>
+was reached to use swprintf() for MSVC builds.<br>
+<br>
+This patch uniforms snwprintf() usage while making it compile using<br>
+MinGW and MSVC.<br>
+<br>
+Assigning _snwprintf() return value to unused variable was also removed<br>
+at one occasion.<br>
+---<br>
+=C2=A0config-msvc.h=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0| 3 ++-<br>
+=C2=A0src/openvpn/tun.c=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0| 2 =
++-<br>
+=C2=A0src/openvpnserv/interactive.c | 8 ++++----<br>
+=C2=A03 files changed, 7 insertions(+), 6 deletions(-)<br>
+<br>
+diff --git a/config-msvc.h b/config-msvc.h<br>
+index 0bb153d..c940d15 100644<br>
+--- a/config-msvc.h<br>
++++ b/config-msvc.h<br>
+@@ -93,9 +93,10 @@<br>
+=C2=A0#define strncasecmp strnicmp<br>
+=C2=A0#define strcasecmp _stricmp<br>
+<br>
+-#if _MSC_VER&lt;1900<br>
++#if _MSC_VER &lt; 1900<br>
+=C2=A0#define snprintf _snprintf<br>
+=C2=A0#endif<br>
++#define snwprintf swprintf=C2=A0</blockquote><blockquote class=3D"gmail_qu=
+ote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,20=
+4);padding-left:1ex">
+<br>
+=C2=A0#if _MSC_VER &lt; 1800<br>
+=C2=A0#define strtoull strtoul<br>
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c<br>
+index 3639718..9e3ca41 100644<br>
+--- a/src/openvpn/tun.c<br>
++++ b/src/openvpn/tun.c<br>
+@@ -4622,7 +4622,7 @@ get_adapter_index_method_1(con<wbr>st char *guid)<br>
+=C2=A0 =C2=A0 =C2=A0DWORD index;<br>
+=C2=A0 =C2=A0 =C2=A0ULONG aindex;<br>
+=C2=A0 =C2=A0 =C2=A0wchar_t wbuf[256];<br>
+-=C2=A0 =C2=A0 _snwprintf(wbuf, SIZE(wbuf), L&quot;\\DEVICE\\TCPIP_%S&quot;=
+, guid);<br>
++=C2=A0 =C2=A0 snwprintf(wbuf, SIZE(wbuf), L&quot;\\DEVICE\\TCPIP_%S&quot;,=
+ guid);<br>
+=C2=A0 =C2=A0 =C2=A0wbuf [SIZE(wbuf) - 1] =3D 0;<br>
+=C2=A0 =C2=A0 =C2=A0if (GetAdapterIndex(wbuf, &amp;aindex) !=3D NO_ERROR)<b=
+r>
+=C2=A0 =C2=A0 =C2=A0{<br>
+diff --git a/src/openvpnserv/interactive.<wbr>c b/src/openvpnserv/interacti=
+ve.<wbr>c<br>
+index 823b25b..a060a06 100644<br>
+--- a/src/openvpnserv/interactive.<wbr>c<br>
++++ b/src/openvpnserv/interactive.<wbr>c<br>
+@@ -276,7 +276,7 @@ ReturnProcessId(HANDLE pipe, DWORD pid, DWORD count, LP=
+HANDLE events)<br>
+=C2=A0 =C2=A0 =C2=A0 * Same format as error messages (3 line string) with e=
+rror =3D 0 in<br>
+=C2=A0 =C2=A0 =C2=A0 * 0x%08x format, PID on line 2 and a description &quot=
+;Process ID&quot; on line 3<br>
+=C2=A0 =C2=A0 =C2=A0 */<br>
+-=C2=A0 =C2=A0 _snwprintf(buf, _countof(buf), L&quot;0x%08x\n0x%08x\n%s&quo=
+t;, 0, pid, msg);<br>
++=C2=A0 =C2=A0 snwprintf(buf, _countof(buf), L&quot;0x%08x\n0x%08x\n%s&quot=
+;, 0, pid, msg);<br>
+=C2=A0 =C2=A0 =C2=A0buf[_countof(buf) - 1] =3D &#39;\0&#39;;<br>
+<br>
+=C2=A0 =C2=A0 =C2=A0WritePipeAsync(pipe, buf, wcslen(buf) * 2, count, event=
+s);<br>
+@@ -1066,7 +1066,7 @@ RegisterDNS(LPVOID unused)<br>
+<br>
+=C2=A0 =C2=A0 =C2=A0if (GetSystemDirectory(sys_path, MAX_PATH))<br>
+=C2=A0 =C2=A0 =C2=A0{<br>
+-=C2=A0 =C2=A0 =C2=A0 =C2=A0 _snwprintf(ipcfg, MAX_PATH, L&quot;%s\\%s&quot=
+;, sys_path, L&quot;ipconfig.exe&quot;);<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 snwprintf(ipcfg, MAX_PATH, L&quot;%s\\%s&quot;=
+, sys_path, L&quot;ipconfig.exe&quot;);<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0ipcfg[MAX_PATH-1] =3D L&#39;\0&#39;;<br>
+=C2=A0 =C2=A0 =C2=A0}<br>
+<br>
+@@ -1706,8 +1706,8 @@ RunOpenvpn(LPVOID p)<br>
+=C2=A0 =C2=A0 =C2=A0else if (exit_code !=3D 0)<br>
+=C2=A0 =C2=A0 =C2=A0{<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0WCHAR buf[256];<br>
+-=C2=A0 =C2=A0 =C2=A0 =C2=A0 int len =3D _snwprintf(buf, _countof(buf),<br>
+-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0L&quot;OpenVPN exited with error: exit code =
+=3D %lu&quot;, exit_code);<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 snwprintf(buf, _countof(buf),<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 L&quot;Open=
+VPN exited with error: exit code =3D %lu&quot;, exit_code);<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0buf[_countof(buf) - 1] =3D=C2=A0 L&#39;\0=
+&#39;;<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0ReturnError(pipe, ERROR_OPENVPN_STARTUP, =
+buf, 1, &amp;exit_event);<br>
+=C2=A0 =C2=A0 =C2=A0}<br></blockquote><div><br></div><div>As said above, I =
+would have replaced all _<span class=3D"" id=3D":3c6.13" tabindex=3D"-1">sn=
+wprintf</span> and <span class=3D"" id=3D":3c6.14" tabindex=3D"-1">snwprint=
+f</span> by</div><div><span class=3D"" id=3D":3c6.15" tabindex=3D"-1">swpri=
+ntf</span> and avoided the #define. That has the added advantage that <span=
+ class=3D"" id=3D":3c6.16" tabindex=3D"-1">mingw</span></div><div>builds al=
+so will no longer depend on the non-standard <span class=3D"" id=3D":3c6.17=
+" tabindex=3D"-1">snwprintf</span>.</div><div><br></div><div>Nevertheless I=
+&#39;m <span class=3D"" id=3D":3c6.18" tabindex=3D"-1">ok</span> with this =
+unless someone else objects.</div><div><br></div><div><span class=3D"" id=
+=3D":3c6.19" tabindex=3D"-1">Selva</span></div></div></div></div></div></di=
+v>
+
+--001a114c86ae38cad2055b64488b--
 
