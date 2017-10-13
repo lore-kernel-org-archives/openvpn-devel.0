@@ -1,10 +1,17 @@
 From: Simon Rozman <simon@...2293...>
-Date: Fri, 13 Oct 2017 11:50:08 +0200
-Message-Id: <20171013095008.8288-1-simon@...2293...>
-In-Reply-To: <99D61A626FDA8A4B90A270669121BE108580F7E3@...2294...>
-References: <99D61A626FDA8A4B90A270669121BE108580F7E3@...2294...>
-Subject: [Openvpn-devel] [PATCH] Uniform swprintf() across MinGW and MSVC
- compilers
+Date: Fri, 13 Oct 2017 16:57:37 +0000
+Message-ID: <99D61A626FDA8A4B90A270669121BE10858144EF@...2294...>
+References: <99D61A626FDA8A4B90A270669121BE10857D3DCD@...2294...>
+ <CAFHpkQGZuQUZBqPmsZkBDx1CPiG5KmKKi1Kn_pL9JqwiiQcOaA@...278...>
+ <99D61A626FDA8A4B90A270669121BE1085811CC4@...2294...>
+ <CAFHpkQF1GuNwEeZ0oCh7RKEzS2oBvO_+oxXvx_oEo-VtjQizqw@...278...>
+In-Reply-To: <CAFHpkQF1GuNwEeZ0oCh7RKEzS2oBvO_+oxXvx_oEo-VtjQizqw@...278...>
+Content-Language: en-US
+Content-Type: multipart/signed; protocol="application/x-pkcs7-signature";
+ micalg=2.16.840.1.101.3.4.2.1;
+ boundary="----=_NextPart_000_0062_01D34455.22FEF700"
+MIME-Version: 1.0
+Subject: Re: [Openvpn-devel] openvpnserv building under MSVC
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,116 +20,101 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: =?utf-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
+Cc: "openvpn-devel (openvpn-devel@lists.sourceforge.net)" <openvpn-devel@lists.sourceforge.net>
 
-Legacy _snwprintf() and snwprintf() functions replaced with ISO C
-swprintf().
+------=_NextPart_000_0062_01D34455.22FEF700
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Assigning _snwprintf() return value to unused variable was also removed
-at one occasion.
----
- src/openvpn/tun.c             |  2 +-
- src/openvpnserv/interactive.c | 20 ++++++++++----------
- src/openvpnserv/validate.c    |  2 +-
- 3 files changed, 12 insertions(+), 12 deletions(-)
+Hi,
 
-diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-index 3639718..25831ce 100644
---- a/src/openvpn/tun.c
-+++ b/src/openvpn/tun.c
-@@ -4622,7 +4622,7 @@ get_adapter_index_method_1(const char *guid)
-     DWORD index;
-     ULONG aindex;
-     wchar_t wbuf[256];
--    _snwprintf(wbuf, SIZE(wbuf), L"\\DEVICE\\TCPIP_%S", guid);
-+    swprintf(wbuf, SIZE(wbuf), L"\\DEVICE\\TCPIP_%S", guid);
-     wbuf [SIZE(wbuf) - 1] = 0;
-     if (GetAdapterIndex(wbuf, &aindex) != NO_ERROR)
-     {
-diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
-index 0b57eb9..0169617 100644
---- a/src/openvpnserv/interactive.c
-+++ b/src/openvpnserv/interactive.c
-@@ -277,7 +277,7 @@ ReturnProcessId(HANDLE pipe, DWORD pid, DWORD count, LPHANDLE events)
-      * Same format as error messages (3 line string) with error = 0 in
-      * 0x%08x format, PID on line 2 and a description "Process ID" on line 3
-      */
--    _snwprintf(buf, _countof(buf), L"0x%08x\n0x%08x\n%s", 0, pid, msg);
-+    swprintf(buf, _countof(buf), L"0x%08x\n0x%08x\n%s", 0, pid, msg);
-     buf[_countof(buf) - 1] = '\0';
- 
-     WritePipeAsync(pipe, buf, wcslen(buf) * 2, count, events);
-@@ -403,8 +403,8 @@ ValidateOptions(HANDLE pipe, const WCHAR *workdir, const WCHAR *options)
- 
-         if (!CheckOption(workdir, 2, argv_tmp, &settings))
-         {
--            snwprintf(buf, _countof(buf), msg1, argv[0], workdir,
--                      settings.ovpn_admin_group);
-+            swprintf(buf, _countof(buf), msg1, argv[0], workdir,
-+                     settings.ovpn_admin_group);
-             buf[_countof(buf) - 1] = L'\0';
-             ReturnError(pipe, ERROR_STARTUP_DATA, buf, 1, &exit_event);
-         }
-@@ -422,15 +422,15 @@ ValidateOptions(HANDLE pipe, const WCHAR *workdir, const WCHAR *options)
-         {
-             if (wcscmp(L"--config", argv[i]) == 0 && argc-i > 1)
-             {
--                snwprintf(buf, _countof(buf), msg1, argv[i+1], workdir,
--                          settings.ovpn_admin_group);
-+                swprintf(buf, _countof(buf), msg1, argv[i+1], workdir,
-+                         settings.ovpn_admin_group);
-                 buf[_countof(buf) - 1] = L'\0';
-                 ReturnError(pipe, ERROR_STARTUP_DATA, buf, 1, &exit_event);
-             }
-             else
-             {
--                snwprintf(buf, _countof(buf), msg2, argv[i],
--                          settings.ovpn_admin_group);
-+                swprintf(buf, _countof(buf), msg2, argv[i],
-+                         settings.ovpn_admin_group);
-                 buf[_countof(buf) - 1] = L'\0';
-                 ReturnError(pipe, ERROR_STARTUP_DATA, buf, 1, &exit_event);
-             }
-@@ -1067,7 +1067,7 @@ RegisterDNS(LPVOID unused)
- 
-     if (GetSystemDirectory(sys_path, MAX_PATH))
-     {
--        _snwprintf(ipcfg, MAX_PATH, L"%s\\%s", sys_path, L"ipconfig.exe");
-+        swprintf(ipcfg, MAX_PATH, L"%s\\%s", sys_path, L"ipconfig.exe");
-         ipcfg[MAX_PATH-1] = L'\0';
-     }
- 
-@@ -1707,8 +1707,8 @@ RunOpenvpn(LPVOID p)
-     else if (exit_code != 0)
-     {
-         WCHAR buf[256];
--        int len = _snwprintf(buf, _countof(buf),
--                             L"OpenVPN exited with error: exit code = %lu", exit_code);
-+        swprintf(buf, _countof(buf),
-+                 L"OpenVPN exited with error: exit code = %lu", exit_code);
-         buf[_countof(buf) - 1] =  L'\0';
-         ReturnError(pipe, ERROR_OPENVPN_STARTUP, buf, 1, &exit_event);
-     }
-diff --git a/src/openvpnserv/validate.c b/src/openvpnserv/validate.c
-index f6a97e9..653bd12 100644
---- a/src/openvpnserv/validate.c
-+++ b/src/openvpnserv/validate.c
-@@ -65,7 +65,7 @@ CheckConfigPath(const WCHAR *workdir, const WCHAR *fname, const settings_t *s)
-     /* convert fname to full path */
-     if (PathIsRelativeW(fname) )
-     {
--        snwprintf(tmp, _countof(tmp), L"%s\\%s", workdir, fname);
-+        swprintf(tmp, _countof(tmp), L"%s\\%s", workdir, fname);
-         tmp[_countof(tmp)-1] = L'\0';
-         config_file = tmp;
-     }
--- 
-2.9.0.windows.1
+> -----Original Message-----
+> From: =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=B8=D1=86=D0=B8=D0=BD=
+ [mailto:chipitsine@...277...]
+> Sent: Friday, October 13, 2017 10:28 AM
+> To: Simon Rozman
+> Cc: openvpn-devel (openvpn-devel@lists.sourceforge.net)
+> Subject: Re: [Openvpn-devel] openvpnserv building under MSVC
+>=20
+>=20
+>=20
+> yep, I meant App Veyor for openvpn core itself
 
-Here's a revised patch that converts all _snwprintf() and snwprintf() oddities to swprintf(). It replaces the previous patch. Hopefuly, this one nails it.
+I have setup AppVeyor building for core openvpn-msvc now. Please, check out=
+ my fork at https://github.com/Amebis/openvpn.
 
-Best regards,
+I repeat: this is for openvpnserv only for the time being. I am not confide=
+nt, I can revise entire openvpn.exe code to make it MSVC compliant. If only=
+ I had more time.
+
+Beast regards,
 Simon
+
+------=_NextPart_000_0062_01D34455.22FEF700
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+
+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
+dTbeJUUAAAAAAAA=
+
+------=_NextPart_000_0062_01D34455.22FEF700--
 
