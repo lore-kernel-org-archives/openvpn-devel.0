@@ -1,11 +1,16 @@
+From: Simon Rozman <simon@...2293...>
+Date: Fri, 13 Oct 2017 04:55:40 +0000
+Message-ID: <99D61A626FDA8A4B90A270669121BE108580F7E3@...2294...>
+References: <20171012072440.8704-1-simon@...2293...>
+ <CAKuzo_jUnvMkHwHXZ=cAre-=z7WACU0b2qKV27FyymfBTncX=g@...278...>
+In-Reply-To: <CAKuzo_jUnvMkHwHXZ=cAre-=z7WACU0b2qKV27FyymfBTncX=g@...278...>
+Content-Language: en-US
+Content-Type: multipart/signed; protocol="application/x-pkcs7-signature";
+ micalg=2.16.840.1.101.3.4.2.1;
+ boundary="----=_NextPart_000_0014_01D343F0.47B8C5E0"
 MIME-Version: 1.0
-In-Reply-To: <20171012080720.7764-1-simon@...2293...>
-References: <20171012080720.7764-1-simon@...2293...>
-From: Selva <selva.nair@...277...>
-Date: Thu, 12 Oct 2017 22:33:14 -0400
-Message-ID: <CAKuzo_jnKUHsZdYYW=Uk7AU6Q2VVvcyRnONEDto_WtmUnWUtMA@...278...>
-Content-Type: multipart/alternative; boundary="001a11406242bfeaba055b647b5a"
-Subject: Re: [Openvpn-devel] [PATCH] Simplify iphlpapi.dll API calls
+Subject: Re: [Openvpn-devel] [PATCH] Uniform snwprintf() across MinGW and
+ MSVC compilers
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -14,496 +19,122 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Simon Rozman <simon@...2293...>
+To: Selva <selva.nair@...277...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---001a11406242bfeaba055b647b5a
-Content-Type: text/plain; charset="UTF-8"
+------=_NextPart_000_0014_01D343F0.47B8C5E0
+Content-Type: text/plain;
+	charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 
 Hi,
 
-Note to self: this is v2 of [PATCH 05/13]
-https://www.mail-archive.com/openvpn-devel@...282...
-.net/msg15589.html
+> For book keeping its easier if version 2 of a patch is sent to the same 
+> thread
+> as the original (e.g., use --in-reply-to: <msgid> in git send-email) and 
+> [PATCH
+> v2 01/13] in header.
 
-On Thu, Oct 12, 2017 at 4:07 AM, Simon Rozman <simon@...2293...> wrote:
+Thank you, I'll learn the team-play. Please have patience with me. :)
 
-> Dynamically locating API function addresses at run-time using
-> GetProcAddress() was a leftover from the early days of the interactive
-> service development. It was required before `NTDDI_VERSION` was raised
-> from Windows XP to Windows Vista.
+> > On Thu, Oct 12, 2017 at 3:24 AM, Simon Rozman <simon@...2293...> wrote:
+> > MinGW's snwprintf() is a replacement for ISO C's swprintf() used by MSVC.
 >
-> After NTDDI_VERSION API level was raised to NTDDI_VISTA, the direct
-> calling of Vista introduced API functions is possible and much
-> simpler.
->
-> This patch simplifies the code while in the same time it removes
-> controversial function type definitions that caused interactive service
-> not to compile on MSVC.
-> ---
->  src/openvpnserv/interactive.c | 123 +-----------------------------
-> ------------
->  1 file changed, 1 insertion(+), 122 deletions(-)
->
-> diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
-> index a060a06..bb8c5f6 100644
-> --- a/src/openvpnserv/interactive.c
-> +++ b/src/openvpnserv/interactive.c
-> @@ -549,23 +549,6 @@ InterfaceLuid(const char *iface_name, PNET_LUID luid)
->      LPWSTR wide_name;
->      int n;
->
-> -    typedef NETIO_STATUS WINAPI (*ConvertInterfaceAliasToLuidFn)
-> (LPCWSTR, PNET_LUID);
-> -    static ConvertInterfaceAliasToLuidFn ConvertInterfaceAliasToLuid =
-> NULL;
-> -    if (!ConvertInterfaceAliasToLuid)
-> -    {
-> -        HMODULE iphlpapi = GetModuleHandle(TEXT("iphlpapi.dll"));
-> -        if (iphlpapi == NULL)
-> -        {
-> -            return GetLastError();
-> -        }
-> -
-> -        ConvertInterfaceAliasToLuid = (ConvertInterfaceAliasToLuidFn)
-> GetProcAddress(iphlpapi, "ConvertInterfaceAliasToLuid");
-> -        if (!ConvertInterfaceAliasToLuid)
-> -        {
-> -            return GetLastError();
-> -        }
-> -    }
-> -
->      n = MultiByteToWideChar(CP_UTF8, 0, iface_name, -1, NULL, 0);
->      wide_name = malloc(n * sizeof(WCHAR));
+> A confusing statement as MinGW too has 'swprintf' and my suggestion was
+> to just use 'swprintf' both for mingw and MSVC. Then neither build would
+> depend on non-standard variants.
 
-     MultiByteToWideChar(CP_UTF8, 0, iface_name, -1, wide_name, n);
->
+Actually, the statement would have been correct if you change "MSVC" to 
+"MSVC2017".
 
-Not a fault of this patch, but malloc's return value not checked... Let's
-address that in a separate patch.
+> As said above, I would have replaced all _snwprintf and snwprintf by 
+> swprintf
+> and avoided the #define. That has the added advantage that mingw builds
+> also will no longer depend on the non-standard snwprintf.
 
+Are you sure MinGW supports swprintf() in an ISO C conformant way? People all 
+over the web complain about MinGW's non-ISO C conformant swprintf() 
+declaration being a legacy of VC 6.0 runtime library used: 
+https://stackoverflow.com/questions/35072373/swprintf-declaration-mismatch
+As said before, I am not familiar with MinGW. I read OpenVPN has a patched 
+version of it. Perhaps you moved to a more recent VC runtime library 
+meanwhile.
 
-> @@ -584,24 +567,6 @@ CmpAddress(LPVOID item, LPVOID address)
->  static DWORD
->  DeleteAddress(PMIB_UNICASTIPADDRESS_ROW addr_row)
->  {
-> -    typedef NETIOAPI_API (*DeleteUnicastIpAddressEntryFn) (const
-> PMIB_UNICASTIPADDRESS_ROW);
-> -    static DeleteUnicastIpAddressEntryFn DeleteUnicastIpAddressEntry =
-> NULL;
-> -
-> -    if (!DeleteUnicastIpAddressEntry)
-> -    {
-> -        HMODULE iphlpapi = GetModuleHandle(TEXT("iphlpapi.dll"));
-> -        if (iphlpapi == NULL)
-> -        {
-> -            return GetLastError();
-> -        }
-> -
-> -        DeleteUnicastIpAddressEntry = (DeleteUnicastIpAddressEntryFn)
-> GetProcAddress(iphlpapi, "DeleteUnicastIpAddressEntry");
-> -        if (!DeleteUnicastIpAddressEntry)
-> -        {
-> -            return GetLastError();
-> -        }
-> -    }
-> -
->      return DeleteUnicastIpAddressEntry(addr_row);
->  }
->
-> @@ -612,32 +577,6 @@ HandleAddressMessage(address_message_t *msg,
-> undo_lists_t *lists)
->      PMIB_UNICASTIPADDRESS_ROW addr_row;
->      BOOL add = msg->header.type == msg_add_address;
->
-> -    typedef NETIOAPI_API (*CreateUnicastIpAddressEntryFn) (const
-> PMIB_UNICASTIPADDRESS_ROW);
-> -    typedef NETIOAPI_API (*InitializeUnicastIpAddressEntryFn)
-> (PMIB_UNICASTIPADDRESS_ROW);
-> -    static CreateUnicastIpAddressEntryFn CreateUnicastIpAddressEntry =
-> NULL;
-> -    static InitializeUnicastIpAddressEntryFn
-> InitializeUnicastIpAddressEntry = NULL;
-> -
-> -    if (!CreateUnicastIpAddressEntry || !InitializeUnicastIpAddressEntry)
-> -    {
-> -        HMODULE iphlpapi = GetModuleHandle(TEXT("iphlpapi.dll"));
-> -        if (iphlpapi == NULL)
-> -        {
-> -            return GetLastError();
-> -        }
-> -
-> -        CreateUnicastIpAddressEntry = (CreateUnicastIpAddressEntryFn)
-> GetProcAddress(iphlpapi, "CreateUnicastIpAddressEntry");
-> -        if (!CreateUnicastIpAddressEntry)
-> -        {
-> -            return GetLastError();
-> -        }
-> -
-> -        InitializeUnicastIpAddressEntry = (InitializeUnicastIpAddressEntryFn)
-> GetProcAddress(iphlpapi, "InitializeUnicastIpAddressEntry");
-> -        if (!InitializeUnicastIpAddressEntry)
-> -        {
-> -            return GetLastError();
-> -        }
-> -    }
-> -
->      addr_row = malloc(sizeof(*addr_row));
->      if (addr_row == NULL)
->      {
-> @@ -706,24 +645,6 @@ CmpRoute(LPVOID item, LPVOID route)
->  static DWORD
->  DeleteRoute(PMIB_IPFORWARD_ROW2 fwd_row)
->  {
-> -    typedef NETIOAPI_API (*DeleteIpForwardEntry2Fn) (PMIB_IPFORWARD_ROW2);
-> -    static DeleteIpForwardEntry2Fn DeleteIpForwardEntry2 = NULL;
-> -
-> -    if (!DeleteIpForwardEntry2)
-> -    {
-> -        HMODULE iphlpapi = GetModuleHandle(TEXT("iphlpapi.dll"));
-> -        if (iphlpapi == NULL)
-> -        {
-> -            return GetLastError();
-> -        }
-> -
-> -        DeleteIpForwardEntry2 = (DeleteIpForwardEntry2Fn)
-> GetProcAddress(iphlpapi, "DeleteIpForwardEntry2");
-> -        if (!DeleteIpForwardEntry2)
-> -        {
-> -            return GetLastError();
-> -        }
-> -    }
-> -
->      return DeleteIpForwardEntry2(fwd_row);
->  }
->
-> @@ -734,24 +655,6 @@ HandleRouteMessage(route_message_t *msg,
-> undo_lists_t *lists)
->      PMIB_IPFORWARD_ROW2 fwd_row;
->      BOOL add = msg->header.type == msg_add_route;
->
-> -    typedef NETIOAPI_API (*CreateIpForwardEntry2Fn) (PMIB_IPFORWARD_ROW2);
-> -    static CreateIpForwardEntry2Fn CreateIpForwardEntry2 = NULL;
-> -
-> -    if (!CreateIpForwardEntry2)
-> -    {
-> -        HMODULE iphlpapi = GetModuleHandle(TEXT("iphlpapi.dll"));
-> -        if (iphlpapi == NULL)
-> -        {
-> -            return GetLastError();
-> -        }
-> -
-> -        CreateIpForwardEntry2 = (CreateIpForwardEntry2Fn)
-> GetProcAddress(iphlpapi, "CreateIpForwardEntry2");
-> -        if (!CreateIpForwardEntry2)
-> -        {
-> -            return GetLastError();
-> -        }
-> -    }
-> -
->      fwd_row = malloc(sizeof(*fwd_row));
->      if (fwd_row == NULL)
->      {
-> @@ -820,36 +723,12 @@ out:
->  static DWORD
->  HandleFlushNeighborsMessage(flush_neighbors_message_t *msg)
->  {
-> -    typedef NETIOAPI_API (*FlushIpNetTable2Fn) (ADDRESS_FAMILY,
-> NET_IFINDEX);
-> -    static FlushIpNetTable2Fn flush_fn = NULL;
-> -
->      if (msg->family == AF_INET)
->      {
->          return FlushIpNetTable(msg->iface.index);
->      }
->
-> -    if (!flush_fn)
-> -    {
-> -        HMODULE iphlpapi = GetModuleHandle(TEXT("iphlpapi.dll"));
-> -        if (iphlpapi == NULL)
-> -        {
-> -            return GetLastError();
-> -        }
-> -
-> -        flush_fn = (FlushIpNetTable2Fn) GetProcAddress(iphlpapi,
-> "FlushIpNetTable2");
-> -        if (!flush_fn)
-> -        {
-> -            if (GetLastError() == ERROR_PROC_NOT_FOUND)
-> -            {
-> -                return WSAEPFNOSUPPORT;
-> -            }
-> -            else
-> -            {
-> -                return GetLastError();
-> -            }
-> -        }
-> -    }
-> -    return flush_fn(msg->family, msg->iface.index);
-> +    return FlushIpNetTable2(msg->family, msg->iface.index);
->  }
->
+If we change _snwprintf/snwprintf() to swprintf() as you suggested, I am 
+afraid OpenVPN would not compile on MinGW anymore without #define tweaks. But, 
+this time MinGW will need them, not MSVC*2017*.
 
-Looks good and cross-compiles without issues.
+Selva, if you can confirm that swprintf() really works on OpenVPN's 
+distribution of MinGW in an ISO C conformant way, I'll gladly use it. I can 
+prepare a patch for you if you can give it a try.
 
-ACK
+Best regards,
+Simon
 
-Selva
+------=_NextPart_000_0014_01D343F0.47B8C5E0
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
 
---001a11406242bfeaba055b647b5a
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+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
+0BmeXbcAAAAAAAA=
 
-<div dir=3D"ltr">Hi,<div><br></div><div>Note to self: this is v2 of [PATCH =
-05/13]</div><div><div class=3D"gmail_extra"><a href=3D"https://www.mail-arc=
-hive.com/openvpn-devel@lists.sourceforge.net/msg15589.html" target=3D"_blan=
-k">https://www.mail-archive.com/o<wbr>penvpn-devel@...282...<wbr>.net/msg15=
-589.html</a></div><div class=3D"gmail_extra"><br><div class=3D"gmail_quote"=
->On Thu, Oct 12, 2017 at 4:07 AM, Simon Rozman <span dir=3D"ltr">&lt;<a hre=
-f=3D"mailto:simon@...2293..." target=3D"_blank">simon@...2293...</a>&gt;</s=
-pan> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0p=
-x 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">Dynamicall=
-y locating API function addresses at run-time using<br>
-GetProcAddress() was a leftover from the early days of the interactive<br>
-service development. It was required before `NTDDI_VERSION` was raised<br>
-from Windows XP to Windows Vista.<br>
-<br>
-After NTDDI_VERSION API level was raised to NTDDI_VISTA, the direct<br>
-calling of Vista introduced API functions is possible and much<br>
-simpler.<br>
-<br>
-This patch simplifies the code while in the same time it removes<br>
-controversial function type definitions that caused interactive service not=
- to compile on MSVC.<br>
----<br>
-=C2=A0src/openvpnserv/interactive.c | 123 +-----------------------------<wb=
-r>------------<br>
-=C2=A01 file changed, 1 insertion(+), 122 deletions(-)<br>
-<br>
-diff --git a/src/openvpnserv/interactive.<wbr>c b/src/openvpnserv/interacti=
-ve.<wbr>c<br>
-index a060a06..bb8c5f6 100644<br>
---- a/src/openvpnserv/interactive.<wbr>c<br>
-+++ b/src/openvpnserv/interactive.<wbr>c<br>
-@@ -549,23 +549,6 @@ InterfaceLuid(const char *iface_name, PNET_LUID luid)<=
-br>
-=C2=A0 =C2=A0 =C2=A0LPWSTR wide_name;<br>
-=C2=A0 =C2=A0 =C2=A0int n;<br>
-<br>
--=C2=A0 =C2=A0 typedef NETIO_STATUS WINAPI (*ConvertInterfaceAliasToLuidF<w=
-br>n) (LPCWSTR, PNET_LUID);<br>
--=C2=A0 =C2=A0 static ConvertInterfaceAliasToLuidFn ConvertInterfaceAliasTo=
-Luid =3D NULL;<br>
--=C2=A0 =C2=A0 if (!ConvertInterfaceAliasToLuid)<br>
--=C2=A0 =C2=A0 {<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 HMODULE iphlpapi =3D GetModuleHandle(TEXT(&quo=
-t;iphlpapi<wbr>.dll&quot;));<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 if (iphlpapi =3D=3D NULL)<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 {<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 return GetLastError();<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 }<br>
--<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 ConvertInterfaceAliasToLuid =3D (ConvertInterf=
-aceAliasToLuidFn<wbr>) GetProcAddress(iphlpapi, &quot;ConvertInterfaceAlias=
-ToLuid&quot;)<wbr>;<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 if (!ConvertInterfaceAliasToLuid)<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 {<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 return GetLastError();<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 }<br>
--=C2=A0 =C2=A0 }<br>
--<br>
-=C2=A0 =C2=A0 =C2=A0n =3D MultiByteToWideChar(CP_UTF8, 0, iface_name, -1, N=
-ULL, 0);<br>
-=C2=A0 =C2=A0 =C2=A0wide_name =3D malloc(n * sizeof(WCHAR));</blockquote><b=
-lockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-le=
-ft:1px solid rgb(204,204,204);padding-left:1ex">
-=C2=A0 =C2=A0 =C2=A0MultiByteToWideChar(CP_UTF8, 0, iface_name, -1, wide_na=
-me, n);<br></blockquote><div><br></div><div>Not a fault of this patch, but =
-malloc&#39;s return value not checked... Let&#39;s</div><div>address that i=
-n a separate patch.=C2=A0</div><div>=C2=A0</div><blockquote class=3D"gmail_=
-quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,=
-204);padding-left:1ex">@@ -584,24 +567,6 @@ CmpAddress(LPVOID item, LPVOID =
-address)<br>
-=C2=A0static DWORD<br>
-=C2=A0DeleteAddress(PMIB_UNICASTIPA<wbr>DDRESS_ROW addr_row)<br>
-=C2=A0{<br>
--=C2=A0 =C2=A0 typedef NETIOAPI_API (*DeleteUnicastIpAddressEntryF<wbr>n) (=
-const PMIB_UNICASTIPADDRESS_ROW);<br>
--=C2=A0 =C2=A0 static DeleteUnicastIpAddressEntryFn DeleteUnicastIpAddressE=
-ntry =3D NULL;<br>
--<br>
--=C2=A0 =C2=A0 if (!DeleteUnicastIpAddressEntry)<br>
--=C2=A0 =C2=A0 {<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 HMODULE iphlpapi =3D GetModuleHandle(TEXT(&quo=
-t;iphlpapi<wbr>.dll&quot;));<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 if (iphlpapi =3D=3D NULL)<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 {<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 return GetLastError();<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 }<br>
--<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 DeleteUnicastIpAddressEntry =3D (DeleteUnicast=
-IpAddressEntryFn<wbr>) GetProcAddress(iphlpapi, &quot;DeleteUnicastIpAddres=
-sEntry&quot;)<wbr>;<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 if (!DeleteUnicastIpAddressEntry)<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 {<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 return GetLastError();<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 }<br>
--=C2=A0 =C2=A0 }<br>
--<br>
-=C2=A0 =C2=A0 =C2=A0return DeleteUnicastIpAddressEntry(ad<wbr>dr_row);<br>
-=C2=A0}<br>
-<br>
-@@ -612,32 +577,6 @@ HandleAddressMessage(address_m<wbr>essage_t *msg, undo=
-_lists_t *lists)<br>
-=C2=A0 =C2=A0 =C2=A0PMIB_UNICASTIPADDRESS_ROW addr_row;<br>
-=C2=A0 =C2=A0 =C2=A0BOOL add =3D msg-&gt;header.type =3D=3D msg_add_address=
-;<br>
-<br>
--=C2=A0 =C2=A0 typedef NETIOAPI_API (*CreateUnicastIpAddressEntryF<wbr>n) (=
-const PMIB_UNICASTIPADDRESS_ROW);<br>
--=C2=A0 =C2=A0 typedef NETIOAPI_API (*InitializeUnicastIpAddressEn<wbr>tryF=
-n) (PMIB_UNICASTIPADDRESS_ROW);<br>
--=C2=A0 =C2=A0 static CreateUnicastIpAddressEntryFn CreateUnicastIpAddressE=
-ntry =3D NULL;<br>
--=C2=A0 =C2=A0 static InitializeUnicastIpAddressEntr<wbr>yFn InitializeUnic=
-astIpAddressEntr<wbr>y =3D NULL;<br>
--<br>
--=C2=A0 =C2=A0 if (!CreateUnicastIpAddressEntry || !InitializeUnicastIpAddr=
-essEnt<wbr>ry)<br>
--=C2=A0 =C2=A0 {<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 HMODULE iphlpapi =3D GetModuleHandle(TEXT(&quo=
-t;iphlpapi<wbr>.dll&quot;));<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 if (iphlpapi =3D=3D NULL)<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 {<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 return GetLastError();<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 }<br>
--<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 CreateUnicastIpAddressEntry =3D (CreateUnicast=
-IpAddressEntryFn<wbr>) GetProcAddress(iphlpapi, &quot;CreateUnicastIpAddres=
-sEntry&quot;)<wbr>;<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 if (!CreateUnicastIpAddressEntry)<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 {<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 return GetLastError();<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 }<br>
--<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 InitializeUnicastIpAddressEntr<wbr>y =3D (Init=
-ializeUnicastIpAddressEnt<wbr>ryFn) GetProcAddress(iphlpapi, &quot;Initiali=
-zeUnicastIpAddressEnt<wbr>ry&quot;);<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 if (!InitializeUnicastIpAddressEn<wbr>try)<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 {<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 return GetLastError();<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 }<br>
--=C2=A0 =C2=A0 }<br>
--<br>
-=C2=A0 =C2=A0 =C2=A0addr_row =3D malloc(sizeof(*addr_row));<br>
-=C2=A0 =C2=A0 =C2=A0if (addr_row =3D=3D NULL)<br>
-=C2=A0 =C2=A0 =C2=A0{<br>
-@@ -706,24 +645,6 @@ CmpRoute(LPVOID item, LPVOID route)<br>
-=C2=A0static DWORD<br>
-=C2=A0DeleteRoute(PMIB_IPFORWARD_RO<wbr>W2 fwd_row)<br>
-=C2=A0{<br>
--=C2=A0 =C2=A0 typedef NETIOAPI_API (*DeleteIpForwardEntry2Fn) (PMIB_IPFORW=
-ARD_ROW2);<br>
--=C2=A0 =C2=A0 static DeleteIpForwardEntry2Fn DeleteIpForwardEntry2 =3D NUL=
-L;<br>
--<br>
--=C2=A0 =C2=A0 if (!DeleteIpForwardEntry2)<br>
--=C2=A0 =C2=A0 {<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 HMODULE iphlpapi =3D GetModuleHandle(TEXT(&quo=
-t;iphlpapi<wbr>.dll&quot;));<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 if (iphlpapi =3D=3D NULL)<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 {<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 return GetLastError();<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 }<br>
--<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 DeleteIpForwardEntry2 =3D (DeleteIpForwardEntr=
-y2Fn) GetProcAddress(iphlpapi, &quot;DeleteIpForwardEntry2&quot;);<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 if (!DeleteIpForwardEntry2)<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 {<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 return GetLastError();<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 }<br>
--=C2=A0 =C2=A0 }<br>
--<br>
-=C2=A0 =C2=A0 =C2=A0return DeleteIpForwardEntry2(fwd_row)<wbr>;<br>
-=C2=A0}<br>
-<br>
-@@ -734,24 +655,6 @@ HandleRouteMessage(route_messa<wbr>ge_t *msg, undo_lis=
-ts_t *lists)<br>
-=C2=A0 =C2=A0 =C2=A0PMIB_IPFORWARD_ROW2 fwd_row;<br>
-=C2=A0 =C2=A0 =C2=A0BOOL add =3D msg-&gt;header.type =3D=3D msg_add_route;<=
-br>
-<br>
--=C2=A0 =C2=A0 typedef NETIOAPI_API (*CreateIpForwardEntry2Fn) (PMIB_IPFORW=
-ARD_ROW2);<br>
--=C2=A0 =C2=A0 static CreateIpForwardEntry2Fn CreateIpForwardEntry2 =3D NUL=
-L;<br>
--<br>
--=C2=A0 =C2=A0 if (!CreateIpForwardEntry2)<br>
--=C2=A0 =C2=A0 {<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 HMODULE iphlpapi =3D GetModuleHandle(TEXT(&quo=
-t;iphlpapi<wbr>.dll&quot;));<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 if (iphlpapi =3D=3D NULL)<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 {<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 return GetLastError();<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 }<br>
--<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 CreateIpForwardEntry2 =3D (CreateIpForwardEntr=
-y2Fn) GetProcAddress(iphlpapi, &quot;CreateIpForwardEntry2&quot;);<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 if (!CreateIpForwardEntry2)<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 {<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 return GetLastError();<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 }<br>
--=C2=A0 =C2=A0 }<br>
--<br>
-=C2=A0 =C2=A0 =C2=A0fwd_row =3D malloc(sizeof(*fwd_row));<br>
-=C2=A0 =C2=A0 =C2=A0if (fwd_row =3D=3D NULL)<br>
-=C2=A0 =C2=A0 =C2=A0{<br>
-@@ -820,36 +723,12 @@ out:<br>
-=C2=A0static DWORD<br>
-=C2=A0HandleFlushNeighborsMessage(f<wbr>lush_neighbors_message_t *msg)<br>
-=C2=A0{<br>
--=C2=A0 =C2=A0 typedef NETIOAPI_API (*FlushIpNetTable2Fn) (ADDRESS_FAMILY, =
-NET_IFINDEX);<br>
--=C2=A0 =C2=A0 static FlushIpNetTable2Fn flush_fn =3D NULL;<br>
--<br>
-=C2=A0 =C2=A0 =C2=A0if (msg-&gt;family =3D=3D AF_INET)<br>
-=C2=A0 =C2=A0 =C2=A0{<br>
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0return FlushIpNetTable(msg-&gt;iface.ind<=
-wbr>ex);<br>
-=C2=A0 =C2=A0 =C2=A0}<br>
-<br>
--=C2=A0 =C2=A0 if (!flush_fn)<br>
--=C2=A0 =C2=A0 {<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 HMODULE iphlpapi =3D GetModuleHandle(TEXT(&quo=
-t;iphlpapi<wbr>.dll&quot;));<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 if (iphlpapi =3D=3D NULL)<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 {<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 return GetLastError();<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 }<br>
--<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 flush_fn =3D (FlushIpNetTable2Fn) GetProcAddre=
-ss(iphlpapi, &quot;FlushIpNetTable2&quot;);<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 if (!flush_fn)<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 {<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 if (GetLastError() =3D=3D ERROR_=
-PROC_NOT_FOUND)<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 {<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 return WSAEPFNOSUP=
-PORT;<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 }<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 else<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 {<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 return GetLastErro=
-r();<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 }<br>
--=C2=A0 =C2=A0 =C2=A0 =C2=A0 }<br>
--=C2=A0 =C2=A0 }<br>
--=C2=A0 =C2=A0 return flush_fn(msg-&gt;family, msg-&gt;iface.index);<br>
-+=C2=A0 =C2=A0 return FlushIpNetTable2(msg-&gt;family, msg-&gt;iface.index)=
-;<br>
-=C2=A0}<br></blockquote><div><br></div><div>Looks good and cross-compiles w=
-ithout issues.</div><div><br></div><div>ACK</div><div><br></div><div>Selva<=
-/div></div></div></div></div>
-
---001a11406242bfeaba055b647b5a--
+------=_NextPart_000_0014_01D343F0.47B8C5E0--
 
