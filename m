@@ -1,12 +1,8 @@
-From: Jeremie Courreges-Anglas <jca@...2272...>
-References: <87fuaymq62.fsf@...2274...>
- <44a0a6e8-0662-6fcc-7f97-d35477bd81b0@...68...>
-Date: Sun, 15 Oct 2017 14:08:14 +0200
-Message-ID: <87efq4havl.fsf@...2274...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="==-=-=";
- micalg=pgp-sha512; protocol="application/pgp-signature"
-Subject: Re: [Openvpn-devel] [patch] Fix time_t printing - NAK
+From: selva.nair@...277...
+Date: Sun, 15 Oct 2017 15:05:15 -0400
+Message-Id: <1508094315-466-1-git-send-email-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH] Fix missing check for return value of
+ malloc'd buffer
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,199 +11,51 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Matthias Andree <matthias.andree@...68...>
-Cc: openvpn-devel@lists.sourceforge.net
-
---==-=-=
-Content-Type: multipart/mixed; boundary="=-=-="
-
---=-=-=
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-On Sun, Oct 15 2017, Matthias Andree <matthias.andree@...68...> wrote:
-> Am 05.10.2017 um 01:47 schrieb Jeremie Courreges-Anglas:
->> When building openvpn-2.4.4 on OpenBSD, I noticed the following warning:
->>
->> --8<--
->> cc -DHAVE_CONFIG_H -I. -I/usr/ports/pobj/openvpn-2.4.4/openvpn-2.4.4/src=
-/openvpn -I../.. -I../../include  -I/usr/ports/pobj/openvpn-2.4.4/openvpn-2=
-.4.4/include  -I/usr/ports/pobj/openvpn-2.4.4/openvpn-2.4.4/src/compat  -I/=
-usr/local/include     -I/usr/local/include    -DPLUGIN_LIBDIR=3D\"/usr/loca=
-l/lib/openvpn/plugins\"  -O2 -pipe -std=3Dc99 -MT error.o -MD -MP -MF .deps=
-/error.Tpo -c -o error.o /usr/ports/pobj/openvpn-2.4.4/openvpn-2.4.4/src/op=
-envpn/error.c
->> /usr/ports/pobj/openvpn-2.4.4/openvpn-2.4.4/src/openvpn/error.c:346:25: =
-warning: format specifies type 'unsigned long' but the argument has type 't=
-ime_t' (aka 'long long') [-Wformat]
->>                         tv.tv_sec,
->>                         ^~~~~~~~~
->> 1 warning generated.
->> mv -f .deps/error.Tpo .deps/error.Po
->> -->8--
->>
->> OpenBSD uses long long for time_t on all architectures, 32 or 64 bits,
->> in order to cope with dates beyond 2038.  This is also the case on
->> NetBSD and Linux x32.
->>
->> The warning is not innocuous, as a mismatch between the format and the
->> type of parameters passed to variadic functions can result in nasty
->> problems (crashes, etc).  For example, the code below crashes on
->> OpenBSD/arm (32 bits long).
->>
->> --8<--
->> #include <stdio.h>
->> #include <time.h>
->>
->> int
->> main(void)
->> {
->>         time_t t;
->>
->>         time(&t);
->>         printf("%ld %s\n", t, "foobar");
->>         return 0;
->> }
->> -->8--
->>
->> The diff below fixes the potential issue and the warning.  The method
->> used is a cast to (long long), a method successfully used since OpenBSD
->> switched to a 64 bits time_t.  More data at
->>
->>   https://www.openbsd.org/papers/eurobsdcon_2013_time_t/mgp00029.html
->>
->> openvpn already uses long long in a few places.  Note that I did not
->> audit the whole openvpn tree for other possible time_t problems, but
->> I can't spot similar warnings in the build logs.
->> From d620431f661375d3564b60f110d1f69575ac78d7 Mon Sep 17 00:00:00 2001
->> From: Jeremie Courreges-Anglas <jca@...2272...>
->> Date: Thu, 5 Oct 2017 01:43:33 +0200
->> Subject: [PATCH] Cast time_t to long double in order to print it.
->>
->> The underlying type of time_t can be anything from unsigned 32 bits to
->> signed 64 bits to float.  To reliably print it, better cast it to "long
->> long", which is at least 64 bits wide and can represent values beyond
->> 2038.
->
-> NAK.
->
-> This is due to the inconsistent and misleading commit log.
-> The subject says "cast to long double", the code does "cast to long long".
+From: Selva Nair <selva.nair@...277...>
 
-oops, sorry about that.
+- Use utf8to16 from common.c for utf8 to wide conversion and
+  check its return value
 
-> The long commit log states time_t could be a float, which it cannot be
-> according to IEEE Std 1003.1, 2013 edition, which, in the sys/types.h
-> section, requires that time_t shall be an integer type (no mention if
-> it's signed or unsigned). (clock_t could be a floating-point type
-> however).=C2=A0 This is a POSIX restriction over ISO 9899.
+Signed-off-by: Selva Nair <selva.nair@...277...>
+---
+ src/openvpnserv/interactive.c | 18 ++++++++++--------
+ 1 file changed, 10 insertions(+), 8 deletions(-)
 
-ISO C only says that time_t is a numeric type (hence a floating point
-type would be possible), but POSIX is more precise indeed.
+diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
+index 3f98217..f3be113 100644
+--- a/src/openvpnserv/interactive.c
++++ b/src/openvpnserv/interactive.c
+@@ -547,15 +547,17 @@ static DWORD
+ InterfaceLuid(const char *iface_name, PNET_LUID luid)
+ {
+     NETIO_STATUS status;
+-    LPWSTR wide_name;
+-    int n;
+-
+-    n = MultiByteToWideChar(CP_UTF8, 0, iface_name, -1, NULL, 0);
+-    wide_name = malloc(n * sizeof(WCHAR));
+-    MultiByteToWideChar(CP_UTF8, 0, iface_name, -1, wide_name, n);
+-    status = ConvertInterfaceAliasToLuid(wide_name, luid);
+-    free(wide_name);
++    LPWSTR wide_name = utf8to16(iface_name);
+ 
++    if (wide_name)
++    {
++        status = ConvertInterfaceAliasToLuid(wide_name, luid);
++        free(wide_name);
++    }
++    else
++    {
++        status = ERROR_OUTOFMEMORY;
++    }
+     return status;
+ }
+ 
+-- 
+2.6.2
 
-Thanks for your feedback.  New proposal attached, hopefully fixing the
-commit message.
-
-> I propose to either:
-> * cast it to uintmax_t and use the PRIuMAX macro in the *printf function,
-> * cast it to unsigned long long and use %llu to print.
-
-I see no good reason to interpret time_t as an unsigned value.  Most
-unix-like systems (original unix, BSD, Linux, solaris...) use a signed
-integer. A negative time_t value ought to be meaningful, representing
-dates before epoch.  Also I've seen people using time_t to store the
-difference between two timestamps, relying on a signed implementation.
-(I'm not saying this is the case in openvpn.)
-
-Printing negative values as unsigned would make them meaningless/hard to
-diagnose.  The "long long" idiom is careful about this.
-
-I don't have much to say about the intmax_t approach, all I know is that
-"long long" works well as a generic solution since it doesn't need
-stdint.h - and format specifiers that some people find ugly.
-
-> While we are at it, note that tv.tv_usec, per POSIX, is a SIGNED integer
-> type capable of representing numbers in the range [-1; 1,000,000] so
-> casting tv_usec to unsigned long without checking if it's -1 is
-> technically wrong, although I'd be surprised to see gettimeofday()
-> return a negative tv_usec - but UINT_MAX or ULONG_MAX likewise.
-
-It makes sense to respect the fact that suseconds_t can store a negative
-value.  But then the same can be said about time_t (since its signedness
-is not defined by posix).
-
-
---=-=-=
-Content-Type: text/x-patch
-Content-Disposition: attachment;
- filename=0001-Cast-time_t-to-long-long-in-order-to-print-it.patch
-Content-Transfer-Encoding: quoted-printable
-
-From=208ca610cc989601866534a46ac75b6cb30d354f96 Mon Sep 17 00:00:00 2001
-From: Jeremie Courreges-Anglas <jca@...2272...>
-Date: Thu, 5 Oct 2017 01:43:33 +0200
-Subject: [PATCH] Cast time_t to long long in order to print it.
-
-time_t is only specified as an integer type per POSIX.  To reliably
-print it, better cast it to "long long", which is at least 64 bits wide
-and can represent values beyond 2038.
-
-Printing as a "long" could cause problems on ILP32 systems using a 64
-bits time_t (eg OpenBSD/armv7).
-
-Signed-off-by: Jeremie Courreges-Anglas <jca@...2272...>
-=2D--
- src/openvpn/error.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/src/openvpn/error.c b/src/openvpn/error.c
-index 04bf0da5..7b46c5ec 100644
-=2D-- a/src/openvpn/error.c
-+++ b/src/openvpn/error.c
-@@ -342,8 +342,8 @@ x_msg_va(const unsigned int flags, const char *format, =
-va_list arglist)
-                 struct timeval tv;
-                 gettimeofday(&tv, NULL);
-=20
-=2D                fprintf(fp, "%lu.%06lu %x %s%s%s%s",
-=2D                        tv.tv_sec,
-+                fprintf(fp, "%lld.%06lu %x %s%s%s%s",
-+                        (long long)tv.tv_sec,
-                         (unsigned long)tv.tv_usec,
-                         flags,
-                         prefix,
-=2D-=20
-2.14.2
-
-
---=-=-=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-
-
---=20
-jca | PGP : 0x1524E7EE / 5135 92C1 AD36 5293 2BDF  DDCC 0DFA 74AE 1524 E7EE
-
---=-=-=--
-
---==-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCgAdFiEEUTWSwa02UpMr393MDfp0rhUk5+4FAlnjT68ACgkQDfp0rhUk
-5+51+Q/+O0R5eR3NhBTB0iKF9h+9Yo2k9cnlJgsYazxlPU+J2AN6XLdRcGwOMRK6
-dpKEYROjrv0Uhhxrbqf5r/cyHnJLqaivMJAaU2lLNXkbK07fFd7CuypGradFtWUo
-JpHH4htz73nTCXD3yN9yS3ibftu1H6byaB9wWo89W0XjkxMUGjZe2tqcLPECr4uk
-04vSOdPcGNtInL+FG0Ck9VfU+sxW7xxxKgLgt6tsOCrHaP6j7MxRbXFqZyqnkWrq
-Buxo1Auwvoz7ZIHbVwiaUnEgO/Ka2KeOdw7LZFUu74l/Hf+L1rwpFMIpFQKPen26
-qx/o0tqMWZTROja6qM6AJKtrdCcy8xaH3JV33+/qMlA9CYowfxXE4etEQF6dmG9Q
-ChU0PAsh2Z9jskTRjWPkCI5eGcanJsk6OVdhdBDD5hdyb5CuwMU1xwEFYbFp6OWe
-YTxhQXHulGEiXHxlbXilYeWEpp1zUMO9BeZJFpO0ZEA7eb66bpaE5IBt//8LIUBx
-DbRTCZFzUfjSB75YAbbjtatc7gvw5k+aKwGX8aw36xyaOAWddwIdoWn+nBx8UOZb
-TOnrxeVNML2K0m/dk3oMgx2boLiuet0oyqNwqDlFWT2x8vY3L2TnIFUdgQ35RjR9
-TAg1s97xooUEnWOU++yeD6GjTNWxXnQU/2QXezBUFNl4gn4x2tA=
-=0BuD
------END PGP SIGNATURE-----
---==-=-=--
 
