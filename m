@@ -1,5 +1,3 @@
-MIME-Version: 1.0
-In-Reply-To: <CAKuzo_jvjZPk6VxwaR0_-HeSB7Segepv-1izEVgPiMe33R=YrQ@...278...>
 References: <20171012072440.8704-1-simon@...2293...>
  <CAKuzo_jUnvMkHwHXZ=cAre-=z7WACU0b2qKV27FyymfBTncX=g@...278...>
  <99D61A626FDA8A4B90A270669121BE108580F7E3@...2294...>
@@ -7,12 +5,13 @@ References: <20171012072440.8704-1-simon@...2293...>
  <cc1449bf-ae57-f598-51af-2d3a59c2da1d@...515...>
  <CAFHpkQEgjmdRgMaOC-1-6vRqjYTUoC6fODtcx2yZt0DJUPGcsw@...278...>
  <CAKuzo_gHHupuSL9hLKyCUbMoFhedAFEPPuWMDsX1TV6d7=qm9A@...278...>
- <20171016165720.GL958@...1296...>
- <CAKuzo_jvjZPk6VxwaR0_-HeSB7Segepv-1izEVgPiMe33R=YrQ@...278...>
-From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
-Date: Mon, 16 Oct 2017 23:47:57 +0500
-Message-ID: <CAFHpkQGz4KX0X-Obka=BfdXODT2uc5mDQYafYxEZhjn1ekNQMw@...278...>
-Content-Type: multipart/alternative; boundary="001a114aa6d6fe85e0055bae7167"
+ <CAFHpkQHQC0eacftzVAnzt4068C0_9VzBZ6CH7Cxksa-Sus-pBQ@...278...>
+From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
+Message-ID: <aa37ff4b-7809-d7d9-3f6e-25bd09b1ebb1@...515...>
+Date: Tue, 17 Oct 2017 16:43:47 +0300
+MIME-Version: 1.0
+In-Reply-To: <CAFHpkQHQC0eacftzVAnzt4068C0_9VzBZ6CH7Cxksa-Sus-pBQ@...278...>
+Content-Language: en-US
 Subject: Re: [Openvpn-devel] [PATCH] Uniform snwprintf() across MinGW and
  MSVC compilers
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -23,155 +22,90 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva <selva.nair@...277...>
-Cc: Gert Doering <gert@...1296...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-
---001a114aa6d6fe85e0055bae7167
-Content-Type: text/plain; charset="UTF-8"
-
-2017-10-16 23:17 GMT+05:00 Selva <selva.nair@...277...>:
-
-> Hi,
->
-> On Mon, Oct 16, 2017 at 12:57 PM, Gert Doering <gert@...1296...>
-> wrote:
->
->> Hi,
->>
->> On Mon, Oct 16, 2017 at 11:33:02AM -0400, Selva wrote:
->> > I did a quick test on ubuntu trusty (14.04.05 LTS),  and as you pointed
->> > out, it fails while
->> > compiling block_dns.c because of some errors in the headers for the
->> > windows filtering platform API. All the bits are there so its possible
->> to
->> > build
->> > after tweaking the installed headers (only a couple of lines) but not
->> > something
->> > one would normally want to do.
->> >
->> > It does look like targeting 14.04 is no more relevant.
->>
->> I have some sort of mixed feedback from Samuli's buildbots here - it
->> *used* to compile just fine, but since the latest patch (removing the
->> "manual" dynamic linking stuff), it fails with
->>
->> openvpnserv-interactive.o:interactive.c:(.text+0xee2): undefined
->> reference to `InitializeUnicastIpAddressEntry'
->>
->> ... so it seems 14.04 mingw does not truly expose all the Vista API bits.
->>
->
-> My bad, I missed that warning when tested on a 14.04 instance (it was a
-> google compute engine
-> with 14.04.5 LTS image with mingw-w64 3.1.0). I do  now see that
-> 'InitializeUnicastIpAddressEntry'
-> is missing in there.
->
-> As these buildbots used to succeed the other header issues I saw (an extra
-> ifdef
-> and a duplicate declaration) must be already patched in them.
->
-> The function stub is there in the import library library
-> (libiphlpapi.lib), so we could add
-> VOID NETIOAPI_API_  InitializeUnicastIpAddressEntry
-> (PMIB_UNICASTIPADDRESS_ROW Row);
-> to interactive.c.
->
-> But.
->
->
->> OTOH, we can just document "16.04 is what you need" - that would work
->> for me, as cross-building is really not "I have this <any breed of unix
->> OS> and want to build and run OpenVPN here!" building...   (I have much
->> stricter requirements wrt breaking platforms for "run here" builds :) )
->>
->
-> I would prefer that option and and we just require 16.04 or better from
-> now on.
->
-
-based on the above, I would say that adding configure check for
-"InitializeUnicastIpAddressEntry" would be nice (and making configure
-gently complain like "please use Ubuntu 16.04")
-
-
->
-> Selva
->
->
-
---001a114aa6d6fe85e0055bae7167
-Content-Type: text/html; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
+To: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>, Selva <selva.nair@...277...>
+Cc: Simon Rozman <simon@...2293...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-<div dir=3D"ltr"><br><div class=3D"gmail_extra"><br><div class=3D"gmail_quo=
-te">2017-10-16 23:17 GMT+05:00 Selva <span dir=3D"ltr">&lt;<a href=3D"mailt=
-o:selva.nair@...277..." target=3D"_blank">selva.nair@...277...</a>&gt;</spa=
-n>:<br><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;=
-border-left:1px solid rgb(204,204,204);padding-left:1ex"><div dir=3D"ltr"><=
-div class=3D"gmail_extra">Hi,</div><div class=3D"gmail_extra"><br><div clas=
-s=3D"gmail_quote"><span class=3D"gmail-">On Mon, Oct 16, 2017 at 12:57 PM, =
-Gert Doering <span dir=3D"ltr">&lt;<a href=3D"mailto:gert@...1296..." targe=
-t=3D"_blank">gert@...1296...</a>&gt;</span> wrote:<br><blockquote class=3D"=
-gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(20=
-4,204,204);padding-left:1ex">Hi,<br>
-<span class=3D"gmail-m_-9066416347882930197m_2672371004063453133gmail-"><br>
-On Mon, Oct 16, 2017 at 11:33:02AM -0400, Selva wrote:<br>
-&gt; I did a quick test on ubuntu trusty (14.04.05 LTS),=C2=A0 and as you p=
-ointed<br>
-&gt; out, it fails while<br>
-&gt; compiling block_dns.c because of some errors in the headers for the<br>
-&gt; windows filtering platform API. All the bits are there so its possible=
- to<br>
-&gt; build<br>
-&gt; after tweaking the installed headers (only a couple of lines) but not<=
-br>
-&gt; something<br>
-&gt; one would normally want to do.<br>
-&gt;<br>
-&gt; It does look like targeting 14.04 is no more relevant.<br>
-<br>
-</span>I have some sort of mixed feedback from Samuli&#39;s buildbots here =
-- it<br>
-*used* to compile just fine, but since the latest patch (removing the<br>
-&quot;manual&quot; dynamic linking stuff), it fails with<br>
-<br>
-openvpnserv-interactive.o:inte<wbr>ractive.c:(.text+0xee2): undefined refer=
-ence to `InitializeUnicastIpAddressEnt<wbr>ry&#39;<br>
-<br>
-... so it seems 14.04 mingw does not truly expose all the Vista API bits.<b=
-r></blockquote><div><br></div></span><div>My bad, I missed that warning whe=
-n tested on a 14.04 instance (it was a google compute engine</div><div>with=
- 14.04.5 LTS image with mingw-w64 3.1.0). I do =C2=A0now see that &#39;Init=
-ializeUnicastIpAddressEnt<wbr>ry&#39;</div><div>is missing in there.</div><=
-div><br></div><div>As these buildbots used to succeed the other header issu=
-es I saw (an extra ifdef</div><div>and a duplicate declaration) must be alr=
-eady patched in them.</div><div><br></div><div>The function stub is there i=
-n the import library library (libiphlpapi.lib), so we could add</div><div>V=
-OID NETIOAPI_API_ =C2=A0<wbr>InitializeUnicastIpAddressEntr<wbr>y (PMIB_UNI=
-CASTIPADDRESS_ROW Row);</div><div>to interactive.c.</div><div><br></div><di=
-v>But.</div><span class=3D"gmail-"><div><br></div><blockquote class=3D"gmai=
-l_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,20=
-4,204);padding-left:1ex">
-<br>
-OTOH, we can just document &quot;16.04 is what you need&quot; - that would =
-work<br>
-for me, as cross-building is really not &quot;I have this &lt;any breed of =
-unix<br>
-OS&gt; and want to build and run OpenVPN here!&quot; building...=C2=A0 =C2=
-=A0(I have much<br>
-stricter requirements wrt breaking platforms for &quot;run here&quot; build=
-s :) )<br></blockquote><div><br></div></span><div>I would prefer that optio=
-n and and we just require 16.04 or better from<br></div><div>now on.</div><=
-/div></div></div></blockquote><div><br></div><div>based on the above, I wou=
-ld say that adding configure check for &quot;InitializeUnicastIpAddressEntr=
-<wbr>y&quot; would be nice (and making configure gently complain like &quot=
-;please use Ubuntu 16.04&quot;) </div><div>=C2=A0</div><blockquote class=3D=
-"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(2=
-04,204,204);padding-left:1ex"><div dir=3D"ltr"><div class=3D"gmail_extra"><=
-div class=3D"gmail_quote"><span class=3D"gmail-HOEnZb"><font color=3D"#8888=
-88"><div><br></div><div>Selva</div></font></span></div><br></div></div>
-</blockquote></div><br></div></div>
+On 16/10/2017 20:34, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=B8=D0=BF=D0=B8=D1=
+=86=D0=B8=D0=BD wrote:
+>=20
+>=20
+> 2017-10-16 20:33 GMT+05:00 Selva <selva.nair@...277...
+> <mailto:selva.nair@...277...>>:
+>=20
+>=20
+>     Hi=C2=A0
+>=20
+>     On Mon, Oct 16, 2017 at 4:22 AM, =D0=98=D0=BB=D1=8C=D1=8F =D0=A8=D0=
+=B8=D0=BF=D0=B8=D1=86=D0=B8=D0=BD <chipitsine@...277...
+>     <mailto:chipitsine@...277...>> wrote:
+>=20
+>=20
+>=20
+>         2017-10-16 13:05 GMT+05:00 Samuli Sepp=C3=A4nen <samuli@...515...
+>         <mailto:samuli@...515...>>:
+>=20
+>             On 13/10/2017 20:48, Selva wrote:
+>=20
+>             > @samuli: Which versions of mingw-w64 should we test against=
+ to ensure
+>             > release and snapshot builds would succeed?
+>=20
+>             Right now _we_ use Ubuntu 16.04 for building:
+>=20
+>             =C2=A0 mingw-w64 4.0.4
+>             =C2=A0 gcc-mingw-w64 5.3.1
+>             =C2=A0 g++-mingw-w64 5.3.1
+>=20
+>             That said, I'm pretty sure many people still build with
+>             Ubuntu 14.04. So
+>             keeping support for it would make sense if it is not
+>             horribly painful.
+>             This is what Ubuntu 14.04 comes with:
+>=20
+>             =C2=A0 mingw-w64 3.1.0
+>             =C2=A0 gcc-mingw-w64 4.8.2
+>             =C2=A0 g++-mingw-w64 4.8.2
+>=20
+>=20
+>         I'm afraid, it's not possible to build openvpn with
+>         mingw-gcc-4.8.X due to lack of firewall manipulation api
+>         (that's why we use xenial repo during travis-ci build)
+>=20
+>=20
+>     Good to know mingw-w64 from xenial is used in the travis-ci script.
+>     =C2=A0
+>     I did a quick test on ubuntu=C2=A0trusty (14.04.05 LTS), =C2=A0and as=
+ you
+>     pointed out, it fails while
+>     compiling block_dns.c because of some errors in the headers for the
+>     windows filtering platform API. All the bits are there so its
+>     possible to build
+>     after tweaking the installed headers (only a couple of lines) but
+>     not something
+>     one would normally want to do.
+>=20
+>     It does look like targeting 14.04 is no more relevant.
+>=20
+>=20
+> it used to work on 14.04 ... with patched debs (header issue is
+> relatively easy to fix)
+>=20
+> however, it does not work now because of not supporting Vista things
+>=20
+>=20
+> yes, 16.04 is just fine
+> =C2=A0
 
---001a114aa6d6fe85e0055bae7167--
+I'm fine with dropping support for the Ubuntu 14.04 version of
+mingw-w64, as the unpatched version does not work anyways. Better keep
+code at the OpenVPN end as simple as possible.
+
+--=20
+Samuli Sepp=C3=A4nen
+Community Manager
+OpenVPN Technologies, Inc
+
+irc freenode net: mattock
 
