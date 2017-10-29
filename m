@@ -1,8 +1,17 @@
-Message-ID: <1509291288.3116.14.camel@...2316...>
+Message-ID: <1509292633.3116.16.camel@...2316...>
 From: James Bottomley <James.Bottomley@...2316...>
-Date: Sun, 29 Oct 2017 15:34:48 +0000
+Date: Sun, 29 Oct 2017 15:57:13 +0000
+In-Reply-To: <72a75ffb-67df-0986-7b64-9080254cc084@...2181...>
+References: <1509192147.3021.6.camel@...2316...>
+ <1509192205.3021.7.camel@...2316...>
+ <CAFHpkQHXWrXn42B1xr0YuPvQUrOSvUqQU6h8RkP_EgP_iBP5Qw@...278...>
+ <1509289652.3116.11.camel@...2316...>
+ <72a75ffb-67df-0986-7b64-9080254cc084@...2181...>
+Content-Type: multipart/signed; micalg="pgp-sha256";
+ protocol="application/pgp-signature"; boundary="=-u7YW5hIBu+gjEwOYRbCX"
 Mime-Version: 1.0
-Subject: [Openvpn-devel] [PATCH] autoconf: Fix engine checks for openssl 1.1
+Subject: Re: [Openvpn-devel] [PATCH 1/1] openssl: add engine method for
+ loading the key
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -11,38 +20,22 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: Antonio Quartulli <a@...2181...>, =?UTF-8?Q?=D0=98=D0=BB=D1=8C=D1=8F_=D0=A8=D0=B8=D0=BF=D0=B8=D1=86?= =?UTF-8?Q?=D0=B8=D0=BD?= <chipitsine@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+
+--=-u7YW5hIBu+gjEwOYRbCX
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Transfer-Encoding: quoted-printable
 
-In openssl 1.1, ENGINE_cleanup became a #define instead of a function
-(because it's no longer needed as engines are self cleaning).  Update
-the autoconf.ac script to check for ENGINE_cleanup as a declaration to
-avoid falsely underfinig HAVE_OPENSSL_ENGINE in openssl 1.1+
+On Sun, 2017-10-29 at 23:15 +0800, Antonio Quartulli wrote:
+> James,
+>=20
+> could you please resend a full patch, so to have a better overview of
+> the whole change?
 
-Signed-off-by: James Bottomley <James.Bottomley@...2316...>
+Sure thing. =C2=A0It's below.
+
+James
+
 ---
- configure.ac | 7 +++++++
- 1 file changed, 7 insertions(+)
-
-diff --git a/configure.ac b/configure.ac
-index 6f59baef..45aa5017 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -899,6 +899,13 @@ if test "${enable_crypto}" = "yes" -a "${with_crypto_library}" = "openssl"; then
- 		,
- 		[have_openssl_engine="no"; break]
- 	)
-+	if test "${have_openssl_engine}" = "no"; then
-+		AC_CHECK_DECL( [ENGINE_cleanup], [have_openssl_engine="yes"],,
-+			[[
-+				#include <openssl/engine.h>
-+			]]
-+		)
-+	fi
- 	if test "${have_openssl_engine}" = "yes"; then
- 		AC_DEFINE([HAVE_OPENSSL_ENGINE], [1], [OpenSSL engine support available])
- 	fi
--- 
-2.12.3
-
+--=-u7YW5hIBu+gjEwOYRbCX--
