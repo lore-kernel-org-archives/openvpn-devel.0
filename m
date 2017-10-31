@@ -1,9 +1,12 @@
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <2f63122a-e9b6-85d6-c81c-a28bf32b83be@...515...>
-Date: Tue, 31 Oct 2017 18:39:52 +0200
-MIME-Version: 1.0
+From: Simon Rozman <simon@...2293...>
+Date: Tue, 31 Oct 2017 21:19:07 +0000
+Message-ID: <99D61A626FDA8A4B90A270669121BE1085875356@...2294...>
+References: <99D61A626FDA8A4B90A270669121BE108587171C@...2294...>
+ <CAKuzo_her_KFBMA3Xt6zKGmHGLnc89qXkb=n_LnvxcSzsvdV+A@...278...>
+In-Reply-To: <CAKuzo_her_KFBMA3Xt6zKGmHGLnc89qXkb=n_LnvxcSzsvdV+A@...278...>
 Content-Language: en-US
-Subject: [Openvpn-devel] Topics for the community meeting (Wed, 1st Nov 2017)
+MIME-Version: 1.0
+Subject: Re: [Openvpn-devel] OpenVPN Interactive Service Branding
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,37 +15,43 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+To: Selva <selva.nair@...277...>
+Cc: "openvpn-devel (openvpn-devel@lists.sourceforge.net)" <openvpn-devel@lists.sourceforge.net>, "eduvpn@...321..." <eduvpn@...321...>
 
-NOTE: This meeting starts at 11:30 CET.
-
----
-
-Hi,
-
-
-We're going to have an IRC meeting tomorrow starting at 11:30 CET
-(10:30 UTC) on #openvpn-meeting <at> irc.freenode.net. You do not have
-to be logged in to Freenode to join the channel.
-
-Current topic list along with basic information is here:
-
-<https://community.openvpn.net/openvpn/wiki/Topics-2017-11-01>
-
-If you have any other things you'd like to bring up, respond to this
-mail, send me mail privately or add them to the list yourself.
-
-In case you can't attend the meeting, please feel free to make comments
-on the topics by responding to this email or to the summary email sent
-after the meeting. Whenever possible, we'll also respond to existing,
-related email threads.
-
---
-Samuli Sepp=E4nen
-Community Manager
-OpenVPN Technologies, Inc
-
-irc freenode net: mattock
-
+SGksDQoNCj4gSW5zdGVhZCBvZiBhIHBpcGUgbmFtZSBzZXQgYXQgY29tcGlsZS10aW1lLCBJIHRo
+aW5rIGl0cyBiZXR0ZXIgdG8gbWFrZSB0aGlzDQo+IGN1c3RvbWl6YWJsZSBieSB0aGUgaW5zdGFs
+bGVyLiBUaGF0IGlzLCB3ZSBjb3VsZCB0YWtlIHNlcnZpY2UgbmFtZSBmcm9tIGFuDQo+IG9wdGlv
+bmFsIHJlZ2lzdHJ5IGVudHJ5IHNvIHRoYXQgaXQgbWF5IGJlIHJlbmFtZWQgYnkgdGhlIGluc3Rh
+bGxhdGlvbiBwYWNrYWdlLg0KDQpIb25lc3RseSwgdG8gbWFrZSB0aGUgbmFtZSBvZiB0aGUgbmFt
+ZWQgcGlwZSBhbmQgdGhlIHJlZ2lzdHJ5IGR5bmFtaWNhbGx5IGNvbmZpZ3VyYWJsZSB3YXMgbXkg
+Zmlyc3QgaWRlYSB0b28uIE9ubHkgdG8gZmluZCBvdXQgdGhhdCBvcGVudnBuc2Vydi5leGUgYWxy
+ZWFkeSBzdXBwb3J0cyBjb21waWxlLXRpbWUgY3VzdG9taXphdGlvbiBvZiB0aGUgc2V0dGluZ3Mg
+cmVnaXN0cnkga2V5LiBUaHVzLCBleHRlbmRpbmcgdGhpcyBwcmFjdGljZSB0byB0aGUgbmFtZWQg
+cGlwZSB3YXMgdGhlICJLSVNTIiBhcHByb2FjaC4NCg0KSSdkIHByb3Bvc2UgdG8gdXNlIGEgc2Vy
+dmljZSBjb21tYW5kIGxpbmUgYXJndW1lbnQuIFNvbWV0aGluZyBsaWtlICItLWluc3RhbmNlIG5h
+bWUiLiBXaGVuIC0taW5zdGFuY2UgaXMgbm90IHNwZWNpZmllZCB0aGUgbmFtZSBkZWZhdWx0cyB0
+byAiT3BlblZQTiIuIFRoZSBzZXJ2aWNlIGNvbW1hbmQgbGluZSBpcyBzdG9yZWQgaW4gcmVnaXN0
+cnkgYWZ0ZXIgYWxsOiBIS0VZX0xPQ0FMX01BQ0hJTkVcU1lTVEVNXEN1cnJlbnRDb250cm9sU2V0
+XFNlcnZpY2VzXDxzZXJ2aWNlIG5hbWU+XEltYWdlUGF0aC4gRXhhbXBsZTogTWljcm9zb2Z0IFNR
+TCBTZXJ2ZXIgaXMgdXNpbmcgc2VydmljZSBjb21tYW5kIGxpbmUgYXJndW1lbnRzIHRvIHN1cHBv
+cnQgbXVsdGlwbGUgaW5zdGFuY2VzLg0KDQpJZiB3ZSBjb3VsZCBtYWtlIHRoaXMgcGF0Y2ggbWVy
+Z2VkIGludG8gdGhlIG9mZmljaWFsIE9wZW5WUE4gZGlzdHJpYnV0aW9uLCBpdCB3b3VsZCBiZSBh
+IGJpZyB3aW4gZm9yIHVzIHRvbywgYXMgd2Ugd291bGQgbm8gbG9uZ2VyIHJlcXVpcmUgdG8gY29t
+cGlsZSBvcGVudnBuc2Vydi5leGUgb3Vyc2VsdmVzIGFueW1vcmUuDQoNCj4gVGhhdCB3YXkgZWR1
+VlBOJ3MgR1VJIHdpbGwgcmVtYWluIGNvbXBhdGlibGUgd2l0aCBvZmZpY2lhbCBzZXJ2aWNlIGlm
+IGEgdXNlcg0KPiB3aXNoZXMgdG8gdXNlIGl0IGFzIGEgcmVwbGFjZW1lbnQgZm9yIE9wZW5WUE4t
+R1VJDQoNCkV4YWN0bHkhDQoNCj4gVGhlIGhhcmQgY29kZWQgYWRtaW4gZ3JvdXAgbmFtZSBpcyBv
+bmx5IGEgZGVmYXVsdCB0byBmYWxsIGJhY2sgb24sIHdoZW4gbm8NCj4gZW50cnkgaXMgZm91bmQg
+aW4gdGhlIHJlZ2lzdHJ5LiBKdXN0IHNldCB0aGUgZGVzaXJlZCBuYW1lIGluIHJlZ2lzdHJ5IHdo
+aWxlDQo+IGluc3RhbGxpbmcgdGhlIHBhY2thZ2UuDQo+IA0KPiBUaGUgZmlyZXdhbGwgcnVsZXMg
+YXJlIGFsd2F5cyBhZGRlZCB0byB0aGUgc2FtZSBzdWJsYXllciBieSBhbGwgaW5zdGFuY2VzIG9m
+DQo+IG9wZW52cG4uIEFuZCB0aGlzIGhhcyB0byByZW1haW4gc28gdG8gYXZvaWQgY29uZmxpY3Rz
+IGJldHdlZW4gcnVsZXMgYWRkZWQNCj4gYnkgbXVsdGlwbGUgaW5zdGFuY2VzLiBBIG5hbWUgY2hh
+bmdlIHdpbGwgb25seSBhZmZlY3QgZXJyb3IgbWVzc2FnZXMuIElmIHRoYXQNCj4gaXMgdGhlIGFp
+bSwgd2h5IHBpY2sgb25seSB0aGUgZmlyZXdhbGwgY29kZT8NCg0KVGhleSByZW1haW5lZCB0aGUg
+bGFzdCB0d28gaGFyZGNvZGVkICJPcGVuVlBOIiBzdHJpbmdzIGluIHRoZSBvcGVudnBuc2Vydi5l
+eGUgY29kZS4gSSBkZWNpZGVkIHRvIGNoYW5nZSB0aGVtIHRvIGNvbXBpbGUtdGltZSBjdXN0b21p
+emFibGUgZm9yIHRoZSBzYWtlIG9mIGNvbnNpc3RlbmN5LiBOb3QgYW55IHByYWN0aWNhbCBhZGRl
+ZCB2YWx1ZSBpbmRlZWQuDQoNCkJlc3QgcmVnYXJkcywNClNpbW9uDQo=
