@@ -1,15 +1,14 @@
-Date: Wed, 1 Nov 2017 17:25:23 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20171101162523.GQ958@...1296...>
-References: <1481718210-15673-1-git-send-email-davids@...515...>
- <7a381eee-fd86-73ba-77c6-498710ad8cdb@...1435...>
+References: <1509192147.3021.6.camel@...2316...>
+ <20171029152418.GF958@...1296...>
+ <1509293083.3116.22.camel@...2316...>
+ <CAKuzo_guDg74RXr1OssXSXLQk=xFoCFwjDkvSgkEvtGcVQR_DQ@...278...>
+From: Steffan Karger <steffan@...1856...>
+Message-ID: <e939db91-a2a2-5b8f-7f35-88a4868e0b9d@...1856...>
+Date: Wed, 1 Nov 2017 19:18:00 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="5OPIRG5sBUHnKBkK"
-Content-Disposition: inline
-In-Reply-To: <7a381eee-fd86-73ba-77c6-498710ad8cdb@...1435...>
-Subject: Re: [Openvpn-devel] [PATCH] Further enhance async-push feature
- description
+In-Reply-To: <CAKuzo_guDg74RXr1OssXSXLQk=xFoCFwjDkvSgkEvtGcVQR_DQ@...278...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH 0/1] add engine keys keys
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,64 +17,35 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan.karger@...1435...>
-Cc: openvpn-devel@lists.sourceforge.net
-
---5OPIRG5sBUHnKBkK
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-finding lost gems in my mailbox...
+On 29-10-17 22:03, Selva wrote:
+> I would like to see new features transparently supported on Windows
+> as well without the need for too much extra code and associated
+> maintenance burden. Our 'cryptoapicert' implementation is already in
+> need of a major re-write to support TLS 1.2 and newer.
 
-On Wed, Dec 14, 2016 at 01:45:09PM +0100, Steffan Karger wrote:
-> >  AC_ARG_ENABLE(
-> >  	[async-push],
-> > -	[AS_HELP_STRING([--enable-async-push], [enable async-push support @<:=
-@default=3Dno@:>@])],
-> > +	[AS_HELP_STRING([--enable-async-push], [enable async-push support for=
- plugins providing deferred authentication @<:@default=3Dno@:>@])],
-> >  	,
-> >  	[enable_async_push=3D"no"]
->=20
-> ACK.
->=20
-> Related question:  looks both useful and harmless.  Should we enable
-> this by default in 2.5?
+Fully agree.  Since cryptoapicert is windows-specific, I actually think
+it would be better to add a 'CNG'[0] implementation to the windows
+wrapper, and make that use management-external-key.  That would probably
+improve UX a lot too, showing users a drop-down to select a key, etc.
+We can then remove the whole deprecated cryptoapi implementation from
+the openvpn core.
 
-Skimmed through the code, and generally speaking, this would make sense.
+> From that point of view, instead of file-based wrapped keys, if a pkcs11
+> compatible API can be used to access TPM (that's possible isn't it?) TPM
+> could be more widely usable without the need of any additional support
+> in openssl or openvpn.
 
-OTOH the code is currently linux only (inotify is not available on FreeBSD,
-at least), so this would just change the default but won't get rid of=20
-any #ifdef, unfortunately... :-(
+Since this one is transparent, and works as long as the user loads the
+right engine, I don't see any limitations to include this patch.
 
-gert
+-Steffan
 
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---5OPIRG5sBUHnKBkK
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJZ+fVzAAoJEB2Cnv7KVigSPgsL/iRzy7UnguU69cVM+eHYjkmw
-zZU4oQcmRHceBcfjvaXhj3j+/X8mTJ1VsBJUePoZxnlgk/lzV/mvH2TTOVRHrjCA
-1qvwfqiQxGt3oUPFxQ/mw4GD9k5MCOTE+mYLlMdUTiPEHx+lAKkkTiGusOjSBWzW
-FzRo0iYBsLbStHyX8JAIGCxl5J5wLvLyB5bC8OHcMfjUHdUqCFrk1CwsrioFspcb
-VPsDm+w/ADJnW82zvNIhMkc6G0rs/2TF+NF+UDq4xqAyiKpIfy9Fv5DPgLjVPr7h
-iUzMiB1y6+RhPsQ6gcAfcjJ1E9m7CRI8v+QqwYrw24nmXBr0DqYhrnFEooIX885v
-8BK1OJsQdLyLGki1cit+4BIMlpEgJk2qWAcbwCJcpAzrlYiaVoQrYKGcpQCB8uWV
-tEbMc6rqPinl7H4ts+hT5gvvDvvTpziYAtehyxzOjLZsEKiOsiKBdeGCVI9rAraQ
-i4bLD/R+ANIyu4G9qsWXv91711klYHwwoX1OuJd82g==
-=iTsu
------END PGP SIGNATURE-----
-
---5OPIRG5sBUHnKBkK--
+[0]
+https://msdn.microsoft.com/en-us/library/windows/desktop/aa376210(v=vs.85).aspx
 
