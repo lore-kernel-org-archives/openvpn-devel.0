@@ -1,11 +1,11 @@
 From: Steffan Karger <steffan@...1856...>
-Date: Wed,  1 Nov 2017 23:03:42 +0100
-Message-Id: <20171101220342.14648-5-steffan@...1856...>
+Date: Wed,  1 Nov 2017 23:03:39 +0100
+Message-Id: <20171101220342.14648-2-steffan@...1856...>
 In-Reply-To: <20171101220342.14648-1-steffan@...1856...>
 References: <1505424872-27434-1-git-send-email-steffan.karger@...1435...>
  <20171101220342.14648-1-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH 4/4 v3] create_temp_file/gen_path: prevent
- memory leak if gc == NULL
+Subject: [Openvpn-devel] [PATCH 1/4 v3] pf: clean up temporary files if
+ plugin init fails
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,87 +18,70 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-If gc == NULL, the data allocated in the alloc_gc_buf() call in
-create_temp_file or the string_mod_const call in gen_path would never
-be free'd.
+From: Steffan Karger <steffan.karger@...1435...>
 
-These functions are currently never called that way, but let's prevent
-future problems.
+close_instance() tries to remove the file in c2.pf.filename, but that only
+works if we actually set that if we fail.  So, set that filename as soon
+as we know we've created the file.
 
-While touching create_temp_file, also remove the counter variable, which is
-never read, simplify the do-while to a while loop, and truncate the prefix
-(if needed) to preserve the random and extension of the created filename.
-
-Signed-off-by: Steffan Karger <steffan@...1856...>
+Signed-off-by: Steffan Karger <steffan.karger@...1435...>
 ---
-v2:
- - change create_temp_file to avoid using a struct buffer (simpler)
- - add gc != NULL check for gen_path (avoid similar memleak pitfall)
-v3:
- - Check the return value of openvpn_snprintf()
+v2: As suggested by Antionio, get rid of local 'gc' and 'file' vars.
+v3: make c->c2.pf.filename const (fixes compile warning)
 
- src/openvpn/misc.c | 26 ++++++++++++++++++--------
- 1 file changed, 18 insertions(+), 8 deletions(-)
+ src/openvpn/pf.c | 10 ++++------
+ src/openvpn/pf.h |  2 +-
+ 2 files changed, 5 insertions(+), 7 deletions(-)
 
-diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
-index 25f38003..67011169 100644
---- a/src/openvpn/misc.c
-+++ b/src/openvpn/misc.c
-@@ -723,21 +723,26 @@ test_file(const char *filename)
- const char *
- create_temp_file(const char *directory, const char *prefix, struct gc_arena *gc)
+diff --git a/src/openvpn/pf.c b/src/openvpn/pf.c
+index 5cb002bf..e1b5b0e7 100644
+--- a/src/openvpn/pf.c
++++ b/src/openvpn/pf.c
+@@ -618,19 +618,18 @@ pf_load_from_buffer_list(struct context *c, const struct buffer_list *config)
+ void
+ pf_init_context(struct context *c)
  {
--    static unsigned int counter;
--    struct buffer fname = alloc_buf_gc(256, gc);
-     int fd;
-     const char *retfname = NULL;
-     unsigned int attempts = 0;
-+    char fname[256] = { 0 };
-+    const char *fname_fmt = PACKAGE "_%.*s_%08lx%08lx.tmp";
-+    const int max_prefix_len = sizeof(fname) - (sizeof(PACKAGE) + 7 + (2 * 8));
- 
--    do
-+    while (attempts < 6)
+-    struct gc_arena gc = gc_new();
+ #ifdef PLUGIN_PF
+     if (plugin_defined(c->plugins, OPENVPN_PLUGIN_ENABLE_PF))
      {
-         ++attempts;
--        ++counter;
- 
--        buf_printf(&fname, PACKAGE "_%s_%08lx%08lx.tmp", prefix,
--                   (unsigned long) get_random(), (unsigned long) get_random());
-+        if (!openvpn_snprintf(fname, sizeof(fname), fname_fmt, max_prefix_len,
-+                              prefix, (unsigned long) get_random(),
-+                              (unsigned long) get_random()))
-+        {
-+            msg(M_WARN, "ERROR: temporary filename too long");
-+            return NULL;
-+        }
- 
--        retfname = gen_path(directory, BSTR(&fname), gc);
-+        retfname = gen_path(directory, fname, gc);
-         if (!retfname)
+-        const char *pf_file = create_temp_file(c->options.tmp_dir, "pf", &gc);
+-        if (pf_file)
++        c->c2.pf.filename = create_temp_file(c->options.tmp_dir, "pf",
++                                             &c->c2.gc);
++        if (c->c2.pf.filename)
          {
-             msg(M_WARN, "Failed to create temporary filename and path");
-@@ -760,7 +765,6 @@ create_temp_file(const char *directory, const char *prefix, struct gc_arena *gc)
-             return NULL;
-         }
-     }
--    while (attempts < 6);
+-            setenv_str(c->c2.es, "pf_file", pf_file);
++            setenv_str(c->c2.es, "pf_file", c->c2.pf.filename);
  
-     msg(M_WARN, "Failed to create temporary file after %i attempts", attempts);
-     return NULL;
-@@ -812,6 +816,12 @@ gen_path(const char *directory, const char *filename, struct gc_arena *gc)
- #else
-     const int CC_PATH_RESERVED = CC_SLASH;
+             if (plugin_call(c->plugins, OPENVPN_PLUGIN_ENABLE_PF, NULL, NULL, c->c2.es) == OPENVPN_PLUGIN_FUNC_SUCCESS)
+             {
+                 event_timeout_init(&c->c2.pf.reload, 1, now);
+-                c->c2.pf.filename = string_alloc(pf_file, &c->c2.gc);
+                 c->c2.pf.enabled = true;
+ #ifdef ENABLE_DEBUG
+                 if (check_debug_level(D_PF_DEBUG))
+@@ -658,7 +657,6 @@ pf_init_context(struct context *c)
  #endif
-+
-+    if (!gc)
-+    {
-+        return NULL; /* Would leak memory otherwise */
-+    }
-+
-     const char *safe_filename = string_mod_const(filename, CC_PRINT, CC_PATH_RESERVED, '_', gc);
+     }
+ #endif
+-    gc_free(&gc);
+ }
  
-     if (safe_filename
+ void
+diff --git a/src/openvpn/pf.h b/src/openvpn/pf.h
+index 414c85b8..b839fd2e 100644
+--- a/src/openvpn/pf.h
++++ b/src/openvpn/pf.h
+@@ -75,7 +75,7 @@ struct pf_context {
+     bool enabled;
+     struct pf_set *pfs;
+ #ifdef PLUGIN_PF
+-    char *filename;
++    const char *filename;
+     time_t file_last_mod;
+     unsigned int n_check_reload;
+     struct event_timeout reload;
 -- 
 2.14.1
 
