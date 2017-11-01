@@ -1,17 +1,12 @@
-References: <1509192147.3021.6.camel@...2316...>
- <1509192205.3021.7.camel@...2316...>
- <CAFHpkQHXWrXn42B1xr0YuPvQUrOSvUqQU6h8RkP_EgP_iBP5Qw@...278...>
- <1509289652.3116.11.camel@...2316...>
- <72a75ffb-67df-0986-7b64-9080254cc084@...2181...>
- <1509292633.3116.16.camel@...2316...>
+References: <1509291288.3116.14.camel@...2316...>
 From: Steffan Karger <steffan@...1856...>
-Message-ID: <d2079a55-a8c4-95be-4385-75d164a9f8c5@...1856...>
-Date: Wed, 1 Nov 2017 19:24:02 +0100
+Message-ID: <062b01dd-305c-8635-1b05-540e6cffe838@...1856...>
+Date: Wed, 1 Nov 2017 19:33:52 +0100
 MIME-Version: 1.0
-In-Reply-To: <1509292633.3116.16.camel@...2316...>
+In-Reply-To: <1509291288.3116.14.camel@...2316...>
 Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH 1/1] openssl: add engine method for
- loading the key
+Subject: Re: [Openvpn-devel] [PATCH] autoconf: Fix engine checks for openssl
+ 1.1
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,52 +15,46 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 To: openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-On 29-10-17 16:57, James Bottomley wrote:
-> On Sun, 2017-10-29 at 23:15 +0800, Antonio Quartulli wrote:
->> James,
->>
->> could you please resend a full patch, so to have a better overview of
->> the whole change?
+On 29-10-17 16:34, James Bottomley wrote:
+> In openssl 1.1, ENGINE_cleanup became a #define instead of a function
+> (because it's no longer needed as engines are self cleaning).  Update
+> the autoconf.ac script to check for ENGINE_cleanup as a declaration to
+> avoid falsely underfinig HAVE_OPENSSL_ENGINE in openssl 1.1+
+
+Typo in "underfinig", but that should be fixable when applying the patch.
+
+> Signed-off-by: James Bottomley <James.Bottomley@...2316...>
+> ---
+>  configure.ac | 7 +++++++
+>  1 file changed, 7 insertions(+)
 > 
-> Sure thing.  It's below.
+> diff --git a/configure.ac b/configure.ac
+> index 6f59baef..45aa5017 100644
+> --- a/configure.ac
+> +++ b/configure.ac
+> @@ -899,6 +899,13 @@ if test "${enable_crypto}" = "yes" -a "${with_crypto_library}" = "openssl"; then
+>  		,
+>  		[have_openssl_engine="no"; break]
+>  	)
+> +	if test "${have_openssl_engine}" = "no"; then
+> +		AC_CHECK_DECL( [ENGINE_cleanup], [have_openssl_engine="yes"],,
+> +			[[
+> +				#include <openssl/engine.h>
+> +			]]
+> +		)
+> +	fi
+>  	if test "${have_openssl_engine}" = "yes"; then
+>  		AC_DEFINE([HAVE_OPENSSL_ENGINE], [1], [OpenSSL engine support available])
+>  	fi
+> 
 
-Feature makes sense, so feature-ACK.  An early question though:
-
-> --- a/src/openvpn/crypto_openssl.c
-> +++ b/src/openvpn/crypto_openssl.c
-> @@ -969,4 +969,59 @@ hmac_ctx_final(HMAC_CTX *ctx, uint8_t *dst)
->      HMAC_Final(ctx, dst, &in_hmac_len);
->  }
->  
-> +#ifdef HAVE_OPENSSL_ENGINE
-> +static int
-> +ui_read(UI *ui, UI_STRING *uis)
-> +{
-> +    SSL_CTX *ctx = UI_get0_user_data(ui);
-> +
-> +    if (UI_get_string_type(uis) == UIT_PROMPT) {
-> +        pem_password_cb *cb = SSL_CTX_get_default_passwd_cb(ctx);
-> +        void *d = SSL_CTX_get_default_passwd_cb_userdata(ctx);
-> +        char password[64];
-> +
-> +        cb(password, sizeof(password), 0, d);
-> +        UI_set_result(ui, uis, password);
-> +
-> +        return 1;
-> +    }
-> +    return 0;
-> +}
-> +#endif
-
-This looks like it should use our user query wrappers from (e.g.)
-console.h.  David, you're the expert here, what should James use to
-query for passwords?
+Change looks good, and does what it says on the tin.  ACK.
 
 -Steffan
 
