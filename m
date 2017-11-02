@@ -1,3 +1,6 @@
+From: Simon Rozman <simon@...2293...>
+Date: Thu, 2 Nov 2017 09:29:17 +0000
+Message-ID: <99D61A626FDA8A4B90A270669121BE108587836B@...2294...>
 References: <99D61A626FDA8A4B90A270669121BE108587171C@...2294...>
  <CAKuzo_her_KFBMA3Xt6zKGmHGLnc89qXkb=n_LnvxcSzsvdV+A@...278...>
  <99D61A626FDA8A4B90A270669121BE1085875356@...2294...>
@@ -7,12 +10,10 @@ References: <99D61A626FDA8A4B90A270669121BE108587171C@...2294...>
  <99D61A626FDA8A4B90A270669121BE1085877307@...2294...>
  <031e4c73-3317-585d-38af-30ac9fede8ff@...515...>
  <d6b130c0-96a3-830f-7e80-bbe7b1f055a0@...1856...>
-From: =?UTF-8?Q?Samuli_Sepp=c3=a4nen?= <samuli@...515...>
-Message-ID: <9392cea0-2b29-b7e1-221c-1f9daecd2add@...515...>
-Date: Thu, 2 Nov 2017 10:51:12 +0200
-MIME-Version: 1.0
-In-Reply-To: <d6b130c0-96a3-830f-7e80-bbe7b1f055a0@...1856...>
+ <9392cea0-2b29-b7e1-221c-1f9daecd2add@...515...>
+In-Reply-To: <9392cea0-2b29-b7e1-221c-1f9daecd2add@...515...>
 Content-Language: en-US
+MIME-Version: 1.0
 Subject: Re: [Openvpn-devel] OpenVPN Interactive Service Branding
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -23,55 +24,35 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
+Content-Transfer-Encoding: base64
+To: =?utf-8?B?U2FtdWxpIFNlcHDDpG5lbg==?= <samuli@...515...>, Steffan Karger <steffan@...1856...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-On 02/11/2017 10:41, Steffan Karger wrote:
-> Hi,
->=20
-> On 02-11-17 09:31, Samuli Sepp=C3=A4nen wrote:
->> On 01/11/2017 20:46, Simon Rozman wrote:
->>>> Speaking of MSIs... we are planning on moving from NSIS to MSI due to
->>>> security issues like the one we fixed in previous release. At the mome=
-nt four
->>>> (other) people who have expressed interest in taking part in the "crea=
-te MSI
->>>> installers for OpenVPN" project. One of these people is me.
->>>>
->>>> Would you be interested in joining forces in this task?
->>>
->>> I'd love to. Count me in!
->>
->> Excellent!
->>
->>> I have been in the MSI packaging for about 10 years now - automated bui=
-lds from command line, developed DLL custom actions in C/C++, localization,=
- GUI, WiX etc.
->>
->> As you probably know, right now we produce Windows executables and
->> installers on Linux using openvpn-build:
->>
->> <https://github.com/OpenVPN/openvpn-build>
->>
->> It seems that WiX which you mention would probably be our tool of
->> choice, given it is open source (MS-RL):
->>
->> <https://github.com/wixtoolset/wix3>
->> <https://opensource.org/licenses/MS-RL>
->>
->> Do you know if WiX runs in Mono? That would allow us to produce
->> installers directly from openvpn-build without having to have a separate
->> Windows packaging computer in the build chain.
->>
->=20
-> Any reason why you specifically want to use WiX?  Are msibuild or wixl
-> (from msitools[0]) not good enough?  I know those lack features, but if
-> they're good enough I would prefer using something that is packaged by
-> many distros (and doesn't need mono).
->=20
-
-Ah, excellent find! I'm definitely not opposed to msitools if it fits
-the bill.
-
-Samuli
-
+SGksDQoNCj4gPj4NCj4gPj4gQXMgeW91IHByb2JhYmx5IGtub3csIHJpZ2h0IG5vdyB3ZSBwcm9k
+dWNlIFdpbmRvd3MgZXhlY3V0YWJsZXMgYW5kDQo+ID4+IGluc3RhbGxlcnMgb24gTGludXggdXNp
+bmcgb3BlbnZwbi1idWlsZDoNCj4gPj4NCj4gPj4gPGh0dHBzOi8vZ2l0aHViLmNvbS9PcGVuVlBO
+L29wZW52cG4tYnVpbGQ+DQo+ID4+DQo+ID4+IEl0IHNlZW1zIHRoYXQgV2lYIHdoaWNoIHlvdSBt
+ZW50aW9uIHdvdWxkIHByb2JhYmx5IGJlIG91ciB0b29sIG9mDQo+ID4+IGNob2ljZSwgZ2l2ZW4g
+aXQgaXMgb3BlbiBzb3VyY2UgKE1TLVJMKToNCj4gPj4NCj4gPj4gPGh0dHBzOi8vZ2l0aHViLmNv
+bS93aXh0b29sc2V0L3dpeDM+DQo+ID4+IDxodHRwczovL29wZW5zb3VyY2Uub3JnL2xpY2Vuc2Vz
+L01TLVJMPg0KPiA+Pg0KPiA+PiBEbyB5b3Uga25vdyBpZiBXaVggcnVucyBpbiBNb25vPyBUaGF0
+IHdvdWxkIGFsbG93IHVzIHRvIHByb2R1Y2UNCj4gPj4gaW5zdGFsbGVycyBkaXJlY3RseSBmcm9t
+IG9wZW52cG4tYnVpbGQgd2l0aG91dCBoYXZpbmcgdG8gaGF2ZSBhDQo+ID4+IHNlcGFyYXRlIFdp
+bmRvd3MgcGFja2FnaW5nIGNvbXB1dGVyIGluIHRoZSBidWlsZCBjaGFpbi4NCj4gPj4NCj4gPg0K
+PiA+IEFueSByZWFzb24gd2h5IHlvdSBzcGVjaWZpY2FsbHkgd2FudCB0byB1c2UgV2lYPyAgQXJl
+IG1zaWJ1aWxkIG9yIHdpeGwNCj4gPiAoZnJvbSBtc2l0b29sc1swXSkgbm90IGdvb2QgZW5vdWdo
+PyAgSSBrbm93IHRob3NlIGxhY2sgZmVhdHVyZXMsIGJ1dA0KPiA+IGlmIHRoZXkncmUgZ29vZCBl
+bm91Z2ggSSB3b3VsZCBwcmVmZXIgdXNpbmcgc29tZXRoaW5nIHRoYXQgaXMgcGFja2FnZWQNCj4g
+PiBieSBtYW55IGRpc3Ryb3MgKGFuZCBkb2Vzbid0IG5lZWQgbW9ubykuDQo+ID4NCj4gDQo+IEFo
+LCBleGNlbGxlbnQgZmluZCEgSSdtIGRlZmluaXRlbHkgbm90IG9wcG9zZWQgdG8gbXNpdG9vbHMg
+aWYgaXQgZml0cyB0aGUgYmlsbC4NCg0KbXNpdG9vbHMsIFdpWCwgTWljcm9zb2Z0J3MgbXNpZGIu
+ZXhlL21zaWluZm8uZXhlL21zaWZpbGVyLmV4ZS9tYWtlY2FiLmV4ZSB1dGlsaXRpZXMsIGV0Yy4g
+SSBldmVuIGludmVudGVkIG15IG93biBNU0kgZGlzdGlsbGVyeSB1c2luZyBOTUFLRSBNYWtlZmls
+ZXMsIFdTSCBzY3JpcHRzIGFuZCBNaWNyb3NvZnQgdXRpbGl0aWVzIHN0YW5kYXJkIHdpdGggVmlz
+dWFsIFN0dWRpby4NCg0KUGljayB5b3VyIHBvaXNvbi4gOikNCg0KQWNjb3JkaW5nIHRvIGJ1aWxk
+IGVudmlyb25tZW50IHByZWZlcmVuY2VzLCBtc2l0b29scyB3b3VsZCBiZSB0aGUgYmVzdCBjaG9p
+Y2UuDQoNClRoZSByZXF1aXJlbWVudHMgKEkgY2FuIHJlbWVtYmVyIHJpZ2h0IG5vdykgYXJlOg0K
+DQotIE1TSSBkYXRhYmFzZSBjb21waWxhdGlvbg0KLSBNU0kgZGF0YWJhc2UgcG9wdWxhdGlvbiB3
+aXRoIGZpbGUgdmVyc2lvbnMsIHNpemVzLCBjaGVja3N1bXMNCi0gQ0FCIGNvbXByZXNzaW9uDQot
+IENBQi9zdHJlYW0gZW1iZWRkaW5nDQotIERpZ2l0YWwgc2lnbmluZyBvZiBNU0kgZmlsZXMNCg0K
+SSBzaGFsbCByZXZpZXcgdGhlIG1zaXRvb2xzIGlmIHRoZXknbGwgZG8gYW5kIGtlZXAgeW91IHBv
+c3RlZC4NCg0KQmVzdCByZWdhcmRzLA0KU2ltb24NCg0K
