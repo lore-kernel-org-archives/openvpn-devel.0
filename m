@@ -1,10 +1,10 @@
-Date: Fri, 3 Nov 2017 19:54:39 +0100 (CET)
-Message-Id: <201711031854.vA3IsdId002989@...2054...>
+Date: Fri, 3 Nov 2017 20:01:27 +0100 (CET)
+Message-Id: <201711031901.vA3J1RFS003175@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <1508094315-466-1-git-send-email-selva.nair@...277...>
-References: <1508094315-466-1-git-send-email-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Fix missing check for return
- value of malloc'd buffer
+In-Reply-To: <20171005212223.24694-1-davids@...515...>
+References: <20171005212223.24694-1-davids@...515...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Remove references to
+ keychain-mcd in Changes.rst
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,29 +15,24 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Selva Nair <selva.nair@...277...>
+To: David Sommerseth <davids@...515...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-ACK.
-
-Patch is actually fairly trivial as soon as one recognizes that 
-"utf8to16()" is one of our functions, which does exactly what the
-code removed here does - length check, malloc, malloc check, 
-conversion-if-memory-allocated.
+ACK, trivial :-)
 
 Your patch has been applied to the master and release/2.4 branch.
 
-commit f3d389a2d2b87aeb649bfdccd596f485346a32c7 (master)
-commit 9ef03874bf0ca35348c58b4b21cb06cc49026efd (release/2.4)
-Author: Selva Nair
-Date:   Sun Oct 15 15:05:15 2017 -0400
+commit 6255706295bf128ec5b5e4c1272fc6ffbfddf0ba (master)
+commit b98a622bb43d01a4bce4795cc924a8ea910aa507 (release/2.4)
+Author: David Sommerseth
+Date:   Thu Oct 5 23:22:23 2017 +0200
 
-     Fix missing check for return value of malloc'd buffer
+     Remove references to keychain-mcd in Changes.rst
 
-     Signed-off-by: Selva Nair <selva.nair@...277...>
+     Signed-off-by: David Sommerseth <davids@...515...>
      Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <1508094315-466-1-git-send-email-selva.nair@...277...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg15641.html
+     Message-Id: <20171005212223.24694-1-davids@...515...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg15561.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
