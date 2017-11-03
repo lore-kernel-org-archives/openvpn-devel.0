@@ -1,10 +1,10 @@
-From: Jan Just Keijser <janjust@...1147...>
-Message-ID: <cc3981e2-742c-37b1-e8fc-fa32f64b7d11@...1147...>
-Date: Fri, 3 Nov 2017 15:03:16 +0100
-MIME-Version: 1.0
-Content-Language: en-US
-Subject: [Openvpn-devel] Possible bug: AEAD Decrypt error: cipher final
- failed
+Date: Fri, 3 Nov 2017 19:22:26 +0100 (CET)
+Message-Id: <201711031822.vA3IMQrK001723@...2054...>
+From: Gert Doering <gert@...1296...>
+In-Reply-To: <1508520356-18277-1-git-send-email-selva.nair@...277...>
+References: <1508520356-18277-1-git-send-email-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Avoid illegal memory access
+ when malformed data is read from the pipe
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,36 +13,32 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-Content-Transfer-Encoding: quoted-printable
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: Selva Nair <selva.nair@...277...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-hi all,
+ACK, and now with time to merge :-)
 
-whilst testing some new hardware with OpenVPN I ran into the following mess=
-ages which keep popping up from time to time:
+Your patch has been applied to the master and release/2.4 branch.
 
- =A0AEAD Decrypt error: cipher final failed
+commit 6f20808c8f37301c43d822f6a22d30b3587abc57 (master)
+commit 17884fa4ab2b3113559542404704402e5fce7643 (release/2.4)
+Author: Selva Nair
+Date:   Fri Oct 20 13:25:56 2017 -0400
+
+     Avoid illegal memory access when malformed data is read from the pipe
+
+     Signed-off-by: Selva Nair <selva.nair@...277...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1508520356-18277-1-git-send-email-selva.nair@...277...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg15657.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
 
-Config:
+--
+kind regards,
 
-server running OpenVPN 2.4.3, basic config, Ubuntu 17, kernel 4.14, openssl=
- 1.0.2g
-client running OpenVPN 2.4.4, basic config, CentOS 7.4, kernel 3.10, openss=
-l 1.0.2k
-
-it's the client that is throwing the above message during heavy load (900 M=
-bps VPN traffic). It happens only with NCP ciphers ,=20
-I am not seeing any cipher messages with 'ncp-disable' set.
-
-as soon as I add 'verb 5' or higher, the message goes away, because perform=
-ance drops to below 500 Mbps due to excessive output.
-Any idea how to tackle this?
-
-TIA,
-
-JJK
-
+Gert Doering
 
 
