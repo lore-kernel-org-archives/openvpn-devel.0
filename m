@@ -1,14 +1,9 @@
-Date: Fri, 3 Nov 2017 19:27:53 +0100
+Date: Fri, 3 Nov 2017 19:32:49 +0100 (CET)
+Message-Id: <201711031832.vA3IWn5k002809@...2054...>
 From: Gert Doering <gert@...1296...>
-Message-ID: <20171103182753.GQ958@...1296...>
+In-Reply-To: <1508751613-23728-1-git-send-email-steffan.karger@...1435...>
 References: <1508751613-23728-1-git-send-email-steffan.karger@...1435...>
- <20171103182433.GP958@...1296...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="Q4RbCnAmn9VrkE5p"
-Content-Disposition: inline
-In-Reply-To: <20171103182433.GP958@...1296...>
-Subject: Re: [Openvpn-devel] [PATCH] make struct key * argument of
+Subject: [Openvpn-devel] [PATCH applied] Re: make struct key * argument of
  init_key_ctx const
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
@@ -18,72 +13,31 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: Steffan Karger <steffan.karger@...1435...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---Q4RbCnAmn9VrkE5p
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+ACK, 2.4-only (already in master)
 
-Hi,
+Your patch has been applied to the release/2.4 branch.
 
-On Fri, Nov 03, 2017 at 07:24:33PM +0100, Gert Doering wrote:
-> On Mon, Oct 23, 2017 at 11:40:13AM +0200, Steffan Karger wrote:
-> > This can be const, and should thus be const.  (Also, resolves a compiler
-> > warning.)
-[..]
-> I think the patch is good, but it *so* does not apply for me...
->=20
-> Applying: make struct key * argument of init_key_ctx const
-> error: patch failed: src/openvpn/crypto.c:826
-> error: src/openvpn/crypto.c: patch does not apply
-> error: patch failed: src/openvpn/crypto.h:321
-> error: src/openvpn/crypto.h: patch does not apply
+commit 94793462a977ad09c14530ff20eedc98bb35d36c
+Author: Steffan Karger
+Date:   Mon Oct 23 11:40:13 2017 +0200
 
-Looked at the first two occurences, and the confusion is explained - this
-change is already in "master" but not in 2.4
+     make struct key * argument of init_key_ctx const
 
-master/crypto.h
+     Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <1508751613-23728-1-git-send-email-steffan.karger@...1435...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg15660.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
-void init_key_ctx(struct key_ctx *ctx, const struct key *key,
-                  const struct key_type *kt, int enc,
-                  const char *prefix);
 
-2.4/crypto.h
+--
+kind regards,
 
-void init_key_ctx(struct key_ctx *ctx, struct key *key,
-                  const struct key_type *kt, int enc,
-                  const char *prefix);
+Gert Doering
 
-I'm too lazy to trace which patch changed master, and did not get=20
-cherrypicked to 2.4 - but this is reasonable to apply to 2.4 (-only),
-so I will :-) - ACK.
-
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---Q4RbCnAmn9VrkE5p
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJZ/LUoAAoJEB2Cnv7KVigS0HIMALI9JqYOHRUthzg9p51pUrmU
-+sbGCsWzjZzH3N4D++KMkRHu3tUhS4z8FnIgXzh2VExSEkLRdMWzwPlr7ODYsoWK
-3Xr6X8scD0828j5UTz+55ak/6+YHpZbQzoYKsEFvrh1QAXQUX+71e3iisuJnTVik
-BJikOEt+xWFDP+fOXna0fyiJKepJNC62eTzOmYxQ2C4oErzvgEfOEVadDHnqwhXQ
-iYEyz85P3erDp5FDSZSHxHAGB9ot1aSRa2T/PDjPavNtR2eSFb+6+OGL3YP6Mgnm
-vAcb/TTbFioJbTrTgNcNXOZKfgTVWgHbaIwTrcj16HcIOjCNvdudx/dk7m9+GJeI
-T6jtLb0aF0/7xOyr562HzAPpZTW0C9onbsbEV4qgqqmT9gDz8lGDVPS4oDpFddsi
-+lRi7ZhaEsNzB6FivYAnA0JWhluyEn/O34Hqtn39N79FJVlZ07cY8Iv3G8RZbT5g
-NlJ/9TUiVfCxXDQ6j1pRkH5YaOAyD4GRgfZxVSCjeg==
-=g/LH
------END PGP SIGNATURE-----
-
---Q4RbCnAmn9VrkE5p--
 
