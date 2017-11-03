@@ -1,9 +1,13 @@
-From: Simon Rozman <simon@...2293...>
-Date: Thu,  2 Nov 2017 20:21:15 +0100
-Message-Id: <20171102192115.336-1-simon@...2293...>
-In-Reply-To: <CAKuzo_gAf8be+-mMijjn0YqA+rxoRPH0ZpEkG7LNv_6+3+oQgw@...278...>
+MIME-Version: 1.0
+In-Reply-To: <20171102192115.336-1-simon@...2293...>
 References: <CAKuzo_gAf8be+-mMijjn0YqA+rxoRPH0ZpEkG7LNv_6+3+oQgw@...278...>
-Subject: [Openvpn-devel] [PATCH] openvpnserv: Add support for multi-instances
+ <20171102192115.336-1-simon@...2293...>
+From: Selva <selva.nair@...277...>
+Date: Thu, 2 Nov 2017 23:26:44 -0400
+Message-ID: <CAKuzo_iidZQh1G9mCgnvu-j9iABO96M7mdvZACpXG7o9Fo-spw@...278...>
+Content-Type: multipart/alternative; boundary="94eb2c059008c59869055d0bad76"
+Subject: Re: [Openvpn-devel] [PATCH] openvpnserv: Add support for
+ multi-instances
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,390 +16,80 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Simon Rozman <simon@...2293...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-While openvpn.exe can run multiple concurrent processes, openvpnserv.exe
-is usually only one single globally unique running process.
+--94eb2c059008c59869055d0bad76
+Content-Type: text/plain; charset="UTF-8"
 
-This patch extends openvpnserv.exe to support multiple service instances
-in parallel allowing side-by-side OpenVPN installations.
+Hi Simon,
 
-Alternate instances must be installed as `SERVICE_WIN32_OWN_PROCESS`
-(Type 0x10) and must use the newly introduced service command line
-parameter:
--instance <name> <id>
-<name> can be `automatic` or `interactive`.
+On Thu, Nov 2, 2017 at 3:21 PM, Simon Rozman <simon@...2293...> wrote:
 
-- The service settings will be loaded from `HKLM\Software\<id>` registry
-  key.
+> While openvpn.exe can run multiple concurrent processes, openvpnserv.exe
+> is usually only one single globally unique running process.
+>
+> This patch extends openvpnserv.exe to support multiple service instances
+> in parallel allowing side-by-side OpenVPN installations.
+>
 
-- The automatic service will use `<id>_exit_1` exit event.
-
-- The interactive service will accept requests on
-  `\\.\pipe\<id>\service` named pipe, and run IPC with openvpn.exe on
-  `\\.\pipe\<id>\service_<pid>`.
-
-This patch preserves backward compatibility, by defaulting to
-`SERVICE_WIN32_SHARE_PROCESS` and `OpenVPN` as service ID.
----
- src/openvpnserv/automatic.c   | 40 +++++++++++-----------
- src/openvpnserv/common.c      | 14 +++++---
- src/openvpnserv/interactive.c | 18 +++++++---
- src/openvpnserv/service.c     | 77 ++++++++++++++++++++++++++++++-------------
- src/openvpnserv/service.h     |  4 ++-
- 5 files changed, 100 insertions(+), 53 deletions(-)
-
-diff --git a/src/openvpnserv/automatic.c b/src/openvpnserv/automatic.c
-index 3e8f6ed..ed530a8 100644
---- a/src/openvpnserv/automatic.c
-+++ b/src/openvpnserv/automatic.c
-@@ -44,7 +44,7 @@
- #define false 0
- 
- static SERVICE_STATUS_HANDLE service;
--static SERVICE_STATUS status;
-+static SERVICE_STATUS status = { SERVICE_WIN32_SHARE_PROCESS };
- 
- openvpn_service_t automatic_service = {
-     automatic,
-@@ -60,12 +60,6 @@ struct security_attributes
-     SECURITY_DESCRIPTOR sd;
- };
- 
--/*
-- * Which registry key in HKLM should
-- * we get config info from?
-- */
--#define REG_KEY "SOFTWARE\\" PACKAGE_NAME
--
- static HANDLE exit_event = NULL;
- 
- /* clear an object */
-@@ -91,15 +85,6 @@ init_security_attributes_allow_all(struct security_attributes *obj)
-     return true;
- }
- 
--/*
-- * This event is initially created in the non-signaled
-- * state.  It will transition to the signaled state when
-- * we have received a terminate signal from the Service
-- * Control Manager which will cause an asynchronous call
-- * of ServiceStop below.
-- */
--#define EXIT_EVENT_NAME  TEXT(PACKAGE "_exit_1")
--
- HANDLE
- create_event(LPCTSTR name, bool allow_all, bool initial_state, bool manual_reset)
- {
-@@ -214,10 +199,19 @@ ServiceCtrlAutomatic(DWORD ctrl_code, DWORD event, LPVOID data, LPVOID ctx)
- 
- 
- VOID WINAPI
-+ServiceStartAutomaticOwn(DWORD dwArgc, LPTSTR *lpszArgv)
-+{
-+    status.dwServiceType = SERVICE_WIN32_OWN_PROCESS;
-+    ServiceStartAutomatic(dwArgc, lpszArgv);
-+}
-+
-+
-+VOID WINAPI
- ServiceStartAutomatic(DWORD dwArgc, LPTSTR *lpszArgv)
- {
-     DWORD error = NO_ERROR;
-     settings_t settings;
-+    TCHAR event_name[256];
- 
-     service = RegisterServiceCtrlHandlerEx(automatic_service.name, ServiceCtrlAutomatic, &status);
-     if (!service)
-@@ -225,7 +219,6 @@ ServiceStartAutomatic(DWORD dwArgc, LPTSTR *lpszArgv)
-         return;
-     }
- 
--    status.dwServiceType = SERVICE_WIN32_SHARE_PROCESS;
-     status.dwCurrentState = SERVICE_START_PENDING;
-     status.dwServiceSpecificExitCode = NO_ERROR;
-     status.dwWin32ExitCode = NO_ERROR;
-@@ -239,8 +232,15 @@ ServiceStartAutomatic(DWORD dwArgc, LPTSTR *lpszArgv)
- 
-     /*
-      * Create our exit event
-+     * This event is initially created in the non-signaled
-+     * state.  It will transition to the signaled state when
-+     * we have received a terminate signal from the Service
-+     * Control Manager which will cause an asynchronous call
-+     * of ServiceStop below.
-      */
--    exit_event = create_event(EXIT_EVENT_NAME, false, false, true);
-+
-+    openvpn_sntprintf(event_name, _countof(event_name), TEXT("%s_exit_1"), service_instance);
-+    exit_event = create_event(event_name, false, false, true);
-     if (!exit_event)
-     {
-         MsgToEventLog(M_ERR, TEXT("CreateEvent failed"));
-@@ -329,8 +329,8 @@ ServiceStartAutomatic(DWORD dwArgc, LPTSTR *lpszArgv)
-                                   TEXT("%s\\%s"), settings.log_dir, log_file);
- 
-                 /* construct command line */
--                openvpn_sntprintf(command_line, _countof(command_line), TEXT(PACKAGE " --service %s 1 --config \"%s\""),
--                                  EXIT_EVENT_NAME,
-+                openvpn_sntprintf(command_line, _countof(command_line), TEXT("openvpn --service \"%s_exit_1\" 1 --config \"%s\""),
-+                                  service_instance,
-                                   find_obj.cFileName);
- 
-                 /* Make security attributes struct for logfile handle so it can
-diff --git a/src/openvpnserv/common.c b/src/openvpnserv/common.c
-index a3aeb39..50b1310 100644
---- a/src/openvpnserv/common.c
-+++ b/src/openvpnserv/common.c
-@@ -24,6 +24,9 @@
- #include "service.h"
- #include "validate.h"
- 
-+LPCTSTR service_instance = TEXT(PACKAGE_NAME);
-+
-+
- /*
-  * These are necessary due to certain buggy implementations of (v)snprintf,
-  * that don't guarantee null termination for size > 0.
-@@ -53,8 +56,6 @@ openvpn_sntprintf(LPTSTR str, size_t size, LPCTSTR format, ...)
-     return len;
- }
- 
--#define REG_KEY  TEXT("SOFTWARE\\" PACKAGE_NAME)
--
- static DWORD
- GetRegString(HKEY key, LPCTSTR value, LPTSTR data, DWORD size)
- {
-@@ -69,7 +70,7 @@ GetRegString(HKEY key, LPCTSTR value, LPTSTR data, DWORD size)
-     if (status != ERROR_SUCCESS)
-     {
-         SetLastError(status);
--        return MsgToEventLog(M_SYSERR, TEXT("Error querying registry value: HKLM\\%s\\%s"), REG_KEY, value);
-+        return MsgToEventLog(M_SYSERR, TEXT("Error querying registry value: HKLM\\SOFTWARE\\%s\\%s"), service_instance, value);
-     }
- 
-     return ERROR_SUCCESS;
-@@ -79,16 +80,19 @@ GetRegString(HKEY key, LPCTSTR value, LPTSTR data, DWORD size)
- DWORD
- GetOpenvpnSettings(settings_t *s)
- {
-+    TCHAR reg_path[256];
-     TCHAR priority[64];
-     TCHAR append[2];
-     DWORD error;
-     HKEY key;
- 
--    LONG status = RegOpenKeyEx(HKEY_LOCAL_MACHINE, REG_KEY, 0, KEY_READ, &key);
-+    openvpn_sntprintf(reg_path, _countof(reg_path), TEXT("SOFTWARE\\%s"), service_instance);
-+
-+    LONG status = RegOpenKeyEx(HKEY_LOCAL_MACHINE, reg_path, 0, KEY_READ, &key);
-     if (status != ERROR_SUCCESS)
-     {
-         SetLastError(status);
--        return MsgToEventLog(M_SYSERR, TEXT("Could not open Registry key HKLM\\%s not found"), REG_KEY);
-+        return MsgToEventLog(M_SYSERR, TEXT("Could not open Registry key HKLM\\%s not found"), reg_path);
-     }
- 
-     error = GetRegString(key, TEXT("exe_path"), s->exe_path, sizeof(s->exe_path));
-diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
-index 07d77af..b14f22a 100644
---- a/src/openvpnserv/interactive.c
-+++ b/src/openvpnserv/interactive.c
-@@ -53,7 +53,7 @@
- #define ERROR_MESSAGE_TYPE     0x20000003
- 
- static SERVICE_STATUS_HANDLE service;
--static SERVICE_STATUS status;
-+static SERVICE_STATUS status = { SERVICE_WIN32_SHARE_PROCESS };
- static HANDLE exit_event = NULL;
- static settings_t settings;
- static HANDLE rdns_semaphore = NULL;
-@@ -1478,7 +1478,7 @@ RunOpenvpn(LPVOID p)
-     }
- 
-     openvpn_sntprintf(ovpn_pipe_name, _countof(ovpn_pipe_name),
--                      TEXT("\\\\.\\pipe\\" PACKAGE "\\service_%lu"), GetCurrentThreadId());
-+                      TEXT("\\\\.\\pipe\\%s\\service_%lu"), service_instance, GetCurrentThreadId());
-     ovpn_pipe = CreateNamedPipe(ovpn_pipe_name,
-                                 PIPE_ACCESS_DUPLEX | FILE_FLAG_FIRST_PIPE_INSTANCE | FILE_FLAG_OVERLAPPED,
-                                 PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_WAIT, 1, 128, 128, 0, NULL);
-@@ -1645,6 +1645,7 @@ ServiceCtrlInteractive(DWORD ctrl_code, DWORD event, LPVOID data, LPVOID ctx)
- static HANDLE
- CreateClientPipeInstance(VOID)
- {
-+    TCHAR pipe_name[256]; /* The entire pipe name string can be up to 256 characters long according to MSDN. */
-     HANDLE pipe = NULL;
-     PACL old_dacl, new_dacl;
-     PSECURITY_DESCRIPTOR sd;
-@@ -1681,7 +1682,8 @@ CreateClientPipeInstance(VOID)
-         initialized = TRUE;
-     }
- 
--    pipe = CreateNamedPipe(TEXT("\\\\.\\pipe\\" PACKAGE "\\service"), flags,
-+    openvpn_sntprintf(pipe_name, _countof(pipe_name), TEXT("\\\\.\\pipe\\%s\\service"), service_instance);
-+    pipe = CreateNamedPipe(pipe_name, flags,
-                            PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE,
-                            PIPE_UNLIMITED_INSTANCES, 1024, 1024, 0, NULL);
-     if (pipe == INVALID_HANDLE_VALUE)
-@@ -1776,6 +1778,15 @@ CmpHandle(LPVOID item, LPVOID hnd)
-     return item == hnd;
- }
- 
-+
-+VOID WINAPI
-+ServiceStartInteractiveOwn(DWORD dwArgc, LPTSTR *lpszArgv)
-+{
-+    status.dwServiceType = SERVICE_WIN32_OWN_PROCESS;
-+    ServiceStartInteractive(dwArgc, lpszArgv);
-+}
-+
-+
- VOID WINAPI
- ServiceStartInteractive(DWORD dwArgc, LPTSTR *lpszArgv)
- {
-@@ -1792,7 +1803,6 @@ ServiceStartInteractive(DWORD dwArgc, LPTSTR *lpszArgv)
-         return;
-     }
- 
--    status.dwServiceType = SERVICE_WIN32_SHARE_PROCESS;
-     status.dwCurrentState = SERVICE_START_PENDING;
-     status.dwServiceSpecificExitCode = NO_ERROR;
-     status.dwWin32ExitCode = NO_ERROR;
-diff --git a/src/openvpnserv/service.c b/src/openvpnserv/service.c
-index b79e999..232b33e 100644
---- a/src/openvpnserv/service.c
-+++ b/src/openvpnserv/service.c
-@@ -223,46 +223,77 @@ out:
- int
- _tmain(int argc, TCHAR *argv[])
- {
--    SERVICE_TABLE_ENTRY dispatchTable[] = {
-+    SERVICE_TABLE_ENTRY dispatchTable_shared[] = {
-         { automatic_service.name, ServiceStartAutomatic },
-         { interactive_service.name, ServiceStartInteractive },
-         { NULL, NULL }
-     };
-+    const SERVICE_TABLE_ENTRY *dispatchTable = dispatchTable_shared;
- 
-     openvpn_service[0] = automatic_service;
-     openvpn_service[1] = interactive_service;
- 
--    if (argc > 1 && (*argv[1] == TEXT('-') || *argv[1] == TEXT('/')))
-+    for (int i = 1; i < argc; i++)
-     {
--        if (_tcsicmp(TEXT("install"), argv[1] + 1) == 0)
-+        if (*argv[i] == TEXT('-') || *argv[i] == TEXT('/'))
-         {
--            return CmdInstallServices();
--        }
--        else if (_tcsicmp(TEXT("remove"), argv[1] + 1) == 0)
--        {
--            return CmdRemoveServices();
--        }
--        else if (_tcsicmp(TEXT("start"), argv[1] + 1) == 0)
--        {
--            BOOL is_auto = argc < 3 || _tcsicmp(TEXT("interactive"), argv[2]) != 0;
--            return CmdStartService(is_auto ? automatic : interactive);
--        }
--        else
--        {
--            goto dispatch;
-+            if (_tcsicmp(TEXT("install"), argv[i] + 1) == 0)
-+            {
-+                return CmdInstallServices();
-+            }
-+            else if (_tcsicmp(TEXT("remove"), argv[i] + 1) == 0)
-+            {
-+                return CmdRemoveServices();
-+            }
-+            else if (_tcsicmp(TEXT("start"), argv[i] + 1) == 0)
-+            {
-+                BOOL is_auto = argc < i + 2 || _tcsicmp(TEXT("interactive"), argv[i + 1]) != 0;
-+                return CmdStartService(is_auto ? automatic : interactive);
-+            }
-+            else if (argc > i + 2 && _tcsicmp(TEXT("instance"), argv[i] + 1) == 0)
-+            {
-+                /* When running as an alternate instance, we are invoked as
-+                 * SERVICE_WIN32_OWN_PROCESS - we are the one and only
-+                 * service in this process. The dispatch table should
-+                 * reflect that.
-+                 */
-+                static const SERVICE_TABLE_ENTRY dispatchTable_automatic[] = {
-+                    { TEXT(""), ServiceStartAutomaticOwn },
-+                    { NULL, NULL }
-+                };
-+                static const SERVICE_TABLE_ENTRY dispatchTable_interactive[] = {
-+                    { TEXT(""), ServiceStartInteractiveOwn },
-+                    { NULL, NULL }
-+                };
-+                dispatchTable = _tcsicmp(TEXT("interactive"), argv[i + 1]) != 0 ?
-+                    dispatchTable_automatic :
-+                    dispatchTable_interactive;
-+
-+                service_instance = argv[i + 2];
-+                i += 2;
-+            }
-+            else
-+            {
-+                _tprintf(TEXT("%s -install        to install the services\n"), APPNAME);
-+                _tprintf(TEXT("%s -start <name>   to start a service (\"automatic\" or \"interactive\")\n"), APPNAME);
-+                _tprintf(TEXT("%s -remove         to remove the services\n"), APPNAME);
-+
-+                _tprintf(TEXT("\nService run-time parameters:\n"));
-+                _tprintf(TEXT("-instance <name> <id>\n")
-+                         TEXT("   Runs the service as an alternate instance. <name> can be \"automatic\" or\n")
-+                         TEXT("   \"interactive\". The service settings will be loaded from\n")
-+                         TEXT("   HKLM\\Software\\<id> registry key, and the interactive service will accept\n")
-+                         TEXT("   requests on \\\\.\\pipe\\<id>\\service named pipe.\n"));
-+
-+                return 0;
-+            }
-         }
--
--        return 0;
-     }
- 
-     /* If it doesn't match any of the above parameters
-      * the service control manager may be starting the service
-      * so we must call StartServiceCtrlDispatcher
-      */
--dispatch:
--    _tprintf(TEXT("%s -install        to install the services\n"), APPNAME);
--    _tprintf(TEXT("%s -start <name>   to start a service (\"automatic\" or \"interactive\")\n"), APPNAME);
--    _tprintf(TEXT("%s -remove         to remove the services\n"), APPNAME);
-     _tprintf(TEXT("\nStartServiceCtrlDispatcher being called.\n"));
-     _tprintf(TEXT("This may take several seconds. Please wait.\n"));
- 
-diff --git a/src/openvpnserv/service.h b/src/openvpnserv/service.h
-index 80aa47a..cb7866c 100644
---- a/src/openvpnserv/service.h
-+++ b/src/openvpnserv/service.h
-@@ -73,10 +73,12 @@ typedef struct {
- 
- extern openvpn_service_t automatic_service;
- extern openvpn_service_t interactive_service;
-+extern LPCTSTR service_instance;
- 
--
-+VOID WINAPI ServiceStartAutomaticOwn(DWORD argc, LPTSTR *argv);
- VOID WINAPI ServiceStartAutomatic(DWORD argc, LPTSTR *argv);
- 
-+VOID WINAPI ServiceStartInteractiveOwn(DWORD argc, LPTSTR *argv);
- VOID WINAPI ServiceStartInteractive(DWORD argc, LPTSTR *argv);
- 
- int openvpn_vsntprintf(LPTSTR str, size_t size, LPCTSTR format, va_list arglist);
--- 
-2.9.0.windows.1
+That was fast. On a quick glance, looks good but the patch does not apply
+on current master. Did you base it on some of your recent patches not
+all of which are yet merged? Looks like the contexts in common.c and
+interactive.c do not match so the patch fails.
 
 Hi,
+>
+> RegisterServiceCtrlHandlerEx() is obviously happy with any service
 
-RegisterServiceCtrlHandlerEx() is obviously happy with any service name for `SERVICE_WIN32_OWN_PROCESS` service types. I have tested it.
-However, I did take an extra step to set status.dwServiceType correctly. Although, according to my testing it worked even when not set correctly too.
+name for `SERVICE_WIN32_OWN_PROCESS` service types. I have
 
-Since there wasn't much extra work, the "legacy" automatic service has been extended to support multiple instances too.
+tested it.
+>
 
-Best regards,
-Simon
+Oh, really? I didn't think that would be the case. Looking at the docs
+again,
+the older non-Ex variant (RegisterServiceCtrlHandler()) does state that the
+name is not checked in case of OWN_PROCESS. Probably that got carried
+over to the ...Ex() though not documented as such.
+
+Cheers,
+
+Selva
+
+--94eb2c059008c59869055d0bad76
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr">Hi Simon,<div class=3D"gmail_extra"><br><div class=3D"gmai=
+l_quote">On Thu, Nov 2, 2017 at 3:21 PM, Simon Rozman <span dir=3D"ltr">&lt=
+;<a href=3D"mailto:simon@...2293..." target=3D"_blank">simon@...2293...</a>=
+&gt;</span> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0=
+ 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">While openvpn.exe can =
+run multiple concurrent processes, openvpnserv.exe<br>
+is usually only one single globally unique running process.<br>
+<br>
+This patch extends openvpnserv.exe to support multiple service instances<br>
+in parallel allowing side-by-side OpenVPN installations.<br></blockquote><d=
+iv><br></div><div>That was fast. On a quick glance, looks good but the patc=
+h does not apply</div><div>on current master. Did you base it on some of yo=
+ur recent patches not</div><div>all of which are yet merged? Looks like the=
+ contexts in common.c and</div><div>interactive.c do not match so the patch=
+ fails.</div><div><br></div><blockquote class=3D"gmail_quote" style=3D"marg=
+in:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">
+Hi,<br>
+<br>
+RegisterServiceCtrlHandlerEx() is obviously happy with any service=C2=A0</b=
+lockquote><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;bord=
+er-left:1px #ccc solid;padding-left:1ex">name for `SERVICE_WIN32_OWN_PROCES=
+S` service types. I have=C2=A0</blockquote><blockquote class=3D"gmail_quote=
+" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">t=
+ested it.<br></blockquote><div><br></div><div>Oh, really? I didn&#39;t thin=
+k that would be the case. Looking at the docs again,</div><div>the older no=
+n-Ex variant (RegisterServiceCtrlHandler()) does state that the</div><div>n=
+ame is not checked in case of OWN_PROCESS. Probably that got carried</div><=
+div>over to the ...Ex() though not documented as such.</div><div><br></div>=
+<div>Cheers,</div><div><br></div><div>Selva</div></div></div></div>
+
+--94eb2c059008c59869055d0bad76--
 
