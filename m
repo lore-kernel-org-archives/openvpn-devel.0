@@ -1,9 +1,10 @@
-Date: Sat, 4 Nov 2017 19:50:32 +0100 (CET)
-Message-Id: <201711041850.vA4IoWZX027127@...2054...>
+Date: Sat, 4 Nov 2017 19:54:34 +0100 (CET)
+Message-Id: <201711041854.vA4IsYTw027200@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20171011134530.6676-1-simon@...2293...>
-References: <20171011134530.6676-1-simon@...2293...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Document
+In-Reply-To: <20171011134902.3876-1-simon@...2293...>
+References: <20171011134902.3876-1-simon@...2293...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix typo in verb command
+ examples
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,22 +18,27 @@ Content-Transfer-Encoding: 8bit
 To: Simon Rozman <simon@...2293...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-Applied with the change proposed by David (removing the last sentence).
+ACK.
 
-Thanks.
+(This is a bit weird, David has obviously ACKed it, but the ACK never
+made it to the list - Simon followed up on the ACK, and References:
+points to tophemmelig.net, so I know it was David... - but anyway, 
+since this is an obviously-correct documentation fix, I dare to just
+ACK it myself ;-) )
 
 Your patch has been applied to the master and release/2.4 branch.
 
-commit a294cd65f6c61d41e1b7584b07295aba73aeb4cb (master)
-commit a255c3b2a77b282fcf1a8cba9d7ec34d48bfd0ed (release/2.4)
+commit 13f615b1f681df29d6792f4310be396e562caa4d (master)
+commit ea122b6ec34f61f304f0a7c5e489ea8263957f11 (release/2.4)
 Author: Simon Rozman
-Date:   Wed Oct 11 15:45:30 2017 +0200
+Date:   Wed Oct 11 15:49:02 2017 +0200
 
-     Document 
+     Fix typo in verb command examples
 
      Acked-by: David Sommerseth <davids@...515...>
-     Message-Id: <20171011134530.6676-1-simon@...2293...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg15599.html
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20171011134902.3876-1-simon@...2293...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg15601.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
