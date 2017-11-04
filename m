@@ -1,10 +1,10 @@
-Date: Sat, 4 Nov 2017 19:34:41 +0100 (CET)
-Message-Id: <201711041834.vA4IYfGA026870@...2054...>
+Date: Sat, 4 Nov 2017 19:37:50 +0100 (CET)
+Message-Id: <201711041837.vA4IboON026958@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <87k1zi18lt.fsf@...2274...>
-References: <87k1zi18lt.fsf@...2274...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Print time_t as long long and
- suseconds_t as long
+In-Reply-To: <20171012103448.7632-1-simon@...2293...>
+References: <20171012103448.7632-1-simon@...2293...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Fix local #include to use
+ quoted form
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,30 +15,21 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Jeremie Courreges-Anglas <jca@...2272...>
+To: Simon Rozman <simon@...2293...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-ACK, thanks.  Reviewed by "staring at the code" (changes are only what it
-says on the tin), compiling with clang and gcc (no format related warnings),
-and running tests, of course :-)
+Your patch has been applied to the master and release/2.4 branch.
 
-I'm a bit undecided whether this should go to release/2.4 as well, as it
-is "refactoring" and our general policy is "refactoring goes into master"
-(but then it's straightforward enough).  Leaving it in master for now, 
-but I can be convinced that we want this in 2.4...
+commit d2a7415f265aea5e0f04d80e48af506e153ba0f4 (master)
+commit c6af7006219ec03ece4545355251e79b47d56e8c (release/2.4)
+Author: Simon Rozman
+Date:   Thu Oct 12 12:34:48 2017 +0200
 
-Your patch has been applied to the master branch.
+     Fix local #include to use quoted form
 
-commit 31b5c0e9a0c10f59a0e987a9e1f82e9268b30e61 (master)
-Author: Jeremie Courreges-Anglas
-Date:   Thu Oct 26 11:40:05 2017 +0200
-
-     Print time_t as long long and suseconds_t as long
-
-     Signed-off-by: Jeremie Courreges-Anglas <jca@...2272...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <87k1zi18lt.fsf@...2274...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg15667.html
+     Acked-by: Selva Nair <selva.nair@...277...>
+     Message-Id: <20171012103448.7632-1-simon@...2293...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg15622.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
