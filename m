@@ -1,13 +1,10 @@
-Date: Fri, 3 Nov 2017 20:09:46 +0100
+Date: Sat, 4 Nov 2017 17:14:29 +0100 (CET)
+Message-Id: <201711041614.vA4GET0X015349@...2054...>
 From: Gert Doering <gert@...1296...>
-Message-ID: <20171103190946.GU958@...1296...>
-References: <20171005232542.30007-1-davids@...515...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="NphB68aIrRU2wdue"
-Content-Disposition: inline
-In-Reply-To: <20171005232542.30007-1-davids@...515...>
-Subject: Re: [Openvpn-devel] [PATCH] man: Describe --proto options better
+In-Reply-To: <20170221192737.24166-3-davids@...515...>
+References: <20170221192737.24166-3-davids@...515...>
+Subject: [Openvpn-devel] [PATCH applied] Re: lz4: Rebase compat-lz4 against
+ upstream v1.7.5
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,89 +13,45 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: David Sommerseth <davids@...515...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---NphB68aIrRU2wdue
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+ACK.
 
-Hi,
+Based on:
+ - after this patch, the compat-lz4.c and compat-lz4.h files exactly match
+   the lz4.c/lz4.h files from the upstream repo, tag 1.7.5, with the
+   modifications done by our tool (needed to fit the "compat" conditional
+   building)
+ - with 1.7.5, we can have LZ4_versionString() now [patch pending...]
+ - there is newer stuff in the LZ4 repo, but as far as I could determine,
+   there is nothing crucial or interesting for us in there - so for the
+   time being, this jump is good enough (and I could take your patch and
+   just apply it, instead of doing another round)
 
-On Fri, Oct 06, 2017 at 01:25:42AM +0200, David Sommerseth wrote:
-> The --proto options changed a bit in OpenVPN v2.4.  This tries to
-> expand this section, explaining the new variants and how they
-> related to older OpenVPN versions.
+Of course it also passes t_client tests (built on a system with no lz4) :-)
 
-As discussed on IRC, this is not fully right yet.  I'm somewhat too
-lazy to write up a proper patch, so I'll just write it up again.
+Your patch has been applied to the master and release/2.4 branch.
 
-Client and server are slightly different, as are 2.3/2.4.  So:
+commit 86614539e5ff2ca72f61a9a377130f3b403c9434 (master)
+commit dd001c359ca1e1fd2181aa0da1f2074608806e0f (release/2.4)
+Author: David Sommerseth
+Date:   Tue Feb 21 20:27:36 2017 +0100
 
- client/2.3
-    --proto udp/tcp    -> IPv4-only
-    --proto udp6/tcp6  -> IPv6-only
-       (no way to get "use what the server advertises in DNS")
+     lz4: Rebase compat-lz4 against upstream v1.7.5
 
- client/2.4
-    --proto udp4/tcp4  -> IPv4-only
-    --proto udp6/tcp6  -> IPv6-only
-    --proto udp/tcp    -> "ask DNS, and try IPv6 and/or IPv4, whatever
-                          comes back from DNS and works"
+     Signed-off-by: David Sommerseth <davids@...515...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20170221192737.24166-3-davids@...515...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg14137.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
- server/2.3
-    --proto udp/tcp    -> IPv4-only
-    --proto udp6/tcp6  -> IPv6-only *or* dual-stack, depending on=20
-                          "net.inet6.ip6.v6only" sysctl (1 -> ipv6-only)
 
- server/2.4
-    --proto udp4/tcp4  -> IPv4-only
-    --proto udp6/tcp6  -> dual-stack or IPv6-only, depending on the
-                          setting of "--bind [ipv6only]" (default is dual)
-    --proto udp/tcp    -> "ask getaddrinfo() what the recommended value for
-                          a listening socket is, and use that" - this can
-                          result in an IPv4-only (INADDR_ANY) or an IPv6/
-                          dual-stack socket (IN6ADDR_ANY_INIT)
+--
+kind regards,
 
-                          So, for best results, use "udp6/tcp6" on machines=
-=20
-                          that have IPv6 active, and only fallback to "udp/=
-tcp"
-                          when you *know* that udp6/tcp6 isn't working (e.g.
-                          because some smart guy removed ipv6.ko from the=20
-                          system).
+Gert Doering
 
-The slightly undefined behaviour of the 2.4/server side wrt "udp/tcp" is
-something we should fix to always get dual-stack unless that fails, and
-then fall back to IPv4-only - but that's slightly complicated (socket.c)
-and needs lots of cross-platform testing, so "nobody has done it yet"
-
-gert
-
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---NphB68aIrRU2wdue
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJZ/L76AAoJEB2Cnv7KVigSCx8MAJqmJc8SeEeWiH0BuClTXC4a
-EIvWcXiwzleIIqHnVMLQryNSOIPslRERdSegL3Row3o4MO+0qIIdOzI6WgHR9IAv
-QwbtdcyvoXL6vafABlQnF+Px0nOetp54qA7ppM+a0DVcjWSgseMxQDHMFj1aPgzf
-ifGm/5Xp3uMKtO7WqD1Owd20D1is9jqtfvM5T7Os5SW9KIvG7Je7BeyLKmmUGYn9
-11WhLvhh16Qj+FUaNcTmXarYbDEpoHQizlJ6hdLgyB73Eal7DBzCbF52DfFpphb7
-SRlQ9DS+v5EZRarGknEWu+Goq7ckceOt+S/GLBBdSHFbUoMoqdcS1p9xR4J+bvgS
-AFKIyV/5hGtDaBgb+R6HZllpOSA2sw45jxN+Eslb1sHi3S2lX4x8JBGYyd5tC4El
-Zat7Dj3ijG5S3snkILEPx9iqnYmlDb/fh4qRdlrVu2l97fAIAEaQUvmyS3hnj6wg
-mzkf5Mg2zzQrt+5id0r5Slnbic5yEVtRz7zbYzqiDQ==
-=Mr9c
------END PGP SIGNATURE-----
-
---NphB68aIrRU2wdue--
 
