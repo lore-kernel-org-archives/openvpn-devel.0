@@ -1,10 +1,10 @@
-Date: Sat, 4 Nov 2017 21:01:54 +0100 (CET)
-Message-Id: <201711042001.vA4K1s53027908@...2054...>
-From: Gert Doering <gert@...1296...>
-In-Reply-To: <20170327221620.24639-1-davids@...515...>
-References: <20170327221620.24639-1-davids@...515...>
-Subject: [Openvpn-devel] [PATCH applied] Re: systemd: Add and ship
- README.systemd
+From: Steffan Karger <steffan@...1856...>
+Date: Sat,  4 Nov 2017 23:45:50 +0100
+Message-Id: <20171104224551.3079-1-steffan@...1856...>
+In-Reply-To: <20171104174756.GX958@...1296...>
+References: <20171104174756.GX958@...1296...>
+Subject: [Openvpn-devel] [PATCH v2] buffer_list_aggregate_separator(): add
+ unit tests
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,36 +15,231 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: David Sommerseth <davids@...515...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: openvpn-devel@lists.sourceforge.net
 
-ACK.
+From: Steffan Karger <steffan.karger@...1435...>
 
-Arguably I have no idea about systemd, but documentation is generally
-welcome, and "how to use openvpn in a systemd environment" is something
-we better document :-) - since there is no code change involved, I do not
-need to verify if this actually correct, but I assume that David knows
-better than the rest of us anyway...
+Before refactoring this function, add tests to verify the new
+implementation.
 
-Patch has been applied to the master and release/2.4 branch.
+While writing the tests, it became clear that this function is not
+behaving very well.  We'll fix that in follow-up commits.
 
-commit 3230057d3a569ccedb0a41116e7819a229bd4a3f (master)
-commit b6642f170e38eb2464a6806f91ce8f95e6a4ab99 (release/2.4)
-Author: David Sommerseth
-Date:   Tue Mar 28 00:16:20 2017 +0200
+Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+---
+v2: add assert_buf_equals_str macro, and use that to compare (not zero-
+    terminated) buffer contents with expected strings.
 
-     systemd: Add and ship README.systemd
+ tests/unit_tests/openvpn/test_buffer.c | 184 ++++++++++++++++++++++++++++++++-
+ 1 file changed, 182 insertions(+), 2 deletions(-)
 
-     Signed-off-by: David Sommerseth <davids@...515...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20170327221620.24639-1-davids@...515...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg14311.html
-     Signed-off-by: Gert Doering <gert@...1296...>
-
-
---
-kind regards,
-
-Gert Doering
+diff --git a/tests/unit_tests/openvpn/test_buffer.c b/tests/unit_tests/openvpn/test_buffer.c
+index 69bb2e58..ba5aa670 100644
+--- a/tests/unit_tests/openvpn/test_buffer.c
++++ b/tests/unit_tests/openvpn/test_buffer.c
+@@ -35,7 +35,7 @@
+ #include "buffer.h"
+ 
+ static void
+-buffer_strprefix(void **state)
++test_buffer_strprefix(void **state)
+ {
+     assert_true(strprefix("123456", "123456"));
+     assert_true(strprefix("123456", "123"));
+@@ -44,11 +44,191 @@ buffer_strprefix(void **state)
+     assert_false(strprefix("12", "123"));
+ }
+ 
++#define testsep ","
++#define testnosep ""
++#define teststr1 "one"
++#define teststr2 "two"
++#define teststr3 "three"
++#define teststr4 "four"
++
++#define assert_buf_equals_str(buf, str) \
++    assert_int_equal(BLEN(buf), strlen(str)); \
++    assert_memory_equal(BPTR(buf), str, BLEN(buf));
++
++struct test_buffer_list_aggregate_ctx {
++    struct buffer_list *empty;
++    struct buffer_list *one_two_three;
++    struct buffer_list *zero_length_strings;
++    struct buffer_list *empty_buffers;
++};
++
++static int test_buffer_list_setup(void **state)
++{
++    struct test_buffer_list_aggregate_ctx *ctx  = calloc(1, sizeof(*ctx));
++    ctx->empty = buffer_list_new(0);
++
++    ctx->one_two_three = buffer_list_new(3);
++    buffer_list_push(ctx->one_two_three, teststr1);
++    buffer_list_push(ctx->one_two_three, teststr2);
++    buffer_list_push(ctx->one_two_three, teststr3);
++
++    ctx->zero_length_strings = buffer_list_new(2);
++    buffer_list_push(ctx->zero_length_strings, "");
++    buffer_list_push(ctx->zero_length_strings, "");
++
++    ctx->empty_buffers = buffer_list_new(2);
++    uint8_t *data1 = malloc(1);
++    uint8_t *data2 = malloc(1);
++    buffer_list_push_data(ctx->empty_buffers, data1, 0);
++    buffer_list_push_data(ctx->empty_buffers, data2, 0);
++
++    *state = ctx;
++    return 0;
++}
++
++static int test_buffer_list_teardown(void **state)
++{
++    struct test_buffer_list_aggregate_ctx *ctx = *state;
++
++    buffer_list_free(ctx->empty);
++    buffer_list_free(ctx->one_two_three);
++    buffer_list_free(ctx->zero_length_strings);
++    buffer_list_free(ctx->empty_buffers);
++    free(ctx);
++    return 0;
++}
++
++static void
++test_buffer_list_full(void **state)
++{
++    struct test_buffer_list_aggregate_ctx *ctx = *state;
++
++    /* list full */
++    assert_int_equal(ctx->one_two_three->size, 3);
++    buffer_list_push(ctx->one_two_three, teststr4);
++    assert_int_equal(ctx->one_two_three->size, 3);
++}
++
++static void
++test_buffer_list_aggregate_separator_empty(void **state)
++{
++    struct test_buffer_list_aggregate_ctx *ctx = *state;
++
++    /* aggregating an empty buffer list results in an empty buffer list */
++    buffer_list_aggregate_separator(ctx->empty, 3, testsep);
++    assert_null(ctx->empty->head);
++}
++
++static void
++test_buffer_list_aggregate_separator_noop(void **state)
++{
++    struct test_buffer_list_aggregate_ctx *ctx = *state;
++
++    /* With a max length of 2, no aggregation should take place */
++    buffer_list_aggregate_separator(ctx->one_two_three, 2, testsep);
++    assert_int_equal(ctx->one_two_three->size, 3);
++    struct buffer *buf = buffer_list_peek(ctx->one_two_three);
++    assert_buf_equals_str(buf, teststr1);
++}
++
++static void
++test_buffer_list_aggregate_separator_two(void **state)
++{
++    struct test_buffer_list_aggregate_ctx *ctx = *state;
++
++    /* Aggregate the first two elements */
++    /* FIXME this exceeds the supplied max */
++    buffer_list_aggregate_separator(ctx->one_two_three, 4, testsep);
++    /* FIXME size does not get adjusted after aggregating */
++    assert_int_equal(ctx->one_two_three->size, 3);
++    struct buffer *buf = buffer_list_peek(ctx->one_two_three);
++    assert_buf_equals_str(buf, teststr1 testsep teststr2 testsep);
++}
++
++static void
++test_buffer_list_aggregate_separator_all(void **state)
++{
++    struct test_buffer_list_aggregate_ctx *ctx = *state;
++
++    /* Aggregate all */
++    buffer_list_aggregate_separator(ctx->one_two_three, 1<<16, testsep);
++    /* FIXME size does not get adjusted after aggregating */
++    assert_int_equal(ctx->one_two_three->size, 3);
++    struct buffer *buf = buffer_list_peek(ctx->one_two_three);
++    assert_buf_equals_str(buf,
++                          teststr1 testsep teststr2 testsep teststr3 testsep);
++}
++
++static void
++test_buffer_list_aggregate_separator_nosep(void **state)
++{
++    struct test_buffer_list_aggregate_ctx *ctx = *state;
++
++    /* Aggregate all */
++    buffer_list_aggregate_separator(ctx->one_two_three, 1<<16, testnosep);
++    /* FIXME size does not get adjusted after aggregating */
++    assert_int_equal(ctx->one_two_three->size, 3);
++    struct buffer *buf = buffer_list_peek(ctx->one_two_three);
++    assert_buf_equals_str(buf, teststr1 teststr2 teststr3);
++}
++
++static void
++test_buffer_list_aggregate_separator_zerolen(void **state)
++{
++    struct test_buffer_list_aggregate_ctx *ctx = *state;
++    struct buffer_list *bl_zerolen = ctx->zero_length_strings;
++
++    /* Aggregate all */
++    buffer_list_aggregate_separator(bl_zerolen, 1<<16, testnosep);
++    /* FIXME size does not get adjusted after aggregating */
++    assert_int_equal(bl_zerolen->size, 2);
++    struct buffer *buf = buffer_list_peek(bl_zerolen);
++    assert_buf_equals_str(buf, "");
++}
++
++static void
++test_buffer_list_aggregate_separator_emptybuffers(void **state)
++{
++    struct test_buffer_list_aggregate_ctx *ctx = *state;
++    struct buffer_list *bl_emptybuffers = ctx->empty_buffers;
++
++    /* Aggregate all */
++    buffer_list_aggregate_separator(bl_emptybuffers, 1<<16, testnosep);
++    /* FIXME size does not get adjusted after aggregating */
++    assert_int_equal(bl_emptybuffers->size, 2);
++    struct buffer *buf = buffer_list_peek(bl_emptybuffers);
++    assert_int_equal(BLEN(buf), 0);
++}
++
+ int
+ main(void)
+ {
+     const struct CMUnitTest tests[] = {
+-        cmocka_unit_test(buffer_strprefix),
++        cmocka_unit_test(test_buffer_strprefix),
++        cmocka_unit_test_setup_teardown(test_buffer_list_full,
++                                        test_buffer_list_setup,
++                                        test_buffer_list_teardown),
++        cmocka_unit_test_setup_teardown(test_buffer_list_aggregate_separator_empty,
++                                        test_buffer_list_setup,
++                                        test_buffer_list_teardown),
++        cmocka_unit_test_setup_teardown(test_buffer_list_aggregate_separator_noop,
++                                        test_buffer_list_setup,
++                                        test_buffer_list_teardown),
++        cmocka_unit_test_setup_teardown(test_buffer_list_aggregate_separator_two,
++                                        test_buffer_list_setup,
++                                        test_buffer_list_teardown),
++        cmocka_unit_test_setup_teardown(test_buffer_list_aggregate_separator_all,
++                                        test_buffer_list_setup,
++                                        test_buffer_list_teardown),
++        cmocka_unit_test_setup_teardown(test_buffer_list_aggregate_separator_nosep,
++                                        test_buffer_list_setup,
++                                        test_buffer_list_teardown),
++        cmocka_unit_test_setup_teardown(test_buffer_list_aggregate_separator_zerolen,
++                                        test_buffer_list_setup,
++                                        test_buffer_list_teardown),
++        cmocka_unit_test_setup_teardown(test_buffer_list_aggregate_separator_emptybuffers,
++                                        test_buffer_list_setup,
++                                        test_buffer_list_teardown),
+     };
+ 
+     return cmocka_run_group_tests_name("buffer", tests, NULL, NULL);
+-- 
+2.14.1
 
 
