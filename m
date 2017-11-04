@@ -1,10 +1,10 @@
-Date: Sat, 4 Nov 2017 20:21:09 +0100 (CET)
-Message-Id: <201711041921.vA4JL9wK027439@...2054...>
+Date: Sat, 4 Nov 2017 20:26:15 +0100 (CET)
+Message-Id: <201711041926.vA4JQFLL027533@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20171013095008.8288-1-simon@...2293...>
-References: <20171013095008.8288-1-simon@...2293...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Uniform swprintf() across MinGW
- and MSVC compilers
+In-Reply-To: <20171010231130.6832-8-simon@...2293...>
+References: <20171010231130.6832-8-simon@...2293...>
+Subject: [Openvpn-devel] [PATCH applied] Re: MSVC meta files added to
+ .gitignore list
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,18 +18,20 @@ Content-Transfer-Encoding: 8bit
 To: Simon Rozman <simon@...2293...>
 Cc: openvpn-devel@lists.sourceforge.net
 
+ACK.  This is something I can understand, without knowing MSVC :-)
+
 Your patch has been applied to the master and release/2.4 branch.
 
-commit 2f7b59196f55d62386cbcb2a889381e91e6c5148 (master)
-commit 7e36553aa6f0c5ca1944025e0bd09aacb38a41cb (release/2.4)
+commit 289ba682c70f9ea801fabca297115409acc437c9 (master)
+commit 6d4d62859db9bbe9b979d485fb7539a56a25212c (release/2.4)
 Author: Simon Rozman
-Date:   Fri Oct 13 11:50:08 2017 +0200
+Date:   Wed Oct 11 01:11:25 2017 +0200
 
-     Uniform swprintf() across MinGW and MSVC compilers
+     MSVC meta files added to .gitignore list
 
-     Acked-by: Selva Nair <selva.nair@...277...>
-     Message-Id: <20171013095008.8288-1-simon@...2293...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg15633.html
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20171010231130.6832-8-simon@...2293...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg15585.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
