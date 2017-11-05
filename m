@@ -1,18 +1,15 @@
+Date: Sun, 5 Nov 2017 20:20:19 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20171105192019.GM958@...1296...>
+References: <20171010231130.6832-1-simon@...2293...>
+ <20171010231130.6832-9-simon@...2293...>
 MIME-Version: 1.0
-In-Reply-To: <a3d45ab2-63e9-2849-6118-775a8f43ec87@...1147...>
-References: <f7687ebf-a75f-095d-67ca-e32a5c4e53e7@...515...>
- <41c0e750-b27e-22ea-d5fb-b17fe391636d@...1147...>
- <689096e2-8bb8-95b8-5daf-22fd600a00ca@...515...>
- <da7671c8-6768-f718-79a0-996cdb0d8d87@...1147...>
- <82ec1478-ec53-3980-05b1-4529a74aa789@...1147...>
- <20170717121451.GQ70062@...1296...>
- <a3d45ab2-63e9-2849-6118-775a8f43ec87@...1147...>
-From: Selva <selva.nair@...277...>
-Date: Sun, 5 Nov 2017 12:36:31 -0500
-Message-ID: <CAKuzo_gd_T-mNYnLTy5dgb3G94cNci7Cs1ohVpCz2EwUcu6TWg@...278...>
-Content-Type: multipart/alternative; boundary="001a114e65087c511f055d3fc892"
-Subject: Re: [Openvpn-devel] Windows installer with updated pkcs11-helper
- (1.22) available for testing
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="5A5IZTkOcqW2Z2LE"
+Content-Disposition: inline
+In-Reply-To: <20171010231130.6832-9-simon@...2293...>
+Subject: Re: [Openvpn-devel] [PATCH 09/13] Signed/unsigned warnings of MSVC
+ resolved
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,101 +18,156 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Jan Just Keijser <janjust@...1147...>
-Cc: Gert Doering <gert@...1296...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: simon@...2293...
+Cc: openvpn-devel@lists.sourceforge.net
 
---001a114e65087c511f055d3fc892
-Content-Type: text/plain; charset="UTF-8"
+--5A5IZTkOcqW2Z2LE
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
 Hi,
 
-And the rationale for the patch:
+On Wed, Oct 11, 2017 at 01:11:26AM +0200, simon@...2293... wrote:
+> From: Simon Rozman <simon@...2293...>
+>=20
+> ---
+>  src/openvpn/block_dns.c       | 2 +-
+>  src/openvpnserv/automatic.c   | 2 +-
+>  src/openvpnserv/common.c      | 2 +-
+>  src/openvpnserv/interactive.c | 4 ++--
+>  src/openvpnserv/validate.c    | 2 +-
+>  5 files changed, 6 insertions(+), 6 deletions(-)
 
-On Mon, Jul 17, 2017 at 8:22 AM, Jan Just Keijser <janjust@...1147...> wrote:
+So... trying to make sense of this.
 
-> On 17/07/17 14:14, Gert Doering wrote:
->
->> Hi,
->>
->> On Mon, Jul 17, 2017 at 02:10:11PM +0200, Jan Just Keijser wrote:
->>
->>> this problem is NOT present in OpenVPN 2.3.17; the same warning appears
->>> (route gateway is ambiguous) but the route is added
->>> anyway. This seems to be a regression in 2.4.
->>>
->> Can we have a log, please?
->>
->>
->> attached: config and log (with hostnames anonymized)
+> diff --git a/src/openvpn/block_dns.c b/src/openvpn/block_dns.c
+> index d43cbcf..f88ba2c 100644
+> --- a/src/openvpn/block_dns.c
+> +++ b/src/openvpn/block_dns.c
+> @@ -370,7 +370,7 @@ get_interface_metric(const NET_IFINDEX index, const A=
+DDRESS_FAMILY family)
+>          }
+>          return ipiface.Metric;
+>      }
+> -    return -err;
+> +    return -(int)err;
+>  }
+
+This, I can somewhat agree to, as "err" is an unsigned type so there
+might be a hidden integer overflow if it happens to be "large".  Which it
+won't be, but still.
+
+>=20=20
+>  /*
+> diff --git a/src/openvpnserv/automatic.c b/src/openvpnserv/automatic.c
+> index 4123d0f..6c39aaa 100644
+> --- a/src/openvpnserv/automatic.c
+> +++ b/src/openvpnserv/automatic.c
+> @@ -155,7 +155,7 @@ match(const WIN32_FIND_DATA *find, LPCTSTR ext)
+>   * Modify the extension on a filename.
+>   */
+>  static bool
+> -modext(LPTSTR dest, int size, LPCTSTR src, LPCTSTR newext)
+> +modext(LPTSTR dest, size_t size, LPCTSTR src, LPCTSTR newext)
+>  {
+>      int i;
+
+Not sure why this is needed?  The code verifies that size is ">0", so
+a signed variable is ok here.
+
+>=20=20
+> diff --git a/src/openvpnserv/common.c b/src/openvpnserv/common.c
+> index b8b817b..7901fd6 100644
+> --- a/src/openvpnserv/common.c
+> +++ b/src/openvpnserv/common.c
+> @@ -36,7 +36,7 @@ openvpn_vsntprintf(LPTSTR str, size_t size, LPCTSTR for=
+mat, va_list arglist)
+>          len =3D _vsntprintf(str, size, format, arglist);
+>          str[size - 1] =3D 0;
+>      }
+> -    return (len >=3D 0 && len < size);
+> +    return (len >=3D 0 && (size_t)len < size);
+>  }
+
+This is, if I understand right, because "len < size" will implicitly cast
+size to (int), causing integer overflow if size is too big for a signed
+int?
 
 
-As in the logs,
+>  int
+>  openvpn_sntprintf(LPTSTR str, size_t size, LPCTSTR format, ...)
+> diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
+> index 8d94197..96e0de0 100644
+> --- a/src/openvpnserv/interactive.c
+> +++ b/src/openvpnserv/interactive.c
+> @@ -188,7 +188,7 @@ typedef enum {
+>  static DWORD
+>  AsyncPipeOp(async_op_t op, HANDLE pipe, LPVOID buffer, DWORD size, DWORD=
+ count, LPHANDLE events)
+>  {
+> -    int i;
+> +    DWORD i;
 
-Mon Jul 17 14:18:43 2017 us=1227 C:\Windows\system32\route.exe ADD
-222.222.97.13 MASK 255.255.255.255 111.111.135.254
-Mon Jul 17 14:18:43 2017 us=1227 Warning: route gateway is ambiguous:
-111.111.135.254 (2 matches)
+... and this totally escapes me.  Why would an "int" suddenly be no longer
+a legal loop variable...?
+=20
+>      BOOL success;
+>      HANDLE io_event;
+>      DWORD res, bytes =3D 0;
+> @@ -1061,7 +1061,7 @@ RegisterDNS(LPVOID unused)
+>          { ipcfg, L"ipconfig /flushdns",    timeout },
+>          { ipcfg, L"ipconfig /registerdns", timeout },
+>      };
+> -    int ncmds =3D sizeof(cmds) / sizeof(cmds[0]);
+> +    DWORD ncmds =3D sizeof(cmds) / sizeof(cmds[0]);
 
-when multiple interfaces match a route, we bail out with a warning unless
-the route method used is exe. This code is the same in 2.3.17 and 2.4.3
-except the latter defaults to using IPAPI invoked via the service. 2.3.7
-also defaults to IPAPI but falls back to exe if the former fails.
+Same thing here...
 
-Looking the sources: In tun.c
-adapter_index_of_ip() returns the index of the first matching adapter and
-the number of matching adapters found. If the count is > 1
-windows_route_find_if_index() in route.c sets the index to
-TUN_ADAPTER_INDEX_INVALID and route addition gets aborted.
+> index 7a2d0e3..5422d33 100644
+> --- a/src/openvpnserv/validate.c
+> +++ b/src/openvpnserv/validate.c
+> @@ -298,7 +298,7 @@ IsUserInGroup(PSID sid, const PTOKEN_GROUPS token_gro=
+ups, const WCHAR *group_nam
+>              break;
+>          }
+>          /* If a match is already found, ret =3D=3D TRUE and the loop is =
+skipped */
+> -        for (int i =3D 0; i < nread && !ret; ++i)
+> +        for (DWORD i =3D 0; i < nread && !ret; ++i)
 
-We could slightly modify adapter_index_of_ip() to return the matching index
-with smallest metric when more than one are found.
+... and here.
 
-Selva
 
---001a114e65087c511f055d3fc892
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Consider me not convinced...
 
-<div dir=3D"ltr">Hi,<div><br></div><div>And the rationale for the patch:<br=
-><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">On Mon, Jul 17, =
-2017 at 8:22 AM, Jan Just Keijser <span dir=3D"ltr">&lt;<a href=3D"mailto:j=
-anjust@...1147..." target=3D"_blank">janjust@...1147...</a>&gt;</span> wrot=
-e:<br><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;b=
-order-left:1px solid rgb(204,204,204);padding-left:1ex"><span class=3D"m_-6=
-21741718886860131m_1830476516909612025m_5075951453959005665gmail-">On 17/07=
-/17 14:14, Gert Doering wrote:<br>
-<blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-=
-left:1px solid rgb(204,204,204);padding-left:1ex">
-Hi,<br>
-<br>
-On Mon, Jul 17, 2017 at 02:10:11PM +0200, Jan Just Keijser wrote:<br>
-<blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-=
-left:1px solid rgb(204,204,204);padding-left:1ex">
-this problem is NOT present in OpenVPN 2.3.17; the same warning appears (ro=
-ute gateway is ambiguous) but the route is added<br>
-anyway. This seems to be a regression in 2.4.<br>
-</blockquote>
-Can we have a log, please?<br>
-<br>
-<br>
-</blockquote></span>
-attached: config and log (with hostnames anonymized)</blockquote><div><br><=
-/div><div>As in the logs,</div><div><div><br></div><div><div>Mon Jul 17 14:=
-18:43 2017 us=3D1227 C:\Windows\system32\route.exe ADD 222.222.97.13 MASK 2=
-55.255.255.255 111.111.135.254</div><div>Mon Jul 17 14:18:43 2017 us=3D1227=
- Warning: route gateway is ambiguous: 111.111.135.254 (2 matches)</div></di=
-v><div><br></div><div>when multiple interfaces match a route, we bail out w=
-ith a warning unless the route method used is exe. This code is the same in=
- 2.3.17 and 2.4.3 except the latter defaults to using IPAPI invoked via the=
- service. 2.3.7 also defaults to IPAPI but falls back to exe if the former =
-fails.=C2=A0<br></div><div><br></div><div>Looking the sources: In tun.c</di=
-v><div>adapter_index_of_ip() returns the index of the first matching adapte=
-r and the number of matching adapters found. If the count is &gt; 1<br></di=
-v><div>windows_route_find_if_index() in route.c sets the index to TUN_ADAPT=
-ER_INDEX_INVALID and route addition gets aborted.</div><div><br></div><div>=
-We could slightly modify adapter_index_of_ip() to return the matching index=
- with smallest metric when more than one are found.</div><div><br></div><di=
-v>Selva<br></div></div></div></div></div></div>
+what exactly are the warnings MSVC spits out here?
 
---001a114e65087c511f055d3fc892--
+gert
+
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--5A5IZTkOcqW2Z2LE
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJZ/2RyAAoJEB2Cnv7KVigSjrML/1hbjQAtctGw2HHEF/CwCIav
+O7Hvz6w42n4q77edrtPLDDrqIu8RKKwh9w21JaL+hY5RIb9kU5C65qI7iNZbdfhX
+G5o/yiKchF53tyPRUqmrU6UfH4yDhyj52YekYujLrynmKrqiRPrmNbK77joeGCYG
+cziMXdCY324xff6qMIzen7kahEzOF19FAx8F0kMU2upU5VRhYl6THMmufD1WeYEx
++SJsZj3SCLwAlHqGAxcotJCKXbEDpBxazH9n+58pTzXn0tr7god1gGn/D3RU2yKf
+H8wrDoyQlhw8zx/l1iHTvWhsj/pPPDmL5GBiGkARLhU3wIzDlJKv5ngypkQNZczd
+LkGBm6DmLNElqYD5nXHta4ycvrHwdkZqTA4yiIYa7rzKAvVQRVlFneQAUHGS/IYR
+tSpyf2Y4egfedK3MdHcXr7GvZhwA/jkFfWReMsjrmN5jaN15v1MInZ8xf6ZrTUK/
+DunfK8kRIGUk9DfP+LOqBUuVit0n9zpg/Fj+7HNnOQ==
+=Kikz
+-----END PGP SIGNATURE-----
+
+--5A5IZTkOcqW2Z2LE--
 
