@@ -1,15 +1,10 @@
 From: Jeremie Courreges-Anglas <jca@...2272...>
-References: <87k1zi18lt.fsf@...2274...>
- <201711041834.vA4IYfGA026870@...2054...>
-Date: Sun, 05 Nov 2017 10:14:03 +0100
-In-Reply-To: <201711041834.vA4IYfGA026870@...2054...> (Gert
- Doering's message of "Sat, 4 Nov 2017 19:34:41 +0100 (CET)")
-Message-ID: <87375t6qas.fsf@...2274...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="==-=-=";
- micalg=pgp-sha512; protocol="application/pgp-signature"
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: Print time_t as long long
- and suseconds_t as long
+Date: Sun,  5 Nov 2017 10:46:41 +0100
+Message-Id: <20171105094641.55673-1-jca@...2272...>
+In-Reply-To: <87375t6qas.fsf@...2274...>
+References: <87375t6qas.fsf@...2274...>
+Subject: [Openvpn-devel] [PATCH] Use long long to format time_t-related
+ environment variables
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,99 +13,87 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
-Cc: openvpn-devel@lists.sourceforge.net
-
---==-=-=
-Content-Type: multipart/mixed; boundary="=-=-="
-
---=-=-=
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-On Sat, Nov 04 2017, Gert Doering <gert@...1296...> wrote:
-> ACK, thanks.  Reviewed by "staring at the code" (changes are only what it
-> says on the tin), compiling with clang and gcc (no format related warning=
-s),
-> and running tests, of course :-)
+Signed-off-by: Jeremie Courreges-Anglas <jca@...2272...>
+---
+ src/openvpn/misc.c    | 4 ++--
+ src/openvpn/misc.h    | 2 +-
+ src/openvpn/multi.c   | 7 ++-----
+ src/openvpn/options.c | 2 +-
+ 4 files changed, 6 insertions(+), 9 deletions(-)
 
-Cool, thank you for your time.
-
-> I'm a bit undecided whether this should go to release/2.4 as well, as it
-> is "refactoring" and our general policy is "refactoring goes into master"
-> (but then it's straightforward enough).  Leaving it in master for now,=20
-> but I can be convinced that we want this in 2.4...
-
-FWIW I'm fine with whatever approach you prefer.  openvpn-2.5.0 will
-hopefully be released before 2038. :)
-
-Here's another small diff, I forgot one suseconds_t occurrence.
-
-
---=-=-=
-Content-Type: text/x-patch
-Content-Disposition: attachment;
- filename=0001-Cast-and-print-another-suseconds_t-as-long.patch
-Content-Transfer-Encoding: quoted-printable
-
-From=20cbe8237ff59129501e1e92c8fd6a3488d94c4c0f Mon Sep 17 00:00:00 2001
-From: Jeremie Courreges-Anglas <jca@...2272...>
-Date: Sun, 5 Nov 2017 10:03:26 +0100
-Subject: [PATCH] Cast and print another suseconds_t as long
-
-Missed in 31b5c0e
-=2D--
- src/openvpn/forward.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index a91a8d9a..1b7455bb 100644
-=2D-- a/src/openvpn/forward.c
-+++ b/src/openvpn/forward.c
-@@ -649,7 +649,7 @@ check_timeout_random_component_dowork(struct context *c)
-     c->c2.timeout_random_component.tv_usec =3D (time_t) get_random() & 0x0=
-003FFFF;
-     c->c2.timeout_random_component.tv_sec =3D 0;
-=20
-=2D    dmsg(D_INTERVAL, "RANDOM USEC=3D%d", (int) c->c2.timeout_random_comp=
-onent.tv_usec);
-+    dmsg(D_INTERVAL, "RANDOM USEC=3D%ld", (long) c->c2.timeout_random_comp=
-onent.tv_usec);
+diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
+index 8c7f6116..001fe1c4 100644
+--- a/src/openvpn/misc.c
++++ b/src/openvpn/misc.c
+@@ -553,10 +553,10 @@ setenv_int(struct env_set *es, const char *name, int value)
  }
-=20
- static inline void
-=2D-=20
+ 
+ void
+-setenv_unsigned(struct env_set *es, const char *name, unsigned int value)
++setenv_long_long(struct env_set *es, const char *name, long long value)
+ {
+     char buf[64];
+-    openvpn_snprintf(buf, sizeof(buf), "%u", value);
++    openvpn_snprintf(buf, sizeof(buf), "%lld", value);
+     setenv_str(es, name, buf);
+ }
+ 
+diff --git a/src/openvpn/misc.h b/src/openvpn/misc.h
+index eb39ce3f..f6c810a2 100644
+--- a/src/openvpn/misc.h
++++ b/src/openvpn/misc.h
+@@ -98,7 +98,7 @@ void setenv_counter(struct env_set *es, const char *name, counter_type value);
+ 
+ void setenv_int(struct env_set *es, const char *name, int value);
+ 
+-void setenv_unsigned(struct env_set *es, const char *name, unsigned int value);
++void setenv_long_long(struct env_set *es, const char *name, long long value);
+ 
+ void setenv_str(struct env_set *es, const char *name, const char *value);
+ 
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index 4545bce1..82a0b9d9 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -565,10 +565,7 @@ multi_client_disconnect_setenv(struct multi_context *m,
+     setenv_stats(&mi->context);
+ 
+     /* setenv connection duration */
+-    {
+-        const unsigned int duration = (unsigned int) now - mi->created;
+-        setenv_unsigned(mi->context.c2.es, "time_duration", duration);
+-    }
++    setenv_long_long(mi->context.c2.es, "time_duration", now - mi->created);
+ }
+ 
+ static void
+@@ -1769,7 +1766,7 @@ multi_client_connect_setenv(struct multi_context *m,
+     {
+         const char *created_ascii = time_string(mi->created, 0, false, &gc);
+         setenv_str(mi->context.c2.es, "time_ascii", created_ascii);
+-        setenv_unsigned(mi->context.c2.es, "time_unix", (unsigned int)mi->created);
++        setenv_long_long(mi->context.c2.es, "time_unix", mi->created);
+     }
+ 
+     gc_free(&gc);
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 7aa311aa..641a26e2 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -990,7 +990,7 @@ setenv_settings(struct env_set *es, const struct options *o)
+     setenv_int(es, "verb", o->verbosity);
+     setenv_int(es, "daemon", o->daemon);
+     setenv_int(es, "daemon_log_redirect", o->log);
+-    setenv_unsigned(es, "daemon_start_time", time(NULL));
++    setenv_long_long(es, "daemon_start_time", time(NULL));
+     setenv_int(es, "daemon_pid", platform_getpid());
+ 
+     if (o->connection_list)
+-- 
 2.14.3
 
-
---=-=-=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-
-
---=20
-jca | PGP : 0x1524E7EE / 5135 92C1 AD36 5293 2BDF  DDCC 0DFA 74AE 1524 E7EE
-
---=-=-=--
-
---==-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCgAdFiEEUTWSwa02UpMr393MDfp0rhUk5+4FAln+1lsACgkQDfp0rhUk
-5+7XqRAAmbd6dd6Q3zwm2zlTECbB9N8uhOgthpKrZtTQ78PFZBZPKOrFVqLQDjrF
-i2ONeaTtark4TE1sJPw8Z42ZXAEpYPorB/FowX1tucPHGPK3FoIIRCPBFjU/o3JD
-9YuKUDZr1lyAY/2kOAYKE/6SsohNF/NGJ9TXvMaErzF/ORY+D8p5iXORq6WSqlmu
-zh/LnyJSYdOalzrSPJHzrIqOgUMT3BPrB5iugXnrRhdQv+GBiW5HYUwg8P/S2B35
-Ho02D9gZ1iic7IJ3CoGtyv7i2yfzGUJ+m/s/eqPBFOhwI0tdxlLrSACmbF2WWYa2
-/3BV7NMqAB4+p4JEUf/0cA7NOBc5iOG0X8clFCFF7IcOYyngwBCVHbcizCNRN5ou
-Yl3Opg0MPXa8gt3kdszLVs/jf9JSymKI6HAAugSnuGFWlm+BOdrGYwcS0iNPYN9R
-qexQTec+zBAiCU6jhhFC0sHHuHxOlN98Wq5L2inFU9V+HHps+agBl31+lS8xjWWQ
-VSrNWJNirTKu+zxd5Os5TwQu3Kbv9UONayhkSt3HiKPV5/TwLYpmamWEQdkGsV+J
-lchGvOTE4LpOeBgQj2UfG+MZZZuNU6xzDEdl+VsZG9pyDwyUBwRXBMwx+udTuhFH
-UcaDHUEVwK5DhNffStfaGTQqis9r37/rOLJakwNnevQkt1T/nv8=
-=qjS3
------END PGP SIGNATURE-----
---==-=-=--
 
