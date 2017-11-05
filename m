@@ -1,10 +1,20 @@
-Date: Sun, 5 Nov 2017 11:12:32 +0100 (CET)
-Message-Id: <201711051012.vA5ACWVu032844@...2054...>
+Date: Sun, 5 Nov 2017 18:11:35 +0100
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20171104224551.3079-1-steffan@...1856...>
-References: <20171104224551.3079-1-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH applied] Re:
- buffer_list_aggregate_separator(): add unit tests
+Message-ID: <20171105171135.GL958@...1296...>
+References: <f7687ebf-a75f-095d-67ca-e32a5c4e53e7@...515...>
+ <41c0e750-b27e-22ea-d5fb-b17fe391636d@...1147...>
+ <689096e2-8bb8-95b8-5daf-22fd600a00ca@...515...>
+ <da7671c8-6768-f718-79a0-996cdb0d8d87@...1147...>
+ <82ec1478-ec53-3980-05b1-4529a74aa789@...1147...>
+ <20170717121451.GQ70062@...1296...>
+ <a3d45ab2-63e9-2849-6118-775a8f43ec87@...1147...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="dtsE+6jMZxJpedRo"
+Content-Disposition: inline
+In-Reply-To: <a3d45ab2-63e9-2849-6118-775a8f43ec87@...1147...>
+Subject: Re: [Openvpn-devel] Windows installer with updated pkcs11-helper
+ (1.22) available for testing
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,34 +23,97 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: Steffan Karger <steffan.karger@...1435...>
-Cc: openvpn-devel@lists.sourceforge.net
+To: Jan Just Keijser <janjust@...1147...>
+Cc: Gert Doering <gert@...1296...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-ACK, test code is good :-)  (it passes the tests now, and does not change
-anything else).  Applying to 2.4 as well, since "test good is good", even
-if we might not apply the refactoring bits there.
+--dtsE+6jMZxJpedRo
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Your patch has been applied to the master and release/2.4 branch.
+Hi,
 
-commit 2ddb527abe38f5866ff01e91f8ee89d0f9700762 (master)
-commit a202f6e74b32beabad764ee4226781a7f7e9c1c6 (release/2.4)
-Author: Steffan Karger
-Date:   Sat Nov 4 23:45:50 2017 +0100
+On Mon, Jul 17, 2017 at 02:22:55PM +0200, Jan Just Keijser wrote:
+> On 17/07/17 14:14, Gert Doering wrote:
+> > Hi,
+> >
+> > On Mon, Jul 17, 2017 at 02:10:11PM +0200, Jan Just Keijser wrote:
+> >> this problem is NOT present in OpenVPN 2.3.17; the same warning appear=
+s (route gateway is ambiguous) but the route is added
+> >> anyway. This seems to be a regression in 2.4.
+> > Can we have a log, please?
+> attached: config and log (with hostnames anonymized)
 
-     buffer_list_aggregate_separator(): add unit tests
+This indeed is a regression, or a "non-handled special case in the iservice"
+(waking up Selva and Heiko).
 
-     Signed-off-by: Steffan Karger <steffan.karger@...1435...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20171104224551.3079-1-steffan@...1856...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg15748.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+2.3 is calling route.exe, which seems to just handle this case fine
+("the given gateway address is present on two different interfaces",
+which I find ambiguous myself :-) ).
+
+2.4 in your setup is using the interactive service...
+
+> Mon Jul 17 14:18:43 2017 us=3D1227 TEST ROUTES: 3/3 succeeded len=3D2 ret=
+=3D1 a=3D1 u/d=3Dup
+> Mon Jul 17 14:18:43 2017 us=3D1227 C:\Windows\system32\route.exe ADD 222.=
+222.97.13 MASK 255.255.255.255 111.111.135.254
+> Mon Jul 17 14:18:43 2017 us=3D1227 Warning: route gateway is ambiguous: 1=
+11.111.135.254 (2 matches)
+> Mon Jul 17 14:18:43 2017 us=3D1227 Route addition via service failed
+
+... which notices that the gateway is ambiguous and refuses to cooperate.
+
+Without checking the code, there's a few things here that are not good
+
+ - that openvpn just goes ahead, while it "should" know that adding the
+   "def1" default routes afterwards is going to make things explode
+ - that we fail, instead of just installing the route (with warning) -
+   which could either be "just pick an interface and log that" or "just
+   pick no interface at all, and let windows routing figure this out"
+
+> Mon Jul 17 14:18:43 2017 us=3D16827 Recursive routing detected, drop tun =
+packet to [AF_INET]222.222.97.13:1194
+> Mon Jul 17 14:18:44 2017 us=3D108829 Recursive routing detected, drop tun=
+ packet to [AF_INET]222.222.97.13:1194
+
+Now *this* is actually good news :-) - instead of blowing up your CPU,
+we notice that we're stuck and log that.
 
 
---
-kind regards,
+As a workaround, what you might do instead...
 
-Gert Doering
+ - connect over IPv6 - the IPv6 code is different and I'm curious what
+   it will do :-)
 
+ - use "--ip-win32 ipapi" (+ run gui as admin) to avoid using the=20
+   interactive service
+
+gert
+
+
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--dtsE+6jMZxJpedRo
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJZ/0ZGAAoJEB2Cnv7KVigSpBoL/1bXgXZxe8tgWcaE4plOautM
+gZNn5gtV/n3mJdJkzWtiDW+YIIJsNC51Ht9e0Nw/EZHJF4X6bpTiatU0kzSXlbjr
+pHaGxhY0rGhfzNk3uU1Q2WfWOmQsN5gb9TLYRbS21qyXBkyU/7ogFrJzpQHimot4
+Sf1OBsKEJ61O/rMVKmjJ9oWA4A93ErrjMbdspoLW0QBfQGnyY/S6nJk16aJOj/nK
+Uf/ZZV0lWgF2EDW6+6lCiIJB038MVjAwA2TsYdgSIpS7pl1njr0Bjqq/4B2BRFit
+26j5Z4fhWhMZO3/sYr1XN0IhAViTuVFL7jhT8oR1eDkp/K8JMx+rwmqiOO9OGsmR
+7D33QGdZwVOSNqlfbyWNV6N/qsc5CzdSVkxP4nkSypVmcFLEMOwgaE8jmi+l6oS+
+/vbCsEWc8NOWvKJ6nccVsI4e+bSxy3ykfE3YMm3Did7/p9OFqhYA+KdBpXhCN00/
+cAQNZSD7B+33LzMsLsXPLE8RfwBBVhVy3QbVS8DA5Q==
+=hxLw
+-----END PGP SIGNATURE-----
+
+--dtsE+6jMZxJpedRo--
 
