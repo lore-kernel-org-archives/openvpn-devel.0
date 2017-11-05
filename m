@@ -1,10 +1,15 @@
-From: Steffan Karger <steffan@...1856...>
-Date: Sat,  4 Nov 2017 23:45:50 +0100
-Message-Id: <20171104224551.3079-1-steffan@...1856...>
-In-Reply-To: <20171104174756.GX958@...1296...>
-References: <20171104174756.GX958@...1296...>
-Subject: [Openvpn-devel] [PATCH v2] buffer_list_aggregate_separator(): add
- unit tests
+From: Jeremie Courreges-Anglas <jca@...2272...>
+References: <87k1zi18lt.fsf@...2274...>
+ <201711041834.vA4IYfGA026870@...2054...>
+Date: Sun, 05 Nov 2017 10:14:03 +0100
+In-Reply-To: <201711041834.vA4IYfGA026870@...2054...> (Gert
+ Doering's message of "Sat, 4 Nov 2017 19:34:41 +0100 (CET)")
+Message-ID: <87375t6qas.fsf@...2274...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; boundary="==-=-=";
+ micalg=pgp-sha512; protocol="application/pgp-signature"
+Subject: Re: [Openvpn-devel] [PATCH applied] Re: Print time_t as long long
+ and suseconds_t as long
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,233 +18,99 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: Gert Doering <gert@...1296...>
+Cc: openvpn-devel@lists.sourceforge.net
+
+--==-=-=
+Content-Type: multipart/mixed; boundary="=-=-="
+
+--=-=-=
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Transfer-Encoding: quoted-printable
 
-From: Steffan Karger <steffan.karger@...1435...>
+On Sat, Nov 04 2017, Gert Doering <gert@...1296...> wrote:
+> ACK, thanks.  Reviewed by "staring at the code" (changes are only what it
+> says on the tin), compiling with clang and gcc (no format related warning=
+s),
+> and running tests, of course :-)
 
-Before refactoring this function, add tests to verify the new
-implementation.
+Cool, thank you for your time.
 
-While writing the tests, it became clear that this function is not
-behaving very well.  We'll fix that in follow-up commits.
+> I'm a bit undecided whether this should go to release/2.4 as well, as it
+> is "refactoring" and our general policy is "refactoring goes into master"
+> (but then it's straightforward enough).  Leaving it in master for now,=20
+> but I can be convinced that we want this in 2.4...
 
-Signed-off-by: Steffan Karger <steffan.karger@...1435...>
----
-v2: add assert_buf_equals_str macro, and use that to compare (not zero-
-    terminated) buffer contents with expected strings.
+FWIW I'm fine with whatever approach you prefer.  openvpn-2.5.0 will
+hopefully be released before 2038. :)
 
- tests/unit_tests/openvpn/test_buffer.c | 184 ++++++++++++++++++++++++++++++++-
- 1 file changed, 182 insertions(+), 2 deletions(-)
+Here's another small diff, I forgot one suseconds_t occurrence.
 
-diff --git a/tests/unit_tests/openvpn/test_buffer.c b/tests/unit_tests/openvpn/test_buffer.c
-index 69bb2e58..ba5aa670 100644
---- a/tests/unit_tests/openvpn/test_buffer.c
-+++ b/tests/unit_tests/openvpn/test_buffer.c
-@@ -35,7 +35,7 @@
- #include "buffer.h"
- 
- static void
--buffer_strprefix(void **state)
-+test_buffer_strprefix(void **state)
- {
-     assert_true(strprefix("123456", "123456"));
-     assert_true(strprefix("123456", "123"));
-@@ -44,11 +44,191 @@ buffer_strprefix(void **state)
-     assert_false(strprefix("12", "123"));
+
+--=-=-=
+Content-Type: text/x-patch
+Content-Disposition: attachment;
+ filename=0001-Cast-and-print-another-suseconds_t-as-long.patch
+Content-Transfer-Encoding: quoted-printable
+
+From=20cbe8237ff59129501e1e92c8fd6a3488d94c4c0f Mon Sep 17 00:00:00 2001
+From: Jeremie Courreges-Anglas <jca@...2272...>
+Date: Sun, 5 Nov 2017 10:03:26 +0100
+Subject: [PATCH] Cast and print another suseconds_t as long
+
+Missed in 31b5c0e
+=2D--
+ src/openvpn/forward.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index a91a8d9a..1b7455bb 100644
+=2D-- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -649,7 +649,7 @@ check_timeout_random_component_dowork(struct context *c)
+     c->c2.timeout_random_component.tv_usec =3D (time_t) get_random() & 0x0=
+003FFFF;
+     c->c2.timeout_random_component.tv_sec =3D 0;
+=20
+=2D    dmsg(D_INTERVAL, "RANDOM USEC=3D%d", (int) c->c2.timeout_random_comp=
+onent.tv_usec);
++    dmsg(D_INTERVAL, "RANDOM USEC=3D%ld", (long) c->c2.timeout_random_comp=
+onent.tv_usec);
  }
- 
-+#define testsep ","
-+#define testnosep ""
-+#define teststr1 "one"
-+#define teststr2 "two"
-+#define teststr3 "three"
-+#define teststr4 "four"
-+
-+#define assert_buf_equals_str(buf, str) \
-+    assert_int_equal(BLEN(buf), strlen(str)); \
-+    assert_memory_equal(BPTR(buf), str, BLEN(buf));
-+
-+struct test_buffer_list_aggregate_ctx {
-+    struct buffer_list *empty;
-+    struct buffer_list *one_two_three;
-+    struct buffer_list *zero_length_strings;
-+    struct buffer_list *empty_buffers;
-+};
-+
-+static int test_buffer_list_setup(void **state)
-+{
-+    struct test_buffer_list_aggregate_ctx *ctx  = calloc(1, sizeof(*ctx));
-+    ctx->empty = buffer_list_new(0);
-+
-+    ctx->one_two_three = buffer_list_new(3);
-+    buffer_list_push(ctx->one_two_three, teststr1);
-+    buffer_list_push(ctx->one_two_three, teststr2);
-+    buffer_list_push(ctx->one_two_three, teststr3);
-+
-+    ctx->zero_length_strings = buffer_list_new(2);
-+    buffer_list_push(ctx->zero_length_strings, "");
-+    buffer_list_push(ctx->zero_length_strings, "");
-+
-+    ctx->empty_buffers = buffer_list_new(2);
-+    uint8_t *data1 = malloc(1);
-+    uint8_t *data2 = malloc(1);
-+    buffer_list_push_data(ctx->empty_buffers, data1, 0);
-+    buffer_list_push_data(ctx->empty_buffers, data2, 0);
-+
-+    *state = ctx;
-+    return 0;
-+}
-+
-+static int test_buffer_list_teardown(void **state)
-+{
-+    struct test_buffer_list_aggregate_ctx *ctx = *state;
-+
-+    buffer_list_free(ctx->empty);
-+    buffer_list_free(ctx->one_two_three);
-+    buffer_list_free(ctx->zero_length_strings);
-+    buffer_list_free(ctx->empty_buffers);
-+    free(ctx);
-+    return 0;
-+}
-+
-+static void
-+test_buffer_list_full(void **state)
-+{
-+    struct test_buffer_list_aggregate_ctx *ctx = *state;
-+
-+    /* list full */
-+    assert_int_equal(ctx->one_two_three->size, 3);
-+    buffer_list_push(ctx->one_two_three, teststr4);
-+    assert_int_equal(ctx->one_two_three->size, 3);
-+}
-+
-+static void
-+test_buffer_list_aggregate_separator_empty(void **state)
-+{
-+    struct test_buffer_list_aggregate_ctx *ctx = *state;
-+
-+    /* aggregating an empty buffer list results in an empty buffer list */
-+    buffer_list_aggregate_separator(ctx->empty, 3, testsep);
-+    assert_null(ctx->empty->head);
-+}
-+
-+static void
-+test_buffer_list_aggregate_separator_noop(void **state)
-+{
-+    struct test_buffer_list_aggregate_ctx *ctx = *state;
-+
-+    /* With a max length of 2, no aggregation should take place */
-+    buffer_list_aggregate_separator(ctx->one_two_three, 2, testsep);
-+    assert_int_equal(ctx->one_two_three->size, 3);
-+    struct buffer *buf = buffer_list_peek(ctx->one_two_three);
-+    assert_buf_equals_str(buf, teststr1);
-+}
-+
-+static void
-+test_buffer_list_aggregate_separator_two(void **state)
-+{
-+    struct test_buffer_list_aggregate_ctx *ctx = *state;
-+
-+    /* Aggregate the first two elements */
-+    /* FIXME this exceeds the supplied max */
-+    buffer_list_aggregate_separator(ctx->one_two_three, 4, testsep);
-+    /* FIXME size does not get adjusted after aggregating */
-+    assert_int_equal(ctx->one_two_three->size, 3);
-+    struct buffer *buf = buffer_list_peek(ctx->one_two_three);
-+    assert_buf_equals_str(buf, teststr1 testsep teststr2 testsep);
-+}
-+
-+static void
-+test_buffer_list_aggregate_separator_all(void **state)
-+{
-+    struct test_buffer_list_aggregate_ctx *ctx = *state;
-+
-+    /* Aggregate all */
-+    buffer_list_aggregate_separator(ctx->one_two_three, 1<<16, testsep);
-+    /* FIXME size does not get adjusted after aggregating */
-+    assert_int_equal(ctx->one_two_three->size, 3);
-+    struct buffer *buf = buffer_list_peek(ctx->one_two_three);
-+    assert_buf_equals_str(buf,
-+                          teststr1 testsep teststr2 testsep teststr3 testsep);
-+}
-+
-+static void
-+test_buffer_list_aggregate_separator_nosep(void **state)
-+{
-+    struct test_buffer_list_aggregate_ctx *ctx = *state;
-+
-+    /* Aggregate all */
-+    buffer_list_aggregate_separator(ctx->one_two_three, 1<<16, testnosep);
-+    /* FIXME size does not get adjusted after aggregating */
-+    assert_int_equal(ctx->one_two_three->size, 3);
-+    struct buffer *buf = buffer_list_peek(ctx->one_two_three);
-+    assert_buf_equals_str(buf, teststr1 teststr2 teststr3);
-+}
-+
-+static void
-+test_buffer_list_aggregate_separator_zerolen(void **state)
-+{
-+    struct test_buffer_list_aggregate_ctx *ctx = *state;
-+    struct buffer_list *bl_zerolen = ctx->zero_length_strings;
-+
-+    /* Aggregate all */
-+    buffer_list_aggregate_separator(bl_zerolen, 1<<16, testnosep);
-+    /* FIXME size does not get adjusted after aggregating */
-+    assert_int_equal(bl_zerolen->size, 2);
-+    struct buffer *buf = buffer_list_peek(bl_zerolen);
-+    assert_buf_equals_str(buf, "");
-+}
-+
-+static void
-+test_buffer_list_aggregate_separator_emptybuffers(void **state)
-+{
-+    struct test_buffer_list_aggregate_ctx *ctx = *state;
-+    struct buffer_list *bl_emptybuffers = ctx->empty_buffers;
-+
-+    /* Aggregate all */
-+    buffer_list_aggregate_separator(bl_emptybuffers, 1<<16, testnosep);
-+    /* FIXME size does not get adjusted after aggregating */
-+    assert_int_equal(bl_emptybuffers->size, 2);
-+    struct buffer *buf = buffer_list_peek(bl_emptybuffers);
-+    assert_int_equal(BLEN(buf), 0);
-+}
-+
- int
- main(void)
- {
-     const struct CMUnitTest tests[] = {
--        cmocka_unit_test(buffer_strprefix),
-+        cmocka_unit_test(test_buffer_strprefix),
-+        cmocka_unit_test_setup_teardown(test_buffer_list_full,
-+                                        test_buffer_list_setup,
-+                                        test_buffer_list_teardown),
-+        cmocka_unit_test_setup_teardown(test_buffer_list_aggregate_separator_empty,
-+                                        test_buffer_list_setup,
-+                                        test_buffer_list_teardown),
-+        cmocka_unit_test_setup_teardown(test_buffer_list_aggregate_separator_noop,
-+                                        test_buffer_list_setup,
-+                                        test_buffer_list_teardown),
-+        cmocka_unit_test_setup_teardown(test_buffer_list_aggregate_separator_two,
-+                                        test_buffer_list_setup,
-+                                        test_buffer_list_teardown),
-+        cmocka_unit_test_setup_teardown(test_buffer_list_aggregate_separator_all,
-+                                        test_buffer_list_setup,
-+                                        test_buffer_list_teardown),
-+        cmocka_unit_test_setup_teardown(test_buffer_list_aggregate_separator_nosep,
-+                                        test_buffer_list_setup,
-+                                        test_buffer_list_teardown),
-+        cmocka_unit_test_setup_teardown(test_buffer_list_aggregate_separator_zerolen,
-+                                        test_buffer_list_setup,
-+                                        test_buffer_list_teardown),
-+        cmocka_unit_test_setup_teardown(test_buffer_list_aggregate_separator_emptybuffers,
-+                                        test_buffer_list_setup,
-+                                        test_buffer_list_teardown),
-     };
- 
-     return cmocka_run_group_tests_name("buffer", tests, NULL, NULL);
--- 
-2.14.1
+=20
+ static inline void
+=2D-=20
+2.14.3
 
+
+--=-=-=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+
+
+--=20
+jca | PGP : 0x1524E7EE / 5135 92C1 AD36 5293 2BDF  DDCC 0DFA 74AE 1524 E7EE
+
+--=-=-=--
+
+--==-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCgAdFiEEUTWSwa02UpMr393MDfp0rhUk5+4FAln+1lsACgkQDfp0rhUk
+5+7XqRAAmbd6dd6Q3zwm2zlTECbB9N8uhOgthpKrZtTQ78PFZBZPKOrFVqLQDjrF
+i2ONeaTtark4TE1sJPw8Z42ZXAEpYPorB/FowX1tucPHGPK3FoIIRCPBFjU/o3JD
+9YuKUDZr1lyAY/2kOAYKE/6SsohNF/NGJ9TXvMaErzF/ORY+D8p5iXORq6WSqlmu
+zh/LnyJSYdOalzrSPJHzrIqOgUMT3BPrB5iugXnrRhdQv+GBiW5HYUwg8P/S2B35
+Ho02D9gZ1iic7IJ3CoGtyv7i2yfzGUJ+m/s/eqPBFOhwI0tdxlLrSACmbF2WWYa2
+/3BV7NMqAB4+p4JEUf/0cA7NOBc5iOG0X8clFCFF7IcOYyngwBCVHbcizCNRN5ou
+Yl3Opg0MPXa8gt3kdszLVs/jf9JSymKI6HAAugSnuGFWlm+BOdrGYwcS0iNPYN9R
+qexQTec+zBAiCU6jhhFC0sHHuHxOlN98Wq5L2inFU9V+HHps+agBl31+lS8xjWWQ
+VSrNWJNirTKu+zxd5Os5TwQu3Kbv9UONayhkSt3HiKPV5/TwLYpmamWEQdkGsV+J
+lchGvOTE4LpOeBgQj2UfG+MZZZuNU6xzDEdl+VsZG9pyDwyUBwRXBMwx+udTuhFH
+UcaDHUEVwK5DhNffStfaGTQqis9r37/rOLJakwNnevQkt1T/nv8=
+=qjS3
+-----END PGP SIGNATURE-----
+--==-=-=--
 
