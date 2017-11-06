@@ -1,10 +1,10 @@
-From: Simon Rozman <simon@...2293...>
-Date: Sun,  5 Nov 2017 23:37:14 +0100
-Message-Id: <20171105223714.7852-1-simon@...2293...>
-In-Reply-To: <CAKuzo_iOXui4WDuRqf6-NybpfeWNjKR3GLn7dsw98FoNoSHNMw@...278...>
-References: <CAKuzo_iOXui4WDuRqf6-NybpfeWNjKR3GLn7dsw98FoNoSHNMw@...278...>
-Subject: [Openvpn-devel] [PATCH v2] openvpnserv: Add support for
- multi-instances
+From: selva.nair@...277...
+Date: Sun,  5 Nov 2017 20:14:36 -0500
+Message-Id: <1509930876-30728-1-git-send-email-selva.nair@...277...>
+In-Reply-To: <1509903249-10979-1-git-send-email-selva.nair@...277...>
+References: <1509903249-10979-1-git-send-email-selva.nair@...277...>
+Subject: [Openvpn-devel] [PATCH v2] Use lowest metric interface when
+ multiple interfaces match a route
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,381 +17,144 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-While openvpn.exe can run multiple concurrent processes, openvpnserv.exe
-is usually only one single globally unique running process.
+From: Selva Nair <selva.nair@...277...>
 
-This patch extends openvpnserv.exe to support multiple service instances
-in parallel allowing side-by-side OpenVPN installations.
+Currently a route addition using IPAPI or service is skipped if the
+route gateway is reachable by multiple interfaces. This changes that
+to use the interface with lowest metric. Implemented by
 
-Alternate instances must be installed as `SERVICE_WIN32_OWN_PROCESS`
-(Type 0x10) and must use the newly introduced service command line
-parameter:
--instance <name> <id>
-<name> can be `automatic` or `interactive`.
+(i)  Do not over-write the return value with TUN_ADAPTER_INDEX_INVALID in
+     windows_route_find_if_index() if multiple interfaces match a route.
+(ii) Select the interface with lowest metric in adapter_index_of_ip()
+     instead of the first one found when multiple interfaces match.
 
-- The service settings will be loaded from `HKLM\Software\<id>` registry
-  key.
+Reported by Jan Just Keijser <janjust@...1147...>
 
-- The automatic service will use `<id>_exit_1` exit event.
+v2: - A private get_interface_metric() method and better error reporting
+    - Revert an unintented edit of route.c (a_index = ...)
+    - Improve the commit message
 
-- The interactive service will accept requests on
-  `\\.\pipe\<id>\service` named pipe, and run IPC with openvpn.exe on
-  `\\.\pipe\<id>\service_<pid>`.
-
-This patch preserves backward compatibility, by defaulting to
-`SERVICE_WIN32_SHARE_PROCESS` and `OpenVPN` as service ID.
+Signed-off-by: Selva Nair <selva.nair@...277...>
 ---
- src/openvpnserv/automatic.c   | 40 +++++++++++-----------
- src/openvpnserv/common.c      | 14 +++++---
- src/openvpnserv/interactive.c | 18 +++++++---
- src/openvpnserv/service.c     | 77 ++++++++++++++++++++++++++++++-------------
- src/openvpnserv/service.h     |  4 ++-
- 5 files changed, 100 insertions(+), 53 deletions(-)
+ src/openvpn/route.c |  1 -
+ src/openvpn/tun.c   | 59 +++++++++++++++++++++++++++++++++++++++++++++++++++--
+ 2 files changed, 57 insertions(+), 3 deletions(-)
 
-diff --git a/src/openvpnserv/automatic.c b/src/openvpnserv/automatic.c
-index 4123d0f..ff5c1a2 100644
---- a/src/openvpnserv/automatic.c
-+++ b/src/openvpnserv/automatic.c
-@@ -44,7 +44,7 @@
- #define false 0
+diff --git a/src/openvpn/route.c b/src/openvpn/route.c
+index 8c71e6e..66a8ae3 100644
+--- a/src/openvpn/route.c
++++ b/src/openvpn/route.c
+@@ -2780,7 +2780,6 @@ windows_route_find_if_index(const struct route_ipv4 *r, const struct tuntap *tt)
+         msg(M_WARN, "Warning: route gateway is ambiguous: %s (%d matches)",
+             print_in_addr_t(r->gateway, 0, &gc),
+             count);
+-        ret = TUN_ADAPTER_INDEX_INVALID;
+     }
  
- static SERVICE_STATUS_HANDLE service;
--static SERVICE_STATUS status;
-+static SERVICE_STATUS status = { SERVICE_WIN32_SHARE_PROCESS };
- 
- openvpn_service_t automatic_service = {
-     automatic,
-@@ -60,12 +60,6 @@ struct security_attributes
-     SECURITY_DESCRIPTOR sd;
- };
- 
--/*
-- * Which registry key in HKLM should
-- * we get config info from?
-- */
--#define REG_KEY "SOFTWARE\\" PACKAGE_NAME
--
- static HANDLE exit_event = NULL;
- 
- /* clear an object */
-@@ -91,15 +85,6 @@ init_security_attributes_allow_all(struct security_attributes *obj)
-     return true;
+     dmsg(D_ROUTE_DEBUG, "DEBUG: route find if: on_tun=%d count=%d index=%d",
+diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
+index 3639718..7603133 100644
+--- a/src/openvpn/tun.c
++++ b/src/openvpn/tun.c
+@@ -4474,6 +4474,49 @@ is_ip_in_adapter_subnet(const IP_ADAPTER_INFO *ai, const in_addr_t ip, in_addr_t
+     return ret;
  }
  
--/*
-- * This event is initially created in the non-signaled
-- * state.  It will transition to the signaled state when
-- * we have received a terminate signal from the Service
-- * Control Manager which will cause an asynchronous call
-- * of ServiceStop below.
-- */
--#define EXIT_EVENT_NAME  TEXT(PACKAGE "_exit_1")
--
- HANDLE
- create_event(LPCTSTR name, bool allow_all, bool initial_state, bool manual_reset)
- {
-@@ -212,10 +197,19 @@ ServiceCtrlAutomatic(DWORD ctrl_code, DWORD event, LPVOID data, LPVOID ctx)
- 
- 
- VOID WINAPI
-+ServiceStartAutomaticOwn(DWORD dwArgc, LPTSTR *lpszArgv)
++/**
++ * Given an interface index return the interface metric.
++ *
++ * Arguments:
++ *   index         : The index of the interface
++ *   family        : AF_INET for IPv4 or AF_INET6 for IPv6
++ * On error returns -1
++ */
++
++/* function signature missing in mingw iphlpapi.h */
++VOID NETIOAPI_API_
++InitializeIpInterfaceEntry(PMIB_IPINTERFACE_ROW Row);
++
++static int
++get_interface_metric(NET_IFINDEX index, ADDRESS_FAMILY family)
 +{
-+    status.dwServiceType = SERVICE_WIN32_OWN_PROCESS;
-+    ServiceStartAutomatic(dwArgc, lpszArgv);
++    DWORD err;
++    int msglevel = D_ROUTE|M_WARN;
++    MIB_IPINTERFACE_ROW ipiface;
++
++    InitializeIpInterfaceEntry(&ipiface);
++    ipiface.Family = family;
++    ipiface.InterfaceIndex = index;
++
++    err = GetIpInterfaceEntry(&ipiface);
++    if (err == NO_ERROR)
++    {
++        return ipiface.Metric;
++    }
++    else if (err == ERROR_NOT_FOUND)
++    {
++        /*
++         *  This happens if the address family is not enabled for the
++         *  interface, which is benign -- display only at a debug level
++         */
++        msglevel = D_ROUTE_DEBUG;
++    }
++    msg(msglevel, "Note: failed to determine metric of interface "
++                  "<%lu> for %s : (error code = %lu)",
++                  index, (family == AF_INET)? "ipv4" : "ipv6", err);
++    return -1;
 +}
 +
-+
-+VOID WINAPI
- ServiceStartAutomatic(DWORD dwArgc, LPTSTR *lpszArgv)
- {
-     DWORD error = NO_ERROR;
-     settings_t settings;
-+    TCHAR event_name[256];
- 
-     service = RegisterServiceCtrlHandlerEx(automatic_service.name, ServiceCtrlAutomatic, &status);
-     if (!service)
-@@ -223,7 +217,6 @@ ServiceStartAutomatic(DWORD dwArgc, LPTSTR *lpszArgv)
-         return;
-     }
- 
--    status.dwServiceType = SERVICE_WIN32_SHARE_PROCESS;
-     status.dwCurrentState = SERVICE_START_PENDING;
-     status.dwServiceSpecificExitCode = NO_ERROR;
-     status.dwWin32ExitCode = NO_ERROR;
-@@ -237,8 +230,15 @@ ServiceStartAutomatic(DWORD dwArgc, LPTSTR *lpszArgv)
- 
-     /*
-      * Create our exit event
-+     * This event is initially created in the non-signaled
-+     * state.  It will transition to the signaled state when
-+     * we have received a terminate signal from the Service
-+     * Control Manager which will cause an asynchronous call
-+     * of ServiceStop below.
-      */
--    exit_event = create_event(EXIT_EVENT_NAME, false, false, true);
-+
-+    openvpn_sntprintf(event_name, _countof(event_name), TEXT("%s_exit_1"), service_instance);
-+    exit_event = create_event(event_name, false, false, true);
-     if (!exit_event)
-     {
-         MsgToEventLog(M_ERR, TEXT("CreateEvent failed"));
-@@ -327,8 +327,8 @@ ServiceStartAutomatic(DWORD dwArgc, LPTSTR *lpszArgv)
-                                   TEXT("%s\\%s"), settings.log_dir, log_file);
- 
-                 /* construct command line */
--                openvpn_sntprintf(command_line, _countof(command_line), TEXT(PACKAGE " --service %s 1 --config \"%s\""),
--                                  EXIT_EVENT_NAME,
-+                openvpn_sntprintf(command_line, _countof(command_line), TEXT("openvpn --service \"%s_exit_1\" 1 --config \"%s\""),
-+                                  service_instance,
-                                   find_obj.cFileName);
- 
-                 /* Make security attributes struct for logfile handle so it can
-diff --git a/src/openvpnserv/common.c b/src/openvpnserv/common.c
-index e77d7ab..dd5d058 100644
---- a/src/openvpnserv/common.c
-+++ b/src/openvpnserv/common.c
-@@ -24,6 +24,9 @@
- #include "service.h"
- #include "validate.h"
- 
-+LPCTSTR service_instance = TEXT(PACKAGE_NAME);
-+
-+
- /*
-  * These are necessary due to certain buggy implementations of (v)snprintf,
-  * that don't guarantee null termination for size > 0.
-@@ -53,8 +56,6 @@ openvpn_sntprintf(LPTSTR str, size_t size, LPCTSTR format, ...)
-     return len;
- }
- 
--#define REG_KEY  TEXT("SOFTWARE\\" PACKAGE_NAME)
--
- static DWORD
- GetRegString(HKEY key, LPCTSTR value, LPTSTR data, DWORD size)
- {
-@@ -69,7 +70,7 @@ GetRegString(HKEY key, LPCTSTR value, LPTSTR data, DWORD size)
-     if (status != ERROR_SUCCESS)
-     {
-         SetLastError(status);
--        return MsgToEventLog(M_SYSERR, TEXT("Error querying registry value: HKLM\\%s\\%s"), REG_KEY, value);
-+        return MsgToEventLog(M_SYSERR, TEXT("Error querying registry value: HKLM\\SOFTWARE\\%s\\%s"), service_instance, value);
-     }
- 
-     return ERROR_SUCCESS;
-@@ -79,16 +80,19 @@ GetRegString(HKEY key, LPCTSTR value, LPTSTR data, DWORD size)
  DWORD
- GetOpenvpnSettings(settings_t *s)
- {
-+    TCHAR reg_path[256];
-     TCHAR priority[64];
-     TCHAR append[2];
-     DWORD error;
-     HKEY key;
+ adapter_index_of_ip(const IP_ADAPTER_INFO *list,
+                     const in_addr_t ip,
+@@ -4483,6 +4526,7 @@ adapter_index_of_ip(const IP_ADAPTER_INFO *list,
+     struct gc_arena gc = gc_new();
+     DWORD ret = TUN_ADAPTER_INDEX_INVALID;
+     in_addr_t highest_netmask = 0;
++    int lowest_metric = INT_MAX;
+     bool first = true;
  
--    LONG status = RegOpenKeyEx(HKEY_LOCAL_MACHINE, REG_KEY, 0, KEY_READ, &key);
-+    openvpn_sntprintf(reg_path, _countof(reg_path), TEXT("SOFTWARE\\%s"), service_instance);
-+
-+    LONG status = RegOpenKeyEx(HKEY_LOCAL_MACHINE, reg_path, 0, KEY_READ, &key);
-     if (status != ERROR_SUCCESS)
-     {
-         SetLastError(status);
--        return MsgToEventLog(M_SYSERR, TEXT("Could not open Registry key HKLM\\%s not found"), REG_KEY);
-+        return MsgToEventLog(M_SYSERR, TEXT("Could not open Registry key HKLM\\%s not found"), reg_path);
-     }
+     if (count)
+@@ -4496,9 +4540,14 @@ adapter_index_of_ip(const IP_ADAPTER_INFO *list,
  
-     error = GetRegString(key, TEXT("exe_path"), s->exe_path, sizeof(s->exe_path));
-diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
-index 0d162e8..649a9a8 100644
---- a/src/openvpnserv/interactive.c
-+++ b/src/openvpnserv/interactive.c
-@@ -53,7 +53,7 @@
- #define ERROR_MESSAGE_TYPE     0x20000003
- 
- static SERVICE_STATUS_HANDLE service;
--static SERVICE_STATUS status;
-+static SERVICE_STATUS status = { SERVICE_WIN32_SHARE_PROCESS };
- static HANDLE exit_event = NULL;
- static settings_t settings;
- static HANDLE rdns_semaphore = NULL;
-@@ -1487,7 +1487,7 @@ RunOpenvpn(LPVOID p)
-     }
- 
-     openvpn_sntprintf(ovpn_pipe_name, _countof(ovpn_pipe_name),
--                      TEXT("\\\\.\\pipe\\openvpn\\service_%lu"), GetCurrentThreadId());
-+                      TEXT("\\\\.\\pipe\\%s\\service_%lu"), service_instance, GetCurrentThreadId());
-     ovpn_pipe = CreateNamedPipe(ovpn_pipe_name,
-                                 PIPE_ACCESS_DUPLEX | FILE_FLAG_FIRST_PIPE_INSTANCE | FILE_FLAG_OVERLAPPED,
-                                 PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_WAIT, 1, 128, 128, 0, NULL);
-@@ -1654,6 +1654,7 @@ ServiceCtrlInteractive(DWORD ctrl_code, DWORD event, LPVOID data, LPVOID ctx)
- static HANDLE
- CreateClientPipeInstance(VOID)
- {
-+    TCHAR pipe_name[256]; /* The entire pipe name string can be up to 256 characters long according to MSDN. */
-     HANDLE pipe = NULL;
-     PACL old_dacl, new_dacl;
-     PSECURITY_DESCRIPTOR sd;
-@@ -1690,7 +1691,8 @@ CreateClientPipeInstance(VOID)
-         initialized = TRUE;
-     }
- 
--    pipe = CreateNamedPipe(TEXT("\\\\.\\pipe\\openvpn\\service"), flags,
-+    openvpn_sntprintf(pipe_name, _countof(pipe_name), TEXT("\\\\.\\pipe\\%s\\service"), service_instance);
-+    pipe = CreateNamedPipe(pipe_name, flags,
-                            PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE,
-                            PIPE_UNLIMITED_INSTANCES, 1024, 1024, 0, NULL);
-     if (pipe == INVALID_HANDLE_VALUE)
-@@ -1785,6 +1787,15 @@ CmpHandle(LPVOID item, LPVOID hnd)
-     return item == hnd;
- }
- 
-+
-+VOID WINAPI
-+ServiceStartInteractiveOwn(DWORD dwArgc, LPTSTR *lpszArgv)
-+{
-+    status.dwServiceType = SERVICE_WIN32_OWN_PROCESS;
-+    ServiceStartInteractive(dwArgc, lpszArgv);
-+}
-+
-+
- VOID WINAPI
- ServiceStartInteractive(DWORD dwArgc, LPTSTR *lpszArgv)
- {
-@@ -1801,7 +1812,6 @@ ServiceStartInteractive(DWORD dwArgc, LPTSTR *lpszArgv)
-         return;
-     }
- 
--    status.dwServiceType = SERVICE_WIN32_SHARE_PROCESS;
-     status.dwCurrentState = SERVICE_START_PENDING;
-     status.dwServiceSpecificExitCode = NO_ERROR;
-     status.dwWin32ExitCode = NO_ERROR;
-diff --git a/src/openvpnserv/service.c b/src/openvpnserv/service.c
-index b79e999..232b33e 100644
---- a/src/openvpnserv/service.c
-+++ b/src/openvpnserv/service.c
-@@ -223,46 +223,77 @@ out:
- int
- _tmain(int argc, TCHAR *argv[])
- {
--    SERVICE_TABLE_ENTRY dispatchTable[] = {
-+    SERVICE_TABLE_ENTRY dispatchTable_shared[] = {
-         { automatic_service.name, ServiceStartAutomatic },
-         { interactive_service.name, ServiceStartInteractive },
-         { NULL, NULL }
-     };
-+    const SERVICE_TABLE_ENTRY *dispatchTable = dispatchTable_shared;
- 
-     openvpn_service[0] = automatic_service;
-     openvpn_service[1] = interactive_service;
- 
--    if (argc > 1 && (*argv[1] == TEXT('-') || *argv[1] == TEXT('/')))
-+    for (int i = 1; i < argc; i++)
-     {
--        if (_tcsicmp(TEXT("install"), argv[1] + 1) == 0)
-+        if (*argv[i] == TEXT('-') || *argv[i] == TEXT('/'))
+         if (is_ip_in_adapter_subnet(list, ip, &hn))
          {
--            return CmdInstallServices();
--        }
--        else if (_tcsicmp(TEXT("remove"), argv[1] + 1) == 0)
--        {
--            return CmdRemoveServices();
--        }
--        else if (_tcsicmp(TEXT("start"), argv[1] + 1) == 0)
--        {
--            BOOL is_auto = argc < 3 || _tcsicmp(TEXT("interactive"), argv[2]) != 0;
--            return CmdStartService(is_auto ? automatic : interactive);
--        }
--        else
--        {
--            goto dispatch;
-+            if (_tcsicmp(TEXT("install"), argv[i] + 1) == 0)
-+            {
-+                return CmdInstallServices();
-+            }
-+            else if (_tcsicmp(TEXT("remove"), argv[i] + 1) == 0)
-+            {
-+                return CmdRemoveServices();
-+            }
-+            else if (_tcsicmp(TEXT("start"), argv[i] + 1) == 0)
-+            {
-+                BOOL is_auto = argc < i + 2 || _tcsicmp(TEXT("interactive"), argv[i + 1]) != 0;
-+                return CmdStartService(is_auto ? automatic : interactive);
-+            }
-+            else if (argc > i + 2 && _tcsicmp(TEXT("instance"), argv[i] + 1) == 0)
-+            {
-+                /* When running as an alternate instance, we are invoked as
-+                 * SERVICE_WIN32_OWN_PROCESS - we are the one and only
-+                 * service in this process. The dispatch table should
-+                 * reflect that.
-+                 */
-+                static const SERVICE_TABLE_ENTRY dispatchTable_automatic[] = {
-+                    { TEXT(""), ServiceStartAutomaticOwn },
-+                    { NULL, NULL }
-+                };
-+                static const SERVICE_TABLE_ENTRY dispatchTable_interactive[] = {
-+                    { TEXT(""), ServiceStartInteractiveOwn },
-+                    { NULL, NULL }
-+                };
-+                dispatchTable = _tcsicmp(TEXT("interactive"), argv[i + 1]) != 0 ?
-+                    dispatchTable_automatic :
-+                    dispatchTable_interactive;
-+
-+                service_instance = argv[i + 2];
-+                i += 2;
-+            }
-+            else
-+            {
-+                _tprintf(TEXT("%s -install        to install the services\n"), APPNAME);
-+                _tprintf(TEXT("%s -start <name>   to start a service (\"automatic\" or \"interactive\")\n"), APPNAME);
-+                _tprintf(TEXT("%s -remove         to remove the services\n"), APPNAME);
-+
-+                _tprintf(TEXT("\nService run-time parameters:\n"));
-+                _tprintf(TEXT("-instance <name> <id>\n")
-+                         TEXT("   Runs the service as an alternate instance. <name> can be \"automatic\" or\n")
-+                         TEXT("   \"interactive\". The service settings will be loaded from\n")
-+                         TEXT("   HKLM\\Software\\<id> registry key, and the interactive service will accept\n")
-+                         TEXT("   requests on \\\\.\\pipe\\<id>\\service named pipe.\n"));
-+
-+                return 0;
-+            }
++            int metric = get_interface_metric(list->Index, AF_INET);
+             if (first || hn > highest_netmask)
+             {
+                 highest_netmask = hn;
++                if (metric >= 0)
++                {
++                    lowest_metric = metric;
++                }
+                 if (count)
+                 {
+                     *count = 1;
+@@ -4512,16 +4561,22 @@ adapter_index_of_ip(const IP_ADAPTER_INFO *list,
+                 {
+                     ++*count;
+                 }
++                if (metric >= 0 && metric < lowest_metric)
++                {
++                    ret = list->Index;
++                    lowest_metric = metric;
++                }
+             }
          }
--
--        return 0;
+         list = list->Next;
      }
  
-     /* If it doesn't match any of the above parameters
-      * the service control manager may be starting the service
-      * so we must call StartServiceCtrlDispatcher
-      */
--dispatch:
--    _tprintf(TEXT("%s -install        to install the services\n"), APPNAME);
--    _tprintf(TEXT("%s -start <name>   to start a service (\"automatic\" or \"interactive\")\n"), APPNAME);
--    _tprintf(TEXT("%s -remove         to remove the services\n"), APPNAME);
-     _tprintf(TEXT("\nStartServiceCtrlDispatcher being called.\n"));
-     _tprintf(TEXT("This may take several seconds. Please wait.\n"));
+-    dmsg(D_ROUTE_DEBUG, "DEBUG: IP Locate: ip=%s nm=%s index=%d count=%d",
++    dmsg(D_ROUTE_DEBUG, "DEBUG: IP Locate: ip=%s nm=%s index=%d count=%d metric=%d",
+          print_in_addr_t(ip, 0, &gc),
+          print_in_addr_t(highest_netmask, 0, &gc),
+          (int)ret,
+-         count ? *count : -1);
++         count ? *count : -1,
++         lowest_metric);
  
-diff --git a/src/openvpnserv/service.h b/src/openvpnserv/service.h
-index 9fe573e..1afd20e 100644
---- a/src/openvpnserv/service.h
-+++ b/src/openvpnserv/service.h
-@@ -73,10 +73,12 @@ typedef struct {
- 
- extern openvpn_service_t automatic_service;
- extern openvpn_service_t interactive_service;
-+extern LPCTSTR service_instance;
- 
--
-+VOID WINAPI ServiceStartAutomaticOwn(DWORD argc, LPTSTR *argv);
- VOID WINAPI ServiceStartAutomatic(DWORD argc, LPTSTR *argv);
- 
-+VOID WINAPI ServiceStartInteractiveOwn(DWORD argc, LPTSTR *argv);
- VOID WINAPI ServiceStartInteractive(DWORD argc, LPTSTR *argv);
- 
- int openvpn_vsntprintf(LPTSTR str, size_t size, LPCTSTR format, va_list arglist);
+     if (ret == TUN_ADAPTER_INDEX_INVALID && count)
+     {
 -- 
-2.9.0.windows.1
+2.1.4
 
-Ups, sorry. Here you go: rebased on OpenVPN/openvpn master.
-
-Best regards,
-Simon
 
