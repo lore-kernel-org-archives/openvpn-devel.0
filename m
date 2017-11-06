@@ -1,19 +1,16 @@
-Date: Mon, 6 Nov 2017 09:07:31 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20171106080731.GP958@...1296...>
-References: <20170907022827.10658-1-davids@...515...>
- <20170907172004.22534-1-davids@...515...>
- <c122b7ac9f1d63ac0ba060f7f7d3ceff.squirrel@...2257...>
- <20170922205944.GA70062@...1296...>
- <a08bca638691c21471fadd3d6589359a.squirrel@...2257...>
- <20171104162253.GW958@...1296...>
- <fc836d9417be8c9d85e314d40dea51c8.squirrel@...2257...>
+From: Simon Rozman <simon@...2293...>
+Date: Mon, 6 Nov 2017 08:35:48 +0000
+Message-ID: <99D61A626FDA8A4B90A270669121BE108587DF29@...2294...>
+References: <20171010231130.6832-1-simon@...2293...>
+ <20171010231130.6832-9-simon@...2293...>
+ <20171105192019.GM958@...1296...>
+ <99D61A626FDA8A4B90A270669121BE108587DA0D@...2294...>
+ <CAKuzo_hTnJVcEuCqCQ-ZR3swbkio7CWZgy3z5C0fWVJ-E0PCvQ@...278...>
+In-Reply-To: <CAKuzo_hTnJVcEuCqCQ-ZR3swbkio7CWZgy3z5C0fWVJ-E0PCvQ@...278...>
+Content-Language: en-US
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="Jl04SkPfyEiGE6TK"
-Content-Disposition: inline
-In-Reply-To: <fc836d9417be8c9d85e314d40dea51c8.squirrel@...2257...>
-Subject: Re: [Openvpn-devel] LZ4 library version printing
+Subject: Re: [Openvpn-devel] [PATCH 09/13] Signed/unsigned warnings of MSVC
+ resolved
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,82 +19,59 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Simon Matter <simon.matter@...2249...>
-Cc: Gert Doering <gert@...1296...>, David Sommerseth <davids@...515...>, openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+To: Selva <selva.nair@...277...>
+Cc: Gert Doering <gert@...1296...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---Jl04SkPfyEiGE6TK
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-
-Hi,
-
-On Mon, Nov 06, 2017 at 08:15:54AM +0100, Simon Matter wrote:
-> > It now has...  (1.7.5).
-> >
-> > I'm not sure where LZ4_versionString() got introduced, though - their
-> > git repo does not have tags for 1.7.1 or 1.7.2, it is in the 1.7.3 tag,
-> > but not in the "last of the old numbering scheme" version.
-> >
-> > Our configure.ac requires 1.7.1 - so if LZ4_versionString() is not in
-> > there yet, we might want to bump to 1.7.3 then.
->=20
-> according to the NEWS file in lz4 there is no such thing as release 1.7.1
-> or 1.7.2, it goes from r131 -> v1.7.3. I therefore suggest to set the
-> minimum version to 1.7.3 as I'm also unable to locate any official 1.7.1
-> or 1.7.2 release.
-
-Sounds like a reasonable plan.
-
-> BTW, for 2.4.4 I've changed to patch to the one attached.
->=20
-> Regards,
-> Simon
-
-> --- openvpn-2.4.4/src/openvpn/options.c.orig	2017-09-26 11:27:37.00000000=
-0 +0200
-> +++ openvpn-2.4.4/src/openvpn/options.c	2017-09-28 06:21:57.977919621 +02=
-00
-> @@ -61,6 +61,10 @@
->=20=20
->  #include "memdbg.h"
->=20=20
-> +#if defined(ENABLE_LZ4)
-> +#include "lz4.h"
-> +#endif
-> +
-
-This will fail if we use the bundled LZ4, which has "compat-lz4.h" -=20
-so maybe we really should go back to including "comp-lz4.h" here, and
-move the lz4.h/compat-lz4.h including to that one.
-
-("bundled LZ4" is what we can have right now, so we need to take that into
-account.  If we want to drop it, that's an independent discussion)
-
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---Jl04SkPfyEiGE6TK
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJaABhDAAoJEB2Cnv7KVigS7q0L/2v0YjJYc83nSv08Fk05K4Dh
-9ieYj1SeKTo88PcmBlgHlt1TbOLQZF4KC32JlB4HdDOCBcIUFbikqDsvnauBPONB
-BgJIptxROlRNVqJJpyFC7hoBFANWKdCSfJZp0YHsmq79VhFnSdzqUWMM2N11R7Bm
-2sB4/tTPazuqMehBQvdFr17sr1ASaono0WLB1R2d5uZAaZGdGZa2jTua8LYXss8i
-AIS4m/aMnaMXjxB8ubNiCvhHb2NNu/maLgt45zxvPV6aEzWyaHMpT+OoApQBUFsu
-Jolqx2Q1tpX8yNawWnvWphBSQEkbW0HcyKOkqhy1hkrlsR+27exukUcmCN2E1VnP
-7ir26mNycgT3edr7RSoS7h0gbzfPYdO7HTDnHqJfw4nLbN6o1SnC7PsXz4mdJpU0
-N3NtzwqOmHZcvsxpWYTgu50t6/8UjQwJX9wyqj/ayWC++lM8PjF1PhpWPIGOpv5w
-xr1aFc6MqqkTpG4tNlAFX5rL/1ZU4ZbHqD9wdygysw==
-=aM81
------END PGP SIGNATURE-----
-
---Jl04SkPfyEiGE6TK--
-
+SGksDQoNCj4gPiA+ID4gZGlmZiAtLWdpdCBhL3NyYy9vcGVudnBuL2Jsb2NrX2Rucy5jIGIvc3Jj
+L29wZW52cG4vYmxvY2tfZG5zLmMNCj4gPiA+ID4gaW5kZXggZDQzY2JjZi4uZjg4YmEyYyAxMDA2
+NDQNCj4gPiA+ID4gLS0tIGEvc3JjL29wZW52cG4vYmxvY2tfZG5zLmMNCj4gPiA+ID4gKysrIGIv
+c3JjL29wZW52cG4vYmxvY2tfZG5zLmMNCj4gPiA+ID4gQEAgLTM3MCw3ICszNzAsNyBAQCBnZXRf
+aW50ZXJmYWNlX21ldHJpYyhjb25zdCBORVRfSUZJTkRFWCBpbmRleCwNCj4gPiA+IGNvbnN0IEFE
+RFJFU1NfRkFNSUxZIGZhbWlseSkNCj4gPiA+ID4gwqAgwqAgwqAgwqAgwqB9DQo+ID4gPiA+IMKg
+IMKgIMKgIMKgIMKgcmV0dXJuIGlwaWZhY2UuTWV0cmljOw0KPiA+ID4gPiDCoCDCoCDCoH0NCj4g
+PiA+ID4gLSDCoCDCoHJldHVybiAtZXJyOw0KPiA+ID4gPiArIMKgIMKgcmV0dXJuIC0oaW50KWVy
+cjsNCj4gPiA+ID4gwqB9DQo+ID4gPg0KPiA+ID4gVGhpcywgSSBjYW4gc29tZXdoYXQgYWdyZWUg
+dG8sIGFzICJlcnIiIGlzIGFuIHVuc2lnbmVkIHR5cGUgc28gdGhlcmUNCj4gPiA+IG1pZ2h0IGJl
+IGEgaGlkZGVuIGludGVnZXIgb3ZlcmZsb3cgaWYgaXQgaGFwcGVucyB0byBiZSAibGFyZ2UiLg0K
+PiA+ID4gV2hpY2ggaXQgd29uJ3QgYmUsIGJ1dCBzdGlsbC4NCj4gPg0KPiA+IEFkZGluZyB0aGUg
+YChpbnQpYCByZXNvbHZlcyB0aGUgd2FybmluZyBDNDE0NjogdW5hcnkgbWludXMgb3BlcmF0b3IN
+Cj4gPiBhcHBsaWVkIHRvIHVuc2lnbmVkIHR5cGUsIHJlc3VsdCBzdGlsbCB1bnNpZ25lZC4NCj4g
+PiBodHRwczovL21zZG4ubWljcm9zb2Z0LmNvbS9lbi11cy9saWJyYXJ5LzRraDA5MTEwLmFzcHgN
+Cj4gPg0KPiA+IEl0IGRvZXNuJ3QgY2hhbmdlIG11Y2gsIGJ1dCBpdCBzaHV0LXVwcyBvbmUgY29t
+cGlsZXIgd2FybmluZy4NCj4gDQo+IFRoZSBvcmlnaW5hbCBjb2RlIGNvdWxkIGJlIGFyZ3VlZCB0
+byBiZSBsb2dpY2FsbHkgd3JvbmcgKHRob3VnaCBwZXJmZWN0bHkNCj4gbGVnYWwgQykgaWYgZXJy
+IGJlY29tZXMgbGFyZ2VyIHRoYW4gYSBzaWduZWQgaW50LiBUaGlzIGNoYW5nZSBkb2VzIG5vdCBm
+aXggdGhhdC4NCj4gU28gd2hhdCdzIHRoZSBwb2ludD8NCj4gDQo+IEFzIGFuIGV4YW1wbGUsIGNv
+bnNpZGVyIHRoaXMNCj4gDQo+IGVyciA9IDIxNDc0ODM2NDnCoCgyIG1vcmUgdGhhbiBJTlRfTUFY
+KQ0KPiBPcmlnaW5hbCB3aWxsIHJldHVybiDCoDIxNDc0ODM2NDfCoChub3QgYSAtdmUgaW50KSBU
+aGUgbmV3IGNvZGUgd2lsbCByZXR1cm4gdGhlDQo+IHNhbWUgMjE0NzQ4MzY0NyBUaGF0IGlzLCB0
+aGUgcmV0dXJuIHZhbHVlIGlzICt2ZSBpbnQgd2hpY2ggdGhlIGNhbGxlciB3aWxsDQo+IHdyb25n
+bHkgaW50ZXJwcmV0IGFzIHZhbGlkIHJlc3VsdC4NCj4gDQo+IFRoaXMgaXMgaHlwb3RoZXRpY2Fs
+IGFzIFdpbmRvd3Mgc3lzdGVtIGVyciBjb2RlcyBkbyBub3QgZ2V0IHRoYXQgbGFyZ2UuDQo+IEJ1
+dCB0aGVuIHRoZSBvcmlnaW5hbCBpcyBhcyBnb29kIGFzIHRoZSByZXBsYWNlbWVudCBleGNlcHQg
+Zm9yIGENCj4gQysrLXRyYWluZWQgY29tcGlsZXIgYmVpbmcgc2lsZW5jZWQuDQoNCkkgdG90YWxs
+eSBhZ3JlZSB3aXRoIHlvdXIgcG9pbnQsIHRoZSBvcmlnaW5hbCBjb2RlIG1pZ2h0IGJlIGxvZ2lj
+YWxseSB3cm9uZy4gSWYgdGhlIGludGVyZmFjZSBtZXRyaWMgaXMgPiBJTlRfTUFYICh3aGljaCBV
+TE9ORyB0aGVvcmV0aWNhbGx5IGNvdWxkIGJlKSwgaXQnbGwgZ2V0IHJldHVybmVkIGFzIGEgbmVn
+YXRpdmUgbnVtYmVyID0+IGZhbHNlLXBvc2l0aXZlIGVycm9yIGNvbmRpdGlvbi4NCg0KVGhlIGdl
+dF9pbnRlcmZhY2VfbWV0cmljKClhbHNvIHJldHVybiBlcnJvciBjb2RlcyA+IElOVF9NQVggYXMg
+YSBwb3NpdGl2ZSBudW1iZXJzID0+IGludmFsaWQgaW50ZXJmYWNlIG1ldHJpYyBpbnN0ZWFkIG9m
+IGVycm9yIGNvbmRpdGlvbi4gQXMgeW91IGRlc2NyaWJlZCB0aGlzIGNhc2UgeW91cnNlbGYuDQoN
+Cj4gVG8gcmVwZWF0LCDCoGNhc3QgZG9lcyBub3QgZWxpbWluYXRlIGEgcG90ZW50aWFsIGZvciBl
+cnJvciwgaXQganVzdCBqdXN0IGhpZGVzIGl0Lg0KDQpUcnVlIGFuZCBJIHRvdGFsbHkgYWdyZWUg
+d2l0aCB5b3UuIEkganVzdCBkaWRuJ3QgZGFyZSB0byByZXdyaXRlIHRoZSBmdW5jdGlvbiBtb3Jl
+IHRob3JvdWdobHkuIENhbiBJLCBwbGVhc2U/DQoNCk9wdGlvbiAxOiBBZGQgYW4gYGlmYCB0byBs
+aW1pdCBtZXRyaWMgdG8gSU5UX01BWCwgYW5kIGFuIGBpZmAgdG8gcmV0dXJuIGFsbCBlcnJvcnMg
+Z3JlYXRlciB0aGFuIElOVF9NQVggc2ltcGx5IGFzIC0xLg0KDQpPcHRpb24gMjogcmVkZWZpbmUg
+ZnVuY3Rpb24gcHJvdG90eXBlIHRvIHJldHVybiBlcnJvciBjb2RlIHVubW9kaWZpZWQsIGFuZCBt
+ZXRyaWNzIHVzaW5nIGFuIGV4dHJhIHBhcmFtZXRlciBwYXNzZWQgYnkgcmVmZXJlbmNlLg0KDQpJ
+J2QgcHJlZmVyIG9wdGlvbiAxIGFmdGVyIHJldmlld2luZyBhbGwgZ2V0X2ludGVyZmFjZV9tZXRy
+aWNzKCkgY2FsbHMuIE5vbmUgb2YgdGhlbSBjYXJlcyBhYm91dCB0aGUgZXhhY3QgZXJyb3IgY29k
+ZS4gVGhleSBqdXN0IHRlc3QgZm9yIG5lZ2F0aXZlIHZhbHVlIGFuZCBzZXQgdGhlIG1ldHJpY3Mg
+dG8gLTEuIEFzIGEgbWF0dGVyIG9mIGZhY3QsIHRoZSBnZXRfaW50ZXJmYWNlX21ldHJpY3MoKSBp
+dHNlbGYgY291bGQgYmUgcmV3cml0dGVuIHRvIHJldHVybiAtMSBhcyB0aGUgbWV0cmljIGZvciBh
+bnkgZXJyb3IgaW4gdGhlIGZpcnN0IHBsYWNlLCB0aHVzIG1ha2luZyB0aGUgZXJyb3IgY2hlY2tz
+IGFmdGVyIGVhY2ggZnVuY3Rpb24gY2FsbCByZWR1bmRhbnQsIHRodXMgc2ltcGxpZnlpbmcgY29k
+ZS4NCg0KQmVzdCByZWdhcmRzLA0KU2ltb24NCg==
