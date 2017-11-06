@@ -1,15 +1,16 @@
+Message-ID: <fc836d9417be8c9d85e314d40dea51c8.squirrel@...2257...>
+In-Reply-To: <20171104162253.GW958@...1296...>
+References: <20170907022827.10658-1-davids@...515...>
+ <20170907172004.22534-1-davids@...515...>
+ <c122b7ac9f1d63ac0ba060f7f7d3ceff.squirrel@...2257...>
+ <20170922205944.GA70062@...1296...>
+ <a08bca638691c21471fadd3d6589359a.squirrel@...2257...>
+ <20171104162253.GW958@...1296...>
+Date: Mon, 6 Nov 2017 08:15:54 +0100
+From: "Simon Matter" <simon.matter@...2249...>
 MIME-Version: 1.0
-In-Reply-To: <99D61A626FDA8A4B90A270669121BE108587DA0D@...2294...>
-References: <20171010231130.6832-1-simon@...2293...>
- <20171010231130.6832-9-simon@...2293...>
- <20171105192019.GM958@...1296...>
- <99D61A626FDA8A4B90A270669121BE108587DA0D@...2294...>
-From: Selva <selva.nair@...277...>
-Date: Sun, 5 Nov 2017 22:34:16 -0500
-Message-ID: <CAKuzo_hTnJVcEuCqCQ-ZR3swbkio7CWZgy3z5C0fWVJ-E0PCvQ@...278...>
-Content-Type: multipart/alternative; boundary="f403043ae4f43a530d055d48225c"
-Subject: Re: [Openvpn-devel] [PATCH 09/13] Signed/unsigned warnings of MSVC
- resolved
+Content-Type: multipart/mixed;boundary="----=_20171106081554_87381"
+Subject: Re: [Openvpn-devel] LZ4 library version printing
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,121 +19,100 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Simon Rozman <simon@...2293...>
-Cc: Gert Doering <gert@...1296...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Gert Doering <gert@...1296...>
+Cc: Gert Doering <gert@...1296...>, David Sommerseth <davids@...515...>, openvpn-devel@lists.sourceforge.net
 
---f403043ae4f43a530d055d48225c
-Content-Type: text/plain; charset="UTF-8"
-
-Hi,
-
-I understand the intent here and its nice to get rid of compiler warnings,
-when
-it makes sense. But be careful while silencing by just a cast.
-
-On Sun, Nov 5, 2017 at 5:06 PM, Simon Rozman <simon@...2293...> wrote:
->
-> Hi,
->
-> Let me explain all proposed modifications case-by-case below...
->
-> > > diff --git a/src/openvpn/block_dns.c b/src/openvpn/block_dns.c index
-> > > d43cbcf..f88ba2c 100644
-> > > --- a/src/openvpn/block_dns.c
-> > > +++ b/src/openvpn/block_dns.c
-> > > @@ -370,7 +370,7 @@ get_interface_metric(const NET_IFINDEX index,
-> > const ADDRESS_FAMILY family)
-> > >          }
-> > >          return ipiface.Metric;
-> > >      }
-> > > -    return -err;
-> > > +    return -(int)err;
-> > >  }
-> >
-> > This, I can somewhat agree to, as "err" is an unsigned type so there
-might be
-> > a hidden integer overflow if it happens to be "large".  Which it won't
-be, but
-> > still.
->
-> Adding the `(int)` resolves the warning C4146: unary minus operator
-> applied to unsigned type, result still unsigned.
-> https://msdn.microsoft.com/en-us/library/4kh09110.aspx
->
-> It doesn't change much, but it shut-ups one compiler warning.
-
-The original code could be argued to be logically wrong (though
-perfectly legal C) if err becomes larger than a signed int. This change
-does not fix that. So what's the point?
-
-As an example, consider this
-
-err = 2147483649 <(214)%20748-3649> (2 more than INT_MAX)
-Original will return  2147483647 <(214)%20748-3647> (not a -ve int)
-The new code will return the same 2147483647 <(214)%20748-3647>
-That is, the return value is +ve int which the caller will wrongly
-interpret as valid result.
-
-This is hypothetical as Windows system err codes do not get that large.
-But then the original is as good as the replacement except for a
-C++-trained compiler being silenced.
-
-While most of the MSVC compiler warnings are false-alarms, one out of many
-> does represent a potential threat. But you don't know which one that is.
-> Therefore it is best to address them all. :)
->
-
-To repeat,  cast does not eliminate a potential for error, it just just
-hides it.
-
-Selva
-
---f403043ae4f43a530d055d48225c
-Content-Type: text/html; charset="UTF-8"
+------=_20171106081554_87381
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr">Hi,<br><br>I understand the intent here and its nice to ge=
-t rid of compiler warnings, when<br>it makes sense. But be careful while si=
-lencing by just a cast.<br><br>On Sun, Nov 5, 2017 at 5:06 PM, Simon Rozman=
- &lt;<a href=3D"mailto:simon@...2293..." target=3D"_blank">simon@...2293...=
-</a>&gt; wrote:<br>&gt;<br>&gt; Hi,<br>&gt;<br>&gt; Let me explain all prop=
-osed modifications case-by-case below...<br>&gt;<br>&gt; &gt; &gt; diff --g=
-it a/src/openvpn/block_dns.c b/src/openvpn/block_dns.c index<br>&gt; &gt; &=
-gt; d43cbcf..f88ba2c 100644<br>&gt; &gt; &gt; --- a/src/openvpn/block_dns.c=
-<br>&gt; &gt; &gt; +++ b/src/openvpn/block_dns.c<br>&gt; &gt; &gt; @@ -370,=
-7 +370,7 @@ get_interface_metric(const NET_IFINDEX index,<br>&gt; &gt; cons=
-t ADDRESS_FAMILY family)<br>&gt; &gt; &gt; =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0}<br>&gt; &gt; &gt; =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0return ipiface.Met=
-ric;<br>&gt; &gt; &gt; =C2=A0 =C2=A0 =C2=A0}<br>&gt; &gt; &gt; - =C2=A0 =C2=
-=A0return -err;<br>&gt; &gt; &gt; + =C2=A0 =C2=A0return -(int)err;<br>&gt; =
-&gt; &gt; =C2=A0}<br>&gt; &gt;<br>&gt; &gt; This, I can somewhat agree to, =
-as &quot;err&quot; is an unsigned type so there might be<br>&gt; &gt; a hid=
-den integer overflow if it happens to be &quot;large&quot;.=C2=A0 Which it =
-won&#39;t be, but<br>&gt; &gt; still.<br>&gt;<br>&gt; Adding the `(int)` re=
-solves the warning C4146: unary minus operator<div>&gt; applied to unsigned=
- type, result still unsigned.<br>&gt; <a href=3D"https://msdn.microsoft.com=
-/en-us/library/4kh09110.aspx" target=3D"_blank">https://msdn.microsoft.com/=
-en-<wbr>us/library/4kh09110.aspx</a><br>&gt;<br>&gt; It doesn&#39;t change =
-much, but it shut-ups one compiler warning.<br><br>The original code could =
-be argued to be logically wrong (though<br>perfectly legal C) if err become=
-s larger than a signed int. This change</div><div>does not fix that. So wha=
-t&#39;s the point?<br><br>As an example, consider this<br><br>err =3D <a hr=
-ef=3D"tel:(214)%20748-3649" value=3D"+12147483649" target=3D"_blank">214748=
-3649</a>=C2=A0(2 more than INT_MAX)<br>Original will return =C2=A0<a href=
-=3D"tel:(214)%20748-3647" value=3D"+12147483647" target=3D"_blank">21474836=
-47</a>=C2=A0(not a -ve int)<br>The new code will return the same <a href=3D=
-"tel:(214)%20748-3647" value=3D"+12147483647" target=3D"_blank">2147483647<=
-/a><br>That is, the return value is +ve int which the caller will wrongly<b=
-r>interpret as valid result.<br><br>This is hypothetical as Windows system =
-err codes do not get that large.<br>But then the original is as good as the=
- replacement except for a <br>C++-trained compiler being silenced.<div><br>=
-<blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-=
-left:1px solid rgb(204,204,204);padding-left:1ex">While most of the MSVC co=
-mpiler warnings are false-alarms, one out of many does represent a potentia=
-l threat. But you don&#39;t know which one that is. Therefore it is best to=
- address them all. :)=C2=A0<br></blockquote><div><br></div><div>To repeat, =
-=C2=A0cast does not eliminate a potential for error, it just just hides it.=
-</div><div><br></div>Selva<br></div></div></div>
+> Hi,
+>
+> returning to this patchset about printing the LZ4 library version...
+>
+> On Sat, Sep 23, 2017 at 10:52:16AM +0200, Simon Matter wrote:
+>> > On Thu, Sep 07, 2017 at 10:40:21PM +0200, Simon Matter wrote:
+>> >> While we are at it, I found it useful to see the used LZ4 version at
+>> >> runtime as it is done with LZO and other libraries.
+>
+> I still like this :-)
+>
+> [..]
+>> > Feature-ACK (I think this is a useful idea, for the same reasons we
+>> have
+>> > LZO and OpenSSL versions :-) ), but that will not work if we use
+>> > compat-lz4.h, so "code NAK".
+>>
+>> IIRC at the time of writing this, the embedded lz4 was too old and
+>> didn't
+>> have the LZ4_versionString() function. So the code won't work with the
+>> patch. If the embedded code has LZ4_versionString() now, it should be
+>> ok.
+>
+> It now has...  (1.7.5).
+>
+> I'm not sure where LZ4_versionString() got introduced, though - their
+> git repo does not have tags for 1.7.1 or 1.7.2, it is in the 1.7.3 tag,
+> but not in the "last of the old numbering scheme" version.
+>
+> Our configure.ac requires 1.7.1 - so if LZ4_versionString() is not in
+> there yet, we might want to bump to 1.7.3 then.
 
---f403043ae4f43a530d055d48225c--
+Hi Gert,
+
+according to the NEWS file in lz4 there is no such thing as release 1.7.1
+or 1.7.2, it goes from r131 -> v1.7.3. I therefore suggest to set the
+minimum version to 1.7.3 as I'm also unable to locate any official 1.7.1
+or 1.7.2 release.
+
+BTW, for 2.4.4 I've changed to patch to the one attached.
+
+Regards,
+Simon=
+
+------=_20171106081554_87381
+Content-Type: text/x-patch; name="openvpn-2.4.4-lz4_version_string.patch"
+Content-Disposition: attachment;
+ filename="openvpn-2.4.4-lz4_version_string.patch"
+Content-Transfer-Encoding: quoted-printable
+
+--- openvpn-2.4.4/src/openvpn/options.c.orig	2017-09-26 11:27:37.00000000=
+0 +0200
++++ openvpn-2.4.4/src/openvpn/options.c	2017-09-28 06:21:57.977919621 +02=
+00
+@@ -61,6 +61,10 @@
+=20
+ #include "memdbg.h"
+=20
++#if defined(ENABLE_LZ4)
++#include "lz4.h"
++#endif
++
+ const char title_string[] =3D
+     PACKAGE_STRING
+ #ifdef CONFIGURE_GIT_REVISION
+@@ -4155,11 +4159,17 @@
+ #else
+ #define LZO_LIB_VER_STR "", ""
+ #endif
++#ifdef ENABLE_LZ4
++#define LZ4_LIB_VER_STR ", LZ4 ", LZ4_versionString()
++#else
++#define LZ4_LIB_VER_STR "", ""
++#endif
+=20
+-    msg(flags, "library versions: %s%s%s", SSL_LIB_VER_STR, LZO_LIB_VER_=
+STR);
++    msg(flags, "library versions: %s%s%s%s%s", SSL_LIB_VER_STR, LZO_LIB_=
+VER_STR, LZ4_LIB_VER_STR);
+=20
+ #undef SSL_LIB_VER_STR
+ #undef LZO_LIB_VER_STR
++#undef LZ4_LIB_VER_STR
+ }
+=20
+ static void
+------=_20171106081554_87381--
+
+
 
