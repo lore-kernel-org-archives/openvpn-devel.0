@@ -1,17 +1,13 @@
 MIME-Version: 1.0
-In-Reply-To: <99D61A626FDA8A4B90A270669121BE108587DF29@...2294...>
-References: <20171010231130.6832-1-simon@...2293...>
- <20171010231130.6832-9-simon@...2293...>
- <20171105192019.GM958@...1296...>
- <99D61A626FDA8A4B90A270669121BE108587DA0D@...2294...>
- <CAKuzo_hTnJVcEuCqCQ-ZR3swbkio7CWZgy3z5C0fWVJ-E0PCvQ@...278...>
- <99D61A626FDA8A4B90A270669121BE108587DF29@...2294...>
+In-Reply-To: <20171105223714.7852-1-simon@...2293...>
+References: <CAKuzo_iOXui4WDuRqf6-NybpfeWNjKR3GLn7dsw98FoNoSHNMw@...278...>
+ <20171105223714.7852-1-simon@...2293...>
 From: Selva <selva.nair@...277...>
-Date: Mon, 6 Nov 2017 16:27:54 -0500
-Message-ID: <CAKuzo_jFp86anFk6mgavBoYhmCCHUeJ_EQpb6Z05PTNJxBYWWw@...278...>
-Content-Type: multipart/alternative; boundary="001a114e6508e0cb91055d5721cc"
-Subject: Re: [Openvpn-devel] [PATCH 09/13] Signed/unsigned warnings of MSVC
- resolved
+Date: Tue, 7 Nov 2017 00:14:54 -0500
+Message-ID: <CAKuzo_gsuMMhThtx4UvWoHP9ipT4x_KEFewBxh00z=h4xkc4ow@...278...>
+Content-Type: multipart/alternative; boundary="001a1138e726005c38055d5da8a7"
+Subject: Re: [Openvpn-devel] [PATCH v2] openvpnserv: Add support for
+ multi-instances
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,183 +17,323 @@ List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 To: Simon Rozman <simon@...2293...>
-Cc: Gert Doering <gert@...1296...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---001a114e6508e0cb91055d5721cc
+--001a1138e726005c38055d5da8a7
 Content-Type: text/plain; charset="UTF-8"
 
 Hi,
 
-On Mon, Nov 6, 2017 at 3:35 AM, Simon Rozman <simon@...2293...> wrote:
+On Sun, Nov 5, 2017 at 5:37 PM, Simon Rozman <simon@...2293...> wrote:
 >
-> Hi,
+> While openvpn.exe can run multiple concurrent processes, openvpnserv.exe
+> is usually only one single globally unique running process.
 >
-> > > > > diff --git a/src/openvpn/block_dns.c b/src/openvpn/block_dns.c
-> > > > > index d43cbcf..f88ba2c 100644
-> > > > > --- a/src/openvpn/block_dns.c
-> > > > > +++ b/src/openvpn/block_dns.c
-> > > > > @@ -370,7 +370,7 @@ get_interface_metric(const NET_IFINDEX index,
-> > > > const ADDRESS_FAMILY family)
-> > > > >          }
-> > > > >          return ipiface.Metric;
-> > > > >      }
-> > > > > -    return -err;
-> > > > > +    return -(int)err;
-> > > > >  }
-> > > >
-> > > > This, I can somewhat agree to, as "err" is an unsigned type so there
-> > > > might be a hidden integer overflow if it happens to be "large".
-> > > > Which it won't be, but still.
-> > >
-> > > Adding the `(int)` resolves the warning C4146: unary minus operator
-> > > applied to unsigned type, result still unsigned.
-> > > https://msdn.microsoft.com/en-us/library/4kh09110.aspx
-> > >
-> > > It doesn't change much, but it shut-ups one compiler warning.
-> >
-> > The original code could be argued to be logically wrong (though
-perfectly
-> > legal C) if err becomes larger than a signed int. This change does not
-fix that.
-> > So what's the point?
-> >
-> > As an example, consider this
-> >
-> > err = 2147483649 <(214)%20748-3649> (2 more than INT_MAX)
-> > Original will return  2147483647 <(214)%20748-3647> (not a -ve int) The
-new code will return the
-> > same 2147483647 <(214)%20748-3647> That is, the return value is +ve int
-which the caller will
-> > wrongly interpret as valid result.
-> >
-> > This is hypothetical as Windows system err codes do not get that large.
-> > But then the original is as good as the replacement except for a
-> > C++-trained compiler being silenced.
+> This patch extends openvpnserv.exe to support multiple service instances
+> in parallel allowing side-by-side OpenVPN installations.
 >
-> I totally agree with your point, the original code might be logically
-wrong. If the interface metric is > INT_MAX (which ULONG theoretically
-could be), it'll get returned as a negative number => false-positive error
-condition.
->
-> The get_interface_metric()also return error codes > INT_MAX as a positive
-numbers => invalid interface metric instead of error condition. As you
-described this case yourself.
->
-> > To repeat,  cast does not eliminate a potential for error, it just just
-hides it.
->
-> True and I totally agree with you. I just didn't dare to rewrite the
-function more thoroughly. Can I, please?
->
->
-> Option 1: Add an `if` to limit metric to INT_MAX, and an `if` to return
-all errors greater than INT_MAX simply as -1.
->
-> Option 2: redefine function prototype to return error code unmodified,
-and metrics using an extra parameter passed by reference.
->
->
-> I'd prefer option 1 after reviewing all get_interface_metrics() calls.
-None of them cares about the exact error code. They just test for negative
-value and set the metrics to -1. As a matter of fact, the
-get_interface_metrics() itself could be rewritten to return -1 as the
-metric for any error in the first place, thus making the error checks after
-each function call redundant, thus simplifying code.
+> Alternate instances must be installed as `SERVICE_WIN32_OWN_PROCESS`
+> (Type 0x10) and must use the newly introduced service command line
+> parameter:
+> -instance <name> <id>
+> <name> can be `automatic` or `interactive`.
 
-The best time to re-factor a function would be when a  a new use case
-needs to change its semantics. Apart from the ill-chosen -err as a return
-value, currently it returns 0 if automatic metric is in use, making it
-impossible
-to use it as a generic function to find the current metric of an interface.
+Looks good and works as promised.
 
-In fact I've a pending patch where such a change would help.
+Some comments + nitpicking below.
 
-So, if you re-write this, consider some improvements: I think it belongs to
-win32.c (declaration in win32.h). Second, return the current metric
-even if Automatic metric is on (could indicate automatic metric needed in
-current use case by a boolean parameter, probably). In case of error,
-logging it and returning -1 should be good enough.
+> diff --git a/src/openvpnserv/automatic.c b/src/openvpnserv/automatic.c
+> index 4123d0f..ff5c1a2 100644
+> --- a/src/openvpnserv/automatic.c
+> +++ b/src/openvpnserv/automatic.c
+> @@ -44,7 +44,7 @@
+>  #define false 0
+>
+>  static SERVICE_STATUS_HANDLE service;
+> -static SERVICE_STATUS status;
+> +static SERVICE_STATUS status = { SERVICE_WIN32_SHARE_PROCESS };
 
-Based on my tests, Windows does not permit setting a metric
-larger than INT_MAX, so a return value of signed int is fine and
-convenient for indicating error.
+While this is correct, making use of C99's designated init like
+
+      {.dwServiceType = SERVICE_WIN32_SHARE_PROCESS}
+
+would be better and clearer.
+
+<snip>
+
+>      if (!exit_event)
+>      {
+>          MsgToEventLog(M_ERR, TEXT("CreateEvent failed"));
+> @@ -327,8 +327,8 @@ ServiceStartAutomatic(DWORD dwArgc, LPTSTR *lpszArgv)
+>                                    TEXT("%s\\%s"), settings.log_dir,
+log_file);
+>
+>                  /* construct command line */
+> -                openvpn_sntprintf(command_line, _countof(command_line),
+TEXT(PACKAGE " --service %s 1 --config \"%s\""),
+> -                                  EXIT_EVENT_NAME,
+> +                openvpn_sntprintf(command_line, _countof(command_line),
+TEXT("openvpn --service \"%s_exit_1\" 1 --config \"%s\""),
+> +                                  service_instance,
+
+The change PACKAGE -> openvpn is not a regression because the
+first word of command line (argv[0]) is not used while launching the
+process,
+right? Instead, the exe_path is used to find the executable.
+
+However, argv[0] will no longer track PACKAGE but stay fixed at "openvpn".
+Hopefully no one cares. I'm fine with this as official builds see no
+difference.
+
+<snip>
+
+> diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
+> index 0d162e8..649a9a8 100644
+> --- a/src/openvpnserv/interactive.c
+> +++ b/src/openvpnserv/interactive.c
+> @@ -53,7 +53,7 @@
+>  #define ERROR_MESSAGE_TYPE     0x20000003
+>
+>  static SERVICE_STATUS_HANDLE service;
+> -static SERVICE_STATUS status;
+> +static SERVICE_STATUS status = { SERVICE_WIN32_SHARE_PROCESS };
+
+same as above... {.dwServiceType = ... }
+
+<snip>
+
+> diff --git a/src/openvpnserv/service.c b/src/openvpnserv/service.c
+> index b79e999..232b33e 100644
+> --- a/src/openvpnserv/service.c
+> +++ b/src/openvpnserv/service.c
+> @@ -223,46 +223,77 @@ out:
+>  int
+>  _tmain(int argc, TCHAR *argv[])
+>  {
+> -    SERVICE_TABLE_ENTRY dispatchTable[] = {
+> +    SERVICE_TABLE_ENTRY dispatchTable_shared[] = {
+>          { automatic_service.name, ServiceStartAutomatic },
+>          { interactive_service.name, ServiceStartInteractive },
+>          { NULL, NULL }
+>      };
+> +    const SERVICE_TABLE_ENTRY *dispatchTable = dispatchTable_shared;
+>
+>      openvpn_service[0] = automatic_service;
+>      openvpn_service[1] = interactive_service;
+>
+> -    if (argc > 1 && (*argv[1] == TEXT('-') || *argv[1] == TEXT('/')))
+> +    for (int i = 1; i < argc; i++)
+>      {
+> -        if (_tcsicmp(TEXT("install"), argv[1] + 1) == 0)
+> +        if (*argv[i] == TEXT('-') || *argv[i] == TEXT('/'))
+>          {
+> -            return CmdInstallServices();
+> -        }
+> -        else if (_tcsicmp(TEXT("remove"), argv[1] + 1) == 0)
+> -        {
+> -            return CmdRemoveServices();
+> -        }
+> -        else if (_tcsicmp(TEXT("start"), argv[1] + 1) == 0)
+> -        {
+> -            BOOL is_auto = argc < 3 || _tcsicmp(TEXT("interactive"),
+argv[2]) != 0;
+> -            return CmdStartService(is_auto ? automatic : interactive);
+> -        }
+> -        else
+> -        {
+> -            goto dispatch;
+> +            if (_tcsicmp(TEXT("install"), argv[i] + 1) == 0)
+> +            {
+> +                return CmdInstallServices();
+> +            }
+> +            else if (_tcsicmp(TEXT("remove"), argv[i] + 1) == 0)
+> +            {
+> +                return CmdRemoveServices();
+> +            }
+> +            else if (_tcsicmp(TEXT("start"), argv[i] + 1) == 0)
+> +            {
+> +                BOOL is_auto = argc < i + 2 ||
+_tcsicmp(TEXT("interactive"), argv[i + 1]) != 0;
+> +                return CmdStartService(is_auto ? automatic :
+interactive);
+> +            }
+> +            else if (argc > i + 2 && _tcsicmp(TEXT("instance"), argv[i]
++ 1) == 0)
+> +            {
+> +                /* When running as an alternate instance, we are invoked
+as
+> +                 * SERVICE_WIN32_OWN_PROCESS - we are the one and only
+> +                 * service in this process. The dispatch table should
+> +                 * reflect that.
+> +                 */
+> +                static const SERVICE_TABLE_ENTRY
+dispatchTable_automatic[] = {
+> +                    { TEXT(""), ServiceStartAutomaticOwn },
+> +                    { NULL, NULL }
+> +                };
+
+Agreed this array has to live beyond the for loop, but why static? Statics
+live for ever while this need not exist beyond the function. Putting it at
+the
+top where dispatchTable_shared is defined (or anywhere before the loop)
+as a non-static variable would be the way to go?
+
+> +                static const SERVICE_TABLE_ENTRY
+dispatchTable_interactive[] = {
+> +                    { TEXT(""), ServiceStartInteractiveOwn },
+> +                    { NULL, NULL }
+> +                };
+
+Same here.
+
+<snip>
+
+Finally, we could add the instance name to the eventlog output.
+MsgToEventLog
+prints errors as "APPNAME error: ...." where APPNAME is "openvpnserv".
+E.g., add " (instance_name)" after APPNAME?
+
+Thanks,
 
 Selva
 
---001a114e6508e0cb91055d5721cc
+--001a1138e726005c38055d5da8a7
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr">Hi,<br><br>On Mon, Nov 6, 2017 at 3:35 AM, Simon Rozman &l=
+<div dir=3D"ltr">Hi,<br><br>On Sun, Nov 5, 2017 at 5:37 PM, Simon Rozman &l=
 t;<a href=3D"mailto:simon@...2293..." target=3D"_blank">simon@...2293...</a=
->&gt; wrote:<br>&gt;<br>&gt; Hi,<br>&gt;<br>&gt; &gt; &gt; &gt; &gt; diff -=
--git a/src/openvpn/block_dns.c b/src/openvpn/block_dns.c<br>&gt; &gt; &gt; =
-&gt; &gt; index d43cbcf..f88ba2c 100644<br>&gt; &gt; &gt; &gt; &gt; --- a/s=
-rc/openvpn/block_dns.c<br>&gt; &gt; &gt; &gt; &gt; +++ b/src/openvpn/block_=
-dns.c<br>&gt; &gt; &gt; &gt; &gt; @@ -370,7 +370,7 @@ get_interface_metric(=
-const NET_IFINDEX index,<br>&gt; &gt; &gt; &gt; const ADDRESS_FAMILY family=
-)<br>&gt; &gt; &gt; &gt; &gt; =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0}<br>&gt; &=
-gt; &gt; &gt; &gt; =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0return ipiface.Metric;=
-<br>&gt; &gt; &gt; &gt; &gt; =C2=A0 =C2=A0 =C2=A0}<br>&gt; &gt; &gt; &gt; &=
-gt; - =C2=A0 =C2=A0return -err;<br>&gt; &gt; &gt; &gt; &gt; + =C2=A0 =C2=A0=
-return -(int)err;<br>&gt; &gt; &gt; &gt; &gt; =C2=A0}<br>&gt; &gt; &gt; &gt=
-;<br>&gt; &gt; &gt; &gt; This, I can somewhat agree to, as &quot;err&quot; =
-is an unsigned type so there<br>&gt; &gt; &gt; &gt; might be a hidden integ=
-er overflow if it happens to be &quot;large&quot;.<br>&gt; &gt; &gt; &gt; W=
-hich it won&#39;t be, but still.<br>&gt; &gt; &gt;<br>&gt; &gt; &gt; Adding=
- the `(int)` resolves the warning C4146: unary minus operator<br>&gt; &gt; =
-&gt; applied to unsigned type, result still unsigned.<br>&gt; &gt; &gt; <a =
-href=3D"https://msdn.microsoft.com/en-us/library/4kh09110.aspx" target=3D"_=
-blank">https://msdn.microsoft.com/en-<wbr>us/library/4kh09110.aspx</a><br>&=
-gt; &gt; &gt;<br>&gt; &gt; &gt; It doesn&#39;t change much, but it shut-ups=
- one compiler warning.<br>&gt; &gt;<br>&gt; &gt; The original code could be=
- argued to be logically wrong (though perfectly<br>&gt; &gt; legal C) if er=
-r becomes larger than a signed int. This change does not fix that.<br>&gt; =
-&gt; So what&#39;s the point?<br>&gt; &gt;<br>&gt; &gt; As an example, cons=
-ider this<br>&gt; &gt;<br>&gt; &gt; err =3D <a href=3D"tel:(214)%20748-3649=
-" value=3D"+12147483649" target=3D"_blank">2147483649</a> (2 more than INT_=
-MAX)<br>&gt; &gt; Original will return =C2=A0<a href=3D"tel:(214)%20748-364=
-7" value=3D"+12147483647" target=3D"_blank">2147483647</a> (not a -ve int) =
-The new code will return the<br>&gt; &gt; same <a href=3D"tel:(214)%20748-3=
-647" value=3D"+12147483647" target=3D"_blank">2147483647</a> That is, the r=
-eturn value is +ve int which the caller will<br>&gt; &gt; wrongly interpret=
- as valid result.<br>&gt; &gt;<br>&gt; &gt; This is hypothetical as Windows=
- system err codes do not get that large.<br>&gt; &gt; But then the original=
- is as good as the replacement except for a<br>&gt; &gt; C++-trained compil=
-er being silenced.<br>&gt;<br>&gt; I totally agree with your point, the ori=
-ginal code might be logically wrong. If the interface metric is &gt; INT_MA=
-X (which ULONG theoretically could be), it&#39;ll get returned as a negativ=
-e number =3D&gt; false-positive error condition.<br>&gt;<br>&gt; The get_in=
-terface_metric()also return error codes &gt; INT_MAX as a positive numbers =
-=3D&gt; invalid interface metric instead of error condition. As you describ=
-ed this case yourself.<br>&gt;<br>&gt; &gt; To repeat, =C2=A0cast does not =
-eliminate a potential for error, it just just hides it.<br>&gt;<br>&gt; Tru=
-e and I totally agree with you. I just didn&#39;t dare to rewrite the funct=
-ion more thoroughly. Can I, please?<br>&gt;<br>&gt;<br>&gt; Option 1: Add a=
-n `if` to limit metric to INT_MAX, and an `if` to return all errors greater=
- than INT_MAX simply as -1.<br>&gt;<br>&gt; Option 2: redefine function pro=
-totype to return error code unmodified, and metrics using an extra paramete=
-r passed by reference.<br>&gt;<br>&gt;<br>&gt; I&#39;d prefer option 1 afte=
-r reviewing all get_interface_metrics() calls. None of them cares about the=
- exact error code. They just test for negative value and set the metrics to=
- -1. As a matter of fact, the get_interface_metrics() itself could be rewri=
-tten to return -1 as the metric for any error in the first place, thus maki=
-ng the error checks after each function call redundant, thus simplifying co=
-de.<br><br>The best time to re-factor a function would be when a =C2=A0a ne=
-w use case<div>needs to change its semantics. Apart from the ill-chosen -er=
-r as a return</div><div>value, currently it returns 0 if automatic metric i=
-s in use, making it impossible</div><div>to use it as a generic function to=
- find the current metric of an interface.<div><div><br></div><div>In fact I=
-&#39;ve a pending patch where such a change would help.</div><div><br></div=
-><div>So, if you re-write this, consider some improvements: I think it belo=
-ngs to</div><div>win32.c (declaration in win32.h). Second, return the curre=
-nt metric=C2=A0</div><div>even if Automatic metric is on (could indicate au=
-tomatic metric needed in</div><div>current use case by a boolean parameter,=
- probably). In case of error,</div><div>logging it and returning -1 should =
-be good enough.</div><div><br></div><div>Based on my tests, Windows does no=
-t permit setting a metric</div><div>larger than INT_MAX, so a return value =
-of signed int is fine and</div><div>convenient for indicating error.</div><=
-div><br>Selva<br></div></div></div></div>
+>&gt; wrote:<br>&gt;<br>&gt; While openvpn.exe can run multiple concurrent =
+processes, openvpnserv.exe<br>&gt; is usually only one single globally uniq=
+ue running process.<br>&gt;<br>&gt; This patch extends openvpnserv.exe to s=
+upport multiple service instances<br>&gt; in parallel allowing side-by-side=
+ OpenVPN installations.<br>&gt;<br>&gt; Alternate instances must be install=
+ed as `SERVICE_WIN32_OWN_PROCESS`<br>&gt; (Type 0x10) and must use the newl=
+y introduced service command line<br>&gt; parameter:<br>&gt; -instance &lt;=
+name&gt; &lt;id&gt;<br>&gt; &lt;name&gt; can be `automatic` or `interactive=
+`.<div><br></div><div>Looks good and works as promised.<br></div><div><br><=
+/div><div>Some comments + nitpicking below.</div><div><br>&gt; diff --git a=
+/src/openvpnserv/automatic.c b/src/openvpnserv/automatic.c<br>&gt; index 41=
+23d0f..ff5c1a2 100644<br>&gt; --- a/src/openvpnserv/automatic.c<br>&gt; +++=
+ b/src/openvpnserv/automatic.c<br>&gt; @@ -44,7 +44,7 @@<br>&gt; =C2=A0#def=
+ine false 0<br>&gt;<br>&gt; =C2=A0static SERVICE_STATUS_HANDLE service;<br>=
+&gt; -static SERVICE_STATUS status;<br>&gt; +static SERVICE_STATUS status =
+=3D { SERVICE_WIN32_SHARE_PROCESS };<br><br>While this is correct, making u=
+se of C99&#39;s designated init like</div><div><br>=C2=A0 =C2=A0 =C2=A0 {.d=
+wServiceType =3D SERVICE_WIN32_SHARE_PROCESS}<br><br></div><div>would be be=
+tter and clearer.<br><br></div><div>&lt;snip&gt;</div><div><br>&gt; =C2=A0 =
+=C2=A0 =C2=A0if (!exit_event)<br>&gt; =C2=A0 =C2=A0 =C2=A0{<br>&gt; =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0MsgToEventLog(M_ERR, TEXT(&quot;CreateEvent fail=
+ed&quot;));<br>&gt; @@ -327,8 +327,8 @@ ServiceStartAutomatic(DWORD dwArgc,=
+ LPTSTR *lpszArgv)<br>&gt; =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
+ =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0TEXT(&quot;%s\\%s&quot;), settings.log_dir, log_file);<br>&gt;<br>&gt; =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0/* construct =
+command line */<br>&gt; - =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0openvpn_sntprintf(command_lin<wbr>e, _countof(command_line), TEXT(PAC=
+KAGE &quot; --service %s 1 --config \&quot;%s\&quot;&quot;),<br>&gt; - =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0EXIT_EVENT_NAME,<br>&gt; + =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0openvpn_sntprintf(command_l=
+in<wbr>e, _countof(command_line), TEXT(&quot;openvpn --service \&quot;%s_ex=
+it_1\&quot; 1 --config \&quot;%s\&quot;&quot;),<br>&gt; + =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0service_instance,<br><br><div>The change PACKAGE=
+ -&gt; openvpn is not a regression because the</div><div>first word of comm=
+and line (argv[0]) is not used while launching the process,</div><div>right=
+? Instead, the exe_path is used to find the executable.=C2=A0</div><div><br=
+></div><div>However, argv[0] will no longer track PACKAGE but stay fixed at=
+ &quot;openvpn&quot;.</div><div>Hopefully no one cares. I&#39;m fine with t=
+his as official builds see no difference.</div><div><br>&lt;snip&gt;</div><=
+div><br>&gt; diff --git a/src/openvpnserv/interactive.<wbr>c b/src/openvpns=
+erv/interactive.<wbr>c<br>&gt; index 0d162e8..649a9a8 100644<br>&gt; --- a/=
+src/openvpnserv/interactive.<wbr>c<br>&gt; +++ b/src/openvpnserv/interactiv=
+e.<wbr>c<br>&gt; @@ -53,7 +53,7 @@<br>&gt; =C2=A0#define ERROR_MESSAGE_TYPE=
+ =C2=A0 =C2=A0 0x20000003<br>&gt;<br>&gt; =C2=A0static SERVICE_STATUS_HANDL=
+E service;<br>&gt; -static SERVICE_STATUS status;<br>&gt; +static SERVICE_S=
+TATUS status =3D { SERVICE_WIN32_SHARE_PROCESS };<br><br>same as above... {=
+.dwServiceType =3D ... }<br><br></div><div>&lt;snip&gt;</div><div>=C2=A0<br=
+>&gt; diff --git a/src/openvpnserv/service.c b/src/openvpnserv/service.c<br=
+>&gt; index b79e999..232b33e 100644<br>&gt; --- a/src/openvpnserv/service.c=
+<br>&gt; +++ b/src/openvpnserv/service.c<br>&gt; @@ -223,46 +223,77 @@ out:=
+<br>&gt; =C2=A0int<br>&gt; =C2=A0_tmain(int argc, TCHAR *argv[])<br>&gt; =
+=C2=A0{<br>&gt; - =C2=A0 =C2=A0SERVICE_TABLE_ENTRY dispatchTable[] =3D {<br=
+>&gt; + =C2=A0 =C2=A0SERVICE_TABLE_ENTRY dispatchTable_shared[] =3D {<br>&g=
+t; =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0{ <a href=3D"http://automatic_service.=
+name" target=3D"_blank">automatic_service.name</a>, ServiceStartAutomatic }=
+,<br>&gt; =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0{ <a href=3D"http://interactive=
+_service.name" target=3D"_blank">interactive_service.name</a>, ServiceStart=
+Interactive },<br>&gt; =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0{ NULL, NULL }<br>=
+&gt; =C2=A0 =C2=A0 =C2=A0};<br>&gt; + =C2=A0 =C2=A0const SERVICE_TABLE_ENTR=
+Y *dispatchTable =3D dispatchTable_shared;<br>&gt;<br>&gt; =C2=A0 =C2=A0 =
+=C2=A0openvpn_service[0] =3D automatic_service;<br>&gt; =C2=A0 =C2=A0 =C2=
+=A0openvpn_service[1] =3D interactive_service;<br>&gt;<br>&gt; - =C2=A0 =C2=
+=A0if (argc &gt; 1 &amp;&amp; (*argv[1] =3D=3D TEXT(&#39;-&#39;) || *argv[1=
+] =3D=3D TEXT(&#39;/&#39;)))<br>&gt; + =C2=A0 =C2=A0for (int i =3D 1; i &lt=
+; argc; i++)<br>&gt; =C2=A0 =C2=A0 =C2=A0{<br>&gt; - =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0if (_tcsicmp(TEXT(&quot;install&quot;), argv[1] + 1) =3D=3D 0)<br>&gt=
+; + =C2=A0 =C2=A0 =C2=A0 =C2=A0if (*argv[i] =3D=3D TEXT(&#39;-&#39;) || *ar=
+gv[i] =3D=3D TEXT(&#39;/&#39;))<br>&gt; =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0{=
+<br>&gt; - =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0return CmdInstallServic=
+es();<br>&gt; - =C2=A0 =C2=A0 =C2=A0 =C2=A0}<br>&gt; - =C2=A0 =C2=A0 =C2=A0=
+ =C2=A0else if (_tcsicmp(TEXT(&quot;remove&quot;), argv[1] + 1) =3D=3D 0)<b=
+r>&gt; - =C2=A0 =C2=A0 =C2=A0 =C2=A0{<br>&gt; - =C2=A0 =C2=A0 =C2=A0 =C2=A0=
+ =C2=A0 =C2=A0return CmdRemoveServices();<br>&gt; - =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0}<br>&gt; - =C2=A0 =C2=A0 =C2=A0 =C2=A0else if (_tcsicmp(TEXT(&quot;s=
+tart&quot;), argv[1] + 1) =3D=3D 0)<br>&gt; - =C2=A0 =C2=A0 =C2=A0 =C2=A0{<=
+br>&gt; - =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0BOOL is_auto =3D argc &l=
+t; 3 || _tcsicmp(TEXT(&quot;interactive&quot;), argv[2]) !=3D 0;<br>&gt; - =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0return CmdStartService(is_auto ? a=
+utomatic : interactive);<br>&gt; - =C2=A0 =C2=A0 =C2=A0 =C2=A0}<br>&gt; - =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0else<br>&gt; - =C2=A0 =C2=A0 =C2=A0 =C2=A0{<br>&=
+gt; - =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0goto dispatch;<br>&gt; + =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0if (_tcsicmp(TEXT(&quot;install&quot;=
+), argv[i] + 1) =3D=3D 0)<br>&gt; + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0{<br>&gt; + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0retur=
+n CmdInstallServices();<br>&gt; + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
+}<br>&gt; + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0else if (_tcsicmp(TEXT=
+(&quot;remove&quot;), argv[i] + 1) =3D=3D 0)<br>&gt; + =C2=A0 =C2=A0 =C2=A0=
+ =C2=A0 =C2=A0 =C2=A0{<br>&gt; + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0return CmdRemoveServices();<br>&gt; + =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0}<br>&gt; + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0else =
+if (_tcsicmp(TEXT(&quot;start&quot;), argv[i] + 1) =3D=3D 0)<br>&gt; + =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0{<br>&gt; + =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0BOOL is_auto =3D argc &lt; i + 2 || _tcsicmp=
+(TEXT(&quot;interactive&quot;), argv[i + 1]) !=3D 0;<br>&gt; + =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0return CmdStartService(is_auto=
+ ? automatic : interactive);<br>&gt; + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0}<br>&gt; + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0else if (argc &g=
+t; i + 2 &amp;&amp; _tcsicmp(TEXT(&quot;instance&quot;), argv[i] + 1) =3D=
+=3D 0)<br>&gt; + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0{<br>&gt; + =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0/* When running as an a=
+lternate instance, we are invoked as<br>&gt; + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 * SERVICE_WIN32_OWN_PROCESS - we are the one an=
+d only<br>&gt; + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 * =
+service in this process. The dispatch table should<br>&gt; + =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 * reflect that.<br>&gt; + =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 */<br>&gt; + =C2=A0 =C2=A0=
+ =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0static const SERVICE_TABLE_ENTRY =
+dispatchTable_automatic[] =3D {<br>&gt; + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0{ TEXT(&quot;&quot;), ServiceStartAut=
+omaticOwn },<br>&gt; + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0{ NULL, NULL }<br>&gt; + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0};<div><br></div><div>Agreed this array has to live=
+ beyond the for loop, but why static? Statics</div><div>live for ever while=
+ this need not exist beyond the function. Putting it at the</div><div>top w=
+here dispatchTable_shared is defined (or anywhere before the loop)</div><di=
+v>as a non-static variable would be the way to go?</div><div><br>&gt; + =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0static const SERVICE_TA=
+BLE_ENTRY dispatchTable_interactive[] =3D {<br>&gt; + =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0{ TEXT(&quot;&quot;), Servi=
+ceStartInteractiveOwn },<br>&gt; + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0{ NULL, NULL }<br>&gt; + =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0};</div><div><br></div><div>Same here=
+.</div><div><br></div><div>&lt;snip&gt;</div><div><br></div><div>Finally, w=
+e could add the instance name to the eventlog output. MsgToEventLog</div><d=
+iv>prints errors as &quot;APPNAME error: ....&quot; where APPNAME is &quot;=
+openvpnserv&quot;.</div><div>E.g., add &quot; (instance_name)&quot; after A=
+PPNAME?</div><div><br></div><div>Thanks,</div><div><br></div><div>Selva<br>=
+</div></div></div></div>
 
---001a114e6508e0cb91055d5721cc--
+--001a1138e726005c38055d5da8a7--
 
