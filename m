@@ -1,9 +1,13 @@
+Date: Wed, 8 Nov 2017 17:18:14 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20171108161813.GT958@...1296...>
+References: <CAKuzo_j+TbC19HRNH1YxWro74950Ftpxj-oDOi7kgAO8bc6ckQ@...278...>
 MIME-Version: 1.0
-From: Selva <selva.nair@...277...>
-Date: Wed, 8 Nov 2017 11:07:16 -0500
-Message-ID: <CAKuzo_j+TbC19HRNH1YxWro74950Ftpxj-oDOi7kgAO8bc6ckQ@...278...>
-Content-Type: multipart/alternative; boundary="94eb2c059008e08fe1055d7ae265"
-Subject: [Openvpn-devel] patchwork
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="8QTINAT9I+GWM3JK"
+Content-Disposition: inline
+In-Reply-To: <CAKuzo_j+TbC19HRNH1YxWro74950Ftpxj-oDOi7kgAO8bc6ckQ@...278...>
+Subject: Re: [Openvpn-devel] patchwork
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,51 +16,70 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Selva <selva.nair@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---94eb2c059008e08fe1055d7ae265
-Content-Type: text/plain; charset="UTF-8"
+--8QTINAT9I+GWM3JK
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
 Hi,
 
-Confused as to how patchwork works:
+On Wed, Nov 08, 2017 at 11:07:16AM -0500, Selva wrote:
+> Confused as to how patchwork works:
 
-@samuli or anyone else: is there a way to get previous versions of a patch
-superseded when a new one is sent to the same thread? Doesn't appear to
-happen automatically -- I've manually set some such as superseded.
+Welcome to the club :-)
 
-And when a v2 is requested is it ok to set the status to "changes
-requested"? Will it automatically revert to "new" when v2 arrives?
+I had some ideas how it should work (like, picking up my "applied" mails
+and auto-closing patches) but right now it's refusing to do so - I think
+we need more tweaking there.
 
-What status header should ACK-ed patches get? I suppose Accepted is for
-merged ones. Anything other than "New" or "Under review" appears to take
-the patch out of the "Action Required" list, although Acked patches still
-need attention to get merged.
+For the time being, I clean up applied and superceded patches manually -
+the list is not long, and it's way more convenient than maintaining the
+old "open patches" list in the wiki.
 
-Thanks,
+[..]
+> What status header should ACK-ed patches get? I suppose Accepted is for
+> merged ones. Anything other than "New" or "Under review" appears to take
+> the patch out of the "Action Required" list, although Acked patches still
+> need attention to get merged.
 
-Selva
+ACKed patches *should* see an "1" show up in the "A/R/T" column (so you'd
+need to send a mail with "acked-by: selva <...>" instead of a plain "ACK",
+but it's currently not doing that either.
 
---94eb2c059008e08fe1055d7ae265
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr">Hi,<div><br></div><div>Confused as to how patchwork works:=
-</div><div><br></div><div>@<span class=3D"" id=3D":5kd.1" tabindex=3D"-1">s=
-amuli</span> or anyone else: is there a way to get previous versions of a p=
-atch superseded when a new one is sent to the same thread? Doesn&#39;t appe=
-ar to happen automatically -- I&#39;ve manually set some such as superseded=
-.<br></div><div><br></div><div>And when a v2 is requested is it <span class=
-=3D"" id=3D":5kd.2" tabindex=3D"-1">ok</span> to set the status to &quot;ch=
-anges requested&quot;? Will it automatically revert to &quot;new&quot; when=
- v2 arrives?</div><div><br></div><div>What status header should <span class=
-=3D"" id=3D":5kd.3" tabindex=3D"-1">ACK</span>-ed patches get? I suppose Ac=
-cepted is for merged ones. Anything other than &quot;New&quot; or &quot;Und=
-er review&quot; appears to take the patch out of the &quot;Action Required&=
-quot; list, although <span class=3D"" id=3D":5kd.4" tabindex=3D"-1">Acked</=
-span> patches still need attention to get merged.<br></div><div><br></div><=
-div>Thanks,</div><div><br></div><div><span class=3D"" id=3D":5kd.5" tabinde=
-x=3D"-1">Selva</span></div></div>
+So: work in progress, no definite answers yet.
 
---94eb2c059008e08fe1055d7ae265--
+(Samuli says it's all python so things can be easily fixed... I hear ya :-)=
+ )
+
+gert
+
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--8QTINAT9I+GWM3JK
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJaAy5FAAoJEB2Cnv7KVigS07UL/0rjbT7IMmkTEHb5nEhDwZuQ
+xBVSIVftRdNBOcpITd4JzhfciN5FsjCeMp8kX1olFfN/QmXJ+G5okiXYGxneVLLz
+jfg0WpnlFOPSkrCk7QajgLg5yfgaKfZDadXPIUr6vpZtxcp/AryN5gPzLLJFCEXR
+X7OS5UegJyAmkMoFVFahWiRnn21Ulfsd3XR4AazEeyUcH9yDfB8c8Jl+g1F+BITP
+7TgZDJ+M2+VZL/zBqUaucHAySwo2+FMhvTfNew5mNZSqmStPWVVgrECL66tOD4TU
+i6yEaZdxfO1EXCxdsvw6KYcNJJuy2vKL0889ZeXBSsoziS0vaj/EaqJGl69BDYA+
+G8MCcMmqqaUBXyjj77QiQZ3wXMVt5QqcAlP78LbXz+Xapu1tf3DOFbv6HUaaTxAn
+0MjSaUY6a7t9BjXFzcP38t1aHC/ch+ZLnJFTVR6RRT1WWvIJjNsPZGud2w5AuVcI
+ICP8zogWj8rhx4W5k7bNPe+l9lY2PWel2R6jwWINLQ==
+=sJgi
+-----END PGP SIGNATURE-----
+
+--8QTINAT9I+GWM3JK--
 
