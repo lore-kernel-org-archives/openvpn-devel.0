@@ -1,14 +1,14 @@
-Date: Wed, 8 Nov 2017 10:48:35 +0100
+Date: Wed, 8 Nov 2017 10:50:31 +0100
 From: Gert Doering <gert@...1296...>
-Message-ID: <20171108094835.GK958@...1296...>
+Message-ID: <20171108095031.GL958@...1296...>
 References: <1509540912-8739-1-git-send-email-steffan.karger@...1435...>
+ <1509540912-8739-2-git-send-email-steffan.karger@...1435...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="8Y8a5CJOPM/zJV44"
+ protocol="application/pgp-signature"; boundary="NP+fiIeNjDlB/E6h"
 Content-Disposition: inline
-In-Reply-To: <1509540912-8739-1-git-send-email-steffan.karger@...1435...>
-Subject: Re: [Openvpn-devel] [PATCH 1/2] doxygen: use relative paths from
- the project root
+In-Reply-To: <1509540912-8739-2-git-send-email-steffan.karger@...1435...>
+Subject: Re: [Openvpn-devel] [PATCH 2/2] doxygen: add make target
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,30 +20,31 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: Steffan Karger <steffan.karger@...1435...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---8Y8a5CJOPM/zJV44
+--NP+fiIeNjDlB/E6h
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
 Hi,
 
-On Wed, Nov 01, 2017 at 01:55:11PM +0100, Steffan Karger wrote:
-> Instead of genering docs with full path names (e.g.
-> /home/steffan/dev/openvpn/src/openvpn/crypto.h), use a relative path wrt
-> the project root (e.g. src/openvpn/crypto.h).  This makes the generated
-> doxygen easier to read.
+On Wed, Nov 01, 2017 at 01:55:12PM +0100, Steffan Karger wrote:
+> Add a make target, such that 'make doxygen' works (both for in-tree and
+> out-of-tree builds).
 
-Feature-ACK, but since there is a patch 2 in the series that right
-afterwards changes this very line=20
+The relative path used for INPUT=3D has some funky side effects if another
+project happens to be checked out "nearby" - I had openvpn in=20
 
-> -STRIP_FROM_PATH        =3D ""
-> +STRIP_FROM_PATH        =3D "."
+  /tmp/x/openvpn/
 
-... again, maybe just folding these two patches together makes more sense.
+and doxygen started building documentation for
+
+  /tmp/roundcubemail-1.3.1/
+
+so that's overdoing things a bit :-) - feature-ACK, code-NAK.
+
+(As discussed on IRC)
 
 gert
-
-
 --=20
 USENET is *not* the non-clickable part of WWW!
                                                            //www.muc.de/~ge=
@@ -51,22 +52,22 @@ rt/
 Gert Doering - Munich, Germany                             gert@...1296...
 fax: +49-89-35655025                        gert@...1297...
 
---8Y8a5CJOPM/zJV44
+--NP+fiIeNjDlB/E6h
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJaAtLzAAoJEB2Cnv7KVigSl4EMAINhhX1kdBHklOj/q9QQRkwt
-975Xttvmj0dmXZq7Jn2WdEnliB1uU4jy0fcoUde8QK7gpcT7XstuB//ZGZBstyRY
-OqCgdlAynQif5lsmyWBAcCX/fhdN50ZJiwvqdFlq9myJeWfEHCw1DVVwggwPKIuU
-SAD+h0ANNoCW6x7HHMXDHT8Ou2iZiFw2kaGmK+WsOpPlkBMMQZqCozEPQz9sHlHN
-WDS7W9JqU1O9cEzxMLOwcV44jQ0ltKn0DV0M8ZHw0hOFJxA+/UOxonwu5SCVHzGo
-ukWOsAb9KZXlMzyH/iQFJcbuNczmmcEN0czYs1kEZECQ3rrG9DPdZrnPFbVmNmbm
-QUpQOiaxP9azoQ+WOzF8mq48ILqnjYy/6O7fc4EMF6GtdUOdaTpcak80t3doe/Pl
-+iWcOf0WhS00sl2OShPqP/doHKkVo/iGhdi5Y7lwEkmwdQkaze9936b+jxLy8GOw
-cAWPndWqVybVHg5Dwa+Y6F68CLVIw7/qGDQV7nnNDg==
-=DqVs
+iQGcBAEBAgAGBQJaAtNnAAoJEB2Cnv7KVigStjAL/2ECVy5VefrmeiYwGnjCCWtJ
+upTeJyld5BW/VDgy9cWzFREHTKGPW2jJ0vlAy8mr0MdxPikDGhO0zjDt5aPGVpuV
+BKuc7osn+/FVYfShXWIjuUVBh3bM0DM7zBVB/QlT3L2KI1FwnGnbz8tzJHD7sfvk
+G/A8KW3rhMmMrS0xP/sPBTXnoejhwFLFi5suTL0g5r7NLAahsSAcip7e/a8RVYJX
+TI/eTbZvnt6tAtutbfom/sGpndzkhmENLelgLHpCHSMy89K8AoPns+8pfM/n6N3r
+Z5WkZm6W2gBKtQLKMetzVXXvNo4jxfVh1+h0xpDv6Qba+7fUE9F1B9QupamELH1D
+EWVWao6H4jTRKE1fGM8RHalozBGMQyPzbOHIG6aJ/m6EfZi06EKQ+eeG4P2TT/Um
+T+/qKfhyos07+3XKp+tPYOHtpjUS85tOzycCjMnbtKw23pKCEOpRL52108m1PN8l
+Ln2imEUbu5ZyArOLTvgt2DaGiAuX+zP4nMrt2jEUXg==
+=u1Q9
 -----END PGP SIGNATURE-----
 
---8Y8a5CJOPM/zJV44--
+--NP+fiIeNjDlB/E6h--
 
