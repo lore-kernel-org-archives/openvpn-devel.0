@@ -1,12 +1,14 @@
+From: Simon Rozman <simon@...2293...>
+Date: Wed, 8 Nov 2017 17:50:54 +0000
+Message-ID: <99D61A626FDA8A4B90A270669121BE1085882F90@...2294...>
+References: <CAKuzo_iOXui4WDuRqf6-NybpfeWNjKR3GLn7dsw98FoNoSHNMw@...278...>
+ <20171105223714.7852-1-simon@...2293...>
+ <CAKuzo_gsuMMhThtx4UvWoHP9ipT4x_KEFewBxh00z=h4xkc4ow@...278...>
+In-Reply-To: <CAKuzo_gsuMMhThtx4UvWoHP9ipT4x_KEFewBxh00z=h4xkc4ow@...278...>
+Content-Language: en-US
 MIME-Version: 1.0
-In-Reply-To: <20171108161813.GT958@...1296...>
-References: <CAKuzo_j+TbC19HRNH1YxWro74950Ftpxj-oDOi7kgAO8bc6ckQ@...278...>
- <20171108161813.GT958@...1296...>
-From: Selva <selva.nair@...277...>
-Date: Wed, 8 Nov 2017 11:46:44 -0500
-Message-ID: <CAKuzo_hEuXEHBdSnSZ-17Dt-HOgv+3P_cHhaz8YWd7YU_B2FcA@...278...>
-Content-Type: multipart/alternative; boundary="001a1147603cff75ab055d7b6f87"
-Subject: Re: [Openvpn-devel] patchwork
+Subject: Re: [Openvpn-devel] [PATCH v2] openvpnserv: Add support for
+ multi-instances
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,110 +17,94 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+To: Selva <selva.nair@...277...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---001a1147603cff75ab055d7b6f87
-Content-Type: text/plain; charset="UTF-8"
-
-Hi,
-
-On Wed, Nov 8, 2017 at 11:18 AM, Gert Doering <gert@...1296...> wrote:
-
-> Hi,
->
-> On Wed, Nov 08, 2017 at 11:07:16AM -0500, Selva wrote:
-> > Confused as to how patchwork works:
->
-> Welcome to the club :-)
->
-
-I already feel better :)
-
-
->
-> I had some ideas how it should work (like, picking up my "applied" mails
-> and auto-closing patches) but right now it's refusing to do so - I think
-> we need more tweaking there.
->
-> For the time being, I clean up applied and superceded patches manually -
-> the list is not long, and it's way more convenient than maintaining the
-> old "open patches" list in the wiki.
->
-
-I like it too -- way better than keeping track in an inbox folder.
-
-
->
-> [..]
-> > What status header should ACK-ed patches get? I suppose Accepted is for
-> > merged ones. Anything other than "New" or "Under review" appears to take
-> > the patch out of the "Action Required" list, although Acked patches still
-> > need attention to get merged.
->
-> ACKed patches *should* see an "1" show up in the "A/R/T" column (so you'd
-> need to send a mail with "acked-by: selva <...>" instead of a plain "ACK",
-> but it's currently not doing that either.
->
-
-Aha, missed that. No way to flip those A/R/T flags by hand, is it.. Will
-remember
-to add Acked-by: Name <email> next time.
-
-Thanks,
-
-Selva
-
---001a1147603cff75ab055d7b6f87
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><div class=3D"gmail_extra">Hi,</div><div class=3D"gmail_ex=
-tra"><br><div class=3D"gmail_quote">On Wed, Nov 8, 2017 at 11:18 AM, Gert D=
-oering <span dir=3D"ltr">&lt;<a href=3D"mailto:gert@...1296..." target=3D"_=
-blank">gert@...1296...</a>&gt;</span> wrote:<br><blockquote class=3D"gmail_=
-quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1=
-ex">Hi,<br>
-<span><br>
-On Wed, Nov 08, 2017 at 11:07:16AM -0500, Selva wrote:<br>
-&gt; Confused as to how patchwork works:<br>
-<br>
-</span>Welcome to the club :-)<br></blockquote><div><br></div><div>I alread=
-y feel better :)</div><div>=C2=A0</div><blockquote class=3D"gmail_quote" st=
-yle=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">
-<br>
-I had some ideas how it should work (like, picking up my &quot;applied&quot=
-; mails<br>
-and auto-closing patches) but right now it&#39;s refusing to do so - I thin=
-k<br>
-we need more tweaking there.<br>
-<br>
-For the time being, I clean up applied and superceded patches manually -<br>
-the list is not long, and it&#39;s way more convenient than maintaining the=
-<br>
-old &quot;open patches&quot; list in the wiki.<br></blockquote><div><br></d=
-iv><div>I like it too -- way better than keeping track in an inbox folder.<=
-/div><div>=C2=A0</div><blockquote class=3D"gmail_quote" style=3D"margin:0 0=
- 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">
-<br>
-[..]<br>
-<span>&gt; What status header should ACK-ed patches get? I suppose Accepted=
- is for<br>
-&gt; merged ones. Anything other than &quot;New&quot; or &quot;Under review=
-&quot; appears to take<br>
-&gt; the patch out of the &quot;Action Required&quot; list, although Acked =
-patches still<br>
-&gt; need attention to get merged.<br>
-<br>
-</span>ACKed patches *should* see an &quot;1&quot; show up in the &quot;A/R=
-/T&quot; column (so you&#39;d<br>
-need to send a mail with &quot;acked-by: selva &lt;...&gt;&quot; instead of=
- a plain &quot;ACK&quot;,<br>
-but it&#39;s currently not doing that either.<br></blockquote><div><br></di=
-v><div>Aha, missed that. No way to flip those A/R/T flags by hand, is it.. =
-Will remember</div><div>to add Acked-by: Name &lt;email&gt; next time.</div=
-><div><br></div><div>Thanks,</div><div><br></div><div>Selva</div></div></di=
-v></div>
-
---001a1147603cff75ab055d7b6f87--
-
+SGksDQoNCj4gPiDCoHN0YXRpYyBTRVJWSUNFX1NUQVRVU19IQU5ETEUgc2VydmljZTsgLXN0YXRp
+YyBTRVJWSUNFX1NUQVRVUyBzdGF0dXM7DQo+ID4gK3N0YXRpYyBTRVJWSUNFX1NUQVRVUyBzdGF0
+dXMgPSB7IFNFUlZJQ0VfV0lOMzJfU0hBUkVfUFJPQ0VTUyB9Ow0KPiANCj4gV2hpbGUgdGhpcyBp
+cyBjb3JyZWN0LCBtYWtpbmcgdXNlIG9mIEM5OSdzIGRlc2lnbmF0ZWQgaW5pdCBsaWtlDQo+IA0K
+PiDCoCDCoCDCoCB7LmR3U2VydmljZVR5cGUgPSBTRVJWSUNFX1dJTjMyX1NIQVJFX1BST0NFU1N9
+IHdvdWxkIGJlIGJldHRlcg0KPiBhbmQgY2xlYXJlci4NCg0KT0suDQoNCg0KPiA+IMKgIMKgIMKg
+IMKgIMKgIMKgIMKgIMKgIMKgLyogY29uc3RydWN0IGNvbW1hbmQgbGluZSAqLw0KPiA+IC0gwqAg
+wqAgwqAgwqAgwqAgwqAgwqAgwqBvcGVudnBuX3NudHByaW50Zihjb21tYW5kX2xpbmUsDQo+ID4g
+X2NvdW50b2YoY29tbWFuZF9saW5lKSwgVEVYVChQQUNLQUdFICIgLS1zZXJ2aWNlICVzIDEgLS1j
+b25maWcNCj4gPiBcIiVzXCIiKSwNCj4gPiAtIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
+IMKgIMKgIMKgIMKgIMKgIMKgIMKgRVhJVF9FVkVOVF9OQU1FLA0KPiA+ICsgwqAgwqAgwqAgwqAg
+wqAgwqAgwqAgwqBvcGVudnBuX3NudHByaW50Zihjb21tYW5kX2xpbmUsDQo+ID4gKyBfY291bnRv
+Zihjb21tYW5kX2xpbmUpLCBURVhUKCJvcGVudnBuIC0tc2VydmljZSBcIiVzX2V4aXRfMVwiIDEN
+Cj4gPiArIC0tY29uZmlnIFwiJXNcIiIpLA0KPiA+ICsgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
+wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqBzZXJ2aWNlX2luc3RhbmNlLA0KPiBUaGUgY2hhbmdl
+IFBBQ0tBR0UgLT4gb3BlbnZwbiBpcyBub3QgYSByZWdyZXNzaW9uIGJlY2F1c2UgdGhlIGZpcnN0
+IHdvcmQNCj4gb2YgY29tbWFuZCBsaW5lIChhcmd2WzBdKSBpcyBub3QgdXNlZCB3aGlsZSBsYXVu
+Y2hpbmcgdGhlIHByb2Nlc3MsIHJpZ2h0Pw0KPiBJbnN0ZWFkLCB0aGUgZXhlX3BhdGggaXMgdXNl
+ZCB0byBmaW5kIHRoZSBleGVjdXRhYmxlLg0KPiANCj4gSG93ZXZlciwgYXJndlswXSB3aWxsIG5v
+IGxvbmdlciB0cmFjayBQQUNLQUdFIGJ1dCBzdGF5IGZpeGVkIGF0ICJvcGVudnBuIi4NCj4gSG9w
+ZWZ1bGx5IG5vIG9uZSBjYXJlcy4gSSdtIGZpbmUgd2l0aCB0aGlzIGFzIG9mZmljaWFsIGJ1aWxk
+cyBzZWUgbm8gZGlmZmVyZW5jZS4NCg0KV2hlbiBleGVjdXRhYmxlIHBhdGggaXMgc3BlY2lmaWVk
+IGV4cGxpY2l0bHkgYXQgQ3JlYXRlUHJvY2VzcygpL0NyZWF0ZVByb2Nlc3NBc1VzZXIoKSwgdGhl
+IGFyZ3ZbMF0gb2YgdGhlIGNvbW1hbmQgbGluZSBpcyBub3QgdXNlZC4gSXQgZG9lcyBnZXQgcGFz
+c2VkIHRvIHRoZSBuZXdseSBjcmVhdGVkIG9wZW52cG4uZXhlIHByb2Nlc3MgYXMgdGhlIGFyZ3Zb
+MF0sIGFsdGhvdWdoIHRoZSBvcGVudnBuLmV4ZSBpZ25vcmVzIGFyZ3ZbMF0uIFNvIHRoZSBhcmd2
+WzBdIGNhbiBiZSAib3BlbnZwbiIsICJvcGVudnBuLmV4ZSIsIFBBQ0tBR0UsICJmb29iYXIiLCB3
+aGF0ZXZlci4uLg0KIA0KVGhlIGludGVyYWN0aXZlIHNlcnZpY2UgaXMgdXNpbmcgaGFyZGNvZGVk
+ICJvcGVudnBuIi4gV2hpbGUgY2hhbmdpbmcgdGhlIGNvbW1hbmQgbGluZSBmb3IgdGhlIGF1dG9t
+YXRpYyBzZXJ2aWNlIHRvIHVzZSBkeW5hbWljIGluc3RhbmNlIG5hbWUgZm9yIGV4aXQgZXZlbnQs
+IEkgc3luY2hyb25pemVkIGFyZ3ZbMF0gdG8gIm9wZW52cG4iIGFzIHdlbGwuDQoNCkluZGVlZCwg
+Zm9yIG9mZmljaWFsIGJ1aWxkcyB0aGF0IGRvZXMgbm90IGNoYW5nZSBhbnl0aGluZy4NCg0KDQo+
+ID4gKyDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoHN0YXRpYyBjb25zdCBTRVJWSUNFX1RBQkxFX0VO
+VFJZDQo+ID4gKyBkaXNwYXRjaFRhYmxlX2F1dG9tYXRpY1tdID0gew0KPiA+ICsgwqAgwqAgwqAg
+wqAgwqAgwqAgwqAgwqAgwqAgwqB7IFRFWFQoIiIpLCBTZXJ2aWNlU3RhcnRBdXRvbWF0aWNPd24g
+fSwNCj4gPiArIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgeyBOVUxMLCBOVUxMIH0NCj4g
+PiArIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgfTsNCj4gDQo+IEFncmVlZCB0aGlzIGFycmF5IGhh
+cyB0byBsaXZlIGJleW9uZCB0aGUgZm9yIGxvb3AsIGJ1dCB3aHkgc3RhdGljPyBTdGF0aWNzIGxp
+dmUNCj4gZm9yIGV2ZXIgd2hpbGUgdGhpcyBuZWVkIG5vdCBleGlzdCBiZXlvbmQgdGhlIGZ1bmN0
+aW9uLiBQdXR0aW5nIGl0IGF0IHRoZSB0b3ANCj4gd2hlcmUgZGlzcGF0Y2hUYWJsZV9zaGFyZWQg
+aXMgZGVmaW5lZCAob3IgYW55d2hlcmUgYmVmb3JlIHRoZSBsb29wKSBhcyBhDQo+IG5vbi1zdGF0
+aWMgdmFyaWFibGUgd291bGQgYmUgdGhlIHdheSB0byBnbz8NCg0KLSBUaGVyZSBpcyBhbG1vc3Qg
+bm90aGluZyBiZXlvbmQgdGhpcyBmdW5jdGlvbi4gVGhpcyBpcyAidGhlIiBtYWluIGZ1bmN0aW9u
+LiBUaGlzIGZ1bmN0aW9uIGVuZHVyZXMgdGhlIHdob2xlIHByb2Nlc3MgbGlmZXRpbWUsIG1ha2lu
+ZyBpdHMgbG9jYWwgdmFyaWFibGVzIHBlcnNpc3Qgb24gc3RhY2sgdGhlIHdob2xlIHByb2Nlc3Mg
+bGlmZXRpbWUuIE5vdCBtdWNoIGJldHRlciB0aGFuIHN0YXRpYyB2YXJpYWJsZXMuDQoNCi0gSWYg
+dGhpcyB3YXMgc29tZSBiaWcgY2h1bmsgb2YgZGF0YSBkZWNsYXJlZCBhcyBhIG1haW4oKSBsb2Nh
+bCB2YXJpYWJsZSwgaXQgd291bGQgZWF0IHVwIGl0cyBjaHVuayBvZiBzdGFjayBmb3IgdGhlIHdo
+b2xlIHByb2Nlc3MgbGlmZXRpbWUuIFdoZW4gaXQgaXMgZGVjbGFyZWQgYXMgc3RhdGljLCBpdCBp
+cyBrZXB0IGluIHRoZSBkYXRhIHNlZ21lbnQuDQoNCi0gQnV0IHRoZSBtYWluIHJlYXNvbiBiZWhp
+bmQgc3RhdGljIHVzYWdlIGlzIHRvIGFsbG93IHVzIHRvIGtlZXAgdGhlIGZlYXR1cmUgYXMgYSBz
+aW5nbGUgY2h1bmsgb2YgY29kZSB2cy4gc3BsaXR0aW5nIGl0IGFjcm9zcyB0aGUgbWFpbiBmdW5j
+dGlvbi4gSSBwZXJzb25hbGx5IHB1dCBjb2RlIGFlc3RoZXRpY3MgYmVmb3JlIG1lbW9yeSB1c2Fn
+ZS4NCg0KDQo+IEZpbmFsbHksIHdlIGNvdWxkIGFkZCB0aGUgaW5zdGFuY2UgbmFtZSB0byB0aGUg
+ZXZlbnRsb2cgb3V0cHV0Lg0KPiBNc2dUb0V2ZW50TG9nIHByaW50cyBlcnJvcnMgYXMgIkFQUE5B
+TUUgZXJyb3I6IC4uLi4iIHdoZXJlIEFQUE5BTUUgaXMNCj4gIm9wZW52cG5zZXJ2Ii4NCj4gRS5n
+LiwgYWRkICIgKGluc3RhbmNlX25hbWUpIiBhZnRlciBBUFBOQU1FPw0KDQpFeGNlbGxlbnQgc3Vn
+Z2VzdGlvbi4gSSBzaGFsbCBhZGQgaXQgdG8gdGhlIHYzIHBhdGNoLg0KDQpIb3dldmVyLCBJIHBy
+b3Bvc2UgYSBiaXQgZGlmZmVyZW50IG91dHB1dC4gVGhlIGBzZXJ2aWNlX2luc3RhbmNlYCBkeW5h
+bWljIHNlcnZpY2UgbmFtZSBpcyB1c2VkIGFzIGEgcmVwbGFjZW1lbnQgZm9yICJPcGVuVlBOIiBh
+bmQgIm9wZW52cG4iIGhhcmRjb2RlZCBzdHJpbmdzIGluIHRoZSBjb2RlLiBUaGVyZWZvcmUsIGxv
+Z2dpbmcgIkFQUE5BTUUgKGluc3RhbmNlX25hbWUpIiB3b3VsZCBsb2cgYXMgIk9wZW5WUE4gKE9w
+ZW5WUE4pIiBmb3Igb2ZmaWNpYWwgYnVpbGRzLiBOb3QgZXhhY3RseSBlbGVnYW50LiBJIHdvdWxk
+IHByZWZlciB0byBrZWVwIHRoZSBvZmZpY2lhbCBPcGVuVlBOIGxvZyBvdXRwdXQgYmFja3dhcmQg
+YmluYXJ5IGNvbXBhdGlibGUuDQoNCkFuIGV4YW1wbGUgb2YgaG93IHdlIGJyYW5kZWQgaW50ZXJh
+Y3RpdmUgc2VydmljZSBpbnN0YW5jZSBmb3IgZWR1VlBOOg0KLSBUaGUgaW50ZXJhY3RpdmUgc2Vy
+dmljZSBpcyBpbnN0YWxsZWQgYXMgIk9wZW5WUE5TZXJ2aWNlSW50ZXJhY3RpdmUkZWR1VlBOIiB3
+aXRoIHRoZSBkaXNwbGF5IG5hbWUgIk9wZW5WUE4gSW50ZXJhY3RpdmUgU2VydmljZSAoZWR1VlBO
+KSINCi0gVGhlIHNlcnZpY2UgaXMgbGF1bmNoZWQgdXNpbmcgIm9wZW52cG5zZXJ2LmV4ZSAtaW5z
+dGFuY2UgaW50ZXJhY3RpdmUgT3BlblZQTiRlZHVWUE4iIGNvbW1hbmQgbGluZS4NCi0gVGhpcyBt
+YWtlcyBpdCBsb2FkIHRoZSBzZXR0aW5ncyBmcm9tICJIS0VZX0xPQ0FMX01BQ0hJTkVcU09GVFdB
+UkVcT3BlblZQTiRlZHVWUE4iDQoNCldlIHdlcmUgY2FyZWZ1bCB0byBzdGFydCB0aGUgaW5zdGFu
+Y2UgbmFtZSB3aXRoICJPcGVuVlBOJCIgYmVjYXVzZToNCi0gV2UgZG9uJ3Qgd2FudCB0byBoaWRl
+IHRoZSBPcGVuVlBOIGludGVyYWN0aXZlIHNlcnZpY2Ugb2ZmaWNpYWwgbmFtZS9icmFuZC4NCi0g
+T3VyIHZlcnNpb24gb2YgaW50ZXJhY3RpdmUgc2VydmljZSBpcyBhbHdheXMgbGlzdGVkIG5leHQg
+dG8gdGhlIG9mZmljaWFsIE9wZW5WUE4ncy4gSW4gdGhlIHJlZ2lzdHJ5IGFuZCBvbiB0aGUgc2Vy
+dmljZXMubXNjIGxpc3QuDQotIE91ciByZWdpc3RyeSBrZXkgaXMgYWRqYWNlbnQgdG8gdGhlIG9m
+ZmljaWFsIE9wZW5WUE4ncy4NCi0gJCBpcyBhbHNvIHVzZWQgaW4gTWljcm9zb2Z0IFNRTCBTZXJ2
+ZXIgYXMgYSBkZWxpbWl0ZXIuDQoNClVzaW5nIHRoZSBBUFBOQU1FICgib3BlbnZwbnNlcnYiKSBh
+bmQgbWVyZ2luZyB3aXRoIG91ciBpbnN0YW5jZSBuYW1lIHdvdWxkIG1ha2UgYSBGcmFua2Vuc3Rl
+aW4gIm9wZW52cG5zZXJ2T3BlblZQTiRlZHVWUE4iIGxvZyBlbnRyeS4gTm90IGV4YWN0bHkgZWxl
+Z2FudCBlaXRoZXIuDQoNCkZvciB2MyBJIHNoYWxsIHJlZGVzaWduIHRoZSBjb2RlIHRvIHVzZSBj
+b21waWxlLXRpbWUgZGVmaW5lZCBQQUNLQUdFX05BTUUvUEFDS0FHRSBhcyB0aGUgbGVmdCBwYXJ0
+IGFnYWluLCBhbmQgb25seSBhcHBlbmQgdGhlICIiIHNlcnZpY2VfaW5zdGFuY2UgZm9yIG9mZmlj
+aWFsIE9wZW5WUE4gYW5kICIkZWR1VlBOIiBmb3IgbmFtZWQgaW5zdGFuY2UuDQoNCkJlc3QgcmVn
+YXJkcywNClNpbW9uDQo=
