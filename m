@@ -1,22 +1,12 @@
-Message-ID: <1510159186.3121.14.camel@...2316...>
-From: James Bottomley <James.Bottomley@...2316...>
-Date: Wed, 08 Nov 2017 08:39:46 -0800
-In-Reply-To: <7dc8bad3-eb19-0644-0b24-162cb0d842a1@...2080...>
-References: <1509192147.3021.6.camel@...2316...>
- <1509192205.3021.7.camel@...2316...>
- <CAFHpkQHXWrXn42B1xr0YuPvQUrOSvUqQU6h8RkP_EgP_iBP5Qw@...278...>
- <1509289652.3116.11.camel@...2316...>
- <72a75ffb-67df-0986-7b64-9080254cc084@...2181...>
- <1509292633.3116.16.camel@...2316...>
- <d2079a55-a8c4-95be-4385-75d164a9f8c5@...1856...>
- <20171104175814.GY958@...1296...>
- <CAKuzo_i-CvWA0SFdTLMcN0c6DgV8DMe450NoWMSjf6iapLfcvg@...278...>
- <7dc8bad3-eb19-0644-0b24-162cb0d842a1@...2080...>
-Content-Type: multipart/signed; micalg="pgp-sha256";
- protocol="application/pgp-signature"; boundary="=-RKuHuP38yZkxmYNOeu7u"
-Mime-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH 1/1] openssl: add engine method for
- loading the key
+MIME-Version: 1.0
+In-Reply-To: <20171108161813.GT958@...1296...>
+References: <CAKuzo_j+TbC19HRNH1YxWro74950Ftpxj-oDOi7kgAO8bc6ckQ@...278...>
+ <20171108161813.GT958@...1296...>
+From: Selva <selva.nair@...277...>
+Date: Wed, 8 Nov 2017 11:46:44 -0500
+Message-ID: <CAKuzo_hEuXEHBdSnSZ-17Dt-HOgv+3P_cHhaz8YWd7YU_B2FcA@...278...>
+Content-Type: multipart/alternative; boundary="001a1147603cff75ab055d7b6f87"
+Subject: Re: [Openvpn-devel] patchwork
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -25,57 +15,110 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net, Selva <selva.nair@...277...>, Gert Doering <gert@...1296...>
+To: Gert Doering <gert@...1296...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
---=-RKuHuP38yZkxmYNOeu7u
+--001a1147603cff75ab055d7b6f87
 Content-Type: text/plain; charset="UTF-8"
+
+Hi,
+
+On Wed, Nov 8, 2017 at 11:18 AM, Gert Doering <gert@...1296...> wrote:
+
+> Hi,
+>
+> On Wed, Nov 08, 2017 at 11:07:16AM -0500, Selva wrote:
+> > Confused as to how patchwork works:
+>
+> Welcome to the club :-)
+>
+
+I already feel better :)
+
+
+>
+> I had some ideas how it should work (like, picking up my "applied" mails
+> and auto-closing patches) but right now it's refusing to do so - I think
+> we need more tweaking there.
+>
+> For the time being, I clean up applied and superceded patches manually -
+> the list is not long, and it's way more convenient than maintaining the
+> old "open patches" list in the wiki.
+>
+
+I like it too -- way better than keeping track in an inbox folder.
+
+
+>
+> [..]
+> > What status header should ACK-ed patches get? I suppose Accepted is for
+> > merged ones. Anything other than "New" or "Under review" appears to take
+> > the patch out of the "Action Required" list, although Acked patches still
+> > need attention to get merged.
+>
+> ACKed patches *should* see an "1" show up in the "A/R/T" column (so you'd
+> need to send a mail with "acked-by: selva <...>" instead of a plain "ACK",
+> but it's currently not doing that either.
+>
+
+Aha, missed that. No way to flip those A/R/T flags by hand, is it.. Will
+remember
+to add Acked-by: Name <email> next time.
+
+Thanks,
+
+Selva
+
+--001a1147603cff75ab055d7b6f87
+Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, 2017-11-08 at 13:27 +0100, David Sommerseth wrote:
-> I need to spend a bit more time to fully grasp the UI get/set calls
-> and the related implementation.=C2=A0=C2=A0But what is done in regards to
-> password retrieving in ui_read() makes sense to me.
+<div dir=3D"ltr"><div class=3D"gmail_extra">Hi,</div><div class=3D"gmail_ex=
+tra"><br><div class=3D"gmail_quote">On Wed, Nov 8, 2017 at 11:18 AM, Gert D=
+oering <span dir=3D"ltr">&lt;<a href=3D"mailto:gert@...1296..." target=3D"_=
+blank">gert@...1296...</a>&gt;</span> wrote:<br><blockquote class=3D"gmail_=
+quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1=
+ex">Hi,<br>
+<span><br>
+On Wed, Nov 08, 2017 at 11:07:16AM -0500, Selva wrote:<br>
+&gt; Confused as to how patchwork works:<br>
+<br>
+</span>Welcome to the club :-)<br></blockquote><div><br></div><div>I alread=
+y feel better :)</div><div>=C2=A0</div><blockquote class=3D"gmail_quote" st=
+yle=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">
+<br>
+I had some ideas how it should work (like, picking up my &quot;applied&quot=
+; mails<br>
+and auto-closing patches) but right now it&#39;s refusing to do so - I thin=
+k<br>
+we need more tweaking there.<br>
+<br>
+For the time being, I clean up applied and superceded patches manually -<br>
+the list is not long, and it&#39;s way more convenient than maintaining the=
+<br>
+old &quot;open patches&quot; list in the wiki.<br></blockquote><div><br></d=
+iv><div>I like it too -- way better than keeping track in an inbox folder.<=
+/div><div>=C2=A0</div><blockquote class=3D"gmail_quote" style=3D"margin:0 0=
+ 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">
+<br>
+[..]<br>
+<span>&gt; What status header should ACK-ed patches get? I suppose Accepted=
+ is for<br>
+&gt; merged ones. Anything other than &quot;New&quot; or &quot;Under review=
+&quot; appears to take<br>
+&gt; the patch out of the &quot;Action Required&quot; list, although Acked =
+patches still<br>
+&gt; need attention to get merged.<br>
+<br>
+</span>ACKed patches *should* see an &quot;1&quot; show up in the &quot;A/R=
+/T&quot; column (so you&#39;d<br>
+need to send a mail with &quot;acked-by: selva &lt;...&gt;&quot; instead of=
+ a plain &quot;ACK&quot;,<br>
+but it&#39;s currently not doing that either.<br></blockquote><div><br></di=
+v><div>Aha, missed that. No way to flip those A/R/T flags by hand, is it.. =
+Will remember</div><div>to add Acked-by: Name &lt;email&gt; next time.</div=
+><div><br></div><div>Thanks,</div><div><br></div><div>Selva</div></div></di=
+v></div>
 
-How to use UI methods is (unsurprisingly) badly documented in openssl.
-I picked up my knowledge of it by giving up on the docs and reading the
-source code. Basically it's a huge overkill interface for reading and
-verifying a passphrase. =C2=A0There are about six overrideable methods:
-opener, closer, reader, writer, flusher and prompt constructor. =C2=A0The
-interface seems to be designed to give control of all aspects of user
-interaction, from passwords, inputs and error outputs. =C2=A0However, it
-only ever seems to be used for passwords.
-
-The only thing I need from it is the reader method (that's what takes
-input from the user) and of the five types
-UIT_PROMPT/VERIFY/BOOLEAN/INPUT/ERROR I only need UIT_PROMPT because
-that's asking the user for input, which duplicates what the PEM
-password prompt does.
-
-James
-
---=-RKuHuP38yZkxmYNOeu7u
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-Content-Transfer-Encoding: 7bit
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-
-iQIcBAABCAAGBQJaAzNWAAoJEAVr7HOZEZN4ghQP/il/4YKWnyv9VylEJpxKAPtz
-ykTdZg0hPYdqddl9pF4ayCC6BKe0fQUedb+kfPdkgF0vqj5SpHobQQsUt3kdf25w
-UPjBGDsc/++Wk1w0fGiKY+JPdFQeu0hwphuiG6TSA3kNpZBu33/AaHGJcxKbprEj
-QLnhCncJdyK19BaOlSjkvc19F65OISUgBL7/gKLHzDwGAa29jXAJir7L8xeXIRCn
-st+VpaAh4iwoON3J9L8+4dVrchzZRmsJVK1r84yZ4obpJmgbpQ4wwX1MIMnKlG0Y
-X3NMnGzAT5ZCH0m9Yy3qxWodIGWCop25rhPazJgab+JI/rPOlzdh2yPGE4i14OKK
-uEkxDLtzGxWnRvOREryB7ExbhhonOHGG7ux3Rt9Iuf3U+D8Q/k5gYfrwWW8KbadS
-53ZvGQxqXTA5Ne6+4nzgtrNsf0B2J/I/6oF9MnrxQbgNyeFqEbJl1Z7dNURvimQT
-J3T2CUOjuca5Buue6FtBNDbG9UVEOk/PolC2WWmZeOkuCPBDvyzi6uQ7LpC7BSl6
-QtIUHPdzoEULkM6ktT0lQBVEGdDhDcx4YeElriY4AAzTAlLvCsxV1lJPa0y71rxC
-ErKf0a9/MyKouJ1ooojJ7380WS+NSf4Xjd9lFF4yH4BCzYBjOMWvGLzSURdexG51
-X5jVRW1Pa2S+s8WFtoQV
-=uyQe
------END PGP SIGNATURE-----
-
---=-RKuHuP38yZkxmYNOeu7u--
-
+--001a1147603cff75ab055d7b6f87--
 
