@@ -1,16 +1,17 @@
-From: Simon Rozman <simon@...2293...>
-Date: Thu, 9 Nov 2017 08:33:51 +0000
-Message-ID: <99D61A626FDA8A4B90A270669121BE1085884910@...2294...>
-References: <CAKuzo_iOXui4WDuRqf6-NybpfeWNjKR3GLn7dsw98FoNoSHNMw@...278...>
- <20171105223714.7852-1-simon@...2293...>
- <CAKuzo_gsuMMhThtx4UvWoHP9ipT4x_KEFewBxh00z=h4xkc4ow@...278...>
- <99D61A626FDA8A4B90A270669121BE1085882F90@...2294...>
- <CAKuzo_jDTZ41vrpZYPtzkW51=2a9X90qtwYnkGGXx85QVJceZg@...278...>
-In-Reply-To: <CAKuzo_jDTZ41vrpZYPtzkW51=2a9X90qtwYnkGGXx85QVJceZg@...278...>
-Content-Language: en-US
+References: <1505424872-27434-1-git-send-email-steffan.karger@...1435...>
+ <20171101220342.14648-1-steffan@...1856...>
+ <20171101220342.14648-5-steffan@...1856...>
+ <2bacffe7-e42b-9a33-b502-924ef38c628a@...2181...>
+From: Steffan Karger <steffan.karger@...1435...>
+Message-ID: <531fd06f-c0f4-9068-a6e6-58e52c8c32e3@...1435...>
+Date: Thu, 9 Nov 2017 14:46:44 +0100
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH v2] openvpnserv: Add support for
- multi-instances
+In-Reply-To: <2bacffe7-e42b-9a33-b502-924ef38c628a@...2181...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="54H9qxDvVGVivijV0jBNwDf5JMQqiXcp2"
+Subject: Re: [Openvpn-devel] [PATCH 4/4 v3] create_temp_file/gen_path:
+ prevent memory leak if gc == NULL
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,67 +20,79 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-To: Selva <selva.nair@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: openvpn-devel@lists.sourceforge.net
 
-SGksDQoNCj4gQnV0IHRoZW4gbWFraW5nIHRoZSB2YXJpYWJsZSBzdGF0aWMganVzdCB0byBrZWVw
-IGEgdmFsaWQgcG9pbnRlciBiZXlvbmQgdGhlDQo+IGN1cnJlbnQgYmxvY2sgbG9jYWwgbG9va3Mg
-bGlrZSBhIGtsdWRnZS4gRm9yIG1lIHNlZWluZyBzdGF0aWMgYXBwbGllZCB0byBhDQo+IHZhcmlh
-YmxlIHNjb3BlZCB0byBhIGJsb2NrIGlzIGp1c3QgY29uZnVzaW5nIGFuZCB1bnVzdWFsIHN0eWxl
-LiBUaGluayBvZiB0aGlzOiBpZg0KPiB5b3UgcmVtb3ZlIHRoYXQgc3RhdGljIHRoZSBjb2RlIG1h
-eSBzdGlsbCBidWlsZCBhbmQgZXZlbiB3b3JrIG9uIHNvbWUNCj4gY29tcGlsZXJzIGRlcGVuZGlu
-ZyBvbiBvcHRpbWl6YXRpb24gbGV2ZWwgZXRjLiBhbmQgbXlzdGVyaW91c2x5IGZhaWwgb24gc29t
-ZQ0KPiBvY2Nhc2lvbnMuIEZyb20gdGhhdCBvbmUgY291bGQgZWl0aGVyIGNvbmNsdWRlIGEgc3Rh
-dGljIHF1YWxpZmllciBpcyByZXF1aXJlZA0KPiBoZXIgb3IgdGhlIHZhcmlhYmxlIGlzIHdyb25n
-bHkgc2NvcGVkLiBJIHRoaW5rIHRoZSBsYXR0ZXIgY29uY2x1c2lvbiBpcyB0aGUgJ3JpZ2h0Jw0K
-PiBvbmUgYW5kIHN0YXRpYyBpcyBhIG1pc3VzZS4NCj4gDQo+IEFzIGZvciB0aGUgY29tYmluYXRp
-b24gJ3N0YXRpYyBjb25zdCAuLi4nLCBpdCBoYXMgYSBwbGFjZSBhbmQgdGhhdCBpcyBmb3IgY29u
-c3RhbnRzDQo+IGRlZmluZWQgb3V0c2lkZSBmdW5jdGlvbnMgdG8gbGltaXQgdGhlIHNjb3BlIG9m
-IGFuIG90aGVyd2lzZSDCoGdsb2JhbCBjb25zdCB0bw0KPiB0aGF0IG9mIHRoZSBjb21waWxhdGlv
-biB1bml0Lg0KPiANCj4gSXQgbWF5IGJlIGp1c3QgbWUuDQoNCk5vdCBuZWNlc3NhcmlseS4gSXQg
-bWF5IGJlIGp1c3QgKm1lKi4gOikNCg0KQW55d2F5LCB5b3UgZ290IG1lIGNvbnZpbmNlZCBhbmQg
-SSBzaGFsbCBtb3ZlIHRob3NlIHN0cnVjdHMgZnJvbSBkYXRhIHNlZ21lbnQgdG8gc3RhY2sgaW4g
-dGhlIG5leHQgdmVyc2lvbiBvZiB0aGUgcGF0Y2guDQoNCj4gSSBsaWtlIGl0OiB1c2luZyAiT3Bl
-blZQTiIgYXMgYSBraW5kIG9mIG5hbWVzcGFjZSBhbHNvIGF2b2lkcyBuYW1lIGNvbGxpc2lvbg0K
-PiB3aXRoIGFueSBvdGhlciAnZm9vYmFyJyBpbnN0YWxsZWQgaW4gSEtMTVxTb2Z0d2FyZVxmb29i
-YXINCg0KRXhhY3RseSwgaW50cm9kdWNpbmcgaW5zdGFuY2VzIGlzIGFsbCBhYm91dCBhdm9pZGlu
-ZyBuYW1lc3BhY2UgY29sbGlzaW9ucy4NCg0KPiBOb3Qgc3VyZSBJIGZvbGxvdywgYnV0IHdpbGwg
-d2FpdCBmb3IgdGhlIHBhdGNoLiBJIHN1cHBvc2UgbmFtaW5nIGFkZGl0aW9uYWwNCj4gaW5zdGFu
-Y2VzIGFzLCBzYXksICdmb28nIMKgdXNpbmcgdGhlIG9mZmljaWFsIHBhY2thZ2UgYW5kIGhhdmUg
-c2VydmljZSBwaXBlLCBleGl0DQo+IGV2ZW50IGV0YyBuYW1lZCBhZnRlciBpdCBhbmQgcmVnaXN0
-cnkga2V5cyB0YWtlbiBmcm9tIEhLTE1cU29mdHdhcmVcZm9vDQo+IHdpbGwgc3RpbGwgd29yay4N
-Cg0KSW4gdGhlIHYxIGFuZCB2MiBwYXRjaGVzLCB5ZXMuIEJ1dCBpbiB2MyBwYXRjaCwgdGhlIFBB
-Q0tBR0UvUEFDS0FHRV9OQU1FIGlzIGFsd2F5cyB1c2VkIGFzIHRoZSBwcmVmaXgvbmFtZXNwYWNl
-LiBUaGlzIHdheSB3ZSBpbXBvc2UgdGhlICJPcGVuVlBOIiBicmFuZGluZyB0byBhbGwgaW5zdGFu
-Y2VzIGJ5IGNvbXBpbGUtdGltZSBkZWZhdWx0LiBJbiB2MywgcGVvcGxlIGNhbid0IHRha2UgdGhl
-IGludGVyYWN0aXZlIHNlcnZpY2UgYW5kIG1ha2UgaXQgZGlzZ3Vpc2UgYXMgdGhlICJNaWNyb3Nv
-ZnRcT2ZmaWNlXEF1dG9tYXRpYyBVcGRhdGUiLg0KDQpUaGUgdjMgbWFkZSBpbnN0YW5jaW5nIGxl
-c3MgZmxleGlibGUgb24gcHVycG9zZS4NCg0KSWYgeW91IGRpc2FncmVlLCBJIGNhbiByZXZlcnQg
-dG8gdjEvMiBiZWhhdmlvdXIuDQoNCj4gSW4gZmFjdCBJIGxpa2UgdGhlIGN1cnJlbnQgcGF0Y2gg
-aW4gdGhhdCBpdCBhbGxvd3MgaW5zdGFsbGluZyBldmVuIHRoZSBvZmZpY2lhbA0KPiBpbnN0YW5j
-ZSBhcyBhIG5hbWVkIG9uZSB3aXRoIG5hbWUgPSBPcGVuVlBOIGFuZCB0aHVzIGRlY291cGxlcw0K
-PiBhdXRvbWF0aWMgYW5kIGludGVyYWN0aXZlIHNlcnZpY2VzLiBUaGF0IG1ha2VzIGl0IGVhc3kg
-dG8gYXZvaWQgaW5zdGFsbGluZyB0aGUNCj4gbGVnYWN5IHNlcnZpY2UsIHdoaWNoIEkgdGhpbmsg
-bm8gb25lIHVzZXMgYW55bW9yZS4NCg0KT3VjaC4gKldlKiB3b3VsZCB1c2UgdGhlIGF1dG9tYXRp
-YyBzZXJ2aWNlIGlmIGl0IHdhcyBjb2RlZCBzbGlnaHRseSBkaWZmZXJlbnQuIEkgZGlkbid0IGtu
-b3cgdGhlIGxlZ2FjeSBhdXRvbWF0aWMgc2VydmljZSBpcyBvbiB0aGUgb2Jzb2xldGUgbGlzdCB5
-ZXQuDQoNClBlcmhhcHMsIGEgdHJ1ZSByZXBsYWNlbWVudCBmb3IgdGhlIGF1dG9tYXRpYyBzZXJ2
-aWNlIGNvdWxkIGJlIHRvIG1ha2UgdGhlIG9wZW52cG4uZXhlIGl0c2VsZiB0byBiZSBhYmxlIHRv
-IGluc3RhbGwgYW5kIHJ1biBhcyBhIFdpbmRvd3Mgc2VydmljZSAoLS1kYWVtb24gZm9yIFdpbmRv
-d3MpOg0KLSBUaGUgU0NNIHdvdWxkIHJlc3RhcnQgaXQsIHNob3VsZCBvcGVudnBuLmV4ZSB0ZXJt
-aW5hdGUgb3IgY3Jhc2guDQotIFNlcGFyYXRlIG9wZW52cG4uZXhlIHNlcnZpY2UgZm9yIGVhY2gg
-b3ZwbiBjb25maWd1cmF0aW9uLCBhbGxvd2luZyBhZG1pbnMgdG8gbWFuYWdlIHRoZW0gaW5kaXZp
-ZHVhbGx5Lg0KLSBMaW51eCBsaWtlIGJlaGF2aW91ciwgd2hlcmUgeW91IHJ1biBlYWNoIHR1bm5l
-bCBhcyBhIHNlcGFyYXRlIFN5c3RlbWQgZGFlbW9uLg0KDQooVGhhdCBpcyBleGFjdGx5IHdoYXQg
-SSdkIG5lZWQgZm9yIG91ciBvZmZpY2UuIFJpZ2h0IG5vdyB3ZSBhcmUgd3JhcHBpbmcgb3BlbnZw
-bi5leGUgaW5zaWRlIGEgTlNTTSBzZXJ2aWNlIGhlbHBlci4gV291bGQgYmUgbmljZSB0byBnZXQg
-dGhhdCBmZWF0dXJlIG91dC1vZi10aGUtYm94LikNCg0KQmFjayB0byB0aGUgaW50ZXJhY3RpdmUg
-c2VydmljZS4uLiBBY2NvcmRpbmcgdG8gdGhlIGxhdGVzdCBbUEFUQ0goIHYzIG1pc3NpbmcpXSwg
-b25lIHdvdWxkIG5lZWQgdG8gc3RhcnQgdGhlIGRlZmF1bHQgaW5zdGFuY2Ugb2YgdGhlIGludGVy
-YWN0aXZlIHNlcnZpY2Ugb25seSB1c2luZyB0aGUgZm9sbG93aW5nIHNlcnZpY2UgY29tbWFuZCBs
-aW5lOg0KDQpvcGVudnBuc2Vydi5leGUgLWluc3RhbmNlIGludGVyYWN0aXZlICIiDQoNCkEgYml0
-IG9kZCBmb3IgdGhlIGNvbW1hbmQgbGluZS4NCg0KQWdhaW4sIEkgY2FuIHJldmVydCB0byB2MS8y
-IGJlaGF2aW91ciBhbmQgbGV0IHRoZSBlbmQtdXNlcnMgc2VsZWN0IHRoZSB3aG9sZSBpbnN0YW5j
-ZSBuYW1lIGF0IHJ1bi10aW1lLg0KDQpCZXN0IHJlZ2FyZHMsDQpTaW1vbg0KDQo=
+--54H9qxDvVGVivijV0jBNwDf5JMQqiXcp2
+Content-Type: multipart/mixed; boundary="WKPsw1Mq2k9Uo6fTE4kWSlDQWpO2QCUCd";
+ protected-headers="v1"
+From: Steffan Karger <steffan.karger@...1435...>
+To: openvpn-devel@lists.sourceforge.net
+Message-ID: <531fd06f-c0f4-9068-a6e6-58e52c8c32e3@...1435...>
+Subject: Re: [Openvpn-devel] [PATCH 4/4 v3] create_temp_file/gen_path: prevent
+ memory leak if gc == NULL
+References: <1505424872-27434-1-git-send-email-steffan.karger@...1435...>
+ <20171101220342.14648-1-steffan@...1856...>
+ <20171101220342.14648-5-steffan@...1856...>
+ <2bacffe7-e42b-9a33-b502-924ef38c628a@...2181...>
+In-Reply-To: <2bacffe7-e42b-9a33-b502-924ef38c628a@...2181...>
+
+--WKPsw1Mq2k9Uo6fTE4kWSlDQWpO2QCUCd
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+
+Hi,
+
+On 09-11-17 04:25, Antonio Quartulli wrote:
+>> @@ -812,6 +816,12 @@ gen_path(const char *directory, const char *filenam=
+e, struct gc_arena *gc)
+>>  #else
+>>      const int CC_PATH_RESERVED =3D CC_SLASH;
+>>  #endif
+>> +
+>> +    if (!gc)
+>> +    {
+>> +        return NULL; /* Would leak memory otherwise */
+>=20
+> As far as I understood the ratio behind this change, we are basically
+> saying that passing gc =3D=3D NULL is a real programming error and not a
+> runtime problem. If so, wouldn't it be better to assert(gc) directly?
+> I am saying so because we should make this failure louder, so that it
+> can be recognized in an early test.
+>=20
+> Or can we have cases when this function is called with NULL because of a
+> temporary failure (my understanding is that this should not be possible)?
+
+I'm a bit in doubt here - if this parameter is NULL, that's a
+programming error.  But we've seen before that programming errors
+sometimes can be triggered by external input.  In this case, this
+function can be called when a client connects.  It *should* never hit
+this case, but if it somehow does, that becomes a DoS vuln.  So I think
+I prefer 'graceful error handling' in paths that are exposed like this,
+unless the error indicates a system integrity error such as an
+out-of-bounds read or write.
+
+-Steffan
+
+
+--WKPsw1Mq2k9Uo6fTE4kWSlDQWpO2QCUCd--
+
+--54H9qxDvVGVivijV0jBNwDf5JMQqiXcp2
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQEcBAEBCAAGBQJaBFxNAAoJEEEwndWOY1w5ELYH/jEWQVXrTwppxHTneysBk/5J
+nCjoESgdlb4CeKGC3w/5L1MznYRd20qYQcQPuyr4+K0Bj3LgyDRWEam0nHJ7MDwO
+4wKG3YFzshYhE/g6jJxu9kjWZ9f8wkgTYl4ymANknUYlzIRn29tq3di0LrxZVbKq
+HZTVGLoB7vy5BjluZF+YEKcEF0oExzK//nnvOJfh6gEz/rhyHmZxfgkoqU9HEjsF
+AcUk01V8gAwsEdOV5yfw+9TtPMancJHDsBIMnW6YwuIpvDTDM4v40VU+6XB8zYzi
+ghl9F43qRrEslXz7NI6o9vMvTI3lnCypuhKNOtvafwC9ehb/yIr5bgDh7D6Z/Bk=
+=YXHn
+-----END PGP SIGNATURE-----
+
+--54H9qxDvVGVivijV0jBNwDf5JMQqiXcp2--
+
