@@ -1,16 +1,16 @@
 References: <1505424872-27434-1-git-send-email-steffan.karger@...1435...>
  <20171101220342.14648-1-steffan@...1856...>
- <20171101220342.14648-3-steffan@...1856...>
+ <20171101220342.14648-4-steffan@...1856...>
 From: Antonio Quartulli <a@...2181...>
-Message-ID: <4757dde2-54d0-0661-9b2c-43f3b9f6f3b2@...2181...>
-Date: Thu, 9 Nov 2017 11:17:21 +0800
+Message-ID: <ebc9ae16-769b-1ea2-65eb-039fbfa9f1b5@...2181...>
+Date: Thu, 9 Nov 2017 11:17:52 +0800
 MIME-Version: 1.0
-In-Reply-To: <20171101220342.14648-3-steffan@...1856...>
+In-Reply-To: <20171101220342.14648-4-steffan@...1856...>
 Content-Type: multipart/signed; micalg=pgp-sha256;
  protocol="application/pgp-signature";
- boundary="Vv00JQowonpS60tXBdrKJbO4O8ox0C3wv"
-Subject: Re: [Openvpn-devel] [PATCH 2/4 v2] pf: reject client if PF plugin
- is configured, but init fails
+ boundary="psNq21LsNsrXdb8qx1KGNmmXeJW1x73rE"
+Subject: Re: [Openvpn-devel] [PATCH 3/4 v2] Don't throw fatal errors from
+ create_temp_file()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,20 +22,20 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---Vv00JQowonpS60tXBdrKJbO4O8ox0C3wv
-Content-Type: multipart/mixed; boundary="wjJuIcQcL8tg9FvaljnJMJnijtP4pHiBI";
+--psNq21LsNsrXdb8qx1KGNmmXeJW1x73rE
+Content-Type: multipart/mixed; boundary="4LB3gEo56nCGCcNN7uAnFuo9QNr7QOn41";
  protected-headers="v1"
 From: Antonio Quartulli <a@...2181...>
 To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
-Message-ID: <4757dde2-54d0-0661-9b2c-43f3b9f6f3b2@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH 2/4 v2] pf: reject client if PF plugin is
- configured, but init fails
+Message-ID: <ebc9ae16-769b-1ea2-65eb-039fbfa9f1b5@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH 3/4 v2] Don't throw fatal errors from
+ create_temp_file()
 References: <1505424872-27434-1-git-send-email-steffan.karger@...1435...>
  <20171101220342.14648-1-steffan@...1856...>
- <20171101220342.14648-3-steffan@...1856...>
-In-Reply-To: <20171101220342.14648-3-steffan@...1856...>
+ <20171101220342.14648-4-steffan@...1856...>
+In-Reply-To: <20171101220342.14648-4-steffan@...1856...>
 
---wjJuIcQcL8tg9FvaljnJMJnijtP4pHiBI
+--4LB3gEo56nCGCcNN7uAnFuo9QNr7QOn41
 Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
@@ -43,42 +43,49 @@ Content-Transfer-Encoding: quoted-printable
 
 
 On 02/11/17 06:03, Steffan Karger wrote:
-> This changes the behavior for pf plugins: instead of just not initializing
-> the firewall rules and happily continuing, this now rejects the client in
-> the case of an (unlikely) failure to initialize the pf.
+> From: Steffan Karger <steffan.karger@...1435...>
 >=20
-> Signed-off-by: Steffan Karger <steffan@...1856...>
+> This function is called in response to connecting clients, and can fail
+> when I/O fails for some (possibly temporary) reason.  In such cases we
+> should not exit the process, but just reject the connecting client.
+>=20
+> This commit changes the function to actually return NULL on errors, and
+> (where needed) changes the callers to check for and handle errors.
+>=20
+> Since the tls-crypt-v2 metadata code also calls create_temp_file() when
+> clients connect, I consider this a prerequisite for tls-crypt-v2.
+>=20
+> Signed-off-by: Steffan Karger <steffan.karger@...1435...>
 
 Acked-by: Antonio Quartulli <a@...2181...>
-
 
 --=20
 Antonio Quartulli
 
 
---wjJuIcQcL8tg9FvaljnJMJnijtP4pHiBI--
+--4LB3gEo56nCGCcNN7uAnFuo9QNr7QOn41--
 
---Vv00JQowonpS60tXBdrKJbO4O8ox0C3wv
+--psNq21LsNsrXdb8qx1KGNmmXeJW1x73rE
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCAAdFiEERdCuyFSHc3WdqS4EB6U8WA7yzXQFAloDyMEACgkQB6U8WA7y
-zXQSDA/9Gctwg/NlxYeENlSKNb3QW6r1f0tihz5P/+q6ubxIt052oEvBENa1VqHL
-o4g6HLr6K67uHhQKeCgixfGl6BO+8n++w9mxBbkyZNAaG9UK2FE63LckQZDrMt4/
-1X29Iy1GKeGyuskaUyG9nGqF7/FJ0IbFzYRYnRPAUWL2k8r7Xo5hdO29Bh2Uligy
-mv+ve7ik/A2EPvjg8kRYl4v7fdyuV68uQBW2AkfKeC2fhrACV4P7K3YLWsaxcloc
-GCajMogy6zNS9VYo+P7IJh2DhGorKtG19B1Ahsj5tITzM2x7fU0KNMqYZQw6sIxM
-T4h9gFLhV6RXFJM2HCWiKuM7yoeWDqfWtDskiGKISfff+B6IT1RHTfIqd6zaHgK/
-PTGJgf7Ke8pi6L4d5xLosS7I9LGPYhmM80EzhEUjXjWMTLDovPDNF8l5bxvSA/Lm
-JOLlRQul8RcO0Qupe9rhd1gSJphFfb9ipgD92S0x5XHNRQssYbY0PWxti6sLvwkr
-pmA242Hq/1vepgzX36Q2zErP20Zl0LEX5FfhUoGIiVdxq3z8ieoqGwN78+n+raww
-OysduocT0tzIAJ8NavQUl2Q9kdI8056dZj6ONOl0/xn4DPJwslqh7EQjX45pCr/C
-ap99Mtom7o6opUFTgRr2mp6W7Gyb/xdMY2mP4LKhTdhR6aHj6fk=
-=k0Sd
+iQIzBAEBCAAdFiEERdCuyFSHc3WdqS4EB6U8WA7yzXQFAloDyOAACgkQB6U8WA7y
+zXRmoQ//YqeE910S9xq5pS7boW4vJ4RYNjK0KqNvLsjxMjFjd/bhIGZxzV8s6imR
++vMBHGhemcNnMCaZ7RGI3uS1g47bF9jmrvKmmAguiSciqf68PFU5coJGGmUScaHc
+6ijNA6sO6F3x/H0C4n7O0qENATBMkw5ACv8+vSRXD6s4EWXxdFkM1GjMVVsVdQ/L
+yKEoaY2pkRzNG7+qhOqT+Dw1XmKis0kfk1UFlHQdSpO9nEVoK1ehW66IlXQeUD3u
+DBT7HZlnC35kKr0eH0zrsODAIrpYsOPDCR6WH5XfMPIlNviU5I7jrOzOU8TVqCKR
+ksJK898xRR2cApaNqXPdLVf6x69aDmTYSALrZg+jFr9EFMUs4ijdGTpdJfdOVecO
+sqqykpERan21tOKvdtk5U6AUqPVQe7n2dYYzIqW8ugme6N0QwtyvvWW6niN8j2XU
+1TBPP1ipmce0Zhdn6F01IhyUVcB52nbXJhTTrCxjS5AnMer+Q5/j3dR+vcvttHYx
+9E4CywDyZyUSXFoZ4SqyQ5uSestyQkVjyupfFcxWxCrENy6ThCSxryWDa6sz3FuT
+yfw/upH6wrIHCCU50qgNHlD+/DLMurNEcCFW38TCkQ69MTcm02cL3HNNqMNQPhLa
+Qgw09q4sGfPCLrpc/f4D4RqxGupPVnsy4DG66Dotk9x7yEsZ7O8=
+=r+sI
 -----END PGP SIGNATURE-----
 
---Vv00JQowonpS60tXBdrKJbO4O8ox0C3wv--
+--psNq21LsNsrXdb8qx1KGNmmXeJW1x73rE--
 
