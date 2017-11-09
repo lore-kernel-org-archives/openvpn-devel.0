@@ -1,16 +1,16 @@
-References: <1505424872-27434-1-git-send-email-steffan.karger@...1435...>
- <20171101220342.14648-1-steffan@...1856...>
- <20171101220342.14648-5-steffan@...1856...>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <2bacffe7-e42b-9a33-b502-924ef38c628a@...2181...>
-Date: Thu, 9 Nov 2017 11:25:13 +0800
+From: Simon Rozman <simon@...2293...>
+Date: Thu, 9 Nov 2017 08:33:51 +0000
+Message-ID: <99D61A626FDA8A4B90A270669121BE1085884910@...2294...>
+References: <CAKuzo_iOXui4WDuRqf6-NybpfeWNjKR3GLn7dsw98FoNoSHNMw@...278...>
+ <20171105223714.7852-1-simon@...2293...>
+ <CAKuzo_gsuMMhThtx4UvWoHP9ipT4x_KEFewBxh00z=h4xkc4ow@...278...>
+ <99D61A626FDA8A4B90A270669121BE1085882F90@...2294...>
+ <CAKuzo_jDTZ41vrpZYPtzkW51=2a9X90qtwYnkGGXx85QVJceZg@...278...>
+In-Reply-To: <CAKuzo_jDTZ41vrpZYPtzkW51=2a9X90qtwYnkGGXx85QVJceZg@...278...>
+Content-Language: en-US
 MIME-Version: 1.0
-In-Reply-To: <20171101220342.14648-5-steffan@...1856...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="ThhKBdGUNfm733gL4rnal0jSFHI2mTB1U"
-Subject: Re: [Openvpn-devel] [PATCH 4/4 v3] create_temp_file/gen_path:
- prevent memory leak if gc == NULL
+Subject: Re: [Openvpn-devel] [PATCH v2] openvpnserv: Add support for
+ multi-instances
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,164 +19,67 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---ThhKBdGUNfm733gL4rnal0jSFHI2mTB1U
-Content-Type: multipart/mixed; boundary="bvUmbHxQVSQxJ0qxpXpJI7p9gktP2nJ32";
- protected-headers="v1"
-From: Antonio Quartulli <a@...2181...>
-To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
-Message-ID: <2bacffe7-e42b-9a33-b502-924ef38c628a@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH 4/4 v3] create_temp_file/gen_path: prevent
- memory leak if gc == NULL
-References: <1505424872-27434-1-git-send-email-steffan.karger@...1435...>
- <20171101220342.14648-1-steffan@...1856...>
- <20171101220342.14648-5-steffan@...1856...>
-In-Reply-To: <20171101220342.14648-5-steffan@...1856...>
-
---bvUmbHxQVSQxJ0qxpXpJI7p9gktP2nJ32
-Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: base64
+To: Selva <selva.nair@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hi Steffan,
-
-patch looks good, but I have just one comment below
-
-On 02/11/17 06:03, Steffan Karger wrote:
-> If gc =3D=3D NULL, the data allocated in the alloc_gc_buf() call in
-> create_temp_file or the string_mod_const call in gen_path would never
-> be free'd.
->=20
-> These functions are currently never called that way, but let's prevent
-> future problems.
->=20
-> While touching create_temp_file, also remove the counter variable, which =
-is
-> never read, simplify the do-while to a while loop, and truncate the prefix
-> (if needed) to preserve the random and extension of the created filename.
->=20
-> Signed-off-by: Steffan Karger <steffan@...1856...>
-> ---
-> v2:
->  - change create_temp_file to avoid using a struct buffer (simpler)
->  - add gc !=3D NULL check for gen_path (avoid similar memleak pitfall)
-> v3:
->  - Check the return value of openvpn_snprintf()
->=20
->  src/openvpn/misc.c | 26 ++++++++++++++++++--------
->  1 file changed, 18 insertions(+), 8 deletions(-)
->=20
-> diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
-> index 25f38003..67011169 100644
-> --- a/src/openvpn/misc.c
-> +++ b/src/openvpn/misc.c
-> @@ -723,21 +723,26 @@ test_file(const char *filename)
->  const char *
->  create_temp_file(const char *directory, const char *prefix, struct gc_ar=
-ena *gc)
->  {
-> -    static unsigned int counter;
-> -    struct buffer fname =3D alloc_buf_gc(256, gc);
->      int fd;
->      const char *retfname =3D NULL;
->      unsigned int attempts =3D 0;
-> +    char fname[256] =3D { 0 };
-> +    const char *fname_fmt =3D PACKAGE "_%.*s_%08lx%08lx.tmp";
-> +    const int max_prefix_len =3D sizeof(fname) - (sizeof(PACKAGE) + 7 + =
-(2 * 8));
->=20=20
-> -    do
-> +    while (attempts < 6)
->      {
->          ++attempts;
-> -        ++counter;
->=20=20
-> -        buf_printf(&fname, PACKAGE "_%s_%08lx%08lx.tmp", prefix,
-> -                   (unsigned long) get_random(), (unsigned long) get_ran=
-dom());
-> +        if (!openvpn_snprintf(fname, sizeof(fname), fname_fmt, max_prefi=
-x_len,
-> +                              prefix, (unsigned long) get_random(),
-> +                              (unsigned long) get_random()))
-> +        {
-> +            msg(M_WARN, "ERROR: temporary filename too long");
-> +            return NULL;
-> +        }
->=20=20
-> -        retfname =3D gen_path(directory, BSTR(&fname), gc);
-> +        retfname =3D gen_path(directory, fname, gc);
->          if (!retfname)
->          {
->              msg(M_WARN, "Failed to create temporary filename and path");
-> @@ -760,7 +765,6 @@ create_temp_file(const char *directory, const char *p=
-refix, struct gc_arena *gc)
->              return NULL;
->          }
->      }
-> -    while (attempts < 6);
->=20=20
->      msg(M_WARN, "Failed to create temporary file after %i attempts", att=
-empts);
->      return NULL;
-> @@ -812,6 +816,12 @@ gen_path(const char *directory, const char *filename=
-, struct gc_arena *gc)
->  #else
->      const int CC_PATH_RESERVED =3D CC_SLASH;
->  #endif
-> +
-> +    if (!gc)
-> +    {
-> +        return NULL; /* Would leak memory otherwise */
-
-As far as I understood the ratio behind this change, we are basically
-saying that passing gc =3D=3D NULL is a real programming error and not a
-runtime problem. If so, wouldn't it be better to assert(gc) directly?
-I am saying so because we should make this failure louder, so that it
-can be recognized in an early test.
-
-Or can we have cases when this function is called with NULL because of a
-temporary failure (my understanding is that this should not be possible)?
-
-
-Cheers,
-
-> +    }
-> +
->      const char *safe_filename =3D string_mod_const(filename, CC_PRINT, C=
-C_PATH_RESERVED, '_', gc);
->=20=20
->      if (safe_filename
->=20
-
---=20
-Antonio Quartulli
-
-
---bvUmbHxQVSQxJ0qxpXpJI7p9gktP2nJ32--
-
---ThhKBdGUNfm733gL4rnal0jSFHI2mTB1U
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEERdCuyFSHc3WdqS4EB6U8WA7yzXQFAloDypkACgkQB6U8WA7y
-zXTNhxAApwXrejz6IUwe/TfS8m14yJppNpSLsDsM9bQfkabLElqQwCTrktzXEJZE
-1g5D6+4YU/4s2hwI5mf0JgAJ5fd8iJnvivxxW6W1B9VmDNMnpMWYDnv6ui6jXswy
-/IVbNHTq+VkpxnUnVX5ohIMoFICp/cQE0F2W2C1oBVWXOjBbS7nmo8DxwR3gWAfz
-NLwL78oa1iLxahzNjtWwray5LAEPl6LhJzsZzOHlo3SVTUH6+wht4i8iAy0iG/p/
-rQHwi30dv1z7VzqINgqiW/REgpvjdX0iBsadQExQE7i1z7XuLtwsaBY55c7c3QO/
-VH2vp6OUjAYDslwC6jve0ZyTVjtQxmSep5mpvmbCvYF+Jw/2jZaG1rRn0/MAY+UH
-YmLtXY0tIgmp3oCC0yOkT3ZPueRJF8qqa8iFsyp9mKJYuybYifoCH5tq4OigJS2j
-v7fcKpI9JDog1p7OROiRnDibrmCx6WvHpCk3poG7lWgR0NuEXIbSBjJ1OMRtXoQz
-IlhfTiWw9sIYbuXpPOXsYs2+ciI/M1Mke+f9fXJ8/UUvz3VlcHDUy9pbWh0QM9Kh
-h4zD2+XbhjREXB5RSnsexKOjRujSUH/qPxuYqdwbzRserSedPbfoGM/PWTrZOYRO
-8NgnQIzy7gAHGKFRQbTZYPV/UIxrFEddgq/U6wHQ2Udp6u2LU3o=
-=sN4T
------END PGP SIGNATURE-----
-
---ThhKBdGUNfm733gL4rnal0jSFHI2mTB1U--
-
+SGksDQoNCj4gQnV0IHRoZW4gbWFraW5nIHRoZSB2YXJpYWJsZSBzdGF0aWMganVzdCB0byBrZWVw
+IGEgdmFsaWQgcG9pbnRlciBiZXlvbmQgdGhlDQo+IGN1cnJlbnQgYmxvY2sgbG9jYWwgbG9va3Mg
+bGlrZSBhIGtsdWRnZS4gRm9yIG1lIHNlZWluZyBzdGF0aWMgYXBwbGllZCB0byBhDQo+IHZhcmlh
+YmxlIHNjb3BlZCB0byBhIGJsb2NrIGlzIGp1c3QgY29uZnVzaW5nIGFuZCB1bnVzdWFsIHN0eWxl
+LiBUaGluayBvZiB0aGlzOiBpZg0KPiB5b3UgcmVtb3ZlIHRoYXQgc3RhdGljIHRoZSBjb2RlIG1h
+eSBzdGlsbCBidWlsZCBhbmQgZXZlbiB3b3JrIG9uIHNvbWUNCj4gY29tcGlsZXJzIGRlcGVuZGlu
+ZyBvbiBvcHRpbWl6YXRpb24gbGV2ZWwgZXRjLiBhbmQgbXlzdGVyaW91c2x5IGZhaWwgb24gc29t
+ZQ0KPiBvY2Nhc2lvbnMuIEZyb20gdGhhdCBvbmUgY291bGQgZWl0aGVyIGNvbmNsdWRlIGEgc3Rh
+dGljIHF1YWxpZmllciBpcyByZXF1aXJlZA0KPiBoZXIgb3IgdGhlIHZhcmlhYmxlIGlzIHdyb25n
+bHkgc2NvcGVkLiBJIHRoaW5rIHRoZSBsYXR0ZXIgY29uY2x1c2lvbiBpcyB0aGUgJ3JpZ2h0Jw0K
+PiBvbmUgYW5kIHN0YXRpYyBpcyBhIG1pc3VzZS4NCj4gDQo+IEFzIGZvciB0aGUgY29tYmluYXRp
+b24gJ3N0YXRpYyBjb25zdCAuLi4nLCBpdCBoYXMgYSBwbGFjZSBhbmQgdGhhdCBpcyBmb3IgY29u
+c3RhbnRzDQo+IGRlZmluZWQgb3V0c2lkZSBmdW5jdGlvbnMgdG8gbGltaXQgdGhlIHNjb3BlIG9m
+IGFuIG90aGVyd2lzZSDCoGdsb2JhbCBjb25zdCB0bw0KPiB0aGF0IG9mIHRoZSBjb21waWxhdGlv
+biB1bml0Lg0KPiANCj4gSXQgbWF5IGJlIGp1c3QgbWUuDQoNCk5vdCBuZWNlc3NhcmlseS4gSXQg
+bWF5IGJlIGp1c3QgKm1lKi4gOikNCg0KQW55d2F5LCB5b3UgZ290IG1lIGNvbnZpbmNlZCBhbmQg
+SSBzaGFsbCBtb3ZlIHRob3NlIHN0cnVjdHMgZnJvbSBkYXRhIHNlZ21lbnQgdG8gc3RhY2sgaW4g
+dGhlIG5leHQgdmVyc2lvbiBvZiB0aGUgcGF0Y2guDQoNCj4gSSBsaWtlIGl0OiB1c2luZyAiT3Bl
+blZQTiIgYXMgYSBraW5kIG9mIG5hbWVzcGFjZSBhbHNvIGF2b2lkcyBuYW1lIGNvbGxpc2lvbg0K
+PiB3aXRoIGFueSBvdGhlciAnZm9vYmFyJyBpbnN0YWxsZWQgaW4gSEtMTVxTb2Z0d2FyZVxmb29i
+YXINCg0KRXhhY3RseSwgaW50cm9kdWNpbmcgaW5zdGFuY2VzIGlzIGFsbCBhYm91dCBhdm9pZGlu
+ZyBuYW1lc3BhY2UgY29sbGlzaW9ucy4NCg0KPiBOb3Qgc3VyZSBJIGZvbGxvdywgYnV0IHdpbGwg
+d2FpdCBmb3IgdGhlIHBhdGNoLiBJIHN1cHBvc2UgbmFtaW5nIGFkZGl0aW9uYWwNCj4gaW5zdGFu
+Y2VzIGFzLCBzYXksICdmb28nIMKgdXNpbmcgdGhlIG9mZmljaWFsIHBhY2thZ2UgYW5kIGhhdmUg
+c2VydmljZSBwaXBlLCBleGl0DQo+IGV2ZW50IGV0YyBuYW1lZCBhZnRlciBpdCBhbmQgcmVnaXN0
+cnkga2V5cyB0YWtlbiBmcm9tIEhLTE1cU29mdHdhcmVcZm9vDQo+IHdpbGwgc3RpbGwgd29yay4N
+Cg0KSW4gdGhlIHYxIGFuZCB2MiBwYXRjaGVzLCB5ZXMuIEJ1dCBpbiB2MyBwYXRjaCwgdGhlIFBB
+Q0tBR0UvUEFDS0FHRV9OQU1FIGlzIGFsd2F5cyB1c2VkIGFzIHRoZSBwcmVmaXgvbmFtZXNwYWNl
+LiBUaGlzIHdheSB3ZSBpbXBvc2UgdGhlICJPcGVuVlBOIiBicmFuZGluZyB0byBhbGwgaW5zdGFu
+Y2VzIGJ5IGNvbXBpbGUtdGltZSBkZWZhdWx0LiBJbiB2MywgcGVvcGxlIGNhbid0IHRha2UgdGhl
+IGludGVyYWN0aXZlIHNlcnZpY2UgYW5kIG1ha2UgaXQgZGlzZ3Vpc2UgYXMgdGhlICJNaWNyb3Nv
+ZnRcT2ZmaWNlXEF1dG9tYXRpYyBVcGRhdGUiLg0KDQpUaGUgdjMgbWFkZSBpbnN0YW5jaW5nIGxl
+c3MgZmxleGlibGUgb24gcHVycG9zZS4NCg0KSWYgeW91IGRpc2FncmVlLCBJIGNhbiByZXZlcnQg
+dG8gdjEvMiBiZWhhdmlvdXIuDQoNCj4gSW4gZmFjdCBJIGxpa2UgdGhlIGN1cnJlbnQgcGF0Y2gg
+aW4gdGhhdCBpdCBhbGxvd3MgaW5zdGFsbGluZyBldmVuIHRoZSBvZmZpY2lhbA0KPiBpbnN0YW5j
+ZSBhcyBhIG5hbWVkIG9uZSB3aXRoIG5hbWUgPSBPcGVuVlBOIGFuZCB0aHVzIGRlY291cGxlcw0K
+PiBhdXRvbWF0aWMgYW5kIGludGVyYWN0aXZlIHNlcnZpY2VzLiBUaGF0IG1ha2VzIGl0IGVhc3kg
+dG8gYXZvaWQgaW5zdGFsbGluZyB0aGUNCj4gbGVnYWN5IHNlcnZpY2UsIHdoaWNoIEkgdGhpbmsg
+bm8gb25lIHVzZXMgYW55bW9yZS4NCg0KT3VjaC4gKldlKiB3b3VsZCB1c2UgdGhlIGF1dG9tYXRp
+YyBzZXJ2aWNlIGlmIGl0IHdhcyBjb2RlZCBzbGlnaHRseSBkaWZmZXJlbnQuIEkgZGlkbid0IGtu
+b3cgdGhlIGxlZ2FjeSBhdXRvbWF0aWMgc2VydmljZSBpcyBvbiB0aGUgb2Jzb2xldGUgbGlzdCB5
+ZXQuDQoNClBlcmhhcHMsIGEgdHJ1ZSByZXBsYWNlbWVudCBmb3IgdGhlIGF1dG9tYXRpYyBzZXJ2
+aWNlIGNvdWxkIGJlIHRvIG1ha2UgdGhlIG9wZW52cG4uZXhlIGl0c2VsZiB0byBiZSBhYmxlIHRv
+IGluc3RhbGwgYW5kIHJ1biBhcyBhIFdpbmRvd3Mgc2VydmljZSAoLS1kYWVtb24gZm9yIFdpbmRv
+d3MpOg0KLSBUaGUgU0NNIHdvdWxkIHJlc3RhcnQgaXQsIHNob3VsZCBvcGVudnBuLmV4ZSB0ZXJt
+aW5hdGUgb3IgY3Jhc2guDQotIFNlcGFyYXRlIG9wZW52cG4uZXhlIHNlcnZpY2UgZm9yIGVhY2gg
+b3ZwbiBjb25maWd1cmF0aW9uLCBhbGxvd2luZyBhZG1pbnMgdG8gbWFuYWdlIHRoZW0gaW5kaXZp
+ZHVhbGx5Lg0KLSBMaW51eCBsaWtlIGJlaGF2aW91ciwgd2hlcmUgeW91IHJ1biBlYWNoIHR1bm5l
+bCBhcyBhIHNlcGFyYXRlIFN5c3RlbWQgZGFlbW9uLg0KDQooVGhhdCBpcyBleGFjdGx5IHdoYXQg
+SSdkIG5lZWQgZm9yIG91ciBvZmZpY2UuIFJpZ2h0IG5vdyB3ZSBhcmUgd3JhcHBpbmcgb3BlbnZw
+bi5leGUgaW5zaWRlIGEgTlNTTSBzZXJ2aWNlIGhlbHBlci4gV291bGQgYmUgbmljZSB0byBnZXQg
+dGhhdCBmZWF0dXJlIG91dC1vZi10aGUtYm94LikNCg0KQmFjayB0byB0aGUgaW50ZXJhY3RpdmUg
+c2VydmljZS4uLiBBY2NvcmRpbmcgdG8gdGhlIGxhdGVzdCBbUEFUQ0goIHYzIG1pc3NpbmcpXSwg
+b25lIHdvdWxkIG5lZWQgdG8gc3RhcnQgdGhlIGRlZmF1bHQgaW5zdGFuY2Ugb2YgdGhlIGludGVy
+YWN0aXZlIHNlcnZpY2Ugb25seSB1c2luZyB0aGUgZm9sbG93aW5nIHNlcnZpY2UgY29tbWFuZCBs
+aW5lOg0KDQpvcGVudnBuc2Vydi5leGUgLWluc3RhbmNlIGludGVyYWN0aXZlICIiDQoNCkEgYml0
+IG9kZCBmb3IgdGhlIGNvbW1hbmQgbGluZS4NCg0KQWdhaW4sIEkgY2FuIHJldmVydCB0byB2MS8y
+IGJlaGF2aW91ciBhbmQgbGV0IHRoZSBlbmQtdXNlcnMgc2VsZWN0IHRoZSB3aG9sZSBpbnN0YW5j
+ZSBuYW1lIGF0IHJ1bi10aW1lLg0KDQpCZXN0IHJlZ2FyZHMsDQpTaW1vbg0KDQo=
