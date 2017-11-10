@@ -1,14 +1,8 @@
-References: <1b275182-8551-6100-e3e9-80c966c2b200@...277...>
- <c2fbb372-cbfe-5231-66fa-33403a1566df@...277...>
- <20170930172859.GY70062@...1296...>
- <CAKuzo_h_HMpRVVoSXft3DPDoDrjhnkWepLiThLbDC43HJtt-Sg@...278...>
-From: Steffan Karger <steffan@...1856...>
-Message-ID: <a723cbfe-2070-10de-d936-eab48423323c@...1856...>
-Date: Fri, 10 Nov 2017 17:23:24 +0100
-MIME-Version: 1.0
-In-Reply-To: <CAKuzo_h_HMpRVVoSXft3DPDoDrjhnkWepLiThLbDC43HJtt-Sg@...278...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] Too much output at --verb 0 (bug?)
+From: =?UTF-8?q?Fran=C3=A7ois=20Kooman?= <fkooman@...2318...>
+Date: Fri, 10 Nov 2017 17:39:46 +0100
+Message-Id: <20171110163946.7656-1-fkooman@...2318...>
+Subject: [Openvpn-devel] [PATCH] Implement "status 4" (JSON) for management
+ interface
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,87 +15,123 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+Parsing CSV can be cumbersome in depending software, so instead
+offer JSON as well using "status 4".
 
-On 01-10-17 05:25, Selva wrote:
-> On Sat, Sep 30, 2017 at 1:28 PM, Gert Doering <gert@...1296...
-> <mailto:gert@...1296...>> wrote:
->     > > do_ifconfig, tt->did_ifconfig_ipv6_setup=0
-> 
->     This one comes as a bit of surprise - it's logged with M_DEBUG, and I
->     assumed that this would be something like "verb 3 or 4, or even higher".
-> 
->     Selva, Steffan, or someone else who understands our message levels -
->     what's M_DEBUG for, and what *should* I have used here?
-> 
-> 
-> Hmm.. The log levels code is out of this world and I've only a vague
-> idea.. I for sure don't know the "officially sanctioned" way of using it
-> and have more questions than answers.
-> 
-> M_DEBUG, M_WARN, M_FATAL etc by themselves do not define any printing
-> level -- in other words these will print at all verb levels unless
-> combined with something that sets the print level. M_INFO is the only
-> M_x flag that is different -- it  has a "verb level" of 1 or more
-> encoded in it.
-> 
-> I suppose the original design idea was that we are only supposed to use
-> M_INFO or one of the LOGLEV's defined in errlevel.h -- the ones starting
-> with D_xxx. If so I  don't see one appropriate for printing ifconfig
-> errors/info/debug. You ma have to create one?
+The "status 4" command uses the same keys/values as "status 2"
+and "status 3", just formatted as JSON.
+---
+ src/openvpn/multi.c | 96 +++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 96 insertions(+)
 
-My thoughts exactly.  Though everyone (including James) seems to use
-M_WARN directly for various types of warnings.
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index 82a0b9d9..3e82431b 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -1014,6 +1014,102 @@ multi_print_status(struct multi_context *m, struct status_output *so, const int
+ 
+             status_printf(so, "END");
+         }
++        else if (version == 4)
++        {
++            /*
++             * Status file version 4 (JSON)
++             */
++            status_printf(so, "{");
++            status_printf(so, "\"TITLE\": \"%s\",", title_string);
++            status_printf(so, "\"TIME\": \"%s\",", time_string(now, 0, false, &gc_top));
++            /* UNIX_TIME added here instead of making it part of TIME as well
++               as in status 2/3 */
++            status_printf(so, "\"UNIX_TIME\": %u,", (unsigned int)now);
++            status_printf(so, "\"CLIENT_LIST\": [");
++
++            /* JSON needs a "," between items, but not at the last position,
++               because I was unable to figure out how to determine if we
++               iterate over the last item, we inverse it by prepending
++               additional items with a comma */
++            int is_first = 1;
++            hash_iterator_init(m->hash, &hi);
++            while ((he = hash_iterator_next(&hi)))
++            {
++                struct gc_arena gc = gc_new();
++                const struct multi_instance *mi = (struct multi_instance *) he->value;
++
++                if (!mi->halt)
++                {
++                    if(0 == is_first) {
++                        status_printf(so, ",");
++                    } else {
++                        is_first = 0;
++                    }
++                    status_printf(so, "{");
++                    status_printf(so, "\"Common Name\": \"%s\",", tls_common_name(mi->context.c2.tls_multi, false));
++                    status_printf(so, "\"Real Address\": \"%s\",", mroute_addr_print(&mi->real, &gc));
++                    status_printf(so, "\"Virtual Address\": \"%s\",", print_in_addr_t(mi->reporting_addr, IA_EMPTY_IF_UNDEF, &gc));
++                    status_printf(so, "\"Virtual IPv6 Address\": \"%s\",", print_in6_addr(mi->reporting_addr_ipv6, IA_EMPTY_IF_UNDEF, &gc));
++                    status_printf(so, "\"Bytes Received\": " counter_format ",", mi->context.c2.link_read_bytes);
++                    status_printf(so, "\"Bytes Sent\": " counter_format ",", mi->context.c2.link_write_bytes);
++                    status_printf(so, "\"Connected Since\": \"%s\",", time_string(mi->created, 0, false, &gc));
++                    status_printf(so, "\"Connected Since (time_t)\": %u,", (unsigned int)mi->created);
++                    status_printf(so, "\"Username\": \"%s\",", tls_username(mi->context.c2.tls_multi, false));
++#ifdef MANAGEMENT_DEF_AUTH
++                    status_printf(so, "\"Client ID\": %lu,", mi->context.c2.mda_context.cid);
++#endif
++                    status_printf(so, "\"Peer ID\": %" PRIu32, mi->context.c2.tls_multi ? mi->context.c2.tls_multi->peer_id : UINT32_MAX);
++                    status_printf(so, "}");
++                }
++                gc_free(&gc);
++            }
++            hash_iterator_free(&hi);
++
++            status_printf(so, "],");
++            status_printf(so, "\"ROUTING_TABLE\": [");
++
++            is_first = 1;
++            hash_iterator_init(m->vhash, &hi);
++            while ((he = hash_iterator_next(&hi)))
++            {
++                struct gc_arena gc = gc_new();
++                const struct multi_route *route = (struct multi_route *) he->value;
++
++                if (multi_route_defined(m, route))
++                {
++                    const struct multi_instance *mi = route->instance;
++                    const struct mroute_addr *ma = &route->addr;
++                    char flags[2] = {0, 0};
++
++                    if (route->flags & MULTI_ROUTE_CACHE)
++                    {
++                        flags[0] = 'C';
++                    }
++                        if(0 == is_first) {
++                            status_printf(so, ",");
++                        } else {
++                            is_first = 0;
++                        }
++                        status_printf(so, "{\"Virtual Address\": \"%s%s\",", mroute_addr_print(ma, &gc), flags);
++                        status_printf(so, "\"Common Name\": \"%s\",", tls_common_name(mi->context.c2.tls_multi, false));
++                        status_printf(so, "\"Real Address\": \"%s\",", mroute_addr_print(&mi->real, &gc));
++                        status_printf(so, "\"Last Ref\": \"%s\",", time_string(route->last_reference, 0, false, &gc));
++                        status_printf(so, "\"Last Ref (time_t)\": %u}", (unsigned int)route->last_reference);
++                }
++                gc_free(&gc);
++            }
++            hash_iterator_free(&hi);
++            status_printf(so, "]");
++
++            if (m->mbuf)
++            {
++                status_printf(so, ",\"GLOBAL_STATS\": {");
++                status_printf(so, "\"Max bcast/mcast queue length\": %d", mbuf_maximum_queued(m->mbuf));
++                status_printf(so, "}");
++            }
++            status_printf(so, "}");
++            status_printf(so, "END");
++        }
+         else
+         {
+             status_printf(so, "ERROR: bad status format version number");
+-- 
+2.13.6
 
-> One could generate a log level on the fly using, say,
->  LOGLEV(4,0,M_DEBUG) meaning print at verb 4+, don't mute, tag as debug.
-> But there is not a single instance of such use anywhere in the code, so
-> I suppose that would be considered a hack?
-
-Yeah, I'd consider that a hack.  My approach would be to find a suitable
-D_* flag or create one of no suitable flag is available.
-
->     > > WARNING: this configuration may cache passwords in memory -- use the
->     > > auth-nocache option to prevent this
->     > >
->     > > == Reconnect client:
->     > > WARNING: 'link-mtu' is used inconsistently, local='link-mtu 1550',
->     > > remote='link-mtu 1602'
->     > > WARNING: 'cipher' is used inconsistently, local='cipher
->     AES-256-GCM',
->     > > remote='cipher AES-256-CBC'
->     > > WARNING: 'auth' is used inconsistently, local='auth [null-digest]',
->     > > remote='auth SHA512'
->     [..]
->     > > None of these are Fatal errors ..
-> 
->     Indeed, WARNINGs could also be re-evaluated.  Either we document that
->     "verb 0" will print errors *and* warnings, or we change the printout
->     to not print warnings.
-> 
-> 
-> Aha. so we're not supposed to print warnings or non-fatal errors at verb
-> 0 -- had no idea.
-> 
-> I would wager that documentation is wrong as we have loads of messages
-> printed with just M_WARN or M_NONFATAL. All of those will print at verb
-> 0. Unless are we not supposed print anything with pure M_x flags alone
-> -- M_INFO being the only exception? Is every M_WARN to be used as
-> M_WARN|M_INFO so that it will print only at verb 1+? That would be a kludge.
-> 
-> Then there is a M_VERB0 = 0 which is commented as "messages displayed
-> even at verb0 -- (fatal errors only)" but its used just once in the code
-> -- that too used by itself which does nothing but just print the message
-> at all verb levels.  And make log consumers (like the GUI) wrongly
-> assume that its a benign info message.
-> 
-> As all M_INFO messages will print at verb 1, we do not have much room to
-> define verb levels for WARN, ERROR, FATAL, do we.. This is unlike any
-> logging system I've seen and could be totally misreading the designer's
-> intent.
-
-Nothing to add but that I agree.  Making our logging consistent is not
-on the top of my list, but I would certainly support patches that do :)
-
--Steffan
 
