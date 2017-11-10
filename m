@@ -1,9 +1,15 @@
-Date: Fri, 10 Nov 2017 15:37:56 +0100 (CET)
-Message-Id: <201711101437.vAAEbuVY085846@...2054...>
+Date: Fri, 10 Nov 2017 15:45:26 +0100
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20171110110858.11482-1-steffan@...1856...>
+Message-ID: <20171110144526.GS958@...1296...>
 References: <20171110110858.11482-1-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Simplify and inline clear_buf()
+ <201711101437.vAAEbuVY085846@...2054...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="CvOg3jo0sXL5jEc+"
+Content-Disposition: inline
+In-Reply-To: <201711101437.vAAEbuVY085846@...2054...>
+Subject: Re: [Openvpn-devel] [PATCH applied] Re: Simplify and inline
+ clear_buf()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,36 +18,65 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
 To: Steffan Karger <steffan@...1856...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-ACK.  Makes sense, simplifies things slightly, and passes all tests :)
+--CvOg3jo0sXL5jEc+
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
-Your patch has been applied to the master branch.
+HI,
 
-(I'm experimenting a bit with the formatting and the patchwork headers,
-so do not wonder why the remainder looks a bit atypical)
+On Fri, Nov 10, 2017 at 03:37:56PM +0100, Gert Doering wrote:
+> ACK.  Makes sense, simplifies things slightly, and passes all tests :)
+>=20
+> Your patch has been applied to the master branch.
+>=20
+> (I'm experimenting a bit with the formatting and the patchwork headers,
+> so do not wonder why the remainder looks a bit atypical)
 
-commit 3280c4c2c7064c0c6719621703f46596212396fd
-Author: Steffan Karger
-Date:   Fri Nov 10 12:08:58 2017 +0100
+So, just for the record:
 
-     Simplify and inline clear_buf()
+> Acked-by: Gert Doering <gert@...1296...>
 
-     Signed-off-by: Steffan Karger <steffan@...1856...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20171110110858.11482-1-steffan@...1856...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg15796.html
-     Signed-off-by: Gert Doering <gert@...1296...>
+*this* gets picked up nicely, if (and only if!) it's on the start of=20
+the line.
 
+(So, please send your ACKs in this format if you want patchwork to=20
+see them :-) )
 
-Acked-by: Gert Doering <gert@...1296...>
-X-Patchwork-State: Accepted
---
-kind regards,
+> X-Patchwork-State: Accepted
 
-Gert Doering
+*this* is totally ignored, no matter whether it's in the body or header.
 
+More investigation needed...
+
+gert
+
+--=20
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
+
+--CvOg3jo0sXL5jEc+
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQGcBAEBAgAGBQJaBbuFAAoJEB2Cnv7KVigSPxkL/iUaGk9sdHInXDaw2ZGphrH1
+9pNOpypRtGPvWkhylBx15kgwGZBZhS0rHrn9YJyTLzbq6dDUSQu9Z+e86tF0wzJv
+wbo9csR7e1N0rM18WEWWKINZODnptj0AzbugTBp4+ZTn+2hCckErf+AlmzQBcDy8
+BlNCN1xPqs2r3DdwDCbhLd8OIjOt+XZTb9gP+B1u3khfVNNjOiUQmvmyqaGLClC6
++tirpL3OC5x6vXhHJEsBhDQcqs8u0HIIesu2q97Uuh11dSDOStRA0i5C1K+WYts0
+UtqpsQXx6SJoyWi1pGJeTBrwFL2QlL9GDWeza9ERzZIpOa7Qlt/3KFDxJRJCAnF6
+l4XmsKRr8mklstlNUsRMWGMKO1ed0jdox2d9U8821/yYphNtp42o3wTtDY+ab1N+
+gRvrmaSUMCqlGOdy4ZaI4ELAzicmIG+sZakH8ZIK0hNfTYiekOUGQOpoDiOj+tia
+mPXy+I/DAfno1l47CNFY6qdoYEACA0NkXl6MBgdsAQ==
+=gvd0
+-----END PGP SIGNATURE-----
+
+--CvOg3jo0sXL5jEc+--
 
