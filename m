@@ -1,20 +1,12 @@
-Date: Thu, 9 Nov 2017 23:03:53 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20171109220353.GN958@...1296...>
-References: <CAKuzo_iOXui4WDuRqf6-NybpfeWNjKR3GLn7dsw98FoNoSHNMw@...278...>
- <20171105223714.7852-1-simon@...2293...>
- <CAKuzo_gsuMMhThtx4UvWoHP9ipT4x_KEFewBxh00z=h4xkc4ow@...278...>
- <99D61A626FDA8A4B90A270669121BE1085882F90@...2294...>
- <CAKuzo_jDTZ41vrpZYPtzkW51=2a9X90qtwYnkGGXx85QVJceZg@...278...>
- <99D61A626FDA8A4B90A270669121BE1085884910@...2294...>
- <CAKuzo_g+8=-S_i1tDjLtHQ36ext9o6zCGszwBCZmwb4AS5as+Q@...278...>
+References: <cc3981e2-742c-37b1-e8fc-fa32f64b7d11@...1147...>
+From: Steffan Karger <steffan@...1856...>
+Message-ID: <521e4a89-ee97-4ca5-d6db-ca5bcc412b2b@...1856...>
+Date: Fri, 10 Nov 2017 09:52:36 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="dYbRCasfhpyZLUd7"
-Content-Disposition: inline
-In-Reply-To: <CAKuzo_g+8=-S_i1tDjLtHQ36ext9o6zCGszwBCZmwb4AS5as+Q@...278...>
-Subject: Re: [Openvpn-devel] [PATCH v2] openvpnserv: Add support for
- multi-instances
+In-Reply-To: <cc3981e2-742c-37b1-e8fc-fa32f64b7d11@...1147...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] Possible bug: AEAD Decrypt error: cipher final
+ failed
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -23,55 +15,44 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Selva <selva.nair@...277...>
-Cc: Simon Rozman <simon@...2293...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
-
---dYbRCasfhpyZLUd7
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+To: openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-(haven't read the rest of the thread yet, but this one caught my eye)
+On 03-11-17 15:03, Jan Just Keijser wrote:
+> whilst testing some new hardware with OpenVPN I ran into the following
+> messages which keep popping up from time to time:
+>=20
+> =A0AEAD Decrypt error: cipher final failed
+>=20
+>=20
+> Config:
+>=20
+> server running OpenVPN 2.4.3, basic config, Ubuntu 17, kernel 4.14,
+> openssl 1.0.2g
+> client running OpenVPN 2.4.4, basic config, CentOS 7.4, kernel 3.10,
+> openssl 1.0.2k
+>=20
+> it's the client that is throwing the above message during heavy load
+> (900 Mbps VPN traffic). It happens only with NCP ciphers , I am not
+> seeing any cipher messages with 'ncp-disable' set.
+>=20
+> as soon as I add 'verb 5' or higher, the message goes away, because
+> performance drops to below 500 Mbps due to excessive output.
+> Any idea how to tackle this?
 
-On Thu, Nov 09, 2017 at 11:12:25AM -0500, Selva wrote:
-> Now try to convince Gert that this belongs to 2.4 :)
+This is (most likely) the GCM authentication check failing.  What would
+be interesting is to see at least what is on the wire and what the
+receiving process thinks it's receiving.  Also, printing the session
+keys would help to verify the crypto.
 
-Well... where would the incentive be to upgrade to 2.5, if we put all
-the nice stuff into 2.4...?
+The verb level do not allow enough granularity to achieve this, so
+you'll have to change the code to print the session keys (after the kex)
+and the full received packet if this error occurs, and keep a pcap of
+the transfer.  Though I'm not very sure whether it's doable to store a
+pcap @ 900 mbit - it's probably not on my old/cheap hw ;-)
 
-Jokes aside, 2.4 will be with us for a while, and if a patch here=20
-means "joining forces with EduVPN, more testing, more bugfixing, better
-software" that is quite a strong argument...
-
-Let's wait for you two to agree on the code first :-)
-
-gert
-
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---dYbRCasfhpyZLUd7
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJaBNDIAAoJEB2Cnv7KVigSUGwMAKlfSxFDDoKFM8pM9vkNylQG
-ViF182OGB+vlXGczkFFdRIifVcHRQaojP3vrmHCAvwGJQJKodD0E/XBg9nhjfem1
-0kL43CwPKPwo0OEVQr5wEFrHbaxtcgZ/YOvCuvVIAHxCux11fV5vACgtErmPpEVS
-EQ5ES4tc6JyK3uLUJSwUO/ispReiK/vPBNnUVrFTryaMwuZY+P3qtyjDvde4GrfQ
-mSAXjUsqWnEIo3K2vNexBCRF5x5HagljWtt+wz7SWP7XMHkTi/NcRkqea/rLW348
-v4K2MUByqQWrdJdFdG3tDPh0hP3qZA8OFYO1L9Oq/YQdnZCCOZKp6pJMA15Bvpva
-J/uzRfiodzLmAkzl5JY/yN8yEaIIXrpSrInwXPXFyODP+YSDMRdpMsVa5bymQn39
-CMHWpTX8X5HT2IVB4DhZVuj7ffxumgxbUyNmGWv46dqyEryXnryktC1kcZG4F13U
-xabPjn0T7+0PpyNl2VyZ1OLZNRw8CB9MGajuInZdtw==
-=vxXc
------END PGP SIGNATURE-----
-
---dYbRCasfhpyZLUd7--
+-Steffan
 
