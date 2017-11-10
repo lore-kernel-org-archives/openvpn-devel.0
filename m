@@ -1,15 +1,14 @@
-Date: Fri, 10 Nov 2017 17:11:31 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20171110161131.GZ958@...1296...>
-References: <3275c6bd-8194-2e23-2e64-3d3fd5d2f090@...2080...>
- <1492184450-11994-1-git-send-email-steffan.karger@...1435...>
+References: <1b275182-8551-6100-e3e9-80c966c2b200@...277...>
+ <c2fbb372-cbfe-5231-66fa-33403a1566df@...277...>
+ <20170930172859.GY70062@...1296...>
+ <CAKuzo_h_HMpRVVoSXft3DPDoDrjhnkWepLiThLbDC43HJtt-Sg@...278...>
+From: Steffan Karger <steffan@...1856...>
+Message-ID: <a723cbfe-2070-10de-d936-eab48423323c@...1856...>
+Date: Fri, 10 Nov 2017 17:23:24 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="7gzJCi2wfhUHVacz"
-Content-Disposition: inline
-In-Reply-To: <1492184450-11994-1-git-send-email-steffan.karger@...1435...>
-Subject: Re: [Openvpn-devel] [PATCH v3] Add --tls-cert-profile option for
- mbedtls builds
+In-Reply-To: <CAKuzo_h_HMpRVVoSXft3DPDoDrjhnkWepLiThLbDC43HJtt-Sg@...278...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] Too much output at --verb 0 (bug?)
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,72 +17,91 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan.karger@...1435...>
-Cc: openvpn-devel@lists.sourceforge.net
-
---7gzJCi2wfhUHVacz
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-On Fri, Apr 14, 2017 at 05:40:49PM +0200, Steffan Karger wrote:
-> v2:
->  - add documentation (manpage, Changes.rst and --help)
->  - no longer print a warning message on each startup for OpenSSL builds
-> v3:
->  - remove format changes in unrelated items (introduced in v2)
->  - Update Changes.rst text to reflect that the default in 2.4.2 is 'legac=
-y'
->    and the default in 2.5 will be 'preferred' (as discussed on the ML).
->  - This patch is for the master branch only now (due to the default).
+On 01-10-17 05:25, Selva wrote:
+> On Sat, Sep 30, 2017 at 1:28 PM, Gert Doering <gert@...1296...
+> <mailto:gert@...1296...>> wrote:
+>     > > do_ifconfig, tt->did_ifconfig_ipv6_setup=0
+> 
+>     This one comes as a bit of surprise - it's logged with M_DEBUG, and I
+>     assumed that this would be something like "verb 3 or 4, or even higher".
+> 
+>     Selva, Steffan, or someone else who understands our message levels -
+>     what's M_DEBUG for, and what *should* I have used here?
+> 
+> 
+> Hmm.. The log levels code is out of this world and I've only a vague
+> idea.. I for sure don't know the "officially sanctioned" way of using it
+> and have more questions than answers.
+> 
+> M_DEBUG, M_WARN, M_FATAL etc by themselves do not define any printing
+> level -- in other words these will print at all verb levels unless
+> combined with something that sets the print level. M_INFO is the only
+> M_x flag that is different -- it  has a "verb level" of 1 or more
+> encoded in it.
+> 
+> I suppose the original design idea was that we are only supposed to use
+> M_INFO or one of the LOGLEV's defined in errlevel.h -- the ones starting
+> with D_xxx. If so I  don't see one appropriate for printing ifconfig
+> errors/info/debug. You ma have to create one?
 
-Tested-by: Gert Doering <gert@...1296...>
+My thoughts exactly.  Though everyone (including James) seems to use
+M_WARN directly for various types of warnings.
 
-I've applied this to "master", added "--tls-cert-profile legacy" to my
-openvpn command line, and my FreeBSD 10.3 + mbedTLS 2.6.0 t_client tests
-came back to "all tests passed".
+> One could generate a log level on the fly using, say,
+>  LOGLEV(4,0,M_DEBUG) meaning print at verb 4+, don't mute, tag as debug.
+> But there is not a single instance of such use anywhere in the code, so
+> I suppose that would be considered a hack?
 
-So from that point of view, this is a necessary addition.
+Yeah, I'd consider that a hack.  My approach would be to find a suitable
+D_* flag or create one of no suitable flag is available.
 
-OTOH, it adds a command line option that will lead to a fatal error on
-an OpenSSL build, which I'm not happy about (read: it will break the=20
-buildslave for openssl builds then...) - so even if we do not have the
-functionality for OpenSSL yet, we should still understand the option
-and then print out a warning.
+>     > > WARNING: this configuration may cache passwords in memory -- use the
+>     > > auth-nocache option to prevent this
+>     > >
+>     > > == Reconnect client:
+>     > > WARNING: 'link-mtu' is used inconsistently, local='link-mtu 1550',
+>     > > remote='link-mtu 1602'
+>     > > WARNING: 'cipher' is used inconsistently, local='cipher
+>     AES-256-GCM',
+>     > > remote='cipher AES-256-CBC'
+>     > > WARNING: 'auth' is used inconsistently, local='auth [null-digest]',
+>     > > remote='auth SHA512'
+>     [..]
+>     > > None of these are Fatal errors ..
+> 
+>     Indeed, WARNINGs could also be re-evaluated.  Either we document that
+>     "verb 0" will print errors *and* warnings, or we change the printout
+>     to not print warnings.
+> 
+> 
+> Aha. so we're not supposed to print warnings or non-fatal errors at verb
+> 0 -- had no idea.
+> 
+> I would wager that documentation is wrong as we have loads of messages
+> printed with just M_WARN or M_NONFATAL. All of those will print at verb
+> 0. Unless are we not supposed print anything with pure M_x flags alone
+> -- M_INFO being the only exception? Is every M_WARN to be used as
+> M_WARN|M_INFO so that it will print only at verb 1+? That would be a kludge.
+> 
+> Then there is a M_VERB0 = 0 which is commented as "messages displayed
+> even at verb0 -- (fatal errors only)" but its used just once in the code
+> -- that too used by itself which does nothing but just print the message
+> at all verb levels.  And make log consumers (like the GUI) wrongly
+> assume that its a benign info message.
+> 
+> As all M_INFO messages will print at verb 1, we do not have much room to
+> define verb levels for WARN, ERROR, FATAL, do we.. This is unlike any
+> logging system I've seen and could be totally misreading the designer's
+> intent.
 
-(Also it - obviously - does not apply to master anymore, due to
-surrounding code changes)
+Nothing to add but that I agree.  Making our logging consistent is not
+on the top of my list, but I would certainly support patches that do :)
 
-
-David: Steffan said you did not like this patch -> we should discuss=20
-how to improve this / what is missing.
-
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---7gzJCi2wfhUHVacz
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJaBc+yAAoJEB2Cnv7KVigSqOQL/0PK8Z5rFsNt3cR99s4JNgqC
-pCJywSlM6jOvSm84yGEAWJTJNTlD18Ut8kRgaHeQFrxCyCli40G91mHOfHynnrDc
-eiDV+z/fn5HNJ3JpRFPNAnkkzCWeberxaFAemNFvT9YWkppv1v4l/17HAdi68Oz3
-srf5QP+iH4AQ+NcQ0smWtyPW5rflHfy3LE3k3kwumWXio/DTDEJSf5o6QZ3x7wfH
-cXoyfJ+tiE7jncrI0hqpEcav0z3i4/wa+7OBzTjLMJHLkDAOMetpjxeiDJmJuUrA
-+w6or8848tywpq7SsBD36zY/+oVWT7CjHbvX/mnaX6T/AdpbKMm8J9PuQ1E6ibs8
-9zVBY5MyvqY1eo3HeI1ZHCg4EC5hXI1nfa4Qj4lv7Pj83P0ib6i0IlFTA225bAVf
-n+CIWlw29moRDDTWDIaCcfkYd3NjhrRIfbk6Ky6FNbpX1eatPRUWUXmMedUEhCYM
-qUjkyS5YKQNxAFoXQu1rKVeaf+AhG3SL4bTajve3/Q==
-=lp2L
------END PGP SIGNATURE-----
-
---7gzJCi2wfhUHVacz--
+-Steffan
 
