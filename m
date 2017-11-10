@@ -1,14 +1,10 @@
-References: <87k1zi18lt.fsf@...2274...>
- <201711041834.vA4IYfGA026870@...2054...>
- <87375t6qas.fsf@...2274...>
-From: Steffan Karger <steffan@...1856...>
-Message-ID: <bcde5965-7932-2647-36ad-64fb62ee37cf@...1856...>
-Date: Fri, 10 Nov 2017 12:55:28 +0100
-MIME-Version: 1.0
+Date: Fri, 10 Nov 2017 15:03:24 +0100 (CET)
+Message-Id: <201711101403.vAAE3OIF084707@...2054...>
+From: Gert Doering <gert@...1296...>
 In-Reply-To: <87375t6qas.fsf@...2274...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: Print time_t as long long
- and suseconds_t as long
+References: <87375t6qas.fsf@...2274...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Cast and print another
+ suseconds_t as long
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,44 +13,28 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Jeremie Courreges-Anglas <jca@...2272...>
+Cc: openvpn-devel@lists.sourceforge.net
 
-Hi,
+Your patch has been applied to the master branch.
 
-On 05-11-17 10:14, Jeremie Courreges-Anglas wrote:
-> Here's another small diff, I forgot one suseconds_t occurrence.
->
-> From cbe8237ff59129501e1e92c8fd6a3488d94c4c0f Mon Sep 17 00:00:00 2001
-> From: Jeremie Courreges-Anglas <jca@...2272...>
-> Date: Sun, 5 Nov 2017 10:03:26 +0100
-> Subject: [PATCH] Cast and print another suseconds_t as long
-> 
-> Missed in 31b5c0e
-> ---
->  src/openvpn/forward.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-> index a91a8d9a..1b7455bb 100644
-> --- a/src/openvpn/forward.c
-> +++ b/src/openvpn/forward.c
-> @@ -649,7 +649,7 @@ check_timeout_random_component_dowork(struct context *c)
->      c->c2.timeout_random_component.tv_usec = (time_t) get_random() & 0x0003FFFF;
->      c->c2.timeout_random_component.tv_sec = 0;
->  
-> -    dmsg(D_INTERVAL, "RANDOM USEC=%d", (int) c->c2.timeout_random_component.tv_usec);
-> +    dmsg(D_INTERVAL, "RANDOM USEC=%ld", (long) c->c2.timeout_random_component.tv_usec);
->  }
->  
->  static inline void
-> -- 
-> 2.14.3
+commit 10f12d2a61a4e2b44fa7dd4d0c32139258aa6aec
+Author: Jeremie Courreges-Anglas
+Date:   Sun Nov 5 10:03:26 2017 +0100
 
-Makes sense.
+     Cast and print another suseconds_t as long
 
-Acked-by: Steffan Karger <steffan@...1856...>
+     Acked-by: Steffan Karger <steffan.karger@...1435...>
+     Message-Id: <87375t6qas.fsf@...2274...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg15749.html
+     Signed-off-by: Gert Doering <gert@...1296...>
 
--Steffan
+
+--
+kind regards,
+
+Gert Doering
+
 
