@@ -1,12 +1,7 @@
-References: <cc3981e2-742c-37b1-e8fc-fa32f64b7d11@...1147...>
 From: Steffan Karger <steffan@...1856...>
-Message-ID: <521e4a89-ee97-4ca5-d6db-ca5bcc412b2b@...1856...>
-Date: Fri, 10 Nov 2017 09:52:36 +0100
-MIME-Version: 1.0
-In-Reply-To: <cc3981e2-742c-37b1-e8fc-fa32f64b7d11@...1147...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] Possible bug: AEAD Decrypt error: cipher final
- failed
+Date: Fri, 10 Nov 2017 12:08:58 +0100
+Message-Id: <20171110110858.11482-1-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH] Simplify and inline clear_buf()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,44 +10,65 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+Such a simple operation should not need a full function call.
 
-On 03-11-17 15:03, Jan Just Keijser wrote:
-> whilst testing some new hardware with OpenVPN I ran into the following
-> messages which keep popping up from time to time:
->=20
-> =A0AEAD Decrypt error: cipher final failed
->=20
->=20
-> Config:
->=20
-> server running OpenVPN 2.4.3, basic config, Ubuntu 17, kernel 4.14,
-> openssl 1.0.2g
-> client running OpenVPN 2.4.4, basic config, CentOS 7.4, kernel 3.10,
-> openssl 1.0.2k
->=20
-> it's the client that is throwing the above message during heavy load
-> (900 Mbps VPN traffic). It happens only with NCP ciphers , I am not
-> seeing any cipher messages with 'ncp-disable' set.
->=20
-> as soon as I add 'verb 5' or higher, the message goes away, because
-> performance drops to below 500 Mbps due to excessive output.
-> Any idea how to tackle this?
+Signed-off-by: Steffan Karger <steffan@...1856...>
+---
+ src/openvpn/buffer.c | 8 --------
+ src/openvpn/buffer.h | 9 +++++++--
+ 2 files changed, 7 insertions(+), 10 deletions(-)
 
-This is (most likely) the GCM authentication check failing.  What would
-be interesting is to see at least what is on the wire and what the
-receiving process thinks it's receiving.  Also, printing the session
-keys would help to verify the crypto.
+diff --git a/src/openvpn/buffer.c b/src/openvpn/buffer.c
+index 7395ab29..4226a808 100644
+--- a/src/openvpn/buffer.c
++++ b/src/openvpn/buffer.c
+@@ -179,14 +179,6 @@ buf_assign(struct buffer *dest, const struct buffer *src)
+     return buf_write(dest, BPTR(src), BLEN(src));
+ }
+ 
+-struct buffer
+-clear_buf(void)
+-{
+-    struct buffer buf;
+-    CLEAR(buf);
+-    return buf;
+-}
+-
+ void
+ free_buf(struct buffer *buf)
+ {
+diff --git a/src/openvpn/buffer.h b/src/openvpn/buffer.h
+index a754fc14..a088e181 100644
+--- a/src/openvpn/buffer.h
++++ b/src/openvpn/buffer.h
+@@ -131,8 +131,6 @@ struct gc_arena
+ 
+ void buf_clear(struct buffer *buf);
+ 
+-struct buffer clear_buf(void);
+-
+ void free_buf(struct buffer *buf);
+ 
+ bool buf_assign(struct buffer *dest, const struct buffer *src);
+@@ -213,6 +211,13 @@ gc_freeaddrinfo_callback(void *addr)
+     freeaddrinfo((struct addrinfo *) addr);
+ }
+ 
++/** Return an empty struct buffer */
++static inline struct buffer
++clear_buf(void)
++{
++    return (struct buffer) { 0 };
++}
++
+ static inline bool
+ buf_defined(const struct buffer *buf)
+ {
+-- 
+2.14.1
 
-The verb level do not allow enough granularity to achieve this, so
-you'll have to change the code to print the session keys (after the kex)
-and the full received packet if this error occurs, and keep a pcap of
-the transfer.  Though I'm not very sure whether it's doable to store a
-pcap @ 900 mbit - it's probably not on my old/cheap hw ;-)
-
--Steffan
 
