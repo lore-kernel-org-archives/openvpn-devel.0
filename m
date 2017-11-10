@@ -1,10 +1,10 @@
-Date: Fri, 10 Nov 2017 15:03:24 +0100 (CET)
-Message-Id: <201711101403.vAAE3OIF084707@...2054...>
+Date: Fri, 10 Nov 2017 15:03:32 +0100 (CET)
+Message-Id: <201711101403.vAAE3WtG084711@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <87375t6qas.fsf@...2274...>
-References: <87375t6qas.fsf@...2274...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Cast and print another
- suseconds_t as long
+In-Reply-To: <20171105094641.55673-1-jca@...2272...>
+References: <20171105094641.55673-1-jca@...2272...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Use long long to format
+ time_t-related environment variables
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -20,15 +20,16 @@ Cc: openvpn-devel@lists.sourceforge.net
 
 Your patch has been applied to the master branch.
 
-commit 10f12d2a61a4e2b44fa7dd4d0c32139258aa6aec
+commit 6c69693adbda2c6abf44b3430afd9ed22bf9e532
 Author: Jeremie Courreges-Anglas
-Date:   Sun Nov 5 10:03:26 2017 +0100
+Date:   Sun Nov 5 10:46:41 2017 +0100
 
-     Cast and print another suseconds_t as long
+     Use long long to format time_t-related environment variables
 
+     Signed-off-by: Jeremie Courreges-Anglas <jca@...2272...>
      Acked-by: Steffan Karger <steffan.karger@...1435...>
-     Message-Id: <87375t6qas.fsf@...2274...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg15749.html
+     Message-Id: <20171105094641.55673-1-jca@...2272...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg15750.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
