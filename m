@@ -1,15 +1,15 @@
-Date: Fri, 10 Nov 2017 15:45:26 +0100
+Date: Fri, 10 Nov 2017 17:11:31 +0100
 From: Gert Doering <gert@...1296...>
-Message-ID: <20171110144526.GS958@...1296...>
-References: <20171110110858.11482-1-steffan@...1856...>
- <201711101437.vAAEbuVY085846@...2054...>
+Message-ID: <20171110161131.GZ958@...1296...>
+References: <3275c6bd-8194-2e23-2e64-3d3fd5d2f090@...2080...>
+ <1492184450-11994-1-git-send-email-steffan.karger@...1435...>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="CvOg3jo0sXL5jEc+"
+ protocol="application/pgp-signature"; boundary="7gzJCi2wfhUHVacz"
 Content-Disposition: inline
-In-Reply-To: <201711101437.vAAEbuVY085846@...2054...>
-Subject: Re: [Openvpn-devel] [PATCH applied] Re: Simplify and inline
- clear_buf()
+In-Reply-To: <1492184450-11994-1-git-send-email-steffan.karger@...1435...>
+Subject: Re: [Openvpn-devel] [PATCH v3] Add --tls-cert-profile option for
+ mbedtls builds
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,42 +18,49 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan@...1856...>
+To: Steffan Karger <steffan.karger@...1435...>
 Cc: openvpn-devel@lists.sourceforge.net
 
---CvOg3jo0sXL5jEc+
+--7gzJCi2wfhUHVacz
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
-HI,
+Hi,
 
-On Fri, Nov 10, 2017 at 03:37:56PM +0100, Gert Doering wrote:
-> ACK.  Makes sense, simplifies things slightly, and passes all tests :)
->=20
-> Your patch has been applied to the master branch.
->=20
-> (I'm experimenting a bit with the formatting and the patchwork headers,
-> so do not wonder why the remainder looks a bit atypical)
+On Fri, Apr 14, 2017 at 05:40:49PM +0200, Steffan Karger wrote:
+> v2:
+>  - add documentation (manpage, Changes.rst and --help)
+>  - no longer print a warning message on each startup for OpenSSL builds
+> v3:
+>  - remove format changes in unrelated items (introduced in v2)
+>  - Update Changes.rst text to reflect that the default in 2.4.2 is 'legac=
+y'
+>    and the default in 2.5 will be 'preferred' (as discussed on the ML).
+>  - This patch is for the master branch only now (due to the default).
 
-So, just for the record:
+Tested-by: Gert Doering <gert@...1296...>
 
-> Acked-by: Gert Doering <gert@...1296...>
+I've applied this to "master", added "--tls-cert-profile legacy" to my
+openvpn command line, and my FreeBSD 10.3 + mbedTLS 2.6.0 t_client tests
+came back to "all tests passed".
 
-*this* gets picked up nicely, if (and only if!) it's on the start of=20
-the line.
+So from that point of view, this is a necessary addition.
 
-(So, please send your ACKs in this format if you want patchwork to=20
-see them :-) )
+OTOH, it adds a command line option that will lead to a fatal error on
+an OpenSSL build, which I'm not happy about (read: it will break the=20
+buildslave for openssl builds then...) - so even if we do not have the
+functionality for OpenSSL yet, we should still understand the option
+and then print out a warning.
 
-> X-Patchwork-State: Accepted
+(Also it - obviously - does not apply to master anymore, due to
+surrounding code changes)
 
-*this* is totally ignored, no matter whether it's in the body or header.
 
-More investigation needed...
+David: Steffan said you did not like this patch -> we should discuss=20
+how to improve this / what is missing.
 
 gert
-
 --=20
 USENET is *not* the non-clickable part of WWW!
                                                            //www.muc.de/~ge=
@@ -61,22 +68,22 @@ rt/
 Gert Doering - Munich, Germany                             gert@...1296...
 fax: +49-89-35655025                        gert@...1297...
 
---CvOg3jo0sXL5jEc+
+--7gzJCi2wfhUHVacz
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGcBAEBAgAGBQJaBbuFAAoJEB2Cnv7KVigSPxkL/iUaGk9sdHInXDaw2ZGphrH1
-9pNOpypRtGPvWkhylBx15kgwGZBZhS0rHrn9YJyTLzbq6dDUSQu9Z+e86tF0wzJv
-wbo9csR7e1N0rM18WEWWKINZODnptj0AzbugTBp4+ZTn+2hCckErf+AlmzQBcDy8
-BlNCN1xPqs2r3DdwDCbhLd8OIjOt+XZTb9gP+B1u3khfVNNjOiUQmvmyqaGLClC6
-+tirpL3OC5x6vXhHJEsBhDQcqs8u0HIIesu2q97Uuh11dSDOStRA0i5C1K+WYts0
-UtqpsQXx6SJoyWi1pGJeTBrwFL2QlL9GDWeza9ERzZIpOa7Qlt/3KFDxJRJCAnF6
-l4XmsKRr8mklstlNUsRMWGMKO1ed0jdox2d9U8821/yYphNtp42o3wTtDY+ab1N+
-gRvrmaSUMCqlGOdy4ZaI4ELAzicmIG+sZakH8ZIK0hNfTYiekOUGQOpoDiOj+tia
-mPXy+I/DAfno1l47CNFY6qdoYEACA0NkXl6MBgdsAQ==
-=gvd0
+iQGcBAEBAgAGBQJaBc+yAAoJEB2Cnv7KVigSqOQL/0PK8Z5rFsNt3cR99s4JNgqC
+pCJywSlM6jOvSm84yGEAWJTJNTlD18Ut8kRgaHeQFrxCyCli40G91mHOfHynnrDc
+eiDV+z/fn5HNJ3JpRFPNAnkkzCWeberxaFAemNFvT9YWkppv1v4l/17HAdi68Oz3
+srf5QP+iH4AQ+NcQ0smWtyPW5rflHfy3LE3k3kwumWXio/DTDEJSf5o6QZ3x7wfH
+cXoyfJ+tiE7jncrI0hqpEcav0z3i4/wa+7OBzTjLMJHLkDAOMetpjxeiDJmJuUrA
++w6or8848tywpq7SsBD36zY/+oVWT7CjHbvX/mnaX6T/AdpbKMm8J9PuQ1E6ibs8
+9zVBY5MyvqY1eo3HeI1ZHCg4EC5hXI1nfa4Qj4lv7Pj83P0ib6i0IlFTA225bAVf
+n+CIWlw29moRDDTWDIaCcfkYd3NjhrRIfbk6Ky6FNbpX1eatPRUWUXmMedUEhCYM
+qUjkyS5YKQNxAFoXQu1rKVeaf+AhG3SL4bTajve3/Q==
+=lp2L
 -----END PGP SIGNATURE-----
 
---CvOg3jo0sXL5jEc+--
+--7gzJCi2wfhUHVacz--
 
