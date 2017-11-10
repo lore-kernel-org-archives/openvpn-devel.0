@@ -1,10 +1,9 @@
-Date: Fri, 10 Nov 2017 15:03:32 +0100 (CET)
-Message-Id: <201711101403.vAAE3WtG084711@...2054...>
+Date: Fri, 10 Nov 2017 15:37:56 +0100 (CET)
+Message-Id: <201711101437.vAAEbuVY085846@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20171105094641.55673-1-jca@...2272...>
-References: <20171105094641.55673-1-jca@...2272...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Use long long to format
- time_t-related environment variables
+In-Reply-To: <20171110110858.11482-1-steffan@...1856...>
+References: <20171110110858.11482-1-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Simplify and inline clear_buf()
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,24 +14,31 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Jeremie Courreges-Anglas <jca@...2272...>
+To: Steffan Karger <steffan@...1856...>
 Cc: openvpn-devel@lists.sourceforge.net
+
+ACK.  Makes sense, simplifies things slightly, and passes all tests :)
 
 Your patch has been applied to the master branch.
 
-commit 6c69693adbda2c6abf44b3430afd9ed22bf9e532
-Author: Jeremie Courreges-Anglas
-Date:   Sun Nov 5 10:46:41 2017 +0100
+(I'm experimenting a bit with the formatting and the patchwork headers,
+so do not wonder why the remainder looks a bit atypical)
 
-     Use long long to format time_t-related environment variables
+commit 3280c4c2c7064c0c6719621703f46596212396fd
+Author: Steffan Karger
+Date:   Fri Nov 10 12:08:58 2017 +0100
 
-     Signed-off-by: Jeremie Courreges-Anglas <jca@...2272...>
-     Acked-by: Steffan Karger <steffan.karger@...1435...>
-     Message-Id: <20171105094641.55673-1-jca@...2272...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg15750.html
+     Simplify and inline clear_buf()
+
+     Signed-off-by: Steffan Karger <steffan@...1856...>
+     Acked-by: Gert Doering <gert@...1296...>
+     Message-Id: <20171110110858.11482-1-steffan@...1856...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg15796.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
+Acked-by: Gert Doering <gert@...1296...>
+X-Patchwork-State: Accepted
 --
 kind regards,
 
