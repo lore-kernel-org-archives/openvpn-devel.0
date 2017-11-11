@@ -1,15 +1,10 @@
-References: <20170918181343.12924-1-a@...2181...>
- <9e5acca1-ab96-5951-0c29-1691b9ce7da7@...1856...>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <a8f9411b-42a9-0916-617e-c2a29a61377a@...2181...>
-Date: Sat, 11 Nov 2017 07:57:38 +0800
-MIME-Version: 1.0
-In-Reply-To: <9e5acca1-ab96-5951-0c29-1691b9ce7da7@...1856...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="7jPNsrHhHMR4j2tb7pck1vHiOffFj7IgF"
-Subject: Re: [Openvpn-devel] [PATCH v4 1/3] pf: restyle pf_c2c/addr_test()
- to make them 'struct context' agnostic
+From: Steffan Karger <steffan@...1856...>
+Date: Sat, 11 Nov 2017 14:47:58 +0100
+Message-Id: <20171111134758.7373-1-steffan@...1856...>
+In-Reply-To: <4e9ea26fee7e606cdb0636dd377bf1bc.squirrel@...2257...>
+References: <4e9ea26fee7e606cdb0636dd377bf1bc.squirrel@...2257...>
+Subject: [Openvpn-devel] [PATCH v3] Add per session pseudo-random jitter to
+ --reneg-sec intervals
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,280 +13,196 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---7jPNsrHhHMR4j2tb7pck1vHiOffFj7IgF
-Content-Type: multipart/mixed; boundary="KCHxFUDx6r5Ekuld8TTpbVehdcx57XNpq";
- protected-headers="v1"
-From: Antonio Quartulli <a@...2181...>
-To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
-Message-ID: <a8f9411b-42a9-0916-617e-c2a29a61377a@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH v4 1/3] pf: restyle pf_c2c/addr_test() to
- make them 'struct context' agnostic
-References: <20170918181343.12924-1-a@...2181...>
- <9e5acca1-ab96-5951-0c29-1691b9ce7da7@...1856...>
-In-Reply-To: <9e5acca1-ab96-5951-0c29-1691b9ce7da7@...1856...>
-
---KCHxFUDx6r5Ekuld8TTpbVehdcx57XNpq
-Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-Hi,
+From: Simon Matter <simon.matter@...2249...>
 
-On 30/09/17 00:10, Steffan Karger wrote:
-> Hi,
->=20
-> On 18-09-17 20:13, Antonio Quartulli wrote:
->> In the attempt of getting rid of any pf-inline.h file, we need
->> to make sure that inline functions do not trigger any circular
->> include dependency.
->>
->> For this reason, avoid pf_c2c/addr_test() to be 'struct context'
->> aware, so that pf-inline.h does not need to rely on the content
->> of openvpn.h.
->>
->> Cc: Steffan Karger <steffan@...1856...>
->> Signed-off-by: Antonio Quartulli <a@...2181...>
->> ---
->>
->> v1-v3: skipped
->> v4: this is the first version of this patch, but named v4 for conveniency
->>
->>
->>  src/openvpn/multi.c     | 25 ++++++++++++++++++-------
->>  src/openvpn/pf-inline.h | 16 ++++++++++------
->>  src/openvpn/pf.c        |  6 +++++-
->>  3 files changed, 33 insertions(+), 14 deletions(-)
->>
->> diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
->> index c798c438..641b825a 100644
->> --- a/src/openvpn/multi.c
->> +++ b/src/openvpn/multi.c
->> @@ -2233,7 +2233,10 @@ multi_bcast(struct multi_context *m,
->>  #ifdef ENABLE_PF
->>                  if (sender_instance)
->>                  {
->> -                    if (!pf_c2c_test(&sender_instance->context,
-> &mi->context, "bcast_c2c"))
->> +                    if (!pf_c2c_test(&sender_instance->context.c2.pf,
->> +                                     &sender_instance->context,
->> +                                     &mi->context.c2.pf, &mi->context,
->> +                                     "bcast_c2c"))
->>                      {
->>                          msg(D_PF_DROPPED_BCAST, "PF: client[%s] ->
-> client[%s] packet dropped by BCAST packet filter",
->>                              mi_prefix(sender_instance),
->> @@ -2243,7 +2246,8 @@ multi_bcast(struct multi_context *m,
->>                  }
->>                  if (sender_addr)
->>                  {
->> -                    if (!pf_addr_test(&mi->context, sender_addr,
-> "bcast_src_addr"))
->> +                    if (!pf_addr_test(&mi->context.c2.pf, &mi->context,
->> +                                      sender_addr, "bcast_src_addr"))
->>                      {
->>                          struct gc_arena gc =3D gc_new();
->>                          msg(D_PF_DROPPED_BCAST, "PF: addr[%s] ->
-> client[%s] packet dropped by BCAST packet filter",
->> @@ -2602,7 +2606,8 @@ multi_process_incoming_link(struct multi_context
-> *m, struct multi_instance *inst
->>                          if (mi)
->>                          {
->>  #ifdef ENABLE_PF
->> -                            if (!pf_c2c_test(c, &mi->context, "tun_c2c"=
-))
->> +                            if (!pf_c2c_test(&c->c2.pf, c,
-> &mi->context.c2.pf,
->> +                                             &mi->context, "tun_c2c"))
->>                              {
->>                                  msg(D_PF_DROPPED, "PF: client ->
-> client[%s] packet dropped by TUN packet filter",
->>                                      mi_prefix(mi));
->> @@ -2618,7 +2623,8 @@ multi_process_incoming_link(struct multi_context
-> *m, struct multi_instance *inst
->>                      }
->>                  }
->>  #ifdef ENABLE_PF
->> -                if (c->c2.to_tun.len && !pf_addr_test(c, &dest,
-> "tun_dest_addr"))
->> +                if (c->c2.to_tun.len && !pf_addr_test(&c->c2.pf, c,
-> &dest,
->> +                                                      "tun_dest_addr"))
->>                  {
->>                      msg(D_PF_DROPPED, "PF: client -> addr[%s] packet
-> dropped by TUN packet filter",
->>                          mroute_addr_print_ex(&dest, MAPF_SHOW_ARP, &gc)=
-);
->> @@ -2663,7 +2669,10 @@ multi_process_incoming_link(struct
-> multi_context *m, struct multi_instance *inst
->>                                  if (mi)
->>                                  {
->>  #ifdef ENABLE_PF
->> -                                    if (!pf_c2c_test(c, &mi->context,
-> "tap_c2c"))
->> +                                    if (!pf_c2c_test(&c->c2.pf, c,
->> +                                                     &mi->context.c2.pf,
->> +                                                     &mi->context,
->> +                                                     "tap_c2c"))
->>                                      {
->>                                          msg(D_PF_DROPPED, "PF: client
-> -> client[%s] packet dropped by TAP packet filter",
->>                                              mi_prefix(mi));
->> @@ -2679,7 +2688,9 @@ multi_process_incoming_link(struct multi_context
-> *m, struct multi_instance *inst
->>                              }
->>                          }
->>  #ifdef ENABLE_PF
->> -                        if (c->c2.to_tun.len && !pf_addr_test(c,
-> &edest, "tap_dest_addr"))
->> +                        if (c->c2.to_tun.len &&
-> !pf_addr_test(&c->c2.pf, c,
->> +                                                              &edest,
->> +
-> "tap_dest_addr"))
->>                          {
->>                              msg(D_PF_DROPPED, "PF: client -> addr[%s]
-> packet dropped by TAP packet filter",
->>                                  mroute_addr_print_ex(&edest,
-> MAPF_SHOW_ARP, &gc));
->> @@ -2792,7 +2803,7 @@ multi_process_incoming_tun(struct multi_context
-> *m, const unsigned int mpp_flags
->>                      set_prefix(m->pending);
->>
->>  #ifdef ENABLE_PF
->> -                    if (!pf_addr_test(c, e2, "tun_tap_src_addr"))
->> +                    if (!pf_addr_test(&c->c2.pf, c, e2,
-> "tun_tap_src_addr"))
->>                      {
->>                          msg(D_PF_DROPPED, "PF: addr[%s] -> client
-> packet dropped by packet filter",
->>                              mroute_addr_print_ex(&src, MAPF_SHOW_ARP,
-> &gc));
->> diff --git a/src/openvpn/pf-inline.h b/src/openvpn/pf-inline.h
->> index ac19ac4c..7e38e674 100644
->> --- a/src/openvpn/pf-inline.h
->> +++ b/src/openvpn/pf-inline.h
->> @@ -31,20 +31,24 @@
->>  #define PCT_SRC  1
->>  #define PCT_DEST 2
->>  static inline bool
->> -pf_c2c_test(const struct context *src, const struct context *dest,
-> const char *prefix)
->> +pf_c2c_test(const struct pf_context *src_pf, const struct context *src,
->> +            const struct pf_context *dest_pf, const struct context *des=
-t,
->> +            const char *prefix)
->=20
-> If you make this function take a const struct tls_multi * as 2nd and 4th
-> argument, you don't have to change the pf_cn_test function prototype
-> (and it doesn't have to know about struct context internals, which is
-> useful for testing modules separately).
+While we were suffering from the "TLS Renegotiation Slowdown" bug here
+https://community.openvpn.net/openvpn/ticket/854 we realized that there is
+still room for improvement in our use case.
 
+It appears that TLS renegotiation is getting more and more expensive in
+terms of CPU cycles with recent changes for more security. To make things
+worse, we realized that most renegotiation procedures took place at almost
+the same time and increased the CPU load too much during these periods.
+That's especially true on large, multi-instance openvpn setups.
 
-Sorry for forgetting about this comment. This is actually a good idea!
+I've created attached patch to add a per session pseudo-random component to
+the --reneg-sec intervals so that renegotiation is evenly spread over time.
+It is configured by simply adding a second value to --reneg-sec as
+described in the --help text:
 
-v5 will come soon.
+--reneg-sec max [min] : Renegotiate data chan. key after at most max
+                  (default=3600) and at least min (default 90% of max on
+                  servers and equal to max on clients).
 
+The jitter is only enabled by default on servers, because the actual reneg
+time is min(reneg_server, reneg_client).  Introducing jitter at both ends
+would bias the actual reneg time to the min value.
 
-Cheers,
+Note that the patch also slightly changes the log output to show the sec
+value in the same way as the bytes/pkts values:
 
+TLS: soft reset sec=3084/3084 bytes=279897/-1 pkts=1370/0
 
->=20
->>  {
->> -    bool pf_cn_test(struct pf_set *pfs, const struct tls_multi *tm,
-> const int type, const char *prefix);
->> +    bool pf_cn_test(const struct context *src, const struct context
-> *dest,
->> +                    const int type, const char *prefix);
->>
->> -    return (!src->c2.pf.enabled  || pf_cn_test(src->c2.pf.pfs,
-> dest->c2.tls_multi, PCT_DEST, prefix))
->> -           && (!dest->c2.pf.enabled || pf_cn_test(dest->c2.pf.pfs,
-> src->c2.tls_multi,  PCT_SRC,  prefix));
->> +    return (!src_pf->enabled || pf_cn_test(src, dest, PCT_DEST, prefix))
->> +           && (!dest_pf->enabled || pf_cn_test(dest, src, PCT_SRC,
-> prefix));
->>  }
->>
->>  static inline bool
->> -pf_addr_test(const struct context *src, const struct mroute_addr
-> *dest, const char *prefix)
->> +pf_addr_test(const struct pf_context *src_pf, const struct context *src,
->> +             const struct mroute_addr *dest, const char *prefix)
->>  {
->>      bool pf_addr_test_dowork(const struct context *src, const struct
-> mroute_addr *dest, const char *prefix);
->>
->> -    if (src->c2.pf.enabled)
->> +    if (src_pf->enabled)
->>      {
->>          return pf_addr_test_dowork(src, dest, prefix);
->>      }
->> diff --git a/src/openvpn/pf.c b/src/openvpn/pf.c
->> index 5cb002bf..135cb15d 100644
->> --- a/src/openvpn/pf.c
->> +++ b/src/openvpn/pf.c
->> @@ -442,8 +442,12 @@ lookup_cn_rule(struct hash *h, const char *cn,
-> const uint32_t cn_hash)
->>  }
->>
->>  bool
->> -pf_cn_test(struct pf_set *pfs, const struct tls_multi *tm, const int
-> type, const char *prefix)
->> +pf_cn_test(const struct context *src, const struct context *dest,
->> +           const int type, const char *prefix)
->>  {
->> +    struct pf_set *pfs =3D src->c2.pf.pfs;
->> +    struct tls_multi *tm =3D dest->c2.tls_multi;
->> +
->>      if (pfs && !pfs->kill)
->>      {
->>          const char *cn;
->>
->=20
-> Otherwise this looks good to me.
->=20
-> -Steffan
->=20
-> -------------------------------------------------------------------------=
------
-> Check out the vibrant tech community on one of the world's most
-> engaging tech sites, Slashdot.org! http://sdm.link/slashdot
-> _______________________________________________
-> Openvpn-devel mailing list
-> Openvpn-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
->=20
+The idea and first versions of this patch are from Simon Matter.  Steffan
+Karger later incorporated the mailing list comments into this patch.  So
+credits go to Simon, and all bugs are Steffan's fault ;-)
 
---=20
-Antonio Quartulli
+Signed-off-by: Simon Matter <simon.matter@...2249...>
+Signed-off-by: Steffan Karger <steffan@...1856...>
+---
+v3: incorporate comments from openvpn-devel@, don't add jitter by
+    default on the client side.
 
+ doc/openvpn.8         | 26 +++++++++++++++++++++-----
+ src/openvpn/init.c    | 15 ++++++++++++++-
+ src/openvpn/options.c | 11 +++++++++--
+ src/openvpn/options.h |  1 +
+ src/openvpn/ssl.c     |  6 +++---
+ 5 files changed, 48 insertions(+), 11 deletions(-)
 
---KCHxFUDx6r5Ekuld8TTpbVehdcx57XNpq--
+diff --git a/doc/openvpn.8 b/doc/openvpn.8
+index a4189ac2..eb5258f9 100644
+--- a/doc/openvpn.8
++++ b/doc/openvpn.8
+@@ -33,7 +33,7 @@
+ .\" .ft -- normal face
+ .\" .in +|-{n} -- indent
+ .\"
+-.TH openvpn 8 "25 August 2016"
++.TH openvpn 8 "04 April 2017"
+ .\"*********************************************************
+ .SH NAME
+ openvpn \- secure IP tunnel daemon.
+@@ -4957,10 +4957,26 @@ Renegotiate data channel key after
+ packets sent and received (disabled by default).
+ .\"*********************************************************
+ .TP
+-.B \-\-reneg\-sec n
+-Renegotiate data channel key after
+-.B n
+-seconds (default=3600).
++.B \-\-reneg\-sec max [min]
++Renegotiate data channel key after at most
++.B max
++seconds (default=3600) and at least
++.B min
++seconds (default is 90% of
++.B max
++for servers, and equal to
++.B max
++for clients).
++
++The effective
++.B reneg\-sec
++value used is per session pseudo-uniform-randomized between
++.B min
++and
++.B max\fR.
++
++With the default value of 3600 this results in an effective per session value
++in the range of 3240..3600 seconds for servers, or just 3600 for clients.
+ 
+ When using dual\-factor authentication, note that this default value may
+ cause the end user to be challenged to reauthorize once per hour.
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 1ed2c55e..0b64930e 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -2693,7 +2693,20 @@ do_init_crypto_tls(struct context *c, const unsigned int flags)
+     to.packet_timeout = options->tls_timeout;
+     to.renegotiate_bytes = options->renegotiate_bytes;
+     to.renegotiate_packets = options->renegotiate_packets;
+-    to.renegotiate_seconds = options->renegotiate_seconds;
++    if (options->renegotiate_seconds_min < 0)
++    {
++        /* Add 10% jitter to the reneg-sec of each connection by default */
++        int auto_jitter = options->mode != MODE_SERVER ? 0 :
++                get_random() % max_int(options->renegotiate_seconds / 10, 1);
++        to.renegotiate_seconds = options->renegotiate_seconds - auto_jitter;
++    }
++    else
++    {
++        /* Add user-specific jitter to the renge-sec of each connection */
++        to.renegotiate_seconds = options->renegotiate_seconds -
++                (get_random() % max_int(options->renegotiate_seconds
++                                        - options->renegotiate_seconds_min, 1));
++    }
+     to.single_session = options->single_session;
+     to.mode = options->mode;
+     to.pull = options->pull;
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 641a26e2..7fe22064 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -603,7 +603,9 @@ static const char usage_message[] =
+     "                  if no ACK from remote within n seconds (default=%d).\n"
+     "--reneg-bytes n : Renegotiate data chan. key after n bytes sent and recvd.\n"
+     "--reneg-pkts n  : Renegotiate data chan. key after n packets sent and recvd.\n"
+-    "--reneg-sec n   : Renegotiate data chan. key after n seconds (default=%d).\n"
++    "--reneg-sec max [min] : Renegotiate data chan. key after at most max (default=%d)\n"
++    "                  and at least min (defaults to 90%% of max on servers and equal\n"
++    "                  to max on clients).\n"
+     "--hand-window n : Data channel key exchange must finalize within n seconds\n"
+     "                  of handshake initiation by any peer (default=%d).\n"
+     "--tran-window n : Transition window -- old key can live this many seconds\n"
+@@ -870,6 +872,7 @@ init_options(struct options *o, const bool init_gc)
+     o->tls_timeout = 2;
+     o->renegotiate_bytes = -1;
+     o->renegotiate_seconds = 3600;
++    o->renegotiate_seconds_min = -1;
+     o->handshake_window = 60;
+     o->transition_window = 3600;
+     o->ecdh_curve = NULL;
+@@ -7999,10 +8002,14 @@ add_option(struct options *options,
+         VERIFY_PERMISSION(OPT_P_TLS_PARMS);
+         options->renegotiate_packets = positive_atoi(p[1]);
+     }
+-    else if (streq(p[0], "reneg-sec") && p[1] && !p[2])
++    else if (streq(p[0], "reneg-sec") && p[1] && !p[3])
+     {
+         VERIFY_PERMISSION(OPT_P_TLS_PARMS);
+         options->renegotiate_seconds = positive_atoi(p[1]);
++        if (p[2])
++        {
++            options->renegotiate_seconds_min = positive_atoi(p[2]);
++        }
+     }
+     else if (streq(p[0], "hand-window") && p[1] && !p[2])
+     {
+diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+index 496c1143..a74dc94d 100644
+--- a/src/openvpn/options.h
++++ b/src/openvpn/options.h
+@@ -548,6 +548,7 @@ struct options
+     int renegotiate_bytes;
+     int renegotiate_packets;
+     int renegotiate_seconds;
++    int renegotiate_seconds_min;
+ 
+     /* Data channel key handshake must finalize
+      * within n seconds of handshake initiation. */
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index cb94229a..174f13cb 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -2732,9 +2732,9 @@ tls_process(struct tls_multi *multi,
+                 && ks->n_packets >= session->opt->renegotiate_packets)
+             || (packet_id_close_to_wrapping(&ks->crypto_options.packet_id.send))))
+     {
+-        msg(D_TLS_DEBUG_LOW,
+-            "TLS: soft reset sec=%d bytes=" counter_format "/%d pkts=" counter_format "/%d",
+-            (int)(ks->established + session->opt->renegotiate_seconds - now),
++        msg(D_TLS_DEBUG_LOW, "TLS: soft reset sec=%lld/%d bytes=" counter_format
++            "/%d pkts=" counter_format "/%d",
++            (now - ks->established), session->opt->renegotiate_seconds,
+             ks->n_bytes, session->opt->renegotiate_bytes,
+             ks->n_packets, session->opt->renegotiate_packets);
+         key_state_soft_reset(session);
+-- 
+2.14.1
 
---7jPNsrHhHMR4j2tb7pck1vHiOffFj7IgF
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEERdCuyFSHc3WdqS4EB6U8WA7yzXQFAloGPPYACgkQB6U8WA7y
-zXRDCg//ZpqhAvExlPMt24JpEO9Bkh69aUemHn7vEHjTB2XeRGbUtiNSZyEQ6I10
-pVCEE7RAzD7du9Jxnd/lR78ppNRL0P9pZVmcoQdKXsvGcM+/1Yi+NxPWYvowS1Hn
-grzDuZfOwQEnG82W5LRUt1E2CR1sPFf2PBTZbJRI5ycmwv4SMknx+iioXTBSA6od
-s5yI2Z5Si3NK5JAfVP0F/9a8uiFGslmz4thcbNEbQZsdUYXAPCkrBoiLCd81dPby
-yx6+qtWCF2Wkh6xSUlhc1Su0pzFRQ5l7h6/Nw2MXNcbCGVndS/B+h6KI0r3Vfl/6
-fbwC7f2EnHXFa+2hXNtWO61LmAqxyayPtsHUOEjH85RocC0cZsKuGtb3gaatOqv3
-xQ63lE6XbOc+S4eNHIcOqhtgUnu6gz8DQBwMbsbIFJ0A70BNE8fIYjyjRycg7Bmx
-upy7CPDhGwylGWYNbZoFmyu90rdveRR7KQ8w7CzlrQ3E3GNNGa/AbuzpkxppXbnI
-KhumcKWeIqXsfx5ERIW445zKMXYngfbW1FpFynO1McF5mKb9w2qX7r8a8uAQ29he
-itI/RVKeWuJz9fKb4DW3uLIfsme9yDLT+RP3xzBijxeq0GIwwzFYq0pa+A1TR2qq
-PWjK0mJ9LWFFpWffiQcGiIoTHoGxLWjFGoQMtRJLxBRXSXZZ/PM=
-=u4IJ
------END PGP SIGNATURE-----
-
---7jPNsrHhHMR4j2tb7pck1vHiOffFj7IgF--
 
