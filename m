@@ -1,10 +1,7 @@
-From: Steffan Karger <steffan@...1856...>
-Date: Sat, 11 Nov 2017 14:47:58 +0100
-Message-Id: <20171111134758.7373-1-steffan@...1856...>
-In-Reply-To: <4e9ea26fee7e606cdb0636dd377bf1bc.squirrel@...2257...>
-References: <4e9ea26fee7e606cdb0636dd377bf1bc.squirrel@...2257...>
-Subject: [Openvpn-devel] [PATCH v3] Add per session pseudo-random jitter to
- --reneg-sec intervals
+From: Gert Doering <gert@...1296...>
+Date: Sat, 11 Nov 2017 14:36:49 +0100
+Message-Id: <20171111133649.20192-1-gert@...1296...>
+Subject: [Openvpn-devel] [PATCH] Remove warning on pushed tun-ipv6 option.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,192 +14,38 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-From: Simon Matter <simon.matter@...2249...>
+tun-ipv6 is a no-op nowadays, and we print a warning to let users know -
+which is not helpful for server-pushed tun-ipv6 (which might be the
+result of --server-ipv6 automatically pushing this).  So, remove the
+warning if parsing pushed options.
 
-While we were suffering from the "TLS Renegotiation Slowdown" bug here
-https://community.openvpn.net/openvpn/ticket/854 we realized that there is
-still room for improvement in our use case.
+Also, remove the VERIFY_PERMISSION() call here which has side effects
+on the "which class of options got pushed, do we need to act on them
+later on?" flag set.
 
-It appears that TLS renegotiation is getting more and more expensive in
-terms of CPU cycles with recent changes for more security. To make things
-worse, we realized that most renegotiation procedures took place at almost
-the same time and increased the CPU load too much during these periods.
-That's especially true on large, multi-instance openvpn setups.
-
-I've created attached patch to add a per session pseudo-random component to
-the --reneg-sec intervals so that renegotiation is evenly spread over time.
-It is configured by simply adding a second value to --reneg-sec as
-described in the --help text:
-
---reneg-sec max [min] : Renegotiate data chan. key after at most max
-                  (default=3600) and at least min (default 90% of max on
-                  servers and equal to max on clients).
-
-The jitter is only enabled by default on servers, because the actual reneg
-time is min(reneg_server, reneg_client).  Introducing jitter at both ends
-would bias the actual reneg time to the min value.
-
-Note that the patch also slightly changes the log output to show the sec
-value in the same way as the bytes/pkts values:
-
-TLS: soft reset sec=3084/3084 bytes=279897/-1 pkts=1370/0
-
-The idea and first versions of this patch are from Simon Matter.  Steffan
-Karger later incorporated the mailing list comments into this patch.  So
-credits go to Simon, and all bugs are Steffan's fault ;-)
-
-Signed-off-by: Simon Matter <simon.matter@...2249...>
-Signed-off-by: Steffan Karger <steffan@...1856...>
+Signed-off-by: Gert Doering <gert@...1296...>
 ---
-v3: incorporate comments from openvpn-devel@, don't add jitter by
-    default on the client side.
+ src/openvpn/options.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
- doc/openvpn.8         | 26 +++++++++++++++++++++-----
- src/openvpn/init.c    | 15 ++++++++++++++-
- src/openvpn/options.c | 11 +++++++++--
- src/openvpn/options.h |  1 +
- src/openvpn/ssl.c     |  6 +++---
- 5 files changed, 48 insertions(+), 11 deletions(-)
-
-diff --git a/doc/openvpn.8 b/doc/openvpn.8
-index a4189ac2..eb5258f9 100644
---- a/doc/openvpn.8
-+++ b/doc/openvpn.8
-@@ -33,7 +33,7 @@
- .\" .ft -- normal face
- .\" .in +|-{n} -- indent
- .\"
--.TH openvpn 8 "25 August 2016"
-+.TH openvpn 8 "04 April 2017"
- .\"*********************************************************
- .SH NAME
- openvpn \- secure IP tunnel daemon.
-@@ -4957,10 +4957,26 @@ Renegotiate data channel key after
- packets sent and received (disabled by default).
- .\"*********************************************************
- .TP
--.B \-\-reneg\-sec n
--Renegotiate data channel key after
--.B n
--seconds (default=3600).
-+.B \-\-reneg\-sec max [min]
-+Renegotiate data channel key after at most
-+.B max
-+seconds (default=3600) and at least
-+.B min
-+seconds (default is 90% of
-+.B max
-+for servers, and equal to
-+.B max
-+for clients).
-+
-+The effective
-+.B reneg\-sec
-+value used is per session pseudo-uniform-randomized between
-+.B min
-+and
-+.B max\fR.
-+
-+With the default value of 3600 this results in an effective per session value
-+in the range of 3240..3600 seconds for servers, or just 3600 for clients.
- 
- When using dual\-factor authentication, note that this default value may
- cause the end user to be challenged to reauthorize once per hour.
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 1ed2c55e..0b64930e 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -2693,7 +2693,20 @@ do_init_crypto_tls(struct context *c, const unsigned int flags)
-     to.packet_timeout = options->tls_timeout;
-     to.renegotiate_bytes = options->renegotiate_bytes;
-     to.renegotiate_packets = options->renegotiate_packets;
--    to.renegotiate_seconds = options->renegotiate_seconds;
-+    if (options->renegotiate_seconds_min < 0)
-+    {
-+        /* Add 10% jitter to the reneg-sec of each connection by default */
-+        int auto_jitter = options->mode != MODE_SERVER ? 0 :
-+                get_random() % max_int(options->renegotiate_seconds / 10, 1);
-+        to.renegotiate_seconds = options->renegotiate_seconds - auto_jitter;
-+    }
-+    else
-+    {
-+        /* Add user-specific jitter to the renge-sec of each connection */
-+        to.renegotiate_seconds = options->renegotiate_seconds -
-+                (get_random() % max_int(options->renegotiate_seconds
-+                                        - options->renegotiate_seconds_min, 1));
-+    }
-     to.single_session = options->single_session;
-     to.mode = options->mode;
-     to.pull = options->pull;
 diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 641a26e2..7fe22064 100644
+index 641a26e2..bbf65613 100644
 --- a/src/openvpn/options.c
 +++ b/src/openvpn/options.c
-@@ -603,7 +603,9 @@ static const char usage_message[] =
-     "                  if no ACK from remote within n seconds (default=%d).\n"
-     "--reneg-bytes n : Renegotiate data chan. key after n bytes sent and recvd.\n"
-     "--reneg-pkts n  : Renegotiate data chan. key after n packets sent and recvd.\n"
--    "--reneg-sec n   : Renegotiate data chan. key after n seconds (default=%d).\n"
-+    "--reneg-sec max [min] : Renegotiate data chan. key after at most max (default=%d)\n"
-+    "                  and at least min (defaults to 90%% of max on servers and equal\n"
-+    "                  to max on clients).\n"
-     "--hand-window n : Data channel key exchange must finalize within n seconds\n"
-     "                  of handshake initiation by any peer (default=%d).\n"
-     "--tran-window n : Transition window -- old key can live this many seconds\n"
-@@ -870,6 +872,7 @@ init_options(struct options *o, const bool init_gc)
-     o->tls_timeout = 2;
-     o->renegotiate_bytes = -1;
-     o->renegotiate_seconds = 3600;
-+    o->renegotiate_seconds_min = -1;
-     o->handshake_window = 60;
-     o->transition_window = 3600;
-     o->ecdh_curve = NULL;
-@@ -7999,10 +8002,14 @@ add_option(struct options *options,
-         VERIFY_PERMISSION(OPT_P_TLS_PARMS);
-         options->renegotiate_packets = positive_atoi(p[1]);
+@@ -5233,8 +5233,10 @@ add_option(struct options *options,
      }
--    else if (streq(p[0], "reneg-sec") && p[1] && !p[2])
-+    else if (streq(p[0], "reneg-sec") && p[1] && !p[3])
+     else if (streq(p[0], "tun-ipv6") && !p[1])
      {
-         VERIFY_PERMISSION(OPT_P_TLS_PARMS);
-         options->renegotiate_seconds = positive_atoi(p[1]);
-+        if (p[2])
+-        VERIFY_PERMISSION(OPT_P_UP);
+-        msg(M_WARN, "Note: option tun-ipv6 is ignored because modern operating systems do not need special IPv6 tun handling anymore.");
++        if ( !(permission_mask & OPT_P_PULL_MODE) )
 +        {
-+            options->renegotiate_seconds_min = positive_atoi(p[2]);
++            msg(M_WARN, "Note: option tun-ipv6 is ignored because modern operating systems do not need special IPv6 tun handling anymore.");
 +        }
      }
-     else if (streq(p[0], "hand-window") && p[1] && !p[2])
-     {
-diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-index 496c1143..a74dc94d 100644
---- a/src/openvpn/options.h
-+++ b/src/openvpn/options.h
-@@ -548,6 +548,7 @@ struct options
-     int renegotiate_bytes;
-     int renegotiate_packets;
-     int renegotiate_seconds;
-+    int renegotiate_seconds_min;
- 
-     /* Data channel key handshake must finalize
-      * within n seconds of handshake initiation. */
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index cb94229a..174f13cb 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -2732,9 +2732,9 @@ tls_process(struct tls_multi *multi,
-                 && ks->n_packets >= session->opt->renegotiate_packets)
-             || (packet_id_close_to_wrapping(&ks->crypto_options.packet_id.send))))
-     {
--        msg(D_TLS_DEBUG_LOW,
--            "TLS: soft reset sec=%d bytes=" counter_format "/%d pkts=" counter_format "/%d",
--            (int)(ks->established + session->opt->renegotiate_seconds - now),
-+        msg(D_TLS_DEBUG_LOW, "TLS: soft reset sec=%lld/%d bytes=" counter_format
-+            "/%d pkts=" counter_format "/%d",
-+            (now - ks->established), session->opt->renegotiate_seconds,
-             ks->n_bytes, session->opt->renegotiate_bytes,
-             ks->n_packets, session->opt->renegotiate_packets);
-         key_state_soft_reset(session);
+ #ifdef ENABLE_IPROUTE
+     else if (streq(p[0], "iproute") && p[1] && !p[2])
 -- 
-2.14.1
+2.13.0
 
 
