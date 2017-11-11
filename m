@@ -1,13 +1,13 @@
 References: <20171110161131.GZ958@...1296...>
  <20171111153653.24773-1-steffan@...1856...>
 From: Antonio Quartulli <a@...2181...>
-Message-ID: <8ae70736-ee68-ca24-cf5a-3261022d6aaa@...2181...>
-Date: Sun, 12 Nov 2017 01:45:51 +0800
+Message-ID: <a619ef35-8c66-9717-48a0-f0db052ee5c0@...2181...>
+Date: Sun, 12 Nov 2017 01:58:31 +0800
 MIME-Version: 1.0
 In-Reply-To: <20171111153653.24773-1-steffan@...1856...>
 Content-Type: multipart/signed; micalg=pgp-sha256;
  protocol="application/pgp-signature";
- boundary="5dMP6Ab3pOlOwuuWWBec7kTjM4ahmaCXx"
+ boundary="IoughWm1LRJMthox6Psb2SqMpoVUqmPfk"
 Subject: Re: [Openvpn-devel] [PATCH v4] Add --tls-cert-profile option for
  mbedtls builds
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -21,19 +21,19 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---5dMP6Ab3pOlOwuuWWBec7kTjM4ahmaCXx
-Content-Type: multipart/mixed; boundary="c67iXPN9H5htjKstWfjfH4sJn6uMSJsVb";
+--IoughWm1LRJMthox6Psb2SqMpoVUqmPfk
+Content-Type: multipart/mixed; boundary="D9WD6mU6FxMtfj7pCfI8Q6oTDolFX4SSt";
  protected-headers="v1"
 From: Antonio Quartulli <a@...2181...>
 To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
-Message-ID: <8ae70736-ee68-ca24-cf5a-3261022d6aaa@...2181...>
+Message-ID: <a619ef35-8c66-9717-48a0-f0db052ee5c0@...2181...>
 Subject: Re: [Openvpn-devel] [PATCH v4] Add --tls-cert-profile option for
  mbedtls builds
 References: <20171110161131.GZ958@...1296...>
  <20171111153653.24773-1-steffan@...1856...>
 In-Reply-To: <20171111153653.24773-1-steffan@...1856...>
 
---c67iXPN9H5htjKstWfjfH4sJn6uMSJsVb
+--D9WD6mU6FxMtfj7pCfI8Q6oTDolFX4SSt
 Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
@@ -60,26 +60,6 @@ On 11/11/17 23:36, Steffan Karger wrote:
 > the master branch to change the default to 'preferred' later.
 >=20
 > Signed-off-by: Steffan Karger <steffan.karger@...1435...>
-
-Tested-by: Antonio Quartulli <a@...2181...>
-
-The test consisted in configuring a server and a client with
-certificates signed with SHA1.
-
-With the default settings, the client was able to connect to the server.
-
-When setting the cert profile to "preferred" on either one, the latter
-complained about unacceptable signature.
-
-This proved that the patch is working as expected.
-
-To note: the server and the clients both start even though they are
-using a certificate that is signed with a non-acceptable signature (for
-their profile). mbedTLS could be improved to reject a certificate when
-signed with an algorithm that is not part of the allowed profile.
-
-Cheers,
-
 > ---
 > v2:
 >  - add documentation (manpage, Changes.rst and --help)
@@ -154,6 +134,10 @@ erred'
 > +.B legacy
 > +(default): SHA1 and newer, RSA 2048-bit+, any elliptic curve.
 > +
+
+don't you think it would be better to put legacy as first profile? That
+would sort the list from the weakest to the strongest profile.
+
 > +.B suiteb
 > +: SHA256/SHA384, ECDSA with P-256 or P-384.
 > +
@@ -235,6 +219,17 @@ n"
 > +        msg(M_WARN, "WARNING: --tls-cert-profile is not yet implemented =
 for OpenSSL, ignoring option.");
 > +#endif
+
+rather than polluting this code with a new ifdef, wouldn't it be
+meaningful to print this message in the openssl routine doing the SSL
+context setup?
+
+This way we get rid of the ifdef and the "openssl" specific code (which
+is just the msg()) would reside in the openssl code.
+
+after all this is not an exception on the parsing of the option, but
+it's an exception on how the value is used.
+
 > +    }
 >      else if (streq(p[0], "crl-verify") && p[1] && ((p[2] && streq(p[2], =
 "dir"))
@@ -344,6 +339,11 @@ onst char *ciphers)
 > +tls_ctx_set_cert_profile(struct tls_root_ctx *ctx, const char *profile)
 > +{
 > +    if (!profile || 0 =3D=3D strcmp(profile, "preferred"))
+
+can profile really be null? Given that we are assigning it a default
+value in init_options() I think we could rather use an assert() here? so
+we make sure the developer will always set an explicit default?
+
 > +    {
 > +        ctx->cert_profile =3D openvpn_x509_crt_profile_preferred;
 > +    }
@@ -414,29 +414,29 @@ onst char *ciphers)
 Antonio Quartulli
 
 
---c67iXPN9H5htjKstWfjfH4sJn6uMSJsVb--
+--D9WD6mU6FxMtfj7pCfI8Q6oTDolFX4SSt--
 
---5dMP6Ab3pOlOwuuWWBec7kTjM4ahmaCXx
+--IoughWm1LRJMthox6Psb2SqMpoVUqmPfk
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCAAdFiEERdCuyFSHc3WdqS4EB6U8WA7yzXQFAloHN08ACgkQB6U8WA7y
-zXTpZxAAuY3zn/d9BKtaGwRayMdXoV8wXfN9AWPD2/r/CCi5Bf8x0ox6BPLI8JCf
-0w9YVl9JoDt9w9hPAIgkWIvdZLfWQWE/2miM8eiqXQWQYm8N88iCNOex40e2ZYfO
-RRW6Hyu4kn0S5C6TUFVgVPexFm4dGczkD5lQXu2PDIxKixGDUNQnmoXBkKFsRvu1
-wXNggzyZOsMYVkyy6+ZarNVr0P1hLPD5qN+NBQWSifjD4K6ccuUI4eUaZ6nAMtrh
-ymLPzHtgduFOJJ6ebfEb+EfrXCaVVjbeEpF16xpUh3b1RXAzSejrK3eD+8uogkkB
-+J4abAIIGDaWN1S4RduJt1oGNDz9iT4Fzbgf24yW90GvxtimyPb3dkZqrjo8anuB
-w1PO042QJyirdSyvmfBhkGmjAdxxEIZ98U77PmQJwv0bO9q+cENmGGwabGJpkF9s
-BrGzimiZlTGXCHMGh8NJ4oQf3WuG8jITT6TZpGyrdBsZK34BxP6v6HmQCOR2OWfz
-3tRn6kiEAsxNYfqkYXyanL35TrDh/r4Y1zx2WWF+305BzBxbXIOZcDxQst6UWHGX
-2/bwfzg8ObJ8NyAADnRyfllOifXnlFRyXCWTpqfae1jNkTFjoXzXZN7tVi7T5IiH
-pozg+wO7SKvn/gfDqrmhG14J6vIYO/K8XbyThhsggYIymUTOf2g=
-=1mnY
+iQIzBAEBCAAdFiEERdCuyFSHc3WdqS4EB6U8WA7yzXQFAloHOkcACgkQB6U8WA7y
+zXTcERAAhN4RtbPOYOQ+zNezK3RdJ78Bqr2ZyAQBaNZ7y2luKUl5j1/iHlD8ftKD
+GLlAUHuUakCpanpMN3Q8AAuL2JWz5alURxx3UvvM8/j/mmzmgO8b4x4TSUk1bWvB
+FBvI7sfu/xZUzEjqjxBAr1rp1AZeQnJ8+cZ1qQS6UGtIyoHxEcClbjDo2VM1DnLW
+LQHV1Xa+DM/UOVdHTHmUtEYun/O1ZLtekdb37HagvjQNzjvNO27h4rf2ruZqKsSv
+aRrl07wUGHPbcoAEvzmqK4WNPmUHcGAMzoQdUdx7r3OUGGQG8rpsOOCKX5IHQjPC
+e7ObaknaYe+OJVJBoSkDR38unMMRm0OoopzZz+iXLH46oC6xzm0mrpi67qdSH8mh
+in+77YQWPZ2rsrwupGGOoEVWNYoQ+sghEwSfGsI8yH82hiaW0b5ID5n3yc5gG410
+UOYl09eROyy2nAKfybSGLGzNAOQFR7P4ySLBkT3T25Fy376R2R9TX0FR7mOWCpum
+nppPry8L5Rg48syei6l3ZjvJgPQuwLCf78kOz5jnARTizEK8QOzFobYuueqkqJoO
+hOzNBwjcDtpdH1iqqFiYt5g5bFIYSrBf+Q0cC5eeW7adW2g0rst+WsKUtRseql9t
+O4/KYfX9ZG0bskM1WpAPgZo55KIGJehqQdQFbhPcih0+uTDE1pg=
+=ZaYd
 -----END PGP SIGNATURE-----
 
---5dMP6Ab3pOlOwuuWWBec7kTjM4ahmaCXx--
+--IoughWm1LRJMthox6Psb2SqMpoVUqmPfk--
 
