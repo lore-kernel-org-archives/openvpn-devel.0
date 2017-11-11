@@ -1,8 +1,10 @@
 From: Gert van Dijk <gert@...2298...>
-Date: Sat, 11 Nov 2017 17:11:21 +0100
-Message-Id: <20171111161122.30087-1-gert@...2298...>
-Subject: [Openvpn-devel] [PATCH 1/2] manpage: improve description of
- --status and --status-version
+Date: Sat, 11 Nov 2017 17:11:22 +0100
+Message-Id: <20171111161122.30087-2-gert@...2298...>
+In-Reply-To: <20171111161122.30087-1-gert@...2298...>
+References: <20171111161122.30087-1-gert@...2298...>
+Subject: [Openvpn-devel] [PATCH 2/2] Add negotiated cipher to status file
+ format 2 and 3
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,56 +17,72 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
+With NCP turned off, this will still display the cipher used.
+
+Trac: #814
+
 Signed-off-by: Gert van Dijk <gert@...2298...>
 ---
- doc/openvpn.8 | 31 ++++++++++++++++++++++++++++---
- 1 file changed, 28 insertions(+), 3 deletions(-)
+ doc/openvpn.8       |  2 +-
+ src/openvpn/multi.c | 11 +++++++----
+ 2 files changed, 8 insertions(+), 5 deletions(-)
 
 diff --git a/doc/openvpn.8 b/doc/openvpn.8
-index a4189ac2..267497fd 100644
+index 267497fd..00dbff6f 100644
 --- a/doc/openvpn.8
 +++ b/doc/openvpn.8
-@@ -2452,12 +2452,37 @@ seconds.
- Status can also be written to the syslog by sending a
- .B SIGUSR2
- signal.
+@@ -2477,7 +2477,7 @@ Connected Since.
+ .B 2
+ \-\- a more reliable format for external processing. Compared to version 1, the
+ client list contains some additional fields: Virtual Address, Virtual IPv6
+-Address, Username, Client ID, Peer ID.
++Address, Username, Client ID, Peer ID, Data Channel Cipher.
+ Future versions may extend the number of fields.
+ .br
+ .B 3
+diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
+index 82a0b9d9..dfad582f 100644
+--- a/src/openvpn/multi.c
++++ b/src/openvpn/multi.c
+@@ -50,6 +50,8 @@
+ #include "forward-inline.h"
+ #include "pf-inline.h"
+ 
++#include "crypto_backend.h"
 +
-+With multi\-client capability enabled on a server, the status file includes a
-+list of clients and a routing table. The output format can be controlled by the
-+.B \-\-status\-version
-+option in that case.
-+
-+For clients or instances running in point\-to\-point mode, it will contain the
-+traffic statistics.
- .\"*********************************************************
- .TP
- .B \-\-status\-version [n]
--Choose the status file format version number.  Currently
--.B n
--can be 1, 2, or 3 and defaults to 1.
-+Set the status file format version number to
-+.B n\fR.
-+
-+This only affects the status file on servers with multi\-client capability
-+enabled.
-+
-+.B 1
-+\-\- traditional format (default). The client list contains the following
-+fields comma\-separated: Common Name, Real Address, Bytes Received, Bytes Sent,
-+Connected Since.
-+.br
-+.B 2
-+\-\- a more reliable format for external processing. Compared to version 1, the
-+client list contains some additional fields: Virtual Address, Virtual IPv6
-+Address, Username, Client ID, Peer ID.
-+Future versions may extend the number of fields.
-+.br
-+.B 3
-+\-\- identical to 2, but fields are tab\-separated.
-+
- .\"*********************************************************
- .TP
- .B \-\-mute n
+ /*#define MULTI_DEBUG_EVENT_LOOP*/
+ 
+ #ifdef MULTI_DEBUG_EVENT_LOOP
+@@ -940,8 +942,8 @@ multi_print_status(struct multi_context *m, struct status_output *so, const int
+              */
+             status_printf(so, "TITLE%c%s", sep, title_string);
+             status_printf(so, "TIME%c%s%c%u", sep, time_string(now, 0, false, &gc_top), sep, (unsigned int)now);
+-            status_printf(so, "HEADER%cCLIENT_LIST%cCommon Name%cReal Address%cVirtual Address%cVirtual IPv6 Address%cBytes Received%cBytes Sent%cConnected Since%cConnected Since (time_t)%cUsername%cClient ID%cPeer ID",
+-                          sep, sep, sep, sep, sep, sep, sep, sep, sep, sep, sep, sep);
++            status_printf(so, "HEADER%cCLIENT_LIST%cCommon Name%cReal Address%cVirtual Address%cVirtual IPv6 Address%cBytes Received%cBytes Sent%cConnected Since%cConnected Since (time_t)%cUsername%cClient ID%cPeer ID%cData Channel Cipher",
++                          sep, sep, sep, sep, sep, sep, sep, sep, sep, sep, sep, sep, sep);
+             hash_iterator_init(m->hash, &hi);
+             while ((he = hash_iterator_next(&hi)))
+             {
+@@ -956,7 +958,7 @@ multi_print_status(struct multi_context *m, struct status_output *so, const int
+ #else
+                                   ""
+ #endif
+-                                  "%c%" PRIu32,
++                                  "%c%" PRIu32 "%c%s",
+                                   sep, tls_common_name(mi->context.c2.tls_multi, false),
+                                   sep, mroute_addr_print(&mi->real, &gc),
+                                   sep, print_in_addr_t(mi->reporting_addr, IA_EMPTY_IF_UNDEF, &gc),
+@@ -971,7 +973,8 @@ multi_print_status(struct multi_context *m, struct status_output *so, const int
+ #else
+                                   sep,
+ #endif
+-                                  sep, mi->context.c2.tls_multi ? mi->context.c2.tls_multi->peer_id : UINT32_MAX);
++                                  sep, mi->context.c2.tls_multi ? mi->context.c2.tls_multi->peer_id : UINT32_MAX,
++                                  sep, translate_cipher_name_to_openvpn(mi->context.options.ciphername));
+                 }
+                 gc_free(&gc);
+             }
 -- 
 2.15.0
 
