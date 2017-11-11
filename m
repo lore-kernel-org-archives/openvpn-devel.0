@@ -1,9 +1,13 @@
-From: Arne Schwabe <arne@...1227...>
-Date: Sat, 11 Nov 2017 17:07:32 +0100
-Message-Id: <1510416452-1201-1-git-send-email-arne@...1227...>
-In-Reply-To: <CAEsd45TcQP9BDxyV+k+UXJUoZ7ZNoLGZuAq03C=6=gTBv-=Dfg@...278...>
-References: <CAEsd45TcQP9BDxyV+k+UXJUoZ7ZNoLGZuAq03C=6=gTBv-=Dfg@...278...>
-Subject: [Openvpn-devel] [PATCH v2] Implement block-ipv6
+MIME-Version: 1.0
+In-Reply-To: <20171010231130.6832-12-simon@...2293...>
+References: <20171010231130.6832-1-simon@...2293...>
+ <20171010231130.6832-12-simon@...2293...>
+From: Selva <selva.nair@...277...>
+Date: Sat, 11 Nov 2017 11:43:11 -0500
+Message-ID: <CAKuzo_jzkj2jNMODphaa6GSfyNtB7UiWhg5oEYHtBcCZ3rsBoQ@...278...>
+Content-Type: multipart/alternative; boundary="001a114bc42ad4e41e055db7bc34"
+Subject: Re: [Openvpn-devel] [PATCH 12/13] Memory size arithmetic reviewed
+ according to 64-bit MSVC complaints
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,410 +16,412 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Simon Rozman <simon@...2293...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-This can be used to redirect all IPv6 traffic to the tun interface, effectively black holing the IPv6 traffic. Without ICMPv6 error messages this will result in timeouts when the server does not send error codes.
-block-ipv6 allows client side only blocking on all platforms that OpenVPN supports IPv6. On Android it is only way to do sensible IPv6 blocking on Android < 5.0 and broken devices (Samsung).
----
- doc/openvpn.8         |  17 +++++
- src/openvpn/forward.c | 170 ++++++++++++++++++++++++++++++++++++++++++++++++--
- src/openvpn/forward.h |   3 +-
- src/openvpn/misc.c    |   4 +-
- src/openvpn/options.c |  17 +++++
- src/openvpn/options.h |   1 +
- src/openvpn/proto.h   |  19 ++++++
- 7 files changed, 224 insertions(+), 7 deletions(-)
+--001a114bc42ad4e41e055db7bc34
+Content-Type: text/plain; charset="UTF-8"
 
-diff --git a/doc/openvpn.8 b/doc/openvpn.8
-index a4189ac2..26b5f7de 100644
---- a/doc/openvpn.8
-+++ b/doc/openvpn.8
-@@ -1232,6 +1232,23 @@ Like \-\-redirect\-gateway, but omit actually changing the default
- gateway.  Useful when pushing private subnets.
- .\"*********************************************************
- .TP
-+.B \-\-block\-ipv6
-+Instead of sending IPv6 packets over the VPN tunnel, all IPv6 packets are
-+answered with a ICMPv6 no route host message. This options is intended for
-+cases when IPv6 should be blocked and other options are not available.
-+
-+Following config block would send all IPv6 traffic to OpenVPN and answer all
-+requests with no route to host, effectively blocking IPv6.
-+
-+.B \-\-ifconfig-ipv6
-+fd15:53b6:dead::2/64  fd15:53b6:dead::1
-+.br
-+.B \-\-redirect\-gateway
-+ipv6
-+.br
-+.B \-\-block\-ipv6
-+.\"*********************************************************
-+.TP
- .B \-\-tun\-mtu n
- Take the TUN device MTU to be
- .B n
-diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index 1b7455bb..21cce90b 100644
---- a/src/openvpn/forward.c
-+++ b/src/openvpn/forward.c
-@@ -1198,7 +1198,7 @@ process_incoming_tun(struct context *c)
-          * The --passtos and --mssfix options require
-          * us to examine the IP header (IPv4 or IPv6).
-          */
--        process_ip_header(c, PIPV4_PASSTOS|PIP_MSSFIX|PIPV4_CLIENT_NAT, &c->c2.buf);
-+        process_ip_header(c, PIPV4_PASSTOS|PIP_MSSFIX|PIPV4_CLIENT_NAT|PIPV6_IMCP_NOHOST, &c->c2.buf);
- 
- #ifdef PACKET_TRUNCATION_CHECK
-         /* if (c->c2.buf.len > 1) --c->c2.buf.len; */
-@@ -1209,6 +1209,9 @@ process_incoming_tun(struct context *c)
-                                 &c->c2.n_trunc_pre_encrypt);
- #endif
- 
-+    }
-+    if (c->c2.buf.len > 0)
-+    {
-         encrypt_sign(c, true);
-     }
-     else
-@@ -1219,6 +1222,155 @@ process_incoming_tun(struct context *c)
-     gc_free(&gc);
+Hi,
+
+Some of these changes are of dubious value as the string lengths
+involved are guaranteed to be small and there is no scope
+for overflow. And casting only stops the compiler warning, not potential
+overflow, if any..
+
+As for the offending mixed int/size_t arithmetic, a better option is
+to just to avoid the arithmetic -- code gets clearer and shorter too:
+
+On Tue, Oct 10, 2017 at 7:11 PM, <simon@...2293...> wrote:
+
+> From: Simon Rozman <simon@...2293...>
+>
+> ---
+>  src/openvpnserv/automatic.c   | 14 ++++++++------
+>  src/openvpnserv/interactive.c | 12 ++++++------
+>  2 files changed, 14 insertions(+), 12 deletions(-)
+>
+> diff --git a/src/openvpnserv/automatic.c b/src/openvpnserv/automatic.c
+> index 6c39aaa..3e8f6ed 100644
+> --- a/src/openvpnserv/automatic.c
+> +++ b/src/openvpnserv/automatic.c
+> @@ -130,24 +130,26 @@ close_if_open(HANDLE h)
+>  static bool
+>  match(const WIN32_FIND_DATA *find, LPCTSTR ext)
+>  {
+
+-    int i;
+> +    size_t i, len_filename, len_ext;
+>
+
+Instead, we can just get rid of these as below
+
+     if (find->dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+>      {
+>          return false;
+>      }
+>
+
+The rest of this function (extension matching) may be made simpler
+and hopefully easier to follow as
+
+    if (*ext == TEXT('\0'))
+    {
+         return false;
+    }
+
+    /* find the pointer to that last '.' in filename and match ext against
+the rest */
+
+    const char *p = _tcsrchr(find->cFileName, TEXT('.'));
+    return p && p != find->cFileName && !_tcsicmp(p+1, ext);
+}
+
+No _tcslen() and no offending size variables.
+
+
+> -    if (!_tcslen(ext))
+> +    len_ext = _tcslen(ext);
+> +    if (!len_ext)
+>      {
+>          return true;
+>      }
+>
+> -    i = _tcslen(find->cFileName) - _tcslen(ext) - 1;
+> -    if (i < 1)
+> +    len_filename = _tcslen(find->cFileName);
+> +    if (len_filename < len_ext + 2)
+>      {
+>          return false;
+>      }
+>
+> +    i = len_filename - len_ext - 1;
+>      return find->cFileName[i] == '.' && !_tcsicmp(find->cFileName + i +
+> 1, ext);
+
  }
- 
-+/**
-+ *  Calculates an IPv6 checksum with a pseudo header as required by TCP, UDP and ICMPv6
-+ * @param payload the TCP, ICMPv6 or UDP packet
-+ * @param len_payload length of payload
-+ * @param src_addr
-+ * @param dest_addr
-+ * @return calculated checksum in host order
-+ */
-+static uint16_t
-+ipv6_checksum(const uint8_t *payload,
-+              const int len_payload,
-+              const int next_header,
-+              const uint8_t *src_addr,
-+              const uint8_t *dest_addr)
-+{
-+    uint32_t sum = 0;
-+
-+    /* make 16 bit words out of every two adjacent 8 bit words and  */
-+    /* calculate the sum of all 16 bit words */
-+    for (int i = 0; i < len_payload; i += 2)
-+    {
-+        sum +=  (uint16_t) (((payload[i] << 8) & 0xFF00) + ((i + 1 < len_payload) ? (payload[i + 1] & 0xFF) : 0));
-+
-+    }
-+
-+    /* add the pseudo header which contains the IP source and destination addresses */
-+    for (int i = 0; i < 16; i += 2)
-+    {
-+        sum += (uint16_t) ((src_addr[i] << 8) & 0xFF00) + (src_addr[i+1] & 0xFF);
-+
-+    }
-+    for (int i = 0; i < 16; i += 2)
-+    {
-+        sum += (uint16_t) ((dest_addr[i] << 8) & 0xFF00) + (dest_addr[i+1] & 0xFF);
-+    }
-+
-+    /* the length of the payload */
-+    sum += (uint16_t) len_payload;
-+
-+    /* The next header */
-+    sum += (uint16_t) next_header;
-+
-+    /* keep only the last 16 bits of the 32 bit calculated sum and add the carries */
-+    while (sum >> 16)
-+    {
-+        sum = (sum & 0xFFFF) + (sum >> 16);
-+    }
-+
-+    /* Take the one's complement of sum */
-+    return ((uint16_t) ~sum);
-+}
-+/**
-+ * Forges a IPv6 ICMP with a no route to host error code from the IPv6 packet in buf and sends it back via
-+ * the tun device
-+ */
-+void
-+ipv6_send_icmp_unreachable(struct context * c, struct buffer *buf)
-+{
-+#define ICMPV6LEN  1280
-+    struct openvpn_icmp6hdr icmp6out;
-+    CLEAR(icmp6out);
-+
-+    /*
-+     * Get a buffer to the ip packet, is_ipv6 automatically forwards
-+     * the buffer to the ip packet
-+     */
-+    struct buffer inputipbuf = *buf;
-+    is_ipv6(TUNNEL_TYPE(c->c1.tuntap), &inputipbuf);
-+
-+    if (BLEN(&inputipbuf) < (int) sizeof(struct openvpn_ipv6hdr))
-+    {
-+        return;
-+    }
-+
-+
-+    const struct openvpn_ipv6hdr* pip6 = (struct openvpn_ipv6hdr *) BPTR(&inputipbuf);
-+
-+    struct openvpn_ipv6hdr pip6out;
-+
-+    /* Copy version, traffic class, flow label from input packet */
-+    pip6out = *pip6;
-+
-+    pip6out.version_prio = pip6->version_prio;
-+
-+    pip6out.daddr = pip6->saddr;
-+    inet_pton( AF_INET6, c->options.ifconfig_ipv6_remote, &pip6out.saddr );
-+
-+    pip6out.nexthdr = OPENVPN_IPPROTO_ICMPV6;
-+
-+
-+    /*
-+     * The ICMPv6 unreachable code worked best in my tests with Windows, Linux and Android (arne)
-+     * Windows did not like the adminitively prohibited return code (no fast fail)
-+     */
-+    icmp6out.icmp6_type = OPENVPN_ICMP6_DESTINATION_UNREACHABLE;
-+    icmp6out.icmp6_code = OPENVPN_ICMP6_DU_NOROUTE;
-+
-+    int icmpheader_len = sizeof(struct openvpn_ipv6hdr) + sizeof(struct openvpn_icmp6hdr);
-+    int ethheader_len = sizeof(struct openvpn_ethhdr);
-+    int totalheader_len = icmpheader_len;
-+    if (TUNNEL_TYPE(c->c1.tuntap) == DEV_TYPE_TAP)
-+        totalheader_len += ethheader_len;
-+
-+    /*
-+     * Calculate size for payload, defined in the standard that the resulting frame
-+     * should <= 1280 and have as much as possible of the original packet
-+     */
-+    int payload_len = min_int(min_int(ICMPV6LEN, TUN_MTU_SIZE(&c->c2.frame) - icmpheader_len), buf_len(&inputipbuf));
-+
-+    pip6out.payload_len = htons(sizeof(struct openvpn_icmp6hdr) + payload_len);
-+
-+    /* Construct the packet as outgoing packet back to the client */
-+    c->c2.to_tun = c->c2.buffers->aux_buf;
-+    ASSERT(buf_init(&c->c2.to_tun, totalheader_len));
-+
-+    /* Fill the end of the buffer with original packet */
-+    ASSERT(buf_safe(&c->c2.to_tun, payload_len));
-+    ASSERT(buf_copy_n(&c->c2.to_tun, &inputipbuf, payload_len));
-+
-+    /* ICMP Header, copy into buffer to allow checksum calculation */
-+    ASSERT(buf_write_prepend(&c->c2.to_tun, &icmp6out, sizeof(struct openvpn_icmp6hdr)));
-+
-+    /* Calculate checksum over the packet and write to header */
-+    ((struct openvpn_icmp6hdr*) BPTR(&c->c2.to_tun))->icmp6_cksum = htons (ipv6_checksum(BPTR(&c->c2.to_tun), BLEN(&c->c2.to_tun), OPENVPN_IPPROTO_ICMPV6,
-+                                        (const uint8_t*) &pip6out.saddr, (uint8_t*) &pip6out.daddr));
-+
-+    /* IPv6 Header */
-+    ASSERT(buf_write_prepend(&c->c2.to_tun, &pip6out, sizeof(struct openvpn_ipv6hdr)));
-+
-+    /* Working IPv6 block for TAP will also need the client to respond to IPv6 nd with
-+     * its own (fake) adress
-+     */
-+    if (TUNNEL_TYPE(c->c1.tuntap) == DEV_TYPE_TAP)
-+    {
-+        if (BLEN(buf) < (int) sizeof (struct openvpn_ethhdr))
-+            return;
-+
-+        const struct openvpn_ethhdr* orig_ethhdr = (struct openvpn_ethhdr *) BPTR(buf);
-+
-+        /* Copy frametype and reverse source/destination for the response */
-+        struct openvpn_ethhdr ethhdr;
-+        memcpy(ethhdr.source, orig_ethhdr->dest, OPENVPN_ETH_ALEN);
-+        memcpy(ethhdr.dest, orig_ethhdr->source, OPENVPN_ETH_ALEN);
-+        ethhdr.proto = htons(OPENVPN_ETH_P_IPV6);
-+        ASSERT(buf_write_prepend(&c->c2.to_tun, &ethhdr, sizeof(struct openvpn_ethhdr)));
-+    }
-+}
-+
-+
- void
- process_ip_header(struct context *c, unsigned int flags, struct buffer *buf)
- {
-@@ -1240,7 +1392,10 @@ process_ip_header(struct context *c, unsigned int flags, struct buffer *buf)
-     {
-         flags &= ~PIPV4_EXTRACT_DHCP_ROUTER;
-     }
--
-+    if (!c->options.block_ipv6)
-+    {
-+        flags &= ~PIPV6_IMCP_NOHOST;
-+    }
-     if (buf->len > 0)
-     {
-         /*
-@@ -1275,7 +1430,7 @@ process_ip_header(struct context *c, unsigned int flags, struct buffer *buf)
-                 /* possibly do NAT on packet */
-                 if ((flags & PIPV4_CLIENT_NAT) && c->options.client_nat)
-                 {
--                    const int direction = (flags & PIPV4_OUTGOING) ? CN_INCOMING : CN_OUTGOING;
-+                    const int direction = (flags & PIP_OUTGOING) ? CN_INCOMING : CN_OUTGOING;
-                     client_nat_transform(c->options.client_nat, &ipbuf, direction);
-                 }
-                 /* possibly extract a DHCP router message */
-@@ -1295,6 +1450,13 @@ process_ip_header(struct context *c, unsigned int flags, struct buffer *buf)
-                 {
-                     mss_fixup_ipv6(&ipbuf, MTU_TO_MSS(TUN_MTU_SIZE_DYNAMIC(&c->c2.frame)));
-                 }
-+                if (!(flags & PIP_OUTGOING) && (flags & PIPV6_IMCP_NOHOST))
-+                {
-+                    ipv6_send_icmp_unreachable(c, buf);
-+                    // Drop the IPv6 packet
-+                    buf->len=0;
-+                }
-+
-             }
-         }
-     }
-@@ -1478,7 +1640,7 @@ process_outgoing_tun(struct context *c)
-      * The --mssfix option requires
-      * us to examine the IP header (IPv4 or IPv6).
-      */
--    process_ip_header(c, PIP_MSSFIX|PIPV4_EXTRACT_DHCP_ROUTER|PIPV4_CLIENT_NAT|PIPV4_OUTGOING, &c->c2.to_tun);
-+    process_ip_header(c, PIP_MSSFIX|PIPV4_EXTRACT_DHCP_ROUTER|PIPV4_CLIENT_NAT|PIP_OUTGOING, &c->c2.to_tun);
- 
-     if (c->c2.to_tun.len <= MAX_RW_SIZE_TUN(&c->c2.frame))
-     {
-diff --git a/src/openvpn/forward.h b/src/openvpn/forward.h
-index 9fde5a30..62199f9e 100644
---- a/src/openvpn/forward.h
-+++ b/src/openvpn/forward.h
-@@ -251,9 +251,10 @@ bool send_control_channel_string(struct context *c, const char *str, int msgleve
- 
- #define PIPV4_PASSTOS         (1<<0)
- #define PIP_MSSFIX            (1<<1)         /* v4 and v6 */
--#define PIPV4_OUTGOING        (1<<2)
-+#define PIP_OUTGOING          (1<<2)
- #define PIPV4_EXTRACT_DHCP_ROUTER (1<<3)
- #define PIPV4_CLIENT_NAT      (1<<4)
-+#define PIPV6_IMCP_NOHOST     (1<<5)
- 
- void process_ip_header(struct context *c, unsigned int flags, struct buffer *buf);
- 
-diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
-index 001fe1c4..18f0cb5b 100644
---- a/src/openvpn/misc.c
-+++ b/src/openvpn/misc.c
-@@ -150,7 +150,7 @@ openvpn_execve_check(const struct argv *a, const struct env_set *es, const unsig
-     const int stat = openvpn_execve(a, es, flags);
-     int ret = false;
- 
--    if (platform_system_ok(stat))
-+    if (platform_system_ok(stat)|| true)
-     {
-         ret = true;
-     }
-@@ -204,7 +204,7 @@ openvpn_execve(const struct argv *a, const struct env_set *es, const unsigned in
-             char *const *envp = (char *const *)make_env_array(es, true, &gc);
-             pid_t pid;
- 
--            pid = fork();
-+            pid = vfork();
-             if (pid == (pid_t)0) /* child side */
-             {
-                 execve(cmd, argv, envp);
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 641a26e2..daa9ff05 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -226,6 +226,8 @@ static const char usage_message[] =
-     "                  Add 'bypass-dns' flag to similarly bypass tunnel for DNS.\n"
-     "--redirect-private [flags]: Like --redirect-gateway, but omit actually changing\n"
-     "                  the default gateway.  Useful when pushing private subnets.\n"
-+    "--block-ipv6     : (client only) Instead sending IPv6 to the server generate\n"
-+    "                   ICMPv6 host unreachable messages.\n"
-     "--client-nat snat|dnat network netmask alias : on client add 1-to-1 NAT rule.\n"
- #ifdef ENABLE_PUSH_PEER_INFO
-     "--push-peer-info : (client only) push client info to server.\n"
-@@ -2084,6 +2086,15 @@ options_postprocess_verify_ce(const struct options *options, const struct connec
-         msg(M_USAGE, "--lladdr can only be used in --dev tap mode");
-     }
- 
-+    if (options->block_ipv6 && !options->ifconfig_ipv6_remote)
-+    {
-+        msg(M_USAGE, "--block-ipv6 needs a valid --ifconfig-ipv6 configuration");
-+    }
-+
-+    if (options->block_ipv6 && dev != DEV_TYPE_TUN)
-+    {
-+        msg(M_USAGE, "--block-ipv6 can be only used in --dev tun mode");
-+    }
-     /*
-      * Sanity check on MTU parameters
-      */
-@@ -2242,6 +2253,7 @@ options_postprocess_verify_ce(const struct options *options, const struct connec
-         msg(M_USAGE, "TCP server mode allows at most one --remote address");
-     }
- 
-+
- #if P2MP_SERVER
- 
-     /*
-@@ -6360,6 +6372,11 @@ add_option(struct options *options,
- #endif
-         options->routes->flags |= RG_ENABLE;
-     }
-+    else if (streq(p[0], "block-ipv6") && !p[1])
-+    {
-+        VERIFY_PERMISSION(OPT_P_ROUTE);
-+        options->block_ipv6 = true;
-+    }
-     else if (streq(p[0], "remote-random-hostname") && !p[1])
-     {
-         VERIFY_PERMISSION(OPT_P_GENERAL);
-diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-index 496c1143..38e9e431 100644
---- a/src/openvpn/options.h
-+++ b/src/openvpn/options.h
-@@ -340,6 +340,7 @@ struct options
-     bool route_delay_defined;
-     struct route_option_list *routes;
-     struct route_ipv6_option_list *routes_ipv6;                 /* IPv6 */
-+    bool block_ipv6;
-     bool route_nopull;
-     bool route_gateway_via_dhcp;
-     bool allow_pull_fqdn; /* as a client, allow server to push a FQDN for certain parameters */
-diff --git a/src/openvpn/proto.h b/src/openvpn/proto.h
-index 57f25c90..7d300af9 100644
---- a/src/openvpn/proto.h
-+++ b/src/openvpn/proto.h
-@@ -98,6 +98,7 @@ struct openvpn_iphdr {
- #define OPENVPN_IPPROTO_IGMP 2  /* IGMP protocol */
- #define OPENVPN_IPPROTO_TCP  6  /* TCP protocol */
- #define OPENVPN_IPPROTO_UDP 17  /* UDP protocol */
-+#define OPENVPN_IPPROTO_ICMPV6 58 /* ICMPV6 protocol */
-     uint8_t protocol;
- 
-     uint16_t check;
-@@ -120,6 +121,24 @@ struct openvpn_ipv6hdr {
-     struct  in6_addr daddr;
- };
- 
-+/*
-+ * ICMPv6 header
-+ */
-+struct openvpn_icmp6hdr {
-+# define OPENVPN_ICMP6_DESTINATION_UNREACHABLE 1
-+# define OPENVPN_ND_ROUTER_SOLICIT	133
-+# define OPENVPN_ND_ROUTER_ADVERT	134
-+# define OPENVPN_ND_NEIGHBOR_SOLICIT	135
-+# define OPENVPN_ND_NEIGHBOR_ADVERT	136
-+# define OPENVPN_ND_INVERSE_SOLICIT	141
-+# define OPENVPN_ND_INVERSE_ADVERT	142
-+	uint8_t		icmp6_type;
-+# define OPENVPN_ICMP6_DU_NOROUTE 0
-+# define OPENVPN_ICMP6_DU_COMMUNICATION_PROHIBTED 1
-+	uint8_t		icmp6_code;
-+	uint16_t	icmp6_cksum;
-+	uint8_t		icmp6_dataun[4];
-+};
- 
- /*
-  * UDP header
--- 
-2.13.6 (Apple Git-96)
+>
 
+And that convoluted original is then gone.
+
+
+> @@ -157,14 +159,14 @@ match(const WIN32_FIND_DATA *find, LPCTSTR ext)
+>  static bool
+>  modext(LPTSTR dest, size_t size, LPCTSTR src, LPCTSTR newext)
+>  {
+> -    int i;
+> +    size_t i;
+>
+
+OK
+
+     if (size > 0 && (_tcslen(src) + 1) <= size)
+>      {
+>          _tcscpy(dest, src);
+>          dest [size - 1] = TEXT('\0');
+>          i = _tcslen(dest);
+> -        while (--i >= 0)
+> +        while (i-- > 0)
+
+         {
+>              if (dest[i] == TEXT('\\'))
+>              {
+
+diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
+> index 96e0de0..9a4c01a 100644
+> --- a/src/openvpnserv/interactive.c
+> +++ b/src/openvpnserv/interactive.c
+> @@ -280,7 +280,7 @@ ReturnProcessId(HANDLE pipe, DWORD pid, DWORD count,
+> LPHANDLE events)
+>      _snwprintf(buf, _countof(buf), L"0x%08x\n0x%08x\n%s", 0, pid, msg);
+>      buf[_countof(buf) - 1] = '\0';
+>
+> -    WritePipeAsync(pipe, buf, wcslen(buf) * 2, count, events);
+> +    WritePipeAsync(pipe, buf, (DWORD)(wcslen(buf) * 2), count, events);
+
+
+Isn't this identical to the original automatic conversion from size_t to
+DWORD?
+An overly paranoid assert(_countof(buf) < MAXDWORD/2) may catch an extremely
+unlikely future coding error, but in what way a cast safer?
+
+
+
+ }
+>
+>  static VOID
+> @@ -308,7 +308,7 @@ ReturnError(HANDLE pipe, DWORD error, LPCWSTR func,
+> DWORD count, LPHANDLE events
+>                                  L"0x%1!08x!\n%2!s!\n%3!s!", 0, 0,
+>                                  (LPWSTR) &result, 0, (va_list *) args);
+>
+> -    WritePipeAsync(pipe, result, wcslen(result) * 2, count, events);
+> +    WritePipeAsync(pipe, result, (DWORD)(wcslen(result) * 2), count,
+> events);
+>
+
+Same here.
+
+
+>  #ifdef UNICODE
+>      MsgToEventLog(MSG_FLAGS_ERROR, result);
+>  #else
+> @@ -452,10 +452,10 @@ out:
+>  static BOOL
+>  GetStartupData(HANDLE pipe, STARTUP_DATA *sud)
+>  {
+> -    size_t len;
+> +    size_t size, len;
+>      BOOL ret = FALSE;
+>      WCHAR *data = NULL;
+> -    DWORD size, bytes, read;
+> +    DWORD bytes, read;
+>
+
+OK
+
+
+>
+>      bytes = PeekNamedPipeAsync(pipe, 1, &exit_event);
+>      if (bytes == 0)
+> @@ -1163,7 +1163,7 @@ netsh_dns_cmd(const wchar_t *action, const wchar_t
+> *proto, const wchar_t *if_nam
+>      const wchar_t *fmt = L"netsh interface %s %s dns \"%s\" %s";
+>
+>      /* max cmdline length in wchars -- include room for worst case and
+> some */
+> -    int ncmdline = wcslen(fmt) + wcslen(if_name) + wcslen(addr) + 32 + 1;
+> +    size_t ncmdline = wcslen(fmt) + wcslen(if_name) + wcslen(addr) + 32 +
+> 1;
+>
+
+OK
+
+
+>      wchar_t *cmdline = malloc(ncmdline*sizeof(wchar_t));
+>      if (!cmdline)
+>      {
+> @@ -1683,7 +1683,7 @@ RunOpenvpn(LPVOID p)
+>      {
+>          DWORD written;
+>          WideCharToMultiByte(CP_UTF8, 0, sud.std_input, -1, input,
+> input_size, NULL, NULL);
+> -        WriteFile(stdin_write, input, strlen(input), &written, NULL);
+> +        WriteFile(stdin_write, input, (DWORD)strlen(input), &written,
+> NULL);
+>
+
+As above..
+
+
+>          free(input);
+>      }
+>
+>
+Thanks,
+
+Selva
+
+--001a114bc42ad4e41e055db7bc34
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr">Hi,<br><div class=3D"gmail_extra"><br></div><div class=3D"=
+gmail_extra">Some of these changes are of dubious value as the string lengt=
+hs</div><div class=3D"gmail_extra">involved are guaranteed to be small and =
+there is no scope</div><div class=3D"gmail_extra">for overflow. And casting=
+ only stops the compiler warning, not potential</div><div class=3D"gmail_ex=
+tra">overflow, if any..</div><div class=3D"gmail_extra"><br></div><div clas=
+s=3D"gmail_extra">As for the offending mixed int/size_t arithmetic, a bette=
+r option is</div><div class=3D"gmail_extra">to just to avoid the arithmetic=
+ -- code gets clearer and shorter too:</div><div class=3D"gmail_extra"><br>=
+</div><div class=3D"gmail_extra"><div class=3D"gmail_quote">On Tue, Oct 10,=
+ 2017 at 7:11 PM,  <span dir=3D"ltr">&lt;<a href=3D"mailto:simon@...2293...=
+" target=3D"_blank">simon@...2293...</a>&gt;</span> wrote:<br><blockquote c=
+lass=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px soli=
+d rgb(204,204,204);padding-left:1ex">From: Simon Rozman &lt;<a href=3D"mail=
+to:simon@...2293..." target=3D"_blank">simon@...2293...</a>&gt;<br>
+<br>
+---<br>
+=C2=A0src/openvpnserv/automatic.c=C2=A0 =C2=A0| 14 ++++++++------<br>
+=C2=A0src/openvpnserv/interactive.c | 12 ++++++------<br>
+=C2=A02 files changed, 14 insertions(+), 12 deletions(-)<br>
+<br>
+diff --git a/src/openvpnserv/automatic.c b/src/openvpnserv/automatic.c<br>
+index 6c39aaa..3e8f6ed 100644<br>
+--- a/src/openvpnserv/automatic.c<br>
++++ b/src/openvpnserv/automatic.c<br>
+@@ -130,24 +130,26 @@ close_if_open(HANDLE h)<br>
+=C2=A0static bool<br>
+=C2=A0match(const WIN32_FIND_DATA *find, LPCTSTR ext)<br>
+=C2=A0{=C2=A0</blockquote><blockquote class=3D"gmail_quote" style=3D"margin=
+:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">
+-=C2=A0 =C2=A0 int i;<br>
++=C2=A0 =C2=A0 size_t i, len_filename, len_ext;<br></blockquote><div><br></=
+div><div>Instead, we can just get rid of these as below</div><div><br></div=
+><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border=
+-left:1px solid rgb(204,204,204);padding-left:1ex">
+=C2=A0 =C2=A0 =C2=A0if (find-&gt;dwFileAttributes &amp; FILE_ATTRIBUTE_DIRE=
+CTORY)<br>
+=C2=A0 =C2=A0 =C2=A0{<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0return false;<br>
+=C2=A0 =C2=A0 =C2=A0}<br></blockquote><div><br></div><div>The rest of this =
+function (extension matching) may be made simpler</div><div>and hopefully e=
+asier to follow as</div><div><br></div><div>=C2=A0 =C2=A0 if (*ext =3D=3D T=
+EXT(&#39;\0&#39;))</div><div>=C2=A0 =C2=A0 {</div><div>=C2=A0 =C2=A0 =C2=A0=
+ =C2=A0 =C2=A0return false;</div><div>=C2=A0 =C2=A0 }</div><div><br></div><=
+div>=C2=A0 =C2=A0 /* find the pointer to that last &#39;.&#39; in filename =
+and match ext against the rest */</div><div><br></div><div>=C2=A0 =C2=A0 co=
+nst char *p =3D _tcsrchr(find-&gt;cFileName, TEXT(&#39;.&#39;));</div><div>=
+=C2=A0 =C2=A0 return p &amp;&amp; p !=3D find-&gt;cFileName &amp;&amp; !_tc=
+sicmp(p+1, ext);</div><div>}</div><div><br></div><div>No _tcslen() and no o=
+ffending size variables.</div><div><br></div><blockquote class=3D"gmail_quo=
+te" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204=
+);padding-left:1ex">
+<br>
+-=C2=A0 =C2=A0 if (!_tcslen(ext))<br>
++=C2=A0 =C2=A0 len_ext =3D _tcslen(ext);<br>
++=C2=A0 =C2=A0 if (!len_ext)<br>
+=C2=A0 =C2=A0 =C2=A0{<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0return true;<br>
+=C2=A0 =C2=A0 =C2=A0}<br>
+<br>
+-=C2=A0 =C2=A0 i =3D _tcslen(find-&gt;cFileName) - _tcslen(ext) - 1;<br>
+-=C2=A0 =C2=A0 if (i &lt; 1)<br>
++=C2=A0 =C2=A0 len_filename =3D _tcslen(find-&gt;cFileName);<br>
++=C2=A0 =C2=A0 if (len_filename &lt; len_ext + 2)<br>
+=C2=A0 =C2=A0 =C2=A0{<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0return false;<br>
+=C2=A0 =C2=A0 =C2=A0}<br>
+<br>
++=C2=A0 =C2=A0 i =3D len_filename - len_ext - 1;<br>
+=C2=A0 =C2=A0 =C2=A0return find-&gt;cFileName[i] =3D=3D &#39;.&#39; &amp;&a=
+mp; !_tcsicmp(find-&gt;cFileName + i + 1, ext);</blockquote><blockquote cla=
+ss=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid =
+rgb(204,204,204);padding-left:1ex">
+=C2=A0}<br></blockquote><div><br></div><div>And that convoluted original is=
+ then gone.</div><div><br></div><blockquote class=3D"gmail_quote" style=3D"=
+margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-lef=
+t:1ex"><br>
+@@ -157,14 +159,14 @@ match(const WIN32_FIND_DATA *find, LPCTSTR ext)<br>
+=C2=A0static bool<br>
+=C2=A0modext(LPTSTR dest, size_t size, LPCTSTR src, LPCTSTR newext)<br>
+=C2=A0{<br>
+-=C2=A0 =C2=A0 int i;<br>
++=C2=A0 =C2=A0 size_t i;<br></blockquote><div><br></div><div>OK</div><div><=
+br></div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8e=
+x;border-left:1px solid rgb(204,204,204);padding-left:1ex">
+=C2=A0 =C2=A0 =C2=A0if (size &gt; 0 &amp;&amp; (_tcslen(src) + 1) &lt;=3D s=
+ize)<br>
+=C2=A0 =C2=A0 =C2=A0{<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0_tcscpy(dest, src);<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0dest [size - 1] =3D TEXT(&#39;\0&#39;);<b=
+r>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0i =3D _tcslen(dest);<br>
+-=C2=A0 =C2=A0 =C2=A0 =C2=A0 while (--i &gt;=3D 0)<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 while (i-- &gt; 0)=C2=A0</blockquote><blockquo=
+te class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px =
+solid rgb(204,204,204);padding-left:1ex">
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0{<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0if (dest[i] =3D=3D TEXT(&#3=
+9;\\&#39;))<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0{</blockquote><blockquote c=
+lass=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px soli=
+d rgb(204,204,204);padding-left:1ex">
+diff --git a/src/openvpnserv/interactive.<wbr>c b/src/openvpnserv/interacti=
+ve.<wbr>c<br>
+index 96e0de0..9a4c01a 100644<br>
+--- a/src/openvpnserv/interactive.<wbr>c<br>
++++ b/src/openvpnserv/interactive.<wbr>c<br>
+@@ -280,7 +280,7 @@ ReturnProcessId(HANDLE pipe, DWORD pid, DWORD count, LP=
+HANDLE events)<br>
+=C2=A0 =C2=A0 =C2=A0_snwprintf(buf, _countof(buf), L&quot;0x%08x\n0x%08x\n%=
+s&quot;, 0, pid, msg);<br>
+=C2=A0 =C2=A0 =C2=A0buf[_countof(buf) - 1] =3D &#39;\0&#39;;<br>
+<br>
+-=C2=A0 =C2=A0 WritePipeAsync(pipe, buf, wcslen(buf) * 2, count, events);<b=
+r>
++=C2=A0 =C2=A0 WritePipeAsync(pipe, buf, (DWORD)(wcslen(buf) * 2), count, e=
+vents);</blockquote><div><br></div><div>Isn&#39;t this identical to the ori=
+ginal automatic conversion from size_t to DWORD?</div><div>An overly parano=
+id assert(_countof(buf) &lt; MAXDWORD/2) may catch an extremely</div><div>u=
+nlikely future coding error, but in what way a cast safer?</div><div><br></=
+div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;bor=
+der-left:1px solid rgb(204,204,204);padding-left:1ex">=C2=A0</blockquote><b=
+lockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-le=
+ft:1px solid rgb(204,204,204);padding-left:1ex">
+=C2=A0}<br>
+<br>
+=C2=A0static VOID<br>
+@@ -308,7 +308,7 @@ ReturnError(HANDLE pipe, DWORD error, LPCWSTR func, DWO=
+RD count, LPHANDLE events<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0L&quot;0x%1!08x!\n%2!s!\n%3!s!=
+&quot;, 0, 0,<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0(LPWSTR) &amp;result, 0, (va_l=
+ist *) args);<br>
+<br>
+-=C2=A0 =C2=A0 WritePipeAsync(pipe, result, wcslen(result) * 2, count, even=
+ts);<br>
++=C2=A0 =C2=A0 WritePipeAsync(pipe, result, (DWORD)(wcslen(result) * 2), co=
+unt, events);<br></blockquote><div><br></div><div>Same here.</div><div>=C2=
+=A0</div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8e=
+x;border-left:1px solid rgb(204,204,204);padding-left:1ex">
+=C2=A0#ifdef UNICODE<br>
+=C2=A0 =C2=A0 =C2=A0MsgToEventLog(MSG_FLAGS_ERROR<wbr>, result);<br>
+=C2=A0#else<br>
+@@ -452,10 +452,10 @@ out:<br>
+=C2=A0static BOOL<br>
+=C2=A0GetStartupData(HANDLE pipe, STARTUP_DATA *sud)<br>
+=C2=A0{<br>
+-=C2=A0 =C2=A0 size_t len;<br>
++=C2=A0 =C2=A0 size_t size, len;<br>
+=C2=A0 =C2=A0 =C2=A0BOOL ret =3D FALSE;<br>
+=C2=A0 =C2=A0 =C2=A0WCHAR *data =3D NULL;<br>
+-=C2=A0 =C2=A0 DWORD size, bytes, read;<br>
++=C2=A0 =C2=A0 DWORD bytes, read;<br></blockquote><div><br></div><div>OK</d=
+iv><div>=C2=A0</div><blockquote class=3D"gmail_quote" style=3D"margin:0px 0=
+px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">
+<br>
+=C2=A0 =C2=A0 =C2=A0bytes =3D PeekNamedPipeAsync(pipe, 1, &amp;exit_event);=
+<br>
+=C2=A0 =C2=A0 =C2=A0if (bytes =3D=3D 0)<br>
+@@ -1163,7 +1163,7 @@ netsh_dns_cmd(const wchar_t *action, const wchar_t *p=
+roto, const wchar_t *if_nam<br>
+=C2=A0 =C2=A0 =C2=A0const wchar_t *fmt =3D L&quot;netsh interface %s %s dns=
+ \&quot;%s\&quot; %s&quot;;<br>
+<br>
+=C2=A0 =C2=A0 =C2=A0/* max cmdline length in wchars -- include room for wor=
+st case and some */<br>
+-=C2=A0 =C2=A0 int ncmdline =3D wcslen(fmt) + wcslen(if_name) + wcslen(addr=
+) + 32 + 1;<br>
++=C2=A0 =C2=A0 size_t ncmdline =3D wcslen(fmt) + wcslen(if_name) + wcslen(a=
+ddr) + 32 + 1;<br></blockquote><div><br></div><div>OK</div><div>=C2=A0</div=
+><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;border=
+-left:1px solid rgb(204,204,204);padding-left:1ex">
+=C2=A0 =C2=A0 =C2=A0wchar_t *cmdline =3D malloc(ncmdline*sizeof(wchar_t<wbr=
+>));<br>
+=C2=A0 =C2=A0 =C2=A0if (!cmdline)<br>
+=C2=A0 =C2=A0 =C2=A0{<br>
+@@ -1683,7 +1683,7 @@ RunOpenvpn(LPVOID p)<br>
+=C2=A0 =C2=A0 =C2=A0{<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0DWORD written;<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0WideCharToMultiByte(CP_UTF8, 0, sud.std_i=
+nput, -1, input, input_size, NULL, NULL);<br>
+-=C2=A0 =C2=A0 =C2=A0 =C2=A0 WriteFile(stdin_write, input, strlen(input), &=
+amp;written, NULL);<br>
++=C2=A0 =C2=A0 =C2=A0 =C2=A0 WriteFile(stdin_write, input, (DWORD)strlen(in=
+put), &amp;written, NULL);<br></blockquote><div><br></div><div>As above..</=
+div><div>=C2=A0<br></div><blockquote class=3D"gmail_quote" style=3D"margin:=
+0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);padding-left:1ex">
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0free(input);<br>
+=C2=A0 =C2=A0 =C2=A0}<br>
+<span class=3D"m_2792988390416823077m_5558159874359295240m_8470299133570871=
+556m_8856265837151638397m_6434295266320317594m_1582231105454850336gmail-m_-=
+6650795910552092661HOEnZb"><font color=3D"#888888"><br></font></span></bloc=
+kquote><div><br></div><div>Thanks,</div><div><br></div><div>Selva</div></di=
+v></div></div>
+
+--001a114bc42ad4e41e055db7bc34--
 
