@@ -1,15 +1,9 @@
-Date: Sat, 11 Nov 2017 15:21:27 +0100
 From: Gert Doering <gert@...1296...>
-Message-ID: <20171111142127.GB958@...1296...>
+Date: Sat, 11 Nov 2017 15:22:30 +0100
+Message-Id: <20171111142230.3288-1-gert@...1296...>
+In-Reply-To: <20171111133649.20192-1-gert@...1296...>
 References: <20171111133649.20192-1-gert@...1296...>
- <98643661-9d58-328c-36da-b314c456af8f@...1856...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="1R3djOICCIfo/gUr"
-Content-Disposition: inline
-In-Reply-To: <98643661-9d58-328c-36da-b314c456af8f@...1856...>
-Subject: Re: [Openvpn-devel] [PATCH] Remove warning on pushed tun-ipv6
- option.
+Subject: [Openvpn-devel] [PATCH v2] Remove warning on pushed tun-ipv6 option.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,51 +12,44 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan@...1856...>
-Cc: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---1R3djOICCIfo/gUr
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+tun-ipv6 is a no-op nowadays, and we print a warning to let users know -
+which is not helpful for server-pushed tun-ipv6 (which might be the
+result of --server-ipv6 automatically pushing this).  So, remove the
+warning if parsing pushed options.
 
-Hi,
+Also, remove the VERIFY_PERMISSION() call here which has side effects
+on the "which class of options got pushed, do we need to act on them
+later on?" flag set.
 
-On Sat, Nov 11, 2017 at 03:16:13PM +0100, Steffan Karger wrote:
-> (I'll leave review of the correctness of the change to someone who
-> actually understands what tun-ipv6 exactly does.)
+v2: use existing pull_mode flag
 
-"exactly and absolutely nothing" :-)
+Signed-off-by: Gert Doering <gert@...1296...>
+---
+ src/openvpn/options.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-(It *used* to be a flag to tell openvpn "switch the tun interface into=20
-ipv6-compatible mode", but after Arne's revamping of this it's basically
-a no-op, which we keep around for compatibility reasons with old config
-files - and the warning points out that it does not do anything)
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 641a26e2..4caa2cd1 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -5233,8 +5233,10 @@ add_option(struct options *options,
+     }
+     else if (streq(p[0], "tun-ipv6") && !p[1])
+     {
+-        VERIFY_PERMISSION(OPT_P_UP);
+-        msg(M_WARN, "Note: option tun-ipv6 is ignored because modern operating systems do not need special IPv6 tun handling anymore.");
++        if ( !pull_mode )
++        {
++            msg(M_WARN, "Note: option tun-ipv6 is ignored because modern operating systems do not need special IPv6 tun handling anymore.");
++        }
+     }
+ #ifdef ENABLE_IPROUTE
+     else if (streq(p[0], "iproute") && p[1] && !p[2])
+-- 
+2.13.0
 
-gert
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---1R3djOICCIfo/gUr
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJaBwdmAAoJEB2Cnv7KVigSYA4L/AsxOOeF2B307TLF172gIp0H
-f3RzdSd4JwRCU2NYNaZDmfKAq/cBzWk6JEBB7R3zn124AHis69f7X5P+HENuLF0j
-Sj2AfUSiQ8NzRRI0/o6ynwahTR9dv1zqDnXO7SyFOtKQzFi2OYAPIdjIc7USbNaL
-3po51OkiRqhKPKQwGFF5kzLARuaa/6N6AUEaOHzJ3ZmyKe/OrCZplFWIwmrIB8e4
-atISuuBW3uII8Lt9OFn3EGc7FZMBfx2M50Vgugq5Wizz+c9X6DPBSA8rfW6CyiQl
-igOXe0pJ7z2zOSRc6Q09jTze1bGm2EFUBCEGY+vUJCrxrjmj36JwDsuGzVnK0KnL
-/LkIbnLBhg3LTskDUDHUbPpBzPeD7bZnLFXLfL2zXCKvj7Xh8my+rxK/MzxYLcE6
-7/yNYDVOMiQAHqQOa/7pb9PjL9rmP+pgvqHi4AfzwRQrpSAop+3ExnVGd4+qk7vI
-D2z4gOAPd9fgOtlbifGL1JvlFiXTfb1t783jWOHhSg==
-=BzXZ
------END PGP SIGNATURE-----
-
---1R3djOICCIfo/gUr--
 
