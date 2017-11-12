@@ -1,14 +1,14 @@
-References: <CAEsd45TcQP9BDxyV+k+UXJUoZ7ZNoLGZuAq03C=6=gTBv-=Dfg@...278...>
- <1510416452-1201-1-git-send-email-arne@...1227...>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <48bb26ee-9a28-24fa-ad5f-485aec1c4ee4@...2181...>
-Date: Sun, 12 Nov 2017 17:32:49 +0800
+References: <20171110161131.GZ958@...1296...>
+ <20171111153653.24773-1-steffan@...1856...>
+ <a619ef35-8c66-9717-48a0-f0db052ee5c0@...2181...>
+From: Steffan Karger <steffan@...1856...>
+Message-ID: <7fbf60b2-e417-5436-e1df-f6bc8ed57692@...1856...>
+Date: Sun, 12 Nov 2017 10:35:05 +0100
 MIME-Version: 1.0
-In-Reply-To: <1510416452-1201-1-git-send-email-arne@...1227...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="aDHjXaxEPiHCiGSR1vVLu3txG5adipqIw"
-Subject: Re: [Openvpn-devel] [PATCH v2] Implement block-ipv6
+In-Reply-To: <a619ef35-8c66-9717-48a0-f0db052ee5c0@...2181...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH v4] Add --tls-cert-profile option for
+ mbedtls builds
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,590 +17,368 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---aDHjXaxEPiHCiGSR1vVLu3txG5adipqIw
-Content-Type: multipart/mixed; boundary="bfWSrGeuVO6TlwglBG58SJKJFKgIQlnk6";
- protected-headers="v1"
-From: Antonio Quartulli <a@...2181...>
-To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
-Message-ID: <48bb26ee-9a28-24fa-ad5f-485aec1c4ee4@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH v2] Implement block-ipv6
-References: <CAEsd45TcQP9BDxyV+k+UXJUoZ7ZNoLGZuAq03C=6=gTBv-=Dfg@...278...>
- <1510416452-1201-1-git-send-email-arne@...1227...>
-In-Reply-To: <1510416452-1201-1-git-send-email-arne@...1227...>
-
---bfWSrGeuVO6TlwglBG58SJKJFKgIQlnk6
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+To: Antonio Quartulli <a@...2181...>, openvpn-devel@lists.sourceforge.net
 
 Hi,
 
-On 12/11/17 00:07, Arne Schwabe wrote:
-> This can be used to redirect all IPv6 traffic to the tun interface, effec=
-tively black holing the IPv6 traffic. Without ICMPv6 error messages this wi=
-ll result in timeouts when the server does not send error codes.
-> block-ipv6 allows client side only blocking on all platforms that OpenVPN=
- supports IPv6. On Android it is only way to do sensible IPv6 blocking on A=
-ndroid < 5.0 and broken devices (Samsung).
-> ---
->  doc/openvpn.8         |  17 +++++
->  src/openvpn/forward.c | 170 ++++++++++++++++++++++++++++++++++++++++++++=
-++++--
->  src/openvpn/forward.h |   3 +-
->  src/openvpn/misc.c    |   4 +-
->  src/openvpn/options.c |  17 +++++
->  src/openvpn/options.h |   1 +
->  src/openvpn/proto.h   |  19 ++++++
->  7 files changed, 224 insertions(+), 7 deletions(-)
->=20
-> diff --git a/doc/openvpn.8 b/doc/openvpn.8
-> index a4189ac2..26b5f7de 100644
-> --- a/doc/openvpn.8
-> +++ b/doc/openvpn.8
-> @@ -1232,6 +1232,23 @@ Like \-\-redirect\-gateway, but omit actually chan=
-ging the default
->  gateway.  Useful when pushing private subnets.
->  .\"*********************************************************
->  .TP
-> +.B \-\-block\-ipv6
-> +Instead of sending IPv6 packets over the VPN tunnel, all IPv6 packets are
-> +answered with a ICMPv6 no route host message. This options is intended f=
-or
-> +cases when IPv6 should be blocked and other options are not available.
-> +
-> +Following config block would send all IPv6 traffic to OpenVPN and answer=
- all
-> +requests with no route to host, effectively blocking IPv6.
-> +
-> +.B \-\-ifconfig-ipv6
-> +fd15:53b6:dead::2/64  fd15:53b6:dead::1
-> +.br
-> +.B \-\-redirect\-gateway
-> +ipv6
-> +.br
-> +.B \-\-block\-ipv6
-> +.\"*********************************************************
-> +.TP
->  .B \-\-tun\-mtu n
->  Take the TUN device MTU to be
->  .B n
-> diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-> index 1b7455bb..21cce90b 100644
-> --- a/src/openvpn/forward.c
-> +++ b/src/openvpn/forward.c
-> @@ -1198,7 +1198,7 @@ process_incoming_tun(struct context *c)
->           * The --passtos and --mssfix options require
->           * us to examine the IP header (IPv4 or IPv6).
->           */
-> -        process_ip_header(c, PIPV4_PASSTOS|PIP_MSSFIX|PIPV4_CLIENT_NAT, =
-&c->c2.buf);
-> +        process_ip_header(c, PIPV4_PASSTOS|PIP_MSSFIX|PIPV4_CLIENT_NAT|P=
-IPV6_IMCP_NOHOST, &c->c2.buf);
->=20=20
->  #ifdef PACKET_TRUNCATION_CHECK
->          /* if (c->c2.buf.len > 1) --c->c2.buf.len; */
-> @@ -1209,6 +1209,9 @@ process_incoming_tun(struct context *c)
->                                  &c->c2.n_trunc_pre_encrypt);
->  #endif
->=20=20
-> +    }
-> +    if (c->c2.buf.len > 0)
-> +    {
->          encrypt_sign(c, true);
->      }
+On 11-11-17 18:58, Antonio Quartulli wrote:
+> On 11/11/17 23:36, Steffan Karger wrote:
+>> From: Steffan Karger <steffan.karger@...1435...>
+>>
+>> This allows the user to specify what certificate crypto algorithms to
+>> support.  The supported profiles are 'preferred', 'legacy' (default) and
+>> 'suiteb', as discussed in <84590a17-1c48-9df2-c48e-4160750b2e33@...1435...>
+>> (https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg14214.html).
+>>
+>> This only implements the feature for mbed TLS builds, because for mbed it
+>> is both more easy to implement and the most relevant because mbed TLS 2+
+>> is by default somewhat restrictive by requiring 2048-bit+ for RSA keys.
+>>
+>> This patch uses 'legacy' as the default profile following discussion on
+>> the openvpn-devel mailing list.  This way this patch can be applied to
+>> both the release/2.4 and master branches.  I'll send a follow-up patch for
+>> the master branch to change the default to 'preferred' later.
+>>
+>> Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+>> ---
+>> v2:
+>>  - add documentation (manpage, Changes.rst and --help)
+>>  - no longer print a warning message on each startup for OpenSSL builds
+>> v3:
+>>  - remove format changes in unrelated items (introduced in v2)
+>>  - Update Changes.rst text to reflect that the default in 2.4.2 is 'legacy'
+>>    and the default in 2.5 will be 'preferred' (as discussed on the ML).
+>>  - This patch is for the master branch only now (due to the default).
+>> v4:
+>>  - Ignore the option for OpenSSL builds, instead of rejecting the option
+>>    and refusing to start.
+>>  - Patch is for master and release/2.4 again.  A follow-up patch will
+>>    change the default for master later on.
+>>
+>>  Changes.rst               | 12 +++++++++++
+>>  doc/openvpn.8             | 22 ++++++++++++++++++++
+>>  src/openvpn/options.c     | 16 ++++++++++++++-
+>>  src/openvpn/options.h     |  1 +
+>>  src/openvpn/ssl.c         |  3 +++
+>>  src/openvpn/ssl_backend.h | 10 ++++++++++
+>>  src/openvpn/ssl_mbedtls.c | 51 +++++++++++++++++++++++++++++++++++++++++++++++
+>>  src/openvpn/ssl_mbedtls.h |  1 +
+>>  src/openvpn/ssl_openssl.c |  6 ++++++
+>>  9 files changed, 121 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/Changes.rst b/Changes.rst
+>> index db9b18b9..a6090cf5 100644
+>> --- a/Changes.rst
+>> +++ b/Changes.rst
+>> @@ -321,6 +321,18 @@ Maintainer-visible changes
+>>    i386/i686 builds on RHEL5.
+>>  
+>>  
+>> +Version 2.4.5
+>> +=============
+>> +
+>> +New features
+>> +------------
+>> +- The new option ``--tls-cert-profile`` can be used to restrict the set of
+>> +  allowed crypto algorithms in TLS certificates in mbed TLS builds.  The
+>> +  default profile is 'legacy' for now, which allows SHA1+, RSA-1024+ and any
+>> +  elliptic curve certificates.  The default will be changed to the 'preferred'
+>> +  profile in the future, which requires SHA2+, RSA-2048+ and any curve.
+>> +
+>> +
+>>  Version 2.4.3
+>>  =============
+>>  
+>> diff --git a/doc/openvpn.8 b/doc/openvpn.8
+>> index a4189ac2..6059c81d 100644
+>> --- a/doc/openvpn.8
+>> +++ b/doc/openvpn.8
+>> @@ -4917,6 +4917,28 @@ when using mbed TLS or
+>>  OpenSSL.
+>>  .\"*********************************************************
+>>  .TP
+>> +.B \-\-tls\-cert\-profile profile
+>> +Set the allowed cryptographic algorithms for certificates according to
+>> +.B profile\fN.
+>> +
+>> +The following profiles are supported:
+>> +
+>> +.B preferred
+>> +: SHA2 and newer, RSA 2048-bit+, any elliptic curve.
+>> +
+>> +.B legacy
+>> +(default): SHA1 and newer, RSA 2048-bit+, any elliptic curve.
+>> +
+> 
+> don't you think it would be better to put legacy as first profile? That
+> would sort the list from the weakest to the strongest profile.
 
-I might not have a full understanding of this chunk: but could you
-explain how this is related to this patch?
+When I wrote the original patch, "preferred" was the default and I
+wanted to have the default first.  But now that "legacy" is the default,
+I agree that it's better to put that first.  Will fix.
 
+>> +.B suiteb
+>> +: SHA256/SHA384, ECDSA with P-256 or P-384.
+>> +
+>> +This option is only supported for mbed TLS builds.  OpenSSL builds accept any
+>> +certificate that OpenSSL accepts.
+>> +
+>> +OpenVPN will migrate to 'preferred' as default in the future.  Please ensure
+>> +that your keys already comply.
+>> +.\"*********************************************************
+>> +.TP
+>>  .B \-\-tls\-timeout n
+>>  Packet retransmit timeout on TLS control channel
+>>  if no acknowledgment from remote within
+>> diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+>> index 49ed004b..23c2c02a 100644
+>> --- a/src/openvpn/options.c
+>> +++ b/src/openvpn/options.c
+>> @@ -599,6 +599,8 @@ static const char usage_message[] =
+>>  #endif
+>>      "--tls-cipher l  : A list l of allowable TLS ciphers separated by : (optional).\n"
+>>      "                : Use --show-tls to see a list of supported TLS ciphers.\n"
+>> +    "--tls-cert-profile p : Set the allowed certificate crypto algorithm profile\n"
+>> +    "                  (default=%s).\n"
+>>      "--tls-timeout n : Packet retransmit timeout on TLS control channel\n"
+>>      "                  if no ACK from remote within n seconds (default=%d).\n"
+>>      "--reneg-bytes n : Renegotiate data chan. key after n bytes sent and recvd.\n"
+>> @@ -872,6 +874,7 @@ init_options(struct options *o, const bool init_gc)
+>>      o->renegotiate_seconds = 3600;
+>>      o->handshake_window = 60;
+>>      o->transition_window = 3600;
+>> +    o->tls_cert_profile = "legacy";
+>>      o->ecdh_curve = NULL;
+>>  #ifdef ENABLE_X509ALTUSERNAME
+>>      o->x509_username_field = X509_USERNAME_FIELD_DEFAULT;
+>> @@ -1750,6 +1753,7 @@ show_settings(const struct options *o)
+>>      SHOW_STR(cryptoapi_cert);
+>>  #endif
+>>      SHOW_STR(cipher_list);
+>> +    SHOW_STR(tls_cert_profile);
+>>      SHOW_STR(tls_verify);
+>>      SHOW_STR(tls_export_cert);
+>>      SHOW_INT(verify_x509_type);
+>> @@ -2729,6 +2733,7 @@ options_postprocess_verify_ce(const struct options *options, const struct connec
+>>          MUST_BE_UNDEF(pkcs12_file);
+>>  #endif
+>>          MUST_BE_UNDEF(cipher_list);
+>> +        MUST_BE_UNDEF(tls_cert_profile);
+>>          MUST_BE_UNDEF(tls_verify);
+>>          MUST_BE_UNDEF(tls_export_cert);
+>>          MUST_BE_UNDEF(verify_x509_name);
+>> @@ -4086,7 +4091,7 @@ usage(void)
+>>              o.verbosity,
+>>              o.authname, o.ciphername,
+>>              o.replay_window, o.replay_time,
+>> -            o.tls_timeout, o.renegotiate_seconds,
+>> +            o.tls_cert_profile, o.tls_timeout, o.renegotiate_seconds,
+>>              o.handshake_window, o.transition_window);
+>>  #else  /* ifdef ENABLE_CRYPTO */
+>>      fprintf(fp, usage_message,
+>> @@ -7831,6 +7836,15 @@ add_option(struct options *options,
+>>          VERIFY_PERMISSION(OPT_P_GENERAL);
+>>          options->cipher_list = p[1];
+>>      }
+>> +    else if (streq(p[0], "tls-cert-profile") && p[1] && !p[2])
+>> +    {
+>> +        VERIFY_PERMISSION(OPT_P_GENERAL);
+>> +#ifdef ENABLE_CRYPTO_MBEDTLS
+>> +        options->tls_cert_profile = p[1];
+>> +#else
+>> +        msg(M_WARN, "WARNING: --tls-cert-profile is not yet implemented for OpenSSL, ignoring option.");
+>> +#endif
+> 
+> rather than polluting this code with a new ifdef, wouldn't it be
+> meaningful to print this message in the openssl routine doing the SSL
+> context setup?
+> 
+> This way we get rid of the ifdef and the "openssl" specific code (which
+> is just the msg()) would reside in the openssl code.
+> 
+> after all this is not an exception on the parsing of the option, but
+> it's an exception on how the value is used.
 
->      else
-> @@ -1219,6 +1222,155 @@ process_incoming_tun(struct context *c)
->      gc_free(&gc);
->  }
->=20=20
-> +/**
-> + *  Calculates an IPv6 checksum with a pseudo header as required by TCP,=
- UDP and ICMPv6
-> + * @param payload the TCP, ICMPv6 or UDP packet
-> + * @param len_payload length of payload
-> + * @param src_addr
-> + * @param dest_addr
-> + * @return calculated checksum in host order
-> + */
-> +static uint16_t
-> +ipv6_checksum(const uint8_t *payload,
-> +              const int len_payload,
-> +              const int next_header,
-> +              const uint8_t *src_addr,
-> +              const uint8_t *dest_addr)
-> +{
-> +    uint32_t sum =3D 0;
-> +
-> +    /* make 16 bit words out of every two adjacent 8 bit words and  */
-> +    /* calculate the sum of all 16 bit words */
-> +    for (int i =3D 0; i < len_payload; i +=3D 2)
-> +    {
-> +        sum +=3D  (uint16_t) (((payload[i] << 8) & 0xFF00) + ((i + 1 < l=
-en_payload) ? (payload[i + 1] & 0xFF) : 0));
-> +
-> +    }
-> +
-> +    /* add the pseudo header which contains the IP source and destinatio=
-n addresses */
-> +    for (int i =3D 0; i < 16; i +=3D 2)
-> +    {
-> +        sum +=3D (uint16_t) ((src_addr[i] << 8) & 0xFF00) + (src_addr[i+=
-1] & 0xFF);
-> +
-> +    }
-> +    for (int i =3D 0; i < 16; i +=3D 2)
-> +    {
-> +        sum +=3D (uint16_t) ((dest_addr[i] << 8) & 0xFF00) + (dest_addr[=
-i+1] & 0xFF);
-> +    }
-> +
-> +    /* the length of the payload */
-> +    sum +=3D (uint16_t) len_payload;
-> +
-> +    /* The next header */
-> +    sum +=3D (uint16_t) next_header;
-> +
-> +    /* keep only the last 16 bits of the 32 bit calculated sum and add t=
-he carries */
-> +    while (sum >> 16)
-> +    {
-> +        sum =3D (sum & 0xFFFF) + (sum >> 16);
-> +    }
-> +
-> +    /* Take the one's complement of sum */
-> +    return ((uint16_t) ~sum);
-> +}
+Gooid point.  Though it was a bit more tricky than you might have
+expected, because the cryptolib-specific code didn't know whether the
+user specified the option or we were using the default (and I didn't
+want to print warning when the uses didn't specify the option).
 
-The function above is basically a copy of udp_checksum() with very
-little differences.
+To work around that, I decided to implement the OpenSSL version too,
+using the approximation based on security levels that was discussed with
+Gert and David during the hackathon.
 
-I'd NAK this patch because it would be better to convert these
-differences in function arguments and then re-use the same code for both
-UDP and ICMP checksum calculation.
+>> +    }
+>>      else if (streq(p[0], "crl-verify") && p[1] && ((p[2] && streq(p[2], "dir"))
+>>                                                     || (p[2] && streq(p[1], INLINE_FILE_TAG) ) || !p[2]) && !p[3])
+>>      {
+>> diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+>> index 496c1143..85ff200b 100644
+>> --- a/src/openvpn/options.h
+>> +++ b/src/openvpn/options.h
+>> @@ -502,6 +502,7 @@ struct options
+>>      const char *priv_key_file;
+>>      const char *pkcs12_file;
+>>      const char *cipher_list;
+>> +    const char *tls_cert_profile;
+>>      const char *ecdh_curve;
+>>      const char *tls_verify;
+>>      int verify_x509_type;
+>> diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+>> index cb94229a..48c1b477 100644
+>> --- a/src/openvpn/ssl.c
+>> +++ b/src/openvpn/ssl.c
+>> @@ -621,6 +621,9 @@ init_ssl(const struct options *options, struct tls_root_ctx *new_ctx)
+>>       * cipher restrictions before loading certificates */
+>>      tls_ctx_restrict_ciphers(new_ctx, options->cipher_list);
+>>  
+>> +    /* Restrict allowed certificate crypto algorithms */
+>> +    tls_ctx_set_cert_profile(new_ctx, options->tls_cert_profile);
+>> +
+>>      tls_ctx_set_options(new_ctx, options->ssl_flags);
+>>  
+>>      if (options->pkcs12_file)
+>> diff --git a/src/openvpn/ssl_backend.h b/src/openvpn/ssl_backend.h
+>> index aba5a4de..ddc76a97 100644
+>> --- a/src/openvpn/ssl_backend.h
+>> +++ b/src/openvpn/ssl_backend.h
+>> @@ -176,6 +176,16 @@ void tls_ctx_set_options(struct tls_root_ctx *ctx, unsigned int ssl_flags);
+>>   */
+>>  void tls_ctx_restrict_ciphers(struct tls_root_ctx *ctx, const char *ciphers);
+>>  
+>> +/**
+>> + * Set the TLS certificate profile.  The profile defines which crypto
+>> + * algorithms may be used in the supplied certificate.
+>> + *
+>> + * @param ctx           TLS context to restrict, must be valid.
+>> + * @param profile       The profile name ('preferred', 'legacy' or 'suiteb').
+>> + *                      Defaults to 'preferred' if NULL.
+>> + */
+>> +void tls_ctx_set_cert_profile(struct tls_root_ctx *ctx, const char *profile);
+>> +
+>>  /**
+>>   * Check our certificate notBefore and notAfter fields, and warn if the cert is
+>>   * either not yet valid or has expired.  Note that this is a non-fatal error,
+>> diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
+>> index 861d936d..6950abfe 100644
+>> --- a/src/openvpn/ssl_mbedtls.c
+>> +++ b/src/openvpn/ssl_mbedtls.c
+>> @@ -62,6 +62,34 @@
+>>  #include <mbedtls/pem.h>
+>>  #include <mbedtls/sha256.h>
+>>  
+>> +static const mbedtls_x509_crt_profile openvpn_x509_crt_profile_legacy =
+>> +{
+>> +    /* Hashes from SHA-1 and above */
+>> +    MBEDTLS_X509_ID_FLAG( MBEDTLS_MD_SHA1 ) |
+>> +    MBEDTLS_X509_ID_FLAG( MBEDTLS_MD_RIPEMD160 ) |
+>> +    MBEDTLS_X509_ID_FLAG( MBEDTLS_MD_SHA224 ) |
+>> +    MBEDTLS_X509_ID_FLAG( MBEDTLS_MD_SHA256 ) |
+>> +    MBEDTLS_X509_ID_FLAG( MBEDTLS_MD_SHA384 ) |
+>> +    MBEDTLS_X509_ID_FLAG( MBEDTLS_MD_SHA512 ),
+>> +    0xFFFFFFF, /* Any PK alg    */
+>> +    0xFFFFFFF, /* Any curve     */
+>> +    1024,      /* RSA-1024 and larger */
+>> +};
+>> +
+>> +static const mbedtls_x509_crt_profile openvpn_x509_crt_profile_preferred =
+>> +{
+>> +    /* SHA-2 and above */
+>> +    MBEDTLS_X509_ID_FLAG( MBEDTLS_MD_SHA224 ) |
+>> +    MBEDTLS_X509_ID_FLAG( MBEDTLS_MD_SHA256 ) |
+>> +    MBEDTLS_X509_ID_FLAG( MBEDTLS_MD_SHA384 ) |
+>> +    MBEDTLS_X509_ID_FLAG( MBEDTLS_MD_SHA512 ),
+>> +    0xFFFFFFF, /* Any PK alg    */
+>> +    0xFFFFFFF, /* Any curve     */
+>> +    2048,      /* RSA-2048 and larger */
+>> +};
+>> +
+>> +#define openvpn_x509_crt_profile_suiteb mbedtls_x509_crt_profile_suiteb;
+>> +
+>>  void
+>>  tls_init_lib(void)
+>>  {
+>> @@ -250,6 +278,27 @@ tls_ctx_restrict_ciphers(struct tls_root_ctx *ctx, const char *ciphers)
+>>      free(tmp_ciphers_orig);
+>>  }
+>>  
+>> +void
+>> +tls_ctx_set_cert_profile(struct tls_root_ctx *ctx, const char *profile)
+>> +{
+>> +    if (!profile || 0 == strcmp(profile, "preferred"))
+> 
+> can profile really be null? Given that we are assigning it a default
+> value in init_options() I think we could rather use an assert() here? so
+> we make sure the developer will always set an explicit default?
 
-This way we avoid code duplication.
+Ok, removed the check.  In the current code, it indeed can not be NULL.
+And since this functions are not called in response to untrusted input,
+I agree that it's not needed.
 
-Differences are:
-- address length
-- protocol number being added to `sum`
+>> +    {
+>> +        ctx->cert_profile = openvpn_x509_crt_profile_preferred;
+>> +    }
+>> +    else if (0 == strcmp(profile, "legacy"))
+>> +    {
+>> +        ctx->cert_profile = openvpn_x509_crt_profile_legacy;
+>> +    }
+>> +    else if (0 == strcmp(profile, "suiteb"))
+>> +    {
+>> +        ctx->cert_profile = openvpn_x509_crt_profile_suiteb;
+>> +    }
+>> +    else
+>> +    {
+>> +        msg (M_FATAL, "ERROR: Invalid cert profile: %s", profile);
+>> +    }
+>> +}
+>> +
+>>  void
+>>  tls_ctx_check_cert_time(const struct tls_root_ctx *ctx)
+>>  {
+>> @@ -917,6 +966,8 @@ key_state_ssl_init(struct key_state_ssl *ks_ssl,
+>>      mbedtls_ssl_conf_rng(&ks_ssl->ssl_config, mbedtls_ctr_drbg_random,
+>>                           rand_ctx_get());
+>>  
+>> +    mbedtls_ssl_conf_cert_profile(&ks_ssl->ssl_config, &ssl_ctx->cert_profile);
+>> +
+>>      if (ssl_ctx->allowed_ciphers)
+>>      {
+>>          mbedtls_ssl_conf_ciphersuites(&ks_ssl->ssl_config, ssl_ctx->allowed_ciphers);
+>> diff --git a/src/openvpn/ssl_mbedtls.h b/src/openvpn/ssl_mbedtls.h
+>> index f69b6100..341da7d4 100644
+>> --- a/src/openvpn/ssl_mbedtls.h
+>> +++ b/src/openvpn/ssl_mbedtls.h
+>> @@ -82,6 +82,7 @@ struct tls_root_ctx {
+>>      struct external_context *external_key; /**< Management external key */
+>>  #endif
+>>      int *allowed_ciphers;       /**< List of allowed ciphers for this connection */
+>> +    mbedtls_x509_crt_profile cert_profile; /**< Allowed certificate types */
+>>  };
+>>  
+>>  struct key_state_ssl {
+>> diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+>> index 0bfb6939..aed36a26 100644
+>> --- a/src/openvpn/ssl_openssl.c
+>> +++ b/src/openvpn/ssl_openssl.c
+>> @@ -383,6 +383,12 @@ tls_ctx_restrict_ciphers(struct tls_root_ctx *ctx, const char *ciphers)
+>>      }
+>>  }
+>>  
+>> +void
+>> +tls_ctx_set_cert_profile(struct tls_root_ctx *ctx, const char *profile)
+>> +{
+>> +    /* TODO --tls-cert-profile not supported for OpenSSL builds */
+>> +}
+>> +
+>>  void
+>>  tls_ctx_check_cert_time(const struct tls_root_ctx *ctx)
+>>  {
+>>
+> 
 
-While there, please fix some codestyle issues that still exist in this
-function.
+Thanks for reviewing!  v5 coming soon.
 
-> +/**
-> + * Forges a IPv6 ICMP with a no route to host error code from the IPv6 p=
-acket in buf and sends it back via
-> + * the tun device
-> + */
-> +void
-> +ipv6_send_icmp_unreachable(struct context * c, struct buffer *buf)
-> +{
-> +#define ICMPV6LEN  1280
-> +    struct openvpn_icmp6hdr icmp6out;
-> +    CLEAR(icmp6out);
-> +
-> +    /*
-> +     * Get a buffer to the ip packet, is_ipv6 automatically forwards
-> +     * the buffer to the ip packet
-> +     */
-> +    struct buffer inputipbuf =3D *buf;
-
-Please add an empty line here (like you've done everywhere else). I
-believe that having an empty line between variables declarations and
-actual code makes the whole thing easier to parse for poor brains like mine.
-
-> +    is_ipv6(TUNNEL_TYPE(c->c1.tuntap), &inputipbuf);
-> +
-> +    if (BLEN(&inputipbuf) < (int) sizeof(struct openvpn_ipv6hdr))
-> +    {
-> +        return;
-> +    }
-> +
-> +
-> +    const struct openvpn_ipv6hdr* pip6 =3D (struct openvpn_ipv6hdr *) BP=
-TR(&inputipbuf);
-
-there should be no space in the middle of a cast.
-
-> +
-> +    struct openvpn_ipv6hdr pip6out;
-> +
-> +    /* Copy version, traffic class, flow label from input packet */
-> +    pip6out =3D *pip6;
-> +
-> +    pip6out.version_prio =3D pip6->version_prio;
-> +
-> +    pip6out.daddr =3D pip6->saddr;
-> +    inet_pton( AF_INET6, c->options.ifconfig_ipv6_remote, &pip6out.saddr=
- );
-> +
-
-no space between '(' and the first function argument.
-
-> +    pip6out.nexthdr =3D OPENVPN_IPPROTO_ICMPV6;
-> +
-> +
-
-one empty line is enough.
-
-> +    /*
-> +     * The ICMPv6 unreachable code worked best in my tests with Windows,=
- Linux and Android (arne)
-> +     * Windows did not like the adminitively prohibited return code (no =
-fast fail)
-> +     */
-> +    icmp6out.icmp6_type =3D OPENVPN_ICMP6_DESTINATION_UNREACHABLE;
-> +    icmp6out.icmp6_code =3D OPENVPN_ICMP6_DU_NOROUTE;
-> +
-> +    int icmpheader_len =3D sizeof(struct openvpn_ipv6hdr) + sizeof(struc=
-t openvpn_icmp6hdr);
-> +    int ethheader_len =3D sizeof(struct openvpn_ethhdr);
-> +    int totalheader_len =3D icmpheader_len;
-
-new line here too ? I'd leave this to your judgement from now on.
-
-> +    if (TUNNEL_TYPE(c->c1.tuntap) =3D=3D DEV_TYPE_TAP)
-> +        totalheader_len +=3D ethheader_len;
-> +
-> +    /*
-> +     * Calculate size for payload, defined in the standard that the resu=
-lting frame
-> +     * should <=3D 1280 and have as much as possible of the original pac=
-ket
-> +     */
-> +    int payload_len =3D min_int(min_int(ICMPV6LEN, TUN_MTU_SIZE(&c->c2.f=
-rame) - icmpheader_len), buf_len(&inputipbuf));
-> +
-> +    pip6out.payload_len =3D htons(sizeof(struct openvpn_icmp6hdr) + payl=
-oad_len);
-> +
-> +    /* Construct the packet as outgoing packet back to the client */
-> +    c->c2.to_tun =3D c->c2.buffers->aux_buf;
-> +    ASSERT(buf_init(&c->c2.to_tun, totalheader_len));
-> +
-> +    /* Fill the end of the buffer with original packet */
-> +    ASSERT(buf_safe(&c->c2.to_tun, payload_len));
-> +    ASSERT(buf_copy_n(&c->c2.to_tun, &inputipbuf, payload_len));
-> +
-> +    /* ICMP Header, copy into buffer to allow checksum calculation */
-> +    ASSERT(buf_write_prepend(&c->c2.to_tun, &icmp6out, sizeof(struct ope=
-nvpn_icmp6hdr)));
-> +
-> +    /* Calculate checksum over the packet and write to header */
-> +    ((struct openvpn_icmp6hdr*) BPTR(&c->c2.to_tun))->icmp6_cksum =3D ht=
-ons (ipv6_checksum(BPTR(&c->c2.to_tun), BLEN(&c->c2.to_tun), OPENVPN_IPPROT=
-O_ICMPV6,
-> +                                        (const uint8_t*) &pip6out.saddr,=
- (uint8_t*) &pip6out.daddr));
-> +
-> +    /* IPv6 Header */
-> +    ASSERT(buf_write_prepend(&c->c2.to_tun, &pip6out, sizeof(struct open=
-vpn_ipv6hdr)));
-> +
-
-I see lots of asserts here and in other functions below.
-
-Is it possible that a bridged/routed client could send a malformed IPv6
-packet to convert this ASSERTs into a DoS for the VPN client?
-
-Actually, any chance that this function is executed on the server? or is
-this impossible?
-
-> +    /* Working IPv6 block for TAP will also need the client to respond t=
-o IPv6 nd with
-> +     * its own (fake) adress
-> +     */
-> +    if (TUNNEL_TYPE(c->c1.tuntap) =3D=3D DEV_TYPE_TAP)
-> +    {
-> +        if (BLEN(buf) < (int) sizeof (struct openvpn_ethhdr))
-> +            return;
-> +
-> +        const struct openvpn_ethhdr* orig_ethhdr =3D (struct openvpn_eth=
-hdr *) BPTR(buf);
-> +
-> +        /* Copy frametype and reverse source/destination for the respons=
-e */
-> +        struct openvpn_ethhdr ethhdr;
-> +        memcpy(ethhdr.source, orig_ethhdr->dest, OPENVPN_ETH_ALEN);
-> +        memcpy(ethhdr.dest, orig_ethhdr->source, OPENVPN_ETH_ALEN);
-> +        ethhdr.proto =3D htons(OPENVPN_ETH_P_IPV6);
-> +        ASSERT(buf_write_prepend(&c->c2.to_tun, &ethhdr, sizeof(struct o=
-penvpn_ethhdr)));
-> +    }
-> +}
-> +
-> +
->  void
->  process_ip_header(struct context *c, unsigned int flags, struct buffer *=
-buf)
->  {
-> @@ -1240,7 +1392,10 @@ process_ip_header(struct context *c, unsigned int =
-flags, struct buffer *buf)
->      {
->          flags &=3D ~PIPV4_EXTRACT_DHCP_ROUTER;
->      }
-> -
-> +    if (!c->options.block_ipv6)
-> +    {
-> +        flags &=3D ~PIPV6_IMCP_NOHOST;
-> +    }
->      if (buf->len > 0)
->      {
->          /*
-> @@ -1275,7 +1430,7 @@ process_ip_header(struct context *c, unsigned int f=
-lags, struct buffer *buf)
->                  /* possibly do NAT on packet */
->                  if ((flags & PIPV4_CLIENT_NAT) && c->options.client_nat)
->                  {
-> -                    const int direction =3D (flags & PIPV4_OUTGOING) ? C=
-N_INCOMING : CN_OUTGOING;
-> +                    const int direction =3D (flags & PIP_OUTGOING) ? CN_=
-INCOMING : CN_OUTGOING;
->                      client_nat_transform(c->options.client_nat, &ipbuf, =
-direction);
->                  }
->                  /* possibly extract a DHCP router message */
-> @@ -1295,6 +1450,13 @@ process_ip_header(struct context *c, unsigned int =
-flags, struct buffer *buf)
->                  {
->                      mss_fixup_ipv6(&ipbuf, MTU_TO_MSS(TUN_MTU_SIZE_DYNAM=
-IC(&c->c2.frame)));
->                  }
-> +                if (!(flags & PIP_OUTGOING) && (flags & PIPV6_IMCP_NOHOS=
-T))
-> +                {
-> +                    ipv6_send_icmp_unreachable(c, buf);
-> +                    // Drop the IPv6 packet
-
-please don't use c++ style comments
-
-> +                    buf->len=3D0;
-> +                }
-> +
->              }
->          }
->      }
-> @@ -1478,7 +1640,7 @@ process_outgoing_tun(struct context *c)
->       * The --mssfix option requires
->       * us to examine the IP header (IPv4 or IPv6).
->       */
-> -    process_ip_header(c, PIP_MSSFIX|PIPV4_EXTRACT_DHCP_ROUTER|PIPV4_CLIE=
-NT_NAT|PIPV4_OUTGOING, &c->c2.to_tun);
-> +    process_ip_header(c, PIP_MSSFIX|PIPV4_EXTRACT_DHCP_ROUTER|PIPV4_CLIE=
-NT_NAT|PIP_OUTGOING, &c->c2.to_tun);
->=20=20
->      if (c->c2.to_tun.len <=3D MAX_RW_SIZE_TUN(&c->c2.frame))
->      {
-> diff --git a/src/openvpn/forward.h b/src/openvpn/forward.h
-> index 9fde5a30..62199f9e 100644
-> --- a/src/openvpn/forward.h
-> +++ b/src/openvpn/forward.h
-> @@ -251,9 +251,10 @@ bool send_control_channel_string(struct context *c, =
-const char *str, int msgleve
->=20=20
->  #define PIPV4_PASSTOS         (1<<0)
->  #define PIP_MSSFIX            (1<<1)         /* v4 and v6 */
-> -#define PIPV4_OUTGOING        (1<<2)
-> +#define PIP_OUTGOING          (1<<2)
->  #define PIPV4_EXTRACT_DHCP_ROUTER (1<<3)
->  #define PIPV4_CLIENT_NAT      (1<<4)
-> +#define PIPV6_IMCP_NOHOST     (1<<5)
->=20=20
->  void process_ip_header(struct context *c, unsigned int flags, struct buf=
-fer *buf);
->=20=20
-> diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
-> index 001fe1c4..18f0cb5b 100644
-> --- a/src/openvpn/misc.c
-> +++ b/src/openvpn/misc.c
-> @@ -150,7 +150,7 @@ openvpn_execve_check(const struct argv *a, const stru=
-ct env_set *es, const unsig
->      const int stat =3D openvpn_execve(a, es, flags);
->      int ret =3D false;
->=20=20
-> -    if (platform_system_ok(stat))
-> +    if (platform_system_ok(stat)|| true)
-
-space before the '||'
-
->      {
->          ret =3D true;
->      }
-> @@ -204,7 +204,7 @@ openvpn_execve(const struct argv *a, const struct env=
-_set *es, const unsigned in
->              char *const *envp =3D (char *const *)make_env_array(es, true=
-, &gc);
->              pid_t pid;
->=20=20
-> -            pid =3D fork();
-> +            pid =3D vfork();
-
-Can you explain how this is related to this patch?
-
->              if (pid =3D=3D (pid_t)0) /* child side */
->              {
->                  execve(cmd, argv, envp);
-> diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-> index 641a26e2..daa9ff05 100644
-> --- a/src/openvpn/options.c
-> +++ b/src/openvpn/options.c
-> @@ -226,6 +226,8 @@ static const char usage_message[] =3D
->      "                  Add 'bypass-dns' flag to similarly bypass tunnel =
-for DNS.\n"
->      "--redirect-private [flags]: Like --redirect-gateway, but omit actua=
-lly changing\n"
->      "                  the default gateway.  Useful when pushing private=
- subnets.\n"
-> +    "--block-ipv6     : (client only) Instead sending IPv6 to the server=
- generate\n"
-> +    "                   ICMPv6 host unreachable messages.\n"
->      "--client-nat snat|dnat network netmask alias : on client add 1-to-1=
- NAT rule.\n"
->  #ifdef ENABLE_PUSH_PEER_INFO
->      "--push-peer-info : (client only) push client info to server.\n"
-> @@ -2084,6 +2086,15 @@ options_postprocess_verify_ce(const struct options=
- *options, const struct connec
->          msg(M_USAGE, "--lladdr can only be used in --dev tap mode");
->      }
->=20=20
-> +    if (options->block_ipv6 && !options->ifconfig_ipv6_remote)
-> +    {
-> +        msg(M_USAGE, "--block-ipv6 needs a valid --ifconfig-ipv6 configu=
-ration");
-> +    }
-> +
-
-Instead of requiring the user to configure an ipv6 on its interface, you
-could just fake a source address for the ICMP packets. This would make
-it much easier for the user as he does not to come up with his own
-"fake" ipv6 configuration.
-
-> +    if (options->block_ipv6 && dev !=3D DEV_TYPE_TUN)
-> +    {
-> +        msg(M_USAGE, "--block-ipv6 can be only used in --dev tun mode");
-> +    }
->      /*
->       * Sanity check on MTU parameters
->       */
-> @@ -2242,6 +2253,7 @@ options_postprocess_verify_ce(const struct options =
-*options, const struct connec
->          msg(M_USAGE, "TCP server mode allows at most one --remote addres=
-s");
->      }
->=20=20
-> +
-
-free gift?
-
->  #if P2MP_SERVER
->=20=20
->      /*
-> @@ -6360,6 +6372,11 @@ add_option(struct options *options,
->  #endif
->          options->routes->flags |=3D RG_ENABLE;
->      }
-> +    else if (streq(p[0], "block-ipv6") && !p[1])
-> +    {
-> +        VERIFY_PERMISSION(OPT_P_ROUTE);
-> +        options->block_ipv6 =3D true;
-> +    }
->      else if (streq(p[0], "remote-random-hostname") && !p[1])
->      {
->          VERIFY_PERMISSION(OPT_P_GENERAL);
-> diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-> index 496c1143..38e9e431 100644
-> --- a/src/openvpn/options.h
-> +++ b/src/openvpn/options.h
-> @@ -340,6 +340,7 @@ struct options
->      bool route_delay_defined;
->      struct route_option_list *routes;
->      struct route_ipv6_option_list *routes_ipv6;                 /* IPv6 =
-*/
-> +    bool block_ipv6;
->      bool route_nopull;
->      bool route_gateway_via_dhcp;
->      bool allow_pull_fqdn; /* as a client, allow server to push a FQDN fo=
-r certain parameters */
-> diff --git a/src/openvpn/proto.h b/src/openvpn/proto.h
-> index 57f25c90..7d300af9 100644
-> --- a/src/openvpn/proto.h
-> +++ b/src/openvpn/proto.h
-> @@ -98,6 +98,7 @@ struct openvpn_iphdr {
->  #define OPENVPN_IPPROTO_IGMP 2  /* IGMP protocol */
->  #define OPENVPN_IPPROTO_TCP  6  /* TCP protocol */
->  #define OPENVPN_IPPROTO_UDP 17  /* UDP protocol */
-> +#define OPENVPN_IPPROTO_ICMPV6 58 /* ICMPV6 protocol */
-
-the defines above have all the values aligned. could you re-align them all?
-
->      uint8_t protocol;
->=20=20
->      uint16_t check;
-> @@ -120,6 +121,24 @@ struct openvpn_ipv6hdr {
->      struct  in6_addr daddr;
->  };
->=20=20
-> +/*
-> + * ICMPv6 header
-> + */
-> +struct openvpn_icmp6hdr {
-> +# define OPENVPN_ICMP6_DESTINATION_UNREACHABLE 1
-> +# define OPENVPN_ND_ROUTER_SOLICIT	133
-> +# define OPENVPN_ND_ROUTER_ADVERT	134
-> +# define OPENVPN_ND_NEIGHBOR_SOLICIT	135
-> +# define OPENVPN_ND_NEIGHBOR_ADVERT	136
-> +# define OPENVPN_ND_INVERSE_SOLICIT	141
-> +# define OPENVPN_ND_INVERSE_ADVERT	142
-> +	uint8_t		icmp6_type;
-> +# define OPENVPN_ICMP6_DU_NOROUTE 0
-> +# define OPENVPN_ICMP6_DU_COMMUNICATION_PROHIBTED 1
-> +	uint8_t		icmp6_code;
-> +	uint16_t	icmp6_cksum;
-> +	uint8_t		icmp6_dataun[4];
-> +};
->=20=20
->  /*
->   * UDP header
->=20
-
-
-Cheers,
-
---=20
-Antonio Quartulli
-
-
---bfWSrGeuVO6TlwglBG58SJKJFKgIQlnk6--
-
---aDHjXaxEPiHCiGSR1vVLu3txG5adipqIw
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEERdCuyFSHc3WdqS4EB6U8WA7yzXQFAloIFUEACgkQB6U8WA7y
-zXTeog//RFh0m52ltFFHp8pblnJV34ogRlTf6IGLrwriJ1MHKinQ6u36ioJ/9plJ
-Y+2NsV+7YAd8COqDB8ypFYjusg5tpEC+cpTgeLMPWy4Wz7OKuOAcu5PMCdH3bg6c
-T82BxFB1fSYII1fTv0xWcAbs9I93rQUfbEP+vyzZjNUgYS4e9E9C7mgSxByGwkyV
-vc1EgEykkwkSnAHnG5qlIHAn4DqLpArHY8uKjb8IH66ifS6nBtr94vSAWNWji9bu
-V2dx1iPzuCAKnjoPMB2yVh+usXRiKyHK2f6iUaSpioekLZ+QmdI61UmFShZrJy5K
-v55CGWG0yxQFpuIboqAFlfsad/rxSrxvDN+ZeJHcPvApm1Noh4JnSXEoXEu9KwxR
-Sx+8xBjy/5R/iIBLTa7RILGM/+9ywJHBSZeF6FNuk7Fi0FNeupynVxo45jt1LJ2/
-YE7IANiATQQFulQ4LT/O0jQn4UGHZT7DTFFyyuxHtWtrOY05CfoyEar7NJJ3vBqO
-LW1Pmpu63qWLjtJVOwA0athx/PhUOKqPBZiXh1jkJTAJwOxuGFHZjRuNh6Nlgr2e
-Rwqu7DpEBsTiYIOmX9UfTzXFatM9X2JD7KXSc65Vd/5F3T+OX5DncFwo9av54o6Z
-94+VhZhiBURFBJQs9u/WFhpwJ2DMZut3pu/JOhMWDhHKZkbh1eI=
-=96gW
------END PGP SIGNATURE-----
-
---aDHjXaxEPiHCiGSR1vVLu3txG5adipqIw--
+-Steffan
 
