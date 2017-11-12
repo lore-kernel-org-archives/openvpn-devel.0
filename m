@@ -1,16 +1,16 @@
-Date: Sun, 12 Nov 2017 21:21:19 +0100
+Date: Sun, 12 Nov 2017 21:22:58 +0100
 From: Simon Ruderich <simon@...2161...>
-Message-ID: <20171112202119.m337ikprgrcrc6hp@...2161...>
-References: <4e9ea26fee7e606cdb0636dd377bf1bc.squirrel@...2257...>
- <20171111134758.7373-1-steffan@...1856...>
+Message-ID: <20171112202258.hat3hetjonkv2pxc@...2161...>
+References: <20171111161836.23356-1-a@...2181...>
+ <20171111161836.23356-3-a@...2181...>
 Mime-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
  protocol="application/pgp-signature";
- boundary="=_zucker.schokokeks.org-25394-1510518080-0001-2"
+ boundary="=_zucker.schokokeks.org-26048-1510518179-0001-2"
 Content-Disposition: inline
-In-Reply-To: <20171111134758.7373-1-steffan@...1856...>
-Subject: Re: [Openvpn-devel] [PATCH v3] Add per session pseudo-random jitter
- to --reneg-sec intervals
+In-Reply-To: <20171111161836.23356-3-a@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH v5 3/3] ensure function declarations are
+ compiled with their definitions
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -19,54 +19,44 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan@...1856...>
+To: Antonio Quartulli <a@...2181...>
 Cc: openvpn-devel@lists.sourceforge.net
 
 This is a MIME-formatted message.  If you see this text it means that your
 E-mail software does not support MIME-formatted messages.
 
---=_zucker.schokokeks.org-25394-1510518080-0001-2
+--=_zucker.schokokeks.org-26048-1510518179-0001-2
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
 
-On Sat, Nov 11, 2017 at 02:47:58PM +0100, Steffan Karger wrote:
-> --- a/src/openvpn/init.c
-> +++ b/src/openvpn/init.c
-> @@ -2693,7 +2693,20 @@ do_init_crypto_tls(struct context *c, const unsign=
-ed int flags)
->      to.packet_timeout =3D options->tls_timeout;
->      to.renegotiate_bytes =3D options->renegotiate_bytes;
->      to.renegotiate_packets =3D options->renegotiate_packets;
-> -    to.renegotiate_seconds =3D options->renegotiate_seconds;
-> +    if (options->renegotiate_seconds_min < 0)
-> +    {
-> +        /* Add 10% jitter to the reneg-sec of each connection by default=
- */
+On Sun, Nov 12, 2017 at 12:18:36AM +0800, Antonio Quartulli wrote:
+> --- a/src/openvpn/crypto.h
+> +++ b/src/openvpn/crypto.h
+> @@ -459,6 +459,9 @@ void prng_bytes(uint8_t *output, int len);
+>
+>  void prng_uninit(void);
+>
+> +/* an analogue to the random() function, but use prng_bytes */
+> +long int get_random(void);
+> +
+>  void test_crypto(struct crypto_options *co, struct frame *f);
+>
+>
+> @@ -514,5 +517,10 @@ key_ctx_bi_defined(const struct key_ctx_bi *key)
+>  }
+>
+>
+> +#else
+> +
+> +/* use plain random is no crypto support is compiled */
 
-Maybe change that to "of each server connection".
+Minor typo, "is" -> "if"
 
-> +        int auto_jitter =3D options->mode !=3D MODE_SERVER ? 0 :
-> +                get_random() % max_int(options->renegotiate_seconds / 10=
-, 1);
-> +        to.renegotiate_seconds =3D options->renegotiate_seconds - auto_j=
-itter;
-> +    }
-> +    else
-> +    {
-> +        /* Add user-specific jitter to the renge-sec of each connection =
-*/
-
-s/renge/reneg/
-
-> +        to.renegotiate_seconds =3D options->renegotiate_seconds -
-> +                (get_random() % max_int(options->renegotiate_seconds
-> +                                        - options->renegotiate_seconds_m=
-in, 1));
-> +    }
->      to.single_session =3D options->single_session;
->      to.mode =3D options->mode;
->      to.pull =3D options->pull;
+> +#define get_random random
+> +
+>  #endif /* ENABLE_CRYPTO */
+>  #endif /* CRYPTO_H */
 
 Regards
 Simon
@@ -75,26 +65,26 @@ Simon
 + using gnupg http://gnupg.org
 + public key id: 0x92FEFDB7E44C32F9
 
---=_zucker.schokokeks.org-25394-1510518080-0001-2
+--=_zucker.schokokeks.org-26048-1510518179-0001-2
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Transfer-Encoding: 7bit
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCgAdFiEEO7rfWMMObpFkF3n0kv79t+RMMvkFAloIrS4ACgkQkv79t+RM
-MvkGdQ/8Dcwh+snAjudQgR9FEk09HtOY+NMfJaiWLoM0Xbd9pTogNZZXuM4xMo6K
-Rnfg/qWZVxOuq/607At4Oz2wnDavP/xGndvg2aiVmS5CNU1b1bV+vBvKfRdquahA
-4ib2WRV7gItL8e7j7zJtej+f5wUUcMpej8wKBwkNObmZ3YPuJIooBTOmKXMEkgeL
-3RvAHibDYNjbY/pJ1OI+reDXcap/dRTIu3G2osGf2FoPyGDUFJF41UeB+hrBEQzl
-o7A4ctdxQNTsPbD5kDMcw832zkRARe7yWhSa8Xw5L57nMPrBuAy7BTVdUKBIFN5C
-8zLrk7+GrrQHLTLA+Isag+hDkN+xo92RtunMvPZ84Hsq64w3EuWvDc1/9FY9Eild
-+WEGXNSUVt+CkGQez+QwBcny4/1kU9W1C7mtf7iT3hvvq51gET0MakOe20q6+taq
-+5hzm+7Gpw7BjHcB+kANN/zI3eGXFrtjCi7pE7Hpdh3dZArvz/WmuLIXNl1NAjLO
-HRH8eLzBZLwAYEvyuwXEAFZ9AdtLAXQOeeHpAF2T2N5WzETEX0Q5oWzu4Uvum/Ud
-lxMaOH4DhfTp9qnyLjXChbZoc07tm3aAmLxfx4uGedGknZbCRfu4bkfe0bZ4LwqJ
-xgkV+r8GbtuDWUXrRLPCxU26HYl8T3/d8rXokAyz4TbUKYp4HwM=
-=fgpu
+iQIzBAEBCgAdFiEEO7rfWMMObpFkF3n0kv79t+RMMvkFAloIraIACgkQkv79t+RM
+MvkCrhAAoP/b8NYVkPzIjepfXKgyGrmttGXT7l6K0o8RTjEviKVOnLPBqQrYPWMd
+l+Awpwlgbi1GPLm4bJYRN0aYeB48w5+RwJkTbnzKH3781Vw+UBKVRqMyndUErWE+
+wmkiuohRMuLsMfp7+E6/ADnKuwCFKuE5Zpc+UIqDw+BuCX0qcVq3DBI0qY7lwUAL
+npxNgOy1yjYE3uEfvTuK/OXwfIEZbK3lO/xpgjQiKgtGR4ICeQ8M1V+EtzAXhnfD
+phqd7ucr98Zb/MbYHAZC9qwkO8VR8KeHgTVcPqoi2zhsGmMQtVwANOvCP7sxty0K
+KVBxULtuaONPtg9GqG0p9e0onPSDokNbYN+H4nTbbnCuummvRbhSE4OUCS81taHp
+LziMryOXPNbJ9WiSMvJXREYgUDhqYjeZhez9reewurdeF/a59mH7UUAZvOCSXJFV
+ZybXcf4P2kt9aIs3bUeWUXXaKMmqdY2EjaJB2cZ7n38J0/ndQ0Vts5/JbpmaOEdD
+FX8/rpZun4llvDI9QymLWLGeEJ6ezNnvRScVAKDLb8XdNjaFPerfsGga0lg7CwPA
+BjwZFccfm+T5jHkdwV4NTP4Spuwgg/oBu8JW0N8JXhStnliM18yXLwAE5vmyloaH
+EKlbClNmyGkwofNf/W0sewA3fVSQ78EcelinVIPYL8k8cKbBy1Q=
+=kEuE
 -----END PGP SIGNATURE-----
 
---=_zucker.schokokeks.org-25394-1510518080-0001-2--
+--=_zucker.schokokeks.org-26048-1510518179-0001-2--
 
