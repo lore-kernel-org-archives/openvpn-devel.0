@@ -1,14 +1,19 @@
-References: <20171111160359.28078-1-steffan@...1856...>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <ed338010-2918-fb1d-27e0-116712651b87@...2181...>
-Date: Sun, 12 Nov 2017 23:33:49 +0800
+Date: Sun, 12 Nov 2017 17:23:44 +0100
+From: Gert Doering <gert@...1296...>
+Message-ID: <20171112162344.GG958@...1296...>
+References: <201708291322.v7TDMcY3029206@...2300...>
+ <20170829190353.GX70062@...1296...>
+ <201708300839.v7U8dklY019715@...2300...>
+ <ed6292e5-2877-7ca8-bf7b-80fe8e7da72e@...1227...>
+ <201708310611.v7V6Bj1f010862@...2300...>
+ <80a5d2fc-819c-76d7-f51d-2a2d476bf31a@...1937...>
+ <201709201059.v8KAxOc2014584@...2300...>
 MIME-Version: 1.0
-In-Reply-To: <20171111160359.28078-1-steffan@...1856...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="II3V4sjEK9de0D08U2v0ikajtURsgw07H"
-Subject: Re: [Openvpn-devel] [PATCH] Use P_DATA_V2 for server->client
- packets too
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature"; boundary="3EG2G0wNthkGfxoY"
+Content-Disposition: inline
+In-Reply-To: <201709201059.v8KAxOc2014584@...2300...>
+Subject: Re: [Openvpn-devel] Solaris 11: t_lpback.sh coredump on AES-GCM
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,94 +22,76 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
+To: Casper.Dik@...2299...
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---II3V4sjEK9de0D08U2v0ikajtURsgw07H
-Content-Type: multipart/mixed; boundary="EmGmuXue3ETdptcALnuRHuf6gRoLbDpHB";
- protected-headers="v1"
-From: Antonio Quartulli <a@...2181...>
-To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
-Message-ID: <ed338010-2918-fb1d-27e0-116712651b87@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH] Use P_DATA_V2 for server->client packets
- too
-References: <20171111160359.28078-1-steffan@...1856...>
-In-Reply-To: <20171111160359.28078-1-steffan@...1856...>
-
---EmGmuXue3ETdptcALnuRHuf6gRoLbDpHB
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
+--3EG2G0wNthkGfxoY
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 
 Hi,
 
-On 12/11/17 00:03, Steffan Karger wrote:
-> P_DATA_V2 introduced the peer-id.  This allows clients to float, but as a
-> side-effect 32-bit aligns the encrypted data.  That alignment improves
-> performance particularly on cheaper/older CPUs.  So although servers don't
-> actually have a peer-id, still use the V2 packet format (with a zero-id)
-> for server->client traffic too.
+noob speaking... so we're upgrading our VM build/test environmend, and
+have added an 11.3 VM (based on the "Oracle Solaris 11.3 VM Template=20
+for Oracle VM VirtualBox" nicely provided by Oracle).
+
+Of course, GCM modes now core dump (=3D good to test :-) )...
+
+On Wed, Sep 20, 2017 at 12:59:24PM +0200, Casper.Dik@...2299... wrote:
+> The fix was also delivered in Solaris 11.3 SRU 24 which was released=20
+> somewhere in the last week.
 >=20
-> Signed-off-by: Steffan Karger <steffan@...1856...>
-> ---
->  src/openvpn/forward.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->=20
-> diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-> index 1b7455bb..20e89d34 100644
-> --- a/src/openvpn/forward.c
-> +++ b/src/openvpn/forward.c
-> @@ -496,7 +496,7 @@ encrypt_sign(struct context *c, bool comp_frag)
->          /* If using P_DATA_V2, prepend the 1-byte opcode and 3-byte peer=
--id to the
->           * packet before openvpn_encrypt(), so we can authenticate the o=
-pcode too.
->           */
-> -        if (c->c2.buf.len > 0 && !c->c2.tls_multi->opt.server && c->c2.t=
-ls_multi->use_peer_id)
-> +        if (c->c2.buf.len > 0 && c->c2.tls_multi->use_peer_id)
->          {
->              tls_prepend_opcode_v2(c->c2.tls_multi, &b->encrypt_buf);
->          }
+> # pkg list -H entire openssl
+> entire                                            0.5.11-0.175.3.24.0.4.0=
+    i--
+> library/security/openssl                          1.0.2.11-0.175.3.24.0.4=
+.0  i--
 
-NAK.
-Although the patch looks good and easy, it is actually missing an
-important part: c->c2.tls_multi->use_peer_id is never set to true on the
-server.
+What I have after what I thought would do the updating ("pkg install entire=
+")
+is:
 
-This should probably happen after parsing "IV_PROTO=3D" in
-prepare_push_reply().
+vagrant@...2321...:/tmp/openvpn$ pkg list -H entire openssl
+entire                                            0.5.11-0.175.3.1.0.5.2   =
+  i--
+library/security/openssl                          1.0.1.16-0.175.3.0.0.30.0=
+  i--
 
+... so is there a way to get from there to "11.3 SRU 24" from the
+inside of the VM?  Or do you need to download something manually, have=20
+a maintenance contract, etc.?
 
-Cheers,
+(Too many things changed in the organizational structure since I used an
+"original Solaris" last time - that was OpenSolaris 10...)
+
+thanks,
+
+gert
 
 --=20
-Antonio Quartulli
+USENET is *not* the non-clickable part of WWW!
+                                                           //www.muc.de/~ge=
+rt/
+Gert Doering - Munich, Germany                             gert@...1296...
+fax: +49-89-35655025                        gert@...1297...
 
-
---EmGmuXue3ETdptcALnuRHuf6gRoLbDpHB--
-
---II3V4sjEK9de0D08U2v0ikajtURsgw07H
+--3EG2G0wNthkGfxoY
 Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCAAdFiEERdCuyFSHc3WdqS4EB6U8WA7yzXQFAloIad0ACgkQB6U8WA7y
-zXTLmA/+PPqFecXdimpVPyUbR9lA49ekpsPfyIRMI5uRmVOwQMu9QKncdx/eP9XQ
-7OjkIwoENYOEHc5V9ZSa1WdqHDjnzk0OL+8jh+1BRHGeMHpLjQhGjnetGTqziwX4
-bTO1FHiV5X35u0N/KwtR7mXhiKRcefUR/sZY3+8dqijsc8XwUdrfLNbPR5ApBNll
-mycH/XrOBY1JcKTHpBcTQ/PFAVCcQEcaK0Y4HQdglru4QkMVDH/IQbbiTaSQwibL
-zf0veqp4C/u0DcA2GGmPWHiDwNYqdAsqc8WjNnFJl9n2+sv4ZyaZB6wDXoQeov/w
-GQ42V7HOvIKkpMM6MVKxuLo88jf8fyYQkQrtV/R9FyClMY5w5x26P6Q0kaAu3xFU
-f2iEbPkyMkYwTzhoqely/DBKPfbBtj0F7hTvl5+E1SGweNH9MYcDjMMpqFCqGrgu
-ZH0f3UH24DKXqspmFQO31S+h1zH9eTWFYr1yPXer96OJb24Yn4ZFXV9Ivf843NMO
-il6+4TLDv1KmUXUWkoelLg379G48mOmExfMvtvXWM0wH2dlOBdx0bN+eVTqiis9i
-NxwqrpYMFUEtnWifYb9J1Z5K4MdFg1IyX8DMBJQr0eOMrLtg73nPmhdwUgLfhIp8
-g3Fe5/f0v3whvQLi4lDFM4uj3RaAAJV+6dy95uMJ6k5+j3bxMFI=
-=Pgh8
+iQGcBAEBAgAGBQJaCHWQAAoJEB2Cnv7KVigScwEL/i1UgXNSup4F6rxki6wS545B
+1heaEvTndN65LNCMhFbC8SH5Z2z8SgC8bpZQkQ4lUx1pUUi3xtM6aZr+PJLjklos
+CKhxYNzxYr1TsdgWEfrqdVSwDPcJkr3NsjBJpyQf2m1tfF4go8M6vXb/Hyv/Aptd
+H4UhfLNCF2CwLDq6hAjnuzsQ/XwS+SDQZMPfkGV89JdxhL6xkE2aJkZpXxH+g3f3
+e20h1mif2l3OChgjssYQUWWAbO8v/FGGOdHqCZ3REzIznDL0zXE+/mUGR9ho0j7p
+2/ey7rIzLTr71VjaM5CUu8lZDKW2Wg870upXxWgIgMxmWu1h8c0hPbYY+fnW6QVa
+0v4FWp5PagErJcDOlC7IP2v2Km8ueUktLnFN45OA3K7ndy/8ndZtAjyhkIL/MB5V
+N7B6DMA/xajQnfAbUtP/HBMfzxxqCLjluMEOTviC4yAUNxhUL+3lf9e1bpspWETu
+2nTXIVe4sFC0fA+AKpVOG8SdwHahcWJr7Wx6hPFZrw==
+=VeRv
 -----END PGP SIGNATURE-----
 
---II3V4sjEK9de0D08U2v0ikajtURsgw07H--
+--3EG2G0wNthkGfxoY--
 
