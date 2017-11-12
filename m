@@ -1,19 +1,10 @@
-Date: Sun, 12 Nov 2017 17:23:44 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20171112162344.GG958@...1296...>
-References: <201708291322.v7TDMcY3029206@...2300...>
- <20170829190353.GX70062@...1296...>
- <201708300839.v7U8dklY019715@...2300...>
- <ed6292e5-2877-7ca8-bf7b-80fe8e7da72e@...1227...>
- <201708310611.v7V6Bj1f010862@...2300...>
- <80a5d2fc-819c-76d7-f51d-2a2d476bf31a@...1937...>
- <201709201059.v8KAxOc2014584@...2300...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="3EG2G0wNthkGfxoY"
-Content-Disposition: inline
-In-Reply-To: <201709201059.v8KAxOc2014584@...2300...>
-Subject: Re: [Openvpn-devel] Solaris 11: t_lpback.sh coredump on AES-GCM
+From: Steffan Karger <steffan@...1856...>
+Date: Sun, 12 Nov 2017 17:36:36 +0100
+Message-Id: <20171112163636.17434-1-steffan@...1856...>
+In-Reply-To: <5f8d8043-5725-f535-e623-da042984196b@...2181...>
+References: <5f8d8043-5725-f535-e623-da042984196b@...2181...>
+Subject: [Openvpn-devel] [PATCH v6] Add --tls-cert-profile option for
+ mbedtls builds
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,76 +13,420 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Casper.Dik@...2299...
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---3EG2G0wNthkGfxoY
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+From: Steffan Karger <steffan.karger@...1435...>
 
-Hi,
+This allows the user to specify what certificate crypto algorithms to
+support.  The supported profiles are 'preferred', 'legacy' (default) and
+'suiteb', as discussed in <84590a17-1c48-9df2-c48e-4160750b2e33@...1435...>
+(https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg14214.html).
 
-noob speaking... so we're upgrading our VM build/test environmend, and
-have added an 11.3 VM (based on the "Oracle Solaris 11.3 VM Template=20
-for Oracle VM VirtualBox" nicely provided by Oracle).
+This fully implements the feature for mbed TLS builds, because for mbed it
+is both more easy to implement and the most relevant because mbed TLS 2+
+is by default somewhat restrictive by requiring 2048-bit+ for RSA keys.
 
-Of course, GCM modes now core dump (=3D good to test :-) )...
+For OpenSSL, this implements an approximation based on security levels, as
+discussed at the hackathon in Karlsruhe.
 
-On Wed, Sep 20, 2017 at 12:59:24PM +0200, Casper.Dik@...2299... wrote:
-> The fix was also delivered in Solaris 11.3 SRU 24 which was released=20
-> somewhere in the last week.
->=20
-> # pkg list -H entire openssl
-> entire                                            0.5.11-0.175.3.24.0.4.0=
-    i--
-> library/security/openssl                          1.0.2.11-0.175.3.24.0.4=
-.0  i--
+This patch uses 'legacy' as the default profile following discussion on
+the openvpn-devel mailing list.  This way this patch can be applied to
+both the release/2.4 and master branches.  I'll send a follow-up patch for
+the master branch to change the default to 'preferred' later.
 
-What I have after what I thought would do the updating ("pkg install entire=
-")
-is:
+Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+---
+v2:
+ - add documentation (manpage, Changes.rst and --help)
+ - no longer print a warning message on each startup for OpenSSL builds
+v3:
+ - remove format changes in unrelated items (introduced in v2)
+ - Update Changes.rst text to reflect that the default in 2.4.2 is 'legacy'
+   and the default in 2.5 will be 'preferred' (as discussed on the ML).
+ - This patch is for the master branch only now (due to the default).
+v4:
+ - Ignore the option for OpenSSL builds, instead of rejecting the option
+   and refusing to start.
+ - Patch is for master and release/2.4 again.  A follow-up patch will
+   change the default for master later on.
+v5:
+ - Add (approximate) OpenSSL implementation.
+ - Remove null check for argument that couln't be null anyway.
+v6:
+ - Fix compilation with OpenSSL 1.0.x
 
-vagrant@...2321...:/tmp/openvpn$ pkg list -H entire openssl
-entire                                            0.5.11-0.175.3.1.0.5.2   =
-  i--
-library/security/openssl                          1.0.1.16-0.175.3.0.0.30.0=
-  i--
+ Changes.rst               | 12 +++++++++++
+ doc/openvpn.8             | 31 ++++++++++++++++++++++++++
+ src/openvpn/init.c        |  3 ++-
+ src/openvpn/options.c     | 10 +++++++++
+ src/openvpn/options.h     |  1 +
+ src/openvpn/ssl.c         |  3 +++
+ src/openvpn/ssl_backend.h | 17 +++++++++++++--
+ src/openvpn/ssl_mbedtls.c | 55 ++++++++++++++++++++++++++++++++++++++++++++++-
+ src/openvpn/ssl_mbedtls.h |  1 +
+ src/openvpn/ssl_openssl.c | 38 +++++++++++++++++++++++++++++++-
+ 10 files changed, 166 insertions(+), 5 deletions(-)
 
-... so is there a way to get from there to "11.3 SRU 24" from the
-inside of the VM?  Or do you need to download something manually, have=20
-a maintenance contract, etc.?
+diff --git a/Changes.rst b/Changes.rst
+index db9b18b9..a6090cf5 100644
+--- a/Changes.rst
++++ b/Changes.rst
+@@ -321,6 +321,18 @@ Maintainer-visible changes
+   i386/i686 builds on RHEL5.
+ 
+ 
++Version 2.4.5
++=============
++
++New features
++------------
++- The new option ``--tls-cert-profile`` can be used to restrict the set of
++  allowed crypto algorithms in TLS certificates in mbed TLS builds.  The
++  default profile is 'legacy' for now, which allows SHA1+, RSA-1024+ and any
++  elliptic curve certificates.  The default will be changed to the 'preferred'
++  profile in the future, which requires SHA2+, RSA-2048+ and any curve.
++
++
+ Version 2.4.3
+ =============
+ 
+diff --git a/doc/openvpn.8 b/doc/openvpn.8
+index a4189ac2..549d96cb 100644
+--- a/doc/openvpn.8
++++ b/doc/openvpn.8
+@@ -4917,6 +4917,37 @@ when using mbed TLS or
+ OpenSSL.
+ .\"*********************************************************
+ .TP
++.B \-\-tls\-cert\-profile profile
++Set the allowed cryptographic algorithms for certificates according to
++.B profile\fN.
++
++The following profiles are supported:
++
++.B legacy
++(default): SHA1 and newer, RSA 2048-bit+, any elliptic curve.
++
++.B preferred
++: SHA2 and newer, RSA 2048-bit+, any elliptic curve.
++
++.B suiteb
++: SHA256/SHA384, ECDSA with P-256 or P-384.
++
++This option is only fully supported for mbed TLS builds.  OpenSSL builds use
++the following approximation:
++
++.B legacy
++(default): sets "security level 1"
++
++.B preferred
++: sets "security level 2"
++
++.B suiteb
++: sets "security level 3" and \-\-tls\-cipher "SUITEB128".
++
++OpenVPN will migrate to 'preferred' as default in the future.  Please ensure
++that your keys already comply.
++.\"*********************************************************
++.TP
+ .B \-\-tls\-timeout n
+ Packet retransmit timeout on TLS control channel
+ if no acknowledgment from remote within
+diff --git a/src/openvpn/init.c b/src/openvpn/init.c
+index 1ed2c55e..cccc63b2 100644
+--- a/src/openvpn/init.c
++++ b/src/openvpn/init.c
+@@ -1016,7 +1016,8 @@ print_openssl_info(const struct options *options)
+         }
+         if (options->show_tls_ciphers)
+         {
+-            show_available_tls_ciphers(options->cipher_list);
++            show_available_tls_ciphers(options->cipher_list,
++                                       options->tls_cert_profile);
+         }
+         if (options->show_curves)
+         {
+diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+index 49ed004b..9d6e279a 100644
+--- a/src/openvpn/options.c
++++ b/src/openvpn/options.c
+@@ -599,6 +599,8 @@ static const char usage_message[] =
+ #endif
+     "--tls-cipher l  : A list l of allowable TLS ciphers separated by : (optional).\n"
+     "                : Use --show-tls to see a list of supported TLS ciphers.\n"
++    "--tls-cert-profile p : Set the allowed certificate crypto algorithm profile\n"
++    "                  (default=legacy).\n"
+     "--tls-timeout n : Packet retransmit timeout on TLS control channel\n"
+     "                  if no ACK from remote within n seconds (default=%d).\n"
+     "--reneg-bytes n : Renegotiate data chan. key after n bytes sent and recvd.\n"
+@@ -872,6 +874,7 @@ init_options(struct options *o, const bool init_gc)
+     o->renegotiate_seconds = 3600;
+     o->handshake_window = 60;
+     o->transition_window = 3600;
++    o->tls_cert_profile = NULL;
+     o->ecdh_curve = NULL;
+ #ifdef ENABLE_X509ALTUSERNAME
+     o->x509_username_field = X509_USERNAME_FIELD_DEFAULT;
+@@ -1750,6 +1753,7 @@ show_settings(const struct options *o)
+     SHOW_STR(cryptoapi_cert);
+ #endif
+     SHOW_STR(cipher_list);
++    SHOW_STR(tls_cert_profile);
+     SHOW_STR(tls_verify);
+     SHOW_STR(tls_export_cert);
+     SHOW_INT(verify_x509_type);
+@@ -2729,6 +2733,7 @@ options_postprocess_verify_ce(const struct options *options, const struct connec
+         MUST_BE_UNDEF(pkcs12_file);
+ #endif
+         MUST_BE_UNDEF(cipher_list);
++        MUST_BE_UNDEF(tls_cert_profile);
+         MUST_BE_UNDEF(tls_verify);
+         MUST_BE_UNDEF(tls_export_cert);
+         MUST_BE_UNDEF(verify_x509_name);
+@@ -7831,6 +7836,11 @@ add_option(struct options *options,
+         VERIFY_PERMISSION(OPT_P_GENERAL);
+         options->cipher_list = p[1];
+     }
++    else if (streq(p[0], "tls-cert-profile") && p[1] && !p[2])
++    {
++        VERIFY_PERMISSION(OPT_P_GENERAL);
++        options->tls_cert_profile = p[1];
++    }
+     else if (streq(p[0], "crl-verify") && p[1] && ((p[2] && streq(p[2], "dir"))
+                                                    || (p[2] && streq(p[1], INLINE_FILE_TAG) ) || !p[2]) && !p[3])
+     {
+diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+index 496c1143..85ff200b 100644
+--- a/src/openvpn/options.h
++++ b/src/openvpn/options.h
+@@ -502,6 +502,7 @@ struct options
+     const char *priv_key_file;
+     const char *pkcs12_file;
+     const char *cipher_list;
++    const char *tls_cert_profile;
+     const char *ecdh_curve;
+     const char *tls_verify;
+     int verify_x509_type;
+diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
+index cb94229a..359ef635 100644
+--- a/src/openvpn/ssl.c
++++ b/src/openvpn/ssl.c
+@@ -616,6 +616,9 @@ init_ssl(const struct options *options, struct tls_root_ctx *new_ctx)
+         tls_ctx_client_new(new_ctx);
+     }
+ 
++    /* Restrict allowed certificate crypto algorithms */
++    tls_ctx_set_cert_profile(new_ctx, options->tls_cert_profile);
++
+     /* Allowable ciphers */
+     /* Since @SECLEVEL also influces loading of certificates, set the
+      * cipher restrictions before loading certificates */
+diff --git a/src/openvpn/ssl_backend.h b/src/openvpn/ssl_backend.h
+index aba5a4de..f588110c 100644
+--- a/src/openvpn/ssl_backend.h
++++ b/src/openvpn/ssl_backend.h
+@@ -176,6 +176,16 @@ void tls_ctx_set_options(struct tls_root_ctx *ctx, unsigned int ssl_flags);
+  */
+ void tls_ctx_restrict_ciphers(struct tls_root_ctx *ctx, const char *ciphers);
+ 
++/**
++ * Set the TLS certificate profile.  The profile defines which crypto
++ * algorithms may be used in the supplied certificate.
++ *
++ * @param ctx           TLS context to restrict, must be valid.
++ * @param profile       The profile name ('preferred', 'legacy' or 'suiteb').
++ *                      Defaults to 'preferred' if NULL.
++ */
++void tls_ctx_set_cert_profile(struct tls_root_ctx *ctx, const char *profile);
++
+ /**
+  * Check our certificate notBefore and notAfter fields, and warn if the cert is
+  * either not yet valid or has expired.  Note that this is a non-fatal error,
+@@ -505,9 +515,12 @@ void print_details(struct key_state_ssl *ks_ssl, const char *prefix);
+  * Show the TLS ciphers that are available for us to use in the OpenSSL
+  * library.
+  *
+- * @param               - list of allowed TLS cipher, or NULL.
++ * @param cipher_list       list of allowed TLS cipher, or NULL.
++ * @param tls_cert_profile  TLS certificate crypto profile name.
+  */
+-void show_available_tls_ciphers(const char *tls_ciphers);
++void
++show_available_tls_ciphers(const char *cipher_list,
++                           const char *tls_cert_profile);
+ 
+ /*
+  * Show the available elliptic curves in the crypto library
+diff --git a/src/openvpn/ssl_mbedtls.c b/src/openvpn/ssl_mbedtls.c
+index 861d936d..09829ebb 100644
+--- a/src/openvpn/ssl_mbedtls.c
++++ b/src/openvpn/ssl_mbedtls.c
+@@ -62,6 +62,34 @@
+ #include <mbedtls/pem.h>
+ #include <mbedtls/sha256.h>
+ 
++static const mbedtls_x509_crt_profile openvpn_x509_crt_profile_legacy =
++{
++    /* Hashes from SHA-1 and above */
++    MBEDTLS_X509_ID_FLAG( MBEDTLS_MD_SHA1 ) |
++    MBEDTLS_X509_ID_FLAG( MBEDTLS_MD_RIPEMD160 ) |
++    MBEDTLS_X509_ID_FLAG( MBEDTLS_MD_SHA224 ) |
++    MBEDTLS_X509_ID_FLAG( MBEDTLS_MD_SHA256 ) |
++    MBEDTLS_X509_ID_FLAG( MBEDTLS_MD_SHA384 ) |
++    MBEDTLS_X509_ID_FLAG( MBEDTLS_MD_SHA512 ),
++    0xFFFFFFF, /* Any PK alg    */
++    0xFFFFFFF, /* Any curve     */
++    1024,      /* RSA-1024 and larger */
++};
++
++static const mbedtls_x509_crt_profile openvpn_x509_crt_profile_preferred =
++{
++    /* SHA-2 and above */
++    MBEDTLS_X509_ID_FLAG( MBEDTLS_MD_SHA224 ) |
++    MBEDTLS_X509_ID_FLAG( MBEDTLS_MD_SHA256 ) |
++    MBEDTLS_X509_ID_FLAG( MBEDTLS_MD_SHA384 ) |
++    MBEDTLS_X509_ID_FLAG( MBEDTLS_MD_SHA512 ),
++    0xFFFFFFF, /* Any PK alg    */
++    0xFFFFFFF, /* Any curve     */
++    2048,      /* RSA-2048 and larger */
++};
++
++#define openvpn_x509_crt_profile_suiteb mbedtls_x509_crt_profile_suiteb;
++
+ void
+ tls_init_lib(void)
+ {
+@@ -250,6 +278,27 @@ tls_ctx_restrict_ciphers(struct tls_root_ctx *ctx, const char *ciphers)
+     free(tmp_ciphers_orig);
+ }
+ 
++void
++tls_ctx_set_cert_profile(struct tls_root_ctx *ctx, const char *profile)
++{
++    if (!profile || 0 == strcmp(profile, "legacy"))
++    {
++        ctx->cert_profile = openvpn_x509_crt_profile_legacy;
++    }
++    else if (0 == strcmp(profile, "preferred"))
++    {
++        ctx->cert_profile = openvpn_x509_crt_profile_preferred;
++    }
++    else if (0 == strcmp(profile, "suiteb"))
++    {
++        ctx->cert_profile = openvpn_x509_crt_profile_suiteb;
++    }
++    else
++    {
++        msg (M_FATAL, "ERROR: Invalid cert profile: %s", profile);
++    }
++}
++
+ void
+ tls_ctx_check_cert_time(const struct tls_root_ctx *ctx)
+ {
+@@ -917,6 +966,8 @@ key_state_ssl_init(struct key_state_ssl *ks_ssl,
+     mbedtls_ssl_conf_rng(&ks_ssl->ssl_config, mbedtls_ctr_drbg_random,
+                          rand_ctx_get());
+ 
++    mbedtls_ssl_conf_cert_profile(&ks_ssl->ssl_config, &ssl_ctx->cert_profile);
++
+     if (ssl_ctx->allowed_ciphers)
+     {
+         mbedtls_ssl_conf_ciphersuites(&ks_ssl->ssl_config, ssl_ctx->allowed_ciphers);
+@@ -1271,12 +1322,14 @@ print_details(struct key_state_ssl *ks_ssl, const char *prefix)
+ }
+ 
+ void
+-show_available_tls_ciphers(const char *cipher_list)
++show_available_tls_ciphers(const char *cipher_list,
++                           const char *tls_cert_profile)
+ {
+     struct tls_root_ctx tls_ctx;
+     const int *ciphers = mbedtls_ssl_list_ciphersuites();
+ 
+     tls_ctx_server_new(&tls_ctx);
++    tls_ctx_set_cert_profile(&tls_ctx, tls_cert_profile);
+     tls_ctx_restrict_ciphers(&tls_ctx, cipher_list);
+ 
+     if (tls_ctx.allowed_ciphers)
+diff --git a/src/openvpn/ssl_mbedtls.h b/src/openvpn/ssl_mbedtls.h
+index f69b6100..341da7d4 100644
+--- a/src/openvpn/ssl_mbedtls.h
++++ b/src/openvpn/ssl_mbedtls.h
+@@ -82,6 +82,7 @@ struct tls_root_ctx {
+     struct external_context *external_key; /**< Management external key */
+ #endif
+     int *allowed_ciphers;       /**< List of allowed ciphers for this connection */
++    mbedtls_x509_crt_profile cert_profile; /**< Allowed certificate types */
+ };
+ 
+ struct key_state_ssl {
+diff --git a/src/openvpn/ssl_openssl.c b/src/openvpn/ssl_openssl.c
+index 0bfb6939..de89cb13 100644
+--- a/src/openvpn/ssl_openssl.c
++++ b/src/openvpn/ssl_openssl.c
+@@ -383,6 +383,40 @@ tls_ctx_restrict_ciphers(struct tls_root_ctx *ctx, const char *ciphers)
+     }
+ }
+ 
++void
++tls_ctx_set_cert_profile(struct tls_root_ctx *ctx, const char *profile)
++{
++#if (OPENSSL_VERSION_NUMBER >= 0x10100000)
++    /* OpenSSL does not have certificate profiles, but a complex set of
++     * callbacks that we could try to implement to achieve something similar.
++     * For now, use OpenSSL's security levels to achieve similar (but not equal)
++     * behaviour. */
++    if (!profile || 0 == strcmp(profile, "legacy"))
++    {
++        SSL_CTX_set_security_level(ctx->ctx, 1);
++    }
++    else if (0 == strcmp(profile, "preferred"))
++    {
++        SSL_CTX_set_security_level(ctx->ctx, 2);
++    }
++    else if (0 == strcmp(profile, "suiteb"))
++    {
++        SSL_CTX_set_security_level(ctx->ctx, 3);
++        SSL_CTX_set_cipher_list(ctx->ctx, "SUITEB128");
++    }
++    else
++    {
++        msg(M_FATAL, "ERROR: Invalid cert profile: %s", profile);
++    }
++#else
++    if (profile)
++    {
++        msg(M_WARN, "WARNING: OpenSSL 1.0.1 does not support --tls-cert-profile"
++            ", ignoring user-set profile: '%s'", profile);
++    }
++#endif
++}
++
+ void
+ tls_ctx_check_cert_time(const struct tls_root_ctx *ctx)
+ {
+@@ -1722,7 +1756,8 @@ print_details(struct key_state_ssl *ks_ssl, const char *prefix)
+ }
+ 
+ void
+-show_available_tls_ciphers(const char *cipher_list)
++show_available_tls_ciphers(const char *cipher_list,
++                           const char *tls_cert_profile)
+ {
+     struct tls_root_ctx tls_ctx;
+     SSL *ssl;
+@@ -1742,6 +1777,7 @@ show_available_tls_ciphers(const char *cipher_list)
+         crypto_msg(M_FATAL, "Cannot create SSL object");
+     }
+ 
++    tls_ctx_set_cert_profile(&tls_ctx, tls_cert_profile);
+     tls_ctx_restrict_ciphers(&tls_ctx, cipher_list);
+ 
+     printf("Available TLS Ciphers,\n");
+-- 
+2.14.1
 
-(Too many things changed in the organizational structure since I used an
-"original Solaris" last time - that was OpenSolaris 10...)
-
-thanks,
-
-gert
-
---=20
-USENET is *not* the non-clickable part of WWW!
-                                                           //www.muc.de/~ge=
-rt/
-Gert Doering - Munich, Germany                             gert@...1296...
-fax: +49-89-35655025                        gert@...1297...
-
---3EG2G0wNthkGfxoY
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJaCHWQAAoJEB2Cnv7KVigScwEL/i1UgXNSup4F6rxki6wS545B
-1heaEvTndN65LNCMhFbC8SH5Z2z8SgC8bpZQkQ4lUx1pUUi3xtM6aZr+PJLjklos
-CKhxYNzxYr1TsdgWEfrqdVSwDPcJkr3NsjBJpyQf2m1tfF4go8M6vXb/Hyv/Aptd
-H4UhfLNCF2CwLDq6hAjnuzsQ/XwS+SDQZMPfkGV89JdxhL6xkE2aJkZpXxH+g3f3
-e20h1mif2l3OChgjssYQUWWAbO8v/FGGOdHqCZ3REzIznDL0zXE+/mUGR9ho0j7p
-2/ey7rIzLTr71VjaM5CUu8lZDKW2Wg870upXxWgIgMxmWu1h8c0hPbYY+fnW6QVa
-0v4FWp5PagErJcDOlC7IP2v2Km8ueUktLnFN45OA3K7ndy/8ndZtAjyhkIL/MB5V
-N7B6DMA/xajQnfAbUtP/HBMfzxxqCLjluMEOTviC4yAUNxhUL+3lf9e1bpspWETu
-2nTXIVe4sFC0fA+AKpVOG8SdwHahcWJr7Wx6hPFZrw==
-=VeRv
------END PGP SIGNATURE-----
-
---3EG2G0wNthkGfxoY--
 
