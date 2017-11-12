@@ -1,14 +1,16 @@
-References: <20171111161122.30087-1-gert@...2298...>
- <20171111161122.30087-2-gert@...2298...>
- <36d79632-6548-2d72-7d25-376d188ecea9@...1227...>
-From: Gert van Dijk <gert@...2298...>
-Message-ID: <a94ba2bb-5a9a-be05-ec69-8ab045e7ba06@...2298...>
-Date: Sun, 12 Nov 2017 21:18:53 +0100
-MIME-Version: 1.0
-In-Reply-To: <36d79632-6548-2d72-7d25-376d188ecea9@...1227...>
-Content-Language: nl
-Subject: Re: [Openvpn-devel] [PATCH 2/2] Add negotiated cipher to status
- file format 2 and 3
+Date: Sun, 12 Nov 2017 21:21:19 +0100
+From: Simon Ruderich <simon@...2161...>
+Message-ID: <20171112202119.m337ikprgrcrc6hp@...2161...>
+References: <4e9ea26fee7e606cdb0636dd377bf1bc.squirrel@...2257...>
+ <20171111134758.7373-1-steffan@...1856...>
+Mime-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="=_zucker.schokokeks.org-25394-1510518080-0001-2"
+Content-Disposition: inline
+In-Reply-To: <20171111134758.7373-1-steffan@...1856...>
+Subject: Re: [Openvpn-devel] [PATCH v3] Add per session pseudo-random jitter
+ to --reneg-sec intervals
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,67 +19,82 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=utf-8
+To: Steffan Karger <steffan@...1856...>
+Cc: openvpn-devel@lists.sourceforge.net
+
+This is a MIME-formatted message.  If you see this text it means that your
+E-mail software does not support MIME-formatted messages.
+
+--=_zucker.schokokeks.org-25394-1510518080-0001-2
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+
+On Sat, Nov 11, 2017 at 02:47:58PM +0100, Steffan Karger wrote:
+> --- a/src/openvpn/init.c
+> +++ b/src/openvpn/init.c
+> @@ -2693,7 +2693,20 @@ do_init_crypto_tls(struct context *c, const unsign=
+ed int flags)
+>      to.packet_timeout =3D options->tls_timeout;
+>      to.renegotiate_bytes =3D options->renegotiate_bytes;
+>      to.renegotiate_packets =3D options->renegotiate_packets;
+> -    to.renegotiate_seconds =3D options->renegotiate_seconds;
+> +    if (options->renegotiate_seconds_min < 0)
+> +    {
+> +        /* Add 10% jitter to the reneg-sec of each connection by default=
+ */
+
+Maybe change that to "of each server connection".
+
+> +        int auto_jitter =3D options->mode !=3D MODE_SERVER ? 0 :
+> +                get_random() % max_int(options->renegotiate_seconds / 10=
+, 1);
+> +        to.renegotiate_seconds =3D options->renegotiate_seconds - auto_j=
+itter;
+> +    }
+> +    else
+> +    {
+> +        /* Add user-specific jitter to the renge-sec of each connection =
+*/
+
+s/renge/reneg/
+
+> +        to.renegotiate_seconds =3D options->renegotiate_seconds -
+> +                (get_random() % max_int(options->renegotiate_seconds
+> +                                        - options->renegotiate_seconds_m=
+in, 1));
+> +    }
+>      to.single_session =3D options->single_session;
+>      to.mode =3D options->mode;
+>      to.pull =3D options->pull;
+
+Regards
+Simon
+--=20
++ privacy is necessary
++ using gnupg http://gnupg.org
++ public key id: 0x92FEFDB7E44C32F9
+
+--=_zucker.schokokeks.org-25394-1510518080-0001-2
+Content-Type: application/pgp-signature; name="signature.asc"
 Content-Transfer-Encoding: 7bit
-To: Arne Schwabe <arne@...1227...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-Hi Arne,
+-----BEGIN PGP SIGNATURE-----
 
-Thanks for reviewing this :)
+iQIzBAEBCgAdFiEEO7rfWMMObpFkF3n0kv79t+RMMvkFAloIrS4ACgkQkv79t+RM
+MvkGdQ/8Dcwh+snAjudQgR9FEk09HtOY+NMfJaiWLoM0Xbd9pTogNZZXuM4xMo6K
+Rnfg/qWZVxOuq/607At4Oz2wnDavP/xGndvg2aiVmS5CNU1b1bV+vBvKfRdquahA
+4ib2WRV7gItL8e7j7zJtej+f5wUUcMpej8wKBwkNObmZ3YPuJIooBTOmKXMEkgeL
+3RvAHibDYNjbY/pJ1OI+reDXcap/dRTIu3G2osGf2FoPyGDUFJF41UeB+hrBEQzl
+o7A4ctdxQNTsPbD5kDMcw832zkRARe7yWhSa8Xw5L57nMPrBuAy7BTVdUKBIFN5C
+8zLrk7+GrrQHLTLA+Isag+hDkN+xo92RtunMvPZ84Hsq64w3EuWvDc1/9FY9Eild
++WEGXNSUVt+CkGQez+QwBcny4/1kU9W1C7mtf7iT3hvvq51gET0MakOe20q6+taq
++5hzm+7Gpw7BjHcB+kANN/zI3eGXFrtjCi7pE7Hpdh3dZArvz/WmuLIXNl1NAjLO
+HRH8eLzBZLwAYEvyuwXEAFZ9AdtLAXQOeeHpAF2T2N5WzETEX0Q5oWzu4Uvum/Ud
+lxMaOH4DhfTp9qnyLjXChbZoc07tm3aAmLxfx4uGedGknZbCRfu4bkfe0bZ4LwqJ
+xgkV+r8GbtuDWUXrRLPCxU26HYl8T3/d8rXokAyz4TbUKYp4HwM=
+=fgpu
+-----END PGP SIGNATURE-----
 
-On 12-11-17 21:09, Arne Schwabe wrote:
-> Am 11.11.17 um 17:11 schrieb Gert van Dijk:
->> With NCP turned off, this will still display the cipher used.
->>
->> Trac: #814
->>
->> Signed-off-by: Gert van Dijk <gert@...2298...>
->> ---
->>  doc/openvpn.8       |  2 +-
->>  src/openvpn/multi.c | 11 +++++++----
->>  2 files changed, 8 insertions(+), 5 deletions(-)
->>
->> diff --git a/doc/openvpn.8 b/doc/openvpn.8
->> index 267497fd..00dbff6f 100644
->> --- a/doc/openvpn.8
->> +++ b/doc/openvpn.8
->> @@ -2477,7 +2477,7 @@ Connected Since.
->>  .B 2
->>  \-\- a more reliable format for external processing. Compared to version 1, the
->>  client list contains some additional fields: Virtual Address, Virtual IPv6
->> -Address, Username, Client ID, Peer ID.
->> +Address, Username, Client ID, Peer ID, Data Channel Cipher.
->>  Future versions may extend the number of fields.
->>  .br
->>  .B 3
-> 
-> 
-> This part of the patch is okay but does not apply cleanly for me. Might
-> need some on the fly fixing on apply.
-> 
-
-Did you apply the first part ([PATCH 1/2] manpage: improve description
-of --status and --status-version)?
-
->> @@ -940,8 +942,8 @@ multi_print_status(struct multi_context *m, struct status_output *so, const int
->>               */
->>              status_printf(so, "TITLE%c%s", sep, title_string);
->>              status_printf(so, "TIME%c%s%c%u", sep, time_string(now, 0, false, &gc_top), sep, (unsigned int)now);
->> -            status_printf(so, "HEADER%cCLIENT_LIST%cCommon Name%cReal Address%cVirtual Address%cVirtual IPv6 Address%cBytes Received%cBytes Sent%cConnected Since%cConnected Since (time_t)%cUsername%cClient ID%cPeer ID",
->> -                          sep, sep, sep, sep, sep, sep, sep, sep, sep, sep, sep, sep);
->> +            status_printf(so, "HEADER%cCLIENT_LIST%cCommon Name%cReal Address%cVirtual Address%cVirtual IPv6 Address%cBytes Received%cBytes Sent%cConnected Since%cConnected Since (time_t)%cUsername%cClient ID%cPeer ID%cData Channel Cipher",
-> 
-> 
-> 
-> Extremely long line, but not your fault, so I will let it pass.
-> 
-> 
-> Works for me and code is good so:
-> 
-> Acked-by: Arne Schwabe <arne@...1227...>
-> Tested-by: Arne Schwabe <arne@...1227...>>
-> 
-> Arne
-> 
+--=_zucker.schokokeks.org-25394-1510518080-0001-2--
 
