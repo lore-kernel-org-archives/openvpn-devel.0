@@ -1,13 +1,15 @@
-References: <20171110163946.7656-1-fkooman@...2318...>
- <63ccd0e3-491f-3fb3-e611-9b6674d3d501@...2298...>
-From: =?UTF-8?Q?Fran=c3=a7ois_Kooman?= <fkooman@...2318...>
-Message-ID: <aef485c7-f619-eaac-6534-0828ab9d41f5@...2318...>
-Date: Sun, 12 Nov 2017 12:15:57 +0100
+References: <7fbf60b2-e417-5436-e1df-f6bc8ed57692@...1856...>
+ <20171112103713.16486-1-steffan@...1856...>
+From: Antonio Quartulli <a@...2181...>
+Message-ID: <5f8d8043-5725-f535-e623-da042984196b@...2181...>
+Date: Sun, 12 Nov 2017 22:15:48 +0800
 MIME-Version: 1.0
-In-Reply-To: <63ccd0e3-491f-3fb3-e611-9b6674d3d501@...2298...>
-Content-Language: en-US
-Subject: Re: [Openvpn-devel] [PATCH] Implement "status 4" (JSON) for
- management interface
+In-Reply-To: <20171112103713.16486-1-steffan@...1856...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="kBsdtdLMPnjEBxDALUCqfhUCAItK3HheF"
+Subject: Re: [Openvpn-devel] [PATCH v5] Add --tls-cert-profile option for
+ mbedtls builds
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,47 +18,82 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
+
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--kBsdtdLMPnjEBxDALUCqfhUCAItK3HheF
+Content-Type: multipart/mixed; boundary="pEuqWAdeC7fqPe3nEXE420sTk4RtTSsDg";
+ protected-headers="v1"
+From: Antonio Quartulli <a@...2181...>
+To: Steffan Karger <steffan@...1856...>, openvpn-devel@lists.sourceforge.net
+Message-ID: <5f8d8043-5725-f535-e623-da042984196b@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH v5] Add --tls-cert-profile option for
+ mbedtls builds
+References: <7fbf60b2-e417-5436-e1df-f6bc8ed57692@...1856...>
+ <20171112103713.16486-1-steffan@...1856...>
+In-Reply-To: <20171112103713.16486-1-steffan@...1856...>
+
+--pEuqWAdeC7fqPe3nEXE420sTk4RtTSsDg
+Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+Content-Transfer-Encoding: quoted-printable
 
-On 11/11/2017 04:55 PM, Gert van Dijk wrote:
-> Hi François,
+Hi,
 
-Hi Gert,
+On 12/11/17 18:37, Steffan Karger wrote:
+[CUT]
 
-> This is not a full review, but as just discussed face-to-face, here are
-> some points from me:
+> +void
+> +tls_ctx_set_cert_profile(struct tls_root_ctx *ctx, const char *profile)
+> +{
+> +    /* OpenSSL does not have certificate profiles, but a complex set of
+> +     * callbacks that we could try to implement to achieve something sim=
+ilar.
+> +     * For now, use OpenSSL's security levels to achieve similar (but no=
+t equal)
+> +     * behaviour. */
+> +    if (0 =3D=3D strcmp(profile, "preferred"))
+> +    {
+> +        SSL_CTX_set_security_level(ctx->ctx, 2);
 
-Thanks for taking the time to look at it!
 
-> 1) Could we also please please enable this for non-management interface
-> use case? I guess it's just adding the status version number 4 in
-> option/config validator (and the manpage).
+unfortunately this function does not exist in OpenSSL 1.0.x and openvpn
+does not compile.
 
-Yes, I will add this as well.
+However, we don't need anything equivalent for openssl-1.0.x because the
+legacy profile is implicitly supported there.
 
-> 2) With 1), perhaps it would be more clear to use *version* in your
-> message/description so that it's about the --status-version option, not
-> the --status option.
-
-This got confused because in the management interface (via telnet) you'd
-use "status" and not "status-version".
-
-> 3) I believe the output structure is not valid JSON with the "END"
-> string at the end.
-
-All (multiline) responses end with "END", so that's why I did that as
-well. Ideally I'd construct a JSON object that does not include newlines
-at all and just responds as:
-
-SUCCESS: { ... }
-
-> (FYI I'm about to upload a patch to include more documentation on the
-> --status-version option and to include a new field as well.)
-
-Great!
 
 Cheers,
-François
+
+
+--=20
+Antonio Quartulli
+
+
+--pEuqWAdeC7fqPe3nEXE420sTk4RtTSsDg--
+
+--kBsdtdLMPnjEBxDALUCqfhUCAItK3HheF
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEERdCuyFSHc3WdqS4EB6U8WA7yzXQFAloIV5UACgkQB6U8WA7y
+zXSOEBAAr1YUaTDaVHJ2nKfoRYR0BuaYvNNtgxKO3IJP23hb/pyN41/flWhlJ77J
+xB3Ja80+u+lAUko4LGuGwo15RpTsyYt9fxkzsGqap8zRFKKhXrA3bMFd4sunON1p
+/MoR4dHhbKLRJ1yzEcvdE4ouMLMMaxSwnbdQgxz4UQ4VurGzfJh4KcmkHkqVJ7zx
+oyNUGbTgDPdc3f7gRJ/5sH96u5febzCmLUsLMyVPOPNGIghV/+EuxzSp50ODR174
+clNkYwe57Nc3x4DcQwu1+m90eXBRZlPVJDxh9F0pTG7KyLcbFlIlxbn38znmeh/7
+j52nEFCuuf7dbcUxRzY7VGie5KUTpnMUbae/V455z2aPQFd8HpOytoxryX9hnCT+
+oofznQIKNNAsrEBxj3k4GtwSpbSVTo1i/wGqbG4leNG0yqwOvLObQ9wn6oDXoyRd
+2DMG4oOIVIzUJgAW6AZXU6Zpub7G0fP9Zrya/YOyyUVmNq6o8qS3NgPcZHPdYFCD
+ucBVHlkboUAGCAPO9420EqBq9pVojU++fE3WQn6rUjoIgwHog/bA3E5a26uYlprG
+SLFKSnZCu10WVrl8dmYnFnziF8bN83Qa8p1jYnpjtsHkDc5FiWvmm5kiZJbudwz3
+5jTTDIsRPG+pczz/13oJ6u2wI4+9XX3taL1f8OtneI19RjRBe6Y=
+=ebyK
+-----END PGP SIGNATURE-----
+
+--kBsdtdLMPnjEBxDALUCqfhUCAItK3HheF--
 
