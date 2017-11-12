@@ -1,10 +1,14 @@
+References: <CAEsd45TcQP9BDxyV+k+UXJUoZ7ZNoLGZuAq03C=6=gTBv-=Dfg@...278...>
+ <1510416452-1201-1-git-send-email-arne@...1227...>
 From: Antonio Quartulli <a@...2181...>
-Date: Sun, 12 Nov 2017 16:48:30 +0800
-Message-Id: <20171112084830.22912-1-a@...2181...>
-In-Reply-To: <6cf2ad26-d6e6-50a7-cb2c-d15a5ff4a198@...1856...>
-References: <6cf2ad26-d6e6-50a7-cb2c-d15a5ff4a198@...1856...>
-Subject: [Openvpn-devel] [PATCH v6] merge *-inline.h files with their main
- header
+Message-ID: <48bb26ee-9a28-24fa-ad5f-485aec1c4ee4@...2181...>
+Date: Sun, 12 Nov 2017 17:32:49 +0800
+MIME-Version: 1.0
+In-Reply-To: <1510416452-1201-1-git-send-email-arne@...1227...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="aDHjXaxEPiHCiGSR1vVLu3txG5adipqIw"
+Subject: Re: [Openvpn-devel] [PATCH v2] Implement block-ipv6
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,1446 +17,590 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--aDHjXaxEPiHCiGSR1vVLu3txG5adipqIw
+Content-Type: multipart/mixed; boundary="bfWSrGeuVO6TlwglBG58SJKJFKgIQlnk6";
+ protected-headers="v1"
+From: Antonio Quartulli <a@...2181...>
+To: Arne Schwabe <arne@...1227...>, openvpn-devel@lists.sourceforge.net
+Message-ID: <48bb26ee-9a28-24fa-ad5f-485aec1c4ee4@...2181...>
+Subject: Re: [Openvpn-devel] [PATCH v2] Implement block-ipv6
+References: <CAEsd45TcQP9BDxyV+k+UXJUoZ7ZNoLGZuAq03C=6=gTBv-=Dfg@...278...>
+ <1510416452-1201-1-git-send-email-arne@...1227...>
+In-Reply-To: <1510416452-1201-1-git-send-email-arne@...1227...>
+
+--bfWSrGeuVO6TlwglBG58SJKJFKgIQlnk6
+Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
-Cc: Antonio Quartulli <a@...2181...>, Steffan Karger <steffan@...1856...>
+Content-Transfer-Encoding: quoted-printable
 
-*-inline.h files are not very useful anymore.
-In the attempt of cleaning up the code some more,
-merge them into their main header files.
+Hi,
 
-At the same time, move functions from fowrard.h
-to forward.c, when they are used only in the latter.
+On 12/11/17 00:07, Arne Schwabe wrote:
+> This can be used to redirect all IPv6 traffic to the tun interface, effec=
+tively black holing the IPv6 traffic. Without ICMPv6 error messages this wi=
+ll result in timeouts when the server does not send error codes.
+> block-ipv6 allows client side only blocking on all platforms that OpenVPN=
+ supports IPv6. On Android it is only way to do sensible IPv6 blocking on A=
+ndroid < 5.0 and broken devices (Samsung).
+> ---
+>  doc/openvpn.8         |  17 +++++
+>  src/openvpn/forward.c | 170 ++++++++++++++++++++++++++++++++++++++++++++=
+++++--
+>  src/openvpn/forward.h |   3 +-
+>  src/openvpn/misc.c    |   4 +-
+>  src/openvpn/options.c |  17 +++++
+>  src/openvpn/options.h |   1 +
+>  src/openvpn/proto.h   |  19 ++++++
+>  7 files changed, 224 insertions(+), 7 deletions(-)
+>=20
+> diff --git a/doc/openvpn.8 b/doc/openvpn.8
+> index a4189ac2..26b5f7de 100644
+> --- a/doc/openvpn.8
+> +++ b/doc/openvpn.8
+> @@ -1232,6 +1232,23 @@ Like \-\-redirect\-gateway, but omit actually chan=
+ging the default
+>  gateway.  Useful when pushing private subnets.
+>  .\"*********************************************************
+>  .TP
+> +.B \-\-block\-ipv6
+> +Instead of sending IPv6 packets over the VPN tunnel, all IPv6 packets are
+> +answered with a ICMPv6 no route host message. This options is intended f=
+or
+> +cases when IPv6 should be blocked and other options are not available.
+> +
+> +Following config block would send all IPv6 traffic to OpenVPN and answer=
+ all
+> +requests with no route to host, effectively blocking IPv6.
+> +
+> +.B \-\-ifconfig-ipv6
+> +fd15:53b6:dead::2/64  fd15:53b6:dead::1
+> +.br
+> +.B \-\-redirect\-gateway
+> +ipv6
+> +.br
+> +.B \-\-block\-ipv6
+> +.\"*********************************************************
+> +.TP
+>  .B \-\-tun\-mtu n
+>  Take the TUN device MTU to be
+>  .B n
+> diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+> index 1b7455bb..21cce90b 100644
+> --- a/src/openvpn/forward.c
+> +++ b/src/openvpn/forward.c
+> @@ -1198,7 +1198,7 @@ process_incoming_tun(struct context *c)
+>           * The --passtos and --mssfix options require
+>           * us to examine the IP header (IPv4 or IPv6).
+>           */
+> -        process_ip_header(c, PIPV4_PASSTOS|PIP_MSSFIX|PIPV4_CLIENT_NAT, =
+&c->c2.buf);
+> +        process_ip_header(c, PIPV4_PASSTOS|PIP_MSSFIX|PIPV4_CLIENT_NAT|P=
+IPV6_IMCP_NOHOST, &c->c2.buf);
+>=20=20
+>  #ifdef PACKET_TRUNCATION_CHECK
+>          /* if (c->c2.buf.len > 1) --c->c2.buf.len; */
+> @@ -1209,6 +1209,9 @@ process_incoming_tun(struct context *c)
+>                                  &c->c2.n_trunc_pre_encrypt);
+>  #endif
+>=20=20
+> +    }
+> +    if (c->c2.buf.len > 0)
+> +    {
+>          encrypt_sign(c, true);
+>      }
 
-No functional change is part of this patch.
-
-Cc: Steffan Karger <steffan@...1856...>
-Signed-off-by: Antonio Quartulli <a@...2181...>
----
-
-v4: pf_c2c/addr_test() has been made static again
-v5: no change
-v6: move functions from forward.h to forward.c when used only by
-    the latter (as suggested by Steffan)
+I might not have a full understanding of this chunk: but could you
+explain how this is related to this patch?
 
 
- src/openvpn/Makefile.am             |   8 +-
- src/openvpn/forward-inline.h        | 341 ------------------------------------
- src/openvpn/forward.c               | 238 ++++++++++++++++++++++++-
- src/openvpn/forward.h               |  87 ++++++++-
- src/openvpn/init.c                  |   4 +-
- src/openvpn/mtcp.c                  |   2 +-
- src/openvpn/mudp.c                  |   2 +-
- src/openvpn/multi.c                 |   4 +-
- src/openvpn/occ-inline.h            |  95 ----------
- src/openvpn/occ.c                   |   4 +-
- src/openvpn/occ.h                   |  61 +++++++
- src/openvpn/openvpn.c               |   2 -
- src/openvpn/openvpn.h               |   2 +-
- src/openvpn/openvpn.vcxproj         |   4 -
- src/openvpn/openvpn.vcxproj.filters |  12 --
- src/openvpn/pf-inline.h             |  67 -------
- src/openvpn/pf.c                    |   2 +-
- src/openvpn/pf.h                    |  39 +++++
- src/openvpn/ping-inline.h           |  64 -------
- src/openvpn/ping.c                  |   1 -
- src/openvpn/ping.h                  |  37 ++++
- 21 files changed, 469 insertions(+), 607 deletions(-)
- delete mode 100644 src/openvpn/forward-inline.h
- delete mode 100644 src/openvpn/occ-inline.h
- delete mode 100644 src/openvpn/pf-inline.h
- delete mode 100644 src/openvpn/ping-inline.h
+>      else
+> @@ -1219,6 +1222,155 @@ process_incoming_tun(struct context *c)
+>      gc_free(&gc);
+>  }
+>=20=20
+> +/**
+> + *  Calculates an IPv6 checksum with a pseudo header as required by TCP,=
+ UDP and ICMPv6
+> + * @param payload the TCP, ICMPv6 or UDP packet
+> + * @param len_payload length of payload
+> + * @param src_addr
+> + * @param dest_addr
+> + * @return calculated checksum in host order
+> + */
+> +static uint16_t
+> +ipv6_checksum(const uint8_t *payload,
+> +              const int len_payload,
+> +              const int next_header,
+> +              const uint8_t *src_addr,
+> +              const uint8_t *dest_addr)
+> +{
+> +    uint32_t sum =3D 0;
+> +
+> +    /* make 16 bit words out of every two adjacent 8 bit words and  */
+> +    /* calculate the sum of all 16 bit words */
+> +    for (int i =3D 0; i < len_payload; i +=3D 2)
+> +    {
+> +        sum +=3D  (uint16_t) (((payload[i] << 8) & 0xFF00) + ((i + 1 < l=
+en_payload) ? (payload[i + 1] & 0xFF) : 0));
+> +
+> +    }
+> +
+> +    /* add the pseudo header which contains the IP source and destinatio=
+n addresses */
+> +    for (int i =3D 0; i < 16; i +=3D 2)
+> +    {
+> +        sum +=3D (uint16_t) ((src_addr[i] << 8) & 0xFF00) + (src_addr[i+=
+1] & 0xFF);
+> +
+> +    }
+> +    for (int i =3D 0; i < 16; i +=3D 2)
+> +    {
+> +        sum +=3D (uint16_t) ((dest_addr[i] << 8) & 0xFF00) + (dest_addr[=
+i+1] & 0xFF);
+> +    }
+> +
+> +    /* the length of the payload */
+> +    sum +=3D (uint16_t) len_payload;
+> +
+> +    /* The next header */
+> +    sum +=3D (uint16_t) next_header;
+> +
+> +    /* keep only the last 16 bits of the 32 bit calculated sum and add t=
+he carries */
+> +    while (sum >> 16)
+> +    {
+> +        sum =3D (sum & 0xFFFF) + (sum >> 16);
+> +    }
+> +
+> +    /* Take the one's complement of sum */
+> +    return ((uint16_t) ~sum);
+> +}
 
-diff --git a/src/openvpn/Makefile.am b/src/openvpn/Makefile.am
-index fcc22d68..babc0adb 100644
---- a/src/openvpn/Makefile.am
-+++ b/src/openvpn/Makefile.am
-@@ -55,7 +55,7 @@ openvpn_SOURCES = \
- 	error.c error.h \
- 	event.c event.h \
- 	fdmisc.c fdmisc.h \
--	forward.c forward.h forward-inline.h \
-+	forward.c forward.h \
- 	fragment.c fragment.h \
- 	gremlin.c gremlin.h \
- 	helper.c helper.h \
-@@ -80,7 +80,7 @@ openvpn_SOURCES = \
- 	mudp.c mudp.h \
- 	multi.c multi.h \
- 	ntlm.c ntlm.h \
--	occ.c occ.h occ-inline.h \
-+	occ.c occ.h \
- 	openssl_compat.h \
- 	pkcs11.c pkcs11.h pkcs11_backend.h \
- 	pkcs11_openssl.c \
-@@ -90,8 +90,8 @@ openvpn_SOURCES = \
- 	otime.c otime.h \
- 	packet_id.c packet_id.h \
- 	perf.c perf.h \
--	pf.c pf.h pf-inline.h \
--	ping.c ping.h ping-inline.h \
-+	pf.c pf.h \
-+	ping.c ping.h \
- 	plugin.c plugin.h \
- 	pool.c pool.h \
- 	proto.c proto.h \
-diff --git a/src/openvpn/forward-inline.h b/src/openvpn/forward-inline.h
-deleted file mode 100644
-index ab83ea40..00000000
---- a/src/openvpn/forward-inline.h
-+++ /dev/null
-@@ -1,341 +0,0 @@
--/*
-- *  OpenVPN -- An application to securely tunnel IP networks
-- *             over a single TCP/UDP port, with support for SSL/TLS-based
-- *             session authentication and key exchange,
-- *             packet encryption, packet authentication, and
-- *             packet compression.
-- *
-- *  Copyright (C) 2002-2017 OpenVPN Technologies, Inc. <sales@...515...>
-- *
-- *  This program is free software; you can redistribute it and/or modify
-- *  it under the terms of the GNU General Public License version 2
-- *  as published by the Free Software Foundation.
-- *
-- *  This program is distributed in the hope that it will be useful,
-- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-- *  GNU General Public License for more details.
-- *
-- *  You should have received a copy of the GNU General Public License along
-- *  with this program; if not, write to the Free Software Foundation, Inc.,
-- *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-- */
--
--#ifndef FORWARD_INLINE_H
--#define FORWARD_INLINE_H
--
--/*
-- * Inline functions
-- */
--
--/*
-- * Does TLS session need service?
-- */
--static inline void
--check_tls(struct context *c)
--{
--#if defined(ENABLE_CRYPTO)
--    void check_tls_dowork(struct context *c);
--
--    if (c->c2.tls_multi)
--    {
--        check_tls_dowork(c);
--    }
--#endif
--}
--
--/*
-- * TLS errors are fatal in TCP mode.
-- * Also check for --tls-exit trigger.
-- */
--static inline void
--check_tls_errors(struct context *c)
--{
--#if defined(ENABLE_CRYPTO)
--    void check_tls_errors_co(struct context *c);
--
--    void check_tls_errors_nco(struct context *c);
--
--    if (c->c2.tls_multi && c->c2.tls_exit_signal)
--    {
--        if (link_socket_connection_oriented(c->c2.link_socket))
--        {
--            if (c->c2.tls_multi->n_soft_errors)
--            {
--                check_tls_errors_co(c);
--            }
--        }
--        else
--        {
--            if (c->c2.tls_multi->n_hard_errors)
--            {
--                check_tls_errors_nco(c);
--            }
--        }
--    }
--#endif /* if defined(ENABLE_CRYPTO) */
--}
--
--/*
-- * Check for possible incoming configuration
-- * messages on the control channel.
-- */
--static inline void
--check_incoming_control_channel(struct context *c)
--{
--#if P2MP
--    void check_incoming_control_channel_dowork(struct context *c);
--
--    if (tls_test_payload_len(c->c2.tls_multi) > 0)
--    {
--        check_incoming_control_channel_dowork(c);
--    }
--#endif
--}
--
--/*
-- * Options like --up-delay need to be triggered by this function which
-- * checks for connection establishment.
-- */
--static inline void
--check_connection_established(struct context *c)
--{
--    void check_connection_established_dowork(struct context *c);
--
--    if (event_timeout_defined(&c->c2.wait_for_connect))
--    {
--        check_connection_established_dowork(c);
--    }
--}
--
--/*
-- * Should we add routes?
-- */
--static inline void
--check_add_routes(struct context *c)
--{
--    void check_add_routes_dowork(struct context *c);
--
--    if (event_timeout_trigger(&c->c2.route_wakeup, &c->c2.timeval, ETT_DEFAULT))
--    {
--        check_add_routes_dowork(c);
--    }
--}
--
--/*
-- * Should we exit due to inactivity timeout?
-- */
--static inline void
--check_inactivity_timeout(struct context *c)
--{
--    void check_inactivity_timeout_dowork(struct context *c);
--
--    if (c->options.inactivity_timeout
--        && event_timeout_trigger(&c->c2.inactivity_interval, &c->c2.timeval, ETT_DEFAULT))
--    {
--        check_inactivity_timeout_dowork(c);
--    }
--}
--
--#if P2MP
--
--static inline void
--check_server_poll_timeout(struct context *c)
--{
--    void check_server_poll_timeout_dowork(struct context *c);
--
--    if (c->options.ce.connect_timeout
--        && event_timeout_trigger(&c->c2.server_poll_interval, &c->c2.timeval, ETT_DEFAULT))
--    {
--        check_server_poll_timeout_dowork(c);
--    }
--}
--
--/*
-- * Scheduled exit?
-- */
--static inline void
--check_scheduled_exit(struct context *c)
--{
--    void check_scheduled_exit_dowork(struct context *c);
--
--    if (event_timeout_defined(&c->c2.scheduled_exit))
--    {
--        if (event_timeout_trigger(&c->c2.scheduled_exit, &c->c2.timeval, ETT_DEFAULT))
--        {
--            check_scheduled_exit_dowork(c);
--        }
--    }
--}
--#endif /* if P2MP */
--
--/*
-- * Should we write timer-triggered status file.
-- */
--static inline void
--check_status_file(struct context *c)
--{
--    void check_status_file_dowork(struct context *c);
--
--    if (c->c1.status_output)
--    {
--        if (status_trigger_tv(c->c1.status_output, &c->c2.timeval))
--        {
--            check_status_file_dowork(c);
--        }
--    }
--}
--
--#ifdef ENABLE_FRAGMENT
--/*
-- * Should we deliver a datagram fragment to remote?
-- */
--static inline void
--check_fragment(struct context *c)
--{
--    void check_fragment_dowork(struct context *c);
--
--    if (c->c2.fragment)
--    {
--        check_fragment_dowork(c);
--    }
--}
--#endif
--
--#if P2MP
--
--/*
-- * see if we should send a push_request in response to --pull
-- */
--static inline void
--check_push_request(struct context *c)
--{
--    void check_push_request_dowork(struct context *c);
--
--    if (event_timeout_trigger(&c->c2.push_request_interval, &c->c2.timeval, ETT_DEFAULT))
--    {
--        check_push_request_dowork(c);
--    }
--}
--
--#endif
--
--#ifdef ENABLE_CRYPTO
--/*
-- * Should we persist our anti-replay packet ID state to disk?
-- */
--static inline void
--check_packet_id_persist_flush(struct context *c)
--{
--    if (packet_id_persist_enabled(&c->c1.pid_persist)
--        && event_timeout_trigger(&c->c2.packet_id_persist_interval, &c->c2.timeval, ETT_DEFAULT))
--    {
--        packet_id_persist_save(&c->c1.pid_persist);
--    }
--}
--#endif
--
--/*
-- * Set our wakeup to 0 seconds, so we will be rescheduled
-- * immediately.
-- */
--static inline void
--context_immediate_reschedule(struct context *c)
--{
--    c->c2.timeval.tv_sec = 0;  /* ZERO-TIMEOUT */
--    c->c2.timeval.tv_usec = 0;
--}
--
--static inline void
--context_reschedule_sec(struct context *c, int sec)
--{
--    if (sec < 0)
--    {
--        sec = 0;
--    }
--    if (sec < c->c2.timeval.tv_sec)
--    {
--        c->c2.timeval.tv_sec = sec;
--        c->c2.timeval.tv_usec = 0;
--    }
--}
--
--static inline struct link_socket_info *
--get_link_socket_info(struct context *c)
--{
--    if (c->c2.link_socket_info)
--    {
--        return c->c2.link_socket_info;
--    }
--    else
--    {
--        return &c->c2.link_socket->info;
--    }
--}
--
--static inline void
--register_activity(struct context *c, const int size)
--{
--    if (c->options.inactivity_timeout)
--    {
--        c->c2.inactivity_bytes += size;
--        if (c->c2.inactivity_bytes >= c->options.inactivity_minimum_bytes)
--        {
--            c->c2.inactivity_bytes = 0;
--            event_timeout_reset(&c->c2.inactivity_interval);
--        }
--    }
--}
--
--/*
-- * Return the io_wait() flags appropriate for
-- * a point-to-point tunnel.
-- */
--static inline unsigned int
--p2p_iow_flags(const struct context *c)
--{
--    unsigned int flags = (IOW_SHAPER|IOW_CHECK_RESIDUAL|IOW_FRAG|IOW_READ|IOW_WAIT_SIGNAL);
--    if (c->c2.to_link.len > 0)
--    {
--        flags |= IOW_TO_LINK;
--    }
--    if (c->c2.to_tun.len > 0)
--    {
--        flags |= IOW_TO_TUN;
--    }
--    return flags;
--}
--
--/*
-- * This is the core I/O wait function, used for all I/O waits except
-- * for TCP in server mode.
-- */
--static inline void
--io_wait(struct context *c, const unsigned int flags)
--{
--    void io_wait_dowork(struct context *c, const unsigned int flags);
--
--    if (c->c2.fast_io && (flags & (IOW_TO_TUN|IOW_TO_LINK|IOW_MBUF)))
--    {
--        /* fast path -- only for TUN/TAP/UDP writes */
--        unsigned int ret = 0;
--        if (flags & IOW_TO_TUN)
--        {
--            ret |= TUN_WRITE;
--        }
--        if (flags & (IOW_TO_LINK|IOW_MBUF))
--        {
--            ret |= SOCKET_WRITE;
--        }
--        c->c2.event_set_status = ret;
--    }
--    else
--    {
--        /* slow path */
--        io_wait_dowork(c, flags);
--    }
--}
--
--#define CONNECTION_ESTABLISHED(c) (get_link_socket_info(c)->connection_established)
--
--#endif /* EVENT_INLINE_H */
-diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
-index 1b7455bb..86494ecb 100644
---- a/src/openvpn/forward.c
-+++ b/src/openvpn/forward.c
-@@ -35,6 +35,9 @@
- #include "gremlin.h"
- #include "mss.h"
- #include "event.h"
-+#include "occ.h"
-+#include "pf.h"
-+#include "ping.h"
- #include "ps.h"
- #include "dhcp.h"
- #include "common.h"
-@@ -42,9 +45,6 @@
- 
- #include "memdbg.h"
- 
--#include "forward-inline.h"
--#include "occ-inline.h"
--#include "ping-inline.h"
- #include "mstats.h"
- 
- counter_type link_read_bytes_global;  /* GLOBAL */
-@@ -77,6 +77,238 @@ show_wait_status(struct context *c)
- 
- #endif /* ifdef ENABLE_DEBUG */
- 
-+/*
-+ * Does TLS session need service?
-+ */
-+static inline void
-+check_tls(struct context *c)
-+{
-+#if defined(ENABLE_CRYPTO)
-+    void check_tls_dowork(struct context *c);
-+
-+    if (c->c2.tls_multi)
-+    {
-+        check_tls_dowork(c);
-+    }
-+#endif
-+}
-+
-+/*
-+ * TLS errors are fatal in TCP mode.
-+ * Also check for --tls-exit trigger.
-+ */
-+static inline void
-+check_tls_errors(struct context *c)
-+{
-+#if defined(ENABLE_CRYPTO)
-+    void check_tls_errors_co(struct context *c);
-+
-+    void check_tls_errors_nco(struct context *c);
-+
-+    if (c->c2.tls_multi && c->c2.tls_exit_signal)
-+    {
-+        if (link_socket_connection_oriented(c->c2.link_socket))
-+        {
-+            if (c->c2.tls_multi->n_soft_errors)
-+            {
-+                check_tls_errors_co(c);
-+            }
-+        }
-+        else
-+        {
-+            if (c->c2.tls_multi->n_hard_errors)
-+            {
-+                check_tls_errors_nco(c);
-+            }
-+        }
-+    }
-+#endif /* if defined(ENABLE_CRYPTO) */
-+}
-+
-+/*
-+ * Check for possible incoming configuration
-+ * messages on the control channel.
-+ */
-+static inline void
-+check_incoming_control_channel(struct context *c)
-+{
-+#if P2MP
-+    void check_incoming_control_channel_dowork(struct context *c);
-+
-+    if (tls_test_payload_len(c->c2.tls_multi) > 0)
-+    {
-+        check_incoming_control_channel_dowork(c);
-+    }
-+#endif
-+}
-+
-+/*
-+ * Options like --up-delay need to be triggered by this function which
-+ * checks for connection establishment.
-+ */
-+static inline void
-+check_connection_established(struct context *c)
-+{
-+    void check_connection_established_dowork(struct context *c);
-+
-+    if (event_timeout_defined(&c->c2.wait_for_connect))
-+    {
-+        check_connection_established_dowork(c);
-+    }
-+}
-+
-+/*
-+ * Should we add routes?
-+ */
-+static inline void
-+check_add_routes(struct context *c)
-+{
-+    void check_add_routes_dowork(struct context *c);
-+
-+    if (event_timeout_trigger(&c->c2.route_wakeup, &c->c2.timeval, ETT_DEFAULT))
-+    {
-+        check_add_routes_dowork(c);
-+    }
-+}
-+
-+/*
-+ * Should we exit due to inactivity timeout?
-+ */
-+static inline void
-+check_inactivity_timeout(struct context *c)
-+{
-+    void check_inactivity_timeout_dowork(struct context *c);
-+
-+    if (c->options.inactivity_timeout
-+        && event_timeout_trigger(&c->c2.inactivity_interval, &c->c2.timeval, ETT_DEFAULT))
-+    {
-+        check_inactivity_timeout_dowork(c);
-+    }
-+}
-+
-+#if P2MP
-+
-+static inline void
-+check_server_poll_timeout(struct context *c)
-+{
-+    void check_server_poll_timeout_dowork(struct context *c);
-+
-+    if (c->options.ce.connect_timeout
-+        && event_timeout_trigger(&c->c2.server_poll_interval, &c->c2.timeval, ETT_DEFAULT))
-+    {
-+        check_server_poll_timeout_dowork(c);
-+    }
-+}
-+
-+/*
-+ * Scheduled exit?
-+ */
-+static inline void
-+check_scheduled_exit(struct context *c)
-+{
-+    void check_scheduled_exit_dowork(struct context *c);
-+
-+    if (event_timeout_defined(&c->c2.scheduled_exit))
-+    {
-+        if (event_timeout_trigger(&c->c2.scheduled_exit, &c->c2.timeval, ETT_DEFAULT))
-+        {
-+            check_scheduled_exit_dowork(c);
-+        }
-+    }
-+}
-+#endif /* if P2MP */
-+
-+/*
-+ * Should we write timer-triggered status file.
-+ */
-+static inline void
-+check_status_file(struct context *c)
-+{
-+    void check_status_file_dowork(struct context *c);
-+
-+    if (c->c1.status_output)
-+    {
-+        if (status_trigger_tv(c->c1.status_output, &c->c2.timeval))
-+        {
-+            check_status_file_dowork(c);
-+        }
-+    }
-+}
-+
-+#ifdef ENABLE_FRAGMENT
-+/*
-+ * Should we deliver a datagram fragment to remote?
-+ */
-+static inline void
-+check_fragment(struct context *c)
-+{
-+    void check_fragment_dowork(struct context *c);
-+
-+    if (c->c2.fragment)
-+    {
-+        check_fragment_dowork(c);
-+    }
-+}
-+#endif
-+
-+#if P2MP
-+
-+/*
-+ * see if we should send a push_request in response to --pull
-+ */
-+static inline void
-+check_push_request(struct context *c)
-+{
-+    void check_push_request_dowork(struct context *c);
-+
-+    if (event_timeout_trigger(&c->c2.push_request_interval, &c->c2.timeval, ETT_DEFAULT))
-+    {
-+        check_push_request_dowork(c);
-+    }
-+}
-+
-+#endif
-+
-+#ifdef ENABLE_CRYPTO
-+/*
-+ * Should we persist our anti-replay packet ID state to disk?
-+ */
-+static inline void
-+check_packet_id_persist_flush(struct context *c)
-+{
-+    if (packet_id_persist_enabled(&c->c1.pid_persist)
-+        && event_timeout_trigger(&c->c2.packet_id_persist_interval, &c->c2.timeval, ETT_DEFAULT))
-+    {
-+        packet_id_persist_save(&c->c1.pid_persist);
-+    }
-+}
-+#endif
-+
-+/*
-+ * Set our wakeup to 0 seconds, so we will be rescheduled
-+ * immediately.
-+ */
-+static inline void
-+context_immediate_reschedule(struct context *c)
-+{
-+    c->c2.timeval.tv_sec = 0;  /* ZERO-TIMEOUT */
-+    c->c2.timeval.tv_usec = 0;
-+}
-+
-+static inline void
-+context_reschedule_sec(struct context *c, int sec)
-+{
-+    if (sec < 0)
-+    {
-+        sec = 0;
-+    }
-+    if (sec < c->c2.timeval.tv_sec)
-+    {
-+        c->c2.timeval.tv_sec = sec;
-+        c->c2.timeval.tv_usec = 0;
-+    }
-+}
-+
- /*
-  * In TLS mode, let TLS level respond to any control-channel
-  * packets which were received, or prepare any packets for
-diff --git a/src/openvpn/forward.h b/src/openvpn/forward.h
-index 9fde5a30..6f155fce 100644
---- a/src/openvpn/forward.h
-+++ b/src/openvpn/forward.h
-@@ -31,9 +31,8 @@
- #ifndef FORWARD_H
- #define FORWARD_H
- 
--#include "openvpn.h"
--#include "occ.h"
--#include "ping.h"
-+/* the following macros must be defined before including any other header
-+ * file */
- 
- #define TUN_OUT(c)      (BLEN(&(c)->c2.to_tun) > 0)
- #define LINK_OUT(c)     (BLEN(&(c)->c2.to_link) > 0)
-@@ -47,6 +46,10 @@
- 
- #define TO_LINK_DEF(c)  (LINK_OUT(c) || TO_LINK_FRAG(c))
- 
-+#include "openvpn.h"
-+#include "occ.h"
-+#include "ping.h"
-+
- #define IOW_TO_TUN          (1<<0)
- #define IOW_TO_LINK         (1<<1)
- #define IOW_READ_TUN        (1<<2)
-@@ -262,4 +265,82 @@ void schedule_exit(struct context *c, const int n_seconds, const int signal);
- 
- #endif
- 
-+static inline struct link_socket_info *
-+get_link_socket_info(struct context *c)
-+{
-+    if (c->c2.link_socket_info)
-+    {
-+        return c->c2.link_socket_info;
-+    }
-+    else
-+    {
-+        return &c->c2.link_socket->info;
-+    }
-+}
-+
-+static inline void
-+register_activity(struct context *c, const int size)
-+{
-+    if (c->options.inactivity_timeout)
-+    {
-+        c->c2.inactivity_bytes += size;
-+        if (c->c2.inactivity_bytes >= c->options.inactivity_minimum_bytes)
-+        {
-+            c->c2.inactivity_bytes = 0;
-+            event_timeout_reset(&c->c2.inactivity_interval);
-+        }
-+    }
-+}
-+
-+/*
-+ * Return the io_wait() flags appropriate for
-+ * a point-to-point tunnel.
-+ */
-+static inline unsigned int
-+p2p_iow_flags(const struct context *c)
-+{
-+    unsigned int flags = (IOW_SHAPER|IOW_CHECK_RESIDUAL|IOW_FRAG|IOW_READ|IOW_WAIT_SIGNAL);
-+    if (c->c2.to_link.len > 0)
-+    {
-+        flags |= IOW_TO_LINK;
-+    }
-+    if (c->c2.to_tun.len > 0)
-+    {
-+        flags |= IOW_TO_TUN;
-+    }
-+    return flags;
-+}
-+
-+/*
-+ * This is the core I/O wait function, used for all I/O waits except
-+ * for TCP in server mode.
-+ */
-+static inline void
-+io_wait(struct context *c, const unsigned int flags)
-+{
-+    void io_wait_dowork(struct context *c, const unsigned int flags);
-+
-+    if (c->c2.fast_io && (flags & (IOW_TO_TUN|IOW_TO_LINK|IOW_MBUF)))
-+    {
-+        /* fast path -- only for TUN/TAP/UDP writes */
-+        unsigned int ret = 0;
-+        if (flags & IOW_TO_TUN)
-+        {
-+            ret |= TUN_WRITE;
-+        }
-+        if (flags & (IOW_TO_LINK|IOW_MBUF))
-+        {
-+            ret |= SOCKET_WRITE;
-+        }
-+        c->c2.event_set_status = ret;
-+    }
-+    else
-+    {
-+        /* slow path */
-+        io_wait_dowork(c, flags);
-+    }
-+}
-+
-+#define CONNECTION_ESTABLISHED(c) (get_link_socket_info(c)->connection_established)
-+
- #endif /* FORWARD_H */
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 1ed2c55e..2e34f547 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -41,6 +41,7 @@
- #include "otime.h"
- #include "pool.h"
- #include "gremlin.h"
-+#include "occ.h"
- #include "pkcs11.h"
- #include "ps.h"
- #include "lladdr.h"
-@@ -48,11 +49,10 @@
- #include "mstats.h"
- #include "ssl_verify.h"
- #include "tls_crypt.h"
--#include "forward-inline.h"
-+#include "forward.h"
- 
- #include "memdbg.h"
- 
--#include "occ-inline.h"
- 
- static struct context *static_context; /* GLOBAL */
- 
-diff --git a/src/openvpn/mtcp.c b/src/openvpn/mtcp.c
-index 3cb52113..015d6b89 100644
---- a/src/openvpn/mtcp.c
-+++ b/src/openvpn/mtcp.c
-@@ -32,7 +32,7 @@
- #if P2MP_SERVER
- 
- #include "multi.h"
--#include "forward-inline.h"
-+#include "forward.h"
- 
- #include "memdbg.h"
- 
-diff --git a/src/openvpn/mudp.c b/src/openvpn/mudp.c
-index eb28ca2b..a4cd6bf8 100644
---- a/src/openvpn/mudp.c
-+++ b/src/openvpn/mudp.c
-@@ -33,7 +33,7 @@
- 
- #include "multi.h"
- #include <inttypes.h>
--#include "forward-inline.h"
-+#include "forward.h"
- 
- #include "memdbg.h"
- 
-diff --git a/src/openvpn/multi.c b/src/openvpn/multi.c
-index 5c2c8e69..a97eed6e 100644
---- a/src/openvpn/multi.c
-+++ b/src/openvpn/multi.c
-@@ -36,10 +36,12 @@
- 
- #if P2MP_SERVER
- 
-+#include "forward.h"
- #include "multi.h"
- #include "push.h"
- #include "misc.h"
- #include "otime.h"
-+#include "pf.h"
- #include "gremlin.h"
- #include "mstats.h"
- #include "ssl_verify.h"
-@@ -47,8 +49,6 @@
- 
- #include "memdbg.h"
- 
--#include "forward-inline.h"
--#include "pf-inline.h"
- 
- /*#define MULTI_DEBUG_EVENT_LOOP*/
- 
-diff --git a/src/openvpn/occ-inline.h b/src/openvpn/occ-inline.h
-deleted file mode 100644
-index 0fa8e5ba..00000000
---- a/src/openvpn/occ-inline.h
-+++ /dev/null
-@@ -1,95 +0,0 @@
--/*
-- *  OpenVPN -- An application to securely tunnel IP networks
-- *             over a single TCP/UDP port, with support for SSL/TLS-based
-- *             session authentication and key exchange,
-- *             packet encryption, packet authentication, and
-- *             packet compression.
-- *
-- *  Copyright (C) 2002-2017 OpenVPN Technologies, Inc. <sales@...515...>
-- *
-- *  This program is free software; you can redistribute it and/or modify
-- *  it under the terms of the GNU General Public License version 2
-- *  as published by the Free Software Foundation.
-- *
-- *  This program is distributed in the hope that it will be useful,
-- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-- *  GNU General Public License for more details.
-- *
-- *  You should have received a copy of the GNU General Public License along
-- *  with this program; if not, write to the Free Software Foundation, Inc.,
-- *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-- */
--
--#ifndef OCC_INLINE_H
--#define OCC_INLINE_H
--
--#ifdef ENABLE_OCC
--
--/*
-- * Inline functions
-- */
--
--static inline int
--occ_reset_op(void)
--{
--    return -1;
--}
--
--/*
-- * Should we send an OCC_REQUEST message?
-- */
--static inline void
--check_send_occ_req(struct context *c)
--{
--    void check_send_occ_req_dowork(struct context *c);
--
--    if (event_timeout_defined(&c->c2.occ_interval)
--        && event_timeout_trigger(&c->c2.occ_interval,
--                                 &c->c2.timeval,
--                                 (!TO_LINK_DEF(c) && c->c2.occ_op < 0) ? ETT_DEFAULT : 0))
--    {
--        check_send_occ_req_dowork(c);
--    }
--}
--
--/*
-- * Should we send an MTU load test?
-- */
--static inline void
--check_send_occ_load_test(struct context *c)
--{
--    void check_send_occ_load_test_dowork(struct context *c);
--
--    if (event_timeout_defined(&c->c2.occ_mtu_load_test_interval)
--        && event_timeout_trigger(&c->c2.occ_mtu_load_test_interval,
--                                 &c->c2.timeval,
--                                 (!TO_LINK_DEF(c) && c->c2.occ_op < 0) ? ETT_DEFAULT : 0))
--    {
--        check_send_occ_load_test_dowork(c);
--    }
--}
--
--/*
-- * Should we send an OCC message?
-- */
--static inline void
--check_send_occ_msg(struct context *c)
--{
--    void check_send_occ_msg_dowork(struct context *c);
--
--    if (c->c2.occ_op >= 0)
--    {
--        if (!TO_LINK_DEF(c))
--        {
--            check_send_occ_msg_dowork(c);
--        }
--        else
--        {
--            tv_clear(&c->c2.timeval); /* ZERO-TIMEOUT */
--        }
--    }
--}
--
--#endif /* ifdef ENABLE_OCC */
--#endif /* ifndef OCC_INLINE_H */
-diff --git a/src/openvpn/occ.c b/src/openvpn/occ.c
-index 40f7e768..5bec2b15 100644
---- a/src/openvpn/occ.c
-+++ b/src/openvpn/occ.c
-@@ -32,11 +32,9 @@
- #ifdef ENABLE_OCC
- 
- #include "occ.h"
--
-+#include "forward.h"
- #include "memdbg.h"
- 
--#include "forward-inline.h"
--#include "occ-inline.h"
- 
- /*
-  * This random string identifies an OpenVPN
-diff --git a/src/openvpn/occ.h b/src/openvpn/occ.h
-index 12d7bc57..369ebac4 100644
---- a/src/openvpn/occ.h
-+++ b/src/openvpn/occ.h
-@@ -90,5 +90,66 @@ is_occ_msg(const struct buffer *buf)
- 
- void process_received_occ_msg(struct context *c);
- 
-+static inline int
-+occ_reset_op(void)
-+{
-+    return -1;
-+}
-+
-+/*
-+ * Should we send an OCC_REQUEST message?
-+ */
-+static inline void
-+check_send_occ_req(struct context *c)
-+{
-+    void check_send_occ_req_dowork(struct context *c);
-+
-+    if (event_timeout_defined(&c->c2.occ_interval)
-+        && event_timeout_trigger(&c->c2.occ_interval,
-+                                 &c->c2.timeval,
-+                                 (!TO_LINK_DEF(c) && c->c2.occ_op < 0) ? ETT_DEFAULT : 0))
-+    {
-+        check_send_occ_req_dowork(c);
-+    }
-+}
-+
-+/*
-+ * Should we send an MTU load test?
-+ */
-+static inline void
-+check_send_occ_load_test(struct context *c)
-+{
-+    void check_send_occ_load_test_dowork(struct context *c);
-+
-+    if (event_timeout_defined(&c->c2.occ_mtu_load_test_interval)
-+        && event_timeout_trigger(&c->c2.occ_mtu_load_test_interval,
-+                                 &c->c2.timeval,
-+                                 (!TO_LINK_DEF(c) && c->c2.occ_op < 0) ? ETT_DEFAULT : 0))
-+    {
-+        check_send_occ_load_test_dowork(c);
-+    }
-+}
-+
-+/*
-+ * Should we send an OCC message?
-+ */
-+static inline void
-+check_send_occ_msg(struct context *c)
-+{
-+    void check_send_occ_msg_dowork(struct context *c);
-+
-+    if (c->c2.occ_op >= 0)
-+    {
-+        if (!TO_LINK_DEF(c))
-+        {
-+            check_send_occ_msg_dowork(c);
-+        }
-+        else
-+        {
-+            tv_clear(&c->c2.timeval); /* ZERO-TIMEOUT */
-+        }
-+    }
-+}
-+
- #endif /* ifdef ENABLE_OCC */
- #endif /* ifndef OCC_H */
-diff --git a/src/openvpn/openvpn.c b/src/openvpn/openvpn.c
-index e237ee50..d25bc093 100644
---- a/src/openvpn/openvpn.c
-+++ b/src/openvpn/openvpn.c
-@@ -37,8 +37,6 @@
- 
- #include "memdbg.h"
- 
--#include "forward-inline.h"
--
- #define P2P_CHECK_SIG() EVENT_LOOP_CHECK_SIGNAL(c, process_signal_p2p, c);
- 
- static bool
-diff --git a/src/openvpn/openvpn.h b/src/openvpn/openvpn.h
-index 9262e68b..a7e133d9 100644
---- a/src/openvpn/openvpn.h
-+++ b/src/openvpn/openvpn.h
-@@ -42,10 +42,10 @@
- #include "sig.h"
- #include "misc.h"
- #include "mbuf.h"
-+#include "pf.h"
- #include "pool.h"
- #include "plugin.h"
- #include "manage.h"
--#include "pf.h"
- 
- /*
-  * Our global key schedules, packaged thusly
-diff --git a/src/openvpn/openvpn.vcxproj b/src/openvpn/openvpn.vcxproj
-index d1c0fdec..30cceb34 100644
---- a/src/openvpn/openvpn.vcxproj
-+++ b/src/openvpn/openvpn.vcxproj
-@@ -193,7 +193,6 @@
-     <ClInclude Include="error.h" />
-     <ClInclude Include="event.h" />
-     <ClInclude Include="fdmisc.h" />
--    <ClInclude Include="forward-inline.h" />
-     <ClInclude Include="forward.h" />
-     <ClInclude Include="fragment.h" />
-     <ClInclude Include="gremlin.h" />
-@@ -217,16 +216,13 @@
-     <ClInclude Include="mudp.h" />
-     <ClInclude Include="multi.h" />
-     <ClInclude Include="ntlm.h" />
--    <ClInclude Include="occ-inline.h" />
-     <ClInclude Include="occ.h" />
-     <ClInclude Include="openvpn.h" />
-     <ClInclude Include="options.h" />
-     <ClInclude Include="otime.h" />
-     <ClInclude Include="packet_id.h" />
-     <ClInclude Include="perf.h" />
--    <ClInclude Include="pf-inline.h" />
-     <ClInclude Include="pf.h" />
--    <ClInclude Include="ping-inline.h" />
-     <ClInclude Include="ping.h" />
-     <ClInclude Include="pkcs11.h" />
-     <ClInclude Include="pkcs11_backend.h" />
-diff --git a/src/openvpn/openvpn.vcxproj.filters b/src/openvpn/openvpn.vcxproj.filters
-index 30df5ec2..4152236d 100644
---- a/src/openvpn/openvpn.vcxproj.filters
-+++ b/src/openvpn/openvpn.vcxproj.filters
-@@ -284,9 +284,6 @@
-     <ClInclude Include="fdmisc.h">
-       <Filter>Header Files</Filter>
-     </ClInclude>
--    <ClInclude Include="forward-inline.h">
--      <Filter>Header Files</Filter>
--    </ClInclude>
-     <ClInclude Include="forward.h">
-       <Filter>Header Files</Filter>
-     </ClInclude>
-@@ -356,9 +353,6 @@
-     <ClInclude Include="ntlm.h">
-       <Filter>Header Files</Filter>
-     </ClInclude>
--    <ClInclude Include="occ-inline.h">
--      <Filter>Header Files</Filter>
--    </ClInclude>
-     <ClInclude Include="occ.h">
-       <Filter>Header Files</Filter>
-     </ClInclude>
-@@ -377,15 +371,9 @@
-     <ClInclude Include="perf.h">
-       <Filter>Header Files</Filter>
-     </ClInclude>
--    <ClInclude Include="pf-inline.h">
--      <Filter>Header Files</Filter>
--    </ClInclude>
-     <ClInclude Include="pf.h">
-       <Filter>Header Files</Filter>
-     </ClInclude>
--    <ClInclude Include="ping-inline.h">
--      <Filter>Header Files</Filter>
--    </ClInclude>
-     <ClInclude Include="ping.h">
-       <Filter>Header Files</Filter>
-     </ClInclude>
-diff --git a/src/openvpn/pf-inline.h b/src/openvpn/pf-inline.h
-deleted file mode 100644
-index 3ba90ccf..00000000
---- a/src/openvpn/pf-inline.h
-+++ /dev/null
-@@ -1,67 +0,0 @@
--/*
-- *  OpenVPN -- An application to securely tunnel IP networks
-- *             over a single TCP/UDP port, with support for SSL/TLS-based
-- *             session authentication and key exchange,
-- *             packet encryption, packet authentication, and
-- *             packet compression.
-- *
-- *  Copyright (C) 2002-2017 OpenVPN Technologies, Inc. <sales@...515...>
-- *
-- *  This program is free software; you can redistribute it and/or modify
-- *  it under the terms of the GNU General Public License version 2
-- *  as published by the Free Software Foundation.
-- *
-- *  This program is distributed in the hope that it will be useful,
-- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-- *  GNU General Public License for more details.
-- *
-- *  You should have received a copy of the GNU General Public License along
-- *  with this program; if not, write to the Free Software Foundation, Inc.,
-- *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-- */
--
--#if defined(ENABLE_PF) && !defined(PF_INLINE_H)
--#define PF_INLINE_H
--
--/*
-- * Inline functions
-- */
--
--#define PCT_SRC  1
--#define PCT_DEST 2
--static inline bool
--pf_c2c_test(const struct pf_context *src_pf, const struct tls_multi *src,
--            const struct pf_context *dest_pf, const struct tls_multi *dest,
--            const char *prefix)
--{
--    bool pf_cn_test(struct pf_set *pfs, const struct tls_multi *tm, const int type, const char *prefix);
--
--    return (!src_pf->enabled || pf_cn_test(src_pf->pfs, dest, PCT_DEST, prefix))
--           && (!dest_pf->enabled || pf_cn_test(dest_pf->pfs, src, PCT_SRC,
--                                               prefix));
--}
--
--static inline bool
--pf_addr_test(const struct pf_context *src_pf, const struct context *src,
--             const struct mroute_addr *dest, const char *prefix)
--{
--    bool pf_addr_test_dowork(const struct context *src, const struct mroute_addr *dest, const char *prefix);
--
--    if (src_pf->enabled)
--    {
--        return pf_addr_test_dowork(src, dest, prefix);
--    }
--    else
--    {
--        return true;
--    }
--}
--
--static inline bool
--pf_kill_test(const struct pf_set *pfs)
--{
--    return pfs->kill;
--}
--
--#endif /* if defined(ENABLE_PF) && !defined(PF_INLINE_H) */
-diff --git a/src/openvpn/pf.c b/src/openvpn/pf.c
-index 5cb002bf..12eeb2d0 100644
---- a/src/openvpn/pf.c
-+++ b/src/openvpn/pf.c
-@@ -35,9 +35,9 @@
- 
- #include "init.h"
- #include "memdbg.h"
-+#include "pf.h"
- #include "ssl_verify.h"
- 
--#include "pf-inline.h"
- 
- static void
- pf_destroy(struct pf_set *pfs)
-diff --git a/src/openvpn/pf.h b/src/openvpn/pf.h
-index 414c85b8..a53ea7e4 100644
---- a/src/openvpn/pf.h
-+++ b/src/openvpn/pf.h
-@@ -31,6 +31,9 @@
- 
- #define PF_MAX_LINE_LEN 256
- 
-+#define PCT_SRC  1
-+#define PCT_DEST 2
-+
- struct context;
- 
- struct ipv4_subnet {
-@@ -101,4 +104,40 @@ void pf_context_print(const struct pf_context *pfc, const char *prefix, const in
- 
- #endif
- 
-+bool pf_addr_test_dowork(const struct context *src,
-+                         const struct mroute_addr *dest, const char *prefix);
-+
-+static inline bool
-+pf_addr_test(const struct pf_context *src_pf, const struct context *src,
-+             const struct mroute_addr *dest, const char *prefix)
-+{
-+    if (src_pf->enabled)
-+    {
-+        return pf_addr_test_dowork(src, dest, prefix);
-+    }
-+    else
-+    {
-+        return true;
-+    }
-+}
-+
-+bool pf_cn_test(struct pf_set *pfs, const struct tls_multi *tm, const int type,
-+                const char *prefix);
-+
-+static inline bool
-+pf_c2c_test(const struct pf_context *src_pf, const struct tls_multi *src,
-+            const struct pf_context *dest_pf, const struct tls_multi *dest,
-+            const char *prefix)
-+{
-+    return (!src_pf->enabled || pf_cn_test(src_pf->pfs, dest, PCT_DEST, prefix))
-+           && (!dest_pf->enabled || pf_cn_test(dest_pf->pfs, src, PCT_SRC,
-+                                               prefix));
-+}
-+
-+static inline bool
-+pf_kill_test(const struct pf_set *pfs)
-+{
-+    return pfs->kill;
-+}
-+
- #endif /* if defined(ENABLE_PF) && !defined(OPENVPN_PF_H) */
-diff --git a/src/openvpn/ping-inline.h b/src/openvpn/ping-inline.h
-deleted file mode 100644
-index 0642b851..00000000
---- a/src/openvpn/ping-inline.h
-+++ /dev/null
-@@ -1,64 +0,0 @@
--/*
-- *  OpenVPN -- An application to securely tunnel IP networks
-- *             over a single TCP/UDP port, with support for SSL/TLS-based
-- *             session authentication and key exchange,
-- *             packet encryption, packet authentication, and
-- *             packet compression.
-- *
-- *  Copyright (C) 2002-2017 OpenVPN Technologies, Inc. <sales@...515...>
-- *
-- *  This program is free software; you can redistribute it and/or modify
-- *  it under the terms of the GNU General Public License version 2
-- *  as published by the Free Software Foundation.
-- *
-- *  This program is distributed in the hope that it will be useful,
-- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
-- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-- *  GNU General Public License for more details.
-- *
-- *  You should have received a copy of the GNU General Public License along
-- *  with this program; if not, write to the Free Software Foundation, Inc.,
-- *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-- */
--
--#ifndef PING_INLINE_H
--#define PING_INLINE_H
--
--/*
-- * Should we exit or restart due to ping (or other authenticated packet)
-- * not received in n seconds?
-- */
--static inline void
--check_ping_restart(struct context *c)
--{
--    void check_ping_restart_dowork(struct context *c);
--
--    if (c->options.ping_rec_timeout
--        && event_timeout_trigger(&c->c2.ping_rec_interval,
--                                 &c->c2.timeval,
--                                 (!c->options.ping_timer_remote
--                                  || link_socket_actual_defined(&c->c1.link_socket_addr.actual))
--                                 ? ETT_DEFAULT : 15))
--    {
--        check_ping_restart_dowork(c);
--    }
--}
--
--/*
-- * Should we ping the remote?
-- */
--static inline void
--check_ping_send(struct context *c)
--{
--    void check_ping_send_dowork(struct context *c);
--
--    if (c->options.ping_send_timeout
--        && event_timeout_trigger(&c->c2.ping_send_interval,
--                                 &c->c2.timeval,
--                                 !TO_LINK_DEF(c) ? ETT_DEFAULT : 1))
--    {
--        check_ping_send_dowork(c);
--    }
--}
--
--#endif /* ifndef PING_INLINE_H */
-diff --git a/src/openvpn/ping.c b/src/openvpn/ping.c
-index 728d6c2a..10cd5a5e 100644
---- a/src/openvpn/ping.c
-+++ b/src/openvpn/ping.c
-@@ -33,7 +33,6 @@
- 
- #include "memdbg.h"
- 
--#include "ping-inline.h"
- 
- /*
-  * This random string identifies an OpenVPN ping packet.
-diff --git a/src/openvpn/ping.h b/src/openvpn/ping.h
-index 5bd5c089..9c5ef8e1 100644
---- a/src/openvpn/ping.h
-+++ b/src/openvpn/ping.h
-@@ -43,4 +43,41 @@ is_ping_msg(const struct buffer *buf)
-     return buf_string_match(buf, ping_string, PING_STRING_SIZE);
- }
- 
-+/*
-+ * Should we exit or restart due to ping (or other authenticated packet)
-+ * not received in n seconds?
-+ */
-+static inline void
-+check_ping_restart(struct context *c)
-+{
-+    void check_ping_restart_dowork(struct context *c);
-+
-+    if (c->options.ping_rec_timeout
-+        && event_timeout_trigger(&c->c2.ping_rec_interval,
-+                                 &c->c2.timeval,
-+                                 (!c->options.ping_timer_remote
-+                                  || link_socket_actual_defined(&c->c1.link_socket_addr.actual))
-+                                 ? ETT_DEFAULT : 15))
-+    {
-+        check_ping_restart_dowork(c);
-+    }
-+}
-+
-+/*
-+ * Should we ping the remote?
-+ */
-+static inline void
-+check_ping_send(struct context *c)
-+{
-+    void check_ping_send_dowork(struct context *c);
-+
-+    if (c->options.ping_send_timeout
-+        && event_timeout_trigger(&c->c2.ping_send_interval,
-+                                 &c->c2.timeval,
-+                                 !TO_LINK_DEF(c) ? ETT_DEFAULT : 1))
-+    {
-+        check_ping_send_dowork(c);
-+    }
-+}
-+
- #endif
--- 
-2.15.0
+The function above is basically a copy of udp_checksum() with very
+little differences.
 
+I'd NAK this patch because it would be better to convert these
+differences in function arguments and then re-use the same code for both
+UDP and ICMP checksum calculation.
+
+This way we avoid code duplication.
+
+Differences are:
+- address length
+- protocol number being added to `sum`
+
+While there, please fix some codestyle issues that still exist in this
+function.
+
+> +/**
+> + * Forges a IPv6 ICMP with a no route to host error code from the IPv6 p=
+acket in buf and sends it back via
+> + * the tun device
+> + */
+> +void
+> +ipv6_send_icmp_unreachable(struct context * c, struct buffer *buf)
+> +{
+> +#define ICMPV6LEN  1280
+> +    struct openvpn_icmp6hdr icmp6out;
+> +    CLEAR(icmp6out);
+> +
+> +    /*
+> +     * Get a buffer to the ip packet, is_ipv6 automatically forwards
+> +     * the buffer to the ip packet
+> +     */
+> +    struct buffer inputipbuf =3D *buf;
+
+Please add an empty line here (like you've done everywhere else). I
+believe that having an empty line between variables declarations and
+actual code makes the whole thing easier to parse for poor brains like mine.
+
+> +    is_ipv6(TUNNEL_TYPE(c->c1.tuntap), &inputipbuf);
+> +
+> +    if (BLEN(&inputipbuf) < (int) sizeof(struct openvpn_ipv6hdr))
+> +    {
+> +        return;
+> +    }
+> +
+> +
+> +    const struct openvpn_ipv6hdr* pip6 =3D (struct openvpn_ipv6hdr *) BP=
+TR(&inputipbuf);
+
+there should be no space in the middle of a cast.
+
+> +
+> +    struct openvpn_ipv6hdr pip6out;
+> +
+> +    /* Copy version, traffic class, flow label from input packet */
+> +    pip6out =3D *pip6;
+> +
+> +    pip6out.version_prio =3D pip6->version_prio;
+> +
+> +    pip6out.daddr =3D pip6->saddr;
+> +    inet_pton( AF_INET6, c->options.ifconfig_ipv6_remote, &pip6out.saddr=
+ );
+> +
+
+no space between '(' and the first function argument.
+
+> +    pip6out.nexthdr =3D OPENVPN_IPPROTO_ICMPV6;
+> +
+> +
+
+one empty line is enough.
+
+> +    /*
+> +     * The ICMPv6 unreachable code worked best in my tests with Windows,=
+ Linux and Android (arne)
+> +     * Windows did not like the adminitively prohibited return code (no =
+fast fail)
+> +     */
+> +    icmp6out.icmp6_type =3D OPENVPN_ICMP6_DESTINATION_UNREACHABLE;
+> +    icmp6out.icmp6_code =3D OPENVPN_ICMP6_DU_NOROUTE;
+> +
+> +    int icmpheader_len =3D sizeof(struct openvpn_ipv6hdr) + sizeof(struc=
+t openvpn_icmp6hdr);
+> +    int ethheader_len =3D sizeof(struct openvpn_ethhdr);
+> +    int totalheader_len =3D icmpheader_len;
+
+new line here too ? I'd leave this to your judgement from now on.
+
+> +    if (TUNNEL_TYPE(c->c1.tuntap) =3D=3D DEV_TYPE_TAP)
+> +        totalheader_len +=3D ethheader_len;
+> +
+> +    /*
+> +     * Calculate size for payload, defined in the standard that the resu=
+lting frame
+> +     * should <=3D 1280 and have as much as possible of the original pac=
+ket
+> +     */
+> +    int payload_len =3D min_int(min_int(ICMPV6LEN, TUN_MTU_SIZE(&c->c2.f=
+rame) - icmpheader_len), buf_len(&inputipbuf));
+> +
+> +    pip6out.payload_len =3D htons(sizeof(struct openvpn_icmp6hdr) + payl=
+oad_len);
+> +
+> +    /* Construct the packet as outgoing packet back to the client */
+> +    c->c2.to_tun =3D c->c2.buffers->aux_buf;
+> +    ASSERT(buf_init(&c->c2.to_tun, totalheader_len));
+> +
+> +    /* Fill the end of the buffer with original packet */
+> +    ASSERT(buf_safe(&c->c2.to_tun, payload_len));
+> +    ASSERT(buf_copy_n(&c->c2.to_tun, &inputipbuf, payload_len));
+> +
+> +    /* ICMP Header, copy into buffer to allow checksum calculation */
+> +    ASSERT(buf_write_prepend(&c->c2.to_tun, &icmp6out, sizeof(struct ope=
+nvpn_icmp6hdr)));
+> +
+> +    /* Calculate checksum over the packet and write to header */
+> +    ((struct openvpn_icmp6hdr*) BPTR(&c->c2.to_tun))->icmp6_cksum =3D ht=
+ons (ipv6_checksum(BPTR(&c->c2.to_tun), BLEN(&c->c2.to_tun), OPENVPN_IPPROT=
+O_ICMPV6,
+> +                                        (const uint8_t*) &pip6out.saddr,=
+ (uint8_t*) &pip6out.daddr));
+> +
+> +    /* IPv6 Header */
+> +    ASSERT(buf_write_prepend(&c->c2.to_tun, &pip6out, sizeof(struct open=
+vpn_ipv6hdr)));
+> +
+
+I see lots of asserts here and in other functions below.
+
+Is it possible that a bridged/routed client could send a malformed IPv6
+packet to convert this ASSERTs into a DoS for the VPN client?
+
+Actually, any chance that this function is executed on the server? or is
+this impossible?
+
+> +    /* Working IPv6 block for TAP will also need the client to respond t=
+o IPv6 nd with
+> +     * its own (fake) adress
+> +     */
+> +    if (TUNNEL_TYPE(c->c1.tuntap) =3D=3D DEV_TYPE_TAP)
+> +    {
+> +        if (BLEN(buf) < (int) sizeof (struct openvpn_ethhdr))
+> +            return;
+> +
+> +        const struct openvpn_ethhdr* orig_ethhdr =3D (struct openvpn_eth=
+hdr *) BPTR(buf);
+> +
+> +        /* Copy frametype and reverse source/destination for the respons=
+e */
+> +        struct openvpn_ethhdr ethhdr;
+> +        memcpy(ethhdr.source, orig_ethhdr->dest, OPENVPN_ETH_ALEN);
+> +        memcpy(ethhdr.dest, orig_ethhdr->source, OPENVPN_ETH_ALEN);
+> +        ethhdr.proto =3D htons(OPENVPN_ETH_P_IPV6);
+> +        ASSERT(buf_write_prepend(&c->c2.to_tun, &ethhdr, sizeof(struct o=
+penvpn_ethhdr)));
+> +    }
+> +}
+> +
+> +
+>  void
+>  process_ip_header(struct context *c, unsigned int flags, struct buffer *=
+buf)
+>  {
+> @@ -1240,7 +1392,10 @@ process_ip_header(struct context *c, unsigned int =
+flags, struct buffer *buf)
+>      {
+>          flags &=3D ~PIPV4_EXTRACT_DHCP_ROUTER;
+>      }
+> -
+> +    if (!c->options.block_ipv6)
+> +    {
+> +        flags &=3D ~PIPV6_IMCP_NOHOST;
+> +    }
+>      if (buf->len > 0)
+>      {
+>          /*
+> @@ -1275,7 +1430,7 @@ process_ip_header(struct context *c, unsigned int f=
+lags, struct buffer *buf)
+>                  /* possibly do NAT on packet */
+>                  if ((flags & PIPV4_CLIENT_NAT) && c->options.client_nat)
+>                  {
+> -                    const int direction =3D (flags & PIPV4_OUTGOING) ? C=
+N_INCOMING : CN_OUTGOING;
+> +                    const int direction =3D (flags & PIP_OUTGOING) ? CN_=
+INCOMING : CN_OUTGOING;
+>                      client_nat_transform(c->options.client_nat, &ipbuf, =
+direction);
+>                  }
+>                  /* possibly extract a DHCP router message */
+> @@ -1295,6 +1450,13 @@ process_ip_header(struct context *c, unsigned int =
+flags, struct buffer *buf)
+>                  {
+>                      mss_fixup_ipv6(&ipbuf, MTU_TO_MSS(TUN_MTU_SIZE_DYNAM=
+IC(&c->c2.frame)));
+>                  }
+> +                if (!(flags & PIP_OUTGOING) && (flags & PIPV6_IMCP_NOHOS=
+T))
+> +                {
+> +                    ipv6_send_icmp_unreachable(c, buf);
+> +                    // Drop the IPv6 packet
+
+please don't use c++ style comments
+
+> +                    buf->len=3D0;
+> +                }
+> +
+>              }
+>          }
+>      }
+> @@ -1478,7 +1640,7 @@ process_outgoing_tun(struct context *c)
+>       * The --mssfix option requires
+>       * us to examine the IP header (IPv4 or IPv6).
+>       */
+> -    process_ip_header(c, PIP_MSSFIX|PIPV4_EXTRACT_DHCP_ROUTER|PIPV4_CLIE=
+NT_NAT|PIPV4_OUTGOING, &c->c2.to_tun);
+> +    process_ip_header(c, PIP_MSSFIX|PIPV4_EXTRACT_DHCP_ROUTER|PIPV4_CLIE=
+NT_NAT|PIP_OUTGOING, &c->c2.to_tun);
+>=20=20
+>      if (c->c2.to_tun.len <=3D MAX_RW_SIZE_TUN(&c->c2.frame))
+>      {
+> diff --git a/src/openvpn/forward.h b/src/openvpn/forward.h
+> index 9fde5a30..62199f9e 100644
+> --- a/src/openvpn/forward.h
+> +++ b/src/openvpn/forward.h
+> @@ -251,9 +251,10 @@ bool send_control_channel_string(struct context *c, =
+const char *str, int msgleve
+>=20=20
+>  #define PIPV4_PASSTOS         (1<<0)
+>  #define PIP_MSSFIX            (1<<1)         /* v4 and v6 */
+> -#define PIPV4_OUTGOING        (1<<2)
+> +#define PIP_OUTGOING          (1<<2)
+>  #define PIPV4_EXTRACT_DHCP_ROUTER (1<<3)
+>  #define PIPV4_CLIENT_NAT      (1<<4)
+> +#define PIPV6_IMCP_NOHOST     (1<<5)
+>=20=20
+>  void process_ip_header(struct context *c, unsigned int flags, struct buf=
+fer *buf);
+>=20=20
+> diff --git a/src/openvpn/misc.c b/src/openvpn/misc.c
+> index 001fe1c4..18f0cb5b 100644
+> --- a/src/openvpn/misc.c
+> +++ b/src/openvpn/misc.c
+> @@ -150,7 +150,7 @@ openvpn_execve_check(const struct argv *a, const stru=
+ct env_set *es, const unsig
+>      const int stat =3D openvpn_execve(a, es, flags);
+>      int ret =3D false;
+>=20=20
+> -    if (platform_system_ok(stat))
+> +    if (platform_system_ok(stat)|| true)
+
+space before the '||'
+
+>      {
+>          ret =3D true;
+>      }
+> @@ -204,7 +204,7 @@ openvpn_execve(const struct argv *a, const struct env=
+_set *es, const unsigned in
+>              char *const *envp =3D (char *const *)make_env_array(es, true=
+, &gc);
+>              pid_t pid;
+>=20=20
+> -            pid =3D fork();
+> +            pid =3D vfork();
+
+Can you explain how this is related to this patch?
+
+>              if (pid =3D=3D (pid_t)0) /* child side */
+>              {
+>                  execve(cmd, argv, envp);
+> diff --git a/src/openvpn/options.c b/src/openvpn/options.c
+> index 641a26e2..daa9ff05 100644
+> --- a/src/openvpn/options.c
+> +++ b/src/openvpn/options.c
+> @@ -226,6 +226,8 @@ static const char usage_message[] =3D
+>      "                  Add 'bypass-dns' flag to similarly bypass tunnel =
+for DNS.\n"
+>      "--redirect-private [flags]: Like --redirect-gateway, but omit actua=
+lly changing\n"
+>      "                  the default gateway.  Useful when pushing private=
+ subnets.\n"
+> +    "--block-ipv6     : (client only) Instead sending IPv6 to the server=
+ generate\n"
+> +    "                   ICMPv6 host unreachable messages.\n"
+>      "--client-nat snat|dnat network netmask alias : on client add 1-to-1=
+ NAT rule.\n"
+>  #ifdef ENABLE_PUSH_PEER_INFO
+>      "--push-peer-info : (client only) push client info to server.\n"
+> @@ -2084,6 +2086,15 @@ options_postprocess_verify_ce(const struct options=
+ *options, const struct connec
+>          msg(M_USAGE, "--lladdr can only be used in --dev tap mode");
+>      }
+>=20=20
+> +    if (options->block_ipv6 && !options->ifconfig_ipv6_remote)
+> +    {
+> +        msg(M_USAGE, "--block-ipv6 needs a valid --ifconfig-ipv6 configu=
+ration");
+> +    }
+> +
+
+Instead of requiring the user to configure an ipv6 on its interface, you
+could just fake a source address for the ICMP packets. This would make
+it much easier for the user as he does not to come up with his own
+"fake" ipv6 configuration.
+
+> +    if (options->block_ipv6 && dev !=3D DEV_TYPE_TUN)
+> +    {
+> +        msg(M_USAGE, "--block-ipv6 can be only used in --dev tun mode");
+> +    }
+>      /*
+>       * Sanity check on MTU parameters
+>       */
+> @@ -2242,6 +2253,7 @@ options_postprocess_verify_ce(const struct options =
+*options, const struct connec
+>          msg(M_USAGE, "TCP server mode allows at most one --remote addres=
+s");
+>      }
+>=20=20
+> +
+
+free gift?
+
+>  #if P2MP_SERVER
+>=20=20
+>      /*
+> @@ -6360,6 +6372,11 @@ add_option(struct options *options,
+>  #endif
+>          options->routes->flags |=3D RG_ENABLE;
+>      }
+> +    else if (streq(p[0], "block-ipv6") && !p[1])
+> +    {
+> +        VERIFY_PERMISSION(OPT_P_ROUTE);
+> +        options->block_ipv6 =3D true;
+> +    }
+>      else if (streq(p[0], "remote-random-hostname") && !p[1])
+>      {
+>          VERIFY_PERMISSION(OPT_P_GENERAL);
+> diff --git a/src/openvpn/options.h b/src/openvpn/options.h
+> index 496c1143..38e9e431 100644
+> --- a/src/openvpn/options.h
+> +++ b/src/openvpn/options.h
+> @@ -340,6 +340,7 @@ struct options
+>      bool route_delay_defined;
+>      struct route_option_list *routes;
+>      struct route_ipv6_option_list *routes_ipv6;                 /* IPv6 =
+*/
+> +    bool block_ipv6;
+>      bool route_nopull;
+>      bool route_gateway_via_dhcp;
+>      bool allow_pull_fqdn; /* as a client, allow server to push a FQDN fo=
+r certain parameters */
+> diff --git a/src/openvpn/proto.h b/src/openvpn/proto.h
+> index 57f25c90..7d300af9 100644
+> --- a/src/openvpn/proto.h
+> +++ b/src/openvpn/proto.h
+> @@ -98,6 +98,7 @@ struct openvpn_iphdr {
+>  #define OPENVPN_IPPROTO_IGMP 2  /* IGMP protocol */
+>  #define OPENVPN_IPPROTO_TCP  6  /* TCP protocol */
+>  #define OPENVPN_IPPROTO_UDP 17  /* UDP protocol */
+> +#define OPENVPN_IPPROTO_ICMPV6 58 /* ICMPV6 protocol */
+
+the defines above have all the values aligned. could you re-align them all?
+
+>      uint8_t protocol;
+>=20=20
+>      uint16_t check;
+> @@ -120,6 +121,24 @@ struct openvpn_ipv6hdr {
+>      struct  in6_addr daddr;
+>  };
+>=20=20
+> +/*
+> + * ICMPv6 header
+> + */
+> +struct openvpn_icmp6hdr {
+> +# define OPENVPN_ICMP6_DESTINATION_UNREACHABLE 1
+> +# define OPENVPN_ND_ROUTER_SOLICIT	133
+> +# define OPENVPN_ND_ROUTER_ADVERT	134
+> +# define OPENVPN_ND_NEIGHBOR_SOLICIT	135
+> +# define OPENVPN_ND_NEIGHBOR_ADVERT	136
+> +# define OPENVPN_ND_INVERSE_SOLICIT	141
+> +# define OPENVPN_ND_INVERSE_ADVERT	142
+> +	uint8_t		icmp6_type;
+> +# define OPENVPN_ICMP6_DU_NOROUTE 0
+> +# define OPENVPN_ICMP6_DU_COMMUNICATION_PROHIBTED 1
+> +	uint8_t		icmp6_code;
+> +	uint16_t	icmp6_cksum;
+> +	uint8_t		icmp6_dataun[4];
+> +};
+>=20=20
+>  /*
+>   * UDP header
+>=20
+
+
+Cheers,
+
+--=20
+Antonio Quartulli
+
+
+--bfWSrGeuVO6TlwglBG58SJKJFKgIQlnk6--
+
+--aDHjXaxEPiHCiGSR1vVLu3txG5adipqIw
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEERdCuyFSHc3WdqS4EB6U8WA7yzXQFAloIFUEACgkQB6U8WA7y
+zXTeog//RFh0m52ltFFHp8pblnJV34ogRlTf6IGLrwriJ1MHKinQ6u36ioJ/9plJ
+Y+2NsV+7YAd8COqDB8ypFYjusg5tpEC+cpTgeLMPWy4Wz7OKuOAcu5PMCdH3bg6c
+T82BxFB1fSYII1fTv0xWcAbs9I93rQUfbEP+vyzZjNUgYS4e9E9C7mgSxByGwkyV
+vc1EgEykkwkSnAHnG5qlIHAn4DqLpArHY8uKjb8IH66ifS6nBtr94vSAWNWji9bu
+V2dx1iPzuCAKnjoPMB2yVh+usXRiKyHK2f6iUaSpioekLZ+QmdI61UmFShZrJy5K
+v55CGWG0yxQFpuIboqAFlfsad/rxSrxvDN+ZeJHcPvApm1Noh4JnSXEoXEu9KwxR
+Sx+8xBjy/5R/iIBLTa7RILGM/+9ywJHBSZeF6FNuk7Fi0FNeupynVxo45jt1LJ2/
+YE7IANiATQQFulQ4LT/O0jQn4UGHZT7DTFFyyuxHtWtrOY05CfoyEar7NJJ3vBqO
+LW1Pmpu63qWLjtJVOwA0athx/PhUOKqPBZiXh1jkJTAJwOxuGFHZjRuNh6Nlgr2e
+Rwqu7DpEBsTiYIOmX9UfTzXFatM9X2JD7KXSc65Vd/5F3T+OX5DncFwo9av54o6Z
+94+VhZhiBURFBJQs9u/WFhpwJ2DMZut3pu/JOhMWDhHKZkbh1eI=
+=96gW
+-----END PGP SIGNATURE-----
+
+--aDHjXaxEPiHCiGSR1vVLu3txG5adipqIw--
 
