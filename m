@@ -1,14 +1,10 @@
-MIME-Version: 1.0
-In-Reply-To: <aef485c7-f619-eaac-6534-0828ab9d41f5@...2318...>
-References: <20171110163946.7656-1-fkooman@...2318...>
- <63ccd0e3-491f-3fb3-e611-9b6674d3d501@...2298...>
- <aef485c7-f619-eaac-6534-0828ab9d41f5@...2318...>
-From: Selva <selva.nair@...277...>
-Date: Sun, 12 Nov 2017 12:21:06 -0500
-Message-ID: <CAKuzo_jfJQOBhYMEyT4oiNN1xAZkvkxZm8eeDT=xcUfToaC9kQ@...278...>
-Content-Type: multipart/alternative; boundary="94eb2c04422a47c61c055dcc62b8"
-Subject: Re: [Openvpn-devel] [PATCH] Implement "status 4" (JSON) for
- management interface
+From: Steffan Karger <steffan@...1856...>
+Date: Sun, 12 Nov 2017 18:22:37 +0100
+Message-Id: <20171112172237.8285-1-steffan@...1856...>
+In-Reply-To: <ed338010-2918-fb1d-27e0-116712651b87@...2181...>
+References: <ed338010-2918-fb1d-27e0-116712651b87@...2181...>
+Subject: [Openvpn-devel] [PATCH v2] Use P_DATA_V2 for server->client packets
+ too
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,54 +13,61 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: =?UTF-8?Q?Fran=C3=A7ois_Kooman?= <fkooman@...2318...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
---94eb2c04422a47c61c055dcc62b8
-Content-Type: text/plain; charset="UTF-8"
+P_DATA_V2 introduced the peer-id.  This allows clients to float, but as a
+side-effect 32-bit aligns the encrypted data.  That alignment improves
+performance particularly on cheaper/older CPUs.  So although servers don't
+actually have a peer-id, still use the V2 packet format (with a zero-id)
+for server->client traffic too.
 
-Hi
+Signed-off-by: Steffan Karger <steffan@...1856...>
+---
+v2: actually enable P_DATA_V2... Now tested with:
+    2.4<>2.4 (V2), 2.4-srv<>2.3-clt (V2), 2.3-srv<>2.4-clt (V1),
+    2.4-srv<>2.2-clt (V1)
 
-> 3) I believe the output structure is not valid JSON with the "END"
-> > string at the end.
->
-> All (multiline) responses end with "END", so that's why I did that as
-> well. Ideally I'd construct a JSON object that does not include newlines
-> at all and just responds as:
->
-> SUCCESS: { ... }
->
+ src/openvpn/forward.c | 4 ++--
+ src/openvpn/push.c    | 1 +
+ 2 files changed, 3 insertions(+), 2 deletions(-)
 
-One of the niceties of JSON is its readability which is greatly reduced
-if formatted without line breaks. Multi-line with the same
-format used for management and console would be nice. Except the
-former gets the extra footer line with "END".
+diff --git a/src/openvpn/forward.c b/src/openvpn/forward.c
+index 1b7455bb..a868a8ff 100644
+--- a/src/openvpn/forward.c
++++ b/src/openvpn/forward.c
+@@ -496,7 +496,7 @@ encrypt_sign(struct context *c, bool comp_frag)
+         /* If using P_DATA_V2, prepend the 1-byte opcode and 3-byte peer-id to the
+          * packet before openvpn_encrypt(), so we can authenticate the opcode too.
+          */
+-        if (c->c2.buf.len > 0 && !c->c2.tls_multi->opt.server && c->c2.tls_multi->use_peer_id)
++        if (c->c2.buf.len > 0 && c->c2.tls_multi->use_peer_id)
+         {
+             tls_prepend_opcode_v2(c->c2.tls_multi, &b->encrypt_buf);
+         }
+@@ -512,7 +512,7 @@ encrypt_sign(struct context *c, bool comp_frag)
+     /* Do packet administration */
+     if (c->c2.tls_multi)
+     {
+-        if (c->c2.buf.len > 0 && (c->c2.tls_multi->opt.server || !c->c2.tls_multi->use_peer_id))
++        if (c->c2.buf.len > 0 && !c->c2.tls_multi->use_peer_id)
+         {
+             tls_prepend_opcode_v1(c->c2.tls_multi, &c->c2.buf);
+         }
+diff --git a/src/openvpn/push.c b/src/openvpn/push.c
+index 5947a31f..16a4101f 100644
+--- a/src/openvpn/push.c
++++ b/src/openvpn/push.c
+@@ -366,6 +366,7 @@ prepare_push_reply(struct context *c, struct gc_arena *gc,
+             push_option_fmt(gc, push_list, M_USAGE, "peer-id %d",
+                             tls_multi->peer_id);
+         }
++        tls_multi->use_peer_id = true;
+     }
+ 
+     /* Push cipher if client supports Negotiable Crypto Parameters */
+-- 
+2.14.1
 
-Selva
-
---94eb2c04422a47c61c055dcc62b8
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr">Hi<div><br><div class=3D"gmail_extra"><div class=3D"gmail_=
-quote"><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-=
-left:1px #ccc solid;padding-left:1ex"><span>
-&gt; 3) I believe the output structure is not valid JSON with the &quot;END=
-&quot;<br>
-&gt; string at the end.<br>
-<br>
-</span>All (multiline) responses end with &quot;END&quot;, so that&#39;s wh=
-y I did that as<br>
-well. Ideally I&#39;d construct a JSON object that does not include newline=
-s<br>
-at all and just responds as:<br>
-<br>
-SUCCESS: { ... }<br></blockquote><div><br></div><div>One of the niceties of=
- JSON is its readability which is greatly reduced</div><div>if formatted wi=
-thout line breaks. Multi-line with the same</div><div>format used for manag=
-ement and console would be nice. Except the</div><div>former gets the extra=
- footer line with &quot;END&quot;.</div><div><br></div><div>Selva</div></di=
-v></div></div></div>
-
---94eb2c04422a47c61c055dcc62b8--
 
