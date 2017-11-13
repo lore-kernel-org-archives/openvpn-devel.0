@@ -1,14 +1,18 @@
-From: Simon Rozman <simon@...2293...>
-Date: Mon, 13 Nov 2017 09:08:56 +0000
-Message-ID: <99D61A626FDA8A4B90A270669121BE108588B957@...2294...>
-References: <20171010231130.6832-1-simon@...2293...>
- <20171010231130.6832-12-simon@...2293...>
- <CAKuzo_jzkj2jNMODphaa6GSfyNtB7UiWhg5oEYHtBcCZ3rsBoQ@...278...>
-In-Reply-To: <CAKuzo_jzkj2jNMODphaa6GSfyNtB7UiWhg5oEYHtBcCZ3rsBoQ@...278...>
-Content-Language: en-US
+References: <20171110163946.7656-1-fkooman@...2318...>
+ <63ccd0e3-491f-3fb3-e611-9b6674d3d501@...2298...>
+ <aef485c7-f619-eaac-6534-0828ab9d41f5@...2318...>
+ <CAKuzo_jfJQOBhYMEyT4oiNN1xAZkvkxZm8eeDT=xcUfToaC9kQ@...278...>
+ <20171112214244.GI958@...1296...>
+From: =?UTF-8?Q?Fran=c3=a7ois_Kooman?= <fkooman@...2318...>
+Message-ID: <34a7cc97-16e2-becc-4f97-ff8dbf8ecb0a@...2318...>
+Date: Mon, 13 Nov 2017 10:44:46 +0100
 MIME-Version: 1.0
-Subject: Re: [Openvpn-devel] [PATCH 12/13] Memory size arithmetic reviewed
- according to 64-bit MSVC complaints
+In-Reply-To: <20171112214244.GI958@...1296...>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="fVSrNHCP0hKalnj94iXEDVgwuL9XAHBUs"
+Subject: Re: [Openvpn-devel] [PATCH] Implement "status 4" (JSON) for
+ management interface
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,59 +21,89 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-To: Selva <selva.nair@...277...>
+To: Gert Doering <gert@...1296...>, Selva <selva.nair@...277...>
 Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-SGksDQoNCj4gU29tZSBvZiB0aGVzZSBjaGFuZ2VzIGFyZSBvZiBkdWJpb3VzIHZhbHVlIGFzIHRo
-ZSBzdHJpbmcgbGVuZ3RocyBpbnZvbHZlZA0KPiBhcmUgZ3VhcmFudGVlZCB0byBiZSBzbWFsbCBh
-bmQgdGhlcmUgaXMgbm8gc2NvcGUgZm9yIG92ZXJmbG93LiBBbmQgY2FzdGluZw0KPiBvbmx5IHN0
-b3BzIHRoZSBjb21waWxlciB3YXJuaW5nLCBub3QgcG90ZW50aWFsIG92ZXJmbG93LCBpZiBhbnku
-Lg0KDQpFeGFjdGx5LiBXaGVyZSB0aGVyZSdzIG5vIHNjb3BlIGZvciBhbiBvdmVyZmxvdyBhbmQg
-Y29tcGlsZXIgaXMgdG9vIGR1bWIgdG8gbm90aWNlIHRoYXQsIHdoeSBub3QgInRlYWNoaW5nIiBp
-dCBhIGJpdD8NCg0KDQo+IEFzIGZvciB0aGUgb2ZmZW5kaW5nIG1peGVkIGludC9zaXplX3QgYXJp
-dGhtZXRpYywgYSBiZXR0ZXIgb3B0aW9uIGlzIHRvIGp1c3QNCj4gdG8NCj4gYXZvaWQgdGhlIGFy
-aXRobWV0aWMgLS0gY29kZSBnZXRzIGNsZWFyZXIgYW5kIHNob3J0ZXIgdG9vOg0KDQpUaG91Z2gs
-IEkgc2VlIG5vIHByb2JsZW0gd2l0aCBzaXplX3QvcHRyZGlmZl90IGFyaXRobWV0aWMgd2hlbiBp
-bXBsZW1lbnRlZCBwcm9wZXJseS4gTzotKQ0KDQoNCj4gICAgIGNvbnN0IGNoYXIgKnAgPSBfdGNz
-cmNocihmaW5kLT5jRmlsZU5hbWUsIFRFWFQoJy4nKSk7DQo+ICAgICByZXR1cm4gcCAmJiBwICE9
-IGZpbmQtPmNGaWxlTmFtZSAmJiAhX3Rjc2ljbXAocCsxLCBleHQpOw0KPg0KPiBObyBfdGNzbGVu
-KCkgYW5kIG5vIG9mZmVuZGluZyBzaXplIHZhcmlhYmxlcy4NCj4gQW5kIHRoYXQgY29udm9sdXRl
-ZCBvcmlnaW5hbCBpcyB0aGVuIGdvbmUuDQoNClRoZSByZXN1bHRpbmcgY29kZSB3b3VsZCBsb29r
-IGEgbG90IG5pY2VyIGluZGVlZC4gU3RheSB0dW5lZCBmb3IgdjIgb2YgdGhpcyBwYXRjaC4NCg0K
-DQo+IC0gICAgV3JpdGVQaXBlQXN5bmMocGlwZSwgYnVmLCB3Y3NsZW4oYnVmKSAqIDIsIGNvdW50
-LCBldmVudHMpOw0KPiArICAgIFdyaXRlUGlwZUFzeW5jKHBpcGUsIGJ1ZiwgKERXT1JEKSh3Y3Ns
-ZW4oYnVmKSAqIDIpLCBjb3VudCwgZXZlbnRzKTsNCj4NCj4gSXNuJ3QgdGhpcyBpZGVudGljYWwg
-dG8gdGhlIG9yaWdpbmFsIGF1dG9tYXRpYyBjb252ZXJzaW9uIGZyb20gc2l6ZV90IHRvDQo+IERX
-T1JEPw0KPiBBbiBvdmVybHkgcGFyYW5vaWQgYXNzZXJ0KF9jb3VudG9mKGJ1ZikgPCBNQVhEV09S
-RC8yKSBtYXkgY2F0Y2ggYW4NCj4gZXh0cmVtZWx5DQo+IHVubGlrZWx5IGZ1dHVyZSBjb2Rpbmcg
-ZXJyb3IsIGJ1dCBpbiB3aGF0IHdheSBhIGNhc3Qgc2FmZXI/DQoNCkkgZGlkbid0IHNheSBpdCBp
-cyBzYWZlci4gVGhlIGJ1ZiBpcyBXQ0hBUlszM10gb24gdGhlIHN0YWNrLiBUaGVyZSBpcyBhIHNh
-ZmV0eSB6ZXJvIHRlcm1pbmF0aW9uIGEgbGluZSBiZWZvcmUgdGhlIFdyaXRlUGlwZUFzeW5jKCku
-IFRoZXJlZm9yZSwgd2NzbGVuKGJ1Zikgd2lsbCBhbHdheXMgcmV0dXJuIGJldHdlZW4gMCBhbmQg
-MzIuIFRpbWVzIHR3byAoaWYgSSB3YXMgY29kaW5nIHRoaXMsIEknZCB1c2UgKnNpemVvZihXQ0hB
-UikgaW5zdGVhZCBvZiAyLCB0byBtYWtlIGEgY2xlYXIgc3RhdGVtZW50LCB3aGF0IGlzIG11bHRp
-cGxpY2F0aW9uIGJ5IDIgYWJvdXQpLCBtYWtpbmcgaXQgYmV0d2VlbiAwIGFuZCA2NC4gVW5mb3J0
-dW5hdGVseSwgcmVzdWx0IGlzIHNpemVfdCB3aGVyZSBXaW4zMiBBUEkgZXhwZWN0cyBhIERXT1JE
-Lg0KDQpUaGlzIHdpbGwgYWx3YXlzIHByb2R1Y2UgYSBmYWxzZSBjb21waWxlciB3YXJuaW5nLiBJ
-IG11dGVkIGl0IGJ5IGFuIGV4cGxpY2l0IGNhc3QsIHNvIHdlIGNhbiBmb2N1cyBvbiBtb3JlIGlt
-cG9ydGFudCB3YXJuaW5ncy4NCg0KDQo+IC0gICAgV3JpdGVQaXBlQXN5bmMocGlwZSwgcmVzdWx0
-LCB3Y3NsZW4ocmVzdWx0KSAqIDIsIGNvdW50LCBldmVudHMpOw0KPiArICAgIFdyaXRlUGlwZUFz
-eW5jKHBpcGUsIHJlc3VsdCwgKERXT1JEKSh3Y3NsZW4ocmVzdWx0KSAqIDIpLCBjb3VudCwNCj4g
-ZXZlbnRzKTsJDQo+DQo+IFNhbWUgaGVyZS4NCg0KVGhlIGByZXN1bHRgIGlzIGEgV2luZG93cyBl
-cnJvciBtZXNzYWdlLiBEbyB5b3UgcmVhbGx5IGV4cGVjdCBXaW5kb3dzIGVycm9yIG1lc3NhZ2Vz
-IHdpbGwgZXZlciBncm93IGJleW9uZCAyRz8NCigyRyBUQ0hBUnMqc2l6ZW9mKFRDSEFSKSA9IDRH
-QiA+IE1BWERXT1JEKQ0KDQoNCj4gLSAgICAgICAgV3JpdGVGaWxlKHN0ZGluX3dyaXRlLCBpbnB1
-dCwgc3RybGVuKGlucHV0KSwgJndyaXR0ZW4sIE5VTEwpOw0KPiArICAgICAgICBXcml0ZUZpbGUo
-c3RkaW5fd3JpdGUsIGlucHV0LCAoRFdPUkQpc3RybGVuKGlucHV0KSwgJndyaXR0ZW4sDQo+IE5V
-TEwpOw0KPg0KPiBBcyBhYm92ZS4uDQoNCkFnYWluLCB5b3Ugc2hvdWxkIG9ic2VydmUgdGhlIGJy
-b2FkZXIgY29udGV4dCBvZiB0aGUgY29kZS4gVGhlIGBpbnB1dGAgYnVmZmVyIGlzIGFsbG9jYXRl
-ZCBvbiB0aGUgaGVhcCBhbmQgaXRzIHNpemUgd2FzIGNhbGN1bGF0ZWQgYXMgRFdPUkQuIChBbHRo
-b3VnaCwgd2UgY291bGQgcmVzZWFyY2ggaGVyZSwgaG93IHRoZSBzaXplIGNhbGN1bGF0aW9uIGJl
-aGF2ZXMgZm9yIHN0cmluZ3MgbG9uZ2VyIHRoYW4gNEcuKSBBbnl3YXksIGl0cyBzaXplIHdpbGwg
-YWx3YXlzIGJlIDw9TUFYRFdPUkQuIEFjY29yZGluZyB0byB0aGUgZ2l2ZW4gcGFyYW1ldGVycywg
-dGhlIFdpZGVDaGFyVG9NdWx0aUJ5dGUoKSBNVVNUIHplcm8tdGVybWluYXRlIHRoZSBgaW5wdXRg
-IGJ1ZmZlci4gVGhlcmVmb3JlLCBzdHJsZW4oaW5wdXQpIGlzIGd1YXJhbnRlZWQgdG8gYmUgPE1B
-WERXT1JELiBUaGVyZWZvcmUsIGNhc3RpbmcgZnJvbSBzaXplX3QgdG8gRFdPUkQgaXMgcGVyZmVj
-dGx5IHNhZmUuDQoNCkJlc3QgcmVnYXJkcywNClNpbW9uDQoNCg==
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--fVSrNHCP0hKalnj94iXEDVgwuL9XAHBUs
+Content-Type: multipart/mixed; boundary="7Dr6qnbvxGnCbwgwamJg5Gwau5tmjf6Bm";
+ protected-headers="v1"
+From: =?UTF-8?Q?Fran=c3=a7ois_Kooman?= <fkooman@...2318...>
+To: Gert Doering <gert@...1296...>, Selva <selva.nair@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net"
+ <openvpn-devel@lists.sourceforge.net>
+Message-ID: <34a7cc97-16e2-becc-4f97-ff8dbf8ecb0a@...2318...>
+Subject: Re: [Openvpn-devel] [PATCH] Implement "status 4" (JSON) for
+ management interface
+References: <20171110163946.7656-1-fkooman@...2318...>
+ <63ccd0e3-491f-3fb3-e611-9b6674d3d501@...2298...>
+ <aef485c7-f619-eaac-6534-0828ab9d41f5@...2318...>
+ <CAKuzo_jfJQOBhYMEyT4oiNN1xAZkvkxZm8eeDT=xcUfToaC9kQ@...278...>
+ <20171112214244.GI958@...1296...>
+In-Reply-To: <20171112214244.GI958@...1296...>
+
+--7Dr6qnbvxGnCbwgwamJg5Gwau5tmjf6Bm
+Content-Language: en-US
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
+
+On 11/12/2017 10:42 PM, Gert Doering wrote:
+> On Sun, Nov 12, 2017 at 12:21:06PM -0500, Selva wrote:
+>> One of the niceties of JSON is its readability which is greatly reduced
+>> if formatted without line breaks.=20
+>=20
+> +1
+>=20
+> the difference in efficienty is not large, but "human readability for
+> manual proofreading" is good.
+
+Selva, Gert,
+
+You know, the funny thing is that my main reason for implementing JSON
+support for status was to have it easily _machine_ readable, for higher
+level programming languages where JSON is "first class citizen", and not
+primarily human readability. Besides you could easily do this to make
+JSON human readable:
+
+$ cat /path/to/status.json | python -mjson.tool
+
+Thinking some more about it now, it doesn't really make sense to
+implement JSON at all, because CSV _is_ actually meant to be machine
+readable and a lot more efficient in the amount of data it uses (much
+less duplication). So it seems my reasons for implementing JSON support
+seems to completely miss the point. For machine readable output it would
+make more sense to use a binary format instead of JSON.
+
+What do you guys think? Are there any other reasons to implement JSON
+support?
+
+Cheers,
+Fran=E7ois
+
+
+--7Dr6qnbvxGnCbwgwamJg5Gwau5tmjf6Bm--
+
+--fVSrNHCP0hKalnj94iXEDVgwuL9XAHBUs
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEYje68UGKkH2qmOqnnF7dZFpXHrIFAloJaZEACgkQnF7dZFpX
+HrLrqQ/+J3GKDAJN4I4HJcOj3hznWLGaiseYWFgG8R/0mYZBALddpo2JniiJrIi9
+4+fuU1sAXQ1Ud1jDlhfPq6evp11Ro1f3if0Wp4Zjxq45Rbo7XiNy8yTaWnptYHK4
+41yqvSNPceoGosdO+9D3OANG7JaJW9IMaKLoCYptygWMeKblSjTenp9zEIhl7eI9
+ot0gleREITsky9BdNaKVQxjwFPxmgx/8r2Qkvib9rGHbRZ9DK3eF2sUkOMsPxKB+
+/PsIYNRatfzPn82OseIedILGR7fn/pj4p84qHNVoIOqhuzWP7Oyhhr/om3QKcHMO
+/vEw3g9D48WhD8bf7X+hZd0chr8IJYI0LR48jHtLRWfYsJxjIzLlz8/Dw9t5mSFT
+GGYH208WCv3vqR9LeaLhwpqPbhn+EdK2R7Cfs/GapRJF7ZLgR+IT568osSMivHW+
+LiWOh3Usg3h+Jm13XZQP3I4CchaFPmvyUMUiow2mjx7jM8vkn555UI4Yq25iZG6l
+iWi4GMOIZKhK16EXeNy1U0XNpxxcQx5JXddqyNssnhU1m52WGwpLDGRYOKbTOlkA
+hn2AzNoO3heJveyp1DolfflP/g5mxUjPHtKxJuNAMrxPSKfwgEjaJTwf9FO7FvlX
+LbhKpIxw7gL4mn3U0JzbLF0PmLtAROSAMxT/RtbR7YY3rLccQpc=
+=PPwI
+-----END PGP SIGNATURE-----
+
+--fVSrNHCP0hKalnj94iXEDVgwuL9XAHBUs--
+
