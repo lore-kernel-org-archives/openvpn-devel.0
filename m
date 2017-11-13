@@ -1,16 +1,16 @@
 Reply-To: openvpn-devel@lists.sourceforge.net
-References: <1477672963-5724-7-git-send-email-heiko.hund@...1489...>
- <20171112082736.15578-1-heiko.hund@...1489...>
+References: <1477672963-5724-8-git-send-email-heiko.hund@...1489...>
+ <20171112083403.15922-1-heiko.hund@...1489...>
 From: David Sommerseth <openvpn@...2080...>
-Message-ID: <ba9f0961-0f5a-1883-0a3f-7af917fd2943@...2080...>
-Date: Mon, 13 Nov 2017 13:39:21 +0100
+Message-ID: <987ebe39-3845-7b96-c884-a202464027cf@...2080...>
+Date: Mon, 13 Nov 2017 13:42:26 +0100
 MIME-Version: 1.0
-In-Reply-To: <20171112082736.15578-1-heiko.hund@...1489...>
+In-Reply-To: <20171112083403.15922-1-heiko.hund@...1489...>
 Content-Type: multipart/signed; micalg=pgp-sha512;
  protocol="application/pgp-signature";
- boundary="H0r5Q96JpVQgUpBupLr36Mo7iN6v71AEX"
-Subject: Re: [Openvpn-devel] [PATCHv2 6/7] argv: do fewer memory
- re-allocations
+ boundary="kCwJmrQLAa3T7apBMB63hB0t5GhvrauWM"
+Subject: Re: [Openvpn-devel] [PATCHv2 7/7] Add gc_arena to struct argv to
+ save allocations
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -22,113 +22,250 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
 To: Heiko Hund <heiko.hund@...1489...>, openvpn-devel@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---H0r5Q96JpVQgUpBupLr36Mo7iN6v71AEX
-Content-Type: multipart/mixed; boundary="bWdWE84J0cJXkM5xNsjpXUJc35npaMnAA";
+--kCwJmrQLAa3T7apBMB63hB0t5GhvrauWM
+Content-Type: multipart/mixed; boundary="Q7OeW48CQ0lBHoPp7k0fwdV34dwTggV2d";
  protected-headers="v1"
 From: David Sommerseth <openvpn@...2080...>
 Reply-To: openvpn-devel@lists.sourceforge.net
 To: Heiko Hund <heiko.hund@...1489...>, openvpn-devel@lists.sourceforge.net
-Message-ID: <ba9f0961-0f5a-1883-0a3f-7af917fd2943@...2080...>
-Subject: Re: [Openvpn-devel] [PATCHv2 6/7] argv: do fewer memory
- re-allocations
-References: <1477672963-5724-7-git-send-email-heiko.hund@...1489...>
- <20171112082736.15578-1-heiko.hund@...1489...>
-In-Reply-To: <20171112082736.15578-1-heiko.hund@...1489...>
+Message-ID: <987ebe39-3845-7b96-c884-a202464027cf@...2080...>
+Subject: Re: [Openvpn-devel] [PATCHv2 7/7] Add gc_arena to struct argv to save
+ allocations
+References: <1477672963-5724-8-git-send-email-heiko.hund@...1489...>
+ <20171112083403.15922-1-heiko.hund@...1489...>
+In-Reply-To: <20171112083403.15922-1-heiko.hund@...1489...>
 
---bWdWE84J0cJXkM5xNsjpXUJc35npaMnAA
+--Q7OeW48CQ0lBHoPp7k0fwdV34dwTggV2d
 Content-Language: en-GB
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
-On 12/11/17 09:27, Heiko Hund wrote:
-> Prevent the re-allocations of memory when the internal argv grows
-> beyond 2 and 4 arguments by initially allocating argv to hold up to
-> 7 (+ trailing NULL) pointers.
->=20
-> While at it rename argv_reset to argv_free to actually express
-> what's going on. Redo the argv_reset functionality so that it can
-> be used to actually reset the argv without re-allocation.
+On 12/11/17 09:34, Heiko Hund wrote:
+> With the private gc_arena we do not have to allocate the strings
+> found during parsing again, since we know the arena they are
+> allocated in is valid as long as the argv vector is.
 >=20
 > Signed-off-by: Heiko Hund <heiko.hund@...1489...>
 > ---
->  src/openvpn/argv.c                   | 53 ++++++++++++++++++------------=
+>  src/openvpn/argv.c                   | 44 ++++++++++++++++--------------=
 ------
->  src/openvpn/argv.h                   |  2 +-
->  src/openvpn/console_systemd.c        |  2 +-
->  src/openvpn/init.c                   | 15 ++--------
->  src/openvpn/lladdr.c                 |  2 +-
->  src/openvpn/multi.c                  | 10 +++----
->  src/openvpn/options.c                |  2 +-
->  src/openvpn/plugin.c                 |  2 +-
->  src/openvpn/route.c                  |  8 +++---
->  src/openvpn/socket.c                 |  4 +--
->  src/openvpn/ssl_verify.c             |  6 ++--
->  src/openvpn/tun.c                    | 32 ++++++++++++----------
->  tests/unit_tests/openvpn/test_argv.c | 41 +++++++++++++++++++---------
->  13 files changed, 94 insertions(+), 85 deletions(-)
+>  src/openvpn/argv.h                   |  1 +
+>  tests/unit_tests/openvpn/test_argv.c | 23 +++++++++++++++++++
+>  3 files changed, 43 insertions(+), 25 deletions(-)
 >=20
 > diff --git a/src/openvpn/argv.c b/src/openvpn/argv.c
-> index afe8efff..419b1dc6 100644
+> index 419b1dc6..51dd1b22 100644
 > --- a/src/openvpn/argv.c
 > +++ b/src/openvpn/argv.c
-> @@ -40,11 +40,30 @@
->  #include "options.h"
+> @@ -46,12 +46,11 @@ argv_extend(struct argv *a, const size_t newcap)
+>      {
+>          char **newargv;
+>          size_t i;
+> -        ALLOC_ARRAY_CLEAR(newargv, char *, newcap);
+> +        ALLOC_ARRAY_CLEAR_GC(newargv, char *, newcap, &a->gc);
+
+Ahh!  Here it is :)  Disregard my comment about this in PATCH v2 6/7 :)
+
+
+>          for (i =3D 0; i < a->argc; ++i)
+>          {
+>              newargv[i] =3D a->argv[i];
+>          }
+> -        free(a->argv);
+>          a->argv =3D newargv;
+>          a->capacity =3D newcap;
+>      }
+> @@ -63,6 +62,7 @@ argv_init(struct argv *a)
+>      a->capacity =3D 0;
+>      a->argc =3D 0;
+>      a->argv =3D NULL;
+> +    a->gc =3D gc_new();
+>      argv_extend(a, 8);
+>  }
+>=20=20
+> @@ -77,24 +77,21 @@ argv_new(void)
+>  void
+>  argv_free(struct argv *a)
+>  {
+> -    size_t i;
+> -    for (i =3D 0; i < a->argc; ++i)
+> -    {
+> -        free(a->argv[i]);
+> -    }
+> -    free(a->argv);
+> +    gc_free(&a->gc);
+>  }
 >=20=20
 >  static void
-> +argv_extend(struct argv *a, const size_t newcap)
-> +{
-> +    if (newcap > a->capacity)
-> +    {
-> +        char **newargv;
-> +        size_t i;
-> +        ALLOC_ARRAY_CLEAR(newargv, char *, newcap);
-
-Did we agree on using the intern gc_arena for this array?
-Or not?  I remember we talked about ALLOC_ARRAY_CLEAR_GC()
-instead.
-
-[...snip...]
-
->  static void
-> @@ -133,14 +145,7 @@ argv_insert_head(const struct argv *a, const char *h=
-ead)
->  const char *
->  argv_str(const struct argv *a, struct gc_arena *gc, const unsigned int f=
-lags)
+>  argv_reset(struct argv *a)
 >  {
-> -    if (a->argv)
-> -    {
-> -        return print_argv((const char **)a->argv, gc, flags);
-> -    }
-> -    else
-> -    {
-> -        return "";
-> -    }
-> +    return print_argv((const char **)a->argv, gc, flags);
+> -    size_t i;
+> -    for (i =3D 0; i < a->argc; ++i)
+> +    if (a->argc)
+>      {
+> -        free(a->argv[i]);
+> -        a->argv[i] =3D NULL;
+> +        size_t i;
+> +        for (i =3D 0; i < a->argc; ++i)
+> +        {
+> +            a->argv[i] =3D NULL;
+> +        }
+> +        a->argc =3D 0;
+>      }
+> -    a->argc =3D 0;
 >  }
+>=20=20
+>  static void
+> @@ -106,7 +103,7 @@ argv_grow(struct argv *a, const size_t add)
+>  }
+>=20=20
+>  static void
+> -argv_append(struct argv *a, char *str)  /* str must have been malloced o=
+r be NULL */
+> +argv_append(struct argv *a, char *str)  /* str must have been gc_malloce=
+d or be NULL */
+>  {
+>      argv_grow(a, 1);
+>      a->argv[a->argc++] =3D str;
+> @@ -127,7 +124,7 @@ argv_clone(const struct argv *a, const size_t headroo=
+m)
+>      {
+>          for (i =3D 0; i < a->argc; ++i)
+>          {
+> -            argv_append(&r, string_alloc(a->argv[i], NULL));
+> +            argv_append(&r, string_alloc(a->argv[i], &r.gc));
+>          }
+>      }
+>      return r;
+> @@ -138,7 +135,7 @@ argv_insert_head(const struct argv *a, const char *he=
+ad)
+>  {
+>      struct argv r;
+>      r =3D argv_clone(a, 1);
+> -    r.argv[0] =3D string_alloc(head, NULL);
+> +    r.argv[0] =3D string_alloc(head, &r.gc);
+>      return r;
+>  }
+>=20=20
+> @@ -243,7 +240,7 @@ argv_printf_arglist(struct argv *a, const char *forma=
+t, va_list arglist)
+>      }
+>=20=20
+>      size =3D adjust_power_of_2(len + 1);
+> -    buf =3D gc_malloc(size, false, &gc);
+> +    buf =3D gc_malloc(size, false, &a->gc);
+>      len =3D vsnprintf(buf, size, f, arglist);
+>      if (len < 0 || len >=3D size)
+>      {
+> @@ -255,11 +252,11 @@ argv_printf_arglist(struct argv *a, const char *for=
+mat, va_list arglist)
+>      while (end)
+>      {
+>          *end =3D '\0';
+> -        argv_append(a, string_alloc(buf, NULL));
+> +        argv_append(a, buf);
+>          buf =3D end + 1;
+>          end =3D strchr(buf, delim);
+>      }
+> -    argv_append(a, string_alloc(buf, NULL));
+> +    argv_append(a, buf);
+>=20=20
+>      if (a->argc !=3D argc)
+>      {
+> @@ -303,23 +300,20 @@ argv_parse_cmd(struct argv *a, const char *s)
+>  {
+>      int nparms;
+>      char *parms[MAX_PARMS + 1];
+> -    struct gc_arena gc =3D gc_new();
+>=20=20
+>      argv_reset(a);
+>=20=20
+> -    nparms =3D parse_line(s, parms, MAX_PARMS, "SCRIPT-ARGV", 0, D_ARGV_=
+PARSE_CMD, &gc);
+> +    nparms =3D parse_line(s, parms, MAX_PARMS, "SCRIPT-ARGV", 0, D_ARGV_=
+PARSE_CMD, &a->gc);
+>      if (nparms)
+>      {
+>          int i;
+>          for (i =3D 0; i < nparms; ++i)
+>          {
+> -            argv_append(a, string_alloc(parms[i], NULL));
+> +            argv_append(a, parms[i]);
+>          }
+>      }
+>      else
+>      {
+> -        argv_append(a, string_alloc(s, NULL));
+> +        argv_append(a, string_alloc(s, &a->gc));
+>      }
+> -
+> -    gc_free(&gc);
+>  }
+> diff --git a/src/openvpn/argv.h b/src/openvpn/argv.h
+> index 2a1945e3..a1aa7ebb 100644
+> --- a/src/openvpn/argv.h
+> +++ b/src/openvpn/argv.h
+> @@ -33,6 +33,7 @@
+>  #include "buffer.h"
+>=20=20
+>  struct argv {
+> +    struct gc_arena gc;
+>      size_t capacity;
+>      size_t argc;
+>      char **argv;
+> diff --git a/tests/unit_tests/openvpn/test_argv.c b/tests/unit_tests/open=
+vpn/test_argv.c
+> index e15e2fe5..5bfef8af 100644
+> --- a/tests/unit_tests/openvpn/test_argv.c
+> +++ b/tests/unit_tests/openvpn/test_argv.c
+> @@ -118,6 +118,28 @@ argv_printf__empty_parameter__argc_correct(void **st=
+ate)
+>  }
+>=20=20
+>  static void
+> +argv_printf__long_args__data_correct(void **state)
+> +{
+> +    int i;
+> +    struct argv a =3D argv_new();
+> +    const char *args[] =3D {
+> +        "good_tools_have_good_names_even_though_it_might_impair_typing",
+> +        "--long-opt=3Dlooooooooooooooooooooooooooooooooooooooooooooooooo=
+ng",
+> +        "--long-cat=3Dlooooooooooooooooooooooooooooooooooooooooooooooooo=
+ooonger",
+> +        "file_with_very_descriptive_filename_that_leaves_no_questions_op=
+en.jpg.exe"
+> +    };
+> +
+> +    argv_printf(&a, "%s %s %s %s", args[0], args[1], args[2], args[3]);
+> +    assert_int_equal(a.argc, 4);
+> +    for (i =3D 0; i < a.argc; i++)
+> +    {
+> +        assert_string_equal(a.argv[i], args[i]);
+> +    }
+> +
+> +    argv_free(&a);
+> +}
+> +
+> +static void
+>  argv_parse_cmd__command_string__argc_correct(void **state)
+>  {
+>      struct argv a =3D argv_new();
+> @@ -233,6 +255,7 @@ main(void)
+>          cmocka_unit_test(argv_printf__group_sep_in_arg__fail_no_ouput),
+>          cmocka_unit_test(argv_printf__combined_path_with_spaces__argc_co=
+rrect),
+>          cmocka_unit_test(argv_printf__empty_parameter__argc_correct),
+> +        cmocka_unit_test(argv_printf__long_args__data_correct),
+>          cmocka_unit_test(argv_parse_cmd__command_string__argc_correct),
+>          cmocka_unit_test(argv_parse_cmd__command_and_extra_options__argc=
+_correct),
+>          cmocka_unit_test(argv_printf_cat__used_twice__argc_correct),
+>=20
 
-Hmmm .... do we _really_  need argv_str()?
-
- $ git grep argv_str
-src/openvpn/argv.c:argv_str(const struct argv *a, struct gc_arena *gc, cons=
-t unsigned int flags)
-src/openvpn/argv.c:    msg(msglev, "%s", argv_str(a, &gc, 0));
-src/openvpn/argv.c:    msg(msglev, "%s: %s", prefix, argv_str(a, &gc, 0));
-src/openvpn/argv.h:const char *argv_str(const struct argv *a, struct gc_are=
-na *gc, const unsigned int flags);
-
-(ignoring unit tests).
-
-Or if we want it for convenience for those two callers in argv.c, remove it=
- from the
-header and make it static inline.  But I'm still not really convinced we re=
-ally need
-it; as the usage is limited to within the argv.c code base.
-
-
-Otherwise, this looks good.  Once we have figured out these two comments, t=
-his is
-fairly straight-forward to include.
+Only glared at these changes.  They make sense and the Acked-By is not
+far away at all!  Just want to run some build tests with the other final
+patches in place first.
 
 
 --=20
@@ -139,9 +276,9 @@ OpenVPN, Inc
 
 
 
---bWdWE84J0cJXkM5xNsjpXUJc35npaMnAA--
+--Q7OeW48CQ0lBHoPp7k0fwdV34dwTggV2d--
 
---H0r5Q96JpVQgUpBupLr36Mo7iN6v71AEX
+--kCwJmrQLAa3T7apBMB63hB0t5GhvrauWM
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -149,20 +286,20 @@ Content-Disposition: attachment; filename="signature.asc"
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBCgAGBQJaCZJ5AAoJEIbPlEyWcf3yGG0P/iEmGKivv89vWFXYYjLzXvG3
-lB8HJAyotpmup66v/+oEPWZeYivc9n6D/doM1DccU6CE8+AvvbpyOE+1FAaPP70d
-x4seztiamDiunXPimCGB+pE8q+4gmdPslL2RmLBKV7AL7lYefPzAZVvvbgmKvvoX
-x1ov0LhWeOKkCKtpWyVxuFqpSwv8C8pts/ZS9zUhOuAI1te9hKAbRsanqndbPVnt
-KPnn86ojBayC8mHyE0PDQHz466Dyvw6H9aJ/DrcCiismTzGN2z2z4w4SofNHGgQa
-bSDPPtzEJN2L1ZhaHVP0/dVdYgjsJpAtTR2hhSc/27bEOeSRLTOXya1WtZy320cR
-BKxRwJi9H7Ha0V1dTEpUsptJC6kxsE9lU14JBiYdvCn+NBA3AjGuCJec8QStngtl
-T/ALaZ5Q9zMWlOMZshB6zEGOALwvRkyZ5GTi/uXijBlvil/8e7UoLRtSY2tBEQQn
-QbTSZj/mKoVOmB2Mpt5tbD7oq0ocfQkeq9SV9nEVtKOQK67px+aPd/0ZM95px6Yc
-zmpM2cwfZSN3hJmzIXycz5FgaNaVxgQ9TAZvuOqTG8sJgRBvu2k8cCCHSwj8kahs
-Xbc2lK/v24nzqxAHnrZ+N1nCRisvG71/JL9IUqUUFMCuntpojjO0sHbsyJDlbvEf
-BCE58D6i8rJ0Q53ifH1i
-=EWnZ
+iQIcBAEBCgAGBQJaCZMzAAoJEIbPlEyWcf3ygQMP/1tIlyKbULSNkTpFur2G5qda
+Gh1fSjAP1Fd9sr4Qw6AS0C3N7y+o/8LokEJIf2tHzShPe7yqhC3mD6wkZvYNvsD3
+GuOdByKkierTG6MpFDjcGB4lcOr/hbJi9SoWU/cg2faZSd8mXnhvc7D3YUofS11s
+S/0RQT9X3Ki2vufP1JxmPq6XleTSY5DaK8Uz+RUA4VXGlZlZR2ikNxdFZwy3Qq3u
+bXTEPLPyNRmAlH6Fg04mzWoTbu+hZLvWPKYPZl6OOGjuv2v8shT7vSxH1RyKi9gy
+lWZjvy5T4A/6w69iBsM7lGP7Dd9wPmW0fSOYrKv9JOWzBlRn73OfxAQCNsVGVuhD
+Irj9BHkXDIwmqwdEn69z8MpaRN5a+J91dqOh/Oa13aJhIFM2sz6y+dsjkt1GeWHF
+Cn4+mcZqDTEiEjQVf/eetJJ6dltI+xOS8caUGsYrZWq18kI2vG8W6lmmyZ0UqIIb
+vyeTRvPVGxM1aCyQWcZDSzjLrVonZOBMUAGiVtQ2R6H1nbRal+2rW8XkSFykAfIC
+SKT01YM0Q5PgjrAfpJvQFiwehZViEtUwqBR5Bsw6hjezCt2q/UDyQ7sPJa6/iU+N
+Q/30NyuoWGFYC/bCARzrc4hAAirDDYSjV24cMg/BdqNSS1eYT7fOBDTF/cfHNiPI
+0e7wOL4lLiijZiNUyVk2
+=162u
 -----END PGP SIGNATURE-----
 
---H0r5Q96JpVQgUpBupLr36Mo7iN6v71AEX--
+--kCwJmrQLAa3T7apBMB63hB0t5GhvrauWM--
 
