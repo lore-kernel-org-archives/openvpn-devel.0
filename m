@@ -1,14 +1,18 @@
-References: <20171111171406.7562-1-gert@...2298...>
-From: Antonio Quartulli <a@...2181...>
-Message-ID: <cf34617b-2b11-8944-e025-3c978a8f6551@...2181...>
-Date: Mon, 13 Nov 2017 18:14:13 +0800
+References: <20171110163946.7656-1-fkooman@...2318...>
+ <63ccd0e3-491f-3fb3-e611-9b6674d3d501@...2298...>
+ <aef485c7-f619-eaac-6534-0828ab9d41f5@...2318...>
+ <CAKuzo_jfJQOBhYMEyT4oiNN1xAZkvkxZm8eeDT=xcUfToaC9kQ@...278...>
+ <20171112214244.GI958@...1296...>
+ <34a7cc97-16e2-becc-4f97-ff8dbf8ecb0a@...2318...>
+ <4ea94797-c52a-da17-b5ba-c7f8d9411326@...2181...>
+From: Steffan Karger <steffan.karger@...1435...>
+Message-ID: <4717a1f2-b8c6-26ae-2cf4-42ae5f34c3eb@...1435...>
+Date: Mon, 13 Nov 2017 11:15:45 +0100
 MIME-Version: 1.0
-In-Reply-To: <20171111171406.7562-1-gert@...2298...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="qLkovBWpKcSHtoKDBx9TiX3up60dDMCOB"
-Subject: Re: [Openvpn-devel] [PATCH] Add generated openvpn.doxyfile to
- .gitignore
+In-Reply-To: <4ea94797-c52a-da17-b5ba-c7f8d9411326@...2181...>
+Content-Language: en-US
+Subject: Re: [Openvpn-devel] [PATCH] Implement "status 4" (JSON) for
+ management interface
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -17,69 +21,94 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert van Dijk <gert@...2298...>
-Cc: openvpn-devel@lists.sourceforge.net
-
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---qLkovBWpKcSHtoKDBx9TiX3up60dDMCOB
-Content-Type: multipart/mixed; boundary="QGUqJJFEqEMpmgloIXQpVl9QjQo1kIxS8";
- protected-headers="v1"
-From: Antonio Quartulli <a@...2181...>
-To: Gert van Dijk <gert@...2298...>
-Cc: openvpn-devel@lists.sourceforge.net
-Message-ID: <cf34617b-2b11-8944-e025-3c978a8f6551@...2181...>
-Subject: Re: [Openvpn-devel] [PATCH] Add generated openvpn.doxyfile to
- .gitignore
-References: <20171111171406.7562-1-gert@...2298...>
-In-Reply-To: <20171111171406.7562-1-gert@...2298...>
-
---QGUqJJFEqEMpmgloIXQpVl9QjQo1kIxS8
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
+To: openvpn-devel@lists.sourceforge.net
 
+Hi,
 
+Since I don't use the mgmt interface / status file a lot, I didn't chip
+in earlier.  But since this quite closely matches my initial thoughts
+I'll do so anyway.
 
-On 12/11/17 01:14, Gert van Dijk wrote:
-> I think this was omitted in 66bf378e.
+On 13-11-17 10:54, Antonio Quartulli wrote:
+> On 13/11/17 17:44, Fran=E7ois Kooman wrote:
+>> On 11/12/2017 10:42 PM, Gert Doering wrote:
+>>> On Sun, Nov 12, 2017 at 12:21:06PM -0500, Selva wrote:
+>>>> One of the niceties of JSON is its readability which is greatly reduced
+>>>> if formatted without line breaks.=20
+>>>
+>>> +1
+>>>
+>>> the difference in efficienty is not large, but "human readability for
+>>> manual proofreading" is good.
+>>
+>> Selva, Gert,
+>>
+>> You know, the funny thing is that my main reason for implementing JSON
+>> support for status was to have it easily _machine_ readable, for higher
+>> level programming languages where JSON is "first class citizen", and not
+>> primarily human readability. Besides you could easily do this to make
+>> JSON human readable:
+>>
+>> $ cat /path/to/status.json | python -mjson.tool
+>>
+>> Thinking some more about it now, it doesn't really make sense to
+>> implement JSON at all, because CSV _is_ actually meant to be machine
+>> readable and a lot more efficient in the amount of data it uses (much
+>> less duplication). So it seems my reasons for implementing JSON support
+>> seems to completely miss the point. For machine readable output it would
+>> make more sense to use a binary format instead of JSON.
+>>
+>> What do you guys think? Are there any other reasons to implement JSON
+>> support?
+
+This was my original question: why should we *add* JSON?  I agree that
+if we would have to pick something now, I'd prefer JSON over CSV.  But
+we already have CSV, and as far as I understand it suffices just fine.
+
+> Although JSON is a bloated language (meaning that there is lots of
+> overhead next to the data itself), I think that it allows you to easily
+> extend the objects being sent back and forth with a fairly high chance
+> to keep backwards compatibility.
 >=20
-> Signed-off-by: Gert van Dijk <gert@...2298...>
+> This is barely true for csv.
 
-Acked-by: Antonio Quartulli <a@...2181...>
+The biggest difference is that CSV is 'flat' while JSON is
+"hierarchical".  But since we already support CSV (and want to keep
+supporting it, I guess?), I think we're kind of bound to a flat
+structure anyway.
 
+> A binary presentation per se is not bad, but then you need to make sure
+> that the format is properly encoded/decoded (especially if the data is
+> transferred across the network from/to different platforms) and this can
+> be error prone.
 
-We definitely need this otherwise the doxyfile won't leave you alone.
+Slightly offtopic: I recently came across CBOR, which seems a good
+attempt to merge the benefits of JSON with a binary representation:
+https://tools.ietf.org/html/rfc7049
 
-Thanks!
+Haven't really used it yet though, so no practical experiences
+unfortunately.
 
+> Honestly I did not read the rest of the thread, but if this data is
+> supposed to be exposed through an API (i.e. REST API or any other
+> interface) and it is meant to travel across the network, I wouldn't mind
+> seeing the JSON format being used.
+>=20
+> JSON consumers nowadays are extremely easy to implement compared to other=
+s.
 
---=20
-Antonio Quartulli
+Even compared to CSV?  I can't really come up with a situation where I
+can consume JSON easily, but can't consume CSV.
 
+> Regarding the JSON "prettiness", I think that printing it in a nice
+> readable format makes it just extremely easy to debug and possibly spot
+> errors on the fly (even when not searching for them). For this reason
+> I'd rather add a couple of tabs and \n to make it easier to read.
 
---QGUqJJFEqEMpmgloIXQpVl9QjQo1kIxS8--
++1, one of the strong sides of JSON is that is easy to make it both user
+and machine readable.
 
---qLkovBWpKcSHtoKDBx9TiX3up60dDMCOB
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEERdCuyFSHc3WdqS4EB6U8WA7yzXQFAloJcHUACgkQB6U8WA7y
-zXRiGRAApaTFIoRdPA4rS/OIdC+J09aVD+oMNVhplMmRG0itVClWDjr+j6iFzUUS
-DwCnlz/B6meCdDyWQD6aQfecDn2jt5We6hQkDPQMN+lo1I6458nM4O5SzXzppza/
-uIrY5heSv12/LSMdlVd0j4mpdS2cUTVRJ8Mra7uRfi2mBkqvbqfoVoCASNk2EIdH
-8iPeqCEp4rQOSxH84Yoym4J02RcCKPEQUJOGF55pcfwhBoGON1/5KQ3znEh4PTn7
-oJEa7GFEfCAN32TyAKS72g3x0Nddcr9K9t0VYSUaU0nBsKZiESwU4siJiAF/XRwh
-G13fsLwgQw6VIFC1ChYXtzxe6P3vTozh86iNAO33qLYvbTQmen99j1+XsHzLnmin
-+hXtCs1b7IlP8Gp1LwZbEbDBUem+A5IypzdX+nXE551jEpJyuqVc+6cWwQlxtGuE
-ftc2BiLynVzJPx3aM2prkr9UamqYZXm9YjPk9J01A9ZV44ls8ZBkCf9WW/fhX2hu
-hftMdbT/18oZKdVkxUKF0fonRND9EKfcy7v9mQOG1i0BSZdOXtYawM/IS8NcERsd
-Cj0XRXSPszsFhKHkM+ZAzbQ2rx8s0a6pF1NYfKxPi9CWqerKcRYCVkg0SdeGy/t9
-sXnLrenK/OXcTlfvqmgjm161npytW+WL3wR6904luHLSe3uKLeU=
-=isfV
------END PGP SIGNATURE-----
-
---qLkovBWpKcSHtoKDBx9TiX3up60dDMCOB--
+-Steffan
 
