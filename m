@@ -1,15 +1,22 @@
 Reply-To: openvpn-devel@lists.sourceforge.net
-References: <1477672963-5724-6-git-send-email-heiko.hund@...1489...>
- <20171112082435.15447-1-heiko.hund@...1489...>
+References: <20171110163946.7656-1-fkooman@...2318...>
+ <63ccd0e3-491f-3fb3-e611-9b6674d3d501@...2298...>
+ <aef485c7-f619-eaac-6534-0828ab9d41f5@...2318...>
+ <CAKuzo_jfJQOBhYMEyT4oiNN1xAZkvkxZm8eeDT=xcUfToaC9kQ@...278...>
+ <20171112214244.GI958@...1296...>
+ <34a7cc97-16e2-becc-4f97-ff8dbf8ecb0a@...2318...>
+ <4ea94797-c52a-da17-b5ba-c7f8d9411326@...2181...>
+ <4717a1f2-b8c6-26ae-2cf4-42ae5f34c3eb@...1435...>
 From: David Sommerseth <openvpn@...2080...>
-Message-ID: <1700099c-a320-ca5d-384d-cdc35f3e4153@...2080...>
-Date: Mon, 13 Nov 2017 12:49:27 +0100
+Message-ID: <6ad9db3e-63b5-78fe-0105-81c92746feb2@...2080...>
+Date: Mon, 13 Nov 2017 13:16:46 +0100
 MIME-Version: 1.0
-In-Reply-To: <20171112082435.15447-1-heiko.hund@...1489...>
+In-Reply-To: <4717a1f2-b8c6-26ae-2cf4-42ae5f34c3eb@...1435...>
 Content-Type: multipart/signed; micalg=pgp-sha512;
  protocol="application/pgp-signature";
- boundary="cP54RnmJbl0Ku4MIFAU2Vpj8VViuX69Qx"
-Subject: Re: [Openvpn-devel] [PATCHv2 5/7] re-implement argv_printf_*()
+ boundary="IhReX3uuaIA4L8lkBqb89jjXlaa6VHaDO"
+Subject: Re: [Openvpn-devel] [PATCH] Implement "status 4" (JSON) for
+ management interface
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,328 +25,159 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Heiko Hund <heiko.hund@...1489...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+To: Steffan Karger <steffan.karger@...1435...>, openvpn-devel@lists.sourceforge.net
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---cP54RnmJbl0Ku4MIFAU2Vpj8VViuX69Qx
-Content-Type: multipart/mixed; boundary="Kh5Rmc4PoBqlA18VaJSOrRqp1C7iGd1Rh";
+--IhReX3uuaIA4L8lkBqb89jjXlaa6VHaDO
+Content-Type: multipart/mixed; boundary="AoSnD7tvtqJp6i7dKeeFrmg8vJX1UpBWo";
  protected-headers="v1"
 From: David Sommerseth <openvpn@...2080...>
 Reply-To: openvpn-devel@lists.sourceforge.net
-To: Heiko Hund <heiko.hund@...1489...>
-Cc: "openvpn-devel@lists.sourceforge.net"
- <openvpn-devel@lists.sourceforge.net>
-Message-ID: <1700099c-a320-ca5d-384d-cdc35f3e4153@...2080...>
-Subject: Re: [Openvpn-devel] [PATCHv2 5/7] re-implement argv_printf_*()
-References: <1477672963-5724-6-git-send-email-heiko.hund@...1489...>
- <20171112082435.15447-1-heiko.hund@...1489...>
-In-Reply-To: <20171112082435.15447-1-heiko.hund@...1489...>
+To: Steffan Karger <steffan.karger@...1435...>,
+ openvpn-devel@lists.sourceforge.net
+Message-ID: <6ad9db3e-63b5-78fe-0105-81c92746feb2@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH] Implement "status 4" (JSON) for
+ management interface
+References: <20171110163946.7656-1-fkooman@...2318...>
+ <63ccd0e3-491f-3fb3-e611-9b6674d3d501@...2298...>
+ <aef485c7-f619-eaac-6534-0828ab9d41f5@...2318...>
+ <CAKuzo_jfJQOBhYMEyT4oiNN1xAZkvkxZm8eeDT=xcUfToaC9kQ@...278...>
+ <20171112214244.GI958@...1296...>
+ <34a7cc97-16e2-becc-4f97-ff8dbf8ecb0a@...2318...>
+ <4ea94797-c52a-da17-b5ba-c7f8d9411326@...2181...>
+ <4717a1f2-b8c6-26ae-2cf4-42ae5f34c3eb@...1435...>
+In-Reply-To: <4717a1f2-b8c6-26ae-2cf4-42ae5f34c3eb@...1435...>
 
---Kh5Rmc4PoBqlA18VaJSOrRqp1C7iGd1Rh
+--AoSnD7tvtqJp6i7dKeeFrmg8vJX1UpBWo
 Content-Language: en-GB
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="windows-1252"
 Content-Transfer-Encoding: quoted-printable
 
-
-Hey,
-
-Thanks a lot for putting a renewed effort into this.  I've reviewed
-this and compile tested with GCC 4.8.5, 6.3.1 and 7.2.1 - as there
-are some warnings appearing; I'll come back to them in a bit.
-
-On 12/11/17 09:24, Heiko Hund wrote:
-> The previous implementation had the problem that it was not fully
-> compatible with printf() and could only detect % format directives
-> following a space character (0x20).
->=20
-> It modifies the format string and inserts marks to separate groups
-> before passing it to the regular printf in libc. The marks are
-> later used to separate the output string into individual command
-> line arguments.
->=20
-> The choice of 035 as the argument delimiter is based on the
-
-Perhaps we should use the hex notation (0x1D) instead of the octal
-notation (035).  The octal notation is just so similar to decimal
-notation and the leading 0 is quite a critical difference.
-
-> assumption that no "regular" string passed to argv_printf_*() will
-> ever have to contain that byte (and the fact that it actually is
-> the ASCII "group separator" control character, which fits its
-> purpose).
->=20
-> Signed-off-by: Heiko Hund <heiko.hund@...1489...>
-> ---
->  src/openvpn/argv.c                   | 253 ++++++++++++++++-------------=
-------
->  src/openvpn/argv.h                   |   4 +-
->  src/openvpn/route.c                  |   8 +-
->  src/openvpn/tun.c                    |  24 ++--
->  tests/unit_tests/openvpn/test_argv.c |  58 +++++++-
->  5 files changed, 184 insertions(+), 163 deletions(-)
->=20
-> diff --git a/src/openvpn/argv.c b/src/openvpn/argv.c
-> index 95bdfeac..afe8efff 100644
-> --- a/src/openvpn/argv.c
-> +++ b/src/openvpn/argv.c
-
+On 13/11/17 11:15, Steffan Karger wrote:
 [...snip...]
+>>> You know, the funny thing is that my main reason for implementing JSON
+>>> support for status was to have it easily _machine_ readable, for higher
+>>> level programming languages where JSON is "first class citizen", and not
+>>> primarily human readability. Besides you could easily do this to make
+>>> JSON human readable:
+>>>
+>>> $ cat /path/to/status.json | python -mjson.tool
+>>>
+>>> Thinking some more about it now, it doesn't really make sense to
+>>> implement JSON at all, because CSV _is_ actually meant to be machine
+>>> readable and a lot more efficient in the amount of data it uses (much
+>>> less duplication). So it seems my reasons for implementing JSON support
+>>> seems to completely miss the point. For machine readable output it would
+>>> make more sense to use a binary format instead of JSON.
+>>>
+>>> What do you guys think? Are there any other reasons to implement JSON
+>>> support?
+>=20
+> This was my original question: why should we *add* JSON?  I agree that
+> if we would have to pick something now, I'd prefer JSON over CSV.  But
+> we already have CSV, and as far as I understand it suffices just fine.
 
->=20=20
-> -static void
-> -argv_printf_arglist(struct argv *a, const char *format, va_list arglist)
-> +/*
-> + * argv_prep_format - prepare argv format string for further processing
-> + *
-> + * Individual argument must be separated by space. Ignores leading and t=
-railing spaces.
-> + * Consecutive spaces count as one. Returns prepared format string, with=
- space replaced
-> + * by delim and adds the number of arguments to the count parameter.
-> + */
+The tooling libraries around JSON vs CSV are more commonly more mature
+these days for JSON; plus it is so widely used the interwebs are filled
+with examples.  And this does not only go for scripted languages; even
+there are also nice libraries for C and C++ too, giving you a machine
+parseable object with better predictability on the result.
 
-Could we make this comment proper Doxygen?  (As well as adding similar thin=
-gs for the other functions as well?)
+If I had a project parsing a CSV and had been given a chance to use JSON
+instead; I'd migrate over ASAP as long as the risks of breaking
+something badly was not very high (It would depend on where in the call
+chain such changes happens, and how much happens after that point).
 
-> +static char *
-> +argv_prep_format(const char *format, const char delim, size_t *count, st=
-ruct gc_arena *gc)
->  {
+So I'm fine with adding --status 4 which dumps JSON.
 
-[...snip...]
+>> Although JSON is a bloated language (meaning that there is lots of
+>> overhead next to the data itself), I think that it allows you to easily
+>> extend the objects being sent back and forth with a fairly high chance
+>> to keep backwards compatibility.
+>>
+>> This is barely true for csv.
+>=20
+> The biggest difference is that CSV is 'flat' while JSON is
+> "hierarchical".  But since we already support CSV (and want to keep
+> supporting it, I guess?), I think we're kind of bound to a flat
+> structure anyway.
 
-> +
-> +        if (!in_token)
->          {
-> -            argv_append(a, term);
-> +            ++*count;
-> +            if (f[0]) /* not after leading spaces */
+Yeah, we cannot rip out CSV now.  We could probably propose that further
+into the future once JSON is widely used.  And we could provide some
+tooling which converts JSON to CSV outside of OpenVPN at that time.
 
-This comment still confuses me :-/
+>> A binary presentation per se is not bad, but then you need to make sure
+>> that the format is properly encoded/decoded (especially if the data is
+>> transferred across the network from/to different platforms) and this can
+>> be error prone.
+>=20
+> Slightly offtopic: I recently came across CBOR, which seems a good
+> attempt to merge the benefits of JSON with a binary representation:
+> https://tools.ietf.org/html/rfc7049
+>=20
+> Haven't really used it yet though, so no practical experiences
+> unfortunately.
 
-Would this be a correct understanding?
+I think that if we want to have a binary approach, that should be a
+variant of --status 4; like --status 4_binary.
 
-  /*
-   * We don't add any delimiter (group separator)
-   * to the resulting format string before something
-   * has been added there.  The resulting format
-   * string will never start with a delimiter.
-   */
+>> Honestly I did not read the rest of the thread, but if this data is
+>> supposed to be exposed through an API (i.e. REST API or any other
+>> interface) and it is meant to travel across the network, I wouldn't mind
+>> seeing the JSON format being used.
+>>
+>> JSON consumers nowadays are extremely easy to implement compared to othe=
+rs.
+>=20
+> Even compared to CSV?  I can't really come up with a situation where I
+> can consume JSON easily, but can't consume CSV.
 
-> +            {
-> +                f[j++] =3D delim;
-> +            }
->          }
-> +
-> +        f[j++] =3D format[i];
-> +        in_token =3D true;
->      }
-> +
-> +    return f;
->  }
->=20=20
-> -void
-> +/*
-> + * argv_printf_arglist - create a struct argv from a format string
-> + *
-> + * Instead of parsing the format string ourselves place delimiters via a=
-rgv_prep_format()
-> + * before we let libc's printf() do the parsing. Then split the resultin=
-g string at the
-> + * injected delimiters.
-> + */
-> +static bool
-> +argv_printf_arglist(struct argv *a, const char *format, va_list arglist)
-> +{
-> +    struct gc_arena gc =3D gc_new();
-> +    const char *delim =3D 035;
+The library tooling is in my experience far easier and predictable.  And
+the JSON libraries have generally been far better at "object-ifying"
+JSON to objects you use in your code than what CSV parses have been.
+But I'll admit, I've mostly avoided CSV for the last decade or so if I
+could use JSON or even XML.
 
-argv.c:217:25: warning: initialization makes pointer from integer without a=
- cast [-Wint-conversion]
-     const char *delim =3D 035;
+CSV just looks structured - until the layout is changed.  While JSON
+(and even XML for that matter, _not_ saying we should have XML support!)
+is not strictly bound to the order of fields, so adding new fields is a
+no-brainer with JSON compared to CSV.  And before you say "We only
+append fields to CSV", some of those changes we have done in the past to
+--status 3 have even broken some users setup - because the CSV parser
+was stupid.  The risk of that happening to JSON is far less.
 
-argv.c:227:34: warning: passing argument 2 of =E2=80=98argv_prep_format=E2=
-=80=99 makes integer from pointer without a cast [-Wint-conversion]
-     f =3D argv_prep_format(format, delim, &argc, &gc);
-                                  ^~~~~
-argv.c:170:1: note: expected =E2=80=98char=E2=80=99 but argument is of type=
- =E2=80=98const char *=E2=80=99
- argv_prep_format(const char *format, const char delim, size_t *count, stru=
-ct gc_arena *gc)
- ^~~~~~~~~~~~~~~~
-argv.c:251:23: warning: passing argument 2 of =E2=80=98strchr=E2=80=99 make=
-s integer from pointer without a cast [-Wint-conversion]
-     end =3D strchr(buf, delim);
-                       ^~~~~
-In file included from /usr/include/sys/un.h:37:0,
-                 from syshead.h:88,
-                 from argv.c:36:
-/usr/include/string.h:232:14: note: expected =E2=80=98int=E2=80=99 but argu=
-ment is of type =E2=80=98const char *=E2=80=99
- extern char *strchr (const char *__s, int __c)
-              ^~~~~~
-argv.c:257:27: warning: passing argument 2 of =E2=80=98strchr=E2=80=99 make=
-s integer from pointer without a cast [-Wint-conversion]
-         end =3D strchr(buf, delim);
-                           ^~~~~
-In file included from /usr/include/sys/un.h:37:0,
-                 from syshead.h:88,
-                 from argv.c:36:
-/usr/include/string.h:232:14: note: expected =E2=80=98int=E2=80=99 but argu=
-ment is of type =E2=80=98const char *=E2=80=99
- extern char *strchr (const char *__s, int __c)
-              ^~~~~~
+>> Regarding the JSON "prettiness", I think that printing it in a nice
+>> readable format makes it just extremely easy to debug and possibly spot
+>> errors on the fly (even when not searching for them). For this reason
+>> I'd rather add a couple of tabs and \n to make it easier to read.
+>=20
+> +1, one of the strong sides of JSON is that is easy to make it both user
+> and machine readable.
+
++1 from me too.
 
 
-Shouldn't *delim be just delim?  I'd propose using:
+Just a few words to the management interface vs --status file.  We
+should support JSON via both channels.  And implementing that shouldn't
+be rocket science as it should be the same function producing that result.
 
-   const char delim =3D 0x1D;  /* ASCII group separator character */
+But we should consider if we want to make use of a JSON library
+producing the JSON streams.  The reason is to ensure the output is
+according to the specification and that escaping if contents is
+consistent and proper.  Imagine if someone puts a double-quote into the
+CN field of a certificate?
 
-This also kills all the warnings above.
+ CN=3D"} Lets explode things, O=3DHacktivist0
 
+Or other characters which needs escaping.
 
-> +    char *f, *buf, *end;
-> +    size_t argc, size;
-> +    bool res =3D false;
-> +    va_list tmplist;
-> +    int len;
-> +
-> +    argv_extend(a, 1); /* ensure trailing NULL */
-> +
-> +    argc =3D a->argc;
-> +    f =3D argv_prep_format(format, delim, &argc, &gc);
-> +    if (f =3D=3D NULL)
-> +    {
-> +        goto out;
-> +    }
-> +
-> +    /* determine minimum buffer size */
-> +    va_copy(tmplist, arglist);
-> +    len =3D vsnprintf(NULL, 0, f, tmplist);
-> +    va_end(tmplist);
-> +    if (len < 0)
-> +    {
-> +        goto out;
-> +    }
-> +
-> +    size =3D adjust_power_of_2(len + 1);
-> +    buf =3D gc_malloc(size, false, &gc);
-> +    len =3D vsnprintf(buf, size, f, arglist);
-> +    if (len < 0 || len >=3D size)
-> +    {
-> +        goto out;
-> +    }
-> +
-> +    /* split the string at the delimiters */
-> +    end =3D strchr(buf, delim);
-> +    while (end)
-> +    {
-> +        *end =3D '\0';
-> +        argv_append(a, string_alloc(buf, NULL));
-> +        buf =3D end + 1;
-> +        end =3D strchr(buf, delim);
-> +    }
-> +    argv_append(a, string_alloc(buf, NULL));
-> +
-> +    if (a->argc !=3D argc)
-> +    {
-> +        /* Someone snuck in a \035, fail gracefully */
-
-I'd prefer 0x1D here too.
-
-> diff --git a/src/openvpn/route.c b/src/openvpn/route.c
-> index 8c71e6ec..02f7299f 100644
-> --- a/src/openvpn/route.c
-> +++ b/src/openvpn/route.c
-> @@ -1614,7 +1614,7 @@ add_route(struct route_ipv4 *r,
->  #elif defined (_WIN32)
->      {
->          DWORD ai =3D TUN_ADAPTER_INDEX_INVALID;
-> -        argv_printf(&argv, "%s%sc ADD %s MASK %s %s",
-> +        argv_printf(&argv, "%s%s ADD %s MASK %s %s",
-
-[...snip... comment to follow ....]
-
-> diff --git a/src/openvpn/tun.c b/src/openvpn/tun.c
-> index 25831ce3..61d6b9eb 100644
-> --- a/src/openvpn/tun.c
-> +++ b/src/openvpn/tun.c
-> @@ -1565,7 +1565,7 @@ do_ifconfig(struct tuntap *tt,
->                  char iface[64];
->                  openvpn_snprintf(iface, sizeof(iface), "interface=3D%lu"=
-, tt->adapter_index );
->                  argv_printf(&argv,
-> -                            "%s%sc interface ipv6 set address %s %s stor=
-e=3Dactive",
-> +                            "%s%s interface ipv6 set address %s %s store=
-=3Dactive",
-
-Even though these changes from %sc to %s are no-brainers; I wonder if we sh=
-ould try
-to trick our buildbot to test these changes on all platforms we have there =
-before
-pushing it out.
+I also see the proposed patch adds "END" at the very end.  To me that
+makes more sense in text/plain representations to indicate that this is
+the end of a list of unknown length.  JSON have that implicitly with the
+last '}'.
 
 
-> diff --git a/tests/unit_tests/openvpn/test_argv.c b/tests/unit_tests/open=
-vpn/test_argv.c
-> index 4a3ba559..a09e92fb 100644
-> --- a/tests/unit_tests/openvpn/test_argv.c
-> +++ b/tests/unit_tests/openvpn/test_argv.c
-
-[...snip...]
->  static void
-> +argv_printf__empty_parameter__argc_correct(void **state)
-> +{
-> +    struct argv a =3D argv_new();
-> +
-> +    argv_printf(&a, "%s", "");
-> +    assert_int_equal(a.argc, 1);
-> +
-> +    argv_printf(&a, "%s %s", PATH1, "");
-> +    assert_int_equal(a.argc, 2);
-> +
-> +    argv_printf(&a, "%s %s %s", PATH1, "", PARAM1);
-> +    assert_int_equal(a.argc, 3);
-> +
-> +    argv_printf(&a, "%s %s %s %s", PATH1, "", "", PARAM1);
-> +    assert_int_equal(a.argc, 4);
-> +
-> +    argv_printf(&a, "%s %s", "", PARAM1);
-> +    assert_int_equal(a.argc, 2);
-> +
-> +    argv_free(&a);
-
-This gives another warning:
-
-est_argv.c: In function =E2=80=98argv_printf__empty_parameter__argc_correct=
-=E2=80=99:
-test_argv.c:117:5: warning: implicit declaration of function =E2=80=98argv_=
-free=E2=80=99; did you mean =E2=80=98argv_reset=E2=80=99? [-Wimplicit-funct=
-ion-declaration]
-     argv_free(&a);
-     ^~~~~~~~~
-     argv_reset
-
-This stops the build of argv_testdriver.  Changing it to argv_reset() compl=
-etes
-and runs the unit test.
-
-> +}
-
-[...snip...]
-
-I'm also getting this warning:
-
-test_argv.c:174:1: warning: =E2=80=98argv_insert_head__empty_argv__head_onl=
-y=E2=80=99 defined but not used [-Wunused-function]
- argv_insert_head__empty_argv__head_only(void **state)
-
-
-Otherwise, this patch looks reasonable and good to me.  And it passes 'make=
- check'
-when fixing those various warnings mentioned above
+Just my few cents for this round :)
 
 
 --=20
@@ -350,9 +188,9 @@ OpenVPN, Inc
 
 
 
---Kh5Rmc4PoBqlA18VaJSOrRqp1C7iGd1Rh--
+--AoSnD7tvtqJp6i7dKeeFrmg8vJX1UpBWo--
 
---cP54RnmJbl0Ku4MIFAU2Vpj8VViuX69Qx
+--IhReX3uuaIA4L8lkBqb89jjXlaa6VHaDO
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -360,20 +198,20 @@ Content-Disposition: attachment; filename="signature.asc"
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v2.0.22 (GNU/Linux)
 
-iQIcBAEBCgAGBQJaCYbKAAoJEIbPlEyWcf3yNHwQAIPvYq0/eL8C30rsmCY0SuGj
-3N/toeexmAF0NU0Lr+sRTblYt/SFNyl9PWIQkl/DhkIuetVKsnrLT8aEkEy5cCdR
-wMRg33NwhOnOyQOOewirR14E5tOrOfezm+l2Y0Bhh2XGtOHGc9jyo+9tLd8zL/EA
-z0iD6uiPjdC3QwQ9uls6dOiclqv2Ql7aKjJUzTa1eARtyKxhxkVp7QknGqAAndxu
-FRbh/MSlwBwkC7qIRuUVuygtG20c+d+B/dVr5uYXDg7NtTLaRk69KRsICHzksi9E
-uVcQmdbsBr/ZqlFblUGr9F54YIG0fgoluyNgdcRgOxtp6gjh6CbAcz7AWSbixdxc
-WXZ696+1dfDqqfYNljZWn6yhnR5VX7P/4U5cnByhehJO2+VOsRO3xN1qlta27Xkf
-zRtvrZMEKbUrABheGjzHN3VJfy1RZXYfYsYqaMyz/8xShGxeOtvg0RA4vWRNWHOZ
-4ByVBvlTVKG39I30g9KVQMmTtADrT/uCXFHcJCrporbtwhfYE14LJ7LpeDK3F/sz
-fONj9tsPz2HcWm6lQSOjjs/RFP3iZu9sMuHK/uhN46nbOiWPK3LBnkwbcsFt73NF
-xtaEsrVoOAPAYqmfR3jmY5hWvSZqjBf7q6uKKDEoKOCloFjB19cPkWV6cFRUapUP
-qpuHHWWzFPZaxp5a6VTH
-=j9D8
+iQIcBAEBCgAGBQJaCY0uAAoJEIbPlEyWcf3ydlYP/0RXMu8TMTZQNbOzgpwTkiiC
+uMmBATwr5G+vzq4IPq7H1YQ5rSQiTP1X1U7U3HZAaK3tlh1bDHXfeJ4VWjpf/QWY
+6PP+GN2bTbtt7s+s+4tlbRtz3WMZEiQLsE83jZsTSjvGpTJ5FLu4SfhwD9/+rQc2
+weoWfYDOJfRASAP+O/V0F4r+U5vJKiI+E2hXjjN17PfYv9R3/WZuG6WdQm3Y2HTb
+GSHW86r/5TRdIqGqymPOlaWpe/KzYIEgWMop+NwcZXVyQSwmH8oVH4PNcQcZ8xtq
+Q8mXRfpfSRe6zdvLH9MdHEOiZdbhxfJ0Re6kJ8UgdLSIClqQ6bsJOqgWgwRfzYhJ
+/eeqE9iUeHxowRo1jfadPeZceX7/d8iEC9tMlNKg+HE+MpCu4YfuRUbFerpmY9Bt
+qckkcJ61fn8oHPbi9QSWYXPU0MUBvFT6KTePdtmIFwaKKgiesSVFXuRZd1dYf+zD
+sS5e4TZ8/5micnCYqeusGdmDlF+g04NwBJUjZlGmn3+jZ9CrfMDGgDVzR3Er+op8
+S6zbCq1QHzSBFEVJsJZtiRarvoHy07TMw/xkbA+fFmNMq7bjz3mND3nXJ+muPmH2
+L0u2fqNonMjTelOYP25dy7NU/hI4zzJRf7Bvb8t8jMdUlFyXK5vTgNjOhw8QiCaI
+aMhYvnMLggUsFjRtge3q
+=OHQk
 -----END PGP SIGNATURE-----
 
---cP54RnmJbl0Ku4MIFAU2Vpj8VViuX69Qx--
+--IhReX3uuaIA4L8lkBqb89jjXlaa6VHaDO--
 
