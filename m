@@ -1,18 +1,10 @@
-References: <20171110163946.7656-1-fkooman@...2318...>
- <63ccd0e3-491f-3fb3-e611-9b6674d3d501@...2298...>
- <aef485c7-f619-eaac-6534-0828ab9d41f5@...2318...>
- <CAKuzo_jfJQOBhYMEyT4oiNN1xAZkvkxZm8eeDT=xcUfToaC9kQ@...278...>
- <20171112214244.GI958@...1296...>
-From: =?UTF-8?Q?Fran=c3=a7ois_Kooman?= <fkooman@...2318...>
-Message-ID: <34a7cc97-16e2-becc-4f97-ff8dbf8ecb0a@...2318...>
-Date: Mon, 13 Nov 2017 10:44:46 +0100
-MIME-Version: 1.0
-In-Reply-To: <20171112214244.GI958@...1296...>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="fVSrNHCP0hKalnj94iXEDVgwuL9XAHBUs"
-Subject: Re: [Openvpn-devel] [PATCH] Implement "status 4" (JSON) for
- management interface
+From: Simon Rozman <simon@...2293...>
+Date: Mon, 13 Nov 2017 10:49:52 +0100
+Message-Id: <20171113094952.33364-1-simon@...2293...>
+In-Reply-To: <99D61A626FDA8A4B90A270669121BE108588B957@...2294...>
+References: <99D61A626FDA8A4B90A270669121BE108588B957@...2294...>
+Subject: [Openvpn-devel] [PATCH v2] openvpnserv: Review MSVC down-casting
+ warnings
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -21,89 +13,122 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>, Selva <selva.nair@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+To: openvpn-devel@lists.sourceforge.net
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---fVSrNHCP0hKalnj94iXEDVgwuL9XAHBUs
-Content-Type: multipart/mixed; boundary="7Dr6qnbvxGnCbwgwamJg5Gwau5tmjf6Bm";
- protected-headers="v1"
-From: =?UTF-8?Q?Fran=c3=a7ois_Kooman?= <fkooman@...2318...>
-To: Gert Doering <gert@...1296...>, Selva <selva.nair@...277...>
-Cc: "openvpn-devel@lists.sourceforge.net"
- <openvpn-devel@lists.sourceforge.net>
-Message-ID: <34a7cc97-16e2-becc-4f97-ff8dbf8ecb0a@...2318...>
-Subject: Re: [Openvpn-devel] [PATCH] Implement "status 4" (JSON) for
- management interface
-References: <20171110163946.7656-1-fkooman@...2318...>
- <63ccd0e3-491f-3fb3-e611-9b6674d3d501@...2298...>
- <aef485c7-f619-eaac-6534-0828ab9d41f5@...2318...>
- <CAKuzo_jfJQOBhYMEyT4oiNN1xAZkvkxZm8eeDT=xcUfToaC9kQ@...278...>
- <20171112214244.GI958@...1296...>
-In-Reply-To: <20171112214244.GI958@...1296...>
+Data size arithmetic was reviewed according to 64-bit MSVC complaints.
 
---7Dr6qnbvxGnCbwgwamJg5Gwau5tmjf6Bm
-Content-Language: en-US
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: quoted-printable
+The warnings were addressed by migrating to size_t, rewriting the code,
+or silencing the warnings by an explicit cast where appropriate.
+---
+ src/openvpnserv/automatic.c   | 20 ++++----------------
+ src/openvpnserv/interactive.c | 12 ++++++------
+ 2 files changed, 10 insertions(+), 22 deletions(-)
 
-On 11/12/2017 10:42 PM, Gert Doering wrote:
-> On Sun, Nov 12, 2017 at 12:21:06PM -0500, Selva wrote:
->> One of the niceties of JSON is its readability which is greatly reduced
->> if formatted without line breaks.=20
->=20
-> +1
->=20
-> the difference in efficienty is not large, but "human readability for
-> manual proofreading" is good.
+diff --git a/src/openvpnserv/automatic.c b/src/openvpnserv/automatic.c
+index 75c3be2..4d5501b 100644
+--- a/src/openvpnserv/automatic.c
++++ b/src/openvpnserv/automatic.c
+@@ -115,25 +115,13 @@ close_if_open(HANDLE h)
+ static bool
+ match(const WIN32_FIND_DATA *find, LPCTSTR ext)
+ {
+-    int i;
+-
+     if (find->dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+     {
+         return false;
+     }
+ 
+-    if (!_tcslen(ext))
+-    {
+-        return true;
+-    }
+-
+-    i = _tcslen(find->cFileName) - _tcslen(ext) - 1;
+-    if (i < 1)
+-    {
+-        return false;
+-    }
+-
+-    return find->cFileName[i] == '.' && !_tcsicmp(find->cFileName + i + 1, ext);
++    const TCHAR *p = _tcsrchr(find->cFileName, TEXT('.'));
++    return p && p != find->cFileName && _tcsicmp(p + 1, ext) == 0;
+ }
+ 
+ /*
+@@ -142,14 +130,14 @@ match(const WIN32_FIND_DATA *find, LPCTSTR ext)
+ static bool
+ modext(LPTSTR dest, int size, LPCTSTR src, LPCTSTR newext)
+ {
+-    int i;
++    size_t i;
+ 
+     if (size > 0 && (_tcslen(src) + 1) <= size)
+     {
+         _tcscpy(dest, src);
+         dest [size - 1] = TEXT('\0');
+         i = _tcslen(dest);
+-        while (--i >= 0)
++        while (i-- > 0)
+         {
+             if (dest[i] == TEXT('\\'))
+             {
+diff --git a/src/openvpnserv/interactive.c b/src/openvpnserv/interactive.c
+index ed4603e..5d58ceb 100644
+--- a/src/openvpnserv/interactive.c
++++ b/src/openvpnserv/interactive.c
+@@ -280,7 +280,7 @@ ReturnProcessId(HANDLE pipe, DWORD pid, DWORD count, LPHANDLE events)
+     swprintf(buf, _countof(buf), L"0x%08x\n0x%08x\n%s", 0, pid, msg);
+     buf[_countof(buf) - 1] = '\0';
+ 
+-    WritePipeAsync(pipe, buf, wcslen(buf) * 2, count, events);
++    WritePipeAsync(pipe, buf, (DWORD)(wcslen(buf) * 2), count, events);
+ }
+ 
+ static VOID
+@@ -308,7 +308,7 @@ ReturnError(HANDLE pipe, DWORD error, LPCWSTR func, DWORD count, LPHANDLE events
+                                 L"0x%1!08x!\n%2!s!\n%3!s!", 0, 0,
+                                 (LPWSTR) &result, 0, (va_list *) args);
+ 
+-    WritePipeAsync(pipe, result, wcslen(result) * 2, count, events);
++    WritePipeAsync(pipe, result, (DWORD)(wcslen(result) * 2), count, events);
+ #ifdef UNICODE
+     MsgToEventLog(MSG_FLAGS_ERROR, result);
+ #else
+@@ -452,10 +452,10 @@ out:
+ static BOOL
+ GetStartupData(HANDLE pipe, STARTUP_DATA *sud)
+ {
+-    size_t len;
++    size_t size, len;
+     BOOL ret = FALSE;
+     WCHAR *data = NULL;
+-    DWORD size, bytes, read;
++    DWORD bytes, read;
+ 
+     bytes = PeekNamedPipeAsync(pipe, 1, &exit_event);
+     if (bytes == 0)
+@@ -1051,7 +1051,7 @@ netsh_dns_cmd(const wchar_t *action, const wchar_t *proto, const wchar_t *if_nam
+     const wchar_t *fmt = L"netsh interface %s %s dns \"%s\" %s";
+ 
+     /* max cmdline length in wchars -- include room for worst case and some */
+-    int ncmdline = wcslen(fmt) + wcslen(if_name) + wcslen(addr) + 32 + 1;
++    size_t ncmdline = wcslen(fmt) + wcslen(if_name) + wcslen(addr) + 32 + 1;
+     wchar_t *cmdline = malloc(ncmdline*sizeof(wchar_t));
+     if (!cmdline)
+     {
+@@ -1571,7 +1571,7 @@ RunOpenvpn(LPVOID p)
+     {
+         DWORD written;
+         WideCharToMultiByte(CP_UTF8, 0, sud.std_input, -1, input, input_size, NULL, NULL);
+-        WriteFile(stdin_write, input, strlen(input), &written, NULL);
++        WriteFile(stdin_write, input, (DWORD)strlen(input), &written, NULL);
+         free(input);
+     }
+ 
+-- 
+2.9.0.windows.1
 
-Selva, Gert,
-
-You know, the funny thing is that my main reason for implementing JSON
-support for status was to have it easily _machine_ readable, for higher
-level programming languages where JSON is "first class citizen", and not
-primarily human readability. Besides you could easily do this to make
-JSON human readable:
-
-$ cat /path/to/status.json | python -mjson.tool
-
-Thinking some more about it now, it doesn't really make sense to
-implement JSON at all, because CSV _is_ actually meant to be machine
-readable and a lot more efficient in the amount of data it uses (much
-less duplication). So it seems my reasons for implementing JSON support
-seems to completely miss the point. For machine readable output it would
-make more sense to use a binary format instead of JSON.
-
-What do you guys think? Are there any other reasons to implement JSON
-support?
-
-Cheers,
-Fran=E7ois
-
-
---7Dr6qnbvxGnCbwgwamJg5Gwau5tmjf6Bm--
-
---fVSrNHCP0hKalnj94iXEDVgwuL9XAHBUs
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEEYje68UGKkH2qmOqnnF7dZFpXHrIFAloJaZEACgkQnF7dZFpX
-HrLrqQ/+J3GKDAJN4I4HJcOj3hznWLGaiseYWFgG8R/0mYZBALddpo2JniiJrIi9
-4+fuU1sAXQ1Ud1jDlhfPq6evp11Ro1f3if0Wp4Zjxq45Rbo7XiNy8yTaWnptYHK4
-41yqvSNPceoGosdO+9D3OANG7JaJW9IMaKLoCYptygWMeKblSjTenp9zEIhl7eI9
-ot0gleREITsky9BdNaKVQxjwFPxmgx/8r2Qkvib9rGHbRZ9DK3eF2sUkOMsPxKB+
-/PsIYNRatfzPn82OseIedILGR7fn/pj4p84qHNVoIOqhuzWP7Oyhhr/om3QKcHMO
-/vEw3g9D48WhD8bf7X+hZd0chr8IJYI0LR48jHtLRWfYsJxjIzLlz8/Dw9t5mSFT
-GGYH208WCv3vqR9LeaLhwpqPbhn+EdK2R7Cfs/GapRJF7ZLgR+IT568osSMivHW+
-LiWOh3Usg3h+Jm13XZQP3I4CchaFPmvyUMUiow2mjx7jM8vkn555UI4Yq25iZG6l
-iWi4GMOIZKhK16EXeNy1U0XNpxxcQx5JXddqyNssnhU1m52WGwpLDGRYOKbTOlkA
-hn2AzNoO3heJveyp1DolfflP/g5mxUjPHtKxJuNAMrxPSKfwgEjaJTwf9FO7FvlX
-LbhKpIxw7gL4mn3U0JzbLF0PmLtAROSAMxT/RtbR7YY3rLccQpc=
-=PPwI
------END PGP SIGNATURE-----
-
---fVSrNHCP0hKalnj94iXEDVgwuL9XAHBUs--
 
