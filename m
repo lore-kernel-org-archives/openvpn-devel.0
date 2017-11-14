@@ -1,5 +1,7 @@
+Message-ID: <5A0ADEF0.5040507@...1147...>
+Date: Tue, 14 Nov 2017 13:17:52 +0100
+From: Jan Just Keijser <janjust@...1147...>
 MIME-Version: 1.0
-In-Reply-To: <20171114083134.GV958@...1296...>
 References: <20171110163946.7656-1-fkooman@...2318...>
  <63ccd0e3-491f-3fb3-e611-9b6674d3d501@...2298...>
  <aef485c7-f619-eaac-6534-0828ab9d41f5@...2318...>
@@ -10,9 +12,7 @@ References: <20171110163946.7656-1-fkooman@...2318...>
  <4717a1f2-b8c6-26ae-2cf4-42ae5f34c3eb@...1435...>
  <6ad9db3e-63b5-78fe-0105-81c92746feb2@...2080...>
  <20171114083134.GV958@...1296...>
-From: "Jonathan K. Bullard" <jkbullard@...277...>
-Date: Tue, 14 Nov 2017 07:01:34 -0500
-Message-ID: <CAEsd45R+WEd+sC1xdaGFcTVDfA_OT_zoJFbTV8xuOMXTsNCvfA@...278...>
+In-Reply-To: <20171114083134.GV958@...1296...>
 Subject: Re: [Openvpn-devel] [PATCH] Implement "status 4" (JSON) for
  management interface
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -23,15 +23,11 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-To: Gert Doering <gert@...1296...>, "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
+To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
 
-Hi,
-
-On Tue, Nov 14, 2017 at 3:31 AM, Gert Doering <gert@...1296...> wrote:
-> Hi,
->
+On 14/11/17 09:31, Gert Doering wrote:
 > On Mon, Nov 13, 2017 at 01:16:46PM +0100, David Sommerseth wrote:
 >> But we should consider if we want to make use of a JSON library
 >> producing the JSON streams.  The reason is to ensure the output is
@@ -39,10 +35,9 @@ On Tue, Nov 14, 2017 at 3:31 AM, Gert Doering <gert@...1296...> wrote:
 >> consistent and proper.  Imagine if someone puts a double-quote into the
 >> CN field of a certificate?
 >>
->>  CN="} Lets explode things, O=Hacktivist0
+>>   CN="} Lets explode things, O=Hacktivist0
 >>
 >> Or other characters which needs escaping.
->
 > I'm not convinced we want to import a new library dependency and a heap
 > of #ifdef for this.
 >
@@ -50,10 +45,12 @@ On Tue, Nov 14, 2017 at 3:31 AM, Gert Doering <gert@...1296...> wrote:
 > need to be encoded <like this>") - and as long as we do not need to parse
 > *incoming* JSON, a full-blown new library is mainly adding complications
 > (like, configure flags, #ifdefs, library version dependencies, ...).
-
+>
+> But you knew that this response would be coming :-)
+>
+>
 +1
 
-Best regards,
+JJK
 
-Jon Bullard
 
