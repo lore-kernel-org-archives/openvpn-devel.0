@@ -1,9 +1,5 @@
-Message-ID: <5A0ADEF0.5040507@...1147...>
-Date: Tue, 14 Nov 2017 13:17:52 +0100
-From: Jan Just Keijser <janjust@...1147...>
-MIME-Version: 1.0
-References: <20171110163946.7656-1-fkooman@...2318...>
- <63ccd0e3-491f-3fb3-e611-9b6674d3d501@...2298...>
+Reply-To: openvpn-devel@lists.sourceforge.net
+References: <63ccd0e3-491f-3fb3-e611-9b6674d3d501@...2298...>
  <aef485c7-f619-eaac-6534-0828ab9d41f5@...2318...>
  <CAKuzo_jfJQOBhYMEyT4oiNN1xAZkvkxZm8eeDT=xcUfToaC9kQ@...278...>
  <20171112214244.GI958@...1296...>
@@ -12,7 +8,16 @@ References: <20171110163946.7656-1-fkooman@...2318...>
  <4717a1f2-b8c6-26ae-2cf4-42ae5f34c3eb@...1435...>
  <6ad9db3e-63b5-78fe-0105-81c92746feb2@...2080...>
  <20171114083134.GV958@...1296...>
-In-Reply-To: <20171114083134.GV958@...1296...>
+ <10ef4327-7cc1-9bd7-7307-af8b90c66962@...2080...>
+ <20171114110244.GW958@...1296...>
+From: David Sommerseth <openvpn@...2080...>
+Message-ID: <a876457c-158b-43e6-07e0-6367e5e8051f@...2080...>
+Date: Tue, 14 Nov 2017 13:40:04 +0100
+MIME-Version: 1.0
+In-Reply-To: <20171114110244.GW958@...1296...>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="W5cHqXVpxB0H9J99EpcRBAkg53uCu4ClN"
 Subject: Re: [Openvpn-devel] [PATCH] Implement "status 4" (JSON) for
  management interface
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -23,34 +28,105 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Transfer-Encoding: 7bit
 To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
 
-On 14/11/17 09:31, Gert Doering wrote:
-> On Mon, Nov 13, 2017 at 01:16:46PM +0100, David Sommerseth wrote:
->> But we should consider if we want to make use of a JSON library
->> producing the JSON streams.  The reason is to ensure the output is
->> according to the specification and that escaping if contents is
->> consistent and proper.  Imagine if someone puts a double-quote into the
->> CN field of a certificate?
->>
->>   CN="} Lets explode things, O=Hacktivist0
->>
->> Or other characters which needs escaping.
-> I'm not convinced we want to import a new library dependency and a heap
-> of #ifdef for this.
->
-> Escaping on *output* is pretty trivial ("characters from <this set>
-> need to be encoded <like this>") - and as long as we do not need to parse
-> *incoming* JSON, a full-blown new library is mainly adding complications
-> (like, configure flags, #ifdefs, library version dependencies, ...).
->
-> But you knew that this response would be coming :-)
->
->
-+1
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--W5cHqXVpxB0H9J99EpcRBAkg53uCu4ClN
+Content-Type: multipart/mixed; boundary="DtI8xQR6VoKN81qArMFrUH3LM794wsXuN";
+ protected-headers="v1"
+From: David Sommerseth <openvpn@...2080...>
+Reply-To: openvpn-devel@lists.sourceforge.net
+To: Gert Doering <gert@...1296...>, openvpn-devel@lists.sourceforge.net
+Message-ID: <a876457c-158b-43e6-07e0-6367e5e8051f@...2080...>
+Subject: Re: [Openvpn-devel] [PATCH] Implement "status 4" (JSON) for
+ management interface
+References: <63ccd0e3-491f-3fb3-e611-9b6674d3d501@...2298...>
+ <aef485c7-f619-eaac-6534-0828ab9d41f5@...2318...>
+ <CAKuzo_jfJQOBhYMEyT4oiNN1xAZkvkxZm8eeDT=xcUfToaC9kQ@...278...>
+ <20171112214244.GI958@...1296...>
+ <34a7cc97-16e2-becc-4f97-ff8dbf8ecb0a@...2318...>
+ <4ea94797-c52a-da17-b5ba-c7f8d9411326@...2181...>
+ <4717a1f2-b8c6-26ae-2cf4-42ae5f34c3eb@...1435...>
+ <6ad9db3e-63b5-78fe-0105-81c92746feb2@...2080...>
+ <20171114083134.GV958@...1296...>
+ <10ef4327-7cc1-9bd7-7307-af8b90c66962@...2080...>
+ <20171114110244.GW958@...1296...>
+In-Reply-To: <20171114110244.GW958@...1296...>
 
-JJK
+--DtI8xQR6VoKN81qArMFrUH3LM794wsXuN
+Content-Language: en-GB
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
 
+
+On 14/11/17 12:02, Gert Doering wrote:
+> JSON is very trivial to produce (unlike XML, or netlink).  The escaping
+> rules on producing are also very easy - basically, encode things in double
+> quotes, and escape the set of { BS, FF, NL, CR, Tab, Backslash, Quote }
+> with a single backslash before the corresponding character.
+>
+>
+<https://stackoverflow.com/questions/19176024/how-to-escape-special-charact=
+ers-in-building-a-json-string>
+
+Right, all those are single byte characters - and that's fairly simple
+... but that ignores various quirks which easily appears with multi-byte
+characters - especially when "looping" through a value, byte by byte.
+We support UTF-8 in certificate subject fields.  So this escaper needs
+to handle those classes the stackoverflow mentions, plus beware of
+multi-byte strings (so we need to use the plethora of mb* related
+functions).
+
+In a clean 8-bit ASCII only-world, things are less complicated.
+
+Heiko and I have looked into the "simple" world of revamping the argv
+parser (to avoid our own "homebrewed" printf-like processing and base it
+on what is in the C library) and even this pre-parsing we need to do
+have popped up with surprises.  The argv caller scope mostly covers
+parsing strings which is defined by us developers so the variations are
+not as broad, and luckily format strings is not expected to contain
+UTF-8 chars.  But I do not for a second think processing certificate
+subject strings will as easy as those values we need to parse (typically
+CN) are not generated by us but a broad range of users.  Who knows what
+kind of funny tricks they'll throw at our code?
+
+But sure, we can start with our own string parser to escape JSON and see
+how it works and then revisit using a library if the maintenance gets
+too annoying.
+
+
+--=20
+kind regards,
+
+David Sommerseth
+OpenVPN, Inc
+
+
+
+--DtI8xQR6VoKN81qArMFrUH3LM794wsXuN--
+
+--W5cHqXVpxB0H9J99EpcRBAkg53uCu4ClN
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBCgAGBQJaCuQkAAoJEIbPlEyWcf3ygnwP/3QoQyI+/vp39IFknvxyVU1/
+2PErla7qP9QknIGCQU9+I5JKL9Mzb/j7F12BqmdsgQGvc83pUOWRSsdQvtSziTOp
+wXHjSnqKWya9ClZJmsXDgdGeu8tTVCETJ9ZM7mLwA0zmCg7EIr/5UokzLogrYLqK
+LSmrvPavHsqqeiFcLCUeGqolS0g6WRRecuIsJGb4m6qbNpOIurVtinTT66X3LJQc
+OVGF5VRO0lk7NZzqMnKTYTbWG5SqZA2Zyw5qbm/MRs8aHolevip3WhVsfR7lTmz0
+o9f0ySPDJNqxEYefA1/4Jdmgqi5QNsUVoK8M1w1EBBkYEJANBl2BV3Oi7kVw7pK/
+NmFsj7o2Ftg2fiSGyC46yxCRpK1EVMCpEzniw6ccHKIhO0lzazhShRXw8Mk7KlsQ
+RyKaEsaTZFK/sUDegSdWd/TwkfCyCqbv+1bs3N/hPuljRtob+FlQ/atCzXbrMwwi
+sWTCRbu/kDGF7Pdg4bYVO3H72NT/e0TZcl+08Bjc8s9yryqSFpjZPcKW2T/3N291
+fpqCUErHGakfAUslBMiIeI0FVbCK+mSYl5o5u6t0IruQp0gm91BRFvcjiQayOaEW
+AE/HnaQw3oWjctz50kfz94DScNJbVA1Np2C0PSqTX/sDywx5jUOFHDimx+MDx/pJ
+5dDYA/2EOFVymm5t+gA6
+=+zmz
+-----END PGP SIGNATURE-----
+
+--W5cHqXVpxB0H9J99EpcRBAkg53uCu4ClN--
 
