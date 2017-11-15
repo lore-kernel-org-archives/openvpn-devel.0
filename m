@@ -1,13 +1,22 @@
 MIME-Version: 1.0
-In-Reply-To: <830a17f8babbca92e21d64c1324a15b1.squirrel@...2257...>
-References: <4e9ea26fee7e606cdb0636dd377bf1bc.squirrel@...2257...>
- <20171111134758.7373-1-steffan@...1856...>
- <830a17f8babbca92e21d64c1324a15b1.squirrel@...2257...>
-From: Steffan Karger <steffan@...1856...>
-Date: Wed, 15 Nov 2017 10:13:24 +0100
-Message-ID: <CAA1AbxLEEDgqOwbz4ZmoQmXCsh-S68c3HvG0D541CLw4vtXUrw@...278...>
-Subject: Re: [Openvpn-devel] [PATCH v3] Add per session pseudo-random jitter
- to --reneg-sec intervals
+In-Reply-To: <a876457c-158b-43e6-07e0-6367e5e8051f@...2080...>
+References: <63ccd0e3-491f-3fb3-e611-9b6674d3d501@...2298...>
+ <aef485c7-f619-eaac-6534-0828ab9d41f5@...2318...>
+ <CAKuzo_jfJQOBhYMEyT4oiNN1xAZkvkxZm8eeDT=xcUfToaC9kQ@...278...>
+ <20171112214244.GI958@...1296...>
+ <34a7cc97-16e2-becc-4f97-ff8dbf8ecb0a@...2318...>
+ <4ea94797-c52a-da17-b5ba-c7f8d9411326@...2181...>
+ <4717a1f2-b8c6-26ae-2cf4-42ae5f34c3eb@...1435...>
+ <6ad9db3e-63b5-78fe-0105-81c92746feb2@...2080...>
+ <20171114083134.GV958@...1296...>
+ <10ef4327-7cc1-9bd7-7307-af8b90c66962@...2080...>
+ <20171114110244.GW958@...1296...>
+ <a876457c-158b-43e6-07e0-6367e5e8051f@...2080...>
+From: "Jonathan K. Bullard" <jkbullard@...277...>
+Date: Wed, 15 Nov 2017 07:34:15 -0500
+Message-ID: <CAEsd45S9q_f+QggSWpfHUgdQGqtXRM58mqH3HHWU+rJr54gdmA@...278...>
+Subject: Re: [Openvpn-devel] [PATCH] Implement "status 4" (JSON) for
+ management interface
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -18,71 +27,67 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-To: Simon Matter <simon.matter@...2249...>
-Cc: openvpn-devel <openvpn-devel@lists.sourceforge.net>
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, Gert Doering <gert@...1296...>, David Sommerseth <openvpn@...2080...>
 
 Hi,
 
-On 15 November 2017 at 07:50, Simon Matter <simon.matter@...2249...> wrote:
-> Hi Steffan,
+On Tue, Nov 14, 2017 at 7:40 AM, David Sommerseth
+<openvpn@...2080...> wrote:
 >
-> While running your v3 version of the patch I found an issue with the
-> modified logging. It gives the following error while building
->
-> gcc -DHAVE_CONFIG_H -I. -I../.. -I../../include  -I../../include
-> -I../../src/compat       -DPLUGIN_LIBDIR=\"/usr/lib64/openvpn/plugins\"
-> -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions
-> -fstack-protector-strong --param=ssp-buffer-size=4 -grecord-gcc-switches
-> -m64 -mtune=generic -std=c99 -c -o ssl.o ssl.c
-> ssl.c: In function 'tls_process':
-> ssl.c:2735:9: warning: format '%lld' expects argument of type 'long long
-> int', but argument 3 has type 'time_t' [-Wformat=]
->          msg(D_TLS_DEBUG_LOW, "TLS: soft reset sec=%lld/%d bytes="
-> counter_format
->          ^
-> and the log output is also corrupted
->
-> TLS: soft reset sec=14774687501680/336605974
-> bytes=18446744069414584320/581335 pkts=0/0
-> TLS: soft reset sec=14787572403571/77375 bytes=18446744069414584320/885
-> pkts=0/-1080308296
-> TLS: soft reset sec=14164802145506/6746662
-> bytes=18446744069414584320/86778 pkts=0/0
-> TLS: soft reset sec=15264313773538/186529 bytes=18446744069414584320/1108
-> pkts=0/13935244
->
-> Please have a look at the attached v4 patch which fixes it for me. The
-> output is now
->
-> TLS: soft reset sec=3474/3474 bytes=8470454/-1 pkts=108673/0
-> TLS: soft reset sec=3489/3489 bytes=429623769/-1 pkts=656033/0
-> TLS: soft reset sec=3517/3517 bytes=89365/-1 pkts=877/0
-> TLS: soft reset sec=3537/3537 bytes=206142/-1 pkts=1123/0
->
-> which seems reasonable to me.
-> In the patch I've modified the lines below:
->
->          msg(D_TLS_DEBUG_LOW,
-> -            "TLS: soft reset sec=%d bytes=" counter_format "/%d pkts="
-> counter_format "/%d",
-> -            (int)(ks->established + session->opt->renegotiate_seconds -
-> now),
-> +            "TLS: soft reset sec=%d/%d bytes=" counter_format "/%d pkts="
-> counter_format "/%d",
-> +            (int)(now - ks->established), session->opt->renegotiate_seconds,
->              ks->n_bytes, session->opt->renegotiate_bytes,
->
-> I'm not a developer and not a git user, so please accept my hand crafted
-> patch work :-)
+> On 14/11/17 12:02, Gert Doering wrote:
+>> JSON is very trivial to produce (unlike XML, or netlink).  The escaping
+>> rules on producing are also very easy - basically, encode things in double
+>> quotes, and escape the set of { BS, FF, NL, CR, Tab, Backslash, Quote }
+>> with a single backslash before the corresponding character.
 
-Uch.  Good find.  Since we recently decided that the right way to
-print a time_t is to cast to long long and use the %lld format
-specifier, I wanted to do that here too. I did the latter, but forgot
-the first and didn't notice because on my x64 system time_t actually
-*is* a long long (so no compiler warnings).
+My reading of the RFC [1] (maybe not the only RFC for JSON?) is that
+all control characters must be escaped (all characters < 0x20). And
+the quotation mark that must be escaped is the double-quote (0x22),
+not the single-quote (0x27).
 
-I'll send a follow-up version that incorporates the comments of both
-Simon's, probably tomorrow.
+Also, the escaping needs to be of the form \uXXXX where XXXX is the
+URF-16 code unit for the character. That's easy for these characters
+-- I think it's printf("\\u%04d", ch) since all the characters we are
+escaping are in the Basic Multilingual Plane (U+0000 through U+FFFF).
 
--Steffan
+
+> <https://stackoverflow.com/questions/19176024/how-to-escape-special-characters-in-building-a-json-string>
+>
+> Right, all those are single byte characters - and that's fairly simple
+> ... but that ignores various quirks which easily appears with multi-byte
+> characters - especially when "looping" through a value, byte by byte.
+> We support UTF-8 in certificate subject fields.  So this escaper needs
+> to handle those classes the stackoverflow mentions, plus beware of
+> multi-byte strings (so we need to use the plethora of mb* related
+> functions).
+>
+> In a clean 8-bit ASCII only-world, things are less complicated.
+>
+> Heiko and I have looked into the "simple" world of revamping the argv
+> parser (to avoid our own "homebrewed" printf-like processing and base it
+> on what is in the C library) and even this pre-parsing we need to do
+> have popped up with surprises.  The argv caller scope mostly covers
+> parsing strings which is defined by us developers so the variations are
+> not as broad, and luckily format strings is not expected to contain
+> UTF-8 chars.  But I do not for a second think processing certificate
+> subject strings will as easy as those values we need to parse (typically
+> CN) are not generated by us but a broad range of users.  Who knows what
+> kind of funny tricks they'll throw at our code?
+
+How does OpenVPN currently handle escaping when generating CSV? If we
+don't do it correctly for multi-byte strings for CSV, do we need to
+for JSON?
+
+From what I can tell, the only problematic character that needs to be
+escaped is the backslash (0x5C). All the other characters that need to
+be escaped are less than 0x40, so they will never appear as part of a
+multi-byte sequence. That one character makes this difficult, but IMO
+the problem is simple enough that it could be done within OpenVPN.
+That would be my preference, instead of adding another dependency.
+
+Best regards,
+
+Jon Bullard
+
+[1] https://www.ietf.org/rfc/rfc4627.txt
 
