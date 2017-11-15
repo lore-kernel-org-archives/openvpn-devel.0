@@ -1,6 +1,7 @@
 MIME-Version: 1.0
-In-Reply-To: <a876457c-158b-43e6-07e0-6367e5e8051f@...2080...>
-References: <63ccd0e3-491f-3fb3-e611-9b6674d3d501@...2298...>
+In-Reply-To: <5A0ADEF0.5040507@...1147...>
+References: <20171110163946.7656-1-fkooman@...2318...>
+ <63ccd0e3-491f-3fb3-e611-9b6674d3d501@...2298...>
  <aef485c7-f619-eaac-6534-0828ab9d41f5@...2318...>
  <CAKuzo_jfJQOBhYMEyT4oiNN1xAZkvkxZm8eeDT=xcUfToaC9kQ@...278...>
  <20171112214244.GI958@...1296...>
@@ -8,13 +9,11 @@ References: <63ccd0e3-491f-3fb3-e611-9b6674d3d501@...2298...>
  <4ea94797-c52a-da17-b5ba-c7f8d9411326@...2181...>
  <4717a1f2-b8c6-26ae-2cf4-42ae5f34c3eb@...1435...>
  <6ad9db3e-63b5-78fe-0105-81c92746feb2@...2080...>
- <20171114083134.GV958@...1296...>
- <10ef4327-7cc1-9bd7-7307-af8b90c66962@...2080...>
- <20171114110244.GW958@...1296...>
- <a876457c-158b-43e6-07e0-6367e5e8051f@...2080...>
-From: "Jonathan K. Bullard" <jkbullard@...277...>
-Date: Wed, 15 Nov 2017 07:34:15 -0500
-Message-ID: <CAEsd45S9q_f+QggSWpfHUgdQGqtXRM58mqH3HHWU+rJr54gdmA@...278...>
+ <20171114083134.GV958@...1296...> <5A0ADEF0.5040507@...1147...>
+From: Selva <selva.nair@...277...>
+Date: Wed, 15 Nov 2017 10:09:18 -0500
+Message-ID: <CAKuzo_jG8ZqXW5FQDNNkKjxHucGzWm62753Qxp2_j=6cdj_LXg@...278...>
+Content-Type: multipart/alternative; boundary="001a11472b5677c3c9055e06e466"
 Subject: Re: [Openvpn-devel] [PATCH] Implement "status 4" (JSON) for
  management interface
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -25,69 +24,95 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
+To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
+
+--001a11472b5677c3c9055e06e466
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-To: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>, Gert Doering <gert@...1296...>, David Sommerseth <openvpn@...2080...>
 
-Hi,
+On Tue, Nov 14, 2017 at 7:17 AM, Jan Just Keijser <janjust@...1147...> wrote:
 
-On Tue, Nov 14, 2017 at 7:40 AM, David Sommerseth
-<openvpn@...2080...> wrote:
+> On 14/11/17 09:31, Gert Doering wrote:
 >
-> On 14/11/17 12:02, Gert Doering wrote:
->> JSON is very trivial to produce (unlike XML, or netlink).  The escaping
->> rules on producing are also very easy - basically, encode things in double
->> quotes, and escape the set of { BS, FF, NL, CR, Tab, Backslash, Quote }
->> with a single backslash before the corresponding character.
+>> On Mon, Nov 13, 2017 at 01:16:46PM +0100, David Sommerseth wrote:
+>>
+>>> But we should consider if we want to make use of a JSON library
+>>> producing the JSON streams.  The reason is to ensure the output is
+>>> according to the specification and that escaping if contents is
+>>> consistent and proper.  Imagine if someone puts a double-quote into the
+>>> CN field of a certificate?
+>>>
+>>>   CN="} Lets explode things, O=Hacktivist0
+>>>
+>>> Or other characters which needs escaping.
+>>>
+>> I'm not convinced we want to import a new library dependency and a heap
+>> of #ifdef for this.
+>>
+>> Escaping on *output* is pretty trivial ("characters from <this set>
+>> need to be encoded <like this>") - and as long as we do not need to parse
+>> *incoming* JSON, a full-blown new library is mainly adding complications
+>> (like, configure flags, #ifdefs, library version dependencies, ...).
+>>
+>> But you knew that this response would be coming :-)
+>>
+>>
+>> +1
 
-My reading of the RFC [1] (maybe not the only RFC for JSON?) is that
-all control characters must be escaped (all characters < 0x20). And
-the quotation mark that must be escaped is the double-quote (0x22),
-not the single-quote (0x27).
-
-Also, the escaping needs to be of the form \uXXXX where XXXX is the
-URF-16 code unit for the character. That's easy for these characters
--- I think it's printf("\\u%04d", ch) since all the characters we are
-escaping are in the Basic Multilingual Plane (U+0000 through U+FFFF).
 
 
-> <https://stackoverflow.com/questions/19176024/how-to-escape-special-characters-in-building-a-json-string>
->
-> Right, all those are single byte characters - and that's fairly simple
-> ... but that ignores various quirks which easily appears with multi-byte
-> characters - especially when "looping" through a value, byte by byte.
-> We support UTF-8 in certificate subject fields.  So this escaper needs
-> to handle those classes the stackoverflow mentions, plus beware of
-> multi-byte strings (so we need to use the plethora of mb* related
-> functions).
->
-> In a clean 8-bit ASCII only-world, things are less complicated.
->
-> Heiko and I have looked into the "simple" world of revamping the argv
-> parser (to avoid our own "homebrewed" printf-like processing and base it
-> on what is in the C library) and even this pre-parsing we need to do
-> have popped up with surprises.  The argv caller scope mostly covers
-> parsing strings which is defined by us developers so the variations are
-> not as broad, and luckily format strings is not expected to contain
-> UTF-8 chars.  But I do not for a second think processing certificate
-> subject strings will as easy as those values we need to parse (typically
-> CN) are not generated by us but a broad range of users.  Who knows what
-> kind of funny tricks they'll throw at our code?
+Piling on... with another +1 :)
 
-How does OpenVPN currently handle escaping when generating CSV? If we
-don't do it correctly for multi-byte strings for CSV, do we need to
-for JSON?
+I would even say that if an external library is required reconsider whether
+we really
+need JSON output.
 
-From what I can tell, the only problematic character that needs to be
-escaped is the backslash (0x5C). All the other characters that need to
-be escaped are less than 0x40, so they will never appear as part of a
-multi-byte sequence. That one character makes this difficult, but IMO
-the problem is simple enough that it could be done within OpenVPN.
-That would be my preference, instead of adding another dependency.
+Selva
 
-Best regards,
+--001a11472b5677c3c9055e06e466
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Jon Bullard
+<div dir=3D"ltr"><div class=3D"gmail_extra"><br><div class=3D"gmail_quote">=
+On Tue, Nov 14, 2017 at 7:17 AM, Jan Just Keijser <span dir=3D"ltr">&lt;<a =
+href=3D"mailto:janjust@...1147..." target=3D"_blank">janjust@...1147...</a>=
+&gt;</span> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0=
+ 0 .8ex;border-left:1px #ccc solid;padding-left:1ex"><span class=3D"">On 14=
+/11/17 09:31, Gert Doering wrote:<br>
+</span><span class=3D""><blockquote class=3D"gmail_quote" style=3D"margin:0=
+ 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">
+On Mon, Nov 13, 2017 at 01:16:46PM +0100, David Sommerseth wrote:<br>
+<blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1p=
+x #ccc solid;padding-left:1ex">
+But we should consider if we want to make use of a JSON library<br>
+producing the JSON streams.=C2=A0 The reason is to ensure the output is<br>
+according to the specification and that escaping if contents is<br>
+consistent and proper.=C2=A0 Imagine if someone puts a double-quote into th=
+e<br>
+CN field of a certificate?<br>
+<br>
+=C2=A0 CN=3D&quot;} Lets explode things, O=3DHacktivist0<br>
+<br>
+Or other characters which needs escaping.<br>
+</blockquote>
+I&#39;m not convinced we want to import a new library dependency and a heap=
+<br>
+of #ifdef for this.<br>
+<br>
+Escaping on *output* is pretty trivial (&quot;characters from &lt;this set&=
+gt;<br>
+need to be encoded &lt;like this&gt;&quot;) - and as long as we do not need=
+ to parse<br>
+*incoming* JSON, a full-blown new library is mainly adding complications<br>
+(like, configure flags, #ifdefs, library version dependencies, ...).<br>
+<br>
+But you knew that this response would be coming :-)<br>
+<br>
+<br>
+</blockquote></span>
++1</blockquote><div><br></div><div><br></div><div>Piling on... with another=
+ +1 :)</div><div><br></div><div>I would even say that if an external librar=
+y is required reconsider whether we really</div><div>need JSON output.</div=
+><div><br></div><div>Selva</div></div></div></div>
 
-[1] https://www.ietf.org/rfc/rfc4627.txt
+--001a11472b5677c3c9055e06e466--
 
