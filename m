@@ -1,10 +1,13 @@
-From: Steffan Karger <steffan@...1856...>
-Date: Thu, 16 Nov 2017 15:09:58 +0100
-Message-Id: <20171116140958.12847-1-steffan@...1856...>
-In-Reply-To: <830a17f8babbca92e21d64c1324a15b1.squirrel@...2257...>
-References: <830a17f8babbca92e21d64c1324a15b1.squirrel@...2257...>
-Subject: [Openvpn-devel] [PATCH v4] Add per session pseudo-random jitter to
- --reneg-sec intervals
+From: Jeremie Courreges-Anglas <jca@...2272...>
+References: <87fuaymq62.fsf@...2274...>
+Date: Thu, 16 Nov 2017 16:23:49 +0100
+In-Reply-To: <87fuaymq62.fsf@...2274...> (Jeremie Courreges-Anglas's
+ message of "Thu, 05 Oct 2017 01:47:17 +0200")
+Message-ID: <87wp2q1c3e.fsf@...2274...>
+MIME-Version: 1.0
+Content-Type: multipart/signed; boundary="=-=-=";
+ micalg=pgp-sha512; protocol="application/pgp-signature"
+Subject: Re: [Openvpn-devel] [patch] Fix time_t printing
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -13,197 +16,42 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
 To: openvpn-devel@lists.sourceforge.net
 
-From: Simon Matter <simon.matter@...2249...>
+--=-=-=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 
-While we were suffering from the "TLS Renegotiation Slowdown" bug here
-https://community.openvpn.net/openvpn/ticket/854 we realized that there is
-still room for improvement in our use case.
 
-It appears that TLS renegotiation is getting more and more expensive in
-terms of CPU cycles with recent changes for more security. To make things
-worse, we realized that most renegotiation procedures took place at almost
-the same time and increased the CPU load too much during these periods.
-That's especially true on large, multi-instance openvpn setups.
+FWIW I have added a "portability" section to the CodeStyle page, and
+a subsection about time_t & suseconds_t.
 
-I've created attached patch to add a per session pseudo-random component to
-the --reneg-sec intervals so that renegotiation is evenly spread over time.
-It is configured by simply adding a second value to --reneg-sec as
-described in the --help text:
+  https://community.openvpn.net/openvpn/wiki/CodeStyle#Printingtime_tandsus=
+econds_tvalues
 
---reneg-sec max [min] : Renegotiate data chan. key after at most max
-                  (default=3600) and at least min (default 90% of max on
-                  servers and equal to max on clients).
+Feedback welcome.
 
-The jitter is only enabled by default on servers, because the actual reneg
-time is min(reneg_server, reneg_client).  Introducing jitter at both ends
-would bias the actual reneg time to the min value.
+--=20
+jca | PGP : 0x1524E7EE / 5135 92C1 AD36 5293 2BDF  DDCC 0DFA 74AE 1524 E7EE
 
-Note that the patch also slightly changes the log output to show the sec
-value in the same way as the bytes/pkts values:
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
 
-TLS: soft reset sec=3084/3084 bytes=279897/-1 pkts=1370/0
+-----BEGIN PGP SIGNATURE-----
 
-The idea and first versions of this patch are from Simon Matter.  Steffan
-Karger later incorporated the mailing list comments into this patch.  So
-credits go to Simon, and all bugs are Steffan's fault ;-)
-
-Signed-off-by: Simon Matter <simon.matter@...2249...>
-Signed-off-by: Steffan Karger <steffan@...1856...>
----
-v3: incorporate comments from openvpn-devel@, don't add jitter by
-    default on the client side.
-v4: fix printing of reneg interval, clarify/typofix comments
-
- doc/openvpn.8         | 26 +++++++++++++++++++++-----
- src/openvpn/init.c    | 15 ++++++++++++++-
- src/openvpn/options.c | 11 +++++++++--
- src/openvpn/options.h |  1 +
- src/openvpn/ssl.c     |  6 +++---
- 5 files changed, 48 insertions(+), 11 deletions(-)
-
-diff --git a/doc/openvpn.8 b/doc/openvpn.8
-index a4189ac2..eb5258f9 100644
---- a/doc/openvpn.8
-+++ b/doc/openvpn.8
-@@ -33,7 +33,7 @@
- .\" .ft -- normal face
- .\" .in +|-{n} -- indent
- .\"
--.TH openvpn 8 "25 August 2016"
-+.TH openvpn 8 "04 April 2017"
- .\"*********************************************************
- .SH NAME
- openvpn \- secure IP tunnel daemon.
-@@ -4957,10 +4957,26 @@ Renegotiate data channel key after
- packets sent and received (disabled by default).
- .\"*********************************************************
- .TP
--.B \-\-reneg\-sec n
--Renegotiate data channel key after
--.B n
--seconds (default=3600).
-+.B \-\-reneg\-sec max [min]
-+Renegotiate data channel key after at most
-+.B max
-+seconds (default=3600) and at least
-+.B min
-+seconds (default is 90% of
-+.B max
-+for servers, and equal to
-+.B max
-+for clients).
-+
-+The effective
-+.B reneg\-sec
-+value used is per session pseudo-uniform-randomized between
-+.B min
-+and
-+.B max\fR.
-+
-+With the default value of 3600 this results in an effective per session value
-+in the range of 3240..3600 seconds for servers, or just 3600 for clients.
- 
- When using dual\-factor authentication, note that this default value may
- cause the end user to be challenged to reauthorize once per hour.
-diff --git a/src/openvpn/init.c b/src/openvpn/init.c
-index 1ed2c55e..a4dd2c87 100644
---- a/src/openvpn/init.c
-+++ b/src/openvpn/init.c
-@@ -2693,7 +2693,20 @@ do_init_crypto_tls(struct context *c, const unsigned int flags)
-     to.packet_timeout = options->tls_timeout;
-     to.renegotiate_bytes = options->renegotiate_bytes;
-     to.renegotiate_packets = options->renegotiate_packets;
--    to.renegotiate_seconds = options->renegotiate_seconds;
-+    if (options->renegotiate_seconds_min < 0)
-+    {
-+        /* Add 10% jitter to reneg-sec by default (server side only) */
-+        int auto_jitter = options->mode != MODE_SERVER ? 0 :
-+                get_random() % max_int(options->renegotiate_seconds / 10, 1);
-+        to.renegotiate_seconds = options->renegotiate_seconds - auto_jitter;
-+    }
-+    else
-+    {
-+        /* Add user-specified jitter to reneg-sec */
-+        to.renegotiate_seconds = options->renegotiate_seconds -
-+                (get_random() % max_int(options->renegotiate_seconds
-+                                        - options->renegotiate_seconds_min, 1));
-+    }
-     to.single_session = options->single_session;
-     to.mode = options->mode;
-     to.pull = options->pull;
-diff --git a/src/openvpn/options.c b/src/openvpn/options.c
-index 49ed004b..0a5c6a64 100644
---- a/src/openvpn/options.c
-+++ b/src/openvpn/options.c
-@@ -603,7 +603,9 @@ static const char usage_message[] =
-     "                  if no ACK from remote within n seconds (default=%d).\n"
-     "--reneg-bytes n : Renegotiate data chan. key after n bytes sent and recvd.\n"
-     "--reneg-pkts n  : Renegotiate data chan. key after n packets sent and recvd.\n"
--    "--reneg-sec n   : Renegotiate data chan. key after n seconds (default=%d).\n"
-+    "--reneg-sec max [min] : Renegotiate data chan. key after at most max (default=%d)\n"
-+    "                  and at least min (defaults to 90%% of max on servers and equal\n"
-+    "                  to max on clients).\n"
-     "--hand-window n : Data channel key exchange must finalize within n seconds\n"
-     "                  of handshake initiation by any peer (default=%d).\n"
-     "--tran-window n : Transition window -- old key can live this many seconds\n"
-@@ -870,6 +872,7 @@ init_options(struct options *o, const bool init_gc)
-     o->tls_timeout = 2;
-     o->renegotiate_bytes = -1;
-     o->renegotiate_seconds = 3600;
-+    o->renegotiate_seconds_min = -1;
-     o->handshake_window = 60;
-     o->transition_window = 3600;
-     o->ecdh_curve = NULL;
-@@ -8001,10 +8004,14 @@ add_option(struct options *options,
-         VERIFY_PERMISSION(OPT_P_TLS_PARMS);
-         options->renegotiate_packets = positive_atoi(p[1]);
-     }
--    else if (streq(p[0], "reneg-sec") && p[1] && !p[2])
-+    else if (streq(p[0], "reneg-sec") && p[1] && !p[3])
-     {
-         VERIFY_PERMISSION(OPT_P_TLS_PARMS);
-         options->renegotiate_seconds = positive_atoi(p[1]);
-+        if (p[2])
-+        {
-+            options->renegotiate_seconds_min = positive_atoi(p[2]);
-+        }
-     }
-     else if (streq(p[0], "hand-window") && p[1] && !p[2])
-     {
-diff --git a/src/openvpn/options.h b/src/openvpn/options.h
-index 496c1143..a74dc94d 100644
---- a/src/openvpn/options.h
-+++ b/src/openvpn/options.h
-@@ -548,6 +548,7 @@ struct options
-     int renegotiate_bytes;
-     int renegotiate_packets;
-     int renegotiate_seconds;
-+    int renegotiate_seconds_min;
- 
-     /* Data channel key handshake must finalize
-      * within n seconds of handshake initiation. */
-diff --git a/src/openvpn/ssl.c b/src/openvpn/ssl.c
-index cb94229a..27f81cf3 100644
---- a/src/openvpn/ssl.c
-+++ b/src/openvpn/ssl.c
-@@ -2732,9 +2732,9 @@ tls_process(struct tls_multi *multi,
-                 && ks->n_packets >= session->opt->renegotiate_packets)
-             || (packet_id_close_to_wrapping(&ks->crypto_options.packet_id.send))))
-     {
--        msg(D_TLS_DEBUG_LOW,
--            "TLS: soft reset sec=%d bytes=" counter_format "/%d pkts=" counter_format "/%d",
--            (int)(ks->established + session->opt->renegotiate_seconds - now),
-+        msg(D_TLS_DEBUG_LOW, "TLS: soft reset sec=%d/%d bytes=" counter_format
-+            "/%d pkts=" counter_format "/%d",
-+            (int) (now - ks->established), session->opt->renegotiate_seconds,
-             ks->n_bytes, session->opt->renegotiate_bytes,
-             ks->n_packets, session->opt->renegotiate_packets);
-         key_state_soft_reset(session);
--- 
-2.14.1
-
+iQIzBAEBCgAdFiEEUTWSwa02UpMr393MDfp0rhUk5+4FAloNrYUACgkQDfp0rhUk
+5+60ZQ//f0Zql057ROmEQ/6tRXbBNSllV4oDJe5Vw4s5Hc5ZjpX20+ijV6jdObl8
+QP7ZizaNkb8HOTIJamseKWQpEML/gXxOx2wMP1HCVN25uxqjlEtuZfE3MrImFUaM
+MoOyGEPoW88kfu8sOxYTdDMbGcgpPIKg10eKo4rdyvVuuNktnKP06vzBckMb08ce
+yp0LXl8svtZxr/E7MsqyFJqaCwYXmcg2pDnkNFNnxWxsWMhSdCHNAdYWLC9Yq/a1
+WqLyMJOC5zRVUQqrRFhmOsuvkcEu5DOlGXI/5dRGoRJWyYOvKqOhUi4wEl6qO/6u
+89pZFNyojzLv/rJRdZCHRXnFa+i1KRCQSYmGLpxOdj2bYF4wAp6qA02lpo/DZ5iX
+HQXDhmLTyb3O5wqhUDpBO8lo52SsSrWyprCFsKSnKxZPIEtjg8/2LeU78OpLqB91
+TpyGAvy+5HlR3oBUwCCkDRx852R08SnbmT1uupgucvFPkiTbKuJdm78Z7SzH3jO4
+9X8YL2Rsm8qZPfB5YJI1M6gDZchN1eujjhHrqZpyuOsKdbe2pWyC9+ZXNxGFV+lZ
+Ym7Gsaq+HAJwk7l1zSoQK+OSJ3HKcZayUJCUu2BG8HWmPzPFGyCzC2Yj6cAZDdPk
+0CzJ5+zxNzrMbT/k/CBjRiD+cck7Yhe/hKSm4r+4nXVJRDS34M0=
+=+S9E
+-----END PGP SIGNATURE-----
+--=-=-=--
 
