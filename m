@@ -1,13 +1,12 @@
-From: Jeremie Courreges-Anglas <jca@...2272...>
-References: <87fuaymq62.fsf@...2274...>
-Date: Thu, 16 Nov 2017 16:23:49 +0100
-In-Reply-To: <87fuaymq62.fsf@...2274...> (Jeremie Courreges-Anglas's
- message of "Thu, 05 Oct 2017 01:47:17 +0200")
-Message-ID: <87wp2q1c3e.fsf@...2274...>
+Message-ID: <e73fb8c56e6a375b069259300acc15c2.squirrel@...2257...>
+In-Reply-To: <20171116140958.12847-1-steffan@...1856...>
+References: <830a17f8babbca92e21d64c1324a15b1.squirrel@...2257...>
+ <20171116140958.12847-1-steffan@...1856...>
+Date: Fri, 17 Nov 2017 07:05:31 +0100
+From: "Simon Matter" <simon.matter@...2249...>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
- micalg=pgp-sha512; protocol="application/pgp-signature"
-Subject: Re: [Openvpn-devel] [patch] Fix time_t printing
+Subject: Re: [Openvpn-devel] [PATCH v4] Add per session pseudo-random jitter
+ to --reneg-sec intervals
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -16,42 +15,59 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: openvpn-devel@lists.sourceforge.net
+Content-Type: text/plain;charset=utf-8
+Content-Transfer-Encoding: 8bit
+To: Steffan Karger <steffan@...1856...>
+Cc: openvpn-devel@lists.sourceforge.net, Steffan Karger <steffan@...1856...>
 
---=-=-=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Hi,
 
+> From: Simon Matter <simon.matter@...2249...>
+>
+> While we were suffering from the "TLS Renegotiation Slowdown" bug here
+> https://community.openvpn.net/openvpn/ticket/854 we realized that there is
+> still room for improvement in our use case.
+>
+> It appears that TLS renegotiation is getting more and more expensive in
+> terms of CPU cycles with recent changes for more security. To make things
+> worse, we realized that most renegotiation procedures took place at almost
+> the same time and increased the CPU load too much during these periods.
+> That's especially true on large, multi-instance openvpn setups.
+>
+> I've created attached patch to add a per session pseudo-random component
+> to
+> the --reneg-sec intervals so that renegotiation is evenly spread over
+> time.
+> It is configured by simply adding a second value to --reneg-sec as
+> described in the --help text:
+>
+> --reneg-sec max [min] : Renegotiate data chan. key after at most max
+>                   (default=3600) and at least min (default 90% of max on
+>                   servers and equal to max on clients).
+>
+> The jitter is only enabled by default on servers, because the actual reneg
+> time is min(reneg_server, reneg_client).  Introducing jitter at both ends
+> would bias the actual reneg time to the min value.
+>
+> Note that the patch also slightly changes the log output to show the sec
+> value in the same way as the bytes/pkts values:
+>
+> TLS: soft reset sec=3084/3084 bytes=279897/-1 pkts=1370/0
+>
+> The idea and first versions of this patch are from Simon Matter.  Steffan
+> Karger later incorporated the mailing list comments into this patch.  So
+> credits go to Simon, and all bugs are Steffan's fault ;-)
+>
+> Signed-off-by: Simon Matter <simon.matter@...2249...>
+> Signed-off-by: Steffan Karger <steffan@...1856...>
+> ---
+> v3: incorporate comments from openvpn-devel@, don't add jitter by
+>     default on the client side.
+> v4: fix printing of reneg interval, clarify/typofix comments
 
-FWIW I have added a "portability" section to the CodeStyle page, and
-a subsection about time_t & suseconds_t.
+I've tested it and it works as expected, thanks!
 
-  https://community.openvpn.net/openvpn/wiki/CodeStyle#Printingtime_tandsus=
-econds_tvalues
+Regards,
+Simon
 
-Feedback welcome.
-
---=20
-jca | PGP : 0x1524E7EE / 5135 92C1 AD36 5293 2BDF  DDCC 0DFA 74AE 1524 E7EE
-
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCgAdFiEEUTWSwa02UpMr393MDfp0rhUk5+4FAloNrYUACgkQDfp0rhUk
-5+60ZQ//f0Zql057ROmEQ/6tRXbBNSllV4oDJe5Vw4s5Hc5ZjpX20+ijV6jdObl8
-QP7ZizaNkb8HOTIJamseKWQpEML/gXxOx2wMP1HCVN25uxqjlEtuZfE3MrImFUaM
-MoOyGEPoW88kfu8sOxYTdDMbGcgpPIKg10eKo4rdyvVuuNktnKP06vzBckMb08ce
-yp0LXl8svtZxr/E7MsqyFJqaCwYXmcg2pDnkNFNnxWxsWMhSdCHNAdYWLC9Yq/a1
-WqLyMJOC5zRVUQqrRFhmOsuvkcEu5DOlGXI/5dRGoRJWyYOvKqOhUi4wEl6qO/6u
-89pZFNyojzLv/rJRdZCHRXnFa+i1KRCQSYmGLpxOdj2bYF4wAp6qA02lpo/DZ5iX
-HQXDhmLTyb3O5wqhUDpBO8lo52SsSrWyprCFsKSnKxZPIEtjg8/2LeU78OpLqB91
-TpyGAvy+5HlR3oBUwCCkDRx852R08SnbmT1uupgucvFPkiTbKuJdm78Z7SzH3jO4
-9X8YL2Rsm8qZPfB5YJI1M6gDZchN1eujjhHrqZpyuOsKdbe2pWyC9+ZXNxGFV+lZ
-Ym7Gsaq+HAJwk7l1zSoQK+OSJ3HKcZayUJCUu2BG8HWmPzPFGyCzC2Yj6cAZDdPk
-0CzJ5+zxNzrMbT/k/CBjRiD+cck7Yhe/hKSm4r+4nXVJRDS34M0=
-=+S9E
------END PGP SIGNATURE-----
---=-=-=--
 
