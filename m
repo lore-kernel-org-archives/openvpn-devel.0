@@ -1,10 +1,10 @@
-Date: Sun, 19 Nov 2017 20:44:52 +0100 (CET)
-Message-Id: <201711191944.vAJJiqLf070239@...2054...>
+Date: Sun, 19 Nov 2017 21:37:56 +0100 (CET)
+Message-Id: <201711192037.vAJKbuHH080370@...2054...>
 From: Gert Doering <gert@...1296...>
-In-Reply-To: <20171116140958.12847-1-steffan@...1856...>
-References: <20171116140958.12847-1-steffan@...1856...>
-Subject: [Openvpn-devel] [PATCH applied] Re: Add per session pseudo-random
- jitter to --reneg-sec intervals
+In-Reply-To: <20171112163636.17434-1-steffan@...1856...>
+References: <20171112163636.17434-1-steffan@...1856...>
+Subject: [Openvpn-devel] [PATCH applied] Re: Add --tls-cert-profile option
+ for mbedtls builds
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -15,31 +15,36 @@ List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>,
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To: Simon Matter <simon.matter@...2249...>
+To: Steffan Karger <steffan.karger@...1435...>
 Cc: openvpn-devel@lists.sourceforge.net
 
-ACK.  The change makes sense, the actual functionality is what the 
-discussion converged to, and the code looks sane (no long long, but it
-isn't printing a time_t either :-) ).
+.. of course this conflicts with o->renegotiate_seconds_min...
 
-Your patch has been applied to the master branch.
+Nevertheless, thanks for the patch :-) - it makes my FreeBSD 10.3 
+(mbedTLS 2.6) buildslave now happy again (on the default settings - with
+--tls-cert-profile preferred, it refuses the old-hash cert, as it should).
 
-commit dd99646347bc5461fa83b0e62114550504bb128f
-Author: Simon Matter
-Date:   Thu Nov 16 15:09:58 2017 +0100
+Also tested with openssl 1.0.1, where it warns and does nothing, as
+expected.  Good :-)
 
-     Add per session pseudo-random jitter to --reneg-sec intervals
+Commit subject amended according to Antonio's comment.
 
-     Signed-off-by: Simon Matter <simon.matter@...2249...>
-     Signed-off-by: Steffan Karger <steffan@...1856...>
-     Acked-by: Gert Doering <gert@...1296...>
-     Message-Id: <20171116140958.12847-1-steffan@...1856...>
-     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg15888.html
+Your patch has been applied to the master and release/2.4 branch.
+
+commit aba758740d26224b7b3957df221def7ab80c5802 (master)
+commit 8bcabf0a1621e6ccc7a44465a73de29fd2d541b3 (release/2.4)
+Author: Steffan Karger
+Date:   Sun Nov 12 17:36:36 2017 +0100
+
+     Add --tls-cert-profile option.
+
+     Signed-off-by: Steffan Karger <steffan.karger@...1435...>
+     Acked-by: Antonio Quartulli <antonio@...515...>
+     Message-Id: <20171112163636.17434-1-steffan@...1856...>
+     URL: https://www.mail-archive.com/openvpn-devel@lists.sourceforge.net/msg15848.html
      Signed-off-by: Gert Doering <gert@...1296...>
 
 
-for patchwork:
-Acked-by: Gert Doering <gert@...1296...>
 --
 kind regards,
 
