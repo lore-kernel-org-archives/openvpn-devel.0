@@ -1,9 +1,11 @@
-From: selva.nair@...277...
-Date: Sat, 18 Nov 2017 12:40:58 -0500
-Message-Id: <1511026858-23281-2-git-send-email-selva.nair@...277...>
-In-Reply-To: <1511026858-23281-1-git-send-email-selva.nair@...277...>
-References: <1511026858-23281-1-git-send-email-selva.nair@...277...>
-Subject: [Openvpn-devel] [PATCH 2/2] Make most registry values optional
+MIME-Version: 1.0
+In-Reply-To: <CAKuzo_jBysn9U0BfWPb0m_D2J9Sg3UFLnUUbjiow0wcv0ZiUeg@...278...>
+References: <CAKuzo_jBysn9U0BfWPb0m_D2J9Sg3UFLnUUbjiow0wcv0ZiUeg@...278...>
+From: =?UTF-8?B?0JjQu9GM0Y8g0KjQuNC/0LjRhtC40L0=?= <chipitsine@...277...>
+Date: Sun, 19 Nov 2017 10:06:20 +0500
+Message-ID: <CAFHpkQHhqSkyEOhONC+_VC-=vJtRf_8bJhQFtbqwSEKW=OSOAQ@...278...>
+Content-Type: multipart/alternative; boundary="94eb2c05a3b03898cb055e4eee31"
+Subject: Re: [Openvpn-devel] input validation for username, password etc.
 List-Id: <openvpn-devel.lists.sourceforge.net>
 List-Unsubscribe: <https://lists.sourceforge.net/lists/options/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=unsubscribe>
@@ -12,101 +14,87 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-To: openvpn-devel@lists.sourceforge.net
+To: Selva <selva.nair@...277...>
+Cc: "openvpn-devel@lists.sourceforge.net" <openvpn-devel@lists.sourceforge.net>
 
-From: Selva Nair <selva.nair@...277...>
+--94eb2c05a3b03898cb055e4eee31
+Content-Type: text/plain; charset="UTF-8"
 
-Not all installations need registry values such as log_dir and
-config_dir especially if automatic service is not in use.
-This patch provides reasonable defaults for registry values.
+2017-11-18 8:25 GMT+05:00 Selva <selva.nair@...277...>:
 
-- Read the default value of HKLM\Software\PACKAGE_NAME to get the
-  install path and construct defaults for exe_path, config_dir,
-  log_dir from it. Use "ovpn", "0", NORMAL_PRIORITY as the defaults
-  for config file extension, log-append flag and process priority.
+> Hi,
+>
+> I want to add some form of validation for user input in the GUI so that
+> the user can be alerted when username, password etc. contains characters
+> that may not work.
+>
+> So far the only characters that appear to be problematic are new line
+> ('\n') and embedded '\0'.  As the management interface uses a line based
+> protocol with '\n' as the delimiter, it can't be a part of input strings
+> and breaks quoting.
+>
+> Is there any other character that should be disallowed?
+>
 
-The only remaining required registry entry is the root key (usually
-HKLM\Software\OpenVPN) whose default value should be set to the
-installation path.
+there's something to investigate about "
 
-Signed-off-by: Selva Nair <selva.nair@...277...>
----
- src/openvpnserv/common.c | 27 +++++++++++++++++++++------
- 1 file changed, 21 insertions(+), 6 deletions(-)
+https://github.com/OpenVPN/openvpn-gui/blob/master/TODO#L3
 
-diff --git a/src/openvpnserv/common.c b/src/openvpnserv/common.c
-index bc99584..759e6a0 100644
---- a/src/openvpnserv/common.c
-+++ b/src/openvpnserv/common.c
-@@ -87,6 +87,8 @@ GetOpenvpnSettings(settings_t *s)
-     TCHAR append[2];
-     DWORD error;
-     HKEY key;
-+    TCHAR install_path[MAX_PATH];
-+    TCHAR default_value[MAX_PATH];
- 
-     LONG status = RegOpenKeyEx(HKEY_LOCAL_MACHINE, REG_KEY, 0, KEY_READ, &key);
-     if (status != ERROR_SUCCESS)
-@@ -95,37 +97,50 @@ GetOpenvpnSettings(settings_t *s)
-         return MsgToEventLog(M_SYSERR, TEXT("Could not open Registry key HKLM\\%s not found"), REG_KEY);
-     }
- 
--    error = GetRegString(key, TEXT("exe_path"), s->exe_path, sizeof(s->exe_path), NULL);
-+    /* The default value of REG_KEY is the install path */
-+    if (GetRegString(key, NULL, install_path, sizeof(install_path), NULL) != ERROR_SUCCESS)
-+    {
-+        goto out;
-+    }
-+
-+    openvpn_sntprintf(default_value, _countof(default_value), TEXT("%s\\bin\\openvpn.exe"),
-+                      install_path);
-+    error = GetRegString(key, TEXT("exe_path"), s->exe_path, sizeof(s->exe_path), default_value);
-     if (error != ERROR_SUCCESS)
-     {
-         goto out;
-     }
- 
--    error = GetRegString(key, TEXT("config_dir"), s->config_dir, sizeof(s->config_dir), NULL);
-+    openvpn_sntprintf(default_value, _countof(default_value), TEXT("%s\\config"), install_path);
-+    error = GetRegString(key, TEXT("config_dir"), s->config_dir, sizeof(s->config_dir),
-+                         default_value);
-     if (error != ERROR_SUCCESS)
-     {
-         goto out;
-     }
- 
--    error = GetRegString(key, TEXT("config_ext"), s->ext_string, sizeof(s->ext_string), NULL);
-+    error = GetRegString(key, TEXT("config_ext"), s->ext_string, sizeof(s->ext_string),
-+                         TEXT(".ovpn"));
-     if (error != ERROR_SUCCESS)
-     {
-         goto out;
-     }
- 
--    error = GetRegString(key, TEXT("log_dir"), s->log_dir, sizeof(s->log_dir), NULL);
-+    openvpn_sntprintf(default_value, _countof(default_value), TEXT("%s\\log"), install_path);
-+    error = GetRegString(key, TEXT("log_dir"), s->log_dir, sizeof(s->log_dir), default_value);
-     if (error != ERROR_SUCCESS)
-     {
-         goto out;
-     }
- 
--    error = GetRegString(key, TEXT("priority"), priority, sizeof(priority), NULL);
-+    error = GetRegString(key, TEXT("priority"), priority, sizeof(priority),
-+                         TEXT("NORMAL_PRIORITY_CLASS"));
-     if (error != ERROR_SUCCESS)
-     {
-         goto out;
-     }
- 
--    error = GetRegString(key, TEXT("log_append"), append, sizeof(append), NULL);
-+    error = GetRegString(key, TEXT("log_append"), append, sizeof(append), TEXT("0"));
-     if (error != ERROR_SUCCESS)
-     {
-         goto out;
--- 
-2.1.4
 
+>
+> Thanks,
+>
+> Selva
+>
+> ------------------------------------------------------------
+> ------------------
+> Check out the vibrant tech community on one of the world's most
+> engaging tech sites, Slashdot.org! http://sdm.link/slashdot
+> _______________________________________________
+> Openvpn-devel mailing list
+> Openvpn-devel@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/openvpn-devel
+>
+>
+
+--94eb2c05a3b03898cb055e4eee31
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><br><div class=3D"gmail_extra"><br><div class=3D"gmail_quo=
+te">2017-11-18 8:25 GMT+05:00 Selva <span dir=3D"ltr">&lt;<a href=3D"mailto=
+:selva.nair@...277..." target=3D"_blank">selva.nair@...277...</a>&gt;</span=
+>:<br><blockquote class=3D"gmail_quote" style=3D"margin:0px 0px 0px 0.8ex;b=
+order-left:1px solid rgb(204,204,204);padding-left:1ex"><div dir=3D"ltr">Hi=
+,<div><br></div><div>I want to add some form of validation for user input i=
+n the GUI so that the user can be alerted when <span id=3D"gmail-m_53085745=
+93088888245:1me.1">username</span>, password etc. contains characters that =
+may not work.</div><div><br></div><div>So far the only characters that appe=
+ar to be problematic are new line (&#39;\n&#39;) and embedded &#39;\0&#39;.=
+=C2=A0 As the management interface uses a line based protocol with &#39;\n&=
+#39; as the delimiter, it can&#39;t be a part of input strings and breaks q=
+uoting.</div><div><br></div><div>Is there any other character that should b=
+e disallowed?</div></div></blockquote><div><br></div><div>there&#39;s somet=
+hing to investigate about &quot;<br><br><a href=3D"https://github.com/OpenV=
+PN/openvpn-gui/blob/master/TODO#L3">https://github.com/OpenVPN/openvpn-gui/=
+blob/master/TODO#L3</a><br></div><div>=C2=A0</div><blockquote class=3D"gmai=
+l_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,20=
+4,204);padding-left:1ex"><div dir=3D"ltr"><div><br></div><div>Thanks,</div>=
+<div><br></div><div><span id=3D"gmail-m_5308574593088888245:1me.2">Selva</s=
+pan></div></div>
+<br>------------------------------<wbr>------------------------------<wbr>-=
+-----------------<br>
+Check out the vibrant tech community on one of the world&#39;s most<br>
+engaging tech sites, Slashdot.org! <a href=3D"http://sdm.link/slashdot" rel=
+=3D"noreferrer" target=3D"_blank">http://sdm.link/slashdot</a><br>_________=
+_____________________<wbr>_________________<br>
+Openvpn-devel mailing list<br>
+<a href=3D"mailto:Openvpn-devel@lists.sourceforge.net">Openvpn-devel@...2155...=
+9...<wbr>sourceforge.net</a><br>
+<a href=3D"https://lists.sourceforge.net/lists/listinfo/openvpn-devel" rel=
+=3D"noreferrer" target=3D"_blank">https://lists.sourceforge.net/<wbr>lists/=
+listinfo/openvpn-devel</a><br>
+<br></blockquote></div><br></div></div>
+
+--94eb2c05a3b03898cb055e4eee31--
 
