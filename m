@@ -1,15 +1,12 @@
-Date: Mon, 20 Nov 2017 09:06:04 +0100
-From: Gert Doering <gert@...1296...>
-Message-ID: <20171120080604.GX958@...1296...>
+MIME-Version: 1.0
+In-Reply-To: <20171120080604.GX958@...1296...>
 References: <20171112163636.17434-1-steffan@...1856...>
  <201711192037.vAJKbuHH080370@...2054...>
- <20171119213837.GA80839@...1296...>
- <8760a6kjwc.fsf@...2274...>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature"; boundary="2eMsdCYyWAhZPdeO"
-Content-Disposition: inline
-In-Reply-To: <8760a6kjwc.fsf@...2274...>
+ <20171119213837.GA80839@...1296...> <8760a6kjwc.fsf@...2274...>
+ <20171120080604.GX958@...1296...>
+From: Steffan Karger <steffan@...1856...>
+Date: Mon, 20 Nov 2017 10:51:41 +0100
+Message-ID: <CAA1Abx+NCXkP_Ns03AzgUt+-W8VPmpYmrptkiohbzO6rZ7Gj-w@...278...>
 Subject: Re: [Openvpn-devel] [PATCH applied] Re: Add --tls-cert-profile
  option for mbedtls builds
 List-Id: <openvpn-devel.lists.sourceforge.net>
@@ -20,79 +17,81 @@ List-Post: <mailto:openvpn-devel@lists.sourceforge.net>
 List-Help: <mailto:openvpn-devel-request@lists.sourceforge.net?subject=help>
 List-Subscribe: <https://lists.sourceforge.net/lists/listinfo/openvpn-devel>, 
  <mailto:openvpn-devel-request@lists.sourceforge.net?subject=subscribe>
-To: Gert Doering <gert@...1296...>, Steffan Karger <steffan.karger@...1435...>, openvpn-devel@lists.sourceforge.net
-
---2eMsdCYyWAhZPdeO
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+To: Gert Doering <gert@...1296...>
+Cc: Steffan Karger <steffan.karger@...1435...>, openvpn-devel <openvpn-devel@lists.sourceforge.net>
 
 Hi,
 
-On Sun, Nov 19, 2017 at 11:01:39PM +0100, Jeremie Courreges-Anglas wrote:
-> > (Not sure, though, why it only complains about two out of three, but
-> > still annoyance...  if LibreSSL claims OPENSSL_VERSION_NUMBER >=3D 0x10=
-100000
-> > it better should provide everything needed)
->=20
-> LibreSSL defines:
->=20
->   #define OPENSSL_VERSION_NUMBER        0x20000000L
->=20
-> breaking #ifdef checks based on it.=20=20
+On 20-11-17 09:06, Gert Doering wrote:> On Sun, Nov 19, 2017 at
+11:01:39PM +0100, Jeremie Courreges-Anglas
+> wrote:
+>>> (Not sure, though, why it only complains about two out of
+>>> three, but still annoyance...  if LibreSSL claims
+>>> OPENSSL_VERSION_NUMBER >= 0x10100000 it better should provide
+>>> everything needed)
+>>
+>> LibreSSL defines:
+>>
+>> #define OPENSSL_VERSION_NUMBER        0x20000000L
+>>
+>> breaking #ifdef checks based on it.
+>
+> Indeed.  I find this a curious and not useful setting - "if it's
+> not compatible with OPENSSL, why define such a version number"?
+> But that's slightly out of scope here...
 
-Indeed.  I find this a curious and not useful setting - "if it's not=20
-compatible with OPENSSL, why define such a version number"?  But that's
-slightly out of scope here...
++1, highly frustrating.  LibreSSL should really just make up their
+mind whether they want to be OpenSSL-compatible or not, and act
+accordingly.
 
-> Sadly, people tend to prefer adding
->=20
->   && !defined(LIBRESSL_VERSION_NUMBER)
->=20
-> to fix the build, rather than doing features detection using autoconf or
-> similar.  openvpn can easily solve this.
+>> Sadly, people tend to prefer adding
+>>
+>> && !defined(LIBRESSL_VERSION_NUMBER)
+>>
+>> to fix the build, rather than doing features detection using
+>> autoconf or similar.  openvpn can easily solve this.
+>
+> ... and I'm thankful for your patch, because this is exactly what I
+>  considered doing here.  We already check for all the 1.0/1.1
+> openssl differences (accessor functions), so adding this one is
+> logical.
 
-... and I'm thankful for your patch, because this is exactly what I=20
-considered doing here.  We already check for all the 1.0/1.1 openssl
-differences (accessor functions), so adding this one is logical.
+*If* we want to keep LibreSSL working, I agree this is the way to go.
+ But I'm kind of annoyed that we are including more and more #ifdefs
+to keep LibreSSL happy.  The version checks are much simpler and make
+it easy to see what code can be purged when we drop support for e.g
+openssl 1.0.1.  I don't want to keep these 'backwards compatibility'
+ifdefs forever.  At some point we'll have to decide to either
+completely stop supporting LibreSSL, or add it as a true abstraction
+(which I will *not* maintain).  We're getting closer and closer to
+that point.
 
-> > This is on OpenBSD 6.0, which happens to be something Samuli's vagrant
-> > setup can provide nicely if anyone wants to have a look :-)
->=20
-> Here's a diff, master builds and seems to run fine as a client on
-> OpenBSD-current.
+>>> This is on OpenBSD 6.0, which happens to be something Samuli's
+>>> vagrant setup can provide nicely if anyone wants to have a look
+>>> :-)
+>>
+>> Here's a diff, master builds and seems to run fine as a client
+>> on OpenBSD-current.
+>
+> Thanks.  Patch looks good to me, but I leave the final word to
+> Steffan (maybe he wants to amend the non-support message to include
+> LibreSSL, or whatever)
 
-Thanks.  Patch looks good to me, but I leave the final word to Steffan
-(maybe he wants to amend the non-support message to include LibreSSL,
-or whatever)
+They look good at first sight, but I'll check these properly later
+this week - when I have some spare cycles available.
 
-> I can cook a similar diff for the remaining OPENSSL /
-> LIBRESSL_VERSION_NUMBER #ifdef.
+>> I can cook a similar diff for the remaining OPENSSL /
+>> LIBRESSL_VERSION_NUMBER #ifdef.
+>
+> This would be appreciated.
 
-This would be appreciated.
+Same reservations as above.
 
-gert
---=20
-now what should I write here...
+To reiterate: our policy towards LibreSSL is currently that we do
+*not* support it, but we won't break it on purpose and accept trivial
+patches to keep it working.  Where 'trivial' is - of course - fuzzy.
 
-Gert Doering - Munich, Germany                             gert@...1296...
-
---2eMsdCYyWAhZPdeO
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGcBAEBAgAGBQJaEozrAAoJEB2Cnv7KVigSTbUL/3PhzhVOc35PU/ns/mDIOWmC
-ph0cxEK68kV2sjGLYDkbF2Q38XH3DHn1+7SG0SZcJBvD+l1MzylhhaKALs58rJG/
-SOl3D4GvprKqKVNrj0tmyNcPuCJ73V6IVI+2MLpZ/X4NM0ErajbEvtec5fch/7MG
-jF0XSTQFpR9QWR9xzZSvLDPkGbKGNndaHBrhx+MGryH9t9j6GyRRRRFlWbHwFFYC
-ydM332IJIPlMUAjwMovBYdO31ttmQjDluoItpzycp6L+kJlOh89RLxLZTd8SRxKi
-RadAScOv1Rogf5ggzzM09GUR80IaH6WIiOvE97P+4+5cQCTFebPLrI/j5HnQ6xwL
-5+Zap++x0RScGl1ZtdcvSNFBT3L0mqoxgAssSrTpVILaeEpX5lmC5s4cnxRu+c1f
-146ZaSmYCWQn21NVHY/sdfPJu7kOSdiUoEk3DNcP/+eP1KpbSKqaQ8lFbYIk/5Yi
-gx+QsZAh60MeRAoAomE0z0JtBzNvTn2ci2gC81BNxQ==
-=a6LR
------END PGP SIGNATURE-----
-
---2eMsdCYyWAhZPdeO--
+-Steffan
 
